@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -1788,10 +1788,10 @@ PTREE NodeDtorExpr(             // MARK FOR DTOR'ING AFTER EXPRESSION
     SYMBOL dtor;                // - dtor symbol
 
     if( ( expr->op != PT_ERROR ) && SymRequiresDtoring( sym ) ) {
-        sym->flag |= SYMF_ADDR_TAKEN;
+        sym->flags |= SYMF_ADDR_TAKEN;
         orig = expr;
         if( ! SymIsModuleDtorable( sym ) ) {
-            sym->flag |= SYMF_CG_ADDR_TAKEN;
+            sym->flags |= SYMF_CG_ADDR_TAKEN;
             SymScope( sym )->u.s.dtor_reqd = true;
         }
         PTreeExtractLocn( expr, &err_locn );
@@ -1833,6 +1833,7 @@ PTREE NodeBasedStr(             // BUILD EXPRESSION FOR TF1_BASED_STRING TYPE
     PTREE node;                 // - new node
     CGVALUE segop;              // - segment id
 
+    segop.pvalue = 0;
     segop.uvalue = SegmentFindBased( expr_type );
     node = PTreeIc( IC_SEGOP_SEG, segop );
     node->type = TypeSegmentShort();
@@ -2149,6 +2150,7 @@ PTREE NodeIcUnsigned(           // ADD A PTREE-IC NODE, UNSIGNED OPERAND
 {
     CGVALUE val;                // - operand
 
+    val.pvalue = 0;
     val.uvalue = operand;
     return( nodeIcCgValue( opcode, val ) );
 }

@@ -6,7 +6,16 @@ proj_name = wrc
 wrc_autodepends = .AUTODEPEND
 !endif
 
+wrc_ntverrc = ..
+
 wrc_trmem = 1
+
+!ifdef bootstrap
+wrc_wreslib_cli = incl_msgtext
+!else
+wrc_wreslib_cli = text
+!endif
+wrc_wreslib_incl = 1
 
 # Base DLL name needs to be 8 chars or less on OS/2, argh! Additionally,
 # internal module name may be required to match file name on some platforms.
@@ -17,6 +26,8 @@ dlltarg_name = bwrcd
 exetarg_name = wrc
 dlltarg_name = wrcd
 !endif
+ntverrc_exe = $(exetarg_name)
+ntverrc_dll = $(dlltarg_name)
 
 win_yacc_prefix = winy
 os2_yacc_prefix = os2y
@@ -32,23 +43,19 @@ additional_clean = *.gh *.grh *.grc *.gc $(os2_yacc_file).* $(win_yacc_file).* *
 !include dllbase.mif
 !include deftarg.mif
 !include trmem.mif
-!include wres.mif
 
 !include $(cpp_dir)/client.mif
 
 #
 # cflags
 #
-.c : .;../c;$(cpp_c_dirs);$(fe_misc_dir)/c;$(trmem_dir);$(watcom_dir)/c
+.c : .;../c;$(cli_cpp_c_dirs);$(fe_misc_dir)/c;$(trmem_dir);$(watcom_dir)/c
 
-inc_dirs = -I. -I"../h" $(wres_inc_dirs) -I"$(fe_misc_dir)/h" $(cpp_inc_dirs)
+inc_dirs = -I. -I"../h" $(cli_wres_inc_dirs) -I"$(fe_misc_dir)/h" $(cli_cpp_inc_dirs)
 
 parser_defines = -DYYDEBUG -DSCANDEBUG
 
 extra_cpp_flags   = -D_STANDALONE_ $(parser_defines)
-!ifdef bootstrap
-extra_cpp_flags   += -DINCL_MSGTEXT
-!endif
 !ifndef wrc_dll
 extra_cpp_flags   += -DIDE_PGM
 !endif
@@ -135,7 +142,7 @@ common_objs = &
     $(_subdir_)rcspawn.obj &
     $(_subdir_)cmdlnprs.obj &
     $(_subdir_)cmdscan.obj &
-    $(cpp_objs)
+    $(cli_cpp_objs)
 
 misc_objs = &
     1250.uni &
@@ -175,15 +182,9 @@ exetarg_libs          = $(dlltarg_name).lib
 !else
 exetarg_prebuild_objs = $(misc_objs) $(prebuild_objs)
 exetarg_objs          = $(objs_exe)
-exetarg_libs          = $(wres_lib)
 !ifndef bootstrap
-exetarg_qnx_res       = usage.u
-exetarg_res_wresui    = wresui.res
+exetarg_res           = wresexe.res
 !endif
-!endif
-!ifndef bootstrap
-exetarg_res_version_nt_386 = exever.res
-exetarg_res_version_nt_x64 = exever.res
 !endif
 !include exetarg.mif
 
@@ -192,26 +193,23 @@ exetarg_res_version_nt_x64 = exever.res
 #
 dlltarg_prebuild_objs = $(dll_subdir) $(prebuild_objs)
 dlltarg_objs          = $(objs_dll)
-dlltarg_libs          = $(wres_lib)
 !ifndef bootstrap
-dlltarg_res_wresui    = wresui.res
+dlltarg_res           = wresdll.res
 !endif
-dlltarg_res_version_nt_386 = version.res
-dlltarg_res_version_nt_x64 = version.res
 !include dlltarg.mif
 
 #
 # rc and others
 #
-verrc_exe = $(exetarg_name)
-verrc_dll = $(dlltarg_name)
-!include verrc.mif
-
 rc_defines    = -D_STANDALONE_ $(parser_defines)
 
-wresui.res : ../rc.rc rcmsg.grh .AUTODEPEND
+wresexe.res : ../rc.rc rcmsg.grh .AUTODEPEND
     @%make echo_rc
-    $(rcui8) -ad $(rc_defines)
+    $(rcu8j) $(ppflags_common) $(ppflags_wreslib) $(rc_cppflags) $(rc_defines) -ad $(rc_flags) $(rc_inc_path) $[@ -fo=$@
+
+wresdll.res : ../rc.rc rcmsg.grh .AUTODEPEND
+    @%make echo_rc
+    $(rcu8j) $(ppflags_common) $(ppflags_wreslib) $(rc_cppflags) $(rc_defines) -DRESX_DLL -ad $(rc_flags) $(rc_inc_path) $[@ -fo=$@
 
 win_yacc_options = -b $(win_yacc_prefix) -d -dd -db -de
 os2_yacc_options = -b $(os2_yacc_prefix) -d -dd -db -de
@@ -239,21 +237,18 @@ rcmsg.grh : ../h/rc.msg
 $(misc_objs):
     cat ../$@ >$@
 
-!ifdef exetarg_qnx_res
-optencod_opt_qnx = -u=$(exetarg_qnx_res)
-!endif
 optencod_targets = $(host_os)
 !ifeq debug 2
 optencod_targets += dbg
 !endif
 
-cmdlnprs.gh cmdlnprs.gc usage.gh $(exetarg_$(host_os)_res) : ../h/options.gml $(__MAKEFILES__)
+cmdlnprs.gh cmdlnprs.gc usage.gh : ../h/options.gml $(__MAKEFILES__)
     @%make echo_optencod
-    $(noecho)*optencod -q -rc=MSG_USAGE_BASE -utf8 $(optencod_opt_$(host_os)) $[@ cmdlnprs.gh cmdlnprs.gc $@ $(optencod_targets)
+    $(optencod) -rc=MSG_USAGE_BASE -utf8 $(optencod_opt_$(host_os)) $[@ cmdlnprs.gh cmdlnprs.gc $@ . $(optencod_targets)
 
 ./cvttable.exe: ../c/cvttable.c $(__MAKEFILES__)
     @%make echo_bldccl
-    $(bld_ccl) $(ppflags_common) $(ppflags_autodep) $[@ -D_STANDALONE_ -I"../h" $(bld_cclflags) $(bld_ldflags)
+    $(bld_ccl) $(ppflags_common) $(ppflags_autodep) $(bld_ppflags_sys) -D_STANDALONE_ $(bld_cppflags) $[@ -I"../h" $(bld_cclflags) $(bld_ldflags)
 
 to932.uni : ./cvttable.exe $(__MAKEFILES__)
     $[@ $@

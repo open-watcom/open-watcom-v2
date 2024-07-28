@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,9 +31,11 @@
 ****************************************************************************/
 
 
-#if !defined( INCL_MSGTEXT )
-
-#define MSG_USAGE_WLIB_BASE     100
-#define MSG_USAGE_AR_BASE       200
-
+#if defined( INCL_MSGTEXT )
+#elif defined( USE_WRESLIB )
+    #define MSG_USAGE_WLIB_BASE     100
+    #define MSG_USAGE_AR_BASE       200
+#else
+    #define MSG_USAGE_WLIB_BASE     100
+    #define MSG_USAGE_AR_BASE       200
 #endif

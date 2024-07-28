@@ -2,22 +2,25 @@ proj_name = wprof
 
 wprof_autodepends = .AUTODEPEND
 
+wprof_ntmanif = ../res
+wprof_ntverrc = ../res
+
 wprof_trmem = 1
+
+wprof_wreslib_cli = gui
+
+wprof_qnx_usage = 1
 
 additional_clean = *.grc
 
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif
-!include wres.mif
 !include trmem.mif
 
 !include $(aui_dir)/client.mif
-!include $(gui_dir)/client.mif
-!include $(ui_dir)/client.mif
 !include $(hlpview_dir)/client.mif
 !include $(wpi_dir)/client.mif
-!include $(commonui_dir)/client.mif
 
 dig_arch = all
 
@@ -32,11 +35,11 @@ dig_arch = all
 #
 .c : ../c;$(dig_srcs);$(watcom_dir)/c;$(trmem_dir)
 
-inc_dirs = -I"../h" -I"$(wsample_dir)/h" $(aui_inc_dirs) $(gui_inc_dirs) $(ui_inc_dirs) &
-    $(commonui_inc_dirs) $(wpi_inc_dirs) $(hlpview_inc_dirs) -I"$(dig_dir)/h"
+inc_dirs = -I"../h" -I"$(wsample_dir)/h" $(cli_aui_inc_dirs) &
+    $(cli_wpi_inc_dirs) $(cli_hlpview_inc_dirs) -I"$(dig_dir)/h"
 
 extra_cpp_flags = $(dig_arch_cpp_flags) -DBLDVER=$(bld_ver)
-!ifeq sys_windowed 1
+!ifdef sys_windowed
 extra_cpp_flags    += -DGUI_IS_GUI
 extra_cpp_flags_os2 = -D__OS2_PM__
 !endif
@@ -75,53 +78,30 @@ extra_ldflags = -ldl
 #
 exetarg_prebuild_objs = $(extra_link_res_$(host_os)) $(resfile)
 exetarg_objs          = $(objs) $(sys_objs)
-exetarg_libs          = $(aui_lib) $(gui_lib) $(ui_lib) $(wres_lib) $(sys_libs)
-exetarg_res_version_nt_386 = exever.res
-exetarg_res_version_nt_x64 = exever.res
-!ifeq sys_windowed 1
+exetarg_libs          = $(cli_aui_libs) $(sys_libs)
 exetarg_res           = $(proj_name).res
-!else
-exetarg_res_wresui    = wresui.res
-!endif
-exetarg_nt_manif_386  = ntmanif.res
-exetarg_nt_manif_x64  = ntmanif.res
-exetarg_qnx_res       = usage.u
 !include exetarg.mif
 
 #
 # rc and others
 #
-!include verrc.mif
-
 #
 # rcflags
 #
-rcfiles = &
-    $(gui_dir)/h/gui.rc &
-    $(gui_dir)/h/gui.msg &
-    $(aui_dir)/res/aui.rc &
-    $(aui_dialogs)
+rc_inc_dirs = -I. $(wprof_rc_inc_dirs) $(cli_aui_rc_inc_dirs)
 
-!ifdef gui_os2pm
-wprof_rc_inc_dirs = -I"../res/os2" -I"../res" -I"../h"
-!else
-wprof_rc_inc_dirs = -I"../res/win" -I"../res" -I"../h"
+!ifdef sys_windowed
+extra_rc_flags_os2 = -I"../res/os2" -I"../res" -I"../h" -DRESX_GUI
+extra_rc_flags_win = -I"../res/win" -I"../res" -I"../h" -DRESX_GUI
+extra_rc_flags_nt  = -I"../res/win" -I"../res" -I"../h" -DRESX_GUI
 !endif
-rc_inc_dirs = -I. $(wprof_rc_inc_dirs) $(aui_rc_inc_dirs) $(gui_rc_inc_dirs)
-rcui_inc_dirs = $(wprof_rc_inc_dirs) $(aui_rc_inc_dirs) $(gui_rc_inc_dirs)
 
-$(proj_name).res : ../res/wprofgui.rc $(rcfiles) $(__MAKEFILES__) .AUTODEPEND
+$(proj_name).res : ../res/wprof.rc $(cli_aui_rc_deps) $(__MAKEFILES__) .AUTODEPEND
     @%make echo_rc
-    $(rc) $(ppflags_common) $(rc_flags) -ad $(rc_inc_path) $[@ -fo=$@
+    $(rcu8) $(ppflags_common) $(ppflags_wreslib) $(rc_cppflags) -ad $(rc_flags) $(rc_inc_path) $[@ -fo=$@
 
-ntmanif.res : ../res/ntmanif.rc
-    @%make echo_rc
-    $(rc) $(ppflags_common) $(rc_flags) -I"../res" $(inc_dirs_sys_nt) $< -fo=$@
-
-wresui.res : ../res/wprofui.rc $(rcfiles) $(__MAKEFILES__) .AUTODEPEND
-    @%make echo_rc
-    $(rcui) -ad
-
-usage.u : ../h/usage.sp $(__MAKEFILES__)
+!ifdef qnx_usage
+$(qnx_usage) : ../h/usage.sp $(__MAKEFILES__)
     @%make echo_wsplice
     $(noecho)*wsplice -u $[@ $@
+!endif

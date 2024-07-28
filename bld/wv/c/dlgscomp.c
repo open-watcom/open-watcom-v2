@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,11 +40,12 @@
 #include "wndsys.h"
 #include "symcomp.h"
 #include "dlgscomp.h"
+#include "litdui.h"
 
 
 static name_list *SortedNames;
 
-static const char *SymGetName( const void *data_handle, int item )
+static const char * GUICALLBACK SymGetName( const void *data_handle, int item )
 {
     item += *(const int *)data_handle;
     if( item >= NameListNumRows( SortedNames ) )

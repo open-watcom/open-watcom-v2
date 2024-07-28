@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -57,6 +57,23 @@
 
 #define DWARF_CU_REC_NO_PCLO_PCHI   1
 
+#define MAX_LANG    (sizeof( LangNames ) / sizeof( LangNames[0] ))
+
+typedef struct {
+    segment_id  segid;
+    long_offset offset;
+} big_patch_handle;
+
+typedef struct {
+    back_handle  bck;
+    int_32       disp;
+} loc_range;
+
+struct lang_map{
+     uint       lang;
+     char       name[10];
+};
+
 dw_client               Client;
 
 static short            CurrFNo;
@@ -67,18 +84,26 @@ static back_handle      Comp_High;
 static back_handle      ARange;
 static sect_info        DwarfSegs[DW_DEBUG_MAX];
 
+static big_patch_handle UnitSize[1];
+
+static const struct lang_map LangNames[] = {
+    {DWLANG_C,       "C"},
+    {DWLANG_CPP,     "CPP"},
+    {DWLANG_FORTRAN, "FORTRAN"},
+    {DWLANG_FORTRAN, "FORTRAN77"},
+};
+
 static void CLIWrite( dw_sectnum sect, const void *block, size_t size )
 /*********************************************************************/
 {
     sect_info           *curr;
-    segment_id          old_segid;
 //    long_offset         off;
 
     curr = &DwarfSegs[sect];
-    old_segid = SetOP( curr->segid );
-//    off = AskBigLocation();
-    DataBytes( size, block );
-    SetOP( old_segid );
+    PUSH_OP( curr->segid );
+//        off = AskBigLocation();
+        DataBytes( size, block );
+    POP_OP();
 }
 
 static dw_out_offset CLITell( dw_sectnum sect )
@@ -86,43 +111,41 @@ static dw_out_offset CLITell( dw_sectnum sect )
 {
     sect_info           *curr;
     long_offset         off;
-    segment_id          old_segid;
 
-   curr = &DwarfSegs[sect];
-   old_segid = SetOP( curr->segid );
-   off = AskBigLocation();
-   SetOP( old_segid );
-   return( off );
+    curr = &DwarfSegs[sect];
+    PUSH_OP( curr->segid );
+        off = AskBigLocation();
+    POP_OP();
+    return( off );
 }
 
 static void CLISeek( dw_sectnum sect, dw_out_offset offset, int type )
 /********************************************************************/
 {
     sect_info           *curr;
-    segment_id          old_segid;
     dw_out_offset       new_offset;
 
     curr = &DwarfSegs[sect];
-    old_segid = SetOP( curr->segid );
-    new_offset = offset;
-    switch( type ) {
-    case DW_SEEK_CUR:
-        new_offset = AskBigLocation() + offset;
-        break;
-    case DW_SEEK_SET:
-        break;
-    case DW_SEEK_END:
-        new_offset = AskBigMaxSize() + offset;
-        break;
-    }
-    SetBigLocation( new_offset );
-    SetOP( old_segid );
+    PUSH_OP( curr->segid );
+        new_offset = offset;
+        switch( type ) {
+        case DW_SEEK_CUR:
+            new_offset = AskBigLocation() + offset;
+            break;
+        case DW_SEEK_SET:
+            break;
+        case DW_SEEK_END:
+            new_offset = AskBigMaxSize() + offset;
+            break;
+        }
+        SetBigLocation( new_offset );
+    POP_OP();
 }
 
 static void DoReloc( dw_sym_handle sym, dw_addr_offset disp )
 /***********************************************************/
 {
-    type_def            *ptr_type;
+    const type_def      *ptr_type;
 
     ptr_type = TypeAddress( TY_NEAR_POINTER );
     FEPtr( (cg_sym_handle)sym, ptr_type, disp );
@@ -138,7 +161,7 @@ static void DoSegReloc( dw_sym_handle sym )
 static void DoLblReloc( back_handle bck, int disp )
 /*************************************************/
 {
-    type_def        *ptr_type;
+    const type_def  *ptr_type;
     segment_id      segid;
 
     segid = AskSegID( bck, CG_BACK );
@@ -169,18 +192,6 @@ static void DoSectOffset( dw_sectnum sect )
 
 }
 
-typedef struct {
-    segment_id  segid;
-    long_offset offset;
-} big_patch_handle;
-
-static big_patch_handle UnitSize[1];
-
-typedef struct {
-    back_handle  bck;
-    int_32       disp;
-}loc_range;
-
 static void CLIReloc( dw_sectnum sect, dw_reloc_type reloc_type, ... )
 /********************************************************************/
 {
@@ -192,84 +203,83 @@ static void CLIReloc( dw_sectnum sect, dw_reloc_type reloc_type, ... )
     loc_range               *high;
     dw_sectnum              sect_no;
     va_list                 args;
-    segment_id              old_segid;
 //    long_offset             off;
 
     va_start( args, reloc_type );
     curr = &DwarfSegs[sect];
-    old_segid = SetOP( curr->segid );
-//    off = AskBigLocation();
-    switch( reloc_type ) {
-    case DW_W_LOW_PC:
-        if( Pc_Low != NULL ) {
-            DoLblReloc( Pc_Low, 0 );
-        } else {
-            Zoiks( ZOIKS_107 ); /* No Low PC */
-        }
-        break;
-    case DW_W_HIGH_PC:
-        if( Pc_High != NULL ) {
-            DoLblReloc( Pc_High, 0 );
-        } else {
-            Zoiks( ZOIKS_107 ); /* No High PC */
-        }
-        break;
-    case DW_W_STATIC:
-        sym = va_arg( args, dw_sym_handle );
-        DoReloc( sym, 0  );
-        break;
-    case DW_W_LABEL:
-        bck = va_arg( args, dw_sym_handle );
-        DoLblReloc( (back_handle)bck, 0 );
-        break;
-    case DW_W_SEGMENT:
-        sym = va_arg( args, dw_sym_handle );
-        DoSegReloc( sym );
-        break;
-    case DW_W_LABEL_SEG:
-        bck = va_arg( args, dw_sym_handle );
-        DoSegLblReloc( (back_handle)bck );
-        break;
-    case DW_W_LOC_RANGE:
-        low =  va_arg( args, loc_range* );
-        high = va_arg( args, loc_range* );
-        DoLblReloc( low->bck, low->disp );
-        DoLblReloc( high->bck, high->disp );
-        break;
-    case DW_W_DEFAULT_FUNCTION:
-        break;
-    case DW_W_ARANGE_ADDR:
-        DoLblReloc( ARange, 0 );
-#if _TARGET_INTEL
-        if( _IsntTargetModel( CGSW_X86_FLAT_MODEL ) ) {
-            DoSegLblReloc( ARange );
-        }
-#endif
-        break;
-    case DW_W_UNIT_SIZE:
-        UnitSize->segid = curr->segid;
-        UnitSize->offset =  AskBigLocation();
-        DataBytes( sizeof( zero ), &zero );
-        break;
-    case DW_W_SECTION_POS:
-        sect_no = va_arg( args, dw_sectnum );
-        DoSectOffset( sect_no );
-        break;
-    case DW_W_EXT_REF:
-      {
-        long_offset disp;
+    PUSH_OP( curr->segid );
+//        off = AskBigLocation();
+        switch( reloc_type ) {
+        case DW_W_LOW_PC:
+            if( Pc_Low != NULL ) {
+                DoLblReloc( Pc_Low, 0 );
+            } else {
+                Zoiks( ZOIKS_107 ); /* No Low PC */
+            }
+            break;
+        case DW_W_HIGH_PC:
+            if( Pc_High != NULL ) {
+                DoLblReloc( Pc_High, 0 );
+            } else {
+                Zoiks( ZOIKS_107 ); /* No High PC */
+            }
+            break;
+        case DW_W_STATIC:
+            sym = va_arg( args, dw_sym_handle );
+            DoReloc( sym, 0  );
+            break;
+        case DW_W_LABEL:
+            bck = va_arg( args, dw_sym_handle );
+            DoLblReloc( (back_handle)bck, 0 );
+            break;
+        case DW_W_SEGMENT:
+            sym = va_arg( args, dw_sym_handle );
+            DoSegReloc( sym );
+            break;
+        case DW_W_LABEL_SEG:
+            bck = va_arg( args, dw_sym_handle );
+            DoSegLblReloc( (back_handle)bck );
+            break;
+        case DW_W_LOC_RANGE:
+            low =  va_arg( args, loc_range* );
+            high = va_arg( args, loc_range* );
+            DoLblReloc( low->bck, low->disp );
+            DoLblReloc( high->bck, high->disp );
+            break;
+        case DW_W_DEFAULT_FUNCTION:
+            break;
+        case DW_W_ARANGE_ADDR:
+            DoLblReloc( ARange, 0 );
+    #if _TARGET_INTEL
+            if( _IsntTargetModel( CGSW_X86_FLAT_MODEL ) ) {
+                DoSegLblReloc( ARange );
+            }
+    #endif
+            break;
+        case DW_W_UNIT_SIZE:
+            UnitSize->segid = curr->segid;
+            UnitSize->offset =  AskBigLocation();
+            DataBytes( sizeof( zero ), &zero );
+            break;
+        case DW_W_SECTION_POS:
+            sect_no = va_arg( args, dw_sectnum );
+            DoSectOffset( sect_no );
+            break;
+        case DW_W_EXT_REF:
+          {
+            long_offset disp;
 
-        sym = va_arg( args, dw_sym_handle );
-        disp = va_arg( args, dw_addr_offset );
-        DoReloc( sym, disp );
-//      DFFEPtrRef( (cg_sym_handle)sym, disp );
-        break;
-      }
-    default:
-        Zoiks( ZOIKS_107 ); /* Unknown reloc */
-        break;
-    }
-    SetOP( old_segid );
+            sym = va_arg( args, dw_sym_handle );
+            disp = va_arg( args, dw_addr_offset );
+            DoReloc( sym, disp );
+//          DFFEPtrRef( (cg_sym_handle)sym, disp );
+            break;
+          }
+        default:
+            Zoiks( ZOIKS_107 ); /* Unknown reloc */
+            break;
+        }
+    POP_OP();
     va_end( args );
 }
 
@@ -307,20 +317,6 @@ void    DFInitDbgInfo( void )
     Client = NULL;
 }
 
-struct lang_map{
-     uint       lang;
-     char       name[10];
-};
-
-struct lang_map LangNames[] = {
-    {DWLANG_C,       "C"},
-    {DWLANG_CPP,     "CPP"},
-    {DWLANG_FORTRAN, "FORTRAN"},
-    {DWLANG_FORTRAN, "FORTRAN77"},
-};
-
-#define MAX_LANG    (sizeof( LangNames ) / sizeof( LangNames[0] ))
-
 static int SetLang( void )
 {
     int     ret;
@@ -346,7 +342,7 @@ static  void    InitSegBck( void )
     back_handle bck;
 
     old_segid = AskOP();
-    for( i = DW_DEBUG_INFO; i < DW_DEBUG_MAX; ++i ) {
+    for( i = 0; i < DW_DEBUG_MAX; ++i ) {
         SetOP( DwarfSegs[i].segid );
         bck = MakeLabel();
         bck->segid = DwarfSegs[i].segid;
@@ -359,15 +355,14 @@ static  void    InitSegBck( void )
 static  void    InitLineSegBck( void )
 /************************************/
 {
-    segment_id  old_segid;
     back_handle bck;
 
-    old_segid = SetOP( DwarfSegs[DW_DEBUG_LINE].segid );
-    bck = MakeLabel();
-    bck->segid = DwarfSegs[DW_DEBUG_LINE].segid;
-    DwarfSegs[DW_DEBUG_LINE].bck = bck;
-    DataLabel( bck->lbl );
-    SetOP( old_segid );
+    PUSH_OP( DwarfSegs[DW_DEBUG_LINE].segid );
+        bck = MakeLabel();
+        bck->segid = DwarfSegs[DW_DEBUG_LINE].segid;
+        DwarfSegs[DW_DEBUG_LINE].bck = bck;
+        DataLabel( bck->lbl );
+    POP_OP();
 }
 
 static  void    FiniSegBck( void )
@@ -376,7 +371,7 @@ static  void    FiniSegBck( void )
     int         i;
     back_handle bck;
 
-    for( i = DW_DEBUG_INFO; i < DW_DEBUG_MAX; ++i ) {
+    for( i = 0; i < DW_DEBUG_MAX; ++i ) {
         bck = DwarfSegs[i].bck;
         BEFreeBack( bck );
     }
@@ -393,7 +388,7 @@ static  void    FiniLineSegBck( void )
 
 static int InitCU( dw_cu_info *cu )
 {
-    type_def        *tipe_addr;
+    const type_def  *tipe_addr;
 
     cu->source_filename = FEAuxInfo( NULL, FEINF_SOURCE_NAME );
     cu->directory = "";
@@ -476,9 +471,6 @@ void    DFBegCCU( segment_id code_segid, dw_sym_handle dbg_pch )
 {
     dw_cu_info      cu;
     back_handle     bck;
-#ifndef DWARF_CU_REC_NO_PCLO_PCHI
-    segment_id      old_segid;
-#endif
 
 #ifdef DWARF_CU_REC_NO_PCLO_PCHI
     /* unused parameters */ (void)code_segid;
@@ -497,35 +489,35 @@ void    DFBegCCU( segment_id code_segid, dw_sym_handle dbg_pch )
         bck = NULL;
         cu.flags = false;
 #else
-        old_segid = SetOP( code_segid );
+        PUSH_OP( code_segid );
     #if _TARGET_INTEL
-        if( _IsTargetModel( CGSW_X86_FLAT_MODEL ) ) {
+            if( _IsTargetModel( CGSW_X86_FLAT_MODEL ) ) {
+                bck = MakeLabel();
+                OutLabel( bck->lbl );
+                Pc_Low = bck;
+                Pc_High = MakeLabel();
+                // Emitting DW_AT_low_pc and DW_AT_high_pc is valid *only* if the
+                // compilation unit's code is in a single contiguous block (see
+                // DWARF 2, section 3.1).
+                // I don't know how to find out at the time of this call if there's
+                // only one code segment or not, hence these attributes are always
+                // disabled. The low/high pc attribs should probably be handled by
+                // the linker.
+                cu.flags = false;
+            } else {
+                bck = NULL;
+                cu.flags = false;
+                Pc_Low = NULL;
+                Pc_High = NULL;
+            }
+    #else
             bck = MakeLabel();
             OutLabel( bck->lbl );
             Pc_Low = bck;
             Pc_High = MakeLabel();
-            // Emitting DW_AT_low_pc and DW_AT_high_pc is valid *only* if the
-            // compilation unit's code is in a single contiguous block (see
-            // DWARF 2, section 3.1).
-            // I don't know how to find out at the time of this call if there's
-            // only one code segment or not, hence these attributes are always
-            // disabled. The low/high pc attribs should probably be handled by
-            // the linker.
-            cu.flags = false;
-        } else {
-            bck = NULL;
-            cu.flags = false;
-            Pc_Low = NULL;
-            Pc_High = NULL;
-        }
-    #else
-        bck = MakeLabel();
-        OutLabel( bck->lbl );
-        Pc_Low = bck;
-        Pc_High = MakeLabel();
-        cu.flags = true;
+            cu.flags = true;
     #endif
-        SetOP( old_segid );
+        POP_OP();
 #endif
         Comp_High = Pc_High;
         DWBeginCompileUnit( Client, &cu );
@@ -588,14 +580,13 @@ void    DFObjInitDbgInfo( void )
                 info.compiler_options |= DW_CM_ABBREV_PRE;
             } else {
                 back_handle bck;
-                segment_id  old_segid;
 
                 info.compiler_options |= DW_CM_ABBREV_GEN;
                 bck = FEBack( abbrev_sym ); // dump out export label
                 bck->segid = DwarfSegs[DW_DEBUG_ABBREV].segid;
-                old_segid = SetOP( DwarfSegs[DW_DEBUG_ABBREV].segid );
-                DataLabel( bck->lbl );
-                SetOP( old_segid );
+                PUSH_OP( DwarfSegs[DW_DEBUG_ABBREV].segid );
+                    DataLabel( bck->lbl );
+                POP_OP();
             }
         }
         debug_pch = FEAuxInfo( NULL, FEINF_DBG_PCH_SYM );
@@ -603,13 +594,12 @@ void    DFObjInitDbgInfo( void )
             attr = FEAttr( debug_pch );
             if( (attr & FE_IMPORT) == 0 ) {
                 back_handle bck;
-                segment_id  old_segid;
 
                 bck = FEBack( debug_pch );
                 bck->segid = DwarfSegs[DW_DEBUG_INFO].segid;
-                old_segid = SetOP( DwarfSegs[DW_DEBUG_INFO].segid );
-                DataLabel( bck->lbl );
-                SetOP( old_segid );
+                PUSH_OP( DwarfSegs[DW_DEBUG_INFO].segid );
+                    DataLabel( bck->lbl );
+                POP_OP();
                 debug_pch = NULL;
             }
         }
@@ -703,7 +693,6 @@ void    DFFiniDbgInfo( void )
 void    DFObjFiniDbgInfo( offset codesize )
 /*****************************************/
 {
-    segment_id      old_segid;
     offset          here;
     back_handle     bck;
 
@@ -711,20 +700,20 @@ void    DFObjFiniDbgInfo( offset codesize )
       || _IsModel( CGSW_GEN_DBG_TYPES ) ) {
         bck = Comp_High;
         if( bck != NULL ) {
-            old_segid = SetOP( AskCodeSeg() );
-            OutLabel( bck->lbl );
-            SetOP( old_segid );
+            PUSH_OP( AskCodeSeg() );
+                OutLabel( bck->lbl );
+            POP_OP();
             BEFreeBack( bck );
             Comp_High = NULL;
         }
         DWEndCompileUnit( Client );
         DWFini( Client );
-        old_segid = SetOP( UnitSize->segid );
-        here = AskLocation();
-        SetLocation( UnitSize->offset );
-        DataLong( codesize );
-        SetLocation( here );
-        SetOP( old_segid );
+        PUSH_OP( UnitSize->segid );
+            here = AskLocation();
+            SetLocation( UnitSize->offset );
+            DataLong( codesize );
+            SetLocation( here );
+        POP_OP();
         FiniSegBck();
     }
 }

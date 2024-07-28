@@ -126,3 +126,7 @@ END
 #include "settings.dlg"
 #include "about.dlg"
 #include "splash.dlg"
+
+#if defined( __NT__ ) && defined( RESX_NTVER )
+    #include "exever.grc"
+#endif

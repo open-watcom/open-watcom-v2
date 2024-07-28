@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,7 +36,7 @@ typedef struct input_lib {
     char        name[1];
 } input_lib;
 
-extern void AddInputLib( libfile io, const char *name );
+extern void AddInputLib( libfile io );
 extern void CloseOneInputLib( void );
 extern void CloseInputLibs( void );
 extern void FiniInputLibs( void );

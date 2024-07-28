@@ -5,8 +5,8 @@
 !endif
     $(noecho)aliasgen aliases.dat ../a/ ../objs.gmk
 
-clean : .symbolic
+clean : .SYMBOLIC
     rm -f *.obj *.err ../a/*.gas ../objs.gmk
 
-realclean : .symbolic clean
+realclean : .SYMBOLIC clean
     rm -f ../objs.gmk ../a/*.gas

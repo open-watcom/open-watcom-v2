@@ -1,6 +1,6 @@
 proj_name = parsedlg
 
-parsedlg_autodepends = .autodepend
+parsedlg_autodepends = .AUTODEPEND
 
 !include cproj.mif
 !include defrule.mif
@@ -11,7 +11,7 @@ parsedlg_autodepends = .autodepend
 #
 .c: ../c
 
-inc_dirs = -I"../h" -I"$(watcom_dir)/h"
+inc_dirs = -I"../h"
 
 # explicit rules
 #################

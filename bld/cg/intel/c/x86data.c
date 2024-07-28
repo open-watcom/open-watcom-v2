@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -201,8 +201,8 @@ void    OutLblPatch( label_handle lbl, fix_class class, offset plus )
 }
 
 
-void    FEPtr( cg_sym_handle sym, type_def *tipe, offset plus )
-/*************************************************************/
+void    FEPtr( cg_sym_handle sym, const type_def *tipe, offset plus )
+/*******************************************************************/
 {
     fe_attr     attr;
     fix_class   class;
@@ -262,8 +262,8 @@ void    FEPtrBase( cg_sym_handle sym )
 }
 
 
-void    BackPtr( back_handle bck, segment_id segid, offset plus, type_def *tipe )
-/*******************************************************************************/
+void    BackPtr( back_handle bck, segment_id segid, offset plus, const type_def *tipe )
+/*************************************************************************************/
 {
     TellOptimizerByPassed();
     if( tipe->length != WORD_SIZE ) {
@@ -305,7 +305,7 @@ static  cg_class ConstDataClass( void )
 name    *GenConstData( const void *buffer, type_class_def type_class )
 /********************************************************************/
 {
-    segment_id          old_segid;
+    segment_id          segid;
     cg_class            cgclass;
     name                *result;
     label_handle        label;
@@ -316,20 +316,23 @@ name    *GenConstData( const void *buffer, type_class_def type_class )
     size = TypeClassSize[type_class];
     label = AskForLabel( NULL );
     if( cgclass == CG_CLB ) {
-        old_segid = SetOP( AskCodeSeg() );
-        SetUpObj( true );
-        GenSelEntry( true );
-        CodeLabel( label, size );
-        CodeBytes( buffer, size );
-        GenSelEntry( false );
+        segid = AskCodeSeg();
     } else {
-        old_segid = SetOP( AskBackSeg() );
-        SetUpObj( true );
-        DataAlign( size );
-        OutLabel( label );
-        DataBytes( size, buffer );
+        segid = AskBackSeg();
     }
-    SetOP( old_segid );
+    PUSH_OP( segid );
+        SetUpObj( true );
+        if( cgclass == CG_CLB ) {
+            GenSelEntry( true );
+            CodeLabel( label, size );
+            CodeBytes( buffer, size );
+            GenSelEntry( false );
+        } else {
+            DataAlign( size );
+            OutLabel( label );
+            DataBytes( size, buffer );
+        }
+    POP_OP();
     TellByPassOver();
     result = AllocMemory( label, 0, cgclass, type_class );
     result->v.usage |= USE_IN_ANOTHER_BLOCK;

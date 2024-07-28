@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -42,12 +42,12 @@ extern void     AddPublicData( dir_node *data );
 extern void     AddPublicProc( dir_node *data );
 extern void     AddLnameData( dir_node *data );
 extern void     AddAliasData( char *data );
-extern void     AddLinnumData( struct line_num_info *data );
+extern void     AddLinnumData( line_num_info *data );
 
 extern bool     GetLnameData( obj_rec * );
 extern char     *GetAliasData( bool );
 extern bool     GetPublicData( void );
-extern int      GetLinnumData( int limit, struct linnum_data **ldata, bool *need32 );
+extern int      GetLinnumData( int limit, linnum_data **ldata, bool *need32 );
 
 extern void     FreeAllQueues( void );
 

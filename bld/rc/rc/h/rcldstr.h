@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,3 +34,5 @@
 extern bool InitRcMsgs( void );
 extern bool GetRcMsg( unsigned, char *, int );
 extern void FiniRcMsgs( void );
+extern bool CheckRcMsgsFile( FILE *fp );
+extern void ResetRcMsgs( void );

@@ -1,0 +1,7 @@
+
+FIXUPP(9c) len:001ah, chksum:4eh(4e)
+    0073h Seg   OFFSET       Frame: GI(1)     Target: SI(1)
+    007ah Seg   OFFSET       Frame: GI(1)     Target: SI(1)
+    008dh Seg   OFFSET       Frame: GI(1)     Target: SI(1)
+    009ch Seg   OFFSET       Frame: GI(1)     Target: SI(1)
+    00a4h Seg   OFFSET       Frame: GI(1)     Target: SI(1)

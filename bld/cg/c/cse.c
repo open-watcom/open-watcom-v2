@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,7 +34,7 @@
 #include "coderep.h"
 #include "zoiks.h"
 #include "tree.h"
-#include "cfloat.h"
+#include "_cfloat.h"
 #include "data.h"
 #include "fpu.h"
 #include "makeins.h"
@@ -73,7 +73,7 @@
  */
 #define _INSBITS( ins )   _LBitScalar((ins)->head.live.within_block)
 #define _BLKBITS( blk )   _LBitScalar((blk)->available_bit)
-#define _INSLINK( ins )   (*(instruction **)&(ins)->u2.cse_link)
+#define _INSLINK( ins )   (*(instruction **)&(ins)->u1.cse_link)
 #define _NAMELINK( op )   (*(instruction **)&(op)->v.conflict)
 
 typedef enum {
@@ -476,7 +476,7 @@ static  instruction *WhichIsAncestor( instruction *ins1, instruction *ins2 )
             blk = blk->u.partition;
         }
         for( first = blk->ins.head.prev; first->head.opcode == OP_NOP; first = first->head.prev ) {
-            if( first->flags.nop_flags & NOP_ZAP_INFO ) {
+            if( first->flags.u.nop_flags & NOP_ZAP_INFO ) {
                 break;
             }
         }
@@ -769,7 +769,7 @@ static  bool    OkToInvert( name *div )
         return( false );
     if( !CFIs32( div->c.value ) )
         return( false );
-    if( GetLog2( div->c.lo.int_value ) == -1 )
+    if( GetLog2( div->c.lo.u.int_value ) == -1 )
         return( false );
     return( true );
 }
@@ -1103,11 +1103,11 @@ static  bool    FixStructRet( block *root )
             if( _OpIsCall( ins->head.opcode ) ) {
                 if( ins->result != NULL
                   && ins->result->n.class == N_TEMP
-                  && (ins->flags.call_flags & CALL_RETURNS_STRUCT)
+                  && (ins->flags.u.call_flags & CALL_RETURNS_STRUCT)
                   && FixOneStructRet( ins ) ) {
                     change = true;
                 }
-                ins->flags.call_flags &= ~CALL_RETURNS_STRUCT;
+                ins->flags.u.call_flags &= ~CALL_RETURNS_STRUCT;
             }
         }
         blk = blk->u.partition;
@@ -1395,7 +1395,7 @@ static  bool    PropOpnd( instruction *ins, name **op,
                         case CONS_ABSOLUTE:
                             if( opnd->i.base != NULL
                               && (opnd->i.index_flags & X_FAKE_BASE) == 0 ) {
-                                disp = opnd->i.constant + defop->c.lo.int_value;
+                                disp = opnd->i.constant + defop->c.lo.u.int_value;
                                 base = opnd->i.base;
                             }
                             break;

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,34 +30,6 @@
 *
 ****************************************************************************/
 
-
-#define WL_PROCS \
-    WL_PROC( WL_PROC_NONE, 0,           "" ) \
-    WL_PROC( WL_PROC_AXP,  EM_ALPHA,    "AXP" ) \
-    WL_PROC( WL_PROC_MIPS, EM_MIPS,     "MIPS" ) \
-    WL_PROC( WL_PROC_PPC,  EM_PPC,      "PPC" ) \
-    WL_PROC( WL_PROC_X86,  EM_386,      "X86" ) \
-    WL_PROC( WL_PROC_X64,  EM_X86_64,   "X64" )
-
-typedef enum {
-    #define WL_PROC(p,e,n)  p,
-    WL_PROCS
-    #undef WL_PROC
-} processor_type;
-
-typedef enum {
-    WL_FTYPE_NONE,
-    WL_FTYPE_ELF,
-    WL_FTYPE_COFF,
-    WL_FTYPE_OMF
-} file_type;
-
-typedef enum {
-    WL_LTYPE_NONE,
-    WL_LTYPE_AR,
-    WL_LTYPE_MLIB,
-    WL_LTYPE_OMF
-} lib_type;
 
 typedef enum {
     AR_FMT_NONE,
@@ -91,7 +63,7 @@ typedef struct {
     boolbit         strip_library    :1;
     boolbit         verbose          :1;
     boolbit         update           :1; //update older files only
-    boolbit         no_c_warn        :1; //no create lib warning
+    boolbit         no_create_warn   :1; //no create lib warning
     boolbit         ar               :1;
     boolbit         coff_import_long :1; // generate old long format of coff import library
     // flags
@@ -105,9 +77,9 @@ typedef struct {
     processor_type  processor;
     file_type       filetype;
     lib_type        libtype;
-    ar_format       ar_libformat;
     int             explode_count;
     char            *ar_name;
+    ar_format       ar_libformat;
 } options_def;
 
 
@@ -118,3 +90,5 @@ typedef struct {
 #define WL_OS_WIN16     1
 #define WL_OS_WIN32     2
 #define WL_OS_OS2       3
+
+extern options_def  Options;

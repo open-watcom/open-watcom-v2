@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -1036,20 +1036,20 @@ void DataInitFinish( INITIALIZE_DATA *init )
             DgInitDone();
         }
         if( currInit->emit_code ) {
-            sym->flag |= SYMF_REFERENCED;
+            sym->flags |= SYMF_REFERENCED;
             if( SymIsThreaded( sym ) ) {
                 CErr2p( ERR_THREAD_CODE_REQD, sym );
             }
         } else {
-            sym->flag &= ~SYMF_REFERENCED;
+            sym->flags &= ~SYMF_REFERENCED;
             if( currInit->const_object ) {
-                sym->flag |= SYMF_CONST_NO_CODE;
+                sym->flags |= SYMF_CONST_NO_CODE;
             }
         }
         if( currInit->initted ) {
-            sym->flag |= SYMF_INITIALIZED;
+            sym->flags |= SYMF_INITIALIZED;
         } else {
-            sym->flag &= ~SYMF_INITIALIZED;
+            sym->flags &= ~SYMF_INITIALIZED;
         }
         switch( currInit->location ) {
         case DL_INTERNAL_AUTO:
@@ -1070,7 +1070,7 @@ void DataInitFinish( INITIALIZE_DATA *init )
             }
             break;
         }
-        sym->flag |= SYMF_INITIALIZED;
+        sym->flags |= SYMF_INITIALIZED;
         /* must be called after symbol is initialized */
         CgSegIdData( sym, dataInitSegIdControl() );
         dataInitCodeFileClose();
@@ -1754,7 +1754,7 @@ static void mayNeedAutoStaticInitCopy( void )
             currInit->auto_sym = currInit->sym;
             currInit->sym = StaticInitSymbol( currInit->auto_sym );
             dataInitEmitAutoAssign( currInit->auto_sym, currInit->sym );
-            currInit->sym->flag |= SYMF_INITIALIZED;
+            currInit->sym->flags |= SYMF_INITIALIZED;
             dataInitLabel();
         }
     }

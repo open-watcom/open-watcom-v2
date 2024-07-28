@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -72,10 +72,10 @@ bool GUIXCreateFixedToolbar( gui_window *wnd )
         with_excl = NULL;
         menu.label = tbar->toolinfo.toolbar[i].label;
         if( menu.label != NULL ) {
-            with_excl = (char *)GUIMemAlloc( strlen( menu.label ) + strlen( LIT( Exclamation ) ) + 1 );
+            with_excl = (char *)GUIMemAlloc( strlen( menu.label ) + strlen( LIT_GUI( Exclamation ) ) + 1 );
             if( with_excl != NULL ) {
                 strcpy( with_excl, menu.label );
-                strcat( with_excl, LIT( Exclamation ) );
+                strcat( with_excl, LIT_GUI( Exclamation ) );
             }
             menu.label = with_excl;
         }
@@ -106,7 +106,7 @@ static bool FixToolbar( gui_window *wnd )
     return( GUIXCreateFixedToolbar( parent_wnd ) );
 }
 
-static bool ToolbarGUIEventProc( gui_window *wnd, gui_event gui_ev, void *param )
+static bool GUICALLBACK ToolbarGUIEventProc( gui_window *wnd, gui_event gui_ev, void *param )
 {
     gui_ctl_id  id;
 
@@ -230,9 +230,9 @@ static bool CreateFloatingToolbar( gui_window *wnd, gui_ord height )
     height += 2 * metrics.avg.y;
     GUIGetClientRect( wnd, &size );
     FloatingToolbar.parent = wnd;
-    FloatingToolbar.title = LIT( Floating_Toolbar );
-    FloatingToolbar.menus.menu[0].label = LIT( XFix_Toolbar );
-    FloatingToolbar.menus.menu[0].hinttext = LIT( Fix_Toolbar_Hint );
+    FloatingToolbar.title = LIT_GUI( Floating_Toolbar );
+    FloatingToolbar.menus.menu[0].label = LIT_GUI( XFix_Toolbar );
+    FloatingToolbar.menus.menu[0].hinttext = LIT_GUI( Fix_Toolbar_Hint );
     FloatingToolbar.rect.height = height;
     FloatingToolbar.rect.width = size.width;
     FloatingToolbar.colours.num_items = GUIGetNumWindowColours( wnd );

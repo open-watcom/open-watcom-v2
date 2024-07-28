@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -56,8 +56,8 @@ static bool GetExtent( gui_window *wnd, const char *text, size_t in_length, gui_
         if( got_new ) {
             GUIReleaseTheDC( wnd );
         }
-        extent->x = GUIScreenToScaleH( extentx );
-        extent->y = GUIScreenToScaleV( extenty );
+        extent->x = GUIScaleFromScreenH( extentx );
+        extent->y = GUIScaleFromScreenV( extenty );
         return( true );
     }
     return( false );
@@ -122,8 +122,8 @@ static bool GetControlExtent( gui_window *wnd, gui_ctl_id id, const char *text, 
             first = _wpi_selectfont( dc, old );
         }
         _wpi_releasepres( hwnd, dc );
-        extent->x = GUIScreenToScaleH( extentx );
-        extent->y = GUIScreenToScaleV( extenty );
+        extent->x = GUIScaleFromScreenH( extentx );
+        extent->y = GUIScaleFromScreenV( extenty );
         return( true );
     }
     return( false );

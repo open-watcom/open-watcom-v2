@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -149,12 +149,12 @@ static bool     OptMemMove( instruction *ins, instruction *next )
             if( shift ) {
                 result = NULL;
                 if( AdjacentMem( ins->result, next->result, ins->type_class ) ) {
-                    hi =  ins->operands[0]->c.lo.int_value;
-                    lo = next->operands[0]->c.lo.int_value;
+                    hi =  ins->operands[0]->c.lo.u.int_value;
+                    lo = next->operands[0]->c.lo.u.int_value;
                     result = next->result;
                 } else if( AdjacentMem( next->result, ins->result, ins->type_class ) ) {
-                    lo =  ins->operands[0]->c.lo.int_value;
-                    hi = next->operands[0]->c.lo.int_value;
+                    lo =  ins->operands[0]->c.lo.u.int_value;
+                    hi = next->operands[0]->c.lo.u.int_value;
                     result = ins->result;
                 } else {
                     return( false );
@@ -215,21 +215,21 @@ static bool OptPushDWORDConstant( instruction *ins, instruction *next )
     if( ! isOpConstant( opi ) || ! isOpConstant( opn ) ) {
         return( false );
     }
-    if( opi->c.lo.int_value != 0 ) {
-        if( opi->c.lo.int_value != -1 ) {
+    if( opi->c.lo.u.int_value != 0 ) {
+        if( opi->c.lo.u.int_value != -1 ) {
             /*
              * first word constant isn't 0 or -1
              */
             return( false );
         }
-        if( opn->c.lo.int_value >= 0 || opn->c.lo.int_value < -128 ) {
+        if( opn->c.lo.u.int_value >= 0 || opn->c.lo.u.int_value < -128 ) {
             /*
              * second word constant won't sign-extend
              */
             return( false );
         }
     } else {
-        if( opn->c.lo.int_value < 0 || opn->c.lo.int_value > 127 ) {
+        if( opn->c.lo.u.int_value < 0 || opn->c.lo.u.int_value > 127 ) {
             /*
              * second word constant exceeds signed byte positive maximum
              */
@@ -397,7 +397,7 @@ void    OptSegs( void )
                          */
                         next->type_class = next->type_class == I1 ? I2 : U2;
                         next->result->r.reg = full_reg;
-                        next->operands[1] = AllocIntConst( next->operands[1]->c.lo.int_value & 0xFF );
+                        next->operands[1] = AllocIntConst( next->operands[1]->c.lo.u.int_value & 0xFF );
                         DoNothing(ins);
                     }
                 }

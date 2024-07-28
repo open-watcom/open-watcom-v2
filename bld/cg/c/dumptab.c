@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,20 +37,20 @@
 #include "dumptab.h"
 
 
-static const char *opRegTab[] = {
+static const char * const opRegTab[] = {
     #define RG( a,b,c,d,e,f ) #f
     #include "rg.h"
     #undef RG
 };
 
-static const char * VerTab[] = {
+static const char * const VerTab[] = {
     #define _V_( x ) #x
     #include "v.h"
     #undef _V_
     ""
 };
 
-static const char * GenTab[] = {
+static const char * const GenTab[] = {
     #define _G_( x ) #x
     #include "g.h"
     #undef _G_

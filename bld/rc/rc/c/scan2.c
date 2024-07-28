@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -121,7 +121,7 @@ static YYTOKENTYPE  scanCPPDirective( ScanValue *value )
  * This function takes the correct action for the #line directive and returns
  * the token following the preprocessor stuff. It uses Scan to do it's
  * scanning. DON'T call this function from within Scan or the functions it
- * calls unless you are very careful about recurtion.
+ * calls unless you are very careful about recursion.
  */
 {
     YYTOKENTYPE token;

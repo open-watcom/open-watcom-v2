@@ -29,8 +29,6 @@ and the answers to these questions.
 The following topics are discussed:
 .begbull $compact
 .bull
-How do I determine my current patch level?
-.bull
 How do I convert to &cmpname?
 .bull
 What should I know about optimization?
@@ -101,82 +99,6 @@ What is the difference between the "debug" and "d2" compiler options?
 :CMT. .bull
 :CMT. How do I trace back from a program crash in VIDEO?
 .endbull
-.*
-.if '&target' ne 'QNX' .do begin
-.*
-.section Determining my current patch level
-.*
-.np
-.ix 'patch level'
-.ix 'patches'
-.ix 'TECHINFO'
-In an effort to immediately correct any problems discovered in the
-originally shipped product, &company provides patches as a continued
-service to its customers.  To determine the current patch level of your
-&company software, a TECHINFO utility program has been provided.
-This program will display your current environment variables, the patch
-level of various &company software programs, and other pertinent
-information, such as your
-.fi AUTOEXEC.BAT
-and
-.fi CONFIG.SYS
-files.
-This information proves to be
-very useful when reporting a problem to the Technical Support team.
-.np
-To run TECHINFO, you must ensure the &company environment variable has
-been set to the directory where your &company software has been installed.
-TECHINFO will pause after each screenful of information.
-The output is also placed in the file
-.fi TECHINFO.OUT.
-.np
-Below is an example of some partial output produced by running the TECHINFO
-utility:
-.tinyexam begin
-WATCOM's Techinfo Utility, Version 1.4
-Current Time: Thu Oct 27 15:58:34 1994
-
-WATCOM                          Phone: (519) 884-0702
-415 Phillip St.                 Fax: (519) 747-4971
-Waterloo, Ontario
-CANADA    N2L 3X2
-
--------------WATCOM C Environment Variables -------------
-WATCOM=<c:\watcom>
-EDPATH=<c:\watcom\eddat>
-INCLUDE=<c:\watcom\h;c:\watcom\h\os2>
-FINCLUDE=<c:\watcom\src\fortran;c:\watcom\src\fortran\win>
-LIBOS2=<c:\watcom\lib286\os2;c:\watcom\lib286>
-PATH=<c:\dos;c:\windows;c:\watcom\binw>
-TMP=<h:\temp>
-File 'c:\watcom\binw\wcc386.exe' has been patched to level '.d'
-.li ...etc...
-.tinyexam end
-.np
-In this example, the software has been patched to level "d".
-In most cases, all tools will share a common patch level.
-However, there are instances where certain tools have been patched
-to one level while others are patched to a different level.
-For example, the compiler may be patched to level "d" while the
-debugger is only patched to level "c".
-Basically, this means that there were no debugger changes in
-the D-level patches.
-.np
-If you run the TECHINFO utility, and determine that you are not at the
-current patch level, it is recommended that you update your software.
-.ix 'BBS'
-.ix 'bulletin board'
-.ix 'FTP site'
-.ix 'CompuServe'
-Patches are available on &company's bulletin board, &company's FTP
-site and CompuServe.
-They are available 24 hours a day.
-Patches are also available on the current release CD-ROM.
-Each patch will include a batch file that allows you to apply the
-patches to your existing software.
-Note that patches must be applied in sequential order, as each patch
-depends on the previous one.
-.do end
 .*
 .section Converting to &cmpname
 .*

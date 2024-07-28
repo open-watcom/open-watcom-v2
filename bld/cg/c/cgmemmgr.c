@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -98,7 +98,7 @@ extern short    __psp;
 #define MEMPTR_SIZE     8
 #define TAG_SIZE        8
 #else
-#define MEM_WORD_SIZE   4
+#define MEM_WORD_SIZE   8
 #define MEMPTR_SIZE     4
 #define TAG_SIZE        4
 #endif
@@ -335,8 +335,9 @@ static int SizeToClass( size_t amount )
     for( ;; ) {
         ++mem_class;
         amount >>= 1;
-        if( amount == 0 )
+        if( amount == 0 ) {
             break;
+        }
     }
     return( mem_class );
 }
@@ -441,7 +442,9 @@ void     MemFree( pointer p )
         blk->free += header->size + sizeof( blk_hdr );
         blk->size += header->size + sizeof( blk_hdr );
 #ifdef DEVBUILD
-        // Must zero the memory for later checks in GetFromBlk
+        /*
+         * Must zero the memory for later checks in GetFromBlk
+         */
         memset( header, 0, length + sizeof( blk_hdr ) );
 #endif
     } else {
@@ -491,10 +494,15 @@ static  pointer MemFromSys( size_t amount )
     mem_blk     *blk;
     size_t      size;
 
-    // round up size to multiple of 64K
+    /*
+     * round up size to multiple of 64K
+     */
     size = _RoundUp( amount + sizeof( mem_blk ) + sizeof( blk_hdr ), _64K );
 #ifdef DEVBUILD
-    ptr = calloc( 1, size );   // Need to clear memory for later assert() calls
+    /*
+     * Need to clear memory for later assert() calls
+     */
+    ptr = calloc( 1, size );
 #else
     ptr = malloc( size );
 #endif
@@ -505,11 +513,13 @@ static  pointer MemFromSys( size_t amount )
             PeakAlloc = AllocSize;
 #endif
         blk = ptr;
-        // If amount was zero, this block will be chopped up into
-        // small chunks immediately. If nonzero, return pointer
-        // to memory at the end of the block and use the rest for
-        // small chunks. If the initial large allocation is freed,
-        // it will also be reused for small blocks.
+        /*
+         * If amount was zero, this block will be chopped up into
+         * small chunks immediately. If nonzero, return pointer
+         * to memory at the end of the block and use the rest for
+         * small chunks. If the initial large allocation is freed,
+         * it will also be reused for small blocks.
+         */
         blk->next = _Blks;
         _Blks = blk;
         blk->free = size - amount - sizeof( mem_blk );

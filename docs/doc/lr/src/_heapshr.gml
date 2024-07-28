@@ -61,9 +61,12 @@ function is
 equivalent to the
 .reffunc _fheapshrink
 function.
-It is identical to the
+.np
+Any function from
+.id &funcb.
+group is identical to the appropriate function from
 .reffunc _heapmin
-function.
+group.
 .desc end
 .return begin
 These functions return zero if successful, and non-zero if some error

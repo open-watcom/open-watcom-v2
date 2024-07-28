@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -42,11 +42,11 @@ extern void         SetUpObj( bool is_data );
 extern void         OutDLLExport( uint words, cg_sym_handle sym );
 extern void         OutFPPatch( fp_patches i );
 extern void         OutPatch( label_handle lbl, patch_attr attr );
-extern abspatch     *NewAbsPatch( void );
+extern abs_patch    *NewAbsPatch( void );
 extern void         OutDataByte( byte value );
 extern void         OutDataShort( uint_16 value );
 extern void         OutDataLong( uint_32 value );
-extern void         OutAbsPatch( abspatch *patch, patch_attr attr );
+extern void         OutAbsPatch( abs_patch *patch, patch_attr attr );
 extern void         OutReloc( segment_id segid, fix_class class, bool rel );
 extern void         OutSpecialCommon( import_handle imphdl, fix_class class, bool rel );
 extern void         OutImport( cg_sym_handle sym, fix_class class, bool rel );

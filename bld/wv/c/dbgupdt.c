@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,7 +35,6 @@
 #include "dbgdefn.h"
 #include "dbgdata.h"
 #include "dbgerr.h"
-#include "dbglit.h"
 #include "dbghook.h"
 #include "dbgio.h"
 #include "dui.h"

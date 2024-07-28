@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,6 +31,6 @@
 ****************************************************************************/
 
 
-extern hw_reg_set   ParmInLineReg( parm_state *state );
-extern type_length  ParmMem( type_length length, type_length alignment, call_state *state );
-extern type_def     *QParmType( cg_sym_handle func, cg_sym_handle parm, type_def *tipe );
+extern hw_reg_set       ParmInLineReg( parm_state *state );
+extern type_length      ParmMem( type_length length, type_length alignment, call_state *state );
+extern const type_def   *QParmType( cg_sym_handle func, cg_sym_handle parm, const type_def *tipe );

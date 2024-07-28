@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -69,7 +69,7 @@ static  instruction     *CompareIns( block *blk )
 static  bool            IsZero( name *op )
 /****************************************/
 {
-    return( op->n.class == N_CONSTANT && op->c.const_type == CONS_ABSOLUTE && op->c.lo.int_value == 0 );
+    return( op->n.class == N_CONSTANT && op->c.const_type == CONS_ABSOLUTE && op->c.lo.u.int_value == 0 );
 }
 
 

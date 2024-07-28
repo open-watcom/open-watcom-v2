@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,7 +36,6 @@
 #include "dbgwind.h"
 #include "dbgerr.h"
 #include "madinter.h"
-#include "dbgadget.h"
 #include "namelist.h"
 #include "dbgbrk.h"
 #include "wndsys.h"
@@ -52,6 +51,8 @@
 #include "dlgbreak.h"
 #include "dbgchopt.h"
 #include "menudef.h"
+#include "dbgicon.h"
+#include "litdui.h"
 
 
 #define WndFunc( wnd )  ( (func_window*)WndExtra( wnd ) )
@@ -76,7 +77,7 @@ static gui_menu_struct FuncMenu[] = {
     #include "menufunc.h"
 };
 
-static  void    FuncModify( a_window wnd, wnd_row row, wnd_piece piece )
+static  void    WNDCALLBACK FuncModify( a_window wnd, wnd_row row, wnd_piece piece )
 {
     address     addr;
     func_window *func = WndFunc( wnd );
@@ -111,7 +112,7 @@ static void FuncGetSourceName( a_window wnd, int row )
     NameListName( NameList( func ), row, TxtBuff, SNT_QUALIFIED );
 }
 
-static wnd_row FuncNumRows( a_window wnd )
+static wnd_row WNDCALLBACK FuncNumRows( a_window wnd )
 {
     return( NameListNumRows( NameList( WndFunc( wnd ) ) ) );
 }
@@ -149,7 +150,7 @@ static void FuncNewOptions( a_window wnd )
     WndZapped( wnd );
 }
 
-static void     FuncMenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_piece piece )
+static void     WNDCALLBACK FuncMenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_piece piece )
 {
     address     addr;
     func_window *func = WndFunc( wnd );
@@ -187,7 +188,7 @@ static void     FuncMenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_piec
 }
 
 
-static  bool    FuncGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *line )
+static  bool    WNDCALLBACK FuncGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *line )
 {
     address     addr;
     func_window *func = WndFunc( wnd );
@@ -202,7 +203,7 @@ static  bool    FuncGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_lin
     case PIECE_NAME:
         line->indent = MaxGadgetLength;
         line->text = TxtBuff;
-        line->extent = WND_MAX_EXTEND;
+        line->extent = WND_NO_EXTENT;
         FuncGetSourceName( wnd, row );
         return( true );
     case PIECE_DEMANGLED:
@@ -228,7 +229,7 @@ void    FuncNewMod( a_window wnd, mod_handle mod )
 }
 
 
-static void FuncRefresh( a_window wnd )
+static void WNDCALLBACK FuncRefresh( a_window wnd )
 {
     func_window *func = WndFunc( wnd );
     mod_handle  mod;
@@ -264,7 +265,7 @@ static void FuncSetOptions( a_window wnd )
     FuncNewOptions( wnd );
 }
 
-static bool FuncWndEventProc( a_window wnd, gui_event gui_ev, void *parm )
+static bool WNDCALLBACK FuncWndEventProc( a_window wnd, gui_event gui_ev, void *parm )
 {
     func_window *func = WndFunc( wnd );
 
@@ -294,7 +295,7 @@ void FuncChangeOptions( void )
     WndForAllClass( WND_GBLFUNCTIONS, FuncSetOptions );
 }
 
-static bool ChkUpdate( void )
+static bool WNDCALLBACK ChkUpdate( void )
 {
     return( UpdateFlags & (UP_SYM_CHANGE | UP_BREAK_CHANGE | UP_CODE_ADDR_CHANGE) );
 }

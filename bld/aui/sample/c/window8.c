@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,13 +36,13 @@
 
 #define NUM_ROWS 50
 
-static wnd_row W8NumRows( a_window wnd )
+static wnd_row WNDCALLBACK W8NumRows( a_window wnd )
 {
     wnd=wnd;
     return( NUM_ROWS );
 }
 
-static bool    W8GetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *line )
+static bool    WNDCALLBACK W8GetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *line )
 {
     wnd=wnd;
 
@@ -58,7 +58,7 @@ static bool    W8GetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_p
 }
 
 
-static void    W8Refresh( a_window wnd )
+static void    WNDCALLBACK W8Refresh( a_window wnd )
 {
     WndSetRepaint( wnd );
 }

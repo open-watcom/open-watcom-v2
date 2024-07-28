@@ -6,4 +6,6 @@ target_cpu = 386
 link386_autodepends = .AUTODEPEND
 !endif
 
+link386_ntverrc = ..
+
 !include ../../link.mif

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,6 +31,7 @@
 
 
 extern gui_resource     WndGadgetArray[];
+extern int              MaxGadgetLength;
 
 extern bool     DbgWndSearch( a_window wnd, bool from_top, int direction );
 extern void     ProcPUINYI( a_window wnd );
@@ -61,7 +62,7 @@ extern void     WndFlushKeys( void );
 extern void     WndMsgBox( const char *msg );
 extern void     WndInfoBox( const char *msg );
 extern void     WndSetOpenNoShow( void );
-extern a_window DbgTitleWndCreate( const char *title, wnd_info *wndinfo, wnd_class_wv wndclass, void *extra, gui_resource *icon, int title_rows, bool vdrag );
+extern a_window DbgWndCreateTitle( const char *title, wnd_info *wndinfo, wnd_class_wv wndclass, void *extra, gui_resource *icon, int title_rows, bool vdrag );
 extern a_window DbgWndCreate( const char *title, wnd_info *info, wnd_class_wv wndclass, void *extra, gui_resource *icon );
 extern void     WndRXError( int num );
 #if defined( GUI_IS_GUI )

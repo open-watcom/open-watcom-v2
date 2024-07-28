@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -44,6 +44,8 @@
 #include "dbgwinsp.h"
 #include "dbgchopt.h"
 #include "menudef.h"
+#include "dbgicon.h"
+#include "litdui.h"
 
 
 #define WndGlob( wnd ) ( (glob_window*)WndExtra( wnd ) )
@@ -76,7 +78,7 @@ static  void    GlobInit( a_window wnd )
     WndSetKeyPiece( wnd, PIECE_NAME );
 }
 
-void     GlobMenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_piece piece )
+static void     WNDCALLBACK GlobMenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_piece piece )
 {
     glob_window *glob = WndGlob( wnd );
     address     addr;
@@ -112,12 +114,12 @@ void     GlobMenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_piece piece
 }
 
 
-wnd_row GlobNumRows( a_window wnd )
+static wnd_row WNDCALLBACK GlobNumRows( a_window wnd )
 {
     return( NameListNumRows( NameList( WndGlob( wnd ) ) ) );
 }
 
-bool    GlobGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *line )
+static bool    WNDCALLBACK GlobGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *line )
 {
     glob_window *glob = WndGlob( wnd );
 
@@ -144,7 +146,7 @@ void GlobNewMod( a_window wnd, mod_handle mod )
 }
 
 
-void    GlobRefresh( a_window wnd )
+static void    WNDCALLBACK GlobRefresh( a_window wnd )
 {
     if( UpdateFlags & UP_SYM_CHANGE ) {
         GlobInit( wnd );
@@ -159,7 +161,7 @@ static void GlobSetOptions( a_window wnd )
     GlobInit( wnd );
 }
 
-static bool GlobWndEventProc( a_window wnd, gui_event gui_ev, void *parm )
+static bool WNDCALLBACK GlobWndEventProc( a_window wnd, gui_event gui_ev, void *parm )
 {
     glob_window *glob = WndGlob( wnd );
 
@@ -183,7 +185,7 @@ void GlobChangeOptions( void )
     WndForAllClass( WND_GLOBALS, GlobSetOptions );
 }
 
-static bool ChkUpdate( void )
+static bool WNDCALLBACK ChkUpdate( void )
 {
     return( UpdateFlags & UP_SYM_CHANGE );
 }

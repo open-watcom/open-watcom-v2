@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -244,7 +245,7 @@ void LinkageSet( SYMBOL sym, char *language )
         linkage = CppLinkage;
         break;
     default:
-        if( sym->flag & SYMF_TEMPLATE_FN ) {
+        if( sym->flags & SYMF_TEMPLATE_FN ) {
             linkage = CppLinkage;
         } else {
             linkage = CurrLinkage;
@@ -254,9 +255,9 @@ void LinkageSet( SYMBOL sym, char *language )
         }
     }
     if( linkage == CppLinkage ) {
-        sym->flag |= SYMF_PLUSPLUS;
+        sym->flags |= SYMF_PLUSPLUS;
     } else {
-        sym->flag &= ~SYMF_PLUSPLUS;
+        sym->flags &= ~SYMF_PLUSPLUS;
     }
 }
 
@@ -264,14 +265,14 @@ bool LinkageIsCpp( SYMBOL sym )
 /*****************************/
 {
     verifyFileScopeSym( sym );
-    return(( sym->flag & SYMF_PLUSPLUS ) != 0 );
+    return(( sym->flags & SYMF_PLUSPLUS ) != 0 );
 }
 
 bool LinkageIsC( SYMBOL sym )
 /***************************/
 {
     verifyFileScopeSym( sym );
-    return(( sym->flag & SYMF_PLUSPLUS ) == 0 );
+    return(( sym->flags & SYMF_PLUSPLUS ) == 0 );
 }
 
 bool LinkageIsCurr( SYMBOL sym )
@@ -279,9 +280,9 @@ bool LinkageIsCurr( SYMBOL sym )
 {
     verifyFileScopeSym( sym );
     if( CurrLinkage == CppLinkage ) {
-        return(( sym->flag & SYMF_PLUSPLUS ) != 0 );
+        return(( sym->flags & SYMF_PLUSPLUS ) != 0 );
     }
-    return(( sym->flag & SYMF_PLUSPLUS ) == 0 );
+    return(( sym->flags & SYMF_PLUSPLUS ) == 0 );
 }
 
 bool LinkageSpecified( void )

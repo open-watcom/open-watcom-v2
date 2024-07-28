@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -166,7 +166,7 @@ static label_entry addLabel( label_list sec_label_list, label_entry entry, orl_s
         entry = insertLabelInMiddle( sec_label_list, entry );
     }
     // add entry to list
-    if( sym_hnd != ORL_NULL_HANDLE ) {
+    if( sym_hnd != NULL ) {
         key_entry.key.u.sym_handle = sym_hnd;
         key_entry.data.u.lab_entry = entry;
         HashTableInsert( SymbolToLabelTable, &key_entry );
@@ -234,7 +234,7 @@ orl_return CreateNamedLabel( orl_symbol_handle sym_hnd )
         entry->type = LTYP_SECTION;
     } else if( primary_type == ORL_SYM_TYPE_GROUP ) {
         entry->type = LTYP_GROUP;
-    } else if( entry->shnd == ORL_NULL_HANDLE ) {
+    } else if( entry->shnd == NULL ) {
         entry->type = LTYP_EXTERNAL_NAMED;
     } else if( primary_type == ORL_SYM_TYPE_FUNC_INFO ){
         entry->type = LTYP_FUNC_INFO;
@@ -245,7 +245,7 @@ orl_return CreateNamedLabel( orl_symbol_handle sym_hnd )
     label_name = ORLSymbolGetName( sym_hnd );
     if( label_name == NULL ) {
         shnd = ORLSymbolGetSecHandle( sym_hnd );
-        if( shnd == ORL_NULL_HANDLE ) {
+        if( shnd == NULL ) {
             entry->label.name = NULL;
             FreeLabel( entry );
             return( ORL_OKAY );
@@ -263,8 +263,10 @@ orl_return CreateNamedLabel( orl_symbol_handle sym_hnd )
     }
     sec_label_list = h_data->u.sec_label_list;
     entry = addLabel( sec_label_list, entry, sym_hnd );
-    if( (Options & PRINT_PUBLICS) && entry->shnd != ORL_NULL_HANDLE &&
-            primary_type != ORL_SYM_TYPE_SECTION && entry->binding != ORL_SYM_BINDING_LOCAL ) {
+    if( (Options & PRINT_PUBLICS)
+      && entry->shnd != NULL
+      && primary_type != ORL_SYM_TYPE_SECTION
+      && entry->binding != ORL_SYM_BINDING_LOCAL ) {
         Publics.number++;
     }
     return( ORL_OKAY );

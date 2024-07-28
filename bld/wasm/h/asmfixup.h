@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,16 +34,14 @@
 
 #include "fppatch.h"
 
-extern struct asmfixup  *InsFixups[OPND_MAX];
-extern struct asmfixup  *FixupHead;
-extern struct asmfixup  *AddFixup( struct asm_sym *sym, enum fixup_types fixup_type, enum fixup_options fixup_option );
-extern void             add_frame( void );
-extern bool             BackPatch( struct asm_sym *sym );
-extern void             mark_fixupp( OPNDTYPE determinant, operand_idx index );
-extern bool             store_fixup( operand_idx index );
+extern asmfixup     *InsFixups[OPND_MAX];
+extern asmfixup     *FixupHead;
+extern asmfixup     *AddFixup( asm_sym *sym, fixup_types fixup_type, fixup_options fixup_option );
+extern void         add_frame( void );
+extern bool         BackPatch( asm_sym *sym );
+extern void         mark_fixupp( OPNDTYPE determinant, operand_idx index );
+extern bool         store_fixup( operand_idx index );
 
-extern struct asmfixup  *FixupListHead; // head of list of fixups
-extern struct asmfixup  *FixupListTail;
-extern bool             AddFPPatchAndFixups( fp_patches patch );
+extern bool         AddFPPatchAndFixups( fp_patches patch );
 
 #endif

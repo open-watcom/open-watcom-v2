@@ -1,5 +1,6 @@
-!ifneq sys_windowed 1
-hlpview_objs =	  &
+!ifdef sys_windowed
+!else
+cli_hlpview_objs = &
     help.obj      &
     vvscroll.obj  &
     helpopen.obj  &
@@ -9,5 +10,5 @@ hlpview_objs =	  &
     msgbox.obj    &
     search.obj    &
     dialcb.obj
-hlpview_inc_dirs = -I"$(hlpview_dir)/h"
+cli_hlpview_inc_dirs = -I"$(hlpview_dir)/h"
 !endif

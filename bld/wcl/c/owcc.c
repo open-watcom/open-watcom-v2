@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2004-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2004-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -622,6 +622,38 @@ static bool find_mapping( char c )
     return( false );
 }
 
+static char *posix_library( const char *s )
+{
+    if( s == NULL ) {
+        return( NULL );
+    }
+    if( strcmp( s, "c" ) == 0 ) {
+        return( "" );
+    }
+    if( strcmp( s, "l" ) == 0 ) {
+        return( "" );
+    }
+    if( strcmp( s, "pthread" ) == 0 ) {
+        return( "" );
+    }
+    if( strcmp( s, "m" ) == 0 ) {
+        return( "" );
+    }
+    if( strcmp( s, "rt" ) == 0 ) {
+        return( "" );
+    }
+    if( strcmp( s, "trace" ) == 0 ) {
+        return( "" );
+    }
+    if( strcmp( s, "xnet" ) == 0 ) {
+        return( "" );
+    }
+    if( strcmp( s, "y" ) == 0 ) {
+        return( "" );
+    }
+    return( NULL );
+}
+
 static void  ParseInit( void )
 {
     initialize_Flags();
@@ -951,15 +983,27 @@ static  int  ParseArgs( int argc, char **argv )
             break;
         case 'l':
             if( Word[0] != '\0' ) {
-                new_item = MemAlloc( sizeof( list ) );
-                new_item->next = NULL;
-                p = MemAlloc( 3 + strlen( Word ) + 2 + 1 );
-                strcpy( p, "lib" );
-                strcpy( p + 3, Word );
-                strcat( p, "." LIB_EXT_SECONDARY );
-                new_item->item = strfdup( p );
-                MemFree( p );
-                ListAppend( &Libs_List, new_item );
+                p = posix_library( Word );
+                if( p == NULL ) {
+                    new_item = MemAlloc( sizeof( list ) );
+                    new_item->next = NULL;
+                    p = MemAlloc( 3 + strlen( Word ) + 2 + 1 );
+                    strcpy( p, "lib" );
+                    strcpy( p + 3, Word );
+                    strcat( p, "." LIB_EXT_SECONDARY );
+                    new_item->item = strfdup( p );
+                    MemFree( p );
+                    ListAppend( &Libs_List, new_item );
+                } else {
+                    if( *p != '\0' ) {
+                        new_item = MemAlloc( sizeof( list ) );
+                        new_item->next = NULL;
+                        new_item->item = strfdup( p );
+                        ListAppend( &Libs_List, new_item );
+                    } else {
+                        /* now ignore POSIX standard libraries */
+                    }
+                }
             }
             wcc_option = false;
             break;

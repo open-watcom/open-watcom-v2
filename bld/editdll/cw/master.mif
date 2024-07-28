@@ -4,11 +4,15 @@ proj_name = weditcw
 
 weditcw_autodepends = .AUTODEPEND
 
+weditcw_ntverrc = ..
+
 weditcw_distrib_lib = 1
 
 memory_model_i86 = c
 
 additional_clean = *.grc
+
+ntverrc_dll = weditcw
 
 !include cproj.mif
 !include defrule.mif
@@ -42,8 +46,6 @@ all: weditcw.dll wedit.dll .SYMBOLIC
 # DLL's
 #
 dlltarg_objs = weditcw.obj
-dlltarg_res_version_nt_386 = version.res
-dlltarg_res_version_nt_x64 = version.res
 !include dlltarg.mif
 
 dlltarg_opts = opt implib
@@ -53,5 +55,3 @@ dlltarg_name = wedit
 #
 # rc and others
 #
-verrc_dll = weditcw
-!include verrc.mif

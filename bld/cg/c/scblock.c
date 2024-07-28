@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -188,7 +188,7 @@ bool    DoScore( block *blk )
         } else if( DoesSomething( ins ) ) {
             if( ins->head.opcode == OP_CALL || ins->head.opcode == OP_CALL_INDIRECT ) {
                 MemChanged( scoreboard,
-                    ( ins->flags.call_flags & CALL_WRITES_NO_MEMORY ) == 0 );
+                    ( ins->flags.u.call_flags & CALL_WRITES_NO_MEMORY ) == 0 );
                 RegKill( scoreboard, ins->zap->reg );
                 if( dst != NULL && dst->n.class != N_REGISTER ) {
                     ScoreInfo( &info, dst );
@@ -261,20 +261,20 @@ byte    HasZero( score *scoreboard, name *n )
     bits = 0;
     if( n->n.class == N_CONSTANT ) {
         if( n->c.const_type == CONS_ABSOLUTE ) {
-            if( n->c.lo.int_value == 0 ) {
+            if( n->c.lo.u.int_value == 0 ) {
                 bits |= LO_HALF | HI_HALF;
             } else if( n->n.size == 2 ) {
-                if( ( n->c.lo.int_value & 0x00ff ) == 0 ) {
+                if( ( n->c.lo.u.int_value & 0x00ff ) == 0 ) {
                     bits |= LO_HALF;
                 }
-                if( ( n->c.lo.int_value & 0xff00 ) == 0 ) {
+                if( ( n->c.lo.u.int_value & 0xff00 ) == 0 ) {
                     bits |= HI_HALF;
                 }
             } else if( n->n.size == 4 ) {
-                if( ( n->c.lo.int_value & 0x0000ffff ) == 0 ) {
+                if( ( n->c.lo.u.int_value & 0x0000ffff ) == 0 ) {
                     bits |= LO_HALF;
                 }
-                if( ( n->c.lo.int_value & 0xffff0000 ) == 0 ) {
+                if( ( n->c.lo.u.int_value & 0xffff0000 ) == 0 ) {
                     bits |= HI_HALF;
                 }
             }

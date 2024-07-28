@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -75,19 +75,23 @@ typedef enum {
 #define NUM_OS 2
 
 enum {
-    TAB_FIRST = 0,
-    TAB_SEG = TAB_FIRST,  // order seg, grp, lname is important
+    TAB_SEG,            // order seg, grp, lname is important
     TAB_GRP,
-    TAB_LIB,
     TAB_EXT,
     TAB_CONST,
     TAB_PROC,
     TAB_MACRO,
-    TAB_CLASS_LNAME,
     TAB_STRUCT,
-    TAB_LAST,
-    TAB_COMM             // TAB_COMM is not included in tables, it is assigned to TAB_EXT
-};                       // tables for definitions
+    /*
+     * following tables are not part of assembler name space
+     */
+    TAB_CLASS_LNAME,
+    TAB_LIB,
+    TAB_FPPATCH,
+    TAB_SIZE,
+};
+
+#define TAB_SYMSPACE_SIZE   TAB_CLASS_LNAME
 
 enum {
     QUERY_COMMENT,
@@ -108,6 +112,11 @@ typedef enum {
     SEGTYPE_ISCODE
 } seg_type;
 
+/*
+ * forward declaration
+ */
+typedef struct dir_node dir_node;
+
 /*---------------------------------------------------------------------------*/
 
 typedef struct stacknode {
@@ -122,7 +131,7 @@ typedef struct stacknode {
 
 typedef struct seg_list {
     struct seg_list     *next;
-    struct dir_node     *seg;
+    dir_node            *seg;
 } seg_list;
 
 typedef struct {
@@ -133,7 +142,7 @@ typedef struct {
 
 typedef struct {
     direct_idx          idx;            // segment lname/order index
-    struct asm_sym      *group;         // its group
+    asm_sym             *group;         // its group
     uint_32             start_loc;      // starting offset of current ledata or lidata
     uint_8              align       :4; // align field (enum segdef_align_values)
     uint_8              combine     :4; // combine field (values in pcobj.h)
@@ -144,7 +153,7 @@ typedef struct {
     uint_32             current_loc;    // current offset in current ledata or lidata
     uint_32             length;         // segment length
     uint_16             abs_frame;      // frame for absolute segment
-    struct asm_sym      *class_name;    // segment class name (lname)
+    asm_sym             *class_name;    // segment class name (lname)
 } seg_info;
 
 typedef struct {
@@ -152,15 +161,9 @@ typedef struct {
     boolbit             use32       :1;
     boolbit             comm        :1;
     boolbit             global      :1;
+    unsigned long       comm_size;
+    uint                comm_distance;
 } ext_info;
-
-typedef struct {
-    direct_idx          idx;            // external definition index
-    boolbit             use32       :1;
-    boolbit             comm        :1;
-    unsigned long       size;
-    uint                distance;
-} comm_info;
 
 typedef struct {
     asm_tok             *tokens;        // array of asm_tok's to replace symbol
@@ -179,7 +182,7 @@ typedef struct label_list {
     struct label_list   *next;
     char                *label;         // name of parameter
     char                *replace;       // string that replaces the label
-    struct asm_sym      *sym;           // structure definition or local label symbol
+    asm_sym             *sym;           // structure definition or local label symbol
     int                 size;           // size of parameter
     int                 factor;         // for local var only
     bool                is_register;    // for arguments only
@@ -191,9 +194,18 @@ typedef struct label_list {
 
 typedef struct {
     regs_list           *regslist;      // list of registers to be saved
-    label_list          *paralist;      // list of parameters
-    label_list          *locallist;     // list of local variables
-    label_list          *labellist;     // list of local labels
+    struct {
+        label_list      *head;          // head of parameters list
+        label_list      *tail;          // tail of parameters list
+    }                   params;         // list of parameters
+    struct {
+        label_list      *head;          // head of local variables list
+        label_list      *tail;          // tail of local variables list
+    }                   locals;         // list of local variables
+    struct {
+        label_list      *head;          // head of local labels list
+        label_list      *tail;          // tail of local labels list
+    }                   labels;         // list of local labels
     unsigned long       parasize;       // total no. of bytes used by parameters
     unsigned long       localsize;      // total no. of bytes used by local variables
     memtype             mem_type;       // distance of procedure: near or far
@@ -210,17 +222,22 @@ typedef struct parm_list {
     char                *def;           // is there a default parm?
 } parm_list;
 
-typedef struct asmlines {
-    struct asmlines     *next;
+typedef struct asmline {
+    struct asmline      *next;
     char                *line;
-    char                parmcount;
+    char                paramscount;
+} asmline;
+
+typedef struct asmlines {
+    asmline             *head;
+    asmline             *tail;
 } asmlines;
 
 typedef struct  fname_list {
-        struct  fname_list *next;
-        time_t  mtime;
-        char    *name;
-        char    *fullname;
+    struct fname_list   *next;
+    time_t              mtime;
+    char                *name;
+    char                *fullname;
 } FNAME;
 
 typedef struct local_label {
@@ -232,9 +249,15 @@ typedef struct local_label {
 } local_label;
 
 typedef struct {
-    parm_list           *parmlist;  // list of parameters
-    local_label         *locallist; // list of local labels
-    asmlines            *data;      // the guts of the macro - LL of strings
+    struct {
+        parm_list       *head;      // head of parameters list
+        parm_list       *tail;      // tail of parameters list
+    }                   params;     // list of parameters
+    struct {
+        local_label     *head;      // head of local labels list
+        local_label     *tail;      // tail of local labels list
+    }                   labels;     // list of local labels
+    asmlines            lines;      // the guts of the macro - LL of strings
     const FNAME         *srcfile;
     bool                hidden;     // if true don't print error messages
 } macro_info;
@@ -247,33 +270,35 @@ typedef struct field_list {
     struct field_list   *next;
     char                *initializer;
     char                *value;
-    struct asm_sym      *sym;
+    asm_sym             *sym;
 } field_list;
 
 typedef struct {
     unsigned            size;       // size in bytes ( including alignment )
     unsigned short      alignment;
-    field_list          *head;
-    field_list          *tail;
+    struct {
+        field_list      *head;      // head of fields list
+        field_list      *tail;      // tail of fields list
+    }                   fields;     // list of fields
 } struct_info;
 
 union entry {
-    seg_info            *seginfo;       // info about segment definition
-    grp_info            *grpinfo;       // info about group definition
-    ext_info            *extinfo;       // info about external definition
-    const_info          *constinfo;     // info about symbolic integer constants
+    seg_info            *seginfo;   // info about segment definition
+    grp_info            *grpinfo;   // info about group definition
+    ext_info            *extinfo;   // info about external definition
+    const_info          *constinfo; // info about symbolic integer constants
     proc_info           *procinfo;
     macro_info          *macroinfo;
     lname_info          *lnameinfo;
     struct_info         *structinfo;
-    comm_info           *comminfo;
 };
 
 typedef struct dir_node {
-    struct asm_sym      sym;
+    asm_sym             sym;
     union entry         e;
-    unsigned long       line_num;     // line number of the directive in source file
-    struct dir_node     *next, *prev; // linked list of this type of symbol
+    unsigned long       line_num;   // line number of the directive in source file
+    struct dir_node     *next;      // linked list of this type of symbol
+    struct dir_node     *prev;      // linked list of this type of symbol
 } dir_node;         // List of grpdef, segdef, pubdef, externdef, included lib
                     // and symbolic integer constants.
 
@@ -295,7 +320,7 @@ typedef struct a_definition_struct {
 
 extern a_definition_struct      Definition;
 
-enum assume_reg {
+typedef enum assume_reg {
     ASSUME_DS = 0,
     ASSUME_ES,
     ASSUME_SS,
@@ -304,7 +329,7 @@ enum assume_reg {
     ASSUME_CS,
     ASSUME_NOTHING,
     ASSUME_ERROR
-};
+} assume_reg;
 
 #define ASSUME_FIRST    ASSUME_DS
 #define ASSUME_LAST     ASSUME_NOTHING
@@ -322,7 +347,7 @@ typedef struct {
     os_type             ostype;         // operating system;
     bool                use32;          // If 32-bit segment is used
     bool                mseg;           // mixed segments (16/32-bit)
-    struct asm_sym      *flat_grp;      // FLAT group symbol
+    asm_sym             *flat_grp;      // FLAT group symbol
     char                *name;          // name of module
     const FNAME         *srcfile;
 } module_info;                          // Information about the module
@@ -331,9 +356,13 @@ extern module_info      ModuleInfo;
 
 #define IS_PROC_FAR()   ( ModuleInfo.model == MOD_MEDIUM || ModuleInfo.model == MOD_LARGE || ModuleInfo.model == MOD_HUGE )
 
-extern seg_list         *CurrSeg;       // points to stack of opened segments
+extern seg_list         *CurrSeg;           // points to stack of opened segments
+
+extern symbol_queue     Tables[TAB_SIZE];   // tables of definitions
 
 /*---------------------------------------------------------------------------*/
+
+extern dir_node         *AllocD( const char * );
 
 extern dir_node         *dir_insert( const char *, int );
 extern void             dir_to_sym( dir_node * );
@@ -388,7 +417,7 @@ extern bool             AlignDirective( asm_token directive, token_buffer *tokbu
 extern bool             ForDirective( token_buffer *tokbuf, token_idx, irp_type );
 
 extern void             DefFlatGroup( void );
-extern bool             SymIs32( struct asm_sym *sym );
+extern bool             SymIs32( asm_sym *sym );
 
 extern bool             directive( token_buffer *tokbuf, token_idx, asm_token );
 
@@ -402,23 +431,23 @@ extern uint_32          GetCurrSegStart(void);
 
 #define SEGISCODE( x )  ( x->seg->e.seginfo->iscode == SEGTYPE_ISCODE )
 
-extern struct asm_sym   *GetGrp( struct asm_sym * );
+extern asm_sym          *GetGrp( asm_sym * );
 
 extern void             AssumeInit( void );     // init all assumed-register table
 extern bool             SetAssume( token_buffer *tokbuf, token_idx );       // Assume a register
 
-extern enum assume_reg  GetAssume( struct asm_sym*, enum assume_reg );
+extern assume_reg       GetAssume( asm_sym *, assume_reg );
 /* Return the assumed register of the symbol, and determine the frame and
    frame_datum of its fixup */
 
-extern enum assume_reg  GetPrefixAssume( struct asm_sym*, enum assume_reg );
+extern assume_reg       GetPrefixAssume( asm_sym *, assume_reg );
 /* Determine the frame and frame_datum of a symbol with a register prefix */
 
 extern bool             FixOverride( token_buffer *tokbuf, token_idx );
 /* Get the correct frame and frame_datum for a label when there is a segment
    or group override. */
 
-extern void             GetSymInfo( struct asm_sym * );
+extern void             GetSymInfo( asm_sym * );
 /* Store location information about a symbol */
 extern bool             NameDirective( token_buffer *tokbuf, token_idx );
 

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -72,8 +72,6 @@ WControl * WEXPORT WStatDialog::getControl( WControlId id ) {
     return( NULL );
 }
 
-extern "C" bool DlgGUIEventProc( gui_window *hwin, gui_event gui_ev, void *parm );
-
 void WStatDialog::doDialog( WWindow *parent ) {
 /*********************************************/
 
@@ -102,7 +100,7 @@ void WStatDialog::doDialog( WWindow *parent ) {
     create_info.extra = this;
     create_info.icon = NULL;
 
-    GUICreateResDialog( &create_info, _dialog_id );
+    GUICreateDialogRes( &create_info, _dialog_id );
 }
 
 void WEXPORT WStatDialog::getCtrlText( WControlId id, WString & str ) {

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -172,5 +172,10 @@
 #define SET_WNDEXSTYLE(hwnd, data)              SetWindowLong( hwnd, GWL_EXSTYLE, (DWORD)data )
 
 #define MENU_CLOSED(wp,lp)                      ((GET_WM_MENUSELECT_FLAGS(wp,lp)==(WORD)-1)&&(GET_WM_MENUSELECT_HMENU(wp,lp)==(HMENU)NULL))
+
+#if (WINVER >= 0x030A)
+    #define MapWindowRect( p1, p2, p3 ) \
+        MapWindowPoints( p1, p2, (LPPOINT)(p3), 2 )
+#endif
 
 #endif

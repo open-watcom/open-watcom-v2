@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -83,7 +83,7 @@ msg(NULL_PTR,           "%W NULL pointer" );
 msg(NO_ROUTINE,         "Tracker was not given a %S routine!" );
 msg(NOT_IN_ALLOCATION,  "%W %D not in any allocation" );
 msg(OVERRUN_2,          "%W %D+%T overruns allocation %D+%T" );
-msg(PRT_USAGE,          "Current usage: %Z bytes; Peak usage: %Z bytes" );
+msg(PRT_USAGE,          "Current usage: %Z bytes; Peak usage: %Z bytes; Allocations: %3" );
 msg(MIN_ALLOC,          "%W allocation of %T less than minimum size" );
 #if defined( _M_I86SM )
     msg(PRT_LIST_1,     "Who  Addr Size   Call   Contents" );
@@ -734,11 +734,11 @@ int _trmem_chk_range( void *start, size_t len, _trmem_who who, _trmem_hdl hdl )
 void _trmem_prt_usage( _trmem_hdl hdl )
 /*************************************/
 {
-    trPrt( hdl, MSG_PRT_USAGE, hdl->mem_used, hdl->max_mem );
+    trPrt( hdl, MSG_PRT_USAGE, hdl->mem_used, hdl->max_mem, hdl->alloc_no);
 }
 
-unsigned _trmem_prt_list( _trmem_hdl hdl )
-/****************************************/
+unsigned _trmem_prt_list_ex( _trmem_hdl hdl, unsigned max_items )
+/***************************************************************/
 {
     entry_ptr   tr;
     unsigned    chunks;
@@ -752,7 +752,7 @@ unsigned _trmem_prt_list( _trmem_hdl hdl )
     chunks = 0;
     do {
         size = getSize( tr );
-        if( chunks < 20 ) {
+        if( chunks < max_items ) {
             trPrt( hdl
                  , MSG_PRT_LIST_3
                  , tr->who
@@ -766,6 +766,12 @@ unsigned _trmem_prt_list( _trmem_hdl hdl )
         tr = tr->next;
     } while( tr );
     return( chunks );
+}
+
+unsigned _trmem_prt_list( _trmem_hdl hdl )
+/****************************************/
+{
+    return( _trmem_prt_list_ex( hdl, 20 ) );
 }
 
 size_t _trmem_msize( void *mem, _trmem_hdl hdl ) {

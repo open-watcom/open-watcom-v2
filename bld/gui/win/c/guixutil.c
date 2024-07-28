@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -52,7 +52,7 @@
 
 #define ERROR_STYLE MB_OK | MB_ICONEXCLAMATION
 
-static void MaxChild( gui_window *wnd, void *param )
+static void GUICALLBACK MaxChild( gui_window *wnd, void *param )
 {
     param = param;
     if( _wpi_iszoomed( wnd->hwnd_frame ) ) {
@@ -475,8 +475,8 @@ void GUIMakeRelative( gui_window *wnd, WPI_POINT *wpi_point, gui_point *point )
             scr_y += GUIGetScrollPos( wnd, SB_VERT );
         }
     }
-    point->x = GUIScreenToScaleH( scr_x );
-    point->y = GUIScreenToScaleV( scr_y );
+    point->x = GUIScaleFromScreenH( scr_x );
+    point->y = GUIScaleFromScreenV( scr_y );
 }
 
 HWND GUIGetScrollHWND( gui_window *wnd )
@@ -538,11 +538,7 @@ void GUISetScrollRange( gui_window *wnd, int bar, int min, int max, bool redraw 
 {
     if( ChangeScrollRange( wnd, bar, max - min ) ) {
         _wpi_setscrollrange( GUIGetParentFrameHWND( wnd ), bar, min, max, ( redraw ) ? TRUE : FALSE );
-        if( bar == SB_HORZ ) {
-            GUIRedrawScroll( wnd, SB_HORZ, redraw );
-        } else {
-            GUIRedrawScroll( wnd, SB_VERT, redraw );
-        }
+        GUIRedrawScroll( wnd, bar, redraw );
     }
 }
 

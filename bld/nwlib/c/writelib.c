@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2023-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,25 +34,19 @@
 #include "wlib.h"
 #include <errno.h>
 #include "wio.h"
-#include "wlibutil.h"
 
 #include "clibext.h"
 
 
 libfile ExportListFile;
-libfile NewLibrary;
 
 char *MakeTmpName( char * );
-
-void WriteNew( const void *buff, size_t len )
-{
-    LibWrite( NewLibrary, buff, len );
-}
 
 void WriteNewLib( void )
 {
     char tmp[_MAX_PATH + 1];
     char *bak,*lib,*out;
+    libfile newlib;
 
     lib = Options.input_name;
     if( Options.output_name != NULL && !IsSameFile( lib, Options.output_name ) ) {
@@ -65,16 +59,16 @@ void WriteNewLib( void )
     } else {
         ExportListFile = NULL;
     }
-    NewLibrary = LibOpen( out, LIBOPEN_WRITE );
-    if( NewLibrary == NULL ) {
+    newlib = LibOpen( out, LIBOPEN_WRITE );
+    if( newlib == NULL ) {
         if( out == tmp ) {
             FatalError( ERR_CANT_OPEN, out, "Cannot create temporary file" );
         } else {
             FatalError( ERR_CANT_OPEN, out, strerror( errno ) );
         }
     }
-    WriteFileTable();
-    LibClose( NewLibrary );
+    WriteFileTable( newlib );
+    LibClose( newlib );
     if( ExportListFile != NULL ) {
         LibClose( ExportListFile );
     }
@@ -95,23 +89,4 @@ void WriteNewLib( void )
             remove( bak );
         }
     }
-}
-
-void WriteBigEndian32( unsigned_32 num )
-{
-    CONV_BE_32( num );
-    WriteNew( &num, sizeof( num ) );
-}
-
-void WriteLittleEndian32( unsigned_32 num )
-{
-    CONV_LE_32( num );
-    WriteNew( &num, sizeof( num ) );
-}
-
-
-void WriteLittleEndian16( unsigned_16 num )
-{
-    CONV_LE_16( num );
-    WriteNew( &num, sizeof( num ) );
 }

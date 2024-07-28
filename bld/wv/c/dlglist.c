@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -81,7 +82,7 @@ static void AddText( gui_window *gui, char *add )
     }
 }
 
-static bool SourceGUIEventProc( gui_window *gui, gui_event gui_ev, void *param )
+static bool GUICALLBACK SourceGUIEventProc( gui_window *gui, gui_event gui_ev, void *param )
 {
     gui_ctl_id  id;
     void        *curr;
@@ -171,5 +172,5 @@ void DlgList( const char *title, void (*clear)(void), void (*add)(const char *,u
     dlg.next = next;
     dlg.name = name;
     dlg.title = DupStr( title );
-    ResDlgOpen( SourceGUIEventProc, &dlg, DIALOG_LIST );
+    DlgOpenRes( SourceGUIEventProc, &dlg, DIALOG_LIST );
 }

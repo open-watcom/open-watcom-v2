@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -70,16 +70,20 @@ void DumpALD( long_double *pld )
  * Dump a long_double value
  */
 {
+#ifdef __WATCOMC__
     CVT_INFO    cvt;
     char        buf[256];
 
     cvt.ndigits = 20;
     cvt.scale = 0;
-    cvt.flags = G_FMT | NO_TRUNC;
+    cvt.flags = FPCVT_G_FMT | FPCVT_NO_TRUNC;
     cvt.expchar = 'e';
     cvt.expwidth = 8;
     __LDcvt( pld, &cvt, buf );
     printf( "%s", buf );
+#else
+    printf( "%.19e", pld->ld.u.value )
+#endif
 }
 
 void DumpALDNL( long_double *pld )

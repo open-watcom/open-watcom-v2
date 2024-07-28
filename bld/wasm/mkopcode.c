@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -48,6 +48,16 @@ char Chars[32000];
 static unsigned inst_table[HASH_TABLE_SIZE] = { 0 };
 static unsigned *index_table;
 static unsigned *pos_table;
+
+static void fini( sword *Words, unsigned int size )
+{
+    unsigned int    i;
+
+    for( i = 0; i < size; i++ ) {
+        free( Words[i].word );
+    }
+    free( Words );
+}
 
 static int len_compare( const void *pv1, const void *pv2 )
 {
@@ -148,17 +158,20 @@ int main( int argc, char *argv[] )
         in = fopen( argv[i1], "r" );
         if( in == NULL ) {
             printf( "Unable to open '%s'\n", argv[i1] );
+            fini( Words, words_count );
             exit( EXIT_FAILURE );
         }
         for( ; fgets( buf, sizeof( buf ), in ) != NULL; ) {
             for( i2 = 0; buf[i2] != '\0' && !isspace( buf[i2] ); i2++ )
                 ;
             buf[i2] = '\0';
-            Words[words_count].word = strdup( buf );
+            Words[words_count].word = malloc( i2 + 1 );
             if( Words[words_count].word == NULL ) {
                 printf( "Out of memory\n" );
+                fini( Words, words_count );
                 exit( EXIT_FAILURE );
             }
+            strcpy( Words[words_count].word, buf );
             ++words_count;
         }
         fclose( in );
@@ -193,6 +206,7 @@ int main( int argc, char *argv[] )
     out = fopen( out_name, "w" );
     if( out == NULL ) {
         printf( "Unable to open '%s'\n", out_name );
+        fini( Words, words_count );
         exit( EXIT_FAILURE );
     }
     fprintf( out, "const char AsmChars[] = {\n" );
@@ -219,5 +233,6 @@ int main( int argc, char *argv[] )
     fprintf( out, "\t{\t0,\t0,\t0,\t0\t}\t/* T_NULL */\n" );
     fprintf( out, "};\n\n" );
     fclose( out );
+    fini( Words, words_count );
     return( EXIT_SUCCESS );
 }

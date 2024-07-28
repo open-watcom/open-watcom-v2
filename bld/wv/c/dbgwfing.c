@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,7 +34,7 @@
 #include "dbgdefn.h"
 #include "dbgdata.h"
 #include "dbgwind.h"
-#include "dbgadget.h"
+#include "gadgets.h"
 #include "guidlg.h"
 #include "strutil.h"
 #include "wndsys.h"
@@ -65,7 +65,7 @@ void FingClose( void )
 }
 
 
-static wnd_row FingNumRows( a_window wnd )
+static wnd_row WNDCALLBACK FingNumRows( a_window wnd )
 {
     /* unused parameters */ (void)wnd;
 
@@ -73,7 +73,7 @@ static wnd_row FingNumRows( a_window wnd )
 }
 
 
-static  bool    FingGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *line )
+static  bool    WNDCALLBACK FingGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *line )
 {
     if( piece != 0 )
         return( false );
@@ -102,7 +102,7 @@ static  bool    FingGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_lin
     return( true );
 }
 
-static bool FingWndEventProc( a_window wnd, gui_event gui_ev, void *parm )
+static bool WNDCALLBACK FingWndEventProc( a_window wnd, gui_event gui_ev, void *parm )
 {
     gui_colour_set      *colours;
 

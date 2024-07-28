@@ -1,16 +1,6 @@
 name: release-load-all
 description: 'Load all artifact for OW Release'
 inputs:
-  arch:
-    description: 'run-time platform'
-    required: false
-    default: ''
-    type: string
-  gitpath:
-    description: 'git subdirectory'
-    required: false
-    default: ''
-    type: string
   tools_nt:
     description: 'used compiler toolchain (for Windows)'
     required: false
@@ -18,6 +8,11 @@ inputs:
     type: string
   tools_lnx:
     description: 'used compiler toolchain (for Linux)'
+    required: false
+    default: ''
+    type: string
+  tools_osx:
+    description: 'used compiler toolchain (for OSX)'
     required: false
     default: ''
     type: string
@@ -31,57 +26,61 @@ runs:
   steps:
   - uses: "./.github/actions/artfload"
     with:
-      arch:     ${{ inputs.arch }}
-      gitpath:  ${{ inputs.gitpath }}
-      artifact: 'rel nt'
-      tools:    ${{ inputs.tools_nt }}
+      hostos:   'lnx'
+      gitpath:  'rel'
+      artifact: "rel nt x64 ${{ inputs.tools_nt }}"
       owdebug:  ${{ inputs.owdebug }}
   - uses: "./.github/actions/artfload"
     with:
-      arch:     ${{ inputs.arch }}
-      gitpath:  ${{ inputs.gitpath }}
-      artifact: 'rel lnx'
-      tools:    ${{ inputs.tools_lnx }}
+      hostos:   'lnx'
+      gitpath:  'rel'
+      artifact: "rel lnx x64 ${{ inputs.tools_lnx }}"
       owdebug:  ${{ inputs.owdebug }}
   - uses: "./.github/actions/artfload"
     with:
-      arch:     ${{ inputs.arch }}
-      gitpath:  ${{ inputs.gitpath }}
-      artifact: 'rel docdos'
-      tools:    ${{ inputs.tools_nt }}
+      hostos:   'lnx'
+      gitpath:  'rel bino64'
+      artifact: "rel osx x64 ${{ inputs.tools_osx }}"
       owdebug:  ${{ inputs.owdebug }}
   - uses: "./.github/actions/artfload"
     with:
-      arch:     ${{ inputs.arch }}
-      gitpath:  ${{ inputs.gitpath }}
-      artifact: 'rel docchm'
-      tools:    ${{ inputs.tools_nt }}
+      hostos:   'lnx'
+      gitpath:  'rel armo64'
+      artifact: "rel osx a64 ${{ inputs.tools_osx }}"
       owdebug:  ${{ inputs.owdebug }}
   - uses: "./.github/actions/artfload"
     with:
-      arch:     ${{ inputs.arch }}
-      gitpath:  ${{ inputs.gitpath }}
-      artifact: 'rel docnt'
-      tools:    ${{ inputs.tools_nt }}
+      hostos:   'lnx'
+      gitpath:  'rel'
+      artifact: "rel docdos ${{ inputs.tools_nt }}"
       owdebug:  ${{ inputs.owdebug }}
   - uses: "./.github/actions/artfload"
     with:
-      arch:     ${{ inputs.arch }}
-      gitpath:  ${{ inputs.gitpath }}
-      artifact: 'rel docos2'
-      tools:    ${{ inputs.tools_nt }}
+      hostos:   'lnx'
+      gitpath:  'rel'
+      artifact: "rel docchm ${{ inputs.tools_nt }}"
       owdebug:  ${{ inputs.owdebug }}
   - uses: "./.github/actions/artfload"
     with:
-      arch:     ${{ inputs.arch }}
-      gitpath:  ${{ inputs.gitpath }}
-      artifact: 'rel docpdf'
-      tools:    ${{ inputs.tools_nt }}
+      hostos:   'lnx'
+      gitpath:  'rel'
+      artifact: "rel docnt ${{ inputs.tools_nt }}"
       owdebug:  ${{ inputs.owdebug }}
   - uses: "./.github/actions/artfload"
     with:
-      arch:     ${{ inputs.arch }}
-      gitpath:  ${{ inputs.gitpath }}
-      artifact: 'rel docwin'
-      tools:    ${{ inputs.tools_nt }}
+      hostos:   'lnx'
+      gitpath:  'rel'
+      artifact: "rel docos2 ${{ inputs.tools_nt }}"
+      owdebug:  ${{ inputs.owdebug }}
+  - uses: "./.github/actions/artfload"
+    with:
+      hostos:   'lnx'
+      gitpath:  'rel'
+      artifact: "rel docpdf ${{ inputs.tools_nt }}"
+      owdebug:  ${{ inputs.owdebug }}
+  - uses: "./.github/actions/artfload"
+    with:
+      hostos:   'lnx'
+      gitpath:  'rel'
+      artifact: "rel docwin ${{ inputs.tools_nt }}"
       owdebug:  ${{ inputs.owdebug }}

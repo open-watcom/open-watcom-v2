@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -69,9 +69,9 @@ static gui_ord GetScroll( gui_window *wnd, int bar )
 
     pos = GetPos( wnd, bar );
     if( bar == SB_HORZ ) {
-        return( GUIScreenToScaleH( pos ) );
+        return( GUIScaleFromScreenH( pos ) );
     } else {
-        return( GUIScreenToScaleV( pos ) );
+        return( GUIScaleFromScreenV( pos ) );
     }
 }
 

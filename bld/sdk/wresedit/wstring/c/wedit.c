@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -159,7 +159,7 @@ static void WExpandEditWindowItem( HWND hDlg, int id, RECT *prect, int height )
     /* expand the child window */
     win = GetDlgItem( hDlg, id );
     GetWindowRect( win, &crect );
-    MapWindowPoints( (HWND)NULL, hDlg, (POINT *)&crect, 2 );
+    MapWindowRect( (HWND)NULL, hDlg, &crect );
     t.left = 0;
     t.top = 0;
     t.right = 0;
@@ -817,7 +817,7 @@ WINEXPORT INT_PTR CALLBACK WStringEditDlgProc( HWND hDlg, UINT message, WPARAM w
             MAKE_POINT( p, lParam );
             win = GetDlgItem( hDlg, IDM_STREDLIST );
             GetWindowRect( win, &r );
-            MapWindowPoints( HWND_DESKTOP, hDlg, (POINT *)&r, 2 );
+            MapWindowRect( HWND_DESKTOP, hDlg, &r );
             if( PtInRect( &r, p ) ) {
                 WHandleSelChange( einfo );
             }

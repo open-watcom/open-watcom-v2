@@ -8,7 +8,7 @@ exes =flush.exe lshchar.exe  lshstr.exe   lshint.exe lshfloat.exe lshptr.exe &
       lshman.exe conostrm.exe  conbuf.exe destruct.exe eqostrm.exe           &
       lshstrbu.exe eqstrmbu.exe eqostrm.exe
 
-all : $(exes) .symbolic
+all : $(exes) .SYMBOLIC
 
 .cpp.exe :
     wcl $[@

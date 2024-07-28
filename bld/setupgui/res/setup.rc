@@ -1,0 +1,37 @@
+/* UTF-8 encoding, ¥ */
+
+#if defined( RESX_GUI )
+  #if defined( __OS2__ )
+    #include <os2.h>
+    #define RC_ITEM(a,b,c)  a b c
+  #else
+    #include <windows.h>
+    #define RC_ITEM(a,b,c)  b a c
+  #endif
+#endif
+#include "setup.rh"
+
+#include "gui.rc"
+#if defined( RESX_GUI )
+  #if defined( __OS2__ )
+    RC_ITEM( ICON, 1, "setup.ico" )
+  #else
+    RC_ITEM( ICON, ApplIcon, PRELOAD FIXED setup.ico )
+    RC_ITEM( ICON, ICN_DISK, PRELOAD FIXED disk.ico )
+  #endif
+  #if defined( CSETUP )
+    RC_ITEM( BITMAP, BITMAP_SPLASH, "wcc.bmp" )
+  #elif defined( JCSETUP )
+    RC_ITEM( BITMAP, BITMAP_SPLASH, "wcc.bmp" )
+  #elif defined( F77SETUP )
+    RC_ITEM( BITMAP, BITMAP_SPLASH, "f77.bmp" )
+  #elif defined( JFSETUP )
+    RC_ITEM( BITMAP, BITMAP_SPLASH, "f77.bmp" )
+  #else
+    RC_ITEM( BITMAP, BITMAP_SPLASH, "generic.bmp" )
+  #endif
+#endif
+
+#if defined( __NT__ ) && defined( RESX_NTVER )
+    #include "exever.grc"
+#endif

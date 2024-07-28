@@ -4,4 +4,4 @@ host_os  = dos
 
 memory_model_i86 = l
 
-!include ../../ui.mif
+!include ../../master.mif

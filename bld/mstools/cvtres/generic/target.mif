@@ -4,4 +4,6 @@ proj_name = cvtres
 cvtres_autodepends = .AUTODEPEND
 !endif
 
+cvtres_ntverrc = ..
+
 !include ../../cvtres.mif

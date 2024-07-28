@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -548,7 +548,7 @@ static orl_return       doCEXTDEF( omf_file_handle ofh, omf_rectyp typ )
             return( ORL_ERROR );
         idx = loadIndex( &buffer, &len );
         loadIndex( &buffer, &len );
-        extname = OmfGetLName( ofh->lnames, idx );
+        extname = OmfGetLName( ofh, idx );
         if( extname == NULL )
             return( ORL_ERROR );
         return_val = OmfAddExtDef( ofh, extname->string, extname->len, typ );

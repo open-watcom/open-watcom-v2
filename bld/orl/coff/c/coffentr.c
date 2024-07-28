@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -383,40 +384,45 @@ orl_return COFFENTRY CoffNoteSecScan( coff_sec_handle hnd, orl_note_callbacks *c
 }
 
 const char * COFFENTRY CoffSymbolGetName( coff_symbol_handle coff_symbol_hnd )
+/****************************************************************************/
 {
     if( coff_symbol_hnd->type & ORL_SYM_TYPE_FILE ) {
-        return( coff_symbol_hnd->symbol->name.name_string + 1 );
+        return( ((coff_sym_file *)( coff_symbol_hnd->symbol + 1 ))->filename );
     }
     return( coff_symbol_hnd->name );
 }
 
 coff_symbol_value COFFENTRY CoffSymbolGetValue( coff_symbol_handle coff_symbol_hnd )
+/**********************************************************************************/
 {
     return( coff_symbol_hnd->symbol->value );
 }
 
 orl_symbol_binding COFFENTRY CoffSymbolGetBinding( coff_symbol_handle coff_symbol_hnd )
+/*************************************************************************************/
 {
     return( coff_symbol_hnd->binding );
 }
 
 orl_symbol_type COFFENTRY CoffSymbolGetType( coff_symbol_handle coff_symbol_hnd )
+/*******************************************************************************/
 {
     return( coff_symbol_hnd->type );
 }
 
 coff_sec_handle COFFENTRY CoffSymbolGetSecHandle( coff_symbol_handle coff_symbol_hnd )
+/************************************************************************************/
 {
     if( coff_symbol_hnd->symbol->sec_num < 1 )
         return( NULL );
     return( coff_symbol_hnd->coff_file_hnd->orig_sec_hnd[coff_symbol_hnd->symbol->sec_num - 1] );
 }
 
-coff_symbol_handle COFFENTRY CoffSymbolGetAssociated( coff_symbol_handle hnd )
+coff_symbol_handle COFFENTRY CoffSymbolGetAssociated( coff_symbol_handle coff_symbol_hnd )
+/****************************************************************************************/
 {
     coff_sym_weak   *weak;
 
-    weak = (coff_sym_weak *)( hnd->symbol + 1 );
-    return( hnd->coff_file_hnd->symbol_handles + weak->tag_index );
+    weak = (coff_sym_weak *)( coff_symbol_hnd->symbol + 1 );
+    return( coff_symbol_hnd->coff_file_hnd->symbol_handles + weak->tag_index );
 }
-

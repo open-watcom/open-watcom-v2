@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,8 +38,6 @@
 #endif
 
 
-static MemPtr   *memPtr;
-
 #ifdef TRMEM
 static _trmem_hdl   TRMemHandle;
 
@@ -61,32 +59,24 @@ void InitMem( void )
             _TRMEM_ALLOC_SIZE_0 | _TRMEM_REALLOC_SIZE_0 |
             _TRMEM_OUT_OF_MEMORY | _TRMEM_CLOSE_CHECK_FREE );
 #endif
-    memPtr = NULL;
 }
-
 
 void *MemAlloc( size_t size )
 /***************************/
 {
-    MemPtr *ptr;
+    void *ptr;
 
     if( size == 0 ) {
         return( NULL );
     }
 #ifdef TRMEM
-    ptr = _trmem_alloc( size + sizeof( MemPtr ), _trmem_guess_who(), TRMemHandle );
+    ptr = _trmem_alloc( size, _trmem_guess_who(), TRMemHandle );
 #else
-    ptr = malloc( size + sizeof( MemPtr ) );
+    ptr = malloc( size );
 #endif
-    if( ptr == NULL )
+    if( ptr == NULL && size != 0 )
         FatalError( ERR_NO_MEMORY );
-    ptr->next = memPtr;
-    ptr->prev = NULL;
-    if( memPtr != NULL ) {
-        memPtr->prev = ptr;
-    }
-    memPtr = ptr;
-    return( ptr + 1 );
+    return( ptr );
 }
 
 void *wres_alloc( size_t size )
@@ -101,61 +91,27 @@ void *wres_alloc( size_t size )
 void *MemRealloc( void *ptr, size_t size )
 /****************************************/
 {
-    MemPtr  *mptr;
+    void  *mptr;
 
-    if( ptr != NULL ) {
-        mptr = ptr;
-        mptr--;
-        if( mptr == memPtr ) {
-            memPtr = mptr->next;
-        }
-        if( mptr->prev != NULL ) {
-            mptr->prev->next = mptr->next;
-        }
-        if( mptr->next != NULL ) {
-            mptr->next->prev = mptr->prev;
-        }
-        ptr = mptr;
-    }
 #ifdef TRMEM
-    mptr = _trmem_realloc( ptr, size + sizeof( MemPtr ), _trmem_guess_who(), TRMemHandle );
+    mptr = _trmem_realloc( ptr, size, _trmem_guess_who(), TRMemHandle );
 #else
-    mptr = realloc( ptr, size + sizeof( MemPtr ) );
+    mptr = realloc( ptr, size );
 #endif
-    if( mptr == NULL )
+    if( mptr == NULL && size != 0 )
         FatalError( ERR_NO_MEMORY );
-    mptr->next = memPtr;
-    mptr->prev = NULL;
-    if( memPtr != NULL ) {
-        memPtr->prev = mptr;
-    }
-    memPtr = mptr;
-
-    return( mptr + 1 );
+    return( mptr );
 }
 
 void MemFree( void *ptr )
 /***********************/
 {
-    MemPtr  *mptr;
-
     if( ptr == NULL )
         return;
-    mptr = ptr;
-    mptr--;
-    if( mptr == memPtr ) {
-        memPtr = mptr->next;
-    }
-    if( mptr->prev != NULL ) {
-        mptr->prev->next = mptr->next;
-    }
-    if( mptr->next != NULL ) {
-        mptr->next->prev = mptr->prev;
-    }
 #ifdef TRMEM
-    _trmem_free( mptr, _trmem_guess_who(), TRMemHandle );
+    _trmem_free( ptr, _trmem_guess_who(), TRMemHandle );
 #else
-    free( mptr );
+    free( ptr );
 #endif
 }
 
@@ -168,44 +124,16 @@ void wres_free( void *ptr )
 #endif
 }
 
-void *MemAllocGlobal( size_t size )
-/*********************************/
+char *MemDupStr( const char *str )
+/********************************/
 {
-    void *ptr;
+    char *ptr;
 
-#ifdef TRMEM
-    ptr = _trmem_alloc( size, _trmem_guess_who(), TRMemHandle );
-#else
-    ptr = malloc( size );
-#endif
-    if( ptr == NULL && size != 0 )
-        FatalError( ERR_NO_MEMORY );
+    if( str == NULL )
+        return( NULL );
+    ptr = MemAlloc( strlen( str ) + 1 );
+    strcpy( ptr, str );
     return( ptr );
-}
-
-void *MemReallocGlobal( void *ptr, size_t size )
-/**********************************************/
-{
-#ifdef TRMEM
-    ptr = _trmem_realloc( ptr, size, _trmem_guess_who(), TRMemHandle );
-#else
-    ptr = realloc( ptr, size );
-#endif
-    if( ptr == NULL && size != 0 )
-        FatalError( ERR_NO_MEMORY );
-    return( ptr );
-}
-
-void MemFreeGlobal( void *ptr )
-/*****************************/
-{
-    if( ptr == NULL )
-        return;
-#ifdef TRMEM
-    _trmem_free( ptr, _trmem_guess_who(), TRMemHandle );
-#else
-    free( ptr );
-#endif
 }
 
 void FiniMem( void )
@@ -213,33 +141,7 @@ void FiniMem( void )
 {
 #ifdef TRMEM
     _trmem_prt_usage( TRMemHandle );
+    _trmem_prt_list_ex( TRMemHandle, 100 );
     _trmem_close( TRMemHandle );
-#else
-    MemPtr  *mptr;
-
-    while( (mptr = memPtr) != NULL ) {
-        memPtr = mptr->next;
-        free( mptr );
-    }
 #endif
-}
-
-char *DupStr( const char *str )
-/*****************************/
-{
-    char *ptr;
-
-    ptr = MemAlloc( strlen( str ) + 1 );
-    strcpy( ptr, str );
-    return( ptr );
-}
-
-char *DupStrGlobal( const char *str )
-/***********************************/
-{
-    char *ptr;
-
-    ptr = MemAllocGlobal( strlen( str ) + 1 );
-    strcpy( ptr, str );
-    return( ptr );
 }

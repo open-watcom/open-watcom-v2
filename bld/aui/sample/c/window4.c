@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -82,13 +82,13 @@ static char * Stuff[] = {
 
 #define SIZE ArraySize( Stuff )
 
-static wnd_row W4NumRows( a_window wnd )
+static wnd_row WNDCALLBACK W4NumRows( a_window wnd )
 {
     wnd=wnd;
     return( SIZE );
 }
 
-static void    W4Modify( a_window wnd, wnd_row row, wnd_piece piece )
+static void    WNDCALLBACK W4Modify( a_window wnd, wnd_row row, wnd_piece piece )
 {
     wnd=wnd;piece=piece;
     if( row < 0 ) {
@@ -107,7 +107,7 @@ static char UiMapChar[] = { 0xC6, 0xEA, 0xC7, 0xD0,
                                         0xDF, 0xDC, 0xFD, 0xF5, 0 };
 #endif
 
-static bool W4GetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *line )
+static bool WNDCALLBACK W4GetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *line )
 {
     static char buff[20];
 
@@ -139,27 +139,27 @@ static bool W4GetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piec
             line->tabstop = true;
             itoa( row, buff, 10 );
             line->text = buff;
-            line->extent = WND_MAX_EXTEND;
+            line->extent = WND_NO_EXTENT;
             return( true );
         case 1:
             line->tabstop = false;
             line->use_prev_attr = true;
             line->text = "";
-            line->extent = WND_MAX_EXTEND;
+            line->extent = WND_NO_EXTENT;
             line->indent = 1000;
             return( true );
         case 2:
             line->tabstop = false;
             line->use_prev_attr = true;
             line->text = Stuff[row];
-            line->extent = WND_MAX_EXTEND;
+            line->extent = WND_NO_EXTENT;
             line->indent = 2000;
             return( true );
         case 3:
             line->tabstop = false;
             line->use_prev_attr = true;
             line->text = "";
-            line->extent = WND_MAX_EXTEND;
+            line->extent = WND_NO_EXTENT;
             line->indent = 3000;
             return( true );
         default:
@@ -170,12 +170,12 @@ static bool W4GetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piec
 }
 
 
-static void W4Refresh( a_window wnd )
+static void WNDCALLBACK W4Refresh( a_window wnd )
 {
     WndSetRepaint( wnd );
 }
 
-static void W4MenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_piece piece )
+static void WNDCALLBACK W4MenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_piece piece )
 {
 
     row=row;piece=piece;

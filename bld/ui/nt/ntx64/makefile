@@ -2,4 +2,4 @@
 host_cpu = x64
 host_os  = nt
 
-!include ../../ui.mif
+!include ../../master.mif

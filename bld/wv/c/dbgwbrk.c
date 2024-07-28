@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,7 +34,6 @@
 #include "dbgdefn.h"
 #include "dbgdata.h"
 #include "dbgwind.h"
-#include "dbgadget.h"
 #include "dbgbrk.h"
 #include "wndsys.h"
 #include "addarith.h"
@@ -43,6 +42,8 @@
 #include "dbgwinsp.h"
 #include "dlgbreak.h"
 #include "menudef.h"
+#include "dbgicon.h"
+#include "litdui.h"
 
 
 #define WndBreak( wnd ) ( (break_window *)WndExtra( wnd ) )
@@ -84,7 +85,7 @@ static brkp     *BrkGetBP( int row )
     return( bp );
 }
 
-static void     BrkMenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_piece piece )
+static void     WNDCALLBACK BrkMenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_piece piece )
 {
     brkp        *bp;
 
@@ -137,7 +138,7 @@ static void     BrkMenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_piece
     }
 }
 
-static void     BrkModify( a_window wnd, wnd_row row, wnd_piece piece )
+static void     WNDCALLBACK BrkModify( a_window wnd, wnd_row row, wnd_piece piece )
 {
     brkp        *bp;
 
@@ -167,7 +168,7 @@ static void     BrkModify( a_window wnd, wnd_row row, wnd_piece piece )
     }
 }
 
-static wnd_row BrkNumRows( a_window wnd )
+static wnd_row WNDCALLBACK BrkNumRows( a_window wnd )
 {
     brkp        *bp;
     wnd_row     count;
@@ -181,7 +182,7 @@ static wnd_row BrkNumRows( a_window wnd )
     return( count );
 }
 
-static  bool    BrkGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *line )
+static  bool    WNDCALLBACK BrkGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *line )
 {
     brkp                *bp;
     break_window        *wndbreak;
@@ -216,7 +217,7 @@ static  bool    BrkGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line
         return( true );
     case PIECE_ADDR:
         line->indent = wndbreak->addr_indent;
-        line->extent = WND_MAX_EXTEND;
+        line->extent = WND_NO_EXTENT;
         line->tabstop = true;
         GetBPAddr( bp, TxtBuff );
         return( true );
@@ -267,7 +268,7 @@ static void     BrkInit( a_window wnd )
 }
 
 
-static void     BrkRefresh( a_window wnd )
+static void     WNDCALLBACK BrkRefresh( a_window wnd )
 {
     brkp        *bp;
     int         row;
@@ -302,7 +303,7 @@ static void     BrkRefresh( a_window wnd )
 }
 
 
-static bool BrkWndEventProc( a_window wnd, gui_event gui_ev, void *parm )
+static bool WNDCALLBACK BrkWndEventProc( a_window wnd, gui_event gui_ev, void *parm )
 {
     break_window        *wndbreak = WndBreak( wnd );
 
@@ -323,7 +324,7 @@ static bool BrkWndEventProc( a_window wnd, gui_event gui_ev, void *parm )
     return( false );
 }
 
-static bool ChkUpdate( void )
+static bool WNDCALLBACK ChkUpdate( void )
 {
     return( UpdateFlags & (UP_MEM_CHANGE | UP_RADIX_CHANGE | UP_SYM_CHANGE | UP_BREAK_CHANGE | UP_OPEN_CHANGE) );
 }

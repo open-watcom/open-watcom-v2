@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,6 +37,14 @@
 #include <stddef.h>     /* for things like size_t and such */
 #include "bool.h"
 
+
+/*
+ * NOTE:
+ *  STRM_PLACEHOLDERS macro depends on STRM_T definition in mstream.h
+ *
+ *  hold this macro in sync with STRM_T definition
+ */
+#define STRM_PLACEHOLDERS   4
 
 /*
  * provide machine independant definitions for different quantities
@@ -77,17 +85,17 @@ enum {
 
 #define sisascii(__s)       ((__s) >= CHAR_MIN && (__s) <= CHAR_MAX)
 
-extern const UINT8 IsArray[256 + 4];
+extern const UINT8 IsArray[256 + STRM_PLACEHOLDERS];
 
-#define sisws(__s)          (IsArray[(__s)+4] & IS_WS)
-#define sisprint(__s)       (IsArray[(__s)+4] & IS_PRINT)
-#define sisalpha(__s)       (IsArray[(__s)+4] & IS_ALPHA)
-#define sisextc(__s)        (IsArray[(__s)+4] & IS_FILEC)
-#define sisdirc(__s)        (IsArray[(__s)+4] & IS_DIRC)
-#define sisfilec(__s)       (IsArray[(__s)+4] & IS_FILEC)
-#define sismacc(__s)        (IsArray[(__s)+4] & IS_MACC)
-#define sisbarf(__s)        (IsArray[(__s)+4] & IS_BARF)
-#define siswildc(__s)       (IsArray[(__s)+4] & IS_WILDC)
+#define sisws(__s)          (IsArray[(__s)+STRM_PLACEHOLDERS] & IS_WS)
+#define sisprint(__s)       (IsArray[(__s)+STRM_PLACEHOLDERS] & IS_PRINT)
+#define sisalpha(__s)       (IsArray[(__s)+STRM_PLACEHOLDERS] & IS_ALPHA)
+#define sisextc(__s)        (IsArray[(__s)+STRM_PLACEHOLDERS] & IS_FILEC)
+#define sisdirc(__s)        (IsArray[(__s)+STRM_PLACEHOLDERS] & IS_DIRC)
+#define sisfilec(__s)       (IsArray[(__s)+STRM_PLACEHOLDERS] & IS_FILEC)
+#define sismacc(__s)        (IsArray[(__s)+STRM_PLACEHOLDERS] & IS_MACC)
+#define sisbarf(__s)        (IsArray[(__s)+STRM_PLACEHOLDERS] & IS_BARF)
+#define siswildc(__s)       (IsArray[(__s)+STRM_PLACEHOLDERS] & IS_WILDC)
 #define sisdotc(__s)        ((__s) == '.')
 
 #define cisws(__c)          sisws((byte)(__c))

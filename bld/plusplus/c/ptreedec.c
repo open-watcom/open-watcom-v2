@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -356,7 +356,7 @@ PTREE PtdDtorUseSym             // DECORATE WITH DTOR USAGE (SYMBOL)
     , SYMBOL dtor )             // - destructor symbol
 {
     if( dtor != NULL ) {
-        dtor->flag |= SYMF_REFERENCED;
+        dtor->flags |= SYMF_REFERENCED;
         expr = FunctionCalled( expr, dtor );
         expr = ptdSymbol( expr, dtor, PTD_DTOR_USE );
     }
@@ -406,7 +406,7 @@ PTREE PtdScopeCall              // SCOPE-CALL RECORDING
     ( PTREE expr                // - expression
     , SYMBOL fun )              // - function/ctor called
 {
-    if( fun != NULL && (fun->flag & SYMF_NO_LONGJUMP) == 0 ) {
+    if( fun != NULL && (fun->flags & SYMF_NO_LONGJUMP) == 0 ) {
         expr = ptdSymbol( expr, fun, PTD_SCOPE_CALL );
     }
     return( expr );

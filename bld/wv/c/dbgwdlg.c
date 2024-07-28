@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -41,6 +41,8 @@
 #include "dbgupdt.h"
 #include "dbgwglob.h"
 #include "wndmenu.h"
+#include "dbgicon.h"
+#include "litdui.h"
 
 
 #define MAX_DLG_LINES 30000U
@@ -143,7 +145,7 @@ static bool WndDlgTxtAttr( const char *buff, wnd_attr_wv wndattr )
 }
 
 
-static wnd_row DlgNumRows( a_window wnd )
+static wnd_row WNDCALLBACK DlgNumRows( a_window wnd )
 {
     /* unused parameters */ (void)wnd;
 
@@ -151,7 +153,7 @@ static wnd_row DlgNumRows( a_window wnd )
 }
 
 
-static void DlgRefresh( a_window wnd )
+static void WNDCALLBACK DlgRefresh( a_window wnd )
 {
     if( DlgLines > 0 )
         WndMoveCurrent( wnd, DlgLines - 1, 0 );
@@ -166,7 +168,7 @@ bool WndDlgTxt( const char *buff )
 }
 
 
-static  bool    DlgGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *line )
+static  bool    WNDCALLBACK DlgGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *line )
 {
     int         i;
     dlg_entry   *curr;
@@ -200,7 +202,7 @@ void WndDlgFini( void )
     }
 }
 
-static bool DlgWndEventProc( a_window wnd, gui_event gui_ev, void *parm )
+static bool WNDCALLBACK DlgWndEventProc( a_window wnd, gui_event gui_ev, void *parm )
 {
     /* unused parameters */ (void)parm;
 
@@ -223,7 +225,7 @@ static bool DlgWndEventProc( a_window wnd, gui_event gui_ev, void *parm )
     return( false );
 }
 
-static bool ChkUpdate( void )
+static bool WNDCALLBACK ChkUpdate( void )
 {
     return( UpdateFlags & UP_DLG_WRITTEN );
 }

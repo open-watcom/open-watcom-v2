@@ -24,7 +24,7 @@ stack_axp=opt stack=8k
 
 exes = strtest.$(exe)
 
-test : .symbolic start test.lnk string.obj strngrep.obj $(exes)
+test : .SYMBOLIC start test.lnk string.obj strngrep.obj $(exes)
     $(noecho)%make common_set_result
 
 clean : .procedure

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -52,6 +52,9 @@
 #define _WCRTLINK
 #define _WCNEAR
 #define _WCNORETURN
+#define _WCI86NEAR
+#define _WCI86FAR
+#define _WCI86HUGE
 #define __near
 #define __based(x)
 
@@ -194,6 +197,23 @@ extern char     *get_dllname( char *buf, int len );
 
 #ifdef __cplusplus
 }
+#endif
+
+#else   /* __WATCOMC__ */
+
+/*
+ * temporary fix for older builds of OW 2.0
+ */
+#if __WATCOMC__ == 1300
+#ifndef _WCI86NEAR
+#define _WCI86NEAR
+#endif
+#ifndef _WCI86FAR
+#define _WCI86FAR
+#endif
+#ifndef _WCI86HUGE
+#define _WCI86HUGE
+#endif
 #endif
 
 #endif  /* !__WATCOMC__ */

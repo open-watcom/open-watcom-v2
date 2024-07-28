@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -45,6 +45,23 @@
 #define FNCMP stricmp
 #endif
 
+#define WL_LTYPE(e,p,n) const char ctext_ ## e[] = n;
+WL_LTYPES
+#undef WL_LTYPE
+
+#define WL_PROC(e,p,n)  const char ctext_ ## e[] = n;
+WL_PROCS
+#undef WL_PROC
+
+#define WL_FTYPE(e,p,n) const char ctext_ ## e[] = n;
+WL_FTYPES
+#undef WL_FTYPE
+
+static char     path[_MAX_PATH];
+
+static pgroup2  pg1;
+static pgroup2  pg2;
+
 int SymbolNameCmp( const char *s1, const char *s2)
 {
     if( Options.respect_case ) {
@@ -54,8 +71,7 @@ int SymbolNameCmp( const char *s1, const char *s2)
     }
 }
 
-
-void GetFileContents( const char *name, libfile io, arch_header *arch, char **contents )
+void GetFileContents( libfile io, const arch_header *arch, char **contents )
 {
     size_t  size;
 
@@ -66,53 +82,54 @@ void GetFileContents( const char *name, libfile io, arch_header *arch, char **co
     size = __ROUND_UP_SIZE_EVEN( arch->size );
     *contents = MemAlloc( size );
     if( LibRead( io, *contents, size ) != size ) {
-        BadLibrary( name );
+        BadLibrary( io );
     }
 }
 
-void NewArchHeader( arch_header *arch, char *name )
+libfile NewArchLibOpen( arch_header *arch, const char *filename )
 {
     struct stat         buf;
 
-    if( stat( name, &buf ) == -1 ) {
-        FatalError( ERR_CANT_FIND, name );
+    if( stat( filename, &buf ) == -1 ) {
+        FatalError( ERR_CANT_FIND, filename );
     }
-    arch->name = name;
+    arch->name = MemDupStr( filename );
     arch->ffname = NULL;
     arch->date = buf.st_mtime;
     arch->uid = buf.st_uid;
     arch->gid = buf.st_gid;
     arch->mode = buf.st_mode;
     arch->size = buf.st_size;
+    arch->libtype = WL_LTYPE_NONE;
+    return( LibOpen( filename, LIBOPEN_READ ) );
 }
 
-static void CopyBytes( char *buffer, libfile source, libfile dest, size_t len )
+void FreeNewArch( const arch_header *arch )
 {
-    if( LibRead( source, buffer, len ) == len ) {
-        LibWrite( dest, buffer, len );
+    MemFree( arch->name );
+}
+
+static void CopyBytes( libfile src, libfile dst, char *buffer, size_t len )
+{
+    if( LibRead( src, buffer, len ) == len ) {
+        LibWrite( dst, buffer, len );
     } else {
-        LibReadError( source );
+        LibReadError( src );
     }
 }
 
-void Copy( libfile source, libfile dest, file_offset size )
+void Copy( libfile src, libfile dst, file_offset size )
 {
     char        buffer[4096];
 
-
     while( size > sizeof( buffer ) ) {
-        CopyBytes( buffer, source, dest, sizeof( buffer ) );
+        CopyBytes( src, dst, buffer, sizeof( buffer ) );
         size -= sizeof( buffer );
     }
     if( size != 0 ) {
-        CopyBytes( buffer, source, dest, size );
+        CopyBytes( src, dst, buffer, size );
     }
 }
-
-static char     path[_MAX_PATH];
-
-static pgroup2  pg1;
-static pgroup2  pg2;
 
 bool IsSameFile( const char *a, const char *b )
 {
@@ -121,15 +138,54 @@ bool IsSameFile( const char *a, const char *b )
     return( FNCMP( pg1.buffer, pg2.buffer ) == 0 );
 }
 
-bool IsSameFNameCase( const char *a, const char *b )
+bool IsSameModuleCase( const char *a, const char *b, int cmp_mode )
+/*
+ * for COFF/ELF objects the real file name is hold in library
+ *   the comparision is transparent for file name with extension
+ *
+ * for OMF objects comparision is not transparen because in object
+ *   file is available source file name or module name (THEADR record)
+ *   the comparision is possible only for source file base name or
+ *   module name
+ *   for OMF files is the object file name derived from source
+ *   file name that only comparision of file base name is possible
+ *   we use following logic:
+ *   - remove first level of extension and compare base name
+ *   - remove second level of extension and compare base name again
+ */
 {
-    _splitpath2( a, pg1.buffer, NULL, NULL, &pg1.fname, NULL );
-    _splitpath2( b, pg2.buffer, NULL, NULL, &pg2.fname, NULL );
-    if( Options.respect_case ) {
-        return( strcmp( pg1.fname, pg2.fname ) == 0 );
+    _splitpath2( a, pg1.buffer, NULL, NULL, &pg1.fname, &pg1.ext );
+    _splitpath2( b, pg2.buffer, NULL, NULL, &pg2.fname, &pg2.ext );
+    if( cmp_mode == 1 ) {
+        /*
+         * OMF format
+         * compare only base name and try to remove second level of extension
+         */
+        if( FNCMP( pg1.fname, pg2.fname ) ) {
+            /*
+             * remove second level of extension and compare base name again
+             */
+            strcpy( path, pg1.fname );
+            _splitpath2( path, pg1.buffer, NULL, NULL, &pg1.fname, NULL );
+            strcpy( path, pg2.fname );
+            _splitpath2( path, pg2.buffer, NULL, NULL, &pg2.fname, NULL );
+            if( FNCMP( pg1.fname, pg2.fname ) ) {
+                return( false );
+            }
+        }
     } else {
-        return( FNCMP( pg1.fname, pg2.fname ) == 0 );
+        /*
+         * AR formats
+         * compare base name and extension
+         */
+        if( FNCMP( pg1.fname, pg2.fname ) ) {
+            return( false );
+        }
+        if( FNCMP( pg1.ext, pg2.ext ) ) {
+            return( false );
+        }
     }
+    return( true );
 }
 
 char *MakeFName( const char *a )
@@ -237,16 +293,26 @@ char    *FormSym( const char *name )
     return( buff );
 }
 
-char *LibFormat( void )
+unsigned_16 mget_U16LE( const unsigned_8 *s )
 {
-    switch( Options.libtype ) {
-    case WL_LTYPE_AR:
-        return( "AR" );
-    case WL_LTYPE_MLIB:
-        return( "MLIB" );
-    case WL_LTYPE_OMF:
-        return( "LIB" );
-    default:
-        return( "unknown format" );
-    }
+    return( ( (unsigned_16)s[1] << 8 ) + s[0] );
+}
+
+unsigned_32 mget_U32LE( const unsigned_8 *s )
+{
+    return( ( (unsigned_32)s[3] << 24 ) + ( (unsigned_32)s[2] << 16 ) + ( (unsigned_16)s[1] << 8 ) + s[0] );
+}
+
+void mset_U16LE( unsigned_8 *out, unsigned_16 value )
+{
+    out[0] = value & 255;
+    out[1] = ( value >> 8 ) & 255;
+}
+
+void mset_U32LE( unsigned_8 *out, unsigned_32 value )
+{
+    out[0] = value & 255;
+    out[1] = ( value >> 8 ) & 255;
+    out[2] = ( value >> 16 ) & 255;
+    out[3] = ( value >> 24 ) & 255;
 }

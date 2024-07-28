@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,11 +37,7 @@
 extern "C" {
 #endif
 
-#if defined(_M_I86)
 typedef void        _WCI86FAR thread_fn( void _WCI86FAR * );
-#else
-typedef void        thread_fn( void * );
-#endif
 typedef thread_fn   __thread_fn;
 #ifdef __NT__
 typedef unsigned    __stdcall thread_fnex( void * );

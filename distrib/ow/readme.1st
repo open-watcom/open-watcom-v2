@@ -70,10 +70,9 @@ mh                  - 16-bit huge memory model
 3r                  - 32-bit register calls
 3s                  - 32-bit stack calls
 samples             - Miscellaneous sample source code
-rtsource            - Runtime startup source code
 win16_helpfiles     - Windows 3.x help files
 win32_helpfiles     - Win32 help files
-whelp_helpfiles     - WHELP format help files
+whelp_helpfiles     - Character mode WHELP format help files
 os2_helpfiles       - OS/2 help files
 pdf_helpfiles       - PDF help files
 

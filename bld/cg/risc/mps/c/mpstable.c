@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -437,7 +438,7 @@ static const opcode_entry    Promote8[] = {
 _OE( _Bin(   ANY,  ANY,  ANY,  NONE ), V_NO,           RG_,          R_BIN2QUAD,     FU_NO ),
 };
 
-static const opcode_entry    *OpcodeList[] = {
+static const opcode_entry * const OpcodeList[] = {
     #define pick(enum,opcode)  opcode,
     #include "_tables.h"
     #undef pick

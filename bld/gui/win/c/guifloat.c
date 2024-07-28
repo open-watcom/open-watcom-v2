@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -124,7 +124,7 @@ bool GUIXCreateFloatingPopup( gui_window *wnd, const gui_point *location,
 
     GUIHFloatingPopup = GUICreateSubMenu( wnd, menus, FLOAT_HINT );
     if( GUIHFloatingPopup == NULLHANDLE ) {
-        GUIError( LIT( Open_Failed ) );
+        GUIError( LIT_GUI( Open_Failed ) );
         return( false );
     }
 

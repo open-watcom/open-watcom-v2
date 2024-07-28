@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,29 +36,47 @@
 #include "dbgmem.h"
 #include "dui.h"
 #include "banner.h"
-#include "litdef.h"
+#include "litdui.h"
+#include "litmenu.h"
+#include "dbglit.h"
+#include "aui.h"
+#include "wv.rh"
 
-#ifdef JAPANESE
-  #define pick(c,e,j) LITSTR( c, j )
-#else
-  #define pick(c,e,j) LITSTR( c, e )
-#endif
 
-#define LITSTR( x, y ) char *LIT_DUI( x );
-#include "wddui.str"
-#undef LITSTR
+#define pick(c,e,j)     char *LIT_DUI( c );
+#include "wddui.gh"
+#undef pick
+
+#define pick(c,e,j)     char *LIT_MENU( c );
+#include "wdmenu.gh"
+#undef pick
 
 void DUIInitLiterals( void )
 {
-    #define LITSTR( x, y ) LIT_DUI( x ) = DUILoadString( DBG_DUI_LITERAL_##x );
-    #include "wddui.str"
-    #undef LITSTR
+    #define pick(c,e,j)     LIT_DUI( c ) = DUILoadString( DBG_DUI_LITERAL_##c );
+    #include "wddui.gh"
+    #undef pick
+    #define pick(c,e,j)     LIT_MENU( c ) = DUILoadString( DBG_DUI_MENU_##c );
+    #include "wdmenu.gh"
+    #undef pick
 }
 
 void DUIFiniLiterals( void )
 {
-    #define LITSTR( x, y ) DUIFreeString( LIT_DUI( x ) );
-    #include "wddui.str"
-    #undef LITSTR
+    #define pick(c,e,j)     DUIFreeString( LIT_MENU( c ) );
+    #include "wdmenu.gh"
+    #undef pick
+    #define pick(c,e,j)     DUIFreeString( LIT_DUI( c ) );
+    #include "wddui.gh"
+    #undef pick
 }
-#undef pick
+
+char *DUILoadString( dui_res_id id )
+{
+    return( WndLoadString( id ) );
+}
+
+void DUIFreeString( void *ptr )
+{
+    WndFree( ptr );
+}

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -114,8 +114,8 @@ bool GUIAPI GUIDlgPickWithRtn( const char *title, GUIPICKCALLBACK *pickinit, PIC
     if( len > DLG_MAX_COLS )
         len = DLG_MAX_COLS;
 
-    Controls[OK_IDX].text = LIT( OK );
-    Controls[CANCEL_IDX].text = LIT( Cancel );
+    Controls[OK_IDX].text = LIT_GUI( OK );
+    Controls[CANCEL_IDX].text = LIT_GUI( Cancel );
     dlg.func = pickinit;
     dlg.choice = -1;
     openrtn( title, DLG_PICK_ROWS, (gui_text_ord)len, Controls, GUI_ARRAY_SIZE( Controls ), &GUIPickGUIEventProc, &dlg );
@@ -125,8 +125,12 @@ bool GUIAPI GUIDlgPickWithRtn( const char *title, GUIPICKCALLBACK *pickinit, PIC
     return( true );
 }
 
+static void GUICALLBACK doGUIDlgOpen( const char *title, gui_text_ord rows, gui_text_ord cols, gui_control_info *controls_info, int num_controls, GUIEVCALLBACK *gui_call_back, void *extra )
+{
+    GUIDlgOpen( title, rows, cols, controls_info, num_controls, gui_call_back, extra );
+}
 
 bool GUIAPI GUIDlgPick( const char *title, GUIPICKCALLBACK *pickinit, int *choice )
 {
-    return( GUIDlgPickWithRtn( title, pickinit, GUIDlgOpen, choice ) );
+    return( GUIDlgPickWithRtn( title, pickinit, doGUIDlgOpen, choice ) );
 }

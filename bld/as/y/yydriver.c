@@ -1,6 +1,10 @@
 #include "as.h"
 #include "lexyacc.h"
 #include "asparser.h"
+#ifdef _STANDALONE_
+#include "options.h"
+#endif
+
 
 typedef uint_16         YYACTIONBASETYPE;
 typedef uint_16         YYACTIONTYPE;

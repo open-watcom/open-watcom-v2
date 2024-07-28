@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -27,5 +28,7 @@
 * Description:  Prototypes for treeconv.c
 *
 ****************************************************************************/
-extern  tn      FoldCnvRnd( cg_op op, tn name, type_def *to_tipe );
-extern  void    TGDemote( tn name, type_def *tipe );
+
+
+extern tn       FoldCnvRnd( cg_op op, tn name, const type_def *to_tipe );
+extern void     TGDemote( tn name, const type_def *tipe );

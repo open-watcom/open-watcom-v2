@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -1631,13 +1631,13 @@ _OE( _BinPP( ANY,  ANY,  ANY,  NONE ), V_NO,                RG_,              G_
 };
 
 
-static const opcode_entry    *OpcodeList[] = {
+static const opcode_entry * const OpcodeList[] = {
     #define pick(enum,opcode,fpopcode)  opcode,
     #include "_tables.h"
     #undef pick
 };
 
-static const opcode_entry    *FPOpcodeList[] = {
+static const opcode_entry * const FPOpcodeList[] = {
     #define pick(enum,opcode,fpopcode)  fpopcode,
     #include "_tables.h"
     #undef pick

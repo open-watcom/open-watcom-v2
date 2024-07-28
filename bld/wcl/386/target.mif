@@ -6,9 +6,11 @@ proj_name = wcl386
 wcl386_autodepends = .AUTODEPEND
 !endif
 
-target_cpu = 386
+wcl386_ntverrc = ../../h
 
 wcl386_trmem = 1
+
+target_cpu = 386
 
 extra_cpp_flags = -DWCL386
 

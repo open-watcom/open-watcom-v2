@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,7 +34,7 @@
 #include "coderep.h"
 #include "indvars.h"
 #include "cgmem.h"
-#include "cfloat.h"
+#include "_cfloat.h"
 #include "stackcg.h"
 #include "zoiks.h"
 #include "i64.h"
@@ -549,7 +549,7 @@ void     MarkInvariants( void )
     MemChangedInLoop = false;
     for( blk = Loop; blk != NULL; blk = blk->u.loop ) {
         for( ins = blk->ins.head.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
-            if( _OpIsCall( ins->head.opcode ) && (ins->flags.call_flags & CALL_WRITES_NO_MEMORY) == 0 ) {
+            if( _OpIsCall( ins->head.opcode ) && (ins->flags.u.call_flags & CALL_WRITES_NO_MEMORY) == 0 ) {
                 MemChangedInLoop = true;
                 have_call = true;
             }
@@ -676,7 +676,7 @@ static value    OpLTZero( name *op, bool fp )
         return( CMP_FALSE );
     if( fp && CFTest( op->c.value ) < 0 )
         return( CMP_TRUE );
-    if( !fp && op->c.lo.int_value < 0 )
+    if( !fp && op->c.lo.u.int_value < 0 )
         return( CMP_TRUE );
     return( CMP_FALSE );
 }
@@ -692,7 +692,7 @@ static value    OpEQZero( name *op, bool fp )
         return( CMP_FALSE );
     if( fp && CFTest( op->c.value ) == 0 )
         return( CMP_TRUE );
-    if( !fp && op->c.lo.int_value == 0 )
+    if( !fp && op->c.lo.u.int_value == 0 )
         return( CMP_TRUE );
     return( CMP_FALSE );
 }
@@ -1145,7 +1145,7 @@ void    FiniIndVars( void )
 }
 
 
-static  bool    ListContainsVar( name * list, name *ivname )
+static  bool    ListContainsVar( name *list, name *ivname )
 /*************************************************************
  * Does the invariant list "list" contain the invariant name "ivname"
  */
@@ -1221,20 +1221,20 @@ bool    Inducable( block *blk, instruction *ins )
 }
 
 
-static void     CheckBasic( instruction *ins, union name *name, union name *cons )
-/*********************************************************************************
+static void     CheckBasic( instruction *ins, name *op, name *cons )
+/*********************************************************************
  * Check if "ins" qualifies as an instruction creating a basic
  * induction variable.  Add an induction variable entry if it is.
  */
 {
-    if( name->n.class == N_TEMP || name->n.class == N_MEMORY ) {
-        if( FindIndVar( name ) == NULL ) {
+    if( op->n.class == N_TEMP || op->n.class == N_MEMORY ) {
+        if( FindIndVar( op ) == NULL ) {
             if( ins->head.opcode == OP_ADD ) {
-                AddIndVar( ins, name, NULL, NULL, NULL, 0, 1,
-                           cons->c.lo.int_value, 0, 1, ins->type_class );
+                AddIndVar( ins, op, NULL, NULL, NULL, 0, 1,
+                           cons->c.lo.u.int_value, 0, 1, ins->type_class );
             } else { /* OP_SUB*/
-                AddIndVar( ins, name, NULL, NULL, NULL, 0, 1,
-                          -(cons->c.lo.int_value), 0, 1, ins->type_class );
+                AddIndVar( ins, op, NULL, NULL, NULL, 0, 1,
+                          -(cons->c.lo.u.int_value), 0, 1, ins->type_class );
             }
         }
     }
@@ -1329,7 +1329,7 @@ static  void    CheckNonBasic( instruction *ins, induction *var,
     lasttimes = var->lasttimes;
     c = 0;
     if( cons != NULL ) {
-        c = cons->c.lo.int_value;
+        c = cons->c.lo.u.int_value;
     }
     switch( ins->head.opcode ) {
     case OP_MOV:
@@ -1938,7 +1938,7 @@ void    SuffixPreHeader( instruction *ins )
     instruction *last;
 
     for( last = PreHead->ins.head.prev; last->head.opcode == OP_NOP; last = last->head.prev ) {
-        if( last->flags.nop_flags & NOP_ZAP_INFO ) {
+        if( last->flags.u.nop_flags & NOP_ZAP_INFO ) {
             break;
         }
     }
@@ -2676,9 +2676,9 @@ bool    CalcFinalValue( induction *var, block *blk, instruction *ins,
         return( false );
     if( op->c.const_type != CONS_ABSOLUTE )
         return( false );
-    init = op->c.lo.int_value;
+    init = op->c.lo.u.int_value;
     *initial = init;
-    test = ins->operands[1]->c.lo.int_value;
+    test = ins->operands[1]->c.lo.u.int_value;
     incr = var->plus;
     dist = test - init;
     if( Sgn( dist ) != Sgn( incr ) )
@@ -2890,7 +2890,7 @@ static  bool    DoReplacement( instruction *ins, induction *rep,
         /*
          * if we are going to overflow our type, bail!
          */
-        I32ToI64( non_ind_op->c.lo.int_value, &big_cons );
+        I32ToI64( non_ind_op->c.lo.u.int_value, &big_cons );
         I32ToI64( rep->times, &temp );
         U64Mul( &big_cons, &temp, &big_cons );
         I32ToI64( rep->plus, &temp );

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -120,7 +120,7 @@ STATIC char *getDirBuf( void )
 }
 
 
-static void massageDollarOctothorpe( char *p )
+STATIC void massageDollarOctothorpe( char *p )
 /********************************************/
 {
     assert( p != NULL );
@@ -129,7 +129,7 @@ static void massageDollarOctothorpe( char *p )
         case '$':
             *p = TMP_DOLLAR;
             break;
-        case '#':
+        case COMMENT_C:
             *p = TMP_COMMENT;
             break;
         }
@@ -301,12 +301,11 @@ STATIC bool getOldNewString( char *inString, const char **oldString, const char 
 
     if( equal == NULL ) {
         return( false );
-    } else {
-        *oldString = inString;
-        *equal     = NULLCHAR;
-        *newString = equal + 1;
-        return( true );
     }
+    *oldString = inString;
+    *equal     = NULLCHAR;
+    *newString = equal + 1;
+    return( true );
 }
 
 
@@ -396,7 +395,8 @@ STATIC const char *GetMacroValueProcess( const char *name )
                 }
             }
             return( dirBuf );
-        } else if( predef & (M_CTIME | M_CDATE | M_CYEAR) ) {
+        }
+        if( predef & (M_CTIME | M_CDATE | M_CYEAR) ) {
             struct tm   *tm;
 
             tm = localtime( &start_time );
@@ -479,10 +479,7 @@ char *GetMacroValue( const char *name )
              * recursively expand so $(macro:sub) OK if macro contains another
              */
             if( strchr( beforeSub, '$' ) != NULL ) {
-                UnGetCHR( STRM_MAGIC );
-                InsString( beforeSub, false );
-                beforeSub = line = DeMacro( TOK_MAGIC );
-                GetCHR();   /* eat STRM_MAGIC */
+                beforeSub = line = FullDeMacroText( beforeSub );
             }
             if( beforeSub == NULL ) {
                 afterSub = NULL;
@@ -676,7 +673,6 @@ char *DeMacroSpecial( const char *InString )
         if( *p == SPECIAL_TMP_DOLLAR ) {
             WriteNVec( outString, old, p - old );
             pos = 0;
-            UnGetCHR( STRM_MAGIC );
             buffer[pos++] = *(p++);
             if( cismsspecial( *p ) && !cismsmodifier( *(p + 1) ) ) {
                 buffer[pos++] = *(p++);
@@ -689,9 +685,7 @@ char *DeMacroSpecial( const char *InString )
             }
             old = p;
             buffer[pos] = NULLCHAR;
-            InsString( buffer, false );
-            tempString = DeMacro( TOK_MAGIC );
-            PreGetCHR();   /* eat STRM_MAGIC */
+            tempString = FullDeMacroText( buffer );
             WriteVec( outString, tempString );
             FreeSafe( tempString);
         }
@@ -780,7 +774,6 @@ STATIC char *ProcessToken( int depth, MTOKEN_T end1, MTOKEN_T end2, MTOKEN_T t )
             }
             FreeSafe( p );
         } else {
-            pos = 0;
             s = PreGetCHR();
             if( sismsspecial( s ) ) {
                 UnGetCHR( s );
@@ -795,26 +788,26 @@ STATIC char *ProcessToken( int depth, MTOKEN_T end1, MTOKEN_T end2, MTOKEN_T t )
                     break;
                 }
                 return( p );
-            } else {
-                for( ;; ) {
-                    if( s == ')' ) {
-                        break;
-                    } else if( s == STRM_MAGIC ||
-                               s == STRM_END   ||
-                               s == '\n' ) {
-                        UnGetCHR( s );
-                        break;
-                    }
-                    if( pos < MAX_TOK_SIZE -1 ) {
-                        macname[pos++] = s;
-                    }
-                    s = PreGetCHR();
+            }
+            pos = 0;
+            for( ;; ) {
+                if( s == ')' ) {
+                    break;
+                } else if( s == STRM_MAGIC ||
+                           s == STRM_END   ||
+                           s == '\n' ) {
+                    UnGetCHR( s );
+                    break;
                 }
-                macname[pos] = NULLCHAR;
-                if( IsMacroName( macname ) ) {
-                    p2 = WrnGetMacroValue( macname );
-                    return( p2 );
+                if( pos < MAX_TOK_SIZE -1 ) {
+                    macname[pos++] = s;
                 }
+                s = PreGetCHR();
+            }
+            macname[pos] = NULLCHAR;
+            if( IsMacroName( macname ) ) {
+                p2 = WrnGetMacroValue( macname );
+                return( p2 );
             }
         }
         break;
@@ -1097,6 +1090,21 @@ char *DeMacro( MTOKEN_T end1 )
 }
 
 
+char *FullDeMacroText( const char *text )
+/****************************************
+ * fully expand input text
+ */
+{
+    char    *expanded;
+
+    UnGetCHR( STRM_MAGIC );
+    InsString( text, false );
+    expanded = deMacroText( 0, TOK_MAGIC, TOK_END );
+    GetCHR();   /* eat STRM_MAGIC */
+    return( expanded );
+}
+
+
 STATIC char *PartDeMacroProcess( void )
 /**************************************
  * Partially DeMacro until EOL.  Copies verbatim, only expanding
@@ -1185,7 +1193,6 @@ char *PartDeMacro( bool forceDeMacro )
  * forceDeMacro if set true will force full Demacro
  */
 {
-    STRM_T  s;
     char    *temp;
 
     if( Glob.compat_nmake || Glob.compat_posix ) {
@@ -1193,21 +1200,18 @@ char *PartDeMacro( bool forceDeMacro )
     }
     if( forceDeMacro ) {
         /* remove white spaces at the beginning */
-        while( sisws( s = PreGetCHR() ) ) {
-        }
-        UnGetCHR( s );
+        UnGetCHR( EatWhite() );
         temp = DeMacro( TOK_EOL );
-        s = PreGetCHR();
+        PreGetCHR();    /* eat EOL */
         if( Glob.compat_nmake || Glob.compat_posix ) {
             IsPartDeMacro = false;
         }
         return( temp );
-    } else {
-        if( Glob.compat_nmake || Glob.compat_posix ) {
-            IsPartDeMacro = false;
-        }
-        return( PartDeMacroProcess() );
     }
+    if( Glob.compat_nmake || Glob.compat_posix ) {
+        IsPartDeMacro = false;
+    }
+    return( PartDeMacroProcess() );
 }
 
 
@@ -1216,9 +1220,8 @@ STATIC bool NMacroNameEq( const char *name1, const char *name2, size_t len )
 {
     if( Glob.compat_nmake || Glob.compat_posix ) {
         return( strncmp( name1, name2, len ) == 0 );
-    } else {
-        return( strnicmp( name1, name2, len ) == 0 );
     }
+    return( strnicmp( name1, name2, len ) == 0 );
 }
 
 
@@ -1350,7 +1353,7 @@ void DefMacro( const char *name )
 }
 
 
-static bool printMac( const void *node, const void *ptr )
+STATIC bool printMac( const void *node, const void *ptr )
 /*******************************************************/
 {
     MACRO const *mac = node;

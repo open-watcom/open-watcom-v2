@@ -30,6 +30,10 @@
 ****************************************************************************/
 
 
+#include "wclass.rh"
+#include "getfile.rh"
+
+
 #define B_newproj       1000
 #define B_openproj      1001
 #define B_saveproj      1002

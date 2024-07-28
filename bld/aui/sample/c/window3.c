@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -264,7 +264,7 @@ static char *Stuff[] =
 
 static wnd_row TheSize = ArraySize( Stuff );
 
-static void W3MenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_piece piece )
+static void WNDCALLBACK W3MenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_piece piece )
 {
     row=row;piece=piece;
     switch( id ) {
@@ -278,19 +278,19 @@ static void W3MenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_piece piec
     }
 }
 
-static void W3Modify( a_window wnd, wnd_row row, wnd_piece piece )
+static void WNDCALLBACK W3Modify( a_window wnd, wnd_row row, wnd_piece piece )
 {
     W3MenuItem( wnd, 0, row, piece );
 }
 
 
-static wnd_row W3NumRows( a_window wnd )
+static wnd_row WNDCALLBACK W3NumRows( a_window wnd )
 {
     wnd=wnd;
     return( TheSize );
 }
 
-static bool W3GetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *line )
+static bool WNDCALLBACK W3GetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *line )
 {
     wnd=wnd;
     if( row >= TheSize )
@@ -299,12 +299,12 @@ static bool W3GetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piec
         return( false );
     line->text = Stuff[row];
     line->tabstop = true;
-//  line->extent = WND_MAX_EXTEND;
+//  line->extent = WND_NO_EXTENT;
     return( true );
 }
 
 
-static void W3Refresh( a_window wnd )
+static void WNDCALLBACK W3Refresh( a_window wnd )
 {
     WndSetRepaint( wnd );
 }

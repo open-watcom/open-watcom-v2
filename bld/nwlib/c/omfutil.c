@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -71,21 +72,10 @@ static unsigned_16 CheckForOverflow( unsigned long curr_offset )
     return( (unsigned_16)curr_offset );
 }
 
-void PadOmf( bool force )
+void WriteOmfRecHeader( libfile io, unsigned_8 type, unsigned_16 len )
 {
-    size_t      padding_size;
-    char        *tmpbuf;
-
-    // page size is always a power of 2
-    // therefor x % Options.page_size == x & ( Options.page_size - 1 )
-
-    padding_size = Options.page_size - (LibTell( NewLibrary ) & ( Options.page_size - 1 ));
-    if( padding_size != Options.page_size || force ) {
-        tmpbuf = MemAlloc( padding_size );
-        memset( tmpbuf, 0, padding_size );
-        WriteNew( tmpbuf, padding_size );
-        MemFree( tmpbuf);
-    }
+    LibWriteU8( io, type );
+    LibWriteU16LE( io, len );
 }
 
 static int isPrime( unsigned num )
@@ -104,15 +94,18 @@ static int isPrime( unsigned num )
 }
 
 
-/*
+static unsigned NextPrime( unsigned maj )
+/****************************************
  * Find the prime number of dictionary pages
  */
-static unsigned NextPrime( unsigned maj )
 {
     int test;
 
     if( maj > 2 ) {
-        maj |= 1;               /* make it odd */
+        /*
+         * make it odd
+         */
+        maj |= 1;
         do {
             test = isPrime( maj );
             maj += 2;
@@ -125,7 +118,7 @@ static unsigned NextPrime( unsigned maj )
     return( maj );
 }
 
-static bool InsertOmfDict( OmfLibBlock *lib_block, unsigned num_blocks, char *sym, unsigned len, unsigned_16 offset )
+static bool InsertOmfDict( OmfLibBlock *lib_block, unsigned num_blocks, const char *sym, unsigned len, unsigned_16 offset )
 {
     unsigned int    loc;
     unsigned int    entry_len;
@@ -146,9 +139,9 @@ static bool InsertOmfDict( OmfLibBlock *lib_block, unsigned num_blocks, char *sy
                     break;
                 }
                 lib_block[h.block].htab[h.bucket] = lib_block[h.block].fflag;
-                lib_block[h.block].fflag += entry_len / 2;
+                lib_block[h.block].fflag += (unsigned_8)( entry_len / 2 );
                 loc -= NUM_BUCKETS + 1;
-                lib_block[h.block].name[loc] = len;
+                lib_block[h.block].name[loc] = (unsigned_8)len;
                 loc++;
                 memcpy( lib_block[h.block].name + loc, sym, len );
                 loc += len;
@@ -171,25 +164,29 @@ static bool InsertOmfDict( OmfLibBlock *lib_block, unsigned num_blocks, char *sy
 
 static bool HashOmfSymbols( OmfLibBlock *lib_block, unsigned num_blocks, sym_file *sfile )
 {
-    bool        ret = true;
+    bool        ret;
     sym_entry   *sym;
     unsigned    str_len;
-    char        *fname;
+    const char  *cp;
+    char        fname[256];     /* OMF maximum name len is 255 characters */
 
+    ret = true;
     for( ; sfile != NULL; sfile = sfile->next ) {
-        if( sfile->import == NULL ) {
-            fname = MakeFName( sfile->full_name );
+        if( sfile->impsym == NULL ) {
+            cp = MakeFName( sfile->full_name );
         } else {
 #ifdef IMP_MODULENAME_DLL
-            fname = sfile->import->DLLName;
+            cp = sfile->impsym->dllName.name;
 #else
-            fname = sfile->import->u.sym.symName;
+            cp = sfile->impsym->u.omf_coff.symName;
 #endif
         }
-        str_len = strlen( fname );
-        fname[str_len] ='!';
-        ret = InsertOmfDict( lib_block, num_blocks, fname, str_len + 1, sfile->u.new_offset_omf );
-        fname[str_len] = 0;
+        str_len = 0;
+        while( *cp != '\0' ) {
+            fname[str_len++] = *cp++;
+        }
+        fname[str_len++] = '!';
+        ret = InsertOmfDict( lib_block, num_blocks, fname, str_len, sfile->u.new_offset_omf );
         if( !ret ) {
             return( ret );
         }
@@ -203,8 +200,10 @@ static bool HashOmfSymbols( OmfLibBlock *lib_block, unsigned num_blocks, sym_fil
     return( ret );
 }
 
-//return size of dict
-unsigned WriteOmfDict( sym_file *first_sfile )
+unsigned WriteOmfDict( libfile io, sym_file *first_sfile )
+/*********************************************************
+ * return size of dict
+ */
 {
     bool        done;
     unsigned    num_blocks;
@@ -220,7 +219,7 @@ unsigned WriteOmfDict( sym_file *first_sfile )
 
     lib_block = NULL;
     do {
-        num_blocks ++;
+        num_blocks++;
         num_blocks = NextPrime( num_blocks );
         if( num_blocks == 0 ) {
             MemFree( lib_block );
@@ -241,40 +240,45 @@ unsigned WriteOmfDict( sym_file *first_sfile )
            }
         }
     }
-    WriteNew( lib_block, dict_size );
+    LibWrite( io, lib_block, dict_size );
     MemFree( lib_block );
     return( num_blocks );
 }
 
-void WriteOmfFile( sym_file *sfile )
+void WriteOmfFile( libfile io, sym_file *sfile )
 {
     sym_entry   *sym;
     const char  *fname;
 
     ++symCount;
-    sfile->u.new_offset_omf = CheckForOverflow( LibTell( NewLibrary ) );
-    if( sfile->import == NULL ) {
+    sfile->u.new_offset_omf = CheckForOverflow( LibTell( io ) );
+    if( sfile->impsym == NULL ) {
         fname = MakeFName( sfile->full_name );
-        // Options.page_size is always a power of 2 so someone should optimize
-        // this sometime. maybe store page_size as a log
+        /*
+         * Options.page_size is always a power of 2 so someone should optimize
+         * this sometime. maybe store page_size as a log
+         */
     } else {
 #ifdef IMP_MODULENAME_DLL
-        fname = sfile->import->DLLName;
+        fname = sfile->impsym->dllName.name;
 #else
-        fname = sfile->import->u.sym.symName;
+        fname = sfile->impsym->u.omf_coff.symName;
 #endif
     }
     /*
-     * add one for ! after name and make sure odd so whole name record will
-     * be word aligned
-     * + '!' character and length byte
+     * the first data consists of the length of the name (one byte),
+     * the name characters and '!' character
+     * make sure whole data will be word aligned
      */
-    charCount += __ROUND_UP_SIZE_EVEN( strlen( fname ) + 1 + 1 );
-    WriteFileBody( sfile );
-    PadOmf( false );
+    charCount += __ROUND_UP_SIZE_EVEN( 1 + strlen( fname ) + 1 );
+    WriteFileBody( io, sfile );
     for( sym = sfile->first; sym != NULL; sym = sym->next ) {
         ++symCount;
-        /* + length byte and word align */
-        charCount += __ROUND_UP_SIZE_EVEN( sym->len + 1 );
+        /*
+         * the next data consists of the length of the name (one byte)
+         * and the name characters
+         * make sure whole data will be word aligned
+         */
+        charCount += __ROUND_UP_SIZE_EVEN( 1 + sym->len );
     }
 }

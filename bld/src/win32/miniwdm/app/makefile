@@ -7,13 +7,13 @@ CFLAGS += -d1
 
 OBJS = devio.obj
 
-.c.obj : .autodepend
+.c.obj : .AUTODEPEND
     $(CC) $(CFLAGS) $(INCS) $<
 
 devio.exe : $(OBJS)
     wlink op quiet, map f { $(OBJS) }
 
-clean : .symbolic
+clean : .SYMBOLIC
     @rm -f *.exe
     @rm -f *.obj
     @rm -f *.map

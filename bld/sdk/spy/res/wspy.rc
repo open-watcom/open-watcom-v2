@@ -102,3 +102,7 @@ END
 #include "log.rc"
 #include "mark.rc"
 #include "about.dlg"
+
+#if defined( __NT__ ) && defined( RESX_NTVER )
+    #include "exever.grc"
+#endif

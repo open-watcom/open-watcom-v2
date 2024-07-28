@@ -37,7 +37,7 @@
 #include "wvlist.hpp"
 #include "mstate.hpp"
 
-#ifndef PRODUCTION
+#ifdef DEVBUILD
     #include "wfile.hpp"
 #endif
 
@@ -54,7 +54,7 @@ WCLASS MWorkFile : public WFileName
         WVList& states() { return( _states ); }
         void makeCommand( WString& s, WVList* workFiles );
         void insertStates( MWorkFile* w );
-#ifndef PRODUCTION
+#ifdef DEVBUILD
         void dump( WFile& f );
 #endif
     private:

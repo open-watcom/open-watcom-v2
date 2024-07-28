@@ -5,6 +5,6 @@ host_cpu = 386
 
 wv_engine_noui = wdb
 
-wv_drv_objs = wdbstub.obj
+wv_drv_objs = wdbstub.obj stublit.obj
 
 !include ../../master.mif

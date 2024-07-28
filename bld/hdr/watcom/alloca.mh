@@ -3,8 +3,8 @@
  *
 :include crwat.sp
  */
-#ifndef _STRINGS_H_INCLUDED
-#define _STRINGS_H_INCLUDED
+#ifndef _ALLOCA_H_INCLUDED
+#define _ALLOCA_H_INCLUDED
 
 :include readonly.sp
 

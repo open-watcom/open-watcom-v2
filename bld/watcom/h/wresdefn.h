@@ -33,7 +33,6 @@
 #define WRESDEFN_INCLUDED
 
 #if defined( __NT__ )
-#define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 #elif defined( __WINDOWS__ )
 #include <windows.h>

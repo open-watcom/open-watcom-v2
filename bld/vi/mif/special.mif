@@ -1,4 +1,4 @@
-!ifeq sys_windowed 1
+!ifdef sys_windowed
 
 special = rcstr.grh
 

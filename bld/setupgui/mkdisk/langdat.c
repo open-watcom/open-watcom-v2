@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -86,7 +86,7 @@ static const char   *DefUsr    = NULL;
 static const char   *DefRel    = NULL;
 static const char   *DefCond   = NULL;
 static const char   *DefWhere  = NULL;
-static const char   *DefDesc   = NULL;
+static const char   *DefDescr  = NULL;
 static const char   *DefOld    = NULL;
 static const char   *DefDstvar = NULL;
 static const char   *DefKeys   = NULL;
@@ -576,7 +576,7 @@ static void ProcessLine( const char *line )
     const char  *rel;
     const char  *cond;
     const char  *where;
-    const char  *desc;
+    const char  *descr;
     const char  *old;
     const char  *dstvar;
     const char  *keys;
@@ -590,7 +590,7 @@ static void ProcessLine( const char *line )
     rel = DEFVAL( DefRel );
     cond = DEFVALA( DefCond );
     where = DEFVALA( DefWhere );
-    desc = DEFVAL( DefDesc );
+    descr = DEFVAL( DefDescr );
     old = DEFVAL( DefOld );
     dstvar = DEFVAL( DefDstvar );
     keys = DEFVALA( DefKeys );
@@ -616,23 +616,21 @@ static void ProcessLine( const char *line )
             rel = str;
         } else if( !stricmp( cmd, "cond" ) ) {
             cond = item_redef( cond, str );
-        } else if( !stricmp( cmd, "conda" ) ) {
+        } else if( !stricmp( cmd, "cond+" ) ) {
             cond = item_append( cond, str );
         } else if( !stricmp( cmd, "where" ) ) {
             where = item_redef( where, str );
-        } else if( !stricmp( cmd, "wherea" ) ) {
+        } else if( !stricmp( cmd, "where+" ) ) {
             where = item_append( where, str );
-        } else if( !stricmp( cmd, "desc" ) ) {
-            desc = str;
-        } else if( !stricmp( cmd, "descr" ) ) {     //  Multiple spellings
-            desc = str;
+        } else if( !stricmp( cmd, "descr" ) ) {
+            descr = str;
         } else if( !stricmp( cmd, "old" ) ) {
             old = str;
         } else if( !stricmp( cmd, "dstvar" ) ) {
             dstvar = str;
         } else if( !stricmp( cmd, "keys" ) ) {
             keys = item_redef( keys, str );
-        } else if( !stricmp( cmd, "keysa" ) ) {
+        } else if( !stricmp( cmd, "keys+" ) ) {
             keys = item_append( keys, str );
         } else {
             printf( "langdat warning: unknown keyword %s\n", cmd );
@@ -655,7 +653,7 @@ static void ProcessLine( const char *line )
         /* Check if 'where' matches specified product */
         if( ( Product == NULL || *where == '\0' || ContainsWord( where, Product, false ) )
           && ( *keys == '\0' || ContainsWord( keys, KeyList, true ) ) ) {
-            Log( true, "<%s><%s><%s><%s><%s><%s><%s><%s><%s><%s>\n", type, redist, dir, old, usr, rel, where, dstvar, cond, desc );
+            Log( true, "<%s><%s><%s><%s><%s><%s><%s><%s><%s><%s>\n", type, redist, dir, old, usr, rel, where, dstvar, cond, descr );
         }
     }
     FREE_ITEM( cond );
@@ -674,7 +672,7 @@ static void FreeDefault( void )
     FREE_ITEM( DefRel );
     FREE_ITEM( DefCond );
     FREE_ITEM( DefWhere );
-    FREE_ITEM( DefDesc );
+    FREE_ITEM( DefDescr );
     FREE_ITEM( DefOld );
     FREE_ITEM( DefDstvar );
     FREE_ITEM( DefKeys );
@@ -716,8 +714,8 @@ static void ProcessDefault( const char *line )
                 DefCond = item_def( DefCond, str, cmd );
             } else if( !stricmp( cmd, "where" ) ) {
                 DefWhere = item_def( DefWhere, str, cmd );
-            } else if( !stricmp( cmd, "desc" ) ) {
-                DefDesc = item_def( DefDesc, str, cmd );
+            } else if( !stricmp( cmd, "descr" ) ) {
+                DefDescr = item_def( DefDescr, str, cmd );
             } else if( !stricmp( cmd, "old" ) ) {
                 DefOld = item_def( DefOld, str, cmd );
             } else if( !stricmp( cmd, "dstvar" ) ) {

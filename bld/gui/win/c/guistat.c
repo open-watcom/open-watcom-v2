@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2018-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2018-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -140,7 +140,7 @@ bool GUIAPI GUIDrawStatusText( gui_window *wnd, const char *text )
     }
     pres = _wpi_getpres( wnd->status );
     if( ( text == NULL ) || ( *text == '\0' ) ) {
-        out_text = LIT( Blank );
+        out_text = LIT_GUI( Blank );
     } else {
         out_text = text;
     }

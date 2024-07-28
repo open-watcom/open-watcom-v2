@@ -2,6 +2,7 @@
 ;*
 ;*                            Open Watcom Project
 ;*
+;* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
 ;*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 ;*
 ;*  ========================================================================
@@ -55,13 +56,13 @@ stk     db 800h dup(?)
 endstk      label   word
 FAR_DATA ends
 
-DGROUP group CONST,_DATA,STRINGS,STACK,_BSS
+DGROUP group CONST,CONST2,_DATA,_BSS,STACK
 
 CONST segment word public 'DATA'
 CONST ends
 
-STRINGS segment word public 'DATA'
-STRINGS ends
+CONST2 segment word public 'DATA'
+CONST2 ends
 
 assume ds:DGROUP,es:DGROUP,ss:DGROUP
 _DATA segment word public 'DATA'

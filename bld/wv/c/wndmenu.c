@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -72,6 +72,8 @@
 #include "dlgcmd.h"
 #include "dlgwind.h"
 #include "menudef.h"
+#include "liteng.h"
+#include "litdui.h"
 
 
 static gui_menu_struct FileMenu[] = {
@@ -111,16 +113,16 @@ static gui_menu_struct HelpMenu[] = {
 };
 
 static gui_menu_struct DbgMainMenu[] = {
-    MENU_CASCADE( MENU_MAIN_FILE, MainMenuFile, FileMenu )
-    MENU_CASCADE( MENU_MAIN_RUN, MainMenuRun, RunMenu )
-    MENU_CASCADE( MENU_MAIN_BREAK, MainMenuBreak, BreakMenu )
-    MENU_CASCADE( MENU_MAIN_CODE, MainMenuCode, CodeMenu )
-    MENU_CASCADE( MENU_MAIN_DATA, MainMenuData, DataMenu )
-    MENU_CASCADE( MENU_MAIN_UNDO, MainMenuUndo, UndoMenu )
-    MENU_CASCADE( MENU_MAIN_SEARCH, MainMenuSearch, SearchMenu )
-    MENU_CASCADE( MENU_MAIN_WINDOW, MainMenuWindow, WindowMenu )
-    MENU_CASCADE_DUMMY( MENU_MAIN_ACTION, MainMenuAction )
-    MENU_CASCADE( MENU_MAIN_HELP, MainMenuHelp, HelpMenu )
+    MENU_CASCADE( MENU_MAIN_FILE, MainMenuXFile, FileMenu )
+    MENU_CASCADE( MENU_MAIN_RUN, MainMenuXRun, RunMenu )
+    MENU_CASCADE( MENU_MAIN_BREAK, MainMenuXBreak, BreakMenu )
+    MENU_CASCADE( MENU_MAIN_CODE, MainMenuXCode, CodeMenu )
+    MENU_CASCADE( MENU_MAIN_DATA, MainMenuXData, DataMenu )
+    MENU_CASCADE( MENU_MAIN_UNDO, MainMenuXUndo, UndoMenu )
+    MENU_CASCADE( MENU_MAIN_SEARCH, MainMenuXSearch, SearchMenu )
+    MENU_CASCADE( MENU_MAIN_WINDOW, MainMenuXWindow, WindowMenu )
+    MENU_CASCADE_DUMMY( MENU_MAIN_ACTION, MainMenuXAction )
+    MENU_CASCADE( MENU_MAIN_HELP, MainMenuXHelp, HelpMenu )
 };
 
 gui_menu_items  WndMainMenu = GUI_MENU_ARRAY( DbgMainMenu );
@@ -351,8 +353,8 @@ static void FreeLabels( gui_menu_items *menus )
         FreeLabels( &menus->menu[i].child );
         if( menus->menu[i].style & WND_MENU_ALLOCATED ) {
             menus->menu[i].style &= ~WND_MENU_ALLOCATED;
-            WndFree( (void *)menus->menu[i].label );
-            WndFree( (void *)menus->menu[i].hinttext );
+//            WndFree( (void *)menus->menu[i].label );
+//            WndFree( (void *)menus->menu[i].hinttext );
         }
     }
 }
@@ -365,8 +367,10 @@ static void LoadLabels( gui_menu_items *menus )
     for( i = 0; i < menus->num_items; i++ ) {
         LoadLabels( &menus->menu[i].child );
         if( (menus->menu[i].style & (GUI_STYLE_MENU_SEPARATOR | WND_MENU_ALLOCATED)) == 0 ) {
-            menus->menu[i].label = WndLoadString( (gui_res_id)(pointer_uint)menus->menu[i].label );
-            menus->menu[i].hinttext = WndLoadString( (gui_res_id)(pointer_uint)menus->menu[i].hinttext );
+//            menus->menu[i].label = WndLoadString( (gui_res_id)(pointer_uint)menus->menu[i].label );
+//            menus->menu[i].hinttext = WndLoadString( (gui_res_id)(pointer_uint)menus->menu[i].hinttext );
+            menus->menu[i].label = *(char **)menus->menu[i].label;
+            menus->menu[i].hinttext = *(char **)menus->menu[i].hinttext;
             menus->menu[i].style |= WND_MENU_ALLOCATED;
         }
     }

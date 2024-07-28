@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -60,14 +60,6 @@
 // specialized data reference macro
 #define _HUGEDATA       _WCDATA
 
-#ifndef _WCI86FAR
-#define _WCI86FAR
-#endif
-
-#ifndef _WCI86NEAR
-#define _WCI86NEAR
-#endif
-
 // memory model macros
 #if defined(__SMALL__)
     #define __SMALL_DATA__
@@ -120,9 +112,6 @@
         #error unrecognized processor for OS2
     #endif
 #elif defined(__NT__)
-    #if !defined(WIN32_LEAN_AND_MEAN) && !defined(WIN32_NICE_AND_FAT)
-        #define WIN32_LEAN_AND_MEAN
-    #endif
     #define __PROTECT_MODE__
     #if defined( _M_IX86 ) && !defined( _M_I86 )
         #define __NT_386__

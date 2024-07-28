@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -624,7 +624,7 @@ static SYMBOL injectOpDel( NAME name )
 {
     SYMBOL sym;
 
-    sym = SymCreateFileScope( TypeVoidFunOfPtrVoid(), SYMC_EXTERN, 0, name );
+    sym = SymCreateFileScope( TypeVoidFunOfPtrVoid(), SYMC_EXTERN, SYMF_NONE, name );
     LinkageSet( sym, "C++" );
     return( sym );
 }
@@ -642,7 +642,7 @@ static void injectOpNew( TYPE fn_type, NAME name )
 {
     SYMBOL sym;
 
-    sym = SymCreateFileScope( fn_type, SYMC_EXTERN, 0, name );
+    sym = SymCreateFileScope( fn_type, SYMC_EXTERN, SYMF_NONE, name );
     LinkageSet( sym, "C++" );
 }
 
@@ -684,7 +684,7 @@ static void injectChipBug( void )
     name = CppSpecialName( SPECIAL_NAME_CHIPBUG );
     type = GetBasicType( TYP_UINT );
     type = MakeModifiedType( type, TF1_NEAR );
-    sym = SymCreateFileScope( type, SYMC_EXTERN, 0, name );
+    sym = SymCreateFileScope( type, SYMC_EXTERN, SYMF_NONE, name );
     LinkageSet( sym, "C" );
     ChipBugSym = sym;
 }
@@ -697,7 +697,7 @@ static void injectBool( void )
     if( CompFlags.extensions_enabled ) {
         name = NameCreateNoLen( Tokens[T_BOOL] );
         KwDisable( T_BOOL );
-        SymCreateFileScope( GetBasicType( TYP_BOOL ), SYMC_TYPEDEF, 0, name );
+        SymCreateFileScope( GetBasicType( TYP_BOOL ), SYMC_TYPEDEF, SYMF_NONE, name );
     }
 }
 
@@ -709,7 +709,7 @@ static void injectDwarfAbbrev( void )
 
     name = CppSpecialName( SPECIAL_NAME_DWARF_ABBREV );
     type = GetBasicType( TYP_CHAR );
-    sym = SymCreateFileScope( type, SYMC_EXTERN, 0, name );
+    sym = SymCreateFileScope( type, SYMC_EXTERN, SYMF_NONE, name );
     LinkageSet( sym, "C" );
     DFAbbrevSym = sym;
 }
@@ -724,12 +724,12 @@ void ScopeCreatePCHDebugSym( void )
     if( CompFlags.pch_debug_info_write ) {
         name = PCHDebugInfoName();
         type = GetBasicType( TYP_CHAR );
-        sym = SymCreateFileScope( type, SYMC_PUBLIC, 0, name );
+        sym = SymCreateFileScope( type, SYMC_PUBLIC, SYMF_NONE, name );
         PCHDebugSym = sym;
     }else if( CompFlags.pch_debug_info_read ) {
         name = PCHDebugInfoName();
         type = GetBasicType( TYP_CHAR );
-        sym = SymCreateFileScope( type, SYMC_EXTERN, 0, name );
+        sym = SymCreateFileScope( type, SYMC_EXTERN, SYMF_NONE, name );
         PCHDebugSym = sym;
     }else{
         PCHDebugSym = NULL;
@@ -1161,7 +1161,7 @@ static SCOPE findBlockScope( SCOPE scope )
 
 static void diagnoseSym( SYMBOL sym )
 {
-    if( sym->flag & (SYMF_REFERENCED | SYMF_NO_REF_WARN) ) {
+    if( sym->flags & (SYMF_REFERENCED | SYMF_NO_REF_WARN) ) {
         return;
     }
     if( SymIsInline( sym ) ) {
@@ -1173,7 +1173,7 @@ static void diagnoseSym( SYMBOL sym )
     if( sym->id == SYMC_DEFAULT ) {
         return;
     }
-    if( SymIsFunction( sym ) && (sym->flag & SYMF_ADDR_TAKEN) ) {
+    if( SymIsFunction( sym ) && (sym->flags & SYMF_ADDR_TAKEN) ) {
         return;
     }
     if( SymIsAnonymous( sym ) ) {
@@ -1256,7 +1256,7 @@ static void handleFileSyms( SYMBOL sym )
         break;
     case SYMC_STATIC:
         if( SymIsFunction( sym ) ) {
-            if( sym->flag & SYMF_REFERENCED ) {
+            if( sym->flags & SYMF_REFERENCED ) {
                 if( ! SymIsInitialized( sym ) ) {
                     /* Check to see if we have a matching aux entry with code attached */
                     AUX_ENTRY *paux = NULL;
@@ -1685,8 +1685,8 @@ SYMBOL AllocSymbol( void )
     sym->sym_type = NULL;
     sym->name = NULL;
     sym->locn = NULL;
-    sym->flag = SYMF_NULL;
-    sym->flag2 = SYMF2_NULL;
+    sym->flags = SYMF_NONE;
+    sym->flags2 = SYMF2_NONE;
     sym->id = SYMC_NULL;
     sym->segid = SEG_NULL;
     sym->u.tinfo = NULL;
@@ -2127,7 +2127,7 @@ void ScopeInsertErrorSym( SCOPE scope, PTREE id )
         name = id->u.id.name;
         sym = AllocSymbol();
         sym->sym_type = TypeError;
-        sym->flag |= SYMF_ERROR;
+        sym->flags |= SYMF_ERROR;
         SymbolLocnDefine( &(id->locn), sym );
         sym_name = scopeInsertName( scope, sym, name );
         _AddSymToRing( &(sym_name->name_syms), sym );
@@ -2911,7 +2911,7 @@ static bool isFriendly( SCOPE check, SCOPE friendly )
                         return( true );
                     }
                     if( ( curr_sym != NULL )
-                     && ( curr_sym->flag & SYMF_TEMPLATE_FN )
+                     && ( curr_sym->flags & SYMF_TEMPLATE_FN )
                      && ( sym == curr_sym->u.alias ) ) {
                         return( true );
                     }
@@ -3338,12 +3338,12 @@ static SYMBOL foundUserConv( lookup_walk *data, SYMBOL syms )
     return( NULL );
 }
 
-static inherit_flag makePerm( symbol_flag flag )
+static inherit_flag makePerm( symbol_flags flags )
 {
-    if( flag & SYMF_PRIVATE ) {
+    if( flags & SYMF_PRIVATE ) {
         return( IN_PRIVATE );
     }
-    if( flag & SYMF_PROTECTED ) {
+    if( flags & SYMF_PROTECTED ) {
         return( IN_PROTECTED );
     }
     return( IN_PUBLIC );
@@ -3579,7 +3579,7 @@ static walk_status memberSearch( BASE_STACK *top, void *parm )
         syms = sym_name->name_syms;
         if( syms != NULL && syms->id == SYMC_ACCESS ) {
             /* this member was an access control; record and keep going */
-            top->access_perm = makePerm( syms->flag );
+            top->access_perm = makePerm( syms->flags );
             top->access_changed = syms;
             return( WALK_NORMAL );
         }
@@ -4015,7 +4015,7 @@ static bool setProtectedAccess( lookup_walk *data, PATH_CAP *cap )
     sym = cap->sym;
     protected_checked = false;
     if( sym != NULL ) {
-        if( sym->flag & SYMF_PROTECTED ) {
+        if( sym->flags & SYMF_PROTECTED ) {
             protected_checked = true;
             if( protectedPathOK( &access_data ) ) {
                 data->protected_OK = true;
@@ -4029,7 +4029,7 @@ static bool setProtectedAccess( lookup_walk *data, PATH_CAP *cap )
                 syms = sym_name->name_type;
             }
             RingIterBeg( syms, sym ) {
-                if( sym->flag & SYMF_PROTECTED ) {
+                if( sym->flags & SYMF_PROTECTED ) {
                     protected_checked = true;
                     if( protectedPathOK( &access_data ) ) {
                         data->protected_OK = true;
@@ -5796,7 +5796,7 @@ static void emitIndexMapping( SAVE_MAPPING *mapping )
 
     sym = mapping->sym;
     DgSymbolLabel( sym );
-    sym->flag |= SYMF_INITIALIZED;
+    sym->flags |= SYMF_INITIALIZED;
     emitOffset( mapping->map_0 * TARGET_UINT );
     from_type = ScopeClass( mapping->from );
     from_info = from_type->u.c.info;
@@ -6630,7 +6630,7 @@ bool ScopeCheckSymbol( SEARCH_RESULT *result, SYMBOL sym )
         return( searchError( result, sym, err_msg ) );
     }
     /* report access permission error */
-    perm = makePerm( sym->flag );
+    perm = makePerm( sym->flags );
     newAccessData( &access_data, perm, located );
     if( result->protected_OK ) {
         access_data.protected_OK = true;
@@ -6961,7 +6961,7 @@ SYMBOL ScopeASMUseSymbol( NAME name, bool *uses_auto )
         CErr2p( ERR_UNDECLARED_SYM, name );
         return( NULL );
     }
-    sym->flag |= SYMF_ADDR_TAKEN | SYMF_CG_ADDR_TAKEN;
+    sym->flags |= SYMF_ADDR_TAKEN | SYMF_CG_ADDR_TAKEN;
     sym = SymMarkRefed( sym );
     if( SymIsAutomatic( sym ) ) {
         sym->sym_type = MakeForceInMemory( sym->sym_type );
@@ -6976,7 +6976,7 @@ void ScopeASMUsesAuto( void )
     SYMBOL fn_sym;
 
     fn_sym = ScopeFunctionInProgress();
-    fn_sym->flag |= SYMF_DONT_INLINE;
+    fn_sym->flags |= SYMF_DONT_INLINE;
 }
 
 SYMBOL ScopeASMLookup( NAME name )
@@ -7102,7 +7102,7 @@ void ScopeAuxName( const char *id, AUX_INFO *auxinfo )
         fn_type = MakeModifiableFunction( ret_type, arg_type, NULL );
         fn_type->u.f.pragma = auxinfo;
         fn_type = CheckDupType( fn_type );
-        sym = SymCreateAtLocn( fn_type, SYMC_EXTERN, 0, name, GetFileScope(), NULL );
+        sym = SymCreateAtLocn( fn_type, SYMC_EXTERN, SYMF_NONE, name, GetFileScope(), NULL );
         LinkageSet( sym, "C" );
         return;
     }
@@ -7562,13 +7562,13 @@ static void saveSymbol( void *e, carve_walk_base *d )
         s->u.type = TypeGetIndex( save_u_type );
         break;
     default:
-        if( s->flag & (SYMF_ADDR_THUNK | SYMF_TEMPLATE_FN | SYMF_ALIAS) ) {
+        if( s->flags & (SYMF_ADDR_THUNK | SYMF_TEMPLATE_FN | SYMF_ALIAS) ) {
             save_u_sym = s->u.sym;
             s->u.sym = SymbolGetIndex( save_u_sym );
-        } else if( s->flag & SYMF_CONSTANT_INT64 ) {
+        } else if( s->flags & SYMF_CONSTANT_INT64 ) {
             save_con = s->u.pval;
             s->u.pval = ConstantPoolGetIndex( save_con );
-        } else if( (s->flag & SYMF_ANONYMOUS) && ( s->id != SYMC_MEMBER ) ) {
+        } else if( (s->flags & SYMF_ANONYMOUS) && ( s->id != SYMC_MEMBER ) ) {
             save_u_sym = s->u.sym;
             s->u.sym = SymbolGetIndex( save_u_sym );
         }
@@ -7603,12 +7603,12 @@ static void saveSymbol( void *e, carve_walk_base *d )
         s->u.type = save_u_type;
         break;
     default:
-        DbgVerify( SymIsThunk( s ) == ( (s->flag & SYMF_ADDR_THUNK) != 0 ), "SYMF_ADDR_THUNK not set properly" );
-        if( s->flag & (SYMF_ADDR_THUNK | SYMF_TEMPLATE_FN | SYMF_ALIAS) ) {
+        DbgVerify( SymIsThunk( s ) == ( (s->flags & SYMF_ADDR_THUNK) != 0 ), "SYMF_ADDR_THUNK not set properly" );
+        if( s->flags & (SYMF_ADDR_THUNK | SYMF_TEMPLATE_FN | SYMF_ALIAS) ) {
             s->u.sym = save_u_sym;
-        } else if( s->flag & SYMF_CONSTANT_INT64 ) {
+        } else if( s->flags & SYMF_CONSTANT_INT64 ) {
             s->u.pval = save_con;
-        } else if( (s->flag & SYMF_ANONYMOUS) && ( s->id != SYMC_MEMBER ) ) {
+        } else if( (s->flags & SYMF_ANONYMOUS) && ( s->id != SYMC_MEMBER ) ) {
             s->u.sym = save_u_sym;
         }
     }
@@ -7832,11 +7832,11 @@ static void readSymbols( void )
             sym->u.type = TypeMapIndex( sym->u.type );
             break;
         default:
-            if( sym->flag & (SYMF_ADDR_THUNK | SYMF_TEMPLATE_FN | SYMF_ALIAS) ) {
+            if( sym->flags & (SYMF_ADDR_THUNK | SYMF_TEMPLATE_FN | SYMF_ALIAS) ) {
                 sym->u.sym = SymbolMapIndex( sym->u.sym );
-            } else if( sym->flag & SYMF_CONSTANT_INT64 ) {
+            } else if( sym->flags & SYMF_CONSTANT_INT64 ) {
                 sym->u.pval = ConstantPoolMapIndex( sym->u.pval );
-            } else if( (sym->flag & SYMF_ANONYMOUS) && ( sym->id != SYMC_MEMBER ) ) {
+            } else if( (sym->flags & SYMF_ANONYMOUS) && ( sym->id != SYMC_MEMBER ) ) {
                 sym->u.sym = SymbolMapIndex( sym->u.sym );
             }
         }

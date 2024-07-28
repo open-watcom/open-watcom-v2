@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -58,9 +58,15 @@
 #include "feprotos.h"
 
 
+#define OC_INFO_NOT_DEBUG   OC_INFO_SELECT
+
 static void     DoRelocRef( cg_sym_handle sym, cg_class class, segment_id segid, offset val, escape_class esc_attr );
 static void     OutShortDisp( label_handle lbl );
 static void     OutCodeDisp( label_handle lbl, fix_class f, bool rel, oc_class class );
+
+static oc_class SaveDbgOc = OC_INFO_NOT_DEBUG;
+static pointer  SaveDbgPtr;
+static offset   LastUnique = ADDR_UNKNOWN;
 
 bool    CodeHasAbsPatch( oc_entry *code )
 /***************************************/
@@ -214,12 +220,6 @@ static void SendBytes( const byte *ptr, unsigned len )
         OutDBytes( len, ptr );
     }
 }
-
-#define OC_INFO_NOT_DEBUG   OC_INFO_SELECT
-
-static oc_class SaveDbgOc = OC_INFO_NOT_DEBUG;
-static pointer  SaveDbgPtr;
-static offset   LastUnique = ADDR_UNKNOWN;
 
 static  void    DumpSavedDebug( void )
 /******************************/

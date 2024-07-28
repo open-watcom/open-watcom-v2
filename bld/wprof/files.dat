@@ -3,6 +3,6 @@
 dir="binw"      usr="wprof.exe"         cond="doshost"
 dir="binp"      usr="wprof.exe"         cond="os2host"
 dir="binw"      usr="wprofw.exe"        cond="winhost"
-dir="binnt"     usr="wprof.exe"         cond="wnthost wnt64host |"  wherea="ac"
+dir="binnt"     usr="wprof.exe"         cond="wnthost wnt64host |"  where+="ac"
 #dir="binnt64"   usr="wprof.exe"         cond="wnt64host"                            keys="ntx64"
 dir="axpnt"     usr="wprof.exe"         cond="alphahost"            where="ac"

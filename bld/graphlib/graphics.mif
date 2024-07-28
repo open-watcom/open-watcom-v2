@@ -17,7 +17,7 @@ supervga_support = -D_SUPERVGA
 !ifeq system windows
 default_windowing = 1
 !endif
-!ifeq default_windowing 1
+!ifdef default_windowing
 def_windowing = -DDEFWIN
 !endif
 
@@ -47,8 +47,8 @@ extra_a_v2_flags = -DVERSION2
 
 inc_dirs = -I. -I"$(graphlib_dir)/h" -I"$(mathlib_dir)/h"
 inc_dirs_dos = -I"$(clib_dir)/mbyte/h"
-inc_dirs_os2 = -I"$(clib_dir)/h" -I"$(clib_dir)/defwin/h" -I"$(lib_misc_dir)/h" -I"$(wpi_dir)/h"
-inc_dirs_win = -I"$(clib_dir)/h" -I"$(clib_dir)/defwin/h" -I"$(lib_misc_dir)/h" -I"$(wpi_dir)/h"
+inc_dirs_os2 = -I"$(clib_dir)/h" -I"$(clib_dir)/defwin/h" -I"$(lib_misc_dir)/h" $(cli_wpi_inc_dirs)
+inc_dirs_win = -I"$(clib_dir)/h" -I"$(clib_dir)/defwin/h" -I"$(lib_misc_dir)/h" $(cli_wpi_inc_dirs)
 
 extra_cpp_flags = $(supervga_support) -D_FARD=
 
@@ -90,7 +90,7 @@ extra_a_flags_qnx = -D_QNX
 # explicit rules
 #################
 
-all: graphi.lib graphi2.lib .symbolic
+all: graphi.lib graphi2.lib .SYMBOLIC
 
 common_objs = &
     $(_subdir_)sqrtf.obj &

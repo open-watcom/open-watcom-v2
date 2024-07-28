@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -54,7 +54,7 @@ typedef struct {
     block               *restore;               // ditto for restore
 } reg_flow_info;
 
-extern  hw_reg_set      PushRegs[];
+extern const hw_reg_set PushRegs[];
 
 static  block           *blockArray[_DBit_SIZE];
 static  int             bitCount;
@@ -191,7 +191,7 @@ static int CountBlocks( void )
 static int CountRegs( hw_reg_set regs )
 /*************************************/
 {
-    hw_reg_set          *curr;
+    const hw_reg_set    *curr;
     int                 count;
 
     count = 0;
@@ -295,7 +295,7 @@ void FlowSave( hw_reg_set *preg )
     int                 num_blocks;
     int                 num_regs;
     int                 curr_reg;
-    hw_reg_set          *curr_push;
+    const hw_reg_set    *curr_push;
     reg_flow_info       *reg_info;
     block               *save;
     block               *restore;

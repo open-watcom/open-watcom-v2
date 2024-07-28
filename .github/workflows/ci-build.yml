@@ -21,8 +21,6 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
-env:
-  OWCURLOPTS:       ${{ vars.OWCURLOPTS }}
 jobs:
   start-start:
     if: github.repository == 'open-watcom/open-watcom-v2'
@@ -30,20 +28,19 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: checkout
-      uses: actions/checkout@v3.5.0
+      uses: actions/checkout@v4
   bootow-lnx:
     needs: start-start
     name: Bootstrap Linux OW
     runs-on: ubuntu-latest
     steps:
     - name: checkout
-      uses: actions/checkout@v3.5.0
+      uses: actions/checkout@v4
     - name: Bootstrap Linux OW
       uses: "./.github/actions/testboot"
       with:
-        arch:       'lnx'
+        hostos:     'lnx'
         gitpath:    'ci/ow'
-        bldscript:  'ci/buildx.sh'
         owdebug:    ${{ vars.OWDEBUG }}
   bootow-nt:
     needs: start-start
@@ -51,13 +48,12 @@ jobs:
     runs-on: windows-latest
     steps:
     - name: checkout
-      uses: actions/checkout@v3.5.0
+      uses: actions/checkout@v4
     - name: Bootstrap Windows OW
       uses: "./.github/actions/testboot"
       with:
-        arch:       'nt'
+        hostos:     'nt'
         gitpath:    'ci\ow'
-        bldscript:  'ci/buildx.cmd'
         owdebug:    ${{ vars.OWDEBUG }}
   workflow-lnx:
     needs: bootow-lnx
@@ -67,17 +63,14 @@ jobs:
         include:
         - owtools: 'GCC'
           tools:   'gcc'
-          image:   'ubuntu-latest'
         - owtools: 'CLANG'
           tools:   'clang'
-          image:   'ubuntu-latest'
     uses: "./.github/workflows/cibldlnx.yml"
     with:
-      arch:         'lnx'
-      bldscript:    'ci/buildx.sh'
+      arch:         'x64'
       tools:        ${{ matrix.tools }}
       owtools:      ${{ matrix.owtools }}
-      image:        ${{ matrix.image }}
+      image:        'ubuntu-latest'
       owdebug:      ${{ vars.OWDEBUG }}
   workflow-nt:
     needs: bootow-nt
@@ -87,14 +80,12 @@ jobs:
         include:
         - owtools: 'VISUALC'
           tools:   'vs2019'
-          image:   'windows-2019'
     uses: "./.github/workflows/cibldnt.yml"
     with:
-      arch:         'nt'
-      bldscript:    'ci/buildx.cmd'
+      arch:         'x64'
       tools:        ${{ matrix.tools }}
       owtools:      ${{ matrix.owtools }}
-      image:        ${{ matrix.image }}
+      image:        'windows-2019'
       owdebug:      ${{ vars.OWDEBUG }}
   workflow-osx:
     needs: start-start
@@ -103,85 +94,70 @@ jobs:
       matrix:
         include:
         - owtools:  'CLANG'
-          tools:    'clang'
+          arch:     'x64'
           image:    'macos-latest'
+          relpath:  'rel bino64'
+        - owtools:  'CLANG'
+          arch:     'a64'
+          image:    'macos-14'
+          relpath:  'rel armo64'
     uses: "./.github/workflows/cibldosx.yml"
     with:
-      arch:         'osx'
-      bldscript:    'ci/buildx.sh'
-      tools:        ${{ matrix.tools }}
+      arch:         ${{ matrix.arch }}
+      tools:        'clang'
+      relpath:      ${{ matrix.relpath }}
       owtools:      ${{ matrix.owtools }}
       image:        ${{ matrix.image }}
       owdebug:      ${{ vars.OWDEBUG }}
-  snapshot-pull:
+  snapshot-both:
     needs:
     - workflow-lnx
     - workflow-nt
-    if: github.event_name == 'PullRequest'
-    name: CI Pull Request Artifact
-    runs-on: ubuntu-latest
-    steps:
-    - name: checkout
-      uses: actions/checkout@v3.5.0
-    - name: Load all release files
-      uses: "./.github/actions/relload"
-      with:
-        arch:       'lnx'
-        gitpath:    'rel'
-        tools_nt:   'vs2019'
-        tools_lnx:  'gcc'
-        owdebug:    ${{ vars.OWDEBUG }}
-    - name: Create OW snapshot
-      id: owsnapshot
-      uses: "./.github/actions/snapshot"
-      with:
-        arch:       'lnx'
-        gitpath:    'rel'
-        owdebug:    ${{ vars.OWDEBUG }}
-    - name: Upload Artifact owsnapshot
-      uses: actions/upload-artifact@v3
-      with:
-        name:           'owsnapshot'
-        path:           ${{ steps.owsnapshot.outputs.fullname }}
-        retention-days: 10
-    - name: Call to delete Artifacs
-      uses: "./.github/actions/artfdelc"
-      with:
-        exclude:    'owsnapshot'
-        owdebug:    ${{ vars.OWDEBUG }}
-  snapshot-push:
-    needs:
-    - workflow-lnx
-    - workflow-nt
-    if: github.event_name != 'PullRequest'
+    - workflow-osx
     name: CI Release
     runs-on: ubuntu-latest
     steps:
     - name: checkout
-      uses: actions/checkout@v3.5.0
+      uses: actions/checkout@v4
     - name: Load all release files
       uses: "./.github/actions/relload"
       with:
-        arch:       'lnx'
-        gitpath:    'rel'
         tools_nt:   'vs2019'
         tools_lnx:  'gcc'
+        tools_osx:  'clang'
         owdebug:    ${{ vars.OWDEBUG }}
     - name: Create OW snapshot
       id: owsnapshot
       uses: "./.github/actions/snapshot"
       with:
-        arch:       'lnx'
+        hostos:     'lnx'
         gitpath:    'rel'
         owdebug:    ${{ vars.OWDEBUG }}
-    - name: Last CI Build
+    - if: github.event_name == 'PullRequest'
+      name: Upload Pull Request owsnapshot
+      uses: actions/upload-artifact@v4
+      with:
+        name:           'owsnapshot'
+        path:           ${{ steps.owsnapshot.outputs.fullname }}
+        retention-days: 14
+        overwrite:      true
+    - if: vars.OWDELETEARTIFACTS == 1 && github.event_name == 'PullRequest'
+      name: Call to delete Pull Request Artifacs
+      uses: "./.github/actions/artfdelc"
+      with:
+        exclude:    'owsnapshot'
+        owdebug:    ${{ vars.OWDEBUG }}
+        owcurlopts: ${{ vars.OWCURLOPTS }}
+    - if: github.event_name != 'PullRequest'
+      name: Upload Last CI Build
       uses: "./.github/actions/lastbld"
       with:
-        arch:       'lnx'
-        tools:      'gcc'
         fullname:   ${{ steps.owsnapshot.outputs.fullname }}
         owdebug:    ${{ vars.OWDEBUG }}
-    - name: Call to delete Artifacs
+        owcurlopts: ${{ vars.OWCURLOPTS }}
+    - if: vars.OWDELETEARTIFACTS == 1 && github.event_name != 'PullRequest'
+      name: Call to delete Last CI Build Artifacs
       uses: "./.github/actions/artfdelc"
       with:
         owdebug:    ${{ vars.OWDEBUG }}
+        owcurlopts: ${{ vars.OWCURLOPTS }}

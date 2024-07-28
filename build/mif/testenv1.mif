@@ -130,7 +130,7 @@ path_wlink = $(%OWROOT)\bld\wl\ntx64.dll
 .CONTINUE
 !endif
 
-.IGNORE
+#.IGNORE
 
 .ERASE
 

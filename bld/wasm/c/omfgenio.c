@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -83,9 +83,12 @@ void ObjWriteOpen( void )
         Fatal( MSG_CANNOT_OPEN_FILE, AsmFiles.fname[OBJ] );
     }
 */
-    AsmFiles.file[OBJ] = fopen( AsmFiles.fname[OBJ], "wb" );
+    char    *obj_name;
+
+    obj_name = CreateFileName( AsmFiles.fname[OBJ], OBJ_EXT, false );
+    AsmFiles.file[OBJ] = fopen( obj_name, "wb" );
     if( AsmFiles.file[OBJ] == NULL ) {
-        Fatal( MSG_CANNOT_OPEN_FILE, AsmFiles.fname[OBJ] );
+        Fatal( MSG_CANNOT_OPEN_FILE, obj_name );
     }
     pobjState = AsmAlloc( sizeof( *pobjState ) + OBJ_BUFFER_SIZE );
     pobjState->in_buf = 0;
@@ -95,19 +98,21 @@ void ObjWriteOpen( void )
 void ObjWriteClose( bool del )
 /****************************/
 {
-/**/myassert( pobjState != NULL );
+    char    *obj_name;
 
+/**/myassert( pobjState != NULL );
     if( pobjState->in_rec ) {
         ObjWEndRec();
     }
+    obj_name = CreateFileName( AsmFiles.fname[OBJ], OBJ_EXT, false );
     if( fclose( AsmFiles.file[OBJ] ) ) {
-        Fatal( MSG_CANNOT_CLOSE_FILE, AsmFiles.fname[OBJ] );
+        Fatal( MSG_CANNOT_CLOSE_FILE, obj_name );
     }
     AsmFree( pobjState );
     pobjState = NULL;
     if( del ) {
         /* This remove works around an NT networking bug */
-        remove( AsmFiles.fname[OBJ] );
+        remove( obj_name );
     }
 }
 

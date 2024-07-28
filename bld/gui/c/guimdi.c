@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -163,8 +163,8 @@ static void MakeHintText( int index, char *name )
 {
     size_t  length;
 
-    length = strlen( LIT( Window_Name_Hint ) );
-    strncpy( MenuHint[index], LIT( Window_Name_Hint ), length );
+    length = strlen( LIT_GUI( Window_Name_Hint ) );
+    strncpy( MenuHint[index], LIT_GUI( Window_Name_Hint ), length );
     strcpy( MenuHint[index]+length, name );
 }
 
@@ -213,8 +213,8 @@ void MDIResetMenus( gui_window *wnd, gui_window *parent_wnd, const gui_menu_item
         InsertMenuForWindow( root, i, -1 );
     }
     if( NumMDIWindows > MAX_NUM_MDI_WINDOWS ) {
-        MDIMoreMenu.label = LIT( XMore_Windows );
-        MDIMoreMenu.hinttext = LIT( More_Windows_Hint );
+        MDIMoreMenu.label = LIT_GUI( XMore_Windows );
+        MDIMoreMenu.hinttext = LIT_GUI( More_Windows_Hint );
         GUIAppendMenuToPopup( root, GUIMDIMenuID, &MDIMoreMenu, false );
     }
 }
@@ -263,8 +263,8 @@ void InitMDI( gui_window *wnd, gui_create_info *dlg_info )
         if( NumMDIWindows > MAX_NUM_MDI_WINDOWS ) {
             if( NumMDIWindows == MAX_NUM_MDI_WINDOWS + 1 ) {
                 if( GUIMDIMenuID != 0 ) {
-                    MDIMoreMenu.label = LIT( XMore_Windows );
-                    MDIMoreMenu.hinttext = LIT( More_Windows_Hint );
+                    MDIMoreMenu.label = LIT_GUI( XMore_Windows );
+                    MDIMoreMenu.hinttext = LIT_GUI( More_Windows_Hint );
                     GUIAppendMenuToPopup( root, GUIMDIMenuID, &MDIMoreMenu, false );
                 }
             }
@@ -438,8 +438,7 @@ void MDIDelete( gui_window *wnd )
  * DlgInit -- callback function for GUIEnumChildWindows to fill list box
  *            with names of MDI windows
  */
-
-static void DlgInit( gui_window *wnd, void *param )
+static void GUICALLBACK DlgInit( gui_window *wnd, void *param )
 {
     char        buffer[MAX_LENGTH];
     dlg_init    *info;
@@ -461,15 +460,14 @@ static void DlgInit( gui_window *wnd, void *param )
  * DlgCount -- callback function for GUIEnumChildWindows to count the number
  *             of MDI child windows
  */
-
-static void DlgCount( gui_window *wnd, void *param )
+static void GUICALLBACK DlgCount( gui_window *wnd, void *param )
 {
     /* unused parameters */ (void)param; (void)wnd;
 
     TotalWindows++;
 }
 
-static void IconCount( gui_window *wnd, void *param )
+static void GUICALLBACK IconCount( gui_window *wnd, void *param )
 {
     /* unused parameters */ (void)param;
 
@@ -499,8 +497,7 @@ int GUIGetNumIconicWindows( void )
 /*
  * PickInit -- callback procedure to GUIDlgPick function
  */
-
-static void PickInit( gui_window *wnd, gui_ctl_id list_id )
+static void GUICALLBACK PickInit( gui_window *wnd, gui_ctl_id list_id )
 {
     gui_window  *root;
     int         num_windows;
@@ -520,7 +517,7 @@ void GUIMDIMoreWindows( void )
     int         choice;
     gui_window  *wnd;
 
-    if( GUIDlgPick( LIT( Select_Window ), &PickInit, &choice ) ) {
+    if( GUIDlgPick( LIT_GUI( Select_Window ), &PickInit, &choice ) ) {
         if( ( choice >= 0 ) && ( choice < TotalWindows ) ) {
             wnd = ChildWindows[choice];
             if( GUIIsMinimized( wnd ) ) {
@@ -548,14 +545,14 @@ gui_window *GUIMDIGetWindow( gui_ctl_id id )
 
 static void InitMDIMenuStruct( void )
 {
-    MDIMenu[0].label = LIT( XCascade );
-    MDIMenu[0].hinttext = LIT( Cascade_Hint );
-    MDIMenu[1].label = LIT( Tile_XHorz );
-    MDIMenu[1].hinttext = LIT( Tile_Horz_Hint );
-    MDIMenu[2].label = LIT( Tile_XVert );
-    MDIMenu[2].hinttext = LIT( Tile_Vert_Hint );
-    MDIMenu[3].label = LIT( XArrange_Icons );
-    MDIMenu[3].hinttext = LIT( Arrange_Icons_Hint );
+    MDIMenu[0].label = LIT_GUI( XCascade );
+    MDIMenu[0].hinttext = LIT_GUI( Cascade_Hint );
+    MDIMenu[1].label = LIT_GUI( Tile_XHorz );
+    MDIMenu[1].hinttext = LIT_GUI( Tile_Horz_Hint );
+    MDIMenu[2].label = LIT_GUI( Tile_XVert );
+    MDIMenu[2].hinttext = LIT_GUI( Tile_Vert_Hint );
+    MDIMenu[3].label = LIT_GUI( XArrange_Icons );
+    MDIMenu[3].hinttext = LIT_GUI( Arrange_Icons_Hint );
 }
 
 void EnableMDIActions( bool enable )

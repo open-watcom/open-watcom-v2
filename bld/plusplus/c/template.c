@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -540,7 +540,7 @@ void TemplateUsingDecl( SYMBOL sym, TOKEN_LOCN *locn )
     DbgAssert( sym->id == SYMC_CLASS_TEMPLATE );
     new_sym = SymCreateAtLocn( sym->sym_type
                              , SYMC_CLASS_TEMPLATE
-                             , SYMF_NULL
+                             , SYMF_NONE
                              , sym->name->name
                              , GetCurrScope()
                              , locn );
@@ -1085,11 +1085,11 @@ static SYMBOL dupTemplateParm( SYMBOL old_parm )
     sym = AllocSymbol();
     sym->id = old_parm->id;
     sym->sym_type = old_parm->sym_type;
-    sym->flag = old_parm->flag;
+    sym->flags = old_parm->flags;
     switch( old_parm->id ) {
     case SYMC_STATIC:
-        if( old_parm->flag & SYMF_CONSTANT_INT64 ) {
-            sym->flag |= SYMF_CONSTANT_INT64;
+        if( old_parm->flags & SYMF_CONSTANT_INT64 ) {
+            sym->flags |= SYMF_CONSTANT_INT64;
             sym->u.pval = old_parm->u.pval;
         } else {
             sym->u.uval = old_parm->u.uval;
@@ -1539,14 +1539,14 @@ static SYMBOL buildTemplateFn( TYPE bound_type, SYMBOL sym, DECL_INFO *dinfo,
     SYMBOL new_sym;
     FN_TEMPLATE *fn_templ;
     FN_TEMPLATE_INST *fn_inst;
-    symbol_flag new_flags;
+    symbol_flags new_flags;
     symbol_class new_class;
 
     if( ScopeType( SymScope( sym ), SCOPE_CLASS ) ) {
-        new_flags = ( sym->flag & SYMF_ACCESS );
+        new_flags = ( sym->flags & SYMF_ACCESS );
         new_class = SYMC_MEMBER;
     } else {
-        new_flags = ( sym->flag & SYMF_PLUSPLUS );
+        new_flags = ( sym->flags & SYMF_PLUSPLUS );
         new_class = SYMC_PUBLIC;
     }
     if( SymIsStatic( sym ) ) {
@@ -2621,7 +2621,7 @@ static PTREE fakeUpParm( SYMBOL sym )
     parm = NULL;
     switch( sym->id ) {
     case SYMC_STATIC:
-        if( sym->flag & SYMF_CONSTANT_INT64 ) {
+        if( sym->flags & SYMF_CONSTANT_INT64 ) {
             parm = PTreeInt64Constant( sym->u.pval->u.int64_constant,
                                        sym->sym_type->id );
         } else {
@@ -3039,7 +3039,7 @@ static void templateFunctionInstantiate( FN_TEMPLATE *fn_templ,
     }
 #endif
 
-    bound_sym->flag |= SYMF_TEMPLATE_FN;
+    bound_sym->flags |= SYMF_TEMPLATE_FN;
     bound_sym->u.alias = fn_sym;
     save_fn = templateData.translate_fn;
     templateData.translate_fn = bound_sym;
@@ -3073,7 +3073,7 @@ static void processFunctionTemplateInstantiations( void )
         RingIterBeg( curr_defn->instantiations, curr_inst ) {
             sym = SymDefArgBase( curr_inst->bound_sym );
 
-            if( ! curr_inst->processed && ( sym->flag & SYMF_REFERENCED ) ) {
+            if( ! curr_inst->processed && ( sym->flags & SYMF_REFERENCED ) ) {
                 templateData.keep_going = true;
                 curr_inst->processed = true;
                 templateFunctionInstantiate( curr_defn, curr_inst );
@@ -3148,7 +3148,7 @@ static void processInstantiationMembers( CLASS_INST *instance )
         sym = SymDefArgBase( dinfo->sym );
 
         if( instance->must_process
-         || ( sym->flag & SYMF_REFERENCED )
+         || ( sym->flags & SYMF_REFERENCED )
          || ( sym->sym_type->flag & TF1_VIRTUAL ) ) {
 
 #ifdef DEVBUILD

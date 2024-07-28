@@ -10,7 +10,7 @@ mkdir $OWROOT/build/$OWOBJDIR
 mkdir $OWROOT/bld/wmake/$OWOBJDIR
 cd $OWROOT/bld/wmake/$OWOBJDIR
 if [ "$OWTOOLS" = "WATCOM" ]; then
-    wmake -f ../wmake
+    wmake -m -f ../wmake
 else
     case `uname` in
         FreeBSD)

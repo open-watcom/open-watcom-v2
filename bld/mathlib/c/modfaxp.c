@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -42,20 +43,20 @@ _WMRTLINK double modf( double x, double *iptr )
 
     ld.u.value = x;
     switch( __LDClass( &ld ) ) {
-    case __ZERO:
+    case FP_ZERO:
         frac = 0.0;
         *iptr = 0.0;
         break;
-    case __DENORMAL:
+    case FP_SUBNORMAL:
         frac = x;
         *iptr = 0.0;
         break;
-    case __NAN:
-    case __INFINITY:
+    case FP_NAN:
+    case FP_INFINITE:
         frac = 0.0;
         *iptr = x;
         break;
-    case __NONZERO:
+    case FP_NORMAL:
         exp = ((ld.u.word[1] >> 20)&0x7FF) - 0x3FE;
         if( exp < 0 ) {
             frac = x;

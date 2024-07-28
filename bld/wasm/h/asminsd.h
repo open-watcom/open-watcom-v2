@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -54,7 +54,7 @@ const unsigned short AsmOpTable[] = {
     #define insa(tok,op1,byte1_info,op2,op3,op_dir,rm_info,wds,opcode,rm_byte,cpu,prefix)
 #endif
 
-const struct asm_ins ASMI86FAR AsmOpTable[] = {
+const asm_ins   ASMI86FAR AsmOpTable[] = {
 
 #endif
 

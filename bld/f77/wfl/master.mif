@@ -6,15 +6,20 @@ proj_name = wfl
 wfl_autodepends = .AUTODEPEND
 !endif
 
+wfl_ntverrc = ..
+
 wfl_trmem = 1
 
+wfl_wreslib_cli = text
+
 additional_clean = *.gh *.grh *.grc
+
+ntverrc_exe = $(exetarg_name)
 
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif
 !include trmem.mif
-!include wres.mif
 
 #
 # cflags
@@ -50,23 +55,17 @@ exetarg_name = $(exename_$(target_cpu))
 #
 exetarg_prebuild_objs = wflmsgs.grh usage.gh
 exetarg_objs = wfl.obj $(trmem_objs)
-exetarg_libs          = $(wres_lib)
-exetarg_res_version_nt_386 = exever.res
-exetarg_res_version_nt_x64 = exever.res
-exetarg_res_wresui    = wresui.res
+exetarg_res = $(proj_name).res
 !include exetarg.mif
 
 #
 # rc and others
 #
-verrc_exe = $(exetarg_name)
-!include verrc.mif
+rc_inc_dirs = -I. -I"$(f77wfl_dir)" -I"$(f77_dir)/h" -I"$(comp_cfg_dir)/h"
 
-rcui_inc_dirs = -I. -I"$(f77wfl_dir)" -I"$(f77_dir)/h" -I"$(comp_cfg_dir)/h"
-
-wresui.res : $(f77wfl_dir)/h/wfl.rc wflmsgs.gh wflmsgs.grh
+$(proj_name).res : $(f77wfl_dir)/h/wfl.rc wflmsgs.gh wflmsgs.grh
     @%make echo_rc
-    $(rcui8)
+    $(rcu8j) $(ppflags_common) $(ppflags_wreslib) $(rc_cppflags) $(rc_flags) $(rc_inc_path) $[@ -fo=$@
 
 #msgencod_enc_linux = -utf8
 
@@ -76,16 +75,14 @@ wflmsgs.gh wflmsgs.grh : $(f77wfl_dir)/gml/wflmsgs.gml
 
 
 # optencod options and targets for various hosts
-!ifdef exetarg_qnx_res
-optencod_opt_qnx    = -u=$(exetarg_qnx_res)
-!endif
 #optencod_enc_linux  = -utf8
+
 optencod_targets_i86 = targ2
 optencod_targets = $(target_cpu) $(host_os) targ1 $(optencod_targets_$(target_cpu))
 !ifeq debug 2
 optencod_targets += dbg
 !endif
 
-usage.gh $(exetarg_$(host_os)_res) : $(f77_dir)/gml/wfxopts.gml $(__MAKEFILES__)
+usage.gh : $(f77_dir)/gml/options.gml $(__MAKEFILES__)
     @%make echo_optencod
-    $(noecho)*optencod -q -rc=MSG_USAGE_BASE -utf8 $(optencod_opt_$(host_os)) $[@ . . $@ $(optencod_targets)
+    $(optencod) -rc=MSG_USAGE_BASE -utf8 $(optencod_opt_$(host_os)) $[@ . . $@ . $(optencod_targets)

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -130,7 +130,7 @@ bool IsOMF( file_list *list, unsigned long loc )
     byte        *rec;
 
     rec = CacheRead( list, loc, sizeof( unsigned_8 ) );
-    return( rec != NULL && *rec == CMD_THEADR );
+    return( rec != NULL && ( *rec == CMD_THEADR || *rec == CMD_LHEADR ) );
 }
 
 char *GetOMFName( file_list *list, unsigned long *loc )

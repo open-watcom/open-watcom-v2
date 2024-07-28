@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -56,27 +56,26 @@ typedef enum {
 } importType;
 
 struct elf_import_sym_struct {
-    char            *name;
+    name_len        sym;
     long            ordinal;
-    long            len; // To save some calculations
     elf_import_sym  *next;
 };
 
 struct import_sym_struct {
-    importType      type;
-    processor_type  processor;
-    char            *DLLName;
+    name_len        dllName;
     union {
         struct {
             long        ordinal;
             char        *symName;
             char        *exportedName;
-        } sym;
+        } omf_coff;
         struct {
             elf_import_sym  *symlist;
-            long            numsyms;
+            size_t          numsyms;
         } elf;
     } u;
+    importType      type;
+    processor_type  processor;
 };
 
 struct sym_file_struct {
@@ -95,7 +94,7 @@ struct sym_file_struct {
     size_t      name_length;
     size_t      ffname_length;
     char        *full_name;
-    import_sym  *import;
+    import_sym  *impsym;
     file_type   obj_type;
 };
 
@@ -107,7 +106,7 @@ typedef enum {
 struct sym_entry_struct {
     sym_entry           *next;
     sym_file            *file;
-    sym_entry           *hash;
+    sym_entry           *hash_next;
     unsigned short      len;
     unsigned char       info;
     symbol_strength     strength;
@@ -119,11 +118,11 @@ extern void FiniFileTab( void );
 extern void ResetFileTab( void );
 extern void CleanFileTab( void );
 extern void ListContents( void );
-extern void AddObjectSymbols( arch_header *arch, libfile io, long offset );
-extern bool RemoveObjectSymbols( const char *name );
+extern void AddObjectSymbols( libfile io, long offset, const arch_header *arch );
+extern bool RemoveObjectSymbols( const arch_header *arch );
 extern void SymCalcNewOffsets( void );
-extern void WriteFileTable( void );
-extern void WriteFileBody( sym_file *sfile );
+extern void WriteFileTable( libfile io );
+extern void WriteFileBody( libfile io, sym_file *sfile );
 extern void AddSym( const char *name, symbol_strength strength, unsigned char info );
 
 #ifdef DEVBUILD

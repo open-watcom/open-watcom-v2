@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -82,7 +82,7 @@
  * identical cases, otherwise we give each pair explicitly.
  */
 
-static  uint_8  BinaryOpcodes4[][2][2] = {
+static const uint_8  BinaryOpcodes4[][2][2] = {
     _BinaryOpcode( 0x00, 0x21 ),                /* OP_ADD */
     _BinaryOpcode( 0x00, 0x21 ),                /* OP_EXT_ADD */
     _BinaryOpcode( 0x00, 0x23 ),                /* OP_SUB */
@@ -101,7 +101,7 @@ static  uint_8  BinaryOpcodes4[][2][2] = {
     _BinaryOpcode( 0x00, 0x00 ),                /* OP_FMOD */
 };
 
-static  uint_8  BinaryOpcodes8[][2][2] = {
+static const uint_8  BinaryOpcodes8[][2][2] = {
     _BinaryOpcode( 0x00, 0x21 ),                /* OP_ADD */
     _BinaryOpcode( 0x00, 0x21 ),                /* OP_EXT_ADD */
     _BinaryOpcode( 0x00, 0x23 ),                /* OP_SUB */
@@ -124,7 +124,7 @@ static  uint_8  BinaryOpcodes8[][2][2] = {
  * MIPS only has slt/sltu - every other operation needs to be
  * reduced to something else.
  */
-static  uint_8  SetOpcodes[][2][2] = {
+static const uint_8  SetOpcodes[][2][2] = {
     _BinaryOpcode( 0x00, 0x00 ),                /* OP_SET_EQUAL */
     _BinaryOpcode( 0x00, 0x00 ),                /* OP_SET_NOT_EQUAL */
     _BinaryOpcode( 0x00, 0x00 ),                /* OP_SET_GREATER */
@@ -133,7 +133,7 @@ static  uint_8  SetOpcodes[][2][2] = {
     _BinaryOpcode( 0x00, 0x00 ),                /* OP_SET_GREATER_EQUAL */
 };
 
-static  uint_8  BinaryImmedOpcodes[] = {
+static const uint_8  BinaryImmedOpcodes[] = {
     0x09,                           /* OP_ADD */
     0x09,                           /* OP_EXT_ADD */
     0x09,                           /* OP_SUB */
@@ -156,7 +156,7 @@ static  uint_8  BinaryImmedOpcodes[] = {
  * Note - 'reg SET_LESS_EQUAL imm' will be converted to 'reg SET_LESS (imm + 1)'
  * inside FindImmedOpcode. That's why the opcodes are the same as for SET_LESS.
  */
-static  uint_8  SetImmedOpcodes[][2] = {
+static const uint_8  SetImmedOpcodes[][2] = {
     _BinaryImmOpcode( 0x00 ),       /* OP_SET_EQUAL */
     _BinaryImmOpcode( 0x00 ),       /* OP_SET_NOT_EQUAL */
     _BinaryImmOpcode( 0x00 ),       /* OP_SET_GREATER */
@@ -174,7 +174,7 @@ static  uint_8  SetImmedOpcodes[][2] = {
  * enabling different trap bits on instructions.
  */
 
-static  uint_8 FloatingBinaryOpcodes[] = {
+static const uint_8 FloatingBinaryOpcodes[] = {
     0x00,                       /* OP_ADD */
     0x00,                       /* OP_EXT_ADD */
     0x01,                       /* OP_SUB */
@@ -184,7 +184,7 @@ static  uint_8 FloatingBinaryOpcodes[] = {
     0x03,                       /* OP_DIV */
 };
 
-static  uint_8 FloatingSetOpcodes[] = {
+static const uint_8 FloatingSetOpcodes[] = {
     0x32,                       /* OP_SET_EQUAL */
     0x32,                       /* OP_SET_NOT_EQUAL */
     0x36,                       /* OP_SET_GREATER */
@@ -193,7 +193,7 @@ static  uint_8 FloatingSetOpcodes[] = {
     0x34,                       /* OP_SET_GREATER_EQUAL */
 };
 
-static  uint_8  loadOpcodes[] = {
+static const uint_8  loadOpcodes[] = {
     0x24,                       /* U1 */
     0x20,                       /* I1 */
     0x25,                       /* U2 */
@@ -209,7 +209,7 @@ static  uint_8  loadOpcodes[] = {
     0x35,                       /* FL */
 };
 
-static  uint_8  storeOpcodes[] = {
+static const uint_8  storeOpcodes[] = {
     0x28,                       /* U1 */
     0x28,                       /* I1 */
     0x29,                       /* U2 */
@@ -227,8 +227,8 @@ static  uint_8  storeOpcodes[] = {
 
 static mips_ins  ins_encoding = 0;
 
-void *InsRelocInit( void *ins )
-/*****************************/
+void *InsRelocInit( const byte *ins )
+/***********************************/
 {
     ins_encoding = *(mips_ins *)ins;
     return( &ins_encoding );
@@ -240,10 +240,10 @@ void InsRelocAddSignedImmed( int disp )
     ins_encoding |= _SignedImmed( disp );
 }
 
-void *InsRelocNext( void *ins )
-/*****************************/
+const byte *InsRelocNext( const byte *ins )
+/*****************************************/
 {
-    return( (mips_ins *)ins + 1 );
+    return( (const byte *)( (mips_ins *)ins + 1 ) );
 }
 
 void EmitInsReloc( void *ins, pointer sym, owl_reloc_type type )
@@ -296,12 +296,12 @@ void GenLOADS32( int_32 value, reg_idx reg )
 }
 
 
-static  uint_8  *FindOpcodes( instruction *ins )
-/***********************************************
+static const uint_8  *FindOpcodes( instruction *ins )
+/****************************************************
  * Look up the opcodes for a binary operator
  */
 {
-    uint_8      *opcodes;
+    const uint_8    *opcodes;
 
     if( _OpIsBinary( ins->head.opcode ) ) {
         if( ins->type_class == U8
@@ -338,8 +338,8 @@ static  uint_8 FindImmedOpcode( instruction *ins )
              * need to increment the immediate by one (since CPU can do
              * 'less than' but not 'less than or equal')
              */
-            ins->operands[1]->c.lo.int_value++;
-            assert( ins->operands[1]->c.lo.int_value <= MIPS_MAX_OFFSET );
+            ins->operands[1]->c.lo.u.int_value++;
+            assert( ins->operands[1]->c.lo.u.int_value <= MIPS_MAX_OFFSET );
         }
     } else {
         opcode = 0;
@@ -540,7 +540,7 @@ static void doCall( instruction *ins )
 /************************************/
 {
     cg_sym_handle       sym;
-    byte_seq            *code;
+    const byte_seq      *code;
     label_handle        lbl;
     name                *op;
     call_class          cclass;
@@ -550,7 +550,7 @@ static void doCall( instruction *ins )
     lbl = symLabel( op );
     code = NULL;
     if( !AskIfRTLabel( lbl ) ) {
-        code = FindAuxInfoSym( sym, FEINF_CALL_BYTES );
+        code = (const byte_seq *)FindAuxInfoSym( sym, FEINF_CALL_BYTES );
     }
     if( code != NULL ) {
         cclass = (call_class)(pointer_uint)FindAuxInfoSym( sym, FEINF_CALL_CLASS );
@@ -830,7 +830,7 @@ static  bool    encodeThreadDataRef( instruction *ins )
 static  void Encode( instruction *ins )
 /*************************************/
 {
-    uint_8          *opcodes;
+    const uint_8    *opcodes;
     uint_8          opcode;
     uint_16         function;
     reg_idx         reg_addr;
@@ -996,7 +996,7 @@ static  void Encode( instruction *ins )
         assert( ins->operands[0]->n.class == N_REGISTER );
         assert( ins->operands[1]->n.class == N_CONSTANT );
         assert( ins->result->n.class == N_REGISTER );
-        imm_value = ins->operands[1]->c.lo.int_value;
+        imm_value = ins->operands[1]->c.lo.u.int_value;
         switch( ins->head.opcode ) {
         case OP_LSHIFT:
             /*
@@ -1046,7 +1046,7 @@ static  void Encode( instruction *ins )
          * 'addiu rt,$zero,immed'
          */
         GenIType( 0x09, _NameRegTrans( ins->result ), ZERO_REG_IDX,
-            (uint_8)ins->operands[0]->c.lo.int_value );
+            (uint_8)ins->operands[0]->c.lo.u.int_value );
         break;
     case G_MOVE:
         assert( ins->operands[0]->n.class == N_REGISTER );
@@ -1073,7 +1073,7 @@ static  void Encode( instruction *ins )
          * 'lui rt,immed'
          */
         GenIType( 0x0f, _NameRegTrans( ins->result ), ZERO_REG_IDX,
-            ins->operands[0]->c.lo.int_value & 0xffff );
+            ins->operands[0]->c.lo.u.int_value & 0xffff );
         break;
     case G_LEA:
         assert( ins->operands[0]->n.class == N_CONSTANT );
@@ -1084,7 +1084,7 @@ static  void Encode( instruction *ins )
              * 'addiu rt,$zero,immed'
              */
             GenIType( 0x09, _NameRegTrans( ins->result ), ZERO_REG_IDX,
-                ins->operands[0]->c.lo.int_value );
+                ins->operands[0]->c.lo.u.int_value );
             break;
         case CONS_LOW_ADDR:
         case CONS_HIGH_ADDR:
@@ -1134,7 +1134,7 @@ static  void Encode( instruction *ins )
          * 'ori rt,rs,immed'
          */
         GenIType( 0x0d, _NameRegTrans( ins->result ), ZERO_REG_IDX,
-            ins->operands[0]->c.lo.int_value );
+            ins->operands[0]->c.lo.u.int_value );
         break;
     case G_LOAD_UA:
         doLoadStoreUnaligned( ins, true );

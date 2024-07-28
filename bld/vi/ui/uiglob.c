@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -41,7 +41,6 @@ char_info   WindowNormalAttribute = { ' ', 7 };
 window      *Windows[MAX_WINDS + 1];
 
 char_info   _FAR *Scrn = NULL;
-char_info   _FAR *ClockStart = NULL;
 char_info   _FAR *SpinLoc = NULL;
 window_id   *ScreenImage = NULL;
 

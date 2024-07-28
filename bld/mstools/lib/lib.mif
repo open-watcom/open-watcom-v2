@@ -1,17 +1,17 @@
 tree_depth = 5
 
+!include $(orl_dir)/client.mif
+
 .c :  $(lib_misc_dir)/c
 
-extra_inc_dirs = -I"$(lib_misc_dir)/h" -I"$(orl_dir)/h"
+extra_inc_dirs = -I"$(lib_misc_dir)/h" $(cli_orl_inc_dirs)
 
 !ifdef target_cpu
 exetarg_prebuild_objs = cmdlnprs.gc
 exetarg_objs = deffile.obj lib.obj message.obj translat.obj demangle.obj dlltool.obj fuzzy.obj hash.obj parse.obj $(mstools_objs)
-exetarg_libs = $(orl_lib)
+exetarg_libs = $(cli_orl_libs)
 !else
 exetarg_objs = libstub.obj $(mstools_stub_obj) $(mstools_objs)
 !endif
-
-!include $(orl_dir)/client.mif
 
 !include ../../../master.mif

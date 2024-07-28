@@ -196,7 +196,7 @@ extern struct segment_record *  Int_seg_tab;    /* internal segment table  */
 extern char **                  Int_mod_ref_tab;/* internal mod_ref table  */
 extern unsigned_16              Segspec;        /* spec seg # for dmp_seg  */
 extern unsigned long            Hexoff;         /* offset for binary dump  */
-extern Elf32_Ehdr               Elf_head;       /* the elf_header          */
+extern Elfxx_Ehdr               Elf_head;       /* the elf_header          */
 extern lmf_header               Qnx_head;       /* the qnx_header          */
 extern extended_header          Phar_ext_head;  /* the phar_extended_header*/
 extern simple_header            Phar_head;      /* the phar_header         */

@@ -1,8 +1,8 @@
-[ DEFAULT type="e" where="c jc f77 jf77" desc="Codeview debugging information compactor" ]
+[ DEFAULT type="e" where="c jc f77 jf77" descr="Codeview debugging information compactor" ]
 
 dir="binw"      usr="cvpack.exe"    cond="doshost winhost |"            old="bin"
 dir="binp"      usr="cvpack.exe"    cond="os2host"
-dir="binnt"     usr="cvpack.exe"    cond="wnthost"      wherea="ac"
+dir="binnt"     usr="cvpack.exe"    cond="wnthost"      where+="ac"
 #dir="binnt64"   usr="cvpack.exe"    cond="wnt64host"                   keys="ntx64"
 dir="axpnt"     usr="cvpack.exe"    cond="alphahost"    where="ac"
 dir="binl"      usr="cvpack"        cond="lnxhost"

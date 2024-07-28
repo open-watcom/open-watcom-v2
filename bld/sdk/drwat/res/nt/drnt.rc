@@ -76,3 +76,7 @@ END
 #include "memwnd.rc"
 #include "memdmp.dlg"
 #include "dipload.dlg"
+
+#if defined( __NT__ ) && defined( RESX_NTVER )
+    #include "exever.grc"
+#endif

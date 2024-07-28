@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -47,6 +47,7 @@ extern char         *GetMacroValue( const char *name );
 extern char         *WrnGetMacroValue( const char *name );
 extern void         DefMacro( const char *name );
 extern char         *DeMacro( MTOKEN_T end );
+extern char         *FullDeMacroText( const char *text );
 extern bool         ForceDeMacro( void );
 extern char         *PartDeMacro( bool forceDeMacro );
 extern void         UnDefMacro( const char *name );

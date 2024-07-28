@@ -4,4 +4,6 @@ proj_name = nmake
 nmake_autodepends = .AUTODEPEND
 !endif
 
+nmake_ntverrc = ..
+
 !include ../../nmake.mif

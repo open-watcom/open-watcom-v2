@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -42,9 +43,9 @@ ORL_STRUCT( orl_reloc ) {
     orl_sec_handle                      section;
     orl_sec_offset                      offset;
     orl_symbol_handle                   symbol;
-    orl_reloc_type                      type;
     orl_sec_addend                      addend;
     orl_symbol_handle                   frame; // used in OMF should be NULL otherwise
+    orl_reloc_type                      type;
 };
 
 typedef orl_return (*orl_sec_return_func)( orl_sec_handle );

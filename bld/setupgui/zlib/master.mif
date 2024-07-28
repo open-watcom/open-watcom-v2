@@ -2,7 +2,7 @@ tree_depth = 4
 
 proj_name       = zlib
 
-zlib_autodepends = .autodepend
+zlib_autodepends = .AUTODEPEND
 
 zlib_nofpu = 1
 

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,6 +35,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <direct.h>
+#include "wio.h"
 #include "bool.h"
 #include "watcom.h"
 #include "lib.h"
@@ -144,6 +145,8 @@ static void VerifyAddFile( const char *filename )
         }
     } else {
         newfilename = VerifyDot( newfilename );
+        if( access( newfilename, F_OK ) != 0 )
+            FatalError( "can't find following file: %s", newfilename );
         AddFile( TYPE_DEFAULT_FILE, newfilename );
         FreeMem( newfilename );
     }

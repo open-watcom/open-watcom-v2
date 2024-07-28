@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -42,6 +42,9 @@
 #include "dbgupdt.h"
 #include "dbgwglob.h"
 #include "menudef.h"
+#include "dbgicon.h"
+#include "liteng.h"
+#include "litdui.h"
 
 
 // gud enuf for now
@@ -77,7 +80,7 @@ static thread_state     *GetThreadRow( wnd_row row )
     return( thd );
 }
 
-static wnd_row TrdNumRows( a_window wnd )
+static wnd_row WNDCALLBACK TrdNumRows( a_window wnd )
 {
     thread_state    *thd;
     wnd_row         num;
@@ -90,7 +93,7 @@ static wnd_row TrdNumRows( a_window wnd )
     return( num );
 }
 
-static void TrdMenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_piece piece )
+static void WNDCALLBACK TrdMenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_piece piece )
 {
     thread_state        *thd = GetThreadRow( row );
 
@@ -140,7 +143,7 @@ static void TrdMenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_piece pie
 }
 
 
-static void TrdRefresh( a_window wnd )
+static void WNDCALLBACK TrdRefresh( a_window wnd )
 {
     thread_state    *thd;
     wnd_row         row;
@@ -158,7 +161,7 @@ static void TrdRefresh( a_window wnd )
 }
 
 
-static bool    TrdGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *line )
+static bool    WNDCALLBACK TrdGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *line )
 {
     thread_state        *thd = GetThreadRow( row );
 
@@ -193,7 +196,7 @@ static bool    TrdGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_
             return( false );
         line->tabstop = false;
         line->use_prev_attr = true;
-        line->extent = WND_MAX_EXTEND;
+        line->extent = WND_NO_EXTENT;
         switch( piece ) {
         case PIECE_ID:
             line->tabstop = true;
@@ -247,7 +250,7 @@ static bool    TrdGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_
 }
 
 
-static bool ChkUpdate( void )
+static bool WNDCALLBACK ChkUpdate( void )
 {
     return( UpdateFlags & UP_THREAD_STATE );
 }
@@ -270,5 +273,5 @@ wnd_info TrdInfo = {
 
 a_window WndTrdOpen( void )
 {
-    return( DbgTitleWndCreate( LIT_DUI( WindowThreads ), &TrdInfo, WND_THREAD, NULL, &TrdIcon, TITLE_SIZE, true ) );
+    return( DbgWndCreateTitle( LIT_DUI( WindowThreads ), &TrdInfo, WND_THREAD, NULL, &TrdIcon, TITLE_SIZE, true ) );
 }

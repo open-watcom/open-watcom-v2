@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -97,10 +97,11 @@ static WPI_WNDPROC          oldFrameProc;
 
 /* forward reference */
 
+/* Local Windows callback functions prototypes */
 #ifdef __OS2_PM__
 WPI_MRESULT CALLBACK GUIFrameProc( HWND, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lparam );
 #endif
-WPI_MRESULT CALLBACK GUIWindowProc( HWND, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lparam );
+WINEXPORT WPI_MRESULT CALLBACK GUIWindowProc( HWND, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lparam );
 
 /*
  * GUIXSetupWnd -- set the default values in the gui_window structure
@@ -237,7 +238,6 @@ HMQ             GUIPMmq;        /* debugger needs access to this */
 
 int GUIXMain( int argc, char *argv[] )
 {
-    bool        ok;
     int         ret;
     bool        register_done;
     HAB         inst;
@@ -260,7 +260,6 @@ int GUIXMain( int argc, char *argv[],
               WPI_INST inst, WPI_INST hPrevInstance, LPSTR lpCmdLine,
               int nShowCmd )
 {
-    bool        ok;
     int         ret;
     bool        register_done;
 
@@ -281,29 +280,17 @@ int GUIXMain( int argc, char *argv[],
     _wpi_setwpiinst( inst, 0, &GUIMainHInst );
     memcpy( &GUIResHInst, &GUIMainHInst, sizeof( WPI_INST ) ) ;
 
-    ok = true;
-
     GUISetWindowClassName();
 
-    ok = GUIFirstCrack();       /* user replaceable stub function */
-
-    if( ok ) {
-        if( !register_done ) {
-            ok = SetupClass();
+    if( GUIFirstCrack() ) {         /* user replaceable stub function */
+        if( register_done || SetupClass() ) {
+            if( GUILoadStrInit( argv[0] ) ) {
+                if( GUIInitInternalStringTable() ) {
+                    GUIInitGUIMenuHint();
+                    GUImain();
+                }
+            }
         }
-    }
-
-    if( ok ) {
-        ok = GUILoadStrInit( argv[0] );
-    }
-
-    if( ok ) {
-        ok = GUIInitInternalStringTable();
-    }
-
-    if( ok ) {
-        GUIInitGUIMenuHint();
-        GUImain();
     }
 
     if( GUIGetFront() == NULL && !Posted ) {  /* no windows created */
@@ -331,7 +318,7 @@ int GUIXMain( int argc, char *argv[],
 static void ShowWnd( HWND hwnd )
 {
     if( hwnd == NULLHANDLE ) {
-        GUIError( LIT( Open_Failed ) );
+        GUIError( LIT_GUI( Open_Failed ) );
     } else {
         _wpi_showwindow( hwnd, SW_SHOWNORMAL );
         _wpi_updatewindow( hwnd );
@@ -705,8 +692,8 @@ void GUIResizeBackground( gui_window *wnd, bool force_msg )
     if( force_msg && (wnd->flags & SENT_INIT) ) {
         gui_coord   size;
 
-        size.x = GUIScreenToScaleH( right - left );
-        size.y = GUIScreenToScaleV( bottom - top );
+        size.x = GUIScaleFromScreenH( right - left );
+        size.y = GUIScaleFromScreenV( bottom - top );
         GUIEVENT( wnd, GUI_RESIZE, &size );
     }
 }
@@ -755,8 +742,8 @@ void GUIDoResize( gui_window *wnd, HWND hwnd, const guix_coord *scr_size )
     if( wnd->flags & SENT_INIT ) {
         gui_coord   size;
 
-        size.x = GUIScreenToScaleH( scr_size->x );
-        size.y = GUIScreenToScaleV( scr_size->y );
+        size.x = GUIScaleFromScreenH( scr_size->x );
+        size.y = GUIScaleFromScreenV( scr_size->y );
         GUIEVENT( wnd, GUI_RESIZE, &size );
     }
     GUIInvalidatePaintHandles( wnd );
@@ -1159,8 +1146,8 @@ WPI_MRESULT CALLBACK GUIWindowProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, W
     case WM_MOUSEMOVE:
         wpi_point.x = GET_WM_MOUSEMOVE_POSX( wparam, lparam );
         wpi_point.y = GET_WM_MOUSEMOVE_POSY( wparam, lparam );
-        point.x = GUIScreenToScaleH( wpi_point.x );
-        point.y = GUIScreenToScaleV( wpi_point.y );
+        point.x = GUIScaleFromScreenH( wpi_point.x );
+        point.y = GUIScaleFromScreenV( wpi_point.y );
         if( ( wpi_point.x != prev_wpi_point.x ) || ( wpi_point.y != prev_wpi_point.y ) ) {
             prev_wpi_point.x = wpi_point.x;
             prev_wpi_point.y = wpi_point.y;

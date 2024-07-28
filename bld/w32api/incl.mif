@@ -2,7 +2,7 @@
 
 proj_name = w32api
 
-w32api_autodepends  = .autodepend
+w32api_autodepends  = .AUTODEPEND
 w32api_distrib_lib  = 1
 
 !include cproj.mif

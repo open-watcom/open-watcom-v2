@@ -20,7 +20,7 @@ stack_axp=opt stack=16k
 
 extra_run_re2c = -b scanner.re
 
-test : .symbolic start test.lnk re2c.$(exe)
+test : .SYMBOLIC start test.lnk re2c.$(exe)
     $(noecho)%make common_set_result_check
 
 check_result : .procedure

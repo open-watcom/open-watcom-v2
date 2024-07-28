@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -150,8 +150,8 @@ static SAMPLEROWRTNS * overviewRowRtns[] = {
 };
 
 
-wnd_row SampleNumRows( a_window wnd )
-/***********************************/
+wnd_row WNDCALLBACK SampleNumRows( a_window wnd )
+/***********************************************/
 {
     sio_data *      curr_sio;
 

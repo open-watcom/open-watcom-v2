@@ -2,7 +2,7 @@
 ;*
 ;*                            Open Watcom Project
 ;*
-;* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+;* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 ;*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 ;*
 ;*  ========================================================================
@@ -56,7 +56,7 @@ include exitwmsg.inc
 
         extrn   __QNXseg__              : byte
 
- DGROUP group _NULL,_AFTERNULL,CONST,STRINGS,_DATA,DATA,XIB,XI,XIE,YIB,YI,YIE,_BSS,STACK
+DGROUP group _NULL,_AFTERNULL,CONST,CONST2,_DATA,DATA,XIB,XI,XIE,YIB,YI,YIE,_BSS,STACK
 
 if ( _MODEL and _BIG_CODE ) eq 0
 
@@ -104,8 +104,8 @@ _AFTERNULL ends
 CONST   segment word public 'DATA'
 CONST   ends
 
-STRINGS segment word public 'DATA'
-STRINGS ends
+CONST2  segment word public 'DATA'
+CONST2  ends
 
 _DATA   segment word public 'DATA'
 _DATA   ends

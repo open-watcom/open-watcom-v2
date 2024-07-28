@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -98,14 +98,14 @@ void SymbolLocnDefine(          // DEFINE LOCATION SYMBOL
     if( sym_locn != NULL && sym_locn->src_file != NULL ) {
         locn = SymbolLocnAlloc( &sym->locn );
         locn->tl = *sym_locn;
-        sym->flag2 |= SYMF2_TOKEN_LOCN;
+        sym->flags2 |= SYMF2_TOKEN_LOCN;
     } else {
         DbgVerify( sym_locn == NULL
                  , "SymbolLocnDefine -- bad location" );
         if( SrcFilesOpen() ) {
             locn = SymbolLocnAlloc( &sym->locn );
             SrcFileGetTokenLocn( &locn->tl );
-            sym->flag2 |= SYMF2_TOKEN_LOCN;
+            sym->flags2 |= SYMF2_TOKEN_LOCN;
         }
     }
 }

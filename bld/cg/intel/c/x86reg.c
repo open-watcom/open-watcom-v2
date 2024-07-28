@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -47,8 +47,8 @@
 
 #define _NPX( x ) (((x) & ROUTINE_NO_8087_RETURNS) == 0)
 
-type_class_def  CallState( aux_handle aux, type_def *tipe, call_state *state )
-/****************************************************************************/
+type_class_def  CallState( aux_handle aux, const type_def *tipe, call_state *state )
+/**********************************************************************************/
 {
     call_class          cclass;
     call_class_target   cclass_target;
@@ -208,8 +208,8 @@ type_class_def  CallState( aux_handle aux, type_def *tipe, call_state *state )
 }
 
 
-void    UpdateReturn( call_state *state, type_def *tipe, type_class_def type_class, aux_handle aux )
-/**************************************************************************************************/
+void    UpdateReturn( call_state *state, const type_def *tipe, type_class_def type_class, aux_handle aux )
+/********************************************************************************************************/
 {
     hw_reg_set  normal;
 

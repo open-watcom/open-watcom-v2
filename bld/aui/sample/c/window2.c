@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -64,7 +64,7 @@ static gui_menu_struct W2AltPopUp[] = {
     { "&Top",       MENU_W2_TOP,    GUI_STYLE_MENU_ENABLED },
 };
 
-static void Pos( a_window wnd, int pos )
+static void WNDCALLBACK Pos( a_window wnd, int pos )
 {
     w2_struct   *w2 = (w2_struct *)WndExtra( wnd );
     int         last;
@@ -79,7 +79,7 @@ static void Pos( a_window wnd, int pos )
 }
 
 
-static int W2Scroll( a_window wnd, int lines )
+static int WNDCALLBACK W2Scroll( a_window wnd, int lines )
 {
     w2_struct   *w2 = (w2_struct *)WndExtra( wnd );
     int         old_top;
@@ -91,7 +91,7 @@ static int W2Scroll( a_window wnd, int lines )
 }
 
 
-static void W2Modify( a_window wnd, wnd_row row, wnd_piece piece )
+static void WNDCALLBACK W2Modify( a_window wnd, wnd_row row, wnd_piece piece )
 {
     w2_struct   *w2 = (w2_struct *)WndExtra( wnd );
 
@@ -107,7 +107,7 @@ static void W2Modify( a_window wnd, wnd_row row, wnd_piece piece )
 }
 
 
-static wnd_row W2NextRow( a_window wnd, wnd_row row, int inc )
+static wnd_row WNDCALLBACK W2NextRow( a_window wnd, wnd_row row, int inc )
 {
     wnd_row     new;
     w2_struct   *w2 = (w2_struct *)WndExtra( wnd );
@@ -137,7 +137,7 @@ static wnd_row W2NextRow( a_window wnd, wnd_row row, int inc )
 }
 
 
-static void     W2MenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_piece piece )
+static void     WNDCALLBACK W2MenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_piece piece )
 {
 
     char        buff[80];
@@ -173,7 +173,7 @@ static void     W2MenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_piece 
     }
 }
 
-static bool W2GetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *line )
+static bool WNDCALLBACK W2GetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *line )
 {
     w2_struct   *w2 = (w2_struct *)WndExtra( wnd );
 
@@ -207,7 +207,7 @@ static bool W2GetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piec
 }
 
 
-static void W2Refresh( a_window wnd )
+static void WNDCALLBACK W2Refresh( a_window wnd )
 {
     WndSetRepaint( wnd );
 }
@@ -217,7 +217,7 @@ static int WordCompare( char **a, char **b )
     return( stricmp( *a, *b ) );
 }
 
-static bool W2WndEventProc( a_window wnd, gui_event gui_ev, void *parm )
+static bool WNDCALLBACK W2WndEventProc( a_window wnd, gui_event gui_ev, void *parm )
 {
     w2_struct   *w2 = (w2_struct *)WndExtra( wnd );
 
@@ -246,7 +246,7 @@ static bool W2WndEventProc( a_window wnd, gui_event gui_ev, void *parm )
     return( false );
 }
 
-static bool ChkUpdate( void )
+static bool WNDCALLBACK ChkUpdate( void )
 {
     return( WndUpdateFlags & EV_UPDATE_2 );
 }

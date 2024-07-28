@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -685,10 +685,10 @@ static  bool    StackBetween( instruction *first, instruction *last, int inc )
 
     enough = true;
     for( ins = first; ins != last; ins = ins->head.next ) {
-        if( ins->s.stk_depth >= ( Max87Stk - 1 ) || _OpIsCall( ins->head.opcode ) ) {
+        if( ins->fp.u.stk_depth >= ( Max87Stk - 1 ) || _OpIsCall( ins->head.opcode ) ) {
             enough = false;
         }
-        ins->s.stk_depth += inc;
+        ins->fp.u.stk_depth += inc;
     }
     return( enough );
 }
@@ -862,7 +862,7 @@ static  void    InitGlobalTemps( void )
     for( temp = TempList; temp != NULL; temp = temp->next ) {
         if( temp->whole_block ) {
             for( ins = Entry->ins.head.prev; ins->head.opcode == OP_NOP; ins = ins->head.prev ) {
-                if( ins->flags.nop_flags & NOP_ZAP_INFO ) {
+                if( ins->flags.u.nop_flags & NOP_ZAP_INFO ) {
                     break;
                 }
             }
@@ -982,14 +982,14 @@ void    FPCalcStk( instruction *ins, int *pdepth )
     int         affect;
 
     if( FPStackIns( ins ) )
-        SeqMaxDepth[ins->sequence] = ins->t.stk_max;
+        SeqMaxDepth[ins->sequence] = ins->u2.stk_max;
     affect = ins->stk_entry - ins->stk_exit;
     SeqCurDepth[ins->sequence] += affect;
     ins->stk_exit = *pdepth;
     ins->stk_entry = *pdepth + affect;
-    ins->s.stk_depth = *pdepth + ins->s.stk_extra;
+    ins->fp.u.stk_depth = *pdepth + ins->fp.u.stk_extra;
     if( affect > 0 )
-        ins->s.stk_depth += affect;
+        ins->fp.u.stk_depth += affect;
     *pdepth += affect;
 }
 
@@ -1062,9 +1062,9 @@ void    FPPreSched( block *blk )
          * consider the two sequences "pow a, b -> c" and "pow d, e -> f" before
          * RegAlloc et all and how we would schedule these with -fpr.
          */
-        ins->s.stk_extra = FPStkReq( ins );
-        depth = InsMaxDepth( ins ) + ins->s.stk_extra;
-        ins->t.stk_max = SeqMaxDepth[ins->sequence];
+        ins->fp.u.stk_extra = FPStkReq( ins );
+        depth = InsMaxDepth( ins ) + ins->fp.u.stk_extra;
+        ins->u2.stk_max = SeqMaxDepth[ins->sequence];
         if( depth > SeqMaxDepth[ins->sequence] ) {
             SeqMaxDepth[ins->sequence] = depth;
         }

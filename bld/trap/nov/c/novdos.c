@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -497,7 +497,7 @@ static char FindPartner( void )
         ACC_WORD( ReqBuff[3] ) = DBG_SERVER_TYPE;
         i = strlen( SAPHead.name );
         ReqBuff[5] = i;
-        memcpy( &ReqBuff[6], &SAPHead.name, i );
+        memcpy( &ReqBuff[6], SAPHead.name, i );
         i += 6;
         ReqBuff[i++] = 1;
         ReqBuff[i++] = sizeof( "NET_ADDRESS" ) - 1;

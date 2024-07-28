@@ -127,19 +127,19 @@ dosexes += x32_3s.exe x32_3r.exe
 exes = &
     $(dosexes) $(cwexes) $(d4gexes) $(rdosexes) $(rdosdevexes) $(winexes) $(os2exes) $(os3exes) $(wntexes) $(wntaxpexes) # $(wntwexes)
 
-all : .symbolic $(exes)
+all : .SYMBOLIC $(exes)
 
-underos2 : .symbolic $(dosexes) $(winexes) $(os2exes) $(os3exes) $(wntexes)
+underos2 : .SYMBOLIC $(dosexes) $(winexes) $(os2exes) $(os3exes) $(wntexes)
 
-underdos : .symbolic $(dosexes) $(winexes) $(os2exes) $(wntexes)
+underdos : .SYMBOLIC $(dosexes) $(winexes) $(os2exes) $(wntexes)
 
-underwnt : .symbolic $(dosexes) $(winexes) $(os2exes) $(wntexes) # $(wntwexes)
+underwnt : .SYMBOLIC $(dosexes) $(winexes) $(os2exes) $(wntexes) # $(wntwexes)
 
-underwntaxp : .symbolic $(wntaxpexes)
+underwntaxp : .SYMBOLIC $(wntaxpexes)
 
-underlnx386 : .symbolic $(lnx386exes)
+underlnx386 : .SYMBOLIC $(lnx386exes)
 
-runtests : .symbolic
+runtests : .SYMBOLIC
 !ifdef notnt
     set notnt=NOTNT
 !endif
@@ -444,11 +444,11 @@ rundeps = $(lnxdeps)
 !endif
 !endif
 
-tests : $(rundeps) .symbolic
+tests : $(rundeps) .SYMBOLIC
     @echo The clib tests completed: SUCCESS!
 
 # Run 16-bit DOS executables
-rundos : $(dosexes) .symbolic
+rundos : $(dosexes) .SYMBOLIC
     @dos_s.exe
     @dos_c.exe
     @dos_m.exe
@@ -456,12 +456,12 @@ rundos : $(dosexes) .symbolic
     @dos_h.exe
 
 # Run CauseWay 32-bit DOS extended executables
-runcw : $(cwexes) .symbolic
+runcw : $(cwexes) .SYMBOLIC
     @cw_3r.exe
     @cw_3s.exe
 
 # Run DOS/4G 32-bit DOS extended executables
-rund4g : $(d4gexes) .symbolic
+rund4g : $(d4gexes) .SYMBOLIC
     # The DOS/4GW 1.97 loader uses an old broken 16-bit MSC runtime that does
     # not handle long PATH env vars; make PATH short for this test
     @set OPATH=$(%PATH)
@@ -472,12 +472,12 @@ rund4g : $(d4gexes) .symbolic
     @set OPATH=
 
 # Run PharLap 386|DOS 32-bit DOS extended executables
-runpls : $(plsexes) .symbolic
+runpls : $(plsexes) .SYMBOLIC
     @pls_3r.exe
     @pls_3s.exe
 
 # Run Windows 3.x 16-bit executables
-runw16 : $(w16exes) .symbolic
+runw16 : $(w16exes) .SYMBOLIC
     @rm -f tmp.log
     @echo Executing win_s.exe
     @win_s.exe
@@ -490,7 +490,7 @@ runw16 : $(w16exes) .symbolic
     @type tmp.log
 
 # Run Windows 3.x 32-bit executables (Win386)
-runw386 :  $(w386exes) .symbolic
+runw386 :  $(w386exes) .SYMBOLIC
     @rm -f tmp.log
     @echo Executing w386_3r.exe
     @w386_3r.exe
@@ -499,7 +499,7 @@ runw386 :  $(w386exes) .symbolic
     @type tmp.log
 
 # Run OS/2 16-bit executables
-runos2 : $(os2exes) .symbolic
+runos2 : $(os2exes) .SYMBOLIC
     @os2_s.exe
     @os2_c.exe
     @os2_m.exe
@@ -508,21 +508,21 @@ runos2 : $(os2exes) .symbolic
     @os2_mt.exe
 
 # Run OS/2 32-bit executables
-runos3 : $(os3exes) .symbolic
+runos3 : $(os3exes) .SYMBOLIC
     @os3_3r.exe
     @os3_3s.exe
     @os3_3rd.exe
     @os3_3sd.exe
 
 # Run Windows NT (Win32) executables
-runwnt : $(wntexes) .symbolic
+runwnt : $(wntexes) .SYMBOLIC
     @wnt_3r.exe
     @wnt_3s.exe
     @wnt_3rd.exe
     @wnt_3sd.exe
 
 # Run Linux executables
-runlnx : $(lnxexes) .symbolic
+runlnx : $(lnxexes) .SYMBOLIC
     @lnx_3r
     @lnx_3s
 

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -1117,64 +1117,6 @@ void ReportUndefined( void )
     }
 }
 
-static void WriteSym( symbol * sym, char star )
-/*********************************************/
-{
-    if( sym->info & SYM_STATIC ) {
-        star = 's';
-    }
-    if( (FmtData.type & MK_16BIT) && ( sym->p.seg != NULL ) && ( sym->p.seg->bits == BITS_32 ) ) {
-        WriteFormat( 0, "%A%c", &sym->addr, star );
-    } else {
-        WriteFormat( 0, "%a%c", &sym->addr, star );
-    }
-    WriteFormat( 15, "%S", sym );
-}
-
-void XReportSymAddr( symbol *sym )
-/********************************/
-{
-    char                star;
-
-    if( sym->info & SYM_REFERENCED ) {
-        if( IS_SYM_IMPORTED( sym ) || ((FmtData.type & MK_ELF) && IsSymElfImported( sym )) ) {
-            star = 'i';
-        } else {
-            star = ' ';
-        }
-    } else if( sym->info & SYM_LOCAL_REF ) {
-        star = '+';
-    } else {
-        star = '*';
-    }
-    WriteSym( sym, star );
-    WriteMapNL( 1 );
-}
-
-void XWriteImports( void )
-/************************/
-{
-    symbol *    sym;
-
-    for( sym = HeadSym; sym != NULL; sym = sym->link ) {
-        if( IS_SYM_IMPORTED( sym ) && sym->p.import != NULL ) {
-            if( (FmtData.type & MK_NOVELL) == 0 || sym->p.import != DUMMY_IMPORT_PTR ) {
-                if( sym->prefix != NULL && ( strlen( sym->prefix ) > 0 ) ) {
-                    WriteFormat( 0, "%s@%s", sym->prefix, sym->name );
-                } else {
-                    WriteFormat( 0, "%s", sym->name );
-                }
-#ifdef _OS2
-                if( FmtData.type & (MK_OS2 | MK_WIN_NE | MK_PE | MK_WIN_VXD) ) {
-                    WriteFormat( 36, "%s", ImpModuleName( sym->p.import ) );
-                }
-#endif
-                WriteMapNL( 1 );
-            }
-        }
-    }
-}
-
 symbol *AddAltDef( symbol *sym, sym_info sym_type )
 /*************************************************/
 {
@@ -1376,7 +1318,9 @@ void ConvertLazyRefs( void )
             WeldSyms( sym, defsym );
             sym->info |= SYM_WAS_LAZY;
             if( LinkFlags & LF_SHOW_DEAD ) {
-                LnkMsg( MAP+MSG_SYMBOL_DEAD, "S", sym );
+                if( MapFile != NULL ) {
+                    WriteMapLnkMsg( MSG_SYMBOL_DEAD, "S", sym );
+                }
             }
         }
     }

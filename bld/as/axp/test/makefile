@@ -11,7 +11,7 @@ objs_ctrl = ctrl.obj ctrldrv.obj
 
 link_cmd = wlink sys ntaxp file { $(objs_$*) } op quiet
 
-all: $(exe_list) .symbolic
+all: $(exe_list) .SYMBOLIC
 
 test.out: $(exe_list)
         if exist test.out del test.out
@@ -34,7 +34,7 @@ abs.exe: $(objs_abs)
 ctrl.exe: $(objs_ctrl)
         $(link_cmd)
 
-clean: .symbolic .explicit
+clean: .SYMBOLIC .explicit
         if exist *.exe del *.exe
         if exist *.obj del *.obj
         if exist *.err del *.err

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -44,13 +44,13 @@ WEXPORT VListBox::~VListBox() {
 
 void VListBox::insertString( const char *str ) {
     WString     *tmp;
-    int         len;
+    int         extentx;
 
     tmp = new WString( str );
     _strings.add( tmp );
-    len = getTextExtentX( *tmp, tmp->size() );
-    if( len > _maxWidth )
-        _maxWidth = len;
+    extentx = getTextExtentX( *tmp, tmp->size() );
+    if( _maxWidth < extentx )
+        _maxWidth = extentx;
     adjustScrollBars();
 //    update();
     performScroll( count(), true );

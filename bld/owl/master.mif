@@ -1,16 +1,18 @@
 proj_name       = owl
-owl_autodepends = .autodepend
+owl_autodepends = .AUTODEPEND
 
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif
+
+!include $(owl_dir)/client.mif
 
 #
 # cflags
 #
 .c: $(owl_dir)/c
 
-inc_dirs = -I"../h"
+inc_dirs = $(cli_owl_inc_dirs)
 
 # explicit rules
 #################

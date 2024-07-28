@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,7 +36,7 @@
 #include <ctype.h>
 #include <sys/types.h>
 #ifdef __WATCOMC__
-#include <process.h>
+    #include <process.h>
 #endif
 #include "wio.h"
 #include "linkstd.h"
@@ -49,38 +49,47 @@
 #include "loadfile.h"
 #include "wreslang.h"
 #include "wressetr.h"
-#include "wresset2.h"
 #include "rcrtns.h"
 #include "wlnkmsg.h"
 #include "posixfp.h"
+#ifdef USE_WRESLIB
+    #include "wresset2.h"
+#else
+    #include <windows.h>
+#endif
 
 #include "clibint.h"
 #include "clibext.h"
 
 
-static  HANDLE_INFO     hInstance = { 0 };
-static  unsigned        MsgShift;
+#ifdef USE_WRESLIB
+static HANDLE_INFO      hInstance = { 0 };
+#else
+static HINSTANCE        hInstance;
+#endif
+static unsigned         msgShift;
 
 bool InitMsg( void )
 {
+#ifdef USE_WRESLIB
     char        msg_buff[RESOURCE_MAX_SIZE];
-#if defined( IDE_PGM ) || !defined( __WATCOMC__ )
+  #if defined( IDE_PGM ) || !defined( __WATCOMC__ )
     char        imageName[_MAX_PATH];
-#else
+  #else
     char        *imageName;
-#endif
+  #endif
 
-#if defined( IDE_PGM )
+  #if defined( IDE_PGM )
     _cmdname( imageName );
-#elif !defined( __WATCOMC__ )
+  #elif !defined( __WATCOMC__ )
     get_dllname( imageName, sizeof( imageName ) );
-#else
+  #else
     imageName = _LpDllName;;
-#endif
+  #endif
     BannerPrinted = false;
     hInstance.status = 0;
     if( OpenResFile( &hInstance, imageName ) ) {
-        MsgShift = _WResLanguage() * MSG_LANG_SPACING;
+        msgShift = _WResLanguage() * MSG_LANG_SPACING;
         if( Msg_Get( MSG_GENERAL_HELP_0, msg_buff ) ) {
             return( true );
         }
@@ -88,14 +97,26 @@ bool InitMsg( void )
     CloseResFile( &hInstance );
     WriteStdOutInfo( NO_RES_MESSAGE "\n", ERR, NULL );
     return( false );
+#else
+    hInstance = GetModuleHandle( NULL );
+    msgShift = _WResLanguage() * MSG_LANG_SPACING;
+    return( true );
+#endif
 }
 
-bool Msg_Get( int resourceid, char *buffer )
+bool Msg_Get( int msgid, char *buffer )
 {
-    if( hInstance.status == 0 || WResLoadString( &hInstance, resourceid + MsgShift, (lpstr)buffer, RESOURCE_MAX_SIZE ) <= 0 ) {
+#ifdef USE_WRESLIB
+    if( hInstance.status == 0 || WResLoadString( &hInstance, msgid + msgShift, (lpstr)buffer, RESOURCE_MAX_SIZE ) <= 0 ) {
         buffer[0] = '\0';
         return( false );
     }
+#else
+    if( LoadString( hInstance, msgid + msgShift, buffer, RESOURCE_MAX_SIZE ) <= 0 ) {
+        buffer[0] = '\0';
+        return( false );
+    }
+#endif
     return( true );
 }
 
@@ -167,20 +188,13 @@ void Msg_Put_Args(
     arg_info->index = 0;
 }
 
-void Msg_Write_Map( int resourceid, ... )
-{
-    char        msg_buff[RESOURCE_MAX_SIZE];
-    va_list     args;
-
-    Msg_Get( resourceid, msg_buff );
-    va_start( args, resourceid );
-    DoWriteMap( msg_buff, args );
-    va_end( args );
-}
-
 bool FiniMsg( void )
 {
+#ifdef USE_WRESLIB
     return( CloseResFile( &hInstance ) );
+#else
+    return( true );
+#endif
 }
 
 FILE *res_open( const char *name, wres_open_mode omode )
@@ -250,6 +264,7 @@ size_t res_write( FILE *fp, const void *buf, size_t len )
 bool res_seek( FILE *fp, long amount, int where )
 /***********************************************/
 {
+#ifdef USE_WRESLIB
     if( fp == hInstance.fp ) {
         if( where == SEEK_SET ) {
             return( lseek( FP2POSIX( fp ), amount + WResFileShift, where ) == -1L );
@@ -257,6 +272,8 @@ bool res_seek( FILE *fp, long amount, int where )
             return( lseek( FP2POSIX( fp ), amount, where ) == -1L );
         }
     }
+#else
+#endif
 
     DbgAssert( where != SEEK_END );
     DbgAssert( !( where == SEEK_CUR && amount < 0 ) );
@@ -285,13 +302,16 @@ bool res_seek( FILE *fp, long amount, int where )
 long res_tell( FILE *fp )
 /***********************/
 {
+#ifdef USE_WRESLIB
     if( fp == hInstance.fp ) {
         return( lseek( FP2POSIX( fp ), 0, SEEK_CUR ) );
-    } else if( FP2POSIX( fp ) == Root->outfile->handle ) {
-        return( PosLoad() );
-    } else {
-        return( QPos( FP2POSIX( fp ) ) );
     }
+#else
+#endif
+    if( FP2POSIX( fp ) == Root->outfile->handle ) {
+        return( PosLoad() );
+    }
+    return( QPos( FP2POSIX( fp ) ) );
 }
 
 bool res_ioerr( FILE *fp, size_t rc )

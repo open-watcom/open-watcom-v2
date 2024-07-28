@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,7 +36,7 @@
 #include "dbgdata.h"
 #include "dbgwind.h"
 #include "mempiece.h"
-#include "dbgadget.h"
+#include "gadgets.h"
 #include "mad.h"
 #include "memtypes.h"
 #include "dbgitem.h"
@@ -49,6 +49,9 @@
 #include "dbgwglob.h"
 #include "dbgwio.h"
 #include "menudef.h"
+#include "dbgicon.h"
+#include "liteng.h"
+#include "litdui.h"
 
 
 #define PIECE_TYPE( x )     ((x) - MENU_IO_FIRST_TYPE)
@@ -82,7 +85,7 @@ static gui_menu_struct IOMenu[] = {
     #include "menuio.h"
 };
 
-static wnd_row IONumRows( a_window wnd )
+static wnd_row WNDCALLBACK IONumRows( a_window wnd )
 {
     return( WndIO( wnd )->num_rows );
 }
@@ -102,7 +105,7 @@ static void IOAddNewAddr( a_window wnd, address *addr, int type )
     curr->value_known = false;
 }
 
-static void     IOMenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_piece piece )
+static void     WNDCALLBACK IOMenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_piece piece )
 {
     io_window   *io = WndIO( wnd );
     address     addr;
@@ -183,7 +186,7 @@ static void     IOMenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_piece 
 }
 
 
-static void     IOModify( a_window wnd, wnd_row row, wnd_piece piece )
+static void     WNDCALLBACK IOModify( a_window wnd, wnd_row row, wnd_piece piece )
 {
     if( row < 0 ) {
         IOMenuItem( wnd, MENU_IO_NEW_ADDRESS, row, piece );
@@ -204,7 +207,7 @@ static void     IOModify( a_window wnd, wnd_row row, wnd_piece piece )
     }
 }
 
-static  bool    IOGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *line )
+static  bool    WNDCALLBACK IOGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *line )
 {
     io_window   *io = WndIO( wnd );
 //    bool        ret;
@@ -251,7 +254,7 @@ static  bool    IOGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_
 }
 
 
-static void     IORefresh( a_window wnd )
+static void     WNDCALLBACK IORefresh( a_window wnd )
 {
     WndNoSelect( wnd );
     WndSetRepaint( wnd );
@@ -294,7 +297,7 @@ void FiniIOWindow( void )
     MemFiniTypes( &IOData );
 }
 
-static bool IOWndEventProc( a_window wnd, gui_event gui_ev, void *parm )
+static bool WNDCALLBACK IOWndEventProc( a_window wnd, gui_event gui_ev, void *parm )
 {
     io_window   *io = WndIO( wnd );
 
@@ -314,7 +317,7 @@ static bool IOWndEventProc( a_window wnd, gui_event gui_ev, void *parm )
     return( false );
 }
 
-static bool ChkUpdate( void )
+static bool WNDCALLBACK ChkUpdate( void )
 {
     return( UpdateFlags & UP_RADIX_CHANGE );
 }

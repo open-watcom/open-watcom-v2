@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -107,7 +107,7 @@ gui_text_ord GUIAPI GUIGetVScrollRangeRows( gui_window *wnd )
     if( wnd->vgadget != NULL ) {
         return( wnd->vgadget->total_size );
     } else {
-        return( GUI_TEXT_NO_ROW );
+        return( GUI_TEXT_NO_RANGE );
     }
 }
 
@@ -116,10 +116,10 @@ gui_ord GUIAPI GUIGetVScrollRange( gui_window *wnd )
     gui_text_ord    text_ord;
 
     text_ord = GUIGetVScrollRangeRows( wnd );
-    if( text_ord != GUI_TEXT_NO_ROW ) {
-        return( GUIScreenToScaleV( text_ord ) );
+    if( text_ord != GUI_TEXT_NO_RANGE ) {
+        return( GUIScaleFromScreenV( text_ord ) );
     } else {
-        return( GUI_NO_ROW );
+        return( GUI_NO_RANGE );
     }
 }
 
@@ -132,7 +132,7 @@ gui_text_ord GUIAPI GUIGetHScrollRangeCols( gui_window *wnd )
     if( wnd->hgadget != NULL ) {
         return( wnd->hgadget->total_size );
     } else {
-        return( GUI_TEXT_NO_COLUMN );
+        return( GUI_TEXT_NO_RANGE );
     }
 }
 
@@ -141,9 +141,9 @@ gui_ord GUIAPI GUIGetHScrollRange( gui_window *wnd )
     gui_text_ord    text_ord;
 
     text_ord = GUIGetHScrollRangeCols( wnd );
-    if( text_ord != GUI_TEXT_NO_COLUMN ) {
-        return( GUIScreenToScaleH( text_ord ) );
+    if( text_ord != GUI_TEXT_NO_RANGE ) {
+        return( GUIScaleFromScreenH( text_ord ) );
     } else {
-        return( GUI_NO_COLUMN );
+        return( GUI_NO_RANGE );
     }
 }

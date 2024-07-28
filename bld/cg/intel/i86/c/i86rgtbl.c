@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -63,7 +63,7 @@
  *       in longest of these tables!
  */
 
-static  hw_reg_set      Reg32Order[] = {
+static const hw_reg_set      Reg32Order[] = {
     HW_D_1( HW_AX ),
     HW_D_1( HW_BX ),
     HW_D_1( HW_SI ),
@@ -75,46 +75,46 @@ static  hw_reg_set      Reg32Order[] = {
     HW_D_1( HW_SEGS ),
     HW_D_1( HW_EMPTY )
 };
-static  hw_reg_set      Empty[] = {
+static const hw_reg_set      Empty[] = {
     HW_D_1( HW_EMPTY )
 };
-static  hw_reg_set      ALReg[] = {
+static const hw_reg_set      ALReg[] = {
     HW_D_1( HW_AL ),
     HW_D_1( HW_EMPTY )
 };
-static  hw_reg_set      AHReg[] = {
+static const hw_reg_set      AHReg[] = {
     HW_D_1( HW_AH ),
     HW_D_1( HW_EMPTY )
 };
-static  hw_reg_set      AXReg[] = {
+static const hw_reg_set      AXReg[] = {
     HW_D_1( HW_AX ),
     HW_D_1( HW_EMPTY )
 };
-static  hw_reg_set      CLReg[] = {
+static const hw_reg_set      CLReg[] = {
     HW_D_1( HW_CL ),
     HW_D_1( HW_EMPTY )
 };
-static  hw_reg_set      CXReg[] = {
+static const hw_reg_set      CXReg[] = {
     HW_D_1( HW_CX ),
     HW_D_1( HW_EMPTY )
 };
-static  hw_reg_set      DXReg[] = {
+static const hw_reg_set      DXReg[] = {
     HW_D_1( HW_DX ),
     HW_D_1( HW_EMPTY )
 };
-static  hw_reg_set      DXAXReg[] = {
+static const hw_reg_set      DXAXReg[] = {
     HW_D_2( HW_DX, HW_AX ),
     HW_D_1( HW_EMPTY )
 };
-static  hw_reg_set      CXBXReg[] = {
+static const hw_reg_set      CXBXReg[] = {
     HW_D_2( HW_CX, HW_BX ),
     HW_D_1( HW_EMPTY )
 };
-static  hw_reg_set      ESBXReg[] = {
+static const hw_reg_set      ESBXReg[] = {
     HW_D_2( HW_ES, HW_BX ),
     HW_D_1( HW_EMPTY )
 };
-static  hw_reg_set      ByteRegs[] = {
+static const hw_reg_set      ByteRegs[] = {
     HW_D_1( HW_AL ),
     HW_D_1( HW_AH ),
     HW_D_1( HW_DL ),
@@ -125,14 +125,14 @@ static  hw_reg_set      ByteRegs[] = {
     HW_D_1( HW_CH ),
     HW_D_1( HW_EMPTY )
 };
-static  hw_reg_set      LowByteRegs[] = {
+static const hw_reg_set      LowByteRegs[] = {
     HW_D_1( HW_AL ),
     HW_D_1( HW_DL ),
     HW_D_1( HW_BL ),
     HW_D_1( HW_CL ),
     HW_D_1( HW_EMPTY )
 };
-static  hw_reg_set      WordOrSegReg[] = {
+static const hw_reg_set      WordOrSegReg[] = {
     HW_D_1( HW_AX ),
     HW_D_1( HW_DX ),
     HW_D_1( HW_BX ),
@@ -149,7 +149,7 @@ static  hw_reg_set      WordOrSegReg[] = {
     HW_D_1( HW_SS ),
     HW_D_1( HW_EMPTY )
 };
-static  hw_reg_set      WordRegs[] = {
+static const hw_reg_set      WordRegs[] = {
     HW_D_1( HW_AX ),
     HW_D_1( HW_DX ),
     HW_D_1( HW_BX ),
@@ -160,21 +160,21 @@ static  hw_reg_set      WordRegs[] = {
     HW_D_1( HW_SP ),
     HW_D_1( HW_EMPTY )
 };
-static  hw_reg_set      TwoByteRegs[] = {
+static const hw_reg_set      TwoByteRegs[] = {
     HW_D_1( HW_AX ),
     HW_D_1( HW_DX ),
     HW_D_1( HW_BX ),
     HW_D_1( HW_CX ),
     HW_D_1( HW_EMPTY )
 };
-static  hw_reg_set      IndexRegs[] = {
+static const hw_reg_set      IndexRegs[] = {
     HW_D_1( HW_BX ),
     HW_D_1( HW_SI ),
     HW_D_1( HW_DI ),
     HW_D_1( HW_BP ),
     HW_D_1( HW_EMPTY )
 };
-static  hw_reg_set      SegRegs[] = {
+static const hw_reg_set      SegRegs[] = {
     HW_D_1( HW_DS ),
     HW_D_1( HW_ES ),
     HW_D_1( HW_FS ),
@@ -183,7 +183,7 @@ static  hw_reg_set      SegRegs[] = {
     HW_D_1( HW_SS ),
     HW_D_1( HW_EMPTY )
 };
-static  hw_reg_set      LongIndexRegs[] = {
+static const hw_reg_set      LongIndexRegs[] = {
     HW_D_2( HW_DS, HW_SI ),
     HW_D_2( HW_DS, HW_DI ),
     HW_D_2( HW_DS, HW_BX ),
@@ -201,7 +201,7 @@ static  hw_reg_set      LongIndexRegs[] = {
     HW_D_2( HW_SS, HW_BX ),
     HW_D_1( HW_EMPTY )
 };
-static  hw_reg_set      DoubleRegs[] = {
+static const hw_reg_set      DoubleRegs[] = {
     HW_D_2( HW_DX, HW_AX ),
     HW_D_2( HW_CX, HW_BX ),
     HW_D_2( HW_CX, HW_AX ),
@@ -219,7 +219,7 @@ static  hw_reg_set      DoubleRegs[] = {
     HW_D_2( HW_BX, HW_AX ),
     HW_D_1( HW_EMPTY )
 };
-static  hw_reg_set      DblPtrRegs[] = {
+static const hw_reg_set      DblPtrRegs[] = {
     HW_D_2( HW_DX, HW_AX ),
     HW_D_2( HW_CX, HW_BX ),
     HW_D_2( HW_CX, HW_AX ),
@@ -267,20 +267,20 @@ static  hw_reg_set      DblPtrRegs[] = {
     HW_D_2( HW_SS, HW_AX ),
     HW_D_1( HW_EMPTY )
 };
-static  hw_reg_set      QuadReg[] = {
+static const hw_reg_set      QuadReg[] = {
     HW_D_4( HW_AX, HW_BX, HW_CX, HW_DX ),
     HW_D_1( HW_EMPTY )
 };
-static  hw_reg_set      TempIndex[] = {
+static const hw_reg_set      TempIndex[] = {
     HW_D_1( HW_SI ),
     HW_D_1( HW_DI ),
     HW_D_1( HW_EMPTY )
 };
-static  hw_reg_set      ST0Reg[] = {
+static const hw_reg_set      ST0Reg[] = {
     HW_D_1( HW_ST0 ),
     HW_D_1( HW_EMPTY )
 };
-static  hw_reg_set      STIReg[] = {
+static const hw_reg_set      STIReg[] = {
     HW_D_1( HW_ST1 ),
     HW_D_1( HW_ST2 ),
     HW_D_1( HW_ST3 ),
@@ -290,7 +290,7 @@ static  hw_reg_set      STIReg[] = {
     HW_D_1( HW_ST7 ),
     HW_D_1( HW_EMPTY )
 };
-static  hw_reg_set      STParmReg[] = {
+static hw_reg_set           STParmReg[] = {
     HW_D_1( HW_ST1 ),
     HW_D_1( HW_ST2 ),
     HW_D_1( HW_ST3 ),
@@ -301,7 +301,7 @@ static  hw_reg_set      STParmReg[] = {
     HW_D_1( HW_EMPTY ),
     HW_D_1( HW_EMPTY )
 };
-static  hw_reg_set      EEch[] = {
+static const hw_reg_set      EEch[] = {
     HW_D_3( HW_DX, HW_AX, HW_CX ),
     HW_D_3( HW_DX, HW_BX, HW_CX ),
     HW_D_3( HW_DI, HW_AX, HW_CX ),
@@ -314,32 +314,33 @@ static  hw_reg_set      EEch[] = {
     HW_D_3( HW_BX, HW_AX, HW_CX ),
     HW_D_1( HW_EMPTY )
 };
-static  hw_reg_set      DXCLReg[] = {
+static const hw_reg_set      DXCLReg[] = {
     HW_D_2( HW_DX, HW_CL ),
     HW_D_1( HW_EMPTY )
 };
-static  hw_reg_set      AHCLReg[] = {
+static const hw_reg_set      AHCLReg[] = {
     HW_D_2( HW_AH, HW_CL ),
     HW_D_1( HW_EMPTY )
 };
 
-hw_reg_set *RegSets[] = {
+const hw_reg_set * const RegSets[] = {
     #define RL(a,b,c,d) a
     #include "rl.h"
     #undef RL
     NULL
 };
 
-op_regs RegList[] = {
+const op_regs RegList[] = {
     #define RG( a,b,c,d,e,f ) {a,b,c,d,e}
     #include "rg.h"
     #undef RG
 };
 
-static  reg_set_index   ClassSets[] = {
-/*       RL_ indicates that the class is already identified*/
-/*       (e.g. I1 already identified as U1*/
-/**/
+static const reg_set_index   ClassSets[] = {
+/********************************************
+ *  RL_ indicates that the class is already identified
+ *       (e.g. I1 already identified as U1
+ */
     RL_BYTE,                /* U1*/
     RL_,                    /* I1*/
     RL_WORD,                /* U2*/
@@ -355,7 +356,7 @@ static  reg_set_index   ClassSets[] = {
     RL_,                    /* FL*/
     RL_                     /* XX*/
 };
-static  hw_reg_set        *ParmSets[] = {
+static const hw_reg_set * const ParmSets[] = {
     ByteRegs,               /* U1*/
     ByteRegs,               /* I1*/
     WordRegs,               /* U2*/
@@ -371,7 +372,7 @@ static  hw_reg_set        *ParmSets[] = {
     __FP80BIT(Empty,QuadReg),/* FL*/
     Empty                   /* XX*/
 };
-static  hw_reg_set        *ParmSets8087[] = {
+static const hw_reg_set * const ParmSets8087[] = {
     ByteRegs,               /* U1*/
     ByteRegs,               /* I1*/
     WordRegs,               /* U2*/
@@ -387,7 +388,7 @@ static  hw_reg_set        *ParmSets8087[] = {
     STParmReg,              /* FL*/
     Empty                   /* XX*/
 };
-static  reg_set_index   IsSets[] = {
+static const reg_set_index   IsSets[] = {
     RL_BYTE,                /* U1*/
     RL_BYTE,                /* I1*/
     RL_WORD,                /* U2*/
@@ -403,7 +404,7 @@ static  reg_set_index   IsSets[] = {
     __FP80BIT(RL_,RL_8),    /* FL*/
     RL_                     /* XX*/
 };
-static  reg_set_index   ReturnSets[] = {
+static const reg_set_index   ReturnSets[] = {
     RL_AL,                  /* U1*/
     RL_AL,                  /* I1*/
     RL_AX,                  /* U2*/
@@ -419,7 +420,7 @@ static  reg_set_index   ReturnSets[] = {
     __FP80BIT(RL_,RL_8),    /* FL*/
     RL_                     /* XX*/
 };
-static  reg_set_index   Return8087[] = {
+static const reg_set_index   Return8087[] = {
     RL_AL,                  /* U1*/
     RL_AL,                  /* I1*/
     RL_AX,                  /* U2*/
@@ -435,7 +436,7 @@ static  reg_set_index   Return8087[] = {
     RL_ST0,                 /* FL*/
     RL_                     /* XX*/
 };
-static  reg_set_index   IndexSets[] = {
+static const reg_set_index   IndexSets[] = {
     RL_,                    /* U1*/
     RL_,                    /* I1*/
     RL_INDEX,               /* U2*/
@@ -452,13 +453,14 @@ static  reg_set_index   IndexSets[] = {
     RL_                     /* XX*/
 };
 
-/*       Information for register set intersections*/
-/*       if sets are of different classes*/
-/*               intersection is empty*/
-/*       } else {*/
-/*               intersection given in square matrix for class*/
-/*       }*/
-
+/*
+ *  Information for register set intersections
+ *  if sets are of different classes
+ *      intersection is empty
+ *  } else {
+ *      intersection given in square matrix for class
+ *  }
+ */
 #define INTERSECT_DEFS \
     pick( ONE_BYTE,   5, OneByteInter ) \
     pick( TWO_BYTE,   9, TwoByteInter ) \
@@ -479,20 +481,20 @@ typedef struct reg_class {
     byte            index;
 } reg_class;
 
-static  reg_class       IntersectInfo[] = {
+static const reg_class       IntersectInfo[] = {
     #define RL(a,b,c,d) {c,d}
     #include "rl.h"
     #undef RL
     {OTHER, 0}          /* RL_NUMBER_OF_SETS*/
 };
 
-static  byte    Width[] = {
+static const byte    Width[] = {
     #define pick(e,w,l) w,
         INTERSECT_DEFS
     #undef pick
 };
 
-static  reg_set_index   OneByteInter[] = {
+static const reg_set_index   OneByteInter[] = {
 /*   AL      AH      CL      BYTE        LOWBYTE  */
     RL_AL,  RL_,    RL_,    RL_AL,      RL_AL,          /* AL */
     RL_,    RL_AH,  RL_,    RL_AH,      RL_,            /* AH */
@@ -501,15 +503,16 @@ static  reg_set_index   OneByteInter[] = {
     RL_AL,  RL_,    RL_CL,  RL_LOWBYTE, RL_LOWBYTE      /* LOWBYTE */
 };
 
-/* short forms used in this table*/
-/* - RL_WD == RL_WORD*/
-/* - RL_IX == RL_INDEX*/
-/* - RL_TI == RL_TEMP_INDEX*/
-/* - RL_2B == RL_TWOBYTE*/
-/* - RL_WS == RL_ANYWORD*/
-/* - RL_SG == RL_SEG*/
-
-static  reg_set_index   TwoByteInter[] = {
+/*
+ * short forms used in this table
+ * - RL_WD == RL_WORD
+ * - RL_IX == RL_INDEX
+ * - RL_TI == RL_TEMP_INDEX
+ * - RL_2B == RL_TWOBYTE
+ * - RL_WS == RL_ANYWORD
+ * - RL_SG == RL_SEG
+ */
+static const reg_set_index   TwoByteInter[] = {
 /* AX   CX     DX     WD     2B     IX     SG     TI     WS           */
 RL_AX, RL_,   RL_,   RL_AX, RL_AX, RL_,   RL_,   RL_,   RL_AX,  /* AX */
 RL_,   RL_CX, RL_,   RL_CX, RL_CX, RL_,   RL_,   RL_,   RL_CX,  /* CX */
@@ -522,7 +525,7 @@ RL_,   RL_,   RL_,   RL_TI, RL_,   RL_TI, RL_,   RL_TI, RL_TI,  /* TI */
 RL_AX, RL_CX, RL_DX, RL_WD, RL_2B, RL_IX, RL_SG, RL_TI, RL_WS   /* WS */
 };
 
-static  reg_set_index   FourByteInter[] = {
+static const reg_set_index   FourByteInter[] = {
 /* DX_AX     ES_BX       CX_BX       LONG_INDEX      DOUBLE      DBL_OR_PTR                   */
 RL_DX_AX,   RL_,        RL_,        RL_,            RL_DX_AX,   RL_DX_AX,       /* DX_AX      */
 RL_,        RL_ES_BX,   RL_,        RL_ES_BX,       RL_,        RL_ES_BX,       /* ES_BX      */
@@ -533,22 +536,22 @@ RL_DX_AX,   RL_ES_BX,   RL_CX_BX,   RL_LONG_INDEX,  RL_DOUBLE,  RL_DBL_OR_PTR   
 };
 
 
-static  reg_set_index   EightByteInter[] = {
+static const reg_set_index   EightByteInter[] = {
 /*  RL_8            */
     RL_8    /* RL_8 */
 };
 
-static  reg_set_index   FloatingInter[] = {
+static const reg_set_index   FloatingInter[] = {
 /*  RL_ST0  RL_STI            */
     RL_ST0, RL_,    /* RL_ST0 */
     RL_,    RL_STI  /* RL_STI */
 };
 
-static  reg_set_index   OtherInter[] = {
+static const reg_set_index   OtherInter[] = {
     RL_
 };
 
-static  reg_set_index   *InterTable[] = {
+static const reg_set_index * const InterTable[] = {
     #define pick(e,w,l) l,
         INTERSECT_DEFS
     #undef pick
@@ -566,8 +569,8 @@ void            InitRegTbl( void )
 reg_set_index   RegIntersect( reg_set_index s1, reg_set_index s2 )
 /****************************************************************/
 {
-    reg_class           *set1;
-    reg_class           *set2;
+    const reg_class     *set1;
+    const reg_class     *set2;
     intersect_class     class;
     reg_set_index       result;
 
@@ -587,10 +590,10 @@ reg_set_index   RegIntersect( reg_set_index s1, reg_set_index s2 )
 }
 
 
-hw_reg_set        *ParmChoices( type_class_def type_class )
-/*********************************************************/
+const hw_reg_set    *ParmChoices( type_class_def type_class )
+/***********************************************************/
 {
-    hw_reg_set  *list;
+    const hw_reg_set    *list;
 
     if( _FPULevel( FPU_87 ) ) {
         list = ParmSets8087[type_class];
@@ -632,7 +635,7 @@ hw_reg_set      StructReg( void )
 hw_reg_set  ReturnReg( type_class_def type_class, bool use_87 )
 /*************************************************************/
 {
-    hw_reg_set          *list;
+    const hw_reg_set    *list;
 
     if( _FPULevel( FPU_87 ) && use_87 ) {
         list = RegSets[Return8087[type_class]];
@@ -675,7 +678,7 @@ reg_set_index   IndexIntersect( reg_set_index curr, type_class_def type_class, b
 bool    IsIndexReg( hw_reg_set reg, type_class_def type_class, bool is_temp_index )
 /*********************************************************************************/
 {
-    hw_reg_set  *list;
+    const hw_reg_set    *list;
 
     if( is_temp_index ) {
         list = RegSets[RL_TEMP_INDEX];
@@ -694,7 +697,7 @@ bool    IsIndexReg( hw_reg_set reg, type_class_def type_class, bool is_temp_inde
 type_class_def  RegClass( hw_reg_set regs )
 /*****************************************/
 {
-    hw_reg_set          *possible;
+    const hw_reg_set    *possible;
     type_class_def      type_class;
 
     if( HW_COvlap( regs, HW_FLTS ) ) {
@@ -721,7 +724,7 @@ type_class_def  RegClass( hw_reg_set regs )
 bool    IndexRegOk( hw_reg_set reg, bool is_temp_index )
 /******************************************************/
 {
-    hw_reg_set  *list;
+    const hw_reg_set    *list;
 
     if( RegClass( reg ) != U2 ) {
         list = RegSets[RL_LONG_INDEX];
@@ -769,8 +772,8 @@ hw_reg_set      High16Reg( hw_reg_set regs )
 hw_reg_set      Low32Reg( hw_reg_set regs )
 /*****************************************/
 {
-    hw_reg_set  low;
-    hw_reg_set  *order;
+    hw_reg_set          low;
+    const hw_reg_set    *order;
 
     if( HW_CEqual( regs, HW_EMPTY ) )
         return( HW_EMPTY );
@@ -887,7 +890,7 @@ hw_reg_set      FullReg( hw_reg_set regs )
 bool    IsRegClass( hw_reg_set regs, type_class_def type_class )
 /**************************************************************/
 {
-    hw_reg_set  *list;
+    const hw_reg_set    *list;
 
     for( list = RegSets[IsSets[type_class]]; !HW_CEqual( *list, HW_EMPTY ); ++list ) {
         if( HW_Equal( *list, regs ) ) {
@@ -983,8 +986,8 @@ hw_reg_set      AllCacheRegs( void )
     return( tmp );
 }
 
-hw_reg_set      *IdxRegs( void )
-/******************************/
+const hw_reg_set    *IdxRegs( void )
+/**********************************/
 {
     return( IndexRegs );
 }

@@ -39,7 +39,7 @@ HEADERS = hello.h
 #-------------------------------------------------------------------
 
 
-all: dbg.exe hello.exe try.exe .symbolic
+all: dbg.exe hello.exe try.exe .SYMBOLIC
     @%null
 
 hello.res: hello.rc hello.ico hello.h

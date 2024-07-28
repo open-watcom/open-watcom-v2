@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,10 +40,10 @@
 #define MAX_DLG_NESTS   5
 
 static gui_window       *Parents[MAX_DLG_NESTS];
-static GUICALLBACK      *dlgGUIEventProcs[MAX_DLG_NESTS];
+static GUIEVCALLBACK    *dlgGUIEventProcs[MAX_DLG_NESTS];
 static int              Nested = -1;
 
-static bool dlgOpenGUIEventProc( gui_window *gui, gui_event gui_ev, void *parm )
+static bool GUICALLBACK dlgOpenGUIEventProc( gui_window *gui, gui_event gui_ev, void *parm )
 {
     bool                rc;
     gui_mcursor_handle  old_cursor;
@@ -75,15 +75,15 @@ gui_window *DlgOpenGetGUIParent( void )
     return( ( Nested == -1 ) ? WndMain->gui : Parents[Nested] );
 }
 
-void DlgOpen( const char *title, gui_text_ord rows, gui_text_ord cols,
+void WNDAPI DlgOpen( const char *title, gui_text_ord rows, gui_text_ord cols,
                      gui_control_info *ctl, int num_controls,
-                     GUICALLBACK *gui_call_back, void *extra )
+                     GUIEVCALLBACK *gui_call_back, void *extra )
 {
     gui_window  *parent;
 
     parent = DlgOpenGetGUIParent();
     dlgGUIEventProcs[Nested + 1] = gui_call_back;
-    GUIModalDlgOpen( parent, title, rows, cols, ctl, num_controls, dlgOpenGUIEventProc, extra );
+    GUIDlgOpenModal( parent, title, rows, cols, ctl, num_controls, dlgOpenGUIEventProc, extra );
 }
 
 static gui_create_info ResDialog = {
@@ -100,10 +100,10 @@ static gui_create_info ResDialog = {
     NULL                            // Menu Resource
 };
 
-void ResDlgOpen( GUICALLBACK *gui_call_back, void *extra, int dlg_id )
+void WNDAPI DlgOpenRes( GUIEVCALLBACK *gui_call_back, void *extra, int dlg_id )
 {
     ResDialog.parent = DlgOpenGetGUIParent();
     dlgGUIEventProcs[Nested + 1] = gui_call_back;
     ResDialog.extra = extra;
-    GUICreateResDialog( &ResDialog, MAKEINTRESOURCE( dlg_id ) );
+    GUICreateDialogRes( &ResDialog, MAKEINTRESOURCE( dlg_id ) );
 }

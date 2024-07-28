@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2023 2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -150,43 +150,40 @@ typedef struct struct_list {
     int                 vtbl_esize;
     char                name[1];
 } struct_list;
+
 typedef struct const_entry {
     struct const_entry  *next;
     int_32              val;
     char                *name;
 } const_entry;
 
-typedef struct dim_entry{
-    struct dim_entry *next;
-    enum {
-        DIM_VAR,
-        DIM_CON,
-    }kind;
-}dim_entry;
-
-typedef struct{
-    dim_entry   entry;
+typedef struct dim_var {
     back_handle dims;
     int         off;
     cg_type     lo_bound_tipe;
     cg_type     num_elts_tipe;
-}dim_var;
+} dim_var;
 
-typedef struct{
-    dim_entry   entry;
+typedef struct dim_con {
     int_32      lo;
     int_32      hi;
     dbg_type    idx;
-}dim_con;
+} dim_con;
 
-typedef union{
-    dim_entry entry;
-    dim_var   var;
-    dim_con   con;
-}dim_any;
+typedef struct dim_any {
+    struct dim_any *next;
+    enum {
+        DIM_VAR,
+        DIM_CON,
+    } kind;
+    union {
+        dim_var   var;
+        dim_con   con;
+    } u;
+} dim_any;
 
 typedef struct array_list {
-    dim_entry      *list;
+    dim_any         *list;
     uint            num;
     unsigned        size;
     dbg_type        base;

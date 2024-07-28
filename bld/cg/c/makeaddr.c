@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,7 +35,7 @@
 #include "coderep.h"
 #include "zoiks.h"
 #include "freelist.h"
-#include "cfloat.h"
+#include "_cfloat.h"
 #include "makeins.h"
 #include "data.h"
 #include "types.h"
@@ -97,8 +97,8 @@ an      NewBoolNode( void )
 }
 
 
-an      MakeTypeTempAddr( name *op, type_def *tipe )
-/**************************************************/
+an      MakeTypeTempAddr( name *op, const type_def *tipe )
+/********************************************************/
 {
     an          addr;
 
@@ -242,8 +242,8 @@ static  name    *Display( cg_sym_handle symbol, level_depth level )
 }
 
 
-an      MakeGets( an dst, an src, type_def *tipe )
-/************************************************/
+an      MakeGets( an dst, an src, const type_def *tipe )
+/******************************************************/
 {
     name                *dst_name;
     name                *src_name;
@@ -284,15 +284,15 @@ an      MakeGets( an dst, an src, type_def *tipe )
 }
 
 
-an      MakeConst( float_handle cf, type_def *tipe )
-/**************************************************/
+an      MakeConst( float_handle cf, const type_def *tipe )
+/********************************************************/
 {
     return( AddrName( AllocConst( cf ), tipe ) );
 }
 
 
-an      MakePoints( an name, type_def *tipe )
-/*******************************************/
+an      MakePoints( an name, const type_def *tipe )
+/*************************************************/
 {
     an  new;
 
@@ -301,8 +301,8 @@ an      MakePoints( an name, type_def *tipe )
     return( new );
 }
 
-an      RegName( hw_reg_set reg, type_def *tipe )
-/***********************************************/
+an      RegName( hw_reg_set reg, const type_def *tipe )
+/*****************************************************/
 {
     an  addr;
 
@@ -313,8 +313,8 @@ an      RegName( hw_reg_set reg, type_def *tipe )
     return( addr );
 }
 
-an      InsName( instruction *ins, type_def *tipe )
-/*************************************************/
+an      InsName( instruction *ins, const type_def *tipe )
+/*******************************************************/
 {
     an  addr;
 
@@ -337,8 +337,8 @@ name    *LoadTemp( name *temp, type_class_def type_class )
 }
 
 
-static  name    *Temporary( name *temp, type_def *tipe )
-/******************************************************/
+static  name    *Temporary( name *temp, const type_def *tipe )
+/************************************************************/
 {
     if( temp->n.class != N_TEMP ) {
         temp = LoadTemp( temp, TypeClass( tipe ) /*temp->n.type_class*/ );
@@ -496,8 +496,8 @@ void    FixCodePtr( an addr )
 }
 
 
-bool    NeedPtrConvert( an addr, type_def * tipe )
-/************************************************/
+bool    NeedPtrConvert( an addr, const type_def *tipe )
+/*****************************************************/
 {
     if( addr->format != NF_ADDR )
         return( true );
@@ -514,8 +514,8 @@ bool    NeedPtrConvert( an addr, type_def * tipe )
 }
 
 
-name    *LoadAddress( name *op, name *suggest, type_def *type_ptr )
-/*****************************************************************/
+name    *LoadAddress( name *op, name *suggest, const type_def *type_ptr )
+/***********************************************************************/
 {
     name                *new;
     type_class_def      type_class;
@@ -547,8 +547,8 @@ name    *LoadAddress( name *op, name *suggest, type_def *type_ptr )
 }
 
 
-an      MakeAddrName( cg_class class, cg_sym_handle sym, type_def *tipe )
-/***********************************************************************/
+an      MakeAddrName( cg_class class, cg_sym_handle sym, const type_def *tipe )
+/*****************************************************************************/
 {
     an          addr;
     fe_attr     attr;

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -58,6 +58,7 @@ extern void             Fatal( unsigned msg, ... );
 extern void             DelErrFile( void );
 
 File_Info               AsmFiles;       // files information
+char                    *ModuleName = NULL;
 
 struct  option {
     char        *option;
@@ -117,6 +118,13 @@ global_options Options = {
     true                // instructions optimization
 };
 
+static void usage_msg( void )
+/***************************/
+{
+    PrintfUsage();
+    exit( EXIT_ERROR );
+}
+
 static void BadCmdLine( int error_code )
 /***************************************
  * SIGNAL CMD-LINE ERROR
@@ -134,6 +142,8 @@ static void BadCmdLine( int error_code )
     strncpy( buffer, switch_start, len );
     buffer[len] = '\0';
     MsgPrintf1( error_code, buffer );
+    printf( "\n" );
+    exit( EXIT_ERROR );
 }
 
 // BAD CHAR DETECTED
@@ -222,128 +232,76 @@ static void add_constant( const char *string, bool underscored )
     }
 }
 
-static void get_fname( char *token, int type )
-/********************************************/
-/*
+char *CreateFileName( const char *template, const char *ext, bool forceext )
+/**************************************************************************/
+{
+    pgroup2     pg;
+    bool        use_defaults;
+    static char filename_buff[_MAX_PATH];
+
+    use_defaults = ( template == NULL );
+    if( use_defaults )
+        template = AsmFiles.fname[ASM];
+    _splitpath2( template, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
+    if( use_defaults ) {
+        /*
+         * default object file goes in current directory
+         */
+        pg.drive = "";
+        pg.dir = "";
+    }
+    if( pg.fname[0] == '\0' || pg.fname[0] == '*' ) {
+        pg.fname = ModuleName;
+    }
+    if( !forceext && pg.ext[0] != '\0' && !use_defaults ) {
+        ext = pg.ext;
+    }
+    _makepath( filename_buff, pg.drive, pg.dir, pg.fname, ext );
+    return( filename_buff );
+}
+
+static void srcFileName( char *token )
+/*************************************
  * figure out the source file name & store it in AsmFiles
  * fill in default object file name if it is null
  */
 {
-    char        name [_MAX_PATH ];
+    char        name[_MAX_PATH ];
     char        msgbuf[MAX_MESSAGE_SIZE];
     pgroup2     pg;
-    pgroup2     def;
 
     /* get filename for source file */
 
-    if( type == ASM ) {
-        if( token == NULL ) {
-            MsgGet( SOURCE_FILE, msgbuf );
-            Fatal( MSG_CANNOT_OPEN_FILE, msgbuf );
-        }
-        if( AsmFiles.fname[ASM] != NULL ) {
-            Fatal( MSG_TOO_MANY_FILES );
-        }
-
-        _splitpath2( token, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
-        if( pg.ext[0] == '\0' ) {
-            pg.ext = ASM_EXT;
-        }
-        _makepath( name, pg.drive, pg.dir, pg.fname, pg.ext );
-        AsmFiles.fname[ASM] = AsmStrDup( name );
-
-        _makepath( name, pg.drive, pg.dir, NULL, NULL );
-        /*
-         * add the source path to the include path
-         * as first item on the include path list
-         */
-        AddItemToIncludePath( name, NULL );
-
-        if( AsmFiles.fname[OBJ] == NULL ) {
-            /* set up default object and error filename */
-            pg.ext = OBJ_EXT;
-            _makepath( name, NULL, NULL, pg.fname, pg.ext );
-        } else {
-            _splitpath2( AsmFiles.fname[OBJ], def.buffer, &def.drive,
-                         &def.dir, &def.fname, &def.ext );
-            if( def.fname[0] == NULLC )
-                def.fname = pg.fname;
-            if( def.ext[0] == NULLC )
-                def.ext = OBJ_EXT;
-
-            _makepath( name, def.drive, def.dir, def.fname, def.ext );
-            AsmFree( AsmFiles.fname[OBJ] );
-        }
-        AsmFiles.fname[OBJ] = AsmStrDup( name );
-
-        if( AsmFiles.fname[ERR] == NULL ) {
-            pg.ext = ERR_EXT;
-            _makepath( name, NULL, NULL, pg.fname, pg.ext );
-        } else {
-            _splitpath2( AsmFiles.fname[ERR], def.buffer, &def.drive,
-                         &def.dir, &def.fname, &def.ext );
-            if( def.fname[0] == NULLC )
-                def.fname = pg.fname;
-            if( def.ext[0] == NULLC )
-                def.ext = ERR_EXT;
-            _makepath( name, def.drive, def.dir, def.fname, def.ext );
-            AsmFree( AsmFiles.fname[ERR] );
-        }
-        AsmFiles.fname[ERR] = AsmStrDup( name );
-
-        if( AsmFiles.fname[LST] == NULL ) {
-            pg.ext = LST_EXT;
-            _makepath( name, NULL, NULL, pg.fname, pg.ext );
-        } else {
-            _splitpath2( AsmFiles.fname[LST], def.buffer, &def.drive,
-                         &def.dir, &def.fname, &def.ext );
-            if( def.fname[0] == NULLC )
-                def.fname = pg.fname;
-            if( def.ext[0] == NULLC )
-                def.ext = LST_EXT;
-            _makepath( name, def.drive, def.dir, def.fname, def.ext );
-            AsmFree( AsmFiles.fname[LST] );
-        }
-        AsmFiles.fname[LST] = AsmStrDup( name );
-
-    } else {
-        /* get filename for object, error, or listing file */
-        _splitpath2( token, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
-        if( AsmFiles.fname[ASM] != NULL ) {
-            _splitpath2( AsmFiles.fname[ASM], def.buffer, &def.drive,
-                         &def.dir, &def.fname, &def.ext );
-            if( pg.fname[0] == NULLC ) {
-                pg.fname = def.fname;
-            }
-        }
-        if( pg.ext[0] == NULLC ) {
-            switch( type ) {
-            case ERR:   pg.ext = ERR_EXT;  break;
-            case LST:   pg.ext = LST_EXT;  break;
-            case OBJ:   pg.ext = OBJ_EXT;  break;
-            }
-        }
-        _makepath( name, pg.drive, pg.dir, pg.fname, pg.ext );
-        if( AsmFiles.fname[type] != NULL ) {
-            AsmFree( AsmFiles.fname[type] );
-        }
-        AsmFiles.fname[type] = AsmStrDup( name );
+    if( token == NULL ) {
+        MsgGet( SOURCE_FILE, msgbuf );
+        Fatal( MSG_CANNOT_OPEN_FILE, msgbuf );
     }
+    if( AsmFiles.fname[ASM] != NULL ) {
+        Fatal( MSG_TOO_MANY_FILES );
+    }
+    _splitpath2( token, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
+    if( pg.ext[0] == '\0' ) {
+        pg.ext = ASM_EXT;
+    }
+    ModuleName = AsmStrDup( pg.fname );
+    _makepath( name, pg.drive, pg.dir, pg.fname, pg.ext );
+    AsmFiles.fname[ASM] = AsmStrDup( name );
 }
 
-static void usage_msg( void )
-/***************************/
+static void add_include( const char *target_name, const char *src )
+/*****************************************************************/
 {
-    PrintfUsage();
-    exit( EXIT_ERROR );
-}
-
-static void add_env_include( const char *target_name )
-/****************************************************/
-{
-    char        buff[128];
+    char        buff[_MAX_PATH];
+    pgroup2     pg;
     const char  *env;
 
+    _splitpath2( src, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
+    _makepath( buff, pg.drive, pg.dir, NULL, NULL );
+    /*
+     * add the source path to the include path
+     * as first item on the include path list
+     */
+    AddItemToIncludePath( buff, NULL );
     /*
      * add OS_include to the include path
      * as last items on the list
@@ -388,6 +346,7 @@ static void main_init( void )
         AsmFiles.file[i] = NULL;
         AsmFiles.fname[i] = NULL;
     }
+    AsmFiles.fname[ERR] = AsmStrDup( "*" );
     ObjRecInit();
 }
 
@@ -544,13 +503,15 @@ static int ProcOptions( OPT_STORAGE *data, const char *str )
             }
             if( _IS_SWITCH_CHAR( ch ) ) {
                 switch_start = CmdScanAddr() - 1;
-                OPT_PROCESS( data );
+                if( OPT_PROCESS( data ) ) {
+                    BadCmdLineOption();
+                }
             } else {  /* collect file name */
                 CmdScanUngetChar();
                 switch_start = CmdScanAddr();
                 fname = NULL;
                 if( OPT_GET_FILE( &fname ) ) {
-                    get_fname( fname->data, ASM );
+                    srcFileName( fname->data );
                     OPT_CLEAN_STRING( &fname );
                 }
             }
@@ -657,7 +618,7 @@ static void set_cpu_mode( void )
 {
     // set parameters passing convention macro
     if( SWData.cpu >= 3 ) {
-        if( Options.watcom_parms_passed_by_regs ) {
+        if( Options.watcom_params_passed_by_regs ) {
             add_constant( "REGISTER", true );
         } else {
             add_constant( "STACK", true );
@@ -848,6 +809,9 @@ static void set_options( OPT_STORAGE *data )
     if( data->zq ) {
         Options.quiet = true;
     }
+    if( data->_question ) {
+        usage_msg();
+    }
 
     switch( data->mem_model ) {
     case OPT_ENUM_mem_model_mt:
@@ -877,57 +841,57 @@ static void set_options( OPT_STORAGE *data )
     switch( data->cpu_info ) {
     case OPT_ENUM_cpu_info__0:
         SWData.cpu = 0;
-        Options.watcom_parms_passed_by_regs = true;
+        Options.watcom_params_passed_by_regs = true;
         break;
     case OPT_ENUM_cpu_info__1:
         SWData.cpu = 1;
-        Options.watcom_parms_passed_by_regs = true;
+        Options.watcom_params_passed_by_regs = true;
         break;
     case OPT_ENUM_cpu_info__2:
         SWData.cpu = 2;
-        Options.watcom_parms_passed_by_regs = true;
+        Options.watcom_params_passed_by_regs = true;
         if( data->_2p ) {
             SWData.protect_mode = true;
         }
         break;
     case OPT_ENUM_cpu_info__3:
         SWData.cpu = 3;
-        Options.watcom_parms_passed_by_regs = true;
+        Options.watcom_params_passed_by_regs = true;
         if( data->_3p ) {
             SWData.protect_mode = true;
         }
         if( data->_3s ) {
-            Options.watcom_parms_passed_by_regs = false;
+            Options.watcom_params_passed_by_regs = false;
         }
         break;
     case OPT_ENUM_cpu_info__4:
         SWData.cpu = 4;
-        Options.watcom_parms_passed_by_regs = true;
+        Options.watcom_params_passed_by_regs = true;
         if( data->_4p ) {
             SWData.protect_mode = true;
         }
         if( data->_4s ) {
-            Options.watcom_parms_passed_by_regs = false;
+            Options.watcom_params_passed_by_regs = false;
         }
         break;
     case OPT_ENUM_cpu_info__5:
         SWData.cpu = 5;
-        Options.watcom_parms_passed_by_regs = true;
+        Options.watcom_params_passed_by_regs = true;
         if( data->_5p ) {
             SWData.protect_mode = true;
         }
         if( data->_5s ) {
-            Options.watcom_parms_passed_by_regs = false;
+            Options.watcom_params_passed_by_regs = false;
         }
         break;
     case OPT_ENUM_cpu_info__6:
         SWData.cpu = 6;
-        Options.watcom_parms_passed_by_regs = true;
+        Options.watcom_params_passed_by_regs = true;
         if( data->_6p ) {
             SWData.protect_mode = true;
         }
         if( data->_6s ) {
-            Options.watcom_parms_passed_by_regs = false;
+            Options.watcom_params_passed_by_regs = false;
         }
         break;
     case OPT_ENUM_cpu_info_default:
@@ -1087,29 +1051,34 @@ static void set_options( OPT_STORAGE *data )
     if( data->nc ) {
         SetStringOption( &Options.code_class, &(data->nc_value) );
     }
-    if( data->fr ) {
-        get_fname( data->fr_value->data, ERR );
+    if( data->fe && data->fe_value != NULL ) {
+        AsmFree( AsmFiles.fname[ERR] );
+        AsmFiles.fname[ERR] = AsmStrDup( data->fe_value->data );
     }
-    if( data->fl ) {
-        get_fname( data->fl_value->data, LST );
+    if( data->fr ) {
+        AsmFree( AsmFiles.fname[ERR] );
+        if( data->fr_value != NULL ) {
+            AsmFiles.fname[ERR] = AsmStrDup( data->fr_value->data );
+        } else {
+            AsmFiles.fname[ERR] = NULL;
+        }
+    }
+    if( data->fl && data->fl_value != NULL ) {
+        AsmFiles.fname[LST] = AsmStrDup( data->fl_value->data );
         Options.write_listing = true;
     }
-    if( data->fo ) {
-        get_fname( data->fo_value->data, OBJ );
+    if( data->fo && data->fo_value != NULL ) {
+        AsmFiles.fname[OBJ] = AsmStrDup( data->fo_value->data );
     }
     if( data->fi ) {
         SetStringOption( &ForceInclude, &(data->fi_value) );
     }
-    if( data->h ) {
-        usage_msg();
-    }
-
 }
 
 static void do_init_stuff( char **cmdline )
 /*****************************************/
 {
-    char        msgbuf[MAX_MESSAGE_SIZE];
+//    char        msgbuf[MAX_MESSAGE_SIZE];
     OPT_STORAGE data;
     char        *target_name;
 
@@ -1123,14 +1092,13 @@ static void do_init_stuff( char **cmdline )
     for( ; *cmdline != NULL; ++cmdline ) {
         ProcOptions( &data, *cmdline );
     }
-    if( AsmFiles.fname[ASM] == NULL ) {
-        MsgGet( NO_FILENAME_SPECIFIED, msgbuf );
-        Fatal( MSG_CANNOT_OPEN_FILE, msgbuf );
-    }
     target_name = set_build_target( &data );
     set_options( &data );
     OPT_FINI( &data );
-    add_env_include( target_name );
+    if( AsmFiles.fname[ASM] == NULL ) {
+        usage_msg();
+    }
+    add_include( target_name, AsmFiles.fname[ASM] );
     AsmFree( target_name );
     set_cpu_mode();
     set_fpu_mode();

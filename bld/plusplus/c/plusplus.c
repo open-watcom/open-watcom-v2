@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -479,7 +479,7 @@ static int compileFiles(        // COMPILE FILES
 
     exit_status = 0;
     for( CompInfo.compfile_cur = 1; ; ++CompInfo.compfile_cur ) {
-        CompInfo.compfile_max = false;
+        CompInfo.compfile_max = 0;
         file_status = front_end( argv );
         if( file_status > exit_status ) {
             if( exit_status == WPP_BATCH_FILES )

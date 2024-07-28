@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,7 +33,7 @@
 #include "_cgstd.h"
 #include "coderep.h"
 #include "data.h"
-#include "cfloat.h"
+#include "_cfloat.h"
 #include "objout.h"
 #include "memcheck.h"
 #include "memlimit.h"
@@ -58,13 +58,12 @@ static    bool          IckyWicky;
 static  bool    FlushSomeOpt( pointer_uint size )
 /***********************************************/
 {
-    segment_id  old_segid;
     bool        freed;
 
     if( InOptimizer == 0 && HaveCodeSeg() ) {
-        old_segid = SetOP( AskCodeSeg() );
-        freed = ShrinkQueue( size );
-        SetOP( old_segid );
+        PUSH_OP( AskCodeSeg() );
+            freed = ShrinkQueue( size );
+        POP_OP();
         if( _IsntModel( CGSW_GEN_NO_OPTIMIZATION ) && !IckyWicky ) {
             IckyWicky = true;
             FEMessage( FEMSG_PEEPHOLE_FLUSHED, NULL );
@@ -131,7 +130,7 @@ void    BlowAwayFreeLists( void )
     RegTreeFrlFree();
     InsFrlFree();
     InstrFrlFree();
-    CFFrlFree();
+    CFFrlFree( &cgh );
     ConfFrlFree();
     NameFrlFree();
     SchedFrlFree();
@@ -151,7 +150,7 @@ bool    MemCheck( size_t size )
         return( true );
     if( RegTreeFrlFree() )
         return( true );
-    if( CFFrlFree() )
+    if( CFFrlFree( &cgh ) )
         return( true );
     if( InsFrlFree() )
         return( true );

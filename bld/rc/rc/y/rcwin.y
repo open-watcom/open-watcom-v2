@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -27,7 +27,8 @@
 *
 * Description:  Windows Resource Compiler grammar for yacc.
 *
-*/
+****************************************************************************/
+
 
 /***************************************************************************
  * As of Nov 25/94 this file contains 13 shift/reduce conflicts
@@ -593,14 +594,14 @@ resource-type
 user-defined-resource
     : name-id comma-opt user-defined-type-id user-defined-data
         {
-            SemAddResourceFree( $1, $3,
+            SemAddResourceAndFree( $1, $3,
                     MEMFLAG_PURE | MEMFLAG_MOVEABLE | MEMFLAG_DISCARDABLE, $4 );
         }
     | name-id comma-opt user-defined-type-id resource-options user-defined-data
         {
             SemWINCheckMemFlags( &($4), 0, MEMFLAG_DISCARDABLE|MEMFLAG_MOVEABLE,
                     MEMFLAG_PURE );
-            SemAddResourceFree( $1, $3, $4.flags, $5 );
+            SemAddResourceAndFree( $1, $3, $4.flags, $5 );
         }
     ;
 
@@ -651,14 +652,14 @@ raw-data-item
 rcdata-resource
     : name-id Y_RCDATA opt-resource-info-stmts user-defined-data
         {
-            SemAddResourceFree( $1, WResIDFromNum( RESOURCE2INT( RT_RCDATA ) ),
+            SemAddResourceAndFree( $1, WResIDFromNum( RESOURCE2INT( RT_RCDATA ) ),
                     MEMFLAG_PURE | MEMFLAG_MOVEABLE | MEMFLAG_DISCARDABLE, $4 );
         }
     | name-id Y_RCDATA resource-options opt-resource-info-stmts user-defined-data
         {
             SemWINCheckMemFlags( &($3), 0, MEMFLAG_DISCARDABLE|MEMFLAG_MOVEABLE,
                     MEMFLAG_PURE );
-            SemAddResourceFree( $1, WResIDFromNum( RESOURCE2INT( RT_RCDATA ) ), $3.flags, $5 );
+            SemAddResourceAndFree( $1, WResIDFromNum( RESOURCE2INT( RT_RCDATA ) ), $3.flags, $5 );
         }
     ;
 
@@ -783,13 +784,13 @@ string-id
 accelerators-resource
     : name-id Y_ACCELERATORS opt-resource-info-stmts acc-section
         {
-            SemAddResourceFree( $1, WResIDFromNum( RESOURCE2INT( RT_ACCELERATOR ) ),
+            SemAddResourceAndFree( $1, WResIDFromNum( RESOURCE2INT( RT_ACCELERATOR ) ),
                 MEMFLAG_PURE | MEMFLAG_MOVEABLE, $4 );
         }
     | name-id Y_ACCELERATORS resource-options opt-resource-info-stmts acc-section
         {
             SemWINCheckMemFlags( &($3), 0, MEMFLAG_MOVEABLE, MEMFLAG_PURE );
-            SemAddResourceFree( $1, WResIDFromNum( RESOURCE2INT( RT_ACCELERATOR ) ),
+            SemAddResourceAndFree( $1, WResIDFromNum( RESOURCE2INT( RT_ACCELERATOR ) ),
                     $3.flags, $5 );
         }
     ;

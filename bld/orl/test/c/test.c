@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -143,7 +144,7 @@ static orl_return PrintSymbolInfo( orl_symbol_handle symbol )
         printf( "none" );
     }
     section = ORLSymbolGetSecHandle( symbol );
-    if( section != ORL_NULL_HANDLE ) {
+    if( section != NULL ) {
         printf( " (in '%s')", ORLSecGetName( section ) );
     }
     printf( "\n" );
@@ -240,7 +241,7 @@ static orl_return PrintSecInfo( orl_sec_handle section )
             printf( "note or comment" );
             break;
         default:
-            printf( "unknown type? %s", sec_type );
+            printf( "unknown type? %d", sec_type );
             break;
         }
         printf( ") " );
@@ -359,7 +360,7 @@ static orl_return PrintSecInfo( orl_sec_handle section )
     }
     if( dump.relocs ) {
         reloc_section = ORLSecGetRelocTable( section );
-        if( reloc_section != ORL_NULL_HANDLE ) {
+        if( reloc_section != NULL ) {
             if( !segname_printed ) {
                 buf = ORLSecGetName( section );
                 printf( "[%s]\n", buf );
@@ -367,10 +368,10 @@ static orl_return PrintSecInfo( orl_sec_handle section )
             }
             printf( "Relocs in [%s], ", ORLSecGetName( reloc_section ) );
             symbol_table = ORLSecGetSymbolTable( reloc_section );
-            if( symbol_table != ORL_NULL_HANDLE ) {
+            if( symbol_table != NULL ) {
                 printf( "symtab='%s', ", ORLSecGetName( symbol_table ) );
                 string_table = ORLSecGetStringTable( symbol_table );
-                if( string_table != ORL_NULL_HANDLE ) {
+                if( string_table != NULL ) {
                     printf( "strtab='%s'.\n", ORLSecGetName( string_table ) );
                 } else {
                     printf( "strtab=none.\n" );

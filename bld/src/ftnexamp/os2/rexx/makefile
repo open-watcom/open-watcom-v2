@@ -4,7 +4,7 @@ cmp             = wfc386
 linker          = wlink
 opts            = -q -xline -expl
 
-all : .symbolic ezrxfunc.dll
+all : .SYMBOLIC ezrxfunc.dll
     @%null
 
 funcload.obj : funcload.for
@@ -33,5 +33,5 @@ EZRXFUNC.DLL : funcload.obj func1.obj func2.obj rxsutils.obj
         @%append $(%lnk) export EZFunc2 resident
         $(linker) name $^& @$(%lnk)
 
-clean : .symbolic
+clean : .SYMBOLIC
         @-del *.lnk *.dll *.map *.obj 1>nul 2>nul

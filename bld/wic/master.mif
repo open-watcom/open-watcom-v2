@@ -12,7 +12,6 @@ wic_trmem = 1
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif
-!include wres.mif
 !include trmem.mif
 
 !include ../objsdef.mif                #   get objs macro
@@ -37,18 +36,17 @@ extra_c_flags_wicgener = $(trmem_cover_cflags)
 # EXE
 #
 exetarg_objs = $(objs)
-exetarg_libs = $(wres_lib)
-exetarg_res_wresui = wresui.res
+exetarg_res = $(proj_name).res
 !include exetarg.mif
 
 #
 # rc and others
 #
-rcui_inc_dirs = -I"../res" -I"../h"
+rc_inc_dirs = -I"../res" -I"../h"
 
-wresui.res: ../res/wic.rc usagee.gh usagej.gh #../res/messages.rc
+$(proj_name).res: ../res/wic.rc usagee.gh usagej.gh #../res/messages.rc
     @%make echo_rc
-    $(rcui)
+    $(rcj) $(ppflags_common) $(rc_cppflags) $(rc_flags) $(rc_inc_path) $[@ -fo=$@
 
 usagee.gh:  ../res/usage.sp
     @%make echo_wsplice

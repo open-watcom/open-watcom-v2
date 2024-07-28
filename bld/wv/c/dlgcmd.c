@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -123,7 +124,7 @@ static bool DlgHistoryKey( gui_window *gui, void *param, int edit, int list )
     }
 }
 
-static bool CmdGUIEventProc( gui_window *gui, gui_event gui_ev, void *param )
+static bool GUICALLBACK CmdGUIEventProc( gui_window *gui, gui_event gui_ev, void *param )
 {
     dlg_command *dlg;
     char        *text;
@@ -180,5 +181,5 @@ void    DlgCmd( void )
     dlg_command *dlg;
 
     dlg = WndMustAlloc( sizeof( dlg_command ) );
-    ResDlgOpen( CmdGUIEventProc, dlg, DIALOG_CMD );
+    DlgOpenRes( CmdGUIEventProc, dlg, DIALOG_CMD );
 }

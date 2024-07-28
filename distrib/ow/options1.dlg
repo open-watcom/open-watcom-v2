@@ -1,41 +1,41 @@
 # UTF-8 encoding, ¥
 static_text=\
-        //1"Select components to install:"\
-        //2"インストールするコンポーネントを選択してください:"\
-        //0
+        //0"Select components to install:"\
+        //1"インストールするコンポーネントを選択してください:"\
+        //-1
 static_text=\
-        //1"(Un-selected components will be removed)"\
-        //2"(選択されていないコンポーネントは削除されます)"\
-        //0
+        //0"(Un-selected components will be removed)"\
+        //1"(選択されていないコンポーネントは削除されます)"\
+        //-1
 static_text=
 detail_check=16Bit,\
-        //1"16-&Bit..."\
-        //2"16ビット(&B)..."\
-        //0,tools16,,\
-        //1"Include 16-bit c&ompilers:"\
-        //2"16-bitコンパイラ(&n):"\
-        //0
+        //0"16-&Bit..."\
+        //1"16ビット(&B)..."\
+        //-1,tools16,,\
+        //0"Include 16-bit c&ompilers:"\
+        //1"16-bitコンパイラ(&n):"\
+        //-1
 static_text=
 other_button=\
-        //1"32-B&it..."\
-        //2"32ビット(&i)..."\
-        //0,32Bit,\
-        //1"32-bit compiler options:"\
-        //2"32-bitオプション:"\
-        //0
+        //0"32-B&it..."\
+        //1"32ビット(&i)..."\
+        //-1,32Bit,\
+        //0"32-bit compiler options:"\
+        //1"32-bitオプション:"\
+        //-1
 static_text=
 other_button=\
-        //1"&Target..."\
-        //2"ターゲット(&T)..."\
-        //0,Target,\
-        //1"Target operating systems:"\
-        //2"ターゲットOS:"\
-        //0
+        //0"&Target..."\
+        //1"ターゲット(&T)..."\
+        //-1,Target,\
+        //0"Target operating systems:"\
+        //1"ターゲットOS:"\
+        //-1
 static_text=
 other_button=\
-        //1"Ho&st..."\
-        //2"ホスト(&s)..."\
-        //0,Host,\
-        //1"Host operating systems:"\
-        //2"ホストOS:"\
-        //0
+        //0"Ho&st..."\
+        //1"ホスト(&s)..."\
+        //-1,Host,\
+        //0"Host operating systems:"\
+        //1"ホストOS:"\
+        //-1

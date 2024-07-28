@@ -2,7 +2,7 @@
 [ DEFAULT type="e" where="c jc f77 jf77" ]
 dir="binw"      usr="dosserv.exe"   cond="doshost winhost |"
 dir="binp"      usr="batserv.exe"   cond="os2host"
-dir="binnt"     usr="batserv.exe"   cond="wnthost"      wherea="ac"
+dir="binnt"     usr="batserv.exe"   cond="wnthost"      where+="ac"
 dir="binnt64"   usr="batserv.exe"   cond="wnt64host"                    keys="ntx64"
 dir="axpnt"     usr="batserv.exe"   cond="alphahost"    where="ac"
 

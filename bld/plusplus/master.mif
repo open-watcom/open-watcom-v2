@@ -2,26 +2,19 @@ tree_depth = 4
 
 proj_name = plusplus
 
-plusplus_autodepends = .autodepend
+plusplus_autodepends = .AUTODEPEND
+
+plusplus_wreslib_cli = incl_msgtext
+
+plusplus_ntverrc = ..
+
+plusplus_qnx_usage = 1
 
 # Important! The C++ compiler modifies string literals
 #suppress_zc = 1
 
 # Extra files to delete on clean
 additional_clean = *.int y.out ytab.* *.mbr *.gh *.grh *.grc *.gc
-
-!include cproj.mif
-!include defrule.mif
-!include dllrule.mif
-!include dllbase.mif
-!include deftarg.mif
-!include trmem.mif
-
-!include $(cg_dir)/mif/fe.mif
-!include $(cpp_dir)/client.mif
-!include asclient.mif
-
-!include ../../ppobjs.mif
 
 #
 # names
@@ -39,20 +32,34 @@ dlltarg_name = wppd$(target_cpu)
 exetarg_name +=$(target_cpu)
 !endif
 intname     = wpp$(target_cpu)
+ntverrc_dll = $(dlltarg_name)
+ntverrc_exe = $(exetarg_name)
+
+!include cproj.mif
+!include defrule.mif
+!include dllrule.mif
+!include dllbase.mif
+!include deftarg.mif
+!include trmem.mif
+
+!include $(cg_dir)/client.mif
+!include asclient.mif
+
+!include ../../ppobjs.mif
 
 #
 # cflags
 #
-.c: ../../c;$(asminline_c);$(fe_misc_dir)/c;$(brinfo_dir)/c;$(cpp_c_dirs);$(trmem_dir);$(watcom_dir)/c
+.c: ../../c;$(cli_asminline_c);$(fe_misc_dir)/c;$(brinfo_dir)/c;$(trmem_dir);$(watcom_dir)/c
 
-inc_dirs = -I. -I.. -I"../../h" $(cg_inc_dirs) $(asminline_inc_dirs) $(cpp_inc_dirs) $(dwarfw_inc_dirs) &
-    -I"$(cc_dir)/h" -I"$(comp_cfg_dir)/h" -I"$(fe_misc_dir)/h" -I"$(brinfo_dir)/h"
+inc_dirs = -I. -I.. -I"../../h" $(cli_cg_inc_dirs) $(cli_asminline_inc_dirs) $(cli_owl_inc_dirs) $(cli_dwarfw_inc_dirs) &
+    $(cli_cfloat_inc_dirs) -I"$(cc_dir)/h" -I"$(comp_cfg_dir)/h" -I"$(fe_misc_dir)/h" -I"$(brinfo_dir)/h"
 
-extra_cpp_flags = -DINCL_MSGTEXT
+extra_cpp_flags =
 !ifndef plusplus_dll
 extra_cpp_flags += -DIDE_PGM
 !endif
-!ifeq dll_cg 1
+!ifdef dll_cg
 extra_cpp_flags += -D_CGDLL
 !endif
 extra_cppflags_axp = -DAS_ALPHA
@@ -84,7 +91,6 @@ extra_c_flags_cmdlnprs = $(incl_file_opts)fesupp.h
 !ifeq debug 2
 extra_c_flags_dbgzap   = $(incl_file_opts)fesupp.h
 !endif
-extra_c_flags_floatsup = $(cfloat_inc_dirs)
 extra_c_flags_initfini = $(incl_file_opts)fesupp.h
 extra_c_flags_intlload = $(incl_file_opts)fesupp.h
 extra_c_flags_pstk     = $(incl_file_opts)fesupp.h
@@ -140,7 +146,7 @@ prebuild_objs = &
     keywords.gh &
     yylex.gh &
     cmdlnprs.gh &
-    $(asminline_deps) &
+    $(cli_asminline_deps) &
     code$(target_cpu).gh &
     $(intname)01.int        # international data files
 !ifdef plusplus_dll
@@ -151,11 +157,8 @@ exetarg_libs          = $(dlltarg_name).lib $(exetarg_libs_$(host_os))
 !else
 exetarg_prebuild_objs = $(prebuild_objs)
 exetarg_objs          = $(comp_objs_exe)
-exetarg_libs          = $(asminline_lib) $(cg_libs)
+exetarg_libs          = $(cli_asminline_libs) $(cli_cg_libs)
 !endif
-exetarg_res_version_nt_386 = exever.res
-exetarg_res_version_nt_x64 = exever.res
-exetarg_qnx_res       = usage.u
 !include exetarg.mif
 
 #
@@ -163,21 +166,15 @@ exetarg_qnx_res       = usage.u
 #
 dlltarg_prebuild_objs = $(dll_subdir) $(prebuild_objs)
 dlltarg_objs          = $(comp_objs_dll)
-dlltarg_libs          = $(asminline_lib) $(cg_libs)
-dlltarg_res_version_nt_386 = version.res
-dlltarg_res_version_nt_x64 = version.res
+dlltarg_libs          = $(cli_asminline_libs) $(cli_cg_libs)
 !include dlltarg.mif
 
 #
 # rc and others
 #
-verrc_dll = $(dlltarg_name)
-verrc_exe = $(exetarg_name)
-!include verrc.mif
-
 ./intlbin.exe: $(fe_misc_dir)/c/intlbin.c
     @%make echo_bldccl
-    $(bld_ccl) $(ppflags_common) $(ppflags_autodep) $[@ $(bld_cclflags) -I"$(fe_misc_dir)/h" $(bld_ldflags)
+    $(bld_ccl) $(ppflags_common) $(ppflags_autodep) $(bld_ppflags_sys) $(bld_cppflags) $[@ $(bld_cclflags) -I"$(fe_misc_dir)/h" $(bld_ldflags)
 
 $(intname)01.int : ./intlbin.exe errors01.int usage01.int
     $[@ $(intname)
@@ -194,7 +191,7 @@ keywords.gh weights.gh : ../../hash/plusplus.key ../../hash/pc.key
 
 ./umktable.exe: ../../c/umktable.c xlat.gh
     @%make echo_bldccl
-    $(bld_ccl) $(ppflags_common) $(ppflags_autodep) $[@ $(bld_cclflags) -I. -I"../../h" $(bld_ldflags)
+    $(bld_ccl) $(ppflags_common) $(ppflags_autodep) $(bld_ppflags_sys) $(bld_cppflags) $[@ $(bld_cclflags) -I. -I"../../h" $(bld_ldflags)
 
 yylex.gh : ./umktable.exe
     @%make echo_execute
@@ -202,7 +199,7 @@ yylex.gh : ./umktable.exe
 
 ./mktrans.exe: ../../c/mktrans.c
     @%make echo_bldccl
-    $(bld_ccl) $(ppflags_common) $(ppflags_autodep) $[@ $(bld_cclflags) $(bld_ldflags)
+    $(bld_ccl) $(ppflags_common) $(ppflags_autodep) $(bld_ppflags_sys) $(bld_cppflags) $[@ $(bld_cclflags) $(bld_ldflags)
 
 xlat.gh : ./mktrans.exe ../../h/ctokens.h keywords.gh ytab.h
     @%make echo_execute
@@ -219,22 +216,20 @@ ytab.c ytab.h : ../../y/plusplus.y ../../c/yydriver.c
     diff y.out ../../y/plusplus.chk
 
 # optencod options and targets for various hosts
-!ifdef exetarg_qnx_res
-optencod_opt_qnx    = -u=$(exetarg_qnx_res)
-!endif
 #optencod_enc_linux  = -utf8
+
 optencod_targets = $(target_cpu) $(host_os)
 !ifeq debug 2
 optencod_targets += dbg
 !endif
 
-cmdlnprs.gh cmdlnprs.gc cmdlnusg.gh usage01.int $(exetarg_qnx_res) : ../../gml/options.gml
+cmdlnprs.gh cmdlnprs.gc cmdlnusg.gh usage01.int $(qnx_usage) : ../../gml/options.gml
     @%make echo_optencod
-    $(noecho)*optencod -q -i -n $(optencod_opt_$(host_os)) $(optencod_enc_$(host_os)) $[@ cmdlnprs.gh cmdlnprs.gc cmdlnusg.gh $(optencod_targets)
+    $(optencod) -i -n $(optencod_opt_$(host_os)) $(optencod_enc_$(host_os)) $[@ cmdlnprs.gh cmdlnprs.gc cmdlnusg.gh . $(optencod_targets)
 
 ./icmask.exe : ../../c/icmask.c
     @%make echo_bldccl
-    $(bld_ccl) $(ppflags_common) $(ppflags_autodep) $[@ $(bld_cclflags) -I"../../h" $(bld_ldflags)
+    $(bld_ccl) $(ppflags_common) $(ppflags_autodep) $(bld_ppflags_sys) $(bld_cppflags) $[@ $(bld_cclflags) -I"../../h" $(bld_ldflags)
 
 ic_mask.gh : ./icmask.exe ../../h/ic.h ../../c/dwarf.c ../../c/cgbkcgrf.c ../../c/cgio.c ../../c/brmwrite.c
     @%make echo_execute
@@ -272,8 +267,6 @@ xcode$(target_cpu).tmp: $(cc_dir)/a/code$(target_cpu).asm
     $(noecho)$(target_as_$(target_cpu)) -fo=.obj -I"$(watcom_dir)/h" $[@
     $(noecho)*bwlink system bin op quiet file code$(target_cpu).obj name $@
 
-bld_extra_incs = -I. -I"$(fe_misc_dir)/h" -I"../../h" -I"$(wasm_dir)/h"
-
 ./mkcode.exe: mkcode.c
     @%make echo_bldccl
-    $(bld_ccl) $(ppflags_common) $(ppflags_autodep) $[@ $(bld_cclflags) $(bld_ldflags)
+    $(bld_ccl) $(ppflags_common) $(ppflags_autodep) $(bld_ppflags_sys) $(bld_cppflags) $[@ $(bld_cclflags) $(bld_ldflags)

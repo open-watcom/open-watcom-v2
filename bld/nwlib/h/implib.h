@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,22 +30,18 @@
 ****************************************************************************/
 
 
-#define MAX_IMPORT_STRING      (_MAX_PATH + 512 + 80)
+#define MAX_IMPORT_STRING       (_MAX_PATH + 512 + 80)
 
-#define ELFBASEIMPORTSIZE 0x14A
-#define ELFBASESTRTABSIZE 0x22
-
-extern char ElfBase[];
-extern char ElfOSInfo[];
+#define ELFBASEIMPORTSIZE       0x14A
+#define ELFBASESTRTABSIZE       0x22
 
 #define ElfBase_SIZE            0x122
 #define ElfOSInfo_SIZE          0x28
 
-#define ELF_IMPORT_SYM_INFO             0x10
-#define ELF_IMPORT_NAMED_SYM_INFO       0x15
+#define ELF_IMPORT_SYM_INFO         0x10
+#define ELF_IMPORT_NAMED_SYM_INFO   0x15
 
 #include "pushpck1.h"
-
 typedef struct {
     unsigned_32         flags;
     unsigned_32         date;
@@ -61,18 +57,20 @@ typedef struct {
     unsigned_32         NamePointerTableRVA;
     unsigned_32         OrdTableRVA;
 } Coff32_Export;
-
-typedef unsigned_32 Coff32_EName;
-typedef unsigned_16 Coff32_EOrd;
-
 #include "poppck.h"
 
-extern bool     AddImport( arch_header *arch, libfile io );
-extern void     OmfMKImport( arch_header *, importType, long, const char *, const char *, char *, processor_type );
-extern void     CoffMKImport( arch_header *, importType, long, const char *, const char *, char *, processor_type );
-extern void     ElfMKImport( arch_header *, importType, long, const char *, const char *, Elf32_Export *, Elf32_Sym *, processor_type );
-extern size_t   CoffImportSize( import_sym * );
-extern size_t   ElfImportSize( import_sym * );
+typedef unsigned_32     Coff32_EName;
+typedef unsigned_16     Coff32_EOrd;
+
+extern unsigned char    ElfBase[];
+extern char             ElfOSInfo[];
+
+extern bool     AddImport( libfile io, const arch_header *arch );
+extern void     OmfMKImport( const arch_header *, importType, long, name_len *, const char *, const char *, processor_type );
+extern void     CoffMKImport( const arch_header *, importType, long, name_len *, const char *, const char *, processor_type );
+extern void     ElfMKImport( const arch_header *, importType, long, name_len *, const char *, Elf32_Export *, Elf32_Sym *, processor_type );
+extern size_t   CoffImportSize( import_sym *impsym );
+extern size_t   ElfImportSize( import_sym *impsym );
 extern void     CoffWriteImport( libfile, sym_file *, bool );
 extern void     ElfWriteImport( libfile, sym_file * );
-extern void     ProcessImport( char * );
+extern void     ProcessImportWlib( const char * );

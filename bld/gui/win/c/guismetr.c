@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,29 +40,29 @@ void GUIAPI GUIGetSystemMetrics( gui_system_metrics *metrics )
 
     if( metrics != NULL ) {
         /* size of border on which your cursor will cause resize */
-        metrics->resize_border.x = GUIScreenToScaleH( _wpi_getsystemmetrics( SM_CXFRAME ) );
-        metrics->resize_border.y = GUIScreenToScaleV( _wpi_getsystemmetrics( SM_CYFRAME ) );
+        metrics->resize_border.x = GUIScaleFromScreenH( _wpi_getsystemmetrics( SM_CXFRAME ) );
+        metrics->resize_border.y = GUIScaleFromScreenV( _wpi_getsystemmetrics( SM_CYFRAME ) );
 
         metrics->mouse = (bool)_wpi_getsystemmetrics( SM_MOUSEPRESENT );
         hdc = _wpi_getpres( HWND_DESKTOP );
         metrics->colour = (bool)( (int)_wpi_getdevicecaps( hdc, NUMCOLORS ) > 2 );
         _wpi_releasepres( HWND_DESKTOP, hdc );
 
-        metrics->top_left.x = GUIScreenToScaleH( _wpi_getsystemmetrics( SM_CXFRAME ) );
-        metrics->top_left.y = GUIScreenToScaleV( _wpi_getsystemmetrics( SM_CYFRAME )
+        metrics->top_left.x = GUIScaleFromScreenH( _wpi_getsystemmetrics( SM_CXFRAME ) );
+        metrics->top_left.y = GUIScaleFromScreenV( _wpi_getsystemmetrics( SM_CYFRAME )
                 + _wpi_getsystemmetrics( SM_CYCAPTION ) - _wpi_getsystemmetrics( SM_CYBORDER ) );
-        metrics->bottom_right.x   = GUIScreenToScaleH( _wpi_getsystemmetrics( SM_CXFRAME ) );
-        metrics->bottom_right.y   = GUIScreenToScaleV( _wpi_getsystemmetrics( SM_CYFRAME ) );
-        metrics->scrollbar_size.x = GUIScreenToScaleH( _wpi_getsystemmetrics( SM_CXHTHUMB ) - 1 );
-        metrics->scrollbar_size.y = GUIScreenToScaleV( _wpi_getsystemmetrics( SM_CYVTHUMB ) - 1 );
+        metrics->bottom_right.x   = GUIScaleFromScreenH( _wpi_getsystemmetrics( SM_CXFRAME ) );
+        metrics->bottom_right.y   = GUIScaleFromScreenV( _wpi_getsystemmetrics( SM_CYFRAME ) );
+        metrics->scrollbar_size.x = GUIScaleFromScreenH( _wpi_getsystemmetrics( SM_CXHTHUMB ) - 1 );
+        metrics->scrollbar_size.y = GUIScaleFromScreenV( _wpi_getsystemmetrics( SM_CYVTHUMB ) - 1 );
 
         /* get the size of a window caption */
-        metrics->dialog_bottom_right_size.x = GUIScreenToScaleH( _wpi_getsystemmetrics( SM_CXDLGFRAME ) );
-        metrics->dialog_bottom_right_size.y = GUIScreenToScaleV( _wpi_getsystemmetrics( SM_CYDLGFRAME ) );
-        metrics->dialog_top_left_size.x = GUIScreenToScaleH( _wpi_getsystemmetrics( SM_CXDLGFRAME ) );
-        metrics->dialog_top_left_size.y = GUIScreenToScaleV( _wpi_getsystemmetrics( SM_CYDLGFRAME )
+        metrics->dialog_bottom_right_size.x = GUIScaleFromScreenH( _wpi_getsystemmetrics( SM_CXDLGFRAME ) );
+        metrics->dialog_bottom_right_size.y = GUIScaleFromScreenV( _wpi_getsystemmetrics( SM_CYDLGFRAME ) );
+        metrics->dialog_top_left_size.x = GUIScaleFromScreenH( _wpi_getsystemmetrics( SM_CXDLGFRAME ) );
+        metrics->dialog_top_left_size.y = GUIScaleFromScreenV( _wpi_getsystemmetrics( SM_CYDLGFRAME )
                 + _wpi_getsystemmetrics( SM_CYCAPTION ) );
 
-        metrics->caption_size = GUIScreenToScaleV( _wpi_getsystemmetrics( SM_CYCAPTION ) );
+        metrics->caption_size = GUIScaleFromScreenV( _wpi_getsystemmetrics( SM_CYCAPTION ) );
     }
 }

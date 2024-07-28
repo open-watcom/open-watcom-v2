@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,7 +32,7 @@
 
 #include "_cgstd.h"
 #include "coderep.h"
-#include "cfloat.h"
+#include "_cfloat.h"
 #include "data.h"
 #include "makeins.h"
 #include "namelist.h"
@@ -103,7 +103,7 @@ static  instruction     *SetToConst( block *blk, int_32 *pcons )
     op = ins->operands[0];
     if( op->n.class != N_CONSTANT || op->c.const_type != CONS_ABSOLUTE )
         return( NULL );
-    *pcons = op->c.lo.int_value;
+    *pcons = op->c.lo.u.int_value;
     return( ins );
 }
 
@@ -188,7 +188,7 @@ static  bool    FindFlowOut( block *blk )
 
         op1 = ins->operands[1];
         assert( op1->n.class == N_CONSTANT && op1->c.const_type == CONS_ABSOLUTE );
-        value = op1->c.lo.int_value;
+        value = op1->c.lo.u.int_value;
         if( oc == OP_CMP_LESS_EQUAL )
             value += 1;
         else

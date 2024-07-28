@@ -26,75 +26,75 @@ tests = test01 &
 	test22 &
 	test23 &
 
-all : $(TESTS) .symbolic
+all : $(TESTS) .SYMBOLIC
     @echo ms2wlink tests PASS
 
-test01 : .symbolic
+test01 : .SYMBOLIC
     $(MSWL) (obj(1); | diff - $@.chk
 
-test02 : .symbolic
+test02 : .SYMBOLIC
     $(MSWL) obj,(exe,map); | diff - $@.chk
 
-test03 : .symbolic
+test03 : .SYMBOLIC
     $(MSWL) 1 2,1 2,3 4; | diff - $@.chk
 
-test04 : .symbolic
+test04 : .SYMBOLIC
     $(MSWL) 1+2,1+2,3+4; | diff - $@.chk
 
-test05 : .symbolic
+test05 : .SYMBOLIC
     $(MSWL) obj@rsp1.lnk; | diff - $@.chk
 
-test06 : .symbolic
+test06 : .SYMBOLIC
     $(MSWL) obj @rsp1.lnk; | diff - $@.chk
 
-test07 : .symbolic
+test07 : .SYMBOLIC
     $(MSWL) obj,exe@rsp1.lnk; | diff - $@.chk
 
-test08 : .symbolic
+test08 : .SYMBOLIC
     $(MSWL) obj,exe @rsp1.lnk; | diff - $@.chk
 
-test09 : .symbolic
+test09 : .SYMBOLIC
     $(MSWL) obj@rsp2.lnk; | diff - $@.chk
 
-test10 : .symbolic
+test10 : .SYMBOLIC
     $(MSWL) obj @rsp2.lnk; | diff - $@.chk
 
-test11 : .symbolic
+test11 : .SYMBOLIC
     $(MSWL) obj,exe@rsp2.lnk; | diff - $@.chk
 
-test12 : .symbolic
+test12 : .SYMBOLIC
     $(MSWL) obj,exe @rsp2.lnk; | diff - $@.chk
 
-test13 : .symbolic
+test13 : .SYMBOLIC
     $(MSWL) @rsp3.lnk; | diff - $@.chk
 
-test14 : .symbolic
+test14 : .SYMBOLIC
     $(MSWL) obj,@rsp3.lnk; | diff - $@.chk
 
-test15 : .symbolic
+test15 : .SYMBOLIC
     $(MSWL) @rsp4.lnk; | diff - $@.chk
 
-test16 : .symbolic
+test16 : .SYMBOLIC
     $(MSWL) @rsp4.lnk 2; | diff - $@.chk
 
-test17 : .symbolic
+test17 : .SYMBOLIC
     $(MSWL) @rsp4.lnk+2; | diff - $@.chk
 
-test18 : .symbolic
+test18 : .SYMBOLIC
     $(MSWL) @rsp6a.lnk , | diff - $@.chk
 
-test19 : .symbolic
+test19 : .SYMBOLIC
     $(MSWL) @rsp6b.lnk ,,, | diff - $@.chk
 
-test20 : .symbolic
+test20 : .SYMBOLIC
     $(MSWL) @rsp5.lnk ,,,, | diff - $@.chk
 
-test21 : .symbolic
+test21 : .SYMBOLIC
     $(MSWL) /SEG:100/st:3 obj,/STACK:0x400,foo/PM:VIO;/ST:123 | diff - $@.chk
 
-test22 : .symbolic
+test22 : .SYMBOLIC
     $(MSWL) @rsp7.lnk | diff - $@.chk
 
-test23 : .symbolic
+test23 : .SYMBOLIC
     $(MSWL) /XLX obj,,,,def8 | diff - $@.chk
 

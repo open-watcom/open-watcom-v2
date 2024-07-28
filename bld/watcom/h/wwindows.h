@@ -34,7 +34,6 @@
 #define WWINDOWS_H_INCLUDED
 
 #include <stddef.h>     /* NULL value */
-#define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 #ifdef __NT__
   #ifdef INCLUDE_COMMDLG_H

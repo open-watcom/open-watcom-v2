@@ -64,8 +64,8 @@ msgbuild.wlb : makefile
 msgbuild.lib : $(object_files) msgbuild.wlb
     wlib -b -q -n msgbuild.lib @msgbuild.wlb
 
-global: .symbolic
+global: .SYMBOLIC
     -rm -f *.err *.exe *.obj *.lib *.lnk *.wlb *.map
 
-reference : .symbolic msgencod.exe
+reference : .SYMBOLIC msgencod.exe
     cp msgencod.exe ../bin

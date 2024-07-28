@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -76,8 +76,8 @@ static a_window     aboutWindow = NULL;
 static bool         aboutOn = true;
 
 
-STATIC wnd_row AboutNumRows( a_window wnd )
-/*****************************************/
+STATIC wnd_row WNDCALLBACK AboutNumRows( a_window wnd )
+/*****************************************************/
 {
     wnd_row     rows;
 
@@ -94,8 +94,8 @@ STATIC wnd_row AboutNumRows( a_window wnd )
 }
 
 
-STATIC bool aboutGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *line )
-/******************************************************************************************/
+STATIC bool WNDCALLBACK aboutGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *line )
+/******************************************************************************************************/
 {
 //    gui_coord           size;
 
@@ -120,8 +120,8 @@ STATIC bool aboutGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_p
 }
 
 
-STATIC bool aboutWndEventProc( a_window wnd, gui_event gui_ev, void *parm )
-/*************************************************************************/
+STATIC bool WNDCALLBACK aboutWndEventProc( a_window wnd, gui_event gui_ev, void *parm )
+/*************************************************************************************/
 {
     /* unused parameters */ (void)wnd; (void)parm;
 

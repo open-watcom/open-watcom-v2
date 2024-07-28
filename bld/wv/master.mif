@@ -6,7 +6,28 @@ tree_depth = 4
 
 proj_name = wv
 
-!ifeq sys_windowed 1
+!ifndef wv_autodepends
+wv_autodepends = .AUTODEPEND
+!endif
+
+wv_ntmanif = ../../res
+wv_ntverrc = ../../res
+
+wv_trmem = 1
+
+wv_wreslib_cli = gui
+
+wv_dos_extender = dos4g	#causeway
+
+wv_qnx_usage = 1
+
+!ifdef sys_windowed
+!ifeq host_os os2
+wv_os2pm = 1
+!endif
+!endif
+
+!ifdef sys_windowed
 name_os2i86    = wdw16
 !else
 name_os2i86    = wd16
@@ -15,29 +36,20 @@ name_wini86    = wdc
 
 !ifdef name_$(host_os)$(host_cpu)
 name = $(name_$(host_os)$(host_cpu))
-!else ifeq sys_windowed 1
+!else ifdef sys_windowed
 name = wdw
 !else
 name = wd
 !endif
 
-!ifndef wv_autodepends
-wv_autodepends = .AUTODEPEND
-!endif
-
-wv_trmem = 1
-
-wv_dos_extender = dos4g	#causeway
-
 additional_clean = *.gh *.grc
-!ifdef gui_os2pm
+!ifdef wv_os2pm
 additional_clean += *.dlg
 !endif
 
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif
-!include wres.mif
 !include trmem.mif
 
 dig_arch = all
@@ -48,11 +60,8 @@ dig_arch = all
 !include $(dig_dir)/trpcli.mif
 
 !include $(aui_dir)/client.mif
-!include $(gui_dir)/client.mif
-!include $(ui_dir)/client.mif
 !include $(hlpview_dir)/client.mif
 !include $(wpi_dir)/client.mif
-!include $(commonui_dir)/client.mif
 
 !include $(wv_dir)/wvobjs.mif
 
@@ -65,30 +74,11 @@ target_nt  = win
 #
 .c: ../c;../../c;$(aui_dir)/c;$(dig_srcs);$(watcom_dir)/c;$(trmem_dir)
 
-!ifdef wv_engine_noui
-res_strings_dir = h
+inc_dirs = -I.  -Ih -I"../h" -I"../../h" -I"../../res" -I"$(dig_dir)/h" $(cli_aui_inc_dirs) &
+	$(cli_ui_inc_dirs_internal) $(cli_hlpview_inc_dirs) $(cli_wpi_inc_dirs)
+!ifdef sys_rtdll
 !else
-res_strings_dir = ../../res/strings
-!endif
-!ifdef gui_os2pm
-wv_res_inc_dirs = -I"$(res_strings_dir)" -I"../../res"
-!else
-wv_res_inc_dirs = -I"../../res/dlgs" -I"$(res_strings_dir)" -I"../../res"
-!endif
-
-inc_dirs = -I.  -Ih -I"../h" -I"../../h" $(wv_res_inc_dirs) -I"$(dig_dir)/h" &
-    $(aui_inc_dirs) $(gui_inc_dirs) $(ui_inc_dirs) $(ui_extra_inc_dirs) &
-    $(hlpview_inc_dirs) $(wpi_inc_dirs) $(commonui_inc_dirs)
-!ifeq sys_rtdll 1
-!else
-!ifeq sys_windowed 1
-inc_dirs += -I"$(gui_dir)/win/h"
-!else
-inc_dirs += -I"$(gui_dir)/ui/h"
-!endif
-!endif
-!if "$(host_os)" == "linux" || "$(host_os)" == "bsd" || "$(host_os)" == "osx" || "$(host_os)" == "haiku"
-inc_dirs += -I"$(ncurses_dir)/h"
+inc_dirs += $(cli_gui_inc_dirs_internal)
 !endif
 
 extra_cpp_flags = $(dig_arch_cpp_flags) -DBLDVER=$(bld_ver)
@@ -98,7 +88,7 @@ extra_cpp_flags += -D__NOUI__
 !ifeq debug 2
 extra_cpp_flags += -DAUI_DBG
 !endif
-!ifeq sys_windowed 1
+!ifdef sys_windowed
 extra_cpp_flags    += -DGUI_IS_GUI -DUI_GUI
 extra_cpp_flags_os2 = -D__OS2_PM__
 !endif
@@ -108,7 +98,7 @@ extra_cpp_flags_dynmem = $(trmem_cpp_flags)
 
 extra_c_flags_win = -zW -zc
 extra_c_flags_qnx = -I"$(clib_dir)/h"
-!ifeq sys_windowed 1
+!ifdef sys_windowed
 extra_c_flags_os2_i86 = -zc -zu
 !else
 extra_c_flags_os2_i86 = -zc
@@ -126,14 +116,14 @@ extra_c_flags_dynmem = $(trmem_cover_cflags)
 #
 lflags_win_i86 += memory font
 
-!ifeq sys_windowed 1
+!ifdef sys_windowed
 extra_l_flags_win_i86 = op stack=12K, heap=15K import DEATH GDI.121 import RESURRECTION GDI.122
 !else
 extra_l_flags_win_i86 = op stack=15K, heap=10K, align=512
 !endif
 # NB: DOS4GOPTIONS export is disabled due to incompatibility with DOS/4G 2.x
 extra_l_flags_dos = op stack=24k #export DOS4GOPTIONS=_DOS4GOPTIONS
-!ifeq sys_windowed 1
+!ifdef sys_windowed
 extra_l_flags_os2_i86 = op stack=19k, newfile
 extra_l_flags_os2_386 = imp WinThreadAssocQueue PMMERGE.5398
 !else
@@ -149,35 +139,23 @@ extra_l_flags_rdos =
 # EXE
 #
 !ifdef wv_engine_noui
-exetarg_prebuild_objs = litdef.gh
+exetarg_prebuild_objs = liteng.gh usage.gh usagej.gh
 exetarg_objs          = $(wv_drv_objs)
 exetarg_libs          = wd.lib
-exetarg_res           = wvuidll.res
 exetarg_name          = $(wv_engine_noui)
-!include exetarg.mif
 !else
-exetarg_prebuild_objs = litdef.gh usage.gh
+exetarg_prebuild_objs = liteng.gh litdui.gh litmenu.gh usage.gh usagej.gh
 exetarg_objs          = $(engine_objs) fingmsg.obj $(ui_objs)
-exetarg_libs          = $(aui_lib) $(gui_lib) $(ui_lib) $(wres_lib)
-exetarg_res_version_nt_386 = exever.res
-exetarg_res_version_nt_x64 = exever.res
-!ifeq sys_windowed 1
-exetarg_res           = $(proj_name).res
-!else
-exetarg_res_wresui    = wresui.res
-!endif
-exetarg_nt_manif_386  = ntmanif.res
-exetarg_nt_manif_x64  = ntmanif.res
-exetarg_qnx_res       = usage.u
+exetarg_libs          = $(cli_aui_libs)
 exetarg_name          = $(name)
-#exetarg_ext           = .exe
-!include exetarg.mif
 !endif
+exetarg_res           = $(proj_name).res
+!include exetarg.mif
 
 #
 # LIB
 #
-libtarg_prebuild_objs = litdef.gh usage.gh
+libtarg_prebuild_objs = liteng.gh usage.gh usagej.gh
 libtarg_objs          = $(engine_objs)
 libtarg_name          = wd
 !include libtarg.mif
@@ -185,15 +163,15 @@ libtarg_name          = wd
 #
 # rc and others
 #
-rc_inc_dirs = -I. -I"../../res/$(target_$(host_os))" $(wv_res_inc_dirs) &
-    -I"../../h" $(aui_rc_inc_dirs) $(gui_rc_inc_dirs) -I"$(dig_dir)/h"
+!ifeq host_os os2
+target_rc_inc_dirs = -I"../../res/os2"
+!else
+target_rc_inc_dirs = -I"../../res/win"
+!endif
+rc_inc_dirs = -I. $(target_rc_inc_dirs) -I"../../res" -I"../../res/dlgs" &
+    -I"../../h" $(cli_aui_rc_inc_dirs) -I"$(dig_dir)/h"
 
-rcui_inc_dirs = -I. $(wv_res_inc_dirs) &
-    -I"../../h" $(aui_rc_inc_dirs) $(gui_rc_inc_dirs) -I"$(dig_dir)/h"
-
-!include verrc.mif
-
-!ifeq sys_windowed 1
+!ifdef sys_windowed
 
 bitmaps_os2 = &
     ../../res/os2/zapant.ico &
@@ -240,7 +218,6 @@ bitmaps_win = &
 bitmaps = &
     $(bitmaps_$(target_$(host_os))) &
     ../../res/splash.bmp &
-    ../../res/closebmp.bmp &
     ../../res/read1.bmp &
     ../../res/read2.bmp &
     ../../res/write1.bmp &
@@ -285,7 +262,7 @@ bitmaps = &
 
 !endif
 
-!ifdef gui_os2pm
+!ifdef wv_os2pm
 
 wv_dialogs = &
     dlgayn.dlg &
@@ -392,14 +369,11 @@ wv_dialogs = &
 
 !endif
 
-rcfiles = &
-    $(gui_dir)/h/gui.rc &
-    $(gui_dir)/h/gui.msg &
-    $(aui_dir)/res/aui.rc &
-    $(aui_dialogs) &
+!ifdef wv_engine_noui
+rcfiles = liteng.gh usage.gh usagej.gh
+!else
+rcfiles = liteng.gh litdui.gh litmenu.gh usage.gh usagej.gh &
     ../../res/dialogs.rc &
-    ../../res/strings.rc &
-    litdef.gh &
     ../../h/dlgamb.rh &
     ../../h/dlgayn.rh &
     ../../h/dlgstk.rh &
@@ -413,55 +387,55 @@ rcfiles = &
     ../../h/dlgstk.rh &
     ../../h/dlgasync.rh &
     $(wv_dialogs)
-
-!ifeq host_os os2
-
-$(proj_name).res : ../../res/wvpm.rc $(bitmaps) $(rcfiles) $(__MAKEFILES__) .autodepend
-    @%make echo_rc
-    $(rc) $(ppflags_common) $(rc_flags) -ad $(rc_inc_path) $[@ -fo=$@
-
-$(proj_name)j.res : ../../res/wvpm.rc $(bitmaps) $(rcfiles) $(__MAKEFILES__) .autodepend
-    @%make echo_rc
-    $(rc) $(ppflags_common) $(rc_flags) -ad -DJAPANESE $(rc_inc_path) $[@ -fo=$@
-
-!else
-
-$(proj_name).res : ../../res/wvwin.rc $(bitmaps) $(rcfiles) $(__MAKEFILES__) .autodepend
-    @%make echo_rc
-    $(rc) $(ppflags_common) $(rc_flags) -ad $(rc_inc_path) $[@ -fo=$@
-
 !endif
 
-wvuidll.res : ../../res/wvuidll.rc litdef.gh $(__MAKEFILES__) .autodepend
+!ifdef wv_engine_noui
+extra_rc_flags = -DRESX_ENG
+!else ifdef sys_windowed
+extra_rc_flags = -DRESX_GUI
+!else
+!endif
+
+!ifdef wv_engine_noui
+$(proj_name).res : ../../res/wv.rc $(rcfiles) $(cli_aui_rc_deps) $(__MAKEFILES__) .AUTODEPEND
+!else ifdef sys_windowed
+$(proj_name)j.res : ../../res/wv.rc $(bitmaps) $(rcfiles) $(cli_aui_rc_deps) $(__MAKEFILES__) .AUTODEPEND
     @%make echo_rc
-    $(rc) $(ppflags_common) $(rc_flags) -ad $(rc_inc_path) $[@ -fo=$@
+    $(rcu8j) $(ppflags_common) $(ppflags_wreslib) $(rc_cppflags) -DJAPANESE -ad $(rc_flags) $(rc_inc_path) $[@ -fo=$@
 
-wresui.res : ../../res/wvui.rc $(rcfiles) usage.gh usagej.gh $(__MAKEFILES__) .autodepend
+$(proj_name).res : ../../res/wv.rc $(bitmaps) $(rcfiles) $(cli_aui_rc_deps) $(__MAKEFILES__) .AUTODEPEND
+!else
+$(proj_name).res : ../../res/wv.rc $(rcfiles) $(cli_aui_rc_deps) $(__MAKEFILES__) .AUTODEPEND
+!endif
     @%make echo_rc
-    $(rcui) -ad
+    $(rcu8) $(ppflags_common) $(ppflags_wreslib) $(rc_cppflags) -ad $(rc_flags) $(rc_inc_path) $[@ -fo=$@
 
-ntmanif.res : ../../res/ntmanif.rc
-    @%make echo_rc
-    $(rc) $(ppflags_common) $(rc_flags) -I"../../res" $(inc_dirs_sys_nt) $< -fo=$@
-
-litdefm.tmp : $(res_strings_dir)/menu.str $(__MAKEFILES__)
+wdeng.gh : ../../res/wdeng.str $(__MAKEFILES__)
     @%make echo_cpp
-    $(cpp) $(ppflags_common) $(rc_ui_flags) $(rc_ui_inc_path) -o$@ $[@
+    $(cppu8) $(ppflags_common) $(ppflags_wreslib) $(rc_cppflags) -I"$(dig_dir)/h" -I"$(watcom_dir)/h" -o$@ $[@
 
-litdefs1.tmp : ../../res/wdeng.str $(__MAKEFILES__)
+wddui.gh : ../../res/wddui.str $(__MAKEFILES__)
     @%make echo_cpp
-    $(cpp) $(ppflags_common) $(rc_ui_flags) -I"$(dig_dir)/h" -I"$(watcom_dir)/h" -o$@ $[@
+    $(cppu8) $(ppflags_common) $(ppflags_wreslib) $(rc_cppflags) -I"$(dig_dir)/h" -I"$(watcom_dir)/h" -o$@ $[@
 
-litdefs2.tmp : $(res_strings_dir)/wddui.str $(__MAKEFILES__)
+wdmenu.gh : ../../res/wdmenu.str $(__MAKEFILES__)
     @%make echo_cpp
-    $(cpp) $(ppflags_common) $(rc_ui_flags) -I"$(dig_dir)/h" -I"$(watcom_dir)/h" -o$@ $[@
+    $(cppu8) $(ppflags_common) $(ppflags_wreslib) $(rc_cppflags) $(rc_inc_path) -o$@ $[@
 
-litdef.gh : litdefs1.tmp litdefs2.tmp litdefm.tmp $(__MAKEFILES__)
+litmenu.gh : wdmenu.gh $(__MAKEFILES__)
     @%create $@
     @%make echo_awk
-    $(noecho)*awk -v prefix=DBG_ENG_LITERAL_ -v base=DBG_ENG_BASE -f $(build_dir)/makemsg2.awk -v OUTFILE=$^. litdefs1.tmp
-    $(noecho)*awk -v prefix=DBG_DUI_LITERAL_ -v base=DBG_DUI_BASE -f $(build_dir)/makemsg2.awk -v OUTFILE=$^. litdefs2.tmp
-    $(noecho)*awk -v prefix=DBG_DUI_MENU_ -v base=DBG_MENU_BASE -f $(build_dir)/makemsg2.awk -v OUTFILE=$^. litdefm.tmp
+    $(noecho)*awk -v prefix=DBG_DUI_MENU_ -v base=DBG_MENU_BASE -f $(build_dir)/makemsg2.awk -v OUTFILE=$^. $[@
+
+liteng.gh : wdeng.gh $(__MAKEFILES__)
+    @%create $@
+    @%make echo_awk
+    $(noecho)*awk -v prefix=DBG_ENG_LITERAL_ -v base=DBG_ENG_BASE -f $(build_dir)/makemsg2.awk -v OUTFILE=$^. $[@
+
+litdui.gh : wddui.gh $(__MAKEFILES__)
+    @%create $@
+    @%make echo_awk
+    $(noecho)*awk -v prefix=DBG_DUI_LITERAL_ -v base=DBG_DUI_BASE -f $(build_dir)/makemsg2.awk -v OUTFILE=$^. $[@
 
 !ifeq debug 2
 wsplice_keys = -kHIDDEN
@@ -475,6 +449,8 @@ usagej.gh : ../../h/usage.sp $(__MAKEFILES__)
     @%make echo_wsplice
     $(noecho)*wsplice -kJAPANESE -k$(host_os) $(wsplice_keys) -t8 -f "pick((MSG_USAGE_BASE+%$#%+), \"\", \"%s\")" $[@ $@
 
-usage.u : ../../h/usage.sp $(__MAKEFILES__)
+!ifdef qnx_usage
+$(qnx_usage) : ../../h/usage.sp $(__MAKEFILES__)
     @%make echo_wsplice
     $(noecho)*wsplice -u -kENGLISH -k$(host_os) -kLINKRES $[@ $@
+!endif

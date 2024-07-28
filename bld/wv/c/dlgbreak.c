@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -48,6 +48,8 @@
 #include "dlgexpr.h"
 #include "dlgbreak.h"
 #include "dlgscomp.h"
+#include "liteng.h"
+#include "litdui.h"
 
 
 typedef struct {
@@ -212,7 +214,7 @@ static bool DlgEditField( gui_ctl_id id )
 }
 
 
-static bool BrkGUIEventProc( gui_window *gui, gui_event gui_ev, void *param )
+static bool GUICALLBACK BrkGUIEventProc( gui_window *gui, gui_event gui_ev, void *param )
 {
     gui_ctl_id  id;
     gui_ctl_id  from;
@@ -351,7 +353,7 @@ bool DlgBreak( address addr )
     }
     dlg.tmpbp = *bp;
     CnvULongDec( bp->index, StrCopyDst( " ", StrCopyDst( LIT_DUI( DlgBreak ), TxtBuff ) ), TXT_LEN );
-    ResDlgOpen( BrkGUIEventProc, &dlg, DIALOG_BREAK );
+    DlgOpenRes( BrkGUIEventProc, &dlg, DIALOG_BREAK );
     SetRecord( true );
     return( !dlg.cancel );
 }

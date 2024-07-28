@@ -13,7 +13,7 @@ CFLAGS += -d1 -hc
 
 OBJS = videomp.obj vidmpdat.obj boxv.obj
 
-.c.obj : .autodepend
+.c.obj : .AUTODEPEND
     $(CC) $(CFLAGS) $(INCS) $<
 
 boxvideo.sys : $(OBJS) $(__MAKEFILES__) videomp.res
@@ -45,7 +45,7 @@ videomp.img : boxvideo.sys disk1 readme.txt oemsetup.inf vidmini.inf
     cp readme.txt   dist
     mkimage -l VIDEOMP -o videomp.img dist
     
-clean : .symbolic
+clean : .SYMBOLIC
     rm -f *.obj
     rm -f *.sys
     rm -f *.sym

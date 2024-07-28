@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -187,7 +187,8 @@ static size_t fmtAddr( char *dest, size_t len, targ_addr *addr, bool offs_32 )
     }
 #endif
     /* segmented formats 16:16 or 16:32 */
-    if( !offs_32 && (FmtData.type & (MK_DOS | MK_OS2_NE | MK_WIN_NE | MK_DOS16M | MK_QNX_16 | MK_RDOS_16)) ) {
+    if( !offs_32
+      && (FmtData.type & (MK_DOS | MK_OS2_NE | MK_WIN_NE | MK_DOS16M | MK_QNX_16 | MK_RDOS_16)) ) {
         return( FmtStr( dest, len, "%x:%x", addr->seg, (unsigned short)addr->off ) );
     } else {
         return( FmtStr( dest, len, "%x:%h", addr->seg, addr->off ) );
@@ -226,7 +227,8 @@ size_t DoFmtStr( char *buff, size_t len, const char *src, va_list args )
     dest = buff;
     for( ;; ) {
         ch = *src++;
-        if( ch == '\0' || len == 1 )
+        if( ch == '\0'
+          || len == 1 )
             break;
         if( ch != '%' ) {
             *dest++ = ch;
@@ -415,8 +417,8 @@ unsigned CalcMsgNum( unsigned num )
     return( class * 1000 + (num & NUM_MSK) );
 }
 
-static size_t GetMsgPrefix( char *buff, size_t max_len, unsigned num )
-/********************************************************************/
+size_t GetMsgPrefix( unsigned num, char *buff, size_t max_len )
+/*************************************************************/
 {
     size_t      msgprefixlen;
     unsigned    class;
@@ -439,11 +441,8 @@ static size_t GetMsgPrefix( char *buff, size_t max_len, unsigned num )
 static void MessageFini( unsigned num, char *buff, size_t len )
 /*************************************************************/
 {
-    size_t      msgprefixlen;
     unsigned    class;
-    char        msgprefix[MAX_MSG_SIZE];
 
-    msgprefixlen = 0;
     class = num & CLASS_MSK;
     if( class >= (ERR & CLASS_MSK) ) {
         LinkState |= LS_LINK_ERROR;
@@ -456,16 +455,17 @@ static void MessageFini( unsigned num, char *buff, size_t len )
             WriteStdOutInfo( buff, num, CurrSymName );
         }
     }
-    if( (num & OUT_MAP) && (MapFile != NIL_FHANDLE) ) {
-        msgprefixlen = GetMsgPrefix( msgprefix, MAX_MSG_SIZE, num );
-        BufWrite( msgprefix, msgprefixlen );
-        BufWrite( buff, len );
-        WriteMapNL( 1 );
+    if( num & OUT_MAP ) {
+        if( MapFile != NULL ) {
+            WriteMapLnkMsgCallback( num, buff, len );
+        }
     }
-    if( class == (FTL & CLASS_MSK) )
+    if( class == (FTL & CLASS_MSK) ) {
         Suicide();
+    }
     /* yells are counted as errors for limits */
-    if(( class == (YELL & CLASS_MSK) ) || ( class >= (MILD_ERR & CLASS_MSK) )) {
+    if( ( class == (YELL & CLASS_MSK) )
+      || ( class >= (MILD_ERR & CLASS_MSK) ) ) {
         if( LinkFlags & LF_MAX_ERRORS_FLAG ) {
             MaxErrors--;
             if( MaxErrors == 0 ) {
@@ -547,7 +547,8 @@ void LnkMsg(
         FileOrder( rc_buff, which_file );
         len += FmtStr( buff + len, MAX_MSG_SIZE - len, rc_buff );
         if( num & LINE ) {
-            if( Token.how != SYSTEM && Token.how != ENVIRONMENT ) {
+            if( Token.how != SYSTEM
+              && Token.how != ENVIRONMENT ) {
                 Msg_Get( MSG_LINE, rc_buff );
                 Msg_Do_Put_Args( rc_buff, &MsgArgInfo, "d", Token.line );
                 len += FmtStr( buff + len, MAX_MSG_SIZE - len, rc_buff );
@@ -631,7 +632,8 @@ bool SkipSymbol( symbol * sym )
 {
     mangled_type art;
 
-    if( (sym->info & SYM_STATIC) && (MapFlags & MAP_STATICS) == 0 )
+    if( (sym->info & SYM_STATIC)
+      && (MapFlags & MAP_STATICS) == 0 )
         return( true );
     art = __is_mangled_internal( sym->name.u.ptr, strlen( sym->name.u.ptr ) );
     return( (MapFlags & MAP_ARTIFICIAL) == 0 && art == __MANGLED_INTERNAL );

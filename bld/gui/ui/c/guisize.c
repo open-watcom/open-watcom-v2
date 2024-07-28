@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -270,8 +270,8 @@ static bool SizeWnd( gui_window *wnd, SAREA *area, gui_flags flag, resize_dir di
     if( flag != MINIMIZED ) {
         gui_coord   newsize;
 
-        newsize.x = GUIScreenToScaleH( wnd->use.width );
-        newsize.y = GUIScreenToScaleV( wnd->use.height );
+        newsize.x = GUIScaleFromScreenH( wnd->use.width );
+        newsize.y = GUIScaleFromScreenV( wnd->use.height );
         GUIEVENT( wnd, GUI_RESIZE, &newsize );
     }
     if( was_minimized ) {
@@ -618,8 +618,8 @@ bool GUIAPI GUIResizeWindow( gui_window *wnd, const gui_rect *rect )
         gui_coord   newsize;
 
         ret = GUIResizeDialog( wnd, &area );
-        newsize.x = GUIScreenToScaleH( wnd->use.width );
-        newsize.y = GUIScreenToScaleV( wnd->use.height );
+        newsize.x = GUIScaleFromScreenH( wnd->use.width );
+        newsize.y = GUIScaleFromScreenV( wnd->use.height );
         GUIEVENT( wnd, GUI_RESIZE, &newsize );
     } else {
         hidden = uivshow( &wnd->vs );
@@ -659,7 +659,7 @@ bool GUIAPI GUIGetRestoredSize( gui_window *wnd, gui_rect *rect )
         pos.row += wnd->parent->vs.area.row;
         pos.col += wnd->parent->vs.area.col;
     }
-    return ( GUIScreenToScaleRect( &pos, rect ) );
+    return ( GUIScaleFromScreenRect( &pos, rect ) );
 }
 
 void GUIAPI GUIMinimizeWindow( gui_window * wnd )

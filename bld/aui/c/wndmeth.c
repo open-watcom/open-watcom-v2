@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -50,71 +50,66 @@ wnd_info NoInfo = {
     NoPopUp
 };
 
-a_window WndNoOpen( void )
-{
-    return( NULL );
-}
-
-bool NoGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *line )
+bool WNDCALLBACK NoGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *line )
 {
     /* unused parameters */ (void)wnd; (void)row; (void)piece; (void)line;
 
     return( false );
 }
 
-void NoModify( a_window wnd, wnd_row row, wnd_piece piece )
+void WNDCALLBACK NoModify( a_window wnd, wnd_row row, wnd_piece piece )
 {
     /* unused parameters */ (void)wnd; (void)row; (void)piece;
 }
 
-void NoNotify( a_window wnd, wnd_row row, wnd_piece piece )
+void WNDCALLBACK NoNotify( a_window wnd, wnd_row row, wnd_piece piece )
 {
     /* unused parameters */ (void)wnd; (void)row; (void)piece;
 }
 
-void    NoBegPaint( a_window wnd, wnd_row row, int num )
+void WNDCALLBACK NoBegPaint( a_window wnd, wnd_row row, int num )
 {
     /* unused parameters */ (void)wnd; (void)row; (void)num;
 }
 
-void    NoEndPaint( a_window wnd, wnd_row row, int num )
+void WNDCALLBACK NoEndPaint( a_window wnd, wnd_row row, int num )
 {
     /* unused parameters */ (void)wnd; (void)row; (void)num;
 }
 
-void NoRefresh( a_window wnd )
+void WNDCALLBACK NoRefresh( a_window wnd )
 {
     WndSetRepaint( wnd );
 }
 
-void NoMenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_piece piece )
+void WNDCALLBACK NoMenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_piece piece )
 {
     /* unused parameters */ (void)wnd; (void)id; (void)row; (void)piece;
 }
 
 
-int NoVScroll( a_window wnd, int lines )
+int WNDCALLBACK NoVScroll( a_window wnd, int lines )
 {
     /* unused parameters */ (void)wnd; (void)lines;
 
     return( 0 );
 }
 
-wnd_row NoNumRows( a_window wnd )
+wnd_row WNDCALLBACK NoNumRows( a_window wnd )
 {
     /* unused parameters */ (void)wnd;
 
     return( -1 );
 }
 
-wnd_row NoNextRow( a_window wnd, wnd_row row, int inc )
+wnd_row WNDCALLBACK NoNextRow( a_window wnd, wnd_row row, int inc )
 {
     /* unused parameters */ (void)wnd;
 
     return( row + inc );
 }
 
-bool NoWndEventProc( a_window wnd, gui_event gui_ev, void *parm )
+bool WNDCALLBACK NoWndEventProc( a_window wnd, gui_event gui_ev, void *parm )
 {
     /* unused parameters */ (void)wnd; (void)parm;
 
@@ -262,7 +257,7 @@ bool WndGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *lin
     line->static_text = false;
     line->tabstop = true;
     line->hot = false;
-    line->extent = WND_NO_EXTEND;
+    line->extent = WND_NO_EXTENT;
     line->master_tabstop = false;
     line->underline = false;
     line->draw_bar = false;

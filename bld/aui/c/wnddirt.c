@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -197,7 +197,7 @@ void WndPaintDirty( a_window wnd )
                 wnd->vscroll_pending = 0;
             } else {
                 for( i = 0; i < wnd->title_rows; ++i ) {
-                    GUIDrawTextExtent( wnd->gui, " ", 1, i, 0, GUI_BACKGROUND, GUI_NO_COLUMN );
+                    GUIDrawTextExtent( wnd->gui, " ", 1, i, 0, GUI_BACKGROUND, GUI_NO_EXTENT );
                 }
                 GUIDoVScrollClip( wnd->gui, wnd->vscroll_pending, wnd->title_rows, wnd->rows - 1 );
                 wnd->vscroll_pending = 0;
@@ -242,7 +242,7 @@ void WndPaintDirty( a_window wnd )
                         rect.y = dirty->row * wnd->max_char.y;
                         rect.width = GUIGetExtentX( wnd->gui, line.text + dirty->colidx, dirty->end_colidx - dirty->colidx + GUICharLen( UCHAR_VALUE( line.text[dirty->colidx] ) ) );
                         rect.height = wnd->max_char.y;
-                    } else if( line.extent == WND_MAX_EXTEND || line.master_tabstop ) {
+                    } else if( line.extent == WND_NO_EXTENT || line.master_tabstop ) {
                         rect.width = 0;
                         rect.height = 0;
                         GUIWndDirtyRow( wnd->gui, dirty->row );

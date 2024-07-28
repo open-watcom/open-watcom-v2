@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,112 +37,81 @@
 #include "cfloati.h"
 
 #define DOUBLE_DIGITS   17
-#define FRLSIZE         ( DOUBLE_DIGITS + offsetof( cfloat, mant ) + 1 )
-
-typedef char *pointer;
+#define FRLSIZE         (CFLOAT_SIZE + DOUBLE_DIGITS)
+#define NEXT_BLOCK(x)   (((mem_blk *)(x))->next)
 
 typedef struct {
-    pointer     head;
-} mini_frl;
+    void        *next;
+} mem_blk;
 
-static cf_callbacks     cfRtns;
-static mini_frl         cfFrlList;
-
-static  void    miniFrlInit( mini_frl *frl_ptr ) {
-/************************************************/
-
-    frl_ptr->head = NULL;
-}
-
-static  pointer miniFrlAlloc( mini_frl *frl_ptr ) {
-/*************************************************/
-
-    pointer     ptr;
-
-    if( frl_ptr->head != NULL ) {
-        // unhook it and return the first element
-        ptr = frl_ptr->head;
-        frl_ptr->head = *((pointer *)ptr);
-        return( ptr );
-    }
-    return( cfRtns.alloc( FRLSIZE ) );
-}
-
-static  void    miniFrlFree( mini_frl *frl_ptr, pointer ptr ) {
-/****************&********************************************/
-
-    *(pointer *)ptr = frl_ptr->head;
-    frl_ptr->head = ptr;
-}
-
-static  void    miniFrlFini( mini_frl *frl_ptr ) {
-/************************************************/
-
-    pointer     ptr;
-    pointer     next;
-
-    ptr = frl_ptr->head;
-    while( ptr != NULL ) {
-        next = *(pointer *)ptr;
-        cfRtns.free( ptr );
-        ptr = next;
-    }
-    frl_ptr->head = NULL;
-}
-
-void    CFInit( cf_callbacks *table ) {
-/*************************************/
-
-    cfRtns = *table;
-    miniFrlInit( &cfFrlList );
+void    CFInit( cfhandle h )
+/**************************/
+{
+    h->head = NULL;
 }
 
 
-cfloat  *CFAlloc( size_t size ) {
-/*******************************/
-
-    cfloat      *number;
+cfloat  *CFAlloc( cfhandle h, size_t size )
+/*****************************************/
+{
+    cfloat      *result;
 
     if( size <= DOUBLE_DIGITS ) {
         size = FRLSIZE;
-        number = (cfloat *)miniFrlAlloc( &cfFrlList );
+        if( h->head != NULL ) {
+            /*
+             * unhook it and return the first element
+             */
+            result = h->head;
+            h->head = NEXT_BLOCK( result );
+        } else {
+            result = h->alloc( size );
+        }
     } else {
-        size += offsetof( cfloat, mant ) + 1;
-        number = cfRtns.alloc( size );
+        size += CFLOAT_SIZE;
+        result = h->alloc( size );
     }
-    number->sign = 0;
-    number->exp = 1;
-    number->len = 1;
-    number->alloc = size;
-    *number->mant = '0';
-    *(number->mant + 1) = NULLCHAR;
-    return( number );
+    /*
+     * Init result to 0 (zero)
+     */
+    result->sign = 0;
+    result->exp = 1;
+    result->len = 1;
+    result->alloc = size;
+    result->mant[0] = '0';
+    result->mant[1] = NULLCHAR;
+    return( result );
 }
 
 
-void    CFFree( cfloat *f ) {
-/***************************/
-
+void    CFFree( cfhandle h, cfloat *f )
+/*************************************/
+{
     if( f->alloc == FRLSIZE ) {
-        miniFrlFree( &cfFrlList, (pointer)f );
+        NEXT_BLOCK( f ) = h->head;
+        h->head = f;
     } else {
-        cfRtns.free( f );
+        h->free( f );
     }
 }
 
+void    CFFini( cfhandle h )
+/**************************/
+{
+    void    *ptr;
 
-bool CFFrlFree( void ) {
-/**********************/
+    while( (ptr = h->head) != NULL ) {
+        h->head = NEXT_BLOCK( ptr );
+        h->free( ptr );
+    }
+}
 
-    if( cfFrlList.head != NULL ) {
-        miniFrlFini( &cfFrlList );
+bool CFFrlFree( cfhandle h )
+/**************************/
+{
+    if( h->head != NULL ) {
+        CFFini( h );
         return( true );
     }
     return( false );
-}
-
-void    CFFini( void ) {
-/**********************/
-
-    miniFrlFini( &cfFrlList );
 }

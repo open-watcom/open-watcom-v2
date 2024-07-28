@@ -1,7 +1,7 @@
 proj_name = awk
 
 !ifndef awk_autodepends
-awk_autodepends = .autodepend
+awk_autodepends = .AUTODEPEND
 !endif
 
 !include cproj.mif
@@ -46,10 +46,10 @@ exetarg_objs = &
 # rc and others
 #
 proctab.c : ./maketab.exe ../h/ytab.h
-    $(noecho)copy $]@ ytab.h
+    $(noecho)%copy $]@ ytab.h
     @%make echo_execute
     $(noecho)$[@ > proctab.c
 
 ./maketab.exe : ../c/maketab.c
     @%make echo_bldcl
-    $(bld_ccl) $(ppflags_common) $(ppflags_autodep) $[@ -I"../h" $(bld_cclflags) $(bld_ldflags)
+    $(bld_ccl) $(ppflags_common) $(ppflags_autodep) $(bld_ppflags_sys) $(bld_cppflags) $[@ -I"../h" $(bld_cclflags) $(bld_ldflags)

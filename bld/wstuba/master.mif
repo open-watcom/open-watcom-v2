@@ -1,6 +1,6 @@
 proj_name = wstuba
 
-wstuba_autodepends = .autodepend
+wstuba_autodepends = .AUTODEPEND
 
 memory_model_i86 = s
 

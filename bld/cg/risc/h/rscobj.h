@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -65,11 +65,11 @@ extern void                 AlignObject( unsigned align );
 extern void                 OutReloc( label_handle label, owl_reloc_type tipe, unsigned offset );
 extern void                 OutSegReloc( label_handle label, segment_id segid );
 extern void                 OutPDataRec( label_handle label, offset proc_size, offset pro_size );
-extern void                 ObjEmitSeq( byte_seq *code );
+extern void                 ObjEmitSeq( const byte_seq *code );
 extern byte_seq_reloc       *SortListReloc( byte_seq_reloc *relocs );
-extern void                 *InsRelocInit( void *ins );
+extern void                 *InsRelocInit( const byte *ins );
 extern void                 EmitInsReloc( void *opcode, pointer sym, owl_reloc_type type );
-extern void                 *InsRelocNext( void *ins );
+extern const byte           *InsRelocNext( const byte *ins );
 extern void                 InsRelocAddSignedImmed( int disp );
 
 #if _TARGET & _TARG_PPC

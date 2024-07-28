@@ -1,8 +1,8 @@
 name: tar-save
 description: 'Create compressed tar file with git sub-directory full contents'
 inputs:
-  arch:
-    description: 'run-time platform'
+  hostos:
+    description: 'host os'
     required: false
     default: ''
     type: string
@@ -45,23 +45,23 @@ runs:
         'opts=-cf' | Out-File -FilePath ${{ github.output }} -Encoding utf8 -Append
       }
     shell: pwsh      
-  - if: inputs.arch == 'lnx' && inputs.format == 'gzip'
+  - if: inputs.hostos == 'lnx' && inputs.format == 'gzip'
     name: Create tar File Linux
     run: tar ${{ steps.tarcmd.outputs.opts }} "${{ inputs.fullname }}" -z --overwrite -C "${{ steps.srcpath.outputs.path }}" .
     shell: bash
-  - if: inputs.arch == 'lnx' && inputs.format != 'gzip'
+  - if: inputs.hostos == 'lnx' && inputs.format != 'gzip'
     name: Create tar File Linux
     run: tar ${{ steps.tarcmd.outputs.opts }} "${{ inputs.fullname }}" -J --overwrite -C "${{ steps.srcpath.outputs.path }}" .
     shell: bash
-  - if: inputs.arch == 'osx' && inputs.format == 'gzip'
+  - if: inputs.hostos == 'osx' && inputs.format == 'gzip'
     name: Create tar File OSX
     run: gtar ${{ steps.tarcmd.outputs.opts }} "${{ inputs.fullname }}" -z --overwrite -C "${{ steps.srcpath.outputs.path }}" .
     shell: bash
-  - if: inputs.arch == 'osx' && inputs.format != 'gzip'
+  - if: inputs.hostos == 'osx' && inputs.format != 'gzip'
     name: Create tar File OSX
     run: gtar ${{ steps.tarcmd.outputs.opts }} "${{ inputs.fullname }}" -J --overwrite -C "${{ steps.srcpath.outputs.path }}" .
     shell: bash
-  - if: inputs.arch == 'nt' && inputs.format == 'gzip'
+  - if: inputs.hostos == 'nt' && inputs.format == 'gzip'
     name: Create tar File (Windows)
     run: |
       7z a "${{ inputs.fullname }}" "${{ steps.srcpath.outputs.path }}"
@@ -69,7 +69,7 @@ runs:
       7z rn "${{ inputs.fullname }}" @lst.txt
       del lst.txt
     shell: cmd
-  - if: inputs.arch == 'nt' && inputs.format != 'gzip'
+  - if: inputs.hostos == 'nt' && inputs.format != 'gzip'
     name: Create tar File (Windows)
     run: |
       tar ${{ steps.tarcmd.outputs.opts }} ${{ runner.temp }}\owartifact.tar -C "${{ steps.srcpath.outputs.path }}" .

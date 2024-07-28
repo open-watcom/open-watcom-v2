@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -338,7 +338,7 @@ static bool cgrfDumpNode(       // DUMP CALL GRAPH NODE
           , node->rescan
           , node->stab_gen
           , DbgSymNameFull( node->base.object, &vbuf )
-          , func->flag );
+          , func->flags );
     CgrfWalkCalls( ctl, node, &cgrfDumpCall );
     VbufFree( &vbuf );
     return( false );

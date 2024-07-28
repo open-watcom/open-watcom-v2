@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -164,10 +164,10 @@ bool    WndSearch( a_window wnd, bool from_top, int direction )
     rx = WndCompileRX( wnd->searchitem );
     if( rx == NULL )
         return( false );
-    not_found = WndLoadString( LITERAL_Not_Found );
-    top_of_window = WndLoadString( LITERAL_Top_Of_Window );
-    end_of_window = WndLoadString( LITERAL_End_Of_Window );
-    search_wrapped = WndLoadString( LITERAL_Search_Wrapped );
+    not_found = WndLoadString( LIT_AUI( Not_Found ) );
+    top_of_window = WndLoadString( LIT_AUI( Top_Of_Window ) );
+    end_of_window = WndLoadString( LIT_AUI( End_Of_Window ) );
+    search_wrapped = WndLoadString( LIT_AUI( Search_Wrapped ) );
     wrap = false;
     starting_pos.piece = 0;
     starting_pos.colidx = ( direction > 0 ) ? -1 : WND_MAX_COLIDX;

@@ -57,7 +57,7 @@ test_cflags_386 += -we -w0 -zq -fh -D_CONSOLE $(inc_dirs_sys) -I"../nt"
     $(run) $(exec_prefix)$@ >>exec.out
     rm $[@
 
-test : .symbolic start_test $(test_exes)
+test : .SYMBOLIC start_test $(test_exes)
     @set ERROR_FILE=error.out
     @set ERROR_MSG=failure to complete test stream
     %write error.out OK
@@ -75,7 +75,7 @@ string04.$(exe) : string04.obj string04.res
     @%append exec.out PASS executing $@
     $(run) $(exec_prefix)$@ >>exec.out
 
-start_test : .symbolic test.lnk
+start_test : .SYMBOLIC test.lnk
     %create exec.out
     @set ERROR_FILE=exec.out
     @set PATH=..\dnt386.dll;..\dnt386u.dll;..\nt386.dll;..\nt386u.dll;$(%PATH)
@@ -95,8 +95,8 @@ test.lnk : makefile
     @%append $@ LIBPATH ../nt386u
     @%append $@ LIBPATH ../nt386u.dll
 
-save : .symbolic
+save : .SYMBOLIC
     @if exist exec.out %ren exec.out s$(arch)_$(alt_error).sav
 
-global : .symbolic
+global : .SYMBOLIC
     @%make common_clean

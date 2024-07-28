@@ -5,4 +5,4 @@ host_cpu = 386
 
 extra_cdir = ../../unix/c
 
-!include ../../ui.mif
+!include ../../master.mif

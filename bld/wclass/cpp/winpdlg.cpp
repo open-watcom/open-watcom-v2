@@ -63,18 +63,6 @@ WEXPORT WInputDialog::~WInputDialog() {
 }
 
 
-void WInputDialog::updateExtents( const char *t, int *w, int *h ) {
-/*****************************************************************/
-
-    if( getTextExtentX( t ) > *w ) {
-        *w = getTextExtentX( t );
-    }
-    if( getTextExtentY( t ) > *h ) {
-        *h = getTextExtentY( t );
-    }
-}
-
-
 void WInputDialog::initialize() {
 /*******************************/
 
@@ -88,12 +76,12 @@ void WInputDialog::initialize() {
 
     int p_w = 0;
     int p_h = 0;
-    updateExtents( _promptText, &p_w, &p_h );
+    updateTextExtents( _promptText, &p_w, &p_h );
     p_w += avg.x() / 2;
     p_h += avg.y() / 2;
     int r_w = 32 * avg.x();
     int r_h = max.y() + 2*max.y() / 3;
-    updateExtents( *_reply, &r_w, &r_h );
+    updateTextExtents( *_reply, &r_w, &r_h );
 
     _prompt = new WText( this, WRect( x, y + (r_h - p_h)/2, p_w, p_h ), _promptText );
     _prompt->show();
@@ -103,9 +91,9 @@ void WInputDialog::initialize() {
 
     int b_w = 0;
     int b_h = 0;
-    updateExtents( BrowseText, &b_w, &b_h );
-    updateExtents( CancelText, &b_w, &b_h );
-    updateExtents( OKText, &b_w, &b_h );
+    updateTextExtents( BrowseText, &b_w, &b_h );
+    updateTextExtents( CancelText, &b_w, &b_h );
+    updateTextExtents( OKText, &b_w, &b_h );
     b_w += avg.x() * 2;
     b_h += avg.y() / 2;
     WDefPushButton *bOk = new WDefPushButton( this, WRect( x, y, b_w, b_h ),

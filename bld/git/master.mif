@@ -1,6 +1,6 @@
 proj_name = cpyright
 
-cpyright_autodepends = .autodepend
+cpyright_autodepends = .AUTODEPEND
 
 !include cproj.mif
 !include defrule.mif

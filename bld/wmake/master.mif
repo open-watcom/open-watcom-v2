@@ -9,7 +9,16 @@ proj_name   = wmake
 wmake_autodepends = .AUTODEPEND
 !endif
 
+wmake_ntverrc = ../h
+
 wmake_trmem = 1
+
+!ifdef bootstrap
+wmake_wreslib_cli = incl_msgtext
+!else
+wmake_wreslib_cli = text
+wmake_wreslib_incl = 1
+!endif
 
 # DOS code will not fit in 64k with /d2
 #!ifeq host_os dos
@@ -24,7 +33,6 @@ additional_clean = *.gh *.grc
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif
-!include wres.mif
 !include trmem.mif
 
 !include $(orl_dir)/client.mif
@@ -36,7 +44,7 @@ additional_clean = *.gh *.grc
 #
 .c : ../c;$(watcom_dir)/c;$(trmem_dir)
 
-inc_dirs = -I. -I"$(wmake_dir)/h" -I"$(orl_dir)/h"
+inc_dirs = -I. -I"$(wmake_dir)/h" $(cli_orl_inc_dirs)
 
 extra_cpp_flags =
 !ifdef DLLS_IMPLEMENTED
@@ -88,32 +96,31 @@ extra_l_flags_dos_386 = opt stack=8k
 exetarg_prebuild_objs = isarray.gh usage.gh usagej.gh
 exetarg_objs          = $(objs)
 !ifeq host_cpu i86
-exetarg_libs          = $(wres_lib)
 !else
-exetarg_libs          = $(wres_lib) $(orl_lib)
+exetarg_libs          = $(cli_orl_libs)
 !endif
-exetarg_res_version_nt_386 = exever.res
-exetarg_res_version_nt_x64 = exever.res
-exetarg_res_wresui    = wresui.res
+exetarg_res           = $(proj_name).res
 exetarg_name          = wmk
 !include exetarg.mif
 
 #
 # rc and others
 #
-!include verrc.mif
+wsplice_opts_linux = -kUNIX
+wsplice_opts_qnx   = -kUNIX
+wsplice_opts_osx   = -kUNIX
 
-wresui.res : ../h/wmake.rc ../h/mrcmsg.h usage.gh usagej.gh $(__MAKEFILES__)
+$(proj_name).res : ../h/wmake.rc ../h/mrcmsg.h usage.gh usagej.gh $(__MAKEFILES__)
     @%make echo_rc
-    $(rcui8)
+    $(rcu8j) $(ppflags_common) $(ppflags_wreslib) $(rc_cppflags) $(rc_flags) $(rc_inc_path) $[@ -fo=$@
 
 usage.gh : ../h/usage.sp $(__MAKEFILES__)
     @%make echo_wsplice
-    $(noecho)*wsplice -kENGLISH -f "pick((MSG_USAGE_BASE + %$#%+), \"%s\", \"\")" $[@ $@
+    $(noecho)*wsplice -kENGLISH $(wsplice_opts_$(host_os)) -f "pick((MSG_USAGE_BASE + %$#%+), \"%s\", \"\")" $[@ $@
 
 usagej.gh : ../h/usage.sp $(__MAKEFILES__)
     @%make echo_wsplice
-    $(noecho)*wsplice -kJAPANESE -f "pick((MSG_USAGE_BASE + %$#%+), \"\", \"%s\")" $[@ $@
+    $(noecho)*wsplice -kJAPANESE $(wsplice_opts_$(host_os)) -f "pick((MSG_USAGE_BASE + %$#%+), \"\", \"%s\")" $[@ $@
 
 isarray.gh : ./cretype.exe $(__MAKEFILES__)
     @%make echo_execute
@@ -121,7 +128,7 @@ isarray.gh : ./cretype.exe $(__MAKEFILES__)
 
 ./cretype.exe : cretype.c $(__MAKEFILES__)
     @%make echo_bldccl
-    $(bld_ccl) $(ppflags_common) $(ppflags_autodep) $[@ $(bld_cclflags) $(bld_ldflags)
+    $(bld_ccl) $(ppflags_common) $(ppflags_autodep) $(bld_ppflags_sys) $(bld_cppflags) $[@ $(bld_cclflags) $(bld_ldflags)
 
 # special targets
 ##################
@@ -134,19 +141,19 @@ chkmsg :
     comm -3 chkmsg.1 chkmsg.3 | tee chkmsg
     rm chkmsg.?
 
-strip : .symbolic
+strip : .SYMBOLIC
     @%make echo_bindres
     $(wstrip) /q $(exetarg_name).exe $(exetarg_name)s.exe >nul
     ls -l *.exe
 
-deps : .symbolic
+deps : .SYMBOLIC
     cd ../c
     ../support/mmk >../makedeps.mif
 
-do : .symbolic
+do : .SYMBOLIC
     wmake -h -n | sed -f ../mkdo.sed >do.bat
 
-test : $(exetarg_name).exe .always .symbolic
+test : $(exetarg_name).exe .always .SYMBOLIC
 curr_dir=$+$(%__CWD__)$-
     cd ../regress
 !ifdef __UNIX__

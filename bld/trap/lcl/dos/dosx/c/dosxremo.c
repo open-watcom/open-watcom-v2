@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -46,6 +46,7 @@
 #include "dosxlink.h"
 #include "dosxfork.h"
 #include "dospath.h"
+#include "dosemu.h"
 
 
 static char             LinkParms[256];
@@ -468,7 +469,9 @@ trap_version TRAPENTRY TrapInit( const char *parms, char *err, bool remote )
     ver.remote = false;
     ver.major = TRAP_VERSION_MAJOR;
     ver.minor = TRAP_VERSION_MINOR;
-    if( !remote && DPMIVersion() == 90 && !DOSEMUCheck() ) {
+    if( !remote
+      && DPMIVersion() == 90
+      && !DOSEMUCheck() ) {
         strcpy( err, TRP_ERR_bad_dpmi );
         return( ver );
     }

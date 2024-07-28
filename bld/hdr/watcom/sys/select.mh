@@ -1,0 +1,33 @@
+/*
+ * sys/select.h POSIX - select types
+ *
+:include crwatcnt.sp
+ */
+#ifndef _SYS_SELECT_H_INCLUDED
+#define _SYS_SELECT_H_INCLUDED
+
+:include readonly.sp
+
+:include owrtlink.sp
+
+:include cpluspro.sp
+
+:segment LINUX
+:include lnxkpack.sp
+:elsesegment
+:include pshpackl.sp
+:endsegment
+
+:: it is shared by sys/select.h and sys/time.h
+:include fdset.sp
+
+:include timeval.sp
+
+:: it is shared by sys/select.h and sys/time.h
+:include select.sp
+
+:include poppack.sp
+
+:include cplusepi.sp
+
+#endif /* !_SYS_SELECT_H_INCLUDED */

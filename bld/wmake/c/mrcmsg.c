@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,50 +34,68 @@
 #if defined( __WATCOMC__ ) || !defined( __UNIX__ )
     #include <process.h>
 #endif
+#ifdef INCL_MSGTEXT
+#elif defined( USE_WRESLIB )
+  #ifdef __NT__
+    #include <windows.h>
+  #endif
+#else
+    #include <windows.h>
+#endif
 #include "make.h"
 #include "mcache.h"
 #include "mrcmsg.h"
-#include "wressetr.h"
-#include "wresset2.h"
 #include "wreslang.h"
+#ifdef INCL_MSGTEXT
+#elif defined( USE_WRESLIB )
+    #include "wressetr.h"
+    #include "wresset2.h"
+#else
+#endif
 
 #include "clibext.h"
 
 
 #define ARRAY_SIZE(a)   (sizeof( a ) / sizeof( (a)[0] ))
 
-#ifdef BOOTSTRAP
-
-    static struct idstr { int id; char *s; } StringTable[] = {
-        #define pick(id,e,j)    {id, e},
-        #include "wmake.msg"
-        #include "usage.gh"
-        #undef pick
-    };
-
-    static int compar( const void *s1, const void *s2 )
-    {
-        return ((struct idstr *)s1)->id - ((struct idstr *)s2)->id;
-    }
-
+#ifdef INCL_MSGTEXT
+static struct idstr {
+    int     id;
+    char    *s;
+} StringTable[] = {
+    #define pick(id,e,j)    {id, e},
+    #include "wmake.msg"
+    #include "usage.gh"
+    #undef pick
+};
+#elif defined( USE_WRESLIB )
+static HANDLE_INFO  hInstance = { 0 };
+#else
+static HINSTANCE    hInstance;
 #endif
+static unsigned     msgShift;
 
-#ifndef BOOTSTRAP
-
-static  HANDLE_INFO hInstance = { 0 };
-static  unsigned    MsgShift;
-
+#ifdef INCL_MSGTEXT
+static int compar( const void *s1, const void *s2 )
+{
+    return( ((struct idstr *)s1)->id - ((struct idstr *)s2)->id );
+}
+#elif defined( USE_WRESLIB )
+#else
 #endif
 
 bool MsgInit( void )
 /******************/
 {
-#ifndef BOOTSTRAP
+#ifdef INCL_MSGTEXT
+    msgShift = 0;
+    return( true );
+#elif defined( USE_WRESLIB )
     static char     name[_MAX_PATH]; // static because address passed outside.
 
     hInstance.status = 0;
     if( _cmdname( name ) != NULL && OpenResFile( &hInstance, name ) ) {
-        MsgShift = _WResLanguage() * MSG_LANG_SPACING;
+        msgShift = _WResLanguage() * MSG_LANG_SPACING;
         if( MsgGet( MSG_USAGE_BASE, name ) ) {
             return( true );
         }
@@ -86,6 +104,8 @@ bool MsgInit( void )
     puts( NO_RES_MESSAGE );
     return( false );
 #else
+    hInstance = GetModuleHandle( NULL );
+    msgShift = _WResLanguage() * MSG_LANG_SPACING;
     return( true );
 #endif
 }
@@ -94,7 +114,7 @@ bool MsgInit( void )
 bool MsgGet( int resourceid, char *buffer )
 /*****************************************/
 {
-#ifdef BOOTSTRAP
+#ifdef INCL_MSGTEXT
     struct idstr *s;
     struct idstr msgid;
 
@@ -105,8 +125,13 @@ bool MsgGet( int resourceid, char *buffer )
         return( false );
     }
     strcpy( buffer, s->s );
+#elif defined( USE_WRESLIB )
+    if( hInstance.status == 0 || WResLoadString( &hInstance, resourceid + msgShift, (lpstr)buffer, MAX_RESOURCE_SIZE ) <= 0 ) {
+        buffer[0] = NULLCHAR;
+        return( false );
+    }
 #else
-    if( hInstance.status == 0 || WResLoadString( &hInstance, resourceid + MsgShift, (lpstr)buffer, MAX_RESOURCE_SIZE ) <= 0 ) {
+    if( LoadString( hInstance, resourceid + msgShift, buffer, MAX_RESOURCE_SIZE ) <= 0 ) {
         buffer[0] = NULLCHAR;
         return( false );
     }
@@ -132,7 +157,9 @@ void MsgGetTail( int resourceid, char *buffer )
 void MsgFini( void )
 /*************************/
 {
-#ifndef BOOTSTRAP
+#ifdef INCL_MSGTEXT
+#elif defined( USE_WRESLIB )
     CloseResFile( &hInstance );
+#else
 #endif
 }

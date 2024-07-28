@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,30 +31,45 @@
 
 
 #if defined( _STANDALONE_ )
-#if defined( INCL_MSGTEXT )
+  #if defined( INCL_MSGTEXT )
     // WASM, must be assigned dynamicaly
-#else
+  #elif defined( USE_WRESLIB )
     // WASM
     #define MSG_LANG_SPACING    13000
-#endif
+  #else
+    // WASM
+    #define MSG_LANG_SPACING    13000
+  #endif
 #elif defined( INCL_MSGTEXT )
     // WCC or WPP, must be assigned dynamicaly
+#elif defined( USE_WRESLIB )
+    // WFC
+    #define MSG_LANG_SPACING    13000
 #else
     // WFC
     #define MSG_LANG_SPACING    13000
 #endif
+
 #if defined( _STANDALONE_ )
-#if defined( INCL_MSGTEXT )
+  #if defined( INCL_MSGTEXT )
     // WASM, must be assigned dynamicaly
-#else
+  #elif defined( USE_WRESLIB )
     // WASM
     #define MSG_SHARE_BASE      1
     #define MSG_WASM_BASE       200
     #define MSG_USAGE_BASE      600
-#endif
+  #else
+    // WASM
+    #define MSG_SHARE_BASE      1
+    #define MSG_WASM_BASE       200
+    #define MSG_USAGE_BASE      600
+  #endif
 #elif defined( INCL_MSGTEXT )
     // WCC or WPP
     #define MSG_SHARE_BASE      0
+#elif defined( USE_WRESLIB )
+    // WFC
+    #define MSG_SHARE_BASE      12000
 #else
     // WFC
     #define MSG_SHARE_BASE      12000
@@ -62,5 +77,5 @@
 
 #include "wasmcmsg.grh"
 #if defined( _STANDALONE_ )
-#include "wasmsmsg.grh"
+    #include "wasmsmsg.grh"
 #endif

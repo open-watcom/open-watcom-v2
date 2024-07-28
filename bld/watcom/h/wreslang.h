@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,15 +36,23 @@
 
 #include "wreslang.rh"
 
-typedef unsigned char res_language_enumeration;
+typedef enum {
+    LANG_RLE_NONE = -1,
+    #define LANG_RLE_DEF( id, val, dbcs )   LANG_##val = val,
+    LANG_RLE_DEFS
+    #undef LANG_RLE_DEF
+    LANG_RLE_MAX,
+} wres_lang_id;
+
+#define LANG_RLE_FIRST_INTERNATIONAL    LANG_RLE_JAPANESE
 
 #ifdef __WATCOMC__
 #ifndef _COMDEF_H_INCLUDED
  #include <_comdef.h>
 #endif
-_WCRTLINK extern res_language_enumeration _WResLanguage(void);
+_WCRTLINK extern wres_lang_id _WResLanguage( void );
 #else
-extern res_language_enumeration _WResLanguage(void);
+extern wres_lang_id _WResLanguage( void );
 #endif
 
 #endif

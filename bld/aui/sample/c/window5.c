@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,7 +38,7 @@
 #define NUM_ROWS        60
 
 
-static int W5Scroll( a_window wnd, int lines )
+static int WNDCALLBACK W5Scroll( a_window wnd, int lines )
 {
     int         old_top;
     int         new_top;
@@ -56,7 +56,7 @@ static int W5Scroll( a_window wnd, int lines )
 }
 
 
-static bool    W5GetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *line )
+static bool    WNDCALLBACK W5GetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *line )
 {
     static char buff[20];
 
@@ -67,7 +67,7 @@ static bool    W5GetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_p
         line->text = buff;
     } else if( piece == 1 ) {
         line->text = "This is text";
-        line->extent = WND_MAX_EXTEND;
+        line->extent = WND_NO_EXTENT;
         line->indent = 5 * WndAvgCharX( wnd );
     } else {
         return( false );
@@ -76,7 +76,7 @@ static bool    W5GetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_p
 }
 
 
-static void W5Refresh( a_window wnd )
+static void WNDCALLBACK W5Refresh( a_window wnd )
 {
     WndSetRepaint( wnd );
 }

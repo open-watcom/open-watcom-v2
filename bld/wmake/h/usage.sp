@@ -4,7 +4,11 @@
 ::
 :segment ENGLISH
 Usage  :  wmake [options]* [macro=text]* [target]*
-Options:  ('/' may be substituted for '-', and '#' for '=')
+:segment UNIX
+Options:
+:elsesegment
+Options:  ( /option is also accepted )
+:endsegment
 -a make all targs (ignoring time stamp)  -b  block/ignore all implicit rules
 -c do not check existence of files made  -d  debug mode (echo progress of work)
 -e erase files after error (no prompt)
@@ -28,7 +32,11 @@ macro=text      overrides the definition of 'macro' with the value 'text'
 target          specifies a target to make (default is first target)
 :elsesegment JAPANESE
 使用方法:  wmake [options]* [macro=text]* [target]*
-オプション:  ('/'は'-'で,'='は'#'で代用する事ができます)
+:segment UNIX
+オプション:
+:elsesegment
+オプション:  ( /optionも使用できます )
+:endsegment
 -a 全ﾀｰｹﾞｯﾄを作成します(ﾀｲﾑ･ｽﾀﾝﾌﾟを無視)  -b すべての暗黙ﾙｰﾙを無視します
 -c 作られたﾌｧｲﾙがあるどうかﾁｪｯｸしません   -d ﾃﾞﾊﾞｯｸﾞ･ﾓｰﾄﾞ(処理過程を出力します)
 -e ｴﾗｰが起きた時、ﾌｧｲﾙを消します(確認しません)

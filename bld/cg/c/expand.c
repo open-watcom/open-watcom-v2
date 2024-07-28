@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -54,8 +54,8 @@
 static instruction  *DoReduce( instruction *ins, const opcode_entry *try, bool has_index )
 /****************************************************************************************/
 {
-    hw_reg_set  *zap;
-    hw_reg_set  zap_all;
+    const hw_reg_set    *zap;
+    hw_reg_set          zap_all;
 
     if( try->generate == G_NO )
         return( ins );
@@ -69,7 +69,7 @@ static instruction  *DoReduce( instruction *ins, const opcode_entry *try, bool h
     if( has_index || ins->num_operands > OpcodeNumOperands( ins ) ) {
         ins = NeedIndex( ins );
     } else {
-        ins->t.index_needs = RL_;
+        ins->u2.index_needs = RL_;
     }
     return( ins );
 }
@@ -81,9 +81,9 @@ static  bool    VerifyRegs( instruction *ins, operand_types ops )
 #define _Any( ops, mul )        ( ( ops & (ANY*mul) ) == (ANY*mul) )
 
     const opcode_entry  *try;
-    hw_reg_set          *possible;
+    const hw_reg_set    *possible;
     name                *name;
-    op_regs             *need;
+    const op_regs       *need;
     hw_reg_set          regs;
     reg_set_index       left_index;
     reg_set_index       right_index;

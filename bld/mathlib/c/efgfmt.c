@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -44,38 +44,58 @@
 FLTSUPPFUNC FAR_STRING _EFG_Format( char *buffer, va_list *pargs, PTR_MBCS_PRTF_SPECS specs )
 {
     int         digits;
-    int         fmt;
     CVT_INFO    cvt;
     double      double_value;
     long_double ld;
 
-    cvt.expchar = specs->_character;    /* 'e', 'g' exponent character */
     digits = specs->_prec;
-    fmt = specs->_character & 0x5F;
-    if( fmt == 'G' ) {
-        if( digits == 0 )  digits = 1;  /* 27-oct-88 */
-        cvt.expchar -= 2;               /* change exponent to 'e' or 'E' */
-        cvt.flags = G_FMT;
-        cvt.scale = 1;
-    } else if( fmt == 'E' ) {
-        cvt.flags = E_FMT;
-        cvt.scale = 1;
-    } else {
-        cvt.flags = F_FMT;
+    cvt.scale = 1;
+    cvt.flags = FPCVT_NONE;
+    switch( specs->_character ) {
+    case 'A':
+        cvt.flags |= FPCVT_IN_CAPS;
+    case 'a':
+        cvt.flags |= FPCVT_A_FMT;
+        break;
+    case 'E':
+        cvt.flags |= FPCVT_IN_CAPS;
+    case 'e':
+        cvt.flags |= FPCVT_E_FMT;
+        break;
+    case 'F':
+        cvt.flags |= FPCVT_IN_CAPS;
+    case 'f':
+        cvt.flags |= FPCVT_F_FMT;
         cvt.scale = 0;
+        break;
+    case 'G':
+        cvt.flags |= FPCVT_IN_CAPS;
+    case 'g':
+        if( digits == 0 )
+            digits = 1;
+        cvt.flags |= FPCVT_G_FMT;
+        break;
     }
-    if( !(specs->_character & 0x20) ) { /* test for 'E', 'F', or 'G' */
-        cvt.flags |= IN_CAPS;           /* INF/NAN needs to be uppercase */
+
+#define GET_CHAR(c)  ((cvt.flags & FPCVT_IN_CAPS) ? (c) - 'a' + 'A': (c))
+
+    if( cvt.flags & FPCVT_A_FMT ) {
+        cvt.expchar = GET_CHAR( 'p' );
+    } else {
+        cvt.expchar = GET_CHAR( 'e' );
     }
+
+#undef GET_CHAR
+
     if( specs->_flags & SPF_ALT ) {
-        cvt.flags |= F_DOT;
+        cvt.flags |= FPCVT_F_DOT;
     }
-    if( (specs->_flags & SPF_LONG_DOUBLE) && !_LDisDouble() ) {
+    if( (specs->_flags & SPF_LONG_DOUBLE)
+      && !_LDisDouble() ) {
         ld = va_arg( *pargs, long_double );
-        cvt.flags |= LONG_DOUBLE;
+        cvt.flags |= FPCVT_LONG_DOUBLE;
     } else {
         double_value = va_arg( *pargs, double );
-
 #ifdef _LONG_DOUBLE_
         /* convert this double into a long double */
         __iFDLD( &double_value, &ld );
@@ -93,7 +113,7 @@ FLTSUPPFUNC FAR_STRING _EFG_Format( char *buffer, va_list *pargs, PTR_MBCS_PRTF_
     specs->_nz1 = cvt.nz1;
     specs->_n2  = cvt.n2;
     specs->_nz2 = cvt.nz2;
-    if( cvt.flags & IS_INF_NAN ) {
+    if( cvt.flags & FPCVT_IS_INF_NAN ) {
         specs->_pad_char = ' '; /* No zero padding for inf/nan! */
     }
     if( cvt.sign < 0 ) {

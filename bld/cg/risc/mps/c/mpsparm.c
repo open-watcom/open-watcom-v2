@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -47,8 +47,8 @@
  * home locations on the stack for arguments passed in registers.
  */
 
-type_length     ParmAlignment( type_def *tipe )
-/*********************************************/
+type_length     ParmAlignment( const type_def *tipe )
+/***************************************************/
 {
     /* unused parameters */ (void)tipe;
 
@@ -58,9 +58,9 @@ type_length     ParmAlignment( type_def *tipe )
 hw_reg_set      ParmReg( type_class_def type_class, type_length len, type_length alignment, call_state *state )
 /*************************************************************************************************************/
 {
-    hw_reg_set  *possible;
-    hw_reg_set  *reg_set;
-    hw_reg_set  regs;
+    const hw_reg_set    *possible;
+    const hw_reg_set    *reg_set;
+    hw_reg_set          regs;
 
     /* unused parameters */ (void)len; (void)alignment;
 

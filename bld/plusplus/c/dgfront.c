@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -49,7 +50,7 @@ void DgSymbol( SYMBOL sym )
     if( sym->id == SYMC_NULL || sym->id == SYMC_EXTERN ) {
         sym->id = SYMC_PUBLIC;
     } else if( SymIsStaticMember( sym ) ) {
-        sym->flag |= SYMF_INITIALIZED;
+        sym->flags |= SYMF_INITIALIZED;
     }
 }
 
@@ -104,7 +105,7 @@ static bool DgStoreScalarValue( TYPE type, PTREE expr, target_size_t offset )
     switch( expr->op ) {
     case PT_FLOATING_CONSTANT:
         CgFrontDataPtr( IC_DATA_FLT, ConPoolFloatAdd( expr ) );
-        ok = ( BFSign( expr->u.floating_constant ) == 0 );
+        ok = ( CFTest( expr->u.floating_constant ) == 0 );
         break;
     case PT_PTR_CONSTANT:
         CgFrontDataPtr( IC_DATA_INT, 0 );
@@ -176,11 +177,11 @@ void DgStoreConstScalar( PTREE expr, TYPE type, SYMBOL sym )
 {
     /* unused parameters */ (void)type;
 
-    //  symbol_flag added;
+    //  symbol_flags added;
     switch( expr->op ) {
     case PT_INT_CONSTANT:
         sym = SymBindConstant( sym, expr->u.int64_constant );
-        sym->flag |= SYMF_CONSTANT_INT | SYMF_INITIALIZED;
+        sym->flags |= SYMF_CONSTANT_INT | SYMF_INITIALIZED;
 #if 0
         if( NULL == Integral64Type( type ) ) {
             sym->u.sval = expr->u.int_constant;
@@ -189,7 +190,7 @@ void DgStoreConstScalar( PTREE expr, TYPE type, SYMBOL sym )
             sym->u.pval = ConPoolInt64Add( expr->u.int64_constant );
             added = SYMF_CONSTANT_INT64 | SYMF_CONSTANT_INT | SYMF_INITIALIZED;
         }
-        sym->flag |= added;
+        sym->flags |= added;
 #endif
         break;
     }

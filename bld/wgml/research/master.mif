@@ -10,8 +10,6 @@ wgml_research_autodepends = .AUTODEPEND
 !include defrule.mif
 !include deftarg.mif
 
-!include wres.mif
-
 !include ../../wgmlobjs.mif
 
 #
@@ -19,7 +17,7 @@ wgml_research_autodepends = .AUTODEPEND
 #
 .c: ../c;../../c;$(watcom_dir)/c
 
-inc_dirs = -I. -I"../h" -I"../../h" $(wres_inc_dirs)
+inc_dirs = -I. -I"../h" -I"../../h" $(cli_wres_inc_dirs)
 
 research_common_objs = &
             cmdlhelp.obj  &
@@ -78,8 +76,7 @@ nwgml : cfcheck.exe cfparse.exe copparse.exe &
 # EXE's
 #
 exetarg_prebuild_objs = wgmlmsge.gh wgmlmsgs.gh
-exetarg_libs = $(wres_lib)
-exetarg_res_wresui = wresui.res
+exetarg_res  = research.res
 
 exetarg_objs = $(cfc_objs)
 exetarg_name = cfcheck
@@ -108,9 +105,9 @@ exetarg_name = outcheck
 #
 # rc and others
 #
-wresui.res : ../../h/wgml.rc wgmlmsgs.gh ../../h/wgml.msg ../../h/wgmlmsg.h ../../h/wgmlerr.msg
+research.res : ../../h/wgml.rc wgmlmsgs.gh ../../h/wgml.msg ../../h/wgmlmsg.h ../../h/wgmlerr.msg
     @%make echo_rc
-    $(rcui8)
+    $(rcu8j) $(ppflags_common) $(rc_cppflags) $(rc_flags) $(rc_inc_path) $[@ -fo=$@
 
 wgmlmsgs.gh : ../../h/wgmlerr.msg ../../h/wgml.msg $(__MAKEFILES__)
     @%make echo_awk

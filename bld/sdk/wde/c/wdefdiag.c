@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -1615,7 +1615,7 @@ bool WdeCalcDialogNCSize( WdeDialogObject *obj, RECT *size )
     if( obj != NULL && obj->window_handle != NULL ) {
         GetWindowRect( obj->window_handle, &win_rect );
         GetClientRect( obj->window_handle, &client_rect );
-        WdeMapWindowRect( obj->window_handle, (HWND)NULL, &client_rect );
+        MapWindowRect( obj->window_handle, (HWND)NULL, &client_rect );
 
         size->left = client_rect.left - win_rect.left;
         size->top = client_rect.top - win_rect.top;

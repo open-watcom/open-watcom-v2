@@ -10,8 +10,7 @@
 # dlltarg_opts                  extra OW wlink directive or options used to link DLL
 # dlltarg_export                list of files containing symbols to export from DLL
 # dlltarg_res                   native resource file added to DLL
-# dlltarg_res_version_nt_<cpu>  native version info resource file added to DLL
-# dlltarg_res_wresui            string resource file (Windows 3.x format) added to DLL
+# dlltarg_no_ntverrc            don't emit NT version resource to DLL
 #
 # All resource macros are include in dependant list
 #
@@ -21,50 +20,68 @@ dlltarg_name = $(proj_name)
 !ifndef dlltarg_ext
 dlltarg_ext = .dll
 !endif
-$(dlltarg_name)$(dlltarg_ext) : $+$(dlltarg_prebuild_objs) $(dlltarg_objs) $(dlltarg_libs)$- &
-        $(dlltarg_res_version_$(host_os)_$(host_cpu)) $(dlltarg_res_wresui) $+$(dlltarg_res) &
-        $(dlltarg_export)$- $(__MAKEFILES__)
+!undef ntverrc_res
+!ifdef ntverrc_dll_res
+! ifndef dlltarg_no_ntverrc
+ntverrc_res = $(ntverrc_dll_res)
+! endif
+!endif
+$(dlltarg_name)$(dlltarg_ext) : $+$(dlltarg_prebuild_objs) $(dlltarg_objs) $(dlltarg_libs) &
+  $(cli_wres_libs) $(dlltarg_res) $(ntverrc_res) $(dlltarg_export)$- $(__MAKEFILES__)
     @%make echo_cl
 !ifndef __WATCOM_TOOLS__
-    $(cl) $(clflags_dll) $+$(dlltarg_objs) $(dlltarg_libs)$- $(ldflags_dll)
+    $(cl) $(clflags_dll) $+$(dlltarg_objs) $(dlltarg_libs) $(cli_wres_libs)$- $(ldflags_dll)
 !else
     $(noecho)%write $^&.lnd $(lflags_dll) $+$(dlltarg_opts)$-
     @for %f in ($+$(dlltarg_objs)$-) do @%append $^&.lnd file %f
-    @for %l in ($+$(dlltarg_libs)$-) do $(noecho)%append $^&.lnd library %l
+    @for %l in ($+$(dlltarg_libs) $(cli_wres_libs)$-) do $(noecho)%append $^&.lnd library %l
     @for %e in ($+$(dlltarg_export)$-) do $(noecho)%append $^&.lnd export { @%e }
     $(linker) name $@ @$^&.lnd
 !endif
-#########################
+############################################
 # add resources to DLL
-#########################
-# native .res
-!ifdef dlltarg_res_version_$(host_os)_$(host_cpu)
+############################################
+# get list of OS native resources
+# for wrc
+###########################
+!undef dlltarg_res_wrc
 !ifdef dlltarg_res
-# version + application
-!ifeq verbose 0
-    @echo bind res $@ ver+appl
-!endif
-    $(rcbind) -q -k $+$(dlltarg_res)$- $@ -fr=$(dlltarg_res_version_$(host_os)_$(host_cpu))
+! ifeq wreslib_cli 1
+!  ifdef ntverrc_res
+dlltarg_res_wrc = $(ntverrc_res)
+!  else
+#dlltarg_res_wrc =
+!  endif
+! else
+!  ifdef ntverrc_res
+dlltarg_res_wrc = $(dlltarg_res) -fr=$(ntverrc_res)
+!  else
+dlltarg_res_wrc = $(dlltarg_res)
+!  endif
+! endif
+!else ifdef ntverrc_res
+dlltarg_res_wrc = $(ntverrc_res)
 !else
-# version only
-!ifeq verbose 0
-    @echo bind res $@ ver
+#dlltarg_res_wrc =
 !endif
-    $(rcbind) -q -k $(dlltarg_res_version_$(host_os)_$(host_cpu)) $@
-!endif
-!else ifdef dlltarg_res
-# application only
-!ifeq verbose 0
+############################################
+# add OS native resources to DLL by wrc
+############################################
+!ifdef dlltarg_res_wrc
+! ifeq verbose 0
     @echo bind res $@ appl
+! endif
+    $(rcbind) $+$(dlltarg_res_wrc)$- $@
 !endif
-    $(rcbind) -q -k $+$(dlltarg_res)$- $@
-!endif
-#########################
-# Windows 3.x resources
-!ifdef dlltarg_res_wresui
-# string resource only
-!ifeq verbose 0
-    @echo bind wresui $@
-!endif
-    $(wstrip) -q -a -r $@ . $(dlltarg_res_wresui)
+############################################
+# add resources for wres library by wstrip
+# Windows 3.x resources format
+############################################
+!ifdef dlltarg_res
+! ifeq wreslib_cli 1
+!  ifeq verbose 0
+    @echo bind res $@ wreslib
+!  endif
+    $(wstrip) -q -a -r $@ . $+$(dlltarg_res)$-
+! endif
 !endif

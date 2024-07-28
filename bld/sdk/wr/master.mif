@@ -6,13 +6,18 @@ proj_name = wr
 wr_autodepends = .AUTODEPEND
 !endif
 
+wr_ntverrc = ../res
+
+wr_trmem = 1
+
+wr_wreslib_cli = gui
+wr_wreslib_incl = 1
+
 memory_model_i86 = l
 
 sys_windowed = 1
 sys_dll = 1
 #suppress_bd = 1
-
-wr_trmem = 1
 
 win_yacc_prefix = winy
 win_yacc_file   = $(win_yacc_prefix)tab
@@ -23,9 +28,9 @@ additional_clean = *.grh *.grc $(win_yacc_file).h $(win_yacc_file).c
 !include defrule.mif
 !include deftarg.mif
 !include dllbase.mif
-!include wres.mif
 !include trmem.mif
 
+!include $(wr_dir)/client.mif
 !include $(commonui_dir)/client.mif
 
 #
@@ -33,7 +38,7 @@ additional_clean = *.grh *.grc $(win_yacc_file).h $(win_yacc_file).c
 #
 .c:   ../c;$(trmem_dir);$(wrc_dir)/c;$(watcom_dir)/c
 
-inc_dirs = -I. -I"../h" $(wres_inc_dirs) -I"$(wrc_dir)/h" $(commonui_inc_dirs)
+inc_dirs = -I. $(cli_wr_inc_dirs) $(cli_wres_inc_dirs) -I"$(wrc_dir)/h" $(cli_commonui_inc_dirs)
 
 extra_cpp_flags   = -DINSIDE_WR
 
@@ -81,9 +86,7 @@ dlltarg_objs = wrmain.obj wrmem.obj wrmsg.obj wrfindt.obj wrtmpfil.obj &
     wrrnames.obj wrhash.obj wredit.obj wrutil.obj &
     wrstubs.obj rcerrprt.obj &
     $(trmem_objs) $(dlltarg_objs_rc)
-dlltarg_libs = $(wres_lib) $(commonui_lib)
-dlltarg_res_version_nt_386 = version.res
-dlltarg_res_version_nt_x64 = version.res
+dlltarg_libs = $(cli_commonui_libs)
 dlltarg_res = $(proj_name).res
 !include dlltarg.mif
 
@@ -98,13 +101,11 @@ exetarg_name = test
 #
 # rc and others
 #
-!include verrc.mif
-
-rc_inc_dirs = -I"$(wrc_dir)/h" #$(wres_inc_dirs) -I"$(wrc_dir)/h" $(commonui_inc_dirs)
+rc_inc_dirs = $(cli_wr_rc_inc_dirs) -I"$(wrc_dir)/h" #$(cli_wres_inc_dirs) -I"$(wrc_dir)/h" $(cli_commonui_rc_inc_dirs)
 
 $(proj_name).res: ../res/wr.rc $(__MAKEFILES__) .AUTODEPEND
     @%make echo_rc
-    $(rc) $(ppflags_common) $(rc_flags) -zku0 -ad $(rc_inc_path) $[@ -fo=$@
+    $(rcu8j) $(ppflags_common) $(ppflags_wreslib) $(rc_cppflags) -ad $(rc_flags) $(rc_inc_path) $[@ -fo=$@
 
 rcmsg.grh :  $(wrc_dir)/h/rc.msg $(__MAKEFILES__)
     @%make echo_awk

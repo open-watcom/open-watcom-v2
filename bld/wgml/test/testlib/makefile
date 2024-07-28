@@ -199,7 +199,7 @@ tfon09.cop : tfon09.fon
 
 !endif
 
-genall : genall.pcd .symbolic
+genall : genall.pcd .SYMBOLIC
         @%make gencop
 
 gencop : .procedure

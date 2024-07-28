@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -163,7 +163,7 @@ static  bool    DoProp( block *blk ) {
                 for( next = ins->head.next; next->head.opcode != OP_BLOCK; next = next->head.next ) {
                     if( _IsReDefinedBy( next, ins->result ) )
                         break;
-                    if( AdjustIndex( next, ins->result, op->c.lo.int_value ) ) {
+                    if( AdjustIndex( next, ins->result, op->c.lo.u.int_value ) ) {
                         RemoveIns( ins );
                         SuffixIns( next, ins );
                         PeepOptBlock( blk, false );

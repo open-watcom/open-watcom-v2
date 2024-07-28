@@ -59,12 +59,12 @@ bool GUIAPI GUICreateDialog( gui_create_info *dlg_info, int num_controls, gui_co
     return( CreateDlg( dlg_info, num_controls, controls_info, false, NULL ) );
 }
 
-bool GUIAPI GUICreateResDialog( gui_create_info *dlg_info, res_name_or_id dlg_id )
+bool GUIAPI GUICreateDialogRes( gui_create_info *dlg_info, res_name_or_id dlg_id )
 {
     return( CreateDlg( dlg_info, 0, NULL, false, dlg_id ) );
 }
 
-bool GUIAPI GUICreateSysModalDialog( gui_create_info *dlg_info, int num_controls, gui_control_info *controls_info )
+bool GUIAPI GUICreateDialogSysModal( gui_create_info *dlg_info, int num_controls, gui_control_info *controls_info )
 {
     return( CreateDlg( dlg_info, num_controls, controls_info, true, NULL ) );
 }

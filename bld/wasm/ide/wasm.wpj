@@ -1,34 +1,32 @@
-40
+42
 projectIdent
 0
 VpeMain
 1
 WRect
 0
-0
+10
 10216
-9800
+9790
 2
 MProject
 3
 MCommand
-808
-..\..\build\binnt\wsplice -kIS_RC -kENGLISH -knt -t8 -f "%+(MSG_USE_E_BASE+%$#-1), \"%s\"" ../h/usage.sp usage.rc
-..\..\build\binnt\wsplice -kIS_RC -kJAPANESE -knt -t8 -f "%+(MSG_USE_J_BASE+%$#-1), \"%s\"" ../h/usage.sp usagej.rc
-vi -d -q -i -s ..\h\makemsg.vi -p"msg.gh MSG_SHARE_RC_BASE" ..\h\asmshare.msg
-vi -d -q -i -s ..\h\makemsg.vi -p"wasmmsg.gh MSG_WASM_RC_BASE" ..\h\wasm.msg
-vi -d -q -i -s ..\h\makemsg.vi -p"wmpmsg.gh MSG_WOMP_RC_BASE" ..\h\womp.msg
+1285
 wcl386 ..\mkopcod1.c -i$(%watcom)\h -i"..\..\watcom\h" -zq
 mkopcod1 ..\fullops.tok ..\inlnops.tok asmops.gh
 wcl386 ..\mkopcode.c -D_STANDALONE_ -i$(%watcom)\h -i"..\..\watcom\h" -zq
 mkopcode ..\fullops.tok ..\inlnops.tok asmopsd.gh
-wrc -q /i=..\..\watcom\h /i=..\h;..\..\womp /bt=windows /d_STANDALONE_ /r /zk0 /fo=wasm.res ..\h\wasm.rc
+..\..\..\build\binbuild\optencod -q  -rc=MSG_USAGE_BASE -utf8  ..\h\options.gml cmdlnprs.gh cmdlnprs.gc usage.gh . nt
+..\..\..\build\binbuild\awk -v base=MSG_WASM_BASE -f "../../../build/makemsg.awk" -v OUTFILE=wasmsmsg.grh ..\h\wasms.msg
+..\..\..\build\binbuild\awk -v base=MSG_SHARE_BASE -f "../../../build/makemsg.awk" -v OUTFILE=wasmcmsg.grh ..\h\wasmc.msg
+..\..\..\build\binbuild\genverrc ..\h\exever.rc exever.grc $$$$ wasm 0
+..\..\..\build\binbuild\bwrc -q -x -zku0 -D_BLDVER=1300 -D_CYEAR=2024 -DNDEBUG  -D__NT__ -D_WIN32 -DWINVER=0x400 -D_WIN32_IE=0x300 -DWIN32_LEAN_AND_MEAN -D_M_IX86 -D_STANDALONE_ -xb -r -bt=nt   -I. -I"../h"  -I"../../../bld/hdr/dos/h" -I"../../../bld/w32api/nt/h" -I"../../../bld/watcom/h" ..\h\wasm.rc -fo=wasm.res
+..\..\..\build\binbuild\bwrc -q -x -zku8 -D_BLDVER=1300 -D_CYEAR=2024 -DNDEBUG -D__NT__ -D_WIN32 -DWINVER=0x400 -D_WIN32_IE=0x300 -DWIN32_LEAN_AND_MEAN -D_M_IX86 -xb -r -bt=nt   -I"../h" -I"../../../bld/hdr/dos/h" -I"../../../bld/w32api/nt/h" -I"../../../bld/watcom/h" exever.grc -fo=exever.res
 
 4
 MCommand
-33
-wstrip /a /r /q wasm.exe . wasm
-
+0
 1
 5
 WFileName
@@ -52,5 +50,5 @@ WFileName
 8
 wasm.tgt
 0
-0
+13
 7

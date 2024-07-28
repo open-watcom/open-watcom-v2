@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -63,7 +63,7 @@ bool GUIAPI GUIShowHelp( gui_help_instance inst, gui_window *wnd, gui_help_actio
     case GUI_HELP_CONTENTS:
     case GUI_HELP_ON_HELP:
     case GUI_HELP_SEARCH:
-        ret = GUIDisplayHelp( wnd, file, LIT( Table_of_Contents ) );
+        ret = GUIDisplayHelp( wnd, file, LIT_GUI( Table_of_Contents ) );
         break;
     case GUI_HELP_CONTEXT:
         break;

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -73,8 +73,12 @@ char const *CmdScanAddr(        // RETURN COMMAND-LINE SCAN ADDRESS
 int CmdScanChar(                // SCAN THE NEXT CHARACTER
     void )
 ;
-size_t CmdScanFilename(         // SCAN A FILE NAME
+size_t CmdScanQuotedString(     // SCAN A QUOTED STRING
     char const **option )       // - addr( option pointer )
+;
+size_t CmdScanFilename(         // SCAN A FILE NAME
+    char const **option,        // - addr( option pointer )
+    bool *quoted )              // - addr( quoted )
 ;
 size_t CmdScanId(               // SCAN AN IDENTIFIER
     char const **option )       // - addr( option pointer )
@@ -89,7 +93,8 @@ int CmdPeekChar(                // PEEK AT NEXT CHARACTER, IN LOWER CASE
     void )
 ;
 size_t CmdScanOption(           // SCAN AN OPTION
-    char const **option )       // - addr( option pointer )
+    char const **option,        // - addr( option pointer )
+    bool *quoted )              // - addr( quoted )
 ;
 bool CmdScanBufferEnd(          // TEST IF END OF BUFFER
     void )

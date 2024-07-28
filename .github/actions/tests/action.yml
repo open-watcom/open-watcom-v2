@@ -1,18 +1,13 @@
 name: tests
 description: 'Process OW tests'
 inputs:
-  arch:
-    description: 'run-time platform'
+  hostos:
+    description: 'host os'
     required: false
     default: ''
     type: string
-  bldscript:
-    description: 'script to build action'
-    required: false
-    default: ''
-    type: string
-  tools:
-    description: 'used compiler toolchain'
+  suffix:
+    description: 'run-time artifact suffix'
     required: false
     default: ''
     type: string
@@ -27,8 +22,7 @@ runs:
   - name: Load Artifact
     uses: "./.github/actions/artfload"
     with:
-      arch:     ${{ inputs.arch }}
+      hostos:   ${{ inputs.hostos }}
       gitpath:  'build binbuild'
-      artifact: "build ${{ inputs.arch }}"
-      tools:    ${{ inputs.tools }}
+      artifact: "build ${{ inputs.suffix }}"
       owdebug:  ${{ inputs.owdebug }}

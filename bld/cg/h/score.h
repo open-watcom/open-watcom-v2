@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -48,15 +48,19 @@ typedef enum {
 } ins_mod;
 
 typedef enum {
-    #define SCOREBOARD
     #define pick(e,s)       SC_ ## e,
     #include "nclass.h"
+    /*
+     * the next 3 used only by the scoreboarder
+     */
+    pick( N_INITIAL,    0   )
+    pick( N_VOLATILE,   0   )
+    pick( N_ADDRESS,    0   )
     #undef pick
-    #undef SCOREBOARD
 } score_name_class_def;
 
 typedef struct score_reg {
-    union name              *reg_name;
+    name                    *reg_name;
     hw_reg_set              reg;
     int                     low;        /*  index of low part of reg, if any */
     int                     high;       /*  index of high part of reg, if any */
@@ -69,11 +73,13 @@ typedef struct score_reg {
 
 typedef struct score_info {
     int_32                  offset;
-    union  name             *base;      /*  indexed names only */
-    union {
-        struct temp_name    *t;
-        struct var_name     *v;
-        void                *p;
+    name                    *base;      /*  indexed names only */
+    struct {
+        union {
+            struct temp_name    *t;
+            struct var_name     *v;
+            void                *p;
+        } u;
     } symbol;
     int                     index_reg;  /*  indexed names only */
     scale_typ               scale;      /*  indexed names only */

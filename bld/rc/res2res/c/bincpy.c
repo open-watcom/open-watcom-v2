@@ -31,6 +31,7 @@
 
 
 #include <stdio.h>
+#include "bool.h"
 #include "wresall.h"
 #include "wressetr.h"
 #include "rcrtns.h"

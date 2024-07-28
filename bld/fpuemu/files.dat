@@ -2,9 +2,9 @@
 # EMUI86
 #
 [ DEFAULT cond="tools16" type="l" where="c jc f77 jf77" ]
-dir="lib286/dos"        usr="emu87.lib"     conda="dostarg"
-dir="lib286/os2"        usr="emu87.lib"     conda="os2targ"
-dir="lib286/win"        usr="emu87.lib"     conda="wintarg"
+dir="lib286/dos"        usr="emu87.lib"     cond+="dostarg"
+dir="lib286/os2"        usr="emu87.lib"     cond+="os2targ"
+dir="lib286/win"        usr="emu87.lib"     cond+="wintarg"
 dir="lib286"            usr="emu87.lib"
 dir="lib286"            usr="noemu87.lib"
 
@@ -17,8 +17,8 @@ dir="lib286"            usr="noemu87.lib"
 #
 [ DEFAULT type="l" where="c jc f77 jf77" ]
 dir="lib386/dos"        usr="emu387.lib"    cond="dostarg"
-dir="lib386"            usr="emu387.lib"                    wherea="ac"
-dir="lib386"            usr="noemu387.lib"                  wherea="ac"
+dir="lib386"            usr="emu387.lib"                    where+="ac"
+dir="lib386"            usr="noemu387.lib"                  where+="ac"
 
 #dir="qnx/binq"         usr="emu387"
 

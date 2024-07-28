@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -42,9 +43,9 @@ static  label_handle    RTLbls[RTSIZE];
 rt_class    LookupRoutine( instruction *ins )
 /*******************************************/
 {
-    rtn_info    *rtn;
-    rt_class    rtindex;
-    opcode_defs opcode;
+    const rtn_info  *rtn;
+    rt_class        rtindex;
+    opcode_defs     opcode;
 
     opcode = ins->head.opcode;
     if( opcode >= FIRST_CONDITION ) {

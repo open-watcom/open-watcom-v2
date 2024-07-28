@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -69,7 +69,7 @@ void DbgSuppInit( dsi_control control )
         code_type = MakeSimpleFunction( GetBasicType( TYP_VOID ), NULL );
         code_sym = SymMakeDummy( code_type, &code_name );
         code_sym->id = SYMC_STATIC;
-        code_sym->flag |= SYMF_INITIALIZED;
+        code_sym->flags |= SYMF_INITIALIZED;
         code_sym->segid = SEG_CODE;
         code_sym = InsertSymbol( GetFileScope(), code_sym, code_name );
         DefaultCodeSymbol = code_sym;
@@ -79,7 +79,7 @@ void DbgSuppInit( dsi_control control )
         data_type = GetBasicType( TYP_CHAR );
         data_sym = SymMakeDummy( data_type, &data_name );
         data_sym->id = SYMC_STATIC;
-        data_sym->flag |= SYMF_INITIALIZED;
+        data_sym->flags |= SYMF_INITIALIZED;
         data_sym->segid = SEG_BSS;
         data_sym = InsertSymbol( GetFileScope(), data_sym, data_name );
         DefaultDataSymbol = data_sym;
@@ -98,13 +98,13 @@ void DbgAddrTaken( SYMBOL sym )
 {
     if( sym != NULL ) {
 #if 0
-        sym->flag |= SYMF_ADDR_TAKEN;
+        sym->flags |= SYMF_ADDR_TAKEN;
 #else
-        if( sym->flag & SYMF_INITIALIZED ) {
-            sym->flag |= SYMF_ADDR_TAKEN;
-        } else if(( sym->flag & SYMF_ADDR_TAKEN ) == 0 ) {
+        if( sym->flags & SYMF_INITIALIZED ) {
+            sym->flags |= SYMF_ADDR_TAKEN;
+        } else if(( sym->flags & SYMF_ADDR_TAKEN ) == 0 ) {
             // first time SYMF_ADDR_TAKEN will be set
-            sym->flag |= SYMF_DBG_ADDR_TAKEN | SYMF_ADDR_TAKEN;
+            sym->flags |= SYMF_DBG_ADDR_TAKEN | SYMF_ADDR_TAKEN;
         }
 #endif
     }

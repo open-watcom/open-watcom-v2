@@ -12,12 +12,14 @@ additional_clean = *.gh
 !include defrule.mif
 !include deftarg.mif
 
+!include $(dwarfw_dir)/client.mif
+
 #
 # cflags
 #
 .c : $(dwarfw_dir)/c;$(watcom_dir)/c
 
-inc_dirs = -I. -I"$(dwarfw_dir)/h"
+inc_dirs = -I. $(cli_dwarfw_inc_dirs)
 
 # explicit rules
 #################
@@ -54,7 +56,7 @@ libtarg_objs = &
 #
 ./dwmakeab.exe : dwmakeab.c
     @%make echo_bldccl
-    $(bld_ccl) $(ppflags_common) $(ppflags_autodep) $[@ -I"$(dwarfw_dir)/h" $(bld_cclflags) $(bld_ldflags)
+    $(bld_ccl) $(ppflags_common) $(ppflags_autodep) $(bld_ppflags_sys) $(bld_cppflags) $[@ $(cli_dwarfw_inc_dirs) $(bld_cclflags) $(bld_ldflags)
 
 dwabenum.gh dwabinfo.gh : ./dwmakeab.exe
     @%make echo_execute

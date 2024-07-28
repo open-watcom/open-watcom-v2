@@ -52,13 +52,13 @@ opt_link_er03 = LIB er03.lib
 
 exes = er01.$(exe) er02.$(exe) er03.$(exe)
 
-test : .symbolic start test.lnk er01.lib er02b.obj er03.lib $(exes) test_set_result
+test : .SYMBOLIC start test.lnk er01.lib er02b.obj er03.lib $(exes) test_set_result
     $(noecho)%make common_set_result_check
 
 check_result : .procedure
     -diff -b error.out error.chk >$(nulldevice)
 
-test_set_result : .symbolic
+test_set_result : .SYMBOLIC
     -$(noecho)%write error.out OK
     -chk_exec exec.out >>error.out
 

@@ -1,6 +1,17 @@
 proj_name = vi
 
-!ifeq sys_windowed 1
+!ifndef vi_autodepends
+vi_autodepends = .AUTODEPEND
+!endif
+
+vi_ntmanif = ../res
+vi_ntverrc = ../res
+
+vi_trmem = 1
+
+vi_dos_extender = causeway
+
+!ifdef sys_windowed
 name = viw
 !else
 name = vi
@@ -10,14 +21,6 @@ name = vi
 name = viw32
 !endif
 !endif
-
-!ifndef vi_autodepends
-vi_autodepends = .AUTODEPEND
-!endif
-
-vi_trmem = 1
-
-vi_dos_extender = causeway
 
 edbind = bedbind
 
@@ -70,28 +73,18 @@ $(bind_compiled) : $(bind_compiled:./=../dat/) $(__MAKEFILES__)
 exetarg_prebuild_objs = $(special) $(other) $(videps)
 exetarg_objs          = $(objsroot) $(objinit) $(objs)
 exetarg_libs          = $(libs)
-exetarg_res_version_nt_386 = exever.res
-exetarg_res_version_nt_x64 = exever.res
-!ifeq sys_windowed 1
+!ifdef sys_windowed
 exetarg_res           = $(name).res
 !endif
-exetarg_nt_manif_386  = ntmanif.res
-exetarg_nt_manif_x64  = ntmanif.res
 exetarg_name          = $(name)
 !include exetarg.mif
 
 #
 # rc and others
 #
-!include verrc.mif
-
 $(name).res : $(vi_dir)/res/viw.rc $(__MAKEFILES__) $(vi_autodepends)
     @%make echo_rc
-    $(rc) $(ppflags_common) $(rc_ui8_flags) $(rc_flags) -ad $(rc_inc_path) $[@ -fo=$@
-
-ntmanif.res : ../res/ntmanif.rc
-    @%make echo_rc
-    $(rc) $(ppflags_common) $(rc_ui8_flags) $(rc_flags) -I"../res" $(inc_dirs_sys_nt) $< -fo=$@
+    $(rcu8j) $(ppflags_common) $(rc_cppflags) -ad $(rc_flags) $(rc_inc_path) $[@ -fo=$@
 
 rcstr.grh : rcstrmsg.gh $(__MAKEFILES__)
     @%make echo_awk
@@ -99,7 +92,7 @@ rcstr.grh : rcstrmsg.gh $(__MAKEFILES__)
 
 rcstrmsg.gh : $(vi_dir)/res/vi.msg $(vi_dir)/res/tooltips.msg ../h/langdef.h $(msgfiles) $(__MAKEFILES__)
     @%make echo_cpp
-    $(cpp) $(ppflags_common) $(rc_ui8_flags) -o$@ $[@
+    $(cppu8) $(ppflags_common) $(rc_cppflags) -o$@ $[@
 
 setfs.obj : setfs.c setfs.gch setfs.gdh
 setgen.obj : setgen.c setgen.gch setgen.gdh

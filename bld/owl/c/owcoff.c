@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -230,7 +230,7 @@ static void formatSectionName( owl_section_handle section, char *buffer ) {
     count = strlen( section->name->text );
     if( count <= 8 ){
         memcpy( buffer, section->name->text, count );
-    }else{
+    } else {
 #endif
         name_offset = _OWLStringIndexToCOFFStringIndex( OWLStringOffset( section->name ) );
         buffer[ 0 ] = '/';
@@ -446,8 +446,8 @@ static void formatSectionSymbol( owl_symbol_info *symbol,
     _WCUNALIGNED coff_sym_section       *aux;
 
     section = symbol->x.section;
-    buffer->name.non_name.zeros = 0;
-    buffer->name.non_name.offset = _OWLStringIndexToCOFFStringIndex( OWLStringOffset( symbol->name ) );
+    buffer->name.u.non_name.zeros = 0;
+    buffer->name.u.non_name.offset = _OWLStringIndexToCOFFStringIndex( OWLStringOffset( symbol->name ) );
     buffer->value = 0;
     buffer->sec_num = _CoffSectionIndex( section->index );
     buffer->type = COFF_IMAGE_SYM_DTYPE_NULL;
@@ -475,12 +475,12 @@ _WCUNALIGNED uint_32     *lastBf;
 _WCUNALIGNED uint_32     *lastFile;
 
 static unsigned doFileRecord( _WCUNALIGNED coff_symbol *buffer,
-                                owl_symbol_index index, char const *name ) {
+                                owl_symbol_index index, char const *name )
 //**************************************************************************
-
+{
     unsigned            num_aux;
 
-    strcpy( buffer->name.name_string, ".file" );
+    strncpy( buffer->name.u.name_string, ".file", COFF_SYM_NAME_LEN );
     if( lastFile != NULL ) {
         *lastFile = index;
     }
@@ -493,9 +493,8 @@ static unsigned doFileRecord( _WCUNALIGNED coff_symbol *buffer,
     num_aux /= sizeof( coff_symbol );
     buffer->num_aux = num_aux;
     buffer += 1;
-    memset( (char *)buffer, 0, num_aux * sizeof( coff_symbol ) );
-    strcpy( (char *)buffer, name );
-    return( 1+num_aux );
+    strncpy( ((coff_sym_file *)buffer)->filename, name, num_aux * sizeof( coff_symbol ) );
+    return( 1 + num_aux );
 }
 
 static void formatFileSymbol( owl_symbol_info *symbol,
@@ -508,7 +507,8 @@ static void formatFileSymbol( owl_symbol_info *symbol,
 static owl_offset functionLineNumOffset( owl_symbol_info *symbol ) {
 //******************************************************************
 
-    if( symbol->x.func == NULL ) return( 0 );
+    if( symbol->x.func == NULL )
+        return( 0 );
     return( symbol->section->x.coff.linenum_offset + symbol->x.func->linenum_offset );
 }
 
@@ -518,7 +518,7 @@ static void doBfRecord( _WCUNALIGNED coff_symbol *buffer,
 
     _WCUNALIGNED coff_sym_bfef  *aux;
 
-    strcpy( buffer->name.name_string, ".bf" );
+    strncpy( buffer->name.u.name_string, ".bf", COFF_SYM_NAME_LEN );
     buffer->sec_num = _CoffSectionIndex( symbol->section->index );
     buffer->type = COFF_IMAGE_SYM_DTYPE_NULL;
     buffer->storage_class = COFF_IMAGE_SYM_CLASS_FUNCTION;
@@ -527,7 +527,7 @@ static void doBfRecord( _WCUNALIGNED coff_symbol *buffer,
     aux->linenum = info->first_line;
     aux->next_func = 0;
     if( lastBf != NULL ) {
-        *lastBf = symbol->index +2;
+        *lastBf = symbol->index + 2;
     }
     lastBf = &aux->next_func;
     buffer += 2;
@@ -537,7 +537,7 @@ static void doLfRecord( _WCUNALIGNED coff_symbol *buffer,
                                 owl_symbol_index index, int num_lines) {
 //**********************************************************************
 
-    strcpy( buffer->name.name_string, ".lf" );
+    strncpy( buffer->name.u.name_string, ".lf", COFF_SYM_NAME_LEN );
     buffer->value = num_lines;
     buffer->sec_num = _CoffSectionIndex( index );
     buffer->type = COFF_IMAGE_SYM_DTYPE_NULL;
@@ -551,7 +551,7 @@ static void doEfRecord( _WCUNALIGNED coff_symbol *buffer,
 
     _WCUNALIGNED coff_sym_bfef  *aux;
 
-    strcpy( buffer->name.name_string, ".ef" );
+    strncpy( buffer->name.u.name_string, ".ef", COFF_SYM_NAME_LEN );
     buffer->value = info->end - info->start;
     buffer->sec_num = _CoffSectionIndex( index );
     buffer->type = COFF_IMAGE_SYM_DTYPE_NULL;
@@ -570,8 +570,8 @@ static void formatFunctionSymbol( owl_symbol_info *symbol,
     owl_func_info               *info;
     owl_func_file               *curr;
 
-    buffer->name.non_name.zeros = 0;
-    buffer->name.non_name.offset = _OWLStringIndexToCOFFStringIndex( OWLStringOffset( symbol->name ) );
+    buffer->name.u.non_name.zeros = 0;
+    buffer->name.u.non_name.offset = _OWLStringIndexToCOFFStringIndex( OWLStringOffset( symbol->name ) );
     buffer->value = symbol->offset;
     buffer->sec_num = _CoffSectionIndex( symbol->section->index );
     buffer->type = _CoffSymType( COFF_IMAGE_SYM_DTYPE_FUNCTION, COFF_IMAGE_SYM_TYPE_NULL );
@@ -630,8 +630,8 @@ static void formatOneSymbol( owl_symbol_info *symbol,
         formatFunctionSymbol( symbol, buffer );
         break;
     case OWL_TYPE_OBJECT:
-        buffer->name.non_name.zeros = 0;
-        buffer->name.non_name.offset = _OWLStringIndexToCOFFStringIndex( OWLStringOffset( symbol->name ) );
+        buffer->name.u.non_name.zeros = 0;
+        buffer->name.u.non_name.offset = _OWLStringIndexToCOFFStringIndex( OWLStringOffset( symbol->name ) );
         buffer->value = symbol->offset;
         buffer->sec_num = ( ( symbol->section != NULL ) ? _CoffSectionIndex(symbol->section->index) : COFF_IMAGE_SYM_UNDEFINED );
         buffer->type = _CoffSymType( complexType[ symbol->type ], COFF_IMAGE_SYM_DTYPE_NULL );
@@ -661,8 +661,8 @@ static void formatComdatSymbol( owl_symbol_handle symbol,
                                         _WCUNALIGNED coff_symbol *buffer ) {
 //**************************************************************************
 
-    buffer->name.non_name.zeros = 0;
-    buffer->name.non_name.offset = _OWLStringIndexToCOFFStringIndex( OWLStringOffset( symbol->name ) );
+    buffer->name.u.non_name.zeros = 0;
+    buffer->name.u.non_name.offset = _OWLStringIndexToCOFFStringIndex( OWLStringOffset( symbol->name ) );
     buffer->value = 0;
     buffer->sec_num = COFF_IMAGE_SYM_UNDEFINED;
     buffer->type = COFF_IMAGE_SYM_DTYPE_NULL;

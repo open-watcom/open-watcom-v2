@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,10 +32,8 @@
 
 #include <stdio.h>
 #include "app.h"
+#include "dlgoptn.h"
 
-
-
-extern int DlgOptions( void );
 
 extern void Password( const char *, char *, unsigned );
 
@@ -106,7 +104,7 @@ char *PickList[] = { "one", "two", "three", "four" };
 
 static char             FileBrowsed[_MAX_PATH] = "e:\\f\\setup.dbg";
 
-static const char *FmtNum( const void *data_handle, int item )
+static const char * GUICALLBACK FmtNum( const void *data_handle, int item )
 {
     static char buff[20];
 

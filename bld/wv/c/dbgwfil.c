@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,7 +34,7 @@
 #include "srcmgt.h"
 #include "dbgdata.h"
 #include "dbgwind.h"
-#include "dbgadget.h"
+#include "gadgets.h"
 #include "dbgerr.h"
 #include "dbgitem.h"
 #include "dbgstk.h"
@@ -60,6 +60,9 @@
 #include "dbgwglob.h"
 #include "dbgwinsp.h"
 #include "menudef.h"
+#include "dbgicon.h"
+#include "liteng.h"
+#include "litdui.h"
 
 
 #define MAX_LINE_LEN    255 // must not wrap a gui_ord
@@ -192,7 +195,7 @@ static void GotoLine( a_window wnd )
 }
 
 
-static void     FileMenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_piece piece )
+static void     WNDCALLBACK FileMenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_piece piece )
 {
     address     addr;
     mod_handle  mod;
@@ -326,7 +329,7 @@ static void FilePos( a_window wnd, int pos )
 }
 
 
-static int FileScroll( a_window wnd, int lines )
+static int WNDCALLBACK FileScroll( a_window wnd, int lines )
 {
     int         old_top;
 
@@ -336,7 +339,7 @@ static int FileScroll( a_window wnd, int lines )
 }
 
 
-static  void    FileModify( a_window wnd, wnd_row row, wnd_piece piece )
+static  void    WNDCALLBACK FileModify( a_window wnd, wnd_row row, wnd_piece piece )
 {
     file_window *file = WndFile( wnd );
     address     addr;
@@ -368,7 +371,7 @@ static void FileSetDotAddr( a_window wnd, address addr )
     }
 }
 
-static void FileNotify( a_window wnd, wnd_row row, wnd_piece piece )
+static void WNDCALLBACK FileNotify( a_window wnd, wnd_row row, wnd_piece piece )
 {
     file_window *file = WndFile( wnd );
     address     addr;
@@ -423,7 +426,7 @@ void FileBreakGadget( a_window wnd, wnd_line_piece *line, bool curr, brkp *bp )
 }
 
 
-static  bool    FileGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *line )
+static  bool    WNDCALLBACK FileGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *line )
 {
     size_t      len;
     file_window *file = WndFile( wnd );
@@ -455,7 +458,7 @@ static  bool    FileGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_lin
         return( true );
     case PIECE_SOURCE:
         line->text = TxtBuff;
-        line->extent = WND_MAX_EXTEND;
+        line->extent = WND_NO_EXTENT;
         if( curr )
             line->attr = WND_STANDOUT;
         if( file->mod != NO_MOD ) {
@@ -743,7 +746,7 @@ static void ClearSrcFile( file_window *file )
     }
 }
 
-static void FileRefresh( a_window wnd )
+static void WNDCALLBACK FileRefresh( a_window wnd )
 {
     file_window *file = WndFile( wnd );
     address     dotaddr;
@@ -778,7 +781,7 @@ static void FileRefresh( a_window wnd )
 }
 
 
-static bool FileWndEventProc( a_window wnd, gui_event gui_ev, void *parm )
+static bool WNDCALLBACK FileWndEventProc( a_window wnd, gui_event gui_ev, void *parm )
 {
     file_window *file = WndFile( wnd );
 
@@ -819,7 +822,7 @@ static bool FileWndEventProc( a_window wnd, gui_event gui_ev, void *parm )
     return( false );
 }
 
-static bool ChkUpdate( void )
+static bool WNDCALLBACK ChkUpdate( void )
 {
     return( UpdateFlags & (UP_NEW_SRC | UP_SYM_CHANGE | UP_CSIP_CHANGE | UP_STACKPOS_CHANGE | UP_BREAK_CHANGE) );
 }

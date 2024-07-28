@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,6 +34,7 @@
 #include "app.h"
 #include "dlgoptn.h"
 
+
 typedef struct dlg_window_set {
     bool        cancel;
 } dlg_window_set;
@@ -48,7 +50,7 @@ static void SetDlgStatus( gui_window *gui )
 }
 
 
-static bool OptSetGUIEventProc( gui_window *gui, gui_event gui_ev, void *param )
+static bool GUICALLBACK OptSetGUIEventProc( gui_window *gui, gui_event gui_ev, void *param )
 {
     gui_ctl_id      id;
     dlg_window_set  *optset;
@@ -88,6 +90,6 @@ bool    DlgOptions( void )
     dlg_window_set      optset;
 
     optset.cancel = true;
-    ResDlgOpen( &OptSetGUIEventProc, &optset, DLG_OPTIONS );
+    DlgOpenRes( &OptSetGUIEventProc, &optset, DLG_OPTIONS );
     return( !optset.cancel );
 }

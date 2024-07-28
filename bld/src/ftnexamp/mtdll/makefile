@@ -112,7 +112,7 @@ targets = mthread.qnx
 targets = dllsamp.dll mthread.exe
 !endif
 
-all : .symbolic $(targets)
+all : .SYMBOLIC $(targets)
         @%null
 
 !ifeq targ os2
@@ -365,5 +365,5 @@ dllsamp.dll : dllsamp.obj
 
 !endif
 
-clean : .symbolic
+clean : .SYMBOLIC
         @-rm *.lnk *.exe *.dll *.map *.obj *.lib *.err 1>nul 2>nul

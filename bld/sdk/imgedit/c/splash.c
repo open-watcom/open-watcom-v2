@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -138,7 +138,7 @@ WPI_DLGRESULT CALLBACK wTitleDlgProc( HWND hwnd, UINT message, WPARAM wparam, LP
             GetClientRect( w666, &rect );
             GetClientRect( hwnd, &arect );
             start = (arect.right - arect.left - bm.bmWidth) / 2;
-            MapWindowPoints( w666, hwnd, (POINT *)&rect, 2 );
+            MapWindowRect( w666, hwnd, &rect );
             tdc = CreateCompatibleDC( dc );
             old_hbitmap = SelectObject( tdc, logo_hbitmap );
             BitBlt( dc, start, rect.top + 5, bm.bmWidth, bm.bmHeight, tdc, 0, 0, SRCCOPY );

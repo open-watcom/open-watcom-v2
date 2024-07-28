@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -376,37 +376,45 @@ bool WEXPORT WFileName::dirExists() const
     return( false );
 }
 
-bool WEXPORT WFileName::attribs( unsigned* attribs ) const
+bool WEXPORT WFileName::attribs( unsigned* pattribs ) const
+/**********************************************************
+ * now return writeable attribute only
+ */
 {
+    bool        found = false;
+    unsigned    attribs = 0;
 #ifdef __UNIX__
-    /* XXX needs to be fixed: just to get it going */
     struct stat st;
-    if( attribs != NULL ) {
-        *attribs = 0;
+
+    if( stat( *this, &st ) == 0 ) {
+        if( S_ISREG( st.st_mode ) ) {
+            if( access( *this, W_OK ) == 0 )
+                attribs |= attrWriteable;
+            found = true;
+        }
     }
-    return( stat( *this, &st ) == 0 );
 #else
     struct _finddata_t fileinfo;
     intptr_t handle;
     int rc;
-    bool found;
 
-    found = false;
     handle = _findfirst( *this, &fileinfo );
     if( handle != -1 ) {
         for( rc = 0; rc != -1; rc = _findnext( handle, &fileinfo ) ) {
             if( (fileinfo.attrib & (_A_HIDDEN | _A_SYSTEM | _A_SUBDIR | _A_VOLID)) == 0 ) {
-                if( attribs != NULL ) {
-                    *attribs = fileinfo.attrib;
-                }
+                if( (fileinfo.attrib & _A_RDONLY) == 0 )
+                    attribs |= attrWriteable;
                 found = true;
                 break;
             }
         }
         _findclose( handle );
     }
-    return( found );
 #endif
+    if( pattribs != NULL ) {
+        *pattribs = attribs;
+    }
+    return( found );
 }
 
 void WEXPORT WFileName::touch( time_t tm ) const

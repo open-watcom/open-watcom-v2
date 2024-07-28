@@ -63,7 +63,7 @@ dlltarg_name = wdpmhook
 #
 exetarg_prebuild_objs = _err.gh _jerr.gh
 exetarg_objs = pmhelp.obj
-exetarg_res = wdpmhelp.res
+exetarg_res = $(proj_name).res
 exetarg_name = wdpmhelp
 !include exetarg.mif
 
@@ -71,16 +71,15 @@ exetarg_name = wdpmhelp
 # rc and others
 #
 rc_inc_dirs = -I"$(trap_dir)/h"
-rcui_inc_dirs = -I"$(trap_dir)/h"
 
-wdpmhelp.res: ../h/pmhelp.rc ../h/wdpmhelp.rh
+$(proj_name).res: ../h/pmhelp.rc ../h/wdpmhelp.rh
     @%make echo_rc
-    $(rc) $(ppflags_common) $(rc_flags) $(rc_inc_path) -fo=$@ $[@
+    $(rc) $(ppflags_common) $(rc_cppflags) $(rc_flags) $(rc_inc_path) -fo=$@ $[@
 
 _err.gh : $(trap_dir)/h/trapmsg.h $(trap_dir)/h/trap.msg
     @%make echo_cpp
-    $(cpp) $(ppflags_common) $(rc_ui_flags) $(rc_ui_inc_path) -o$@ $[@
+    $(cpp) $(ppflags_common) $(rc_cppflags) $(rc_inc_path) -o$@ $[@
 
 _jerr.gh : $(trap_dir)/h/trapmsg.h $(trap_dir)/h/trap.msg
     @%make echo_cpp
-    $(cpp) $(ppflags_common) $(rc_ui_flags) -DJAPANESE $(rc_ui_inc_path) -o$@ $[@
+    $(cppj) $(ppflags_common) $(rc_cppflags) -DJAPANESE $(rc_inc_path) -o$@ $[@

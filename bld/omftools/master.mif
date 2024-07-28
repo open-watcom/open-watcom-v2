@@ -1,5 +1,5 @@
 proj_name = omftools
-omftools_autodepends = .autodepend
+omftools_autodepends = .AUTODEPEND
 
 !include cproj.mif
 !include defrule.mif

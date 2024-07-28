@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -147,7 +147,7 @@ void GUIXDrawText( gui_window *wnd, const char *text, size_t length, const gui_c
         pos = -length + 1; /* so (pos+length) will be 1 for drawing extent */
     }
     if( draw_extent ) {
-        if( in_extentx == GUI_NO_COLUMN ) {
+        if( in_extentx == GUI_NO_EXTENT ) {
             /* this is the most that will be covered.  It will be adjust for
                starting position and dirty rect */
             extentx = wnd->use.width;

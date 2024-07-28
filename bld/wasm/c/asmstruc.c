@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,12 +40,12 @@
 
 a_definition_struct Definition = { 0, NULL, NULL };
 
-struct asm_sym *FindStructureMember( asm_sym *symbol, const char *name )
+asm_sym *FindStructureMember( asm_sym *symbol, const char *name )
 {
     field_list      *field;
-    struct asm_sym  *sym;
+    asm_sym         *sym;
 
-    for( field = ((dir_node *)symbol)->e.structinfo->head; field != NULL; field = field->next ) {
+    for( field = ((dir_node *)symbol)->e.structinfo->fields.head; field != NULL; field = field->next ) {
         if( (sym = field->sym) != NULL ) {
             if( strcmp( name, sym->name ) == 0 ) {
                 return( sym );
@@ -64,8 +64,8 @@ bool StructDef( token_buffer *tokbuf, token_idx i )
 
     if( Options.mode & MODE_IDEAL ) {
         n = i + 1;
-        if( ( tokbuf->tokens[i].u.token == T_STRUC ) &&
-            ( tokbuf->tokens[n].class != TC_ID ) ) {
+        if( ( tokbuf->tokens[i].u.token == T_STRUC )
+          && ( tokbuf->tokens[n].class != TC_ID ) ) {
             AsmError( SYNTAX_ERROR );
             return( RC_ERROR );
         }
@@ -75,7 +75,8 @@ bool StructDef( token_buffer *tokbuf, token_idx i )
         } else {
             n = INVALID_IDX;
         }
-        if( ISINVALID_IDX( n ) || ( tokbuf->tokens[n].class != TC_ID ) ) {
+        if( ISINVALID_IDX( n )
+          || ( tokbuf->tokens[n].class != TC_ID ) ) {
             AsmError( SYNTAX_ERROR );
             return( RC_ERROR );
         }
@@ -90,7 +91,8 @@ bool StructDef( token_buffer *tokbuf, token_idx i )
                 dir = dir_insert( name, TAB_STRUCT );
             } else if( dir->sym.state == SYM_UNDEFINED ) {
                 dir_change( dir, TAB_STRUCT );
-            } else if( ( dir->sym.state == SYM_STRUCT ) && (Options.mode & MODE_IDEAL) ) {
+            } else if( ( dir->sym.state == SYM_STRUCT )
+              && (Options.mode & MODE_IDEAL) ) {
                 /* Redefinition of structure */
                 FreeInfo( dir );
                 dir_init( dir, TAB_STRUCT );
@@ -117,8 +119,8 @@ bool StructDef( token_buffer *tokbuf, token_idx i )
                 return( RC_ERROR );
             }
         }
-        if( Definition.curr_struct != NULL &&
-            strcmp( name, Definition.curr_struct->sym.name ) == 0 ) {
+        if( Definition.curr_struct != NULL
+          && strcmp( name, Definition.curr_struct->sym.name ) == 0 ) {
             /* this is the right struct ... so end it */
             Definition.curr_struct = pop( &Definition.struct_stack );
             Definition.struct_depth--;
@@ -160,7 +162,7 @@ bool InitializeStructure( asm_sym *sym, asm_sym *struct_symbol, token_buffer *to
     }
 
     ptr = tokbuf->tokens[i].string_ptr;
-    for( f = dir->e.structinfo->head; f != NULL; f = f->next ) {
+    for( f = dir->e.structinfo->fields.head; f != NULL; f = f->next ) {
         /* put the lines to define the fields of the structure in,
          * using the values specified ( if any ) or the default ones otherwise
          */
@@ -257,14 +259,16 @@ int AddFieldToStruct( asm_sym *sym, token_buffer *tokbuf, token_idx loc )
         }
         strcat( f->value, " " );
     }
-
+    /*
+     * add new field to the end of list
+     */
     f->next = NULL;
-    if( the_struct->head == NULL ) {
-        the_struct->head = the_struct->tail = f;
+    if( the_struct->fields.head == NULL ) {
+        the_struct->fields.head = f;
     } else {
-        the_struct->tail->next = f;
-        the_struct->tail = f;
+        the_struct->fields.tail->next = f;
     }
+    the_struct->fields.tail = f;
 
     return( offset );
 }

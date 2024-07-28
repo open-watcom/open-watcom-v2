@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -41,6 +41,9 @@
 #include "dbgwglob.h"
 #include "dbgwrtrd.h"
 #include "menudef.h"
+#include "dbgicon.h"
+#include "liteng.h"
+#include "litdui.h"
 
 
 #define RUN_THREAD_INFO_TYPE_NONE       0
@@ -94,7 +97,7 @@ static thread_state     *GetThreadRow( wnd_row row )
     return( thd );
 }
 
-static wnd_row RunTrdNumRows( a_window wnd )
+static wnd_row WNDCALLBACK RunTrdNumRows( a_window wnd )
 {
     thread_state    *thd;
     wnd_row         num;
@@ -107,7 +110,7 @@ static wnd_row RunTrdNumRows( a_window wnd )
     return( num );
 }
 
-static bool RunTrdWndEventProc( a_window wnd, gui_event gui_ev, void *parm )
+static bool WNDCALLBACK RunTrdWndEventProc( a_window wnd, gui_event gui_ev, void *parm )
 {
     /* unused parameters */ (void)parm;
 
@@ -122,7 +125,7 @@ static bool RunTrdWndEventProc( a_window wnd, gui_event gui_ev, void *parm )
     return( false );
 }
 
-static void     RunTrdMenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_piece piece )
+static void     WNDCALLBACK RunTrdMenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_piece piece )
 {
     thread_state        *thd = GetThreadRow( row );
 
@@ -173,7 +176,7 @@ static void     RunTrdMenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_pi
     DbgUpdate( UP_THREAD_STATE );
 }
 
-static void RunTrdRefresh( a_window wnd )
+static void WNDCALLBACK RunTrdRefresh( a_window wnd )
 {
     thread_state    *thd;
     wnd_row         row;
@@ -190,7 +193,7 @@ static void RunTrdRefresh( a_window wnd )
     WndSetRepaint( wnd );
 }
 
-static bool    RunTrdGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *line )
+static bool    WNDCALLBACK RunTrdGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *line )
 {
     thread_state        *thd = GetThreadRow( row );
 
@@ -216,7 +219,7 @@ static bool    RunTrdGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_li
             return( false );
         line->tabstop = false;
         line->use_prev_attr = true;
-        line->extent = WND_MAX_EXTEND;
+        line->extent = WND_NO_EXTENT;
         switch( InfoType[piece] ) {
         case RUN_THREAD_INFO_TYPE_NAME:
             line->tabstop = true;
@@ -278,7 +281,7 @@ static bool    RunTrdGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_li
     return( false );
 }
 
-static bool ChkUpdate( void )
+static bool WNDCALLBACK ChkUpdate( void )
 {
     return( UpdateFlags & UP_THREAD_STATE );
 }
@@ -302,7 +305,7 @@ wnd_info RunTrdInfo = {
 
 a_window WndRunTrdOpen( void )
 {
-    return( DbgTitleWndCreate( LIT_DUI( WindowThreads ), &RunTrdInfo, WND_RUN_THREAD, NULL, &TrdIcon, TITLE_SIZE, true ) );
+    return( DbgWndCreateTitle( LIT_DUI( WindowThreads ), &RunTrdInfo, WND_RUN_THREAD, NULL, &TrdIcon, TITLE_SIZE, true ) );
 }
 
 void RunThreadNotify( void )

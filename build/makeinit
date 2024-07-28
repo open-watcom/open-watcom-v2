@@ -32,9 +32,9 @@ verbose       = 0
 
 !ifndef nowgml
 !ifdef %OWNOWGML
-nowgml        = $+$(%OWNOWGML)$-
-!else
-nowgml        = 0
+!ifeq %OWNOWGML 1
+nowgml = 1
+!endif
 !endif
 !endif
 
@@ -43,9 +43,7 @@ noecho = @
 noecho =
 !endif
 
-mif_path      = $(%OWROOT)/build/mif
-
-.mif: "$(mif_path)"
+.mif: "$(%OWROOT)/build/mif"
 
 # setup non-WATCOM tools macros
 !ifeq %OWTOOLS VISUALC
@@ -85,7 +83,7 @@ bld_os = nt
 !else ifdef __NTX64__
 bld_cpu = x64
 bld_os = nt
-bldonly_nt = x64
+use_for_build_ntx64 = msvc_intel
 !else ifdef __NTAXP__
 bld_cpu = axp
 bld_os = nt
@@ -98,7 +96,7 @@ bld_os = linux
 !else ifdef __LINUXX64__
 bld_cpu = x64
 bld_os = linux
-bldonly_linux = x64
+use_for_build_linuxx64 = clang_gcc
 !else ifdef __LINUXMIPS__
 bld_cpu = mps
 bld_os = linux
@@ -108,18 +106,18 @@ bld_os = linux
 !else ifdef __LINUXARM__
 bld_cpu = arm
 bld_os = linux
-bldonly_linux = arm
+use_for_build_linuxarm = clang_gcc
 !else ifdef __LINUXARM64__
 bld_cpu = a64
 bld_os = linux
-bldonly_linux = a64
+use_for_build_linuxa64 = clang_gcc
 !else ifdef __BSD386__
 bld_cpu = 386
 bld_os = bsd
 !else ifdef __BSDX64__
 bld_cpu = x64
 bld_os = bsd
-bldonly_bsd = x64
+use_for_build_bsdx64 = clang_gcc
 !else ifdef __BSDPPC__
 bld_cpu = ppc
 bld_os = bsd
@@ -129,7 +127,7 @@ bld_os = haiku
 !else ifdef __HAIKUX64__
 bld_cpu = x64
 bld_os = haiku
-bldonly_haiku = x64
+use_for_build_haikux64 = clang_gcc
 !else ifdef __HAIKUPPC__
 bld_cpu = ppc
 bld_os = haiku
@@ -139,18 +137,18 @@ bld_os = osx
 !else ifdef __OSXX64__
 bld_cpu = x64
 bld_os = osx
-bldonly_osx = x64
+use_for_build_osxx64 = clang_gcc
 !else ifdef __OSXPPC__
 bld_cpu = ppc
 bld_os = osx
 !else ifdef __OSXARM__
 bld_cpu = arm
 bld_os = osx
-bldonly_osx = arm
+use_for_build_osxarm = clang_gcc
 !else ifdef __OSXARM64__
 bld_cpu = a64
 bld_os = osx
-bldonly_osx = a64
+use_for_build_osxa64 = clang_gcc
 !endif
 
 nested_wmake = wmake
@@ -167,7 +165,9 @@ nulldevice = nul
 
 # default windowing support
 !ifdef %OWDEFAULT_WINDOWING
-default_windowing = $+$(%OWDEFAULT_WINDOWING)$-
+!ifeq %OWDEFAULT_WINDOWING 1
+default_windowing = 1
+!endif
 !endif
 
 !include cdirs.mif

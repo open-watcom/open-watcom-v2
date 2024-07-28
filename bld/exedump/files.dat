@@ -3,7 +3,7 @@
 [ DEFAULT type="e" where="c f77 jc jf77" ]
 dir="binw"      usr="wdump.exe"     cond="doshost winhost |"
 dir="binp"      usr="wdump.exe"     cond="os2host"
-dir="binnt"     usr="wdump.exe"     cond="wnthost"      wherea="ac"
+dir="binnt"     usr="wdump.exe"     cond="wnthost"      where+="ac"
 dir="binnt64"   usr="wdump.exe"     cond="wnt64host"                    keys="ntx64"
 dir="axpnt"     usr="wdump.exe"     cond="alphahost"    where="ac"
 dir="binl"      usr="wdump"         cond="lnxhost"

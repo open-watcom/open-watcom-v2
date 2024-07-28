@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -381,12 +381,11 @@ static TOKEN doScanFloat( bool hex )
           || c == '-' ) {
             c = WriteBufferCharNextChar( c );
         }
-        if( c < '0'
-          || c > '9' ) {
+        if( (CharSet[c] & C_DI) == 0 ) {
             token = T_BAD_TOKEN;
             BadTokenInfo = ERR_INVALID_FLOATING_POINT_CONSTANT;
         }
-        while( c >= '0' && c <= '9' ) {
+        while( CharSet[c] & C_DI ) {
             c = WriteBufferCharNextChar( c );
         }
     }
@@ -509,8 +508,7 @@ static TOKEN ScanPPDot( void )
     Buffer[0] = '.';
     TokenLen = 1;
     c = NextChar();
-    if( c >= '0'
-      && c <= '9' ) {
+    if( CharSet[c] & C_DI ) {
         Buffer[TokenLen++] = c;
         return( doScanPPNumber() );
     } else {
@@ -711,7 +709,7 @@ static TOKEN doScanNum( void )
              * if collecting tokens for macro preprocessor, allow 8 and 9
              * since the argument may be used in with # or ##.
              */
-            while( c >= '0' && c <= '9' ) {
+            while( CharSet[c] & C_DI ) {
                 digit_mask |= c;
                 c = WriteBufferCharNextChar( c );
             }
@@ -738,7 +736,7 @@ static TOKEN doScanNum( void )
         bad_token_type = ERR_INVALID_CONSTANT;
         con.form = CON_DEC;
         c = NextChar();
-        while( c >= '0' && c <= '9' ) {
+        while( CharSet[c] & C_DI ) {
             c = WriteBufferCharNextChar( c );
         }
         if( c == '.'
@@ -814,18 +812,19 @@ static TOKEN doScanNum( void )
         unsigned_32 value;
 
         value = 0;
-        while( c >= '0' && c <= '9' ) {
+        while( CharSet[c] & C_DI ) {
             value = value * 10 + c - '0';
             c = WriteBufferCharNextChar( c );
         }
         if( value == 64 ) {
+            if( ov == CNV_32 ) {
+                Constant64.u._32[I64LO32] = Constant;
+                Constant64.u._32[I64HI32] = 0;
+            }
             if( con.suffix == SUFF_I ) {
                 ConstType = TYP_LONG64;
             } else {
                 ConstType = TYP_ULONG64;
-            }
-            if( ov == CNV_32 ) {
-                U32ToU64( Constant, &Constant64 );
             }
         } else if( value == 32 ) {
             if( con.suffix == SUFF_I ) {
@@ -858,76 +857,79 @@ static TOKEN doScanNum( void )
                 CWarn1( ERR_CONSTANT_TOO_BIG );
             }
         }
-    } else if( ov == CNV_32
-      && con.suffix != SUFF_LL
-      && con.suffix != SUFF_ULL ) {
+    } else if( ov == CNV_32 ) {
+        /*
+         * 32-bit value
+         */
         switch( con.suffix ) {
         case SUFF_NONE:
             if( Constant <= TARGET_INT_MAX ) {
                 ConstType = TYP_INT;
+                break;
+            }
 #if TARGET_INT < TARGET_LONG
-            } else if( Constant <= TARGET_UINT_MAX
+            if( Constant <= TARGET_UINT_MAX
               && con.form != CON_DEC ) {
-                ConstType = TYP_UINT;
-            } else if( Constant <= 0x7fffffffU ) {
-                ConstType = TYP_LONG;
-            } else {
-                ConstType = TYP_ULONG;
-            }
 #else
-            } else if( con.form != CON_DEC ) {
-                ConstType = TYP_UINT;
-            } else {
-                ConstType = TYP_ULONG;
-            }
+            if( con.form != CON_DEC ) {
 #endif
-            break;
-        case SUFF_L:
-            if( Constant <= 0x7FFFFFFFU ) {
-                ConstType = TYP_LONG;
-            } else {
-                ConstType = TYP_ULONG;
+                ConstType = TYP_UINT;
+                break;
             }
+            /* fall through */
+        case SUFF_L:
+            if( Constant <= TARGET_LONG_MAX ) {
+                ConstType = TYP_LONG;
+                break;
+            }
+            if( con.form != CON_DEC ) {
+                ConstType = TYP_ULONG;
+                break;
+            }
+            /* fall through */
+        case SUFF_LL:
+            Constant64.u._32[I64LO32] = Constant;
+            Constant64.u._32[I64HI32] = 0;
+            ConstType = TYP_LONG64;
             break;
         case SUFF_U:
-            ConstType = TYP_UINT;
 #if TARGET_INT < TARGET_LONG
-            if( Constant > TARGET_UINT_MAX ) {
-                ConstType = TYP_ULONG;
+            if( Constant <= TARGET_UINT_MAX ) {
+                ConstType = TYP_UINT;
+                break;
             }
-#endif
+            /* fall through */
+#else
+            ConstType = TYP_UINT;
             break;
+#endif
         case SUFF_UL:
             ConstType = TYP_ULONG;
+            break;
+        case SUFF_ULL:
+            Constant64.u._32[I64LO32] = Constant;
+            Constant64.u._32[I64HI32] = 0;
+            ConstType = TYP_ULONG64;
             break;
         default:
             break;
         }
     } else {
+        /*
+         * 64-bit value
+         */
         switch( con.suffix ) {
         case SUFF_NONE:
-            ConstType = TYP_LONG64;
-            if( Constant64.u._32[I64HI32] & 0x80000000 ) {
-                ConstType = TYP_ULONG64;
-            }
-            break;
         case SUFF_L:
         case SUFF_LL:
-            if( ov == CNV_32 ) {
-                U32ToU64( Constant, &Constant64 );
-            }
-            if( Constant64.u._32[I64HI32] & 0x80000000 ) {
-                ConstType = TYP_ULONG64;
-            } else {
+            if( (Constant64.u._32[I64HI32] & 0x80000000) == 0 ) {
                 ConstType = TYP_LONG64;
+                break;
             }
-            break;
+            /* fall through */
         case SUFF_U:
         case SUFF_UL:
         case SUFF_ULL:
-            if( ov == CNV_32 ) {
-                U32ToU64( Constant, &Constant64 );
-            }
             ConstType = TYP_ULONG64;
             break;
         default:
@@ -1767,7 +1769,7 @@ static TOKEN ScanNewline( void )
     SrcFileLoc = SrcFile->src_loc;
     if( PPControl & PPCTL_EOL )
         return( T_NULL );
-    return( ChkControl() );
+    return( CheckControl() );
 }
 
 static TOKEN ScanCarriageReturn( void )
@@ -2003,4 +2005,3 @@ void FiniPPScan( bool ppscan_mode )
         ScanFunc[SCAN_DOT] = ScanDot;
     }
 }
-

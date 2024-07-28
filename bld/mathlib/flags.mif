@@ -1,3 +1,24 @@
+mlib_cpp_flags_windows  = -DSTRICT
+mlib_cpp_flags_winnt    = $(cppflags_win32ver)
+
+#mlib_app_flags_winnt    = $(appflags_win32ver)
+mlib_app_flags_286      = -DPDIV -D_BUILDING_MATHLIB
+mlib_app_flags_287      = -DPDIV
+mlib_app_flags_386      = -DPDIV -D_BUILDING_MATHLIB
+mlib_app_flags_387      = -DPDIV
+
+mlib_cpp_flags = $(mlib_cpp_flags_$(system))
+mlib_app_flags = $(mlib_app_flags_$(system)) $(mlib_app_flags_$(processor))
+!ifeq linkage dynamic
+!ifdef export_only
+mlib_cpp_flags += -D__MAKE_DLL_WRTLIB
+mlib_app_flags += -D__MAKE_DLL_WRTLIB -D_EXPORT
+!else
+mlib_cpp_flags += -D__MAKE_DLL_MATHLIB
+mlib_app_flags += -D__MAKE_DLL_MATHLIB -D_EXPORT
+!endif
+!endif
+
 !ifneq debug 0
 sw_c_common = $(watcom_common_cflags)-j-zastd=c99-we-x-xx-zam-oax-zl-wpx
 !else
@@ -5,13 +26,6 @@ sw_c_common = $(watcom_common_cflags)-j-zastd=c99-we-x-xx-zam-s-oax-zl-wpx
 !endif
 !ifdef __UNIX__
 sw_c_common += -fo=.obj
-!endif
-
-sw_c_static  =
-!ifdef export_only
-sw_c_dynamic = -D__MAKE_DLL_WRTLIB
-!else
-sw_c_dynamic = -D__MAKE_DLL_MATHLIB
 !endif
 
 # sw_c_(processor)_(model)
@@ -51,8 +65,8 @@ sw_c_ppc =
 # sw_c_(system)
 sw_c_msdos    = -bt=dos
 sw_c_os2      = -bt=os2
-sw_c_windows  = -bt=windows -DSTRICT
-sw_c_winnt    = -bt=nt $(ppflags_win32ver)
+sw_c_windows  = -bt=windows
+sw_c_winnt    = -bt=nt
 sw_c_linux    = -bt=linux
 sw_c_netware  = -bt=netware
 sw_c_qnx      = -bt=qnx
@@ -60,13 +74,6 @@ sw_c_qnx      = -bt=qnx
 sw_a_common = -we
 !ifdef __UNIX__
 sw_a_common += -fo=.obj
-!endif
-
-sw_a_static  =
-!ifdef export_only
-sw_a_dynamic = -D__MAKE_DLL_WRTLIB -D_EXPORT
-!else
-sw_a_dynamic = -D__MAKE_DLL_MATHLIB -D_EXPORT
 !endif
 
 # sw_a_(processor)_(model)
@@ -84,14 +91,14 @@ sw_a_mps_   =
 sw_a_ppc_   =
 
 # sw_a_(processor)
-sw_a_intel    = -w8-cx-DPDIV -ee
+sw_a_intel    = -w8-cx-ee
 sw_a_16bit    = -0
 sw_a_register = -5r
 sw_a_stack    = -5s
 
-sw_a_286 = $(sw_a_intel)$(sw_a_16bit) -fpc -D_BUILDING_MATHLIB
+sw_a_286 = $(sw_a_intel)$(sw_a_16bit) -fpc
 sw_a_287 = $(sw_a_intel)$(sw_a_16bit) -fpi -fp0
-sw_a_386 = $(sw_a_intel)$(sw_a_$(convention)) -fpc -D_BUILDING_MATHLIB
+sw_a_386 = $(sw_a_intel)$(sw_a_$(convention)) -fpc
 sw_a_387 = $(sw_a_intel)$(sw_a_$(convention)) -fpi87 -fp5
 sw_a_axp =
 sw_a_mps =
@@ -101,14 +108,14 @@ sw_a_ppc =
 sw_a_msdos    = -bt=dos
 sw_a_os2      = -bt=os2
 sw_a_windows  = -bt=windows
-sw_a_winnt    = -bt=nt $(ppflags_win32ver)
+sw_a_winnt    = -bt=nt
 sw_a_linux    = -bt=linux
 sw_a_netware  = -bt=netware
 sw_a_qnx      = -bt=qnx
 
-mlib_c_flags = $(sw_c_common) $(sw_c_$(linkage)) $(sw_c_$(mlib_$(processor))_$(model)) &
+mlib_c_flags = $(sw_c_common) $(sw_c_$(mlib_$(processor))_$(model)) &
     $(sw_c_$(processor)) $(sw_c_$(system)) $(extra_mlib_c_flags)
-mlib_a_flags = $(sw_a_common) $(sw_a_$(linkage)) $(sw_a_$(mlib_$(processor))_$(model)) &
+mlib_a_flags = $(sw_a_common) $(sw_a_$(mlib_$(processor))_$(model)) &
     $(sw_a_$(processor)) $(sw_a_$(system)) $(extra_mlib_a_flags)
 
 # debug flags need to be last to override optimization flags

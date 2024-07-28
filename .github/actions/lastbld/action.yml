@@ -1,23 +1,18 @@
 name: last-build
 description: 'Create new OW release on GitHub and upload snapshot archive'
 inputs:
-  arch:
-    description: 'run-time platform'
-    required: false
-    default: ''
-    type: string
   fullname:
     description: 'release asset full file name'
     required: false
     default: ''
     type: string
-  tools:
-    description: 'used compiler toolchain'
+  owdebug:
+    description: 'verbosed/debug output for GH Actions scripts development'
     required: false
     default: ''
     type: string
-  owdebug:
-    description: 'verbosed/debug output for GH Actions scripts development'
+  owcurlopts:
+    description: 'additional curl options for GH Actions scripts development'
     required: false
     default: ''
     type: string
@@ -27,6 +22,8 @@ runs:
   - name: Setup curl options
     id: curlcmd
     uses: "./.github/actions/curlcmd"
+    with:
+      owcurlopts: ${{ inputs.owcurlopts }}
   - id: cireldata
     run: |
       echo "tag=Last-CI-build" >> ${{ github.output }}
@@ -37,6 +34,7 @@ runs:
     with:
       tag:     ${{ steps.cireldata.outputs.tag }}
       owdebug: ${{ inputs.owdebug }}
+      owcurlopts: ${{ inputs.owcurlopts }}
   - name: Create new Release
     uses: "./.github/actions/ghrelcre"
     id: cinewrel
@@ -46,6 +44,7 @@ runs:
       tag:     ${{ steps.cireldata.outputs.tag }}
       tagmsg:  ${{ steps.cireldata.outputs.timestamp }}
       owdebug: ${{ inputs.owdebug }}
+      owcurlopts: ${{ inputs.owcurlopts }}
   - run: |
       $name = Split-Path -Path ${{ inputs.fullname }} -Leaf
       $response = ${{ steps.curlcmd.outputs.gh }} -H "Authorization: Bearer ${{ github.token }}" `

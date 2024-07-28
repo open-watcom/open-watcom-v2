@@ -44,9 +44,9 @@ default_targ    = d
 
 first : $(default_targ)
 
-w : nmpbind.exe .symbolic
+w : nmpbind.exe .SYMBOLIC
 
-d : dnmpbind.exe .symbolic
+d : dnmpbind.exe .SYMBOLIC
 
 #
 # EXE's
@@ -64,12 +64,12 @@ exetarg_name = dnmpbind
 #
 # rc and others
 #
-rcui_inc_dirs = -I"$(trap_dir)/h"
+rc_inc_dirs = -I"$(trap_dir)/h"
 
 _err.gh : $(trap_dir)/h/trapmsg.h $(trap_dir)/h/trap.msg
     @%make echo_cpp
-    $(cpp) $(ppflags_common) $(rc_ui_flags) $(rc_ui_inc_path) -o$@ $[@
+    $(cpp) $(ppflags_common) $(rc_cppflags) $(rc_inc_path) -o$@ $[@
 
 _jerr.gh : $(trap_dir)/h/trapmsg.h $(trap_dir)/h/trap.msg
     @%make echo_cpp
-    $(cpp) $(ppflags_common) $(rc_ui_flags) -DJAPANESE $(rc_ui_inc_path) -o$@ $[@
+    $(cppj) $(ppflags_common) $(rc_cppflags) -DJAPANESE $(rc_inc_path) -o$@ $[@

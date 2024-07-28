@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,8 +36,8 @@
 #include <process.h>
 #endif
 #include "aui.h"
+#include "sample.rh"
 #include "guidlg.h"
-#include "rcdefs.h"
 #include "dlgbutn.h"
 
 
@@ -125,14 +125,14 @@ extern int RandNum( int );
 
 extern char     *Word[WORD_SIZE];
 
-extern WNDOPEN W1Open;
-extern WNDOPEN W2Open;
-extern WNDOPEN W3Open;
-extern WNDOPEN W4Open;
-extern WNDOPEN W5Open;
-extern WNDOPEN W6Open;
-extern WNDOPEN W7Open;
-extern WNDOPEN W8Open;
+extern a_window W1Open( void );
+extern a_window W2Open( void );
+extern a_window W3Open( void );
+extern a_window W4Open( void );
+extern a_window W5Open( void );
+extern a_window W6Open( void );
+extern a_window W7Open( void );
+extern a_window W8Open( void );
 
 extern void     Password( const char *title, char *buff, size_t buff_len );
 extern void     DlgCmd( void );

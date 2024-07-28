@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,22 +31,11 @@
 ****************************************************************************/
 
 
-typedef struct MemPtr MemPtr;
-struct MemPtr{
-    MemPtr   *next;
-    MemPtr   *prev;
-};
 extern void InitMem( void );
-extern void *MemRealloc( void *ptr, size_t size );
-extern void *MemAlloc( size_t size );
-extern void MemFree( void *ptr );
-
-//globals which have pointers all the time do not require memory tracking
-extern void *MemReallocGlobal( void *ptr, size_t size );
-extern void *MemAllocGlobal( size_t size );
-extern void MemFreeGlobal( void *ptr );
-
 extern void MemPrtList( void );
 extern void FiniMem( void );
-extern char *DupStr( const char * );
-extern char *DupStrGlobal( const char * ); //uses MemAllocGlobal
+
+extern void *MemAlloc( size_t size );
+extern void MemFree( void *ptr );
+extern void *MemRealloc( void *ptr, size_t size );
+extern char *MemDupStr( const char * );

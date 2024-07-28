@@ -8,7 +8,7 @@ exes = abs.exe   acos.exe acosh.exe arg.exe  asin.exe asinh.exe atan.exe &
        log10.exe norm.exe polar.exe pow.exe  real.exe sin.exe   sinh.exe &
        sqrt.exe  tan.exe  tanh.exe
 
-all : $(exes) .symbolic
+all : $(exes) .SYMBOLIC
 
 .cpp.exe :
     wcl $[@

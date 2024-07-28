@@ -1,8 +1,8 @@
 name: github-release-assets
 description: 'Upload release asset file (day and month release)'
 inputs:
-  arch:
-    description: 'run-time platform'
+  hostos:
+    description: 'host os'
     required: false
     default: ''
     type: string
@@ -21,13 +21,13 @@ inputs:
     required: false
     default: ''
     type: string
-  tools:
-    description: 'used compiler toolchain'
+  owdebug:
+    description: 'verbosed/debug output for GH Actions scripts development'
     required: false
     default: ''
     type: string
-  owdebug:
-    description: 'verbosed/debug output for GH Actions scripts development'
+  owcurlopts:
+    description: 'additional curl options for GH Actions scripts development'
     required: false
     default: ''
     type: string
@@ -36,13 +36,15 @@ runs:
   steps:
   - uses: "./.github/actions/artfload"
     with:
-      arch:     ${{ inputs.arch }}
+      hostos:   ${{ inputs.hostos }}
       artifact: "install ${{ inputs.target }}"
       gitpath:  'temp'
       owdebug:  ${{ inputs.owdebug }}
   - name: Setup curl options
     id: curlcmd
     uses: "./.github/actions/curlcmd"
+    with:
+      owcurlopts: ${{ inputs.owcurlopts }}
   - run: |
       Join-Path ${{ github.workspace }} temp | Get-ChildItem -File | Foreach-Object {
         $response = ${{ steps.curlcmd.outputs.gh }} -H "Authorization: Bearer ${{ github.token }}" `

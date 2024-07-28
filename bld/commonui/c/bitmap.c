@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,20 +36,14 @@
 #include <string.h>
 #ifdef _M_I86
     #include <malloc.h>
+    #include <i86.h>
 #endif
-#include <dos.h>
 #include "bool.h"
 #include "palette.h"
 #include "bitmap.h"
-#include "cguimem.h"
 
-#ifndef _WCI86HUGE
-    #if defined( _M_I86 )
-        #define _WCI86HUGE __huge
-    #else
-        #define _WCI86HUGE
-    #endif
-#endif
+#include "clibext.h"
+
 
 #define HUGE_SHIFT      8
 #define START_OF_HEADER sizeof( BITMAPFILEHEADER )
@@ -68,7 +62,7 @@ static BITMAPINFO *readDIBInfo( FILE *fp )
     BITMAPINFOHEADER    *header;
     long                bitmap_size;
 
-    header = MemAlloc( sizeof( BITMAPINFOHEADER ) );
+    header = CUIMemAlloc( sizeof( BITMAPINFOHEADER ) );
     if( header == NULL ) {
         return( NULL );
     }
@@ -78,17 +72,14 @@ static BITMAPINFO *readDIBInfo( FILE *fp )
         /* Bitmap has palette, read it */
         fseek( fp, START_OF_HEADER, SEEK_SET );
         bitmap_size = DIB_INFO_SIZE( header->biBitCount );
-        bm = MemRealloc( header, bitmap_size );
+        bm = CUIMemRealloc( header, bitmap_size );
         if( bm == NULL ) {
             return( NULL );
         }
         fread( bm, bitmap_size, 1, fp );
+        return( bm );
     }
-    else {
-        return( (BITMAPINFO*) header );
-    }
-
-    return( bm );
+    return( (BITMAPINFO*) header );
 
 } /* readDIBInfo */
 
@@ -101,7 +92,7 @@ static BITMAPCOREINFO *readCoreInfo( FILE *fp )
     BITMAPCOREHEADER    *header;
     long                bitmap_size;
 
-    header = MemAlloc( sizeof( BITMAPCOREHEADER ) );
+    header = CUIMemAlloc( sizeof( BITMAPCOREHEADER ) );
     if( header == NULL ) {
         return( NULL );
     }
@@ -109,7 +100,7 @@ static BITMAPCOREINFO *readCoreInfo( FILE *fp )
     fread( header, sizeof( BITMAPCOREHEADER ), 1, fp );
     fseek( fp, START_OF_HEADER, SEEK_SET );
     bitmap_size = CORE_INFO_SIZE( header->bcBitCount );
-    bm_core = MemRealloc( header, bitmap_size );
+    bm_core = CUIMemRealloc( header, bitmap_size );
     if( bm_core == NULL ) {
         return( NULL );
     }
@@ -141,8 +132,8 @@ static void HugeMemCopy( void __far *dst, void __far *src, unsigned bytes )
 }
 #else
 #define HugeMemCopy( a, b, c ) memcpy( a, b, c )
-#define __halloc( a, b ) MemAlloc( a )
-#define __hfree MemFree
+#define __halloc( a, b ) CUIMemAlloc( a )
+#define __hfree CUIMemFree
 #endif
 
 /* This is the amount of memory we read in at once. */
@@ -157,7 +148,7 @@ static void readInPieces( BYTE _WCI86HUGE *dst, FILE *fp, DWORD size )
     WORD                chunk_size;
 
     for( chunk_size = CHUNK_SIZE; chunk_size != 0; chunk_size >>= 1 ) {
-        if( (buffer = MemAlloc( chunk_size )) != NULL ) {
+        if( (buffer = CUIMemAlloc( chunk_size )) != NULL ) {
             while( size > chunk_size ) {
                 fread( buffer, chunk_size, 1, fp );
                 HugeMemCopy( dst, buffer, chunk_size );
@@ -166,7 +157,7 @@ static void readInPieces( BYTE _WCI86HUGE *dst, FILE *fp, DWORD size )
             }
             fread( buffer, size, 1, fp );
             HugeMemCopy( dst, buffer, size );
-            MemFree( buffer );
+            CUIMemFree( buffer );
             break;
         }
     }
@@ -247,13 +238,13 @@ static HBITMAP readBitmap( HWND hwnd, FILE *fp, long offset, bool core, bitmap_i
         if( info != NULL ) {
             info->u.bm_core = bm_core;
         } else {
-            MemFree( bm_core );
+            CUIMemFree( bm_core );
         }
     } else {
         if( info != NULL ) {
             info->u.bm_info = bm_info;
         } else {
-            MemFree( bm_info );
+            CUIMemFree( bm_info );
         }
     }
     return( hbitmap );

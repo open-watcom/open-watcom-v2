@@ -31,7 +31,11 @@ if [ "$OWTOOLS" = "WATCOM" ]; then
     wcc386 -p getversi.gc >getversi.sh
 elif [ "$OWTOOLS" = "CLANG" ]; then
     echo export OWTOOLSVER=__clang_major__>getversi.gc
-    clang -x c -E getversi.gc -o getversi.sh
+    if [ ! -z "$OWCLANG" ]; then
+        $OWCLANG -x c -E getversi.gc -o getversi.sh
+    else
+        clang -x c -E getversi.gc -o getversi.sh
+    fi
 elif [ "$OWTOOLS" = "GCC" ]; then
     echo export OWTOOLSVER=__GNUC__>getversi.gc
     gcc -x c -E getversi.gc -o getversi.sh

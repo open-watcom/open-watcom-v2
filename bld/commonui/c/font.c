@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -181,7 +182,7 @@ void InitMonoFont( char *app, char *inifile, int default_font, HANDLE inst )
     need_stock = true;
     GetPrivateProfileString( app, fontKey, "", str, sizeof( str ), inifile );
     if( str[0] != 0 ) {
-        if( GetLogFontFromString( &logFont, str )  ) {
+        if( GetFontFromString( &logFont, str )  ) {
             fixedFont = CreateFontIndirect( &logFont );
             if( fixedFont != NULL ) {
                 need_stock = false;
@@ -214,7 +215,7 @@ void SaveMonoFont( char *app, char *inifile )
 {
     char        str[MAX_STR];
 
-    GetFontFormatString( &logFont, str );
+    SetFontToString( &logFont, str );
     WritePrivateProfileString( app, fontKey, str, inifile );
 
 } /* SaveMonoFont */

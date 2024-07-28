@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,12 +30,12 @@
 ****************************************************************************/
 
 
-extern hw_reg_set       *RegSets[];
-extern op_regs          RegList[];
+extern const hw_reg_set * const RegSets[];
+extern const op_regs    RegList[];
 
 extern void             InitRegTbl( void );
 extern reg_set_index    RegIntersect( reg_set_index s1, reg_set_index s2 );
-extern hw_reg_set       *ParmChoices( type_class_def type_class );
+extern const hw_reg_set *ParmChoices( type_class_def type_class );
 extern hw_reg_set       InLineParm( hw_reg_set regs, hw_reg_set used );
 extern hw_reg_set       StructReg( void );
 extern reg_set_index    SegIndex( void );
@@ -64,7 +64,7 @@ extern hw_reg_set       StackReg( void );
 extern hw_reg_set       DisplayReg( void );
 extern int              SizeDisplayReg( void );
 extern hw_reg_set       AllCacheRegs( void );
-extern hw_reg_set       *IdxRegs( void );
+extern const hw_reg_set *IdxRegs( void );
 extern hw_reg_set       ParmRegConflicts(hw_reg_set);
 extern hw_reg_set       High48Reg( hw_reg_set regs );
 extern hw_reg_set       Low48Reg( hw_reg_set regs );
@@ -85,9 +85,9 @@ extern reg_set_index    UsualPossible( type_class_def type_class );
 extern hw_reg_set       FrameBaseReg( void );
 extern hw_reg_set       FrameReg( void );
 extern int              GetArchIndex( hw_reg_set regs );
-extern hw_reg_set       *ParmRegs( void );
-extern hw_reg_set       *GPRegs( void );
-extern hw_reg_set       *FPRegs( void );
+extern const hw_reg_set *ParmRegs( void );
+extern const hw_reg_set *GPRegs( void );
+extern const hw_reg_set *FPRegs( void );
 extern hw_reg_set       SavedRegs( void );
 #if _TARGET & _TARG_370
 extern hw_reg_set       RAReg( void );

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,90 +38,65 @@
 #include "preproc.h"
 #include "codegen.h"
 #include "floatsup.h"
-#include "floatlim.h"
 
+
+cfstruct            cxxh;
+
+void    FloatSupportInit( void )
+/******************************/
+{
+    cxxh.alloc = CMemAlloc;
+    cxxh.free = CMemFree;
+    CFInit( &cxxh );
+}
+
+void    FloatSupportFini( void )
+/******************************/
+{
+    CFFini( &cxxh );
+}
 
 static float_handle makeOK( float_handle f )
+/******************************************/
 {
-    BFFree( f );
-    f = BFCnvUF( 1 );
+    if( CFExp( f ) > 0 ) {
+        CErr1( ERR_FLOATING_CONSTANT_OVERFLOW );
+    } else {
+        CErr1( ERR_FLOATING_CONSTANT_UNDERFLOW );
+    }
+    CFFree( &cxxh, f );
+    f = CFCnvUF( &cxxh, 1 );
     return( f );
 }
 
-
-float_handle BFCheckFloatLimit( float_handle f )
-/************************************/
+float_handle CFCheckFloatLimit( float_handle f )
+/**********************************************/
 {
-    int sign;
-    bool err;
-
-    err = false;
-    sign = BFSign( f );
-    if( sign > 0 ) {
-        if( BFCmp( f, (float_handle)&MaxPosFloat ) > 0 ) {
-            err = true;
-            CErr1( ERR_FLOATING_CONSTANT_OVERFLOW );
-        } else if( BFCmp( f, (float_handle)&MinPosFloat ) < 0 ) {
-            err = true;
-            CErr1( ERR_FLOATING_CONSTANT_UNDERFLOW );
-        }
-    } else if( sign < 0 ) {
-        if( BFCmp( f, (float_handle)&MaxNegFloat ) < 0 ) {
-            err = true;
-            CErr1( ERR_FLOATING_CONSTANT_OVERFLOW );
-        } else if( BFCmp( f, (float_handle)&MinNegFloat ) > 0 ) {
-            err = true;
-            CErr1( ERR_FLOATING_CONSTANT_UNDERFLOW );
-        }
-    }
-    if( err ) {
-        f = makeOK( f );
-    }
+    if( CFIsFloat( f ) )
+        return( f );
+    f = makeOK( f );
     return( f );
 }
 
-extern float_handle BFCheckDblLimit( float_handle f )
+float_handle CFCheckDoubleLimit( float_handle f )
+/***********************************************/
 {
-    int sign;
-    bool err;
-
-    err = false;
-    sign = BFSign( f );
-    if( sign > 0 ) {
-        if( BFCmp( f, (float_handle)&MaxPosDbl ) > 0 ) {
-            err = true;
-            CErr1( ERR_FLOATING_CONSTANT_OVERFLOW );
-        } else if( BFCmp( f, (float_handle)&MinPosDbl ) == -1 ) {
-            err = true;
-            CErr1( ERR_FLOATING_CONSTANT_UNDERFLOW );
-
-        }
-    } else if( sign < 0 ) {
-        if( BFCmp( f, (float_handle)&MaxNegDbl ) < 0 ) {
-            err = true;
-            CErr1( ERR_FLOATING_CONSTANT_OVERFLOW );
-        } else if( BFCmp( f, (float_handle)&MinNegDbl ) > 0 ) {
-            err = true;
-            CErr1( ERR_FLOATING_CONSTANT_UNDERFLOW );
-        }
-    }
-    if( err ) {
-        f = makeOK( f );
-    }
+    if( CFIsDouble( f ) )
+        return( f );
+    f = makeOK( f );
     return( f );
 }
 
-
-target_long BFGetLong( float_handle *f )
-/**************************************/
+target_long CFFloat2Long( float_handle *f )
+/*****************************************/
 {
     float_handle new_f;
     target_long val;
 
-    new_f = BFTrunc( *f );
-    BFFree( *f );
+    new_f = CFTrunc( &cxxh, *f );
+    CFFree( &cxxh, *f );
     *f = NULL;
-    val = BFCnvF32( new_f );
-    BFFree( new_f );
+    val = CFCnvF32( new_f );
+    CFFree( &cxxh, new_f );
     return( val );
 }

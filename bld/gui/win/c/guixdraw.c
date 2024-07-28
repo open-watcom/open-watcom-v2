@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -78,6 +78,7 @@ static void GUIDrawTextBitmapRGB( gui_window *wnd, const char *text,
     size_t      num_chars;
     WPI_RECT    wpi_rect;
     guix_ord    hscroll_pos;
+    guix_ord    vscroll_pos;
     WPI_COLOUR  colour;
     WPI_RECTDIM left, top, right, bottom;
     WPI_RECTDIM paint_left, paint_top, paint_right, paint_bottom;
@@ -114,21 +115,20 @@ static void GUIDrawTextBitmapRGB( gui_window *wnd, const char *text,
     top = paint_top / height * height;
     bottom = ( paint_bottom + height - 1 ) / height * height;
 
+    hscroll_pos = 0;
     if( GUI_DO_HSCROLL( wnd ) ) {
         hscroll_pos = GUIGetScrollPos( wnd, SB_HORZ );
-    } else {
-        hscroll_pos = 0;
     }
-
-    nDrawY = GUIScaleToScreenV( pos->y );
+    vscroll_pos = 0;
     if( GUI_DO_VSCROLL( wnd ) ) {
-        nDrawY -= GUIGetScrollPos( wnd, SB_VERT );
+        vscroll_pos = GUIGetScrollPos( wnd, SB_VERT );
     }
+    nDrawY = GUIScaleToScreenV( pos->y ) - vscroll_pos;
     nDrawX = left + GUIScaleToScreenH( pos->x ) - hscroll_pos;
 
     if( draw_extent ) {
         /* blanks out some portion of rest of the line */
-        if( extentx != GUI_NO_COLUMN ) {
+        if( extentx != GUI_NO_EXTENT ) {
             right = nDrawX + GUIScaleToScreenX( extentx );
         }
     } else {
@@ -142,7 +142,7 @@ static void GUIDrawTextBitmapRGB( gui_window *wnd, const char *text,
         brush = _wpi_createsolidbrush( colour );
         pen = _wpi_createpen( PS_SOLID, 1, colour );
         if( pen == WPI_NULL ) {
-            GUIError(LIT( Pen_Failed ));
+            GUIError( LIT_GUI( Pen_Failed ) );
         }
         old_brush = _wpi_selectbrush( wnd->hdc, brush );
         old_pen = _wpi_selectpen( wnd->hdc, pen );
@@ -191,7 +191,7 @@ void GUIDrawBitmapAttr( gui_window *wnd, const guix_coord *size, const gui_coord
     fore = GUIGetFore( wnd, attr );
     back = GUIGetBack( wnd, attr );
 
-    GUIDrawTextBitmapRGB( wnd, NULL, size->x, size->y, pos, fore, back, GUI_NO_COLUMN, false, hotspot_no );
+    GUIDrawTextBitmapRGB( wnd, NULL, size->x, size->y, pos, fore, back, GUI_NO_EXTENT, false, hotspot_no );
 }
 
 void GUIXDrawText( gui_window *wnd, const char *text, size_t length, const gui_coord *pos,

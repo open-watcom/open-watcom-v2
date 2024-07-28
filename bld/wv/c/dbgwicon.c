@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,5 +33,10 @@
 
 #include "dbgdefn.h"
 #include "dbgwind.h"
-#define DEFINE_ICONS
 #include "dbgicon.h"
+#include "wv.rh"
+
+
+#define pick( x, y, z ) gui_resource x = { ICONID( y ), z };
+    DEFICONS
+#undef pick

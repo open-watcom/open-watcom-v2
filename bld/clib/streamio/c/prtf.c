@@ -587,6 +587,8 @@ static FAR_STRING formstring( CHAR_TYPE *buffer, va_list *pargs, PTR_PRTF_SPECS 
         }
         /* types f & F fall through */
 
+    case STRING( 'a' ):
+    case STRING( 'A' ):
     case STRING( 'g' ):
     case STRING( 'G' ):
     case STRING( 'e' ):

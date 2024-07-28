@@ -9,19 +9,19 @@ wcpp_autodepends = .AUTODEPEND
 !include deftarg.mif
 !include exerule.mif
 
-!include ../client.mif
+!include $(cpp_dir)/client.mif
 
 #
 # cflags
 #
-.c : ../c;$(posix_dir)/misc;$(watcom_dir)/c
+.c : $(cli_cpp_c_dirs);$(posix_dir)/misc;$(watcom_dir)/c
 
-inc_dirs = -I"../h" -I"$(posix_dir)/h"
+inc_dirs = $(cli_cpp_inc_dirs) -I"$(posix_dir)/h"
 
 # explicit rules
 #################
 
-common_objs = $(cpp_objs) ppenv.obj ppmem.obj
+common_objs = $(cli_cpp_objs) ppenv.obj ppmem.obj
 
 !ifndef bootstrap
 all: mkmk.exe testpp.exe dumpmac.exe wcpp.exe .SYMBOLIC
@@ -45,4 +45,3 @@ exetarg_name = testpp
 exetarg_objs = dumpmac.obj ppdmpmac.obj $(common_objs)
 exetarg_name = dumpmac
 !include exetarg.mif
-

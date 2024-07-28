@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2024-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,7 +35,6 @@
 #include <stdlib.h>
 #include "bool.h"
 #include "wpi.h"
-#include "cguimem.h"
 #include "_windlg.h"
 #include "jdlg.h"
 
@@ -58,14 +58,14 @@ static bool mbcs2unicode( const char *src, LPWSTR *dest, int *len )
         return( false );
     }
 
-    new = MemAlloc( len1 * sizeof( WCHAR ) );
+    new = CUIMemAlloc( len1 * sizeof( WCHAR ) );
     if( new == NULL ) {
         return( false );
     }
 
     len2 = MultiByteToWideChar( CP_OEMCP, MB_ERR_INVALID_CHARS, src, -1, new, len1 );
     if( len2 != len1 ) {
-        MemFree( new );
+        CUIMemFree( new );
         return( false );
     }
 
@@ -90,7 +90,7 @@ static bool createFontInfoData( const char *facename, WORD pointsize, BYTE **fid
 
 #ifdef __WINDOWS__
     slen = strlen( facename ) + 1;
-    data = (BYTE *)MemAlloc( sizeof( WORD ) + slen );
+    data = (BYTE *)CUIMemAlloc( sizeof( WORD ) + slen );
     if( data != NULL ) {
         *(WORD *)data = pointsize;
         memcpy( data + sizeof( WORD ), facename, slen );
@@ -99,7 +99,7 @@ static bool createFontInfoData( const char *facename, WORD pointsize, BYTE **fid
     data = NULL;
     if( mbcs2unicode( facename, &uni_facename, &slen ) ) {
         slen *= sizeof( WCHAR );
-        data = (BYTE *)MemAlloc( sizeof( WORD ) + slen );
+        data = (BYTE *)CUIMemAlloc( sizeof( WORD ) + slen );
         if( data != NULL ) {
             *(WORD *)data = pointsize;
             memcpy( data + sizeof( WORD ), uni_facename, slen );
@@ -229,7 +229,7 @@ static bool getSystemFontFaceName( char **facename, WORD *pointsize )
         return( false );
     }
 
-    *facename = (char *)MemAlloc( strlen( lf.lfFaceName ) + 1 );
+    *facename = (char *)CUIMemAlloc( strlen( lf.lfFaceName ) + 1 );
     if( *facename == NULL ) {
         return( false );
     }
@@ -379,7 +379,7 @@ bool JDialogInit( void )
 void JDialogFini( void )
 {
     if( JFontInfo != NULL ) {
-        MemFree( JFontInfo );
+        CUIMemFree( JFontInfo );
         JFontInfo = NULL;
         JFontInfoLen = 0;
     }
@@ -569,7 +569,7 @@ INT_PTR JDialogBox( HINSTANCE hinst, LPCSTR lpszDlgTemp, HWND hwndOwner, DLGPROC
     return( ret );
 
 JDB_DEFAULT_ACTION:
-    return( DialogBox( hinst, (LPSTR)lpszDlgTemp, hwndOwner, dlgproc ) );
+    return( DialogBox( hinst, lpszDlgTemp, hwndOwner, dlgproc ) );
 
 } /* JDialogBox */
 
@@ -597,7 +597,7 @@ INT_PTR JDialogBoxParam( HINSTANCE hinst, LPCSTR lpszDlgTemp, HWND hwndOwner, DL
     return( ret );
 
 JDBP_DEFAULT_ACTION:
-    return( DialogBoxParam( hinst, (LPSTR)lpszDlgTemp, hwndOwner, dlgproc, lParamInit ) );
+    return( DialogBoxParam( hinst, lpszDlgTemp, hwndOwner, dlgproc, lParamInit ) );
 
 } /* JDialogBoxParam */
 
@@ -625,7 +625,7 @@ HWND JCreateDialog( HINSTANCE hinst, LPCSTR lpszDlgTemp, HWND hwndOwner, DLGPROC
     return( ret );
 
 JCD_DEFAULT_ACTION:
-    return( CreateDialog( hinst, (LPSTR)lpszDlgTemp, hwndOwner, dlgproc ) );
+    return( CreateDialog( hinst, lpszDlgTemp, hwndOwner, dlgproc ) );
 
 } /* JCreateDialog */
 
@@ -653,7 +653,7 @@ HWND JCreateDialogParam( HINSTANCE hinst, LPCSTR lpszDlgTemp, HWND hwndOwner, DL
     return( ret );
 
 JCDP_DEFAULT_ACTION:
-    return( CreateDialogParam( hinst, (LPSTR)lpszDlgTemp, hwndOwner, dlgproc, lParamInit ) );
+    return( CreateDialogParam( hinst, lpszDlgTemp, hwndOwner, dlgproc, lParamInit ) );
 
 } /* JCreateDialogParam */
 

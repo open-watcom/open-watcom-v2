@@ -10,7 +10,7 @@ srcfile = c/nttstrt1.c
 
 !else
 
-all : .symbolic
-clean : .symbolic
+all : .SYMBOLIC
+clean : .SYMBOLIC
 
 !endif

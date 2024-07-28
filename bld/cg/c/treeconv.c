@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,19 +38,19 @@
 #include "treeprot.h"
 #include "treefold.h"
 #include "zoiks.h"
-#include "cfloat.h"
+#include "_cfloat.h"
 #include "utils.h"
 #include "makeaddr.h"
 #include "procdef.h"
 #include "typemap.h"
 
 
-static  bool    DemoteTree( tn name, type_def *tipe, bool just_test ) {
-/*********************************************************************/
+static  bool    DemoteTree( tn name, const type_def *tipe, bool just_test ) {
+/***************************************************************************/
 
-    type_def    *frum;
-    bool        demote_this_node;
-    bool        can_demote;
+    const type_def  *frum;
+    bool            demote_this_node;
+    bool            can_demote;
 
     frum = name->tipe;
     can_demote = false;
@@ -58,7 +58,7 @@ static  bool    DemoteTree( tn name, type_def *tipe, bool just_test ) {
     if( TypeClass( frum ) <= I4 ) {
         switch( name->class ) {
         case TN_UNARY: /* go left*/
-            switch( name->u2.t.op ) {
+            switch( name->u1.t.op ) {
             case O_UMINUS:
             case O_COMPLEMENT:
             case O_CONVERT:
@@ -75,7 +75,7 @@ static  bool    DemoteTree( tn name, type_def *tipe, bool just_test ) {
             }
             break;
         case TN_BINARY: /* go left, right*/
-            switch( name->u2.t.op ) {
+            switch( name->u1.t.op ) {
 #if _TARGET_INTEL
             case O_CONVERT:
                  /* Based pointer junk */
@@ -83,7 +83,7 @@ static  bool    DemoteTree( tn name, type_def *tipe, bool just_test ) {
             case O_DIV:
             case O_MOD:
                 if( name->u.left->tipe->length > tipe->length ||
-                    name->u2.t.rite->tipe->length > tipe->length )
+                    name->u1.t.rite->tipe->length > tipe->length )
                     break;
                 /* fall throught */
 #endif
@@ -98,18 +98,18 @@ static  bool    DemoteTree( tn name, type_def *tipe, bool just_test ) {
                     break;
                 if( name->u.left->tipe->refno == TY_HUGE_POINTER )
                     break;
-                if( name->u2.t.rite->tipe->refno == TY_HUGE_POINTER )
+                if( name->u1.t.rite->tipe->refno == TY_HUGE_POINTER )
                     break;
                 can_demote = DemoteTree( name->u.left, tipe, just_test );
                 if( can_demote ) {
-                    can_demote = DemoteTree( name->u2.t.rite, tipe, just_test );
+                    can_demote = DemoteTree( name->u1.t.rite, tipe, just_test );
                 }
                 demote_this_node = true;
                 break;
             }
             break;
         case TN_COMMA:
-            can_demote = DemoteTree( name->u2.t.rite, tipe, just_test );
+            can_demote = DemoteTree( name->u1.t.rite, tipe, just_test );
             break;
         case TN_SIDE_EFFECT:
             can_demote = DemoteTree( name->u.left, tipe, just_test );
@@ -129,8 +129,8 @@ static  bool    DemoteTree( tn name, type_def *tipe, bool just_test ) {
 }
 
 
-void    TGDemote( tn name, type_def *tipe )
-/*****************************************/
+void    TGDemote( tn name, const type_def *tipe )
+/***********************************************/
 {
     if( DemoteTree( name, tipe, true ) ) {
         DemoteTree( name, tipe, false );
@@ -138,8 +138,8 @@ void    TGDemote( tn name, type_def *tipe )
 }
 
 
-tn      FoldCnvRnd( cg_op op, tn name, type_def *to_tipe )
-/********************************************************/
+tn      FoldCnvRnd( cg_op op, tn name, const type_def *to_tipe )
+/**************************************************************/
 {
     tn              new;
     float_handle    cf;
@@ -147,7 +147,7 @@ tn      FoldCnvRnd( cg_op op, tn name, type_def *to_tipe )
 
     if( name->class == TN_CONS ) {
         if( name->tipe->refno == TY_DEFAULT ) {
-            cf = CFCopy( name->u.name->c.value );
+            cf = CFCopy( &cgh, name->u.name->c.value );
         } else {
             cf = CnvCFToType( name->u.name->c.value, name->tipe );
         }
@@ -155,22 +155,22 @@ tn      FoldCnvRnd( cg_op op, tn name, type_def *to_tipe )
             new = TGConst( cf, to_tipe );
         } else if( op == O_CONVERT ) {
             junk = cf;
-            cf = CFTrunc( cf );
-            CFFree( junk );
+            cf = CFTrunc( &cgh, cf );
+            CFFree( &cgh, junk );
             if( to_tipe->refno != TY_DEFAULT ) {
                 junk = cf;
                 cf = CnvCFToType( cf, to_tipe );
-                CFFree( junk );
+                CFFree( &cgh, junk );
             }
             new = TGConst( cf, to_tipe );
         } else if( op == O_ROUND ) {
             junk = cf;
-            cf = CFRound( cf );
-            CFFree( junk );
+            cf = CFRound( &cgh, cf );
+            CFFree( &cgh, junk );
             if( to_tipe->refno != TY_DEFAULT ) {
                 junk = cf;
                 cf = CnvCFToType( cf, to_tipe );
-                CFFree( junk );
+                CFFree( &cgh, junk );
             }
             new = TGConst( cf, to_tipe );
         } else {

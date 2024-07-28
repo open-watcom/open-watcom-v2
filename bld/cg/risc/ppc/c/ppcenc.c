@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -87,7 +87,7 @@
  * identical cases, otherwise we give each pair explicitly.
  */
 
-static  gen_opcode  BinaryOpcodes[][2][2] = {
+static const gen_opcode  BinaryOpcodes[][2][2] = {
     _BinaryOpcode( 31, 266 ),           /* OP_ADD */
     _BinaryOpcode( 31, 266 ),           /* OP_EXT_ADD */
     _BinaryOpcode( 31, 8 ),             /* OP_SUB */
@@ -106,7 +106,7 @@ static  gen_opcode  BinaryOpcodes[][2][2] = {
     _BinaryOpcode( 0, 0 ),              /* OP_FMOD */
 };
 
-static  gen_opcode  FPOpcodes[][2] = {
+static const gen_opcode  FPOpcodes[][2] = {
     { 63, 21 },         /* OP_ADD */
     { 63, 21 },         /* OP_EXT_ADD */
     { 63, 20 },         /* OP_SUB */
@@ -125,7 +125,7 @@ static  gen_opcode  FPOpcodes[][2] = {
     { 0, 0 },           /* OP_FMOD */
 };
 
-static  gen_opcode  BinaryImmedOpcodes[] = {
+static const gen_opcode  BinaryImmedOpcodes[] = {
     14,                 /* OP_ADD */
     14,                 /* OP_EXT_ADD */
     8,                  /* OP_SUB */
@@ -144,7 +144,7 @@ static  gen_opcode  BinaryImmedOpcodes[] = {
     0,                  /* OP_FMOD */
 };
 
-static  gen_opcode  loadOpcodes[] = {
+static const gen_opcode  loadOpcodes[] = {
     34,                 /* U1 */
     34,                 /* I1 */
     40,                 /* U2 */
@@ -160,7 +160,7 @@ static  gen_opcode  loadOpcodes[] = {
     50,                 /* FL */
 };
 
-static  gen_opcode  storeOpcodes[] = {
+static const gen_opcode  storeOpcodes[] = {
     38,                 /* U1 */
     38,                 /* I1 */
     44,                 /* U2 */
@@ -176,7 +176,7 @@ static  gen_opcode  storeOpcodes[] = {
     54,                 /* FL */
 };
 
-static  gen_opcode  BranchOpcodes[][2] = {
+static const gen_opcode  BranchOpcodes[][2] = {
     /*
      * page 3-68 for a real description
      * BO     BI
@@ -189,12 +189,12 @@ static  gen_opcode  BranchOpcodes[][2] = {
     { INVERT, LT },     /* OP_CMP_GREATER_EQUAL */
 };
 
-static byte     Zeros[MAX_ALIGNMENT];
+static const byte       Zeros[MAX_ALIGNMENT];
 
 static ppc_ins  ins_encoding = 0;
 
-void *InsRelocInit( void *ins )
-/*****************************/
+void *InsRelocInit( const byte *ins )
+/***********************************/
 {
     ins_encoding = *(ppc_ins *)ins;
     return( &ins_encoding );
@@ -206,10 +206,10 @@ void InsRelocAddSignedImmed( int disp )
     ins_encoding |= _SignedImmed( disp );
 }
 
-void *InsRelocNext( void *ins )
-/*****************************/
+const byte *InsRelocNext( const byte *ins )
+/***********************************/
 {
-    return( (ppc_ins *)ins + 1 );
+    return( (const byte *)( (ppc_ins *)ins + 1 ) );
 }
 
 void EmitInsReloc( void *ins, pointer sym, owl_reloc_type type )
@@ -235,10 +235,10 @@ void EmitInsReloc( void *ins, pointer sym, owl_reloc_type type )
 #endif
 }
 
-static  gen_opcode  *FindOpcodes( instruction *ins )
-/**************************************************/
+static const gen_opcode  *FindOpcodes( instruction *ins )
+/*******************************************************/
 {
-    gen_opcode      *opcodes;
+    const gen_opcode    *opcodes;
 
     if( _IsFloating( ins->type_class ) ) {
         opcodes = &FPOpcodes[ins->head.opcode - FIRST_BINARY_OP][0];
@@ -249,10 +249,10 @@ static  gen_opcode  *FindOpcodes( instruction *ins )
 }
 
 
-static  gen_opcode  *FindImmedOpcodes( instruction *ins )
-/*******************************************************/
+static const gen_opcode  *FindImmedOpcodes( instruction *ins )
+/************************************************************/
 {
-    gen_opcode      *opcodes;
+    const gen_opcode    *opcodes;
 
     opcodes = &BinaryImmedOpcodes[ins->head.opcode - FIRST_BINARY_OP];
     if( *opcodes == 0 ) {
@@ -393,13 +393,13 @@ static  void    doCall( instruction *ins )
 /****************************************/
 {
     call_class      cclass;
-    byte_seq        *code;
+    const byte_seq  *code;
     label_handle    lbl;
     name            *op;
 
     op = ins->operands[CALL_OP_ADDR];
     cclass = (call_class)(pointer_uint)FindAuxInfo( op, FEINF_CALL_CLASS );
-    code = FindAuxInfo( op, FEINF_CALL_BYTES );
+    code = (const byte_seq *)FindAuxInfo( op, FEINF_CALL_BYTES );
     if( code != NULL ) {
         _ObjEmitSeq( code );
         if( cclass & FECALL_GEN_ABORTS ) {
@@ -591,7 +591,7 @@ static  void    DbgBlkInfo( instruction *ins )
     offset lc;
 
     lc = AskLocation();
-    if( ins->flags.nop_flags & NOP_DBGINFO_START ) {
+    if( ins->flags.u.nop_flags & NOP_DBGINFO_START ) {
         DbgBlkBeg( (dbg_block *)ins->operands[0], lc );
     } else {
         DbgBlkEnd( (dbg_block *)ins->operands[0], lc );
@@ -616,7 +616,7 @@ static  void    Encode( instruction *ins )
     reg_idx             temp;
     gen_opcode          op1;
     gen_opcode          op2;
-    gen_opcode          *ops;
+    const gen_opcode    *ops;
     int_16              mem_offset;
     reg_idx             reg_mem;
 
@@ -648,13 +648,13 @@ static  void    Encode( instruction *ins )
         assert( ins->result->n.class == N_REGISTER );
         /* addis rd, imm(0) */
         GenOPIMM( 15, _NameRegTrans( ins->result ), ZERO_SINK,
-            ins->operands[0]->c.lo.int_value & 0xffff );
+            ins->operands[0]->c.lo.u.int_value & 0xffff );
         break;
     case G_MOVE_UI:
         /* a load of an unsigned 16-bit immediate */
         /* use addi rd, imm(0) */
         GenOPIMM( 14, _NameRegTrans( ins->result ), ZERO_SINK,
-            ins->operands[0]->c.lo.int_value );
+            ins->operands[0]->c.lo.u.int_value );
         break;
     case G_LEA:
         assert( ins->operands[0]->n.class == N_CONSTANT );
@@ -663,7 +663,7 @@ static  void    Encode( instruction *ins )
         case CONS_ABSOLUTE:
             // addi rd, imm(0)
             GenOPIMM( 14, _NameRegTrans( ins->result ), ZERO_SINK,
-                ins->operands[0]->c.lo.int_value );
+                ins->operands[0]->c.lo.u.int_value );
             break;
         case CONS_LOW_ADDR:
         case CONS_HIGH_ADDR:
@@ -740,19 +740,19 @@ static  void    Encode( instruction *ins )
         switch( ins->head.opcode ) {
         case OP_LSHIFT:
             // rlwinm dst,src,n,0,31-n
-            op2 = 31 - _FiveBits( ins->operands[1]->c.lo.int_value );
-            b = _FiveBits( ins->operands[1]->c.lo.int_value );
+            op2 = 31 - _FiveBits( ins->operands[1]->c.lo.u.int_value );
+            b = _FiveBits( ins->operands[1]->c.lo.u.int_value );
             GenOPINS( 21, op2, _NameRegTrans( ins->result ), b,
                 _NameRegTrans( ins->operands[0] ) );
             break;
         case OP_RSHIFT:
             if( _IsSigned( ins->type_class ) ) {
                 GenOPINS( 31, 824, _NameRegTrans( ins->result ),
-                    (reg_idx)ins->operands[1]->c.lo.int_value,
+                    (reg_idx)ins->operands[1]->c.lo.u.int_value,
                     _NameRegTrans( ins->operands[0] ) );
             } else {
                 // rlwinm dst,src,32-n,n,31
-                b = _FiveBits( ins->operands[1]->c.lo.int_value );
+                b = _FiveBits( ins->operands[1]->c.lo.u.int_value );
                 op2 = ( b << 5 ) | 31;
                 b = 32 - b;
                 GenOPINS( 21, op2, _NameRegTrans( ins->result ), b,
@@ -768,7 +768,7 @@ static  void    Encode( instruction *ins )
                 s = _NameRegTrans( ins->result );
                 a = _NameRegTrans( ins->operands[0] );
             }
-            GenOPIMM( ops[0], s, a, ins->operands[1]->c.lo.int_value );
+            GenOPIMM( ops[0], s, a, ins->operands[1]->c.lo.u.int_value );
             break;
         }
         break;
@@ -796,7 +796,7 @@ static  void    Encode( instruction *ins )
             op1 = 11;
         }
         GenCMPIMM( op1, _NameRegTrans( ins->operands[0] ),
-            ins->operands[1]->c.lo.int_value );
+            ins->operands[1]->c.lo.u.int_value );
         break;
     case G_SIGN:
         assert( ins->operands[0]->n.class == N_REGISTER );
@@ -925,7 +925,7 @@ void    GenJumpLabel( label_handle label )
 static void    GenJumpIf( instruction *ins, pointer label )
 /*********************************************************/
 {
-    gen_opcode  *ops;
+    const gen_opcode    *ops;
 
     ops = &BranchOpcodes[ins->head.opcode - FIRST_COMPARISON][0]; // fixme - floating point
     GenCONDBR( 16, ops[0], ops[1], label );

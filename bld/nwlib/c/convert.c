@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -73,15 +73,16 @@ static size_t   ARstrlen( const char * str )
     const char  *c;
 
     for( c = str; *c != '\0'; c++ ) {
-        if( ( c[0] == '/' ) && ( c[1] == '\n' ) ) {
+        if( ( c[0] == '/' )
+          && ( c[1] == '\n' ) ) {
             break;
         }
     }
     return( c - str );
 }
 
-char *GetARName( libfile io, ar_header *header, arch_header *arch )
-/*****************************************************************/
+char *GetARName( libfile io, const ar_header *header, arch_dict *dict )
+/*********************************************************************/
 {
     char        buffer[AR_NAME_LEN + 1];
     char        *buf;
@@ -90,8 +91,10 @@ char *GetARName( libfile io, ar_header *header, arch_header *arch )
 
     if( header->name[0] == '/' ) {
         len = GetARNumeric( header->name + 1, AR_NAME_LEN - 1 );
-        buf = arch->fnametab + len;
-    } else if( header->name[0] == '#' && header->name[1] == '1' && header->name[2] == '/') {
+        buf = dict->fnametab + len;
+    } else if( header->name[0] == '#'
+      && header->name[1] == '1'
+      && header->name[2] == '/') {
         len = GetARNumeric( header->name + 3, AR_NAME_LEN - 3 );
         name = MemAlloc( len + 1 );
         LibRead( io, name, len );
@@ -108,18 +111,20 @@ char *GetARName( libfile io, ar_header *header, arch_header *arch )
     return( name );
 }
 
-char *GetFFName( arch_header *arch )
-/**********************************/
+char *GetFFName( arch_dict *dict )
+/********************************/
 {
     char        *name;
 
     name = NULL;
-    if( arch->ffnametab != NULL && arch->nextffname != NULL ) {
-        name = DupStr( arch->nextffname );
-        arch->nextffname += strlen( name ) + 1;
-        if( arch->nextffname >= arch->lastffname || ( arch->nextffname[0] == '\n'
-                && arch->nextffname + 1 >= arch->lastffname ) ) {
-            arch->nextffname = NULL;
+    if( dict->ffnametab != NULL
+      && dict->nextffname != NULL ) {
+        name = MemDupStr( dict->nextffname );
+        dict->nextffname += strlen( name ) + 1;
+        if( dict->nextffname >= dict->lastffname
+          || ( dict->nextffname[0] == '\n'
+          && dict->nextffname + 1 >= dict->lastffname ) ) {
+            dict->nextffname = NULL;
         }
     }
     return( name );
@@ -131,7 +136,8 @@ static void GetARValue( const char *element, ar_len len, char delimiter, char *b
 // that it is null-terminated rather than blank-padded
 {
     for( ; len > 0; --len ) {
-        if( element[len - 1] != ' ' && element[len - 1] != delimiter ) {
+        if( element[len - 1] != ' '
+          && element[len - 1] != delimiter ) {
             break;
         }
     }
@@ -141,7 +147,7 @@ static void GetARValue( const char *element, ar_len len, char delimiter, char *b
     buffer[len] = '\0';
 }
 
-void GetARHeaderValues( ar_header *header, arch_header * arch )
+void GetARHeaderValues( const ar_header *header, arch_header *arch )
 {
     arch->date = GetARNumeric( header->date, AR_DATE_LEN );
     arch->uid = GetARNumeric( header->uid, AR_UID_LEN );
@@ -150,7 +156,7 @@ void GetARHeaderValues( ar_header *header, arch_header * arch )
     arch->size = GetARNumeric( header->size, AR_SIZE_LEN );
 }
 
-static void PutARPadding( char * element, ar_len current_len, ar_len desired_len )
+static void PutARPadding( char *element, ar_len current_len, ar_len desired_len )
 {
     ar_len      loop;
 
@@ -161,13 +167,13 @@ static void PutARPadding( char * element, ar_len current_len, ar_len desired_len
 
 static void PutARName( char *ar_name, const char *arch_name )
 {
-    ar_len      name_len;
+    ar_len      namelen;
 
 
-    name_len = strlen( arch_name );
-    strncpy( ar_name, arch_name, name_len );
-    if( name_len < AR_NAME_LEN ) {
-        PutARPadding( ar_name, name_len, AR_NAME_LEN );
+    namelen = strlen( arch_name );
+    strncpy( ar_name, arch_name, namelen );
+    if( namelen < AR_NAME_LEN ) {
+        PutARPadding( ar_name, namelen, AR_NAME_LEN );
     }
 }
 
@@ -197,7 +203,7 @@ static void PutARValueMode( char *element, uint_32 value, ar_len desired_len )
     }
 }
 
-void CreateARHeader( ar_header *ar, arch_header * arch )
+void CreateARHeader( ar_header *ar, const arch_header *arch )
 {
     PutARName( ar->name, arch->name );
     PutARValue( ar->date, arch->date, AR_DATE_LEN );
@@ -207,4 +213,3 @@ void CreateARHeader( ar_header *ar, arch_header * arch )
     PutARValue( ar->size, arch->size, AR_SIZE_LEN );
     memcpy( ar->header_ident, AR_HEADER_IDENT, AR_HEADER_IDENT_LEN );
 }
-

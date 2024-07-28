@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2023-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,8 +34,8 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdarg.h>
-#include "cguimem.h"
 #include "ldstr.h"
+
 
 /* No string to be loaded can be more than LDSTR_MAX_STR_LEN bytes long. */
 #define LDSTR_MAX_STR_LEN       500
@@ -74,7 +74,7 @@ char *AllocRCString( msg_id id )
     if( len < 0 )
         len = 0;
     tmpBuf[len++] = '\0';
-    ret = MemAlloc( len );
+    ret = CUIMemAlloc( len );
     if( ret != NULL ) {
         memcpy( ret, tmpBuf, len );
     }
@@ -102,7 +102,7 @@ int CopyRCString( msg_id id, char *buf, int bufsize )
  */
 void FreeRCString( char *str )
 {
-    MemFree( str );
+    CUIMemFree( str );
 }
 
 /*

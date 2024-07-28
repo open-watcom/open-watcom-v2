@@ -67,9 +67,9 @@ alt_error = 00
 !include testenv.mif
 !include ../codegen.mif
 
-test_flags_386 += -I"$(codegen_dir)" $(run_quietly)
-test_flags_i86 += -I"$(codegen_dir)" $(run_quietly)
-test_flags_axp += -I"$(codegen_dir)" $(run_quietly)
+test_flags_386 += $(run_quietly)
+test_flags_i86 += $(run_quietly)
+test_flags_axp += $(run_quietly)
 
 !ifeq alt_error 00
 add_br_ = $(targ_br_$(targ_env_$(arch)))
@@ -83,13 +83,13 @@ test_flags += $(add_br_$(no_br_$^*))
 
 .c: source
 
-test : .symbolic start test.lnk $(codegen_exes) test_set_result
+test : .SYMBOLIC start test.lnk $(codegen_exes) test_set_result
     $(noecho)%make common_set_result_check
 
 check_result : .procedure
     -diff -b error.out error.chk
 
-test_set_result : .symbolic
+test_set_result : .SYMBOLIC
     -@%write error.out OK
     -chk_exec exec.out >> error.out
 

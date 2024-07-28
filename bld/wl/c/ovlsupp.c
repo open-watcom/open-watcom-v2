@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -63,24 +63,22 @@ seg_leader          *OvlSeg;            /* pointer to seg_leader for overlaytab 
 unsigned_16         OvlAreaSize;
 list_of_names       *OvlClasses;        /* list of classes to be overlayed      */
 
+static void         AllocAreas( OVL_AREA *area );
+
+static vect_state   VectState;          /* structure with overlay state members */
 static segdata      *OvlSegData;
-static symbol       *OverlayTable;      /* symbol entry for overlay table */
-static symbol       *OverlayTableEnd;   /* symbol entry for overlay table */
-static symbol       *OvlVecStart;       /* symbol entry for overlay vector start */
-static symbol       *OvlVecEnd;         /* symbol entry for overlay vector end */
 static targ_addr    OvlvecAddr;         /* address of overlay vectors */
 static targ_addr    Stash;
 static group_entry  *OvlGroup;          /* pointer to group for overlay table   */
 static targ_addr    OvltabAddr;         /* address of overlay tables            */
 static unsigned     OvltabSize;         /* size of overlay tables               */
-static vecnode      *OvlVectors;        /* point to overlay vector notes        */
 static int          VecNum;             /* number of vectors so far             */
 
 void ResetOverlaySupp( void )
 /***************************/
 {
     OvlAreaSize = 0xFFFF;
-    OvlVectors = NULL;
+    VectState.OvlVectors = NULL;
     /* OvlSectNum value 0 is reserved for Root */
     /* Overlayed sections start at 1 */
     OvlSectNum = 1;
@@ -123,61 +121,36 @@ void WalkAreas( OVL_AREA *ovl, void (*rtn)( section * ) )
     }
 }
 
-static void WriteVectors( void )
-/******************************/
-{
-    vecnode             *vectnode;
-    int                 n;
-    targ_addr           addr;
-    symbol              *sym;
-
-    WriteMapNL( 2 );
-    XReportSymAddr( OverlayTable );
-    XReportSymAddr( OverlayTableEnd );
-    XReportSymAddr( OvlVecStart );
-    XReportSymAddr( OvlVecEnd );
-    WriteOvlHead();
-    n = 0;
-    for( vectnode = OvlVectors; vectnode != NULL; vectnode = vectnode->next ) {
-        OvlGetVecAddr( ++n, &addr );
-        sym = vectnode->sym;
-        WriteMap( "%a section %d : %S",
-                  &addr, sym->p.seg->u.leader->class->section->ovlref, sym );
-    }
-}
-
 static void DoSecPubs( section *sec )
 /***********************************/
 {
-    WriteMapNL( 2 );
-    WriteMap( "Overlay section %d address %a", sec->ovlref, &sec->sect_addr );
-    WriteMap( "====================================" );
-    WriteSegs( sec );
-    StartMapSort();
-    if( MapFlags & MAP_FLAG ) {
-        WritePubHead();
+    if( MapFile != NULL ) {
+        WriteMapOvlPubHead( sec );
+        WriteMapPubStart();
     }
-    ProcPubs( sec->mods, sec );
+    ProcPubsSect( sec->mods, sec );
     OvlProcPubsSect( sec );
-    FinishMapSort();
+    if( MapFile != NULL ) {
+        WriteMapPubEnd();
+    }
 }
 
 void OvlProcPubsSect( section *sec )
 /**********************************/
 {
     for( CurrMod = sec->u.dist_mods; CurrMod != NULL; CurrMod = CurrMod->x.next ) {
-        DoPubs( sec );
+        DoPubsSect( sec );
     }
 }
 
 void OvlProcPubs( void )
 /**********************/
 {
-    WriteVectors();
+    if( MapFile != NULL ) {
+        WriteMapOvlVectHead( &VectState );
+    }
     WalkAreas( Root->areas, DoSecPubs );
 }
-
-static void         AllocAreas( OVL_AREA *area );
 
 static void AllocSections( section *first_sect )
 /**********************************************/
@@ -237,7 +210,9 @@ static void AllocSections( section *first_sect )
         NormalizeAddr();        /* avoid any overflow messages */
         AddSize( 2 );   /* reserve some space for the overlay manager */
         NormalizeAddr();        /*  get canonical form */
-        if( ( CurrLoc.seg > max.seg ) || ( CurrLoc.seg == max.seg ) && ( CurrLoc.off > max.off ) ) {
+        if( ( CurrLoc.seg > max.seg )
+          || ( CurrLoc.seg == max.seg )
+          && ( CurrLoc.off > max.off ) ) {
             max = CurrLoc;
         }
         CurrLoc = save;
@@ -264,13 +239,13 @@ void OvlCalc( void )
     CurrSect = Root;
     /* record starting address of overlay table */
     Align( 2 ); // for overlay table speed.
-    SET_SYM_ADDR( OverlayTable, CurrLoc.off, CurrLoc.seg );
+    SET_SYM_ADDR( VectState.OverlayTable, CurrLoc.off, CurrLoc.seg );
     DEBUG(( DBG_OLD, "Overlay table address %a", &CurrLoc ));
     OvltabAddr = CurrLoc;
     /* calculate size of overlay table proper */
     /* OvlSectNum value 0 is reserved for Root, Root entry is not emited */
     temp = sizeof( ovltab_prolog ) + ( OvlSectNum - 1 ) * sizeof( ovltab_entry );
-    SET_SYM_ADDR( OverlayTableEnd, CurrLoc.off + temp, CurrLoc.seg );
+    SET_SYM_ADDR( VectState.OverlayTableEnd, CurrLoc.off + temp, CurrLoc.seg );
     temp += sizeof( unsigned_16 );      /* add Overlays table terminator */
     for( fnode = OutFiles; fnode != NULL; fnode = fnode->next ) {
         fnode->ovlfnoff = temp;
@@ -281,7 +256,7 @@ void OvlCalc( void )
     OvltabSize = temp;   /*  incl. NULLCHAR */
     CurrentSeg = NULL;
     AddSize( OvltabSize );
-    SET_SYM_ADDR( OvlVecStart, CurrLoc.off, CurrLoc.seg );
+    SET_SYM_ADDR( VectState.OvlVecStart, CurrLoc.off, CurrLoc.seg );
     DEBUG(( DBG_OLD, "Overlay vector start %a", &CurrLoc ));
     OvlvecAddr = CurrLoc;
     /* calculate start of overlay area */
@@ -292,7 +267,7 @@ void OvlCalc( void )
     }
     AddSize( temp );
     OvltabSize += temp;
-    SET_SYM_ADDR( OvlVecEnd, CurrLoc.off, CurrLoc.seg );
+    SET_SYM_ADDR( VectState.OvlVecEnd, CurrLoc.off, CurrLoc.seg );
     AddSize( 2 );       // reserve some space for the ovl. manager.
     Align( 4 );
     NormalizeAddr();
@@ -323,7 +298,7 @@ void FreeOverlaySupp( void )
 /**************************/
 {
     OvlClasses = NULL;
-    OvlVectors = NULL;
+    VectState.OvlVectors = NULL;
     if( OvlSeg != NULL ) {
         FreeLeader( OvlSeg );
     }
@@ -360,7 +335,8 @@ void OvlDefVector( symbol *sym )
         return;         /* NOTE: <--- premature return <----------- */
     }
     ovlref = sdata->u.leader->class->section->ovlref;
-    if( !sdata->iscode || ( ovlref == 0 ) ) {      // not code or in root
+    if( !sdata->iscode
+      || ( ovlref == 0 ) ) {      // not code or in root
         sym->u.d.ovlstate |= (OVL_FORCE | OVL_NO_VECTOR);
     } else {
         if( sym->info & SYM_REFERENCED ) {
@@ -386,7 +362,7 @@ void OvlVectorize( symbol *sym )
     sym->u.d.ovlstate |= OVL_FORCE;
     _PermAlloc( vectnode, sizeof( vecnode ) );
     vectnode->sym = sym;
-    LinkList( &OvlVectors, vectnode );
+    LinkList( &VectState.OvlVectors, vectnode );
     DEBUG(( DBG_OLD, "Vectorize %d %S", VecNum, sym ));
 }
 
@@ -422,7 +398,8 @@ static void OvlRefVector( symbol *sym )
 void OvlTryRefVector( symbol *sym )
 /*********************************/
 {
-    if( FmtData.u.dos.distribute && (LinkState & LS_SEARCHING_LIBRARIES) ) {
+    if( FmtData.u.dos.distribute
+      && (LinkState & LS_SEARCHING_LIBRARIES) ) {
         RefDistribSym( sym );
     } else {
         OvlRefVector( sym );
@@ -455,7 +432,8 @@ void OvlIndirectCall( symbol *sym )
             DistribIndirectCall( sym );
         } else if( sym->p.seg != NULL ) {
             ovlref = sym->p.seg->u.leader->class->section->ovlref;
-            if( ( ovlref != 0 ) && sym->p.seg->iscode ) {
+            if( ( ovlref != 0 )
+              && sym->p.seg->iscode ) {
                 OvlVectorize( sym );
             }
         }
@@ -547,10 +525,11 @@ static void ShortVectors( symbol *loadsym )
     vectdata.call_op = 0xe8;
     vectdata.jmp_op = 0xe9;     // near jmp
     vecnum = 1;
-    for( vectnode = OvlVectors; vectnode != NULL; vectnode = vectnode->next ) {
+    for( vectnode = VectState.OvlVectors; vectnode != NULL; vectnode = vectnode->next ) {
         temp = vectoff + offsetof( svector, ldr_addr ) + sizeof( unsigned_16 );
         diff = loadval - temp;
-        if( ( diff < -32768 ) || ( diff > 32767 ) ) {
+        if( ( diff < -32768 )
+          || ( diff > 32767 ) ) {
             LnkMsg( ERR+MSG_VECT_RANGE, "sd", "short (1)", vecnum );
         }
         _HostU16toTarg( diff, vectdata.ldr_addr );
@@ -558,7 +537,8 @@ static void ShortVectors( symbol *loadsym )
         _HostU16toTarg( loadsym->p.seg->u.leader->class->section->ovlref, vectdata.sec_num );
         temp = vectoff + offsetof( svector, target ) + sizeof( unsigned_16 );
         diff = MK_REAL_ADDR( loadsym->addr.seg, loadsym->addr.off ) - temp;
-        if( ( diff < -32768 ) || ( diff > 32767 ) ) {
+        if( ( diff < -32768 )
+          || ( diff > 32767 ) ) {
             LnkMsg( ERR+MSG_VECT_RANGE, "sd", "short (2)", vecnum );
         }
         _HostU16toTarg( diff, vectdata.target );
@@ -587,10 +567,11 @@ static void LongVectors( symbol *loadsym )
     loadval = loadsym->addr.off;
     addr.seg = OvlGroup->grp_addr.seg;
     vecnum = 1;
-    for( vectnode = OvlVectors; vectnode != NULL; vectnode = vectnode->next ) {
+    for( vectnode = VectState.OvlVectors; vectnode != NULL; vectnode = vectnode->next ) {
         temp = vectoff + offsetof( lvector, u.v.ldr_addr ) + sizeof( unsigned_16 );
         diff = loadval - temp;
-        if( ( diff < -32768 ) || ( diff > 32767 ) ) {
+        if( ( diff < -32768 )
+          || ( diff > 32767 ) ) {
             LnkMsg( ERR+MSG_VECT_RANGE, "sd", "long", vecnum );
         }
         _HostU16toTarg( diff, vectdata.u.v.ldr_addr );
@@ -674,10 +655,10 @@ void OvlPass1( void )
     WalkAreas( Root->areas, LoadObjFiles );
 
     /* define symbols for overlay table */
-    OverlayTable = DefISymbol( _OvltabName );
-    OverlayTableEnd = DefISymbol( _OvltabEndName );
-    OvlVecStart = DefISymbol( _OvlVecStartName );
-    OvlVecEnd = DefISymbol( _OvlVecEndName );
+    VectState.OverlayTable = DefISymbol( _OvltabName );
+    VectState.OverlayTableEnd = DefISymbol( _OvltabEndName );
+    VectState.OvlVecStart = DefISymbol( _OvlVecStartName );
+    VectState.OvlVecEnd = DefISymbol( _OvlVecEndName );
 
     OvlSeg = InitLeader( "" );
     OvlSeg->class = FindClass( Root, OvlMgrClass, BITS_16, true );
@@ -686,10 +667,10 @@ void OvlPass1( void )
     OvlSegData->bits = BITS_16;
     OvlSegData->u.leader = OvlSeg;
 
-    OverlayTable->p.seg = OvlSegData;
-    OverlayTableEnd->p.seg = OvlSegData;
-    OvlVecStart->p.seg = OvlSegData;
-    OvlVecEnd->p.seg = OvlSegData;
+    VectState.OverlayTable->p.seg = OvlSegData;
+    VectState.OverlayTableEnd->p.seg = OvlSegData;
+    VectState.OvlVecStart->p.seg = OvlSegData;
+    VectState.OvlVecEnd->p.seg = OvlSegData;
 
     /* generate reference for overlay loader */
     if( FmtData.u.dos.dynamic ) {

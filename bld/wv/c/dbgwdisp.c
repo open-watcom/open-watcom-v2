@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -46,6 +46,8 @@
 #include "dbgwdisp.h"
 #include "dbgwtool.h"
 #include "dbgwpain.h"
+#include "liteng.h"
+#include "litdui.h"
 
 
 #define DISP_OPTS() \
@@ -594,4 +596,9 @@ wnd_class_wv ReqWndName( void )
     if( cmd < 0 )
         Error( ERR_LOC, LIT_DUI( ERR_BAD_WIND_NAME ) );
     return( (wnd_class_wv)cmd );
+}
+
+a_window WndNoOpen( void )
+{
+    return( NULL );
 }

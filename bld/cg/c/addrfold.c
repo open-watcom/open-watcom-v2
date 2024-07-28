@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,7 +39,7 @@
 #include "procdef.h"
 #include "zoiks.h"
 #include "freelist.h"
-#include "cfloat.h"
+#include "_cfloat.h"
 #include "fpu.h"
 #include "makeins.h"
 #include "makeaddr.h"
@@ -91,7 +91,7 @@ typedef enum {
 
 #define _HaveMode( action )     ( (action) >= IL )
 
-static  mode_action     AddTable[][9] = {
+static const mode_action    AddTable[][9] = {
 /***************************************/
 /*                       left argument*/
 #if WORD_SIZE == 2
@@ -124,7 +124,7 @@ static  mode_action     AddTable[][9] = {
  * tables so I just used this table to map CL constants onto the tables
  */
 
-static  byte    Idx[] = {
+static const byte   Idx[] = {
         0,        /* CL_ADDR_GLOBAL */
         2,        /* CL_ADDR_TEMP */
         4,        /* CL_POINTER */
@@ -146,8 +146,8 @@ static  byte    Idx[] = {
         5         /* CL_TEMP_OFFSET */
 };
 
-name    *Points( an addr, type_def *tipe )
-/****************************************/
+name    *Points( an addr, const type_def *tipe )
+/**********************************************/
 {
     type_class_def      type_class;
     type_length         size;
@@ -239,8 +239,8 @@ name    *Points( an addr, type_def *tipe )
 }
 
 
-an      AddrName( name *op, type_def *tipe )
-/******************************************/
+an      AddrName( name *op, const type_def *tipe )
+/************************************************/
 {
     an  addr;
 
@@ -325,8 +325,8 @@ static  void    AddIndex( an addr, name *index, name *addend ) {
 }
 
 
-bool    CypAddrPlus( an l_addr, an r_addr, type_def *tipe )
-/*********************************************************/
+bool    CypAddrPlus( an l_addr, an r_addr, const type_def *tipe )
+/***************************************************************/
 {
     mode_action action;
 
@@ -375,8 +375,8 @@ static        bool    AddToTypeLength( type_length x, type_length y ) {
 }
 
 
-an      AddrPlus( an l_addr, an r_addr, type_def *tipe )
-/******************************************************/
+an      AddrPlus( an l_addr, an r_addr, const type_def *tipe )
+/************************************************************/
 
 /*       Returns NULL if code needs to be generated*/
 {
@@ -522,8 +522,8 @@ static  bool    ShiftConst( an r_addr ) {
 }
 
 
-bool    CypAddrShift( an l_addr, an r_addr, type_def *tipe )
-/**********************************************************/
+bool    CypAddrShift( an l_addr, an r_addr, const type_def *tipe )
+/****************************************************************/
 {
     /* unused parameters */ (void)tipe;
 
@@ -557,8 +557,8 @@ static  bool    ShiftToTypeLength( type_length x, uint_16 y )
 }
 
 
-an      AddrShift( an l_addr, an r_addr, type_def *tipe )
-/*******************************************************/
+an      AddrShift( an l_addr, an r_addr, const type_def *tipe )
+/*************************************************************/
 
 /*       Returns NULL if code needs to be generated*/
 {

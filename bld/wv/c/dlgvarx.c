@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,6 +38,7 @@
 #include "dlgvarx.h"
 #include "dbgerr.h"
 #include "dlgexpr.h"
+#include "litdui.h"
 
 
 static bool GetDlgStatus( dlg_var_expand *varx, gui_window *gui )
@@ -63,7 +64,7 @@ static void SetDlgStatus( dlg_var_expand *varx, gui_window *gui )
 }
 
 
-static bool VarGUIEventProc( gui_window *gui, gui_event gui_ev, void *param )
+static bool GUICALLBACK VarGUIEventProc( gui_window *gui, gui_event gui_ev, void *param )
 {
     gui_ctl_id      id;
     dlg_var_expand  *varx;
@@ -104,7 +105,7 @@ bool    DlgVarExpand( dlg_var_expand *pvarx )
     varx.start = pvarx->start;
     varx.end = pvarx->end;
     varx.cancel = true;
-    ResDlgOpen( VarGUIEventProc, &varx, DIALOG_VARX );
+    DlgOpenRes( VarGUIEventProc, &varx, DIALOG_VARX );
     if( varx.cancel )
         return( false );
     pvarx->start = varx.start;

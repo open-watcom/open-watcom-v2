@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -1080,7 +1080,7 @@ static void PaintWindow( gui_window *wnd, gui_text_ord row, gui_text_ord num, gu
             extent += GUIGetHScroll( wnd );
         }
         GUIDrawTextExtent( wnd, data, length, row + i - vscroll, indent,
-                           GUI_MENU_ACTIVE, GUI_NO_COLUMN );
+                           GUI_MENU_ACTIVE, GUI_NO_EXTENT );
 #if hot_spots
         GUIDrawHotSpot( wnd, (i % NUM_HOT_SPOTS) + 1, row + i - vscroll, indent,
                        GUI_MENU_ACTIVE );
@@ -1433,7 +1433,7 @@ bool Child2WndGUIEventProc( gui_window *wnd, gui_event gui_ev, void *param )
         out = GUIGetExtra( wnd );
         if( row < out->numrows ) {
             col = GUIGetStringPos( wnd, IndentData[row].indent, IndentData[row].data, point.x );
-            if( col != GUI_TEXT_NO_COLUMN ) {
+            if( col != GUI_TEXT_NO_POS ) {
                 sprintf( Buffer, "Mouse press - position %d", col );
                 GUIDisplayMessage( wnd, Buffer, "SAMPLE PROGRAM", GUI_INFORMATION );
             }

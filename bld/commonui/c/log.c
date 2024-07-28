@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,7 +40,6 @@
 #include "bool.h"
 #include "watcom.h"
 #include "log.h"
-#include "cguimem.h"
 #ifndef NOUSE3D
     #include "ctl3dcvr.h"
 #endif
@@ -101,7 +100,7 @@ static bool getLogName( char *buf, HWND hwnd )
     OPENFILENAME        of;
     int                 rc;
     static char         fname[LOG_MAX_FNAME];
-    static char         filterList[] = "File (*.*)" \
+    static const char   filterList[] = "File (*.*)" \
                                        "\0" \
                                        "*.*" \
                                        "\0\0";
@@ -110,7 +109,7 @@ static bool getLogName( char *buf, HWND hwnd )
     memset( &of, 0, sizeof( OPENFILENAME ) );
     of.lStructSize = sizeof( OPENFILENAME );
     of.hwndOwner = hwnd;
-    of.lpstrFilter = (LPSTR)filterList;
+    of.lpstrFilter = filterList;
     of.lpstrDefExt = NULL;
     of.nFilterIndex = 1L;
     of.lpstrFile = fname;
@@ -153,7 +152,7 @@ static void flushLog( bool free )
     fclose( f );
     if( free ) {
         for( i = 0; i < LinesUsed; i++ ) {
-            MemFree( BufLines[i] );
+            CUIMemFree( BufLines[i] );
         }
     }
     LinesUsed = 0;
@@ -222,12 +221,12 @@ INT_PTR CALLBACK ConfigLogDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lp
     case WM_COMMAND:
         switch( wparam ) {
         case LOG_CFG_BROWSE:
-            buf = MemAlloc( LOG_MAX_FNAME );
+            buf = CUIMemAlloc( LOG_MAX_FNAME );
             if( getLogName( buf, hwnd ) ) {
                 strlwr( buf );
                 SetDlgItemText( hwnd, LOG_CFG_NAME_EDIT, buf );
             }
-            MemFree( buf );
+            CUIMemFree( buf );
             break;
         case LOG_CFG_OK:
             if( IsDlgButtonChecked( hwnd, LOG_CFG_QUERY_NAME ) ) {
@@ -377,7 +376,7 @@ void LogOut( char *res )
         flushLog( false );
     } else {
         len = strlen( res ) + 1;
-        BufLines[LinesUsed] = MemAlloc( len );
+        BufLines[LinesUsed] = CUIMemAlloc( len );
         strcpy( BufLines[LinesUsed], res );
         LinesUsed++;
         if( LinesUsed == NO_BUF_LINES ) {

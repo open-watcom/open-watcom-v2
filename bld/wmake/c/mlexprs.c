@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -61,10 +61,11 @@ STATIC MTOKEN_T lexLongFilePathName( STRM_T s, MTOKEN_T tok )
     pos = 0;
 
     s = PreGetCHR();
-
-    /* \" is considered a double quote character                         */
-    /* and if a double quote is found again then we break out as the end */
-    /* of the filename                                                   */
+    /*
+     * \" is considered a double quote character
+     * and if a double quote is found again then we break out as the end
+     * of the filename
+     */
     while( pos < _MAX_PATH && s != '\"' && s != '\n' && s != STRM_END ) {
         file[pos++] = s;
         s = PreGetCHR();
@@ -85,7 +86,7 @@ STATIC MTOKEN_T lexLongFilePathName( STRM_T s, MTOKEN_T tok )
     if( pos >= _MAX_PATH ) {
         PrtMsg( FTL | LOC | MAXIMUM_TOKEN_IS, _MAX_PATH - 1 ); // NOTREACHED
         ExitFatal();
-        // never return
+        /* never return */
     }
     file[pos] = NULLCHAR;
 
@@ -114,14 +115,23 @@ MTOKEN_T LexPath( STRM_T s )
     VECSTR      vec;                /* we'll store file/path here */
 
     for( ;; ) {                     /* get first valid character */
-        if( s == '\n' || s == STRM_END ) {
-            /* now we pass this to LexParser() so that it can reset */
+        if( s == '\n'
+          || s == STRM_END ) {
+            /*
+             * now we pass this to LexParser() so that it can reset
+             */
             return( LexParser( s ) );
         }
 
         if( s == STRM_MAGIC ) {
             InsString( DeMacro( TOK_EOL ), true );
-        } else if( !sisfilec( s ) && !siswildc( s ) && !sisdirc( s ) && !sisdotc( s ) && !IS_PATH_SPLIT( s ) && s != '\"' && !sisws( s ) ) {
+        } else if( !sisfilec( s )
+          && !siswildc( s )
+          && !sisdirc( s )
+          && !sisdotc( s )
+          && !IS_PATH_SPLIT( s )
+          && s != '\"'
+          && !sisws( s ) ) {
             PrtMsg( ERR | LOC | EXPECTING_M, M_PATH );
         } else if( !sisws( s ) ) {
             break;
@@ -129,7 +139,9 @@ MTOKEN_T LexPath( STRM_T s )
 
         s = PreGetCHR(); /* keep fetching characters */
     }
-    /* just so you know what we've got now */
+    /*
+     * just so you know what we've got now
+     */
     assert( sisfilec( s ) || siswildc( s ) || sisdirc( s ) || sisdotc( s ) || IS_PATH_SPLIT( s ) || s == '\"' );
 
     vec = StartVec();
@@ -144,7 +156,6 @@ MTOKEN_T LexPath( STRM_T s )
          * as path seperators.  If we are not in string mode character validity
          * is checked against sisfilec().
          */
-
         dquote = false;
 
         while( pos < _MAX_PATH && s != '\n' && s != STRM_END ) {
@@ -153,14 +164,18 @@ MTOKEN_T LexPath( STRM_T s )
 
                 if( s == '\"' ) {
                     path[pos++] = '\"';
-                } else if( s == '\n' || s == STRM_END ) {
-                    // Handle special case when backslash is placed at end of
-                    // line or file
+                } else if( s == '\n'
+                  || s == STRM_END ) {
+                    /*
+                     * Handle special case when backslash is placed at end of
+                     * line or file
+                     */
                     path[pos++] = '\\';
                 } else {
                     path[pos++] = '\\';
-
-                    // make sure we don't cross boundaries
+                    /*
+                     * make sure we don't cross boundaries
+                     */
                     if( pos < _MAX_PATH ) {
                         path[pos++] = s;
                     }
@@ -171,10 +186,16 @@ MTOKEN_T LexPath( STRM_T s )
                 } else {
                     if( dquote ) {
                         path[pos++] = s;
-                    } else if( sisfilec( s ) || siswildc( s ) || sisdirc( s ) || sisdotc( s ) ) {
+                    } else if( sisfilec( s )
+                      || siswildc( s )
+                      || sisdirc( s )
+                      || sisdotc( s ) ) {
                         path[pos++] = s;
                     } else {
-                        break; // not valid path character, break out.
+                        /*
+                         * not valid path character, break out
+                         */
+                        break;
                     }
                 }
             }
@@ -186,14 +207,14 @@ MTOKEN_T LexPath( STRM_T s )
             FreeSafe( FinishVec( vec ) );
             PrtMsg( FTL | LOC | ERROR_STRING_OPEN );
             ExitFatal();
-            // never return
+            /* never return */
         }
 
         if( pos == _MAX_PATH ) {
             FreeSafe( FinishVec( vec ) );
             PrtMsg( FTL | LOC | MAXIMUM_TOKEN_IS, _MAX_PATH - 1 ); // NOTREACHED
             ExitFatal();
-            // never return
+            /* never return */
         }
 
         path[pos] = NULLCHAR;
@@ -247,14 +268,16 @@ STATIC MTOKEN_T lexFileName( STRM_T s )
     if( pos == _MAX_PATH ) {
         PrtMsg( FTL | LOC | MAXIMUM_TOKEN_IS, _MAX_PATH - 1 ); // NOTREACHED
         ExitFatal();
-        // never return
+        /* never return */
     }
     file[pos] = NULLCHAR;
     UnGetCHR( s );
-
-    /* if it is a file, we have to check last position for a ':', and
-     * trim it off if it's there */
-    if( pos > 1 && file[pos - 1] == ':' ) {
+    /*
+     * if it is a file, we have to check last position for a ':', and
+     * trim it off if it's there
+     */
+    if( pos > 1
+      && file[pos - 1] == ':' ) {
         file[pos - 1] = NULLCHAR;   /* trim a trailing colon */
         UnGetCHR( ':' );            /* push back the colon */
         --pos;
@@ -263,7 +286,8 @@ STATIC MTOKEN_T lexFileName( STRM_T s )
      * try to do the trim twice because if file ends with a double colon
      * it means its a double colon explicit rule
      */
-    if( pos > 1 && file[pos - 1] == ':' ) {
+    if( pos > 1
+      && file[pos - 1] == ':' ) {
         file[pos - 1] = NULLCHAR;   /* trim a trailing colon */
         UnGetCHR( ':' );            /* push back the colon */
     }
@@ -327,11 +351,9 @@ STATIC char *getCurlPath( void )
             PrtMsg( WRN | LOC | PATH_TOO_LONG );
         }
         return( StrDupSafe( path ) );
-
-    } else {
-        UnGetCHR( s );
-        return( "" );
     }
+    UnGetCHR( s );
+    return( "" );
 }
 
 
@@ -374,12 +396,11 @@ STATIC MTOKEN_T lexDotName( void )
     if( s != '.' ) {
         PrtMsg( ERR | LOC | INVALID_SUFSUF );
         return( TOK_NULL );
-    } else {
-        ext[pos++] = '.';
-        s = PreGetCHR();
     }
-
-    if( sisdirc( s ) || IS_PATH_SPLIT( s ) ) {          // check for "."{dirc}
+    ext[pos++] = '.';
+    s = PreGetCHR();
+    if( sisdirc( s )            /* check for "."{dirc} */
+      || IS_PATH_SPLIT( s ) ) {
         UnGetCHR( s );
         if( *dep_path != NULLCHAR ) {
             PrtMsg( ERR | LOC | INVALID_SUFSUF );
@@ -387,10 +408,11 @@ STATIC MTOKEN_T lexDotName( void )
         return( lexFileName( '.' ) );
     }
 
-    if( s == '.' ) {        /* check if ".."{extc} or ".."{dirc} */
-        s2 = PreGetCHR();    /* probe one character */
+    if( s == '.' ) {            /* check if ".."{extc} or ".."{dirc} */
+        s2 = PreGetCHR();       /* probe one character */
         UnGetCHR( s2 );
-        if( sisdirc( s2 ) || IS_PATH_SPLIT( s2 ) ) {    // is ".."{dirc}
+        if( sisdirc( s2 )
+          || IS_PATH_SPLIT( s2 ) ) {    /* is ".."{dirc} */
             UnGetCHR( s );
             if( *dep_path != NULLCHAR ) {
                 PrtMsg( ERR | LOC | INVALID_SUFSUF );
@@ -405,7 +427,7 @@ STATIC MTOKEN_T lexDotName( void )
         if( pos == MAX_SUFFIX ) {
             PrtMsg( FTL | LOC | MAXIMUM_TOKEN_IS, MAX_SUFFIX - 1 );
             ExitFatal();
-            // never return
+            /* never return */
         }
         ext[pos] = NULLCHAR;
     }
@@ -422,24 +444,28 @@ STATIC MTOKEN_T lexDotName( void )
             ext[pos++] = s;
         }
         if( pos == MAX_SUFFIX ) {
-            PrtMsg( FTL | LOC | MAXIMUM_TOKEN_IS, MAX_SUFFIX - 1 ); //NOTREACHED
+            PrtMsg( FTL | LOC | MAXIMUM_TOKEN_IS, MAX_SUFFIX - 1 ); // NOTREACHED
             ExitFatal();
-            // never return
+            /* never return */
         }
         ext[pos] = NULLCHAR;
 
         ret = TOK_SUFSUF;
     } else {
-        if( *targ_path != NULLCHAR && *dep_path != NULLCHAR ) {
+        if( *targ_path != NULLCHAR
+          && *dep_path != NULLCHAR ) {
             PrtMsg( ERR | LOC | INVALID_SUFSUF );
         }
         ret = TOK_SUF;
     }
     UnGetCHR( s );           /* put back what we don't need */
 
-    if( *targ_path != NULLCHAR && *dep_path != NULLCHAR && ret == TOK_SUF ) {
+    if( *targ_path != NULLCHAR
+      && *dep_path != NULLCHAR
+      && ret == TOK_SUF ) {
         PrtMsg( ERR | LOC | INVALID_SUFSUF );
-    } else if( ret == TOK_SUF && checkDotName( ext ) ) {
+    } else if( ret == TOK_SUF
+      && checkDotName( ext ) ) {
         return( TOK_DOTNAME );
     }
     CurAttr.u.ptr = StrDupSafe( ext );
@@ -484,17 +510,18 @@ STATIC bool checkMacro( STRM_T s )
     if( pos == MAX_MAC_NAME ) {
         PrtMsg( FTL | LOC | MAXIMUM_TOKEN_IS, MAX_MAC_NAME - 1 );
         ExitFatal();
-        // never return
+        /* never return */
     }
     mac[pos] = NULLCHAR;
     ws = sisws( s );
-    while( sisws( s ) ) {
-        s = PreGetCHR();
+    if( ws ) {
+        s = EatWhite();
     }
     if( s == '=' ) {
         DefMacro( mac );
         return( true );          /* go around again */
-    } else if( s == '+' ) {
+    }
+    if( s == '+' ) {
         s = PreGetCHR();
         if( s == '=' ) {
             InsString( ")$-", false );
@@ -506,8 +533,10 @@ STATIC bool checkMacro( STRM_T s )
         UnGetCHR( s );
         s = '+';
     }
-
-    UnGetCHR( s );           /* not a macro line, put everything back*/
+    /*
+     * not a macro line, put everything back
+     */
+    UnGetCHR( s );
     if( ws ) {
         UnGetCHR( ' ' );
     }
@@ -538,7 +567,9 @@ STATIC char *deMacroDoubleQuote( bool start_dquote )
 
     s = PreGetCHR();
     UnGetCHR( s );
-    if( s == '\n' || s == STRM_END || s == STRM_MAGIC ) {
+    if( s == '\n'
+      || s == STRM_END
+      || s == STRM_MAGIC ) {
         return( CharToStrSafe( NULLCHAR ) );
     }
 
@@ -557,7 +588,9 @@ STATIC char *deMacroDoubleQuote( bool start_dquote )
             assert( s != '\n' || s != STRM_END );
             if( s == '\"' ) {
                 if( !in_dquote ) {
-                    /* Found the start of a Double Quoted String */
+                    /*
+                     * Found the start of a Double Quoted String
+                     */
                     if( pos != 0 ) {
                         buffer[pos] = NULLCHAR;
                         UnGetCHR( s );
@@ -566,7 +599,9 @@ STATIC char *deMacroDoubleQuote( bool start_dquote )
                     }
                     in_dquote = true;
                 } else {
-                    /* Found the end of the Double Quoted String */
+                    /*
+                     * Found the end of the Double Quoted String
+                     */
                     buffer[pos++] = s;
                     buffer[pos] = NULLCHAR;
                     s = PreGetCHR();
@@ -580,7 +615,9 @@ STATIC char *deMacroDoubleQuote( bool start_dquote )
             if( !in_dquote ) {
                 if( sisws( s ) ) {
                     if( in_word ) {
-                        /* Found the end of the Word */
+                        /*
+                         * Found the end of the Word
+                         */
                         buffer[pos] = NULLCHAR;
                         UnGetCHR( s );
                         UnGetCHR( STRM_TMP_LEX_START );
@@ -588,7 +625,9 @@ STATIC char *deMacroDoubleQuote( bool start_dquote )
                     }
                 } else {
                     if( !in_word ) {
-                        /* Found the start of the Word */
+                        /*
+                         * Found the start of the Word
+                         */
                         if( pos != 0 ) {
                             buffer[pos] = NULLCHAR;
                             UnGetCHR( s );
@@ -605,7 +644,7 @@ STATIC char *deMacroDoubleQuote( bool start_dquote )
         if( pos >= _MAX_PATH ) {
             PrtMsg( FTL | LOC | MAXIMUM_TOKEN_IS, _MAX_PATH - 1 ); // NOTREACHED
             ExitFatal();
-            // never return
+            /* never return */
         }
 
         buffer[pos] = NULLCHAR;
@@ -617,7 +656,9 @@ STATIC char *deMacroDoubleQuote( bool start_dquote )
         for( current = p; *current != NULLCHAR; ++current ) {
             if( *current == '\"' ) {
                 if( !in_dquote ) {
-                    /* Found the start of a Double Quoted String */
+                    /*
+                     * Found the start of a Double Quoted String
+                     */
                     if( current != p ) {
                         UnGetCHR( STRM_MAGIC );
                         InsString( StrDupSafe( current ), true );
@@ -627,7 +668,9 @@ STATIC char *deMacroDoubleQuote( bool start_dquote )
                     }
                     in_dquote = true;
                 } else {
-                    /* Found the end of the Double Quoted String */
+                    /*
+                     * Found the end of the Double Quoted String
+                     */
                     current++;
                     if( *current != NULLCHAR ) {
                         UnGetCHR( STRM_MAGIC );
@@ -641,9 +684,12 @@ STATIC char *deMacroDoubleQuote( bool start_dquote )
         }
     }
 
-    if( !start_dquote && !in_dquote ) {
-        /* there are no double quotes in the text */
-        /* so return text as is */
+    if( !start_dquote
+      && !in_dquote ) {
+        /*
+         * there are no double quotes in the text
+         * so return text as is
+         */
         return( p );
 
     }
@@ -678,17 +724,23 @@ MTOKEN_T LexParser( STRM_T s )
     for( ;; ) {
 
         if( atstart ) {
-                /* atstart == true if either of these succeed */
-            if( sisws( s ) ) {           /* cmd line */
+            /*
+             * atstart == true if either of these succeed
+             */
+            if( sisws( s ) ) {
+                /*
+                 * cmd line starts with space
+                 */
                 return( lexCmd() );
             }
-            if( sismacc( s ) && checkMacro( s ) ) {  /* check if macro = body */
+            if( sismacc( s )
+              && checkMacro( s ) ) {  /* check if macro = body */
                 s = PreGetCHR();
                 continue;
             }
 
             atstart = false;
-            UnGetCHR( s );           /* put back our probe */
+            UnGetCHR( s );          /* put back our probe */
             s = STRM_MAGIC;         /* force macro expansion */
         }
 
@@ -704,10 +756,7 @@ MTOKEN_T LexParser( STRM_T s )
             p = deMacroDoubleQuote( false );  /* expand to next white space */
             if( *p == NULLCHAR ) {  /* already at ws */
                 FreeSafe( p );
-                s = PreGetCHR();    /* eat the ws */
-                while( sisws( s ) ) {
-                    s = PreGetCHR();
-                }
+                s = EatWhite();     /* eat the ws */
                 if( s == '\n' ) {
                     atstart = true;
                     return( TOK_EOL );
@@ -740,7 +789,14 @@ MTOKEN_T LexParser( STRM_T s )
             UnGetCHR( s );
             return( TOK_SCOLON );
         default:
-            if( sisfilec( s ) || siswildc( s ) || sisdirc( s ) || sisdotc( s ) || s == '\"' || ( (Glob.compat_nmake || Glob.compat_posix) && s == SPECIAL_TMP_DOLLAR ) ) {
+            if( sisfilec( s )
+              || siswildc( s )
+              || sisdirc( s )
+              || sisdotc( s )
+              || s == '\"'
+              || ( (Glob.compat_nmake
+              || Glob.compat_posix)
+              && s == SPECIAL_TMP_DOLLAR ) ) {
                 return( lexFileName( s ) );
             }
             PrtMsg( WRN | LOC | UNKNOWN_TOKEN, s );

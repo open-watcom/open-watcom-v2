@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,7 +40,7 @@
 #include <limits.h>
 #include "bool.h"
 #include "lsspec.h"
-#include "encodlng.h"
+#include "wreslang.h"
 #include "cvttable.h"
 
 #include "clibext.h"
@@ -82,8 +82,52 @@ TAG( TIMESTAMP ) \
 TAG( TITLE ) \
 TAG( TITLEU ) \
 TAG( USAGE ) \
-TAG( USAGEGRP ) \
-TAG( USAGEOGRP )
+TAG( USAGECHAIN ) \
+TAG( USAGEGROUP ) \
+TAG( USAGENOCHAIN )
+
+/*
+ *******************************************
+ * TAG        * sub-TAG
+ *******************************************
+ * ARGEQUAL
+ * CHAIN
+ * NOEQUAL
+ *
+ * FOOTER       FOOTERU, JFOOTER, JFOOTERU
+ * TITLE        TITLEU, JTITLE, JTITLEU
+ *
+ * OPTION
+ * USAGECHAIN
+ * USAGEGROUP
+ *              JUSAGE, USAGE
+ *
+ *******************************************
+ * OPTION attributes sub-TAG
+ *******************************************
+ * CHAR
+ * CMT
+ * CODE
+ * ENUMERATE
+ * FILE
+ * GROUP
+ * ID
+ * IMMEDIATE
+ * INTERNAL
+ * MULTIPLE
+ * NEGATE
+ * NOCHAIN
+ * NTARGET
+ * NUMBER
+ * OPTIONAL
+ * PATH
+ * PREFIX
+ * SPECIAL
+ * TARGET
+ * TIMESTAMP
+ * USAGENOCHAIN
+ *******************************************
+ */
 
 #define NEXT_ARG() \
         --argc1; ++argv1
@@ -91,7 +135,7 @@ TAG( USAGEOGRP )
 #define NEXT_ARG_CHECK() \
         --argc1; ++argv1; if( argc1 < NUM_FILES ) { return( true ); }
 
-#define NOSKIP( s )     (s[0] != '.' || s[1] != '\0')
+#define BLANKARG( s )       (s[0] == '.' && s[1] == '\0')
 
 // functions that are supplied by the host environment
 #define FN_UNGET            "OPT_UNGET"                 // void ( void )
@@ -127,9 +171,7 @@ TAG( USAGEOGRP )
 
 #define HAS_OPT_STRING(o)       ((o)->is_id || (o)->is_file || (o)->is_path || (o)->is_text)
 #define HAS_OPT_NUMBER(o)       ((o)->is_number && (o)->is_multiple)
-#define HAS_OPT_CHAIN(o)        ((o)->chain != NULL && (o)->chain->code_used)
 
-#define NOCHAIN                 ((CHAIN *)(pointer_uint)-1)
 #define NOSENSITIVE             ' '
 
 #define IS_SENSITIVE(c)         ((c)->s != NOSENSITIVE)
@@ -147,7 +189,7 @@ TAG( USAGEOGRP )
 
 #define SKIP_SPACES(s)          while( myisspace( *s ) ) s++
 
-typedef const char              *lang_data[LANG_MAX];
+typedef const char              *lang_data[LANG_RLE_MAX];
 
 typedef unsigned long           targmask;
 
@@ -194,30 +236,37 @@ typedef struct ename {
     char            name[1];
 } ENAME;
 
-typedef struct title {
-    struct title    *next;
+typedef struct text {
+    struct text     *next;
     targmask        target_mask;
     targmask        ntarget_mask;
-    boolbit         is_titleu   : 1;
-    lang_data       lang_title;
-    lang_data       lang_titleu;
-} TITLE;
+    boolbit         any_target  : 1;
+    boolbit         is_u        : 1;
+    lang_data       lang_usage;
+    lang_data       lang_usageu;
+} TEXT;
 
 typedef struct chain {
     struct chain    *next;
-    lang_data       Usage;
-    size_t          name_len;
+    size_t          len;
     size_t          pattern_len;
-    boolbit         usage_used : 1;
-    boolbit         code_used  : 1;
     char            pattern[1];
 } CHAIN;
 
-typedef struct group {
-    struct group    *next;
-    lang_data       Usage;
+typedef struct usagechain {
+    struct usagechain *next;
+    lang_data       lang_usage;
+    size_t          len;
+    size_t          pattern_len;
     char            pattern[1];
-} GROUP;
+} USAGECHAIN;
+
+typedef struct usagegroup {
+    struct usagegroup *next;
+    lang_data       lang_usage;
+    USAGECHAIN      *usageChainList;
+    char            id[1];
+} USAGEGROUP;
 
 
 typedef struct option {
@@ -236,6 +285,10 @@ typedef struct option {
     targmask        target_mask;
     targmask        ntarget_mask;
     boolbit         default_specified : 1;
+    boolbit         any_target        : 1;
+    boolbit         usage_used        : 1;
+    boolbit         nochain           : 1;
+    boolbit         usage_nochain     : 1;
     boolbit         is_simple         : 1;
     boolbit         is_immediate      : 1;
     boolbit         is_code           : 1;
@@ -254,7 +307,8 @@ typedef struct option {
     boolbit         is_negate         : 1;
     char            equal_char;
     CHAIN           *chain;
-    GROUP           *group;
+    USAGECHAIN      *usageChain;
+    USAGEGROUP      *usageGroup;
     size_t          name_len;
     char            *name;
     char            pattern[1];
@@ -266,19 +320,22 @@ typedef struct codeseq {
     OPTION          *option;
     char            c;
     char            s;
-    boolbit         accept     : 1;
-    boolbit         chain      : 1;
-    boolbit         chain_root : 1;
-    boolbit         sel        : 1;
+    boolbit         accept        : 1;
+    boolbit         is_chain      : 1;
+    boolbit         is_chain_root : 1;
+    boolbit         sel           : 1;
 } CODESEQ;
 
 static unsigned     line;
+static unsigned     errcount = 0;
+
 static FILE         *gfp;
 static FILE         *ofp;
 static FILE         *pfp;
 static FILE         *ufp;
 static FILE         *mfp;
 static FILE         *bfp;
+static FILE         *ofpg;
 
 static char         ibuff[BUFF_SIZE];
 static char         tagbuff[BUFF_SIZE];
@@ -288,15 +345,13 @@ static char         hdrbuff[BUFF_SIZE];
 static char         maxusgbuff[BUFF_SIZE];
 
 static char         alternateEqual;
-static CHAIN        *lastChain;
-static GROUP        *lastGroup;
 static size_t       maxUsageLen;
 static targmask     targetMask = 0;
 static targmask     targetAnyMask;
 static targmask     targetDbgMask;
 static targmask     targetUnusedMask;
 
-static tag_id getsUsage = TAG_NULL;
+static tag_id       getsUsage = TAG_NULL;
 
 static char         *outputbuff = NULL;
 static lang_data    outputdata;
@@ -355,15 +410,15 @@ static const char *validTargets[] = {
 };
 
 static const char * const langName[] = {
-    #define LANG_DEF( id, dbcs )        #id ,
-    LANG_DEFS
-    #undef LANG_DEF
+    #define LANG_RLE_DEF( id, val, dbcs )   #id ,
+    LANG_RLE_DEFS
+    #undef LANG_RLE_DEF
 };
 
 static uint_8 const langMaxChar[] = {
-    #define LANG_DEF( id, dbcs )        dbcs ,
-    LANG_DEFS
-    #undef LANG_DEF
+    #define LANG_RLE_DEF( id, val, dbcs )   dbcs ,
+    LANG_RLE_DEFS
+    #undef LANG_RLE_DEF
 };
 
 /*
@@ -388,10 +443,13 @@ static const char *usageMsg[] = {
     "  -l=<lang-n> is the language(number) used for output data",
     "  -n '\0' terminated items",
     "  -nn '\n' terminated items",
+    "  -p generate only parser code",
     "  -q quiet operation",
     "  -rc=<macro-name> generate files for resource compiler",
+    "  -t report missing non-english data",
     "  -u=<usage-u> is the output file for the QNX usage file",
     "  -utf8 output text use UTF-8 encoding",
+    "  -x=<id> use id to extend symbols to be unique for more instances",
     "",
     "    <gml-file> is the tagged input GML file",
     "    <parser-h> is the output file for the command line parser data declaration",
@@ -402,28 +460,34 @@ static const char *usageMsg[] = {
 };
 
 static struct {
-    boolbit     international   : 1;
-    boolbit     quiet           : 1;
-    boolbit     no_equal        : 1;
-    boolbit     alternate_equal : 1;
-    boolbit     rc              : 1;
-    boolbit     out_utf8        : 1;
+    boolbit     international       : 1;
+    boolbit     quiet               : 1;
+    boolbit     no_equal            : 1;
+    boolbit     alternate_equal     : 1;
+    boolbit     rc                  : 1;
+    boolbit     out_utf8            : 1;
+    boolbit     report_missing_data : 1;
+    boolbit     parser_only         : 1;
     char        *rc_macro;
     char        *line_term;
     char        *list_sep;
-    language_id lang;
+    char        *sid;
+    wres_lang_id lang;
 } optFlag;
 
-static TARGET   *targetList;
-static ENAME    *enumList;
-static OPTION   *optionList;
-static OPTION   *uselessOptionList;
-static TITLE    *titleList;
-static TITLE    *footerList;
-static CHAIN    *chainList;
-static GROUP    *groupList = NULL;
-static TITLE    *targetTitle;
-static TITLE    *targetFooter;
+static TARGET       *targetList;
+static ENAME        *enumList;
+static OPTION       *optionList;
+static OPTION       *uselessOptionList;
+static TEXT         *titleList;
+static TEXT         *footerList;
+static CHAIN        *chainList;
+static USAGEGROUP   blankUsageGroup;
+static USAGEGROUP   *usageGroupList;
+static USAGEGROUP   *lastUsageGroup;
+static USAGECHAIN   *lastUsageChain = NULL;
+static TEXT         *targetTitle;
+static TEXT         *targetFooter;
 
 static void emitCode( CODESEQ *head, unsigned depth, flow_control control );
 
@@ -499,26 +563,26 @@ static size_t utf8_to_cp932( const char *src, char *dst )
     return( o );
 }
 
-static const char *getLangData( lang_data langdata, language_id lang )
+static const char *getLangData( lang_data langdata, wres_lang_id lang )
 {
     const char *p;
 
     p = langdata[lang];
     if( p == NULL
       || *p == '\0' ) {
-        p = langdata[LANG_English];
+        p = langdata[LANG_RLE_ENGLISH];
     }
     return( p );
 }
 
 static void outputInit( void )
 {
-    int i;
+    wres_lang_id lang;
     char *p;
 
-    p = outputbuff = calloc( LANG_MAX, BUFF_SIZE );
-    for( i = 0; i < LANG_MAX; i++ ) {
-        outputdata[i] = p;
+    p = outputbuff = calloc( LANG_RLE_MAX, BUFF_SIZE );
+    for( lang = 0; lang < LANG_RLE_MAX; lang++ ) {
+        outputdata[lang] = p;
         p += BUFF_SIZE;
     }
 }
@@ -526,6 +590,19 @@ static void outputInit( void )
 static void outputFini( void )
 {
     free( outputbuff );
+}
+
+static void error( const char *msg, ... )
+{
+    va_list args;
+
+    if( line > 0 ) {
+        fprintf( stderr, "error on line %u\n", line );
+    }
+    va_start( args, msg );
+    vfprintf( stderr, msg, args );
+    va_end( args );
+    errcount++;
 }
 
 #if defined( __WATCOMC__ )
@@ -737,36 +814,39 @@ static INAME *addEnumerator( ENAME *en, const char *field_name )
     return( ei );
 }
 
-static GROUP *findGroup( const char *pattern )
+static USAGEGROUP *findUsageGroup( const char *id )
 {
-    GROUP *gr;
+    USAGEGROUP  *ugr;
 
-    for( gr = groupList; gr != NULL; gr = gr->next ) {
-        if( strcmp( gr->pattern, pattern ) == 0 ) {
+    for( ugr = usageGroupList; ugr != NULL; ugr = ugr->next ) {
+        if( strcmp( ugr->id, id ) == 0 ) {
             break;
         }
     }
-    return( gr );
+    return( ugr );
 }
 
-static GROUP *addGroup( const char *pattern )
+static void initUsageGroup( void )
 {
-    size_t  pattern_len;
-    GROUP   *gr;
+    memset( &blankUsageGroup, 0, sizeof( blankUsageGroup ) );
+    usageGroupList = &blankUsageGroup;
+    lastUsageGroup = NULL;
+}
 
-    if( findGroup( pattern ) != NULL ) {
-        fail( "USAGEGRP: option '%s' already defined\n", pattern );
-    }
-    pattern_len = strlen( pattern );
-    gr = calloc( 1, sizeof( *gr ) + pattern_len );
-    memcpy( gr->pattern, pattern, pattern_len + 1 );
-    if( groupList == NULL ) {
-        groupList = gr;
+static void addUsageGroup( const char *id )
+{
+    size_t      id_len;
+    USAGEGROUP  *ugr;
+
+    id_len = strlen( id );
+    ugr = calloc( 1, sizeof( *ugr ) + id_len );
+    memcpy( ugr->id, id, id_len + 1 );
+    if( lastUsageGroup == NULL ) {
+        usageGroupList->next = ugr;
     } else {
-        lastGroup->next = gr;
+        lastUsageGroup->next = ugr;
     }
-    lastGroup = gr;
-    return( gr );
+    lastUsageGroup = ugr;
 }
 
 static CHAIN *findChain( const char *pattern )
@@ -774,36 +854,52 @@ static CHAIN *findChain( const char *pattern )
     CHAIN *cn;
 
     for( cn = chainList; cn != NULL; cn = cn->next ) {
-        if( cmpChainPattern( cn->pattern, pattern, cn->pattern_len ) ) {
-            return( cn );
+        if( strcmp( pattern, cn->pattern ) == 0 ) {
+            break;
         }
     }
-    return( NULL );
+    return( cn );
 }
 
-static CHAIN *addChain( char *pattern, bool chain )
+static void addChain( char *pattern )
 {
     size_t pattern_len;
     CHAIN *cn;
 
     pattern_len = cvtOptionSpec( pattern, pattern, CVT_PATTERN ) - pattern;
-    for( cn = chainList; cn != NULL; cn = cn->next ) {
-        if( strcmp( pattern, cn->pattern ) == 0 ) {
-            if( cn->code_used ) {
-                fail( "CHAIN: option '%s' already defined\n", pattern );
-            } else {
-                fail( "USAGEOGRP: option '%s' already defined\n", pattern );
-            }
-        }
-    }
     cn = calloc( 1, sizeof( *cn ) + pattern_len );
     cn->pattern_len = pattern_len;
     memcpy( cn->pattern, pattern, pattern_len + 1 );
-    cn->name_len = cvtOptionSpec( pattern, pattern, CVT_NAME ) - pattern;
-    cn->code_used = chain ? true : false;
+    cn->len = cvtOptionSpec( pattern, pattern, CVT_NAME ) - pattern;
     cn->next = chainList;
     chainList = cn;
-    return( cn );
+}
+
+static USAGECHAIN *findUsageChain( USAGEGROUP *ugr, const char *pattern )
+{
+    USAGECHAIN  *ucn;
+
+    for( ucn = ugr->usageChainList; ucn != NULL; ucn = ucn->next ) {
+        if( strcmp( pattern, ucn->pattern ) == 0 ) {
+            break;
+        }
+    }
+    return( ucn );
+}
+
+static void addUsageChain( USAGEGROUP *ugr, char *pattern )
+{
+    size_t      pattern_len;
+    USAGECHAIN  *ucn;
+
+    pattern_len = cvtOptionSpec( pattern, pattern, CVT_PATTERN ) - pattern;
+    ucn = calloc( 1, sizeof( *ucn ) + pattern_len );
+    ucn->pattern_len = pattern_len;
+    memcpy( ucn->pattern, pattern, pattern_len + 1 );
+    ucn->len = cvtOptionSpec( pattern, pattern, CVT_NAME ) - pattern;
+    ucn->next = ugr->usageChainList;
+    ugr->usageChainList = ucn;
+    lastUsageChain = ucn;
 }
 
 static FILE *initFILE( const char *fnam, const char *fmod )
@@ -812,10 +908,8 @@ static FILE *initFILE( const char *fnam, const char *fmod )
     bool        open_read;
 
     fp = NULL;
-    open_read = ( strchr( fmod, 'r' ) != NULL );
-    if( open_read
-      || fnam[0] != '.'
-      || fnam[1] != '\0' ) {
+    if( *fnam != '\0' && !BLANKARG( fnam ) ) {
+        open_read = ( strchr( fmod, 'r' ) != NULL );
         fp = fopen( fnam, fmod );
         if( fp == NULL ) {
             fail( "cannot open '%s' for %s", fnam, ( open_read ) ? "input" : "output" );
@@ -826,12 +920,18 @@ static FILE *initFILE( const char *fnam, const char *fmod )
 
 static const char *nextWord( const char *s, char *o )
 {
+    char    *start;
+
+    start = o;
     while( *s != '\0' ) {
         if( myisspace( *s ) )
             break;
         *o++ = *s++;
     }
     *o = '\0';
+    if( BLANKARG( start ) ) {
+        *start = '\0';
+    }
     SKIP_SPACES( s );
     return( s );
 }
@@ -879,7 +979,7 @@ static tag_id isTag( const char **eot )
     if( *p++ == ':' ) {
         p = nextTag( p, tagbuff );
         if( (tag = findTag( tagbuff )) == TAG_UNKNOWN )
-            fail( "unknown tag: %s\n", tagbuff );
+            error( "unknown tag: %s\n", tagbuff );
         *eot = p;
         return( tag );
     }
@@ -902,6 +1002,9 @@ static OPTION *pushNewOption( char *pattern, OPTION *o )
     newo->is_simple = true;
     newo->next = optionList;
     newo->equal_char = '\0';
+    newo->target_mask = targetAnyMask;
+    newo->any_target = true;
+    newo->usageGroup = usageGroupList;
     optionList = newo;
     return( newo );
 }
@@ -918,8 +1021,7 @@ static char *pickUpRest( const char *p )
     // if only two '.' character than it is single space text
     len = strlen( p );
     out = dst = malloc( len + 1 );
-    if( p[0] == '.'
-      && p[1] == '\0' ) {
+    if( BLANKARG( p ) ) {
         len = 0;
     } else if( p[0] == '.'
       && p[1] == '.'
@@ -946,7 +1048,7 @@ static void doARGEQUAL( const char *p )
     char    c;
 
     if( *p == '\0' ) {
-        fail( ":argequal. must have <char> specified\n" );
+        error( ":argequal. tag requires <char> parameter\n" );
     } else {
         if( p[0] == '.'
           && p[1] == '.' ) {
@@ -954,16 +1056,19 @@ static void doARGEQUAL( const char *p )
         } else {
             c = *p;
         }
-        if( getsUsage == TAG_NULL ) {
-            alternateEqual = c;
-            optFlag.alternate_equal = true;
-        } else if( getsUsage == TAG_OPTION ) {
+        if( getsUsage == TAG_OPTION ) {
             OPTION *o;
 
             for( o = optionList; o != NULL; o = o->synonym ) {
                 o->equal_char = c;
             }
+        } else {
+            alternateEqual = c;
+            optFlag.alternate_equal = true;
         }
+    }
+    if( getsUsage != TAG_OPTION ) {
+        getsUsage = TAG_ARGEQUAL;
     }
 }
 
@@ -1009,15 +1114,29 @@ static void doTARGET( const char *p )
     while( *p != '\0' ) {
         p = nextWord( p, tokbuff );
         if( (mask = findTarget( tokbuff )) == 0 ) {
-            fail( "invalid target name '%s'\n", tokbuff );
-        }
-        if( targetTitle != NULL ) {
-            targetTitle->target_mask |= mask;
+            error( "invalid target name '%s'\n", tokbuff );
+        } else if( targetTitle != NULL ) {
+            if( targetTitle->any_target ) {
+                targetTitle->target_mask = mask;
+                targetTitle->any_target = false;
+            } else {
+                targetTitle->target_mask |= mask;
+            }
         } else if( targetFooter != NULL ) {
-            targetFooter->target_mask |= mask;
+            if( targetFooter->any_target ) {
+                targetFooter->target_mask = mask;
+                targetFooter->any_target = false;
+            } else {
+                targetFooter->target_mask |= mask;
+            }
         } else {
             for( o = optionList; o != NULL; o = o->synonym ) {
-                o->target_mask |= mask;
+                if( o->any_target ) {
+                    o->target_mask = mask;
+                    o->any_target = false;
+                } else {
+                    o->target_mask |= mask;
+                }
             }
         }
     }
@@ -1032,9 +1151,8 @@ static void doNTARGET( const char *p )
     while( *p != '\0' ) {
         p = nextWord( p, tokbuff );
         if( (mask = findTarget( tokbuff )) == 0 ) {
-            fail( "invalid target name '%s'\n", tokbuff );
-        }
-        if( targetTitle != NULL ) {
+            error( "invalid target name '%s'\n", tokbuff );
+        } else if( targetTitle != NULL ) {
             targetTitle->ntarget_mask |= mask;
         } else if( targetFooter != NULL ) {
             targetFooter->ntarget_mask |= mask;
@@ -1058,7 +1176,7 @@ static void doNUMBER( const char *p )
     }
     if( *p != '\0' ) {
         p = nextWord( p, tokbuff );
-        if( NOSKIP( tokbuff ) ) {
+        if( *tokbuff != '\0' ) {
             for( o = optionList; o != NULL; o = o->synonym ) {
                 o->check_func = strdup( tokbuff );
             }
@@ -1066,7 +1184,7 @@ static void doNUMBER( const char *p )
     }
     if( *p != '\0' ) {
         p = nextWord( p, tokbuff );
-        if( NOSKIP( tokbuff ) ) {
+        if( *tokbuff != '\0' ) {
             for( o = optionList; o != NULL; o = o->synonym ) {
                 o->number_default = atoi( tokbuff );
                 o->default_specified = true;
@@ -1101,7 +1219,7 @@ static void doNOCHAIN( const char *p )
     /* unused parameters */ (void)p;
 
     for( o = optionList; o != NULL; o = o->synonym ) {
-        o->chain = NOCHAIN;
+        o->nochain = true;
     }
 }
 
@@ -1116,7 +1234,7 @@ static void doID( const char *p )
     }
     if( *p != '\0' ) {
         p = nextWord( p, tokbuff );
-        if( NOSKIP( tokbuff ) ) {
+        if( *tokbuff != '\0' ) {
             for( o = optionList; o != NULL; o = o->synonym ) {
                 o->check_func = strdup( tokbuff );
             }
@@ -1141,7 +1259,7 @@ static void doCHAR( const char *p )
     }
     if( *p != '\0' ) {
         p = nextWord( p, tokbuff );
-        if( NOSKIP( tokbuff ) ) {
+        if( *tokbuff != '\0' ) {
             for( o = optionList; o != NULL; o = o->synonym ) {
                 o->check_func = strdup( tokbuff );
             }
@@ -1160,17 +1278,17 @@ static void doIMMEDIATE( const char *p )
 {
     OPTION *o;
 
+    if( *p == '\0' ) {
+        error( ":immediate. tag requires <fn> parameter\n" );
+        return;
+    }
     for( o = optionList; o != NULL; o = o->synonym ) {
         o->is_immediate = true;
         o->is_simple = false;
     }
-    if( *p != '\0' ) {
-        p = nextWord( p, tokbuff );
-        for( o = optionList; o != NULL; o = o->synonym ) {
-            o->immediate_func = strdup( tokbuff );
-        }
-    } else {
-        fail( ":immediate. must have <fn> specified\n" );
+    p = nextWord( p, tokbuff );
+    for( o = optionList; o != NULL; o = o->synonym ) {
+        o->immediate_func = strdup( tokbuff );
     }
     if( *p != '\0' ) {
         p = nextWord( p, tokbuff );
@@ -1185,6 +1303,10 @@ static void doCODE( const char *p )
 {
     OPTION *o;
 
+    if( *p == '\0' ) {
+        error( ":code. tag requires <source-code> parameter\n" );
+        return;
+    }
     for( o = optionList; o != NULL; o = o->synonym ) {
         o->is_code = true;
         o->is_simple = false;
@@ -1193,8 +1315,6 @@ static void doCODE( const char *p )
         for( o = optionList; o != NULL; o = o->synonym ) {
             o->code = strdup( p );
         }
-    } else {
-        fail( ":code. must have <source-code> specified\n" );
     }
 }
 
@@ -1238,7 +1358,7 @@ static void doNEGATE( const char *p )
     for( o = optionList; o != NULL; o = o->synonym ) {
         o->is_negate = true;
         if( o->enumerate != NULL ){
-            fail( "must be non-enumeration switch for negate tag\n" );
+            error( ":negate. tag can be used with non-enumeration option for negate tag\n" );
         }
     }
 }
@@ -1250,6 +1370,7 @@ static void doNOEQUAL( const char *p )
     /* unused parameters */ (void)p;
 
     optFlag.no_equal = true;
+    getsUsage = TAG_NOEQUAL;
 }
 
 // :path. [<usage argid>]
@@ -1271,22 +1392,25 @@ static void doPATH( const char *p )
     }
 }
 
-// :chain. <option> <usage>
+// :chain. <option> <option> ...
 //
 // mark options that start with <option> as chainable
 // i.e., -oa -ox == -oax
 static void doCHAIN( const char *p )
 {
-    CHAIN *cn;
-
-    if( *p == '\0' ) {
-        fail( "missing <option> in :chain. tag\n" );
-    }
-    p = nextWord( p, tokbuff );
-    cn = addChain( tokbuff, true );
-    cn->Usage[LANG_English] = pickUpRest( p );
-    lastChain = cn;
     getsUsage = TAG_CHAIN;
+    if( *p == '\0' ) {
+        error( ":chain. tag requires <option> parameter\n" );
+        return;
+    }
+    while( *p != '\0' ) {
+        p = nextWord( p, tokbuff );
+        if( findChain( tokbuff ) != NULL ) {
+            error( ":chain. tag <option> value '%s' is already defined\n", tokbuff );
+        } else {
+            addChain( tokbuff );
+        }
+    }
 }
 
 // :enumerate. <name> [<option>]
@@ -1296,7 +1420,8 @@ static void doENUMERATE( const char *p )
     OPTION *o;
 
     if( *p == '\0' ) {
-        fail( "missing <name> in :enumerate. tag\n" );
+        error( ":enumerate. tag requires <name> parameter\n" );
+        return;
     }
     p = nextWord( p, tokbuff );
     en = addEnumName( &enumList, tokbuff );
@@ -1321,13 +1446,14 @@ static void doSPECIAL( const char *p )
 {
     OPTION *o;
 
+    if( *p == '\0' ) {
+        error( ":special. tag requires <fn> parameter\n" );
+        return;
+    }
     for( o = optionList; o != NULL; o = o->synonym ) {
         o->is_special = true;
         o->is_text = true;
         o->is_simple = false;
-    }
-    if( *p == '\0' ) {
-        fail( "missing <fn> in :special. tag\n" );
     }
     p = nextWord( p, tokbuff );
     for( o = optionList; o != NULL; o = o->synonym ) {
@@ -1359,8 +1485,20 @@ static void doUSAGE( const char *p )
 {
     OPTION *o;
 
-    for( o = optionList; o != NULL; o = o->synonym ) {
-        o->lang_usage[LANG_English] = pickUpRest( p );
+    switch( getsUsage ) {
+    case TAG_USAGECHAIN:
+        lastUsageChain->lang_usage[LANG_RLE_ENGLISH] = pickUpRest( p );
+        break;
+    case TAG_USAGEGROUP:
+        lastUsageGroup->lang_usage[LANG_RLE_ENGLISH] = pickUpRest( p );
+        break;
+    case TAG_OPTION:
+        for( o = optionList; o != NULL; o = o->synonym ) {
+            o->lang_usage[LANG_RLE_ENGLISH] = pickUpRest( p );
+        }
+        break;
+    default:
+        error( ":usage. tag can follow only :usagechain., :usagegroup., or :option. tag\n" );
     }
 }
 
@@ -1371,32 +1509,38 @@ static void doJUSAGE( const char *p )
     OPTION *o;
 
     switch( getsUsage ) {
-    case TAG_CHAIN:
-        lastChain->Usage[LANG_Japanese] = pickUpRest( p );
+    case TAG_USAGECHAIN:
+        if( lastUsageChain->lang_usage[LANG_RLE_ENGLISH] == NULL ) {
+            error( ":jusage. tag last :usagechain. hasn't define English text.\n" );
+        }
+        lastUsageChain->lang_usage[LANG_RLE_JAPANESE] = pickUpRest( p );
         break;
-    case TAG_GROUP:
-        lastGroup->Usage[LANG_Japanese] = pickUpRest( p );
+    case TAG_USAGEGROUP:
+        if( lastUsageGroup->lang_usage[LANG_RLE_ENGLISH] == NULL ) {
+            error( ":jusage. tag last :usagegroup. hasn't define English text.\n" );
+        }
+        lastUsageGroup->lang_usage[LANG_RLE_JAPANESE] = pickUpRest( p );
         break;
     case TAG_OPTION:
         for( o = optionList; o != NULL; o = o->synonym ) {
             usage = pickUpRest( p );
             if( *usage == '\0' ) {
                 free( usage );
-                usage = strdup( o->lang_usage[LANG_English] );
+                usage = strdup( o->lang_usage[LANG_RLE_ENGLISH] );
             }
-            o->lang_usage[LANG_Japanese] = usage;
+            o->lang_usage[LANG_RLE_JAPANESE] = usage;
         }
         break;
     default:
-        fail( ":jusage. must follow :chain., :group., or :option.\n" );
+        error( ":jusage. tag can follow only :usagechain., :usagegroup., or :option. tag\n" );
     }
 }
 
 // :title. <text>
 static void doTITLE( const char *p )
 {
-    TITLE **i;
-    TITLE *t;
+    TEXT    **i;
+    TEXT    *t;
 
     i = &titleList;
     for( t = *i; t != NULL; t = *i ) {
@@ -1405,54 +1549,51 @@ static void doTITLE( const char *p )
     t = calloc( 1, sizeof( *t ) );
     t->next = *i;
     *i = t;
-    t->lang_title[LANG_English] = pickUpRest( p );
+    t->lang_usage[LANG_RLE_ENGLISH] = pickUpRest( p );
+    t->target_mask = targetAnyMask;
+    t->any_target = true;
     targetTitle = t;
     targetFooter = NULL;
+    getsUsage = TAG_TITLE;
 }
 
 // :titleu. <text>
 static void doTITLEU( const char *p )
 {
-    TITLE *t;
-
-    t = targetTitle;
-    if( t == NULL ) {
-        fail( ":titleu. must follow a :title.\n" );
+    if( getsUsage != TAG_TITLE || targetTitle == NULL ) {
+        error( ":titleu. tag must follow a :title. tag\n" );
+        return;
     }
-    t->lang_titleu[LANG_English] = pickUpRest( p );
-    t->is_titleu = true;
+    targetTitle->lang_usageu[LANG_RLE_ENGLISH] = pickUpRest( p );
+    targetTitle->is_u = true;
 }
 
 // :jtitle. <text>
 static void doJTITLE( const char *p )
 {
-    TITLE *t;
-
-    t = targetTitle;
-    if( t == NULL ) {
-        fail( ":jtitle. must follow a :title.\n" );
+    if( getsUsage != TAG_TITLE || targetTitle == NULL ) {
+        error( ":jtitle. tag must follow a :title. tag\n" );
+        return;
     }
-    t->lang_title[LANG_Japanese] = pickUpRest( p );
+    targetTitle->lang_usage[LANG_RLE_JAPANESE] = pickUpRest( p );
 }
 
 // :jtitleu. <text>
 static void doJTITLEU( const char *p )
 {
-    TITLE *t;
-
-    t = targetTitle;
-    if( t == NULL ) {
-        fail( ":jtitleu. must follow a :title.\n" );
+    if( getsUsage != TAG_TITLE || targetTitle == NULL ) {
+        error( ":jtitleu. tag must follow a :title. tag\n" );
+        return;
     }
-    t->lang_titleu[LANG_Japanese] = pickUpRest( p );
-    t->is_titleu = true;
+    targetTitle->lang_usageu[LANG_RLE_JAPANESE] = pickUpRest( p );
+    targetTitle->is_u = true;
 }
 
 // :footer. <text>
 static void doFOOTER( const char *p )
 {
-    TITLE **i;
-    TITLE *t;
+    TEXT    **i;
+    TEXT    *t;
 
     i = &footerList;
     for( t = *i; t != NULL; t = *i ) {
@@ -1461,62 +1602,63 @@ static void doFOOTER( const char *p )
     t = calloc( 1, sizeof( *t ) );
     t->next = *i;
     *i = t;
-    t->lang_title[LANG_English] = pickUpRest( p );
+    t->lang_usage[LANG_RLE_ENGLISH] = pickUpRest( p );
+    t->target_mask = targetAnyMask;
+    t->any_target = true;
     targetFooter = t;
     targetTitle = NULL;
+    getsUsage = TAG_FOOTER;
 }
 
 // :footeru. <text>
 static void doFOOTERU( const char *p )
 {
-    TITLE *t;
-
-    t = targetFooter;
-    if( t == NULL ) {
-        fail( ":footeru. must follow a :footer.\n" );
+    if( getsUsage != TAG_FOOTER || targetFooter == NULL ) {
+        error( ":footeru. tag must follow a :footer. tag\n" );
+        return;
     }
-    t->lang_titleu[LANG_English] = pickUpRest( p );
-    t->is_titleu = true;
+    targetFooter->lang_usageu[LANG_RLE_ENGLISH] = pickUpRest( p );
+    targetFooter->is_u = true;
 }
 
 // :jfooter. <text>
 static void doJFOOTER( const char *p )
 {
-    TITLE *t;
-
-    t = targetFooter;
-    if( t == NULL ) {
-        fail( ":jfooter. must follow a :footer.\n" );
+    if( getsUsage != TAG_FOOTER || targetFooter == NULL ) {
+        error( ":jfooter. tag must follow a :footer. tag\n" );
+        return;
     }
-    t->lang_title[LANG_Japanese] = pickUpRest( p );
+    targetFooter->lang_usage[LANG_RLE_JAPANESE] = pickUpRest( p );
 }
 
 // :jfooteru. <text>
 static void doJFOOTERU( const char *p )
 {
-    TITLE *t;
-
-    t = targetFooter;
-    if( t == NULL ) {
-        fail( ":jfooteru. must follow a :footer.\n" );
+    if( getsUsage != TAG_FOOTER || targetFooter == NULL ) {
+        error( ":jfooteru. tag must follow a :footer. tag\n" );
+        return;
     }
-    t->lang_titleu[LANG_Japanese] = pickUpRest( p );
-    t->is_titleu = true;
+    targetFooter->lang_usageu[LANG_RLE_JAPANESE] = pickUpRest( p );
+    targetFooter->is_u = true;
 }
 
-// :group. <num>
+// :group. <group_id>
 static void doGROUP( const char *p )
 {
-    OPTION *o;
-    GROUP  *gr;
+    OPTION      *o;
+    USAGEGROUP  *ugr;
 
-    if( *p != '\0' ) {
-        p = nextWord( p, tokbuff );
-        gr = findGroup( tokbuff );
-        if( gr != NULL ) {
-            for( o = optionList; o != NULL; o = o->synonym ) {
-                 o->group = gr;
-            }
+    if( *p == '\0' ) {
+        error( ":group. tag requires <group_id> parameter\n" );
+        return;
+    }
+    p = nextWord( p, tokbuff );
+    ugr = findUsageGroup( tokbuff );
+    if( ugr == NULL ) {
+        error( ":group. tag <group_id> value '%s' is not found.\n", tokbuff );
+    } else {
+        for( o = optionList; o != NULL; o = o->synonym ) {
+            o->usageGroup = ugr;
         }
     }
 }
@@ -1538,40 +1680,66 @@ static void doTIMESTAMP( const char *p )
     }
 }
 
-// :usageogrp. <option> <usage>
+// :usagechain. <group_id> <option>
 //
 // mark options that start with <option> as group in usage text
 // i.e., -fp0 -fp1 ==> -fp{0,1}
-static void doUSAGEOGRP( const char *p )
+static void doUSAGECHAIN( const char *p )
 {
-    CHAIN *cn;
+    USAGEGROUP  *ugr;
 
     if( *p == '\0' ) {
-        fail( "missing <option> in :usageogrp. tag\n" );
+        error( ":usagechain. tag requires <group_id> parameter\n" );
+        return;
     }
     p = nextWord( p, tokbuff );
-    cn = addChain( tokbuff, false );
-    cn->Usage[LANG_English] = pickUpRest( p );
-    lastChain = cn;
-    getsUsage = TAG_CHAIN;
+    if( *p == '\0' ) {
+        error( ":usagechain. tag requires <option> parameter\n" );
+        return;
+    }
+    ugr = findUsageGroup( tokbuff );
+    if( ugr == NULL ) {
+        error( ":usagechain. tag <group_id> value '%s' is not found.\n", tokbuff );
+        return;
+    }
+    nextWord( p, tokbuff );
+    if( findUsageChain( ugr, tokbuff ) != NULL ) {
+        error( ":usagechain. tag <option> value '%s' is already defined for <group_id> '%s'.\n", tokbuff, ugr->id );
+        return;
+    }
+    addUsageChain( ugr, tokbuff );
+    getsUsage = TAG_USAGECHAIN;
 }
 
-// :usagegrp. <num> <usage text>
+// :usagegroup. <group_id>
 //
-// define group <num> with usage text for block of options
+// define group <group_id> for block of options
 //
-static void doUSAGEGRP( const char *p )
+static void doUSAGEGROUP( const char *p )
 {
-    GROUP *gr;
-
     if( *p == '\0' ) {
-        fail( "missing <num> in :usagegrp. tag\n" );
+        error( ":usagegroup. tag requires <group_id> parameter\n" );
+        return;
     }
-    p = nextWord( p, tokbuff );
-    gr = addGroup( tokbuff );
-    gr->Usage[LANG_English] = pickUpRest( p );
-    lastGroup = gr;
-    getsUsage = TAG_GROUP;
+    nextWord( p, tokbuff );
+    if( findUsageGroup( tokbuff ) != NULL ) {
+        error( ":usagegroup. <group_id> '%s' already defined\n", tokbuff );
+        return;
+    }
+    addUsageGroup( tokbuff );
+    getsUsage = TAG_USAGEGROUP;
+}
+
+// :usagenochain.
+static void doUSAGENOCHAIN( const char *p )
+{
+    OPTION *o;
+
+    /* unused parameters */ (void)p;
+
+    for( o = optionList; o != NULL; o = o->synonym ) {
+        o->usage_nochain = true;
+    }
 }
 
 static void checkForGMLEscape( const char *p )
@@ -1595,7 +1763,7 @@ static void checkForGMLEscape( const char *p )
         is_escape = true;
     }
     if( is_escape ) {
-        fail( "possible GML escape sequence: &%c%c\n", c1, c2 );
+        error( "possible GML escape sequence: &%c%c\n", c1, c2 );
     }
 }
 
@@ -1642,40 +1810,105 @@ static void readInputFile( void )
 
 static void checkForMissingUsages( void )
 {
-    OPTION *o;
-    int start_lang;
-    int end_lang;
-    int i;
+    OPTION      *o;
+    TEXT        *t;
+    USAGECHAIN  *ucn;
+    USAGEGROUP  *ugr;
+    wres_lang_id start_lang;
+    wres_lang_id end_lang;
+    wres_lang_id lang;
+    int         j;
 
     if( optFlag.international ) {
         start_lang = 0;
-        end_lang = LANG_MAX;
+        end_lang = LANG_RLE_MAX;
     } else {
-        start_lang = LANG_English;
+        start_lang = LANG_RLE_ENGLISH;
         end_lang = start_lang + 1;
     }
     for( o = optionList; o != NULL; o = o->next ) {
-        if( o->chain == NULL
-          || cmpOptPattern( o->pattern, o->chain->pattern ) ) {
-            for( i = start_lang; i < end_lang; ++i ) {
-                if( o->lang_usage[i] == NULL ) {
-                    fail( "option '%s' has no %s usage\n", o->pattern, langName[i] );
+        if( o->usageChain == NULL
+          || cmpOptPattern( o->pattern, o->usageChain->pattern ) ) {
+            for( lang = start_lang; lang < end_lang; ++lang ) {
+                if( ( lang == LANG_RLE_ENGLISH || optFlag.report_missing_data ) && o->lang_usage[lang] == NULL ) {
+                    error( "option '%s' has no %s usage text\n", o->pattern, langName[lang] );
+                }
+            }
+        }
+    }
+    j = 1;
+    for( t = titleList; t != NULL; t = t->next ) {
+        for( lang = start_lang; lang < end_lang; ++lang ) {
+            if( ( lang == LANG_RLE_ENGLISH || optFlag.report_missing_data ) && t->lang_usage[lang] == NULL ) {
+                error( "title(%d) has no %s usage text\n", j, langName[lang] );
+            }
+        }
+        j++;
+    }
+    j = 1;
+    for( t = footerList; t != NULL; t = t->next ) {
+        for( lang = start_lang; lang < end_lang; ++lang ) {
+            if( ( lang == LANG_RLE_ENGLISH || optFlag.report_missing_data ) && t->lang_usage[lang] == NULL ) {
+                error( "footer(%d) has no %s usage text\n", j, langName[lang] );
+            }
+        }
+        j++;
+    }
+    for( ugr = usageGroupList->next; ugr != NULL; ugr = ugr->next ) {
+        for( lang = start_lang; lang < end_lang; ++lang ) {
+            if( optFlag.report_missing_data && ugr->lang_usage[lang] == NULL ) {
+                error( "group '%s' has no %s usage text\n", ugr->id, langName[lang] );
+            }
+        }
+        for( ucn = ugr->usageChainList; ucn != NULL; ucn = ucn->next ) {
+            for( lang = start_lang; lang < end_lang; ++lang ) {
+                if( optFlag.report_missing_data && ucn->lang_usage[lang] == NULL ) {
+                    error( "chain '%s' has no %s usage text\n", ucn->pattern, langName[lang] );
                 }
             }
         }
     }
 }
 
-static void assignChainToOptions( void )
+static void assignCodeChainToOptions( void )
 {
-    OPTION *o;
+    OPTION  *o;
+    CHAIN   *cn;
+    CHAIN   *cnx;
 
     for( o = optionList; o != NULL; o = o->next ) {
-        if( o->chain == NOCHAIN ) {
-            o->chain = NULL;
-        } else {
-            o->chain = findChain( o->pattern );
+        cnx = NULL;
+        if( !o->nochain ) {
+            for( cn = chainList; cn != NULL; cn = cn->next ) {
+                if( cmpChainPattern( cn->pattern, o->pattern, cn->pattern_len ) ) {
+                    if( cnx == NULL || cnx->pattern_len < cn->pattern_len ) {
+                        cnx = cn;
+                    }
+                }
+            }
         }
+        o->chain = cnx;
+    }
+}
+
+static void assignUsageChainToOptions( void )
+{
+    OPTION      *o;
+    USAGECHAIN  *ucn;
+    USAGECHAIN  *ucnx;
+
+    for( o = optionList; o != NULL; o = o->next ) {
+        ucnx = NULL;
+        if( !o->usage_nochain ) {
+            for( ucn = o->usageGroup->usageChainList; ucn != NULL; ucn = ucn->next ) {
+                if( cmpChainPattern( ucn->pattern, o->pattern, ucn->pattern_len ) ) {
+                    if( ucnx == NULL || ucnx->pattern_len < ucn->pattern_len ) {
+                        ucnx = ucn;
+                    }
+                }
+            }
+        }
+        o->usageChain = ucnx;
     }
 }
 
@@ -1719,6 +1952,12 @@ static char *special_char( char *f, char c )
         f = strpcpy( f, "_exclamation" );
     } else if( c == '#' ) {
         f = strpcpy( f, "_sharp" );
+    } else if( c == '?' ) {
+        f = strpcpy( f, "_question" );
+    } else if( c == '@' ) {
+        f = strpcpy( f, "_at" );
+    } else if( c == '"' ) {
+        f = strpcpy( f, "_dquote" );
     } else {
         *f++ = '_';
     }
@@ -1794,66 +2033,85 @@ static void startParserH( void )
 {
     OPTION *o;
     ENAME *en;
+    FILE *fp;
 
+    if( !optFlag.parser_only ) {
+        if( optFlag.sid != NULL && *optFlag.sid != '\0' ) {
+            fp = ofpg;
+        } else {
+            fp = ofp;
+        }
+        if( fp != NULL ) {
+            fprintf( fp, "#ifndef OPT_STRING\n" );
+            fprintf( fp, "#define OPT_STRING opt_string\n" );
+            fprintf( fp, "typedef struct opt_string {\n" );
+            fprintf( fp, "    struct opt_string *next;\n" );
+            fprintf( fp, "    char data[1];\n" );
+            fprintf( fp, "} opt_string;\n" );
+            fprintf( fp, "#endif\n" );
+            fprintf( fp, "#ifndef OPT_NUMBER\n" );
+            fprintf( fp, "#define OPT_NUMBER opt_number\n" );
+            fprintf( fp, "typedef struct opt_number {\n" );
+            fprintf( fp, "    struct opt_number *next;\n" );
+            fprintf( fp, "    unsigned number;\n" );
+            fprintf( fp, "} opt_number;\n" );
+            fprintf( fp, "#endif\n" );
+        }
+        if( ofp != NULL ) {
+            fprintf( ofp, "typedef struct opt_storage%s OPT_STORAGE%s;\n", optFlag.sid, optFlag.sid );
+            fprintf( ofp, "struct opt_storage%s {\n", optFlag.sid );
+            fprintf( ofp, "    unsigned     timestamp;\n" );
+            for( o = optionList; o != NULL; o = o->next ) {
+                if( o->synonym == NULL ) {
+                    if( o->is_number ) {
+                        if( HAS_OPT_NUMBER( o ) ) {
+                            fprintf( ofp, "    OPT_NUMBER   *%s;\n", o->value_field_name );
+                        } else {
+                            fprintf( ofp, "    unsigned     %s;\n", o->value_field_name );
+                        }
+                    } else if( o->is_char ) {
+                        fprintf( ofp, "    int          %s;\n", o->value_field_name );
+                    } else if( HAS_OPT_STRING( o ) ) {
+                        fprintf( ofp, "    OPT_STRING   *%s;\n", o->value_field_name );
+                    }
+                    /*
+                     * the enumeration is shared by several options that
+                     * require enumeration timestamp to be processed instead
+                     * of option simple timestamp
+                     * in case of enumeration it is skiped and processed in next code
+                     */
+                    if( o->enumerate == NULL ) {
+                        if( o->is_timestamp ) {
+                            fprintf( ofp, "    unsigned     %s_timestamp;\n", o->field_name );
+                        }
+                    }
+                }
+            }
+            /*
+             * this section process only enumerations (field + timestamp)
+             */
+            for( en = enumList; en != NULL; en = en->next ) {
+                if( !en->used )
+                    continue;
+                fprintf( ofp, "    unsigned     %s;\n", en->name );
+                if( en->is_timestamp ) {
+                    fprintf( ofp, "    unsigned     %s_timestamp;\n", en->name );
+                }
+            }
+            for( o = optionList; o != NULL; o = o->next ) {
+                if( o->synonym == NULL ) {
+                    if( o->enumerate == NULL ) {
+                        fprintf( ofp, "    boolbit      %s : 1;\n", o->field_name );
+                    }
+                }
+            }
+            fprintf( ofp, "};\n" );
+            fprintf( ofp, "extern void " FN_INIT "%s( OPT_STORAGE%s *data );\n", optFlag.sid, optFlag.sid );
+            fprintf( ofp, "extern void " FN_FINI "%s( OPT_STORAGE%s *data );\n", optFlag.sid, optFlag.sid );
+        }
+    }
     if( ofp != NULL ) {
-        fprintf( ofp, "typedef struct opt_string OPT_STRING;\n" );
-        fprintf( ofp, "struct opt_string {\n" );
-        fprintf( ofp, "    OPT_STRING *next;\n" );
-        fprintf( ofp, "    char data[1];\n" );
-        fprintf( ofp, "};\n" );
-        fprintf( ofp, "typedef struct opt_number OPT_NUMBER;\n" );
-        fprintf( ofp, "struct opt_number {\n" );
-        fprintf( ofp, "    OPT_NUMBER *next;\n" );
-        fprintf( ofp, "    unsigned number;\n" );
-        fprintf( ofp, "};\n" );
-        fprintf( ofp, "typedef struct opt_storage OPT_STORAGE;\n" );
-        fprintf( ofp, "struct opt_storage {\n" );
-        fprintf( ofp, "    unsigned     timestamp;\n" );
-        for( o = optionList; o != NULL; o = o->next ) {
-            if( o->synonym == NULL ) {
-                if( o->is_number ) {
-                    if( HAS_OPT_NUMBER( o ) ) {
-                        fprintf( ofp, "    OPT_NUMBER   *%s;\n", o->value_field_name );
-                    } else {
-                        fprintf( ofp, "    unsigned     %s;\n", o->value_field_name );
-                    }
-                } else if( o->is_char ) {
-                    fprintf( ofp, "    int          %s;\n", o->value_field_name );
-                } else if( HAS_OPT_STRING( o ) ) {
-                    fprintf( ofp, "    OPT_STRING   *%s;\n", o->value_field_name );
-                }
-                /*
-                 * the enumeration is shared by several options that
-                 * require enumeration timestamp to be processed instead
-                 * of option simple timestamp
-                 * in case of enumeration it is skiped and processed in next code
-                 */
-                if( o->enumerate == NULL ) {
-                    if( o->is_timestamp ) {
-                        fprintf( ofp, "    unsigned     %s_timestamp;\n", o->field_name );
-                    }
-                }
-            }
-        }
-        /*
-         * this section process only enumerations (field + timestamp)
-         */
-        for( en = enumList; en != NULL; en = en->next ) {
-            if( !en->used )
-                continue;
-            fprintf( ofp, "    unsigned     %s;\n", en->name );
-            if( en->is_timestamp ) {
-                fprintf( ofp, "    unsigned     %s_timestamp;\n", en->name );
-            }
-        }
-        for( o = optionList; o != NULL; o = o->next ) {
-            if( o->synonym == NULL ) {
-                if( o->enumerate == NULL ) {
-                    fprintf( ofp, "    boolbit      %s : 1;\n", o->field_name );
-                }
-            }
-        }
-        fprintf( ofp, "};\n" );
+        fprintf( ofp, "extern bool " FN_PROCESS "%s( OPT_STORAGE%s *data );\n", optFlag.sid, optFlag.sid );
     }
 }
 
@@ -1870,7 +2128,7 @@ static void finishParserH( void )
                 continue;
             for( ei = en->items; ei != NULL; ei = ei->next ) {
                 ++value;
-                fprintf( ofp, "#define OPT_ENUM_%s %u\n", ei->name, value );
+                fprintf( ofp, "#define OPT_ENUM%s_%s %u\n", optFlag.sid, ei->name, value );
             }
         }
     }
@@ -1983,16 +2241,16 @@ static bool markChainCode( CODESEQ *head, size_t level )
 
     rc = false;
     for( c = head; c != NULL; c = c->sibling ) {
-        if( HAS_OPT_CHAIN( c->option ) ) {
+        if( c->option->chain != NULL ) {
             if( c->children != NULL
-              && level <= c->option->chain->name_len ) {
+              && level <= c->option->chain->len ) {
                 if( markChainCode( c->children, level + 1 ) ) {
-                    if( level == c->option->chain->name_len ) {
-                        c->chain_root = true;
+                    if( level == c->option->chain->len ) {
+                        c->is_chain_root = true;
                     }
                 }
-            } else if( c->option->name_len == c->option->chain->name_len + 1 ) {
-                c->chain = true;
+            } else if( c->option->name_len == c->option->chain->len + 1 ) {
+                c->is_chain = true;
                 rc = true;
                 /*
                  * this is an extension, you can use two forms of input
@@ -2001,7 +2259,7 @@ static bool markChainCode( CODESEQ *head, size_t level )
                  */
                 if( c->children != NULL
                   && c->children->c == '+' ) {
-                    c->children->chain = true;
+                    c->children->is_chain = true;
                 }
             }
         }
@@ -2103,7 +2361,7 @@ static void emitAcceptCode( CODESEQ *c, unsigned depth, flow_control control )
         if( o->is_timestamp ) {
             emitPrintf( depth, "data->%s_timestamp = ++(data->timestamp);\n", o->enumerate->name );
         }
-        emitPrintf( depth, "data->%s = OPT_ENUM_%s;\n", o->enumerate->name, ei->name );
+        emitPrintf( depth, "data->%s = OPT_ENUM%s_%s;\n", o->enumerate->name, optFlag.sid, ei->name );
         if( o->is_immediate ) {
             emitPrintf( depth, "%s( data, true );\n", o->immediate_func );
         }
@@ -2147,15 +2405,15 @@ static void emitAcceptCode( CODESEQ *c, unsigned depth, flow_control control )
 
 static void emitCodeTree( CODESEQ *c, unsigned depth, flow_control control )
 {
-    if( c->children ) {
-        if( c->chain ) {
+    if( c->children != NULL ) {
+        if( c->is_chain ) {
             emitCode( c->children, depth, (control & ~EC_CHAIN) | EC_CONTINUE );
             if( c->accept ) {
                 emitAcceptCode( c, depth, control );
             } else {
                 emitPrintf( depth, "return( true );\n" );
             }
-        } else if( c->chain_root ) {
+        } else if( c->is_chain_root ) {
             emitCode( c->children, depth, control | EC_CHAIN | EC_CONTINUE );
             if( c->accept ) {
                 emitAcceptCode( c, depth, control & ~EC_CONTINUE );
@@ -2171,7 +2429,7 @@ static void emitCodeTree( CODESEQ *c, unsigned depth, flow_control control )
             }
         }
     } else {
-        if( HAS_OPT_CHAIN( c->option ) ) {
+        if( c->option->chain != NULL ) {
             emitAcceptCode( c, depth, control );
         } else {
             emitAcceptCode( c, depth, control & ~EC_CONTINUE );
@@ -2238,7 +2496,7 @@ static void emitCode( CODESEQ *head, unsigned depth, flow_control control )
         if( count == 0
           && ( IS_SENSITIVE( c )
           || (control & EC_CHAIN)
-          && !c->chain ) ) {
+          && !c->is_chain ) ) {
             emitIfCode( c, depth, control );
             c->sel = false;
         } else {
@@ -2258,7 +2516,7 @@ static void outputFN_PROCESS( void )
     unsigned depth = 0;
     CODESEQ *codeseq;
 
-    emitPrintf( depth, "bool " FN_PROCESS "( OPT_STORAGE *data )\n" );
+    emitPrintf( depth, "bool " FN_PROCESS "%s( OPT_STORAGE%s *data )\n", optFlag.sid, optFlag.sid );
     emitPrintf( depth, "{\n" );
     ++depth;
     codeseq = genCode( optionList );
@@ -2275,7 +2533,7 @@ static void outputFN_INIT( void )
     INAME *ei;
     unsigned depth = 0;
 
-    emitPrintf( depth, "void " FN_INIT "( OPT_STORAGE *data )\n" );
+    emitPrintf( depth, "void " FN_INIT "%s( OPT_STORAGE%s *data )\n", optFlag.sid, optFlag.sid );
     emitPrintf( depth, "{\n" );
     ++depth;
     emitPrintf( depth, "memset( data, 0, sizeof( *data ) );\n" );
@@ -2290,7 +2548,7 @@ static void outputFN_INIT( void )
         if( !en->used )
             continue;
         ei = addEnumerator( en, "default" );
-        emitPrintf( depth, "data->%s = OPT_ENUM_%s;\n", en->name, ei->name );
+        emitPrintf( depth, "data->%s = OPT_ENUM%s_%s;\n", en->name, optFlag.sid, ei->name );
     }
     --depth;
     emitPrintf( depth, "}\n" );
@@ -2299,19 +2557,27 @@ static void outputFN_INIT( void )
 static void outputFN_FINI( void )
 {
     OPTION *o;
-    unsigned depth = 0;
+    unsigned depth;
+    bool no_data;
 
-    emitPrintf( depth, "void " FN_FINI "( OPT_STORAGE *data )\n" );
+    depth = 0;
+    emitPrintf( depth, "void " FN_FINI "%s( OPT_STORAGE%s *data )\n", optFlag.sid, optFlag.sid );
     emitPrintf( depth, "{\n" );
+    no_data = true;
     ++depth;
     for( o = optionList; o != NULL; o = o->next ) {
         if( o->synonym == NULL ) {
             if( HAS_OPT_STRING( o ) ) {
                 emitPrintf( depth, FN_CLEAN_STRING "( &(data->%s) );\n", o->value_field_name );
+                no_data = false;
             } else if( HAS_OPT_NUMBER( o ) ) {
                 emitPrintf( depth, FN_CLEAN_NUMBER "( &(data->%s) );\n", o->value_field_name );
+                no_data = false;
             }
         }
+    }
+    if( no_data ) {
+        emitPrintf( depth, "(void)data;\n" );
     }
     --depth;
     emitPrintf( depth, "}\n" );
@@ -2320,35 +2586,35 @@ static void outputFN_FINI( void )
 static int usageCmp( const void *v1, const void *v2 )
 {
     int     res;
-    size_t  name_len;
+    size_t  chain_len;
     OPTION  *o1 = *(OPTION **)v1;
     OPTION  *o2 = *(OPTION **)v2;
     char    *n1 = o1->name;
     char    *n2 = o2->name;
 
     res = 0;
-    if( o1->chain != o2->chain ) {
-        if( o1->chain == NULL ) {
-            name_len = o2->chain->name_len;
-        } else if( o2->chain == NULL ) {
-            name_len = o1->chain->name_len;
-        } else if( o1->chain->name_len > o2->chain->name_len ) {
-            name_len = o1->chain->name_len;
+    if( o1->usageChain != o2->usageChain ) {
+        if( o1->usageChain == NULL ) {
+            chain_len = o2->usageChain->len;
+        } else if( o2->usageChain == NULL ) {
+            chain_len = o1->usageChain->len;
+        } else if( o1->usageChain->len > o2->usageChain->len ) {
+            chain_len = o1->usageChain->len;
         } else {
-            name_len = o2->chain->name_len;
+            chain_len = o2->usageChain->len;
         }
-        res = strnicmp( n1, n2, name_len );
+        res = strnicmp( n1, n2, chain_len );
         if( res == 0 ) {
-            res = strncmp( n1, n2, name_len );
+            res = strncmp( n1, n2, chain_len );
             if( res == 0 ) {
-                if( o1->chain == NULL ) {
+                if( o1->usageChain == NULL ) {
                     return( 1 );
                 }
-                if( o2->chain == NULL ) {
+                if( o2->usageChain == NULL ) {
                     return( -1 );
                 }
-                n1 += name_len;
-                n2 += name_len;
+                n1 += chain_len;
+                n2 += chain_len;
             }
         }
     }
@@ -2394,12 +2660,12 @@ static char *catArg( char *arg, char *buf, char equal_char )
 
 static char *genOptionUsageStart( OPTION *o, char *buf, bool no_prefix )
 {
-    if( o->chain != NULL ) {
+    if( o->usageChain != NULL ) {
         if( !no_prefix ) {
             *buf++ = ' ';
             *buf++ = ' ';
         }
-        strcpy( buf, o->name + o->chain->name_len );
+        strcpy( buf, o->name + o->usageChain->len );
         buf += strlen( buf );
     } else {
         *buf++ = '-';
@@ -2461,10 +2727,8 @@ static char *genOptionUsageStart( OPTION *o, char *buf, bool no_prefix )
     return( buf );
 }
 
-static bool usageValid( OPTION *o, GROUP *gr )
+static bool usageOptionValid( OPTION *o )
 {
-    if( o->group != gr )
-        return( false );
     if( o->synonym != NULL )
         return( false );
     if( o->is_internal
@@ -2499,9 +2763,10 @@ static void emitUsageH( void )
     if( optFlag.rc ) {
         if( ufp != NULL ) {
             fprintf( ufp, "pick((%s+%d), ", optFlag.rc_macro, line_offs++ );
-            emitQuotedString( ufp, getLangData( outputdata, LANG_English ), "", "" );
+            str = getLangData( outputdata, LANG_RLE_ENGLISH );
+            emitQuotedString( ufp, str, "", "" );
             fprintf( ufp, ", " );
-            str = getLangData( outputdata, LANG_Japanese );
+            str = getLangData( outputdata, LANG_RLE_JAPANESE );
             if( !optFlag.out_utf8 ) {
                 utf8_to_cp932( str, tmpbuff );
                 str = tmpbuff;
@@ -2563,97 +2828,72 @@ static void expand_tab( const char *s, char *buf )
 
 #define HEADER_LEFT_MARGIN   8
 
-static void procBlockHeader( lang_data langdata, language_id lang )
+static void outputUsageGroupHeader( lang_data langdata, process_line_fn *process_line )
 {
-    const char  *s;
-    size_t      len;
-    char        *buf;
+    wres_lang_id    lang;
+    const char      *str;
+    size_t          len;
+    char            *buf;
 
-    buf = GET_OUTPUT_BUF( lang );
-    s = getLangData( langdata, lang );
-    len = strlen( s );
-    if( len < 80 ) {
-        len = ( 80 - len ) / 2;
-        if( len > HEADER_LEFT_MARGIN )
-            len = HEADER_LEFT_MARGIN;
-        while( len-- > 0 ) {
-            *buf++ = ' ';
+    str = getLangData( langdata, LANG_RLE_ENGLISH );
+    if( str != NULL ) {
+        for( lang = 0; lang < LANG_RLE_MAX; lang++ ) {
+            buf = GET_OUTPUT_BUF( lang );
+            str = getLangData( langdata, lang );
+            len = strlen( str );
+            if( len < 80 ) {
+                len = ( 80 - len ) / 2;
+                if( len > HEADER_LEFT_MARGIN )
+                    len = HEADER_LEFT_MARGIN;
+                while( len-- > 0 ) {
+                    *buf++ = ' ';
+                }
+            }
+            strcpy( buf, str );
         }
+        process_output( process_line );
     }
-    strcpy( buf, s );
 }
 
-static void outputBlockHeader( lang_data langdata, process_line_fn *process_line )
+static void outputUsageLangdata( lang_data langdata, process_line_fn *process_line )
 {
-    language_id lang;
+    wres_lang_id    lang;
+    const char      *str;
 
-    for( lang = 0; lang < LANG_MAX; lang++ ) {
-        procBlockHeader( langdata, lang );
-    }
-    process_output( process_line );
-}
-
-static void outputTitle( lang_data langdata, process_line_fn *process_line )
-{
-    language_id lang;
-
-    for( lang = 0; lang < LANG_MAX; lang++ ) {
-        expand_tab( getLangData( langdata, lang ), GET_OUTPUT_BUF( lang ) );
+    for( lang = 0; lang < LANG_RLE_MAX; lang++ ) {
+        str = getLangData( langdata, lang );
+        expand_tab( str, GET_OUTPUT_BUF( lang ) );
     }
     process_line();
 }
 
-static void outputUsageHeader( process_line_fn *process_line )
+static void outputUsageCommon( TEXT *t, process_line_fn *process_line )
 {
-    TITLE       *t;
-
-    for( t = titleList; t != NULL; t = t->next ) {
+    while( t != NULL ) {
         if( IS_SELECTED( t ) ) {
-            outputTitle( t->lang_title, process_line );
+            outputUsageLangdata( t->lang_usage, process_line );
             if( process_line == emitUsageH ) {
-                outputTitle( ( t->is_titleu ) ? t->lang_titleu : t->lang_title, emitUsageHQNX );
+                outputUsageLangdata( ( t->is_u ) ? t->lang_usageu : t->lang_usage, emitUsageHQNX );
             }
         }
+        t = t->next;
     }
 }
 
-static void outputUsageFooter( process_line_fn *process_line )
-{
-    TITLE       *t;
-
-    for( t = footerList; t != NULL; t = t->next ) {
-        if( IS_SELECTED( t ) ) {
-            outputTitle( t->lang_title, process_line );
-            if( process_line == emitUsageH ) {
-                outputTitle( ( t->is_titleu ) ? t->lang_titleu : t->lang_title, emitUsageHQNX );
-            }
-        }
-    }
-}
-
-static void clearChainUsage( void )
-{
-    CHAIN   *cn;
-
-    for( cn = chainList; cn != NULL; cn = cn->next ) {
-        cn->usage_used = false;
-    }
-}
-
-static bool createChainHeaderPrefix( OPTION **o, char *buf, size_t max )
+static bool createUsageChainHeaderPrefix( OPTION **o, char *buf, size_t max )
 {
     size_t      len;
-    CHAIN       *cn;
+    USAGECHAIN  *ucn;
     char        *stop;
 
     stop = buf + max;
-    cn = (*o)->chain;
+    ucn = (*o)->usageChain;
     *buf++ = '-';
-    buf = cvtOptionSpec( buf, cn->pattern, CVT_NAME );
+    buf = cvtOptionSpec( buf, ucn->pattern, CVT_NAME );
     *buf++ = '{';
     len = 0;
-    for( ; *o != NULL && (*o)->chain == cn; o++ ) {
-        if( (*o)->chain != NULL ) {
+    for( ; *o != NULL; o++ ) {
+        if( (*o)->usageChain == ucn ) {
             if( len > 0 ) {
                 *buf++ = ',';
             }
@@ -2669,27 +2909,37 @@ static bool createChainHeaderPrefix( OPTION **o, char *buf, size_t max )
     return( buf == stop );
 }
 
-static void outputChainHeader( OPTION **o, process_line_fn *process_line, size_t max )
+static void outputUsageChainHeader( OPTION **o, process_line_fn *process_line, size_t max )
 {
-    char        *buf;
-    size_t      len;
-    language_id lang;
+    char            *buf;
+    size_t          len;
+    wres_lang_id    lang;
+    const char      *str;
 
-    if( createChainHeaderPrefix( o, hdrbuff, max ) ) {
-        for( lang = 0; lang < LANG_MAX; lang++ ) {
+    if( createUsageChainHeaderPrefix( o, hdrbuff, max ) ) {
+        for( lang = 0; lang < LANG_RLE_MAX; lang++ ) {
             buf = GET_OUTPUT_BUF( lang );
             strcpy( buf, hdrbuff );
-            strcpy( buf + max, getLangData( (*o)->chain->Usage, lang ) );
+            str = getLangData( (*o)->usageChain->lang_usage, lang );
+            if( str != NULL ) {
+                strcpy( buf + max, str );
+            }
         }
     } else {
-        for( lang = 0; lang < LANG_MAX; lang++ ) {
-            buf = GET_OUTPUT_BUF( lang );
-            for( len = max / 2; len-- > 0; )
-                *buf++ = ' ';
-            strcpy( buf, getLangData( (*o)->chain->Usage, lang ) );
+        str = getLangData( (*o)->usageChain->lang_usage, LANG_RLE_ENGLISH );
+        if( str != NULL ) {
+            for( lang = 0; lang < LANG_RLE_MAX; lang++ ) {
+                buf = GET_OUTPUT_BUF( lang );
+                for( len = max / 2; len-- > 0; )
+                    *buf++ = ' ';
+                str = getLangData( (*o)->usageChain->lang_usage, lang );
+                if( str != NULL ) {
+                    strcpy( buf, str );
+                }
+            }
+            process_output( process_line );
         }
-        process_output( process_line );
-        for( lang = 0; lang < LANG_MAX; lang++ ) {
+        for( lang = 0; lang < LANG_RLE_MAX; lang++ ) {
             strcpy( GET_OUTPUT_BUF( lang ), hdrbuff );
         }
     }
@@ -2704,7 +2954,7 @@ static char *createOptionPrefix( OPTION *o, char *buf, size_t max )
     buf = genOptionUsageStart( o, buf, false );
     while( buf < stop )
         *buf++ = ' ';
-    if( o->chain != NULL ) {
+    if( o->usageChain != NULL ) {
         *buf++ = '-';
         *buf++ = ' ';
     }
@@ -2712,19 +2962,37 @@ static char *createOptionPrefix( OPTION *o, char *buf, size_t max )
     return( buf );
 }
 
-static void outputOption( OPTION *o, process_line_fn *process_line, size_t max )
+static void outputUsageOption( OPTION *o, process_line_fn *process_line, size_t max )
 {
-    char        *buf;
-    size_t      len;
-    language_id lang;
+    char            *buf;
+    size_t          len;
+    wres_lang_id    lang;
+    const char      *str;
 
+    o->usage_used = true;
     len = createOptionPrefix( o, hdrbuff, max ) - hdrbuff;
-    for( lang = 0; lang < LANG_MAX; lang++ ) {
+    for( lang = 0; lang < LANG_RLE_MAX; lang++ ) {
         buf = GET_OUTPUT_BUF( lang );
         strcpy( buf, hdrbuff );
-        strcpy( buf + len, getLangData( o->lang_usage, lang ) );
+        str = getLangData( o->lang_usage, lang );
+        strcpy( buf + len, str );
     }
     process_output( process_line );
+}
+
+static void outputUsageChain( OPTION **oo, size_t i, size_t count, process_line_fn *process_line, size_t max )
+{
+    USAGECHAIN  *ucn;
+
+    ucn = oo[i]->usageChain;
+    outputUsageChainHeader( &oo[i], process_line, max );
+    for( ; i < count; i++ ) {
+        if( oo[i]->usage_used )
+            continue;
+        if( oo[i]->usageChain == ucn ) {
+            outputUsageOption( oo[i], process_line, max );
+        }
+    }
 }
 
 static bool checkUsageLength( size_t len )
@@ -2732,7 +3000,7 @@ static bool checkUsageLength( size_t len )
     return( ( len / langMaxChar[optFlag.lang] ) > CONSOLE_WIDTH );
 }
 
-static void processUsage( process_line_fn *process_line, GROUP *gr )
+static void processUsage( process_line_fn *process_line, USAGEGROUP *ugr )
 {
     unsigned    count;
     unsigned    i;
@@ -2746,7 +3014,9 @@ static void processUsage( process_line_fn *process_line, GROUP *gr )
     max = 0;
     count = 0;
     for( o = optionList; o != NULL; o = o->next ) {
-        if( usageValid( o, gr ) ) {
+        if( o->usageGroup != ugr )
+            continue;
+        if( usageOptionValid( o ) ) {
             ++count;
             len = genOptionUsageStart( o, tmpbuff, false ) - tmpbuff;
             if( max < len ) {
@@ -2755,59 +3025,53 @@ static void processUsage( process_line_fn *process_line, GROUP *gr )
         }
     }
     ++max;
-    oo = calloc( count + 1, sizeof( OPTION * ) );
-    c = oo;
-    for( o = optionList; o != NULL; o = o->next ) {
-        if( usageValid( o, gr ) ) {
-            *c++ = o;
+    if( count > 0 ) {
+        oo = calloc( count + 1, sizeof( OPTION * ) );
+        c = oo;
+        for( o = optionList; o != NULL; o = o->next ) {
+            if( o->usageGroup != ugr )
+                continue;
+            if( usageOptionValid( o ) ) {
+                *c++ = o;
+            }
+        }
+        *c = NULL;
+        qsort( oo, count, sizeof( OPTION * ), usageCmp );
+
+        for( i = 0; i < count; ++i ) {
+            oo[i]->usage_used = false;
+        }
+
+        if( ugr != usageGroupList ) {
+            outputUsageGroupHeader( ugr->lang_usage, process_line );
+        }
+        for( i = 0; i < count; ++i ) {
+            if( oo[i]->usage_used )
+                continue;
+            if( oo[i]->usageChain != NULL ) {
+                outputUsageChain( oo, i, count, process_line, max );
+            } else {
+                outputUsageOption( oo[i], process_line, max );
+            }
+        }
+        free( oo );
+        if( checkUsageLength( maxUsageLen ) ) {
+            fprintf( stderr, "usage message exceeds %u chars\n%s\n", CONSOLE_WIDTH, maxusgbuff );
         }
     }
-    *c = NULL;
-    qsort( oo, count, sizeof( OPTION * ), usageCmp );
-
-    clearChainUsage();
-    for( i = 0; i < count; ++i ) {
-        if( oo[i]->chain != NULL
-          && !oo[i]->chain->usage_used ) {
-            oo[i]->chain->usage_used = true;
-            outputChainHeader( &oo[i], process_line, max );
-        }
-        outputOption( oo[i], process_line, max );
-    }
-    free( oo );
-    if( checkUsageLength( maxUsageLen ) ) {
-        fprintf( stderr, "usage message exceeds %u chars\n%s\n", CONSOLE_WIDTH, maxusgbuff );
-    }
-}
-
-static bool checkGroupUsed( GROUP *gr )
-{
-    OPTION  *o;
-
-    for( o = optionList; o != NULL; o = o->next ) {
-        if( usageValid( o, gr ) ) {
-            return( true );
-        }
-    }
-    return( false );
 }
 
 static void outputUsage( process_line_fn *process_line )
 {
-    GROUP       *gr;
+    USAGEGROUP  *ugr;
 
-    outputUsageHeader( process_line );
+    outputUsageCommon( titleList, process_line );
 
-    gr = NULL;
-    processUsage( process_line, gr );
-    for( gr = groupList; gr != NULL; gr = gr->next ) {
-        if( checkGroupUsed( gr ) ) {
-            outputBlockHeader( gr->Usage, process_line );
-            processUsage( process_line, gr );
-        }
+    for( ugr = usageGroupList; ugr != NULL; ugr = ugr->next ) {
+        processUsage( process_line, ugr );
     }
 
-    outputUsageFooter( process_line );
+    outputUsageCommon( footerList, process_line );
 }
 
 static void outputUsageH( void )
@@ -2821,7 +3085,7 @@ static void emitUsageB( void )
     const char *str;
 
     str = getLangData( outputdata, optFlag.lang );
-    if( optFlag.lang == LANG_Japanese ) {
+    if( optFlag.lang == LANG_RLE_JAPANESE ) {
         if( !optFlag.out_utf8 ) {
             utf8_to_cp932( str, tmpbuff );
             str = tmpbuff;
@@ -2841,7 +3105,7 @@ static void dumpInternational( void )
     LocaleUsage usage_header;
 
     if( optFlag.international ) {
-        for( optFlag.lang = LANG_FIRST_INTERNATIONAL; optFlag.lang < LANG_MAX; optFlag.lang++ ) {
+        for( optFlag.lang = LANG_RLE_FIRST_INTERNATIONAL; optFlag.lang < LANG_RLE_MAX; optFlag.lang++ ) {
             sprintf( fname, "usage%02u." LOCALE_DATA_EXT, optFlag.lang );
             bfp = fopen( fname, "wb" );
             if( bfp == NULL ) {
@@ -2872,6 +3136,8 @@ static void closeFiles( void )
         fclose( pfp );
     if( ufp != NULL ) {
         fclose( ufp );
+    if( ofpg != NULL )
+        fclose( ofpg );
     }
 }
 
@@ -2968,6 +3234,9 @@ static char *ProcessOption( char *s, char *option_start )
             optFlag.line_term = "\\0";
         }
         return( s );
+    case 'p':
+        optFlag.parser_only = true;
+        return( s );
     case 'q':
         optFlag.quiet = true;
         return( s );
@@ -2988,6 +3257,9 @@ static char *ProcessOption( char *s, char *option_start )
             return( s );
         }
         break;
+    case 't':
+        optFlag.report_missing_data = true;
+        return( s );
     case 'u':
         if( *s == '=' ) {
             s = getFileName( s + 1, option_start );
@@ -3003,6 +3275,22 @@ static char *ProcessOption( char *s, char *option_start )
             return( s );
         }
         break;
+    case 'x':
+        if( *s == '=' ) {
+            s++;
+            SKIP_SPACES( s );
+            optFlag.sid = option_start;
+            while( *s != '\0' ) {
+                if( myisspace( *s ) ) {
+                    s++;
+                    break;
+                }
+                *option_start++ = *s++;
+            }
+            *option_start = '\0';
+            return( s );
+        }
+        break;
     }
     printf( "Unknown option: %s\n", option_start );
     return( NULL );
@@ -3013,6 +3301,7 @@ static void initOptions( void )
 {
      optFlag.line_term = "";
      optFlag.list_sep = "";
+     optFlag.sid = "";
 }
 
 static bool ProcessOptions( char *str )
@@ -3076,6 +3365,10 @@ static bool ProcessOptions( char *str )
                 }
                 targetMask |= targetAnyMask;
                 break;
+            case 4:
+                str = getFileName( str, name );
+                ofpg = initFILE( name, "w+" );
+                break;
             default:
                 p = name;
                 while( *str != '\0' ) {
@@ -3098,7 +3391,7 @@ static bool ProcessOptions( char *str )
     return( rc );
 }
 
-#define NUM_FILES   4
+#define NUM_FILES   5
 
 int main( int argc, char **argv )
 {
@@ -3106,9 +3399,7 @@ int main( int argc, char **argv )
     int     i;
 
     setlocale( LC_ALL, "C" );
-    ok = _LANG_DEFS_OK();
-    if( !ok )
-        fail( "language index mismatch\n" );
+    ok = true;
     initTargets();
     initOptions();
     for( i = 1; i < argc; i++ ) {
@@ -3123,21 +3414,29 @@ int main( int argc, char **argv )
         dumpUsage();
     } else {
         initUTF8();
+        initUsageGroup();
         readInputFile();
-        assignChainToOptions();
+        assignCodeChainToOptions();
+        assignUsageChainToOptions();
         checkForMissingUsages();
         stripUselessOptions();
         initOptionFields();
 
-        outputInit();
-        startParserH();
-        outputFN_PROCESS();
-        outputFN_INIT();
-        outputFN_FINI();
-        finishParserH();
-        outputUsageH();
-        dumpInternational();
-        outputFini();
+        if( errcount > 0 ) {
+            ok = false;
+        } else {
+            outputInit();
+            startParserH();
+            outputFN_PROCESS();
+            if( !optFlag.parser_only ) {
+                outputFN_INIT();
+                outputFN_FINI();
+            }
+            finishParserH();
+            outputUsageH();
+            dumpInternational();
+            outputFini();
+        }
     }
     closeFiles();
     finiTargets();
@@ -3145,4 +3444,3 @@ int main( int argc, char **argv )
         return( EXIT_SUCCESS );
     return( EXIT_FAILURE );
 }
-

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -167,7 +167,6 @@ typedef struct state_desc {
     boolbit         right : 1;
 } state_desc;
 
-#ifdef _M_I86
 static char const _WCI86FAR dtorChar = '~';
 static char const _WCI86FAR openParen = '(';
 static char const _WCI86FAR closeParen = ')';
@@ -192,50 +191,16 @@ static char const _WCI86FAR basedStrPrefix[] = "\"";
 static char const _WCI86FAR basedStrSuffix[] = "\"";
 static char const _WCI86FAR basedSelf[] = "__self";
 static char const _WCI86FAR basedVoid[] = "void";
-#else
-static char const           dtorChar = '~';
-static char const           openParen = '(';
-static char const           closeParen = ')';
-static char const           signedPrefix[] = "signed ";
-static char const           operatorName[] = "operator ";
-static char const           deleteFunction[] = "delete";
-static char const           deleteArrayFunction[] = "delete []";
-static char const           anonymousEnum[] = "__anonymous_enum ";
-static char const           newFunction[] = "new";
-static char const           newArrayFunction[] = "new []";
-static char const           scopeSeparator[] = "::";
-static char const           templatePrefix[] = "<";
-static char const           templateSuffix[] = ">";
-static char const           templateSeparator[] = ",";
-static char const           arrayPrefix[] = "[";
-static char const           arraySuffix[] = "]";
-static char const           functionPrefix[] = "( ";
-static char const           functionSuffix[] = ")";
-static char const           functionSeparator[] = ", ";
-static char const           basedSuffix[] = ") ";
-static char const           basedStrPrefix[] = "\"";
-static char const           basedStrSuffix[] = "\"";
-static char const           basedSelf[] = "__self";
-static char const           basedVoid[] = "void";
-#endif
 
 // mangled character translations
 typedef struct table_t {
-#ifdef _M_I86
-    char const _WCI86FAR        *string;    // translated string
-#else
-    char const                  *string;    // translated string
-#endif
-    char                        grouping;   // flavour of character
+    char const _WCI86FAR    *string;    // translated string
+    char                    grouping;   // flavour of character
 } table_t;
 
-#define LOWER_TABLE_LIMIT           'A'
+#define LOWER_TABLE_LIMIT   'A'
 
-#ifdef _M_I86
 static table_t const _WCI86FAR translate_type_encoding[] = {
-#else
-static table_t const           translate_type_encoding[] = {
-#endif
 #define CHAR_UNUSED         0
 #define CHAR_BASIC_TYPE     1
 #define CHAR_POINTER        2
@@ -273,11 +238,7 @@ static table_t const           translate_type_encoding[] = {
     /* '_' */   { "",           CHAR_BASIC_TYPE } // for ctor/dtor return type
 };
 
-#ifdef _M_I86
 static char _WCI86FAR * const _WCI86FAR operatorFunction[] = {
-#else
-static char           * const           operatorFunction[] = {
-#endif
     /* A */ ">>",
     /* B */ "<<",
     /* C */ "!",
@@ -301,11 +262,7 @@ static char           * const           operatorFunction[] = {
     /* U */ "||"
 };
 
-#ifdef _M_I86
 static char const _WCI86FAR * const _WCI86FAR relationalFunction[] = {
-#else
-static char const           * const           relationalFunction[] = {
-#endif
     /* A */ "==",
     /* B */ "!=",
     /* C */ "<",
@@ -314,11 +271,7 @@ static char const           * const           relationalFunction[] = {
     /* F */ ">="
 };
 
-#ifdef _M_I86
 static char const _WCI86FAR * const _WCI86FAR assignmentFunction[] = {
-#else
-static char const           * const           assignmentFunction[] = {
-#endif
     /* A */ "=",
     /* B */ "*=",
     /* C */ "+=",
@@ -335,44 +288,39 @@ static char const           * const           assignmentFunction[] = {
 
 #define check_element(i,a)  (i >= 0 && i < num_elements( a ))
 
-typedef union key_desc {
-    char        str[2];
-    short       val;
-} key_desc;
-typedef struct assoc_desc {
-    key_desc            u;
-#ifdef _M_I86
-    char _WCI86FAR      *name;
-#else
-    char                *name;
-#endif
-} assoc_desc;
+#define WATCOMOBJ_INITS \
+    WATCOMOBJ_INIT( 'A', '*', "__internal" ) \
+    WATCOMOBJ_INIT( 'B', 'I', "__onceonly" ) \
+    WATCOMOBJ_INIT( 'D', 'A', "__arrdtorblk" ) \
+    WATCOMOBJ_INIT( 'D', 'F', "__defarg" ) \
+    WATCOMOBJ_INIT( 'D', 'I', "__debuginfo" ) \
+    WATCOMOBJ_INIT( 'D', 'O', "__dtorobjblk" ) \
+    WATCOMOBJ_INIT( 'M', 'P', "__mbrptrthunk" ) \
+    WATCOMOBJ_INIT( 'S', 'I', "__staticinit" ) \
+    WATCOMOBJ_INIT( 'T', 'H', "__throwblk" ) \
+    WATCOMOBJ_INIT( 'T', 'I', "__typeid" ) \
+    WATCOMOBJ_INIT( 'T', 'S', "__typesig" ) \
+    WATCOMOBJ_INIT( 'V', 'A', "__rtti" ) \
+    WATCOMOBJ_INIT( 'V', 'B', "__vbtbl" ) \
+    WATCOMOBJ_INIT( 'V', 'F', "__vftbl" ) \
+    WATCOMOBJ_INIT( 'V', 'M', "__vmtbl" ) \
+    WATCOMOBJ_INIT( 'V', 'T', "__vfthunk" ) \
+    WATCOMOBJ_INIT( 'S', 'T', "__typstattab" ) \
+    WATCOMOBJ_INIT( 'C', 'M', "__stattabcmd" ) \
+    WATCOMOBJ_INIT( 'U', 'N', "<unique>" )
 
-#ifdef _M_I86
-static assoc_desc const _WCI86FAR watcomObject[] = {
-#else
-static assoc_desc const           watcomObject[] = {
-#endif
-    { {'A','*'},  "__internal" },
-    { {'B','I'},  "__onceonly" },
-    { {'D','A'},  "__arrdtorblk" },
-    { {'D','F'},  "__defarg" },
-    { {'D','I'},  "__debuginfo" },
-    { {'D','O'},  "__dtorobjblk" },
-    { {'M','P'},  "__mbrptrthunk" },
-    { {'S','I'},  "__staticinit" },
-    { {'T','H'},  "__throwblk" },
-    { {'T','I'},  "__typeid" },
-    { {'T','S'},  "__typesig" },
-    { {'V','A'},  "__rtti" },
-    { {'V','B'},  "__vbtbl" },
-    { {'V','F'},  "__vftbl" },
-    { {'V','M'},  "__vmtbl" },
-    { {'V','T'},  "__vfthunk" },
-    { {'S','T'},  "__typstattab" },
-    { {'C','M'},  "__stattabcmd" },
-    { {'U','N'},  "<unique>" },
+#define WATCOMOBJ_INIT(a,b,c) {c,{a,b}},
+static const struct {
+    const char _WCI86FAR    *name;
+    union {
+        const char  str[2];
+        short       val;
+    } u;
+} _WCI86FAR   watcomObject[] = {
+    WATCOMOBJ_INITS
 };
+#undef WATCOMOBJ_INIT
+
 #define MAX_WATCOM_OBJECT       num_elements( watcomObject )
 
 #if 0 || defined( TEST ) || defined( DUMP )
@@ -455,11 +403,7 @@ static void emitChar( output_desc *data, char c )
     }
 }
 
-#ifdef _M_I86
 static void emitStr( output_desc *data, const char _WCI86FAR *p )
-#else
-static void emitStr( output_desc *data, const char           *p )
-#endif
 {
     if( p != NULL ) {
         while( *p != NULL_CHAR ) {
@@ -1214,7 +1158,10 @@ static bool template_name( output_desc *data, state_desc *state )
 
 static bool watcom_object( output_desc *data, state_desc *state )
 {
-    key_desc srch;
+    union {
+        char    c[2];
+        short   val;
+    } srch;
     int      i;
     size_t   len;
     char     c;
@@ -1226,9 +1173,9 @@ static bool watcom_object( output_desc *data, state_desc *state )
         _output2( DM_SET_INDEX, state->prefix );
         _output2( DM_WATCOM_OBJECT, 0 );
     } else {
-        srch.str[0] = c;
+        srch.c[0] = c;
         advanceChar( data );
-        srch.str[1] = currChar( data );
+        srch.c[1] = currChar( data );
         advanceChar( data );
         for( i = 1; i < MAX_WATCOM_OBJECT; i++ ) {
             if( srch.val == watcomObject[i].u.val ) {

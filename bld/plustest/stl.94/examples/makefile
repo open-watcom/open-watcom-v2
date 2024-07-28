@@ -36,7 +36,7 @@ opt_link = FILE tempbuf.obj, random.obj
 
 !include stl_test.mif
 
-test : .symbolic start test.lnk tempbuf.obj random.obj $(tests)
+test : .SYMBOLIC start test.lnk tempbuf.obj random.obj $(tests)
     $(noecho)%make common_set_result_display
 
 clean : .procedure

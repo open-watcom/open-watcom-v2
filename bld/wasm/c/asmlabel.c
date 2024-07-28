@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -47,8 +47,8 @@ static unsigned   AnonymousCounter = 0;
 void PrepAnonLabels( void )
 /*************************/
 {
-    struct asm_sym *sym;
-    char buffer[20];
+    asm_sym     *sym;
+    char        buffer[20];
 
     sprintf( buffer, "L&_%d", AnonymousCounter );
     AsmChangeName( "@B", buffer  );
@@ -61,8 +61,8 @@ void PrepAnonLabels( void )
 
 }
 
-bool IsLabelStruct( char *name )
-/******************************/
+bool IsLabelStruct( const char *name )
+/************************************/
 {
     asm_sym *sym;
 
@@ -74,13 +74,13 @@ bool IsLabelStruct( char *name )
 bool MakeLabel( token_buffer *tokbuf, token_idx i, memtype mem_type )
 /*******************************************************************/
 {
-    struct asm_sym      *sym;
-    char                *symbol_name;
+    asm_sym         *sym;
+    char            *symbol_name;
 #if defined( _STANDALONE_ )
-    uint_32             addr = 0;
-    char                buffer[20];
-    struct asm_sym      *newsym;
-//    proc_info           *info;
+    uint_32         addr = 0;
+    char            buffer[20];
+    asm_sym         *newsym;
+//    proc_info       *info;
 #endif
 
     symbol_name = tokbuf->tokens[i].string_ptr;

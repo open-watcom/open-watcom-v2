@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -56,7 +56,7 @@ ref_entry DoPass1Relocs( unsigned_8 *contents, ref_entry r_entry, dis_sec_offset
     }
 
     for( ; r_entry != NULL && ( r_entry->offset < end ); r_entry = r_entry->next ) {
-        if( r_entry->label->shnd != ORL_NULL_HANDLE && ( r_entry->label->type == LTYP_SECTION ) ) {
+        if( r_entry->label->shnd != NULL && ( r_entry->label->type == LTYP_SECTION ) ) {
             if( r_entry->addend ) {
                 addend = HandleAddend( r_entry );
             } else {
@@ -218,7 +218,7 @@ return_val DoPass1( orl_sec_handle shnd, unsigned_8 *contents, dis_sec_size size
                     }
                 }
                 if( r_entry != NULL && ( r_entry->offset == op_pos ) ) {
-                    if( IsIntelx86 && r_entry->label->shnd != ORL_NULL_HANDLE
+                    if( IsIntelx86 && r_entry->label->shnd != NULL
                         && ( r_entry->type != ORL_RELOC_TYPE_SEGMENT )
                         && ( r_entry->label->type == LTYP_SECTION ) ) {
                         /* For section offsets under intel we MUST generate a

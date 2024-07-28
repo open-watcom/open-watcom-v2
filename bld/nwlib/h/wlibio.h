@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,11 +40,11 @@ struct io_struct {
     char            *name;
     libfile         next;
     libfile         prev;
-    FILE            *io;
+    FILE            *fp;
     long            endpos;
-    bool            write_to;
     size_t          buf_size;
     size_t          buf_pos;
+    bool            write_to;
     char            buffer[1];
 };
 
@@ -55,9 +56,14 @@ extern void         FiniLibIo( void );
 extern libfile      LibOpen( const char *name, bool write_to );
 extern size_t       LibRead( libfile io, void *buff, size_t len );
 extern void         LibWrite( libfile io, const void *buff, size_t len );
+extern void         LibWriteU8( libfile io, unsigned_8 value );
+extern void         LibWriteU16LE( libfile io, unsigned_16 value );
+extern void         LibWriteU32BE( libfile io, unsigned_32 value );
+extern void         LibWriteU32LE( libfile io, unsigned_32 value );
+extern void         LibWriteNulls( libfile io, size_t len );
 extern void         LibClose( libfile io );
 extern void         LibSeek( libfile io, long where, int whence );
 extern long         LibTell( libfile io );
 extern void         LibReadError( libfile io );
 extern void         LibWriteError( libfile io );
-extern void         BadLibrary( const char *name );
+extern void         BadLibrary( libfile io );

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2023-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,15 +32,17 @@
 
 uint_16 TargetShort( uint_16 value )
 {
-    union {
-        char        b[2];
-        uint_16     val;
+    struct {
+        union {
+            char        b[2];
+            uint_16     val;
+        } u;
     } in, out;
 
-    in.val = value;
-    out.b[0] = in.b[1];
-    out.b[1] = in.b[0];
-    return( out.val );
+    in.u.val = value;
+    out.u.b[0] = in.u.b[1];
+    out.u.b[1] = in.u.b[0];
+    return( out.u.val );
 }
 
 int TargetOffset( int value )
@@ -50,17 +52,19 @@ int TargetOffset( int value )
 
 uint_32 TargetBigInt( uint_32 value )
 {
-    union {
-        char        b[4];
-        uint_32     val;
+    struct {
+        union {
+            char        b[4];
+            uint_32     val;
+        } u;
     } in, out;
 
-    in.val = value;
-    out.b[0] = in.b[3];
-    out.b[1] = in.b[2];
-    out.b[2] = in.b[1];
-    out.b[3] = in.b[0];
-    return( out.val );
+    in.u.val = value;
+    out.u.b[0] = in.u.b[3];
+    out.u.b[1] = in.u.b[2];
+    out.u.b[2] = in.u.b[1];
+    out.u.b[3] = in.u.b[0];
+    return( out.u.val );
 }
 
 void TargAddL( uint_32 *targetw, uint_32 value )

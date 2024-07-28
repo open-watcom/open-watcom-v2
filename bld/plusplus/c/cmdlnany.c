@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -125,10 +125,12 @@ static bool checkSTD( unsigned *value )
         if( CmdRecogChar( 'c' )
           && CmdRecogChar( '+' )
           && CmdRecogChar( '+' ) ) {
-            if( CmdRecogChar( '9' ) && CmdRecogChar( '8' ) ) {
+            if( CmdRecogChar( '9' )
+              && CmdRecogChar( '8' ) ) {
                 cxxstd = STD_CXX98;
                 fail = false;
-            } else if( CmdRecogChar( '0' ) && CmdRecogChar( 'x' ) ) {
+            } else if( CmdRecogChar( '0' )
+              && CmdRecogChar( 'x' ) ) {
                 cxxstd = STD_CXX0X;
                 fail = false;
             }
@@ -449,50 +451,33 @@ static void handleOptionEW( OPT_STORAGE *data, bool value )
 #include "cmdlnprs.gc"
 
 static bool openCmdFile(        // OPEN A COMMAND FILE
-    char const *filename,       // - file name
-    size_t size )               // - size of name
+    char const *filename )      // - file name
 {
-    char fnm[_MAX_PATH];        // - buffer for name
-
-    stxvcpy( fnm, filename, size );
-    StripQuotes( fnm );
-    return( IoSuppOpenSrc( fnm, FT_CMD ) );
+    return( IoSuppOpenSrc( filename, FT_CMD ) );
 }
 
 static const char *get_env(     // GET ENVIRONMENT VAR
-    const char *var,            // - variable name
-    size_t len )                // - length of name
+    const char *var )           // - variable name
 {
-    char        buf[128];       // - used to make a string
-    const char  *env;           // - environment name
-
-    if( len >= sizeof( buf ) ) {
-        env = NULL;
-    } else {
-        stxvcpy( buf, var, len );
-        env = CppGetEnv( buf );
-    }
-    return( env );
+    return( CppGetEnv( var ) );
 }
 
 static void scanInputFile(       // PROCESS NAME OF INPUT FILE
     void )
 {
-    char filename[_MAX_PATH];   // - scanned file name
-    size_t len;                 // - length of file name
-    char const *fnm;            // - file name in command line
+    OPT_STRING *fname;
 
-    len = CmdScanFilename( &fnm );
+    fname = NULL;
+    OPT_GET_FILE( &fname );
     ++CompInfo.compfile_max;
     if( CompInfo.compfile_max == CompInfo.compfile_cur ) {
         if( WholeFName == NULL ) {
-            stxvcpy( filename, fnm, len );
-            StripQuotes( filename );
-            WholeFName = FNameAdd( filename );
+            WholeFName = FNameAdd( fname->data );
         } else {
             CErr1( ERR_CAN_ONLY_COMPILE_ONE_FILE );
         }
     }
+    OPT_CLEAN_STRING( &fname );
 }
 
 
@@ -529,9 +514,8 @@ static void procOptions(        // PROCESS AN OPTIONS LINE
     const char *str )           // - scan position in command line
 {
     int c;                      // - next character
-    char const *fnm;            // - scanned @ name
     const char *env;            // - environment name
-    size_t len;                 // - length of file name
+    OPT_STRING *fname;
 
     if( indirectionLevel >= MAX_INDIRECTION ) {
         BadCmdLine( ERR_MAX_CMD_INDIRECTION );
@@ -551,24 +535,26 @@ static void procOptions(        // PROCESS AN OPTIONS LINE
                     BadCmdLine( ERR_INVALID_OPTION );
                 }
             } else if( c == '@' ) {
+                fname = NULL;
                 CmdScanSkipWhiteSpace();
-                len = CmdScanFilename( &fnm );
-                env = get_env( fnm, len );
+                OPT_GET_FILE( &fname );
+                env = get_env( fname->data );
                 if( NULL == env ) {
-                    if( openCmdFile( fnm, len ) ) {
+                    if( openCmdFile( fname->data ) ) {
                         CmdLnCtxPushCmdFile( SrcFileCurrent() );
                         processCmdFile( data );
                         CmdLnCtxPop();
                     } else {
-                        CmdLnCtxPushEnv( fnm );
+                        CmdLnCtxPushEnv( fname->data );
                         BadCmdLine( ERR_BAD_CMD_INDIRECTION );
                         CmdLnCtxPop();
                     }
                 } else {
-                    CmdLnCtxPushEnv( fnm );
+                    CmdLnCtxPushEnv( fname->data );
                     procOptions( data, env );
                     CmdLnCtxPop();
                 }
+                OPT_CLEAN_STRING( &fname );
             } else {
                 CmdScanUngetChar();
                 scanInputFile();
@@ -723,19 +709,16 @@ static void analyseAnyTargetOptions( OPT_STORAGE *data )
     switch( data->opt_level ) {
     case OPT_ENUM_opt_level_ox:  /* -ox => -obmiler -s */
         GenSwitches &= ~ CGSW_GEN_NO_OPTIMIZATION;
-        GenSwitches |= CGSW_GEN_BRANCH_PREDICTION;       // -ob
-        GenSwitches |= CGSW_GEN_LOOP_OPTIMIZATION;       // -ol
-        GenSwitches |= CGSW_GEN_INS_SCHEDULING;          // -or
-        CmdSysSetMaxOptimization();             // -om
-        CompFlags.inline_intrinsics = true;     // -oi
-#if 0   // Disabled - introduces too many problems which no one is ready to fix
-        if( ! data->oe ) {
-            data->oe = 1;                       // -oe
-            // keep in sync with options.gml
-            data->oe_value = 100;
-        }
+        GenSwitches |= CGSW_GEN_BRANCH_PREDICTION;  // -ob
+        GenSwitches |= CGSW_GEN_LOOP_OPTIMIZATION;  // -ol
+        GenSwitches |= CGSW_GEN_INS_SCHEDULING;     // -or
+        CmdSysSetMaxOptimization();                 // -om
+        CompFlags.inline_intrinsics = true;         // -oi
+#if 1   // Disabled - introduces too many problems which no one is ready to fix
+        // keep in sync with options.gml
+        CgBackSetOeSize( 20 );                      // -oe
 #endif
-        TOGGLE( check_stack ) = false;         // -s
+        TOGGLE( check_stack ) = false;              // -s
         break;
     case OPT_ENUM_opt_level_od:
         GenSwitches |= CGSW_GEN_NO_OPTIMIZATION;
@@ -893,16 +876,21 @@ static void analyseAnyTargetOptions( OPT_STORAGE *data )
         CompFlags.use_pcheaders = true;
         CompFlags.fhwe_switch_used = true;
     }
-    if( data->fh || data->fhq ) {
+    if( data->fh
+      || data->fhq ) {
         if( data->fhq ) {
             CompFlags.no_pch_warnings = true;
         }
         CompFlags.use_pcheaders = true;
 
-        if( data->fh && ( !data->fhq || data->fh_timestamp > data->fhq_timestamp ) ) {
+        if( data->fh
+          && ( !data->fhq
+          || data->fh_timestamp > data->fhq_timestamp ) ) {
             SetStringOption( PCHFileNamePtr(), &(data->fh_value) );
             OPT_CLEAN_STRING( &(data->fhq_value) );
-        } else if( data->fhq && ( !data->fh || data->fhq_timestamp > data->fh_timestamp ) ) {
+        } else if( data->fhq
+          && ( !data->fh
+          || data->fhq_timestamp > data->fh_timestamp ) ) {
             SetStringOption( PCHFileNamePtr(), &(data->fhq_value) );
             OPT_CLEAN_STRING( &(data->fh_value) );
         }

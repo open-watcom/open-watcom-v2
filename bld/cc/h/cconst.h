@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -46,21 +46,6 @@
 #else
     #define FNAMECMPSTR             stricmp     /* for case insensitive file systems */
 #endif
-
-#ifndef LARGEST_QUAD_INDEX
-    #define LARGEST_QUAD_INDEX      0xFFFF
-    #define LARGEST_DATA_QUAD_INDEX 0xFFFFF
-#else
-    #define LARGEST_DATA_QUAD_INDEX LARGEST_QUAD_INDEX
-#endif
-#define LARGEST_SYM_INDEX           0xFFFF
-
-#define SYM_BUF_SIZE                1024
-#define SYMS_PER_BUF                (SYM_BUF_SIZE/sizeof(SYM_ENTRY))
-#define SYMBUFS_PER_SEG             16
-#define SYM_SEG_SIZE                (SYM_BUF_SIZE*SYMBUFS_PER_SEG)
-
-#define MAX_SYM_SEGS                (LARGEST_SYM_INDEX/(SYMS_PER_BUF*SYMBUFS_PER_SEG)+1)
 
 #define BUF_SIZE                    512
 

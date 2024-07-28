@@ -10,9 +10,9 @@ proj_name = utils
 
 .c: .
 
-all : smpsync.exe mergehlp.exe smpmt.exe .symbolic
+all : smpsync.exe mergehlp.exe smpmt.exe .SYMBOLIC
     @%null
 
 .c.exe :
     @%make echo_bldccl
-    $(bld_ccl) $(ppflags_common) $(ppflags_autodep) -fm -I"$(wprof_dir)/h" -I"$(dig_dir)/h" -I"$(wsample_dir)/h" $(bld_cclflags) $[@ $(bld_ldflags)
+    $(bld_ccl) $(ppflags_common) $(ppflags_autodep) $(bld_ppflags_sys) $(bld_cppflags) -fm -I"$(wprof_dir)/h" -I"$(dig_dir)/h" -I"$(wsample_dir)/h" $(bld_cclflags) $[@ $(bld_ldflags)

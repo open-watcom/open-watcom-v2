@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,6 +33,7 @@
 #include "optopts.h"
 #include "offset.h"
 #include "rtclass.h"
+#include "objrep.h"
 #ifdef DEVBUILD
 #include "useinfo.h"
 #endif
@@ -64,7 +65,7 @@ typedef enum {
 
 typedef struct label_def {
     label_handle            link;
-    pointer                 patch;
+    obj_patch               *patches;
     cg_sym_handle           sym;
     offset                  address;
     status_bits             status;
@@ -107,7 +108,7 @@ extern bool             AskIfRTLabel( label_handle lbl );
 extern bool             AskIfUniqueLabel( label_handle lbl );
 extern bool             AskIfCommonLabel( label_handle lbl );
 extern offset           AskAddress( label_handle lbl );
-extern pointer          AskLblPatch( label_handle lbl );
+extern pointer          AskLblPatches( label_handle lbl );
 extern cg_sym_handle    AskForLblSym( label_handle lbl );
 
 extern void             AddLblDef( ins_entry *instr );

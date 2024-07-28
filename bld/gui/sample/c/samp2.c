@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2018-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2018-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -70,8 +70,8 @@ static gui_ord Width = 0;
 static char Text[][NUM_TEXT] = { {"0%"}, {"25%"}, {"50%"}, {"75%"}, {"100%"} };
 static gui_ord Strlen[NUM_TEXT] = { 2, 3, 3, 3, 4 };
 
-static GUICALLBACK GetNewGUIEventProc;
-static GUICALLBACK StatusGUIEventProc;
+static GUIEVCALLBACK GetNewGUIEventProc;
+static GUIEVCALLBACK StatusGUIEventProc;
 
 static gui_create_info DialogWnd = {
     "Install Program: ",

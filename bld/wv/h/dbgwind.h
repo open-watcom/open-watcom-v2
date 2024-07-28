@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,10 +32,9 @@
 
 
 #include "aui.h"
-#include "dbglit.h"
 #include "dbgmenu.h"
 #include "dlgbutn.h"
-#include "dbgicon.h"
+
 
 #define WND_MENU_ALLOCATED      GUI_STYLE_MENU_UTIL_2
 
@@ -71,11 +71,13 @@ typedef enum {
 #define NUM_WNDCLS      WND_CURRENT
 #define NUM_WNDCLS_ALL  WND_NUM_CLASSES
 
+typedef a_window        wnd_open( void );
+
 #define pick( a,b,c,d,e,f ) extern wnd_info d;
 #include "wndnames.h"
 #undef pick
 
-#define pick( a,b,c,d,e,f ) extern WNDOPEN c;
+#define pick( a,b,c,d,e,f ) extern wnd_open c;
 #include "wndnames.h"
 #undef pick
 
@@ -110,7 +112,9 @@ extern void         WndCodeBrk( address, bool );
 
 extern void         WndDoInput( void );
 
-extern WNDOPEN      *WndOpenTab[];
+extern wnd_open     WndNoOpen;
+
+extern wnd_open     *WndOpenTab[];
 extern const char   WndNameTab[];
 extern wnd_macro    *WndMacroList;
 

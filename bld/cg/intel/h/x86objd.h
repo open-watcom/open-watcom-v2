@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,7 +32,7 @@
 
 
 /* aligned */
-#include "objrep.h"
+//#include "objrep.h"
 #include "pcobj.h"
 #include "escape.h"
 
@@ -172,10 +172,10 @@ typedef enum {
     AP_HAVE_OFFSET          = 0x02
 } abspatch_flags;
 
-typedef struct abspatch {
-    struct abspatch         *link;
+typedef struct abs_patch {
+    struct abs_patch        *link;
     object                  *obj;
-    obj_patch               pat;
+    obj_patch               patch;
     long_offset             value;
     abspatch_flags          flags;
-} abspatch;
+} abs_patch;

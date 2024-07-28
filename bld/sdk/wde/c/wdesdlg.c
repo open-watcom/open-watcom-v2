@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -450,7 +450,7 @@ bool WdeAddControlToDialog( WdeResInfo *res_info, OBJPTR dialog,
 
     MapDialogRect( dialog_win, &control_rect );
 
-    WdeMapWindowRect( dialog_win, res_info->edit_win, &control_rect );
+    MapWindowRect( dialog_win, res_info->edit_win, &control_rect );
 
     control_rect.left += origin->x;
     control_rect.top += origin->y;

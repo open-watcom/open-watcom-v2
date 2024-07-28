@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,7 +33,7 @@
 #include "srcmgt.h"
 #include "dbgdata.h"
 #include "dbgwind.h"
-#include "dbgadget.h"
+#include "gadgets.h"
 #include "dbgerr.h"
 #include "dbgitem.h"
 #include "strutil.h"
@@ -66,6 +66,8 @@
 #include "dbgmad.h"
 #include "dbgchopt.h"
 #include "menudef.h"
+#include "dbgicon.h"
+#include "litdui.h"
 
 
 #define AVG_INS_SIZE    7
@@ -375,7 +377,7 @@ bool    AsmIsTracking( a_window wnd )
 }
 #endif
 
-static  void    AsmModify( a_window wnd, wnd_row row, wnd_piece piece )
+static  void    WNDCALLBACK AsmModify( a_window wnd, wnd_row row, wnd_piece piece )
 {
     asm_window  *asw;
     address     addr;
@@ -395,7 +397,7 @@ static  void    AsmModify( a_window wnd, wnd_row row, wnd_piece piece )
 }
 
 
-static void AsmNotify( a_window wnd, wnd_row row, wnd_piece piece )
+static void WNDCALLBACK AsmNotify( a_window wnd, wnd_row row, wnd_piece piece )
 {
     asm_window  *asw;
     address     addr;
@@ -431,7 +433,7 @@ bool AsmOpenGadget( a_window wnd, wnd_line_piece *line, mod_handle mod )
 }
 
 
-static void     AsmMenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_piece piece )
+static void     WNDCALLBACK AsmMenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_piece piece )
 {
     address     addr;
     asm_window  *asw;
@@ -562,7 +564,7 @@ static void     AsmMenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_piece
 }
 
 
-static int AsmScroll( a_window wnd, int lines )
+static int WNDCALLBACK AsmScroll( a_window wnd, int lines )
 {
     address             addr;
     int                 moved;
@@ -611,7 +613,7 @@ static int AsmScroll( a_window wnd, int lines )
 }
 
 
-static  void    AsmBegPaint( a_window wnd, wnd_row row, int num )
+static  void    WNDCALLBACK AsmBegPaint( a_window wnd, wnd_row row, int num )
 {
     asm_window  *asw;
 
@@ -622,7 +624,7 @@ static  void    AsmBegPaint( a_window wnd, wnd_row row, int num )
 }
 
 
-static  void    AsmEndPaint( a_window wnd, wnd_row row, int num )
+static  void    WNDCALLBACK AsmEndPaint( a_window wnd, wnd_row row, int num )
 {
     /* unused parameters */ (void)wnd; (void)row; (void)num;
 
@@ -656,7 +658,7 @@ static void AsmNewSource( asm_window *asw, cue_handle *cueh )
     }
 }
 
-static  bool    AsmGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *line )
+static  bool    WNDCALLBACK AsmGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *line )
 {
     address     addr;
     asm_window  *asw;
@@ -726,7 +728,7 @@ static  bool    AsmGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line
     switch( piece ) {
     case PIECE_BREAK:
         line->tabstop = false;
-        line->extent = WND_NO_EXTEND;
+        line->extent = WND_NO_EXTENT;
         if( src_line == 0 )
             FileBreakGadget( wnd, line, curr, FindBreak( addr ) );
         break;
@@ -897,7 +899,7 @@ static  void    AsmNewIP( a_window wnd )
     }
 }
 
-static void     AsmRefresh( a_window wnd )
+static void     WNDCALLBACK AsmRefresh( a_window wnd )
 {
     asm_window          *asw;
     unsigned            new_size;
@@ -992,7 +994,7 @@ static  void    AsmInit( a_window wnd )
     WndZapped( wnd );
 }
 
-static bool AsmWndEventProc( a_window wnd, gui_event gui_ev, void *parm )
+static bool WNDCALLBACK AsmWndEventProc( a_window wnd, gui_event gui_ev, void *parm )
 {
     asm_window  *asw;
 
@@ -1043,7 +1045,7 @@ void AsmChangeOptions( void )
     WndForAllClass( WND_ASSEMBLY, DoAsmChangeOptions );
 }
 
-static bool ChkUpdate( void )
+static bool WNDCALLBACK ChkUpdate( void )
 {
     return( UpdateFlags & (UP_MAD_CHANGE | UP_SYM_CHANGE | UP_NEW_PROGRAM | UP_NEW_SRC | UP_STACKPOS_CHANGE
             | UP_CSIP_CHANGE | UP_BREAK_CHANGE | UP_RADIX_CHANGE | UP_ASM_RESIZE) );
@@ -1083,7 +1085,7 @@ a_window DoWndAsmOpen( address addr, bool track )
     asw->cache_addr = NilAddr;
     asw->dotaddr = NilAddr;
     asw->last_width = 0;
-    wnd = DbgTitleWndCreate( LIT_DUI( WindowAssembly ), &AsmInfo, WND_ASSEMBLY, asw, &AsmIcon, TITLE_SIZE, false );
+    wnd = DbgWndCreateTitle( LIT_DUI( WindowAssembly ), &AsmInfo, WND_ASSEMBLY, asw, &AsmIcon, TITLE_SIZE, false );
     if( wnd == NULL )
         return( wnd );
     asw->track = track;

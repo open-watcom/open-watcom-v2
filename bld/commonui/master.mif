@@ -5,7 +5,7 @@ name = commonui
 !endif
 
 !ifndef commonui_autodepends
-commonui_autodepends = .autodepend
+commonui_autodepends = .AUTODEPEND
 !endif
 
 sys_windowed = 1
@@ -25,7 +25,7 @@ additional_clean = *.gh *.grh
 #
 .c: ../c;$(watcom_dir)/c
 
-inc_dirs = -I. -I"../h" $(wpi_inc_dirs) $(dis_includes)
+inc_dirs = -I. -I"../h" $(cli_wpi_inc_dirs) $(dis_includes)
 
 extra_cpp_flags     = -DGUI_IS_GUI
 extra_cpp_flags_nt  = -DNOUSE3D
@@ -110,4 +110,4 @@ uistr.grh : uistrmsg.gh
 
 uistrmsg.gh : ../res/commonui.msg
     @%make echo_cpp
-    $(cpp) $(ppflags_common) $(rc_ui8_flags) -I"../h" -o$@ $[@
+    $(cppu8) $(ppflags_common) $(rc_cppflags) -I"../h" -o$@ $[@

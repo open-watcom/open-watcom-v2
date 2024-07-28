@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,18 +32,18 @@
 
 extern  an      NewAddrName( void );
 extern  an      NewBoolNode( void );
-extern  an      MakeTypeTempAddr( name *op, type_def *tipe );
+extern  an      MakeTypeTempAddr( name *op, const type_def *tipe );
 extern  an      MakeTempAddr( name *op );
 extern  void    InitMakeAddr( void );
 extern  name    *GenIns( an addr );
 extern  void    NamesCrossBlocks( void );
 extern  bool    AddrFrlFree( void );
 extern  void    AddrFree( an node );
-extern  an      MakeGets( an dst, an src, type_def *tipe );
-extern  an      MakeConst( float_handle cf, type_def *tipe );
-extern  an      MakePoints( an name, type_def *tipe );
-extern  an      RegName( hw_reg_set reg, type_def *tipe );
-extern  an      InsName( instruction *ins, type_def *tipe );
+extern  an      MakeGets( an dst, an src, const type_def *tipe );
+extern  an      MakeConst( float_handle cf, const type_def *tipe );
+extern  an      MakePoints( an name, const type_def *tipe );
+extern  an      RegName( hw_reg_set reg, const type_def *tipe );
+extern  an      InsName( instruction *ins, const type_def *tipe );
 extern  name    *LoadTemp( name *temp, type_class_def type_class );
 extern  an      AddrEval( an addr );
 extern  void    MoveAddress( an src, an dest );
@@ -57,7 +58,7 @@ extern  void    AddrDemote( an node );
 extern  name    *MaybeTemp( name *op, type_class_def type_class );
 extern  void    CheckPointer( an addr );
 extern  void    FixCodePtr( an addr );
-extern  bool    NeedPtrConvert( an addr, type_def *tipe );
-extern  name    *LoadAddress( name *op, name *suggest, type_def *type_ptr );
-extern  an      MakeAddrName( cg_class class, cg_sym_handle sym, type_def *tipe );
+extern  bool    NeedPtrConvert( an addr, const type_def *tipe );
+extern  name    *LoadAddress( name *op, name *suggest, const type_def *type_ptr );
+extern  an      MakeAddrName( cg_class class, cg_sym_handle sym, const type_def *tipe );
 extern  cg_type NamePtrType(name *op);

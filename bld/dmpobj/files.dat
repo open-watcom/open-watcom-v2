@@ -3,7 +3,7 @@
 [ DEFAULT type="e" where="c jc f77 jf77" ]
 dir="binw"      usr="dmpobj.exe"    cond="doshost winhost |"
 dir="binp"      usr="dmpobj.exe"    cond="os2host"
-dir="binnt"     usr="dmpobj.exe"    cond="wnthost"      wherea="ac"
+dir="binnt"     usr="dmpobj.exe"    cond="wnthost"      where+="ac"
 dir="binnt64"   usr="dmpobj.exe"    cond="wnt64host"                    keys="ntx64"
 dir="axpnt"     usr="dmpobj.exe"    cond="alphahost"    where="ac"
 dir="binl"      usr="dmpobj"        cond="lnxhost"

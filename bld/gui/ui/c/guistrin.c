@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -51,11 +51,11 @@ gui_text_ord GUIAPI GUIGetStringPos( gui_window *wnd, gui_ord indent, const char
     mouse = GUIScaleToScreenH( mouse_x );
 
     if( mouse < start ) {
-        return( GUI_TEXT_NO_COLUMN );
+        return( GUI_TEXT_NO_POS );
     }
     pos = mouse - start;
     if( pos >= strlen( string ) ) {
-        return( GUI_TEXT_NO_COLUMN );
+        return( GUI_TEXT_NO_POS );
     } else {
         return( pos );
     }

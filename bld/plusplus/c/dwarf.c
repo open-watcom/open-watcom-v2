@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -144,23 +144,23 @@ static void sym_reset( SYMBOL sym )
 /*********************************/
 {
     if( InDebug ) {
-        if( (sym->flag2 & SYMF2_SYMDBG) == 0 ) {
-            sym->flag2 = (sym->flag2 & ~SYMF2_DW_HANDLE) | SYMF2_SYMDBG;
+        if( (sym->flags2 & SYMF2_SYMDBG) == 0 ) {
+            sym->flags2 = (sym->flags2 & ~SYMF2_DW_HANDLE) | SYMF2_SYMDBG;
         }
     }
 }
 
-static void sym_update( SYMBOL sym, symbol_flag2 flags, dw_handle dh )
-/********************************************************************/
+static void sym_update( SYMBOL sym, symbol_flags2 flags2, dw_handle dh )
+/**********************************************************************/
 {
-    #ifdef DEVBUILD
-    if( sym->flag2 & SYMF2_CG_HANDLE ) {
+#ifdef DEVBUILD
+    if( sym->flags2 & SYMF2_CG_HANDLE ) {
         DumpSymbol( sym );
         CFatal( "dwarf: handle for sym busy" );
     }
-    #endif
-    sym->flag2 |= flags;
-    if( sym->flag2 & SYMF2_TOKEN_LOCN ) {
+#endif
+    sym->flags2 |= flags2;
+    if( sym->flags2 & SYMF2_TOKEN_LOCN ) {
         sym->locn->u.dwh = dh;
     }
 }
@@ -179,7 +179,7 @@ static void dwarfTokenLocation( TOKEN_LOCN *locn )
 static void dwarfLocation( SYMBOL sym )
 /*************************************/
 {
-    if( sym->flag2 & SYMF2_TOKEN_LOCN ) {
+    if( sym->flags2 & SYMF2_TOKEN_LOCN ) {
         dwarfTokenLocation( &sym->locn->tl );
     }
 }
@@ -322,9 +322,9 @@ static dw_handle dwarfDebugMemberFuncDef( CLASSINFO *info, SYMBOL sym )
     if( SymIsStaticMember( sym ) ) {
         flags |= DW_SUB_STATIC;
     }
-    if( sym->flag & SYMF_PRIVATE ) {
+    if( sym->flags & SYMF_PRIVATE ) {
         flags |= DW_FLAG_PRIVATE;
-    } else if( sym->flag & SYMF_PROTECTED ) {
+    } else if( sym->flags & SYMF_PROTECTED ) {
         flags |= DW_FLAG_PROTECTED;
     } else {
         flags |= DW_FLAG_PUBLIC;
@@ -548,7 +548,7 @@ static bool dwarfClassInfo( TYPE type )
         dh = 0;
         sym_reset( curr );
         if( !IsCppNameInterestingDebug( curr ) ) {
-        } else if( !InDebug && (curr->flag2 & SYMF2_TOKEN_LOCN) == 0 )  {
+        } else if( !InDebug && (curr->flags2 & SYMF2_TOKEN_LOCN) == 0 )  {
         } else if( SymIsClassDefinition( curr ) ) {
             dh = dwarfSymbol( curr, DC_DEFINE );
         } else if( SymIsEnumDefinition( curr ) ) {
@@ -572,9 +572,9 @@ static bool dwarfClassInfo( TYPE type )
             if( !InDebug ) {
                 dwarfLocation( curr );
             }
-            if( curr->flag & SYMF_PRIVATE ) {
+            if( curr->flags & SYMF_PRIVATE ) {
                 flags = DW_FLAG_PRIVATE;
-            } else if( curr->flag & SYMF_PROTECTED ) {
+            } else if( curr->flags & SYMF_PROTECTED ) {
                 flags = DW_FLAG_PROTECTED;
             } else {
                 flags = DW_FLAG_PUBLIC;
@@ -902,7 +902,7 @@ static dbg_type dwarfBasedPointerType( TYPE type, uint flags )
 #if _INTEL_CPU
             if( !IsFlat() ) {  /* should check Client */
                 DWLocSegment( Client, locid, (dw_sym_handle) DefaultDataSymbol );
-                DefaultDataSymbol->flag |= SYMF_REFERENCED;
+                DefaultDataSymbol->flags |= SYMF_REFERENCED;
             }
 #endif
         }
@@ -953,7 +953,7 @@ static dbg_type dwarfBasedPointerType( TYPE type, uint flags )
                     DbgAddrTaken( DefaultCodeSymbol );
                 } else {
                     DWLocSegment( Client, locid, (dw_sym_handle) DefaultDataSymbol );
-                    DefaultDataSymbol->flag |= SYMF_REFERENCED;
+                    DefaultDataSymbol->flags |= SYMF_REFERENCED;
                 }
             }
 #endif
@@ -1222,7 +1222,7 @@ static void dwarf_define_parm( SYMBOL sym )
     dw_handle   dh;
     char        *name;
 
-    if( (sym->flag2 & SYMF2_TOKEN_LOCN) == 0 )
+    if( (sym->flags2 & SYMF2_TOKEN_LOCN) == 0 )
         return;
     if( IsCppNameInterestingDebug( sym ) ) {
         name = CppNameDebug( sym );
@@ -1259,9 +1259,9 @@ static void dwarf_block_open( SYMBOL sym )
     dw_handle   dh;
 
     sym_reset( sym );
-    if( (sym->flag2 & SYMF2_TOKEN_LOCN) == 0 )
+    if( (sym->flags2 & SYMF2_TOKEN_LOCN) == 0 )
         return;
-    if( sym->flag2 & SYMF2_DW_HANDLE )
+    if( sym->flags2 & SYMF2_DW_HANDLE )
         return;
     if( !dwarfValidateSymbol( sym ) )
         return;
@@ -1446,9 +1446,9 @@ static dw_handle dwarfFunctionDefine( SYMBOL sym, CGFILE *file_ctl )
         if( base->flag & TF1_INLINE ) {
             flags |= DW_FLAG_DECLARED_INLINE;
         }
-        if( sym->flag & SYMF_PRIVATE ) {
+        if( sym->flags & SYMF_PRIVATE ) {
             flags |= DW_FLAG_PRIVATE;
-        } else if( sym->flag & SYMF_PROTECTED ) {
+        } else if( sym->flags & SYMF_PROTECTED ) {
             flags |= DW_FLAG_PROTECTED;
         } else {
             flags |= DW_FLAG_PUBLIC;
@@ -1499,13 +1499,13 @@ static dw_handle dwarfFunction( SYMBOL sym, DC_CONTROL control )
     CGFILE      *file_ctl;
 
     sym_reset( sym );
-    if( sym->flag2 & SYMF2_DW_HANDLE ) {
+    if( sym->flags2 & SYMF2_DW_HANDLE ) {
         dh = sym->locn->u.dwh;
     } else {
         dh = DWHandle( Client, DW_ST_NONE );
         sym_update( sym, SYMF2_DW_HANDLE_FWD, dh );
     }
-    if( (control & DC_DEFINE) && (sym->flag2 & SYMF2_DW_HANDLE_FWD) ) {
+    if( (control & DC_DEFINE) && (sym->flags2 & SYMF2_DW_HANDLE_FWD) ) {
         file_ctl = CgioLocateFile( sym );
         if( (file_ctl != NULL) && (file_ctl->defined.src_file == NULL) ) {
             file_ctl = NULL;
@@ -1524,7 +1524,7 @@ static dw_handle dwarfData( SYMBOL sym )
     uint      flags;
 
     #ifdef DEVBUILD
-        if( sym->flag2 & SYMF2_DW_HANDLE_DEF ) {
+        if( sym->flags2 & SYMF2_DW_HANDLE_DEF ) {
             DumpSymbol( sym );
             CFatal( "dwarf: data symbol already defined" );
         }
@@ -1535,9 +1535,9 @@ static dw_handle dwarfData( SYMBOL sym )
         if( SymIsStaticDataMember( sym ) ) {
             class_dh = dwarfType( SymClass( sym ), DC_DEFAULT );
         }
-        if( sym->flag & SYMF_PRIVATE ) {
+        if( sym->flags & SYMF_PRIVATE ) {
             flags |= DW_FLAG_PRIVATE;
-        } else if( sym->flag & SYMF_PROTECTED ) {
+        } else if( sym->flags & SYMF_PROTECTED ) {
             flags |= DW_FLAG_PROTECTED;
         } else {
             flags |= DW_FLAG_PUBLIC;
@@ -1570,7 +1570,7 @@ static dw_handle dwarfDebugStatic( SYMBOL sym )
 
     sym_reset( sym );
 #ifdef DEVBUILD
-    if( sym->flag2 & SYMF2_DW_HANDLE_DEF ) {
+    if( sym->flags2 & SYMF2_DW_HANDLE_DEF ) {
         DumpSymbol( sym );
         CFatal( "dwarf: data symbol already defined" );
     }
@@ -1581,9 +1581,9 @@ static dw_handle dwarfDebugStatic( SYMBOL sym )
         if( SymIsStaticDataMember( sym ) ) {
             class_dh = dwarfType( SymClass( sym ), DC_DEFAULT );
         }
-        if( sym->flag & SYMF_PRIVATE ) {
+        if( sym->flags & SYMF_PRIVATE ) {
             flags |= DW_FLAG_PRIVATE;
-        } else if( sym->flag & SYMF_PROTECTED ) {
+        } else if( sym->flags & SYMF_PROTECTED ) {
             flags |= DW_FLAG_PROTECTED;
         } else {
             flags |= DW_FLAG_PUBLIC;
@@ -1640,12 +1640,12 @@ static dw_handle dwarfSymbol( SYMBOL sym, DC_CONTROL control )
     dw_handle       dh = 0;
 
     if( !InDebug ) {
-        if( (sym->flag2 & SYMF2_TOKEN_LOCN) == 0 ) {
+        if( (sym->flags2 & SYMF2_TOKEN_LOCN) == 0 ) {
             return( 0 );
         }
     };
     sym_reset( sym );
-    if( sym->flag2 & SYMF2_DW_HANDLE_DEF )
+    if( sym->flags2 & SYMF2_DW_HANDLE_DEF )
         return( sym->locn->u.dwh );
 
     if( !InDebug ) {
@@ -1907,7 +1907,7 @@ static void dwarfDebugSymbol( SCOPE scope )
         if(  SymIsClassTemplateModel( curr ) ) {
             WalkTemplateInst( curr, &dwarfTempScope );
         } else if( ! SymIsFunctionTemplateModel( curr ) &&
-            ( curr->flag & (SYMF_INITIALIZED | SYMF_REFERENCED) ) &&
+            ( curr->flags & (SYMF_INITIALIZED | SYMF_REFERENCED) ) &&
             SymIsData( curr ) &&
             !SymIsEnumeration( curr) &&
             !SymIsTemporary( curr ) &&
@@ -2040,7 +2040,7 @@ static void dwarfPreUsedSymbol( SCOPE scope )
     stop = ScopeOrderedStart( scope );
     for( curr = NULL; (curr = ScopeOrderedNext( stop, curr )) != NULL; ) {
         if( !SymIsFunctionTemplateModel( curr ) &&
-            ( curr->flag & SYMF_INITIALIZED ) &&
+            ( curr->flags & SYMF_INITIALIZED ) &&
             SymIsData( curr ) &&
             !SymIsEnumeration( curr) &&
             !SymIsTemporary( curr ) &&
@@ -2178,7 +2178,7 @@ extern void DwarfSymDebugGenSymbol( SYMBOL sym, bool scoped, bool by_ref )
         if( !IsFlat() ) {  /* should check Client */
             if( !IsBigData() ) {
                 dl = symbolicDebugSetSegment( dl, DefaultDataSymbol );
-                DefaultDataSymbol->flag |= SYMF_REFERENCED;
+                DefaultDataSymbol->flags |= SYMF_REFERENCED;
             }
         }
 #endif

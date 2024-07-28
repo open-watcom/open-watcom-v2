@@ -1,7 +1,7 @@
 #######################
 # DOS and Windows 3.x
 #
-[ DEFAULT dir="binw" cond="wnttarg wintarg os2targ | | winhost doshost | &" where="c jc f77 jf77" desc="Resource tools" ]
+[ DEFAULT dir="binw" cond="wnttarg wintarg os2targ | | winhost doshost | &" where="c jc f77 jf77" descr="Resource tools" ]
 # Resource editors:
 # Image editor
     type="e" usr="wimgedit.exe"
@@ -28,7 +28,7 @@
     type="s" usr="949.uni"
     type="s" usr="950.uni"
     type="s" usr="to932.uni"
-[ DEFAULT dir="binw" cond="winhost" where="c jc f77 jf77" desc="GUI tools" ]
+[ DEFAULT dir="binw" cond="winhost" where="c jc f77 jf77" descr="GUI tools" ]
 # DDE spy
     type="e" usr="wddespy.exe"
 # Heap walker
@@ -44,7 +44,7 @@
 #######################
 # OS/2
 #
-[ DEFAULT dir="binp" cond="wnttarg wintarg os2targ | | os2host" where="c jc f77 jf77" desc="Resource tools" ]
+[ DEFAULT dir="binp" cond="wnttarg wintarg os2targ | | os2host" where="c jc f77 jf77" descr="Resource tools" ]
 # wrc
     type="e" usr="wrc.exe"                  
     type="d" usr="wrcd.dll" dir="binp/dll"
@@ -61,7 +61,7 @@
 #######################
 # Windows NT - 386
 #
-[ DEFAULT dir="binnt" cond="wnttarg wintarg os2targ | | wnthost" where="c jc f77 jf77" desc="Resource tools" ]
+[ DEFAULT dir="binnt" cond="wnttarg wintarg os2targ | | wnthost" where="c jc f77 jf77" descr="Resource tools" ]
 # Resource editors:
 # Image editor
     type="e" usr="wimgedit.exe"
@@ -90,14 +90,14 @@
     type="s" usr="949.uni"
     type="s" usr="950.uni"
     type="s" usr="to932.uni"
-[ DEFAULT dir="binnt" cond="wnthost" where="c jc f77 jf77" desc="GUI tools" ]
+[ DEFAULT dir="binnt" cond="wnthost" where="c jc f77 jf77" descr="GUI tools" ]
 # DDE spy
     type="e" usr="wddespy.exe"
 # wspy
     type="e" usr="wspy.exe"
     type="d" usr="ntspyhk.dll"
 # Dr. Watcom
-    type="e" usr="drwatcom.exe" conda="wnt64host |"
+    type="e" usr="drwatcom.exe" cond+="wnt64host |"
     type="e" usr="_drwin95.exe"
 # zoom
     type="e" usr="wzoom.exe"
@@ -105,7 +105,7 @@
 #######################
 # Windows NT - AXP
 #
-[ DEFAULT dir="axpnt" cond="wnttarg wintarg os2targ | | alphahost" where="ac" desc="Resource tools" ]
+[ DEFAULT dir="axpnt" cond="wnttarg wintarg os2targ | | alphahost" where="ac" descr="Resource tools" ]
 # Resource editors:
 # Image editor
     type="e" usr="wimgedit.exe"
@@ -134,7 +134,7 @@
     type="s" usr="949.uni"
     type="s" usr="950.uni"
     type="s" usr="to932.uni"
-[ DEFAULT dir="axpnt" cond="alphahost" where="ac" desc="GUI tools" ]
+[ DEFAULT dir="axpnt" cond="alphahost" where="ac" descr="GUI tools" ]
 # DDE spy
     type="e" usr="wddespy.exe"
 # wspy
@@ -148,7 +148,7 @@
 #######################
 # Windows NT - X64
 #
-[ DEFAULT dir="binnt64" cond="wnttarg wintarg os2targ | | wnt64host" where="c jc f77 jf77" keys="ntx64" desc="Resource tools" ]
+[ DEFAULT dir="binnt64" cond="wnttarg wintarg os2targ | | wnt64host" where="c jc f77 jf77" keys="ntx64" descr="Resource tools" ]
 # Resource editors:
 # Image editor
     type="e" usr="wimgedit.exe"
@@ -177,7 +177,7 @@
     type="s" usr="949.uni"
     type="s" usr="950.uni"
     type="s" usr="to932.uni"
-[ DEFAULT dir="binnt64" cond="wnt64host" where="c jc f77 jf77" keys="ntx64" desc="GUI tools" ]
+[ DEFAULT dir="binnt64" cond="wnt64host" where="c jc f77 jf77" keys="ntx64" descr="GUI tools" ]
 # DDE spy
     type="e" usr="wddespy.exe"
 # wspy
@@ -191,7 +191,7 @@
 #######################
 # Linux - 386
 #
-[ DEFAULT dir="binl" cond="wnttarg wintarg os2targ | | lnxhost" where="c f77 jc jf77" desc="Resource tools" ]
+[ DEFAULT dir="binl" cond="wnttarg wintarg os2targ | | lnxhost" where="c f77 jc jf77" descr="Resource tools" ]
 # wrc
     type="e" usr="wrc"
 # .UNI files
@@ -207,7 +207,7 @@
 #######################
 # Linux - X64
 #
-[ DEFAULT dir="binl64" cond="wnttarg wintarg os2targ | | lnx64host" where="c f77 jc jf77" keys="lx64" desc="Resource tools" ]
+[ DEFAULT dir="binl64" cond="wnttarg wintarg os2targ | | lnx64host" where="c f77 jc jf77" keys="lx64" descr="Resource tools" ]
 # wrc
     type="e" usr="wrc"
 # .UNI files

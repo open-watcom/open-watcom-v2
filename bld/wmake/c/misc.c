@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -94,14 +94,16 @@ STATIC char *FindNextSep( const char *str, bool (*chk_sep)( char ) )
     char    c;
 
     dquote = false;
-    while( (c = *str) != NULLCHAR ) {
+    while( (c = str[0]) != NULLCHAR ) {
         if( c == '\\' ) {
-            if( dquote && str[1] != NULLCHAR ) {
+            if( dquote
+              && str[1] != NULLCHAR ) {
                 ++str;
             }
         } else if( c == '\"' ) {
             dquote = !dquote;
-        } else if( !dquote && chk_sep( c ) ) {
+        } else if( !dquote
+          && chk_sep( c ) ) {
             break;
         }
         str++;
@@ -212,11 +214,11 @@ static bool __fnmatch( const char *pattern, const char *string )
         pattern++;
     }
     if( *pattern == NULLCHAR ) {
-        if( (*string == NULLCHAR) || star_char ) {
+        if( (*string == NULLCHAR)
+          || star_char ) {
             return( true );
-        } else {
-            return( false );
         }
+        return( false );
     }
     /*
      * check pattern section with exact match
@@ -243,30 +245,29 @@ static bool __fnmatch( const char *pattern, const char *string )
          * match is OK, try next pattern section
          */
         return( __fnmatch( pattern, string ) );
-    } else {
-        /*
-         * star pattern section, try locate exact match
-         */
-        while( *string != NULLCHAR ) {
-            if( FNameChrEq( *p, *string ) ) {
-                for( i = 1; i < len; i++ ) {
-                    if( !FNameChrEq( *(p + i), *(string + i) ) ) {
-                        break;
-                    }
-                }
-                if( i == len ) {
-                    /*
-                     * if rest doesn't match, find next occurence
-                     */
-                    if( __fnmatch( pattern, string + len ) ) {
-                        return( true );
-                    }
+    }
+    /*
+     * star pattern section, try locate exact match
+     */
+    while( *string != NULLCHAR ) {
+        if( FNameChrEq( *p, *string ) ) {
+            for( i = 1; i < len; i++ ) {
+                if( !FNameChrEq( *(p + i), *(string + i) ) ) {
+                    break;
                 }
             }
-            string++;
+            if( i == len ) {
+                /*
+                 * if rest doesn't match, find next occurence
+                 */
+                if( __fnmatch( pattern, string + len ) ) {
+                    return( true );
+                }
+            }
         }
-        return( false );
+        string++;
     }
+    return( false );
 }
 
 /*

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -50,7 +51,7 @@ static char             prog[UTIL_LEN];
 static char             args[UTIL_LEN];
 
 
-static bool ProgGUIEventProc( gui_window * gui, gui_event gui_ev, void * param )
+static bool GUICALLBACK ProgGUIEventProc( gui_window * gui, gui_event gui_ev, void * param )
 {
     gui_ctl_id          id;
     dlg_new_prog        *dlg;
@@ -97,7 +98,7 @@ static void DoDlgNewProg( dlg_new_prog  *pdlg )
     pdlg->prog = prog;
     pdlg->args = args;
     pdlg->cancel = true;
-    ResDlgOpen( ProgGUIEventProc, pdlg, DIALOG_NEW_PROG );
+    DlgOpenRes( ProgGUIEventProc, pdlg, DIALOG_NEW_PROG );
 }
 
 void    DlgNewProg( void )

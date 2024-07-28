@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -65,19 +66,21 @@ STATIC MTOKEN_T lexFormQualifier( MTOKEN_T tok )
     case '!':   CurAttr.u.form = FORM_EXT;             break;
     default:
         PrtMsg( ERR | LOC | EXPECTING_M, M_FORM_QUALIFIER );
-        UnGetCHR( s );               /* put character back */
-        CurAttr.u.form = FORM_FULL;   /* assume full name */
+        UnGetCHR( s );              /* put character back */
+        CurAttr.u.form = FORM_FULL; /* assume full name */
     }
     return( tok );
 }
 
 
 void GetModifier( void )
-/*****************************/
+/**********************/
 {
     STRM_T  s;
 
-    // Modifier already eaten by CatModifier
+    /*
+     * Modifier already eaten by CatModifier
+     */
     if( !IsPartDeMacro ) {
         s = PreGetCHR();
         switch( s ) {
@@ -129,14 +132,13 @@ STATIC char *CatModifier( char *inString, bool destroy )
             FreeSafe( inString );
         }
         return( FinishVec( output ) );
-    } else {
-        UnGetCHR( s );
-        ret = StrDupSafe( inString );
-        if( destroy ) {
-            FreeSafe( inString );
-        }
-        return( ret );
     }
+    UnGetCHR( s );
+    ret = StrDupSafe( inString );
+    if( destroy ) {
+        FreeSafe( inString );
+    }
+    return( ret );
 }
 
 MTOKEN_T LexMSDollar( STRM_T s )
@@ -150,10 +152,13 @@ MTOKEN_T LexMSDollar( STRM_T s )
 
     assert( sismsspecial( s ) );
 
-    if( IsPartDeMacro || !DoingUpdate ) {
-        /* we need to use SPECIAL_TMP_DOLLAR to prevent recursion
-           from kicking in because recursion occurs when there are
-           still dollars remaining */
+    if( IsPartDeMacro
+      || !DoingUpdate ) {
+        /*
+         * we need to use SPECIAL_TMP_DOLLAR to prevent recursion
+         * from kicking in because recursion occurs when there are
+         * still dollars remaining
+         */
         temp[0] = SPECIAL_TMP_DOLLAR;
         temp[1] = s;
         if( s == '*' ) {
@@ -172,32 +177,29 @@ MTOKEN_T LexMSDollar( STRM_T s )
         CurAttr.u.ptr = CatModifier( temp, false );
         return( MAC_NAME );
 
-    } else {
-        switch( s ) {
-        case '<':
+    }
+    switch( s ) {
+    case '<':
+        CurAttr.u.form = FORM_FULL;
+        return( MAC_INF_DEP );
+    case '*':
+        s = PreGetCHR();
+        if( s == '*' ) {
             CurAttr.u.form = FORM_FULL;
-            return( MAC_INF_DEP );
-        case '*':
-            s = PreGetCHR();
-            if( s == '*' ) {
-                CurAttr.u.form = FORM_FULL;
-                return( MAC_ALL_DEP );
-            } else {
-                CurAttr.u.form = FORM_NOEXT;
-                UnGetCHR( s );
-                return( MAC_CUR );
-            }
-        case '?':
-            CurAttr.u.form = FORM_FULL;
-            return( MAC_YOUNG_DEP );
-        case '@':
-            CurAttr.u.form = FORM_FULL;
-            return( MAC_CUR );
-
-        default:
-            UnGetCHR( s );
-            return( MAC_START );
+            return( MAC_ALL_DEP );
         }
+        CurAttr.u.form = FORM_NOEXT;
+        UnGetCHR( s );
+        return( MAC_CUR );
+    case '?':
+        CurAttr.u.form = FORM_FULL;
+        return( MAC_YOUNG_DEP );
+    case '@':
+        CurAttr.u.form = FORM_FULL;
+        return( MAC_CUR );
+    default:
+        UnGetCHR( s );
+        return( MAC_START );
     }
 }
 
@@ -214,7 +216,9 @@ STATIC MTOKEN_T lexDollar( void )
 
     s = PreGetCHR();
 
-    if( (Glob.compat_nmake || Glob.compat_posix) && sismsspecial( s ) ) {
+    if( (Glob.compat_nmake
+      || Glob.compat_posix)
+      && sismsspecial( s ) ) {
         t = LexMSDollar( s );
         GetModifier();
         return( t );
@@ -280,7 +284,9 @@ STATIC MTOKEN_T lexSubString( STRM_T s )
         case STRM_MAGIC:
         case ')':
         case '$':
-            /* always stop on these characters */
+            /*
+             * always stop on these characters
+             */
             done = true;
             break;
         default:
@@ -372,8 +378,10 @@ MTOKEN_T LexMacDef( STRM_T s )
             || s == STRM_MAGIC
             || s == '\n'
             || s == '$'
-            || (onlyws && !sisws( s ))
-            || (!onlyws && sisws( s )) ) {
+            || (onlyws
+            && !sisws( s ))
+            || (!onlyws
+            && sisws( s )) ) {
             break;
         }
     }

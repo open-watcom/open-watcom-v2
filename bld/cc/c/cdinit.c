@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,11 +33,15 @@
 #include "cvars.h"
 #include <limits.h>
 #include "i64.h"
+#include "roundmac.h"
 
-#define DATA_QUAD_SEG_SIZE      (32 * 1024)
-#define DATA_QUADS_PER_SEG      (DATA_QUAD_SEG_SIZE / sizeof( DATA_QUAD_LIST ))
 
-#define MAX_DATA_QUAD_SEGS (LARGEST_DATA_QUAD_INDEX / DATA_QUADS_PER_SEG + 1)
+#define DATA_QUAD_SEG_SIZE_DEF  _32K
+#define DATA_QUAD_MAX_INDEX_DEF 0xFFFFF
+
+#define DATA_QUAD_PER_SEG       (DATA_QUAD_SEG_SIZE_DEF / sizeof( DATA_QUAD_LIST ))
+#define DATA_QUAD_SEG_SIZE      (DATA_QUAD_PER_SEG * sizeof( DATA_QUAD_LIST ))
+#define DATA_QUAD_SEG_MAX       (DATA_QUAD_MAX_INDEX_DEF / DATA_QUAD_PER_SEG + 1)
 
 typedef enum {
     IS_VALUE,
@@ -66,42 +70,7 @@ typedef struct data_quad_list {
     struct data_quad_list   *next;
 } DATA_QUAD_LIST;
 
-static unsigned BitMask[] = {
-    0x00000001,
-    0x00000003,
-    0x00000007,
-    0x0000000F,
-    0x0000001F,
-    0x0000003F,
-    0x0000007F,
-    0x000000FF,
-    0x000001FF,
-    0x000003FF,
-    0x000007FF,
-    0x00000FFF,
-    0x00001FFF,
-    0x00003FFF,
-    0x00007FFF,
-    0x0000FFFF,
-    0x0001FFFF,
-    0x0003FFFF,
-    0x0007FFFF,
-    0x000FFFFF,
-    0x001FFFFF,
-    0x003FFFFF,
-    0x007FFFFF,
-    0x00FFFFFF,
-    0x01FFFFFF,
-    0x03FFFFFF,
-    0x07FFFFFF,
-    0x0FFFFFFF,
-    0x1FFFFFFF,
-    0x3FFFFFFF,
-    0x7FFFFFFF,
-    0xFFFFFFFF
-};
-
-static DATA_QUAD_LIST   *DataQuadSegs[MAX_DATA_QUAD_SEGS]; /* segments for data quads */
+static DATA_QUAD_LIST   *DataQuadSegs[DATA_QUAD_SEG_MAX]; /* segments for data quads */
 static DATA_QUAD_LIST   *CurDataQuad;
 static int              DataQuadSegIndex;
 static int              DataQuadIndex;
@@ -123,7 +92,7 @@ bool DataQuadsAvailable( void )
 
 void InitDataQuads( void )
 {
-    DataQuadIndex = DATA_QUADS_PER_SEG;
+    DataQuadIndex = DATA_QUAD_PER_SEG;
     DataQuadSegIndex = -1;
     memset( DataQuadSegs, 0, sizeof( DataQuadSegs ) );
     /*
@@ -139,7 +108,7 @@ void FreeDataQuads( void )
 {
     unsigned    i;
 
-    for( i = 0; i < MAX_DATA_QUAD_SEGS; i++ ) {
+    for( i = 0; i < DATA_QUAD_SEG_MAX; i++ ) {
         if( DataQuadSegs[i] == NULL )
             break;
         FEfree( DataQuadSegs[i] );
@@ -180,8 +149,8 @@ static DATA_QUAD_LIST *NewDataQuad( void )
     static DATA_QUAD_LIST   *DataQuadPtr;
     DATA_QUAD_LIST          *dql;
 
-    if( DataQuadIndex >= (DATA_QUADS_PER_SEG - 1) ) {
-        if( DataQuadSegIndex == MAX_DATA_QUAD_SEGS ) {
+    if( DataQuadIndex >= (DATA_QUAD_PER_SEG - 1) ) {
+        if( DataQuadSegIndex == DATA_QUAD_SEG_MAX ) {
             CErr1( ERR_INTERNAL_LIMIT_EXCEEDED );
             CSuicide();
         }
@@ -333,15 +302,6 @@ static void RelSeekBytes( target_ssize n )
          * dql->next == NULL
          */
         ZeroBytes( n );
-    }
-}
-
-static void ChkConstant( unsigned value, unsigned max_value )
-{
-    if( value > max_value ) {
-        if( (value | (max_value >> 1)) != ~0U ) {
-            CWarn1( ERR_CONSTANT_TOO_BIG );
-        }
     }
 }
 
@@ -619,7 +579,8 @@ static void StorePointer( TYPEPTR typ, target_size size )
     if( typ->decl_type == TYP_POINTER ) {
         GenDataQuad( &dq, size );
     } else if( dq.type == QDT_STRING ) {
-        if( TypeSize( typ ) != DataPtrSize || CompFlags.strict_ANSI ) {
+        if( TypeSize( typ ) != DataPtrSize
+          || CompFlags.strict_ANSI ) {
             CErr1( ERR_INVALID_INITIALIZER );
         }
         GenDataQuad( &dq, size );
@@ -658,17 +619,54 @@ static void StoreInt64( TYPEPTR typ )
     GenDataQuad( &dq, TARGET_LONG64 );
 }
 
-static FIELDPTR InitBitField( FIELDPTR field )
+static void LoadBitField( uint64 *val64 )
+{
+    DATA_QUAD           *dqp;
+
+    val64->u._32[I64LO32] = 0;
+    val64->u._32[I64HI32] = 0;
+    if( CurDataQuad->next == NULL )
+        return;
+    dqp = &CurDataQuad->next->dq;
+    if( dqp->type == QDT_CONSTANT )
+        return;
+    if( CurDataQuad->next->size == TARGET_LONG64 ) {
+        val64->u._32[I64LO32] = dqp->u.long64.u._32[I64LO32];
+        val64->u._32[I64HI32] = dqp->u.long64.u._32[I64HI32];
+    } else {
+        val64->u._32[I64LO32] = dqp->u.ulong_values[0];
+    }
+}
+
+static void ResetBitField( uint64 *val64, unsigned start, unsigned width )
+{
+    uint64      mask;
+
+    /*
+     * mask = ( 1 << width ) - 1;
+     */
+    mask.u._32[I64LO32] = 1;
+    mask.u._32[I64HI32] = 0;
+    U64ShiftL( &mask, width, &mask );
+    if( mask.u._32[I64LO32] == 0 )
+        mask.u._32[I64HI32]--;
+    mask.u._32[I64LO32]--;
+    U64ShiftL( &mask, start, &mask );
+
+    val64->u._32[I64HI32] &= ~mask.u._32[I64HI32];
+    val64->u._32[I64LO32] &= ~mask.u._32[I64LO32];
+}
+
+static void InitBitField( FIELDPTR field )
 {
     TYPEPTR             typ;
     target_size         size;
     uint64              value64;
-    uint64              tmp;
-    unsigned            bit_value;
-    target_size         offset;
+    const_val           bit_value;
     TOKEN               token;
     bool                is64bit;
     DATA_TYPE           dtype;
+    unsigned            width;
 
     token = CurToken;
     if( CurToken == T_LEFT_BRACE )
@@ -677,38 +675,21 @@ static FIELDPTR InitBitField( FIELDPTR field )
     size = SizeOfArg( typ );
     dtype = typ->u.f.field_type;
     is64bit = ( dtype == TYP_LONG64 || dtype == TYP_ULONG64 );
-    U32ToU64( 0, &value64 );
-    offset = field->offset;
-    while( typ->decl_type == TYP_FIELD || typ->decl_type == TYP_UFIELD ) {
-        bit_value = 0;
-        if( CurToken != T_RIGHT_BRACE )
-            bit_value = ConstExpr();
-        if( typ->u.f.field_type == TYP_BOOL ) {
-            if( bit_value != 0 ) {
-                bit_value = 1;
+    LoadBitField( &value64 );
+    if( typ->u.f.field_type == TYP_BOOL ) {
+        width = 1;
+    } else {
+        width = typ->u.f.field_width;
+    }
+    ResetBitField( &value64, typ->u.f.field_start, width );
+    if( CurToken != T_RIGHT_BRACE ) {
+        if( ConstExprAndType( &bit_value ) ) {
+            if( CheckAssignBits( &bit_value.value, width, true ) ) {
+                CWarn1( ERR_CONSTANT_TOO_BIG );
             }
-        } else {
-            ChkConstant( bit_value, BitMask[typ->u.f.field_width - 1] );
-            bit_value &= BitMask[typ->u.f.field_width - 1];
-        }
-        if( is64bit ) {
-            U32ToU64( bit_value, &tmp );
-            U64ShiftL( &tmp, typ->u.f.field_start, &tmp );
-            value64.u._32[I64LO32] |= tmp.u._32[I64LO32];
-            value64.u._32[I64HI32] |= tmp.u._32[I64HI32];
-        } else {
-            value64.u._32[I64LO32] |= bit_value << typ->u.f.field_start;
-        }
-        field = field->next_field;
-        if( field == NULL )
-            break;
-        if( field->offset != offset )
-            break;    /* bit field done */
-        typ = field->field_type;
-        if( CurToken == T_EOF )
-            break;
-        if( CurToken != T_RIGHT_BRACE ) {
-            MustRecog( T_COMMA );
+            U64ShiftL( &bit_value.value, typ->u.f.field_start, &bit_value.value );
+            value64.u._32[I64LO32] |= bit_value.value.u._32[I64LO32];
+            value64.u._32[I64HI32] |= bit_value.value.u._32[I64HI32];
         }
     }
     if( is64bit ) {
@@ -721,7 +702,6 @@ static FIELDPTR InitBitField( FIELDPTR field )
             NextToken();
         MustRecog( T_RIGHT_BRACE );
     }
-    return( field );
 }
 
 
@@ -739,18 +719,21 @@ static void *DesignatedInit( TYPEPTR typ, TYPEPTR ctyp, void *field )
     target_size     offs;
     static bool     new_field = true;
 
-    if( !CompFlags.extensions_enabled && CHECK_STD( < , C99 ) ) {
+    if( !CompFlags.extensions_enabled
+      && CHECK_STD( < , C99 ) ) {
         return( field );
     }
 
-    if( CurToken != T_LEFT_BRACKET && CurToken != T_DOT ) {
+    if( CurToken != T_LEFT_BRACKET
+      && CurToken != T_DOT ) {
         new_field = true;
         return( field );
     }
     /*
      * if designator refers to outer type: back out
      */
-    if( typ != ctyp && new_field )
+    if( typ != ctyp
+      && new_field )
         return( NULL );
 
     new_field = false;
@@ -782,7 +765,8 @@ static void *DesignatedInit( TYPEPTR typ, TYPEPTR ctyp, void *field )
         NextToken();
     }
 
-    if( CurToken != T_LEFT_BRACKET && CurToken != T_DOT ) {
+    if( CurToken != T_LEFT_BRACKET
+      && CurToken != T_DOT ) {
         new_field = true;
         MustRecog( T_EQUAL );
     }
@@ -826,7 +810,8 @@ static void InitArray( TYPEPTR typ, TYPEPTR ctyp )
             break;
         if( m != n ) {
             elem_size = SizeOfArg( typ->object );
-            if( typ->u.array->unspecified_dim && m > array_size ) {
+            if( typ->u.array->unspecified_dim
+              && m > array_size ) {
                 RelSeekBytes( ( array_size - n ) * elem_size );
                 ZeroBytes( ( m - array_size ) * elem_size );
             } else {
@@ -853,7 +838,9 @@ static void InitArray( TYPEPTR typ, TYPEPTR ctyp )
             break;
         if( DesignatedInSubAggregate( typ->object->decl_type ) )
             continue;
-        if( n < array_size || typ == ctyp || typ->u.array->unspecified_dim ) {
+        if( n < array_size
+          || typ == ctyp
+          || typ->u.array->unspecified_dim ) {
             MustRecog( T_COMMA );
         }
         if( CurToken == T_RIGHT_BRACE ) {
@@ -895,12 +882,13 @@ static void InitStructUnion( TYPEPTR typ, TYPEPTR ctyp, FIELDPTR field )
         }
         ftyp = field->field_type;
         offset = field->offset + SizeOfArg( ftyp );
-        if( ftyp->decl_type == TYP_FIELD || ftyp->decl_type == TYP_UFIELD ) {
-            field = InitBitField( field );
+        if( ftyp->decl_type == TYP_FIELD
+          || ftyp->decl_type == TYP_UFIELD ) {
+            InitBitField( field );
         } else {
             InitSymData( ftyp, ctyp, 1 );
-            field = field->next_field;
         }
+        field = field->next_field;
         if( typ->decl_type == TYP_UNION ) {
             if( offset < n ) {
                 ZeroBytes( n - offset );    /* pad the rest */
@@ -917,7 +905,8 @@ static void InitStructUnion( TYPEPTR typ, TYPEPTR ctyp, FIELDPTR field )
             break;
         if( DesignatedInSubAggregate( ftyp->decl_type ) )
             continue;
-        if( field != NULL || typ == ctyp ) {
+        if( field != NULL
+          || typ == ctyp ) {
             MustRecog( T_COMMA );
         }
         if( CurToken == T_RIGHT_BRACE ) {
@@ -962,7 +951,8 @@ void InitSymData( TYPEPTR typ, TYPEPTR ctyp, int level )
     token = CurToken;
     if( CurToken == T_LEFT_BRACE ) {
         NextToken();
-        if( CurToken == T_RIGHT_BRACE || CurToken == T_COMMA ) {
+        if( CurToken == T_RIGHT_BRACE
+          || CurToken == T_COMMA ) {
             CErr1( ERR_EMPTY_INITIALIZER_LIST );
         }
     }
@@ -1081,7 +1071,8 @@ static bool CharArray( TYPEPTR typ )
 {
     if( CurToken == T_STRING ) {
         SKIP_TYPEDEFS( typ );
-        if( typ->decl_type == TYP_CHAR || typ->decl_type == TYP_UCHAR ) {
+        if( typ->decl_type == TYP_CHAR
+          || typ->decl_type == TYP_UCHAR ) {
             return( true );
         }
     }
@@ -1093,7 +1084,8 @@ static bool WCharArray( TYPEPTR typ )
 {
     if( CurToken == T_STRING ) {
         SKIP_TYPEDEFS( typ );
-        if( typ->decl_type == TYP_SHORT || typ->decl_type == TYP_USHORT ) {
+        if( typ->decl_type == TYP_SHORT
+          || typ->decl_type == TYP_USHORT ) {
             return( true );
         }
     }
@@ -1281,7 +1273,8 @@ void StaticInit( SYMPTR sym, SYM_HANDLE sym_handle )
      * If innermost array had unspecified dimension, create new types whose
      * dimensions will be determined by number of initializers
      */
-    if( (typ != NULL) && typ->u.array->unspecified_dim ) {
+    if( (typ != NULL)
+      && typ->u.array->unspecified_dim ) {
         if( struct_typ == NULL ) {
             /*
              * Array was not inside struct
@@ -1427,10 +1420,11 @@ static void InitStructUnionVar( SYMPTR sym, SYM_HANDLE sym_handle, int index, TY
             MustRecog( T_RIGHT_BRACE );
         if( CurToken == T_EOF )
             break;
-        if( field->next_field == NULL )
-            break;
         if( CurToken != T_RIGHT_BRACE ) {
             MustRecog( T_COMMA );
+        }
+        if( field->next_field == NULL ) {
+            break;
         }
     }
 }
@@ -1582,7 +1576,8 @@ static void InitArrayVar( SYMPTR sym, SYM_HANDLE sym_handle, TYPEPTR typ )
                 MustRecog( T_COMMA );
                 if( CurToken == T_RIGHT_BRACE )
                     break;
-                if( n && i >= n ) {
+                if( n
+                  && i >= n ) {
                     CErr1( ERR_TOO_MANY_INITS );
                 }
             }
@@ -1633,7 +1628,8 @@ static void InitArrayVar( SYMPTR sym, SYM_HANDLE sym_handle, TYPEPTR typ )
                 MustRecog( T_COMMA );
                 if( CurToken == T_RIGHT_BRACE )
                     break;
-                if( n && i >= n ) {
+                if( n
+                  && i >= n ) {
                     CErr1( ERR_TOO_MANY_INITS );
                 }
             }
@@ -1661,7 +1657,8 @@ void VarDeclEquals( SYMPTR sym, SYM_HANDLE sym_handle )
 {
     TYPEPTR     typ;
 
-    if( SymLevel == 0 || sym->attribs.stg_class == SC_STATIC ) {
+    if( SymLevel == 0
+      || sym->attribs.stg_class == SC_STATIC ) {
         if( sym->flags & SYM_INITIALIZED ) {
             CErrSymName( ERR_VAR_ALREADY_INITIALIZED, sym, sym_handle );
         }
@@ -1677,16 +1674,19 @@ void VarDeclEquals( SYMPTR sym, SYM_HANDLE sym_handle )
         /*
          * check for { before checking for array, struct or union
          */
-        if( CurToken != T_LEFT_BRACE && typ->decl_type != TYP_ARRAY ) {
+        if( CurToken != T_LEFT_BRACE
+          && typ->decl_type != TYP_ARRAY ) {
             AddStmt( AsgnOp( VarLeaf( sym, sym_handle ), T_ASSIGN_LAST, CommaExpr() ) );
             sym->flags |= SYM_ASSIGNED;
         } else if( typ->decl_type == TYP_ARRAY ) {
-            if( CurToken == T_LEFT_BRACE && CompFlags.auto_agg_inits ) {
+            if( CurToken == T_LEFT_BRACE
+              && CompFlags.auto_agg_inits ) {
                 InitArrayVar( sym, sym_handle, typ );
             } else {
                 AggregateVarDeclEquals( sym, sym_handle );
             }
-        } else if( typ->decl_type == TYP_STRUCT || typ->decl_type == TYP_UNION ) {
+        } else if( typ->decl_type == TYP_STRUCT
+          || typ->decl_type == TYP_UNION ) {
             if( CurToken == T_LEFT_BRACE
               && CompFlags.auto_agg_inits
               && SimpleStruct( typ ) ) {

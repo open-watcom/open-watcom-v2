@@ -173,8 +173,8 @@ static void addAllWOWModules( void )
          rc != 0 && strcmp( me.szModule, WOWAppInfo.modname ) != 0;
          rc = pVDMModuleNext( ProcessInfo.process_handle, ti->thread_handle, &me, NULL, 0 ) )
     {
-        memcpy( &im.Module, &me.szModule, sizeof( me.szModule ) );
-        memcpy( &im.FileName, &me.szExePath, sizeof( me.szExePath ) );
+        memcpy( im.Module, me.szModule, sizeof( me.szModule ) );
+        memcpy( im.FileName, me.szExePath, sizeof( me.szExePath ) );
         AddLib16( &im );
         me.dwSize = sizeof( MODULEENTRY );
     }

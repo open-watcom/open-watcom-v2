@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -262,7 +262,7 @@ bool_maybe  VisibleToCall( instruction *ins, name *op, bool modifies )
 {
     switch( op->n.class ) {
     case N_MEMORY:
-        if( modifies && (ins->flags.call_flags & CALL_WRITES_NO_MEMORY) )
+        if( modifies && (ins->flags.u.call_flags & CALL_WRITES_NO_MEMORY) )
             return( MB_FALSE );
         if( _IsModel( CGSW_GEN_FORTRAN_ALIASING ) ) {
             switch( op->m.memory_type ) {
@@ -294,7 +294,7 @@ bool_maybe  VisibleToCall( instruction *ins, name *op, bool modifies )
         // does a partial restore of the register-state, we do not
         // schedule any instructions past a call which has the
         // CALL_IS_SETJMP flag set
-        if( ins->flags.call_flags & CALL_IS_SETJMP )
+        if( ins->flags.u.call_flags & CALL_IS_SETJMP )
             return( MB_TRUE );
         return( MB_FALSE );
 #endif

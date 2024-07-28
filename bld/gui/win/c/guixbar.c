@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -250,7 +250,7 @@ bool GUIAPI GUIDrawBarGroup( gui_window *wnd, gui_text_ord row, gui_ord start,
         if( bstyle == GUI_BAR_SHADOW ) {
             gui_ord    x;
 
-            x = GUIScreenToScaleX( SHADOW_OFFSET );
+            x = GUIScaleFromScreenX( SHADOW_OFFSET );
             if( width2 < x ) {
                 if( width1 > x ) {
                     width1 -= x;

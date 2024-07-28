@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -141,15 +141,6 @@ void ClearScreen( void )
     setCursor( 0, 0 );
 
 } /* ClearScreen */
-
-/*
- * GetClockStart - get clock start position
- */
-void GetClockStart( void )
-{
-    ClockStart = &Scrn[EditVars.ClockX + EditVars.ClockY * EditVars.WindMaxWidth];
-
-} /* GetClockStart */
 
 /*
  * GetSpinStart - get spinner start position

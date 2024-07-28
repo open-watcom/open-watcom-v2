@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -91,13 +91,13 @@ hw_reg_set SavedRegs( void )
     return( saved );
 }
 
-type_class_def  CallState( aux_handle aux, type_def *tipe, call_state *state )
-/****************************************************************************/
+type_class_def  CallState( aux_handle aux, const type_def *tipe, call_state *state )
+/**********************************************************************************/
 {
     type_class_def      type_class;
     byte                i;
     hw_reg_set          parms[24];
-    hw_reg_set          *parm_src;
+    const hw_reg_set    *parm_src;
     hw_reg_set          *parm_dst;
 
     state->unalterable = FixedRegs();
@@ -137,8 +137,8 @@ type_class_def  CallState( aux_handle aux, type_def *tipe, call_state *state )
 }
 
 
-void    UpdateReturn( call_state *state, type_def *tipe, type_class_def type_class, aux_handle aux )
-/**************************************************************************************************/
+void    UpdateReturn( call_state *state, const type_def *tipe, type_class_def type_class, aux_handle aux )
+/********************************************************************************************************/
 {
     /* unused parameters */ (void)tipe; (void)aux;
 

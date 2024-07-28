@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,8 +34,6 @@
 #include "_aui.h"
 #include "guidlg.h"
 #include "wndregx.h"
-#include "dlgrx.rh"
-#include "dlgsrch.rh"
 #include <string.h>
 
 
@@ -112,6 +111,9 @@ static bool DlgHistoryKey( gui_window *gui, void *param, int edit, int list )
     gui_key     key;
 
     GUI_GET_KEY_CONTROL( param, id, key );
+
+    /* unused variable */ (void)id;
+
     switch( key ) {
     case GUI_KEY_UP:
         MoveCursor( gui, edit, list, -1 );
@@ -149,7 +151,7 @@ static  void    SetRXStatus( gui_window *gui )
 }
 
 
-static bool RXGUIEventProc( gui_window *gui, gui_event gui_ev, void *param )
+static bool GUICALLBACK RXGUIEventProc( gui_window *gui, gui_event gui_ev, void *param )
 {
     gui_ctl_id  id;
 
@@ -209,7 +211,7 @@ static void     SetDlgStatus( gui_window *gui, dlg_search *dlg )
 }
 
 
-static bool SrchGUIEventProc( gui_window *gui, gui_event gui_ev, void *param )
+static bool GUICALLBACK SrchGUIEventProc( gui_window *gui, gui_event gui_ev, void *param )
 {
     gui_ctl_id  id;
     dlg_search  *dlg;
@@ -237,7 +239,7 @@ static bool SrchGUIEventProc( gui_window *gui, gui_event gui_ev, void *param )
             GUICloseDialog( gui );
             return( true );
         case CTL_SRCH_EDIT_RX:
-            ResDlgOpen( &RXGUIEventProc, NULL, DIALOG_RX );
+            DlgOpenRes( &RXGUIEventProc, NULL, DIALOG_RX );
             return( true );
         case CTL_SRCH_PREV:
             dlg->direction = -1;
@@ -270,7 +272,7 @@ static int DoDlgSearch( a_window wnd, void *history, bool want_prev )
     dlg->case_ignore = SrchIgnoreCase;
     dlg->use_rx = SrchRX;
     dlg->history = history;
-    ResDlgOpen( &SrchGUIEventProc, dlg, want_prev ? DIALOG_SEARCH : DIALOG_SEARCH_ALL );
+    DlgOpenRes( &SrchGUIEventProc, dlg, want_prev ? DIALOG_SEARCH : DIALOG_SEARCH_ALL );
     direction = dlg->direction;
     SrchRX = dlg->use_rx;
     SrchIgnoreCase = dlg->case_ignore;
@@ -283,13 +285,13 @@ static int DoDlgSearch( a_window wnd, void *history, bool want_prev )
     return( direction );
 }
 
-int DlgSearch( a_window wnd, void *history )
+int WNDAPI DlgSearch( a_window wnd, void *history )
 {
     return( DoDlgSearch( wnd, history, true ) );
 }
 
 
-bool DlgSearchAll( char **expr, void *history )
+bool WNDAPI DlgSearchAll( char **expr, void *history )
 {
     int         direction;
 

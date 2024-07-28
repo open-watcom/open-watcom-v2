@@ -12,5 +12,5 @@ main.obj : main.cpp hello.xh
 hello.xih hello.xh : hello.idl
     sc -s"xih;xh" $<
 
-clean : .symbolic
+clean : .SYMBOLIC
     rm -f *.obj *.exe *.xh *.xih *.err

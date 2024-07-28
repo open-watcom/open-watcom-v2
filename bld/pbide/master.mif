@@ -1,9 +1,12 @@
 tree_depth = 4
 
 proj_name = pbide
-name = dlldbg
 
 pbide_autodepends = .AUTODEPEND
+
+pbide_ntverrc = ..
+
+name = dlldbg
 
 !include cproj.mif
 !include defrule.mif
@@ -30,8 +33,6 @@ exetarg_res  = $(name).res
 #
 # rc and others
 #
-!include verrc.mif
-
 $(name).res : ../dlldbg.rc ../debugger.ico $(__MAKEFILES__)
     @%make echo_rc
-    $(rc) $(ppflags_common) $(rc_flags) $[@ -fo=$@
+    $(rc) $(ppflags_common) $(rc_cppflags) $(rc_flags) $[@ -fo=$@

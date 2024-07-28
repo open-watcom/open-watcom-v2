@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,9 +32,9 @@
 
 extern  void    BGStartInline( cg_sym_handle proc_sym );
 extern  void    BGAddInlineParm( an addr );
-extern  an      BGStopInline( call_handle call, type_def *tipe );
-extern  void    BGProcInline( cg_sym_handle proc_sym, type_def *tipe );
-extern  void    BGParmInline( cg_sym_handle sym, type_def *tipe );
-extern  void    BGRetInline( an addr, type_def *tipe );
+extern  an      BGStopInline( call_handle call, const type_def *tipe );
+extern  void    BGProcInline( cg_sym_handle proc_sym, const type_def *tipe );
+extern  void    BGParmInline( cg_sym_handle sym, const type_def *tipe );
+extern  void    BGRetInline( an addr, const type_def *tipe );
 extern  bool    BGInInline( void );
 extern  int     BGInlineDepth( void );

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -110,7 +110,7 @@ static int ORLSeek( FILE *fp, long pos, int where )
     return( 0 );
 }
 
-void InitObjORL( void )
+void InitORLObj( void )
 /*********************/
 {
     ORLSetFuncs( orl_cli_funcs, ORLRead, ORLSeek, ChkLAlloc, LFree );
@@ -119,7 +119,7 @@ void InitObjORL( void )
     ReadCacheList = NULL;
 }
 
-void ObjORLFini( void )
+void FiniORLObj( void )
 /*********************/
 {
     ORLFini( ORLHandle );
@@ -161,14 +161,12 @@ static void ClearCachedData( file_list *list )
 /********************************************/
 {
     readcache   *cache;
-    readcache   *next;
 
-    for( cache = ReadCacheList; cache != NULL; cache = next ) {
-        next = cache->next;
+    while( (cache = ReadCacheList) != NULL ) {
+        ReadCacheList = cache->next;
         CacheFree( list, cache->data );
         _LnkFree( cache );
     }
-    ReadCacheList = NULL;
 }
 
 bool IsORL( file_list *list, unsigned long loc )
@@ -458,7 +456,7 @@ static orl_return DeclareSegment( orl_sec_handle sec )
     segdata                 *sdata;
     segnode                 *snode;
     const char              *name;
-    unsigned_32 _WCUNALIGNED *contents;
+    unsigned char           *contents;
     size_t                  len;
     orl_sec_flags           flags;
     orl_sec_type            type;
@@ -491,8 +489,18 @@ static orl_return DeclareSegment( orl_sec_handle sec )
             /*
              * .idata$4 it is an import by ordinal
              */
-            ORLSecGetContents( sec, (void *)&contents );
-            ImpOrdinal = *contents;
+            ORLSecGetContents( sec, &contents );
+            if( flags & ORL_SEC_FLAG_USE_64 ) {
+                uint_64 val;
+
+                memcpy( &val, contents, sizeof( val ) );
+                ImpOrdinal = (ordinal_t)val;
+            } else {
+                uint_32 val;
+
+                memcpy( &val, contents, sizeof( val ) );
+                ImpOrdinal = (ordinal_t)val;
+            }
         }
         sdata->isdead = true;
         sdata->isidata = true;
@@ -528,7 +536,7 @@ static segnode *FindSegNode( orl_sec_handle sechdl )
 {
     orl_table_index     idx;
 
-    if( sechdl == ORL_NULL_HANDLE )
+    if( sechdl == NULL )
         return( NULL );
     idx = ORLCvtSecHdlToIdx( sechdl );
     if( idx == 0 ) {
@@ -661,7 +669,7 @@ static orl_return ProcSymbol( orl_symbol_handle symhdl )
         } else {
             newnode->isdefd = true;
             ORLSymbolGetValue( symhdl, &val64 );
-            if( (type & ORL_SYM_TYPE_COMMON) && (type & ORL_SYM_TYPE_OBJECT) && sechdl == ORL_NULL_HANDLE ) {
+            if( (type & ORL_SYM_TYPE_COMMON) && (type & ORL_SYM_TYPE_OBJECT) && sechdl == NULL ) {
                 sym = MakeCommunalSym( sym, val64.u._32[I64LO32], false, BITS_32 );
             } else if( snode != NULL && snode->entry != NULL && snode->entry->iscdat ) {
                 DefineComdatSym( snode, sym, val64.u._32[I64LO32] );

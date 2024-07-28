@@ -3,26 +3,28 @@
 #
 
 !ifdef bootstrap
-asminline_lib = $(as_dir)/$(target_cpu)/$(objs_subdir)/asinline.lib
-!else ifeq $(proj_name)_rtdll 1
+cli_asminline_libs = $(as_dir)/$(target_cpu)/$(objs_subdir)/asinline.lib
+!else ifdef $(proj_name)_rtdll
 #
 # AS in-line run-time DLL used
 #
-asminline_lib = $(as_dir)/$(target_cpu)/$(objs_subdir).rtd/asinline.lib
-!else ifeq $(proj_name)_dll 1
+cli_asminline_libs = $(as_dir)/$(target_cpu)/$(objs_subdir).rtd/asinline.lib
+!else ifdef $(proj_name)_dll
 #
 # AS in-line DLL used
 #
-asminline_lib = $(as_dir)/$(target_cpu)/$(objs_subdir).dll/asinline.lib
+cli_asminline_libs = $(as_dir)/$(target_cpu)/$(objs_subdir).dll/asinline.lib
 !else
 #
 # AS in-line library used
 #
-asminline_lib = $(as_dir)/$(target_cpu)/$(objs_subdir)/asinline.lib
+cli_asminline_libs = $(as_dir)/$(target_cpu)/$(objs_subdir)/asinline.lib
 !endif
 
 #
-asminline_c =
-asminline_inc_dirs = -I"$(as_dir)/h" -I"$(owl_dir)/h"
-asminline_deps =
-asminline_objs =
+cli_asminline_c =
+cli_asminline_inc_dirs = -I"$(as_dir)/h"
+cli_asminline_deps =
+cli_asminline_objs =
+cli_asminline_rc_inc_dirs =
+cli_asminline_rc_deps =

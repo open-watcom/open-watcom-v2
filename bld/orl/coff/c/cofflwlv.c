@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -42,7 +42,6 @@ orl_return CoffCreateSymbolHandles( coff_file_handle file_hnd )
 {
     coff_quantity       i;
     coff_quantity       prev;
-//    int                 len;
     unsigned_16         type; // type of CoffSymEnt
     coff_symbol_handle  current;
     coff_sym_section    *aux;
@@ -63,18 +62,20 @@ orl_return CoffCreateSymbolHandles( coff_file_handle file_hnd )
         current->coff_file_hnd = file_hnd;
         current->has_bf = false;
         current->symbol = (coff_symbol *)( file_hnd->symbol_table->contents + sizeof( coff_symbol ) * i );
-        if( current->symbol->name.non_name.zeros == 0 ) {
-            current->name = (char *)( file_hnd->string_table->contents + current->symbol->name.non_name.offset - sizeof( coff_sec_size ) );
+        if( current->symbol->name.u.non_name.zeros == 0 ) {
+            current->name = (char *)( file_hnd->string_table->contents + current->symbol->name.u.non_name.offset - sizeof( coff_sec_size ) );
             current->name_alloced = false;
         } else {
-//            len = strlen( current->symbol->name.name_string );
-            if( strlen( current->symbol->name.name_string ) >= COFF_SYM_NAME_LEN ) {
+            char    buff[COFF_SYM_NAME_LEN + 1];
+
+            strncpy( buff, current->symbol->name.u.name_string, COFF_SYM_NAME_LEN );
+            buff[COFF_SYM_NAME_LEN] = '\0';
+            if( strlen( buff ) == COFF_SYM_NAME_LEN ) {
                 current->name = _ClientAlloc( file_hnd, COFF_SYM_NAME_LEN + 1 );
-                strncpy( current->name, current->symbol->name.name_string, COFF_SYM_NAME_LEN );
-                current->name[COFF_SYM_NAME_LEN] = '\0';
+                strcpy( current->name, buff );
                 current->name_alloced = true;
             } else {
-                current->name = current->symbol->name.name_string;
+                current->name = current->symbol->name.u.name_string;
                 current->name_alloced = false;
             }
         }

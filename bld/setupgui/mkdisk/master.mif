@@ -2,7 +2,7 @@ tree_depth = 4
 
 proj_name = mkdisk
 
-mkdisk_autodepends = .autodepend
+mkdisk_autodepends = .AUTODEPEND
 
 mkdisk_trmem = 1
 
@@ -14,7 +14,7 @@ mkdisk_trmem = 1
 ziplib = $(setupgui_dir)/ziplib/$(objs_subdir)/ziplib.lib
 zlib   = $(setupgui_dir)/zlib/$(objs_subdir)/zlib.lib
 
-bld_extra_incs = -I"$(setupgui_dir)/h" -I"$(libzip_dir)/lib" -I"$(zlib_dir)" -I"$(builder_dir)/h" -I"$(fe_misc_dir)/h"
+#bld_extra_incs = -I"$(setupgui_dir)/h" -I"$(libzip_dir)/lib" -I"$(zlib_dir)" -I"$(builder_dir)/h" -I"$(fe_misc_dir)/h"
 
 extra_cpp_flags_utils = $(trmem_cpp_flags)
 
@@ -22,18 +22,22 @@ extra_c_flags_utils = $(trmem_cover_cflags)
 
 .c : ..;$(trmem_dir)
 
-commands = mkexezip.exe uzip.exe splitfil.exe packsize.exe genmkfil.exe langdat.exe mkinf.exe
+commands = mkexezip.exe uzip.exe langdat.exe mkinf.exe # splitfil.exe packsize.exe genmkfil.exe
 
 all : $(commands) .SYMBOLIC
 
-.c.exe:
-    @%make echo_bldccl
-    $(bld_ccl) $(ppflags_common) $(ppflags_autodep) $[@ $(bld_cclflags) $(bld_ldflags)
-
 langdat.exe : langdat.c $(builder_dir)/c/utils.c $(trmem_objs)
     @%make echo_bldccl
-    $(bld_ccl) $(ppflags_common) $(ppflags_autodep) $< $(bld_cclflags) $(bld_ldflags)
+    $(bld_ccl) $(ppflags_common) $(ppflags_autodep) $(bld_ppflags_sys) $(bld_cppflags) $< $(bld_cclflags) -I"$(builder_dir)/h" $(bld_ldflags)
+
+mkinf.exe: mkinf.c
+    @%make echo_bldccl
+    $(bld_ccl) $(ppflags_common) $(ppflags_autodep) $(bld_ppflags_sys) $(bld_cppflags) $[@ $(bld_cclflags) $(bld_ldflags)
+
+mkexezip.exe: mkexezip.c
+    @%make echo_bldccl
+    $(bld_ccl) $(ppflags_common) $(ppflags_autodep) $(bld_ppflags_sys) $(bld_cppflags) $[@ $(bld_cclflags) -I"$(libzip_dir)/lib" -I"$(zlib_dir)" -I"$(setupgui_dir)/h" $(ziplib) $(zlib) $(bld_ldflags)
 
 uzip.exe: uzip.c
     @%make echo_bldccl
-    $(bld_ccl) $(ppflags_common) $(ppflags_autodep) $[@ $(bld_cclflags) $(ziplib) $(zlib) $(bld_ldflags)
+    $(bld_ccl) $(ppflags_common) $(ppflags_autodep) $(bld_ppflags_sys) $(bld_cppflags) $[@ $(bld_cclflags) -I"$(libzip_dir)/lib" $(ziplib) $(zlib) $(bld_ldflags)

@@ -4,7 +4,7 @@
 # tabs, too!
 
 INCS = -I. -I../h -I../../watcom/h -I../../lib_misc/h $(DEFS)
-DEFS = $(TARGETDEF) -D__UNIX__ -DBOOTSTRAP -D_POSIX_C_SOURCE=200112L -D_BLDVER=$(OWBLDVERTOOL) -D_CYEAR=xxxx
+DEFS = $(TARGETDEF) -D__UNIX__ -DBOOTSTRAP -DINCL_MSGTEXT -D_POSIX_C_SOURCE=200112L -D_BLDVER=$(OWBLDVERTOOL) -D_CYEAR=xxxx
 CFLAGS = -g -O2 $(INCS)
 
 all: ../../../build/$(OWOBJDIR)/wmake
@@ -79,7 +79,7 @@ wsplice.exe: wsplice.o clibext.o
 	$(CC) -g wsplice.o clibext.o -o $@
 
 usage.gh : ../h/usage.sp wsplice.exe
-	./wsplice.exe -kENGLISH -f 'pick((MSG_USAGE_BASE+%#%+), "%s", "")' ../h/usage.sp $@
+	./wsplice.exe -kENGLISH -kUNIX -f 'pick((MSG_USAGE_BASE+%#%+), "%s", "")' ../h/usage.sp $@
 
 cretype.exe : ../c/cretype.c
 	$(CC) -I../../watcom/h -D__UNIX__ -o $@ $?

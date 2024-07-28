@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -374,8 +374,8 @@ static  void    SearchDefUse( void )
         for( ins = blk->ins.head.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
             if( ( ins->head.opcode == OP_CALL
                || ins->head.opcode == OP_CALL_INDIRECT )
-             && ( ( ins->flags.call_flags & CALL_READS_NO_MEMORY ) == 0
-/*21-nov-90*/  || ( ins->flags.call_flags & CALL_WRITES_NO_MEMORY ) == 0 ) ) {
+             && ( ( ins->flags.u.call_flags & CALL_READS_NO_MEMORY ) == 0
+/*21-nov-90*/  || ( ins->flags.u.call_flags & CALL_WRITES_NO_MEMORY ) == 0 ) ) {
                 UseDefGlobals( blk );
                 touched_non_op = true;
             }

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -483,9 +483,9 @@ static  instruction    *To86Move( instruction *ins, instruction *next )
  * the 8086 using an available 8086 register.
  */
 {
-    hw_reg_set  *regs;
-    name        *reg;
-    instruction *ret;
+    const hw_reg_set    *regs;
+    name                *reg;
+    instruction         *ret;
 
     ret = ins->head.next;
     for( regs = RegSets[RL_MOVE]; ; ++regs ) {

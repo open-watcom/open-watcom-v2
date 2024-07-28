@@ -18,7 +18,6 @@ wgml_trmem = 1
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif
-!include wres.mif
 !include trmem.mif
 
 !include ../wgmlobjs.mif
@@ -28,7 +27,7 @@ wgml_trmem = 1
 #
 .c: ../c;$(watcom_dir)/c;$(trmem_dir)
 
-inc_dirs = -I. -I"../h" $(wres_inc_dirs)
+inc_dirs = -I. -I"../h" $(cli_wres_inc_dirs)
 
 extra_cpp_flags_gmemory = $(trmem_cpp_flags)
 
@@ -47,8 +46,7 @@ extra_c_flags_gmemory = $(trmem_cover_cflags)
 #
 exetarg_prebuild_objs = wgmlmsgs.gh wgmlmsge.gh
 exetarg_objs          = $(objs)
-exetarg_libs          = $(wres_lib)
-exetarg_res_wresui    = wresui.res
+exetarg_res           = $(proj_name).res
 !include exetarg.mif
 
 #
@@ -56,9 +54,9 @@ exetarg_res_wresui    = wresui.res
 #
 msgfiles = ../h/wgmlerr.msg ../h/wgml.msg
 
-wresui.res : ../h/wgml.rc wgmlmsgs.gh ../h/wgmlmsg.h $(msgfiles) $(__MAKEFILES__)
+$(proj_name).res : ../h/wgml.rc wgmlmsgs.gh ../h/wgmlmsg.h $(msgfiles) $(__MAKEFILES__)
     @%make echo_rc
-    $(rcui8)
+    $(rcu8j) $(ppflags_common) $(rc_cppflags) $(rc_flags) $(rc_inc_path) $[@ -fo=$@
 
 wgmlmsgs.gh : $(msgfiles) $(__MAKEFILES__)
     @%make echo_awk

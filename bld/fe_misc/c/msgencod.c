@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -48,7 +48,7 @@
 #include "wio.h"
 #include "watcom.h"
 #include "lsspec.h"
-#include "encodlng.h"
+#include "wreslang.h"
 #include "cvttable.h"
 
 #include "clibext.h"
@@ -112,6 +112,8 @@ def_msg_type( JCK, "JCK_" ) \
 
 #define SKIP_SPACES(s)  while( isspace( *s ) ) s++
 
+#define BLANKARG( s )   ((s)[0] == '.' && (s)[1] == '\0')
+
 typedef enum {
 #define def_tag( e ) TAG_##e,
     ALL_TAGS
@@ -159,7 +161,7 @@ typedef struct msgwordref {
 typedef struct msgsym {
     struct msgsym *next;
     struct msgsym *sortedByName[2];
-    char        *lang_txt[LANG_MAX];
+    char        *lang_txt[LANG_RLE_MAX];
     char        *fname;
     char        *attr;
     unsigned    line;
@@ -183,12 +185,12 @@ typedef struct data_word_tables {
 typedef int (*comp_fn)(const void *,const void *);
 
 const char *langName[] = {
-    #define LANG_DEF( id, dbcs )        #id ,
-    LANG_DEFS
-    #undef LANG_DEF
+    #define LANG_RLE_DEF( id, val, dbcs )        #id ,
+    LANG_RLE_DEFS
+    #undef LANG_RLE_DEF
 };
 
-unsigned langTextCount[LANG_MAX];
+unsigned langTextCount[LANG_RLE_MAX];
 
 static const char *tagNames[] = {
 #define def_tag( e ) #e,
@@ -305,7 +307,7 @@ static void error( const char *f, ... )
 
     ++errors;
     va_start( args, f );
-    if( line ) {
+    if( line > 0 ) {
         printf( "%s(%u): Error! E000: ", ifname, line );
     }
     vprintf( f, args );
@@ -319,7 +321,7 @@ static void warn( const char *f, ... )
     ++warnings;
     va_start( args, f );
     if( !flags.no_warn ) {
-        if( line ) {
+        if( line > 0 ) {
             printf( "%s(%u): Warning! W000: ", ifname, line );
         }
         vprintf( f, args );
@@ -327,14 +329,14 @@ static void warn( const char *f, ... )
     va_end( args );
 }
 
-static void errorLocn( const char *fn, unsigned ln, const char *f, ... )
+static void errorLocn( const char *fn, unsigned lineno, const char *f, ... )
 {
     va_list args;
 
     ++errors;
     va_start( args, f );
-    if( ln ) {
-        printf( "%s(%u): Error! E000: ", fn, ln );
+    if( lineno > 0 ) {
+        printf( "%s(%u): Error! E000: ", fn, lineno );
     }
     vprintf( f, args );
     va_end( args );
@@ -358,8 +360,9 @@ static FILE *initFILE( const char *fnam, const char *fmod )
     bool        open_read;
 
     fp = NULL;
-    open_read = ( strchr( fmod, 'r' ) != NULL );
-    if( open_read || fnam[0] != '.' || fnam[1] != '\0' ) {
+    if( *fnam != '\0'
+      && !BLANKARG( fnam ) ) {
+        open_read = ( strchr( fmod, 'r' ) != NULL );
         fp = fopen( fnam, fmod );
         if( fp == NULL ) {
             printf( "fatal: cannot open '%s' for %s\n", fnam, ( open_read ) ? "input" : "output" );
@@ -438,7 +441,8 @@ static unsigned pickUpLevel( const char *p )
     unsigned long   level;
 
     level = pickUpNum( p );
-    if( level == 0 || level > 15 ) {
+    if( level == 0
+      || level > 15 ) {
         error( "<level> can only be in the range 1-15\n" );
     }
     return( level );
@@ -592,7 +596,9 @@ static void do_msggrp( const char *p )
     flags.grouped = true;
     nextWord( group, p );
     len = strlen( group );
-    if( !flags.rc && !flags.gen_gpick && len != 2 ) {
+    if( !flags.rc
+      && !flags.gen_gpick
+      && len != 2 ) {
         error( ":msggroup code '%s' not two characters\n", group );
         switch( len ) {
         case 0 :
@@ -622,7 +628,8 @@ static void do_msggrp( const char *p )
             *end = grp;
             break;
         } else {
-            if( (strcmp( cur->name, group ) == 0) && !saw_dup ) {
+            if( (strcmp( cur->name, group ) == 0)
+              && !saw_dup ) {
                 error( "msggroup code '%s' same as previous code\n", group );
                 saw_dup = true;
             }
@@ -674,7 +681,7 @@ static void do_msgtxt( const char *p )
 {
     MSGSYM *m = mustBeProceededByMSGSYM();
 
-    m->lang_txt[LANG_English] = strdup( p );
+    m->lang_txt[LANG_RLE_ENGLISH] = strdup( p );
     totalMsgLen += commonTxt( p );
 }
 
@@ -682,10 +689,10 @@ static void do_msgjtxt( const char *p )
 {
     MSGSYM *m = mustBeProceededByMSGSYM();
 
-    m->lang_txt[LANG_Japanese] = strdup( p );
+    m->lang_txt[LANG_RLE_JAPANESE] = strdup( p );
     commonTxt( p );
-    if( p[0] ) {
-        langTextCount[LANG_Japanese]++;
+    if( p[0] != '\0' ) {
+        langTextCount[LANG_RLE_JAPANESE]++;
     }
 }
 
@@ -785,15 +792,18 @@ static void checkForGMLEscape( const char *p )
 
     ++p;
     c1 = *p++;
-    if( c1 == '\0' || ! isalpha( c1 ) ) {
+    if( c1 == '\0'
+      || ! isalpha( c1 ) ) {
         return;
     }
     c2 = *p++;
-    if( c2 == '\0' || ! isalpha( c2 ) ) {
+    if( c2 == '\0'
+      || ! isalpha( c2 ) ) {
         return;
     }
     is_escape = false;
-    if( *p == '\0' || ! isalpha( *p ) ) {
+    if( *p == '\0'
+      || ! isalpha( *p ) ) {
         is_escape = true;
     }
     if( is_escape ) {
@@ -820,7 +830,8 @@ static char *inputIO( void )
         }
         if( c == '\n' )
             break;
-        if( c == '\r' && p[1] == '\n' ) {
+        if( c == '\r'
+          && p[1] == '\n' ) {
             *p++ = '\0';
             break;
         }
@@ -876,14 +887,14 @@ static int percentPresent( char c, const char *p )
     return( 0 );
 }
 
-static void checkReplacements( MSGSYM *m, int start_lang, int end_lang )
+static void checkReplacements( MSGSYM *m, wres_lang_id start_lang, wres_lang_id end_lang )
 {
-    int i;
+    wres_lang_id lang;
     char c;
     char *eng_text;
     char *p;
 
-    eng_text = m->lang_txt[LANG_English];
+    eng_text = m->lang_txt[LANG_RLE_ENGLISH];
     if( eng_text == NULL ) {
         return;
     }
@@ -894,16 +905,15 @@ static void checkReplacements( MSGSYM *m, int start_lang, int end_lang )
         c = *++p;
         if( c == '\0' )
             break;
-        for( i = start_lang; i < end_lang; ++i ) {
+        for( lang = start_lang; lang < end_lang; ++lang ) {
             char *intl_text;
-            if( i == LANG_English )
+            if( lang == LANG_RLE_ENGLISH )
                 continue;
-            intl_text = m->lang_txt[i];
+            intl_text = m->lang_txt[lang];
             if( intl_text == NULL )
                 continue;
             if( ! percentPresent( c, intl_text ) ) {
-                errorLocn( m->fname, m->line, "MSGSYM %s's %s text has format mismatch for %%%c\n", m->name,
-                langName[i], c );
+                errorLocn( m->fname, m->line, "MSGSYM %s's %s text has format mismatch for %%%c\n", m->name, langName[lang], c );
             }
         }
     }
@@ -912,28 +922,30 @@ static void checkReplacements( MSGSYM *m, int start_lang, int end_lang )
 static void checkMessages( void )
 {
     MSGSYM *m;
-    int start_lang;
-    int end_lang;
-    int i;
+    wres_lang_id    start_lang;
+    wres_lang_id    end_lang;
+    wres_lang_id    lang;
 
     for( m = messageSyms; m != NULL; m = m->next ) {
         if( flags.international ) {
             start_lang = 0;
-            end_lang = LANG_MAX;
+            end_lang = LANG_RLE_MAX;
         } else {
-            start_lang = LANG_English;
+            start_lang = LANG_RLE_ENGLISH;
             end_lang = start_lang + 1;
         }
-        for( i = start_lang; i < end_lang; ++i ) {
-            if( m->lang_txt[i] == NULL ) {
-                errorLocn( m->fname, m->line, "MSGSYM %s has no %s text\n", m->name,
-                langName[i] );
+        for( lang = start_lang; lang < end_lang; ++lang ) {
+            if( m->lang_txt[lang] == NULL ) {
+                errorLocn( m->fname, m->line, "MSGSYM %s has no %s text\n", m->name, langName[lang] );
             }
         }
         checkReplacements( m, start_lang, end_lang );
         if( !flags.ignore_prefix ) {
             switch( m->mtype ) {
-            #define def_msg_type( e, p ) case MSG_TYPE_##e: if( strPref( m, p ) ) errorLocn( m->fname, m->line, "MSGSYM %s has incorrect prefix (should be " p ")\n", m->name ); break;
+            #define def_msg_type( e, p ) case MSG_TYPE_##e: \
+              if( strPref( m, p ) ) \
+                errorLocn( m->fname, m->line, "MSGSYM %s has incorrect prefix (should be " p ")\n", m->name ); \
+              break;
                 ALL_MSG_TYPES
             #undef def_msg_type
             default:
@@ -1103,10 +1115,11 @@ static void splitIntoWords( void )
     const char *p;
 
     for( m = messageSyms; m != NULL; m = m->next ) {
-        p = m->lang_txt[LANG_English];
+        p = m->lang_txt[LANG_RLE_ENGLISH];
         a = &(m->words);
         for( ;; ) {
-            if( isspace( p[0] ) && isspace( p[1] ) ) {
+            if( isspace( p[0] )
+              && isspace( p[1] ) ) {
                 errorLocn( m->fname, m->line, "MSGSYM %s text has too many blanks '%s'\n", m->name, p );
             }
             SKIP_SPACES( p );
@@ -1295,7 +1308,7 @@ static void writeMsgTable( void )
     outputTableStart( o_msgc, "uint_8 const", "msg_text" );
     for( m = messageSyms; m != NULL; m = m->next ) {
         msg_base[current_base++] = current_text;
-        fprintf( o_msgc, "\n/* %4u %s */\n", m->index, m->lang_txt[LANG_English] );
+        fprintf( o_msgc, "\n/* %4u %s */\n", m->index, m->lang_txt[LANG_RLE_ENGLISH] );
         for( r = m->words; r != NULL; r = r->next ) {
             w = r->word;
             if( w->index == NO_INDEX ) {
@@ -1414,19 +1427,19 @@ static void writeMsgC( void )
         if( flags.rc ) {
             fputs( "\n", o_msgc );
             for( m = messageSyms; m != NULL; m = m->next ) {
-                str = m->lang_txt[LANG_Japanese];
+                str = m->lang_txt[LANG_RLE_JAPANESE];
                 if( !flags.out_utf8 ) {
                     utf8_to_cp932( str, tmp );
                     tmp[sizeof( tmp ) - 1] = '\0';
                     str = tmp;
                 }
                 fprintf( o_msgc, "pick( %s, \"%s\", \"%s\" )\n",
-                    m->name, m->lang_txt[LANG_English], str );
+                    m->name, m->lang_txt[LANG_RLE_ENGLISH], str );
             }
             fputs( "\n", o_msgc );
         } else if( flags.gen_gpick ) {
             for( m = messageSyms; m != NULL; m = m->next ) {
-                fprintf( o_msgc, "\"%s\",\n", m->lang_txt[LANG_English] );
+                fprintf( o_msgc, "\"%s\",\n", m->lang_txt[LANG_RLE_ENGLISH] );
             }
         } else {
             writeMSGIfndefs();
@@ -1553,15 +1566,15 @@ static void dumpInternational( void )
     char const *text;
     MSGSYM *m;
     FILE *fp;
-    unsigned lang;
+    wres_lang_id lang;
     unsigned len;
     bool dump_warning;
     char err_fname[16];
     LocaleErrors errors_header;
     char tmp[512];
 
-    for( lang = LANG_FIRST_INTERNATIONAL; lang < LANG_MAX; ++lang ) {
-        sprintf( err_fname, "errors%02u." LOCALE_DATA_EXT, lang );
+    for( lang = LANG_RLE_FIRST_INTERNATIONAL; lang < LANG_RLE_MAX; ++lang ) {
+        sprintf( err_fname, "errors%02d." LOCALE_DATA_EXT, lang );
         fp = fopen( err_fname, "wb" );
         if( fp == NULL ) {
             fatal( "cannot open international file for write" );
@@ -1583,9 +1596,9 @@ static void dumpInternational( void )
                     warn( "using English text for %s version of %s\n",
                         langName[lang], m->name );
                 }
-                text = m->lang_txt[LANG_English];
+                text = m->lang_txt[LANG_RLE_ENGLISH];
             }
-            if( lang == LANG_Japanese ) {
+            if( lang == LANG_RLE_JAPANESE ) {
                 if( !flags.out_utf8 ) {
                     utf8_to_cp932( text, tmp );
                     tmp[sizeof( tmp ) - 1] = '\0';
@@ -1620,7 +1633,8 @@ static char *ProcessOption( char *p, char *option_start )
             flags.international = true;
             return( p );
         }
-        if( *p++ == 'p' && ISSEP( p[0] ) ) { // 'ip'
+        if( *p++ == 'p'
+          && ISSEP( p[0] ) ) { // 'ip'
             flags.ignore_prefix = true;
             return( p );
         }
@@ -1641,18 +1655,23 @@ static char *ProcessOption( char *p, char *option_start )
         flags.gen_gpick = true;
         return( p );
     case 'u':   // 'utf8'
-        if( *p++ == 't' && *p++ == 'f' && *p++ == '8' && ISSEP( p[0] ) ) {
+        if( *p++ == 't'
+          && *p++ == 'f'
+          && *p++ == '8'
+          && ISSEP( p[0] ) ) {
             flags.out_utf8 = true;
             return( p );
         }
         break;
     case 'r':   // 'rc='
-        if( *p++ == 'c' && *p++ == '=' ) {
+        if( *p++ == 'c'
+          && *p++ == '=' ) {
             int i;
 
             i = 0;
-            while( *p != '\0' && !isspace( *p ) ) {
-                if( i < sizeof( flags.rc_macro ) - 1 ) {
+            while( *p != '\0'
+              && !isspace( *p ) ) {
+                if( i < ( sizeof( flags.rc_macro ) - 1 ) ) {
                     flags.rc_macro[i++] = *p;
                 }
                 p++;
@@ -1663,7 +1682,9 @@ static char *ProcessOption( char *p, char *option_start )
         }
         break;
     case 'l':   // 'len='
-        if( *p++ == 'e' && *p++ == 'n' && *p++ == '=' ) {
+        if( *p++ == 'e'
+          && *p++ == 'n'
+          && *p++ == '=' ) {
             long    val;
             char    *end;
 
@@ -1693,13 +1714,15 @@ static char *getFileName( char *str, char *name )
             if( ch == '"' ) {
                 break;
             }
-            if( ch == '\\' && *str == '"' ) {
+            if( ch == '\\'
+              && *str == '"' ) {
                 ch = *str++;
             }
             *name++ = ch;
         }
     } else {
-        while( *str != '\0' && !isspace( *str ) ) {
+        while( *str != '\0'
+          && !isspace( *str ) ) {
             *name++ = *str++;
         }
     }
@@ -1731,7 +1754,8 @@ static char *ReadIndirectFile( char *name )
                 *str = '\0';        // - mark end of str
                 break;
             }
-            if( ch != ' ' && isspace( ch ) ) {
+            if( ch != ' '
+              && isspace( ch ) ) {
                 *str = ' ';
             }
         }
@@ -1796,14 +1820,9 @@ static bool ProcessOptions( char *str )
 
 int main( int argc, char **argv )
 {
-    bool    langs_ok;
     int     i;
 
     flags.max_len = 127;
-    langs_ok = _LANG_DEFS_OK();
-    if( !langs_ok )
-        fatal( "language index mismatch\n" );
-
     for( i = 1; i < argc; i++ ) {
         if( ProcessOptions( argv[i] ) ) {
             closeFiles();
@@ -1826,7 +1845,8 @@ int main( int argc, char **argv )
         qsort( cvt_table_932, sizeof( cvt_table_932 ) / sizeof( cvt_table_932[0] ), sizeof( cvt_table_932[0] ), (comp_fn)compare_utf8 );
     }
     readGML();
-    if( !flags.rc && !flags.gen_gpick ) {
+    if( !flags.rc
+      && !flags.gen_gpick ) {
         compressMsgs();
     }
     writeMsgH();

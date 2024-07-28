@@ -53,3 +53,7 @@ END
 
 #include "stredit.dlg"
 #include "about.dlg"
+
+#if defined( __NT__ ) && defined( RESX_NTVER )
+    #include "dllver.grc"
+#endif

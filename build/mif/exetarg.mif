@@ -9,9 +9,6 @@
 # exetarg_libs                  libraries which are linked to EXE
 # exetarg_opts                  extra OW wlink directive or options used to link EXE
 # exetarg_res                   native resource file added to EXE
-# exetarg_res_version_nt_<cpu>  native version info resource file added to EXE
-# exetarg_res_wresui            string resource file (Windows 3.x format) added to EXE
-# exetarg_nt_manif_<cpu>        special NT resource file for manifest XML file
 # exetarg_qnx_res               special QNX resource file for usage text
 #
 # All resource macros are include in dependant list
@@ -24,17 +21,11 @@ additional_clean_sys = *$(exetarg_ext)
 !else
 exetarg_ext = .exe
 !endif
-!ifdef exetarg_qnx_res
-additional_clean_qnx = $(exetarg_qnx_res)
-! ifdef __WATCOM_TOOLS__
-!  ifeq host_os qnx
-exetarg_qnx_res_obj = $(exetarg_qnx_res)
-exetarg_qnx_res_opt = opt resource=$(exetarg_qnx_res)
-!  endif
-! endif
-!else
-! undef exetarg_qnx_res_obj
-! undef exetarg_qnx_res_opt
+!undef exetarg_qnx_res_obj
+!undef exetarg_qnx_res_link
+!ifdef qnx_usage
+exetarg_qnx_res_obj = $(qnx_usage)
+exetarg_qnx_res_link = opt resource=$(qnx_usage)
 !endif
 !ifeq host_os osx
 # now unsupported on OSX
@@ -46,15 +37,13 @@ exetarg_qnx_res_opt = opt resource=$(exetarg_qnx_res)
 objcopy = objcopy
 !endif
 $(exetarg_name)$(exetarg_ext) : $+$(exetarg_prebuild_objs) $(exetarg_qnx_res_obj) &
-        $(exetarg_objs) $(exetarg_libs)$- $(exetarg_res_version_$(host_os)_$(host_cpu)) &
-        $(exetarg_$(host_os)_manif_$(host_cpu)) $+$(exetarg_res_wresui) $(exetarg_res)$- &
-        $(__MAKEFILES__)
+  $(exetarg_objs) $(exetarg_libs) $(cli_wres_libs) $(exetarg_res) $(ntverrc_exe_res) $(ntmanif_res)$- $(__MAKEFILES__)
     @%make echo_cl
 !ifndef __WATCOM_TOOLS__
 ! ifdef bootstrap
-    $(bld_cl) $(bld_clflags) $+$(exetarg_objs) $(exetarg_libs)$- $(bld_ldflags)
+    $(bld_cl) $(bld_clflags) $+$(exetarg_objs) $(exetarg_libs) $(cli_wres_libs)$- $(bld_ldflags)
 ! else
-    $(cl) $(clflags) $+$(exetarg_objs) $(exetarg_libs)$- $(ldflags)
+    $(cl) $(clflags) $+$(exetarg_objs) $(exetarg_libs) $(cli_wres_libs)$- $(ldflags)
 ! endif
 ! ifeq host_os osx
 # now unsupported on OSX
@@ -67,98 +56,95 @@ $(exetarg_name)$(exetarg_ext) : $+$(exetarg_prebuild_objs) $(exetarg_qnx_res_obj
 !  endif
 ! endif
 !else
-    $(noecho)%write $^&.lnk $(lflags) $+$(exetarg_opts) $(exetarg_qnx_res_opt)$-
+    $(noecho)%write $^&.lnk $(lflags) $+$(exetarg_opts) $(exetarg_qnx_res_link)$-
     @for %f in ($+$(exetarg_objs)$-) do @%append $^&.lnk file %f
-    @for %l in ($+$(exetarg_libs)$-) do $(noecho)%append $^&.lnk library %l
+    @for %l in ($+$(exetarg_libs) $(cli_wres_libs)$-) do $(noecho)%append $^&.lnk library %l
 ! ifdef win386
     $(linker) name $(lname) @$^&.lnk
 ! else
     $(linker) name $@ @$^&.lnk
 ! endif
 !endif
-###############################
-# bind to EXE
-###############################
-# add WIN386 extender and .res
-###############################
+############################################
+# add resources to EXE
+############################################
+# get list of OS native resources
+# for wrc
+###########################
+!undef exetarg_res_wrc
+!ifdef exetarg_res
+! ifeq wreslib_cli 1
+!  ifdef ntmanif_res
+!   ifdef ntverrc_exe_res
+exetarg_res_wrc = $(ntmanif_res) -fr=$(ntverrc_exe_res)
+!   else
+exetarg_res_wrc = $(ntmanif_res)
+!   endif
+!  else
+!   ifdef ntverrc_exe_res
+exetarg_res_wrc = $(ntverrc_exe_res)
+!   else
+#exetarg_res_wrc =
+!   endif
+!  endif
+! else
+!  ifdef ntmanif_res
+!   ifdef ntverrc_exe_res
+exetarg_res_wrc = $(exetarg_res) -fr=$(ntmanif_res) -fr=$(ntverrc_exe_res)
+!   else
+exetarg_res_wrc = $(exetarg_res) -fr=$(ntmanif_res)
+!   endif
+!  else
+!   ifdef ntverrc_exe_res
+exetarg_res_wrc = $(exetarg_res) -fr=$(ntverrc_exe_res)
+!   else
+exetarg_res_wrc = $(exetarg_res)
+!   endif
+!  endif
+! endif
+!else ifdef ntmanif_res
+! ifdef ntverrc_exe_res
+exetarg_res_wrc = $(ntmanif_res) -fr=$(ntverrc_exe_res)
+! else
+exetarg_res_wrc = $(ntmanif_res)
+! endif
+!else ifdef ntverrc_exe_res
+exetarg_res_wrc = $(ntverrc_exe_res)
+!else
+#exetarg_res_wrc =
+!endif
+############################################
+# add WIN386 extender and resources
+############################################
 !ifdef win386
-! ifdef exetarg_res
+! ifdef exetarg_res_wrc
 # extender + application .res
 !  ifeq verbose 0
     @echo wbind $(win386ldr) $@
 !  endif
-    $(wbind) $(lname) $(wbind_quiet) -s $(win386ldr) -R $(wbind_quiet) -k $+$(exetarg_res)$- $@
+    $(wbind) $(lname) $(wbind_quiet) -s $(win386ldr) -R $(wbind_quiet) -k $+$(exetarg_res_wrc)$- $@
 ! else
 # extender, no .res
     $(wbind) $(lname) -n $(wbind_quiet) -s $(win386ldr)
 ! endif
-###############################
-# add native resources
-###############################
-!else ifdef exetarg_$(host_os)_manif_$(host_cpu)
-#
-# with NT manifest file
-#
-! ifdef exetarg_res_version_$(host_os)_$(host_cpu)
-!  ifdef exetarg_res
-# manifest + version + application
-!   ifeq verbose 0
-    @echo bind res $@ manif+ver+appl
-!   endif
-    $(rcbind) -q -k $+$(exetarg_res)$- $@ -fr=$(exetarg_res_version_$(host_os)_$(host_cpu)) &
-        -fr=$(exetarg_$(host_os)_manif_$(host_cpu))
-!  else
-# manifest + version only
-!   ifeq verbose 0
-    @echo bind res $@ manif+ver
-!   endif
-    $(rcbind) -q -k $(exetarg_res_version_$(host_os)_$(host_cpu)) $@ &
-        -fr=$(exetarg_$(host_os)_manif_$(host_cpu))
-!  endif
-! else ifdef exetarg_res
-# manifest + application
-!  ifeq verbose 0
-    @echo bind res $@ manif+appl
-!  endif
-    $(rcbind) -q -k $+$(exetarg_res)$- $@ -fr=$(exetarg_$(host_os)_manif_$(host_cpu))
-! else
-# manifest only
-!  ifeq verbose 0
-    @echo bind res $@ manif
-!  endif
-    $(rcbind) -q -k $(exetarg_$(host_os)_manif_$(host_cpu)) $@
-! endif
-!else ifdef exetarg_res_version_$(host_os)_$(host_cpu)
-#
-# without NT manifest file
-#
-! ifdef exetarg_res
-# version + application
-!  ifeq verbose 0
-    @echo bind res $@ ver+appl
-!  endif
-    $(rcbind) -q -k $+$(exetarg_res)$- $@ -fr=$(exetarg_res_version_$(host_os)_$(host_cpu))
-! else
-# version only
-!  ifeq verbose 0
-    @echo bind res $@ ver
-!  endif
-    $(rcbind) -q -k $(exetarg_res_version_$(host_os)_$(host_cpu)) $@
-! endif
-!else ifdef exetarg_res
-# application only
+############################################
+# add OS native resources to EXE by wrc
+############################################
+!else ifdef exetarg_res_wrc
 ! ifeq verbose 0
     @echo bind res $@ appl
 ! endif
-    $(rcbind) -q -k $+$(exetarg_res)$- $@
+    $(rcbind) $+$(exetarg_res_wrc)$- $@
 !endif
-###############################
-# add Windows 3.x resources
-###############################
-!ifdef exetarg_res_wresui
-# string resource only
-! ifeq verbose 0
-    @echo bind wresui $@
+############################################
+# add resources for wres library by wstrip
+# Windows 3.x resources format
+############################################
+!ifdef exetarg_res
+! ifeq wreslib_cli 1
+!  ifeq verbose 0
+    @echo bind res $@ wreslib
+!  endif
+    $(wstrip) -q -a -r $@ . $+$(exetarg_res)$-
 ! endif
-    $(wstrip) -q -a -r $@ . $+$(exetarg_res_wresui)$-
 !endif

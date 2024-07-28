@@ -8,7 +8,7 @@ tree_depth = 6
 .asm : ../../../a;$(fpuemu_dir)/i86/asm;$(fpuemu_dir)/386/asm
 .gas : ../../../a
 
-all : $(objfiles) $(libname).lib .symbolic
+all : $(objfiles) $(libname).lib .SYMBOLIC
     @%null
 
 $(libname).lib : $(objs) $(libs) $(__MAKEFILES__)

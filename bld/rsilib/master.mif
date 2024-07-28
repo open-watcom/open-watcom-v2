@@ -1,6 +1,6 @@
 proj_name = rsilib
 
-rsilib_autodepends = .autodepend
+rsilib_autodepends = .AUTODEPEND
 
 rsilib_nofpu = 1
 

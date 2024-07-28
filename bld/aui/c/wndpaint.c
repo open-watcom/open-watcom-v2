@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -129,7 +129,7 @@ static void WndDrawTheLine( a_window wnd, wnd_line_piece *line, wnd_row row )
             GUIDrawHotSpot( wnd->gui, line->text[0],
                             row, line->indent, line->attr );
             return;
-        } else if( line->extent == WND_NO_EXTEND ) {
+        } else if( line->extent == WND_NO_EXTENT ) {
             GUIDrawText( wnd->gui, line->text, line->length,
                          row, line->indent, line->attr );
         } else {
@@ -138,7 +138,7 @@ static void WndDrawTheLine( a_window wnd, wnd_line_piece *line, wnd_row row )
         }
     }
     extent = GUIGetExtentX( wnd->gui, line->text, line->length );
-    if( line->extent != WND_MAX_EXTEND ) {
+    if( line->extent != WND_NO_EXTENT ) {
         if( extent < line->extent ) {
             extent = line->extent;
         }

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -52,7 +52,7 @@ static void CheckBitfieldType( TYPEPTR typ );
  * matches enum DataType in ctypes.h
  */
 static unsigned char  CTypeSizes[] = {
-    #define pick1(enum,cgtype,x86asmtype,name,size) size,
+    #define pick1(type,dtype,cgtype,x86asmtype,name,size) size,
     #include "cdatatyp.h"
     #undef  pick1
 };
@@ -754,7 +754,7 @@ TAGPTR NullTag( void )
 TAGPTR VfyNewTag( TAGPTR tag, DATA_TYPE tag_type )
 {
     if( tag->sym_type != NULL ) {               /* tag already exists */
-        if( !ChkEqSymLevel( tag ) ) {
+        if( !CheckEqSymLevel( tag ) ) {
             tag = NewTag( tag->hash, tag->name );
         } else if( tag->size != 0 || tag->sym_type->decl_type != tag_type ) {
             CErr2p( ERR_DUPLICATE_TAG, tag->name );
@@ -831,14 +831,14 @@ static FIELDPTR NewField( FIELDPTR new_field, TYPEPTR decl )
 
 
 static TYPEPTR EnumFieldType( TYPEPTR ftyp, bool plain_int,
-                    bitfield_width start, bitfield_width width )
+                    bitfield_width bits_start, bitfield_width bits_width )
 {
     TYPEPTR     typ;
     DATA_TYPE   data_type;
 
     typ = TypeNode( TYP_FIELD, NULL );
-    typ->u.f.field_start = start;
-    typ->u.f.field_width = width;
+    typ->u.f.field_start = bits_start;
+    typ->u.f.field_width = bits_width;
     if( plain_int ) {
         data_type = TYP_INT;    /* default to signed bit fields */
     } else {
@@ -1025,13 +1025,14 @@ static target_size GetFields( TYPEPTR decl )
     unsigned            bits_total;
     target_size         struct_size;
     target_size         next_offset;
-    unsigned            width;
+    unsigned            bits_width;
     align_type          worst_alignment;
     DATA_TYPE           unqualified_type;
     DATA_TYPE           prev_unqualified_type;
     bool                plain_int;
     decl_info           info;
     static field_level_stype struct_level = 0;
+    const_val           cval;
 
     struct_level++;
     prev_unqualified_type = TYP_VOID;   /* so it doesn't match 1st time */
@@ -1092,25 +1093,29 @@ static target_size GetFields( TYPEPTR decl )
                 }
                 CheckBitfieldType( typ );
                 NextToken();
-                width = ConstExpr();
-                if( width == 0 && field != NULL ) {
+                ConstExprAndType( &cval );
+                bits_width = 0;
+                if( (cval.value.u._32[I64HI32] | cval.value.u._32[I64LO32]) == 0
+                  && field != NULL ) {
                     CErr1( ERR_WIDTH_0 );
-                }
-                if( (int)width < 0 ) {
+                } else if( (int)cval.value.u._32[I64HI32] < 0 ) {
                     CErr1( ERR_WIDTH_NEGATIVE );
-                    width = 0;
-                } else if( width > ( TARGET_BITFIELD * CHAR_BIT ) || width > bits_total ) {
+                } else if( cval.value.u._32[I64HI32] > 0
+                  || cval.value.u._32[I64LO32] > ( TARGET_BITFIELD * CHAR_BIT )
+                  || cval.value.u._32[I64LO32] > bits_total ) {
                     CErr1( ERR_FIELD_TOO_WIDE );
-                    width = TARGET_BITFIELD * CHAR_BIT;
+                    bits_width = TARGET_BITFIELD * CHAR_BIT;
+                } else {
+                    bits_width = cval.value.u._32[I64LO32];
                 }
-                if( width > bits_available || width == 0 ) {
+                if( bits_width > bits_available || bits_width == 0 ) {
                     scalar_size = TypeSize( typ );
                     if( bits_available != bits_total ) {
                         /*
                          * some bits have been used; abandon this unit
                          */
                         next_offset += bits_total / CHAR_BIT;
-                    } else if( width == 0 ) {
+                    } else if( bits_width == 0 ) {
                         /*
                          * no bits have been used; align to base type
                          */
@@ -1123,9 +1128,9 @@ static target_size GetFields( TYPEPTR decl )
                     field->offset = next_offset;
                     field->field_type = EnumFieldType( typ, plain_int,
                               (bitfield_width)( bits_total - bits_available ),
-                              (bitfield_width)width );
+                              (bitfield_width)bits_width );
                 }
-                bits_available -= width;
+                bits_available -= bits_width;
             } else {
                 if( bits_available != bits_total ) { //changed from bit field to non
                     next_offset += bits_total / CHAR_BIT;
@@ -1199,7 +1204,7 @@ static TYPEPTR StructDecl( DATA_TYPE decl_typ, bool packed )
         }
         if( CurToken != T_LEFT_BRACE ) {
             if( CurToken == T_SEMI_COLON ) {
-                if( !ChkEqSymLevel( tag ) ) {
+                if( !CheckEqSymLevel( tag ) ) {
                     tag = NewTag( tag->hash, tag->name );
                 }
             }
@@ -1336,16 +1341,24 @@ static TYPEPTR ComplexDecl( DATA_TYPE decl_typ, bool packed )
 
 static void CheckBitfieldType( TYPEPTR typ )
 {
-    // skip typedefs
+    /*
+     * skip typedefs
+     */
     SKIP_TYPEDEFS( typ );
     if( CompFlags.extensions_enabled ) {
-        // go into enum base
+        /*
+         * go into enum base
+         */
         SKIP_ENUM( typ );
     }
     switch( typ->decl_type ) {
+    case TYP_BOOL:
+        if( !CompFlags.extensions_enabled && CHECK_STD( < , C99 ) ) {
+            break;
+        }
+        /* fall through */
     case TYP_INT:
     case TYP_UINT:
-    case TYP_BOOL:
         /*
          * ANSI C only allows int and unsigned [int]; C99 adds _Bool
          */
@@ -1376,7 +1389,7 @@ void VfyNewSym( id_hash_idx hash, const char *name )
     ENUMPTR     ep;
 
     ep = EnumLookup( hash, name );
-    if( ep != NULL && ChkEqSymLevel( ep->parent ) ) {
+    if( ep != NULL && CheckEqSymLevel( ep->parent ) ) {
         SetDiagEnum( ep );
         CErr2p( ERR_SYM_ALREADY_DEFINED, name );
         SetDiagPop();
@@ -1384,7 +1397,7 @@ void VfyNewSym( id_hash_idx hash, const char *name )
     sym_handle = SymLook( hash, name );
     if( sym_handle != SYM_NULL ) {
         SymGet( &sym, sym_handle );
-        if( ChkEqSymLevel( &sym ) ) {
+        if( CheckEqSymLevel( &sym ) ) {
             SetDiagSymbol( &sym, sym_handle );
             CErr2p( ERR_SYM_ALREADY_DEFINED, name );
             SetDiagPop();
@@ -1414,7 +1427,7 @@ void FreeTags( void )
 
     for( hash = 0; hash <= ID_HASH_SIZE; hash++ ) {
         for( ; (tag = TagHash[hash]) != NULL; ) {
-            if( ChkLtSymLevel( tag ) )
+            if( CheckLtSymLevel( tag ) )
                 break;
             TagHash[hash] = tag->next_tag;
             tag->next_tag = DeadTags;

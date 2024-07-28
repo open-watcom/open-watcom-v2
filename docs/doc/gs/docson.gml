@@ -72,8 +72,9 @@ This manual includes 5 major sections each of which describes
 operating system specific development issues. The operating systems
 covered include extended DOS, OS/2, Windows 3.x, Windows NT/2000/XP,
 Windows 95/98/Me, 32-bit Windows 3.x (using &company's Supervisor
-technology) and Novell NLMs. Topics include creating a sample program,
-operating system specific error messages, and debugging techniques.
+technology), Novell NLMs and Linux. Topics include creating a sample
+program, operating system specific error messages, and debugging
+techniques.
 .*
 .*
 .if '&lang' eq 'FORTRAN 77' .do begin
@@ -115,7 +116,7 @@ techniques.
 .point &lnkname User's Guide
 This manual describes how to use the &lnkname to generate executables
 for target systems such as extended DOS, Windows 3.x, Windows 95/98/Me,
-Windows NT/2000/XP, OS/2, and Novell NLMs.
+Windows NT/2000/XP, OS/2, Novell NLMs and Linux.
 .*
 :cmt..point Comprehensive Index
 :cmt.Comprehensive Index for entire package
@@ -126,16 +127,16 @@ Windows NT/2000/XP, OS/2, and Novell NLMs.
 .*
 .np
 The following sections describe how to access the on-line help that is
-available for DOS, Windows and OS/2.
+available for DOS, Windows, OS/2 and Linux.
 .*
 .beglevel
 .*
-.section On-line Documentation under DOS
+.section On-line Documentation under DOS and Linux
 .*
 .np
 The &company Help program,
 .kw WHELP
-.ct , may be used under DOS to access on-line documentation.
+.ct , may be used under DOS or Linux to access on-line documentation.
 The &company Help command line syntax is:
 .millust begin
 WHELP help_file [topic_name]
@@ -144,7 +145,7 @@ WHELP help_file [topic_name]
 .note
 If
 .us help_file
-is specified without an extension then ".IHP" is assumed.
+is specified without an extension then ".ihp" is assumed.
 .note
 The
 .us topic_name

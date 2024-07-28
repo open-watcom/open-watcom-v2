@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -67,7 +67,7 @@ void EncodeCall( oc_handle *oc ) {
     doBranch( 0x34, oc->handle, RA_REG_IDX );
 }
 
-static  uint_8  BranchOpcodes[][2] = {
+static const uint_8  BranchOpcodes[][2] = {
     { 0x39, 0x31 },                     /* OP_CMP_EQUAL */
     { 0x3d, 0x35 },                     /* OP_CMP_NOT_EQUAL */
     { 0x3f, 0x37 },                     /* OP_CMP_GREATER */

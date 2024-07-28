@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -99,10 +99,10 @@ orl_return ORLENTRY ORLFini( orl_handle orl_hnd )
     return( ORL_OKAY );
 }
 
-static bool checkPEMachine( unsigned_16 machine_type )
-/****************************************************/
+static bool checkPEMachine( unsigned char *buffer )
+/*************************************************/
 {
-    switch( machine_type ) {
+    switch( *(unsigned_16 *)buffer ) {
     case COFF_IMAGE_FILE_MACHINE_I860:
     case COFF_IMAGE_FILE_MACHINE_I386A:
     case COFF_IMAGE_FILE_MACHINE_I386:
@@ -111,142 +111,159 @@ static bool checkPEMachine( unsigned_16 machine_type )
     case COFF_IMAGE_FILE_MACHINE_ALPHA:
     case COFF_IMAGE_FILE_MACHINE_POWERPC:
     case COFF_IMAGE_FILE_MACHINE_AMD64:
-//    case COFF_IMAGE_FILE_MACHINE_UNKNOWN:
         return( true );
     }
     return( false );
 }
 
-static bool checkPE( orl_handle orl_hnd, FILE *fp, long *pos )
-/************************************************************/
+static int checkPE( orl_handle orl_hnd, FILE *fp )
+/************************************************/
 {
-    unsigned char   *magic;
+    unsigned char   *buffer;
     unsigned_32     ne_header_off;
+    long            pos1;
+    long            pos2;
+    int             rc;
 
-    if( ORL_FUNCS_SEEK( LCL_ORL_HND( orl_hnd ), fp, NE_HEADER_OFFSET, SEEK_CUR ) ) {
-        return( false );
+    rc = 0;
+    pos1 = NE_HEADER_OFFSET - 4;
+    if( ORL_FUNCS_SEEK( LCL_ORL_HND( orl_hnd ), fp, pos1, SEEK_CUR ) == 0 ) {
+        buffer = ORL_FUNCS_READ( LCL_ORL_HND( orl_hnd ), fp, 0x4 );
+        if( buffer != NULL ) {
+            pos1 += 4;
+            ne_header_off = *(unsigned_32 *)buffer;
+            pos2 = ne_header_off - pos1 - 4;
+            if( ORL_FUNCS_SEEK( LCL_ORL_HND( orl_hnd ), fp, pos2, SEEK_CUR ) == 0 ) {
+                buffer = ORL_FUNCS_READ( LCL_ORL_HND( orl_hnd ), fp, 4 );
+                if( buffer != NULL ) {
+                    pos2 += 4;
+                    rc = ( buffer[0] == 'P' && buffer[1] == 'E' && buffer[2] == '\0' && buffer[3] == '\0' );
+                    if( rc ) {
+                        rc = 0;
+                        buffer = ORL_FUNCS_READ( LCL_ORL_HND( orl_hnd ), fp, 4 );
+                        if( buffer != NULL ) {
+                            pos2 += 4;
+                            rc = checkPEMachine( buffer );
+                        }
+                    }
+                }
+                if( ORL_FUNCS_SEEK( LCL_ORL_HND( orl_hnd ), fp, SEEK_POSBACK( pos2 ), SEEK_CUR ) ) {
+                    rc = -1;
+                }
+            }
+        }
+        if( ORL_FUNCS_SEEK( LCL_ORL_HND( orl_hnd ), fp, SEEK_POSBACK( pos1 ), SEEK_CUR ) ) {
+            rc = -1;
+        }
     }
-    *pos += NE_HEADER_OFFSET;
-    magic = ORL_FUNCS_READ( LCL_ORL_HND( orl_hnd ), fp, 0x4 );
-    if( magic == NULL ) {
-        return( false );
-    }
-    *pos += 4;
-    ne_header_off = *(unsigned_32 *)magic;
-    if( ORL_FUNCS_SEEK( LCL_ORL_HND( orl_hnd ), fp, ne_header_off - *pos, SEEK_CUR ) ) {
-        return( false );
-    }
-    *pos = ne_header_off;
-    magic = ORL_FUNCS_READ( LCL_ORL_HND( orl_hnd ), fp, 4 );
-    if( magic != NULL ) {
-        *pos += 4;
-        if( magic[0]=='P' && magic[1] == 'E' && magic[2] == '\0' && magic[3] == '\0' ) {
-            magic = ORL_FUNCS_READ( LCL_ORL_HND( orl_hnd ), fp, 4 );
-            if( magic != NULL ) {
-                *pos += 4;
-                return( checkPEMachine( *(unsigned_16 *)magic ) );
+    return( rc );
+}
+
+static int checkOMF( orl_handle orl_hnd, FILE *fp, unsigned char *magic )
+/************************************************************************
+ * See if this is the start of an OMF object file
+ * the first record must be a THEADR or LHEADR record and we check that
+ * it is valid, if it is then we assume that this is an OMF object file.
+ */
+{
+    int             rc;
+    int             len;
+    int             pos;
+    unsigned char   *buffer;
+    unsigned char   *p;
+    unsigned char   chksum;
+
+    rc = 0;
+    if( ( magic[0] == CMD_THEADR
+      || magic[0] == CMD_LHEADR )
+      && ( magic[1] + ( (int)magic[2] << 8 ) - magic[3] - 2 ) == 0 ) {
+        /*
+         * This looks good so far, we must now check the record
+         */
+        len = magic[3] + 1;
+        buffer = ORL_FUNCS_READ( LCL_ORL_HND( orl_hnd ), fp, len );
+        if( buffer != NULL ) {
+            pos = len;
+            /*
+             * Go on to check record checksum
+             */
+            chksum = magic[0] + magic[1] + magic[2] + magic[3];
+            p = buffer;
+            while( len ) {
+                chksum += *p;
+                len--;
+                p++;
+            }
+            p--;
+            if( chksum == 0 ) {
+                /*
+                 * this is the correct OMF record at the beginning of the object
+                 */
+                rc = 1;
+            } else if( *p == 0 ) {
+                /*
+                 * some compilers doesn't use checksum for OMF records
+                 * then checksum value is 0
+                 */
+                rc = 1;
+            }
+            if( ORL_FUNCS_SEEK( LCL_ORL_HND( orl_hnd ), fp, SEEK_POSBACK( pos ), SEEK_CUR ) ) {
+                rc = -1;
             }
         }
     }
-    return( false );
+    return( rc );
 }
 
 orl_file_format ORLFileIdentify( orl_handle orl_hnd, FILE *fp )
 /*************************************************************/
 {
     unsigned char       *magic;
-    unsigned_16         len;
-    unsigned char       chksum;
+    orl_file_format     ret_format;
+    int                 rc;
 
+    ret_format = ORL_UNRECOGNIZED_FORMAT;
+    rc = 0;
     magic = ORL_FUNCS_READ( LCL_ORL_HND( orl_hnd ), fp, 4 );
-    if( magic == NULL ) {
-        return( ORL_UNRECOGNIZED_FORMAT );
-    }
-    /*
-     * seek to beginning of object before return
-     */
-    if( ORL_FUNCS_SEEK( LCL_ORL_HND( orl_hnd ), fp, SEEK_POSBACK( 4 ), SEEK_CUR ) ) {
-        return( ORL_UNRECOGNIZED_FORMAT );
-    }
-    if( magic[0] == 0x7f && magic[1] == 'E' && magic[2] == 'L' && magic[3] == 'F' ) {
-        return( ORL_ELF );
-    }
-    /*
-     * See if this is the start of an OMF object file
-     * the first record must be a THEADR record and we check that it is
-     * valid, if it is then we assume that this is an OMF object file.
-     */
-    if( magic[0] == CMD_THEADR ) {
-        len = magic[1] | ( magic[2] << 8 );
-        len -= magic[3];
-        len -= 2;
-        if( len == 0 ) {
-            /*
-             * This looks good so far, we must now check the record
-             */
-            len = magic[3] + 1;
-            if( ORL_FUNCS_SEEK( LCL_ORL_HND( orl_hnd ), fp, 4, SEEK_CUR ) ) {
-                return( ORL_UNRECOGNIZED_FORMAT );
+    if( magic != NULL ) {
+        /*
+         * check ELF object
+         */
+        if( magic[0] == 0x7f && magic[1] == 'E' && magic[2] == 'L' && magic[3] == 'F' ) {
+            ret_format = ORL_ELF;
+        /*
+         * check COFF import library
+         */
+        } else if( magic[0] == 0 && magic[1] == 0 && magic[2] == 0xFF && magic[3] == 0xFF ) {
+            ret_format = ORL_COFF;
+        /*
+         * check OMF object image
+         */
+        } else if( (rc = checkOMF( orl_hnd, fp, magic )) != 0 ) {
+            if( rc > 0 ) {
+                ret_format = ORL_OMF;
             }
-            chksum = magic[0] + magic[1] + magic[2] + magic[3];
-            magic = ORL_FUNCS_READ( LCL_ORL_HND( orl_hnd ), fp, len );
-            if( ORL_FUNCS_SEEK( LCL_ORL_HND( orl_hnd ), fp, SEEK_POSBACK( 4 + len ), SEEK_CUR ) ) {
-                return( ORL_UNRECOGNIZED_FORMAT );
-            }
-            if( magic != NULL ) {
-                /*
-                 * Go on to check record checksum
-                 */
-                while( len ) {
-                    chksum += *magic;
-                    len--;
-                    magic++;
-                }
-                magic--;
-                if( *magic == 0 || chksum == 0 ) {
-                    /*
-                     * seems to be a correct OMF record to start the OBJ
-                     */
-                    return( ORL_OMF );
-                }
-            } else {
-                magic = ORL_FUNCS_READ( LCL_ORL_HND( orl_hnd ), fp, 4 );
-                if( magic == NULL ) {
-                    return( ORL_UNRECOGNIZED_FORMAT );
-                }
-                /*
-                 * seek to beginning of object before return
-                 */
-                if( ORL_FUNCS_SEEK( LCL_ORL_HND( orl_hnd ), fp, SEEK_POSBACK( 4 ), SEEK_CUR ) ) {
-                    return( ORL_UNRECOGNIZED_FORMAT );
-                }
+        /*
+         * check COFF object image
+         */
+        } else if( checkPEMachine( magic ) ) {
+            ret_format = ORL_COFF;
+        /*
+         * check PE executable image
+         */
+        } else if( magic[0] == 'M' && magic[1] == 'Z' && (rc = checkPE( orl_hnd, fp )) != 0 ) {
+            if( rc > 0 ) {
+                ret_format = ORL_COFF;
             }
         }
-    }
-
-    if( checkPEMachine( *(unsigned_16 *)magic ) ) {
-        return( ORL_COFF );
-    }
-    /*
-     * Is it PE?
-     */
-    if( magic[0] == 'M' && magic[1] == 'Z' ) {
-        bool    ok;
-        long    pos;
-
-        pos = 0;
-        ok = checkPE( orl_hnd, fp, &pos );
-        if( pos ) {
-            /*
-             * seek to beginning of object before return
-             */
-            ORL_FUNCS_SEEK( LCL_ORL_HND( orl_hnd ), fp, SEEK_POSBACK( pos ), SEEK_CUR );
-        }
-        if( ok ) {
-            return( ORL_COFF );
+        /*
+         * seek to beginning of object before return
+         */
+        if( ORL_FUNCS_SEEK( LCL_ORL_HND( orl_hnd ), fp, SEEK_POSBACK( 4 ), SEEK_CUR ) ) {
+            ret_format = ORL_UNRECOGNIZED_FORMAT;
         }
     }
-    return( ORL_UNRECOGNIZED_FORMAT );
+    return( ret_format );
 }
 
 orl_file_handle ORLENTRY ORLFileInit( orl_handle orl_hnd, FILE *fp, orl_file_format type )
@@ -416,7 +433,7 @@ orl_sec_handle ORLENTRY ORLFileGetSymbolTable( orl_file_handle orl_file_hnd )
     default:    // ORL_UNRECOGNIZED_FORMAT
         break;
     }
-    return( ORL_NULL_HANDLE );
+    return( NULL );
 }
 
 const char * ORLENTRY ORLSecGetName( orl_sec_handle orl_sec_hnd )
@@ -529,7 +546,7 @@ orl_sec_handle ORLENTRY ORLSecGetStringTable( orl_sec_handle orl_sec_hnd )
     default:    // ORL_UNRECOGNIZED_FORMAT
         break;
     }
-    return( ORL_NULL_HANDLE );
+    return( NULL );
 }
 
 orl_sec_handle ORLENTRY ORLSecGetSymbolTable( orl_sec_handle orl_sec_hnd )
@@ -544,7 +561,7 @@ orl_sec_handle ORLENTRY ORLSecGetSymbolTable( orl_sec_handle orl_sec_hnd )
     default:    // ORL_UNRECOGNIZED_FORMAT
         break;
     }
-    return( ORL_NULL_HANDLE );
+    return( NULL );
 }
 
 orl_sec_handle ORLENTRY ORLSecGetRelocTable( orl_sec_handle orl_sec_hnd )
@@ -559,7 +576,7 @@ orl_sec_handle ORLENTRY ORLSecGetRelocTable( orl_sec_handle orl_sec_hnd )
     default:    // ORL_UNRECOGNIZED_FORMAT
         break;
     }
-    return( ORL_NULL_HANDLE );
+    return( NULL );
 }
 
 orl_linnum ORLENTRY ORLSecGetLines( orl_sec_handle orl_sec_hnd )
@@ -629,7 +646,7 @@ orl_sec_handle ORLENTRY ORLSecGetAssociated( orl_sec_handle orl_sec_hnd )
     if( LCL_SEC_HND( orl_sec_hnd )->type == ORL_OMF ) {
         return( OmfSecGetAssociated( (omf_sec_handle)orl_sec_hnd ) );
     }
-    return( ORL_NULL_HANDLE );
+    return( NULL );
 }
 
 orl_group_handle ORLENTRY ORLSecGetGroup( orl_sec_handle orl_sec_hnd )
@@ -637,7 +654,7 @@ orl_group_handle ORLENTRY ORLSecGetGroup( orl_sec_handle orl_sec_hnd )
     if( LCL_SEC_HND( orl_sec_hnd )->type == ORL_OMF ) {
         return( OmfSecGetGroup( (omf_sec_handle)orl_sec_hnd ) );
     }
-    return( ORL_NULL_HANDLE );
+    return( NULL );
 }
 
 orl_return ORLENTRY ORLSecGetContents( orl_sec_handle orl_sec_hnd, unsigned char **buffer )
@@ -715,7 +732,7 @@ orl_sec_handle ORLENTRY ORLCvtIdxToSecHdl( orl_file_handle orl_file_hnd, orl_tab
     default:    // ORL_UNRECOGNIZED_FORMAT
         break;
     }
-    return( ORL_NULL_HANDLE );
+    return( NULL );
 }
 
 orl_return ORLENTRY ORLRelocSecScan( orl_sec_handle orl_sec_hnd, orl_reloc_return_func return_func )
@@ -860,7 +877,7 @@ orl_sec_handle ORLENTRY ORLSymbolGetSecHandle( orl_symbol_handle orl_symbol_hnd 
     default:    // ORL_UNRECOGNIZED_FORMAT
         break;
     }
-    return( ORL_NULL_HANDLE );
+    return( NULL );
 }
 
 orl_symbol_handle ORLENTRY ORLSymbolGetAssociated( orl_symbol_handle orl_symbol_hnd )

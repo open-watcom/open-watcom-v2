@@ -54,10 +54,10 @@ not need them. The general syntax is:
 
  where:
 
- <arc_name>  is the name of a ZIP archive which contains all source files.
+ <arc_name>  is the name of a ZIP archive which contains all files.
              If not specified, this is the installer executable, that is,
              a self-extracting installer is assumed. If a self-extracting
-             installer does not exist, source files are searched for directly
+             installer does not exist, files are searched for directly
              on the host filesystem.
 
  <inf_name>  is the name of the setup script. By default, this is 'setup.inf'.
@@ -66,7 +66,7 @@ not need them. The general syntax is:
              assumed to be located in the same directory where the setup
              utility was started from.
 
- <src_path>  is the path containing source files. By default, this is the
+ <src_path>  is the path containing files. By default, this is the
              same location where setup.inf is found.
 
 
@@ -112,7 +112,6 @@ the override file will be cleared (i.e., false).
  os2_helpfiles   - help files in OS/2 .hlp/.inf format
  pdf_helpfiles   - documentation in PDF format
  whtml_helpfiles - help files in whtml .chm format
- rtsource        - run-time library startup source
  samples         - sample source code
 
 
@@ -157,7 +156,7 @@ to 0 or 1.
 
  A non-exhaustive list follows:
 
- FullInstall    - install all source files
+ FullInstall    - install all files
  DstDir         - destination directory for installation
  UnInstall      - uninstall previously installed product
 

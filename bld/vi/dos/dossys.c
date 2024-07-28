@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,9 +39,8 @@
 #include "osidle.h"
 #include "int16.h"
 #include "int10.h"
+#include "dosclck.h"
 
-
-extern void UpdateDOSClock( void );
 
 #define PHAR_SCRN_SEL   0x34
 extern int PageCnt;
@@ -296,27 +295,6 @@ void ScreenPage( int page )
     } else {
         EditFlags.NoSetCursor = false;
     }
-#elif defined( DOS4G ) || defined( CAUSEWAY )
-    unsigned long       a;
-    unsigned long       b;
-
-    if( !EditFlags.Monocolor ) {
-        Scrn = (char_info _FAR *)0xb8000;
-    } else {
-        Scrn = (char_info _FAR *)0xb0000;
-    }
-    a = *(unsigned short _FAR *)0x44e / sizeof( char_info );
-    Scrn += a;
-    PageCnt += page;
-    if( PageCnt > 0 ) {
-        b = (unsigned long)( ( EditVars.WindMaxWidth + 1 ) * ( EditVars.WindMaxHeight + 1 ) );
-        if( a + b < 0x8000L / sizeof( char_info ) ) {
-            Scrn += b;
-        }
-        EditFlags.NoSetCursor = true;
-    } else {
-        EditFlags.NoSetCursor = false;
-    }
 #elif defined( PHARLAP )
     unsigned long       a;
     unsigned long       b;
@@ -340,16 +318,37 @@ void ScreenPage( int page )
         EditFlags.NoSetCursor = false;
     } /* if */
     Scrn = _MK_FP( PHAR_SCRN_SEL, c );
+#elif defined( DOS4G ) || defined( CAUSEWAY )
+    unsigned long       a;
+    unsigned long       b;
+
+    if( !EditFlags.Monocolor ) {
+        Scrn = (char_info _FAR *)0xb8000;
+    } else {
+        Scrn = (char_info _FAR *)0xb0000;
+    }
+    a = *(unsigned short _FAR *)0x44e / sizeof( char_info );
+    Scrn += a;
+    PageCnt += page;
+    if( PageCnt > 0 ) {
+        b = (unsigned long)( ( EditVars.WindMaxWidth + 1 ) * ( EditVars.WindMaxHeight + 1 ) );
+        if( a + b < 0x8000L / sizeof( char_info ) ) {
+            Scrn += b;
+        }
+        EditFlags.NoSetCursor = true;
+    } else {
+        EditFlags.NoSetCursor = false;
+    }
 #endif
 
 } /* ScreenPage */
 
 #if defined( _M_I86 )
     #define KEY_PTR (char _FAR *)0x00400017;
-#elif defined( DOS4G ) || defined( CAUSEWAY )
-    #define KEY_PTR (char _FAR *)0x00000417;
 #elif defined( PHARLAP )
     #define KEY_PTR _MK_FP( PHAR_SCRN_SEL, 0x417 );
+#elif defined( DOS4G ) || defined( CAUSEWAY )
+    #define KEY_PTR (char _FAR *)0x00000417;
 #endif
 
 /*
@@ -428,8 +427,7 @@ bool KeyboardHit( void )
 
     rc = _BIOSKeyboardHit( ( EditFlags.ExtendedKeyboard ) ? KEYB_EXT : KEYB_STD );
     if( !rc ) {
-#if defined( _M_I86 ) || defined( DOS4G ) || defined( CAUSEWAY )
-#else   /* defined( PHARLAP ) */
+#if defined( PHARLAP )
         UpdateDOSClock();
 #endif
         ReleaseVMTimeSlice();

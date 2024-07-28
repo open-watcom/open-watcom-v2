@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,85 +31,71 @@
 ****************************************************************************/
 
 #if defined( __WATCOMC__ ) || !defined( __UNIX__ )
-#include <process.h>
+    #include <process.h>
 #endif
 #include "global.h"
 #include "rcerrors.h"
 #include "usage.rh"
 #include "rcldstr.h"
-#include "wresset2.h"
+#include "wreslang.h"
+#if defined( INCL_MSGTEXT )
+#elif defined( USE_WRESLIB )
+    #include "wresset2.h"
+    #include "rclayer0.h"
+#else
+    #include <windows.h>
+#endif
 
 #include "clibint.h"
 #include "clibext.h"
 
 
 #if defined( INCL_MSGTEXT )
-
 static const char * const StringTable[] = {
     #define pick(c,e,j) e,
     #include "rc.msg"
     #include "usage.gh"
     #undef pick
 };
-
-bool InitRcMsgs( void )
-{
-    return( true );
-}
-
-bool GetRcMsg( unsigned resid, char *buff, int buff_len )
-{
-    /* unused parameters */ (void)buff_len;
-
-    strcpy( buff, StringTable[resid] );
-    return( true );
-}
-
-void FiniRcMsgs( void ) {}
-
+#elif defined( USE_WRESLIB )
+static HANDLE_INFO  hInstance = { 0 };
 #else
-
-#include "rclayer0.h"
-#include "wreslang.h"
-
-extern HANDLE_INFO  hInstance;
-
-extern bool         RcIoNoBuffer;
-
-static unsigned     MsgShift;
+static HINSTANCE    hInstance;
+#endif
+static unsigned     msgShift;
 
 bool InitRcMsgs( void )
 {
+#if defined( INCL_MSGTEXT )
+    msgShift = 0;
+    return( true );
+#elif defined( USE_WRESLIB )
     /*
      * minimum size of testbuf is 2 characters (one character + terminator)
      * otherwise WResLoadString return 0 (error)
      */
     char        testbuf[2];
-    bool        ok;
-#if defined( IDE_PGM ) || !defined( __WATCOMC__ )
+  #if defined( IDE_PGM ) || !defined( __WATCOMC__ )
     char        imageName[_MAX_PATH];
-#else
+  #else
     char        *imageName;
-#endif
+  #endif
 
-#if defined( IDE_PGM )
+  #if defined( IDE_PGM )
     _cmdname( imageName );
-#elif !defined( __WATCOMC__ )
+  #elif !defined( __WATCOMC__ )
     get_dllname( imageName, sizeof( imageName ) );
-#else
+  #else
     imageName = _LpDllName;
-#endif
+  #endif
     /*
      * swap open functions so this file handle is not buffered.
      * This makes it easier for layer0 to fool WRES into thinking
      * that the resource information starts at offset 0
      */
     hInstance.status = 0;
-    RcIoNoBuffer = true;
-    ok = OpenResFile( &hInstance, imageName );
-    RcIoNoBuffer = false;
-    if( ok ) {
-        MsgShift = _WResLanguage() * MSG_LANG_SPACING;
+    if( OpenRcMsgsFile( &hInstance, imageName ) ) {
+        msgShift = _WResLanguage() * MSG_LANG_SPACING;
         if( GetRcMsg( MSG_USAGE_BASE, testbuf, sizeof( testbuf ) ) ) {
             return( true );
         }
@@ -117,20 +103,71 @@ bool InitRcMsgs( void )
     CloseResFile( &hInstance );
     RcFatalError( ERR_RCSTR_NOT_FOUND );
     return( false );
+#else
+  #if defined( IDE_PGM )
+    hInstance = GetModuleHandle( NULL );
+  #elif !defined( __WATCOMC__ )
+    char        imageName[_MAX_PATH];
+
+    get_dllname( imageName, sizeof( imageName ) );
+    hInstance = GetModuleHandle( imageName );
+  #else
+    hInstance = GetModuleHandle( _LpDllName );
+  #endif
+    msgShift = _WResLanguage() * MSG_LANG_SPACING;
+    return( true );
+#endif
 }
 
 bool GetRcMsg( unsigned resid, char *buff, int buff_len )
 {
-    if( WResLoadString( &hInstance, resid + MsgShift, buff, buff_len ) <= 0 ) {
+#if defined( INCL_MSGTEXT )
+    /* unused parameters */ (void)buff_len;
+
+    strcpy( buff, StringTable[resid] );
+#elif defined( USE_WRESLIB )
+    if( WResLoadString( &hInstance, resid + msgShift, buff, buff_len ) <= 0 ) {
         buff[0] = '\0';
         return( false );
     }
+#else
+    if( LoadString( hInstance, resid + msgShift, buff, buff_len ) <= 0 ) {
+        buff[0] = '\0';
+        return( false );
+    }
+#endif
     return( true );
 }
 
 void FiniRcMsgs( void )
 {
+#if defined( INCL_MSGTEXT )
+#elif defined( USE_WRESLIB )
     CloseResFile( &hInstance );
+#else
+#endif
 }
 
+void ResetRcMsgs( void )
+{
+#if defined( INCL_MSGTEXT )
+#elif defined( USE_WRESLIB )
+    memset( &hInstance, 0, sizeof( HANDLE_INFO ) );
+#else
+    hInstance = NULL;
 #endif
+}
+
+bool CheckRcMsgsFile( FILE *fp )
+{
+    /* unused parameters */ (void)fp;
+
+#if defined( INCL_MSGTEXT )
+#elif defined( USE_WRESLIB )
+    if( hInstance.fp == fp ) {
+        return( true );
+    }
+#else
+#endif
+    return( false );
+}

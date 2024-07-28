@@ -1,6 +1,5 @@
-!ifeq sys_windowed 1
-commonui_inc_dirs = -I"$(commonui_dir)/$(objs_subdir)" -I"$(commonui_dir)/h" -I"$(commonui_dir)/res"
-commonui_lib = $(commonui_dir)/$(objs_subdir)/commonui.lib
-commonui_str_def = $(commonui_dir)/$(objs_subdir)/uistr.grh
-commonui_str_msg = $(commonui_dir)/$(objs_subdir)/uistrmsg.gh
+!ifdef sys_windowed
+cli_commonui_inc_dirs = -I"$(commonui_dir)/$(objs_subdir)" -I"$(commonui_dir)/h"
+cli_commonui_libs = $(commonui_dir)/$(objs_subdir)/commonui.lib
+cli_commonui_rc_inc_dirs = -I"$(commonui_dir)/$(objs_subdir)" -I"$(commonui_dir)/res" -I"$(commonui_dir)/h"
 !endif

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,7 +37,7 @@
 #include "coderep.h"
 #include "indvars.h"
 #include "cgmem.h"
-#include "cfloat.h"
+#include "_cfloat.h"
 #include "zoiks.h"
 #include "cgaux.h"
 #include "data.h"
@@ -132,7 +132,7 @@ block   *DupBlock( block *blk )
     return( copy );
 }
 
-#define COPY_PTR( x )   (x)->v.alter_ego
+#define COPY_PTR( x )   (x)->u2.alter_ego
 
 static  void    ClearCopyPtrs( block *tail )
 /******************************************/

@@ -579,17 +579,19 @@ for detailed info on the tool and/or look at the source if the documentation
 doesn't satisfy you.
 .np
 So how does builder work? Each project has a
-.us lang.ctl
+.us builder.ctl
 builder script file. If you go to a project directory and run builder, it will
 make only that project; if you go to
 .us bld
 and run builder, it will build everything under the sun. The overall build uses
-.us bat\lang.ctl
-which includes all of the individual project
-.us lang.ctl
+.us builder.ctl
+ in the
+.us bld
+directory, which includes all of the individual project
+.us builder.ctl
 files that we use. Note that if you run builder, it will traverse directories upwards
 until it finds a
-.us lang.ctl
+.us builder.ctl
 (or it hits the root and still doesn't find anything, but then you must have
 surely done something wrong). Results are logged to
 .us build.log
@@ -623,7 +625,7 @@ source is in
 Each makefile has a comment line at the top of the file which is read by
 .us pmake.
 Most of our
-.us lang.ctl
+.us builder.ctl
 files will have a line similar to this:
 .millust begin
 pmake -d build -h ...

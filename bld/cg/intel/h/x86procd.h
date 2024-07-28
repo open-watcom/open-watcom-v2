@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -74,7 +74,7 @@ typedef struct target_proc_def {
         type_length             ___UNUSED;
         type_length             base_adjust;
         type_length             push_local_size;
-        union name              *return_points;
+        name                    *return_points;
         dbg_rtn                 *debug;
         label_handle            routine_profile_data;
         label_handle            block_profile_data;
@@ -84,5 +84,5 @@ typedef struct target_proc_def {
         unsigned                sp_align : 1;
         unsigned                has_fd_temps : 1;
         unsigned                never_sp_frame : 1;
-        union name              *tls_index;
+        name                    *tls_index;
 } target_proc_def;

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -44,6 +44,8 @@
 #include "dbgwinsp.h"
 #include "dlgfile.h"
 #include "menudef.h"
+#include "dbgicon.h"
+#include "litdui.h"
 
 
 #define TITLE_SIZE      2
@@ -107,7 +109,7 @@ static void     ImgInit( a_window wnd )
     WndZapped( wnd );
 }
 
-static void     ImgMenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_piece piece )
+static void     WNDCALLBACK ImgMenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_piece piece )
 {
     image_entry *image;
     char        *new_name;
@@ -165,7 +167,7 @@ static void     ImgMenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_piece
     }
 }
 
-static wnd_row ImgNumRows( a_window wnd )
+static wnd_row WNDCALLBACK ImgNumRows( a_window wnd )
 {
     image_entry *image;
     wnd_row     count;
@@ -179,7 +181,7 @@ static wnd_row ImgNumRows( a_window wnd )
     return( count );
 }
 
-static  bool    ImgGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *line )
+static  bool    WNDCALLBACK ImgGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *line )
 {
     image_entry         *image;
 
@@ -214,7 +216,7 @@ static  bool    ImgGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line
     } else {
         line->tabstop = false;
         line->use_prev_attr = true;
-        line->extent = WND_MAX_EXTEND;
+        line->extent = WND_NO_EXTENT;
         image = ImgGetImage( row );
         if( image == NULL )
             return( false );
@@ -239,13 +241,13 @@ static  bool    ImgGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line
     return( false );
 }
 
-static void     ImgRefresh( a_window wnd )
+static void     WNDCALLBACK ImgRefresh( a_window wnd )
 {
     ImgInit( wnd );
 }
 
 
-static bool ImgWndEventProc( a_window wnd, gui_event gui_ev, void *parm )
+static bool WNDCALLBACK ImgWndEventProc( a_window wnd, gui_event gui_ev, void *parm )
 {
     /* unused parameters */ (void)parm;
 
@@ -262,7 +264,7 @@ static bool ImgWndEventProc( a_window wnd, gui_event gui_ev, void *parm )
     return( false );
 }
 
-static bool ChkUpdate( void )
+static bool WNDCALLBACK ChkUpdate( void )
 {
     return( UpdateFlags & UP_SYM_CHANGE );
 }
@@ -285,5 +287,5 @@ wnd_info ImgInfo = {
 
 a_window WndImgOpen( void )
 {
-    return( DbgTitleWndCreate( LIT_DUI( WindowImages ), &ImgInfo, WND_IMAGE, NULL, &ImgIcon, TITLE_SIZE, true ) );
+    return( DbgWndCreateTitle( LIT_DUI( WindowImages ), &ImgInfo, WND_IMAGE, NULL, &ImgIcon, TITLE_SIZE, true ) );
 }

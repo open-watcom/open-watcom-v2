@@ -31,10 +31,10 @@ export OWTOOLS=GCC
 export OWDOCBUILD=0
 
 # Set OWNOWGML variable to 1 to not use WGML utility
-# It doesn't requires appropriate DOS emulator
+# It doesn't requires appropriate DOSBOX emulator
 # and suppress documentation build
 
-# set OWNOWGML=1
+# export OWNOWGML=1
 
 # Set OWGUINOBUILD variable to 1 to suppress tools GUI version build
 # If it is used then only tools character mode version is build
@@ -55,6 +55,7 @@ export OWDISTRBUILD=0
 
 # Change OWGHOSTSCRIPTPATH variable to the PATH required by GhostScript 
 # for PDF creation on used host OS (optional)
+
 # export OWGHOSTSCRIPTPATH=:
 
 # Set appropriate variables to point to Windows help compilers which you 
@@ -63,11 +64,11 @@ export OWDISTRBUILD=0
 # OWCHMCMD specifies the Free Pascal HTML Help compiler, an alternative 
 #    compiler that can also build Compressed HTML help ".chm" files, 
 #    available natively on non-Windows OSes
+
 #export OWCHMCMD=chmcmd
 
 # build process requires WGML utility which is available only as DOS executable
-# it is necessary to have some DOS emulator installed
-# DOSBOX emulator is available on most platforms
+# it is necessary to have DOSBOX emulator installed
 # if DOSBOX emulator is used then OWDOSBOX variable must be set
 # Uncoment and set OWDOSBOX variable bellow to point to DOSBOX emulator executable
 

@@ -1,0 +1,36 @@
+/* UTF-8 encoding, ¥ */
+
+/*************************************************************************/
+/*                          WLINK RESOURCE FILE                          */
+/*************************************************************************/
+
+#include "_formats.h"
+#include "wlnkmsg.rh"
+#include "wreslang.rh"
+
+STRINGTABLE
+BEGIN
+    #define pick(c,e,j) (c + RLE_ENGLISH * MSG_LANG_SPACING), [ e ]
+
+    #include "lnkerror.msg"
+    #include "wlink.msg"
+    #include "rc.msg"
+
+    #undef pick
+
+    #define pick(c,e,j) (c + RLE_JAPANESE * MSG_LANG_SPACING), [ j ]
+
+    #include "lnkerror.msg"
+    #include "wlink.msg"
+    #include "rc.msg"
+
+    #undef pick
+END
+
+#if defined( __NT__ ) && defined( RESX_NTVER )
+  #ifdef RESX_DLL
+    #include "dllver.grc"
+  #else
+    #include "exever.grc"
+  #endif
+#endif

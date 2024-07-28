@@ -1,7 +1,9 @@
 proj_name = whc
 proj_type = cxx
 
-whc_autodepends = .autodepend
+whc_autodepends = .AUTODEPEND
+
+whc_ntverrc = ../h
 
 whc_trmem = 1
 
@@ -55,11 +57,8 @@ exetarg_objs = &
     compress.obj &
     parsing.obj &
     $(trmem_objs)
-exetarg_res_version_nt_386 = exever.res
-exetarg_res_version_nt_x64 = exever.res
 !include exetarg.mif
 
 #
 # rc and others
 #
-!include verrc.mif

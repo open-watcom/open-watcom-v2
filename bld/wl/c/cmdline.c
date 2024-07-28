@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -65,6 +65,7 @@
 #include "cmdhelp.h"
 #include "library.h"
 #include "sysblock.h"
+#include "mapio.h"
 
 
 #ifdef BOOTSTRAP
@@ -176,9 +177,12 @@ static bool sysHelp( void )
     if( p[0] == '?' ) {
         p++;            // skip '?'
 #if defined( __UNIX__ )
-    } else if( p[0] == '-' && p[1] == '?' ) {
+    } else if( p[0] == '-'
+      && p[1] == '?' ) {
 #else
-    } else if( ( p[0] == '-' || p[0] == '/' ) && p[1] == '?' ) {
+    } else if( ( p[0] == '-'
+      || p[0] == '/' )
+      && p[1] == '?' ) {
 #endif
         p += 2;         // skip '-?' or '/?'
     } else if( p[0] == '\0' ) {
@@ -254,11 +258,8 @@ void Burn( void )
  */
 {
     FreePaths();
-    if( MapFName != NULL ) {
-        _LnkFree( MapFName );
-        MapFName = NULL;
-    }
     FreeOutFiles();
+    MapFini();
     BurnUtils();
 }
 
@@ -297,7 +298,8 @@ void DoCmdFile( const char *fname )
     const char  *namelnk;
 
     ResetCmdFile();
-    if( fname == NULL || *fname == '\0' ) {
+    if( fname == NULL
+      || *fname == '\0' ) {
         NewCommandSource( NULL, NULL, COMMANDLINE );
     } else {
         NewCommandSource( NULL, fname, ENVIRONMENT );
@@ -349,7 +351,8 @@ void DoCmdFile( const char *fname )
             }
         }
     }
-    if( (FmtData.type & (MK_NOVELL | MK_DOS)) && (LinkFlags & LF_INC_LINK_FLAG) ) {
+    if( (FmtData.type & (MK_NOVELL | MK_DOS))
+      && (LinkFlags & LF_INC_LINK_FLAG) ) {
         LnkMsg( FTL+MSG_FORMAT_BAD_OPTION, "s", "incremental" );
     }
 #ifdef _NOVELL
@@ -368,32 +371,40 @@ void DoCmdFile( const char *fname )
         AddObjLib( "wovl.lib", LIB_PRIORITY_MIN );     // add a reference to wovl.lib
     }
 #endif
-    if( Name == NULL || (CmdFlags & CF_HAVE_FILES) == 0 ) {
+    if( Name == NULL
+      || (CmdFlags & CF_HAVE_FILES) == 0 ) {
         Ignite();
         LnkMsg( FTL+MSG_NO_FILES_FOUND, NULL );
     }
     namelen = strlen( Name );
-    if( MapFlags & MAP_FLAG ) {
+    if( namelen > 0 ) {
         if( MapFName == NULL ) {
-            MapFName = FileName( Name, namelen, E_MAP, true );
+            if( MapFlags & MAP_FLAG ) {
+                MapFName = FileName( Name, namelen, E_MAP, true );
+            }
         }
-    } else {
+        if( SymFileName == NULL
+          && ( (CmdFlags & CF_SEPARATE_SYM)
+          || (FmtData.type & MK_COM)
+          && (LinkFlags & LF_ANY_DBI_FLAG)
+          || (FmtData.type & MK_ELF)
+          && (LinkFlags & (LF_OLD_DBI_FLAG | LF_CV_DBI_FLAG))
+          || (FmtData.type & MK_RAW)
+          && (LinkFlags & LF_ANY_DBI_FLAG) ) ) {
+            SymFileName = FileName( Name, namelen, E_SYM, true );
+        }
+        if( FmtData.implibname == NULL
+          && FmtData.make_implib ) {
+            if( FmtData.make_impfile ) {
+                extension = E_LBC;
+            } else {
+                extension = E_LIBRARY;
+            }
+            FmtData.implibname = FileName( Name, namelen, extension, true );
+        }
+    }
+    if( MapFName == NULL ) {
         MapFlags = 0;   // if main isn't set, don't set anything.
-    }
-    if( SymFileName == NULL && ( (CmdFlags & CF_SEPARATE_SYM)
-      || (FmtData.type & MK_COM) && (LinkFlags & LF_ANY_DBI_FLAG)
-      || (FmtData.type & MK_ELF) && (LinkFlags & (LF_OLD_DBI_FLAG | LF_CV_DBI_FLAG))
-      || (FmtData.type & MK_RAW) && (LinkFlags & LF_ANY_DBI_FLAG)
-      ) ) {
-        SymFileName = FileName( Name, namelen, E_SYM, true );
-    }
-    if( FmtData.make_implib && FmtData.implibname == NULL ) {
-        if( FmtData.make_impfile ) {
-            extension = E_LBC;
-        } else {
-            extension = E_LIBRARY;
-        }
-        FmtData.implibname = FileName( Name, namelen, extension, true );
     }
     CheckTraces();
     BurnUtils();
@@ -433,9 +444,9 @@ void SetFormat( void )
         OvlFillOutFilePtrs();       // fill in all unspecified outfile pointers.
     }
 #endif
-    if( MapFlags & MAP_FLAG ) {
-        LnkMsg( MAP+MSG_EXE_NAME, "s", Root->outfile->fname );
-        LnkMsg( MAP+MSG_CREATE_EXE, "f" );
+    if( MapFile != NULL ) {
+        WriteMapLnkMsg( MSG_EXE_NAME, "s", Root->outfile->fname );
+        WriteMapLnkMsg( MSG_CREATE_EXE, "f" );
     }
 #ifdef _QNX
     if( FmtData.type & MK_QNX ) {
@@ -542,7 +553,8 @@ void FreeFormatStuff( void )
             break;
         }
     }
-    if( possible != 0 && check->free_func != NULL ) {
+    if( possible != 0
+      && check->free_func != NULL ) {
         check->free_func();
     }
 }
@@ -602,7 +614,8 @@ void AddLibPaths( const char *path_list, size_t len, bool add_to_front )
 void AddLibPathsToEnd( const char *path_list )
 /********************************************/
 {
-    if( path_list != NULL && *path_list != '\0' ) {
+    if( path_list != NULL
+      && *path_list != '\0' ) {
         AddLibPaths( path_list, strlen( path_list ), false );
     }
 }
@@ -613,7 +626,8 @@ void AddLibPathsToEndList( const char *path_list )
     size_t          len;
     path_entry      *newpath;
 
-    if( path_list != NULL && *path_list != '\0' ) {
+    if( path_list != NULL
+      && *path_list != '\0' ) {
         len = strlen( path_list );
         _ChkAlloc( newpath, sizeof( path_entry ) + len );
         strcpy( newpath->name, path_list );
@@ -659,7 +673,10 @@ static void CleanSystemList( bool burn )
 
     for( sysown = &SysBlocks; (sys = *sysown) != NULL; ) {
         name = sys->name;
-        if( burn || name == NULL || memcmp( "286", name, 4 ) != 0 && memcmp( "386", name, 4 ) != 0 ) {
+        if( burn
+          || name == NULL
+          || memcmp( "286", name, 4 ) != 0
+          && memcmp( "386", name, 4 ) != 0 ) {
             *sysown = sys->next;
             if( name != NULL ) {
                 _LnkFree( name );

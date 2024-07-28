@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,7 +34,7 @@
 extern  void    TellOptimizerByPassed( void );
 extern  void    TellByPassOver( void );
 extern  void    TellAddress( label_handle lbl, offset addr );
-extern  void    TellDonePatch( label_handle lbl );
+extern  void    TellDonePatches( label_handle lbl );
 extern  void    TellReachedLabel( label_handle lbl );
 extern  void    TellProcLabel( label_handle lbl );
 extern  void    TellCommonLabel( label_handle lbl, import_handle imphdl );

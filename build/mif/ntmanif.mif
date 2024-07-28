@@ -1,14 +1,6 @@
-!ifdef manifest_$(host_os)_$(host_cpu)
-$(manifest_$(host_os)_$(host_cpu)) : ../ntmanif.rc .EXPLICIT
-    @%make echo_rc
-    $(rc) $(ppflags_common) $(rc_flags) -I.. $(inc_dirs_sys) -I"$(watcom_dir)/h" $< -fo=$@
-!endif
+ntmanif_res = ntmanif.res
 
-bind_res_manifest: .PROCEDURE .EXPLICIT
-!ifdef manifest_$(host_os)_$(host_cpu)
-!ifeq verbose 0
-    @echo bind res $@
-!endif
-    $(rcbind) -q -k $(manifest_$(host_os)_$(host_cpu)) $@
-!endif
+$(ntmanif_res) : $($(proj_name)_ntmanif)/ntmanif.rc $($(proj_name)_ntmanif)/appmanif.xml .EXPLICIT
+    @%make echo_rc
+    $(rc) -zku8 $(ppflags_common) $(rc_cppflags) $(rc_flags_sys) -I"$($(proj_name)_ntmanif)" $(inc_dirs_sys) $[@ -fo=$@
 

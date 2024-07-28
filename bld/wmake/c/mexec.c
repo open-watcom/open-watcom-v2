@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -104,7 +104,8 @@
 #define CUPPER(c)               (((c) >= 'a') ? (c) - 'a' + 'A' : (c))
 
 #if defined( __DOS__ )
-    #define FIX_CHAR_OS(c,f)    (((c) == '/') ? '\\' : (cisalpha( (c) ) ? ((f) ? CUPPER(c) : CLOWER(c)) : (c)))
+//    #define FIX_CHAR_OS(c,f)    (((c) == '/') ? '\\' : (cisalpha( (c) ) ? ((f) ? CUPPER(c) : CLOWER(c)) : (c)))
+    #define FIX_CHAR_OS(c,f)    (((c) == '/') ? '\\' : ((f) && cisalpha((c)) ? CUPPER(c) : (c)))
 #elif defined( __OS2__ ) || defined( __NT__ ) || defined( __RDOS__ )
     #define FIX_CHAR_OS(c,f)    (((c) == '/') ? '\\' : (c))
 #else   /* __UNIX__ */
@@ -158,6 +159,7 @@ STATIC const char * const   dosInternals[] = {   /* COMMAND.COM commands */
 static const char * const   percentCmds[] = {
     "ABORT",
     "APPEND",
+    "COPY",
     "CREATE",
     "ERASE",
     "MAKE",
@@ -173,6 +175,7 @@ static const char * const   percentCmds[] = {
 enum {
     PER_ABORT,
     PER_APPEND,
+    PER_COPY,
     PER_CREATE,
     PER_ERASE,
     PER_MAKE,
@@ -195,6 +198,21 @@ STATIC bool     execLine( char *line ); /* called recursively in handleFor */
 STATIC NKLIST   *noKeepList;            /* contains the list of files that
                                            needs to be cleaned when wmake
                                            exits */
+
+static bool IsDotOrDotDot( const char *fname )
+/*********************************************
+ * return true if fname is "." or "..", false otherwise
+ */
+{
+    return( fname[0] == '.' && ( fname[1] == NULLCHAR || ( fname[1] == '.' && fname[2] == NULLCHAR ) ) );
+}
+
+static bool chk_is_dir( const char *name )
+{
+    struct stat     s;
+
+    return( stat( name, &s ) == 0 && S_ISDIR( s.st_mode ) );
+}
 
 char *CmdGetFileName( char *src, char **fname, bool osname )
 /**********************************************************/
@@ -434,8 +452,8 @@ STATIC bool createFile( const FLIST *head )
 {
     NKLIST  *temp;
     FILE    *fp;
-    char    *fileName = NULL;
-    char    *tmpFileName = NULL;
+    char    *fileName;
+    char    *tmpFileName;
     bool    ok;
 
     assert( head != NULL );
@@ -445,10 +463,7 @@ STATIC bool createFile( const FLIST *head )
         /* Push the filename back into the stream
          * and then get it back out using DeMacro to fully DeMacro
          */
-        UnGetCHR( STRM_MAGIC );
-        InsString( head->fileName, false );
-        fileName = DeMacro( TOK_MAGIC );
-        GetCHR();           /* eat STRM_MAGIC */
+        fileName = FullDeMacroText( head->fileName );
 
         tmpFileName = RemoveBackSlash( fileName );
         fp = fopen( tmpFileName, "w" );
@@ -472,9 +487,9 @@ STATIC bool createFile( const FLIST *head )
             PrtMsg( ERR | ERROR_OPENING_FILE, tmpFileName );
             ok = false;
         }
+        FreeSafe( fileName );
+        FreeSafe( tmpFileName );
     }
-    FreeSafe( fileName );
-    FreeSafe( tmpFileName );
     return( ok );
 }
 
@@ -684,7 +699,7 @@ STATIC bool percentWrite( char *arg, enum write_type type )
         return( true );
     }
     /* handle File name */
-    p = CmdGetFileName( arg, &fn, true );
+    p = CmdGetFileName( arg, &fn, false );
     if( *p != NULLCHAR ) {
         if( !cisws( *p ) ) {
             switch( type ) {
@@ -757,7 +772,7 @@ STATIC bool percentErase( char *arg )
 
     ok = false;
     /* handle File name */
-    p = CmdGetFileName( arg, &fn, true );
+    p = CmdGetFileName( arg, &fn, false );
     if( *p != NULLCHAR && !cisws( *p ) ) {
         PrtMsg( ERR | SYNTAX_ERROR_IN, percentCmds[PER_ERASE] );
         PrtMsg( INF | PRNTSTR, "File" );
@@ -784,7 +799,7 @@ STATIC bool percentRename( char *arg )
     }
 
     /* Get first LFN */
-    p = CmdGetFileName( arg, &fn1, true );
+    p = CmdGetFileName( arg, &fn1, false );
     if( *p == NULLCHAR || !cisws( *p ) ) {
         PrtMsg( ERR | SYNTAX_ERROR_IN, percentCmds[PER_RENAME] );
         PrtMsg( INF | PRNTSTR, "First file" );
@@ -795,13 +810,153 @@ STATIC bool percentRename( char *arg )
     /* skip ws after first and before second file name */
     p = SkipWS( p );
     /* Get second LFN as well */
-    p = CmdGetFileName( p, &fn2, true );
+    p = CmdGetFileName( p, &fn2, false );
     if( *p != NULLCHAR && !cisws( *p ) ) {
         PrtMsg( ERR | SYNTAX_ERROR_IN, percentCmds[PER_RENAME] );
         return( false );
     }
     *p = NULLCHAR;          /* terminate second file name */
     return( rename( fn1, fn2 ) == 0 );
+}
+
+static FILE *open_file( const char *name, const char *mode )
+/**********************************************************/
+{
+    FILE    *fp;
+
+    fp = fopen( name, mode );
+    if( fp == NULL )
+        PrtMsg( ERR | ERROR_OPENING_FILE, name );
+    return( fp );
+}
+
+static bool close_file( FILE *fp, const char *name )
+/**************************************************/
+{
+    if( fp != NULL ) {
+        if( fclose( fp ) ) {
+            PrtMsg( ERR | ERROR_CLOSING_FILE, name );
+            return( false );
+        }
+    }
+    return( true );
+}
+
+static size_t read_block( void *buf, size_t len, FILE *fp, const char *name )
+/***************************************************************************/
+{
+    size_t readlen;
+
+    readlen = fread( buf, 1, len, fp );
+    if( ferror( fp ) )
+        PrtMsg( ERR | READ_ERROR, name );
+    return( readlen );
+}
+
+static size_t write_block( const void *buf, size_t len, FILE *fp, const char *name )
+/**********************************************************************************/
+{
+    size_t writelen;
+
+    writelen = fwrite( buf, 1, len, fp );
+    if( ferror( fp ) )
+        PrtMsg( ERR | ERROR_WRITING_FILE, name );
+    return( writelen );
+}
+
+STATIC bool oneCopy( const char *src, const char *dst )
+/*****************************************************/
+{
+    FILE            *fps;
+    FILE            *fpd;
+    bool            ok;
+    char            buf[FILE_BUFFER_SIZE];
+    size_t          len;
+    struct stat     st;
+    struct utimbuf  dsttimes;
+
+    ok = false;
+    fps = open_file( src, "rb" );
+    if( fps != NULL ) {
+        fpd = open_file( dst, "wb" );
+        if( fpd != NULL ) {
+            while( (len = read_block( buf, FILE_BUFFER_SIZE, fps, src )) == FILE_BUFFER_SIZE ) {
+                if( len != write_block( buf, len, fpd, dst ) ) {
+                    break;
+                }
+            }
+            if( len != FILE_BUFFER_SIZE ) {
+                ok = ( len == write_block( buf, len, fpd, dst ) );
+            }
+            ok &= close_file( fpd, dst );
+
+            stat( src, &st );
+            dsttimes.actime = st.st_atime;
+            dsttimes.modtime = st.st_mtime;
+            utime( dst, &dsttimes );
+            /*
+             * copy permissions: mostly necessary for the "x" bit
+             * some files is copied with the read-only permission
+             */
+            chmod( dst, st.st_mode );
+        }
+        ok &= close_file( fps, src );
+    }
+    return( ok );
+}
+
+STATIC bool processCopy( const char *src, const char *dst )
+/*********************************************************/
+{
+    char            buf[FILE_BUFFER_SIZE];
+    pgroup2         pg;
+
+    if( chk_is_dir( dst ) ) {
+        _splitpath2( src, pg.buffer, NULL, NULL, &pg.fname, &pg.ext );
+        _makepath( buf, NULL, dst, pg.fname, pg.ext );
+        dst = strcpy( pg.buffer, buf );
+    }
+    return( oneCopy( src, dst ) );
+}
+
+STATIC bool percentCopy( char *arg )
+/***********************************
+ * "%COPY" {ws}+ <source file> {ws}+ <destination file>
+ */
+{
+    char        *p;
+    char        *fn1, *fn2;
+
+    assert( arg != NULL );
+
+    if( Glob.noexec ) {
+        return( true );
+    }
+    /*
+     * Get first LFN
+     */
+    p = CmdGetFileName( arg, &fn1, false );
+    if( *p == NULLCHAR || !cisws( *p ) ) {
+        PrtMsg( ERR | SYNTAX_ERROR_IN, percentCmds[PER_COPY] );
+        PrtMsg( INF | PRNTSTR, "First file" );
+        PrtMsg( INF | PRNTSTR, fn1 );
+        return( false );
+    }
+    *p++ = NULLCHAR;        /* terminate first file name */
+    /*
+     * skip ws after first and before second file name
+     */
+    p = SkipWS( p );
+    /*
+     * Get second LFN as well
+     */
+    p = CmdGetFileName( p, &fn2, false );
+    if( *p != NULLCHAR && !cisws( *p ) ) {
+        PrtMsg( ERR | SYNTAX_ERROR_IN, percentCmds[PER_COPY] );
+        return( false );
+    }
+    *p = NULLCHAR;          /* terminate second file name */
+    return( processCopy( fn1, fn2 ) != 0 );
 }
 
 STATIC bool percentCmd( const char *cmdname, char *arg )
@@ -832,6 +987,9 @@ STATIC bool percentCmd( const char *cmdname, char *arg )
                 // never return
             case PER_APPEND:
                 ok = percentWrite( arg, WR_APPEND );
+                break;
+            case PER_COPY:
+                ok = percentCopy( arg );
                 break;
             case PER_CREATE:
                 ok = percentWrite( arg, WR_CREATE );
@@ -1501,21 +1659,6 @@ STATIC bool remove_item( const char *name, const rm_flags *flags, bool dir )
     return( rc == 0 );
 }
 
-static bool IsDotOrDotDot( const char *fname )
-/*********************************************
- * return true if fname is "." or "..", false otherwise
- */
-{
-    return( fname[0] == '.' && ( fname[1] == NULLCHAR || ( fname[1] == '.' && fname[2] == NULLCHAR ) ) );
-}
-
-static bool chk_is_dir( const char *name )
-{
-    struct stat     s;
-
-    return( stat( name, &s ) == 0 && S_ISDIR( s.st_mode ) );
-}
-
 static bool doRM( const char *fullpath, const rm_flags *flags )
 {
     iolist              *tmp;
@@ -1699,7 +1842,7 @@ STATIC RET_T handleRM( char *cmd )
         /*
          * handle File name
          */
-        p = CmdGetFileName( p, &name, true );
+        p = CmdGetFileName( p, &name, false );
         *p = NULLCHAR;      /* terminate file name */
         if( !processRM( name, &flags ) ) {
             return( RET_ERROR );
@@ -1800,7 +1943,7 @@ STATIC RET_T handleMkdir( char *cmd )
     /*
      * handle File name
      */
-    p = CmdGetFileName( p, &path, true );
+    p = CmdGetFileName( p, &path, false );
     if( *p != NULLCHAR ) {
         return( handleMkdirSyntaxError() );
     }
@@ -1809,153 +1952,6 @@ STATIC RET_T handleMkdir( char *cmd )
     }
     return( RET_SUCCESS );
 }
-
-static FILE *open_file( const char *name, const char *mode )
-/**********************************************************/
-{
-    FILE    *fp;
-
-    fp = fopen( name, mode );
-    if( fp == NULL )
-        PrtMsg( ERR | ERROR_OPENING_FILE, name );
-    return( fp );
-}
-
-static bool close_file( FILE *fp, const char *name )
-/**************************************************/
-{
-    if( fp != NULL ) {
-        if( fclose( fp ) ) {
-            PrtMsg( ERR | ERROR_CLOSING_FILE, name );
-            return( false );
-        }
-    }
-    return( true );
-}
-
-static size_t read_block( void *buf, size_t len, FILE *fp, const char *name )
-/***************************************************************************/
-{
-    size_t readlen;
-
-    readlen = fread( buf, 1, len, fp );
-    if( ferror( fp ) )
-        PrtMsg( ERR | READ_ERROR, name );
-    return( readlen );
-}
-
-static size_t write_block( const void *buf, size_t len, FILE *fp, const char *name )
-/**********************************************************************************/
-{
-    size_t writelen;
-
-    writelen = fwrite( buf, 1, len, fp );
-    if( ferror( fp ) )
-        PrtMsg( ERR | ERROR_WRITING_FILE, name );
-    return( writelen );
-}
-
-STATIC bool oneCopy( const char *src, const char *dst )
-/*****************************************************/
-{
-    FILE            *fps;
-    FILE            *fpd;
-    bool            ok;
-    char            buf[FILE_BUFFER_SIZE];
-    size_t          len;
-    struct stat     st;
-    struct utimbuf  dsttimes;
-
-    ok = false;
-    fps = open_file( src, "rb" );
-    if( fps != NULL ) {
-        fpd = open_file( dst, "wb" );
-        if( fpd != NULL ) {
-            while( (len = read_block( buf, FILE_BUFFER_SIZE, fps, src )) == FILE_BUFFER_SIZE ) {
-                if( len != write_block( buf, len, fpd, dst ) ) {
-                    break;
-                }
-            }
-            if( len != FILE_BUFFER_SIZE ) {
-                ok = ( len == write_block( buf, len, fpd, dst ) );
-            }
-            ok &= close_file( fpd, dst );
-
-            stat( src, &st );
-            dsttimes.actime = st.st_atime;
-            dsttimes.modtime = st.st_mtime;
-            utime( dst, &dsttimes );
-            /*
-             * copy permissions: mostly necessary for the "x" bit
-             * some files is copied with the read-only permission
-             */
-            chmod( dst, st.st_mode );
-        }
-        ok &= close_file( fps, src );
-    }
-    return( ok );
-}
-
-STATIC bool processCopy( const char *src, const char *dst )
-/*********************************************************/
-{
-    char            buf[FILE_BUFFER_SIZE];
-    pgroup2         pg;
-
-    if( chk_is_dir( dst ) ) {
-        _splitpath2( src, pg.buffer, NULL, NULL, &pg.fname, &pg.ext );
-        _makepath( buf, NULL, dst, pg.fname, pg.ext );
-        dst = strcpy( pg.buffer, buf );
-    }
-    return( oneCopy( src, dst ) );
-}
-
-STATIC RET_T handleCopy( char *arg )
-/***********************************
- * "COPY" {ws}+ <source file> {ws}+ <destination file>
- */
-{
-    char        *p;
-    char        *fn1, *fn2;
-
-    assert( arg != NULL );
-
-    if( Glob.noexec ) {
-        return( RET_SUCCESS );
-    }
-    /*
-     * Get first LFN
-     *
-     * skip "COPY"
-     */
-    p = arg + 4;
-    p = SkipWS( p );
-    p = CmdGetFileName( p, &fn1, true );
-    if( *p == NULLCHAR || !cisws( *p ) ) {
-        PrtMsg( ERR | SYNTAX_ERROR_IN, dosInternals[COM_COPY] );
-        PrtMsg( INF | PRNTSTR, "First file" );
-        PrtMsg( INF | PRNTSTR, fn1 );
-        return( RET_ERROR );
-    }
-    *p++ = NULLCHAR;        /* terminate first file name */
-    /*
-     * skip ws after first and before second file name
-     */
-    p = SkipWS( p );
-    /*
-     * Get second LFN as well
-     */
-    p = CmdGetFileName( p, &fn2, true );
-    if( *p != NULLCHAR && !cisws( *p ) ) {
-        PrtMsg( ERR | SYNTAX_ERROR_IN, dosInternals[COM_COPY] );
-        return( RET_ERROR );
-    }
-    *p = NULLCHAR;          /* terminate second file name */
-    if( processCopy( fn1, fn2 ) )
-        return( RET_SUCCESS );
-    return( RET_ERROR );
-}
-
 
 STATIC RET_T handleRmdir( char *cmd )
 /************************************
@@ -1979,7 +1975,7 @@ STATIC RET_T handleRmdir( char *cmd )
     /*
      * handle File name
      */
-    p = CmdGetFileName( p, &path, true );
+    p = CmdGetFileName( p, &path, false );
     if( *p != NULLCHAR ) {
         PrtMsg( ERR | SYNTAX_ERROR_IN, dosInternals[COM_RMDIR] );
         return( RET_ERROR );
@@ -2001,7 +1997,7 @@ STATIC bool hasMetas( const char *cmd )
 
     dquote = false;
     for( p = cmd; *p != NULLCHAR; ++p ) {
-        if( *p == '"' ) {
+        if( *p == '\"' ) {
             dquote = !dquote;
         } else if( !dquote && strchr( SHELL_METAS, *p ) != NULL ) {
             return( true );
@@ -2169,13 +2165,6 @@ STATIC RET_T shellSpawn( char *cmd, shell_flags flags )
         flags |= FLAG_SHELL;
     }
 
-    /*
-     * skip whitespace between the command and the argument
-     */
-    while( cisws( *arg ) ) {
-        arg++;
-    }
-
 #if defined( __DOS__ )
     {
         char    ext_buf[10];
@@ -2205,6 +2194,10 @@ STATIC RET_T shellSpawn( char *cmd, shell_flags flags )
         }
         dumpCommand( cmd );
     }
+    /*
+     * skip whitespace between the command and the argument
+     */
+    arg = SkipWS( arg );
     if( percent_cmd ) {
         if( percentCmd( cmdname, arg ) )
             return( RET_SUCCESS );
@@ -2240,7 +2233,6 @@ STATIC RET_T shellSpawn( char *cmd, shell_flags flags )
         case COM_RM:    my_ret = handleRM( cmd );           break;
         case COM_MKDIR: my_ret = handleMkdir( cmd );        break;
         case COM_RMDIR: my_ret = handleRmdir( cmd );        break;
-        case COM_COPY:  my_ret = handleCopy( cmd );         break;
 #if defined( __OS2__ ) || defined( __NT__ ) || defined( __UNIX__ ) || defined( __RDOS__ )
         case COM_CD:
         case COM_CHDIR: my_ret = handleCD( cmd );           break;
@@ -2453,10 +2445,7 @@ bool ExecCList( CLIST *clist )
         ok = writeInlineFiles( clist->inlineHead, &(clist->text) );
         currentFlist = clist->inlineHead;
         if( ok ) {
-            UnGetCHR( STRM_MAGIC );
-            InsString( clist->text, false );
-            line = DeMacro( TOK_MAGIC );
-            GetCHR();        /* eat STRM_MAGIC */
+            line = FullDeMacroText( clist->text );
             if( Glob.verbose ) {
                 ok = verbosePrintTempFile( currentFlist );
             }

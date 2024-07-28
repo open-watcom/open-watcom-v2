@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,6 +38,7 @@
 #include "guidlg.h"
 #include "dlgayn.h"
 #include "strutil.h"
+#include "litdui.h"
 
 
 typedef struct {
@@ -44,7 +46,7 @@ typedef struct {
     unsigned long   mult;
 } dlg_ayn;
 
-static bool AynGUIEventProc( gui_window *gui, gui_event gui_ev, void *param )
+static bool GUICALLBACK AynGUIEventProc( gui_window *gui, gui_event gui_ev, void *param )
 {
     dlg_ayn     *ayn;
     gui_ctl_id  id;
@@ -78,6 +80,6 @@ bool DlgAreYouNuts( unsigned long mult )
 
     ayn.as_a_fruitcake = false;
     ayn.mult = mult;
-    ResDlgOpen( AynGUIEventProc, &ayn, DIALOG_AYN );
+    DlgOpenRes( AynGUIEventProc, &ayn, DIALOG_AYN );
     return( ayn.as_a_fruitcake );
 }

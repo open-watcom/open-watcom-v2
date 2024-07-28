@@ -4,6 +4,9 @@ proj_name = uninstal
 uninstal_autodepends = .AUTODEPEND
 !endif
 
+uninstal_ntmanif = ../res
+uninstal_ntverrc = ../res
+
 sys_windowed = 1
 
 additional_clean = *.gh *.grh *.grc
@@ -19,7 +22,7 @@ additional_clean = *.gh *.grh *.grc
 #
 .c: $(uninstal_dir)
 
-inc_dirs = -I. -I".." $(commonui_inc_dirs)
+inc_dirs = -I. -I".." $(cli_commonui_inc_dirs)
 
 # explicit rules
 #################
@@ -29,31 +32,23 @@ inc_dirs = -I. -I".." $(commonui_inc_dirs)
 #
 exetarg_prebuild_objs = rcstr.grh
 exetarg_objs          = uninstal.obj
-exetarg_libs          = $(commonui_lib)
-exetarg_res_version_nt_386  = exever.res
-exetarg_res_version_nt_x64  = exever.res
+exetarg_libs          = $(cli_commonui_libs)
 exetarg_res           = $(proj_name).res
-exetarg_nt_manif_386  = ntmanif.res
-exetarg_nt_manif_x64  = ntmanif.res
 !include exetarg.mif
 
 #
 # rc and others
 #
-!include verrc.mif
+rc_inc_dirs = -I"../res" -I".."
 
-$(proj_name).res : ../uninstal.rc $(__MAKEFILES__) .AUTODEPEND
+$(proj_name).res : ../res/uninstal.rc $(__MAKEFILES__) .AUTODEPEND
     @%make echo_rc
-    $(rc) $(ppflags_common) $(rc_flags) -ad -zku8 $(inc_path) $[@ -fo=$@
-
-ntmanif.res : ../ntmanif.rc
-    @%make echo_rc
-    $(rc) $(ppflags_common) $(rc_flags) -I.. $(inc_dirs_sys_nt) $< -fo=$@
+    $(rcu8) $(ppflags_common) $(rc_cppflags) -ad $(rc_flags) $(rc_inc_path) $[@ -fo=$@
 
 rcstr.grh : rcstrmsg.gh $(__MAKEFILES__)
     @%make echo_awk
     $(noecho)*awk -f $(build_dir)/msgtoh.awk -v OUTFILE=$^. $[@
 
-rcstrmsg.gh : $(uninstal_dir)/uninstal.msg $(__MAKEFILES__)
+rcstrmsg.gh : ../res/uninstal.msg $(__MAKEFILES__)
     @%make echo_cpp
-    $(cpp) $(ppflags_common) -zku8 $(rc_cppflags) $(inc_path) -o$@ $[@
+    $(cppu8) $(ppflags_common) $(rc_cppflags) $(rc_inc_path) -o$@ $[@

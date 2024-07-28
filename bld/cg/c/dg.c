@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,7 +40,7 @@
 #include "cgmem.h"
 #include "typclass.h"
 #include "types.h"
-#include "cfloat.h"
+#include "_cfloat.h"
 #include "cgaux.h"
 #include "model.h"
 #include "cgstub.h"
@@ -49,6 +49,34 @@
 #include "feprotos.h"
 #include "cgprotos.h"
 
+
+enum {
+    LOC_SYM,
+    LOC_CONST,
+    LOC_TEMP,
+    LOP_IND_2,
+    LOP_IND_4,
+    LOP_IND_ADDR_16,
+    LOP_IND_ADDR_32,
+    LOP_ZEB,
+    LOP_ZEW,
+    LOP_MK_FP,
+    LOP_POP,
+    LOP_XCHG,
+    LOP_ADD,
+    LOP_DUP
+};
+
+typedef struct location {
+        struct location         *next;
+        union {
+            t                   *be_sym;
+            cg_sym_handle       fe_sym;
+            unsigned            stk;
+            uint_32             val;
+        }                       u;
+        byte                    class;
+} location;
 
 extern  uint_16         TypeIdx;
 
@@ -70,6 +98,34 @@ extern  void            DDefLabel(l *);
 extern  void            DRefLabel(l *);
 extern  void            Find(char *,pointer *,pointer );
 
+
+static fname_lst  *SrcFiles;
+
+static const char * const LopNames[] = {
+    "",
+    "",
+    "IND_2",
+    "IND_4",
+    "IND_A16",
+    "IND_A32",
+    "ZEB",
+    "ZEW",
+    "MK_FP",
+    "POP",
+    "XCHG",
+    "ADD",
+    "DUP"
+};
+
+static const char * const DBOpNames[] = {
+    "DB_OP_POINTS",
+    "DB_OP_ZEX",
+    "DB_OP_XCHG",
+    "DB_OP_MK_FP",
+    "DB_OP_ADD",
+    "DB_OP_DUP",
+    "DB_OP_POP"
+};
 
 
 void    DGAlign( uint algn )
@@ -234,57 +290,6 @@ extern  void    DGString( cchar_ptr s, uint len )
     }
     Put( ")%n",s );
 }
-enum {
-LOC_SYM,
-LOC_CONST,
-LOC_TEMP,
-LOP_IND_2,
-LOP_IND_4,
-LOP_IND_ADDR_16,
-LOP_IND_ADDR_32,
-LOP_ZEB,
-LOP_ZEW,
-LOP_MK_FP,
-LOP_POP,
-LOP_XCHG,
-LOP_ADD,
-LOP_DUP
-};
-static char *LopNames[] = {
-"",
-"",
-"IND_2",
-"IND_4",
-"IND_A16",
-"IND_A32",
-"ZEB",
-"ZEW",
-"MK_FP",
-"POP",
-"XCHG",
-"ADD",
-"DUP"
-};
-typedef struct location {
-        struct location         *next;
-        union {
-            t                   *be_sym;
-            cg_sym_handle       fe_sym;
-            unsigned            stk;
-            uint_32             val;
-        }                       u;
-        byte                    class;
-} location;
-static char *DBOpNames[] = {
-"DB_OP_POINTS",
-"DB_OP_ZEX",
-"DB_OP_XCHG",
-"DB_OP_MK_FP",
-"DB_OP_ADD",
-"DB_OP_DUP",
-"DB_OP_POP"
-};
-
 static char *DoLocation( char *str, dbg_loc loc ) {
 /*************************************************/
 
@@ -457,8 +462,6 @@ extern  void _CGAPI             DBLocFini( dbg_loc loc ) {
 
     Action( "DBLocFini( %p )%n", loc );
 }
-
-static fname_lst  *SrcFiles;
 
 static  void    SrcFileNoInit( void )
 /***********************************/
@@ -742,8 +745,8 @@ extern  dbg_type        DBIntArrayCG( cg_type tipe, uint_32 hi, dbg_type base )
 extern  array_list  *DBBegArray(  dbg_type base, cg_type tipe, bool is_col_major )
 /********************************************************************************/
 {
-    array_list *ar;
-    type_def   *tipe_addr;
+    array_list      *ar;
+    const type_def  *tipe_addr;
 
     Action( "DBBegArray( %l, %s, %d )", base, Tipe( tipe ),
                      is_col_major );
@@ -761,8 +764,8 @@ extern  array_list  *DBBegArray(  dbg_type base, cg_type tipe, bool is_col_major
 static  void    AddDim( array_list *ar, dim_any *dim )
 /****************************************************/
 {
-    dim_entry *curr;
-    dim_entry **owner;
+    dim_any *curr;
+    dim_any **owner;
 
     owner = &ar->list;
     for(;;) {
@@ -771,7 +774,7 @@ static  void    AddDim( array_list *ar, dim_any *dim )
             break;
         owner = &curr->next;
     }
-    dim->entry.next = NULL;
+    dim->next = NULL;
     *owner = dim;
     ar->num++;
 }
@@ -779,14 +782,14 @@ static  void    AddDim( array_list *ar, dim_any *dim )
 extern  void DBDimCon( array_list *ar, dbg_type idx, int_32 lo, int_32 hi )
 /*************************************************************************/
 {
-    dim_con *dim;
+    dim_any *dim;
 
     Action( "DBDimCon( %p %d, %l, %l, %d)%n", ar, idx, lo, hi );
     dim = CGAlloc(  sizeof( *dim ) );
-    dim->entry.kind = DIM_CON;
-    dim->lo = lo;
-    dim->hi = hi;
-    dim->idx = idx;
+    dim->kind = DIM_CON;
+    dim->u.con.lo = lo;
+    dim->u.con.hi = hi;
+    dim->u.con.idx = idx;
     AddDim( ar, dim );
 }
 
@@ -796,24 +799,23 @@ extern  void  DBDimVar( array_list *ar,
                         cg_type num_elts_tipe )
 /*********************************************/
 {
-    dim_var *dim;
+    dim_any *dim;
 
     Action( "DBDimVar" );
     Action( "( %p, %s, %s, %s, %d )%n", ar, Label( dims->lp ),
             Tipe( lo_bound_tipe ), Tipe( num_elts_tipe ), off );
     dim = CGAlloc( sizeof( *dim ) );
-    dim->entry.kind = DIM_VAR;
-    dim->dims = dims;
-    dim->off = off;
-    dim->lo_bound_tipe = lo_bound_tipe;
-    dim->num_elts_tipe = num_elts_tipe;
+    dim->kind = DIM_VAR;
+    dim->u.var.dims = dims;
+    dim->u.var.off = off;
+    dim->u.var.lo_bound_tipe = lo_bound_tipe;
+    dim->u.var.num_elts_tipe = num_elts_tipe;
     AddDim( ar, dim );
 }
 
-extern  dbg_type        DBEndArray( array_list  *ar ) {
-/*******************************************************/
-
-
+extern  dbg_type        DBEndArray( array_list  *ar )
+/***************************************************/
+{
     Action( "DBEndArray( %p )", ar );
     TypDbg( "(%d) array #dim == %d%n", ++TypeIdx, ar->num );
     CGFree( ar );

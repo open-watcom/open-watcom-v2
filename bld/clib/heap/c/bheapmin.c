@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2024-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,11 +38,6 @@
 
 
 _WCRTLINK int _bheapshrink( __segment seg )
-{
-    return( _bheapmin( seg ) );
-}
-
-_WCRTLINK int _bheapmin( __segment seg )
 {
     if( seg == _DGroup() )
         return( _nheapshrink() );

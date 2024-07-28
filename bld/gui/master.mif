@@ -10,28 +10,28 @@ gui_trmem = 1
 gui_autodepends = .AUTODEPEND
 !endif
 
+gui_wreslib_cli = gui
+
 additional_clean = *.grh
 
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif
 
-!include $(commonui_dir)/client.mif
+!include $(gui_dir)/client.mif
 !include $(wpi_dir)/client.mif
-!include $(ui_dir)/client.mif
 
-!include wres.mif
 !include trmem.mif
 
 #
 # cflags
 #
-.c: ../c;../../c;$(hlpview_dir)/c;$(trmem_dir)
+.c: ../c;../../c;$(hlpview_dir)/c;$(trmem_dir);$(commonui_dir)/c
 
-inc_dirs = -I. -I"../h" -I"../../h" -I"$(hlpview_dir)/h" $(commonui_inc_dirs) &
-    $(wpi_inc_dirs) $(ui_inc_dirs) $(wres_inc_dirs)
+inc_dirs = $(cli_gui_inc_dirs) $(cli_gui_inc_dirs_internal) $(cli_hlpview_inc_dirs) &
+    $(cli_wpi_inc_dirs) $(cli_wres_inc_dirs) -I"$(commonui_dir)/h"
 
-!ifeq sys_windowed 1
+!ifdef sys_windowed
 extra_cpp_flags     = -DGUI_IS_GUI
 extra_cpp_flags_os2 = -D__OS2_PM__
 !endif
@@ -100,7 +100,7 @@ mem_objs = &
     guimem.obj     &
     $(trmem_objs)
 libtarg_objs = $(common_objs) $(mem_objs) $(sysobjs)
-libtarg_libs = $(wpi_lib) $(commonui_lib)
+libtarg_libs = $(cli_wpi_libs)
 !include libtarg.mif
 
 #

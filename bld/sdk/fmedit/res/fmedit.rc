@@ -42,3 +42,7 @@ VCENTRE BITMAP "vcentre.bmp"
 BOTTOM  BITMAP "bottom.bmp"
 
 #include "fmdlgs.dlg"
+
+#if defined( __NT__ ) && defined( RESX_NTVER )
+    #include "dllver.grc"
+#endif

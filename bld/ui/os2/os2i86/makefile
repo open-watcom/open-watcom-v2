@@ -5,4 +5,4 @@ host_os  = os2
 
 memory_model_i86 = l
 
-!include ../../ui.mif
+!include ../../master.mif

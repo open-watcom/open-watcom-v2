@@ -1,38 +1,52 @@
 /* UTF-8 encoding, ¥ */
 
-#include "wresdefn.h"
-#include "samprc.rh"
-#include "gui.rc"
+#ifdef RESX_GUI
+  #ifdef __OS2__
+    #define RC_ITEM(a,b,c) a b c
+    #include <os2.h>
+  #else
+    #define RC_ITEM(a,b,c) b a c
+    #include <windows.h>
+  #endif
+#else
+    #include "wresdefn.h"
+#endif
+#include "gui.rh"
+#include "sample.rh"
 
-STRINGTABLE
-BEGIN
-    STRMSG2, "this is msg 2"
-END
+#include "gui.rc"
 
 #include "sample.dlg"
 
-#include "sample.men"
+#ifdef __OS2__
+#else
+    #include "sample.men"
+#endif
 
-#ifdef WINRC
+STRINGTABLE
+BEGIN
+    STRMSG1, "this is msg 1"
+    STRMSG2, "this is msg 2"
+END
 
-CLOSEBMP        BITMAP "closebmp.bmp"
+#ifdef RESX_GUI
 
-MINIMIZE        BITMAP "min.bmp"
-MAXIMIZE        BITMAP "max.bmp"
-RESTORE         BITMAP "restore.bmp"
-RESIZE          BITMAP "resize.bmp"
-CHANGEMENU      BITMAP "change.bmp"
-HOT5            BITMAP "one.bmp"
-HOT4            BITMAP "one.bmp"
-HOT3            BITMAP "one.bmp"
-HOT2            BITMAP "one.bmp"
-HOT1            BITMAP "one.bmp"
+RC_ITEM( BITMAP, MINIMIZE,      "min.bmp" )
+RC_ITEM( BITMAP, MAXIMIZE,      "max.bmp" )
+RC_ITEM( BITMAP, RESTORE,       "restore.bmp" )
+RC_ITEM( BITMAP, RESIZE,        "resize.bmp" )
+RC_ITEM( BITMAP, CHANGEMENU,    "change.bmp" )
+RC_ITEM( BITMAP, HOT5,          "one.bmp" )
+RC_ITEM( BITMAP, HOT4,          "one.bmp" )
+RC_ITEM( BITMAP, HOT3,          "one.bmp" )
+RC_ITEM( BITMAP, HOT2,          "one.bmp" )
+RC_ITEM( BITMAP, HOT1,          "one.bmp" )
 
-ApplIcon        ICON "main.ico"
-WIN1            ICON "win1.ico"
-WIN2            ICON "win2.ico"
-WIN3            ICON "win3.ico"
-MAIN            ICON "main.ico"
-DLG             ICON "dlg.ico"
+RC_ITEM( ICON, ApplIcon,        "main.ico" )
+RC_ITEM( ICON, WIN1,            "win1.ico" )
+RC_ITEM( ICON, WIN2,            "win2.ico" )
+RC_ITEM( ICON, WIN3,            "win3.ico" )
+RC_ITEM( ICON, MAIN,            "main.ico" )
+RC_ITEM( ICON, DLG,             "dlg.ico" )
 
 #endif

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2023-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -46,205 +46,253 @@ void InitLibIo( void )
 
 void FiniLibIo( void )
 {
-    libfile lio;
+    libfile io;
 
-    while( (lio = fileList) != NULL ) {
-        fileList = lio->next;
-        fclose( lio->io );
-        MemFreeGlobal( lio->name );
-        MemFreeGlobal( lio );
+    while( (io = fileList) != NULL ) {
+        fileList = io->next;
+        fclose( io->fp );
+        MemFree( io->name );
+        MemFree( io );
     }
 }
 
 libfile LibOpen( const char *name, bool write_to )
 {
-    FILE    *io;
-    libfile lio;
+    FILE    *fp;
+    libfile io;
 
     if( write_to ) {
-        io = fopen( name, "wb" );
+        fp = fopen( name, "wb" );
     } else {
-        io = fopen( name, "rb" );
+        fp = fopen( name, "rb" );
     }
-    if( io == NULL && errno == EMFILE ) {
+    if( fp == NULL && errno == EMFILE ) {
         CloseOneInputLib();
         if( write_to ) {
-            io = fopen( name, "wb" );
+            fp = fopen( name, "wb" );
         } else {
-            io = fopen( name, "rb" );
+            fp = fopen( name, "rb" );
         }
     }
-    if( io == NULL ) {
+    if( fp == NULL ) {
         FatalError( ERR_CANT_OPEN, name, strerror( errno ) );
     }
     if( write_to ) {
-        lio = MemAllocGlobal( sizeof( *lio ) + WRITE_FILE_BUFFER_SIZE - 1);
+        io = MemAlloc( sizeof( *io ) + WRITE_FILE_BUFFER_SIZE - 1);
     } else {
-        lio = MemAllocGlobal( sizeof( *lio ) + READ_FILE_BUFFER_SIZE - 1);
+        io = MemAlloc( sizeof( *io ) + READ_FILE_BUFFER_SIZE - 1);
     }
-    lio->next = fileList;
-    lio->prev = NULL;
+    io->next = fileList;
+    io->prev = NULL;
     if( fileList != NULL ) {
-        fileList->prev = lio;
+        fileList->prev = io;
     }
-    fileList = lio;
-    lio->write_to = write_to;
-    lio->io = io;
-    lio->name = DupStrGlobal( name );
-    lio->buf_size = 0;
-    lio->buf_pos = 0;
-    fseek( io, 0, SEEK_END );
-    lio->endpos = ftell( io );
-    fseek( io, 0, SEEK_SET );
-    return( lio );
+    fileList = io;
+    io->write_to = write_to;
+    io->fp = fp;
+    io->name = MemDupStr( name );
+    io->buf_size = 0;
+    io->buf_pos = 0;
+    fseek( fp, 0, SEEK_END );
+    io->endpos = ftell( fp );
+    fseek( fp, 0, SEEK_SET );
+    return( io );
 }
 
-void LibReadError( libfile lio )
+void LibReadError( libfile io )
 {
-    FatalError( ERR_CANT_READ, lio->name, strerror( errno ) );
+    FatalError( ERR_CANT_READ, io->name, strerror( errno ) );
 }
 
-void LibWriteError( libfile lio )
+void LibWriteError( libfile io )
 {
-    FatalError( ERR_CANT_WRITE, lio->name, strerror( errno ) );
+    FatalError( ERR_CANT_WRITE, io->name, strerror( errno ) );
 }
 
-void BadLibrary( const char *name )
-/*********************************/
+void BadLibrary( libfile io )
+/***************************/
 {
-    FatalError( ERR_BAD_LIBRARY, name );
+    FatalError( ERR_BAD_LIBRARY, io->name );
 }
 
-static void LibFlush( libfile lio )
+static void LibFlush( libfile io )
 {
-    if( lio->buf_size ) {
-        if( fwrite( lio->buffer, 1, lio->buf_size, lio->io ) != lio->buf_size ) {
-            LibWriteError( lio );
+    if( io->buf_size ) {
+        if( fwrite( io->buffer, 1, io->buf_size, io->fp ) != io->buf_size ) {
+            LibWriteError( io );
         }
-        lio->buf_size = 0;
+        io->buf_size = 0;
     }
 }
 
-size_t LibRead( libfile lio, void *buff, size_t len )
+size_t LibRead( libfile io, void *buff, size_t len )
 {
     size_t      ret;
     size_t      b_read;
 
     if( len > READ_FILE_BUFFER_SIZE ) {
-        b_read = lio->buf_size - lio->buf_pos;
+        b_read = io->buf_size - io->buf_pos;
         if( b_read ) {
-            memcpy( buff, lio->buffer + lio->buf_pos, b_read );
+            memcpy( buff, io->buffer + io->buf_pos, b_read );
         }
-        ret = fread( (char *)buff + b_read, 1, len - b_read, lio->io );
-        if( ferror( lio->io ) ) {
-            LibReadError( lio );
+        ret = fread( (char *)buff + b_read, 1, len - b_read, io->fp );
+        if( ferror( io->fp ) ) {
+            LibReadError( io );
         }
         b_read += ret;
-        lio->buf_size = 0;
-        lio->buf_pos = 0;
+        io->buf_size = 0;
+        io->buf_pos = 0;
         return( b_read );
     }
-    b_read = lio->buf_size - lio->buf_pos;
+    b_read = io->buf_size - io->buf_pos;
     if( b_read > len )
         b_read = len;
     if( b_read ) {
-        memcpy( buff, lio->buffer + lio->buf_pos, b_read );
-        lio->buf_pos += b_read;
+        memcpy( buff, io->buffer + io->buf_pos, b_read );
+        io->buf_pos += b_read;
     }
-    if( lio->buf_pos == lio->buf_size ) {
-        ret = fread( lio->buffer, 1, READ_FILE_BUFFER_SIZE, lio->io );
-        if( ferror( lio->io ) ) {
-            LibReadError( lio );
+    if( io->buf_pos == io->buf_size ) {
+        ret = fread( io->buffer, 1, READ_FILE_BUFFER_SIZE, io->fp );
+        if( ferror( io->fp ) ) {
+            LibReadError( io );
         }
-        lio->buf_size = ret;
-        lio->buf_pos = 0;
+        io->buf_size = ret;
+        io->buf_pos = 0;
         if( ret == 0 ) {
             return( b_read );
         }
         if( b_read < len ) {
             if( ret > len - b_read )
                 ret = len - b_read;
-            memcpy( (char *)buff + b_read, lio->buffer, ret );
+            memcpy( (char *)buff + b_read, io->buffer, ret );
             b_read += ret;
-            lio->buf_pos += ret;
+            io->buf_pos += ret;
         }
     }
     return( b_read );
 }
 
-void LibWrite( libfile lio, const void *buff, size_t len )
+void LibWrite( libfile io, const void *buff, size_t len )
 {
     size_t  num;
 
+    if( len == 0 )
+        return;
     if( len > WRITE_FILE_BUFFER_SIZE ) {
-        LibFlush( lio );
-        if( fwrite( buff, 1, len, lio->io ) != len ) {
-            LibWriteError( lio );
+        LibFlush( io );
+        if( fwrite( buff, 1, len, io->fp ) != len ) {
+            LibWriteError( io );
         }
         return;
     }
-    num = WRITE_FILE_BUFFER_SIZE - lio->buf_size;
+    num = WRITE_FILE_BUFFER_SIZE - io->buf_size;
     if( num > len )
         num = len;
-    memcpy( lio->buffer + lio->buf_size, buff, num );
+    memcpy( io->buffer + io->buf_size, buff, num );
     len -= num;
-    lio->buf_size += num;
+    io->buf_size += num;
     if( len ) {
-        LibFlush( lio );
-        memcpy( lio->buffer, (char *)buff + num, len );
-        lio->buf_size = len;
+        LibFlush( io );
+        memcpy( io->buffer, (char *)buff + num, len );
+        io->buf_size = len;
     }
 }
 
-void LibClose( libfile lio )
+void LibWriteU8( libfile io, unsigned_8 value )
 {
-    if( lio->write_to ) {
-        LibFlush( lio );
+    LibWrite( io, &value, sizeof( value ) );
+}
+
+void LibWriteU16LE( libfile io, unsigned_16 value )
+{
+    CONV_LE_16( value );
+    LibWrite( io, &value, sizeof( value ) );
+}
+
+void LibWriteU32BE( libfile io, unsigned_32 value )
+{
+    CONV_BE_32( value );
+    LibWrite( io, &value, sizeof( value ) );
+}
+
+void LibWriteU32LE( libfile io, unsigned_32 value )
+{
+    CONV_LE_32( value );
+    LibWrite( io, &value, sizeof( value ) );
+}
+
+void LibWriteNulls( libfile io, size_t len )
+{
+    size_t  num;
+
+    if( len == 0 )
+        return;
+    if( len > WRITE_FILE_BUFFER_SIZE ) {
+        LibWriteNulls( io, len - WRITE_FILE_BUFFER_SIZE );
+        len = WRITE_FILE_BUFFER_SIZE;
     }
-    if( fclose( lio->io ) != 0 ) {
-        LibWriteError( lio );
+    num = WRITE_FILE_BUFFER_SIZE - io->buf_size;
+    if( num > len )
+        num = len;
+    memset( io->buffer + io->buf_size, 0, num );
+    len -= num;
+    io->buf_size += num;
+    if( len ) {
+        LibFlush( io );
+        memset( io->buffer, 0, len );
+        io->buf_size = len;
     }
-    if( fileList == lio ) {
+}
+
+void LibClose( libfile io )
+{
+    if( io->write_to ) {
+        LibFlush( io );
+    }
+    if( fclose( io->fp ) != 0 ) {
+        LibWriteError( io );
+    }
+    if( fileList == io ) {
         fileList = fileList->next;
     }
-    if( lio->next != NULL ) {
-        lio->next->prev = lio->prev;
+    if( io->next != NULL ) {
+        io->next->prev = io->prev;
     }
-    if( lio->prev != NULL ) {
-        lio->prev->next = lio->next;
+    if( io->prev != NULL ) {
+        io->prev->next = io->next;
     }
-    MemFreeGlobal( lio->name );
-    MemFreeGlobal( lio );
+    MemFree( io->name );
+    MemFree( io );
 }
 
-void LibSeek( libfile lio, long where, int whence )
+void LibSeek( libfile io, long where, int whence )
 {
-    if( lio->write_to ) {
-        LibFlush( lio );
+    if( io->write_to ) {
+        LibFlush( io );
     } else {
         if( whence == SEEK_END ) {
-            where += lio->endpos - LibTell( lio );
+            where += io->endpos - LibTell( io );
             whence = SEEK_CUR;
         } else if( whence == SEEK_SET ) {
-            where -= LibTell( lio );
+            where -= LibTell( io );
             whence = SEEK_CUR;
         }
-        if( ( lio->buf_pos >= -where ) && ( lio->buf_pos + where < lio->buf_size ) ) {
-            lio->buf_pos += where;
+        if( ( io->buf_pos >= -where ) && ( io->buf_pos + where < io->buf_size ) ) {
+            io->buf_pos += where;
             return;
         }
-        where -= lio->buf_size - lio->buf_pos;
+        where -= (long)( io->buf_size - io->buf_pos );
     }
-    fseek( lio->io, where, whence );
-    lio->buf_size = 0;
-    lio->buf_pos = 0;
+    fseek( io->fp, where, whence );
+    io->buf_size = 0;
+    io->buf_pos = 0;
 }
 
-long LibTell( libfile lio )
+long LibTell( libfile io )
 {
-    if( lio->write_to ) {
-        return( ftell( lio->io ) + lio->buf_size );
+    if( io->write_to ) {
+        return( (long)( ftell( io->fp ) + io->buf_size ) );
     } else {
-        return( ftell( lio->io ) - lio->buf_size + lio->buf_pos );
+        return( (long)( ftell( io->fp ) - io->buf_size + io->buf_pos ) );
     }
 }

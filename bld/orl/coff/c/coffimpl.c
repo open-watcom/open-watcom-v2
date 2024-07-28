@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,6 +38,7 @@
 #include "walloca.h"
 #include "coffimpl.h"
 #include "cofforl.h"
+#include "coffimpc.h"
 #include "roundmac.h"
 #include "implcoff.h"
 
@@ -55,6 +57,11 @@
 #define MAX_NUM_COFF_LIB_SECTIONS       8
 #define MAX_NUM_COFF_LIB_SYMBOLS        32
 #define INIT_MAX_SIZE_COFF_STRING_TABLE 1024
+
+#define IMPLIB_HDR_SIZE (sizeof( size_t ) + sizeof( long ))
+#define IMPLIB_LEN      (*(size_t *)coff_file_hnd->implib_data)
+#define IMPLIB_POS      (*(long *)( coff_file_hnd->implib_data + sizeof( size_t ) ))
+#define IMPLIB_DATA     (coff_file_hnd->implib_data + IMPLIB_HDR_SIZE)
 
 typedef struct {
     coff_file_header    header;
@@ -108,7 +115,10 @@ static void AddCoffString( coff_lib_file *c_file, const char *name, size_t len )
 {
     char    *x;
 
-    len++;  // add space for terminator character
+    /*
+     * add space for terminator character
+     */
+    len++;
     if( ( c_file->string_table_size + len ) >= c_file->max_string_table_size ) {
         c_file->max_string_table_size *= 2;
         x = _ClientAlloc( c_file->coff_file_hnd, c_file->max_string_table_size );
@@ -129,7 +139,7 @@ static char *formatDigit( char *buf, size_t len, unsigned long value )
     if( len > 0 && value > 0 ) {
         x = ldiv( value, 10 );
         buf = formatDigit( buf, len - 1, x.quot );
-        *buf++ = x.rem + '0';
+        *buf++ = (char)( x.rem ) + '0';
     }
     return( buf );
 }
@@ -174,11 +184,11 @@ static coff_quantity AddCoffSymbol( coff_lib_file *c_file, signed_16 sec_num, co
     sym = c_file->symbols + c_file->header.num_symbols;
     len = strlen( name );
     if( len > COFF_SYM_NAME_LEN ) {
-        sym->name.non_name.zeros = 0;
-        sym->name.non_name.offset = c_file->string_table_size + 4;
+        sym->name.u.non_name.zeros = 0;
+        sym->name.u.non_name.offset = c_file->string_table_size + 4;
         AddCoffString( c_file, name, len );
     } else {
-        strncpy( sym->name.name_string, name, COFF_SYM_NAME_LEN );
+        strncpy( sym->name.u.name_string, name, COFF_SYM_NAME_LEN );
     }
     sym->value = value;
     sym->sec_num = sec_num; /* 1-based, 0 is special value */
@@ -246,11 +256,6 @@ static coff_quantity AddCoffSymSec( coff_lib_file *c_file, signed_16 sec_num, un
     return( symb_idx );
 }
 
-#define IMPLIB_HDR_SIZE (sizeof( size_t ) + sizeof( long ))
-#define IMPLIB_LEN      (*(size_t *)coff_file_hnd->implib_data)
-#define IMPLIB_POS      (*(long *)( coff_file_hnd->implib_data + sizeof( size_t ) ))
-#define IMPLIB_DATA     (coff_file_hnd->implib_data + IMPLIB_HDR_SIZE)
-
 static int DataImpLibInit( coff_file_handle coff_file_hnd )
 {
     if( coff_file_hnd->implib_data == NULL ) {
@@ -265,7 +270,7 @@ static int DataImpLibInit( coff_file_handle coff_file_hnd )
 
 static int DataImpLibFini( coff_file_handle coff_file_hnd )
 {
-    if( coff_file_hnd->implib_data == NULL ) {
+    if( coff_file_hnd->implib_data != NULL ) {
         _ClientFree( coff_file_hnd, coff_file_hnd->implib_data );
         coff_file_hnd->implib_data = NULL;
     }
@@ -305,9 +310,12 @@ int ImportLibSeek( coff_file_handle coff_file_hnd, long pos, int where )
     return( 0 );
 }
 
-static void AddStringPadding( coff_file_handle coff_file_hnd, const char *name, size_t len )
+static void AddStringPadding( coff_file_handle coff_file_hnd, name_len *str )
 {
-    AddDataImpLib( coff_file_hnd, name, (int)len );
+    size_t      len;
+
+    len = str->len + 1;
+    AddDataImpLib( coff_file_hnd, str->name, (int)len );
     if( len & 1 ) {
         AddDataImpLib( coff_file_hnd, "\0", 1 );
     }
@@ -341,7 +349,9 @@ static void CreateCoffSymbols( coff_file_handle coff_file_hnd, coff_lib_file *c_
 
 static void CreateCoffReloc( coff_file_handle coff_file_hnd, coff_sec_offset sec_offset, coff_quantity sym_tab_index, unsigned_16 type )
 {
-    //output is buffered so no point in putting COFF_RELOC struct
+    /*
+     * output is buffered so no point in putting COFF_RELOC struct
+     */
     AddDataImpLib( coff_file_hnd, &sec_offset, sizeof( sec_offset ) );
     AddDataImpLib( coff_file_hnd, &sym_tab_index, sizeof( sym_tab_index ) );
     AddDataImpLib( coff_file_hnd, &type, sizeof( type ) );
@@ -354,63 +364,86 @@ static void CreateCoffStringTable( coff_file_handle coff_file_hnd, coff_lib_file
     AddDataImpLib( coff_file_hnd, c_file->string_table, c_file->string_table_size - 4 );
 }
 
-static char *getImportName( char *src, coff_import_object_name_type type )
+static size_t getImportName( char *dst, const char *src, coff_import_object_name_type type )
 {
-    char    *end;
+    const char  *end;
+    size_t      len;
+    char        *p;
 
-/*
-I got following information from Microsoft about name type and name conversion.
-
-    COFF_IMPORT_OBJECT_ORDINAL = 0,          // Import by ordinal
-    COFF_IMPORT_OBJECT_NAME = 1,             // Import name == public symbol name.
-    COFF_IMPORT_OBJECT_NAME_NO_PREFIX = 2,   // Import name == public symbol name skipping leading ?, @, or optionally _.
-    COFF_IMPORT_OBJECT_NAME_UNDECORATE = 3,  // Import name == public symbol name skipping leading ?, @, or optionally _
-                                        // and truncating at first @
-*/
-    // Note:
-    // COFF_IMPORT_OBJECT_NAME_NO_PREFIX is used for C symbols with underscore as prefix
-    // COFF_IMPORT_OBJECT_NAME_UNDECORATE is used for __stdcall and __fastcall name mangling
-    // __stdcall uses underscore as prefix and @nn as suffix
-    // __fastcall uses @ as prefix and @nn as suffix
-
-    // this solution is stupid, probably it needs improvement
-    // there is no more information from Microsoft
-
+    /*
+     * I got following information from Microsoft info about name type and
+     * name conversion.
+     *
+     * Import by ordinal
+     *   COFF_IMPORT_OBJECT_ORDINAL         = 0
+     * Import name == public symbol name
+     *   COFF_IMPORT_OBJECT_NAME            = 1
+     * Import name == public symbol name skipping leading ?, @,
+     * or optionally _
+     *   COFF_IMPORT_OBJECT_NAME_NO_PREFIX  = 2
+     * Import name == public symbol name skipping leading ?, @,
+     * or optionally _ and truncating at first @
+     *   COFF_IMPORT_OBJECT_NAME_UNDECORATE = 3
+     *
+     * Note:
+     *   COFF_IMPORT_OBJECT_NAME_NO_PREFIX is used for C symbols
+     *     with underscore as prefix
+     *   COFF_IMPORT_OBJECT_NAME_UNDECORATE is used for __stdcall
+     *     and __fastcall name mangling
+     *   __stdcall uses underscore as prefix and @nn as suffix
+     *   __fastcall uses @ as prefix and @nn as suffix
+     *
+     * this solution is simple, probably it needs improvement
+     * no more information from Microsoft
+     */
+    len = 0;
     if( *src != 0 ) {
+        len = strlen( src );
         switch( type ) {
         case COFF_IMPORT_OBJECT_ORDINAL:
         case COFF_IMPORT_OBJECT_NAME:
             break;
         case COFF_IMPORT_OBJECT_NAME_UNDECORATE:
-            // remove suffix @nn or @ if any
+            /*
+             * remove suffix @nn or @ if any
+             */
             end = src + strlen( src );
             while( end != src ) {
                 --end;
                 if( *end < '0' || *end > '9' ) {
                     if( *end == '@' ) {
-                        *end = 0;
+                        len -= src + strlen( src ) - end;
                     }
                     break;
                 }
             }
-            // fall through
-        case COFF_IMPORT_OBJECT_NAME_NO_PREFIX:
-            // remove prefix @ or _ if any
-            if(( *src == '@' ) || ( *src == '_' ))
+            /* fall through */
+        case       COFF_IMPORT_OBJECT_NAME_NO_PREFIX:
+            /*
+             * remove prefix @ or _ if any
+             */
+            if( ( *src == '@' ) || ( *src == '_' ) ) {
                 src++;
+                len--;
+            }
             break;
         }
     }
-    return( src );
+    p = dst;
+    while( len-- > 0 ) {
+        *p++ = *src++;
+    }
+    *p = '\0';
+    return( p - dst );
 }
 
-static void AddDataImportTablesNamed( coff_file_handle coff_file_hnd, import_sym *import, unsigned symb_hints )
+static void AddDataImportTablesNamed( coff_file_handle coff_file_hnd, import_sym *impsym, unsigned symb_hints )
 {
     char        nulls[8];
     unsigned_16 type;
     unsigned    thunk_size;
 
-    switch( import->processor ) {
+    switch( impsym->processor ) {
     case COFF_IMAGE_FILE_MACHINE_ALPHA:
         type = COFF_IMAGE_REL_ALPHA_REFLONGNB;
         break;
@@ -427,9 +460,15 @@ static void AddDataImportTablesNamed( coff_file_handle coff_file_hnd, import_sym
     case COFF_IMAGE_FILE_MACHINE_I386:
         type = COFF_IMAGE_REL_I386_DIR32NB;
         break;
+    default:
+        /*
+         * TODO: should be handled somehow, now no reloc
+         */
+        type = 0;
+        break;
     }
     thunk_size = 4;
-    if( import->processor == COFF_IMAGE_FILE_MACHINE_AMD64 ) {
+    if( impsym->processor == COFF_IMAGE_FILE_MACHINE_AMD64 ) {
         thunk_size = 8;
     }
     memset( nulls, 0, sizeof( nulls ) );
@@ -451,13 +490,13 @@ static void AddDataImportTablesNamed( coff_file_handle coff_file_hnd, import_sym
     CreateCoffReloc( coff_file_hnd, 0x0000, symb_hints, type );
 }
 
-static void AddDataImportTablesOrdinal( coff_file_handle coff_file_hnd, import_sym *import )
+static void AddDataImportTablesOrdinal( coff_file_handle coff_file_hnd, import_sym *impsym )
 {
     unsigned_64 import_table_entry;
 
-    switch( import->processor ) {
+    switch( impsym->processor ) {
     case COFF_IMAGE_FILE_MACHINE_AMD64:
-        import_table_entry.u._64[0] = import->ordinal | COFF_IMAGE_ORDINAL_FLAG64;
+        import_table_entry.u._64[0] = impsym->ordinal | COFF_IMAGE_ORDINAL_FLAG64;
         /*
          * .idata$5 section data - ordinal
          */
@@ -475,7 +514,7 @@ static void AddDataImportTablesOrdinal( coff_file_handle coff_file_hnd, import_s
     default:
         break;
     }
-    import_table_entry.u._32[0] = import->ordinal | COFF_IMAGE_ORDINAL_FLAG32;
+    import_table_entry.u._32[0] = impsym->ordinal | COFF_IMAGE_ORDINAL_FLAG32;
     /*
      * .idata$5 section data - ordinal
      */
@@ -486,113 +525,111 @@ static void AddDataImportTablesOrdinal( coff_file_handle coff_file_hnd, import_s
     AddDataImpLib( coff_file_hnd, &import_table_entry.u._32[0], 4 );
 }
 
-static int CoffCreateImport( coff_file_handle coff_file_hnd, import_sym *import )
+static int CoffCreateImport( coff_file_handle coff_file_hnd, import_sym *impsym )
 {
     coff_lib_file   c_file;
     unsigned_16     ordinal;
     char            nulls[8];
-    size_t          symbol_name_len;
     coff_quantity   symb_name;
     coff_quantity   symb_imp_name;
     coff_quantity   symb_hints;
     coff_quantity   symb_toc;
-    char            *DLLSymbolName;
-    size_t          dllsymbol_name_len;
+    name_len        DLLSymbolName;
     signed_16       sec_num;
     bool            is_named;
     unsigned_32     thunk_section_align;
     unsigned        thunk_size;
+    char            *p;
 
     c_file.coff_file_hnd = coff_file_hnd;
     InitCoffFile( &c_file );
 
-    symbol_name_len = strlen( import->exportedName );
-    DLLSymbolName = alloca( symbol_name_len + 1 );
-    strcpy( DLLSymbolName, import->exportedName );
-    DLLSymbolName = getImportName( DLLSymbolName, import->type );
-    dllsymbol_name_len = strlen( DLLSymbolName );
+    p = alloca( strlen( impsym->exportedName ) + 1 );
+    DLLSymbolName.len = getImportName( p, impsym->exportedName, impsym->type );
+    DLLSymbolName.name = p;
 
     thunk_size = 4;
     thunk_section_align = COFF_IMAGE_SCN_ALIGN_4BYTES;
-    if( import->processor == COFF_IMAGE_FILE_MACHINE_AMD64 ) {
+    if( impsym->processor == COFF_IMAGE_FILE_MACHINE_AMD64 ) {
         thunk_size = 8;
         thunk_section_align = COFF_IMAGE_SCN_ALIGN_8BYTES;
     }
 
-    SetCoffFile( &c_file, import->processor, import->time_date_stamp, 0 );
+    SetCoffFile( &c_file, impsym->processor, impsym->time_date_stamp, 0 );
     /*
      * .text section header
      */
-    switch( import->processor ) {
+    switch( impsym->processor ) {
     case COFF_IMAGE_FILE_MACHINE_ALPHA:
-        sec_num = AddCoffSection( &c_file, ".text", sizeof( CoffImportAxpText ), 3, COFF_IMAGE_SCN_ALIGN_16BYTES | COFF_IMAGE_SCN_LNK_COMDAT | COFF_IMAGE_SCN_CNT_CODE | COFF_IMAGE_SCN_MEM_READ | COFF_IMAGE_SCN_MEM_EXECUTE );
+        sec_num = AddCoffSection( &c_file, str_coff_text.name, sizeof( CoffImportAxpText ), 3, COFF_IMAGE_SCN_ALIGN_16BYTES | COFF_IMAGE_SCN_LNK_COMDAT | COFF_IMAGE_SCN_CNT_CODE | COFF_IMAGE_SCN_MEM_READ | COFF_IMAGE_SCN_MEM_EXECUTE );
         break;
     case COFF_IMAGE_FILE_MACHINE_R3000:
     case COFF_IMAGE_FILE_MACHINE_R4000:
-        sec_num = AddCoffSection( &c_file, ".text", sizeof( CoffImportMipsText ), 3, COFF_IMAGE_SCN_ALIGN_16BYTES | COFF_IMAGE_SCN_LNK_COMDAT | COFF_IMAGE_SCN_CNT_CODE | COFF_IMAGE_SCN_MEM_READ | COFF_IMAGE_SCN_MEM_EXECUTE );
+        sec_num = AddCoffSection( &c_file, str_coff_text.name, sizeof( CoffImportMipsText ), 3, COFF_IMAGE_SCN_ALIGN_16BYTES | COFF_IMAGE_SCN_LNK_COMDAT | COFF_IMAGE_SCN_CNT_CODE | COFF_IMAGE_SCN_MEM_READ | COFF_IMAGE_SCN_MEM_EXECUTE );
         break;
     case COFF_IMAGE_FILE_MACHINE_POWERPC:
-        sec_num = AddCoffSection( &c_file, ".text", sizeof( CoffImportPpcText ), 1, COFF_IMAGE_SCN_ALIGN_4BYTES | COFF_IMAGE_SCN_LNK_COMDAT | COFF_IMAGE_SCN_CNT_CODE | COFF_IMAGE_SCN_MEM_READ | COFF_IMAGE_SCN_MEM_EXECUTE );
+        sec_num = AddCoffSection( &c_file, str_coff_text.name, sizeof( CoffImportPpcText ), 1, COFF_IMAGE_SCN_ALIGN_4BYTES | COFF_IMAGE_SCN_LNK_COMDAT | COFF_IMAGE_SCN_CNT_CODE | COFF_IMAGE_SCN_MEM_READ | COFF_IMAGE_SCN_MEM_EXECUTE );
         break;
     case COFF_IMAGE_FILE_MACHINE_AMD64:
-        sec_num = AddCoffSection( &c_file, ".text", sizeof( CoffImportX64Text ), 1, COFF_IMAGE_SCN_ALIGN_2BYTES | COFF_IMAGE_SCN_LNK_COMDAT | COFF_IMAGE_SCN_CNT_CODE | COFF_IMAGE_SCN_MEM_READ | COFF_IMAGE_SCN_MEM_EXECUTE );
+        sec_num = AddCoffSection( &c_file, str_coff_text.name, sizeof( CoffImportX64Text ), 1, COFF_IMAGE_SCN_ALIGN_2BYTES | COFF_IMAGE_SCN_LNK_COMDAT | COFF_IMAGE_SCN_CNT_CODE | COFF_IMAGE_SCN_MEM_READ | COFF_IMAGE_SCN_MEM_EXECUTE );
         break;
     case COFF_IMAGE_FILE_MACHINE_I386:
-        sec_num = AddCoffSection( &c_file, ".text", sizeof( CoffImportX86Text ), 1, COFF_IMAGE_SCN_ALIGN_2BYTES | COFF_IMAGE_SCN_LNK_COMDAT | COFF_IMAGE_SCN_CNT_CODE | COFF_IMAGE_SCN_MEM_READ | COFF_IMAGE_SCN_MEM_EXECUTE );
+        sec_num = AddCoffSection( &c_file, str_coff_text.name, sizeof( CoffImportX86Text ), 1, COFF_IMAGE_SCN_ALIGN_2BYTES | COFF_IMAGE_SCN_LNK_COMDAT | COFF_IMAGE_SCN_CNT_CODE | COFF_IMAGE_SCN_MEM_READ | COFF_IMAGE_SCN_MEM_EXECUTE );
         break;
     default:
         return( ORL_ERROR );
     }
     AddCoffSymSec( &c_file, sec_num, COFF_IMAGE_COMDAT_SELECT_NODUPLICATES );
-    if( import->processor == COFF_IMAGE_FILE_MACHINE_POWERPC ) {
-        symb_name = AddCoffSymbolWithPrefix( &c_file, sec_num, "..", import->exportedName, 0x0, COFF_IMAGE_SYM_TYPE_FUNCTION, COFF_IMAGE_SYM_CLASS_EXTERNAL, 0 );
+    if( impsym->processor == COFF_IMAGE_FILE_MACHINE_POWERPC ) {
+        symb_name = AddCoffSymbolWithPrefix( &c_file, sec_num, str_coff_ppc_prefix.name, impsym->exportedName, 0x0, COFF_IMAGE_SYM_TYPE_FUNCTION, COFF_IMAGE_SYM_CLASS_EXTERNAL, 0 );
     } else {
-        symb_name = AddCoffSymbol( &c_file, sec_num, import->exportedName, 0x0, COFF_IMAGE_SYM_TYPE_FUNCTION, COFF_IMAGE_SYM_CLASS_EXTERNAL, 0 );
+        symb_name = AddCoffSymbol( &c_file, sec_num, impsym->exportedName, 0x0, COFF_IMAGE_SYM_TYPE_FUNCTION, COFF_IMAGE_SYM_CLASS_EXTERNAL, 0 );
     }
 
-    is_named = ( import->type != COFF_IMPORT_OBJECT_ORDINAL );
-    if( import->processor == COFF_IMAGE_FILE_MACHINE_POWERPC ) {
+    is_named = ( impsym->type != COFF_IMPORT_OBJECT_ORDINAL );
+    if( impsym->processor == COFF_IMAGE_FILE_MACHINE_POWERPC ) {
         /*
          * .pdata section header
          */
-        sec_num = AddCoffSection( &c_file, ".pdata", sizeof( CoffImportPpcPdata ), 4, COFF_IMAGE_SCN_ALIGN_1BYTES | COFF_IMAGE_SCN_LNK_COMDAT | COFF_IMAGE_SCN_CNT_INITIALIZED_DATA | COFF_IMAGE_SCN_MEM_READ );
+        sec_num = AddCoffSection( &c_file, str_coff_pdata.name, sizeof( CoffImportPpcPdata ), 4, COFF_IMAGE_SCN_ALIGN_1BYTES | COFF_IMAGE_SCN_LNK_COMDAT | COFF_IMAGE_SCN_CNT_INITIALIZED_DATA | COFF_IMAGE_SCN_MEM_READ );
         AddCoffSymSec( &c_file, sec_num, COFF_IMAGE_COMDAT_SELECT_ASSOCIATIVE );
         /*
          * .reldata section header
          */
-        sec_num = AddCoffSection( &c_file, ".reldata", 8, 2, COFF_IMAGE_SCN_ALIGN_8BYTES | COFF_IMAGE_SCN_LNK_COMDAT | COFF_IMAGE_SCN_CNT_INITIALIZED_DATA | COFF_IMAGE_SCN_MEM_READ |  COFF_IMAGE_SCN_MEM_WRITE );
+        sec_num = AddCoffSection( &c_file, str_coff_reldata.name, 8, 2, (unsigned_32)(COFF_IMAGE_SCN_ALIGN_8BYTES | COFF_IMAGE_SCN_LNK_COMDAT | COFF_IMAGE_SCN_CNT_INITIALIZED_DATA | COFF_IMAGE_SCN_MEM_READ | COFF_IMAGE_SCN_MEM_WRITE) );
         if( is_named ) {
             AddCoffSymSec( &c_file, sec_num, COFF_IMAGE_COMDAT_SELECT_NODUPLICATES );
         }
-        AddCoffSymbol( &c_file, sec_num, import->exportedName, 0x0, COFF_IMAGE_SYM_TYPE_NULL, COFF_IMAGE_SYM_CLASS_EXTERNAL, 0 );
+        AddCoffSymbol( &c_file, sec_num, impsym->exportedName, 0x0, COFF_IMAGE_SYM_TYPE_NULL, COFF_IMAGE_SYM_CLASS_EXTERNAL, 0 );
     }
 
     /*
      * .idata$5 section header
      */
-    sec_num = AddCoffSection( &c_file, ".idata$5", thunk_size, ( is_named ) ? 1 : 0, thunk_section_align | COFF_IMAGE_SCN_LNK_COMDAT | COFF_IMAGE_SCN_CNT_INITIALIZED_DATA | COFF_IMAGE_SCN_MEM_READ | COFF_IMAGE_SCN_MEM_WRITE );
+    sec_num = AddCoffSection( &c_file, str_coff_idata5.name, thunk_size, ( is_named ) ? 1 : 0, thunk_section_align | COFF_IMAGE_SCN_LNK_COMDAT | COFF_IMAGE_SCN_CNT_INITIALIZED_DATA | COFF_IMAGE_SCN_MEM_READ | COFF_IMAGE_SCN_MEM_WRITE );
     AddCoffSymSec( &c_file, sec_num, COFF_IMAGE_COMDAT_SELECT_NODUPLICATES );
-    symb_imp_name = AddCoffSymbolWithPrefix( &c_file, sec_num, "__imp_", import->exportedName, 0x0, COFF_IMAGE_SYM_TYPE_NULL, COFF_IMAGE_SYM_CLASS_EXTERNAL, 0 );
+    symb_imp_name = AddCoffSymbolWithPrefix( &c_file, sec_num, str_coff_imp_prefix.name, impsym->exportedName, 0x0, COFF_IMAGE_SYM_TYPE_NULL, COFF_IMAGE_SYM_CLASS_EXTERNAL, 0 );
     /*
      * .idata$4 section header
      */
-    sec_num = AddCoffSection( &c_file, ".idata$4", thunk_size, ( is_named ) ? 1 : 0, thunk_section_align | COFF_IMAGE_SCN_LNK_COMDAT | COFF_IMAGE_SCN_CNT_INITIALIZED_DATA | COFF_IMAGE_SCN_MEM_READ | COFF_IMAGE_SCN_MEM_WRITE );
+    sec_num = AddCoffSection( &c_file, str_coff_idata4.name, thunk_size, ( is_named ) ? 1 : 0, thunk_section_align | COFF_IMAGE_SCN_LNK_COMDAT | COFF_IMAGE_SCN_CNT_INITIALIZED_DATA | COFF_IMAGE_SCN_MEM_READ | COFF_IMAGE_SCN_MEM_WRITE );
     AddCoffSymSec( &c_file, sec_num, COFF_IMAGE_COMDAT_SELECT_ASSOCIATIVE );
     /*
      * .idata$6 section header
      */
+    symb_hints = 0;
     if( is_named ) {
-        sec_num = AddCoffSection( &c_file, ".idata$6", sizeof( ordinal ) + __ROUND_UP_SIZE_EVEN( dllsymbol_name_len + 1 ), 0, COFF_IMAGE_SCN_ALIGN_2BYTES | COFF_IMAGE_SCN_LNK_COMDAT | COFF_IMAGE_SCN_CNT_INITIALIZED_DATA | COFF_IMAGE_SCN_MEM_READ | COFF_IMAGE_SCN_MEM_WRITE );
+        sec_num = AddCoffSection( &c_file, str_coff_idata6.name, sizeof( ordinal ) + __ROUND_UP_SIZE_EVEN( DLLSymbolName.len + 1 ), 0, (unsigned_32)(COFF_IMAGE_SCN_ALIGN_2BYTES | COFF_IMAGE_SCN_LNK_COMDAT | COFF_IMAGE_SCN_CNT_INITIALIZED_DATA | COFF_IMAGE_SCN_MEM_READ | COFF_IMAGE_SCN_MEM_WRITE) );
         symb_hints = AddCoffSymSec( &c_file, sec_num, COFF_IMAGE_COMDAT_SELECT_ASSOCIATIVE );
     }
     /*
      * other symbols
      */
     symb_toc = 0;
-    if( import->processor == COFF_IMAGE_FILE_MACHINE_POWERPC ) {
-        symb_toc = AddCoffSymbol( &c_file, 0, ".toc", 0x0, COFF_IMAGE_SYM_TYPE_NULL, COFF_IMAGE_SYM_CLASS_EXTERNAL, 0 );
+    if( impsym->processor == COFF_IMAGE_FILE_MACHINE_POWERPC ) {
+        symb_toc = AddCoffSymbol( &c_file, 0, str_coff_toc.name, 0x0, COFF_IMAGE_SYM_TYPE_NULL, COFF_IMAGE_SYM_CLASS_EXTERNAL, 0 );
     }
-    AddCoffSymbolWithPrefix( &c_file, 0, "__IMPORT_DESCRIPTOR_", import->DLLName, 0x0, COFF_IMAGE_SYM_TYPE_NULL, COFF_IMAGE_SYM_CLASS_EXTERNAL, 0 );
+    AddCoffSymbolWithPrefix( &c_file, 0, str_coff_import_descriptor.name, impsym->DLLName, 0x0, COFF_IMAGE_SYM_TYPE_NULL, COFF_IMAGE_SYM_CLASS_EXTERNAL, 0 );
     /*
      * COFF file header
      */
@@ -604,7 +641,7 @@ static int CoffCreateImport( coff_file_handle coff_file_hnd, import_sym *import 
     /*
      * COFF section data
      */
-    switch( import->processor ) {
+    switch( impsym->processor ) {
     case COFF_IMAGE_FILE_MACHINE_ALPHA:
         /*
          * .text section data
@@ -686,17 +723,17 @@ static int CoffCreateImport( coff_file_handle coff_file_hnd, import_sym *import 
      * .idata$5 and .idata$4 sections and relocations data
      */
     if( is_named ) {
-        AddDataImportTablesNamed( coff_file_hnd, import, symb_hints );
+        AddDataImportTablesNamed( coff_file_hnd, impsym, symb_hints );
     } else {
-        AddDataImportTablesOrdinal( coff_file_hnd, import );
+        AddDataImportTablesOrdinal( coff_file_hnd, impsym );
     }
     if( is_named ) {
         /*
          * .idata$6 section data - name
          */
-        ordinal = import->ordinal;
+        ordinal = impsym->ordinal;
         AddDataImpLib( coff_file_hnd, &ordinal, sizeof( ordinal ) );
-        AddStringPadding( coff_file_hnd, DLLSymbolName, dllsymbol_name_len + 1 );
+        AddStringPadding( coff_file_hnd, &DLLSymbolName );
     }
     /*
      * COFF symbol table
@@ -713,20 +750,22 @@ static int CoffCreateImport( coff_file_handle coff_file_hnd, import_sym *import 
 int convert_import_library_init( coff_file_handle coff_file_hnd )
 {
     coff_import_object_header   *i_hdr;
-    import_sym                  sym;
+    import_sym                  impsym;
 
-    // init import library data structure
+    /*
+     * init import library data structure
+     */
     if( DataImpLibInit( coff_file_hnd ) != ORL_OKAY )
         return( ORL_OUT_OF_MEMORY );
 
     i_hdr = (coff_import_object_header *)coff_file_hnd->f_hdr_buffer;
-    sym.processor = i_hdr->machine;
-    sym.exportedName = ORL_PTR_READ( coff_file_hnd->coff_hnd, coff_file_hnd->fp, i_hdr->size_of_data );
-    sym.DLLName = sym.exportedName + strlen( sym.exportedName ) + 1;
-    sym.time_date_stamp = i_hdr->time_date_stamp;
-    sym.type = i_hdr->name_type;
-    sym.ordinal = i_hdr->oh.ordinal;
-    return( CoffCreateImport( coff_file_hnd, &sym ) );
+    impsym.processor = i_hdr->machine;
+    impsym.exportedName = ORL_PTR_READ( coff_file_hnd->coff_hnd, coff_file_hnd->fp, i_hdr->size_of_data );
+    impsym.DLLName = impsym.exportedName + strlen( impsym.exportedName ) + 1;
+    impsym.time_date_stamp = i_hdr->time_date_stamp;
+    impsym.type = i_hdr->name_type;
+    impsym.ordinal = i_hdr->oh.ordinal;
+    return( CoffCreateImport( coff_file_hnd, &impsym ) );
 }
 
 int convert_import_library_fini( coff_file_handle coff_file_hnd )

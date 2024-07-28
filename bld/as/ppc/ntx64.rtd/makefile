@@ -5,6 +5,6 @@ host_cpu = x64
 
 sys_dll = 1
 sys_rtdll = 1
-no_standalone = 1
+lib_only = 1
 
 !include ../target.mif

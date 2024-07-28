@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -746,8 +746,8 @@ segment_id  AskOP( void )
 }
 
 
-segment_id  SetOP( segment_id segid )
-/***********************************/
+segment_id  ChangeOP( segment_id segid )
+/**************************************/
 {
     segment_id  old_segid;
     section_def *newdef;
@@ -768,11 +768,21 @@ segment_id  SetOP( segment_id segid )
 }
 
 
+void    SetOP( segment_id segid )
+/*******************************/
+{
+    if( segid == UNDEFSEG ) {
+        currSection = NULL;
+    } else {
+        currSection = FindSection( segid );
+    }
+}
+
+
 void    FlushOP( segment_id segid )
 /*********************************/
 {
     section_def         *sect;
-    segment_id          old_segid;
     owl_section_type    tipe;
 
     sect = FindSection( segid );
@@ -791,9 +801,9 @@ void    FlushOP( segment_id segid )
         case OWL_SECTION_COMDAT_CODE:
         case OWL_SECTION_COMDAT_DATA:
         case OWL_SECTION_COMDAT_BSS:
-            old_segid = SetOP( segid );
-            DFSegRange();
-            SetOP( old_segid );
+            PUSH_OP( segid );
+                DFSegRange();
+            POP_OP();
             break;
         }
     }
@@ -1048,8 +1058,8 @@ void OutPDataRec( label_handle label, offset proc_size, offset pro_size )
 }
 
 
-void    *InitPatch( void )
-/************************/
+void    *InitPatches( void )
+/**************************/
 {
     return( NULL );
 }
@@ -1071,26 +1081,25 @@ void    TellObjNewProc( cg_sym_handle proc )
 /******************************************/
 {
     segment_id  proc_segid;
-    segment_id  old_segid;
 
-    old_segid = SetOP( codeSectionId );
-    proc_segid = FESegID( proc );
-    if( codeSectionId != proc_segid ) {
-        DoEmptyQueue();
-        codeSectionId = proc_segid;
-        SetOP( codeSectionId );
-        currSection->is_start = true;
-    }
-    if( FEAttr( proc ) & FE_COMMON ) {
-        if( _IsModel( CGSW_GEN_DBG_CV ) ) { // set the $debug for comdat
-            CVDefSymComdat( currSection->owl_handle );
+    PUSH_OP( codeSectionId );
+        proc_segid = FESegID( proc );
+        if( codeSectionId != proc_segid ) {
+            DoEmptyQueue();
+            codeSectionId = proc_segid;
+            SetOP( codeSectionId );
+            currSection->is_start = true;
         }
-    } else {
-        if( _IsModel( CGSW_GEN_DBG_CV ) ) {
-            CVDefSymNormal();  // reset to normal $debug section
+        if( FEAttr( proc ) & FE_COMMON ) {
+            if( _IsModel( CGSW_GEN_DBG_CV ) ) { // set the $debug for comdat
+                CVDefSymComdat( currSection->owl_handle );
+            }
+        } else {
+            if( _IsModel( CGSW_GEN_DBG_CV ) ) {
+                CVDefSymNormal();  // reset to normal $debug section
+            }
         }
-    }
-    SetOP( old_segid );
+    POP_OP();
 }
 
 void    IncLocation( offset by )
@@ -1155,14 +1164,14 @@ byte_seq_reloc *SortListReloc( byte_seq_reloc *relocs )
     return( SortList( relocs, offsetof( byte_seq_reloc, next ), relocBefore ) );
 }
 
-void    ObjEmitSeq( byte_seq *code )
-/**********************************/
+void    ObjEmitSeq( const byte_seq *code )
+/****************************************/
 {
     byte_seq_reloc      *curr;
     back_handle         back;
     type_length         loc;
     byte_seq_len        i;
-    void                *code_ptr;
+    const byte          *code_ptr;
     void                *ins_opcode;
     pointer             reloc_sym;
     owl_reloc_type      reloc_type;

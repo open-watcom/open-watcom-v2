@@ -762,17 +762,20 @@ Appendix A: IDE and Batch IDE configuration file (ide.cfg)
                                   that match the *maskdef* of the chosen
                                   target type. (see *Project/Target)
                   $<mask>       - a string of switches that match *mask*
-                  $<symtag[!][=][,][;][+]>
+                  $<symtag[!][=]['][,][;][+]>
                                 - a list of filenames associated with
                                   *symtag* as defined in a previous *Symbol*
                                   statement.  If (!) is specified, the name
                                   of the symbol is not included in the
                                   expansion.  If (=) is included, the name
                                   of the symbol (if included) is followed by
-                                  an equal sign.  If either (,) or (;) or (+)
-                                  are included, the filenames in the list
-                                  are separated by that character, otherwise
-                                  they are separated by blanks.
+                                  an equal sign.  If (') is included, the 
+                                  filenames in the list are quoted by (')
+                                  character instead of default (") character.
+                                  If either (,) or (;) or (+) are included, 
+                                  the filenames in the list are separated by 
+                                  that character, otherwise they are separated
+                                  by blanks.
 
     Action      - defines an action associated with the rule
     actionname  - the name of the action.  This becomes the name used in

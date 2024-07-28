@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -251,7 +251,7 @@ static void generateOffsetFunc( // GENERATE CODE FOR OFFSET FUNCTION
 
     refed = node->u.symcg.symbol;
     previous_func = CgFrontCurrentFunction();
-    func->flag |= SYMF_INITIALIZED;
+    func->flags |= SYMF_INITIALIZED;
     stashed_scope = GetCurrScope();
     scope_class = SymScope( func );
     SetCurrScope(scope_class);

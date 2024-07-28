@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -129,7 +129,7 @@ static  void    Far16Parms( cn call )
     }
     lbl = RTLabel( rtindex );
     call->name->u.n.name = AllocMemory( lbl, 0, CG_LBL, WD );
-    call_ins->flags.call_flags |= CALL_FAR16 | CALL_POPS_PARMS;
+    call_ins->flags.u.call_flags |= CALL_FAR16 | CALL_POPS_PARMS;
     call_ins->operands[CALL_OP_USED] = AllocRegName( state->parm.used );
     call_ins->operands[CALL_OP_POPS] = AllocS32Const( 0 );
     call_ins->zap = &call_ins->operands[CALL_OP_USED]->r;
@@ -177,7 +177,7 @@ an      BGCall( cn call, bool use_return, bool aux_inline )
             }
             ret_ins = MakeUnary( OP_LA, result, ret_ptr, WD );
             HW_TurnOn( state->parm.used, state->return_reg );
-            call_ins->flags.call_flags |= CALL_RETURNS_STRUCT;
+            call_ins->flags.u.call_flags |= CALL_RETURNS_STRUCT;
         }
     }
     if( _IsTargetModel( CGSW_X86_FLOATING_DS )
@@ -191,7 +191,7 @@ an      BGCall( cn call, bool use_return, bool aux_inline )
     } else {
         if( AssgnParms( call, aux_inline ) ) {
             if( state->attr & ROUTINE_REMOVES_PARMS ) {
-                call_ins->flags.call_flags |= CALL_POPS_PARMS;
+                call_ins->flags.u.call_flags |= CALL_POPS_PARMS;
             }
         }
     }
@@ -201,25 +201,25 @@ an      BGCall( cn call, bool use_return, bool aux_inline )
          * a routine that never returns can not write any memory
          * as far as this routine is concerned
          */
-        call_ins->flags.call_flags |= CALL_WRITES_NO_MEMORY;
+        call_ins->flags.u.call_flags |= CALL_WRITES_NO_MEMORY;
     }
     if( state->attr & ROUTINE_READS_NO_MEMORY ) {
-        call_ins->flags.call_flags |= CALL_READS_NO_MEMORY;
+        call_ins->flags.u.call_flags |= CALL_READS_NO_MEMORY;
     }
     if( state->attr & ROUTINE_NEVER_RETURNS_ABORTS ) {
-        call_ins->flags.call_flags |= CALL_ABORTS;
+        call_ins->flags.u.call_flags |= CALL_ABORTS;
     }
     if( state->attr & ROUTINE_NEVER_RETURNS_NORETURN ) {
-        call_ins->flags.call_flags |= CALL_NORETURN;
+        call_ins->flags.u.call_flags |= CALL_NORETURN;
     }
     if( _RoutineIsInterrupt( state->attr ) ) {
-        call_ins->flags.call_flags |= CALL_INTERRUPT | CALL_POPS_PARMS;
+        call_ins->flags.u.call_flags |= CALL_INTERRUPT | CALL_POPS_PARMS;
     }
     if( state->attr & ROUTINE_NEEDS_BP_CHAIN ) {
-        call_ins->flags.call_flags |= CALL_NEEDS_BP_CHAIN;
+        call_ins->flags.u.call_flags |= CALL_NEEDS_BP_CHAIN;
     }
     if( !use_return ) {
-        call_ins->flags.call_flags |= CALL_IGNORES_RETURN;
+        call_ins->flags.u.call_flags |= CALL_IGNORES_RETURN;
     }
     if( call_ins->type_class == XX ) {
         reg_name = AllocRegName( state->return_reg );
@@ -240,9 +240,9 @@ an      BGCall( cn call, bool use_return, bool aux_inline )
                 AddIns( MakeUnary( OP_PUSH, ret_ptr, NULL, WD ) );
                 state->parm.offset += TypeClassSize[WD];
                 call_ins->operands[CALL_OP_POPS] =
-                        AllocS32Const( call_ins->operands[CALL_OP_POPS]->c.lo.int_value + TypeClassSize[WD] );
+                        AllocS32Const( call_ins->operands[CALL_OP_POPS]->c.lo.u.int_value + TypeClassSize[WD] );
                 if( state->attr & ROUTINE_REMOVES_PARMS ) {
-                    call_ins->flags.call_flags |= CALL_POPS_PARMS;
+                    call_ins->flags.u.call_flags |= CALL_POPS_PARMS;
                 }
             }
             AddCall( call_ins, call );
@@ -274,13 +274,12 @@ an      BGCall( cn call, bool use_return, bool aux_inline )
 }
 
 
-void    BGProcDecl( cg_sym_handle sym, type_def *tipe )
-/*****************************************************/
+void    BGProcDecl( cg_sym_handle sym, const type_def *tipe )
+/***********************************************************/
 {
     hw_reg_set          reg;
     name                *temp;
     type_class_def      type_class;
-    segment_id          old_segid;
     label_handle        lbl;
 
     SaveTargetModel = TargetModel;
@@ -288,12 +287,12 @@ void    BGProcDecl( cg_sym_handle sym, type_def *tipe )
     if( tipe != TypeNone ) {
         if( type_class == XX ) {
             if( CurrProc->state.attr & ROUTINE_ALLOCS_RETURN ) {
-                old_segid = SetOP( AskBackSeg() );
-                lbl = AskForNewLabel();
-                DataLabel( lbl );
-                DGUBytes( tipe->length );
-                CurrProc->targ.return_points = (name *)SAllocMemory( lbl, 0, CG_LBL, TypeClass( tipe ), tipe->length );
-                SetOP( old_segid );
+                PUSH_OP( AskBackSeg() );
+                    lbl = AskForNewLabel();
+                    DataLabel( lbl );
+                    DGUBytes( tipe->length );
+                    CurrProc->targ.return_points = (name *)SAllocMemory( lbl, 0, CG_LBL, TypeClass( tipe ), tipe->length );
+                POP_OP();
             } else {
                 reg = CurrProc->state.return_reg;
                 if( HW_CEqual( reg, HW_EMPTY ) ) {
@@ -314,8 +313,8 @@ void    BGProcDecl( cg_sym_handle sym, type_def *tipe )
 }
 
 
-name    *StReturn( an retval, type_def *tipe, instruction **pins )
-/****************************************************************/
+name    *StReturn( an retval, const type_def *tipe, instruction **pins )
+/**********************************************************************/
 {
     name        *retp;
     name        *ptr;
@@ -465,8 +464,8 @@ void    PostCall( cn call )
     /* unused parameters */ (void)call;
 }
 
-type_def    *PassParmType( cg_sym_handle func, type_def* tipe )
-/*************************************************************/
+const type_def  *PassParmType( cg_sym_handle func, const type_def *tipe )
+/***********************************************************************/
 {
     if( (call_class_target)(pointer_uint)FindAuxInfoSym( func, FEINF_CALL_CLASS_TARGET ) & FECALL_X86_FAR16_CALL )
         return( tipe );

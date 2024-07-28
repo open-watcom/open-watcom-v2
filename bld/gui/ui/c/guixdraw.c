@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -322,10 +322,10 @@ static void WndClean( gui_window *wnd )
 }
 
 /*
- * GUIWndRfrshArea -- refresh a portion of the use are of the screen
+ * GUIWndRefreshArea -- refresh a portion of the use are of the screen
  */
 
-void GUIWndRfrshArea( gui_window *wnd, SAREA *area )
+void GUIWndRefreshArea( gui_window *wnd, SAREA *area )
 {
     gui_control *control;
     gui_row_num row_num;
@@ -400,14 +400,14 @@ void GUIAPI GUIWndUpdate( gui_window *wnd )
     if( !GUIIsOpen( wnd ) ) {
         return;
     }
-    if( GUI_WND_VISIBLE( wnd ) && GUI_WND_MINIMIZED( wnd ) ) {
-        GUIDrawIcon( wnd );
-    } else {
-        if( GUI_WND_VISIBLE( wnd ) ) {
+    if( GUI_WND_VISIBLE( wnd ) ) {
+        if( GUI_WND_MINIMIZED( wnd ) ) {
+            GUIDrawIcon( wnd );
+        } else {
             DrawFrame( wnd );
             DrawGadget( wnd, wnd->vgadget, VSCROLL_INVALID );
             DrawGadget( wnd, wnd->hgadget, HSCROLL_INVALID );
+            GUIWndRefreshArea( wnd, &wnd->dirty );
         }
-        GUIWndRfrshArea( wnd, &wnd->dirty );
     }
 }

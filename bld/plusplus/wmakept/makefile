@@ -32,7 +32,7 @@ wmakept.exe : wmakept.lnk wmakept.obj
     wlink @wmakept.lnk name wmakept file wmakept
 
 
-global: .symbolic
+global: .SYMBOLIC
     -del *.err
     -del *.exe
     -del *.obj

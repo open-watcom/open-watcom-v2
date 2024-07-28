@@ -6,7 +6,9 @@ tree_depth = 4
 
 proj_name = dip
 
-dip_autodepends = .autodepend
+dip_autodepends = .AUTODEPEND
+
+dip_ntverrc = ..
 
 dip_nofpu = 1
 
@@ -18,9 +20,10 @@ dip_nocheckstack = 1
 sys_dll = 1
 !endif
 
-dllname = $(dip_format)
-
 additional_clean = *.grc
+
+dllname = $(dip_format)
+ntverrc_dll = $(dllname)
 
 !include cproj.mif
 !include defrule.mif
@@ -36,7 +39,7 @@ additional_clean = *.grc
 #
 .c: ../c;../../c;$(lib_misc_dir)/c;$(extra_srcs)
 
-inc_dirs = -I"../h" $(dwarfr_inc_dirs) -I"$(lib_misc_dir)/h" $(extra_incs) -I"$(dig_dir)/h"
+inc_dirs = -I"../h" $(cli_dwarfr_inc_dirs) -I"$(lib_misc_dir)/h" $(extra_incs) -I"$(dig_dir)/h"
 
 extra_cpp_flags = -DINSIDE_DIP $(extra_cppflags)
 
@@ -94,15 +97,11 @@ dlltarg_objs += $(imp_objs_watcom)
 dlltarg_libs += $(imp_libs)
 !endif
 !ifeq dip_format dwarf
-dlltarg_libs += $(dwarfr_lib)
+dlltarg_libs += $(cli_dwarfr_libs)
 !endif
-dlltarg_res_version_nt_386 = version.res
-dlltarg_res_version_nt_x64 = version.res
 dlltarg_name = $(dllname)
 !include dlltarg.mif
 
 #
 # rc and others
 #
-verrc_dll = $(dllname)
-!include verrc.mif

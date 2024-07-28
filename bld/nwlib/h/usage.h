@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -48,15 +48,14 @@ enum {
     #undef pick
 };
 
-#ifdef INCL_MSGTEXT
-
+#if defined( INCL_MSGTEXT )
 enum {
     MSG_USAGE_WLIB_BASE = 0
     #define pick(c,e,j) + 1
     #include "wlib.msg"
     #undef pick
 };
-
 #define MSG_USAGE_AR_BASE   (MSG_USAGE_WLIB_BASE + MSG_USAGE_WLIB_COUNT)
-
+#elif defined( USE_WRESLIB )
+#else
 #endif

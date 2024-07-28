@@ -14,8 +14,8 @@ which = SERVER
 !include $(rsilib_dir)/client.mif
 
 extra_objs = rsiacc.obj
-extra_incs = $(rsilib_inc_dirs)
-extra_libs = $(rsilib_lib)
+extra_incs = $(cli_rsilib_inc_dirs)
+extra_libs = $(cli_rsilib_libs)
 
 extra_c_flags = -zu
 

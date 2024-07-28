@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -41,7 +41,6 @@
 #include "segmem.h"
 #include "sdkasm.h"
 #include "font.h"
-#include "cguimem.h"
 #include "memwndcd.h"
 
 
@@ -557,7 +556,7 @@ static void gotoIns( MemWndInfo *info, uint_32 ins_cnt )
         } else {
             size += backup_cnt * sizeof( WORD );
         }
-        asm_info = MemAlloc( size );
+        asm_info = CUIMemAlloc( size );
         if( asm_info != NULL ) {
             info->asm_info = asm_info;
             asm_info->big = (info->limit > 0xffff);

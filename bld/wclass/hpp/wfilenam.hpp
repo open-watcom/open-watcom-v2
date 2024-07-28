@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -54,6 +54,7 @@ WCLASS WFileName : public WString {
         bool WEXPORT setCWD() const;
         bool WEXPORT makeDir() const;
         bool WEXPORT dirExists() const;
+        #define attrWriteable 0x01
         bool WEXPORT attribs( unsigned* attribs = NULL ) const;
         void WEXPORT touch( time_t tm=0 ) const;
 

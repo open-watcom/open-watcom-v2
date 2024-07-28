@@ -4,7 +4,6 @@ supplemental=winsys
 supplemental=windir
 winsys=%winsystemdir%
 MinimalInstall=false
-CDDir=%SrcDir2%
 DoCreateIcons=1
 DoCreateHelpIcons=1
 DoModifyAuto=1
@@ -19,7 +18,7 @@ UninstallCompany=openwatcom.org
 UninstallHelpURL=http://www.openwatcom.org
 UninstallMajorVersion=2
 UninstallMinorVersion=0
-ToolHelp=%CDDir%\binw\toolhelp.dll
+#ToolHelp=%CDDir%\binw\toolhelp.dll
 GenerateBatchFile=1
 BatchFileName=%DstDir%/owsetenv
 BatchFileCaption=Open Watcom Build Environment
@@ -51,7 +50,6 @@ autoset=whtml_helpfiles=IsWin98 IsWin2000 IsWin64 | |
 autoset=whelp_helpfiles=doshost lnxhost lnx64host | |
 autoset=os2_helpfiles=os2host
 autoset=pdf_helpfiles=false
-autoset=rtsource=false
 autoset=3r=true
 autoset=3s=true
 autoset=cplusplus=true
@@ -112,6 +110,7 @@ env=WATCOM=%DstDir%,                            IsOS2 IsOS2DosBox IsDOS IsWin16 
 env=EDPATH=%DstDir%\EDDAT,                      IsOS2 IsOS2DosBox IsDOS IsWin16 IsWin32 IsWin64 | | | | |
 env=EDPATH=%DstDir%/eddat,                      IsLinux32 IsLinux64 |
 env=WWINHELP=%DstDir%\BINW,                     IsDOS IsWin16 IsWin32 | |
+env=WWINHELP=%DstDir%/binw,                     IsLinux32 IsLinux64 |
 env=WHTMLHELP=%DstDir%\BINNT\HELP,              IsWin32 IsWin64 |
 env=WIPFC=%DstDir%\WIPFC,                       IsOS2 IsOS2DosBox IsDOS IsWin16 IsWin32 IsWin64 | | | | |
 env=WIPFC=%DstDir%/wipfc,                       IsLinux32 IsLinux64 |

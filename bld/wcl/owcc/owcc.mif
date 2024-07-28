@@ -6,6 +6,8 @@ proj_name = owcc
 owcc_autodepends = .AUTODEPEND
 !endif
 
+owcc_ntverrc = ../../h
+
 owcc_trmem = 1
 
 !include ../../master.mif

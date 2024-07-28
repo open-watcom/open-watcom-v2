@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,13 +35,13 @@
 #include "dbgwind.h"
 #include "dbgio.h"
 #include "dbgerr.h"
-#include "dbgadget.h"
 #include "strutil.h"
 #include "dbgscan.h"
 #include "dbgwdlg.h"
 #include "dlgfile.h"
 #include "wndsys.h"
 #include "wnddump.h"
+#include "liteng.h"
 
 
 typedef void WRITERTN( file_handle, const char * );

@@ -1,0 +1,52 @@
+/* UTF-8 encoding, ¥ */
+
+#ifdef __OS2__
+    #define RC_ITEM(a,b,c) a b c
+    #include <os2.h>
+#else
+    #define RC_ITEM(a,b,c) b a c
+    #include <windows.h>
+#endif
+#include "ide.rh"
+
+#include "wclass.rc"
+
+RC_ITEM( BITMAP, B_newproj,         "newproj.bmp" )
+RC_ITEM( BITMAP, B_openproj,        "openproj.bmp" )
+RC_ITEM( BITMAP, B_saveproj,        "saveproj.bmp" )
+RC_ITEM( BITMAP, B_makeproj,        "makeproj.bmp" )
+RC_ITEM( BITMAP, B_maketarg,        "maketarg.bmp" )
+RC_ITEM( BITMAP, B_debgtarg,        "debgtarg.bmp" )
+RC_ITEM( BITMAP, B_browtarg,        "browtarg.bmp" )
+RC_ITEM( BITMAP, B_samptarg,        "samptarg.bmp" )
+RC_ITEM( BITMAP, B_proftarg,        "proftarg.bmp" )
+RC_ITEM( BITMAP, B_runtarg,         "runtarg.bmp" )
+RC_ITEM( BITMAP, B_edititem,        "edititem.bmp" )
+RC_ITEM( BITMAP, B_makeitem,        "makeitem.bmp" )
+RC_ITEM( BITMAP, B_rdbgtarg,        "rdbgtarg.bmp" )
+
+RC_ITEM( BITMAP, B_sourceOpen,      "srcopen.bmp" )
+RC_ITEM( BITMAP, B_sourceClosed,    "srcclos.bmp" )
+RC_ITEM( BITMAP, B_sourceItem,      "srcitem.bmp" )
+RC_ITEM( BITMAP, B_flashPage,       "ide_s.bmp" )
+
+#ifndef __OS2__
+RC_ITEM( BITMAP, B_powerbuilder,    "rtrn2pb.bmp" )
+#endif
+
+/*************************************************************************
+ * hold this order of ICONS
+ * it defines icons index in executable
+ * this index is used for file extensions association by OW installer
+ *************************************************************************/
+RC_ITEM( ICON, I_Ide,       "ide.ico" )     /* 0    used by installer */
+RC_ITEM( ICON, I_Target,    "target.ico" )  /* 1 */
+RC_ITEM( ICON, I_MsgLog,    "msglog.ico" )  /* 2 */
+/*************************************************************************/
+
+#ifndef __OS2__
+    #include "getfile.dlg"
+  #ifdef __NT__
+    #include "getfile9.dlg"
+  #endif
+#endif

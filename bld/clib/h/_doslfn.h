@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -93,8 +93,8 @@ extern lfn_ret_t __lfnerror_ax( void );
 
 #else  /* !_M_I86 */
 
-extern char                 * const __lfn_rm_tb_linear;
-extern unsigned short       const __lfn_rm_tb_segment;
+extern char                 * __lfn_rm_tb_linear;
+extern unsigned short       __lfn_rm_tb_segment;
 
 #define RM_TB_PARM1_SIZE    ( MB_CUR_MAX * _MAX_PATH )
 #define RM_TB_PARM2_SIZE    ( MB_CUR_MAX * _MAX_PATH )

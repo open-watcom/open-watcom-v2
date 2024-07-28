@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,11 +34,10 @@
 #define BACKWARDS
 #include "dbgdefn.h"
 #include "dbgdata.h"
-#include "dbglit.h"
+#include "liteng.h"
 #include "dbgio.h"
 #include "dbgmem.h"
 #include "dui.h"
-#include "wdmsgdef.h"
 #include "dbgscrn.h"
 #include "trpld.h"
 #include "strutil.h"
@@ -46,6 +45,9 @@
 #include "dbgprog.h"
 #include "dbglkup.h"
 #include "dbgerr.h"
+#include "dbglit.h"
+#include "wv.rh"
+#include "dbgname.h"
 
 
 #define MIN_MEM_SIZE    (500UL*1024)

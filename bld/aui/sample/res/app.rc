@@ -1,20 +1,40 @@
-#ifdef __OS2__
+/* UTF-8 encoding, ¥ */
 
-#include <os2.h>
-#include "appcomm2.rc"
-
-#define RC_ITEM(a,b,c) a b c
-
+#ifdef RESX_GUI
+  #ifdef __OS2__
+    #include <os2.h>
+  #else
+    #include <windows.h>
+  #endif
 #else
+    #include "wresdefn.h"
+#endif
+#include "aui.rh"
+#include "sample.rh"
 
-#include <windows.h>
-#include "appcomm.rc"
+#include "aui.rc"
 
-#define RC_ITEM(a,b,c) b a c
-
+#ifdef JAPANESE
+  #if defined( __OS2__ ) && defined( RESX_GUI )
+    #include "japoptn2.dlg"
+  #else
+    #include "japoptn.dlg"
+  #endif
+#else
+  #if defined( __OS2__ ) && defined( RESX_GUI )
+    #include "dlgoptn2.dlg"
+  #else
+    #include "dlgoptn.dlg"
+  #endif
 #endif
 
-#include "rcdefs.h"
+#ifdef RESX_GUI
+
+#ifdef __OS2__
+#define RC_ITEM(a,b,c) a b c
+#else
+#define RC_ITEM(a,b,c) b a c
+#endif
 
 #ifdef __OS2__
 RC_ITEM( ICON,      1,              "dui2.ico" )
@@ -37,4 +57,6 @@ RC_ITEM( ICON,      ICON_WORDS,     "word2.ico" )
 #else
 RC_ITEM( ICON,      ICON_MAIN,      "dui.ico" )
 RC_ITEM( ICON,      ICON_WORDS,     "words.ico" )
+#endif
+
 #endif

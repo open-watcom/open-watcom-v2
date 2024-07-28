@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,14 +32,13 @@
 
 #include <ctype.h>
 #if defined( __NT__ ) && defined( GUI_IS_GUI )
-    #define WIN32_LEAN_AND_MEAN
     #include <windows.h>
 #endif
 #include "dbgdefn.h"
 #include "dbgdata.h"
 #include "dbgwind.h"
 #include "dbgerr.h"
-#include "dbgadget.h"
+#include "gadgets.h"
 #include "dbghook.h"
 #include "dbgio.h"
 #include "dbgscrn.h"
@@ -66,6 +65,9 @@
 #include "dbgwpain.h"
 #include "dbginit.h"
 #include "menudef.h"
+#include "liteng.h"
+#include "litdui.h"
+#include "wv.rh"
 
 
 static void             WndBadCmd( a_window );
@@ -73,18 +75,18 @@ static void             WndBadCmd( a_window );
 char *WndGadgetHint[] =
 {
     #define pick( a,b,c,d,e,f ) f,
-    #include "gadgets.h"
+        GADGETS
     #undef pick
 };
 
 gui_resource WndGadgetArray[] = {
-    #define pick( a,b,c,d,e,f ) { b, d },
-    #include "gadgets.h"
+    #define pick( a,b,c,d,e,f ) { BITMAPID( b ), d },
+        GADGETS
     #undef pick
-    #define pick( a,b,c,d,e,f ) { c, e },
-    #include "gadgets.h"
+    #define pick( a,b,c,d,e,f ) { BITMAPID( c ), e },
+        GADGETS
     #undef pick
-    { BITMAP_SPLASH, "splash" },
+    { BITMAPID( BITMAP_SPLASH ), "splash" },
 };
 
 int         WndGadgetHintSize = ArraySize( WndGadgetHint );
@@ -128,7 +130,7 @@ int         MaxGadgetLength;
 static const char WindowNameTab[] =
 {
     #define pick(t,p)   t "\0"
-    WINDOW_DEFS
+        WINDOW_DEFS
     #undef pick
 };
 
@@ -142,7 +144,7 @@ static void ToWndChooseNew( a_window wnd )
 static void (* const WndJmpTab[])( a_window ) =
 {
     #define pick(t,p)   p,
-    WINDOW_DEFS
+        WINDOW_DEFS
     #undef pick
 };
 
@@ -532,7 +534,7 @@ void WndSetOpenNoShow( void )
     _SwitchOn( SW_OPEN_NO_SHOW );
 }
 
-a_window DbgTitleWndCreate( const char *title, wnd_info *wndinfo,
+a_window DbgWndCreateTitle( const char *title, wnd_info *wndinfo,
                                     wnd_class_wv wndclass, void *extra,
                                     gui_resource *icon,
                                     int title_rows, bool vdrag )
@@ -605,7 +607,7 @@ a_window DbgTitleWndCreate( const char *title, wnd_info *wndinfo,
 a_window DbgWndCreate( const char *title, wnd_info *info,
                                wnd_class_wv wndclass, void *extra, gui_resource *icon )
 {
-    return( DbgTitleWndCreate( title, info, wndclass, extra, icon, 0, true ) );
+    return( DbgWndCreateTitle( title, info, wndclass, extra, icon, 0, true ) );
 }
 
 static char **RXErrTxt[] = {

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,7 +34,7 @@
 #include "coderep.h"
 #include "score.h"
 #include "freelist.h"
-#include "cfloat.h"
+#include "_cfloat.h"
 #include "spawn.h"
 #include "memout.h"
 #include "data.h"
@@ -191,11 +191,11 @@ static  void    InitZero( void )
 /* since it will just set offset to 0 */
 {
     ScZero = ScAlloc( sizeof( score_info ) );
-    ScZero->class     = SC_N_CONSTANT;
-    ScZero->offset    = 0;
-    ScZero->symbol.p  = NULL;
-    ScZero->index_reg = NO_INDEX;
-    ScZero->base      = NULL;
+    ScZero->class       = SC_N_CONSTANT;
+    ScZero->offset      = 0;
+    ScZero->symbol.u.p  = NULL;
+    ScZero->index_reg   = NO_INDEX;
+    ScZero->base        = NULL;
 }
 
 

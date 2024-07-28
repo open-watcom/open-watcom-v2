@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -327,7 +327,7 @@ static bool DialogBoxControl2GUI( DialogBoxControl *ctl, gui_control_info *ctl_i
         area.height = ( ( ctl->SizeInfo.height + DLG_Y_MULT/2 ) / DLG_Y_MULT );
         if( area.height < 1 )
             area.height = 1;
-        ok = GUIScreenToScaleRectR( &area, &ctl_info->rect );
+        ok = GUIScaleFromScreenRectR( &area, &ctl_info->rect );
     }
 
     if( !ok ) {
@@ -370,7 +370,7 @@ static gui_create_info *DialogBoxHeader2GUI( DialogBoxHeader *hdr )
     area.col = 0;
     if( bounding.width > area.width )
         area.col = ( bounding.width - area.width ) / 2;
-    ok = GUIScreenToScaleRect( &area, &dlg_info->rect );
+    ok = GUIScaleFromScreenRect( &area, &dlg_info->rect );
 
     if( ok ) {
         // set the scroll styles
@@ -413,7 +413,7 @@ static gui_create_info *DialogBoxHeader2GUI( DialogBoxHeader *hdr )
     return( dlg_info );
 }
 
-bool GUICreateDialogFromRes( res_name_or_id dlg_id, gui_window *parent_wnd, GUICALLBACK *gui_call_back, void *extra )
+bool GUICreateDialogFromRes( res_name_or_id dlg_id, gui_window *parent_wnd, GUIEVCALLBACK *gui_call_back, void *extra )
 {
     DialogBoxHeader     *hdr;
     DialogBoxControl    *cntls;

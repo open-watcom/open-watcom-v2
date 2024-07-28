@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,41 +37,41 @@
 #include "clibext.h"
 
 
-static void SkipObject( libfile io )
+static void SkipObject( libfile io, const arch_header *arch )
 {
-    if( Options.libtype == WL_LTYPE_OMF ) {
+    if( arch->libtype == WL_LTYPE_OMF ) {
         OmfSkipObject( io );
     }
 }
 
-static void CopyObj( libfile io, libfile out, arch_header *arch )
+static void CopyObj( libfile src, libfile dst, const arch_header *arch )
 {
-    if( Options.libtype == WL_LTYPE_OMF ) {
-        OmfExtract( io, out );
+    if( arch->libtype == WL_LTYPE_OMF ) {
+        OmfExtract( src, dst );
     } else {
-        Copy( io, out, arch->size );
+        Copy( src, dst, arch->size );
     }
 }
 
-static void ExtractObj( libfile io, const char *name, arch_header *arch, const char *newname )
+static void ExtractObj( libfile src, const char *name, const arch_header *arch, const char *newname )
 {
     long        pos;
-    libfile     out;
+    libfile     dst;
     char        *obj_name;
 
     obj_name = MakeObjOutputName( name, newname );
     remove( obj_name );
-    out = LibOpen( obj_name, LIBOPEN_WRITE );
-    pos = LibTell( io );
-    CopyObj( io, out, arch );
-    LibSeek( io, pos, SEEK_SET );
-    LibClose( out );
+    dst = LibOpen( obj_name, LIBOPEN_WRITE );
+    pos = LibTell( src );
+    CopyObj( src, dst, arch );
+    LibSeek( src, pos, SEEK_SET );
+    LibClose( dst );
     if( Options.ar && Options.verbose ) {
         Message( "x - %s", obj_name );
     }
 }
 
-static void ProcessOneObject( arch_header *arch, libfile io )
+static void ProcessOneObject( libfile io, const arch_header *arch )
 {
     lib_cmd  *cmd;
     bool      deleted;
@@ -87,7 +87,7 @@ static void ProcessOneObject( arch_header *arch, libfile io )
     }
     deleted = false;
     for( cmd = CmdList; cmd != NULL; cmd = cmd->next ) {
-        if( IsSameFNameCase( arch->name, cmd->name ) ) {
+        if( IsSameModuleCase( arch->name, cmd->name, ( arch->libtype == WL_LTYPE_OMF ) ) ) {
             if( !Options.explode ) {
                 if( (cmd->ops & OP_EXTRACT) && (cmd->ops & OP_EXTRACTED) == 0 ) {
                     if( cmd->fname != NULL ) {
@@ -108,22 +108,22 @@ static void ProcessOneObject( arch_header *arch, libfile io )
     }
 
     if( deleted ) {
-        SkipObject( io );
+        SkipObject( io, arch );
         Options.modified = true;
     } else {
-        AddObjectSymbols( arch, io, LibTell( io ) );
+        AddObjectSymbols( io, LibTell( io ), arch );
     }
 }
 
-static void AddOneObject( arch_header *arch, libfile io )
+static void AddOneObject( libfile io, const arch_header *arch )
 {
-    AddObjectSymbols( arch, io, LibTell( io ) );
+    AddObjectSymbols( io, LibTell( io ), arch );
 }
 
-static void DelOneObject( arch_header *arch, libfile io )
+static void DelOneObject( libfile io, const arch_header *arch )
 {
-    RemoveObjectSymbols( arch->name );
-    SkipObject( io );
+    RemoveObjectSymbols( arch );
+    SkipObject( io, arch );
 }
 
 typedef enum {
@@ -132,66 +132,76 @@ typedef enum {
     OBJ_PROCESS,
 } objproc;
 
-static void ProcessLibOrObj( char *name, objproc obj, void (*process)( arch_header *arch, libfile io ) )
+static void ProcessLibOrObj( const char *filename, objproc obj, libwalk_fn *process )
 {
-    libfile     io;
+    libfile         io;
     unsigned char   buff[AR_IDENT_LEN];
-    arch_header arch;
+    arch_header     arch;
 
-    NewArchHeader( &arch, name );
-    io = LibOpen( name, LIBOPEN_READ );
+    io = NewArchLibOpen( &arch, filename );
     if( LibRead( io, buff, sizeof( buff ) ) != sizeof( buff ) ) {
-        FatalError( ERR_CANT_READ, name, strerror( errno ) );
+        FatalError( ERR_CANT_READ, io->name, strerror( errno ) );
     }
     if( memcmp( buff, AR_IDENT, sizeof( buff ) ) == 0 ) {
-        // AR format
-        AddInputLib( io, name );
-        LibWalk( io, name, process );
+        /*
+         * Library AR format
+         */
+        arch.libtype = WL_LTYPE_AR;
+        AddInputLib( io );
+        LibWalk( io, &arch, process );
         if( Options.libtype == WL_LTYPE_NONE ) {
             Options.libtype = WL_LTYPE_AR;
         }
     } else if( memcmp( buff, LIBMAG, LIBMAG_LEN ) == 0 ) {
-        // MLIB format
+        /*
+         * Library MLIB format
+         */
         if( LibRead( io, buff, sizeof( buff ) ) != sizeof( buff ) ) {
-            FatalError( ERR_CANT_READ, name, strerror( errno ) );
+            FatalError( ERR_CANT_READ, io->name, strerror( errno ) );
         }
         if( memcmp( buff, LIB_CLASS_DATA_SHOULDBE, LIB_CLASS_LEN + LIB_DATA_LEN ) ) {
-            BadLibrary( name );
+            BadLibrary( io );
         }
-        AddInputLib( io, name );
-        LibWalk( io, name, process );
+        arch.libtype = WL_LTYPE_MLIB;
+        AddInputLib( io );
+        LibWalk( io, &arch, process );
         if( Options.libtype == WL_LTYPE_NONE ) {
             Options.libtype = WL_LTYPE_MLIB;
         }
-    } else if( AddImport( &arch, io ) ) {
+    } else if( AddImport( io, &arch ) ) {   /* import DLL exported symbols */
         LibClose( io );
     } else if( buff[0] == LIB_HEADER_REC && buff[1] != 0x01 ) {
         /*
-          The buff[1] != 1 bit above is a bad hack to get around
-          the fact that the coff cpu_type for PPC object files is
-          0x1f0.  Really, we should be reading in the first object
-          record and doing the checksum and seeing if it is actually
-          a LIB_HEADER_REC.  All file format designers who are too
-          stupid to recognize the need for a signature should be
-          beaten up with large blunt objects.
+         * Library OMF format
+         *
+         * The buff[1] != 1 bit above is a bad hack to get around
+         * the fact that the coff cpu_type for PPC object files is
+         * 0x1f0.  Really, we should be reading in the first object
+         * record and doing the checksum and seeing if it is actually
+         * a LIB_HEADER_REC.  All file format designers who are too
+         * stupid to recognize the need for a signature should be
+         * beaten up with large blunt objects.
          */
-        // OMF format
-        AddInputLib( io, name );
+        arch.libtype = WL_LTYPE_OMF;
+        AddInputLib( io );
         LibSeek( io, 0, SEEK_SET );
+        LibWalk( io, &arch, process );
         if( Options.libtype == WL_LTYPE_NONE ) {
             Options.libtype = WL_LTYPE_OMF;
         }
-        OMFLibWalk( io, name, process );
     } else if( obj == OBJ_PROCESS ) {
-        // Object
+        /*
+         * Object
+         */
         LibSeek( io, 0, SEEK_SET );
-        AddObjectSymbols( &arch, io, 0 );
+        AddObjectSymbols( io, 0, &arch );
         LibClose( io );
     } else if( obj == OBJ_ERROR ) {
-        BadLibrary( name );
+        BadLibrary( io );
     } else {
         LibClose( io );
     }
+    FreeNewArch( &arch );
 }
 
 static void WalkInputLib( void )
@@ -209,7 +219,7 @@ static void AddModules( void )
             continue;
         strcpy( buff, cmd->name );
         if( cmd->ops & OP_IMPORT ) {
-            ProcessImport( buff );
+            ProcessImportWlib( buff );
         } else {
             DefaultExtension( buff, EXT_OBJ );
             ProcessLibOrObj( buff, OBJ_PROCESS, AddOneObject );
@@ -240,10 +250,16 @@ static void DelModules( void )
             ProcessLibOrObj( buff, OBJ_SKIP, DelOneObject );
             cmd->ops |= OP_DELETED;
         }
-        if( (cmd->ops & OP_DELETED) == 0 && (cmd->ops & OP_ADD) == 0 ) {
-            Warning( ERR_CANT_DELETE, cmd->name );
-        } else if( (cmd->ops & OP_DELETED) && (cmd->ops & OP_ADD) == 0 && Options.ar && Options.verbose ) {
-            Message( "-d %s", cmd->name );
+        if( (cmd->ops & OP_ADD) == 0 ) {
+            if( cmd->ops & OP_DELETED ) {
+                if( Options.ar && Options.verbose ) {
+                    Message( "-d %s", cmd->name );
+                }
+            } else {
+                if( !Options.quiet ) {
+                    Warning( ERR_CANT_DELETE, cmd->name );
+                }
+            }
         }
     }
 }
@@ -252,14 +268,18 @@ static void EmitWarnings( void )
 {
     lib_cmd     *cmd;
 
-    // give a warning if we couldn't find objects to extract
-    //  - note: deletes which we didn't find have already been taken
-    //    care of by DelModules above (ack :P)
-    //    this might make ordering of warnings a little odd...
+    /*
+     * give a warning if we couldn't find objects to extract
+     *  - note: deletes which we didn't find have already been taken
+     *    care of by DelModules above (ack :P)
+     *    this might make ordering of warnings a little odd...
+     */
     for( cmd = CmdList; cmd != NULL; cmd = cmd->next ) {
         if( cmd->ops & OP_EXTRACT ) {
             if( ( cmd->ops & OP_FOUND ) == 0 ) {
-                Warning( ERR_CANT_EXTRACT, cmd->name );
+                if( !Options.quiet ) {
+                    Warning( ERR_CANT_EXTRACT, cmd->name );
+                }
             }
         }
     }

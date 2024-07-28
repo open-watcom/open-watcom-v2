@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2023-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -54,18 +54,18 @@ typedef enum {
 typedef int_16              invar_id;
 typedef struct invariant {              /*  an invariant list is */
         int_32                  times;  /*  + <v>*times */
-        union  name             *name;  /*  this is <v> */
+        name                    *name;  /*  this is <v> */
         struct invariant        *next;  /*  ... add the next one */
         invar_id                id;
 } invariant;
 
 typedef struct induction {              /* an induction variable is */
         int_32                  times;     /*  ( <i>*times ) */
-        union name              *ivtimes;  /*     *ivtimes */
+        name                    *ivtimes;  /*     *ivtimes */
         struct invariant        *invar;    /*     +invariant_list[*ivtimes?] */
         int_32                  plus2;     /*     +plus2*ivtimes */
         int_32                  plus;      /*  .. +plus */
-        union  name             *name;     /*  this is <j> */
+        name                    *name;     /*  this is <j> */
         struct induction        *prev;     /*  link in list of induction vars */
         struct induction        *basic;    /*  this is <i> */
         struct induction        *next;     /*  link in list of induction vars */

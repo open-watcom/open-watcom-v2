@@ -69,7 +69,7 @@ $(LNK) : $(lnk_dependencies)
 .c.obj :
         $(CC) $(CFLAGS) $[*
 
-clean: .symbolic
+clean: .SYMBOLIC
     rm -f *.obj *.err *.exe *.lnk *.res *.rex *.lib *.sym *.map
     rm -f *.lk1 *.mk1 *.mk
 

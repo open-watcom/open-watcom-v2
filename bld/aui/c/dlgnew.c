@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -72,7 +72,7 @@ static gui_control_info Controls[] = {
     #undef pick_p4id
 };
 
-static bool dlgNewGUIEventProc( gui_window *gui, gui_event gui_ev, void *param )
+static bool GUICALLBACK dlgNewGUIEventProc( gui_window *gui, gui_event gui_ev, void *param )
 {
     gui_ctl_id  id;
     dlgnew_ctl  *dlgnew;
@@ -107,8 +107,8 @@ static bool dlgNewGUIEventProc( gui_window *gui, gui_event gui_ev, void *param )
     return( false );
 }
 
-bool    DlgNewWithCtl( const char *title, char *buff, size_t buff_len, gui_control_info *controls,
-                    int num_controls, GUICALLBACK *gui_call_back, gui_text_ord rows, gui_text_ord cols, gui_text_ord max_cols )
+bool    WNDAPI DlgNewWithCtl( const char *title, char *buff, size_t buff_len, gui_control_info *controls,
+                    int num_controls, GUIEVCALLBACK *gui_call_back, gui_text_ord rows, gui_text_ord cols, gui_text_ord max_cols )
 {
     dlgnew_ctl  dlgnew;
     int         len;
@@ -125,12 +125,12 @@ bool    DlgNewWithCtl( const char *title, char *buff, size_t buff_len, gui_contr
     return( !dlgnew.cancel );
 }
 
-bool    DlgNew( const char *title, char *buff, size_t buff_len )
+bool    WNDAPI DlgNew( const char *title, char *buff, size_t buff_len )
 {
     bool        rc;
 
-    Controls[OK_IDX].text = WndLoadString( LITERAL_New_OK );
-    Controls[CANCEL_IDX].text = WndLoadString( LITERAL_New_Cancel );
+    Controls[OK_IDX].text = WndLoadString( LIT_AUI( New_OK ) );
+    Controls[CANCEL_IDX].text = WndLoadString( LIT_AUI( New_Cancel ) );
     rc = DlgNewWithCtl( title, buff, buff_len, Controls, ArraySize( Controls ), dlgNewGUIEventProc, DLG_SIZE_DATA );
     WndFree( (void *)Controls[OK_IDX].text );
     WndFree( (void *)Controls[CANCEL_IDX].text );

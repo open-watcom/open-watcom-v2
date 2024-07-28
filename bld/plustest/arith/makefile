@@ -62,7 +62,7 @@ exes = &
     rsa.$(exe)      &
     waste.$(exe)
 
-test : .symbolic start test.lnk $(exes)
+test : .SYMBOLIC start test.lnk $(exes)
     $(noecho)%make common_set_result
 
 dmc.$(exe) : dmc.obj

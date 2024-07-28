@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,7 +37,7 @@
 #include "dbgwind.h"
 #include "dbgstk.h"
 #include "dbgerr.h"
-#include "dbgadget.h"
+#include "gadgets.h"
 #include "dbgitem.h"
 #include "dlgvarx.h"
 #include "wspawn.h"
@@ -61,6 +61,9 @@
 #include "dbgchopt.h"
 #include "dipinter.h"
 #include "menudef.h"
+#include "dbgicon.h"
+#include "liteng.h"
+#include "litdui.h"
 
 
 #define WndVar( wnd )       ((var_window *)WndExtra( wnd ))
@@ -167,12 +170,12 @@ bool    WndVarAdd( a_window wnd, const char *name, unsigned len, bool expand )
 }
 
 
-static wnd_row VarNumRows( a_window wnd )
+static wnd_row WNDCALLBACK VarNumRows( a_window wnd )
 {
     return( VarRowTotal( WndVarInfo( wnd ) ) );
 }
 
-static  void    VarModify( a_window wnd, wnd_row row, wnd_piece piece )
+static  void    WNDCALLBACK VarModify( a_window wnd, wnd_row row, wnd_piece piece )
 {
     var_node            *v;
     type_kind           class;
@@ -389,7 +392,7 @@ static void VarInitPopup( a_window wnd, var_window *var, var_node *v )
 }
 
 
-static void VarMenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_piece piece )
+static void WNDCALLBACK VarMenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_piece piece )
 {
     var_node            *v;
     dlg_var_expand      varx;
@@ -635,7 +638,7 @@ static void FmtName( var_window *var, var_node *v, wnd_line_piece *line,
     var->i.name_end_row = row;
 }
 
-static  bool    VarGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *line )
+static  bool    WNDCALLBACK VarGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *line )
 {
     var_window  *var = WndVar( wnd );
     var_node    *v;
@@ -822,7 +825,7 @@ static bool VarInfoWndRefresh( var_type vtype, var_info *i, address *addr, a_win
     return( repaint );
 }
 
-static  void    VarBegPaint( a_window wnd, wnd_row row, int num )
+static  void    WNDCALLBACK VarBegPaint( a_window wnd, wnd_row row, int num )
 {
     var_window  *var = WndVar( wnd );
 
@@ -832,7 +835,7 @@ static  void    VarBegPaint( a_window wnd, wnd_row row, int num )
 }
 
 
-static  void    VarEndPaint( a_window wnd, wnd_row row, int num )
+static  void    WNDCALLBACK VarEndPaint( a_window wnd, wnd_row row, int num )
 {
     var_window  *var = WndVar( wnd );
 
@@ -897,7 +900,7 @@ static void VarWndRefreshVisible( var_info *i, int top, int rows, VARDIRTRTN *di
     VarOldErrState();
 }
 
-static  void VarRefresh( a_window wnd )
+static  void WNDCALLBACK VarRefresh( a_window wnd )
 {
     var_window  *var = WndVar( wnd );
     address     addr;
@@ -930,7 +933,7 @@ static  void VarRefresh( a_window wnd )
 }
 
 
-static bool VarWndEventProc( a_window wnd, gui_event gui_ev, void *parm )
+static bool WNDCALLBACK VarWndEventProc( a_window wnd, gui_event gui_ev, void *parm )
 {
     var_window  *var = WndVar( wnd );
     gui_ord     old_width;
@@ -1045,7 +1048,7 @@ void VarChangeOptions( void )
     VarWndDoAll( DoVarChangeOptions );
 }
 
-static bool ChkUpdate( void )
+static bool WNDCALLBACK ChkUpdate( void )
 {
     return( UpdateFlags & (UP_VAR_DISPLAY | UP_MEM_CHANGE | UP_STACKPOS_CHANGE | UP_CSIP_CHANGE | UP_REG_CHANGE | UP_RADIX_CHANGE | UP_SYM_CHANGE) );
 }

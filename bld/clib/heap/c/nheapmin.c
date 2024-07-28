@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -64,17 +64,7 @@ _WCRTLINK int _heapshrink( void )
     return( _nheapshrink() );
 }
 
-_WCRTLINK int _heapmin( void )
-{
-    return( _nheapshrink() );
-}
-
 #endif
-
-_WCRTLINK int _nheapmin( void )
-{
-    return( _nheapshrink() );
-}
 
 #if defined(__OS2__) && !defined(_M_I86) || defined(__WINDOWS__) || defined(__NT__) || \
     defined(__CALL21__) || defined(__RDOS__) || defined(__DOS_EXT__)

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -64,12 +64,12 @@ enum {
 
 extern gui_control_info Controls[];
 
-extern bool         DialogScaled;
-extern bool         ButtonsScaled;
-extern bool         ControlsScaled;
+extern bool             DialogScaled;
+extern bool             ButtonsScaled;
+extern bool             ControlsScaled;
 
-extern int          NUM_LIST_BOX_DATA;
+extern int              NUM_LIST_BOX_DATA;
 
-extern void         StaticDialogInit( void );
-extern void         StaticDialogCreate( gui_window *parent_wnd );
-extern GUICALLBACK  StaticDialogWndGUIEventProc;
+extern void             StaticDialogInit( void );
+extern void             StaticDialogCreate( gui_window *parent_wnd );
+extern GUIEVCALLBACK    StaticDialogWndGUIEventProc;

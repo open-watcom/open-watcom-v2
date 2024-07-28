@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2023-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,8 +37,6 @@
 #include "cmdlnprs.gh"          // required generated file
 #include "cmdlnprs.h"
 
-
-#define ISNOT_BLANK_QUOTES(o,l) ((l) > 0 && ((l) != 2 || (o)[0] != '\"' || (o)[1] != '\"'))
 
 static void addString           // STORE A STRING
     ( OPT_STRING **h            // - addr[ storage ]
@@ -95,26 +93,22 @@ static bool scanOffNumber       // SCAN A NUMBER
 }
 
 
-void StripQuotes                // STRIP QUOTES FROM A STRING
-    ( char *fname )             // - the string
+static void UnEscape        // REMOVE QUOTES ESCAPING FROM A STRING
+    ( char *s )             // - the string
 {
-    char *s;
     char *d;
 
-    if( *fname == '"' ) {
-        // string will shrink so we can reduce in place
-        d = fname;
-        for( s = d + 1; *s && *s != '"'; ++s ) {
-            // collapse double backslashes, only then look for escaped quotes
-            if( s[0] == '\\' && s[1] == '\\' ) {
-                ++s;
-            } else if( s[0] == '\\' && s[1] == '"' ) {
+    // string will shrink so we can reduce in place
+    for( d = s; *s != '\0'; ++s ) {
+        // collapse double backslashes, only then look for escaped quotes
+        if( s[0] == '\\' ) {
+            if( s[1] == '\\' || s[1] == '"' ) {
                 ++s;
             }
-            *d++ = *s;
         }
-        *d = '\0';
+        *d++ = *s;
     }
+    *d = '\0';
 }
 
 
@@ -150,7 +144,7 @@ bool OPT_GET_ID                 // PARSE: ID
 
     CmdRecogEquals();
     len = CmdScanId( &id );
-    if( len != 0 ) {
+    if( len > 0 ) {
         addString( p, id, len );
         return( true );
     }
@@ -221,12 +215,15 @@ bool OPT_GET_FILE               // PARSE: FILE NAME
 {
     size_t len;
     char const *fname;
+    bool quoted;
 
     CmdRecogEquals();
-    len = CmdScanFilename( &fname );
-    if( ISNOT_BLANK_QUOTES( fname, len ) ) {
+    len = CmdScanFilename( &fname, &quoted );
+    if( len > 0 ) {
         addString( p, fname, len );
-        StripQuotes( (*p)->data );
+        if( quoted ) {
+            UnEscape( (*p)->data );
+        }
         return( true );
     }
     BadCmdLineFile();
@@ -238,14 +235,17 @@ bool OPT_GET_FILE_OPT           // PARSE: OPTIONAL FILE NAME
 {
     size_t len;
     char const *fname;
+    bool quoted;
 
     // handle leading option char specially
     if( CmdRecogEquals() || !CmdScanSwEnd() ) {
         // specified an '=' so accept -this-is-a-file-name.fil or /tmp/ack.tmp
-        len = CmdScanFilename( &fname );
-        if( ISNOT_BLANK_QUOTES( fname, len ) ) {
+        len = CmdScanFilename( &fname, &quoted );
+        if( len > 0 ) {
             addString( p, fname, len );
-            StripQuotes( (*p)->data );
+            if( quoted ) {
+                UnEscape( (*p)->data );
+            }
         } else {
             OPT_CLEAN_STRING( p );
         }
@@ -259,13 +259,16 @@ bool OPT_GET_PATH               // PARSE: PATH
 {
     size_t len;
     char const *path;
+    bool quoted;
 
 //    CmdPathDelim();
     CmdRecogEquals();
-    len = CmdScanFilename( &path );
-    if( ISNOT_BLANK_QUOTES( path, len ) ) {
+    len = CmdScanFilename( &path, &quoted );
+    if( len > 0 ) {
         addString( p, path, len );
-        StripQuotes( (*p)->data );
+        if( quoted ) {
+            UnEscape( (*p)->data );
+        }
         return( true );
     }
     BadCmdLinePath();
@@ -277,14 +280,17 @@ bool OPT_GET_PATH_OPT           // PARSE: OPTIONAL PATH
 {
     size_t len;
     char const *fname;
+    bool quoted;
 
 //    if( CmdPathDelim() || !CmdScanSwEnd() ) {
     if( CmdRecogEquals() || !CmdScanSwEnd() ) {
         // specified an '=' so accept -this-is-a-path-name.fil or /tmp/ack.tmp
-        len = CmdScanFilename( &fname );
-        if( ISNOT_BLANK_QUOTES( fname, len ) ) {
+        len = CmdScanFilename( &fname, &quoted );
+        if( len > 0 ) {
             addString( p, fname, len );
-            StripQuotes( (*p)->data );
+            if( quoted ) {
+                UnEscape( (*p)->data );
+            }
         } else {
             OPT_CLEAN_STRING( p );
         }
@@ -298,12 +304,15 @@ bool OPT_GET_OPTION             // PARSE: OPTION TEXT
 {
     size_t len;
     char const *option;
+    bool quoted;
 
     CmdRecogEquals();
-    len = CmdScanOption( &option );
-    if( ISNOT_BLANK_QUOTES( option, len ) ) {
+    len = CmdScanOption( &option, &quoted );
+    if( len > 0 ) {
         addString( p, option, len );
-        StripQuotes( (*p)->data );
+        if( quoted ) {
+            UnEscape( (*p)->data );
+        }
         return( true );
     }
     BadCmdLineOption();

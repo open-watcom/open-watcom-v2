@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -126,7 +126,7 @@ bool WHandleGetKeyValue( WAccelEditInfo *einfo, bool ignore_first )
         WGetKeyPressProc( NULL, 0, 0, 0 );
         einfo->key_info.key = 0;
         GetWindowRect( GetDlgItem( einfo->edit_dlg, IDM_ACCEDLIST ), &r );
-        MapWindowPoints( (HWND)NULL, einfo->edit_dlg, (POINT *)&r, 2 );
+        MapWindowRect( (HWND)NULL, einfo->edit_dlg, &r );
         einfo->key_info.text_win = CreateWindow( "static", text,
             WS_CHILD | WS_VISIBLE | SS_LEFT, r.left, r.top,
             r.right - r.left, r.bottom - r.top, einfo->edit_dlg, (HMENU)NULL,

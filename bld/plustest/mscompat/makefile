@@ -38,7 +38,7 @@ err_out = $+ $(files_err) $-
 ext=.exe
 comp_out = $+ $(files_comp) $-
 
-test : .symbolic start $(comp_out) $(err_out)
+test : .SYMBOLIC start $(comp_out) $(err_out)
     $(noecho)%make common_set_result
 
 clean : .procedure

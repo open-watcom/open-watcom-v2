@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -474,7 +474,7 @@ static  dbg_block *MkBlock( void )
     blk->parent = CurrProc->targ.debug->blk;
     CurrProc->targ.debug->blk = blk;
     blk->locals = NULL;
-    blk->patches = NULL;
+    blk->bpatches = NULL;
     return( blk );
 }
 
@@ -646,9 +646,9 @@ static  void    AddBlockInfo( dbg_block *blk, bool start )
     ins = MakeNop();
     ins->table = DbgInfo;
     ins->u.gen_table = ins->table;
-    ins->flags.nop_flags = NOP_DBGINFO;
+    ins->flags.u.nop_flags = NOP_DBGINFO;
     if( start )
-        ins->flags.nop_flags |= NOP_DBGINFO_START;
+        ins->flags.u.nop_flags |= NOP_DBGINFO_START;
     ins->operands[0] = (name *)blk;
     AddIns( ins );
 }
@@ -804,7 +804,7 @@ void    EmitProEnd( void )
 void    EmitDbgInfo( instruction *ins )
 /*************************************/
 {
-    if( ins->flags.nop_flags & NOP_DBGINFO_START ) {
+    if( ins->flags.u.nop_flags & NOP_DBGINFO_START ) {
         EmitDbg( OC_INFO_DBG_BLK_BEG, ins->operands[0] );
     } else {
         EmitDbg( OC_INFO_DBG_BLK_END, ins->operands[0] );
@@ -822,12 +822,10 @@ void    EmitEpiBeg( void )
 void    EmitRtnEnd( void )
 /************************/
 {
-    segment_id      old_segid;
-
     EmitDbg( OC_INFO_DBG_RTN_END, CurrProc->targ.debug );
-    old_segid = SetOP( AskCodeSeg() );
-    EmptyQueue();
-    SetOP( old_segid );
+    PUSH_OP( AskCodeSeg() );
+        EmptyQueue();
+    POP_OP();
 }
 
 

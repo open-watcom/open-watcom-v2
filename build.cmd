@@ -7,8 +7,8 @@ cd %OWROOT%\bld\wmake
 if not exist %OWOBJDIR% mkdir %OWOBJDIR%
 cd %OWOBJDIR%
 if exist %OWROOT%\build\%OWOBJDIR%\wmake.exe del %OWROOT%\build\%OWOBJDIR%\wmake.exe
-wmake -f ..\wmake clean >>%OWBUILDER_BOOTX_OUTPUT% 2>&1
-wmake -f ..\wmake >>%OWBUILDER_BOOTX_OUTPUT% 2>&1
+wmake -m -f ..\wmake clean >>%OWBUILDER_BOOTX_OUTPUT% 2>&1
+wmake -m -f ..\wmake >>%OWBUILDER_BOOTX_OUTPUT% 2>&1
 if errorlevel == 1 goto error_exit
 cd %OWROOT%\bld\builder
 if not exist %OWOBJDIR% mkdir %OWOBJDIR%

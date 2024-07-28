@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2024-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,10 +33,10 @@
 #include "commonui.h"
 #include <string.h>
 #include "bool.h"
-#include "cguimem.h"
 #include "srchmsg.h"
 #include "ldstr.h"
 #include "watcom.h"
+
 
 /*
  * SrchMsg - searchs tbl for a message corresponding to value

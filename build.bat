@@ -12,8 +12,8 @@ cd "%OWOBJDIR%"
 if exist "%OWROOT%\build\%OWOBJDIR%\wmake.exe" del "%OWROOT%\build\%OWOBJDIR%\wmake.exe"
 if '%OWTOOLS%' == 'VISUALC' goto visualc
 if '%OWTOOLS%' == 'INTEL' goto intel
-wmake -f ..\wmake clean >>"%OWBUILDER_BOOTX_OUTPUT%" %OWBUILDER_REDIR_ERROUT%
-wmake -f ..\wmake >>"%OWBUILDER_BOOTX_OUTPUT%" %OWBUILDER_REDIR_ERROUT%
+wmake -m -f ..\wmake clean >>"%OWBUILDER_BOOTX_OUTPUT%" %OWBUILDER_REDIR_ERROUT%
+wmake -m -f ..\wmake >>"%OWBUILDER_BOOTX_OUTPUT%" %OWBUILDER_REDIR_ERROUT%
 if errorlevel == 1 goto exiterr
 goto mkbuilder
 :intel

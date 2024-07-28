@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -377,11 +377,11 @@ dbg_type _CGAPI DBArray( dbg_type idx, dbg_type base )
     return( ret );
 }
 
-dbg_array _CGAPI DBBegArray(  dbg_type base, cg_type tipe, bool is_col_major )
-/************************************************************************************/
+dbg_array _CGAPI DBBegArray( dbg_type base, cg_type tipe, bool is_col_major )
+/***************************************************************************/
 {
-    dbg_array   ar;
-//  type_def   *tipe_addr;
+    dbg_array       ar;
+//    const type_def  *tipe_addr;
 
     /* unused parameters */ (void)tipe;
 
@@ -413,9 +413,9 @@ static  void    AddDim( dbg_array ar, dim_any *dim )
         curr = *owner;
         if( curr == NULL )
             break;
-        owner = &curr->entry.next;
+        owner = &curr->next;
     }
-    dim->entry.next = NULL;
+    dim->next = NULL;
     *owner = dim;
     ar->num++;
 }
@@ -423,17 +423,17 @@ static  void    AddDim( dbg_array ar, dim_any *dim )
 void _CGAPI DBDimCon( dbg_array ar, dbg_type idx, int_32 lo, int_32 hi )
 /**********************************************************************/
 {
-    dim_con *dim;
+    dim_any *dim;
 
 #ifdef DEVBUILD
     EchoAPI( "DBDimCon( %i, %i, %i, %i )\n", ar, idx, lo, hi );
 #endif
     dim = CGAlloc( sizeof( *dim ) );
-    dim->entry.kind = DIM_CON;
-    dim->lo = lo;
-    dim->hi = hi;
-    dim->idx = idx;
-    AddDim( ar, (dim_any *)dim );
+    dim->kind = DIM_CON;
+    dim->u.con.lo = lo;
+    dim->u.con.hi = hi;
+    dim->u.con.idx = idx;
+    AddDim( ar, dim );
 }
 
 void _CGAPI DBDimVar( dbg_array ar, back_handle dims, int off,
@@ -441,18 +441,18 @@ void _CGAPI DBDimVar( dbg_array ar, back_handle dims, int off,
                         cg_type num_elts_tipe )
 /*************************************************/
 {
-    dim_var *dim;
+    dim_any     *dim;
 
 #ifdef DEVBUILD
     EchoAPI( "DBDimVar(%i, %B, %i, %t, %t)\n", ar, dims, off, lo_bound_tipe, num_elts_tipe);
 #endif
     dim = CGAlloc( sizeof( *dim ) );
-    dim->entry.kind = DIM_VAR;
-    dim->dims = dims;
-    dim->off = off;
-    dim->lo_bound_tipe = lo_bound_tipe;
-    dim->num_elts_tipe = num_elts_tipe;
-    AddDim( ar, (dim_any *)dim );
+    dim->kind = DIM_VAR;
+    dim->u.var.dims = dims;
+    dim->u.var.off = off;
+    dim->u.var.lo_bound_tipe = lo_bound_tipe;
+    dim->u.var.num_elts_tipe = num_elts_tipe;
+    AddDim( ar, dim );
     ar->is_variable = true;
 }
 
@@ -510,8 +510,8 @@ dbg_type _CGAPI DBIntArray( uint_32 hi, dbg_type base )
 dbg_type _CGAPI DBIntArrayCG( cg_type tipe, uint_32 hi, dbg_type base )
 /*********************************************************************/
 {
-    dbg_type          ret;
-    type_def          *tipe_addr;
+    dbg_type        ret;
+    const type_def  *tipe_addr;
 
 #ifdef DEVBUILD
     EchoAPI( "DBIntArrayCG( %t, %i, %i )", tipe, hi, base );

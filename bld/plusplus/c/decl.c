@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -150,7 +150,7 @@ bool DeclNoInit( DECL_INFO *dinfo )
         /* "int C::a;" instead of "static int a;" in "class C" */
         CompFlags.external_defn_found = true;
         if( SymIsInitialized( sym ) ) {
-            if( (sym->flag & SYMF_IN_CLASS_INIT) == 0 ) {
+            if( (sym->flags & SYMF_IN_CLASS_INIT) == 0 ) {
                 if( ! TemplateMemberCanBeIgnored() ) {
                     CErr2p( ERR_CANNOT_INIT_AGAIN, sym );
                 }
@@ -158,7 +158,7 @@ bool DeclNoInit( DECL_INFO *dinfo )
             } else {
                 /* reset in-class initialization flag to get the
                  * symbol exported */
-                sym->flag &= ~SYMF_IN_CLASS_INIT;
+                sym->flags &= ~SYMF_IN_CLASS_INIT;
             }
         }
         if( ! TypeDefined( type ) ) {

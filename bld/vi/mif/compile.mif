@@ -3,7 +3,7 @@ c_dirs_root = $(vi_dir)/$(host_os)
 c_dirs_root = $(vi_dir)/unix
 !endif
 
-!ifeq sys_windowed 1
+!ifdef sys_windowed
 ! ifeq host_os nt
 c_dirs_root = $(vi_dir)/nt;$(vi_dir)/win
 ! else
@@ -19,10 +19,10 @@ c_dirs = $(vi_dir)/c;$(c_dirs_root);$(vi_dir)/ui;$(watcom_dir)/c
 .asm : $(c_dirs)
 
 extra_cpp_flags = -DINSIDE_VI
-!ifeq sys_windowed 1
+!ifdef sys_windowed
 extra_cpp_flags += -DNOUSE3D -D__WIN__
 !else
-!ifeq ui_os unix
+!ifeq cli_ui_os unix
 !ifneq debug 0
 extra_cpp_flags += -DTRACE
 !endif

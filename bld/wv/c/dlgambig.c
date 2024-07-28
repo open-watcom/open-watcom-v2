@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -44,7 +45,7 @@
 #include "dbglkup.h"
 
 
-static bool SymPick( const char *text, GUIPICKCALLBACK *pick_call_back, int *choice )
+static bool WNDCALLBACK SymPick( const char *text, GUIPICKCALLBACK *pick_call_back, int *choice )
 {
     dlg_pick    dlg;
 
@@ -52,14 +53,14 @@ static bool SymPick( const char *text, GUIPICKCALLBACK *pick_call_back, int *cho
 
     dlg.func = pick_call_back;
     dlg.choice = -1;
-    ResDlgOpen( GUIPickGUIEventProc, &dlg, DIALOG_AMBIG );
+    DlgOpenRes( GUIPickGUIEventProc, &dlg, DIALOG_AMBIG );
     if( dlg.choice == -1 )
         return( false );
     *choice = dlg.choice;
     return( true );
 }
 
-static const char *SymPickText( const void *data_handle, int item )
+static const char * GUICALLBACK SymPickText( const void *data_handle, int item )
 {
     sym_list            *sym;
     unsigned            len;

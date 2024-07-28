@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -28,12 +29,12 @@
 *
 ****************************************************************************/
 
-extern  name    *Points( an addr, type_def *tipe );
-extern  an      AddrName( name *op, type_def *tipe );
-extern  bool    CypAddrPlus( an l_addr, an r_addr, type_def *tipe );
-extern  an      AddrPlus( an l_addr, an r_addr, type_def *tipe );
-extern  bool    CypAddrShift( an l_addr, an r_addr, type_def *tipe );
-extern  an      AddrShift( an l_addr, an r_addr, type_def *tipe );
+extern  name    *Points( an addr, const type_def *tipe );
+extern  an      AddrName( name *op, const type_def *tipe );
+extern  bool    CypAddrPlus( an l_addr, an r_addr, const type_def *tipe );
+extern  an      AddrPlus( an l_addr, an r_addr, const type_def *tipe );
+extern  bool    CypAddrShift( an l_addr, an r_addr, const type_def *tipe );
+extern  an      AddrShift( an l_addr, an r_addr, const type_def *tipe );
 extern  name    *GetValue( an addr, name *suggest );
 extern  name    *AddrToName( an addr );
 

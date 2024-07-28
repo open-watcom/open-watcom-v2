@@ -4,10 +4,16 @@ proj_name = aui
 aui_autodepends = .AUTODEPEND
 !endif
 
+!ifdef sys_windowed
+!ifeq host_os os2
+aui_os2pm = 1
+!endif
+!endif
+
 suppress_zc = 1
 
 additional_clean = *.grh
-!ifdef gui_os2pm
+!ifdef aui_os2pm
 additional_clean += *.dlg
 !endif
 
@@ -15,19 +21,19 @@ additional_clean += *.dlg
 !include defrule.mif
 !include deftarg.mif
 
-!include $(gui_dir)/client.mif
+!include $(aui_dir)/client.mif
 
 #
 # cflags
 #
 .c: .;../c;$(posix_dir)/misc
 
-inc_dirs = -I. -I"../h" $(gui_inc_dirs) -I"$(posix_dir)/h"
+inc_dirs = -I. -I"../h" $(cli_aui_inc_dirs) -I"$(posix_dir)/h"
 
 extra_c_flags_i86 = -zc
 extra_c_flags_nov = -4s -ot
 extra_c_flags_dos_i86 = -of
-!ifeq sys_windowed 1
+!ifdef sys_windowed
 extra_c_flags_os2_i86 = -zu
 !endif
 extra_c_flags_win_i86 = -zW
@@ -39,7 +45,7 @@ extra_c_flags_win_386 = -zw
 #
 # objects
 #
-!ifdef gui_os2pm
+!ifdef aui_os2pm
 
 aui_dialogs = &
     dlgrx.dlg &
@@ -64,7 +70,7 @@ aui_dialogs = &
 #
 # LIB
 #
-libtarg_prebuild_objs = auistr.grh $(aui_dialogs)
+libtarg_prebuild_objs = aui.grh $(aui_dialogs)
 libtarg_objs = &
     guimain.obj &
     wndgadgt.obj &
@@ -129,7 +135,7 @@ libtarg_objs = &
 #
 # rc and others
 #
-!ifdef gui_os2pm
+!ifdef aui_os2pm
 
 dlg_opts  = -font=10.Helv
 dlgj_opts =
@@ -150,6 +156,6 @@ japsrcha.dlg : ../res/dlgs/japsrcha.dlg
 
 !endif
 
-auistr.grh : ../res/aui.msg
+aui.grh : ../res/aui.msg
     @%make echo_awk
-    $(noecho)*awk -v base=AUI_LITERAL_BASE -f $(build_dir)/makemsg.awk -v OUTFILE=$^. $[@
+    $(noecho)*awk -v prefix=AUI_LITERAL_ -v base=AUI_LITERAL_BASE -f $(build_dir)/makemsg.awk -v OUTFILE=$^. $[@

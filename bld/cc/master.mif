@@ -2,7 +2,13 @@ tree_depth = 4
 
 proj_name = cc
 
-cc_autodepends = .autodepend
+cc_autodepends = .AUTODEPEND
+
+cc_wreslib_cli = incl_msgtext
+
+cc_ntverrc = ..
+
+cc_qnx_usage = 1
 
 #
 # names
@@ -30,6 +36,8 @@ exetarg_name = $(bin_subdir)/$(exename)
 dlltarg_name = $(bin_subdir)/$(dllname)
 bin_intname  = $(bin_subdir)/$(intname)
 !endif
+ntverrc_dll = $(dllname)
+ntverrc_exe = $(exename)
 
 additional_clean = *.int *.gh *.grh *.gc *.grc
 !ifndef bootstrap
@@ -47,8 +55,7 @@ $(bin_subdir) : .EXPLICIT
 !include trmem.mif
 
 # CODEGEN stuff
-!include $(cg_dir)/mif/fe.mif
-!include $(cpp_dir)/client.mif
+!include $(cg_dir)/client.mif
 !include asclient.mif
 
 !include ../../ccobjs.mif
@@ -56,15 +63,15 @@ $(bin_subdir) : .EXPLICIT
 #
 # cflags
 #
-.c: ../../c;$(asminline_c);$(fe_misc_dir)/c;$(cpp_c_dirs);$(watcom_dir)/c
+.c: ../../c;$(cli_asminline_c);$(fe_misc_dir)/c;$(watcom_dir)/c
 
-inc_dirs  = -I. -I.. -I"../../h" $(cg_inc_dirs) $(asminline_inc_dirs) $(cpp_inc_dirs) $(dwarfw_inc_dirs) -I"$(comp_cfg_dir)/h" -I"$(fe_misc_dir)/h"
+inc_dirs  = -I. -I.. -I"../../h" $(cli_cg_inc_dirs) $(cli_asminline_inc_dirs) $(cli_owl_inc_dirs) $(cli_dwarfw_inc_dirs) -I"$(comp_cfg_dir)/h" -I"$(fe_misc_dir)/h"
 
-extra_cpp_flags = -DINCL_MSGTEXT
-!ifneq cc_dll 1
+extra_cpp_flags =
+!ifndef cc_dll
 extra_cpp_flags += -DIDE_PGM
 !endif
-!ifeq dll_cg 1
+!ifdef dll_cg
 extra_cpp_flags += -D_CGDLL
 !endif
 extra_cppflags_axp = -DAS_ALPHA
@@ -76,7 +83,7 @@ extra_cpp_flags += -DAS_DEBUG_DUMP
 !endif
 
 extra_cpp_flags_cmsg     = -D__msg_file_prefix=$(intname)
-!ifeq cc_dll 1
+!ifdef cc_dll
 ! ifeq host_os dos
 extra_cpp_flags_ideentry = -DCAUSEWAY
 ! endif
@@ -120,12 +127,12 @@ prebuild_objs = &
     weights.gh &
     keywords.gh &
     cmdlnprs.gh &
-    $(asminline_deps) &
+    $(cli_asminline_deps) &
     code$(target_cpu).gh &
     $(bin_intname)01.int
 
 !ifndef bootstrap
-all: $(bin_subdir) $(exetarg_name).exe .symbolic
+all: $(bin_subdir) $(exetarg_name).exe .SYMBOLIC
 !endif
 
 #
@@ -139,11 +146,8 @@ exetarg_libs          = $(dlltarg_name).lib $(exetarg_libs_$(host_os))
 !else
 exetarg_prebuild_objs = $(prebuild_objs)
 exetarg_objs          = $(comp_objs_exe)
-exetarg_libs          = $(asminline_lib) $(cg_libs)
+exetarg_libs          = $(cli_asminline_libs) $(cli_cg_libs)
 !endif
-exetarg_res_version_nt_386 = exever.res
-exetarg_res_version_nt_x64 = exever.res
-exetarg_qnx_res       = usage.u
 exetarg_name          = $(exetarg_name)
 !include exetarg.mif
 
@@ -152,19 +156,13 @@ exetarg_name          = $(exetarg_name)
 #
 dlltarg_prebuild_objs = $(dll_subdir) $(prebuild_objs)
 dlltarg_objs          = $(comp_objs_dll)
-dlltarg_libs          = $(asminline_lib) $(cg_libs)
-dlltarg_res_version_nt_386 = version.res
-dlltarg_res_version_nt_x64 = version.res
+dlltarg_libs          = $(cli_asminline_libs) $(cli_cg_libs)
 dlltarg_name          = $(dlltarg_name)
 !include dlltarg.mif
 
 #
 # rc and others
 #
-verrc_dll = $(dllname)
-verrc_exe = $(exename)
-!include verrc.mif
-
 !ifeq target_cpu axp
 
 codeaxp.gh :
@@ -200,7 +198,7 @@ xcode$(target_cpu).tmp: ../../a/code$(target_cpu).asm
 
 ./mkcode.exe: mkcode.c
     @%make echo_bldccl
-    $(bld_ccl) $(ppflags_common) $(ppflags_autodep) $[@ $(bld_cclflags) $(bld_ldflags)
+    $(bld_ccl) $(ppflags_common) $(ppflags_autodep) $(bld_ppflags_sys) $(bld_cppflags) $[@ $(bld_cclflags) $(bld_ldflags)
 
 #msgencod_enc_linux = -utf8
 
@@ -210,7 +208,7 @@ msgtxt.gh msgdefs.gh msgattr.gh errors01.int : ../../gml/cerrs.gml
 
 ./intlbin.exe: $(fe_misc_dir)/c/intlbin.c
     @%make echo_bldccl
-    $(bld_ccl) $(ppflags_common) $(ppflags_autodep) $[@ -I"$(fe_misc_dir)/h" $(bld_cclflags) $(bld_ldflags)
+    $(bld_ccl) $(ppflags_common) $(ppflags_autodep) $(bld_ppflags_sys) $(bld_cppflags) $[@ -I"$(fe_misc_dir)/h" $(bld_cclflags) $(bld_ldflags)
 
 $(bin_intname)01.int : ./intlbin.exe errors01.int usage01.int
     $[@ $@
@@ -222,15 +220,13 @@ weights.gh keywords.gh : $(key_objs)
     $(noecho)findhash -q -e ",OPR_NOP,-1" $(key_objs)
 
 # optencod options and targets for various hosts
-!ifdef exetarg_qnx_res
-optencod_opt_qnx    = -u=$(exetarg_qnx_res)
-!endif
 #optencod_enc_linux  = -utf8
+
 optencod_targets = $(target_cpu) $(host_os)
 !ifeq debug 2
 optencod_targets += dbg
 !endif
 
-cmdlnprs.gh cmdlnprs.gc usage.gh usage01.int $(exetarg_$(host_os)_res): ../../gml/options.gml
+cmdlnprs.gh cmdlnprs.gc usage.gh usage01.int $(qnx_usage) : ../../gml/options.gml
     @%make echo_optencod
-    $(noecho)*optencod -q -i -n $(optencod_opt_$(host_os)) $(optencod_enc_$(host_os)) $]@ cmdlnprs.gh cmdlnprs.gc usage.gh $(optencod_targets)
+    $(optencod) -i -n $(optencod_opt_$(host_os)) $(optencod_enc_$(host_os)) $]@ cmdlnprs.gh cmdlnprs.gc usage.gh . $(optencod_targets)

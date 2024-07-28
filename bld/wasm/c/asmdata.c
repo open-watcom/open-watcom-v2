@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -177,7 +177,7 @@ static token_idx array_element( asm_sym *sym, asm_sym *struct_sym, token_buffer 
     asm_sym             *the_struct;
     token_idx           tmp;
 
-    the_struct = (asm_sym*)Definition.curr_struct;
+    the_struct = (asm_sym *)Definition.curr_struct;
 
     if( sym != NULL ) {
         sym->count++;
@@ -218,7 +218,8 @@ static token_idx array_element( asm_sym *sym, asm_sym *struct_sym, token_buffer 
                 the_struct->first_length++;
             }
 
-            if( sym != NULL && Parse_Pass == PASS_1 ) {
+            if( sym != NULL
+              && Parse_Pass == PASS_1 ) {
                 update_sizes( sym, first_init, no_of_bytes );
             }
 #else
@@ -246,8 +247,8 @@ static token_idx array_element( asm_sym *sym, asm_sym *struct_sym, token_buffer 
             break; // go around again
         case TC_NUM:
         case TC_FLOAT:
-            if( tokbuf->tokens[cur_pos+1].class == TC_RES_ID &&
-                tokbuf->tokens[cur_pos+1].u.token == T_DUP ) {
+            if( tokbuf->tokens[cur_pos+1].class == TC_RES_ID
+              && tokbuf->tokens[cur_pos+1].u.token == T_DUP ) {
                 cur_pos = dup_array( sym, struct_sym, tokbuf, cur_pos, no_of_bytes );
                 if( ISINVALID_IDX( cur_pos ) )
                     return( INVALID_IDX );
@@ -277,7 +278,8 @@ static token_idx array_element( asm_sym *sym, asm_sym *struct_sym, token_buffer 
             }
             char_ptr = (char *)tokbuf->tokens[cur_pos].u.bytes;
 #if defined( _STANDALONE_ )
-            if( sym != NULL && Parse_Pass == PASS_1 ) {
+            if( sym != NULL
+              && Parse_Pass == PASS_1 ) {
                 update_sizes( sym, first_init, no_of_bytes );
             }
             if( !struct_field ) {
@@ -336,10 +338,12 @@ static token_idx array_element( asm_sym *sym, asm_sym *struct_sym, token_buffer 
             * format -- LSB first */
             little_endian( char_ptr, no_of_bytes );
 #if defined( _STANDALONE_ )
-            if( no_of_bytes == 1 && struct_field ) {
+            if( no_of_bytes == 1
+              && struct_field ) {
                 no_of_bytes = tokbuf->tokens[cur_pos].u.value;
             }
-            if( sym != NULL && Parse_Pass == PASS_1 ) {
+            if( sym != NULL
+              && Parse_Pass == PASS_1 ) {
                 update_sizes( sym, first_init, no_of_bytes );
             }
             if( !struct_field ) {
@@ -363,11 +367,11 @@ static token_idx array_element( asm_sym *sym, asm_sym *struct_sym, token_buffer 
         case TC_ID:
           {
             token_idx           i;
-            enum fixup_types    fixup_type = 0;
+            fixup_types         fixup_type = 0;
             asm_sym             *init_sym;
             char                *ptr;
             long                data = 0;
-            struct asmfixup     *fixup;
+            asmfixup            *fixup;
 #if defined( _STANDALONE_ )
             bool                expanded;
 #endif
@@ -474,7 +478,8 @@ static token_idx array_element( asm_sym *sym, asm_sym *struct_sym, token_buffer 
             /* now actually output the data */
             ptr = (char *)&data;
 #if defined( _STANDALONE_ )
-            if( sym != NULL && Parse_Pass == PASS_1 ) {
+            if( sym != NULL
+              && Parse_Pass == PASS_1 ) {
                 update_sizes( sym, first_init, no_of_bytes );
             }
             if( !struct_field ) {
@@ -502,12 +507,12 @@ static token_idx array_element( asm_sym *sym, asm_sym *struct_sym, token_buffer 
         case TC_UNARY_OPERATOR:
           {
             token_idx           i;
-            enum fixup_types    fixup_type = 0;
+            fixup_types         fixup_type = 0;
             token_idx           seg_off_operator_loc = 0;
             asm_sym             *init_sym;
             char                *ptr;
             long                data = 0;
-            struct asmfixup     *fixup;
+            asmfixup            *fixup;
 
             if( tokbuf->tokens[cur_pos].u.token == T_OFFSET ||
                 tokbuf->tokens[cur_pos].u.token == T_SEG ) {
@@ -522,8 +527,8 @@ static token_idx array_element( asm_sym *sym, asm_sym *struct_sym, token_buffer 
             i = ++cur_pos;
             if( i + 2 < tokbuf->count ) {
                 if( ( tokbuf->tokens[i].class == TC_RES_ID )
-                    && ( tokbuf->tokens[i + 1].class == TC_RES_ID )
-                    && ( tokbuf->tokens[i + 1].u.token == T_PTR ) ) {
+                  && ( tokbuf->tokens[i + 1].class == TC_RES_ID )
+                  && ( tokbuf->tokens[i + 1].u.token == T_PTR ) ) {
                     i += 2;
                 }
             }
@@ -645,7 +650,8 @@ static token_idx array_element( asm_sym *sym, asm_sym *struct_sym, token_buffer 
                     /* now actually output the data */
                     ptr = (char *)&data;
 #if defined( _STANDALONE_ )
-                    if( sym != NULL && Parse_Pass == PASS_1 ) {
+                    if( sym != NULL
+                      && Parse_Pass == PASS_1 ) {
                         update_sizes( sym, first_init, no_of_bytes );
                     }
                     if( !struct_field ) {
@@ -771,13 +777,13 @@ bool data_init( token_buffer *tokbuf, token_idx sym_loc, token_idx initializer_l
  * parse data initialization assembly line;
  */
 {
-    unsigned            no_of_bytes;
-    memtype             mem_type;
-    struct asm_sym      *sym = NULL;
-    struct asm_sym      *struct_sym = NULL;
+    unsigned        no_of_bytes;
+    memtype         mem_type;
+    asm_sym         *sym = NULL;
+    asm_sym         *struct_sym = NULL;
 #if defined( _STANDALONE_ )
-    uint                old_offset = 0;
-    bool                label_dir = false;
+    uint            old_offset = 0;
+    bool            label_dir = false;
 
     struct_field = false;
     first_init = true;
@@ -858,7 +864,8 @@ bool data_init( token_buffer *tokbuf, token_idx sym_loc, token_idx initializer_l
     }
 
 #if defined( _STANDALONE_ )
-    if( ISVALID_IDX( sym_loc ) && tokbuf->tokens[sym_loc].u.token == T_LABEL ) {
+    if( ISVALID_IDX( sym_loc )
+      && tokbuf->tokens[sym_loc].u.token == T_LABEL ) {
         label_dir = true;
         if( sym_loc > 0 ) {
             sym_loc--;
@@ -893,7 +900,8 @@ bool data_init( token_buffer *tokbuf, token_idx sym_loc, token_idx initializer_l
                     return( RC_ERROR );
                 }
                 return( RC_OK );
-            } else if( sym->state == SYM_EXTERNAL && ((dir_node *)sym)->e.extinfo->global ) {
+            } else if( sym->state == SYM_EXTERNAL
+              && ((dir_node *)sym)->e.extinfo->global ) {
                 dir_to_sym( (dir_node *)sym );
                 if( !sym->public ) {
                     AddPublicData( (dir_node *)sym );
@@ -913,7 +921,8 @@ bool data_init( token_buffer *tokbuf, token_idx sym_loc, token_idx initializer_l
         }
 
         GetSymInfo( sym );
-        if( Parse_Pass != PASS_1 && sym->offset != old_offset ) {
+        if( Parse_Pass != PASS_1
+          && sym->offset != old_offset ) {
             PhaseError = true;
         }
 #else

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -208,34 +208,30 @@ typedef struct enum_list {
     unsigned    is_c      :1;
 } enum_list;
 
-typedef struct dim_entry{
-    union dim_any *next;
-    enum {
-        DIM_VAR,
-        DIM_CON,
-    }kind;
-}dim_entry;
-
-typedef struct{
-    dim_entry   entry;
+typedef struct dim_var {
     back_handle dims;
     int         off;
     cg_type     lo_bound_tipe;
     cg_type     num_elts_tipe;
-}dim_var;
+} dim_var;
 
-typedef struct{
-    dim_entry   entry;
+typedef struct dim_con {
     int_32      lo;
     int_32      hi;
     dbg_type    idx;
-}dim_con;
+} dim_con;
 
-typedef union dim_any {
-    dim_entry   entry;
-    dim_var     var;
-    dim_con     con;
-}dim_any;
+typedef struct dim_any {
+    struct dim_any *next;
+    enum {
+        DIM_VAR,
+        DIM_CON,
+    } kind;
+    union {
+        dim_var     var;
+        dim_con     con;
+    } u;
+} dim_any;
 
 typedef struct array_list {
     dim_any         *list;
@@ -264,7 +260,7 @@ typedef struct proc_list {
 typedef struct location {
     struct location         *next;
     union {
-        union name          *be_sym;
+        name                *be_sym;
         cg_sym_handle       fe_sym;
         unsigned            ptr_type;
         unsigned            stk;
@@ -297,11 +293,11 @@ typedef struct {
 
 typedef struct block_patch {
     struct block_patch      *link;
-    dbg_patch               patch;
+    dbg_patch               dpatch;
 } block_patch;
 
 typedef struct name_entry {
-    dbg_patch               patch;
+    dbg_patch               dpatch;
     dbg_type                refno;
     dbg_type                scope;
     uint                    len;
@@ -311,7 +307,7 @@ typedef struct name_entry {
 typedef struct dbg_block {
     struct dbg_block        *parent;
     dbg_local               *locals;
-    block_patch             *patches;
+    block_patch             *bpatches;
     back_handle             end_lbl;
     uint_32                 start;
 } dbg_block;

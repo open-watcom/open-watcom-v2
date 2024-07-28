@@ -6,9 +6,11 @@ proj_name = wclmps
 wclmps_autodepends = .AUTODEPEND
 !endif
 
-target_cpu = mps
+wclmps_ntverrc = ../../h
 
 wclmps_trmem = 1
+
+target_cpu = mps
 
 extra_cpp_flags = -DWCLMPS
 

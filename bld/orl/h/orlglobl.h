@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,8 +36,6 @@
 #include "watcom.h"
 
 #define ORLENTRY
-
-#define ORL_NULL_HANDLE             NULL
 
 #define ORL_STRUCT(s)               struct s ## _struct
 #define ORL_STRUCT_SIZEOF(s)        sizeof( struct s ## _struct )
@@ -116,6 +114,12 @@ typedef enum {
     ORL_MACHINE_TYPE_I8086,
     ORL_MACHINE_TYPE_AMD64,
     ORL_MACHINE_TYPE_SPARCPLUS,
+    ORL_MACHINE_TYPE_ARM,
+    ORL_MACHINE_TYPE_ARMNT,
+    ORL_MACHINE_TYPE_ARM64,
+    ORL_MACHINE_TYPE_RISCV32,
+    ORL_MACHINE_TYPE_RISCV64,
+    ORL_MACHINE_TYPE_RISCV128,
     ORL_MACHINE_TYPE_UNKNOWN
 } orl_machine_type;
 

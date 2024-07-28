@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,7 +34,7 @@
 #include "coderep.h"
 #include "regset.h"
 #include "confldef.h"
-#include "cfloat.h"
+#include "_cfloat.h"
 #include "makeins.h"
 #include "namelist.h"
 #include "regalloc.h"
@@ -48,7 +48,7 @@
 #include "_split.h"
 
 
-type_class_def  HalfClass[] = {
+const type_class_def    HalfClass[] = {
     0,                  /* U1 */
     0,                  /* I1 */
     U1,                 /* U2 */
@@ -65,7 +65,7 @@ type_class_def  HalfClass[] = {
     U4                  /* XX */
 };
 
-type_class_def  DoubleClass[] = {
+const type_class_def    DoubleClass[] = {
 /*******************************/
 
     U2,                 /* U1 */
@@ -84,7 +84,7 @@ type_class_def  DoubleClass[] = {
     XX                  /* XX */
 };
 
-type_class_def  Unsigned[] = {
+const type_class_def    Unsigned[] = {
 /****************************/
 
     U1,                 /* U1 */
@@ -108,7 +108,7 @@ type_class_def  Unsigned[] = {
     XX                  /* XX */
 };
 
-type_class_def  Signed[] = {
+const type_class_def    Signed[] = {
 /**************************/
 
     I1,                 /* U1 */
@@ -160,7 +160,7 @@ static  reg_set_index   ResPossible( instruction *ins )
 hw_reg_set      Op1Reg( instruction *ins )
 /****************************************/
 {
-    hw_reg_set  *list;
+    const hw_reg_set    *list;
 
     list = RegSets[Op1Possible( ins )];
     return( *list );
@@ -169,7 +169,7 @@ hw_reg_set      Op1Reg( instruction *ins )
 hw_reg_set      ResultReg( instruction *ins )
 /*******************************************/
 {
-    hw_reg_set  *list;
+    const hw_reg_set    *list;
 
     list = RegSets[ResultPossible( ins )];
     return( *list );
@@ -178,7 +178,7 @@ hw_reg_set      ResultReg( instruction *ins )
 hw_reg_set      ZapReg( instruction *ins )
 /****************************************/
 {
-    hw_reg_set  *list;
+    const hw_reg_set    *list;
 
     list = RegSets[RegList[ins->u.gen_table->reg_set].zap];
     return( *list );
@@ -187,7 +187,7 @@ hw_reg_set      ZapReg( instruction *ins )
 instruction *MoveConst( uint_32 value, name *result, type_class_def type_class )
 /******************************************************************************/
 {
-    return( MakeMove( AllocConst( CFCnvU32F( value ) ), result, type_class ) );
+    return( MakeMove( AllocConst( CFCnvU32F( &cgh, value ) ), result, type_class ) );
 }
 
 
@@ -432,7 +432,7 @@ instruction      *rCHANGESHIFT( instruction *ins )
 {
     int_32      shift_count;
 
-    shift_count = ins->operands[1]->c.lo.int_value;
+    shift_count = ins->operands[1]->c.lo.u.int_value;
     assert( shift_count >= 0 );
     ins->operands[1] = AllocS32Const( shift_count & ( ( WORD_SIZE * 8 ) - 1 ) );
     return( ins );
@@ -454,7 +454,7 @@ instruction      *rFIXSHIFT( instruction *ins )
      */
 #ifdef DEVBUILD
     assert( ins->operands[1]->n.class == N_CONSTANT );
-    shift_count = ins->operands[1]->c.lo.int_value;
+    shift_count = ins->operands[1]->c.lo.u.int_value;
     assert( shift_count >= REG_SIZE * 8 );
 #endif
     if( ins->head.opcode == OP_RSHIFT && Signed[ins->type_class] == ins->type_class ) {
@@ -611,7 +611,7 @@ instruction      *rDOUBLEHALF( instruction *ins )
     name                *name1;
 
     name1 = ins->operands[1];
-    name1 = AllocIntConst( name1->c.lo.int_value >> 1 );
+    name1 = AllocIntConst( name1->c.lo.u.int_value >> 1 );
     ins->operands[1] = name1;
     new_ins = MakeBinary( ins->head.opcode, ins->operands[0], name1, ins->result, ins->type_class );
     new_ins->table = ins->table;
@@ -789,7 +789,7 @@ instruction      *rNEGADD( instruction *ins )
 static  void    NegOp2( instruction *ins )
 /****************************************/
 {
-    ins->operands[1] = AllocConst( CFCnvI32F( -ins->operands[1]->c.lo.int_value ) );
+    ins->operands[1] = AllocConst( CFCnvI32F( &cgh, -ins->operands[1]->c.lo.u.int_value ) );
 }
 
 

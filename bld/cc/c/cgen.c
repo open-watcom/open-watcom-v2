@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -93,7 +93,7 @@ struct func_save {
  * matches table of type in ctypes.h
  */
 static  char    CGDataType[] = {
-    #define pick1(enum,cgtype,x86asmtype,name,size) cgtype,
+    #define pick1(type,dtype,cgtype,x86asmtype,name,size) cgtype,
     #include "cdatatyp.h"
     #undef  pick1
 };
@@ -163,10 +163,10 @@ static local_vars *ReleaseVars( SYM_HANDLE sym_list, local_vars *local_var_list 
 
 static void FreeSymBackInfo( SYMPTR sym, SYM_HANDLE sym_handle )
 {
-    if( sym->info.backinfo != NULL ) {
-        BEFiniBack( sym->info.backinfo );
-        BEFreeBack( sym->info.backinfo );
-        sym->info.backinfo = NULL;
+    if( sym->u1.backinfo != NULL ) {
+        BEFiniBack( sym->u1.backinfo );
+        BEFreeBack( sym->u1.backinfo );
+        sym->u1.backinfo = NULL;
         SymReplace( sym, sym_handle );
     }
 }
@@ -288,7 +288,7 @@ static void EndFunction( OPNODE *node )
     } else {                            // return value
         SymGet( &sym, node->u2.sym_handle );
         dtype = CGenType( sym.sym_type );
-        name = CGTempName( sym.info.return_var, dtype );
+        name = CGTempName( sym.u1.return_var, dtype );
         name = CGUnary( O_POINTS, name, dtype );
         CGReturn( name, ReturnType( dtype ) );
     }
@@ -313,7 +313,7 @@ static void ReturnExpression( OPNODE *node, cg_name expr )
 
     SymGet( &sym, node->u2.sym_handle );
     dtype = CGenType( sym.sym_type );
-    name = CGTempName( sym.info.return_var, dtype );
+    name = CGTempName( sym.u1.return_var, dtype );
     CGDone( CGAssign( name, expr, dtype ) );
 }
 
@@ -575,7 +575,7 @@ static cg_name PushSym( OPNODE *node )
         dtype = CGenType( typ );
     }
     if( sym.flags & SYM_FUNC_RETURN_VAR ) {
-        name = CGTempName( sym.info.return_var, dtype );
+        name = CGTempName( sym.u1.return_var, dtype );
     } else {
         name = CGFEName( (CGSYM_HANDLE)node->u2.sym_handle, dtype );
     }
@@ -606,7 +606,7 @@ static cg_name PushSymAddr( OPNODE *node )
         dtype = CGenType( typ );
     }
     if( sym.flags & SYM_FUNC_RETURN_VAR ) {
-        name = CGTempName( sym.info.return_var, dtype );
+        name = CGTempName( sym.u1.return_var, dtype );
     } else {
         name = CGFEName( (CGSYM_HANDLE)node->u2.sym_handle, dtype );
 #if 0
@@ -648,6 +648,7 @@ static cg_name DotOperator( cg_name op1, OPNODE *node, cg_name op2 )
 {
     TYPEPTR     typ;
     cg_name     name;
+    unsigned    width;
 
     /*
      * node->u2.result_type is the type of the data
@@ -656,8 +657,12 @@ static cg_name DotOperator( cg_name op1, OPNODE *node, cg_name op2 )
     name = CGBinary( O_PLUS, op1, op2, DataPointerType( node ) );
     typ = node->u2.result_type;
     if( typ->decl_type == TYP_FIELD || typ->decl_type == TYP_UFIELD ) {
-        name = CGBitMask( name, typ->u.f.field_start,
-                    typ->u.f.field_width, CGenType( typ ) );
+        if( typ->u.f.field_type == TYP_BOOL ) {
+            width = 1;
+        } else {
+            width = typ->u.f.field_width;
+        }
+        name = CGBitMask( name, typ->u.f.field_start, width, CGenType( typ ) );
     }
     if( node->flags & OPFLAG_UNALIGNED ) {
         name = CGAttr( name, CG_SYM_UNALIGNED );
@@ -1110,7 +1115,7 @@ static void CDoAutoDecl( SYM_HANDLE sym_handle )
             }
             dtype = CGenType( typ );
             if( sym.flags & SYM_FUNC_RETURN_VAR ) {
-                sym.info.return_var = CGTemp( dtype );
+                sym.u1.return_var = CGTemp( dtype );
                 SymReplace( &sym, sym_handle );
             } else {
                 CGAutoDecl( (CGSYM_HANDLE)sym_handle, dtype );
@@ -1854,9 +1859,9 @@ static void FreeGblVars( SYM_HANDLE sym_handle )
 
     for( ; sym_handle != SYM_NULL; sym_handle = sym->handle ) {
         sym = SymGetPtr( sym_handle );
-        if( sym->info.backinfo != NULL ) {
-//            BEFiniBack( sym->info.backinfo );
-            BEFreeBack( sym->info.backinfo );
+        if( sym->u1.backinfo != NULL ) {
+//            BEFiniBack( sym->u1.backinfo );
+            BEFreeBack( sym->u1.backinfo );
         }
     }
 }
@@ -1871,8 +1876,8 @@ static void RelExtVars( SYM_HANDLE sym_handle )
             if( sym->attribs.stg_class == SC_EXTERN
               || sym->attribs.stg_class == SC_STATIC
               || sym->sym_type->decl_type == TYP_VOID ) {
-                if( sym->info.backinfo != NULL ) {
-                    BEFreeBack( sym->info.backinfo );
+                if( sym->u1.backinfo != NULL ) {
+                    BEFreeBack( sym->u1.backinfo );
                 }
             }
         }
@@ -1895,7 +1900,7 @@ void DoCompile( void )
 {
     jmp_buf         *old_env;
     jmp_buf         env;
-    cg_init_info    cgi_info;
+    cg_init_info    cg_info;
 
     old_env = Environment;
     if( setjmp( env ) == 0 ) {
@@ -1914,8 +1919,8 @@ void DoCompile( void )
             if( CompFlags.rent ) {
                 GenSwitches |= CGSW_GEN_POSITION_INDEPENDANT;
             }
-            cgi_info = BEInit( GenSwitches, TargetSwitches, OptSize, ProcRevision );
-            if( cgi_info.success ) {
+            cg_info = BEInit( GenSwitches, TargetSwitches, OptSize, ProcRevision );
+            if( cg_info.revision != 0 || cg_info.target != 0 ) {
 #if _CPU == 386
                 if( TargetSwitches & (CGSW_X86_P5_PROFILING | CGSW_X86_NEW_P5_PROFILING) ) {
                     FunctionProfileSegId = AddSegName( "TI", "DATA", SEGTYPE_INITFINI );
@@ -2025,7 +2030,7 @@ cg_type CGenType( TYPEPTR typ )
 }
 
 
-extern cg_type PtrType( TYPEPTR typ, type_modifiers flags )
+cg_type PtrType( TYPEPTR typ, type_modifiers flags )
 {
     cg_type     dtype;
 

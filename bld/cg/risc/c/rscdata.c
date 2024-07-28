@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -106,8 +106,8 @@ void    IterBytes( offset len, byte pat )
     TellByPassOver();
 }
 
-void    BackPtr( back_handle bck, segment_id segid, offset plus, type_def *tipe )
-/*******************************************************************************/
+void    BackPtr( back_handle bck, segment_id segid, offset plus, const type_def *tipe )
+/*************************************************************************************/
 {
     /* unused parameters */ (void)segid; (void)tipe;
 
@@ -138,8 +138,8 @@ void    BackPtrBase( back_handle bck, segment_id segid )
     TellByPassOver();
 }
 
-void    FEPtr( cg_sym_handle sym, type_def *tipe, offset plus )
-/*************************************************************/
+void    FEPtr( cg_sym_handle sym, const type_def *tipe, offset plus )
+/*******************************************************************/
 {
     /* unused parameters */  (void)tipe;
 
@@ -195,10 +195,10 @@ static constant_defn    *GetI64Const( name *cons, type_class_def type_class )
 
     i64Defn.label = NULL;
     i64Defn.const_class = type_class;
-    i64Defn.value[0] = cons->c.lo.uint_value & 0xffff;
-    i64Defn.value[1] = ( cons->c.lo.uint_value >> 16 ) & 0xffff;
-    i64Defn.value[2] = cons->c.hi.uint_value & 0xffff;
-    i64Defn.value[3] = ( cons->c.hi.uint_value >> 16 ) & 0xffff;
+    i64Defn.value[0] = cons->c.lo.u.uint_value & 0xffff;
+    i64Defn.value[1] = ( cons->c.lo.u.uint_value >> 16 ) & 0xffff;
+    i64Defn.value[2] = cons->c.hi.u.uint_value & 0xffff;
+    i64Defn.value[3] = ( cons->c.hi.u.uint_value >> 16 ) & 0xffff;
     return( &i64Defn );
 }
 
@@ -206,7 +206,6 @@ name    *GenFloat( name *cons, type_class_def type_class )
 /********************************************************/
 {
     constant_defn       *defn;
-    segment_id          old_segid;
     name                *result;
 
     TellOptimizerByPassed();
@@ -217,12 +216,12 @@ name    *GenFloat( name *cons, type_class_def type_class )
     }
     if( defn->label == NULL ) {
         defn->label = AskForLabel( NULL );
-        old_segid = SetOP( AskBackSeg() );
-        AlignObject( 8 );
-        assert( ( AskLocation() & 0x07 ) == 0 );
-        OutLabel( defn->label );
-        DataBytes( TypeClassSize[type_class], &defn->value );
-        SetOP( old_segid );
+        PUSH_OP( AskBackSeg() );
+            AlignObject( 8 );
+            assert( ( AskLocation() & 0x07 ) == 0 );
+            OutLabel( defn->label );
+            DataBytes( TypeClassSize[type_class], &defn->value );
+        POP_OP();
 
     }
     result = AllocMemory( defn->label, 0, CG_LBL, type_class );

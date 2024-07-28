@@ -35,7 +35,6 @@
 #include <stdlib.h>
 #include <ctype.h>
 #if defined(__AXP__) && defined(__NT__)
-    #define WIN32_LEAN_AND_MEAN
     #include <windows.h>
 #endif
 #include "trpld.h"

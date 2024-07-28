@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,11 +40,11 @@
     #define _FAR    __far
     #define _NEAR   __near
 #elif defined( __DOS__ )
-  #if defined( DOS4G ) || defined( CAUSEWAY )
-    #define _FAR
-    #define _NEAR
-  #elif defined( PHARLAP )
+  #if defined( PHARLAP )
     #define _FAR    __far
+    #define _NEAR
+  #elif defined( DOS4G ) || defined( CAUSEWAY )
+    #define _FAR
     #define _NEAR
   #endif
 #else

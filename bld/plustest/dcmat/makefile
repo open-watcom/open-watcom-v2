@@ -32,7 +32,7 @@ opt_link = LIBRARY matrix.lib
 
 exes = test.$(exe) tmatrix.$(exe)
 
-test : .symbolic start matrix.lib test.lnk $(exes)
+test : .SYMBOLIC start matrix.lib test.lnk $(exes)
     $(noecho)%make common_set_result
 
 matrix.lib : $(objs) matrix.lbc

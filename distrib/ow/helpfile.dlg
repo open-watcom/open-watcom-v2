@@ -1,34 +1,34 @@
 # UTF-8 encoding, ¥
 name=Helpfile
 static_text=\
-        //1"Select the types of online help files:"\
-        //2"オンラインヘルプ・ファイルのタイプの選択:"\
-        //0
+        //0"Select the types of online help files:"\
+        //1"オンラインヘルプ・ファイルのタイプの選択:"\
+        //-1
 static_text=
 check_box=win16_helpfiles,,\
-        //1"Win1&6 Hosted Help Files"\
-        //2"Win1&6 ホスト・ヘルプファイル"\
-        //0
+        //0"Win1&6 Hosted Help Files"\
+        //1"Win1&6 ホスト・ヘルプファイル"\
+        //-1
 check_box=win32_helpfiles,,\
-        //1"Win&32 Hosted Help Files"\
-        //2"Win&32 ホスト・ヘルプファイル"\
-        //0
+        //0"Win&32 Hosted Help Files"\
+        //1"Win&32 ホスト・ヘルプファイル"\
+        //-1
 check_box=whtml_helpfiles,,\
+        //0"Win32 Hosted &HTML Help Files"\
         //1"Win32 Hosted &HTML Help Files"\
-        //2"Win32 Hosted &HTML Help Files"\
-        //0
+        //-1
 check_box=os2_helpfiles,,\
-        //1"&OS/2 Hosted Help Files"\
-        //2"&OS/2 ホスト・ヘルプファイル"\
-        //0
+        //0"&OS/2 Hosted Help Files"\
+        //1"&OS/2 ホスト・ヘルプファイル"\
+        //-1
 check_box=whelp_helpfiles,,\
-        //1"&DOS Hosted Help Files"\
-        //2"&DOS ホスト・ヘルプファイル"\
-        //0
+        //0"&Character mode Help Files"\
+        //1"&Character mode Help Files"\
+        //-1
 check_box=pdf_helpfiles,,\
+        //0"&PDF Help Files"\
         //1"&PDF Help Files"\
-        //2"&PDF Help Files"\
-        //0
+        //-1
 static_text=
 include=space.dlg
 static_text=

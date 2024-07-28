@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,21 +36,21 @@ typedef enum {
     OP_DELETE =         0x0001,
     OP_ADD =            0x0002,
     OP_EXTRACT =        0x0004,
+    OP_TABLE =          0x0008,
 
-    OP_DELETED =        0x0010,
-    OP_ADDED =          0x0020,
-    OP_EXTRACTED =      0x0040,
-    OP_FOUND =          0x0080,
+    OP_IMPORT =         0x0010,
+    OP_PRINT =          0x0020,
 
-    OP_IMPORT =         0x0100,
-    OP_PRINT =          0x0200,
-    OP_TABLE =          0x0400
+    OP_DELETED =        0x0100,
+    OP_ADDED =          0x0200,
+    OP_EXTRACTED =      0x0400,
+    OP_FOUND =          0x0800,
 } operation;
 
 typedef struct lib_cmd {
     struct      lib_cmd *next;
-    operation   ops;
     char        *fname;
+    operation   ops;
     char        name[1];
 } lib_cmd;
 

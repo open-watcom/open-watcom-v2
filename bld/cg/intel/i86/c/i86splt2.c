@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,7 +36,7 @@
 #include "model.h"
 #include "system.h"
 #include "zoiks.h"
-#include "cfloat.h"
+#include "_cfloat.h"
 #include "makeins.h"
 #include "namelist.h"
 #include "rgtbl.h"
@@ -54,10 +54,10 @@
 
 
 typedef struct eight_byte_name {
-        union name     *low;
-        union name     *mid_low;
-        union name     *mid_high;
-        union name     *high;
+    name        *low;
+    name        *mid_low;
+    name        *mid_high;
+    name        *high;
 } eight_byte_name;
 
 name    *LowPart( name *tosplit, type_class_def type_class )
@@ -75,25 +75,25 @@ name    *LowPart( name *tosplit, type_class_def type_class )
     case N_CONSTANT:
         if( tosplit->c.const_type == CONS_ABSOLUTE ) {
             if( type_class == U1 ) {
-                u8 = tosplit->c.lo.int_value & 0xff;
+                u8 = tosplit->c.lo.u.int_value & 0xff;
                 new = AllocUIntConst( u8 );
             } else if( type_class == I1 ) {
-                s8 = tosplit->c.lo.int_value & 0xff;
+                s8 = tosplit->c.lo.u.int_value & 0xff;
                 new = AllocIntConst( s8 );
             } else if( type_class == U2 ) {
-                u16 = tosplit->c.lo.int_value & 0xffff;
+                u16 = tosplit->c.lo.u.int_value & 0xffff;
                 new = AllocUIntConst( u16 );
             } else if( type_class == I2 ) {
-                s16 = tosplit->c.lo.int_value & 0xffff;
+                s16 = tosplit->c.lo.u.int_value & 0xffff;
                 new = AllocIntConst( s16 );
             } else if( type_class == FL ) {
                 _Zoiks( ZOIKS_125 );
             } else { /* FD */
                 floatval = GetFloat( tosplit, FD );
-                new = AllocConst( CFCnvU32F( _TargetLongInt( *(uint_32 *)( floatval->value + 0 ) ) ) );
+                new = AllocConst( CFCnvU32F( &cgh, _TargetLongInt( *(uint_32 *)( floatval->value + 0 ) ) ) );
             }
         } else if( tosplit->c.const_type == CONS_ADDRESS ) {
-            new = AddrConst( tosplit->c.value, (segment_id)tosplit->c.lo.int_value, CONS_OFFSET );
+            new = AddrConst( tosplit->c.value, (segment_id)tosplit->c.lo.u.int_value, CONS_OFFSET );
         } else {
             _Zoiks( ZOIKS_044 );
         }
@@ -149,25 +149,25 @@ name    *HighPart( name *tosplit, type_class_def type_class )
     case N_CONSTANT:
         if( tosplit->c.const_type == CONS_ABSOLUTE ) {
             if( type_class == U1 ) {
-                u8 = ( tosplit->c.lo.int_value >> 8 ) & 0xff;
+                u8 = ( tosplit->c.lo.u.int_value >> 8 ) & 0xff;
                 new = AllocUIntConst( u8 );
             } else if( type_class == I1 ) {
-                s8 = ( tosplit->c.lo.int_value >> 8 ) & 0xff;
+                s8 = ( tosplit->c.lo.u.int_value >> 8 ) & 0xff;
                 new = AllocIntConst( s8 );
             } else if( type_class == U2 ) {
-                u16 = ( tosplit->c.lo.int_value >> 16 ) & 0xffff;
+                u16 = ( tosplit->c.lo.u.int_value >> 16 ) & 0xffff;
                 new = AllocUIntConst( u16 );
             } else if( type_class == I2 ) {
-                s16 = ( tosplit->c.lo.int_value >> 16 ) & 0xffff;
+                s16 = ( tosplit->c.lo.u.int_value >> 16 ) & 0xffff;
                 new = AllocIntConst( s16 );
             } else if( type_class == FL ) {
                 _Zoiks( ZOIKS_125 );
             } else { /* FD */
                 floatval = GetFloat( tosplit, FD );
-                new = AllocConst( CFCnvU32F( _TargetLongInt( *(uint_32 *)( floatval->value + 2 ) ) ) );
+                new = AllocConst( CFCnvU32F( &cgh, _TargetLongInt( *(uint_32 *)( floatval->value + 2 ) ) ) );
             }
         } else if( tosplit->c.const_type == CONS_ADDRESS ) {
-            new = AddrConst( tosplit->c.value, (segment_id)tosplit->c.lo.int_value, CONS_SEGMENT );
+            new = AddrConst( tosplit->c.value, (segment_id)tosplit->c.lo.u.int_value, CONS_SEGMENT );
         } else {
             _Zoiks( ZOIKS_044 );
         }
@@ -341,10 +341,10 @@ static  void    Split8Name( instruction *ins, name *tosplit, eight_byte_name *ou
         switch( ins->type_class ) {
         case I8:
         case U8:
-            out->low      = AllocIntConst( _TargetShort( tosplit->c.lo.uint_value & 0xffff ) );
-            out->mid_low  = AllocIntConst( _TargetShort( tosplit->c.lo.uint_value >> 16 ) );
-            out->mid_high = AllocIntConst( _TargetShort( tosplit->c.hi.uint_value & 0xffff ) );
-            out->high     = AllocIntConst( _TargetShort( tosplit->c.hi.uint_value >> 16 ) );
+            out->low      = AllocIntConst( _TargetShort( tosplit->c.lo.u.uint_value & 0xffff ) );
+            out->mid_low  = AllocIntConst( _TargetShort( tosplit->c.lo.u.uint_value >> 16 ) );
+            out->mid_high = AllocIntConst( _TargetShort( tosplit->c.hi.u.uint_value & 0xffff ) );
+            out->high     = AllocIntConst( _TargetShort( tosplit->c.hi.u.uint_value >> 16 ) );
             break;
         case FD:
             floatval = GetFloat( tosplit, FD );
@@ -746,7 +746,7 @@ instruction     *rCYPSHIFT( instruction *ins )
 
     HalfType( ins );
     temp = AllocTemp( ins->type_class );
-    half_count = ins->operands[1]->c.lo.int_value - temp->n.size * 8;
+    half_count = ins->operands[1]->c.lo.u.int_value - temp->n.size * 8;
     if( ins->head.opcode == OP_LSHIFT ) {
         ins1 = MakeBinary( OP_LSHIFT,
                         LowPart( ins->operands[0], ins->type_class ),

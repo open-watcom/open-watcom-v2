@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,10 +36,6 @@
 #include <stddef.h>     // for wchar_t
 #include <float.h>      // for LDBL_DIG
 
-#ifndef _WMRTLINK
-    #define _WMRTLINK   // This SUCKS!
-#endif
-
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -48,7 +44,7 @@ extern "C" {
  #define _LONG_DOUBLE_
 #endif
 
-#if defined( __WATCOMC__ )
+#if defined( _M_I86 )
 typedef unsigned long   u4;
 typedef long            i4;
 #else
@@ -83,46 +79,39 @@ typedef struct {                // Layout of IEEE 754 single (FS)
     } u;
 } float_single;
 
-/* NB: The following values *must* match FP_ macros in math.h! */
-enum    ld_classification {
-    __ZERO      = 0,
-    __DENORMAL  = 1,
-    __NONZERO   = 2,
-    __NAN       = 3,
-    __INFINITY  = 4
-};
-
 enum    ldcvt_flags {
-    E_FMT       = 0x0001,       // 'E' format
-    F_FMT       = 0x0002,       // 'F' format
-    G_FMT       = 0x0004,       // 'G' format
-    F_CVT       = 0x0008,       // __cvt routine format rules
-    F_DOT       = 0x0010,       // always put '.' in result
-    LONG_DOUBLE = 0x0020,       // number is true long double
-    NO_TRUNC    = 0x0040,       // always provide ndigits in buffer
-    IN_CAPS     = 0x0080,       // 'inf'/'nan' is uppercased
-    IS_INF_NAN  = 0x0100,       // number is inf/nan (output flag)
+    FPCVT_NONE          = 0x0000,
+    FPCVT_E_FMT         = 0x0001,   // 'E' format
+    FPCVT_F_FMT         = 0x0002,   // 'F' format
+    FPCVT_G_FMT         = 0x0004,   // 'G' format
+    FPCVT_F_CVT         = 0x0008,   // __cvt routine format rules
+    FPCVT_F_DOT         = 0x0010,   // always put '.' in result
+    FPCVT_LONG_DOUBLE   = 0x0020,   // number is true long double
+    FPCVT_NO_TRUNC      = 0x0040,   // always provide ndigits in buffer
+    FPCVT_IN_CAPS       = 0x0080,   // alpha characters are output uppercased
+    FPCVT_IS_INF_NAN    = 0x0100,   // number is inf/nan (output flag)
+    FPCVT_A_FMT         = 0x0200,   // 'A' format
 };
 
 typedef struct cvt_info {
-      int       ndigits;        // INPUT: number of digits
-      int       scale;          // INPUT: FORTRAN scale factor
-      int       flags;          // INPUT/OUTPUT: flags (see ldcvt_flags)
-      int       expchar;        // INPUT: exponent character to use
-      int       expwidth;       // INPUT/OUTPUT: number of exponent digits
-      int       sign;           // OUTPUT: 0 => +ve; otherwise -ve
-      int       decimal_place;  // OUTPUT: position of '.'
-      int       n1;             // OUTPUT: number of leading characters
-      int       nz1;            // OUTPUT: followed by this many '0's
-      int       n2;             // OUTPUT: followed by these characters
-      int       nz2;            // OUTPUT: followed by this many '0's
+    int         ndigits;        // INPUT: number of digits
+    int         scale;          // INPUT: FORTRAN scale factor
+    int         flags;          // INPUT/OUTPUT: flags (see ldcvt_flags)
+    int         expchar;        // INPUT: exponent character to use
+    int         expwidth;       // INPUT/OUTPUT: number of exponent digits
+    int         sign;           // OUTPUT: 0 => +ve; otherwise -ve
+    int         decimal_place;  // OUTPUT: position of '.'
+    int         n1;             // OUTPUT: number of leading characters
+    int         nz1;            // OUTPUT: followed by this many '0's
+    int         n2;             // OUTPUT: followed by these characters
+    int         nz2;            // OUTPUT: followed by this many '0's
 } CVT_INFO;
 
-/* Depending on the target, some functions expect near pointer arguments
+/*
+ * Depending on the target, some functions expect near pointer arguments
  * to be pointing into the stack segment, while in other cases they must
  * point into the data segment.
  */
-
 #if !defined( _M_IX86 ) || defined( __FLAT__ )
 typedef long_double                                     *ld_stk_ptr;
 typedef double                                          *dbl_stk_ptr;
@@ -139,19 +128,19 @@ typedef void        __based( __segname( "_STACK" ) )    *i8_stk_ptr;
 typedef void        __based( __segname( "_STACK" ) )    *u8_stk_ptr;
 #endif
 
-_WMRTLINK extern void __LDcvt(
-                         long_double *pld,      // pointer to long_double
-                         CVT_INFO  *cvt,        // conversion info
-                         char      *buf );      // buffer
 #if defined( __WATCOMC__ )
+_WMRTLINK extern void __LDcvt(
+                        long_double *pld,       // pointer to long_double
+                        CVT_INFO    *cvt,       // conversion info
+                        char        *buf );     // buffer
 _WMRTLINK extern int __Strtold(
-                        const char *bufptr,
+                        const char  *bufptr,
                         long_double *pld,
-                        char **endptr );
+                        char        **endptr );
 _WMRTLINK extern int __wStrtold(
                         const wchar_t *bufptr,
                         long_double *pld,
-                        wchar_t **endptr );
+                        wchar_t     **endptr );
 #endif
 extern  int     __LDClass( long_double * );
 extern  void    __ZBuf2LD( buf_stk_ptr, ld_stk_ptr );
@@ -587,10 +576,11 @@ extern  int     __FLDC( ld_stk_ptr, ld_stk_ptr );
 #endif
 #endif
 
-// define number of significant digits for long double numbers (80-bit)
-// it will be defined in float.h as soon as OW support long double
-// used in mathlib/c/ldcvt.c
-
+/*
+ * define number of significant digits for long double numbers (80-bit)
+ * it will be defined in float.h as soon as OW support long double
+ * used in mathlib/c/ldcvt.c
+ */
 #ifdef _LONG_DOUBLE_
 #if LDBL_DIG == 15
 #undef LDBL_DIG
@@ -600,14 +590,15 @@ extern  int     __FLDC( ld_stk_ptr, ld_stk_ptr );
 #endif
 #endif
 
-// floating point conversion buffer length definition
-// is defined in lib_misc/h/cvtbuf.h
-// used by various floating point conversion routines
-// used in clib/startup/c/cvtbuf.c, lib_misc/h/thread.h
-// and mathlib/c/efcvt.c
-// it must be equal maximum FP precision ( LDBL_DIG )
-// hold lib_misc/h/cvtbuf.h in sync with LDBL_DIG
-
+/*
+ * floating point conversion buffer length definition
+ * is defined in lib_misc/h/cvtbuf.h
+ * used by various floating point conversion routines
+ * used in clib/startup/c/cvtbuf.c, lib_misc/h/thread.h
+ * and mathlib/c/efcvt.c
+ * it must be equal maximum FP precision ( LDBL_DIG )
+ * hold lib_misc/h/cvtbuf.h in sync with LDBL_DIG
+ */
 #ifdef __cplusplus
 };
 #endif

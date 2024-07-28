@@ -6,9 +6,15 @@ proj_name = wfc
 wfc_autodepends = .AUTODEPEND
 !endif
 
-additional_clean = *.gh *.grh *.grc
+wfc_ntverrc = ..
 
 wfc_trmem = 1
+
+wfc_wreslib_cli = text
+
+wfc_qnx_usage = 1
+
+additional_clean = *.gh *.grh *.grc
 
 exename_i86 = wfc
 exename_386 = wfc386
@@ -16,13 +22,14 @@ exename_axp = wfcaxp
 exename_ppc = wfcppc
 exetarg_name = $(exename_$(target_cpu))
 
+ntverrc_exe = $(exetarg_name)
+
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif
-!include wres.mif
 !include trmem.mif
 
-!include $(cg_dir)/mif/fe.mif
+!include $(cg_dir)/client.mif
 !include asclient.mif
 
 !include $(f77wfc_dir)/files.mif
@@ -30,14 +37,14 @@ exetarg_name = $(exename_$(target_cpu))
 #
 # cflags
 #
-.c: $(f77wfc_dir)/c;$(asminline_c);$(trmem_dir);$(watcom_dir)/c;$(fe_misc_dir)/h
+.c: $(f77wfc_dir)/c;$(cli_asminline_c);$(trmem_dir);$(watcom_dir)/c;$(fe_misc_dir)/h
 
 inc_dirs= -I. -I.. -I"$(f77wfc_dir)/h" -I"$(f77_dir)/h" &
-    $(cg_inc_dirs) $(dwarfw_inc_dirs) -I"$(comp_cfg_dir)/h" -I"$(fe_misc_dir)/h" &
-    $(asminline_inc_dirs) -I"$(clib_dir)/h" -I"$(lib_misc_dir)/h"
+    $(cli_cg_inc_dirs) $(cli_dwarfw_inc_dirs) $(cli_cfloat_inc_dirs) -I"$(comp_cfg_dir)/h" -I"$(fe_misc_dir)/h" &
+    $(cli_asminline_inc_dirs) $(cli_owl_inc_dirs) -I"$(clib_dir)/h" -I"$(lib_misc_dir)/h"
 
 extra_cpp_flags =
-!ifeq dll_cg 1
+!ifdef dll_cg
 extra_cpp_flags += -D_CGDLL
 !endif
 
@@ -57,26 +64,21 @@ extra_a_flags_axp = -oc
 #
 # EXE
 #
-exetarg_prebuild_objs = $(asminline_deps) usage.gh wfcmsgs.gh code$(target_cpu).gh
+exetarg_prebuild_objs = $(cli_asminline_deps) usage.gh wfcmsgs.gh code$(target_cpu).gh
 exetarg_objs          = $(fobjs) $(trmem_objs) $(trmemcvr_objs)
-exetarg_libs          = $(asminline_lib) $(cg_libs) $(wres_lib)
-exetarg_res_version_nt_386 = exever.res
-exetarg_res_version_nt_x64 = exever.res
-exetarg_res_wresui    = wresui.res
+exetarg_libs          = $(cli_asminline_libs) $(cli_cg_libs)
+exetarg_res           = $(proj_name).res
 !include exetarg.mif
 
 #
 # rc and others
 #
-verrc_exe = $(exetarg_name)
-!include verrc.mif
+rc_inc_dirs = -I. -I.. -I"$(f77wfc_dir)/h" -I"$(f77_dir)/h" &
+    $(cli_asminline_rc_inc_dirs) -I"$(comp_cfg_dir)/h" -I"$(fe_misc_dir)/h"
 
-rcui_inc_dirs = -I. -I.. -I"$(f77wfc_dir)/h" -I"$(f77_dir)/h" &
-    $(asminline_inc_dirs) -I"$(comp_cfg_dir)/h" -I"$(fe_misc_dir)/h"
-
-wresui.res : $(f77wfc_dir)/h/wfc.rc $(f77wfc_dir)/h/wfc.rh
+$(proj_name).res : $(f77wfc_dir)/h/wfc.rc $(f77wfc_dir)/h/wfc.rh $(cli_asminline_rc_deps)
     @%make echo_rc
-    $(rcui8)
+    $(rcu8j) $(ppflags_common) $(ppflags_wreslib) $(rc_cppflags) $(rc_flags) $(rc_inc_path) $[@ -fo=$@
 
 #msgencod_enc_linux = -utf8
 
@@ -115,22 +117,20 @@ xcode$(target_cpu).tmp: $(f77wfc_dir)/a/code$(target_cpu).asm
 
 ./mkcode.exe: mkcode.c
     @%make echo_bldccl
-    $(bld_ccl) $(ppflags_common) $(ppflags_autodep) $[@ $(bld_cclflags) $(bld_ldflags)
+    $(bld_ccl) $(ppflags_common) $(ppflags_autodep) $(bld_ppflags_sys) $(bld_cppflags) $[@ $(bld_cclflags) $(bld_ldflags)
 
 wfcmsgs.gh wfcmsgs.grh wfcgrps.gh wfcattrs.gh : $(f77wfc_dir)/gml/wfcmsgs.gml
     @%make echo_msgencod
     $(noecho)*msgencod -q -s -ip -rc=MSG_LANG_BASE -utf8 $(msgencod_enc_$(host_os)) $[@ wfcmsgs.gh wfcmsgs.grh wfcgrps.gh wfcattrs.gh
 
-# .gh options and targets for various hosts
-!ifdef exetarg_qnx_res
-optencod_opt_qnx    = -u=$(exetarg_qnx_res)
-!endif
+# optencod options and targets for various hosts
 #optencod_enc_linux  = -utf8
+
 optencod_targets = $(target_cpu) $(host_os)
 !ifeq debug 2
 optencod_targets += dbg
 !endif
 
-usage.gh $(exetarg_$(host_os)_res) : $(f77_dir)/gml/wfxopts.gml $(__MAKEFILES__)
+usage.gh $(qnx_usage) : $(f77_dir)/gml/options.gml $(__MAKEFILES__)
     @%make echo_optencod
-    $(noecho)*optencod -q -rc=MSG_USAGE_BASE -utf8 $(optencod_opt_$(host_os)) $[@ . . $@ $(optencod_targets)
+    $(optencod) -rc=MSG_USAGE_BASE -utf8 $(optencod_opt_$(host_os)) $[@ . . $@ . $(optencod_targets)

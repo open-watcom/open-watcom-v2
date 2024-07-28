@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,7 +40,7 @@ bool GUIAPI GUIGetMinSize( gui_coord *size )
     if( size == NULL ) {
         return( false );
     }
-    size->x = GUIScreenToScaleH( MIN_WIDTH );
-    size->y = GUIScreenToScaleV( MIN_HEIGHT );
+    size->x = GUIScaleFromScreenH( MIN_WIDTH );
+    size->y = GUIScaleFromScreenV( MIN_HEIGHT );
     return( true );
 }

@@ -8,5 +8,5 @@ wlink.lnk : ../wlink.sp ../specs.sp
     @%make echo_wsplice
     $(noecho)*wsplice -k Pwlsystem -k $(host_os) -k $(host_cpu) $< $@
 
-clean : .symbolic
+clean : .SYMBOLIC
     rm -f *.lnk

@@ -61,5 +61,5 @@ mkwinhlp.exe : mkwinhlp.c
     wcl $[@ -zq-ox-d1 -l=$(util_bt)
     del mkwinhlp.obj
 
-global : .symbolic
+global : .SYMBOLIC
     rm -f $(help_os2) $(help_win) $(temp_files) *.obj *.exe *.err *.dmp

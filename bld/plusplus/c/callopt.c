@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -98,7 +99,7 @@ static PTREE doCopySubstitution( // EFFECT COPY SUBSTITUTION
         dtor->u.subtree[1] = NULL;
         NodeFreeDupedExpr( old );
     }
-    repl->u.symcg.symbol->flag = 0;
+    repl->u.symcg.symbol->flags = SYMF_NONE;
     *a_repl = NodeReplace( *a_repl, tgt );
     orig = NodeConvertFlags( ClassTypeForType( tgt->type )
                            , orig

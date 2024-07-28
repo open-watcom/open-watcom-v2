@@ -24,45 +24,45 @@ name_model_ppc = _s
 name_model_mps = _s
 name_model_x64 = _s
 
-wres_dir_qnxi86     = qnxi86/$(name_model_i86)
-wres_dir_wini86     = wini86/$(name_model_i86)
-wres_dir_os2i86     = os2i86/$(name_model_i86)
+wres_subdir_qnxi86     = qnxi86/$(name_model_i86)
+wres_subdir_wini86     = wini86/$(name_model_i86)
+wres_subdir_os2i86     = os2i86/$(name_model_i86)
 !ifdef pegged
-wres_dir_dosi86     = os2i86/$(name_model_i86)
+wres_subdir_dosi86     = os2i86/$(name_model_i86)
 !else
-wres_dir_dosi86     = dosi86/$(name_model_i86)
+wres_subdir_dosi86     = dosi86/$(name_model_i86)
 !endif
 
-wres_dir_dos386     = dos386/$(name_model_386)
-wres_dir_nov386     = nov386/$(name_model_386)
-wres_dir_qnx386     = qnx386/$(name_model_386)
-wres_dir_linux386   = linux386/$(name_model_386)
-wres_dir_rdos386    = rdos386/$(name_model_386)
-wres_dir_os2386     = os2386/$(name_model_386)
-wres_dir_win386     = win386/$(name_model_386)
-!ifeq $(proj_name)_rtdll 1
-wres_dir_nt386      = nt386.dll/$(name_model_386)
+wres_subdir_dos386     = dos386/$(name_model_386)
+wres_subdir_nov386     = nov386/$(name_model_386)
+wres_subdir_qnx386     = qnx386/$(name_model_386)
+wres_subdir_linux386   = linux386/$(name_model_386)
+wres_subdir_rdos386    = rdos386/$(name_model_386)
+wres_subdir_os2386     = os2386/$(name_model_386)
+wres_subdir_win386     = win386/$(name_model_386)
+!ifdef $(proj_name)_rtdll
+wres_subdir_nt386      = nt386.dll/$(name_model_386)
 !else
-wres_dir_nt386      = nt386/$(name_model_386)
+wres_subdir_nt386      = nt386/$(name_model_386)
 !endif
 
-wres_dir_ntaxp      = ntaxp/$(name_model_axp)
-wres_dir_ntmps      = ntmps/$(name_model_mps)
+wres_subdir_ntaxp      = ntaxp/$(name_model_axp)
+wres_subdir_ntmps      = ntmps/$(name_model_mps)
 
-wres_dir_linuxarm   = linuxarm/$(name_model_arm)
-wres_dir_linuxa64   = linuxa64/$(name_model_a64)
-wres_dir_linuxmps   = linuxmps/$(name_model_mps)
-wres_dir_linuxppc   = linuxppc/$(name_model_ppc)
-wres_dir_linuxx64   = linuxx64/$(name_model_x64)
-wres_dir_ntx64      = ntx64/$(name_model_x64)
-wres_dir_osxx64     = osxx64/$(name_model_x64)
-wres_dir_osxarm     = osxarm/$(name_model_arm)
-wres_dir_osxa64     = osxa64/$(name_model_a64)
+wres_subdir_linuxarm   = linuxarm/$(name_model_arm)
+wres_subdir_linuxa64   = linuxa64/$(name_model_a64)
+wres_subdir_linuxmps   = linuxmps/$(name_model_mps)
+wres_subdir_linuxppc   = linuxppc/$(name_model_ppc)
+wres_subdir_linuxx64   = linuxx64/$(name_model_x64)
+wres_subdir_ntx64      = ntx64/$(name_model_x64)
+wres_subdir_osxx64     = osxx64/$(name_model_x64)
+wres_subdir_osxarm     = osxarm/$(name_model_arm)
+wres_subdir_osxa64     = osxa64/$(name_model_a64)
 
 !ifdef bootstrap
-wres_lib = $(wres_dir)/$(objs_subdir)/wres.lib
+cli_wres_libs = $(wres_dir)/$(objs_subdir)/wres.lib
 !else
-wres_lib = $(wres_dir)/$(wres_dir_$(objs_subdir))/wres.lib
+cli_wres_libs = $(wres_dir)/$(wres_subdir_$(objs_subdir))/wres.lib
 !endif
 
-wres_inc_dirs = -I"$(wres_dir)/h"
+cli_wres_inc_dirs = -I"$(wres_dir)/h"

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2023-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -44,7 +44,7 @@ extern owl_section_handle       CurrentSection;
 
 extern void ObjSetObjFile( char *obj_name );
 extern void ObjSwitchSection( reserved_section );
-extern bool ObjInit( char *file_name );
+extern bool ObjInit( const char *file_name, const char *err_file );
 extern bool ObjLabelDefined( sym_handle );
 extern void ObjEmitLabel( sym_handle );
 extern void ObjEmitNumericLabel( uint_32 );

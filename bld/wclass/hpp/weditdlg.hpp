@@ -47,7 +47,6 @@ WCLASS WEditDialog  : public WDialog {
         bool WEXPORT edit( WString& reply );
     private:
         void initialize( void );
-        void updateExtents( const char *, int *, int * );
     private:
         WMultiLineEditBox*      _edit;
         WString*                _reply;

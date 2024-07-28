@@ -1,4 +1,4 @@
-[ default type="s" cond="samples" where="c jc ac" desc="C++ Class Library Sample Code" ]
+[ default type="s" cond="samples" where="c jc ac" descr="C++ Class Library Sample Code" ]
 dir="samples/cplbexam/complex/friend"	usr="lshift.cpp"
 dir="samples/cplbexam/complex/friend"	usr="makefile"
 dir="samples/cplbexam/complex/friend"	usr="rshift.cpp"

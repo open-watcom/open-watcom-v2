@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -42,27 +42,27 @@ static bool ColourNamesInitialized = false;
 
 static void InitColourNames( void )
 {
-    ColourNames[0] = LIT( Black );
-    ColourNames[1] = LIT( Blue );
-    ColourNames[2] = LIT( Green );
-    ColourNames[3] = LIT( Cyan );
-    ColourNames[4] = LIT( Red );
-    ColourNames[5] = LIT( Magenta );
-    ColourNames[6] = LIT( Brown );
-    ColourNames[7] = LIT( White );
-    ColourNames[8] = LIT( Grey );
-    ColourNames[9] = LIT( BrightBlue );
-    ColourNames[10] = LIT( BrightGreen );
-    ColourNames[11] = LIT( BrightCyan );
-    ColourNames[12] = LIT( BrightRed );
-    ColourNames[13] = LIT( BrightMagenta );
-    ColourNames[14] = LIT( BrightYellow );
-    ColourNames[15] = LIT( BrightWhite );
+    ColourNames[0] = LIT_GUI( Black );
+    ColourNames[1] = LIT_GUI( Blue );
+    ColourNames[2] = LIT_GUI( Green );
+    ColourNames[3] = LIT_GUI( Cyan );
+    ColourNames[4] = LIT_GUI( Red );
+    ColourNames[5] = LIT_GUI( Magenta );
+    ColourNames[6] = LIT_GUI( Brown );
+    ColourNames[7] = LIT_GUI( White );
+    ColourNames[8] = LIT_GUI( Grey );
+    ColourNames[9] = LIT_GUI( BrightBlue );
+    ColourNames[10] = LIT_GUI( BrightGreen );
+    ColourNames[11] = LIT_GUI( BrightCyan );
+    ColourNames[12] = LIT_GUI( BrightRed );
+    ColourNames[13] = LIT_GUI( BrightMagenta );
+    ColourNames[14] = LIT_GUI( BrightYellow );
+    ColourNames[15] = LIT_GUI( BrightWhite );
 }
 
 static gui_colour InitColour;
 
-static void PickColour( gui_window *wnd, gui_ctl_id list_id )
+static void GUICALLBACK PickColour( gui_window *wnd, gui_ctl_id list_id )
 {
     int i;
 

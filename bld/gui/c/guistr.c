@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -54,7 +55,7 @@ bool GUIInitInternalStringTable( void )
 {
     gui_res_id  id = GUI_LITERAL_BASE;
 
-    #define pick( a, b, c ) LIT( a ) = GUIGetInternalLiteralString( id ); id++;
+    #define pick( a, b, c ) LIT_GUI( a ) = GUIGetInternalLiteralString( id ); id++;
     #include "gui.msg"
     #undef pick
 
@@ -63,7 +64,7 @@ bool GUIInitInternalStringTable( void )
 
 bool GUIFiniInternalStringTable( void )
 {
-    #define pick( a, b, c ) GUIMemFree( (void *)LIT( a ) );
+    #define pick( a, b, c ) GUIMemFree( (void *)LIT_GUI( a ) );
     #include "gui.msg"
     #undef pick
 

@@ -1,0 +1,254 @@
+.387
+DGROUP		GROUP	_TEXT,_DATA
+_TEXT		SEGMENT	WORD PUBLIC USE16 'CODE'
+		ASSUME CS:DGROUP, DS:DGROUP, SS:DGROUP
+start:
+	cld
+	push		di
+	push		es
+	call		near ptr Decode
+	pop		es
+	pop		di
+	mov		ax,word ptr ss:[3f8H]
+	mov		bx,word ptr ss:[3faH]
+	shr		bx,1
+	rcr		ax,1
+	shr		bx,1
+	rcr		ax,1
+	shr		bx,1
+	rcr		ax,1
+	shr		bx,1
+	rcr		ax,1
+	mov		dx,es
+	add		dx,ax
+	mov		ds,dx
+	mov		si,word ptr ss:[3f8H]
+	and		si,0fH
+	push		ds
+	push		si
+	mov		cx,word ptr 6[si]
+	add		si,1bH
+L$1:
+	or		cx,cx
+	je		L$2
+	push		si
+	push		ds
+	push		es
+	mov		ax,word ptr 2[si]
+	mov		si,word ptr [si]
+	mov		bx,es
+	add		ax,bx
+	mov		es,ax
+	add		word ptr es:[si],bx
+	pop		es
+	pop		ds
+	pop		si
+	dec		cx
+	add		si,4
+	jne		L$1
+	mov		ax,ds
+	add		ax,1000H
+	mov		ds,ax
+	jmp		L$1
+L$2:
+	pop		si
+	pop		ds
+	mov		bx,es
+	mov		ax,word ptr 0eH[si]
+	add		ax,bx
+	mov		dx,ax
+	mov		bp,word ptr 10H[si]
+	mov		ax,word ptr 16H[si]
+	add		ax,bx
+	mov		word ptr cs:L$23,ax
+	mov		ax,word ptr 14H[si]
+	mov		word ptr cs:L$22,ax
+	mov		es,word ptr ss:[3fcH]
+	mov		ds,word ptr ss:[3fcH]
+	mov		ss,dx
+	mov		sp,bp
+	jmp		dword ptr cs:L$22
+Decode:
+	xor		ch,ch
+	mov		cl,byte ptr 3[si]
+	mov		ax,1
+	shl		ax,cl
+	dec		ax
+	mov		word ptr cs:L$15,ax
+	sub		cl,8
+	mov		byte ptr cs:L$14,cl
+	add		si,0cH
+	mov		bp,word ptr [si]
+	add		si,2
+	mov		dl,10H
+	mov		dh,dl
+L$3:
+	adc		bp,bp
+	dec		dl
+	jne		L$4
+	mov		bp,word ptr [si]
+	inc		si
+	inc		si
+	mov		dl,dh
+L$4:
+	jae		L$5
+	mov		al,byte ptr [si]
+	mov		byte ptr es:[di],al
+	inc		si
+	inc		di
+	jmp		L$3
+L$5:
+	adc		bp,bp
+	dec		dl
+	jne		L$6
+	mov		bp,word ptr [si]
+	inc		si
+	inc		si
+	mov		dl,dh
+L$6:
+	jae		L$11
+	xor		cx,cx
+	adc		bp,bp
+	dec		dl
+	jne		L$7
+	mov		bp,word ptr [si]
+	inc		si
+	inc		si
+	mov		dl,dh
+L$7:
+	adc		cl,cl
+	adc		bp,bp
+	dec		dl
+	jne		L$8
+	mov		bp,word ptr [si]
+	inc		si
+	inc		si
+	mov		dl,dh
+L$8:
+	adc		cl,cl
+	add		cl,2
+	xor		ax,ax
+	mov		al,byte ptr [si]
+	inc		si
+	dec		ax
+	js		L$10
+L$9:
+	add		ax,cx
+	push		si
+	push		ds
+	push		es
+	pop		ds
+	mov		si,di
+	sub		si,ax
+	rep movsb
+	pop		ds
+	pop		si
+	jmp		L$3
+L$10:
+	mov		al,byte ptr [si]
+	inc		si
+	inc		cx
+	rep stosb
+	jmp		L$3
+L$11:
+	adc		bp,bp
+	dec		dl
+	jne		L$12
+	mov		bp,word ptr [si]
+	inc		si
+	inc		si
+	mov		dl,dh
+L$12:
+	jae		L$13
+	xor		ax,ax
+	mov		ax,word ptr [si]
+	add		si,2
+	mov		ch,al
+	mov		cl,4
+	shr		ax,cl
+	mov		cl,ch
+	and		cx,0fH
+	add		cl,2
+	dec		ax
+	jns		L$9
+	jmp		L$10
+L$13:
+	mov		ax,word ptr 1[si]
+	mov		ch,al
+    DB	0b1H
+L$14:
+	add		al,0d3H
+	call		near ptr 0dd5H
+	add		si,3
+    DB	81H, 0e1H
+L$15:
+	dec		word ptr [bx]
+	add		cx,2
+	dec		ax
+	jns		L$9
+	cmp		cx,12H
+	jae		L$10
+	cmp		cl,4
+	je		L$19
+	cmp		cl,3
+	je		L$17
+	cmp		cl,5
+	je		L$16
+	cmp		cl,2
+	je		L$21
+	jmp		L$21
+L$16:
+	xor		ch,ch
+	mov		cl,byte ptr [si]
+	inc		si
+	rep movsb
+	jmp		near ptr L$3
+L$17:
+	cmp		si,0c000H
+	jae		L$18
+	jmp		near ptr L$3
+L$18:
+	mov		ax,si
+	shr		ax,1
+	shr		ax,1
+	shr		ax,1
+	shr		ax,1
+	push		bx
+	mov		bx,ds
+	add		ax,bx
+	mov		ds,ax
+	and		si,0fH
+	pop		bx
+	jmp		near ptr L$3
+L$19:
+	cmp		di,0c000H
+	jae		L$20
+	jmp		near ptr L$3
+L$20:
+	mov		ax,di
+	sub		ax,0c000H
+	push		ax
+	push		bx
+	shr		ax,1
+	shr		ax,1
+	shr		ax,1
+	shr		ax,1
+	mov		bx,es
+	add		ax,bx
+	mov		es,ax
+	pop		bx
+	pop		ax
+	sub		di,ax
+	and		ax,0fH
+	add		di,ax
+	jmp		near ptr L$3
+L$21:
+	ret
+L$22:
+    DB	0, 0
+L$23:
+    DB	0, 0
+_TEXT		ENDS
+_DATA		SEGMENT	WORD PUBLIC USE16 'DATA'
+_DATA		ENDS
+		END

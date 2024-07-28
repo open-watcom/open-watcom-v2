@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,7 +37,7 @@
 #include <ctype.h>
 #include <limits.h>
 #include "lsspec.h"
-#include "encodlng.h"
+#include "wreslang.h"
 #include "pathgrp2.h"
 
 #include "clibext.h"
@@ -71,7 +71,7 @@ static void copyAligned( FILE *ofp, FILE *ifp ) {
     }
 }
 
-static void processLang( char *prefix, unsigned lang ) {
+static void processLang( char *prefix, wres_lang_id lang ) {
     unsigned    curr_offset;
     FILE        *fp;
     FILE        *ifp;
@@ -83,7 +83,7 @@ static void processLang( char *prefix, unsigned lang ) {
     char        name[9];
 
     _splitpath2( prefix, pg.buffer, &pg.drive, &pg.dir, &pg.fname, NULL );
-    sprintf( name, "%.6s%02u", pg.fname, lang );
+    sprintf( name, "%.6s%02d", pg.fname, lang );
     _makepath( fname, pg.drive, pg.dir, name, LOCALE_DATA_EXT );
     fp = fopen( fname, "wb" );
     if( !fp ) {
@@ -100,7 +100,7 @@ static void processLang( char *prefix, unsigned lang ) {
     curr_offset = 0;
     for( component = LS_MIN; component < LS_MAX; ++component ) {
         header.offset[ curr_offset++ ] = ftell( fp );
-        sprintf( name, "%.6s%02u", componentName[component], lang );
+        sprintf( name, "%.6s%02d", componentName[component], lang );
         name[0] = (char)tolower(name[0]);
         _makepath( fname, NULL, NULL, name, LOCALE_DATA_EXT );
         ifp = fopen( fname, "rb" );
@@ -119,12 +119,12 @@ static void processLang( char *prefix, unsigned lang ) {
 
 int main( int argc, char **argv )
 {
-    unsigned lang;
+    wres_lang_id    lang;
 
     if( argc != 2 ) {
         fatal( "usage: intlbin <prefix>" );
     }
-    for( lang = LANG_FIRST_INTERNATIONAL; lang < LANG_MAX; ++lang ) {
+    for( lang = LANG_RLE_FIRST_INTERNATIONAL; lang < LANG_RLE_MAX; ++lang ) {
         processLang( argv[1], lang );
     }
     return( EXIT_SUCCESS );

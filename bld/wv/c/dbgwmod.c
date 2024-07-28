@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,7 +35,6 @@
 #include "dbgdefn.h"
 #include "dbgdata.h"
 #include "dbgwind.h"
-#include "dbgadget.h"
 #include "modlist.h"
 #include "dbgio.h"
 #include "dbgutil.h"
@@ -47,6 +46,8 @@
 #include "dbgwmod.h"
 #include "dbgchopt.h"
 #include "menudef.h"
+#include "dbgicon.h"
+#include "litdui.h"
 
 
 #define WndMod( wnd ) ( (mod_window*)WndExtra( wnd ) )
@@ -76,7 +77,7 @@ static gui_menu_struct ModMenu[] = {
     #include "menumod.h"
 };
 
-static wnd_row ModNumRows( a_window wnd )
+static wnd_row WNDCALLBACK ModNumRows( a_window wnd )
 {
     return( ModListNumRows( ModList( WndMod( wnd ) ) ) );
 }
@@ -118,7 +119,7 @@ static void     ModInit( a_window wnd )
     ModCalcIndent( wnd );
 }
 
-static void     ModMenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_piece piece )
+static void     WNDCALLBACK ModMenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_piece piece )
 {
     address     addr;
     mod_handle  handle;
@@ -177,7 +178,7 @@ static void     ModMenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_piece
 }
 
 
-static void     ModModify( a_window wnd, wnd_row row, wnd_piece piece )
+static void     WNDCALLBACK ModModify( a_window wnd, wnd_row row, wnd_piece piece )
 {
     if( piece == PIECE_SOURCE ) {
         if( ModHasSourceInfo( ModListMod( ModList( WndMod( wnd ) ), row ) ) ) {
@@ -193,7 +194,7 @@ static void     ModModify( a_window wnd, wnd_row row, wnd_piece piece )
 }
 
 
-static  bool    ModGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *line )
+static  bool    WNDCALLBACK ModGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *line )
 {
     mod_handle  handle;
     mod_window  *mod = WndMod( wnd );
@@ -253,7 +254,7 @@ void ModNewHandle( a_window wnd, mod_handle handle )
     ModSetCurrent( wnd );
 }
 
-static void     ModRefresh( a_window wnd )
+static void     WNDCALLBACK ModRefresh( a_window wnd )
 {
     int         i;
     mod_window  *mod = WndMod( wnd );
@@ -281,7 +282,7 @@ static void ModSetOptions( a_window wnd )
     ModInit( wnd );
 }
 
-static bool ModWndEventProc( a_window wnd, gui_event gui_ev, void *parm )
+static bool WNDCALLBACK ModWndEventProc( a_window wnd, gui_event gui_ev, void *parm )
 {
     mod_window  *mod = WndMod( wnd );
 
@@ -312,7 +313,7 @@ void ModChangeOptions( void )
     WndForAllClass( WND_MODULES, ModSetOptions );
 }
 
-static bool ChkUpdate( void )
+static bool WNDCALLBACK ChkUpdate( void )
 {
     return( UpdateFlags & (UP_SYM_CHANGE | UP_OPEN_CHANGE | UP_CSIP_CHANGE | UP_STACKPOS_CHANGE) );
 }

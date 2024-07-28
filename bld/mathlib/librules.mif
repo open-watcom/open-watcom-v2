@@ -1,7 +1,7 @@
-.c.obj : $(__MAKEFILES__) .autodepend
+.c.obj : $(__MAKEFILES__) .AUTODEPEND
     @%make echo_cc
-    $(cc) $(ppflags_common) $(ppflags_autodep) $[@ $(include_c_path) $(mlib_c_flags) $(c_dbg_flags) $($^&_flags)
+    $(cc) $(ppflags_common) $(ppflags_autodep) $(ppflags_sys) $(mlib_cpp_flags) $[@ $(include_c_path) $(mlib_c_flags) $(c_dbg_flags) $($^&_flags)
 
-.asm.obj .gas.obj : $(__MAKEFILES__) .autodepend
+.asm.obj .gas.obj : $(__MAKEFILES__) .AUTODEPEND
     @%make echo_as
-    $(as) $(ppflags_common) $[@ $(include_a_path) $(mlib_a_flags) $(a_dbg_flags) $($^&_flags)
+    $(as) $(ppflags_common) $(mlib_app_flags) $[@ $(include_a_path) $(mlib_a_flags) $(a_dbg_flags) $($^&_flags)

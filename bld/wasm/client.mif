@@ -1,6 +1,6 @@
-asminline_c = $(wasm_dir)/c
-asminline_inc_dirs = -I"$(wasm_dir)/h"
-asminline_objs = &
+cli_asminline_c = $(wasm_dir)/c
+cli_asminline_inc_dirs = -I"$(wasm_dir)/h"
+cli_asminline_objs = &
     $(_subdir_)asmins.obj &
     $(_subdir_)asmscan.obj &
     $(_subdir_)asmline.obj &
@@ -13,8 +13,10 @@ asminline_objs = &
     $(_subdir_)asmjump.obj &
     $(_subdir_)asmexpnd.obj &
     $(_subdir_)asmeval.obj
-asminline_lib =
-asminline_deps = asmops.gh asmopsd.gh wasmcmsg.grh
+cli_asminline_libs =
+cli_asminline_deps = asmops.gh asmopsd.gh wasmcmsg.grh
+cli_asminline_rc_inc_dirs = -I"$(wasm_dir)/h"
+cli_asminline_rc_deps = wasmcmsg.grh
 
 !ifeq proj_name wasm
 wasm_client_extra_files = $(wasm_dir)/fullops.tok
@@ -27,7 +29,7 @@ wasmcmsg.grh : $(wasm_dir)/h/wasmc.msg $(__MAKEFILES__) .EXPLICIT
 
 ./mkopcod1.exe: $(wasm_dir)/mkopcod1.c $(wasm_dir)/mkopcode.h $(__MAKEFILES__) .EXPLICIT
     @%make echo_bldccl
-    $(bld_ccl) $(ppflags_common) $(ppflags_autodep) $[@ $(wasm_client_extra_defines) -I. -I"$(wasm_dir)/h" $(bld_cclflags) $(bld_ldflags)
+    $(bld_ccl) $(ppflags_common) $(ppflags_autodep) $(bld_ppflags_sys) $(wasm_client_extra_defines) $(bld_cppflags) $[@ -I. $(cli_asminline_inc_dirs) $(bld_cclflags) $(bld_ldflags)
 
 asmops.gh: ./mkopcod1.exe $(wasm_client_extra_files) $(wasm_dir)/inlnops.tok .EXPLICIT
     @%make echo_execute
@@ -35,7 +37,7 @@ asmops.gh: ./mkopcod1.exe $(wasm_client_extra_files) $(wasm_dir)/inlnops.tok .EX
 
 ./mkopcode.exe: $(wasm_dir)/mkopcode.c $(wasm_dir)/mkopcode.h asmops.gh $(__MAKEFILES__) .EXPLICIT
     @%make echo_bldccl
-    $(bld_ccl) $(ppflags_common) $(ppflags_autodep) $[@ $(wasm_client_extra_defines) -I. -I"$(wasm_dir)/h" $(bld_cclflags) $(bld_ldflags)
+    $(bld_ccl) $(ppflags_common) $(ppflags_autodep) $(bld_ppflags_sys) $(wasm_client_extra_defines) $(bld_cppflags) $[@ -I. $(cli_asminline_inc_dirs) $(bld_cclflags) $(bld_ldflags)
 
 asmopsd.gh: ./mkopcode.exe $(wasm_client_extra_files) $(wasm_dir)/inlnops.tok .EXPLICIT
     @%make echo_execute

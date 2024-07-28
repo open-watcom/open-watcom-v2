@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -390,7 +390,7 @@ HWND WdeCreateTag( HWND parent, WdeSetOrderStruct *o )
     }
 
     GetWindowRect( parent, &rect );
-    MapWindowPoints( (HWND)NULL, o->res_info->forms_win, (POINT *)&rect, 2 );
+    MapWindowRect( (HWND)NULL, o->res_info->forms_win, &rect );
 
     tag = CreateWindow( WdeTagClass, NULL, WS_VISIBLE | WS_CHILD | BS_PUSHBUTTON,
                         rect.left, rect.top, TAG_WIDTH, TAG_HEIGHT,

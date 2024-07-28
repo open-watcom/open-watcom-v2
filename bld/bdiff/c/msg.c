@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,36 +32,52 @@
 
 #include "bdiff.h"
 #ifdef __WATCOMC__
-#include <process.h>
+    #include <process.h>
 #endif
-#include "wressetr.h"
-#include "wresset2.h"
 #include "wreslang.h"
 #include "msg.h"
+#ifdef USE_WRESLIB
+    #include "wressetr.h"
+    #include "wresset2.h"
+#else
+    #include <windows.h>
+#endif
 
 #include "clibext.h"
 
 
-static  HANDLE_INFO     hInstance = { 0 };
-static  unsigned        MsgShift;
+#ifdef USE_WRESLIB
+static HANDLE_INFO      hInstance = { 0 };
+#else
+static HINSTANCE        hInstance;
+#endif
+static unsigned         msgShift;
 
 bool GetMsg( char *buffer, int resourceid )
 {
-    if( hInstance.status == 0 || WResLoadString( &hInstance, resourceid + MsgShift, (lpstr)buffer, MAX_RESOURCE_SIZE ) <= 0 ) {
+#ifdef USE_WRESLIB
+    if( hInstance.status == 0 || WResLoadString( &hInstance, resourceid + msgShift, (lpstr)buffer, MAX_RESOURCE_SIZE ) <= 0 ) {
         buffer[0] = '\0';
         return( false );
     }
+#else
+    if( LoadString( hInstance, resourceid + msgShift, buffer, MAX_RESOURCE_SIZE ) <= 0 ) {
+        buffer[0] = '\0';
+        return( false );
+    }
+#endif
     return( true );
 }
 
 bool MsgInit( void )
 {
+#ifdef USE_WRESLIB
     char        name[_MAX_PATH];
     char        msgbuf[MAX_RESOURCE_SIZE];
 
     hInstance.status = 0;
     if( _cmdname( name ) != NULL && OpenResFile( &hInstance, name ) ) {
-        MsgShift = _WResLanguage() * MSG_LANG_SPACING;
+        msgShift = _WResLanguage() * MSG_LANG_SPACING;
         if( GetMsg( msgbuf, MSG_USAGE_BASE ) ) {
             return( true );
         }
@@ -69,6 +85,11 @@ bool MsgInit( void )
     CloseResFile( &hInstance );
     puts( NO_RES_MESSAGE );
     return( false );
+#else
+    hInstance = GetModuleHandle( NULL );
+    msgShift = _WResLanguage() * MSG_LANG_SPACING;
+    return( true );
+#endif
 }
 
 static void OrderMsg( int order[], int num_arg, char *msg_ptr )
@@ -112,7 +133,10 @@ void Message( int format, ... )
 
 void MsgFini( void )
 {
+#ifdef USE_WRESLIB
     CloseResFile( &hInstance );
+#else
+#endif
 }
 
 static void Err( int format, va_list args )

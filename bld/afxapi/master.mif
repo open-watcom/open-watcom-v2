@@ -2,7 +2,9 @@
 
 proj_name = afxapi
 
-afxapi_autodepends  = .autodepend
+afxapi_autodepends  = .AUTODEPEND
+
+afxapi_ntverrc = ../h
 
 !ifeq lib_debug 1
 afxapi_debug = 1
@@ -29,6 +31,8 @@ intname = owfi$(bld_ver)
 statname = owfs$(bld_ver)
 !endif
 !endif
+
+ntverrc_dll = $(dllname)
 
 !include cproj.mif
 !include defrule.mif
@@ -351,15 +355,10 @@ $(intname).lib: $(objs) $(__MAKEFILES__)
     @rm tmp2.gdf
     @rm tmp3.gdf
 
-verrc_dll = $(dllname)
-!include verrc.mif
-
 extra_l_flags_dll = export @export.gdf
 
 dlltarg_libs = $(intname).lib
 dlltarg_res = $(dllname).res
-dlltarg_res_version_nt_386 = version.res
-dlltarg_res_version_nt_x64 = version.res
 dlltarg_objs = $(dynamic_objs)
 dlltarg_name = $(dllname)
 !include dlltarg.mif
@@ -374,7 +373,7 @@ $(statname).lib: $(static_objs) $(__MAKEFILES__)
 
 $(dllname).res: ../h/owf.rc $(__MAKEFILES__) .AUTODEPEND
     @%make echo_rc
-    $(rc) $(ppflags_common) $(rc_flags) -ad -zk0 $(inc_path) -I"../include" $[@ -fo=$@
+    $(rcj) $(ppflags_common) $(rc_cppflags) -ad $(rc_flags) $(rc_inc_path) -I"../include" $[@ -fo=$@
 
 .sp.gsp:
     @%make echo_awk

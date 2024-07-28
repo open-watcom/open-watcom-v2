@@ -4,6 +4,8 @@ proj_name = cpplib
 
 x_subdir = xobjs
 
+additional_clean_subdirs = $(x_subdir)
+
 !include $(cpplib_dir)/master.mif
 
 # make targets for libraries
@@ -28,7 +30,7 @@ target_objs += $(dbg_objs_c)
 target_xobjs += $(dbg_objs_c)
 !endif
 
-libs : .symbolic $(target_lib) $(target_lib_x) $(files)
+libs : .SYMBOLIC $(target_lib) $(target_lib_x) $(files)
     @%null
 
 $(target_lib) : $(dep_dirs) $(target_objs) $(__MAKEFILES__)

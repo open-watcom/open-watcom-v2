@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,6 +30,10 @@
 ****************************************************************************/
 
 
+#include "sample.rh"
+#include "gui.h"
+#include "guikey.h"
+
 #define keys                    1
 #define controls_on_main        0
 #define parent_keys             1
@@ -43,9 +47,6 @@
 #define mdi                     1
 #define controls_on_child3      1
 #define dynamic_menus           1
-
-#include "gui.h"
-#include "guikey.h"
 
 #define DLG_CHAR_WIDTH  20
 #define DLG_CHAR_HEIGHT 35
@@ -75,11 +76,11 @@ typedef struct {
     disp_entry      *display;
 } out_info;
 
-extern GUICALLBACK     MainWndGUIEventProc;
-extern GUICALLBACK     ControlWndGUIEventProc;
-extern GUICALLBACK     Child1WndGUIEventProc;
-extern GUICALLBACK     Child2WndGUIEventProc;
-extern GUICALLBACK     Child3WndGUIEventProc;
+extern GUIEVCALLBACK    MainWndGUIEventProc;
+extern GUIEVCALLBACK    ControlWndGUIEventProc;
+extern GUIEVCALLBACK    Child1WndGUIEventProc;
+extern GUIEVCALLBACK    Child2WndGUIEventProc;
+extern GUIEVCALLBACK    Child3WndGUIEventProc;
 
 enum {
     MENU_STATIC_DIALOG,

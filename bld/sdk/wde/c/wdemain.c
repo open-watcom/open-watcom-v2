@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -1425,7 +1425,7 @@ INT_PTR CALLBACK WdeSplashDlgProc( HWND hDlg, UINT message, WPARAM wParam, LPARA
             GetClientRect( w666, &rect );
             GetClientRect( hDlg, &arect );
             start = ( arect.right - arect.left - bm.bmWidth ) / 2;
-            MapWindowPoints( w666, hDlg, (POINT *)&rect, 2 );
+            MapWindowRect( w666, hDlg, &rect );
             tdc = CreateCompatibleDC( dc );
             old = SelectObject( tdc, logo );
             BitBlt( dc, start, rect.top + 20, bm.bmWidth, bm.bmHeight, tdc, 0, 0, SRCCOPY );

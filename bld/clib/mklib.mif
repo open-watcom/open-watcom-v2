@@ -7,7 +7,7 @@ tree_depth = 6
 .c   : ../../../c
 .asm .gas : ../../../a
 
-all : $(objfiles) $(libname).lib .symbolic
+all : $(objfiles) $(libname).lib .SYMBOLIC
     @%null
 
 $(libname).lib : $(objs) $(__MAKEFILES__)

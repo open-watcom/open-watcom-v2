@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,14 +37,14 @@
 #include "_cg.h"
 #include "bckdef.h"
 #include "typclass.h"
-#include "cfloat.h"
+#include "_cfloat.h"
 #include "cgaux.h"
 #include "model.h"
 #include "cgstub.h"
 #define extern
 #include "stubdata.h"
 
-cg_type CGIntTypes[] = {
+const cg_type CGIntTypes[] = {
     TY_UINT_1,
     TY_INT_1,
     TY_UINT_2,
@@ -64,7 +64,7 @@ cg_type CGIntTypes[] = {
     TY_DOUBLE,
     TY_DEFAULT
 };
-cg_type DGIntTypes[] = {
+const cg_type DGIntTypes[] = {
     TY_UINT_1,
     TY_INT_1,
     TY_UINT_2,
@@ -82,12 +82,12 @@ cg_type DGIntTypes[] = {
     TY_CODE_PTR,
     TY_DEFAULT
 };
-cg_type FloatTypes[] = {
+const cg_type FloatTypes[] = {
     TY_SINGLE,
     TY_DOUBLE,
     TY_DEFAULT
 };
-cg_op ControlOps[] = {
+const cg_op ControlOps[] = {
     O_GOTO,
     O_LABEL,
     O_INVOKE_LABEL,
@@ -96,7 +96,7 @@ cg_op ControlOps[] = {
     O_IF_FALSE,
     O_NOP
 };
-cg_op CompareOps[] = {
+const cg_op CompareOps[] = {
     O_EQ,
     O_NE,
     O_LT,
@@ -105,13 +105,13 @@ cg_op CompareOps[] = {
     O_GE,
     O_NOP
 };
-cg_op FlowOps[] = {
+const cg_op FlowOps[] = {
     O_FLOW_AND,
     O_FLOW_OR,
     O_FLOW_NOT,
     O_NOP
 };
-cg_op UnaryOps[] = {
+const cg_op UnaryOps[] = {
     O_UMINUS,
     O_COMPLEMENT,
     O_POINTS,
@@ -136,7 +136,7 @@ cg_op UnaryOps[] = {
     O_PTR_TO_NATIVE,
     O_NOP
 };
-cg_op BinaryOps[] = {
+const cg_op BinaryOps[] = {
     O_PLUS,
     O_MINUS,
     O_TIMES,
@@ -155,7 +155,7 @@ cg_op BinaryOps[] = {
     O_SIDE_EFFECT,
     O_NOP
 };
-cg_op FunkyOps[] = {
+const cg_op FunkyOps[] = {
     O_POW,
     O_ATAN2,
     O_FMOD,
@@ -176,14 +176,14 @@ cg_op FunkyOps[] = {
     O_RETURN,
     O_NOP
 };
-char * Classes[] = {
+const char * const Classes[] = {
     "CG_FE",
     "CG_LBL",
     "CG_BACK",
     "CG_TBL",
     ""
 };
-char * Ops[] = {
+const char * const Ops[] = {
     "",
     "+",
     "O_INTERNAL_01",
@@ -300,7 +300,7 @@ char * Ops[] = {
     "O_LV_PRE_GETS",
     ""
 };
-char * Tipes[] = {
+const char * const Tipes[] = {
     "TY_UINT_1",
     "TY_INT_1",
     "TY_UINT_2",

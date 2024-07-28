@@ -6,4 +6,6 @@ target_cpu = axp
 claxp_autodepends = .AUTODEPEND
 !endif
 
+claxp_ntverrc = ..
+
 !include ../../cl.mif

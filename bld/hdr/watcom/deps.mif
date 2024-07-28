@@ -179,14 +179,15 @@ h/vector       : $(vector_deps)
 
 # The follow describe the dependences for the various *.h files.
 
-fcntl_deps     = $(crwatqnx_sp) ../readonly.sp ../owrtlink.sp ../systypes.sp $(cplus) $(packll) $(packlnxk) ../off_t.sp ../pid_t.sp ../mode_t.sp ../wchar_t.sp ../modedef.sp ../loff_t.sp ../incdir.sp ../sopen.sp ../open.sp ../creat.sp $(extension) $(posixext)
-graph_deps     = $(owhdr) $(cplus) $(packll)
-pgchart_deps   = $(owhdr) $(cplus) $(packll)
-process_deps   = $(crwatqnx_sp) ../readonly.sp ../owrtlink.sp ../lfndos.sp ../systypes.sp $(cplus) ../pid_t.sp ../wchar_t.sp ../thrdhndl.sp ../getenv.sp ../putenv.sp ../setenv.sp ../system.sp ../abort.sp ../exit.sp ../_exit.sp ../getpid.sp ../msexec.sp ../pxexec.sp ../msspawn.sp $(extension)
-unistd_deps    = $(crwatqnx_sp) ../readonly.sp ../owrtlink.sp ../systypes.sp $(cplus) ../null.sp ../access.sp ../seekpos.sp ../pid_t.sp ../uid_t.sp ../gid_t.sp ../off_t.sp ../size_t.sp ../ssize_t.sp ../_exit.sp ../brk.sp ../fileio.sp ../msioext.sp ../dosflock.sp ../getpid.sp ../msexec.sp ../pxexec.sp ../pxexec.sp ../getcwd.sp ../chdir.sp ../mkdir.sp ../rmdir.sp ../remove.sp ../rename.sp ../stdfilno.sp $(posixext) $(unixext) $(extension)
-sys_stat_deps  = $(owhdr) ../lfndos.sp $(cplus) $(packll) $(packlnxk) ../incdir.sp ../time_t.sp ../off_t.sp ../dev_t.sp ../ino_t.sp ../mode_t.sp ../nlink_t.sp ../uid_t.sp ../gid_t.sp ../wchar_t.sp ../modedef.sp ../umask.sp ../chmod.sp ../stat.sp ../mkdir.sp $(extension) $(posixext)
-sys_time_deps  = $(owhdrcnt) ../owrtlink.sp $(cplus) $(packll) $(packlnxk) ../time_t.sp ../timeval.sp
-sys_types_deps = $(owhdr) $(cplus) $(packll) $(packlnxk) ../loff_t.sp ../incdir.sp ../time_t.sp ../size_t.sp ../exactint.sp ../ssize_t.sp ../pid_t.sp ../off_t.sp ../timer_t.sp ../clockidt.sp ../schedp.sp ../dev_t.sp ../ino_t.sp ../mode_t.sp ../nlink_t.sp ../uid_t.sp ../gid_t.sp ../id_t.sp ../schedp.sp ../sem_t.sp ../pthread1.sp ../pthread2.sp $(extension)
+fcntl_deps      = $(crwatqnx_sp) ../readonly.sp ../owrtlink.sp ../systypes.sp $(cplus) $(packll) $(packlnxk) ../off_t.sp ../pid_t.sp ../mode_t.sp ../wchar_t.sp ../modedef.sp ../loff_t.sp ../incdir.sp ../sopen.sp ../open.sp ../creat.sp $(extension) $(posixext)
+graph_deps      = $(owhdr) $(cplus) $(packll)
+pgchart_deps    = $(owhdr) $(cplus) $(packll)
+process_deps    = $(crwatqnx_sp) ../readonly.sp ../owrtlink.sp ../lfndos.sp ../systypes.sp $(cplus) ../pid_t.sp ../wchar_t.sp ../thrdhndl.sp ../getenv.sp ../putenv.sp ../setenv.sp ../system.sp ../abort.sp ../exit.sp ../_exit.sp ../getpid.sp ../msexec.sp ../pxexec.sp ../msspawn.sp $(extension)
+unistd_deps     = $(crwatqnx_sp) ../readonly.sp ../owrtlink.sp ../systypes.sp $(cplus) ../null.sp ../access.sp ../seekpos.sp ../pid_t.sp ../uid_t.sp ../gid_t.sp ../off_t.sp ../size_t.sp ../ssize_t.sp ../_exit.sp ../brk.sp ../fileio.sp ../msioext.sp ../dosflock.sp ../getpid.sp ../msexec.sp ../pxexec.sp ../pxexec.sp ../getcwd.sp ../chdir.sp ../mkdir.sp ../rmdir.sp ../remove.sp ../rename.sp ../stdfilno.sp $(posixext) $(unixext) $(extension)
+sys_select_deps = $(owhdrcnt) ../owrtlink.sp $(cplus) $(packll) $(packlnxk) ../fdset.sp ../time_t.sp ../susecond.sp ../timeval.sp ../select.sp
+sys_stat_deps   = $(owhdr) ../lfndos.sp $(cplus) $(packll) $(packlnxk) ../incdir.sp ../time_t.sp ../off_t.sp ../dev_t.sp ../ino_t.sp ../mode_t.sp ../nlink_t.sp ../uid_t.sp ../gid_t.sp ../wchar_t.sp ../modedef.sp ../umask.sp ../chmod.sp ../stat.sp ../mkdir.sp $(extension) $(posixext)
+sys_time_deps   = $(owhdrcnt) ../owrtlink.sp $(cplus) $(packll) $(packlnxk) ../fdset.sp ../time_t.sp ../susecond.sp ../timeval.sp ../select.sp
+sys_types_deps  = $(owhdr) $(cplus) $(packll) $(packlnxk) ../loff_t.sp ../incdir.sp ../time_t.sp ../size_t.sp ../exactint.sp ../ssize_t.sp ../susecond.sp ../pid_t.sp ../off_t.sp ../timer_t.sp ../clockidt.sp ../schedp.sp ../dev_t.sp ../ino_t.sp ../mode_t.sp ../nlink_t.sp ../uid_t.sp ../gid_t.sp ../id_t.sp ../schedp.sp ../sem_t.sp ../pthread1.sp ../pthread2.sp $(extension)
 
 h/_algmut.h       : $(mh_dir)/_algmut.mh $(owhdrcnt) $(ns_std)
 h/_algnmod.h      : $(mh_dir)/_algnmod.mh $(owhdrcnt) $(ns_std)
@@ -322,6 +323,8 @@ h/sys/stat.h      : $(mh_dir)/sys/stat.mh $(sys_stat_deps)
 !else ifeq system rdos
 
 h/sys/wait.h      : $(mh_dir)/sys/wait.mh $(owhdr) $(cplus) ../wait.sp
+h/sys/select.h    : $(mh_dir)/sys/select.mh $(sys_select_deps)
+h/sys/time.h      : $(mh_dir)/sys/time.mh $(sys_time_deps)
 
 !else ifeq system linux
 
@@ -338,6 +341,7 @@ h/sys/mman.h      : $(mh_dir)/linux/sys/mman.mh $(owhdr) ../systypes.sp $(cplus)
 h/sys/mount.h     : $(mh_dir)/linux/sys/mount.mh $(owhdr) $(cplus) $(packlnxk)
 h/sys/ptrace.h    : $(mh_dir)/linux/sys/ptrace.mh $(owhdr) $(cplus) $(packlnxk)
 h/sys/resource.h  : $(mh_dir)/linux/sys/resource.mh $(owhdr) $(cplus) $(packlnxk) ../incdir.sp
+h/sys/select.h    : $(mh_dir)/sys/select.mh $(sys_select_deps)
 h/sys/sendfile.h  : $(mh_dir)/linux/sys/sendfile.mh $(owhdr) ../systypes.sp $(cplus) $(packlnxk)
 h/sys/stat.h      : $(mh_dir)/sys/stat.mh $(sys_stat_deps)
 h/sys/sysinfo.h   : $(mh_dir)/linux/sys/sysinfo.mh $(owhdr) $(cplus) $(packlnxk) ../incdir.sp
@@ -415,6 +419,7 @@ h/sys/qnxterm.h   : $(qnx_mh_dir)/sys/qnxterm.mh $(packll)
 h/sys/qnx_glob.h  : $(qnx_mh_dir)/sys/qnx_glob.mh $(packll)
 h/sys/sched.h     : $(qnx_mh_dir)/sys/sched.mh $(packll)
 h/sys/seginfo.h   : $(qnx_mh_dir)/sys/seginfo.mh $(packll)
+#h/sys/select.h    : $(qnx_mh_dir)/sys/select.mh $(packll)
 h/sys/sendmx.h    : $(qnx_mh_dir)/sys/sendmx.mh $(packll)
 h/sys/ser_msg.h   : $(qnx_mh_dir)/sys/ser_msg.mh $(packll)
 h/sys/sidinfo.h   : $(qnx_mh_dir)/sys/sidinfo.mh $(packll)

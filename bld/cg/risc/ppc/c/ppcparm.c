@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -43,7 +43,7 @@
 #include "feprotos.h"
 
 
-static  hw_reg_set      floatRegs[] = {
+static const hw_reg_set     floatRegs[] = {
     HW_D_1( HW_F1 ),
     HW_D_1( HW_F2 ),
     HW_D_1( HW_F3 ),
@@ -60,7 +60,7 @@ static  hw_reg_set      floatRegs[] = {
     HW_D_1( HW_EMPTY )
 };
 
-static  hw_reg_set      scalarRegs[] = {
+static const hw_reg_set     scalarRegs[] = {
     HW_D_1( HW_D3 ),
     HW_D_1( HW_D4 ),
     HW_D_1( HW_D5 ),
@@ -80,8 +80,8 @@ void    InitPPCParmState( call_state *state )
     state->parm.fr = FIRST_FLOAT_PARM_REG_IDX;
 }
 
-type_length     ParmAlignment( type_def *tipe )
-/*********************************************/
+type_length     ParmAlignment( const type_def *tipe )
+/***************************************************/
 {
     type_class_def      type_class;
 

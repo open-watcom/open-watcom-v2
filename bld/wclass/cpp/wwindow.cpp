@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -307,17 +307,15 @@ bool WEXPORT WWindow::processMsg( gui_event gui_ev, void *parm )
     return( false );
 }
 
-
-extern "C" void EnumChildProc( gui_window *hwin, void * )
-/*******************************************************/
+extern "C" void GUICALLBACK EnumChildProc( gui_window *hwin, void * )
+/*******************************************************************/
 {
     WWindow *win = (WWindow*)GUIGetExtra( hwin );
     win->autosize();
 }
 
-
-extern "C" void EnumControlProc( gui_window *hwin, WControlId id, void * )
-/************************************************************************/
+extern "C" void GUICALLBACK EnumControlProc( gui_window *hwin, WControlId id, void * )
+/************************************************************************************/
 {
     WWindow *win = (WWindow*)GUIGetExtra( hwin );
     WControl* control = win->getControl( id );
@@ -334,9 +332,8 @@ void WWindow::enumChildren()
     GUIEnumControls( _handle, EnumControlProc, NULL );
 }
 
-
-extern "C" bool WinGUIEventProc( gui_window *hwin, gui_event gui_ev, void *parm )
-/*******************************************************************************/
+extern "C" bool GUICALLBACK WinGUIEventProc( gui_window *hwin, gui_event gui_ev, void *parm )
+/*******************************************************************************************/
 {
     WWindow* win = (WWindow *)GUIGetExtra( hwin );
     if( gui_ev == GUI_INIT_WINDOW ) {
@@ -892,10 +889,10 @@ void WEXPORT WWindow::resized( int, int )
     //updateAutosize();
 }
 
-void WEXPORT WWindow::size( WOrdinal w, WOrdinal h )
+void WEXPORT WWindow::size( WOrdinal width, WOrdinal high )
 {
-    _autosize.w( w );
-    _autosize.h( h );
+    _autosize.w( width );
+    _autosize.h( high );
     autosize();
 }
 
@@ -1115,13 +1112,13 @@ bool WEXPORT WWindow::rightBttnUp( int x, int y, WMouseKeyFlags flags )
 }
 
 
-void WEXPORT WWindow::setScrollRange( WScrollBar sb, int maxr )
-/*************************************************************/
+void WEXPORT WWindow::setScrollRange( WScrollBar sb, int maxRange )
+/*****************************************************************/
 {
     if( sb == WScrollBarVertical ) {
-        GUISetVScrollRange( _handle, maxr );
+        GUISetVScrollRange( _handle, maxRange );
     } else {
-        GUISetHScrollRange( _handle, maxr );
+        GUISetHScrollRange( _handle, maxRange );
     }
 }
 
@@ -1159,13 +1156,13 @@ int  WEXPORT WWindow::getScrollPos( WScrollBar sb )
 }
 
 
-void WEXPORT WWindow::setScrollTextRange( WScrollBar sb, int maxr )
-/*****************************************************************/
+void WEXPORT WWindow::setScrollTextRange( WScrollBar sb, int maxRange )
+/*********************************************************************/
 {
     if( sb == WScrollBarVertical ) {
-        GUISetVScrollRangeRows( _handle, maxr );
+        GUISetVScrollRangeRows( _handle, maxRange );
     } else {
-        GUISetHScrollRangeCols( _handle, maxr );
+        GUISetHScrollRangeCols( _handle, maxRange );
     }
 }
 
@@ -1352,5 +1349,20 @@ void WWindow::hookF1Key( bool set )
         GUIHookF1();
     } else {
         GUIUnHookF1();
+    }
+}
+
+void WEXPORT WWindow::updateTextExtents( const char *text, gui_ord *extentx, gui_ord *extenty )
+/*********************************************************************************************/
+{
+    gui_ord tmp;
+
+    tmp = GUIGetExtentX( _handle, text, strlen( text ) );
+    if( *extentx < tmp ) {
+        *extentx = tmp;
+    }
+    tmp = GUIGetExtentY( _handle, text );
+    if( *extenty < tmp ) {
+        *extenty = tmp;
     }
 }

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,7 +32,7 @@
 
 #include "_cgstd.h"
 #include "coderep.h"
-#include "cfloat.h"
+#include "_cfloat.h"
 #include "data.h"
 #include "rgtbl.h"
 #include "fixindex.h"
@@ -76,23 +76,23 @@ bool    DoVerify( vertype kind, instruction *ins )
             return( false );
         if( !CFIsI32( op1->c.value ) && !CFIsU32( op1->c.value ) )
             return(false);
-        if( (op1->c.lo.int_value & 0x0000ffff) == (( op1->c.lo.int_value >> 16 ) & 0x0000ffff) )
+        if( (op1->c.lo.u.int_value & 0x0000ffff) == (( op1->c.lo.u.int_value >> 16 ) & 0x0000ffff) )
             return( true );
         break;
     case V_OP2HIGH_B_ZERO:
-        if( op2->c.const_type == CONS_ABSOLUTE && (op2->c.lo.int_value & 0x0000ff00) == 0 )
+        if( op2->c.const_type == CONS_ABSOLUTE && (op2->c.lo.u.int_value & 0x0000ff00) == 0 )
             return( true );
         break;
     case V_OP2LOW_B_FF:
-        if( op2->c.const_type == CONS_ABSOLUTE && (~op2->c.lo.int_value & 0x000000ff) == 0 )
+        if( op2->c.const_type == CONS_ABSOLUTE && (~op2->c.lo.u.int_value & 0x000000ff) == 0 )
             return( true );
         break;
     case V_OP2LOW_B_ZERO:
-        if( op2->c.const_type == CONS_ABSOLUTE && (op2->c.lo.int_value & 0x000000ff) == 0 )
+        if( op2->c.const_type == CONS_ABSOLUTE && (op2->c.lo.u.int_value & 0x000000ff) == 0 )
             return( true );
         break;
     case V_OP2LOW_W_FFFF:
-        if( op2->c.const_type == CONS_ABSOLUTE && (~op2->c.lo.int_value & 0x0000ffff) == 0 )
+        if( op2->c.const_type == CONS_ABSOLUTE && (~op2->c.lo.u.int_value & 0x0000ffff) == 0 )
             return( true );
         break;
     case V_LSHONE:
@@ -110,7 +110,7 @@ bool    DoVerify( vertype kind, instruction *ins )
             return( false );
         if( op2->c.const_type != CONS_ABSOLUTE )
             return( false );
-        if( op2->c.lo.int_value != 8 )
+        if( op2->c.lo.u.int_value != 8 )
             return( false );
         if( op1->n.class == N_REGISTER && !HW_CEqual( op1->r.reg, HW_ABCD ) )
             return( false );
@@ -120,7 +120,7 @@ bool    DoVerify( vertype kind, instruction *ins )
     case V_CYP2SHIFT:
         if( op2->c.const_type != CONS_ABSOLUTE )
             return( false );
-        if( op2->c.lo.int_value != 8 )
+        if( op2->c.lo.u.int_value != 8 )
             return( false );
         if( _CPULevel( CPU_186 ) )
             return( false );
@@ -130,29 +130,29 @@ bool    DoVerify( vertype kind, instruction *ins )
     case V_CYP4SHIFT:
         if( op2->c.const_type != CONS_ABSOLUTE )
             return( false );
-        if( op2->c.lo.int_value < 16 )
+        if( op2->c.lo.u.int_value < 16 )
             return( false );
         return( true );
     case V_OP2HIGH_B_FF:
-        if( op2->c.const_type == CONS_ABSOLUTE && (op2->c.lo.int_value & 0x0000ff00) == 0x0000ff00 )
+        if( op2->c.const_type == CONS_ABSOLUTE && (op2->c.lo.u.int_value & 0x0000ff00) == 0x0000ff00 )
             return( true );
         break;
     case V_OP2HIGH_W_FFFF_REG:
         if( op1->n.class == N_REGISTER && HW_Ovlap( op1->r.reg, HW_xBP ) )
             break;
     case V_OP2HIGH_W_FFFF:
-        if( op2->c.const_type == CONS_ABSOLUTE && (op2->c.lo.int_value & 0xffff0000) == 0xffff0000 )
+        if( op2->c.const_type == CONS_ABSOLUTE && (op2->c.lo.u.int_value & 0xffff0000) == 0xffff0000 )
             return( true );
         break;
     case V_OP2HIGH_W_ZERO_REG:
         if( op1->n.class == N_REGISTER && HW_Ovlap( op1->r.reg, HW_xBP ) )
             break;
     case V_OP2HIGH_W_ZERO:
-        if( op2->c.const_type == CONS_ABSOLUTE && (op2->c.lo.int_value & 0xffff0000) == 0 )
+        if( op2->c.const_type == CONS_ABSOLUTE && (op2->c.lo.u.int_value & 0xffff0000) == 0 )
             return( true );
         break;
     case V_OP2LOW_W_ZERO:
-        if( op2->c.const_type == CONS_ABSOLUTE && (op2->c.lo.int_value & 0x0000ffff) == 0 )
+        if( op2->c.const_type == CONS_ABSOLUTE && (op2->c.lo.u.int_value & 0x0000ffff) == 0 )
             return( true );
         break;
     case V_OP2PTR:
@@ -169,7 +169,7 @@ bool    DoVerify( vertype kind, instruction *ins )
         switch( ins->head.opcode ) {
 #if _TARGET & _TARG_80386
         case OP_MUL:
-            switch( op2->c.lo.int_value ) {
+            switch( op2->c.lo.u.int_value ) {
             case 3:
             case 5:
             case 9:
@@ -181,7 +181,7 @@ bool    DoVerify( vertype kind, instruction *ins )
                 return( false );
             if( OptForSize > 50 )
                 return( false );
-            switch( op2->c.lo.int_value ) {
+            switch( op2->c.lo.u.int_value ) {
             case 1:
             case 2:
             case 3:
@@ -247,9 +247,9 @@ bool    DoVerify( vertype kind, instruction *ins )
     case V_AC_BETTER:
         if( op2->c.const_type != CONS_ABSOLUTE )
             return( true );
-        if( op2->c.lo.int_value > 127 )
+        if( op2->c.lo.u.int_value > 127 )
             return( true );
-        if( op2->c.lo.int_value < -128 )
+        if( op2->c.lo.u.int_value < -128 )
             return( true );
         break;
     case V_OP2POW2_286:

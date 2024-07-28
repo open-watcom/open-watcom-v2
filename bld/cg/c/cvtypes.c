@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -50,7 +50,7 @@ struct lf_info {
      lf_values  code;
 } lf_info;
 
-static struct lf_info LFInfo[LFG_LAST] = {
+static const struct lf_info LFInfo[LFG_LAST] = {
     #define _LFMAC( n, N, c )    { sizeof( lf_##n ), c },
     #include "cv4types.h"
     #undef _LFMAC
@@ -60,13 +60,12 @@ static  void    BuffWrite( cv_out *out, void *to )
 /************************************************/
 {
     unsigned    len;
-    segment_id  old_segid;
 
-    len = (byte *)to - out->beg;
-    old_segid = SetOP( out->segid );
-    DataBytes( len, out->beg );
-    out->beg = to;
-    SetOP( old_segid );
+    PUSH_OP( out->segid );
+        len = (byte *)to - out->beg;
+        DataBytes( len, out->beg );
+        out->beg = to;
+    POP_OP();
 }
 
 static  void   BuffSkip( cv_out *out, void *to )
@@ -79,12 +78,11 @@ static  void    buffEnd( cv_out *out )
 /************************************/
 {
     unsigned    len;
-    segment_id  old_segid;
 
-    len = out->ptr - out->beg;
-    old_segid = SetOP( out->segid );
-    DataBytes( len, out->beg );
-    SetOP( old_segid );
+    PUSH_OP( out->segid );
+        len = out->ptr - out->beg;
+        DataBytes( len, out->beg );
+    POP_OP();
 }
 
 static  void    *BuffInc( cv_out *out, int size )
@@ -98,7 +96,9 @@ static  void    *BuffInc( cv_out *out, int size )
 }
 
 static  void  *AlignBuff( cv_out *out )
-/*** round out->ptr up to align size ***/
+/**************************************
+ * round out->ptr up to align size
+ */
 {
     int     len;
 //    int     len4;
@@ -120,11 +120,9 @@ static  void  *AlignBuff( cv_out *out )
 static  void    SegReloc( segment_id segid, cg_sym_handle sym )
 /*************************************************************/
 {
-    segment_id  old_segid;
-
-    old_segid = SetOP( segid );
-    FEPtrBase( sym );
-    SetOP( old_segid );
+    PUSH_OP( segid );
+        FEPtrBase( sym );
+    POP_OP();
 }
 
 static  void    *StartType( cv_out *out, lfg_index what )
@@ -155,21 +153,22 @@ static  void    NewType( cv_out *out )
 }
 
 static  int  EndSub( cv_out *out )
-/*** write out a member of a subfield (don't write a length) ***/
-/* return length so it can be backpatched to list head       ***/
-/* reset buff to start **/
+/*********************************
+ * write out a member of a subfield (don't write a length)
+ * return length so it can be backpatched to list head
+ * reset buff to start
+ */
 {
     unsigned        len;
-    segment_id      old_segid;
 //    long_offset     here;
 
     AlignBuff( out );
     len = out->ptr - out->buff;
     if( _IsModel( CGSW_GEN_DBG_TYPES ) ) {
-        old_segid = SetOP( CVTypes );
-//        here = AskBigLocation();
-        DataBytes( len, out->buff );
-        SetOP( old_segid );
+        PUSH_OP( CVTypes );
+//            here = AskBigLocation();
+            DataBytes( len, out->buff );
+        POP_OP();
     }
     out->ptr = out->buff;
     return( len );
@@ -178,7 +177,6 @@ static  int  EndSub( cv_out *out )
 static  long_offset   EndTypeString( cv_out *out )
 /************************************************/
 {
-    segment_id      old_segid;
     unsigned        len;
     long_offset     here = 0;
 
@@ -186,10 +184,10 @@ static  long_offset   EndTypeString( cv_out *out )
         AlignBuff( out );
         len = out->ptr - out->buff;
         *((u2 *)&out->buff[0]) = len - sizeof( u2 );  /* set type rec len*/
-        old_segid = SetOP( CVTypes );
-        here = AskBigLocation();
-        DataBytes( len, out->buff );
-        SetOP( old_segid );
+        PUSH_OP( CVTypes );
+            here = AskBigLocation();
+            DataBytes( len, out->buff );
+        POP_OP();
     }
     return( here );
 }
@@ -205,17 +203,18 @@ void    CVEndType( cv_out *out )
 }
 
 static  void    PatchLen( long_offset where, u2 what )
-/********** back patch field list length ************/
+/*****************************************************
+ * back patch field list length
+ */
 {
     long_offset         here;
-    segment_id          old_segid;
 
-    old_segid = SetOP( CVTypes );
-    here = AskBigLocation();
-    SetBigLocation( where );
-    DataShort( what );
-    SetBigLocation( here );
-    SetOP( old_segid );
+    PUSH_OP( CVTypes );
+        here = AskBigLocation();
+        SetBigLocation( where );
+        DataShort( what );
+        SetBigLocation( here );
+    POP_OP();
 }
 
 static  void PutFld2( cv_out *out, short num )
@@ -289,6 +288,7 @@ void CVPutINum( cv_out *out, int_32 num )
 /***************************************/
 {
     byte       *ptr;
+
 #define LC( what, to )   *((to *)&what)
     if( num >= 0 && num < 0x00008000 ) {
         *((u2*)out->ptr) = num;  /* out num as is */
@@ -321,6 +321,7 @@ void        CVPutINum64( cv_out *out, signed_64 val )
 /***************************************************/
 {
     byte       *ptr;
+
 #define LC( what, to )   *((to *)&what)
     if( val.u._32[I64HI32] == 0 || val.u._32[I64HI32] == -1 ) {
         CVPutINum( out, val.u._32[I64LO32] );
@@ -425,10 +426,10 @@ static char const RealNames[MAX_REAL_NAME][17] = {
 dbg_type    CVScalar( const char *name, cg_type tipe )
 /****************************************************/
 {
-    type_def          *tipe_addr;
-    int                length;
-    cv_primitive       index;
-    int                count;
+    const type_def      *tipe_addr;
+    int                 length;
+    cv_primitive        index;
+    int                 count;
 
     index.s = 0;  /* set bits to 0 */
     if( strcmp( name, "__segment" ) == 0 ) {
@@ -529,7 +530,9 @@ void    CVDumpName( dbg_name name, dbg_type tipe )
     ct_modifier     *mod;
     long_offset     here;
 
-// we are going to loose the name so a fix is needed in the interface
+    /*
+     * we are going to loose the name so a fix is needed in the interface
+     */
     if( tipe == DBG_FWD_TYPE ) {
         NewTypeString( out );
         tipe = ++TypeIdx;
@@ -539,8 +542,8 @@ void    CVDumpName( dbg_name name, dbg_type tipe )
             mod->attr.s = 0;
             mod->index = tipe;
             here = EndTypeString( out );
-            name->patch.segid = CVTypes;
-            name->patch.offset = 2 + here + offsetof(lf_modifier, f.index ) ;
+            name->dpatch.segid = CVTypes;
+            name->dpatch.offset = 2 + here + offsetof(lf_modifier, f.index ) ;
         }
     }
     name->refno = tipe;
@@ -550,14 +553,13 @@ void CVBackRefType( dbg_name name, dbg_type tipe )
 /************************************************/
 {
     long_offset     here;
-    segment_id      old_segid;
 
-    old_segid = SetOP( name->patch.segid );
-    here = AskBigLocation();
-    SetBigLocation( name->patch.offset );
-    DataShort( tipe );
-    SetBigLocation( here );
-    SetOP( old_segid );
+    PUSH_OP( name->dpatch.segid );
+        here = AskBigLocation();
+        SetBigLocation( name->dpatch.offset );
+        DataShort( tipe );
+        SetBigLocation( here );
+    POP_OP();
     name->refno = tipe;
 }
 
@@ -568,7 +570,9 @@ dbg_type    CVArray( dbg_type dims, dbg_type base )
     ct_dimarray     *array;
     dbg_type        ret;
 
-// Need the length to make things simple
+    /*
+     * Need the length to make things simple
+     */
     NewTypeString( out );
     ret = ++TypeIdx;
     array = StartType( out, LFG_DIMARRAY );
@@ -586,7 +590,9 @@ dbg_type    CVArraySize( offset size, uint_32 hi, dbg_type base )
     ct_array    *array;
     dbg_type    ret;
 
-// Need the length to make things simple
+    /*
+     * Need the length to make things simple
+     */
     NewTypeString( out );
     ret = ++TypeIdx;
     array = StartType( out, LFG_ARRAY );
@@ -656,7 +662,7 @@ dbg_type    CVIndCharBlock( back_handle len, cg_type len_type, int off )
     ct_dimvaru      *dim;
     cv_primitive    index;
     lf_values       ret;
-    type_def        *tipe_addr;
+    const type_def  *tipe_addr;
 
     tipe_addr = TypeAddress( len_type );
     itipe = LFIntType( tipe_addr->length );
@@ -675,9 +681,9 @@ dbg_type    CVIndCharBlock( back_handle len, cg_type len_type, int off )
 
 typedef struct {
     union {
-      cg_sym_handle s;
-      name          *n;
-    } v;
+        cg_sym_handle   sym;
+        name            *name;
+    } u;
     int         o;
     enum {
         EXPR_NONE     = 0x00,
@@ -687,11 +693,11 @@ typedef struct {
     } state;
 } fold_leaf;
 
-enum{ FOLD_EXPR = 10 };
+enum{ MAX_FOLD_EXPR = 10 };
 typedef struct {
-    fold_leaf *stk;
-    fold_leaf ops[FOLD_EXPR];
-    bool  error;
+    fold_leaf   *stk;
+    fold_leaf   ops[MAX_FOLD_EXPR];
+    bool        error;
 } fold_expr;
 
 static  void    DoLocFold( dbg_loc loc, fold_expr *what )
@@ -717,15 +723,15 @@ static  void    DoLocFold( dbg_loc loc, fold_expr *what )
     case LOC_BP_OFFSET:
         --stk;
         if( (loc->class & 0xf0) == LOC_BP_OFFSET ) {
-            stk[0].v.n  = loc->u.be_sym->v.symbol;
+            stk[0].u.name  = loc->u.be_sym->v.symbol;
             stk[0].state = EXPR_NAME;
             stk[0].o = 0;
         } else {
             if( loc->class == LOC_MEMORY ) {
-                stk[0].v.s = loc->u.fe_sym;
+                stk[0].u.sym = loc->u.fe_sym;
                 stk[0].state = EXPR_SYM;
             } else {
-                stk[0].v.s = 0;
+                stk[0].u.sym = 0;
                 disp = loc->u.val;
                 stk[0].o = disp;
                 stk[0].state = EXPR_NONE;
@@ -740,7 +746,7 @@ static  void    DoLocFold( dbg_loc loc, fold_expr *what )
                 return;
             }
             if( stk[1].state & EXPR_VAR ) {
-                stk[0].v = stk[1].v;
+                stk[0].u = stk[1].u;
                 stk[0].state |= stk[1].state;
             }
             stk[0].o += stk[1].o;
@@ -768,12 +774,12 @@ static bool FoldExpr( dbg_loc loc, fold_leaf *ret )
 {
     fold_expr      expr;
 
-    expr.stk = &expr.ops[FOLD_EXPR];
+    expr.stk = &expr.ops[MAX_FOLD_EXPR];
     expr.error = false;
     DoLocFold( loc, &expr );
     if( !expr.error ) {
-        if( expr.stk == &expr.ops[FOLD_EXPR - 1] ) {
-            *ret = expr.ops[FOLD_EXPR - 1];
+        if( expr.stk == &expr.ops[MAX_FOLD_EXPR - 1] ) {
+            *ret = expr.ops[MAX_FOLD_EXPR - 1];
             return( true );
         }
     }
@@ -788,7 +794,7 @@ dbg_type    CVLocCharBlock( dbg_loc loc, cg_type len_type )
     cv_out          out[1];
     ct_dimvaru      *dim;
     lf_values       ret;
-    type_def        *tipe_addr;
+    const type_def  *tipe_addr;
     fold_leaf       tmp;
 
     tipe_addr = TypeAddress( len_type );
@@ -798,9 +804,9 @@ dbg_type    CVLocCharBlock( dbg_loc loc, cg_type len_type )
             NewTypeString( out );
             symref = ++TypeIdx;
             StartType( out, LFG_REFSYM );
-            CVOutLocal( out, tmp.v.n, tmp.o, itipe );
+            CVOutLocal( out, tmp.u.name, tmp.o, itipe );
         } else {
-            symref = OutBckSym( FEBack( tmp.v.s ), tmp.o, itipe );
+            symref = OutBckSym( FEBack( tmp.u.sym ), tmp.o, itipe );
         }
     } else {
         symref = OutBckCon( 1, itipe );
@@ -825,7 +831,7 @@ dbg_type    CVFtnArray( back_handle dims, cg_type lo_bound_tipe,
     cv_out          out[1];
     ct_dimvarlu     *dim;
     lf_values       ret;
-    type_def        *tipe_addr;
+    const type_def  *tipe_addr;
 
     /* unused parameters */ (void)num_elts_tipe;
 
@@ -855,7 +861,9 @@ dbg_type    CVIntArray( uint_32 hi, dbg_type base )
     dbg_type        ret;
     lf_values       dim;
 
-// Need the length to make things simple
+    /*
+     * Need the length to make things simple
+     */
     dim = ArrayDim( hi );
     NewTypeString( out );
     ret = ++TypeIdx;
@@ -870,7 +878,9 @@ dbg_type    CVIntArray( uint_32 hi, dbg_type base )
 
 
 static  lf_values   ArrayDimL( int_32 low, int_32 hi )
-/************ Make 1 dim array bound ****************/
+/*****************************************************
+ * Make 1 dim array bound
+ */
 {
     cv_out          out[1];
     ct_dimconlu     *dim;
@@ -892,13 +902,12 @@ static  lf_values   ArrayDimL( int_32 low, int_32 hi )
 static  dbg_type    CVDimVarLU( dbg_array ar )
 /********************************************/
 {
-    cv_out         out[1];
-    ct_dimvarlu    *var;
-    dbg_type       itipe;
-    dbg_type       symref[2];
-    type_def       *tipe_addr;
-    dim_any        *dim;
-    dim_any        *next;
+    cv_out          out[1];
+    ct_dimvarlu     *var;
+    dbg_type        itipe;
+    dbg_type        symref[2];
+    const type_def  *tipe_addr;
+    dim_any         *dim;
 
     NewTypeString( out );
     var = StartType( out, LFG_DIMVARLU );
@@ -906,20 +915,20 @@ static  dbg_type    CVDimVarLU( dbg_array ar )
     var->index = LF_TINT4;
     tipe_addr = NULL;
     itipe = 0;
-    for( dim = ar->list; dim != NULL; dim = next ) {
-        next = dim->entry.next;
-        switch( dim->entry.kind ) {
+    while( (dim = ar->list) != NULL ) {
+        ar->list = dim->next;
+        switch( dim->kind ) {
         case DIM_VAR:
             if( tipe_addr == NULL ) {
-                tipe_addr = TypeAddress( dim->var.lo_bound_tipe );
+                tipe_addr = TypeAddress( dim->u.var.lo_bound_tipe );
                 itipe = LFIntType( tipe_addr->length );
             }
-            symref[0] = OutBckSym( dim->var.dims, dim->var.off, itipe );
-            symref[1] = OutBckSym( dim->var.dims, dim->var.off + tipe_addr->length, itipe );
+            symref[0] = OutBckSym( dim->u.var.dims, dim->u.var.off, itipe );
+            symref[1] = OutBckSym( dim->u.var.dims, dim->u.var.off + tipe_addr->length, itipe );
             break;
         case DIM_CON:
-            symref[0] = OutBckCon( dim->con.lo, dim->con.idx );
-            symref[1] = OutBckCon( dim->con.hi, dim->con.idx );
+            symref[0] = OutBckCon( dim->u.con.lo, dim->u.con.idx );
+            symref[1] = OutBckCon( dim->u.con.hi, dim->u.con.idx );
             break;
         default:
             symref[0] = 0;
@@ -932,7 +941,6 @@ static  dbg_type    CVDimVarLU( dbg_array ar )
         PutFld2( out, symref[1] );
         CGFree( dim  );
     }
-    ar->list = NULL;
     EndTypeString( out );
     return( ++TypeIdx );
 }
@@ -943,18 +951,17 @@ static  dbg_type    CVDimConLU( dbg_array ar )
     cv_out          out[1];
     ct_dimconlu     *con;
     dim_any         *dim;
-    dim_any         *next;
 
     NewTypeString( out );
     con = StartType( out, LFG_DIMCONLU );
     con->rank = ar->num;
     con->index = LF_TINT4;
-    for( dim = ar->list; dim != NULL; dim = next ) {
-        next = dim->entry.next;
-        switch( dim->entry.kind ) {
+    while( (dim = ar->list) != NULL ) {
+        ar->list = dim->next;
+        switch( dim->kind ) {
         case DIM_CON:
-            PutFldSized( out, 4, dim->con.lo );
-            PutFldSized( out, 4, dim->con.hi );
+            PutFldSized( out, 4, dim->u.con.lo );
+            PutFldSized( out, 4, dim->u.con.hi );
             break;
         default:
             Zoiks( ZOIKS_106 ); /* bad pointer */
@@ -963,7 +970,6 @@ static  dbg_type    CVDimConLU( dbg_array ar )
         }
         CGFree( dim );
     }
-    ar->list = NULL;
     EndTypeString( out );
     return( ++TypeIdx );
 }
@@ -994,7 +1000,7 @@ dbg_type   CVSubRange( int_32 lo, int_32 hi, dbg_type base )
 static  cv_ptrtype  PtrClass( cg_type ptr_type )
 /**********************************************/
 {
-    type_def        *tipe_addr;
+    const type_def  *tipe_addr;
     cv_ptrtype      ret = 0;
 
     tipe_addr = TypeAddress( ptr_type );
@@ -1096,8 +1102,10 @@ static  dbg_type    CVBasedPtrK( cg_type ptr_type, dbg_type base,
 
     /* unused parameters */ (void)ptr_type;
 
-    //TODO: Need to do somthing about segments
-    //TODO: Need to do somthing about BasePtr
+    /*
+     * TODO: Need to do somthing about segments
+     * TODO: Need to do somthing about BasePtr
+     */
     NewTypeString( out );
     ret = ++TypeIdx;
 //    ptype = PtrClass( ptr_type );
@@ -1150,10 +1158,10 @@ typedef struct {
     bool indirect;
 } based_leaf;
 
-#define MAX_OP 2
+#define MAX_OPS 2
 typedef struct {
     based_leaf      *stk;
-    based_leaf      ops[MAX_OP];
+    based_leaf      ops[MAX_OPS];
     cg_sym_handle   sym;
     int             count;
     enum {
@@ -1183,7 +1191,7 @@ static  void    DoLocBase( dbg_loc loc, based_expr *what )
     switch( loc->class & 0xf0 ) {
     case LOC_CONSTANT:
     case LOC_BP_OFFSET:
-        if( what->count < MAX_OP ) {
+        if( what->count < MAX_OPS ) {
             ++what->count;
             --stk;
         } else {
@@ -1288,7 +1296,7 @@ dbg_type    CVBasedPtr( cg_type ptr_type, dbg_type base, dbg_loc loc_segment )
     uint           based_kind;
     dbg_type       ret;
 
-    expr.stk = &expr.ops[MAX_OP];
+    expr.stk = &expr.ops[MAX_OPS];
     expr.count = 0;
     expr.state = IS_NONE;
     expr.sym = NULL;;
@@ -1381,7 +1389,7 @@ static cv_mprop WVCVMProp( uint kind )
 static   cv_vtshape   CVVTShape( cg_type ptr_type )
 /*************************************************/
 {
-    type_def        *tipe_addr;
+    const type_def  *tipe_addr;
     cv_vtshape      ret = 0;
 
     tipe_addr = TypeAddress( ptr_type );
@@ -1611,7 +1619,9 @@ static int  MkFlist( dbg_struct st )
 }
 
 static  field_any  *UnLinkMethod( field_any **owner, const char *name )
-/*** UnLink method with name  ****************************************/
+/**********************************************************************
+ * UnLink method with name
+ */
 {
     field_any    *curr;
 
@@ -1684,13 +1694,9 @@ static int  FlistCount( field_any *field )
 dbg_type    CVEndStruct( dbg_struct st )
 /**************************************/
 {
-    lf_values        flisti;
-    lf_values        hd;
-    lf_values        vshape;
-    union {
-        ct_structure s;
-        ct_union     u;
-    }          *head;
+    lf_values       flisti;
+    lf_values       hd;
+    lf_values       vshape;
     int             count;
     cv_out          out[1];
 
@@ -1712,23 +1718,27 @@ dbg_type    CVEndStruct( dbg_struct st )
     flisti = ++TypeIdx;
     count = FlistCount( st->list );
     if( st->is_struct ) {
+        ct_structure *head;
+
         head = StartType( out, LFG_STRUCTURE );
-//      head->s.count  = st->num;
-        head->s.count  = count;
-        head->s.field = flisti;
-        head->s.property.s = 0;
-        head->s.property.f.cnested = st->is_cnested;
-        head->s.property.f.isnested = st->is_nested;
-        head->s.property.f.overops = SortMethods( st );
-        head->s.dList = 0;
-        head->s.vshape = vshape;
+//        head->count  = st->num;
+        head->count  = count;
+        head->field = flisti;
+        head->property.s = 0;
+        head->property.f.cnested = st->is_cnested;
+        head->property.f.isnested = st->is_nested;
+        head->property.f.overops = SortMethods( st );
+        head->dList = 0;
+        head->vshape = vshape;
     } else {
+        ct_union     *head;
+
         head = StartType( out, LFG_UNION );
-        head->u.count  = st->num;
-        head->u.field = flisti;
-        head->u.property.s = 0;
-        head->s.property.f.cnested = st->is_cnested;
-        head->s.property.f.isnested = st->is_nested;
+        head->count  = st->num;
+        head->field = flisti;
+        head->property.s = 0;
+        head->property.f.cnested = st->is_cnested;
+        head->property.f.isnested = st->is_nested;
     }
     CVPutINum( out, st->size );
     CVPutStr( out, st->name );
@@ -1813,10 +1823,6 @@ dbg_type    CVEndProc( dbg_proc pr )
     ct_arglist  *args;
     lf_values   arglist;
     cv_calls    call;
-    union{
-        ct_procedure *a_procedure;
-        ct_mfunction *a_mfunction;
-    }f;
     lf_values   proci;
     cv_out      out[1];
 
@@ -1842,29 +1848,33 @@ dbg_type    CVEndProc( dbg_proc pr )
     call = CV_GENERIC;
 #endif
     if( pr->cls != DBG_NIL_TYPE ) {
+        ct_mfunction *mfunction;
+
         if( pr->this == DBG_NIL_TYPE ) {
             pr->this = LF_TVOID;
         }
         NewTypeString( out );
         proci = ++TypeIdx;
-        f.a_mfunction = StartType( out, LFG_MFUNCTION );
-        f.a_mfunction->rvtype = pr->ret;
-        f.a_mfunction->class_idx = pr->cls;
-        f.a_mfunction->thisptr = pr->this;
-        f.a_mfunction->call = call;
-        f.a_mfunction->res = 0;
-        f.a_mfunction->parms = pr->num;
-        f.a_mfunction->arglist = arglist;
-        f.a_mfunction->thisadjust = 0; /* always zero for watcom */
+        mfunction = StartType( out, LFG_MFUNCTION );
+        mfunction->rvtype = pr->ret;
+        mfunction->class_idx = pr->cls;
+        mfunction->thisptr = pr->this;
+        mfunction->call = call;
+        mfunction->res = 0;
+        mfunction->parms = pr->num;
+        mfunction->arglist = arglist;
+        mfunction->thisadjust = 0; /* always zero for watcom */
     } else {
+        ct_procedure *procedure;
+
         NewTypeString( out );
         proci = ++TypeIdx;
-        f.a_procedure = StartType( out, LFG_PROCEDURE );
-        f.a_procedure->rvtype = pr->ret;
-        f.a_procedure->call = call;
-        f.a_procedure->res = 0;
-        f.a_procedure->parms = pr->num;
-        f.a_procedure->arglist = arglist;
+        procedure = StartType( out, LFG_PROCEDURE );
+        procedure->rvtype = pr->ret;
+        procedure->call = call;
+        procedure->res = 0;
+        procedure->parms = pr->num;
+        procedure->arglist = arglist;
     }
     EndTypeString( out );
     return( proci );

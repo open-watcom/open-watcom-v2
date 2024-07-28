@@ -2,7 +2,7 @@
 ;*
 ;*                            Open Watcom Project
 ;*
-;* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+;* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 ;*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 ;*
 ;*  ========================================================================
@@ -63,7 +63,7 @@ FLG_LFN     equ 100h
         extrn   "C",_LpCmdLine          : dword
         extrn   "C",_LpPgmName          : dword
 
-DGROUP group _NULL,_AFTERNULL,CONST,_DATA,DATA,TIB,TI,TIE,XIB,XI,XIE,YIB,YI,YIE,_BSS,PRIVATE_STACK,STACK
+DGROUP group _NULL,_AFTERNULL,CONST,CONST2,_DATA,DATA,TIB,TI,TIE,XIB,XI,XIE,YIB,YI,YIE,_BSS,PRIVATE_STACK,STACK
 
 DPMIGetSegmentBaseAddress   equ     6
 
@@ -117,7 +117,10 @@ _AFTERNULL ends
 CONST   segment word public 'DATA'
 CONST   ends
 
-_DATA    segment dword public 'DATA'
+CONST2  segment word public 'DATA'
+CONST2  ends
+
+_DATA   segment dword public 'DATA'
 
         public  __D16Infoseg
         public  __x386_zero_base_selector
@@ -134,7 +137,7 @@ caller_stack    label   fword
 caller_esp      dd      0
 caller_ss       dw      0
 
-_DATA    ends
+_DATA   ends
 
 DATA    segment word public 'DATA'
 DATA    ends

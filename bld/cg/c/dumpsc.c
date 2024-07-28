@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -54,12 +54,12 @@ static  void    DumpScList( score_list *curr )
         break;
     case SC_N_TEMP:
         DumpChar( 't' );
-        DumpInt( curr->info.symbol.t->v.id );
+        DumpInt( curr->info.symbol.u.t->v.id );
         DumpLiteral( " offset " );
         DumpLong( curr->info.offset );
         break;
     case SC_N_MEMORY:
-        DumpXString( FEName( curr->info.symbol.p ) );
+        DumpXString( FEName( curr->info.symbol.u.p ) );
         DumpLiteral( " offset " );
         DumpLong( curr->info.offset );
         break;
@@ -89,7 +89,7 @@ static  void    DumpScList( score_list *curr )
         break;
     case SC_N_ADDRESS:
         DumpLiteral( "ADDRESS(" );
-        DumpOperand(curr->info.symbol.p);
+        DumpOperand(curr->info.symbol.u.p);
         DumpChar( ')' );
         break;
     }

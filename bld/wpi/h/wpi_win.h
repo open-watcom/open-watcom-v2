@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -250,6 +250,9 @@ extern void _wpi_getbitmapdim( WPI_HBITMAP hbitmap, int *pwidth, int *pheight );
 
     #define _wpi_mapwindowpoints( hfrom, hto, ppts, num ) \
                                 MapWindowPoints( hfrom, hto, ppts, num )
+
+    #define _wpi_mapwindowrect( hfrom, hto, prect ) \
+                                MapWindowPoints( hfrom, hto, (LPPOINT)prect, 2 )
 
     #define _wpi_getcursorpos( pt ) GetCursorPos( pt )
 
@@ -567,7 +570,7 @@ extern void _wpi_suspendthread( UINT thread_id, WPI_QMSG *qmsg );
                         (font)->lfStrikeOut = (style) ? -1 : 0
 
     #define _wpi_f_setfontbold( font, style ) \
-                        (font)->lfWeight = (style) ? 700 : 400
+                        (font)->lfWeight = (style) ? FW_BOLD : FW_NORMAL
 
     #define _wpi_f_getfontitalic( font ) \
                         ( (font)->lfItalic )
@@ -580,7 +583,7 @@ extern void _wpi_suspendthread( UINT thread_id, WPI_QMSG *qmsg );
                         ( (font)->lfStrikeOut )
 
     #define _wpi_f_getfontbold( font ) \
-                        ( ( (font)->lfWeight == 700 ) ? 1 : 0 )
+                        ( ( (font)->lfWeight == FW_BOLD ) ? 1 : 0 )
 
     #define _wpi_f_setfontsize( font, point_size, pix_size ) \
         (font)->lfHeight = pix_size
@@ -653,13 +656,13 @@ extern void _wpi_suspendthread( UINT thread_id, WPI_QMSG *qmsg );
             BOOL                tmp_bool; \
             tmp_bool = (bold); \
             if( tmp_bool ) { \
-                (font)->lfWeight = 700; \
+                (font)->lfWeight = FW_BOLD; \
             } else { \
-                (font)->lfWeight = 400; \
+                (font)->lfWeight = FW_NORMAL; \
             } \
         }
 
-    #define _wpi_getfontbold( font ) ( (font)->lfWeight == 700 )
+    #define _wpi_getfontbold( font ) ( (font)->lfWeight == FW_BOLD )
 
     #define _wpi_setfontitalic( font, italic ) \
         (font)->lfItalic = (italic) ? -1 : 0;

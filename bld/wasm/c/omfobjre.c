@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,9 +35,10 @@
 #include "asmglob.h"
 #include "asmalloc.h"
 #include "omfobjre.h"
-#include "pcobj.h"
 #include "myassert.h"
 #include "omfcarve.h"
+#include "omffixup.h"
+
 
 static carve_t myCarver;
 
@@ -78,10 +79,10 @@ void ObjKillRec( obj_rec *objr )
     switch( objr->command ) {
     case CMD_FIXUPP:
         {
-            fixup   *cur;
-            fixup   *next;
+            fixuprec    *cur;
+            fixuprec    *next;
 
-            cur = objr->d.fixupp.fixup;
+            cur = objr->u.fixupp.fixup;
             while( cur != NULL ) {
                 next = cur->next;
                 FixKill( cur );
@@ -94,7 +95,7 @@ void ObjKillRec( obj_rec *objr )
         {
             linnum_data *lines;
 
-            lines = objr->d.linnum.lines;
+            lines = objr->u.linnum.lines;
             if( lines != NULL ) {
                 AsmFree( lines );
             }
@@ -102,9 +103,9 @@ void ObjKillRec( obj_rec *objr )
         break;
     case CMD_PUBDEF:
     case CMD_STATIC_PUBDEF:
-        if( objr->d.pubdef.free_pubs ) {
-/**/        myassert( objr->d.pubdef.pubs != NULL );
-            AsmFree( objr->d.pubdef.pubs );
+        if( objr->u.pubdef.free_pubs ) {
+/**/        myassert( objr->u.pubdef.pubs != NULL );
+            AsmFree( objr->u.pubdef.pubs );
         }
         break;
     }

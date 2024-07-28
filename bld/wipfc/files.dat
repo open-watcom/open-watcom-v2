@@ -1,15 +1,15 @@
 # WIPFC component of install manifest
 
-[ DEFAULT cond="os2targ" type="e" where="c f77 jc jf77" desc="OS/2 IPFC help compiler" ]
-dir="binw"      usr="wipfc.exe" conda="doshost winhost |"
-dir="binp"      usr="wipfc.exe" conda="os2host"
-dir="binnt"     usr="wipfc.exe" conda="wnthost"     wherea="ac"
-dir="binnt64"   usr="wipfc.exe" conda="wnt64host"                   keys="ntx64"
-dir="axpnt"     usr="wipfc.exe" conda="alphahost"   where="ac"
-dir="binl"      usr="wipfc"     conda="lnxhost"
-dir="binl64"    usr="wipfc"     conda="lnx64host"                   keys="lx64"
+[ DEFAULT cond="os2targ" type="e" where="c f77 jc jf77" descr="OS/2 IPFC help compiler" ]
+dir="binw"      usr="wipfc.exe" cond+="doshost winhost |"
+dir="binp"      usr="wipfc.exe" cond+="os2host"
+dir="binnt"     usr="wipfc.exe" cond+="wnthost"     where+="ac"
+dir="binnt64"   usr="wipfc.exe" cond+="wnt64host"                   keys="ntx64"
+dir="axpnt"     usr="wipfc.exe" cond+="alphahost"   where="ac"
+dir="binl"      usr="wipfc"     cond+="lnxhost"
+dir="binl64"    usr="wipfc"     cond+="lnx64host"                   keys="lx64"
 
-[ DEFAULT dir="wipfc" cond="os2targ" type="s" where="c f77 jc jf77 ac" desc="OS/2 IPFC help compiler support files" ]
+[ DEFAULT dir="wipfc" cond="os2targ" type="s" where="c f77 jc jf77 ac" descr="OS/2 IPFC help compiler support files" ]
 #
 # WIPFC NLS config file
 #

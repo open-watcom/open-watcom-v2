@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,8 +34,8 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdarg.h>
-#include "cguimem.h"
 #include "ldstr.h"
+
 
 #define ALLOC_STRING( x )       AllocRCString( x )
 #define FREE_STRING( x )        FreeRCString( x )

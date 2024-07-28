@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2023-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,73 +38,73 @@
 
 /* aligned */
 typedef enum {
-        TF_VOLATILE     = 0x01,
-        TF_USED         = 0x02,
-        TF_DEMOTED      = 0x04,
-        TF_REVERSE      = 0x08,
-        TF_CONSTANT     = 0x10,
-        TF_UNALIGNED    = 0x20,
-        TF_HAS_LEFT     = 0x40,
+    TF_VOLATILE     = 0x01,
+    TF_USED         = 0x02,
+    TF_DEMOTED      = 0x04,
+    TF_REVERSE      = 0x08,
+    TF_CONSTANT     = 0x10,
+    TF_UNALIGNED    = 0x20,
+    TF_HAS_LEFT     = 0x40,
 } tn_flags;
 
 
 typedef enum {
-        TN_LEAF,
-        TN_UNARY,
-        TN_BINARY,
-        TN_COMPARE,
-        TN_ASSIGN,
-        TN_LV_ASSIGN,
-        TN_FLOW,
-        TN_PRE_GETS,
-        TN_LV_PRE_GETS,
-        TN_POST_GETS,
-        TN_PARM,
-        TN_CALL,
-        TN_COMMA,
-        TN_FLOW_OUT,
-        TN_QUESTION,
-        TN_COLON,
-        TN_BIT_LVALUE,
-        TN_BIT_RVALUE,
-        TN_CONS,
-        TN_WARP,
-        TN_CALLBACK,
-        TN_HANDLE,
-        TN_PATCH,
-        TN_NUMBER_OF_CLASSES,
-        TN_SIDE_EFFECT
+    TN_LEAF,
+    TN_UNARY,
+    TN_BINARY,
+    TN_COMPARE,
+    TN_ASSIGN,
+    TN_LV_ASSIGN,
+    TN_FLOW,
+    TN_PRE_GETS,
+    TN_LV_PRE_GETS,
+    TN_POST_GETS,
+    TN_PARM,
+    TN_CALL,
+    TN_COMMA,
+    TN_FLOW_OUT,
+    TN_QUESTION,
+    TN_COLON,
+    TN_BIT_LVALUE,
+    TN_BIT_RVALUE,
+    TN_CONS,
+    TN_WARP,
+    TN_CALLBACK,
+    TN_HANDLE,
+    TN_PATCH,
+    TN_NUMBER_OF_CLASSES,
+    TN_SIDE_EFFECT
 } tn_class;
 
 typedef struct tree_node {
 #ifdef DEVBUILD
-        use_info                useinfo;
+    use_info                useinfo;
 #endif
-        struct type_def         *tipe;
-        union {
-            struct tree_node    *left;
-            union name          *name;
-            struct address_name *addr;
-            void                *handle;
-            cg_callback         callback;
-        } u;
-        uint                    kids;
-        tn_class                class;
-        tn_flags                flags;
-        struct type_def         *optipe;
-        union {
-            struct {
-                cg_op               op;
-                struct tree_node    *rite;
-                name                *base;
-                uint                alignment;
-            } t;
-            struct {
-                byte                start;
-                byte                len;
-                bool                is_signed;
-            } b;
-        } u2;
+    const struct type_def   *tipe;
+    union {
+        struct tree_node    *left;
+        name                *name;
+        struct address_name *addr;
+        void                *handle;
+        cg_callback         callback;
+    } u;
+    uint                    kids;
+    tn_class                class;
+    tn_flags                flags;
+    const struct type_def   *optipe;
+    union {
+        struct {
+            cg_op               op;
+            struct tree_node    *rite;
+            name                *base;
+            uint                alignment;
+        } t;
+        struct {
+            byte                start;
+            byte                len;
+            bool                is_signed;
+        } b;
+    } u1;
 } tree_node;
 
 typedef struct tree_node        *tn;

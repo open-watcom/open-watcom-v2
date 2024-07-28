@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,14 +33,14 @@
 
 #include "cfloati.h"
 
-cfloat  *CFInverse( cfloat *op ) {
-/********************************/
-
+cfloat  *CFInverse( cfhandle h, cfloat *f )
+/*****************************************/
+{
     cfloat      *one;
     cfloat      *result;
 
-    one = CFCnvI32F( 1 );
-    result = CFDiv( one, op );
-    CFFree( one );
+    one = CFCnvI32F( h, 1 );
+    result = CFDiv( h, one, f );
+    CFFree( h, one );
     return( result );
 }

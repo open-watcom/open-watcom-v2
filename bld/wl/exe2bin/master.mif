@@ -2,7 +2,7 @@ tree_depth = 4
 
 proj_name = exe2bin
 
-exe2bin_autodepends = .autodepend
+exe2bin_autodepends = .AUTODEPEND
 
 memory_model_i86 = s
 

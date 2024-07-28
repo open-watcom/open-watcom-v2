@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -184,13 +184,13 @@ typedef enum {
     FEMSG_ERROR,                    /* cg error message (string) */
     FEMSG_FATAL,                    /* fatal error  (string) */
     FEMSG_INFO_PROC,                /* info message about current proc (string) */
-    FEMSG_BAD_PARM_REGISTER,        /* bad "aux" parm      (parm num) */
-    FEMSG_BAD_RETURN_REGISTER,      /* bad "aux" value     (sym) */
+    FEMSG_BAD_PARM_REGISTER,        /* bad "aux" __parm   (parm num) */
+    FEMSG_BAD_RETURN_REGISTER,      /* bad "aux" __value  (sym) */
     FEMSG_REGALLOC_DIED,            /* register alloc ran out of mem (sym) */
     FEMSG_SCOREBOARD_DIED,          /* scoreboard ran out of mem   (sym) */
     FEMSG_PEEPHOLE_FLUSHED,         /* peep hole optimizer flushed (none) */
     FEMSG_BACK_END_ERROR,           /* back end error (int) */
-    FEMSG_BAD_SAVE,                 /* bad "aux" modify (sym) */
+    FEMSG_BAD_SAVE,                 /* bad "aux" __modify (sym) */
     FEMSG_WANT_MORE_DATA,           /* back end wants more data space (int) */
     FEMSG_BLIP,                     /* blip */
     FEMSG_BAD_LINKAGE,              /* cannot resolve linkage conventions (sym) */
@@ -204,13 +204,9 @@ typedef enum {
 #define DBG_NIL_TYPE    ((dbg_type)0)
 #define DBG_FWD_TYPE    ((dbg_type)-1)
 
-typedef union   cg_init_info {
-    struct {
-        unsigned revision   : 10;
-        unsigned target     : 5;
-        unsigned is_large   : 1;
-    } version;
-    int     success;
+typedef struct  cg_init_info {
+    unsigned short    revision;
+    unsigned short    target;
 } cg_init_info;
 
 enum {
@@ -229,16 +225,16 @@ enum {
 /*
     Front end should do
 
-    cg_init_info    info;
+    cg_init_info    cg_info;
 
-    info = BEInit(...);
-    if( info.success == 0 ) {
+    cg_info = BEInit(...);
+    if( cg_info.revision == 0 && cg_info.target == 0 ) {
         // The code generator didn't initialize! terminate (dnpg,dncthd)
     } else {
-        if( info.version.revision != II_REVISION ) {
+        if( cg_info.revision != II_REVISION ) {
            // crap out --- wrong version of code generator
        }
-       // look at info.version.is_large and info.version.target
+       // look at cg_info.target
     }
 
 */

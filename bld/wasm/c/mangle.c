@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -46,96 +47,66 @@ enum changes {
 
 #define USCORE "_"
 
-typedef char *(*mangle_func)( struct asm_sym *, char * );
-
-static char *AsmMangler( struct asm_sym *sym, char *buffer )
-/**********************************************************/
+static char *AsmMangler( asm_sym *sym )
+/*************************************/
 {
-    char        *name;
-    size_t      len;
-
-    len = strlen( sym->name ) + 1;
-    if( buffer == NULL ) {
-        name = AsmAlloc( len );
-    } else {
-        name = buffer;
-    }
-    memcpy( name, sym->name, len );
-    return( name );
+    return( AsmStrDup( sym->name ) );
 }
 
-static char *UCaseMangler( struct asm_sym *sym, char *buffer )
-/************************************************************/
+static char *UCaseMangler( asm_sym *sym )
+/***************************************/
 {
     char        *name;
-    size_t      len;
 
-    len = strlen( sym->name ) + 1;
-    if( buffer == NULL ) {
-        name = AsmAlloc( len );
-    } else {
-        name = buffer;
-    }
-    memcpy( name, sym->name, len );
-    strupr( name );
-    return( name );
+    name = AsmStrDup( sym->name );
+    return( strupr( name ) );
 }
 
-static char *UScoreMangler( struct asm_sym *sym, char *buffer )
-/*************************************************************/
+static char *UScoreMangler( asm_sym *sym )
+/****************************************/
 {
     char        *name;
-    size_t      len;
 
-    len = strlen( sym->name ) + 1;
-    if( buffer == NULL ) {
-        name = AsmAlloc( len + 1 );
-    } else {
-        name = buffer;
-    }
+    name = AsmAlloc( strlen( sym->name ) + 1 + 1 );
     name[0] = '_';
-    memcpy( name + 1, sym->name, len );
+    strcpy( name + 1, sym->name );
     return( name );
 }
 
-static char *StdUScoreMangler( struct asm_sym *sym, char *buffer )
-/****************************************************************/
+static char *StdUScoreMangler( asm_sym *sym )
+/*******************************************/
 {
     if( !Options.mangle_stdcall )
-        return( AsmMangler( sym, buffer ) );
+        return( AsmMangler( sym ) );
 
-    if( Options.use_stdcall_at_number && ( sym->state == SYM_PROC ) ) {
+    if( Options.use_stdcall_at_number
+      && ( sym->state == SYM_PROC ) ) {
         int     parasize;
         char    *name;
+        int     count;
 
         parasize = ((dir_node *)sym)->e.procinfo->parasize;
-        if( buffer == NULL ) {
-            int         count;
-
-            for( count = 2; parasize > 9; count++ )
-                parasize /= 10;
-            name = AsmAlloc( strlen( sym->name ) + 2 + count );
-            parasize = ((dir_node *)sym)->e.procinfo->parasize;
-        } else {
-            name = buffer;
-        }
+        for( count = 2; parasize > 9; count++ )
+            parasize /= 10;
+        name = AsmAlloc( strlen( sym->name ) + 1 + 1 + count + 1 );
+        parasize = ((dir_node *)sym)->e.procinfo->parasize;
         sprintf( name, "_%s@%d", sym->name, parasize );
         return( name );
-    } else {
-        return( UScoreMangler( sym, buffer ) );
     }
+    return( UScoreMangler( sym ) );
 }
 
-static char *WatcomCMangler( struct asm_sym *sym, char *buffer )
-/**************************************************************/
+static char *WatcomCMangler( asm_sym *sym )
+/*****************************************/
 {
-    char                *name;
-    char                *ptr = sym->name;
-    enum changes        changes;
-    size_t              len;
-    char                *p;
+    char            *name;
+    char            *ptr = sym->name;
+    enum changes    changes;
+    size_t          len;
+    char            *p;
 
-    if( !Options.watcom_parms_passed_by_regs && SymIs32( sym ) ) {
+    if( !Options.watcom_params_passed_by_regs
+      && SymIs32( sym ) ) {
         changes = USCORE_NONE;
     } else if( sym->state == SYM_PROC ) {
         changes = USCORE_AFTER;
@@ -153,11 +124,7 @@ static char *WatcomCMangler( struct asm_sym *sym, char *buffer )
     }
 
     len = strlen( ptr );
-    if( buffer == NULL ) {
-        name = AsmAlloc( len + 3 );
-    } else {
-        name = buffer;
-    }
+    name = AsmAlloc( len + 2 + 1 );
     p = name;
     if( changes & USCORE_BEFORE ) {
         *p++ = '_';
@@ -170,16 +137,16 @@ static char *WatcomCMangler( struct asm_sym *sym, char *buffer )
     return( name );
 }
 
-static char *CMangler( struct asm_sym *sym, char *buffer )
-/********************************************************/
+static char *CMangler( asm_sym *sym )
+/***********************************/
 {
-    return( UScoreMangler( sym, buffer ) );
+    return( UScoreMangler( sym ) );
 }
 
-static mangle_func GetMangler( char *mangle_type )
-/************************************************/
+static mangle_func GetMangler( const char *mangle_type )
+/******************************************************/
 {
-    mangle_func         mangler;
+    mangle_func mangler;
 
     mangler = NULL;
     if( mangle_type != NULL ) {
@@ -194,8 +161,8 @@ static mangle_func GetMangler( char *mangle_type )
     return( mangler );
 }
 
-char *Mangle( struct asm_sym *sym, char *buffer )
-/***********************************************/
+char *Mangle( asm_sym *sym )
+/**************************/
 {
     mangle_func mangler;
 
@@ -227,11 +194,11 @@ char *Mangle( struct asm_sym *sym, char *buffer )
         break;
     }
     sym->mangler = mangler;
-    return( mangler( sym, buffer ) );
+    return( mangler( sym ) );
 }
 
-void SetMangler( struct asm_sym *sym, char *mangle_type, int langtype )
-/*********************************************************************/
+void SetMangler( asm_sym *sym, const char *mangle_type, int langtype )
+/********************************************************************/
 {
     mangle_func mangler;
 

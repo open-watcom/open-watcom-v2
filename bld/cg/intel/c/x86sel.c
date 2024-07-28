@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -73,6 +73,16 @@
 
 #define MAX_COST        0x7FFFFFFFL
 #define MAX_IN_RANGE    (MAX_COST/1000) /* so no overflow */
+
+#if _TARGET & _TARG_8086
+    #define LONG_JUMP 5
+    #define SHORT_JUMP 2
+    static const byte CmpSize[] = { 0, 2, 3, 0, 9 };
+#elif _TARGET & _TARG_80386
+    #define LONG_JUMP 6
+    #define SHORT_JUMP 2
+    static const byte CmpSize[] = { 0, 2, 4, 0, 5 };
+#endif
 
 
 static cost_val Balance( int_32 size, int_32 time )
@@ -154,16 +164,6 @@ cost_val JumpCost( sel_handle s_node )
     return( cost );
 }
 
-
-#if _TARGET & _TARG_8086
-    #define LONG_JUMP 5
-    #define SHORT_JUMP 2
-    static byte CmpSize[] = { 0, 2, 3, 0, 9 };
-#elif _TARGET & _TARG_80386
-    #define LONG_JUMP 6
-    #define SHORT_JUMP 2
-    static byte CmpSize[] = { 0, 2, 4, 0, 5 };
-#endif
 
 cost_val IfCost( sel_handle s_node, int entries )
 /***********************************************/
@@ -285,7 +285,6 @@ tbl_control     *MakeScanTab( select_list *list, int_32 hi,
     uint_32             cases;
     int_32              lo;
     int_32              to_sub;
-    segment_id          old_segid;
     select_list         *scan;
     int_32              curr;
 
@@ -293,49 +292,49 @@ tbl_control     *MakeScanTab( select_list *list, int_32 hi,
     lo = list->low;
     table = CGAlloc( sizeof( tbl_control ) + (cases-1) * sizeof( label_handle ) );
     table->size = cases;
-    old_segid = SetOP( AskCodeSeg() );
-    table->value_lbl = AskForNewLabel();
-    CodeLabel( table->value_lbl, TypeAddress( TY_NEAR_CODE_PTR )->length );
-    GenSelEntry( true );
-    table->lbl = AskForNewLabel();
-    if( tipe != real_tipe ) {
-        to_sub = lo;
-    } else {
-        to_sub = 0;
-    }
-    if( other == NULL ) {
-        other = table->cases[0];  /* no otherwise? he bakes!*/
-    }
-    if( tipe == TY_WORD ) {
-        GenValuesForward( list, hi, lo, to_sub, tipe );
-    } else {
-        GenValuesBackward( list, hi, lo, to_sub, tipe );
-    }
-    GenSelEntry( false );
-    CodeLabel( table->lbl, 0 );
-    tab_ptr = &table->cases[0];
-    curr = lo;
-    scan = list;
-    if( tipe != TY_WORD ) {
-        GenCodePtr( other );
-    }
-    for( ;; ) {
-        *tab_ptr = scan->label;
-        GenCodePtr( *tab_ptr );
-        ++tab_ptr;
-        if( SelCompare( curr, hi ) >= 0 )
-            break;
-        if( SelCompare( curr, scan->high ) >= 0 ) {
-            scan = scan->next;
-            curr = scan->low;
+    PUSH_OP( AskCodeSeg() );
+        table->value_lbl = AskForNewLabel();
+        CodeLabel( table->value_lbl, TypeAddress( TY_NEAR_CODE_PTR )->length );
+        GenSelEntry( true );
+        table->lbl = AskForNewLabel();
+        if( tipe != real_tipe ) {
+            to_sub = lo;
         } else {
-            ++curr;
+            to_sub = 0;
         }
-    }
-    if( tipe == TY_WORD ) {
-        GenCodePtr( other );
-    }
-    SetOP( old_segid );
+        if( other == NULL ) {
+            other = table->cases[0];  /* no otherwise? he bakes!*/
+        }
+        if( tipe == TY_WORD ) {
+            GenValuesForward( list, hi, lo, to_sub, tipe );
+        } else {
+            GenValuesBackward( list, hi, lo, to_sub, tipe );
+        }
+        GenSelEntry( false );
+        CodeLabel( table->lbl, 0 );
+        tab_ptr = &table->cases[0];
+        curr = lo;
+        scan = list;
+        if( tipe != TY_WORD ) {
+            GenCodePtr( other );
+        }
+        for( ;; ) {
+            *tab_ptr = scan->label;
+            GenCodePtr( *tab_ptr );
+            ++tab_ptr;
+            if( SelCompare( curr, hi ) >= 0 )
+                break;
+            if( SelCompare( curr, scan->high ) >= 0 ) {
+                scan = scan->next;
+                curr = scan->low;
+            } else {
+                ++curr;
+            }
+        }
+        if( tipe == TY_WORD ) {
+            GenCodePtr( other );
+        }
+    POP_OP();
     return( table );
 }
 
@@ -346,32 +345,31 @@ tbl_control     *MakeJmpTab( select_list *list, int_32 lo,
     tbl_control         *table;
     label_handle        *tab_ptr;
     uint_32             cases;
-    segment_id          old_segid;
 
     cases = hi - lo + 1;
     table = CGAlloc( sizeof( tbl_control ) + (cases-1) * sizeof( label_handle ) );
-    old_segid = SetOP( AskCodeSeg() );
-    table->lbl = AskForNewLabel();
-    table->value_lbl = NULL;
-    CodeLabel( table->lbl, TypeAddress( TY_NEAR_CODE_PTR )->length );
-    table->size = cases;
-    tab_ptr = &table->cases[0];
-    for(;;) {
-        if( SelCompare( lo, list->low ) < 0 ) {
-            *tab_ptr = other;
-        } else {
-            *tab_ptr = list->label;
+    PUSH_OP( AskCodeSeg() );
+        table->lbl = AskForNewLabel();
+        table->value_lbl = NULL;
+        CodeLabel( table->lbl, TypeAddress( TY_NEAR_CODE_PTR )->length );
+        table->size = cases;
+        tab_ptr = &table->cases[0];
+        for(;;) {
+            if( SelCompare( lo, list->low ) < 0 ) {
+                *tab_ptr = other;
+            } else {
+                *tab_ptr = list->label;
+            }
+            GenCodePtr( *tab_ptr );
+            ++tab_ptr;
+            if( SelCompare( lo, hi ) >= 0 )
+                break;
+            if( SelCompare( lo, list->high ) >= 0 ) {
+                list = list->next;
+            }
+            ++lo;
         }
-        GenCodePtr( *tab_ptr );
-        ++tab_ptr;
-        if( SelCompare( lo, hi ) >= 0 )
-            break;
-        if( SelCompare( lo, list->high ) >= 0 ) {
-            list = list->next;
-        }
-        ++lo;
-    }
-    SetOP( old_segid );
+    POP_OP();
     return( table );
 }
 
@@ -391,7 +389,7 @@ name        *SelIdx( tbl_control *table, an node )
 }
 
 
-type_def        *SelNodeType( an node, bool is_signed )
+const type_def  *SelNodeType( an node, bool is_signed )
 /*****************************************************/
 {
     cg_type     unsigned_t;

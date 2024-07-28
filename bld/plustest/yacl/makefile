@@ -56,7 +56,7 @@ extra_run_wordcnt = <test/wordcnt.cpp
 .c : test;base;io
 .cpp : test;base;io
 
-test : .symbolic start base.lib io.lib test.lnk $(exes)
+test : .SYMBOLIC start base.lib io.lib test.lnk $(exes)
     $(noecho)%make common_set_result
 
 dkbtrtst.$(exe) : dkbtrtst.obj

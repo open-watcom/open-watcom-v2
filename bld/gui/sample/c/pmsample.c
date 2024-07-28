@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2018-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2018-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,19 +31,12 @@
 ****************************************************************************/
 
 
-#include "gui.h"
+#include "sample.h"
 #include "guitypes.h"
 
 static  gui_rect        Scale           = { 0, 0, 1000, 1000 };
 
-bool MainWndGUIEventProc( gui_window *wnd, gui_event gui_ev, void *param )
-{
-    /* unused parameters */ (void)gui; (void)gui_ev; (void)param;
-
-    return( true );
-}
-
-static gui_create_info Parent = {
+gui_create_info Parent = {
     "Sample Application",
     { 250, 250, 500, 500 },
     GUI_HSCROLL | GUI_VSCROLL,
@@ -70,6 +63,13 @@ static gui_create_info Child = {
     NULL,                           // Icon
     NULL                            // Menu Resource
 };
+
+bool GUICALLBACK MainWndGUIEventProc( gui_window *wnd, gui_event gui_ev, void *param )
+{
+    /* unused parameters */ (void)wnd; (void)gui_ev; (void)param;
+
+    return( true );
+}
 
 void GUIAPI GUImain( void )
 {

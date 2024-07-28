@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -45,7 +45,6 @@
 #include "wpi.h"
 #include "font.h"
 #include "segmem.h"
-#include "cguimem.h"
 #include "dlgmod.h"
 #include "descript.h"
 #include "savelbox.h"
@@ -1085,9 +1084,9 @@ LRESULT CALLBACK MemDisplayProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpar
     case WM_NCDESTROY:
         if( info != NULL ) {
             if( info->asm_info != NULL ) {
-                MemFree( info->asm_info );
+                CUIMemFree( info->asm_info );
             }
-            MemFree( info );
+            CUIMemFree( info );
         }
         /* fall through */
     default:
@@ -1306,7 +1305,7 @@ HWND DispMem( HANDLE instance, HWND parent, WORD seg, bool isdpmi )
             return( NULLHANDLE );
         }
     }
-    info = MemAlloc( sizeof( MemWndInfo ) );
+    info = CUIMemAlloc( sizeof( MemWndInfo ) );
     if( info == NULL ) {
         RCMessageBox( parent, MWND_CANT_DISP_MEM_WND, MemConfigInfo.appname, MB_OK | MB_ICONHAND | MB_SYSTEMMODAL );
         return( NULLHANDLE );
@@ -1369,7 +1368,7 @@ HWND DispMem( HANDLE instance, HWND parent, WORD seg, bool isdpmi )
     if( hdl == NULLHANDLE || info->scrlbar == NULL ) {
         RCMessageBox( parent, MWND_CANT_DISP_MEM_WND, MemConfigInfo.appname, MB_OK | MB_ICONHAND | MB_SYSTEMMODAL );
         DestroyWindow( hdl );
-        MemFree( info );
+        CUIMemFree( info );
         return( NULLHANDLE );
     }
     if( maximize ) {

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,27 +31,25 @@
 ****************************************************************************/
 
 
-extern void     StartTime( void );
-extern void     StartMapBuffering( void );
-extern void     StopMapBuffering( void );
+#define WriteMapLnkMsg(m,...)   LnkMsg( MAP + m, __VA_ARGS__ )
+
+extern void     ResetWriteMapIO( void );
 extern void     MapInit( void );
-extern void     WriteGroups( void );
-extern void     WriteSegs( section * );
-extern void     WritePubHead( void );
-extern void     WritePubModHead( void );
-extern void     WriteOvlHead( void );
-extern void     WriteModSegs( void );
-extern void     WriteMapLines( void );
-extern void     ProcUndefined( symbol * );
-extern void     RecordTracedSym( symbol * );
-extern void     WriteUndefined( void );
-extern void     FreeUndefs( void );
-extern void     WriteLibsUsed( void );
-extern void     MapSizes( void );
+extern void     MapFini( void );
+extern void     StartTime( void );
 extern void     EndTime( void );
-extern void     WriteMapNL( unsigned );
-extern void     DoWriteMap( const char *, va_list );
-extern void     WriteMap( const char *, ... );
-extern void     WriteFormat( size_t, const char *, ... );
-extern void     BufWrite( const char *, size_t );
-extern void     ResetMapIO( void );
+extern void     RecordUndefinedSym( symbol * );
+extern void     PrintUndefinedSyms( void );
+extern void     WriteMapHead( section * );
+extern void     WriteMapOvlPubHead( section *sec );
+extern void     WriteMapOvlVectHead( vect_state *VectState );
+extern void     WriteMapModulesSegments( void );
+extern void     WriteMapLibsUsed( void );
+extern void     WriteMapLnkMsgCallback( unsigned msgnum, const char *str, size_t len );
+extern void     WriteMapTracedSymRecord( symbol * );
+extern void     WriteMapTracedSyms( void );
+extern void     WriteMapPubStart( void );
+extern void     WriteMapPubEnd( void );
+extern void     WriteMapPubSortStart( pubdefinfo *info );
+extern void     WriteMapPubSortEnd( pubdefinfo *info );
+extern void     WriteMapPubEntry( pubdefinfo *info, symbol *sym );

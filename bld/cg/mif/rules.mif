@@ -1,5 +1,5 @@
 extra_cpp_flags   = -DBY_CG
-!ifeq dll_cg 1
+!ifdef dll_cg
 extra_cpp_flags  += -D_CGDLL
 !endif
 
@@ -7,19 +7,19 @@ track_flags_i86 = -D_TRACK -of+
 track_flags_386 = -D_TRACK -of+
 track_flags_axp = -D_TRACK
 
-!ifeq cg_trmem 1
+!ifdef cg_trmem
 extra_c_flags_memmgt    = $(track_flags_$(host_cpu))
 extra_c_flags_trmem     = $(track_flags_$(host_cpu))
 !endif
 
-inc_dirs = -I. $(inc_dirs_targ) -I"$(cg_dir)/h" $(cfloat_inc_dirs) $(dwarfw_inc_dirs) -I"$(comp_cfg_dir)/h"
+inc_dirs = -I. $(inc_dirs_targ) -I"$(cg_dir)/h" $(cli_cfloat_inc_dirs) $(cli_dwarfw_inc_dirs) -I"$(comp_cfg_dir)/h"
 
 .c: $(src_path);$(watcom_dir)/c;$(trmem_dir)
 .asm: $(asm_path)
 
 ./bitset.exe : $(watcom_dir)/c/bitset.c
     @%make echo_bldccl
-    $(bld_ccl) $(ppflags_common) $(ppflags_autodep) $[@ $(bld_cclflags) $(bld_ldflags)
+    $(bld_ccl) $(ppflags_common) $(ppflags_autodep) $(bld_ppflags_sys) $(bld_cppflags) $[@ $(bld_cclflags) $(bld_ldflags)
 
 gbit.gh : ./bitset.exe $(cg_dir)/mif/cg.mif
     @%make echo_execute

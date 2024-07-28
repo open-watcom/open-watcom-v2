@@ -6,31 +6,6 @@ inputs:
     required: false
     default: ''
     type: string
-  arch:
-    description: 'run-time platform'
-    required: false
-    default: ''
-    type: string
-  bldscript:
-    description: 'script to build action'
-    required: false
-    default: ''
-    type: string
-  tools_nt:
-    description: 'used compiler toolchain (for Windows)'
-    required: false
-    default: ''
-    type: string
-  tools_lnx:
-    description: 'used compiler toolchain (for Linux)'
-    required: false
-    default: ''
-    type: string
-  owtools:
-    description: 'OW build compiler toolchain'
-    required: false
-    default: ''
-    type: string
   owdebug:
     description: 'verbosed/debug output for GH Actions scripts development'
     required: false
@@ -39,80 +14,56 @@ inputs:
 runs:
   using: composite
   steps:
-  - if: inputs.arch == 'lnx'
-    uses: "./.github/actions/artfload"
+  - uses: "./.github/actions/artfload"
     with:
-      arch:         'lnx'
+      hostos:       'lnx'
       gitpath:      'build binbuild'
-      artifact:     'build lnx'
-      tools:        ${{ inputs.tools_lnx }}
-      owdebug:      ${{ inputs.owdebug }}
-  - if: inputs.arch == 'nt'
-    uses: "./.github/actions/artfload"
-    with:
-      arch:         'nt'
-      gitpath:      'build binbuild'
-      artifact:     'build nt'
-      tools:        ${{ inputs.tools_nt }}
+      artifact:     'build lnx x64 gcc'
       owdebug:      ${{ inputs.owdebug }}
   - uses: "./.github/actions/artfload"
     with:
-      arch:         ${{ inputs.arch }}
+      hostos:       'lnx'
       gitpath:      'bld setupgui'
-      artifact:     'bld setupgui nt'
-      tools:        ${{ inputs.tools_nt }}
+      artifact:     'bld setupgui nt x64 vs2019'
       owdebug:      ${{ inputs.owdebug }}
   - uses: "./.github/actions/artfload"
     with:
-      arch:         ${{ inputs.arch }}
+      hostos:       'lnx'
       gitpath:      'bld setupgui'
-      artifact:     'bld setupgui lnx'
-      tools:        ${{ inputs.tools_lnx }}
+      artifact:     'bld setupgui lnx x64 gcc'
       owdebug:      ${{ inputs.owdebug }}
   # load all release binaries
   - uses: "./.github/actions/relload"
     with:
-      arch:         ${{ inputs.arch }}
-      gitpath:      'rel'
-      tools_nt:     ${{ inputs.tools_nt }}
-      tools_lnx:    ${{ inputs.tools_lnx }}
+      tools_nt:     'vs2019'
+      tools_lnx:    'gcc'
+      tools_osx:    'clang'
       owdebug:      ${{ inputs.owdebug }}
   - if: inputs.target == 'snapshot'
     name: Create OW snapshot
     id: owsnapshot
     uses: "./.github/actions/snapshot"
     with:
-      arch:         ${{ inputs.arch }}
+      hostos:       'lnx'
       gitpath:      'rel'
       owdebug:      ${{ inputs.owdebug }}
   # run build script
-  - if: inputs.target != 'snapshot' && ( inputs.arch == 'lnx' )
+  - if: inputs.target != 'snapshot'
     name: Build Installers
-    run: ${{ inputs.bldscript }} ${{ inputs.tools_lnx }}
+    run: ci/buildx.sh gcc
     env:
       OWBUILD_STAGE: 'inst'
-      OWTOOLS:       ${{ inputs.owtools }}
+      OWTOOLS:       'GCC'
       OWROOT:        ${{ github.workspace }}
       OWDEBUG:       ${{ inputs.owdebug }}
       OWINSTTARGET:  ${{ inputs.target }}
       OWVERBOSE:     1
     shell: bash
-  - if: inputs.target != 'snapshot' && inputs.arch == 'nt'
-    name: Build Installers
-    run: ${{ inputs.bldscript }} ${{ inputs.tools_nt }}
-    env:
-      OWBUILD_STAGE: 'inst'
-      OWTOOLS:       ${{ inputs.owtools }}
-      OWROOT:        ${{ github.workspace }}
-      OWDEBUG:       ${{ inputs.owdebug }}
-      OWINSTTARGET:  ${{ inputs.target }}
-      OWVERBOSE:     1
-    shell: cmd
   # save all artifacts for distribution
   # full content of directory, cannot specify files
   - uses: "./.github/actions/artfsave"
     with:
-      arch:         ${{ inputs.arch }}
+      hostos:       'lnx'
       gitpath:      'distrib ow bin'
       artifact:     "install ${{ inputs.target }}"
       owdebug:      ${{ inputs.owdebug }}

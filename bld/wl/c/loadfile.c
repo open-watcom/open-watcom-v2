@@ -198,7 +198,8 @@ static void DoCVPack( void )
     int         retval;
     char        *name;
 
-    if( (LinkFlags & LF_CVPACK_FLAG) && (LinkState & LS_LINK_ERROR) == 0 ) {
+    if( (LinkFlags & LF_CVPACK_FLAG)
+      && (LinkState & LS_LINK_ERROR) == 0 ) {
         if( SymFileName != NULL ) {
             name = SymFileName;
         } else {
@@ -281,7 +282,8 @@ static void finiLoad( void )
 #endif
 #ifdef _OS2
   #if 0
-    if( (FmtData.type & (MK_OS2 | MK_WIN_NE)) && (LinkState & LS_HAVE_PPC_CODE) ) {
+    if( (FmtData.type & (MK_OS2 | MK_WIN_NE))
+      && (LinkState & LS_HAVE_PPC_CODE) ) {
         // development temporarly on hold:
         FiniELFLoadFile();
         return;
@@ -351,7 +353,6 @@ void FiniLoadFile( void )
     OpenOutFiles();
     SetupImpLib();
     finiLoad();
-    MapSizes();
     CloseOutFiles();
     DoCVPack();
 }
@@ -401,13 +402,15 @@ void GetStkAddr( void )
 /*********************/
 /* Find the address of the stack */
 {
-    if( (FmtData.type & MK_NOVELL) == 0 && !FmtData.dll ) {
+    if( (FmtData.type & MK_NOVELL) == 0
+      && !FmtData.dll ) {
         if( StackSegPtr != NULL ) {
             StackAddr.seg = StackSegPtr->seg_addr.seg;
             StackAddr.off = StackSegPtr->seg_addr.off + StackSegPtr->size;
         } else {
 #ifdef _OS2
-            if( (FmtData.type & MK_WIN_NE) && (LinkFlags & LF_STK_SIZE_FLAG) ) {
+            if( (FmtData.type & MK_WIN_NE)
+              && (LinkFlags & LF_STK_SIZE_FLAG) ) {
                 PhoneyStack();
             } else {
 #endif
@@ -444,7 +447,8 @@ static void DefABSSSym( const char *name )
    symbol          *sym;
 
     sym = RefISymbol( name );
-    if( (sym->info & SYM_DEFINED) == 0 || (sym->info & SYM_LINK_GEN) ) {
+    if( (sym->info & SYM_DEFINED) == 0
+      || (sym->info & SYM_LINK_GEN) ) {
         sym->info |= SYM_DEFINED | SYM_LINK_GEN;
 #ifdef _EXE
         if( FmtData.type & MK_OVERLAYS ) {
@@ -581,7 +585,8 @@ void SetStkSize( void )
                 StackSegPtr->size = StackSize;
             }
         } else {
-            if( !FmtData.dll && StackSegPtr->size >= 0x200 ) {
+            if( !FmtData.dll
+              && StackSegPtr->size >= 0x200 ) {
                 StackSize = StackSegPtr->size;
             } else {
                 StackSegPtr->size = StackSize;
@@ -604,7 +609,8 @@ void SetStartSym( const char *name )
     if( StartInfo.type != START_UNDEFED ) {
         if( StartInfo.type == START_IS_SYM ) {
             namelen = strlen( name );
-            if( namelen != strlen( StartInfo.targ.sym->name.u.ptr ) || CmpRtn( StartInfo.targ.sym->name.u.ptr, name, namelen ) != 0 ) {
+            if( namelen != strlen( StartInfo.targ.sym->name.u.ptr )
+              || CmpRtn( StartInfo.targ.sym->name.u.ptr, name, namelen ) != 0 ) {
                 LnkMsg( LOC+MILD_ERR+MSG_MULT_START_ADDRS_BY, "12", StartInfo.targ.sym->name.u.ptr, name );
             }
         } else {
@@ -637,7 +643,8 @@ void GetStartAddr( void )
     case START_UNDEFED:         // NOTE: the possible fall through
         addoff = false;
         if( !FmtData.dll ) {
-            if( Groups == NULL || (FmtData.type & MK_ELF) ) {
+            if( Groups == NULL
+              || (FmtData.type & MK_ELF) ) {
                 StartInfo.addr.seg = 0;
                 StartInfo.addr.off = 0;
             } else {
@@ -652,12 +659,12 @@ void GetStartAddr( void )
         /* if startaddr is not in first segment and segment is part of */
         /* a group, adjust seg + off relative to start of group        */
         /* instead of start of seg. This allows far call optimization to work*/
-        if( (StartInfo.targ.sdata->u.leader->seg_addr.seg > 0) &&
-            (StartInfo.targ.sdata->u.leader->group != NULL) ) {
-
+        if( (StartInfo.targ.sdata->u.leader->seg_addr.seg > 0)
+          && (StartInfo.targ.sdata->u.leader->group != NULL) ) {
             deltaseg = StartInfo.targ.sdata->u.leader->seg_addr.seg
               - StartInfo.targ.sdata->u.leader->group->grp_addr.seg;
-            if( (deltaseg > 0) && (deltaseg <= StartInfo.targ.sdata->u.leader->seg_addr.seg) ) {
+            if( (deltaseg > 0)
+              && (deltaseg <= StartInfo.targ.sdata->u.leader->seg_addr.seg) ) {
                 StartInfo.addr.seg -= deltaseg;
                 StartInfo.addr.off += 16 * deltaseg - StartInfo.targ.sdata->u.leader->group->grp_addr.off;
             }
@@ -678,7 +685,8 @@ offset CalcGroupSize( group_entry *group )
 {
     offset size;
 
-    if(( group == DataGroup ) && ( FmtData.dgroupsplitseg != NULL )) {
+    if(( group == DataGroup )
+      && ( FmtData.dgroupsplitseg != NULL )) {
         size = FmtData.dgroupsplitseg->seg_addr.off - group->grp_addr.off - FmtData.bsspad;
         DbgAssert( size >= group->size );
     } else {
@@ -950,7 +958,9 @@ static void FlushImpBuffer( void )
 void BuildImpLib( void )
 /*****************************/
 {
-    if( (LinkState & LS_LINK_ERROR) || ImpLib.handle == NIL_FHANDLE || !FmtData.make_implib )
+    if( (LinkState & LS_LINK_ERROR)
+      || ImpLib.handle == NIL_FHANDLE
+      || !FmtData.make_implib )
         return;
     if( ImpLib.bufsize > 0 ) {
         FlushImpBuffer();
@@ -1093,7 +1103,9 @@ static bool WriteSegData( void *_sdata, void *_info )
     unsigned long   newpos;
     unsigned long   oldpos;
 
-    if( !sdata->isuninit && !sdata->isdead && ( sdata->length > 0 ) ) {
+    if( !sdata->isuninit
+      && !sdata->isdead
+      && ( sdata->length > 0 ) ) {
         newpos = info->seg_start + sdata->a.delta;
         if( info->repos ) {
             SeekLoad( newpos );
@@ -1137,7 +1149,8 @@ static bool DoGroupLeader( void *_seg, void *_info )
     grpwriteinfo    *info = _info;
 
     // If class or sector should not be output, skip it
-    if( EMIT_CLASS( seg->class ) && EMIT_SEG( seg ) ) {
+    if( EMIT_CLASS( seg->class )
+      && EMIT_SEG( seg ) ) {
         info->seg_start = info->grp_start + SEG_GROUP_DELTA( seg );
         DoWriteLeader( seg, info );
     }
@@ -1362,7 +1375,8 @@ void SeekLoad( unsigned long offset )
     outfilelist         *outfile;
 
     outfile = CurrSect->outfile;
-    if( outfile->buffer != NULL && ( outfile->origin + offset ) < outfile->bufpos ) {
+    if( outfile->buffer != NULL
+      && ( outfile->origin + offset ) < outfile->bufpos ) {
         FlushBuffFile( outfile );
     }
     if( outfile->buffer == NULL ) {
@@ -1379,7 +1393,8 @@ void SeekEndLoad( unsigned long offset )
     outfilelist         *outfile;
 
     outfile = CurrSect->outfile;
-    if( outfile->buffer != NULL && offset > 0 ) {
+    if( outfile->buffer != NULL
+      && offset > 0 ) {
         FlushBuffFile( outfile );
     }
     if( outfile->buffer == NULL ) {

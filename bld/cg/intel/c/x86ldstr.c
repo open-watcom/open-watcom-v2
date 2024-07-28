@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,7 +32,7 @@
 
 #include "_cgstd.h"
 #include "coderep.h"
-#include "cfloat.h"
+#include "_cfloat.h"
 #include "zoiks.h"
 #include "score.h"
 #include "makeins.h"
@@ -119,23 +119,23 @@ static  name    **Enregister( instruction *ins )
     return( NULL );
 }
 
-static  hw_reg_set      *RoverByte;
-static  hw_reg_set      *RoverWord;
-static  hw_reg_set      *RoverDouble;
+static const hw_reg_set *RoverByte;
+static const hw_reg_set *RoverWord;
+static const hw_reg_set *RoverDouble;
 
-static hw_reg_set       *FindRegister( instruction *ins )
+static const hw_reg_set *FindRegister( instruction *ins )
 /********************************************************
  * Find a register of the appropriate type for the instruction.
  * Note we use rover pointers for each of the classes so that the
  * scheduler will have a better chance to intermix instructions.
  */
 {
-    hw_reg_set  except;
-    hw_reg_set  *regs;
-    hw_reg_set  *curregs;
-    hw_reg_set  *start;
-    hw_reg_set  *first;
-    hw_reg_set  **rover_ptr;
+    hw_reg_set          except;
+    const hw_reg_set    *regs;
+    const hw_reg_set    *curregs;
+    const hw_reg_set    *start;
+    const hw_reg_set    *first;
+    const hw_reg_set    **rover_ptr;
 
     switch( ins->type_class ) {
     case U1:
@@ -235,11 +235,11 @@ static  bool    LoadStoreIns( instruction *ins )
  * RISCify one instruction. See LdStAlloc for details.
  */
 {
-    name        **op_ptr;
-    name        *op;
-    hw_reg_set  *hw_reg;
-    instruction *new_ins;
-    name        *reg;
+    name                **op_ptr;
+    name                *op;
+    const hw_reg_set    *hw_reg;
+    instruction         *new_ins;
+    name                *reg;
 
     if( !DoesSomething( ins ) )
         return( false );

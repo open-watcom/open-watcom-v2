@@ -6,7 +6,7 @@
 CC = bwcl386
 !endif
 
-all : .symbolic
+all : .SYMBOLIC
     $(CC) -fe=exercise -fo=exercise -I"../dos/h" -zq <<
 $#include <stdio.h>
 $#include <limits.h>
@@ -127,5 +127,5 @@ _UI8_MAX      = 255
 !endif
     rm -f exercise.*
 
-clean: .symbolic
+clean: .SYMBOLIC
     rm -f exercise.*

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -528,8 +528,8 @@ static void UpdateControlVisibility( gui_window *gui, a_dialog_header *dlg, bool
     }
 }
 
-static bool GenericGUIEventProc( gui_window *gui, gui_event gui_ev, void *param )
-/*******************************************************************************/
+static bool GUICALLBACK GenericGUIEventProc( gui_window *gui, gui_event gui_ev, void *param )
+/*******************************************************************************************/
 {
 #if defined( GUI_IS_GUI )
     static bool         first_time = true;
@@ -871,7 +871,7 @@ dlg_state GenericDialog( gui_window *parent, a_dialog_header *dlg )
     }
 
     GUIRefresh();
-    GUIModalDlgOpen( parent == NULL ? MainWnd : parent, VbufString( &title ), height, width,
+    GUIDlgOpenModal( parent == NULL ? MainWnd : parent, VbufString( &title ), height, width,
                      dlg->controls, dlg->num_controls,
                      &GenericGUIEventProc, &result );
     ResetDriveInfo();

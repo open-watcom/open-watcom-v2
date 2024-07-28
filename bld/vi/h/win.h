@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -114,7 +114,6 @@ extern char_info    WindowNormalAttribute;
 extern char         WindowBordersNG[];
 extern char         WindowBordersG[];
 extern char_info    _FAR *Scrn;
-extern char_info    _FAR *ClockStart;
 extern char_info    _FAR *SpinLoc;
 extern window_id    *ScreenImage;
 extern bool         MinSlots[MAX_MIN_SLOTS];

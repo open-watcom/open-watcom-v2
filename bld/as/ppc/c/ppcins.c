@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,6 +31,9 @@
 ****************************************************************************/
 
 #include "as.h"
+#ifdef _STANDALONE_
+#include "options.h"
+#endif
 
 
 #define MAX_NAME_LEN    20      /* maximum length of a PPC instruction mnemonic */
@@ -491,7 +494,7 @@ static void bitSetCover( uint_32 subset, void (*func)( ins_flags set, ins_table 
 #if defined( _STANDALONE_ ) && defined( AS_DEBUG_DUMP )
 static char *itStrings[] = {
     #define PICK( a, b, c, d, e, f, g ) #a,
-    #include "ppcfmt.inc"
+    #include "_ppcfmt.h"
     #undef PICK
 };
 

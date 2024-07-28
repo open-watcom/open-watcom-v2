@@ -76,16 +76,16 @@ usr="watcom??.dll"     keys="newdbg"
 # Windows NT - X64
 #
 [ DEFAULT type="d" dir="binnt64" cond="wnt64host" where="c jc f77 jf77" keys="no_ntx64" ]
-usr="codeview.dll"     keysa="!newdbg"
-usr="codevi??.dll"     keysa="newdbg"
-usr="dwarf.dll"        keysa="!newdbg"
-usr="dwarf??.dll"      keysa="newdbg"
-usr="export.dll"       keysa="!newdbg"
-usr="export??.dll"     keysa="newdbg"
-usr="mapsym.dll"       keysa="!newdbg"
-usr="mapsym??.dll"     keysa="newdbg"
-usr="watcom.dll"       keysa="!newdbg"
-usr="watcom??.dll"     keysa="newdbg"
+usr="codeview.dll"     keys+="!newdbg"
+usr="codevi??.dll"     keys+="newdbg"
+usr="dwarf.dll"        keys+="!newdbg"
+usr="dwarf??.dll"      keys+="newdbg"
+usr="export.dll"       keys+="!newdbg"
+usr="export??.dll"     keys+="newdbg"
+usr="mapsym.dll"       keys+="!newdbg"
+usr="mapsym??.dll"     keys+="newdbg"
+usr="watcom.dll"       keys+="!newdbg"
+usr="watcom??.dll"     keys+="newdbg"
 
 #######################
 # Linux - 386
@@ -106,16 +106,16 @@ usr="watcom??.dip"     keys="newdbg"
 # Linux - X64
 #
 [ DEFAULT type="s" dir="binl64" cond="lnx64host" where="c f77 jc jf77" keys="no_lx64" ]
-usr="codeview.so"     keysa="!newdbg"
-usr="codevi??.so"     keysa="newdbg"
-usr="dwarf.so"        keysa="!newdbg"
-usr="dwarf??.so"      keysa="newdbg"
-usr="export.so"       keysa="!newdbg"
-usr="export??.so"     keysa="newdbg"
-usr="mapsym.so"       keysa="!newdbg"
-usr="mapsym??.so"     keysa="newdbg"
-usr="watcom.so"       keysa="!newdbg"
-usr="watcom??.so"     keysa="newdbg"
+usr="codeview.so"     keys+="!newdbg"
+usr="codevi??.so"     keys+="newdbg"
+usr="dwarf.so"        keys+="!newdbg"
+usr="dwarf??.so"      keys+="newdbg"
+usr="export.so"       keys+="!newdbg"
+usr="export??.so"     keys+="newdbg"
+usr="mapsym.so"       keys+="!newdbg"
+usr="mapsym??.so"     keys+="newdbg"
+usr="watcom.so"       keys+="!newdbg"
+usr="watcom??.so"     keys+="newdbg"
 
 #######################
 # RDOS

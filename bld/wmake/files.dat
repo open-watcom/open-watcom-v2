@@ -3,7 +3,7 @@
 dir="binw"      usr="wmaker.exe"    cond="doshost"
 dir="binw"      usr="wmake.exe"     cond="doshost winhost |"
 dir="binp"      usr="wmake.exe"     cond="os2host"
-dir="binnt"     usr="wmake.exe"     cond="wnthost"      wherea="ac"
+dir="binnt"     usr="wmake.exe"     cond="wnthost"      where+="ac"
 dir="binnt64"   usr="wmake.exe"     cond="wnt64host"                    keys="ntx64"
 dir="axpnt"     usr="wmake.exe"     cond="alphahost"    where="ac"
 dir="binl"      usr="wmake"         cond="lnxhost"

@@ -19,7 +19,7 @@ bootutil_proc()
     if [ "$OWTOOLS" = "WATCOM" ]; then
         mkdir $OWROOT/bld/wmake/$OWOBJDIR
         cd $OWROOT/bld/wmake/$OWOBJDIR
-        wmake -f ../wmake
+        wmake -m -f ../wmake
         RC=$?
     else
         case `uname` in
@@ -54,7 +54,6 @@ build_proc()
         export PATH=$WATCOM_PATH:$PATH
     fi
     RC=0
-    export OWDOSBOX=dosbox
     export OWGHOSTSCRIPTPATH=:
 
     . $OWROOT/cmnvars.sh

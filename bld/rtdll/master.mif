@@ -2,6 +2,8 @@ proj_name = rtdll
 
 rtdll_autodepends = .AUTODEPEND
 
+rtdll_ntverrc = ..
+
 additional_clean = *.ilb *.grc
 
 rtdll_host_cpu_086=i86
@@ -42,13 +44,14 @@ br_suffix=0
 patch_level=0
 !endif
 
+!include $(rtdll_dir)/dllname.mif
+ntverrc_dll = $(dllname)
+
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif
 !include dllbase.mif
 !include libsubdi.mif
-
-!include $(rtdll_dir)/dllname.mif
 
 !include ../objs.mif
 
@@ -98,11 +101,6 @@ libtarg_name          = $(libdllname)x
 #
 dlltarg_objs          = $(dll_objs)
 dlltarg_libs          = $(dll_libs)
-dlltarg_res_version_nt_386 = version.res
-dlltarg_res_version_nt_x64 = version.res
-dlltarg_res_version_nt_axp = version.res
-dlltarg_res_version_nt_mps = version.res
-dlltarg_res_version_nt_ppc = version.res
 dlltarg_export        = $(dll_def)
 !ifeq component wlib
 !ifeq convention register
@@ -117,10 +115,6 @@ dlltarg_name          = $(dllname)
 #
 # rc and others
 #
-verrc_dll_skel = ../verinfo.rc
-verrc_dll      = $(dllname)
-!include verrc.mif
-
 $(dllname).lbc : $(dllname).dll $(rtdll_dir)/proclbc.awk $(static_objs)
     @%make echo_awk
     $(noecho)*awk -f $(rtdll_dir)/proclbc.awk -v OS=$(host_os) -v BR=$(br_suffix) -v "LSTFILE=$(rtdll_dir:\=/)/brfunc.dat" -v OUTFILE=$^. $(dllname).ilb

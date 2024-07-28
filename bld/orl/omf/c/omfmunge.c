@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -80,10 +80,10 @@ static int nameCmp( omf_file_handle ofh, omf_idx n1, omf_idx n2 )
 
     if( n1 == n2 )
         return( 0 );
-    s1 = OmfGetLName( ofh->lnames, n1 );
+    s1 = OmfGetLName( ofh, n1 );
     if( s1 == NULL )
         return( 1 );
-    s2 = OmfGetLName( ofh->lnames, n2 );
+    s2 = OmfGetLName( ofh, n2 );
     if( s2 == NULL )
         return( 1 );
     if( s1->len != s2->len )
@@ -328,17 +328,6 @@ static omf_grp_handle   newGroup( omf_file_handle ofh )
     grp->omf_file_hnd = ofh;
 
     return( grp );
-}
-
-
-static omf_string getIdx2String( omf_sec_handle sh, omf_idx idx )
-{
-    assert( sh );
-
-    if( idx < sh->assoc.string.num ) {
-        return( sh->assoc.string.strings[idx] );
-    }
-    return( NULL );
 }
 
 
@@ -844,14 +833,14 @@ static orl_sec_flags getSegSecFlags( omf_file_handle ofh, omf_idx name, omf_idx 
     assert( ofh );
 
     flags = ORL_SEC_FLAG_NONE;
-    str = OmfGetLName( ofh->lnames, class );
+    str = OmfGetLName( ofh, class );
     if( str != NULL ) {
         slen = strNUpper( lname, str );
         if( ( slen > 3 ) && ( strcmp( "CODE", &lname[slen - 4] ) == 0 || strcmp( "TEXT", &lname[slen - 4] ) == 0 ) ) {
             flags |= ORL_SEC_FLAG_EXEC | ORL_SEC_FLAG_EXECUTE_PERMISSION | ORL_SEC_FLAG_READ_PERMISSION;
         } else if( ( slen > 3 ) && strcmp( "DATA", &lname[slen - 4] ) == 0 ) {
             flags |= ORL_SEC_FLAG_READ_PERMISSION;
-            str = OmfGetLName( ofh->lnames, name );
+            str = OmfGetLName( ofh, name );
             if( str != NULL ) {
                 slen = strNUpper( lname, str );
                 if( strstr( "CONST", lname ) ) {
@@ -866,7 +855,7 @@ static orl_sec_flags getSegSecFlags( omf_file_handle ofh, omf_idx name, omf_idx 
             flags |= ORL_SEC_FLAG_READ_PERMISSION | ORL_SEC_FLAG_WRITE_PERMISSION | ORL_SEC_FLAG_UNINITIALIZED_DATA;
         } else {
             flags |= ORL_SEC_FLAG_READ_PERMISSION;
-            str = OmfGetLName( ofh->lnames, name );
+            str = OmfGetLName( ofh, name );
             slen = strNUpper( lname, str );
             if( ( slen > 3 ) && ( strcmp( "CODE", &lname[slen - 4] ) == 0 || strcmp( "TEXT", &lname[slen - 4] ) == 0 ) ) {
                 flags |= ORL_SEC_FLAG_EXEC | ORL_SEC_FLAG_EXECUTE_PERMISSION;
@@ -1467,7 +1456,7 @@ orl_return OmfAddComDat( omf_file_handle ofh, bool is32, int flags, int attr, in
             break;
         }
 
-        comname = OmfGetLName( ofh->lnames, name );
+        comname = OmfGetLName( ofh, name );
         if( comname == NULL )
             return( ORL_ERROR );
         sym = _NewSymbol( ofh, styp, comname );
@@ -1566,7 +1555,7 @@ orl_return OmfAddSegDef( omf_file_handle ofh, bool is32, orl_sec_alignment align
     /* Create symbol for section using its name, when looking up we will
      * need to match the indexes for proper matching
      */
-    segname = OmfGetLName( ofh->lnames, name );
+    segname = OmfGetLName( ofh, name );
     if( segname == NULL )
         return( ORL_ERROR );
     sym = _NewSymbol( ofh, ORL_SYM_TYPE_SECTION, segname );
@@ -1659,7 +1648,7 @@ orl_return  OmfAddGrpDef( omf_file_handle ofh, omf_idx name, omf_idx *segs, unsi
         sh->assoc.seg.group = grp;
     }
 
-    grpname = OmfGetLName( ofh->lnames, name );
+    grpname = OmfGetLName( ofh, name );
     if( grpname == NULL )
         return( ORL_ERROR );
 
@@ -1725,16 +1714,19 @@ orl_return  OmfAddComment( omf_file_handle ofh, unsigned_8 class, unsigned_8 fla
 }
 
 
-omf_string OmfGetLName( omf_sec_handle lnames, omf_idx idx )
+omf_string OmfGetLName( omf_file_handle ofh, omf_idx lname )
 {
-    assert( lnames );
-    assert( lnames->type == ORL_SEC_TYPE_STR_TABLE );
+    omf_sec_handle      sh;
 
-    if( idx == 0 ) {
+    assert( ofh );
+    sh = ofh->lnames;
+    assert( sh );
+    assert( sh->type == ORL_SEC_TYPE_STR_TABLE );
+
+    if( lname == 0 || lname > sh->assoc.string.num ) {
         return( NULL );
     }
-
-    return( getIdx2String( lnames, --idx ) );
+    return( sh->assoc.string.strings[lname - 1] );
 }
 
 

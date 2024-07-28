@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,27 +36,27 @@
 #include "asminlin.h"
 
 typedef enum {
-        MT_EMPTY,
-        MT_BYTE,
-        MT_WORD,
-        MT_DWORD,
-        MT_QWORD,
-        MT_FWORD,
-        MT_TBYTE,
-        MT_OWORD,
-        MT_SHORT,
-        MT_NEAR,
-        MT_FAR,
-        MT_PTR,
+    MT_EMPTY,
+    MT_BYTE,
+    MT_WORD,
+    MT_DWORD,
+    MT_QWORD,
+    MT_FWORD,
+    MT_TBYTE,
+    MT_OWORD,
+    MT_SHORT,
+    MT_NEAR,
+    MT_FAR,
+    MT_PTR,
 #if defined( _STANDALONE_ )
-        MT_SBYTE,
-        MT_SWORD,
-        MT_SDWORD,
-        MT_STRUCT,
-        MT_PROC,
-        MT_ABS,
+    MT_SBYTE,
+    MT_SWORD,
+    MT_SDWORD,
+    MT_STRUCT,
+    MT_PROC,
+    MT_ABS,
 #endif
-        MT_ERROR
+    MT_ERROR
 } memtype;
 
 #if defined( _STANDALONE_ )
@@ -69,44 +70,46 @@ typedef enum {
     WASM_LANG_BASIC,
     WASM_LANG_WATCOM_C
 } lang_type;
+
+typedef char        *(*mangle_func)( struct asm_sym * );
 #endif
 
 typedef struct asm_sym {
-        struct asm_sym  *next;
-        char            *name;
+    struct asm_sym  *next;
+    char            *name;
 
 #if defined( _STANDALONE_ )
-        struct asm_sym  *segment;
-        struct asm_sym  *structure;     /* structure type name */
-        uint_32         offset;
-        uint_32         first_size;     /* size of 1st initializer in bytes */
-        uint_32         first_length;   /* size of 1st initializer--elts. dup'd */
-        uint_32         total_size;     /* total number of bytes (sizeof) */
-        uint_32         total_length;   /* total number of elements (lengthof) */
-        uint_32         count;
-        char            *(*mangler)( struct asm_sym *sym, char *buffer );
-        bool            public;
-        bool            referenced;
-        lang_type       langtype;
+    struct asm_sym  *segment;
+    struct asm_sym  *structure;     /* structure type name */
+    uint_32         offset;
+    uint_32         first_size;     /* size of 1st initializer in bytes */
+    uint_32         first_length;   /* size of 1st initializer--elts. dup'd */
+    uint_32         total_size;     /* total number of bytes (sizeof) */
+    uint_32         total_length;   /* total number of elements (lengthof) */
+    uint_32         count;
+    mangle_func     mangler;
+    bool            public;
+    bool            referenced;
+    lang_type       langtype;
 #else
-        long            addr;
+    long            addr;
 #endif
-        memtype         mem_type;
-        enum sym_state  state;
-        struct asmfixup *fixup;
+    memtype         mem_type;
+    sym_state       state;
+    asmfixup        *fixup;
 } asm_sym;
 
-extern  struct asm_sym  *AsmLookup( const char *name );
-extern  struct asm_sym  *AsmGetSymbol( const char *name );
-extern  void            FreeASym( struct asm_sym *sym );
+extern asm_sym      *AsmLookup( const char *name );
+extern asm_sym      *AsmGetSymbol( const char *name );
+extern void         FreeASym( asm_sym *sym );
 
 #if defined( _STANDALONE_ )
 
-extern  void            AsmTakeOut( const char *name );
-extern  bool            AsmChangeName( const char *old, const char *new );
-extern  void            WriteListing( void );
+extern void         AsmTakeOut( const char *name );
+extern bool         AsmChangeName( const char *old, const char *new );
+extern void         WriteListing( void );
 
-extern  struct asm_sym  *AllocDSym( const char *, bool );
+extern asm_sym      *AllocDSym( const char * );
 
 #define IS_SYM_COUNTER( x ) ( ( x[0] == '$' ) && ( x[1] == 0 ) )
 

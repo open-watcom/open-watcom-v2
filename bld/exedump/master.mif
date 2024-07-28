@@ -1,6 +1,8 @@
 proj_name = wdump
 
-wdump_autodepends = .autodepend
+wdump_autodepends = .AUTODEPEND
+
+wdump_ntverrc = ../h
 
 additional_clean = *.grc
 
@@ -55,11 +57,8 @@ exetarg_objs = &
     dumphll.obj &
     coff.obj &
     leb128rd.obj
-exetarg_res_version_nt_386 = exever.res
-exetarg_res_version_nt_x64 = exever.res
 !include exetarg.mif
 
 #
 # rc and others
 #
-!include verrc.mif

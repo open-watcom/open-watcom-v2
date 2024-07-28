@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -65,7 +65,7 @@ static  WPI_TEXTMETRIC  GUIDialogtm;                    /* tm of dialog font */
 static  gui_coord       SizeDialog      = { 128, 128 }; /* of test dialog        */
 static  gui_coord       SizeScreen      = { 0, 0 };     /* of test dialog        */
 
-/* Local Window callback functions prototypes */
+/* Local Windows callback functions prototypes */
 WINEXPORT WPI_DLGRESULT CALLBACK GUIInitDialogFuncDlgProc( HWND hwnd, WPI_MSG message, WPI_PARAM1 wparam, WPI_PARAM2 lparam );
 
 void GUIAPI GUISetJapanese( void )
@@ -337,8 +337,8 @@ WPI_DLGRESULT CALLBACK GUIDialogDlgProc( HWND hwnd, WPI_MSG message, WPI_PARAM1 
             scr_size.x = _wpi_getwmsizex( wparam, lparam );
             scr_size.y = _wpi_getwmsizey( wparam, lparam );
             GUISetRowCol( wnd, &scr_size );
-            size.x = GUIScreenToScaleH( scr_size.x );
-            size.y = GUIScreenToScaleV( scr_size.y );
+            size.x = GUIScaleFromScreenH( scr_size.x );
+            size.y = GUIScaleFromScreenV( scr_size.y );
             GUIEVENT( wnd, GUI_RESIZE, &size );
         }
         break;
@@ -647,7 +647,7 @@ bool GUIXCreateDialog( gui_create_info *dlg_info, gui_window *wnd,
 
     old_dlgtemplate = DialogTemplate( dlg_style | DS_SETFONT,
                            parent_scr_pos.x, parent_scr_pos.y, scr_size.x, scr_size.y,
-                           LIT( Empty ), LIT( Empty ), dlg_info->title,
+                           LIT_GUI( Empty ), LIT_GUI( Empty ), dlg_info->title,
                            FontPointSize, Font, &templatelen );
     if( old_dlgtemplate == NULL ) {
         return( false );
@@ -673,7 +673,7 @@ bool GUIXCreateDialog( gui_create_info *dlg_info, gui_window *wnd,
         AdjustToDialogUnits( &scr_pos );
         AdjustToDialogUnits( &scr_size );
         if( ctl_info->text == NULL ) {
-            captiontext = LIT( Empty );
+            captiontext = LIT_GUI( Empty );
         } else {
             captiontext = ctl_info->text;
         }
@@ -786,9 +786,9 @@ void GUIInitDialog( void )
 
     font_set = false;
 #ifdef __OS2_PM__
-    Font = GUIStrDup( LIT( OS2_Dialog_Font ), NULL );
+    Font = GUIStrDup( LIT_GUI( OS2_Dialog_Font ), NULL );
 #else
-    Font = GUIStrDup( LIT( Windows_Dialog_Font ), NULL );
+    Font = GUIStrDup( LIT_GUI( Windows_Dialog_Font ), NULL );
 #endif
     if( Font ) {
         cp = strrchr( Font, '.' );
@@ -812,8 +812,8 @@ void GUIInitDialog( void )
     // size of the client area to scale subsequent screen units
     old_dlgtemplate = DialogTemplate( MODAL_STYLE | DS_SETFONT,
                            SizeDialog.x, SizeDialog.y,
-                           SizeDialog.x, SizeDialog.y, LIT( Empty ),
-                           LIT( Empty ), LIT( Empty ), FontPointSize, Font, &templatelen );
+                           SizeDialog.x, SizeDialog.y, LIT_GUI( Empty ),
+                           LIT_GUI( Empty ), LIT_GUI( Empty ), FontPointSize, Font, &templatelen );
     if( old_dlgtemplate != NULL ) {
         new_dlgtemplate = DoneAddingControls( old_dlgtemplate );
         DynamicDialogBox( GUIInitDialogFuncDlgProc, GUIMainHInst, NULLHANDLE, new_dlgtemplate, 0 );

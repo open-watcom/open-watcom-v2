@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,6 +35,9 @@
 
 #define OUTPUT_OBJECT_NAME(s,f,d,k) DoOutObjectName( s, (outputter_fn *)(f), (outputter_data)(d), k )
 
+#define PUSH_OP(s)  { segment_id old_segid; old_segid = ChangeOP(s)
+#define POP_OP()    SetOP( old_segid ); }
+
 typedef void        *outputter_data;
 typedef void        outputter_fn( const char *, outputter_data );
 
@@ -49,7 +52,8 @@ extern segment_id   AskBackSeg( void );
 extern segment_id   AskOP( void );
 extern segment_id   AskSegID( void *hdl, cg_class class );
 extern bool         AskSegIsBlank( segment_id segid );
-extern segment_id   SetOP( segment_id segid );
+extern segment_id   ChangeOP( segment_id segid );
+extern void         SetOP( segment_id segid );
 extern void         FlushOP( segment_id segid );
 extern bool         NeedBaseSet( void );
 extern offset       AskLocation( void );
@@ -59,7 +63,7 @@ extern long_offset  AskBigMaxSize( void );
 extern void         SetLocation( offset loc );
 extern void         SetBigLocation( long_offset loc );
 extern void         OutLabel( label_handle label );
-extern void         *InitPatch( void );
+extern void         *InitPatches( void );
 extern void         AbsPatch( abspatch_handle patch, offset lc );
 extern void         TellObjNewProc( cg_sym_handle proc );
 extern void         IncLocation( offset by );
@@ -75,10 +79,10 @@ extern void         DoEmptyQueue( void );
 extern void         DoAlignment( int len );
 extern bool         CodeHasAbsPatch( oc_entry *code );
 
-extern void         BackPtr( back_handle bck, segment_id segid, offset plus, type_def *tipe );
+extern void         BackPtr( back_handle bck, segment_id segid, offset plus, const type_def *tipe );
 extern void         BackPtrBase( back_handle bck, segment_id segid );
 extern void         BackPtrBigOffset( back_handle bck, segment_id segid, offset plus );
-extern void         FEPtr( cg_sym_handle sym, type_def *tipe, offset plus );
+extern void         FEPtr( cg_sym_handle sym, const type_def *tipe, offset plus );
 extern void         FEPtrBaseOffset( cg_sym_handle sym, offset plus );
 extern void         FEPtrBase( cg_sym_handle sym );
 

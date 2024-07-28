@@ -36,6 +36,6 @@
 &edvi has encountered an internal error.  Please note the
 circumstances of this error and, if possible, construct a small
 test case that demonstrates the problem. You can then either file
-a bug report using "GitHub issues" at &owurl1. ,
+a bug report using "GitHub issues" at &owurl./issues. ,
 or you can discuss the problem on "Open Watcom Discord Channel"
-at &owurl2. .
+at &owurl1. .

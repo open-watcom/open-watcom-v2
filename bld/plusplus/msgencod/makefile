@@ -35,8 +35,8 @@ dosencod.lnk : makefile
     @for %i in ( $(objs) ) do @%append $@ FILE %i
     @%append $@ LIB siliblw
 
-global : .symbolic
+global : .SYMBOLIC
     rm -f *.obj *.exe *.gh *.lnk
 
-reference : .symbolic msgencod.exe
+reference : .SYMBOLIC msgencod.exe
     cp msgencod.exe ../bin

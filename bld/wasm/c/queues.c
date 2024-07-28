@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -53,7 +53,7 @@ static qdesc   *LinnumQueue = NULL;   // queue of linnum_data structs
 static void QAddItem( qdesc **queue, void *data )
 /***********************************************/
 {
-    struct queuenode    *node;
+    queuenode   *node;
 
     node = AsmAlloc( sizeof( queuenode ) );
     node->data = data;
@@ -64,21 +64,25 @@ static void QAddItem( qdesc **queue, void *data )
     QEnqueue( *queue, node );
 }
 
-static long QCount( qdesc *q )
-/****************************/
-/* count the # of entries in the queue, if the retval is -ve we have an error */
+static int QCount( qdesc *q )
+/****************************
+ * count the # of entries in the queue
+ * if the retval is -1 then we have an error
+ */
 {
-    long        count = 0;
-    queuenode   *node;
+    unsigned long       count;
+    queuenode           *node;
 
-    if( q == NULL )
-        return( 0 );
-    for( node = q->head; node != NULL; node = node->next ) {
-        if( ++count < 0 ) {
-            return( -1L );
+    count = 0;
+    if( q != NULL ) {
+        for( node = q->head; node != NULL; node = node->next ) {
+            count++;
+            if( count > INT_MAX ) {
+                return( -1 );
+            }
         }
     }
-    return( count );
+    return( (int)count );
 }
 
 static char **NameArray;
@@ -107,15 +111,15 @@ void AddPublicProc( dir_node *dir )
 bool GetPublicData( void )
 /************************/
 {
-    obj_rec             *objr;
-    struct queuenode    *start;
-    struct queuenode    *curr;
-    struct queuenode    *last;
-    dir_node            *curr_seg;
-    dir_node            *dir;
-    struct pubdef_data  *d;
-    unsigned char       cmd;
-    name_handle         i;
+    obj_rec         *objr;
+    queuenode       *start;
+    queuenode       *curr;
+    queuenode       *last;
+    dir_node        *curr_seg;
+    dir_node        *dir;
+    pubdef_data     *d;
+    unsigned char   cmd;
+    name_handle     i;
 
     if( PubQueue == NULL )
         return( false );
@@ -125,20 +129,20 @@ bool GetPublicData( void )
         cmd = ( dir->sym.public ) ? CMD_PUBDEF : CMD_STATIC_PUBDEF;
         objr = ObjNewRec( cmd );
         objr->is_32 = 0;
-        objr->d.pubdef.free_pubs = 1;
-        objr->d.pubdef.num_pubs = 0;
-        objr->d.pubdef.base.frame = 0;
-        objr->d.pubdef.base.grp_idx = 0;
-        objr->d.pubdef.base.seg_idx = 0;
+        objr->u.pubdef.free_pubs = 1;
+        objr->u.pubdef.num_pubs = 0;
+        objr->u.pubdef.base.frame = 0;
+        objr->u.pubdef.base.grp_idx = 0;
+        objr->u.pubdef.base.seg_idx = 0;
         curr_seg = (dir_node *)dir->sym.segment;
         if( curr_seg != NULL ) {
-            objr->d.pubdef.base.seg_idx = curr_seg->e.seginfo->idx;
+            objr->u.pubdef.base.seg_idx = curr_seg->e.seginfo->idx;
             if( curr_seg->e.seginfo->group != NULL ) {
-                objr->d.pubdef.base.grp_idx = ((dir_node *)curr_seg->e.seginfo->group)->e.grpinfo->idx;
+                objr->u.pubdef.base.grp_idx = ((dir_node *)curr_seg->e.seginfo->group)->e.grpinfo->idx;
             }
         }
         for( curr = start; curr != NULL; curr = curr->next ) {
-            if( objr->d.pubdef.num_pubs > MAX_PUB_SIZE )
+            if( objr->u.pubdef.num_pubs > MAX_PUB_SIZE )
                 break;
             dir = (dir_node *)curr->data;
             if( (dir_node *)dir->sym.segment != curr_seg )
@@ -161,16 +165,16 @@ bool GetPublicData( void )
             if( dir->sym.offset > 0xffffUL ) {
                 objr->is_32 = 1;
             }
-            objr->d.pubdef.num_pubs++;
+            objr->u.pubdef.num_pubs++;
         }
         last = curr;
 
-        d = AsmAlloc( objr->d.pubdef.num_pubs * sizeof( struct pubdef_data ) );
-        objr->d.pubdef.pubs = d;
-        NameArray = AsmAlloc( objr->d.pubdef.num_pubs * sizeof( char * ) );
+        d = AsmAlloc( objr->u.pubdef.num_pubs * sizeof( pubdef_data ) );
+        objr->u.pubdef.pubs = d;
+        NameArray = AsmAlloc( objr->u.pubdef.num_pubs * sizeof( char * ) );
         for( i = 0, curr = start; curr != last; curr = curr->next, ++i ) {
             dir = (dir_node *)curr->data;
-            NameArray[i] = Mangle( &dir->sym, NULL );
+            NameArray[i] = Mangle( &dir->sym );
             d->name = i;
             if( dir->sym.state != SYM_CONST ) {
                 d->offset = dir->sym.offset;
@@ -185,9 +189,9 @@ bool GetPublicData( void )
             d->type.idx = 0;
             ++d;
         }
-        d = objr->d.pubdef.pubs;
+        d = objr->u.pubdef.pubs;
         write_record( objr, true );
-        for( i = 0; i < objr->d.pubdef.num_pubs; i++ ) {
+        for( i = 0; i < objr->u.pubdef.num_pubs; i++ ) {
             AsmFree( NameArray[i] );
         }
         AsmFree( NameArray );
@@ -270,16 +274,16 @@ bool GetLnameData( obj_rec *objr )
         dir = (dir_node *)curr->data;
         len = strlen( dir->sym.name );
         ObjPutName( objr, dir->sym.name, (uint_8)len );
-        objr->d.lnames.num_names++;
+        objr->u.lnames.num_names++;
         switch( dir->sym.state ) {
         case SYM_GRP:
-            dir->e.grpinfo->idx = objr->d.lnames.num_names;
+            dir->e.grpinfo->idx = objr->u.lnames.num_names;
             break;
         case SYM_SEG:
-            dir->e.seginfo->idx = objr->d.lnames.num_names;
+            dir->e.seginfo->idx = objr->u.lnames.num_names;
             break;
         case SYM_CLASS_LNAME:
-            dir->e.lnameinfo->idx = objr->d.lnames.num_names;
+            dir->e.lnameinfo->idx = objr->u.lnames.num_names;
             break;
         }
     }
@@ -307,30 +311,30 @@ static void FreeLnameQueue( void )
     }
 }
 
-void AddLinnumData( struct line_num_info *data )
-/**********************************************/
+void AddLinnumData( line_num_info *data )
+/***************************************/
 {
     QAddItem( &LinnumQueue, data );
 }
 
-int GetLinnumData( int limit, struct linnum_data **ldata, bool *need32 )
-/**********************************************************************/
+int GetLinnumData( int limit, linnum_data **ldata, bool *need32 )
+/***************************************************************/
 {
-    queuenode               *node;
-    struct line_num_info    *node_data;
-    long                    count;
-    int                     i;
+    queuenode       *node;
+    line_num_info   *node_data;
+    int             count;
+    int             i;
 
     count = QCount( LinnumQueue );
     if( count <= 0 )
         return( 0 );
-    if( count < limit )
-        limit = (unsigned)count;
+    if( limit > count )
+        limit = count;
     *need32 = false;
-    *ldata = AsmAlloc( limit * sizeof( struct linnum_data ) );
+    *ldata = AsmAlloc( limit * sizeof( linnum_data ) );
     for( i = 0; i < limit; i++ ) {
         node = QDequeue( LinnumQueue );
-        node_data = (struct line_num_info *)(node->data);
+        node_data = (line_num_info *)(node->data);
         if( *ldata != NULL ) {
             (*ldata)[i].number = node_data->number;
             (*ldata)[i].offset = node_data->offset;
@@ -341,16 +345,28 @@ int GetLinnumData( int limit, struct linnum_data **ldata, bool *need32 )
         AsmFree( node_data );
         AsmFree( node );
     }
-    if( count - limit == 0 ) {
-        AsmFree( LinnumQueue );
-        LinnumQueue = NULL;
-    }
     return( limit );
+}
+
+static void FreeLinnumQueue( void )
+/*********************************/
+{
+    queuenode *node;
+
+    if( LinnumQueue != NULL ) {
+        while( LinnumQueue->head != NULL ) {
+            node = QDequeue( LinnumQueue );
+            AsmFree( node->data );
+            AsmFree( node );
+        }
+        AsmFree( LinnumQueue );
+    }
 }
 
 void FreeAllQueues( void )
 /************************/
 {
+    FreeLinnumQueue();
     FreePubQueue();
     FreeAliasQueue();
     FreeLnameQueue();

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,30 +31,13 @@
 ****************************************************************************/
 
 
-#ifndef _DBGLIT_H_INCLUDED
-#define _DBGLIT_H_INCLUDED
+typedef unsigned    dui_res_id;
 
-#include "dbgname.h"
-#include "banner.h"
-#include "litdef.h"
-
-#ifdef JAPANESE
-  #define pick(c,e,j) LITSTR( c, j )
-#else
-  #define pick(c,e,j) LITSTR( c, e )
-#endif
-
-#define LITSTR( x, y ) extern char *LIT_ENG( x );
-#include "wdeng.str"
-#undef LITSTR
-
-#define LITSTR( x, y ) extern char *LIT_DUI( x );
-#include "wddui.str"
-#undef LITSTR
-
-#undef pick
-
-extern void InitLiterals( void );
-extern void FiniLiterals( void );
-
-#endif /* _DBGLIT_H_INCLUDED */
+extern void     InitLiterals( void );
+extern void     FiniLiterals( void );
+extern void     InitEngineLiterals( void );
+extern void     FiniEngineLiterals( void );
+extern void     DUIInitLiterals( void );
+extern void     DUIFiniLiterals( void );
+extern char     *DUILoadString( dui_res_id id );
+extern void     DUIFreeString( void * );

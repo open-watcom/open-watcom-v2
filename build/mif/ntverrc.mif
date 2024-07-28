@@ -1,0 +1,44 @@
+# Generate dllver.res and/or exever.res
+
+# Default names and values
+
+!ifndef ntverrc_dll
+ntverrc_dll = $(proj_name)
+!endif
+
+!ifndef ntverrc_exe
+ntverrc_exe = $(proj_name)
+!endif
+
+ntverrc_dll_dep = dllver.grc
+ntverrc_dll_res = dllver.res
+ntverrc_dll_deps = $(ntverrc_dll_dep)
+
+ntverrc_exe_dep = exever.grc
+ntverrc_exe_res = exever.res
+ntverrc_exe_deps = $(ntverrc_exe_dep)
+
+!ifndef patch_level
+patch_level = 0
+!endif
+
+$(ntverrc_exe_dep): $($(proj_name)_ntverrc)/exever.rc .EXPLICIT
+    @%make echo_genverrc
+    $(noecho)genverrc $]@ $@ $$ $(ntverrc_exe) $(patch_level)
+
+$(ntverrc_exe_res) : $(ntverrc_exe_deps) .EXPLICIT
+    @%make echo_rc
+    $(rc) -zku8 $(ppflags_common) $(rc_cppflags) $(rc_flags_sys) -I"$($(proj_name)_ntverrc)" $(inc_dirs_sys) -I"$(watcom_dir)/h" $[@ -fo=$@
+
+$(ntverrc_dll_dep): $($(proj_name)_ntverrc)/dllver.rc .EXPLICIT
+    @%make echo_genverrc
+    $(noecho)genverrc $]@ $@ $$ $(ntverrc_dll) $(patch_level)
+
+$(ntverrc_dll_res) : $(ntverrc_dll_deps) .EXPLICIT
+    @%make echo_rc
+    $(rc) -zku8 $(ppflags_common) $(rc_cppflags) $(rc_flags_sys) -I"$($(proj_name)_ntverrc)" $(inc_dirs_sys) -I"$(watcom_dir)/h" $[@ -fo=$@
+
+echo_genverrc : .PROCEDURE .EXPLICIT
+!ifeq verbose 0
+    @echo genverrc $@
+!endif

@@ -1,6 +1,6 @@
 proj_name = symdump
 
-symdump_autodepends = .autodepend
+symdump_autodepends = .AUTODEPEND
 
 !include cproj.mif
 !include defrule.mif

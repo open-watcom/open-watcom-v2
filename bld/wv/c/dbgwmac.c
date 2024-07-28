@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,7 +36,6 @@
 #include "dbgdefn.h"
 #include "dbgdata.h"
 #include "dbgwind.h"
-#include "dbgadget.h"
 #include "guidlg.h"
 #include "sortlist.h"
 #include "dbgerr.h"
@@ -53,6 +52,9 @@
 #include "wndmenu.h"
 #include "menudef.h"
 #include "dbgmisc.h"
+#include "dbgicon.h"
+#include "liteng.h"
+#include "litdui.h"
 
 
 #define TITLE_SIZE      2
@@ -86,9 +88,9 @@ static char **WndDisplayNames[] = {
 };
 
 static char **WhatList[] = {
-    LITREF_DUI( mac_popup_menu ),
-    LITREF_DUI( mac_main_menu ),
-    LITREF_DUI( mac_command_string ),
+    LITREF_DUI( Mac_PopupMenu ),
+    LITREF_DUI( Mac_MainMenu ),
+    LITREF_DUI( Mac_CommandString ),
 };
 
 static char **Titles[] = {
@@ -104,7 +106,7 @@ static gui_menu_struct MacMenu[] = {
     #include "menumac.h"
 };
 
-static const char *WndGetName( const void *data_handle, int item )
+static const char * GUICALLBACK WndGetName( const void *data_handle, int item )
 {
     return( *((const char ***)data_handle)[item] );
 }
@@ -167,7 +169,7 @@ static void MacChangeMac( a_window wnd, wnd_macro *mac, gui_key key, wnd_class_w
     WndNewCurrent( wnd, i, PIECE_KEY );
 }
 
-static void     MacModify( a_window wnd, wnd_row row, wnd_piece piece );
+static void     WNDCALLBACK MacModify( a_window wnd, wnd_row row, wnd_piece piece );
 
 static bool MacModWhat( a_window wnd, wnd_row row )
 {
@@ -242,7 +244,7 @@ bool MacKeyHit( a_window wnd, gui_key key )
     }
 }
 
-static bool MacPopupClicked( a_window wnd, gui_ctl_id id )
+static bool WNDCALLBACK MacPopupClicked( a_window wnd, gui_ctl_id id )
 {
     char                *p;
     gui_ctl_id          main_id;
@@ -350,7 +352,7 @@ static void MacModCmd( a_window wnd, wnd_row row )
 }
 
 
-static void     MacModify( a_window wnd, wnd_row row, wnd_piece piece )
+static void     WNDCALLBACK MacModify( a_window wnd, wnd_row row, wnd_piece piece )
 {
     wnd_macro   *mac;
 
@@ -380,7 +382,7 @@ static void     MacModify( a_window wnd, wnd_row row, wnd_piece piece )
 #define TDDBG "tdkeys.dbg"
 #define WDDBG "wdkeys.dbg"
 
-static void     MacMenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_piece piece )
+static void     WNDCALLBACK MacMenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_piece piece )
 {
     wnd_macro           *mac;
     mac_window          *wndmac;
@@ -435,7 +437,7 @@ static void     MacMenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_piece
     }
 }
 
-static wnd_row MacNumRows( a_window wnd )
+static wnd_row WNDCALLBACK MacNumRows( a_window wnd )
 {
     wnd_macro   *mac;
     wnd_row     count;
@@ -449,7 +451,7 @@ static wnd_row MacNumRows( a_window wnd )
     return( count );
 }
 
-static  bool MacGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *line )
+static  bool WNDCALLBACK MacGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *line )
 {
     wnd_macro           *mac;
     cmd_list            *cmds;
@@ -595,14 +597,14 @@ static void MacReSize( a_window wnd )
     Indents[PIECE_TEXT] = Indents[PIECE_WHAT] + max_size[PIECE_WHAT] + 2 * WndAvgCharX( wnd );
 }
 
-static void     MacRefresh( a_window wnd )
+static void     WNDCALLBACK MacRefresh( a_window wnd )
 {
     MacReSize( wnd );
     WndNoSelect( wnd );
     WndSetRepaint( wnd );
 }
 
-static bool MacWndEventProc( a_window wnd, gui_event gui_ev, void *parm )
+static bool WNDCALLBACK MacWndEventProc( a_window wnd, gui_event gui_ev, void *parm )
 {
     mac_window  *wndmac = WndMac( wnd );
 
@@ -627,7 +629,7 @@ static bool MacWndEventProc( a_window wnd, gui_event gui_ev, void *parm )
     return( false );
 }
 
-static bool ChkUpdate( void )
+static bool WNDCALLBACK ChkUpdate( void )
 {
     return( UpdateFlags & UP_MACRO_CHANGE );
 }
@@ -653,5 +655,5 @@ a_window WndMacOpen( void )
     mac_window  *wndmac;
 
     wndmac = WndMustAlloc( sizeof( *wndmac ) );
-    return( DbgTitleWndCreate( LIT_DUI( WindowAccelerator ), &MacInfo, WND_MACRO, wndmac, &AclIcon, TITLE_SIZE, true ) );
+    return( DbgWndCreateTitle( LIT_DUI( WindowAccelerator ), &MacInfo, WND_MACRO, wndmac, &AclIcon, TITLE_SIZE, true ) );
 }

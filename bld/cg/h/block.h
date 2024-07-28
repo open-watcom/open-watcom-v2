@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2023-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -46,8 +46,8 @@
 #define _MarkBlkUnMarked( b )   _MarkBlkAttrNot( b, BLK_BLOCK_MARKED )
 #define _MarkBlkMarked( b )     _MarkBlkAttr( b, BLK_BLOCK_MARKED )
 
-#define _MarkBlkAllUnVisited()  ClearBlocksBitsMask( ~BLK_BLOCK_VISITED )
 #define _MarkBlkAllAttrNot( a ) ClearBlocksBitsMask( ~(a) )
+#define _MarkBlkAllUnVisited()  ClearBlocksBitsMask( ~BLK_BLOCK_VISITED )
 
 #define BLOCK_SIZE(n)           (sizeof( block ) + (n - 1) * sizeof( block_edge ))
 
@@ -161,7 +161,7 @@ typedef struct block {
         union {
             struct block        *alter_ego;     /* used in loop unrolling */
             struct block        *next;          /* used for CALL_LABEL kludge */
-        } v;
+        } u2;
         label_handle            label;          /* front end identification */
         local_bit_set           available_bit;
         level_depth             depth;          /* loop nesting depth */

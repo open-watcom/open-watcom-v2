@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -153,30 +153,28 @@ void FatalResError( const char *msg )
     longjmp( Env, 1 );
 }
 
-void FatalError( int str, ... )
+void FatalError( int msgid, ... )
 {
     va_list             arglist;
     char                buff[MAX_ERROR_SIZE];
     char                msg[512];
 
-    MsgGet( str, buff );
-    va_start( arglist, str );
+    MsgGet( msgid, buff );
+    va_start( arglist, msgid );
     vsnprintf( msg, 512, buff, arglist );
     va_end( arglist );
     IdeOutput( msg, IDEMSGSEV_ERROR );
     longjmp( Env, 1 );
 }
 
-void Warning( int str, ... )
+void Warning( int msgid, ... )
 {
     va_list             arglist;
     char                buff[MAX_ERROR_SIZE];
     char                msg[512];
 
-    if( Options.quiet )
-        return;
-    MsgGet( str, buff );
-    va_start( arglist, str );
+    MsgGet( msgid, buff );
+    va_start( arglist, msgid );
     vsnprintf( msg, 512, buff, arglist );
     va_end( arglist );
     IdeOutput( msg, IDEMSGSEV_WARNING );
@@ -188,8 +186,6 @@ void Message( const char *buff, ... )
     va_list             arglist;
     char                msg[512];
 
-    if( Options.quiet )
-        return;
     va_start( arglist, buff );
     vsnprintf( msg, 512, buff, arglist );
     va_end( arglist );
@@ -218,41 +214,34 @@ void Usage( void )
 /****************/
 {
     char                buff[MAX_ERROR_SIZE];
-    int                 str;
-    int                 str_last;
-    bool                console_tty;
+    int                 msgid;
+    int                 msgid_last;
 
-    Banner();
-    if( IdeCbs != NULL ) {
-        console_tty = ( ideInfo != NULL && ideInfo->ver > 2 && ideInfo->console_output );
-        if( console_tty && !Options.quiet && !Options.terse_listing ) {
-            ConsolePuts( "" );
-        }
-        if( Options.ar ) {
-            str = MSG_USAGE_AR_BASE;
-            str_last = MSG_USAGE_AR_BASE + MSG_USAGE_AR_COUNT;
-            MsgGet( str++, buff );
-            ConsolePrintf( buff, Options.ar_name );
-            str_last = MSG_USAGE_AR_BASE + MSG_USAGE_AR_COUNT;
-        } else {
-            str = MSG_USAGE_WLIB_BASE;
-            str_last = MSG_USAGE_WLIB_BASE + MSG_USAGE_WLIB_COUNT;
-        }
-        for( ; str < str_last; ++str ) {
-            MsgGet( str, buff );
-            ConsolePuts( buff );
-        }
+    Banner( true );
+    if( Options.ar ) {
+        msgid = MSG_USAGE_AR_BASE;
+        msgid_last = MSG_USAGE_AR_BASE + MSG_USAGE_AR_COUNT;
+        MsgGet( msgid++, buff );
+        ConsolePrintf( buff, Options.ar_name );
+        msgid_last = MSG_USAGE_AR_BASE + MSG_USAGE_AR_COUNT;
+    } else {
+        msgid = MSG_USAGE_WLIB_BASE;
+        msgid_last = MSG_USAGE_WLIB_BASE + MSG_USAGE_WLIB_COUNT;
+    }
+    for( ; msgid < msgid_last; ++msgid ) {
+        MsgGet( msgid, buff );
+        ConsolePuts( buff );
     }
     longjmp( Env, 1 );
 }
 
-void Banner( void )
+void Banner( bool force )
 {
     static bool alreadyDone = false;
 
     if( !alreadyDone ) {
         alreadyDone = true;
-        if( !Options.quiet && !Options.terse_listing && IdeCbs != NULL ) {
+        if( force || !Options.quiet && !Options.terse_listing ) {
             ConsolePuts(
                 banner1t( "Library Manager" )
 #ifdef DEVBUILD

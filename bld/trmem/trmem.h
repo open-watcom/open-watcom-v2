@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -142,6 +142,7 @@ extern size_t _trmem_msize( void *, _trmem_hdl );
     _trmem_prt_list prints a list of all currently allocated chunks.
 */
 extern void _trmem_prt_usage( _trmem_hdl );
+extern unsigned _trmem_prt_list_ex( _trmem_hdl hdl, unsigned max_items );
 extern unsigned _trmem_prt_list( _trmem_hdl );
 
 /*

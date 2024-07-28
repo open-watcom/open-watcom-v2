@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -69,7 +69,7 @@
  * If you add a new routine, add it to the debugger's symbol list
  * so the debugger can recognize it.
  */
-rtn_info RTInfo[] = {
+const rtn_info RTInfo[] = {
     #define PICK(e,name,op,class,left,right,result) {name, op, class, left, right, result},
     #define PICK1(e,name,op,class,left,right,result) __FP80BIT(PICK(e,name,op,class,left,right,result),)
     #include "_rtinfo.h"
@@ -77,7 +77,7 @@ rtn_info RTInfo[] = {
     #undef PICK
 };
 
-static  struct STRUCT_BYTE_SEQ( 6 ) Scn1 = {
+static const struct STRUCT_BYTE_SEQ( 6 ) Scn1 = {
      6, false,
     {0xF2,              /*      repne           */
      0xAE,              /*      scasb           */
@@ -85,13 +85,13 @@ static  struct STRUCT_BYTE_SEQ( 6 ) Scn1 = {
      0x89, 0xCF}        /*      mov     di,cx   */
 };
 
-static  struct STRUCT_BYTE_SEQ( 2 ) Scn2 = {
+static const struct STRUCT_BYTE_SEQ( 2 ) Scn2 = {
      2, false,
     {0xF2,              /*      repne           */
      0xAF}              /*      scasw           */
 };
 
-static  struct STRUCT_BYTE_SEQ( 18 ) Scn4 = {
+static const struct STRUCT_BYTE_SEQ( 18 ) Scn4 = {
      18, false,
     {0x83, 0xC7, 0x02,  /* L1:  add     d1,2    */
      0x49,              /* L2:  dec     cx      */
@@ -110,7 +110,7 @@ static  struct STRUCT_BYTE_SEQ( 18 ) Scn4 = {
 const char  *AskRTName( rt_class rtindex )
 /****************************************/
 {
-    return( RTInfo[rtindex].nam );
+    return( RTInfo[rtindex].name );
 }
 
 
@@ -130,8 +130,8 @@ name    *Addressable( name *cons, type_class_def type_class )
             return( GenFloat( cons, type_class ) );
         case U8:
         case I8:
-            buffer.u._32[I64LO32] = cons->c.lo.int_value;
-            buffer.u._32[I64HI32] = cons->c.hi.int_value;
+            buffer.u._32[I64LO32] = cons->c.lo.u.int_value;
+            buffer.u._32[I64HI32] = cons->c.hi.u.int_value;
             return( GenConstData( &buffer, type_class ) );
         default:
             Zoiks( ZOIKS_138 );
@@ -222,7 +222,7 @@ instruction     *rMAKECALL( instruction *ins )
  * the tables above to decide where parms go.
  */
 {
-    rtn_info            *info;
+    const rtn_info      *info;
     label_handle        lbl;
     instruction         *left_ins;
     instruction         *new_ins;
@@ -507,7 +507,7 @@ instruction     *rMAKEFNEG( instruction *ins )
  * and modified by the call.
  */
 {
-    rtn_info            *info;
+    const rtn_info      *info;
     label_handle        lbl;
     instruction         *left_ins;
     instruction         *new_ins;
@@ -565,19 +565,19 @@ pointer BEAuxInfo( pointer hdl, aux_class request )
     case FEINF_AUX_LOOKUP:
         switch( FindRTLabel( hdl ) ) {
         case RT_SCAN1:
-            return( &Scn1 );
+            return( (pointer)&Scn1 );
         case RT_SCAN2:
-            return( &Scn2 );
+            return( (pointer)&Scn2 );
         case RT_SCAN4:
-            return( &Scn4 );
+            return( (pointer)&Scn4 );
         default:
             break;
         }
         break;
     case FEINF_CALL_CLASS:
-        return( FECALL_GEN_NONE );
+        return( (pointer)FECALL_GEN_NONE );
     case FEINF_CALL_CLASS_TARGET:
-        return( FECALL_X86_NONE );
+        return( (pointer)FECALL_X86_NONE );
     case FEINF_CALL_BYTES:
         return( hdl );
     default:

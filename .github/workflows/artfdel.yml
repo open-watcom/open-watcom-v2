@@ -8,10 +8,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: checkout
-      uses: actions/checkout@v3.5.0
+      uses: actions/checkout@v4
     - name: Delete Artifacts
       uses: "./.github/actions/artfdel"
       with:
         runid: ${{ github.event.client_payload.runid  }}
         exclude: ${{ github.event.client_payload.exclude }}
         owdebug: ${{ vars.OWDEBUG }}
+        owcurlopts: ${{ vars.OWCURLOPTS }}

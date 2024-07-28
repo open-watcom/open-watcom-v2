@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,21 +39,21 @@
 
 #include "intsupp.h"
 
-#define SymAddrTaken(s)     (((s)->flag & SYMF_ADDR_TAKEN) != 0)
-#define SymDbgAddrTaken(s)  (((s)->flag & SYMF_DBG_ADDR_TAKEN) != 0)
-#define SymIsAnError(s)     (((s)->flag & SYMF_ERROR) != 0)
-#define SymIsConstantInt(s) (((s)->flag & SYMF_CONSTANT_INT) != 0)
-#define SymIsConstantNoCode(s) (((s)->flag & SYMF_CONST_NO_CODE) != 0)
-#define SymIsInitialized(s) (((s)->flag & SYMF_INITIALIZED) != 0)
-#define SymIsReferenced(s)  (((s)->flag & SYMF_REFERENCED) != 0)
-#define SymInVft(s)         (((s)->flag & SYMF_IN_VFT) != 0)
-#define SymIsAnonymousMember(s) (((s)->flag & SYMF_ANONYMOUS) != 0)
-#define SymIsUninlineable(s)    (((s)->flag & SYMF_DONT_INLINE) != 0)
-#define SymIsMustGen(s)     (((s)->flag & SYMF_MUST_GEN) != 0)
-#define SymIsFnTemplateMatchable(s) (((s)->flag & SYMF_TEMPLATE_FN) != 0)
+#define SymAddrTaken(s)     (((s)->flags & SYMF_ADDR_TAKEN) != 0)
+#define SymDbgAddrTaken(s)  (((s)->flags & SYMF_DBG_ADDR_TAKEN) != 0)
+#define SymIsAnError(s)     (((s)->flags & SYMF_ERROR) != 0)
+#define SymIsConstantInt(s) (((s)->flags & SYMF_CONSTANT_INT) != 0)
+#define SymIsConstantNoCode(s) (((s)->flags & SYMF_CONST_NO_CODE) != 0)
+#define SymIsInitialized(s) (((s)->flags & SYMF_INITIALIZED) != 0)
+#define SymIsReferenced(s)  (((s)->flags & SYMF_REFERENCED) != 0)
+#define SymInVft(s)         (((s)->flags & SYMF_IN_VFT) != 0)
+#define SymIsAnonymousMember(s) (((s)->flags & SYMF_ANONYMOUS) != 0)
+#define SymIsUninlineable(s)    (((s)->flags & SYMF_DONT_INLINE) != 0)
+#define SymIsMustGen(s)     (((s)->flags & SYMF_MUST_GEN) != 0)
+#define SymIsFnTemplateMatchable(s) (((s)->flags & SYMF_TEMPLATE_FN) != 0)
 
-#define SymIsAlias(s)       (((s)->flag & SYMF_ALIAS) != 0)
-#define SymIsCatchAlias(s)  ( (s)->id == SYMC_AUTO && ( (s)->flag & SYMF_CATCH_ALIAS ))
+#define SymIsAlias(s)       (((s)->flags & SYMF_ALIAS) != 0)
+#define SymIsCatchAlias(s)  ( (s)->id == SYMC_AUTO && ( (s)->flags & SYMF_CATCH_ALIAS ))
 
 #define SymIsTypedef(s)     ( (s)->id == SYMC_TYPEDEF )
 #define SymIsDefArg(s)      ( (s)->id == SYMC_DEFAULT )
@@ -117,14 +118,14 @@ SYMBOL SymConstantValue         // GET CONSTANT VALUE FOR SYMBOL
 SYMBOL SymCreate(               // CREATE NEW SYMBOL
     TYPE type,                  // - symbol type
     symbol_class id,            // - symbol class
-    symbol_flag flags,          // - symbol flags
+    symbol_flags flags,         // - symbol flags
     NAME name,                  // - symbol name
     SCOPE scope )               // - scope for insertion
 ;
 SYMBOL SymCreateAtLocn(         // CREATE NEW SYMBOL AT LOCATION
     TYPE type,                  // - symbol type
     symbol_class id,            // - symbol class
-    symbol_flag flags,          // - symbol flags
+    symbol_flags flags,         // - symbol flags
     NAME name,                  // - symbol name
     SCOPE scope,                // - scope for insertion
     TOKEN_LOCN* locn )          // - location
@@ -132,19 +133,19 @@ SYMBOL SymCreateAtLocn(         // CREATE NEW SYMBOL AT LOCATION
 SYMBOL SymCreateCurrScope(      // CREATE NEW CURR-SCOPE SYMBOL
     TYPE type,                  // - symbol type
     symbol_class id,            // - symbol class
-    symbol_flag flags,          // - symbol flags
+    symbol_flags flags,         // - symbol flags
     NAME name )                 // - symbol name
 ;
 SYMBOL SymCreateFileScope(      // CREATE NEW FILE-SCOPE SYMBOL
     TYPE type,                  // - symbol type
     symbol_class id,            // - symbol class
-    symbol_flag flags,          // - symbol flags
+    symbol_flags flags,         // - symbol flags
     NAME name )                 // - symbol name
 ;
 SYMBOL SymCreateTempScope(      // CREATE NEW TEMP-SCOPE SYMBOL
     TYPE type,                  // - symbol type
     symbol_class id,            // - symbol class
-    symbol_flag flags,          // - symbol flags
+    symbol_flags flags,         // - symbol flags
     NAME name )                 // - symbol name
 ;
 SYMBOL SymDefaultBase(          // REMOVE DEFAULT ARGUMENTS TO GET BASE SYMBOL
@@ -353,7 +354,7 @@ SCOPE SymScope(                 // GET SCOPE FOR SYMBOL
 void SymSetNvReferenced(        // SET REFERENCED IF NOT VIRTUAL FUNCTION
     SYMBOL sym )                // - the symbol
 ;
-symbol_flag SymThrowFlags(      // GET SYMBOL'S THROW BITS
+symbol_flags SymThrowFlags(     // GET SYMBOL'S THROW BITS
     SYMBOL sym )                // - the symbol
 ;
 SYMBOL SymMakeAlias(            // DECLARE AN ALIAS IN CURRSCOPE

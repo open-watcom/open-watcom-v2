@@ -1,18 +1,13 @@
 name: release
 description: 'Create new day and month Release on GitHub'
 inputs:
-  arch:
-    description: 'run-time platform'
-    required: false
-    default: ''
-    type: string
-  tools:
-    description: 'used compiler toolchain'
-    required: false
-    default: ''
-    type: string
   owdebug:
     description: 'verbosed/debug output for GH Actions scripts development'
+    required: false
+    default: ''
+    type: string
+  owcurlopts:
+    description: 'additional curl options for GH Actions scripts development'
     required: false
     default: ''
     type: string
@@ -29,6 +24,8 @@ runs:
   - name: Setup curl options
     id: curlcmd
     uses: "./.github/actions/curlcmd"
+    with:
+      owcurlopts: ${{ inputs.owcurlopts }}
 ##############################################
 # create daily release, delete existing one
 ##############################################
@@ -43,6 +40,7 @@ runs:
     with:
       tag:     ${{ steps.dreldata.outputs.tag }}
       owdebug: ${{ inputs.owdebug }}
+      owcurlopts: ${{ inputs.owcurlopts }}
   - name: 'Create daily Release'
     id: newdrel
     uses: "./.github/actions/ghrelcre"
@@ -52,6 +50,7 @@ runs:
       tag:     ${{ steps.dreldata.outputs.tag }}
       tagmsg:  ${{ steps.dreldata.outputs.timestamp }}
       owdebug: ${{ inputs.owdebug }}
+      owcurlopts: ${{ inputs.owcurlopts }}
 ##############################################
 # create monthly release, only if not exists
 ##############################################
@@ -85,6 +84,7 @@ runs:
       tag:     ${{ steps.mreldata.outputs.tag }}
       tagmsg:  ${{ steps.mreldata.outputs.tagmsg }}
       owdebug: ${{ inputs.owdebug }}
+      owcurlopts: ${{ inputs.owcurlopts }}
   - if: steps.oldmrel.outputs.sha == ''
     id: mdata
     run: echo "tag=${{ steps.mreldata.outputs.tag }}" >> ${{ github.output }}

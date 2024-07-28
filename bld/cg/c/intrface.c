@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,7 +37,7 @@
 #include "memcheck.h"
 #include "cgmem.h"
 #include "tree.h"
-#include "cfloat.h"
+#include "_cfloat.h"
 #include "zoiks.h"
 #include "cgauxinf.h"
 #include "data.h"
@@ -73,15 +73,13 @@
 #endif
 
 
-#ifdef QNX_FLAKEY
-unsigned        OrigModel;
-#endif
-
 #define MAX_BCK_INFO    1000    // number of bck_info's per carve block
 
-typedef union uback_info {
-    bck_info    bck;
-    union uback_info    *link;
+typedef struct uback_info {
+    union {
+        bck_info            bck;
+        struct uback_info   *link;
+    } u;
 } uback_info;
 
 typedef struct bck_info_block {
@@ -89,9 +87,14 @@ typedef struct bck_info_block {
     uback_info                  bck_infos[MAX_BCK_INFO];
 } bck_info_block;
 
+#ifdef QNX_FLAKEY
+unsigned        OrigModel;
+#endif
+
 uback_info      *BckInfoHead;           // linked list of available bck_info's
 bck_info_block  *BckInfoCarveHead;      // list of big blocks of bck_info's
 
+cfstruct        cgh;
 
 /*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%*/
 /*%                                              %%*/
@@ -104,13 +107,13 @@ static  bool            memStarted = false;
 void _CGAPI     BEMemInit( void )
 /*******************************/
 {
-    cf_callbacks cf_rtns = { CGAlloc, CGFree };
-
     BckInfoHead = NULL;
     BckInfoCarveHead = NULL;
     InitBlip();
     CGMemInit();
-    CFInit( &cf_rtns );
+    cgh.alloc = CGAlloc;
+    cgh.free = CGFree;
+    CFInit( &cgh );
     memStarted = true;
 }
 
@@ -120,7 +123,7 @@ cg_init_info _CGAPI     BEInitCg( cg_switches switches,
                                     proc_revision proc )
 /**************************************************************/
 {
-    cg_init_info        info;
+    cg_init_info        cg_info;
 
     OptForSize = (byte)optsize;
     CGProcessorVersion = proc; /* so _CPULevel works */
@@ -152,26 +155,25 @@ cg_init_info _CGAPI     BEInitCg( cg_switches switches,
     TypeInit();
     TInit();
     if( !CGOpenf() ) {
-        info.success = 0;
+        cg_info.revision = 0;
+        cg_info.target = 0;
     } else {
-        info.success = 1;
-        info.version.is_large = true;
+        cg_info.revision = II_REVISION;
 #if _TARGET & _TARG_8086
-        info.version.target = II_TARG_8086;
+        cg_info.target = II_TARG_8086;
 #elif _TARGET & _TARG_80386
-        info.version.target = II_TARG_80386;
+        cg_info.target = II_TARG_80386;
 #elif _TARGET & _TARG_370
-        info.version.target = II_TARG_370; /* NYI -- for now */
+        cg_info.target = II_TARG_370; /* NYI -- for now */
 #elif _TARGET & _TARG_AXP
-        info.version.target = II_TARG_AXP;
+        cg_info.target = II_TARG_AXP;
 #elif _TARGET & _TARG_PPC
-        info.version.target = II_TARG_PPC;
+        cg_info.target = II_TARG_PPC;
 #elif _TARGET & _TARG_MIPS
-        info.version.target = II_TARG_MIPS;
+        cg_info.target = II_TARG_MIPS;
 #endif
-        info.version.revision = II_REVISION;
     }
-    return( info );
+    return( cg_info );
 }
 
 cg_init_info _CGAPI     BEInit( cg_switches switches,
@@ -225,7 +227,7 @@ void _CGAPI     BEMemFree( pointer ptr )
 void _CGAPI     BEMemFini( void )
 /*******************************/
 {
-    CFFini();
+    CFFini( &cgh );
     CGMemFini();
 }
 
@@ -261,12 +263,6 @@ void _CGAPI     BEFini( void )
     BEMemFini();
 }
 
-bool _CGAPI     BEMoreMem( void )
-/*******************************/
-{
-    return( _MemCheck( 1 ) );
-}
-
 segment_id _CGAPI   BEGetSeg( void )
 /**********************************/
 {
@@ -286,10 +282,10 @@ segment_id _CGAPI   BESetSeg( segment_id segid )
 {
 #ifdef DEVBUILD
     EchoAPI( "BESetSeg( %x )", segid );
-    segid = SetOP( segid );
+    segid = ChangeOP( segid );
     return EchoAPIHexReturn( segid );
 #else
-    return( SetOP( segid ) );
+    return( ChangeOP( segid ) );
 #endif
 }
 
@@ -469,10 +465,10 @@ static void AllocMoreBckInfo( void )
         p = &carve_block->bck_infos[0];
         BckInfoHead = p;
         for( i = 0; i < (MAX_BCK_INFO - 1); i++ ) {
-            p->link = p + 1;
+            p->u.link = p + 1;
             ++p;
         }
-        p->link = NULL;
+        p->u.link = NULL;
     }
 }
 
@@ -500,8 +496,8 @@ back_handle _CGAPI      BENewBack( cg_sym_handle sym )
     if( BckInfoHead == NULL ) {
         AllocMoreBckInfo();
     }
-    bck = &BckInfoHead->bck;
-    BckInfoHead = BckInfoHead->link;
+    bck = &BckInfoHead->u.bck;
+    BckInfoHead = BckInfoHead->u.link;
     bck->lbl = AskForLabel( sym );
     bck->imp = NOT_IMPORTED;
     bck->imp_alt = NOT_IMPORTED;
@@ -536,11 +532,11 @@ void _CGAPI     BEFreeBack( back_handle bck )
     EchoAPI( "BEFreeBack( %L )\n", bck );
 #endif
     if( IS_REAL_BACK( bck ) ) {
-//      CGFree( bck );
+//        CGFree( bck );
         uback_info      *p;
 
         p = (uback_info *)bck;
-        p->link = BckInfoHead;
+        p->u.link = BckInfoHead;
         BckInfoHead = p;
     }
 }
@@ -661,8 +657,8 @@ void _CGAPI     CGAutoDecl( cg_sym_handle sym, cg_type tipe )
 void _CGAPI     CGReturn( cg_name name, cg_type tipe )
 /****************************************************/
 {
-    type_def    *new_tipe;
-    an          retv;
+    const type_def  *new_tipe;
+    an              retv;
 
 #ifdef DEVBUILD
     EchoAPI( "CGReturn( %n, %t )\n\n", name, tipe );
@@ -1502,36 +1498,41 @@ void _CGAPI     DGInteger64( unsigned_64 value, cg_type tipe )
 /************************************************************/
 {
     type_length len;
-    union{
-        uint_32     vall;
-        unsigned_64 val;
-        byte        buff[8];
+    struct {
+        union {
+            uint_32     vall;
+            unsigned_64 val;
+            byte        buff[8];
+        } u;
     } data;
     byte        *form;
 
 #if ( ( _TARG_MEMORY & _TARG_LOW_FIRST ) == 0 ) == defined( __BIG_ENDIAN__ )
-    data.val = value;
+    data.u.val = value;
 #else
     {  // reverse them
-        union{
-            unsigned_64 val;
-            byte        buff[8];
-        }temp;
+        struct {
+            union {
+                unsigned_64 val;
+                byte        buff[8];
+            } u;
+        } temp;
         int  i;
-        temp.val = value;
+
+        temp.u.val = value;
         for( i = 0; i <= 7; ++i ) {
-            data.buff[i] = temp.buff[7 - i];
+            data.u.buff[i] = temp.u.buff[7 - i];
         }
     }
 #endif
 #ifdef DEVBUILD
 // fix this up when we get printf support for int64
     EchoAPI( "DGInteger64( %x %x, %t )\n"
-           , data.val.u._32[0]
-           , data.val.u._32[1]
+           , data.u.val.u._32[0]
+           , data.u.val.u._32[1]
            , tipe );
 #endif
-    form = data.buff;
+    form = data.u.buff;
     len = TypeLength( tipe );
     DGBytes( len, form );
 }
@@ -1545,9 +1546,9 @@ void _CGAPI     DGFloat( cchar_ptr value, cg_type tipe )
 #ifdef DEVBUILD
     EchoAPI( "DGFloat( %c, %t )\n", value, tipe );
 #endif
-    cf = CFCnvSF( value );
+    cf = CFCnvSF( &cgh, value );
     CFCnvTarget( cf, &buff, TypeLength( tipe ) );
-    CFFree( cf );
+    CFFree( &cgh, cf );
     DGBytes( TypeLength( tipe ), &buff );
 }
 
@@ -1770,107 +1771,4 @@ void    cg_internal TellImportHandle( cg_sym_handle sym, import_handle imphdl )
 /*****************************************************************************/
 {
     FEBack( sym )->imp = imphdl;
-}
-
-/*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%*/
-/*%                                              %%*/
-/*%   CFloat routines                            %%*/
-/*%                                              %%*/
-/*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%*/
-
-
-char * _CGAPI   BFCnvFS( float_handle cf, char_ptr buff, int buff_len )
-/*********************************************************************/
-{
-    return( CFCnvFS( cf, buff, buff_len ) );
-}
-
-float_handle _CGAPI     BFCnvSF( cchar_ptr start )
-/************************************************/
-{
-    return( CFCnvSF( start ) );
-}
-
-void _CGAPI     BFCnvTarget( float_handle cf, pointer buff, int class )
-/*********************************************************************/
-{
-    CFCnvTarget( cf, (flt *)buff, class );
-}
-
-float_handle _CGAPI     BFMul( float_handle c1, float_handle c2 )
-/***************************************************************/
-{
-    return( CFMul( c1, c2 ) );
-}
-
-float_handle _CGAPI     BFAdd( float_handle c1, float_handle c2 )
-/***************************************************************/
-{
-    return( CFAdd( c1, c2 ) );
-}
-
-float_handle _CGAPI     BFDiv( float_handle c1, float_handle c2 )
-/***************************************************************/
-{
-    return( CFDiv( c1, c2 ) );
-}
-
-float_handle _CGAPI     BFSub( float_handle c1, float_handle c2 )
-/***************************************************************/
-{
-    return( CFSub( c1, c2 ) );
-}
-
-void _CGAPI             BFNegate( float_handle c1 )
-/*************************************************/
-{
-     CFNegate( c1 );
-}
-
-float_handle _CGAPI     BFTrunc( float_handle c1 )
-/************************************************/
-{
-     return( CFTrunc( c1 ) );
-}
-
-float_handle _CGAPI     BFCopy( float_handle c1 )
-/***********************************************/
-{
-     return( CFCopy( c1 ) );
-}
-
-int _CGAPI              BFSign( float_handle c1 )
-/***********************************************/
-{
-     return( CFTest( c1 ) );
-}
-
-float_handle _CGAPI     BFCnvIF( int data )
-/*****************************************/
-{
-    return( CFCnvIF( data ) );
-}
-
-float_handle _CGAPI     BFCnvUF( uint data )
-/******************************************/
-{
-    return( CFCnvUF( data ) );
-}
-
-int_32 _CGAPI        BFCnvF32( float_handle f )
-/*********************************************/
-{
-    return( CFCnvF32( f ) );
-}
-
-int _CGAPI              BFCmp( float_handle l, float_handle r )
-/*************************************************************/
-{
-    return( CFCompare( l, r ) );
-}
-
-void _CGAPI             BFFree( float_handle cf )
-/***********************************************/
-{
-    CFFree( cf );
 }

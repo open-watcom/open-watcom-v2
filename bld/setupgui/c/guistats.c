@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -144,8 +144,8 @@ static gui_colour_set StatusColours[] = {
 #endif
 };
 
-static bool StatusGUIEventProc( gui_window *gui, gui_event gui_ev, void *parm )
-/*****************************************************************************/
+static bool GUICALLBACK StatusGUIEventProc( gui_window *gui, gui_event gui_ev, void *parm )
+/*****************************************************************************************/
 {
     static bool         button_pressed = false;
     gui_ctl_id          id;
@@ -168,9 +168,9 @@ static bool StatusGUIEventProc( gui_window *gui, gui_event gui_ev, void *parm )
             }
             msg = GetVariableStrVal( Messages[MsgLine0] );
             GUIDrawTextExtent( gui, msg, strlen( msg ), LINE0_ROW,
-                               LINE0_COL * CharSize.x, WND_STATUS_TEXT, GUI_NO_COLUMN );
+                               LINE0_COL * CharSize.x, WND_STATUS_TEXT, GUI_NO_EXTENT );
             GUIDrawTextExtent( gui, StatusLine1, strlen( StatusLine1 ), LINE1_ROW,
-                               LINE1_COL * CharSize.x, WND_STATUS_TEXT, GUI_NO_COLUMN );
+                               LINE1_COL * CharSize.x, WND_STATUS_TEXT, GUI_NO_EXTENT );
 #if !defined( GUI_IS_GUI )
             {
                 int         len1, len2;
@@ -371,7 +371,7 @@ static bool OpenStatusWindow( const char *title )
     GUIGetClientRect( StatusWnd, &StatusRect );
 
     Cancel.parent = StatusWnd;
-    Cancel.text = LIT( Cancel );
+    Cancel.text = LIT_GUI( Cancel );
     Cancel.rect.height = 7 * CharSize.y / 4;
     Cancel.rect.width = (strlen( Cancel.text ) + 4) * CharSize.x;
     Cancel.rect.x = (StatusRect.width - Cancel.rect.width) / 2;

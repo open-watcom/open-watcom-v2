@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,7 +33,6 @@
 #include <string.h>
 #include "sample.h"
 #include "dlgstat.h"
-#include "samprc.rh"
 
 
 #define GUI_NO_ID   ((gui_ctl_id)-1)
@@ -172,12 +171,12 @@ static gui_create_info DialogControl = {
     NULL                            // Menu Resource
 };
 
-static const char *ListBoxFunc( const void *data_handle, int item )
+static const char * GUICALLBACK ListBoxFunc( const void *data_handle, int item )
 {
     return( ((const char **)data_handle)[item] );
 }
 
-static void ContrCallBack( gui_window *wnd, gui_ctl_id id, void *param )
+static void GUICALLBACK ContrCallBack( gui_window *wnd, gui_ctl_id id, void *param )
 {
     int                 i;
     int                 *num;

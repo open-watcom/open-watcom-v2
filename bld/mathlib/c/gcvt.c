@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -61,7 +61,7 @@ _WMRTLINK char *gcvt( double value, int digits, char *buf )
     ld.u.value = value;
 #endif
     cvt.ndigits = digits;
-    cvt.flags = G_FMT | NO_TRUNC;
+    cvt.flags = FPCVT_G_FMT | FPCVT_NO_TRUNC;
     cvt.scale = 1;
     cvt.expwidth = 0;
     cvt.expchar  = 'E';

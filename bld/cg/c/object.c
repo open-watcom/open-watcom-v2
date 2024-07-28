@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -53,6 +53,30 @@
 /* BLK_BLOCK_VISITED is used in the sense of placed                 */
 /*                                                                  */
 
+#define NOT_TAKEN       -1
+#define DNA             0
+#define TAKEN           1
+
+typedef struct {
+    block       *first;
+    block       *last;
+} block_queue;
+
+typedef enum {
+    ABORT = 0,          // Abort this particular path
+    CONTINUE,           // Continue on as normal
+    STOP,               // Stop the entire flood down
+} flood_decision;
+
+typedef struct flood_info {
+    bool        post_dominates;
+    block       *dominator;
+} flood_info;
+
+typedef flood_decision (*flood_down_func)( block *, flood_info * );
+
+typedef int (*bp_heuristic)( block *, instruction * );
+
 static  source_line_number      DumpLineNum( source_line_number n,
                                              source_line_number last,
                                              bool label_line ) {
@@ -77,99 +101,98 @@ void    GenObject( void )
     source_line_number  last_line;
     block_num           targets;
     block_num           i;
-    segment_id          old_segid;
     label_handle        lbl;
     unsigned            align;
     fe_attr             attr;
 
-    old_segid = SetOP( AskCodeSeg() );
-    InitZeroPage();
-    last_line = 0;
-    attr = FEAttr( AskForLblSym( CurrProc->label ) );
-    for( blk = HeadBlock; blk != NULL; blk = next_block ) {
-        next_block = blk->next_block;
-        if( blk->label != CurrProc->label && blk->label != NULL ) {
-            last_line = DumpLineNum( blk->ins.head.line_num, last_line, true );
-            if( _IsBlkAttr( blk, BLK_ITERATIONS_KNOWN ) && blk->iterations >= 10 ) {
-                align = DepthAlign( DEEP_LOOP_ALIGN );
-            } else {
-                align = DepthAlign( blk->depth );
+    PUSH_OP( AskCodeSeg() );
+        InitZeroPage();
+        last_line = 0;
+        attr = FEAttr( AskForLblSym( CurrProc->label ) );
+        for( blk = HeadBlock; blk != NULL; blk = next_block ) {
+            next_block = blk->next_block;
+            if( blk->label != CurrProc->label && blk->label != NULL ) {
+                last_line = DumpLineNum( blk->ins.head.line_num, last_line, true );
+                if( _IsBlkAttr( blk, BLK_ITERATIONS_KNOWN ) && blk->iterations >= 10 ) {
+                    align = DepthAlign( DEEP_LOOP_ALIGN );
+                } else {
+                    align = DepthAlign( blk->depth );
+                }
+                CodeLabel( blk->label, align );
+                if( (blk->edge[0].flags & BLOCK_LABEL_DIES) && BlocksUnTrimmed ) {
+                    TellCondemnedLabel( blk->label );
+                }
             }
-            CodeLabel( blk->label, align );
-            if( (blk->edge[0].flags & BLOCK_LABEL_DIES) && BlocksUnTrimmed ) {
-                TellCondemnedLabel( blk->label );
+            StartBlockProfiling( blk );
+            InitStackDepth( blk );
+            for( ins = blk->ins.head.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
+                if( ins->head.opcode == OP_NOP
+                  && ( (ins->flags.u.nop_flags & NOP_SOURCE_QUEUE) || ins->flags.u.nop_flags == NOP_DBGINFO )) // an end block
+                {
+                    last_line = DumpLineNum(ins->head.line_num, last_line, true);
+                } else {
+                    last_line = DumpLineNum(ins->head.line_num, last_line, false);
+                }
+                if( attr & FE_NAKED ) {
+                    // don't want to generate anything except calls to pragma's for
+                    // naked functions
+                    if( ins->head.opcode == OP_CALL ) {
+                        if( FindAuxInfo( ins->operands[CALL_OP_ADDR], FEINF_CALL_BYTES ) != NULL ) {
+                            GenObjCode( ins );
+                        }
+                    }
+                } else {
+                    GenObjCode( ins );
+                }
             }
-        }
-        StartBlockProfiling( blk );
-        InitStackDepth( blk );
-        for( ins = blk->ins.head.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
-            if( ins->head.opcode == OP_NOP
-              && ( (ins->flags.nop_flags & NOP_SOURCE_QUEUE) || ins->flags.nop_flags == NOP_DBGINFO )) // an end block
-            {
-                last_line = DumpLineNum(ins->head.line_num, last_line, true);
-            } else {
-                last_line = DumpLineNum(ins->head.line_num, last_line, false);
-            }
-            if( attr & FE_NAKED ) {
-                // don't want to generate anything except calls to pragma's for
-                // naked functions
-                if( ins->head.opcode == OP_CALL ) {
-                    if( FindAuxInfo( ins->operands[CALL_OP_ADDR], FEINF_CALL_BYTES ) != NULL ) {
-                        GenObjCode( ins );
+            EndBlockProfiling();
+            if( _IsBlkAttr( blk, BLK_JUMP | BLK_BIG_JUMP ) ) {
+                if( BlockByBlock
+                 || next_block == NULL
+                 || blk->edge[0].destination.u.lbl != next_block->label ) {
+                    // watch out for orphan blocks (no inputs/targets)
+                    if( blk->targets > 0 ) {
+                        GenJumpLabel( blk->edge[0].destination.u.lbl );
                     }
                 }
-            } else {
-                GenObjCode( ins );
-            }
-        }
-        EndBlockProfiling();
-        if( _IsBlkAttr( blk, BLK_JUMP | BLK_BIG_JUMP ) ) {
-            if( BlockByBlock
-             || next_block == NULL
-             || blk->edge[0].destination.u.lbl != next_block->label ) {
-                // watch out for orphan blocks (no inputs/targets)
-                if( blk->targets > 0 ) {
-                    GenJumpLabel( blk->edge[0].destination.u.lbl );
+            } else if( _IsBlkAttr( blk, BLK_RETURN ) ) {
+                FiniZeroPage();
+                GenEpilog();
+            } else if( _IsBlkAttr( blk, BLK_CALL_LABEL ) ) {
+                GenCallLabel( blk->edge[0].destination.u.blk );
+                if( BlockByBlock ) {
+                    if( next_block == NULL ) {
+                        GenJumpLabel( blk->u2.next->label );
+                    } else {
+                        GenJumpLabel( next_block->label );
+                    }
                 }
+            } else if( _IsBlkAttr( blk, BLK_LABEL_RETURN ) ) {
+                GenLabelReturn();
             }
-        } else if( _IsBlkAttr( blk, BLK_RETURN ) ) {
-            FiniZeroPage();
-            GenEpilog();
-        } else if( _IsBlkAttr( blk, BLK_CALL_LABEL ) ) {
-            GenCallLabel( blk->edge[0].destination.u.blk );
-            if( BlockByBlock ) {
-                if( next_block == NULL ) {
-                    GenJumpLabel( blk->v.next->label );
-                } else {
-                    GenJumpLabel( next_block->label );
-                }
-            }
-        } else if( _IsBlkAttr( blk, BLK_LABEL_RETURN ) ) {
-            GenLabelReturn();
-        }
-        if( !_IsBlkAttr( blk, BLK_LABEL_RETURN ) ) { /* maybe pointer to dead label */
-            for( targets = blk->targets; targets-- > 0; ) {
-                lbl = blk->edge[targets].destination.u.lbl;
-                TellReachedLabel( lbl );
-                if( (blk->edge[targets].flags & DEST_LABEL_DIES) && BlocksUnTrimmed ) {
-                    TellCondemnedLabel( lbl );
-                    for( i = targets; i-- > 0; ) {
-                        if( blk->edge[i].destination.u.lbl == lbl ) {
-                            blk->edge[i].flags &= ~DEST_LABEL_DIES;
+            if( !_IsBlkAttr( blk, BLK_LABEL_RETURN ) ) { /* maybe pointer to dead label */
+                for( targets = blk->targets; targets-- > 0; ) {
+                    lbl = blk->edge[targets].destination.u.lbl;
+                    TellReachedLabel( lbl );
+                    if( (blk->edge[targets].flags & DEST_LABEL_DIES) && BlocksUnTrimmed ) {
+                        TellCondemnedLabel( lbl );
+                        for( i = targets; i-- > 0; ) {
+                            if( blk->edge[i].destination.u.lbl == lbl ) {
+                                blk->edge[i].flags &= ~DEST_LABEL_DIES;
+                            }
                         }
                     }
                 }
             }
+            if( !BlocksUnTrimmed && blk->label != CurrProc->label && blk->label != NULL ) {
+                TellCondemnedLabel( blk->label );
+            }
+            CurrBlock = blk;
+            FreeBlock();
         }
-        if( !BlocksUnTrimmed && blk->label != CurrProc->label && blk->label != NULL ) {
-            TellCondemnedLabel( blk->label );
-        }
-        CurrBlock = blk;
-        FreeBlock();
-    }
-    HeadBlock = blk;
-    BlockList = blk;
-    SetOP( old_segid );
+        HeadBlock = blk;
+        BlockList = blk;
+    POP_OP();
 }
 
 
@@ -211,11 +234,6 @@ static  void    BlocksSortedBy( bool (*bigger)( block *, block * ) )
     }
 }
 
-
-typedef struct {
-    block       *first;
-    block       *last;
-} block_queue;
 
 static  void    BQInit( block_queue *q ) {
 /****************************************/
@@ -303,10 +321,6 @@ static  instruction     *FindCondition( block *blk ) {
     return( NULL );
 }
 
-#define NOT_TAKEN       -1
-#define DNA             0
-#define TAKEN           1
-
 static  int     PointerHeuristic( block *blk, instruction *cond ) {
 /*****************************************************************/
 
@@ -355,7 +369,7 @@ static  int     OpcodeHeuristic( block *blk, instruction *cond ) {
     case OP_CMP_LESS_EQUAL:
         if( op2->n.class == N_CONSTANT ) {
             if( op2->c.const_type == CONS_ABSOLUTE ) {
-                if( op2->c.lo.int_value == 0 ) {
+                if( op2->c.lo.u.int_value == 0 ) {
                     prediction = NOT_TAKEN;
                 }
             }
@@ -365,7 +379,7 @@ static  int     OpcodeHeuristic( block *blk, instruction *cond ) {
     case OP_CMP_GREATER_EQUAL:
         if( op2->n.class == N_CONSTANT ) {
             if( op2->c.const_type == CONS_ABSOLUTE ) {
-                if( op2->c.lo.int_value == 0 ) {
+                if( op2->c.lo.u.int_value == 0 ) {
                     prediction = TAKEN;
                 }
             }
@@ -422,19 +436,6 @@ static  void    PushTargets( void *stack, block *blk ) {
         EdgeStackPush( stack, &blk->edge[i] );
     }
 }
-
-typedef enum {
-    ABORT = 0,          // Abort this particular path
-    CONTINUE,           // Continue on as normal
-    STOP,               // Stop the entire flood down
-} flood_decision;
-
-typedef struct flood_info {
-    bool        post_dominates;
-    block       *dominator;
-} flood_info;
-
-typedef flood_decision (*flood_down_func)( block *, flood_info * );
 
 static  void    FloodDown( block *from, flood_down_func func, void *parm )
 /************************************************************************/
@@ -681,9 +682,7 @@ static  int     ReturnHeuristic( block *blk, instruction *cond ) {
     return( prediction );
 }
 
-typedef int (*bp_heuristic)( block *, instruction * );
-
-static bp_heuristic     Heuristics[] = {
+static bp_heuristic const Heuristics[] = {
     PointerHeuristic,
     CallHeuristic,
     OpcodeHeuristic,
@@ -765,6 +764,7 @@ static  block   *BestFollower( block_queue *unplaced, block *blk ) {
             best = NULL;
             break;
         }
+        #undef _Munge
         break;
     case BLK_CALL_LABEL:
         for( curr = BQFirst( unplaced ); curr != NULL; curr = BQNext( unplaced, curr ) ) {

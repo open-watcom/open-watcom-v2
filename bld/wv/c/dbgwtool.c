@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,28 +32,28 @@
 
 #include "dbgdefn.h"
 #include "dbgwind.h"
-#include "rcdef.rh"
 #include "dbgwtool.h"
 #include "dbginit.h"
 #include "menudef.h"
+#include "dbgicon.h"
+#include "wv.rh"
 
+
+#define TOOL(a,b,c) { "", BITMAPID( BITMAP_ ##a ), MENU_TOOL_ ##b, MENU_LIT( HELP_ ##c ), MENU_LIT( TIP_ ##c ) }
 
 static gui_toolbar_struct ToolBar[] = {
-    { "", BITMAP_GO, MENU_TOOL_GO, MENU_LIT( HELP_XGo ), MENU_LIT( TIP_XGo ) },
-    { "", BITMAP_OVER, MENU_TOOL_TRACE_OVER, MENU_LIT( HELP_XOver ),
-      MENU_LIT( TIP_XOver ) },
-    { "", BITMAP_INTO, MENU_TOOL_STEP_INTO, MENU_LIT( HELP_XInto ),
-      MENU_LIT( TIP_XInto ) },
-    { "", BITMAP_RETURN, MENU_TOOL_RETURN_TO_CALLER, MENU_LIT( HELP_XReturn ),
-      MENU_LIT( TIP_XReturn ) },
-    { "", BITMAP_BACK, MENU_TOOL_UNDO, MENU_LIT( HELP_XUndo ), MENU_LIT( TIP_XUndo ) },
-    { "", BITMAP_FOR, MENU_TOOL_REDO, MENU_LIT( HELP_XRedo ), MENU_LIT( TIP_XRedo ) },
-    { "", BITMAP_UP, MENU_TOOL_UP_STACK, MENU_LIT( HELP_UXnwind_Stack ),
-      MENU_LIT( TIP_UXnwind_Stack ) },
-    { "", BITMAP_DOWN, MENU_TOOL_DOWN_STACK, MENU_LIT( HELP_RXewind_Stack ),
-      MENU_LIT( TIP_RXewind_Stack ) },
-    { "",  BITMAP_HOME, MENU_TOOL_HOME, MENU_LIT( HELP_XHome ), MENU_LIT( TIP_XHome ) }
+    TOOL( GO,     GO,               XGo ),
+    TOOL( OVER,   TRACE_OVER,       XOver ),
+    TOOL( INTO,   STEP_INTO,        XInto ),
+    TOOL( RETURN, RETURN_TO_CALLER, XReturn ),
+    TOOL( BACK,   UNDO,             XUndo ),
+    TOOL( FOR,    REDO,             XRedo ),
+    TOOL( UP,     UP_STACK,         UXnwind_Stack ),
+    TOOL( DOWN,   DOWN_STACK,       RXewind_Stack ),
+    TOOL( HOME,   HOME,             XHome ),
 };
+
+#undef TOOL
 
 static gui_toolbar_items tb_ToolBar = GUI_TOOLBAR_ARRAY( ToolBar );
 

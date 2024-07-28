@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,16 +34,8 @@
 #ifndef OMFLIFIX_H
 #define OMFLIFIX_H
 
-typedef struct lifix_munge  lifix;
-struct lifix_munge {
-    lifix   *next;
-    uint_16 lower_bound;
-    int_16  delta;
-};
+#include "omfrec.h"
 
-typedef struct {
-    lifix   *head;
-} lifix_list;
 
 extern void LifixInit( lifix_list *lif );
 extern int_16 LifixDelta( lifix_list *lif, uint_16 old_offset );

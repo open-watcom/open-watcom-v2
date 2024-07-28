@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,7 +35,7 @@
 #include "_cgstd.h"
 #include "coderep.h"
 #include "cgswitch.h"
-#include "cfloat.h"
+#include "_cfloat.h"
 #include "dbbit.h"
 #include "symdbg.h"
 #include "bldins.h"
@@ -49,21 +49,20 @@ typedef union hdl_type {
 
 extern  cg_init_info    BEInit(cg_switches switches, cg_target_switches tg_switches,
                                uint size,proc_revision proc) {
-    cg_init_info        info;
-    info.version.is_large = true;
-    info.version.revision = II_REVISION;
+    cg_init_info        cg_info;
+
+    cg_info.revision = II_REVISION;
 #if _TARGET & _TARG_8086
-    info.version.target = II_TARG_8086;
+    cg_info.target = II_TARG_8086;
 #else
-    info.version.target = II_TARG_80386;
+    cg_info.target = II_TARG_80386;
 #endif
-    return( info );
+    return( cg_info );
 }
 extern void BEStart() {}
 extern void BEStop() {}
 extern void BEAbort() {}
 extern void BEFini() {}
-extern bool BEMoreMem(void) {return(0);}
 extern segment_id BESetSeg(segment_id _1) {return(0);}
 extern void BEDefSeg(segment_id _1,seg_attr _2,char * _3,uint _4) {}
 extern void BEFlushSeg(segment_id _1 ) {}

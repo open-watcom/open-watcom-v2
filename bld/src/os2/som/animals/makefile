@@ -12,5 +12,5 @@ main.obj : main.c animals.h
 animals.ih animals.h : animals.idl
     sc -s"ih;h" -maddstar $<
 
-clean : .symbolic
+clean : .SYMBOLIC
     rm -f *.obj *.exe *.h *.ih *.err

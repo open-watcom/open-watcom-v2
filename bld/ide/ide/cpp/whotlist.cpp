@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -64,13 +64,15 @@ bool WHotSpotList::gettingFocus( WWindow* )
 
 void WHotSpotList::adjustScrollBars()
 {
-    int scrollr = 0;
+    int scrollrows = 0;
     int cnt = count();
     if( cnt > getRows() ) {
-        scrollr = cnt;
+        scrollrows = cnt;
     }
-    setScrollTextRange( WScrollBarVertical, scrollr );
+    /* vertical scroll and position is in character units */
+    setScrollTextRange( WScrollBarVertical, scrollrows );
     setScrollTextPos( WScrollBarVertical, _topIndex );
+    /* horizontal scroll is in graphical units */
     setScrollRange( WScrollBarHorizontal, width() );
 }
 
@@ -95,7 +97,7 @@ bool WHotSpotList::paint()
     int offset;
     int maxRows = numDirtyRows() + _topIndex + firstDirtyRow();
     int numElem = count();
-    int extent;
+    int extentx;
     WRect r;
 
     getClientRect( r );
@@ -118,15 +120,13 @@ bool WHotSpotList::paint()
         } else {
             offset = 0;
         }
-        extent = r.w();
-        if( width() > extent )
-            extent = width();
+        extentx = r.w();
+        if( extentx < width() )
+            extentx = width();
         if( i == _selected ) {
-            drawTextExtent( i - _topIndex, offset, str, WPaintAttrMenuActive,
-                            extent );
+            drawTextExtent( i - _topIndex, offset, str, WPaintAttrMenuActive, extentx );
         } else {
-            drawTextExtent( i - _topIndex, offset, str, WPaintAttrControlBackground,
-                            extent );
+            drawTextExtent( i - _topIndex, offset, str, WPaintAttrControlBackground, extentx );
         }
     }
 
@@ -373,27 +373,22 @@ bool WHotSpotList::scrollNotify( WScrollNotification sn, int diff )
 //----------------------------------------------------------------
 {
     switch( sn ) {
-        case WScrollUp:
-            performScroll( -1 );
-            return( true );
-
-        case WScrollPageUp:
-            performScroll( -1 * getRows() + 1 );
-            return( true );
-
-        case WScrollDown:
-            performScroll( 1 );
-            return( true );
-
-        case WScrollPageDown:
-            performScroll( getRows() - 1 );
-            return( true );
-
-        case WScrollVertical:
-            performScroll( diff );
-            return( true );
+    case WScrollUp:
+        performScroll( -1 );
+        return( true );
+    case WScrollPageUp:
+        performScroll( -1 * getRows() + 1 );
+        return( true );
+    case WScrollDown:
+        performScroll( 1 );
+        return( true );
+    case WScrollPageDown:
+        performScroll( getRows() - 1 );
+        return( true );
+    case WScrollVertical:
+        performScroll( diff );
+        return( true );
     }
-
     return( false );
 }
 
@@ -417,7 +412,6 @@ bool WHotSpotList::keyDown(  WKeyCode key, WKeyState state )
             scrollToSelected();
             changed();
             return( true );
-
         case WKeyPagedown:
             _selected += nRows - 1;
             if( _selected >= count() ) {
@@ -431,7 +425,6 @@ bool WHotSpotList::keyDown(  WKeyCode key, WKeyState state )
             scrollToSelected();
             changed();
             return( true );
-
         case WKeyUp:
             _selected -= 1;
             if( _selected < 0 )
@@ -444,7 +437,6 @@ bool WHotSpotList::keyDown(  WKeyCode key, WKeyState state )
             scrollToSelected();
             changed();
             return( true );
-
         case WKeyDown:
             _selected += 1;
             if( _selected >= count() ) {
@@ -458,14 +450,12 @@ bool WHotSpotList::keyDown(  WKeyCode key, WKeyState state )
             scrollToSelected();
             changed();
             return( true );
-
         case WKeyEnter:
             if( count() != 0 && _dblClickClient && _dblClick ) {
                 (_dblClickClient->*_dblClick)( this );
                 invalidateRow( _selected - _topIndex );
             }
             return( true );
-
         case WKeySpace:
             if( _hotPressClient && _hotPress ) {
                 (_hotPressClient->*_hotPress)( this );
@@ -488,7 +478,6 @@ bool WHotSpotList::keyDown(  WKeyCode key, WKeyState state )
                 setScrollTextPos( WScrollBarHorizontal, col + 1 );
             }
             break;
-
         }
     }
     return( false );

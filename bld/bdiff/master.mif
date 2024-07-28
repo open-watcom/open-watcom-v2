@@ -1,6 +1,10 @@
 proj_name = bdiff
 
-bdiff_autodepend = .AUTODEPENDS
+bdiff_autodepend = .AUTODEPEND
+
+bdiff_wreslib_cli = text
+
+bdiff_ntmanif = ../h
 
 additional_clean = *.gh
 
@@ -14,21 +18,25 @@ subdir_bdiff    = bdiff
 !include defrule.mif
 defrule_key = wcpatch
 extra_cpp_wcpatch_flags = -DBDIFF -D_WPATCH
+ppflags_wcpatch_wreslib = $(ppflags_wreslib)
 !include defrule.mif
 defrule_key = wpatch
 extra_cpp_wpatch_flags = -D_WPATCH -DBPATCH
+ppflags_wpatch_wreslib = $(ppflags_wreslib)
 !include defrule.mif
 defrule_key = bpatch
 extra_cpp_bpatch_flags = -D_WPATCH -DBPATCH
+ppflags_bpatch_wreslib = $(ppflags_wreslib)
 !include defrule.mif
 defrule_key = bdump
 extra_cpp_bdump_flags = -DBDUMP
+ppflags_bdump_wreslib = $(ppflags_wreslib)
 !include defrule.mif
 defrule_key = bdiff
 extra_cpp_bdiff_flags = -DBDIFF
+ppflags_bdiff_wreslib = $(ppflags_wreslib)
 !include defrule.mif
 !include deftarg.mif
-!include wres.mif
 
 #
 # cflags
@@ -45,8 +53,6 @@ all : bpatch.exe bdiff.exe bpcmt.exe bplevel.exe bdump.exe wpatch.exe wcpatch.ex
 #
 # EXE's
 #
-exetarg_nt_manif_386 = ntmanif.res
-exetarg_nt_manif_x64 = ntmanif.res
 
 #
 # BCMT
@@ -62,7 +68,6 @@ exetarg_objs        = bplevel.obj
 exetarg_name        = bplevel
 !include exetarg.mif
 
-exetarg_libs        = $(wres_lib)
 #
 # WCPATCH. Create patch.
 #
@@ -73,7 +78,7 @@ exetarg_objs = &
     $(subdir_wcpatch)/wcptchio.obj &
     $(subdir_wcpatch)/wcpatch.obj &
     $(subdir_wcpatch)/diff.obj
-exetarg_res_wresui  = wcpatch.res
+exetarg_res         = wcpatch.res
 exetarg_name        = wcpatch
 !include exetarg.mif
 
@@ -89,7 +94,7 @@ exetarg_objs = &
     $(subdir_wpatch)/wpatchio.obj &
     $(subdir_wpatch)/wpatch.obj &
     $(subdir_wpatch)/bpatch.obj
-exetarg_res_wresui  = wpatch.res
+exetarg_res         = wpatch.res
 exetarg_name        = wpatch
 !include exetarg.mif
 
@@ -105,7 +110,7 @@ exetarg_objs = &
     $(subdir_bpatch)/oldfile.obj &
     $(subdir_bpatch)/patchio.obj &
     $(subdir_bpatch)/patmain.obj
-exetarg_res_wresui  = bpatch.res
+exetarg_res         = bpatch.res
 exetarg_name        = bpatch
 !include exetarg.mif
 
@@ -120,7 +125,7 @@ exetarg_objs = &
     $(subdir_bdump)/oldfile.obj &
     $(subdir_bdump)/patchio.obj &
     $(subdir_bdump)/patmain.obj
-exetarg_res_wresui  = bdump.res
+exetarg_res         = bdump.res
 exetarg_name        = bdump
 !include exetarg.mif
 
@@ -133,45 +138,39 @@ exetarg_objs = &
     $(subdir_bdiff)/diff.obj &
     $(subdir_bdiff)/dopatch.obj &
     $(subdir_bdiff)/msg.obj
-exetarg_res_wresui  = bdiff.res
+exetarg_res         = bdiff.res
 exetarg_name        = bdiff
 !include exetarg.mif
 
 #
 # rc and others
 #
-rcui_inc_dirs = -I..
+rc_inc_dirs = -I..
 
-ppusage.gh : ../gml/patcopts.gml $(__MAKEFILES__)
+ppusage.gh : ../gml/optionsp.gml $(__MAKEFILES__)
     @%make echo_optencod
-    $(noecho)*optencod -q -rc=MSG_USAGE_BASE -utf8 $(optencod_opt_$(host_os)) $[@ . . $@
+    $(optencod) -rc=MSG_USAGE_BASE -utf8 $(optencod_opt_$(host_os)) $[@ . . $@ .
 
-pdusage.gh : ../gml/dumpopts.gml $(__MAKEFILES__)
+pdusage.gh : ../gml/optionsu.gml $(__MAKEFILES__)
     @%make echo_optencod
-    $(noecho)*optencod -q -rc=MSG_USAGE_BASE -utf8 $(optencod_opt_$(host_os)) $[@ . . $@
+    $(optencod) -rc=MSG_USAGE_BASE -utf8 $(optencod_opt_$(host_os)) $[@ . . $@ .
 
-dusage.gh : ../gml/diffopts.gml $(__MAKEFILES__)
+dusage.gh : ../gml/optionsi.gml $(__MAKEFILES__)
     @%make echo_optencod
-    $(noecho)*optencod -q -rc=MSG_USAGE_BASE -utf8 $(optencod_opt_$(host_os)) $[@ . . $@
+    $(optencod) -rc=MSG_USAGE_BASE -utf8 $(optencod_opt_$(host_os)) $[@ . . $@ .
 
-bpatch.res : ../bpatch.rc ../h/bpatch.h ppusage.gh
+bpatch.res : ../h/bpatch.rc ../h/bpatch.h ppusage.gh
     @%make echo_rc
-    $(rcui8) -DBPATCH
+    $(rcu8j) $(ppflags_common) $(ppflags_wreslib) $(rc_cppflags) -DBPATCH $(rc_flags) $(rc_inc_path) $[@ -fo=$@
 
-bdump.res : ../bpatch.rc ../h/bpatch.h pdusage.gh
+bdump.res : ../h/bpatch.rc ../h/bpatch.h pdusage.gh
     @%make echo_rc
-    $(rcui8) -DBDUMP
+    $(rcu8j) $(ppflags_common) $(ppflags_wreslib) $(rc_cppflags) -DBDUMP $(rc_flags) $(rc_inc_path) $[@ -fo=$@
 
-bdiff.res : ../bpatch.rc ../h/bpatch.h dusage.gh
+bdiff.res : ../h/bpatch.rc ../h/bpatch.h dusage.gh
     @%make echo_rc
-    $(rcui8) -DBDIFF
+    $(rcu8j) $(ppflags_common) $(ppflags_wreslib) $(rc_cppflags) -DBDIFF $(rc_flags) $(rc_inc_path) $[@ -fo=$@
 
-wpatch.res wcpatch.res : ../bpatch.rc ../h/bpatch.h
+wpatch.res wcpatch.res : ../h/bpatch.rc ../h/bpatch.h
     @%make echo_rc
-    $(rcui8)
-
-!ifdef exetarg_$(host_os)_manif_$(host_cpu)
-$(exetarg_$(host_os)_manif_$(host_cpu)) : ../ntmanif.rc .EXPLICIT
-    @%make echo_rc
-    $(rc) $(ppflags_common) $(rc_flags) -I.. $(inc_dirs_sys_nt) -I"$(watcom_dir)/h" $< -fo=$@
-!endif
+    $(rcu8j) $(ppflags_common) $(ppflags_wreslib) $(rc_cppflags) $(rc_flags) $(rc_inc_path) $[@ -fo=$@

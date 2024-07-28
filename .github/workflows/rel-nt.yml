@@ -6,9 +6,6 @@ on:
       arch:
         required: true
         type: string
-      bldscript:
-        required: true
-        type: string
       tools:
         required: true
         type: string
@@ -27,13 +24,13 @@ jobs:
     runs-on: ${{ inputs.image }}
     steps:
     - name: checkout
-      uses: actions/checkout@v3.5.0
+      uses: actions/checkout@v4
     - name: Bootstrap
       uses: "./.github/actions/boot"
       with:
-        arch:       ${{ inputs.arch }}
-        bldscript:  ${{ inputs.bldscript }}
-        tools:      ${{ inputs.tools }}
+        hostos:     'nt'
+        buildcmd:   "ci/buildx.cmd ${{ inputs.tools }}"
+        suffix:     "nt ${{ inputs.arch }} ${{ inputs.tools }}"
         owtools:    ${{ inputs.owtools }}
         owdebug:    ${{ inputs.owdebug }}
   build-nt:
@@ -43,13 +40,13 @@ jobs:
     timeout-minutes: 120
     steps:
     - name: checkout
-      uses: actions/checkout@v3.5.0
+      uses: actions/checkout@v4
     - name: Build
       uses: "./.github/actions/build"
       with:
-        arch:       ${{ inputs.arch }}
-        bldscript:  ${{ inputs.bldscript }}
-        tools:      ${{ inputs.tools }}
+        hostos:     'nt'
+        buildcmd:   "ci/buildx.cmd ${{ inputs.tools }}"
+        suffix:     "nt ${{ inputs.arch }} ${{ inputs.tools }}"
         owtools:    ${{ inputs.owtools }}
         owdebug:    ${{ inputs.owdebug }}
   docsbuild:
@@ -74,13 +71,15 @@ jobs:
           doctype: docwin
     steps:
     - name: checkout
-      uses: actions/checkout@v3.5.0
+      uses: actions/checkout@v4
     - name: Documentation
       uses: "./.github/actions/docbuild"
       with:
+        hostos:     'nt'
+        buildcmd:   "ci/buildx.cmd ${{ inputs.tools }}"
         target:     ${{ matrix.doctype }}
-        arch:       ${{ inputs.arch }}
-        tools:      ${{ inputs.tools }}
+        suffixi:    "nt ${{ inputs.arch }} ${{ inputs.tools }}"
+        suffixo:    "${{ matrix.doctype }} ${{ inputs.tools }}"
         owtools:    ${{ inputs.owtools }}
         owdebug:    ${{ inputs.owdebug }}
   tests-nt:
@@ -89,10 +88,9 @@ jobs:
     runs-on: ${{ inputs.image }}
     steps:
     - name: checkout
-      uses: actions/checkout@v3.5.0
+      uses: actions/checkout@v4
     - name: Tests
       uses: "./.github/actions/tests"
       with:
-        arch:       ${{ inputs.arch }}
-        bldscript:  ${{ inputs.bldscript }}
-        tools:      ${{ inputs.tools }}
+        hostos:     'nt'
+        suffix:     "nt ${{ inputs.arch }} ${{ inputs.tools }}"

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -506,7 +506,7 @@ instruction      *rCONSTLOAD( instruction *ins )
     assert( ins->operands[0]->c.const_type == CONS_ABSOLUTE );
 
     first = NULL;
-    FactorInt32( ins->operands[0]->c.lo.int_value, &high, &extra, &low );
+    FactorInt32( ins->operands[0]->c.lo.u.int_value, &high, &extra, &low );
     /*
      * work to be done here - need some way of accurately representing
      * the ldah rn,extra(rn) instruction
@@ -533,7 +533,7 @@ instruction      *rCONSTLOAD( instruction *ins )
     assert( ins->operands[0]->c.const_type == CONS_ABSOLUTE );
 
     cons = ins->operands[0];
-    c = cons->c.lo.uint_value;
+    c = cons->c.lo.u.uint_value;
     k = 65536U;
     high = c / k;
     low = c % k;
@@ -644,7 +644,7 @@ instruction *rALLOCA( instruction *ins )
     check = true;
     CurrProc->targ.base_is_fp = true;
     if( amount->n.class == N_CONSTANT && amount->c.const_type == CONS_ABSOLUTE ) {
-        value = amount->c.lo.uint_value;
+        value = amount->c.lo.u.uint_value;
         value = _RoundUp( value, STACK_ALIGNMENT );
         real_amount = AllocS32Const( value );
         first = MakeBinary( OP_SUB, sreg, AllocS32Const( value ), temp, type_class );

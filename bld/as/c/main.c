@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,6 +34,7 @@
 #include <setjmp.h>
 #include "preproc.h"
 #include "asparser.h"
+#include "options.h"
 
 #include "clibint.h"
 
@@ -55,7 +56,11 @@ int PP_MBCharLen( const char *p )
 int main( int argc, char **argv )
 //*******************************
 {
-    static char *fname;
+    char        *fname;
+    char        *err_file;
+    OPT_STORAGE data;
+    OPT_STRING  *files;
+    OPT_STRING  *src;
 
 #ifndef __WATCOMC__
     _argv = argv;
@@ -70,58 +75,64 @@ int main( int argc, char **argv )
         Usage();
     } else {
         PP_Init( '#', PPSPEC_AS );
-        if( OptionsInit( --argc, ++argv ) ) {
+        OPT_INIT( &data );
+        files = NULL;
+        if( OptionsInit( --argc, ++argv, &data, &files ) ) {
             Banner();
             if( _IsOption( PRINT_HELP ) ) {
                 Usage();
-                *argv = NULL;
-            } else if( !*argv ) {
+            } else if( files == NULL ) {
                 AsOutMessage( stderr, AS_MSG_ERROR );
                 AsOutMessage( stderr, NO_FILENAME_SPECIFIED );
                 fputc( '\n', stderr );
-            }
-            PP_IncludePathAdd( PPINCLUDE_SYS, PP_GetEnv( "INCLUDE" ) );
-            while( *argv != NULL ) {
-                fname = MakeAsmFilename( *argv );
-                argv++;
-                if( PP_FileInit( fname, PPFLAG_ASM_COMMENT | PPFLAG_EMIT_LINE | PPFLAG_TRUNCATE_FILE_NAME ) != 0 ) {
-                    AsOutMessage( stderr, UNABLE_TO_OPEN, fname );
-                    fputc( '\n', stderr );
-                } else {
-                    OptionsPPDefine();
-                    SymInit();
-                    InsInit();
-                    DirInit();
-                    if( ObjInit( fname ) ) {
-                        if( setjmp( AsmParse ) == 0 ) {
-                            ErrorCountsReset();
-                            DoReport = true;
-                            if( !yyparse() ) {
-                                CurrLineno--;    // This is the total # of lines
-                                ObjRelocsFini(); // Must be done before ErrorReport
-                                                 // and other finis
-                            } else {
+            } else {
+                OptionsPPInclude( &data );
+                for( src = files; src != NULL; src = src->next ) {
+                    fname = MakeAsmFilename( src->data );
+                    if( PP_FileInit( fname, PPFLAG_ASM_COMMENT | PPFLAG_EMIT_LINE | PPFLAG_TRUNCATE_FILE_NAME ) != 0 ) {
+                        AsOutMessage( stderr, UNABLE_TO_OPEN, fname );
+                        fputc( '\n', stderr );
+                    } else {
+                        OptionsPPDefine( &data );
+                        SymInit();
+                        InsInit();
+                        DirInit();
+                        err_file = NULL;
+                        if( data.fr_value != NULL ) {
+                            err_file = data.fr_value->data;
+                        }
+                        if( ObjInit( fname, err_file ) ) {
+                            if( setjmp( AsmParse ) == 0 ) {
+                                ErrorCountsReset();
+                                DoReport = true;
+                                if( !yyparse() ) {
+                                    CurrLineno--;    // This is the total # of lines
+                                    ObjRelocsFini(); // Must be done before ErrorReport and other finis
+                                } else {
+                                    DoReport = false;
+                                }
+                            } else { // AbortParse() was invoked
                                 DoReport = false;
                             }
-                        } else { // AbortParse() was invoked
-                            DoReport = false;
+                            ErrorReport();
+                            AsLexerFini();
+                            ObjFini();
                         }
-                        ErrorReport();
-                        AsLexerFini();
-                        ObjFini();
-                    }
-                    DirFini();
-                    InsFini();
-                    SymFini();
-                    if( *argv != NULL ) {
-                        PP_MacrosFini();
-                        PP_MacrosInit();
+                        DirFini();
+                        InsFini();
+                        SymFini();
+                        if( src->next != NULL ) {
+                            PP_MacrosFini();
+                            PP_MacrosInit();
+                        }
+                        PP_FileFini();
                     }
                 }
-                PP_FileFini();
             }
         }
+        OPT_CLEAN_STRING( &files );
         OptionsFini();
+        OPT_FINI( &data );
         PP_Fini();
     }
     AsMsgFini();

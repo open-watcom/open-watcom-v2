@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -112,7 +112,8 @@ enum {
     ASM,
     ERR,
     OBJ,
-    LST
+    LST,
+    CMD
 };
 #define FILE_TYPES      4
 
@@ -122,6 +123,7 @@ typedef struct {
 } File_Info;    // Information about the source and object files
 
 extern File_Info        AsmFiles;   // files information
+extern char             *ModuleName;
 
 #define ASM_EXT "asm"
 #define ERR_EXT "err"
@@ -172,7 +174,7 @@ typedef struct global_options {
     bool        use_stdcall_at_number;
     bool        mangle_stdcall;
     bool        write_listing;
-    bool        watcom_parms_passed_by_regs;
+    bool        watcom_params_passed_by_regs;
     smode       mode_init;
     smode       mode;
     int         locals_len;
@@ -194,6 +196,8 @@ typedef struct global_vars{
 } global_vars;
 
 extern global_vars Globals;
+
+extern char *CreateFileName( const char *template, const char *ext, bool forceext );
 
 #endif
 

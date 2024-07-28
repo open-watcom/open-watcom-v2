@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2024-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,109 +39,120 @@
 #include "clibext.h"
 
 
-static void AllocFNameTab( const char *name, libfile io, arch_header *arch )
-/**************************************************************************/
+static void AllocFNameTab( libfile io, const arch_header *arch, arch_dict *dict )
+/*******************************************************************************/
 {
-    MemFree( arch->fnametab );
-    GetFileContents( name, io, arch, &arch->fnametab );
+    MemFree( dict->fnametab );
+    GetFileContents( io, arch, &dict->fnametab );
 }
 
-static void AllocFFNameTab( const char *name, libfile io, arch_header *arch )
-/***************************************************************************/
+static void AllocFFNameTab( libfile io, const arch_header *arch, arch_dict *dict )
+/********************************************************************************/
 {
-    MemFree( arch->ffnametab );
-    GetFileContents( name, io, arch, &arch->ffnametab );
-    arch->nextffname = arch->ffnametab;
-    arch->lastffname = arch->nextffname + arch->size;
+    MemFree( dict->ffnametab );
+    GetFileContents( io, arch, &dict->ffnametab );
+    dict->nextffname = dict->ffnametab;
+    dict->lastffname = dict->nextffname + arch->size;
 }
 
 
-void LibWalk( libfile io, const char *name, void (*rtn)( arch_header *, libfile io ) )
-/************************************************************************************/
+void LibWalk( libfile io, const arch_header *arch, libwalk_fn *rtn )
+/******************************************************************/
 {
-    ar_header           ar;
-    arch_header         arch;
-    size_t              bytes_read;
-//    int                 dict_count;
     long                pos;
+    arch_header         tmp_arch;
 
-//    dict_count = 0;
-    arch.fnametab = NULL;
-    arch.ffnametab = NULL;
-    while( (bytes_read = LibRead( io, &ar, AR_HEADER_SIZE )) != 0 ) {
-        if( bytes_read != AR_HEADER_SIZE ) {
-            BadLibrary( name );
+    tmp_arch.libtype = arch->libtype;
+    if( tmp_arch.libtype == WL_LTYPE_OMF ) {
+        unsigned_16     pagelen;
+        char            buff[MAX_IMPORT_STRING];
+        unsigned_8      rec_type;
+        unsigned_16     rec_len;
+        unsigned_8      str_len;
+
+        if( LibRead( io, &rec_type, sizeof( rec_type ) ) != sizeof( rec_type ) )
+            BadLibrary( io );
+        if( LibRead( io, &rec_len, sizeof( rec_len ) ) != sizeof( rec_len ) )
+            BadLibrary( io );
+        CONV_LE_16( rec_len );
+        pos = rec_len;
+        pagelen = rec_len + OMFHDRLEN;
+        if( Options.page_size == 0 ) {
+            Options.page_size = pagelen;
         }
-        if( strncmp( ar.header_ident, AR_HEADER_IDENT, AR_HEADER_IDENT_LEN ) ) {
-            BadLibrary( name );
-        }
-        GetARHeaderValues( &ar, &arch );
+        LibSeek( io, pos, SEEK_CUR );
         pos = LibTell( io );
-        if( ar.name[0] == '/' && ar.name[1] == ' ' && ar.name[2] == ' ' ) {
-            // Ignore symbol table.
-/*
-            dict_count++;
-            if( dict_count == 2 ) {
-                error = readDict( &arch );
-            } else {
-                error = MoveAheadFrom( &arch );
-                updateNewArchive( &arch );
-            }
-*/
-        } else if( ar.name[0] == '/' && ar.name[1] == '/' && ar.name[2] == ' ' ) {
-            AllocFNameTab( name, io, &arch );
-        } else if( ar.name[0] == '/' && ar.name[1] == '/' && ar.name[2] == '/' ) {
-            AllocFFNameTab( name, io, &arch );
-        } else {
-            arch.name = GetARName( io, &ar, &arch );
-            arch.ffname = GetFFName( &arch );
-            rtn( &arch, io );
-            MemFree( arch.name );
-            MemFree( arch.ffname );
+        tmp_arch.date = arch->date;
+        tmp_arch.uid = arch->uid;
+        tmp_arch.gid = arch->gid;
+        tmp_arch.mode = arch->mode;
+        tmp_arch.size = arch->size;
+        tmp_arch.ffname = NULL;
+        tmp_arch.name = buff;
+        while( LibRead( io, &rec_type, sizeof( rec_type ) ) == sizeof( rec_type ) && ( rec_type == CMD_THEADR ) ) {
+            if( LibRead( io, &rec_len, sizeof( rec_len ) ) != sizeof( rec_len ) )
+                BadLibrary( io );
+            if( LibRead( io, &str_len, sizeof( str_len ) ) != sizeof( str_len ) )
+                BadLibrary( io );
+            if( LibRead( io, buff, str_len ) != str_len )
+                BadLibrary( io );
+            buff[str_len] = '\0';
+            LibSeek( io, pos, SEEK_SET );
+            rtn( io, &tmp_arch );
+            pos = LibTell( io );
+            pos = __ROUND_UP_SIZE( pos, pagelen );
+            LibSeek( io, pos, SEEK_SET );
         }
-        arch.size = __ROUND_UP_SIZE_EVEN( arch.size );
-        LibSeek( io, pos + arch.size, SEEK_SET );
-    }
-    MemFree( arch.fnametab );
-    MemFree( arch.ffnametab );
-}
+    } else {
+        ar_header       ar;
+        size_t          bytes_read;
+        arch_dict       dict;
+//        int             dict_count;
 
-void OMFLibWalk( libfile io, char *name, void (*rtn)( arch_header *arch, libfile io ) )
-/*************************************************************************************/
-{
-    unsigned_16     pagelen;
-    long            offset;
-    arch_header     arch;
-    char            buff[MAX_IMPORT_STRING];
-    unsigned_8      len;
-    unsigned_16     rec_len;
-    unsigned_8      type;
-
-    if( LibRead( io, &type, sizeof( type ) ) != sizeof( type ) )
-        return; // nyi - FALSE?
-    if( LibRead( io, &rec_len, sizeof( rec_len ) ) != sizeof( rec_len ) )
-        return;
-    pagelen = GET_LE_16( rec_len );
-    offset = pagelen;
-    pagelen += 3;
-    if( Options.page_size == 0 ) {
-        Options.page_size = pagelen;
-    }
-    LibSeek( io, offset, SEEK_CUR );
-    NewArchHeader( &arch, name );
-    offset = LibTell( io );
-    while( LibRead( io, &type, sizeof( type ) ) == sizeof( type ) && ( type == CMD_THEADR ) ) {
-        LibSeek( io, 2, SEEK_CUR );
-        if( LibRead( io, &len, sizeof( len ) ) != sizeof( len ) )
-            break;
-        if( LibRead( io, buff, len ) != len )
-            break;
-        buff[len] = '\0';
-        arch.name = buff;
-        LibSeek( io, offset, SEEK_SET );
-        rtn( &arch, io );
-        offset = LibTell( io );
-        offset = __ROUND_UP_SIZE( offset, pagelen );
-        LibSeek( io, offset, SEEK_SET );
+//        dict_count = 0;
+        dict.fnametab = NULL;
+        dict.ffnametab = NULL;
+        while( (bytes_read = LibRead( io, &ar, AR_HEADER_SIZE )) != 0 ) {
+            if( bytes_read != AR_HEADER_SIZE ) {
+                BadLibrary( io );
+            }
+            if( strncmp( ar.header_ident, AR_HEADER_IDENT, AR_HEADER_IDENT_LEN ) ) {
+                BadLibrary( io );
+            }
+            GetARHeaderValues( &ar, &tmp_arch );
+            pos = LibTell( io );
+            if( ar.name[0] == '/'
+              && ar.name[1] == ' '
+              && ar.name[2] == ' ' ) {
+                // Ignore symbol table.
+/*
+                dict_count++;
+                if( dict_count == 2 ) {
+                    error = readDict( &tmp_arch );
+                } else {
+                    error = MoveAheadFrom( &tmp_arch );
+                    updateNewArchive( &tmp_arch );
+                }
+*/
+            } else if( ar.name[0] == '/'
+              && ar.name[1] == '/'
+              && ar.name[2] == ' ' ) {
+                AllocFNameTab( io, &tmp_arch, &dict );
+            } else if( ar.name[0] == '/'
+              && ar.name[1] == '/'
+              && ar.name[2] == '/' ) {
+                AllocFFNameTab( io, &tmp_arch, &dict );
+            } else {
+                tmp_arch.name = GetARName( io, &ar, &dict );
+                tmp_arch.ffname = GetFFName( &dict );
+                rtn( io, &tmp_arch );
+                MemFree( tmp_arch.name );
+                MemFree( tmp_arch.ffname );
+            }
+            pos += __ROUND_UP_SIZE_EVEN( tmp_arch.size );
+            LibSeek( io, pos, SEEK_SET );
+        }
+        MemFree( dict.fnametab );
+        MemFree( dict.ffnametab );
     }
 }

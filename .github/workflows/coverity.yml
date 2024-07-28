@@ -11,7 +11,6 @@ env:
   OWCOV_TOOLS_GITPATH:   'coverity-scan-analysis'
   OWCOV_RESULTS_GITPATH: 'cov-int'
   OWCOV_TAG:             'Coverity-scan'
-  OWCURLOPTS:            ${{ vars.OWCURLOPTS }}
 jobs:
   check_run:
     if: github.repository == 'open-watcom/open-watcom-v2'
@@ -21,13 +20,14 @@ jobs:
       runit: ${{ steps.check_tag.outputs.old }}
     steps:
     - name: Checkout Actions
-      uses: actions/checkout@v3.5.0
+      uses: actions/checkout@v4
     - name: Check tag reference
       id: check_tag
       uses: "./.github/actions/ghtagchk"
       with:
         tag:        ${{ env.OWCOV_TAG }}
         owdebug:    ${{ vars.OWDEBUG }}
+        owcurlopts: ${{ vars.OWCURLOPTS }}
   scan-lnx:
     needs: check_run
     if: needs.check_run.outputs.runit
@@ -39,14 +39,16 @@ jobs:
       OWCOV_RESULTS_ARCHIVE: 'open-watcom-v2.tgz'
     steps:
     - name: Checkout Actions
-      uses: actions/checkout@v3.5.0
+      uses: actions/checkout@v4
     - name: Install DOSBOX
       uses: "./.github/actions/dosboxin"
       with:
-        arch:       'lnx'
+        hostos:     'lnx'
     - name: Setup curl options
       id: curlcmd
       uses: "./.github/actions/curlcmd"
+      with:
+        owcurlopts: ${{ inputs.owcurlopts }}
     - name: "Download Coverity Tools"
       run: |
         $response = ${{ steps.curlcmd.outputs.cov }} `
@@ -58,7 +60,7 @@ jobs:
     - name: "Restore Coverity Tools"
       uses: "./.github/actions/tarload"
       with:
-        arch:       'lnx'
+        hostos:     'lnx'
         fullname:   ${{ env.OWCOV_TOOLS_ARCHIVE }}
         gitpath:    ${{ env.OWCOV_TOOLS_GITPATH }}
         format:     'gzip'
@@ -100,11 +102,12 @@ jobs:
       shell: bash
     - if: vars.OWDEBUG == 1
       name: Upload Artifact
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name:             'coverity'
         path:             ${{ steps.tarname.outputs.fullname }}
         retention-days:   3
+        overwrite:        true
     - id: last_commit
       run: git rev-parse HEAD | Join-String -OutputPrefix 'sha=' | Out-File -FilePath ${{ github.output }} -Encoding utf8 -Append
       shell: pwsh
@@ -131,7 +134,7 @@ jobs:
       run: |
         $response = ${{ steps.curlcmd.outputs.gh }} -H "Authorization: Bearer ${{ github.token }}" `
         -X POST "https://api.github.com/repos/${{ github.repository }}/git/refs" `
-        -d '{\"ref\":\"refs/tags/${{ env.OWCOV_TAG }}\",\"sha\":\"${{ steps.last_commit.outputs.sha }}\"}'
+        -d '{"ref":"refs/tags/${{ env.OWCOV_TAG }}","sha":"${{ steps.last_commit.outputs.sha }}"}'
         if( '${{ vars.OWDEBUG }}' -eq '1' ) { $response }
       shell: pwsh
     - if: steps.check_tag.outputs.sha != ''
@@ -139,7 +142,7 @@ jobs:
       run: |
         $response = ${{ steps.curlcmd.outputs.gh }} -H "Authorization: Bearer ${{ github.token }}" `
         -X PATCH "https://api.github.com/repos/${{ github.repository }}/git/refs/tags/${{ env.OWCOV_TAG }}" `
-        -d '{\"sha\":\"${{ steps.last_commit.outputs.sha }}\"}'
+        -d '{"sha":"${{ steps.last_commit.outputs.sha }}"}'
         if( '${{ vars.OWDEBUG }}' -eq '1' ) { $response }
       shell: pwsh
 
@@ -154,14 +157,16 @@ jobs:
 #      OWCOV_RESULTS_ARCHIVE: 'open-watcom-v2.zip'
 #    steps:
 #    - name: Checkout Actions
-#      uses: actions/checkout@v3.5.0
+#      uses: actions/checkout@v4
 #    - name: Install DOSBOX
 #      uses: "./.github/actions/dosboxin"
 #      with:
-#        arch:       'nt'
+#        hostos:     'nt'
 #    - name: Setup curl options
 #      id: curlcmd
 #      uses: "./.github/actions/curlcmd"
+#      with:
+#        owcurlopts: ${{ inputs.owcurlopts }}
 #    - name: "Download Coverity Tools"
 #      run: |
 #        $response = ${{ steps.curlcmd.outputs.cov }} `
@@ -173,7 +178,7 @@ jobs:
 #    - name: "Restore Coverity Tools"
 #      uses: "./.github/actions/tarload"
 #      with:
-#        arch:       'nt'
+#        hostos:     'nt'
 #        fullname:   ${{ env.OWCOV_TOOLS_ARCHIVE }}
 #        gitpath:    ${{ env.OWCOV_TOOLS_GITPATH }}
 #        format:     'gzip'
@@ -213,7 +218,7 @@ jobs:
 #    - name: "Archive Coverity output data"
 #      uses: "./.github/actions/tarsave"
 #      with:
-#        arch:       'nt'
+#        hostos:     'nt'
 #        fullname:   ${{ steps.tarname.outputs.fullname }}
 #        gitpath:    ${{ env.OWCOV_RESULTS_GITPATH }}
 #        format:     'gzip'
@@ -241,7 +246,7 @@ jobs:
 #      run: |
 #        $response = ${{ steps.curlcmd.outputs.gh }} -H "Authorization: Bearer ${{ github.token }}" `
 #        -X POST "https://api.github.com/repos/${{ github.repository }}/git/refs" `
-#        -d '{\"ref\":\"refs/tags/${{ env.OWCOV_TAG }}\",\"sha\":\"${{ steps.last_commit.outputs.sha }}\"}'
+#        -d '{"ref":"refs/tags/${{ env.OWCOV_TAG }}","sha":"${{ steps.last_commit.outputs.sha }}"}'
 #        if( '${{ vars.OWDEBUG }}' -eq '1' ) { $response }
 #      shell: pwsh
 #    - if: steps.check_tag.outputs.sha != ''
@@ -249,6 +254,6 @@ jobs:
 #      run: |
 #        $response = ${{ steps.curlcmd.outputs.gh }} -H "Authorization: Bearer ${{ github.token }}" `
 #        -X PATCH "https://api.github.com/repos/${{ github.repository }}/git/refs/tags/${{ env.OWCOV_TAG }}" `
-#        -d '{\"sha\":\"${{ steps.last_commit.outputs.sha }}\"}'
+#        -d '{"sha":"${{ steps.last_commit.outputs.sha }}"}'
 #        if( '${{ vars.OWDEBUG }}' -eq '1' ) { $response }
 #      shell: pwsh

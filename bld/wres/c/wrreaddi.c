@@ -297,7 +297,7 @@ static bool readMResDir( FILE *fp, WResDir currdir, bool *dup_discarded,
                 error = WResAddResource2( type, name, head->MemoryFlags,
                             WRESTELL( fp ), head->Size, currdir, NULL,
                             &dup, fileinfo );
-                if(  error && !WResIsEmptyWindow( dup ) ) {
+                if( error && !WResIsEmptyWindow( dup ) ) {
                     error = false;
                     if( dup_discarded != NULL  ) {
                         *dup_discarded = true;

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -148,7 +148,7 @@ UINT_PTR CALLBACK LBSaveOFNHookProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM 
  */
 bool GetSaveFName( HWND mainhwnd, char *fname )
 {
-    static char         filterList[] = "File (*.*)" \
+    static const char   filterList[] = "File (*.*)" \
                                        "\0" \
                                        "*.*" \
                                        "\0\0";
@@ -159,7 +159,7 @@ bool GetSaveFName( HWND mainhwnd, char *fname )
     memset( &of, 0, sizeof( OPENFILENAME ) );
     of.lStructSize = sizeof( OPENFILENAME );
     of.hwndOwner = mainhwnd;
-    of.lpstrFilter = (LPSTR)filterList;
+    of.lpstrFilter = filterList;
     of.lpstrDefExt = "";
     of.nFilterIndex = 1L;
     of.lpstrFile = fname;

@@ -8,6 +8,7 @@ proj_name = emui86
 
 emui86_autodepends = .AUTODEPEND
 emui86_distrib_lib = 1
+emui86_qnx_usage = 1
 
 memory_model_i86 = s
 memory_model_386 = s
@@ -32,7 +33,7 @@ extra_cpp_flags_qnx = -DQNX$(cpu_size)
 extra_c_flags_dos = -zl -zls
 extra_c_flags_os2 = -zl -zls
 extra_c_flags_win = -zl -zls
-extra_c_flags_qnx = -oais -i"$(new_qnx_h)"
+extra_c_flags_qnx = -oais
 
 extra_c_flags_hook8087 = -i"../h"
 extra_c_flags_qnxemu87 = -i"$(clib_dir)/startup/h" -I"$(clib_dir)/h" -I"$(lib_misc_dir)/h" -i"$(comp_cfg_dir)/h"
@@ -70,21 +71,21 @@ all: $(exes_$(cpu_size)) .SYMBOLIC
 # EXE's
 #
 exetarg_objs    = qemu87.obj
-exetarg_qnx_res = usage.u
 exetarg_name    = emu87
 !include exetarg.mif
 
 exetarg_objs    = qnxemu87.obj emu8087.obj fpeqnx.obj
-exetarg_qnx_res = usage.u
 exetarg_opts    = opt priv=0, long
 exetarg_name    = emu87_$(cpu_size)
 !include exetarg.mif
 
-usage.u : $(fpuemu_dir)/usage.sp
+!ifdef qnx_usage
+$(qnx_usage) : $(fpuemu_dir)/usage.sp
     @%make echo_wsplice
     $(noecho)*wsplice -u $< $@
+!endif
 
-!else ifeq host_os stub
+!else ifdef stub
 
 all : emu87.lib noemu87.lib .SYMBOLIC
 

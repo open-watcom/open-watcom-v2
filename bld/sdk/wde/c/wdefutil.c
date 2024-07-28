@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -1397,11 +1397,6 @@ void WdeDefineObjectLookupHelpComboEntry( HWND hDlg, WORD hw, WRHashTable *table
     }
 
     WRMemFree( str );
-}
-
-void WdeMapWindowRect( HWND src, HWND dest, RECT *rect )
-{
-    MapWindowPoints( src, dest, (POINT *)rect, 2 );
 }
 
 void WdeEXSetDefineInfo( WdeDefineObjectInfo *o_info, HWND hDlg )

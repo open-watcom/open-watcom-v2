@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,87 +36,97 @@
 #include "watcom.h"
 #include "cfloati.h"
 
-static  int     Adder( int a, int b ) {
-/*************************************/
-
+static  int     Adder( int a, int b )
+/***********************************/
+{
     return( a + b );
 }
 
-static  int     Suber( int a, int b ) {
-/*************************************/
-
+static  int     Suber( int a, int b )
+/***********************************/
+{
     return( a - b );
 }
 
-int     CFOrder( cfloat *float1, cfloat *float2 ) {
-/*************************************************/
-
-    int         index;
+int     CFOrder( cfloat *f1, cfloat *f2 )
+/****************************************
+ * compare absolute value of f1 and f2
+ *
+ * return value
+ *
+ *      = 0     | f1 | = | f2 |
+ *      > 0     | f1 | > | f2 |
+ *      < 0     | f1 | < | f2 |
+ */
+{
+    int         i;
     int         diff;
 
-    if( float1->exp > float2->exp ) return( 1 );
-    if( float1->exp < float2->exp ) return( -1 );
-    index = 0;
-    for(;;) {
-        if( index >= float1->len ) break;
-        if( index >= float2->len ) return( 1 );
-        diff = CFAccess( float1, index ) - CFAccess( float2, index );
-        if( diff < 0 ) return( -1 );
-        if( diff > 0 ) return( 1 );
-        index++;
+    diff = f1->exp - f2->exp;
+    if( diff == 0 ) {
+        diff = f1->len - f2->len;
+        for( i = 0; i < f1->len && i < f2->len; i++ ) {
+            if( f1->mant[i] != f2->mant[i] ) {
+                diff = (unsigned char)f1->mant[i] - (unsigned char)f2->mant[i];
+                break;
+            }
+        }
     }
-    if( index < float2->len ) return( -1 );
-    return( 0 );        /* | float1 | == | float2 |*/
+    return( diff );
 }
 
-static  int     Max( int a, int b ) {
-/***********************************/
-
-    if( b > a ) return( b );
+static  int     Max( int a, int b )
+/*********************************/
+{
+    if( b > a )
+        return( b );
     return( a );
 }
 
 
-static  int     Min( int a, int b ) {
-/***********************************/
-
-    if( b < a ) return( b );
+static  int     Min( int a, int b )
+/*********************************/
+{
+    if( b < a )
+        return( b );
     return( a );
 }
 
-static  cfloat  *CSSum( cfloat *op1, cfloat *op2, int (*arith)( int, int ) )
-/***************************************************************************/
+static  cfloat  *CSSum( cfhandle h, cfloat *f1, cfloat *f2, int (*arith)( int, int ) )
+/************************************************************************************/
 {
     int         carry;
     int         pos;
     int         length;
-    int         op1left;
-    int         op2left;
+    int         f1left;
+    int         f2left;
     int         farleft;
-    int         op1right;
-    int         op2right;
+    int         f1right;
+    int         f2right;
     int         farright;
     cfloat      *result;
 
-    op1left = op1->exp;
-    op2left = op2->exp;
-    op1right = op1left - op1->len;
-    op2right = op2left - op2->len;
-    farleft = Max( op1left, op2left );
-    farright = Min( op1right, op2right );
+    f1left = f1->exp;
+    f2left = f2->exp;
+    f1right = f1left - f1->len;
+    f2right = f2left - f2->len;
+    farleft = Max( f1left, f2left );
+    farright = Min( f1right, f2right );
     length = farleft - farright + 1;           /* result length + extra digit*/
     pos = farright + 1;
-    result = CFAlloc( length );
+    result = CFAlloc( h, length );
     result->exp = farleft + 1;
     result->len = length;
     carry = 0;
     length--;
     while( pos <= farleft ) {
-        if( pos > op1right && pos <= op1left ) {
-            carry += CFAccess( op1, op1left - pos );
+        if( pos > f1right
+          && pos <= f1left ) {
+            carry += CFAccess( f1, f1left - pos );
         }
-        if( pos > op2right && pos <= op2left ) {
-            carry = arith( carry, CFAccess( op2, op2left - pos ) );
+        if( pos > f2right
+          && pos <= f2left ) {
+            carry = arith( carry, CFAccess( f2, f2left - pos ) );
         }
         if( carry < 0 ) {
             CFDeposit( result, length, carry + 10 );
@@ -131,135 +142,156 @@ static  cfloat  *CSSum( cfloat *op1, cfloat *op2, int (*arith)( int, int ) )
         length--;
     }
     CFDeposit( result, length, carry );
-    result->sign = op1->sign;
+    result->sign = f1->sign;
+    /*
+     * normalize result
+     */
     CFClean( result );
     return( result );
 }
 
 
-
-cfloat  *CFAdd( cfloat *op1, cfloat *op2 ) {
-/******************************************/
-
+cfloat  *CFAdd( cfhandle h, cfloat *f1, cfloat *f2 )
+/**************************************************/
+{
     int         ord;
 
-    switch( op1->sign + 3 * op2->sign ) {
+    switch( f1->sign + 3 * f2->sign ) {
     case -4:
     case  4:
-        return( CSSum( op1, op2, &Adder ) );
-    case -3:                 /* Op1 is zero*/
+        return( CSSum( h, f1, f2, &Adder ) );
+    case -3:                 /* f1 is zero*/
     case  3:
-        return( CFCopy( op2 ) );
+        return( CFCopy( h, f2 ) );
     case -2:                 /* different signs*/
     case  2:                 /* different signs*/
-        ord = CFOrder( op1, op2 );
-        if( ord == -1 ) {
-            return( CSSum( op2, op1, &Suber ) );  /* | op1 | < | op2 |*/
-        } else if( ord == 1 ) {
-            return( CSSum( op1, op2, &Suber ) );  /* | op1 | > | op2 |*/
-        } else {
-            return( CFAlloc( 1 ) );
+        ord = CFOrder( f1, f2 );
+        if( ord < 0 ) {
+            return( CSSum( h, f2, f1, &Suber ) );   /* | f1 | < | f2 | */
         }
-    case -1:                 /* Op2 is zero*/
-    case  1:                 /* Op2 is zero*/
-        return( CFCopy( op1 ) );
+        if( ord > 0 ) {
+            return( CSSum( h, f1, f2, &Suber ) );   /* | f1 | > | f2 | */
+        }
+        return( CFAlloc( h, 1 ) );                  /* | f1 | = | f2 | */
+    case -1:                 /* f2 is zero*/
+    case  1:                 /* f2 is zero*/
+        return( CFCopy( h, f1 ) );
     case  0:
-        return( CFAlloc( 1 ) );
+        return( CFAlloc( h, 1 ) );
     }
     return( NULL ); // shut up compiler
 }
 
-cfloat  *CFSub( cfloat *op1, cfloat *op2 ) {
-/******************************************/
-
+cfloat  *CFSub( cfhandle h, cfloat *f1, cfloat *f2 )
+/**************************************************/
+{
     cfloat      *result;
     int         ord;
 
-    switch( op1->sign + 3 * op2->sign ) {
+    switch( f1->sign + 3 * f2->sign ) {
     case -4:
     case  4:
-        ord = CFOrder( op1, op2 );
-        if( ord == -1 ) {
-            result = CSSum( op2, op1, &Suber );        /* | op1 | < | op2 |*/
+        ord = CFOrder( f1, f2 );
+        if( ord < 0 ) {
+            result = CSSum( h, f2, f1, &Suber );    /* | f1 | < | f2 | */
             CFNegate( result );
             return( result );
-        } else if( ord == 1 ) {
-            return( CSSum( op1, op2, &Suber ) );        /* | op1 | > | op2 |*/
-        } else {
-            return( CFAlloc( 1 ) );
         }
-    case -3:                 /* Op1 is zero*/
-    case  3:                 /* Op1 is zero*/
-        result = CFCopy( op2 );
+        if( ord > 0 ) {
+            return( CSSum( h, f1, f2, &Suber ) );   /* | f1 | > | f2 | */
+        }
+        return( CFAlloc( h, 1 ) );                  /* | f1 | = | f2 | */
+    case -3:                 /* f1 is zero*/
+    case  3:                 /* f1 is zero*/
+        result = CFCopy( h, f2 );
         CFNegate( result );
         return( result );
     case -2:                 /* different signs*/
     case  2:                 /* different signs*/
-        return( CSSum( op1, op2, &Adder ) );
-    case -1:                 /* Op2 is zero*/
-    case  1:                 /* Op2 is zero*/
-        return( CFCopy( op1 ) );
+        return( CSSum( h, f1, f2, &Adder ) );
+    case -1:                 /* f2 is zero*/
+    case  1:                 /* f2 is zero*/
+        return( CFCopy( h, f1 ) );
     case  0:
-        return( CFAlloc( 1 ) );
+        return( CFAlloc( h, 1 ) );
     }
     return( NULL ); // shut up compiler
 }
 
-void    CFNegate( cfloat *f ) {
-/*****************************/
-
+void    CFNegate( cfloat *f )
+/***************************/
+{
     f->sign = -f->sign;
 }
 
-int     CFCompare( cfloat *op1, cfloat *op2 ) {
-/*********************************************/
+int     CFCompare( cfloat *f1, cfloat *f2 )
+/*****************************************/
+{
+    int     cmp;
 
-    if( op1->sign < op2->sign ) {
+    if( f1->sign < f2->sign ) {
         return( -1 );
-    } else if( op1->sign > op2->sign ) {
-        return( 1 );
-    } else {
-        return( op1->sign * CFOrder( op1, op2 ) );
     }
+    if( f1->sign > f2->sign ) {
+        return( 1 );
+    }
+    /*
+     * f1 sign = f2 sign
+     */
+    cmp = CFOrder( f1, f2 );
+    if( cmp == 0 )              /* | f1 | = | f2 | */
+        return( 0 );
+    if( cmp > 0 ) {             /* | f1 | > | f2 | */
+        return( f1->sign );
+    }
+    return( -1 * f1->sign );    /* | f1 | < | f2 | */
 }
 
-int     CFTest( cfloat *f ) {
-/***************************/
-
+int     CFTest( cfloat *f )
+/*************************/
+{
     return( f->sign );
 }
 
-int     CFAccess( cfloat *f, int index ) {
-/****************************************/
-
-    return( *(f->mant + index) - '0' );
+int     CFExp( cfloat *f )
+/************************/
+{
+    return( f->exp );
 }
 
-void    CFDeposit( cfloat *f, int index, int data ) {
-/***************************************************/
-
-    *(f->mant + index) = (char)data + '0';
+int     CFAccess( cfloat *f, int index )
+/**************************************/
+{
+    return( f->mant[index] - '0' );
 }
 
-void    CFClean( cfloat *f ) {
-/****************************/
+void    CFDeposit( cfloat *f, int index, int data )
+/*************************************************/
+{
+    f->mant[index] = (char)data + '0';
+}
 
+void    CFClean( cfloat *f )
+/***************************
+ * normalize number data
+ */
+{
     int         headindex;
     char        *head;
     int         new_len;
 
     for( new_len = f->len; new_len > 0; --new_len ) {
-        if( *(f->mant + new_len - 1) != '0' )
+        if( f->mant[new_len - 1] != '0' )
             break;
         if( new_len == 1 ) { /* it's zero!*/
             f->exp = 1;
             f->sign = 0;
             f->len = 1;
-            *(f->mant + 1) = NULLCHAR;
+            f->mant[1] = NULLCHAR;
             return;
         }
     }
-    *(f->mant + new_len) = NULLCHAR;
+    f->mant[new_len] = NULLCHAR;
     headindex = 0;
     head = f->mant;
     while( *head == '0' ) {
@@ -275,5 +307,5 @@ void    CFClean( cfloat *f ) {
         new_len = CF_MAX_PREC;
     }
     f->len = new_len;
-    *(f->mant + new_len) = NULLCHAR;
+    f->mant[new_len] = NULLCHAR;
 }

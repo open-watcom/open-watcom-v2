@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -79,7 +79,12 @@ extern void AsmErr( unsigned msgnum, ... );
 extern void AsmWarn( int level, unsigned msgnum, ... );
 extern void AsmNote( int level, unsigned msgnum, ... );
 extern void _AsmNote( int level, unsigned msgnum, ... );
-#if !defined( INCL_MSGTEXT )
+#if defined( INCL_MSGTEXT )
+#elif defined( USE_WRESLIB )
+extern void MsgPutUsage( void );
+extern void MsgSubStr( char *, char *, char );
+extern void MsgChgeSpec( char *strptr, char specifier );
+#else
 extern void MsgPutUsage( void );
 extern void MsgSubStr( char *, char *, char );
 extern void MsgChgeSpec( char *strptr, char specifier );

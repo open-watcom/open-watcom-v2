@@ -1,0 +1,20 @@
+#include <windows.h>
+#include "rcstr.grh"
+#include "progress.h"
+
+#include "progress.dlg"
+
+STRINGTABLE
+BEGIN
+    #define pick(c,e) c, [ e ]
+
+    #include "rcstrmsg.gh"
+
+    #undef pick
+END
+
+"APPLICON" ICON DISCARDABLE "uninstal.ico"
+
+#if defined( __NT__ ) && defined( RESX_NTVER )
+    #include "exever.grc"
+#endif

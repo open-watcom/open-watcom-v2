@@ -4,6 +4,12 @@ proj_name = wsample
 wsample_autodepends = .AUTODEPEND
 !endif
 
+wsample_ntverrc = ../h
+
+wsample_wreslib_cli = text
+
+wsample_qnx_usage = 1
+
 !ifndef target
 target = $(host_os)
 !endif
@@ -13,6 +19,20 @@ memory_model_i86 = c
 !endif
 
 additional_clean = *.gh *.grh *.grc
+
+#
+# names
+#
+exetarg_name_os2_i86   = wsampos2
+exetarg_name_pls_386   = wsamppls
+exetarg_name_rsi_i86   = wsamprsi
+exetarg_name_win_i86   = wsamplew
+!ifdef exetarg_name_$(target)_$(host_cpu)
+exetarg_name = $(exetarg_name_$(target)_$(host_cpu))
+!else
+exetarg_name = wsample
+!endif
+ntverrc_exe = $(exetarg_name)
 
 !include cproj.mif
 !include defrule.mif
@@ -27,9 +47,6 @@ dig_arch = $(host_cpu)
 
 !include $(dig_dir)/digcli.mif
 
-!ifneq target win
-!include wres.mif
-!endif
 !include tools.mif
 
 #
@@ -46,9 +63,9 @@ dig_arch = $(host_cpu)
 !ifeq target nov
 inc_dirs = -I. -I"../h" -I"$(nwoss_dir)/common/h" -I"$(nwoss_dir)/nw4/h" -I"$(dig_dir)/h"
 !else ifeq target win
-inc_dirs = -I. -I"../h" $(windbg_inc_dirs) -I"$(dig_dir)/h"
+inc_dirs = -I. -I"../h" $(cli_windbg_inc_dirs) -I"$(dig_dir)/h"
 !else ifeq target rsi
-inc_dirs = -I. -I"../h" $(rsilib_inc_dirs) -I"$(dig_dir)/h"
+inc_dirs = -I. -I"../h" $(cli_rsilib_inc_dirs) -I"$(dig_dir)/h"
 !else ifeq target pls
 inc_dirs = -I. -I"../h" -I"$(plsdir)" -I"$(dig_dir)/h"
 !else ifeq target linux
@@ -117,21 +134,6 @@ lflags_dos_386 = sys pharlap ext opt nodefaultlibs, maxdata=0 runtime maxreal=10
 # explicit rules
 #################
 
-rcui_inc_dirs = -I"../h"
-
-#
-# names
-#
-exetarg_name_os2_i86   = wsampos2
-exetarg_name_pls_386   = wsamppls
-exetarg_name_rsi_i86   = wsamprsi
-exetarg_name_win_i86   = wsamplew
-!ifdef exetarg_name_$(target)_$(host_cpu)
-exetarg_name = $(exetarg_name_$(target)_$(host_cpu))
-!else
-exetarg_name = wsample
-!endif
-
 #
 # EXE
 #
@@ -154,15 +156,13 @@ exetarg_objs_linux_ppc  = samplnx.obj sysio.obj io.obj sysinit.obj sampexe.obj l
 exetarg_objs_linux_x64  = samplnx.obj sysio.obj io.obj sysinit.obj sampexe.obj lnxutl.obj
 exetarg_objs          = $(exetarg_objs_$(target)_$(host_cpu)) sample.obj sampdata.obj wmsg.obj output.obj
 exetarg_libs_pls      = $(plsdir)/wdos32.lib $(plsdir)/wdosx32.lib
-exetarg_libs_rsi      = $(rsilib_lib)
-exetarg_libs_win      = $(windbg_lib)
-exetarg_libs          = $(wres_lib) $(exetarg_libs_$(target))
-exetarg_res_version_nt_386 = exever.res
-exetarg_res_version_nt_x64 = exever.res
+exetarg_libs_rsi      = $(cli_rsilib_libs)
+exetarg_libs_win      = $(cli_windbg_libs)
+exetarg_libs          = $(exetarg_libs_$(target))
 !ifeq host_os win
 exetarg_res           = $(proj_name).res
 !else
-exetarg_res_wresui    = wresui.res
+exetarg_res           = wresexe.res
 !endif
 !include exetarg.mif
 
@@ -175,22 +175,19 @@ rc_cpp_dos_pls_386 = -D__PHARLAP__
 rc_cpp_dos = $(rc_cpp_dos_$(target)_$(host_cpu))
 !endif
 
-verrc_exe = $(exetarg_name)
-!include verrc.mif
-
-rcui_inc_dirs = -I"../h"
+rc_inc_dirs = -I"../h"
 
 $(proj_name).res : ../h/wsamplew.rc ../h/wsampres.rc ../h/wsamplew.ico ../h/wsample.rc ../h/wmsg.h ../h/wsample.msg usage.gh $(__MAKEFILES__)
     @%make echo_rc
-    $(rcui8) -30
+    $(rcu8j) $(ppflags_common) $(ppflags_wreslib) $(rc_cppflags) -30 $(rc_flags) $(rc_inc_path) $[@ -fo=$@
 
-wresui.res : ../h/wsample.rc ../h/wmsg.h ../h/wsample.msg usage.gh $(__MAKEFILES__)
+wresexe.res : ../h/wsample.rc ../h/wmsg.h ../h/wsample.msg usage.gh $(__MAKEFILES__)
     @%make echo_rc
-    $(rcui8)
+    $(rcu8j) $(ppflags_common) $(ppflags_wreslib) $(rc_cppflags) $(rc_flags) $(rc_inc_path) $[@ -fo=$@
 
 wsample.gh : ../h/wsample.msg $(__MAKEFILES__)
     @%make echo_cpp
-    $(cpp) $(ppflags_common) -zku8 $(rc_cppflags) $(cppflags) -o$^. $[@
+    $(cppu8) $(ppflags_common) $(ppflags_wreslib) $(rc_cppflags) $(cppflags) -o$^. $[@
 
 wsample.grh : wsample.gh $(__MAKEFILES__)
     @%make echo_awk
@@ -198,7 +195,7 @@ wsample.grh : wsample.gh $(__MAKEFILES__)
 
 except.gh : ../h/except.msg $(__MAKEFILES__)
     @%make echo_cpp
-    $(cpp) $(ppflags_common) -zku8 $(rc_cppflags) $(cppflags) -o$^. $[@
+    $(cppu8) $(ppflags_common) $(ppflags_wreslib) $(rc_cppflags) $(cppflags) -o$^. $[@
 
 except.grh : except.gh $(__MAKEFILES__)
     @%make echo_awk
@@ -206,20 +203,17 @@ except.grh : except.gh $(__MAKEFILES__)
 
 ./mknver.exe: $(watcom_dir)/c/mknver.c $(watcom_dir)/h/banner.h $(__MAKEFILES__)
     @%make echo_bldccl
-    $(bld_ccl) $(ppflags_common) $(ppflags_autodep) $[@ $(bld_cclflags) $(bld_ldflags)
+    $(bld_ccl) $(ppflags_common) $(ppflags_autodep) $(bld_ppflags_sys) $(bld_cppflags) $[@ $(bld_cclflags) $(bld_ldflags)
 
 nversion.tmp: ./mknver.exe $(__MAKEFILES__)
     @%make echo_execute
     $(noecho)$[@ $@
 
-!ifdef exetarg_qnx_res
-optencod_opt_qnx    = -u=$(exetarg_qnx_res)
-!endif
 optencod_targets = $(target)
 !ifeq debug 2
 optencod_targets += dbg
 !endif
 
-usage.gh $(exetarg_$(host_os)_res) : ../h/options.gml $(__MAKEFILES__)
+usage.gh $(qnx_usage) : ../h/options.gml $(__MAKEFILES__)
     @%make echo_optencod
-    $(noecho)*optencod -q -rc=MSG_USAGE_BASE -utf8 $(optencod_opt_$(host_os)) $[@ . . $@ $(optencod_targets)
+    $(optencod) -rc=MSG_USAGE_BASE -utf8 $(optencod_opt_$(host_os)) $[@ . . $@ . $(optencod_targets)

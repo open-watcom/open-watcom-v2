@@ -17,15 +17,15 @@ tests = test00 test01
 
 .c: source
 
-test : .symbolic start $(tests)
+test : .SYMBOLIC start $(tests)
     $(noecho)%make common_set_result
 
-test00 : .symbolic $(diags_0099) $(diags_0199) $(diags_0299) $(diags_0399) $(diags_sys_$(arch))
+test00 : .SYMBOLIC $(diags_0099) $(diags_0199) $(diags_0299) $(diags_0399) $(diags_sys_$(arch))
     catfile -a *.err | $(fix_source_path) >>exec.out
     catfile -a *.ser | $(fix_source_path) >>exec.out
     @%make diag_clean
 
-test01 : .symbolic source/diag0001.c
+test01 : .SYMBOLIC source/diag0001.c
     @%make set_path_wpp
     -$(wpp_$(arch)) $[@ $(diagnose_opts) $(opt_diag0001)
     @%make set_old_path

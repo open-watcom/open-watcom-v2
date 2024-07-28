@@ -2,7 +2,7 @@
 :cmt.*
 :cmt.*                            Open Watcom Project
 :cmt.*
-:cmt.* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+:cmt.* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 :cmt.*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 :cmt.*
 :cmt.*  ========================================================================
@@ -27,63 +27,80 @@
 :cmt.*
 :cmt.* Description:  C++ compiler command line options.
 :cmt.*
-:cmt.*     UTF-8 encoding, ¥
-:cmt.*
 :cmt.*****************************************************************************
+:cmt.
+:cmt. Source file uses UTF-8 encoding, ¥
+:cmt.
+:cmt. Definition of command line options to use by optencod utility to generate
+:cmt.  	appropriate command line parser and usage text.
 :cmt.
 :cmt.
 :cmt. GML Macros used:
 :cmt.
-:cmt.   :chain. <option> <usage text>               options that start with <option>
-:cmt.                                                   can be chained together i.e.,
-:cmt.                                                   -oa -ox -ot => -oaxt
-:cmt.   :target. <targ1> <targ2> ...                valid for these targets
-:cmt.   :ntarget. <targ1> <targ2> ...               not valid for these targets
-:cmt.   :usageogrp. <option> <usage text>           group of options that start with <option>
-:cmt.                                                   are chained together in usage
-:cmt.   :usagegrp. <num> <usage text>               group of options that have group <num>
-:cmt.                                                   are chained together in usage
-:cmt.   :title. <text>                              English title usage text
-:cmt.   :jtitle. <text>                             Japanese title usage text
-:cmt.   :titleu. <text>                             English title usage text for QNX resource file
-:cmt.   :jtitleu. <text>                            Japanese title usage text for QNX resource file
+:cmt.	:chain. <option> <option> ...	options that start with <option>
+:cmt.					    can be chained together i.e.,
+:cmt.					    -oa -ox -ot => -oaxt
+:cmt.	:option. <option> <synonym> ... define an option
+:cmt.	:title. <text>			English title usage text
+:cmt.	:jtitle. <text>			Japanese title usage text
+:cmt.	:titleu. <text>			English title usage text for QNX resource file
+:cmt.	:jtitleu. <text>		Japanese title usage text for QNX resource file
+:cmt.	:usagegroup. <group_id>		define group of options that have group
+:cmt.					    <group_id> are grouped together in
+:cmt.					    usage text
+:cmt.	:usagechain. <group_id> <option>    
+:cmt.                                   group of options that start with <option>
+:cmt.					    are chained together in usage text for
+:cmt.					    defined group <group_id>
 :cmt.
-:cmt.   :option. <option> <synonym> ...             define an option
-:cmt.   :immediate. <fn> [<usage argid>]            <fn> is called when option parsed
-:cmt.   :code. <source-code>                        <source-code> is executed when option parsed
-:cmt.   :enumerate. <name> [<option>]               option is one value in <name> enumeration
-:cmt.   :number. [<fn>] [<default>] [<usage argid>] =<num> allowed; call <fn> to check
-:cmt.   :id. [<fn>] [<usage argid>]                 =<id> req'd; call <fn> to check
-:cmt.   :char. [<fn>] [<usage argid>]               =<char> req'd; call <fn> to check
-:cmt.   :file. [<usage argid>]                      =<file> req'd
-:cmt.   :path. [<usage argid>]                      =<path> req'd
-:cmt.   :special. <fn> [<usage argid>]              call <fn> to parse option
-:cmt.   :usage. <text>                              English usage text
-:cmt.   :jusage. <text>                             Japanese usage text
+:cmt.	:target. <targ1> <targ2> ...	valid for these targets (default is 'any')
+:cmt.	:ntarget. <targ1> <targ2> ...	not valid for these targets
+:cmt.	:immediate. <fn> [<usage argid>]
+:cmt.					<fn> is called when option parsed
+:cmt.	:code. <source-code>		<source-code> is executed when option parsed
+:cmt.	:enumerate. <name> [<option>]	option is one value in <name> enumeration
+:cmt.   :number. [<fn>] [<default>] [<usage argid>]
+:cmt.					=<num> allowed; call <fn> to check
+:cmt.	:id. [<fn>] [<usage argid>]	=<id> req'd; call <fn> to check
+:cmt.	:char. [<fn>] [<usage argid>]	=<char> req'd; call <fn> to check
+:cmt.	:file. [<usage argid>]		=<file> req'd
+:cmt.	:path. [<usage argid>]		=<path> req'd
+:cmt.	:special. <fn> [<usage argid>]	call <fn> to parse option
 :cmt.
-:cmt.   :optional.                                  value is optional
-:cmt.   :internal.                                  option is undocumented
-:cmt.   :prefix.                                    prefix of a :special. option
-:cmt.   :nochain.                                   option isn't chained with other options
-:cmt.   :timestamp.                                 kludge to record "when" an option
-:cmt.                                                   is set so that dependencies
-:cmt.                                                   between options can be simulated
-:cmt.   :negate.                                    negate option value
-:cmt.   :group. <num>                               group <num> to which option is included
+:cmt.	:optional.			value is optional
+:cmt.	:internal.			option is undocumented
+:cmt.	:prefix.			prefix of a :special. option
+:cmt.	:nochain.			option isn't chained with other options
+:cmt.					    in parser code
+:cmt.	:timestamp.			kludge to record "when" an option
+:cmt.					    is set so that dependencies
+:cmt.					    between options can be simulated
+:cmt.	:negate.			negate option value
+:cmt.
+:cmt.	:usage. <text>			English usage text
+:cmt.	:jusage. <text>			Japanese usage text
+:cmt.
+:cmt.	:usagenochain.			option isn't chained with other options
+:cmt.					    in usage text
+:cmt.	:group. <group_id>		group <group_id> to which option is
+:cmt.					    included
 :cmt.
 :cmt. Global macros
 :cmt.
-:cmt.   :noequal.                                   args can't have option '='
-:cmt.   :argequal. <char>                           args use <char> instead of '='
+:cmt.	:noequal.			args can't have option '='
+:cmt.	:argequal. <char>		args use <char> instead of '='
 :cmt.
 :cmt. where <targ>:
-:cmt.               default - any, dbg
-:cmt.               architecture - i86, 386, x64, axp, ppc, mps, sparc
-:cmt.               host OS - bsd, dos, linux, nt, os2, osx, qnx, haiku, rdos, win
-:cmt.               extra - targ1, targ2
+:cmt.   default - any, dbg, unused
+:cmt.   architecture - i86, 386, x64, axp, ppc, mps, sparc
+:cmt.   host OS - bsd, dos, linux, nov, nt, os2, osx, pls, qnx, rsi, haiku, rdos, win
+:cmt.   extra - targ1, targ2
 :cmt.
-:cmt.   Translations are required for the :jtitle. and :jusage. tags
-:cmt.   if there is no text associated with the tag.
+:cmt. The :jtitle. or :jusage. tag is required if no text is associated with the tag.
+:cmt. Otherwise, English text defined with :title. or :use. tag will be used instead.
+:cmt.
+:cmt. If any required argument is blank then use '.' (dot) character as placeholder.
+:cmt.
 
 
 :title.  Usage: wpp [options] file [options]
@@ -114,12 +131,8 @@
 :jtitle. .         ( '='は常に省略可能です。つまり -w4 -zp4 )
 :target. any
 
-:chain. fh Precompiled Header Files (PCH)
-:jusage. プリコンパイル済みヘッダーファイル（PCH）
-:chain. p Preprocess source file
-:jusage. p ソースファイルを前処理します
-:chain. o Optimization
-:jusage. o 最適化
+
+:chain. fh o p
 
 :option. 0
 :target. i86
@@ -211,7 +224,8 @@
 :usage.  Pentium Pro stack calling conventions
 :jusage. Pentium Pro スタック呼び出し規約
 
-:usageogrp. ad Make Dependency info
+:usagechain. . ad
+:usage. Make Dependency info
 
 :option. ad
 :target. any
@@ -260,11 +274,12 @@
 :target. any
 :id. . <os>
 :optional.
-:nochain.
+:usagenochain.
 :usage.  build target is operating system <os>
 :jusage. 構築ターゲットはオペレーティング･システム <os>
 
-:usageogrp. b Application type
+:usagechain. . b
+:usage. Application type
 
 :option. bc
 :target. any
@@ -298,19 +313,20 @@
 
 :option. d
 :target. any
-:nochain.
+:usagenochain.
 :special. scanDefine <name>[=text]
 :usage.  same as #define name [text] before compilation
 :jusage. コンパイル前の #define name [text] と同じ
 
 :option. d+
 :target. any
-:nochain.
+:usagenochain.
 :special. scanDefinePlus
 :usage.  allow extended -d macro definitions
 :jusage. 拡張された -d マクロ定義を許可します
 
-:usageogrp. d Debugging information
+:usagechain. . d
+:usage. Debugging information
 
 :option. d0
 :target. any
@@ -381,7 +397,8 @@
 :usage.  generate browsing information
 :jusage. ブラウズ情報を生成します
 
-:usageogrp. ec Default calling convention
+:usagechain. . ec
+:usage. Default calling convention
 
 :option. ecc
 :target. i86 386
@@ -536,6 +553,10 @@
 :usage.  specify file of command lines to be batch processed
 :jusage. バッチ処理するコマンドラインのファイルを指定します
 
+:usagechain. . fh
+:usage. Precompiled Header Files (PCH)
+:jusage. プリコンパイル済みヘッダーファイル（PCH）
+
 :option. fh
 :target. any
 :file.
@@ -634,7 +655,8 @@
 :usage.  inline 80x87 instructions with specified depth
 :jusage. 指定した深さのインライン80x87命令
 
-:usageogrp. fp Generate Floating-point code
+:usagechain. . fp
+:usage. Generate Floating-point code
 
 :option. fpc
 :target. i86 386
@@ -694,7 +716,8 @@
 :usage.  set code group name
 :jusage. コード･グループ名を設定します
 
-:usageogrp. h Debugging Information Format
+:usagechain. . h
+:usage. Debugging Information Format
 
 :option. hw
 :target. i86 386
@@ -755,7 +778,8 @@
 :jusage. OWLリストを出力します
 :internal.
 
-:usageogrp. m Memory model
+:usagechain. . m
+:usage. Memory model
 :jusage. メモリ・モデル
 
 :option. mc
@@ -823,6 +847,10 @@
 :id. . <name>
 :usage.  set name of text segment
 :jusage. テキスト･セグメント名を設定します
+
+:usagechain. . o
+:usage. Optimization
+:jusage. o 最適化
 
 :option. oa
 :target. any
@@ -948,9 +976,14 @@
 :usage.  NULL points to valid memory in the target environment
 :jusage. NULLは、ターゲット環境内の有効なメモリを指します
 
+:usagechain. . p
+:usage. Preprocess source file
+:jusage. p ソースファイルを前処理します
+
 :option. pil
 :target. any
 :nochain.
+:usagenochain.
 :usage.  preprocessor ignores #line directives
 :jusage. preprocessor ignores #line directives
 
@@ -1069,7 +1102,8 @@
 :usage.  VC++ compatibility: alloca allowed in argument lists
 :jusage. VC++ 互換性: 引数リストの中でallocaを使用できます
 
-:usageogrp. w Warning control
+:usagechain. . w
+:usage. Warning control
 
 :option. w
 :target. any
@@ -1103,7 +1137,7 @@
 
 :option. wpx
 :target. any
-:nochain.
+:usagenochain.
 :internal.
 :usage.  internal experimental option, check prototypes defined already
 :jusage.
@@ -1210,7 +1244,7 @@
 
 :option. xx
 :target. any
-:nochain.
+:usagenochain.
 :usage.  ignore default directories for file search (.,../h,../c,...)
 :jusage. ignore default directories for file search (.,../h,../c,...)
 
@@ -1322,7 +1356,8 @@
 :usage.  dump informational statistics to stdout
 :jusage. 情報として統計値をstdoutに出力します
 
-:usageogrp. zk Multi-byte/Unicode character support
+:usagechain. . zk
+:usage. Multi-byte/Unicode character support
 
 :option. zk0 zk
 :target. any

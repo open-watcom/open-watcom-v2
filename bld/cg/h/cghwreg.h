@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2023-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -324,7 +324,7 @@ typedef struct hw_reg_set {
                                }
 
 #ifdef HW_DEFINE_VARS
-    #define HW_DEFINE_GLOBAL_CONST( x ) hw_reg_set x = \
+    #define HW_DEFINE_GLOBAL_CONST( x ) const hw_reg_set x = \
                                         {\
                                         HW_0(          __0(x) )\
                                         HW_1( HW_COMMA __1(x) )\
@@ -336,7 +336,7 @@ typedef struct hw_reg_set {
                                         HW_7( HW_COMMA __7(x) )\
                                         }
 #else
-    #define HW_DEFINE_GLOBAL_CONST( x ) extern hw_reg_set x
+    #define HW_DEFINE_GLOBAL_CONST( x ) extern const hw_reg_set x
 #endif
 
 #define HW_ITER( x ) HW_0(   x( 0 ) )\

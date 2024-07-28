@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2023-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -393,7 +393,7 @@ void SemWINWriteMenu( WResID *name, ResMemFlags flags, FullMenu *menu,
             ErrorHasOccured = true;
         } else {
             loc.len = SemEndResource( loc.start );
-            SemAddResourceFree( name, WResIDFromNum( RESOURCE2INT( RT_MENU ) ), flags, loc );
+            SemAddResourceAndFree( name, WResIDFromNum( RESOURCE2INT( RT_MENU ) ), flags, loc );
         }
     } else {
         RESFREE( name );

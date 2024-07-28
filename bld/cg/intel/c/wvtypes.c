@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -56,8 +56,8 @@ static dbg_patch        CueInfoOffset;
 static  byte    GetScalar( cg_type tipe ) {
 /*****************************************/
 
-    byte        scalar;
-    type_def    *tipe_addr;
+    byte            scalar;
+    const type_def  *tipe_addr;
 
     tipe_addr = TypeAddress( tipe );
     if( tipe_addr->refno == TY_DEFAULT ) {
@@ -173,7 +173,7 @@ void    WVDumpName( dbg_name name, dbg_type tipe )
     if( _IsModel( CGSW_GEN_DBG_TYPES ) ) {
         BuffIndex( name->scope );
         if( tipe == DBG_FWD_TYPE ) {
-            BuffForward( &name->patch );
+            BuffForward( &name->dpatch );
         } else {
             BuffIndex( tipe );
         }
@@ -186,14 +186,13 @@ void WVBackRefType( dbg_name name, dbg_type tipe )
 /************************************************/
 {
     offset      here;
-    segment_id  old_segid;
 
-    old_segid = SetOP( name->patch.segid );
-    here = AskLocation();
-    SetLocation( name->patch.offset );
-    DataShort( 0x80 | (tipe >> 8) | (tipe << 8) );
-    SetLocation( here );
-    SetOP( old_segid );
+    PUSH_OP( name->dpatch.segid );
+        here = AskLocation();
+        SetLocation( name->dpatch.offset );
+        DataShort( 0x80 | (tipe >> 8) | (tipe << 8) );
+        SetLocation( here );
+    POP_OP();
 }
 
 dbg_type        WVCharBlock( uint_32 len )
@@ -300,16 +299,16 @@ dbg_type    WVSubRange( int_32 lo, int_32 hi, dbg_type base )
 static  void    ReverseDims( dbg_array ar )
 /*****************************************/
 {
-    dim_any   *curr;
-    dim_entry *next;
-    dim_entry *head;
+    dim_any     *curr;
+    dim_any     *next;
+    dim_any     *head;
 
     curr = ar->list;
     head = NULL;
     while( curr != NULL ) {
-        next = curr->entry.next;
-        curr->entry.next = NULL;
-        curr->entry.next = head;
+        next = curr->next;
+        curr->next = NULL;
+        curr->next = head;
         head = curr;
         curr = next;
     }
@@ -324,25 +323,22 @@ dbg_type    WVEndArray( dbg_array ar )
     dbg_type  ret = 0;
     dbg_type  sub;
 
-//  ReverseDims( ar );
-    for(;;) {
-        dim = ar->list;
-        if( dim == NULL )
-            break;
-        switch( dim->entry.kind ) {
+//    ReverseDims( ar );
+    while( (dim = ar->list) != NULL ) {
+        ar->list = dim->next;
+        switch( dim->kind ) {
         case DIM_CON:
-            sub = WVSubRange( dim->con.lo, dim->con.hi, dim->con.idx );
+            sub = WVSubRange( dim->u.con.lo, dim->u.con.hi, dim->u.con.idx );
             ret = WVArray( sub, ar->base );
             ar->base = ret;
             break;
         case DIM_VAR:
-            ret = WVFtnArray( dim->var.dims, dim->var.lo_bound_tipe,
-                     dim->var.num_elts_tipe, dim->var.off, ar->base );
+            ret = WVFtnArray( dim->u.var.dims, dim->u.var.lo_bound_tipe,
+                     dim->u.var.num_elts_tipe, dim->u.var.off, ar->base );
             ar->base = ret;
             break;
 
         }
-        ar->list = dim->entry.next;
         CGFree( dim  );
     }
     return( ret );
@@ -626,16 +622,15 @@ void WVDmpCueInfo( long_offset where )
     cue_blk     *blk;
     cue_state   *curr;
     cue_state   *end;
-    segment_id  old_segid;
     offset      here;
 
 
-    old_segid = SetOP( CueInfoOffset.segid );
-    here = AskLocation();
-    SetLocation( CueInfoOffset.offset );
-    DataLong( where );  // current location in DbgTypes segment
-    SetLocation( here );
-    SetOP( old_segid );
+    PUSH_OP( CueInfoOffset.segid );
+        here = AskLocation();
+        SetLocation( CueInfoOffset.offset );
+        DataLong( where );  // current location in DbgTypes segment
+        SetLocation( here );
+    POP_OP();
     ctl = &LineInfo;
     blk = ctl->head;
     DataShort( ctl->count );  // number of entries

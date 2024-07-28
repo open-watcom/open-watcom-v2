@@ -10,7 +10,6 @@ additional_clean = *.gh *.grh *.grc
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif
-!include wres.mif
 !include trmem.mif
 
 !include $(commonui_dir)/client.mif
@@ -21,10 +20,10 @@ additional_clean = *.gh *.grh *.grc
 #
 # cflags
 #
-.c: ../c;../../c;$(cpp_c_dirs);$(watcom_dir)/c
+.c: ../c;../../c;$(cli_cpp_c_dirs);$(watcom_dir)/c
 
-inc_dirs = -I. -I"../h" -I"../../h" $(wr_inc_dirs) $(wres_inc_dirs) $(cpp_inc_dirs) &
-    $(wpi_inc_dirs) $(commonui_inc_dirs)
+inc_dirs = -I. -I"../h" -I"../../h" $(cli_wr_inc_dirs) $(cli_wres_inc_dirs) $(cli_cpp_inc_dirs) &
+    $(cli_wpi_inc_dirs) $(cli_commonui_inc_dirs)
 
 extra_cpp_flags     = -DWRESEDLL
 
@@ -59,23 +58,19 @@ dlltarg_objs          = $(sys_object) &
     winst.obj wsetedit.obj wmsg.obj wopts.obj wstrdup.obj &
     wselft.obj wrename.obj wwait.obj wmemf.obj wcopystr.obj &
     wclip.obj wisedit.obj weditsym.obj &
-    $(cpp_objs) ppenv.obj
-dlltarg_libs = $(wres_lib) $(wr_lib) $(wpi_lib) $(commonui_lib)
-dlltarg_res_version_nt_386 = version.res
-dlltarg_res_version_nt_x64 = version.res
+    $(cli_cpp_objs) ppenv.obj
+dlltarg_libs = $(cli_wr_libs) $(cli_wpi_libs) $(cli_commonui_libs)
 dlltarg_res           = $(proj_name).res
 !include dlltarg.mif
 
 #
 # rc and others
 #
-!include verrc.mif
-
-rc_inc_dirs = -I"../res" -I"../../res" -I"../../h" $(commonui_inc_dirs)
+rc_inc_dirs = -I"../res" -I"../../res" -I"../../h" $(cli_wr_rc_inc_dirs) $(cli_commonui_rc_inc_dirs)
 
 $(proj_name).res: ../res/$(proj_name).rc $(__MAKEFILES__) .AUTODEPEND
     @%make echo_rc
-    $(rc) $(ppflags_common) $(rc_ui8_flags) $(rc_flags) -ad $(rc_inc_path) $[@ -fo=$@
+    $(rcu8j) $(ppflags_common) $(rc_cppflags) -ad $(rc_flags) $(rc_inc_path) $[@ -fo=$@
 
 rcstr.grh: rcstrmsg.gh $(__MAKEFILES__)
     @%make echo_awk
@@ -83,4 +78,4 @@ rcstr.grh: rcstrmsg.gh $(__MAKEFILES__)
 
 rcstrmsg.gh: ../res/$(proj_name).msg $(__MAKEFILES__)
     @%make echo_cpp
-    $(cpp) $(ppflags_common) $(rc_ui8_flags) -I"../../res" -o$@ $[@
+    $(cppu8) $(ppflags_common) $(rc_cppflags) -I"../../res" -o$@ $[@

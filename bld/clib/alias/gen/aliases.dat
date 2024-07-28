@@ -79,6 +79,10 @@ getpid        getpid            _getpid           d16 d32 nt  nta ntm ntp       
 getpwe        setpwent          endpwent                                                                          l32 lpc lmp
 getws_        getws             _getws            d16 d32 nt  nta ntm ntp                 o16 o32 q16 q32 w16 w32 l32
 gmtm_r        _gmtime           gmtime_r                                                                          l32 lpc lmp
+heapmi        _heapshrink       _heapmin          d16 d32 nt  nta ntm ntp                 o16 o32 q16 q32 w16 w32 l32 lpc lmp rdu
+bheapm        _bheapshrink      _bheapmin         d16                                     o16     q16     w16
+fheapm        _fheapshrink      _fheapmin         d16                                     o16     q16     w16
+nheapm        _nheapshrink      _nheapmin         d16 d32 nt  nta ntm ntp                 o16 o32 q16 q32 w16 w32 l32 lpc lmp rdu
 i64toa        lltoa             _i64toa           d16 d32 nt  nta ntm ntp nvc     nvl     o16 o32 q16 q32 w16 w32 l32 lpc lmp rdu rdk
 index_        strchr            index             d16 d32 nt  nta ntm ntp nvc     nvl     o16 o32 q16 q32 w16 w32 l32 lpc lmp rdu rdk
 isatty        isatty            _isatty           d16 d32 nt  nta ntm ntp                 o16 o32         w16 w32             rdu rdk

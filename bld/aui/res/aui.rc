@@ -1,7 +1,17 @@
+/* UTF-8 encoding, ¥ */
+
 #include "gui.rc"
-#include "dlgrx.rh"
-#include "dlgsrch.rh"
-#include "auistr.rc"
+
+STRINGTABLE
+BEGIN
+    #define pick(c,e,j) (AUI_LITERAL_##c + RLE_ENGLISH * MSG_LANG_SPACING), [ e ]
+    #include "aui.msg"
+    #undef pick
+    #define pick(c,e,j) (AUI_LITERAL_##c + RLE_JAPANESE * MSG_LANG_SPACING), [ j ]
+    #include "aui.msg"
+    #undef pick
+END
+
 #ifdef JAPANESE
 #include "japrx.dlg"
 #include "japsrch.dlg"

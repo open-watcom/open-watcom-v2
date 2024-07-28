@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -58,17 +58,17 @@ typedef struct obj_patch {
 } obj_patch;
 
 typedef struct temp_patch {
-        struct obj_patch        pat;
+        obj_patch               patch;
         struct temp_patch       *link;
         label_handle            lbl;
 } temp_patch;
 
 typedef struct object {
-        struct array_control    data;
-        struct array_control    fixes;
-        struct temp_patch       *patches;
-        struct array_control    *exports;
-        struct array_control    *lines;
+        array_control           data;
+        array_control           fixes;
+        temp_patch              *tpatches;
+        array_control           exports;
+        array_control           *lines;
         long_offset             start;
         objhandle               segfix;
         uint_16                 index;

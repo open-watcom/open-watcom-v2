@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,7 +35,6 @@
 #include "srcmgt.h"
 #include "dbgdata.h"
 #include "dbgwind.h"
-#include "dbgadget.h"
 #include "wndregx.h"
 #include "sortlist.h"
 #include "strutil.h"
@@ -46,6 +45,9 @@
 #include "dbgwinsp.h"
 #include "dbgwsrch.h"
 #include "menudef.h"
+#include "dbgicon.h"
+#include "liteng.h"
+#include "litdui.h"
 
 
 #define WndSrch( wnd ) ( (srch_window *)WndExtra( wnd ) )
@@ -91,7 +93,7 @@ static gui_menu_struct SrchMenu[] = {
     #include "menusrch.h"
 };
 
-static wnd_row SrchNumRows( a_window wnd )
+static wnd_row WNDCALLBACK SrchNumRows( a_window wnd )
 {
     return( WndSrch( wnd )->num_rows );
 }
@@ -226,7 +228,7 @@ static void     SrchInit( a_window wnd )
 }
 
 
-static void SrchMenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_piece piece )
+static void WNDCALLBACK SrchMenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_piece piece )
 {
     srch_window *srch = WndSrch( wnd );
     a_window    new;
@@ -250,7 +252,7 @@ static void SrchMenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_piece pi
 }
 
 
-static  bool    SrchGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *line )
+static  bool    WNDCALLBACK SrchGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *line )
 {
     srch_window *srch = WndSrch( wnd );
     found_item  *found;
@@ -268,7 +270,7 @@ static  bool    SrchGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_lin
         DIPModName( found->mod, TxtBuff, TXT_LEN );
         line->text = TxtBuff;
         line->indent = MaxGadgetLength;
-        line->extent = WND_MAX_EXTEND;
+        line->extent = WND_NO_EXTENT;
         return( true );
     case PIECE_SOURCE:
         line->indent = MaxGadgetLength;
@@ -286,7 +288,7 @@ static  bool    SrchGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_lin
 
 
 
-static void     SrchRefresh( a_window wnd )
+static void     WNDCALLBACK SrchRefresh( a_window wnd )
 {
     srch_window *srch = WndSrch( wnd );
     found_item  *found;
@@ -306,7 +308,7 @@ static void     SrchRefresh( a_window wnd )
 }
 
 
-static bool SrchWndEventProc( a_window wnd, gui_event gui_ev, void *parm )
+static bool WNDCALLBACK SrchWndEventProc( a_window wnd, gui_event gui_ev, void *parm )
 {
     srch_window *srch = WndSrch( wnd );
 
@@ -327,7 +329,7 @@ static bool SrchWndEventProc( a_window wnd, gui_event gui_ev, void *parm )
     return( false );
 }
 
-static bool ChkUpdate( void )
+static bool WNDCALLBACK ChkUpdate( void )
 {
     return( UpdateFlags & (UP_SYMBOLS_LOST | UP_OPEN_CHANGE) );
 }

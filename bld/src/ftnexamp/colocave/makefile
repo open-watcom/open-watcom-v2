@@ -13,7 +13,7 @@ flags=          # originally -o
 flags+= -NOEX -NOR
 !endif
 
-all: asetup$(exeext) adventure$(exeext) .symbolic
+all: asetup$(exeext) adventure$(exeext) .SYMBOLIC
     asetup$(exeext)  # builds advtxt from advdat
 
 asetup$(exeext): asetup.for asubs.for
@@ -22,7 +22,7 @@ asetup$(exeext): asetup.for asubs.for
 adventure$(exeext): aamain.for asubs.for
     $(cplnk) $(flags) -FE=adventure$(exeext) aamain.for asubs.for
 
-clean: .symbolic
+clean: .SYMBOLIC
     @rm *.obj
     @rm *.err
     @rm *.exe

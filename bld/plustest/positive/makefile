@@ -94,13 +94,13 @@ stack_i86 = op stack=12k
 
 .cpp: source
 
-test : .symbolic start start_test test.lnk $(positive_exes) test_set_result
+test : .SYMBOLIC start start_test test.lnk $(positive_exes) test_set_result
     $(noecho)%make common_set_result_check
 
 check_result : .procedure
     -diff -b error.out exec.chk >$(nulldevice)
 
-test_set_result : .symbolic
+test_set_result : .SYMBOLIC
     -$(noecho)%write error.out OK
     -chk_exec exec.out >>error.out
 
@@ -119,7 +119,7 @@ exc01.exe : exc01.obj exc01b.obj
 cltemp21.exe : cltemp21.obj cltmp21b.obj
 friend4.exe : friend4.obj friend4b.obj
 
-start_test : .symbolic
+start_test : .SYMBOLIC
     @set ERROR_MSG=error
 
 clean : .procedure

@@ -1,4 +1,4 @@
-[ DEFAULT type="s" cond="samples" where="c jc ac" desc="Windows 3.x and NT examples" ]
+[ DEFAULT type="s" cond="samples" where="c jc ac" descr="Windows 3.x and NT examples" ]
 dir="samples/win"       usr="master.mif"
 dir="samples/win"       usr="mswin.wpj"
 dir="samples/win"       usr="read.me"
@@ -252,7 +252,7 @@ dir="samples/win/watzee/win32"  usr="watzee.wpj"
 dir="samples/win/watzee/win386" usr="makefile"
 dir="samples/win/watzee/win386" usr="watzee.tgt"
 dir="samples/win/watzee/win386" usr="watzee.wpj"
-[ DEFAULT type="s" cond="samples" where="ac" desc="Windows 3.x and NT examples" ]
+[ DEFAULT type="s" cond="samples" where="ac" descr="Windows 3.x and NT examples" ]
 dir="samples/win/alarm/winaxp"  usr="makefile"
 dir="samples/win/datactl/winaxp"        usr="makefile"
 dir="samples/win/edit/winaxp"   usr="makefile"

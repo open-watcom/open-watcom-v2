@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,22 +30,39 @@
 ****************************************************************************/
 
 
-extern void GetFileContents( const char *name, libfile io, arch_header *arch, char **contents );
-extern void Copy( libfile source, libfile dest, file_offset size );
-extern char *MakeObjOutputName( const char *src, const char *new );
-extern char *MakeListName( void );
-extern char *MakeFName( const char *a );
-extern char *MakeBakName( void );
-extern bool IsSameFNameCase( const char *a, const char *b );
-extern int  SymbolNameCmp( const char *s1, const char *s2);
-extern bool IsExt( const char *a, const char *b );
-extern void NewArchHeader( arch_header *arch, char *name );
-extern void DefaultExtension( char *name, const char *def_ext );
-extern char *TrimPath( const char * );
-extern void TrimPathInPlace( char * );
-extern bool IsSameFile( const char *a, const char *b );
-extern char *FormSym( const char * );
-extern char *WlibGetEnv( const char *name );
-extern void Banner( void );
-extern char *LibFormat( void );
-extern char *MakeTmpName( char *buffer );
+#define WL_LTYPE(e,p,n) extern const char ctext_ ## e[];
+WL_LTYPES
+#undef WL_LTYPE
+
+#define WL_PROC(e,p,n)  extern const char ctext_ ## e[];
+WL_PROCS
+#undef WL_PROC
+
+#define WL_FTYPE(e,p,n) extern const char ctext_ ## e[];
+WL_FTYPES
+#undef WL_FTYPE
+
+extern void     GetFileContents( libfile io, const arch_header *arch, char **contents );
+extern void     Copy( libfile src, libfile dst, file_offset size );
+extern char     *MakeObjOutputName( const char *src, const char *new );
+extern char     *MakeListName( void );
+extern char     *MakeFName( const char *a );
+extern char     *MakeBakName( void );
+extern bool     IsSameModuleCase( const char *a, const char *b, int cmp_mode );
+extern int      SymbolNameCmp( const char *s1, const char *s2);
+extern bool     IsExt( const char *a, const char *b );
+extern libfile  NewArchLibOpen( arch_header *arch, const char *filename );
+extern void     FreeNewArch( const arch_header *arch );
+extern void     DefaultExtension( char *name, const char *def_ext );
+extern char     *TrimPath( const char * );
+extern void     TrimPathInPlace( char * );
+extern bool     IsSameFile( const char *a, const char *b );
+extern char     *FormSym( const char * );
+extern char     *WlibGetEnv( const char *name );
+extern void     Banner( bool force );
+extern char     *MakeTmpName( char *buffer );
+
+extern unsigned_16  mget_U16LE( const unsigned_8 *s );
+extern unsigned_32  mget_U32LE( const unsigned_8 *s );
+extern void     mset_U16LE( unsigned_8 *out, unsigned_16 value );
+extern void     mset_U32LE( unsigned_8 *out, unsigned_32 value );

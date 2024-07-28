@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include "dbglit.h"
+#include "liteng.h"
 #include <stdlib.h>
 #ifdef _M_IX86
     #include <i86.h>
@@ -56,11 +56,7 @@
     #include "guimem.h"
     #include "wresmem.h"
     #ifdef GUI_IS_GUI
-        #include "cguimem.h"
         #include "wpimem.h"
-        #ifdef __OS2__
-            #include "os2mem.h"
-        #endif
     #else
         #include "stdui.h"
         #include "helpmem.h"
@@ -468,30 +464,9 @@ void *WndAlloc( size_t size )
 
 #ifdef GUI_IS_GUI
 
-void *MemAlloc( size_t size )
-{
-    void        *ptr;
-
-#ifdef TRMEM
-    ptr = _trmem_alloc( size, _trmem_guess_who(), DbgMemHandle );
-#else
-    ptr = malloc( size );
-#endif
-    memset( ptr, 0, size );
-    return( ptr );
-}
-
 #ifdef __OS2__
 
 void * _wpi_malloc( size_t size )
-{
-#ifdef TRMEM
-    return( _trmem_alloc( size, _trmem_guess_who(), DbgMemHandle ) );
-#else
-    return( malloc( size ) );
-#endif
-}
-void *PMmalloc( size_t size )
 {
 #ifdef TRMEM
     return( _trmem_alloc( size, _trmem_guess_who(), DbgMemHandle ) );
@@ -564,26 +539,9 @@ void WndFree( void *ptr )
 
 #ifdef GUI_IS_GUI
 
-void MemFree( void *ptr )
-{
-#ifdef TRMEM
-    _trmem_free( ptr, _trmem_guess_who(), DbgMemHandle );
-#else
-    free( ptr );
-#endif
-}
-
 #ifdef __OS2__
 
 void _wpi_free( void *ptr )
-{
-#ifdef TRMEM
-    _trmem_free( ptr, _trmem_guess_who(), DbgMemHandle );
-#else
-    free( ptr );
-#endif
-}
-void PMfree( void *ptr )
 {
 #ifdef TRMEM
     _trmem_free( ptr, _trmem_guess_who(), DbgMemHandle );
@@ -658,26 +616,9 @@ void *WndRealloc( void *ptr, size_t size )
 
 #ifdef GUI_IS_GUI
 
-void *MemRealloc( void *ptr, size_t size )
-{
-#ifdef TRMEM
-    return( _trmem_realloc( ptr, size, _trmem_guess_who(), DbgMemHandle ) );
-#else
-    return( realloc( ptr, size ) );
-#endif
-}
-
 #ifdef __OS2__
 
 void * _wpi_realloc( void *ptr, size_t size )
-{
-#ifdef TRMEM
-    return( _trmem_realloc( ptr, size, _trmem_guess_who(), DbgMemHandle ) );
-#else
-    return( realloc( ptr, size ) );
-#endif
-}
-void *PMrealloc( void *ptr, size_t size )
 {
 #ifdef TRMEM
     return( _trmem_realloc( ptr, size, _trmem_guess_who(), DbgMemHandle ) );

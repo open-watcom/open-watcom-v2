@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -44,6 +44,7 @@
 #include "distrib.h"
 #include "specials.h"
 #include "load16m.h"
+#include "mapio.h"
 
 
 #ifdef _EXE
@@ -189,7 +190,9 @@ static void KillUnrefedSyms( void *_sym )
             sym->info |= SYM_DEAD;
         }
         if( LinkFlags & LF_SHOW_DEAD ) {
-            LnkMsg( MAP+MSG_SYMBOL_DEAD, "S", sym );
+            if( MapFile != NULL ) {
+                WriteMapLnkMsg( MSG_SYMBOL_DEAD, "S", sym );
+            }
         }
     }
 }

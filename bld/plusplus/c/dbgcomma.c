@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -55,7 +55,7 @@ static SYMBOL defineRoutine     // DEFINE R/T ROUTINE
 {
     SYMBOL sym;                 // - created symbol
     TYPE sym_type;              // - symbol's type
-    symbol_flag flags;          // - symbol's flags
+    symbol_flags flags;         // - symbol's flags
 
     sym_type = TypeVoidFunOfVoid();
     flags = SYMF_REFERENCED | SYMF_NO_LONGJUMP;

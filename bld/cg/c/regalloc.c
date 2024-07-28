@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -126,7 +126,7 @@ static name *ReplIndex( instruction *ins, reg_tree *tree, name *x, name *reg )
 {
     name        *new_x;
 
-    ins->t.index_needs = RL_;
+    ins->u2.index_needs = RL_;
     reg = FindReg( tree, x->i.index, reg );
     new_x = ScaleIndex(reg, x->i.base, x->i.constant,
                         x->n.type_class, x->n.size, x->i.scale,
@@ -611,7 +611,7 @@ static  bool    StealsSeg( instruction *ins,
     Does giving "reg" to "conf" steal the last segment away from "ins"?
 */
 {
-    hw_reg_set          *index_needs;
+    const hw_reg_set    *index_needs;
     name                *op;
     conflict_node       *new_conf;
 
@@ -644,7 +644,7 @@ static bool StealsIdx( instruction *ins, hw_reg_set except, name *actual_op )
     "ins" make it impossible to generate an indexed addressing mode?
 */
 {
-    hw_reg_set          *index_needs;
+    const hw_reg_set    *index_needs;
     name                *op;
     conflict_node       *new_conf;
     opcnt               i;
@@ -669,7 +669,7 @@ static bool StealsIdx( instruction *ins, hw_reg_set except, name *actual_op )
             is_result = true;
         }
     }
-    index_needs = RegSets[ins->t.index_needs];
+    index_needs = RegSets[ins->u2.index_needs];
     if( HW_CEqual( *index_needs, HW_EMPTY ) )
         return( false );
     for( ;; ) {
@@ -724,7 +724,7 @@ static  bool_maybe TooGreedy( conflict_node *conf, hw_reg_set reg, name *op )
     block               *blk;
     instruction         *ins;
     instruction         *last;
-    hw_reg_set          *ins_needs;
+    const hw_reg_set    *ins_needs;
     bool_maybe          rc;
     op_reg_set_index    needs;
 

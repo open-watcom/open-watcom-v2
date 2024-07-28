@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -296,6 +296,7 @@ public:
     virtual int WEXPORT getTextExtentY( const char *text ) {
         return( GUIGetExtentY( _handle, text ) );
     }
+    virtual void WEXPORT updateTextExtents( const char *text, gui_ord *extentx, gui_ord *extenty );
     virtual void displayFloatingPopup( WPopupMenu * );
     virtual WOrdinal WEXPORT frameWidth( void ) {
         return( WSystemMetrics::frameWidth() );

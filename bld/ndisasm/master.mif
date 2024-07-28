@@ -4,14 +4,19 @@ proj_name = wdis
 wdis_autodepends = .AUTODEPEND
 !endif
 
+wdis_ntverrc = ../stand/h
+
 wdis_trmem = 1
+
+wdis_wreslib_cli = text
+
+wdis_qnx_usage = 1
 
 additional_clean = *.gh *.grh *.grc
 
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif
-!include wres.mif
 !include trmem.mif
 
 !include $(orl_dir)/client.mif
@@ -27,7 +32,7 @@ dig_arch = all
 .c: .;$(trmem_dir);$(disasm_dir)/stand/c;$(dis_srcs);$(lib_misc_dir)/c;$(watcom_dir)/c
 
 inc_dirs = -I. $(dis_includes) -I"$(disasm_dir)/stand/h" -I"$(disasm_dir)/h" &
-    -I"$(orl_dir)/h" -I"$(lib_misc_dir)/h" -I"$(comp_cfg_dir)/h"
+    $(cli_orl_inc_dirs) -I"$(lib_misc_dir)/h" -I"$(comp_cfg_dir)/h"
 
 extra_cpp_flags = -DINSIDE_WDIS $(dig_arch_cpp_flags)
 
@@ -72,23 +77,18 @@ exetarg_objs = &
     $(dis_objs) &
     demangle.obj &
     $(trmem_objs)
-exetarg_libs          = $(orl_lib) $(wres_lib)
-exetarg_res_version_nt_386 = exever.res
-exetarg_res_version_nt_x64 = exever.res
-exetarg_res_wresui    = wresui.res
-exetarg_qnx_res       = usage.u
+exetarg_libs          = $(cli_orl_libs)
+exetarg_res           = $(proj_name).res
 !include exetarg.mif
 
 #
 # rc and others
 #
-!include verrc.mif
+rc_inc_dirs = -I"../stand/h" -I"../stand"
 
-rcui_inc_dirs = -I"../stand/h" -I"../stand"
-
-wresui.res : $(disasm_dir)/stand/h/wdis.rc usage.gh msg.grh $(__MAKEFILES__)
+$(proj_name).res : $(disasm_dir)/stand/h/wdis.rc usage.gh msg.grh $(__MAKEFILES__)
     @%make echo_rc
-    $(rcui8)
+    $(rcu8j) $(ppflags_common) $(ppflags_wreslib) $(rc_cppflags) $(rc_flags) $(rc_inc_path) $[@ -fo=$@
 
 distbls.gh : ./disbuild.exe $(__MAKEFILES__)
     @%make echo_execute
@@ -96,20 +96,20 @@ distbls.gh : ./disbuild.exe $(__MAKEFILES__)
 
 ./disbuild.exe : $(disasm_dir)/core/c/disbuild.c $(disbuild_headers) $(__MAKEFILES__)
     @%make echo_bldccl
-    $(bld_ccl) $(ppflags_common) $(ppflags_autodep) $[@ $(dig_arch_cpp_flags) -I"../h" $(dis_includes) $(bld_cclflags) $(bld_ldflags)
+    $(bld_ccl) $(ppflags_common) $(ppflags_autodep) $(bld_ppflags_sys) $(dig_arch_cpp_flags) $(bld_cppflags) $[@ -I"../h" $(dis_includes) $(bld_cclflags) $(bld_ldflags)
 
 msg.grh : ../stand/wdis.msg $(__MAKEFILES__)
     @%make echo_awk
     $(noecho)*awk -v base=WDIS_LITERAL_BASE -f $(build_dir)/makemsg.awk -v OUTFILE=$^. $[@
 
-!ifdef exetarg_qnx_res
-optencod_opt_qnx = -u=$(exetarg_qnx_res)
-!endif
+# optencod options and targets for various hosts
+#optencod_enc_linux  = -utf8
+
 optencod_targets = $(host_os)
 !ifeq debug 2
 optencod_targets += dbg
 !endif
 
-usage.gh $(exetarg_$(host_os)_res): ../stand/options.gml $(__MAKEFILES__)
+usage.gh $(qnx_usage) : ../stand/options.gml $(__MAKEFILES__)
     @%make echo_optencod
-    $(noecho)*optencod -q -rc=MSG_USAGE_BASE -utf8 $(optencod_opt_$(host_os)) $[@ . . $@ $(optencod_targets)
+    $(optencod) -rc=MSG_USAGE_BASE -utf8 $(optencod_opt_$(host_os)) $[@ . . $@ . $(optencod_targets)

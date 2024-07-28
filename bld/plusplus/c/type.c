@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -4019,12 +4019,12 @@ DECL_INFO *FinishDeclarator( DECL_SPEC *dspec, DECL_INFO *dinfo )
         sym = AllocSymbol();
         sym->sym_type = prev_type;
         if( prev_type->id == TYP_ERROR ) {
-            sym->flag |= SYMF_ERROR;
+            sym->flags |= SYMF_ERROR;
         }
         setStorageClass( sym, dspec->stg_class );
         SymbolLocnDefine( &(id_tree->locn), sym );
         if( !TOGGLE( unreferenced ) ) {
-            sym->flag |= SYMF_NO_REF_WARN;
+            sym->flags |= SYMF_NO_REF_WARN;
         }
         dinfo->sym = sym;
         dinfo->name = id;
@@ -5654,7 +5654,7 @@ static void noDuplicateNames( DECL_INFO *head, DECL_INFO *check )
             check->name = NameDummy();
             arg_sym = check->sym;
             if( arg_sym != NULL ) {
-                arg_sym->flag |= SYMF_REFERENCED;
+                arg_sym->flags |= SYMF_REFERENCED;
             }
             return;
         }
@@ -7101,7 +7101,7 @@ SYMBOL MakeVATableSym( SCOPE class_scope )
     vatable_type = MakeCompilerConstCommonData( vatable_type );
     sym = AllocSymbol();
     sym->id = SYMC_PUBLIC;
-    sym->flag |= SYMF_REFERENCED;
+    sym->flags |= SYMF_REFERENCED;
     sym->sym_type = vatable_type;
     sym = tryInsertion( GetFileScope(), sym, name );
     LinkageSet( sym, "C++" );
@@ -7125,7 +7125,7 @@ SYMBOL MakeVBTableSym( SCOPE scope, vindex num_vbases, target_offset_t delta )
     vbtable_type = MakeCompilerConstCommonData( vbtable_type );
     sym = AllocSymbol();
     sym->id = SYMC_PUBLIC;
-    sym->flag |= SYMF_REFERENCED;
+    sym->flags |= SYMF_REFERENCED;
     sym->sym_type = vbtable_type;
     sym = tryInsertion( GetFileScope(), sym, name );
     LinkageSet( sym, "C++" );
@@ -7153,7 +7153,7 @@ SYMBOL MakeVMTableSym( SCOPE from, SCOPE to, bool *had_to_define )
     vmtable_type = MakeCompilerConstCommonData( vmtable_type );
     sym = AllocSymbol();
     sym->id = SYMC_PUBLIC;
-    sym->flag |= SYMF_REFERENCED;
+    sym->flags |= SYMF_REFERENCED;
     sym->sym_type = vmtable_type;
     sym = tryInsertion( GetFileScope(), sym, name );
     LinkageSet( sym, "C++" );
@@ -7178,7 +7178,7 @@ SYMBOL MakeVFTableSym( SCOPE scope, vindex num_vfns, target_offset_t delta )
     vftable_type = MakeCompilerConstCommonData( vftable_type );
     sym = AllocSymbol();
     sym->id = SYMC_PUBLIC;
-    sym->flag |= SYMF_REFERENCED;
+    sym->flags |= SYMF_REFERENCED;
     sym->sym_type = vftable_type;
     sym = tryInsertion( GetFileScope(), sym, name );
     LinkageSet( sym, "C++" );
@@ -7209,7 +7209,7 @@ void TypedefUsingDecl( DECL_SPEC *dspec, SYMBOL typedef_sym, TOKEN_LOCN *locn )
         type = typedef_sym->sym_type;
         name = typedef_sym->name->name;
     }
-    SymCreateAtLocn( type, SYMC_TYPEDEF, SYMF_NULL, name, GetCurrScope(), locn );
+    SymCreateAtLocn( type, SYMC_TYPEDEF, SYMF_NONE, name, GetCurrScope(), locn );
 }
 
 bool TypeHasVirtualBases( TYPE type )

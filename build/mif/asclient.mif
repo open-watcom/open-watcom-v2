@@ -2,15 +2,15 @@
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #
 
-wasm_inline_i86 = 1
-wasm_inline_386 = 1
-as_inline_axp = 1
-as_inline_mps = 1
-as_inline_ppc = 1
+asclient_wasm_i86 = 1
+asclient_wasm_386 = 1
+asclient_as_axp = 1
+asclient_as_mps = 1
+asclient_as_ppc = 1
 
-!ifdef as_inline_$(target_cpu)
+!ifdef asclient_as_$(target_cpu)
 !include $(as_dir)/client.mif
 !endif
-!ifdef wasm_inline_$(target_cpu)
+!ifdef asclient_wasm_$(target_cpu)
 !include $(wasm_dir)/client.mif
 !endif

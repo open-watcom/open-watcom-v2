@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,7 +36,7 @@
 
 
 #define GUIAPI                  /* public API */
-#define GUIAPICALLBACK          /* public callback */
+#define GUICALLBACK             /* public callback */
 
 #define GUI_LAST_INTERNAL_MSG   255
 
@@ -365,11 +365,11 @@ typedef enum {
 #define GUI_ALT_STATE( state )      ((state & GUI_KS_ALT) != 0)
 #define GUI_CTRL_STATE( state )     ((state & GUI_KS_CTRL) != 0)
 
-#define GUI_NO_COLUMN       ((gui_ord)-1)
-#define GUI_NO_ROW          ((gui_ord)-1)
+#define GUI_NO_EXTENT       ((gui_ord)-1)
+#define GUI_NO_RANGE        ((gui_ord)-1)
 
-#define GUI_TEXT_NO_COLUMN  ((gui_text_ord)-1)
-#define GUI_TEXT_NO_ROW     ((gui_text_ord)-1)
+#define GUI_TEXT_NO_RANGE   ((gui_text_ord)-1)
+#define GUI_TEXT_NO_POS     ((gui_text_ord)-1)
 
 // GUIIsChecked and GUISetChecked values
 #define GUI_NOT_CHECKED     0
@@ -475,14 +475,14 @@ typedef struct gui_control_info {
     gui_ctl_id              id;
 } gui_control_info;
 
-typedef bool (GUIAPICALLBACK GUICALLBACK)( gui_window *wnd, gui_event gui_ev, void *param );
-typedef void (GUIAPICALLBACK ENUMCALLBACK)( gui_window *wnd, void *param );
-typedef void (GUIAPICALLBACK CONTRENUMCALLBACK)( gui_window *parent_wnd, gui_ctl_id id, void *param );
-typedef void (GUIAPICALLBACK GUIPICKCALLBACK)( gui_window *wnd, gui_ctl_id id );
-typedef void (GUIAPICALLBACK PICKDLGOPEN)( const char *title, gui_text_ord rows, gui_text_ord cols,
+typedef bool (GUICALLBACK GUIEVCALLBACK)( gui_window *wnd, gui_event gui_ev, void *param );
+typedef void (GUICALLBACK ENUMCALLBACK)( gui_window *wnd, void *param );
+typedef void (GUICALLBACK CONTRENUMCALLBACK)( gui_window *parent_wnd, gui_ctl_id id, void *param );
+typedef void (GUICALLBACK GUIPICKCALLBACK)( gui_window *wnd, gui_ctl_id id );
+typedef void (GUICALLBACK PICKDLGOPEN)( const char *title, gui_text_ord rows, gui_text_ord cols,
                              gui_control_info *controls_info, int num_controls,
-                             GUICALLBACK *gui_call_back, void *extra );
-typedef const char *(GUIAPICALLBACK GUIPICKGETTEXT)( const void *data_handle, int item );
+                             GUIEVCALLBACK *gui_call_back, void *extra );
+typedef const char *(GUICALLBACK GUIPICKGETTEXT)( const void *data_handle, int item );
 
 typedef struct gui_create_info {
     const char          *title;
@@ -492,7 +492,7 @@ typedef struct gui_create_info {
     gui_window          *parent;
     gui_menu_items      menus;
     gui_colour_items    colours;
-    GUICALLBACK         *gui_call_back;
+    GUIEVCALLBACK       *gui_call_back;
     void                *extra;
     gui_resource        *icon;
     res_name_or_id      resource_menu;
@@ -701,6 +701,7 @@ extern char     * GUIAPI GUIGetFontInfo( gui_window *wnd );
 extern bool     GUIAPI GUISetFontInfo( gui_window *wnd, char *fontinfo );
 extern bool     GUIAPI GUISetSystemFont( gui_window *wnd, bool fixed );
 extern char     * GUIAPI GUIGetFontFromUser( char *fontinfo );
+extern void     GUIAPI GUIChangeCurrentFont( gui_window *wnd, char *facename, int bold );
 
 /* Painting functions */
 
@@ -885,8 +886,8 @@ extern bool     GUIAPI GUIDlgPickWithRtn( const char *title, GUIPICKCALLBACK *pi
 /* Dialog Functions */
 
 extern bool     GUIAPI GUICreateDialog( gui_create_info *dlg_info, int num_controls, gui_control_info *controls_info );
-extern bool     GUIAPI GUICreateSysModalDialog( gui_create_info *dlg_info, int num_controls, gui_control_info *controls_info );
-extern bool     GUIAPI GUICreateResDialog( gui_create_info *dlg_info, res_name_or_id dlg_id );
+extern bool     GUIAPI GUICreateDialogSysModal( gui_create_info *dlg_info, int num_controls, gui_control_info *controls_info );
+extern bool     GUIAPI GUICreateDialogRes( gui_create_info *dlg_info, res_name_or_id dlg_id );
 extern void     GUIAPI GUICloseDialog( gui_window *wnd );
 extern void     GUIAPI GUISetModalDlgs( bool );
 

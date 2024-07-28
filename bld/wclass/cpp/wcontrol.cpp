@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -217,9 +217,10 @@ void WEXPORT WControl::setUpdates( bool start_update ) {
     }
 }
 
-
+#if 0
 void WEXPORT WControl::textMetrics( WPoint &avg, WPoint &max ) {
 /**************************************************************/
 
     parent()->textMetrics( avg, max );
 }
+#endif

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -59,6 +59,9 @@
 #include "dbgmad.h"
 #include "dbgwmem.h"
 #include "menudef.h"
+#include "dbgicon.h"
+#include "liteng.h"
+#include "litdui.h"
 
 
 #define TITLE_SIZE      1
@@ -267,7 +270,7 @@ static void MemSetStartAddr( a_window wnd, address addr, bool new_home )
     MemGetContents( wnd, false );
 }
 
-static  void MemRefresh( a_window wnd )
+static  void WNDCALLBACK MemRefresh( a_window wnd )
 {
     mem_window  *mem;
 
@@ -406,7 +409,7 @@ static  void    MemUpdateCursor( a_window wnd )
 }
 
 
-static  void    MemModify( a_window wnd, wnd_row row, wnd_piece piece )
+static  void    WNDCALLBACK MemModify( a_window wnd, wnd_row row, wnd_piece piece )
 {
     address     addr;
     union {
@@ -632,7 +635,7 @@ static bool GetBuff( mem_window *mem, unsigned long offset, char *buff, size_t s
     }
 }
 
-static  bool    MemGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *line )
+static  bool    WNDCALLBACK MemGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *line )
 {
     char            buff[16];
     unsigned long   offset;
@@ -776,7 +779,7 @@ static void MemResize( a_window wnd )
     MemRefresh( wnd );
 }
 
-static void     MemMenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_piece piece )
+static void     WNDCALLBACK MemMenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_piece piece )
 {
     mem_window  *mem;
 
@@ -864,14 +867,14 @@ static void     MemMenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_piece
     }
 }
 
-static  void StkRefresh( a_window wnd )
+static  void WNDCALLBACK StkRefresh( a_window wnd )
 {
     MemSetStartAddr( wnd, Context.stack, true );
     WndZapped( wnd );
 }
 
 
-static  int     MemScroll( a_window wnd, int lines )
+static  int     WNDCALLBACK MemScroll( a_window wnd, int lines )
 {
     int             tomove;
     unsigned long   offset;
@@ -945,7 +948,7 @@ void FiniMemWindow( void )
     MemFiniTypes( &MemData );
 }
 
-static bool MemWndEventProc( a_window wnd, gui_event gui_ev, void *parm )
+static bool WNDCALLBACK MemWndEventProc( a_window wnd, gui_event gui_ev, void *parm )
 {
     mem_window      *mem;
     int             i;
@@ -1008,17 +1011,17 @@ static bool MemWndEventProc( a_window wnd, gui_event gui_ev, void *parm )
     return( false );
 }
 
-static bool ChkUpdateBin( void )
+static bool WNDCALLBACK ChkUpdateBin( void )
 {
     return( UpdateFlags & UP_RADIX_CHANGE );
 }
 
-static bool ChkUpdateMem( void )
+static bool WNDCALLBACK ChkUpdateMem( void )
 {
     return( UpdateFlags & (UP_RADIX_CHANGE | UP_MEM_CHANGE | UP_SYM_CHANGE | UP_NEW_PROGRAM) );
 }
 
-static bool ChkUpdateStk( void )
+static bool WNDCALLBACK ChkUpdateStk( void )
 {
     return( UpdateFlags & (UP_RADIX_CHANGE | UP_MEM_CHANGE | UP_STACKPOS_CHANGE | UP_REG_CHANGE | UP_SYM_CHANGE | UP_NEW_PROGRAM) );
 }
@@ -1085,7 +1088,7 @@ a_window        DoWndMemOpen( address addr, mad_type_handle mth )
     mem->stack = false;
     mem->init_mth = mth;
     mem->piece_type = MemByteType;
-    wnd = DbgTitleWndCreate( MemGetTitle( mem ), &MemInfo, WND_MEMORY, mem, &MemIcon, TITLE_SIZE, false );
+    wnd = DbgWndCreateTitle( MemGetTitle( mem ), &MemInfo, WND_MEMORY, mem, &MemIcon, TITLE_SIZE, false );
     return( wnd );
 }
 
@@ -1106,7 +1109,7 @@ a_window        WndStkOpen( void )
     mem->init_mth = GetMADTypeHandleDefaultAt( Context.stack, MTK_INTEGER );
     mem->file = false;
     mem->stack = true;
-    wnd = DbgTitleWndCreate( LIT_DUI( WindowStack ), &StkInfo, WND_STACK, mem, &StkIcon, TITLE_SIZE, false );
+    wnd = DbgWndCreateTitle( LIT_DUI( WindowStack ), &StkInfo, WND_STACK, mem, &StkIcon, TITLE_SIZE, false );
     return( wnd );
 }
 
@@ -1122,6 +1125,6 @@ a_window        DoWndBinOpen( const char *title, file_handle fh )
     mem->init_mth = MAD_NIL_TYPE_HANDLE;
     mem->piece_type = MemByteType;
     mem->u.f.fh = fh;
-    wnd = DbgTitleWndCreate( title, &BinInfo, WND_BINARY, mem, &MemIcon, TITLE_SIZE, false );
+    wnd = DbgWndCreateTitle( title, &BinInfo, WND_BINARY, mem, &MemIcon, TITLE_SIZE, false );
     return( wnd );
 }

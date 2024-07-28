@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -328,7 +328,7 @@ fe_attr FEAttr(                 // GET SYMBOL ATTRIBUTES
         }
     }
     // don't export addressability thunks
-    if( (sym->flag & SYMF_ADDR_THUNK) == 0 ) {
+    if( (sym->flags & SYMF_ADDR_THUNK) == 0 ) {
         if( mod_flags & (TF1_DLLEXPORT|TF1_DLLIMPORT) ) {
             if( SymIsInitialized( sym ) ) {
                 if( mod_flags & TF1_DLLEXPORT ) {
@@ -344,8 +344,8 @@ fe_attr FEAttr(                 // GET SYMBOL ATTRIBUTES
             }
         }
     }
-    // change to this: if( sym->flag & SYMF_CG_ADDR_TAKEN ) {
-    if( sym->flag & SYMF_CG_ADDR_TAKEN ) {
+    // change to this: if( sym->flags & SYMF_CG_ADDR_TAKEN ) {
+    if( sym->flags & SYMF_CG_ADDR_TAKEN ) {
         attr |= FE_ADDR_TAKEN;
     }
     if( SymIsClassMember( sym ) ) {
@@ -356,7 +356,7 @@ fe_attr FEAttr(                 // GET SYMBOL ATTRIBUTES
             attr |= FE_STATIC;
             /* only set FE_GLOBAL if it's not an in-class
          * initialization of a const static member */
-            if( (sym->flag & SYMF_IN_CLASS_INIT) == 0 ) {
+            if( (sym->flags & SYMF_IN_CLASS_INIT) == 0 ) {
                 attr |= FE_GLOBAL;
             }
         } else {
@@ -769,7 +769,7 @@ static bool makeFileScopeStaticNear( SYMBOL sym )
     if( ScopeId( SymScope( sym ) ) != SCOPE_FILE ) {
         return( false );
     }
-    if( (sym->flag & SYMF_ADDR_TAKEN) != 0 ) {
+    if( (sym->flags & SYMF_ADDR_TAKEN) != 0 ) {
         /*
          * function may be called as a FAR function through a pointer
          */
@@ -850,7 +850,7 @@ static call_class getCallClass( SYMBOL sym )
             /*
              * don't export addressability thunks
              */
-            if( (sym->flag & SYMF_ADDR_THUNK) == 0 ) {
+            if( (sym->flags & SYMF_ADDR_THUNK) == 0 ) {
                 if( flags & TF1_DLLEXPORT ) {
                     if( (fn_flags & TF1_INLINE) == 0 ) {
                         cclass |= FECALL_GEN_DLL_EXPORT;
@@ -906,7 +906,7 @@ static call_class_target getCallClassTarget( SYMBOL sym )                       
             /*
              * don't export addressability thunks
              */
-            if( (sym->flag & SYMF_ADDR_THUNK) == 0 ) {
+            if( (sym->flags & SYMF_ADDR_THUNK) == 0 ) {
                 if( flags & TF1_DLLEXPORT ) {
                     if( fn_flags & TF1_INLINE ) {
                         /*
@@ -938,7 +938,7 @@ static call_class_target getCallClassTarget( SYMBOL sym )                       
                 }
             }
     #endif
-            if( sym->flag & SYMF_FAR16_CALLER ) {
+            if( sym->flags & SYMF_FAR16_CALLER ) {
                 cclass_target |= FECALL_X86_THUNK_PROLOG;
             }
         }
@@ -968,9 +968,9 @@ static sym_access getSymAccess( // GET access flag of symbol
 {
     sym_access access;
 
-    if( sym->flag & SYMF_PRIVATE ) {
+    if( sym->flags & SYMF_PRIVATE ) {
         access = SYM_ACC_PRIVATE;
-    } else if( sym->flag & SYMF_PROTECTED ) {
+    } else if( sym->flags & SYMF_PROTECTED ) {
         access = SYM_ACC_PROTECTED;
     } else {
         access = SYM_ACC_PUBLIC;

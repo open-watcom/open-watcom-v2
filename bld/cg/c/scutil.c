@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -222,7 +222,7 @@ void    MemChanged( score *scoreboard, bool statics_too )
                     changed = true;
                     break;
                 case SC_N_TEMP:
-                    if( (curr->info.symbol.v->usage & USE_ADDRESS) == 0 ) {
+                    if( (curr->info.symbol.u.v->usage & USE_ADDRESS) == 0 ) {
                         changed = true;
                     }
                     break;

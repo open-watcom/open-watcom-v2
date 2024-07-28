@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -54,11 +54,6 @@
 #include "clibext.h"
 
 
-/* Local Window callback functions prototypes */
-#ifndef __OS2_PM__
-WINEXPORT UINT_PTR CALLBACK OpenOFNHookProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
-#endif
-
 #ifndef __OS2_PM__
 static  char    *LastPath; // this is set in NT for the sake of viper
 #endif
@@ -68,6 +63,11 @@ static  char    *LastPath; // this is set in NT for the sake of viper
 static  bool    hookFileDlg = false;
 #else
 static  bool    hookFileDlg = true;
+#endif
+
+/* Local Windows callback functions prototypes */
+#ifndef __OS2_PM__
+WINEXPORT UINT_PTR CALLBACK OpenOFNHookProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
 #endif
 
 void GUIAPI GUIHookFileDlg( bool hook )
@@ -119,10 +119,10 @@ int GUIGetFileName( gui_window *wnd, open_file_name *ofn )
     fdlg.fl = FDS_CENTER | FDS_ENABLEFILELB;
     if( ofn->flags & FN_ISSAVE ) {
         fdlg.fl |= FDS_SAVEAS_DIALOG;
-        fdlg.pszOKButton = (PSZ)LIT( FDlg_Save_Text );
+        fdlg.pszOKButton = (PSZ)LIT_GUI( FDlg_Save_Text );
     } else {
         fdlg.fl |= FDS_OPEN_DIALOG;
-        fdlg.pszOKButton = (PSZ)LIT( FDlg_Open_Text );
+        fdlg.pszOKButton = (PSZ)LIT_GUI( FDlg_Open_Text );
     }
     if( ofn->flags & FN_ALLOWMULTISELECT ) {
         fdlg.fl |= FDS_MULTIPLESEL;

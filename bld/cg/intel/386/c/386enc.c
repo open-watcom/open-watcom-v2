@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,7 +37,7 @@
 #include "pcencode.h"
 #include "zoiks.h"
 #include "zeropage.h"
-#include "cfloat.h"
+#include "_cfloat.h"
 #include "cgaux.h"
 #include "p5prof.h"
 #include "data.h"
@@ -66,6 +66,17 @@
 #define RMR_MOD_IND     0x80
 #define RMR_MOD_DIR     5
 #define RMR_MOD_SIB     4
+
+static const hw_reg_set IndexTab[] = {
+    HW_D( HW_EAX ),
+    HW_D( HW_ECX ),
+    HW_D( HW_EDX ),
+    HW_D( HW_EBX ),
+    HW_D( HW_ESP ),
+    HW_D( HW_EBP ),
+    HW_D( HW_ESI ),
+    HW_D( HW_EDI )
+};
 
 
 static void OpndSizeIf( bool if_32 )
@@ -138,19 +149,6 @@ void    DoRepOp( instruction *ins )
         }
     }
 }
-
-
-static  hw_reg_set IndexTab[] = {
-    HW_D( HW_EAX ),
-    HW_D( HW_ECX ),
-    HW_D( HW_EDX ),
-    HW_D( HW_EBX ),
-    HW_D( HW_ESP ),
-    HW_D( HW_EBP ),
-    HW_D( HW_ESI ),
-    HW_D( HW_EDI )
-};
-
 
 static  void    Add32Displacement( int_32 val )
 /*********************************************/
@@ -366,7 +364,7 @@ static int_32   GetNextAddConstant( instruction *ins )
          * turn it into:
          *      LEA     EAX, 3[ECX+EDX]
          */
-        disp = neg * next->operands[1]->c.lo.int_value,
+        disp = neg * next->operands[1]->c.lo.u.int_value,
         DoNothing( next );
         break;
     }
@@ -392,7 +390,7 @@ void    LayLeaRegOp( instruction *ins )
     case OP_ADD:
         if( right->n.class == N_CONSTANT ) {
             if( right->c.const_type == CONS_ABSOLUTE ) {
-                EA( HW_EMPTY, left->r.reg, 0, neg * right->c.lo.int_value, NULL, true );
+                EA( HW_EMPTY, left->r.reg, 0, neg * right->c.lo.u.int_value, NULL, true );
             } else {
                 EA( HW_EMPTY, left->r.reg, 0, 0, right, true );
             }
@@ -402,7 +400,7 @@ void    LayLeaRegOp( instruction *ins )
         }
         break;
     case OP_MUL:
-        switch( right->c.lo.int_value ) {
+        switch( right->c.lo.u.int_value ) {
         case 3: scale = 1;  break;
         case 5: scale = 2;  break;
         case 9: scale = 3;  break;
@@ -412,7 +410,7 @@ void    LayLeaRegOp( instruction *ins )
         break;
     case OP_LSHIFT:
         disp = GetNextAddConstant( ins );   /* 2004-11-05  RomanT */
-        switch( right->c.lo.int_value ) {
+        switch( right->c.lo.u.int_value ) {
         case 1:
             if( _CPULevel( CPU_586 ) ) {
                 /*
@@ -424,7 +422,7 @@ void    LayLeaRegOp( instruction *ins )
             }
             /* fall through */
         default:
-            EA( HW_EMPTY, left->r.reg, (scale_typ)right->c.lo.int_value, disp, NULL, true );
+            EA( HW_EMPTY, left->r.reg, (scale_typ)right->c.lo.u.int_value, disp, NULL, true );
         }
         break;
     }
@@ -545,7 +543,7 @@ void    DoRelocConst( name *op, type_class_def type_class )
     } else if( op->c.const_type == CONS_SEGMENT ) {
         ILen += 2;
         if( op->c.value == NULL ) {
-            DoSegRef( (segment_id)op->c.lo.int_value );
+            DoSegRef( (segment_id)op->c.lo.u.int_value );
         } else {
             DoSymRef( op->c.value, 0, true );
         }
@@ -586,37 +584,36 @@ void    GenPushC( int_32 value )
 pointer GenFar16Thunk( pointer label, uint_16 parms_size, bool remove_parms )
 /***************************************************************************/
 {
-    segment_id  old_segid;
     pointer     code_32;
 
-    old_segid = SetOP( AskCode16Seg() );
-//    CodeLabel( label, DepthAlign( PROC_ALIGN ) );
-    code_32 = AskForNewLabel();
-    TellOptimizerByPassed();
-    SetUpObj( false );
-    OutLabel( label );
-    OutDataByte( 0xb9 );                /* mov cx,# */
-    OutDataShort( parms_size );
-    OutDataByte( 0x9a );
-    OutRTImport( RT_Far32Func, F_FAR16 );
-    OutDataShort( 0 );
-    OutDataShort( 0 );
-    if( remove_parms ) {
-        OutDataByte( 0xca );
+    PUSH_OP( AskCode16Seg() );
+//        CodeLabel( label, DepthAlign( PROC_ALIGN ) );
+        code_32 = AskForNewLabel();
+        TellOptimizerByPassed();
+        SetUpObj( false );
+        OutLabel( label );
+        OutDataByte( 0xb9 );                /* mov cx,# */
         OutDataShort( parms_size );
-    } else {
-        OutDataByte( 0xcb );
-        OutDataShort( 0 );              // padding
-    }
-    /*
-     * emit "reloc for offset of code_32 label"
-     */
-    SetUpObj( true );
-    TellKeepLabel( code_32 );
-    OutReloc( AskCodeSeg(), F_OFFSET, false );
-    OutLblPatch( code_32, F_OFFSET, 0 );
-    TellByPassOver();
-    SetOP( old_segid );
+        OutDataByte( 0x9a );
+        OutRTImport( RT_Far32Func, F_FAR16 );
+        OutDataShort( 0 );
+        OutDataShort( 0 );
+        if( remove_parms ) {
+            OutDataByte( 0xca );
+            OutDataShort( parms_size );
+        } else {
+            OutDataByte( 0xcb );
+            OutDataShort( 0 );              // padding
+        }
+        /*
+         * emit "reloc for offset of code_32 label"
+         */
+        SetUpObj( true );
+        TellKeepLabel( code_32 );
+        OutReloc( AskCodeSeg(), F_OFFSET, false );
+        OutLblPatch( code_32, F_OFFSET, 0 );
+        TellByPassOver();
+    POP_OP();
     return( code_32 );
 }
 
@@ -721,39 +718,38 @@ segment_id GenProfileData( char *fe_name, label_handle *data, label_handle *stac
  * generate P5 profiler code
  */
 {
-    segment_id      old_segid;
     segment_id      data_segid = (segment_id)(pointer_uint)FEAuxInfo( NULL, FEINF_P5_PROF_SEG );
 
-    old_segid = SetOP( data_segid );
-    TellOptimizerByPassed();
-    SetUpObj( true );
-    *data = AskForNewLabel();
-    OutLabel( *data );
-    OutDataByte( *fe_name );                    //flag
-    OutDataByte( 0 );
-    OutDataByte( 0 );
-    OutDataByte( 0 );
-    OutDataLong( 0 );                           //semaphore
-    if( stack == NULL ) {
-        OutDataLong( 0 );                       //stack
-    } else {
-        OutReloc( data_segid, F_OFFSET, false );  //caller
-        OutLblPatch( *stack, F_OFFSET, 0 );
-    }
-    OutDataLong( 0 );                           //esp
-    OutDataLong( 0 );                           //dynamic
-    OutDataLong( 0 );                           //lo_count
-    OutDataLong( 0 );                           //hi_count
-    OutDataLong( 0 );                           //lo_cycle
-    OutDataLong( 0 );                           //hi_cycle
-    OutDataLong( 0 );                           //lo_start_time
-    OutDataLong( 0 );                           //hi_start_time
-    OutReloc( AskCodeSeg(), F_OFFSET, false );  //caller
-    OutLblPatch( CurrProc->label, F_OFFSET, 0 );
-    OutDataLong( 0 );                           //call_ins
-    OutDataLong( 0 );                           //callee
-    TellByPassOver();
-    SetOP( old_segid );
+    PUSH_OP( data_segid );
+        TellOptimizerByPassed();
+        SetUpObj( true );
+        *data = AskForNewLabel();
+        OutLabel( *data );
+        OutDataByte( *fe_name );                    //flag
+        OutDataByte( 0 );
+        OutDataByte( 0 );
+        OutDataByte( 0 );
+        OutDataLong( 0 );                           //semaphore
+        if( stack == NULL ) {
+            OutDataLong( 0 );                       //stack
+        } else {
+            OutReloc( data_segid, F_OFFSET, false );  //caller
+            OutLblPatch( *stack, F_OFFSET, 0 );
+        }
+        OutDataLong( 0 );                           //esp
+        OutDataLong( 0 );                           //dynamic
+        OutDataLong( 0 );                           //lo_count
+        OutDataLong( 0 );                           //hi_count
+        OutDataLong( 0 );                           //lo_cycle
+        OutDataLong( 0 );                           //hi_cycle
+        OutDataLong( 0 );                           //lo_start_time
+        OutDataLong( 0 );                           //hi_start_time
+        OutReloc( AskCodeSeg(), F_OFFSET, false );  //caller
+        OutLblPatch( CurrProc->label, F_OFFSET, 0 );
+        OutDataLong( 0 );                           //call_ins
+        OutDataLong( 0 );                           //callee
+        TellByPassOver();
+    POP_OP();
     return( data_segid );
 }
 
@@ -826,7 +822,7 @@ void    Pow2Div( instruction *ins )
     bool        if_32;
 
     if_32 = false;
-    log2 = GetLog2( ins->operands[1]->c.lo.int_value );
+    log2 = GetLog2( ins->operands[1]->c.lo.u.int_value );
     switch( ins->type_class ) {
     case I1:
     case U1:
@@ -908,7 +904,6 @@ void    Do4CXShift( instruction *ins, void (*rtn)(instruction *) )
 void StartBlockProfiling( block *blk )
 /************************************/
 {
-    segment_id          old_segid;
     segment_id          data_segid;
     label_handle        data;
 
@@ -920,24 +915,24 @@ void StartBlockProfiling( block *blk )
     if( blk->label == NULL )
         return;
     TellKeepLabel( blk->label );
-    old_segid = SetOP( data_segid );
-    TellOptimizerByPassed();
-    SetUpObj( true );
-    data = AskForNewLabel();
-    TellKeepLabel( data );
-    OutLabel( data );
-    OutDataByte( PROFILE_FLAG_BLOCK );          //flag
-    OutDataByte( 0 );                           //...
-    OutDataByte( 0 );                           //...
-    OutDataByte( 0 );                           //...
-    OutDataLong( 0 );                           //lo_count
-    OutDataLong( 0 );                           //hi_count
-    OutReloc( AskCodeSeg(), F_OFFSET, false );  //block
-    OutLblPatch( blk->label, F_OFFSET, 0 );
-    OutReloc( AskCodeSeg(), F_OFFSET, false );  //function
-    OutLblPatch( CurrProc->label, F_OFFSET, 0 );
-    TellByPassOver();
-    SetOP( old_segid );
+    PUSH_OP( data_segid );
+        TellOptimizerByPassed();
+        SetUpObj( true );
+        data = AskForNewLabel();
+        TellKeepLabel( data );
+        OutLabel( data );
+        OutDataByte( PROFILE_FLAG_BLOCK );          //flag
+        OutDataByte( 0 );                           //...
+        OutDataByte( 0 );                           //...
+        OutDataByte( 0 );                           //...
+        OutDataLong( 0 );                           //lo_count
+        OutDataLong( 0 );                           //hi_count
+        OutReloc( AskCodeSeg(), F_OFFSET, false );  //block
+        OutLblPatch( blk->label, F_OFFSET, 0 );
+        OutReloc( AskCodeSeg(), F_OFFSET, false );  //function
+        OutLblPatch( CurrProc->label, F_OFFSET, 0 );
+        TellByPassOver();
+    POP_OP();
     _Code;
     LayOpword( 0x0583 );                /* add L1+lo_count,1 */
     ILen += 4;

@@ -4,6 +4,8 @@ proj_name = rcsdll
 rcsdll_autodepends = .AUTODEPEND
 !endif
 
+rcsdll_ntverrc = ../h
+
 suppress_zc = 1
 
 additional_clean = *.grc
@@ -15,9 +17,9 @@ additional_clean = *.grc
 #
 # cflags
 #
-.cpp : ..;../mkssi;../ocycle
+.cpp : ../cpp;../mkssi;../ocycle
 
-inc_dirs = -I..
+inc_dirs = -I"../h"
 
 !ifdef sys_dll
 extra_cpp_flags = -D_RCSDLL_
@@ -51,8 +53,6 @@ objs_ntx64  = mkssi.obj objcycle.obj
 # DLL
 #
 dlltarg_objs = rcsdll.obj inifile.obj $(objs_$(objs_subdir)) $(extra_objs)
-dlltarg_res_version_nt_386 = version.res
-dlltarg_res_version_nt_x64 = version.res
 dlltarg_name = rcsdll
 !include dlltarg.mif
 !else
@@ -67,5 +67,3 @@ libtarg_name = rcsdll
 #
 # rc and others
 #
-!include verrc.mif
-

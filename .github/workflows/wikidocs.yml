@@ -47,13 +47,13 @@ jobs:
     runs-on: windows-2019
     steps:
     - name: checkout
-      uses: actions/checkout@v3.5.0
+      uses: actions/checkout@v4
     - name: Bootstrap
       uses: "./.github/actions/boot"
       with:
-        arch:           'nt'
-        bldscript:      'ci\buildx.cmd'
-        tools:          'vs2019'
+        hostos:         'nt'
+        buildcmd:       'ci/buildx.cmd vs2019'
+        suffix:         'nt x64 vs2019'
         owtools:        'VISUALC'
         noarchive:      '1'
         owdebug:        ${{ vars.OWDEBUG }}
@@ -74,16 +74,18 @@ jobs:
           owtarget: '.and wikipdf .or -- -- docset=wikipdf -i'
     steps:
     - name: checkout
-      uses: actions/checkout@v3.5.0
+      uses: actions/checkout@v4
     - name: Docs Build
       uses: "./.github/actions/docbuild"
       with:
+        hostos:     'nt'
+        buildcmd:   'ci/buildx.cmd vs2019'
         target:     ${{ matrix.doctype }}
-        gitpath:    'docs wiki'
-        owtarget:   ${{ matrix.owtarget }}
-        arch:       'nt'
-        tools:      'vs2019'
+        relpath:    'docs wiki'
+        suffixi:    'nt x64 vs2019'
+        suffixo:    "${{ matrix.doctype }} vs2019"
         owtools:    'VISUALC'
+        owtarget:   ${{ matrix.owtarget }}
         owdebug:    ${{ vars.OWDEBUG }}
         noarchive:  '1'
   wiki-update:
@@ -104,12 +106,12 @@ jobs:
         OWGHTOKEN: ${{ secrets.OWGHTOKEN }}
         OWWIKIPROJ: open-watcom/open-watcom-v2-wikidocs
     - name: Download Artifact html
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       with:
         name: 'rel-wikihtml-vs2019'
         path: docs
     - name: Download Artifact pdf
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       with:
         name: 'rel-wikipdf-vs2019'
         path: docs
@@ -125,8 +127,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: checkout
-      uses: actions/checkout@v3.5.0
-    - name: Call to delete Artifacts
+      uses: actions/checkout@v4
+    - if: vars.OWDELETEARTIFACTS == 1
+      name: Call to delete Artifacts
       uses: "./.github/actions/artfdelc"
       with:
         owdebug:    ${{ vars.OWDEBUG }}
+        owcurlopts: ${{ vars.OWCURLOPTS }}

@@ -4,4 +4,6 @@ proj_name = rc
 rc_autodepends = .AUTODEPEND
 !endif
 
+rc_ntverrc = ..
+
 !include ../../rc.mif

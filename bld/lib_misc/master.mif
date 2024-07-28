@@ -1,6 +1,6 @@
 proj_name = aliasgen
 
-aliasgen_autodepends = .autodepend
+aliasgen_autodepends = .AUTODEPEND
 
 !include cproj.mif
 !include defrule.mif

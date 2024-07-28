@@ -1,6 +1,6 @@
 .EXTENSIONS:
 .EXTENSIONS: .exp .exe .dis .dib .dum .ls1 .lst .obj .ser .mer .err .i .i0 .i1 .p .gc .gcp .c .cpp .for .asm .src .mif
-.mif: ..;"$(mif_path)"
+.mif: ..;"$(%OWROOT)/build/mif"
 
 !include testenv1.mif
 
@@ -210,14 +210,14 @@ test.lnk : $(__MAKEFILES__) .EXPLICIT
     @*awk -v target=$(init_$^&) -f $(wasmtest_dir)/createc.awk -v OUTFILE=$^. $[@
 
 .src.gcp:
-    @copy $< $@
+    @%copy $< $@
 !else
 .asm.gc:
     @set ERROR_MSG=failure to create $^.
     @*awk -v target=$(init_$^&) -f $(wasmtest_dir)/createc.awk -v OUTFILE=$^. $[@
 
 .src.gc:
-    @copy $< $@
+    @%copy $< $@
 !endif
 
 !endif

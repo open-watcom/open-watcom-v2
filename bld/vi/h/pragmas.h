@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -46,6 +46,21 @@ extern void             Out43( unsigned char );
 
 extern void             Out42( unsigned char );
 #pragma aux Out42 = 0xe6 0x42 __parm [__al]
+
+extern char IsWindows( void );
+#pragma aux IsWindows = \
+        "mov    ax,1600h" \
+        "int    2fh" \
+        "cmp    al,0" \
+        "je short L1" \
+        "cmp    al,080h" \
+        "je short L1" \
+        "mov    al,1" \
+        "jmp short L2" \
+    "L1:" \
+        "mov    al,0" \
+    "L2:" \
+        __value [__al]
 
 extern void (__interrupt _FAR *DosGetVect( char ))( void );
 #ifdef _M_I86

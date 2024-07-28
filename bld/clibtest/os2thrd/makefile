@@ -10,7 +10,7 @@ srcfile = c/os2tst01.c
 
 !else
 
-all : .symbolic
-clean : .symbolic
+all : .SYMBOLIC
+clean : .SYMBOLIC
 
 !endif

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,7 +34,6 @@
 #include "dbgdata.h"
 #include "dbgwind.h"
 #include "dbgtback.h"
-#include "dbgadget.h"
 #include "dbgmem.h"
 #include "dbgchain.h"
 #include "mad.h"
@@ -49,6 +48,8 @@
 #include "dbgwinsp.h"
 #include "dlgbreak.h"
 #include "menudef.h"
+#include "dbgicon.h"
+#include "litdui.h"
 
 
 enum {
@@ -71,12 +72,12 @@ static gui_menu_struct CallMenu[] = {
     #include "menucall.h"
 };
 
-static wnd_row CallNumRows( a_window wnd )
+static wnd_row WNDCALLBACK CallNumRows( a_window wnd )
 {
     return( WndCall( wnd )->tb.curr->total_depth );
 }
 
-static void     CallMenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_piece piece )
+static void     WNDCALLBACK CallMenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_piece piece )
 {
     call_chain  *chain;
     call_window *call = WndCall( wnd );
@@ -112,7 +113,7 @@ static void     CallMenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_piec
     }
 }
 
-static  bool    CallGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *line )
+static  bool    WNDCALLBACK CallGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *line )
 {
     call_chain  *chain;
     call_window *call = WndCall( wnd );
@@ -120,7 +121,7 @@ static  bool    CallGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_lin
     chain = GetCallChain( &call->tb, row );
     if( chain == NULL )
         return( false );
-    line->extent = WND_MAX_EXTEND;
+    line->extent = WND_NO_EXTENT;
     switch( piece ) {
     case PIECE_SYMBOL:
         StrCopyDst( ":", StrCopyDst( chain->symbol, TxtBuff ) );
@@ -185,7 +186,7 @@ static void CallScrollPos( a_window wnd )
 }
 
 
-static void CallRefresh( a_window wnd )
+static void WNDCALLBACK CallRefresh( a_window wnd )
 {
 
     if( UpdateFlags & (UP_RADIX_CHANGE | UP_SYM_CHANGE | UP_CSIP_CHANGE) ) {
@@ -204,7 +205,7 @@ static void CallClose( a_window wnd )
 }
 
 
-static bool CallWndEventProc( a_window wnd, gui_event gui_ev, void *parm )
+static bool WNDCALLBACK CallWndEventProc( a_window wnd, gui_event gui_ev, void *parm )
 {
     call_window *call = WndCall( wnd );
 
@@ -226,7 +227,7 @@ static bool CallWndEventProc( a_window wnd, gui_event gui_ev, void *parm )
 }
 
 
-static bool ChkUpdate( void )
+static bool WNDCALLBACK ChkUpdate( void )
 {
     return( UpdateFlags & (UP_RADIX_CHANGE | UP_SYM_CHANGE | UP_CSIP_CHANGE | UP_STACKPOS_CHANGE) );
 }

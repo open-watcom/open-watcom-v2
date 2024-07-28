@@ -5,11 +5,11 @@ tree_depth = 4
 host_os  = nt
 host_cpu = 386
 
+proj_name = dbginst
+
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif
-
-all: dbginst.exe .SYMBOLIC
 
 !ifeq debug 0
 
@@ -64,5 +64,11 @@ inc_dirs = -I"$(w32api_dir)/nt/h"
 
 extra_cpp_flags = -D_WIN32 -DWIN32
 
-dbginst.exe : dbginst.obj
-        $(cl) $(clflags) $< $(ldflags)
+# explicit rules
+#################
+
+#
+# EXE
+#
+exetarg_objs = dbginst.obj
+!include exetarg.mif

@@ -1,18 +1,18 @@
 name: boot
 description: 'Process OW bootstrap build'
 inputs:
-  arch:
-    description: 'run-time platform'
+  hostos:
+    description: 'host os'
     required: false
     default: ''
     type: string
-  bldscript:
-    description: 'script to build action'
+  suffix:
+    description: 'run-time artifact suffix'
     required: false
     default: ''
     type: string
-  tools:
-    description: 'used compiler toolchain'
+  buildcmd:
+    description: 'build command'
     required: false
     default: ''
     type: string
@@ -34,9 +34,9 @@ inputs:
 runs:
   using: composite
   steps:
-  - if: inputs.arch == 'lnx' || inputs.arch == 'osx'
+  - if: inputs.hostos == 'lnx' || inputs.hostos == 'osx'
     name: Bootstrap
-    run: ${{ inputs.bldscript }} ${{ inputs.tools }}
+    run: ${{ inputs.buildcmd }}
     env:
       OWBUILD_STAGE: 'boot'
       OWTOOLS:       ${{ inputs.owtools }}
@@ -44,9 +44,9 @@ runs:
       OWDEBUG:       ${{ inputs.owdebug }}
       OWVERBOSE:     1
     shell: bash
-  - if: inputs.arch == 'nt'
+  - if: inputs.hostos == 'nt'
     name: Bootstrap
-    run: ${{ inputs.bldscript }} ${{ inputs.tools }}
+    run: ${{ inputs.buildcmd }}
     env:
       OWBUILD_STAGE: 'boot'
       OWTOOLS:       ${{ inputs.owtools }}
@@ -56,17 +56,15 @@ runs:
     shell: cmd
   - uses: "./.github/actions/artfsave"
     with:
-      arch:         ${{ inputs.arch }}
+      hostos:       ${{ inputs.hostos }}
       gitpath:      'bld watcom binbuild'
-      artifact:     "bld watcom ${{ inputs.arch }}"
-      tools:        ${{ inputs.tools }}
+      artifact:     "bld watcom ${{ inputs.suffix }}"
       noarchive:    ${{ inputs.noarchive }}
       owdebug:      ${{ inputs.owdebug }}
   - uses: "./.github/actions/artfsave"
     with:
-      arch:         ${{ inputs.arch }}
+      hostos:       ${{ inputs.hostos }}
       gitpath:      'build binbuild'
-      artifact:     "build ${{ inputs.arch }}"
-      tools:        ${{ inputs.tools }}
+      artifact:     "build ${{ inputs.suffix }}"
       noarchive:    ${{ inputs.noarchive }}
       owdebug:      ${{ inputs.owdebug }}

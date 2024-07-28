@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -53,41 +53,41 @@
  *
  */
 
-#define MAX_PRE_TOK     8       // chars needed for maximum keyword
-#define INCLUDE      "INCLUDE"  // include directory for include file search
+#define MAX_PRE_TOK     8       /* chars needed for maximum keyword */
+#define INCLUDE      "INCLUDE"  /* include directory for include file search */
 
 
-typedef enum {                  // must be kept in sync with directives
-    D_BLANK = -1,               // a blank line
+typedef enum {                  /* must be kept in sync with directives */
+    D_BLANK = -1,               /* a blank line */
     #define pick(text,enum) enum,
     #include "mdirectv.h"
     #undef pick
     D_MAX
 } directiveTok;
 
-STATIC const char * const directives[] = {   // table must be lexically sorted.
+STATIC const char * const directives[] = {   /* table must be lexically sorted */
     #define pick(text,enum) text,
     #include "mdirectv.h"
     #undef pick
 };
 #define NUM_DIRECT      D_MAX
 
-#define MAX_DIR_LEN     8       // num chars incl null-terminator
+#define MAX_DIR_LEN     8       /* num chars incl null-terminator */
 
-STATIC char     atStartOfLine;  /* EOL at the start of a line...
+/*
+ * EOL at the start of a line...
  * This is a slight optimization for the critical code in PreGetCHR().
  */
+STATIC char     atStartOfLine;
 STATIC STRM_T   lastChar;
-STATIC bool     doingPreProc;   // are we doing some preprocessing?
-
-
+STATIC bool     doingPreProc;   /* are we doing some preprocessing? */
 /*
  * MS Compatability extension to add the if (expression) functionality
  */
-
 STATIC void doElIf( bool (*logical)(void), directiveTok tok );
-
-// local functions
+/*
+ * local functions
+ */
 STATIC void parseExpr ( DATAVALUE *leftVal, char *inString );
 STATIC void logorExpr ( DATAVALUE *leftVal );
 STATIC void logandExpr( DATAVALUE *leftVal );
@@ -101,8 +101,8 @@ STATIC void addExpr   ( DATAVALUE *leftVal );
 STATIC void multExpr  ( DATAVALUE *leftVal );
 STATIC void unaryExpr ( DATAVALUE *leftVal );
 
-STATIC char         *currentPtr;    // Pointer to current start in string
-STATIC MTOKEN_TYPE  currentToken;   // Contains information for current token
+STATIC char         *currentPtr;    /* Pointer to current start in string */
+STATIC MTOKEN_TYPE  currentToken;   /* Contains information for current token */
 
 
 /*
@@ -126,11 +126,11 @@ struct nestIf {
     boolbit     elseFound   : 1;
 };
 
-#define MAX_NEST    32                  // maximum depth of if nesting
+#define MAX_NEST    32                  /* maximum depth of if nesting */
 
-STATIC struct nestIf    nest[MAX_NEST]; // stack for nesting
-STATIC nest_level       nestLevel;      // items on stack
-STATIC struct nestIf    curNest;        // current skip info
+STATIC struct nestIf    nest[MAX_NEST]; /* stack for nesting */
+STATIC nest_level       nestLevel;      /* items on stack */
+STATIC struct nestIf    curNest;        /* current skip info */
 
 
 void PreProcInit( void )
@@ -156,7 +156,7 @@ void PreProcFini( void )
 }
 
 
-STATIC STRM_T eatWhite( void )
+STRM_T EatWhite( void )
 /*****************************
  * pre:
  * post:    0 or more ws characters removed from input
@@ -169,12 +169,11 @@ STATIC STRM_T eatWhite( void )
     while( sisws( s ) ) {
         s = PreGetCHR();
     }
-
     return( s );
 }
 
 
-STATIC void eatToEOL( void )
+STRM_T EatToEOL( void )
 /*****************************
  * pre:
  * post:    atStartOfLine == EOL, 0 or more chars removed from input
@@ -187,6 +186,7 @@ STATIC void eatToEOL( void )
     while( s != '\n' && s != STRM_END ) {
         s = PreGetCHR();
     }
+    return( s );
 }
 
 
@@ -207,8 +207,7 @@ STATIC directiveTok getPreTok( void )
     char    **key;
     char    *tmp;               /* to pass tok buf to bsearch */
 
-    s = eatWhite();
-
+    s = EatWhite();
     if( s == '\n' ) {
         UnGetCHR( s );
         return( D_BLANK );
@@ -218,8 +217,10 @@ STATIC directiveTok getPreTok( void )
     while( sisalpha( s ) && ( pos < MAX_PRE_TOK - 1 ) ) {
         tok[pos++] = s;
         s = PreGetCHR();
-        // MS Compatability ELSE IFEQ can also be defined as ELSEIFEQ
-        // similar for other types of if preprocessor directives
+        /*
+         * MS Compatability ELSE IFEQ can also be defined as ELSEIFEQ
+         * similar for other types of if preprocessor directives
+         */
         if( pos == 4 ) {
             tok[pos] = NULLCHAR;
             if( stricmp( directives[D_ELSE], tok ) == 0 ) {
@@ -230,7 +231,7 @@ STATIC directiveTok getPreTok( void )
     tok[pos] = NULLCHAR;
 
     UnGetCHR( s );
-    UnGetCHR( eatWhite() );
+    UnGetCHR( EatWhite() );
 
     tmp = tok;
     key = bsearch( &tmp, directives, NUM_DIRECT, sizeof( char * ), KWCompare );
@@ -266,7 +267,7 @@ STATIC bool ifDef( void )
     assert( !curNest.skip2endif );
 
     name = DeMacro( MAC_PUNC );
-    eatToEOL();
+    EatToEOL();
 
     if( !IsMacroName( name ) ) {
         FreeSafe( name );
@@ -317,7 +318,7 @@ STATIC bool ifOp( void )
     assert( !curNest.skip2endif );
 
     test = DeMacro( TOK_EOL );
-    eatToEOL();
+    EatToEOL();
 
     parseExpr( &temp, test );
 
@@ -345,7 +346,7 @@ STATIC void ifEqProcess( char const **v1, char **v2 )
 
     name = DeMacro( MAC_PUNC );
     test = DeMacro( TOK_EOL );
-    eatToEOL();
+    EatToEOL();
 
     if( !IsMacroName( name ) ) {
         FreeSafe( name );
@@ -365,7 +366,7 @@ STATIC void ifEqProcess( char const **v1, char **v2 )
     UnGetCHR( '\n' );
     InsString( value, true );
     value = DeMacro( TOK_EOL );
-    eatToEOL();
+    EatToEOL();
 
     beg = SkipWS( test );           /* find first non-ws */
     chopTrailWS( beg );             /* chop trailing ws */
@@ -449,22 +450,29 @@ STATIC void bangIf( bool (*logical)(void), directiveTok tok )
     if( nestLevel >= MAX_NEST ) {
         PrtMsg( FTL | LOC | IF_NESTED_TOO_DEEP );
         ExitFatal();
-        // never return
+        /* never return */
     }
-
-    nest[nestLevel++] = curNest; // save old nesting on the stack
-
-        // remember that curNest still contains info from previous level
+    /*
+     * save old nesting on the stack
+     */
+    nest[nestLevel++] = curNest;
+    /*
+     * remember that curNest still contains info from previous level
+     */
     curNest.skip2endif = (curNest.skip || curNest.skip2endif);
     curNest.skip = false;
     curNest.elseFound = false;
-
-    if( !curNest.skip2endif ) { // ok to interpret if arguments?
+    /*
+     * ok to interpret if arguments?
+     */
+    if( !curNest.skip2endif ) {
         curNest.skip = !logical();
     } else {
-        // this block is to be skipped, don't interpret args to if
+        /*
+         * this block is to be skipped, don't interpret args to if
+         */
         curNest.skip = true;
-        eatToEOL();
+        EatToEOL();
     }
 
     if( curNest.skip ) {
@@ -487,11 +495,11 @@ STATIC void bangEndIf( void )
     if( nestLevel == 0 ) {
         PrtMsg( FTL | LOC | UNMATCHED_WITH_IF, directives[D_ENDIF] );
         ExitFatal();
-        // never return
+        /* never return */
     }
     curNest = nest[--nestLevel];
 
-    eatToEOL();
+    EatToEOL();
 }
 
 
@@ -506,13 +514,15 @@ STATIC void doElse( void )
     if( nestLevel == 0 ) {
         PrtMsg( FTL | LOC | UNMATCHED_WITH_IF, directives[D_ELSE] );
         ExitFatal();
-        // never return
+        /* never return */
     }
 
     if( curNest.elseFound ) {
         PrtMsg( WRN | LOC | SKIPPING_AFTER_ELSE, directives[D_ELSE],
             directives[D_ELSE] );
-        // must set these because we may not have been skipping previous block
+        /*
+         * must set these because we may not have been skipping previous block
+         */
         curNest.skip2endif = true;
         curNest.skip = true;
         return;
@@ -520,13 +530,19 @@ STATIC void doElse( void )
     curNest.elseFound = true;
 
     if( !curNest.skip2endif ) {
-        // check we're not skipping. if !skip then we should skip the else part.
+        /*
+         * check we're not skipping. if !skip then we should skip the else part.
+         */
         if( !curNest.skip ) {
-            // skip to the end - we've done a block in this nesting
+            /*
+             * skip to the end - we've done a block in this nesting
+             */
             curNest.skip = true;
             curNest.skip2endif = true;
         } else {
-            // we still haven't done block in this nesting, do the else portion
+            /*
+             * we still haven't done block in this nesting, do the else portion
+             */
             curNest.skip = false;
         }
     }
@@ -556,31 +572,39 @@ STATIC void doElIf( bool (*logical)(void), directiveTok tok )
     if( nestLevel == 0 ) {
         PrtMsg( FTL | LOC | UNMATCHED_WITH_IF, buf );
         ExitFatal();
-        // never return
+        /* never return */
     }
 
     if( curNest.elseFound ) {
         PrtMsg( WRN | LOC | SKIPPING_AFTER_ELSE, buf, directives[D_ELSE] );
-        // must set these because we may not have been skipping previous block
+        /*
+         * must set these because we may not have been skipping previous block
+         */
         curNest.skip2endif = true;
         curNest.skip = true;
-        eatToEOL();
+        EatToEOL();
         return;
     }
 
     if( !curNest.skip2endif ) {
-        // check we're not skipping. if !skip, we should skip the else if part
+        /*
+         * check we're not skipping. if !skip, we should skip the else if part
+         */
         if( !curNest.skip ) {
-            // skip to the end - we've done a block in this nesting
+            /*
+             * skip to the end - we've done a block in this nesting
+             */
             curNest.skip = true;
             curNest.skip2endif = true;
-            eatToEOL();
+            EatToEOL();
         } else {
-            // we still haven't done block in this nesting, try this logical.
+            /*
+             * we still haven't done block in this nesting, try this logical.
+             */
             curNest.skip = !logical();
         }
     } else {
-        eatToEOL();
+        EatToEOL();
     }
 
     if( curNest.skip ) {
@@ -606,7 +630,7 @@ STATIC void bangElse( void )
     tok = getPreTok();
     switch( tok ) {
     case D_BLANK:
-        eatToEOL();
+        EatToEOL();
         doElse();
         break;
     case D_IFDEF:   doElIf( ifDef,  D_IFDEF );  break;
@@ -617,10 +641,10 @@ STATIC void bangElse( void )
     case D_IFNEQ:   doElIf( ifNEq,  D_IFNEQ );  break;
     case D_IFNEQI:  doElIf( ifNEqi, D_IFNEQI ); break;
     default:
-        eatToEOL();
+        EatToEOL();
         PrtMsg( FTL | LOC | NOT_ALLOWED_AFTER_ELSE, directives[tok], directives[D_ELSE] );
         ExitFatal();
-        // never return
+        /* never return */
     }
 }
 
@@ -638,7 +662,7 @@ STATIC void bangDefine( void )
     name = DeMacro( MAC_PUNC );    /* decode name */
 
     if( !IsMacroName( name ) ) {
-        eatToEOL();
+        EatToEOL();
     } else {
         DefMacro( name );
     }
@@ -671,7 +695,7 @@ STATIC void bangInject( void )
 
     assert( !curNest.skip );
     text = DeMacro( TOK_EOL );
-    eatToEOL();
+    EatToEOL();
     contents = SkipWS( text );
     if( *contents == NULLCHAR ) {
         FreeSafe( text );
@@ -727,40 +751,33 @@ STATIC void bangLoadDLL( void )
 
     assert( !curNest.skip );
     text = DeMacro( TOK_EOL );
-    eatToEOL();
+    EatToEOL();
     p = SkipWS( text );
     if( *p == NULLCHAR ) {
         FreeSafe( text );
         return;
     }
-    p = CmdGetFileName( p, &cmd_name, true );
+    /*
+     * command name is case-sensitive
+     */
+    p = SkipWS( CmdGetFileName( p, &cmd_name, false ) );
     if( *p == NULLCHAR ) {
         FreeSafe( text );
         return;
     }
-    p = SkipWS( p );
-    if( *p == NULLCHAR ) {
-        FreeSafe( text );
-        return;
-    }
-    p = CmdGetFileName( p, &dll_name, true );
-    if( *p == NULLCHAR ) {
-        OSLoadDLL( cmd_name, dll_name, NULL );
-        FreeSafe( text );
-        return;
-    }
-    ent_name = SkipWS( p );
+    /*
+     * DLL name is OS case-sensitive
+     */
+    ent_name = SkipWS( CmdGetFileName( p, &dll_name, true ) );
     if( *ent_name == NULLCHAR ) {
         OSLoadDLL( cmd_name, dll_name, NULL );
         FreeSafe( text );
         return;
     }
+    /*
+     * entry name is case-sensitive
+     */
     p = skipUntilWS( ent_name );
-    if( *p == NULLCHAR ) {
-        OSLoadDLL( cmd_name, dll_name, ent_name );
-        FreeSafe( text );
-        return;
-    }
     *p = NULLCHAR;
     OSLoadDLL( cmd_name, dll_name, ent_name );
     FreeSafe( text );
@@ -779,7 +796,7 @@ STATIC void bangUnDef( void )
     assert( !curNest.skip );
 
     name = DeMacro( MAC_PUNC );
-    eatToEOL();
+    EatToEOL();
 
     if( !IsMacroName( name ) ) {
         FreeSafe( name );
@@ -852,7 +869,7 @@ STATIC void bangInclude( void )
     assert( !curNest.skip );
 
     text = DeMacro( TOK_EOL );
-    eatToEOL();
+    EatToEOL();
 
     chopTrailWS( text );    /* get rid of trailing ws */
 
@@ -881,8 +898,10 @@ STATIC void bangInclude( void )
                     }
                     break;
                 }
-                // check if there are any trailing characters if there are
-                // then error
+                /*
+                 * check if there are any trailing characters if there are
+                 * then error
+                 */
                 if( !cisws( *p ) ) {
                     PrtMsg( ERR | LOC | UNABLE_TO_INCLUDE, text );
                     break;
@@ -918,7 +937,7 @@ STATIC void bangMessage( void )
     assert( !curNest.skip );
 
     text = DeMacro( TOK_EOL );
-    eatToEOL();
+    EatToEOL();
 
     chopTrailWS( text );
 
@@ -937,7 +956,7 @@ STATIC void bangError( void )
     assert( !curNest.skip );
 
     text = DeMacro( TOK_EOL );
-    eatToEOL();
+    EatToEOL();
 
     chopTrailWS( text );
 
@@ -957,7 +976,7 @@ STATIC void handleBang( void )
     tok = getPreTok();
     /* these are executed regardless of skip */
     switch( tok ) {
-    case D_BLANK:   eatToEOL();                 break;
+    case D_BLANK:   EatToEOL();                 break;
     case D_ELSE:    bangElse();                 break;
     case D_ENDIF:   bangEndIf();                break;
     case D_IF:      bangIf( ifOp,   D_IF );     break;
@@ -982,7 +1001,7 @@ STATIC void handleBang( void )
                 break;
             }
         } else {
-            eatToEOL(); /* otherwise, we just eat it up */
+            EatToEOL(); /* otherwise, we just eat it up */
         }
     }
 }
@@ -1033,9 +1052,13 @@ STRM_T PreGetCHR( void )
     }
 
     for( ;; ) {
-        if( !doingPreProc && (atStartOfLine == '\n' || s == STRM_TMP_EOL) ) {
+        if( !doingPreProc
+          && (atStartOfLine == '\n'
+          || s == STRM_TMP_EOL) ) {
             if( s == STRM_TMP_EOL ) {
-                // Throw away the unwanted TMP character
+                /*
+                 * Throw away the unwanted TMP character
+                 */
                 s = GetCHR();
                 if( s != BANG_C ) {
                     UnGetCHR( s );
@@ -1044,10 +1067,14 @@ STRM_T PreGetCHR( void )
             }
             doingPreProc = true;
 
-            if( Glob.compat_nmake || Glob.compat_posix ) {
-                /* Check for NMAKE and UNIX compatible 'include' directive */
-                if( s == 'i' && PreTestString( "nclude " ) ) {
-                    UnGetCHR( eatWhite() );
+            if( Glob.compat_nmake
+              || Glob.compat_posix ) {
+                /*
+                 * Check for NMAKE and UNIX compatible 'include' directive
+                 */
+                if( s == 'i'
+                  && PreTestString( "nclude " ) ) {
+                    UnGetCHR( EatWhite() );
                     bangInclude();
                     s = GetCHR();
                 }
@@ -1062,8 +1089,9 @@ STRM_T PreGetCHR( void )
             doingPreProc = false;
         }
 
-        /* now we have a character of input */
-
+        /*
+         * now we have a character of input
+         */
         atStartOfLine = s;
         temp          = s;
 
@@ -1072,7 +1100,9 @@ STRM_T PreGetCHR( void )
         if( s == STRM_TMP_EOL ) {
             s = GetCHR();
         }
-        if( s == COMMENT_C && lastChar != '$' && inlineLevel == 0 ) {
+        if( s == COMMENT_C
+          && lastChar != '$'
+           && inlineLevel == 0 ) {
             s = GetCHR();
             while( s != '\n' && s != STRM_END ) {
                 s = GetCHR();
@@ -1080,8 +1110,7 @@ STRM_T PreGetCHR( void )
             if( temp == STRM_TMP_EOL ) {
                 s = STRM_TMP_EOL;
             }
-            /* we already have next char in t */
-            continue;
+            continue;               /* already have next char */
         }
 
         if( s == STRM_END ) {
@@ -1093,86 +1122,88 @@ STRM_T PreGetCHR( void )
             return( s );
         }
 
-        if( inlineLevel > 0 ) {     // We are currently defining an inline file
-            lastChar = s;           // ignore all special characters ie {nl}
+        if( inlineLevel > 0 ) {
+            /*
+             * We are currently defining an inline file
+             * ignore all special characters ie {nl}
+             */
+            lastChar = s;
             if( skip ) {
-                s = GetCHR();
+                s = GetCHR();       /* must get next char */
                 continue;
             }
             return( s );
-        } else {
-            if( Glob.compat_nmake && s == MS_LINECONT_C ) {
-                s = GetCHR();
-                if( s == '\n' ) {
-                    lastChar = ' ';
-                    if( skip ) {
-                        s = STRM_TMP_EOL;
-                        continue;
-                    }
-                    // place holder for temporary EOL
-                    // this is to be able to implement the
-                    // bang statements after line continues
-                    UnGetCHR( STRM_TMP_EOL );
-                    return( ' ' );
-                } else {
-                    lastChar = MS_LINECONT_C;
-                    if( skip ) {
-                        s = GetCHR();
-                        continue;
-                    }
-                    UnGetCHR( s );
-                    return( MS_LINECONT_C );
-                }
-            }
+        }
 
-            if( s != LINECONT_C ) {
-                if( s != UNIX_LINECONT_C || !Glob.compat_unix ) {
-                    lastChar = s;
-                    if( skip ) {
-                        s = GetCHR();   /* must get next char */
-                        continue;
-                    }
-                    return( s );
-                }
-                s = GetCHR();
-                if( s != '\n' ) {
-                    lastChar = UNIX_LINECONT_C;
-                    if( skip ) {
-                        continue;       /* already have next char */
-                    }
-                    UnGetCHR( s );
-                    return( UNIX_LINECONT_C );
-                } else {
-                    if( skip ) {
-                        continue;       /* already have next char */
-                    }
-                    UnGetCHR( STRM_TMP_EOL );
+        if( Glob.compat_nmake
+          && s == MS_LINECONT_C ) {
+            s = GetCHR();
+            if( s == '\n' ) {
+                lastChar = ' ';
+                /*
+                 * place holder for temporary EOL
+                 * this is to be able to implement the
+                 * bang statements after line continues
+                 */
+                s = STRM_TMP_EOL;
+                if( skip ) {
+                    continue;       /* already have next char */
                 }
             } else {
-                s = GetCHR();           /* check if '&' followed by {nl} */
-                if( s != '\n' || lastChar == '^' || lastChar == '[' || lastChar == ']' ) {
-                                        /* nope... restore state */
-                    lastChar = LINECONT_C;
-                    if( skip ) {
-                        continue;       /* already have next char */
-                    }
-                    UnGetCHR( s );
-                    return( LINECONT_C );
-                } else {
-                    if( skip ) {
-                        continue;       /* already have next char */
-                    }
-                    UnGetCHR( STRM_TMP_EOL );
+                lastChar = MS_LINECONT_C;
+                if( skip ) {
+                    s = GetCHR();   /* must get next char */
+                    continue;
                 }
             }
+            UnGetCHR( s );
+            return( lastChar );
         }
-        s = GetCHR();
+
+        if( s != LINECONT_C ) {
+            if( s != UNIX_LINECONT_C
+              || !Glob.compat_unix ) {
+                lastChar = s;
+                if( skip ) {
+                    s = GetCHR();   /* must get next char */
+                    continue;
+                }
+                return( s );
+            }
+            s = GetCHR();
+            if( s != '\n' ) {
+                lastChar = UNIX_LINECONT_C;
+                if( skip ) {
+                    continue;       /* already have next char */
+                }
+                UnGetCHR( s );
+                return( UNIX_LINECONT_C );
+            }
+        } else {
+            s = GetCHR();           /* check if '&' followed by {nl} */
+            if( s != '\n'
+              || lastChar == '^'
+              || lastChar == '['
+              || lastChar == ']' ) {
+                                    /* nope... restore state */
+                lastChar = LINECONT_C;
+                if( skip ) {
+                    continue;       /* already have next char */
+                }
+                UnGetCHR( s );
+                return( LINECONT_C );
+            }
+        }
+        if( skip ) {
+            continue;               /* already have next char */
+        }
+        s = STRM_TMP_EOL;
     }
 }
 
 
 STATIC void makeToken( MTOKEN_O type, MTOKEN_TYPE *current, size_t *index )
-/*******************************************66****************************/
+/*************************************************************************/
 {
     switch( type ) {
     case OP_COMPLEMENT:
@@ -1222,11 +1253,14 @@ STATIC INT32 makeHexNumber( const char *inString, size_t *stringLength )
     pChar = inString;
     for( ;; ) {
         c = pChar[0];
-        if( c >= '0' && c <= '9' ) {
+        if( c >= '0'
+          && c <= '9' ) {
             c = c - '0';
-        } else if( c >= 'a' && c <= 'f' ) {
+        } else if( c >= 'a'
+          && c <= 'f' ) {
             c = c - 'a' + 10;
-        } else if( c >= 'A' && c <= 'F' ) {
+        } else if( c >= 'A'
+          && c <= 'F' ) {
             c = c - 'A' + 10;
         } else {
             break;
@@ -1251,21 +1285,22 @@ STATIC void makeNumberToken( const char *inString, MTOKEN_TYPE *current, size_t 
     value       = 0;
     *index      = 0;
     c = pChar[0];
-    if( c == '0' ) {                            // octal or hex number
+    if( c == '0' ) {        /* octal or hex number */
         ++pChar;
         c = pChar[0];
-        if( c == 'x'  ||  c == 'X' ) {          // hex number
+        if( c == 'x'
+          || c == 'X' ) {   /* hex number */
             ++pChar;
             value = makeHexNumber( pChar, &hexLength );
             pChar += hexLength;
-        } else {                                // octal number
+        } else {            /* octal number */
             while( c >= '0'  &&  c <= '7' ) {
                 value = value * 8 + c - '0';
                 ++pChar;
                 c = pChar[0];
             }
         }
-    } else {                                    // decimal number
+    } else {                /* decimal number */
         while( c >= '0'  &&  c <= '9' ) {
             value = value * 10 + c - '0';
             ++pChar;
@@ -1285,12 +1320,14 @@ STATIC void makeStringToken( const char *inString, MTOKEN_TYPE *current, size_t 
     size_t  inIndex;
     size_t  currentIndex;
 
-    inIndex       = 1;   // skip initial double quote
+    inIndex       = 1;   /* skip initial double quote */
     currentIndex  = 0;
     current->type = OP_STRING;
     for( ;; ) {
         if( inString[inIndex] == '\"' ) {
-            // skip the second double quote
+            /*
+             * skip the second double quote
+             */
             ++inIndex;
             break;
         }
@@ -1302,7 +1339,9 @@ STATIC void makeStringToken( const char *inString, MTOKEN_TYPE *current, size_t 
         case NULLCHAR:
         case '\n':
         case COMMENT_C:
-            /* error did not find closing quotation */
+            /*
+             * error did not find closing quotation
+             */
             current->type = OP_ERROR;
             break;
         default:
@@ -1332,12 +1371,16 @@ STATIC void makeAlphaToken( const char *inString, MTOKEN_TYPE *current, size_t *
     pwritelast = pwrite + sizeof( current->data.string ) - 1;
     current->type = OP_STRING;
 
-    // Note that in this case we are looking at a string that has no quotations
-    // nmake gives expected error with exists(a(b) but also with exists("a(b")
+    /*
+     * Note that in this case we are looking at a string that has no quotations
+     * nmake gives expected error with exists(a(b) but also with exists("a(b")
+     */
     while( *r != ')' && *r != '(' && !cisws( *r ) ) {
         if( pwrite >= pwritelast ) {
-            // VC++ 6 nmake allows 512 or more bytes here. We limit to 255.
-            current->type = OP_ENDOFSTRING; // This truncates.
+            /*
+             * VC++ 6 nmake allows 512 or more bytes here. We limit to 255.
+             */
+            current->type = OP_ENDOFSTRING; /* This truncates */
             break;
         }
         *pwrite++ = *r++;
@@ -1354,7 +1397,9 @@ STATIC bool IsMacro( char const *name )
 {
     char    *value;
 
-    // Seemingly redundant but GetMacroValue() needs plausible name
+    /*
+     * Seemingly redundant but GetMacroValue() needs plausible name
+     */
     if( !IsMacroName( name ) ) {
        return( false );
     }
@@ -1388,40 +1433,43 @@ STATIC void makeFuncToken( const char *inString, MTOKEN_TYPE *current, size_t *i
     char    *probe;
 
     makeAlphaToken( inString, current, index );
-    // check that the next token is a '(', swallow it, and check we have more.
+    /*
+     * check that the next token is a '(', swallow it, and check we have more.
+     */
     probe = SkipWS( inString + *index );
-    if( *probe != '(' || (probe = SkipWS( probe + 1), *probe == NULLCHAR) ) {
-        current->type = OP_ERROR;
-    } else {
-        bool (*is)(const char *);
+    if( *probe == '(' ) {
+        probe = SkipWS( probe + 1 );
+        if( *probe != NULLCHAR ) {
+            bool (*is)(const char *);
 
-        if( name2function( current, DEFINED, IsMacro,   &is )
-          || name2function( current, EXIST,  ExistFile, &is )
-          || name2function( current, EXISTS, ExistFile, &is ) ) {
-            if( *probe == '\"' ) {      // Get macro or file name
-                makeStringToken( probe, current, index );
-            } else {
-                makeAlphaToken( probe, current, index );
-            }
-            probe += *index;
-            if( current->type == OP_STRING ) {
-                probe = SkipWS( probe );
-                if( *probe != ')' ) {
-                    current->type = OP_ERROR;
+            if( name2function( current, DEFINED, IsMacro,   &is )
+              || name2function( current, EXIST,  ExistFile, &is )
+              || name2function( current, EXISTS, ExistFile, &is ) ) {
+                if( *probe == '\"' ) {      /* Get macro or file name */
+                    makeStringToken( probe, current, index );
                 } else {
+                    makeAlphaToken( probe, current, index );
+                }
+                probe += *index;
+                if( current->type != OP_STRING ) {
+                    *index = probe - inString;
+                    return;
+                }
+                probe = SkipWS( probe );
+                if( *probe == ')' ) {
                     if( is == ExistFile ) {
                         FixName( current->data.string );
                     }
                     current->type          = OP_INTEGER;
                     current->data.number   = is( current->data.string );
-                    ++probe;    // Swallow OP_PAREN_RIGHT
+                    ++probe;    /* Swallow OP_PAREN_RIGHT */
+                    *index = probe - inString;
+                    return;
                 }
             }
-            *index = probe - inString;
-        } else {
-            current->type = OP_ERROR;
         }
     }
+    current->type = OP_ERROR;
 }
 
 STATIC void makeCmdToken( const char *inString, MTOKEN_TYPE *current, size_t *index )
@@ -1433,12 +1481,14 @@ STATIC void makeCmdToken( const char *inString, MTOKEN_TYPE *current, size_t *in
     size_t  inIndex;
     size_t  currentIndex;
 
-    inIndex       = 1;   // skip opening bracket
+    inIndex       = 1;   /* skip opening bracket */
     currentIndex  = 0;
     current->type = OP_SHELLCMD;
     for( ;; ) {
         if( inString[inIndex] == ']' ) {
-            // skip the closing bracket
+            /*
+             * skip the closing bracket
+             */
             ++inIndex;
             break;
         }
@@ -1450,7 +1500,9 @@ STATIC void makeCmdToken( const char *inString, MTOKEN_TYPE *current, size_t *in
         case NULLCHAR :
         case '\n':
         case COMMENT_C:
-            // error did not find closing quotation
+            /*
+             * error did not find closing quotation
+             */
             current->type = OP_ERROR;
             break;
         default:
@@ -1608,11 +1660,12 @@ STATIC void nextToken( void )
 {
     if( *currentPtr != NULLCHAR ) {
         currentPtr += ScanToken( currentPtr, &currentToken );
-        while( cisws( *currentPtr ) ) {
-            ++currentPtr;
-        }
+        currentPtr = SkipWS( currentPtr );
     } else {
-        currentToken.type = OP_ERROR;  // no more tokens
+        /*
+         * no more tokens
+         */
+        currentToken.type = OP_ERROR;
     }
 }
 
@@ -1766,7 +1819,9 @@ STATIC void equalExpr( DATAVALUE *leftVal )
                     leftVal->type = OP_INTEGER;
                     break;
                 default:
-                    // error
+                    /*
+                     * error
+                     */
                     break;
                 }
             } else {
@@ -1787,7 +1842,9 @@ STATIC void equalExpr( DATAVALUE *leftVal )
                     leftVal->type = OP_INTEGER;
                     break;
                 default:
-                    // error
+                    /*
+                     * error
+                     */
                     break;
                 }
             } else {
@@ -1940,7 +1997,6 @@ STATIC void multExpr( DATAVALUE *leftValue )
             } else {
                 leftValue->type = OP_ERROR;
             }
-
         } else if( currentToken.type == OP_DIVIDE ) {
             nextToken();
             unaryExpr( &rightValue );
@@ -2042,7 +2098,9 @@ STATIC void unaryExpr( DATAVALUE *leftValue )
         break;
     default:
         leftValue->type        = OP_ERROR;
-        // error
+        /*
+         * error
+         */
     }
 }
 

@@ -110,7 +110,7 @@ typedef enum {
 #define SCROLL_HLINE            10
 #define SCROLL_VLINE            2
 #define MAX_MARKS               26
-#define MAX_SEARCH_STRINGS      9
+#define MAX_SEARCH_STRINGS      10
 #define MAX_SCRIPT_LENGTH       2048
 #define MAX_MOUSE_SPEED         250
 #define MAX_OVERRIDE_KEY_BUFF   512

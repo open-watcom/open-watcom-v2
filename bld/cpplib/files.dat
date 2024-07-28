@@ -1,118 +1,118 @@
-[ DEFAULT cond="cplusplus tools16" where="c jc" desc="C++ Runtime 16-bit Libraries" ]
+[ DEFAULT cond="cplusplus tools16" where="c jc" descr="C++ Runtime 16-bit Libraries" ]
 # ---------- DOS libraries -----------
-type="l"    dir="lib286"        usr="plibs.lib"     conda="dostarg os2targ | ms"
-type="l"    dir="lib286"        usr="plibc.lib"     conda="dostarg os2targ | mc"
-type="l"    dir="lib286"        usr="plibm.lib"     conda="dostarg os2targ | mm"
-type="l"    dir="lib286"        usr="plibl.lib"     conda="dostarg os2targ | ml"          wherea="f77 jf77"
-type="l"    dir="lib286"        usr="plibh.lib"     conda="dostarg os2targ | mh"
-type="l"    dir="lib286"        usr="plbxs.lib"     conda="dostarg os2targ | ms"
-type="l"    dir="lib286"        usr="plbxc.lib"     conda="dostarg os2targ | mc"
-type="l"    dir="lib286"        usr="plbxm.lib"     conda="dostarg os2targ | mm"
-type="l"    dir="lib286"        usr="plbxl.lib"     conda="dostarg os2targ | ml"
-type="l"    dir="lib286"        usr="plbxh.lib"     conda="dostarg os2targ | mh"
-type="l"    dir="lib286"        usr="cplxs.lib"     conda="dostarg os2targ | ms"
-type="l"    dir="lib286"        usr="cplxc.lib"     conda="dostarg os2targ | mc"
-type="l"    dir="lib286"        usr="cplxm.lib"     conda="dostarg os2targ | mm"
-type="l"    dir="lib286"        usr="cplxl.lib"     conda="dostarg os2targ | ml"
-type="l"    dir="lib286"        usr="cplxh.lib"     conda="dostarg os2targ | mh"
-type="l"    dir="lib286"        usr="cplx7s.lib"    conda="dostarg os2targ | ms"
-type="l"    dir="lib286"        usr="cplx7c.lib"    conda="dostarg os2targ | mc"
-type="l"    dir="lib286"        usr="cplx7m.lib"    conda="dostarg os2targ | mm"
-type="l"    dir="lib286"        usr="cplx7l.lib"    conda="dostarg os2targ | ml"
-type="l"    dir="lib286"        usr="cplx7h.lib"    conda="dostarg os2targ | mh"
+type="l"    dir="lib286"        usr="plibs.lib"     cond+="dostarg os2targ | ms"
+type="l"    dir="lib286"        usr="plibc.lib"     cond+="dostarg os2targ | mc"
+type="l"    dir="lib286"        usr="plibm.lib"     cond+="dostarg os2targ | mm"
+type="l"    dir="lib286"        usr="plibl.lib"     cond+="dostarg os2targ | ml"          where+="f77 jf77"
+type="l"    dir="lib286"        usr="plibh.lib"     cond+="dostarg os2targ | mh"
+type="l"    dir="lib286"        usr="plbxs.lib"     cond+="dostarg os2targ | ms"
+type="l"    dir="lib286"        usr="plbxc.lib"     cond+="dostarg os2targ | mc"
+type="l"    dir="lib286"        usr="plbxm.lib"     cond+="dostarg os2targ | mm"
+type="l"    dir="lib286"        usr="plbxl.lib"     cond+="dostarg os2targ | ml"
+type="l"    dir="lib286"        usr="plbxh.lib"     cond+="dostarg os2targ | mh"
+type="l"    dir="lib286"        usr="cplxs.lib"     cond+="dostarg os2targ | ms"
+type="l"    dir="lib286"        usr="cplxc.lib"     cond+="dostarg os2targ | mc"
+type="l"    dir="lib286"        usr="cplxm.lib"     cond+="dostarg os2targ | mm"
+type="l"    dir="lib286"        usr="cplxl.lib"     cond+="dostarg os2targ | ml"
+type="l"    dir="lib286"        usr="cplxh.lib"     cond+="dostarg os2targ | mh"
+type="l"    dir="lib286"        usr="cplx7s.lib"    cond+="dostarg os2targ | ms"
+type="l"    dir="lib286"        usr="cplx7c.lib"    cond+="dostarg os2targ | mc"
+type="l"    dir="lib286"        usr="cplx7m.lib"    cond+="dostarg os2targ | mm"
+type="l"    dir="lib286"        usr="cplx7l.lib"    cond+="dostarg os2targ | ml"
+type="l"    dir="lib286"        usr="cplx7h.lib"    cond+="dostarg os2targ | mh"
 
 # ---------- 16-bit OS/2 libraries -----------
-type="l"    dir="lib286/os2"    usr="plibmtl.lib"   conda="os2targ ml"
-type="l"    dir="lib286/os2"    usr="plbxmtl.lib"   conda="os2targ ml"
+type="l"    dir="lib286/os2"    usr="plibmtl.lib"   cond+="os2targ ml"
+type="l"    dir="lib286/os2"    usr="plbxmtl.lib"   cond+="os2targ ml"
 
 # ---------- Windows libraries -----------
-type="l"    dir="lib286/win"    usr="plibs.lib"     conda="wintarg ms"
-type="l"    dir="lib286/win"    usr="plibc.lib"     conda="wintarg mc"
-type="l"    dir="lib286/win"    usr="plibm.lib"     conda="wintarg mm"
-type="l"    dir="lib286/win"    usr="plibl.lib"     conda="wintarg ml"
-type="l"    dir="lib286/win"    usr="plbxs.lib"     conda="wintarg ms"
-type="l"    dir="lib286/win"    usr="plbxc.lib"     conda="wintarg mc"
-type="l"    dir="lib286/win"    usr="plbxm.lib"     conda="wintarg mm"
-type="l"    dir="lib286/win"    usr="plbxl.lib"     conda="wintarg ml"
-type="l"    dir="lib286/win"    usr="cplxs.lib"     conda="wintarg ms"
-type="l"    dir="lib286/win"    usr="cplxc.lib"     conda="wintarg mc"
-type="l"    dir="lib286/win"    usr="cplxm.lib"     conda="wintarg mm"
-type="l"    dir="lib286/win"    usr="cplxl.lib"     conda="wintarg ml"
-type="l"    dir="lib286/win"    usr="cplx7s.lib"    conda="wintarg ms"
-type="l"    dir="lib286/win"    usr="cplx7c.lib"    conda="wintarg mc"
-type="l"    dir="lib286/win"    usr="cplx7m.lib"    conda="wintarg mm"
-type="l"    dir="lib286/win"    usr="cplx7l.lib"    conda="wintarg ml"
+type="l"    dir="lib286/win"    usr="plibs.lib"     cond+="wintarg ms"
+type="l"    dir="lib286/win"    usr="plibc.lib"     cond+="wintarg mc"
+type="l"    dir="lib286/win"    usr="plibm.lib"     cond+="wintarg mm"
+type="l"    dir="lib286/win"    usr="plibl.lib"     cond+="wintarg ml"
+type="l"    dir="lib286/win"    usr="plbxs.lib"     cond+="wintarg ms"
+type="l"    dir="lib286/win"    usr="plbxc.lib"     cond+="wintarg mc"
+type="l"    dir="lib286/win"    usr="plbxm.lib"     cond+="wintarg mm"
+type="l"    dir="lib286/win"    usr="plbxl.lib"     cond+="wintarg ml"
+type="l"    dir="lib286/win"    usr="cplxs.lib"     cond+="wintarg ms"
+type="l"    dir="lib286/win"    usr="cplxc.lib"     cond+="wintarg mc"
+type="l"    dir="lib286/win"    usr="cplxm.lib"     cond+="wintarg mm"
+type="l"    dir="lib286/win"    usr="cplxl.lib"     cond+="wintarg ml"
+type="l"    dir="lib286/win"    usr="cplx7s.lib"    cond+="wintarg ms"
+type="l"    dir="lib286/win"    usr="cplx7c.lib"    cond+="wintarg mc"
+type="l"    dir="lib286/win"    usr="cplx7m.lib"    cond+="wintarg mm"
+type="l"    dir="lib286/win"    usr="cplx7l.lib"    cond+="wintarg ml"
 
-[ DEFAULT dir="lib386" cond="cplusplus wintarg wnttarg | os2targ | rdostarg |" where="c jc ac" desc="C++ Runtime 32-bit Libraries" ]
+[ DEFAULT dir="lib386" cond="cplusplus wintarg wnttarg | os2targ | rdostarg |" where="c jc ac" descr="C++ Runtime 32-bit Libraries" ]
 # ---------- OS independent libraries (flat) ---------
-type="l"    usr="cplx3r.lib"    conda="3r"
-type="l"    usr="cplx3s.lib"    conda="3s"
-type="l"    usr="cplx73r.lib"   conda="3r"
-type="l"    usr="cplx73s.lib"   conda="3s"
+type="l"    usr="cplx3r.lib"    cond+="3r"
+type="l"    usr="cplx3s.lib"    cond+="3s"
+type="l"    usr="cplx73r.lib"   cond+="3r"
+type="l"    usr="cplx73s.lib"   cond+="3s"
 
-[ DEFAULT dir="lib386" cond="cplusplus wintarg rdostarg |" where="c jc" desc="C++ Runtime 32-bit Libraries" ]
+[ DEFAULT dir="lib386" cond="cplusplus wintarg rdostarg |" where="c jc" descr="C++ Runtime 32-bit Libraries" ]
 # ---------- OS independent libraries (flat) ---------
-type="l"    usr="plib3r.lib"    conda="3r"      wherea="f77 jf77"
-type="l"    usr="plib3s.lib"    conda="3s"
-type="l"    usr="plbx3r.lib"    conda="3r"
-type="l"    usr="plbx3s.lib"    conda="3s"
+type="l"    usr="plib3r.lib"    cond+="3r"      where+="f77 jf77"
+type="l"    usr="plib3s.lib"    cond+="3s"
+type="l"    usr="plbx3r.lib"    cond+="3r"
+type="l"    usr="plbx3s.lib"    cond+="3s"
 
-[ DEFAULT dir="lib386/dos" cond="cplusplus dostarg" where="c jc" desc="C++ Runtime Libraries 32-bit" ]
+[ DEFAULT dir="lib386/dos" cond="cplusplus dostarg" where="c jc" descr="C++ Runtime Libraries 32-bit" ]
 # ---------- 32 bit DOS libraries (small) -----------
-type="l"    usr="plib3r.lib"    conda="3r"      wherea="f77 jf77"
-type="l"    usr="plib3s.lib"    conda="3s"
-type="l"    usr="plbx3r.lib"    conda="3r"
-type="l"    usr="plbx3s.lib"    conda="3s"
-type="l"    usr="cplx3r.lib"    conda="3r"
-type="l"    usr="cplx3s.lib"    conda="3s"
-type="l"    usr="cplx73r.lib"   conda="3r"
-type="l"    usr="cplx73s.lib"   conda="3s"
+type="l"    usr="plib3r.lib"    cond+="3r"      where+="f77 jf77"
+type="l"    usr="plib3s.lib"    cond+="3s"
+type="l"    usr="plbx3r.lib"    cond+="3r"
+type="l"    usr="plbx3s.lib"    cond+="3s"
+type="l"    usr="cplx3r.lib"    cond+="3r"
+type="l"    usr="cplx3s.lib"    cond+="3s"
+type="l"    usr="cplx73r.lib"   cond+="3r"
+type="l"    usr="cplx73s.lib"   cond+="3s"
 
-[ DEFAULT dir="lib386/linux" cond="cplusplus lnxtarg" where="c jc" desc="C++ Runtime Libraries 32-bit" ]
+[ DEFAULT dir="lib386/linux" cond="cplusplus lnxtarg" where="c jc" descr="C++ Runtime Libraries 32-bit" ]
 # ---------- Linux libraries (flat) -----------
-type="l"    usr="plib3r.lib"    conda="3r"      wherea="f77 jf77"
-type="l"    usr="plib3s.lib"    conda="3s"
-type="l"    usr="plbx3r.lib"    conda="3r"
-type="l"    usr="plbx3s.lib"    conda="3s"
-type="l"    usr="plibmt3r.lib"  conda="3r"
-type="l"    usr="plibmt3s.lib"  conda="3s"
-type="l"    usr="plbxmt3r.lib"  conda="3r"
-type="l"    usr="plbxmt3s.lib"  conda="3s"
-type="l"    usr="cplx3r.lib"    conda="3r"
-type="l"    usr="cplx3s.lib"    conda="3s"
-type="l"    usr="cplx73r.lib"   conda="3r"
-type="l"    usr="cplx73s.lib"   conda="3s"
+type="l"    usr="plib3r.lib"    cond+="3r"      where+="f77 jf77"
+type="l"    usr="plib3s.lib"    cond+="3s"
+type="l"    usr="plbx3r.lib"    cond+="3r"
+type="l"    usr="plbx3s.lib"    cond+="3s"
+type="l"    usr="plibmt3r.lib"  cond+="3r"
+type="l"    usr="plibmt3s.lib"  cond+="3s"
+type="l"    usr="plbxmt3r.lib"  cond+="3r"
+type="l"    usr="plbxmt3s.lib"  cond+="3s"
+type="l"    usr="cplx3r.lib"    cond+="3r"
+type="l"    usr="cplx3s.lib"    cond+="3s"
+type="l"    usr="cplx73r.lib"   cond+="3r"
+type="l"    usr="cplx73s.lib"   cond+="3s"
 
-[ DEFAULT dir="lib386/rdos" cond="cplusplus rdostarg" where="c jc" desc="C++ Runtime Libraries 32-bit" ]
+[ DEFAULT dir="lib386/rdos" cond="cplusplus rdostarg" where="c jc" descr="C++ Runtime Libraries 32-bit" ]
 # ---------- RDOS libraries (flat) -----------
-type="l"    usr="plibmt3r.lib"  conda="3r"
-type="l"    usr="plibmt3s.lib"  conda="3s"
-type="l"    usr="plbxmt3r.lib"  conda="3r"
-type="l"    usr="plbxmt3s.lib"  conda="3s"
+type="l"    usr="plibmt3r.lib"  cond+="3r"
+type="l"    usr="plibmt3s.lib"  cond+="3s"
+type="l"    usr="plbxmt3r.lib"  cond+="3r"
+type="l"    usr="plbxmt3s.lib"  cond+="3s"
 
-[ DEFAULT dir="lib386/nt" cond="cplusplus wnttarg" where="c jc ac" desc="C++ Runtime Libraries 32-bit" ]
+[ DEFAULT dir="lib386/nt" cond="cplusplus wnttarg" where="c jc ac" descr="C++ Runtime Libraries 32-bit" ]
 # ---------- NT libraries (flat) -----------
-type="l"    usr="plib3r.lib"    conda="3r"      wherea="f77 jf77"
-type="l"    usr="plib3s.lib"    conda="3s"
-type="l"    usr="plbx3r.lib"    conda="3r"
-type="l"    usr="plbx3s.lib"    conda="3s"
-type="l"    usr="plibmt3r.lib"  conda="3r"
-type="l"    usr="plibmt3s.lib"  conda="3s"
-type="l"    usr="plbxmt3r.lib"  conda="3r"
-type="l"    usr="plbxmt3s.lib"  conda="3s"
+type="l"    usr="plib3r.lib"    cond+="3r"      where+="f77 jf77"
+type="l"    usr="plib3s.lib"    cond+="3s"
+type="l"    usr="plbx3r.lib"    cond+="3r"
+type="l"    usr="plbx3s.lib"    cond+="3s"
+type="l"    usr="plibmt3r.lib"  cond+="3r"
+type="l"    usr="plibmt3s.lib"  cond+="3s"
+type="l"    usr="plbxmt3r.lib"  cond+="3r"
+type="l"    usr="plbxmt3s.lib"  cond+="3s"
 
-[ DEFAULT dir="lib386/os2" cond="cplusplus os2targ" where="c jc" desc="C++ Runtime Libraries 32-bit" ]
+[ DEFAULT dir="lib386/os2" cond="cplusplus os2targ" where="c jc" descr="C++ Runtime Libraries 32-bit" ]
 # ---------- 32 bit OS/2 libraries (flat) -----------
-type="l"    usr="plib3r.lib"    conda="3r"      wherea="f77 jf77"
-type="l"    usr="plib3s.lib"    conda="3s"
-type="l"    usr="plbx3r.lib"    conda="3r"
-type="l"    usr="plbx3s.lib"    conda="3s"
-type="l"    usr="plibmt3r.lib"  conda="3r"
-type="l"    usr="plibmt3s.lib"  conda="3s"
-type="l"    usr="plbxmt3r.lib"  conda="3r"
-type="l"    usr="plbxmt3s.lib"  conda="3s"
+type="l"    usr="plib3r.lib"    cond+="3r"      where+="f77 jf77"
+type="l"    usr="plib3s.lib"    cond+="3s"
+type="l"    usr="plbx3r.lib"    cond+="3r"
+type="l"    usr="plbx3s.lib"    cond+="3s"
+type="l"    usr="plibmt3r.lib"  cond+="3r"
+type="l"    usr="plibmt3s.lib"  cond+="3s"
+type="l"    usr="plbxmt3r.lib"  cond+="3r"
+type="l"    usr="plbxmt3s.lib"  cond+="3s"
 
-[ DEFAULT cond="cplusplus alphatarg" where="ac" desc="C++ Runtime Libraries 32-bit" ]
+[ DEFAULT cond="cplusplus alphatarg" where="ac" descr="C++ Runtime Libraries 32-bit" ]
 # ---------- Dec Alpha libraries -----------
 type="l"    dir="libaxp/nt"     usr="plib.lib"
 type="l"    dir="libaxp/nt"     usr="plbx.lib"
@@ -120,7 +120,7 @@ type="l"    dir="libaxp/nt"     usr="plibmt.lib"
 type="l"    dir="libaxp/nt"     usr="plbxmt.lib"
 type="l"    dir="libaxp"        usr="cplx.lib"
 
-[ DEFAULT dir="lib386/netware" cond="cplusplus nlmtarg 3s" where="c jc" desc="C++ Runtime Libraries 32-bit" ]
+[ DEFAULT dir="lib386/netware" cond="cplusplus nlmtarg 3s" where="c jc" descr="C++ Runtime Libraries 32-bit" ]
 # ---------- 32 bit NETWARE libraries (small) -----------
 type="l"    usr="plib3s.lib"
 type="l"    usr="plbx3s.lib"
@@ -129,26 +129,26 @@ type="l"    usr="plbxmt3s.lib"
 type="l"    usr="cplx3s.lib"
 type="l"    usr="cplx73s.lib"
 
-[ DEFAULT cond="cplusplus" where="c jc" desc="C++ Runtime 32-bit DLL Import Libraries" ]
+[ DEFAULT cond="cplusplus" where="c jc" descr="C++ Runtime 32-bit DLL Import Libraries" ]
 # ---------- RTDLL import libraries (flat) -----------
-type="l"    dir="lib386/nt"     usr="plbrdll.lib"   conda="wnttarg 3r"      wherea="ac"
-type="l"    dir="lib386/nt"     usr="plbrdllx.lib"  conda="wnttarg 3r"      wherea="ac"
-type="l"    dir="lib386/nt"     usr="plbsdll.lib"   conda="wnttarg 3s"      wherea="ac"
-type="l"    dir="lib386/nt"     usr="plbsdllx.lib"  conda="wnttarg 3s"      wherea="ac"
+type="l"    dir="lib386/nt"     usr="plbrdll.lib"   cond+="wnttarg 3r"      where+="ac"
+type="l"    dir="lib386/nt"     usr="plbrdllx.lib"  cond+="wnttarg 3r"      where+="ac"
+type="l"    dir="lib386/nt"     usr="plbsdll.lib"   cond+="wnttarg 3s"      where+="ac"
+type="l"    dir="lib386/nt"     usr="plbsdllx.lib"  cond+="wnttarg 3s"      where+="ac"
 
-type="l"    dir="lib386/os2"    usr="plbrdll.lib"   conda="os2targ 3r"
-type="l"    dir="lib386/os2"    usr="plbrdllx.lib"  conda="os2targ 3r"
-type="l"    dir="lib386/os2"    usr="plbsdll.lib"   conda="os2targ 3s"
-type="l"    dir="lib386/os2"    usr="plbsdllx.lib"  conda="os2targ 3s"
+type="l"    dir="lib386/os2"    usr="plbrdll.lib"   cond+="os2targ 3r"
+type="l"    dir="lib386/os2"    usr="plbrdllx.lib"  cond+="os2targ 3r"
+type="l"    dir="lib386/os2"    usr="plbsdll.lib"   cond+="os2targ 3s"
+type="l"    dir="lib386/os2"    usr="plbsdllx.lib"  cond+="os2targ 3s"
 
-[ DEFAULT cond="cplusplus" where="c jc" desc="C++ Runtime 32-bit DLL Libraries" ]
+[ DEFAULT cond="cplusplus" where="c jc" descr="C++ Runtime 32-bit DLL Libraries" ]
 # ---------- run-time DLL libraries (flat) -----------
-type="d"    dir="binnt"         usr="plbr??.dll"    conda="wnttarg 3r"      wherea="ac"
-type="s"    dir="binnt"         usr="plbr??.sym"    conda="wnttarg 3r"      wherea="ac"
-type="d"    dir="binnt"         usr="plbs??.dll"    conda="wnttarg 3s"      wherea="ac"
-type="s"    dir="binnt"         usr="plbs??.sym"    conda="wnttarg 3s"      wherea="ac"
+type="d"    dir="binnt"         usr="plbr??.dll"    cond+="wnttarg 3r"      where+="ac"
+type="s"    dir="binnt"         usr="plbr??.sym"    cond+="wnttarg 3r"      where+="ac"
+type="d"    dir="binnt"         usr="plbs??.dll"    cond+="wnttarg 3s"      where+="ac"
+type="s"    dir="binnt"         usr="plbs??.sym"    cond+="wnttarg 3s"      where+="ac"
 
-type="d"    dir="binp/dll"      usr="plbr??.dll"    conda="os2targ 3r"
-type="s"    dir="binp/dll"      usr="plbr??.sym"    conda="os2targ 3r"
-type="d"    dir="binp/dll"      usr="plbs??.dll"    conda="os2targ 3s"
-type="s"    dir="binp/dll"      usr="plbs??.sym"    conda="os2targ 3s"
+type="d"    dir="binp/dll"      usr="plbr??.dll"    cond+="os2targ 3r"
+type="s"    dir="binp/dll"      usr="plbr??.sym"    cond+="os2targ 3r"
+type="d"    dir="binp/dll"      usr="plbs??.dll"    cond+="os2targ 3s"
+type="s"    dir="binp/dll"      usr="plbs??.sym"    cond+="os2targ 3s"

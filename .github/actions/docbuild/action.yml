@@ -6,8 +6,8 @@ inputs:
     required: false
     default: ''
     type: string
-  gitpath:
-    description: 'git sub-directory where documentation is located'
+  relpath:
+    description: 'binary release path'
     required: false
     default: 'rel'
     type: string
@@ -16,13 +16,23 @@ inputs:
     required: false
     default: ''
     type: string
-  arch:
-    description: 'run-time platform'
+  hostos:
+    description: 'host os'
     required: false
     default: ''
     type: string
-  tools:
-    description: 'used compiler toolchain'
+  suffixi:
+    description: 'run-time artifact suffix'
+    required: false
+    default: ''
+    type: string
+  suffixo:
+    description: 'documentation artifact suffix'
+    required: false
+    default: ''
+    type: string
+  buildcmd:
+    description: 'build command'
     required: false
     default: ''
     type: string
@@ -46,17 +56,16 @@ runs:
   steps:
   - uses: "./.github/actions/dosboxin"
     with:
-      arch:         ${{ inputs.arch }}
+      hostos:       ${{ inputs.hostos }}
   - uses: "./.github/actions/artfload"
     with:
-      arch:         ${{ inputs.arch }}
+      hostos:       ${{ inputs.hostos }}
       gitpath:      'build binbuild'
-      artifact:     "build ${{ inputs.arch }}"
-      tools:        ${{ inputs.tools }}
+      artifact:     "build ${{ inputs.suffixi }}"
       noarchive:    ${{ inputs.noarchive }}
       owdebug:      ${{ inputs.owdebug }}
   - name: Documentation Build
-    run: ci/buildx.cmd ${{ inputs.tools }}
+    run: ${{ inputs.buildcmd }}
     env:
       OWBUILD_STAGE: 'docs'
       OWDOCTARGET:   ${{ inputs.target }} ${{ inputs.owtarget }}
@@ -69,9 +78,8 @@ runs:
     shell: cmd
   - uses: "./.github/actions/artfsave"
     with:
-      arch:         ${{ inputs.arch }}
-      gitpath:      ${{ inputs.gitpath }}
-      artifact:     "rel ${{ inputs.target }}"
-      tools:        ${{ inputs.tools }}
+      hostos:       ${{ inputs.hostos }}
+      gitpath:      ${{ inputs.relpath }}
+      artifact:     "rel ${{ inputs.suffixo }}"
       noarchive:    ${{ inputs.noarchive }}
       owdebug:      ${{ inputs.owdebug }}

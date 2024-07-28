@@ -27,7 +27,7 @@ exetarg_name = batserv
 
 inc_dirs = -I"../nt" -I"../h"
 
-all: batserv.exe tstnt.exe .symbolic
+all: batserv.exe tstnt.exe .SYMBOLIC
 
 exetarg_objs = batserv.obj batpipe.obj
 exetarg_opts = op stack=32k
@@ -46,7 +46,7 @@ exetarg_name = tstnt
 
 inc_dirs = -I"../dos" -I"../h" -I"../os2"
 
-all: dosserv.exe tstos2.exe .symbolic
+all: dosserv.exe tstos2.exe .SYMBOLIC
 
 exetarg_objs = int.obj link.obj int21.obj
 exetarg_opts = op stack=1500
@@ -88,8 +88,8 @@ exetarg_res = wininte.res
 exetarg_name = wininte
 !include exetarg.mif
 
-winint.res wininte.res : ../winint.rc
+winint.res wininte.res : ../win/winint.rc
     @%make echo_rc
-    $(rc) $(ppflags_common) $(rc_flags) $(inc_dirs) $[@ -fo=$@
+    $(rc) $(ppflags_common) $(rc_cppflags) $(rc_flags) $(inc_dirs) $[@ -fo=$@
 
 !endif

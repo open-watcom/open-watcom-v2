@@ -2,7 +2,7 @@
 ;*
 ;*                            Open Watcom Project
 ;*
-;* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+;* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 ;*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 ;*
 ;*  ========================================================================
@@ -161,7 +161,7 @@ _AFTERNULL ends
 CONST   segment word public 'DATA'
 CONST   ends
 
-_DATA    segment dword public 'DATA'
+_DATA   segment dword public 'DATA'
 extrn __x32_stack_size:dword
 ;debugger requires two variables below to be positioned together
 __x32_zero_base_selector        label   word
@@ -198,7 +198,7 @@ null_msg        db      'Null code pointer was called',0
 ConsoleName     db      "con",0
 NewLine         db      0Dh,0Ah
 
-_DATA    ends
+_DATA   ends
 
 
 DATA    segment word public 'DATA'

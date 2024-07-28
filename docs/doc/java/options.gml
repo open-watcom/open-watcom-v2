@@ -1,6 +1,6 @@
 :cmt GML Macros used:
 :cmt
-:cmt    :chain. <char> <usage>                  options that start with <char>
+:cmt.	:chain. <option> <option> ...		options that start with <option>
 :cmt                                            can be chained together i.e.,
 :cmt                                            -oa -ox -ot => -oaxt
 :cmt    :option. <option> <synonym> ...         define an option
@@ -50,7 +50,8 @@
 :jtitle. \t    ( 終端の '[-]' はﾃﾞﾌｫﾙﾄｵﾌﾟｼｮﾝを使用します )
 :target. any
 
-:chain. m display message output
+:chain. m
+:usagechain. m display message output
 :jusage. m ﾒｯｾｰｼﾞ出力を表示する
 
 :option. br

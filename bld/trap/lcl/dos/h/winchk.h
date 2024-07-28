@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -49,25 +49,3 @@ extern unsigned DPMIVersion( void );
     __parm      [] \
     __value     [__dx] \
     __modify    [__ax __bx __cx __dx __si __es __di]
-
-static const char DOSEMUString[] = "$DOSEMU$";
-
-extern int DOSEMUCheck( void );
-#pragma aux DOSEMUCheck = \
-        "push ds"           \
-        "mov  ax,0f000h"    \
-        "mov  es,ax"        \
-        "mov  di,0ffe0h"    \
-        "mov  ax,seg DOSEMUString" \
-        "mov  ds,ax"        \
-        "mov  si,offset DOSEMUString" \
-        "mov  cx,4"         \
-        "cld"               \
-        "repe cmpsw"        \
-        "mov  ax,0"         \
-        "jne short L1"      \
-        "inc  ax"           \
-    "L1: pop  ds"           \
-    __parm      [] \
-    __value     [__ax] \
-    __modify    [__bx __cx __dx __si __es __di]

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,7 +39,7 @@
 #include "bckdef.h"
 #include "typclass.h"
 #include "types.h"
-#include "cfloat.h"
+#include "_cfloat.h"
 #include "cgaux.h"
 #include "model.h"
 #include "cgstub.h"
@@ -77,7 +77,7 @@ extern  cg_init_info    BEInit( cg_switches cg_data, cg_target_switches tg_data,
                                 uint opt_size, proc_revision proc ) {
 //===================================================================
 
-    cg_init_info        info;
+    cg_init_info        cg_info;
     int                 i;
 
     Model = cg_data;
@@ -132,22 +132,21 @@ extern  cg_init_info    BEInit( cg_switches cg_data, cg_target_switches tg_data,
     CodeSeg = -1;
     TargTypeInit();
     Action( "BEInit%n" );
-    info.version.is_large = true;
-    info.version.revision = II_REVISION;
+    cg_info.revision = II_REVISION;
 #if _TARGET & _TARG_8086
-    info.version.target = II_TARG_8086;
+    cg_info.target = II_TARG_8086;
 #elif _TARGET & _TARG_80386
-    info.version.target = II_TARG_80386;
+    cg_info.target = II_TARG_80386;
 #elif _TARGET & _TARG_AXP
-    info.version.target = II_TARG_AXP;
+    cg_info.target = II_TARG_AXP;
 #elif _TARGET & _TARG_PPC
-    info.version.target = II_TARG_PPC;
+    cg_info.target = II_TARG_PPC;
 #elif _TARGET & _TARG_MIPS
-    info.version.target = II_TARG_MIPS;
+    cg_info.target = II_TARG_MIPS;
 #else
     #error UNKNOWN TARGET
 #endif
-    return( info );
+    return( cg_info );
 }
 extern  void    BECloseFiles()
 {
@@ -417,65 +416,7 @@ extern  void    BEDefSeg( segment_id segid, seg_attr attr, const char *str, uint
     SegOk[segid] = true;
     Locs[segid] = 0;
 }
-extern  bool    BEMoreMem( void ) {
-//=================================
-
-    Action( "BEMoreMem() -> 0%n" );
-    return(false);
-}
-
 extern  uint_32 BEUnrollCount( uint_32 c ) {
 /**************************************************/
     return( c );
-}
-
-/* floating point stuff */
-
-#pragma off (unreferenced);
-extern  char            *BFCnvFS( float_handle cf, char *buff, int buff_len ) {
-/*****************************************************************************/
-    Action( "BFCnvFS()%n" );
-    *buff = 0;
-    return( buff );
-}
-
-extern  float_handle    BFCnvSF( const char *start ) {
-/****************************************************/
-    Action( "BFCnvSF(): %s%n", start );
-    return( NULL );
-}
-
-extern  float_handle    BFMul( float_handle c1, float_handle c2 ) {
-/*****************************************************************/
-    Action( "BFMul()%n" );
-    return( NULL );
-}
-
-extern  float_handle    BFAdd( float_handle c1, float_handle c2 ) {
-/*****************************************************************/
-    Action( "BFAdd()%n" );
-    return( NULL );
-}
-
-extern  float_handle    BFDiv( float_handle c1, float_handle c2 ) {
-/*****************************************************************/
-    Action( "BFDiv()%n" );
-    return( NULL );
-}
-
-extern  float_handle    BFSub( float_handle c1, float_handle c2 ) {
-/*****************************************************************/
-    Action( "BFSub()%n" );
-    return( NULL );
-}
-
-extern  int             BFCmp( float_handle l, float_handle r ) {
-/***************************************************************/
-    Action( "BFCmp()%n" );
-    return( NULL );
-}
-
-extern  void            BFFree( float_handle cf ) {
-/*************************************************/
-    Action( "BFFree()%n" );
 }

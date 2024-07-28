@@ -23,7 +23,7 @@ sys_x86_nt      = sys nt dll op modname=$^&, desc $(description)
 sys_x86_nt      = sys nt dll op modname=$^&, desc $(description)
 !else ifdef test
 sys_x86_nt      = sys nt op st=20k, modname=$^&, desc $(description)
-!else ifeq gui 1
+!else ifdef gui
 sys_x86_nt      = sys nt_win op st=20k, modname=$^&, desc $(description)
 !else
 sys_x86_nt      = sys nt op modname=$^&, desc $(description)

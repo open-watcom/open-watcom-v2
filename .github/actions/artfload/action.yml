@@ -1,23 +1,18 @@
 name: artifact-load
 description: 'Download Artifact (tar file) and restore it to git subdirectory'
 inputs:
-  arch:
-    description: 'run-time platform'
+  hostos:
+    description: 'host os'
     required: false
     default: ''
     type: string
   gitpath:
     description: 'git subdirectory'
-    required: false
+    required: true
     default: ''
     type: string
   artifact:
     description: 'artifact name, worlds separated by space, spaces are replased by dash characters (-)'
-    required: false
-    default: ''
-    type: string
-  tools:
-    description: 'used compiler toolchain'
     required: false
     default: ''
     type: string
@@ -37,7 +32,7 @@ runs:
   - name: Get Artifact name
     id: artifact_name
     run: >
-      -Split "${{ inputs.artifact }} ${{ inputs.tools }}"
+      -Split "${{ inputs.artifact }}"
       | Join-String -Separator '-' -OutputPrefix 'id='
       | Out-File -FilePath ${{ github.output }} -Encoding utf8 -Append
     shell: pwsh
@@ -51,7 +46,7 @@ runs:
       }
     shell: pwsh
   - name: Restore Artifact ${{ steps.artifact_name.outputs.id }}
-    uses: actions/download-artifact@v3
+    uses: actions/download-artifact@v4
     with:
       name: ${{ steps.artifact_name.outputs.id }}
       path: ${{ steps.dstpath.outputs.path }}
@@ -67,7 +62,7 @@ runs:
     name: Restore Artifact
     uses: "./.github/actions/tarload"
     with:
-      arch:     ${{ inputs.arch }}
+      hostos:   ${{ inputs.hostos }}
       gitpath:  ${{ inputs.gitpath }}
       fullname: ${{ steps.tarname.outputs.fullname }}
       owdebug:  ${{ inputs.owdebug }}

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -53,11 +53,19 @@
 #include "clibext.h"
 
 
+#ifdef __UNIX__
+#define CHECK_OPTION(p)         ( p[0] == '-' )
+#else
+#define CHECK_OPTION(p)         ( p[0] == '-' || p[0] == Glob.swchar )
+#endif
+#define CHECK_STDIN(p)          ( p[0] == '-' && p[1] == NULLCHAR )
+
 STATIC TLIST    *mustTargs;         /* targets we must update           */
 STATIC TLIST    *firstTargFound;    /* first targets we ever found      */
 STATIC NODE     *filesToDo;         /* pointers into argv to -f files   */
 
 static void parseString( const char *s )
+/**************************************/
 {
     TLIST       *tlist;
 
@@ -107,7 +115,9 @@ STATIC void doBuiltIns( const char *makeopts )
             suffices = SuffixList;
             builtins = NULL;
         }
-        // suffixes must be parsed before builtins
+        /*
+         * suffixes must be parsed before builtins
+         */
         if( suffices != NULL ) {
             FmtStr( cpy, "%F", suffices );
             parseString( cpy );
@@ -134,8 +144,27 @@ static void setFirstTarget( TLIST *potential_first )
         }
         return;
     }
-    /*  Note all first targets must not have attribute explicit */
+    /*
+     * Note all first targets must not have attribute explicit
+     */
     firstTargFound = potential_first;
+}
+
+STATIC bool checkMacroDefn( const char *buf )
+/*******************************************/
+{
+    char        *p;
+
+    assert( buf != NULL );
+
+    p = strchr( buf, '=' );
+    if( p == NULL )
+        return( false );
+    if( p == buf )
+        return( false );
+//    if( p[1] == '\0' )
+//        return( false );
+    return( true );
 }
 
 STATIC void handleMacroDefn( const char *buf )
@@ -151,13 +180,12 @@ STATIC void handleMacroDefn( const char *buf )
 
     assert( buf != NULL );
 
-    q = StrDupSafe( buf );    /* we need our own copy */
+    q = StrDupSafe( buf );  /* we need our own copy */
 
-    p = strpbrk( q, "#=" );
+    p = strpbrk( q, "=" );
     assert( p != NULL );
-    *p = '=';                   /* lex doesn't recognize '#' */
 
-    InsString( q, false );     /* put arg into stream */
+    InsString( q, false );  /* put arg into stream */
     while( LexToken( LEX_PARSER ) != TOK_END ) {
         /* NOP - eat all the characters */
     }
@@ -223,7 +251,7 @@ STATIC char *procFlags( char const * const *argv, const char **log_name )
 #define CHK_OPTION(o)   options[(unsigned char)(o)]
 
     if( (p = argv[1]) != NULL ) {
-        if( strcmp( p, "?" ) == 0 || ((p[0] == '-' || p[0] == Glob.swchar) && strcmp( p + 1, "?" ) == 0) ) {
+        if( strcmp( p, "?" ) == 0 || (CHECK_OPTION( p ) && strcmp( p + 1, "?" ) == 0) ) {
             Usage();
             // never return
         }
@@ -234,8 +262,11 @@ STATIC char *procFlags( char const * const *argv, const char **log_name )
         checkCtrl( p );
         select = p[0];
         option = ctolower( p[1] );
-        if( select == '-' || select == Glob.swchar ) {
+        if( CHECK_OPTION( p ) ) {
             if( option != NULLCHAR && p[2] == NULLCHAR ) {
+                /*
+                 * single character options processing
+                 */
                 switch( option ) {
                 case '?':
                     Usage();
@@ -266,7 +297,9 @@ STATIC char *procFlags( char const * const *argv, const char **log_name )
 #endif
                 case 'y':   Glob.show_offenders = true; break;
                 case 'z':   Glob.hold           = true; break;
-                    /* these options require a filename */
+                /*
+                 * following options require a filename
+                 */
                 case 'f':
                 case 'l':
                     if( (p = *++argv) == NULL ) {
@@ -276,9 +309,9 @@ STATIC char *procFlags( char const * const *argv, const char **log_name )
                     }
                     checkCtrl( p );
                     if( option == 'f' ) {
-                        if( (p[0] == '-') && (p[1] == NULLCHAR) ) {
+                        if( CHECK_STDIN( p ) ) {
                             // stdin
-                        } else if( (p[0] == '-') || (p[0] == Glob.swchar) ) {
+                        } else if( CHECK_OPTION( p ) ) {
                             PrtMsg( ERR | INVALID_FILE_OPTION, select, option );
                             Usage();
                             // never return
@@ -287,8 +320,9 @@ STATIC char *procFlags( char const * const *argv, const char **log_name )
                         new->name = (char *)p;
                         new->next = filesToDo;
                         filesToDo = new;
-                    } else
+                    } else {
                         *log_name = p;
+                    }
                     break;
                 default:
                     PrtMsg( ERR | INVALID_OPTION, select, option );
@@ -300,6 +334,9 @@ STATIC char *procFlags( char const * const *argv, const char **log_name )
                 continue;
             }
             if( p[3] == NULLCHAR ) {
+                /*
+                 * two character options processing
+                 */
 #if defined( __DOS__ )
                 if( option == 'e' && ctolower( p[2] ) == 'r' ) {
                     Glob.redir_err = true;
@@ -329,9 +366,9 @@ STATIC char *procFlags( char const * const *argv, const char **log_name )
                 }
             }
         }
-        if( strpbrk( p, "=#" ) != NULL ) {     /* is macro=defn */
+        if( checkMacroDefn( p ) ) { /* is macro=defn */
             handleMacroDefn( p );
-        } else {                /* is a target */
+        } else {                    /* is a target */
             handleTarg( p );
         }
     } // while( *++argv != NULL )
@@ -419,10 +456,8 @@ STATIC const char *procLogName( const char * const *argv )
 
     while( *++argv != NULL ) {
         p = *argv;
-        if( ((p[0] == '-') || (p[0] == Glob.swchar)) &&
-                (ctolower( p[1] ) == 'l') && (p[2] == NULLCHAR) ) {
-            return( ((p = *++argv) == NULL || (p[0] == '-')
-                || (p[0] == Glob.swchar)) ? NULL : p );
+        if( CHECK_OPTION( p ) && (ctolower( p[1] ) == 'l') && (p[2] == NULLCHAR) ) {
+            return( ((p = *++argv) == NULL || CHECK_OPTION( p )) ? NULL : p );
         }
     }
     return( NULL );
@@ -481,7 +516,7 @@ STATIC void parseFiles( void )
             newhead = cur->next;
             p = cur->name;
             FreeSafe( cur );
-            if( p[0] == '-' && p[1] == NULLCHAR ) { /* handle -f - */
+            if( CHECK_STDIN( p ) ) { /* handle -f - */
                 InsOpenFile( stdin );
                 ok = true;
             } else {
@@ -627,7 +662,7 @@ static int ExitSafe( int rc )
             FreeTList( firstTargFound );
         }
 #endif
-
+        ParseFini();
         AutoDepFini();
         ExecFini();
         LexFini();
@@ -693,6 +728,5 @@ int main( int argc, char **argv )
     if( !doMusts() ) {
         return( ExitSafe( EXIT_ERROR ) );
     }
-    ParseFini();
     return( ExitSafe( EXIT_OK ) );
 }

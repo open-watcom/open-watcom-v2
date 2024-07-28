@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -179,7 +179,7 @@ void    GenBlock( block_class class, int targets )
          * opcode (the AddIns code puts in line number automatically).
          */
         ins = MakeNop();
-        ins->flags.nop_flags |= NOP_SOURCE_QUEUE;
+        ins->flags.u.nop_flags |= NOP_SOURCE_QUEUE;
         AddIns( ins );
     }
     CurrBlock->prev_block = BlockList;
@@ -273,8 +273,8 @@ block   *ReGenBlock( block *blk, label_handle lbl )
 }
 
 
-type_class_def  InitCallState( type_def *tipe )
-/*********************************************/
+type_class_def  InitCallState( const type_def *tipe )
+/***************************************************/
 {
     name            *name;
     cg_sym_handle   sym;

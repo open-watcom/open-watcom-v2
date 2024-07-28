@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,6 +39,14 @@
 #include "clibext.h"
 
 
+#define HASH_SIZE                   256
+#define WLIB_LIST_MAX_MESSAGE_LEN   511
+#define WLIB_LIST_LINE_WIDTH        79
+#define WLIB_LIST_OFF_COLUMN        40
+
+static char             listMsg[WLIB_LIST_MAX_MESSAGE_LEN + 1];
+static size_t           msgLength = 0;
+
 static sym_table        FileTable;
 static sym_file         *CurrFile;
 static sym_entry        **HashTable;
@@ -47,9 +55,11 @@ static sym_entry        **SortedSymbols;
 static char             *padding_string;
 static size_t           padding_string_len;
 
-#define HASH_SIZE       256
-
-static int Hash( const char *string, unsigned *plen );
+static unsigned long    NumFiles;
+static size_t           NumSymbols;
+static file_offset      TotalNameLength;
+static file_offset      TotalFFNameLength;
+static file_offset      TotalSymbolLength;
 
 void InitFileTab( void )
 /**********************/
@@ -57,44 +67,44 @@ void InitFileTab( void )
     FileTable.first = NULL;
     FileTable.add_to = &FileTable.first;
     SortedSymbols = NULL;
-    HashTable = MemAllocGlobal( HASH_SIZE * sizeof( HashTable[0] ) );
+    HashTable = MemAlloc( HASH_SIZE * sizeof( HashTable[0] ) );
     memset( HashTable, 0, HASH_SIZE * sizeof( HashTable[0] ) );
 }
 
 static void FiniSymFile( sym_file *sfile )
 /****************************************/
 {
-    sym_entry           *sym, *next_sym;
-    elf_import_sym      *temp;
+    sym_entry           *sym;
+    sym_entry           *next_sym;
+    elf_import_sym      *elfimp;
 
     for( sym = sfile->first; sym != NULL; sym = next_sym ) {
         next_sym = sym->next;
-        MemFreeGlobal( sym );
+        MemFree( sym );
     }
-    MemFreeGlobal( sfile->full_name );
-    MemFreeGlobal( sfile->arch.name );
-    MemFreeGlobal( sfile->arch.ffname );
-    if( sfile->import != NULL ) {
-        switch( sfile->import->type ) {
+    MemFree( sfile->full_name );
+    MemFree( sfile->arch.name );
+    MemFree( sfile->arch.ffname );
+    if( sfile->impsym != NULL ) {
+        switch( sfile->impsym->type ) {
         case ELF:
         case ELFRENAMED:
-            for( temp = sfile->import->u.elf.symlist; temp != NULL;
-                         temp = sfile->import->u.elf.symlist ) {
-                sfile->import->u.elf.symlist = temp->next;
-                MemFreeGlobal( temp->name );
-                MemFreeGlobal( temp );
+            for( elfimp = sfile->impsym->u.elf.symlist; elfimp != NULL;
+                         elfimp = sfile->impsym->u.elf.symlist ) {
+                sfile->impsym->u.elf.symlist = elfimp->next;
+                MemFree( (void *)elfimp->sym.name );
+                MemFree( elfimp );
             }
-            MemFreeGlobal( sfile->import->DLLName );
             break;
         default:
-            MemFreeGlobal( sfile->import->DLLName );
-            MemFreeGlobal( sfile->import->u.sym.symName );
-            MemFreeGlobal( sfile->import->u.sym.exportedName );
+            MemFree( sfile->impsym->u.omf_coff.symName );
+            MemFree( sfile->impsym->u.omf_coff.exportedName );
             break;
         }
-        MemFreeGlobal( sfile->import );
+        MemFree( (void *)sfile->impsym->dllName.name );
+        MemFree( sfile->impsym );
     }
-    MemFreeGlobal( sfile );
+    MemFree( sfile );
 }
 
 
@@ -105,22 +115,21 @@ void CleanFileTab( void )
     sym_file    *curr;
     sym_file    *next;
 
-    for( curr = FileTable.first; curr; curr = next ) {
+    for( curr = FileTable.first; curr != NULL ; curr = next ) {
         next = curr->next;
-
         /*
          * If curr->first is NULL then either this file contains no
          * symbols or we are ignoring all of them.  Remove the file.
          */
-        if( !curr->first ) {
-            if( last ) {
+        if( curr->first == NULL ) {
+            if( last != NULL ) {
                 last->next = curr->next;
             } else {
                 FileTable.first = curr->next;
             }
 
             if( &(curr->next) == FileTable.add_to ) {
-                if( last ) {
+                if( last != NULL ) {
                     FileTable.add_to = &(last->next);
                 } else {
                     FileTable.add_to = &(FileTable.first);
@@ -136,7 +145,7 @@ void CleanFileTab( void )
 
 
 void FiniFileTab( void )
-/***********************/
+/**********************/
 {
     sym_file    *sfile;
 
@@ -146,67 +155,96 @@ void FiniFileTab( void )
     }
     FileTable.add_to = &FileTable.first;
     if( SortedSymbols != NULL ) {
-        MemFreeGlobal( SortedSymbols );
+        MemFree( SortedSymbols );
         SortedSymbols = NULL;
     }
-    MemFreeGlobal( HashTable );
+    MemFree( HashTable );
     HashTable = NULL;
+}
+
+
+static int Hash( const char *string, unsigned *len )
+/**************************************************/
+{
+    unsigned long       g;
+    unsigned long       h;
+    const char          *start;
+
+    start = string;
+    h = 0;
+    while( *string != 0 ) {
+        h = ( h << 4 ) + *string;
+        if( (g = (h & 0xf0000000)) != 0 ) {
+            h = h ^ ( g >> 24 );
+            h = h ^ g;
+        }
+        ++string;
+    }
+    if( len != NULL ) {
+        *len = (unsigned)( string - start );
+    }
+    return( h % HASH_SIZE );
 }
 
 
 static void RemoveFromHashTable( sym_entry *sym )
 /***********************************************/
 {
-    sym_entry       *hash;
-    sym_entry       *prev;
+    sym_entry       *hash_sym;
+    sym_entry       *hash_prev;
     int             hval;
-    unsigned        len;
 
-    hval = Hash( sym->name, &len );
-    hash = HashTable[hval];
-
-    if( hash == sym ) {
-        HashTable[hval] = sym->hash;
-    } else if( hash != NULL ) {
-        prev = hash;
-
-        for( hash = hash->hash; hash != NULL; hash = hash->hash ) {
-            if( hash == sym ) {
-                prev->hash = hash->hash;
-                break;
+    hash_prev = NULL;
+    hval = Hash( sym->name, NULL );
+    for( hash_sym = HashTable[hval]; hash_sym != NULL; hash_sym = hash_sym->hash_next ) {
+        if( hash_sym == sym ) {
+            if( hash_prev == NULL ) {
+                HashTable[hval] = hash_sym->hash_next;
             } else {
-                prev = hash;
+                hash_prev->hash_next = hash_sym->hash_next;
             }
+            break;
+        } else {
+            hash_prev = hash_sym;
         }
     }
 }
 
 
-static void NewSymFile( arch_header *arch )
-/*****************************************/
+static sym_file *NewSymFile( const arch_header *arch, file_type obj_type )
+/************************************************************************/
 {
     sym_file    *sfile;
 
-    sfile = MemAllocGlobal( sizeof( sym_file ) );
+    sfile = MemAlloc( sizeof( sym_file ) );
+    sfile->obj_type = obj_type;
     sfile->first = NULL;
     sfile->next = NULL;
-    sfile->arch = *arch;
-    sfile->import = NULL;
+    sfile->impsym = NULL;
     sfile->inlib_offset = 0;
-    sfile->full_name = DupStrGlobal( sfile->arch.name );
-    sfile->arch.name = DupStrGlobal( sfile->arch.name );
-    if( Options.trim_path )
-        TrimPathInPlace( sfile->arch.name );
+    sfile->full_name = MemDupStr( arch->name );
+    sfile->arch.date = arch->date;
+    sfile->arch.uid = arch->uid;
+    sfile->arch.gid = arch->gid;
+    sfile->arch.mode = arch->mode;
+    sfile->arch.size = arch->size;
+    sfile->arch.libtype = arch->libtype;
+    if( Options.trim_path ) {
+        sfile->arch.name = MemDupStr( TrimPath( arch->name ) );
+    } else {
+        sfile->arch.name = MemDupStr( arch->name );
+    }
     sfile->name_length = strlen( sfile->arch.name );
-    if( sfile->arch.ffname != NULL ) {
-        sfile->arch.ffname = DupStrGlobal( sfile->arch.ffname );
+    if( arch->ffname != NULL ) {
+        sfile->arch.ffname = MemDupStr( arch->ffname );
         sfile->ffname_length = strlen( sfile->arch.ffname );
     } else {
+        sfile->arch.ffname = NULL;
         sfile->ffname_length = 0;
     }
     *(FileTable.add_to) = sfile;
     FileTable.add_to = &sfile->next;
-    CurrFile = sfile;
+    return( sfile );
 }
 
 
@@ -219,28 +257,22 @@ static int CompSyms( const void *ap, const void *bp )
     return( strcmp( a->name, b->name ) );
 }
 
-static void WriteFileHeader( arch_header *arch )
-/**********************************************/
+static void WriteFileHeader( libfile io, const arch_header *arch )
+/****************************************************************/
 {
     ar_header   ar;
 
     CreateARHeader( &ar, arch );
-    WriteNew( &ar, AR_HEADER_SIZE );
+    LibWrite( io, &ar, AR_HEADER_SIZE );
 }
 
-static void WritePadding( file_offset size )
-/******************************************/
+static void WritePadding( libfile io, file_offset size )
+/******************************************************/
 {
     if( size & 1 ) {
-        WriteNew( padding_string, padding_string_len );
+        LibWrite( io, padding_string, padding_string_len );
     }
 }
-
-static unsigned long    NumFiles;
-static size_t           NumSymbols;
-static file_offset      TotalNameLength;
-static file_offset      TotalFFNameLength;
-static file_offset      TotalSymbolLength;
 
 static void SortSymbols( void )
 /*****************************/
@@ -260,7 +292,9 @@ static void SortSymbols( void )
         ++NumFiles;
         switch( Options.libtype ) {
         case WL_LTYPE_AR:
-            // Always using "full" filename for AR
+            /*
+             * Always using "full" filename for AR
+             */
             if( sfile->arch.ffname != NULL ) {
                 name_length = sfile->ffname_length;
             } else {
@@ -268,7 +302,9 @@ static void SortSymbols( void )
                 name_length = sfile->name_length;
             }
             if( Options.ar_libformat == AR_FMT_BSD ) {
-                // BSD doesn't use special file name table
+                /*
+                 * BSD doesn't use special file name table
+                 */
                 sfile->name_offset = -1;
                 name_length = 0;
             } else if( Options.ar_libformat == AR_FMT_GNU ) {
@@ -285,12 +321,14 @@ static void SortSymbols( void )
             }
             break;
         case WL_LTYPE_MLIB:
-            // If no full filename, assume name is full, and trim
-            // it to get non-full filename.
+            /*
+             * If no full filename, assume name is full, and trim
+             * it to get non-full filename.
+             */
             if( sfile->arch.ffname == NULL ) {
                 sfile->arch.ffname = sfile->arch.name;
                 sfile->ffname_length = strlen( sfile->arch.ffname );
-                sfile->arch.name = DupStrGlobal( TrimPath( sfile->arch.ffname ) );
+                sfile->arch.name = MemDupStr( TrimPath( sfile->arch.ffname ) );
                 sfile->name_length = strlen( sfile->arch.name );
             }
             name_length = sfile->name_length;
@@ -308,9 +346,11 @@ static void SortSymbols( void )
 
     if( NumSymbols == 0 ) {
         SortedSymbols = NULL;
-        Warning( ERR_NO_SYMBOLS );
+        if( !Options.quiet ) {
+            Warning( ERR_NO_SYMBOLS );
+        }
     } else {
-        SortedSymbols = MemAllocGlobal( NumSymbols * sizeof( SortedSymbols[0] ) );
+        SortedSymbols = MemAlloc( NumSymbols * sizeof( SortedSymbols[0] ) );
     }
 
     sym_curr = SortedSymbols;
@@ -322,9 +362,9 @@ static void SortSymbols( void )
     }
 
     qsort( SortedSymbols, NumSymbols, sizeof( sym_entry * ), CompSyms );
-
-    // re-hook symbols onto files in sorted order
-
+    /*
+     * re-hook symbols onto files in sorted order
+     */
     for( sfile = FileTable.first; sfile != NULL; sfile = sfile->next ) {
         sfile->first = NULL;
     }
@@ -336,70 +376,103 @@ static void SortSymbols( void )
     }
 }
 
-void WriteFileBody( sym_file *sfile )
-/***********************************/
+void WriteFileBody( libfile dst, sym_file *sfile )
+/************************************************/
 {
-    libfile     io;
+    libfile     src;
 
-    if( sfile->import == NULL ) {
+    if( sfile->impsym == NULL ) {
         if( sfile->inlib_offset == 0 ) {
-            io = LibOpen( sfile->full_name, LIBOPEN_READ );
+            src = LibOpen( sfile->full_name, LIBOPEN_READ );
         } else {
-            io = InLibHandle( sfile->inlib );
-            LibSeek( io, sfile->inlib_offset, SEEK_SET );
+            src = InLibHandle( sfile->inlib );
+            LibSeek( src, sfile->inlib_offset, SEEK_SET );
         }
         if( sfile->obj_type == WL_FTYPE_OMF ) {
-            OmfCopy( io, sfile );
+            OmfCopy( src, dst, sfile );
         } else {
-            Copy( io, NewLibrary, sfile->arch.size );
+            Copy( src, dst, sfile->arch.size );
         }
         if( sfile->inlib_offset == 0 ) {
-            LibClose( io );
+            LibClose( src );
         }
     } else {
         switch( sfile->obj_type ) {
         case WL_FTYPE_ELF:
-            ElfWriteImport( NewLibrary, sfile );
+            ElfWriteImport( dst, sfile );
             break;
         case WL_FTYPE_COFF:
-            CoffWriteImport( NewLibrary, sfile, Options.coff_import_long );
+            CoffWriteImport( dst, sfile, Options.coff_import_long );
             break;
         case WL_FTYPE_OMF:
-            OmfWriteImport( sfile );
+            OmfWriteImport( dst, sfile );
             break;
         }
     }
 }
 
-static void WriteOmfLibTrailer( void )
+static void WriteOmfLibTrailer( libfile io )
+/*******************************************
+ * output OMF library end page
+ *
+ * struct {
+ *     // OMF record header
+ *     unsigned_8  type;
+ *     unsigned_16 len;
+ *     // OMF Library trailer
+ *     ...
+ *     zeros up to dictionary page size alignment (512 bytes)
+ *     ...
+ * }
+ *
+ * it doesn't use omfRec because it is OMF record without check sum
+ * and it is filled by zeros up to full size (aligned to 512 bytes)
+ */
 {
-    OmfRecord   *rec;
-    size_t      size;
+    unsigned_16 len;
 
-    size = DIC_REC_SIZE - (unsigned long)LibTell( NewLibrary ) % DIC_REC_SIZE;
-    rec = MemAlloc( size );
-    rec->basic.type = LIB_TRAILER_REC;
-    rec->basic.len = GET_LE_16( size - 3 );
-    memset( rec->basic.contents, 0, size - 3 );
-    WriteNew( rec, size );
-    MemFree( rec );
+    len = DIC_REC_SIZE - ( (unsigned long)LibTell( io ) % DIC_REC_SIZE ) - OMFHDRLEN;
+    /*
+     * output OMF record header
+     */
+    WriteOmfRecHeader( io, LIB_TRAILER_REC, len );
+    /*
+     * output OMF Library trailer data
+     */
+    LibWriteNulls( io, len );
 }
 
-static void WriteOmfLibHeader( unsigned_32 dict_offset, unsigned_16 dict_size )
+static void WriteOmfLibHeader( libfile io, unsigned_32 dict_offset, unsigned_16 dict_size )
+/******************************************************************************************
+ * output OMF library first page
+ *
+ * struct {
+ *     // OMF record header
+ *     unsigned_8  type;
+ *     unsigned_16 page_size;  //really page size - 3
+ *     // OMF Library header
+ *     unsigned_32 dict_offset;
+ *     unsigned_16 dict_size;
+ *     unsigned_8  flags;
+ *     ...
+ *     zeros up to OMF library page size
+ *     ...
+ * }
+ *
+ * it doesn't use omfRec because it is OMF record without check sum
+ * and it is used as overlay for already zeroed OMF library full page size
+ */
 {
-    OmfLibHeader    lib_header; // i didn't use omfRec because page size can be quite big
-
-    LibSeek( NewLibrary, 0, SEEK_SET );
-    lib_header.type = LIB_HEADER_REC;
-    lib_header.page_size = GET_LE_16( Options.page_size - 3 );
-    lib_header.dict_offset = GET_LE_32( dict_offset );
-    lib_header.dict_size = GET_LE_16( dict_size );
-    if( Options.respect_case ) {
-        lib_header.flags = 1;
-    } else {
-        lib_header.flags = 0;
-    }
-    WriteNew( &lib_header, sizeof( lib_header ) );
+    /*
+     * output OMF record header
+     */
+    WriteOmfRecHeader( io, LIB_HEADER_REC, Options.page_size - OMFHDRLEN );
+    /*
+     * output OMF library header data without trailing zeros
+     */
+    LibWriteU32LE( io, dict_offset );
+    LibWriteU16LE( io, dict_size );
+    LibWriteU8( io, ( Options.respect_case ) ? 1 : 0 );
 }
 
 static unsigned_16 OptimalPageSize( void )
@@ -426,8 +499,23 @@ static unsigned_16 OptimalPageSize( void )
     return( page_size );
 }
 
-static void WriteOmfFileTable( void )
-/***********************************/
+static void WriteOmfLibPadding( libfile io, bool force )
+/******************************************************/
+{
+    size_t      padding_size;
+
+    /*
+     * page size is always a power of 2
+     * therefor x % Options.page_size == x & ( Options.page_size - 1 )
+     */
+    padding_size = Options.page_size - (LibTell( io ) & ( Options.page_size - 1 ));
+    if( padding_size != Options.page_size || force ) {
+        LibWriteNulls( io, padding_size );
+    }
+}
+
+static void WriteOmfFileTable( libfile io )
+/*****************************************/
 {
     sym_file    *sfile;
     unsigned    num_blocks;
@@ -438,19 +526,35 @@ static void WriteOmfFileTable( void )
     } else if( Options.page_size == (unsigned_16)-1 ) {
         Options.page_size = OptimalPageSize();
     }
-    PadOmf( true );
-
+    /*
+     * allocate and clean space for OMF Library Header
+     */
+    WriteOmfLibPadding( io, true );
+    /*
+     * write all modules to OMF Library
+     */
     for( sfile = FileTable.first; sfile != NULL; sfile = sfile->next ) {
-        WriteOmfFile( sfile );
+        WriteOmfFile( io, sfile );
+        WriteOmfLibPadding( io, false );
     }
-    WriteOmfLibTrailer();
-    dict_offset = LibTell( NewLibrary );
-    num_blocks = WriteOmfDict( FileTable.first );
-    WriteOmfLibHeader( dict_offset, num_blocks );
+    /*
+     * write OMF Library Trailer
+     */
+    WriteOmfLibTrailer( io );
+    /*
+     * write OMF Library Dictionaries
+     */
+    dict_offset = LibTell( io );
+    num_blocks = WriteOmfDict( io, FileTable.first );
+    /*
+     * rewind file to beggining and write OMF Library Header
+     */
+    LibSeek( io, 0, SEEK_SET );
+    WriteOmfLibHeader( io, dict_offset, num_blocks );
 }
 
-static void WriteArMlibFileTable( void )
-/**************************************/
+static void WriteArMlibFileTable( libfile io )
+/********************************************/
 {
     arch_header     arch;
     sym_file        *sfile;
@@ -466,12 +570,12 @@ static void WriteArMlibFileTable( void )
 
 
     SortSymbols();
-
-    // figure out this dictionary sizes
-
+    /*
+     * figure out this dictionary sizes
+     */
     switch( Options.libtype ) {
     case WL_LTYPE_AR:
-        dict1_size = ( NumSymbols + 1 ) * sizeof(unsigned_32) + __ROUND_UP_SIZE_EVEN( TotalSymbolLength );
+        dict1_size = ( NumSymbols + 1 ) * sizeof( unsigned_32 ) + __ROUND_UP_SIZE_EVEN( TotalSymbolLength );
 
         header_size = AR_IDENT_LEN + AR_HEADER_SIZE + dict1_size;
 
@@ -523,16 +627,18 @@ static void WriteArMlibFileTable( void )
         padding_string_len = LIB_FILE_PADDING_STRING_LEN;
         break;
     }
-
-    // calculate the object files offsets
-
+    /*
+     * calculate the object files offsets
+     */
     index = 0;
     obj_offset = 0;
     isBSD = ( ( Options.libtype == WL_LTYPE_AR ) && ( Options.ar_libformat == AR_FMT_BSD ) );
     for( sfile = FileTable.first; sfile != NULL; sfile = sfile->next ) {
         sfile->u.new_offset = obj_offset + header_size;
         sfile->index = ++index;
-        if( isBSD && ( sfile->name_length > AR_NAME_LEN || strchr( sfile->arch.name, ' ' ) != NULL ) ) {
+        if( isBSD
+          && ( sfile->name_length > AR_NAME_LEN
+          || strchr( sfile->arch.name, ' ' ) != NULL ) ) {
             obj_offset += __ROUND_UP_SIZE_EVEN( sfile->arch.size + sfile->name_length ) + AR_HEADER_SIZE;
         } else {
             obj_offset += __ROUND_UP_SIZE_EVEN( sfile->arch.size ) + AR_HEADER_SIZE;
@@ -541,16 +647,16 @@ static void WriteArMlibFileTable( void )
 
     switch( Options.libtype ) {
     case WL_LTYPE_AR:
-        WriteNew( AR_IDENT, AR_IDENT_LEN );
+        LibWrite( io, AR_IDENT, AR_IDENT_LEN );
         break;
     case WL_LTYPE_MLIB:
-        WriteNew( LIBMAG, LIBMAG_LEN );
-        WriteNew( LIB_CLASS_DATA_SHOULDBE, LIB_CLASS_LEN + LIB_DATA_LEN );
+        LibWrite( io, LIBMAG, LIBMAG_LEN );
+        LibWrite( io, LIB_CLASS_DATA_SHOULDBE, LIB_CLASS_LEN + LIB_DATA_LEN );
         break;
     }
-
-    // write the useless dictionary
-
+    /*
+     * write the useless dictionary
+     */
     arch.date = currenttime;
     arch.uid = 0;
     arch.gid = 0;
@@ -558,67 +664,67 @@ static void WriteArMlibFileTable( void )
     if( dict1_size > 0 ) {
         arch.size = dict1_size;     // word round size
         arch.name = "/";
-        WriteFileHeader( &arch );
+        WriteFileHeader( io, &arch );
 
-        WriteBigEndian32( NumSymbols );
+        LibWriteU32BE( io, NumSymbols );
         for( sfile = FileTable.first; sfile != NULL; sfile = sfile->next ) {
             for( sym = sfile->first; sym != NULL; sym = sym->next ) {
-                WriteBigEndian32( sym->file->u.new_offset );
+                LibWriteU32BE( io, sym->file->u.new_offset );
             }
         }
         for( sfile = FileTable.first; sfile != NULL; sfile = sfile->next ) {
             for( sym = sfile->first; sym != NULL; sym = sym->next ) {
-                WriteNew( sym->name, sym->len + 1 );
+                LibWrite( io, sym->name, sym->len + 1 );
             }
         }
-        WritePadding( TotalSymbolLength );
+        WritePadding( io, TotalSymbolLength );
     }
-
-    // write the useful dictionary
-
+    /*
+     * write the useful dictionary
+     */
     if( dict2_size > 0 ) {
         arch.size = dict2_size;     // word round size
         arch.name = "/";
-        WriteFileHeader( &arch );
+        WriteFileHeader( io, &arch );
 
         if( Options.libtype == WL_LTYPE_AR ) {
-            WriteLittleEndian32( NumFiles );
+            LibWriteU32LE( io, NumFiles );
             for( sfile = FileTable.first; sfile != NULL; sfile = sfile->next ) {
-                WriteLittleEndian32( sfile->u.new_offset );
+                LibWriteU32LE( io, sfile->u.new_offset );
             }
         }
 
-        WriteLittleEndian32( NumSymbols );
+        LibWriteU32LE( io, NumSymbols );
         switch( Options.libtype ) {
         case WL_LTYPE_AR:
             for( i = 0; i < NumSymbols; ++i ) {
-                WriteLittleEndian16( SortedSymbols[i]->file->index );
+                LibWriteU16LE( io, SortedSymbols[i]->file->index );
             }
             break;
         case WL_LTYPE_MLIB:
             for( i = 0; i < NumSymbols; ++i ) {
-                WriteLittleEndian32( SortedSymbols[i]->file->index );
+                LibWriteU32LE( io, SortedSymbols[i]->file->index );
             }
             for( i = 0; i < NumSymbols; ++i ) {
-                WriteNew( &(SortedSymbols[i]->info), 1 );
+                LibWriteU8( io, SortedSymbols[i]->info );
             }
             break;
         }
         for( i = 0; i < NumSymbols; ++i ) {
-            WriteNew( SortedSymbols[i]->name, SortedSymbols[i]->len + 1 );
+            LibWrite( io, SortedSymbols[i]->name, SortedSymbols[i]->len + 1 );
         }
         switch( Options.libtype ) {
         case WL_LTYPE_AR:
-            WritePadding( TotalSymbolLength );
+            WritePadding( io, TotalSymbolLength );
             break;
         case WL_LTYPE_MLIB:
-            WritePadding( dict2_size );
+            WritePadding( io, dict2_size );
             break;
         }
     }
-
-    // write the string table
-
+    /*
+     * write the string table
+     */
     if( TotalNameLength > 0 ) {
         char    *stringpad;
         size_t  stringpadlen;
@@ -638,31 +744,34 @@ static void WriteArMlibFileTable( void )
         }
         arch.size = TotalNameLength;        // real size
         arch.name = "//";
-        WriteFileHeader( &arch );
+        WriteFileHeader( io, &arch );
         for( sfile = FileTable.first; sfile != NULL; sfile = sfile->next ) {
             if( sfile->name_offset == -1 )
                 continue;
-            // Always write the "full" filename for AR
-            if( Options.libtype == WL_LTYPE_AR && sfile->arch.ffname != NULL ) {
-                WriteNew( sfile->arch.ffname, sfile->ffname_length );
+            /*
+             * Always write the "full" filename for AR
+             */
+            if( Options.libtype == WL_LTYPE_AR
+              && sfile->arch.ffname != NULL ) {
+                LibWrite( io, sfile->arch.ffname, sfile->ffname_length );
             } else {
-                WriteNew( sfile->arch.name, sfile->name_length );
+                LibWrite( io, sfile->arch.name, sfile->name_length );
             }
-            WriteNew( stringpad, stringpadlen );
+            LibWrite( io, stringpad, stringpadlen );
         }
-        WritePadding( TotalNameLength );
+        WritePadding( io, TotalNameLength );
     }
-
-    // write the full filename table
-
+    /*
+     * write the full filename table
+     */
     if( Options.libtype == WL_LTYPE_MLIB ) {
         arch.size = TotalFFNameLength;      // real size
         arch.name = "///";
-        WriteFileHeader( &arch );
+        WriteFileHeader( io, &arch );
         for( sfile = FileTable.first; sfile != NULL; sfile = sfile->next ) {
-            WriteNew( sfile->arch.ffname, sfile->ffname_length + 1 );
+            LibWrite( io, sfile->arch.ffname, sfile->ffname_length + 1 );
         }
-        WritePadding( TotalFFNameLength );
+        WritePadding( io, TotalFFNameLength );
     }
 
     for( sfile = FileTable.first; sfile != NULL; sfile = sfile->next ) {
@@ -673,9 +782,12 @@ static void WriteArMlibFileTable( void )
         arch = sfile->arch;
         if( sfile->name_offset == -1 ) {
             if( Options.ar_libformat == AR_FMT_BSD ) {
-                // BSD append file name after header and before file image if it is longer then
-                //  max.length or it contains space
-                if( sfile->name_length > AR_NAME_LEN || strchr( sfile->arch.name, ' ' ) != NULL ) {
+                /*
+                 * BSD append file name after header and before file image if it is longer then
+                 *  max.length or it contains space
+                 */
+                if( sfile->name_length > AR_NAME_LEN
+                  || strchr( sfile->arch.name, ' ' ) != NULL ) {
                     append_name = true;
                     arch.size += sfile->name_length;
                     sprintf( buff, AR_NAME_CONTINUED_AFTER "%lu", (unsigned long)sfile->name_length );
@@ -693,101 +805,90 @@ static void WriteArMlibFileTable( void )
             sprintf( buff, "/%ld", sfile->name_offset );
             arch.name = buff;
         }
-        WriteFileHeader( &arch );
+        WriteFileHeader( io, &arch );
         if( append_name ) {
-            WriteNew( sfile->arch.name, sfile->name_length );
+            LibWrite( io, sfile->arch.name, sfile->name_length );
         }
-        WriteFileBody( sfile );
-        WritePadding( arch.size );
+        WriteFileBody( io, sfile );
+        WritePadding( io, arch.size );
     }
 }
 
-void WriteFileTable( void )
-/*************************/
+void WriteFileTable( libfile io )
+/*******************************/
 {
-    if( Options.libtype == WL_LTYPE_NONE && Options.omf_found ) {
+    if( Options.libtype == WL_LTYPE_NONE
+      && Options.omf_found ) {
         if( Options.coff_found ) {
             Options.libtype = WL_LTYPE_AR;
         } else {
             Options.libtype = WL_LTYPE_OMF;
         }
     }
-    if( Options.coff_found && (Options.libtype == WL_LTYPE_NONE || Options.libtype == WL_LTYPE_OMF) ) {
+    if( Options.coff_found
+      && (Options.libtype == WL_LTYPE_NONE
+      || Options.libtype == WL_LTYPE_OMF) ) {
         Options.libtype = WL_LTYPE_AR;
     }
-    if( Options.elf_found && (Options.libtype == WL_LTYPE_NONE || Options.libtype == WL_LTYPE_OMF) ) {
+    if( Options.elf_found
+      && (Options.libtype == WL_LTYPE_NONE
+      || Options.libtype == WL_LTYPE_OMF) ) {
         Options.libtype = WL_LTYPE_AR;
     }
-    if( Options.libtype == WL_LTYPE_AR || Options.libtype == WL_LTYPE_MLIB ) {
-        WriteArMlibFileTable();
+    if( Options.libtype == WL_LTYPE_AR
+      || Options.libtype == WL_LTYPE_MLIB ) {
+        WriteArMlibFileTable( io );
     } else {
-        WriteOmfFileTable();
+        WriteOmfFileTable( io );
     }
-}
-
-static int Hash( const char *string, unsigned *plen )
-/***************************************************/
-{
-    unsigned long       g;
-    unsigned long       h;
-
-    h = 0;
-    *plen = 0;
-    while( *string != 0 ) {
-        h = ( h << 4 ) + *string;
-        if( (g = (h & 0xf0000000)) != 0 ) {
-            h = h ^ ( g >> 24 );
-            h = h ^ g;
-        }
-        ++string;
-        ++*plen;
-    }
-    return( h % HASH_SIZE );
 }
 
 void AddSym( const char *name, symbol_strength strength, unsigned char info )
 /***************************************************************************/
 {
-    sym_entry   *sym,**owner;
-    int         hash;
-    unsigned    name_len;
+    sym_entry   *hash_sym;
+    sym_entry   **owner;
+    int         hval;
+    unsigned    namelen;
 
-    hash = Hash( name, &name_len );
-    for( sym = HashTable[hash]; sym != NULL; sym = sym->hash ) {
-        if( sym->len != name_len )
+    hval = Hash( name, &namelen );
+    for( hash_sym = HashTable[hval]; hash_sym != NULL; hash_sym = hash_sym->hash_next ) {
+        if( hash_sym->len != namelen )
             continue;
-        if( SymbolNameCmp( sym->name, name ) == 0 ) {
-            if( strength > sym->strength ) {
-                owner = &sym->file->first;
-                while( *owner != sym ) {
+        if( SymbolNameCmp( hash_sym->name, name ) == 0 ) {
+            if( strength > hash_sym->strength ) {
+                owner = &hash_sym->file->first;
+                while( *owner != hash_sym ) {
                     owner = &(*owner)->next;
                 }
-                *owner = sym->next;
-                owner = HashTable + hash;
-                while( *owner != sym ) {
-                    owner = &(*owner)->hash;
+                *owner = hash_sym->next;
+                owner = HashTable + hval;
+                while( *owner != hash_sym ) {
+                    owner = &(*owner)->hash_next;
                 }
-                *owner = sym->hash;
-                MemFreeGlobal( sym );
+                *owner = hash_sym->hash_next;
+                MemFree( hash_sym );
                 break; //db
-            } else if( strength == sym->strength ) {
+            } else if( strength == hash_sym->strength ) {
                 if( strength == SYM_STRONG ) {
-                    Warning( ERR_DUPLICATE_SYMBOL, FormSym( name ) );
+                    if( !Options.quiet ) {
+                        Warning( ERR_DUPLICATE_SYMBOL, FormSym( name ) );
+                    }
                 }
             }
             return;
         }
     }
-    sym = MemAllocGlobal( sizeof( sym_entry ) + name_len );
-    sym->len = name_len;
-    sym->strength = strength;
-    sym->info = info;
-    memcpy( sym->name, name, name_len + 1 );
-    sym->next = CurrFile->first;
-    CurrFile->first = sym;
-    sym->file = CurrFile;
-    sym->hash = HashTable[hash];
-    HashTable[hash] = sym;
+    hash_sym = MemAlloc( sizeof( sym_entry ) + namelen );
+    hash_sym->len = namelen;
+    hash_sym->strength = strength;
+    hash_sym->info = info;
+    strcpy( hash_sym->name, name );
+    hash_sym->next = CurrFile->first;
+    CurrFile->first = hash_sym;
+    hash_sym->file = CurrFile;
+    hash_sym->hash_next = HashTable[hval];
+    HashTable[hval] = hash_sym;
 }
 
 #ifdef DEVBUILD
@@ -795,8 +896,7 @@ void DumpFileTable( void )
 {
     sym_file    *sfile;
     sym_entry   *entry;
-    sym_entry   *hash;
-    unsigned    len;
+    sym_entry   *hash_sym;
     int         hval;
     long        files    = 0L;
     long        symbols  = 0L;
@@ -808,15 +908,15 @@ void DumpFileTable( void )
     for( sfile = FileTable.first; sfile != NULL; sfile = sfile->next ) {
         ++files;
         printf( "File: \"%s\"\n", sfile->full_name );
-        for( entry = sfile->first; entry; entry = entry->next ) {
+        for( entry = sfile->first; entry != NULL; entry = entry->next ) {
             ++symbols;
 
-            hval = Hash( entry->name, &len );
-            printf( "\t\"%s\" (%d, %u, \"%s\")", entry->name, hval, len,
+            hval = Hash( entry->name, NULL );
+            printf( "\t\"%s\" (%d, %u, \"%s\")", entry->name, hval, (unsigned)( entry->len ),
                     (HashTable[hval] ? HashTable[hval]->name : "(NULL)") );
 
-            for( hash = entry->hash; hash != NULL; hash = hash->hash ) {
-                printf( " -> \"%s\"", hash->name );
+            for( hash_sym = entry->hash_next; hash_sym != NULL; hash_sym = hash_sym->hash_next ) {
+                printf( " -> \"%s\"", hash_sym->name );
                 fflush( stdout );
             }
             printf( "\n" );
@@ -828,48 +928,42 @@ void DumpFileTable( void )
     printf( "----------------------------------------------------------\n" );
 }
 
-
 void DumpHashTable( void )
 {
-    sym_entry   *hash;
-    int         i;
+    sym_entry   *hash_sym;
+    int         hval;
     int         length;
 
     printf( "----------------------------------------------------------\n" );
     printf( "Hash Table Dump\n" );
     printf( "----------------------------------------------------------\n" );
-
-    for( i = 0; i < HASH_SIZE; ++i ) {
+    for( hval = 0; hval < HASH_SIZE; hval++ ) {
         length = 0;
-
-        if( HashTable[i] ) {
-            for( hash = HashTable[i]; hash != NULL; hash = hash->next ) {
-                ++length;
-            }
+        for( hash_sym = HashTable[hval]; hash_sym != NULL; hash_sym = hash_sym->next ) {
+            ++length;
         }
-
-        printf( "Offset %6d: %d\n", i, length );
+        printf( "Offset %6d: %d\n", hval, length );
     }
     printf( "----------------------------------------------------------\n" );
 }
-#endif // DEVBUILD
+#endif /* DEVBUILD */
 
 
-bool RemoveObjectSymbols( const char *name )
-/******************************************/
+bool RemoveObjectSymbols( const arch_header *arch )
+/*************************************************/
 {
     sym_file    *sfile;
-    sym_file    *prev_sfile;
+    sym_file    *sfile_prev;
     sym_entry   *sym;
 
-    prev_sfile = NULL;
+    sfile_prev = NULL;
     for( sfile = FileTable.first; sfile != NULL; sfile = sfile->next ) {
-        if( SymbolNameCmp( sfile->full_name, name ) == 0 ) {
-            if( prev_sfile != NULL ) {    /* Not deleting from head of list */
-                prev_sfile->next = sfile->next;
+        if( SymbolNameCmp( sfile->full_name, arch->name ) == 0 ) {
+            if( sfile_prev != NULL ) {    /* Not deleting from head of list */
+                sfile_prev->next = sfile->next;
 
                 if( FileTable.add_to == &sfile->next ) { /* Last node in list */
-                    FileTable.add_to = &prev_sfile->next;
+                    FileTable.add_to = &sfile_prev->next;
                 }
             } else {
                 if( FileTable.add_to == &sfile->next ) { /* Only node in list */
@@ -879,7 +973,9 @@ bool RemoveObjectSymbols( const char *name )
                     FileTable.first = sfile->next;
                 }
             }
-
+            /*
+             * remove all module symbols
+             */
             for( sym = sfile->first; sym != NULL; sym = sym->next ) {
                 RemoveFromHashTable( sym );
             }
@@ -888,105 +984,95 @@ bool RemoveObjectSymbols( const char *name )
             Options.modified = true;
             return( true );
         }
-        prev_sfile = sfile;
+        sfile_prev = sfile;
     }
     return( false );
 }
 
-void AddObjectSymbols( arch_header *arch, libfile io, long offset )
-/*****************************************************************/
+void AddObjectSymbols( libfile io, long offset, const arch_header *arch )
+/***********************************************************************/
 {
     obj_file    *ofile;
     file_type   obj_type;
 
-    ofile = OpenLibFile( arch->name, io );
+    ofile = OpenORLLibFile( io, arch->name );
     if( ofile->orl != NULL ) {
         if( ORLFileGetFormat( ofile->orl ) == ORL_COFF ) {
             if( Options.libtype == WL_LTYPE_MLIB ) {
-                FatalError( ERR_NOT_LIB, "COFF", LibFormat() );
+                FatalError( ERR_NOT_LIB, ctext_WL_FTYPE_COFF, ctext_WL_LTYPE_MLIB );
             }
             Options.coff_found = true;
             obj_type = WL_FTYPE_COFF;
         } else {
             if( Options.omf_found ) {
-                FatalError( ERR_MIXED_OBJ, "ELF", "OMF" );
+                FatalError( ERR_MIXED_OBJ, ctext_WL_FTYPE_ELF, ctext_WL_FTYPE_OMF );
             }
             Options.elf_found = true;
             obj_type = WL_FTYPE_ELF;
         }
     } else {
         if( Options.libtype == WL_LTYPE_MLIB ) {
-            FatalError( ERR_NOT_LIB, "OMF", LibFormat() );
+            FatalError( ERR_NOT_LIB, ctext_WL_FTYPE_OMF, ctext_WL_LTYPE_MLIB );
         }
         if( Options.elf_found ) {
-            FatalError( ERR_MIXED_OBJ, "ELF", "OMF" );
+            FatalError( ERR_MIXED_OBJ, ctext_WL_FTYPE_ELF, ctext_WL_FTYPE_OMF );
         }
         Options.omf_found = true;
         obj_type = WL_FTYPE_OMF;
     }
-    NewSymFile( arch );
-    CurrFile->obj_type = obj_type;
+    CurrFile = NewSymFile( arch, obj_type );
     CurrFile->inlib_offset = offset;
     CurrFile->inlib = FindInLib( io );
     ObjWalkSymList( ofile, CurrFile );
-    CloseLibFile( ofile );
+    CloseORLLibFile( ofile );
+    MemFree( ofile );
 }
 
-void OmfMKImport( arch_header *arch, importType type,
-                  long ordinal, const char *DLLname, const char *symName,
-                  char *exportedName, processor_type processor )
+void OmfMKImport( const arch_header *arch, importType type,
+                  long ordinal, name_len *dllName, const char *symName,
+                  const char *exportedName, processor_type processor )
 {
+    import_sym  *impsym;
+
     if( Options.elf_found ) {
-        FatalError( ERR_MIXED_OBJ, "ELF", "OMF" );
+        FatalError( ERR_MIXED_OBJ, ctext_WL_FTYPE_ELF, ctext_WL_FTYPE_OMF );
     }
     Options.omf_found = true;
-    NewSymFile( arch );
-    CurrFile->obj_type = WL_FTYPE_OMF;
-    CurrFile->import = MemAllocGlobal( sizeof( import_sym ) );
-    CurrFile->import->DLLName = DupStrGlobal( DLLname );
-    CurrFile->import->u.sym.ordinal = ordinal;
-    if( symName != NULL ) {
-        CurrFile->import->u.sym.symName = DupStrGlobal( symName );
-    } else {
-        CurrFile->import->u.sym.symName = NULL;
-    }
-    if( exportedName != NULL ) {
-        CurrFile->import->u.sym.exportedName = DupStrGlobal( exportedName );
-    } else {
-        CurrFile->import->u.sym.exportedName = NULL;
-    }
-    CurrFile->import->type = type;
-    CurrFile->import->processor = processor;
-    CurrFile->arch.size = OmfImportSize( CurrFile->import );
+    CurrFile = NewSymFile( arch, WL_FTYPE_OMF );
+    impsym = MemAlloc( sizeof( import_sym ) );
+    impsym->dllName.name = MemDupStr( dllName->name );
+    impsym->dllName.len = dllName->len;
+    impsym->u.omf_coff.ordinal = ordinal;
+    impsym->u.omf_coff.symName = MemDupStr( symName );
+    impsym->u.omf_coff.exportedName = MemDupStr( exportedName );
+    impsym->type = type;
+    impsym->processor = processor;
+    CurrFile->impsym = impsym;
+    CurrFile->arch.size = OmfImportSize( impsym );
     AddSym( symName, SYM_STRONG, 0 );
 }
 
-void CoffMKImport( arch_header *arch, importType type,
-                   long ordinal, const char *DLLname, const char *symName,
-                   char *exportedName, processor_type processor )
+void CoffMKImport( const arch_header *arch, importType type,
+                   long ordinal, name_len *dllName, const char *symName,
+                   const char *exportedName, processor_type processor )
 {
+    import_sym  *impsym;
+
     if( Options.elf_found ) {
-        FatalError( ERR_MIXED_OBJ, "ELF", "COFF" );
+        FatalError( ERR_MIXED_OBJ, ctext_WL_FTYPE_ELF, ctext_WL_FTYPE_COFF );
     }
     Options.coff_found = true;
-    NewSymFile( arch );
-    CurrFile->obj_type = WL_FTYPE_COFF;
-    CurrFile->import = MemAllocGlobal( sizeof( import_sym ) );
-    CurrFile->import->type = type;
-    CurrFile->import->u.sym.ordinal = ordinal;
-    CurrFile->import->DLLName = DupStrGlobal( DLLname );
-    if( symName != NULL ) {
-        CurrFile->import->u.sym.symName = DupStrGlobal( symName );
-    } else {
-        CurrFile->import->u.sym.symName = NULL;
-    }
-    if( exportedName != NULL ) {
-        CurrFile->import->u.sym.exportedName = DupStrGlobal( exportedName );
-    } else {
-        CurrFile->import->u.sym.exportedName = NULL;
-    }
-    CurrFile->import->processor = processor;
-    CurrFile->arch.size = CoffImportSize( CurrFile->import );
+    CurrFile = NewSymFile( arch, WL_FTYPE_COFF );
+    impsym = MemAlloc( sizeof( import_sym ) );
+    impsym->type = type;
+    impsym->u.omf_coff.ordinal = ordinal;
+    impsym->dllName.name = MemDupStr( dllName->name );
+    impsym->dllName.len = dllName->len;
+    impsym->u.omf_coff.symName = MemDupStr( symName );
+    impsym->u.omf_coff.exportedName = MemDupStr( exportedName );
+    impsym->processor = processor;
+    CurrFile->impsym = impsym;
+    CurrFile->arch.size = CoffImportSize( impsym );
     switch( type ) {
     case IMPORT_DESCRIPTOR:
     case NULL_IMPORT_DESCRIPTOR:
@@ -999,94 +1085,54 @@ void CoffMKImport( arch_header *arch, importType type,
     }
 }
 
-void ElfMKImport( arch_header *arch, importType type, long export_size,
-                  const char *DLLname, const char *strings, Elf32_Export *export_table,
+void ElfMKImport( const arch_header *arch, importType type, long export_size,
+                  name_len *dllName, const char *strings, Elf32_Export *export_table,
                   Elf32_Sym *sym_table, processor_type processor )
 {
-    int                 i;
-    elf_import_sym      **temp;
-    elf_import_sym      *imp_sym;
+    int             i;
+    elf_import_sym  **pelfimp;
+    elf_import_sym  *elfimp;
+    import_sym      *impsym;
 
     if( Options.coff_found ) {
-        FatalError( ERR_MIXED_OBJ, "ELF", "COFF" );
+        FatalError( ERR_MIXED_OBJ, ctext_WL_FTYPE_ELF, ctext_WL_FTYPE_COFF );
     }
     if( Options.omf_found ) {
-        FatalError( ERR_MIXED_OBJ, "ELF", "OMF" );
+        FatalError( ERR_MIXED_OBJ, ctext_WL_FTYPE_ELF, ctext_WL_FTYPE_OMF );
     }
     Options.elf_found = true;
-    NewSymFile( arch );
-    CurrFile->obj_type = WL_FTYPE_ELF;
-    CurrFile->import = MemAllocGlobal( sizeof( import_sym ) );
-    CurrFile->import->type = type;
-    CurrFile->import->DLLName = DupStrGlobal( DLLname );
-    CurrFile->import->u.elf.numsyms = 0;
-    temp = &(CurrFile->import->u.elf.symlist);
+    CurrFile = NewSymFile( arch, WL_FTYPE_ELF );
+    impsym = MemAlloc( sizeof( import_sym ) );
+    impsym->type = type;
+    impsym->dllName.name = MemDupStr( dllName->name );
+    impsym->dllName.len = dllName->len;
+    impsym->u.elf.numsyms = 0;
+    impsym->processor = processor;
+    CurrFile->impsym = impsym;
 
+    pelfimp = &(impsym->u.elf.symlist);
     for( i = 0; i < export_size; i++ ) {
         if( export_table[i].exp_symbol ) {
-            imp_sym = MemAllocGlobal( sizeof( elf_import_sym ) );
-            imp_sym->name = DupStrGlobal( strings + sym_table[export_table[i].exp_symbol].st_name );
-            imp_sym->len = strlen( imp_sym->name );
-            imp_sym->ordinal = export_table[i].exp_ordinal;
+            elfimp = MemAlloc( sizeof( elf_import_sym ) );
+            elfimp->sym.name = MemDupStr( strings + sym_table[export_table[i].exp_symbol].st_name );
+            elfimp->sym.len = strlen( elfimp->sym.name );
+            elfimp->ordinal = export_table[i].exp_ordinal;
             if( type == ELF ) {
-                AddSym( imp_sym->name, SYM_STRONG, ELF_IMPORT_SYM_INFO );
+                AddSym( elfimp->sym.name, SYM_STRONG, ELF_IMPORT_SYM_INFO );
             }
 
-            CurrFile->import->u.elf.numsyms ++;
+            impsym->u.elf.numsyms++;
 
-            *temp = imp_sym;
-            temp = &(imp_sym->next);
+            *pelfimp = elfimp;
+            pelfimp = &(elfimp->next);
         }
     }
-    *temp = NULL;
-    CurrFile->import->processor = processor;
-    CurrFile->arch.size = ElfImportSize( CurrFile->import );
+    *pelfimp = NULL;
+
+    CurrFile->arch.size = ElfImportSize( impsym );
 }
 
-#define MAX_MESSAGE_LEN 511
-static char             listMsg[MAX_MESSAGE_LEN + 1];
-static size_t           msgLength = 0;
-
-static void listPrint( FILE *fp, char *str, ... )
-{
-    va_list             arglist;
-
-    /* unused parameters */ (void)fp;
-
-    va_start( arglist, str );
-    msgLength += vsnprintf( listMsg + msgLength, MAX_MESSAGE_LEN - msgLength, str, arglist );
-    va_end( arglist );
-}
-
-static void listNewLine( FILE *fp )
-{
-    if( fp ) {
-        fprintf( fp, "%s\n", listMsg );
-    } else {
-        Message( listMsg );
-    }
-    msgLength = 0;
-    listMsg[0] = ' ';
-    listMsg[1] = '\0';
-}
-
-#define LINE_WIDTH 79
-#define OFF_COLUMN 40
-
-static void fpadch( FILE *fp, char ch, size_t len )
-{
-    /* unused parameters */ (void)fp;
-
-    if( len > 0 ) {
-        if( len > MAX_MESSAGE_LEN - msgLength )
-            len = MAX_MESSAGE_LEN - msgLength;
-        memset( listMsg + msgLength, ch, len );
-        msgLength += len;
-        listMsg[msgLength] = '\0';
-    }
-}
-
-static void printVerboseTableEntry( arch_header *arch )
+static void printVerboseTableEntryAr( sym_file *sfile )
 {
     char        member_mode[11];
     char        date[128];
@@ -1094,164 +1140,225 @@ static void printVerboseTableEntry( arch_header *arch )
 
     member_mode[10] = '\0';
     member_mode[9] = ' ';
-    if( arch->mode & AR_S_IRUSR ) {
+    if( sfile->arch.mode & AR_S_IRUSR ) {
         member_mode[0] = 'r';
     } else {
         member_mode[0] = '-';
     }
-    if( arch->mode & AR_S_IWUSR ) {
+    if( sfile->arch.mode & AR_S_IWUSR ) {
         member_mode[1] = 'w';
     } else {
         member_mode[1] = '-';
     }
-    if( (arch->mode & AR_S_IXUSR) == 0 && (arch->mode & AR_S_ISUID) ) {
+    if( (sfile->arch.mode & AR_S_IXUSR) == 0
+      && (sfile->arch.mode & AR_S_ISUID) ) {
         member_mode[2] = 'S';
-    } else if( (arch->mode & AR_S_IXUSR) && (arch->mode & AR_S_ISUID) ) {
+    } else if( (sfile->arch.mode & AR_S_IXUSR)
+      && (sfile->arch.mode & AR_S_ISUID) ) {
         member_mode[2] = 's';
-    } else if( arch->mode & AR_S_IXUSR ) {
+    } else if( sfile->arch.mode & AR_S_IXUSR ) {
         member_mode[2] = 'x';
     } else {
         member_mode[2] = '-';
     }
-    if( arch->mode & AR_S_IRGRP ) {
+    if( sfile->arch.mode & AR_S_IRGRP ) {
         member_mode[3] = 'r';
     } else {
         member_mode[3] = '-';
     }
-    if( arch->mode & AR_S_IWGRP ) {
+    if( sfile->arch.mode & AR_S_IWGRP ) {
         member_mode[4] = 'w';
     } else {
         member_mode[4] = '-';
     }
-    if( (arch->mode & AR_S_IXGRP) == 0 && (arch->mode & AR_S_ISGID) ) {
+    if( (sfile->arch.mode & AR_S_IXGRP) == 0
+      && (sfile->arch.mode & AR_S_ISGID) ) {
         member_mode[5] = 'S';
-    } else if( (arch->mode & AR_S_IXGRP) && (arch->mode & AR_S_ISGID) ) {
+    } else if( (sfile->arch.mode & AR_S_IXGRP)
+      && (sfile->arch.mode & AR_S_ISGID) ) {
         member_mode[5] = 's';
-    } else if( arch->mode & AR_S_IXGRP ) {
+    } else if( sfile->arch.mode & AR_S_IXGRP ) {
         member_mode[5] = 'x';
     } else {
         member_mode[5] = '-';
     }
-    if( arch->mode & AR_S_IROTH ) {
+    if( sfile->arch.mode & AR_S_IROTH ) {
         member_mode[6] = 'r';
     } else {
         member_mode[6] = '-';
     }
-    if( arch->mode & AR_S_IWOTH ) {
+    if( sfile->arch.mode & AR_S_IWOTH ) {
         member_mode[7] = 'w';
     } else {
         member_mode[7] = '-';
     }
-    if( arch->mode & AR_S_IXOTH ) {
+    if( sfile->arch.mode & AR_S_IXOTH ) {
         member_mode[8] = 'x';
     } else {
         member_mode[8] = '-';
     }
-    t = (time_t) arch->date;
+    t = (time_t) sfile->arch.date;
     strftime( date, 127, "%b %d %H:%M %Y", localtime( &t ) );
-    Message( "%s %u/%u %u %s %s", member_mode, arch->uid, arch->gid, arch->size,
-        date, MakeFName( arch->name ) );
+    Message( "%s %u/%u %u %s %s", member_mode, sfile->arch.uid, sfile->arch.gid, sfile->arch.size,
+        date, MakeFName( sfile->arch.name ) );
+}
+
+
+static void ListContentsAr( void )
+/********************************/
+{
+    sym_file    *sfile;
+    lib_cmd     *cmd;
+
+    if( CmdList != NULL ) {
+        for( cmd = CmdList; cmd != NULL; cmd = cmd->next ) {
+            if( cmd->ops & OP_FOUND ) {
+                if( Options.verbose ) {
+                    for( sfile = FileTable.first; sfile != NULL; sfile = sfile->next ) {
+                        if( IsSameModuleCase( sfile->arch.name, cmd->name, ( sfile->obj_type == WL_FTYPE_OMF ) ) ) {
+                            if( Options.terse_listing ) {
+                                Message( sfile->arch.name );
+                            } else {
+                                printVerboseTableEntryAr( sfile );
+                            }
+                            break;
+                        }
+                    }
+                } else {
+                    Message( MakeFName( cmd->name ) );
+                }
+            }
+        }
+    } else {
+        if( Options.verbose ) {
+            for( sfile = FileTable.first; sfile != NULL; sfile = sfile->next ) {
+                printVerboseTableEntryAr( sfile );
+            }
+        } else {
+            for( sfile = FileTable.first; sfile != NULL; sfile = sfile->next ) {
+                Message( "%s", MakeFName( sfile->arch.name ) );
+            }
+        }
+    }
+}
+
+
+static void listPrintWlib( FILE *fp, const char *str, ... )
+{
+    va_list             arglist;
+
+    /* unused parameters */ (void)fp;
+
+    va_start( arglist, str );
+    msgLength += vsnprintf( listMsg + msgLength, WLIB_LIST_MAX_MESSAGE_LEN - msgLength, str, arglist );
+    va_end( arglist );
+}
+
+
+static void listNewLineWlib( FILE *fp )
+{
+    if( fp != NULL ) {
+        fprintf( fp, "%s\n", listMsg );
+    } else {
+        if( !Options.quiet ) {
+            Message( listMsg );
+        }
+    }
+    msgLength = 0;
+    listMsg[0] = ' ';
+    listMsg[1] = '\0';
+}
+
+
+static void fpadchWlib( FILE *fp, char ch, size_t len )
+{
+    /* unused parameters */ (void)fp;
+
+    if( len > 0 ) {
+        if( len > WLIB_LIST_MAX_MESSAGE_LEN - msgLength )
+            len = WLIB_LIST_MAX_MESSAGE_LEN - msgLength;
+        memset( listMsg + msgLength, ch, len );
+        msgLength += len;
+        listMsg[msgLength] = '\0';
+    }
+}
+
+static void ListContentsWlib( void )
+/**********************************/
+{
+    sym_file    *sfile;
+    sym_entry   *sym;
+    int         i;
+    FILE        *fp;
+    char        *name;
+    size_t      namelen;
+
+    if( Options.terse_listing ) {
+        SortSymbols();
+        for( i = 0; i < NumSymbols; ++i ) {
+            sym = SortedSymbols[i];
+            name = FormSym( sym->name );
+            namelen = strlen( name );
+            if( !Options.quiet ) {
+                Message( name );
+            }
+        }
+        return;
+    }
+
+    if( Options.list_file == NULL ) {
+        Options.list_file = MemDupStr( MakeListName() );
+    }
+    if( Options.list_file[0] != '\0' ) {
+        fp = fopen( Options.list_file, "w" );
+        if( fp == NULL ) {
+            FatalError( ERR_CANT_OPEN, Options.list_file, strerror( errno ) );
+        }
+    } else {
+        fp = NULL;
+    }
+    SortSymbols();
+
+    for( i = 0; i < NumSymbols; ++i ) {
+        sym = SortedSymbols[i];
+        name = FormSym( sym->name );
+        namelen = strlen( name );
+        listPrintWlib( fp, "%s..", name );
+        fpadchWlib( fp, '.', WLIB_LIST_LINE_WIDTH - 2 - namelen - sym->file->name_length );
+        listPrintWlib( fp, "%s", sym->file->arch.name );
+        listNewLineWlib( fp );
+    }
+
+    listNewLineWlib( fp );
+
+    for( sfile = FileTable.first; sfile != NULL; sfile = sfile->next ) {
+        if( sfile->arch.ffname != NULL ) {
+            listPrintWlib( fp, "%s ", sfile->arch.ffname );
+        } else {
+            listPrintWlib( fp, "%s ", sfile->arch.name );
+        }
+        fpadchWlib( fp, ' ', WLIB_LIST_OFF_COLUMN - 1 - sfile->name_length - 16 );
+        listPrintWlib( fp, "Offset=%8.8xH", sfile->inlib_offset );
+        listNewLineWlib( fp );
+        for( sym = sfile->first; sym != NULL; sym = sym->next ) {
+            listPrintWlib( fp, "    %s", FormSym( sym->name ) );
+            listNewLineWlib( fp );
+        }
+        listNewLineWlib( fp );
+    }
+
+    if( fp != NULL ) {
+        fclose( fp );
+    }
 }
 
 
 void ListContents( void )
 /***********************/
 {
-    sym_file    *sfile;
-    lib_cmd     *cmd;
-
     if( Options.ar ) {
-        if( CmdList != NULL ) {
-            for( cmd = CmdList; cmd != NULL; cmd = cmd->next ) {
-                if( cmd->ops & OP_FOUND ) {
-                    if( Options.verbose ) {
-                        for( sfile = FileTable.first; sfile != NULL; sfile = sfile->next ) {
-                            if( IsSameFNameCase( sfile->arch.name, cmd->name ) ) {
-                                if( Options.terse_listing ) {
-                                    Message( sfile->arch.name );
-                                } else {
-                                    printVerboseTableEntry( &( sfile->arch ) );
-                                }
-                                break;
-                            }
-                        }
-                    } else {
-                        Message( MakeFName( cmd->name ) );
-                    }
-                }
-            }
-        } else {
-            if( Options.verbose ) {
-                for( sfile = FileTable.first; sfile != NULL; sfile = sfile->next ) {
-                    printVerboseTableEntry( & ( sfile->arch ) );
-                }
-            } else {
-                for( sfile = FileTable.first; sfile != NULL; sfile = sfile->next ) {
-                    Message( "%s", MakeFName( sfile->arch.name ) );
-                }
-            }
-        }
+        ListContentsAr();
     } else {
-        sym_entry       *sym;
-        int             i;
-        FILE            *fp;
-        char            *name;
-        size_t          name_len;
-
-        if( Options.terse_listing ) {
-            SortSymbols();
-            for( i = 0; i < NumSymbols; ++i ) {
-                sym = SortedSymbols[i];
-                name = FormSym( sym->name );
-                name_len = strlen( name );
-                Message( name );
-            }
-            return;
-        }
-
-        if( Options.list_file == NULL ) {
-            Options.list_file = DupStr( MakeListName() );
-        }
-        if( Options.list_file[0] != 0 ) {
-            fp = fopen( Options.list_file, "w" );
-            if( fp == NULL ) {
-                FatalError( ERR_CANT_OPEN, Options.list_file, strerror( errno ) );
-            }
-        } else {
-            fp = NULL;
-        }
-        SortSymbols();
-
-        for( i = 0; i < NumSymbols; ++i ) {
-            sym = SortedSymbols[i];
-            name = FormSym( sym->name );
-            name_len = strlen( name );
-            listPrint( fp, "%s..", name );
-            fpadch( fp, '.', LINE_WIDTH - 2 - name_len - sym->file->name_length );
-            listPrint( fp, "%s", sym->file->arch.name );
-            listNewLine( fp );
-        }
-
-        listNewLine( fp );
-
-        for( sfile = FileTable.first; sfile != NULL; sfile = sfile->next ) {
-            if( sfile->arch.ffname != NULL ) {
-                listPrint( fp, "%s ", sfile->arch.ffname );
-            } else {
-                listPrint( fp, "%s ", sfile->arch.name );
-            }
-            fpadch( fp, ' ', OFF_COLUMN - 1 - sfile->name_length - 16 );
-            listPrint( fp, "Offset=%8.8xH", sfile->inlib_offset );
-            listNewLine( fp );
-            for( sym = sfile->first; sym != NULL; sym = sym->next ) {
-                listPrint( fp, "    %s", FormSym( sym->name ) );
-                listNewLine( fp );
-            }
-            listNewLine( fp );
-        }
-
-        if( fp != NULL ) {
-            fclose( fp );
-        }
+        ListContentsWlib();
     }
 }

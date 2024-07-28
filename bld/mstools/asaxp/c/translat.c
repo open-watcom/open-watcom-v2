@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -103,17 +104,17 @@ static void asaxp_opts( OPT_STORAGE *cmdOpts, CmdLine *cmdLine )
 
     optStr = cmdOpts->d_value;
     while( optStr != NULL ) {
-        AppendFmtCmdLine( cmdLine, ASAXP_OPTS_SECTION, "/d%s ", optStr->data );
+        AppendFmtCmdLine( cmdLine, ASAXP_OPTS_SECTION, "-d%s ", optStr->data );
         optStr = optStr->next;
     }
 
     if( cmdOpts->fo || cmdOpts->o) {
-        AppendFmtCmdLine( cmdLine, ASAXP_OPTS_SECTION, "/fo=%s ", cmdOpts->fo_value->data );
+        AppendFmtCmdLine( cmdLine, ASAXP_OPTS_SECTION, "-fo=%s ", cmdOpts->fo_value->data );
     }
 
     optStr = cmdOpts->i_value;
     while( optStr != NULL ) {
-        AppendFmtCmdLine( cmdLine, ASAXP_OPTS_SECTION, "/i=%s ", optStr->data );
+        AppendFmtCmdLine( cmdLine, ASAXP_OPTS_SECTION, "-i=%s ", optStr->data );
         optStr = optStr->next;
     }
 
@@ -135,7 +136,7 @@ static void default_opts( OPT_STORAGE *cmdOpts, CmdLine *cmdLine )
 /**************************************************************/
 {
     if (!cmdOpts->nowopts) {
-        AppendCmdLine( cmdLine, ASAXP_OPTS_SECTION, "/oc /zq" );
+        AppendCmdLine( cmdLine, ASAXP_OPTS_SECTION, "-oc -zq" );
     }
 }
 
@@ -172,7 +173,7 @@ void OptionsTranslate( OPT_STORAGE *cmdOpts, CmdLine *cmdLine )
         BannerMessage();
     }
 
-    if( cmdOpts->help || cmdOpts->_ ) {
+    if( cmdOpts->help || cmdOpts->_question ) {
         PrintHelpMessage();
         exit( EXIT_SUCCESS );
 

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -69,7 +69,7 @@ typedef enum {
     SIGNED_BOTH             /* always signed */
 } issigned;
 
-static byte UCondTable[] = {
+static const byte UCondTable[] = {
 /***************************
  * The 8086 code for an unsigned jmp
  */
@@ -83,7 +83,7 @@ static byte UCondTable[] = {
     3               /* OP_CMP_GREATER_EQUAL */
 };
 
-static byte SCondTable[] = {
+static const byte SCondTable[] = {
 /***************************
  * The 8086 code for a signed jmp
  */
@@ -97,7 +97,7 @@ static byte SCondTable[] = {
     13              /* OP_CMP_GREATER_EQUAL */
 };
 
-static byte rev_condition[] = {
+static const byte rev_condition[] = {
 /******************************
  * Reverse the sense of an 8086 jmp (ie: ja -> jbe)
  * i.e. XOR 1
@@ -105,7 +105,7 @@ static byte rev_condition[] = {
     1,0,3,2,5,4,7,6,9,8,11,10,13,12,15,14
 };
 
-static issigned signed_type[] = {
+static const issigned signed_type[] = {
 /********************************
  * What kind of a jump does the instruction need following it
  */
@@ -357,17 +357,17 @@ void    GenCall( instruction *ins )
     cg_sym_handle   sym;
     bool            imp;
     call_class      cclass;
-    byte_seq        *code;
+    const byte_seq  *code;
     label_handle    lbl;
     bool            far_call;
 
-    if( ins->flags.call_flags & CALL_INTERRUPT ) {
+    if( ins->flags.u.call_flags & CALL_INTERRUPT ) {
         Pushf();
     }
     op = ins->operands[CALL_OP_ADDR];
     cclass = (call_class)(pointer_uint)FindAuxInfo( op, FEINF_CALL_CLASS );
     far_call = ( ((call_class_target)(pointer_uint)FindAuxInfo( op, FEINF_CALL_CLASS_TARGET ) & FECALL_X86_FAR_CALL) != 0 );
-    code = FindAuxInfo( op, FEINF_CALL_BYTES );
+    code = (const byte_seq *)FindAuxInfo( op, FEINF_CALL_BYTES );
     if( code != NULL ) {
         _Emit;
         if( code->relocs ) {
@@ -397,7 +397,7 @@ void    GenCall( instruction *ins )
             lbl = (label_handle)sym;
             imp = true;
         }
-        DoCall( lbl, imp, far_call, (ins->flags.call_flags & CALL_POPS_PARMS) != 0 );
+        DoCall( lbl, imp, far_call, (ins->flags.u.call_flags & CALL_POPS_PARMS) != 0 );
     }
     if( (cclass & (FECALL_GEN_ABORTS | FECALL_GEN_NORETURN))
       && _IsntTargetModel( CGSW_X86_NEW_P5_PROFILING ) ) {
@@ -415,16 +415,16 @@ void    GenCallIndirect( instruction *ins )
     gen_opcode      opcode;
     name            *op;
 
-    if( ins->flags.call_flags & CALL_INTERRUPT ) {
+    if( ins->flags.u.call_flags & CALL_INTERRUPT ) {
         Pushf();
     }
-    if( (ins->flags.call_flags & CALL_ABORTS)
+    if( (ins->flags.u.call_flags & CALL_ABORTS)
       && _IsntTargetModel( CGSW_X86_NEW_P5_PROFILING ) ) {
         occlass = OC_JMPI;
     } else {
         occlass = OC_CALLI;
     }
-    if( ins->flags.call_flags & CALL_POPS_PARMS ) {
+    if( ins->flags.u.call_flags & CALL_POPS_PARMS ) {
         occlass |= OC_ATTR_POP;
     }
     op = ins->operands[CALL_OP_ADDR];
@@ -438,7 +438,7 @@ void    GenCallIndirect( instruction *ins )
     LayOpword( opcode );
     LayModRM( op );
     _Emit;
-    if( (ins->flags.call_flags & CALL_NORETURN)
+    if( (ins->flags.u.call_flags & CALL_NORETURN)
       && _IsntTargetModel( CGSW_X86_NEW_P5_PROFILING ) ) {
         GenNoReturn();
     }
@@ -453,19 +453,19 @@ void    GenCallRegister( instruction *ins )
     name            *op;
     oc_class        occlass;
 
-    if( ins->flags.call_flags & CALL_INTERRUPT ) {
+    if( ins->flags.u.call_flags & CALL_INTERRUPT ) {
         Pushf();
     }
     op = ins->operands[CALL_OP_ADDR];
     occlass = OC_CALLI;
-    if( ins->flags.call_flags & CALL_POPS_PARMS ) {
+    if( ins->flags.u.call_flags & CALL_POPS_PARMS ) {
         occlass |= OC_ATTR_POP;
     }
     ReFormat( occlass );
     LayOpword( M_CJINEAR );
     LayRegRM( op->r.reg );
     _Emit;
-    if( (ins->flags.call_flags & CALL_NORETURN)
+    if( (ins->flags.u.call_flags & CALL_NORETURN)
       && _IsntTargetModel( CGSW_X86_NEW_P5_PROFILING ) ) {
         GenNoReturn();
     }

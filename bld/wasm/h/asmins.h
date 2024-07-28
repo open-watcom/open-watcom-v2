@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -53,12 +53,12 @@ typedef enum operand_idx {
 
 typedef unsigned short  asmins_idx;
 
-struct AsmCodeName {
+typedef struct AsmCodeName {
     asmins_idx      position;       // starting position in AsmOpTable
     unsigned short  len :4;         // length of command, e.g. "AX" = 2
     unsigned short  index :12;      // index into AsmChars[] in asmops2.h
     unsigned short  next;           // index to next item in hash item list
-};
+} AsmCodeName;
 
 typedef struct asm_ins {
     asm_token           token;                  /* T_ADD, etc */
@@ -138,15 +138,15 @@ typedef struct asm_code {
    OP_R ( without extension ) should follow OP_Rx
    OP_I ( without extension ) should follow OP_Ix  */
 
-extern const asm_ins                ASMI86FAR AsmOpTable[];
-extern const struct AsmCodeName     AsmOpcode[];
-extern const char                   AsmChars[];
+extern const asm_ins        ASMI86FAR AsmOpTable[];
+extern const AsmCodeName    AsmOpcode[];
+extern const char           AsmChars[];
 
-extern const char *                 const regs[3][4];
+extern const char           *const regs[3][4];
 
 #if defined( _STANDALONE_ )
 
-extern void     find_frame( struct asm_sym *sym );
+extern void     find_frame( asm_sym *sym );
 extern int      GetInsString( asm_token, char * );
 
 #endif

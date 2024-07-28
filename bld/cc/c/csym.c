@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,9 +34,22 @@
 #include "cgswitch.h"
 #include "caux.h"
 #include "cmacadd.h"
+#include "roundmac.h"
 
 
-#define CURR_SYM_HANDLE() ((SYM_HANDLE)(pointer_uint)NextSymHandle)
+#define SYM_BUF_SIZE_DEF    _1K
+#define SYM_SEG_SIZE_DEF    _32K
+#define SYM_MAX_INDEX_DEF   0xFFFFF
+
+#define SYM_PER_BUF         (SYM_BUF_SIZE_DEF / sizeof( SYM_ENTRY ))
+#define SYM_BUF_SIZE        (SYM_PER_BUF * sizeof( SYM_ENTRY ))
+#define SYM_BUF_PER_SEG     (SYM_SEG_SIZE_DEF / SYM_BUF_SIZE_DEF)
+#define SYM_SEG_SIZE        (SYM_BUF_SIZE * SYM_BUF_PER_SEG)
+#define SYM_PER_SEG         (SYM_SEG_SIZE / sizeof( SYM_ENTRY ))
+#define SYM_SEG_MAX         (SYM_MAX_INDEX_DEF / SYM_PER_SEG + 1)
+#define SYM_MAX_INDEX       (SYM_SEG_MAX * SYM_PER_SEG)
+
+#define CURR_SYM_HANDLE()   ((SYM_HANDLE)(pointer_uint)NextSymHandle)
 
 typedef struct sym_stats {
     unsigned    get;
@@ -62,7 +75,7 @@ static unsigned     FirstSymInBuf;
 static char         *SymBufPtr;
 static unsigned     NextSymHandle;
 static SEGADDR_T    SymBufSegment;              /* segment # for symbol table buffers */
-static seg_info     SymBufSegs[MAX_SYM_SEGS];   /* segments for symbols */
+static seg_info     SymBufSegs[SYM_SEG_MAX];   /* segments for symbols */
 
 static SEGADDR_T AllocSegment( seg_info *si )
 {
@@ -70,7 +83,7 @@ static SEGADDR_T AllocSegment( seg_info *si )
      * FEmalloc never returns NULL - it either allocates the memory
      * or kills the compiler.
      */
-    si->index = (SEGADDR_T)FEmalloc( 0x04000 );
+    si->index = (SEGADDR_T)FEmalloc( SYM_SEG_SIZE );
     si->allocated = true;
     return( si->index );
 }
@@ -86,7 +99,7 @@ static SEGADDR_T AccessSegment( seg_info *si )
 static void NewSym( void )
 {
     ++NextSymHandle;
-    if( NextSymHandle >= LARGEST_SYM_INDEX ) {
+    if( NextSymHandle >= SYM_MAX_INDEX ) {
         CErr1( ERR_INTERNAL_LIMIT_EXCEEDED );
         CSuicide();
     }
@@ -118,7 +131,7 @@ void SymInit( void )
     LastSymBuf = 0;
     SymBufDirty = 0;
     CurFuncHandle = SYM_NULL;
-    for( seg_num = 0; seg_num < MAX_SYM_SEGS; ++seg_num ) {
+    for( seg_num = 0; seg_num < SYM_SEG_MAX; ++seg_num ) {
         SymBufSegs[seg_num].allocated = false;
     }
     SymBufSegment = AllocSegment( &SymBufSegs[0] );
@@ -132,7 +145,7 @@ void SymFini( void )
     unsigned    seg_num;
     seg_info    *si;
 
-    for( seg_num = 0; seg_num < MAX_SYM_SEGS; ++seg_num ) {
+    for( seg_num = 0; seg_num < SYM_SEG_MAX; ++seg_num ) {
         si = &SymBufSegs[seg_num];
         if( si->allocated ) {
             FEfree( si->index );
@@ -321,8 +334,8 @@ static void SymAccess( unsigned sym_num )
     seg_info    *si;
 
     Cached_sym_num = sym_num;
-    if( sym_num < FirstSymInBuf || sym_num >= FirstSymInBuf + SYMS_PER_BUF ) {
-        buf_num = sym_num / SYMS_PER_BUF;
+    if( sym_num < FirstSymInBuf || sym_num >= FirstSymInBuf + SYM_PER_BUF ) {
+        buf_num = sym_num / SYM_PER_BUF;
         if( SymBufDirty ) {
             SymStats.write++;
             si = &SymBufSegs[SymBufSegNum];
@@ -331,13 +344,13 @@ static void SymAccess( unsigned sym_num )
             }
             SymBufDirty = 0;
         }
-        seg_num = buf_num / SYMBUFS_PER_SEG;
+        seg_num = buf_num / SYM_BUF_PER_SEG;
         si = &SymBufSegs[seg_num];
         SymBufSegment = AccessSegment( si );
-        SymBufPtr = (char *)SymBufSegment + (buf_num % SYMBUFS_PER_SEG) * SYM_BUF_SIZE;
+        SymBufPtr = (char *)SymBufSegment + (buf_num % SYM_BUF_PER_SEG) * SYM_BUF_SIZE;
         SymBufNum = buf_num;
         SymBufSegNum = seg_num;
-        FirstSymInBuf = buf_num * SYMS_PER_BUF;
+        FirstSymInBuf = buf_num * SYM_PER_BUF;
     }
     Cached_sym_addr = SymBufPtr + (sym_num - FirstSymInBuf) * sizeof( SYM_ENTRY );
 }
@@ -439,12 +452,12 @@ SYM_HANDLE SymAdd( id_hash_idx hash, SYMPTR sym )
     NewSym();
     sym->level = (id_level_type)SymLevel;
     hsym = SymHash( sym, CURR_SYM_HANDLE() );
-    sym->info.hash = hash;
+    sym->u1.hash = hash;
     /*
      * add name to head of list
      */
     for( head = &HashTab[hash]; *head != NULL; head = &(*head)->next_sym ) {
-        if( ChkLtSymLevel( *head ) || ChkEqSymLevel( *head ) ) {
+        if( CheckLtSymLevel( *head ) || CheckEqSymLevel( *head ) ) {
             break;
         }
     }
@@ -469,7 +482,7 @@ SYM_HANDLE SymAddL0( id_hash_idx hash, SYMPTR new_sym )
     new_sym->level = 0;
     new_hsym = SymHash( new_sym, CURR_SYM_HANDLE() );
     new_hsym->next_sym = NULL;
-    new_sym->info.hash = hash;
+    new_sym->u1.hash = hash;
     hsym = HashTab[hash];
     if( hsym == NULL ) {
         HashTab[hash] = new_hsym;
@@ -563,7 +576,7 @@ SYM_HANDLE Sym0Look( id_hash_idx hash, const char *id )
 }
 
 
-static void ChkReference( SYMPTR sym, SYM_NAMEPTR name )
+static void CheckReference( SYMPTR sym, SYM_NAMEPTR name )
 {
     TYPEPTR     typ;
 
@@ -589,7 +602,7 @@ static void ChkReference( SYMPTR sym, SYM_NAMEPTR name )
 }
 
 
-static void ChkIncomplete( SYMPTR sym, SYM_NAMEPTR name )
+static void CheckIncomplete( SYMPTR sym, SYM_NAMEPTR name )
 {
     TYPEPTR     typ;
 
@@ -616,7 +629,7 @@ static void ChkIncomplete( SYMPTR sym, SYM_NAMEPTR name )
 }
 
 
-static void ChkDefined( SYMPTR sym, SYM_NAMEPTR name )
+static void CheckDefined( SYMPTR sym, SYM_NAMEPTR name )
 {
     if( sym->flags & SYM_DEFINED ) {
         if( sym->attribs.stg_class == SC_STATIC ) {
@@ -645,7 +658,7 @@ static void ChkDefined( SYMPTR sym, SYM_NAMEPTR name )
     }
 }
 
-static void ChkFunction( SYMPTR sym, SYM_NAMEPTR name )
+static void CheckFunction( SYMPTR sym, SYM_NAMEPTR name )
 {
 #if _INTEL_CPU
     if( sym->attribs.stg_class == SC_STATIC ) {
@@ -681,7 +694,7 @@ static  void InitExtName( struct xlist **where  )
     *where = NULL;
 }
 
-static void ChkExtName( struct xlist **link, SYMPTR sym, SYM_NAMEPTR name  )
+static void CheckExtName( struct xlist **link, SYMPTR sym, SYM_NAMEPTR name  )
 /***Restricted extern names i.e 8 char upper check *****/
 {
     struct xlist    *new, *curr;
@@ -790,14 +803,14 @@ static SYM_HASHPTR GetSymList( void )
     id_hash_idx     hash;
     unsigned        i;
     unsigned        j;
-    SYM_HASHPTR     sym_seglist[MAX_SYM_SEGS];
-    SYM_HASHPTR     sym_buflist[SYMBUFS_PER_SEG];
-    SYM_HASHPTR     sym_buftail[SYMBUFS_PER_SEG];
+    SYM_HASHPTR     sym_seglist[SYM_SEG_MAX];
+    SYM_HASHPTR     sym_buflist[SYM_BUF_PER_SEG];
+    SYM_HASHPTR     sym_buftail[SYM_BUF_PER_SEG];
 
     sym_list = NULL;
     for( hash = 0; hash < ID_HASH_SIZE; hash++ ) {
         for( hsym = HashTab[hash]; hsym != NULL; hsym = next_hsymptr ) {
-            if( !ChkEqSymLevel( hsym ) )
+            if( !CheckEqSymLevel( hsym ) )
                 break;
             next_hsymptr = hsym->next_sym;
             hsym->next_sym = sym_list;
@@ -808,32 +821,32 @@ static SYM_HASHPTR GetSymList( void )
     // if SymLevel == 0 then should sort the sym_list so that we don't do
     // a lot of page thrashing.
     if( SymLevel == 0 ) {
-        for( i = 0; i < MAX_SYM_SEGS; i++ ) {
+        for( i = 0; i < SYM_SEG_MAX; i++ ) {
             sym_seglist[i] = NULL;
         }
         for( hsym = sym_list; hsym != NULL; hsym = next_hsymptr ) {
             next_hsymptr = hsym->next_sym;
-            i = (unsigned)(pointer_uint)hsym->handle / (SYMS_PER_BUF * SYMBUFS_PER_SEG);
+            i = (unsigned)(pointer_uint)hsym->handle / (SYM_PER_BUF * SYM_BUF_PER_SEG);
             hsym->next_sym = sym_seglist[i];
             sym_seglist[i] = hsym;
         }
         sym_list = NULL;
         sym_tail = NULL;
-        for( i = 0; i < MAX_SYM_SEGS; i++ ) {
-            for( j = 0; j < SYMBUFS_PER_SEG; j++ ) {
+        for( i = 0; i < SYM_SEG_MAX; i++ ) {
+            for( j = 0; j < SYM_BUF_PER_SEG; j++ ) {
                 sym_buflist[j] = NULL;
                 sym_buftail[j] = NULL;
             }
             for( hsym = sym_seglist[i]; hsym != NULL; hsym = next_hsymptr ) {
                 next_hsymptr = hsym->next_sym;
-                j = ((unsigned)(pointer_uint)hsym->handle / SYMS_PER_BUF) % SYMBUFS_PER_SEG;
+                j = ((unsigned)(pointer_uint)hsym->handle / SYM_PER_BUF) % SYM_BUF_PER_SEG;
                 hsym->next_sym = sym_buflist[j];
                 sym_buflist[j] = hsym;
                 if( sym_buftail[j] == NULL ) {
                     sym_buftail[j] = hsym;
                 }
             }
-            for( j = 0; j < SYMBUFS_PER_SEG; j++ ) {
+            for( j = 0; j < SYM_BUF_PER_SEG; j++ ) {
                 hsym = sym_buflist[j];
                 if( hsym != NULL ) {
                     if( sym_list == NULL )
@@ -898,7 +911,7 @@ static SYM_HASHPTR FreeSym( void )
                     /*
                      * FUNCTION
                      */
-                    ChkFunction( &sym, hsym->name );
+                    CheckFunction( &sym, hsym->name );
                 }
                 if( tail[bucket] == SYM_NULL ) {
                     tail[bucket] = hsym->handle;
@@ -911,15 +924,15 @@ static SYM_HASHPTR FreeSym( void )
              */
             sym.name = CPermAlloc( strlen( hsym->name ) + 1 );
             strcpy( sym.name, hsym->name );
-            sym.info.backinfo = NULL;
+            sym.u1.backinfo = NULL;
             SymReplace( &sym, hsym->handle );
         }
         SetErrLoc( &sym.src_loc );
-        ChkIncomplete( &sym, hsym->name );
+        CheckIncomplete( &sym, hsym->name );
         if( SymLevel == 0 ) {
-            ChkDefined( &sym, hsym->name );
+            CheckDefined( &sym, hsym->name );
         } else {
-            ChkReference( &sym, hsym->name );
+            CheckReference( &sym, hsym->name );
             if( sym.attribs.stg_class == SC_STATIC && (sym.flags & SYM_FUNCTION) == 0 ) {
                 CurFuncNode->op.u2.func.flags &= ~FUNC_OK_TO_INLINE;
                 SymReplace( CurFunc, CurFuncHandle );

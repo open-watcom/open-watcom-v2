@@ -1,3 +1,35 @@
+/****************************************************************************
+*
+*                            Open Watcom Project
+*
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+*
+*  ========================================================================
+*
+*    This file contains Original Code and/or Modifications of Original
+*    Code as defined in and that are subject to the Sybase Open Watcom
+*    Public License version 1.0 (the 'License'). You may not use this file
+*    except in compliance with the License. BY USING THIS FILE YOU AGREE TO
+*    ALL TERMS AND CONDITIONS OF THE LICENSE. A copy of the License is
+*    provided with the Original Code and Modifications, and is also
+*    available at www.sybase.com/developer/opensource.
+*
+*    The Original Code and all software distributed under the License are
+*    distributed on an 'AS IS' basis, WITHOUT WARRANTY OF ANY KIND, EITHER
+*    EXPRESS OR IMPLIED, AND SYBASE AND ALL CONTRIBUTORS HEREBY DISCLAIM
+*    ALL SUCH WARRANTIES, INCLUDING WITHOUT LIMITATION, ANY WARRANTIES OF
+*    MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, QUIET ENJOYMENT OR
+*    NON-INFRINGEMENT. Please see the License for the specific language
+*    governing rights and limitations under the License.
+*
+*  ========================================================================
+*
+* Description:  OS/2 Resource Compiler grammar for yacc.
+*
+****************************************************************************/
+
+
 /***************************************************************************
  * OS/2 Resource Compiler Grammar
  * Worked out with much blood, sweat & tears, no thanks to IBM's atrocious
@@ -561,14 +593,14 @@ resource-type
 user-defined-resource
     : Y_RESOURCE type-id comma-opt name-id user-defined-data
         {
-            SemAddResourceFree( $4, $2,
+            SemAddResourceAndFree( $4, $2,
                     MEMFLAG_DISCARDABLE | MEMFLAG_PURE | MEMFLAG_MOVEABLE, $5 );
         }
     | Y_RESOURCE type-id comma-opt name-id resource-options user-defined-data
         {
             SemOS2CheckResFlags( &($5), 0, MEMFLAG_DISCARDABLE | MEMFLAG_MOVEABLE,
                     MEMFLAG_PURE );
-            SemAddResourceFree( $4, $2, $5.flags, $6 );
+            SemAddResourceAndFree( $4, $2, $5.flags, $6 );
         }
     ;
 
@@ -666,14 +698,14 @@ rc-data
 rcdata-resource
     : Y_RCDATA name-id rc-data
         {
-            SemAddResourceFree( $2, WResIDFromNum( OS2_RT_RCDATA ),
+            SemAddResourceAndFree( $2, WResIDFromNum( OS2_RT_RCDATA ),
                     MEMFLAG_PURE | MEMFLAG_MOVEABLE, $3 );
         }
     | Y_RCDATA name-id resource-options rc-data
         {
             SemOS2CheckResFlags( &($3), 0, MEMFLAG_DISCARDABLE | MEMFLAG_MOVEABLE,
                     MEMFLAG_PURE );
-            SemAddResourceFree( $2, WResIDFromNum( OS2_RT_RCDATA ), $3.flags, $4 );
+            SemAddResourceAndFree( $2, WResIDFromNum( OS2_RT_RCDATA ), $3.flags, $4 );
         }
     ;
 
@@ -1416,33 +1448,33 @@ window-stmt
         {
             IntMask mask = {0};
             $$ = SemOS2SetWndData( $2, $4, $6, $8, mask, mask, $9, NULL );
-       }
+        }
     | Y_WINDOW cntl-text comma-opt cntl-id comma-opt size-info comma-opt
                 ctl-class-name presparam-list diag-control-section
         {
-           IntMask mask = {0};
-           IntMask mask2 = {0};
-           $$ = SemOS2SetWndData( $2, $4, $6, $8, mask, mask2, $9, $10 );
+            IntMask mask = {0};
+            IntMask mask2 = {0};
+            $$ = SemOS2SetWndData( $2, $4, $6, $8, mask, mask2, $9, $10 );
         }
     | Y_WINDOW cntl-text comma-opt cntl-id comma-opt size-info comma-opt
                 ctl-class-name comma-opt cntl-style presparam-list
         {
-           IntMask mask = {0};
+            IntMask mask = {0};
             $$ = SemOS2SetWndData( $2, $4, $6, $8, $10, mask, $11, NULL );
-       }
+        }
     | Y_WINDOW cntl-text comma-opt cntl-id comma-opt size-info comma-opt
                 ctl-class-name comma-opt cntl-style presparam-list
                 diag-control-section
         {
-           IntMask mask = {0};
+            IntMask mask = {0};
             $$ = SemOS2SetWndData( $2, $4, $6, $8, $10, mask, $11, $12 );
-       }
+        }
     | Y_WINDOW cntl-text comma-opt cntl-id comma-opt size-info comma-opt
       ctl-class-name comma-opt cntl-style comma-opt frame-style
       presparam-list diag-control-section
-      {
-       $$ = SemOS2SetWndData( $2, $4, $6, $8, $10, $12, $13, $14 );
-      }
+        {
+            $$ = SemOS2SetWndData( $2, $4, $6, $8, $10, $12, $13, $14 );
+        }
     ;
 
 dialog-or-frame

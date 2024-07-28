@@ -26,7 +26,7 @@ stack_axp=opt stack=8k
 
 .cpp: ../bits
 
-test : .symbolic start test.lnk tbits.$(exe)
+test : .SYMBOLIC start test.lnk tbits.$(exe)
     $(noecho)%make common_set_result
 
 clean : .procedure

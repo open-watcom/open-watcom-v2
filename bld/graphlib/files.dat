@@ -1,7 +1,7 @@
 [ DEFAULT cond="tools16" where="c jc f77 jf77" rel="." ]
-type="l" dir="lib286/dos"    usr="graph.lib"     conda="dostarg"
-type="l" dir="lib286/dos"    usr="graph2.lib"    conda="dostarg"
-type="s" dir="lib286/os2"    usr="graphp.obj"    conda="os2targ"
+type="l" dir="lib286/dos"    usr="graph.lib"     cond+="dostarg"
+type="l" dir="lib286/dos"    usr="graph2.lib"    cond+="dostarg"
+type="s" dir="lib286/os2"    usr="graphp.obj"    cond+="os2targ"
 
 [ DEFAULT where="c jc f77 jf77" rel="." ]
 type="l" dir="lib386/dos"    usr="graph.lib"     cond="dostarg"

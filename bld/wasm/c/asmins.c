@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -61,8 +61,8 @@
 
 extern bool             ptr_operator( memtype, bool );
 
-static struct asm_code  Code_Info;
-struct asm_code         *Code = &Code_Info;
+static asm_code         Code_Info;
+asm_code                *Code = &Code_Info;
 
 operand_idx             Opnd_Count;
 
@@ -76,11 +76,11 @@ static bool             segm_override_jumps( token_buffer *tokbuf, expr_list *op
 extern bool             DefineProc;     // true if the definition of procedure
                                         // has not ended
 
-static void             check_assume( struct asm_sym *, prefix_reg );
+static void             check_assume( asm_sym *, prefix_reg );
 
 bool                    CheckSeg;       // if checking of opened segment is needed
-struct asm_sym          *Frame;         // Frame of current fixup
-struct asm_sym          *SegOverride;
+asm_sym                 *Frame;         // Frame of current fixup
+asm_sym                 *SegOverride;
 
 #else
 
@@ -96,8 +96,8 @@ static bool             mem2code( unsigned char, asm_token, asm_token, asm_sym *
 
 #if defined( _STANDALONE_ )
 
-void find_frame( struct asm_sym *sym )
-/************************************/
+void find_frame( asm_sym *sym )
+/*****************************/
 {
     if( SegOverride != NULL ) {
         sym = SegOverride;
@@ -201,9 +201,9 @@ static void seg_override( asm_token seg_reg, asm_sym *sym )
 - determine if segment override is necessary with the current address mode;
 */
 {
-    prefix_reg          default_seg;
+    prefix_reg      default_seg;
 #if defined( _STANDALONE_ )
-    enum assume_reg     assume_seg;
+    assume_reg      assume_seg;
 
     switch( seg_reg ) {
     case T_SS:
@@ -277,12 +277,13 @@ static void seg_override( asm_token seg_reg, asm_sym *sym )
 
 #if defined( _STANDALONE_ )
 
-static void check_assume( struct asm_sym *sym, prefix_reg default_reg )
-/**************************************************************************/
-/* Check if an assumed register is found, and prefix a register if necessary */
+static void check_assume( asm_sym *sym, prefix_reg default_reg )
+/***************************************************************
+ * Check if an assumed register is found, and prefix a register if necessary
+ */
 {
-    enum assume_reg     reg;
-    enum assume_reg     def_reg;
+    assume_reg      reg;
+    assume_reg      def_reg;
 
     /**/myassert( sym != NULL );
     if( sym->state == SYM_UNDEFINED )
@@ -406,8 +407,8 @@ bool InRange( unsigned long val, unsigned bytes )
      Can 'val' be represented in 'bytes' bytes?
 */
 {
-    unsigned long max;
-    unsigned long mask;
+    unsigned long   max;
+    unsigned long   mask;
 
     max = ( 1UL << ( bytes * 8 ) ) - 1;
     if( val <= max ) /* absolute value fits */
@@ -425,9 +426,9 @@ static bool mem2code( unsigned char ss, asm_token index, asm_token base, asm_sym
   encode the memory operand to machine code
 */
 {
-    struct asm_code     *rCode = Code;
-    unsigned char       mod_field;
-    unsigned char       rm_field;
+    asm_code        *rCode = Code;
+    unsigned char   mod_field;
+    unsigned char   rm_field;
 
     // clear mod
     rm_field = 0;
@@ -1256,7 +1257,7 @@ static bool expand_call( token_buffer *tokbuf, token_idx index, int lang_type )
         reversed++;
         break;
     case WASM_LANG_WATCOM_C:
-        if( Options.watcom_parms_passed_by_regs || !Use32 ) {
+        if( Options.watcom_params_passed_by_regs || !Use32 ) {
             parameter_on_stack = false;
         } else {
             cleanup++;
@@ -1637,10 +1638,10 @@ static bool idata_nofixup( expr_list *opndx )
 static bool idata_fixup( token_buffer *tokbuf, expr_list *opndx )
 /***************************************************************/
 {
-    struct asmfixup     *fixup;
-    enum fixup_types    fixup_type;
-    int                 type;
-    bool                sym32;
+    asmfixup        *fixup;
+    fixup_types     fixup_type;
+    int             type;
+    bool            sym32;
 
     Code->data[Opnd_Count] = opndx->value;
     segm_override_idata( tokbuf, opndx );
@@ -1787,14 +1788,14 @@ static bool idata_operand( token_buffer *tokbuf, expr_list *opndx )
 static bool memory_operand( token_buffer *tokbuf, expr_list *opndx )
 /******************************************************************/
 {
-    unsigned char       ss = SCALE_FACTOR_1;
-    asm_token           index = T_NULL;
-    asm_token           base = T_NULL;
-    struct asm_sym      *sym;
-    bool                base_lock = false;
-    enum fixup_types    fixup_type;
+    unsigned char   ss = SCALE_FACTOR_1;
+    asm_token       index = T_NULL;
+    asm_token       base = T_NULL;
+    asm_sym         *sym;
+    bool            base_lock = false;
+    fixup_types     fixup_type;
 #if defined( _STANDALONE_ )
-    bool                sym32;
+    bool            sym32;
 #endif
 
     Code->data[Opnd_Count] = opndx->value;
@@ -2281,18 +2282,18 @@ bool AsmParse( token_buffer *tokbuf, const char *curline )
  *   with the switch statement;
  */
 {
-    token_idx           i;
-    bool                cur_opnd_label = false;
-    bool                last_opnd_label = false;
-    struct asm_code     *rCode = Code;
-    expr_list           opndx;
-    token_idx           n;
-    operand_idx         j;
-    int                 jmp_flags;
-    bool                flag;
+    token_idx       i;
+    bool            cur_opnd_label = false;
+    bool            last_opnd_label = false;
+    asm_code        *rCode = Code;
+    expr_list       opndx;
+    token_idx       n;
+    operand_idx     j;
+    int             jmp_flags;
+    bool            flag;
 #if defined( _STANDALONE_ )
-    int                 temp;
-    static bool         in_epilogue = false;
+    int             temp;
+    static bool     in_epilogue = false;
 #endif
 
 #if defined( _STANDALONE_ )
@@ -3071,7 +3072,7 @@ void AsmEnvInit( int use32, int cpu, int fpu, bool fpu_emu )
     }
 }
 
-static enum asm_cpu CPUinfo;
+static asm_cpu  CPUinfo;
 
 void AsmInit( void )
 /******************/

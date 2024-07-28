@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -50,6 +50,8 @@
 #include "dbgwglob.h"
 #include "dbgwinsp.h"
 #include "menudef.h"
+#include "dbgicon.h"
+#include "litdui.h"
 
 
 enum {
@@ -103,7 +105,7 @@ static event_record *RepGetEvent( int row )
 }
 
 
-static wnd_row RepNumRows( a_window wnd )
+static wnd_row WNDCALLBACK RepNumRows( a_window wnd )
 {
     wnd_row             count;
     event_record        *ev;
@@ -118,7 +120,7 @@ static wnd_row RepNumRows( a_window wnd )
 }
 
 
-static void RepRefresh( a_window wnd )
+static void WNDCALLBACK RepRefresh( a_window wnd )
 {
     event_record        *ev;
     gui_ord             extent, max_addr, max_cue;
@@ -157,7 +159,7 @@ static void RepRefresh( a_window wnd )
 }
 
 
-static void RepMenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_piece piece )
+static void WNDCALLBACK RepMenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_piece piece )
 {
     event_record        *ev;
 
@@ -188,7 +190,7 @@ static void RepMenuItem( a_window wnd, gui_ctl_id id, wnd_row row, wnd_piece pie
 }
 
 
-static  bool    RepGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *line )
+static  bool    WNDCALLBACK RepGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *line )
 {
     event_record        *ev;
 
@@ -219,7 +221,7 @@ static  bool    RepGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line
 }
 
 
-static bool RepWndEventProc( a_window wnd, gui_event gui_ev, void *parm )
+static bool WNDCALLBACK RepWndEventProc( a_window wnd, gui_event gui_ev, void *parm )
 {
     /* unused parameters */ (void)parm;
 
@@ -231,7 +233,7 @@ static bool RepWndEventProc( a_window wnd, gui_event gui_ev, void *parm )
     return( false );
 }
 
-static bool ChkUpdate( void )
+static bool WNDCALLBACK ChkUpdate( void )
 {
     return( UpdateFlags & UP_EVENT_CHANGE );
 }

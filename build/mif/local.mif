@@ -1,52 +1,57 @@
 ##############################################################################
 #
-# HANDLING OF NON-WATCOM COMPILERS/PLATFORMS
+# HANDLING OF TOOLCHAINS/COMPILERS/PLATFORMS
 #
 ##############################################################################
-#
-# x64 CPU (64-bit)
-#
-##################################
-# use native tools for x64 cpu
-# skip build for unsupported platforms
-!ifeq host_cpu x64
-! ifneq bld_cpu x64
-skip_build: .SYMBOLIC
-! else ifndef bldonly_$(host_os)
-skip_build: .SYMBOLIC
+
+##################################################
+# check for MS Visual Studio and Intel toolchains
+##################################################
+!ifeq use_for_build_$(bld_os)$(bld_cpu) msvc_intel
+! if !( defined( __MSVC_TOOLS__ ) || defined( __INTEL_TOOLS__ ) )
+# skip, configuration mismatch
+skip = 1
+! else ifeq use_for_target_$(host_os)$(host_cpu) msvc_intel
+!  if "$(bld_os)$(bld_cpu)" != "$(host_os)$(host_cpu)"
+# skip, target mismatch
+skip = 2
+!  endif
+! else ifdef use_for_target_$(host_os)$(host_cpu)
+# skip, current target requires toolchain other then configured
+skip = 3
 ! endif
-##################################
-#
-# arm CPU (32-bit)
-#
-##################################
-# use native tools for arm cpu
-# skip build for unsupported platforms
-!else ifeq host_cpu arm
-! ifneq bld_cpu arm
-skip_build: .SYMBOLIC
-! else ifndef bldonly_$(host_os)
-skip_build: .SYMBOLIC
+##################################################
+# check for Clang and GCC toolchains
+##################################################
+!else ifeq use_for_build_$(bld_os)$(bld_cpu) clang_gcc
+! if !( defined( __CLANG_TOOLS__ ) || defined( __GCC_TOOLS__ ) )
+# skip, configuration mismatch
+skip = 4
+! else ifeq use_for_target_$(host_os)$(host_cpu) clang_gcc
+!  if "$(bld_os)$(bld_cpu)" != "$(host_os)$(host_cpu)"
+# skip, target mismatch
+skip = 5
+!  endif
+! else ifdef use_for_target_$(host_os)$(host_cpu)
+# skip, current target requires toolchain other then configured
+skip = 6
 ! endif
-##################################
-#
-# arm CPU (64-bit)
-#
-##################################
-# use native tools for a64 cpu
-# skip build for unsupported platforms
-!else ifeq host_cpu a64
-! ifneq bld_cpu a64
+##################################################
+# check for WATCOM toolchain
+##################################################
+!else ifdef use_for_build_$(bld_os)$(bld_cpu)
+# skip, current host requires toolchain other then configured
+skip = 7
+!else ifdef use_for_target_$(host_os)$(host_cpu)
+# skip, current target requires toolchain other then configured
+skip = 8
+!endif
+##############################################################################
+!ifdef skip
 skip_build: .SYMBOLIC
-! else ifndef bldonly_$(host_os)
-skip_build: .SYMBOLIC
-! endif
-##################################
-#
-# others
-#
-##################################
-!else
+!  ifeq verbose 1
+    @echo skip $(skip) : host_os=$(host_os)/host_cpu=$(host_cpu)/bld_os=$(bld_os)/bld_cpu=$(bld_cpu)
+!  endif
 !endif
 ##############################################################################
 
@@ -54,8 +59,8 @@ skip_build: .SYMBOLIC
 ######################
 
 !ifdef bootstrap
-!ifdef __WATCOM_TOOLS__
-!ifdef __LOADDLL__
+! ifdef __WATCOM_TOOLS__
+!  ifdef __LOADDLL__
 !loaddll wcc    wccd.dll
 !loaddll wcc386 wccd386.dll
 !loaddll wccaxp wccdaxp.dll
@@ -65,56 +70,52 @@ skip_build: .SYMBOLIC
 !loaddll wpp386 wppd386.dll
 !loaddll wppaxp wppdaxp.dll
 !loaddll wrc    wrcd.dll
-!endif
-!endif
+!  endif
+! endif
 !endif
 
+!ifeq use_for_build_$(bld_os)$(bld_cpu) msvc_intel
+##############################################################################
 ##############################################################################
 #
 # definitions for VISUALC and INTEL toolchains
 #
 ##############################################################################
-!if defined("__MSVC_TOOLS__") || defined("__INTEL_TOOLS__")
-
-!if defined("__NT__")
-
-!if !defined( "__WATCOM_TOOLS__" ) || "$(bld_cpu)" == "x64"
+##############################################################################
 
 additional_clean_sys = *.pdb
 
 # librarian settings
 ############################
-!ifdef __INTEL_TOOLS__
+! ifdef __INTEL_TOOLS__
 bld_lib = $(noecho)xilib -nologo -out:$@
-!else
+! else
 bld_lib = $(noecho)lib -nologo -out:$@
-!endif
+! endif
 
 # common settings
 ############################
-common_cppflags = -D__FLAT__
+common_ppflags      = -D__FLAT__ -D_CRT_SECURE_NO_WARNINGS -D_CRT_NONSTDC_NO_WARNINGS -D_STATIC_CPPLIB
 
-common_cppflags_nt  = -D__NT__
+common_cppflags_nt  = -D__NT__ -DWIN32_LEAN_AND_MEAN
 
-common_cppflags_386 = -D__386__
 common_cppflags_x64 =
 
-common_cppflags_nt_386  = -D__NT_386__
 common_cppflags_nt_x64  = -D__NT_X64__
 
 # common release/debug options
-!ifdef __INTEL_TOOLS__
+! ifdef __INTEL_TOOLS__
 common_flags_rel = -Ox -Zi -fast
 common_flags_dbg = -Zi -fast
-!else
+! else
 common_flags_rel = -Ox -Zi
 common_flags_dbg = -Zi
-!endif
-!ifeq debug 0
+! endif
+! ifeq debug 0
 common_flags = $(common_flags_rel)
-!else
+! else
 common_flags = $(common_flags_dbg)
-!endif
+! endif
 
 # -wd4068 "unknown pragma"
 # -wd4102 "unreferenced label"
@@ -125,31 +126,30 @@ common_flags = $(common_flags_dbg)
 # -wd4702 "unreachable code"
 #common_cflags_wng = -wd4068 -wd4102 -wd4127 -wd4214 -wd4244 -wd4306 -wd4702
 common_cflags_wng = -W4 -wd4214
-common_cflags = $(common_cflags_wng) -D_STATIC_CPPLIB
+common_cflags = $(common_cflags_wng)
 
 common_ldflags_rel =
 common_ldflags_dbg =
-!ifeq debug 0
+! ifeq debug 0
 common_ldflags = $(common_ldflags_rel)
-!else
+! else
 common_ldflags = $(common_ldflags_dbg)
-!endif
+! endif
 
 # Options for building Executable
-!ifdef bootstrap
+! ifdef bootstrap
 common_cflags_exe  =
 common_clflags_exe =
-!else
+! else
 common_cflags_exe  =
 common_clflags_exe =
-!endif
+! endif
 
 # Options for building DLLs
 common_cflags_lib_shared  = -LD
 common_clflags_lib_shared = -LD
 
 # Target specific options
-target_cflags_386   =
 target_cflags_x64   =
 
 # DLL/shared library file extension
@@ -158,35 +158,37 @@ ext_lib_shared = .dll
 # extra objects for linking via cl
 cl_extra_objs_gen =
 cl_extra_objs_dll =
-!ifeq bld_cpu x64
+! ifeq bld_cpu x64
 cl_extra_libs_gen = $(watcom_dir)/$(host_os)x64/clibext.lib
 cl_extra_libs_dll = $(watcom_dir)/$(host_os)x64/clibexts.lib
-!else
+! else
 cl_extra_libs_gen = $(watcom_dir)/$(bin_subdir)/clibext.lib
 cl_extra_libs_dll = $(watcom_dir)/$(bin_subdir)/clibexts.lib
-!endif
+! endif
 
-!ifeq sys_dll 1
+! ifdef sys_dll
 cl_extra_objs = $(cl_extra_objs_dll)
 cl_extra_libs = $(cl_extra_libs_dll)
-!else
+! else
 cl_extra_objs = $(cl_extra_objs_gen)
 cl_extra_libs = $(cl_extra_libs_gen)
-!endif
+! endif
 
 # bld settings
 ############################
-!ifdef __INTEL_TOOLS__
-bcc  = icl -nologo -c
-bcxx = icl -nologo -c
-bccl = $(noecho)icl -nologo
-bcl  = $(noecho)icl -nologo
-!else
-bcc  = cl -nologo -c
-bcxx = cl -nologo -c
-bccl = $(noecho)cl -nologo
-bcl  = $(noecho)cl -nologo
-!endif
+! ifdef __INTEL_TOOLS__
+bld_cc  = icl -nologo -c
+bld_cxx = icl -nologo -c
+bld_ccl = $(noecho)icl -nologo
+bld_cl  = $(noecho)icl -nologo
+! else
+bld_cc  = cl -nologo -c
+bld_cxx = cl -nologo -c
+bld_ccl = $(noecho)cl -nologo
+bld_cl  = $(noecho)cl -nologo
+! endif
+
+bld_ppflags_sys = $(common_ppflags)
 
 # extra objects for linking via cl
 bld_cl_extra_objs_gen =
@@ -194,61 +196,68 @@ bld_cl_extra_objs_dll =
 bld_cl_extra_libs_gen = $(watcom_dir)/$(bin_subdir)/clibext.lib
 bld_cl_extra_libs_dll = $(watcom_dir)/$(bin_subdir)/clibexts.lib
 
-!ifeq sys_dll 1
+! ifdef sys_dll
 bld_cl_extra_objs = $(bld_cl_extra_objs_dll)
 bld_cl_extra_libs = $(bld_cl_extra_libs_dll)
-!else
+! else
 bld_cl_extra_objs = $(bld_cl_extra_objs_gen)
 bld_cl_extra_libs = $(bld_cl_extra_libs_gen)
-!endif
+! endif
 
-bld_cc_sys = -D_CRT_SECURE_NO_WARNINGS -D_CRT_NONSTDC_NO_WARNINGS
+bld_cc_sys =
 bld_cl_sys =
-
-bld_incs = $(bld_extra_incs) -I"$(watcom_dir)/h"
-
-bld_cppflags = $(common_cppflags) $(common_cppflags_$(bld_os)) $(common_cppflags_$(bld_cpu)) $(common_cppflags_$(bld_os)_$(bld_cpu))
-
-bld_cflags   = $(common_cflags) $(common_flags) -Fo$@
 
 bld_c_flags   =
 bld_cxx_flags = -EHsc
 
+bld_incs = $(bld_extra_incs) -I"$(watcom_dir)/h"
+
+bld_cppflags = $(common_cppflags_$(bld_os)) $(common_cppflags_$(bld_cpu)) $(common_cppflags_$(bld_os)_$(bld_cpu))
+
+# options for source compilation only
+bld_cflags   = $(bld_cc_sys) $(common_cflags) $(common_flags) $(bld_incs) #-Fo$@
+
 bld_ldflags1 = $(common_ldflags) -Fm
 
+# options for linking only
+bld_clflags  = $(bld_cl_sys) -Fe$@ $(bld_ldflags1)
+
+# options for single source compile and link
+bld_cclflags = $(bld_cflags) $(bld_clflags)
+
+# options for linking
 bld_ldflags  =  $(bld_cl_extra_libs_gen) -link -nologo &
     -MAPINFO:EXPORTS -INCREMENTAL:NO -DEFAULTLIB:user32.lib -DEFAULTLIB:ole32.lib &
     -DEFAULTLIB:advapi32.lib -DEFAULTLIB:shell32.lib -DEFAULTLIB:gdi32.lib -DEFAULTLIB:comdlg32.lib &
     -NODEFAULTLIB:libucrt.lib -DEFAULTLIB:ucrt.lib &
     $(bld_extra_ldflags) $(bld_ldflags_$(proj_type))
 
-# options for linking via cl
-bld_cclflags = $(bld_cppflags) $(common_cflags) $(common_flags) -Fe$@ $(bld_ldflags1)
-bld_clflags  = -Fe$@ $(bld_ldflags1)
-
-!ifndef __WATCOM_TOOLS__
+#
+# target definitions for VISUALC and INTEL toolchains
+#
+! ifeq use_for_target_$(host_os)$(host_cpu) msvc_intel
 
 # standard settings
 ############################
-!ifdef __INTEL_TOOLS__
+!  ifdef __INTEL_TOOLS__
 cc  = $(noecho)icl -nologo -c
 cxx = $(noecho)icl -nologo -c
 cl  = $(noecho)icl -nologo
-!else
+!  else
 cc   = $(noecho)cl -nologo -c
 cxx  = $(noecho)cl -nologo -c
 cl   = $(noecho)cl -nologo
-!endif
+!  endif
 
-cppflags_nt  = $(common_cppflags) $(common_cppflags_nt)
-cppflags_osi = $(common_cppflags) $(common_cppflags_$(host_os))
+ppflags_sys = $(common_ppflags)
 
-cppflags_386 = $(common_cppflags_386) $(common_cppflags_$(host_os)_386)
-!ifdef bootstrap
+cppflags_nt  = $(common_cppflags_nt)
+
+!  ifdef bootstrap
 cppflags_x64 = $(common_cppflags_x64) $(common_cppflags_$(host_os)_x64)
-!else
+!  else
 cppflags_x64 = $(common_cppflags_x64) $(common_cppflags_$(host_os)_x64) -D_WIN32_WINNT=_WIN32_WINNT_WIN7
-!endif
+!  endif
 
 c_flags   =
 cxx_flags = -EHsc
@@ -269,13 +278,13 @@ ldflags_gen  = $(cl_extra_libs_gen) $(ldflags_gen_all) $(extra_ldflags) $(bld_ld
 ldflags_dll  = $(cl_extra_libs_dll) $(ldflags_gen_all) $(extra_ldflags_dll) $(bld_ldflags_dll_$(proj_type))
 ldflags_wind = $(cl_extra_libs_gen) $(ldflags_gen_all) -SUBSYSTEM:WINDOWS $(extra_ldflags) $(bld_ldflags_$(proj_type))
 
-!ifeq sys_dll 1
+!  ifdef sys_dll
 ldflags = $(ldflags_dll)
-!else ifeq sys_windowed 1
+!  else ifdef sys_windowed
 ldflags = $(ldflags_wind)
-!else
+!  else
 ldflags = $(ldflags_gen)
-!endif
+!  endif
 
 # options for linking by cl
 clflags_gen  = $(bld_cl_sys) $(common_flags) $(common_clflags_exe) -Fe$@ $(ldflags1)
@@ -285,35 +294,15 @@ clflags_wind = $(clflags_gen)
 # options for include source code file
 incl_file_opts = -FI
 
-!endif
-!endif
-
-!else
-!error "OS is unsupported by OW build system for this toolchain"
-!endif
-
-##############################################################################
-#
-# definitions for CLANG and GCC toolchain
-#
-##############################################################################
-!else if defined("__CLANG_TOOLS__") || defined("__GCC_TOOLS__")
-
-!if defined("__LINUX__") || defined("__BSD__") || defined("__HAIKU__") || defined("__OSX__")
-
-!ifdef __LINUX__
-! if !defined( "__WATCOM_TOOLS__" ) || "$(bld_cpu)" == "x64" || "$(bld_cpu)" == "arm" || "$(bld_cpu)" == "a64"
-use_for_build = 1
 ! endif
-!else ifdef __BSD__
-use_for_build = 1
-!else ifdef __HAIKU__
-use_for_build = 1
-!else ifdef __OSX__
-use_for_build = 1
-!endif
-
-!ifdef use_for_build
+!else ifeq use_for_build_$(bld_os)$(bld_cpu) clang_gcc
+##############################################################################
+##############################################################################
+#
+# definitions for CLANG and GCC toolchains
+#
+##############################################################################
+##############################################################################
 
 # librarian settings
 ############################
@@ -321,7 +310,7 @@ bld_lib = $(noecho)ar crs $@
 
 # common settings
 ############################
-common_cppflags         = -D__UNIX__ -D__FLAT__
+common_ppflags          = -D__UNIX__ -D__FLAT__
 
 common_cppflags_linux   = -D__LINUX__
 common_cppflags_bsd     = -D__BSD__
@@ -360,48 +349,54 @@ common_cppflags_osx_a64     = -D__OSX_ARM64__
 common_flags_rel = -O -g1 -gdwarf-2
 common_flags_dbg = -g -gdwarf
 # common debug info compression options
-!ifdef __CLANG_TOOLS__
+! ifdef __CLANG_TOOLS__
 common_flags_compr = -gz
-!else
-! ifdef __OSX__
 ! else
+!  ifdef __OSX__
+!  else
 common_flags_compr = -gz
+!  endif
 ! endif
-!endif
 
-!ifeq debug 0
+! ifeq debug 0
 common_flags = $(common_flags_rel) $(common_flags_compr)
-!else
+! else
 common_flags = $(common_flags_dbg) $(common_flags_compr)
-!endif
+! endif
 
 # Warning flags: all enabled except the ones that have no use besides annoy people
-!ifdef __CLANG_TOOLS__
+! ifdef __CLANG_TOOLS__
 common_cflags_wng = -Wall -Wno-switch -Wno-missing-braces -Wno-parentheses -Wno-pragma-pack -Wno-implicit-exception-spec-mismatch -ferror-limit=200
-!else
+! else
 common_cflags_wng = -Wall -Wno-switch -Wno-missing-braces -Wno-parentheses
-!endif
+! endif
 common_cflags = $(common_cflags_wng)
+! ifdef %ASAN
+common_cflags += -fsanitize=address
+! endif
 
 common_ldflags_rel =
 common_ldflags_dbg =
-!ifeq debug 0
+! ifeq debug 0
 common_ldflags = $(common_ldflags_rel)
-!else
+! else
 common_ldflags = $(common_ldflags_dbg)
-!endif
+! endif
+! ifdef %ASAN
+common_ldflags += -fsanitize=address
+! endif
 
 # Options for building Executable
-!ifdef bootstrap
+! ifdef bootstrap
 common_cflags_exe  =
 common_clflags_exe =
-!else ifeq host_os osx
+! else ifeq host_os osx
 common_cflags_exe  =
 common_clflags_exe =
-!else
+! else
 common_cflags_exe  = -static
 common_clflags_exe = -static
-!endif
+! endif
 
 # Options for building DLLs
 common_cflags_lib_shared  = -fPIC
@@ -409,12 +404,11 @@ common_clflags_lib_shared = -shared
 
 # Target specific options
 target_cflags_386   =
-!ifdef bootstrap
+! ifdef bootstrap
 target_cflags_x64   =
-!else
+! else
 target_cflags_x64   =
-#target_cflags_x64   = -march=core2 -msse2
-!endif
+! endif
 target_cflags_ppc   =
 target_cflags_mps   =
 target_cflags_arm   =
@@ -426,112 +420,151 @@ ext_lib_shared = .so
 # extra objects for linking via cl
 cl_extra_objs_gen =
 cl_extra_objs_dll =
-!ifeq bld_cpu x64
+! ifeq bld_cpu x64
 cl_extra_libs_gen = $(watcom_dir)/$(host_os)x64/clibext.lib
 cl_extra_libs_dll = $(watcom_dir)/$(host_os)x64/clibexts.lib
-!else
+! else
 cl_extra_libs_gen = $(watcom_dir)/$(bin_subdir)/clibext.lib
 cl_extra_libs_dll = $(watcom_dir)/$(bin_subdir)/clibexts.lib
-!endif
+! endif
 
-!ifeq sys_dll 1
+! ifdef sys_dll
 cl_extra_objs = $(cl_extra_objs_dll)
 cl_extra_libs = $(cl_extra_libs_dll)
-!else
+! else
 cl_extra_objs = $(cl_extra_objs_gen)
 cl_extra_libs = $(cl_extra_libs_gen)
-!endif
+! endif
 
 # bld settings
 ############################
-!ifdef __CLANG_TOOLS__
-bcc  = clang -pipe -c
-bcxx = clang++ -pipe -c
-bccl = $(noecho)clang -pipe
-bcl  = $(noecho)clang -pipe
-!else
-bcc  = gcc -pipe -c
-bcxx = g++ -pipe -c
-bccl = $(noecho)gcc -pipe
-bcl  = $(noecho)gcc -pipe
-!endif
+! ifdef __CLANG_TOOLS__
+!  ifdef %OWCLANG
+bld_cc  = $(%OWCLANG) -pipe -c
+bld_ccl = $(noecho)$(%OWCLANG) -pipe
+bld_cl  = $(noecho)$(%OWCLANG) -pipe
+!  else
+bld_cc  = clang -pipe -c
+bld_ccl = $(noecho)clang -pipe
+bld_cl  = $(noecho)clang -pipe
+!  endif
+!  ifdef %OWCLANGXX
+bld_cxx = $(%OWCLANGXX) -pipe -c
+!  else
+bld_cxx = clang++ -pipe -c
+!  endif
+! else
+!  ifdef %OWGCC
+bld_cc  = $(%OWGCC) -pipe -c
+bld_ccl = $(noecho)$(%OWGCC) -pipe
+bld_cl  = $(noecho)$(%OWGCC) -pipe
+!  else
+bld_cc  = gcc -pipe -c
+bld_ccl = $(noecho)gcc -pipe
+bld_cl  = $(noecho)gcc -pipe
+!  endif
+!  ifdef %OWGCCXX
+bld_cxx = $(%OWGCCXX) -pipe -c
+!  else
+bld_cxx = g++ -pipe -c
+!  endif
+! endif
+
+bld_ppflags_sys = $(common_ppflags)
 
 bld_cl_extra_objs_gen =
 bld_cl_extra_objs_dll =
 bld_cl_extra_libs_gen = $(watcom_dir)/$(bin_subdir)/clibext.lib
 bld_cl_extra_libs_dll = $(watcom_dir)/$(bin_subdir)/clibexts.lib
 
-!ifeq sys_dll 1
+! ifdef sys_dll
 bld_cl_extra_objs = $(bld_cl_extra_objs_dll)
 bld_cl_extra_libs = $(bld_cl_extra_libs_dll)
-!else
+! else
 bld_cl_extra_objs = $(bld_cl_extra_objs_gen)
 bld_cl_extra_libs = $(bld_cl_extra_libs_gen)
-!endif
+! endif
 
 bld_cc_sys = -fno-asm -fno-common -fsigned-char
 bld_cl_sys =
 
-bld_incs = $(bld_extra_incs) -I"$(watcom_dir)/h"
-
-bld_cppflags = $(common_cppflags) $(common_cppflags_$(bld_os)) $(common_cppflags_$(bld_cpu)) $(common_cppflags_$(bld_os)_$(bld_cpu))
-
-bld_cflags   = $(common_cflags) $(common_flags) -o $@
-
-bld_c_flags   =
+bld_c_flags   = -std=gnu99
 bld_cxx_flags = -std=c++98
 
-# options for linking
-!ifdef __OSX__
+bld_incs = $(bld_extra_incs) -I"$(watcom_dir)/h"
+
+bld_cppflags = $(common_cppflags_$(bld_os)) $(common_cppflags_$(bld_cpu)) $(common_cppflags_$(bld_os)_$(bld_cpu))
+
+# options for source compilation only
+bld_cflags   = $(bld_cc_sys) $(common_cflags) $(common_flags) $(bld_incs) #-o $@
+
+! ifdef __OSX__
+bld_ldflags1 = $(common_ldflags) -Wl,-map,$^&.map
+! else
+bld_ldflags1 = $(common_ldflags) -Wl,-Map,$^&.map
+! endif
+
+# options for linking only
+bld_clflags  = $(bld_cl_sys) -o $@ $(bld_ldflags1)
+
+# options for single source compile and link
+bld_cclflags = $(bld_cflags) $(bld_clflags)
+
+! ifdef __OSX__
 bld_ldflags_cxx = -lc++
 bld_ldflags_dll_cxx = -lc++
-!else ifdef __CLANG_TOOLS__
+! else ifdef __CLANG_TOOLS__
 bld_ldflags_cxx = -lstdc++
 bld_ldflags_dll_cxx = -lstdc++
-!else ifdef __GCC_TOOLS__
-! if $(__GCC_TOOLS__) < 7
+! else ifdef __GCC_TOOLS__
+!  if $(__GCC_TOOLS__) < 7
 bld_ldflags_cxx = -lsupc++ -lstdc++
 bld_ldflags_dll_cxx = -lsupc++ -lstdc++
+!  else
+bld_ldflags_cxx = -lstdc++
+bld_ldflags_dll_cxx = -lstdc++
+!  endif
 ! else
-bld_ldflags_cxx = -lstdc++
-bld_ldflags_dll_cxx = -lstdc++
-! endif
-!else
 bld_ldflags_cxx = -lsupc++ -lstdc++
 bld_ldflags_dll_cxx = -lsupc++ -lstdc++
-!endif
+! endif
 
-!ifdef __OSX__
-bld_ldflags1 = $(common_ldflags) -Wl,-map,$^&.map
-!else
-bld_ldflags1 = $(common_ldflags) -Wl,-Map,$^&.map
-!endif
-
+# options for linking
 bld_ldflags  = $(bld_cl_extra_libs_gen) $(bld_extra_ldflags) $(bld_ldflags_$(proj_type))
 
-# options for linking via cl
-bld_cclflags = $(bld_cppflags) $(common_cflags) $(common_flags) -o $@ $(bld_ldflags1)
-bld_clflags  = -o $@ $(bld_ldflags1)
-
-!ifndef __WATCOM_TOOLS__
+#
+# target definitions for Clang and GCC toolchains
+#
+! ifeq use_for_target_$(host_os)$(host_cpu) clang_gcc
 
 # standard settings
 ############################
-!ifdef __CLANG_TOOLS__
+!  ifdef __CLANG_TOOLS__
+!   ifdef %OWCLANG
+cc   = $(noecho)$(%OWCLANG) -pipe -c
+cl   = $(noecho)$(%OWCLANG) -pipe
+!   else
 cc   = $(noecho)clang -pipe -c
-cxx  = $(noecho)clang++ -pipe -c
 cl   = $(noecho)clang -pipe
-!else
+!   endif
+!   ifdef %OWCLANGXX
+cxx  = $(noecho)$(%OWCLANGXX) -pipe -c
+!   else
+cxx  = $(noecho)clang++ -pipe -c
+!   endif
+!  else
 cc   = $(noecho)gcc -pipe -c
-cxx  = $(noecho)g++ -pipe -c
 cl   = $(noecho)gcc -pipe
-!endif
+cxx  = $(noecho)g++ -pipe -c
+!  endif
 
-cppflags_linux  = $(common_cppflags) $(common_cppflags_linux)
-cppflags_bsd    = $(common_cppflags) $(common_cppflags_bsd)
-cppflags_haiku  = $(common_cppflags) $(common_cppflags_haiku)
-cppflags_osx    = $(common_cppflags) $(common_cppflags_osx)
-cppflags_osi    = $(common_cppflags) $(common_cppflags_$(host_os))
+ppflags_sys = $(common_ppflags)
+
+cppflags_linux  = $(common_cppflags_linux)
+cppflags_bsd    = $(common_cppflags_bsd)
+cppflags_haiku  = $(common_cppflags_haiku)
+cppflags_osx    = $(common_cppflags_osx)
+cppflags_osi    = $(common_cppflags_$(host_os))
 
 cppflags_386    = $(common_cppflags_386) $(common_cppflags_$(host_os)_386)
 cppflags_ppc    = $(common_cppflags_ppc) $(common_cppflags_$(host_os)_ppc)
@@ -540,7 +573,7 @@ cppflags_x64    = $(common_cppflags_x64) $(common_cppflags_$(host_os)_x64)
 cppflags_arm    = $(common_cppflags_arm) $(common_cppflags_$(host_os)_arm)
 cppflags_a64    = $(common_cppflags_a64) $(common_cppflags_$(host_os)_a64)
 
-c_flags   =
+c_flags   = -std=gnu99
 cxx_flags = -std=c++98
 
 cflags_gen  = $(bld_cc_sys) $(common_cflags) $(target_cflags_$(bld_cpu)) $(common_flags) $(common_cflags_exe) -o $@
@@ -548,23 +581,23 @@ cflags_dll  = $(bld_cc_sys) $(common_cflags) $(target_cflags_$(bld_cpu)) $(commo
 cflags_wind = $(cflags_gen)
 
 # options for linking
-!ifdef __OSX__
+!  ifdef __OSX__
 ldflags1 = $(common_ldflags) -Wl,-map,$^&.map
-!else
+!  else
 ldflags1 = $(common_ldflags) -Wl,-Map,$^&.map
-!endif
+!  endif
 
 ldflags_gen  = $(cl_extra_libs_gen) $(extra_ldflags) $(bld_ldflags_$(proj_type))
 ldflags_dll  = $(cl_extra_libs_dll) $(extra_ldflags_dll) $(bld_ldflags_dll_$(proj_type))
 ldflags_wind = $(ldflags_gen)
 
-!ifeq sys_dll 1
+!  ifdef sys_dll
 ldflags = $(ldflags_dll)
-!else ifeq sys_windowed 1
+!  else ifdef sys_windowed
 ldflags = $(ldflags_wind)
-!else
+!  else
 ldflags = $(ldflags_gen)
-!endif
+!  endif
 
 # options for single source utility compilations
 clflags_gen  = $(common_clflags_exe) $(bld_cl_sys) $(common_flags) -o $@ $(ldflags1)
@@ -574,42 +607,19 @@ clflags_wind = $(clflags_gen)
 # options for include source code file
 incl_file_opts = -include
 
-!endif
-
-!endif  # use_for_build
-
+! endif
 !else
-!error "OS is unsupported by OW build system for this toolchain"
-!endif
-
+##############################################################################
 ##############################################################################
 #
 # definitions for WATCOM toolchain
 #
 ##############################################################################
-!else if defined("__WATCOM_TOOLS__")
+##############################################################################
 
-!if defined("__LINUX__") || defined("__DOS__") || defined("__OS2__") || defined("__NT__")
-
-!ifdef __LINUX__
-! if "$(bld_cpu)" == "386" || "$(bld_cpu)" == "axp" || "$(bld_cpu)" == "ppc" || "$(bld_cpu)" == "mps"
-use_for_build = 1
+! if !( defined("__LINUX__") || defined("__DOS__") || defined("__OS2__") || defined("__NT__") )
+!error "OS is unsupported by OW build system for this toolchain"
 ! endif
-!else ifdef __DOS__
-! if "$(bld_cpu)" == "386"
-use_for_build = 1
-! endif
-!else ifdef __OS2__
-! if "$(bld_cpu)" == "386"
-use_for_build = 1
-! endif
-!else ifdef __NT__
-! if "$(bld_cpu)" == "386" || "$(bld_cpu)" == "axp" || "$(bld_cpu)" == "ppc" || "$(bld_cpu)" == "mps"
-use_for_build = 1
-! endif
-!endif
-
-!ifdef use_for_build
 
 # librarian settings
 ############################
@@ -626,6 +636,11 @@ bcc_axp         = *wccaxp
 bcc_ppc         = *wccppc
 bcc_mps         = *wccmps
 
+bcxx_386        = *wpp386
+bcxx_axp        = *wppaxp
+bcxx_ppc        = *wppppc
+bcxx_mps        = *wppmps
+
 bcl_386         = *wcl386
 bcl_axp         = *wclaxp
 bcl_ppc         = *wclppc
@@ -636,62 +651,65 @@ bas_axp         = *wasaxp
 bas_ppc         = *wasppc
 bas_mps         = *wasmps
 
-bcc             = $(bcc_$(bld_cpu)) -zq
-bccl            = $(noecho)$(bcl_$(bld_cpu)) -zq
-bcl             = $(noecho)$(bcl_$(bld_cpu)) -zq
+bld_cc          = $(bcc_$(bld_cpu)) -zq
+bld_cxx         = $(bcxx_$(bld_cpu)) -zq
+bld_ccl         = $(noecho)$(bcl_$(bld_cpu)) -zq
+bld_cl          = $(noecho)$(bcl_$(bld_cpu)) -zq
 bas             = $(bas_$(bld_cpu)) -q
 blink           = *wlink op q
 
+bld_ppflags_sys =
+
 bld_cc_sys      = $(cflags_$(bld_os))
 bld_cl_sys      = $(clflags_$(bld_os)_$(bld_cpu))
+
+bld_c_flags     =
+bld_cxx_flags   = #-zastd=c++98
+
 bld_incs        = $(bld_extra_incs) -I"$(watcom_dir)/h"
 
-!if $(%OWTOOLSVER) >= 1300
+! if $(%OWTOOLSVER) > 1300
+# this can be used for OW 2.1 because older versions of OW 2.0
+# not support these new options
 bld_watcom_common_cflags   =-wx-wce=C310-xx-zam-zastd=c99
 bld_watcom_common_cxxflags =-w8-wce=P579-xx-zam
-!else
+! else
 bld_watcom_common_cflags   =-wx-wce=310-za99
 bld_watcom_common_cxxflags =-w8-wce=579
-!endif
+! endif
 
-!ifeq debug 0
+! ifeq debug 0
 bld_debug_cflags  = -s-ox
-!else
+! else
 bld_debug_cflags  = -d2
-!endif
+! endif
 
-# options for source compilations
-bld_cflags      = $(bld_debug_cflags)$(bld_watcom_common_cflags)-j-fo=.obj
+common_cppflags_nt = -DWIN32_LEAN_AND_MEAN
+bld_cppflags    = $(common_cppflags_$(bld_os))
 
-# options for single source utility compilations
-bld_cclflags    = $(bld_debug_cflags)$(bld_watcom_common_cflags)-j-fo=.obj -fe=$@
-bld_clflags     = -fe=$@
+# options for source compilation only
+bld_cflags      = $(bld_cc_sys) $(bld_debug_cflags)$(bld_watcom_common_cflags)-j-fo=.obj $(bld_incs)
+
+# options for linking only
+bld_clflags     = $(bld_cl_sys) -fe=$@
+
+# options for single source compile and link
+bld_cclflags    = $(bld_cflags) $(bld_clflags)
 
 # options for linking
 bld_ldflags     =
 
-!endif  # use_for_build
-
-!else
-!error "OS is unsupported by OW build system for this toolchain"
-!endif
-
-##############################################################################
 #
-# Unknown toolchain
+# target definition for WATCOM toolchain is in cproj.mif
 #
-##############################################################################
-!else ifndef __WATCOM_TOOLS__
-!error "Toolchain is unsupported by OW build system"
+
 !endif
-
 ##############################################################################
-
-bld_cc          = $(bcc) $(bld_cc_sys) $(bld_incs)
-bld_ccl         = $(bccl) $(bld_cc_sys) $(bld_cl_sys) $(bld_incs)
-bld_cl          = $(bcl) $(bld_cl_sys)
+##############################################################################
 
 cpp             = $(noecho)*wcpp $(bldver_cppflags)
+cppj            = $(cpp) -zk0
+cppu8           = $(cpp) -zku8
 
 echo_optencod : .PROCEDURE .EXPLICIT
 !ifeq verbose 0
@@ -758,4 +776,3 @@ echo_aslink : .PROCEDURE .EXPLICIT
     @echo bld_as $^&.obj
     @echo bld_link $^&.tmp
 !endif
-

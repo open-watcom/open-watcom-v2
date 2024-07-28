@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,9 +35,3 @@ pick( N_MEMORY,     sizeof( memory_name )   )
 pick( N_TEMP,       sizeof( temp_name )     )
 pick( N_REGISTER,   sizeof( register_name ) )
 pick( N_INDEXED,    sizeof( indexed_name )  )
-#ifdef SCOREBOARD
-/*  the next 3 used only by the scoreboarder */
-pick( N_INITIAL,    0   )
-pick( N_VOLATILE,   0   )
-pick( N_ADDRESS,    0   )
-#endif

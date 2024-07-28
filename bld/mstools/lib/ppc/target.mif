@@ -6,4 +6,6 @@ target_cpu = ppc
 libppc_autodepends = .AUTODEPEND
 !endif
 
+libppc_ntverrc = ..
+
 !include ../../lib.mif

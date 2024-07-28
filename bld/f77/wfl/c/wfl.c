@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,15 +37,15 @@
 #include <ctype.h>
 #include <errno.h>
 #ifdef __UNIX__
-  #include <dirent.h>
+    #include <dirent.h>
 #else
-  #include <direct.h>
+    #include <direct.h>
 #endif
 #if defined( __WATCOMC__ ) || !defined( __UNIX__ )
-#include <process.h>
+    #include <process.h>
 #endif
 #if defined( __WATCOMC__ ) || defined( __UNIX__ )
-#include <fnmatch.h>
+    #include <fnmatch.h>
 #endif
 #include "switch.h"
 #include "bool.h"
@@ -54,10 +54,14 @@
 #include "swchar.h"
 #include "pathgrp2.h"
 #include "compcfg.h"
-#include "wressetr.h"
-#include "wresset2.h"
 #include "wreslang.h"
 #include "wfl.rh"
+#ifdef USE_WRESLIB
+    #include "wressetr.h"
+    #include "wresset2.h"
+#else
+    #include <windows.h>
+#endif
 
 #include "clibint.h"
 #include "clibext.h"
@@ -210,16 +214,23 @@ static  char    *SystemName = NULL;     // system name
 static  char    *StackSize = NULL;      // stack size
 static  int     DebugFlag;              // debugging flag
 
-static  HANDLE_INFO     hInstance = { 0 };
-static  unsigned        MsgShift;
+#ifdef USE_WRESLIB
+static HANDLE_INFO      hInstance = { 0 };
+#else
+static HINSTANCE        hInstance;
+#endif
+static unsigned         msgShift;
 
 static bool LoadMsg( unsigned msg, char *buffer, int buff_size )
 /***************************************************************
- * Load a message into the specified buffer.  This function is called
- * by WLINK when linked with 16-bit version of WATFOR-77.
+ * Load a message into the specified buffer.
  */
 {
-    return( hInstance.status && ( WResLoadString( &hInstance, msg + MsgShift, buffer, buff_size ) > 0 ) );
+#ifdef USE_WRESLIB
+    return( hInstance.status && ( WResLoadString( &hInstance, msg + msgShift, buffer, buff_size ) > 0 ) );
+#else
+    return( LoadString( hInstance, msg + msgShift, buffer, buff_size ) > 0 );
+#endif
 }
 
 static char *GetMsg( unsigned msg )
@@ -238,18 +249,28 @@ static char *GetMsg( unsigned msg )
 static void ErrorInit( const char *pgm_name )
 /*******************************************/
 {
+#ifdef USE_WRESLIB
     hInstance.status = 0;
     if( OpenResFile( &hInstance, pgm_name ) ) {
-        MsgShift = _WResLanguage() * MSG_LANG_SPACING;
+        msgShift = _WResLanguage() * MSG_LANG_SPACING;
         return;
     }
     CloseResFile( &hInstance );
+#else
+    /* unused parameters */ (void)pgm_name;
+
+    hInstance = GetModuleHandle( NULL );
+    msgShift = _WResLanguage() * MSG_LANG_SPACING;
+#endif
 }
 
 static void ErrorFini( void )
 /***************************/
 {
+#ifdef USE_WRESLIB
     CloseResFile( &hInstance );
+#else
+#endif
 }
 
 static  void    printfMsg( unsigned msg, ... )

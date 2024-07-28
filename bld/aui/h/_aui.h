@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,7 +34,7 @@
 #define __AUI_H_INCLUDED
 
 #include "aui.h"
-#include "auistr.h"
+#include "aui.rh"
 
 #define WNDEVENT( w, e, p )     (w)->info->event( w, e, p )
 
@@ -77,7 +77,6 @@ extern bool             WndKeyEscape( a_window );
 extern bool             WndKeyRubOut( a_window );
 extern bool             WndKeyChoose( a_window, int ch );
 extern void             WndSayMatchMode( a_window );
-extern a_window         WndNoOpen( void );
 extern int              WndNextId( void );
 extern void             WndFreeId( int i );
 extern bool             WndPieceIsHot( a_window wnd, wnd_row row, wnd_piece piece );

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,17 +32,24 @@
 
 
 #include "wgml.h"
-#include "wressetr.h"
-#include "wresset2.h"
 #include "wreslang.h"
 #include "wgmlmsg.rh"
+#ifdef USE_WRESLIB
+    #include "wressetr.h"
+    #include "wresset2.h"
+#else
+    #include <windows.h>
+#endif
 
 #include "clibext.h"
 
 
-HANDLE_INFO hInstance;
-
-static unsigned MsgShift;               // 0 = english, 1000 for japanese
+#ifdef USE_WRESLIB
+static HANDLE_INFO  hInstance = { 0 };
+#else
+static HINSTANCE    hInstance;
+#endif
+static unsigned     msgShift;               // 0 = english, 1000 for japanese
 
 
 /***************************************************************************/
@@ -51,11 +58,12 @@ static unsigned MsgShift;               // 0 = english, 1000 for japanese
 
 bool init_msgs( void )
 {
+#ifdef USE_WRESLIB
     char        fname[_MAX_PATH];
 
     hInstance.status = 0;
     if( _cmdname( fname ) != NULL && OpenResFile( &hInstance, fname ) ) {
-        MsgShift = _WResLanguage() * MSG_LANG_SPACING;
+        msgShift = _WResLanguage() * MSG_LANG_SPACING;
         if( get_msg( ERR_DUMMY, fname, sizeof( fname ) ) ) {
             return( true );
         }
@@ -64,6 +72,11 @@ bool init_msgs( void )
     out_msg( NO_RES_MESSAGE "\n" );
     g_suicide();
     return( false );
+#else
+    hInstance = GetModuleHandle( NULL );
+    msgShift = _WResLanguage() * MSG_LANG_SPACING;
+    return( true );
+#endif
 }
 
 
@@ -73,10 +86,17 @@ bool init_msgs( void )
 
 bool get_msg( msg_ids resid, char *buff, size_t buff_len )
 {
-    if( hInstance.status == 0 || WResLoadString( &hInstance, resid + MsgShift, buff, (int)buff_len ) <= 0 ) {
+#ifdef USE_WRESLIB
+    if( hInstance.status == 0 || WResLoadString( &hInstance, resid + msgShift, buff, (int)buff_len ) <= 0 ) {
         buff[0] = '\0';
         return( false );
     }
+#else
+    if( LoadString( hInstance, resid + msgShift, buff, (int)buff_len ) <= 0 ) {
+        buff[0] = '\0';
+        return( false );
+    }
+#endif
     return( true );
 }
 
@@ -86,5 +106,8 @@ bool get_msg( msg_ids resid, char *buff, size_t buff_len )
 
 void fini_msgs( void )
 {
+#ifdef USE_WRESLIB
     CloseResFile( &hInstance );
+#else
+#endif
 }

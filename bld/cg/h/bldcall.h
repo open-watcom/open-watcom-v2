@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,20 +30,20 @@
 ****************************************************************************/
 
 
-extern  type_class_def  AddCallBlock( cg_sym_handle sym, type_def *tipe );
+extern  type_class_def  AddCallBlock( cg_sym_handle sym, const type_def *tipe );
 extern  void            BGFiniCall( cn call );
-extern  cn              BGInitCall( an node, type_def *tipe, aux_handle aux );
+extern  cn              BGInitCall( an node, const type_def *tipe, aux_handle aux );
 extern  void            BGAddParm( cn call, an parm );
-extern  void            BGAutoDecl( cg_sym_handle sym, type_def *tipe );
-extern  name            *DoParmDecl( cg_sym_handle sym, type_def *tipe, hw_reg_set reg );
-extern  void            BGParmDecl( cg_sym_handle sym, type_def *tipe );
+extern  void            BGAutoDecl( cg_sym_handle sym, const type_def *tipe );
+extern  name            *DoParmDecl( cg_sym_handle sym, const type_def *tipe, hw_reg_set reg );
+extern  void            BGParmDecl( cg_sym_handle sym, const type_def *tipe );
 extern  void            AddCallIns( instruction *ins, cn call );
 extern  void            ReverseParmNodeList( pn *owner );
 extern  void            PushParms( pn parm, call_state *state );
 extern  void            ReserveStack( call_state *state, instruction *prev, type_length len );
 extern  void            ParmIns( pn parm, call_state *state );
-extern  void            BGZapBase( name *base, type_def *tipe );
-extern  void            BGReturn( an retval, type_def *tipe );
+extern  void            BGZapBase( name *base, const type_def *tipe );
+extern  void            BGReturn( an retval, const type_def *tipe );
 extern  bool            AssgnParms( cn call, bool aux_inline );
 extern  hw_reg_set      CallZap( call_state *state );
-extern  void            UpdateReturn( call_state *, type_def *, type_class_def, aux_handle );
+extern  void            UpdateReturn( call_state *, const type_def *, type_class_def, aux_handle );

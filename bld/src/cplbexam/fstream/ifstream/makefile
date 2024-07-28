@@ -5,7 +5,7 @@
 
 exes =  construc.exe handle.exe handbuf.exe open.exe
 
-all : $(exes) .symbolic
+all : $(exes) .SYMBOLIC
 
 .cpp.exe :
     wcl $[@

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -1419,7 +1419,7 @@ int   fnmatch( const char *patt, const char *s, int flags )
 *
 ****************************************************************************/
 
-res_language_enumeration _WResLanguage(void)
+wres_lang_id _WResLanguage( void )
 {
     return( RLE_ENGLISH );
 }

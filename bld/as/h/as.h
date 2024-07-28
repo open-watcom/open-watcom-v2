@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -47,7 +48,6 @@
 #include "exprtree.h"
 #include "inslist.h"
 #include "directiv.h"
-#include "options.h"
 #include "ashash.h"
 #include "sections.h"
 #include "asnumlab.h"

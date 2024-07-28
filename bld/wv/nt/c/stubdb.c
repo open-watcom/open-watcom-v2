@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,7 +36,7 @@
 #include <windows.h>
 #include "srcmgt.h"
 #include "dbgdata.h"
-#include "dbglit.h"
+#include "liteng.h"
 #include "mad.h"
 #include "dui.h"
 #include "dbgvar.h"
@@ -291,26 +291,6 @@ void DlgCmd( void )
         DoCmd( DupStr( buff ) );
         DoInput();
     }
-}
-
-char *DUILoadString( dui_res_id id )
-{
-    char        buff[256];
-    char        *ret;
-    int         size;
-
-    size = LoadString( GetModuleHandle( NULL ), id, buff, sizeof( buff ) );
-    if( size < 0 )
-        size = 0;
-    buff[size++] = NULLCHAR;
-    ret = DbgAlloc( size );
-    memcpy( ret, buff, size );
-    return( ret );
-}
-
-void DUIFreeString( void *ptr )
-{
-    DbgFree( ptr );
 }
 
 void DUIMsgBox( const char *text )
@@ -726,14 +706,6 @@ void DUIEnterCriticalSection( void )
 }
 
 void DUIExitCriticalSection( void )
-{
-}
-
-void DUIInitLiterals( void )
-{
-}
-
-void DUIFiniLiterals( void )
 {
 }
 

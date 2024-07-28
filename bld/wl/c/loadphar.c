@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -302,26 +302,52 @@ static void WritePharExtended( unsigned_32 start )
     SeekLoad( start + HEAD_SIZE );
     file_size = HEAD_SIZE;
     if( FmtData.type & MK_PHAR_MULTISEG ) {
+        /*
+         * write sit info
+         */
         _HostU32toTarg( file_size, header.sit_offset );
         temp = WriteSIT();
         _HostU32toTarg( temp, header.sit_size );
         file_size += temp;
         _HostU16toTarg( sizeof( seg_info_table ), header.sit_entry_size );
+        /*
+         * write reloc info
+         */
         _HostU32toTarg( file_size, header.reloc_offset );
         temp = WritePharRelocs();
         _HostU32toTarg( temp, header.reloc_size );
         file_size += temp;
+        /*
+         * write rtp block
+         */
+        _HostU32toTarg( file_size, header.rtp_offset );
+        temp = WriteRTPBlock();
+        _HostU32toTarg( temp, header.rtp_size );
+        file_size += temp;
     } else {
+        /*
+         * write sit info
+         */
         _HostU32toTarg( 0, header.sit_offset );
         _HostU32toTarg( 0, header.sit_size );
         _HostU16toTarg( 0, header.sit_entry_size );
+        /*
+         * write rtp block
+         */
+        _HostU32toTarg( file_size, header.rtp_offset );
+        temp = WriteRTPBlock();
+        _HostU32toTarg( temp, header.rtp_size );
+        file_size += temp;
+        /*
+         * write reloc info
+         */
         _HostU32toTarg( file_size, header.reloc_offset );
         _HostU32toTarg( 0, header.reloc_size );
+//        file_size += 0;
     }
-    _HostU32toTarg( file_size, header.rtp_offset );
-    temp = WriteRTPBlock();
-    _HostU32toTarg( temp, header.rtp_size );
-    file_size += temp;
+    /*
+     * write image data
+     */
     image_offset = file_size;
     if( FmtData.type & MK_PHAR_MULTISEG ) {
         file_size += WritePharSegData();

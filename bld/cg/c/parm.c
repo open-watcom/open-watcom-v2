@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -79,8 +79,8 @@ type_length      ParmMem( type_length length, type_length alignment, call_state 
     return( offset );
 }
 
-type_def        *QParmType( cg_sym_handle func, cg_sym_handle parm, type_def *tipe )
-/**********************************************************************************/
+const type_def  *QParmType( cg_sym_handle func, cg_sym_handle parm, const type_def *tipe )
+/****************************************************************************************/
 {
     return( TypeAddress( FEParmType( func, parm, tipe->refno ) ) );
 }

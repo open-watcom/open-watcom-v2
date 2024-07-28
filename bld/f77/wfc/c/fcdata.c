@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -53,19 +53,23 @@
 #include "subscr.h"
 #include "kwlist.h"
 #include "fltcnv.h"
+#include "fmemmgr.h"
 #include "cgswitch.h"
 #include "cgprotos.h"
+#include "cfloat.h"
 
-// The following are to support a temporary fix so that constants dumped by
-// DATA statements provide the same precision for constants dumped by the code
-// generator.  Consider:
-//      DOUBLE PRECISION X, Y
-//      PARAMETER (Y=1D036)
-//      DATA X/Y/
-//      PRINT *, X - Y
-//      END
-// The result should be 0.
 
+/*
+ * The following are to support a temporary fix so that constants dumped by
+ * DATA statements provide the same precision for constants dumped by the code
+ * generator.  Consider:
+ *      DOUBLE PRECISION X, Y
+ *      PARAMETER (Y=1D036)
+ *      DATA X/Y/
+ *      PRINT *, X - Y
+ *      END
+ * The result should be 0.
+ */
 
 /* Forward declarations */
 static  void    InitStructArr( sym_id fd, act_dim_list *dim );
@@ -845,57 +849,69 @@ static  void    DoDataInit( PTYPE var_type )
         DtBytes( const_ptr, var_size );
     } else if( DtConstType <= PT_LOG_4 ) {
         DtBytes( const_ptr, var_size );
-    } else {        // numeric to numeric
+    } else {
+        cfstruct    f77h;
+        /*
+         * numeric to numeric
+         */
+        f77h.alloc = FMemAlloc;
+        f77h.free  = FMemFree;
+        CFInit( &f77h );
+
         if( DtConstType != var_type ) {
-            DataCnvTab[ ( var_type - PT_INT_1 ) * CONST_TYPES +
-                        ( DtConstType - PT_INT_1 ) ]( (ftn_type *)const_ptr, (ftn_type *)const_buff );
+            DataCnvTab[( var_type - PT_INT_1 ) * CONST_TYPES +
+                        ( DtConstType - PT_INT_1 )]( (ftn_type *)const_ptr, (ftn_type *)const_buff );
             const_ptr = const_buff;
         }
-
-// Temporary fix for identical precision between front end and code generator.
+        /*
+         * Temporary fix for identical precision between front end and code generator.
+         */
         {
-            char        fmt_buff[CONVERSION_BUFFER+1];
-            float_handle cf;
+            char            fmt_buff[CONVERSION_BUFFER + 1];
+            float_handle    cf;
 
             if( (var_type == PT_REAL_4) || (var_type == PT_CPLX_8) ) {
                 CnvS2S( (single *)const_ptr, fmt_buff );
-                cf = BFCnvSF( fmt_buff );
-                BFCnvTarget( cf, const_buff, BETypeLength( TY_SINGLE ) );
-                BFFree( cf );
+                cf = CFCnvSF( &f77h, fmt_buff );
+                CFCnvTarget( cf, (flt *)const_buff, BETypeLength( TY_SINGLE ) );
+                CFFree( &f77h, cf );
             } else if( (var_type == PT_REAL_8) || (var_type == PT_CPLX_16) ) {
                 CnvD2S( (double *)const_ptr, fmt_buff );
-                cf = BFCnvSF( fmt_buff );
-                BFCnvTarget( cf, const_buff, BETypeLength( TY_DOUBLE ) );
-                BFFree( cf );
+                cf = CFCnvSF( &f77h, fmt_buff );
+                CFCnvTarget( cf, (flt *)const_buff, BETypeLength( TY_DOUBLE ) );
+                CFFree( &f77h, cf );
             } else if( (var_type == PT_REAL_16) || (var_type == PT_CPLX_32) ) {
                 CnvX2S( (extended *)const_ptr, fmt_buff );
-                cf = BFCnvSF( fmt_buff );
-                BFCnvTarget( cf, const_buff, BETypeLength( TY_LONGDOUBLE ) );
-                BFFree( cf );
+                cf = CFCnvSF( &f77h, fmt_buff );
+                CFCnvTarget( cf, (flt *)const_buff, BETypeLength( TY_LONGDOUBLE ) );
+                CFFree( &f77h, cf );
             }
             if( var_type == PT_CPLX_8 ) {
                 CnvS2S( (single *)(const_ptr + sizeof( single )), fmt_buff );
-                cf = BFCnvSF( fmt_buff );
-                BFCnvTarget( cf, const_buff + sizeof( single ), BETypeLength( TY_SINGLE ) );
-                BFFree( cf );
+                cf = CFCnvSF( &f77h, fmt_buff );
+                CFCnvTarget( cf, (flt *)( const_buff + sizeof( single ) ), BETypeLength( TY_SINGLE ) );
+                CFFree( &f77h, cf );
             } else if( var_type == PT_CPLX_16 ) {
                 CnvD2S( (double *)(const_ptr + sizeof( double )), fmt_buff );
-                cf = BFCnvSF( fmt_buff );
-                BFCnvTarget( cf, const_buff + sizeof( double ), BETypeLength( TY_DOUBLE ) );
-                BFFree( cf );
+                cf = CFCnvSF( &f77h, fmt_buff );
+                CFCnvTarget( cf, (flt *)( const_buff + sizeof( double ) ), BETypeLength( TY_DOUBLE ) );
+                CFFree( &f77h, cf );
             } else if( var_type == PT_CPLX_32 ) {
                 CnvX2S( (extended *)(const_ptr + sizeof( extended )), fmt_buff );
-                cf = BFCnvSF( fmt_buff );
-                BFCnvTarget( cf, const_buff + sizeof( extended ), BETypeLength( TY_LONGDOUBLE ) );
-                BFFree( cf );
+                cf = CFCnvSF( &f77h, fmt_buff );
+                CFCnvTarget( cf, (flt *)( const_buff + sizeof( extended ) ), BETypeLength( TY_LONGDOUBLE ) );
+                CFFree( &f77h, cf );
             }
             if( (var_type >= PT_REAL_4) && (var_type <= PT_CPLX_32) ) {
                 const_ptr = const_buff;
             }
         }
-// End of temporary fix.
-
+        /*
+         * End of temporary fix.
+         */
         DtBytes( const_ptr, var_size );
+
+        CFFini( &f77h );
     }
     DtItemSize = 0;
 }

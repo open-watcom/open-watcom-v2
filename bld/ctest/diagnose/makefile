@@ -12,10 +12,10 @@ tests = test00
 
 .c: source
 
-test : .symbolic start $(tests)
+test : .SYMBOLIC start $(tests)
     $(noecho)%make common_set_result
 
-test00 : .symbolic $(diags_0099)
+test00 : .SYMBOLIC $(diags_0099)
     catfile -a *.err | sed -f source/fixpath.sed >>exec.out
     @%make diag_clean
 

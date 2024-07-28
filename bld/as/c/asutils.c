@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,6 +35,7 @@
 #ifdef _STANDALONE_
 #include <setjmp.h>
 #include "banner.h"
+#include "options.h"
 #else
 #include "asinline.h"
 #endif
@@ -65,6 +66,8 @@ enum {
     #include "as.msg"
     #undef pick
 };
+#elif defined( USE_WRESLIB )
+#else
 #endif
 
 typedef enum {
@@ -74,7 +77,6 @@ typedef enum {
 
 extern int      CurrLineno;
 extern char     *CurrFilename;
-extern FILE     *ErrorFile;
 extern jmp_buf  AsmParse;
 
 unsigned        ErrorLimit = 20;        // default error limit

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,7 +36,7 @@
 #include "bool.h"
 #include "dbgdefn.h"
 #include "dbgdata.h"
-#include "dbglit.h"
+#include "liteng.h"
 #include "dbgmem.h"
 #include "dbgio.h"
 #include "dbgerr.h"
@@ -125,7 +125,7 @@ size_t MADCLIENTRY( WriteMem )( address a, size_t size, const void *buff )
 size_t MADCLIENTRY( String )( mad_string mstr, char *buff, size_t buff_len )
 {
     static  char ** strings[] = {
-        #define pick( e, es, js ) LITREF_ENG( e ),
+        #define pick(c,e,j)     LITREF_ENG( c ),
         #include "mad.str"
         #undef pick
     };

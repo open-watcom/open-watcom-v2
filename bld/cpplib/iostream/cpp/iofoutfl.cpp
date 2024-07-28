@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -92,20 +92,20 @@ namespace std {
 
     format_flags = this->flags();
     if(( format_flags & ( ios::scientific | ios::fixed )) == ios::scientific ) {
-        cvt.flags = E_FMT;
+        cvt.flags = FPCVT_E_FMT;
         cvt.scale = 1;
     } else if(( format_flags & ( ios::scientific | ios::fixed )) == ios::fixed ) {
-        cvt.flags = F_FMT;
+        cvt.flags = FPCVT_F_FMT;
         cvt.scale = 0;
     } else {
-        cvt.flags = G_FMT;
+        cvt.flags = FPCVT_G_FMT;
         cvt.scale = 1;
         if( precision == 0 ) {
             precision = 1;
         }
     }
     if( format_flags & ios::showpoint ) {
-        cvt.flags |= F_DOT;
+        cvt.flags |= FPCVT_F_DOT;
     }
     cvt.ndigits = precision;
     cvt.expchar = ( format_flags & ios::uppercase ) ? 'E' : 'e';

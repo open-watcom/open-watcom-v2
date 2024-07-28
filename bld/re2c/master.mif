@@ -1,6 +1,6 @@
 proj_name = re2c
 
-re2c_autodepends = .autodepend
+re2c_autodepends = .AUTODEPEND
 
 additional_clean = ytab.c ytab.h y.out
 

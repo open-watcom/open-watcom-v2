@@ -19,7 +19,7 @@ test02.exe : test02.obj
 test02.obj : test02.asm
     wasm -zq -wx $<
 
-clean : .symbolic
+clean : .SYMBOLIC
     @rm -f *.obj
     @rm -f *.exe
     @rm -f *.com

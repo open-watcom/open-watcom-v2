@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,7 +32,7 @@
 
 #include "_cgstd.h"
 #include "coderep.h"
-#include "cfloat.h"
+#include "_cfloat.h"
 #include "data.h"
 #include "intrface.h"
 #include "rgtbl.h"
@@ -70,25 +70,26 @@ void    DumpInsOffsets( void )
     DO_DUMPOFFSET( "head.state", offsetof( instruction, head.state ) );
     DO_DUMPOFFSET( "table\t", offsetof( instruction, table ) );
     DO_DUMPOFFSET( "u.gen_table", offsetof( instruction, u.gen_table ) );
-    DO_DUMPOFFSET( "u2.cse_link", offsetof( instruction, u2.cse_link ) );
-    DO_DUMPOFFSET( "u2.parm_list", offsetof( instruction, u2.parm_list ) );
+    DO_DUMPOFFSET( "u1.cse_link", offsetof( instruction, u1.cse_link ) );
+    DO_DUMPOFFSET( "u1.parm_list", offsetof( instruction, u1.parm_list ) );
     DO_DUMPOFFSET( "zap\t", offsetof( instruction, zap ) );
     DO_DUMPOFFSET( "result\t", offsetof( instruction, result ) );
     DO_DUMPOFFSET( "id\t", offsetof( instruction, id ) );
     DO_DUMPOFFSET( "type_class", offsetof( instruction, type_class ) );
     DO_DUMPOFFSET( "base_type_class", offsetof( instruction, base_type_class ) );
     DO_DUMPOFFSET( "sequence", offsetof( instruction, sequence ) );
-    DO_DUMPOFFSET( "flags.byte", offsetof( instruction, flags.byte ) );
-    DO_DUMPOFFSET( "flags.bool_flag", offsetof( instruction, flags.bool_flag ) );
-    DO_DUMPOFFSET( "flags.call_flag", offsetof( instruction, flags.call_flags ) );
-    DO_DUMPOFFSET( "flags.nop_flags", offsetof( instruction, flags.nop_flags ) );
-    DO_DUMPOFFSET( "t.index_needs", offsetof( instruction, t.index_needs ) );
-    DO_DUMPOFFSET( "t.stk_max", offsetof( instruction, t.stk_max ) );
+    DO_DUMPOFFSET( "flags.u.byte", offsetof( instruction, flags.u.byte ) );
+    DO_DUMPOFFSET( "flags.u.bool_flag", offsetof( instruction, flags.u.bool_flag ) );
+    DO_DUMPOFFSET( "flags.u.call_flag", offsetof( instruction, flags.u.call_flags ) );
+    DO_DUMPOFFSET( "flags.u.nop_flags", offsetof( instruction, flags.u.nop_flags ) );
+    DO_DUMPOFFSET( "u2.index_needs", offsetof( instruction, u2.index_needs ) );
+    DO_DUMPOFFSET( "u2.stk_max", offsetof( instruction, u2.stk_max ) );
     DO_DUMPOFFSET( "stk_entry", offsetof( instruction, stk_entry ) );
     DO_DUMPOFFSET( "num_operands", offsetof( instruction, num_operands ) );
     DO_DUMPOFFSET( "ins_flags", offsetof( instruction, ins_flags ) );
     DO_DUMPOFFSET( "stk_exit", offsetof( instruction, stk_exit ) );
-    DO_DUMPOFFSET( "s.stk_extra", offsetof( instruction, s.stk_extra ) );
+    DO_DUMPOFFSET( "fp.u.stk_extra", offsetof( instruction, fp.u.stk_extra ) );
+    DO_DUMPOFFSET( "fp.u.stk_depth", offsetof( instruction, fp.u.stk_depth ) );
     DO_DUMPOFFSET( "operands[0]", offsetof( instruction, operands[0] ) );
 }
 
@@ -115,7 +116,7 @@ void    DumpITab( instruction *ins )
 }
 
 
-static const char * ClassNames[] = {
+static const char * const ClassNames[] = {
 /**********************************/
 
     " U1 ",
@@ -219,10 +220,10 @@ void    DumpOperand( name *operand )
         }
     } else if( operand->n.class == N_CONSTANT ) {
         if( operand->c.const_type == CONS_ABSOLUTE ) {
-            if( operand->c.lo.int_value != 0 ) {
-                if( operand->c.hi.int_value != 0 && operand->c.hi.int_value != -1 )
-                    Dump8h( operand->c.hi.int_value );
-                Dump8h( operand->c.lo.int_value );
+            if( operand->c.lo.u.int_value != 0 ) {
+                if( operand->c.hi.u.int_value != 0 && operand->c.hi.u.int_value != -1 )
+                    Dump8h( operand->c.hi.u.int_value );
+                Dump8h( operand->c.lo.u.int_value );
             } else {
                 CFCnvFS( operand->c.value, buffer, 20 );
                 DumpXString( buffer );
@@ -231,14 +232,14 @@ void    DumpOperand( name *operand )
             if( operand->c.const_type == CONS_SEGMENT ) {
                 DumpLiteral( "SEG(" );
                 if( operand->c.value == NULL ) {
-                    DumpInt( operand->c.lo.int_value );
+                    DumpInt( operand->c.lo.u.int_value );
                 } else {
                     DumpOperand( operand->c.value );
                 }
             } else if( operand->c.const_type == CONS_OFFSET ) {
                 DumpLiteral( "OFFSET(" );
 #if _TARGET & _TARG_370
-                DumpInt( operand->c.lo.int_value );
+                DumpInt( operand->c.lo.u.int_value );
 #else
                 DumpOperand( operand->c.value );
 #endif
@@ -253,8 +254,8 @@ void    DumpOperand( name *operand )
                 if( operand->c.value != NULL ) {
                     DumpOperand( operand->c.value );
                 } else {
-                    if( operand->c.lo.int_value != 0 ) {
-                        DumpLong( operand->c.lo.int_value );
+                    if( operand->c.lo.u.int_value != 0 ) {
+                        DumpLong( operand->c.lo.u.int_value );
                     } else {
                         DumpLiteral( "NULL" );
                     }
@@ -323,7 +324,7 @@ void DoDumpIInfo( instruction *ins, bool fp )
         DumpChar( ' ' );
         DumpChar( ins->stk_entry + '0' );
         DumpChar( ins->stk_exit + '0' );
-        DumpChar( ins->s.stk_depth + '0' );
+        DumpChar( ins->fp.u.stk_depth + '0' );
     } else {
         DumpLiteral( "     " );
     }
@@ -463,7 +464,7 @@ void    DumpCond( instruction *ins, block *blk )
 }
 
 
-static const char * Usage[] = {
+static const char * const Usage[] = {
 /*****************************/
 
     "USE_IN_BLOCK, ",

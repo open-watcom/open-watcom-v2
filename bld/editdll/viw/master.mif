@@ -4,9 +4,13 @@ proj_name = weditviw
 
 weditviw_autodepends = .AUTODEPEND
 
+weditviw_ntverrc = ..
+
 weditviw_distrib_lib = 1
 
 additional_clean = *.grc
+
+ntverrc_dll = weditviw
 
 !include cproj.mif
 !include defrule.mif
@@ -40,8 +44,6 @@ all: weditviw.dll wedit.dll .SYMBOLIC
 # DLL's
 #
 dlltarg_objs    = weditviw.obj
-dlltarg_res_version_nt_386 = version.res
-dlltarg_res_version_nt_x64 = version.res
 !include dlltarg.mif
 
 dlltarg_opts    = opt implib
@@ -51,5 +53,3 @@ dlltarg_name    = wedit
 #
 # rc and others
 #
-verrc_dll = weditviw
-!include verrc.mif

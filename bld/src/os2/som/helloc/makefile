@@ -12,5 +12,5 @@ main.obj : main.c hello.h
 hello.ih hello.h : hello.idl
     sc -s"ih;h" -maddstar $<
 
-clean : .symbolic
+clean : .SYMBOLIC
     rm -f *.obj *.exe *.h *.ih *.err

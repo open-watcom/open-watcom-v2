@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -305,7 +305,7 @@ static void InitInfoPad( HWND info_dlg )
 
     win = GetDlgItem( info_dlg, IDM_RNTYPETEXT );
     GetWindowRect( win, &rect1 );
-    MapWindowPoints( (HWND)NULL, info_dlg, (POINT *)&rect1, 2 );
+    MapWindowRect( (HWND)NULL, info_dlg, &rect1 );
     InfoPad.dlg_border.x = rect1.left;
     InfoPad.dlg_border.y = rect1.top;
     InfoPad.type.x = rect1.right - rect1.left;
@@ -318,7 +318,7 @@ static void InitInfoPad( HWND info_dlg )
 
     win = GetDlgItem( info_dlg, IDM_RNTYPE );
     GetWindowRect( win, &rect1 );
-    MapWindowPoints( (HWND)NULL, info_dlg, (POINT *)&rect1, 2 );
+    MapWindowRect( (HWND)NULL, info_dlg, &rect1 );
     InfoPad.text_y = rect1.top - InfoPad.type.y - InfoPad.dlg_border.y;
 }
 
@@ -369,7 +369,7 @@ static void WResizeInfoWindow( WREResInfo *info )
 
     if( ok ) {
         GetWindowRect( win, &rect );
-        MapWindowPoints( (HWND)NULL, info->info_win, (POINT *)&rect, 2 );
+        MapWindowRect( (HWND)NULL, info->info_win, &rect );
         x = InfoPad.dlg_border.x * 2 + (width * 2) / 5;
         y = rect.top;
         ok = SetWindowPos( win, (HWND)NULL, x, y, (width * 3) / 5, height, SWP_NOZORDER ) != 0;
@@ -383,7 +383,7 @@ static void WResizeInfoWindow( WREResInfo *info )
 
     if( ok ) {
         GetWindowRect( win, &rect );
-        MapWindowPoints( (HWND)NULL, info->info_win, (POINT *)&rect, 2 );
+        MapWindowRect( (HWND)NULL, info->info_win, &rect );
         y = rect.top;
         ok = SetWindowPos( win, (HWND)NULL, x, y, 0, 0, SWP_NOSIZE | SWP_NOZORDER ) != 0;
     }
@@ -396,7 +396,7 @@ static void WResizeInfoWindow( WREResInfo *info )
 
     if( ok ) {
         GetWindowRect( win, &rect );
-        MapWindowPoints( (HWND)NULL, info->info_win, (POINT *)&rect, 2 );
+        MapWindowRect( (HWND)NULL, info->info_win, &rect );
         x = x + (width * 3) / 5 - InfoPad.total.x;
         y = InfoPad.dlg_border.y + InfoPad.type.y + InfoPad.text_y * 2 + height;
         ok = SetWindowPos( win, (HWND)NULL, x, y, 0, 0, SWP_NOSIZE | SWP_NOZORDER ) != 0;

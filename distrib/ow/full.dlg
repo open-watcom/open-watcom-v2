@@ -1,5 +1,5 @@
 # UTF-8 encoding, ¥
 radio_button=FullInstall,false,\
-        //1"&Full installation"\
-        //2"すべてをインストール(&F)"\
-        //0
+        //0"&Full installation"\
+        //1"すべてをインストール(&F)"\
+        //-1

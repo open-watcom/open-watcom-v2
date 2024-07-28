@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -55,8 +55,8 @@
 #include "wreslang.h"
 
 
-static res_language_enumeration check_code_page( void )
-/*****************************************************/
+static wres_lang_id check_code_page( void )
+/*****************************************/
 {
     unsigned    codepage;
 #if defined __OS2__
@@ -87,17 +87,17 @@ static res_language_enumeration check_code_page( void )
 #endif
 
 #ifdef NO_CODEPAGE
-    return( RLE_ENGLISH );
+    return( LANG_RLE_ENGLISH );
 #else
     /*** Try to match the returned code page to known ones ***/
     switch( codepage ) {
-        case 932:   return( RLE_JAPANESE );
-        default:    return( RLE_ENGLISH );
+        case 932:   return( LANG_RLE_JAPANESE );
+        default:    return( LANG_RLE_ENGLISH );
     }
 #endif
 }
 
-_WCRTLINK res_language_enumeration _WResLanguage( void )
+_WCRTLINK wres_lang_id _WResLanguage( void )
 {
     char        *env;
 
@@ -107,11 +107,11 @@ _WCRTLINK res_language_enumeration _WResLanguage( void )
         return( check_code_page() );
     }
     if( _stricmp( env, "english" ) == 0 )
-        return( RLE_ENGLISH );
+        return( LANG_RLE_ENGLISH );
     if( _stricmp( env, "japanese" ) == 0 )
-        return( RLE_JAPANESE );
+        return( LANG_RLE_JAPANESE );
     if( env[0] >= '0' && env[0] <= '9' ) {
-        return( env[0] - '0' );
+        return( atoi( env ) );
     }
-    return( RLE_ENGLISH );
+    return( LANG_RLE_ENGLISH );
 }

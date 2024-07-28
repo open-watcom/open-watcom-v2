@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -66,7 +66,7 @@ void SemWINAddMessageTable( WResID *name, ScanString *filename )
 
     if( CmdLineParms.TargetOS == RC_TARGET_OS_WIN32 ) {
         start = SemCopyRawFile( filename->string );
-        SemAddResourceFree( name, WResIDFromNum( RESOURCE2INT( RT_MESSAGETABLE ) ),
+        SemAddResourceAndFree( name, WResIDFromNum( RESOURCE2INT( RT_MESSAGETABLE ) ),
                             MEMFLAG_MOVEABLE | MEMFLAG_PURE, start );
     } else {
         RcError( ERR_NT_KEYWORD, SemWINTokenToString( Y_MESSAGETABLE ) );
@@ -318,7 +318,7 @@ static RcStatus copyIcons( FullIconDir *dir, FILE *fp, ResMemFlags flags, int *e
         /*
          * add the icon to the RES file directory
          */
-        SemAddResourceFree( WResIDFromNum( CurrResFile.NextCurOrIcon ),
+        SemAddResourceAndFree( WResIDFromNum( CurrResFile.NextCurOrIcon ),
                 WResIDFromNum( RESOURCE2INT( RT_ICON ) ), flags, loc );
         /*
          * change the reference in the ICON directory
@@ -363,7 +363,7 @@ static bool writeIconDir( FullIconDir *dir, WResID *name, ResMemFlags flags, int
         *err_code = LastWresErr();
     } else {
         loc.len = SemEndResource( loc.start );
-        SemAddResourceFree( name, WResIDFromNum( RESOURCE2INT( RT_GROUP_ICON ) ), flags, loc );
+        SemAddResourceAndFree( name, WResIDFromNum( RESOURCE2INT( RT_GROUP_ICON ) ), flags, loc );
     }
 
     return( error );
@@ -511,7 +511,7 @@ static bool writeTheWindows2xIcon( FullIconDirEntry *entry, WResID *name, ResMem
         *err_code = LastWresErr();
     } else {
         loc.len = SemEndResource( loc.start );
-        SemAddResourceFree( name, WResIDFromNum( RESOURCE2INT( RT_ICON ) ), flags, loc );
+        SemAddResourceAndFree( name, WResIDFromNum( RESOURCE2INT( RT_ICON ) ), flags, loc );
     }
 
     return( error );
@@ -695,7 +695,7 @@ static bool writeCurDir( FullCurDir *dir, WResID *name, ResMemFlags flags,
         *err_code = LastWresErr();
     } else {
         loc.len = SemEndResource( loc.start );
-        SemAddResourceFree( name, WResIDFromNum( RESOURCE2INT( RT_GROUP_CURSOR ) ), flags, loc );
+        SemAddResourceAndFree( name, WResIDFromNum( RESOURCE2INT( RT_GROUP_CURSOR ) ), flags, loc );
     }
 
     return( error );
@@ -782,7 +782,7 @@ static RcStatus copyCursors( FullCurDir *dir, FILE *fp, ResMemFlags flags, int *
         /*
          * add the cursor to the RES file directory
          */
-        SemAddResourceFree( WResIDFromNum( CurrResFile.NextCurOrIcon ),
+        SemAddResourceAndFree( WResIDFromNum( CurrResFile.NextCurOrIcon ),
                 WResIDFromNum( RESOURCE2INT( RT_CURSOR ) ), flags, loc );
         /*
          * change the reference in the cursor directory
@@ -899,7 +899,7 @@ static bool writeTheWindows2xCursor( FullCurDirEntry *entry, WResID *name, ResMe
         *err_code = LastWresErr();
     } else {
         loc.len = SemEndResource( loc.start );
-        SemAddResourceFree( name, WResIDFromNum( RESOURCE2INT( RT_CURSOR ) ), flags, loc );
+        SemAddResourceAndFree( name, WResIDFromNum( RESOURCE2INT( RT_CURSOR ) ), flags, loc );
     }
 
     return( error );
@@ -1117,7 +1117,7 @@ static RcStatus copyBitmap( BitmapFileHeader *head, FILE *fp,
     /*
      * add the bitmap to the RES file directory
      */
-    SemAddResourceFree( name, WResIDFromNum( RESOURCE2INT( RT_BITMAP ) ), flags, loc );
+    SemAddResourceAndFree( name, WResIDFromNum( RESOURCE2INT( RT_BITMAP ) ), flags, loc );
 
     RESFREE( buffer );
 
@@ -1138,7 +1138,7 @@ static bool writeTheWindows2xBitmap( BitmapInfoHeader *dibhead, WResID *name, Re
         *err_code = LastWresErr();
     } else {
         loc.len = SemEndResource( loc.start );
-        SemAddResourceFree( name, WResIDFromNum( RESOURCE2INT( RT_BITMAP ) ), flags, loc );
+        SemAddResourceAndFree( name, WResIDFromNum( RESOURCE2INT( RT_BITMAP ) ), flags, loc );
     }
 
     return( error );
@@ -1292,7 +1292,7 @@ static RcStatus copyFont( FontInfo *info, FILE *fp, WResID *name,
     /*
      * add the font to the RES file directory
      */
-    SemAddResourceFree( name, WResIDFromNum( RESOURCE2INT( RT_FONT ) ), flags, loc );
+    SemAddResourceAndFree( name, WResIDFromNum( RESOURCE2INT( RT_FONT ) ), flags, loc );
 
     RESFREE( buffer );
 
@@ -1504,7 +1504,7 @@ void SemWINWriteFontDir( void )
             ErrorHasOccured = true;
         } else {
             loc.len = SemEndResource( loc.start );
-            SemAddResourceFree( WResIDFromStr( FONT_DIR_NAME ),
+            SemAddResourceAndFree( WResIDFromStr( FONT_DIR_NAME ),
                     WResIDFromNum( RESOURCE2INT( RT_FONTDIR ) ), FONT_DIR_FLAGS, loc );
         }
         FreeFontDir( CurrResFile.FontDir );

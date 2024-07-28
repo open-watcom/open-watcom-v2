@@ -3,4 +3,4 @@
 host_os  = linux
 host_cpu = x64
 
-!include ../../ui.mif
+!include ../../master.mif

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,6 +38,9 @@
 #include "guikey.h"
 #include "guifdlg.h"
 
+
+#define WNDAPI              /* public API */
+#define WNDCALLBACK         /* public callback */
 
 #define SAVE_SIZE           512
 
@@ -147,7 +150,7 @@ typedef struct wnd_line_piece {
     const char  *text;                  // default ""
     wnd_attr    attr;                   // default WND_PLAIN
     gui_ord     indent;                 // default 0
-    gui_ord     extent;                 // default WND_NO_EXTEND
+    gui_ord     extent;                 // default WND_NO_EXTENT
     unsigned    tabstop         : 1;    // default on
     unsigned    static_text     : 1;    // default off
     unsigned    hot             : 1;    // default off
@@ -165,8 +168,7 @@ typedef struct wnd_line_piece {
     const char  *hint;                  // set for Hint Text
 } wnd_line_piece;
 
-#define WND_NO_EXTEND   0
-#define WND_MAX_EXTEND  GUI_NO_COLUMN
+#define WND_NO_EXTENT   GUI_NO_EXTENT
 
 typedef struct wnd_create_struct {
     struct wnd_info     *info;
@@ -256,26 +258,29 @@ typedef struct _a_window {
     wnd_rect                dirty[1];
 } *a_window;
 
-typedef bool        (WNDCALLBACK)( a_window, gui_event, void * );
-typedef void        (WNDREFRESH)( a_window );
-typedef void        (WNDMENU)( a_window, gui_ctl_id id, wnd_row, wnd_piece );
-typedef void        (WNDMODIFY)( a_window, wnd_row, wnd_piece );
-typedef int         (WNDSCROLL)( a_window, int );
-typedef wnd_row     (WNDNUMROWS)( a_window );
-typedef wnd_row     (WNDNEXTROW)( a_window, wnd_row, int );
-typedef bool        (WNDGETLINE)( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece * );
-typedef void        (WNDNOTIFY)( a_window wnd, wnd_row row, wnd_piece piece );
-typedef void        (WNDBEGPAINT)( a_window wnd, wnd_row row, int num );
-typedef void        (WNDENDPAINT)( a_window wnd, wnd_row row, int num );
-typedef bool        (WNDCHKUPDATE)( void );
-typedef a_window    (WNDOPEN)( void );
-typedef a_window    (WNDCREATE)( char *, struct wnd_info *, wnd_class, void * );
-typedef void        (WNDCLOSE)( a_window );
-typedef bool        (WNDPICKER)( const char *, GUIPICKCALLBACK *, int * );
-typedef bool        (WNDCLICKHOOK)( a_window wnd, gui_ctl_id id );
+/* window callback functions */
+typedef bool        (WNDCALLBACK WNDEVCALLBACK)( a_window, gui_event, void * );
+typedef void        (WNDCALLBACK WNDREFRESH)( a_window );
+typedef void        (WNDCALLBACK WNDMENU)( a_window, gui_ctl_id id, wnd_row, wnd_piece );
+typedef void        (WNDCALLBACK WNDMODIFY)( a_window, wnd_row, wnd_piece );
+typedef int         (WNDCALLBACK WNDSCROLL)( a_window, int );
+typedef wnd_row     (WNDCALLBACK WNDNUMROWS)( a_window );
+typedef wnd_row     (WNDCALLBACK WNDNEXTROW)( a_window, wnd_row, int );
+typedef bool        (WNDCALLBACK WNDGETLINE)( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece * );
+typedef void        (WNDCALLBACK WNDNOTIFY)( a_window wnd, wnd_row row, wnd_piece piece );
+typedef void        (WNDCALLBACK WNDBEGPAINT)( a_window wnd, wnd_row row, int num );
+typedef void        (WNDCALLBACK WNDENDPAINT)( a_window wnd, wnd_row row, int num );
+typedef bool        (WNDCALLBACK WNDCHKUPDATE)( void );
+/* special callback functions */
+typedef bool        (WNDCALLBACK WNDPICKER)( const char *, GUIPICKCALLBACK *, int * );
+typedef bool        (WNDCALLBACK WNDCLICKHOOK)( a_window wnd, gui_ctl_id id );
+/* not used as callback functions */
+//typedef a_window    (WNDCALLBACK WNDOPEN)( void );
+//typedef a_window    (WNDCALLBACK WNDCREATE)( char *, struct wnd_info *, wnd_class, void * );
+//typedef void        (WNDCALLBACK WNDCLOSE)( a_window );
 
 typedef struct wnd_info {
-    WNDCALLBACK             *event;
+    WNDEVCALLBACK           *event;
     WNDREFRESH              *refresh;
     WNDGETLINE              *getline;
     WNDMENU                 *menuitem;
@@ -296,20 +301,18 @@ typedef struct {
     bool        cancel;
 } dlgnew_ctl;
 
-extern bool                 DlgPickWithRtn( const char *title, const void *data_handle, int def_item, GUIPICKGETTEXT *getstring, int num_items, int *choice );
-extern bool                 DlgPickWithRtn2( const char *title, const void *data_handle, int def_item, GUIPICKGETTEXT *getstring, int num_items, WNDPICKER *pickfn, int *choice );
-extern bool                 DlgPick( const char *title, const void *data_handle, int def_item, int num_items, int *choice );
-extern bool                 DlgNew( const char *title, char *buff, size_t buff_len );
-extern bool                 DlgNewWithCtl( const char *title, char *buff, size_t buff_len, gui_control_info *controls, int num_controls,
-                                            GUICALLBACK *gui_call_back, gui_text_ord rows, gui_text_ord cols, gui_text_ord max_cols );
-extern void                 DlgOpen( const char *title, gui_text_ord, gui_text_ord, gui_control_info *, int, GUICALLBACK *, void * );
-extern void                 ResDlgOpen( GUICALLBACK *, void *, int dlg_id );
-extern int                  DlgGetFileName( open_file_name *ofn );
-extern bool                 DlgFileBrowse( char *title, char *filter, char *path, unsigned len, fn_flags flags );
-extern int                  DlgSearch( a_window wnd, void *history );
-extern bool                 DlgSearchAll( char **expr, void *history );
-
-extern a_window             WndMain;
+extern bool                 WNDAPI DlgPickWithRtn( const char *title, const void *data_handle, int def_item, GUIPICKGETTEXT *getstring, int num_items, int *choice );
+extern bool                 WNDAPI DlgPickWithRtn2( const char *title, const void *data_handle, int def_item, GUIPICKGETTEXT *getstring, int num_items, WNDPICKER *pickfn, int *choice );
+extern bool                 WNDAPI DlgPick( const char *title, const void *data_handle, int def_item, int num_items, int *choice );
+extern bool                 WNDAPI DlgNew( const char *title, char *buff, size_t buff_len );
+extern bool                 WNDAPI DlgNewWithCtl( const char *title, char *buff, size_t buff_len, gui_control_info *controls, int num_controls,
+                                            GUIEVCALLBACK *gui_call_back, gui_text_ord rows, gui_text_ord cols, gui_text_ord max_cols );
+extern void                 WNDAPI DlgOpen( const char *title, gui_text_ord, gui_text_ord, gui_control_info *, int, GUIEVCALLBACK *, void * );
+extern void                 WNDAPI DlgOpenRes( GUIEVCALLBACK *, void *, int dlg_id );
+extern int                  WNDAPI DlgGetFileName( open_file_name *ofn );
+extern bool                 WNDAPI DlgFileBrowse( char *title, char *filter, char *path, unsigned len, fn_flags flags );
+extern int                  WNDAPI DlgSearch( a_window wnd, void *history );
+extern bool                 WNDAPI DlgSearchAll( char **expr, void *history );
 
 //extern a_window             WndFindOwner( a_window );
 //extern a_window             WndFirst( void );
@@ -357,7 +360,7 @@ extern void                 WndToFront( a_window );   // won't restore an icon!
 
 extern void                 WndCurrToGUIPoint( a_window wnd, gui_point *point );
 
-extern WNDCREATE            WndCreate;
+extern a_window             WndCreate( char *, struct wnd_info *, wnd_class, void * );
 extern void                 WndInitCreateStruct( wnd_create_struct * );
 extern a_window             WndCreateWithStruct( wnd_create_struct * );
 extern a_window             WndCreateWithStructAndMenuRes( wnd_create_struct *, res_name_or_id menu_id );
@@ -366,7 +369,7 @@ extern bool                 WndInit( char *title );
 extern bool                 WndInitWithMenuRes( char *title, res_name_or_id menu_id );
 extern bool                 WndFini( void );
 extern bool                 WndMainMenuProc( a_window, gui_ctl_id id );
-extern GUICALLBACK          WndMainGUIEventProc;
+extern GUIEVCALLBACK        WndMainGUIEventProc;
 extern void                 WndSetSrchItem( a_window wnd, const char *expr );
 extern bool                 WndSearch( a_window, bool, int );
 extern void                 WndInitNumRows( a_window );
@@ -374,9 +377,11 @@ extern void                 WndRXError( int );
 
 extern a_window             WndNext( a_window );
 
+extern a_window             WndMain;
+
 extern wnd_info             NoInfo;
 
-extern WNDCALLBACK          NoWndEventProc;
+extern WNDEVCALLBACK        NoWndEventProc;
 extern WNDREFRESH           NoRefresh;
 extern WNDGETLINE           NoGetLine;
 extern WNDMENU              NoMenuItem;

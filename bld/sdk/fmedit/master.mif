@@ -2,7 +2,9 @@ tree_depth = 4
 
 proj_name = fmedit
 
-fmedit_autodepends = .autodepend
+fmedit_autodepends = .AUTODEPEND
+
+fmedit_ntverrc = ../res
 
 sys_dll = 1
 
@@ -64,20 +66,16 @@ dlltarg_objs = &
     verdll.obj &
     $(objs_$(host_os)) &
     verimp.obj
-dlltarg_res_version_nt_386 = version.res
-dlltarg_res_version_nt_x64 = version.res
 dlltarg_res           = $(proj_name).res
 !include dlltarg.mif
 
 #
 # rc and others
 #
-!include verrc.mif
-
 rc_inc_dirs = -I"../res" -I"../dev"
 
 extra_rc_flags_win = -30
 
 $(proj_name).res: ../res/fmedit.rc $(__MAKEFILES__) .AUTODEPEND
     @%make echo_rc
-    $(rc) $(ppflags_common) $(rc_flags) $(rc_inc_path) $[@ -fo=$@
+    $(rc) $(ppflags_common) $(rc_cppflags) $(rc_flags) $(rc_inc_path) $[@ -fo=$@

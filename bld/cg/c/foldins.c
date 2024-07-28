@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,7 +34,7 @@
 #include "coderep.h"
 #include "zoiks.h"
 #include "tree.h"
-#include "cfloat.h"
+#include "_cfloat.h"
 #include "makeins.h"
 #include "foldins.h"
 #include "data.h"
@@ -139,7 +139,7 @@ static  instruction *CmpRelocZero( instruction *ins, opcnt c, opcnt r )
     if( CFTest( cons->c.value ) != 0 )
         return( NULL );
     rel = ins->operands[r];
-    if( rel->c.const_type == CONS_OFFSET && !AskSegIsNear( (segment_id)rel->c.lo.int_value ) )
+    if( rel->c.const_type == CONS_OFFSET && !AskSegIsNear( (segment_id)rel->c.lo.u.int_value ) )
         return( NULL );
     switch( ins->head.opcode ) {
     case OP_BIT_TEST_FALSE:
@@ -183,7 +183,7 @@ static  instruction *StraightLine( instruction *ins, tn fold, bool is_true )
         return( NULL );
     if( result->c.const_type != CONS_ABSOLUTE )
         return( NULL );
-    if( result->c.lo.int_value == 0 )
+    if( result->c.lo.u.int_value == 0 )
         is_true = !is_true;
     if( is_true ) {
         _SetBlockIndex( ins, _TrueIndex(ins), _TrueIndex(ins) );
@@ -201,10 +201,10 @@ static  instruction    *FoldAbsolute( instruction *ins ) {
     opcnt           num_operands;
     name            *result;
     tn              fold;
-    type_def        *tipe;
-    type_def        *left_tipe;
-    type_def        *rite_tipe;
-    type_def        *fold_tipe;
+    const type_def  *tipe;
+    const type_def  *left_tipe;
+    const type_def  *rite_tipe;
+    const type_def  *fold_tipe;
     pointer         left;
     pointer         rite;
     name            *tmp;

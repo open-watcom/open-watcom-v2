@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2023-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -162,7 +162,7 @@
                    || ( ( opnd->v.usage & NEEDS_MEMORY )
                         && _Isnt( conf, CST_OK_ACROSS_CALLS ) ) )
                         && !_GBitOverlap( conf->id.out_of_block, flow->call_exempt ) ) {
-                    if( (ins->flags.call_flags & CALL_WRITES_NO_MEMORY) == 0
+                    if( (ins->flags.u.call_flags & CALL_WRITES_NO_MEMORY) == 0
                      || ( opnd->n.class == N_TEMP
                        && ( opnd->v.usage & USE_ADDRESS ) ) ) {
                         _SuffixLoad( ins, opnd, reg_name, class );
@@ -170,8 +170,8 @@
                     if( ( last_defn != NULL
                        || ( ( opnd->v.usage & USE_IN_ANOTHER_BLOCK )
                           && _GBitOverlap( conf->id.out_of_block, flow->in ) ) )
-                     && ( ( (ins->flags.call_flags & CALL_WRITES_NO_MEMORY) == 0 )
-                       || ( (ins->flags.call_flags & CALL_READS_NO_MEMORY) == 0 )
+                     && ( ( (ins->flags.u.call_flags & CALL_WRITES_NO_MEMORY) == 0 )
+                       || ( (ins->flags.u.call_flags & CALL_READS_NO_MEMORY) == 0 )
                        || ( opnd->n.class == N_TEMP
                             && ( opnd->v.usage & USE_ADDRESS ) ) ) ) {
                         last_defn = NULL;

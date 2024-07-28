@@ -6,9 +6,6 @@ on:
       arch:
         required: true
         type: string
-      bldscript:
-        required: true
-        type: string
       tools:
         required: true
         type: string
@@ -27,13 +24,13 @@ jobs:
     runs-on: ${{ inputs.image }}
     steps:
     - name: checkout
-      uses: actions/checkout@v3.5.0
+      uses: actions/checkout@v4
     - name: Bootstrap
       uses: "./.github/actions/boot"
       with:
-        arch:       ${{ inputs.arch }}
-        bldscript:  ${{ inputs.bldscript }}
-        tools:      ${{ inputs.tools }}
+        hostos:     'lnx'
+        buildcmd:   "ci/buildx.sh ${{ inputs.tools }}"
+        suffix:     "lnx ${{ inputs.arch }} ${{ inputs.tools }}"
         owtools:    ${{ inputs.owtools }}
         owdebug:    ${{ inputs.owdebug }}
   build-lnx:
@@ -43,13 +40,13 @@ jobs:
     timeout-minutes: 120
     steps:
     - name: checkout
-      uses: actions/checkout@v3.5.0
+      uses: actions/checkout@v4
     - name: Build
       uses: "./.github/actions/build"
       with:
-        arch:       ${{ inputs.arch }}
-        bldscript:  ${{ inputs.bldscript }}
-        tools:      ${{ inputs.tools }}
+        hostos:     'lnx'
+        buildcmd:   "ci/buildx.sh ${{ inputs.tools }}"
+        suffix:     "lnx ${{ inputs.arch }} ${{ inputs.tools }}"
         owtools:    ${{ inputs.owtools }}
         owdebug:    ${{ inputs.owdebug }}
   tests-lnx:
@@ -58,32 +55,29 @@ jobs:
     runs-on: ${{ inputs.image }}
     steps:
     - name: checkout
-      uses: actions/checkout@v3.5.0
+      uses: actions/checkout@v4
     - name: Tests
       uses: "./.github/actions/tests"
       with:
-        arch:       ${{ inputs.arch }}
-        bldscript:  ${{ inputs.bldscript }}
-        tools:      ${{ inputs.tools }}
+        hostos:     'lnx'
+        suffix:     "lnx ${{ inputs.arch }} ${{ inputs.tools }}"
   testboot-lnx:
     name: Test Bootstrap
     needs: tests-lnx
     runs-on: ${{ inputs.image }}
     steps:
     - name: checkout
-      uses: actions/checkout@v3.5.0
+      uses: actions/checkout@v4
     - name: Load Artifact
       uses: "./.github/actions/artfload"
       with:
-        arch:     ${{ inputs.arch }}
+        hostos:   'lnx'
         gitpath:  'rel'
-        artifact: "rel ${{ inputs.arch }}"
-        tools:    ${{ inputs.tools }}
+        artifact: "rel lnx ${{ inputs.arch }} ${{ inputs.tools }}"
         owdebug:  ${{ inputs.owdebug }}
     - name: Test Bootstrap
       uses: "./.github/actions/testboot"
       with:
-        arch:       ${{ inputs.arch }}
+        hostos:     'lnx'
         gitpath:    'rel'
-        bldscript:  ${{ inputs.bldscript }}
         owdebug:    ${{ inputs.owdebug }}

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,7 +34,6 @@
 extern infilelist       *CachedFiles;
 extern infilelist       *CachedLibFiles;
 
-extern void             InitObjIO( void );
 extern infilelist       *AllocFileEntry( const char *, const path_entry * );
 extern infilelist       *AllocUniqueFileEntry( const char *, const path_entry * );
 extern bool             CleanCachedHandles( void );

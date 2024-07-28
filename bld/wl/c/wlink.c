@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -95,14 +95,17 @@ extern char     *_edata;
 extern char     *_end;
 #endif
 
-static const char   *ArgSave;
-
-// Not sure what this is for - doesn't seem to be referenced
+/*
+ * Not sure what this is for - doesn't seem to be referenced
+ */
 //extern int              __nheapblk;
 
+static const char   *ArgSave;
+
 static void PreAddrCalcFormatSpec( void )
-/***************************************/
-// format specific routines which need to be called before address calculation
+/****************************************
+ * format specific routines which need to be called before address calculation
+ */
 {
 #ifdef _OS2
     if( FmtData.type & (MK_PE | MK_WIN_VXD | MK_OS2 | MK_WIN_NE) ) {
@@ -134,8 +137,9 @@ static void PreAddrCalcFormatSpec( void )
 }
 
 static void PostAddrCalcFormatSpec( void )
-/****************************************/
-// format specific routines which need to be called after address calculation
+/*****************************************
+ * format specific routines which need to be called after address calculation
+ */
 {
 #ifdef _OS2
     if( FmtData.type & (MK_PE | MK_WIN_VXD | MK_OS2 | MK_WIN_NE) ) {
@@ -170,16 +174,15 @@ static void PostAddrCalcFormatSpec( void )
 }
 
 static void ResetMisc( void )
-/***************************/
-/* Linker support initialization. */
+/****************************
+ * Linker support initialization.
+ */
 {
     LinkFlags = LF_REDEFS_OK | LF_CASE_FLAG | LF_FAR_CALLS_FLAG;
     LinkState = LS_MAKE_RELOCS;
     AbsGroups = NULL;
     DataGroup = NULL;
     IDataGroup = NULL;
-    MapFile = NIL_FHANDLE;
-    MapFName = NULL;
     OutFiles = NULL;
     ObjLibFiles = NULL;
     LibModules = NULL;
@@ -187,16 +190,16 @@ static void ResetMisc( void )
     SET_ADDR_UNDEFINED( CurrLoc );
     CurrMod = NULL;
     StackSize = DEF_STACK_SIZE;
-    // set case sensitivity for symbols
     ResetSym();
     SetSymCase();
 }
 
 static void DoDefaultSystem( void )
-/*********************************/
-/* first hint about format being 32-bit vs. 16-bit (might distinguish between
+/**********************************
+ * first hint about format being 32-bit vs. 16-bit (might distinguish between
  * os/2 v1 & os/2 v2), and if that doesn't decide it, haul in the default
- * system block */
+ * system block
+ */
 {
     if( (LinkState & LS_FMT_DECIDED) == 0 ) {
         if( LinkState & LS_FMT_SEEN_64BIT ) {
@@ -232,9 +235,9 @@ static void FindLibPaths( void )
     } else {
         AddLibPathsToEnd( GetEnvString( "LIB286" ) );
         /*
-            If we haven't seen a 386 object file by this time, we're
-            not going to.
-        */
+         * If we haven't seen a 386 object file by this time, we're
+         * not going to.
+         */
         HintFormat( MK_16BIT );
     }
     AddLibPathsToEndList( LibPath );
@@ -247,8 +250,8 @@ static void ResetSubSystems( void )
     ResetMsg();
     VirtMemInit();
     ResetMisc();
+    ResetWriteMapIO();
     ResetDBI();
-    ResetMapIO();
     ResetCmdAll();
 #ifdef _EXE
     ResetOverlaySupp();
@@ -287,25 +290,20 @@ void InitSubSystems( void )
     InitTokBuff();
     InitSpillFile();
     InitSym();
-    InitObjORL();
+    InitORLObj();
     InitCmdFile();
 }
 
 static void CleanSubSystems( void )
 /*********************************/
 {
-    if( MapFile != NIL_FHANDLE ) {
-        QClose( MapFile, MapFName );
-        MapFile = NIL_FHANDLE;
-    }
     FreeOutFiles();
-    _LnkFree( MapFName );
+    MapFini();
     BurnSystemList();
     FreeList( UsrLibPath );
     CloseSpillFile();
     CleanTraces();
     FreePaths();
-    FreeUndefs();
     FreeLocalImports();
     CleanLoadFile();
     CleanLinkStruct();
@@ -400,13 +398,13 @@ static void DoLink( const char *cmdline )
     CheckErr();
     InitLoadFile();
     ObjPass2();
-    FiniMap();
     CheckErr();
     FiniLoadFile();
     WritePermData();
     BuildImpLib();
     FiniEnvVars();
     EndTime();
+    MapFini();
 
     ignore_signal();
 }

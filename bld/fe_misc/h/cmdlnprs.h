@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2023-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,15 +40,6 @@ extern "C" {
 
 // Standard Command-Line Parsing Routines
 
-void OPT_INIT
-    ( OPT_STORAGE *data )
-;
-void OPT_FINI
-    ( OPT_STORAGE *data )
-;
-bool OPT_PROCESS
-    ( OPT_STORAGE *data )
-;
 void OPT_CLEAN_NUMBER           // CLEAN UP NUMBERS
     ( OPT_NUMBER **h )          // - list
 ;
@@ -108,9 +99,6 @@ bool OPT_RECOG_LOWER            // RECOGNIZE LOWERCASE CHAR
 ;
 void OPT_UNGET                  // UNGET A CHARACTER
     ( void )
-;
-void StripQuotes                // STRIP QUOTES FROM A STRING
-    ( char *fname )             // - the string
 ;
 
 // The following are required to be supplied by the front end

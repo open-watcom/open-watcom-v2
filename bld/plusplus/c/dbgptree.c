@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -363,7 +363,7 @@ static char *textPTREE(         // GET TEXT FOR A PARSE-TREE NODE
         type_add = printTypes;
         break;
     case PT_FLOATING_CONSTANT :
-        BFCnvFS( pnode->u.floating_constant, buffer, 256 );
+        CFCnvFS( pnode->u.floating_constant, buffer, 256 );
         type_add = printTypes;
         break;
     case PT_STRING_CONSTANT :

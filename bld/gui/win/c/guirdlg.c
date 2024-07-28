@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -43,9 +43,6 @@
 #endif
 #include "oswincls.h"
 
-
-/* Local Window callback functions prototypes */
-WINEXPORT BOOL CALLBACK InsertResDlgCntlFunc( HWND hwnd, LPARAM lparam );
 
 WPI_INST                        GUIResHInst;
 
@@ -93,6 +90,9 @@ static GetClassMap Map[] =
 ,   { GUI_STATIC,           WC_STATIC,      0xffff,             0xffff              }
 };
 #endif
+
+/* Local Windows callback functions prototypes */
+WINEXPORT BOOL CALLBACK InsertResDlgCntlFunc( HWND hwnd, LPARAM lparam );
 
 gui_control_class GUIGetControlClassFromHWND( HWND cntl )
 {
@@ -201,7 +201,7 @@ bool GUIInsertResDialogControls( gui_window *wnd )
     return( true );
 }
 
-bool GUICreateDialogFromRes( res_name_or_id dlg_id, gui_window *parent_wnd, GUICALLBACK *gui_call_back, void *extra )
+bool GUICreateDialogFromRes( res_name_or_id dlg_id, gui_window *parent_wnd, GUIEVCALLBACK *gui_call_back, void *extra )
 {
     WPI_DLGPROC     dlgproc;
     HWND            parent_hwnd;

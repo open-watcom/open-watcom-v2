@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,7 +33,7 @@
 #ifndef _FONTSTR_H_INCLUDED
 #define _FONTSTR_H_INCLUDED
 
-bool    GetLogFontFromString( LOGFONT *l, char *data );
-void    GetFontFormatString( LOGFONT *lf, char *str );
+bool    GetFontFromString( LOGFONT *l, char *data );
+void    SetFontToString( LOGFONT *lf, char *str );
 
 #endif /* _FONTSTR_H_INCLUDED */

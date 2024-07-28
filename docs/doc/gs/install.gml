@@ -4,7 +4,7 @@
 The package contains the following components:
 .begbull $compact
 .bull
-.us &product CD-ROM
+.us &product installer image
 .bull
 .us This manual
 .endbull
@@ -23,8 +23,6 @@ An 80386 or higher processor
 &minram of memory
 .bull
 Hard disk with enough space available to install the components you require.
-.bull
-A CD-ROM disk drive
 .endbull
 .np
 .ix 'software requirements'
@@ -41,6 +39,8 @@ Microsoft Windows 95 or higher
 Microsoft Windows NT version 3.1 or higher
 .bull
 IBM OS/2 2.1 or higher
+.bull
+Linux 32/64-bit with Kernel 3.x or higher
 .endbull
 .np
 .*

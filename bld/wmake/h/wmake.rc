@@ -54,3 +54,7 @@ BEGIN
  * For the new and improved Help page, please see usage.sp CSK
  */
 END
+
+#if defined( __NT__ ) && defined( RESX_NTVER )
+    #include "exever.grc"
+#endif

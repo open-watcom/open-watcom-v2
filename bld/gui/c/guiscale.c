@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -147,12 +147,12 @@ static bool ConvertFromScreenRect( const guix_rect *screen_rect, gui_rect *rect,
 
 /* Routines Used by lower levels of GUI library */
 
-bool GUIScreenToScaleRect( const guix_rect *screen_rect, gui_rect *rect )
+bool GUIScaleFromScreenRect( const guix_rect *screen_rect, gui_rect *rect )
 {
     return( ConvertFromScreenRect( screen_rect, rect, false ) );
 }
 
-bool GUIScreenToScaleRectR( const guix_rect *screen_rect, gui_rect *rect )
+bool GUIScaleFromScreenRectR( const guix_rect *screen_rect, gui_rect *rect )
 {
     return( ConvertFromScreenRect( screen_rect, rect, true ) );
 }
@@ -187,22 +187,22 @@ guix_ord GUIScaleToScreenY( gui_ord ord )
     return( ConvertToScreenV( ord - scale_data.y ) + screen_data.y );
 }
 
-gui_ord GUIScreenToScaleH( guix_ord screen_ord )
+gui_ord GUIScaleFromScreenH( guix_ord screen_ord )
 {
     return( ConvertFromScreenH( screen_ord ) );
 }
 
-gui_ord GUIScreenToScaleV( guix_ord screen_ord )
+gui_ord GUIScaleFromScreenV( guix_ord screen_ord )
 {
     return( ConvertFromScreenV( screen_ord ) );
 }
 
-gui_ord GUIScreenToScaleX( guix_ord screen_ord )
+gui_ord GUIScaleFromScreenX( guix_ord screen_ord )
 {
     return( ConvertFromScreenH( screen_ord - screen_data.x ) + scale_data.x );
 }
 
-gui_ord GUIScreenToScaleY( guix_ord screen_ord )
+gui_ord GUIScaleFromScreenY( guix_ord screen_ord )
 {
     return( ConvertFromScreenV( screen_ord - screen_data.y ) + scale_data.y );
 }

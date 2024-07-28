@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -69,7 +69,7 @@ bool    IndexOkay( instruction *ins, name *index ) {
     } else {
         _SetTrue( conf, CST_NEEDS_INDEX );
         ins->head.state = OPERANDS_NEED_WORK;
-        ins->t.index_needs = MarkIndex( ins, name, 0 );
+        ins->u2.index_needs = MarkIndex( ins, name, 0 );
         return( true );
     }
 }

@@ -1,25 +1,25 @@
-__none : .symbolic
+__none : .SYMBOLIC
         @echo use "WMAKE forceout" or "WMAKE checkout" or "WMAKE checked_out"
         @echo or "WMAKE errsrc" or "WMAKE checkin= checkin"
         @%abort
 
-checkin : .symbolic
+checkin : .SYMBOLIC
         set check_out=checkin
         @%make __err
 
-forceout : .symbolic
+forceout : .SYMBOLIC
         set check_out=forceout
         @%make __err
 
-checkout : .symbolic
+checkout : .SYMBOLIC
         set check_out=checkout
         @%make __err
 
-checked_out : .symbolic
+checked_out : .SYMBOLIC
         set check_out=@echo
         @%make __err
 
-__err : errsrc.exe .symbolic
+__err : errsrc.exe .SYMBOLIC
         $(%check_out) $(f77_dir)\f77lib\h\errcod.h
         $(%check_out) $(f77_dir)\f77lib\c\errmsg.c
         $(%check_out) $(f77_dir)\f77lib\c\errmsg.rc
@@ -126,7 +126,7 @@ __err : errsrc.exe .symbolic
         del errmsg.msg
 !endif
 
-errsrc : errsrc.exe .symbolic
+errsrc : errsrc.exe .SYMBOLIC
         @%null
 
 errsrc.exe : errsrc.obj
@@ -135,7 +135,7 @@ errsrc.exe : errsrc.obj
 errsrc.obj : ../c/errsrc.c
         wcc386 $[@ -w3 -d1 -I"$(lang_root)/h" -I"$(c_dir)h"
 
-makedoc : errdoc.exe .symbolic
+makedoc : errdoc.exe .SYMBOLIC
         errdoc
 
 errdoc.exe : errdoc.obj
@@ -144,5 +144,5 @@ errdoc.exe : errdoc.obj
 errdoc.obj : ../c/errdoc.for
         wfc386 $[@ -d1
 
-clean: .symbolic
+clean: .SYMBOLIC
         rm errmsg.* errsrc.* errgrp.* errdoc.* errcod.* *.ipf *.gml

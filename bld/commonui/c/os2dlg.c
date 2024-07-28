@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,7 +36,6 @@
 #include <stdlib.h>
 #include <ctype.h>
 #include <wpi.h>
-#include "os2mem.h"
 #include "os2dlg.h"
 
 
@@ -69,7 +68,7 @@ TEMPLATE_HANDLE PMDialogTemplate( USHORT temptype, USHORT codepage, USHORT focus
     dataSegLen = 0;
     dataSeg = NULL;
 
-    dlgtemplate = PMmalloc( blocklen );
+    dlgtemplate = CUIMemAlloc( blocklen );
     if( dlgtemplate == NULL )
         return( NULL );
 
@@ -128,14 +127,14 @@ TEMPLATE_HANDLE PMAddControl( TEMPLATE_HANDLE old_dlgtemplate, DWORD style, USHO
     blocklen = sizeof( WDLGITEMTEMPLATE ) + dt->cbTemplate;
     ddatalen =  classlen + textlen + ctldatalen + dataSegLen + presparmslen;
 
-    new_dlgtemplate = PMrealloc( old_dlgtemplate, blocklen );
-    dataSeg = PMrealloc( dataSeg, ddatalen );
+    new_dlgtemplate = CUIMemRealloc( old_dlgtemplate, blocklen );
+    dataSeg = CUIMemRealloc( dataSeg, ddatalen );
 
     if( new_dlgtemplate == NULL || ( dataSeg == NULL && ddatalen ) ) {
         if( dataSeg != NULL )
-            PMfree( dataSeg );
+            CUIMemFree( dataSeg );
         if( new_dlgtemplate != NULL )
-            PMfree( new_dlgtemplate );
+            CUIMemFree( new_dlgtemplate );
         if( new_text != NULL )
             _wpi_freemenutext( new_text );
         return( NULL );
@@ -254,12 +253,12 @@ TEMPLATE_HANDLE PMDoneAddingControls( TEMPLATE_HANDLE old_dlgtemplate )
     }
 
     if( dataSeg != NULL ) {
-        new_dlgtemplate = PMrealloc( old_dlgtemplate, dt->cbTemplate + dataSegLen );
+        new_dlgtemplate = CUIMemRealloc( old_dlgtemplate, dt->cbTemplate + dataSegLen );
         dt = (WPDLGTEMPLATE)new_dlgtemplate;
         dit = (WPDLGITEMTEMPLATE)( (WPCHAR)new_dlgtemplate + dt->cbTemplate );
         _FARmemcpy( dit, dataSeg, dataSegLen );
         dt->cbTemplate += dataSegLen;
-        PMfree( dataSeg );
+        CUIMemFree( dataSeg );
         dataSeg = NULL;
     } else {
         new_dlgtemplate = old_dlgtemplate;
@@ -308,7 +307,7 @@ TEMPLATE_HANDLE DialogTemplate( DWORD style, int x, int y, int cx, int cy,
     psize = 0;
     if( facename != NULL ) {
         bufsize = strlen( facename ) + 10 + 1;
-        buf = (char *)PMmalloc( bufsize );
+        buf = (char *)CUIMemAlloc( bufsize );
         if( buf != NULL ) {
             buf[0] = '\0';
             sprintf( buf, "%u.%s", pointsize, facename );
@@ -319,7 +318,7 @@ TEMPLATE_HANDLE DialogTemplate( DWORD style, int x, int y, int cx, int cy,
             psize = sizeof( PRESPARAMS ) - sizeof( PARAM )
                     + sizeof( BYTE ) + 2 * sizeof( ULONG )
                     + bufsize;
-            pdata = (PRESPARAMS *)PMmalloc( psize );
+            pdata = (PRESPARAMS *)CUIMemAlloc( psize );
             if( pdata != NULL ) {
                 pdata->cb = psize - sizeof( ULONG );
                 pdata->aparam[0].id = PP_FONTNAMESIZE;
@@ -328,7 +327,7 @@ TEMPLATE_HANDLE DialogTemplate( DWORD style, int x, int y, int cx, int cy,
             } else {
                 psize = 0;
             }
-            PMfree( buf );
+            CUIMemFree( buf );
         }
     }
 
@@ -344,11 +343,11 @@ TEMPLATE_HANDLE DialogTemplate( DWORD style, int x, int y, int cx, int cy,
                         WC_FRAME, captiontext, pdata, psize, NULL, frame_flags );
 
     if( pdata != NULL ) {
-        PMfree( pdata );
+        CUIMemFree( pdata );
     }
 
     if( new_dlgtemplate == NULL ) {
-        PMfree( old_dlgtemplate );
+        CUIMemFree( old_dlgtemplate );
     }
 
     return( new_dlgtemplate );
@@ -366,7 +365,7 @@ TEMPLATE_HANDLE AddControl( TEMPLATE_HANDLE old_dlgtemplate, int x, int y,
     new_dlgtemplate = PMAddControl( old_dlgtemplate, style, x, y, cx, cy, id, 0, classname, captiontext, NULL, 0, infodata, infodatalen );
 
     if( new_dlgtemplate == NULL ) {
-        PMfree( old_dlgtemplate );
+        CUIMemFree( old_dlgtemplate );
     }
 
     return( new_dlgtemplate );

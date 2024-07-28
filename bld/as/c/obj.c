@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,15 +35,17 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include "pathgrp2.h"
+#include "options.h"
 
 #include "clibext.h"
 
 
 #if defined( __UNIX__ )
-  #define OBJ_EXT        "o"
+#define OBJ_EXT         "o"
 #else
-  #define OBJ_EXT        "obj"
+#define OBJ_EXT         "obj"
 #endif
+#define ERR_EXT         "err"
 
 extern int              ExitStatus;
 
@@ -123,8 +125,8 @@ static int owl_seek( owl_client_file f, long offset, int where )
     return( fseek( f, offset, where ) );
 }
 
-bool ObjInit( char *fname )
-//*************************
+bool ObjInit( const char *fname, const char *err_file )
+//*****************************************************
 {
     owl_client_funcs    funcs = { owl_write, owl_tell, owl_seek, MemAlloc, MemFree };
     pgroup2             pg1;
@@ -144,14 +146,36 @@ bool ObjInit( char *fname )
         _makepath( objName, pg2.drive, pg2.dir, pg2.fname, pg2.ext );
     }
     objectDefined = false;      // so that the /fo applies only to the 1st obj
-    _makepath( errorFilename, NULL, NULL, pg1.fname, "err" );
     objFP = fopen( objName, "wb" );
     if( objFP == NULL ) {
         AsOutMessage( stderr, UNABLE_TO_CREATE, objName );
         fputc( '\n', stderr );
         return( false );
     }
-    ErrorFile = fopen( errorFilename, "wt" );
+    if( err_file == NULL ) {
+        errorFilename[0] = '\0';
+        ErrorFile = NULL;
+    } else {
+        if( strcmp( err_file, "*" ) == 0 ) {
+            /*
+             * default location is current directory
+             */
+            pg2.drive = NULL;
+            pg2.dir = NULL;
+            pg2.fname = pg1.fname;
+            pg2.ext = ERR_EXT;
+        } else {
+            _splitpath2( err_file, pg2.buffer, &pg2.drive, &pg2.dir, &pg2.fname, &pg2.ext );
+            if( pg2.fname[0] == '\0' || strcmp( pg2.fname, "*" ) == 0 ) {
+                pg2.fname = pg1.fname;
+            }
+            if( pg2.ext[0] == '\0' ) {
+                pg2.ext = ERR_EXT;
+            }
+        }
+        _makepath( errorFilename, pg2.drive, pg2.dir, pg2.fname, pg2.ext );
+        ErrorFile = fopen( errorFilename, "wt" );
+    }
     OwlHandle = OWLInit( &funcs, OBJ_OWL_CPU );
     if( _IsOption( OBJ_COFF ) ) {
         obj_format = OWL_FORMAT_COFF;
@@ -164,7 +188,7 @@ bool ObjInit( char *fname )
         obj_format = OWL_FORMAT_ELF;
 #endif
     }
-       OwlFile = OWLFileInit( OwlHandle, fname, objFP, obj_format, OWL_FILE_OBJECT );
+    OwlFile = OWLFileInit( OwlHandle, fname, objFP, obj_format, OWL_FILE_OBJECT );
     ObjSwitchSection( AS_SECTION_TEXT );
     CurrAlignment = 0;
     return( true );

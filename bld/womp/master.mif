@@ -1,7 +1,7 @@
 proj_name = womp
 
 !ifndef womp_autodepends
-womp_autodepends = .autodepend
+womp_autodepends = .AUTODEPEND
 !endif
 
 womp_trmem = 1
@@ -9,7 +9,6 @@ womp_trmem = 1
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif
-!include wres.mif
 !include trmem.mif
 
 #
@@ -66,18 +65,17 @@ exetarg_objs = &
     wat2can1.obj    &
     wpmsg.obj       &
     $(trmem_objs)
-exetarg_libs       = $(wres_lib)
-exetarg_res_wresui = wresui.res
+exetarg_res        = $(proj_name).res
 !include exetarg.mif
 
 #
 # rc and others
 #
-rcui_inc_dirs = -I. -I.. -I"../h" -I"$(wrc_dir)/h"
+rc_inc_dirs = -I. -I.. -I"../h" -I"$(wrc_dir)/h"
 
-wresui.res : ../h/$(proj_name).rc
+$(proj_name).res : ../h/$(proj_name).rc
     @%make echo_rc
-    $(rcui8)
+    $(rcu8j) $(ppflags_common) $(rc_cppflags) $(rc_flags) $(rc_inc_path) $[@ -fo=$@
 
 wompmsg.gh : ../womp.msg
     @%make echo_awk

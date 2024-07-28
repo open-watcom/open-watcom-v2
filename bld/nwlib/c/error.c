@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,77 +32,95 @@
 
 #include "wlib.h"
 #ifdef __WATCOMC__
-#include <process.h>
+    #include <process.h>
 #endif
+#include "wreslang.h"
+#if defined( INCL_MSGTEXT )
+#elif defined( USE_WRESLIB )
+    #include "wressetr.h"
+    #include "wresset2.h"
+#else
+    #include <windows.h>
+#endif
+
+#include "clibint.h"
+#include "clibext.h"
 
 
 #if defined( INCL_MSGTEXT )
-
-static char *msg_text_array[] = {
+static const char * const msg_text_array[] = {
     #define pick(c,e,j) e,
     #include "wlib.msg"
     #include "usagew.gh"
     #include "usagea.gh"
     #undef pick
 };
-
-void InitMsg( void ) {}
-
-void MsgGet( int resourceid, char *buffer )
-{
-    strcpy( buffer, msg_text_array[resourceid] );
-}
-
-void FiniMsg( void ) {}
-
+#elif defined( USE_WRESLIB )
+static HANDLE_INFO      hInstance = { 0 };
 #else
-
-#include "wressetr.h"
-#include "wresset2.h"
-#include "wreslang.h"
-
-#include "clibint.h"
-#include "clibext.h"
-
-
-static  HANDLE_INFO     hInstance = { 0 };
-static  unsigned        MsgShift;
+static HINSTANCE        hInstance;
+#endif
+static unsigned         msgShift;
 
 void InitMsg( void )
 {
-#if defined( IDE_PGM ) || !defined( __WATCOMC__ )
+#if defined( INCL_MSGTEXT )
+    msgShift = 0;
+#elif defined( USE_WRESLIB )
+  #if defined( IDE_PGM ) || !defined( __WATCOMC__ )
     char    imageName[_MAX_PATH];
-#else
+  #else
     char    *imageName;
-#endif
+  #endif
 
-#if defined( IDE_PGM )
+  #if defined( IDE_PGM )
     _cmdname( imageName );
-#elif !defined( __WATCOMC__ )
+  #elif !defined( __WATCOMC__ )
     get_dllname( imageName, sizeof( imageName ) );
-#else
+  #else
     imageName = _LpDllName;
-#endif
+  #endif
     hInstance.status = 0;
     if( OpenResFile( &hInstance, imageName ) ) {
-        MsgShift = _WResLanguage() * MSG_LANG_SPACING;
+        msgShift = _WResLanguage() * MSG_LANG_SPACING;
         return;
     }
     CloseResFile( &hInstance );
     FatalResError( NO_RES_MESSAGE "\n" );
+#else
+  #if defined( IDE_PGM )
+    hInstance = GetModuleHandle( NULL );
+  #elif !defined( __WATCOMC__ )
+    char    imageName[_MAX_PATH];
+    get_dllname( imageName, sizeof( imageName ) );
+    hInstance = GetModuleHandle( imageName );
+  #else
+    hInstance = GetModuleHandle( _LpDllName );
+  #endif
+    msgShift = _WResLanguage() * MSG_LANG_SPACING;
+#endif
 }
 
-void MsgGet( int resourceid, char *buffer )
+void MsgGet( int msgid, char *buffer )
 {
-    if( hInstance.status == 0 || WResLoadString( &hInstance, resourceid + MsgShift, (lpstr)buffer, MAX_ERROR_SIZE ) <= 0 ) {
+#if defined( INCL_MSGTEXT )
+    strcpy( buffer, msg_text_array[msgid] );
+#elif defined( USE_WRESLIB )
+    if( hInstance.status == 0 || WResLoadString( &hInstance, msgid + msgShift, (lpstr)buffer, MAX_ERROR_SIZE ) <= 0 ) {
         buffer[0] = '\0';
     }
+#else
+    if( LoadString( hInstance, msgid + msgShift, buffer, MAX_ERROR_SIZE ) <= 0 ) {
+        buffer[0] = '\0';
+    }
+#endif
 }
 
 void FiniMsg( void )
 {
-    if( !CloseResFile( &hInstance ) ) {
-        longjmp( Env, 1 );
-    }
-}
+#if defined( INCL_MSGTEXT )
+#elif defined( USE_WRESLIB )
+    CloseResFile( &hInstance );
+#else
 #endif
+}

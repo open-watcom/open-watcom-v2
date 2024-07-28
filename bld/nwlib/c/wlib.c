@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,6 +34,8 @@
 #include "wlib.h"
 #include "ar.h"
 #include "main.h"
+#include "cmdline.h"
+
 
 jmp_buf Env;
 
@@ -41,7 +44,7 @@ int InitSubSystems( void )
     if( !setjmp( Env ) ) {
         InitMem();
         InitMsg( );
-        InitObj();
+        InitORLObj();
         return( EXIT_SUCCESS );
     } else {
         return( EXIT_FAILURE );
@@ -73,9 +76,8 @@ int WlibMainLine( char *argv[] )
 void FiniSubSystems( void )
 {
     if( !setjmp( Env ) ) {
-        FiniObj();
+        FiniORLObj();
         FiniMsg();
         FiniMem();
     }
 }
-

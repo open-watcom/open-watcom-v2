@@ -36,7 +36,7 @@ fakeide.lnk : makefile
     @%append $@ LIBRARY $(PROJECT).lib
 
 
-global: .symbolic
+global: .SYMBOLIC
     -del *.err
     -del *.exe
     -del *.obj

@@ -590,6 +590,7 @@ static unsigned padOutICBlock( unsigned ics )
         pad_ic.opcode = IC_PCH_PAD;
         do {
             ++ics;
+            pad_ic.value.pvalue = 0;
             pad_ic.value.uvalue = ics;
             PCHWriteUnaligned( &pad_ic, sizeof( pad_ic ) );
         } while(( ics % CGINTER_BLOCKING ) != 0 );
@@ -677,7 +678,7 @@ static void saveCGFILE( void *e, carve_walk_base *d )
                 getCGFileLocn( h, cursor, &zap_locn );
                 if( ModuleIsZap1( &zap_locn ) ) {
                     zap_ref.opcode = IC_ZAP1_REF;
-                    zap_ref.value.ivalue = 0;
+                    zap_ref.value.pvalue = 0;
                 }
                 break;
             }

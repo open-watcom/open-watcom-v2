@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -143,7 +143,7 @@ static void typeSigAccessVar(   // ACCESS A DTOR, DEFAULT-CTOR, COPY-CTOR
             }
         } else {
             sym = ClassFunMakeAddressable( sym );
-            sym->flag |= SYMF_ADDR_TAKEN;
+            sym->flags |= SYMF_ADDR_TAKEN;
             if( (info->acc & TSA_NO_REF) == 0 ) {
                 if( acc_var & info->acc ) {
                     sym = SymMarkRefed( sym );

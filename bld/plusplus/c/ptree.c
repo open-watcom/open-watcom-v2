@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -105,6 +105,7 @@ static void ptreeInit(          // INITIALIZATION
     ExtraRptRegisterCtr( &total_frees, "total # of PTreeFreeSubtrees" );
     ExtraRptRegisterCtr( &null_frees, "total # of NULL PTreeFreeSubtrees" );
     ExtraRptRegisterCtr( &simple_frees, "total # of simple PTreeFreeSubtrees" );
+    FloatSupportInit();
 }
 
 static void ptreeFini(          // COMPLETION
@@ -112,6 +113,7 @@ static void ptreeFini(          // COMPLETION
 {
     /* unused parameters */ (void)defn;
 
+    FloatSupportFini();
     DbgStmt( CarveVerifyAllGone( carvePTREE, "PTREE" ) );
     CarveDestroy( carvePTREE );
 }
@@ -206,7 +208,7 @@ PTREE PTreeFree( PTREE tree )
             fp_val = tree->u.floating_constant;
             tree->u.floating_constant = NULL;
             if( fp_val != NULL ) {
-                BFFree( fp_val );
+                CFFree( &cxxh, fp_val );
             }
         }
         ExtraRptDecrementCtr( nodes_defined );
@@ -424,7 +426,7 @@ PTREE PTreeInt64Constant( signed_64 v, type_id id )
 
 static float_handle makeFPRep( const char *buff )
 {
-    return( BFCnvSF( buff ) );
+    return( CFCnvSF( &cxxh, buff ) );
 }
 
 PTREE PTreeFloatingConstantStr( const char *buff, type_id id )
@@ -1050,19 +1052,19 @@ PTREE PTreeForceIntegral( PTREE cexpr )
     switch( cexpr->op ) {
     case PT_INT_CONSTANT:
         return( cexpr );
-    case PT_FLOATING_CONSTANT: {
+    case PT_FLOATING_CONSTANT:
+      {
         int sign;
         target_long result;
 
         CErr1( ERR_EXPR_MUST_BE_INTEGRAL );
-        sign = BFSign( cexpr->u.floating_constant );
-        result = BFGetLong( &(cexpr->u.floating_constant) );
+        sign = CFTest( cexpr->u.floating_constant );
+        result = CFFloat2Long( &(cexpr->u.floating_constant) );
         cexpr->op = PT_INT_CONSTANT;
         cexpr->u.int_constant = result;
-        cexpr = ptreeSetConstantType( cexpr
-                                    , sign < 0 ? TYP_SINT : TYP_UINT );
+        cexpr = ptreeSetConstantType( cexpr, ( sign < 0 ) ? TYP_SINT : TYP_UINT );
         return( cexpr );
-    }
+      }
     }
     if( cexpr->op != PT_ERROR ) {
         PTreeErrorExpr( cexpr, ERR_NOT_A_CONSTANT_EXPR );
@@ -1743,11 +1745,11 @@ PTREE PTreeCheckFloatRepresentation( PTREE tree )
     id = TypedefModifierRemove( tree->type )->id;
     switch( id ) {
     case TYP_FLOAT:
-        tree->u.floating_constant = BFCheckFloatLimit( tree->u.floating_constant );
+        tree->u.floating_constant = CFCheckFloatLimit( tree->u.floating_constant );
         break;
     case TYP_DOUBLE:
     case TYP_LONG_DOUBLE:
-        tree->u.floating_constant = BFCheckDblLimit( tree->u.floating_constant );
+        tree->u.floating_constant = CFCheckDoubleLimit( tree->u.floating_constant );
         break;
     }
     return( tree );
@@ -1762,7 +1764,7 @@ unsigned PTreeGetFPRaw( PTREE tree, char *buff, unsigned len )
     DbgAssert( tree != NULL && tree->op == PT_FLOATING_CONSTANT );
     DbgAssert( len >= 128 );
     cg_float = tree->u.floating_constant;
-    end = BFCnvFS( cg_float, buff, len );
+    end = CFCnvFS( cg_float, buff, len );
     len = (unsigned)( end - buff );
     DbgAssert( buff[len] == '\0' );
     // returns strlen( buff ) + 1

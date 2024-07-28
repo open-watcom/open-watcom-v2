@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -41,7 +41,7 @@
 #include <direct.h>
 #define INCLUDE_COMMDLG_H
 #include <wwindows.h>
-#include "getfile.h"
+#include "ide.rh"
 #include "wstring.hpp"
 #include "wstrlist.hpp"
 #include "wfilenam.hpp"
@@ -51,6 +51,10 @@
 
 #include "clibext.h"
 
+
+/* Local Windows CALLBACK function prototypes */
+extern "C"
+WINEXPORT UINT_PTR CALLBACK AddSrcDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
 
 typedef struct {
     WString     *result;

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,12 +34,14 @@
 #ifndef _FLOATSUP_H
 #define _FLOATSUP_H
 
-extern float_handle BFCheckFloatLimit(
-        float_handle f )
-;
-extern float_handle BFCheckDblLimit(
-        float_handle f )
-;
-extern target_long BFGetLong( float_handle *f );
+#include "cfloat.h"
+
+extern cfstruct     cxxh;
+
+extern void         FloatSupportInit( void );
+extern void         FloatSupportFini( void );
+extern float_handle CFCheckFloatLimit( float_handle f );
+extern float_handle CFCheckDoubleLimit( float_handle f );
+extern target_long  CFFloat2Long( float_handle *f );
 
 #endif

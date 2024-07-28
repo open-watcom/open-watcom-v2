@@ -61,18 +61,18 @@ sav_file_2 = x$(arch)_$(alt_error).sav
 
 .c: source
 
-test : .symbolic start start_test test.lnk $(callconv_exes) test_set_result
+test : .SYMBOLIC start start_test test.lnk $(callconv_exes) test_set_result
     $(noecho)%make common_set_result_check
 
 check_result : .procedure
     -diff -b error.out error.chk
 
-test_set_result : .symbolic
+test_set_result : .SYMBOLIC
     -diff -b $(%RUN_FILE) sym$(arch)$(alt_error).chk >error.out
     -%append error.out OK
     -chk_exec exec.out >>error.out
 
-start_test : .symbolic
+start_test : .SYMBOLIC
     @set RUN_FILE=exec2.out
     %create $(%RUN_FILE)
 

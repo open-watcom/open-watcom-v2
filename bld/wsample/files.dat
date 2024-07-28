@@ -9,7 +9,7 @@ dir="binp"      usr="wsample.exe"       cond="os2targ"
 
 dir="nlm"       usr="wsample.nlm"       cond="nlmtarg"
 
-dir="binnt"     usr="wsample.exe"       cond="wnthost"      wherea="ac"
+dir="binnt"     usr="wsample.exe"       cond="wnthost"      where+="ac"
 
 dir="axpnt"     usr="wsample.exe"       cond="alphahost"    where="ac"
 

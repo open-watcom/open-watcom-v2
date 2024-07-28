@@ -41,7 +41,7 @@ extra_a_v2_flags = -DVERSION2
 #
 .c: ../c
 
-inc_dirs = -I. -I"../h" -I"$(graphlib_dir)/h" -I"$(mathlib_dir)/h" -I"$(watcom_dir)/h" $(inc_dirs_lang_dos)
+inc_dirs = -I. -I"../h" -I"$(graphlib_dir)/h" -I"$(mathlib_dir)/h" $(inc_dirs_lang_dos)
 
 extra_cpp_flags = -D_FARD=
 
@@ -63,7 +63,7 @@ extra_c_flags_win = -zW
 # explicit rules
 #################
 
-all : chart.lib chart2.lib .symbolic
+all : chart.lib chart2.lib .SYMBOLIC
 
 template = &
     $(_subdir_)pgancom.obj &

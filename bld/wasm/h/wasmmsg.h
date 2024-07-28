@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,7 +32,8 @@
 
 #define MAX_MESSAGE_SIZE    128
 
-#if defined( _STANDALONE_ ) && defined( INCL_MSGTEXT )
+#if defined( _STANDALONE_ )
+  #if defined( INCL_MSGTEXT )
     // WASM, must be assigned dynamicaly
     #define MSG_SHARE_BASE      0
 
@@ -49,11 +50,15 @@ enum {
     #include "../h/wasms.msg"
     #undef pick
 };
+  #elif defined( USE_WRESLIB )
+  #else
+  #endif
 #endif
 
 #include "wasmmsg.rh"
 
-#if !defined( _STANDALONE_ ) && defined( INCL_MSGTEXT )
+#if !defined( _STANDALONE_ )
+  #if defined( INCL_MSGTEXT )
     // WCC or WPP, must be assigned dynamicaly
 enum {
     MSG_LANG_SPACING = MSG_SHARE_BASE
@@ -61,4 +66,7 @@ enum {
     #include "../h/wasmc.msg"
     #undef pick
 };
+  #elif defined( USE_WRESLIB )
+  #else
+  #endif
 #endif

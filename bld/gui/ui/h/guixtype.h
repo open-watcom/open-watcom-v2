@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,6 +30,22 @@
 *
 ****************************************************************************/
 
+
+/*
+ * NOTE:
+ * gui project use 3 types of coordinates
+ *
+ * 1. gui_ord
+ *    it is public API graphical coordinate type (int)
+ *
+ * 2. gui_text_ord
+ *    it is public API text coordinate type (unsigned short)
+ *
+ * 3. guix_ord
+ *    it is internal signed coordinate type which depend on API type
+ *    for GUI it is graphical coordinate type (int)
+ *    for UI it is text coordinate type (short)
+ */
 
 #define s_x             col
 #define s_y             row

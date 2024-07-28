@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -96,7 +96,7 @@
 
 type_length StackDepth;
 
-hw_reg_set   PushRegs[] = {
+const hw_reg_set PushRegs[] = {
     HW_D( HW_xAX ),
     HW_D( HW_xBX ),
     HW_D( HW_xCX ),
@@ -143,7 +143,7 @@ static  bool    ScanInstructions( void )
                     CurrProc->state.attr |= ROUTINE_NEEDS_PROLOG;
                     sp_constant = false;
                 }
-                if( ins->flags.call_flags & CALL_NEEDS_BP_CHAIN ) {
+                if( ins->flags.u.call_flags & CALL_NEEDS_BP_CHAIN ) {
                     CurrProc->state.attr |= ROUTINE_NEEDS_BP_CHAIN;
                 }
             }
@@ -925,7 +925,6 @@ static unsigned returnAddressStackSize( void )
 void    GenProlog( void )
 /***********************/
 {
-    segment_id  old_segid;
     hw_reg_set  to_push;
     unsigned    ret_size;
     pointer     label;
@@ -934,147 +933,146 @@ void    GenProlog( void )
 
     ScanInstructions();     /* Do These 2 calls before using DO_WINDOWS_CRAP! */
     FindIfExported();
-    old_segid = SetOP( AskCodeSeg() );
+    PUSH_OP( AskCodeSeg() );
+        if( CurrProc->prolog_state & PST_FUNCTION_NAME ) {
+            EmitNameInCode();
+        }
 
-    if( CurrProc->prolog_state & PST_FUNCTION_NAME ) {
-        EmitNameInCode();
-    }
+        if( _IsModel( CGSW_GEN_DBG_NUMBERS ) ) {
+            CodeLineNumber( HeadBlock->ins.head.line_num, false );
+        }
 
-    if( _IsModel( CGSW_GEN_DBG_NUMBERS ) ) {
-        CodeLineNumber( HeadBlock->ins.head.line_num, false );
-    }
+        if( _IsModel( CGSW_GEN_DBG_LOCALS ) ) { // d1+ or d2
+            EmitRtnBeg();
+        }
+        if( CurrProc->state.attr & ROUTINE_WANTS_DEBUGGING ) {
+            CurrProc->state.attr |= ROUTINE_NEEDS_PROLOG;
+        }
 
-    if( _IsModel( CGSW_GEN_DBG_LOCALS ) ) { // d1+ or d2
-        EmitRtnBeg();
-    }
-    if( CurrProc->state.attr & ROUTINE_WANTS_DEBUGGING ) {
-        CurrProc->state.attr |= ROUTINE_NEEDS_PROLOG;
-    }
+        CurrProc->parms.base = 0;
+        CurrProc->parms.size = CurrProc->state.parm.offset;
 
-    CurrProc->parms.base = 0;
-    CurrProc->parms.size = CurrProc->state.parm.offset;
-
-    origlabel = label = CurrProc->label;
+        origlabel = label = CurrProc->label;
 
 #if _TARGET & _TARG_80386
-    if( _RoutineIsFar16( CurrProc->state.attr ) ) {
-        label = GenFar16Thunk( CurrProc->label, CurrProc->parms.size,
-                    CurrProc->state.attr & ROUTINE_REMOVES_PARMS );
-//        CurrProc->label = label; /* ugly mess if following are combined */
-    }
+        if( _RoutineIsFar16( CurrProc->state.attr ) ) {
+            label = GenFar16Thunk( CurrProc->label, CurrProc->parms.size,
+                        CurrProc->state.attr & ROUTINE_REMOVES_PARMS );
+//            CurrProc->label = label; /* ugly mess if following are combined */
+        }
 #endif
 
-    CodeLabel( label, DepthAlign( PROC_ALIGN ) );
+        CodeLabel( label, DepthAlign( PROC_ALIGN ) );
 
-    attr = FEAttr( AskForLblSym( origlabel ) );
+        attr = FEAttr( AskForLblSym( origlabel ) );
 
-    if( CurrProc->prolog_state & PST_PROLOG_RDOSDEV ) {
-        GenRdosdevProlog();
-    }
-
-#if _TARGET & _TARG_80386
-    if( (attr & FE_NAKED) == 0 ) {
-        if( _IsTargetModel( CGSW_X86_NEW_P5_PROFILING )
-          || _IsTargetModel( CGSW_X86_P5_PROFILING ) ) {
-            GenP5ProfilingProlog( label );
+        if( CurrProc->prolog_state & PST_PROLOG_RDOSDEV ) {
+            GenRdosdevProlog();
         }
-        if( CurrProc->prolog_state & PST_PROLOG_THUNK ) {
-            QuickSave( HW_xSP, OP_PUSH );
-            GenPushC( CurrProc->parms.size );
-            GenUnkPush( &CurrProc->targ.stack_check );
-            if( NeedStackCheck() ) {
-                DoRTCall( RT_THUNK_STK, true );
-            } else {
-                DoRTCall( RT_THUNK, true );
+
+    #if _TARGET & _TARG_80386
+        if( (attr & FE_NAKED) == 0 ) {
+            if( _IsTargetModel( CGSW_X86_NEW_P5_PROFILING )
+              || _IsTargetModel( CGSW_X86_P5_PROFILING ) ) {
+                GenP5ProfilingProlog( label );
             }
-            CurrProc->parms.base += WORD_SIZE;
-        }
-    }
-#endif
-
-    ret_size = returnAddressStackSize();
-    CurrProc->parms.base += ret_size;
-    CalcUsedRegs();
-
-    to_push = SaveRegs();
-    HW_CTurnOff( to_push, HW_FLTS );
-    if( !CurrProc->targ.sp_frame
-      || CurrProc->targ.sp_align ) {
-        HW_CTurnOff( to_push, HW_xBP );
-    }
-
-    if( attr & FE_NAKED ) {
-        /*
-         * don't do anything - empty prologue
-         */
-    } else if( _RoutineIsInterrupt( CurrProc->state.attr ) ) {
-        ret_size = -PushAll();
-        CurrProc->targ.base_adjust = 0;
-        MoveParms();
-    } else {
-        if( CHAIN_FRAME ) {
-            CurrProc->targ.base_adjust = 0;
-            if( NeedBPProlog() ) {
-                HW_CTurnOn( CurrProc->state.used, HW_xBP );
-                CurrProc->parms.base += WORD_SIZE;
-                if( FAR_RET_ON_STACK ) {
-                    if( CHEAP_FRAME ) {
-                        GenCypWindowsProlog();
-                    } else {
-#if _TARGET & _TARG_8086
-                        /*
-                         * Windows prologs zap AX, so warn idiot user if we
-                         * generate one for a routine in which AX is live
-                         * upon entry to routine, or unalterable.
-                         */
-                        if( HW_COvlap( CurrProc->state.unalterable, HW_xAX )
-                          || HW_COvlap( CurrProc->state.parm.used, HW_xAX ) ) {
-                            FEMessage( FEMSG_ERROR, "exported routine with AX live on entry" );
-                        }
-#endif
-                        GenWindowsProlog();
-                        CurrProc->targ.base_adjust += 2; /* the extra push DS */
-                    }
+            if( CurrProc->prolog_state & PST_PROLOG_THUNK ) {
+                QuickSave( HW_xSP, OP_PUSH );
+                GenPushC( CurrProc->parms.size );
+                GenUnkPush( &CurrProc->targ.stack_check );
+                if( NeedStackCheck() ) {
+                    DoRTCall( RT_THUNK_STK, true );
                 } else {
-                    QuickSave( HW_xBP, OP_PUSH );
-                    GenRegMove( HW_xSP, HW_xBP );
+                    DoRTCall( RT_THUNK, true );
                 }
-                PrologHook();
-            }
-            DoStackCheck();
-            CurrProc->targ.base_adjust += LoadDS();
-            CurrProc->targ.base_adjust += Push( to_push );
-            CurrProc->parms.base += CurrProc->targ.base_adjust;
-            AllocStack();
-            AdjustPushLocals();
-        } else {
-            DoStackCheck();
-            CurrProc->parms.base += LoadDS();
-            if( (CurrProc->state.attr & ROUTINE_NEVER_RETURNS_ABORTS) == 0 ) {
-                CurrProc->parms.base += Push( to_push );
-            }
-            Enter();
-            AdjustPushLocals();
-            if( _IsModel( CGSW_GEN_NO_OPTIMIZATION )
-              || CurrProc->targ.sp_frame ) {
-                CurrProc->targ.base_adjust = 0;
-            } else {
-                CurrProc->targ.base_adjust = AdjustBase();
-                if( CurrProc->targ.base_adjust != 0 ) {
-                    GenRegSub( HW_xBP, -CurrProc->targ.base_adjust );
-                }
+                CurrProc->parms.base += WORD_SIZE;
             }
         }
-        RelocParms();
-        MoveParms();
-    }
-    CurrProc->prolog_state |= PST_PROLOG_GENERATED;
+    #endif
 
-    if( _IsModel( CGSW_GEN_DBG_LOCALS ) ) { // d1+ or d2
-        DbgRetOffset( CurrProc->parms.base - CurrProc->targ.base_adjust - ret_size );
-        EmitProEnd();
-    }
-    SetOP( old_segid );
+        ret_size = returnAddressStackSize();
+        CurrProc->parms.base += ret_size;
+        CalcUsedRegs();
+
+        to_push = SaveRegs();
+        HW_CTurnOff( to_push, HW_FLTS );
+        if( !CurrProc->targ.sp_frame
+          || CurrProc->targ.sp_align ) {
+            HW_CTurnOff( to_push, HW_xBP );
+        }
+
+        if( attr & FE_NAKED ) {
+            /*
+             * don't do anything - empty prologue
+             */
+        } else if( _RoutineIsInterrupt( CurrProc->state.attr ) ) {
+            ret_size = -PushAll();
+            CurrProc->targ.base_adjust = 0;
+            MoveParms();
+        } else {
+            if( CHAIN_FRAME ) {
+                CurrProc->targ.base_adjust = 0;
+                if( NeedBPProlog() ) {
+                    HW_CTurnOn( CurrProc->state.used, HW_xBP );
+                    CurrProc->parms.base += WORD_SIZE;
+                    if( FAR_RET_ON_STACK ) {
+                        if( CHEAP_FRAME ) {
+                            GenCypWindowsProlog();
+                        } else {
+    #if _TARGET & _TARG_8086
+                            /*
+                             * Windows prologs zap AX, so warn idiot user if we
+                             * generate one for a routine in which AX is live
+                             * upon entry to routine, or unalterable.
+                             */
+                            if( HW_COvlap( CurrProc->state.unalterable, HW_xAX )
+                              || HW_COvlap( CurrProc->state.parm.used, HW_xAX ) ) {
+                                FEMessage( FEMSG_ERROR, "exported routine with AX live on entry" );
+                            }
+    #endif
+                            GenWindowsProlog();
+                            CurrProc->targ.base_adjust += 2; /* the extra push DS */
+                        }
+                    } else {
+                        QuickSave( HW_xBP, OP_PUSH );
+                        GenRegMove( HW_xSP, HW_xBP );
+                    }
+                    PrologHook();
+                }
+                DoStackCheck();
+                CurrProc->targ.base_adjust += LoadDS();
+                CurrProc->targ.base_adjust += Push( to_push );
+                CurrProc->parms.base += CurrProc->targ.base_adjust;
+                AllocStack();
+                AdjustPushLocals();
+            } else {
+                DoStackCheck();
+                CurrProc->parms.base += LoadDS();
+                if( (CurrProc->state.attr & ROUTINE_NEVER_RETURNS_ABORTS) == 0 ) {
+                    CurrProc->parms.base += Push( to_push );
+                }
+                Enter();
+                AdjustPushLocals();
+                if( _IsModel( CGSW_GEN_NO_OPTIMIZATION )
+                  || CurrProc->targ.sp_frame ) {
+                    CurrProc->targ.base_adjust = 0;
+                } else {
+                    CurrProc->targ.base_adjust = AdjustBase();
+                    if( CurrProc->targ.base_adjust != 0 ) {
+                        GenRegSub( HW_xBP, -CurrProc->targ.base_adjust );
+                    }
+                }
+            }
+            RelocParms();
+            MoveParms();
+        }
+        CurrProc->prolog_state |= PST_PROLOG_GENERATED;
+
+        if( _IsModel( CGSW_GEN_DBG_LOCALS ) ) { // d1+ or d2
+            DbgRetOffset( CurrProc->parms.base - CurrProc->targ.base_adjust - ret_size );
+            EmitProEnd();
+        }
+    POP_OP();
 
     if( CurrProc->prolog_state & PST_EXPORT ) {
         OutDLLExport( WORDS_COUNT( CurrProc->parms.size ), AskForLblSym( CurrProc->label ) );
@@ -1116,7 +1114,7 @@ void        AdjustStackDepth( instruction *ins )
             _Zoiks( ZOIKS_077 );
             return;
         }
-        adjust = op->c.lo.int_value;
+        adjust = op->c.lo.u.int_value;
         if( ins->head.opcode == OP_SUB ) {
             StackDepth += adjust;
         } else {
@@ -1131,10 +1129,10 @@ void        AdjustStackDepth( instruction *ins )
         break;
     case OP_CALL:
     case OP_CALL_INDIRECT:
-        if( ins->flags.call_flags & CALL_POPS_PARMS ) {
+        if( ins->flags.u.call_flags & CALL_POPS_PARMS ) {
             op = ins->operands[CALL_OP_POPS];
             if( op->n.class == N_CONSTANT ) {
-                StackDepth -= op->c.lo.int_value;
+                StackDepth -= op->c.lo.u.int_value;
             }
         }
     default:

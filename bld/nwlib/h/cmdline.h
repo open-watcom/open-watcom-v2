@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -29,10 +30,18 @@
 ****************************************************************************/
 
 
-extern void InitCmdLine( void );
-extern void ProcessCmdLine( char *argv[] );
-extern void FiniCmdLine( void );
+#include "cmdlnprs.gh"
+#include "cmdscan.h"
+
 
 extern lib_cmd      *CmdList;
-extern options_def  Options;
+extern const char   *option_start;
 
+extern void         InitCmdLine( void );
+extern void         ProcessCmdLine( char *argv[] );
+extern void         FiniCmdLine( void );
+extern char         *CopyFilenameExt( OPT_STRING *src, const char *ext );
+extern char         *GetFilenameExt( const char *ext );
+extern char         *CopyFilename( OPT_STRING *src );
+extern char         *GetFilename( void );
+extern void         AddCommand( operation ops );

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -56,7 +56,7 @@ typedef struct inline_stack {
         struct inline_stack     *next;
         struct inline_parm      *parms;
         cg_sym_handle           proc_sym;
-        type_def                *tipe;
+        const type_def          *tipe;
         an                      addr;
 } inline_stack;
 
@@ -89,8 +89,8 @@ void    BGAddInlineParm( an addr )
 }
 
 
-an      BGStopInline( call_handle call, type_def *tipe )
-/******************************************************/
+an      BGStopInline( call_handle call, const type_def *tipe )
+/************************************************************/
 {
     // works if we're in the middle of a conditional???
 
@@ -116,8 +116,8 @@ an      BGStopInline( call_handle call, type_def *tipe )
 }
 
 
-static bool NotEquiv( type_def *a, type_def *b )
-/**********************************************/
+static bool NotEquiv( const type_def *a, const type_def *b )
+/**********************************************************/
 {
     if( TypeClass( a ) != TypeClass( b ) )
         return( true );
@@ -127,8 +127,8 @@ static bool NotEquiv( type_def *a, type_def *b )
 }
 
 
-void    BGProcInline( cg_sym_handle proc_sym, type_def *tipe )
-/************************************************************/
+void    BGProcInline( cg_sym_handle proc_sym, const type_def *tipe )
+/******************************************************************/
 {
     if( InlineStack->proc_sym != proc_sym || NotEquiv( InlineStack->tipe, tipe ) ) {
         _Zoiks( ZOIKS_072 );
@@ -136,8 +136,8 @@ void    BGProcInline( cg_sym_handle proc_sym, type_def *tipe )
 }
 
 
-void    BGParmInline( cg_sym_handle sym, type_def *tipe )
-/*******************************************************/
+void    BGParmInline( cg_sym_handle sym, const type_def *tipe )
+/*************************************************************/
 {
     name                *temp;
     name                *parm_value;
@@ -157,8 +157,8 @@ void    BGParmInline( cg_sym_handle sym, type_def *tipe )
 }
 
 
-void    BGRetInline( an addr, type_def *tipe )
-/********************************************/
+void    BGRetInline( an addr, const type_def *tipe )
+/**************************************************/
 {
     an  tempaddr;
 

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -57,11 +57,8 @@ extern bool     IsStackClass( const char *, size_t );
 extern void     CalcAddresses( void );
 extern void     AllocClasses( section * );
 extern void     CombineSeg( seg_leader *, signed_32 *, offset, byte, byte );
-extern void     ProcPubs( mod_entry *, section * );
-extern void     StartMapSort( void );
-extern void     FinishMapSort( void );
-extern void     DoPubs( section * );
+extern void     ProcPubsSect( mod_entry *, section * );
+extern void     DoPubsSect( section * );
 extern void     SetSegFlags( xxx_seg_flags * );
 extern void     CalcSegSizes( void );
 extern void     ConvertToFrame( targ_addr *, segment, bool );
-extern void     FiniMap( void );

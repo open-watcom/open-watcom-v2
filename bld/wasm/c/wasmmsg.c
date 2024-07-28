@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,7 +33,15 @@
 
 #include "asmglob.h"
 #ifdef __WATCOMC__
-  #include <process.h>
+    #include <process.h>
+#endif
+#include "wreslang.h"
+#if defined( INCL_MSGTEXT )
+#elif defined( USE_WRESLIB )
+    #include "wressetr.h"
+    #include "wresset2.h"
+#else
+    #include <windows.h>
 #endif
 #include "banner.h"
 //#include "wasmmsg.h"
@@ -49,7 +57,6 @@ enum {
 };
 
 #if defined( INCL_MSGTEXT )
-
 static const char *txtmsgs[] = {
     #define pick(num,etext,jtext) {etext},
     #include "wasmc.msg"
@@ -57,17 +64,12 @@ static const char *txtmsgs[] = {
     #include "usage.gh"
     #undef pick
 };
-
+#elif defined( USE_WRESLIB )
+static HANDLE_INFO      hInstance = { 0 };
 #else
-
-#include "wressetr.h"
-#include "wresset2.h"
-#include "wreslang.h"
-
-static  HANDLE_INFO     hInstance = { 0 };
-static  unsigned        MsgShift;
-
+static HINSTANCE        hInstance;
 #endif
+static unsigned         msgShift;
 
 static const char *FingerMsg[] = {
     banner1w( "x86 Assembler", _WASM_VERSION_ ),
@@ -134,12 +136,15 @@ void MsgPrintf1( unsigned resourceid, const char *token )
 
 bool MsgInit( void )
 {
-#if !defined( INCL_MSGTEXT )
+#if defined( INCL_MSGTEXT )
+    msgShift = 0;
+    return( true );
+#elif defined( USE_WRESLIB )
     char        name[_MAX_PATH];
 
     hInstance.status = 0;
     if( _cmdname( name ) != NULL && OpenResFile( &hInstance, name ) ) {
-        MsgShift = _WResLanguage() * MSG_LANG_SPACING;
+        msgShift = _WResLanguage() * MSG_LANG_SPACING;
         if( MsgGet( MSG_USAGE_BASE, name ) ) {
             return( true );
         }
@@ -148,24 +153,33 @@ bool MsgInit( void )
     puts( NO_RES_MESSAGE );
     return( false );
 #else
+    hInstance = GetModuleHandle( NULL );
+    msgShift = _WResLanguage() * MSG_LANG_SPACING;
     return( true );
 #endif
 }
 
 void MsgFini( void )
 {
-#if !defined( INCL_MSGTEXT )
+#if defined( INCL_MSGTEXT )
+#elif defined( USE_WRESLIB )
     CloseResFile( &hInstance );
+#else
 #endif
 }
 
 bool MsgGet( unsigned id, char *buffer )
 {
 #if defined( INCL_MSGTEXT )
-    strncpy( buffer, txtmsgs[id], MAX_MESSAGE_SIZE - 1 );
+    strncpy( buffer, txtmsgs[id + MsgShift], MAX_MESSAGE_SIZE - 1 );
     buffer[MAX_MESSAGE_SIZE - 1] = '\0';
+#elif defined( USE_WRESLIB )
+    if( hInstance.status == 0 || WResLoadString( &hInstance, id + msgShift, (lpstr)buffer, MAX_MESSAGE_SIZE ) <= 0 ) {
+        buffer[0] = '\0';
+        return( false );
+    }
 #else
-    if( hInstance.status == 0 || WResLoadString( &hInstance, id + MsgShift, (lpstr)buffer, MAX_MESSAGE_SIZE ) <= 0 ) {
+    if( LoadString( hInstance, id + msgShift, buffer, MAX_MESSAGE_SIZE ) <= 0 ) {
         buffer[0] = '\0';
         return( false );
     }

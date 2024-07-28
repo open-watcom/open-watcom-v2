@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -56,11 +56,12 @@
 #define TARGET_LDIMAGINARY 10
 #define TARGET_BOOL     1
 #define TARGET_WCHAR    2
-#define TARGET_BITFIELD 4
+#define TARGET_BITFIELD 8
 
 #define TARGET_INT_MAX  2147483647
 #define TARGET_INT_MIN  (-2147483647-1)
 #define TARGET_UINT_MAX 4294967295U
+#define TARGET_LONG_MAX TARGET_INT_MAX
 #define TARGET_FLT_MAX  3.402823466e+38f
 
 typedef short           target_short;

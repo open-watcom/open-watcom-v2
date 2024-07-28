@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,48 +33,65 @@
 #include "wlib.h"
 #include "ar.h"
 #include "coff.h"
+#include "coffimpc.h"
 #include "roundmac.h"
 #include "exedos.h"
 
 #include "clibext.h"
 
 
-// must correspond to defines in implib.h
-static char *procname[] = {
-    #define WL_PROC(p,e,n)  n,
-    WL_PROCS
-    #undef WL_PROC
-};
+static orl_sec_handle   found_sec_handle;
+static orl_rva          export_table_rva;
 
-static void fillInU16( unsigned_16 value, char *out )
+static unsigned getLenName( libfile io, char *name )
 {
-    out[0] = value & 255;
-    out[1] = ( value >> 8 ) & 255;
+    unsigned_8  namelen;
+
+    *name = '\0';
+    if( LibRead( io, &namelen, sizeof( namelen ) ) != sizeof( namelen ) ) {
+        return( 0 );
+    }
+    if( namelen == 0 ) {
+        return( 0 );
+    }
+    if( LibRead( io, name, namelen ) != namelen ) {
+        FatalError( ERR_BAD_DLL, io->name );
+    }
+    name[namelen] = '\0';
+    return( namelen );
 }
 
-static void fillInU32( unsigned_32 value, char *out )
+static unsigned getU16( libfile io )
 {
-    out[0] = value & 255;
-    out[1] = ( value >> 8 ) & 255;
-    out[2] = ( value >> 16 ) & 255;
-    out[3] = ( value >> 24 ) & 255;
+    unsigned_16 u16;
+
+    if( LibRead( io, &u16, sizeof( u16 ) ) != sizeof( u16 ) ) {
+        FatalError( ERR_BAD_DLL, io->name );
+    }
+    return( u16 );
 }
 
-static orl_sec_handle found_sec_handle;
+static unsigned_32 getU32( libfile io )
+{
+    unsigned_32 u32;
+
+    if( LibRead( io, &u32, sizeof( u32 ) ) != sizeof( u32 ) ) {
+        FatalError( ERR_BAD_DLL, io->name );
+    }
+    return( u32 );
+}
 
 static orl_return FindHelper( orl_sec_handle sec )
 {
-    if( found_sec_handle == ORL_NULL_HANDLE ) {
+    if( found_sec_handle == NULL ) {
         found_sec_handle = sec;
     }
     return( ORL_OKAY );
 }
 
-static orl_rva      export_table_rva;
-
 static orl_return FindExportTableHelper( orl_sec_handle sec )
 {
-    if( found_sec_handle == ORL_NULL_HANDLE ) {
+    if( found_sec_handle == NULL ) {
         orl_sec_base    base;
 
         ORLSecGetBase( sec, &base );
@@ -86,32 +103,32 @@ static orl_return FindExportTableHelper( orl_sec_handle sec )
     return( ORL_OKAY );
 }
 
-static orl_sec_handle FindSec( obj_file *ofile, char *name )
+static orl_sec_handle FindSec( obj_file *ofile, const char *name )
 {
     export_table_rva = 0;
-    found_sec_handle = ORL_NULL_HANDLE;
+    found_sec_handle = NULL;
 
     ORLFileScan( ofile->orl, name, FindHelper );
-    if( found_sec_handle == ORL_NULL_HANDLE ) {
+    if( found_sec_handle == NULL ) {
         if( stricmp( ".edata", name ) == 0 ) {
             export_table_rva = ORLExportTableRVA( ofile->orl );
 
             if( export_table_rva == 0 ) {
-                FatalError( ERR_NO_EXPORTS, ofile->hdl->name );
+                FatalError( ERR_NO_EXPORTS, ofile->io->name );
             }
 
             ORLFileScan( ofile->orl, NULL, FindExportTableHelper );
         }
 
-        if( found_sec_handle == ORL_NULL_HANDLE ) {
-            FatalError( ERR_NO_EXPORTS, ofile->hdl->name );
+        if( found_sec_handle == NULL ) {
+            FatalError( ERR_NO_EXPORTS, ofile->io->name );
         }
     }
 
     return( found_sec_handle );
 }
 
-static bool elfAddImport( arch_header *arch, libfile io, long header_offset )
+static bool elfAddImport( libfile io, long header_offset, const arch_header *arch )
 {
     obj_file        *ofile;
     orl_sec_handle  sym_sec;
@@ -123,9 +140,10 @@ static bool elfAddImport( arch_header *arch, libfile io, long header_offset )
 //    orl_sec_size    sym_size;
     char            *strings;
     processor_type  processor = WL_PROC_NONE;
-    char            *oldname;
-    char            *DLLname;
+    name_len        dllName;
     Elf32_Word      ElfMagic;
+    char            *dll_name;
+    arch_header     tmp_arch;
 
     LibSeek( io, header_offset, SEEK_SET );
     if( LibRead( io, &ElfMagic, sizeof( ElfMagic ) ) != sizeof( ElfMagic ) ) {
@@ -142,7 +160,7 @@ static bool elfAddImport( arch_header *arch, libfile io, long header_offset )
         return( false );
     }
     LibSeek( io, 0, SEEK_SET );
-    ofile = OpenObjFile( io->name );
+    ofile = OpenORLObjFile( io->name );
     if( ofile->orl == NULL ) {
         FatalError( ERR_CANT_READ, io->name, "Unknown error" );
     }
@@ -154,10 +172,6 @@ static bool elfAddImport( arch_header *arch, libfile io, long header_offset )
         FatalError( ERR_CANT_READ, io->name, "Not a PPC DLL" );
     }
 
-    oldname = arch->name;
-    arch->ffname = oldname;
-    DLLname = DupStr( MakeFName( oldname ) );
-    arch->name = DupStr( TrimPath( oldname ) );
     export_sec = FindSec( ofile, ".exports" );
     ORLSecGetContents( export_sec, (unsigned_8 **)&export_table );
     export_size = ORLSecGetSize( export_sec ) / sizeof( Elf32_Export );
@@ -167,151 +181,156 @@ static bool elfAddImport( arch_header *arch, libfile io, long header_offset )
     string_sec = ORLSecGetStringTable( sym_sec );
     ORLSecGetContents( string_sec, (unsigned_8 **)&strings );
 
-    ElfMKImport( arch, ELF, export_size, DLLname, strings, export_table, sym_table, processor );
+    tmp_arch.date = arch->date;
+    tmp_arch.uid = arch->uid;
+    tmp_arch.gid = arch->gid;
+    tmp_arch.mode = arch->mode;
+    tmp_arch.size = arch->size;
+    tmp_arch.libtype = arch->libtype;
 
-    MemFree( arch->name );
-    MemFree( DLLname );
-    arch->name = oldname;
-    CloseObjFile( ofile );
+    dllName.name = dll_name = MemDupStr( TrimPath( arch->name ) );
+    dllName.len = strlen( dllName.name );
+    tmp_arch.name = dll_name;
+    tmp_arch.ffname = NULL;
+
+    ElfMKImport( &tmp_arch, ELF, export_size, &dllName, strings, export_table, sym_table, processor );
+
+    MemFree( dll_name );
+
+    CloseORLObjFile( ofile );
+    MemFree( ofile );
     return( true );
 }
 
-static bool getOs2Symbol( libfile io, char *symbol, unsigned_16 *ordinal, unsigned *len )
-{
-    unsigned_8  name_len;
-
-    if( LibRead( io, &name_len, sizeof( name_len ) ) != sizeof( name_len ) ) {
-        return( false );
-    }
-    if( name_len == 0 ) {
-        return( false );
-    }
-    if( LibRead( io, symbol, name_len ) != name_len ) {
-        FatalError( ERR_BAD_DLL, io->name );
-    }
-    symbol[name_len] = 0;
-    if( LibRead( io, ordinal, sizeof( unsigned_16 ) ) != sizeof( unsigned_16 ) ) {
-        FatalError( ERR_BAD_DLL, io->name );
-    }
-    *len = 1 + name_len + 2;
-    return( true );
-}
-
-static void importOs2Table( libfile io, arch_header *arch, char *dll_name, bool coff_obj, importType type, unsigned length )
+static void importOs2Table( libfile io, const arch_header *arch, name_len *dllName, bool coff_obj, importType type, unsigned length )
 {
     unsigned_16 ordinal;
-    char        symbol[256];
+    char        sym_name[256];  /* maximum name len is 255 characters */
     unsigned    bytes_read;
-    unsigned    total_read = 0;
+    unsigned    total_read;
 
-    while( getOs2Symbol( io, symbol, &ordinal, &bytes_read ) ) {
-        /* Make sure we're not reading past the end of name table */
-        total_read += bytes_read;
+    total_read = 0;
+    while( (bytes_read = getLenName( io, sym_name )) > 0 ) {
+        ordinal = getU16( io );
+        /*
+         * Make sure we're not reading past the end of name table
+         */
+        total_read += bytes_read + 1 + sizeof( unsigned_16 );
         if( total_read > length ) {
-            Warning( ERR_BAD_DLL, io->name );
+            if( !Options.quiet ) {
+                Warning( ERR_BAD_DLL, io->name );
+            }
             return;
         }
-        /* The resident/non-resident name tables contain more than just exports
-           (module names, comments etc.). Everything that has ordinal of zero isn't
-           an export but more exports could follow */
-        if( ordinal == 0 )
-            continue;
-        if( coff_obj ) {
-            CoffMKImport( arch, ORDINAL, ordinal, dll_name, symbol, NULL, WL_PROC_X86 );
-        } else {
-            OmfMKImport( arch, type, ordinal, dll_name, symbol, NULL, WL_PROC_X86 );
+        /*
+         * The resident/non-resident name tables contain more than just exports
+         * (module names, comments etc.). Everything that has ordinal of zero isn't
+         * an export but more exports could follow
+         */
+        if( ordinal ) {
+            if( coff_obj ) {
+                CoffMKImport( arch, ORDINAL, ordinal, dllName, sym_name, NULL, WL_PROC_X86 );
+            } else {
+                OmfMKImport( arch, type, ordinal, dllName, sym_name, NULL, WL_PROC_X86 );
+            }
         }
     }
 }
 
-static void os2AddImport( arch_header *arch, libfile io, long header_offset )
+static void os2AddImport( libfile io, long header_offset, const arch_header *arch )
 {
     os2_exe_header  os2_header;
-    char            dll_name[_MAX_FNAME + _MAX_EXT + 1];
-    char            junk[256];
-    unsigned_16     ordinal;
+    char            dll_name[256];  /* maximum name len is 255 characters */
+    char            junk[256];      /* maximum name len is 255 characters */
     importType      type;
     unsigned        bytes_read;
+    name_len        dllName;
 
     LibSeek( io, header_offset, SEEK_SET );
     LibRead( io, &os2_header, sizeof( os2_header ) );
     LibSeek( io, os2_header.resident_off - sizeof( os2_header ), SEEK_CUR );
-    getOs2Symbol( io, dll_name, &ordinal, &bytes_read );
+    dllName.len = getLenName( io, dll_name );
+    dllName.name = dll_name;
+    getU16( io );
     type = Options.r_ordinal ? ORDINAL : NAMED;
-    importOs2Table( io, arch, dll_name, false, type, UINT_MAX );
+    importOs2Table( io, arch, &dllName, false, type, UINT_MAX );
     if( os2_header.nonres_off ) {
         type = Options.nr_ordinal ? ORDINAL : NAMED;
         LibSeek( io, os2_header.nonres_off, SEEK_SET );
-        // The first entry is the module description and should be ignored
-        getOs2Symbol( io, junk, &ordinal, &bytes_read );
-        importOs2Table( io, arch, dll_name, false, type, os2_header.nonres_size - bytes_read );
+        /*
+         * The first entry is the module description and should be ignored
+         */
+        bytes_read = getLenName( io, junk );
+        getU16( io );
+        importOs2Table( io, arch, &dllName, false, type,
+            os2_header.nonres_size - ( bytes_read + 1 + sizeof( unsigned_16 ) ) );
     }
 }
 
-static void AddSymWithPrefix( const char *prefix, const char *name, symbol_strength strength, unsigned char info )
-/****************************************************************************************************************/
+static void AddSym2( name_len *n1, const char *n2, symbol_strength strength, unsigned char info )
+/***********************************************************************************************/
 {
-    size_t  len;
-    char    *buffer;
+    char    *sym_name;
 
-    len = strlen( prefix );
-    buffer = MemAlloc( len + strlen( name ) + 1 );
-    strcpy( strcpy( buffer, prefix ) + len, name );
-    AddSym( buffer, strength, info );
-    MemFree( buffer );
+    sym_name = MemAlloc( n1->len + strlen( n2 ) + 1 );
+    strcpy( strcpy( sym_name, n1->name ) + n1->len, n2 );
+    AddSym( sym_name, strength, info );
+    MemFree( sym_name );
 }
 
-static void coffAddImportOverhead( arch_header *arch, const char *DLLName, processor_type processor )
+static void coffAddImportOverhead( const arch_header *arch, name_len *dllName, processor_type processor )
 {
-    char    *buffer;
-    char        *fname;
-    size_t  len;
+    char        *buffer;
+    char        *mod_name;
+    size_t      mod_len;
 
-    fname = MakeFName( DLLName );
-    len = strlen( fname );
-    buffer = MemAlloc( len + 22 );
-    strcpy( strcpy( buffer, "__IMPORT_DESCRIPTOR_" ) + sizeof( "__IMPORT_DESCRIPTOR_" ) - 1, fname );
-    CoffMKImport( arch, IMPORT_DESCRIPTOR, 0, DLLName, buffer, NULL, processor );
-    CoffMKImport( arch, NULL_IMPORT_DESCRIPTOR, 0, DLLName, "__NULL_IMPORT_DESCRIPTOR", NULL, processor );
+    buffer = MakeFName( dllName->name );
+    mod_len = strlen( buffer );
+    mod_name = strcpy( MemAlloc( mod_len + 1 ), buffer );
+    buffer = MemAlloc( mod_len + 22 );
+    strcpy( strcpy( buffer, str_coff_import_descriptor.name ) + str_coff_import_descriptor.len, mod_name );
+    CoffMKImport( arch, IMPORT_DESCRIPTOR, 0, dllName, buffer, NULL, processor );
+    CoffMKImport( arch, NULL_IMPORT_DESCRIPTOR, 0, dllName, str_coff_null_import_descriptor.name, NULL, processor );
     buffer[0] = 0x7f;
-    strcpy( strcpy( buffer + 1, fname ) + len, "_NULL_THUNK_DATA" );
-    CoffMKImport( arch, NULL_THUNK_DATA, 0, DLLName, buffer, NULL, processor );
+    strcpy( strcpy( buffer + 1, mod_name ) + mod_len, str_coff_null_thunk_data.name );
+    CoffMKImport( arch, NULL_THUNK_DATA, 0, dllName, buffer, NULL, processor );
     MemFree( buffer );
+    MemFree( mod_name );
 }
 
-static void os2FlatAddImport( arch_header *arch, libfile io, long header_offset )
+static void os2FlatAddImport( libfile io, long header_offset, const arch_header *arch )
 {
     os2_flat_header os2_header;
-    char            dll_name[256];
-    unsigned_16     ordinal;
+    char            dll_name[256];  /* maximum name len is 255 characters */
     bool            coff_obj;
     importType      type;
-    unsigned        bytes_read;
+    name_len        dllName;
 
     coff_obj = ( Options.coff_found || ( Options.libtype == WL_LTYPE_AR && !Options.omf_found ) );
     LibSeek( io, header_offset, SEEK_SET );
     LibRead( io, &os2_header, sizeof( os2_header ) );
     LibSeek( io, os2_header.resname_off - sizeof( os2_header ), SEEK_CUR );
-    getOs2Symbol( io, dll_name, &ordinal, &bytes_read );
+    dllName.len = getLenName( io, dll_name );
+    dllName.name = dll_name;
+    getU16( io );
     if( coff_obj ) {
-        coffAddImportOverhead( arch, dll_name, WL_PROC_X86 );
+        coffAddImportOverhead( arch, &dllName, WL_PROC_X86 );
     }
     type = Options.r_ordinal ? ORDINAL : NAMED;
-    importOs2Table( io, arch, dll_name, coff_obj, type, os2_header.resname_off - os2_header.entry_off );
+    importOs2Table( io, arch, &dllName, coff_obj, type, os2_header.resname_off - os2_header.entry_off );
     if( os2_header.nonres_off ) {
         LibSeek( io, os2_header.nonres_off, SEEK_SET );
         type = Options.nr_ordinal ? ORDINAL : NAMED;
-        importOs2Table( io, arch, dll_name, coff_obj, type, os2_header.nonres_size );
+        importOs2Table( io, arch, &dllName, coff_obj, type, os2_header.nonres_size );
     }
 }
 
-static bool nlmAddImport( arch_header *arch, libfile io, long header_offset )
+static bool nlmAddImport( libfile io, long header_offset, const arch_header *arch )
 {
     nlm_header  nlm;
-    unsigned_8  name_len;
-    char        dll_name[_MAX_FNAME + _MAX_EXT + 1];
-    char        symbol[256];
-    unsigned_32 offset;
+    char        dll_name[256];  /* maximum name len is 255 characters */
+    char        sym_name[256];  /* maximum name len is 255 characters */
+    name_len    dllName;
 
     LibSeek( io, header_offset, SEEK_SET );
     LibRead( io, &nlm, sizeof( nlm ) );
@@ -319,43 +338,31 @@ static bool nlmAddImport( arch_header *arch, libfile io, long header_offset )
         return( false );
     }
     LibSeek( io, offsetof( nlm_header, moduleName ) , SEEK_SET );
-    if( LibRead( io, &name_len, sizeof( name_len ) ) != sizeof( name_len ) ) {
+    dllName.len = getLenName( io, dll_name );
+    if( dllName.len == 0 ) {
         FatalError( ERR_BAD_DLL, io->name );
     }
-    if( name_len == 0 ) {
-        FatalError( ERR_BAD_DLL, io->name );
-    }
-    if( LibRead( io, dll_name, name_len ) != name_len ) {
-        FatalError( ERR_BAD_DLL, io->name );
-    }
-    symbol[name_len] = '\0';
+    dllName.name = dll_name;
     LibSeek( io, nlm.publicsOffset, SEEK_SET  );
     while( nlm.numberOfPublics > 0 ) {
         nlm.numberOfPublics--;
-        if( LibRead( io, &name_len, sizeof( name_len ) ) != sizeof( name_len ) ) {
+        if( getLenName( io, sym_name ) == 0 ) {
             FatalError( ERR_BAD_DLL, io->name );
         }
-        if( LibRead( io, symbol, name_len ) != name_len ) {
-            FatalError( ERR_BAD_DLL, io->name );
-        }
-        symbol[name_len] = '\0';
-        if( LibRead( io, &offset, sizeof( offset ) ) != sizeof( offset ) ) {
-            FatalError( ERR_BAD_DLL, io->name );
-        }
-        OmfMKImport( arch, NAMED, 0, dll_name, symbol, NULL, WL_PROC_X86 );
+        getU32( io );
+        OmfMKImport( arch, NAMED, 0, &dllName, sym_name, NULL, WL_PROC_X86 );
     }
     return( true );
 }
 
-static void peAddImport( arch_header *arch, libfile io, long header_offset )
+static void peAddImport( libfile io, long header_offset, const arch_header *arch )
 {
     obj_file        *ofile;
     orl_sec_handle  export_sec;
     orl_sec_base    export_base;
     char            *edata;
-    char            *DLLName;
-    char            *oldname;
-    char            *currname;
+    name_len        dllName;
+    char            *sym_name;
     Coff32_Export   *export_header;
     Coff32_EName    *name_table;
     Coff32_EOrd     *ord_table;
@@ -365,14 +372,15 @@ static void peAddImport( arch_header *arch, libfile io, long header_offset )
     importType      type;
     bool            coff_obj;
     long            adjust;
+    arch_header     tmp_arch;
 
     LibSeek( io, header_offset, SEEK_SET );
     if( Options.libtype == WL_LTYPE_MLIB ) {
-        FatalError( ERR_NOT_LIB, "COFF", LibFormat() );
+        FatalError( ERR_NOT_LIB, ctext_WL_FTYPE_COFF, ctext_WL_LTYPE_MLIB );
     }
     coff_obj = ( Options.coff_found || ( Options.libtype == WL_LTYPE_AR && !Options.omf_found ) );
 
-    ofile = OpenObjFile( io->name );
+    ofile = OpenORLObjFile( io->name );
     if( ofile->orl == NULL ) {
         FatalError( ERR_CANT_READ, io->name, "Unknown error" );
     }
@@ -421,41 +429,47 @@ static void peAddImport( arch_header *arch, libfile io, long header_offset )
     ord_table = (Coff32_EOrd *)(edata + export_header->OrdTableRVA - export_base.u._32[I64LO32] + adjust);
     ordinal_base = export_header->ordBase;
 
-    DLLName = edata + export_header->nameRVA - export_base.u._32[I64LO32] + adjust;
-    oldname = arch->name;
-    arch->name = DLLName;
-    arch->ffname = NULL;
-    DLLName = DupStr( DLLName );
+    tmp_arch.date = arch->date;
+    tmp_arch.uid = arch->uid;
+    tmp_arch.gid = arch->gid;
+    tmp_arch.mode = arch->mode;
+    tmp_arch.size = arch->size;
+    tmp_arch.libtype = arch->libtype;
+
+    dllName.name = tmp_arch.name = edata + export_header->nameRVA - export_base.u._32[I64LO32] + adjust;
+    dllName.len = strlen( dllName.name );
+    tmp_arch.ffname = NULL;
+
     if( coff_obj ) {
-        coffAddImportOverhead( arch, DLLName, processor );
+        coffAddImportOverhead( &tmp_arch, &dllName, processor );
     }
     for( i = 0; i < export_header->numNamePointer; i++ ) {
-        currname = &(edata[name_table[i] - export_base.u._32[I64LO32] + adjust]);
+        sym_name = &(edata[name_table[i] - export_base.u._32[I64LO32] + adjust]);
         if( coff_obj ) {
-            CoffMKImport( arch, ORDINAL, ord_table[i] + ordinal_base, DLLName, currname, NULL, processor );
-            AddSymWithPrefix( "__imp_", currname, SYM_WEAK, 0 );
+            CoffMKImport( &tmp_arch, ORDINAL, ord_table[i] + ordinal_base, &dllName, sym_name, NULL, processor );
+            AddSym2( &str_coff_imp_prefix, sym_name, SYM_WEAK, 0 );
         } else {
             type = Options.r_ordinal ? ORDINAL : NAMED;
-            OmfMKImport( arch, type, ord_table[i] + ordinal_base, DLLName, currname, NULL, WL_PROC_X86 );
-//            AddSymWithPrefix( "__imp_", currname, SYM_WEAK, 0 );
+            OmfMKImport( &tmp_arch, type, ord_table[i] + ordinal_base, &dllName, sym_name, NULL, WL_PROC_X86 );
+//            AddSym2( &str_coff_imp_prefix, sym_name, SYM_WEAK, 0 );
         }
         if( processor == WL_PROC_PPC ) {
-            AddSymWithPrefix( "..", currname, SYM_WEAK, 0 );
+            AddSym2( &str_coff_ppc_prefix, sym_name, SYM_WEAK, 0 );
         }
     }
-    MemFree( DLLName );
 
-    arch->name = oldname;
-    CloseObjFile( ofile );
+    CloseORLObjFile( ofile );
+    MemFree( ofile );
 }
 
 
-static char *GetImportString( char **rawpntr, char *original )
+static char *GetImportString( char **rawpntr, const char *original )
 {
     bool    quote = false;
-    char    *raw  = *rawpntr;
+    char    *raw;
     char    *result;
 
+    raw = *rawpntr;
     if( *raw == '\'' ) {
         quote = true;
         ++raw;
@@ -463,8 +477,9 @@ static char *GetImportString( char **rawpntr, char *original )
 
     result = raw;
 
-    while( *raw && (quote || (*raw != '.')) ) {
-        if( quote && (*raw == '\'') ) {
+    while( *raw != '\0' && (quote || (*raw != '.')) ) {
+        if( quote
+          && (*raw == '\'') ) {
             quote  = false;
             *raw++ = '\0';
             break;
@@ -473,7 +488,9 @@ static char *GetImportString( char **rawpntr, char *original )
         ++raw;
     }
 
-    if( *raw == '.' || (!*raw && !quote) ) {
+    if( *raw == '.'
+      || ( *raw == '\0'
+      && !quote ) ) {
         if( *raw == '.' )
             *raw++ = '\0';
 
@@ -486,85 +503,77 @@ static char *GetImportString( char **rawpntr, char *original )
 }
 
 
-void ProcessImport( char *name )
+void ProcessImportWlib( const char *name )
 {
-    char            *DLLName, *symName, *exportedName, *ordString;
-    long            ordinal = 0;
-    arch_header     *arch;
+    name_len        dllName;
+    char            *symName;
+    char            *exportedName;
+    char            *ordString;
+    long            ordinal;
+    arch_header     arch;
     char            *buffer;
     Elf32_Export    export_table[2];
     Elf32_Sym       sym_table[3];
     char            *namecopy;
+    char            *p;
+    char            *dll_name;
     unsigned        sym_len;
 
-    namecopy = DupStr( name );
+    p = namecopy = MemDupStr( name );
 
-    symName = GetImportString( &name, namecopy );
-    if( *name == '\0' || *symName == '\0' ) {
-        FatalError( ERR_BAD_CMDLINE, namecopy );
+    symName = GetImportString( &p, name );
+    if( *p == '\0'
+      || *symName == '\0' ) {
+        FatalError( ERR_BAD_CMDLINE, name );
     }
 
-    DLLName = GetImportString( &name, namecopy );
-    if( *DLLName == '\0' ) {
-        FatalError( ERR_BAD_CMDLINE, namecopy );
+    dll_name = GetImportString( &p, name );
+    if( *dll_name == '\0' ) {
+        FatalError( ERR_BAD_CMDLINE, name );
     }
 
-    exportedName = symName;     // JBS 99/07/01 give it a default value
+    exportedName = symName;     // give it a default value
 
-    if( *name != '\0' ) {
-        ordString = GetImportString( &name, namecopy );
+    ordinal = 0;
+    if( *p != '\0' ) {
+        ordString = GetImportString( &p, name );
         if( *ordString != '\0' ) {
-            if( isdigit( *ordString ) ) {
+            if( isdigit( *(unsigned char *)ordString ) ) {
                 ordinal = strtoul( ordString, NULL, 0 );
             } else {
                 symName = ordString;
             }
         }
-
         /*
          * Make sure there is nothing other than white space on the rest
          * of the line.
          */
         if( ordinal ) {
-            while( *name != '\0' && isspace( *name ) )
-                ++name;
-
-            if( *name != '\0' ) {
-                FatalError( ERR_BAD_CMDLINE, namecopy );
+            while( isspace( *(unsigned char *)p ) )
+                ++p;
+            if( *p != '\0' ) {
+                FatalError( ERR_BAD_CMDLINE, name );
             }
-        } else if( *name != '\0' ) {
-            exportedName = GetImportString( &name, namecopy );
-            if( !exportedName || !*exportedName ) {
+        } else if( *p != '\0' ) {
+            exportedName = GetImportString( &p, name );
+            if( exportedName == NULL
+              || *exportedName == '\0' ) {
                 exportedName = symName;
-            } else if( isdigit( *exportedName ) ) {
+            } else if( isdigit( *(unsigned char *)exportedName ) ) {
                 ordinal      = strtoul( exportedName, NULL, 0 );
                 exportedName = symName;
-            } else if( *name != '\0' ) {
-                ordString = GetImportString( &name, namecopy );
+            } else if( *p != '\0' ) {
+                ordString = GetImportString( &p, name );
                 if( *ordString != '\0' ) {
-                    if( isdigit( *ordString ) ) {
+                    if( isdigit( *(unsigned char *)ordString ) ) {
                         ordinal = strtoul( ordString, NULL, 0 );
                     } else {
-                        FatalError( ERR_BAD_CMDLINE, namecopy );
+                        FatalError( ERR_BAD_CMDLINE, name );
                     }
                 }
             }
         }
     }
-
-    MemFree( namecopy );
-
-    arch = MemAlloc( sizeof( arch_header ) );
-
-    arch->name = DupStr( DLLName );
-    arch->ffname = NULL;
-    arch->date = time( NULL );
-    arch->uid = 0;
-    arch->gid = 0;
-    arch->mode = AR_S_IFREG | (AR_S_IRUSR | AR_S_IWUSR | AR_S_IRGRP | AR_S_IWGRP | AR_S_IROTH | AR_S_IWOTH);
-    arch->size = 0;
-    arch->fnametab = NULL;
-    arch->ffnametab = NULL;
 
     if( Options.filetype == WL_FTYPE_NONE ) {
         if( Options.omf_found ) {
@@ -604,67 +613,96 @@ void ProcessImport( char *name )
 #endif
             }
         }
-        Warning( ERR_NO_PROCESSOR, procname[Options.processor] );
+        if( !Options.quiet ) {
+            const char      *ctext;
+
+            switch( Options.processor ) {
+            case WL_PROC_X86:
+                ctext = ctext_WL_PROC_X86;
+                break;
+            case WL_PROC_AXP:
+                ctext = ctext_WL_PROC_AXP;
+                break;
+            case WL_PROC_MIPS:
+                ctext = ctext_WL_PROC_MIPS;
+                break;
+            case WL_PROC_PPC:
+                ctext = ctext_WL_PROC_PPC;
+                break;
+            default:
+                ctext = ctext_WL_PROC_NONE;
+                break;
+            }
+            Warning( ERR_NO_PROCESSOR, ctext );
+        }
     }
     if( Options.filetype == WL_FTYPE_NONE ) {
         switch( Options.libtype ) {
         case WL_LTYPE_MLIB:
             Options.filetype = WL_FTYPE_ELF;
-            Warning( ERR_NO_TYPE, "ELF" );
             break;
         case WL_LTYPE_AR:
             Options.filetype = WL_FTYPE_COFF;
-            Warning( ERR_NO_TYPE, "COFF" );
             break;
         case WL_LTYPE_OMF:
             Options.filetype = WL_FTYPE_OMF;
-            Warning( ERR_NO_TYPE, "OMF" );
             break;
         default:
             switch( Options.processor ) {
             case WL_PROC_AXP:
                 Options.libtype = WL_LTYPE_AR;
                 Options.filetype = WL_FTYPE_COFF;
-                Warning( ERR_NO_TYPE, "COFF" );
                 break;
             case WL_PROC_MIPS:
 #ifdef __NT__
                 Options.libtype = WL_LTYPE_AR;
                 Options.filetype = WL_FTYPE_COFF;
-                Warning( ERR_NO_TYPE, "COFF" );
 #else
                 Options.libtype = WL_LTYPE_MLIB;
                 Options.filetype = WL_FTYPE_ELF;
-                Warning( ERR_NO_TYPE, "ELF" );
 #endif
                 break;
             case WL_PROC_PPC:
 #ifdef __NT__
                 Options.libtype = WL_LTYPE_AR;
                 Options.filetype = WL_FTYPE_COFF;
-                Warning( ERR_NO_TYPE, "COFF" );
 #else
                 Options.libtype = WL_LTYPE_MLIB;
                 Options.filetype = WL_FTYPE_ELF;
-                Warning( ERR_NO_TYPE, "ELF" );
 #endif
                 break;
             case WL_PROC_X64:
 #ifdef __NT__
                 Options.libtype = WL_LTYPE_AR;
                 Options.filetype = WL_FTYPE_COFF;
-                Warning( ERR_NO_TYPE, "COFF" );
 #else
                 Options.libtype = WL_LTYPE_MLIB;
                 Options.filetype = WL_FTYPE_ELF;
-                Warning( ERR_NO_TYPE, "ELF" );
 #endif
                 break;
             case WL_PROC_X86:
                 Options.filetype = WL_FTYPE_OMF;
-                Warning( ERR_NO_TYPE, "OMF" );
                 break;
             }
+        }
+        if( !Options.quiet ) {
+            const char      *ctext;
+
+            switch( Options.filetype ) {
+            case WL_FTYPE_OMF:
+                ctext = ctext_WL_FTYPE_OMF;
+                break;
+            case WL_FTYPE_COFF:
+                ctext = ctext_WL_FTYPE_COFF;
+                break;
+            case WL_FTYPE_ELF:
+                ctext = ctext_WL_FTYPE_ELF;
+                break;
+            default:
+                ctext = ctext_WL_FTYPE_NONE;
+                break;
+            }
+            Warning( ERR_NO_TYPE, ctext );
         }
     }
     if( Options.libtype == WL_LTYPE_NONE ) {
@@ -678,83 +716,101 @@ void ProcessImport( char *name )
         }
     }
 
+    arch.name = dll_name;
+    arch.ffname = NULL;
+    arch.date = time( NULL );
+    arch.uid = 0;
+    arch.gid = 0;
+    arch.mode = AR_S_IFREG | (AR_S_IRUSR | AR_S_IWUSR | AR_S_IRGRP | AR_S_IWGRP | AR_S_IROTH | AR_S_IWOTH);
+    arch.size = 0;
+    arch.libtype = WL_LTYPE_NONE;
+
+    dllName.name = dll_name;
+    dllName.len = strlen( dll_name );
+
     switch( Options.filetype ) {
     case WL_FTYPE_ELF:
         sym_len = strlen( symName ) + 1;
-        if( ordinal == 0 ) {
-            export_table[0].exp_ordinal = -1;
-            export_table[1].exp_ordinal = -1;
-        } else {
+        if( ordinal ) {
             export_table[0].exp_ordinal = ordinal;
             export_table[1].exp_ordinal = ordinal;
+        } else {
+            export_table[0].exp_ordinal = -1;
+            export_table[1].exp_ordinal = -1;
         }
         export_table[0].exp_symbol = 1;
         export_table[1].exp_symbol = 2;
-
+        /*
+         * create strings array "<symName>\0<exportedName>\0"
+         */
+        buffer = MemAlloc( sym_len + strlen( exportedName ) + 1 );
+        strcpy( buffer, symName );
+        strcpy( buffer + sym_len, exportedName );
+        /*
+         * set offsets to strings array
+         */
         sym_table[1].st_name = 0;
         sym_table[2].st_name = sym_len;
 
-        buffer = MemAlloc( sym_len + strlen( exportedName ) + 1 );
-        memcpy( buffer, symName, sym_len );
-        strcpy( buffer + sym_len, exportedName );
+        ElfMKImport( &arch, ELFRENAMED, 2, &dllName, buffer, export_table, sym_table, Options.processor );
 
-        ElfMKImport( arch, ELFRENAMED, 2, DLLName, buffer, export_table, sym_table, Options.processor );
-
-        if( ordinal == 0 ) {
-            AddSym( symName, SYM_STRONG, ELF_IMPORT_NAMED_SYM_INFO );
-        } else {
-            AddSym( symName, SYM_STRONG, ELF_IMPORT_SYM_INFO );
-        }
         MemFree( buffer );
+
+        if( ordinal ) {
+            AddSym( symName, SYM_STRONG, ELF_IMPORT_SYM_INFO );
+        } else {
+            AddSym( symName, SYM_STRONG, ELF_IMPORT_NAMED_SYM_INFO );
+        }
         break;
     case WL_FTYPE_COFF:
-        if( Options.libtype != WL_LTYPE_AR ) {
-            FatalError( ERR_NOT_LIB, "COFF", LibFormat() );
+        if( Options.libtype == WL_LTYPE_OMF ) {
+            FatalError( ERR_NOT_LIB, ctext_WL_FTYPE_COFF, ctext_WL_LTYPE_OMF );
         }
-        coffAddImportOverhead( arch, DLLName, Options.processor );
-
-        if( ordinal == 0 ) {
-            CoffMKImport( arch, NAMED, ordinal, DLLName, symName, exportedName, Options.processor );
+        if( Options.libtype == WL_LTYPE_MLIB ) {
+            FatalError( ERR_NOT_LIB, ctext_WL_FTYPE_COFF, ctext_WL_LTYPE_MLIB );
+        }
+        coffAddImportOverhead( &arch, &dllName, Options.processor );
+        if( ordinal ) {
+            CoffMKImport( &arch, ORDINAL, ordinal, &dllName, symName, NULL, Options.processor );
         } else {
-            CoffMKImport( arch, ORDINAL, ordinal, DLLName, symName, NULL, Options.processor );
+            CoffMKImport( &arch, NAMED, ordinal, &dllName, symName, exportedName, Options.processor );
         }
-        AddSymWithPrefix( "__imp_", symName, SYM_WEAK, 0 );
+        AddSym2( &str_coff_imp_prefix, symName, SYM_WEAK, 0 );
         if( Options.processor == WL_PROC_PPC ) {
-            AddSymWithPrefix( "..", symName, SYM_WEAK, 0 );
+            AddSym2( &str_coff_ppc_prefix, symName, SYM_WEAK, 0 );
         }
         break;
     case WL_FTYPE_OMF:
         if( Options.libtype == WL_LTYPE_MLIB ) {
-            FatalError( ERR_NOT_LIB, "OMF", LibFormat() );
+            FatalError( ERR_NOT_LIB, ctext_WL_FTYPE_OMF, ctext_WL_LTYPE_MLIB );
         }
-        if( ordinal == 0 ) {
-            OmfMKImport( arch, NAMED, ordinal, DLLName, symName, exportedName, WL_PROC_X86 );
+        if( ordinal ) {
+            OmfMKImport( &arch, ORDINAL, ordinal, &dllName, symName, NULL, WL_PROC_X86 );
         } else {
-            OmfMKImport( arch, ORDINAL, ordinal, DLLName, symName, NULL, WL_PROC_X86 );
+            OmfMKImport( &arch, NAMED, ordinal, &dllName, symName, exportedName, WL_PROC_X86 );
         }
-        //AddSymWithPrefix( "__imp_", symName, SYM_WEAK, 0 );
+        //AddSym2( &str_coff_imp_prefix, symName, SYM_WEAK, 0 );
         break;
     }
-    MemFree( arch->name );
-    MemFree( arch );
+    MemFree( namecopy );
 }
 
-size_t ElfImportSize( import_sym *import )
+size_t ElfImportSize( import_sym *impsym )
 {
     size_t          len;
-    elf_import_sym  *temp;
+    elf_import_sym  *elfimp;
 
-    len = ELFBASEIMPORTSIZE + strlen( import->DLLName ) + 1;
-    switch( import->type ) {
+    len = ELFBASEIMPORTSIZE + impsym->dllName.len + 1;
+    switch( impsym->type ) {
     case ELF:
-        len += import->u.elf.numsyms * 0x21;
-        for( temp = import->u.elf.symlist; temp != NULL; temp = temp->next ) {
-            len += temp->len;
+        len += impsym->u.elf.numsyms * 0x21;
+        for( elfimp = impsym->u.elf.symlist; elfimp != NULL; elfimp = elfimp->next ) {
+            len += elfimp->sym.len;
         }
         len = __ROUND_UP_SIZE_EVEN( len );
         break;
     case ELFRENAMED:
-        len += 0x21 + 1 + import->u.elf.symlist->len + import->u.elf.symlist->next->len;
+        len += 0x21 + 1 + impsym->u.elf.symlist->sym.len + impsym->u.elf.symlist->next->sym.len;
         len = __ROUND_UP_SIZE_EVEN( len );
         break;
     default:
@@ -763,7 +819,7 @@ size_t ElfImportSize( import_sym *import )
     return( len );
 }
 
-size_t CoffImportSize( import_sym *import )
+size_t CoffImportSize( import_sym *impsym )
 {
     size_t  dll_len;
     size_t  mod_len;
@@ -772,13 +828,13 @@ size_t CoffImportSize( import_sym *import )
     size_t  exp_len;
     size_t  opt_hdr_len;
 
-    dll_len = strlen( import->DLLName );
-    mod_len = strlen( MakeFName( import->DLLName ) );
+    dll_len = impsym->dllName.len;
+    mod_len = strlen( MakeFName( impsym->dllName.name ) );
 
-    switch( import->type ) {
+    switch( impsym->type ) {
     case IMPORT_DESCRIPTOR:
         opt_hdr_len = 0;
-        switch( import->processor ) {
+        switch( impsym->processor ) {
         case WL_PROC_X64:
             if( Options.coff_import_long ) {
                 opt_hdr_len = sizeof( coff_opt_hdr64 );
@@ -794,58 +850,70 @@ size_t CoffImportSize( import_sym *import )
             }
             break;
         }
-        return( COFF_FILE_HEADER_SIZE                   // header
-            + opt_hdr_len                               // optional header
-            + 2 * COFF_SECTION_HEADER_SIZE +            // section table (headers)
-            + 0x14 + 3 * COFF_RELOC_SIZE                // section data
-            + __ROUND_UP_SIZE_EVEN( dll_len + 1 )       // section data
-            + 7 * COFF_SYM_SIZE                         // symbol table
-            + 4 + mod_len + 21 + 25 + mod_len + 18 );   // string table
+        return( COFF_FILE_HEADER_SIZE                               // header
+            + opt_hdr_len                                           // optional header
+            + 2 * COFF_SECTION_HEADER_SIZE +                        // section table (headers)
+            + 0x14 + 3 * COFF_RELOC_SIZE                            // section data
+            + __ROUND_UP_SIZE_EVEN( dll_len + 1 )                   // section data
+            + 7 * COFF_SYM_SIZE                                     // symbol table
+            + 4                                                     // string table
+            + str_coff_import_descriptor.len + mod_len + 1          // string table
+            + str_coff_null_import_descriptor.len + 1               // string table
+            + 1 + mod_len + str_coff_null_thunk_data.len + 1 );     // string table
     case NULL_IMPORT_DESCRIPTOR:
         return( COFF_FILE_HEADER_SIZE
             + COFF_SECTION_HEADER_SIZE
             + 0x14
             + COFF_SYM_SIZE
-            + 4 + 25 ) ;
+            + 4                                                     // string table
+            + str_coff_null_import_descriptor.len + 1 ) ;           // string table
     case NULL_THUNK_DATA:
         return( COFF_FILE_HEADER_SIZE
             + 2 * COFF_SECTION_HEADER_SIZE
             + 0x4 + 0x4
             + COFF_SYM_SIZE
-            + 4 + mod_len + 18 ) ;
+            + 4                                                     // string table
+            + 1 + mod_len + str_coff_null_thunk_data.len + 1 );     // string table
     case ORDINAL:
     case NAMED:
-        sym_len = strlen( import->u.sym.symName );
+        sym_len = strlen( impsym->u.omf_coff.symName );
         if( Options.coff_import_long ) {
-            if( import->type == NAMED ) {
-                if( import->u.sym.exportedName == NULL ) {
+            if( impsym->type == NAMED ) {
+                if( impsym->u.omf_coff.exportedName == NULL ) {
                     exp_len = sym_len;
                 } else {
-                    exp_len = strlen( import->u.sym.exportedName );
+                    exp_len = strlen( impsym->u.omf_coff.exportedName );
                 }
                 ret = COFF_FILE_HEADER_SIZE
                     + 4 * COFF_SECTION_HEADER_SIZE
-                    + 4 + COFF_RELOC_SIZE                       // idata$5
-                    + 4 + COFF_RELOC_SIZE                       // idata$4
-                    + 2 + __ROUND_UP_SIZE_EVEN( exp_len + 1 )   // idata$6
+                    + 4 + COFF_RELOC_SIZE                           // idata$5
+                    + 4 + COFF_RELOC_SIZE                           // idata$4
+                    + 2 + __ROUND_UP_SIZE_EVEN( exp_len + 1 )       // idata$6
                     + 11 * COFF_SYM_SIZE
-                    + 4 + mod_len + 21;                         // 21 = strlen("__IMPORT_DESCRIPTOR_") + 1
+                    + 4                                             // string table
+                    + str_coff_import_descriptor.len + mod_len + 1; // string table
             } else {
                 ret = COFF_FILE_HEADER_SIZE
                     + 3 * COFF_SECTION_HEADER_SIZE
                     + 4 + 4
                     + 9 * COFF_SYM_SIZE
-                    + 4 + mod_len + 21;
+                    + 4                                             // string table
+                    + str_coff_import_descriptor.len + mod_len + 1; // string table
             }
-            switch( import->processor ) {
+            switch( impsym->processor ) {
             case WL_PROC_AXP:
                 if( sym_len > 8 ) {
-                    // Everything goes to symbol table
-                    ret += sym_len + 1 + sym_len + 7;
+                    /*
+                     * Everything goes to symbol table
+                     */
+                    ret += sym_len + 1                              // string table
+                        + str_coff_imp_prefix.len + sym_len + 1;    // string table
                 } else if( sym_len > 2 ) {
-                    // Undecorated symbol can be stored directly, but the
-                    // version with "__imp_" prepended goes to symbol table
-                    ret += 7 + sym_len;
+                    /*
+                     * Undecorated symbol can be stored directly, but the
+                     * version with "__imp_" prepended goes to symbol table
+                     */
+                    ret += str_coff_imp_prefix.len + sym_len + 1;   // string table
                 }
                 ret += 0xc + 3 * COFF_RELOC_SIZE;   // .text
                 break;
@@ -856,11 +924,14 @@ size_t CoffImportSize( import_sym *import )
                 break;
             case WL_PROC_PPC:
                 if( sym_len > 8 ) {
-                    ret += sym_len + 1 + sym_len + 3 + sym_len + 7;
+                    ret += sym_len + 1                              // string table
+                        + str_coff_ppc_prefix.len + sym_len + 1     // string table
+                        + str_coff_imp_prefix.len + sym_len + 1;    // string table
                 } else if( sym_len > 6 ) {
-                    ret += sym_len + 3 + sym_len + 7;
+                    ret += str_coff_ppc_prefix.len + sym_len + 1    // string table
+                        + str_coff_imp_prefix.len + sym_len + 1;    // string table
                 } else if( sym_len > 2 ) {
-                    ret += sym_len + 7;
+                    ret += str_coff_imp_prefix.len + sym_len + 1;   // string table
                 }
                 ret += 6 * COFF_SYM_SIZE
                     + 2 * COFF_SECTION_HEADER_SIZE
@@ -869,26 +940,34 @@ size_t CoffImportSize( import_sym *import )
                     + 0x8  + 2 * COFF_RELOC_SIZE;   // .reldata
                 break;
             case WL_PROC_X64:
-                // See comment for AXP above
+                /*
+                 * See comment for AXP above
+                 */
                 if( sym_len > 8 ) {
-                    ret += sym_len + 1 + sym_len + 7;
+                    ret += sym_len + 1                              // string table
+                        + str_coff_imp_prefix.len + sym_len + 1;    // string table
                 } else if( sym_len > 2 ) {
-                    ret += 7 + sym_len;
+                    ret += str_coff_imp_prefix.len + sym_len + 1;   // string table
                 }
                 ret += 6 + COFF_RELOC_SIZE;     // .text
                 break;
             case WL_PROC_X86:
-                // See comment for AXP above
+                /*
+                 * See comment for AXP above
+                 */
                 if( sym_len > 8 ) {
-                    ret += sym_len + 1 + sym_len + 7;
+                    ret += sym_len + 1                              // string table
+                        + str_coff_imp_prefix.len + sym_len + 1;    // string table
                 } else if( sym_len > 2 ) {
-                    ret += 7 + sym_len;
+                    ret += str_coff_imp_prefix.len + sym_len + 1;   // string table
                 }
                 ret += 6 + COFF_RELOC_SIZE;     // .text
                 break;
             }
         } else {
-            ret = sizeof( coff_import_object_header ) + dll_len + 1 + sym_len + 1;
+            ret = sizeof( coff_import_object_header )
+                + dll_len + 1
+                + sym_len + 1;                                      // string table
         }
         return( ret );
     default:
@@ -905,28 +984,27 @@ static short    ElfProcessors[] = {
 
 void ElfWriteImport( libfile io, sym_file *sfile )
 {
-    elf_import_sym  *temp;
-    import_sym      *import;
-    unsigned long   strtabsize;
-    unsigned long   numsyms;
+    elf_import_sym  *elfimp;
+    import_sym      *impsym;
+    size_t          strtabsize;
+    size_t          numsyms;
     bool            padding;
-    unsigned long   offset;
-    unsigned long   more;
+    size_t          offset;
 
-    import = sfile->import;
-    strtabsize = ELFBASESTRTABSIZE + strlen( import->DLLName ) + 1;
-    for( temp = import->u.elf.symlist; temp != NULL; temp = temp->next ) {
-        strtabsize += temp->len + 1;
+    impsym = sfile->impsym;
+    strtabsize = ELFBASESTRTABSIZE + impsym->dllName.len + 1;
+    for( elfimp = impsym->u.elf.symlist; elfimp != NULL; elfimp = elfimp->next ) {
+        strtabsize += elfimp->sym.len + 1;
     }
     padding = ( (strtabsize & 1) != 0 );
     strtabsize = __ROUND_UP_SIZE_EVEN( strtabsize );
-    fillInU16( ElfProcessors[import->processor], &(ElfBase[0x12]) );
-    fillInU32( strtabsize, &(ElfBase[0x74]) );
-    fillInU32( strtabsize + 0x100, &(ElfBase[0x98]) );
-    fillInU32( strtabsize + 0x118, &(ElfBase[0xc0]) );
-    switch( import->type ) {
+    mset_U16LE( &(ElfBase[0x12]), ElfProcessors[impsym->processor] );
+    mset_U32LE( &(ElfBase[0x74]), strtabsize );
+    mset_U32LE( &(ElfBase[0x98]), strtabsize + 0x100 );
+    mset_U32LE( &(ElfBase[0xc0]), strtabsize + 0x118 );
+    switch( impsym->type ) {
     case ELF:
-        numsyms = import->u.elf.numsyms;
+        numsyms = impsym->u.elf.numsyms;
         break;
     case ELFRENAMED:
         numsyms = 1;
@@ -935,13 +1013,13 @@ void ElfWriteImport( libfile io, sym_file *sfile )
         numsyms = 0;
         break;
     }
-    fillInU32( 0x10 * ( numsyms + 1 ), &(ElfBase[0xc4]) );
-    fillInU32( strtabsize + 0x128 + 0x10 * numsyms, &(ElfBase[0xe8]) );
-    fillInU32( 0x10 * numsyms, &(ElfBase[0xec]) );
+    mset_U32LE( &(ElfBase[0xc4]), 0x10 * ( numsyms + 1 ) );
+    mset_U32LE( &(ElfBase[0xe8]), strtabsize + 0x128 + 0x10 * numsyms );
+    mset_U32LE( &(ElfBase[0xec]), 0x10 * numsyms );
     LibWrite( io, ElfBase, ElfBase_SIZE );
-    LibWrite( io, import->DLLName, strlen( import->DLLName ) + 1);
-    for( temp = import->u.elf.symlist; temp != NULL; temp = temp->next ) {
-        LibWrite( io, temp->name, temp->len + 1 );
+    LibWrite( io, impsym->dllName.name, impsym->dllName.len + 1 );
+    for( elfimp = impsym->u.elf.symlist; elfimp != NULL; elfimp = elfimp->next ) {
+        LibWrite( io, elfimp->sym.name, elfimp->sym.len + 1 );
     }
     if( padding ) {
         LibWrite( io, AR_FILE_PADDING_STRING, AR_FILE_PADDING_STRING_LEN );
@@ -949,55 +1027,45 @@ void ElfWriteImport( libfile io, sym_file *sfile )
     LibWrite( io, ElfOSInfo, ElfOSInfo_SIZE );
 
     offset = 0;
-    strtabsize = ELFBASESTRTABSIZE + strlen( import->DLLName ) + 1;
-    for( temp = import->u.elf.symlist; temp != NULL; temp = temp->next ) {
-        LibWrite( io, &strtabsize, 4 );
-        LibWrite( io, &offset, 4 );
-        more = 0x10;
-        LibWrite( io, &more, 4 );
-        more = 0x00040010;
-        if( temp->ordinal == -1 ) {
-            more |= 0x5;
-        }
-        LibWrite( io, &more, 4 );
-
+    strtabsize = ELFBASESTRTABSIZE + impsym->dllName.len + 1;
+    for( elfimp = impsym->u.elf.symlist; elfimp != NULL; elfimp = elfimp->next ) {
+        LibWriteU32LE( io, strtabsize );
+        LibWriteU32LE( io, offset );
+        LibWriteU32LE( io, 0x00000010 );
+        LibWriteU32LE( io, ( elfimp->ordinal == -1 ) ? 0x00040015 : 0x00040010 );
         offset += 0x10;
-        strtabsize += temp->len + 1;
+        strtabsize += elfimp->sym.len + 1;
         if( offset >= (numsyms * 0x10) ) {
             break;
         }
     }
     offset = 0;
-    strtabsize = ELFBASESTRTABSIZE + strlen( import->DLLName ) + 1;
-    switch( import->type ) {
+    strtabsize = ELFBASESTRTABSIZE + impsym->dllName.len + 1;
+    switch( impsym->type ) {
     case ELF:
-        for( temp = import->u.elf.symlist; temp != NULL; temp = temp->next ) {
-            LibWrite( io, &temp->ordinal, 4 );
-            LibWrite( io, &strtabsize, 4 );
-            more = 0x01000022;
-            LibWrite( io, &more, 4 );
-            more = 0;
-            LibWrite( io, &more, 4 );
-            strtabsize += temp->len + 1;
+        for( elfimp = impsym->u.elf.symlist; elfimp != NULL; elfimp = elfimp->next ) {
+            LibWriteU32LE( io, elfimp->ordinal );
+            LibWriteU32LE( io, strtabsize );
+            LibWriteU32LE( io, 0x01000022 );
+            LibWriteU32LE( io, 0x00000000 );
+            strtabsize += elfimp->sym.len + 1;
         }
         break;
     case ELFRENAMED:
-        temp = import->u.elf.symlist;
-        strtabsize += temp->len + 1;
-        temp = temp->next;
-        LibWrite( io, &(temp->ordinal), 4 );
-        LibWrite( io, &strtabsize, 4 ) ;
-        more = 0x01000022;
-        LibWrite( io, &more, 4 );
-        more = 0;
-        LibWrite( io, &more, 4 );
+        elfimp = impsym->u.elf.symlist;
+        strtabsize += elfimp->sym.len + 1;
+        elfimp = elfimp->next;
+        LibWriteU32LE( io, elfimp->ordinal );
+        LibWriteU32LE( io, strtabsize );
+        LibWriteU32LE( io, 0x01000022 );
+        LibWriteU32LE( io, 0x00000000 );
         break;
     default:
         break;
     }
 }
 
-bool AddImport( arch_header *arch, libfile io )
+bool AddImport( libfile io, const arch_header *arch )
 {
     unsigned_32     ne_header_off;
     long            header_offset;
@@ -1021,19 +1089,19 @@ bool AddImport( arch_header *arch, libfile io )
         }
         if( ok ) {
             if( signature == EXESIGN_LE ) {
-                os2FlatAddImport( arch, io, header_offset );
+                os2FlatAddImport( io, header_offset, arch );
             } else if( signature == EXESIGN_LX ) {
-                os2FlatAddImport( arch, io, header_offset );
+                os2FlatAddImport( io, header_offset, arch );
             } else if( signature == EXESIGN_NE ) {
-                os2AddImport( arch, io, header_offset );
+                os2AddImport( io, header_offset, arch );
             } else if( signature == EXESIGN_PE ) {
-                peAddImport( arch, io, header_offset );
+                peAddImport( io, header_offset, arch );
             } else if( header_offset ) {
                 ok = false;
             } else {
-                ok = elfAddImport( arch, io, header_offset );
+                ok = elfAddImport( io, header_offset, arch );
                 if( !ok ) {
-                    ok = nlmAddImport( arch, io, header_offset );
+                    ok = nlmAddImport( io, header_offset, arch );
                 }
             }
         }

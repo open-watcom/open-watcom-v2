@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -67,9 +67,9 @@ dbg_type        DFFtnType( const char *name, dbg_ftn_type tipe )
 dbg_type        DFScalar( const char *name, cg_type tipe )
 /********************************************************/
 {
-    type_def    *tipe_addr;
-    int          class;
-    dbg_type     ret;
+    const type_def  *tipe_addr;
+    int             class;
+    dbg_type        ret;
 
     tipe_addr = TypeAddress( tipe );
     if( tipe_addr->attr & TYPE_FLOAT ) {
@@ -168,10 +168,10 @@ dbg_type    DFCharBlockNamed( const char *name, uint_32 len )
 dbg_type    DFIndCharBlock( back_handle len, cg_type len_type, int off )
 /**********************************************************************/
 {
-    dbg_type    ret;
-    dw_loc_id   len_locid;
+    dbg_type        ret;
+    dw_loc_id       len_locid;
     dw_loc_handle   len_loc;
-    type_def    *tipe_addr;
+    const type_def  *tipe_addr;
 
     len_locid = DWLocInit( Client );
     DWLocSym( Client, len_locid, (dw_sym_handle)len, DW_W_LABEL );
@@ -187,8 +187,8 @@ dbg_type        DFLocCharBlock( dbg_loc loc, cg_type len_type )
 /*************************************************************/
 {
     dw_loc_handle   len_loc;
-    type_def    *tipe_addr;
-    dbg_type    ret;
+    const type_def  *tipe_addr;
+    dbg_type        ret;
 
     //NYI: damned if I know what to do.
     len_loc = DBGLoc2DF( loc );
@@ -259,42 +259,39 @@ static  dw_handle   MKBckVar( back_handle bck, int off, dw_handle tipe )
 dbg_type    DFEndArray( dbg_array ar )
 /************************************/
 {
-    dw_dim_info    info;
-    dw_vardim_info varinfo;
-    dbg_type       lo_tipe;
-    dbg_type       count_tipe;
-    type_def       *tipe_addr;
-    dim_any        *dim;
-    dbg_type       ret;
+    dw_dim_info     info;
+    dw_vardim_info  varinfo;
+    dbg_type        lo_tipe;
+    dbg_type        count_tipe;
+    const type_def  *tipe_addr;
+    dim_any         *dim;
+    dbg_type        ret;
 
     ret = DWBeginArray( Client, ar->base, 0, NULL, 0, 0 );
     lo_tipe = DBG_NIL_TYPE;
     tipe_addr = NULL;
     count_tipe = DBG_NIL_TYPE;
-    for(;;) {
-        dim = ar->list;
-        if( dim == NULL )
-            break;
-        switch( dim->entry.kind ) {
+    while( (dim = ar->list) != NULL ) {
+        ar->list = dim->next;
+        switch( dim->kind ) {
         case DIM_CON:
-            info.index_type = dim->con.idx;
-            info.lo_data  = dim->con.lo;
-            info.hi_data  = dim->con.hi;
+            info.index_type = dim->u.con.idx;
+            info.lo_data  = dim->u.con.lo;
+            info.hi_data  = dim->u.con.hi;
             DWArrayDimension( Client, &info );
             break;
         case DIM_VAR:
             if( lo_tipe == DBG_NIL_TYPE ) {
-                tipe_addr = TypeAddress( dim->var.lo_bound_tipe );
-                lo_tipe = DFScalar( "", dim->var.lo_bound_tipe );
-                count_tipe = DFScalar( "",  dim->var.num_elts_tipe );
+                tipe_addr = TypeAddress( dim->u.var.lo_bound_tipe );
+                lo_tipe = DFScalar( "", dim->u.var.lo_bound_tipe );
+                count_tipe = DFScalar( "",  dim->u.var.num_elts_tipe );
             }
             varinfo.index_type = lo_tipe;
-            varinfo.lo_data  =  MKBckVar( dim->var.dims, dim->var.off, lo_tipe);
-            varinfo.count_data  = MKBckVar( dim->var.dims, dim->var.off + tipe_addr->length, count_tipe);
+            varinfo.lo_data  =  MKBckVar( dim->u.var.dims, dim->u.var.off, lo_tipe);
+            varinfo.count_data  = MKBckVar( dim->u.var.dims, dim->u.var.off + tipe_addr->length, count_tipe);
             DWArrayVarDim( Client, &varinfo );
             break;
         }
-        ar->list = dim->entry.next;
         CGFree( dim );
     }
     DWEndArray( Client );
@@ -305,11 +302,11 @@ dbg_type        DFFtnArray( back_handle dims, cg_type lo_bound_tipe,
                             cg_type num_elts_tipe, int off, dbg_type base )
 /*************************************************************************/
 {
-    dw_vardim_info varinfo;
-    dbg_type       lo_tipe;
-    dbg_type       count_tipe;
-    type_def       *tipe_addr;
-    dbg_type       ret;
+    dw_vardim_info  varinfo;
+    dbg_type        lo_tipe;
+    dbg_type        count_tipe;
+    const type_def  *tipe_addr;
+    dbg_type        ret;
 
     ret = DWBeginArray( Client, base, 0, NULL, 0, 0 );
     tipe_addr = TypeAddress( lo_bound_tipe );
@@ -337,8 +334,8 @@ dbg_type DFSubRange( int_32 lo, int_32 hi, dbg_type base )
 static  uint   DFPtrClass( cg_type ptr_type )
 /*******************************************/
 {
-    type_def    *tipe_addr;
-    uint        flags;
+    const type_def  *tipe_addr;
+    uint            flags;
 
 #if _TARGET_INTEL
     if( (ptr_type == TY_POINTER || ptr_type == TY_CODE_PTR)
@@ -756,10 +753,10 @@ dbg_type        DFEndStruct( dbg_struct st )
 dbg_type        DFEndEnum( dbg_enum en )
 /**************************************/
 {
-    dbg_type    ret;
-    type_def    *tipe_addr;
-    const_entry *cons;
-    signed_64   val;
+    dbg_type        ret;
+    const type_def  *tipe_addr;
+    const_entry     *cons;
+    signed_64       val;
 
     tipe_addr = TypeAddress( en->tipe );
     ret = DWBeginEnumeration( Client, tipe_addr->length, NULL, 0, 0 );
