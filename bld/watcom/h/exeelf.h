@@ -809,9 +809,9 @@ typedef struct {
     Elf64_Off   p_offset;       // offset of segment from beginnning of file
     Elf64_Addr  p_vaddr;        // segment virtual address
     Elf64_Addr  p_paddr;        // segment physical address
-    Elf64_Word  p_filesz;       // size of segment in file
-    Elf64_Word  p_memsz;        // size of segment in memory
-    Elf64_Word  p_align;        // segment align value (in mem & file)
+    Elf64_Xword p_filesz;       // size of segment in file
+    Elf64_Xword p_memsz;        // size of segment in memory
+    Elf64_Xword p_align;        // segment align value (in mem & file)
 } Elf64_Phdr;
 
 // segment types
