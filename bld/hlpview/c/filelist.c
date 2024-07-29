@@ -187,7 +187,12 @@ static FileList *doFillFileList( const char *path, FileList *list )
         }
         *path_end = '\0';
         strcpy( buf, p );
-        len = strlen( buf ) - 1;
+
+        if( *buf != '\0' ) {
+            len = strlen( buf ) -1;
+        } else {
+            len = 0;
+        }
 #ifdef __UNIX__
         if( buf[len] == '/' )
             buf[len] = '\0';
