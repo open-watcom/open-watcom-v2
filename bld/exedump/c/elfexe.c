@@ -283,6 +283,21 @@ static void dmp_prog_type( unsigned_32 type )
     case PT_PHDR:
         Wdputs( "address of progam header" );
         break;
+    case PT_TLS:
+        Wdputs( "TLS" );
+        break;
+    case PT_GNU_EH_FRAME:
+        Wdputs( "GNU stack unwinding tables" );
+        break;
+    case PT_GNU_STACK:
+        Wdputs( "GNU stack executability" );
+        break;
+    case PT_GNU_RELRO:
+        Wdputs( "GNU readonly after reloc" );
+        break;
+    case PT_GNU_PROPERTY:
+        Wdputs( "GNU property" );
+        break;
     case PT_LOPROC:
         Wdputs( "processor specific" );
         break;
@@ -334,6 +349,60 @@ static void dmp_sec_type( unsigned_32 type )
     case SHT_DYNSYM:
         Wdputs( "dynamic link symbol table" );
         break;
+    case SHT_INIT_ARRAY:
+        Wdputs( "constructors" );
+        break;
+    case SHT_FINI_ARRAY:
+        Wdputs( "destructors" );
+        break;
+    case SHT_PREINIT_ARRAY:
+        Wdputs( "pre-constructors" );
+        break;
+    case SHT_GROUP:
+        Wdputs( "group" );
+        break;
+    case SHT_SYMTAB_SHNDX:
+        Wdputs( "extended section index" );
+        break;
+    case SHT_OS:
+        Wdputs( "identify target OS" );
+        break;
+    case SHT_IMPORTS:
+        Wdputs( "refs to external sysmbols" );
+        break;
+    case SHT_EXPORTS:
+        Wdputs( "symbols exported by ordinal" );
+        break;
+    case SHT_RES:
+        Wdputs( "read only resource data" );
+        break;
+    case SHT_IDMDLL:
+        Wdputs( "symbol name demangling infos" );
+        break;
+    case SHT_DEFLIB:
+        Wdputs( "default static libraries" );
+        break;
+    case SHT_GNU_ATTRIBUTES:
+        Wdputs( "GNU attributes" );
+        break;
+    case SHT_GNU_HASH:
+        Wdputs( "GNU hash" );
+        break;
+    case SHT_GNU_LIBLIST:
+        Wdputs( "GNU prelink library list" );
+        break;
+    case SHT_CHECKSUM:
+        Wdputs( "checksum for DSO content" );
+        break;
+    case SHT_GNU_verdef:
+        Wdputs( "GNU version definition" );
+        break;
+    case SHT_GNU_verneed:
+        Wdputs( "GNU version needs section" );
+        break;
+    case SHT_GNU_versym:
+        Wdputs( "GNU version symbol table" );
+        break;
     case SHT_LOPROC:
         Wdputs( "processor specific" );
         break;
@@ -384,6 +453,27 @@ static void dmp_sec_flgs( unsigned_32 flags )
     }
     if( flags & SHF_EXECINSTR ) {
         strcat( name, " EXEC_INSTR |" );
+    }
+    if( flags & SHF_MERGE ) {
+        strcat( name, " MERGE |" );
+    }
+    if( flags & SHF_STRINGS ) {
+        strcat( name, " STRINGS |" );
+    }
+    if( flags & SHF_INFO_LINK ) {
+        strcat( name, " INFO_LINK |" );
+    }
+    if( flags & SHF_OS_NONCONFORMING ) {
+        strcat( name, " OS_NONCONFORMING |" );
+    }
+    if( flags & SHF_GROUP ) {
+        strcat( name, " GROUP |" );
+    }
+    if( flags & SHF_TLS ) {
+        strcat( name, " TLS |" );
+    }
+    if( flags & SHF_COMPRESSED ) {
+        strcat( name, " COMPRESSED |" );
     }
     if( name[strlen(name)-1] == '|' ) {
         name[strlen(name)-1] = '\0';
