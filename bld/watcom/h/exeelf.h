@@ -823,6 +823,11 @@ typedef struct {
 #define PT_NOTE         4               // comments & auxiliary information
 #define PT_SHLIB        5               // here be dragons
 #define PT_PHDR         6               // address of prog. header in mem (for interp.)
+#define PT_TLS          7               // thread local storage
+#define PT_GNU_EH_FRAME 0x6474e550      // unwinding tables
+#define PT_GNU_STACK    0x6474e551      // stack executability
+#define PT_GNU_RELRO    0x6474e552      // readonly after reloc
+#define PT_GNU_PROPERTY 0x6474e553      // GNU properties
 #define PT_OS           0x60000001      // target os information
 #define PT_RES          0x60000002      // read-only resource information
 #define PT_LOPROC       0x70000000      // processor specific (start)
