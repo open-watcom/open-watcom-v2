@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -186,16 +186,18 @@ static FileList *doFillFileList( const char *path, FileList *list )
             path_end++;
         }
         *path_end = '\0';
-        strcpy( buf, p );
-        len = strlen( buf ) - 1;
+        if( *p != '\0' ) {
+            strcpy( buf, p );
+            len = strlen( buf ) - 1;
 #ifdef __UNIX__
-        if( buf[len] == '/' )
-            buf[len] = '\0';
+            if( buf[len] == '/' )
+                buf[len] = '\0';
 #else
-        if( buf[len] == '/' || buf[len] == '\\' )
-            buf[len] = '\0';
+            if( buf[len] == '/' || buf[len] == '\\' )
+                buf[len] = '\0';
 #endif
-        list = scanDirectory( buf, list );
+            list = scanDirectory( buf, list );
+        }
         if( done )
             break;
         p = path_end + 1;
