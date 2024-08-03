@@ -35,8 +35,6 @@
 #include "dlgoptn.h"
 
 
-extern void Password( const char *, char *, unsigned );
-
 void *SrchHistory;
 
 static gui_menu_struct FirstMenu[] = {
