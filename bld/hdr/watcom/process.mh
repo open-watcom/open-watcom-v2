@@ -216,13 +216,13 @@ _WCRTLINK extern int        cwait( int *__status, int __process_id, int __action
 _WCRTLINK extern int        _cwait( int *__status, int __process_id, int __action_code );
 
 :endsegment
-:segment LINUX | QNX
+:segment QNX
 #if !(defined(SYSV) || defined(BSD) || defined(XENIX) || defined(_UNIX_H_INCLUDED))
 :endsegment
 _WCRTLINK extern char       *getcmd( char *__buffer );
 _WCRTLINK extern int        _bgetcmd( char *__buffer, int __len );
 _WCRTLINK extern char       *_cmdname( char *__name );
-:segment LINUX | QNX
+:segment QNX
 #endif
 :endsegment
 
