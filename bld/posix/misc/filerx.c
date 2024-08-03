@@ -97,6 +97,7 @@ char *FileMatchInit( void **crx, const char *wild )
     regexp      *rx;
     size_t      i, len;
     char        *old_magic;
+    bool        old_flag;
 
     /*
         Calculate size of regular expression.  We calculate it because it
@@ -104,6 +105,7 @@ char *FileMatchInit( void **crx, const char *wild )
         the stack all the time.
     */
     old_magic = MagicString;
+    old_flag = MagicFlag;
     MagicString = ".";
     MagicFlag = false;
     j = 0;
@@ -146,6 +148,7 @@ char *FileMatchInit( void **crx, const char *wild )
     }
     MemFree( tomatch );
     MagicString = old_magic;
+    MagicFlag = old_flag;
     return( rxErrorStrings[RegExpError] );
 }
 
