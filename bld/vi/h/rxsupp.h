@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,7 +39,7 @@
 extern regexp   *CurrentRegularExpression;
 
 /* findrx.c */
-extern vi_rc    FindRegularExpression( char *, i_mark *, char **, linenum, find_type );
+extern vi_rc    FindRegularExpressionForward( char *, i_mark *, char **, linenum, find_type );
 extern vi_rc    FindRegularExpressionBackwards( char *, i_mark *, char **, linenum, find_type );
 
 /* rxsupp.c */

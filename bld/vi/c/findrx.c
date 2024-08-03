@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -42,8 +42,8 @@ static bool wrapMsgPrinted = false;
 /*
  * FindRegularExpression - do a forward search for a regular expression
  */
-vi_rc FindRegularExpression( char *pat, i_mark *pos1, char **linedata,
-                             linenum termline, find_type flags )
+vi_rc FindRegularExpressionForward( char *pat, i_mark *pos1, char **linedata,
+                             linenum termline, find_type findfl )
 {
     vi_rc       rc;
     int         found;
@@ -63,7 +63,7 @@ vi_rc FindRegularExpression( char *pat, i_mark *pos1, char **linedata,
         ClearWindow( message_window_id );
     }
     sline = pos1->line;
-    if( flags & FINDFL_WRAP ) {
+    if( findfl & FINDFL_WRAP ) {
         ilineno = sline;
     }
     rc = CGimmeLinePtr( sline, &cfcb, &cline );
@@ -93,7 +93,7 @@ vi_rc FindRegularExpression( char *pat, i_mark *pos1, char **linedata,
         if( rc == ERR_NO_ERR ) {
             ++sline;
         } else if( rc == ERR_NO_MORE_LINES ) {
-            if( (flags & FINDFL_WRAP) == 0 ) {
+            if( (findfl & FINDFL_WRAP) == 0 ) {
                 return( ERR_FIND_END_OF_FILE );
             } else {
                 Message1( wrapMsg, "bottom" );
@@ -134,7 +134,7 @@ vi_rc FindRegularExpression( char *pat, i_mark *pos1, char **linedata,
  * FindRegularExpressionBackwards - do a reverse search for a regular expression
  */
 vi_rc FindRegularExpressionBackwards( char *pat, i_mark *pos1, char **linedata,
-                                      linenum termline, find_type flags )
+                                      linenum termline, find_type findfl )
 {
     vi_rc       rc;
     char        *data;
@@ -159,7 +159,7 @@ vi_rc FindRegularExpressionBackwards( char *pat, i_mark *pos1, char **linedata,
     if( rc != ERR_NO_ERR ) {
         return( rc );
     }
-    if( flags & FINDFL_WRAP ) {
+    if( findfl & FINDFL_WRAP ) {
         ilineno = sline;
     }
     scol = pos1->column;
@@ -209,7 +209,7 @@ vi_rc FindRegularExpressionBackwards( char *pat, i_mark *pos1, char **linedata,
         if( rc == ERR_NO_ERR ) {
             --sline;
         } else if( rc == ERR_NO_MORE_LINES ) {
-            if( (flags & FINDFL_WRAP) == 0 ) {
+            if( (findfl & FINDFL_WRAP) == 0 ) {
                 return( ERR_FIND_TOP_OF_FILE );
             } else {
                 Message1( wrapMsg, "top" );

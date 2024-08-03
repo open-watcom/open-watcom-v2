@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -85,7 +85,7 @@ vi_rc FindMatch( i_mark *pos1 )
     pos2 = CurrentPos;
     pos2.column -= 1;
     RegExpAttrSave( -1, NULL );
-    rc = FindRegularExpression( matchd, &pos2, &linedata, pos2.line, 0 );
+    rc = FindRegularExpressionForward( matchd, &pos2, &linedata, pos2.line, FINDFL_NONE );
     if( rc == ERR_NO_ERR ) {
         /*
          * find out which matched
@@ -114,10 +114,10 @@ vi_rc FindMatch( i_mark *pos1 )
             for( ;; ) {
                 if( m2 ) {
                     pos2.column--;
-                    rc = FindRegularExpressionBackwards( NULL, &pos2, &linedata, -1L, 0 );
+                    rc = FindRegularExpressionBackwards( NULL, &pos2, &linedata, -1L, FINDFL_NONE );
                 } else {
                     pos2.column++;
-                    rc = FindRegularExpression( NULL, &pos2, &linedata, MAX_LONG, 0 );
+                    rc = FindRegularExpressionForward( NULL, &pos2, &linedata, MAX_LONG, FINDFL_NONE );
                 }
                 if( rc != ERR_NO_ERR ) {
                     Error( GetErrorMsg( ERR_MATCH_NOT_FOUND ), match[(m2 == 0)] );

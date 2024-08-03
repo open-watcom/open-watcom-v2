@@ -81,7 +81,7 @@ vi_rc TagHunt( const char *str )
             } else {
                 rc = FindTag( buff );
                 if( rc < ERR_NO_ERR ) {
-                    ColorFind( str, 0 );
+                    ColorFind( str, FINDFL_NONE );
                     rc = ERR_TAG_NOT_FOUND;
                 }
             }
@@ -107,7 +107,7 @@ vi_rc FindTag( const char *tag )
     vi_rc               rc;
 
     RegExpAttrSave( -1, &META[3] );
-    rc = ColorFind( tag, 0 );
+    rc = ColorFind( tag, FINDFL_NONE );
     RegExpAttrRestore();
     return( rc );
 

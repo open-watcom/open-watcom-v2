@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -105,14 +105,14 @@ void ResetLastFind( info *inf )
  */
 static vi_rc GetFindForward( char *st, i_mark *pos1, int *len1 )
 {
-    find_type   flags;
+    find_type   findfl;
 
-    flags = FINDFL_FORWARD;
+    findfl = FINDFL_FORWARD;
     if( EditFlags.SearchWrap )
-        flags |= FINDFL_WRAP;
+        findfl |= FINDFL_WRAP;
     if( EditFlags.NoReplaceSearchString )
-        flags |= FINDFL_NOCHANGE;
-    return( GetFind( st, pos1, len1, flags ) );
+        findfl |= FINDFL_NOCHANGE;
+    return( GetFind( st, pos1, len1, findfl ) );
 
 } /* GetFindForward */
 
@@ -121,14 +121,14 @@ static vi_rc GetFindForward( char *st, i_mark *pos1, int *len1 )
  */
 static vi_rc GetFindBackwards( char *st, i_mark *pos1, int *len1 )
 {
-    find_type   flags;
+    find_type   findfl;
 
-    flags = FINDFL_BACKWARDS;
+    findfl = FINDFL_BACKWARDS;
     if( EditFlags.SearchWrap )
-        flags |= FINDFL_WRAP;
+        findfl |= FINDFL_WRAP;
     if( EditFlags.NoReplaceSearchString )
-        flags |= FINDFL_NOCHANGE;
-    return( GetFind( st, pos1, len1, flags ) );
+        findfl |= FINDFL_NOCHANGE;
+    return( GetFind( st, pos1, len1, findfl ) );
 
 } /* GetFindBackwards */
 
@@ -444,7 +444,7 @@ static vi_rc processFind( range *r, char *st, vi_rc (*rtn)( char *, i_mark *, in
 /*
  * GetFind - get a find location
  */
-vi_rc GetFind( char *st, i_mark *pos1, int *len1, find_type flags )
+vi_rc GetFind( char *st, i_mark *pos1, int *len1, find_type findfl )
 {
     int         len;
     char        *linedata = NULL;
@@ -457,12 +457,12 @@ vi_rc GetFind( char *st, i_mark *pos1, int *len1, find_type flags )
     if( CurrentFile == NULL ) {
         return( ERR_NO_FILE );
     }
-    rc = setLineCol( st, &pos2, flags );
+    rc = setLineCol( st, &pos2, findfl );
     if( rc == ERR_NO_ERR ) {
-        if( flags & FINDFL_FORWARD ) {
-            rc = FindRegularExpression( sStr, &pos2, &linedata, MAX_LONG, flags );
+        if( findfl & FINDFL_FORWARD ) {
+            rc = FindRegularExpressionForward( sStr, &pos2, &linedata, MAX_LONG, findfl );
         } else {
-            rc = FindRegularExpressionBackwards( sStr, &pos2, &linedata, -1, flags );
+            rc = FindRegularExpressionBackwards( sStr, &pos2, &linedata, -1, findfl );
         }
     }
     lastPosInfo = CurrentInfo;
@@ -483,11 +483,11 @@ vi_rc GetFind( char *st, i_mark *pos1, int *len1, find_type flags )
 
         if( rc == ERR_FIND_NOT_FOUND || rc == ERR_FIND_END_OF_FILE ||
             rc == ERR_FIND_TOP_OF_FILE ) {
-            if( (flags & FINDFL_NOERROR) == 0 ) {
+            if( (findfl & FINDFL_NOERROR) == 0 ) {
                 Error( GetErrorMsg( rc ), sStr );
                 rc = DO_NOT_CLEAR_MESSAGE_WINDOW;
             }
-            if( flags & FINDFL_FORWARD ) {
+            if( findfl & FINDFL_FORWARD ) {
                 lastPos.column -= 1;
             } else {
                 lastPos.column += 1;
@@ -504,7 +504,7 @@ vi_rc GetFind( char *st, i_mark *pos1, int *len1, find_type flags )
 /*
  * setLineCol - set up line and column to start search at
  */
-static vi_rc setLineCol( char *st, i_mark *pos, find_type flags )
+static vi_rc setLineCol( char *st, i_mark *pos, find_type findfl )
 {
     fcb         *cfcb;
     line        *cline;
@@ -520,14 +520,14 @@ static vi_rc setLineCol( char *st, i_mark *pos, find_type flags )
         if( lastPos.line != 0 && currPos.column == CurrentPos.column &&
             currPos.line == CurrentPos.line ) {
             *pos = lastPos;
-            if( flags & FINDFL_FORWARD ) {
+            if( findfl & FINDFL_FORWARD ) {
                 pos->column += 1;
             } else {
                 pos->column -= 2;
             }
         } else {
             *pos = CurrentPos;
-            if( flags & FINDFL_FORWARD ) {
+            if( findfl & FINDFL_FORWARD ) {
                 pos->column += 0;
             } else {
                 pos->column -= 2;
@@ -535,12 +535,12 @@ static vi_rc setLineCol( char *st, i_mark *pos, find_type flags )
         }
         ReplaceString( &sStr, lastFind );
     } else {
-        if( (flags & FINDFL_NOCHANGE) == 0 ) {
+        if( (findfl & FINDFL_NOCHANGE) == 0 ) {
             ReplaceString( &lastFind, st );
         }
         ReplaceString( &sStr, st );
         *pos = CurrentPos;
-        if( flags & FINDFL_FORWARD ) {
+        if( findfl & FINDFL_FORWARD ) {
             pos->column += 0;
         } else {
             pos->column -= 2;
@@ -550,9 +550,9 @@ static vi_rc setLineCol( char *st, i_mark *pos, find_type flags )
     /*
      * wrap if needed
      */
-    if( flags & FINDFL_NEXTLINE ) {
+    if( findfl & FINDFL_NEXTLINE ) {
         wrapped = false;
-        if( flags & FINDFL_FORWARD ) {
+        if( findfl & FINDFL_FORWARD ) {
             pos->column = 0;
             pos->line += 1;
             if( IsPastLastLine( pos->line ) ) {
@@ -571,8 +571,8 @@ static vi_rc setLineCol( char *st, i_mark *pos, find_type flags )
                 pos->column = 0;
             }
         }
-        if( wrapped && (flags & FINDFL_WRAP) == 0 ) {
-            if( flags & FINDFL_FORWARD ) {
+        if( wrapped && (findfl & FINDFL_WRAP) == 0 ) {
+            if( findfl & FINDFL_FORWARD ) {
                 return( ERR_FIND_END_OF_FILE );
             } else {
                 return( ERR_FIND_TOP_OF_FILE );

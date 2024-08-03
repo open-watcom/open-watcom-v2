@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -186,6 +186,7 @@ typedef enum {
  * find types
  */
 typedef enum {
+    FINDFL_NONE      = 0x00,
     FINDFL_FORWARD   = 0x01,
     FINDFL_BACKWARDS = 0x02,
     FINDFL_NEXTLINE  = 0x04,
