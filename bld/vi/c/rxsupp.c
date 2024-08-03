@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -41,10 +41,8 @@ extern char _NEAR META[];
  */
 bool IsMagicCharRegular( char ch )
 {
-    if( !EditFlags.Magic && EditVars.Majick != NULL ) {
-        if( strchr( EditVars.Majick, ch ) != NULL ) {
-            return( true );
-        }
+    if( strchr( EditVars.Majick.str, ch ) != NULL ) {
+        return( true );
     }
     return( false );
 
@@ -102,8 +100,10 @@ void MakeExpressionNonRegular( char *str )
             foo[j++] = '\\';
         } else if( strchr( META, str[i] ) != NULL ) {
             foo[j++] = '\\';
-            if( IsMagicCharRegular( str[i] ) ) {
-                j--;
+            if( !EditFlags.Magic ) {
+                if( IsMagicCharRegular( str[i] ) ) {
+                    j--;
+                }
             }
         }
         foo[j++] = str[i];
@@ -117,13 +117,13 @@ void MakeExpressionNonRegular( char *str )
 
 static bool old_CaseIgnore = false;
 static bool old_Magic      = true;
-static char *old_Majick    = NULL;
+static magic_type old_Majick = { "" };
 
 void RegExpAttrSave( int caseignore, char *majick )
 {
     old_CaseIgnore  = EditFlags.CaseIgnore;
     old_Magic       = EditFlags.Magic;
-    old_Majick      = EditVars.Majick;
+    strcpy( old_Majick.str, EditVars.Majick.str );
 
     if( caseignore != -1 ) {
         EditFlags.CaseIgnore = ( caseignore ) ? true : false;
@@ -132,7 +132,7 @@ void RegExpAttrSave( int caseignore, char *majick )
         EditFlags.Magic      = true;
     } else {
         EditFlags.Magic      = false;
-        EditVars.Majick      = majick;
+        strcpy( EditVars.Majick.str, majick );
     }
 }
 
@@ -140,5 +140,5 @@ void RegExpAttrRestore( void )
 {
     EditFlags.CaseIgnore = old_CaseIgnore;
     EditFlags.Magic      = old_Magic;
-    EditVars.Majick      = old_Majick;
+    strcpy( EditVars.Majick.str, old_Majick.str );
 }

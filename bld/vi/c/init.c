@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -310,7 +310,7 @@ static void doInitializeEditor( int argc, char *argv[] )
     /*
      * initial configuration
      */
-    EditVars.Majick = DupString( "()~@" );
+    strcpy( EditVars.Majick.str, "()~@" );
     EditVars.FileEndString = DupString( "[END_OF_FILE]" );
     MatchInit();
     SetGadgetString( NULL );

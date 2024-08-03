@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -101,8 +101,9 @@ bool    CaseIgnore = true;
 bool    MagicFlag = true;
 #endif
 
-#if !defined( MAGICSTR )
-#define MAGICSTR        MagicString
+#if defined( MAGICSTR )
+char    *MagicString = MAGICSTR;
+#else
 char    *MagicString = "()";
 #endif
 
@@ -305,17 +306,17 @@ regexp *RegComp( const char *instr )
         /*
          * flip roles of magic chars
          */
-        if( !MAGICFLAG && MAGICSTR != NULL ) {
+        if( !MAGICFLAG && MagicString != NULL && *MagicString != '\0' ) {
             j = 0;
             k = strlen( instr );
             for( i = 0; i < k; i++ ) {
                 if( instr[i] == '\\' ) {
-                    if( strchr( MAGICSTR, instr[i + 1] ) == NULL ) {
+                    if( strchr( MagicString, instr[i + 1] ) == NULL ) {
                         buff[j++] = '\\';
                     }
                     i++;
                 } else {
-                    if( strchr( MAGICSTR, instr[i] ) != NULL ) {
+                    if( strchr( MagicString, instr[i] ) != NULL ) {
                         buff[j++] = '\\';
                     }
                 }

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -146,7 +146,7 @@ static const char *getOneSetVal( int token, bool isbool, char *tmpstr, bool want
             str = EditVars.TagFileName;
             break;
         case SETVAR_T_MAGICSTRING:
-            str = EditVars.Majick;
+            str = EditVars.Majick.str;
             break;
         case SETVAR_T_COMMANDCURSORTYPE:
         case SETVAR_T_OVERSTRIKECURSORTYPE:
@@ -820,9 +820,10 @@ static vi_rc processSetToken( int j, char *new, const char **pvalue, int *winfla
             }
             break;
         case SETVAR_T_MAGICSTRING:
-            ReplaceString( &EditVars.Majick, fn );
+            strncpy( EditVars.Majick.str, fn, MAGICLEN_MAX );
+            EditVars.Majick.str[MAGICLEN_MAX] = '\0';
             if( msgFlag ) {
-                MySprintf( fn, "magicstring set to %s", EditVars.Majick );
+                MySprintf( fn, "magicstring set to %s", EditVars.Majick.str );
             }
             break;
         case SETVAR_T_COMMANDCURSORTYPE:

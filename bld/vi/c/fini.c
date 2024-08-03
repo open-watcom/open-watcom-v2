@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -152,7 +152,6 @@ static void miscGlobalsFini( void )
     _MemFreeArray( EditVars.TileColors );
     _MemFreeArray( EditVars.GrepDefault );
     _MemFreeArray( EditVars.FileEndString );
-    _MemFreeArray( EditVars.Majick );
     _MemFreeArray( EditVars.GadgetString );
     _MemFreeArray( EditVars.WordDefn );
     _MemFreeArray( EditVars.WordAltDefn );

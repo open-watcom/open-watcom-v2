@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -82,9 +82,7 @@ extern bool     CaseIgnore;
 extern bool     MagicFlag;
 #endif
 
-#ifndef MAGICSTR
 extern char     *MagicString;
-#endif
 
 #define NSUBEXP  21
 typedef struct {

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -96,12 +96,14 @@ char *FileMatchInit( void **crx, const char *wild )
     size_t      j;
     regexp      *rx;
     size_t      i, len;
+    char        *old_magic;
 
     /*
         Calculate size of regular expression.  We calculate it because it
         can be as large as 3*_MAX_PATH... which is a lot to allocate off
         the stack all the time.
     */
+    old_magic = MagicString;
     MagicString = ".";
     MagicFlag = false;
     j = 0;
@@ -143,6 +145,7 @@ char *FileMatchInit( void **crx, const char *wild )
         *crx = NULL;
     }
     MemFree( tomatch );
+    MagicString = old_magic;
     return( rxErrorStrings[RegExpError] );
 }
 
