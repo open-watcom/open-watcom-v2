@@ -34,7 +34,6 @@
 #include "vi.h"
 #include "rxsupp.h"
 
-extern char _NEAR META[];
 
 /*
  * IsMagicCharRegular - check if character is magic and regular (no-magic meaning)

@@ -84,6 +84,12 @@ extern bool     MagicFlag;
 
 extern char     *MagicString;
 
+#ifdef __WATCOMC__
+extern char     __near META[];
+#else
+extern char     META[];
+#endif
+
 #define NSUBEXP  21
 typedef struct {
     const char  *startp[NSUBEXP];
