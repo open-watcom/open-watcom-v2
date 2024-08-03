@@ -70,7 +70,7 @@ posixlib_objs = &
     $(_subdir_)isdotdot.obj &
     $(_subdir_)lineprt.obj &
     $(_subdir_)quit.obj &
-    $(_subdir_)regexp.obj
+    $(_subdir_)owregexp.obj
 
 !ifdef bootstrap
 stdlibdir=$(std_subdir_$(host_cpu))

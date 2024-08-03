@@ -37,7 +37,7 @@
 #include <string.h>
 #include "bool.h"
 #include "wio.h"
-#include "regexp.h"
+#include "owregexp.h"
 #include "getopt.h"
 #include "argvrx.h"
 #include "argvenv.h"

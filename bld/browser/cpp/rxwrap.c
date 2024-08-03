@@ -38,4 +38,4 @@
 
 #define MAX_STR 256
 
-#include "../../posix/misc/regexp.c"
+#include "../../posix/misc/owregexp.c"

@@ -39,7 +39,7 @@
 #include <direct.h>
 #endif
 #include "watcom.h"
-#include "regexp.h"
+#include "owregexp.h"
 #include "misc.h"
 #include "fnutils.h"
 #include "filerx.h"

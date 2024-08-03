@@ -40,4 +40,4 @@
 
 extern vi_rc            RegExpError;
 
-#include "regexp.h"
+#include "owregexp.h"

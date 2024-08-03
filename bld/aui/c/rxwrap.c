@@ -32,4 +32,4 @@
 #include "rxwrap.h"
 #include "clibext.h"
 
-#include "../../posix/misc/regexp.c"
+#include "../../posix/misc/owregexp.c"

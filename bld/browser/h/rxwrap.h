@@ -64,6 +64,6 @@ extern "C" {
 };
 #endif
 
-#include "regexp.h"
+#include "owregexp.h"
 
 #endif

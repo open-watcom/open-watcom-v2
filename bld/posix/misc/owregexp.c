@@ -66,7 +66,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <ctype.h>
-#include "regexp.h"
+#include "owregexp.h"
 #if !defined( ALLOC ) || !defined( FREE )
 #include <stdlib.h>
 #endif

@@ -38,4 +38,4 @@
 
 vi_rc   RegExpError;
 
-#include "../../posix/misc/regexp.c"
+#include "../../posix/misc/owregexp.c"

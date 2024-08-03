@@ -42,7 +42,7 @@
 
 #define STANDALONE_RX
 
-#include "regexp.h"
+#include "owregexp.h"
 
 extern char SrchIgnoreMagic[];
 #ifdef __WATCOMC__
