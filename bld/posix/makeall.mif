@@ -2,7 +2,13 @@
 #   define macro for OS's which need POSIX utilities
 #
 
-!ifndef __UNIX__
+!ifndef bootstrap
+build_posix=1
+!else ifndef __UNIX__
+build_posix=1
+!endif
+
+!ifdef build_posix
 
 proj_name = posix_all
 

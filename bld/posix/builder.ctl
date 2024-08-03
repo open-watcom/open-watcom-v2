@@ -13,6 +13,7 @@ set PROJDIR=<CWD>
 
 [ BLOCK <BINTOOL> build ]
 #========================
+[ IFDEF <BLD_HOST> OS2 NT DOS ]
     cdsay "<PROJDIR>"
     <CPCMD> <OWOBJDIR>/cat.exe   "<OWROOT>/build/<OWOBJDIR>/cat<CMDEXT>"
     <CPCMD> <OWOBJDIR>/egrep.exe "<OWROOT>/build/<OWOBJDIR>/egrep<CMDEXT>"
@@ -26,6 +27,7 @@ set PROJDIR=<CWD>
     <CPCMD> <OWOBJDIR>/uniq.exe  "<OWROOT>/build/<OWOBJDIR>/uniq<CMDEXT>"
     <CPCMD> <OWOBJDIR>/wc.exe    "<OWROOT>/build/<OWOBJDIR>/wc<CMDEXT>"
     <CPCMD> <OWOBJDIR>/which.exe "<OWROOT>/build/<OWOBJDIR>/which<CMDEXT>"
+[ ENDIF ]
 
 [ BLOCK <BINTOOL> clean ]
 #========================

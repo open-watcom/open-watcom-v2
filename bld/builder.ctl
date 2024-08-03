@@ -20,9 +20,7 @@ cdsay .
 # GIT related stuff
 [ INCLUDE "<OWROOT>/bld/git/builder.ctl" ]
 # If necessary, build POSIX tools (awk, sed, cp, ...)
-[ IFDEF <BLD_HOST> OS2 NT DOS ]
 [ INCLUDE "<OWROOT>/bld/posix/builder.ctl" ]
-[ ENDIF ]
 # Build wsplice and genverrc
 [ INCLUDE "<OWROOT>/bld/builder/builder.ctl" ]
 # Build our version of yacc
@@ -248,6 +246,9 @@ cdsay .
 [ IFDEF <OWDISTRBUILD> 1 ]
 [ INCLUDE "<OWROOT>/distrib/ow/builder.ctl" ]
 [ ENDIF ]
+
+# test - build POSIX tools (awk, sed, cp, ...)
+[ INCLUDE "<OWROOT>/bld/posix/builder.ctl" ]
 
 [ BLOCK <BLDRULE> docsclean docs ]
 #=================================
