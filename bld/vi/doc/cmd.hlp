@@ -183,14 +183,14 @@ the rest is optional.
 	    syntax as the "map" command. See keyadd for a delayed addition of
 	    keystrokes.
 
-	[fgr]ep (-c) (-u) "string" (file)
+	[fgr]ep (-c) (-i) "string" (file)
 	  - searches for string in the specified wild card (file). (if
-	    (file) is not specified, it defaults to *.c).  Search is
-	    case insensitive, unless -c is specified, in which case
-	    the search is case sensitve.  -u uses the CaseIgnore setting
-	    to determine whether or not to be case sensitive in the search
-	    When all matches are found, a selection window is presented 
-	    with the files that contained string.  
+	    (file) is not specified, it defaults to *.c).  If -c is specified
+	    then the search is case sensitive or if -i is specified then the
+	    search is case insensitive otherwise the CaseIgnore setting is
+	    used to determine whether or not to be case sensitive in the
+	    search.  When all matches are found, a selection window is
+	    presented with the files that contained string.  
 
 	[f]iles
 	  - open a window with a list of all files currently being edited;

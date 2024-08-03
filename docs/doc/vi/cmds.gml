@@ -822,17 +822,17 @@ Replaces all tabs in the current edit buffer with spaces.
 .endfunc
 
 .begfunc FGREP
-.syntx * FGRep '"-c"' '"-u"' &lt.string&gt. &lt.files&gt.
+.syntx * FGRep '"-c"' '"-i"' &lt.string&gt. &lt.files&gt.
 .begdescr
 Searches the file list &parm4 for the string &parm3
 .period
 .np
-The search is by default case insensitive, unless
+If
 .param -c
-is specified, which forces the search to be case sensitive.
-Specifying
-.param -u
-causes the setting of
+is specified then the search to be case sensitive or if
+.param -i
+is specified then the search to be case insensitive otherwise
+the setting of
 .keyref caseignore 1
 to determine whether or not to be case sensitive in the search.
 .np
