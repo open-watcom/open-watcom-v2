@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -309,11 +309,10 @@ static void *doMemReallocUnsafe( void *ptr, size_t size, WHO_PTR who )
             memcpy( tmp, ptr, tsize );
             MemFree( ptr );
         }
-    } else
-#endif
-    {
-#ifdef __WATCOMC__
+    } else {
         size = MSIZE( tmp );
+#else
+    {
 #endif
         if( size > orig_size ) {
             memset( &(((char *)tmp)[orig_size]), 0, size - orig_size );

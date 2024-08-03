@@ -142,7 +142,8 @@ static void __interrupt handleInt1c( void )
                         if( tTick.tHour2 > '9' ) {
                             tTick.tHour2 = '0';
                             tTick.tHour1++;
-                        } else if( tTick.tHour2 == '4' && tTick.tHour1 == '2' ) {
+                        } else if( tTick.tHour2 == '4'
+                          && tTick.tHour1 == '2' ) {
                             tTick.tHour2 = tTick.tHour1 = '0';
                         }
                     }

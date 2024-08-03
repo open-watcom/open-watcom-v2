@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -48,7 +49,8 @@ void GetTimeString( char *st )
     am_pm = 'a';
     if( s[11] == '1' && s[12] == '2' ) {
         am_pm = 'p';
-    } else if( (s[11] == '1' && s[12] > '2') || s[11] == '2' ) {
+    } else if( (s[11] == '1' && s[12] > '2')
+      || s[11] == '2' ) {
         am_pm = 'p';
         i = (s[11] - '0') * 10 + s[12] - '0';
         i -= 12;

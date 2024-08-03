@@ -84,7 +84,7 @@ vi_rc FindMatch( i_mark *pos1 )
     which = 0;
     pos2 = CurrentPos;
     pos2.column -= 1;
-    RegExpAttrSave( -1, NULL );
+    RegExpMagicSave();
     rc = FindRegularExpressionForward( matchd, &pos2, &linedata, pos2.line, FINDFL_NONE );
     if( rc == ERR_NO_ERR ) {
         /*
@@ -139,7 +139,7 @@ vi_rc FindMatch( i_mark *pos1 )
     } else {
         rc = ERR_NOTHING_TO_MATCH;
     }
-    RegExpAttrRestore();
+    RegExpMagicRestore();
     return( rc );
 
 } /* FindMatch */

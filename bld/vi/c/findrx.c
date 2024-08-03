@@ -40,7 +40,7 @@ static char wrapMsg[] = "Wrapped past %s of file";
 static bool wrapMsgPrinted = false;
 
 /*
- * FindRegularExpression - do a forward search for a regular expression
+ * FindRegularExpressionForward - do a forward search for a regular expression
  */
 vi_rc FindRegularExpressionForward( char *pat, i_mark *pos1, char **linedata,
                              linenum termline, find_type findfl )
@@ -128,7 +128,7 @@ vi_rc FindRegularExpressionForward( char *pat, i_mark *pos1, char **linedata,
     pos1->line = sline;
     return( ERR_NO_ERR );
 
-} /* FindRegularExpression */
+} /* FindRegularExpressionForward */
 
 /*
  * FindRegularExpressionBackwards - do a reverse search for a regular expression

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -109,9 +109,10 @@ static vi_rc insertGenericSavebuf( int buf, bool afterflag )
             return( rc );
         }
         tmp = &clip;
-    } else
-#endif
+    } else if( buf >= MAX_SAVEBUFS ) {
+#else
     if( buf >= MAX_SAVEBUFS ) {
+#endif
         tmp = &SpecialSavebufs[buf - MAX_SAVEBUFS];
     } else {
         tmp = &Savebufs[buf];
@@ -608,7 +609,8 @@ vi_rc SetSavebufNumber( const char *data )
 #endif
             if( st[0] >= '1' && st[0] <= '9' ) {
                 SavebufNumber = st[0] - '1';
-            } else if( st[0] >= 'a' && st[0] <= 'z' ) {
+            } else if( st[0] >= 'a'
+              && st[0] <= 'z' ) {
                 SavebufNumber = st[0] - 'a' + MAX_SAVEBUFS;
             } else {
                 Error( GetErrorMsg( ERR_INVALID_SAVEBUF ), st[0] );
@@ -635,13 +637,15 @@ bool IsEmptySavebuf( char ch )
         return( IsClipboardEmpty() );
     } else {
 #endif
-        if( ch >= '1' && ch <= '9' ) {
+        if( ch >= '1'
+          && ch <= '9' ) {
             bufnum = ch - '1';
             if( Savebufs[bufnum].type == SAVEBUF_NOP ) {
                 return( true );
             }
             return( false );
-        } else if( ch >= 'a' && ch <= 'z' ) {
+        } else if( ch >= 'a'
+          && ch <= 'z' ) {
             bufnum = ch - 'a';
             if( SpecialSavebufs[bufnum].type == SAVEBUF_NOP ) {
                 return( true );

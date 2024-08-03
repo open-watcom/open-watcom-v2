@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -86,17 +87,17 @@ static int iscomment( int c )
 
 static int islogical( char *string )
 {
-    if( strnicmp( string, ".ne.", 4 ) == 0 ||
-        strnicmp( string, ".eq.", 4 ) == 0 ||
-        strnicmp( string, ".ge.", 4 ) == 0 ||
-        strnicmp( string, ".le.", 4 ) == 0 ||
-        strnicmp( string, ".lt.", 4 ) == 0 ||
-        strnicmp( string, ".gt.", 4 ) == 0 ||
-        strnicmp( string, ".or.", 4 ) == 0 ) {
+    if( strnicmp( string, ".ne.", 4 ) == 0
+      || strnicmp( string, ".eq.", 4 ) == 0
+      || strnicmp( string, ".ge.", 4 ) == 0
+      || strnicmp( string, ".le.", 4 ) == 0
+      || strnicmp( string, ".lt.", 4 ) == 0
+      || strnicmp( string, ".gt.", 4 ) == 0
+      || strnicmp( string, ".or.", 4 ) == 0 ) {
         return( 4 );
-    } else if( strnicmp( string, ".and.", 5 ) == 0 ||
-                strnicmp( string, ".xor.", 5 ) == 0 ||
-                strnicmp( string, ".not.", 5 ) == 0 ) {
+    } else if( strnicmp( string, ".and.", 5 ) == 0
+      || strnicmp( string, ".xor.", 5 ) == 0
+      || strnicmp( string, ".not.", 5 ) == 0 ) {
         return( 5 );
     } else {
         return( 0 );

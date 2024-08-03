@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -192,7 +193,9 @@ static void getFloat( ss_block *ss_new, char *start, int skip, int command )
     lastc = tolower( *end );
     if( lastc == 'f' || lastc == 'l' ) {
         end++;
-    } else if( *end != '\0' && !isspace( *end ) && !issymbol( *end ) ) {
+    } else if( *end != '\0'
+      && !isspace( *end )
+      && !issymbol( *end ) ) {
         ss_new->type = SE_INVALIDTEXT;
         end++;
     }
@@ -212,7 +215,8 @@ static void getNumber( ss_block *ss_new, char *start, char top )
     if( *end == '.' ) {
         getFloat( ss_new, start, end - start + 1, AFTER_DOT );
         return;
-    } else if( *end == 'e' || *end == 'E' ) {
+    } else if( *end == 'e'
+      || *end == 'E' ) {
         getFloat( ss_new, start, end - start + 1, AFTER_EXP );
         return;
     } else if( isdigit( *end ) ) {
@@ -275,9 +279,13 @@ static void getText( ss_block *ss_new, char *start )
         }
     } else if( isDeclspec ) {
         ss_new->type = SE_KEYWORD;
-    } else if( flags.inIfDir && isdirective( start, KEYWORD_DEFINED ) ) {
+    } else if( flags.inIfDir
+      && isdirective( start, KEYWORD_DEFINED ) ) {
         ss_new->type = SE_PREPROCESSOR;
-    } else if( end[0] == ':' && firstNonWS == start && end[1] != ':' && end[1] != '>' ) {
+    } else if( end[0] == ':'
+      && firstNonWS == start
+      && end[1] != ':'
+      && end[1] != '>' ) {
         // : and > checked as it may be :: (CPP) operator or :> (base op.)
         end++;
         ss_new->type = SE_JUMPLABEL;
@@ -335,17 +343,20 @@ static void getPreprocessor( ss_block *ss_new, char *start )
         if( end[0] == '"' ) {
             if( !withinQuotes ) {
                 withinQuotes = true;
-            } else if( end[-1] != '\\' || end[-2] == '\\' ) {
+            } else if( end[-1] != '\\'
+              || end[-2] == '\\' ) {
                 withinQuotes = false;
             }
             continue;
         }
         if( end[0] == '/' ) {
-            if( end[1] == '*' && !withinQuotes ) {
+            if( end[1] == '*'
+              && !withinQuotes ) {
                 flags.inCComment = true;
                 lenCComment = 0;
                 break;
-            } else if( end[1] == '/' && !withinQuotes ) {
+            } else if( end[1] == '/'
+              && !withinQuotes ) {
                 flags.inCPPComment = true;
                 flags.inPreprocessor = false;
                 break;
@@ -556,7 +567,8 @@ void InitCFlags( linenum line_no )
                     if( text[0] == '"' ) {
                         if( !withinQuotes ) {
                             withinQuotes = true;
-                        } else if( text[-1] != '\\' || text[-2] == '\\' ) {
+                        } else if( text[-1] != '\\'
+                          || text[-2] == '\\' ) {
                             withinQuotes = false;
                         }
                     }
@@ -615,10 +627,13 @@ void InitCFlags( linenum line_no )
                         if( text[0] == '"' ) {
                             if( !withinQuotes ) {
                                 withinQuotes = true;
-                            } else if( text[-1] != '\\' || text[-2] == '\\' ) {
+                            } else if( text[-1] != '\\'
+                              || text[-2] == '\\' ) {
                                 withinQuotes = false;
                             }
-                        } else if( text[0] == '/' && text[-1] == '/' && !withinQuotes ) {
+                        } else if( text[0] == '/'
+                          && text[-1] == '/'
+                          && !withinQuotes ) {
                             flags.inCPPComment = true;
                         }
                     } while( text != starttext );

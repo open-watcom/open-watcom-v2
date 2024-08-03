@@ -115,13 +115,13 @@ void MakeExpressionNonRegular( char *str )
 
 
 static bool old_CaseIgnore = false;
-static bool old_Magic      = true;
+static bool old_Magic1     = true;
 static magic_type old_Majick = { "" };
 
 void RegExpAttrSave( int caseignore, char *majick )
 {
     old_CaseIgnore  = EditFlags.CaseIgnore;
-    old_Magic       = EditFlags.Magic;
+    old_Magic1      = EditFlags.Magic;
     strcpy( old_Majick.str, EditVars.Majick.str );
 
     if( caseignore != -1 ) {
@@ -138,6 +138,19 @@ void RegExpAttrSave( int caseignore, char *majick )
 void RegExpAttrRestore( void )
 {
     EditFlags.CaseIgnore = old_CaseIgnore;
-    EditFlags.Magic      = old_Magic;
+    EditFlags.Magic      = old_Magic1;
     strcpy( EditVars.Majick.str, old_Majick.str );
+}
+
+static bool old_Magic2 = true;
+
+void RegExpMagicSave( void )
+{
+    old_Magic2 = EditFlags.Magic;
+    EditFlags.Magic = true;
+}
+
+void RegExpMagicRestore( void )
+{
+    EditFlags.Magic = old_Magic2;
 }

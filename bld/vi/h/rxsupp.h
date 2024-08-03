@@ -49,6 +49,8 @@ extern int      GetCurrRegExpLength( void );
 extern void     MakeExpressionNonRegular( char * );
 extern void     RegExpAttrSave( int, char * );
 extern void     RegExpAttrRestore( void );
+extern void     RegExpMagicSave( void );
+extern void     RegExpMagicRestore( void );
 extern bool     IsMagicCharRegular( char );
 
 /* regsub.c */

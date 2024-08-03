@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -799,9 +799,9 @@ static vi_rc getBracketLoc( i_mark *pos )
     tmp[1] = ')';
     tmp[2] = '\0';
 //    lne = CurrentPos.line;
-    RegExpAttrSave( -1, NULL );
+    RegExpMagicSave();
     rc = GetFind( tmp, pos, &len, FINDFL_BACKWARDS | FINDFL_NOERROR | FINDFL_NOCHANGE );
-    RegExpAttrRestore();
+    RegExpMagicRestore();
     if( pos->line != CurrentPos.line ) {
         return( ERR_FIND_NOT_FOUND );
     }

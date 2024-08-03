@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -223,9 +224,11 @@ vi_key MapVirtualKeyToVIKey( WORD vk, WORD data )
             key = ConvertWierdCharacter( vk, data );
         } else if( ctrldown ) {
             key = VI_KEY( CTRL_A ) + t;
-        } else if( shiftdown && capsdown ) {
+        } else if( shiftdown
+          && capsdown ) {
             key = 'a' + t;
-        } else if( shiftdown || capsdown ) {
+        } else if( shiftdown
+          || capsdown ) {
             key = 'A' + t;
         } else {
             key = 'a' + t;

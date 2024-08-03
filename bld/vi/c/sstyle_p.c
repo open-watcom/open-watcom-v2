@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -209,7 +210,9 @@ static void getFloat( ss_block *ss_new, char *start, int skip, int command )
     lastc = tolower( *end );
     if( lastc == 'f' || lastc == 'l' ) {
         end++;
-    } else if( *end != '\0' && !isspace( *end ) && !issymbol( *end ) ) {
+    } else if( *end != '\0'
+      && !isspace( *end )
+      && !issymbol( *end ) ) {
         ss_new->type = SE_INVALIDTEXT;
         end++;
     }
@@ -277,7 +280,9 @@ static void getText( ss_block *ss_new, char *start )
     // Expect a double regular expression after s, tr, and y.
     if( end - start == 1 && (*start == 's' || *start == 'y') ) {
         flags.doubleRegExp = true;
-    } else if( end - start == 2 && *start == 't' && *(start + 1) == 'r' ) {
+    } else if( end - start == 2
+      && *start == 't'
+      && *(start + 1) == 'r' ) {
         flags.doubleRegExp = true;
     } else {
         flags.doubleRegExp = false;
@@ -286,7 +291,10 @@ static void getText( ss_block *ss_new, char *start )
     ss_new->type = SE_IDENTIFIER;
     if( isKeyword ) {
         ss_new->type = SE_KEYWORD;
-    } else if( end[0] == ':' && firstNonWS == start && end[1] != ':' && end[1] != '>' ) {
+    } else if( end[0] == ':'
+      && firstNonWS == start
+      && end[1] != ':'
+      && end[1] != '>' ) {
         // : and > checked as it may be :: (CPP) operator or :> (base op.)
         end++;
         ss_new->type = SE_JUMPLABEL;
@@ -503,7 +511,8 @@ void InitPerlFlags( linenum line_no )
                     } else {
                         withinQuotes = false;
                     }
-                } else if( text[0] == '\\' && ( text[1] == '\\' || text[1] == '"' ) ) {
+                } else if( text[0] == '\\'
+                  && ( text[1] == '\\' || text[1] == '"' ) ) {
                     ++text;
                 }
             }
@@ -560,8 +569,8 @@ void GetPerlBlock( ss_block *ss_new, char *start, line *line, linenum line_no )
             if( isalpha( start[1] ) || (start[0] == '$' && start[1] == '#') ) {
                 getVariable( ss_new, start );
                 return;
-            } else if( start[0] == '$' &&
-                       (isdigit( start[1] ) || isspecvar( start[1] )) ) {
+            } else if( start[0] == '$'
+              && (isdigit( start[1] ) || isspecvar( start[1] )) ) {
                 getSpecialVariable( ss_new, start );
                 return;
             }
