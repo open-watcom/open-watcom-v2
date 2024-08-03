@@ -41,6 +41,9 @@
 
 #include "app.h"
 
+#include "clibext.h"
+
+
 typedef struct {
     int         top;
     int         saved_top;

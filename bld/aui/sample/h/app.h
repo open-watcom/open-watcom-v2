@@ -32,7 +32,7 @@
 
 #include <stdlib.h>
 #include <string.h>
-#ifndef __UNIX__
+#if defined( __WATCOMC__ ) || !defined( __UNIX__ )
 #include <process.h>
 #endif
 #include "aui.h"

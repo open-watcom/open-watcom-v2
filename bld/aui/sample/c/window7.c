@@ -44,7 +44,7 @@ static wnd_row WNDCALLBACK W7NumRows( a_window wnd )
 
 static bool    WNDCALLBACK W7GetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *line )
 {
-    static char buff[20];
+    static char buff[22];
 
     wnd=wnd;
 
@@ -53,7 +53,7 @@ static bool    WNDCALLBACK W7GetLine( a_window wnd, wnd_row row, wnd_piece piece
     if( piece != 0 )
         return( false );
     line->text = buff;
-    itoa( row, buff, 10 );
+    sprintf( buff, "%d", row );
     return( true );
 }
 

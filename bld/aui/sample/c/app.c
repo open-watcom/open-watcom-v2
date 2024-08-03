@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,6 +33,9 @@
 #include "app.h"
 #include "watcom.h"
 //#include "stdui.h"
+
+#include "clibext.h"
+
 
 wnd_update_flags    WndUpdateFlags = 0;
 
@@ -88,7 +91,7 @@ static gui_menu_items   menu_PopTart = GUI_MENU_ARRAY( PopTart );
 
 bool    WndProcMacro( a_window wnd, gui_key key )
 {
-    gui_ctl_id  menu;
+    gui_ctl_id  menu = 0;
     int         i;
 
     WndStatusText( "" );

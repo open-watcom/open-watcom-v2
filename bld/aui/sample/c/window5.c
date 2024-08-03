@@ -58,12 +58,12 @@ static int WNDCALLBACK W5Scroll( a_window wnd, int lines )
 
 static bool    WNDCALLBACK W5GetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *line )
 {
-    static char buff[20];
+    static char buff[22];
 
     if( row >= NUM_ROWS )
         return( false );
     if( piece == 0 ) {
-        itoa( row, buff, 10 );
+        sprintf( buff, "%d", row );
         line->text = buff;
     } else if( piece == 1 ) {
         line->text = "This is text";

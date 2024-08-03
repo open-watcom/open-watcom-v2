@@ -34,6 +34,8 @@
 #include "app.h"
 #include "dlgoptn.h"
 
+#include "clibext.h"
+
 
 void *SrchHistory;
 
@@ -115,7 +117,7 @@ static const char * GUICALLBACK FmtNum( const void *data_handle, int item )
 static void TimeIt( void )
 {
     char                buff[80];
-    size_t              len;
+//    size_t              len;
     long                iters;
     a_window            wnd;
     gui_text_metrics    dummy;
@@ -129,7 +131,7 @@ static void TimeIt( void )
         return;
     iters = strtol( buff, NULL, 10 );
     strcpy( buff, "This is just some text" );
-    len = strlen( buff );
+//    len = strlen( buff );
     while( --iters >= 0 ) {
 //      GUIDrawText( WndGui( wnd ), buff, len, 0, 0, WndPlainAttr );
         GUIGetTextMetrics( WndGui( wnd ), &dummy );
