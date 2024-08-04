@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -117,14 +117,14 @@ size_t InsertTabSpace( size_t j, char *buff, bool *tabme )
 /*
  * ExpandTabsInABufferUpToColumn - expand tabs only up to specified column
  */
-bool ExpandTabsInABufferUpToColumn( size_t endcol, char *in, size_t inlen, char *out, size_t outsize )
+bool ExpandTabsInABufferUpToColumn( size_t endcol, const char *instr, size_t inlen, char *out, size_t outsize )
 {
     size_t      i;
     size_t      j;
     bool        res;
 
     if( outsize > 0 ) {
-        res = ExpandTabsInABuffer( in, endcol, out, outsize );
+        res = ExpandTabsInABuffer( instr, endcol, out, outsize );
         outsize--;  /* reserve space for '\0' terminator */
         i = strlen( out );
         j = outsize - i + endcol;
@@ -132,7 +132,7 @@ bool ExpandTabsInABufferUpToColumn( size_t endcol, char *in, size_t inlen, char 
             inlen = j;
         }
         for( j = endcol; j < inlen; j++ ) {
-            out[i++] = in[j];
+            out[i++] = instr[j];
         }
         out[i] = '\0';
         return( res );
@@ -144,7 +144,7 @@ bool ExpandTabsInABufferUpToColumn( size_t endcol, char *in, size_t inlen, char 
 /*
  * ExpandTabsInABuffer - do all tabs in a buffer
  */
-bool ExpandTabsInABuffer( const char *in, size_t inlen, char *out, size_t outsize )
+bool ExpandTabsInABuffer( const char *instr, size_t inlen, char *out, size_t outsize )
 {
     size_t          j;
     size_t          k;
@@ -163,7 +163,7 @@ bool ExpandTabsInABuffer( const char *in, size_t inlen, char *out, size_t outsiz
             /*
              * if we have a tab, insert some spaces
              */
-            c = (unsigned char)in[j];
+            c = (unsigned char)instr[j];
             if( c < ' ' || c > 127 ) {
                 if( c == '\t' ) {
                     tabme = true;
@@ -206,13 +206,13 @@ bool ExpandTabsInABuffer( const char *in, size_t inlen, char *out, size_t outsiz
  *                            curs is base 1
  *                            returned coordinates are base 1
  */
-int WinVirtualCursorPosition( char *buff, int curs )
+int WinVirtualCursorPosition( const char *instr, int curs )
 {
     int j;
     int pos = 0;
 
     for( j = 0; j < curs; j++ ) {
-        if( !getNextPos( (unsigned char)buff[j], &pos ) ) {
+        if( !getNextPos( (unsigned char)instr[j], &pos ) ) {
             break;
         }
     }
@@ -228,21 +228,23 @@ int WinVirtualCursorPosition( char *buff, int curs )
  *                         vc is base 1
  *                         returned coordinates are base 1
  */
-int WinRealCursorPosition( char *buff, int vc )
+int WinRealCursorPosition( const char *instr, int vc )
 {
-    int         pos, i, len;
+    int         pos;
+    int         i;
+    int         inlen;
 
-    len = strlen( buff );
+    inlen = strlen( instr );
     pos = 0;
-    for( i = 0; i < len; i++ ) {
-        if( !getNextPos( (unsigned char)buff[i], &pos ) ) {
+    for( i = 0; i < inlen; i++ ) {
+        if( !getNextPos( (unsigned char)instr[i], &pos ) ) {
             break;
         }
         if( pos >= vc ) {
             return( i + 1 );
         }
     }
-    return( len );
+    return( inlen );
 
 } /* WinRealCursorPosition */
 
@@ -250,7 +252,7 @@ int WinRealCursorPosition( char *buff, int vc )
  * GetVirtualCursorPosition - get the virtual position of the cursor, given
  *                            the real position on the current line
  */
-int GetVirtualCursorPosition( char *buff, int curs )
+int GetVirtualCursorPosition( const char *instr, int curs )
 {
     int j;
     int pos = 0;
@@ -262,7 +264,7 @@ int GetVirtualCursorPosition( char *buff, int curs )
         curs--;
     }
     for( j = 0; j < curs; j++ ) {
-        if( !getNextPos( (unsigned char)buff[j], &pos ) ) {
+        if( !getNextPos( (unsigned char)instr[j], &pos ) ) {
             break;
         }
     }
@@ -304,17 +306,17 @@ int VirtualColumnOnCurrentLine( int ccol )
 /*
  * realPosition
  */
-static int realPosition( int virt_pos, char *buff, int len )
+static int realPosition( int virt_pos, const char *instr, int inlen )
 {
     int         j;
     int         pos = 0;
 
     if( EditFlags.Modeless ) {
-        len++;
+        inlen++;
     }
 
-    for( j = 0; j < len; j++ ) {
-        if( !getNextPos( (unsigned char)buff[j], &pos ) ) {
+    for( j = 0; j < inlen; j++ ) {
+        if( !getNextPos( (unsigned char)instr[j], &pos ) ) {
             break;
         }
         if( pos >= virt_pos ) {
@@ -322,7 +324,7 @@ static int realPosition( int virt_pos, char *buff, int len )
         }
 
     }
-    return( len );
+    return( inlen );
 
 } /* realPosition */
 
@@ -332,17 +334,17 @@ static int realPosition( int virt_pos, char *buff, int len )
  */
 int RealColumnOnCurrentLine( int vc )
 {
-    int         cl;
-    char        *buff;
+    int         inlen;
+    const char  *instr;
 
     if( CurrentLine->u.ld.nolinedata ) {
-        cl = WorkLine->len;
-        buff = WorkLine->data;
+        inlen = WorkLine->len;
+        instr = WorkLine->data;
     } else {
-        cl = CurrentLine->len;
-        buff = CurrentLine->data;
+        inlen = CurrentLine->len;
+        instr = CurrentLine->data;
     }
-    return( realPosition( vc, buff, cl ) );
+    return( realPosition( vc, instr, inlen ) );
 
 } /* RealColumnOnCurrentLine */
 
@@ -351,27 +353,28 @@ int RealColumnOnCurrentLine( int vc )
  */
 bool CursorPositionOffRight( int vc )
 {
-    int         cl, j, pos = 0;
-    char        *buff;
+    int         j, pos = 0;
+    int         inlen;
+    const char  *instr;
 
 
     if( CurrentLine->u.ld.nolinedata ) {
-        cl = WorkLine->len;
-        buff = WorkLine->data;
+        inlen = WorkLine->len;
+        instr = WorkLine->data;
     } else {
-        cl = CurrentLine->len;
-        buff = CurrentLine->data;
+        inlen = CurrentLine->len;
+        instr = CurrentLine->data;
     }
-    if( cl == 0 ) {
+    if( inlen == 0 ) {
         return( false );
     }
 
     if( EditFlags.Modeless ) {
-        cl++;
+        inlen++;
     }
 
-    for(j = 0; j < cl; j++ ) {
-        if( !getNextPos( (unsigned char)buff[j], &pos ) ) {
+    for(j = 0; j < inlen; j++ ) {
+        if( !getNextPos( (unsigned char)instr[j], &pos ) ) {
             break;
         }
         if( pos >= vc ) {
@@ -383,9 +386,9 @@ bool CursorPositionOffRight( int vc )
 
 } /* CursorPositionOffRight */
 
-int RealCursorPositionInString( char *buff, int virt_pos )
+int RealCursorPositionInString( const char *instr, int virt_pos )
 {
-    return( realPosition( virt_pos, buff, strlen( buff ) ) );
+    return( realPosition( virt_pos, instr, strlen( instr ) ) );
 }
 
 int RealCursorPositionOnLine( linenum line_num, int virt_pos )
@@ -407,14 +410,15 @@ int RealCursorPositionOnLine( linenum line_num, int virt_pos )
 /*
  * VirtualLineLen - compute the real length of a specified line
  */
-int VirtualLineLen( char *buff )
+int VirtualLineLen( const char *instr )
 {
-    int j, cl;
+    int j;
     int pos = 0;
+    int inlen;
 
-    cl = strlen( buff );
-    for( j = 0; j < cl; j++ ) {
-        if( !getNextPos( (unsigned char)buff[j], &pos ) ) {
+    inlen = strlen( instr );
+    for( j = 0; j < inlen; j++ ) {
+        if( !getNextPos( (unsigned char)instr[j], &pos ) ) {
             break;
         }
     }
@@ -425,7 +429,7 @@ int VirtualLineLen( char *buff )
 /*
  * AddLeadingTabSpace - make leading spaces tabs (if possible)
  */
-bool AddLeadingTabSpace( size_t *len, char *buff, int amount )
+bool AddLeadingTabSpace( size_t *len, char *data, int amount )
 {
     char        *tmp;
     size_t      i;
@@ -440,11 +444,11 @@ bool AddLeadingTabSpace( size_t *len, char *buff, int amount )
      * expand leading stuff into spaces
      */
     start = 0;
-    while( isspace( buff[start] ) )
+    while( isspace( data[start] ) )
         start++;
     tmp = StaticAlloc();
     j = *len;
-    ExpandTabsInABuffer( buff, j, tmp, EditVars.MaxLineLen + 1 );
+    ExpandTabsInABuffer( data, j, tmp, EditVars.MaxLineLen + 1 );
     i = 0;
     while( tmp[i] == ' ' )
         i++;
@@ -485,12 +489,13 @@ bool AddLeadingTabSpace( size_t *len, char *buff, int amount )
     if( k > 0 ) {
         k = InsertTabSpace( k, tmp, &tabme );
     }
-    for( l = start; l <= j; l++ ) {
-        tmp[k++] = buff[l];
+    for( l = start; l < j; l++ ) {
+        tmp[k++] = data[l];
     }
-    memcpy( buff, tmp, k );
+    memcpy( data, tmp, k );
+    data[k] = '\0';
     StaticFree( tmp );
-    *len = k - 1;
+    *len = k;
     return( full );
 
 } /* AddLeadingTabSpace */
@@ -499,7 +504,7 @@ bool AddLeadingTabSpace( size_t *len, char *buff, int amount )
 /*
  * ConvertSpacesToTabsUpToColumn - add tabs only up to specified column
  */
-bool ConvertSpacesToTabsUpToColumn( size_t endcol, char *in, size_t inlen, char *out, size_t outlen )
+bool ConvertSpacesToTabsUpToColumn( size_t endcol, const char *instr, size_t inlen, char *out, size_t outlen )
 {
     size_t      extra;
     size_t      first_blank;
@@ -510,7 +515,6 @@ bool ConvertSpacesToTabsUpToColumn( size_t endcol, char *in, size_t inlen, char 
     size_t      m;
     size_t      n;
     bool        blanks_inprog, tabme;
-    char        oc;
     char        c;
     bool        in_quotes;
     bool        in_single_quotes;
@@ -530,10 +534,8 @@ bool ConvertSpacesToTabsUpToColumn( size_t endcol, char *in, size_t inlen, char 
     /*
      * run through each character
      */
-    oc = in[endcol];
-    in[endcol] = '\0';
-    for( j = 0; j <= endcol; j++ ) {
-        c = in[j];
+    for( j = 0; j < endcol; j++ ) {
+        c = instr[j];
         if( c != ' ' || in_quotes || in_single_quotes ) {
 
             /*
@@ -600,7 +602,6 @@ bool ConvertSpacesToTabsUpToColumn( size_t endcol, char *in, size_t inlen, char 
             if( c == '\0' ) {
                 break;
             }
-
         } else {
             /*
              * mark start of blanks
@@ -609,23 +610,20 @@ bool ConvertSpacesToTabsUpToColumn( size_t endcol, char *in, size_t inlen, char 
                 first_blank = j;
                 blanks_inprog = true;
             }
-
         }
-
     }
 
     /*
      * copy the rest
      */
-    k--;
-    in[endcol] = oc;
+//    k--;
     if( inlen > outlen - k ) {
         inlen = outlen - k;
     }
     for( j = endcol; j < inlen; j++ ) {
-        out[k++] = in[j];
+        out[k++] = instr[j];
     }
-    out[k++] = '\0';
+    out[k] = '\0';
     return( tabme );
 
 } /* ConvertSpacesToTabsUpToColumn */

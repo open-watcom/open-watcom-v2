@@ -179,7 +179,7 @@ vi_rc SelectFileOpen( const char *dir, char **result_ptr, const char *mask, bool
  */
 static vi_rc displayGenericLines( file *f, list_linenum pagetop, int leftcol,
                                 list_linenum hi_line, type_style *hilight_style, hichar *hi_list,
-                                char **vals, size_t valoff )
+                                const char **vals, size_t valoff )
 {
     int             j;
     size_t          k;
@@ -700,7 +700,8 @@ vi_rc SelectLineInFile( selflinedata *sfd )
                         MoveWindowToFront( fs_select_window_id );
                     }
                     if( rc == ERR_NO_ERR ) {
-                        ReplaceString( &(sfd->vals[cln - 1]), tmp );
+                        MemFree( (void *)sfd->vals[cln - 1] );
+                        sfd->vals[cln - 1] = DupString( tmp );
                         redraw = true;
                     }
                     break;

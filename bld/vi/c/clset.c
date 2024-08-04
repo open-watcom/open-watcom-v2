@@ -53,7 +53,7 @@ static bool msgFlag;
 static bool needsRedisplay = false;
 static char msgString[MAX_STR];
 
-static void setMessage( char *msg, bool redisplay )
+static void setMessage( const char *msg, bool redisplay )
 {
     strcpy( msgString, msg );
     needsRedisplay = redisplay;
@@ -1133,7 +1133,7 @@ static size_t getLongestTokenLength( const char *list )
 /*
  * getSetInfo - build string of values
  */
-static list_linenum getSetInfo( char ***vals, char ***list, size_t *longest )
+static list_linenum getSetInfo( const char ***vals, char ***list, size_t *longest )
 {
     list_linenum    i;
     size_t          i1;
@@ -1150,7 +1150,7 @@ static list_linenum getSetInfo( char ***vals, char ***list, size_t *longest )
     tc = tc1 + tc2;
     sdata = _MemAllocPtrArray( set_data, tc );
     *list = _MemAllocPtrArray( char, tc );
-    *vals = _MemAllocPtrArray( char, tc );
+    *vals = (const char **)_MemAllocPtrArray( char, tc );
 
     for( i1 = 0; i1 < tc1; i1++ ) {
         sdata[i1] = MemAlloc( sizeof( set_data ) );
@@ -1197,7 +1197,7 @@ vi_rc Set( const char *name )
     short           tmp;
     list_linenum    tc;
     list_linenum    i;
-    char            **vals = NULL;
+    const char      **vals = NULL;
     char            **list;
     size_t          longest;
 #endif

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,19 +37,19 @@
 
 /*----- LOCALS -----*/
 
-static  ss_flags_h  flags;
-static  char        *firstNonWS;
+static ss_flags_h   flags;
+static const char   *firstNonWS;
 
 
-void InitHTMLLine( char *text )
+void InitHTMLLine( const char *text )
 {
     SKIP_SPACES( text );
     firstNonWS = text;
 }
 
-static void getText( ss_block *ss_new, char *start )
+static void getText( ss_block *ss_new, const char *start )
 {
-    char    *end = start + 1;
+    const char  *end = start + 1;
 
     // gather up symbol
     while( isalnum( *end ) || (*end == '_') ) {
@@ -74,12 +75,12 @@ static void getSymbol( ss_block *ss_new )
     ss_new->len = 1;
 }
 
-extern void getHTMLComment( ss_block *ss_new, char *start, int skip )
+extern void getHTMLComment( ss_block *ss_new, const char *start, int skip )
 {
-    char    *end = start + skip;
-    char    comment1;
-    char    comment2;
-    char    comment3;
+    const char  *end = start + skip;
+    char        comment1;
+    char        comment2;
+    char        comment3;
 
     for( ;; ) {
         // check for "-->"
@@ -108,10 +109,10 @@ extern void getHTMLComment( ss_block *ss_new, char *start, int skip )
     ss_new->len = end - start;
 }
 
-static void getString( ss_block *ss_new, char *start, int skip )
+static void getString( ss_block *ss_new, const char *start, int skip )
 {
-    char    *nstart = start + skip;
-    char    *end = nstart;
+    const char  *nstart = start + skip;
+    const char  *end = nstart;
 
     ss_new->type = SE_STRING;
     while( *end != '\0' && *end != '"' ) {
@@ -148,7 +149,7 @@ void InitHTMLFlags( linenum line_no )
 }
 
 
-void GetHTMLBlock( ss_block *ss_new, char *start, int line )
+void GetHTMLBlock( ss_block *ss_new, const char *start, int line )
 {
     /* unused parameters */ (void)line;
 
@@ -182,7 +183,9 @@ void GetHTMLBlock( ss_block *ss_new, char *start, int line )
         getString( ss_new, start, 1 );
         return;
     case '<':
-        if( start[1] == '!' && start[2] == '-' && start[3] == '-' ) {
+        if( start[1] == '!'
+          && start[2] == '-'
+          && start[3] == '-' ) {
             flags.inHTMLComment = true;
             getHTMLComment( ss_new, start, 4 );
             return;
@@ -195,7 +198,8 @@ void GetHTMLBlock( ss_block *ss_new, char *start, int line )
         break;
     }
 
-    if( isalnum( start[0] ) || (start[0] == '_') ) {
+    if( isalnum( start[0] )
+      || (start[0] == '_') ) {
         getText( ss_new, start );
     } else {
         getSymbol( ss_new );

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,7 +39,7 @@
 /* Local Windows CALLBACK function prototypes */
 WINEXPORT INT_PTR CALLBACK FileListDlgProc( HWND dlg, UINT msg, WPARAM wparam, LPARAM lparam );
 
-static info *findInfo( char *file_name )
+static info *findInfo( const char *file_name )
 {
     info    *i;
 

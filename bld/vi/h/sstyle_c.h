@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,8 +31,8 @@
 ****************************************************************************/
 
 
-void    GetCBlock( ss_block *, char *, line *, linenum );
+void    GetCBlock( ss_block *, const char *, line *, linenum );
 void    InitCFlags( linenum );
 void    GetCFlags( ss_flags_c * );
 void    InitCFlagsGivenValues( ss_flags_c * );
-void    InitCLine( char * );
+void    InitCLine( const char * );

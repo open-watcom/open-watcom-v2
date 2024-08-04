@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -440,7 +440,7 @@ dc_line *DCFindLine( int c_line_no, window_id wid )
     return( NULL );
 }
 
-void DCValidateLine( dc_line *dcline, int start_col, char *text )
+void DCValidateLine( dc_line *dcline, int start_col, const char *text )
 {
     size_t  nlen;
 

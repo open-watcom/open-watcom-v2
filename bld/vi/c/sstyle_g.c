@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,12 +39,12 @@
 
 /*----- LOCALS -----*/
 
-static  ss_flags_g  flags;
-static  char        *firstNonWS;
-static  char        *firstChar;
+static ss_flags_g   flags;
+static const char   *firstNonWS;
+static const char   *firstChar;
 
 
-static int isGMLComment( char *string )
+static int isGMLComment( const char *string )
 {
     if( strnicmp( string, ".*", 2 ) == 0 || strnicmp( string, ":cmt", 4 ) == 0 && ( string[4] == '.' || string[4] == ' ' ) ) {
         return( 1 );
@@ -52,16 +53,16 @@ static int isGMLComment( char *string )
     }
 }
 
-void InitGMLLine( char *text )
+void InitGMLLine( const char *text )
 {
     firstChar = text;
     SKIP_SPACES( text );
     firstNonWS = text;
 }
 
-static void getText( ss_block *ss_new, char *start )
+static void getText( ss_block *ss_new, const char *start )
 {
-    char    *end = start + 1;
+    const char  *end = start + 1;
 
     // gather up symbol
     while( isalnum( *end ) || (*end == '_') ) {
@@ -87,12 +88,12 @@ static void getSymbol( ss_block *ss_new )
     ss_new->len = 1;
 }
 
-static void getGMLComment( ss_block *ss_new, char *start, int skip )
+static void getGMLComment( ss_block *ss_new, const char *start, int skip )
 {
-    char    *end = start + skip;
-    char    comment1;
-    char    comment2;
-    char    comment3;
+    const char  *end = start + skip;
+    char        comment1;
+    char        comment2;
+    char        comment3;
 
     for( ;; ) {
         // check for "-->"
@@ -121,10 +122,10 @@ static void getGMLComment( ss_block *ss_new, char *start, int skip )
     ss_new->len = end - start;
 }
 
-static void getString( ss_block *ss_new, char *start, int skip )
+static void getString( ss_block *ss_new, const char *start, int skip )
 {
-    char    *nstart = start + skip;
-    char    *end = nstart;
+    const char  *nstart = start + skip;
+    const char  *end = nstart;
 
     ss_new->type = SE_STRING;
     while( *end != '\0' && *end != '"' ) {
@@ -160,7 +161,7 @@ void InitGMLFlags( linenum line_no )
     flags.inString = false;
 }
 
-void GetGMLBlock( ss_block *ss_new, char *start, int line )
+void GetGMLBlock( ss_block *ss_new, const char *start, int line )
 {
     /* unused parameters */ (void)line;
 

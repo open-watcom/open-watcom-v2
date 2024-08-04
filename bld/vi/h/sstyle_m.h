@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -29,8 +30,8 @@
 ****************************************************************************/
 
 
-void    GetMkBlock( ss_block *, char *, int );
+void    GetMkBlock( ss_block *, const char *, int );
 void    InitMkFlags( linenum );
 void    GetMkFlags( ss_flags_m * );
 void    InitMkFlagsGivenValues( ss_flags_m * );
-void    InitMkLine( char * );
+void    InitMkLine( const char * );

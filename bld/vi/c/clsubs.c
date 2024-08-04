@@ -194,12 +194,12 @@ static void nextSearchStartPos( i_mark *pos, bool gflag, int rlen )
 /*
  * ReplaceSubString - replace a sub-string with a different one
  */
-int ReplaceSubString( char *data, int len, int s, int e, char *rep, int replen )
+int ReplaceSubString( char *data, int len, int s, int e, const char *replace, int rlen )
 {
     int i, ln, delta, slen;
 
     slen = e - s + 1;
-    delta = slen - replen;
+    delta = slen - rlen;
 
     /*
      * make room
@@ -220,8 +220,8 @@ int ReplaceSubString( char *data, int len, int s, int e, char *rep, int replen )
     /*
      * copy in new string
      */
-    for( i = 0; i < replen; i++ ) {
-        data[s + i] = rep[i];
+    for( i = 0; i < rlen; i++ ) {
+        data[s + i] = replace[i];
     }
     return( len );
 

@@ -638,7 +638,7 @@ typedef vi_rc checkres_fn( const char *, char *, int * );
  */
 typedef struct {
     file                *f;                     // file with data for lines
-    char                **vals;                 // values associated with each line
+    const char          **vals;                 // values associated with each line
     size_t              valoff;                 // offset to display values beside line data
     window_info         *wi;                    // info describing window to create
     list_linenum        sl;                     // selected line

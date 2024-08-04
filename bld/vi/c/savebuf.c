@@ -377,7 +377,7 @@ void FiniSavebufs( void )
 /*
  * AddLineToSavebuf - add a single line to save buffer
  */
-void AddLineToSavebuf( char *data, int scol, int ecol )
+void AddLineToSavebuf( const char *data, int scol, int ecol )
 {
     savebuf     *tmp;
     int         i, len, j;

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,9 +39,9 @@
 /* Local Windows CALLBACK function prototypes */
 WINEXPORT INT_PTR CALLBACK UsageDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
 
-static char     **usageList;
-static int      usageCnt;
-static char     *usageStr;
+static const char * const *usageList;
+static int              usageCnt;
+static const char       *usageStr;
 
 /*
  * UsageDlgProc - callback routine for usage dialog
@@ -82,7 +82,7 @@ WINEXPORT INT_PTR CALLBACK UsageDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPA
 /*
  * UsageDialog - show the startup dialog
  */
-void UsageDialog( char **list, char *msg, int cnt )
+void UsageDialog( const char * const *list, const char *msg, int cnt )
 {
     DLGPROC     dlgproc;
 

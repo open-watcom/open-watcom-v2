@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -235,7 +235,7 @@ vi_rc DisplayLineInWindowWithColor( window_id wid, int c_line_no, const char *te
  * DisplayLineInWindowWithSyntaxStyle - display wrt syntax lang. settings
  */
 vi_rc DisplayLineInWindowWithSyntaxStyle( window_id wid, int c_line_no, line *line,
-                                        linenum line_no, char *text, int start_col,
+                                        linenum line_no, const char *text, int start_col,
                                         unsigned int junk )
 {
     static ss_block     ss[MAX_SS_BLOCKS];
@@ -248,12 +248,12 @@ vi_rc DisplayLineInWindowWithSyntaxStyle( window_id wid, int c_line_no, line *li
 
     /* unused parameters */ (void)junk;
 
+    tmp = NULL;
     if( EditFlags.RealTabs ) {
-        len = strlen( text );
         tmp = StaticAlloc();
+        len = strlen( text );
         ExpandTabsInABuffer( text, len, tmp, EditVars.MaxLineLen + 1 );
-    } else {
-        tmp = text;
+        text = tmp;
     }
 
     // this code commented out cause it doesn't quite work.
@@ -265,20 +265,20 @@ vi_rc DisplayLineInWindowWithSyntaxStyle( window_id wid, int c_line_no, line *li
 
     // parse the line (generate new flags as well)
     ss[0].end = BEYOND_TEXT;
-    SSDifBlock( ss, tmp, start_col, line, line_no, &dummy );
+    SSDifBlock( ss, text, start_col, line, line_no, &dummy );
 
     // prevent displayLineInWindowGeneric from expanding tabs - blech
     saveRealTabs = EditFlags.RealTabs;
     EditFlags.RealTabs = false;
 
     // display the thing
-    rc = displayLineInWindowGeneric( wid, c_line_no, tmp, start_col, ss );
+    rc = displayLineInWindowGeneric( wid, c_line_no, text, start_col, ss );
     EditFlags.RealTabs = saveRealTabs;
 
     // now say that it has been displayed and the flags are OK
-    // DCValidateLine( c_line, start_col, tmp );
+    // DCValidateLine( c_line, start_col, text );
 
-    if( EditFlags.RealTabs ) {
+    if( tmp != NULL ) {
         StaticFree( tmp );
     }
     return( rc );

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -51,7 +51,7 @@ void            SSInitLanguageFlags( linenum );
 void            SSInitLanguageFlagsGivenValues( ss_flags * );
 void            SSGetLanguageFlags( ss_flags * );
 bool            SSKillsFlags( char );
-void            SSDifBlock( ss_block *, char *, int, line *, linenum, int * );
+void            SSDifBlock( ss_block *, const char *, int, line *, linenum, int * );
 ss_block        *SSNewBlock( void );
 void            SSKillBlock( ss_block * );
 syntax_element  SSGetStyle( int, int );

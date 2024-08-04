@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,8 +31,8 @@
 ****************************************************************************/
 
 
-void    GetFORTRANBlock( ss_block *, char *, int );
+void    GetFORTRANBlock( ss_block *, const char *, int );
 void    InitFORTRANFlags( linenum );
 void    GetFORTRANFlags( ss_flags_f * );
 void    InitFORTRANFlagsGivenValues( ss_flags_f * );
-void    InitFORTRANLine( char *, linenum );
+void    InitFORTRANLine( const char *, linenum );

@@ -37,6 +37,9 @@
 #include "clibext.h"
 
 
+#define PRAGMA_DATFILE      "pragma.dat"
+#define DECLSPEC_DATFILE    "declspec.dat"
+
 typedef struct vi_keyword {
     vi_word         keyword;
     int             hashValue;
@@ -55,9 +58,6 @@ static char         *pragma_read_buf        = NULL;
 static hash_entry   *declspec_table         = NULL;
 static int          declspec_table_entries  = 0;
 static char         *declspec_read_buf      = NULL;
-
-#define PRAGMA_DATFILE      "pragma.dat"
-#define DECLSPEC_DATFILE    "declspec.dat"
 
 /*
  * hashpjw - taken from red dragon book, pg 436

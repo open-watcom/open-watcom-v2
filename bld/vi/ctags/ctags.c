@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -141,7 +141,7 @@ static void displayBanner( void )
     }
     puts(
         banner1t( "CTAGS Utility" ) "\n"
-        banner1v( "1.0" ) "\n"
+        banner1v( _CTAGS_VERSION_ ) "\n"
         banner2 "\n"
         banner2a( 1984 ) "\n"
         banner3 "\n"
@@ -488,7 +488,7 @@ bool IsTokenChar( int ch )
 /*
  * MyStricmp - ignore trailing null, advance buf pointer
  */
-int MyStricmp( char **buf, char *literal )
+int MyStricmp( char **buf, const char *literal )
 {
     int     ret;
     size_t  len;

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -54,9 +54,9 @@ int         GetStatusHeight( void );
 // display.c
 void    ClearWindow( window_id );
 #ifdef BITBLT_BUFFER_DISPLAY
-int     DisplayLineInWindowWithSyntaxStyle( window_id, int, line *, linenum, char *, int, HDC, HDC );
+int     DisplayLineInWindowWithSyntaxStyle( window_id, int, line *, linenum, const char *, int, HDC, HDC );
 #else
-int     DisplayLineInWindowWithSyntaxStyle( window_id, int, line *, linenum, char *, int, HDC );
+int     DisplayLineInWindowWithSyntaxStyle( window_id, int, line *, linenum, const char *, int, HDC );
 #endif
 // int CountChars( char *, char * );
 // int FindPos( char *, int );
@@ -123,7 +123,7 @@ void    FiniInstance( void );
 void    HandleMenuSelect( WPARAM wparam, LPARAM lparam );
 void    GetMenuHelpString( char *res );
 void    SetMenuHelpString( const char *str );
-void    UsageDialog( char **, char *, int );
+void    UsageDialog( const char * const *, const char *, int );
 char    *GetInitialFileName( void );
 list_linenum PickATag( list_linenum tag_count, char **tag_list, const char *tagname );
 

@@ -38,7 +38,7 @@
 
 static  ss_flags_c  flags;
 static  int         lenCComment = 0;
-static  char        *firstNonWS;
+static  const char  *firstNonWS;
 
 
 enum getFloatCommands {
@@ -71,17 +71,17 @@ static int issymbol( int c )
     }
 }
 
-void InitRexxLine( char *text )
+void InitRexxLine( const char *text )
 {
     SKIP_SPACES( text );
     firstNonWS = text;
 }
 
-static void getHex( ss_block *ss_new, char *start )
+static void getHex( ss_block *ss_new, const char *start )
 {
-    int     lastc;
-    char    *end;
-    bool    nodigits = true;
+    int         lastc;
+    const char  *end;
+    bool        nodigits = true;
 
     ss_new->type = SE_HEX;
     for( end = start + 2; isxdigit( *end ); end++ ) {
@@ -105,10 +105,10 @@ static void getHex( ss_block *ss_new, char *start )
     ss_new->len = end - start;
 }
 
-static void getFloat( ss_block *ss_new, char *start, int skip, int command )
+static void getFloat( ss_block *ss_new, const char *start, int skip, int command )
 {
-    char    *end = start + skip;
-    char    lastc;
+    const char  *end = start + skip;
+    char        lastc;
 
     ss_new->type = SE_FLOAT;
 
@@ -177,10 +177,10 @@ static void getFloat( ss_block *ss_new, char *start, int skip, int command )
     ss_new->len = end - start;
 }
 
-static void getNumber( ss_block *ss_new, char *start, char top )
+static void getNumber( ss_block *ss_new, const char *start, char top )
 {
-    int     lastc;
-    char    *end = start + 1;
+    int         lastc;
+    const char  *end = start + 1;
 
     while( *end >= '0' && *end <= top ) {
         end++;
@@ -217,10 +217,10 @@ static void getNumber( ss_block *ss_new, char *start, char top )
     }
 }
 
-static void getText( ss_block *ss_new, char *start )
+static void getText( ss_block *ss_new, const char *start )
 {
-    char    *end = start + 1;
-    char    save_char;
+    const char  *end = start + 1;
+    char        save_char;
 
     while( isalnum( *end ) || *end == '_' || *end == '.' ) {
         end++;
@@ -245,10 +245,10 @@ static void getSymbol( ss_block *ss_new )
     ss_new->len = 1;
 }
 
-static void getPreprocessor( ss_block *ss_new, char *start )
+static void getPreprocessor( ss_block *ss_new, const char *start )
 {
-    char    *end = start;
-    bool    withinQuotes = flags.inString;
+    const char  *end = start;
+    bool        withinQuotes = flags.inString;
 
     ss_new->type = SE_PREPROCESSOR;
 
@@ -303,9 +303,9 @@ static void getPreprocessor( ss_block *ss_new, char *start )
     ss_new->len = end - start;
 }
 
-static void getChar( ss_block *ss_new, char *start, int skip )
+static void getChar( ss_block *ss_new, const char *start, int skip )
 {
-    char    *end;
+    const char  *end;
 
     ss_new->type = SE_CHAR;
     for( end = start + skip; *end != '\0'; ++end ) {
@@ -329,9 +329,9 @@ static void getInvalidChar( ss_block *ss_new )
     ss_new->len = 1;
 }
 
-static void getCComment( ss_block *ss_new, char *start, int skip )
+static void getCComment( ss_block *ss_new, const char *start, int skip )
 {
-    char    *end = start + skip;
+    const char  *end = start + skip;
 
     lenCComment += skip;
     for( ;; ) {
@@ -357,9 +357,9 @@ static void getCComment( ss_block *ss_new, char *start, int skip )
     ss_new->len = end - start;
 }
 
-static void getCPPComment( ss_block *ss_new, char *start )
+static void getCPPComment( ss_block *ss_new, const char *start )
 {
-    char    *end = start;
+    const char  *end = start;
 
     SKIP_TOEND( end );
     flags.inCPPComment = true;
@@ -370,10 +370,10 @@ static void getCPPComment( ss_block *ss_new, char *start )
     ss_new->len = end - start;
 }
 
-static void getString( ss_block *ss_new, char *start, int skip )
+static void getString( ss_block *ss_new, const char *start, int skip )
 {
-    char    *nstart = start + skip;
-    char    *end = nstart;
+    const char  *nstart = start + skip;
+    const char  *end = nstart;
 
     ss_new->type = SE_STRING;
 again:
@@ -554,7 +554,7 @@ void InitRexxFlags( linenum line_no )
     }
 }
 
-void GetRexxBlock( ss_block *ss_new, char *start, line *line, linenum line_no )
+void GetRexxBlock( ss_block *ss_new, const char *start, line *line, linenum line_no )
 {
     line = line;
     line_no = line_no;

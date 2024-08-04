@@ -54,7 +54,7 @@
     #define T2      "\t\t"
 #endif
 
-char * UsageMsg[] = {
+const char * const UsageMsg[] = {
 #ifdef __WIN__
     "viw [-?-dinqrvzI] +<n> -k\"keys\" [-s<scr> [-p\"prm\"]] [-t<tag>]",
     "    [-c<cfg>] [-P<x y w h>] files",
