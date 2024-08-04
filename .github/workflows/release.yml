@@ -66,7 +66,7 @@ jobs:
         include:
         - owtools: 'CLANG'
           arch:    'x64'
-          image:   'macos-14-large'
+          image:   'macos-13'
           relpath: 'rel bino64'
         - owtools: 'CLANG'
           arch:    'a64'
