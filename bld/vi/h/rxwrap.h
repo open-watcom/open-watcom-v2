@@ -25,7 +25,7 @@
 *
 *  ========================================================================
 *
-* Description:  Wrapper for regexp.c module.
+* Description:  Declaration for wrapper module rxwrap.c to access owregexp.c
 *
 ****************************************************************************/
 
