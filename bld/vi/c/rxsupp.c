@@ -128,9 +128,9 @@ void RegExpAttrSave( int caseignore, char *majick )
         EditFlags.CaseIgnore = ( caseignore ) ? true : false;
     }
     if( majick == NULL ) {
-        EditFlags.Magic      = true;
+        EditFlags.Magic = true;
     } else {
-        EditFlags.Magic      = false;
+        EditFlags.Magic = false;
         strcpy( EditVars.Majick.str, majick );
     }
 }
@@ -140,6 +140,7 @@ void RegExpAttrRestore( void )
     EditFlags.CaseIgnore = old_CaseIgnore;
     EditFlags.Magic      = old_Magic1;
     strcpy( EditVars.Majick.str, old_Majick.str );
+    *old_Majick.str = '\0';
 }
 
 static bool old_Magic2 = true;
