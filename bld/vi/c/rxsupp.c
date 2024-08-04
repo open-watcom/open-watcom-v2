@@ -50,7 +50,7 @@ bool IsMagicCharRegular( char ch )
 /*
  * CurrentRegComp - compile current regular expression
  */
-vi_rc CurrentRegComp( char *str )
+vi_rc CurrentRegComp( const char *str )
 {
     if( CurrentRegularExpression != NULL ) {
         _MemFreeArray( CurrentRegularExpression );
@@ -63,7 +63,7 @@ vi_rc CurrentRegComp( char *str )
 /*
  * GetCurrRegExpColumn
  */
-int GetCurrRegExpColumn( char *data )
+int GetCurrRegExpColumn( const char *data )
 {
     int cl;
 
@@ -118,10 +118,10 @@ static bool old_CaseIgnore = false;
 static bool old_Magic1     = true;
 static magic_type old_Majick = { "" };
 
-void RegExpAttrSave( int caseignore, char *majick )
+void RegExpAttrSave( int caseignore, const char *majick )
 {
-    old_CaseIgnore  = EditFlags.CaseIgnore;
-    old_Magic1      = EditFlags.Magic;
+    old_CaseIgnore = EditFlags.CaseIgnore;
+    old_Magic1     = EditFlags.Magic;
     strcpy( old_Majick.str, EditVars.Majick.str );
 
     if( caseignore != -1 ) {

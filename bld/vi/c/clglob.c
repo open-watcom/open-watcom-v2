@@ -42,7 +42,7 @@
 vi_rc Global( linenum n1, linenum n2, const char *data, int dmt )
 {
     char        sstr[MAX_INPUT_LINE];
-    char        *linedata;
+    const char  *linedata;
     bool        match;
     vi_rc       rc;
     vi_rc       rc1;

@@ -62,7 +62,7 @@ vi_rc FindMatch( i_mark *pos1 )
     char        *match[2];
     int         matchcnt, which, m1, m2, i;
     char        matchd[MAX_STR], tmp[MAX_STR];
-    char        *linedata;
+    const char  *linedata;
     i_mark      pos2;
     vi_rc       rc;
 

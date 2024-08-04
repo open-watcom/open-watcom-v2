@@ -36,18 +36,19 @@
 
 #include "rxwrap.h"
 
+
 extern regexp   *CurrentRegularExpression;
 
 /* findrx.c */
-extern vi_rc    FindRegularExpressionForward( char *, i_mark *, char **, linenum, find_type );
-extern vi_rc    FindRegularExpressionBackwards( char *, i_mark *, char **, linenum, find_type );
+extern vi_rc    FindRegularExpressionForward( const char *, i_mark *, const char **, linenum, find_type );
+extern vi_rc    FindRegularExpressionBackwards( const char *, i_mark *, const char **, linenum, find_type );
 
 /* rxsupp.c */
-extern vi_rc    CurrentRegComp( char * );
-extern int      GetCurrRegExpColumn( char * );
+extern vi_rc    CurrentRegComp( const char * );
+extern int      GetCurrRegExpColumn( const char * );
 extern int      GetCurrRegExpLength( void );
 extern void     MakeExpressionNonRegular( char * );
-extern void     RegExpAttrSave( int, char * );
+extern void     RegExpAttrSave( int, const char * );
 extern void     RegExpAttrRestore( void );
 extern void     RegExpMagicSave( void );
 extern void     RegExpMagicRestore( void );

@@ -236,7 +236,7 @@ vi_rc Substitute( linenum n1, linenum n2, const char *data )
     char        rstr[MAX_INPUT_LINE];
     char        *newr;
     char        c;
-    char        *linedata;
+    const char  *linedata;
     bool        iflag = false;
     bool        gflag = false;
     bool        undoflag = false;

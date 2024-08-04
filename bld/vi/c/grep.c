@@ -119,7 +119,9 @@ vi_rc DoEGREP( const char *dirlist, const char *string )
 {
     vi_rc   rc;
 
+    RegExpMagicSave();
     cRx = RegComp( string );
+    RegExpMagicRestore();
     rc = RegExpError;
     if( rc == ERR_NO_ERR ) {
         searchString = DupString( string );

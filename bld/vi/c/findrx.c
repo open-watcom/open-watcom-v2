@@ -42,14 +42,14 @@ static bool wrapMsgPrinted = false;
 /*
  * FindRegularExpressionForward - do a forward search for a regular expression
  */
-vi_rc FindRegularExpressionForward( char *pat, i_mark *pos1, char **linedata,
+vi_rc FindRegularExpressionForward( const char *pat, i_mark *pos1, const char **linedata,
                              linenum termline, find_type findfl )
 {
     vi_rc       rc;
     int         found;
     linenum     ilineno = 0;
     bool        wrapped = false;
-    char        *data;
+    const char  *data;
     line        *cline;
     fcb         *cfcb;
     int         scol;
@@ -133,11 +133,11 @@ vi_rc FindRegularExpressionForward( char *pat, i_mark *pos1, char **linedata,
 /*
  * FindRegularExpressionBackwards - do a reverse search for a regular expression
  */
-vi_rc FindRegularExpressionBackwards( char *pat, i_mark *pos1, char **linedata,
+vi_rc FindRegularExpressionBackwards( const char *pat, i_mark *pos1, const char **linedata,
                                       linenum termline, find_type findfl )
 {
     vi_rc       rc;
-    char        *data;
+    const char  *data;
     bool        wrapped = false;
     bool        found;
     linenum     ilineno = 0;

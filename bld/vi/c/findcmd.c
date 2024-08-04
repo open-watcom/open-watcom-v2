@@ -447,7 +447,7 @@ static vi_rc processFind( range *r, char *st, vi_rc (*rtn)( char *, i_mark *, in
 vi_rc GetFind( char *st, i_mark *pos1, int *len1, find_type findfl )
 {
     int         len;
-    char        *linedata = NULL;
+    const char  *linedata = NULL;
     i_mark      pos2;
     vi_rc       rc;
 
