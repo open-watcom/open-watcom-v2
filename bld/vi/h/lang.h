@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,10 +40,15 @@ typedef enum {
     VI_LANG_MAX
 } lang_t;
 
-typedef struct tag_hash_entry {
-    char                    *keyword;
-    struct tag_hash_entry   *next;
-    bool                    real;
+typedef struct vi_word {
+    char                *str;
+    unsigned            len;
+} vi_word;
+
+typedef struct hash_entry {
+    struct hash_entry   *next;
+    vi_word             keyword;
+    bool                real;
 } hash_entry;
 
 typedef struct tag_lang_info {
@@ -52,9 +58,9 @@ typedef struct tag_lang_info {
     char                *read_buf;
 } lang_info;
 
-bool    IsKeyword( char *start, char *end, bool case_ignore );
-bool    IsPragma( char *start, char *end );
-bool    IsDeclspec( char *start, char *end );
+bool    IsKeyword( const char *start, const char *end, bool case_ignore );
+bool    IsPragma( const char *start, const char *end );
+bool    IsDeclspec( const char *start, const char *end );
 void    LangInit( lang_t );
 void    LangFini( lang_t );
 void    LangFiniAll( void );
