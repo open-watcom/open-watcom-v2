@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -82,7 +82,7 @@ static dyn_dim_type dynGetLanguage( HWND hwndDlg, bool initial )
     int sel;
 
     initial = initial;
-    sel = (int)SendDlgItemMessage( hwndDlg, SETFS_LANGUAGESELECT, CB_GETCURSEL, 0, 0L );
+    sel = (int)SendDlgItemMessage( hwndDlg, SETFS_LANGUAGE, CB_GETCURSEL, 0, 0L );
     switch( sel ) {
     case VI_LANG_NONE:
     case VI_LANG_USER:
@@ -94,7 +94,7 @@ static dyn_dim_type dynGetLanguage( HWND hwndDlg, bool initial )
 static dyn_dim_type dynGetCRLFAutoDetect( HWND hwndDlg, bool initial )
 {
     initial = initial;
-    if( IsDlgButtonChecked( hwndDlg, SETFS_CRLFAUTODETECT ) ) {
+    if( IsDlgButtonChecked( hwndDlg, SETFS_SOURCE_CRLFAUTODETECT ) ) {
         return( DYN_DIM );
     }
     return( DYN_VISIBLE );
@@ -111,7 +111,7 @@ static bool dynIsLanguage( WPARAM wparam, LPARAM lparam, HWND hwndDlg )
 #endif
     id = LOWORD( wparam );
     cmd = GET_WM_COMMAND_CMD( wparam, lparam );
-    if( id == SETFS_LANGUAGESELECT && cmd == CBN_SELCHANGE ) {
+    if( id == SETFS_LANGUAGE && cmd == CBN_SELCHANGE ) {
         return( true );
     }
     return( false );
@@ -128,7 +128,7 @@ static bool dynIsCRLFAutoDetect( WPARAM wparam, LPARAM lparam, HWND hwndDlg )
 #endif
     id = LOWORD( wparam );
     cmd = GET_WM_COMMAND_CMD( wparam, lparam );
-    if( id == SETFS_CRLFAUTODETECT && cmd == BN_CLICKED ) {
+    if( id == SETFS_SOURCE_CRLFAUTODETECT && cmd == BN_CLICKED ) {
         return( true );
     }
     return( false );
@@ -137,61 +137,61 @@ static bool dynIsCRLFAutoDetect( WPARAM wparam, LPARAM lparam, HWND hwndDlg )
 static void fs_get( void *dlg, ctl_elt *ctl, void *data )
 {
     switch( ctl->control ) {
-    case SETFS_LANGUAGESELECT:
+    case SETFS_LANGUAGE:
         *(int *)data = ((dlg_data *)dlg)->Language;
         break;
-    case SETFS_TABAMOUNT:
+    case SETFS_TABS_TAB:
         *(int *)data = ((dlg_data *)dlg)->TabAmount;
         break;
-    case SETFS_HARDTAB:
+    case SETFS_TABS_HARD:
         *(int *)data = ((dlg_data *)dlg)->HardTab;
         break;
-    case SETFS_SHIFTWIDTH:
+    case SETFS_TABS_SHIFT:
         *(int *)data = ((dlg_data *)dlg)->ShiftWidth;
         break;
-    case SETFS_PPKEYWORDONLY:
+    case SETFS_LANGUAGE_PPKEYWORDONLY:
         *(bool *)data = ((dlg_data *)dlg)->PPKeywordOnly;
         break;
-    case SETFS_CMODE:
+    case SETFS_LANGUAGE_CMODE:
         *(bool *)data = ((dlg_data *)dlg)->CMode;
         break;
-    case SETFS_READENTIREFILE:
+    case SETFS_SOURCE_READENTIREFILE:
         *(bool *)data = ((dlg_data *)dlg)->ReadEntireFile;
         break;
-    case SETFS_READONLYCHECK:
+    case SETFS_SOURCE_READONLYCHECK:
         *(bool *)data = ((dlg_data *)dlg)->ReadOnlyCheck;
         break;
-    case SETFS_IGNORECTRLZ:
+    case SETFS_SOURCE_IGNORECTRLZ:
         *(bool *)data = ((dlg_data *)dlg)->IgnoreCtrlZ;
         break;
-    case SETFS_CRLFAUTODETECT:
+    case SETFS_SOURCE_CRLFAUTODETECT:
         *(bool *)data = ((dlg_data *)dlg)->CRLFAutoDetect;
         break;
-    case SETFS_WRITECRLF:
+    case SETFS_SOURCE_WRITECRLF:
         *(bool *)data = ((dlg_data *)dlg)->WriteCRLF;
         break;
-    case SETFS_EIGHTBITS:
+    case SETFS_SOURCE_EIGHTBITS:
         *(bool *)data = ((dlg_data *)dlg)->EightBits;
         break;
-    case SETFS_REALTABS:
+    case SETFS_TABS_REAL:
         *(bool *)data = ((dlg_data *)dlg)->RealTabs;
         break;
-    case SETFS_AUTOINDENT:
+    case SETFS_TABS_AUTOINDENT:
         *(bool *)data = ((dlg_data *)dlg)->AutoIndent;
         break;
-    case SETFS_IGNORETAGCASE:
+    case SETFS_TAGS_IGNORECASE:
         *(bool *)data = ((dlg_data *)dlg)->IgnoreTagCase;
         break;
-    case SETFS_TAGPROMPT:
+    case SETFS_TAGS_PROMPT:
         *(bool *)data = ((dlg_data *)dlg)->TagPrompt;
         break;
-    case SETFS_SHOWMATCH:
+    case SETFS_MISC_SHOWMATCH:
         *(bool *)data = ((dlg_data *)dlg)->ShowMatch;
         break;
-    case SETFS_TAGFILENAME:
+    case SETFS_TAGS_FILENAME:
         *(char **)data = ((dlg_data *)dlg)->TagFileName;
         break;
-    case SETFS_GREPDEFAULT:
+    case SETFS_MISC_GREP:
         *(char **)data = ((dlg_data *)dlg)->GrepDefault;
         break;
     }
@@ -200,62 +200,62 @@ static void fs_get( void *dlg, ctl_elt *ctl, void *data )
 static void fs_set( void *dlg, ctl_elt *ctl, void *data )
 {
     switch( ctl->control ) {
-    case SETFS_LANGUAGESELECT:
+    case SETFS_LANGUAGE:
         ((dlg_data *)dlg)->Language = *(int *)data;
         break;
-    case SETFS_TABAMOUNT:
+    case SETFS_TABS_TAB:
         ((dlg_data *)dlg)->TabAmount = *(int *)data;
         break;
-    case SETFS_HARDTAB:
+    case SETFS_TABS_HARD:
         ((dlg_data *)dlg)->HardTab = *(int *)data;
         break;
-    case SETFS_SHIFTWIDTH:
+    case SETFS_TABS_SHIFT:
         ((dlg_data *)dlg)->ShiftWidth = *(int *)data;
         break;
-    case SETFS_PPKEYWORDONLY:
+    case SETFS_LANGUAGE_PPKEYWORDONLY:
         ((dlg_data *)dlg)->PPKeywordOnly = *(bool *)data;
         break;
-    case SETFS_CMODE:
+    case SETFS_LANGUAGE_CMODE:
         ((dlg_data *)dlg)->CMode = *(bool *)data;
         break;
-    case SETFS_READENTIREFILE:
+    case SETFS_SOURCE_READENTIREFILE:
         ((dlg_data *)dlg)->ReadEntireFile = *(bool *)data;
         break;
-    case SETFS_READONLYCHECK:
+    case SETFS_SOURCE_READONLYCHECK:
         ((dlg_data *)dlg)->ReadOnlyCheck = *(bool *)data;
         break;
-    case SETFS_IGNORECTRLZ:
+    case SETFS_SOURCE_IGNORECTRLZ:
         ((dlg_data *)dlg)->IgnoreCtrlZ = *(bool *)data;
         break;
-    case SETFS_CRLFAUTODETECT:
+    case SETFS_SOURCE_CRLFAUTODETECT:
         ((dlg_data *)dlg)->CRLFAutoDetect = *(bool *)data;
         break;
-    case SETFS_WRITECRLF:
+    case SETFS_SOURCE_WRITECRLF:
         ((dlg_data *)dlg)->WriteCRLF = *(bool *)data;
         break;
-    case SETFS_EIGHTBITS:
+    case SETFS_SOURCE_EIGHTBITS:
         ((dlg_data *)dlg)->EightBits = *(bool *)data;
         break;
-    case SETFS_REALTABS:
+    case SETFS_TABS_REAL:
         ((dlg_data *)dlg)->RealTabs = *(bool *)data;
         break;
-    case SETFS_AUTOINDENT:
+    case SETFS_TABS_AUTOINDENT:
         ((dlg_data *)dlg)->AutoIndent = *(bool *)data;
         break;
-    case SETFS_IGNORETAGCASE:
+    case SETFS_TAGS_IGNORECASE:
         ((dlg_data *)dlg)->IgnoreTagCase = *(bool *)data;
         break;
-    case SETFS_TAGPROMPT:
+    case SETFS_TAGS_PROMPT:
         ((dlg_data *)dlg)->TagPrompt = *(bool *)data;
         break;
-    case SETFS_SHOWMATCH:
+    case SETFS_MISC_SHOWMATCH:
         ((dlg_data *)dlg)->ShowMatch = *(bool *)data;
         break;
-    case SETFS_TAGFILENAME:
-        *(char **)data = ((dlg_data *)dlg)->TagFileName;
+    case SETFS_TAGS_FILENAME:
+        ((dlg_data *)dlg)->TagFileName = *(char **)data;
         break;
-    case SETFS_GREPDEFAULT:
-        *(char **)data = ((dlg_data *)dlg)->GrepDefault;
+    case SETFS_MISC_GREP:
+        ((dlg_data *)dlg)->GrepDefault = *(char **)data;
         break;
     }
 }
@@ -628,10 +628,10 @@ WINEXPORT INT_PTR CALLBACK SetFSDlgProc( HWND hwndDlg, UINT msg, WPARAM wparam, 
                 }
             }
             break;
-        case SETFS_DELETE:
+        case SETFS_FILETYPE_DELETE:
             deleteSelectedFT( hwndDlg );
             return( TRUE );
-        case SETFS_INSERT:
+        case SETFS_FILETYPE_INSERT:
             insertFT( hwndDlg );
             return( TRUE );
         case IDOK:

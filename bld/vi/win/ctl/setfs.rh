@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,30 +31,41 @@
 ****************************************************************************/
 
 
-#define SETFS_PPKEYWORDONLY         101
-#define SETFS_TAGFILENAME           104
-#define SETFS_IGNORETAGCASE         106
-#define SETFS_TAGPROMPT             107
-#define SETFS_FILETYPE              108
-#define SETFS_LANGUAGESELECT        110
-#define SETFS_REALTABS              120
-#define SETFS_HARDTABS              121
-#define SETFS_AUTOINDENT            122
-#define SETFS_CMODE                 123
-#define SETFS_READENTIREFILE        125
-#define SETFS_READONLYCHECK         126
-#define SETFS_IGNORECTRLZ           127
-#define SETFS_CRLFAUTODETECT        128
-#define SETFS_WRITECRLF             129
-#define SETFS_EIGHTBITS             130
-#define SETFS_TABAMOUNT             132
-#define SETFS_SHIFTWIDTH            135
-#define SETFS_GREPDEFAULT           139
-#define SETFS_SHOWMATCH             140
-#define SETFS_LANGUAGE              141
-#define SETFS_HARDTAB               142
-#define SETFS_DEFAULTS              144
-#define SETFS_DELETE                147
-#define SETFS_INSERT                148
-#define SETFS_HARDTABSTR1           143
-#define SETFS_HARDTABSTR2           145
+#define SETFS_SOURCE_GROUPBOX           101
+#define SETFS_SOURCE_READENTIREFILE     102
+#define SETFS_SOURCE_READONLYCHECK      103
+#define SETFS_SOURCE_IGNORECTRLZ        104
+#define SETFS_SOURCE_CRLFAUTODETECT     105
+#define SETFS_SOURCE_WRITECRLF          106
+#define SETFS_SOURCE_EIGHTBITS          107
+#define SETFS_LANGUAGE_GROUPBOX         108
+#define SETFS_LANGUAGE_TEXT             109
+#define SETFS_LANGUAGE                  110
+#define SETFS_LANGUAGE_PPKEYWORDONLY    111
+#define SETFS_LANGUAGE_CMODE            112
+#define SETFS_TABS_GROUPBOX             113
+#define SETFS_TABS_TAB_TEXT1            114
+#define SETFS_TABS_TAB                  115
+#define SETFS_TABS_TAB_TEXT2            116
+#define SETFS_TABS_SHIFT_TEXT1          117
+#define SETFS_TABS_SHIFT                118
+#define SETFS_TABS_SHIFT_TEXT2          119
+#define SETFS_TABS_HARD_TEXT1           120
+#define SETFS_TABS_HARD                 121
+#define SETFS_TABS_HARD_TEXT2           122
+#define SETFS_TABS_REAL                 123
+#define SETFS_TABS_AUTOINDENT           124
+#define SETFS_TAGS_GROUPBOX             125
+#define SETFS_TAGS_FILENAME_TEXT        126
+#define SETFS_TAGS_FILENAME             127
+#define SETFS_TAGS_IGNORECASE           128
+#define SETFS_TAGS_PROMPT               129
+#define SETFS_MISC_GROUPBOX             130
+#define SETFS_MISC_GREP_TEXT            131
+#define SETFS_MISC_GREP                 132
+#define SETFS_MISC_SHOWMATCH            133
+#define SETFS_FILETYPE_GROUPBOX         134
+#define SETFS_FILETYPE_TEXT             135
+#define SETFS_FILETYPE                  136
+#define SETFS_FILETYPE_DELETE           137
+#define SETFS_FILETYPE_INSERT           138

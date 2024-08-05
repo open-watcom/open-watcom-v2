@@ -6,61 +6,61 @@ SETFS DIALOG 25, 17, 299, 208
 STYLE DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
 FONT 8, "MS Sans Serif"
 BEGIN
-    COMBOBOX        SETFS_FILETYPE, 232, 114, 60, 63, CBS_SIMPLE |
+    COMBOBOX        SETFS_FILETYPE, 232, 87, 60, 63, CBS_SIMPLE |
                     CBS_AUTOHSCROLL | WS_VSCROLL | WS_GROUP | WS_TABSTOP
-    LTEXT           "Syntax Highlighting", 109, 9, 66, 75, 12
-    GROUPBOX        "Language", 105, 4, 56, 100, 79
-    COMBOBOX        SETFS_LANGUAGESELECT, 20, 78, 75, 132, CBS_DROPDOWNLIST |
+    LTEXT           "Syntax Highlighting", SETFS_LANGUAGE_TEXT, 9, 66, 75, 12
+    GROUPBOX        "Language", SETFS_LANGUAGE_GROUPBOX, 4, 56, 100, 79
+    COMBOBOX        SETFS_LANGUAGE, 20, 78, 75, 132, CBS_DROPDOWNLIST |
                     WS_VSCROLL | WS_GROUP | WS_TABSTOP
-    CONTROL         "Block preprocessor", SETFS_PPKEYWORDONLY, "Button",
+    CONTROL         "Block preprocessor", SETFS_LANGUAGE_PPKEYWORDONLY, "Button",
                     BS_AUTOCHECKBOX | NOT WS_VISIBLE | WS_GROUP | WS_TABSTOP,
                     9, 97, 75, 10
-    CONTROL         "C Indent Assist", SETFS_CMODE, "Button",
+    CONTROL         "C Indent Assist", SETFS_LANGUAGE_CMODE, "Button",
                     BS_AUTOCHECKBOX | WS_TABSTOP, 9, 108, 75, 10
-    EDITTEXT        SETFS_TABAMOUNT,  159, 67, 28, 12, ES_AUTOHSCROLL
-    EDITTEXT        SETFS_SHIFTWIDTH, 159, 83, 28, 12, ES_AUTOHSCROLL
-    EDITTEXT        SETFS_HARDTAB,    159, 99, 28, 12, ES_AUTOHSCROLL
-    CONTROL         "Real tabs", SETFS_REALTABS, "Button", BS_AUTOCHECKBOX |
+    EDITTEXT        SETFS_TABS_TAB,  159, 67, 28, 12, ES_AUTOHSCROLL
+    EDITTEXT        SETFS_TABS_SHIFT, 159, 83, 28, 12, ES_AUTOHSCROLL
+    EDITTEXT        SETFS_TABS_HARD,    159, 99, 28, 12, ES_AUTOHSCROLL
+    CONTROL         "Real tabs", SETFS_TABS_REAL, "Button", BS_AUTOCHECKBOX |
                     WS_TABSTOP, 116, 113, 44, 10
-    CONTROL         "Autoindent", SETFS_AUTOINDENT, "Button",
+    CONTROL         "Autoindent", SETFS_TABS_AUTOINDENT, "Button",
                     BS_AUTOCHECKBOX | WS_TABSTOP, 116, 124, 48, 10
-    CONTROL         "Read entire file", SETFS_READENTIREFILE, "Button",
+    CONTROL         "Read entire file", SETFS_SOURCE_READENTIREFILE, "Button",
                     BS_AUTOCHECKBOX | WS_GROUP | WS_TABSTOP, 9, 16, 63, 10
-    CONTROL         "Check read-only flag", SETFS_READONLYCHECK, "Button",
+    CONTROL         "Check read-only flag", SETFS_SOURCE_READONLYCHECK, "Button",
                     BS_AUTOCHECKBOX | WS_TABSTOP, 9, 27, 80, 10
-    CONTROL         "Ignore CTRL-Z", SETFS_IGNORECTRLZ, "Button",
+    CONTROL         "Ignore CTRL-Z", SETFS_SOURCE_IGNORECTRLZ, "Button",
                     BS_AUTOCHECKBOX | WS_TABSTOP, 9, 38, 61, 10
-    CONTROL         "CRLF Autodetect", SETFS_CRLFAUTODETECT, "Button",
+    CONTROL         "CRLF Autodetect", SETFS_SOURCE_CRLFAUTODETECT, "Button",
                     BS_AUTOCHECKBOX | WS_TABSTOP, 116, 16, 68, 10
-    CONTROL         "Write CRLFs", SETFS_WRITECRLF, "Button",
+    CONTROL         "Write CRLFs", SETFS_SOURCE_WRITECRLF, "Button",
                     BS_AUTOCHECKBOX | WS_TABSTOP, 116, 27, 54, 10
-    CONTROL         "Use eight-bit characters", SETFS_EIGHTBITS, "Button",
+    CONTROL         "Use eight-bit characters", SETFS_SOURCE_EIGHTBITS, "Button",
                     BS_AUTOCHECKBOX | WS_TABSTOP, 116, 38, 91, 10
-    EDITTEXT        SETFS_TAGFILENAME, 41, 152, 66, 12, ES_AUTOHSCROLL |
+    EDITTEXT        SETFS_TAGS_FILENAME, 41, 152, 66, 12, ES_AUTOHSCROLL |
                     WS_GROUP
-    CONTROL         "Ignore case", SETFS_IGNORETAGCASE, "Button",
+    CONTROL         "Ignore case", SETFS_TAGS_IGNORECASE, "Button",
                     BS_AUTOCHECKBOX | WS_TABSTOP, 116, 147, 51, 10
-    CONTROL         "Prompt on multiple tags", SETFS_TAGPROMPT, "Button",
+    CONTROL         "Prompt on multiple tags", SETFS_TAGS_PROMPT, "Button",
                     BS_AUTOCHECKBOX | WS_TABSTOP, 116, 158, 88, 10
-    EDITTEXT        SETFS_GREPDEFAULT, 66, 185, 41, 12, ES_AUTOHSCROLL
-    CONTROL         "Show matching brackets", SETFS_SHOWMATCH, "Button",
+    EDITTEXT        SETFS_MISC_GREP, 66, 185, 41, 12, ES_AUTOHSCROLL
+    CONTROL         "Show matching brackets", SETFS_MISC_SHOWMATCH, "Button",
                     BS_AUTOCHECKBOX | WS_TABSTOP, 116, 186, 92, 10
-    GROUPBOX        "Tags", 102, 4, 138, 212, 34
-    LTEXT           "Tag File:", 103, 9, 154, 30, 8
-    GROUPBOX        "Tabs", 119, 110, 56, 106, 79
-    GROUPBOX        "Source", 124, 4, 5, 212, 47
-    LTEXT           "Tab amount:", 131, 116, 69, 42, 8
-    LTEXT           "chars", 133, 190, 69, 20, 8
-    LTEXT           "Shift width:", 134, 116, 85, 38, 8
-    LTEXT           "chars", 136, 190, 85, 20, 8
-    GROUPBOX        "Miscellaneous", 137, 4, 175, 212, 27
-    LTEXT           "Grep extensions:", 138, 9, 187, 56, 8
-    LTEXT           "Hard tabs:", SETFS_HARDTABSTR1, 116, 101, 35, 8
-    LTEXT           "chars", SETFS_HARDTABSTR2, 190, 101, 20, 8
-    LTEXT           "File Type:", 112, 232, 103, 34, 8
-    GROUPBOX        "", 116, 224, 0, 1, 208
+    GROUPBOX        "Tags", SETFS_TAGS_GROUPBOX, 4, 138, 212, 34
+    LTEXT           "Tag File:", SETFS_TAGS_FILENAME_TEXT, 9, 154, 30, 8
+    GROUPBOX        "Tabs", SETFS_TABS_GROUPBOX, 110, 56, 106, 79
+    GROUPBOX        "Source", SETFS_SOURCE_GROUPBOX, 4, 5, 212, 47
+    LTEXT           "Tab amount:", SETFS_TABS_TAB_TEXT1, 116, 69, 42, 8
+    LTEXT           "chars", SETFS_TABS_TAB_TEXT2, 190, 69, 20, 8
+    LTEXT           "Shift width:", SETFS_TABS_SHIFT_TEXT1, 116, 85, 38, 8
+    LTEXT           "chars", SETFS_TABS_SHIFT_TEXT2, 190, 85, 20, 8
+    GROUPBOX        "Miscellaneous", SETFS_MISC_GROUPBOX, 4, 175, 212, 27
+    LTEXT           "Grep extensions:", SETFS_MISC_GREP_TEXT, 9, 187, 56, 8
+    LTEXT           "Hard tabs:", SETFS_TABS_HARD_TEXT1, 116, 101, 35, 8
+    LTEXT           "chars", SETFS_TABS_HARD_TEXT2, 190, 101, 20, 8
+    LTEXT           "File Type:", SETFS_FILETYPE_TEXT, 232, 76, 34, 8
+    GROUPBOX        "", SETFS_FILETYPE_GROUPBOX, 224, 0, 1, 208
     DEFPUSHBUTTON   "OK", IDOK, 244, 12, 40, 14, WS_GROUP
     PUSHBUTTON      "Cancel", IDCANCEL, 244, 29, 40, 14
-    PUSHBUTTON      "&Insert", SETFS_INSERT, 244, 58, 40, 14
-    PUSHBUTTON      "&Delete", SETFS_DELETE, 244, 76, 40, 14
+    PUSHBUTTON      "&Insert", SETFS_FILETYPE_INSERT, 244, 150, 40, 14
+    PUSHBUTTON      "&Delete", SETFS_FILETYPE_DELETE, 244, 168, 40, 14
 END
