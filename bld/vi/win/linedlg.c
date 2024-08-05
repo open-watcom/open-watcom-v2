@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,7 +40,6 @@
 WINEXPORT INT_PTR CALLBACK GotoLineDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
 
 static char     lineStr[20];
-static char     lineLen = sizeof( lineStr ) - 1;
 static linenum  *lineVal;
 
 /*
@@ -63,7 +62,7 @@ WINEXPORT INT_PTR CALLBACK GotoLineDlgProc( HWND hwnd, UINT msg, WPARAM wparam, 
             EndDialog( hwnd, FALSE );
             break;
         case IDOK:
-            GetDlgItemText( hwnd, GOTOLINE_EDIT, lineStr, lineLen );
+            GetDlgItemText( hwnd, GOTOLINE_EDIT, lineStr, sizeof( lineStr ) );
             *lineVal = atol( lineStr );
             if( *lineVal > 0 ) {
                 EndDialog( hwnd, TRUE );

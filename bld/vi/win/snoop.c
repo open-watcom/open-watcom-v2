@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -142,7 +142,7 @@ WINEXPORT INT_PTR CALLBACK SnoopDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPA
             bi.lpszTitle = buffer1;
             bi.ulFlags = BIF_RETURNONLYFSDIRS;
             bi.lpfn = BrowseCallbackProc;
-            GetDlgItemText( hwnd, SNOOP_PATH, buffer2, MAX_PATH );
+            GetDlgItemText( hwnd, SNOOP_PATH, buffer2, sizeof( buffer2 ) );
             bi.lParam = (LPARAM)buffer2;
             if( (pidl = pfnSHBrowseForFolder( &bi )) != NULL ) {
                 if( pfnSHGetPathFromIDList( pidl, buffer1 ) ) {
@@ -156,11 +156,11 @@ WINEXPORT INT_PTR CALLBACK SnoopDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPA
             EndDialog( hwnd, FALSE );
             break;
         case IDOK:
-            GetDlgItemText( hwnd, SNOOP_STRING, snoop, MAX_INPUT_LINE );
+            GetDlgItemText( hwnd, SNOOP_STRING, snoop, sizeof( snoop ) );
             ReplaceString( &snoopData.find, snoop );
-            GetDlgItemText( hwnd, SNOOP_EXT, snoop, MAX_INPUT_LINE );
+            GetDlgItemText( hwnd, SNOOP_EXT, snoop, sizeof( snoop ) );
             ReplaceString( &snoopData.ext, snoop );
-            GetDlgItemText( hwnd, SNOOP_PATH, snoop, MAX_INPUT_LINE );
+            GetDlgItemText( hwnd, SNOOP_PATH, snoop, sizeof( snoop ) );
             ReplaceString( &snoopData.path, snoop );
             snoopData.case_ignore = IsDlgButtonChecked( hwnd, SNOOP_IGNORE_CASE );
             snoopData.use_regexp = IsDlgButtonChecked( hwnd, SNOOP_REGULAR_EXPRESSIONS );

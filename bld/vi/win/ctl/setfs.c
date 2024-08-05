@@ -252,10 +252,12 @@ static void fs_set( void *dlg, ctl_elt *ctl, void *data )
         ((dlg_data *)dlg)->ShowMatch = *(bool *)data;
         break;
     case SETFS_TAGS_FILENAME:
-        ((dlg_data *)dlg)->TagFileName = *(char **)data;
+        strncpy( ((dlg_data *)dlg)->TagFileName, *(char **)data, TAGFILENAMEWIDTH - 1 );
+        ((dlg_data *)dlg)->TagFileName[TAGFILENAMEWIDTH - 1] = '\0';
         break;
     case SETFS_MISC_GREP:
-        ((dlg_data *)dlg)->GrepDefault = *(char **)data;
+        strncpy( ((dlg_data *)dlg)->GrepDefault, *(char **)data, GREPDEFAULTWIDTH - 1 );
+        ((dlg_data *)dlg)->GrepDefault[GREPDEFAULTWIDTH - 1] = '\0';
         break;
     }
 }
