@@ -81,8 +81,9 @@ static int issymbol( int c )
 static bool isdirective( const char *text, const char *directive )
 {
     int len = strlen( directive );
-    return( strncmp( text, directive, len ) == 0 && !isalnum( *(text + len) ) &&
-            *(text + len) != '_' );
+    return( strncmp( text, directive, len ) == 0
+            && !isalnum( *(text + len) )
+            && *(text + len) != '_' );
 }
 
 void InitCLine( const char *text )
@@ -159,7 +160,9 @@ static void getFloat( ss_block *ss_new, const char *start, int skip, int command
             if( *end == 'f' || *end == 'F' || *end == 'l' || *end == 'L' ) {
                 break;
             }
-            if( *end != '\0' && !isspace( *end ) && !issymbol( *end ) ) {
+            if( *end != '\0'
+              && !isspace( *end )
+              && !issymbol( *end ) ) {
                 if( *end != '\0' ) {
                     end++;
                 }
@@ -215,8 +218,7 @@ static void getNumber( ss_block *ss_new, const char *start, char top )
     if( *end == '.' ) {
         getFloat( ss_new, start, end - start + 1, AFTER_DOT );
         return;
-    } else if( *end == 'e'
-      || *end == 'E' ) {
+    } else if( *end == 'e' || *end == 'E' ) {
         getFloat( ss_new, start, end - start + 1, AFTER_EXP );
         return;
     } else if( isdigit( *end ) ) {
@@ -320,7 +322,8 @@ static void getPreprocessor( ss_block *ss_new, const char *start )
         // and then the keyword
         directive = end;
         for( ; *end != '\0'; ++end ) {
-            if( isspace( *end ) || issymbol( *end ) ) {
+            if( isspace( *end )
+              || issymbol( *end ) ) {
                 break;
             }
         }
@@ -386,7 +389,8 @@ static void getChar( ss_block *ss_new, const char *start, int skip )
         if( *end == '\'' ) {
             break;
         }
-        if( end[0] == '\\' && ( end[1] == '\\' || end[1] == '\'' ) ) {
+        if( end[0] == '\\'
+          && ( end[1] == '\\' || end[1] == '\'' ) ) {
             ++end;
         }
     }
@@ -424,7 +428,9 @@ static void getCComment( ss_block *ss_new, const char *start, int skip )
     lenCComment += skip;
     flags.inCComment = true;
     for( end = start + skip; *end != '\0'; ++end ) {
-        if( end[0] == '*' && end[1] == '/' && lenCComment > 1  ) {
+        if( end[0] == '*'
+          && end[1] == '/'
+          && lenCComment > 1  ) {
             end += 2;
             lenCComment += 2;
             flags.inCComment = false;
@@ -443,7 +449,8 @@ static void getCPPComment( ss_block *ss_new, const char *start )
     end = start;
     SKIP_TOEND( end );
     flags.inCPPComment = true;
-    if( *start == '\0' || end[-1] != '\\' ) {
+    if( *start == '\0'
+      || end[-1] != '\\' ) {
         flags.inCPPComment = false;
     }
     ss_new->type = SE_COMMENT;
@@ -459,7 +466,8 @@ static void getString( ss_block *ss_new, const char *start, int skip )
         if( end[0] == '"' ) {
             break;
         }
-        if( end[0] == '\\' && ( end[1] == '\\' || end[1] == '"' ) ) {
+        if( end[0] == '\\'
+          && ( end[1] == '\\' || end[1] == '"' ) ) {
             ++end;
         }
     }
@@ -593,7 +601,8 @@ void InitCFlags( linenum line_no )
 
         // if not in a comment (and none above), we may be string or pp
         if( !flags.inCComment ) {
-            if( topChar == '#' && !EditFlags.PPKeywordOnly ) {
+            if( topChar == '#'
+              && !EditFlags.PPKeywordOnly ) {
                 flags.inPreprocessor = true;
             }
             if( withinQuotes ) {
@@ -615,7 +624,9 @@ void InitCFlags( linenum line_no )
                 while( text != starttext && *text != '/' ) {
                     text--;
                 }
-                if( text[1] == '*' && text[0] == '/' && text[-1] != '/' ) {
+                if( text[1] == '*'
+                  && text[0] == '/'
+                  && text[-1] != '/' ) {
                     if( text == starttext ) {
                         flags.inCComment = true;
                         lenCComment = 100;
@@ -707,8 +718,8 @@ void GetCBlock( ss_block *ss_new, const char *start, line *line, linenum line_no
         return;
     }
 
-    if( *firstNonWS == '#' &&
-        (!EditFlags.PPKeywordOnly || firstNonWS == start) ) {
+    if( *firstNonWS == '#'
+      && (!EditFlags.PPKeywordOnly || firstNonWS == start) ) {
         getPreprocessor( ss_new, start );
         return;
     }

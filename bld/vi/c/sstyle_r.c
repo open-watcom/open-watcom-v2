@@ -491,7 +491,8 @@ void InitRexxFlags( linenum line_no )
 
         // if not in a comment (and none above), we may be string or pp
         if( !flags.inCComment ) {
-            if( topChar == '#' && !EditFlags.PPKeywordOnly ) {
+            if( topChar == '#'
+              && !EditFlags.PPKeywordOnly ) {
                 flags.inPreprocessor = true;
             }
             if( withinQuotes ) {
@@ -592,8 +593,8 @@ void GetRexxBlock( ss_block *ss_new, const char *start, line *line, linenum line
         return;
     }
 
-    if( *firstNonWS == '#' &&
-        (!EditFlags.PPKeywordOnly || firstNonWS == start) ) {
+    if( *firstNonWS == '#'
+      && (!EditFlags.PPKeywordOnly || firstNonWS == start) ) {
         getPreprocessor( ss_new, start );
         return;
     }

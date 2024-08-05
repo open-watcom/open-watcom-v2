@@ -78,7 +78,7 @@ static bool isIf( const char *start )
         && ( start[1] == 'f' || start[1] == 'F' ) );
 }
 
-static void getPreproc( ss_block *ss_new, const char *start )
+static void getPreprocessor( ss_block *ss_new, const char *start )
 {
     const char  *end = start + 1;
     const char  *keyword;
@@ -250,7 +250,7 @@ void GetMkBlock( ss_block *ss_new, const char *start, int line )
 
     // Preprocessor directives must start at beginning of line
     if( (start[0] == '!') && (firstChar == start) ) {
-        getPreproc( ss_new, start );
+        getPreprocessor( ss_new, start );
         return;
     }
 
