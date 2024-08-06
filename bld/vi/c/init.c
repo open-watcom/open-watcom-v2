@@ -548,24 +548,24 @@ static void doInitializeEditor( int argc, char *argv[] )
     for( i = 0; i < startcnt; i++ ) {
         GetFromEnv( startup[i], tmp );
         ReplaceString( &cfgFN, tmp );
-        if( cfgFN[0] != '\0' ) {
-            if( startup_parms[i] != NULL ) {
-                parm = startup_parms[i];
-            } else {
-                parm = "";
-            }
+        if( cfgFN == NULL || *cfgFN == '\0' )
+            continue;
+        if( startup_parms[i] != NULL ) {
+            parm = startup_parms[i];
+        } else {
+            parm = "";
+        }
 #if defined( __NT__ ) && !defined( __WIN__ )
-            {
-                if( !EditFlags.Quiet ) {
-                    SetConsoleActiveScreenBuffer( OutputHandle );
-                }
+        {
+            if( !EditFlags.Quiet ) {
+                SetConsoleActiveScreenBuffer( OutputHandle );
             }
+        }
 #endif
-            sline = 0;
-            rc = Source( cfgFN, parm, &sline );
-            if( rc > ERR_NO_ERR ) {
-                Error( "%s on line %u of \"%s\"", GetErrorMsg( rc ), sline, cfgFN );
-            }
+        sline = 0;
+        rc = Source( cfgFN, parm, &sline );
+        if( rc > ERR_NO_ERR ) {
+            Error( "%s on line %u of \"%s\"", GetErrorMsg( rc ), sline, cfgFN );
         }
     }
     if( argc == 1 ) {
