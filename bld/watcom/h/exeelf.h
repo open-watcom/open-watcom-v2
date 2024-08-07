@@ -1097,6 +1097,19 @@ typedef union {
     Elf64_Ehdr  elf64;
 } Elfxx_Ehdr;
 
+/* program header */
+typedef union {
+    Elf32_Phdr  elf32;
+    Elf64_Phdr  elf64;
+} Elfxx_Phdr;
+
+/* section header */
+typedef union {
+    Elf32_Shdr  elf32;
+    Elf64_Shdr  elf64;
+} Elfxx_Shdr;
+
+
 #define ELF32(x)    (x).elf32
 #define ELF64(x)    (x).elf64
 
