@@ -87,7 +87,7 @@ static  const_string_table elf64_exe_msg[] = {
     NULL
 };
 
-static  const_string_table elf_prog_msg[] = {
+static  const_string_table elf32_prog_msg[] = {
     "4type of segment                             = ",
     "4offset of segment from beginning of file    = ",
     "4segment virtual address                     = ",
@@ -99,7 +99,7 @@ static  const_string_table elf_prog_msg[] = {
     NULL
 };
 
-static  const_string_table elf_sec_msg[] = {
+static  const_string_table elf32_sec_msg[] = {
     "4name of the section                         = ",
     "4section type                                = ",
     "4flags                                       = ",
@@ -486,46 +486,58 @@ static void dmp_sec_flgs( unsigned_32 flags )
 /*
  * byte swap ELF section header
  */
-static void swap_shdr( Elf32_Shdr *elf_sec )
+static void swap_shdr( Elfxx_Shdr *elf_sec )
 /******************************************/
 {
-    if( Byte_swap ) {
-        SWAP_32( elf_sec->sh_name );
-        SWAP_32( elf_sec->sh_type );
-        SWAP_32( elf_sec->sh_flags );
-        SWAP_32( elf_sec->sh_addr );
-        SWAP_32( elf_sec->sh_offset );
-        SWAP_32( elf_sec->sh_size );
-        SWAP_32( elf_sec->sh_link );
-        SWAP_32( elf_sec->sh_info );
-        SWAP_32( elf_sec->sh_addralign );
-        SWAP_32( elf_sec->sh_entsize );
+    if( !Byte_swap ) {
+        return;
+    }
+
+    /* two fields have the same size in Elf32 and Elf64 */
+    SWAP_32( elf_sec->elf32.sh_name );
+    SWAP_32( elf_sec->elf32.sh_type );
+
+
+    {
+        SWAP_32( elf_sec->elf32.sh_flags );
+        SWAP_32( elf_sec->elf32.sh_addr );
+        SWAP_32( elf_sec->elf32.sh_offset );
+        SWAP_32( elf_sec->elf32.sh_size );
+        SWAP_32( elf_sec->elf32.sh_link );
+        SWAP_32( elf_sec->elf32.sh_info );
+        SWAP_32( elf_sec->elf32.sh_addralign );
+        SWAP_32( elf_sec->elf32.sh_entsize );
     }
 }
 
 /*
  * byte swap ELF program header
  */
-static void swap_phdr( Elf32_Phdr *elf_prog )
+static void swap_phdr( Elfxx_Phdr *elf_prog )
 /*******************************************/
 {
-    if( Byte_swap ) {
-        /* Byte swap program header */
-        SWAP_32( elf_prog->p_type );
-        SWAP_32( elf_prog->p_offset );
-        SWAP_32( elf_prog->p_vaddr );
-        SWAP_32( elf_prog->p_paddr );
-        SWAP_32( elf_prog->p_filesz );
-        SWAP_32( elf_prog->p_memsz );
-        SWAP_32( elf_prog->p_flags );
-        SWAP_32( elf_prog->p_align );
+    if( !Byte_swap ) {
+        return;
+    }
+
+    /* first field has the same size in Elf32 and Elf64 */
+    SWAP_32( elf_prog->elf32.p_type );
+
+    {
+        SWAP_32( elf_prog->elf32.p_offset );
+        SWAP_32( elf_prog->elf32.p_vaddr );
+        SWAP_32( elf_prog->elf32.p_paddr );
+        SWAP_32( elf_prog->elf32.p_filesz );
+        SWAP_32( elf_prog->elf32.p_memsz );
+        SWAP_32( elf_prog->elf32.p_flags );
+        SWAP_32( elf_prog->elf32.p_align );
     }
 }
 
 static void set_dwarf( unsigned_32 start )
 /****************************************/
 {
-    Elf32_Shdr      elf_sec;
+    Elfxx_Shdr      elf_sec;
     unsigned_32     offset;
     char            *string_table;
     int             i;
@@ -547,18 +559,18 @@ static void set_dwarf( unsigned_32 start )
     Wlseek( offset );
     Wread( &elf_sec, sizeof( Elf32_Shdr ) );
     swap_shdr( &elf_sec );
-    string_table = Wmalloc( elf_sec.sh_size );
-    Wlseek( elf_sec.sh_offset + start );
-    Wread( string_table, elf_sec.sh_size );
+    string_table = Wmalloc( elf_sec.elf32.sh_size );
+    Wlseek( elf_sec.elf32.sh_offset + start );
+    Wread( string_table, elf_sec.elf32.sh_size );
     for( i = 0; i < Elf_head.elf32.e_shnum; i++ ) {
         Wlseek( Elf_head.elf32.e_shoff + i * Elf_head.elf32.e_shentsize + start );
         Wread( &elf_sec, sizeof( Elf32_Shdr ) );
         swap_shdr( &elf_sec );
-        if( elf_sec.sh_type == SHT_PROGBITS ) {
-            sect = Lookup_section_name( &string_table[elf_sec.sh_name] );
+        if( elf_sec.elf32.sh_type == SHT_PROGBITS ) {
+            sect = Lookup_section_name( &string_table[elf_sec.elf32.sh_name] );
             if ( sect < DW_DEBUG_MAX ) {
-                sections[sect] = elf_sec.sh_offset + start;
-                sectsizes[sect] = elf_sec.sh_size;
+                sections[sect] = elf_sec.elf32.sh_offset + start;
+                sectsizes[sect] = elf_sec.elf32.sh_size;
             }
         }
     }
@@ -638,29 +650,51 @@ static void dmp_sec_data( char *name,
 static void dmp_prog_sec( unsigned_32 start )
 /*******************************************/
 {
-    Elf32_Phdr      elf_prog;
-    Elf32_Shdr      elf_sec;
+    Elfxx_Phdr      elf_prog;
+    Elfxx_Shdr      elf_sec;
     unsigned_32     offset;
     char            *string_table;
     int             i;
+    int             e_phnum;
+    int             e_shnum;
+    unsigned_32     e_shstrndx;
+    unsigned_32     sizeof_Phdr;
+    unsigned_32     sizeof_Shdr;
 
     // grab the string table, if it exists
     if( Options_dmp & DEBUG_INFO ) {
         set_dwarf( start );
     }
-    if( Elf_head.elf32.e_shstrndx ) {
-        offset = Elf_head.elf32.e_shoff
-               + Elf_head.elf32.e_shstrndx * Elf_head.elf32.e_shentsize+start;
+
+    if( IS_ELF64( Elf_head) ) {
+        e_phnum = Elf_head.elf64.e_phnum;
+        e_shnum = Elf_head.elf64.e_shnum;
+        e_shstrndx = Elf_head.elf64.e_shstrndx;
+        sizeof_Phdr = sizeof( Elf64_Phdr);
+        sizeof_Shdr = sizeof( Elf64_Shdr);
+    } else {
+        e_phnum = Elf_head.elf32.e_phnum;
+        e_shnum = Elf_head.elf32.e_shnum;
+        e_shstrndx = Elf_head.elf32.e_shstrndx;
+        sizeof_Phdr = sizeof( Elf32_Phdr);
+        sizeof_Shdr = sizeof( Elf32_Shdr);
+    }
+
+    if( IS_ELF32( Elf_head ) & ( e_shstrndx != 0 ) ) {
+        offset = start + Elf_head.elf32.e_shoff +
+                 e_shstrndx * Elf_head.elf32.e_shentsize;
         Wlseek( offset );
         Wread( &elf_sec, sizeof( Elf32_Shdr ) );
         swap_shdr( &elf_sec );
-        string_table = Wmalloc( elf_sec.sh_size );
-        Wlseek( elf_sec.sh_offset + start );
-        Wread( string_table, elf_sec.sh_size );
+        string_table = Wmalloc( elf_sec.elf32.sh_size );
+        Wlseek( elf_sec.elf32.sh_offset + start );
+        Wread( string_table, elf_sec.elf32.sh_size );
     } else {
         string_table = NULL;
     }
-    if( Elf_head.elf32.e_phnum ) {
+
+    /* dump all program header, when available */
+    if( e_phnum ) {
         Banner( "ELF Program Header" );
         offset = Elf_head.elf32.e_phoff + start;
         for( i = 0; i < Elf_head.elf32.e_phnum; i++ ) {
@@ -673,37 +707,44 @@ static void dmp_prog_sec( unsigned_32 start )
                 Wdputslc( "\n");
             }
             Wlseek( offset );
-            Wread( &elf_prog, sizeof( Elf32_Phdr ) );
+            Wread( &elf_prog, sizeof_Phdr );
             swap_phdr( &elf_prog );
 //          elf_prog.p_offset += start; //Relocate file pos
-            offset += sizeof( Elf32_Phdr );
+            offset += sizeof_Phdr;
             Data_count++;
-            dmp_prog_type( elf_prog.p_type );
-            Dump_header( &elf_prog, elf_prog_msg, 4 );
-            dmp_prog_flgs( elf_prog.p_flags );
-            if( Options_dmp & (DOS_SEG_DMP | OS2_SEG_DMP) ) {
-                if( Segspec == 0 || Segspec == Data_count ) {
-                    Dmp_seg_data( elf_prog.p_offset + start, elf_prog.p_filesz );
+
+            {
+                dmp_prog_type( elf_prog.elf32.p_type );
+                Dump_header( &elf_prog, elf32_prog_msg, 4 );
+                dmp_prog_flgs( elf_prog.elf32.p_flags );
+                if( Options_dmp & (DOS_SEG_DMP | OS2_SEG_DMP) ) {
+                    if( Segspec == 0 || Segspec == Data_count ) {
+                        Dmp_seg_data( elf_prog.elf32.p_offset + start, elf_prog.elf32.p_filesz );
+                    }
+                } else if( elf_prog.elf32.p_type == PT_NOTE ) {
+                    dmp_sec_note( elf_prog.elf32.p_offset + start, elf_prog.elf32.p_filesz );
                 }
-            } else if( elf_prog.p_type == PT_NOTE ) {
-                dmp_sec_note( elf_prog.p_offset + start, elf_prog.p_filesz );
             }
             Wdputslc( "\n" );
         }
     }
-    if( Elf_head.elf32.e_shnum ) {
+
+    /* dump all section header, when available */
+    if( e_shnum ) {
         Banner( "ELF Section Header" );
         offset = Elf_head.elf32.e_shoff+start;
-        for( i = 0; i < Elf_head.elf32.e_shnum; i++ ) {
+        for( i = 0; i < e_shnum; i++ ) {
             Wlseek( offset );
-            Wread( &elf_sec, sizeof( Elf32_Shdr ) );
+            Wread( &elf_sec, sizeof_Shdr );
             swap_shdr( &elf_sec );
 //          elf_sec.sh_offset += start;  // relocate file pos
             Wdputs( "             Section Header #" );
             Putdec( i );
             if( string_table != NULL ) {
                 Wdputs( " \"" );
-                Wdputs( &(string_table[elf_sec.sh_name]) );
+                {
+                    Wdputs( &(string_table[elf_sec.elf32.sh_name]) );
+                }
                 Wdputs( "\"" );
             }
             Wdputslc( "\n" );
@@ -712,43 +753,47 @@ static void dmp_prog_sec( unsigned_32 start )
                 Puthex( offset, 8 );
                 Wdputslc( "\n" );
             }
-            dmp_sec_type( elf_sec.sh_type );
-            Dump_header( &elf_sec.sh_name, elf_sec_msg, 4 );
-            dmp_sec_flgs( elf_sec.sh_flags );
+
+            {
+                dmp_sec_type( elf_sec.elf32.sh_type );
+                Dump_header( &elf_sec.elf32.sh_name, elf32_sec_msg, 4 );
+                dmp_sec_flgs( elf_sec.elf32.sh_flags );
+            }
+
             if( Options_dmp & FIX_DMP ) {
-                if( elf_sec.sh_type==SHT_REL || elf_sec.sh_type==SHT_RELA ) {
-                    Elf32_Shdr      rel_sec;
+                if( elf_sec.elf32.sh_type==SHT_REL || elf_sec.elf32.sh_type==SHT_RELA ) {
+                    Elfxx_Shdr      rel_sec;
                     Elf32_Rela      elf_rela;
                     unsigned long   loc;
                     int             ctr, rel_size;
 
                     Wdputs( "relocation information for section #" );
-                    Putdec( elf_sec.sh_info );
+                    Putdec( elf_sec.elf32.sh_info );
                     Wlseek( Elf_head.elf32.e_shoff + start +
-                            Elf_head.elf32.e_shentsize * elf_sec.sh_info );
+                            Elf_head.elf32.e_shentsize * elf_sec.elf32.sh_info );
                     Wread( &rel_sec, sizeof( Elf32_Shdr ) );
                     swap_shdr( &rel_sec );
                     if( string_table != NULL ) {
                         Wdputs( " \"" );
-                        Wdputs( &string_table[rel_sec.sh_name] );
+                        Wdputs( &string_table[rel_sec.elf32.sh_name] );
                         Wdputs( "\"" );
                     } else {
                         Wdputs( " no_name (no associated string table)" );
                     }
                     Wdputslc( ":\n" );
                     Wdputs( "symbol index refers to section #" );
-                    Putdec( elf_sec.sh_link );
+                    Putdec( elf_sec.elf32.sh_link );
                     Wdputslc( "\n" );
                     Wdputslc( "Offset   Sym Idx  Addend   Type      Offset   Sym Idx  Addend   Type\n" );
-                    rel_size = (elf_sec.sh_type == SHT_REL ? sizeof( Elf32_Rel ) : sizeof( Elf32_Rela ));
-                    for( loc = 0, ctr = 0; loc < elf_sec.sh_size; loc += rel_size, ctr++ ) {
-                        Wlseek( elf_sec.sh_offset + start + loc );
+                    rel_size = (elf_sec.elf32.sh_type == SHT_REL ? sizeof( Elf32_Rel ) : sizeof( Elf32_Rela ));
+                    for( loc = 0, ctr = 0; loc < elf_sec.elf32.sh_size; loc += rel_size, ctr++ ) {
+                        Wlseek( elf_sec.elf32.sh_offset + start + loc );
                         Wread( &elf_rela, rel_size );
                         Puthex( elf_rela.r_offset, 8 );
                         Wdputc( ' ' );
                         Puthex( ELF32_R_SYM( elf_rela.r_info ), 8 );
                         Wdputc( ' ' );
-                        if( elf_sec.sh_type == SHT_RELA ) {
+                        if( elf_sec.elf32.sh_type == SHT_RELA ) {
                             Puthex( elf_rela.r_addend, 8 );
                         } else {
                             Wdputs( "n/a     " );
@@ -766,27 +811,28 @@ static void dmp_prog_sec( unsigned_32 start )
                     }
                 }
             }
+
             if( Options_dmp & DEBUG_INFO ) {
                 Wdputslc( "\n" );
                 if( string_table != NULL ) {
-                    dmp_sec_data( &(string_table[elf_sec.sh_name]),
-                                  elf_sec.sh_type,
-                                  elf_sec.sh_offset+start,
-                                  elf_sec.sh_size );
+                    dmp_sec_data( &(string_table[elf_sec.elf32.sh_name]),
+                                  elf_sec.elf32.sh_type,
+                                  elf_sec.elf32.sh_offset+start,
+                                  elf_sec.elf32.sh_size );
                 } else {
                     dmp_sec_data( NULL,
-                                  elf_sec.sh_type,
-                                  elf_sec.sh_offset+start,
-                                  elf_sec.sh_size );
+                                  elf_sec.elf32.sh_type,
+                                  elf_sec.elf32.sh_offset+start,
+                                  elf_sec.elf32.sh_size );
                 }
             } else if( Options_dmp & OS2_SEG_DMP ) {
-                if( elf_sec.sh_size && elf_sec.sh_type != SHT_NOBITS ) {
+                if( elf_sec.elf32.sh_size && elf_sec.elf32.sh_type != SHT_NOBITS ) {
                     Wdputslc( "Section dump:\n" );
-                    Dmp_seg_data( elf_sec.sh_offset + start, elf_sec.sh_size );
+                    Dmp_seg_data( elf_sec.elf32.sh_offset + start, elf_sec.elf32.sh_size );
                 }
             }
             Wdputslc( "\n" );
-            offset +=  Elf_head.elf32.e_shentsize;
+            offset +=  sizeof_Shdr;
         }
     }
     if( Options_dmp & DEBUG_INFO ) {
