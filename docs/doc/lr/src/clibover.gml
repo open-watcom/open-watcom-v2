@@ -1117,7 +1117,7 @@ and strings.
 .fdbeg
 .fd atof
 string to "double"
-.if '&target' eq 'QNX' .do begin
+.if '&machsys' eq 'QNX' .do begin
 .fd atoh
 hexadecimal string to "unsigned int"
 .do end
