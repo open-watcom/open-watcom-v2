@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -52,7 +53,7 @@ HANDLE          RedirRead;
 HANDLE          NulHdl;
 HANDLE          OverlapHdl;
 
-char            *CmdProc;
+char            CmdProc[128];
 DWORD           ProcId;
 HANDLE          ProcHdl;
 static  HANDLE  MemHdl;
@@ -207,7 +208,8 @@ void main( int argc, char *argv[] )
 {
     SECURITY_ATTRIBUTES attr;
 
-    argc=argc;argv=argv;
+    /* unused parameters */ (void)argc; (void)argv;
+
 #if 0
     if( argc > 1 && (argv[1][0] == 'q' || argv[1][0] == 'Q') ) {
         h = CreateFile( PREFIX DEFAULT_NAME, GENERIC_WRITE, 0,
@@ -225,8 +227,15 @@ void main( int argc, char *argv[] )
     SemWritten = CreateSemaphore( NULL, 0, 1, WRITTEN_NAME );
     MemHdl = CreateFileMapping( INVALID_HANDLE_VALUE, NULL, PAGE_READWRITE, 0, 1024, SHARED_MEM_NAME  );
     SharedMem = MapViewOfFile( MemHdl, FILE_MAP_WRITE, 0, 0, 0 );
-    CmdProc = getenv( "ComSpec" );
-    if( CmdProc == NULL ) {
+    /*
+     * there was used getenv C function, but it looks like some versions of Microsoft
+     * VS C run-time library has bug that getenv (maybe in some situation only) return invalid pointer and
+     * when it is accessed fail and report access violation.
+     * I change it to Windows API GetEnvironmentVariable to fix this problem and don't depend on
+     * getenv from MS C run-time library anymore
+     */
+    GetEnvironmentVariable( "ComSpec", CmdProc, sizeof( CmdProc ) );
+    if( *CmdProc == '\0' ) {
         fprintf( stderr, "Unable to find command processor\n" );
         exit( 1 );
     }
