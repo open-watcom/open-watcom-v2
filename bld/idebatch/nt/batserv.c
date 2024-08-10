@@ -223,8 +223,11 @@ void main( int argc, char *argv[] )
 
     /* unused parameters */ (void)argc; (void)argv;
 
-#if 0
+    SemReadUp = CreateSemaphore( NULL, 0, 1, READUP_NAME );
+    SemReadDone = CreateSemaphore( NULL, 0, 1, READDONE_NAME );
+    SemWritten = CreateSemaphore( NULL, 0, 1, WRITTEN_NAME );
     if( argc > 1 && (argv[1][0] == 'q' || argv[1][0] == 'Q') ) {
+#if 0
         h = CreateFile( PREFIX DEFAULT_LINK_NAME, GENERIC_WRITE, 0,
                 NULL, OPEN_EXISTING, 0, NULL );
         if( h != INVALID_HANDLE_VALUE ) {
@@ -232,13 +235,10 @@ void main( int argc, char *argv[] )
             WriteFile( h, &done, sizeof( done ), &sent, NULL );
             CloseHandle( h );
         }
+#endif
         exit_link( 0 );
     }
-#endif
-    SemReadUp = CreateSemaphore( NULL, 0, 1, READUP_NAME );
-    SemReadDone = CreateSemaphore( NULL, 0, 1, READDONE_NAME );
-    SemWritten = CreateSemaphore( NULL, 0, 1, WRITTEN_NAME );
-    MemHdl = CreateFileMapping( INVALID_HANDLE_VALUE, NULL, PAGE_READWRITE, 0, 1024, DEFAULT_LINK_NAME  );
+    MemHdl = CreateFileMapping( INVALID_HANDLE_VALUE, NULL, PAGE_READWRITE, 0, 1024, DEFAULT_LINK_NAME );
     SharedMemPtr = MapViewOfFile( MemHdl, FILE_MAP_WRITE, 0, 0, 0 );
     /*
      * there was used getenv C function, but it looks like some versions of Microsoft

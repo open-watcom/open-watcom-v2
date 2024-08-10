@@ -16,9 +16,18 @@ extra_cpp_editor_flags = -D__EDITOR__
 
 .c: ../os2;../c
 
+inc_dirs = -I"../os2" -I"../h"
+
+all: batserv.exe tstos2.exe .SYMBOLIC
+
 exetarg_objs = batserv.obj
 exetarg_opts = op stack=16k
 exetarg_name = batserv
+!include exetarg.mif
+
+exetarg_objs = tst.obj batcli.obj
+exetarg_opts = op stack=16k
+exetarg_name = tstos2
 !include exetarg.mif
 
 !else ifeq host_os nt
