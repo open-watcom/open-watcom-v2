@@ -227,15 +227,17 @@ void main( int argc, char *argv[] )
     SemReadDone = CreateSemaphore( NULL, 0, 1, READDONE_NAME );
     SemWritten = CreateSemaphore( NULL, 0, 1, WRITTEN_NAME );
     if( argc > 1 && (argv[1][0] == 'q' || argv[1][0] == 'Q') ) {
-#if 0
-        h = CreateFile( PREFIX DEFAULT_LINK_NAME, GENERIC_WRITE, 0,
-                NULL, OPEN_EXISTING, 0, NULL );
-        if( h != INVALID_HANDLE_VALUE ) {
+        MemHdl = OpenFileMapping( FILE_MAP_WRITE, FALSE, DEFAULT_LINK_NAME );
+        if( MemHdl == NULL ) {
+            Say(( "can not connect to batcher spawn server\n" ));
+        } else {
+            char	done;
+
+            SharedMemPtr = MapViewOfFile( MemHdl, FILE_MAP_WRITE, 0, 0, 0 );
+            Say(( "LNK_SHUTDOWN\n" ));
             done = LNK_SHUTDOWN;
-            WriteFile( h, &done, sizeof( done ), &sent, NULL );
-            CloseHandle( h );
+            BatservWrite( &done, sizeof( done ) );
         }
-#endif
         exit_link( 0 );
     }
     MemHdl = CreateFileMapping( INVALID_HANDLE_VALUE, NULL, PAGE_READWRITE, 0, 1024, DEFAULT_LINK_NAME );
