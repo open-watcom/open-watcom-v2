@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -497,7 +497,7 @@ static char buff[MAX_BUFF+1];
         BatchSpawn( cmd );
         for( ;; ) {
             WSystemService::sysYield(); //allow other tasks to run
-            unsigned long stat;
+            batch_stat stat;
             int len = BatchCollect( buff, MAX_BUFF, &stat );
             if( len < 0 ) {
                 break;

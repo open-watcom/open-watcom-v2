@@ -36,7 +36,6 @@
 #include <fcntl.h>
 #include <dos.h>
 #include "batpipe.h"
-#include "batcher.h"
 
 
 int     pipeHdl = -1;
@@ -64,7 +63,8 @@ static unsigned my_read( int hdl, void *buff, unsigned len )
 {
     unsigned    got;
 
-    if( _dos_read( hdl, buff, len, &got ) != 0 ) return( -1 );
+    if( _dos_read( hdl, buff, len, &got ) != 0 )
+        return( -1 );
     return( got );
 }
 
@@ -72,7 +72,8 @@ static unsigned my_write( int hdl, void *buff, unsigned len )
 {
     unsigned    sent;
 
-    if( _dos_write( hdl, buff, len, &sent ) != 0 ) return( -1 );
+    if( _dos_write( hdl, buff, len, &sent ) != 0 )
+        return( -1 );
     return( sent );
 }
 
@@ -96,18 +97,19 @@ unsigned BatchSpawn( const char *cmd )
     return( 0 );
 }
 
-unsigned BatchCollect( void *ptr, unsigned max, unsigned long *status )
+int BatchCollect( void *ptr, batch_len max, batch_stat *status )
 {
     int         len;
     char        *buff = ptr;
 
     buff[0] = LNK_QUERY;
-    *(unsigned long *)&buff[1] = max;
-    my_write( pipeHdl, buff, 5 );
+    *(batch_len *)&buff[1] = max;
+    my_write( pipeHdl, buff, 1 + sizeof( batch_len ) );
     len = my_read( pipeHdl, buff, max ) - 1;
-    if( len <= 0 ) return( 0 );
+    if( len <= 0 )
+        return( 0 );
     if( *buff == LNK_STATUS ) {
-        *status = *(unsigned long *)&buff[1];
+        *status = *(batch_stat *)&buff[1];
         return( -1 );
     }
     memmove( buff, &buff[1], len );

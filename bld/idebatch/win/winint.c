@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -218,7 +218,8 @@ static void resizeChildWindows( WORD width, WORD height )
 {
 
     height = height-LISTBOX_Y-5;
-    if( height < LISTBOX_Y ) height = LISTBOX_Y;
+    if( height < LISTBOX_Y )
+        height = LISTBOX_Y;
     width -= 2* LISTBOX_X;
 
     MoveWindow( listBox, LISTBOX_X, LISTBOX_Y, width, height, TRUE );
@@ -431,7 +432,8 @@ static BOOL anyInstance( void )
         NULL                    /* create parms */
         );
 
-    if( !ourWindow ) return( FALSE );
+    if( !ourWindow )
+        return( FALSE );
 
     ShowWindow( ourWindow, SW_NORMAL );
     UpdateWindow( ourWindow );
@@ -461,8 +463,10 @@ int PASCAL WinMain( HINSTANCE this_inst, HINSTANCE prev_inst, LPSTR cmdline,
     cmdshow = cmdshow;
     ourInstance = this_inst;
 
-    if( !firstInstance() ) return( FALSE );
-    if( !anyInstance() ) return( FALSE );
+    if( !firstInstance() )
+        return( FALSE );
+    if( !anyInstance() )
+        return( FALSE );
 
     while( GetMessage( &msg, NULL, 0, 0 ) ) {
         TranslateMessage( &msg );

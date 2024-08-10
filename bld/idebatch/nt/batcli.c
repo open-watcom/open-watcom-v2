@@ -39,7 +39,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include "batpipe.h"
-#include "batcher.h"
 
 
 static HANDLE MemHdl;
@@ -83,19 +82,20 @@ unsigned BatchSpawn( const char *cmd )
     return( 0 );
 }
 
-unsigned BatchCollect( void *ptr, unsigned max, unsigned long *status )
+int BatchCollect( void *ptr, batch_len max, batch_stat *status )
 {
     int         len;
     char        *buff = ptr;
 
     buff[0] = LNK_QUERY;
-    *(unsigned long *)&buff[1] = max;
-    BatservWrite( buff, 5 );
+    *(batch_len *)&buff[1] = max;
+    BatservWrite( buff, 1 + sizeof( batch_len ) );
     len = BatservRead( buff, max ) - 1;
-    if( len <= 0 ) return( 0 );
+    if( len <= 0 )
+        return( 0 );
     if( *buff == LNK_STATUS ) {
-        *status = *(unsigned long *)&buff[1];
-        return( (unsigned)-1 );
+        *status = *(batch_stat *)&buff[1];
+        return( -1 );
     }
     memmove( buff, &buff[1], len );
     return( len );

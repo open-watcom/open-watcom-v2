@@ -46,7 +46,8 @@ unsigned BatservRead( void *buff, unsigned len )
     ReleaseSemaphore( SemReadUp, 1, NULL );
     WaitForSingleObject( SemWritten, INFINITE );
     bytes_read = *(unsigned*)SharedMemPtr;
-    if( bytes_read > len ) bytes_read = len;
+    if( bytes_read > len )
+        bytes_read = len;
     memcpy( buff, SharedMemPtr + sizeof( unsigned ), bytes_read );
     ReleaseSemaphore( SemReadDone, 1, NULL );
     return( bytes_read );

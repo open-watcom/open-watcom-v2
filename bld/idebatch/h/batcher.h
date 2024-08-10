@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,13 +35,16 @@
 extern "C" {
 #endif
 
+typedef unsigned long   batch_stat;
+typedef int             batch_len;
+
 extern const char   *BatchLink( const char *__name );
 extern unsigned     BatchMaxCmdLine( void );
 extern unsigned     BatchChdir( const char *__new_dir );
 extern unsigned     BatchSpawn( const char *__cmd );
 extern unsigned     BatchCancel( void );
 extern unsigned     BatchAbort( void );
-extern unsigned     BatchCollect( void *__buffer, unsigned __len, unsigned long *__status );
+extern int          BatchCollect( void *__buffer, batch_len __len, batch_stat *__status );
 extern void         BatchUnlink( int );
 
 #ifdef __cplusplus

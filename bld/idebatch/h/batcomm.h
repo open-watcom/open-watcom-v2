@@ -46,3 +46,21 @@ enum {
     LNK_STATUS,
     LNK_ABORT
 };
+
+#include "pushpck1.h"
+typedef struct batch_data {
+    union {
+        char            buff[TRANS_MAXLEN];
+        struct {
+#ifdef __NT__
+            unsigned    len;
+#endif
+            char        cmd;
+            union {
+                char            data[1];
+                batch_stat      status;
+            } u;
+        } s;
+    } u;
+} batch_data;
+#include "poppck.h"

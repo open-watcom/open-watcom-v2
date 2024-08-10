@@ -155,7 +155,8 @@ static void ProcessConnection( void )
             break;
         case LNK_QUERY:
             max = *(unsigned long *)&buff[1];
-            if( max > sizeof( buff ) ) max = sizeof( buff );
+            if( max > sizeof( buff ) )
+                max = sizeof( buff );
             --max;
             if( PeekNamedPipe( RedirRead, buff, 0, NULL, &bytes_read,
                         NULL ) && bytes_read != 0 ) {
@@ -231,7 +232,7 @@ void main( int argc, char *argv[] )
         if( MemHdl == NULL ) {
             Say(( "can not connect to batcher spawn server\n" ));
         } else {
-            char	done;
+            char        done;
 
             SharedMemPtr = MapViewOfFile( MemHdl, FILE_MAP_WRITE, 0, 0, 0 );
             Say(( "LNK_SHUTDOWN\n" ));
