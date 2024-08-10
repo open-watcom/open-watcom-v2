@@ -31,17 +31,18 @@
 ****************************************************************************/
 
 
-#include "batcomm.h"
+#define TRANS_MAXLEN        1024
+#define DEFAULT_LINK_NAME   "BatLink"
 
-
-#define READUP_NAME     "ReadUpSem"
-#define WRITTEN_NAME    "WrittenSem"
-#define READDONE_NAME   "ReadDoneSem"
-
-extern char             *SharedMemPtr;
-extern HANDLE           SemReadUp;
-extern HANDLE           SemWritten;
-extern HANDLE           SemReadDone;
-
-extern unsigned BatservRead( void *buff, unsigned len );
-extern unsigned BatservWrite( void *buff, unsigned len );
+enum {
+    LNK_NOP,
+    LNK_CWD,
+    LNK_RUN,
+    LNK_QUERY,
+    LNK_CANCEL,
+    LNK_DONE,
+    LNK_SHUTDOWN,
+    LNK_OUTPUT,
+    LNK_STATUS,
+    LNK_ABORT
+};

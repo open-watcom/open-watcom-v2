@@ -31,21 +31,9 @@
 ****************************************************************************/
 
 
-#define PREFIX              "\\PIPE\\"
-#define PREFIX_LEN          6
-#define NAME_MAXLEN         12
-#define TRANS_MAXLEN        1024
-#define DEFAULT_LINK_NAME   "BatLink"
+#include "batcomm.h"
 
-enum {
-    LNK_NOP,
-    LNK_CWD,
-    LNK_RUN,
-    LNK_QUERY,
-    LNK_CANCEL,
-    LNK_DONE,
-    LNK_SHUTDOWN,
-    LNK_OUTPUT,
-    LNK_STATUS,
-    LNK_ABORT
-};
+
+#define PREFIX          "\\PIPE\\"
+#define PREFIX_LEN      6
+#define NAME_MAXLEN     12

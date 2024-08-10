@@ -68,7 +68,6 @@ static char     batch_buff[TRANS_MAXLEN]; /* static to miminize stack usage */
 
 unsigned BatchChdir( const char *new_dir )
 {
-
     batch_buff[0] = LNK_CWD;
     strcpy( &batch_buff[1], new_dir );
     BatservWrite( batch_buff, (unsigned long)( strlen( batch_buff ) + 1 ) );
