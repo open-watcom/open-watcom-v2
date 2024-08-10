@@ -47,7 +47,7 @@ static HANDLE MemHdl;
 const char *BatchLink( const char *name )
 {
     if( name == NULL )
-        name = DEFAULT_NAME;
+        name = DEFAULT_LINK_NAME;
     SemReadUp = OpenSemaphore( SEMAPHORE_ALL_ACCESS, FALSE, READUP_NAME );
     SemReadDone = OpenSemaphore( SEMAPHORE_ALL_ACCESS, FALSE, READDONE_NAME );
     SemWritten = OpenSemaphore( SEMAPHORE_ALL_ACCESS, FALSE, WRITTEN_NAME );
@@ -61,10 +61,10 @@ const char *BatchLink( const char *name )
 
 unsigned BatchMaxCmdLine( void )
 {
-    return( MAX_TRANS - 1 );
+    return( TRANS_MAXLEN - 1 );
 }
 
-static char     batch_buff[MAX_TRANS]; /* static to miminize stack usage */
+static char     batch_buff[TRANS_MAXLEN]; /* static to miminize stack usage */
 
 unsigned BatchChdir( const char *new_dir )
 {

@@ -31,12 +31,12 @@
 ****************************************************************************/
 
 
-#define READUP_NAME     "ReadUpSem"
-#define WRITTEN_NAME    "WrittenSem"
-#define READDONE_NAME   "ReadDoneSem"
+#define READUP_NAME         "ReadUpSem"
+#define WRITTEN_NAME        "WrittenSem"
+#define READDONE_NAME       "ReadDoneSem"
 
-#define MAX_TRANS       1024
-#define DEFAULT_NAME    "BatLink"
+#define TRANS_MAXLEN        1024
+#define DEFAULT_LINK_NAME   "BatLink"
 
 enum {
     LNK_NOP,

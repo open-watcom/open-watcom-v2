@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -42,11 +43,12 @@ int     pipeHdl = -1;
 
 const char *BatchLink( const char *name )
 {
-    char        pipeName[ PREFIX_LEN + MAX_NAME ] = PREFIX;
+    char        pipeName[PREFIX_LEN + NAME_MAXLEN + 1] = PREFIX;
 
     if( name == NULL )
-        name = DEFAULT_NAME;
-    strcpy( pipeName + PREFIX_LEN, name );
+        name = DEFAULT_LINK_NAME;
+    strncpy( pipeName + PREFIX_LEN, name, NAME_MAXLEN );
+    pipeName[PREFIX_LEN + NAME_MAXLEN] = '\0';
     if( _dos_open( pipeName, O_RDWR, &pipeHdl ) != 0 ) {
         return( "can not connect to batcher spawn server" );
     }
@@ -55,7 +57,7 @@ const char *BatchLink( const char *name )
 
 unsigned BatchMaxCmdLine()
 {
-    return( MAX_TRANS-1 );
+    return( TRANS_MAXLEN - 1 );
 }
 
 static unsigned my_read( int hdl, void *buff, unsigned len )
@@ -74,7 +76,7 @@ static unsigned my_write( int hdl, void *buff, unsigned len )
     return( sent );
 }
 
-static char     batch_buff[MAX_TRANS]; /* static to minimize stack space */
+static char     batch_buff[TRANS_MAXLEN]; /* static to minimize stack space */
 
 unsigned BatchChdir( const char *new_dir )
 {

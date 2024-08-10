@@ -49,18 +49,36 @@
 
 #include "batpipe.h"
 
-HANDLE          RedirRead;
-HANDLE          NulHdl;
-HANDLE          OverlapHdl;
+static  HANDLE      RedirRead;
+static  HANDLE      NulHdl;
+static  char        CmdProc[128];
+static  DWORD       ProcId;
+static  HANDLE      ProcHdl;
+static  HANDLE      MemHdl;
 
-char            CmdProc[128];
-DWORD           ProcId;
-HANDLE          ProcHdl;
-static  HANDLE  MemHdl;
+static void exit_link( int rc )
+{
+    if( SemReadUp != NULL ) {
+        CloseHandle( SemReadUp );
+    }
+    if( SemReadDone != NULL ) {
+        CloseHandle( SemReadDone );
+    }
+    if( SemWritten != NULL ) {
+        CloseHandle( SemWritten );
+    }
+    if( MemHdl != NULL ) {
+        CloseHandle( MemHdl );
+    }
+    if( SharedMemPtr != NULL ) {
+        UnmapViewOfFile( SharedMemPtr );
+    }
+    exit( rc );
+}
 
 static void RunCmd( char *cmd_name )
 {
-    char                cmd[MAX_TRANS+80];
+    char                cmd[TRANS_MAXLEN + 80];
     PROCESS_INFORMATION info;
     HANDLE              dup;
     STARTUPINFO         start;
@@ -111,7 +129,7 @@ static void SendStatus( unsigned long status )
 
 static void ProcessConnection( void )
 {
-    char                buff[MAX_TRANS];
+    char                buff[TRANS_MAXLEN];
     DWORD               bytes_read;
     char                *dir;
     DWORD               rc;
@@ -173,12 +191,7 @@ static void ProcessConnection( void )
             return;
         case LNK_SHUTDOWN:
             Say(( "LNK_SHUTDOWN\n" ));
-            CloseHandle( SemReadUp );
-            CloseHandle( SemReadDone );
-            CloseHandle( SemWritten );
-            CloseHandle( MemHdl );
-            UnmapViewOfFile( SharedMemPtr );
-            exit( 0 );
+            exit_link( 0 );
             break;
         }
     }
@@ -212,20 +225,20 @@ void main( int argc, char *argv[] )
 
 #if 0
     if( argc > 1 && (argv[1][0] == 'q' || argv[1][0] == 'Q') ) {
-        h = CreateFile( PREFIX DEFAULT_NAME, GENERIC_WRITE, 0,
+        h = CreateFile( PREFIX DEFAULT_LINK_NAME, GENERIC_WRITE, 0,
                 NULL, OPEN_EXISTING, 0, NULL );
         if( h != INVALID_HANDLE_VALUE ) {
             done = LNK_SHUTDOWN;
             WriteFile( h, &done, sizeof( done ), &sent, NULL );
             CloseHandle( h );
         }
-        exit( 0 );
+        exit_link( 0 );
     }
 #endif
     SemReadUp = CreateSemaphore( NULL, 0, 1, READUP_NAME );
     SemReadDone = CreateSemaphore( NULL, 0, 1, READDONE_NAME );
     SemWritten = CreateSemaphore( NULL, 0, 1, WRITTEN_NAME );
-    MemHdl = CreateFileMapping( INVALID_HANDLE_VALUE, NULL, PAGE_READWRITE, 0, 1024, DEFAULT_NAME  );
+    MemHdl = CreateFileMapping( INVALID_HANDLE_VALUE, NULL, PAGE_READWRITE, 0, 1024, DEFAULT_LINK_NAME  );
     SharedMemPtr = MapViewOfFile( MemHdl, FILE_MAP_WRITE, 0, 0, 0 );
     /*
      * there was used getenv C function, but it looks like some versions of Microsoft
@@ -237,7 +250,7 @@ void main( int argc, char *argv[] )
     GetEnvironmentVariable( "ComSpec", CmdProc, sizeof( CmdProc ) );
     if( *CmdProc == '\0' ) {
         fprintf( stderr, "Unable to find command processor\n" );
-        exit( 1 );
+        exit_link( 1 );
     }
     SetConsoleCtrlHandler( NULL, FALSE );
     SetConsoleCtrlHandler( Ignore, TRUE );
@@ -248,7 +261,7 @@ void main( int argc, char *argv[] )
     NulHdl = CreateFile( "NUL", GENERIC_READ, FILE_SHARE_READ|FILE_SHARE_WRITE, &attr, OPEN_EXISTING, 0, NULL );
     if( NulHdl == INVALID_HANDLE_VALUE ) {
         fprintf( stderr, "Unable to open NUL device\n" );
-        exit( 1 );
+        exit_link( 1 );
     }
     EnumWindows( HideWindows , 0 );
 

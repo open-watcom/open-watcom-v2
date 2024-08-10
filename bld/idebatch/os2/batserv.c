@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -47,17 +47,27 @@
 
 #include "batpipe.h"
 
-HPIPE           LnkHdl;
-HPIPE           RedirHdl;
+static HPIPE           LnkHdl;
+static HPIPE           RedirHdl;
 
-char            RedirName[ PREFIX_LEN + MAX_NAME + 1];
-unsigned        CmdStatus;
-char            *CmdProc;
-unsigned        ProcId;
+static char            PipeName[PREFIX_LEN + NAME_MAXLEN + 1];
+static char            *CmdProc;
+static unsigned        ProcId;
+
+static void exit_link( int rc )
+{
+    if( LnkHdl != NULLHANDLE ) {
+        DosClose( LnkHdl );
+    }
+    if( RedirHdl != NULLHANDLE ) {
+        DosClose( RedirHdl );
+    }
+    exit( rc );
+}
 
 static void RunCmd( char *cmd_name )
 {
-    char        cmd[MAX_TRANS+80];
+    char        cmd[TRANS_MAXLEN + 80];
     RESULTCODES res;
     UINT        rc;
 
@@ -65,7 +75,7 @@ static void RunCmd( char *cmd_name )
     //DOS programs can be handled by quoting the redirection
     //operators:
     //          prog 1^>out 2^>&1
-    snprintf( cmd, sizeof( cmd ), "%s%c/C %s 0<NUL 1>%s 2>&1%c", CmdProc, '\0', cmd_name, RedirName, '\0' );
+    snprintf( cmd, sizeof( cmd ), "%s%c/C %s 0<NUL 1>%s 2>&1%c", CmdProc, '\0', cmd_name, PipeName, '\0' );
     rc = DosExecPgm( NULL, 0,           /* don't care about fail name */
                 EXEC_ASYNCRESULT,       /* execflags */
                 cmd,                    /* args */
@@ -94,7 +104,7 @@ static void SendStatus( unsigned long status )
 
 static void ProcessConnection( void )
 {
-    char                buff[MAX_TRANS];
+    char                buff[TRANS_MAXLEN];
     ULONG               bytes_read;
     unsigned long       max;
     struct _AVAILDATA   BytesAvail;
@@ -106,7 +116,8 @@ static void ProcessConnection( void )
 
     for( ;; ) {
         DosRead( LnkHdl, buff, sizeof( buff ), &bytes_read );
-        if( bytes_read == 0 ) break;
+        if( bytes_read == 0 )
+            break;
         buff[bytes_read] = '\0';
         switch( buff[0] ) {
         case LNK_CWD:
@@ -129,7 +140,8 @@ static void ProcessConnection( void )
             break;
         case LNK_QUERY:
             max = *(unsigned long *)&buff[1];
-            if( max > sizeof( buff ) ) max = sizeof( buff );
+            if( max > sizeof( buff ) )
+                max = sizeof( buff );
             --max;
             rc = DosPeekNPipe(RedirHdl, buff, 0, &bytes_read,
                         &BytesAvail, &PipeState );
@@ -161,7 +173,7 @@ static void ProcessConnection( void )
         case LNK_DONE:
             return;
         case LNK_SHUTDOWN:
-            exit( 0 );
+            exit_link( 0 );
             break;
         }
     }
@@ -176,8 +188,9 @@ void main( int argc, char *argv[] )
     unsigned long       sent;
     char        done;
 
+    strcpy( PipeName, PREFIX DEFAULT_LINK_NAME );
     if( argc > 1 && (argv[1][0] == 'q' || argv[1][0] == 'Q') ) {
-        rc = DosOpen( PREFIX DEFAULT_NAME, &h, &actiontaken, 0,
+        rc = DosOpen( PipeName, &h, &actiontaken, 0,
                         FILE_NORMAL,
                         OPEN_ACTION_FAIL_IF_NEW | OPEN_ACTION_OPEN_IF_EXISTS,
                         OPEN_SHARE_DENYNONE | OPEN_ACCESS_WRITEONLY,
@@ -187,30 +200,30 @@ void main( int argc, char *argv[] )
             DosWrite( h, &done, sizeof( done ), &sent );
             DosClose( h );
         }
-        exit( 0 );
+        exit_link( 0 );
     }
     CmdProc = getenv( "COMSPEC" );
     if( CmdProc == NULL ) {
         fprintf( stderr, "Unable to find command processor\n" );
-        exit( 1 );
+        exit_link( 1 );
     }
     //NYI: need to accept name for link pipe
-    rc = DosCreateNPipe( PREFIX DEFAULT_NAME, &LnkHdl,
+    rc = DosCreateNPipe( PipeName, &LnkHdl,
         NP_NOINHERIT | NP_NOWRITEBEHIND | NP_ACCESS_DUPLEX,
         NP_WAIT | NP_READMODE_MESSAGE | NP_TYPE_MESSAGE | 1,
-        MAX_TRANS, MAX_TRANS, 0 );
+        TRANS_MAXLEN, TRANS_MAXLEN, 0 );
     if( rc != 0 ) {
         fprintf( stderr, "Unable to create link pipe\n" );
-        exit( 1 );
+        exit_link( 1 );
     }
-    sprintf( RedirName, PREFIX "%d", getpid() );
-    rc = DosCreateNPipe( RedirName, &RedirHdl,
+    sprintf( PipeName, PREFIX "%d", getpid() );
+    rc = DosCreateNPipe( PipeName, &RedirHdl,
         NP_NOINHERIT | NP_WRITEBEHIND | NP_ACCESS_INBOUND,
         NP_WAIT | NP_READMODE_BYTE | NP_TYPE_BYTE | 1,
-        MAX_TRANS, MAX_TRANS, 0 );
+        TRANS_MAXLEN, TRANS_MAXLEN, 0 );
     if( rc != 0 ) {
         fprintf( stderr, "Unable to create redirection pipe\n" );
-        exit( 1 );
+        exit_link( 1 );
     }
     DosSetFHState( LnkHdl, OPEN_FLAGS_NOINHERIT );
     DosSetFHState( RedirHdl, OPEN_FLAGS_NOINHERIT );

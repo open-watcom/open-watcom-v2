@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,11 +31,11 @@
 ****************************************************************************/
 
 
-#define PREFIX          "\\PIPE\\"
-#define PREFIX_LEN      (sizeof( PREFIX ) - 1)
-#define MAX_NAME        13
-#define MAX_TRANS       1024
-#define DEFAULT_NAME    "BatLink"
+#define PREFIX              "\\PIPE\\"
+#define PREFIX_LEN          6
+#define NAME_MAXLEN         12
+#define TRANS_MAXLEN        1024
+#define DEFAULT_LINK_NAME   "BatLink"
 
 enum {
     LNK_NOP,
