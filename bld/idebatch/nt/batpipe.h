@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,7 +34,6 @@
 #define READUP_NAME     "ReadUpSem"
 #define WRITTEN_NAME    "WrittenSem"
 #define READDONE_NAME   "ReadDoneSem"
-#define SHARED_MEM_NAME "SharedMem"
 
 #define MAX_TRANS       1024
 #define DEFAULT_NAME    "BatLink"
@@ -51,7 +51,7 @@ enum {
     LNK_ABORT
 };
 
-extern char             *SharedMem;
+extern char             *SharedMemPtr;
 extern HANDLE           SemReadUp;
 extern HANDLE           SemWritten;
 extern HANDLE           SemReadDone;

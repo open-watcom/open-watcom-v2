@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -50,11 +51,11 @@ const char *BatchLink( const char *name )
     SemReadUp = OpenSemaphore( SEMAPHORE_ALL_ACCESS, FALSE, READUP_NAME );
     SemReadDone = OpenSemaphore( SEMAPHORE_ALL_ACCESS, FALSE, READDONE_NAME );
     SemWritten = OpenSemaphore( SEMAPHORE_ALL_ACCESS, FALSE, WRITTEN_NAME );
-    MemHdl = OpenFileMapping( FILE_MAP_WRITE, FALSE, SHARED_MEM_NAME );
+    MemHdl = OpenFileMapping( FILE_MAP_WRITE, FALSE, name );
     if( MemHdl == NULL || SemReadUp == NULL || SemWritten == NULL ) {
         return( "can not connect to batcher spawn server" );
     }
-    SharedMem = MapViewOfFile( MemHdl, FILE_MAP_WRITE, 0, 0, 0 );
+    SharedMemPtr = MapViewOfFile( MemHdl, FILE_MAP_WRITE, 0, 0, 0 );
     return( NULL );
 }
 
@@ -130,6 +131,6 @@ void BatchUnlink( int shutdown )
     CloseHandle( SemReadDone );
     CloseHandle( SemWritten );
     CloseHandle( MemHdl );
-    UnmapViewOfFile( SharedMem );
-    SharedMem = NULL;
+    UnmapViewOfFile( SharedMemPtr );
+    SharedMemPtr = NULL;
 }

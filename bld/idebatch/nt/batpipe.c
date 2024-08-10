@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,7 +34,7 @@
 #include <windows.h>
 #include "batpipe.h"
 
-char                    *SharedMem;
+char                    *SharedMemPtr;
 HANDLE                  SemReadUp;
 HANDLE                  SemWritten;
 HANDLE                  SemReadDone;
@@ -44,9 +45,9 @@ unsigned BatservRead( void *buff, unsigned len )
 
     ReleaseSemaphore( SemReadUp, 1, NULL );
     WaitForSingleObject( SemWritten, INFINITE );
-    bytes_read = *(unsigned*)SharedMem;
+    bytes_read = *(unsigned*)SharedMemPtr;
     if( bytes_read > len ) bytes_read = len;
-    memcpy( buff, SharedMem + sizeof( unsigned ), bytes_read );
+    memcpy( buff, SharedMemPtr + sizeof( unsigned ), bytes_read );
     ReleaseSemaphore( SemReadDone, 1, NULL );
     return( bytes_read );
 }
@@ -54,8 +55,8 @@ unsigned BatservRead( void *buff, unsigned len )
 unsigned BatservWrite( void *buff, unsigned len )
 {
     WaitForSingleObject( SemReadUp, INFINITE );
-    *(unsigned*)SharedMem = len;
-    memcpy( SharedMem + sizeof( unsigned ), buff, len );
+    *(unsigned*)SharedMemPtr = len;
+    memcpy( SharedMemPtr + sizeof( unsigned ), buff, len );
     ReleaseSemaphore( SemWritten, 1, NULL );
     WaitForSingleObject( SemReadDone, INFINITE );
     return( len );

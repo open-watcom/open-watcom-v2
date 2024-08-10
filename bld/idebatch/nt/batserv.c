@@ -177,7 +177,7 @@ static void ProcessConnection( void )
             CloseHandle( SemReadDone );
             CloseHandle( SemWritten );
             CloseHandle( MemHdl );
-            UnmapViewOfFile( SharedMem );
+            UnmapViewOfFile( SharedMemPtr );
             exit( 0 );
             break;
         }
@@ -225,8 +225,8 @@ void main( int argc, char *argv[] )
     SemReadUp = CreateSemaphore( NULL, 0, 1, READUP_NAME );
     SemReadDone = CreateSemaphore( NULL, 0, 1, READDONE_NAME );
     SemWritten = CreateSemaphore( NULL, 0, 1, WRITTEN_NAME );
-    MemHdl = CreateFileMapping( INVALID_HANDLE_VALUE, NULL, PAGE_READWRITE, 0, 1024, SHARED_MEM_NAME  );
-    SharedMem = MapViewOfFile( MemHdl, FILE_MAP_WRITE, 0, 0, 0 );
+    MemHdl = CreateFileMapping( INVALID_HANDLE_VALUE, NULL, PAGE_READWRITE, 0, 1024, DEFAULT_NAME  );
+    SharedMemPtr = MapViewOfFile( MemHdl, FILE_MAP_WRITE, 0, 0, 0 );
     /*
      * there was used getenv C function, but it looks like some versions of Microsoft
      * VS C run-time library has bug that getenv (maybe in some situation only) return invalid pointer and
