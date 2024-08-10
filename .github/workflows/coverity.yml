@@ -1,5 +1,5 @@
-name: Coverity-Scan
-run-name: Coverity Scan tools download, build and send data to analysis
+run-name: Coverity-Scan
+name: Coverity Scan tools download, build and send data to analysis
 
 on:
   schedule:
