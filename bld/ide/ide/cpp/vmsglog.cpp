@@ -490,10 +490,7 @@ static char buff[MAX_BUFF+1];
         }
 #endif
     } else {
-        int     maxlen;
-
-        maxlen = BatchMaxCmdLine();
-        cmd.truncate( maxlen );
+        cmd.truncate( BatchMaxCmdLine() );
         BatchSpawn( cmd );
         for( ;; ) {
             WSystemService::sysYield(); //allow other tasks to run

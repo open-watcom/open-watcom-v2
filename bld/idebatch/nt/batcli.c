@@ -41,7 +41,7 @@
 #include "batpipe.h"
 
 
-static HANDLE MemHdl;
+static HANDLE   MemHdl;
 
 const char *BatchLink( const char *name )
 {
@@ -87,6 +87,8 @@ int BatchCollect( void *ptr, batch_len max, batch_stat *status )
             *status = bdata.u.s.u.status;
             len = -1;
         } else {
+            if( len > max )
+                len = max;
             memcpy( ptr, bdata.u.s.u.data, len );
         }
     } else {
