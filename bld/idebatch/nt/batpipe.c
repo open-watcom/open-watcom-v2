@@ -41,37 +41,27 @@ HANDLE                  SemReadUp;
 HANDLE                  SemWritten;
 HANDLE                  SemReadDone;
 
-int BatservReadData( char *plink_cmd, void *buff, int len )
+int BatservReadData( void )
 {
     int     bytes_read;
-    char    link_cmd;
 
     ReleaseSemaphore( SemReadUp, 1, NULL );
     WaitForSingleObject( SemWritten, INFINITE );
-    bytes_read = SharedMemPtr->data.u.s.u.len;
+    bytes_read = SharedMemPtr->len;
     if( bytes_read > 0 ) {
-        link_cmd = SharedMemPtr->data.u.s.cmd;
-        bytes_read--;
-        if( bytes_read > len )
-            bytes_read = len;
-        if( bytes_read > 0 ) {
-            memcpy( buff, SharedMemPtr->data.u.s.u.data, bytes_read );
-        }
+        memcpy( bdata.u.s.u.data, SharedMemPtr->data.u.s.u.data, bytes_read );
     } else {
-        link_cmd = 0;
-        bytes_read = -1;
-    }
-    if( plink_cmd != NULL ) {
-        *plink_cmd = link_cmd;
+        bdata.u.s.cmd = LNK_NOP;
+        bytes_read = 0;
     }
     ReleaseSemaphore( SemReadDone, 1, NULL );
-    return( bytes_read );
+    return( bytes_read - 1 );
 }
 
 int BatservWriteCmd( char link_cmd )
 {
     WaitForSingleObject( SemReadUp, INFINITE );
-    SharedMemPtr->data.u.s.u.len = 1;
+    SharedMemPtr->len = 1;
     SharedMemPtr->data.u.s.cmd = link_cmd;
     ReleaseSemaphore( SemWritten, 1, NULL );
     WaitForSingleObject( SemReadDone, INFINITE );
@@ -81,7 +71,7 @@ int BatservWriteCmd( char link_cmd )
 int BatservWriteData( char link_cmd, const void *buff, int len )
 {
     WaitForSingleObject( SemReadUp, INFINITE );
-    SharedMemPtr->data.u.s.u.len = len + 1;
+    SharedMemPtr->len = len + 1;
     SharedMemPtr->data.u.s.cmd = link_cmd;
     memcpy( SharedMemPtr->data.u.s.u.data, buff, len );
     ReleaseSemaphore( SemWritten, 1, NULL );

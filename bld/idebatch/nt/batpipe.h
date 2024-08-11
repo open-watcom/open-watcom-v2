@@ -45,6 +45,6 @@ extern HANDLE           SemReadUp;
 extern HANDLE           SemWritten;
 extern HANDLE           SemReadDone;
 
-extern int      BatservReadData( char *plink_cmd, void *buff, int len );
+extern int      BatservReadData( void );
 extern int      BatservWriteCmd( char link_cmd );
 extern int      BatservWriteData( char link_cmd, const void *buff, int len );

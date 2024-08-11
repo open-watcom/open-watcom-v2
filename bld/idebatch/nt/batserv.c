@@ -122,40 +122,38 @@ static void SendStatus( batch_stat status )
 
 static void ProcessConnection( void )
 {
-    char                buff[TRANS_MAXLEN];
     DWORD               bytes_read;
     DWORD               rc;
     DWORD               status;
     unsigned            max;
-    char                link_cmd;
     int                 rbytes;
 
     for( ;; ) {
-        rbytes = BatservReadData( &link_cmd, buff, sizeof( buff ) );
+        rbytes = BatservReadData();
         if( rbytes < 0 )
             break;
-        buff[rbytes] = '\0';
-        switch( link_cmd ) {
+        bdata.u.s.u.data[rbytes] = '\0';
+        switch( bdata.u.s.cmd ) {
         case LNK_CWD:
             rc = 0;
-            if( !SetCurrentDirectory( buff ) ) {
+            if( !SetCurrentDirectory( bdata.u.s.u.data ) ) {
                 rc = GetLastError();
             }
             SendStatus( rc );
             break;
         case LNK_RUN:
-            RunCmd( buff );
+            RunCmd( bdata.u.s.u.data );
             break;
         case LNK_QUERY:
-            max = *(batch_len *)buff;
-            if( max > sizeof( buff ) )
-                max = sizeof( buff );
-            if( PeekNamedPipe( RedirRead, buff, 0, NULL, &bytes_read, NULL )
+            max = bdata.u.s.u.len;
+            if( max > TRANS_DATA_MAXLEN )
+                max = TRANS_DATA_MAXLEN;
+            if( PeekNamedPipe( RedirRead, bdata.u.buffer, 0, NULL, &bytes_read, NULL )
               && bytes_read != 0 ) {
                 if( max > bytes_read )
                     max = bytes_read;
-                ReadFile( RedirRead, buff, max, &bytes_read, NULL );
-                BatservWriteData( LNK_OUTPUT, buff, bytes_read );
+                ReadFile( RedirRead, bdata.u.buffer, max, &bytes_read, NULL );
+                BatservWriteData( LNK_OUTPUT, bdata.u.buffer, bytes_read );
             } else {
                 if( WaitForSingleObject( ProcHdl, 0 ) == WAIT_TIMEOUT ) {
                     /* let someone else run */
