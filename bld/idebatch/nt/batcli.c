@@ -65,14 +65,14 @@ int BatchMaxCmdLine( void )
 
 batch_stat BatchChdir( const char *dir )
 {
-    BatservWriteData( LNK_CWD, dir, strlen( dir ) + 1 );
+    BatservWriteData( LNK_CWD, dir, (int)( strlen( dir ) + 1 ) );
     BatservReadData();
     return( bdata.u.s.u.status );
 }
 
 int BatchSpawn( const char *cmd )
 {
-    BatservWriteData( LNK_RUN, cmd, strlen( cmd ) + 1 );
+    BatservWriteData( LNK_RUN, cmd, (int)( strlen( cmd ) + 1 ) );
     return( 0 );
 }
 

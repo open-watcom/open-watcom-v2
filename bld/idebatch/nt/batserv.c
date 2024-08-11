@@ -210,8 +210,6 @@ void main( int argc, char *argv[] )
 {
     SECURITY_ATTRIBUTES attr;
 
-    /* unused parameters */ (void)argc; (void)argv;
-
     SemReadUp = CreateSemaphore( NULL, 0, 1, READUP_NAME );
     SemReadDone = CreateSemaphore( NULL, 0, 1, READDONE_NAME );
     SemWritten = CreateSemaphore( NULL, 0, 1, WRITTEN_NAME );
@@ -226,7 +224,7 @@ void main( int argc, char *argv[] )
         }
         exit_link( 0 );
     }
-    MemHdl = CreateFileMapping( INVALID_HANDLE_VALUE, NULL, PAGE_READWRITE, 0, 1024, DEFAULT_LINK_NAME );
+    MemHdl = CreateFileMapping( INVALID_HANDLE_VALUE, NULL, PAGE_READWRITE, 0, TRANS_MAXLEN, DEFAULT_LINK_NAME );
     SharedMemPtr = MapViewOfFile( MemHdl, FILE_MAP_WRITE, 0, 0, 0 );
     /*
      * there was used getenv C function, but it looks like some versions of Microsoft
