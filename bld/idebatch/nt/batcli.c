@@ -67,18 +67,14 @@ static char     batch_buff[TRANS_MAXLEN]; /* static to miminize stack usage */
 
 batch_stat BatchChdir( const char *new_dir )
 {
-    batch_buff[0] = LNK_CWD;
-    strcpy( &batch_buff[1], new_dir );
-    BatservWrite( batch_buff, (unsigned long)( strlen( batch_buff ) + 1 ) );
+    BatservWriteData( LNK_CWD, new_dir, strlen( new_dir ) + 1 );
     BatservRead( batch_buff, sizeof( batch_buff ) );
     return( *(batch_stat *)&batch_buff[1] );
 }
 
 int BatchSpawn( const char *cmd )
 {
-    batch_buff[0] = LNK_RUN;
-    strcpy( &batch_buff[1], cmd );
-    BatservWrite( batch_buff, (unsigned long)strlen( batch_buff ) );
+    BatservWriteData( LNK_RUN, cmd, strlen( cmd ) + 1 );
     return( 0 );
 }
 
@@ -87,9 +83,7 @@ int BatchCollect( void *ptr, batch_len max, batch_stat *status )
     int         len;
     char        *buff = ptr;
 
-    buff[0] = LNK_QUERY;
-    *(batch_len *)&buff[1] = max;
-    BatservWrite( buff, 1 + sizeof( batch_len ) );
+    BatservWriteData( LNK_QUERY, &max, sizeof( max ) );
     len = BatservRead( buff, max ) - 1;
     if( len <= 0 )
         return( 0 );
@@ -103,29 +97,20 @@ int BatchCollect( void *ptr, batch_len max, batch_stat *status )
 
 int BatchCancel( void )
 {
-    char        cmd;
-
-    cmd = LNK_CANCEL;
-    BatservWrite( &cmd, sizeof( cmd ) );
+    BatservWriteCmd( LNK_CANCEL );
     return( 0 );
 }
 
 int BatchAbort( void )
 {
-    char        cmd;
-
-    cmd = LNK_ABORT;
-    BatservWrite( &cmd, sizeof( cmd ) );
+    BatservWriteCmd( LNK_ABORT );
     return( 0 );
 }
 
 
 void BatchUnlink( int shutdown )
 {
-    char        done;
-
-    done = shutdown ? LNK_SHUTDOWN : LNK_DONE;
-    BatservWrite( &done, sizeof( done ) );
+    BatservWriteCmd( ( shutdown ) ? LNK_SHUTDOWN : LNK_DONE );
     CloseHandle( SemReadUp );
     CloseHandle( SemReadDone );
     CloseHandle( SemWritten );

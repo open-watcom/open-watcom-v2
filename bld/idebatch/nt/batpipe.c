@@ -34,7 +34,7 @@
 #include <windows.h>
 #include "batpipe.h"
 
-char                    *SharedMemPtr;
+batch_data              *SharedMemPtr;
 HANDLE                  SemReadUp;
 HANDLE                  SemWritten;
 HANDLE                  SemReadDone;
@@ -45,21 +45,31 @@ unsigned BatservRead( void *buff, unsigned len )
 
     ReleaseSemaphore( SemReadUp, 1, NULL );
     WaitForSingleObject( SemWritten, INFINITE );
-    bytes_read = *(unsigned*)SharedMemPtr;
+    bytes_read = SharedMemPtr->u.s.len;
     if( bytes_read > len )
         bytes_read = len;
-    memcpy( buff, SharedMemPtr + sizeof( unsigned ), bytes_read );
+    memcpy( buff, &SharedMemPtr->u.s.cmd, bytes_read );
     ReleaseSemaphore( SemReadDone, 1, NULL );
     return( bytes_read );
 }
 
-unsigned BatservWrite( void *buff, unsigned len )
+int BatservWriteCmd( char link_cmd )
 {
     WaitForSingleObject( SemReadUp, INFINITE );
-    *(unsigned*)SharedMemPtr = len;
-    memcpy( SharedMemPtr + sizeof( unsigned ), buff, len );
+    SharedMemPtr->u.s.len = 1;
+    SharedMemPtr->u.s.cmd = link_cmd;
+    ReleaseSemaphore( SemWritten, 1, NULL );
+    WaitForSingleObject( SemReadDone, INFINITE );
+    return( 0 );
+}
+
+int BatservWriteData( char link_cmd, const void *buff, int len )
+{
+    WaitForSingleObject( SemReadUp, INFINITE );
+    SharedMemPtr->u.s.len = len + 1;
+    SharedMemPtr->u.s.cmd = link_cmd;
+    memcpy( SharedMemPtr->u.s.u.data, buff, len );
     ReleaseSemaphore( SemWritten, 1, NULL );
     WaitForSingleObject( SemReadDone, INFINITE );
     return( len );
 }
-

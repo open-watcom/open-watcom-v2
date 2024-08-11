@@ -39,10 +39,11 @@
 #define WRITTEN_NAME    "WrittenSem"
 #define READDONE_NAME   "ReadDoneSem"
 
-extern char             *SharedMemPtr;
+extern batch_data       *SharedMemPtr;
 extern HANDLE           SemReadUp;
 extern HANDLE           SemWritten;
 extern HANDLE           SemReadDone;
 
 extern unsigned BatservRead( void *buff, unsigned len );
-extern unsigned BatservWrite( void *buff, unsigned len );
+extern int      BatservWriteCmd( char link_cmd );
+extern int      BatservWriteData( char link_cmd, const void *buff, int len );

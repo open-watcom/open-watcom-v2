@@ -117,14 +117,7 @@ static void RunCmd( char *cmd_name )
 
 static void SendStatus( batch_stat status )
 {
-    struct {
-        unsigned char   cmd;
-        batch_stat      stat;
-    } buff;
-
-    buff.cmd = LNK_STATUS;
-    buff.stat = status;
-    BatservWrite( &buff, sizeof( buff ) );
+    BatservWriteData( LNK_STATUS, &status, sizeof( status ) );
 }
 
 static void ProcessConnection( void )
@@ -158,19 +151,17 @@ static void ProcessConnection( void )
             if( max > sizeof( buff ) )
                 max = sizeof( buff );
             --max;
-            if( PeekNamedPipe( RedirRead, buff, 0, NULL, &bytes_read,
-                        NULL ) && bytes_read != 0 ) {
-                if( bytes_read < max )
+            if( PeekNamedPipe( RedirRead, buff, 0, NULL, &bytes_read, NULL )
+              && bytes_read != 0 ) {
+                if( max > bytes_read )
                     max = bytes_read;
-                ReadFile( RedirRead, &buff[1], max, &bytes_read, NULL );
-                buff[0] = LNK_OUTPUT;
-                BatservWrite( buff, bytes_read + 1 );
+                ReadFile( RedirRead, buff, max, &bytes_read, NULL );
+                BatservWriteData( LNK_OUTPUT, buff, bytes_read );
             } else {
                 if( WaitForSingleObject( ProcHdl, 0 ) == WAIT_TIMEOUT ) {
                     /* let someone else run */
                     Sleep( 1 );
-                    buff[0] = LNK_NOP;
-                    BatservWrite( buff, 1 );
+                    BatservWriteCmd( LNK_NOP );
                 } else {
                     GetExitCodeProcess( ProcHdl, &status );
                     CloseHandle( RedirRead );
@@ -232,12 +223,9 @@ void main( int argc, char *argv[] )
         if( MemHdl == NULL ) {
             Say(( "can not connect to batcher spawn server\n" ));
         } else {
-            char        done;
-
             SharedMemPtr = MapViewOfFile( MemHdl, FILE_MAP_WRITE, 0, 0, 0 );
             Say(( "LNK_SHUTDOWN\n" ));
-            done = LNK_SHUTDOWN;
-            BatservWrite( &done, sizeof( done ) );
+            BatservWriteCmd( LNK_SHUTDOWN );
         }
         exit_link( 0 );
     }
