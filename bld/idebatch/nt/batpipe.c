@@ -49,7 +49,7 @@ int BatservReadData( void )
     WaitForSingleObject( SemWritten, INFINITE );
     bytes_read = SharedMemPtr->len;
     if( bytes_read > 0 ) {
-        memcpy( bdata.u.s.u.data, SharedMemPtr->data.u.s.u.data, bytes_read );
+        memcpy( bdata.u.buffer, SharedMemPtr->data.u.buffer, bytes_read );
     } else {
         bdata.u.s.cmd = LNK_NOP;
         bytes_read = 0;
