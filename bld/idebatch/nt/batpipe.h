@@ -39,7 +39,8 @@
 #define WRITTEN_NAME    "WrittenSem"
 #define READDONE_NAME   "ReadDoneSem"
 
-extern batch_data       *SharedMemPtr;
+extern batch_data       bdata;
+extern batch_shmem      *SharedMemPtr;
 extern HANDLE           SemReadUp;
 extern HANDLE           SemWritten;
 extern HANDLE           SemReadDone;

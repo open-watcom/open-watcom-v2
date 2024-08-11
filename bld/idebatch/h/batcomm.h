@@ -34,6 +34,12 @@
 #define TRANS_MAXLEN        1024
 #define DEFAULT_LINK_NAME   "BatLink"
 
+#ifdef __NT__
+#define TRANS_DATA_MAXLEN       (TRANS_MAXLEN - sizeof( batch_len ) - 1)
+#else
+#define TRANS_DATA_MAXLEN       (TRANS_MAXLEN - 1)
+#endif
+
 enum {
     LNK_NOP,
     LNK_CWD,
@@ -50,17 +56,25 @@ enum {
 #include "pushpck1.h"
 typedef struct batch_data {
     union {
-        char            buff[TRANS_MAXLEN];
+        char            buffer[TRANS_DATA_MAXLEN + 1];
         struct {
-#ifdef __NT__
-            unsigned    len;
-#endif
             char        cmd;
             union {
-                char            data[1];
+                char            data[TRANS_DATA_MAXLEN];
+                batch_len       len;
                 batch_stat      status;
             } u;
         } s;
     } u;
 } batch_data;
 #include "poppck.h"
+
+#ifdef __NT__
+#include "pushpck1.h"
+typedef struct batch_shmem {
+    batch_len   len;
+    batch_data  data;
+} batch_shmem;
+#include "poppck.h"
+#endif
+

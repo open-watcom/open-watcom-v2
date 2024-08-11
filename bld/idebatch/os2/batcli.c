@@ -56,7 +56,7 @@ const char *BatchLink( const char *name )
 
 int BatchMaxCmdLine( void )
 {
-    return( TRANS_MAXLEN - 1 );
+    return( TRANS_DATA_MAXLEN - 1 );
 }
 
 static unsigned my_read( int hdl, void *buff, unsigned len )
