@@ -490,7 +490,7 @@ static char buff[MAX_BUFF+1];
         }
 #endif
     } else {
-        unsigned        maxlen;
+        int     maxlen;
 
         maxlen = BatchMaxCmdLine();
         cmd.truncate( maxlen );

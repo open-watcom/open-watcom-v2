@@ -115,11 +115,11 @@ static void RunCmd( char *cmd_name )
     ProcHdl = info.hProcess;
 }
 
-static void SendStatus( unsigned long status )
+static void SendStatus( batch_stat status )
 {
     struct {
         unsigned char   cmd;
-        unsigned long   stat;
+        batch_stat      stat;
     } buff;
 
     buff.cmd = LNK_STATUS;

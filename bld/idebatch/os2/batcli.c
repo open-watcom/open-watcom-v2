@@ -54,7 +54,7 @@ const char *BatchLink( const char *name )
     return( NULL );
 }
 
-unsigned BatchMaxCmdLine()
+int BatchMaxCmdLine( void )
 {
     return( TRANS_MAXLEN - 1 );
 }
@@ -79,16 +79,16 @@ static unsigned my_write( int hdl, void *buff, unsigned len )
 
 static char     batch_buff[TRANS_MAXLEN]; /* static to minimize stack space */
 
-unsigned BatchChdir( const char *new_dir )
+batch_stat BatchChdir( const char *new_dir )
 {
     batch_buff[0] = LNK_CWD;
     strcpy( &batch_buff[1], new_dir );
     my_write( pipeHdl, batch_buff, strlen( batch_buff ) + 1 );
     my_read( pipeHdl, batch_buff, sizeof( batch_buff ) );
-    return( *(unsigned long *)&batch_buff[1] );
+    return( *(batch_stat *)&batch_buff[1] );
 }
 
-unsigned BatchSpawn( const char *cmd )
+int BatchSpawn( const char *cmd )
 {
 
     batch_buff[0] = LNK_RUN;
@@ -116,7 +116,7 @@ int BatchCollect( void *ptr, batch_len max, batch_stat *status )
     return( len );
 }
 
-unsigned BatchCancel()
+int BatchCancel( void )
 {
     char        cmd;
 
@@ -125,7 +125,7 @@ unsigned BatchCancel()
     return( 0 );
 }
 
-unsigned BatchAbort()
+int BatchAbort( void )
 {
     char        cmd;
 

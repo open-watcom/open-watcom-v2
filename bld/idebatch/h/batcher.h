@@ -39,11 +39,11 @@ typedef unsigned long   batch_stat;
 typedef int             batch_len;
 
 extern const char   *BatchLink( const char *__name );
-extern unsigned     BatchMaxCmdLine( void );
-extern unsigned     BatchChdir( const char *__new_dir );
-extern unsigned     BatchSpawn( const char *__cmd );
-extern unsigned     BatchCancel( void );
-extern unsigned     BatchAbort( void );
+extern int          BatchMaxCmdLine( void );
+extern batch_stat   BatchChdir( const char *__new_dir );
+extern int          BatchSpawn( const char *__cmd );
+extern int          BatchCancel( void );
+extern int          BatchAbort( void );
 extern int          BatchCollect( void *__buffer, batch_len __len, batch_stat *__status );
 extern void         BatchUnlink( int );
 
