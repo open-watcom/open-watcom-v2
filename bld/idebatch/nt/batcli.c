@@ -63,13 +63,13 @@ int BatchMaxCmdLine( void )
     return( TRANS_MAXLEN - 1 );
 }
 
-static char     batch_buff[TRANS_MAXLEN]; /* static to miminize stack usage */
-
 batch_stat BatchChdir( const char *new_dir )
 {
+    batch_stat  status;
+
     BatservWriteData( LNK_CWD, new_dir, strlen( new_dir ) + 1 );
-    BatservRead( batch_buff, sizeof( batch_buff ) );
-    return( *(batch_stat *)&batch_buff[1] );
+    BatservReadData( NULL, &status, sizeof( status ) );
+    return( status );
 }
 
 int BatchSpawn( const char *cmd )
@@ -81,17 +81,18 @@ int BatchSpawn( const char *cmd )
 int BatchCollect( void *ptr, batch_len max, batch_stat *status )
 {
     int         len;
-    char        *buff = ptr;
+    char        link_cmd;
 
     BatservWriteData( LNK_QUERY, &max, sizeof( max ) );
-    len = BatservRead( buff, max ) - 1;
-    if( len <= 0 )
-        return( 0 );
-    if( *buff == LNK_STATUS ) {
-        *status = *(batch_stat *)&buff[1];
-        return( -1 );
+    len = BatservReadData( &link_cmd, ptr, max );
+    if( len > 0 ) {
+        if( link_cmd == LNK_STATUS ) {
+            *status = *(batch_stat *)ptr;
+            len = -1;
+        }
+    } else {
+        len = 0;
     }
-    memmove( buff, &buff[1], len );
     return( len );
 }
 

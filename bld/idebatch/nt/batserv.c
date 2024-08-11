@@ -124,33 +124,32 @@ static void ProcessConnection( void )
 {
     char                buff[TRANS_MAXLEN];
     DWORD               bytes_read;
-    char                *dir;
     DWORD               rc;
     DWORD               status;
     unsigned            max;
+    char                link_cmd;
+    int                 rbytes;
 
     for( ;; ) {
-        bytes_read = BatservRead( buff, sizeof( buff ) );
-        if( bytes_read == 0 )
+        rbytes = BatservReadData( &link_cmd, buff, sizeof( buff ) );
+        if( rbytes < 0 )
             break;
-        buff[bytes_read] = '\0';
-        switch( buff[0] ) {
+        buff[rbytes] = '\0';
+        switch( link_cmd ) {
         case LNK_CWD:
             rc = 0;
-            dir = &buff[1];
-            if( !SetCurrentDirectory( dir ) ) {
+            if( !SetCurrentDirectory( buff ) ) {
                 rc = GetLastError();
             }
             SendStatus( rc );
             break;
         case LNK_RUN:
-            RunCmd( &buff[1] );
+            RunCmd( buff );
             break;
         case LNK_QUERY:
-            max = *(unsigned long *)&buff[1];
+            max = *(batch_len *)buff;
             if( max > sizeof( buff ) )
                 max = sizeof( buff );
-            --max;
             if( PeekNamedPipe( RedirRead, buff, 0, NULL, &bytes_read, NULL )
               && bytes_read != 0 ) {
                 if( max > bytes_read )

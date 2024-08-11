@@ -39,16 +39,29 @@ HANDLE                  SemReadUp;
 HANDLE                  SemWritten;
 HANDLE                  SemReadDone;
 
-unsigned BatservRead( void *buff, unsigned len )
+int BatservReadData( char *plink_cmd, void *buff, int len )
 {
-    unsigned    bytes_read;
+    int     bytes_read;
+    char    link_cmd;
 
     ReleaseSemaphore( SemReadUp, 1, NULL );
     WaitForSingleObject( SemWritten, INFINITE );
     bytes_read = SharedMemPtr->u.s.len;
-    if( bytes_read > len )
-        bytes_read = len;
-    memcpy( buff, &SharedMemPtr->u.s.cmd, bytes_read );
+    if( bytes_read > 0 ) {
+        link_cmd = SharedMemPtr->u.s.cmd;
+        bytes_read--;
+        if( bytes_read > len )
+            bytes_read = len;
+        if( bytes_read > 0 ) {
+            memcpy( buff, SharedMemPtr->u.s.u.data, bytes_read );
+        }
+    } else {
+        link_cmd = 0;
+        bytes_read = -1;
+    }
+    if( plink_cmd != NULL ) {
+        *plink_cmd = link_cmd;
+    }
     ReleaseSemaphore( SemReadDone, 1, NULL );
     return( bytes_read );
 }
