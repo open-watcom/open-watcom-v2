@@ -63,11 +63,11 @@ int BatchMaxCmdLine( void )
     return( TRANS_DATA_MAXLEN - 1 );
 }
 
-batch_stat BatchChdir( const char *new_dir )
+batch_stat BatchChdir( const char *dir )
 {
     batch_stat  status;
 
-    BatservWriteData( LNK_CWD, new_dir, strlen( new_dir ) + 1 );
+    BatservWriteData( LNK_CWD, dir, strlen( dir ) + 1 );
     BatservReadData( NULL, &status, sizeof( status ) );
     return( status );
 }

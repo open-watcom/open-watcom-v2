@@ -40,7 +40,7 @@ typedef int             batch_len;
 
 extern const char   *BatchLink( const char *__name );
 extern int          BatchMaxCmdLine( void );
-extern batch_stat   BatchChdir( const char *__new_dir );
+extern batch_stat   BatchChdir( const char *__dir );
 extern int          BatchSpawn( const char *__cmd );
 extern int          BatchCancel( void );
 extern int          BatchAbort( void );

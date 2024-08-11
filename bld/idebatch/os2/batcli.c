@@ -79,10 +79,10 @@ static unsigned my_write( int hdl, void *buff, unsigned len )
 
 static char     batch_buff[TRANS_MAXLEN]; /* static to minimize stack space */
 
-batch_stat BatchChdir( const char *new_dir )
+batch_stat BatchChdir( const char *dir )
 {
     batch_buff[0] = LNK_CWD;
-    strcpy( &batch_buff[1], new_dir );
+    strcpy( &batch_buff[1], dir );
     my_write( pipeHdl, batch_buff, strlen( batch_buff ) + 1 );
     my_read( pipeHdl, batch_buff, sizeof( batch_buff ) );
     return( *(batch_stat *)&batch_buff[1] );
