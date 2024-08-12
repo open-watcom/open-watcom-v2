@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,12 +31,16 @@
 ****************************************************************************/
 
 
-#define MAGIC_ID                "\251\252\253\254"
-#define TERMINATE_COMMAND_STR   MAGIC_ID "done"
-#define TERMINATE_CLIENT_STR    MAGIC_ID "die"
-#define NEW_OPEN_LIST           MAGIC_ID "open"
-#define END_OPEN_LIST           MAGIC_ID "endopen"
-#define GOT_OPEN_STR            MAGIC_ID "gotopenstr"
-#define GET_REAL_NAME           MAGIC_ID "getrealname"
-#define LINK_NAME               "idelink"
-#define EDITOR_LINK_NAME        "edidelink"
+#define DEFAULT_LINK_NAME           "idelink"
+#define EDITOR_LINK_NAME            "edidelink"
+
+#define LIT_MAGIC_ID                "\251\252\253\254"
+#define LIT_TERMINATE_COMMAND_STR   LIT_MAGIC_ID "done"
+#define LIT_TERMINATE_CLIENT_STR    LIT_MAGIC_ID "die"
+#define LIT_NEW_OPEN_LIST           LIT_MAGIC_ID "open"
+#define LIT_END_OPEN_LIST           LIT_MAGIC_ID "endopen"
+#define LIT_GOT_OPEN_STR            LIT_MAGIC_ID "gotopenstr"
+#define LIT_GET_REAL_NAME           LIT_MAGIC_ID "getrealname"
+
+#define VxDPutLIT(x)    VxDPut(x, sizeof(x))
+

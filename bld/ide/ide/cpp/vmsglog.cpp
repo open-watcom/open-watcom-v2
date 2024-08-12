@@ -177,7 +177,7 @@ void VMsgLog::startConnect()
 #ifdef __WINDOWS__
         _vxdPresent = (bool)VxDPresent();
         if( _vxdPresent ) {
-            const char* res = VxDLink( LINK_NAME );
+            const char* res = VxDLink( DEFAULT_LINK_NAME );
             if( !res ) {
                 WSystemService::sysExecBackground( _config->batserv() );
                 _connectionTries = CONNECTION_TRIES;
@@ -234,7 +234,7 @@ WEXPORT VMsgLog::~VMsgLog()
 #ifdef __WINDOWS__
         if( _vxdPresent ) {
             if( _serverConnected ) {
-                VxDPut( TERMINATE_CLIENT_STR, sizeof( TERMINATE_CLIENT_STR )+1 );
+                VxDPutLIT( LIT_TERMINATE_CLIENT_STR );
             }
             for( int i = 0; i < 100; i++ ) {
                 if( VxDUnLink() == 0 ) {
@@ -453,8 +453,8 @@ static char buffer[MAX_BUFF+1];
 void VMsgLog::scanLine( const char* buff, int len )
 {
     for( int i = 0; i < len; i++ ) {
-        if( buff[i] == 10 ) {
-        } else if( buff[i] == 13 ) {
+        if( buff[i] == '\n' ) {
+        } else if( buff[i] == '\r' ) {
             addLine( buffer );
             blength = 0;
             buffer[blength] = '\0';
@@ -482,7 +482,7 @@ static char buff[MAX_BUFF+1];
         for( ;; ) {
             int len = VxDGet( buff, MAX_BUFF );
             buff[len] = '\0';
-            if( streq( buff, TERMINATE_COMMAND_STR ) ) {
+            if( streq( buff, LIT_TERMINATE_COMMAND_STR ) ) {
                 break;
             } else if( len > 0 ) {
                 scanLine( buff, len );

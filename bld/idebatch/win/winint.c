@@ -298,10 +298,10 @@ LONG WINAPI MainWindowProc( HWND hwnd, UINT msg, UINT wparam, LONG lparam )
 #ifndef __EDITOR__
                 if( !stricmp( buff, ":ol" ) ) {
                     if( hasOL ) {
-                        VxDPut( END_OPEN_LIST, sizeof( END_OPEN_LIST ) + 1 );
+                        VxDPutLIT( LIT_END_OPEN_LIST );
                         hasOL = 0;
                     } else {
-                        VxDPut( NEW_OPEN_LIST, sizeof( NEW_OPEN_LIST ) + 1 );
+                        VxDPutLIT( LIT_NEW_OPEN_LIST );
                         hasOL = 1;
                     }
                     VxDGet( buff, sizeof( buff ) );
@@ -320,7 +320,7 @@ LONG WINAPI MainWindowProc( HWND hwnd, UINT msg, UINT wparam, LONG lparam )
                             VxDPut( buff, strlen( buff ) + 1 );
                             continue;
                         }
-                        if( !stricmp( buff,TERMINATE_COMMAND_STR ) ) {
+                        if( !stricmp( buff, LIT_TERMINATE_COMMAND_STR ) ) {
                             break;
                         }
                         listBoxOut( "(%d,%d): %s", len, strlen( buff ), buff );
@@ -355,7 +355,7 @@ LONG WINAPI MainWindowProc( HWND hwnd, UINT msg, UINT wparam, LONG lparam )
         return( DefWindowProc( hwnd, msg, wparam, lparam ) );
 
     case WM_CLOSE:
-        VxDPut( TERMINATE_CLIENT_STR, sizeof( TERMINATE_CLIENT_STR ) + 1 );
+        VxDPutLIT( LIT_TERMINATE_CLIENT_STR );
         while( 1 ) {
             if( VxDUnLink() == 0 ) {
                 break;
@@ -437,10 +437,10 @@ static BOOL anyInstance( void )
 
     ShowWindow( ourWindow, SW_NORMAL );
     UpdateWindow( ourWindow );
-#ifndef __EDITOR__
-    res = VxDLink( LINK_NAME );
-#else
+#ifdef __EDITOR__
     res = VxDLink( EDITOR_LINK_NAME );
+#else
+    res = VxDLink( DEFAULT_LINK_NAME );
 #endif
     if( res != NULL ) {
         MessageBox( NULL,res,"Link Error", MB_OK | MB_TASKMODAL );
