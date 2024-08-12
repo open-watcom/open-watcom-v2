@@ -49,12 +49,12 @@
 
 #include "batpipe.h"
 
-static  HANDLE      RedirRead;
-static  HANDLE      NulHdl;
-static  char        CmdProc[128];
-static  DWORD       ProcId;
-static  HANDLE      ProcHdl;
-static  HANDLE      MemHdl;
+static HANDLE       RedirRead;
+static HANDLE       NulHdl;
+static char         CmdProc[128];
+static DWORD        ProcId;
+static HANDLE       ProcHdl;
+static HANDLE       MemHdl;
 
 static void exit_link( int rc )
 {
