@@ -481,13 +481,14 @@ static char buff[MAX_BUFF+1];
         VxDPut( cmd.gets(), cmd.size() + 1 );
         for( ;; ) {
             int len = VxDGet( buff, sizeof( buff ) );
+            if( len < 0 )
+                break;
             if( len > 0 ) {
                 buff[sizeof( buff ) - 1] = '\0';
                 if( streq( buff, LIT_TERMINATE_COMMAND_STR ) ) {
                     break;
-                } else {
-                    scanLine( buff, len );
                 }
+                scanLine( buff, len );
             }
         }
 #endif
@@ -497,10 +498,11 @@ static char buff[MAX_BUFF+1];
         for( ;; ) {
             WSystemService::sysYield(); //allow other tasks to run
             batch_stat stat;
-            int len = BatchCollect( buff, MAX_BUFF, &stat );
-            if( len < 0 ) {
+            int len = BatchCollect( buff, sizeof( buff ), &stat );
+            if( len < 0 )
                 break;
-            } else if( len > 0 ) {
+            if( len > 0 ) {
+                buff[sizeof( buff ) - 1] = '\0';
                 scanLine( buff, len );
             }
         }

@@ -444,7 +444,7 @@ static BOOL anyInstance( void )
     res = VxDLink( DEFAULT_LINK_NAME );
 #endif
     if( res != NULL ) {
-        MessageBox( NULL,res,"Link Error", MB_OK | MB_TASKMODAL );
+        MessageBox( NULL, res, "Link Error", MB_OK | MB_TASKMODAL );
         return( FALSE );
     }
     SetTimer( ourWindow, TIMER_ID, 500, 0L );
