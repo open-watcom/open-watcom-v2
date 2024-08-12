@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -98,7 +98,7 @@ void __pascal VxDRaiseInterrupt( unsigned intr )
 /*
  * VxDGet - get some data from a client/server
  */
-unsigned __pascal VxDGet( void __far *rec, unsigned len )
+int __pascal VxDGet( void __far *rec, unsigned len )
 {
     _dword      rc;
 
@@ -114,6 +114,8 @@ unsigned __pascal VxDGet( void __far *rec, unsigned len )
 #else
     rc = ConvGet( __ConvId, rec, len, BLOCK );
 #endif
+    if( (signed short)rc < 0 )
+        return( (signed short)rc );
     return( rc >> 16 );
 
 } /* VxDGet */

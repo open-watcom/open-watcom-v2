@@ -93,12 +93,16 @@ exetarg_name = winint
 
 exetarg_prebuild_objs = $(subdir_editor)
 exetarg_objs = $(subdir_editor)/winint.obj link.obj
-exetarg_res = wininte.res
+exetarg_res = $(subdir_editor)/winint.res
 exetarg_name = wininte
 !include exetarg.mif
 
-winint.res wininte.res : ../win/winint.rc
+winint.res : ../win/winint.rc
     @%make echo_rc
-    $(rc) $(ppflags_common) $(rc_cppflags) $(rc_flags) $(inc_dirs) $[@ -fo=$@
+    $(rc) $(ppflags_common) $(rc_cppflags) $(rc_flags) $(inc_dirs) $(rc_inc_path) $[@ -fo=$@
+
+$(subdir_editor)/winint.res : ../win/winint.rc
+    @%make echo_rc
+    $(rc) $(ppflags_common) $(rc_cppflags) -D__EDITOR__ $(rc_flags) $(inc_dirs) $(rc_inc_path) $[@ -fo=$@
 
 !endif

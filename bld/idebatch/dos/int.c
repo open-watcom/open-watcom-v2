@@ -86,7 +86,6 @@ int main( void )
     char        names[2 * _MAX_PATH + 2];
     char        *ptr;
     char        *nptr;
-    long        rc;
     int         i, len;
 
     cputs( "WATCOM DOS Driver\r\n" );
@@ -112,18 +111,19 @@ int main( void )
     }
     cputs( "DOS Driver started\r\n" );
     for( ;; ) {
-        rc = VxDGet( buff, sizeof( buff ) );
-        if( rc < 0 ) {
-            ltoa( rc, buff, 10 );
+        len = VxDGet( buff, sizeof( buff ) );
+        if( len < 0 ) {
+            ltoa( len, buff, 10 );
             cputs( "Error " );
             cputs( buff );
             cputs( "encountered, aborting!\r\n" );
             break;
         }
-        if( stricmp( buff, LIT_TERMINATE_CLIENT_STR ) == 0 ) {
+        buff[sizeof( buff ) - 1] = '\0';
+        if( strcmp( buff, LIT_TERMINATE_CLIENT_STR ) == 0 ) {
             break;
         }
-        if( stricmp( buff, LIT_NEW_OPEN_LIST ) == 0 ) {
+        if( strcmp( buff, LIT_NEW_OPEN_LIST ) == 0 ) {
             /*
              * free old list of names
              */
@@ -140,8 +140,11 @@ int main( void )
              * get list of names
              */
             for( ;; ) {
-                rc = VxDGet( buff, sizeof( buff ) );
-                if( stricmp( buff, LIT_END_OPEN_LIST ) == 0 ) {
+                len = VxDGet( buff, sizeof( buff ) );
+                if( len < 0 )
+                    break;
+                buff[sizeof( buff ) - 1] = '\0';
+                if( strcmp( buff, LIT_END_OPEN_LIST ) == 0 ) {
                     break;
                 }
                 ptr = buff;

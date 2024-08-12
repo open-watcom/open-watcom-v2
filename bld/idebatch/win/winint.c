@@ -152,7 +152,6 @@ static void listBoxOut( char *str, ... )
 
 LRESULT CALLBACK EditSubClassProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
-
     switch( msg ) {
     case WM_KEYDOWN:
         if( wparam == VK_RETURN ) {
@@ -313,14 +312,16 @@ LONG WINAPI MainWindowProc( HWND hwnd, UINT msg, UINT wparam, LONG lparam )
                     VxDPut( buff, len + 1 );
                     while( 1 ) {
                         len = VxDGet( buff, sizeof( buff ) );
-                        buff[len] = 0;
-                        if( !strnicmp( buff, GET_REAL_NAME, sizeof( GET_REAL_NAME ) - 1 ) ) {
-                            listBoxOut( "REQUEST: %s\r\n", &buff[ sizeof( GET_REAL_NAME ) ] );
-                            sprintf( buff,"y.c" );
+                        if( len < 0 )
+                            break;
+                        buff[sizeof( buff ) - 1] = '\0';
+                        if( strncmp( buff, LIT_GET_REAL_NAME, sizeof( LIT_GET_REAL_NAME ) - 1 ) == 0 ) {
+                            listBoxOut( "REQUEST: %s\r\n", &buff[sizeof( LIT_GET_REAL_NAME )] );
+                            sprintf( buff, "y.c" );
                             VxDPut( buff, strlen( buff ) + 1 );
                             continue;
                         }
-                        if( !stricmp( buff, LIT_TERMINATE_COMMAND_STR ) ) {
+                        if( strcmp( buff, LIT_TERMINATE_COMMAND_STR ) == 0 ) {
                             break;
                         }
                         listBoxOut( "(%d,%d): %s", len, strlen( buff ), buff );
