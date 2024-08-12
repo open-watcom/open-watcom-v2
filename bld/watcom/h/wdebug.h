@@ -99,14 +99,14 @@ extern int UnaccessName( char __far * );                    /* 12 */
 extern int StartConv( _dword );                             /* 13 */
 extern int LookForConv( _dword __far * );                   /* 14 */
 extern int EndConv( _dword );                               /* 15 */
-extern _dword ConvGet( _dword, void __far *, _word, _word  ); /* 16 */
-extern _word ConvPut( _dword, const void __far *, _word, _word  ); /* 17 */
+extern _dword ConvGet( _dword id, void __far *buff, _word len, _word attr ); /* 16 */
+extern _word ConvPut( _dword id, const void __far *buff, _word len, _word attr ); /* 17 */
 extern _word IsConvAck( _dword );                           /* 18 */
 extern void MyID( _dword __far * );                         /* 19 */
 extern _word SetExecutionFocus( _dword );                   /* 1a */
 extern int WhatHappened( void );                            /* 1b */
-extern _word ConvGetTimeOut( _dword, void __far *, _word, _word  ); /* 1c */
-extern _word ConvPutTimeOut( _dword, void __far *, _word, _word  ); /* 1d */
+extern _word ConvGetTimeOut( _dword id, void __far *buff, _word len, _word timeout ); /* 1c */
+extern _word ConvPutTimeOut( _dword id, const void __far *buff, _word len, _word timeout ); /* 1d */
 extern short EMUInit( void );                               /* 1e */
 extern short EMUShutdown( void );                           /* 1f */
 extern short EMURegister( _word, _dword );                  /* 20 */
