@@ -119,7 +119,6 @@ int main( void )
             cputs( "encountered, aborting!\r\n" );
             break;
         }
-        buff[sizeof( buff ) - 1] = '\0';
         if( strcmp( buff, LIT_TERMINATE_CLIENT_STR ) == 0 ) {
             break;
         }
@@ -143,7 +142,6 @@ int main( void )
                 len = VxDGet( buff, sizeof( buff ) );
                 if( len < 0 )
                     break;
-                buff[sizeof( buff ) - 1] = '\0';
                 if( strcmp( buff, LIT_END_OPEN_LIST ) == 0 ) {
                     break;
                 }

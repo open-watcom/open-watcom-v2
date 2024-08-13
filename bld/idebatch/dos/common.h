@@ -42,4 +42,4 @@
 #define LIT_GOT_OPEN_STR            LIT_MAGIC_ID "gotopenstr"
 #define LIT_GET_REAL_NAME           LIT_MAGIC_ID "getrealname"
 
-#define VxDPutLIT(x)    VxDPut(x, sizeof(x))
+#define VxDPutLIT(x)    VxDPut(x, sizeof(x) - 1)

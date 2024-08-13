@@ -478,13 +478,12 @@ static char buff[MAX_BUFF+1];
     buffer[blength] = '\0';
     if( !_batserv ) {
 #ifdef __WINDOWS__
-        VxDPut( cmd.gets(), cmd.size() + 1 );
+        VxDPut( cmd.gets(), cmd.size() );
         for( ;; ) {
             int len = VxDGet( buff, sizeof( buff ) );
             if( len < 0 )
                 break;
             if( len > 0 ) {
-                buff[sizeof( buff ) - 1] = '\0';
                 if( streq( buff, LIT_TERMINATE_COMMAND_STR ) ) {
                     break;
                 }

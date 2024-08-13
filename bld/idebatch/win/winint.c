@@ -305,20 +305,19 @@ LONG WINAPI MainWindowProc( HWND hwnd, UINT msg, UINT wparam, LONG lparam )
                     }
                     VxDGet( buff, sizeof( buff ) );
                 } else if( hasOL ) {
-                    VxDPut( buff, strlen( buff ) + 1 );
+                    VxDPut( buff, strlen( buff ) );
                     VxDGet( buff, sizeof( buff ) );
                 } else {
 #endif
-                    VxDPut( buff, len + 1 );
+                    VxDPut( buff, len );
                     while( 1 ) {
                         len = VxDGet( buff, sizeof( buff ) );
                         if( len < 0 )
                             break;
-                        buff[sizeof( buff ) - 1] = '\0';
                         if( strncmp( buff, LIT_GET_REAL_NAME, sizeof( LIT_GET_REAL_NAME ) - 1 ) == 0 ) {
                             listBoxOut( "REQUEST: %s\r\n", &buff[sizeof( LIT_GET_REAL_NAME )] );
                             sprintf( buff, "y.c" );
-                            VxDPut( buff, strlen( buff ) + 1 );
+                            VxDPut( buff, strlen( buff ) );
                             continue;
                         }
                         if( strcmp( buff, LIT_TERMINATE_COMMAND_STR ) == 0 ) {

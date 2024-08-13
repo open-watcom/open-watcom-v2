@@ -102,9 +102,12 @@ int __pascal VxDGet( void __far *rec, unsigned len )
 {
     _dword      rc;
 
+    /*
+     * reserve space for null terminate character
+     */
 #ifdef __WINDOWS__
     for( ;; ) {
-        rc = ConvGet( __ConvId, rec, len, NO_BLOCK );
+        rc = ConvGet( __ConvId, rec, len - 1, NO_BLOCK );
         if( (rc & 0xffff) == BLOCK ) {
             messageLoop();
         } else {
@@ -112,11 +115,16 @@ int __pascal VxDGet( void __far *rec, unsigned len )
         }
     }
 #else
-    rc = ConvGet( __ConvId, rec, len, BLOCK );
+    rc = ConvGet( __ConvId, rec, len - 1, BLOCK );
 #endif
     if( (signed short)rc < 0 )
         return( (signed short)rc );
-    return( rc >> 16 );
+    len = rc >> 16;
+    /*
+     * add null terminate character
+     */
+    ((char __far *)rec)[len] = '\0';
+    return( len );
 
 } /* VxDGet */
 
