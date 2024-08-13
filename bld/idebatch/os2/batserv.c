@@ -182,23 +182,22 @@ static void ProcessConnection( void )
 
 void main( int argc, char *argv[] )
 {
-    APIRET      rc;
-    HFILE       h;
-    unsigned long       actiontaken;
-    unsigned long       sent;
-    char        done;
+    APIRET          rc;
+    unsigned long   actiontaken;
+    unsigned long   sent;
+    char            done;
 
     strcpy( PipeName, PREFIX DEFAULT_LINK_NAME );
     if( argc > 1 && (argv[1][0] == 'q' || argv[1][0] == 'Q') ) {
-        rc = DosOpen( PipeName, &h, &actiontaken, 0,
+        rc = DosOpen( PipeName, &LnkHdl, &actiontaken, 0,
                         FILE_NORMAL,
                         OPEN_ACTION_FAIL_IF_NEW | OPEN_ACTION_OPEN_IF_EXISTS,
                         OPEN_SHARE_DENYNONE | OPEN_ACCESS_WRITEONLY,
                         0 );
         if( rc == 0 ) {
             done = LNK_SHUTDOWN;
-            DosWrite( h, &done, sizeof( done ), &sent );
-            DosClose( h );
+            DosWrite( LnkHdl, &done, sizeof( done ), &sent );
+            DosClose( LnkHdl );
         }
         exit_link( 0 );
     }
