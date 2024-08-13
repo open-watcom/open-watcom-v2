@@ -25,7 +25,7 @@ exetarg_opts = op stack=16k
 exetarg_name = batserv
 !include exetarg.mif
 
-exetarg_objs = tst.obj batcli.obj
+exetarg_objs = tst.obj batcli.obj batpipe.obj
 exetarg_opts = op stack=16k
 exetarg_name = tstos2
 !include exetarg.mif
@@ -62,7 +62,7 @@ exetarg_opts = op stack=1500
 exetarg_name = dosserv
 !include exetarg.mif
 
-exetarg_objs = tst.obj batcli.obj
+exetarg_objs = tst.obj batcli.obj batpipe.obj
 exetarg_name = tstos2
 !include exetarg.mif
 

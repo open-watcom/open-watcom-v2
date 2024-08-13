@@ -36,7 +36,7 @@ extern "C" {
 #endif
 
 typedef unsigned long   batch_stat;
-typedef int             batch_len;
+typedef unsigned        batch_len;
 
 extern const char       *BatchLink( const char *__name );
 extern int              BatchMaxCmdLine( void );

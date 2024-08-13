@@ -32,28 +32,78 @@
 
 
 #include "batcher.h"
-#include "batcomm.h"
+
+
+#define TRANS_MAXLEN        1024
+#define DEFAULT_LINK_NAME   "BatLink"
 
 #ifdef __NT__
 
-#define READUP_NAME     "ReadUpSem"
-#define WRITTEN_NAME    "WrittenSem"
-#define READDONE_NAME   "ReadDoneSem"
+#define TRANS_DATA_MAXLEN   (TRANS_MAXLEN - sizeof( batch_len ) - 1)
 
-extern batch_data       bdata;
-extern batch_shmem      *SharedMemPtr;
-extern HANDLE           SemReadUp;
-extern HANDLE           SemWritten;
-extern HANDLE           SemReadDone;
+#define PREFIX              ""
+#define PREFIX_LEN          0
+#define NAME_MAXLEN         80
 
-extern int      BatservReadData( void );
-extern int      BatservWriteCmd( char link_cmd );
-extern int      BatservWriteData( char link_cmd, const void *buff, int len );
+#define READUP_NAME         "ReadUpSem"
+#define WRITTEN_NAME        "WrittenSem"
+#define READDONE_NAME       "ReadDoneSem"
 
 #else
 
-#define PREFIX          "\\PIPE\\"
-#define PREFIX_LEN      6
-#define NAME_MAXLEN     12
+#define TRANS_DATA_MAXLEN   (TRANS_MAXLEN - 1)
+
+#define PREFIX              "\\PIPE\\"
+#define PREFIX_LEN          6
+#define NAME_MAXLEN         12
 
 #endif
+
+enum {
+    LNK_NOP,
+    LNK_CWD,
+    LNK_RUN,
+    LNK_QUERY,
+    LNK_CANCEL,
+    LNK_DONE,
+    LNK_SHUTDOWN,
+    LNK_OUTPUT,
+    LNK_STATUS,
+    LNK_ABORT
+};
+
+#include "pushpck1.h"
+typedef struct batch_data {
+    union {
+        char            buffer[TRANS_DATA_MAXLEN + 1];
+        struct {
+            char        cmd;
+            union {
+                char            data[TRANS_DATA_MAXLEN];
+                batch_len       len;
+                batch_stat      status;
+            } u;
+        } s;
+    } u;
+} batch_data;
+#include "poppck.h"
+
+#ifdef __NT__
+#include "pushpck1.h"
+typedef struct batch_shmem {
+    batch_len   len;
+    batch_data  data;
+} batch_shmem;
+#include "poppck.h"
+#endif
+
+extern batch_data       bdata;
+
+#ifdef __NT__
+extern int              BatservPipeCreate( const char *name );
+#endif
+extern int              BatservPipeOpen( const char *name );
+extern int              BatservReadData( void );
+extern int              BatservWriteCmd( char link_cmd );
+extern int              BatservWriteData( char link_cmd, const void *buff, unsigned len );
+extern void             BatservPipeClose( void );

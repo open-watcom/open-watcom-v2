@@ -38,6 +38,7 @@
 #include <sys/types.h>
 #include <direct.h>
 #include <windows.h>
+#include "batpipe.h"
 
 
 #ifdef DEBUG
@@ -46,33 +47,15 @@
     #define Say( x )
 #endif
 
-
-#include "batpipe.h"
-
 static HANDLE       RedirRead;
 static HANDLE       NulHdl;
 static char         CmdProc[128];
 static DWORD        ProcId;
 static HANDLE       ProcHdl;
-static HANDLE       MemHdl;
 
 static void exit_link( int rc )
 {
-    if( SemReadUp != NULL ) {
-        CloseHandle( SemReadUp );
-    }
-    if( SemReadDone != NULL ) {
-        CloseHandle( SemReadDone );
-    }
-    if( SemWritten != NULL ) {
-        CloseHandle( SemWritten );
-    }
-    if( MemHdl != NULL ) {
-        CloseHandle( MemHdl );
-    }
-    if( SharedMemPtr != NULL ) {
-        UnmapViewOfFile( SharedMemPtr );
-    }
+    BatservPipeClose();
     exit( rc );
 }
 
@@ -126,13 +109,13 @@ static void ProcessConnection( void )
     DWORD               rc;
     DWORD               status;
     unsigned            max;
-    int                 rbytes;
+    int                 len;
 
     for( ;; ) {
-        rbytes = BatservReadData();
-        if( rbytes < 0 )
+        len = BatservReadData();
+        if( len < 0 )
             break;
-        bdata.u.s.u.data[rbytes] = '\0';
+        bdata.u.s.u.data[len] = '\0';
         switch( bdata.u.s.cmd ) {
         case LNK_CWD:
             rc = 0;
@@ -210,22 +193,16 @@ void main( int argc, char *argv[] )
 {
     SECURITY_ATTRIBUTES attr;
 
-    SemReadUp = CreateSemaphore( NULL, 0, 1, READUP_NAME );
-    SemReadDone = CreateSemaphore( NULL, 0, 1, READDONE_NAME );
-    SemWritten = CreateSemaphore( NULL, 0, 1, WRITTEN_NAME );
     if( argc > 1 && (argv[1][0] == 'q' || argv[1][0] == 'Q') ) {
-        MemHdl = OpenFileMapping( FILE_MAP_WRITE, FALSE, DEFAULT_LINK_NAME );
-        if( MemHdl == NULL ) {
+        if( BatservPipeOpen( DEFAULT_LINK_NAME ) ) {
             Say(( "can not connect to batcher spawn server\n" ));
         } else {
-            SharedMemPtr = MapViewOfFile( MemHdl, FILE_MAP_WRITE, 0, 0, 0 );
             Say(( "LNK_SHUTDOWN\n" ));
             BatservWriteCmd( LNK_SHUTDOWN );
         }
         exit_link( 0 );
     }
-    MemHdl = CreateFileMapping( INVALID_HANDLE_VALUE, NULL, PAGE_READWRITE, 0, TRANS_MAXLEN, DEFAULT_LINK_NAME );
-    SharedMemPtr = MapViewOfFile( MemHdl, FILE_MAP_WRITE, 0, 0, 0 );
+    BatservPipeCreate( DEFAULT_LINK_NAME );
     /*
      * there was used getenv C function, but it looks like some versions of Microsoft
      * VS C run-time library has bug that getenv (maybe in some situation only) return invalid pointer and
