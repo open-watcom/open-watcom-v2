@@ -50,7 +50,7 @@ exetarg_name = tstnt
 
 !else ifeq host_os dos
 
-.c: ../dos;../c;
+.c: ../dos;../c
 .asm: ../dos
 
 inc_dirs = -I"../dos" -I"../h"

@@ -56,19 +56,19 @@ const char *BatchLink( const char *name )
 
 int BatchMaxCmdLine( void )
 {
-    return( TRANS_DATA_MAXLEN - 1 );
+    return( TRANS_DATA_MAXLEN );
 }
 
 batch_stat BatchChdir( const char *dir )
 {
-    BatservWriteData( LNK_CWD, dir, (int)( strlen( dir ) + 1 ) );
+    BatservWriteData( LNK_CWD, dir, strlen( dir ) );
     BatservReadData();
     return( bdata.u.s.u.status );
 }
 
 int BatchSpawn( const char *cmd )
 {
-    BatservWriteData( LNK_RUN, cmd, (int)( strlen( cmd ) + 1 ) );
+    BatservWriteData( LNK_RUN, cmd, strlen( cmd ) );
     return( 0 );
 }
 
@@ -76,6 +76,10 @@ int BatchCollect( void *ptr, batch_len max, batch_stat *status )
 {
     int         len;
 
+    /*
+     * reserve space for null terminate character
+     */
+    max--;
     BatservWriteData( LNK_QUERY, &max, sizeof( max ) );
     len = BatservReadData();
     if( len < 0 )
@@ -111,4 +115,3 @@ void BatchUnlink( int shutdown )
     BatservWriteCmd( ( shutdown ) ? LNK_SHUTDOWN : LNK_DONE );
     BatservPipeClose();
 }
-

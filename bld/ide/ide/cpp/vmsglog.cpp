@@ -501,7 +501,6 @@ static char buff[MAX_BUFF+1];
             if( len < 0 )
                 break;
             if( len > 0 ) {
-                buff[sizeof( buff ) - 1] = '\0';
                 scanLine( buff, len );
             }
         }

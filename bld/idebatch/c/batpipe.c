@@ -162,6 +162,8 @@ int BatservWriteData( char link_cmd, const void *buff, unsigned len )
     WaitForSingleObject( SemReadUp, INFINITE );
     SharedMemPtr->len = len + 1;
     SharedMemPtr->data.u.s.cmd = link_cmd;
+    if( len > TRANS_DATA_MAXLEN )
+        len = TRANS_DATA_MAXLEN;
     memcpy( SharedMemPtr->data.u.s.u.data, buff, len );
     ReleaseSemaphore( SemWritten, 1, NULL );
     WaitForSingleObject( SemReadDone, INFINITE );
