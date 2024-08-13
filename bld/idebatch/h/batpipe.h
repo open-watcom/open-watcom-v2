@@ -34,6 +34,7 @@
 #include "batcher.h"
 #include "batcomm.h"
 
+#ifdef __NT__
 
 #define READUP_NAME     "ReadUpSem"
 #define WRITTEN_NAME    "WrittenSem"
@@ -48,3 +49,11 @@ extern HANDLE           SemReadDone;
 extern int      BatservReadData( void );
 extern int      BatservWriteCmd( char link_cmd );
 extern int      BatservWriteData( char link_cmd, const void *buff, int len );
+
+#else
+
+#define PREFIX          "\\PIPE\\"
+#define PREFIX_LEN      6
+#define NAME_MAXLEN     12
+
+#endif

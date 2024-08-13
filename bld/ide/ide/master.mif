@@ -39,9 +39,9 @@ additional_clean = $(docs_host_dir)/ide.gh
 #
 c_path_os2  = $(batch_dir)/os2
 c_path_nt   = $(batch_dir)/nt
-c_path_win  = $(batch_dir)/dos;$(batch_dir)/os2
+c_path_win  = $(batch_dir)/dos
 
-.c : ../cpp;$(c_path_$(host_os));$(watcom_dir)/c
+.c : ../cpp;$(c_path_$(host_os));$(batch_dir)/c;$(watcom_dir)/c
 .cpp : ../cpp
 
 inc_dirs_win = -I"$(batch_dir)/dos"

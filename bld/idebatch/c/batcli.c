@@ -32,8 +32,10 @@
 
 
 /*
-        BATCLI :  NT interface to BATSERV
+        BATCLI :  interface to BATSERV
 */
+
+#ifdef __NT__
 
 #include <windows.h>
 #include <stdlib.h>
@@ -120,3 +122,121 @@ void BatchUnlink( int shutdown )
     UnmapViewOfFile( SharedMemPtr );
     SharedMemPtr = NULL;
 }
+
+#else
+
+#include <stdlib.h>
+#include <string.h>
+#include <sys/types.h>
+#include <fcntl.h>
+#include <dos.h>
+#include "batpipe.h"
+
+
+int     pipeHdl = -1;
+
+const char *BatchLink( const char *name )
+{
+    char        pipeName[PREFIX_LEN + NAME_MAXLEN + 1] = PREFIX;
+
+    if( name == NULL )
+        name = DEFAULT_LINK_NAME;
+    strncpy( pipeName + PREFIX_LEN, name, NAME_MAXLEN );
+    pipeName[PREFIX_LEN + NAME_MAXLEN] = '\0';
+    if( _dos_open( pipeName, O_RDWR, &pipeHdl ) != 0 ) {
+        return( "can not connect to batcher spawn server" );
+    }
+    return( NULL );
+}
+
+int BatchMaxCmdLine( void )
+{
+    return( TRANS_DATA_MAXLEN - 1 );
+}
+
+static unsigned my_read( int hdl, void *buff, unsigned len )
+{
+    unsigned    got;
+
+    if( _dos_read( hdl, buff, len, &got ) != 0 )
+        return( -1 );
+    return( got );
+}
+
+static unsigned my_write( int hdl, void *buff, unsigned len )
+{
+    unsigned    sent;
+
+    if( _dos_write( hdl, buff, len, &sent ) != 0 )
+        return( -1 );
+    return( sent );
+}
+
+static char     batch_buff[TRANS_MAXLEN]; /* static to minimize stack space */
+
+batch_stat BatchChdir( const char *dir )
+{
+    batch_buff[0] = LNK_CWD;
+    strcpy( &batch_buff[1], dir );
+    my_write( pipeHdl, batch_buff, strlen( batch_buff ) + 1 );
+    my_read( pipeHdl, batch_buff, sizeof( batch_buff ) );
+    return( *(batch_stat *)&batch_buff[1] );
+}
+
+int BatchSpawn( const char *cmd )
+{
+
+    batch_buff[0] = LNK_RUN;
+    strcpy( &batch_buff[1], cmd );
+    my_write( pipeHdl, batch_buff, strlen( batch_buff ) );
+    return( 0 );
+}
+
+int BatchCollect( void *ptr, batch_len max, batch_stat *status )
+{
+    int         len;
+    char        *buff = ptr;
+
+    buff[0] = LNK_QUERY;
+    *(batch_len *)&buff[1] = max;
+    my_write( pipeHdl, buff, 1 + sizeof( batch_len ) );
+    len = my_read( pipeHdl, buff, max ) - 1;
+    if( len <= 0 )
+        return( 0 );
+    if( *buff == LNK_STATUS ) {
+        *status = *(batch_stat *)&buff[1];
+        return( -1 );
+    }
+    memmove( buff, &buff[1], len );
+    return( len );
+}
+
+int BatchCancel( void )
+{
+    char        cmd;
+
+    cmd = LNK_CANCEL;
+    my_write( pipeHdl, &cmd, sizeof( cmd ) );
+    return( 0 );
+}
+
+int BatchAbort( void )
+{
+    char        cmd;
+
+    cmd = LNK_ABORT;
+    my_write( pipeHdl, &cmd, sizeof( cmd ) );
+    return( 0 );
+}
+
+
+void BatchUnlink( int shutdown )
+{
+    char        done;
+
+    done = shutdown ? LNK_SHUTDOWN : LNK_DONE;
+    my_write( pipeHdl, &done, sizeof( done ) );
+    _dos_close( pipeHdl );
+}
+
+#endif

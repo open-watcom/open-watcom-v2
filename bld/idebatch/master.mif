@@ -50,10 +50,10 @@ exetarg_name = tstnt
 
 !else ifeq host_os dos
 
-.c: ../dos;../c;../os2
+.c: ../dos;../c;
 .asm: ../dos
 
-inc_dirs = -I"../dos" -I"../h" -I"../os2"
+inc_dirs = -I"../dos" -I"../h"
 
 all: dosserv.exe tstos2.exe .SYMBOLIC
 
