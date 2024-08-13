@@ -453,6 +453,7 @@ void *GUIMemAlloc( size_t size )
     return( malloc( size ) );
 #endif
 }
+#ifndef __NOUI__
 void * WNDAPI WndAlloc( size_t size )
 {
 #ifdef TRMEM
@@ -461,6 +462,7 @@ void * WNDAPI WndAlloc( size_t size )
     return( malloc( size ) );
 #endif
 }
+#endif
 
 #ifdef GUI_IS_GUI
 
@@ -528,6 +530,7 @@ void GUIMemFree( void *ptr )
     free( ptr );
 #endif
 }
+#ifndef __NOUI__
 void WNDAPI WndFree( void *ptr )
 {
 #ifdef TRMEM
@@ -536,6 +539,7 @@ void WNDAPI WndFree( void *ptr )
     free( ptr );
 #endif
 }
+#endif
 
 #ifdef GUI_IS_GUI
 
