@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -77,60 +77,59 @@ extern _word CS( void );
         "mov    ax,cs" \
     __value [__ax]
 
-extern short CheckWin386Debug( void );                      /* 00 */
-extern short CopyMemory386( _word, _dword, _word, _dword, _word ); /* 01 */
-extern void GetDescriptor( short, void __far * );           /* 02 */
-extern _dword GetLimit( short );                            /* 03 */
-extern short GetDebugRegister( short, _dword __far * );     /* 04 */
-extern short SetDebugRegister( short, _dword __far * );     /* 05 */
-extern _word InitSampler( void __far *, _word, _word );     /* 06 */
-extern void QuitSampler( _dword __far * );                  /* 07 */
-extern _word StartSampler( void );                          /* 08 */
-extern void StopSampler( _dword __far * );                  /* 09 */
-extern void GetCurrTick( _dword __far * );                  /* 0a */
-extern void SetTimerTick( _word );                          /* 0b */
-extern _word GetTimerTick( void );                          /* 0c */
-extern _word GetSampleCount( void );                        /* 0d */
-extern void GetSample0Tick( _dword __far * );               /* 0e */
-extern int RegisterName( char __far * );                    /* 0f */
-extern int AccessName( char __far *, _dword __far *);       /* 10 */
-extern int UnregisterName( char __far * );                  /* 11 */
-extern int UnaccessName( char __far * );                    /* 12 */
-extern int StartConv( _dword );                             /* 13 */
-extern int LookForConv( _dword __far * );                   /* 14 */
-extern int EndConv( _dword );                               /* 15 */
-extern _dword ConvGet( _dword id, void __far *buff, _word len, _word attr ); /* 16 */
-extern _word ConvPut( _dword id, const void __far *buff, _word len, _word attr ); /* 17 */
-extern _word IsConvAck( _dword );                           /* 18 */
-extern void MyID( _dword __far * );                         /* 19 */
-extern _word SetExecutionFocus( _dword );                   /* 1a */
-extern int WhatHappened( void );                            /* 1b */
-extern _word ConvGetTimeOut( _dword id, void __far *buff, _word len, _word timeout ); /* 1c */
-extern _word ConvPutTimeOut( _dword id, const void __far *buff, _word len, _word timeout ); /* 1d */
-extern short EMUInit( void );                               /* 1e */
-extern short EMUShutdown( void );                           /* 1f */
-extern short EMURegister( _word, _dword );                  /* 20 */
-extern short EMUUnRegister( _word );                        /* 21 */
-extern short FPUPresent( void );                            /* 22 */
-extern short EMUSaveRestore( _word, void __far *, _word );  /* 23 */
-extern void PauseSampler( void );                           /* 24 */
-extern void UnPauseSampler( void );                         /* 25 */
-extern void EGAWrite( unsigned, char, char );               /* 26 */
-extern char VGARead( unsigned, char );                      /* 27 */
-extern void DisableVideo( unsigned );                       /* 28 */
-extern short RegisterInterruptCallback( void __far *,
-                void __far *, void __far * );               /* 29 */
-extern void UnRegisterInterruptCallback( void __far * );    /* 2a */
-extern short GetInterruptCallback( icb_data __far * );      /* 2b */
-extern short RestartFromInterrupt( void );                  /* 2c */
-extern short Is32BitSel( short );                           /* 2d */
-extern long GetVMId( void );                                /* 2e */
-extern short HookIDT( void __far * );                       /* 2f */
-extern short IDTFini( void );                               /* 30 */
-extern short IDTInit( unsigned );                           /* 31 */
-extern short ConvPutPending( void );                        /* 32 */
-extern short UseHotKey( int );                              /* 33 */
-extern short RaiseInterruptInVM( _dword, _word );           /* 34 */
+/* 00 */ extern short CheckWin386Debug( void );
+/* 01 */ extern short CopyMemory386( _word, _dword, _word, _dword, _word );
+/* 02 */ extern void GetDescriptor( short, void __far * );
+/* 03 */ extern _dword GetLimit( short );
+/* 04 */ extern short GetDebugRegister( short, _dword __far * );
+/* 05 */ extern short SetDebugRegister( short, _dword __far * );
+/* 06 */ extern _word InitSampler( void __far *, _word, _word );
+/* 07 */ extern void QuitSampler( _dword __far * );
+/* 08 */ extern _word StartSampler( void );
+/* 09 */ extern void StopSampler( _dword __far * );
+/* 0a */ extern void GetCurrTick( _dword __far * );
+/* 0b */ extern void SetTimerTick( _word );
+/* 0c */ extern _word GetTimerTick( void );
+/* 0d */ extern _word GetSampleCount( void );
+/* 0e */ extern void GetSample0Tick( _dword __far * );
+/* 0f */ extern int RegisterName( char __far *name );
+/* 10 */ extern int AccessName( char __far *name, _dword __far *id);
+/* 11 */ extern int UnregisterName( char __far *name );
+/* 12 */ extern int UnaccessName( char __far *name );
+/* 13 */ extern int StartConv( _dword id );
+/* 14 */ extern int LookForConv( _dword __far *id );
+/* 15 */ extern int EndConv( _dword id );
+/* 16 */ extern _dword ConvGet( _dword id, void __far *buff, _word len, _word attr );
+/* 17 */ extern _word ConvPut( _dword id, const void __far *buff, _word len, _word attr );
+/* 18 */ extern _word IsConvAck( _dword id );
+/* 19 */ extern void MyID( _dword __far *VM_id );
+/* 1a */ extern _word SetExecutionFocus( _dword VM_id );
+/* 1b */ extern int WhatHappened( void );
+/* 1c */ extern _word ConvGetTimeOut( _dword id, void __far *buff, _word len, _word timeout );
+/* 1d */ extern _word ConvPutTimeOut( _dword id, const void __far *buff, _word len, _word timeout );
+/* 1e */ extern short EMUInit( void );
+/* 1f */ extern short EMUShutdown( void );
+/* 20 */ extern short EMURegister( _word, _dword );
+/* 21 */ extern short EMUUnRegister( _word );
+/* 22 */ extern short FPUPresent( void );
+/* 23 */ extern short EMUSaveRestore( _word, void __far *, _word );
+/* 24 */ extern void PauseSampler( void );
+/* 25 */ extern void UnPauseSampler( void );
+/* 26 */ extern void EGAWrite( unsigned, char, char );
+/* 27 */ extern char VGARead( unsigned, char );
+/* 28 */ extern void DisableVideo( unsigned );
+/* 29 */ extern short RegisterInterruptCallback( void __far *callback, void __far *data, void __far *stack );
+/* 2a */ extern void UnRegisterInterruptCallback( void __far *callback );
+/* 2b */ extern short GetInterruptCallback( icb_data __far *callback );
+/* 2c */ extern short RestartFromInterrupt( void );
+/* 2d */ extern short Is32BitSel( short );
+/* 2e */ extern long GetVMId( void );
+/* 2f */ extern short HookIDT( void __far * );
+/* 30 */ extern short IDTFini( void );
+/* 31 */ extern short IDTInit( unsigned );
+/* 32 */ extern short ConvPutPending( void );
+/* 33 */ extern short UseHotKey( int );
+/* 34 */ extern short RaiseInterruptInVM( _dword VM_id, _word intno );
 
 #pragma aux CheckWin386Debug = \
         "mov    ax,0fa00h" \
