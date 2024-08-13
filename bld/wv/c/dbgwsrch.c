@@ -174,7 +174,7 @@ static void GlobalModWalker( srch_window *srch )
 
     DIPWalkModList( NO_MOD, BuildFileList, srch );
     srch->file_list = SortLinkedList( srch->file_list,
-                offsetof( a_cue, next ), CueCompare, WndAlloc, WndFree );
+                offsetof( a_cue, next ), CueCompare, DbgAlloc, DbgFree );
     for( file = srch->file_list; file != NULL; file = file->next ) {
         if( file->next != NULL && strcmp( file->name, file->next->name ) == 0 )
             continue;

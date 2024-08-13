@@ -453,7 +453,7 @@ void *GUIMemAlloc( size_t size )
     return( malloc( size ) );
 #endif
 }
-void *WndAlloc( size_t size )
+void * WNDAPI WndAlloc( size_t size )
 {
 #ifdef TRMEM
     return( _trmem_alloc( size, _trmem_guess_who(), DbgMemHandle ) );
@@ -528,7 +528,7 @@ void GUIMemFree( void *ptr )
     free( ptr );
 #endif
 }
-void WndFree( void *ptr )
+void WNDAPI WndFree( void *ptr )
 {
 #ifdef TRMEM
     _trmem_free( ptr, _trmem_guess_who(), DbgMemHandle );
