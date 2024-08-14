@@ -72,7 +72,7 @@ int main( void )
             BatchSpawn( buff );
             for( ;; ) {
                 len = BatchCollect( buff, sizeof( buff ), &stat );
-                if( len == -1 ) {
+                if( len < 0 ) {
                     printf( "done: status = %d\n", (int)stat );
                     break;
                 } else if( kbhit() ) {
@@ -81,8 +81,7 @@ int main( void )
                     } else {
                         BatchCancel();
                     }
-                } else if( len != 0 ) {
-                    buff[len] = '\0';
+                } else if( len > 0 ) {
                     printf( "%s", buff );
                     fflush( stdout );
                 }

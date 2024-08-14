@@ -111,6 +111,7 @@ static void ProcessConnection( void )
             break;
         /*
          * add additional null terminate character
+         * strings are transferred without null terminate character
          */
         bdata.u.s.u.data[len] = '\0';
         switch( bdata.u.s.cmd ) {
