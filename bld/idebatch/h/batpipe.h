@@ -34,24 +34,24 @@
 #include "batcher.h"
 
 
-#define TRANS_MAXLEN        1024
 #define DEFAULT_LINK_NAME   "BatLink"
+#define COMSPEC_MAXLEN      80
+
+#define TRANS_MAXLEN        1024
+#ifdef __NT__
+#define TRANS_BDATA_MAXLEN  (TRANS_MAXLEN - sizeof( batch_len ))
+#else
+#define TRANS_BDATA_MAXLEN  TRANS_MAXLEN
+#endif
+#define TRANS_DATA_MAXLEN   (TRANS_BDATA_MAXLEN - 1)
 
 #ifdef __NT__
-
-#define TRANS_DATA_MAXLEN   (TRANS_MAXLEN - sizeof( batch_len ) - 1)
 
 #define PREFIX              ""
 #define PREFIX_LEN          0
 #define NAME_MAXLEN         80
 
-#define READUP_NAME         "ReadUpSem"
-#define WRITTEN_NAME        "WrittenSem"
-#define READDONE_NAME       "ReadDoneSem"
-
 #else
-
-#define TRANS_DATA_MAXLEN   (TRANS_MAXLEN - 1)
 
 #define PREFIX              "\\PIPE\\"
 #define PREFIX_LEN          6
@@ -75,11 +75,11 @@ enum {
 #include "pushpck1.h"
 typedef struct batch_data {
     union {
-        char            buffer[TRANS_DATA_MAXLEN + 1];
+        char            buffer[TRANS_BDATA_MAXLEN];
         struct {
             char        cmd;
             union {
-                char            data[TRANS_DATA_MAXLEN];
+                char            data[TRANS_DATA_MAXLEN + 1];
                 batch_len       len;
                 batch_stat      status;
             } u;

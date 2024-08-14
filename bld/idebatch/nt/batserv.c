@@ -49,7 +49,7 @@
 
 static HANDLE       RedirRead;
 static HANDLE       NulHdl;
-static char         CmdProc[128];
+static char         CmdProc[COMSPEC_MAXLEN + 1];
 static DWORD        ProcId;
 static HANDLE       ProcHdl;
 
@@ -61,7 +61,7 @@ static void exit_link( int rc )
 
 static void RunCmd( char *cmd_name )
 {
-    char                cmd[TRANS_MAXLEN + 80];
+    char                cmd[COMSPEC_MAXLEN + 4 + TRANS_DATA_MAXLEN + 1];
     PROCESS_INFORMATION info;
     HANDLE              dup;
     STARTUPINFO         start;
@@ -98,18 +98,13 @@ static void RunCmd( char *cmd_name )
     ProcHdl = info.hProcess;
 }
 
-static void SendStatus( batch_stat status )
-{
-    BatservWriteData( LNK_STATUS, &status, sizeof( status ) );
-}
-
 static void ProcessConnection( void )
 {
     DWORD               bytes_read;
     DWORD               rc;
-    DWORD               status;
     unsigned            max;
     int                 len;
+    batch_stat			status;
 
     for( ;; ) {
         len = BatservReadData();
@@ -118,23 +113,24 @@ static void ProcessConnection( void )
         bdata.u.s.u.data[len] = '\0';
         switch( bdata.u.s.cmd ) {
         case LNK_CWD:
-            rc = 0;
+            status = 0;
             if( !SetCurrentDirectory( bdata.u.s.u.data ) ) {
-                rc = GetLastError();
+                status = GetLastError();
             }
-            SendStatus( rc );
+            BatservWriteData( LNK_STATUS, &status, sizeof( status ) );
             break;
         case LNK_RUN:
             RunCmd( bdata.u.s.u.data );
             break;
         case LNK_QUERY:
             max = bdata.u.s.u.len;
-            if( max > TRANS_DATA_MAXLEN )
-                max = TRANS_DATA_MAXLEN;
             if( PeekNamedPipe( RedirRead, bdata.u.buffer, 0, NULL, &bytes_read, NULL )
               && bytes_read != 0 ) {
-                if( max > bytes_read )
-                    max = bytes_read;
+                /*
+                 * limit read length to maximum output length 
+                 */
+                if( max > TRANS_DATA_MAXLEN )
+                    max = TRANS_DATA_MAXLEN;
                 ReadFile( RedirRead, bdata.u.buffer, max, &bytes_read, NULL );
                 BatservWriteData( LNK_OUTPUT, bdata.u.buffer, bytes_read );
             } else {
@@ -143,11 +139,12 @@ static void ProcessConnection( void )
                     Sleep( 1 );
                     BatservWriteCmd( LNK_NOP );
                 } else {
-                    GetExitCodeProcess( ProcHdl, &status );
+                    GetExitCodeProcess( ProcHdl, &rc );
                     CloseHandle( RedirRead );
-                    SendStatus( status );
                     ProcId = 0;
                     CloseHandle( ProcHdl );
+                    status = rc;
+                    BatservWriteData( LNK_STATUS, &status, sizeof( status ) );
                 }
             }
             break;

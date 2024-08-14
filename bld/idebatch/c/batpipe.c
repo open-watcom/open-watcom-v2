@@ -41,6 +41,12 @@
 #include "batpipe.h"
 
 
+#ifdef __NT__
+#define READUP_NAME         "ReadUpSem"
+#define WRITTEN_NAME        "WrittenSem"
+#define READDONE_NAME       "ReadDoneSem"
+#endif
+
 batch_data              bdata;
 
 #ifdef __NT__
@@ -127,13 +133,11 @@ int BatservReadData( void )
     WaitForSingleObject( SemWritten, INFINITE );
     bytes_read = SharedMemPtr->len;
     if( bytes_read > 0 ) {
-        if( bytes_read > TRANS_DATA_MAXLEN + 1  )
-            bytes_read = TRANS_DATA_MAXLEN + 1;
         memcpy( bdata.u.buffer, SharedMemPtr->data.u.buffer, bytes_read );
     }
     ReleaseSemaphore( SemReadDone, 1, NULL );
 #else
-    if( _dos_read( pipeHdl, bdata.u.buffer, TRANS_MAXLEN, &bytes_read ) != 0 )
+    if( _dos_read( pipeHdl, bdata.u.buffer, TRANS_BDATA_MAXLEN, &bytes_read ) != 0 )
         return( -1 );
 #endif
     return( bytes_read - 1 );
@@ -158,12 +162,12 @@ int BatservWriteCmd( char link_cmd )
 
 int BatservWriteData( char link_cmd, const void *buff, unsigned len )
 {
+    if( len > TRANS_DATA_MAXLEN )
+        len = TRANS_DATA_MAXLEN;
 #ifdef __NT__
     WaitForSingleObject( SemReadUp, INFINITE );
     SharedMemPtr->len = len + 1;
     SharedMemPtr->data.u.s.cmd = link_cmd;
-    if( len > TRANS_DATA_MAXLEN )
-        len = TRANS_DATA_MAXLEN;
     memcpy( SharedMemPtr->data.u.s.u.data, buff, len );
     ReleaseSemaphore( SemWritten, 1, NULL );
     WaitForSingleObject( SemReadDone, INFINITE );

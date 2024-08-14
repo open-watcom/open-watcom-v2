@@ -50,9 +50,11 @@
 static HPIPE           LnkHdl;
 static HPIPE           RedirHdl;
 
-static char            PipeName[PREFIX_LEN + NAME_MAXLEN + 1];
-static char            *CmdProc;
+static char            RedirName[PREFIX_LEN + NAME_MAXLEN + 1];
+static char            CmdProc[COMSPEC_MAXLEN + 1];
 static unsigned        ProcId;
+
+static batch_data      pdata;
 
 static void exit_link( int rc )
 {
@@ -67,7 +69,7 @@ static void exit_link( int rc )
 
 static void RunCmd( char *cmd_name )
 {
-    char        cmd[TRANS_MAXLEN + 80];
+    char        cmd[COMSPEC_MAXLEN + 4 + TRANS_DATA_MAXLEN + 9 + PREFIX_LEN + NAME_MAXLEN + 6 + 1];
     RESULTCODES res;
     UINT        rc;
 
@@ -75,7 +77,7 @@ static void RunCmd( char *cmd_name )
     //DOS programs can be handled by quoting the redirection
     //operators:
     //          prog 1^>out 2^>&1
-    snprintf( cmd, sizeof( cmd ), "%s%c/C %s 0<NUL 1>%s 2>&1%c", CmdProc, '\0', cmd_name, PipeName, '\0' );
+    snprintf( cmd, sizeof( cmd ), "%s%c/C %s 0<NUL 1>%s 2>&1%c", CmdProc, '\0', cmd_name, RedirName, '\0' );
     rc = DosExecPgm( NULL, 0,           /* don't care about fail name */
                 EXEC_ASYNCRESULT,       /* execflags */
                 cmd,                    /* args */
@@ -89,22 +91,8 @@ static void RunCmd( char *cmd_name )
     }
 }
 
-static void SendStatus( batch_stat status )
-{
-    struct {
-        unsigned char   cmd;
-        batch_stat      stat;
-    } buff;
-    ULONG       dummy;
-
-    buff.cmd = LNK_STATUS;
-    buff.stat = status;
-    DosWrite( LnkHdl, &buff, sizeof( buff ), &dummy );
-}
-
 static void ProcessConnection( void )
 {
-    char                buff[TRANS_MAXLEN];
     ULONG               bytes_read;
     unsigned long       max;
     struct _AVAILDATA   BytesAvail;
@@ -112,17 +100,17 @@ static void ProcessConnection( void )
     APIRET              rc;
     RESULTCODES         res;
     PID                 dummy;
-    char                *dir;
+    const char          *dir;
 
     for( ;; ) {
-        DosRead( LnkHdl, buff, sizeof( buff ), &bytes_read );
+        DosRead( LnkHdl, pdata.u.buffer, sizeof( pdata.u.buffer ), &bytes_read );
         if( bytes_read == 0 )
             break;
-        buff[bytes_read] = '\0';
-        switch( buff[0] ) {
+        pdata.u.buffer[bytes_read] = '\0';
+        switch( pdata.u.s.cmd ) {
         case LNK_CWD:
             rc = 0;
-            dir = &buff[1];
+            dir = pdata.u.s.u.data;
             if( isalpha( dir[0] ) && dir[1] == ':' ) {
                 rc = DosSetDefaultDisk( toupper( dir[0] ) - ('A' - 1) );
                 dir += 2;
@@ -130,39 +118,37 @@ static void ProcessConnection( void )
             if( rc == 0 && dir[0] != '\0' ) {
                 rc = DosSetCurrentDir( dir );
             }
-            SendStatus( rc );
+            pdata.u.s.cmd = LNK_STATUS;
+            pdata.u.s.u.status = rc;
+            DosWrite( LnkHdl, pdata.u.buffer, 1 + sizeof( pdata.u.s.u.status ), &bytes_read );
             break;
         case LNK_RUN:
             DosSetNPHState( RedirHdl, NP_NOWAIT | NP_READMODE_BYTE );
             DosConnectNPipe( RedirHdl );
             DosSetNPHState( RedirHdl, NP_WAIT | NP_READMODE_BYTE );
-            RunCmd( &buff[1] );
+            RunCmd( pdata.u.s.u.data );
             break;
         case LNK_QUERY:
-            max = *(unsigned long *)&buff[1];
-            if( max > sizeof( buff ) )
-                max = sizeof( buff );
-            --max;
-            rc = DosPeekNPipe(RedirHdl, buff, 0, &bytes_read,
-                        &BytesAvail, &PipeState );
+            max = pdata.u.s.u.len;
+            rc = DosPeekNPipe( RedirHdl, pdata.u.buffer, 0, &bytes_read, &BytesAvail, &PipeState );
             if( rc == 0 && BytesAvail.cbpipe != 0 ) {
-                DosRead( RedirHdl, &buff[1], max, &bytes_read );
-                buff[0] = LNK_OUTPUT;
-                DosWrite( LnkHdl, buff, bytes_read + 1, &bytes_read );
+                if( max > TRANS_DATA_MAXLEN )
+                    max = TRANS_DATA_MAXLEN;
+                DosRead( RedirHdl, pdata.u.s.u.data, max, &bytes_read );
+                pdata.u.s.cmd = LNK_OUTPUT;
+            } else if( DosWaitChild( DCWA_PROCESS, DCWW_NOWAIT, &res, &dummy, ProcId ) == ERROR_CHILD_NOT_COMPLETE ) {
+                /* let someone else run */
+                DosSleep( 1 );
+                pdata.u.s.cmd = LNK_NOP;
+                bytes_read = 0;
             } else {
-                rc = DosWaitChild( DCWA_PROCESS, DCWW_NOWAIT, &res,
-                                        &dummy, ProcId );
-                if( rc != ERROR_CHILD_NOT_COMPLETE ) {
-                    DosDisConnectNPipe( RedirHdl );
-                    SendStatus( res.codeResult );
-                    ProcId = 0;
-                } else {
-                    /* let someone else run */
-                    DosSleep( 1 );
-                    buff[0] = LNK_NOP;
-                    DosWrite( LnkHdl, buff, 1, &bytes_read );
-                }
+                DosDisConnectNPipe( RedirHdl );
+                ProcId = 0;
+                pdata.u.s.cmd = LNK_STATUS;
+                pdata.u.s.u.status = res.codeResult;
+                bytes_read = sizeof( pdata.u.s.u.status );
             }
+            DosWrite( LnkHdl, pdata.u.buffer, bytes_read + 1, &bytes_read );
             break;
         case LNK_CANCEL:
             DosSendSignalException( ProcId, XCPT_SIGNAL_INTR );
@@ -185,29 +171,30 @@ void main( int argc, char *argv[] )
     APIRET          rc;
     unsigned long   actiontaken;
     unsigned long   sent;
-    char            done;
+    char            *p;
 
-    strcpy( PipeName, PREFIX DEFAULT_LINK_NAME );
+    strcpy( RedirName, PREFIX DEFAULT_LINK_NAME );
     if( argc > 1 && (argv[1][0] == 'q' || argv[1][0] == 'Q') ) {
-        rc = DosOpen( PipeName, &LnkHdl, &actiontaken, 0,
+        rc = DosOpen( RedirName, &LnkHdl, &actiontaken, 0,
                         FILE_NORMAL,
                         OPEN_ACTION_FAIL_IF_NEW | OPEN_ACTION_OPEN_IF_EXISTS,
                         OPEN_SHARE_DENYNONE | OPEN_ACCESS_WRITEONLY,
                         0 );
         if( rc == 0 ) {
-            done = LNK_SHUTDOWN;
-            DosWrite( LnkHdl, &done, sizeof( done ), &sent );
-            DosClose( LnkHdl );
+            pdata.u.s.cmd = LNK_SHUTDOWN;
+            DosWrite( LnkHdl, pdata.u.buffer, 1, &sent );
         }
         exit_link( 0 );
     }
-    CmdProc = getenv( "COMSPEC" );
-    if( CmdProc == NULL ) {
+    p = getenv( "COMSPEC" );
+    if( p == NULL ) {
         fprintf( stderr, "Unable to find command processor\n" );
         exit_link( 1 );
     }
+    strncpy( CmdProc, p, COMSPEC_MAXLEN );
+    CmdProc[COMSPEC_MAXLEN] = '\0';
     //NYI: need to accept name for link pipe
-    rc = DosCreateNPipe( PipeName, &LnkHdl,
+    rc = DosCreateNPipe( RedirName, &LnkHdl,
         NP_NOINHERIT | NP_NOWRITEBEHIND | NP_ACCESS_DUPLEX,
         NP_WAIT | NP_READMODE_MESSAGE | NP_TYPE_MESSAGE | 1,
         TRANS_MAXLEN, TRANS_MAXLEN, 0 );
@@ -215,8 +202,8 @@ void main( int argc, char *argv[] )
         fprintf( stderr, "Unable to create link pipe\n" );
         exit_link( 1 );
     }
-    sprintf( PipeName, PREFIX "%d", getpid() );
-    rc = DosCreateNPipe( PipeName, &RedirHdl,
+    sprintf( RedirName, PREFIX "%d", getpid() );
+    rc = DosCreateNPipe( RedirName, &RedirHdl,
         NP_NOINHERIT | NP_WRITEBEHIND | NP_ACCESS_INBOUND,
         NP_WAIT | NP_READMODE_BYTE | NP_TYPE_BYTE | 1,
         TRANS_MAXLEN, TRANS_MAXLEN, 0 );
