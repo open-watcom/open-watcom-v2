@@ -120,7 +120,7 @@ static void ProcessConnection( void )
             rc = 0;
             dir = pdata.u.s.u.data;
             if( isalpha( dir[0] ) && dir[1] == ':' ) {
-                rc = DosSetDefaultDisk( toupper( dir[0] ) - ('A' - 1) );
+                rc = DosSetDefaultDisk( toupper( dir[0] ) - ( 'A' - 1 ) );
                 dir += 2;
             }
             if( rc == 0 && dir[0] != '\0' ) {
