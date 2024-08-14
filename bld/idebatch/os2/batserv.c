@@ -47,6 +47,7 @@
 
 #include "batpipe.h"
 
+
 static HPIPE           LnkHdl;
 static HPIPE           RedirHdl;
 
@@ -56,27 +57,103 @@ static unsigned        ProcId;
 
 static batch_data      pdata;
 
-static void exit_link( int rc )
+static int BatpipeRedirCreate( const char *name )
+{
+    if( DosCreateNPipe( name, &RedirHdl,
+            NP_NOINHERIT | NP_WRITEBEHIND | NP_ACCESS_INBOUND,
+            NP_WAIT | NP_READMODE_BYTE | NP_TYPE_BYTE | 1,
+            TRANS_MAXLEN, TRANS_MAXLEN, 0 ) != 0 )
+        return( 1 );
+    return( 0 );
+}
+
+static void BatpipeRedirClose( void )
+{
+    if( RedirHdl != NULLHANDLE ) {
+        DosClose( RedirHdl );
+        RedirHdl = NULLHANDLE;
+    }
+}
+
+static int BatpipePipeCreate( const char *name )
+{
+    if( DosCreateNPipe( name, &LnkHdl,
+            NP_NOINHERIT | NP_NOWRITEBEHIND | NP_ACCESS_DUPLEX,
+            NP_WAIT | NP_READMODE_MESSAGE | NP_TYPE_MESSAGE | 1,
+            TRANS_MAXLEN, TRANS_MAXLEN, 0 ) != 0 )
+        return( 1 );
+    return( 0 );
+}
+
+static int BatpipePipeOpen( const char *name )
+{
+    unsigned long   actiontaken;
+
+    if( DosOpen( name, &LnkHdl, &actiontaken, 0,
+            FILE_NORMAL,
+            OPEN_ACTION_FAIL_IF_NEW | OPEN_ACTION_OPEN_IF_EXISTS,
+            OPEN_SHARE_DENYNONE | OPEN_ACCESS_WRITEONLY,
+            0 ) != 0 )
+        return( 1 );
+    return( 0 );
+}
+
+static void BatpipePipeClose( void )
 {
     if( LnkHdl != NULLHANDLE ) {
         DosClose( LnkHdl );
+        LnkHdl = NULLHANDLE;
     }
-    if( RedirHdl != NULLHANDLE ) {
-        DosClose( RedirHdl );
-    }
+}
+
+static int BatpipeReadData( void )
+{
+    ULONG       bytes_read;
+
+    if( DosRead( LnkHdl, pdata.u.buffer, TRANS_BDATA_MAXLEN, &bytes_read ) != 0 )
+        return( -1 );
+    return( bytes_read - 1 );
+}
+
+static int BatpipeWriteCmd( char link_cmd )
+{
+    ULONG       sent;
+
+    DosWrite( LnkHdl, &link_cmd, 1, &sent );
+    return( 0 );
+}
+
+static int BatpipeWriteData( char link_cmd, const void *buff, unsigned len )
+{
+    ULONG       sent;
+
+    if( len > TRANS_DATA_MAXLEN )
+        len = TRANS_DATA_MAXLEN;
+    pdata.u.s.cmd = link_cmd;
+    memcpy( pdata.u.s.u.data, buff, len );
+    DosWrite( LnkHdl, pdata.u.buffer, len + 1, &sent );
+    return( sent - 1 );
+}
+
+static void exit_link( int rc )
+{
+    BatpipePipeClose();
+    BatpipeRedirClose();
     exit( rc );
 }
 
-static void RunCmd( char *cmd_name )
+static void RunCmd( const char *cmd_name )
 {
     char        cmd[COMSPEC_MAXLEN + 4 + TRANS_DATA_MAXLEN + 9 + PREFIX_LEN + NAME_MAXLEN + 6 + 1];
     RESULTCODES res;
     UINT        rc;
 
-    //NYI: spawning of DOS and PM programs
-    //DOS programs can be handled by quoting the redirection
-    //operators:
-    //          prog 1^>out 2^>&1
+    /*
+     * NYI: spawning of DOS and PM programs
+     * DOS programs can be handled by quoting the redirection
+     * operators:
+     *          prog 1^>out 2^>&1
+     */
     snprintf( cmd, sizeof( cmd ), "%s%c/C %s 0<NUL 1>%s 2>&1%c", CmdProc, '\0', cmd_name, RedirName, '\0' );
     rc = DosExecPgm( NULL, 0,           /* don't care about fail name */
                 EXEC_ASYNCRESULT,       /* execflags */
@@ -94,19 +171,23 @@ static void RunCmd( char *cmd_name )
 static void ProcessConnection( void )
 {
     ULONG               bytes_read;
-    unsigned long       max;
+    int                 len;
     struct _AVAILDATA   BytesAvail;
     ULONG               PipeState;
     APIRET              rc;
     RESULTCODES         res;
     PID                 dummy;
     const char          *dir;
+    batch_stat          status;
 
     for( ;; ) {
-        DosRead( LnkHdl, pdata.u.buffer, sizeof( pdata.u.buffer ), &bytes_read );
-        if( bytes_read == 0 )
+        len = BatpipeReadData();
+        if( len < 0 )
             break;
-        pdata.u.buffer[bytes_read] = '\0';
+        /*
+         * add additional null terminate character
+         */
+        pdata.u.s.u.data[len] = '\0';
         switch( pdata.u.s.cmd ) {
         case LNK_CWD:
             rc = 0;
@@ -118,9 +199,8 @@ static void ProcessConnection( void )
             if( rc == 0 && dir[0] != '\0' ) {
                 rc = DosSetCurrentDir( dir );
             }
-            pdata.u.s.cmd = LNK_STATUS;
-            pdata.u.s.u.status = rc;
-            DosWrite( LnkHdl, pdata.u.buffer, 1 + sizeof( pdata.u.s.u.status ), &bytes_read );
+            status = rc;
+            BatpipeWriteData( LNK_STATUS, &status, sizeof( status ) );
             break;
         case LNK_RUN:
             DosSetNPHState( RedirHdl, NP_NOWAIT | NP_READMODE_BYTE );
@@ -129,26 +209,26 @@ static void ProcessConnection( void )
             RunCmd( pdata.u.s.u.data );
             break;
         case LNK_QUERY:
-            max = pdata.u.s.u.len;
-            rc = DosPeekNPipe( RedirHdl, pdata.u.buffer, 0, &bytes_read, &BytesAvail, &PipeState );
-            if( rc == 0 && BytesAvail.cbpipe != 0 ) {
-                if( max > TRANS_DATA_MAXLEN )
-                    max = TRANS_DATA_MAXLEN;
-                DosRead( RedirHdl, pdata.u.s.u.data, max, &bytes_read );
-                pdata.u.s.cmd = LNK_OUTPUT;
+            len = pdata.u.s.u.len;
+            if( DosPeekNPipe( RedirHdl, pdata.u.buffer, 0, &bytes_read, &BytesAvail, &PipeState ) == 0
+              && BytesAvail.cbpipe != 0 ) {
+                /*
+                 * limit read length to maximum output length
+                 */
+                if( len > TRANS_DATA_MAXLEN )
+                    len = TRANS_DATA_MAXLEN;
+                DosRead( RedirHdl, pdata.u.buffer, len, &bytes_read );
+                BatpipeWriteData( LNK_OUTPUT, pdata.u.buffer, bytes_read );
             } else if( DosWaitChild( DCWA_PROCESS, DCWW_NOWAIT, &res, &dummy, ProcId ) == ERROR_CHILD_NOT_COMPLETE ) {
                 /* let someone else run */
                 DosSleep( 1 );
-                pdata.u.s.cmd = LNK_NOP;
-                bytes_read = 0;
+                BatpipeWriteCmd( LNK_NOP );
             } else {
                 DosDisConnectNPipe( RedirHdl );
                 ProcId = 0;
-                pdata.u.s.cmd = LNK_STATUS;
-                pdata.u.s.u.status = res.codeResult;
-                bytes_read = sizeof( pdata.u.s.u.status );
+                status = res.codeResult;
+                BatpipeWriteData( LNK_STATUS, &status, sizeof( status ) );
             }
-            DosWrite( LnkHdl, pdata.u.buffer, bytes_read + 1, &bytes_read );
             break;
         case LNK_CANCEL:
             DosSendSignalException( ProcId, XCPT_SIGNAL_INTR );
@@ -169,21 +249,14 @@ static void ProcessConnection( void )
 void main( int argc, char *argv[] )
 {
     APIRET          rc;
-    unsigned long   actiontaken;
-    unsigned long   sent;
-    char            *p;
+    const char      *p;
 
     strcpy( RedirName, PREFIX DEFAULT_LINK_NAME );
     if( argc > 1 && (argv[1][0] == 'q' || argv[1][0] == 'Q') ) {
-        rc = DosOpen( RedirName, &LnkHdl, &actiontaken, 0,
-                        FILE_NORMAL,
-                        OPEN_ACTION_FAIL_IF_NEW | OPEN_ACTION_OPEN_IF_EXISTS,
-                        OPEN_SHARE_DENYNONE | OPEN_ACCESS_WRITEONLY,
-                        0 );
-        if( rc == 0 ) {
-            pdata.u.s.cmd = LNK_SHUTDOWN;
-            DosWrite( LnkHdl, pdata.u.buffer, 1, &sent );
+        if( !BatpipePipeOpen( RedirName ) ) {
+            BatpipeWriteCmd( LNK_SHUTDOWN );
         }
+        BatpipePipeClose();
         exit_link( 0 );
     }
     p = getenv( "COMSPEC" );
@@ -194,20 +267,12 @@ void main( int argc, char *argv[] )
     strncpy( CmdProc, p, COMSPEC_MAXLEN );
     CmdProc[COMSPEC_MAXLEN] = '\0';
     //NYI: need to accept name for link pipe
-    rc = DosCreateNPipe( RedirName, &LnkHdl,
-        NP_NOINHERIT | NP_NOWRITEBEHIND | NP_ACCESS_DUPLEX,
-        NP_WAIT | NP_READMODE_MESSAGE | NP_TYPE_MESSAGE | 1,
-        TRANS_MAXLEN, TRANS_MAXLEN, 0 );
-    if( rc != 0 ) {
+    if( BatpipePipeCreate( RedirName ) ) {
         fprintf( stderr, "Unable to create link pipe\n" );
         exit_link( 1 );
     }
     sprintf( RedirName, PREFIX "%d", getpid() );
-    rc = DosCreateNPipe( RedirName, &RedirHdl,
-        NP_NOINHERIT | NP_WRITEBEHIND | NP_ACCESS_INBOUND,
-        NP_WAIT | NP_READMODE_BYTE | NP_TYPE_BYTE | 1,
-        TRANS_MAXLEN, TRANS_MAXLEN, 0 );
-    if( rc != 0 ) {
+    if( BatpipeRedirCreate( RedirName ) ) {
         fprintf( stderr, "Unable to create redirection pipe\n" );
         exit_link( 1 );
     }

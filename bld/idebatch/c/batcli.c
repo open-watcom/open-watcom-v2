@@ -89,10 +89,11 @@ int BatchCollect( void *ptr, batch_len max, batch_stat *status )
             *status = bdata.u.s.u.status;
             return( -1 );
         }
-        if( len > max )
-            len = max;
         memcpy( ptr, bdata.u.s.u.data, len );
     }
+    /*
+     * add additional null terminate character
+     */
     ((char *)ptr)[len] = '\0';
     return( len );
 }

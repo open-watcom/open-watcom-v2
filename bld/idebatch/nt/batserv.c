@@ -59,7 +59,7 @@ static void exit_link( int rc )
     exit( rc );
 }
 
-static void RunCmd( char *cmd_name )
+static void RunCmd( const char *cmd_name )
 {
     char                cmd[COMSPEC_MAXLEN + 4 + TRANS_DATA_MAXLEN + 1];
     PROCESS_INFORMATION info;
@@ -102,14 +102,16 @@ static void ProcessConnection( void )
 {
     DWORD               bytes_read;
     DWORD               rc;
-    unsigned            max;
+    batch_stat          status;
     int                 len;
-    batch_stat			status;
 
     for( ;; ) {
         len = BatservReadData();
         if( len < 0 )
             break;
+        /*
+         * add additional null terminate character
+         */
         bdata.u.s.u.data[len] = '\0';
         switch( bdata.u.s.cmd ) {
         case LNK_CWD:
@@ -123,29 +125,27 @@ static void ProcessConnection( void )
             RunCmd( bdata.u.s.u.data );
             break;
         case LNK_QUERY:
-            max = bdata.u.s.u.len;
+            len = bdata.u.s.u.len;
             if( PeekNamedPipe( RedirRead, bdata.u.buffer, 0, NULL, &bytes_read, NULL )
               && bytes_read != 0 ) {
                 /*
-                 * limit read length to maximum output length 
+                 * limit read length to maximum output length
                  */
-                if( max > TRANS_DATA_MAXLEN )
-                    max = TRANS_DATA_MAXLEN;
-                ReadFile( RedirRead, bdata.u.buffer, max, &bytes_read, NULL );
+                if( len > TRANS_DATA_MAXLEN )
+                    len = TRANS_DATA_MAXLEN;
+                ReadFile( RedirRead, bdata.u.buffer, len, &bytes_read, NULL );
                 BatservWriteData( LNK_OUTPUT, bdata.u.buffer, bytes_read );
+            } else if( WaitForSingleObject( ProcHdl, 0 ) == WAIT_TIMEOUT ) {
+                /* let someone else run */
+                Sleep( 1 );
+                BatservWriteCmd( LNK_NOP );
             } else {
-                if( WaitForSingleObject( ProcHdl, 0 ) == WAIT_TIMEOUT ) {
-                    /* let someone else run */
-                    Sleep( 1 );
-                    BatservWriteCmd( LNK_NOP );
-                } else {
-                    GetExitCodeProcess( ProcHdl, &rc );
-                    CloseHandle( RedirRead );
-                    ProcId = 0;
-                    CloseHandle( ProcHdl );
-                    status = rc;
-                    BatservWriteData( LNK_STATUS, &status, sizeof( status ) );
-                }
+                GetExitCodeProcess( ProcHdl, &rc );
+                CloseHandle( RedirRead );
+                ProcId = 0;
+                CloseHandle( ProcHdl );
+                status = rc;
+                BatservWriteData( LNK_STATUS, &status, sizeof( status ) );
             }
             break;
         case LNK_CANCEL:
@@ -170,7 +170,8 @@ static BOOL CALLBACK HideWindows( HWND hwnd, LPARAM lp )
 {
     DWORD       pid;
 
-    lp=lp;
+    /* unused parameters */ (void)lp;
+
     GetWindowThreadProcessId( hwnd, &pid );
     if( pid == GetCurrentProcessId() ) {
         ShowWindow( hwnd, SW_HIDE );
@@ -223,7 +224,7 @@ void main( int argc, char *argv[] )
         fprintf( stderr, "Unable to open NUL device\n" );
         exit_link( 1 );
     }
-    EnumWindows( HideWindows , 0 );
+    EnumWindows( HideWindows, 0 );
 
     Say(( "LNK_UP\n" ));
     for( ;; ) {

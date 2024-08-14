@@ -79,6 +79,9 @@ typedef struct batch_data {
         struct {
             char        cmd;
             union {
+                /*
+                 * add one byte for additional null terminate character
+                 */
                 char            data[TRANS_DATA_MAXLEN + 1];
                 batch_len       len;
                 batch_stat      status;
