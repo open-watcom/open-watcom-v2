@@ -259,33 +259,35 @@ typedef enum ui_event {
     EV_JOIN_RIGHT,              // 0x022B
     EV_JOIN_LEFT,               // 0x022C
     EV_SPLIT,                   // 0x022D
-    EV_SCROLL_LINE_UP,          // 0x022E
-    EV_SCROLL_LINE_DOWN,        // 0x022F
+    EV_SCROLL_UP,               // 0x022E
+    EV_SCROLL_DOWN,             // 0x022F
     EV_SCROLL_PAGE_UP,          // 0x0230
     EV_SCROLL_PAGE_DOWN,        // 0x0231
     EV_SCROLL_FIELD_LEFT,       // 0x0232
     EV_SCROLL_FIELD_RIGHT,      // 0x0233
-    EV_SCROLL_PAGE_LEFT,        // 0x0234
-    EV_SCROLL_PAGE_RIGHT,       // 0x0235
-    EV_SCROLL_VERTICAL,         // 0x0236
-    EV_SCROLL_HORIZONTAL,       // 0x0237
+    EV_SCROLL_LEFT,             // 0x0234
+    EV_SCROLL_RIGHT,            // 0x0235
+    EV_SCROLL_PAGE_LEFT,        // 0x0236
+    EV_SCROLL_PAGE_RIGHT,       // 0x0237
+    EV_SCROLL_VERTICAL,         // 0x0238
+    EV_SCROLL_HORIZONTAL,       // 0x0239
 
-    EV_IDLE,                    // 0x0238
-    EV_BUFFER_CLEAR,            // 0x0239
+    EV_IDLE,                    // 0x023A
+    EV_BUFFER_CLEAR,            // 0x023B
 
-    EV_MOUSE_MOVE,              // 0x023A
-    EV_LIST_BOX_CHANGED,        // 0x023B
-    EV_MENU_ACTIVE,             // 0x023C
-    EV_MENU_INITPOPUP,          // 0x023D
-    EV_LIST_BOX_DCLICK,         // 0x023E
-    EV_LIST_BOX_CLOSED,         // 0x023F
-    EV_BACKGROUND_RESIZE,       // 0x0240
+    EV_MOUSE_MOVE,              // 0x023C
+    EV_LIST_BOX_CHANGED,        // 0x023D
+    EV_MENU_ACTIVE,             // 0x023E
+    EV_MENU_INITPOPUP,          // 0x023F
+    EV_LIST_BOX_DCLICK,         // 0x0240
+    EV_LIST_BOX_CLOSED,         // 0x0241
+    EV_BACKGROUND_RESIZE,       // 0x0242
 
     // NOTE: This event should always be passed up, from all functions.
-    EV_KILL_UI,                 // 0x0241
+    EV_KILL_UI,                 // 0x0243
 
-    EV_CHECK_BOX_CLICK,         // 0x0242
-    EV_REDRAW_SCREEN,           // 0x0243
+    EV_CHECK_BOX_CLICK,         // 0x0244
+    EV_REDRAW_SCREEN,           // 0x0245
 
     EV_STICKY_FUNC               = 0x03F0,
     EV_STICKY_SHIFT,            // 0x03F1

@@ -443,8 +443,8 @@ static bool SetCurrWnd( ui_event ui_ev, gui_window *curr )
     case EV_SCROLL_PAGE_DOWN:
     case EV_SCROLL_LEFT:
     case EV_SCROLL_RIGHT:
-    case EV_PAGE_LEFT:
-    case EV_PAGE_RIGHT:
+    case EV_SCROLL_PAGE_LEFT:
+    case EV_SCROLL_PAGE_RIGHT:
     case EV_SCROLL_VERTICAL:
     case EV_SCROLL_HORIZONTAL:
         if( ( curr != GUICurrWnd ) && ( curr != NULL ) ) {

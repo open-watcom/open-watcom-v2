@@ -148,16 +148,6 @@ struct gui_window {
 #define XMIN 0
 
 enum {
-    EV_SCROLL_UP            = EV_FIRST_UNUSED,
-    EV_SCROLL_DOWN,
-    EV_SCROLL_LEFT,
-    EV_SCROLL_RIGHT,
-    EV_PAGE_LEFT,
-    EV_PAGE_RIGHT,
-    EV_DESTROY
-};
-
-enum {
     EV_SYS_MENU_RESTORE     = EV_FIRST_UNUSED,
     EV_SYS_MENU_MOVE,
     EV_SYS_MENU_SIZE,

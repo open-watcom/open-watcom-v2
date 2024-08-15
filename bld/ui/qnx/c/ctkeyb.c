@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -189,9 +189,9 @@ static const event_shift_map ShiftMap[] = {
     FUNC_MAP( F12 ),
 };
 
-#define evmap( code, terminfo_code )            \
-    entry->ui_ev = EV_##code;                   \
-    entry->str = terminfo_code;                 \
+#define evmap( code, terminfo_code )    \
+    entry->ui_ev = code;                \
+    entry->str = terminfo_code;         \
     ++entry;
 
 static bool init_interminfo( void )
@@ -200,80 +200,80 @@ static bool init_interminfo( void )
 
     entry = InTerminfo;
 
-    evmap( RUB_OUT,             key_backspace );
-    evmap( RUB_OUT,             key_clear );
-    evmap( DELETE,              key_dc );
-    evmap( CURSOR_DOWN,         key_down );
-    evmap( INSERT,              key_ic );
-    evmap( F1,                  key_f1 );
-    evmap( F2,                  key_f2 );
-    evmap( F3,                  key_f3 );
-    evmap( F4,                  key_f4 );
-    evmap( F5,                  key_f5 );
-    evmap( F6,                  key_f6 );
-    evmap( F7,                  key_f7 );
-    evmap( F8,                  key_f8 );
-    evmap( F9,                  key_f9 );
-    evmap( F10,                 key_f10 );
-    evmap( F11,                 key_f11 );
-    evmap( F12,                 key_f12 );
-    evmap( SHIFT_F1,            key_f13 );
-    evmap( SHIFT_F2,            key_f14 );
-    evmap( SHIFT_F3,            key_f15 );
-    evmap( SHIFT_F4,            key_f16 );
-    evmap( SHIFT_F5,            key_f17 );
-    evmap( SHIFT_F6,            key_f18 );
-    evmap( SHIFT_F7,            key_f19 );
-    evmap( SHIFT_F8,            key_f20 );
-    evmap( SHIFT_F9,            key_f21 );
-    evmap( SHIFT_F10,           key_f22 );
-    evmap( SHIFT_F11,           key_f23 );
-    evmap( SHIFT_F12,           key_f24 );
-    evmap( CTRL_F1,             key_f25 );
-    evmap( CTRL_F2,             key_f26 );
-    evmap( CTRL_F3,             key_f27 );
-    evmap( CTRL_F4,             key_f28 );
-    evmap( CTRL_F5,             key_f29 );
-    evmap( CTRL_F6,             key_f30 );
-    evmap( CTRL_F7,             key_f31 );
-    evmap( CTRL_F8,             key_f32 );
-    evmap( CTRL_F9,             key_f33 );
-    evmap( CTRL_F10,            key_f34 );
-    evmap( CTRL_F11,            key_f35 );
-    evmap( CTRL_F12,            key_f36 );
-    evmap( ALT_F1,              key_f37 );
-    evmap( ALT_F2,              key_f38 );
-    evmap( ALT_F3,              key_f39 );
-    evmap( ALT_F4,              key_f40 );
-    evmap( ALT_F5,              key_f41 );
-    evmap( ALT_F6,              key_f42 );
-    evmap( ALT_F7,              key_f43 );
-    evmap( ALT_F8,              key_f44 );
-    evmap( ALT_F9,              key_f45 );
-    evmap( ALT_F10,             key_f46 );
-    evmap( ALT_F11,             key_f47 );
-    evmap( ALT_F12,             key_f48 );
-    evmap( HOME,                key_home );
-    evmap( CURSOR_LEFT,         key_left );
-    evmap( PAGE_DOWN,           key_npage );
-    evmap( PAGE_UP,             key_ppage );
-    evmap( CURSOR_RIGHT,        key_right );
-    evmap( SCROLL_LINE_DOWN,    key_sf );
-    evmap( SCROLL_LINE_UP,      key_sr );
-    evmap( CURSOR_UP,           key_up );
-    evmap( HOME,                key_beg );
-    evmap( ESCAPE,              key_cancel );
-    evmap( END,                 key_end );
-    evmap( ENTER,               key_enter );
-    evmap( TAB_FORWARD,         key_next );
-    evmap( TAB_BACKWARD,        key_previous );
-    evmap( SHIFT_HOME,          key_sbeg );
-    evmap( SHIFT_END,           key_send );
-    evmap( SHIFT_CURSOR_LEFT,   key_sleft );
-    evmap( TAB_BACKWARD,        key_snext );
-    evmap( TAB_FORWARD,         key_sprevious );
-    evmap( SHIFT_CURSOR_RIGHT,  key_sright );
-    evmap( TAB_BACKWARD,        key_btab );
+    evmap( EV_RUB_OUT,             key_backspace );
+    evmap( EV_RUB_OUT,             key_clear );
+    evmap( EV_DELETE,              key_dc );
+    evmap( EV_CURSOR_DOWN,         key_down );
+    evmap( EV_INSERT,              key_ic );
+    evmap( EV_F1,                  key_f1 );
+    evmap( EV_F2,                  key_f2 );
+    evmap( EV_F3,                  key_f3 );
+    evmap( EV_F4,                  key_f4 );
+    evmap( EV_F5,                  key_f5 );
+    evmap( EV_F6,                  key_f6 );
+    evmap( EV_F7,                  key_f7 );
+    evmap( EV_F8,                  key_f8 );
+    evmap( EV_F9,                  key_f9 );
+    evmap( EV_F10,                 key_f10 );
+    evmap( EV_F11,                 key_f11 );
+    evmap( EV_F12,                 key_f12 );
+    evmap( EV_SHIFT_F1,            key_f13 );
+    evmap( EV_SHIFT_F2,            key_f14 );
+    evmap( EV_SHIFT_F3,            key_f15 );
+    evmap( EV_SHIFT_F4,            key_f16 );
+    evmap( EV_SHIFT_F5,            key_f17 );
+    evmap( EV_SHIFT_F6,            key_f18 );
+    evmap( EV_SHIFT_F7,            key_f19 );
+    evmap( EV_SHIFT_F8,            key_f20 );
+    evmap( EV_SHIFT_F9,            key_f21 );
+    evmap( EV_SHIFT_F10,           key_f22 );
+    evmap( EV_SHIFT_F11,           key_f23 );
+    evmap( EV_SHIFT_F12,           key_f24 );
+    evmap( EV_CTRL_F1,             key_f25 );
+    evmap( EV_CTRL_F2,             key_f26 );
+    evmap( EV_CTRL_F3,             key_f27 );
+    evmap( EV_CTRL_F4,             key_f28 );
+    evmap( EV_CTRL_F5,             key_f29 );
+    evmap( EV_CTRL_F6,             key_f30 );
+    evmap( EV_CTRL_F7,             key_f31 );
+    evmap( EV_CTRL_F8,             key_f32 );
+    evmap( EV_CTRL_F9,             key_f33 );
+    evmap( EV_CTRL_F10,            key_f34 );
+    evmap( EV_CTRL_F11,            key_f35 );
+    evmap( EV_CTRL_F12,            key_f36 );
+    evmap( EV_ALT_F1,              key_f37 );
+    evmap( EV_ALT_F2,              key_f38 );
+    evmap( EV_ALT_F3,              key_f39 );
+    evmap( EV_ALT_F4,              key_f40 );
+    evmap( EV_ALT_F5,              key_f41 );
+    evmap( EV_ALT_F6,              key_f42 );
+    evmap( EV_ALT_F7,              key_f43 );
+    evmap( EV_ALT_F8,              key_f44 );
+    evmap( EV_ALT_F9,              key_f45 );
+    evmap( EV_ALT_F10,             key_f46 );
+    evmap( EV_ALT_F11,             key_f47 );
+    evmap( EV_ALT_F12,             key_f48 );
+    evmap( EV_HOME,                key_home );
+    evmap( EV_CURSOR_LEFT,         key_left );
+    evmap( EV_PAGE_DOWN,           key_npage );
+    evmap( EV_PAGE_UP,             key_ppage );
+    evmap( EV_CURSOR_RIGHT,        key_right );
+    evmap( EV_SCROLL_LINE_DOWN,    key_sf );
+    evmap( EV_SCROLL_LINE_UP,      key_sr );
+    evmap( EV_CURSOR_UP,           key_up );
+    evmap( EV_HOME,                key_beg );
+    evmap( EV_ESCAPE,              key_cancel );
+    evmap( EV_END,                 key_end );
+    evmap( EV_ENTER,               key_enter );
+    evmap( EV_TAB_FORWARD,         key_next );
+    evmap( EV_TAB_BACKWARD,        key_previous );
+    evmap( EV_SHIFT_HOME,          key_sbeg );
+    evmap( EV_SHIFT_END,           key_send );
+    evmap( EV_SHIFT_CURSOR_LEFT,   key_sleft );
+    evmap( EV_TAB_BACKWARD,        key_snext );
+    evmap( EV_TAB_FORWARD,         key_sprevious );
+    evmap( EV_SHIFT_CURSOR_RIGHT,  key_sright );
+    evmap( EV_TAB_BACKWARD,        key_btab );
 
     // Check to see that the correct number of events were added
     return( NUM_ELTS( InTerminfo ) == NUM_IN_TERM_INFO_MAPPINGS );
