@@ -74,13 +74,13 @@ typedef struct a_gadget{
 #ifdef __cplusplus
     extern "C" {
 #endif
-extern void     uiinitgadget( a_gadget * );
-extern void     uidrawgadget( a_gadget * );
-extern void     uishowgadget( a_gadget * );
-extern void     uisetgadget( a_gadget *, int );
-extern void     uisetgadgetnodraw( a_gadget *, int );
-extern void     uifinigadget( a_gadget * );
-extern ui_event uigadgetfilter( ui_event, a_gadget * );
+extern void     uiinitgadget( p_gadget );
+extern void     uidrawgadget( p_gadget );
+extern void     uishowgadget( p_gadget );
+extern void     uisetgadget( p_gadget, int );
+extern void     uisetgadgetnodraw( p_gadget, int );
+extern void     uifinigadget( p_gadget );
+extern ui_event uigadgetfilter( ui_event, p_gadget );
 #ifdef __cplusplus
 }
 #endif
