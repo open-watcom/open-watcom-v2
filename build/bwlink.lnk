@@ -47,6 +47,57 @@ system begin dos
     format dos ^
 end
 
+system begin dos_pc98
+    libpath '%OWROOT%/bld/wl/ovlldr/dosi86'
+    libpath '%OWROOT%/bld/fpuemu/i86/stubi86'
+    libpath '%OWROOT%/bld/fpuemu/i86/dosi86'
+    libpath '%OWROOT%/bld/clib/pc98/library/msdos.086/ms'
+    libpath '%OWROOT%/bld/clib/pc98/library/msdos.086/mc'
+    libpath '%OWROOT%/bld/clib/pc98/library/msdos.086/mm'
+    libpath '%OWROOT%/bld/clib/pc98/library/msdos.086/ml'
+    libpath '%OWROOT%/bld/clib/pc98/library/msdos.086/mh'
+    libpath '%OWROOT%/bld/clib/library/msdos.086/ms'
+    libpath '%OWROOT%/bld/clib/library/msdos.086/mc'
+    libpath '%OWROOT%/bld/clib/library/msdos.086/mm'
+    libpath '%OWROOT%/bld/clib/library/msdos.086/ml'
+    libpath '%OWROOT%/bld/clib/library/msdos.086/mh'
+    libpath '%OWROOT%/bld/clib/doslfn/library/msdos.086/ms'
+    libpath '%OWROOT%/bld/clib/doslfn/library/msdos.086/mc'
+    libpath '%OWROOT%/bld/clib/doslfn/library/msdos.086/mm'
+    libpath '%OWROOT%/bld/clib/doslfn/library/msdos.086/ml'
+    libpath '%OWROOT%/bld/clib/doslfn/library/msdos.086/mh'
+    libpath '%OWROOT%/bld/mathlib/library/msdos.286/ms'
+    libpath '%OWROOT%/bld/mathlib/library/msdos.287/ms'
+    libpath '%OWROOT%/bld/mathlib/library/msdos.286/mc'
+    libpath '%OWROOT%/bld/mathlib/library/msdos.287/mc'
+    libpath '%OWROOT%/bld/mathlib/library/msdos.286/mm'
+    libpath '%OWROOT%/bld/mathlib/library/msdos.287/mm'
+    libpath '%OWROOT%/bld/mathlib/library/msdos.286/ml'
+    libpath '%OWROOT%/bld/mathlib/library/msdos.287/ml'
+    libpath '%OWROOT%/bld/mathlib/library/msdos.286/mh'
+    libpath '%OWROOT%/bld/mathlib/library/msdos.287/mh'
+    libpath '%OWROOT%/bld/cpplib/library/generic.086/ms'
+    libpath '%OWROOT%/bld/cpplib/library/generic.086/mc'
+    libpath '%OWROOT%/bld/cpplib/library/generic.086/mm'
+    libpath '%OWROOT%/bld/cpplib/library/generic.086/ml'
+    libpath '%OWROOT%/bld/cpplib/library/generic.086/mh'
+    libpath '%OWROOT%/bld/cpplib/complex/generic.086/ms'
+    libpath '%OWROOT%/bld/cpplib/complex/generic.086/mc'
+    libpath '%OWROOT%/bld/cpplib/complex/generic.086/mm'
+    libpath '%OWROOT%/bld/cpplib/complex/generic.086/ml'
+    libpath '%OWROOT%/bld/cpplib/complex/generic.086/mh'
+    libpath '%OWROOT%/bld/cpplib/complex/generic.087/ms'
+    libpath '%OWROOT%/bld/cpplib/complex/generic.087/mc'
+    libpath '%OWROOT%/bld/cpplib/complex/generic.087/mm'
+    libpath '%OWROOT%/bld/cpplib/complex/generic.087/ml'
+    libpath '%OWROOT%/bld/cpplib/complex/generic.087/mh'
+    libpath '%OWROOT%/bld/f77/f77lib/msdos.086/ml'
+    libpath '%OWROOT%/bld/f77/f77lib/msdos.086/mm'
+    libpath '%OWROOT%/bld/f77/f77lib/msdos.087/ml'
+    libpath '%OWROOT%/bld/f77/f77lib/msdos.087/mm'
+    format dos ^
+end
+
 system begin windows
     option osname='Windows 16-bit'
     libpath '%OWROOT%/bld/fpuemu/i86/stubi86'
@@ -143,6 +194,34 @@ system begin dos4g
     format os2 le ^
 end
 
+system begin dos4g_pc98
+    option osname='DOS/4G'
+    libpath '%OWROOT%/bld/fpuemu/386/stub386'
+    libpath '%OWROOT%/bld/fpuemu/386/dos386'
+    libpath '%OWROOT%/bld/clib/pc98/library/msdos.386/ms_r'
+    libpath '%OWROOT%/bld/clib/pc98/library/msdos.386/ms_s'
+    libpath '%OWROOT%/bld/clib/doslfn/library/msdos.386/ms_r'
+    libpath '%OWROOT%/bld/clib/doslfn/library/msdos.386/ms_s'
+    libpath '%OWROOT%/bld/clib/library/msdos.386/ms_r'
+    libpath '%OWROOT%/bld/clib/library/msdos.386/ms_s'
+    libpath '%OWROOT%/bld/mathlib/library/msdos.386/ms_r'
+    libpath '%OWROOT%/bld/mathlib/library/msdos.386/ms_s'
+    libpath '%OWROOT%/bld/mathlib/library/msdos.387/ms_r'
+    libpath '%OWROOT%/bld/mathlib/library/msdos.387/ms_s'
+    libpath '%OWROOT%/bld/cpplib/library/generic.386/ms_r'
+    libpath '%OWROOT%/bld/cpplib/library/generic.386/ms_s'
+    libpath '%OWROOT%/bld/cpplib/complex/generic.386/ms_r'
+    libpath '%OWROOT%/bld/cpplib/complex/generic.386/ms_s'
+    libpath '%OWROOT%/bld/cpplib/complex/generic.387/ms_r'
+    libpath '%OWROOT%/bld/cpplib/complex/generic.387/ms_s'
+    libpath '%OWROOT%/bld/f77/f77lib/msdos.386/ms_r'
+    libpath '%OWROOT%/bld/f77/f77lib/msdos.386/ms_s'
+    libpath '%OWROOT%/bld/f77/f77lib/msdos.387/ms_r'
+    libpath '%OWROOT%/bld/f77/f77lib/msdos.387/ms_s'
+    op stub='%OWROOT%/bld/wstuba/dos386/wstub.exe'
+    format os2 le ^
+end
+
 system begin causeway
     option osname='CauseWay'
     libpath '%OWROOT%/bld/fpuemu/386/stub386'
@@ -186,6 +265,31 @@ system begin causeway_dll
     libpath '%OWROOT%/bld/cpplib/complex/generic.387/ms_s'
     libpath '%OWROOT%/bld/causeway/cwdll/dos386'
     op stub='%OWROOT%/bld/causeway/cw32/dos386/cwdstub.exe'
+    format os2 le ^
+end
+
+system begin causeway_pc98
+    option osname='CauseWay'
+    libpath '%OWROOT%/bld/fpuemu/386/stub386'
+    libpath '%OWROOT%/bld/fpuemu/386/dos386'
+    libpath '%OWROOT%/bld/clib/pc98/library/msdos.386/ms_r'
+    libpath '%OWROOT%/bld/clib/pc98/library/msdos.386/ms_s'
+    libpath '%OWROOT%/bld/clib/doslfn/library/msdos.386/ms_r'
+    libpath '%OWROOT%/bld/clib/doslfn/library/msdos.386/ms_s'
+    libpath '%OWROOT%/bld/clib/library/msdos.386/ms_r'
+    libpath '%OWROOT%/bld/clib/library/msdos.386/ms_s'
+    libpath '%OWROOT%/bld/mathlib/library/msdos.386/ms_r'
+    libpath '%OWROOT%/bld/mathlib/library/msdos.386/ms_s'
+    libpath '%OWROOT%/bld/mathlib/library/msdos.387/ms_r'
+    libpath '%OWROOT%/bld/mathlib/library/msdos.387/ms_s'
+    libpath '%OWROOT%/bld/cpplib/library/generic.386/ms_r'
+    libpath '%OWROOT%/bld/cpplib/library/generic.386/ms_s'
+    libpath '%OWROOT%/bld/cpplib/complex/generic.386/ms_r'
+    libpath '%OWROOT%/bld/cpplib/complex/generic.386/ms_s'
+    libpath '%OWROOT%/bld/cpplib/complex/generic.387/ms_r'
+    libpath '%OWROOT%/bld/cpplib/complex/generic.387/ms_s'
+    libpath '%OWROOT%/bld/causeway/cw32/dos386'
+    op stub='%OWROOT%/bld/causeway/cw32/dos386/cwstub.exe'
     format os2 le ^
 end
 
