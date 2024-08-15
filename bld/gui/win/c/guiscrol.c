@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -47,7 +47,7 @@ guix_ord GUIGetScrollScreenSize( gui_window *wnd, int bar )
         return( right - left );
     } else {
         if( GUI_VSCROLL_ROWS( wnd ) ) {
-            return( GUIFromTextY( wnd->num_rows, wnd ) );
+            return( GUITextToScreenV( wnd->num_rows, wnd ) );
         } else {
             return( bottom - top );
         }
@@ -58,13 +58,13 @@ guix_ord GUIGetScrollInc( gui_window *wnd, int bar )
 {
     if( bar == SB_HORZ ) {
         if( GUI_HSCROLL_COLS( wnd ) ) {
-            return( GUIFromTextX( 1, wnd ) );
+            return( GUITextToScreenH( 1, wnd ) );
         } else {
             return( 1 );
         }
     } else {
         if( GUI_VSCROLL_ROWS( wnd ) ) {
-            return( GUIFromTextY( 1, wnd ) );
+            return( GUITextToScreenV( 1, wnd ) );
         } else {
             return( 1 );
         }
@@ -129,7 +129,7 @@ static void SetScroll( gui_window *wnd, int bar, guix_ord pos )
 
 void GUIAPI GUISetVScrollRow( gui_window *wnd, gui_text_ord vscroll_pos )
 {
-    SetScroll( wnd, SB_VERT, GUIFromTextY( vscroll_pos, wnd ) );
+    SetScroll( wnd, SB_VERT, GUITextToScreenV( vscroll_pos, wnd ) );
 }
 
 /*
@@ -138,7 +138,7 @@ void GUIAPI GUISetVScrollRow( gui_window *wnd, gui_text_ord vscroll_pos )
 
 void GUIAPI GUISetHScrollCol( gui_window *wnd, gui_text_ord hscroll_pos )
 {
-    SetScroll( wnd, SB_HORZ, GUIFromTextX( hscroll_pos, wnd ) );
+    SetScroll( wnd, SB_HORZ, GUITextToScreenH( hscroll_pos, wnd ) );
 }
 
 /*

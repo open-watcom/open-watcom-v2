@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -67,7 +67,7 @@ static void InitScroll( gui_window *wnd, int bar, guix_ord pos )
 
 void GUIAPI GUIInitVScrollRow( gui_window *wnd, gui_text_ord vscroll_pos )
 {
-    InitScroll( wnd, SB_VERT, GUIFromTextY( vscroll_pos, wnd ) );
+    InitScroll( wnd, SB_VERT, GUITextToScreenV( vscroll_pos, wnd ) );
 }
 
 /*
@@ -76,7 +76,7 @@ void GUIAPI GUIInitVScrollRow( gui_window *wnd, gui_text_ord vscroll_pos )
 
 void GUIAPI GUIInitHScrollCol( gui_window *wnd, gui_text_ord hscroll_pos )
 {
-    InitScroll( wnd, SB_HORZ, GUIFromTextX( hscroll_pos, wnd ) );
+    InitScroll( wnd, SB_HORZ, GUITextToScreenH( hscroll_pos, wnd ) );
 }
 
 /*

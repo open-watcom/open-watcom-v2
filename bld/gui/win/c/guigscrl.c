@@ -50,7 +50,7 @@ static guix_ord GetPos( gui_window *wnd, int bar )
 
 gui_text_ord GUIAPI GUIGetHScrollCol( gui_window *wnd )
 {
-    return( GUIToTextX( GetPos( wnd, SB_HORZ ), wnd ) );
+    return( GUITextFromScreenH( GetPos( wnd, SB_HORZ ), wnd ) );
 }
 
 /*
@@ -59,7 +59,7 @@ gui_text_ord GUIAPI GUIGetHScrollCol( gui_window *wnd )
 
 gui_text_ord GUIAPI GUIGetVScrollRow( gui_window *wnd )
 {
-    return( GUIToTextY( GetPos( wnd, SB_VERT ), wnd ) );
+    return( GUITextFromScreenV( GetPos( wnd, SB_VERT ), wnd ) );
 }
 
 

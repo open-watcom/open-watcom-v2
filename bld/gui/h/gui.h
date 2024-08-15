@@ -44,6 +44,25 @@
 
 #define GUI_ARRAY_SIZE( x )     (sizeof( x ) / sizeof( *x ))
 
+/*
+ * NOTE:
+ * gui project use 3 types of coordinates
+ *
+ * 1. gui_ord
+ *    it is public API graphical coordinate type (int)
+ *
+ * 2. gui_text_ord
+ *    it is public API text coordinate type (unsigned short)
+ *
+ * 3. guix_ord
+ *    it is internal signed coordinate type which depend on API type
+ *    for GUI it is graphical coordinate type (int)
+ *    for UI it is text coordinate type (short)
+ */
+
+typedef int                 gui_ord;
+typedef unsigned short      gui_text_ord;
+
 typedef enum {
     GUI_NO_EVENT,
     GUI_INIT_WINDOW,
@@ -375,10 +394,6 @@ typedef enum {
 #define GUI_NOT_CHECKED     0
 #define GUI_CHECKED         1
 #define GUI_INDETERMINANT   2
-
-typedef int                 gui_ord;
-
-typedef unsigned short      gui_text_ord;
 
 typedef unsigned            gui_ctl_id;
 typedef unsigned            gui_res_id;

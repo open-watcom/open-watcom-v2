@@ -403,8 +403,8 @@ void GUISetRowCol( gui_window *wnd, const guix_coord *scr_size )
         size_x = scr_size->x;
         size_y = scr_size->y;
     }
-    wnd->num_cols = GUIToTextX( size_x, wnd );
-    wnd->num_rows = GUIToTextY( size_y, wnd );
+    wnd->num_cols = GUITextFromScreenH( size_x, wnd );
+    wnd->num_rows = GUITextFromScreenV( size_y, wnd );
 }
 
 /*

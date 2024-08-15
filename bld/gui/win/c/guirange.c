@@ -69,7 +69,7 @@ static void SetRange( gui_window *wnd, int bar, guix_ord range, guix_ord text_ra
 void GUIAPI GUISetHScrollRangeCols( gui_window *wnd, gui_text_ord text_range )
 {
     wnd->flags |= HRANGE_COL;
-    SetRange( wnd, SB_HORZ, GUIFromTextX( text_range, wnd ), text_range );
+    SetRange( wnd, SB_HORZ, GUITextToScreenH( text_range, wnd ), text_range );
 }
 
 /*
@@ -79,7 +79,7 @@ void GUIAPI GUISetHScrollRangeCols( gui_window *wnd, gui_text_ord text_range )
 void GUIAPI GUISetVScrollRangeRows( gui_window *wnd, gui_text_ord text_range )
 {
     wnd->flags |= VRANGE_ROW;
-    SetRange( wnd, SB_VERT, GUIFromTextY( text_range, wnd ), text_range );
+    SetRange( wnd, SB_VERT, GUITextToScreenV( text_range, wnd ), text_range );
 }
 
 /*
@@ -138,7 +138,7 @@ gui_text_ord GUIAPI GUIGetVScrollRangeRows( gui_window *wnd )
     if( range == GUI_NO_RANGE ) {
         return( GUI_TEXT_NO_RANGE );
     } else {
-        return( GUIToTextY( range, wnd ) );
+        return( GUITextFromScreenV( range, wnd ) );
     }
 }
 
@@ -154,6 +154,6 @@ gui_text_ord GUIAPI GUIGetHScrollRangeCols( gui_window *wnd )
     if( range == GUI_NO_RANGE ) {
         return( GUI_TEXT_NO_RANGE );
     } else {
-        return( GUIToTextX( range, wnd ) );
+        return( GUITextFromScreenH( range, wnd ) );
     }
 }

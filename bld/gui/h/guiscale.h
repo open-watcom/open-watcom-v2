@@ -38,13 +38,17 @@
 
 extern void GUISetScreen( gui_ord xmin, gui_ord ymin, gui_ord width, gui_ord height );
 
+/* for dimension only */
 extern guix_ord GUIScaleToScreenH( gui_ord ord );
 extern guix_ord GUIScaleToScreenV( gui_ord ord );
+/* for coordinate only */
 extern guix_ord GUIScaleToScreenX( gui_ord ord );
 extern guix_ord GUIScaleToScreenY( gui_ord ord );
 
+/* for dimension only */
 extern gui_ord GUIScaleFromScreenH( guix_ord screen_ord );
 extern gui_ord GUIScaleFromScreenV( guix_ord screen_ord );
+/* for coordinate only */
 extern gui_ord GUIScaleFromScreenX( guix_ord screen_ord );
 extern gui_ord GUIScaleFromScreenY( guix_ord screen_ord );
 

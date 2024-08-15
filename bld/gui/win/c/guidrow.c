@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -49,7 +49,7 @@ void GUIAPI GUIWndDirtyRow( gui_window *wnd, gui_text_ord row )
     int         h;
     WPI_RECTDIM left, top, right, bottom;
 
-    height = GUIFromTextY( 1, wnd );
+    height = GUITextToScreenV( 1, wnd );
     wpi_rect = wnd->hwnd_client_rect;
     h = _wpi_getheightrect( wpi_rect );
     _wpi_getrectvalues( wpi_rect, &left, &top, &right, &bottom );

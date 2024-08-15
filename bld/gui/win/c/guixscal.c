@@ -44,40 +44,40 @@ void GUIClientToScaleRect( const guix_rect *client, gui_rect *rect )
 }
 
 /*
- *  GUIToTextX -- divide by character width, height
+ *  GUITextFromScreenH -- divide by character width, height
+ *  !! dimension only !!
  */
-
-gui_text_ord GUIToTextX( guix_ord ord, gui_window *wnd )
+gui_text_ord GUITextFromScreenH( guix_ord ord, gui_window *wnd )
 {
     GUIGetMetrics( wnd );
     return( GUIMulDiv( gui_text_ord, ord, 1, AVGXCHAR( GUItm ) ) );
 }
 
 /*
- *  GUIToTextY -- divide by character width, height
+ *  GUITextFromScreenV -- divide by character width, height
+ *  !! dimension only !!
  */
-
-gui_text_ord GUIToTextY( guix_ord ord, gui_window *wnd )
+gui_text_ord GUITextFromScreenV( guix_ord ord, gui_window *wnd )
 {
     GUIGetMetrics( wnd );
     return( GUIMulDiv( gui_text_ord, ord, 1, AVGYCHAR( GUItm ) ) );
 }
 
 /*
- *  GUIFromTextX -- multiply by character width, height
+ *  GUITextToScreenH -- multiply by character width, height
+ *  !! dimension only !!
  */
-
-guix_ord GUIFromTextX( gui_text_ord text_ord, gui_window *wnd )
+guix_ord GUITextToScreenH( gui_text_ord text_ord, gui_window *wnd )
 {
     GUIGetMetrics( wnd );
     return( GUIMulDiv( gui_ord, text_ord, AVGXCHAR( GUItm ), 1 ) );
 }
 
 /*
- *  GUIFromTextY -- multiply by character widht, height
+ *  GUITextToScreenV -- multiply by character widht, height
+ *  !! dimension only !!
  */
-
-guix_ord GUIFromTextY( gui_text_ord text_ord, gui_window *wnd )
+guix_ord GUITextToScreenV( gui_text_ord text_ord, gui_window *wnd )
 {
     GUIGetMetrics( wnd );
     return( GUIMulDiv( gui_ord, text_ord, AVGYCHAR( GUItm ), 1 ) );
@@ -86,7 +86,6 @@ guix_ord GUIFromTextY( gui_text_ord text_ord, gui_window *wnd )
 /*
  * GUIGetTheDC - get the device context using font information in wnd
  */
-
 bool GUIGetTheDC( gui_window *wnd )
 {
     if( wnd->hdc == NULLHANDLE ) {
@@ -119,7 +118,6 @@ void GUIReleaseTheDC( gui_window *wnd )
 /*
  * GUIGetMetrics - Initialize the tm structure with info for the given window
  */
-
 void GUIGetMetrics( gui_window *wnd )
 {
     bool got_new;
@@ -136,20 +134,17 @@ void GUIGetMetrics( gui_window *wnd )
  * GUIGetUpdateRows -- get the start row and number of rows to get
  *                     updated.  Must have called GUIBeginPaint first.
  */
-
-
-/* We assume that this function is only called between GUIBeginPaint and
- * GUIEndPaint, so the wnd->hdc is valid and wnd->font is selected
- */
-
 void GUIGetUpdateRows( gui_window *wnd, HWND hwnd, gui_text_ord *start, gui_text_ord *num )
 {
     WPI_RECT    wpi_rect;
     int         avgy;
     WPI_RECTDIM left, top, right, bottom;
 
-    hwnd = hwnd;
+    /* unused parameters */ (void)hwnd;
 
+    /* We assume that this function is only called between GUIBeginPaint and
+     * GUIEndPaint, so the wnd->hdc is valid and wnd->font is selected
+     */
     _wpi_gettextmetrics( wnd->hdc, &GUItm );
     avgy = AVGYCHAR( GUItm );
     _wpi_getpaintrect( wnd->ps, &wpi_rect );
