@@ -2,7 +2,7 @@
 ;*
 ;*                            Open Watcom Project
 ;*
-;* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+;* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 ;*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 ;*
 ;*  ========================================================================
@@ -31,13 +31,13 @@
 
 
 ERR_SERVER_EXISTS               equ     0ffffh          ; -1
-ERR_NO_MORE_CONVS               equ     0fffeh          ; -2
+ERR_NO_MORE_CONVERSATIONS       equ     0fffeh          ; -2
 ERR_NO_SUCH_SERVER              equ     0fffdh          ; -3
 ERR_ALREADY_ACCESSED_SERVER     equ     0fffch          ; -4
 ERR_HAVE_NOT_ACCESSED_SERVER    equ     0fffbh          ; -5
 ERR_NOT_THAT_SERVER             equ     0fffah          ; -6
-ERR_NO_SUCH_CONV                equ     0fff9h          ; -7
-ERR_CONV_NOT_STARTED            equ     0fff8h          ; -8
+ERR_NO_SUCH_CONVERSATION        equ     0fff9h          ; -7
+ERR_CONVERSATION_NOT_STARTED    equ     0fff8h          ; -8
 ERR_NOT_A_SERVER                equ     0fff7h          ; -9
 ERR_NOT_CONNECTED               equ     0fff6h          ; -10
 ERR_NO_SUCH_ID                  equ     0fff5h          ; -11
