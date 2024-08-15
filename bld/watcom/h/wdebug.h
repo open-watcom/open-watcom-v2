@@ -31,13 +31,13 @@
 
 
 #define ERR_SERVER_EXISTS               -1
-#define ERR_NO_MORE_CONVS               -2
+#define ERR_NO_MORE_CONVERSATIONS       -2
 #define ERR_NO_SUCH_SERVER              -3
 #define ERR_ALREADY_ACCESSED_SERVER     -4
 #define ERR_HAVE_NOT_ACCESSED_SERVER    -5
 #define ERR_NOT_THAT_SERVER             -6
-#define ERR_NO_SUCH_CONV                -7
-#define ERR_CONV_NOT_STARTED            -8
+#define ERR_NO_SUCH_CONVERSATION        -7
+#define ERR_CONVERSATION_NOT_STARTED    -8
 #define ERR_NOT_A_SERVER                -9
 #define ERR_NOT_CONNECTED               -10
 #define ERR_NO_SUCH_ID                  -11
@@ -96,17 +96,17 @@ extern _word CS( void );
 /* 10 */ extern int AccessName( char __far *name, _dword __far *id);
 /* 11 */ extern int UnregisterName( char __far *name );
 /* 12 */ extern int UnaccessName( char __far *name );
-/* 13 */ extern int StartConv( _dword id );
-/* 14 */ extern int LookForConv( _dword __far *id );
-/* 15 */ extern int EndConv( _dword id );
-/* 16 */ extern _dword ConvGet( _dword id, void __far *buff, _word len, _word attr );
-/* 17 */ extern _word ConvPut( _dword id, const void __far *buff, _word len, _word attr );
-/* 18 */ extern _word IsConvAck( _dword id );
+/* 13 */ extern int StartConversation( _dword id );
+/* 14 */ extern int LookForConversation( _dword __far *id );
+/* 15 */ extern int EndConversation( _dword id );
+/* 16 */ extern _dword ConversationGet( _dword id, void __far *buff, _word len, _word attr );
+/* 17 */ extern _word ConversationPut( _dword id, const void __far *buff, _word len, _word attr );
+/* 18 */ extern _word IsConversationAck( _dword id );
 /* 19 */ extern void MyID( _dword __far *VM_id );
 /* 1a */ extern _word SetExecutionFocus( _dword VM_id );
 /* 1b */ extern int WhatHappened( void );
-/* 1c */ extern _word ConvGetTimeOut( _dword id, void __far *buff, _word len, _word timeout );
-/* 1d */ extern _word ConvPutTimeOut( _dword id, const void __far *buff, _word len, _word timeout );
+/* 1c */ extern _word ConversationGetTimeOut( _dword id, void __far *buff, _word len, _word timeout );
+/* 1d */ extern _word ConversationPutTimeOut( _dword id, const void __far *buff, _word len, _word timeout );
 /* 1e */ extern short EMUInit( void );
 /* 1f */ extern short EMUShutdown( void );
 /* 20 */ extern short EMURegister( _word, _dword );
@@ -127,7 +127,7 @@ extern _word CS( void );
 /* 2f */ extern short HookIDT( void __far * );
 /* 30 */ extern short IDTFini( void );
 /* 31 */ extern short IDTInit( unsigned );
-/* 32 */ extern short ConvPutPending( void );
+/* 32 */ extern short ConversationPutPending( void );
 /* 33 */ extern short UseHotKey( int );
 /* 34 */ extern short RaiseInterruptInVM( _dword VM_id, _word intno );
 
@@ -262,37 +262,37 @@ extern _word CS( void );
     __parm [__es __bx] \
     __value [__ax]
 
-#pragma aux StartConv = \
+#pragma aux StartConversation = \
         "mov    ax,0fa13h" \
         "int 2fh" \
     __parm [__cx __bx] \
     __value [__ax]
 
-#pragma aux LookForConv = \
+#pragma aux LookForConversation = \
         "mov    ax,0fa14h" \
         "int 2fh" \
     __parm [__es __bx] \
     __value [__ax]
 
-#pragma aux EndConv = \
+#pragma aux EndConversation = \
         "mov    ax,0fa15h" \
         "int 2fh" \
     __parm [__cx __bx] \
     __value [__ax]
 
-#pragma aux ConvGet = \
+#pragma aux ConversationGet = \
         "mov    ax,0fa16h" \
         "int 2fh" \
     __parm [__cx __bx] [__es __dx] [__si] [__di] \
     __value [__dx __ax]
 
-#pragma aux ConvPut = \
+#pragma aux ConversationPut = \
         "mov    ax,0fa17h" \
         "int 2fh" \
     __parm [__cx __bx] [__es __dx] [__si] [__di] \
     __value [__ax]
 
-#pragma aux IsConvAck = \
+#pragma aux IsConversationAck = \
         "mov    ax,0fa18h" \
         "int 2fh" \
     __parm [__cx __bx] \
@@ -317,13 +317,13 @@ extern _word CS( void );
         "int 2fh" \
     __value [__ax]
 
-#pragma aux ConvGetTimeOut = \
+#pragma aux ConversationGetTimeOut = \
         "mov    ax,0fa1ch" \
         "int 2fh" \
     __parm [__cx __bx] [__es __dx] [__si] [__di] \
     __value [__ax]
 
-#pragma aux ConvPutTimeOut = \
+#pragma aux ConversationPutTimeOut = \
         "mov    ax,0fa1dh" \
         "int 2fh" \
     __parm [__cx __bx] [__es __dx] [__si] [__di] \
@@ -441,7 +441,7 @@ extern _word CS( void );
     __parm [__bx] \
     __modify [__ax]
 
-#pragma aux ConvPutPending = \
+#pragma aux ConversationPutPending = \
         "mov    ax,0fa32h" \
         "int 2fh" \
     __value [__ax]

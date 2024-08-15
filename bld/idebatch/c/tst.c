@@ -75,7 +75,8 @@ int main( void )
                 if( len < 0 ) {
                     printf( "done: status = %d\n", (int)stat );
                     break;
-                } else if( kbhit() ) {
+                }
+                if( kbhit() ) {
                     if( getch() == 'a' ) {
                         BatchAbort();
                     } else {

@@ -37,7 +37,7 @@
 ;****************************************************************************
 .386
 
-extrn ___ConvId:DWORD
+extrn ___ConversationId:DWORD
 
 DGROUP group _DATA
 _DATA segment word public 'DATA' use16
@@ -67,9 +67,9 @@ SendUp proc near
         mov     di,1                            ; BLOCK
         mov     ax, SEG DGROUP
         mov     ds,ax
-        mov     cx,word ptr ds:[___ConvId+2]    ; conv id number
-        mov     bx,word ptr ds:[___ConvId]
-        mov     ax,0fa17h                       ; ConvPut
+        mov     cx,word ptr ds:[___ConversationId+2] ; conversation id number
+        mov     bx,word ptr ds:[___ConversationId]
+        mov     ax,0fa17h                       ; ConversationPut
         int     02fh
         pop     es
         pop     ds
@@ -87,9 +87,9 @@ ReceiveBack proc near
         mov     di,1                            ; BLOCK
         mov     ax, SEG DGROUP
         mov     ds,ax
-        mov     cx,word ptr ds:[___ConvId+2]    ; conv id number
-        mov     bx,word ptr ds:[___ConvId]
-        mov     ax,0fa16h                       ; get
+        mov     cx,word ptr ds:[___ConversationId+2] ; conversation id number
+        mov     bx,word ptr ds:[___ConversationId]
+        mov     ax,0fa16h                       ; ConversationGet
         int     02fh
         pop     es
         pop     ds

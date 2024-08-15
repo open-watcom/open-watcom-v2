@@ -75,7 +75,7 @@ trap_retval RemoteGet( void *data, trap_elen len )
 
 #ifdef __WINDOWS__
     for( ;; ) {
-        rc = ConvGet( _id, data, len, NO_BLOCK );
+        rc = ConversationGet( _id, data, len, NO_BLOCK );
         if( (rc & 0xffff) == BLOCK ) {
             SetExecutionFocus( _id );
         } else {
@@ -86,7 +86,7 @@ trap_retval RemoteGet( void *data, trap_elen len )
 #ifdef DEBUG_ME
     Blip( &_a, &_b, 'G' );
 #endif
-    rc = ConvGet( _id, data, len, BLOCK );
+    rc = ConversationGet( _id, data, len, BLOCK );
 #ifdef DEBUG_ME
     Blip( &_a, &_b, 'g' );
 #endif
@@ -100,7 +100,7 @@ trap_retval RemotePut( void *data, trap_elen len )
     int rc;
 
     for( ;; ) {
-        rc = ConvPut( _id, data, len, NO_BLOCK );
+        rc = ConversationPut( _id, data, len, NO_BLOCK );
         if( rc == BLOCK ) {
             SetExecutionFocus( _id );
         } else {
@@ -111,7 +111,7 @@ trap_retval RemotePut( void *data, trap_elen len )
 #ifdef DEBUG_ME
     Blip( &_aa, &_bb, 'T' );
 #endif
-    ConvPut( _id, data, len, BLOCK );
+    ConversationPut( _id, data, len, BLOCK );
 #ifdef DEBUG_ME
     Blip( &_aa, &_bb, 't' );
 #endif
@@ -125,7 +125,7 @@ bool RemoteConnect( void )
     int rc;
 
 #ifdef SERVER
-    rc = LookForConv( &_id );
+    rc = LookForConversation( &_id );
     if( rc == 1 ) {
         return( true );
     } else if( rc == 0 ) {
@@ -138,12 +138,12 @@ bool RemoteConnect( void )
     if( _first ) {
 
         _first = false;
-        rc = StartConv( _id );
+        rc = StartConversation( _id );
         if( rc != 0 ) {
         }
     }
     for( ;; ) {
-        rc = IsConvAck( _id );
+        rc = IsConversationAck( _id );
         if( !rc ) {
             ReleaseVMTimeSlice();
         } else if( rc < 0 ) {
@@ -158,7 +158,7 @@ void RemoteDisco( void )
 {
 #ifdef SERVER
 #else
-    EndConv( _id );
+    EndConversation( _id );
 #endif
 }
 

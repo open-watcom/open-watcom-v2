@@ -43,7 +43,7 @@
 #include "link.h"
 
 
-_dword __ConvId;
+_dword __ConversationId;
 
 static char linkName[128];
 
@@ -90,7 +90,7 @@ static void messageLoop( void )
  */
 void __pascal VxDRaiseInterrupt( unsigned intr )
 {
-    RaiseInterruptInVM( __ConvId, intr );
+    RaiseInterruptInVM( __ConversationId, intr );
 
 } /* VxDRaiseInterrupt */
 #endif
@@ -107,7 +107,7 @@ int __pascal VxDGet( void __far *rec, unsigned len )
      */
 #ifdef __WINDOWS__
     for( ;; ) {
-        rc = ConvGet( __ConvId, rec, len - 1, NO_BLOCK );
+        rc = ConversationGet( __ConversationId, rec, len - 1, NO_BLOCK );
         if( (rc & 0xffff) == BLOCK ) {
             messageLoop();
         } else {
@@ -115,7 +115,7 @@ int __pascal VxDGet( void __far *rec, unsigned len )
         }
     }
 #else
-    rc = ConvGet( __ConvId, rec, len - 1, BLOCK );
+    rc = ConversationGet( __ConversationId, rec, len - 1, BLOCK );
 #endif
     if( (signed short)rc < 0 )
         return( (signed short)rc );
@@ -133,7 +133,7 @@ int __pascal VxDGet( void __far *rec, unsigned len )
  */
 int __pascal VxDPutPending( void )
 {
-    return( ConvPutPending() );
+    return( ConversationPutPending() );
 
 } /* VxDPutPending */
 
@@ -146,7 +146,7 @@ void __pascal VxDPut( const void __far *rec, unsigned len )
     int rc;
 
     for( ;; ) {
-        rc = ConvPut( __ConvId, rec, len, NO_BLOCK );
+        rc = ConversationPut( __ConversationId, rec, len, NO_BLOCK );
         if( rc == BLOCK ) {
             messageLoop();
         } else {
@@ -154,7 +154,7 @@ void __pascal VxDPut( const void __far *rec, unsigned len )
         }
     }
 #else
-    ConvPut( __ConvId, rec, len, BLOCK );
+    ConversationPut( __ConversationId, rec, len, BLOCK );
 #endif
 
 } /* VxDPut */
@@ -167,10 +167,11 @@ char __pascal VxDConnect( void )
 {
     int rc;
 #ifdef SERVER
-    rc = LookForConv( &__ConvId );
+    rc = LookForConversation( &__ConversationId );
     if( rc == 1 ) {
         return( 1 );
-    } else if( rc == 0 ) {
+    }
+    if( rc == 0 ) {
         ReleaseVMTimeSlice();
         return( 0 );
     }
@@ -179,10 +180,10 @@ char __pascal VxDConnect( void )
     static int _first=1;
     if( _first ) {
         _first = 0;
-        rc = StartConv( __ConvId );
+        rc = StartConversation( __ConversationId );
     }
     for( ;; ) {
-        rc = IsConvAck( __ConvId );
+        rc = IsConversationAck( __ConversationId );
         if( !rc ) {
             ReleaseVMTimeSlice();
         } else if( rc < 0 ) {
@@ -200,7 +201,7 @@ char __pascal VxDConnect( void )
 int __pascal VxDDisconnect( void )
 {
 #ifndef SERVER
-    return( EndConv( __ConvId ) );
+    return( EndConversation( __ConversationId ) );
 #else
     return( 0 );
 #endif
@@ -221,7 +222,7 @@ const char * __pascal VxDLink( const char __far *name )
         return( "Could not register server!" );
     }
 #else
-    rc = AccessName( linkName, &__ConvId );
+    rc = AccessName( linkName, &__ConversationId );
     if( rc < 0 ) {
         return( "Could not find server!" );
     }
