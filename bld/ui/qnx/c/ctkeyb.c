@@ -258,8 +258,8 @@ static bool init_interminfo( void )
     evmap( EV_PAGE_DOWN,           key_npage );
     evmap( EV_PAGE_UP,             key_ppage );
     evmap( EV_CURSOR_RIGHT,        key_right );
-    evmap( EV_SCROLL_LINE_DOWN,    key_sf );
-    evmap( EV_SCROLL_LINE_UP,      key_sr );
+    evmap( EV_SCROLL_DOWN,         key_sf );
+    evmap( EV_SCROLL_UP,           key_sr );
     evmap( EV_CURSOR_UP,           key_up );
     evmap( EV_HOME,                key_beg );
     evmap( EV_ESCAPE,              key_cancel );
