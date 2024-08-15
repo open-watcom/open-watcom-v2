@@ -54,13 +54,20 @@
 static int __sysconf_nprocessors( void )
 {
     syscall_res res;
-    unsigned char mask[128];
+    unsigned char mask[128];    /* enough space for 1024 cores */
     int ret;
     int i;
+    int used;
 
     res = sys_call3( SYS_sched_getaffinity, (u_long)0, (u_long)(sizeof(mask)), (u_long)mask );
+    if ( __syscall_iserror( res ) ) {
+        _RWD_errno = __syscall_errno( res );
+        return( -1 );
+    }
+    used = __syscall_val( int, res );
+
     ret = 0;
-    for( i = 0; i < sizeof( mask ); i++ ) {
+    for( i = 0; i < used ; i++ ) {
         while( mask[i] ) {
             mask[i] &= mask[i] - 1;
             ret++;
