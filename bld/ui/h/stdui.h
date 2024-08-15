@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -263,10 +263,10 @@ typedef enum ui_event {
     EV_SCROLL_LINE_DOWN,        // 0x022F
     EV_SCROLL_PAGE_UP,          // 0x0230
     EV_SCROLL_PAGE_DOWN,        // 0x0231
-    EV_SCROLL_LEFT_FIELD,       // 0x0232
-    EV_SCROLL_RIGHT_FIELD,      // 0x0233
-    EV_SCROLL_LEFT_PAGE,        // 0x0234
-    EV_SCROLL_RIGHT_PAGE,       // 0x0235
+    EV_SCROLL_FIELD_LEFT,       // 0x0232
+    EV_SCROLL_FIELD_RIGHT,      // 0x0233
+    EV_SCROLL_PAGE_LEFT,        // 0x0234
+    EV_SCROLL_PAGE_RIGHT,       // 0x0235
     EV_SCROLL_VERTICAL,         // 0x0236
     EV_SCROLL_HORIZONTAL,       // 0x0237
 

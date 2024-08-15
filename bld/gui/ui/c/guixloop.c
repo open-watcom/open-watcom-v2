@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -406,13 +406,13 @@ static void ProcessScrollEvent( ui_event ui_ev  )
         diff = 1;
         gadget = GUICurrWnd->hgadget;
         break;
-    case EV_SCROLL_LEFT_PAGE:
+    case EV_SCROLL_PAGE_LEFT:
         events = ( (GUICurrWnd->style & GUI_HSCROLL_EVENTS) != 0 );
         gui_ev = GUI_SCROLL_PAGE_LEFT;
         diff = -GUICurrWnd->use.width;
         gadget = GUICurrWnd->hgadget;
         break;
-    case EV_SCROLL_RIGHT_PAGE:
+    case EV_SCROLL_PAGE_RIGHT:
         events = ( (GUICurrWnd->style & GUI_HSCROLL_EVENTS) != 0 );
         gui_ev = GUI_SCROLL_PAGE_RIGHT;
         diff = GUICurrWnd->use.width;
@@ -685,8 +685,8 @@ bool GUIProcessEvent( ui_event ui_ev )
     case EV_SCROLL_PAGE_DOWN:
     case EV_SCROLL_LEFT:
     case EV_SCROLL_RIGHT:
-    case EV_SCROLL_LEFT_PAGE:
-    case EV_SCROLL_RIGHT_PAGE:
+    case EV_SCROLL_PAGE_LEFT:
+    case EV_SCROLL_PAGE_RIGHT:
         if( GUICurrWnd != NULL ) {
             ProcessScrollEvent( ui_ev );
             return( true );
