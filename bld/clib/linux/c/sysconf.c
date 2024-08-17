@@ -38,7 +38,6 @@
 #include <limits.h>
 #include <sys/resource.h>
 #include <sys/sysinfo.h>
-#include "rterrno.h"
 #include "linuxsys.h"
 
 
@@ -94,7 +93,7 @@ static int __sysconf_nprocessors_conf( void )
         if( ret < val )
             ret = val;
         if( *end == '\0' )
-        	break;
+                break;
         start = end + 1;
     }
     free( str );

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2016-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2016-2024 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -35,7 +35,6 @@
 #include <sched.h>
 #include "futex.h"
 #include "atomic.h"
-#include "rterrno.h"
 #include "thread.h"
 #include "linuxsys.h"
 
