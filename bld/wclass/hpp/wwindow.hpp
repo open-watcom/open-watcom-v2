@@ -155,8 +155,7 @@ private:
     WRect                   _autosize;
     gui_mcursor_type        _prevCursor;
     gui_mcursor_type        _currCursor;
-    WOrdinal                _firstDirtyRow;
-    int                     _numDirtyRows;
+    gui_rows_set            _dirtyRowsSet;
     bool                    _keyHandled;
 
 protected:
@@ -357,8 +356,8 @@ public:
     void WEXPORT drawTextExtent( int, int, const char *, size_t, WPaintAttr, int );
     void WEXPORT drawTextExtent( int, int, const char *, size_t, int );
     void WEXPORT drawHotSpot( int, int, int );
-    WOrdinal WEXPORT firstDirtyRow( void ) { return( _firstDirtyRow ); }
-    int WEXPORT numDirtyRows( void ) { return( _numDirtyRows ); }
+    WOrdinal WEXPORT firstDirtyRow( void ) { return( _dirtyRowsSet.start ); }
+    int WEXPORT numDirtyRows( void ) { return( _dirtyRowsSet.count ); }
 };
 
 #endif
