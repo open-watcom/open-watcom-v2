@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -74,8 +74,8 @@ static bool DrawRect( gui_window *wnd, const gui_rect *rect, WPI_COLOUR colour, 
         pos += rect->height;
         size *= -1;
     }
-    pos_y = GUIScaleToScreenH( pos );
-    size_y = GUIScaleToScreenH( size );
+    pos_y = GUIScaleToScreenV( pos );
+    size_y = GUIScaleToScreenV( size );
     if( GUI_DO_VSCROLL( wnd ) ) {
         pos_y += GUIGetScrollPos( wnd, SB_VERT );
     }
