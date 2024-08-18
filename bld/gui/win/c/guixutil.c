@@ -467,13 +467,11 @@ void GUIMakeRelative( gui_window *wnd, WPI_POINT *wpi_point, gui_point *point )
     _wpi_getrectvalues( wpi_rect, &left, &top, &right, &bottom );
     scr_x = wpi_point->x - left;
     scr_y = wpi_point->y - top;
-    if( GUI_DO_HSCROLL( wnd ) || GUI_DO_VSCROLL( wnd ) ) {
-        if( GUI_DO_HSCROLL( wnd ) ) {
-            scr_x += GUIGetScrollPos( wnd, SB_HORZ );
-        }
-        if( GUI_DO_VSCROLL( wnd ) ) {
-            scr_y += GUIGetScrollPos( wnd, SB_VERT );
-        }
+    if( GUI_DO_HSCROLL( wnd ) ) {
+        scr_x += GUIGetScrollPos( wnd, SB_HORZ );
+    }
+    if( GUI_DO_VSCROLL( wnd ) ) {
+        scr_y += GUIGetScrollPos( wnd, SB_VERT );
     }
     point->x = GUIScaleFromScreenH( scr_x );
     point->y = GUIScaleFromScreenV( scr_y );
