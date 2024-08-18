@@ -69,14 +69,16 @@ static void drawgadget( p_gadget g )
 
     uiunprotect( g->vs );
     length = g->end - g->start - 1;
-    for( i=g->start; i <= g->end; ++i ) {
+    for( i = g->start; i <= g->end; ++i ) {
         if( g->dir == VERTICAL ) {
             uivtextput( g->vs, row(g,i), col(g,i), _ATTR, VertScrollFrame, 0 );
         } else {
             uivtextput( g->vs, row(g,i), col(g,i), _ATTR, HorzScrollFrame, 0 );
         }
     }
-    /* don't draw scroll thumb in g->total_size <= page_size */
+    /*
+     * don't draw scroll thumb in g->total_size <= page_size
+     */
     if( ( g->total_size > g->page_size ) && ( length > 1 ) ) {
         if( g->dir == HORIZONTAL ) {
             uivtextput( g->vs, g->anchor, g->linear, _ATTR_SLIDER, SliderChar, 0 );
@@ -121,7 +123,9 @@ void uiinitgadget( p_gadget g )
 {
     setlinear( g );
     drawgadget( g );
-    /* do NOT uirefresh here please, it causes screen flashing */
+    /*
+     * do NOT uirefresh here please, it causes screen flashing
+     */
 }
 
 void uidrawgadget( p_gadget g )
@@ -189,12 +193,16 @@ ui_event uigadgetfilter( ui_event ui_ev, p_gadget g )
                 Pressed = g;
             }
         }
-        /* ignore everything if the gadget was not pressed */
+        /*
+         * ignore everything if the gadget was not pressed
+         */
         if( Pressed != g )
             return( ui_ev );
         length = g->end - g->start - 1;
-        /* don't send pagefoward followed by pagebackward, then forward */
-        /* ignore non-mouse events */
+        /*
+         * don't send pagefoward followed by pagebackward, then forward
+         * ignore non-mouse events
+         */
         switch( ui_ev ) {
         case EV_MOUSE_PRESS :
             StartPos = g->pos;
@@ -212,8 +220,10 @@ ui_event uigadgetfilter( ui_event ui_ev, p_gadget g )
             if( m_linear == g->end ) {
                 return( g->forward );
             }
-            /* don't do page up and page down when total size is less than
-               or equal to the page size */
+            /*
+             * don't do page up and page down when total size is less than
+             * or equal to the page size
+             */
             if( g->total_size <= g->page_size )
                 break;
             start = g->linear; //CalcStart( g, g->pos, length );
@@ -235,8 +245,10 @@ ui_event uigadgetfilter( ui_event ui_ev, p_gadget g )
             }
             break;
         case EV_MOUSE_DRAG :
-            /* don't do draging if total_size is less than or equal to the
-               page size or mouse is too far from gadget */
+            /*
+             * don't do draging if total_size is less than or equal to the
+             * page size or mouse is too far from gadget
+             */
             if( ( m_anchor < ( g->anchor - 1 ) ) || ( m_anchor > ( g->anchor + 1 ) ) ||
                 ( g->total_size <= g->page_size ) ) {
                 return( EV_NO_EVENT );
@@ -262,14 +274,18 @@ ui_event uigadgetfilter( ui_event ui_ev, p_gadget g )
                     m_linear = g->linear;
                     Drag = false;
                 } else {
-                    /* mouse drag to first scroll character or further left,
-                       so pos = 0 */
+                    /*
+                     * mouse drag to first scroll character or further left,
+                     * so pos = 0
+                     */
                     if( m_linear <= ( g->start + 1 ) ) {
                         m_linear = g->start + 1;
                         pos = 0;
                     } else {
-                        /* mouse drag to last scroll character or further right,
-                           so pos = total_size */
+                        /*
+                         * mouse drag to last scroll character or further right,
+                         * so pos = total_size
+                         */
                         if( m_linear >= ( g->end - 1 ) ) {
                             m_linear = g->end - 1;
                             pos = g->total_size - g->page_size;
