@@ -45,7 +45,7 @@ extern guix_ord     GUITextToScreenV( gui_text_ord text_ord, gui_window *wnd );
 extern gui_text_ord GUITextFromScreenH( guix_ord ord, gui_window *wnd );
 extern gui_text_ord GUITextFromScreenV( guix_ord ord, gui_window *wnd );
 
-extern void         GUIGetUpdateRows( gui_window *, HWND, gui_text_ord *, gui_text_ord * );
+extern void         GUIGetUpdateRows( gui_window *, HWND, gui_rows_set * );
 
 extern void         GUIGetMetrics( gui_window *wnd );
 extern bool         GUIGetTheDC( gui_window *wnd );

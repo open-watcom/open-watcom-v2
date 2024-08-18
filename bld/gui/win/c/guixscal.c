@@ -134,7 +134,7 @@ void GUIGetMetrics( gui_window *wnd )
  * GUIGetUpdateRows -- get the start row and number of rows to get
  *                     updated.  Must have called GUIBeginPaint first.
  */
-void GUIGetUpdateRows( gui_window *wnd, HWND hwnd, gui_text_ord *start, gui_text_ord *num )
+void GUIGetUpdateRows( gui_window *wnd, HWND hwnd, gui_rows_set *rows_set )
 {
     WPI_RECT    wpi_rect;
     int         avgy;
@@ -153,19 +153,19 @@ void GUIGetUpdateRows( gui_window *wnd, HWND hwnd, gui_text_ord *start, gui_text
     top    = _wpi_cvtc_y_plus1( hwnd, top );
     bottom = _wpi_cvtc_y_plus1( hwnd, bottom );
 
-    *start = (gui_text_ord)( top / avgy );
-    *num = (gui_text_ord)( ( bottom + avgy - 1 ) / avgy ) - *start;
-    if( ( *start + *num ) > wnd->num_rows ) {
-        *num = wnd->num_rows - *start;
+    rows_set->start = (gui_text_ord)( top / avgy );
+    rows_set->count = (gui_text_ord)( ( bottom + avgy - 1 ) / avgy ) - rows_set->start;
+    if( ( rows_set->start + rows_set->count ) > wnd->num_rows ) {
+        rows_set->count = wnd->num_rows - rows_set->start;
     }
 
     if( GUI_DO_VSCROLL( wnd ) ) {
-        *start += GUIGetVScrollRow( wnd );
+        rows_set->start += GUIGetVScrollRow( wnd );
     }
 
     if( wnd->flags & PARTIAL_ROWS ) {
         if( ( ( bottom + avgy - 1 ) % avgy ) != 0 ) {
-            (*num)++;
+            rows_set->count++;
         }
     }
 }

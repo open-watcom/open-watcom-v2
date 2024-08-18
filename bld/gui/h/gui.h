@@ -564,10 +564,10 @@ typedef void            *gui_mcursor_handle;
  *
  */
 
-typedef struct gui_row_num {
+typedef struct gui_rows_set {
     gui_text_ord    start;
-    gui_text_ord    num;
-} gui_row_num;
+    gui_text_ord    count;
+} gui_rows_set;
 
 typedef struct gui_end_session {
     bool        endsession;
@@ -584,33 +584,32 @@ typedef struct gui_timer_event {
     gui_timer_id    id;
 } gui_timer_event;
 
-#define GUI_GET_TIMER( param, i )   ( i = ((gui_timer_event *)param)->id )
+#define GUI_GET_TIMER( __param, __id )      ( __id = ((gui_timer_event *)__param)->id )
 
-#define GUI_GET_BOOL( param, b )    ( b = *(bool *)param )
+#define GUI_GET_BOOL( __param, __bool )     ( __bool = *(bool *)__param )
 
-#define GUI_GET_ENDSESSION( param, b, l )           \
-    {                                               \
-        b = ((gui_end_session *)param)->endsession; \
-        l = ((gui_end_session *)param)->logoff;     \
+#define GUI_GET_ENDSESSION( __param, __endsession, __logoff )       \
+    {                                                               \
+        __endsession = ((gui_end_session *)__param)->endsession;    \
+        __logoff = ((gui_end_session *)__param)->logoff;            \
     }
 
-#define GUI_GET_POINT( param, point ) ( point = *(gui_point *)param )
+#define GUI_GET_POINT( __param, __point ) ( __point = *(gui_point *)__param )
 
-#define GUI_GET_ROWS( param, gui_start, gui_num )   \
-    {                                               \
-        gui_start = ((gui_row_num *)param)->start;  \
-        gui_num =   ((gui_row_num *)param)->num;    \
+#define GUI_GET_ROWS( __param, __rows_set )     \
+    {                                           \
+        __rows_set = *(gui_rows_set *)__param;  \
     }
 
-#define GUI_GETID( param, id ) ( id = *(gui_ctl_id *)param )
+#define GUI_GETID( __param, __id )          ( __id = *(gui_ctl_id *)__param )
 
-#define GUI_GET_SIZE( param, size )         \
-    {                                       \
-        size.x = ((gui_coord *)param)->x;   \
-        size.y = ((gui_coord *)param)->y;   \
+#define GUI_GET_SIZE( __param, __size )         \
+    {                                           \
+        __size.x = ((gui_coord *)__param)->x;   \
+        __size.y = ((gui_coord *)__param)->y;   \
     }
 
-#define GUI_GET_SCROLL( param, scroll ) ( scroll = *(int *)param )
+#define GUI_GET_SCROLL( __param, __scroll ) ( __scroll = *(int *)__param )
 
 /* Initialization Functions */
 

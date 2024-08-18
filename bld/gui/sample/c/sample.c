@@ -1014,7 +1014,7 @@ static gui_text_ord GetStringIndent( gui_ord *indent, gui_text_ord hscroll, gui_
     return( string_indent );
 }
 
-static void PaintWindow( gui_window *wnd, gui_text_ord row, gui_text_ord num, gui_text_ord vscroll, gui_text_ord hscroll )
+static void PaintWindow( gui_window *wnd, const gui_rows_set *rows_set, gui_text_ord vscroll, gui_text_ord hscroll )
 {
     out_info            *out;
     gui_text_ord        numrows;
@@ -1028,14 +1028,15 @@ static void PaintWindow( gui_window *wnd, gui_text_ord row, gui_text_ord num, gu
     gui_rect            client;
     char                *data;
     gui_coord           pos;
+    gui_text_ord        row;
 
-    row += vscroll;
+    row = rows_set->start + vscroll;
     GUIGetTextMetrics( wnd, &metrics );
     out = GUIGetExtra( wnd );
-    if( (row + num) > out->numrows ) {
+    if( (row + rows_set->count) > out->numrows ) {
         numrows = out->numrows - row;
     } else {
-        numrows = num;
+        numrows = rows_set->count;
     }
     for( i = 0; i < numrows; i++ ) {
         indent = out->display[row + i].indent;
@@ -1097,8 +1098,7 @@ bool Child1WndGUIEventProc( gui_window *wnd, gui_event gui_ev, void *param )
     int                 diff;
     gui_rect            client;
     gui_text_metrics    metrics;
-    gui_text_ord        row;
-    gui_text_ord        num;
+    gui_rows_set        rows_set;
     gui_point           point;
     gui_key             key;
     gui_ctl_id          id;
@@ -1118,8 +1118,8 @@ bool Child1WndGUIEventProc( gui_window *wnd, gui_event gui_ev, void *param )
         GUIAppendMenuToPopup( wnd, MENU_MORE, &MenuMore[0], false );
         return( true );
     case GUI_PAINT:
-        GUI_GET_ROWS( param, row, num );
-        PaintWindow( wnd, row, num, GUIGetVScrollRow( wnd ), GUIGetHScrollCol( wnd ) );
+        GUI_GET_ROWS( param, rows_set );
+        PaintWindow( wnd, &rows_set, GUIGetVScrollRow( wnd ), GUIGetHScrollCol( wnd ) );
         return( true );
     case GUI_FONT_CHANGED:
     case GUI_RESIZE:
@@ -1304,6 +1304,7 @@ static void CreatePopup( gui_window *wnd, const gui_menu_items *menus, gui_ctl_i
 bool Child2WndGUIEventProc( gui_window *wnd, gui_event gui_ev, void *param )
 {
     gui_point           point;
+    gui_rows_set        rows_set;
     gui_text_ord        row;
     gui_text_ord        col;
 #if keys
@@ -1313,7 +1314,6 @@ bool Child2WndGUIEventProc( gui_window *wnd, gui_event gui_ev, void *param )
     attr_entry          *new_attr;
     char                Buffer[80];
     gui_text_ord        i;
-    gui_text_ord        num;
     gui_text_ord        prev_col;
     out_info            *out;
     char                *start;
@@ -1375,8 +1375,8 @@ bool Child2WndGUIEventProc( gui_window *wnd, gui_event gui_ev, void *param )
         }
         return( true );
     case GUI_PAINT:
-        GUI_GET_ROWS( param, row, num );
-        PaintWindow( wnd, row, num, 0, 0 );
+        GUI_GET_ROWS( param, rows_set );
+        PaintWindow( wnd, &rows_set, 0, 0 );
         return( true );
     case GUI_MOUSEMOVE:
         if( Highlight ) {

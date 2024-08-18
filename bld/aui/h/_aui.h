@@ -92,7 +92,7 @@ extern void             WndDirtyScreenPiece( a_window wnd, wnd_coord *piece );
 extern void             WndDirtyScreenRow( a_window wnd, wnd_row row );
 extern void             WndNextNonIconToFront( a_window wnd );
 extern void             WndActive( a_window wnd );
-extern void             WndProcPaint( a_window wnd, void *parm );
+extern void             WndPaintRows( a_window wnd, wnd_row start_row, int num );
 extern bool             WndIgnoreMouseMove( a_window wnd );
 extern void             WndMouseMove( a_window wnd, void *parm );
 extern void             WndRButtonUp( a_window wnd, void *parm );

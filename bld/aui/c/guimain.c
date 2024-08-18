@@ -362,7 +362,10 @@ static void DoMainGUIEventProc( void *_spawnp )
         break;
     case GUI_PAINT:
         if( WndSwitchOff( wnd, WSW_REPAINT ) ) { // going to repaint anyway
-            WndProcPaint( wnd, parm );
+            gui_rows_set    rows_set;
+
+            GUI_GET_ROWS( parm, rows_set );
+            WndPaintRows( wnd, rows_set.start, rows_set.count );
         }
         break;
     case GUI_SCROLL_BOTTOM :
@@ -502,8 +505,9 @@ static void DoMainGUIEventProc( void *_spawnp )
             bool    endsession;
             bool    dummy;
 
+            /* unused variables */ (void)dummy;
+
             GUI_GET_ENDSESSION( parm, endsession, dummy );
-            (void)dummy;    /* reference to unused variable */
             if( endsession ) {
                 WndEndSessionHook();
             }

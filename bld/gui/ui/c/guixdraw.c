@@ -327,11 +327,11 @@ static void WndClean( gui_window *wnd )
 
 void GUIWndRefreshArea( gui_window *wnd, SAREA *area )
 {
-    gui_control *control;
-    gui_row_num row_num;
-    int         hscroll;
-    int         vscroll;
-    int         frame_adjust;
+    gui_control     *control;
+    gui_rows_set    rows_set;
+    int             hscroll;
+    int             vscroll;
+    int             frame_adjust;
 
     /* if this window has a parent that is minimized or this window is
      * minimized, don't draw anything
@@ -372,9 +372,9 @@ void GUIWndRefreshArea( gui_window *wnd, SAREA *area )
                     wnd->background );
 
         if( GUI_WND_VISIBLE( wnd ) && (wnd->flags & DONT_SEND_PAINT) == 0 ) {
-            row_num.start = vscroll + area->row - frame_adjust;
-            row_num.num = area->height;
-            GUIEVENT( wnd, GUI_PAINT, &row_num );
+            rows_set.start = vscroll + area->row - frame_adjust;
+            rows_set.count = area->height;
+            GUIEVENT( wnd, GUI_PAINT, &rows_set );
         }
         for( control = wnd->controls; control != NULL; control = control->sibling ) {
             GUIRefreshControl( control->parent, control->id );

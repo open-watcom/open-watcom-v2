@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -45,14 +45,14 @@
 #ifndef __OS2_PM__FOO
 void GUIPaint( gui_window *wnd, HWND hwnd, bool isdlg )
 {
-    HDC         prev_hdc;
-    PAINTSTRUCT *prev_ps;
-    gui_row_num row_num;
-    PAINTSTRUCT ps;
-    WPI_RECT    wpi_rect;
+    HDC             prev_hdc;
+    PAINTSTRUCT     *prev_ps;
+    gui_rows_set    rows_set;
+    PAINTSTRUCT     ps;
+    WPI_RECT        wpi_rect;
 #ifdef __OS2_PM__
-    ULONG       flags;
-    RECTL       client;
+    ULONG           flags;
+    RECTL           client;
 #endif
 
     isdlg=isdlg;
@@ -84,9 +84,9 @@ void GUIPaint( gui_window *wnd, HWND hwnd, bool isdlg )
     }
 
     /* send paint to app */
-    GUIGetUpdateRows( wnd, hwnd, &row_num.start, &row_num.num );
-    if( row_num.num > 0 ) {
-        GUIEVENT( wnd, GUI_PAINT, &row_num );
+    GUIGetUpdateRows( wnd, hwnd, &rows_set );
+    if( rows_set.count > 0 ) {
+        GUIEVENT( wnd, GUI_PAINT, &rows_set );
     }
 
     /* finish painting */
@@ -123,19 +123,19 @@ void GUIPaint( gui_window *wnd, HWND hwnd, bool isdlg )
 // this is some experimental PM stuff
 void GUIPaint( gui_window *wnd, HWND hwnd, bool isdlg )
 {
-    HDC         prev_hdc;
-    PAINTSTRUCT *prev_ps;
-    gui_row_num row_num;
-    PAINTSTRUCT ps;
-    PAINTSTRUCT fill_area;
+    HDC             prev_hdc;
+    PAINTSTRUCT     *prev_ps;
+    gui_rows_set    rows_set;
+    PAINTSTRUCT     ps;
+    PAINTSTRUCT     fill_area;
 
     // experimenal stuff
-    HPS                 hps;
-    RECTL               client;
-    LONG                width, height;
-    ULONG               flags;
-    int                 compat_created;
-    gui_paint_info      *pinfo;
+    HPS             hps;
+    RECTL           client;
+    LONG            width, height;
+    ULONG           flags;
+    int             compat_created;
+    gui_paint_info  *pinfo;
 
     // figure out which paint info to use
     if( !isdlg && wnd->root == hwnd ) {
@@ -184,9 +184,9 @@ void GUIPaint( gui_window *wnd, HWND hwnd, bool isdlg )
         }
 
         /* send paint to app */
-        GUIGetUpdateRows( wnd, hwnd, &row_num.start, &row_num.num );
-        if( row_num.num > 0 ) {
-            GUIEVENT( wnd, GUI_PAINT, &row_num );
+        GUIGetUpdateRows( wnd, hwnd, &rows_set );
+        if( rows_set.count > 0 ) {
+            GUIEVENT( wnd, GUI_PAINT, &rows_set );
         }
 
         /* finish painting */

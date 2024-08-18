@@ -174,7 +174,7 @@ static void WndDrawCursor( a_window wnd, wnd_line_piece *line, wnd_row row, wnd_
     }
 }
 
-static void    WndPaintRows( a_window wnd, wnd_row start_row, int num )
+void    WndPaintRows( a_window wnd, wnd_row start_row, int num )
 {
     wnd_row             row;
     wnd_row             row_to_get;
@@ -229,16 +229,6 @@ static void    WndPaintRows( a_window wnd, wnd_row start_row, int num )
     if( notify_row != WND_NO_ROW ) {
         WndNotify( wnd, notify_row, notify_piece );
     }
-}
-
-
-void    WndProcPaint( a_window wnd, void *parm )
-{
-    wnd_row             row;
-    int                 num;
-
-    GUI_GET_ROWS( parm, row, num );
-    WndPaintRows( wnd, row, num );
 }
 
 
