@@ -256,15 +256,12 @@ void GUIProcessScrollMsg( gui_window *wnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_P
             GUIVScroll( diff, wnd, GUI_SCROLL_BOTTOM );
             break;
 #endif
+        case SB_THUMBTRACK:
+            if( (wnd->scroll_style & GUI_VTRACK) == 0 )
+                break;
+            /* fall through */
         case SB_THUMBPOSITION:
             if( wnd->scroll_style & GUI_VDRAG ) {
-                param = GET_WM_VSCROLL_POS( wparam, lparam );
-                diff = param - GUIGetScrollPos( wnd, bar );
-                GUIVScroll( diff, wnd, GUI_SCROLL_VERTICAL );
-            }
-            break;
-        case SB_THUMBTRACK:
-            if( (wnd->scroll_style & (GUI_VDRAG | GUI_VTRACK)) == (GUI_VDRAG | GUI_VTRACK) ) {
                 param = GET_WM_VSCROLL_POS( wparam, lparam );
                 diff = param - GUIGetScrollPos( wnd, bar );
                 GUIVScroll( diff, wnd, GUI_SCROLL_VERTICAL );
@@ -301,15 +298,12 @@ void GUIProcessScrollMsg( gui_window *wnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_P
             GUIHScroll( diff, wnd, GUI_SCROLL_FULL_RIGHT );
             break;
 #endif
+        case SB_THUMBTRACK:
+            if( (wnd->scroll_style & GUI_HTRACK) == 0 )
+                break;
+            /* fall through */
         case SB_THUMBPOSITION:
             if( wnd->scroll_style & GUI_HDRAG ) {
-                param = GET_WM_HSCROLL_POS( wparam, lparam );
-                diff = param - GUIGetScrollPos( wnd, bar );
-                GUIHScroll( diff, wnd, GUI_SCROLL_HORIZONTAL );
-            }
-            break;
-        case SB_THUMBTRACK:
-            if( (wnd->scroll_style & (GUI_HDRAG | GUI_HTRACK)) == (GUI_HDRAG | GUI_HTRACK) ) {
                 param = GET_WM_HSCROLL_POS( wparam, lparam );
                 diff = param - GUIGetScrollPos( wnd, bar );
                 GUIHScroll( diff, wnd, GUI_SCROLL_HORIZONTAL );
