@@ -693,14 +693,14 @@ bool GUIProcessEvent( ui_event ui_ev )
         }
         break;
     case EV_SCROLL_VERTICAL:
-        if( ( GUICurrWnd->vgadget != NULL ) && (GUICurrWnd->style & GUI_VSCROLL_EVENTS) ) {
+        if( IS_VSCROLL_ON( GUICurrWnd ) && (GUICurrWnd->style & GUI_VSCROLL_EVENTS) ) {
             DoScrollDrag( GUICurrWnd->vgadget, prev, diff );
         } else {
             GUIDirtyWhole( GUICurrWnd );
         }
         return( true );
     case EV_SCROLL_HORIZONTAL:
-        if( ( GUICurrWnd->hgadget != NULL ) && (GUICurrWnd->style & GUI_HSCROLL_EVENTS) ) {
+        if( IS_HSCROLL_ON( GUICurrWnd ) && (GUICurrWnd->style & GUI_HSCROLL_EVENTS) ) {
             DoScrollDrag( GUICurrWnd->hgadget, prev, diff );
         } else {
             GUIDirtyWhole( GUICurrWnd );

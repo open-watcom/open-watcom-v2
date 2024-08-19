@@ -380,17 +380,6 @@ void GUIFreeWindowMemory( gui_window *wnd, bool from_parent, bool dialog )
     GUIMemFree( wnd );
 }
 
-bool GUIScrollOn( gui_window *wnd, int bar )
-{
-    if( ( bar == SB_VERT ) && GUI_VSCROLL_ON( wnd ) ) {
-        return( true );
-    }
-    if( ( bar == SB_HORZ ) && GUI_HSCROLL_ON( wnd ) ) {
-        return( true );
-    }
-    return( false );
-}
-
 void GUISetRowCol( gui_window *wnd, const guix_coord *scr_size )
 {
     guix_ord    size_x;

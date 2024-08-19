@@ -42,10 +42,10 @@ gui_scroll_styles GUIAPI GUIGetScrollStyle( gui_window * wnd )
     gui_scroll_styles scroll_style;
 
     scroll_style = GUI_NOSCROLL;
-    if( wnd->hgadget != NULL ) {
+    if( IS_HSCROLL_ON( wnd ) ) {
         scroll_style |= GUI_HSCROLL;
     }
-    if( wnd->vgadget != NULL ) {
+    if( IS_VSCROLL_ON( wnd ) ) {
         scroll_style |= GUI_VSCROLL;
     }
     return( scroll_style );

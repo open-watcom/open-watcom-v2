@@ -243,10 +243,10 @@ static bool SizeWnd( gui_window *wnd, SAREA *area, gui_flags flag, resize_dir di
     if( GUIHasStatus( wnd ) ) {
         GUIResizeStatus( wnd );
     }
-    if( wnd->hgadget != NULL ) {
+    if( IS_HSCROLL_ON( wnd ) ) {
         ResizeGadget( wnd->hgadget, wnd->use.width, wnd->use.height, GUI_HRANGE_SET( wnd ) );
     }
-    if( wnd->vgadget != NULL ) {
+    if( IS_VSCROLL_ON( wnd ) ) {
         ResizeGadget( wnd->vgadget, wnd->use.height, wnd->use.width, GUI_VRANGE_SET( wnd ) );
     }
     if( GUI_WND_MAXIMIZED( wnd ) ) {

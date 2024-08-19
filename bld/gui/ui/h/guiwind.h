@@ -82,10 +82,13 @@ typedef enum {
                               VSCROLL_INVALID | HSCROLL_INVALID
 } gui_flags;
 
-#define GUI_HRANGE_SET( wnd ) ( ( wnd->hgadget != NULL ) && ( ( wnd->flags & HRANGE_SET ) != 0 ) )
-#define GUI_VRANGE_SET( wnd ) ( ( wnd->vgadget != NULL ) && ( ( wnd->flags & VRANGE_SET ) != 0 ) )
-#define GUI_DO_HSCROLL( wnd ) ( ( wnd->hgadget != NULL ) && ( ( wnd->style & GUI_HSCROLL_EVENTS ) == 0 ) )
-#define GUI_DO_VSCROLL( wnd ) ( ( wnd->vgadget != NULL ) && ( ( wnd->style & GUI_VSCROLL_EVENTS ) == 0 ) )
+#define IS_HSCROLL_ON(x)        ((x)->hgadget != NULL)
+#define IS_VSCROLL_ON(x)        ((x)->vgadget != NULL)
+#define GUI_DO_HSCROLL(x)       (IS_HSCROLL_ON(x) && (((x)->style & GUI_HSCROLL_EVENTS) == 0))
+#define GUI_DO_VSCROLL(x)       (IS_VSCROLL_ON(x) && (((x)->style & GUI_VSCROLL_EVENTS) == 0))
+
+#define GUI_HRANGE_SET(x)       (IS_HSCROLL_ON(x) && ((x)->flags & HRANGE_SET) )
+#define GUI_VRANGE_SET(x)       (IS_VSCROLL_ON(x) && ((x)->flags & VRANGE_SET) )
 #define GUI_WND_MINIMIZED( wnd ) ( wnd->flags & MINIMIZED )
 #define GUI_WND_MAXIMIZED( wnd ) ( wnd->flags & MAXIMIZED )
 #define GUI_WND_VISIBLE( wnd )   ( wnd->style & GUI_VISIBLE )

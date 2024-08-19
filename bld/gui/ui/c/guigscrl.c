@@ -36,36 +36,28 @@
 
 gui_text_ord GUIAPI GUIGetHScrollCol( gui_window * wnd )
 {
-    if( wnd->hgadget == NULL ) {
-        return( 0 );
-    } else {
+    if( IS_HSCROLL_ON( wnd ) )
         return( wnd->hgadget->pos );
-    }
+    return( 0 );
 }
 
 gui_text_ord GUIAPI GUIGetVScrollRow( gui_window * wnd )
 {
-    if( wnd->vgadget == NULL ) {
-        return( 0 );
-    } else {
+    if( IS_VSCROLL_ON( wnd ) )
         return( wnd->vgadget->pos );
-    }
+    return( 0 );
 }
 
 gui_ord GUIAPI GUIGetHScroll( gui_window * wnd )
 {
-    if( wnd->hgadget == NULL ) {
-        return( 0 );
-    } else {
+    if( IS_HSCROLL_ON( wnd ) )
         return( GUIScaleFromScreenH( wnd->hgadget->pos ) );
-    }
+    return( 0 );
 }
 
 gui_ord GUIAPI GUIGetVScroll( gui_window * wnd )
 {
-    if( wnd->vgadget == NULL ) {
-        return( 0 );
-    } else {
+    if( IS_VSCROLL_ON( wnd ) )
         return( GUIScaleFromScreenV( wnd->vgadget->pos ) );
-    }
+    return( 0 );
 }
