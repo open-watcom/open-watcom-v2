@@ -112,7 +112,6 @@ void GUIScroll( gui_window *wnd, int bar, int change )
 /*
  * GUISetVScrollRow -- Set the vertical scrolling position for the window
  */
-
 void GUIAPI GUISetVScrollRow( gui_window *wnd, gui_text_ord vscroll_pos )
 {
     if( IS_VSCROLL_ON( wnd ) ) {
@@ -123,7 +122,6 @@ void GUIAPI GUISetVScrollRow( gui_window *wnd, gui_text_ord vscroll_pos )
 /*
  * GUISetHScrollCol -- Set the horizontal scrolling position for the window
  */
-
 void GUIAPI GUISetHScrollCol( gui_window *wnd, gui_text_ord hscroll_pos )
 {
     if( IS_HSCROLL_ON( wnd ) ) {
@@ -135,7 +133,6 @@ void GUIAPI GUISetHScrollCol( gui_window *wnd, gui_text_ord hscroll_pos )
  * GUISetVScroll -- Set the vertical scrolling position for the window
  *                  call by user in user scale
  */
-
 void GUIAPI GUISetVScroll( gui_window *wnd, gui_ord vscroll_pos )
 {
     guix_ord    scr_y;
@@ -153,7 +150,6 @@ void GUIAPI GUISetVScroll( gui_window *wnd, gui_ord vscroll_pos )
  * GUISetHScroll -- Set the horizontal scrolling position for the window
  *                  call by user in user scale
  */
-
 void GUIAPI GUISetHScroll( gui_window *wnd, gui_ord hscroll_pos )
 {
     guix_ord    scr_x;
@@ -171,7 +167,6 @@ void GUIAPI GUISetHScroll( gui_window *wnd, gui_ord hscroll_pos )
  * GUIVScroll -- scroll vertically the given number of lines
  *               only call by library why library does scrolling
  */
-
 static void GUIVScroll( int diff, gui_window *wnd, gui_event gui_ev )
 {
     if( diff == 0 ) {
@@ -194,7 +189,6 @@ static void GUIVScroll( int diff, gui_window *wnd, gui_event gui_ev )
  * GUIHScroll -- scroll horizontally the given number of characters
  *               only call by library why library does scrolling
  */
-
 static void GUIHScroll( int diff, gui_window *wnd, gui_event gui_ev )
 {
     if( diff == 0 ) {
@@ -218,15 +212,13 @@ void GUIProcessScrollMsg( gui_window *wnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_P
     int         diff;
     WORD        param;
     int         mult;
-    int         bar;
 
     wparam = wparam;
     lparam = lparam;
 
     switch( msg ) {
     case WM_VSCROLL:
-        bar = SB_VERT;
-        mult = GUIGetScrollInc( wnd, bar );
+        mult = GUIGetScrollInc( wnd, SB_VERT );
         switch( GET_WM_VSCROLL_CMD( wparam, lparam ) ) {
         case SB_LINEUP:
             GUIVScroll( -mult, wnd, GUI_SCROLL_UP );
@@ -242,11 +234,11 @@ void GUIProcessScrollMsg( gui_window *wnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_P
             break;
 #ifndef __OS2_PM__
         case SB_TOP:
-            diff = -GUIGetScrollPos( wnd, bar );
+            diff = -GUIGetScrollPos( wnd, SB_VERT );
             GUIVScroll( diff, wnd, GUI_SCROLL_TOP );
             break;
         case SB_BOTTOM:
-            diff = GUIGetScrollRange( wnd, bar ) - GUIGetScrollPos( wnd, bar );
+            diff = GUIGetScrollRange( wnd, SB_VERT ) - GUIGetScrollPos( wnd, SB_VERT );
             GUIVScroll( diff, wnd, GUI_SCROLL_BOTTOM );
             break;
 #endif
@@ -257,18 +249,17 @@ void GUIProcessScrollMsg( gui_window *wnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_P
         case SB_THUMBPOSITION:
             if( wnd->scroll_style & GUI_VDRAG ) {
                 param = GET_WM_VSCROLL_POS( wparam, lparam );
-                diff = param - GUIGetScrollPos( wnd, bar );
+                diff = param - GUIGetScrollPos( wnd, SB_VERT );
                 GUIVScroll( diff, wnd, GUI_SCROLL_VERTICAL );
             }
             break;
         case SB_ENDSCROLL:
-            GUIRedrawScroll( wnd, bar, false );
+            GUIRedrawScroll( wnd, SB_VERT, false );
             break;
         }
         break;
     case WM_HSCROLL:
-        bar = SB_HORZ;
-        mult = GUIGetScrollInc( wnd, bar );
+        mult = GUIGetScrollInc( wnd, SB_HORZ );
         switch( GET_WM_HSCROLL_CMD( wparam, lparam ) ) {
         case SB_LINELEFT:
             GUIHScroll( -mult, wnd, GUI_SCROLL_LEFT );
@@ -284,11 +275,11 @@ void GUIProcessScrollMsg( gui_window *wnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_P
             break;
 #ifndef __OS2_PM__
         case SB_LEFT:
-            diff = -GUIGetScrollPos( wnd, bar );
+            diff = -GUIGetScrollPos( wnd, SB_HORZ );
             GUIHScroll( diff, wnd, GUI_SCROLL_FULL_LEFT );
             break;
         case SB_RIGHT:
-            diff = GUIGetScrollRange( wnd, bar ) - GUIGetScrollPos( wnd, bar );
+            diff = GUIGetScrollRange( wnd, SB_HORZ ) - GUIGetScrollPos( wnd, SB_HORZ );
             GUIHScroll( diff, wnd, GUI_SCROLL_FULL_RIGHT );
             break;
 #endif
@@ -299,12 +290,12 @@ void GUIProcessScrollMsg( gui_window *wnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_P
         case SB_THUMBPOSITION:
             if( wnd->scroll_style & GUI_HDRAG ) {
                 param = GET_WM_HSCROLL_POS( wparam, lparam );
-                diff = param - GUIGetScrollPos( wnd, bar );
+                diff = param - GUIGetScrollPos( wnd, SB_HORZ );
                 GUIHScroll( diff, wnd, GUI_SCROLL_HORIZONTAL );
             }
             break;
         case SB_ENDSCROLL:
-            GUIRedrawScroll( wnd, bar, false );
+            GUIRedrawScroll( wnd, SB_HORZ, false );
             break;
         }
     }
@@ -318,8 +309,11 @@ static void DoSetScroll( gui_window *wnd, int bar, bool range_set,
     guix_ord        screen_size;
 
     screen_size = GUIGetScrollScreenSize( wnd, bar );
-    if( range_set ) { /* app explicitly set scroll range        */
-                      /* need to adjust range if size changed   */
+    if( range_set ) {
+        /*
+         * app explicitly set scroll range
+         * need to adjust range if size changed
+         */
         range = *p_range;
         if( chars ) {
             range *= GUIGetScrollInc( wnd, bar );
@@ -346,14 +340,12 @@ static void DoSetScroll( gui_window *wnd, int bar, bool range_set,
 /*
  * GUISetSroll -- Set the scroll range for the given window
  */
-
 void GUISetScroll( gui_window *wnd )
 {
-
     if( GUI_DO_HSCROLL( wnd ) ) {
-        DoSetScroll( wnd, SB_HORZ, GUI_HRANGE_SET( wnd ), wnd->flags & HRANGE_COL, &wnd->hscroll_range );
+        DoSetScroll( wnd, SB_HORZ, GUI_HRANGE_SET( wnd ), (wnd->flags & HRANGE_COL) != 0, &wnd->hscroll_range );
     }
     if( GUI_DO_VSCROLL( wnd ) ) {
-        DoSetScroll( wnd, SB_VERT, GUI_VRANGE_SET( wnd ), wnd->flags & VRANGE_ROW, &wnd->vscroll_range );
+        DoSetScroll( wnd, SB_VERT, GUI_VRANGE_SET( wnd ), (wnd->flags & VRANGE_ROW) != 0, &wnd->vscroll_range );
     }
 }
