@@ -39,7 +39,7 @@
 #include "guidoscr.h"
 
 
-static void DoScroll( gui_window *wnd, int rows, int cols, int start, int end, bool chars )
+static void DoScroll( gui_window *wnd, int rows_diff, int cols_diff, int start, int end, bool char_unit )
 {
     int         dx, dy;
     WPI_RECT    wpi_rect;
@@ -61,12 +61,12 @@ static void DoScroll( gui_window *wnd, int rows, int cols, int start, int end, b
 #endif
     multx = 1;
     multy = 1;
-    if( chars ) {
+    if( char_unit ) {
         multx = GUITextToScreenH( 1, wnd );
         multy = GUITextToScreenV( 1, wnd );
     }
-    dx = -cols * multx;
-    dy = -rows * multy;
+    dx = -cols_diff * multx;
+    dy = -rows_diff * multy;
     if( dy != 0 ) {
 #ifdef __OS2_PM__
         start *= multy;
@@ -131,38 +131,38 @@ static void DoScroll( gui_window *wnd, int rows, int cols, int start, int end, b
     _wpi_updatewindow( hwnd );
 }
 
-void GUIAPI GUIDoVScroll( gui_window *wnd, int rows )
+void GUIAPI GUIDoVScroll( gui_window *wnd, int rows_diff )
 {
-    DoScroll( wnd, rows, 0, -1, -1, true );
+    DoScroll( wnd, rows_diff, 0, -1, -1, true );
 }
 
-void GUIAPI GUIDoHScroll( gui_window *wnd, int cols )
+void GUIAPI GUIDoHScroll( gui_window *wnd, int cols_diff )
 {
-    DoScroll( wnd, 0, cols, -1, -1, true );
+    DoScroll( wnd, 0, cols_diff, -1, -1, true );
 }
 
 
-void GUIAPI GUIDoVScrollClip( gui_window *wnd, int rows, int start, int end )
+void GUIAPI GUIDoVScrollClip( gui_window *wnd, int rows_diff, int start_row, int end_row )
 {
-    DoScroll( wnd, rows, 0, start, end, true );
+    DoScroll( wnd, rows_diff, 0, start_row, end_row, true );
 }
 
-void GUIAPI GUIDoHScrollClip( gui_window *wnd, int cols, int start, int end )
+void GUIAPI GUIDoHScrollClip( gui_window *wnd, int cols_diff, int start_col, int end_col )
 {
-    DoScroll( wnd, 0, cols, start, end, true );
+    DoScroll( wnd, 0, cols_diff, start_col, end_col, true );
 }
 
-void GUIDoScroll( gui_window *wnd, int row_col, int bar )
+void GUIDoScroll( gui_window *wnd, int diff, int bar )
 {
-    int         rows;
-    int         cols;
+    int         cols_diff;
+    int         rows_diff;
 
-    rows = 0;
-    cols = 0;
     if( bar == SB_HORZ ) {
-        cols = row_col;
+        cols_diff = diff;
+        rows_diff = 0;
     } else {
-        rows = row_col;
+        rows_diff = diff;
+        cols_diff = 0;
     }
-    DoScroll( wnd, rows, cols, -1, -1, false );
+    DoScroll( wnd, rows_diff, cols_diff, -1, -1, false );
 }

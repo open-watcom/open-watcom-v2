@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -96,7 +96,7 @@ static void InitScroll( p_gadget gadget, guix_ord scr_pos )
 
 static void SetScroll( p_gadget gadget, guix_ord scr_pos )
 {
-   GUIScroll( (int)scr_pos - gadget->pos, gadget );
+   GUIScroll( scr_pos - gadget->pos, gadget );
 }
 
 static void Scrl( p_gadget gadget, gui_ord scroll_pos, void (*fn)( p_gadget, guix_ord ) )

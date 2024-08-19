@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -95,22 +95,22 @@ static void DoScroll( gui_window *wnd, int diff, a_gadget_direction dir, int sta
     GUIWndUpdate( wnd );
 }
 
-void GUIAPI GUIDoHScroll( gui_window *wnd, int cols )
+void GUIAPI GUIDoHScroll( gui_window *wnd, int cols_diff )
 {
-    DoScroll( wnd, cols, HORIZONTAL, -1, -1 );
+    DoScroll( wnd, cols_diff, HORIZONTAL, -1, -1 );
 }
 
-void GUIAPI GUIDoVScroll( gui_window *wnd, int rows )
+void GUIAPI GUIDoVScroll( gui_window *wnd, int rows_diff )
 {
-    DoScroll( wnd, rows, VERTICAL, -1, -1 );
+    DoScroll( wnd, rows_diff, VERTICAL, -1, -1 );
 }
 
-void GUIAPI GUIDoHScrollClip( gui_window *wnd, int cols, int start, int end )
+void GUIAPI GUIDoHScrollClip( gui_window *wnd, int cols_diff, int start_col, int end_col )
 {
-    DoScroll( wnd, cols, HORIZONTAL, start, end );
+    DoScroll( wnd, cols_diff, HORIZONTAL, start_col, end_col );
 }
 
-void GUIAPI GUIDoVScrollClip( gui_window *wnd, int rows, int start, int end )
+void GUIAPI GUIDoVScrollClip( gui_window *wnd, int rows_diff, int start_row, int end_row )
 {
-    DoScroll( wnd, rows, VERTICAL, start, end );
+    DoScroll( wnd, rows_diff, VERTICAL, start_row, end_row );
 }

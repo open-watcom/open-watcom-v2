@@ -866,10 +866,10 @@ extern void     GUIAPI GUISetHScrollRangeCols( gui_window *wnd, gui_text_ord ran
 extern void     GUIAPI GUISetVScrollRangeRows( gui_window *wnd, gui_text_ord range );
 extern gui_text_ord GUIAPI GUIGetHScrollRangeCols( gui_window *wnd );
 extern gui_text_ord GUIAPI GUIGetVScrollRangeRows( gui_window *wnd );
-extern void     GUIAPI GUIDoHScroll( gui_window *wnd, int cols );
-extern void     GUIAPI GUIDoVScroll( gui_window *wnd, int rows );
-extern void     GUIAPI GUIDoHScrollClip( gui_window *wnd, int cols, int start, int end );
-extern void     GUIAPI GUIDoVScrollClip( gui_window *wnd, int rows, int start, int end );
+extern void     GUIAPI GUIDoHScroll( gui_window *wnd, int cols_diff );
+extern void     GUIAPI GUIDoVScroll( gui_window *wnd, int rows_diff );
+extern void     GUIAPI GUIDoHScrollClip( gui_window *wnd, int cols_diff, int start_col, int end_col );
+extern void     GUIAPI GUIDoVScrollClip( gui_window *wnd, int rows_diff, int start_row, int end_row );
 
 /* deals in percent of range */
 
