@@ -512,11 +512,11 @@ static bool ChangeScrollRange( gui_window *wnd, int bar, guix_ord new )
     if( bar == SB_HORZ ) {
         if( wnd->hrange == new )
             return( false );
-        wnd->hpos = new;
+        wnd->hrange = new;
     } else {
         if( wnd->vrange == new )
             return( false );
-        wnd->vpos = new;
+        wnd->vrange = new;
     }
     return( true );
 }
