@@ -155,18 +155,18 @@ void    AddrFree( an node )
 void    InsToAddr( an addr )
 /**************************/
 {
-    an          new;
+    an          new_an;
     instruction *ins;
 
     if( addr->format == NF_INS ) {
         ins = addr->u.i.ins;
         ins->result = BGNewTemp( addr->tipe );
-        new = AddrName( ins->result, addr->tipe );
-        new->flags = addr->flags;
-        new->u.n.base = addr->u.i.base;
-        new->u.n.alignment = addr->u.i.alignment;
-        CopyAddr( new, addr );
-        AddrFree( new );
+        new_an = AddrName( ins->result, addr->tipe );
+        new_an->flags = addr->flags;
+        new_an->u.n.base = addr->u.i.base;
+        new_an->u.n.alignment = addr->u.i.alignment;
+        CopyAddr( new_an, addr );
+        AddrFree( new_an );
     }
 }
 
@@ -175,7 +175,7 @@ void    NamesCrossBlocks( void )
 /******************************/
 {
     an          addr;
-    an          new;
+    an          new_an;
     an          next;
     name        *temp;
 
@@ -203,9 +203,9 @@ void    NamesCrossBlocks( void )
                         |= USE_IN_ANOTHER_BLOCK;
                 }
             }
-            new = AddrName( temp, addr->tipe );
-            CopyAddr( new, addr );
-            AddrFree( new );
+            new_an = AddrName( temp, addr->tipe );
+            CopyAddr( new_an, addr );
+            AddrFree( new_an );
         }
     }
 }
@@ -294,11 +294,11 @@ an      MakeConst( float_handle cf, const type_def *tipe )
 an      MakePoints( an name, const type_def *tipe )
 /*************************************************/
 {
-    an  new;
+    an  new_an;
 
-    new = AddrName( Points( name, tipe ), tipe );
+    new_an = AddrName( Points( name, tipe ), tipe );
     BGDone( name );
-    return( new );
+    return( new_an );
 }
 
 an      RegName( hw_reg_set reg, const type_def *tipe )
@@ -350,11 +350,11 @@ static  name    *Temporary( name *temp, const type_def *tipe )
 an      AddrEval( an addr )
 /*************************/
 {
-    an  new;
+    an  new_an;
 
-    new = AddrName( Temporary( GenIns( addr ), addr->tipe ), addr->tipe );
+    new_an = AddrName( Temporary( GenIns( addr ), addr->tipe ), addr->tipe );
     AddrFree( addr );
-    return( new );
+    return( new_an );
 }
 
 
@@ -404,44 +404,44 @@ an      AddrToIns( an addr )
 /**************************/
 {
     instruction *ins;
-    an          new;
+    an          new_an;
 
     if( addr->format != NF_INS ) {
         ins = MakeMove( GenIns( addr ), NULL, TypeClass( addr->tipe ) );
-        new = InsName( ins, addr->tipe );
-        new->flags = addr->flags;
-        new->u.n.alignment = addr->u.n.alignment;
+        new_an = InsName( ins, addr->tipe );
+        new_an->flags = addr->flags;
+        new_an->u.n.alignment = addr->u.n.alignment;
         BGDone( addr );
         AddIns( ins );
     } else {
-        new = addr;
+        new_an = addr;
     }
-    return( new );
+    return( new_an );
 }
 
 
 an      AddrDuplicate( an node )
 /******************************/
 {
-    an          new;
+    an          new_an;
     name        *op;
 
     InsToAddr( node );
     op = GenIns( node );
-    new = AddrName( op, node->tipe );
-    CopyAddr( new, node );
-    return( new );
+    new_an = AddrName( op, node->tipe );
+    CopyAddr( new_an, node );
+    return( new_an );
 }
 
 an      AddrCopy( an node )
 /*************************/
 {
-    an  new;
+    an  new_an;
 
     InsToAddr( node );
-    new = NewAddrName();
-    CopyAddr( node, new );
-    return( new );
+    new_an = NewAddrName();
+    CopyAddr( node, new_an );
+    return( new_an );
 }
 
 
@@ -517,18 +517,18 @@ bool    NeedPtrConvert( an addr, const type_def *tipe )
 name    *LoadAddress( name *op, name *suggest, const type_def *type_ptr )
 /***********************************************************************/
 {
-    name                *new;
+    name                *new_addr;
     type_class_def      type_class;
 
     if( op->n.class == N_INDEXED && !HasTrueBase( op ) ) {
         if( op->i.constant != 0 ) {
             type_class = op->i.index->n.type_class;
-            new = MaybeTemp( suggest, type_class );
+            new_addr = MaybeTemp( suggest, type_class );
             AddIns( MakeBinary( OP_ADD, op->i.index,
                          AllocS32Const( op->i.constant ),
-                         new, type_class ) );
+                         new_addr, type_class ) );
         } else {
-            new = op->i.index;
+            new_addr = op->i.index;
         }
     } else {
         if( suggest != NULL ) {
@@ -540,10 +540,10 @@ name    *LoadAddress( name *op, name *suggest, const type_def *type_ptr )
                 type_class = CP;
             }
         }
-        new = MaybeTemp( suggest, type_class );
-        AddIns( MakeUnary( OP_LA, op, new, type_class ) );
+        new_addr = MaybeTemp( suggest, type_class );
+        AddIns( MakeUnary( OP_LA, op, new_addr, type_class ) );
     }
-    return( new );
+    return( new_addr );
 }
 
 

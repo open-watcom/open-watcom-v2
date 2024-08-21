@@ -1088,40 +1088,40 @@ tn      FoldMod( tn left, tn rite, const type_def *tipe )
 tn      Fold1sComp( tn left, const type_def *tipe )
 /***************************************************/
 {
-    tn              new;
+    tn              new_tn;
     float_handle    lv;
 
-    new = NULL;
+    new_tn = NULL;
     if( !HasBigConst( tipe ) && left->class == TN_CONS ) {
         lv = left->u.name->c.value;
         if( CFIs32( lv ) ) {
-            new = IntToType( ~CFConvertByType( lv, tipe ), tipe );
+            new_tn = IntToType( ~CFConvertByType( lv, tipe ), tipe );
             BurnTree( left );
         }
     }
-    return( new );
+    return( new_tn );
 }
 
 
 tn      FoldUMinus( tn left, const type_def *tipe )
 /***************************************************/
 {
-    tn              new;
+    tn              new_tn;
     float_handle    lv;
 
-    new = NULL;
+    new_tn = NULL;
     if( left->class == TN_CONS ) {
         lv = OkToNegate( left->u.name->c.value, tipe );
         if( lv != NULL ) {
-            new = CFToType( lv, tipe );
+            new_tn = CFToType( lv, tipe );
             BurnTree( left );
         }
     } else if( left->class == TN_UNARY && left->u1.t.op == O_UMINUS ) {
-        new = left->u.left;
+        new_tn = left->u.left;
         left->u.left = NULL;
         BurnTree( left );
     }
-    return( new );
+    return( new_tn );
 }
 
 
@@ -1260,7 +1260,7 @@ tn      FoldBitCompare( cg_op op, tn left, tn rite )
 /**********************************************************/
 {
     tn          fold;
-    uint_32     new_cons;
+    uint_32     new_c;
     uint_32     mask;
 
     if( left->class == TN_CONS ) {
@@ -1271,13 +1271,13 @@ tn      FoldBitCompare( cg_op op, tn left, tn rite )
     }
     fold = NULL;
     if( rite->class == TN_CONS && left->class == TN_BIT_RVALUE && !left->u1.b.is_signed && !HasBigConst( left->tipe ) ) {
-        new_cons = rite->u.name->c.lo.u.int_value;
-        new_cons <<= left->u1.b.start;
+        new_c = rite->u.name->c.lo.u.int_value;
+        new_c <<= left->u1.b.start;
         mask = TGMask32( left );
-        if( ( new_cons & ~mask ) == 0 ) { /* idiot comparing out of range*/
+        if( ( new_c & ~mask ) == 0 ) { /* idiot comparing out of range*/
             fold = TGUnary( O_POINTS, left->u.left, left->tipe );
             fold = TGBinary( O_AND, fold, IntToType( mask, left->tipe ), left->tipe );
-            fold = TGCompare( op, fold, IntToType( new_cons, left->tipe ), left->tipe );
+            fold = TGCompare( op, fold, IntToType( new_c, left->tipe ), left->tipe );
             left->u.left = NULL; /* so no recursion*/
             BurnTree( left );
             BurnTree( rite );

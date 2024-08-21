@@ -144,7 +144,7 @@ instruction *PushOneParm( instruction *ins, name *curr,
                                  call_state *state )
 /*****************************************************/
 {
-    instruction *new;
+    instruction *new_ins;
     name        *dst;
     name        *stack_reg;
 
@@ -152,9 +152,9 @@ instruction *PushOneParm( instruction *ins, name *curr,
 
     stack_reg = AllocRegName( StackReg() );
     dst = AllocIndex( stack_reg, NULL, offset, type_class );
-    new = MakeMove( curr, dst, type_class );
-    SuffixIns( ins, new );
-    return( new );
+    new_ins = MakeMove( curr, dst, type_class );
+    SuffixIns( ins, new_ins );
+    return( new_ins );
 }
 
 

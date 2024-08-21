@@ -873,18 +873,18 @@ static invariant    *CopyInvariant( invariant *invar )
  * Return a copy of invariant list "invar"
  */
 {
-    invariant   *new;
+    invariant   *new_inv;
 
     if( invar == NULL ) {
-        new = NULL;
+        new_inv = NULL;
     } else {
-        new = CGAlloc( sizeof( invariant ) );
-        new->name = invar->name;
-        new->times = invar->times;
-        new->id = invar->id;
-        new->next = SafeRecurseCG( (func_sr)CopyInvariant, invar->next );
+        new_inv = CGAlloc( sizeof( invariant ) );
+        new_inv->name = invar->name;
+        new_inv->times = invar->times;
+        new_inv->id = invar->id;
+        new_inv->next = SafeRecurseCG( (func_sr)CopyInvariant, invar->next );
     }
-    return( new );
+    return( new_inv );
 }
 
 
@@ -904,14 +904,14 @@ static invariant    *NewInvariant( name *op, int times )
  * bag a new "invariant"
  */
 {
-    invariant   *new;
+    invariant   *new_inv;
 
-    new = CGAlloc( sizeof( invariant ) );
-    new->name = op;
-    new->times = times;
-    new->next = NULL;
-    new->id = 0;
-    return( new );
+    new_inv = CGAlloc( sizeof( invariant ) );
+    new_inv->name = op;
+    new_inv->times = times;
+    new_inv->next = NULL;
+    new_inv->id = 0;
+    return( new_inv );
 }
 
 
@@ -996,25 +996,25 @@ void     CommonInvariant( void )
 }
 
 
-static bool_maybe   DifferentIV( induction *alias, induction *new )
-/*****************************************************************/
+static bool_maybe   DifferentIV( induction *alias, induction *new_ind )
+/*********************************************************************/
 {
-    if( alias->basic != new->basic )
+    if( alias->basic != new_ind->basic )
         return( MB_TRUE );
-    if( alias->plus2 != new->plus2 )
+    if( alias->plus2 != new_ind->plus2 )
         return( MB_TRUE );
-    if( alias->times != new->times )
+    if( alias->times != new_ind->times )
         return( MB_TRUE );
-    if( alias->ivtimes != new->ivtimes )
+    if( alias->ivtimes != new_ind->ivtimes )
         return( MB_TRUE );
-    if( alias->lasttimes != new->lasttimes )
+    if( alias->lasttimes != new_ind->lasttimes )
         return( MB_TRUE );
-    if( !SameInvariant( alias->invar, new->invar ) )
+    if( !SameInvariant( alias->invar, new_ind->invar ) )
         return( MB_TRUE );
-    if( DifferentClasses( alias->name->n.type_class, new->name->n.type_class ) ) {
+    if( DifferentClasses( alias->name->n.type_class, new_ind->name->n.type_class ) ) {
         return( MB_TRUE );
     }
-    if( alias->plus != new->plus )
+    if( alias->plus != new_ind->plus )
         return( MB_MAYBE );
     return( MB_FALSE );
 }
@@ -1038,53 +1038,53 @@ static induction    *AddIndVar( instruction *ins,
  * used to fill in the fields.
  */
 {
-    induction   *new;
+    induction   *new_ind;
     induction   *alias;
 
-    new = FindIndVar( op );
-    if( new == NULL ) {
-        new = CGAlloc( sizeof( induction ) );
-        new->name = op;
-        new->state = EMPTY;
+    new_ind = FindIndVar( op );
+    if( new_ind == NULL ) {
+        new_ind = CGAlloc( sizeof( induction ) );
+        new_ind->name = op;
+        new_ind->state = EMPTY;
         if( prev == NULL ) {
-            new->basic = new;
-            _SetV( new, IV_BASIC | IV_TOP );
+            new_ind->basic = new_ind;
+            _SetV( new_ind, IV_BASIC | IV_TOP );
         } else {
-            new->basic = prev->basic;
+            new_ind->basic = prev->basic;
             _ClrV( prev, IV_TOP );
-            _SetV( new, IV_TOP );
+            _SetV( new_ind, IV_TOP );
         }
-        new->use_count = 0;
-        new->index_use_count = 0;
-        new->prev = prev;
-        new->times = times;
-        new->ivtimes = ivtimes;
-        new->lasttimes = lasttimes;
-        new->plus = plus;
-        new->plus2 = plus2;
-        new->header = Head;
-        new->invar = CopyInvariant( invar );
-        MulInvariant( new->invar, iv_mult );
-        new->ins = ins;
-        new->type_class = type_class;
-        new->alias = new;
-        new->next = IndVarList;
-        IndVarList = new;
+        new_ind->use_count = 0;
+        new_ind->index_use_count = 0;
+        new_ind->prev = prev;
+        new_ind->times = times;
+        new_ind->ivtimes = ivtimes;
+        new_ind->lasttimes = lasttimes;
+        new_ind->plus = plus;
+        new_ind->plus2 = plus2;
+        new_ind->header = Head;
+        new_ind->invar = CopyInvariant( invar );
+        MulInvariant( new_ind->invar, iv_mult );
+        new_ind->ins = ins;
+        new_ind->type_class = type_class;
+        new_ind->alias = new_ind;
+        new_ind->next = IndVarList;
+        IndVarList = new_ind;
         NumIndVars++;
         for( alias = IndVarList; alias != NULL; alias = alias->next ) {
-            if( alias == new )
+            if( alias == new_ind )
                 continue;
             if( _IsV( alias, IV_ALIAS ) )
                 continue;
-            if( DifferentIV( alias, new ) != MB_FALSE )
+            if( DifferentIV( alias, new_ind ) != MB_FALSE )
                 continue;
-            new->alias = alias->alias;
-            alias->alias = new;
-            _SetV( new, IV_ALIAS );
+            new_ind->alias = alias->alias;
+            alias->alias = new_ind;
+            _SetV( new_ind, IV_ALIAS );
             break;
         }
     }
-    return( new );
+    return( new_ind );
 }
 
 
@@ -1555,8 +1555,8 @@ static  void    MarkSurvivors( void )
 }
 
 
-static  void    AdjOneIndex( name **pop, induction *var, induction *new )
-/***********************************************************************/
+static  void    AdjOneIndex( name **pop, induction *var, induction *new_ind )
+/***************************************************************************/
 {
     name        *op;
 
@@ -1565,15 +1565,15 @@ static  void    AdjOneIndex( name **pop, induction *var, induction *new )
         return;
     if( Uses( op, var->name ) != IVU_USED_AS_INDEX )
         return;
-    *pop = ScaleIndex( new->name, op->i.base,
-                      op->i.constant - ( new->plus - var->plus ),
+    *pop = ScaleIndex( new_ind->name, op->i.base,
+                      op->i.constant - ( new_ind->plus - var->plus ),
                       op->n.type_class, op->n.size,
                       op->i.scale, op->i.index_flags );
 }
 
 
-static  void    AdjustIndex( induction *var, induction *new )
-/***********************************************************/
+static  void    AdjustIndex( induction *var, induction *new_ind )
+/***************************************************************/
 {
     block       *blk;
     instruction *ins;
@@ -1582,10 +1582,10 @@ static  void    AdjustIndex( induction *var, induction *new )
     for( blk = Loop; blk != NULL; blk = blk->u.loop ) {
         for( ins = blk->ins.head.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
             for( i = 0; i < ins->num_operands; ++i ) {
-                AdjOneIndex( &ins->operands[i], var, new );
+                AdjOneIndex( &ins->operands[i], var, new_ind );
             }
             if( ins->result != NULL ) {
-                AdjOneIndex( &ins->result, var, new );
+                AdjOneIndex( &ins->result, var, new_ind );
             }
         }
     }
@@ -2301,26 +2301,26 @@ instruction     *DupIns( instruction *blk_end, instruction *ins,
                                  name *var, int_32 adjust )
 /**************************************************************/
 {
-    instruction *new;
+    instruction *new_ins;
     opcnt       num_operands;
     opcnt       i;
 
-    new = NewIns( ins->num_operands );
+    new_ins = NewIns( ins->num_operands );
     num_operands = ins->num_operands;
-    Copy( ins, new, offsetof( instruction, operands ) + num_operands * sizeof( name * ) );
+    Copy( ins, new_ins, offsetof( instruction, operands ) + num_operands * sizeof( name * ) );
     for( i = 0; i < num_operands; ++i ) {
-        AdjustOp( blk_end, &new->operands[i], var, adjust );
+        AdjustOp( blk_end, &new_ins->operands[i], var, adjust );
     }
-    if( new->result != NULL ) {
-        AdjustOp( blk_end, &new->result, var, adjust );
+    if( new_ins->result != NULL ) {
+        AdjustOp( blk_end, &new_ins->result, var, adjust );
     }
     if( blk_end == NULL ) {
-        SuffixPreHeader( new );
+        SuffixPreHeader( new_ins );
     } else {
-        SuffixIns( blk_end, new );
-        blk_end = new;
+        SuffixIns( blk_end, new_ins );
+        blk_end = new_ins;
     }
-    new->head.line_num = ins->head.line_num;
+    new_ins->head.line_num = ins->head.line_num;
     return( blk_end );
 }
 
@@ -3295,7 +3295,7 @@ static  bool    ReduceVar( induction *var )
     induction           *alias;
     name                *new_temp;
     type_class_def      type_class;
-    induction           *new;
+    induction           *new_ind;
     instruction         *ins;
 
     if( _IsntV( var, IV_TOP ) )
@@ -3335,11 +3335,11 @@ static  bool    ReduceVar( induction *var )
 //        ins = MakeMove( new_temp, alias->name, type_class );
 //        SuffixPreHeader( ins );
     }
-    new = AddIndVar( var->basic->ins->head.prev, new_temp,
+    new_ind = AddIndVar( var->basic->ins->head.prev, new_temp,
                      var->basic, var->invar, var->ivtimes,
                      var->lasttimes, var->times,
                      var->plus, var->plus2, 1, ins->type_class );
-    _SetV( new, IV_INTRODUCED );
+    _SetV( new_ind, IV_INTRODUCED );
     return( true );
 }
 

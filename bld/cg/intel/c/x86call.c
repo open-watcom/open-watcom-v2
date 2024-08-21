@@ -433,13 +433,13 @@ instruction *   PushOneParm( instruction *ins, name *curr,
                                 call_state *state )
 /********************************************************/
 {
-    instruction *new;
+    instruction *new_ins;
 //    int         size;
 
     /* unused parameters */ (void)state; (void)offset;
 
-    new = MakeUnary( OP_PUSH, curr, NULL, type_class );
-    SuffixIns( ins, new );
+    new_ins = MakeUnary( OP_PUSH, curr, NULL, type_class );
+    SuffixIns( ins, new_ins );
 #if 0
     if( curr->n.class == N_CONSTANT ) {
         size = TypeClassSize[type_class];
@@ -447,7 +447,7 @@ instruction *   PushOneParm( instruction *ins, name *curr,
         size = curr->n.size;
     }
 #endif
-    return( new );
+    return( new_ins );
 }
 
 

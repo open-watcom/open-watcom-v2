@@ -319,7 +319,7 @@ instruction *rALLOCA( instruction *ins )
 instruction      *rM_SIMPCMP( instruction *ins )
 /**********************************************/
 {
-    instruction         *new;
+    instruction         *new_ins;
     opcode_defs         opcode;
     bool                reverse;
 
@@ -389,9 +389,9 @@ instruction      *rM_SIMPCMP( instruction *ins )
     if( reverse ) {
         opcode = OP_CMP_EQUAL;
     }
-    new = MakeCondition( opcode, ins->result, AllocS32Const( 0 ), _TrueIndex( ins ), _FalseIndex( ins ), ins->type_class );
-    SuffixIns( ins, new );
-    return( new );
+    new_ins = MakeCondition( opcode, ins->result, AllocS32Const( 0 ), _TrueIndex( ins ), _FalseIndex( ins ), ins->type_class );
+    SuffixIns( ins, new_ins );
+    return( new_ins );
 }
 
 /* Note: This could be used for 128-bit types implemented on top of

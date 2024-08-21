@@ -330,8 +330,8 @@ static int_32   UnrollCount( block *loop_tail, bool *clean, bool *complete )
 }
 
 #if 0
-static  bool    ReplaceName( name **pop, name *orig, name *new )
-/***************************************************************
+static  bool    ReplaceName( name **pop, name *orig, name *new_name )
+/********************************************************************
  * Replace all occurrences of orig in *pop with new and return the new name.
  */
 {
@@ -344,13 +344,13 @@ static  bool    ReplaceName( name **pop, name *orig, name *new )
     switch( op->n.class ) {
     case N_INDEXED:
         if( op->i.index == orig ) {
-            *pop = ScaleIndex( new, op->i.base,
+            *pop = ScaleIndex( new_name, op->i.base,
                                op->i.constant,
                                op->n.type_class, op->n.size,
                                op->i.scale, op->i.index_flags );
             return( true );
         } else if( op->i.base == orig ) {
-            *pop = ScaleIndex( op->i.index, new, op->i.constant,
+            *pop = ScaleIndex( op->i.index, new_name, op->i.constant,
                                op->n.type_class, op->n.size,
                                op->i.scale, op->i.index_flags );
         }
@@ -359,13 +359,13 @@ static  bool    ReplaceName( name **pop, name *orig, name *new )
         op = DeAlias( op );
         if( op == orig ) {
             offset = (*pop)->v.offset - op->v.offset;
-            *pop = TempOffset( new, offset, (*pop)->n.type_class );
+            *pop = TempOffset( new_name, offset, (*pop)->n.type_class );
             return( true );
         }
         break;
     default:
         if( op == orig ) {
-            *pop = new;
+            *pop = new_name;
             return( true );
         }
     }
@@ -961,7 +961,7 @@ static  void    MakeWorldGoAround( block *loop, loop_abstract *cleanup_copy, loo
     instruction         *add;
     name                *modifier;
     type_class_def      comp_type_class;
-    block               *new;
+    block               *new_blk;
     instruction         *ins;
     uint_32             high_bit;
 
@@ -974,25 +974,25 @@ static  void    MakeWorldGoAround( block *loop, loop_abstract *cleanup_copy, loo
      * add a piece of code to check and make sure n and ( n - reps ) have the same sign
      */
     if( !cond->complete && Signed[comp_type_class] != comp_type_class ) {
-        new = MakeBlock( AskForNewLabel(), 2 );
-        _SetBlkAttr( new, BLK_CONDITIONAL );
-        new->loop_head = PreHead->loop_head;
-        new->next_block = NULL;
-        new->prev_block = NULL;
-        new->input_edges = NULL;
-        new->id = NO_BLOCK_ID;
-        new->gen_id = PreHead->gen_id;
-        new->ins.head.line_num = 0;
+        new_blk = MakeBlock( AskForNewLabel(), 2 );
+        _SetBlkAttr( new_blk, BLK_CONDITIONAL );
+        new_blk->loop_head = PreHead->loop_head;
+        new_blk->next_block = NULL;
+        new_blk->prev_block = NULL;
+        new_blk->input_edges = NULL;
+        new_blk->id = NO_BLOCK_ID;
+        new_blk->gen_id = PreHead->gen_id;
+        new_blk->ins.head.line_num = 0;
         temp = AllocTemp( comp_type_class );
         ins = MakeBinary( OP_XOR, add->result, cond->invariant, temp, comp_type_class );
-        SuffixIns( new->ins.head.prev, ins );
+        SuffixIns( new_blk->ins.head.prev, ins );
         high_bit = 1 << ( ( 8 * TypeClassSize[comp_type_class] ) - 1 );
         ins = MakeCondition( OP_BIT_TEST_TRUE, temp, AllocS32Const( high_bit ), 0, 1, comp_type_class );
-        SuffixIns( new->ins.head.prev, ins );
-        PointEdge( &new->edge[0], cleanup_copy->head );
-        PointEdge( &new->edge[1], loop->loop_head );
-        MoveEdge( &PreHead->edge[0], new );
-        AddBlocks( PreHead, new );
+        SuffixIns( new_blk->ins.head.prev, ins );
+        PointEdge( &new_blk->edge[0], cleanup_copy->head );
+        PointEdge( &new_blk->edge[1], loop->loop_head );
+        MoveEdge( &PreHead->edge[0], new_blk );
+        AddBlocks( PreHead, new_blk );
     }
     /*
      * now munge Head so that it looks more like we want it to, and make a copy which we can

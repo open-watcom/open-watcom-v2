@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -96,27 +96,27 @@ void    AddLblRef( ins_entry *instr )
 void    DelLblRef( ins_entry *instr )
 /***********************************/
 {
-    label_handle    old;
+    label_handle    old_lbl;
 
   optbegin
-    old = _Label( instr );
-    DelRef( &old->refs, instr );
-    TryScrapLabel( old );
+    old_lbl = _Label( instr );
+    DelRef( &old_lbl->refs, instr );
+    TryScrapLabel( old_lbl );
   optend
 }
 
 
-void    ChgLblRef( ins_entry *instr, label_handle new )
-/*****************************************************/
+void    ChgLblRef( ins_entry *instr, label_handle new_lbl )
+/*********************************************************/
 {
     ins_entry       **owner;
     ins_entry       *curr;
-    label_handle    old;
+    label_handle    old_lbl;
 
   optbegin
-    old = _Label( instr );
-    if( old != new ) {
-        owner = &old->refs;
+    old_lbl = _Label( instr );
+    if( old_lbl != new_lbl ) {
+        owner = &old_lbl->refs;
         for(;;) {
             curr = *owner;
             if( curr == instr )
@@ -124,10 +124,10 @@ void    ChgLblRef( ins_entry *instr, label_handle new )
             owner = (ins_entry **)&_LblRef( curr );
         }
         *owner = _LblRef( curr );
-        _LblRef( curr ) = new->refs;
-        new->refs = curr;
-        _Label( curr ) = new;
-        TryScrapLabel( old );
+        _LblRef( curr ) = new_lbl->refs;
+        new_lbl->refs = curr;
+        _Label( curr ) = new_lbl;
+        TryScrapLabel( old_lbl );
     }
   optend
 }
@@ -148,63 +148,63 @@ bool    UniqueLabel( label_handle lbl )
 }
 
 
-ins_entry       *AliasLabels( ins_entry *oldlbl, ins_entry *newlbl )
-/******************************************************************/
+ins_entry       *AliasLabels( ins_entry *old_ins, ins_entry *new_ins )
+/********************************************************************/
 {
-    label_handle    old;
-    label_handle    new;
+    label_handle    old_lbl;
+    label_handle    new_lbl;
     ins_entry       *old_jmp;
     ins_entry       **owner;
 
   optbegin
-    if( oldlbl != newlbl ) {
+    if( old_ins != new_ins ) {
         /* use maximum of the two aligment requests */
-        if( _ObjLen( oldlbl ) > _ObjLen( newlbl ) ) {
-            _ObjLen( newlbl ) = _ObjLen( oldlbl );
+        if( _ObjLen( old_ins ) > _ObjLen( new_ins ) ) {
+            _ObjLen( new_ins ) = _ObjLen( old_ins );
         }
 #if _TARGET_RISC
         /* one of the line numbers (at most) is non-zero - keep it */
-        if( _LblLine( oldlbl ) != 0 ) {
-            _LblLine( newlbl ) = _LblLine( oldlbl );
+        if( _LblLine( old_ins ) != 0 ) {
+            _LblLine( new_ins ) = _LblLine( old_ins );
         }
 #endif
-        _SetAttr( newlbl, _GetAttr( oldlbl ) & OC_ATTR_SHORT );
-        new = _Label( newlbl );
-        old = _Label( oldlbl );
-        if( new->redirect == old ) {
-            new->redirect = NULL;
-            _ClrStatus( old, REDIRECTION );
-        } else if( old->redirect == new ) {
-            old->redirect = NULL;
-            _ClrStatus( new, REDIRECTION );
+        _SetAttr( new_ins, _GetAttr( old_ins ) & OC_ATTR_SHORT );
+        new_lbl = _Label( new_ins );
+        old_lbl = _Label( old_ins );
+        if( new_lbl->redirect == old_lbl ) {
+            new_lbl->redirect = NULL;
+            _ClrStatus( old_lbl, REDIRECTION );
+        } else if( old_lbl->redirect == new_lbl ) {
+            old_lbl->redirect = NULL;
+            _ClrStatus( new_lbl, REDIRECTION );
         }
         for(;;) {
-            old->ins = new->ins;
-            old = old->alias;
-            if( old == NULL ) {
+            old_lbl->ins = new_lbl->ins;
+            old_lbl = old_lbl->alias;
+            if( old_lbl == NULL ) {
                 break;
             }
         }
-        old = _Label( oldlbl );
-        owner = &old->refs;
+        old_lbl = _Label( old_ins );
+        owner = &old_lbl->refs;
         for(;;) {
             old_jmp = *owner;
             if( old_jmp == NULL )
                 break;
-            _Label( old_jmp ) = new;
+            _Label( old_jmp ) = new_lbl;
             owner = (ins_entry **)&_LblRef( old_jmp );
         }
-        *owner = new->refs;
-        new->refs = old->refs;
-        old->refs = NULL;
-        while( new->alias != NULL ) {
-            new = new->alias;
+        *owner = new_lbl->refs;
+        new_lbl->refs = old_lbl->refs;
+        old_lbl->refs = NULL;
+        while( new_lbl->alias != NULL ) {
+            new_lbl = new_lbl->alias;
         }
-        new->alias = old;
-        _Label( oldlbl ) = NULL;
-        oldlbl = DelInstr( oldlbl );
+        new_lbl->alias = old_lbl;
+        _Label( old_ins ) = NULL;
+        old_ins = DelInstr( old_ins );
     }
-    optreturn( oldlbl );
+    optreturn( old_ins );
 }
 
 
@@ -272,17 +272,17 @@ void    ScrapCodeLabel( label_handle lbl )
 }
 
 
-void    TryScrapLabel( label_handle old )
-/***************************************/
+void    TryScrapLabel( label_handle old_lbl )
+/*******************************************/
 {
   optbegin
-    if( old->refs != NULL )
+    if( old_lbl->refs != NULL )
         optreturnvoid;
-    if( old->ins != NULL ) {
-        KillDeadLabels( old->ins );
-    } else if( _TstStatus( old, DYINGLABEL )
-         && !_TstStatus( old, REDIRECTION | KEEPLABEL ) ) {
-        ScrapCodeLabel( old );
+    if( old_lbl->ins != NULL ) {
+        KillDeadLabels( old_lbl->ins );
+    } else if( _TstStatus( old_lbl, DYINGLABEL )
+         && !_TstStatus( old_lbl, REDIRECTION | KEEPLABEL ) ) {
+        ScrapCodeLabel( old_lbl );
     }
   optend
 }

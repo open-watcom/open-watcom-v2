@@ -86,13 +86,13 @@ static dep_list_entry *AllocDep( void )
  * Allocate one dependancy link structure.
  */
 {
-    dep_list_block  *new;
+    dep_list_block  *new_dlb;
 
     if( CurrDepBlock == NULL || CurrDepBlock->used >= DEPS_IN_BLOCK ) {
-        new = AllocFrl( &DepFrl, sizeof( dep_list_block ) );
-        new->next = CurrDepBlock;
-        new->used = 0;
-        CurrDepBlock = new;
+        new_dlb = AllocFrl( &DepFrl, sizeof( dep_list_block ) );
+        new_dlb->next = CurrDepBlock;
+        new_dlb->used = 0;
+        CurrDepBlock = new_dlb;
     }
     return( &CurrDepBlock->entries[CurrDepBlock->used++] );
 }

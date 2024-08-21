@@ -63,7 +63,7 @@ typedef struct eight_byte_name {
 name    *LowPart( name *tosplit, type_class_def type_class )
 /***********************************************************/
 {
-    name                *new = NULL;
+    name                *new_part = NULL;
     name                *new_cons;
     signed_8            s8;
     unsigned_8          u8;
@@ -76,67 +76,67 @@ name    *LowPart( name *tosplit, type_class_def type_class )
         if( tosplit->c.const_type == CONS_ABSOLUTE ) {
             if( type_class == U1 ) {
                 u8 = tosplit->c.lo.u.int_value & 0xff;
-                new = AllocUIntConst( u8 );
+                new_part = AllocUIntConst( u8 );
             } else if( type_class == I1 ) {
                 s8 = tosplit->c.lo.u.int_value & 0xff;
-                new = AllocIntConst( s8 );
+                new_part = AllocIntConst( s8 );
             } else if( type_class == U2 ) {
                 u16 = tosplit->c.lo.u.int_value & 0xffff;
-                new = AllocUIntConst( u16 );
+                new_part = AllocUIntConst( u16 );
             } else if( type_class == I2 ) {
                 s16 = tosplit->c.lo.u.int_value & 0xffff;
-                new = AllocIntConst( s16 );
+                new_part = AllocIntConst( s16 );
             } else if( type_class == FL ) {
                 _Zoiks( ZOIKS_125 );
             } else { /* FD */
                 floatval = GetFloat( tosplit, FD );
-                new = AllocConst( CFCnvU32F( &cgh, _TargetLongInt( *(uint_32 *)( floatval->value + 0 ) ) ) );
+                new_part = AllocConst( CFCnvU32F( &cgh, _TargetLongInt( *(uint_32 *)( floatval->value + 0 ) ) ) );
             }
         } else if( tosplit->c.const_type == CONS_ADDRESS ) {
-            new = AddrConst( tosplit->c.value, (segment_id)tosplit->c.lo.u.int_value, CONS_OFFSET );
+            new_part = AddrConst( tosplit->c.value, (segment_id)tosplit->c.lo.u.int_value, CONS_OFFSET );
         } else {
             _Zoiks( ZOIKS_044 );
         }
         break;
     case N_REGISTER:
         if( type_class == U1 || type_class == I1 ) {
-            new = AllocRegName( Low16Reg( tosplit->r.reg ) );
+            new_part = AllocRegName( Low16Reg( tosplit->r.reg ) );
         } else {
-            new = AllocRegName( Low32Reg( tosplit->r.reg ) );
+            new_part = AllocRegName( Low32Reg( tosplit->r.reg ) );
         }
         break;
     case N_TEMP:
-        new = TempOffset( tosplit, 0, type_class );
-        if( new->t.temp_flags & CONST_TEMP ) {
+        new_part = TempOffset( tosplit, 0, type_class );
+        if( new_part->t.temp_flags & CONST_TEMP ) {
             if( tosplit->n.type_class == FS ) {
                 new_cons = IntEquivalent( tosplit->v.symbol );
             } else {
                 new_cons = tosplit->v.symbol;
             }
-            new->v.symbol = LowPart( new_cons, type_class );
+            new_part->v.symbol = LowPart( new_cons, type_class );
         }
         break;
     case N_MEMORY:
-        new = AllocMemory( tosplit->v.symbol, tosplit->v.offset,
+        new_part = AllocMemory( tosplit->v.symbol, tosplit->v.offset,
                                 tosplit->m.memory_type, type_class );
-        new->v.usage = tosplit->v.usage;
+        new_part->v.usage = tosplit->v.usage;
         break;
     case N_INDEXED:
-        new = ScaleIndex( tosplit->i.index, tosplit->i.base,
+        new_part = ScaleIndex( tosplit->i.index, tosplit->i.base,
                                 tosplit->i.constant, type_class, 0, tosplit->i.scale,
                                 tosplit->i.index_flags );
         break;
     default:
         break;
     }
-    return( new );
+    return( new_part );
 }
 
 
 name    *HighPart( name *tosplit, type_class_def type_class )
 /***********************************************************/
 {
-    name                *new = NULL;
+    name                *new_part = NULL;
     name                *new_cons;
     name                *op;
     signed_8            s8;
@@ -150,38 +150,38 @@ name    *HighPart( name *tosplit, type_class_def type_class )
         if( tosplit->c.const_type == CONS_ABSOLUTE ) {
             if( type_class == U1 ) {
                 u8 = ( tosplit->c.lo.u.int_value >> 8 ) & 0xff;
-                new = AllocUIntConst( u8 );
+                new_part = AllocUIntConst( u8 );
             } else if( type_class == I1 ) {
                 s8 = ( tosplit->c.lo.u.int_value >> 8 ) & 0xff;
-                new = AllocIntConst( s8 );
+                new_part = AllocIntConst( s8 );
             } else if( type_class == U2 ) {
                 u16 = ( tosplit->c.lo.u.int_value >> 16 ) & 0xffff;
-                new = AllocUIntConst( u16 );
+                new_part = AllocUIntConst( u16 );
             } else if( type_class == I2 ) {
                 s16 = ( tosplit->c.lo.u.int_value >> 16 ) & 0xffff;
-                new = AllocIntConst( s16 );
+                new_part = AllocIntConst( s16 );
             } else if( type_class == FL ) {
                 _Zoiks( ZOIKS_125 );
             } else { /* FD */
                 floatval = GetFloat( tosplit, FD );
-                new = AllocConst( CFCnvU32F( &cgh, _TargetLongInt( *(uint_32 *)( floatval->value + 2 ) ) ) );
+                new_part = AllocConst( CFCnvU32F( &cgh, _TargetLongInt( *(uint_32 *)( floatval->value + 2 ) ) ) );
             }
         } else if( tosplit->c.const_type == CONS_ADDRESS ) {
-            new = AddrConst( tosplit->c.value, (segment_id)tosplit->c.lo.u.int_value, CONS_SEGMENT );
+            new_part = AddrConst( tosplit->c.value, (segment_id)tosplit->c.lo.u.int_value, CONS_SEGMENT );
         } else {
             _Zoiks( ZOIKS_044 );
         }
         break;
     case N_REGISTER:
         if( type_class == U1 || type_class == I1 ) {
-            new = AllocRegName( High16Reg( tosplit->r.reg ) );
+            new_part = AllocRegName( High16Reg( tosplit->r.reg ) );
         } else {
-            new = AllocRegName( High32Reg( tosplit->r.reg ) );
+            new_part = AllocRegName( High32Reg( tosplit->r.reg ) );
         }
         break;
     case N_TEMP:
-        new = TempOffset( tosplit, tosplit->n.size / 2, type_class );
-        if( new->t.temp_flags & CONST_TEMP ) {
+        new_part = TempOffset( tosplit, tosplit->n.size / 2, type_class );
+        if( new_part->t.temp_flags & CONST_TEMP ) {
             if( tosplit->n.type_class == FS ) {
                 new_cons = IntEquivalent( tosplit->v.symbol );
             } else {
@@ -190,24 +190,24 @@ name    *HighPart( name *tosplit, type_class_def type_class )
             op = HighPart( new_cons, type_class );
             if( op->n.class == N_REGISTER )
                 return( op );
-            new->v.symbol = op;
+            new_part->v.symbol = op;
         }
         break;
     case N_MEMORY:
-        new = AllocMemory( tosplit->v.symbol,
+        new_part = AllocMemory( tosplit->v.symbol,
                                 tosplit->v.offset + tosplit->n.size / 2,
                                 tosplit->m.memory_type, type_class );
-        new->v.usage = tosplit->v.usage;
+        new_part->v.usage = tosplit->v.usage;
         break;
     case N_INDEXED:
-        new = ScaleIndex( tosplit->i.index, tosplit->i.base,
+        new_part = ScaleIndex( tosplit->i.index, tosplit->i.base,
                 tosplit->i.constant+ tosplit->n.size / 2, type_class, 0,
                 tosplit->i.scale, tosplit->i.index_flags );
         break;
     default:
         break;
     }
-    return( new );
+    return( new_part );
 }
 
 
@@ -500,16 +500,16 @@ instruction     *rSPLIT8NEG( instruction *ins )
 /*********************************************/
 /*   Used to split 8 byte negate */
 {
-    instruction         *new;
+    instruction         *new_ins;
 
     /*  OK, so we're not really splitting the thing. But it works just
      *  as well.
      */
-    new = MakeBinary( OP_SUB, AllocIntConst( 0 ), ins->operands[0],
+    new_ins = MakeBinary( OP_SUB, AllocIntConst( 0 ), ins->operands[0],
                         ins->result, ins->type_class );
-    DupSeg( ins, new );
-    ReplIns( ins, new );
-    return( new );
+    DupSeg( ins, new_ins );
+    ReplIns( ins, new_ins );
+    return( new_ins );
 }
 
 instruction     *rSPLIT8TST( instruction *ins )
@@ -564,7 +564,7 @@ instruction     *rSPLIT8CMP( instruction *ins )
     eight_byte_name     rite;
     byte                true_idx;
     byte                false_idx;
-    instruction         *new[8];
+    instruction         *new_ins[8];
     type_class_def      high_type_class;
     unsigned            i;
     unsigned            j;
@@ -584,57 +584,57 @@ instruction     *rSPLIT8CMP( instruction *ins )
     i = 0;
     switch( ins->head.opcode ) {
     case OP_CMP_EQUAL:
-        new[i++] = MakeCondition( OP_CMP_NOT_EQUAL, left.high, rite.high,
+        new_ins[i++] = MakeCondition( OP_CMP_NOT_EQUAL, left.high, rite.high,
                                         false_idx, NO_JUMP, U2 );
-        new[i++] = MakeCondition( OP_CMP_NOT_EQUAL, left.mid_high, rite.mid_high,
+        new_ins[i++] = MakeCondition( OP_CMP_NOT_EQUAL, left.mid_high, rite.mid_high,
                                         false_idx, NO_JUMP, U2 );
-        new[i++] = MakeCondition( OP_CMP_NOT_EQUAL, left.mid_low, rite.mid_low,
+        new_ins[i++] = MakeCondition( OP_CMP_NOT_EQUAL, left.mid_low, rite.mid_low,
                                         false_idx, NO_JUMP, U2 );
-        new[i++] = MakeCondition( OP_CMP_EQUAL, left.low, rite.low,
+        new_ins[i++] = MakeCondition( OP_CMP_EQUAL, left.low, rite.low,
                                         true_idx, false_idx, U2 );
         break;
     case OP_CMP_NOT_EQUAL:
-        new[i++] = MakeCondition( OP_CMP_NOT_EQUAL, left.high, rite.high,
+        new_ins[i++] = MakeCondition( OP_CMP_NOT_EQUAL, left.high, rite.high,
                                         true_idx, NO_JUMP, U2 );
-        new[i++] = MakeCondition( OP_CMP_NOT_EQUAL, left.mid_high, rite.mid_high,
+        new_ins[i++] = MakeCondition( OP_CMP_NOT_EQUAL, left.mid_high, rite.mid_high,
                                         true_idx, NO_JUMP, U2 );
-        new[i++] = MakeCondition( OP_CMP_NOT_EQUAL, left.mid_low, rite.mid_low,
+        new_ins[i++] = MakeCondition( OP_CMP_NOT_EQUAL, left.mid_low, rite.mid_low,
                                         true_idx, NO_JUMP, U2 );
-        new[i++] = MakeCondition( OP_CMP_NOT_EQUAL, left.low, rite.low,
+        new_ins[i++] = MakeCondition( OP_CMP_NOT_EQUAL, left.low, rite.low,
                                         true_idx, false_idx, U2 );
         break;
     case OP_CMP_GREATER:
     case OP_CMP_GREATER_EQUAL:
-        new[i++] = MakeCondition( OP_CMP_GREATER, left.high, rite.high,
+        new_ins[i++] = MakeCondition( OP_CMP_GREATER, left.high, rite.high,
                                         true_idx, NO_JUMP, high_type_class );
-        new[i++] = MakeCondition( OP_CMP_NOT_EQUAL, left.high, rite.high,
+        new_ins[i++] = MakeCondition( OP_CMP_NOT_EQUAL, left.high, rite.high,
                                         false_idx, NO_JUMP, U2 );
-        new[i++] = MakeCondition( OP_CMP_GREATER, left.mid_high, rite.mid_high,
+        new_ins[i++] = MakeCondition( OP_CMP_GREATER, left.mid_high, rite.mid_high,
                                         true_idx, NO_JUMP, U2 );
-        new[i++] = MakeCondition( OP_CMP_NOT_EQUAL, left.mid_high, rite.mid_high,
+        new_ins[i++] = MakeCondition( OP_CMP_NOT_EQUAL, left.mid_high, rite.mid_high,
                                         false_idx, NO_JUMP, U2 );
-        new[i++] = MakeCondition( OP_CMP_GREATER, left.mid_low, rite.mid_low,
+        new_ins[i++] = MakeCondition( OP_CMP_GREATER, left.mid_low, rite.mid_low,
                                         true_idx, NO_JUMP, U2 );
-        new[i++] = MakeCondition( OP_CMP_NOT_EQUAL, left.mid_low, rite.mid_low,
+        new_ins[i++] = MakeCondition( OP_CMP_NOT_EQUAL, left.mid_low, rite.mid_low,
                                         false_idx, NO_JUMP, U2 );
-        new[i++] = MakeCondition( ins->head.opcode, left.low, rite.low,
+        new_ins[i++] = MakeCondition( ins->head.opcode, left.low, rite.low,
                                         true_idx, false_idx, U2 );
         break;
     case OP_CMP_LESS:
     case OP_CMP_LESS_EQUAL:
-        new[i++] = MakeCondition( OP_CMP_LESS, left.high, rite.high,
+        new_ins[i++] = MakeCondition( OP_CMP_LESS, left.high, rite.high,
                                         true_idx, NO_JUMP, high_type_class );
-        new[i++] = MakeCondition( OP_CMP_NOT_EQUAL, left.high, rite.high,
+        new_ins[i++] = MakeCondition( OP_CMP_NOT_EQUAL, left.high, rite.high,
                                         false_idx, NO_JUMP, U2 );
-        new[i++] = MakeCondition( OP_CMP_LESS, left.mid_high, rite.mid_high,
+        new_ins[i++] = MakeCondition( OP_CMP_LESS, left.mid_high, rite.mid_high,
                                         true_idx, NO_JUMP, U2 );
-        new[i++] = MakeCondition( OP_CMP_NOT_EQUAL, left.mid_high, rite.mid_high,
+        new_ins[i++] = MakeCondition( OP_CMP_NOT_EQUAL, left.mid_high, rite.mid_high,
                                         false_idx, NO_JUMP, U2 );
-        new[i++] = MakeCondition( OP_CMP_LESS, left.mid_low, rite.mid_low,
+        new_ins[i++] = MakeCondition( OP_CMP_LESS, left.mid_low, rite.mid_low,
                                         true_idx, NO_JUMP, U2 );
-        new[i++] = MakeCondition( OP_CMP_NOT_EQUAL, left.mid_low, rite.mid_low,
+        new_ins[i++] = MakeCondition( OP_CMP_NOT_EQUAL, left.mid_low, rite.mid_low,
                                         false_idx, NO_JUMP, U2 );
-        new[i++] = MakeCondition( ins->head.opcode, left.low, rite.low,
+        new_ins[i++] = MakeCondition( ins->head.opcode, left.low, rite.low,
                                         true_idx, false_idx, U2 );
         break;
     default:
@@ -642,13 +642,13 @@ instruction     *rSPLIT8CMP( instruction *ins )
     }
     --i;
     for( j = 0; j < i; ++j ) {
-        DupSeg( ins, new[j] );
-        PrefixIns( ins, new[j] );
+        DupSeg( ins, new_ins[j] );
+        PrefixIns( ins, new_ins[j] );
     }
-    DupSeg( ins, new[i] );
-    ReplIns( ins, new[i] );
-    UpdateLive( new[0], new[i] );
-    return( new[0] );
+    DupSeg( ins, new_ins[i] );
+    ReplIns( ins, new_ins[i] );
+    UpdateLive( new_ins[0], new_ins[i] );
+    return( new_ins[0] );
 }
 
 

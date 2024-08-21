@@ -151,13 +151,13 @@ void    BGAddParm( cn call, an parm )
  * link a parm into the list of parms for a call node
  */
 {
-    pn          new;
+    pn          new_parm;
 
-    new = CGAlloc( sizeof( parm_node ) );
-    new->name = AddrToIns( parm );
-    new->name->flags |= FL_ADDR_OK_ACROSS_BLOCKS; /* always taken care of by BGCall*/
-    new->next = call->parms;
-    call->parms = new;
+    new_parm = CGAlloc( sizeof( parm_node ) );
+    new_parm->name = AddrToIns( parm );
+    new_parm->name->flags |= FL_ADDR_OK_ACROSS_BLOCKS; /* always taken care of by BGCall*/
+    new_parm->next = call->parms;
+    call->parms = new_parm;
 }
 
 

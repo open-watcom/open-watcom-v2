@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -71,16 +71,16 @@ static    stack_entry   *StackMap;
 static  void    StackEntry( stack_temp *st_temp, name *temp )
 /***********************************************************/
 {
-    stack_entry *new;
+    stack_entry *new_stk;
 
-    new = CGAlloc( sizeof( stack_entry ) );
-    new->link = StackMap;
-    new->size = temp->n.size;
-    new->location = temp->t.location;
-    new->temp.first = st_temp->first;
-    new->temp.last = st_temp->last;
-    new->temp.others = NULL;
-    StackMap = new;
+    new_stk = CGAlloc( sizeof( stack_entry ) );
+    new_stk->link = StackMap;
+    new_stk->size = temp->n.size;
+    new_stk->location = temp->t.location;
+    new_stk->temp.first = st_temp->first;
+    new_stk->temp.last = st_temp->last;
+    new_stk->temp.others = NULL;
+    StackMap = new_stk;
 }
 
 
@@ -170,8 +170,8 @@ static  stack_entry     *ReUsableStack(stack_temp *st_temp,name *temp)
 }
 
 
-static bool SetLastUse( name *op, name *temp, stack_temp *new, instruction *ins )
-/*******************************************************************************/
+static bool SetLastUse( name *op, name *temp, stack_temp *new_stk, instruction *ins )
+/***********************************************************************************/
 {
     if( op->n.class == N_INDEXED && op->i.base != NULL ) {
         op = op->i.base;
@@ -179,7 +179,7 @@ static bool SetLastUse( name *op, name *temp, stack_temp *new, instruction *ins 
     if( op->n.class == N_TEMP ) {
         if( DeAlias( op ) == temp ) {
             _INS_NOT_BLOCK ( ins );
-            new->last = ins->id;
+            new_stk->last = ins->id;
             return( true );
         }
     }
@@ -187,8 +187,8 @@ static bool SetLastUse( name *op, name *temp, stack_temp *new, instruction *ins 
 }
 
 
-static  void    ScanForLastUse( block *blk, stack_temp *new, name *temp )
-/***********************************************************************/
+static  void    ScanForLastUse( block *blk, stack_temp *new_stk, name *temp )
+/***************************************************************************/
 {
     instruction *ins;
     opcnt       i;
@@ -197,30 +197,30 @@ static  void    ScanForLastUse( block *blk, stack_temp *new, name *temp )
         if( ins->result != NULL && ins->result->n.class == N_TEMP
           && DeAlias( ins->result ) == temp ) {
             if( SideEffect( ins ) ) {
-                new->last = new->first + 1;
+                new_stk->last = new_stk->first + 1;
                 return;
             } else {
                 DoNothing( ins );
             }
         } else {
             for( i = ins->num_operands; i-- > 0; ) {
-                if( SetLastUse( ins->operands[i], temp, new, ins ) ) {
+                if( SetLastUse( ins->operands[i], temp, new_stk, ins ) ) {
                     return;
                 }
             }
             if( ins->result != NULL ) {
-                if( SetLastUse( ins->result, temp, new, ins ) ) {
+                if( SetLastUse( ins->result, temp, new_stk, ins ) ) {
                     return;
                 }
             }
         }
     }
-    new->last = new->first;
+    new_stk->last = new_stk->first;
 }
 
 
-static  void    ScanForFirstDefn( block *blk, stack_temp *new, name *temp )
-/*************************************************************************/
+static  void    ScanForFirstDefn( block *blk, stack_temp *new_stk, name *temp )
+/*****************************************************************************/
 {
     instruction *ins;
     opcnt       i;
@@ -229,7 +229,7 @@ static  void    ScanForFirstDefn( block *blk, stack_temp *new, name *temp )
         if( ins->result != NULL ) {
             if( ins->result->n.class == N_TEMP ) {
                 if( DeAlias( ins->result ) == temp ) {
-                    new->first = ins->id;
+                    new_stk->first = ins->id;
                     return;
                 }
              }
@@ -237,26 +237,26 @@ static  void    ScanForFirstDefn( block *blk, stack_temp *new, name *temp )
         for( i = ins->num_operands; i-- > 0; ) {
             if( ins->operands[i]->n.class == N_TEMP ) {
                 if( DeAlias( ins->operands[i] ) == temp ) {
-                    new->first = ins->id;
+                    new_stk->first = ins->id;
                     return;
                 }
             }
         }
     }
-    new->first = FIRST_INS_ID;
+    new_stk->first = FIRST_INS_ID;
 }
 
 
-static  void    CalcRange( stack_temp *new, name *temp )
-/******************************************************/
+static  void    CalcRange( stack_temp *new_stk, name *temp )
+/**********************************************************/
 {
     block       *blk;
 
     for( blk = HeadBlock; blk->id != temp->t.u.block_id; ) {
         blk = blk->next_block;
     }
-    ScanForFirstDefn( blk, new, temp );
-    ScanForLastUse( blk, new, temp );
+    ScanForFirstDefn( blk, new_stk, temp );
+    ScanForLastUse( blk, new_stk, temp );
 }
 
 

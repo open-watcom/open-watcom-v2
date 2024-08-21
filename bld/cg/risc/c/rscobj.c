@@ -104,17 +104,17 @@ section_def *FindSection( segment_id segid )
 section_def *AddSection( segment_id segid )
 /*****************************************/
 {
-    section_def         *new;
+    section_def         *new_sec;
     unsigned            bucket;
 
-    new = CGAlloc( sizeof( section_def ) );
+    new_sec = CGAlloc( sizeof( section_def ) );
     bucket = segid % N_SECTIONS;
-    new->segid = segid;
-    new->next = sectionDefs[bucket];
-    sectionDefs[bucket] = new;
-    new->func  = NULL;
-    new->is_start = true;
-    return( new );
+    new_sec->segid = segid;
+    new_sec->next = sectionDefs[bucket];
+    sectionDefs[bucket] = new_sec;
+    new_sec->func  = NULL;
+    new_sec->is_start = true;
+    return( new_sec );
 }
 
 static void DeleteSections( void )
@@ -488,12 +488,12 @@ void    InitSegDefs( void )
 void    DefSegment( segment_id segid, seg_attr attr, const char *str, uint align, bool use_16 )
 /*********************************************************************************************/
 {
-    section_def         *new;
+    section_def         *new_sec;
     owl_section_type    type;
 
     /* unused parameters */ (void)align; (void)use_16;
 
-    new = AddSection( segid );
+    new_sec = AddSection( segid );
     if( attr & EXEC ) {
         type = OWL_SECTION_CODE;
         if( attr & COMDAT ) {
@@ -519,7 +519,7 @@ void    DefSegment( segment_id segid, seg_attr attr, const char *str, uint align
             type = OWL_SECTION_COMDAT_BSS;
         }
     }
-    new->owl_handle = OWLSectionInit( owlFile, str, type, 16 );
+    new_sec->owl_handle = OWLSectionInit( owlFile, str, type, 16 );
 }
 
 void    OutFileStart( int line )
@@ -617,12 +617,12 @@ char GetMemModel( void )
 segment_id DbgSegDef( const char *sect_name )
 /*******************************************/
 {
-    section_def         *new;
+    section_def         *new_sec;
     segment_id          segid;
 
     segid = --backSectionId;
-    new = AddSection( segid );
-    new->owl_handle = OWLSectionInit( owlFile, sect_name, OWL_SECTION_DEBUG, 1 );
+    new_sec = AddSection( segid );
+    new_sec->owl_handle = OWLSectionInit( owlFile, sect_name, OWL_SECTION_DEBUG, 1 );
     return( segid );
 }
 
@@ -750,7 +750,7 @@ segment_id  ChangeOP( segment_id segid )
 /**************************************/
 {
     segment_id  old_segid;
-    section_def *newdef;
+    section_def *new_sec;
 
 
     if( currSection == NULL ) {
@@ -761,8 +761,8 @@ segment_id  ChangeOP( segment_id segid )
     if( segid == UNDEFSEG ) {
         currSection = NULL;
     } else {
-        newdef = FindSection( segid );
-        currSection = newdef;
+        new_sec = FindSection( segid );
+        currSection = new_sec;
     }
     return( old_segid );
 }

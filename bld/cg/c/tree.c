@@ -128,15 +128,15 @@ static  tn  NewTreeNode( void )
  * gimme a new tree node
  */
 {
-    tn  new;
+    tn  new_tn;
 
-    new = AllocFrl( &TreeFrl, sizeof( tree_node ) );
-    new->flags = TF_USED;
+    new_tn = AllocFrl( &TreeFrl, sizeof( tree_node ) );
+    new_tn->flags = TF_USED;
 #ifdef DEVBUILD
-    new->useinfo.hdltype = NO_HANDLE;
-    new->useinfo.used = false;
+    new_tn->useinfo.hdltype = NO_HANDLE;
+    new_tn->useinfo.used = false;
 #endif
-    return( new );
+    return( new_tn );
 }
 
 
@@ -173,21 +173,21 @@ tn  TGBitMask( tn left, byte start, byte len, const type_def *tipe )
  * whose type is "tipe".  Takes and yields an lvalue.
  */
 {
-    tn new;
+    tn new_tn;
 
-    new = NewTreeNode();
-    new->u.left = left;
-    new->tipe = tipe;
+    new_tn = NewTreeNode();
+    new_tn->u.left = left;
+    new_tn->tipe = tipe;
 #if _TARGET & _TARG_370
-    new->u1.b.start = tipe->length * 8 - start - len;
+    new_tn->u1.b.start = tipe->length * 8 - start - len;
 #else
-    new->u1.b.start = start;
+    new_tn->u1.b.start = start;
 #endif
-    new->u1.b.len = len;
-    new->u1.b.is_signed = false;
-    new->kids = left->kids + 1;
-    new->class = TN_BIT_LVALUE;
-    return( new );
+    new_tn->u1.b.len = len;
+    new_tn->u1.b.is_signed = false;
+    new_tn->kids = left->kids + 1;
+    new_tn->class = TN_BIT_LVALUE;
+    return( new_tn );
 }
 
 
@@ -365,7 +365,7 @@ tn  TGCompare( cg_op op, tn left, tn rite, const type_def *tipe )
  * build a relational operator node
  */
 {
-    tn      new;
+    tn      new_tn;
     bool    can_demote;
 
     can_demote = true;
@@ -385,17 +385,17 @@ tn  TGCompare( cg_op op, tn left, tn rite, const type_def *tipe )
     }
     left = TGConvert( left, tipe );
     rite = TGConvert( rite, tipe );
-    new = FoldCompare( op, left, rite, tipe );
-    if( new != NULL )
-        return( new );
-    new = FoldBitCompare( op, left, rite );
-    if( new != NULL )
-        return( new );
-    new = FoldPostGetsCompare( op, left, rite, tipe );
-    if( new != NULL )
-        return( new );
-    new = TGNode( TN_COMPARE, op, left, rite, TypeBoolean );
-    return( new );
+    new_tn = FoldCompare( op, left, rite, tipe );
+    if( new_tn != NULL )
+        return( new_tn );
+    new_tn = FoldBitCompare( op, left, rite );
+    if( new_tn != NULL )
+        return( new_tn );
+    new_tn = FoldPostGetsCompare( op, left, rite, tipe );
+    if( new_tn != NULL )
+        return( new_tn );
+    new_tn = TGNode( TN_COMPARE, op, left, rite, TypeBoolean );
+    return( new_tn );
 }
 
 
@@ -473,27 +473,27 @@ tn  TGConvert( tn name, const type_def *tipe )
  */
 {
     const type_def  *node_type;
-    tn              new;
+    tn              new_tn;
 
     node_type = name->tipe;
-    new = name;
+    new_tn = name;
     if( tipe->refno != TY_DEFAULT && tipe != node_type ) {
         if( tipe == TypeBoolean ) {
             if( node_type != TypeBoolean ) {
-                new = TGCompare( O_NE, new, TGLeaf( Int( 0 ) ), node_type );
+                new_tn = TGCompare( O_NE, new_tn, TGLeaf( Int( 0 ) ), node_type );
             }
         } else {
             if( node_type == TypeBoolean ) {
-                new = TGNode( TN_FLOW_OUT, O_NOP, new, NULL, tipe );
+                new_tn = TGNode( TN_FLOW_OUT, O_NOP, new_tn, NULL, tipe );
             } else {
-                new = FoldCnvRnd( O_CONVERT, new, tipe );
-                if( new == NULL ) {
-                    new = TGNode( TN_UNARY, O_CONVERT, name, NULL, tipe );
+                new_tn = FoldCnvRnd( O_CONVERT, new_tn, tipe );
+                if( new_tn == NULL ) {
+                    new_tn = TGNode( TN_UNARY, O_CONVERT, name, NULL, tipe );
                 }
             }
         }
     }
-    return( new );
+    return( new_tn );
 }
 
 
@@ -775,9 +775,9 @@ tn  TGUnary( cg_op op, tn left, const type_def *tipe )
  * build a unary operator tree node
  */
 {
-    tn  new;
+    tn  new_tn;
 
-    new = NULL;
+    new_tn = NULL;
 
     if( op != O_POINTS ) { /* for O_POINTS, the tipe given is always correct*/
         if( tipe == TypeNone ) {
@@ -788,38 +788,38 @@ tn  TGUnary( cg_op op, tn left, const type_def *tipe )
     switch( op ) {
     case O_UMINUS:
         left = TGConvert( left, tipe );
-        new = FoldUMinus( left, tipe );
+        new_tn = FoldUMinus( left, tipe );
         break;
     case O_COMPLEMENT:
         left = TGConvert( left, tipe );
-        new = Fold1sComp( left, tipe );
+        new_tn = Fold1sComp( left, tipe );
         break;
     case O_POINTS:
         if( left->class == TN_BIT_LVALUE ) {
-            new = left;
-            new->class = TN_BIT_RVALUE;
+            new_tn = left;
+            new_tn->class = TN_BIT_RVALUE;
             if( tipe->attr & TYPE_SIGNED ) {
-                new->u1.b.is_signed = true;
+                new_tn->u1.b.is_signed = true;
             }
         }
         break;
     case O_ROUND:
-        new = FoldCnvRnd( op, left, tipe );
+        new_tn = FoldCnvRnd( op, left, tipe );
         break;
     case O_CONVERT:
-        new = FoldCnvRnd( op, left, tipe );
-        if( new == NULL ) {
-            new = TGConvert( left, tipe );
+        new_tn = FoldCnvRnd( op, left, tipe );
+        if( new_tn == NULL ) {
+            new_tn = TGConvert( left, tipe );
         }
         break;
     case O_SQRT:
         left = TGConvert( left, tipe );
-        new = FoldSqrt( left, tipe );
+        new_tn = FoldSqrt( left, tipe );
         break;
     case O_LOG:
     case O_LOG10:
         left = TGConvert( left, tipe );
-        new = FoldLog( op, left, tipe );
+        new_tn = FoldLog( op, left, tipe );
         break;
     case O_COS:
     case O_SIN:
@@ -842,7 +842,7 @@ tn  TGUnary( cg_op op, tn left, const type_def *tipe )
      * sucker. If we start getting more agressive, this will have to
      * actually do something.
      */
-        new = left;
+        new_tn = left;
         break;
     case O_PTR_TO_NATIVE:
     case O_PTR_TO_FOREIGN:
@@ -853,10 +853,10 @@ tn  TGUnary( cg_op op, tn left, const type_def *tipe )
         _Zoiks( ZOIKS_055 );
         break;
     }
-    if( new == NULL ) {
-        new = TGNode( TN_UNARY, op, left, NULL, tipe );
+    if( new_tn == NULL ) {
+        new_tn = TGNode( TN_UNARY, op, left, NULL, tipe );
     }
-    return( new );
+    return( new_tn );
 }
 
 call_handle TGInitCall( tn left, const type_def *tipe, cg_sym_handle sym )
@@ -881,7 +881,7 @@ tn  TGAddParm( call_handle call, tn parm, const type_def *tipe )
  * see TGInitCall ^
  */
 {
-    tn  new;
+    tn  new_tn;
     tn  scan;
 
     if( tipe->refno == TY_DEFAULT ) {
@@ -891,15 +891,15 @@ tn  TGAddParm( call_handle call, tn parm, const type_def *tipe )
         }
     }
     parm = TGConvert( parm, tipe );
-    new = TGNode( TN_PARM, O_NOP, parm, NULL, tipe );
+    new_tn = TGNode( TN_PARM, O_NOP, parm, NULL, tipe );
     if( call->flags & TF_REVERSE ) {
-        new->u1.t.rite = call->u1.t.rite;
-        call->u1.t.rite = new;
+        new_tn->u1.t.rite = call->u1.t.rite;
+        call->u1.t.rite = new_tn;
     } else {
         for( scan = call; scan->u1.t.rite != NULL; ) {
             scan = scan->u1.t.rite;
         }
-        scan->u1.t.rite = new;
+        scan->u1.t.rite = new_tn;
     }
     return( call );
 }
@@ -1072,30 +1072,30 @@ tn  TGDuplicate( tn node )
  * Return a duplicate for tree "node"
  */
 {
-    tn  new;
+    tn  new_tn;
 
     if( node != NULL ) {
         switch( node->class ) {
         case TN_CONS:
-            new = TGConst( CFCopy( &cgh, node->u.name->c.value ), node->tipe );
+            new_tn = TGConst( CFCopy( &cgh, node->u.name->c.value ), node->tipe );
             break;
         case TN_LEAF:
-            new = TGLeaf( AddrCopy( node->u.addr ) );
+            new_tn = TGLeaf( AddrCopy( node->u.addr ) );
             break;
         case TN_BIT_LVALUE:
         case TN_BIT_RVALUE:
-            new = TGBitMask( TGDuplicate( node->u.left ), node->u1.b.start, node->u1.b.len, node->tipe );
+            new_tn = TGBitMask( TGDuplicate( node->u.left ), node->u1.b.start, node->u1.b.len, node->tipe );
             break;
         default:
-            new = TGNode( node->class, node->u1.t.op, TGDuplicate( node->u.left ),
+            new_tn = TGNode( node->class, node->u1.t.op, TGDuplicate( node->u.left ),
                     TGDuplicate( node->u1.t.rite ), node->tipe );
             break;
         }
-        new->class = node->class;
+        new_tn->class = node->class;
     } else {
-        new = NULL;
+        new_tn = NULL;
     }
-    return( new );
+    return( new_tn );
 }
 
 

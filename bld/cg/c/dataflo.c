@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -277,7 +277,7 @@ static  void    LiveAnalysis( block *tail, global_bit_set memory_bits )
     block               *blk;
     block               *target;
     data_flow_def       *data;
-    global_bit_set      new;
+    global_bit_set      new_gbs;
     block_num           i;
     bool                change;
 
@@ -297,9 +297,9 @@ static  void    LiveAnalysis( block *tail, global_bit_set memory_bits )
             /*   defined within the procedure*/
 
             if( _IsBlkAttr( blk, BLK_RETURN | BLK_LABEL_RETURN ) ) {
-                new = memory_bits;
+                new_gbs = memory_bits;
             } else {
-                _GBitInit( new, EMPTY );
+                _GBitInit( new_gbs, EMPTY );
             }
             if( !_IsBlkAttr( blk, BLK_BIG_JUMP ) ) {
                 for( i = blk->targets; i-- > 0; ) {
@@ -307,20 +307,20 @@ static  void    LiveAnalysis( block *tail, global_bit_set memory_bits )
 
                     /*   new OUT = union of successors' IN*/
 
-                    _GBitTurnOn( new, target->dataflow->in );
+                    _GBitTurnOn( new_gbs, target->dataflow->in );
                 }
             }
-            if( !_GBitSame( data->out, new ) ) {
-                data->out = new;
+            if( !_GBitSame( data->out, new_gbs ) ) {
+                data->out = new_gbs;
                 change = true;
             }
 
             /*   new IN == ( new OUT - DEF ) union USE*/
 
-            _GBitTurnOff( new, data->def );
-            _GBitTurnOn( new, data->use );
-            if( !_GBitSame( data->in, new ) ) {
-                _GBitAssign( data->in, new );
+            _GBitTurnOff( new_gbs, data->def );
+            _GBitTurnOn( new_gbs, data->use );
+            if( !_GBitSame( data->in, new_gbs ) ) {
+                _GBitAssign( data->in, new_gbs );
                 change = true;
             }
         }

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -382,19 +382,19 @@ static  void    NewInterval( block *blk, level_depth level )
 /**********************************************************/
 {
     interval_def        *prev;
-    interval_def        *new;
+    interval_def        *new_interval;
 
     prev = IntervalNo( blk, level - 1 );
-    new = CGAlloc( sizeof( interval_def ) );
-    new->link = Intervals;
-    Intervals = new;
-    new->sub_int = prev;
-    new->next_sub_int = NULL;
-    new->level = level;
-    new->parent = NULL;
-    new->first_block = blk;
-    new->last_block = blk;
-    prev->parent = new;
+    new_interval = CGAlloc( sizeof( interval_def ) );
+    new_interval->link = Intervals;
+    Intervals = new_interval;
+    new_interval->sub_int = prev;
+    new_interval->next_sub_int = NULL;
+    new_interval->level = level;
+    new_interval->parent = NULL;
+    new_interval->first_block = blk;
+    new_interval->last_block = blk;
+    prev->parent = new_interval;
 }
 
 

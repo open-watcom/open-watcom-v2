@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,19 +41,19 @@
 label_handle GetWeirdPPCDotDotLabel( label_handle lbl )
 /*****************************************************/
 {
-    label_handle    new;
+    label_handle    new_lbl;
 
     if( _TstStatus( lbl, HAS_PPC_ALIAS ) ) {
         return( lbl->ppc_alt_name );
     }
     if( AskIfRTLabel( lbl ) ) {
-        new = AskForRTLabel( SYM2RTIDX( lbl->lbl.sym ) );
+        new_lbl = AskForRTLabel( SYM2RTIDX( lbl->lbl.sym ) );
     } else {
-        new = AskForLabel( lbl->lbl.sym );
+        new_lbl = AskForLabel( lbl->lbl.sym );
     }
-    new->ppc_alt_name = lbl;
-    lbl->ppc_alt_name = new;
+    new_lbl->ppc_alt_name = lbl;
+    lbl->ppc_alt_name = new_lbl;
     _SetStatus( lbl, HAS_PPC_ALIAS );
-    _SetStatus( new, WEIRD_PPC_ALIAS );
-    return( new );
+    _SetStatus( new_lbl, WEIRD_PPC_ALIAS );
+    return( new_lbl );
 }

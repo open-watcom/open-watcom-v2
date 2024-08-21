@@ -163,7 +163,7 @@ static  int     EvalNo = { 0 };
 extern  n       *CGEval( n *nd ) {
 /********************************/
 
-    n           *new;
+    n           *new_n;
     char        buff[80];
     char        *endptr;
 
@@ -172,12 +172,12 @@ extern  n       *CGEval( n *nd ) {
     endptr = CopyStrEnd( "[eval", buff );
     endptr = CopyStrEnd( LToS( ++EvalNo ), endptr );
     endptr = CopyStrEnd( "]", endptr );
-    new = NewNode( LEAF, nd->t );
-    new->l = (n *)ACopyOf( buff );
+    new_n = NewNode( LEAF, nd->t );
+    new_n->l = (n *)ACopyOf( buff );
     DumpTree( nd );
-    Code( "evaluate ===> %s%n", new->l );
-    Action( " -> %t%n%n", new );
-    return( new );
+    Code( "evaluate ===> %s%n", new_n->l );
+    Action( " -> %t%n%n", new_n );
+    return( new_n );
 }
 
 extern  n       *CGVolatile( n *nd ) {
@@ -202,8 +202,8 @@ static  n       *CGDuplicateArray[2];
 extern  n       **CGDuplicate( n *nd ) {
 /************************************/
 
-    n           *new1;
-    n           *new2;
+    n           *new_n1;
+    n           *new_n2;
     char        buff[80];
     char        *endptr;
 
@@ -212,18 +212,18 @@ extern  n       **CGDuplicate( n *nd ) {
     endptr = CopyStrEnd( "[dup", buff );
     endptr = CopyStrEnd( LToS( ++DupNo ), endptr );
     endptr = CopyStrEnd( "]", endptr );
-    new1 = NewNode( LEAF, nd->t );
-    new1->l = (n *)ACopyOf( buff );
+    new_n1 = NewNode( LEAF, nd->t );
+    new_n1->l = (n *)ACopyOf( buff );
     endptr = CopyStrEnd( "[dup", buff );
     endptr = CopyStrEnd( LToS( ++DupNo ), endptr );
     endptr = CopyStrEnd( "]", endptr );
-    new2 = NewNode( LEAF, nd->t );
-    new2->l = (n *)ACopyOf( buff );
+    new_n2 = NewNode( LEAF, nd->t );
+    new_n2->l = (n *)ACopyOf( buff );
     DumpT( nd );
-    Code( "duplicate ===> %s %s%n", new1->l, new2->l );
-    CGDuplicateArray[0] = new1;
-    CGDuplicateArray[1] = new2;
-    Action( " -> %t %t%n", new1, new2 );
+    Code( "duplicate ===> %s %s%n", new_n1->l, new_n2->l );
+    CGDuplicateArray[0] = new_n1;
+    CGDuplicateArray[1] = new_n2;
+    Action( " -> %t %t%n", new_n1, new_n2 );
     return( CGDuplicateArray );
 }
 
@@ -441,21 +441,21 @@ extern  void    VerCGCtrl( bool ver, cg_op o, n *e, l *lb ) {
 extern  n       *CGCompare( cg_op o, n *l, n *r, cg_type t ) {
 /************************************************************/
 
-    n   *new;
+    n   *new_n;
 
     Action( "CGCompare" );
     VerNode(l);
     VerNode(r);
     VerOp(o,CompareOps);
     Action( "( %s, %t, %t, %s )", Op(o), l, r, Tipe( t ) );
-    new = Binary(o,l,r,TY_BOOLEAN);
-    Action( " -> %t%n", new );
-    return( new );
+    new_n = Binary(o,l,r,TY_BOOLEAN);
+    Action( " -> %t%n", new_n );
+    return( new_n );
 }
 extern  n       *CGFlow( cg_op o, n *l, n *r ) {
 /**********************************************/
 
-    n   *new;
+    n   *new_n;
 
     Action( "CGFlow" );
     VerNode(l);
@@ -466,9 +466,9 @@ extern  n       *CGFlow( cg_op o, n *l, n *r ) {
     }
     VerOp(o,FlowOps);
     Action( "( %s, %t, %t )", Op(o), l, r );
-    new = Binary(o,l,r,TY_BOOLEAN);
-    Action( " -> %t%n", new );
-    return( new );
+    new_n = Binary(o,l,r,TY_BOOLEAN);
+    Action( " -> %t%n", new_n );
+    return( new_n );
 }
 extern  sh      *CGSelInit() {
 /****************************/
@@ -743,14 +743,14 @@ extern  n       *CGBitMask( n *r, byte st, byte ln, cg_type t ) {
 extern  n       *DoCGAssign( n *l, n *r, cg_type t, int i ) {
 /**************************************************/
 
-    n   *new;
+    n   *new_n;
 
     NotDefault( t );
     VerNode( l ); VerNode( r );
     Action( "( %t, %t, %s )", l, r, Tipe(t) );
-    new = Binary( i,l,r,t );
-    Action( " -> %t%n", new );
-    return( new );
+    new_n = Binary( i,l,r,t );
+    Action( " -> %t%n", new_n );
+    return( new_n );
 }
 extern  n       *CGAssign( n *l, n *r, cg_type t ) {
 /****************************************************/
@@ -767,14 +767,14 @@ extern  n       *CGLVAssign( n *l, n *r, cg_type t ) {
 extern  n       *DoCGPreGets( cg_op o, n *l, n *r, cg_type t, int i ) {
 /************************************************************/
 
-    n   *new;
+    n   *new_n;
 
     NotDefault( t );
     VerNode( l ); VerNode( r ); VerOp( o, BinaryOps );
     Action( "( %s, %t, %t, %s )", Op(o), l, r, Tipe(t) );
-    new = Unary( i, Binary(o,l,r,t),t );
-    Action( " -> %t%n", new );
-    return( new );
+    new_n = Unary( i, Binary(o,l,r,t),t );
+    Action( " -> %t%n", new_n );
+    return( new_n );
 }
 extern  n       *CGPreGets( cg_op o, n *l, n *r, cg_type t ) {
 /***************************************************************/
@@ -791,67 +791,67 @@ extern  n       *CGLVPreGets( cg_op o, n *l, n *r, cg_type t ) {
 extern  n       *CGPostGets( cg_op o, n *l, n *r, cg_type t ) {
 /*************************************************************/
 
-    n   *new;
+    n   *new_n;
 
     Action( "CGPostGets" );
     NotDefault( t );
     VerNode( l ); VerNode( r ); VerOp( o, BinaryOps );
     Action( "( %s, %t, %t, %s )", Op(o), l, r, Tipe(t) );
-    new = Unary( O_POST_GETS,Binary(o,l,r,t),t );
-    Action( " -> %t%n", new );
-    return( new );
+    new_n = Unary( O_POST_GETS,Binary(o,l,r,t),t );
+    Action( " -> %t%n", new_n );
+    return( new_n );
 }
 extern  n       *CGUnary( cg_op o, n *r, cg_type t ) {
 /****************************************************/
 
-    n   *new;
+    n   *new_n;
 
     Action( "CGUnary" );
     VerNode( r ); VerOp( o, UnaryOps );
     Action( "( %s, %t, %s )", Op(o), r, Tipe(t) );
     if( o == O_POINTS ) { NotDefault( t ); }
-    new = Unary( o, r, t );
-    Action( " -> %t%n", new );
-    return( new );
+    new_n = Unary( o, r, t );
+    Action( " -> %t%n", new_n );
+    return( new_n );
 }
 extern  n       *CGBinary( cg_op o, n *l, n *r, cg_type t ) {
 /***********************************************************/
 
-    n   *new;
+    n   *new_n;
 
     Action( "CGBinary" );
     VerNode( r ); VerNode( l ); VerOp( o, BinaryOps );
     Action( "( %s, %t, %t, %s )", Op(o), l, r, Tipe(t) );
-    new = Binary( o,l,r,t );
-    Action( " -> %t%n", new );
-    return( new );
+    new_n = Binary( o,l,r,t );
+    Action( " -> %t%n", new_n );
+    return( new_n );
 }
 extern  n       *CGIndex( n *l, n *r, cg_type t, cg_type s ) {
 /*************************************************/
 
-    n   *new;
+    n   *new_n;
 
     s=s;
     Action( "CGIndex" );
     VerNode( l ); VerNode( r );
     Action( "( %t, %t, %s )", l, r, Tipe(t) );
-    new = Binary( O_PLUS,l,r,t );
-    Action( " -> %t%n", new );
-    return( new );
+    new_n = Binary( O_PLUS,l,r,t );
+    Action( " -> %t%n", new_n );
+    return( new_n );
 }
 extern  n       *CGInitCall( n *l, cg_type t, sym_handle h ) {
 /************************************************************/
 
-    n   *new;
+    n   *new_n;
 
     Action( "CGInitCall" );
     VerNode(l);
 //  Action( "( %t, %s )", l, Tipe(t) );
     Action( "( %t, %s, %s )", l, Tipe(t), FEName(h) );
-    new = Binary(O_CALL,l,NULL,t);
-    new->h = h;
-    Action( " -> %t%n", new );
-    return( new );
+    new_n = Binary(O_CALL,l,NULL,t);
+    new_n->h = h;
+    Action( " -> %t%n", new_n );
+    return( new_n );
 }
 extern  void    CGAddParm( n *l, n *p, cg_type t ) {
 /**************************************************/
@@ -926,14 +926,14 @@ extern  void    CGReturn( n *r, cg_type t ) {
 extern  n       *CGChoose( n *s, n *l, n *r, cg_type t ) {
 /********************************************************/
 
-    n   *new;
+    n   *new_n;
 
     Action( "CGChoose" );
     VerNode( s ); VerNode( r ); VerNode( l );
     Action( "( %t, %t, %t, %s )", s, l, r, Tipe(t) );
-    new = Binary( OP_CHOOSE,s,Binary( OP_JOIN,l,r,t ),t );
-    Action( " -> %t%n", new );
-    return( new );
+    new_n = Binary( OP_CHOOSE,s,Binary( OP_JOIN,l,r,t ),t );
+    Action( " -> %t%n", new_n );
+    return( new_n );
 }
 extern  n       *CGWarp( n *b4, l *lb, n *af ) {
 /**********************************************/

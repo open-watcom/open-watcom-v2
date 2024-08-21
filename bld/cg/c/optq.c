@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,53 +35,53 @@
 #include "optwif.h"
 
 
-void    InsertQueue( ins_entry *old, ins_entry *new )
-/***************************************************/
+void    InsertQueue( ins_entry *old_ins, ins_entry *new_ins )
+/***********************************************************/
 {
   optbegin
     if( FirstIns == NULL ) {
-        FirstIns = old;
-        LastIns = old;
+        FirstIns = old_ins;
+        LastIns = old_ins;
         FirstIns->ins.prev = NULL;
         FirstIns->ins.next = NULL;
-    } else if( new == NULL ) {
-        FirstIns->ins.prev = old;
-        old->ins.next = FirstIns;
-        old->ins.prev = NULL;
-        FirstIns = old;
-    } else if( new == LastIns ) {
-        LastIns->ins.next = old;
-        old->ins.next = NULL;
-        old->ins.prev = LastIns;
-        LastIns = old;
+    } else if( new_ins == NULL ) {
+        FirstIns->ins.prev = old_ins;
+        old_ins->ins.next = FirstIns;
+        old_ins->ins.prev = NULL;
+        FirstIns = old_ins;
+    } else if( new_ins == LastIns ) {
+        LastIns->ins.next = old_ins;
+        old_ins->ins.next = NULL;
+        old_ins->ins.prev = LastIns;
+        LastIns = old_ins;
     } else {
-        old->ins.next = new->ins.next;
-        old->ins.prev = new;
-        new->ins.next->ins.prev = old;
-        new->ins.next = old;
+        old_ins->ins.next = new_ins->ins.next;
+        old_ins->ins.prev = new_ins;
+        new_ins->ins.next->ins.prev = old_ins;
+        new_ins->ins.next = old_ins;
     }
     ++QCount;
   optend
 }
 
 
-void    DeleteQueue( ins_entry *old )
-/***********************************/
+void    DeleteQueue( ins_entry *old_ins )
+/***************************************/
 {
   optbegin
-    if( old == FirstIns ) {
+    if( old_ins == FirstIns ) {
         FirstIns = FirstIns->ins.next;
         if( FirstIns != NULL ) {
             FirstIns->ins.prev = NULL;
         } else {
             LastIns = NULL;
         }
-    } else if( old == LastIns ) {
+    } else if( old_ins == LastIns ) {
         LastIns = LastIns->ins.prev;
         LastIns->ins.next = NULL;
     } else {
-        old->ins.next->ins.prev = old->ins.prev;
-        old->ins.prev->ins.next = old->ins.next;
+        old_ins->ins.next->ins.prev = old_ins->ins.prev;
+        old_ins->ins.prev->ins.next = old_ins->ins.next;
     }
     --QCount;
   optend

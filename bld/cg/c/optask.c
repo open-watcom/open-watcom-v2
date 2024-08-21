@@ -40,75 +40,75 @@
 static  label_handle DoAskForLabel( cg_sym_handle sym )
 /**************************************************/
 {
-    label_handle    new;
+    label_handle    new_lbl;
 
   optbegin
-    new = CGAlloc( sizeof( code_lbl ) );
-    new->lbl.link    = Handles;
-    Handles = new;
-    new->lbl.sym     = sym;
-    new->lbl.address = ADDR_UNKNOWN;
-    new->lbl.patches = NULL;
-    new->lbl.status  = 0;
-    new->alias       = NULL;
-    new->ins         = NULL;
-    new->refs        = NULL;
+    new_lbl = CGAlloc( sizeof( code_lbl ) );
+    new_lbl->lbl.link    = Handles;
+    Handles = new_lbl;
+    new_lbl->lbl.sym     = sym;
+    new_lbl->lbl.address = ADDR_UNKNOWN;
+    new_lbl->lbl.patches = NULL;
+    new_lbl->lbl.status  = 0;
+    new_lbl->alias       = NULL;
+    new_lbl->ins         = NULL;
+    new_lbl->refs        = NULL;
 #if OPTIONS & SHORT_JUMPS
-    new->redirect    = NULL;
+    new_lbl->redirect    = NULL;
 #endif
 #if _TARGET_RISC
-    new->ppc_alt_name = NULL;
-    new->owl_symbol   = NULL;
+    new_lbl->ppc_alt_name = NULL;
+    new_lbl->owl_symbol   = NULL;
 #endif
 #ifdef DEVBUILD
-    new->useinfo.hdltype = NO_HANDLE;
-    new->useinfo.used = false;
+    new_lbl->useinfo.hdltype = NO_HANDLE;
+    new_lbl->useinfo.used = false;
 #endif
-    optreturn( new );
+    optreturn( new_lbl );
 }
 
 
 label_handle AskForNewLabel( void )
 /*********************************/
 {
-    label_handle    new;
+    label_handle    new_lbl;
 
   optbegin
-    new = DoAskForLabel( NULL );
+    new_lbl = DoAskForLabel( NULL );
     /* the DYINGLABEL bit will cause unused labels to be scrapped*/
     /* without the LDONE travelling through the optimizer queue*/
-    new->lbl.status = CODELABEL | DYINGLABEL;
-    optreturn( new )
+    new_lbl->lbl.status = CODELABEL | DYINGLABEL;
+    optreturn( new_lbl )
 }
 
 
 label_handle AskForRTLabel( rt_class rtindex )
 /********************************************/
 {
-    label_handle    lbl;
+    label_handle    new_lbl;
 
   optbegin
-    lbl = DoAskForLabel( RTIDX2SYM( rtindex ) );
-    _SetStatus( lbl, RUNTIME );
-    optreturn( lbl );
+    new_lbl = DoAskForLabel( RTIDX2SYM( rtindex ) );
+    _SetStatus( new_lbl, RUNTIME );
+    optreturn( new_lbl );
 }
 
 
 label_handle AskForLabel( cg_sym_handle sym )
 /*******************************************/
 {
-    label_handle    new;
+    label_handle    new_lbl;
     fe_attr         attr;
 
   optbegin
-    new = DoAskForLabel( sym );
+    new_lbl = DoAskForLabel( sym );
     if( sym != NULL ) {
         attr = FEAttr( sym );
         if( attr & FE_UNIQUE ) {
-            _SetStatus( new, UNIQUE );
+            _SetStatus( new_lbl, UNIQUE );
         }
     }
-    optreturn( new );
+    optreturn( new_lbl );
 }
 
 

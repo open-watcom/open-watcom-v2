@@ -849,14 +849,14 @@ name    *OpAdjusted( name *op, int bias, type_class_def type_class )
 instruction     *rFLIPSIGN( instruction *ins )
 /********************************************/
 {
-    instruction         *new;
+    instruction         *new_ins;
     name                *new_op;
 
     new_op = OpAdjusted( ins->operands[0], ins->operands[0]->n.size - 1, U1 );
-    new = MakeBinary( OP_XOR, new_op, AllocIntConst( 0x80 ), new_op, U1 );
-    DupSegRes( ins, new );
-    ReplIns( ins, new );
-    return( new );
+    new_ins = MakeBinary( OP_XOR, new_op, AllocIntConst( 0x80 ), new_op, U1 );
+    DupSegRes( ins, new_ins );
+    ReplIns( ins, new_ins );
+    return( new_ins );
 }
 
 
@@ -865,25 +865,25 @@ instruction     *rTEMP2CONST( instruction *ins )
 {
     opcnt       i;
     name        *op;
-    instruction *new;
+    instruction *new_ins;
 
     /* 2005-05-14 RomanT
      * Never modify const temps operands "in place" - ReplIns() will be
      * unable to move conflict edges and they will point to nowhere.
-     * Instead, new instruction must be created and ReplIns()'ed.
+     * Instead, new_ins instruction must be created and ReplIns()'ed.
      */
-    new = NewIns( ins->num_operands );
-    Copy( ins, new, sizeof( instruction ) );  // without operands
+    new_ins = NewIns( ins->num_operands );
+    Copy( ins, new_ins, sizeof( instruction ) );  // without operands
     for( i = ins->num_operands; i-- > 0; ) {
         op = ins->operands[i];
         if( _ConstTemp( op ) ) {
-            new->operands[i] = op->v.symbol;
+            new_ins->operands[i] = op->v.symbol;
         } else {
-            new->operands[i] = op;
+            new_ins->operands[i] = op;
         }
     }
-    ReplIns( ins, new );
-    return ( new );
+    ReplIns( ins, new_ins );
+    return ( new_ins );
 }
 
 
