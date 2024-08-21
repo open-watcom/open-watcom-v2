@@ -177,54 +177,45 @@ void VMsgLog::startConnect()
 #ifdef __WINDOWS__
         _vxdPresent = (bool)VxDPresent();
         if( _vxdPresent ) {
-            const char* res = VxDLink( DEFAULT_LINK_NAME );
-            if( !res ) {
+            const char* err = VxDLink( DEFAULT_LINK_NAME );
+            if( err == NULL ) {
                 WSystemService::sysExecBackground( _config->batserv() );
                 _connectionTries = CONNECTION_TRIES;
                 _connecting = true;
                 _connectTimer->start( CONNECTION_INTERVAL );
                 addLine( "Connecting..." );
             } else {
-                WMessageDialog::info( this, "VxD: %s", res );
+                WMessageDialog::info( this, "VxD: %s", err );
             }
         } else {
             WMessageDialog::info( this, "VxD: WDEBUG.386 not present" );
         }
 #endif
     } else {
-#ifdef __WINDOWS__
         const char* err = BatchLink( NULL );
-        if( err ) {
+        if( err != NULL ) {
             _localBatserv = true;
             WSystemService::sysExecBackground( _config->batserv() );
             _connectionTries = CONNECTION_TRIES;
+            addLine( "Connecting..." );
+#ifdef __WINDOWS__
             _connecting = true;
             _connectTimer->start( CONNECTION_INTERVAL );
-            addLine( "Connecting..." );
-        } else {
-            _serverConnected = true;
-        }
 #else
-        const char* err = BatchLink( NULL );
-        if( err ) {
-            _localBatserv = true;
-            WSystemService::sysExecBackground( _config->batserv() );
-            addLine( "Connecting..." );
-            _connectionTries = CONNECTION_TRIES;
             while( err && _connectionTries > 0 ) {
                 WSystemService::sysSleep( CONNECTION_INTERVAL );
                 err = BatchLink( NULL );
                 _connectionTries -= 1;
             }
         }
-        if( err ) {
+        if( err != NULL ) {
             WMessageDialog::info( this, err );
             _parent->deleteMsglog();
             //zombie code at this point!!!!!!!!!!!!!!
+#endif
         } else {
             _serverConnected = true;
         }
-#endif
     }
 }
 
@@ -369,7 +360,7 @@ void VMsgLog::connectTimer( WTimer* timer, DWORD )
 #endif
     } else {
         err = BatchLink( NULL );
-        if( !err ) {
+        if( err == NULL ) {
             _serverConnected = true;
         }
     }
