@@ -913,7 +913,7 @@ extern BOOL _wpi_exttextout( WPI_PRES pres, int left, int top, UINT options,
 
     #define _wpi_setfontfacename( font, name ) \
         { \
-            char        *wpi_tmp_str = NULL; \
+            const char  *wpi_tmp_str = NULL; \
             wpi_tmp_str = name; \
             (font)->szFacename[0] = '\0'; \
             (font)->szFamilyname[0] = '\0'; \
@@ -970,7 +970,7 @@ extern int _wpi_getmetricpointsize( WPI_PRES pres, WPI_TEXTMETRIC *textmetric, i
 
     #define _wpi_metricileading( metric ) (metric).lInternalLeading
 
-extern void _wpi_enumfonts( WPI_PRES pres, char *facename, WPI_FONTENUMPROC proc, char *data );
+extern void _wpi_enumfonts( WPI_PRES pres, const char *facename, WPI_FONTENUMPROC proc, char *data );
 
 extern void _wpi_enumchildwindows( HWND hwnd, WPI_ENUMPROC proc, LPARAM data );
 
