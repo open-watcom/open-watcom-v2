@@ -265,7 +265,7 @@ bool GUIAPI GUISetSystemFont( gui_window *wnd, bool fixed )
 #endif
 }
 
-void GUIAPI GUIChangeCurrentFont( gui_window *wnd, char *facename, int bold )
+void GUIAPI GUIChangeCurrentFont( gui_window *wnd, const char *facename, int bold )
 {
 #ifdef __OS2_PM__
     /* unused parameters */ (void)wnd; (void)facename; (void)bold;

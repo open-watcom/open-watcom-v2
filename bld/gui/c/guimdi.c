@@ -159,7 +159,7 @@ static void MakeLabel( int index, char *name, char *label )
 }
 
 
-static void MakeHintText( int index, char *name )
+static void MakeHintText( int index, const char *name )
 {
     size_t  length;
 

@@ -715,7 +715,7 @@ extern char     * GUIAPI GUIGetFontInfo( gui_window *wnd );
 extern bool     GUIAPI GUISetFontInfo( gui_window *wnd, char *fontinfo );
 extern bool     GUIAPI GUISetSystemFont( gui_window *wnd, bool fixed );
 extern char     * GUIAPI GUIGetFontFromUser( char *fontinfo );
-extern void     GUIAPI GUIChangeCurrentFont( gui_window *wnd, char *facename, int bold );
+extern void     GUIAPI GUIChangeCurrentFont( gui_window *wnd, const char *facename, int bold );
 
 /* Painting functions */
 
