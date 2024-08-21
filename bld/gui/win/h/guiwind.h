@@ -34,7 +34,7 @@
 #ifndef _GUIWIND_H_
 #define _GUIWIND_H_
 
-
+#include <string.h>
 #ifdef __OS2_PM__
     #include <stddef.h>     /* NULL value */
     #define INCL_GPI
@@ -54,6 +54,41 @@
 #include "toolbr.h"
 #include "guihint.h"
 
+
+#define IS_HSCROLL_ON(x)        (((x)->scroll_style & GUI_HSCROLL) != 0)
+#define IS_VSCROLL_ON(x)        (((x)->scroll_style & GUI_VSCROLL) != 0)
+#define GUI_HRANGE_SET(x)       (((x)->flags & HRANGE_SET) != 0)
+#define GUI_VRANGE_SET(x)       (((x)->flags & VRANGE_SET) != 0)
+#define GUI_DO_HSCROLL(x)       (IS_HSCROLL_ON(x) && (((x)->style & GUI_HSCROLL_EVENTS) == 0))
+#define GUI_DO_VSCROLL(x)       (IS_VSCROLL_ON(x) && (((x)->style & GUI_VSCROLL_EVENTS) == 0))
+
+#define GUI_HSCROLL_COLS(x)     (((x)->scroll_style & GUI_HCOLS) != 0)
+#define GUI_VSCROLL_ROWS(x)     (((x)->scroll_style & GUI_VROWS) != 0)
+
+#define GUI_IS_DIALOG( wnd )    ((wnd->flags & IS_DIALOG) != 0)
+
+#define WNDATTRFG( wnd, attr )  (wnd)->attrs[attr].fore
+#define WNDATTRBG( wnd, attr )  (wnd)->attrs[attr].back
+
+#define NUMBER_OF_FORCED_REPAINTS 3
+
+#define AVGXCHAR( tm )          ( _wpi_metricavecharwidth(tm) + _wpi_metricoverhang( tm ) )
+#define AVGYCHAR( tm )          ( _wpi_metricheight(tm) + _wpi_metricexleading(tm) )
+#define MAXXCHAR( tm )          ( _wpi_metricmaxcharwidth(tm) + _wpi_metricoverhang(tm) )
+#define MAXYCHAR( tm )          ( _wpi_metricheight(tm) + _wpi_metricexleading(tm) )
+#define EXTRA_SIZE              sizeof( LONG_PTR )
+#define GUI_CONTAINER_WORD1     0
+#if defined(__NT__)
+#define GUI_CONTAINER_WORD2     1       // NT needs 2 longs for MDI
+#else
+#define GUI_CONTAINER_WORD2     0
+#endif
+#define GUI_EXTRA_WORD          ( GUI_CONTAINER_WORD2 + 1 )
+#define GUI_MDI_WORD            ( GUI_EXTRA_WORD + 1 )
+#define NUM_EXTRA_WORDS         ( GUI_MDI_WORD + 1 )
+#define GUI_ISROOTWIN(wnd)      ( wnd->root != NULL )
+
+#define GUI_CLASSNAME_MAX       64
 
 typedef enum flags {
     NONE_SET            = 0x0000,
@@ -75,14 +110,6 @@ typedef enum flags {
     UTILITY_BIT         = 0x8000,
 } gui_flags;
 
-#define GUI_HRANGE_SET( wnd )   ( (wnd->flags & HRANGE_SET) != 0 )
-#define GUI_VRANGE_SET( wnd )   ( (wnd->flags & VRANGE_SET) != 0 )
-
-#define GUI_IS_DIALOG( wnd )    ( (wnd->flags & IS_DIALOG) != 0 )
-
-#define WNDATTRFG( wnd, attr )  (wnd)->attrs[attr].fore
-#define WNDATTRBG( wnd, attr )  (wnd)->attrs[attr].back
-
 typedef struct wnd_colour {
     WPI_COLOUR fore;
     WPI_COLOUR back;
@@ -97,7 +124,6 @@ typedef struct toolbarinfo {
     WPI_HBITMAP         *hbitmaps;
 } toolbarinfo;
 
-#define NUMBER_OF_FORCED_REPAINTS 3
 typedef struct gui_paint_info {
     WPI_HANDLE          old_bmp;
     WPI_HANDLE          draw_bmp;
@@ -171,36 +197,8 @@ struct gui_window {
     gui_paint_info      hwnd_pinfo;
 };
 
-#define IS_HSCROLL_ON(x)    (((x)->scroll_style & GUI_HSCROLL) != 0)
-#define IS_VSCROLL_ON(x)    (((x)->scroll_style & GUI_VSCROLL) != 0)
-#define GUI_DO_HSCROLL(x)   (IS_HSCROLL_ON(x) && (((x)->style & GUI_HSCROLL_EVENTS) == 0))
-#define GUI_DO_VSCROLL(x)   (IS_VSCROLL_ON(x) && (((x)->style & GUI_VSCROLL_EVENTS) == 0))
-
-#define GUI_HSCROLL_COLS(x) (((x)->scroll_style & GUI_HCOLS) != 0)
-#define GUI_VSCROLL_ROWS(x) (((x)->scroll_style & GUI_VROWS) != 0)
-
-#define AVGXCHAR( tm ) ( _wpi_metricavecharwidth(tm) + _wpi_metricoverhang( tm ) )
-#define AVGYCHAR( tm ) ( _wpi_metricheight(tm) + _wpi_metricexleading(tm) )
-#define MAXXCHAR( tm ) ( _wpi_metricmaxcharwidth(tm) + _wpi_metricoverhang(tm) )
-#define MAXYCHAR( tm ) ( _wpi_metricheight(tm) + _wpi_metricexleading(tm) )
-#define EXTRA_SIZE              sizeof( LONG_PTR )
-#define GUI_CONTAINER_WORD1     0
-#if defined(__NT__)
-#define GUI_CONTAINER_WORD2     1       // NT needs 2 longs for MDI
-#else
-#define GUI_CONTAINER_WORD2     0
-#endif
-#define GUI_EXTRA_WORD          ( GUI_CONTAINER_WORD2 + 1 )
-#define GUI_MDI_WORD            ( GUI_EXTRA_WORD + 1 )
-#define NUM_EXTRA_WORDS         ( GUI_MDI_WORD + 1 )
-#define GUI_ISROOTWIN(wnd)      ( wnd->root != NULL )
-
-#define GUI_CLASSNAME_MAX       64
-
 extern char GUIClass[GUI_CLASSNAME_MAX + 1];
 extern char GUIDialogClass[GUI_CLASSNAME_MAX + 1];
 extern char GUIDefaultClassName[];
-
-#include "guix.h"
 
 #endif // _GUIWIND_H_

@@ -41,7 +41,6 @@
 #include "guistr.h"
 #include "guiutil.h"
 #include "guihotsp.h"
-#include <string.h>
 
 
 bool GUISetEditText( an_edit_control *edit_control, char const *text, bool is_GUI_data )

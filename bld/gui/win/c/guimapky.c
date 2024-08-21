@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,13 +31,14 @@
 
 
 #include "guiwind.h"
-#include <string.h>
 #include <ctype.h>
 #include <stdlib.h>
 #include "guimapky.h"
 #include "guixutil.h"
 #include "guimkey.h"
 #include "guixwind.h"
+#include "guix.h"
+
 
 extern  bool            EditControlHasFocus;
 extern  gui_keystate    KeyState;

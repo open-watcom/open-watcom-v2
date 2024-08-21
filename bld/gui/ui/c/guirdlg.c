@@ -32,7 +32,6 @@
 
 
 #include "guiwind.h"
-#include <string.h>
 #include <stdlib.h>
 #include "watcom.h"
 #include "guiutil.h"

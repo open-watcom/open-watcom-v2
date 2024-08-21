@@ -35,7 +35,6 @@
 #include "guidlg.h"
 #include "guistr.h"
 #include "guipick.h"
-#include <string.h>
 
 
 #define DLG_PICK_ROWS   14

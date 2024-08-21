@@ -32,7 +32,6 @@
 
 
 #include <stdlib.h>
-#include <string.h>
 #include "guiwind.h"
 #include "guidlg.h"
 #include "guistr.h"

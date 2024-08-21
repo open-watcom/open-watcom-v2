@@ -37,8 +37,9 @@
 #include "guixutil.h"
 #include "guiutil.h"
 #include "guistr.h"
-#include <string.h>
 #include "guitool.h"
+#include "guix.h"
+
 
 #define FIX_TOOLBAR     1
 

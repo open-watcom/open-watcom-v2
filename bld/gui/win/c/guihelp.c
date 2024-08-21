@@ -33,7 +33,6 @@
 
 #include "guiwind.h"
 #include <stdlib.h>
-#include <string.h>
 #include <mbstring.h>
 #include "guixwind.h"
 #ifndef __OS2_PM__

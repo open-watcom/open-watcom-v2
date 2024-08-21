@@ -57,6 +57,7 @@
 #include "guirdlg.h"
 #include "guimdi.h"
 #include "guistat.h"
+#include "guix.h"
 
 
 #if !defined(__NT__)

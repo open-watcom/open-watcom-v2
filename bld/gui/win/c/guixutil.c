@@ -33,7 +33,6 @@
 
 #include "guiwind.h"
 #include <stdlib.h>
-#include <string.h>
 #include "guicolor.h"
 #include "guimenus.h"
 #include "guiscale.h"
@@ -48,6 +47,7 @@
 #include "guipaint.h"
 #include "guizlist.h"
 #include "guirdlg.h"
+#include "guix.h"
 
 
 #define ERROR_STYLE MB_OK | MB_ICONEXCLAMATION

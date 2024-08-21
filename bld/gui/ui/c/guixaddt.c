@@ -35,7 +35,7 @@
 #include "guilistb.h"
 #include "guixdlg.h"
 #include "guicontr.h"
-#include <string.h>
+
 
 /*
  * GUIControlSetRedraw -- set the redraw flag for a given window control

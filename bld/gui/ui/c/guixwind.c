@@ -31,7 +31,6 @@
 
 
 #include "guiwind.h"
-#include <string.h>
 #ifdef __WATCOMC__
     #include <process.h>
 #endif
@@ -52,6 +51,7 @@
 #include "guiuiev.h"
 #include "guiev.h"
 #include "guixwind.h"
+#include "guix.h"
 
 #include "clibext.h"
 

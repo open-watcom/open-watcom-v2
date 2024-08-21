@@ -38,7 +38,6 @@
 #include "guiwnclr.h"
 #include "guixdlg.h"
 #include "guidraw.h"
-#include <string.h>
 
 static gui_colour_set IBMDialColours[] = {
     #define pick(e,f,b)     { f, b },

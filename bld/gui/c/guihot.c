@@ -35,6 +35,7 @@
 #include "guiscale.h"
 #include "guihot.h"
 #include "guihook.h"
+#include "guix.h"
 
 
 int             GUINumHotSpots = 0;

@@ -31,7 +31,6 @@
 
 
 #include "guiwind.h"
-#include <string.h>
 #include "guiscale.h"
 #include "guixwind.h"
 #include "statwnd.h"

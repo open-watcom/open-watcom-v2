@@ -34,7 +34,7 @@
 #include "guiwind.h"
 #include "guidlg.h"
 #include "guistr.h"
-#include <string.h>
+
 
 #define MIN_LENGTH      10
 #define MAX_LENGTH      25

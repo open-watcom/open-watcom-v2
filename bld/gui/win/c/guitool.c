@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,7 +32,6 @@
 
 #include "guiwind.h"
 #include <stdlib.h>
-#include <string.h>
 #include "guixwind.h"
 #include "guiscale.h"
 #include "guitool.h"
@@ -40,6 +39,7 @@
 #include "guimenus.h"
 #include "guixutil.h"
 #include "guirdlg.h"
+#include "guix.h"
 
 
 /* total height/width taken up by outline around  bitmap, on button */

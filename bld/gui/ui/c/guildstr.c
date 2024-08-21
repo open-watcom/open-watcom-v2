@@ -35,7 +35,6 @@
 
 #include "guiwind.h"
 #include "guiextnm.h"
-#include <string.h>
 #include <sys/types.h>
 #include <stdio.h>
 #include "watcom.h"

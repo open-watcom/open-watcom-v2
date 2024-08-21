@@ -41,7 +41,6 @@
 #include "guistat.h"
 #include "guixinit.h"
 #include "guixdlg.h"
-#include <string.h>
 #include "walloca.h"
 #include "guixwind.h"
 

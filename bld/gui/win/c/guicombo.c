@@ -32,7 +32,6 @@
 
 
 #include "guiwind.h"
-#include <string.h>
 #include "guicombo.h"
 #include "guicontr.h"
 //#include "guixhook.h"

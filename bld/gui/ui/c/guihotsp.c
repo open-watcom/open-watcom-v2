@@ -37,7 +37,7 @@
 #include "guiutil.h"
 #include "guixutil.h"
 #include "guixdlg.h"
-#include <string.h>
+
 
 /*
  * GUICreateHot -- called by GUIDoAddControl

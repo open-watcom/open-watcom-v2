@@ -32,7 +32,6 @@
 
 
 #include "guiwind.h"
-#include <string.h>
 #include "guiscale.h"
 #include "guixutil.h"
 #include "guixdraw.h"
@@ -48,6 +47,7 @@
 #include "guigadgt.h"
 #include "guixhook.h"
 #include "guistat.h"
+#include "guix.h"
 
 
 #define VALIDWINDOW( area, check_min )          \

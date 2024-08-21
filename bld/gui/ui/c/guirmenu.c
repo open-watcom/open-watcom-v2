@@ -30,7 +30,6 @@
 
 
 #include "guiwind.h"
-#include <string.h>
 #include <stdlib.h>
 #include "watcom.h"
 #include "layer0.h"

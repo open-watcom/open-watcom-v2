@@ -36,7 +36,7 @@
 #include "guiutil.h"
 #include "guixutil.h"
 #include "guiscale.h"
-#include <string.h>
+
 
 static bool SetStatusArea( gui_window *wnd, gui_ord x, gui_ord height, SAREA *area )
 {

@@ -32,7 +32,6 @@
 
 
 #include "guiwind.h"
-#include <string.h>
 #if !defined(__OS2_PM__) && !defined(__WINDOWS_386__)
 #include <commdlg.h>
 #endif

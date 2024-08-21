@@ -37,7 +37,6 @@
 #include "guimenu.h"
 #include "guihook.h"
 #include "guirmenu.h"
-#include <string.h>
 #include "guitool.h"
 
 

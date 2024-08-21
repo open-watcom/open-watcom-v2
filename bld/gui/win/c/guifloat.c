@@ -38,6 +38,7 @@
 #include "guifloat.h"
 #include "guistr.h"
 #include "guixwind.h"
+#include "guix.h"
 
 
 extern  HMENU           GUIHFloatingPopup;

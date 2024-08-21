@@ -33,7 +33,6 @@
 
 #include "guiwind.h"
 #include <stdlib.h>
-#include <string.h>
 #include "guistr.h"
 #include "guihook.h"
 #include "guiximdi.h"

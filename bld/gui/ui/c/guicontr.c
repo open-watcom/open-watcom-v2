@@ -41,7 +41,6 @@
 #include "guicolor.h"
 #include "guicontr.h"
 #include "guievent.h"
-#include <string.h>
 
 
 /*

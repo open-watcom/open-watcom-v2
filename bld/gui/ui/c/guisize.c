@@ -33,7 +33,6 @@
 
 #include "guiwind.h"
 #include <stdio.h>
-#include <string.h>
 #include "guiwhole.h"
 #include "guiscale.h"
 #include "guicontr.h"

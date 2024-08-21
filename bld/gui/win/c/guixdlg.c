@@ -33,7 +33,6 @@
 
 #include "guiwind.h"
 #include <stdlib.h>
-#include <string.h>
 #include "guiutil.h"
 #include "guixutil.h"
 #include "guicontr.h"
@@ -49,6 +48,7 @@
 #include "guipaint.h"
 #include "guimapky.h"
 #include "guirdlg.h"
+#include "guix.h"
 #ifndef __OS2_PM__
 #include "windlg.h"
 #else

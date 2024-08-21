@@ -32,7 +32,6 @@
 
 
 #include "guiwind.h"
-#include <string.h>
 #include <stdlib.h>
 #include "guixutil.h"
 #include "guiscale.h"
@@ -41,6 +40,7 @@
 #include "guixdraw.h"
 #include "guistr.h"
 #include "guicolor.h"
+#include "guix.h"
 
 
 typedef struct draw_cache {

@@ -32,7 +32,6 @@
 
 
 #include "guiwind.h"
-#include <string.h>
 #include "guimenus.h"
 #include "guixwind.h"
 #include "guixutil.h"
@@ -42,6 +41,7 @@
 #include "guixhook.h"
 #include "guihook.h"
 #include "guimdi.h"
+#include "guix.h"
 
 
 #define MAX_STR 256

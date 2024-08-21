@@ -32,7 +32,6 @@
 
 #include "guiwind.h"
 #include <stdlib.h>
-#include <string.h>
 #include "wmdisim.h"
 #include "guixutil.h"
 #include "guixhook.h"
@@ -41,6 +40,7 @@
 #include "guiscrol.h"
 #include "guixwind.h"
 #include "guistyle.h"
+#include "guix.h"
 
 
 #define MAX_LENGTH 256

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,8 +32,8 @@
 
 
 #include "guiwind.h"
-#include <string.h>
 #include "guistr.h"
+
 
 static bool SetStructNum( hints_info *hintsinfo, hint_type type, const gui_hint_items *hints )
 {

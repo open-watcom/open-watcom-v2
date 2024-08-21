@@ -33,8 +33,8 @@
 
 #include "guiwind.h"
 #include "guiscale.h"
-#include <string.h>
 #include "walloca.h"
+#include "guix.h"
 
 
 /*
