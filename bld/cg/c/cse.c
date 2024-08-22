@@ -58,6 +58,7 @@
 #include "flograph.h"
 #include "cse.h"
 #include "varusage.h"
+#include "edge.h"
 #include "feprotos.h"
 
 
@@ -183,10 +184,7 @@ static  bool    FindDefnBlocks( block *blk, instruction *cond, opcnt i )
                     if( new_dest_blk != blk ) {
                         jump_edge = &input->edge[0];
                         RemoveInputEdge( jump_edge );
-                        new_dest_blk->inputs++;
-                        jump_edge->next_source = new_dest_blk->input_edges;
-                        new_dest_blk->input_edges = jump_edge;
-                        jump_edge->destination.u.blk = new_dest_blk;
+                        PointEdge( jump_edge, new_dest_blk );
                         if( input->depth < blk->depth ) {
                             MoveHead( blk, new_dest_blk );
                         }
@@ -683,7 +681,8 @@ static  instruction     *ProcessExpr( instruction *ins1, instruction *ins2, bool
             return( NULL );
         }
     }
-    if( ins1->operands[0] != ins2->operands[0] || ins1->operands[i] != ins2->operands[i] ) {
+    if( ins1->operands[0] != ins2->operands[0]
+      || ins1->operands[i] != ins2->operands[i] ) {
         if( !_OpCommutes( ins1->head.opcode ) )
             return( NULL );
         if( ins1->operands[0] != ins2->operands[i]
@@ -1261,7 +1260,7 @@ static  void    LinkMemMoves( block *root )
     instruction *ins;
 
     blk = root;
-    for(;;) {
+    for( ;; ) {
         for( ins = blk->ins.head.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
             if( !isMoveIns( ins ) )
                 continue;

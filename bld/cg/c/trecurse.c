@@ -203,7 +203,10 @@ static void DoTrans( block *blk, instruction *call_ins )
     }
 
     blk->targets = 0;
-    PointEdge( &blk->edge[0], target );
+    edge = &blk->edge[0];
+    edge->flags = DEST_IS_BLOCK;
+    edge->source->targets++;
+    PointEdge( edge, target );
 }
 
 static bool SafePath( instruction *ins )
@@ -362,7 +365,8 @@ static bool     OkayToTransCall( block *blk, instruction *call_ins )
      * bother - better running out of stack than an infinite loop
      * (besides - certain codegen stuff needs a RET block)
      */
-    if( !_IsBlkAttr( blk, BLK_RETURN ) && SafePath( call_ins->head.next ) ) {
+    if( !_IsBlkAttr( blk, BLK_RETURN )
+      && SafePath( call_ins->head.next ) ) {
         ok = true;
         for( i = 0; i < blk->targets; i++ ) {
             dest = blk->edge[i].destination.u.blk;
@@ -385,7 +389,8 @@ void     TRAddParm( instruction *call_ins, instruction *parm_ins )
     /*
      * if either is NULL we've had an error and should refrain from GP faulting
      */
-    if( call_ins == NULL || parm_ins == NULL )
+    if( call_ins == NULL
+      || parm_ins == NULL )
         return;
     _TR_LINK( parm_ins ) = (void *)_TR_LINK( call_ins );
     _TR_LINK( call_ins ) = (void *)parm_ins;
@@ -424,7 +429,9 @@ bool     TailRecursion( void )
     bool        changed;
 
     changed = false;
-    if( _IsntModel( CGSW_GEN_NO_OPTIMIZATION ) && !ScaryConditions() && !BlockByBlock ) {
+    if( _IsntModel( CGSW_GEN_NO_OPTIMIZATION )
+      && !ScaryConditions()
+      && !BlockByBlock ) {
         for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
             for( ins = blk->ins.head.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
                 if( ins->head.opcode == OP_CALL ) {

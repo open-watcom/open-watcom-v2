@@ -38,6 +38,7 @@
 #include "nullprop.h"
 #include "blktrim.h"
 #include "breakrtn.h"
+#include "edge.h"
 
 
 typedef struct  edge_list {
@@ -101,9 +102,11 @@ bool    CreateBreak( void )
     pending = 0;
     BranchOuts = NULL;
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
-        if( AskIfReachedLabel( blk->label ) && blk != HeadBlock )
+        if( AskIfReachedLabel( blk->label )
+          && blk != HeadBlock )
             break;
-        if( (blk->edge[0].flags & BLOCK_LABEL_DIES) == 0 && blk != HeadBlock ) {
+        if( (blk->edge[0].flags & BLOCK_LABEL_DIES) == 0
+          && blk != HeadBlock ) {
             _MarkBlkVisited( blk );
             ++pending;
         } else if( pending == 0 ) {
@@ -165,7 +168,8 @@ bool    CreateBreak( void )
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
         edge = &blk->edge[0];
         for( targets = blk->targets; targets > 0; --targets ) {
-            if( (edge->flags & DEST_IS_BLOCK) == 0 || edge->destination.u.blk->gen_id >= break_blk->gen_id ) {
+            if( (edge->flags & DEST_IS_BLOCK) == 0
+              || edge->destination.u.blk->gen_id >= break_blk->gen_id ) {
                 exit_edge = CGAlloc( sizeof( edge_list ) );
                 exit_edge->edge = edge;
                 exit_edge->next = BranchOuts;
@@ -189,11 +193,8 @@ bool    CreateBreak( void )
         } else {
             exit_edge->lbl = edge->destination.u.lbl;
         }
-        edge->destination.u.blk = exit_blk;
         edge->flags |= DEST_IS_BLOCK;
-        edge->next_source = exit_blk->input_edges;
-        exit_blk->input_edges = edge;
-        exit_blk->inputs++;
+        PointEdge( edge, exit_blk );
     }
 
     if( exit_blk->inputs == 0 ) {
@@ -237,11 +238,8 @@ bool    CreateBreak( void )
     _MarkBlkAttrClr( HeadBlock, BLK_BIG_LABEL );
     edge = &blk->edge[0];
     edge->flags = DEST_IS_BLOCK;
-    edge->destination.u.blk = HeadBlock;
     edge->source = blk;
-    edge->next_source = HeadBlock->input_edges;
-    HeadBlock->input_edges = edge;
-    HeadBlock->inputs++;
+    PointEdge( edge, HeadBlock );
     HeadBlock->prev_block = blk;
     blk->prev_block = NULL;
     blk->next_block = HeadBlock;

@@ -47,6 +47,7 @@
 #include "typemap.h"
 #include "blktrim.h"
 #include "bgcall.h"
+#include "edge.h"
 #include "feprotos.h"
 
 
@@ -334,10 +335,7 @@ void    FixEdges( void )
                 dest = FindBlockWithLbl( edge->destination.u.lbl );
                 if( dest != NULL ) {
                     edge->flags |= DEST_IS_BLOCK;
-                    edge->destination.u.blk = dest;
-                    edge->next_source = edge->destination.u.blk->input_edges;
-                    edge->destination.u.blk->input_edges = edge;
-                    edge->destination.u.blk->inputs++;
+                    PointEdge( edge, dest );
                 }
             }
         }

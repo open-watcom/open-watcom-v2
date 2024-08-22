@@ -210,11 +210,13 @@ static  block   *DupLoop( block *tail, loop_abstract *loop )
                 }
             }
             edge = &copy->edge[i];
-            PointEdge( edge, dest );
-            edge->flags &= ~ONE_ITER_EXIT;
+            edge->flags = DEST_IS_BLOCK;
+//            edge->flags &= ~ONE_ITER_EXIT;
             if( dest == old_header ) {
                 edge->flags |= DEST_IS_HEADER;
             }
+            edge->source->targets++;
+            PointEdge( edge, dest );
         }
     }
     return( COPY_PTR( tail ) );
@@ -671,9 +673,9 @@ void    RemoveIns( instruction *ins )
     ins->head.prev = NULL;
 }
 
-static  block   *MakeNonConditional( block *butt, block_edge *edge )
+static  block   *MakeNonConditional( block *blki, block_edge *edgei )
 /*******************************************************************
- * If butt is conditional, create a new block which is
+ * If blki is conditional, create a new block which is
  * in between the conditional block and the head of the
  * current loop. We need a nonconditional block so that
  * we can append instructions to it when hoisting the
@@ -681,27 +683,31 @@ static  block   *MakeNonConditional( block *butt, block_edge *edge )
  */
 {
     block       *blk;
+    block_edge  *edge;
 
-    if( _IsBlkAttr( butt, BLK_CONDITIONAL ) ) {
+    if( _IsBlkAttr( blki, BLK_CONDITIONAL ) ) {
         blk = MakeBlock( AskForNewLabel(), 1 );
         _SetBlkAttr( blk, BLK_JUMP | BLK_IN_LOOP );
         blk->id = NO_BLOCK_ID;
-        blk->gen_id = butt->gen_id;
+        blk->gen_id = blki->gen_id;
         blk->ins.head.line_num = 0;
-        blk->next_block = butt->next_block;
+        blk->next_block = blki->next_block;
         if( blk->next_block != NULL ) {
             blk->next_block->prev_block = blk;
         }
-        blk->prev_block = butt;
-        butt->next_block = blk;
+        blk->prev_block = blki;
+        blki->next_block = blk;
         blk->loop_head = Head;
-        PointEdge( &blk->edge[0], edge->destination.u.blk );
-        MoveEdge( edge, blk );
+        edge = &blk->edge[0];
+        edge->flags = DEST_IS_BLOCK;
+        edge->source->targets++;
+        PointEdge( edge, edgei->destination.u.blk );
+        MoveEdge( edgei, blk );
         UnMarkLoop();
         MarkLoop();
         return( blk );
     }
-    return( butt );
+    return( blki );
 }
 
 static  int     ExitEdges( block *head )
@@ -715,7 +721,8 @@ static  int     ExitEdges( block *head )
 
     count = 0;
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
-        if( blk->loop_head == head || blk == head ) {
+        if( blk->loop_head == head
+          || blk == head ) {
             if( _IsBlkAttr( blk, BLK_LOOP_EXIT ) ) {
                 count++;
             }
@@ -762,7 +769,7 @@ void    HoistCondition( block *head )
  * which controls exit from the loop is the first statement in the
  * loop. To do this, we remove each instruction and append it to the
  * prehead, while also appending a copy of the instruction to the
- * loop butts. Note that this could violate the limit on instructions
+ * loop blks. Note that this could violate the limit on instructions
  * per block, but I'm not checking at the moment. You may only call
  * this routine if the above function returned true.
  */
@@ -803,28 +810,27 @@ void    HoistCondition( block **head, block *prehead )
  * Munge the loop and prehead so that the condition is the first statement in
  * the loop. This only works for a loop which has no conditional blocks in it
  * other than the exit condition. To do this, we hoist each instruction from
- * the head and make a copy appended to both the prehead and butt (my quaint
+ * the head and make a copy appended to both the prehead and blk (my quaint
  * notation for the block which jumps to the head and is not the prehead). We
  * return true if we were able to hoist the condition to the top, false otherwise.
  */
 {
-    block       *butt;
-    block_edge  *butt_edge;
+    block       *blk;
+    block_edge  *blk_edge;
     instruction *ins;
     instruction *next;
-    instruction *butt_ins;
+    instruction *blk_ins;
     instruction *prehead_ins;
-    block       *blk;
 
-    for( butt_edge = (*head)->input_edges; butt_edge != NULL; butt_edge = butt_edge->next_source ) {
-        if( butt_edge->source != prehead ) {
+    for( blk_edge = (*head)->input_edges; blk_edge != NULL; blk_edge = blk_edge->next_source ) {
+        if( blk_edge->source != prehead ) {
             break;
         }
     }
-    if( butt_edge == NULL )
+    if( blk_edge == NULL )
         return( false );
-    butt = MakeNonConditional( butt_edge->source, butt_edge );
-    butt_ins = butt->ins.head.prev;
+    blk = MakeNonConditional( blk_edge->source, blk_edge );
+    blk_ins = blk->ins.head.prev;
     prehead_ins = prehead->ins.head.prev;
     blk = *head;
     /*
@@ -833,19 +839,19 @@ void    HoistCondition( block **head, block *prehead )
     if( !_IsBlkAttr( blk, BLK_JUMP | BLK_CONDITIONAL ) )
         return( false );
     /*
-     * the new head should have an input from prehead and one from the butt
+     * the new head should have an input from prehead and one from the blk
      * any more and we have to bail out
      */
     if( blk->inputs > 2 )
         return( false );
     /*
-     * transfer all instructions to prehead/butt
+     * transfer all instructions to prehead/blk
      */
     for( ins = blk->ins.head.next; ins->head.opcode != OP_BLOCK; ins = next ) {
         if( _OpIsCondition( ins->head.opcode ) ) {
             return( _IsBlkAttr( blk, BLK_LOOP_EXIT ) );
         }
-        butt_ins = DupIns( butt_ins, ins, NULL, 0 );
+        blk_ins = DupIns( blk_ins, ins, NULL, 0 );
         next = ins->head.next;
         RemoveIns( ins );
         SuffixIns( prehead_ins, ins );
@@ -964,6 +970,7 @@ static  void    MakeWorldGoAround( block *loop, loop_abstract *cleanup_copy, loo
     block               *new_blk;
     instruction         *ins;
     uint_32             high_bit;
+    block_edge          *edge;
 
     comp_type_class = cond->compare_ins->type_class;
     temp = AllocTemp( comp_type_class );
@@ -973,7 +980,8 @@ static  void    MakeWorldGoAround( block *loop, loop_abstract *cleanup_copy, loo
     /*
      * add a piece of code to check and make sure n and ( n - reps ) have the same sign
      */
-    if( !cond->complete && Signed[comp_type_class] != comp_type_class ) {
+    if( !cond->complete
+      && Signed[comp_type_class] != comp_type_class ) {
         new_blk = MakeBlock( AskForNewLabel(), 2 );
         _SetBlkAttr( new_blk, BLK_CONDITIONAL );
         new_blk->loop_head = PreHead->loop_head;
@@ -989,14 +997,20 @@ static  void    MakeWorldGoAround( block *loop, loop_abstract *cleanup_copy, loo
         high_bit = 1 << ( ( 8 * TypeClassSize[comp_type_class] ) - 1 );
         ins = MakeCondition( OP_BIT_TEST_TRUE, temp, AllocS32Const( high_bit ), 0, 1, comp_type_class );
         SuffixIns( new_blk->ins.head.prev, ins );
-        PointEdge( &new_blk->edge[0], cleanup_copy->head );
-        PointEdge( &new_blk->edge[1], loop->loop_head );
+        edge = &new_blk->edge[0];
+        edge->flags = DEST_IS_BLOCK;
+        edge->source->targets++;
+        PointEdge( edge, cleanup_copy->head );
+        edge = &new_blk->edge[1];
+        edge->flags = DEST_IS_BLOCK;
+        edge->source->targets++;
+        PointEdge( edge, loop->loop_head );
         MoveEdge( &PreHead->edge[0], new_blk );
         AddBlocks( PreHead, new_blk );
     }
     /*
      * now munge Head so that it looks more like we want it to, and make a copy which we can
-     * then attach to our butt
+     * then attach to our blk
      */
     ins = Head->ins.head.prev;
     ins->head.opcode = cond->opcode;
@@ -1004,8 +1018,6 @@ static  void    MakeWorldGoAround( block *loop, loop_abstract *cleanup_copy, loo
     ins->operands[1] = add->result;
     _SetBlockIndex( ins, 0, 1 );
     if( cond->complete ) {
-        block_edge      *edge;
-
         /*
          * we have completely unrolled the loop - so behead it
          */
@@ -1034,8 +1046,14 @@ static  void    MakeWorldGoAround( block *loop, loop_abstract *cleanup_copy, loo
                 blk = DupBlock( Head );
                 AddBlocks( loop, blk );
                 MoveEdge( &loop->edge[0], blk );
-                PointEdge( &blk->edge[0], Head->edge[0].destination.u.blk );
-                PointEdge( &blk->edge[1], Head->edge[1].destination.u.blk );
+                edge = &blk->edge[0];
+                edge->flags = DEST_IS_BLOCK;
+                edge->source->targets++;
+                PointEdge( edge, Head->edge[0].destination.u.blk );
+                edge = &blk->edge[1];
+                edge->flags = DEST_IS_BLOCK;
+                edge->source->targets++;
+                PointEdge( edge, Head->edge[1].destination.u.blk );
                 blk->u.loop = loop;
                 for( ;; ) {
                     if( loop->u.loop == Head ) {
@@ -1066,7 +1084,8 @@ bool    Hoisted( block *head, instruction *compare )
     }
 #else
     if( _IsBlkAttr( head, BLK_CONDITIONAL ) ) {
-        if( _OpIsCondition( head->ins.head.next->head.opcode ) && compare == head->ins.head.next ) {
+        if( _OpIsCondition( head->ins.head.next->head.opcode )
+          && compare == head->ins.head.next ) {
             return( true );
         }
     }
@@ -1091,9 +1110,9 @@ bool    UnRoll( void )
     if( unroll_count <= 0 )
         return( false );
     AnalyseLoop( NULL, &one_cond, &cond.compare_ins, &cond.compare_block );
-    if( one_cond &&
-        Hoisted( Head, cond.compare_ins ) &&
-        TractableCond( &cond ) ) {
+    if( one_cond
+      && Hoisted( Head, cond.compare_ins )
+      && TractableCond( &cond ) ) {
         MarkHeaderEdges( Loop, Head );
         DupLoop( Loop, &cleanup_copy );
         RedirectHeaderEdges( cleanup_copy.tail, cleanup_copy.head );
