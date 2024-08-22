@@ -201,7 +201,6 @@ static void DoTrans( block *blk, instruction *call_ins )
         edge = &blk->edge[i];
         RemoveInputEdge( edge );
     }
-
     blk->targets = 0;
     edge = &blk->edge[0];
     edge->flags = DEST_IS_BLOCK;

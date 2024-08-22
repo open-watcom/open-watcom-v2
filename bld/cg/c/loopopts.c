@@ -101,7 +101,7 @@ static void     InitIndVars( void )
  * Initialize for induction variable processing
  */
 {
-    IndVarList = NULL;                 /* initialize */
+    IndVarList = NULL;  /* initialize */
 }
 
 static level_depth      MaxDepth( void )
@@ -202,7 +202,7 @@ block    *AddPreBlock( block *postblk )
     /*
      * make preblk go to postblk
      */
-    preblk->targets++;
+    preblk->targets = 1;
     edge = &preblk->edge[0];
     edge->source = preblk;
     edge->flags = SOURCE_IS_PREHEADER | DEST_IS_BLOCK;
@@ -2520,9 +2520,9 @@ static  induction       *FindReplacement( induction *var )
           ) {
             log2oth = GetLog2( other->times );
             if( ( replacement == NULL )
-             || ( replacement->invar != NULL && other->invar == NULL )
-             || ( log2oth < log2rep )
-             || ( log2oth == log2rep && other->plus < replacement->plus ) ) {
+              || ( replacement->invar != NULL && other->invar == NULL )
+              || ( log2oth < log2rep )
+              || ( log2oth == log2rep && other->plus < replacement->plus ) ) {
                 replacement = other;
                 log2rep = GetLog2( replacement->times );
             }
@@ -2728,14 +2728,14 @@ bool    CalcFinalValue( induction *var, block *blk, instruction *ins,
         if( incr <= 0 )
             return( false );
         if( test <= init )
-            return( false );     // wraps or exits immediately BBB - July, 1996
+            return( false );     // wraps or exits immediately
         *final = test + ( incr - remd );
         break;
     case OP_CMP_GREATER_EQUAL:
         if( incr <= 0 )
             return( false );
         if( test <= init )
-            return( false );     // wraps or exits immediately BBB - July, 1996
+            return( false );     // wraps or exits immediately
         if( remd == 0 ) {
             *final = test;
         } else {
@@ -2746,14 +2746,14 @@ bool    CalcFinalValue( induction *var, block *blk, instruction *ins,
         if( incr >= 0 )
             return( false );
         if( test >= init )
-            return( false );     // wraps or exits immediately BBB - July, 1996
+            return( false );     // wraps or exits immediately
         *final = test + ( incr - remd );
         break;
     case OP_CMP_LESS_EQUAL:
         if( incr >= 0 )
             return( false );
         if( test >= init )
-            return( false );     // wraps or exits immediately BBB - July, 1996
+            return( false );     // wraps or exits immediately
         if( remd == 0 ) {
             *final = test;
         } else {
@@ -3094,7 +3094,10 @@ static  bool    DoLoopInvariant( bool(*rtn)(void) )
 
     change = false;
     max_depth = MaxDepth();
-    for( depth = 1; depth <= max_depth; ++depth ) { /* do loop invariant code motion from the outside in */
+    /*
+     * do loop invariant code motion from the outside in
+     */
+    for( depth = 1; depth <= max_depth; ++depth ) {
         for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
             if( _IsBlkAttr( blk, BLK_LOOP_HEADER )
               && blk->depth == depth ) {
@@ -3176,7 +3179,7 @@ static  bool    FindInvariants( void )
 /*************************************
  * Find any invariant, hoistable expressions in "Loop", and
  * pre-calculate the expression in the loop pre-header, putting the
- * result into a tempory and replaceing the calculation within the loop
+ * result into a tempory and replacing the calculation within the loop
  * with a reference to that temporary.  Also, if there are any
  * invariant operands whose pre-loop values can be calculated,
  * propagate the constant values into the loop.  The copy propagator in
@@ -3268,7 +3271,10 @@ void    LoopEnregister( void )
     level_depth         depth;
     block               *blk;
 
-    for( depth = MaxDepth(); depth >= 1; --depth ) { /* do loop enregistering from the inside out */
+    /*
+     * do loop enregistering from the inside out
+     */
+    for( depth = MaxDepth(); depth >= 1; --depth ) {
         for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
             if( _IsBlkAttr( blk, BLK_LOOP_HEADER )
               && blk->depth == depth ) {

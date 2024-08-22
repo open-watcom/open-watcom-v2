@@ -43,26 +43,32 @@
 
 void    PointEdge( block_edge *edge, block *new_dest )
 /*****************************************************
-    Make edge point to block new_dest
-*/
+ * Make edge point to block new_dest
+ */
 {
-    /* hook edge into new destination's input list*/
+    /*
+     * hook edge into new destination's input list
+     */
     edge->next_source = new_dest->input_edges;
     new_dest->input_edges = edge;
     new_dest->inputs++;
-    /* point edge at new block*/
+    /*
+     * point edge at new block
+     */
     edge->destination.u.blk = new_dest;
 }
 
 void    RemoveEdge( block_edge *edge )
 /*************************************
-    Remove the given edge from it's block.
-*/
+ * Remove the given edge from it's block.
+ */
 {
     block_edge  *curr;
     block_edge  **owner;
 
-    /* unhook edge from its old destination's input list*/
+    /*
+     * unhook edge from its old destination's input list
+     */
     if( edge->flags & DEST_IS_BLOCK ) {
         owner = &edge->destination.u.blk->input_edges;
         for( ;; ) {
@@ -79,8 +85,8 @@ void    RemoveEdge( block_edge *edge )
 
 void    MoveEdge( block_edge *edge, block *new_dest )
 /****************************************************
-    Move edge to point to block new_dest
-*/
+ * Move edge to point to block new_dest
+ */
 {
     RemoveEdge( edge );
     edge->flags = DEST_IS_BLOCK;
@@ -90,10 +96,10 @@ void    MoveEdge( block_edge *edge, block *new_dest )
 
 block   *SplitBlock( block *blk, instruction *ins )
 /**************************************************
-    Split a block in two before the given instruction. The first block
-    will simply jump to the second block, which will receive all the
-    edges from the previous block.
-*/
+ * Split a block in two before the given instruction. The first block
+ * will simply jump to the second block, which will receive all the
+ * edges from the previous block.
+ */
 {
     block       *new_blk;
     block_edge  *edge;
@@ -108,11 +114,11 @@ block   *SplitBlock( block *blk, instruction *ins )
     new_blk->next_block->prev_block = new_blk;
     _MarkBlkAttrClr( blk, BLK_CONDITIONAL | BLK_RETURN | BLK_SELECT | BLK_LOOP_EXIT | BLK_UNKNOWN_DESTINATION );
     _MarkBlkAttrSet( blk, BLK_JUMP );
-    blk->targets = 1;
     _MarkBlkAttrClr( new_blk, BLK_LOOP_HEADER );
     new_blk->inputs = 0;
     new_blk->input_edges = NULL;
     new_blk->id = NO_BLOCK_ID;
+    blk->targets = 1;
     edge = &blk->edge[0];
     edge->flags = DEST_IS_BLOCK;
     edge->source->targets++;
