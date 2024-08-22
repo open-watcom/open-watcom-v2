@@ -446,7 +446,7 @@ void    BGBigLabel( back_handle bck )
     EnLink( bck->lbl, false );
     HaveCurrBlock = true;
     BigLabel();
-    _MarkBlkAttr( CurrBlock, BLK_BIG_LABEL );
+    _MarkBlkAttrSet( CurrBlock, BLK_BIG_LABEL );
 }
 
 

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -203,7 +203,7 @@ bool    CreateBreak( void )
         FreeABlock( exit_blk );
     }
 
-    _MarkBlkAttr( HeadBlock, BLK_BIG_LABEL );
+    _MarkBlkAttrSet( HeadBlock, BLK_BIG_LABEL );
     HaveBreak = true;
 /*
     change any branches to HeadBlock from a block after break_blk into
@@ -234,7 +234,7 @@ bool    CreateBreak( void )
     HeadBlock->label = AskForNewLabel();
     blk->targets = 1;
     _SetBlkAttr( blk, BLK_BIG_LABEL | BLK_JUMP );
-    _MarkBlkAttrNot( HeadBlock, BLK_BIG_LABEL );
+    _MarkBlkAttrClr( HeadBlock, BLK_BIG_LABEL );
     edge = &blk->edge[0];
     edge->flags = DEST_IS_BLOCK;
     edge->destination.u.blk = HeadBlock;

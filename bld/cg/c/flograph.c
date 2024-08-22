@@ -54,7 +54,7 @@ static  void    Irreducable( void )
     block       *blk;
 
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
-        _MarkBlkAttrNot( blk, BLK_ITERATIONS_KNOWN | BLK_LOOP_HEADER );
+        _MarkBlkAttrClr( blk, BLK_ITERATIONS_KNOWN | BLK_LOOP_HEADER );
         blk->loop_head = NULL;
         blk->depth = 1;
     }
@@ -444,7 +444,7 @@ static  void    NestingDepth( void )
                                 if( blk->loop_head == NULL && blk != target ) {
                                     blk->loop_head = target;
                                 }
-                                _MarkBlkAttr( target, BLK_LOOP_HEADER );
+                                _MarkBlkAttrSet( target, BLK_LOOP_HEADER );
                                 change = true;
                                 break;
                             }

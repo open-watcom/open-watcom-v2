@@ -57,7 +57,7 @@ block   *MakeBlock( label_handle label, block_num edges )
     block_edge  *edge;
     block_num   i;
 
-    blk = CGAlloc( sizeof( block ) + ( edges - 1 ) * sizeof( block_edge ) );
+    blk = CGAlloc( BLOCK_SIZE( edges ) );
     blk->next_block = NULL;
     blk->prev_block = NULL;
     blk->label = label;
@@ -186,8 +186,8 @@ void    GenBlock( block_class class, int targets )
     BlockList = CurrBlock;
     CurrBlock->next_block = NULL;
     if( targets > 1 ) {
-        new_blk = CGAlloc( sizeof( block ) + ( targets - 1 ) * sizeof( block_edge ) );
-        Copy( CurrBlock, new_blk, sizeof( block ) );
+        new_blk = CGAlloc( BLOCK_SIZE( targets ) );
+        Copy( CurrBlock, new_blk, BLOCK_SIZE( 1 ) );
         if( CurrBlock->ins.head.next == (instruction *)&CurrBlock->ins ) {
             new_blk->ins.head.next = (instruction *)&new_blk->ins;
             new_blk->ins.head.prev = (instruction *)&new_blk->ins;
@@ -234,8 +234,8 @@ block   *ReGenBlock( block *blk, label_handle lbl )
     block_num   targets;
 
     targets = blk->targets + 1;
-    new_blk = CGAlloc( sizeof( block ) + ( targets - 1 ) * sizeof( block_edge ) );
-    Copy( blk, new_blk, sizeof( block ) + ( targets - 2 ) * sizeof( block_edge ) );
+    new_blk = CGAlloc( BLOCK_SIZE( targets ) );
+    Copy( blk, new_blk, BLOCK_SIZE( targets - 1 ) );
     new_blk->edge[targets - 1].destination.u.lbl = lbl;
     new_blk->edge[targets - 1].flags = 0;
     new_blk->targets = targets;
@@ -414,7 +414,7 @@ bool        FixReturns( void )
             _MarkBlkVisited( blk );
             if( blk->next_block == NULL )
                 return( false );
-            _MarkBlkAttr( blk, BLK_RETURNED_TO );
+            _MarkBlkAttrSet( blk, BLK_RETURNED_TO );
             LinkReturnsParms[0] = blk->next_block->label;
             LinkReturnsParms[1] = blk->edge[0].destination.u.lbl;
             if( !FROM_SR_VALUE( LinkReturns( NULL ), bool ) ) {

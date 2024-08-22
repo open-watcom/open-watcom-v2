@@ -98,7 +98,7 @@ static  void    CheckRefs( conflict_node *conf, block *blk )
         if( _OpIsCall( ins->head.opcode ) &&
            ( (ins->flags.u.call_flags & CALL_WRITES_NO_MEMORY) == 0 ||
                (ins->flags.u.call_flags & CALL_READS_NO_MEMORY) == 0 ) ) {
-            _MarkBlkAttr( blk, BLK_CONTAINS_CALL );
+            _MarkBlkAttrSet( blk, BLK_CONTAINS_CALL );
         }
     }
 }
@@ -217,10 +217,10 @@ static  void    CalculateLoadStore( conflict_node *conf )
     block               *blk;
     data_flow_def       *flow;
 
-    _MarkBlkAllAttrNot( BLK_CONTAINS_CALL | BLK_BLOCK_MARKED | BLK_BLOCK_VISITED );
+    _MarkBlkAllAttrClr( BLK_CONTAINS_CALL | BLK_BLOCK_MARKED | BLK_BLOCK_VISITED );
     blk = HeadBlock;
     if( blk != NULL ) {
-        _MarkBlkAttr( blk, BLK_BIG_LABEL );
+        _MarkBlkAttrSet( blk, BLK_BIG_LABEL );
     }
     _GBitAssign( id, conf->id.out_of_block );
     /* turn on bits before the conflict range */
@@ -273,7 +273,7 @@ static  void    CalculateLoadStore( conflict_node *conf )
             _GBitTurnOff( flow->need_store, id );
         }
     }
-    _MarkBlkAllAttrNot( BLK_CONTAINS_CALL | BLK_BLOCK_MARKED | BLK_BLOCK_VISITED );
+    _MarkBlkAllAttrClr( BLK_CONTAINS_CALL | BLK_BLOCK_MARKED | BLK_BLOCK_VISITED );
 }
 
 

@@ -228,10 +228,10 @@ void    MoveHead( block *old, block *new )
         }
     }
     if( _IsBlkAttr( old, BLK_LOOP_HEADER ) )
-        _MarkBlkAttr( new, BLK_LOOP_HEADER );
+        _MarkBlkAttrSet( new, BLK_LOOP_HEADER );
     if( _IsBlkAttr( old, BLK_ITERATIONS_KNOWN ) )
-        _MarkBlkAttr( new, BLK_ITERATIONS_KNOWN );
-    _MarkBlkAttrNot( old, BLK_LOOP_HEADER | BLK_ITERATIONS_KNOWN );
+        _MarkBlkAttrSet( new, BLK_ITERATIONS_KNOWN );
+    _MarkBlkAttrClr( old, BLK_LOOP_HEADER | BLK_ITERATIONS_KNOWN );
     new->iterations = old->iterations;
     new->loop_head = old->loop_head;
     old->loop_head = new;
@@ -289,7 +289,7 @@ static  void    JoinBlocks( block *jump, block *target )
     label = target->label;
     target->label = jump->label;
     if( _IsBlkAttr( jump, BLK_BIG_LABEL ) )
-        _MarkBlkAttr( target, BLK_BIG_LABEL );
+        _MarkBlkAttrSet( target, BLK_BIG_LABEL );
     jump->label = label;
     line_num = target->ins.head.line_num;
     target->ins.head.line_num = jump->ins.head.line_num;
@@ -354,8 +354,8 @@ static  bool    SameTarget( block *blk )
         return( false );
     if( _IsBlkAttr( targ1, BLK_UNKNOWN_DESTINATION ) || _IsBlkAttr( targ2, BLK_UNKNOWN_DESTINATION ) )
         return( false );
-    _MarkBlkAttrNot( blk, BLK_CONDITIONAL );
-    _MarkBlkAttr( blk, BLK_JUMP );
+    _MarkBlkAttrClr( blk, BLK_CONDITIONAL );
+    _MarkBlkAttrSet( blk, BLK_JUMP );
     RemoveEdge( &blk->edge[1] );
     ins = blk->ins.head.prev;
     while( !_OpIsCondition( ins->head.opcode ) ) {
@@ -439,8 +439,8 @@ void KillCondBlk( block *blk, instruction *ins, byte dest_idx )
 
     RemoveInputEdge( &blk->edge[0] );
     RemoveInputEdge( &blk->edge[1] );
-    _MarkBlkAttrNot( blk, BLK_CONDITIONAL );
-    _MarkBlkAttr( blk, BLK_JUMP );
+    _MarkBlkAttrClr( blk, BLK_CONDITIONAL );
+    _MarkBlkAttrSet( blk, BLK_JUMP );
     blk->targets = 1;
     dest_blk = blk->edge[dest_idx].destination.u.blk;
     edge = &blk->edge[0];

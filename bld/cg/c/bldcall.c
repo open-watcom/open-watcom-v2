@@ -81,7 +81,7 @@ type_class_def  AddCallBlock( cg_sym_handle sym, const type_def *tipe )
     NewProc( FELexLevel( sym ) );
     EnLink( AskForSymLabel( sym, CG_FE ), false );
     CurrProc->label = CurrBlock->label;
-    _MarkBlkAttr( CurrBlock, BLK_BIG_LABEL );
+    _MarkBlkAttrSet( CurrBlock, BLK_BIG_LABEL );
     type_class = InitCallState( tipe );
     AddIns( MakeNop() );
     return( type_class );

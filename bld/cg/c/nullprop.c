@@ -357,7 +357,7 @@ static void     FloodDown( block *blk, block_class bits )
     stk = InitStack();
     for(;;) {
         if( _IsBlkAttr( blk, bits ) ) {
-            _MarkBlkAttr( blk, bits );
+            _MarkBlkAttrSet( blk, bits );
             PushTargets( stk, blk, true );
         }
         if( Empty( stk ) )

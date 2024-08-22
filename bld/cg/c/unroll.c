@@ -121,7 +121,7 @@ block   *DupBlock( block *blk )
 
     copy = MakeBlock( AskForNewLabel(), blk->targets );
     _SetBlkAttr( copy, blk->class );
-    _MarkBlkAttrNot( copy, BLK_LOOP_HEADER | BLK_ITERATIONS_KNOWN );
+    _MarkBlkAttrClr( copy, BLK_LOOP_HEADER | BLK_ITERATIONS_KNOWN );
     copy->id = NO_BLOCK_ID;
     copy->depth = blk->depth;
     copy->gen_id = blk->gen_id;
@@ -1018,7 +1018,7 @@ static  void    MakeWorldGoAround( block *loop, loop_abstract *cleanup_copy, loo
         FreeIns( ins );
         MakeJumpBlock( Head, edge );
         MarkLoopHeader( loop, Head->loop_head );
-        _MarkBlkAttrNot( Head, BLK_LOOP_HEADER | BLK_ITERATIONS_KNOWN );
+        _MarkBlkAttrClr( Head, BLK_LOOP_HEADER | BLK_ITERATIONS_KNOWN );
     } else {
         MoveEdge( &Head->edge[0], cond->loop_edge );
         if( cond->clean ) {
@@ -1030,7 +1030,7 @@ static  void    MakeWorldGoAround( block *loop, loop_abstract *cleanup_copy, loo
             if( loop->edge[0].destination.u.blk == Head ) {
                 block   *blk;
 
-                _MarkBlkAttrNot( Head, BLK_LOOP_HEADER );
+                _MarkBlkAttrClr( Head, BLK_LOOP_HEADER );
                 blk = DupBlock( Head );
                 AddBlocks( loop, blk );
                 MoveEdge( &loop->edge[0], blk );
@@ -1040,7 +1040,7 @@ static  void    MakeWorldGoAround( block *loop, loop_abstract *cleanup_copy, loo
                 for( ;; ) {
                     if( loop->u.loop == Head ) {
                         loop->u.loop = NULL;
-                        _MarkBlkAttr( loop, BLK_LOOP_HEADER );
+                        _MarkBlkAttrSet( loop, BLK_LOOP_HEADER );
                         loop->loop_head = Head->loop_head;
                         MarkLoopHeader( blk, loop );
                         Head = loop;
@@ -1097,11 +1097,11 @@ bool    UnRoll( void )
         MarkHeaderEdges( Loop, Head );
         DupLoop( Loop, &cleanup_copy );
         RedirectHeaderEdges( cleanup_copy.tail, cleanup_copy.head );
-        _MarkBlkAttr( cleanup_copy.head, BLK_LOOP_HEADER | BLK_DONT_UNROLL );
+        _MarkBlkAttrSet( cleanup_copy.head, BLK_LOOP_HEADER | BLK_DONT_UNROLL );
         MarkLoopHeader( cleanup_copy.tail, cleanup_copy.head );
-        _MarkBlkAttr( Head, BLK_IGNORE );
+        _MarkBlkAttrSet( Head, BLK_IGNORE );
         last = DoUnroll( Loop, unroll_count, false );
-        _MarkBlkAttrNot( Head, BLK_IGNORE );
+        _MarkBlkAttrClr( Head, BLK_IGNORE );
         MarkLoopHeader( last, Head );
         MakeWorldGoAround( last, &cleanup_copy, &cond, unroll_count );
         cleanup_copy.head->loop_head = Head->loop_head;
@@ -1112,7 +1112,7 @@ bool    UnRoll( void )
         last = DoUnroll( Loop, Head->unroll_count, false );
         MarkLoopHeader( last, Head );
     }
-    _MarkBlkAttr( Head, BLK_DONT_UNROLL );
+    _MarkBlkAttrSet( Head, BLK_DONT_UNROLL );
     FixBlockIds();
     ClearCopyPtrs( Loop );
     return( true );

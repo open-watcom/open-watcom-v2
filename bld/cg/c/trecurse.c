@@ -191,8 +191,8 @@ static void DoTrans( block *blk, instruction *call_ins )
      * make blk jump to the block after the prologue
      */
     target = HeadBlock->edge[0].destination.u.blk;
-    _MarkBlkAttrNot( blk, BLK_CONDITIONAL | BLK_RETURN | BLK_SELECT );
-    _MarkBlkAttr( blk, BLK_JUMP );
+    _MarkBlkAttrClr( blk, BLK_CONDITIONAL | BLK_RETURN | BLK_SELECT );
+    _MarkBlkAttrSet( blk, BLK_JUMP );
     /*
      * remove blk from the input lists of any blocks which it might have
      * previously gone to

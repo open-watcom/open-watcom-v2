@@ -312,7 +312,7 @@ void     MarkLoop( void )
     Loop = NULL;
     for( other_blk = HeadBlock; other_blk != NULL; other_blk = other_blk->next_block ) {
         if( InLoop( other_blk ) ) {
-            _MarkBlkAttr( other_blk, BLK_IN_LOOP );
+            _MarkBlkAttrSet( other_blk, BLK_IN_LOOP );
             other_blk->u.loop = Loop;
             Loop = other_blk;
         }
@@ -321,7 +321,7 @@ void     MarkLoop( void )
         edge = &other_blk->edge[0];
         for( targets = other_blk->targets; targets > 0; --targets ) {
             if( !_IsBlkAttr( edge->destination.u.blk, BLK_IN_LOOP ) ) {
-                _MarkBlkAttr( other_blk, BLK_LOOP_EXIT );
+                _MarkBlkAttrSet( other_blk, BLK_LOOP_EXIT );
             }
             ++edge;
         }
@@ -338,7 +338,7 @@ void     UnMarkLoop( void )
     block       *blk;
 
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
-        _MarkBlkAttrNot( blk, BLK_IN_LOOP | BLK_LOOP_EXIT );
+        _MarkBlkAttrClr( blk, BLK_IN_LOOP | BLK_LOOP_EXIT );
         blk->u.loop = NULL;
     }
 }
@@ -367,8 +367,8 @@ void     MakeJumpBlock( block *cond_blk, block_edge *exit_edge )
 
     RemoveInputEdge( &cond_blk->edge[0] );
     RemoveInputEdge( &cond_blk->edge[1] );
-    _MarkBlkAttrNot( cond_blk, BLK_CONDITIONAL );
-    _MarkBlkAttr( cond_blk, BLK_JUMP );
+    _MarkBlkAttrClr( cond_blk, BLK_CONDITIONAL );
+    _MarkBlkAttrSet( cond_blk, BLK_JUMP );
     cond_blk->targets = 1;
     edge = &cond_blk->edge[0];
     edge->flags = exit_edge->flags;
@@ -404,10 +404,10 @@ static bool     KillOneTrippers( void )
                     }
                 }
                 if( _IsBlkAttr( blk, BLK_LOOP_HEADER ) ) {
-                    _MarkBlkAttrNot( blk, BLK_LOOP_HEADER );
+                    _MarkBlkAttrClr( blk, BLK_LOOP_HEADER );
                     loop_head = blk;
                 } else {
-                    _MarkBlkAttrNot( blk->loop_head, BLK_LOOP_HEADER );
+                    _MarkBlkAttrClr( blk->loop_head, BLK_LOOP_HEADER );
                     loop_head = blk->loop_head;
                 }
                 for( curr = HeadBlock; curr != NULL; curr = curr->next_block ) {
@@ -2434,7 +2434,7 @@ static  bool    BlueMoonUnRoll( block *cond_blk, induction *var,
         SuffixIns( blk_end, ins );
         blk_end = DupIns( ins, cond, var->name, 0 );
     } else {
-        _MarkBlkAttrNot( cond_blk, BLK_LOOP_HEADER );
+        _MarkBlkAttrClr( cond_blk, BLK_LOOP_HEADER );
         MakeJumpBlock( cond_blk, exit_edge );
         if( know_bounds ) {
             ins = MakeMove( AllocS32Const( final ), var->name,
@@ -2729,7 +2729,7 @@ bool    CalcFinalValue( induction *var, block *blk, instruction *ins,
     }
     if( InstructionWillExec( var->ins ) ) {
         Head->iterations = ( *final - *initial ) / incr;
-        _MarkBlkAttr( Head, BLK_ITERATIONS_KNOWN );
+        _MarkBlkAttrSet( Head, BLK_ITERATIONS_KNOWN );
     }
     return( true );
 }
@@ -3489,8 +3489,8 @@ static  bool    TwistLoop( block_list *header_list, bool unroll )
                 }
             }
 //            DupNoncondInstrs( cond_blk, cond, PreHead );
-            _MarkBlkAttrNot( PreHead, BLK_JUMP );
-            _MarkBlkAttr( PreHead, BLK_CONDITIONAL );
+            _MarkBlkAttrClr( PreHead, BLK_JUMP );
+            _MarkBlkAttrSet( PreHead, BLK_CONDITIONAL );
             dupcond = MakeCondition( cond->head.opcode, cond->operands[0],
                                      cond->operands[1], _TrueIndex( cond ),
                                      _FalseIndex( cond ), cond->type_class );
@@ -3510,8 +3510,8 @@ static  bool    TwistLoop( block_list *header_list, bool unroll )
             }
             new_head->loop_head = Head->loop_head;
             Head->loop_head = new_head;
-            _MarkBlkAttrNot( Head, BLK_LOOP_HEADER );
-            _MarkBlkAttr( new_head, BLK_LOOP_HEADER );
+            _MarkBlkAttrClr( Head, BLK_LOOP_HEADER );
+            _MarkBlkAttrSet( new_head, BLK_LOOP_HEADER );
             Head = new_head;
         }
     }
@@ -3600,9 +3600,9 @@ static  bool    DoInduction( block_list *header, bool reduce, bool unroll )
             MergeVars();
             if( ReduceInStrength() ) {
                 change = true;
-                _MarkBlkAttr( PreHead, BLK_IN_LOOP );
+                _MarkBlkAttrSet( PreHead, BLK_IN_LOOP );
                 LoopInsDead();
-                _MarkBlkAttrNot( PreHead, BLK_IN_LOOP );
+                _MarkBlkAttrClr( PreHead, BLK_IN_LOOP );
             }
             FreeBadVars();
             ElimIndVars();

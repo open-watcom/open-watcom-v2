@@ -445,10 +445,10 @@ static  void    FloodDown( block *from, flood_down_func func, void *parm )
     flood_decision      decision;
     block_edge          *edge;
 
-    _MarkBlkAllAttrNot( BLK_FLOODED );
+    _MarkBlkAllAttrClr( BLK_FLOODED );
     stack = EdgeStackInit();
     PushTargets( stack, from );
-    _MarkBlkAttr( from, BLK_FLOODED );
+    _MarkBlkAttrSet( from, BLK_FLOODED );
     while( !EdgeStackEmpty( stack ) ) {
         edge = EdgeStackPop( stack );
         dest = edge->destination.u.blk;
@@ -459,7 +459,7 @@ static  void    FloodDown( block *from, flood_down_func func, void *parm )
             continue;
         if( decision == STOP )
             break;
-        _MarkBlkAttr( dest, BLK_FLOODED );
+        _MarkBlkAttrSet( dest, BLK_FLOODED );
         PushTargets( stack, dest );
     }
     EdgeStackFini( stack );

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -101,15 +101,15 @@ block   *SplitBlock( block *blk, instruction *ins )
     block_num   i;
 
     new_blk = MakeBlock( AskForNewLabel(), blk->targets );
-    Copy( blk, new_blk, sizeof( block ) + ( sizeof( block_edge ) * ( blk->targets - 1 ) ) );
+    Copy( blk, new_blk, BLOCK_SIZE( blk->targets ) );
     new_blk->next_block = blk->next_block;
     new_blk->prev_block = blk;
     blk->next_block = new_blk;
     new_blk->next_block->prev_block = new_blk;
-    _MarkBlkAttrNot( blk, BLK_CONDITIONAL | BLK_RETURN | BLK_SELECT | BLK_LOOP_EXIT | BLK_UNKNOWN_DESTINATION );
-    _MarkBlkAttr( blk, BLK_JUMP );
+    _MarkBlkAttrClr( blk, BLK_CONDITIONAL | BLK_RETURN | BLK_SELECT | BLK_LOOP_EXIT | BLK_UNKNOWN_DESTINATION );
+    _MarkBlkAttrSet( blk, BLK_JUMP );
     blk->targets = 1;
-    _MarkBlkAttrNot( new_blk, BLK_LOOP_HEADER );
+    _MarkBlkAttrClr( new_blk, BLK_LOOP_HEADER );
     new_blk->inputs = 0;
     new_blk->input_edges = NULL;
     new_blk->id = NO_BLOCK_ID;
