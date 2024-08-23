@@ -79,13 +79,13 @@ jobs:
       matrix:
         include:
         - owtools: 'VISUALC'
-          tools:   'vs2019'
+          tools:   'vs2022'
     uses: "./.github/workflows/cibldnt.yml"
     with:
       arch:         'x64'
       tools:        ${{ matrix.tools }}
       owtools:      ${{ matrix.owtools }}
-      image:        'windows-2019'
+      image:        'windows-2022'
       owdebug:      ${{ vars.OWDEBUG }}
   workflow-osx:
     needs: start-start
@@ -122,7 +122,7 @@ jobs:
     - name: Load all release files
       uses: "./.github/actions/relload"
       with:
-        tools_nt:   'vs2019'
+        tools_nt:   'vs2022'
         tools_lnx:  'gcc'
         tools_osx:  'clang'
         owdebug:    ${{ vars.OWDEBUG }}

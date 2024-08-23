@@ -107,9 +107,20 @@ common_cppflags_nt_x64  = -D__NT_X64__
 ! ifdef __INTEL_TOOLS__
 common_flags_rel = -Ox -Zi -fast
 common_flags_dbg = -Zi -fast
-! else
+! else ifdef __MSVC_TOOLS__
+!  if $(__MSVC_TOOLS__) < 1930
 common_flags_rel = -Ox -Zi
 common_flags_dbg = -Zi
+!  else
+# Visual Studio 2022 and above
+# probably bug, incorrectly inlined code if -Ox option is used
+# -Ob1 option solve the issue
+# hard to debug, I didn't found method to say debugger to work with
+# breakpoints in inlined function code
+# of cause it can be some hidden bug in OW code, but happen with VS2022 only
+common_flags_rel = -Ox -Zi -Ob1
+common_flags_dbg = -Zi -Ob1
+!  endif
 ! endif
 ! ifeq debug 0
 common_flags = $(common_flags_rel)
@@ -226,7 +237,7 @@ bld_clflags  = $(bld_cl_sys) -Fe$@ $(bld_ldflags1)
 bld_cclflags = $(bld_cflags) $(bld_clflags)
 
 # options for linking
-bld_ldflags  =  $(bld_cl_extra_libs_gen) -link -nologo &
+bld_ldflags  =  $(bld_cl_extra_libs_gen) -link -nologo -debug -DYNAMICBASE:NO &
     -MAPINFO:EXPORTS -INCREMENTAL:NO -DEFAULTLIB:user32.lib -DEFAULTLIB:ole32.lib &
     -DEFAULTLIB:advapi32.lib -DEFAULTLIB:shell32.lib -DEFAULTLIB:gdi32.lib -DEFAULTLIB:comdlg32.lib &
     -NODEFAULTLIB:libucrt.lib -DEFAULTLIB:ucrt.lib &
@@ -269,7 +280,7 @@ cflags_wind = $(cflags_gen)
 # options for linking
 ldflags1 = $(common_ldflags) -Fm
 
-ldflags_gen_all  = -link -nologo &
+ldflags_gen_all  = -link -nologo -debug -DYNAMICBASE:NO &
     -INCREMENTAL:NO -DEFAULTLIB:user32.lib -DEFAULTLIB:ole32.lib -DEFAULTLIB:advapi32.lib &
     -DEFAULTLIB:shell32.lib -DEFAULTLIB:gdi32.lib -DEFAULTLIB:comdlg32.lib &
     -NODEFAULTLIB:libucrt.lib -DEFAULTLIB:ucrt.lib
