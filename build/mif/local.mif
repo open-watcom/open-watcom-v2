@@ -237,7 +237,7 @@ bld_clflags  = $(bld_cl_sys) -Fe$@ $(bld_ldflags1)
 bld_cclflags = $(bld_cflags) $(bld_clflags)
 
 # options for linking
-bld_ldflags  =  $(bld_cl_extra_libs_gen) -link -nologo -debug -DYNAMICBASE:NO &
+bld_ldflags  =  $(bld_cl_extra_libs_gen) -link -nologo &
     -MAPINFO:EXPORTS -INCREMENTAL:NO -DEFAULTLIB:user32.lib -DEFAULTLIB:ole32.lib &
     -DEFAULTLIB:advapi32.lib -DEFAULTLIB:shell32.lib -DEFAULTLIB:gdi32.lib -DEFAULTLIB:comdlg32.lib &
     -NODEFAULTLIB:libucrt.lib -DEFAULTLIB:ucrt.lib &
@@ -280,7 +280,7 @@ cflags_wind = $(cflags_gen)
 # options for linking
 ldflags1 = $(common_ldflags) -Fm
 
-ldflags_gen_all  = -link -nologo -debug -DYNAMICBASE:NO &
+ldflags_gen_all  = -link -nologo &
     -INCREMENTAL:NO -DEFAULTLIB:user32.lib -DEFAULTLIB:ole32.lib -DEFAULTLIB:advapi32.lib &
     -DEFAULTLIB:shell32.lib -DEFAULTLIB:gdi32.lib -DEFAULTLIB:comdlg32.lib &
     -NODEFAULTLIB:libucrt.lib -DEFAULTLIB:ucrt.lib
