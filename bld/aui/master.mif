@@ -26,9 +26,9 @@ additional_clean += *.dlg
 #
 # cflags
 #
-.c: .;../c;$(posix_dir)/misc
+.c: .;../c
 
-inc_dirs = -I. -I"../h" $(cli_aui_inc_dirs) -I"$(posix_dir)/h"
+inc_dirs = -I. -I"../h" $(cli_aui_inc_dirs)
 
 extra_c_flags_i86 = -zc
 extra_c_flags_nov = -4s -ot
@@ -38,6 +38,9 @@ extra_c_flags_os2_i86 = -zu
 !endif
 extra_c_flags_win_i86 = -zW
 extra_c_flags_win_386 = -zw
+
+extra_c_flags_rxwrap = -I"$(posix_dir)/h" -I"$(posix_dir)/misc"
+extra_c_flags_wndsrch = -I"$(posix_dir)/h"
 
 # explicit rules
 #################

@@ -29,9 +29,9 @@ bld_cl_extra_objs_gen = clibext.obj
 !endif
 !endif
 
-inc_dirs = -I"../h" -I"$(pmake_dir)" -I"$(posix_dir)/h"
+inc_dirs = -I"../h" -I"$(pmake_dir)"
 
-.c : ../c;$(pmake_dir);$(posix_dir)/misc;$(watcom_dir)/c;$(trmem_dir)
+.c : ../c;$(pmake_dir);$(watcom_dir)/c;$(trmem_dir)
 
 builder_sys_objs_dos  = sysdos.obj
 builder_sys_objs_nt   = sysnt.obj
