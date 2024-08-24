@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,9 +33,9 @@
 #define OP2HDL(x)   ((drmem_hdl)(pointer_uint)(x))
 #define HDL2OP(x)   ((stack_op)(pointer_uint)(x))
 
-#define DWRContextOP(x,y)       HDL2OP(DWRContext(x,y))
-#define DWRContextPushOP(x,y)   DWRContextPush(x,OP2HDL(y))
-#define DWRContextPopOP(x)      HDL2OP(DWRContextPop(x))
+#define DR_ContextOP(x,y)       HDL2OP(DR_Context(x,y))
+#define DR_ContextPushOP(x,y)   DR_ContextPush(x,OP2HDL(y))
+#define DR_ContextPopOP(x)      HDL2OP(DR_ContextPop(x))
 
 /* data types */
 
@@ -46,15 +46,15 @@ typedef enum {
 } stack_op;
 
 typedef enum {
-    DWR_FORMCL_address,
-    DWR_FORMCL_block,
-    DWR_FORMCL_data,
-    DWR_FORMCL_flag,
-    DWR_FORMCL_ref,
-    DWR_FORMCL_ref_addr,
-    DWR_FORMCL_string,
-    DWR_FORMCL_indirect,
-} dwr_formcl;
+    DR_FORMCL_address,
+    DR_FORMCL_block,
+    DR_FORMCL_data,
+    DR_FORMCL_flag,
+    DR_FORMCL_ref,
+    DR_FORMCL_ref_addr,
+    DR_FORMCL_string,
+    DR_FORMCL_indirect,
+} dr_formcl;
 
 typedef struct {
     drmem_hdl               handle;     // original handle
@@ -62,49 +62,49 @@ typedef struct {
     unsigned                tag;        // the actual tag.
 } mod_scan_info;
 
-typedef bool (*DWRCUWLK)( drmem_hdl, drmem_hdl, mod_scan_info *, void * );
-typedef bool (*DWRCHILDCB)( drmem_hdl, drmem_hdl, void * );
+typedef bool (*DR_CUWLK)( drmem_hdl, drmem_hdl, mod_scan_info *, void * );
+typedef bool (*DR_CHILDCB)( drmem_hdl, drmem_hdl, void * );
 
 /* function prototypes */
-extern long         DWRInfoLength( drmem_hdl  );
-extern bool         DWRScanCompileUnit( dr_search_context *, DWRCUWLK, const dw_tagnum *, dr_depth, void * );
-extern void         DWRAllChildren( drmem_hdl, DWRCHILDCB, void * );
-extern void         DWRSkipForm( drmem_hdl *, dw_formnum );
-extern unsigned_32  DWRReadConstant( drmem_hdl, drmem_hdl );
+extern long         DR_InfoLength( drmem_hdl  );
+extern bool         DR_ScanCompileUnit( dr_search_context *, DR_CUWLK, const dw_tagnum *, dr_depth, void * );
+extern void         DR_AllChildren( drmem_hdl, DR_CHILDCB, void * );
+extern void         DR_SkipForm( drmem_hdl *, dw_formnum );
+extern unsigned_32  DR_ReadConstant( drmem_hdl, drmem_hdl );
 extern unsigned_32  ReadConst( dw_formnum form, drmem_hdl  );
-extern drmem_hdl    DWRReadReference( drmem_hdl, drmem_hdl );
-extern unsigned_32  DWRReadAddr( drmem_hdl, drmem_hdl );
-extern char         *DWRReadString( drmem_hdl, drmem_hdl );
-extern unsigned_32  DWRReadInt( drmem_hdl where, unsigned size );
-extern int          DWRReadFlag( drmem_hdl, drmem_hdl );
-extern char         *DWRCopyDbgSecString( drmem_hdl *, unsigned_32 offset );
-extern bool         DWRScanForAttrib( drmem_hdl *, drmem_hdl *, dw_atnum );
-extern bool         DWRSearchArray( const dw_tagnum *, dw_tagnum );
-extern unsigned     DWRGetAddrSize( drmem_hdl );
-extern drmem_hdl    DWRSkipTag( drmem_hdl * );
-extern dw_tagnum    DWRGetTag( drmem_hdl entry );
-extern dw_tagnum    DWRReadTag( drmem_hdl *entry, drmem_hdl *abbrev );
-extern bool         DWRReadTagEnd( drmem_hdl *entry, drmem_hdl *abbrev, dw_tagnum * );
-extern void         DWRGetCompileUnitHdr( drmem_hdl, DWRCUWLK, void * );
-extern char         *DWRGetName( drmem_hdl, drmem_hdl );
-extern void         DWRSkipChildren( drmem_hdl *, drmem_hdl * );
-extern void         DWRSkipAttribs( drmem_hdl, drmem_hdl * );
-extern void         DWRSkipRest( drmem_hdl, drmem_hdl * );
-extern drmem_hdl    DWRFindCompileUnit( drmem_hdl );
-extern compunit_info *DWRFindCompileInfo( drmem_hdl );
-extern bool         DWRScanAllCompileUnits( dr_search_context *, DWRCUWLK, const dw_tagnum *, dr_depth, void * );
-extern bool         DWRWalkCompileUnit( drmem_hdl, DWRCUWLK, const dw_tagnum *, dr_depth , void * );
+extern drmem_hdl    DR_ReadReference( drmem_hdl, drmem_hdl );
+extern unsigned_32  DR_ReadAddr( drmem_hdl, drmem_hdl );
+extern char         *DR_ReadString( drmem_hdl, drmem_hdl );
+extern unsigned_32  DR_ReadInt( drmem_hdl where, unsigned size );
+extern int          DR_ReadFlag( drmem_hdl, drmem_hdl );
+extern char         *DR_CopyDbgSecString( drmem_hdl *, unsigned_32 offset );
+extern bool         DR_ScanForAttrib( drmem_hdl *, drmem_hdl *, dw_atnum );
+extern bool         DR_SearchArray( const dw_tagnum *, dw_tagnum );
+extern unsigned     DR_GetAddrSize( drmem_hdl );
+extern drmem_hdl    DR_SkipTag( drmem_hdl * );
+extern dw_tagnum    DR_GetTag( drmem_hdl entry );
+extern dw_tagnum    DR_ReadTag( drmem_hdl *entry, drmem_hdl *abbrev );
+extern bool         DR_ReadTagEnd( drmem_hdl *entry, drmem_hdl *abbrev, dw_tagnum * );
+extern void         DR_GetCompileUnitHdr( drmem_hdl, DR_CUWLK, void * );
+extern char         *DR_GetName( drmem_hdl, drmem_hdl );
+extern void         DR_SkipChildren( drmem_hdl *, drmem_hdl * );
+extern void         DR_SkipAttribs( drmem_hdl, drmem_hdl * );
+extern void         DR_SkipRest( drmem_hdl, drmem_hdl * );
+extern drmem_hdl    DR_FindCompileUnit( drmem_hdl );
+extern compunit_info *DR_FindCompileInfo( drmem_hdl );
+extern bool         DR_ScanAllCompileUnits( dr_search_context *, DR_CUWLK, const dw_tagnum *, dr_depth, void * );
+extern bool         DR_WalkCompileUnit( drmem_hdl, DR_CUWLK, const dw_tagnum *, dr_depth , void * );
 
-extern bool         DWRWalkChildren( drmem_hdl mod, const dw_tagnum *tags, const DRWLKBLK *wlks, void *d );
-extern bool         DWRWalkContaining( drmem_hdl mod, drmem_hdl target, DRWLKBLK wlk, void *d );
-extern bool         DWRWalkSiblings( drmem_hdl curr, const dw_tagnum *tags, const DRWLKBLK *wlks, void *d );
-extern bool         DWRWalkScope( drmem_hdl mod, const dw_tagnum *tags, DRWLKBLK wlk, void *d );
-extern void         DWRContextPush( dr_context_stack *, drmem_hdl );
-extern drmem_hdl    DWRContextPop( dr_context_stack * );
-extern drmem_hdl    DWRContext( dr_context_stack *stack, int up );
-extern void         DWRFreeContextStack( dr_context_stack * );
+extern bool         DR_WalkChildren( drmem_hdl mod, const dw_tagnum *tags, const DRWLKBLK *wlks, void *d );
+extern bool         DR_WalkContaining( drmem_hdl mod, drmem_hdl target, DRWLKBLK wlk, void *d );
+extern bool         DR_WalkSiblings( drmem_hdl curr, const dw_tagnum *tags, const DRWLKBLK *wlks, void *d );
+extern bool         DR_WalkScope( drmem_hdl mod, const dw_tagnum *tags, DRWLKBLK wlk, void *d );
+extern void         DR_ContextPush( dr_context_stack *, drmem_hdl );
+extern drmem_hdl    DR_ContextPop( dr_context_stack * );
+extern drmem_hdl    DR_Context( dr_context_stack *stack, int up );
+extern void         DR_FreeContextStack( dr_context_stack * );
 
-extern dwr_formcl   DWRFormClass( dw_formnum form );
+extern dr_formcl    DR_FormClass( dw_formnum form );
 
 /* data declarations */
 extern const dw_tagnum * const SearchTypes[];

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -63,30 +63,30 @@ void DRENTRY DRKidsSearch( drmem_hdl clhandle, dr_search search, void *data, DRC
     int             index;
     char            *name;
 
-    if( DWRReadTagEnd( &tmp_entry, &abbrev, &tag ) ) {
+    if( DR_ReadTagEnd( &tmp_entry, &abbrev, &tag ) ) {
         return;
     }
-    has_kids = DWRVMReadByte( abbrev );
+    has_kids = DR_VMReadByte( abbrev );
     abbrev++;
     if( !has_kids ) {
         return;
     }
 
-    DWRSkipAttribs( abbrev, &tmp_entry );
+    DR_SkipAttribs( abbrev, &tmp_entry );
 
     newentry = tmp_entry;                       /* alway point to start of die */
-    while( !DWRReadTagEnd( &tmp_entry, &abbrev, &tag ) ) {
-        has_kids = DWRVMReadByte( abbrev );
+    while( !DR_ReadTagEnd( &tmp_entry, &abbrev, &tag ) ) {
+        has_kids = DR_VMReadByte( abbrev );
         abbrev++;
-        if( DWRSearchArray( SearchTypes[search], tag ) ) {
+        if( DR_SearchArray( SearchTypes[search], tag ) ) {
             symtype = DR_SYM_NOT_SYM;
             for( index = 0; index < DR_SYM_NOT_SYM; index++ ) {
-                if( DWRSearchArray( SearchTags[index], tag ) ) {
+                if( DR_SearchArray( SearchTags[index], tag ) ) {
                     symtype = index;
                     break;
                 }
             }
-            name = DWRGetName( abbrev, tmp_entry );
+            name = DR_GetName( abbrev, tmp_entry );
             if( !callback( symtype, newentry, name, prt, data ) ) {
                 break;
             }
@@ -95,9 +95,9 @@ void DRENTRY DRKidsSearch( drmem_hdl clhandle, dr_search search, void *data, DRC
         /* NYI - DW_TAG_lexical_block only one? */
 
         if( has_kids && tag != DW_TAG_lexical_block ) {
-            DWRSkipChildren( &abbrev, &tmp_entry );
+            DR_SkipChildren( &abbrev, &tmp_entry );
         } else {
-            DWRSkipAttribs( abbrev, &tmp_entry );
+            DR_SkipAttribs( abbrev, &tmp_entry );
         }
         newentry = tmp_entry;                   /* alway point to start of die */
     }
@@ -120,29 +120,29 @@ static bool baseHook( dr_sym_type notused1, drmem_hdl handle,
     /* unused parameters */ (void)notused1; (void)notused2;
 
     if( name != NULL ) {
-        DWRFREE( name );
+        DR_FREE( name );
     }
 
     tmp_entry = handle;
-    if( DWRReadTagEnd( &tmp_entry, &abbrev, &tag ) )
+    if( DR_ReadTagEnd( &tmp_entry, &abbrev, &tag ) )
         return( true );
     abbrev++;   /* skip child flag */
 
-    if( DWRScanForAttrib( &abbrev, &tmp_entry, DW_AT_type ) ) {
-        basehandle = DWRReadReference( abbrev, tmp_entry );
+    if( DR_ScanForAttrib( &abbrev, &tmp_entry, DW_AT_type ) ) {
+        basehandle = DR_ReadReference( abbrev, tmp_entry );
         tmp_entry = basehandle;
-        if( DWRReadTagEnd( &tmp_entry, &abbrev, &tag ) )
+        if( DR_ReadTagEnd( &tmp_entry, &abbrev, &tag ) )
             return( true );
         abbrev++;   /* skip child flag */
 
         symtype = DR_SYM_NOT_SYM;
         for( index = 0; index < DR_SYM_NOT_SYM; index++ ) {
-            if( DWRSearchArray( SearchTags[index], tag ) ) {
+            if( DR_SearchArray( SearchTags[index], tag ) ) {
                 symtype = index;
                 break;
             }
         }
-        basename = DWRGetName( abbrev, tmp_entry );
+        basename = DR_GetName( abbrev, tmp_entry );
         return( binfo->callback( symtype, basehandle, basename, handle, binfo->data ) );
     }
     return( true );
@@ -168,23 +168,23 @@ static bool CheckEntry( drmem_hdl abbrev, drmem_hdl handle, mod_scan_info *minfo
     drmem_hdl       tmp_entry = handle;
     dw_tagnum       tag;
 
-    if( DWRScanForAttrib( &tmp_abbrev, &tmp_entry, DW_AT_type ) ) {
-        ref = DWRReadReference( tmp_abbrev, tmp_entry );
+    if( DR_ScanForAttrib( &tmp_abbrev, &tmp_entry, DW_AT_type ) ) {
+        ref = DR_ReadReference( tmp_abbrev, tmp_entry );
         if( ref == sinfo->parent ) {
             tmp_entry = minfo->context->classhdl;
-            if( DWRReadTagEnd( &tmp_entry, &tmp_abbrev, &tag ) )
-                DWREXCEPT( DREXCEP_BAD_DBG_INFO );
+            if( DR_ReadTagEnd( &tmp_entry, &tmp_abbrev, &tag ) )
+                DR_EXCEPT( DREXCEP_BAD_DBG_INFO );
             tmp_abbrev++;   /* skip child flag */
 
             symtype = DR_SYM_NOT_SYM;
             for( index = 0; index < DR_SYM_NOT_SYM; index++ ) {
-                if( DWRSearchArray( SearchTags[index], tag ) ) {
+                if( DR_SearchArray( SearchTags[index], tag ) ) {
                     symtype = index;
                     break;
                 }
             }
             sinfo->callback( symtype, minfo->context->classhdl,
-                             DWRGetName( tmp_abbrev, tmp_entry ),
+                             DR_GetName( tmp_abbrev, tmp_entry ),
                              minfo->handle, sinfo->data );
         }
     }
@@ -207,10 +207,10 @@ void DRENTRY DRDerivedSearch( drmem_hdl handle, void *data, DRCLSSRCH callback )
     info.data = data;
     info.parent = handle;
 
-    compunit = DWRFindCompileInfo( handle );
+    compunit = DR_FindCompileInfo( handle );
     ctxt.compunit = compunit;
     ctxt.start = compunit->start;
-    ctxt.end = compunit->start + DWRVMReadDWord( compunit->start );
+    ctxt.end = compunit->start + DR_VMReadDWord( compunit->start );
     ctxt.start += sizeof( compuhdr_prologue );
     ctxt.classhdl    = DRMEM_HDL_NULL;
     ctxt.functionhdl = DRMEM_HDL_NULL;
@@ -218,8 +218,8 @@ void DRENTRY DRDerivedSearch( drmem_hdl handle, void *data, DRCLSSRCH callback )
     ctxt.stack.free  = 0;
     ctxt.stack.stack = NULL;
 
-    DWRScanCompileUnit( &ctxt, CheckEntry, inh_lst, DR_DEPTH_CLASSES, &info );
-    DWRFreeContextStack( &ctxt.stack );
+    DR_ScanCompileUnit( &ctxt, CheckEntry, inh_lst, DR_DEPTH_CLASSES, &info );
+    DR_FreeContextStack( &ctxt.stack );
 }
 
 static bool friendHook( dr_sym_type st, drmem_hdl handle, char *name,
@@ -235,12 +235,12 @@ static bool friendHook( dr_sym_type st, drmem_hdl handle, char *name,
     FriendInfo  *info;
 
     info = (FriendInfo *)data;
-    DWRFREE( name );
+    DR_FREE( name );
 
     entry = handle;
-    abbrev = DWRSkipTag( &entry ) + 1;
-    if( DWRScanForAttrib( &abbrev, &entry, DW_AT_friend ) ) {
-        friend_han = DWRReadReference( abbrev, entry );
+    abbrev = DR_SkipTag( &entry ) + 1;
+    if( DR_ScanForAttrib( &abbrev, &entry, DW_AT_friend ) ) {
+        friend_han = DR_ReadReference( abbrev, entry );
         name = DRGetName( friend_han );
         st = DRGetSymType( friend_han );
 
@@ -266,9 +266,9 @@ dr_sym_type DRENTRY DRGetSymType( drmem_hdl entry )
     int             index;
     dw_tagnum       tag;
 
-    tag = DWRGetTag( entry );
+    tag = DR_GetTag( entry );
     for( index = 0; index < DR_SYM_NOT_SYM; index++ ) {
-        if( DWRSearchArray( SearchTags[index], tag ) ) {
+        if( DR_SearchArray( SearchTags[index], tag ) ) {
             symtype = index;
             break;
         }

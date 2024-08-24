@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,7 +34,7 @@
 #include "drutils.h"
 
 
-static bool   DWRGetConstAT( drmem_hdl abbrev, drmem_hdl info,
+static bool   DR_GetConstAT( drmem_hdl abbrev, drmem_hdl info,
                                                dw_atnum at,
                                                unsigned_32  *where )
 /******************************************************************/
@@ -47,22 +47,22 @@ static bool   DWRGetConstAT( drmem_hdl abbrev, drmem_hdl info,
 
     ret = false;
     for( ;; ) {
-        attrib = DWRVMReadULEB128( &abbrev );
+        attrib = DR_VMReadULEB128( &abbrev );
         if( attrib == at )
             break;
-        form = DWRVMReadULEB128( &abbrev );
+        form = DR_VMReadULEB128( &abbrev );
         if( attrib == 0 )
             break;
-        DWRSkipForm( &info, form );
+        DR_SkipForm( &info, form );
     }
     if( attrib != 0 ) {
-        *where = DWRReadConstant( abbrev, info );
+        *where = DR_ReadConstant( abbrev, info );
         ret = true;
     }
     return( ret );
 }
 
-static int DWRGetAT( drmem_hdl abbrev, drmem_hdl  info,
+static int DR_GetAT( drmem_hdl abbrev, drmem_hdl  info,
                      dr_val32  *vals, const dw_atnum *at )
 /********************************************************/
 /* look for a specific attribute in the list of attributes */
@@ -71,7 +71,7 @@ static int DWRGetAT( drmem_hdl abbrev, drmem_hdl  info,
     dw_atnum    attrib;
     dw_formnum  form;
     uint_16     index;
-    dwr_formcl  formcl;
+    dr_formcl   formcl;
     uint_32     value;
     int         count;
     int         max;
@@ -82,28 +82,28 @@ static int DWRGetAT( drmem_hdl abbrev, drmem_hdl  info,
     }
     max = index;
     for( ;; ) {
-        attrib = DWRVMReadULEB128( &abbrev );
+        attrib = DR_VMReadULEB128( &abbrev );
         if( attrib == 0 )
             break;
-        form = DWRVMReadULEB128( &abbrev );
+        form = DR_VMReadULEB128( &abbrev );
         for( index = 0; index < max; ++index ) {
             if( attrib == at[index] ) {
                 ++count;
                 if( form == DW_FORM_indirect ) {
-                    form = DWRVMReadULEB128( &info );
+                    form = DR_VMReadULEB128( &info );
                 }
-                formcl = DWRFormClass( form );
+                formcl = DR_FormClass( form );
                 value = ReadConst( form, info );
-                if( formcl == DWR_FORMCL_data ) {
+                if( formcl == DR_FORMCL_data ) {
                     vals[index].val_class = DR_VAL_INT;
                     vals[index].val.s = value;
                 } else {
                     vals[index].val_class = DR_VAL_REF;
-                    vals[index].val.ref = DWRFindCompileUnit( info ) + value;
+                    vals[index].val.ref = DR_FindCompileUnit( info ) + value;
                 }
             }
         }
-        DWRSkipForm( &info, form );
+        DR_SkipForm( &info, form );
     }
     return( count );
 }
@@ -123,8 +123,8 @@ void DRENTRY DRGetSubrangeInfo( drmem_hdl sub, dr_subinfo *info )
     drmem_hdl       abbrev;
     dr_val32        vals[3];
 
-    abbrev = DWRSkipTag( &sub ) + 1;
-    DWRGetAT( abbrev, sub, vals, SubATList );
+    abbrev = DR_SkipTag( &sub ) + 1;
+    DR_GetAT( abbrev, sub, vals, SubATList );
     info->low = vals[0];
     info->high = vals[1];
     info->count = vals[2];
@@ -144,8 +144,8 @@ int DRENTRY DRGetBitFieldInfo( drmem_hdl mem, dr_bitfield *info )
     dr_val32        vals[3];
     int             count;
 
-    abbrev = DWRSkipTag( &mem ) + 1;
-    count =  DWRGetAT( abbrev, mem, vals, BitATList );
+    abbrev = DR_SkipTag( &mem ) + 1;
+    count =  DR_GetAT( abbrev, mem, vals, BitATList );
     info->byte_size = vals[0];
     info->bit_offset = vals[1];
     info->bit_size = vals[2];
@@ -176,7 +176,7 @@ bool DRENTRY DRGetTypeInfo( drmem_hdl entry, dr_typeinfo *info )
             info->modifier.sign = false;
             return( true );
         }
-        tag = DWRReadTag( &entry, &abbrev );
+        tag = DR_ReadTag( &entry, &abbrev );
         abbrev++;   /* skip child flag */
         switch( tag ) {
         case DW_TAG_array_type:
@@ -247,15 +247,15 @@ bool DRENTRY DRGetTypeInfo( drmem_hdl entry, dr_typeinfo *info )
         }
         curr_ab = abbrev;
         curr_ent = entry;
-        if( DWRScanForAttrib( &curr_ab, &curr_ent, DW_AT_type ) ) {
-            entry = DWRReadReference( curr_ab, curr_ent );
+        if( DR_ScanForAttrib( &curr_ab, &curr_ent, DW_AT_type ) ) {
+            entry = DR_ReadReference( curr_ab, curr_ent );
         } else {
             goto error;
         }
     }end_loop:;
     info->kind = kind;
     if( info->mclass != DR_MOD_ADDR ) {
-        if( DWRGetConstAT( abbrev, entry, DW_AT_byte_size, &value ) ) {
+        if( DR_GetConstAT( abbrev, entry, DW_AT_byte_size, &value ) ) {
             info->size =  value;
         } else {
             info->size = 0;
@@ -263,7 +263,7 @@ bool DRENTRY DRGetTypeInfo( drmem_hdl entry, dr_typeinfo *info )
     }
     switch( info->mclass ) {
     case DR_MOD_BASE:
-        if( DWRGetConstAT( abbrev, entry, DW_AT_encoding, &value ) ) {
+        if( DR_GetConstAT( abbrev, entry, DW_AT_encoding, &value ) ) {
             switch( value ) {
             case DW_ATE_address:
                 info->kind = DR_TYPEK_ADDRESS;
@@ -303,12 +303,12 @@ bool DRENTRY DRGetTypeInfo( drmem_hdl entry, dr_typeinfo *info )
         }
         break;
     case DR_MOD_ADDR:
-        if( !DWRGetConstAT( abbrev, entry, DW_AT_address_class, &value ) ) {
+        if( !DR_GetConstAT( abbrev, entry, DW_AT_address_class, &value ) ) {
             value = DW_ADDR_none;
         }
         switch( value ) {
         case DW_ADDR_none:
-            info->size = DWRGetAddrSize( DWRFindCompileUnit( entry ) );
+            info->size = DR_GetAddrSize( DR_FindCompileUnit( entry ) );
             info->modifier.ptr = DR_PTR_none;
             break;
         case DW_ADDR_near16:
@@ -348,9 +348,9 @@ dr_ptr DRENTRY DRGetAddrClass( drmem_hdl entry )
     dr_ptr      ret;
     dw_addr     value;
 
-    abbrev = DWRSkipTag( &entry ) + 1;
-    if( DWRScanForAttrib( &abbrev, &entry, DW_AT_address_class ) ) {
-        value = (dw_addr)DWRReadConstant( abbrev, entry );
+    abbrev = DR_SkipTag( &entry ) + 1;
+    if( DR_ScanForAttrib( &abbrev, &entry, DW_AT_address_class ) ) {
+        value = (dw_addr)DR_ReadConstant( abbrev, entry );
     } else {
         value = DW_ADDR_none;
     }
@@ -386,10 +386,10 @@ drmem_hdl DRENTRY DRGetTypeAT( drmem_hdl entry )
     drmem_hdl   abbrev;
     drmem_hdl   type;
 
-    abbrev = DWRSkipTag( &entry ) + 1;
+    abbrev = DR_SkipTag( &entry ) + 1;
     type = DRMEM_HDL_NULL;
-    if( DWRScanForAttrib( &abbrev, &entry, DW_AT_type ) ) {
-        type = DWRReadReference( abbrev, entry );
+    if( DR_ScanForAttrib( &abbrev, &entry, DW_AT_type ) ) {
+        type = DR_ReadReference( abbrev, entry );
     }
     return( type );
 }
@@ -403,27 +403,27 @@ dr_array_stat DRENTRY DRGetArrayInfo( drmem_hdl entry, dr_array_info *info )
     dw_children     haschild;
 
     stat = DR_ARRAY_NONE;
-    abbrev = DWRSkipTag( &entry );  /* skip tag */
-    haschild = DWRVMReadByte( abbrev );
+    abbrev = DR_SkipTag( &entry );  /* skip tag */
+    haschild = DR_VMReadByte( abbrev );
     abbrev++;
-    if( DWRGetConstAT( abbrev, entry, DW_AT_ordering, &value ) ) {
+    if( DR_GetConstAT( abbrev, entry, DW_AT_ordering, &value ) ) {
         info->ordering = value;
         stat |= DR_ARRAY_ORDERING;
     }
-    if( DWRGetConstAT( abbrev, entry, DW_AT_byte_size, &value ) ) {
+    if( DR_GetConstAT( abbrev, entry, DW_AT_byte_size, &value ) ) {
         info->byte_size = value;
         stat |= DR_ARRAY_BYTE_SIZE;
     }
-    if( DWRGetConstAT( abbrev, entry, DW_AT_stride_size, &value ) ) {
+    if( DR_GetConstAT( abbrev, entry, DW_AT_stride_size, &value ) ) {
         info->stride_size = value;
         stat |= DR_ARRAY_STRIDE_SIZE;
     }
-    if( DWRGetConstAT( abbrev, entry, DW_AT_count, &value ) ) {
+    if( DR_GetConstAT( abbrev, entry, DW_AT_count, &value ) ) {
         info->count = value;
         stat |= DR_ARRAY_COUNT;
     }
     if( haschild == DW_CHILDREN_yes ) {
-        DWRSkipAttribs( abbrev, &entry );
+        DR_SkipAttribs( abbrev, &entry );
         info->child = entry;
     } else {
         info->child = DRMEM_HDL_NULL;
@@ -442,7 +442,7 @@ drmem_hdl DRENTRY DRSkipTypeChain( drmem_hdl tref )
 
     for( ;; ) {
         entry = tref;
-        tag = DWRReadTag( &entry, &abbrev );
+        tag = DR_ReadTag( &entry, &abbrev );
         abbrev++;   /* skip child flag */
         switch( tag ) {
         case DW_TAG_const_type:
@@ -453,8 +453,8 @@ drmem_hdl DRENTRY DRSkipTypeChain( drmem_hdl tref )
         default:
             goto end_loop;
         }
-        if( DWRScanForAttrib( &abbrev, &entry, DW_AT_type ) ) {
-            entry = DWRReadReference( abbrev, entry );
+        if( DR_ScanForAttrib( &abbrev, &entry, DW_AT_type ) ) {
+            entry = DR_ReadReference( abbrev, entry );
             tref = entry;
         } else {
             tref = DRMEM_HDL_NULL;
@@ -473,7 +473,7 @@ bool DRENTRY DRWalkStruct( drmem_hdl mod, const DRWLKBLK *wlks, void *d )
  * wlks[0] == member func, wlks[1] inherit func, wlks[2] default
  */
 {
-    return( DWRWalkChildren( mod, MemTag, wlks, d ) );
+    return( DR_WalkChildren( mod, MemTag, wlks, d ) );
 }
 
 static const dw_tagnum ArrayTag[DR_WLKBLK_ARRSIB] = {
@@ -485,7 +485,7 @@ bool DRENTRY DRWalkArraySibs( drmem_hdl mod, const DRWLKBLK *wlks, void *d )
  * wlks[0] == subrange [1] = enumerator , 0 = Null
  */
 {
-    return( DWRWalkSiblings( mod, ArrayTag, wlks, d ) );
+    return( DR_WalkSiblings( mod, ArrayTag, wlks, d ) );
 }
 
 static const dw_tagnum EnumTag[DR_WLKBLK_ENUMS] = {
@@ -501,7 +501,7 @@ bool DRENTRY DRWalkEnum( drmem_hdl mod,  DRWLKBLK wlk, void *d )
 
     wlks[0] = wlk;
     wlks[1] = NULL;
-    return( DWRWalkChildren( mod, EnumTag, wlks, d ) );
+    return( DR_WalkChildren( mod, EnumTag, wlks, d ) );
 }
 
 bool DRENTRY DRConstValAT( drmem_hdl var, uint_32 *ret )
@@ -510,18 +510,18 @@ bool DRENTRY DRConstValAT( drmem_hdl var, uint_32 *ret )
     drmem_hdl   abbrev;
     dw_formnum  form;
     uint_32     val;
-    dwr_formcl  formcl;
+    dr_formcl   formcl;
 
-    abbrev = DWRSkipTag( &var ) + 1;
-    if( DWRScanForAttrib( &abbrev, &var, DW_AT_const_value ) ) {
-        form = DWRVMReadULEB128( &abbrev );
+    abbrev = DR_SkipTag( &var ) + 1;
+    if( DR_ScanForAttrib( &abbrev, &var, DW_AT_const_value ) ) {
+        form = DR_VMReadULEB128( &abbrev );
         for( ;; ) {
-            formcl = DWRFormClass( form );
+            formcl = DR_FormClass( form );
             switch( formcl ) {
-            case DWR_FORMCL_indirect:
-                form = DWRVMReadULEB128( &var );
+            case DR_FORMCL_indirect:
+                form = DR_VMReadULEB128( &var );
                 break;
-            case DWR_FORMCL_data:
+            case DR_FORMCL_data:
                 val = ReadConst( form, var );
                 *ret = val;
                 goto found;

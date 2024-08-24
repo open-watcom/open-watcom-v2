@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,64 +34,64 @@
 #include "drstack.h"
 
 
-void DWRStackCreate(                        // INITIALIZE A STACK
+void DR_StackCreate(                        // INITIALIZE A STACK
     dr_stack *stk,                          // -- stack to initialize
     uint start_size )                       // -- initial size guess
 /*************************/
 {
-    stk->stack = DWRALLOC( start_size * sizeof( uint_32 ) );
+    stk->stack = DR_ALLOC( start_size * sizeof( uint_32 ) );
     stk->free = 0;
     stk->size = start_size;
 }
 
-void DWRStackCopy(                          // COPY A STACK FROM ANOTHER
+void DR_StackCopy(                          // COPY A STACK FROM ANOTHER
     dr_stack *dest,                         // -- destination of copy
     const dr_stack *src )                   // -- source of copy
 /************************/
 {
     dest->free = src->free;
     dest->size = src->size;
-    dest->stack = DWRALLOC( dest->size * sizeof( uint_32 ) );
+    dest->stack = DR_ALLOC( dest->size * sizeof( uint_32 ) );
     memcpy( dest->stack, src->stack, dest->size * sizeof( uint_32 ) );
 }
 
-void DWRStackFree(                          // DESTRUCT A STACK
+void DR_StackFree(                          // DESTRUCT A STACK
     dr_stack *stk )                         // -- stack to trash
 /***********************/
 {
-    DWRFREE( stk->stack );
+    DR_FREE( stk->stack );
     stk->stack = NULL;
     stk->size = 0;
     stk->free = 0;
 }
 
-void DWRStackPush(                          // PUSH ITEM ON THE STACK
+void DR_StackPush(                          // PUSH ITEM ON THE STACK
     dr_stack *stk,                          // -- stack to push on
     uint_32 val )                           // -- value to push
 /***********************/
 {
     if( stk->free >= stk->size ) {
         stk->size *= 2;
-        stk->stack = DWRREALLOC( stk->stack, stk->size * sizeof( uint_32 ) );
+        stk->stack = DR_REALLOC( stk->stack, stk->size * sizeof( uint_32 ) );
     }
 
     stk->stack[stk->free] = val;
     stk->free += 1;
 }
 
-uint_32 DWRStackPop(                        // POP ITEM OFF THE STACK
+uint_32 DR_StackPop(                        // POP ITEM OFF THE STACK
     dr_stack *stk )                         // -- stack to pop off of
 /*************************/
 {
     if( stk->free == 0 ) {
-        DWREXCEPT( DREXCEP_DWARF_LIB_FAIL );
+        DR_EXCEPT( DREXCEP_DWARF_LIB_FAIL );
     }
 
     stk->free -= 1;
     return stk->stack[stk->free];
 }
 
-uint_32 DWRStackTop(                        // RETURN TOP ELEMENT OF STACK
+uint_32 DR_StackTop(                        // RETURN TOP ELEMENT OF STACK
     dr_stack *stk )                         // -- stack to use
 /*************************/
 {
@@ -102,7 +102,7 @@ uint_32 DWRStackTop(                        // RETURN TOP ELEMENT OF STACK
     }
 }
 
-bool DWRStackEmpty(                         // IS A STACK EMPTY?
+bool DR_StackEmpty(                         // IS A STACK EMPTY?
     dr_stack *stk )                         // -- stack to check
 /*************************/
 {

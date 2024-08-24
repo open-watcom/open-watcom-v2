@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,44 +30,44 @@
 ****************************************************************************/
 
 
-extern void             DWRVMInit( void );
-extern void             DWRVMDestroy( void );
-extern void             DWRVMReset( void );
-extern bool             DWRVMSectDone( drmem_hdl base, unsigned_32 size );
-// DWRCurrNode must be set for alloc, free
-extern drmem_hdl        DWRVMAlloc( unsigned long, int );
-extern void             DWRVMFree( drmem_hdl hdl );
-extern char             *DWRVMCopyString( drmem_hdl * );
-extern size_t           DWRVMGetStrBuff( drmem_hdl drstr, char *buf, size_t max );
-extern unsigned_16      DWRVMReadWord( drmem_hdl );
-extern unsigned_32      DWRVMReadDWord( drmem_hdl );
-extern int_64           DWRVMReadSLEB128( drmem_hdl *vmptr );
-extern uint_64          DWRVMReadULEB128( drmem_hdl *vmptr );
+extern void             DR_VMInit( void );
+extern void             DR_VMDestroy( void );
+extern void             DR_VMReset( void );
+extern bool             DR_VMSectDone( drmem_hdl base, unsigned_32 size );
+// DR_CurrNode must be set for alloc, free
+extern drmem_hdl        DR_VMAlloc( unsigned long, int );
+extern void             DR_VMFree( drmem_hdl hdl );
+extern char             *DR_VMCopyString( drmem_hdl * );
+extern size_t           DR_VMGetStrBuff( drmem_hdl drstr, char *buf, size_t max );
+extern unsigned_16      DR_VMReadWord( drmem_hdl );
+extern unsigned_32      DR_VMReadDWord( drmem_hdl );
+extern int_64           DR_VMReadSLEB128( drmem_hdl *vmptr );
+extern uint_64          DR_VMReadULEB128( drmem_hdl *vmptr );
 
 #if defined( USE_VIRTMEM )
 
-extern size_t           DWRVMStrLen( drmem_hdl );
-extern void             DWRVMSwap( drmem_hdl, unsigned_32, bool *ret );
-extern void             DWRVMSkipLEB128( drmem_hdl * );
-extern void             DWRVMRead( drmem_hdl, void *, size_t );
-extern unsigned_8       DWRVMReadByte( drmem_hdl );
+extern size_t           DR_VMStrLen( drmem_hdl );
+extern void             DR_VMSwap( drmem_hdl, unsigned_32, bool *ret );
+extern void             DR_VMSkipLEB128( drmem_hdl * );
+extern void             DR_VMRead( drmem_hdl, void *, size_t );
+extern unsigned_8       DR_VMReadByte( drmem_hdl );
 
 #else   /* !USE_VIRTMEM */
 
-#define DWRVMStrLen(__h)        strlen((const char *)__h)
-#define DWRVMSwap(__ig1,__ig2,__ig3)
-#define DWRVMSkipLEB128(__h)          \
+#define DR_VMStrLen(__h)        strlen((const char *)__h)
+#define DR_VMSwap(__ig1,__ig2,__ig3)
+#define DR_VMSkipLEB128(__h)          \
     {                                 \
         const char *p = (const char *)*(__h); \
         while( (*p++ & 0x80) != 0 );  \
         *(__h) = (drmem_hdl)p;        \
     }
-#define DWRVMRead(__h,__b,__l)  (void)memcpy( __b, (void *)__h, __l )
-#define DWRVMReadByte(__h)      *((unsigned_8 *)(__h))
+#define DR_VMRead(__h,__b,__l)  (void)memcpy( __b, (void *)__h, __l )
+#define DR_VMReadByte(__h)      *((unsigned_8 *)(__h))
 
 #if 0   // defined(__386__)   need to figure out
 
-#define DWRVMReadULEB128(__h)   ReadULEB128( __h )
+#define DR_VMReadULEB128(__h)   ReadULEB128( __h )
 
 extern unsigned_32      ReadULEB128( drmem_hdl * );         /* inline */
 /* warning -- this function only works if the ULEB128 is <= 0x0fffffff */

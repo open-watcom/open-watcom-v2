@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,13 +34,13 @@
 #ifndef DRRTNS_INLCUDED
 #define DRRTNS_INLCUDED
 
-extern WDRRoutines      DWRRtns;
+extern DRRoutines       DR_Rtns;
 
-#define DWRREAD         DWRRtns.cli_read
-#define DWRSEEK         DWRRtns.cli_seek
-#define DWRALLOC        DWRRtns.cli_alloc
-#define DWRREALLOC      DWRRtns.cli_realloc
-#define DWRFREE         DWRRtns.cli_free
-#define DWREXCEPT       DWRRtns.cli_except
+#define DR_READ         DR_Rtns.cli_read
+#define DR_SEEK         DR_Rtns.cli_seek
+#define DR_ALLOC        DR_Rtns.cli_alloc
+#define DR_REALLOC      DR_Rtns.cli_realloc
+#define DR_FREE         DR_Rtns.cli_free
+#define DR_EXCEPT       DR_Rtns.cli_except
 
 #endif

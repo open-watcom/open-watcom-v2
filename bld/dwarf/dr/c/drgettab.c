@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -44,7 +44,7 @@
 #define VBL_ARRAY_DELTA     0x10
 #define VBL_ARRAY_MASK      (VBL_ARRAY_DELTA - 1)
 
-file_info               FileNameTable;
+file_info               DR_FileNameTable;
 
 static bool GrabLineAddr( drmem_hdl abbrev, drmem_hdl mod, mod_scan_info *x, void *data )
 /***************************************************************************************/
@@ -54,31 +54,31 @@ static bool GrabLineAddr( drmem_hdl abbrev, drmem_hdl mod, mod_scan_info *x, voi
 {
     /* unused parameters */ (void)x;
 
-    if( DWRScanForAttrib( &abbrev, &mod, DW_AT_stmt_list ) ) {
-        *((unsigned_32 *)data) = DWRReadConstant( abbrev, mod );
+    if( DR_ScanForAttrib( &abbrev, &mod, DW_AT_stmt_list ) ) {
+        *((unsigned_32 *)data) = DR_ReadConstant( abbrev, mod );
     }
     return( false );    // do not continue with the search.
 }
 
-void DWRInitFileTable( file_table *tab )
+void DR_InitFileTable( file_table *tab )
 /**************************************/
 {
     tab->len = 0;
-    tab->tab = DWRALLOC( VBL_ARRAY_DELTA * sizeof( filetab_entry ) );
+    tab->tab = DR_ALLOC( VBL_ARRAY_DELTA * sizeof( filetab_entry ) );
 }
 
-void DWRFiniFileTable( file_table *tab, bool freenames )
+void DR_FiniFileTable( file_table *tab, bool freenames )
 /******************************************************/
 {
     filetab_idx     ftidx;
 
     if( freenames ) {
         for( ftidx = 0; ftidx < tab->len; ftidx++ ) {
-            DWRFREE( tab->tab[ftidx].u.name );
+            DR_FREE( tab->tab[ftidx].u.name );
         }
     }
     if( tab->tab != NULL ) {
-        DWRFREE( tab->tab );
+        DR_FREE( tab->tab );
     }
 }
 
@@ -87,12 +87,12 @@ static void GrowTable( file_table *tab )
 {
     tab->len++;
     if( !(tab->len & VBL_ARRAY_MASK) ) {        // it will overflow
-        tab->tab = DWRREALLOC( tab->tab,
+        tab->tab = DR_REALLOC( tab->tab,
                    (tab->len + VBL_ARRAY_DELTA) * sizeof(filetab_entry) );
     }
 }
 
-static filetab_idx DWRAddFileName( char *name, file_table *tab )
+static filetab_idx DR_AddFileName( char *name, file_table *tab )
 /**************************************************************/
 {
     filetab_idx     ftidx;
@@ -101,7 +101,7 @@ static filetab_idx DWRAddFileName( char *name, file_table *tab )
     names = (char **)tab->tab;
     for( ftidx = 0; ftidx < tab->len; ++ftidx ) {
         if( strcmp( name, *names ) == 0 ) {
-            DWRFREE( name );
+            DR_FREE( name );
             return( ftidx );
         }
         names++;
@@ -111,7 +111,7 @@ static filetab_idx DWRAddFileName( char *name, file_table *tab )
     return( ftidx );
 }
 
-static void DWRInsertIndex( filetab_idx ftidx, file_table *tab, unsigned where )
+static void DR_InsertIndex( filetab_idx ftidx, file_table *tab, unsigned where )
 /******************************************************************************/
 {
     if( where == TAB_IDX_FNAME ) {
@@ -121,35 +121,35 @@ static void DWRInsertIndex( filetab_idx ftidx, file_table *tab, unsigned where )
     }
 }
 
-static void DWRAddIndex( filetab_idx ftidx, file_table *tab, unsigned where )
+static void DR_AddIndex( filetab_idx ftidx, file_table *tab, unsigned where )
 /***************************************************************************/
 {
     GrowTable( tab );
-    DWRInsertIndex( ftidx, tab, where );
+    DR_InsertIndex( ftidx, tab, where );
 }
 
-static filetab_idx DWRIndexPath( dr_fileidx pathidx, file_table *tab )
+static filetab_idx DR_IndexPath( dr_fileidx pathidx, file_table *tab )
 /********************************************************************/
 {
     return( tab->tab[pathidx].u.idx.pathidx );
 }
 
-filetab_idx DWRIndexFile( dr_fileidx fileidx, file_table *tab )
+filetab_idx DR_IndexFile( dr_fileidx fileidx, file_table *tab )
 /*************************************************************/
 {
     return( tab->tab[fileidx].u.idx.fnameidx );
 }
 
-char * DWRIndexFileName( filetab_idx ftidx, file_table *tab )
+char * DR_IndexFileName( filetab_idx ftidx, file_table *tab )
 /***********************************************************/
 {
     return( tab->tab[ftidx].u.name );
 }
 
-static void DWRTrimTableSize( file_table *tab )
+static void DR_TrimTableSize( file_table *tab )
 /*********************************************/
 {
-    tab->tab = DWRREALLOC( tab->tab, tab->len * sizeof(filetab_entry) );
+    tab->tab = DR_REALLOC( tab->tab, tab->len * sizeof(filetab_entry) );
 }
 
 static void ReadNameEntry( drmem_hdl *start, file_info *nametab,
@@ -160,17 +160,17 @@ static void ReadNameEntry( drmem_hdl *start, file_info *nametab,
     filetab_idx     ftidx;
     dr_fileidx      pathidx;
 
-    name = DWRVMCopyString( start );
-    ftidx = DWRAddFileName( name, &nametab->fnametab );
-    DWRAddIndex( ftidx, idxtab, TAB_IDX_FNAME );
-    pathidx = DWRVMReadULEB128( start );
-    ftidx = DWRIndexPath( pathidx, maptab );
-    DWRInsertIndex( ftidx, idxtab, TAB_IDX_PATH );
-    DWRVMSkipLEB128( start );   // skip time
-    DWRVMSkipLEB128( start );   // skip length
+    name = DR_VMCopyString( start );
+    ftidx = DR_AddFileName( name, &nametab->fnametab );
+    DR_AddIndex( ftidx, idxtab, TAB_IDX_FNAME );
+    pathidx = DR_VMReadULEB128( start );
+    ftidx = DR_IndexPath( pathidx, maptab );
+    DR_InsertIndex( ftidx, idxtab, TAB_IDX_PATH );
+    DR_VMSkipLEB128( start );   // skip time
+    DR_VMSkipLEB128( start );   // skip length
 }
 
-void DWRScanFileTable( drmem_hdl start, file_info *nametab, file_table *idxtab )
+void DR_ScanFileTable( drmem_hdl start, file_info *nametab, file_table *idxtab )
 /******************************************************************************/
 // find the filenames in the line information, and return them in a table
 {
@@ -188,32 +188,32 @@ void DWRScanFileTable( drmem_hdl start, file_info *nametab, file_table *idxtab )
     dw_lne          value_lne;
 
     stmt_offset = (unsigned_32)-1;
-    DWRGetCompileUnitHdr( start, GrabLineAddr, &stmt_offset );
+    DR_GetCompileUnitHdr( start, GrabLineAddr, &stmt_offset );
     if( stmt_offset == (unsigned_32)-1 ) {
         return;
     }
-    start = DWRCurrNode->sections[DR_DEBUG_LINE].base + stmt_offset;
-    finish = start + DWRVMReadDWord( start );
-    op_base = DWRVMReadByte( start + offsetof( stmt_prologue, opcode_base ) );
+    start = DR_CurrNode->sections[DR_DEBUG_LINE].base + stmt_offset;
+    finish = start + DR_VMReadDWord( start );
+    op_base = DR_VMReadByte( start + offsetof( stmt_prologue, opcode_base ) );
     start += offsetof( stmt_prologue, standard_opcode_lengths );
     oparray = walloca( op_base - 1 );
     for( index = 0; index < op_base - 1; index++ ) {
-        oparray[index] = DWRVMReadByte( start );
+        oparray[index] = DR_VMReadByte( start );
         start++;
     }
-    DWRInitFileTable( &curridxmap );
+    DR_InitFileTable( &curridxmap );
     while( start < finish ) {           // get directory table
-        value = DWRVMReadByte( start );
+        value = DR_VMReadByte( start );
         if( value == 0 ) {
             start++;
             break;
         }
-        name = DWRVMCopyString( &start );
-        ftidx = DWRAddFileName( name, &nametab->pathtab );
-        DWRAddIndex( ftidx, &curridxmap, TAB_IDX_PATH );
+        name = DR_VMCopyString( &start );
+        ftidx = DR_AddFileName( name, &nametab->pathtab );
+        DR_AddIndex( ftidx, &curridxmap, TAB_IDX_PATH );
     }
     while( start < finish ) {           // get filename table
-        value = DWRVMReadByte( start );
+        value = DR_VMReadByte( start );
         if( value == 0 ) {
             start++;
             break;
@@ -221,11 +221,11 @@ void DWRScanFileTable( drmem_hdl start, file_info *nametab, file_table *idxtab )
         ReadNameEntry( &start, nametab, idxtab, &curridxmap );
     }
     while( start < finish ) {   // now go through the statement program
-        value_lns = DWRVMReadByte( start );
+        value_lns = DR_VMReadByte( start );
         start++;
         if( value_lns == 0 ) {      // it's an extended opcode
-            length = DWRVMReadULEB128( &start );
-            value_lne = DWRVMReadByte( start );
+            length = DR_VMReadULEB128( &start );
+            value_lne = DR_VMReadByte( start );
             if( value_lne == DW_LNE_define_file ) {
                 start++;
                 ReadNameEntry( &start, nametab, idxtab, &curridxmap );
@@ -237,25 +237,25 @@ void DWRScanFileTable( drmem_hdl start, file_info *nametab, file_table *idxtab )
                 start += sizeof( unsigned_16 );    // it is a fixed size
             } else {    // it is a variable # of blocks
                 for( value = oparray[value_lns - 1]; value > 0; --value ) {
-                    DWRVMSkipLEB128( &start );
+                    DR_VMSkipLEB128( &start );
                 }
             }
         }       // else it was a special op, and thus only 1 byte long
     }
-    DWRTrimTableSize( idxtab );
-    DWRFiniFileTable( &curridxmap, false );
+    DR_TrimTableSize( idxtab );
+    DR_FiniFileTable( &curridxmap, false );
 }
 
-char * DWRFindFileName( dr_fileidx fileidx, drmem_hdl entry )
+char * DR_FindFileName( dr_fileidx fileidx, drmem_hdl entry )
 /***********************************************************/
 {
     compunit_info   *compunit;
     filetab_idx     ftidx;
 
     if( fileidx != 0 ) {
-        compunit = DWRFindCompileInfo( entry );
-        ftidx = DWRIndexFile( fileidx - 1, &compunit->filetab );
-        return( DWRIndexFileName( ftidx, &FileNameTable.fnametab ) );
+        compunit = DR_FindCompileInfo( entry );
+        ftidx = DR_IndexFile( fileidx - 1, &compunit->filetab );
+        return( DR_IndexFileName( ftidx, &DR_FileNameTable.fnametab ) );
     }
     return( NULL );
 }

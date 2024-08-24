@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,7 +35,7 @@
 #include "drgettab.h"
 
 
-struct dr_dbg_info  *DWRCurrNode = NULL;
+struct dr_dbg_info  *DR_CurrNode = NULL;
 
 /* function prototypes */
 
@@ -66,7 +66,7 @@ static void ReadCUAbbrevTable( struct dr_dbg_info *dbg, compunit_info *compunit 
         }
     }
     sizealloc = ABBREV_TABLE_GUESS;
-    abbrevs = DWRALLOC( sizealloc * sizeof( drmem_hdl ) );
+    abbrevs = DR_ALLOC( sizealloc * sizeof( drmem_hdl ) );
     for( i = 0; i < sizealloc; ++i ) {
         abbrevs[i] = DRMEM_HDL_NULL;
     }
@@ -74,7 +74,7 @@ static void ReadCUAbbrevTable( struct dr_dbg_info *dbg, compunit_info *compunit 
     start = dbg->sections[DR_DEBUG_ABBREV].base + compunit->abbrev_start;
     finish = dbg->sections[DR_DEBUG_ABBREV].base + dbg->sections[DR_DEBUG_ABBREV].size;
     while( start < finish ) {
-        code = DWRVMReadULEB128( &start );
+        code = DR_VMReadULEB128( &start );
         if( code == 0 )
             break;                  // indicates end of table
         if( code > maxnum )
@@ -82,7 +82,7 @@ static void ReadCUAbbrevTable( struct dr_dbg_info *dbg, compunit_info *compunit 
         if( code >= sizealloc ) {
             oldsize = sizealloc;
             sizealloc = code + ABBREV_TABLE_INCREMENT;
-            abbrevs = DWRREALLOC( abbrevs, sizealloc * sizeof( drmem_hdl ) );
+            abbrevs = DR_REALLOC( abbrevs, sizealloc * sizeof( drmem_hdl ) );
             for( i = oldsize; i < sizealloc; ++i ) {
                 abbrevs[i] = DRMEM_HDL_NULL;
             }
@@ -90,20 +90,20 @@ static void ReadCUAbbrevTable( struct dr_dbg_info *dbg, compunit_info *compunit 
         if( abbrevs[code] == DRMEM_HDL_NULL ) {
             abbrevs[code] = start;
         }
-        DWRVMSkipLEB128( &start );              // skip tag
+        DR_VMSkipLEB128( &start );              // skip tag
         start++;                                // skip child indicator
         do {
-            code = DWRVMReadULEB128( &start );  // read attribute
-            DWRVMSkipLEB128( &start );          // skip form
+            code = DR_VMReadULEB128( &start );  // read attribute
+            DR_VMSkipLEB128( &start );          // skip form
         } while( code != 0 );
     }
     if( sizealloc > maxnum ) {  // reduce size to actual amount needed
         /* abbrev[0] not used but we want abbrev[code] = start to work */
-        abbrevs = DWRREALLOC( abbrevs, ( maxnum + 1 ) * sizeof( drmem_hdl ) );
+        abbrevs = DR_REALLOC( abbrevs, ( maxnum + 1 ) * sizeof( drmem_hdl ) );
     }
     compunit->numabbrevs = maxnum + 1;
     compunit->abbrevs = abbrevs;
-    compunit->abbrev_refs = DWRALLOC( sizeof( unsigned ) );
+    compunit->abbrev_refs = DR_ALLOC( sizeof( unsigned ) );
     *compunit->abbrev_refs = 1;
 }
 
@@ -114,8 +114,8 @@ static dr_dbg_handle  InitDbgHandle( void *file, unsigned long *sizes, bool byte
     int                 i;
     unsigned long       size;
 
-    dbg = DWRALLOC( sizeof( struct dr_dbg_info ) );
-    DWRCurrNode = dbg;    /* must be set for DWRVMAlloc in virtstub.c */
+    dbg = DR_ALLOC( sizeof( struct dr_dbg_info ) );
+    DR_CurrNode = dbg;    /* must be set for DR_VMAlloc in virtstub.c */
     if( dbg == NULL )
         return( NULL );
     dbg->next = NULL;
@@ -128,9 +128,9 @@ static dr_dbg_handle  InitDbgHandle( void *file, unsigned long *sizes, bool byte
         size = sizes[i];
         dbg->sections[i].size = size;
         if( size != 0 ) {
-            dbg->sections[i].base = DWRVMAlloc( size, i );
+            dbg->sections[i].base = DR_VMAlloc( size, i );
             if( dbg->sections[i].base == DRMEM_HDL_NULL ) {
-                DWRFREE( dbg );
+                DR_FREE( dbg );
                 return( NULL );
             }
         } else {
@@ -150,7 +150,7 @@ bool  DRENTRY DRDbgClear( dr_dbg_handle dbg )
 
     ret = false;
     for( i = 0; i < DR_DEBUG_NUM_SECTS; i++ ) {
-        DWRVMSwap( dbg->sections[i].base, dbg->sections[i].size, &ret );
+        DR_VMSwap( dbg->sections[i].base, dbg->sections[i].size, &ret );
     }
     return( ret );
 }
@@ -161,7 +161,7 @@ void DRENTRY DRDbgDone( dr_dbg_handle dbg )
     int                 i;
 
     for( i = 0; i < DR_DEBUG_NUM_SECTS; i++ ) {
-        DWRVMSectDone( dbg->sections[i].base, dbg->sections[i].size );
+        DR_VMSectDone( dbg->sections[i].base, dbg->sections[i].size );
         dbg->sections[i].base = DRMEM_HDL_NULL;
         dbg->sections[i].size = 0;
     }
@@ -184,26 +184,26 @@ static void ReadCompUnits( struct dr_dbg_info *dbg, int read_ftab )
     unsigned_8          addr_size;
     unsigned_8          curr_addr_size;
 
-    compunit = &DWRCurrNode->compunit;
-    start = DWRCurrNode->sections[DR_DEBUG_INFO].base;
-    finish = start + DWRCurrNode->sections[DR_DEBUG_INFO].size;
-    addr_size = DWRVMReadByte( start + offsetof( compuhdr_prologue, addr_size ) );
+    compunit = &DR_CurrNode->compunit;
+    start = DR_CurrNode->sections[DR_DEBUG_INFO].base;
+    finish = start + DR_CurrNode->sections[DR_DEBUG_INFO].size;
+    addr_size = DR_VMReadByte( start + offsetof( compuhdr_prologue, addr_size ) );
     for( ;; ) {
         compunit->next = NULL;
         compunit->start = start;
-        compunit->end = start + sizeof( unsigned_32 ) + DWRVMReadDWord( start );
-        version = DWRVMReadWord( start + offsetof( compuhdr_prologue, version ) );
+        compunit->end = start + sizeof( unsigned_32 ) + DR_VMReadDWord( start );
+        version = DR_VMReadWord( start + offsetof( compuhdr_prologue, version ) );
         if( DWARF_VER_INVALID( version ) )
-            DWREXCEPT( DREXCEP_BAD_DBG_VERSION );
-        compunit->abbrev_start = DWRVMReadDWord( start + offsetof( compuhdr_prologue, abbrev_offset ) );
-        curr_addr_size = DWRVMReadByte( start + offsetof( compuhdr_prologue, addr_size ) );
+            DR_EXCEPT( DREXCEP_BAD_DBG_VERSION );
+        compunit->abbrev_start = DR_VMReadDWord( start + offsetof( compuhdr_prologue, abbrev_offset ) );
+        curr_addr_size = DR_VMReadByte( start + offsetof( compuhdr_prologue, addr_size ) );
         if( curr_addr_size != addr_size ) {
             addr_size = 0;
         }
         ReadCUAbbrevTable( dbg, compunit );
         if( read_ftab ) {
-            DWRInitFileTable( &compunit->filetab );
-            DWRScanFileTable( start, &FileNameTable, &compunit->filetab );
+            DR_InitFileTable( &compunit->filetab );
+            DR_ScanFileTable( start, &DR_FileNameTable, &compunit->filetab );
         } else {
             compunit->filetab.len = 0;
             compunit->filetab.tab = NULL;
@@ -211,11 +211,11 @@ static void ReadCompUnits( struct dr_dbg_info *dbg, int read_ftab )
         if( compunit->end >= finish )
             break;
         start = compunit->end;
-        next = DWRALLOC( sizeof( compunit_info ) );
+        next = DR_ALLOC( sizeof( compunit_info ) );
         compunit->next = next;
         compunit = next;
     }
-    DWRCurrNode->addr_size = addr_size;
+    DR_CurrNode->addr_size = addr_size;
 }
 
 dr_dbg_handle DRENTRY DRDbgInitNFT( void * file, unsigned long * sizes, bool byteswap )
@@ -254,50 +254,50 @@ void DRENTRY DRDbgFini( dr_dbg_handle dbg )
     compunit = dbg->compunit.next;
     while( compunit != NULL ) {
         next = compunit->next;
-        DWRFiniFileTable( &compunit->filetab, false );
+        DR_FiniFileTable( &compunit->filetab, false );
         if( compunit->abbrevs != NULL ) {
             --(*compunit->abbrev_refs);
             if( *compunit->abbrev_refs == 0 ) {
-                DWRFREE( compunit->abbrevs );
-                DWRFREE( compunit->abbrev_refs );
+                DR_FREE( compunit->abbrevs );
+                DR_FREE( compunit->abbrev_refs );
             }
             compunit->abbrevs = NULL;
             compunit->abbrev_refs = NULL;
         }
-        DWRFREE( compunit );
+        DR_FREE( compunit );
         compunit = next;
     }
-    DWRFiniFileTable( &dbg->compunit.filetab, false );
-    DWRFREE( dbg );
+    DR_FiniFileTable( &dbg->compunit.filetab, false );
+    DR_FREE( dbg );
 }
 
 dr_dbg_handle DRENTRY DRSetDebug( dr_dbg_handle dbg )
 /***************************************************/
 {
     dr_dbg_handle  old;
-    old = DWRCurrNode;
-    DWRCurrNode = dbg;
+    old = DR_CurrNode;
+    DR_CurrNode = dbg;
     return( old );
 }
 
 dr_dbg_handle DRENTRY DRGetDebug( void )
 /**************************************/
 {
-    return( DWRCurrNode );
+    return( DR_CurrNode );
 }
 
 void DRENTRY DRInit( void )
 /*************************/
 {
-    DWRVMInit();
-    DWRInitFileTable( &FileNameTable.fnametab );
-    DWRInitFileTable( &FileNameTable.pathtab );
+    DR_VMInit();
+    DR_InitFileTable( &DR_FileNameTable.fnametab );
+    DR_InitFileTable( &DR_FileNameTable.pathtab );
 }
 
 void DRENTRY DRFini( void )
 /*************************/
 {
-    DWRVMDestroy();
-    DWRFiniFileTable( &FileNameTable.fnametab, true );
-    DWRFiniFileTable( &FileNameTable.pathtab, true );
+    DR_VMDestroy();
+    DR_FiniFileTable( &DR_FileNameTable.fnametab, true );
+    DR_FiniFileTable( &DR_FileNameTable.pathtab, true );
 }
