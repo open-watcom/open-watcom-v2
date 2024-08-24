@@ -85,13 +85,13 @@ const static trap_callbacks TrapCallbacks = {
 
 #define DEFEXT      ".trp"
 #define MODSIGN     TRAPSIGN
-#include "../ldrrex.c"      /* PharLap REX format loader */
+#include "ldrrex.c"     /* PharLap REX format loader */
 
 #else
 
 #define DEFEXT      ".trp"
 #define MODINIT     "TrapLoad_"
-#include "../ldrpe.c"       /* PE DLL format loader */
+#include "ldrpe.c"      /* PE DLL format loader */
 
 #endif
 
@@ -99,7 +99,7 @@ const static trap_callbacks TrapCallbacks = {
 
 #define DEFEXT      ".so"
 #define MODINIT     "TrapLoad"
-#include "../ldrso.c"       /* Shared library format loader */
+#include "ldrso.c"      /* Shared library format loader */
 
 #endif
 

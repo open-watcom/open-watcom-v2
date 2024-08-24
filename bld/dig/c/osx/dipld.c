@@ -55,13 +55,13 @@
 
 #define DEFEXT      ".dip"
 #define MODSIGN     DIPSIGN
-#include "../ldrrex.c"      /* PharLap REX format loader */
+#include "ldrrex.c"     /* PharLap REX format loader */
 
 #else
 
 #define DEFEXT      ".so"
 #define MODINIT     "DIPLOAD"
-#include "../ldrso.c"       /* Shared library format loader */
+#include "ldrso.c"      /* Shared library format loader */
 
 #endif
 

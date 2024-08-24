@@ -46,7 +46,7 @@
 //#define MODINIT     "TrapLoad"
 #define MODSIGN     TRAPSIGN
 
-#include "../ldrrex.c"       /* PharLap REX format loader */
+#include "ldrrex.c"     /* PharLap REX format loader */
 
 extern void             *_slib_func[2];
 

@@ -26,6 +26,8 @@ inc_dirs = -I"../h" -I"$(dig_dir)/h"
 
 extra_cpp_flags = -DBLDVER=$(bld_ver)
 
+extra_c_flags_dipld = -I"$(dig_dir)/c"
+
 # explicit rules
 #################
 

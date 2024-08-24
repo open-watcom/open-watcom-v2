@@ -105,6 +105,9 @@ extra_c_flags_os2_i86 = -zc
 !endif
 
 extra_c_flags_dynmem = $(trmem_cover_cflags)
+extra_c_flags_dipld = -I"$(dig_dir)/c"
+extra_c_flags_madld = -I"$(dig_dir)/c"
+extra_c_flags_trpld = -I"$(dig_dir)/c"
 
 #
 # aflags

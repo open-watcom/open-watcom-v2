@@ -205,6 +205,8 @@ extra_c_flags_win_i86 = -bd
 !endif
 !endif
 
+extra_c_flags_trpld = -I"$(dig_dir)/c"
+
 # aflags stuff
 ###############
 extra_a_flags += $(model_switch_$(host_cpu)) -D$(which)

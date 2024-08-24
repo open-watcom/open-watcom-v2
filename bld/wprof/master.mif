@@ -55,6 +55,8 @@ extra_c_flags_qnx_i86 = -zt32
 extra_c_flags_win_i86 = -zW
 
 extra_c_flags_memutil = $(trmem_cover_cflags)
+extra_c_flags_dipld = -I"$(dig_dir)/c"
+extra_c_flags_madld = -I"$(dig_dir)/c"
 
 #
 # lflags
