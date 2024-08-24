@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -59,7 +59,7 @@ void DWENTRY DWMacStartFile( dw_client cli, dw_linenum line, const char *name )
 
     buf[0] = DW_MACINFO_start_file;
     end = WriteULEB128( buf + 1, line );
-    end = WriteULEB128( end, GetFileNumber( cli, name ) );
+    end = WriteULEB128( end, DW_GetFileNumber( cli, name ) );
     CLIWrite( cli, DW_DEBUG_MACINFO, buf, end - buf );
 }
 
@@ -119,7 +119,7 @@ void DWENTRY DWMacFini( dw_client cli, dw_macro mac, const char *def )
     if( parm != NULL ) {
         CLIWriteU8( cli, DW_DEBUG_MACINFO, '(' );
         /* parms are in the linked list in reverse order */
-        for( parm = ReverseChain( parm ); parm->next != NULL; parm = FreeLink( cli, parm ) ) {
+        for( parm = DW_ReverseChain( parm ); parm->next != NULL; parm = DW_FreeLink( cli, parm ) ) {
             CLIWrite( cli, DW_DEBUG_MACINFO, parm->name, parm->len );
             CLIWriteU8( cli, DW_DEBUG_MACINFO, ',' );
         }
@@ -165,14 +165,14 @@ void DWENTRY DWMacUse( dw_client cli, dw_linenum line, const char *name )
 }
 
 
-void InitDebugMacInfo( dw_client cli )
+void DW_InitDebugMacInfo( dw_client cli )
 /* must be called after InitDebugLine */
 {
     /* unused parameters */ (void)cli;
 }
 
 
-void FiniDebugMacInfo( dw_client cli )
+void DW_FiniDebugMacInfo( dw_client cli )
 {
     /* write the terminator */
     CLISectionWriteZeros( cli, DW_DEBUG_MACINFO, 1 );

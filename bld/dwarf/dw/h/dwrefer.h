@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,16 +34,10 @@
 #ifndef DWREFER_H_INCLUDED
 #define DWREFER_H_INCLUDED
 
-#define InitReferences          DW_InitReferences
-#define FiniReferences          DW_FiniReferences
-#define SetReferenceFile        DW_SetReferenceFile
-#define StartRef                DW_StartRef
-#define EndRef                  DW_EndRef
-
-void InitReferences( dw_client );
-void FiniReferences( dw_client );
-void SetReferenceFile( dw_client, uint );
-void StartRef( dw_client );
-void EndRef( dw_client );
+extern void     DW_InitReferences( dw_client );
+extern void     DW_FiniReferences( dw_client );
+extern void     DW_SetReferenceFile( dw_client, uint );
+extern void     DW_StartRef( dw_client );
+extern void     DW_EndRef( dw_client );
 
 #endif

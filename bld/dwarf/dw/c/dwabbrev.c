@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -87,7 +87,7 @@ static uint mapFromWToX( abbrev_code abbrev )
     return( result + abbrevInfo[index].bit_index );
 }
 
-unsigned MarkAbbrevAsUsed( dw_client cli, abbrev_code *abbrev )
+unsigned DW_MarkAbbrevAsUsed( dw_client cli, abbrev_code *abbrev )
 {
     uint                        index;
     uint                        code;
@@ -100,7 +100,7 @@ unsigned MarkAbbrevAsUsed( dw_client cli, abbrev_code *abbrev )
     data = &abbrevInfo[( *abbrev & AB_ENUM_MASK ) - 1];
 
     /* check for AT_decl_* */
-    *abbrev |= CheckDecl( cli, data->valid_mask );
+    *abbrev |= DW_CheckDecl( cli, data->valid_mask );
 
     /* check the emitted bit set to see if we've emitted this already */
     code = mapFromWToX( *abbrev );
@@ -186,19 +186,19 @@ unsigned MarkAbbrevAsUsed( dw_client cli, abbrev_code *abbrev )
 }
 
 
-void InitDebugAbbrev( dw_client cli )
+void DW_InitDebugAbbrev( dw_client cli )
 {
     memset( cli->debug_abbrev.emitted, 0, sizeof( cli->debug_abbrev.emitted ) );
 }
 
 
-void FiniDebugAbbrev( dw_client cli )
+void DW_FiniDebugAbbrev( dw_client cli )
 {
     /* the zero terminator */
     CLISectionWriteZeros( cli, DW_DEBUG_ABBREV, 1 );
 }
 
-void  GenAllAbbrev( dw_client  cli )
+void  DW_GenAllAbbrev( dw_client  cli )
 {
     abbrev_code                 abbrev;
     uint_32                     mask;
@@ -230,7 +230,7 @@ void  GenAllAbbrev( dw_client  cli )
                 mask_bit >>= 1;
             }
             abbrev |= (index+1);
-            MarkAbbrevAsUsed( cli, &abbrev );
+            DW_MarkAbbrevAsUsed( cli, &abbrev );
         }
     }
 }

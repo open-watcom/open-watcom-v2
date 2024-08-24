@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -41,18 +42,11 @@ typedef struct die_tree {
     dw_sect_offs        sibling;        // previous AT_sibling
 } die_tree;
 
-#define InitDIE                 DW_InitDIE
-#define FiniDIE                 DW_FiniDIE
-#define StartDIE                DW_StartDIE
-#define EndDIE                  DW_EndDIE
-#define StartChildren           DW_StartChildren
-#define EndChildren             DW_EndChildren
-
-void            InitDIE( dw_client );
-void            FiniDIE( dw_client );
-void            StartDIE( dw_client, abbrev_code );
-void            EndDIE( dw_client );
-void            StartChildren( dw_client );
-void            EndChildren( dw_client );
+extern void     DW_InitDIE( dw_client );
+extern void     DW_FiniDIE( dw_client );
+extern void     DW_StartDIE( dw_client, abbrev_code );
+extern void     DW_EndDIE( dw_client );
+extern void     DW_StartChildren( dw_client );
+extern void     DW_EndChildren( dw_client );
 
 #endif

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -131,7 +131,7 @@ dw_loc_label DWENTRY DWLocNewLabel( dw_client cli, dw_loc_id loc )
 {
     dw_loc_label    new;
 
-    new = CarveAlloc( cli, cli->debug_loc.label_carver );
+    new = DW_CarveAlloc( cli, cli->debug_loc.label_carver );
     new->next = loc->labels;
     loc->labels = new;
     new->addr = 0;
@@ -426,7 +426,7 @@ dw_loc_handle DWENTRY DWLocFini( dw_client cli, dw_loc_id loc )
     addr = 0;
     base_of_block = result->u.expr.expr;
     p = base_of_block + sizeof( uint_16 );
-    for( cur_op = loc->first; cur_op != NULL; cur_op = FreeLink( cli, cur_op ) ) {
+    for( cur_op = loc->first; cur_op != NULL; cur_op = DW_FreeLink( cli, cur_op ) ) {
         *p++ = cur_op->op_code;
         ++addr;
         switch( cur_op->op_code ) {
@@ -482,20 +482,20 @@ dw_loc_handle DWENTRY DWLocFini( dw_client cli, dw_loc_id loc )
     }
     *(uint_16 *)base_of_block = (uint_16)( ( p - base_of_block ) - sizeof( uint_16 ) );
 
-    CarveFreeChain( cli->debug_loc.label_carver, loc->labels );
+    DW_CarveFreeChain( cli->debug_loc.label_carver, loc->labels );
     CLIFree( cli, loc );
 
     return( result );
 }
 
-void EmitLocExprNull( dw_client cli, dw_sectnum sect, size_t size )
+void DW_EmitLocExprNull( dw_client cli, dw_sectnum sect, size_t size )
 {
     /* ensure that size is correct value */
     _Assert( size == 1 || size == 2 || size == 4 );
     CLISectionWriteZeros( cli, sect, size );
 }
 
-uint_32 EmitLocExpr( dw_client cli, dw_sectnum sect, size_t size, dw_loc_handle loc )
+uint_32 DW_EmitLocExpr( dw_client cli, dw_sectnum sect, size_t size, dw_loc_handle loc )
 {
     char            *p;
     size_t          bytes_left;
@@ -580,7 +580,7 @@ void DWENTRY DWListEntryOut( dw_client cli, dw_list_id id, dw_sym_handle begin, 
         id->hdl.u.ref = CLISectionAbs( cli, DW_DEBUG_LOC );
     }
     CLIReloc4( cli, DW_DEBUG_LOC, DW_W_LOC_RANGE, begin, end );
-    EmitLocExpr( cli, DW_DEBUG_LOC, sizeof( uint_16 ), loc );
+    DW_EmitLocExpr( cli, DW_DEBUG_LOC, sizeof( uint_16 ), loc );
 }
 
 dw_loc_handle DWENTRY DWListFini( dw_client cli, dw_list_id id )
@@ -588,7 +588,7 @@ dw_loc_handle DWENTRY DWListFini( dw_client cli, dw_list_id id )
     if( id->hdl.is_expr == LOC_LIST_REF ) {
         CLISectionWriteZeros( cli, DW_DEBUG_LOC, 2 * sizeof( dw_targ_addr ) );
     } else {
-        id->hdl.u.list = ReverseChain( id->hdl.u.list );
+        id->hdl.u.list = DW_ReverseChain( id->hdl.u.list );
     }
     return( (dw_loc_handle)id );
 }
@@ -597,7 +597,7 @@ dw_loc_handle DWENTRY DWListFini( dw_client cli, dw_list_id id )
 static void trash( dw_client cli, dw_loc_handle loc )
 {
     if( loc->is_expr == LOC_LIST ) {
-        FreeChain( cli, loc->u.list );
+        DW_FreeChain( cli, loc->u.list );
     }
     CLIFree( cli, loc );
 }
@@ -616,7 +616,7 @@ void DWENTRY DWLocTrash( dw_client cli, dw_loc_handle loc )
 }
 
 
-uint_32 EmitLocList( dw_client cli, dw_sectnum sect, dw_loc_handle loc )
+uint_32 DW_EmitLocList( dw_client cli, dw_sectnum sect, dw_loc_handle loc )
 {
     list_entry      *cur;
     uint_32         bytes_written;
@@ -628,20 +628,20 @@ uint_32 EmitLocList( dw_client cli, dw_sectnum sect, dw_loc_handle loc )
     for( cur = loc->u.list; cur != NULL; cur = cur->next ) {
         bytes_written += 2 * sizeof( dw_targ_addr );
         CLIReloc4( cli, sect, DW_W_LOC_RANGE, cur->begin, cur->end );
-        bytes_written += EmitLocExpr( cli, sect, sizeof( uint_16 ), loc );
+        bytes_written += DW_EmitLocExpr( cli, sect, sizeof( uint_16 ), loc );
     }
     CLISectionWriteZeros( cli, sect, 2 * sizeof( dw_targ_addr ) );
     return( bytes_written + 2 * sizeof( dw_targ_addr ) );
 }
 
 
-uint_32 EmitLoc( dw_client cli, dw_sectnum sect, dw_loc_handle loc )
+uint_32 DW_EmitLoc( dw_client cli, dw_sectnum sect, dw_loc_handle loc )
 {
     switch( loc->is_expr ) {
     case LOC_LIST:
         CLIWriteU8( cli, sect, DW_FORM_data4 );
         CLIReloc3( cli, sect, DW_W_SECTION_POS, DW_DEBUG_LOC );
-        EmitLocList( cli, DW_DEBUG_LOC, loc );
+        DW_EmitLocList( cli, DW_DEBUG_LOC, loc );
         return( 1 + sizeof( dw_sect_offs ) );
     case LOC_LIST_REF:
         CLIWriteU8( cli, sect, DW_FORM_data4 );
@@ -651,12 +651,12 @@ uint_32 EmitLoc( dw_client cli, dw_sectnum sect, dw_loc_handle loc )
         return( 1 + sizeof( dw_sect_offs ) );
     case LOC_EXPR:
         CLIWriteU8( cli, sect, DW_FORM_block2 );
-        return( 1 + EmitLocExpr( cli, sect, sizeof( uint_16 ), loc ) );
+        return( 1 + DW_EmitLocExpr( cli, sect, sizeof( uint_16 ), loc ) );
     }
     return( 0 );
 }
 
-uint_32 EmitLocNull( dw_client cli, dw_sectnum sect )
+uint_32 DW_EmitLocNull( dw_client cli, dw_sectnum sect )
 {
     static const uint_8 loc_null[] = {DW_FORM_block1, 0};
 
@@ -664,14 +664,14 @@ uint_32 EmitLocNull( dw_client cli, dw_sectnum sect )
     return( sizeof( loc_null ) );
 }
 
-void InitDebugLoc( dw_client cli )
+void DW_InitDebugLoc( dw_client cli )
 {
     cli->debug_loc.handles = 0;
-    cli->debug_loc.label_carver = CarveCreate( cli, sizeof( struct dw_loc_label ), 16 );
+    cli->debug_loc.label_carver = DW_CarveCreate( cli, sizeof( struct dw_loc_label ), 16 );
 }
 
 
-void FiniDebugLoc( dw_client cli )
+void DW_FiniDebugLoc( dw_client cli )
 {
     dw_loc_handle   cur;
     dw_loc_handle   next;
@@ -680,5 +680,5 @@ void FiniDebugLoc( dw_client cli )
         next = cur->next;
         trash( cli, cur );
     }
-    CarveDestroy( cli, cli->debug_loc.label_carver );
+    DW_CarveDestroy( cli, cli->debug_loc.label_carver );
 }

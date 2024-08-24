@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -66,7 +67,7 @@ static void newBlk(
 }
 
 
-carve_t CarveCreate(
+carve_t DW_CarveCreate(
     dw_client                   cli,
     size_t                      elm_size,
     size_t                      blk_size )
@@ -85,16 +86,16 @@ carve_t CarveCreate(
 }
 
 
-void CarveDestroy(
+void DW_CarveDestroy(
     dw_client                   cli,
     carve_t                     cv )
 {
-    FreeChain( cli, cv->blk_list );
+    DW_FreeChain( cli, cv->blk_list );
     CLIFree( cli, cv );
 }
 
 
-void *CarveAlloc(
+void *DW_CarveAlloc(
     dw_client                   cli,
     carve_t                     cv )
 {
@@ -113,7 +114,7 @@ void *CarveAlloc(
 }
 
 
-void CarveFree(
+void DW_CarveFree(
     carve_t                     cv,
     void *                      elm )
 {
@@ -122,7 +123,7 @@ void CarveFree(
 }
 
 
-void *CarveFreeLink(
+void *DW_CarveFreeLink(
     carve_t                     cv,
     void *                      elm )
 {
@@ -135,7 +136,7 @@ void *CarveFreeLink(
 }
 
 
-void CarveFreeChain(
+void DW_CarveFreeChain(
     carve_t                     cv,
     void *                      list )
 {

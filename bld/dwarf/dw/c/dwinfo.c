@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,82 +38,82 @@
 #include "dwinfo.h"
 
 
-void InfoReloc( dw_client cli, uint reloc_type )
+void DW_InfoReloc( dw_client cli, uint reloc_type )
 {
     CLIReloc2( cli, DW_DEBUG_INFO, reloc_type );
 }
 
 
-void Info8( dw_client cli, uint_8 value )
+void DW_Info8( dw_client cli, uint_8 value )
 {
     CLIWriteU8( cli, DW_DEBUG_INFO, value );
 }
 
 
-void Info16( dw_client cli, uint_16 value )
+void DW_Info16( dw_client cli, uint_16 value )
 {
     CLIWriteU16( cli, DW_DEBUG_INFO, value );
 }
 
 
-void Info32( dw_client cli, uint_32 value )
+void DW_Info32( dw_client cli, uint_32 value )
 {
     CLIWriteU32( cli, DW_DEBUG_INFO, value );
 }
 
 
-void InfoSLEB128( dw_client cli, dw_sconst value )
+void DW_InfoSLEB128( dw_client cli, dw_sconst value )
 {
     CLIWriteSLEB128( cli, DW_DEBUG_INFO, value );
 }
 
 
-void InfoULEB128( dw_client cli, dw_uconst value )
+void DW_InfoULEB128( dw_client cli, dw_uconst value )
 {
     CLIWriteULEB128( cli, DW_DEBUG_INFO, value );
 }
 
 
-void InfoBytes( dw_client cli, const void *buf, size_t size )
+void DW_InfoBytes( dw_client cli, const void *buf, size_t size )
 {
     CLIWrite( cli, DW_DEBUG_INFO, buf, size );
 }
 
 
-void InfoString( dw_client cli, const char *str )
+void DW_InfoString( dw_client cli, const char *str )
 {
     CLIWriteString( cli, DW_DEBUG_INFO, str );
 }
 
-void InfoEmitLocExprNull( dw_client cli, size_t size )
+void DW_InfoEmitLocExprNull( dw_client cli, size_t size )
 {
-    EmitLocExprNull( cli, DW_DEBUG_INFO, size );
+    DW_EmitLocExprNull( cli, DW_DEBUG_INFO, size );
 }
 
-uint_32 InfoEmitLocExpr( dw_client cli, size_t size, dw_loc_handle loc )
+uint_32 DW_InfoEmitLocExpr( dw_client cli, size_t size, dw_loc_handle loc )
 {
-    return( EmitLocExpr( cli, DW_DEBUG_INFO, size, loc ) );
+    return( DW_EmitLocExpr( cli, DW_DEBUG_INFO, size, loc ) );
 }
 
-void InfoHandleWriteOffset( dw_client cli, dw_handle hdl )
+void DW_InfoHandleWriteOffset( dw_client cli, dw_handle hdl )
 {
-    HandleWriteOffset( cli, hdl, DW_DEBUG_INFO );
+    DW_HandleWriteOffset( cli, hdl, DW_DEBUG_INFO );
 }
 
-void InfoHandleReference( dw_client cli, dw_handle hdl )
+void DW_InfoHandleReference( dw_client cli, dw_handle hdl )
 {
     if( cli->compiler_options & DW_CM_BROWSER ) {
         DWReference( cli, cli->decl.line, cli->decl.column, hdl );
     }
-    InfoHandleWriteOffset( cli, hdl );
+    DW_InfoHandleWriteOffset( cli, hdl );
 }
 
 
-void InitDebugInfo( dw_client cli )
+void DW_InitDebugInfo( dw_client cli )
 {
     /* leave room for the length field */
     CLISectionReserveSize( cli, DW_DEBUG_INFO );
-    Info16( cli, 2 );   /* section version */
+    DW_Info16( cli, 2 );   /* section version */
     /* abbrev start */
     if( cli->compiler_options & DW_CM_ABBREV_PRE ) {
         CLIReloc4( cli, DW_DEBUG_INFO, DW_W_EXT_REF, cli->abbrev_sym, 0 );
@@ -122,11 +122,11 @@ void InitDebugInfo( dw_client cli )
         CLIReloc3( cli, DW_DEBUG_INFO, DW_W_SECTION_POS, DW_DEBUG_ABBREV );
         CLISectionSeekEnd( cli, DW_DEBUG_ABBREV );
     }
-    Info8( cli, cli->offset_size );
+    DW_Info8( cli, cli->offset_size );
 }
 
 
-void FiniDebugInfo( dw_client cli )
+void DW_FiniDebugInfo( dw_client cli )
 {
     /* backpatch the section length */
     CLISectionSetSize( cli, DW_DEBUG_INFO );

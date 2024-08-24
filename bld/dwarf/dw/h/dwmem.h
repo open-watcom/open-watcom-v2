@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,14 +34,9 @@
 #ifndef DWMEM_H_INCLUDED
 #define DWMEM_H_INCLUDED
 
-#define StrDup                  DW_StrDup
-#define FreeChain               DW_FreeChain
-#define FreeLink                DW_FreeLink
-#define ReverseChain            DW_ReverseChain
-
-extern  char *StrDup( dw_client __cli, const char *__str );
-extern  void *FreeLink( dw_client __cli, void *__node );
-extern  void FreeChain( dw_client __cli, void *__chain );
-extern  void *ReverseChain( void *__chain );
+extern char     *DW_StrDup( dw_client __cli, const char *__str );
+extern void     *DW_FreeLink( dw_client __cli, void *__node );
+extern void     DW_FreeChain( dw_client __cli, void *__chain );
+extern void     *DW_ReverseChain( void *__chain );
 
 #endif

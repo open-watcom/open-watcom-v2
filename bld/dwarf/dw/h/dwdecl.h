@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,14 +36,9 @@
 
 #include "dwabbrev.h"
 
-#define InitDecl                DW_InitDecl
-#define FiniDecl                DW_FiniDecl
-#define EmitDecl                DW_EmitDecl
-#define CheckDecl               DW_CheckDecl
-
-void    InitDecl( dw_client );
-void    FiniDecl( dw_client );
-void    EmitDecl( dw_client );
-abbrev_code     CheckDecl( dw_client, abbrev_code );
+extern void         DW_InitDecl( dw_client );
+extern void         DW_FiniDecl( dw_client );
+extern void         DW_EmitDecl( dw_client );
+extern abbrev_code  DW_CheckDecl( dw_client, abbrev_code );
 
 #endif

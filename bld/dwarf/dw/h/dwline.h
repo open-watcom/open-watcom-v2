@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -46,12 +47,8 @@ typedef struct dw_include_stack {
 } dw_include_stack;
 
 
-#define InitDebugLine           DW_InitDebugLine
-#define FiniDebugLine           DW_FiniDebugLine
-#define GetFileNumber           DW_GetFileNumber
-
-extern  void    InitDebugLine( dw_client cli, const char *, const char *, size_t );
-extern  void    FiniDebugLine( dw_client cli );
-extern  uint    GetFileNumber( dw_client cli, const char * );
+extern void     DW_InitDebugLine( dw_client cli, const char *, const char *, size_t );
+extern void     DW_FiniDebugLine( dw_client cli );
+extern uint     DW_GetFileNumber( dw_client cli, const char * );
 
 #endif

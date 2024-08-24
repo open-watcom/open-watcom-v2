@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,36 +34,20 @@
 #ifndef DWINFO_H_INCLUDED
 #define DWINFO_H_INCLUDED
 
-#define InitDebugInfo           DW_InitDebugInfo
-#define FiniDebugInfo           DW_FiniDebugInfo
-#define InfoAllocate            DW_InfoAllocate
-#define InfoReloc               DW_InfoReloc
-#define Info8                   DW_Info8
-#define Info16                  DW_Info16
-#define Info32                  DW_Info32
-#define InfoSLEB128             DW_InfoSLEB128
-#define InfoULEB128             DW_InfoULEB128
-#define InfoBytes               DW_InfoBytes
-#define InfoString              DW_InfoString
-#define InfoEmitLocExpr         DW_InfoEmitLocExpr
-#define InfoEmitLocExprNull     DW_InfoEmitLocExprNull
-#define InfoHandleWriteOffset   DW_InfoHandleWriteOffset
-#define InfoHandleReference     DW_InfoHandleReference
+extern void         DW_InitDebugInfo( dw_client );
+extern void         DW_FiniDebugInfo( dw_client );
 
-extern void         InitDebugInfo( dw_client );
-extern void         FiniDebugInfo( dw_client );
-
-extern void         InfoReloc( dw_client, uint );
-extern void         Info8( dw_client, uint_8 );
-extern void         Info16( dw_client, uint_16 );
-extern void         Info32( dw_client, uint_32 );
-extern void         InfoSLEB128( dw_client, dw_sconst );
-extern void         InfoULEB128( dw_client, dw_uconst );
-extern void         InfoBytes( dw_client, const void *, size_t );
-extern void         InfoString( dw_client, const char * );
-extern uint_32      InfoEmitLocExpr( dw_client, size_t, dw_loc_handle );
-extern void         InfoEmitLocExprNull( dw_client, size_t );
-extern void         InfoHandleWriteOffset( dw_client cli, dw_handle hdl );
-extern void         InfoHandleReference( dw_client cli, dw_handle hdl );
+extern void         DW_InfoReloc( dw_client, uint );
+extern void         DW_Info8( dw_client, uint_8 );
+extern void         DW_Info16( dw_client, uint_16 );
+extern void         DW_Info32( dw_client, uint_32 );
+extern void         DW_InfoSLEB128( dw_client, dw_sconst );
+extern void         DW_InfoULEB128( dw_client, dw_uconst );
+extern void         DW_InfoBytes( dw_client, const void *, size_t );
+extern void         DW_InfoString( dw_client, const char * );
+extern uint_32      DW_InfoEmitLocExpr( dw_client, size_t, dw_loc_handle );
+extern void         DW_InfoEmitLocExprNull( dw_client, size_t );
+extern void         DW_InfoHandleWriteOffset( dw_client cli, dw_handle hdl );
+extern void         DW_InfoHandleReference( dw_client cli, dw_handle hdl );
 
 #endif

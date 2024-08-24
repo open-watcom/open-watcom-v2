@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -79,7 +79,7 @@ static void writeFileName( dw_client cli, const char *name, size_t len ) // len 
 }
 
 
-uint GetFileNumber( dw_client cli, const char *name )
+uint DW_GetFileNumber( dw_client cli, const char *name )
 {
     size_t              len;
     dw_include          *walk;
@@ -114,7 +114,7 @@ void DWENTRY DWSetFile( dw_client cli, const char *filename )
     _Validate( filename != NULL );
 
     buf[0] = DW_LNS_set_file;
-    end = WriteSLEB128( buf + 1, GetFileNumber( cli, filename ) );
+    end = WriteSLEB128( buf + 1, DW_GetFileNumber( cli, filename ) );
     CLIWrite( cli, DW_DEBUG_LINE, buf, end - buf );
 }
 
@@ -153,7 +153,7 @@ void DWENTRY DWLineNum( dw_client cli, uint info, dw_linenum line_num, dw_column
     cli->debug_line.line = line_num;
 }
 
-void DWLineAddr( dw_client cli, dw_sym_handle sym, dw_addr_offset addr )
+void DWENTRY DWLineAddr( dw_client cli, dw_sym_handle sym, dw_addr_offset addr )
 {
     uint_8              buf[1 + MAX_LEB128 + sizeof( dw_targ_addr )];
     uint_8              *end;
@@ -166,7 +166,7 @@ void DWLineAddr( dw_client cli, dw_sym_handle sym, dw_addr_offset addr )
     cli->debug_line.addr = addr;
 }
 
-void DWLineSeg( dw_client cli, dw_sym_handle sym )
+void DWENTRY DWLineSeg( dw_client cli, dw_sym_handle sym )
 {
     uint_8              buf[1 + MAX_LEB128 + 1];
     uint_8              *end;
@@ -181,7 +181,7 @@ void DWLineSeg( dw_client cli, dw_sym_handle sym )
     }
 }
 
-void InitDebugLine( dw_client cli, const char *source_filename, const char *inc_list, size_t inc_list_len )
+void DW_InitDebugLine( dw_client cli, const char *source_filename, const char *inc_list, size_t inc_list_len )
 {
     stmt_prologue prol = {
         0,
@@ -229,16 +229,16 @@ void InitDebugLine( dw_client cli, const char *source_filename, const char *inc_
     /* and put out the terminators */
     CLISectionWriteZeros( cli, DW_DEBUG_LINE, 2 );
     /* and put out the source filename */
-    GetFileNumber( cli, source_filename );
+    DW_GetFileNumber( cli, source_filename );
 }
 
 
-void FiniDebugLine( dw_client cli )
+void DW_FiniDebugLine( dw_client cli )
 {
     static const uint_8 end_seq[] = { 0, 1, DW_LNE_end_sequence };
 
     CLIWrite( cli, DW_DEBUG_LINE, end_seq, sizeof( end_seq ) );
     /* backpatch the section length */
     CLISectionSetSize( cli, DW_DEBUG_LINE );
-    FreeChain( cli, cli->debug_line.files );
+    DW_FreeChain( cli, cli->debug_line.files );
 }

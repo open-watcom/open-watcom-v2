@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,10 +34,7 @@
 #ifndef DWSYM_H_INCLUDED
 #define DWSYM_H_INCLUDED
 
-#define InitSym                 DW_InitSym
-#define FiniSym                 DW_FiniSym
-
-void            InitSyms( dw_client, dw_init_info * );
-void            FiniSyms( dw_client );
+extern void     DW_InitSyms( dw_client, dw_init_info * );
+extern void     DW_FiniSyms( dw_client );
 
 #endif

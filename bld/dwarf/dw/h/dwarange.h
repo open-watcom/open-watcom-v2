@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,10 +34,7 @@
 #ifndef DWARANGE_H_INCLUDED
 #define DWARANGE_H_INCLUDED
 
-#define InitDebugAranges        DW_InitDebugAranges
-#define FiniDebugAranges        DW_FiniDebugAranges
-
-void    InitDebugAranges( dw_client );
-void    FiniDebugAranges( dw_client );
+extern void     DW_InitDebugAranges( dw_client );
+extern void     DW_FiniDebugAranges( dw_client );
 
 #endif
