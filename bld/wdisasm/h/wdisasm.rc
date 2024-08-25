@@ -5,13 +5,13 @@ STRINGTABLE
 BEGIN
     #define pick(c,e,j) (c + RLE_ENGLISH * MSG_LANG_SPACING), [ e ]
 
-    #include "..\wdisasm.msg"
+    #include "wdisasm.msg"
 
     #undef pick
 
     #define pick(c,e,j) (c + RLE_JAPANESE * MSG_LANG_SPACING), [ j ]
 
-    #include "..\wdisasm.msg"
+    #include "wdisasm.msg"
 
     #undef pick
 
