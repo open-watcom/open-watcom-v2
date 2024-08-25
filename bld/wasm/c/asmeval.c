@@ -1213,8 +1213,8 @@ static bool calculate( expr_list *token_1, expr_list *token_2, token_buffer *tok
             token_1->type = EXPR_UNDEF;
             return( RC_ERROR );
         }
-        switch( tokbuf->tokens[index].u.token ) {
 #if defined( _STANDALONE_ )
+        switch( tokbuf->tokens[index].u.token ) {
         case T_LENGTH:
         case T_SIZE:
         case T_LENGTHOF:
@@ -1302,12 +1302,15 @@ static bool calculate( expr_list *token_1, expr_list *token_2, token_buffer *tok
             token_1->explicit = false;
             token_1->mem_type = MT_EMPTY;
             break;
-#endif
         default:
             TokenAssign( token_1, token_2 );
             token_1->instr = tokbuf->tokens[index].u.token;
             break;
         }
+#else
+        TokenAssign( token_1, token_2 );
+        token_1->instr = tokbuf->tokens[index].u.token;
+#endif
         break;
     case TC_ARITH_OPERATOR:
         MakeConst( token_1 );
