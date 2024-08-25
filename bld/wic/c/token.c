@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -1029,7 +1029,7 @@ void setTokPos(pTokPos pos, char *fileName, int8 fileLevel, int16 lineNum,
     pos->orderLineNum = orderLineNum1;
 }
 
-TokenType getTokDataType(pTokData tokData) {
+token_type getTokDataType(pTokData tokData) {
     int code;
     if (tokData == NULL) {
         code = Y_EOF;

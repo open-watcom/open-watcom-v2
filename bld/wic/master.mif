@@ -7,6 +7,8 @@ proj_name = wic
 
 wic_autodepends = .AUTODEPEND
 
+wic_wreslib_cli = text
+
 wic_trmem = 1
 
 !include cproj.mif
