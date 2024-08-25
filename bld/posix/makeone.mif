@@ -25,7 +25,7 @@ posix_autodepends = .AUTODEPEND
 #
 .c: ../src/$(name)
 
-inc_dirs = -I"../src/$(name)" -I"../h"
+inc_dirs = -I"../src/$(name)" -I"../h" $(extra_inc_dirs)
 
 #
 # lflags
