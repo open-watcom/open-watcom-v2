@@ -1174,7 +1174,7 @@ bool ConstExprAndType( const_val *val )
         break;
     case OPR_PUSHFLOAT:
         CErr1( ERR_EXPR_MUST_BE_INTEGRAL );
-        I32ToI64( (int)atof( tree->op.u2.float_value->string ), &val->value );
+        val->value.u._64[0] = (long long)atof( tree->op.u2.float_value->string );
         ret = false;
         break;
     default:
@@ -2546,6 +2546,15 @@ static TREEPTR NotOp( TREEPTR tree )
         case TYP_LONG:
         case TYP_ULONG:
             if( tree->op.u2.long_value == 0 ) {
+                tree->op.u2.long_value = 1;
+            } else {
+                tree->op.u2.long_value = 0;
+            }
+            tree->op.u1.const_type = TYP_INT;
+            break;
+        case TYP_LONG64:
+        case TYP_ULONG64:
+            if( (tree->op.u2.long64_value.u._32[I64LO32] | tree->op.u2.long64_value.u._32[I64HI32]) == 0 ) {
                 tree->op.u2.long_value = 1;
             } else {
                 tree->op.u2.long_value = 0;

@@ -935,28 +935,28 @@ TREEPTR RelOp( TREEPTR op1, TOKEN opr, TREEPTR op2 )
         tree = ErrorNode( tree );
     } else {
         switch( opr ) {
-            case T_EQ:
-                tree->op.u1.cc = CC_EQ;
-                break;
-            case T_NE:
-                tree->op.u1.cc = CC_NE;
-                break;
-            case T_LT:
-                tree->op.u1.cc = CC_LT;
-                break;
-            case T_LE:
-                tree->op.u1.cc = CC_LE;
-                break;
-            case T_GT:
-                tree->op.u1.cc = CC_GT;
-                break;
-            case T_GE:
-                tree->op.u1.cc = CC_GE;
-                break;
-            default:
-                assert( 0 );
-                tree->op.u1.cc = 0;
-                break;
+        case T_EQ:
+            tree->op.u1.cc = CC_EQ;
+            break;
+        case T_NE:
+            tree->op.u1.cc = CC_NE;
+            break;
+        case T_LT:
+            tree->op.u1.cc = CC_LT;
+            break;
+        case T_LE:
+            tree->op.u1.cc = CC_LE;
+            break;
+        case T_GT:
+            tree->op.u1.cc = CC_GT;
+            break;
+        case T_GE:
+            tree->op.u1.cc = CC_GE;
+            break;
+        default:
+            assert( 0 );
+            tree->op.u1.cc = 0;
+            break;
         }
         tree->op.u2.compare_type = cmp_type;
         tree->u.expr_type = GetType( TYP_INT );

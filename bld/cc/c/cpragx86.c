@@ -601,8 +601,8 @@ void AsmSysLine( const char *buff )
 #endif
 }
 
-static bool checkEnum( int *value )
-/*********************************/
+static bool checkEnum( unsigned char *byte_value )
+/************************************************/
 {
     id_hash_idx hash;
     SYM_HANDLE  sym_handle;
@@ -614,7 +614,7 @@ static bool checkEnum( int *value )
         if( sym_handle == NULL ) {
             ep = EnumLookup( hash, Buffer );
             if( ep != NULL ) {
-                *value = ep->value.u._64[0];
+                *byte_value = (unsigned char)ep->value.u._64[0];
                 return( true );
             }
         }
@@ -631,7 +631,7 @@ static bool GetByteSeq( aux_info *info )
     fix_words           fixword;
     bool                uses_auto;
     bool                too_many_bytes;
-    int                 value;
+    unsigned char       byte_value;
 #if _CPU == 8086
     bool                use_fpu_emu = false;
 #endif
@@ -662,8 +662,8 @@ static bool GetByteSeq( aux_info *info )
 #endif
             AsmCodeBuffer[AsmCodeAddress++] = (unsigned char)Constant;
             PPNextToken();
-        } else if( checkEnum( &value ) ) {
-            AsmCodeBuffer[AsmCodeAddress++] = (unsigned char)value;
+        } else if( checkEnum( &byte_value ) ) {
+            AsmCodeBuffer[AsmCodeAddress++] = byte_value;
             PPNextToken();
         } else {
 #if _CPU == 8086

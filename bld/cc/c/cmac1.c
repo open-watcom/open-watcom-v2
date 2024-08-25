@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -251,6 +251,7 @@ TOKEN GetMacroToken( void )
     bool            keep_token;
     TOKEN           token;
 
+    token = T_NULL;
     for( ; (mtok = TokenList) != NULL; ) {
         if( (token = mtok->token) != T_NULL ) {
             break;

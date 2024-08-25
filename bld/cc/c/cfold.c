@@ -1215,14 +1215,16 @@ static void CheckOpndValues( TREEPTR tree )
                 max_shift = SizeOfArg( tree->left->u.expr_type );
             max_shift *= 8;
             switch( con ) {
-            case SIGNED_INT: {
+            case SIGNED_INT:
+              {
                 if( opnd->op.u2.long_value < 0 ) {
                     shift_negative = true;
                 } else if( opnd->op.u2.ulong_value >= max_shift ) {
                     shift_too_big = true;
                 }
-                } break;
-            case SIGNED_INT64: {
+              } break;
+            case SIGNED_INT64:
+              {
                 int64       right;
                 uint64      big_shift;
 
@@ -1235,12 +1237,13 @@ static void CheckOpndValues( TREEPTR tree )
                         shift_too_big = true;
                     }
                 }
-                } break;
+              } break;
             case UNSIGNED_INT:
                 if( opnd->op.u2.ulong_value >= max_shift )
                     shift_too_big = true;
                 break;
-            case UNSIGNED_INT64: {
+            case UNSIGNED_INT64:
+              {
                 uint64      right;
                 uint64      big_shift;
 
@@ -1249,7 +1252,7 @@ static void CheckOpndValues( TREEPTR tree )
                 if( U64Cmp( &right, &big_shift ) >= 0 ) {
                     shift_too_big = true;
                 }
-                } break;
+              } break;
             default:
                 /*
                  * Not supposed to happen!
