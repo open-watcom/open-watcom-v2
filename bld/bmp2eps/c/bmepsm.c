@@ -29,7 +29,7 @@ static char progname[] = { "bmp2eps" };
 
 /* filenames when processing stdin */
 static char dummy_bmp[] = { "file.bmp" };
-#if HAVE_PNG_H
+#ifdef HAVE_PNG_H
 static char dummy_png[] = { "file.png" };
 #endif
 #if HAVE_JPEGLIB_H
@@ -95,7 +95,7 @@ static const char   UsageText[] = {
   " \0"
   "      -t <filetype>          choose one of the following\0"
   "         bmp\0"
-#if HAVE_PNG_H
+#ifdef HAVE_PNG_H
   "         png\0"
 #endif
 #if HAVE_JPEGLIB_H
@@ -390,7 +390,7 @@ int main(int argc, char *argv[])
               if(strcmp(ptr, "bmp") == 0) {
                 dummy_filename = dummy_bmp;
               }
-#if HAVE_PNG_H
+#ifdef HAVE_PNG_H
               if(strcmp(ptr, "png") == 0) {
                 dummy_filename = dummy_png;
               }
@@ -548,7 +548,7 @@ int main(int argc, char *argv[])
                 if(strncmp(ptr, str_ft, lgt1) == 0) {
                   done = 1;
                   ptr = &(ptr[lgt1]);
-#if HAVE_PNG_H
+#ifdef HAVE_PNG_H
                   if(strcmp(ptr, "png") == 0) {
                     dummy_filename = dummy_png;
                   }
@@ -649,7 +649,7 @@ int main(int argc, char *argv[])
         if(r == -1) {
           fprintf(stderr, "setmode(): Failed to establish binary mode for stdin!\n");
         }
-#if DEBUG
+#ifdef DEBUG
         else {
           fprintf(stderr, "setmode(): Binary mode established.\n");
         }
