@@ -2,7 +2,7 @@
 *
 *                          Open Watcom Project
 *
-* Copyright (c) 2018-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2018-2024 The Open Watcom Contributors. All Rights Reserved.
 *
 *****************************************************************************/
 // (c) 2016 and later: Unicode, Inc. and others.
@@ -72,7 +72,7 @@ U_NAMESPACE_BEGIN
  * @see LocalPointer
  * @stable ICU 4.4
  */
-#if U_HAVE_RVALUE_REFERENCES
+#ifdef U_HAVE_RVALUE_REFERENCES
 class LocalUEnumerationPointer : public LocalPointerBase<UEnumeration> {
 public:
     using LocalPointerBase<UEnumeration>::operator*;

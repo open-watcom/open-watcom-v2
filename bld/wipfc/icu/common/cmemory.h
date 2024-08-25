@@ -2,7 +2,7 @@
 *
 *                          Open Watcom Project
 *
-* Copyright (c) 2018-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2018-2024 The Open Watcom Contributors. All Rights Reserved.
 *
 *****************************************************************************/
 // (c) 2016 and later: Unicode, Inc. and others.
@@ -148,7 +148,7 @@ public:
      * @param p simple pointer to an array of T items that is adopted
      */
     explicit LocalMemory(T *p=NULL) : LocalPointerBase<T>(p) {}
-#if U_HAVE_RVALUE_REFERENCES
+#ifdef U_HAVE_RVALUE_REFERENCES
     /**
      * Move constructor, leaves src with isNull().
      * @param src source smart pointer
@@ -163,7 +163,7 @@ public:
     ~LocalMemory() {
         uprv_free(LocalPointerBase<T>::ptr);
     }
-#if U_HAVE_RVALUE_REFERENCES
+#ifdef U_HAVE_RVALUE_REFERENCES
     /**
      * Move assignment operator, leaves src with isNull().
      * The behavior is undefined if *this and src are the same object.
@@ -312,7 +312,7 @@ public:
      * Destructor deletes the array (if owned).
      */
     ~MaybeStackArray() { releaseArray(); }
-#if U_HAVE_RVALUE_REFERENCES
+#ifdef U_HAVE_RVALUE_REFERENCES
     /**
      * Move constructor: transfers ownership or copies the stack array.
      */
@@ -426,7 +426,7 @@ private:
 #endif
 };
 
-#if U_HAVE_RVALUE_REFERENCES
+#ifdef U_HAVE_RVALUE_REFERENCES
 template<typename T, int32_t stackCapacity>
 icu::MaybeStackArray<T, stackCapacity>::MaybeStackArray(
         MaybeStackArray <T, stackCapacity>&& src) U_NOEXCEPT
