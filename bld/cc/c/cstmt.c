@@ -201,6 +201,21 @@ void GenFunctionNode( SYM_HANDLE sym_handle )
 }
 
 
+/*
+ * __declspec(noinline) fix the problem with VS2022 MS compiler global optimization
+ * by inlining, it was searched by empirical testing that it fix our problem
+ * but reason for this behaviour is unknown
+ *
+ * probably bug, incorrectly inlined code
+ * -Ob1 option for this source file solve this issue (always)
+ * experimentaly checked that this function if not inlined then fix the issue
+ * hard to debug, I didn't found method to say debugger to work with
+ * breakpoints in inlined function code
+ * of cause it can be some hidden bug in OW code, but happen with VS2022 only
+ */
+#ifdef _WIN64
+__declspec(noinline)
+#endif
 LABEL_INDEX NextLabel( void )
 {
     return( ++LabelIndex );
@@ -284,7 +299,7 @@ static bool JumpFalse( TREEPTR expr, LABEL_INDEX label )
 
     jump_generated = false;
     if( expr->op.opr == OPR_PUSHINT ) {
-        if( ! expr->op.u2.long_value ) {
+        if( CheckZeroConstant( expr ) ) {
             Jump( label );
             jump_generated = true;
         }
@@ -300,7 +315,7 @@ static bool JumpFalse( TREEPTR expr, LABEL_INDEX label )
 static void JumpTrue( TREEPTR expr, LABEL_INDEX label )
 {
     if( expr->op.opr == OPR_PUSHINT ) {
-        if( expr->op.u2.long_value ) {
+        if( !CheckZeroConstant( expr ) ) {
             Jump( label );
         }
         FreeExprNode( expr );

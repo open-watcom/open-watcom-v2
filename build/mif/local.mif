@@ -112,14 +112,8 @@ common_flags_dbg = -Zi -fast
 common_flags_rel = -Ox -Zi
 common_flags_dbg = -Zi
 !  else
-# Visual Studio 2022 and above
-# probably bug, incorrectly inlined code if -Ox option is used
-# -Ob1 option solve the issue
-# hard to debug, I didn't found method to say debugger to work with
-# breakpoints in inlined function code
-# of cause it can be some hidden bug in OW code, but happen with VS2022 only
-common_flags_rel = -Ox -Zi -Ob1
-common_flags_dbg = -Zi -Ob1
+common_flags_rel = -Ox -Zi
+common_flags_dbg = -Zi
 !  endif
 ! endif
 ! ifeq debug 0
@@ -128,15 +122,42 @@ common_flags = $(common_flags_rel)
 common_flags = $(common_flags_dbg)
 ! endif
 
-# -wd4068 "unknown pragma"
-# -wd4102 "unreferenced label"
-# -wd4127 "conditional expression is constant"
-# -wd4214 "bit field types other than int"
-# -wd4244 "conversion ....., possible loss of data"
-# -wd4306 "type cast: conversion ...... of greater size"
-# -wd4702 "unreachable code"
-#common_cflags_wng = -wd4068 -wd4102 -wd4127 -wd4214 -wd4244 -wd4306 -wd4702
+#
+# C4013	"'function' undefined; assuming extern returning int"
+# C4061	"enumerator 'identifier' in switch of enum 'enumeration' is not explicitly handled by a case label"
+# C4062	"enumerator 'identifier' in switch of enum 'enumeration' is not handled"
+# C4063	"case 'identifier' is not a valid value for switch of enum 'enumeration'"
+# C4068 "unknown pragma"
+# C4102 "unreferenced label"
+# C4127 "conditional expression is constant"
+# C4214 "bit field types other than int"
+# C4244 "conversion ....., possible loss of data"
+# C4306 "type cast: conversion ...... of greater size"
+# C4574	"'Identifier' is defined to be '0': did you mean to use '#if identifier'?"
+# C4702 "unreachable code"
+# C4710	"'function': function not inlined"
+# C4711	"function 'function' selected for automatic inline expansion"
+# C4774	"'string' : format string expected in argument number is not a string literal"
+# C4820	"'bytes' bytes padding added after construct 'member_name'"
+# C5045	"Compiler will insert Spectre mitigation for memory load if /Qspectre switch specified"
+#
+!ifeq proj_name builder
 common_cflags_wng = -W4 -wd4214
+!else
+common_cflags_wng = -Wall &
+    -we4013 &
+    -wd4061 &
+    -wd4062 &
+    -wd4063 &
+    -wd4214 &
+    -wd4306 &
+    -wd4574 &
+    -wd4710 &
+    -wd4711 &
+    -wd4774 &
+    -wd4820 &
+    -wd5045
+!endif
 common_cflags = $(common_cflags_wng)
 
 common_ldflags_rel =
@@ -237,8 +258,8 @@ bld_clflags  = $(bld_cl_sys) -Fe$@ $(bld_ldflags1)
 bld_cclflags = $(bld_cflags) $(bld_clflags)
 
 # options for linking
-bld_ldflags  =  $(bld_cl_extra_libs_gen) -link -nologo &
-    -MAPINFO:EXPORTS -INCREMENTAL:NO -DEFAULTLIB:user32.lib -DEFAULTLIB:ole32.lib &
+bld_ldflags  =  $(bld_cl_extra_libs_gen) -link -nologo -debug -MAPINFO:EXPORTS &
+    -INCREMENTAL:NO -DEFAULTLIB:user32.lib -DEFAULTLIB:ole32.lib &
     -DEFAULTLIB:advapi32.lib -DEFAULTLIB:shell32.lib -DEFAULTLIB:gdi32.lib -DEFAULTLIB:comdlg32.lib &
     -NODEFAULTLIB:libucrt.lib -DEFAULTLIB:ucrt.lib &
     $(bld_extra_ldflags) $(bld_ldflags_$(proj_type))
@@ -280,7 +301,7 @@ cflags_wind = $(cflags_gen)
 # options for linking
 ldflags1 = $(common_ldflags) -Fm
 
-ldflags_gen_all  = -link -nologo &
+ldflags_gen_all  = -link -nologo -debug -MAPINFO:EXPORTS &
     -INCREMENTAL:NO -DEFAULTLIB:user32.lib -DEFAULTLIB:ole32.lib -DEFAULTLIB:advapi32.lib &
     -DEFAULTLIB:shell32.lib -DEFAULTLIB:gdi32.lib -DEFAULTLIB:comdlg32.lib &
     -NODEFAULTLIB:libucrt.lib -DEFAULTLIB:ucrt.lib
