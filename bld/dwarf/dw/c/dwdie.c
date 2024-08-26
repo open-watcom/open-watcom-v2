@@ -103,7 +103,7 @@ void DW_StartDIE( dw_client cli, abbrev_code abbrev )
     doTheSiblingThing( cli );
 
     if( abbrev & AB_START_REF ) {
-         DW_StartRef( cli );
+        DW_StartRef( cli );
     }
 
     haskids = (abbrev & AB_SIBLING) != 0;       // ab_sibling in "always on"
