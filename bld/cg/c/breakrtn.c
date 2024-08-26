@@ -90,12 +90,11 @@ bool    CreateBreak( void )
         return( false );
     }
     FixEdges();
-
-/*
-    Run through the blocks and find a place (break_blk) where no previous
-    blocks are branched to from later blocks. IE: there are no backward branches
-    around break_blk.
-*/
+    /*
+     * Run through the blocks and find a place (break_blk) where no previous
+     * blocks are branched to from later blocks. IE: there are no backward branches
+     * around break_blk.
+     */
     _MarkBlkAllUnVisited();
     break_blk = NULL;
     back_break_blk = NULL;
@@ -127,10 +126,15 @@ bool    CreateBreak( void )
             ++edge;
         }
     }
-    /* clean up the BLOCK_VISITED flags */
+    /*
+     * clean up the BLOCK_VISITED flags
+     */
     _MarkBlkAllUnVisited();
     if( back_break_blk != NULL ) {
-        break_blk = back_break_blk; /* always better to break on a back edge */
+        /*
+         * always better to break on a back edge
+         */
+        break_blk = back_break_blk;
     }
     if( break_blk == NULL ) {
         break_blk = HeadBlock;
@@ -142,11 +146,10 @@ bool    CreateBreak( void )
         UnFixEdges();
         return( false );
     }
-
-/*
-    create a new block and link it after break_blk. Point Break to the rest
-    of the blocks and unhook them from the block list.
-*/
+    /*
+     * create a new block and link it after break_blk. Point Break to the rest
+     * of the blocks and unhook them from the block list.
+     */
     Break = break_blk;
     Curr = CurrBlock;
     Tail = BlockList;
@@ -160,11 +163,10 @@ bool    CreateBreak( void )
     _SetBlkAttr( exit_blk, BLK_UNKNOWN_DESTINATION );
     break_blk->prev_block->next_block = exit_blk;
     break_blk->prev_block = NULL;
-
-/*
-    run throuch all the blocks before break_blk, and create a 'BranchOut' for
-    and edge that goes to a block after break_blk
-*/
+    /*
+     * run throuch all the blocks before break_blk, and create a 'BranchOut' for
+     * and edge that goes to a block after break_blk
+     */
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
         edge = &blk->edge[0];
         for( targets = blk->targets; targets > 0; --targets ) {
@@ -179,12 +181,10 @@ bool    CreateBreak( void )
             ++edge;
         }
     }
-
-/*
-    now, point all 'BranchOuts' at the new 'exit' block, saving their original
-    labels in the 'lbl' field of the exit_list
-*/
-
+    /*
+     * now, point all 'BranchOuts' at the new 'exit' block, saving their original
+     * labels in the 'lbl' field of the exit_list
+     */
     for( exit_edge = BranchOuts; exit_edge != NULL; exit_edge = exit_edge->next ) {
         edge = exit_edge->edge;
         if( edge->flags & DEST_IS_BLOCK ) {
@@ -206,10 +206,10 @@ bool    CreateBreak( void )
 
     _MarkBlkAttrSet( HeadBlock, BLK_BIG_LABEL );
     HaveBreak = true;
-/*
-    change any branches to HeadBlock from a block after break_blk into
-    a label (~DEST_IS_BLOCK) branch.
-*/
+    /*
+     * change any branches to HeadBlock from a block after break_blk into
+     * a label (~DEST_IS_BLOCK) branch.
+     */
     for( edge = HeadBlock->input_edges; edge != NULL; edge = next_edge ) {
         next_edge = edge->next_source;
         if( edge->source->gen_id >= break_blk->gen_id ) {
@@ -218,12 +218,12 @@ bool    CreateBreak( void )
             edge->flags &= ~DEST_IS_BLOCK;
         }
     }
-/*
-    Now, set up a new HeadBlock, and redirect all unknowns branches to it.
-    Known branches may still go to the old HeadBlock. This is so that
-    HeadBlock will not be a loop header. The loop optimizer will
-    screw up if it is.
-*/
+    /*
+     * Now, set up a new HeadBlock, and redirect all unknowns branches to it.
+     * Known branches may still go to the old HeadBlock. This is so that
+     * HeadBlock will not be a loop header. The loop optimizer will
+     * screw up if it is.
+     */
     blk = NewBlock( NULL, false );
     blk->input_edges = NULL;
     blk->inputs = 0;
