@@ -42,14 +42,14 @@
 
 #else /* __cplusplus not defined */
 
+:include extc99.sp
+
  #define bool _Bool
  #define true  1
  #define false 0
- #if __STDC_VERSION__ < 199901L
-  typedef unsigned char _Bool;
- #endif
-
  #define __bool_true_false_are_defined 1
+
+:include extepi.sp
 
 #endif /* __cplusplus not defined */
 :endsegment
