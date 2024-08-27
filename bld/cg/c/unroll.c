@@ -70,8 +70,8 @@ typedef struct loop_condition {
     block       *loop_edge;
     instruction *compare_ins;
     block       *compare_block;
-    bool        clean;                  // do we need something to clean up after us?
-    bool        complete;               // did we unroll the loop completely
+    bool        clean;          /* do we need something to clean up after us? */
+    bool        complete;       /* did we unroll the loop completely */
 } loop_condition;
 
 
@@ -179,7 +179,10 @@ static  block   *DupLoop( block *tail, loop_abstract *loop )
         copy = DupBlock( blk );
         COPY_PTR( blk ) = copy;
         COPY_PTR( copy ) = blk;
-        if( prev != NULL ) { // link this copy into the list of copied blocks
+        if( prev != NULL ) {
+            /*
+             * link this copy into the list of copied blocks
+             */
             prev->u.loop = copy;
             copy->next_block = prev;
             prev->prev_block = copy;
@@ -190,7 +193,10 @@ static  block   *DupLoop( block *tail, loop_abstract *loop )
     }
     loop->head = copy;
     if( copy != NULL ) {
-        copy->u.loop = NULL; // terminate the list held in blk->u.loop
+        /*
+         * terminate the list held in blk->u.loop
+         */
+        copy->u.loop = NULL;
     }
     /*
      * now link the blocks together - for each edge, we point the

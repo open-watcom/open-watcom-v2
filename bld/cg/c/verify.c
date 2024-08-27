@@ -57,7 +57,8 @@ static  bool    SameLocation( name *n1, name *n2 )
     loc1 = base->t.location + n1->v.offset - base->v.offset;
     base = DeAlias( n2 );
     loc2 = base->t.location + n2->v.offset - base->v.offset;
-    if( _IsFloating( n1->n.type_class ) || _IsFloating( n2->n.type_class ) ) {
+    if( _IsFloating( n1->n.type_class )
+      || _IsFloating( n2->n.type_class ) ) {
         if( n1->n.type_class != n2->n.type_class ) {
             return( false );
         }
@@ -85,29 +86,33 @@ static  bool    NextCmp( instruction *ins )
 
 
 static  bool    IsMin( name *op, type_class_def type_class )
-/********************************************************
-    Verify if "op" is a constant which is the smallest of possible
-    values for type "class".
-*/
+/***********************************************************
+ * Verify if "op" is a constant which is the smallest of possible
+ * values for type "class".
+ */
 {
     if( op->c.const_type == CONS_ABSOLUTE ) {
         switch( type_class ) {
         case U1:
         case U2:
         case U4:
-            if( CFIsI16( op->c.value ) && op->c.lo.u.int_value == 0 )
+            if( CFIsI16( op->c.value )
+              && op->c.lo.u.int_value == 0 )
                 return( true );
             break;
         case I1:
-            if( CFIsI8( op->c.value ) && op->c.lo.u.int_value == 0x80 )
+            if( CFIsI8( op->c.value )
+              && op->c.lo.u.int_value == 0x80 )
                 return( true );
             break;
         case I2:
-            if( CFIsI16( op->c.value ) && op->c.lo.u.int_value == 0x8000 )
+            if( CFIsI16( op->c.value )
+              && op->c.lo.u.int_value == 0x8000 )
                 return( true );
             break;
         case I4:
-            if( CFIsI32( op->c.value ) && op->c.lo.u.int_value == 0x80000000 )
+            if( CFIsI32( op->c.value )
+              && op->c.lo.u.int_value == 0x80000000 )
                 return( true );
             break;
         }
@@ -116,35 +121,41 @@ static  bool    IsMin( name *op, type_class_def type_class )
 }
 
 static  bool    IsMax( name *op, type_class_def type_class )
-/********************************************************
-    Verify if "op" is a constant which is the largest of possible
-    values for type "class".
-*/
+/***********************************************************
+ * Verify if "op" is a constant which is the largest of possible
+ * values for type "class".
+ */
 {
     if( op->c.const_type == CONS_ABSOLUTE ) {
         switch( type_class ) {
         case U1:
-            if( CFIsU8( op->c.value ) && op->c.lo.u.int_value == 0xff )
+            if( CFIsU8( op->c.value )
+              && op->c.lo.u.int_value == 0xff )
                 return( true );
             break;
         case U2:
-            if( CFIsU16( op->c.value ) && op->c.lo.u.int_value == 0xffff )
+            if( CFIsU16( op->c.value )
+              && op->c.lo.u.int_value == 0xffff )
                 return( true );
             break;
         case U4:
-            if( CFIsU32( op->c.value ) && op->c.lo.u.int_value == 0xffffffff )
+            if( CFIsU32( op->c.value )
+              && op->c.lo.u.int_value == 0xffffffff )
                 return( true );
             break;
         case I1:
-            if( CFIsU8( op->c.value ) && op->c.lo.u.int_value == 0x7f )
+            if( CFIsU8( op->c.value )
+              && op->c.lo.u.int_value == 0x7f )
                 return( true );
             break;
         case I2:
-            if( CFIsU16( op->c.value ) && op->c.lo.u.int_value == 0x7fff )
+            if( CFIsU16( op->c.value )
+              && op->c.lo.u.int_value == 0x7fff )
                 return( true );
             break;
         case I4:
-            if( CFIsU32( op->c.value ) && op->c.lo.u.int_value == 0x7fffffff )
+            if( CFIsU32( op->c.value )
+              && op->c.lo.u.int_value == 0x7fffffff )
                 return( true );
             break;
         }
@@ -152,9 +163,9 @@ static  bool    IsMax( name *op, type_class_def type_class )
     return( false );
 }
 
-static  bool    Op2Pow2( instruction *ins ) {
-/*******************************************/
-
+static  bool    Op2Pow2( instruction *ins )
+/*****************************************/
+{
     int         log;
 
     log = GetLog2( ins->operands[1]->c.lo.u.int_value );
@@ -171,15 +182,17 @@ static  bool    Op2Pow2( instruction *ins ) {
 bool    OtherVerify( vertype kind, instruction *ins,
                         name *op1, name *op2, name *result )
 /***********************************************************
-    verify a if "kind" is true about instruction "ins" whose operands
-    are "op1", "op2", "result".  This the target independant code.  We
-    want to know these things for the 8086, 386 and 370 compilers.
-*/
+ * verify a if "kind" is true about instruction "ins" whose operands
+ * are "op1", "op2", "result".  This the target independant code.  We
+ * want to know these things for the 8086, 386 and 370 compilers.
+ */
 {
     switch( kind ) {
     case V_NO:
-        /* This can get called if it's an optimization reduction that's
-            no good for volatile instructions */
+        /*
+         * This can get called if it's an optimization reduction that's
+         * no good for volatile instructions
+         */
         return( true );
     case V_CMPEQ:
         if( ins->head.opcode == OP_CMP_EQUAL )
@@ -232,35 +245,37 @@ bool    OtherVerify( vertype kind, instruction *ins,
         }
         break;
     case V_OFFSETZERO:
-        if( op1->n.class == N_INDEXED && op1->i.constant == 0
-         && !HasTrueBase( op1 ) )
+        if( op1->n.class == N_INDEXED
+          && op1->i.constant == 0
+          && !HasTrueBase( op1 ) )
             return( true );
         break;
     case V_OP1ONE:
-        if( op1->c.const_type == CONS_ABSOLUTE && op1->c.lo.u.int_value == 1 )
+        if( op1->c.const_type == CONS_ABSOLUTE
+          && op1->c.lo.u.int_value == 1 )
             return( true );
         break;
     case V_OP1RELOC:
         if( op1->n.class == N_CONSTANT
-         && op1->c.const_type != CONS_ABSOLUTE )
+          && op1->c.const_type != CONS_ABSOLUTE )
             return( true );
         break;
     case V_OP1ZERO:
         if( op1->c.const_type == CONS_ABSOLUTE
-         && CFIsI16( op1->c.value )
-         && op1->c.lo.u.int_value == 0 )
+          && CFIsI16( op1->c.value )
+          && op1->c.lo.u.int_value == 0 )
             return( true );
         break;
     case V_OP2NEG:
         if( ( op2->c.const_type == CONS_ABSOLUTE )
-         && ( op2->c.lo.u.int_value < 0 )
-         && ( op2->c.lo.u.int_value & 0xffff ) != 0x8000
-         && ( op2->c.lo.u.int_value != 0x80000000 ) )
+          && ( op2->c.lo.u.int_value < 0 )
+          && ( op2->c.lo.u.int_value & 0xffff ) != 0x8000
+          && ( op2->c.lo.u.int_value != 0x80000000 ) )
             return( true );
         break;
     case V_OP2ONE:
         if( op2->c.const_type == CONS_ABSOLUTE
-         && op2->c.lo.u.int_value == 1 )
+          && op2->c.lo.u.int_value == 1 )
             return( true );
         break;
     case V_OP2POW2:
@@ -270,13 +285,13 @@ bool    OtherVerify( vertype kind, instruction *ins,
         break;
     case V_OP2TWO:
         if( op2->c.const_type == CONS_ABSOLUTE
-         && op2->c.lo.u.int_value == 2 )
+          && op2->c.lo.u.int_value == 2 )
             return( true );
         break;
     case V_OP2ZERO:
         if( op2->c.const_type == CONS_ABSOLUTE
-         &&  CFIsI16( op2->c.value )
-         &&  op2->c.lo.u.int_value == 0 )
+          &&  CFIsI16( op2->c.value )
+          &&  op2->c.lo.u.int_value == 0 )
             return( true );
         break;
     case V_OP2_FFFFFFFF:
@@ -290,7 +305,9 @@ bool    OtherVerify( vertype kind, instruction *ins,
             return( false );
          return( SameLocation( result, op1 ) );
     case V_SAME_TYPE:
-        /* if we have a constant, the name_class of op1 is bogus */
+        /*
+         * if we have a constant, the name_class of op1 is bogus
+         */
         if( op1->n.class == N_CONSTANT ) {
             if( ins->type_class == result->n.type_class ) {
                 return( true );
@@ -328,14 +345,16 @@ bool    OtherVerify( vertype kind, instruction *ins,
         if( op2->c.lo.u.int_value != 0 )
             return( false );
         if( ins->head.opcode == OP_CMP_EQUAL
-         || ins->head.opcode == OP_CMP_NOT_EQUAL
-         || ins->type_class == U4 )
+          || ins->head.opcode == OP_CMP_NOT_EQUAL
+          || ins->type_class == U4 )
             return( true );
         break;
     case V_SHIFT2BIG:
-        /* check if shift amount is equal to or greater than register width */
+        /*
+         * check if shift amount is equal to or greater than register width
+         */
         if( op2->c.const_type == CONS_ABSOLUTE
-         && op2->c.lo.u.int_value >= REG_SIZE * 8 )
+          && op2->c.lo.u.int_value >= REG_SIZE * 8 )
             return( true );
         break;
     default:

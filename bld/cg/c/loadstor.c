@@ -95,9 +95,9 @@ static  void    CheckRefs( conflict_node *conf, block *blk )
                 return;
             }
         }
-        if( _OpIsCall( ins->head.opcode ) &&
-           ( (ins->flags.u.call_flags & CALL_WRITES_NO_MEMORY) == 0 ||
-               (ins->flags.u.call_flags & CALL_READS_NO_MEMORY) == 0 ) ) {
+        if( _OpIsCall( ins->head.opcode )
+          && ( (ins->flags.u.call_flags & CALL_WRITES_NO_MEMORY) == 0
+          || (ins->flags.u.call_flags & CALL_READS_NO_MEMORY) == 0 ) ) {
             _MarkBlkAttrSet( blk, BLK_CONTAINS_CALL );
         }
     }
@@ -120,7 +120,8 @@ static  void    LoadStoreIfCall( global_bit_set *id )
     data_flow_def       *flow;
 
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
-        if( _IsBlkAttr( blk, BLK_CONTAINS_CALL ) && !_IsBlkMarked( blk ) ) {
+        if( _IsBlkAttr( blk, BLK_CONTAINS_CALL )
+          && !_IsBlkMarked( blk ) ) {
             flow = blk->dataflow;
             _GBitTurnOn( flow->need_load, *id );
             _GBitTurnOn( flow->need_store, *id );
@@ -142,7 +143,8 @@ static  void    TurnOffLoadStoreBits( global_bit_set *id )
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
         if( !_IsBlkMarked( blk ) ) {
             flow = blk->dataflow;
-            if( _GBitOverlap( flow->need_load, *id ) && _GBitOverlap( flow->need_store, *id ) ) {
+            if( _GBitOverlap( flow->need_load, *id )
+              && _GBitOverlap( flow->need_store, *id ) ) {
                 _GBitTurnOff( flow->need_load, *id );
                 _GBitTurnOff( flow->need_store, *id );
             }
@@ -170,9 +172,11 @@ static  void    PropagateLoadStoreBits( block *start, global_bit_set *id )
             blk_dat = blk->dataflow;
             for( edge = blk->input_edges; edge != NULL; edge = edge->next_source ) {
                 source_dat = edge->source->dataflow;
-                if( _GBitOverlap( source_dat->out, *id ) &&
-                    _GBitOverlap( blk_dat->in, *id ) ) {
-                    /* NB: there are 3 IFs to minimize the & of iterations*/
+                if( _GBitOverlap( source_dat->out, *id )
+                  && _GBitOverlap( blk_dat->in, *id ) ) {
+                    /*
+                     * NB: there are 3 IFs to minimize the & of iterations
+                     */
                     if( _GBitOverlap( source_dat->need_store, *id ) ) {
                         change |= !_GBitOverlap( blk_dat->need_load, *id );
                         _GBitTurnOn( blk_dat->need_load, *id );
@@ -240,12 +244,14 @@ static  void    CalculateLoadStore( conflict_node *conf )
     while( blk != NULL ) {
         flow = blk->dataflow;
         CheckRefs( conf, blk );
-        if( _GBitOverlap( flow->in, id ) && _IsBlkAttr( blk, BLK_BIG_LABEL ) ) {
+        if( _GBitOverlap( flow->in, id )
+          && _IsBlkAttr( blk, BLK_BIG_LABEL ) ) {
             _GBitTurnOn( flow->need_load, id );
         } else {
             _GBitTurnOff( flow->need_load, id );
         }
-        if( _GBitOverlap( flow->out, id ) && _IsBlkAttr( blk, BLK_RETURN | BLK_BIG_JUMP ) ) {
+        if( _GBitOverlap( flow->out, id )
+          && _IsBlkAttr( blk, BLK_RETURN | BLK_BIG_JUMP ) ) {
             _GBitTurnOn( flow->need_store, id );
         } else {
             _GBitTurnOff( flow->need_store, id );
@@ -253,7 +259,7 @@ static  void    CalculateLoadStore( conflict_node *conf )
         if( blk->ins.head.prev != (instruction *)&blk->ins ) {
             _INS_NOT_BLOCK( blk->ins.head.prev );
             _INS_NOT_BLOCK( conf->ins_range.last );
-            if( blk->ins.head.prev->id >= conf->ins_range.last->id) {
+            if( blk->ins.head.prev->id >= conf->ins_range.last->id ) {
                 break;
             }
         }
