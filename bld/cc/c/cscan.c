@@ -212,6 +212,7 @@ TOKEN KwLookup( const char *buf, size_t len )
      */
     if( CHECK_STD( < , C99 ) ) {
         switch( token ) {
+        case T__BOOL:
         case T_INLINE:
             if( CompFlags.extensions_enabled )
                 break;
@@ -219,7 +220,6 @@ TOKEN KwLookup( const char *buf, size_t len )
         case T_RESTRICT:
         case T__COMPLEX:
         case T__IMAGINARY:
-        case T__BOOL:
         case T___OW_IMAGINARY_UNIT:
             return( T_ID );
         }
