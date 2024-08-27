@@ -2040,9 +2040,10 @@ static TREEPTR GenVaStartNode( TREEPTR last_parm )
       && Token[ExprLevel-1] != T_LEFT_PAREN
       && Token[ExprLevel-2] == T_LEFT_PAREN ) {
         offset = 0;
-        if( last_parm->op.opr == OPR_PUSHINT
-          && last_parm->op.u2.long_value == 0 ) {    // varargs.h
-            offset = -REG_SIZE;
+        if( last_parm->op.opr == OPR_PUSHINT ) {
+            if( CheckZeroConstant( last_parm ) ) {    // varargs.h
+                offset = -REG_SIZE;
+            }
         }
         parmsym = ValueStack[ExprLevel];            // get name of parameter
         sym_handle = SYM_NULL;
@@ -2116,8 +2117,9 @@ static TREEPTR GenVaArgNode( TREEPTR last_parm )
       && Token[ExprLevel] != T_LEFT_PAREN
       && Token[ExprLevel-1] != T_LEFT_PAREN
       && Token[ExprLevel-2] == T_LEFT_PAREN ) {
-        if( last_parm->op.opr == OPR_PUSHINT
-          && last_parm->op.u2.long_value == 0 ) {   // varargs.h
+        if( last_parm->op.opr == OPR_PUSHINT ) {
+            if( CheckZeroConstant( last_parm ) ) {   // varargs.h
+            }
         }
         parmsym = ValueStack[ExprLevel];            // get name of parameter
         FreeExprNode( parmsym );
@@ -2474,7 +2476,7 @@ static TREEPTR OrOr( TREEPTR tree )
      * This routine is called when || token is found
      */
     if( tree->op.opr == OPR_PUSHINT ) {
-        if( tree->op.u2.long_value != 0 ) {
+        if( !CheckZeroConstant( tree ) ) {
             ++SizeOfCount;      /* skip code gen */
             CurToken = T_NULL;
         }
@@ -2489,7 +2491,7 @@ static TREEPTR AndAnd( TREEPTR tree )
      * This routine is called when && token is found
      */
     if( tree->op.opr == OPR_PUSHINT ) {
-        if( tree->op.u2.long_value == 0 ) {
+        if( CheckZeroConstant( tree ) ) {
             ++SizeOfCount;      /* skip code gen */
             CurToken = T_NULL;
         }

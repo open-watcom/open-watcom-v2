@@ -937,7 +937,7 @@ void CheckParmAssign( TYPEPTR typ1, TREEPTR opnd2, int parmno, bool asgn_check )
         if( asgn_check ) {  /* Allow only "... *p = int 0";  */
             if( IsPointer( typ1 )
               && opnd2->op.opr == OPR_PUSHINT ) {
-                if( opnd2->op.u2.long_value != 0 ) {
+                if( !CheckZeroConstant( opnd2 ) ) {
                     CWarnP1( parmno, ERR_NONPORTABLE_PTR_CONV );
                 }
             } else {
