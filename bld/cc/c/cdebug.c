@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -347,7 +347,7 @@ static void DumpFieldList( dbg_struct st, target_size bias,
                         field_typ->u.tag->u.field_list, NULL );
         } else if(( field_typ->decl_type == TYP_FIELD ) ||
             ( field_typ->decl_type == TYP_UFIELD ) ) {
-            field_typ->u1.debug_type = DBIntegralType(field_typ->u.f.field_type);
+            field_typ->u1.debug_type = DBIntegralType( field_typ->u.f.field_type );
             DBAddBitField( st, bias + pfield->offset,
                 field_typ->u.f.field_start,
                 field_typ->u.f.field_width, pfield->name,
