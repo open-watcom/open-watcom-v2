@@ -979,12 +979,12 @@ TREEPTR FlowOp( TREEPTR op1, opr_code opr, TREEPTR op2 )
     }
     if( op1->op.opr == OPR_PUSHINT ) {
         if( opr == OPR_OR_OR ) {
-            if( op1->op.u2.long_value == 0 ) {
+            if( CheckZeroConstant( op1 ) ) {
                 FreeExprNode( op1 );
                 return( op2 );
             }
         } else {        // OPR_AND_AND
-            if( op1->op.u2.long_value != 0 ) {
+            if( !CheckZeroConstant( op1 ) ) {
                 FreeExprNode( op1 );
                 return( op2 );
             }
@@ -992,12 +992,12 @@ TREEPTR FlowOp( TREEPTR op1, opr_code opr, TREEPTR op2 )
     }
     if( op2->op.opr == OPR_PUSHINT ) {
         if( opr == OPR_OR_OR ) {
-            if( op2->op.u2.long_value == 0 ) {
+            if( CheckZeroConstant( op2 ) ) {
                 FreeExprNode( op2 );
                 return( op1 );
             }
         } else {        // OPR_AND_AND
-            if( op2->op.u2.long_value != 0 ) {
+            if( !CheckZeroConstant( op2 ) ) {
                 FreeExprNode( op2 );
                 return( op1 );
             }
@@ -2158,13 +2158,13 @@ TYPEPTR TernType( TREEPTR true_part, TREEPTR false_part )
     dtype1 = DataTypeOf( typ1 );
     dtype2 = DataTypeOf( typ2 );
     if( dtype1 == TYP_POINTER && false_part->op.opr == OPR_PUSHINT ) {
-        if( false_part->op.u2.long_value != 0 ) {
+        if( !CheckZeroConstant( false_part ) ) {
             CWarn1( ERR_NONPORTABLE_PTR_CONV );
         }
         return( MergedType( typ1, typ2 ) ); /* merge near/far/const etc. */
     }
     if( dtype2 == TYP_POINTER && true_part->op.opr == OPR_PUSHINT ) {
-        if( true_part->op.u2.long_value != 0 ) {
+        if( !CheckZeroConstant( true_part ) ) {
             CWarn1( ERR_NONPORTABLE_PTR_CONV );
         }
         return( MergedType( typ2, typ1 ) ); /* merge near/far/const etc. */
