@@ -42,14 +42,21 @@
 
 #else /* __cplusplus not defined */
 
-:include extc99.sp
+::
+:: _Bool type was introduced by C99 standard
+:: in compiler C89 mode _Bool type is defined if extension is enabled
+:: in compiler C89 pure mode (without extension) _Bool type doesn't exist
+:: I am not sure if define _Bool type in this case is correct
+:: but it is symbol from compiler reserved namespace that user should not use it
+::
+ #if defined( _NO_EXT_KEYS ) && __STDC_VERSION__ < 199901L /* C89 and extensions disabled */
+  typedef unsigned char _Bool;
+ #endif
 
  #define bool _Bool
  #define true  1
  #define false 0
  #define __bool_true_false_are_defined 1
-
-:include extepi.sp
 
 #endif /* __cplusplus not defined */
 :endsegment
