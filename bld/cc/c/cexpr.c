@@ -93,6 +93,7 @@ void ExprInit( void )
 }
 
 //-----------------------------CNODE-----------------------------------
+
 static TREEPTR CallNode( TREEPTR func, TREEPTR parms, TYPEPTR func_result_type )
 {
     TREEPTR     tree;
@@ -235,7 +236,10 @@ static TREEPTR ConstLeaf( void )
     TREEPTR     leaf;
     FLOATVAL    *flt;
 
-    leaf = LeafNode( OPR_PUSHINT );     // assume integer value
+    /*
+     * assume integer value
+     */
+    leaf = LeafNode( OPR_PUSHINT );
     leaf->op.u1.const_type = ConstType;
     switch( ConstType ) {
     case TYP_WCHAR:
@@ -649,12 +653,12 @@ static TREEPTR TakeRValue( TREEPTR tree, int void_ok )
             tree->op.flags |= OPFLAG_RVALUE;
         }
         break;
-    case OPR_DOT:                       // sym.field
-    case OPR_ARROW:                     // ptr->field
-    case OPR_INDEX:                     // array[index]
+    case OPR_DOT:                       /* sym.field */
+    case OPR_ARROW:                     /* ptr->field */
+    case OPR_INDEX:                     /* array[index] */
         tree->op.flags |= OPFLAG_RVALUE;
         break;
-    case OPR_CALL:                      // func()
+    case OPR_CALL:                      /* func() */
         tree->op.flags |= OPFLAG_RVALUE;
         if( tree->left->op.opr == OPR_FUNCNAME ) {
             SymGet( &sym, tree->left->op.u2.sym_handle );
@@ -666,7 +670,7 @@ static TREEPTR TakeRValue( TREEPTR tree, int void_ok )
         }
         break;
     case OPR_POINTS:
-        if( tree->left->op.opr == OPR_PUSHSTRING ) {    // *"abc"
+        if( tree->left->op.opr == OPR_PUSHSTRING ) {    /* *"abc" */
             STR_HANDLE  string;
 
             string = tree->left->op.u2.string_handle;
@@ -711,6 +715,7 @@ static void CheckAddrOfArray( TYPEPTR typ )
 #endif
 
 //-----------------------------COPS------------------------------------
+
 static TREEPTR AddrOp( TREEPTR tree )
 {
     TYPEPTR         typ;
@@ -859,11 +864,17 @@ TREEPTR BasedPtrNode( TYPEPTR ptrtyp, TREEPTR tree )
     sym_handle = ptrtyp->u.p.based_sym;
     segid =  ptrtyp->u.p.segid;
     switch( ptrtyp->u.p.based_kind ) {
-    case BASED_VOID:          //__based( void )       segment:>offset base op
+    case BASED_VOID:
+        /*
+         * __based( void )       segment:>offset base op
+         */
         break;
     case BASED_NONE:
         break;
-    case BASED_SELFSEG:       //__based( (__segment) __self ) use seg of self
+    case BASED_SELFSEG:
+        /*
+         * __based( (__segment) __self ) use seg of self
+         */
         tree->op.flags &= ~OPFLAG_RVALUE;
         based_sym = ExprNode( tree, OPR_DUPE, NULL );
         based_sym->op.flags |= OPFLAG_RVALUE;
@@ -871,7 +882,10 @@ TREEPTR BasedPtrNode( TYPEPTR ptrtyp, TREEPTR tree )
         tree = MakeFarOp( based_sym, tree );
         tree->right = NULL;
         break;
-    case BASED_VAR:              //__based( <var> )             add offset to var pointer
+    case BASED_VAR:
+        /*
+         * __based( <var> )             add offset to var pointer
+         */
       {
         TYPEPTR     typ;
         TYPEPTR     old;
@@ -893,23 +907,35 @@ TREEPTR BasedPtrNode( TYPEPTR ptrtyp, TREEPTR tree )
         tree->u.expr_type = old;
         tree->op.u2.result_type = old;
       } break;
-    case BASED_SEGVAR:           //__based( <var> )             add offset to seg var
+    case BASED_SEGVAR:
+        /*
+         * __based( <var> )             add offset to seg var
+         */
         sym = SymGetPtr( sym_handle );
         based_sym = VarLeaf( sym, sym_handle );
         based_sym->op.opr = OPR_PUSHSYM;
         tree = MakeFarOp( based_sym, tree );
         break;
-    case BASED_VARSEG:        //__based( (__segment) <var> ) ) use seg of var
+    case BASED_VARSEG:
+        /*
+         * __based( (__segment) <var> ) ) use seg of var
+         */
         sym = SymGetPtr( sym_handle );
         based_sym = FarPtrCvt( sym, sym_handle );
         tree = MakeFarOp( based_sym, tree );
         break;
-    case BASED_SEGNAME:       //__based( __segname( "name" )   use seg of segname
+    case BASED_SEGNAME:
+        /*
+         * __based( __segname( "name" )   use seg of segname
+         */
         if( sym_handle != SYM_NULL ) {
             sym = SymGetPtr( sym_handle );
             based_sym = VarLeaf( sym, sym_handle );
             based_sym->op.opr = OPR_PUSHSEG;
-        } else { //error I guess
+        } else {
+            /*
+             * error I guess
+             */
             based_sym = LeafNode( OPR_PUSHINT );
             based_sym->op.u1.const_type = TYP_INT;
             based_sym->op.u2.long_value = segid;
@@ -1140,6 +1166,7 @@ static TREEPTR IncDec( TREEPTR tree, TOKEN opr )
     CompFlags.useful_side_effect = true;
     return( tree );
 }
+
 //-----------------------------CEXPR-----------------------------------
 
 bool ConstExprAndType( const_val *val )
@@ -1366,7 +1393,10 @@ static TREEPTR GetExpr( void )
                 if( typ != NULL ) {
                     tree = SizeofOp( typ );
                 } else {
-                    tree = UIntLeaf( 1 ); //error use this as default
+                    /*
+                     * error use this as default
+                     */
+                    tree = UIntLeaf( 1 );
                 }
                 --SizeOfCount;
                 CompFlags.meaningless_stmt = true;
@@ -1409,7 +1439,10 @@ static TREEPTR GetExpr( void )
                     tree = GenNextParm( tree, &plist );
                     tree = GenFuncCall( tree );
                     MustRecog( T_RIGHT_PAREN );
-                    if( plist != NULL ) {   // function has prototype
+                    if( plist != NULL ) {
+                        /*
+                         * function has prototype
+                         */
                         if( *plist != NULL
                           && (*plist)->decl_type != TYP_DOT_DOT_DOT ) {
                             CErr1( ERR_PARM_COUNT_MISMATCH );
@@ -1805,7 +1838,7 @@ static TREEPTR GenIndex( TREEPTR tree, TREEPTR index_expr )
     typ = tree->u.expr_type;
     SKIP_TYPEDEFS( typ );
     if( typ->decl_type == TYP_ARRAY ) {
-        tree_flags = tree->op.flags;  // get modifiers of array obj
+        tree_flags = tree->op.flags;  /* get modifiers of array obj */
     } else if( typ->decl_type == TYP_POINTER ) {
         type_modifiers  flags;
 
@@ -1894,7 +1927,7 @@ static void AddCallNode( TREEPTR tree )
 {
     call_list   *new;
 
-    if( tree->left != NULL ) {  // could be errors
+    if( tree->left != NULL ) {  /* could be errors */
         new = CMemAlloc( sizeof( call_list ) );
         new->next = NULL;
         new->callnode = tree;
@@ -1948,7 +1981,7 @@ static TREEPTR GenNextParm( TREEPTR tree, TYPEPTR **plistptr )
     typ = SkipTypeFluff( tree->u.expr_type );
     plist = *plistptr;
     if( plist != NULL ) {
-        if( *plist == NULL ) {  // To many parm trees
+        if( *plist == NULL ) {  /* To many parm trees */
 #if _CPU == 386
             /*
              * can allow wrong number of parms with -3s option
@@ -1961,7 +1994,7 @@ static TREEPTR GenNextParm( TREEPTR tree, TYPEPTR **plistptr )
 #else
             CErr1( ERR_PARM_COUNT_MISMATCH );
 #endif
-            *plist = GetType( TYP_DOT_DOT_DOT );           //shut up message
+            *plist = GetType( TYP_DOT_DOT_DOT );        /* shut up message */
             plist = NULL;
         } else if( (*plist)->decl_type == TYP_DOT_DOT_DOT ) {
             plist = NULL;
@@ -1969,7 +2002,10 @@ static TREEPTR GenNextParm( TREEPTR tree, TYPEPTR **plistptr )
             return( tree );
         }
     }
-    if( plist != NULL ) {  //do conversion from tree to parm type
+    if( plist != NULL ) {
+        /*
+         * do conversion from tree to parm type
+         */
         parm_typ = *plist;
         CheckParmAssign( parm_typ, tree, ParmNum(), true );
         if( parm_typ != NULL ) {
@@ -1983,7 +2019,7 @@ static TREEPTR GenNextParm( TREEPTR tree, TYPEPTR **plistptr )
             ++*plistptr;
         }
     } else {
-        if( typ->decl_type == TYP_FLOAT ) { // default conversions
+        if( typ->decl_type == TYP_FLOAT ) {     /* default conversions */
             typ = GetType( TYP_DOUBLE );
             tree = FixupAss( tree, typ );
         } else if( typ->decl_type == TYP_POINTER ) {
@@ -2041,11 +2077,17 @@ static TREEPTR GenVaStartNode( TREEPTR last_parm )
       && Token[ExprLevel-2] == T_LEFT_PAREN ) {
         offset = 0;
         if( last_parm->op.opr == OPR_PUSHINT ) {
-            if( CheckZeroConstant( last_parm ) ) {    // varargs.h
+            /*
+             * check for varargs
+             */
+            if( CheckZeroConstant( last_parm ) ) {
                 offset = -REG_SIZE;
             }
         }
-        parmsym = ValueStack[ExprLevel];            // get name of parameter
+        /*
+         * get name of parameter
+         */
+        parmsym = ValueStack[ExprLevel];
         sym_handle = SYM_NULL;
         if( parmsym->op.opr == OPR_PUSHSYM ) {
             for( sym_handle = CurFunc->u.func.parms; sym_handle != SYM_NULL; sym_handle = sym->handle ) {
@@ -2067,7 +2109,7 @@ static TREEPTR GenVaStartNode( TREEPTR last_parm )
         FreeExprNode( parmsym );
         tree = ValueStack[ExprLevel - 1];
         if( tree->op.opr == OPR_PUSHSYM ) {
-            tree->op.opr = OPR_PUSHADDR;            // want address of va_list
+            tree->op.opr = OPR_PUSHADDR;            /* want address of va_list */
         }
         tree->op.flags &= ~OPFLAG_RVALUE;
         tree = ExprNode( tree, OPR_VASTART, IntLeaf( offset ) );
@@ -2118,14 +2160,20 @@ static TREEPTR GenVaArgNode( TREEPTR last_parm )
       && Token[ExprLevel-1] != T_LEFT_PAREN
       && Token[ExprLevel-2] == T_LEFT_PAREN ) {
         if( last_parm->op.opr == OPR_PUSHINT ) {
-            if( CheckZeroConstant( last_parm ) ) {   // varargs.h
+            /*
+             * check for varargs
+             */
+            if( CheckZeroConstant( last_parm ) ) {
             }
         }
-        parmsym = ValueStack[ExprLevel];            // get name of parameter
+        /*
+         * get name of parameter
+         */
+        parmsym = ValueStack[ExprLevel];
         FreeExprNode( parmsym );
         tree = ValueStack[ExprLevel - 1];
         if( tree->op.opr == OPR_PUSHSYM ) {
-            tree->op.opr = OPR_PUSHADDR;            // want address of va_list
+            tree->op.opr = OPR_PUSHADDR;            /* want address of va_list */
         }
         tree->op.flags &= ~OPFLAG_RVALUE;
         tree = ExprNode( tree, OPR_VASTART, IntLeaf( 0 ) );
@@ -2204,7 +2252,7 @@ static TREEPTR GenFuncCall( TREEPTR last_parm )
             tree = ParmNode( tree, ValueStack[i], far16_func );
         }
         if( n != ExprLevel ) {
-            tree = ParmNode( tree, last_parm, far16_func );     // this is 1'st parm
+            tree = ParmNode( tree, last_parm, far16_func );     /* this is 1'st parm */
         }
         ExprLevel = n;
     } else {
@@ -2332,7 +2380,7 @@ static TREEPTR StartFunc( TREEPTR tree, TYPEPTR **plistptr )
     SYM_HANDLE          sym_handle;
     SYM_ENTRY           sym;
 
-    if( tree->op.opr == OPR_ERROR ) {   // hoke something up
+    if( tree->op.opr == OPR_ERROR ) {   /* hoke something up */
         tree = DummyFuncName();
     }
     decl_flags = FLAG_NONE;
@@ -2346,7 +2394,7 @@ static TREEPTR StartFunc( TREEPTR tree, TYPEPTR **plistptr )
         SKIP_TYPEDEFS( typ );
     }
     if( tree->op.opr == OPR_PUSHADDR ) {        /* direct call */
-        tree->op.opr = OPR_FUNCNAME;            // change to funcname
+        tree->op.opr = OPR_FUNCNAME;            /* change to funcname */
         sym_handle = tree->op.u2.sym_handle;
         SymGet( &sym, sym_handle );
 #if 0
@@ -2364,7 +2412,7 @@ static TREEPTR StartFunc( TREEPTR tree, TYPEPTR **plistptr )
             sym_handle = SYM_NULL;
             sym.flags = SYM_NONE;
         } else {
-            if( tree->op.opr == OPR_POINTS ) {  //need to recover decl flags
+            if( tree->op.opr == OPR_POINTS ) {  /* need to recover decl flags */
                 decl_flags = typ->u.fn.decl_flags;
             }
             sym_handle = MakeNewSym( &sym, 'F', orig_typ, SC_AUTO );
@@ -2406,7 +2454,7 @@ static TREEPTR StartFunc( TREEPTR tree, TYPEPTR **plistptr )
         Class[ExprLevel] = TC_PARM_LIST;
         Token[ExprLevel] = T_LEFT_PAREN;
         tree = NULL;               /* indicate need operand for parm */
-    } else { // foo() build call
+    } else { /* foo() build call */
 #ifdef __SEH__
         opr = OPR_CALL;
         if( CompFlags.exception_filter_expr
@@ -2441,7 +2489,7 @@ static TREEPTR StartFunc( TREEPTR tree, TYPEPTR **plistptr )
         }
         if( opr == OPR_CALL ) {
 #endif
-            typ = typ->object; //get return type
+            typ = typ->object; /* get return type */
             SKIP_TYPEDEFS( typ );
             if( (sym.flags & SYM_TEMP) == 0 ) {
                 SetDiagSymbol( &sym, sym_handle );
@@ -2508,7 +2556,10 @@ TREEPTR BoolExpr( TREEPTR tree )
     case OPR_OR_OR:
     case OPR_AND_AND:
     case OPR_ERROR:
-        break;                          // tree is a boolean expression
+        /*
+         * tree is a boolean expression
+         */
+        break;
     default:
         if( tree->op.opr == OPR_EQUALS ) {
             if( IsConstLeaf( tree ) ) {
@@ -2657,7 +2708,7 @@ static TREEPTR TernOp( TREEPTR expr1, TREEPTR true_part, TREEPTR false_part )
     } else {
         tree = ExprNode( true_part, OPR_COLON, false_part );
         tree->op.u2.label_index = NextLabel();
-        NextLabel();                            // need 2 labels
+        NextLabel();                            /* need 2 labels */
         tree = ExprNode( expr1, OPR_QUESTION, tree );
         tree->op.u2.result_type = result_typ;
         ops = OPFLAG_NONE;
