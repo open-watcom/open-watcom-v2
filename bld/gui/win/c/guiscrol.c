@@ -302,7 +302,7 @@ void GUIProcessScrollMsg( gui_window *wnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_P
 }
 
 static void DoSetScroll( gui_window *wnd, int bar, bool range_set,
-                         bool chars, unsigned *p_range )
+                         bool char_unit, unsigned *prange )
 {
     guix_ord        range;
     guix_ord        pos;
@@ -314,8 +314,8 @@ static void DoSetScroll( gui_window *wnd, int bar, bool range_set,
          * app explicitly set scroll range
          * need to adjust range if size changed
          */
-        range = *p_range;
-        if( chars ) {
+        range = *prange;
+        if( char_unit ) {
             range *= GUIGetScrollInc( wnd, bar );
         }
         if( range < screen_size ) {
@@ -327,12 +327,12 @@ static void DoSetScroll( gui_window *wnd, int bar, bool range_set,
         if( range < pos ) {
             GUIScroll( wnd, bar, range - pos );
         }
-        if( !chars ) {
-            *p_range = range + screen_size;
+        if( !char_unit ) {
+            *prange = range + screen_size;
         }
     } else {
         range = screen_size + GUIGetScrollPos( wnd, bar );
-        *p_range = range + screen_size;
+        *prange = range + screen_size;
     }
     GUISetScrollRange( wnd, bar, 0, range, true );
 }
@@ -343,9 +343,9 @@ static void DoSetScroll( gui_window *wnd, int bar, bool range_set,
 void GUISetScroll( gui_window *wnd )
 {
     if( GUI_DO_HSCROLL( wnd ) ) {
-        DoSetScroll( wnd, SB_HORZ, GUI_HRANGE_SET( wnd ), (wnd->flags & HRANGE_COL) != 0, &wnd->hscroll_range );
+        DoSetScroll( wnd, SB_HORZ, GUI_HRANGE_SET( wnd ), GUI_HRANGE_CHAR_UNIT( wnd ), &wnd->hscroll_range );
     }
     if( GUI_DO_VSCROLL( wnd ) ) {
-        DoSetScroll( wnd, SB_VERT, GUI_VRANGE_SET( wnd ), (wnd->flags & VRANGE_ROW) != 0, &wnd->vscroll_range );
+        DoSetScroll( wnd, SB_VERT, GUI_VRANGE_SET( wnd ), GUI_VRANGE_CHAR_UNIT( wnd ), &wnd->vscroll_range );
     }
 }

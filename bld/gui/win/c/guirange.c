@@ -73,7 +73,7 @@ static void SetVScrollRange( gui_window *wnd, guix_ord range, guix_ord text_rang
 void GUIAPI GUISetHScrollRangeCols( gui_window *wnd, gui_text_ord text_range )
 {
     if( IS_HSCROLL_ON( wnd ) ) {
-        wnd->flags |= HRANGE_COL;
+        wnd->flags |= HRANGE_CHAR_UNIT;
         SetHScrollRange( wnd, GUITextToScreenH( text_range, wnd ), text_range );
     }
 }
@@ -85,7 +85,7 @@ void GUIAPI GUISetHScrollRangeCols( gui_window *wnd, gui_text_ord text_range )
 void GUIAPI GUISetVScrollRangeRows( gui_window *wnd, gui_text_ord text_range )
 {
     if( IS_VSCROLL_ON( wnd ) ) {
-        wnd->flags |= VRANGE_ROW;
+        wnd->flags |= VRANGE_CHAR_UNIT;
         SetVScrollRange( wnd, GUITextToScreenV( text_range, wnd ), text_range );
     }
 }
@@ -99,7 +99,7 @@ void GUIAPI GUISetHScrollRange( gui_window *wnd, gui_ord range )
     guix_ord    scr_range;
 
     if( IS_HSCROLL_ON( wnd ) ) {
-        wnd->flags &= ~HRANGE_COL;
+        wnd->flags &= ~HRANGE_CHAR_UNIT;
         scr_range = GUIScaleToScreenH( range );
         SetHScrollRange( wnd, scr_range, scr_range );
     }
@@ -114,7 +114,7 @@ void GUIAPI GUISetVScrollRange( gui_window *wnd, gui_ord range )
     guix_ord    scr_range;
 
     if( IS_VSCROLL_ON( wnd ) ) {
-        wnd->flags &= ~VRANGE_ROW;
+        wnd->flags &= ~VRANGE_CHAR_UNIT;
         scr_range = GUIScaleToScreenV( range );
         SetVScrollRange( wnd, scr_range, scr_range );
     }

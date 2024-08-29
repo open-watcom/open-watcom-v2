@@ -62,6 +62,9 @@
 #define GUI_DO_HSCROLL(x)       (IS_HSCROLL_ON(x) && (((x)->style & GUI_HSCROLL_EVENTS) == 0))
 #define GUI_DO_VSCROLL(x)       (IS_VSCROLL_ON(x) && (((x)->style & GUI_VSCROLL_EVENTS) == 0))
 
+#define GUI_HRANGE_CHAR_UNIT(x) (((x)->flags & HRANGE_CHAR_UNIT) != 0)
+#define GUI_VRANGE_CHAR_UNIT(x) (((x)->flags & VRANGE_CHAR_UNIT) != 0)
+
 #define GUI_HSCROLL_COLS(x)     (((x)->scroll_style & GUI_HCOLS) != 0)
 #define GUI_VSCROLL_ROWS(x)     (((x)->scroll_style & GUI_VROWS) != 0)
 
@@ -96,8 +99,8 @@ typedef enum flags {
     VRANGE_SET          = 0x0002,
     NEEDS_RESIZE_REDRAW = 0x0004,
     NEEDS_RESIZE_NOTIFY = 0x0008,
-    VRANGE_ROW          = 0x0010,
-    HRANGE_COL          = 0x0020,
+    VRANGE_CHAR_UNIT    = 0x0010,
+    HRANGE_CHAR_UNIT    = 0x0020,
     DOING_CLOSE         = 0x0040,
     SENT_INIT           = 0x0080,
     IS_DIALOG           = 0x0100,
