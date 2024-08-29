@@ -82,8 +82,6 @@
 #define IS_OPERAND( token ) ( IS_ID_OR_KEYWORD( token ) || token == T_CONSTANT )
 
 #ifdef DEVBUILD
-    #define __xstr(x)   #x
-    #define __location " (" __FILE__ "," __xstr(__LINE__) ")"
     #define DbgDefault( msg )   default: CFatal( msg __location )
 #else
     #define DbgDefault( msg )

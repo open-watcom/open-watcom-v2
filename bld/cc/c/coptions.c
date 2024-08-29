@@ -57,8 +57,7 @@
 
 
 #ifdef DEVBUILD
-    #define __location " (" __FILE__ "," __xstr(__LINE__) ")"
-    #define DbgNever()          (CFatal( "should never execute this" __location ))
+    #define DbgNever()  (FEMessage( FEMSG_FATAL, "should never execute this" __location ))
 #else
     #define DbgNever()
 #endif
@@ -806,14 +805,12 @@ static void AnalyseAnyTargetOptions( OPT_STORAGE *data )
         OPT_STRING *str;
         while( (str = data->tp_value) != NULL ) {
             data->tp_value = str->next;
-            PragmaSetToggle( str->data, 1, false );
+            SetToggleFlag( str->data, 1, false );
             CMemFree( str );
         }
     }
     if( data->zi ) {
         CompFlags.extra_stats_wanted = true;
-        // try to prevent distortions caused by debug stuff
-        TOGGLEDBG( no_mem_cleanup ) = true;
     }
 #endif
     SetCharacterEncoding( data );

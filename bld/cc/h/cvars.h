@@ -64,6 +64,11 @@
 #define CheckEqSymLevel(p)  ((p)->level == (id_level_type)SymLevel)
 #define CheckLtSymLevel(p)  ((p)->level < (id_level_type)SymLevel)
 
+#ifdef DEVBUILD
+    #define __xstr(x)   #x
+    #define __location  " (" __FILE__ "," __xstr(__LINE__) ")"
+#endif
+
 /* Macros to skip all typedefs and arrive at the underlying type */
 #define SKIP_TYPEDEFS( typeptr )                    \
     while( typeptr->decl_type == TYP_TYPEDEF ) {    \
