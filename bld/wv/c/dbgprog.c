@@ -201,16 +201,16 @@ void FindLocalDebugInfo( const char *name )
     file_handle fh;
 
     len = strlen( name );
-    _AllocA( buff, len + 1 + 4 + 2 );
-    _AllocA( symfile, len + 1 + 4 );
-    strcpy( buff, "@l" );
+    _AllocA( buff, 2 + len + 4 + 1 );   /* prefix + name + extension + '\0' */
+    _AllocA( symfile, len + 4 + 1 );    /* name + extension + '\0' */
+    SetFileLocPrefix( buff, OP_LOCAL );
     // If a .sym file is present, use it in preference to the executable
     fh = FullPathOpen( name, ExtPointer( name, OP_LOCAL ) - name, "sym", symfile, len + 4 );
     if( fh != NIL_HANDLE ) {
-        strcat( buff, symfile );
+        strcpy( buff + 2, symfile );
         FileClose( fh );
     } else {
-        strcat( buff, name );
+        strcpy( buff + 2, name );
     }
     InsertRing( RingEnd( &LocalDebugInfo ), buff, strlen( buff ), false );
 }
@@ -508,8 +508,6 @@ static image_entry *CreateImage( const char *exe, const char *symfile )
             oattrs = 0;
             curr_name = SkipPathInfo( curr->name, OP_LOCAL );
             curr_name = RealFName( curr_name, &oattrs );
-            if( curr_name[0] == '@' && curr_name[1] == 'l' )
-                curr_name += 2;
             curr_len = ExtPointer( curr_name, OP_LOCAL ) - curr_name;
             local = ( this_len == curr_len && strnicmp( this_name, curr_name, this_len ) == 0 );
             if( local ) {

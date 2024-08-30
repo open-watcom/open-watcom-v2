@@ -87,6 +87,17 @@ static sys_error        SysErrors[MAX_ERRORS];
 static error_handle     ErrRover;
 static error_handle     LastErr;
 
+char *SetFileLocPrefix( char *buff, obj_attrs oattrs )
+{
+    *buff++ = LOC_ESCAPE;
+    if( oattrs == OP_REMOTE ) {
+        *buff++ = REMOTE_LOC;
+    } else if( oattrs == OP_LOCAL ) {
+        *buff++ = LOCAL_LOC;
+    }
+    return( buff );
+}
+
 const char  *RealFName( char const *name, obj_attrs *oattrs )
 {
     *oattrs &= ~(OP_REMOTE | OP_LOCAL);
@@ -423,14 +434,12 @@ static size_t MakeNameWithPath( obj_attrs oattrs,
     const file_components   *info;
     char                    *p;
 
-    p = res;
     if( oattrs & OP_REMOTE ) {
-        *p++ = LOC_ESCAPE;
-        *p++ = REMOTE_LOC;
+        p = SetFileLocPrefix( res, OP_REMOTE );
     } else if( oattrs & OP_LOCAL ) {
-        *p++ = LOC_ESCAPE;
-        *p++ = LOCAL_LOC;
+        p = SetFileLocPrefix( res, OP_LOCAL );
     } else {
+        p = res;
         oattrs = DefaultLoc( oattrs );
     }
     if( path != NULL ) {
