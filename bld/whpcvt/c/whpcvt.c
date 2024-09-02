@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -137,7 +137,7 @@ const char      Fonttype_helv[] = "helv";
 const char      Fonttype_courier[] = "courier";
 
 static list_def Lists[MAX_LISTS] = {
-    { LIST_TYPE_NONE,   0,  0,  false,  false },    // list base
+    { LIST_TYPE_NONE,   0,  0,  false,  false },    /* list base */
 };
 
 list_def        *Curr_list = &Lists[0];
@@ -421,8 +421,9 @@ tab_size Tabs_align( tab_size ch_len )
 {
     int         i;
     tab_size    len;
-
-    // find the tab we should use
+    /*
+     * find the tab we should use
+     */
     len = 1;
     for( i = 0; i < tabs_num; i++ ) {
         if( tabs_list[i] > ch_len ) {
@@ -474,7 +475,10 @@ static char *normalize_fname( char *file, const char *name, const char *fext )
     size_t              len;
 
     if( fext != NULL ) {
-        len = strlen( name ) + sizeof( Output_file_ext );   // add enough space for various file extensions
+        /*
+         * add enough space for various file extensions
+         */
+        len = strlen( name ) + sizeof( Output_file_ext );
     } else {
         len = strlen( name ) + 1;
     }
@@ -876,8 +880,12 @@ static int read_char( void )
 #endif
     if( c == EOF )
         return( c );
-    if( c == (unsigned char)WHP_SPACE_NOBREAK )
-        return( ' ' );  // convert special blanks to regular blanks
+    if( c == (unsigned char)WHP_SPACE_NOBREAK ) {
+        /*
+         * convert special blanks to regular blanks
+         */
+        return( ' ' );
+    }
     return( c );
 }
 
@@ -910,12 +918,14 @@ bool read_line( void )
                 if( eat_blank ) {
                     eat_blank = false;
                     if( *skip_blanks( Line_buf ) == '\n' ) {
-                        /* the 'exclude off, but eat blank line after' character
-                           is used to do 'dummy' figures (to get the the
-                           figure numbers right). Since real text has
-                           to get ejected, an extra blank line is hard to
-                           prevent. So this is used to eat one blank line
-                           after the fake figure */
+                        /*
+                         * the 'exclude off, but eat blank line after' character
+                         * is used to do 'dummy' figures (to get the the
+                         * figure numbers right). Since real text has
+                         * to get ejected, an extra blank line is hard to
+                         * prevent. So this is used to eat one blank line
+                         * after the fake figure
+                         */
                         break;
                     }
                 }
@@ -947,12 +957,12 @@ char *whole_keyword_line( char *ptr )
     char                buf[100];
     char                *end;
     size_t              len;
-
-    /* this is a kludge case! If a line contains nothing but keywords,
-       then parse it without generating a blank line. This
-       can happen in GML when people use index entries to generate
-       keywords, so we have to look for this case */
-
+    /*
+     * this is a kludge case! If a line contains nothing but keywords,
+     * then parse it without generating a blank line. This
+     * can happen in GML when people use index entries to generate
+     * keywords, so we have to look for this case
+     */
     for( ; *ptr == WHP_CTX_KW; ) {
         end = strchr( ptr + 1, WHP_CTX_KW );
         len = end - ptr - 1;
@@ -963,9 +973,11 @@ char *whole_keyword_line( char *ptr )
         if( *ptr == '\0' ) {
             return( NULL );
         } else if( *ptr == ' ' ) {
-            /* kludge fix cuz of GML: GML thinks that keywords are
-               are real words, so it puts a space after them.
-               This should fix that */
+            /*
+             * kludge fix cuz of GML: GML thinks that keywords are
+             * are real words, so it puts a space after them.
+             * This should fix that
+             */
             ptr++;
         }
     }
@@ -978,7 +990,10 @@ size_t trans_add_char( char ch, section_def *section )
 {
     section->section_size++;
     if( section->section_size > section->allocated_size ) {
-        section->allocated_size += 1024;    // grow by a good, big amount
+        /*
+         * grow by a good, big amount
+         */
+        section->allocated_size += 1024;
         _renew( section->section_text, section->allocated_size );
     }
     section->section_text[section->section_size - 1] = ch;
@@ -1060,7 +1075,10 @@ static void add_key_ctx( keyword_def *key, ctx_def *ctx )
 
     key->ctx_list_size++;
     if( key->ctx_list_size > key->ctx_list_alloc ) {
-        key->ctx_list_alloc += 16;      // grow by a reasonable amount
+        /*
+         * grow by a reasonable amount
+         */
+        key->ctx_list_alloc += 16;
         _renew( key->ctx_list, key->ctx_list_alloc );
     }
     key->ctx_list[key->ctx_list_size - 1] = ctx;
@@ -1214,14 +1232,20 @@ static char *skip_prep( char *str )
     start = skip_blanks( str );
     start = skip_underscores( start );
     end = skip_nonblanks( start );
-    /* now 'end' points to the terminating char after the first word */
+    /*
+     * now 'end' points to the terminating char after the first word
+     */
     if( start == end ) {
-        /* no first word */
+        /*
+         * no first word
+         */
         return( str );
     }
     next = skip_blanks( end );
     if( *next == '\0' ) {
-        /* nothing after the first word */
+        /*
+         * nothing after the first word
+         */
         return( start );
     }
 
@@ -1257,7 +1281,9 @@ static browse_def *add_browse( const char *browse_name, ctx_def *ctx )
             strcpy( browse->browse_name, browse_name );
             browse->ctx_list = NULL;
             browse->next =  NULL;
-            /* keep the browse list in the order they are parsed */
+            /*
+             * keep the browse list in the order they are parsed
+             */
             if( browse_prev == NULL ) {
                 Browse_list = browse;
             } else {
@@ -1477,8 +1503,10 @@ static bool read_topic( void )
     case ' ':
     case '\t':
         if( *skip_blanks( Line_buf ) == '\0' ) {
-            /* due to a bug on GML, skip completely blank lines
-               between topics, like this */
+            /*
+             * due to a bug on GML, skip completely blank lines
+             * between topics, like this
+             */
             return( read_line() );
         }
         /* fall through */
@@ -1530,7 +1558,9 @@ static void sort_ctx_list( void )
     for( ctx = Ctx_list; ctx != NULL; ctx = next_ctx ) {
         next_ctx = ctx->next;
         if( ctx->title == NULL ) {
-            /* ctx item without a definition */
+            /*
+             * ctx item without a definition
+             */
             sprintf( buf, "The context id '%s' is used but not defined", ctx->ctx_name );
             message_str( buf );
             error_quit();
@@ -1634,9 +1664,10 @@ static int ctx_cmp( const void *_ctx1, const void *_ctx2 )
     return( stricmp( (*ctx1)->title, (*ctx2)->title ) );
 }
 
-// removes empty contexts from a given keyword_def if Remove_empty == true
 static void compress_kw( keyword_def *kw )
-/****************************************/
+/*****************************************
+ * removes empty contexts from a given keyword_def if Remove_empty == true
+ */
 {
     int         o_size;
     int         n_size = 0;
@@ -1659,47 +1690,57 @@ static void compress_kw( keyword_def *kw )
 static void output_kw_file( void )
 /********************************/
 {
-    keyword_def                 *temp_kw;   // used for grabbing keywords
-    keyword_def                 **kw;       // array of *keyword_def's
-    ctx_def                     **ctx;      // array of *ctx_def's
-    int                         ctx_num;    // number of ctx we're on
-    int                         kw_num = 0; // number of keywords
-    int                         i;          // counter
-    bool                        title;      // whether we've printed this kw
-
-    // output header
+    keyword_def                 *temp_kw;   /* used for grabbing keywords */
+    keyword_def                 **kw;       /* array of *keyword_def's */
+    ctx_def                     **ctx;      /* array of *ctx_def's */
+    int                         ctx_num;    /* number of ctx we're on */
+    int                         kw_num = 0; /* number of keywords */
+    int                         i;          /* counter */
+    bool                        title;      /* whether we've printed this kw */
+    /*
+     * output header
+     */
     whp_fprintf( KW_file, ":H1.%s\n", Gen_titles[GEN_TITLE_KEYWORD][Title_case] );
     whp_fprintf( KW_file, ":pb.%c%c\n", WHP_SLIST_START, WHP_LIST_COMPACT );
-
-    // count the number of keywords in our list
+    /*
+     * count the number of keywords in our list
+     */
     for( temp_kw = Keyword_list; temp_kw !=NULL; temp_kw = temp_kw->next )
         kw_num++;
-
-    // if we've got any keywords ...
+    /*
+     * if we've got any keywords ...
+     */
     if( kw_num > 0 ) {
-        // ... we allocate an array of pointers to keywords ...
+        /*
+         * ... we allocate an array of pointers to keywords ...
+         */
         _new( kw, kw_num );
-
-        // ... fill it up ...
+        /*
+         * ... fill it up ...
+         */
         kw_num = 0;
         for( temp_kw = Keyword_list; temp_kw !=NULL; temp_kw = temp_kw->next ) {
             kw[kw_num] = temp_kw;
             kw_num++;
         }
-
-        // .. and then sort it.
+        /*
+         * .. and then sort it.
+         */
         qsort( kw, kw_num, sizeof( keyword_def * ), kw_cmp );
 
         for( i = 0; i < kw_num; i++ ) {
             title = false;
-
-            // remove empty contexts if we need to
+            /*
+             * remove empty contexts if we need to
+             */
             compress_kw( kw[i] );
-
-            // get our array of contexts
+            /*
+             * get our array of contexts
+             */
             ctx = kw[i]->ctx_list;
-
-            // we treat keywords with only one context as a special case
+            /*
+             * we treat keywords with only one context as a special case
+             */
             if( kw[i]->ctx_list_size == 1 ) {
                 if( !is_special_topic( ctx[0], Dump_popup_k ) ) {
                     whp_fprintf( KW_file,
@@ -1712,14 +1753,20 @@ static void output_kw_file( void )
                                 WHP_HLINK );
                 }
             } else if( kw[i]->ctx_list_size > 1 ) {
-                // sort the list of contexts by title.
+                /*
+                 * sort the list of contexts by title.
+                 */
                 qsort( ctx, kw[i]->ctx_list_size, sizeof( ctx_def * ), ctx_cmp );
 
                 for( ctx_num = 0; ctx_num < kw[i]->ctx_list_size; ctx_num++ ) {
-                    // if the context is not special output a hyperlink
+                    /*
+                     * if the context is not special output a hyperlink
+                     */
                     if( !is_special_topic( ctx[ctx_num], Dump_popup_k ) ) {
                         if( !title ) {
-                            // output keyword
+                            /*
+                             * output keyword
+                             */
                             whp_fprintf( KW_file,
                                         ":pb.%c:pb.%cb%c%s%c\n"
                                         ":pb.%c%c\n",
@@ -1740,7 +1787,9 @@ static void output_kw_file( void )
                                 ctx[ctx_num]->title,
                                 WHP_HLINK );
                     }
-                    // go to the next context on our list
+                    /*
+                     * go to the next context on our list
+                     */
                 }
                 if( title ) {
                     whp_fprintf( KW_file, ":pb.%c\n", WHP_SLIST_END );
@@ -1749,8 +1798,9 @@ static void output_kw_file( void )
         }
         free( kw );
     }
-
-    // the end
+    /*
+     * the end
+     */
     whp_fprintf( KW_file, ":pb.%c\n", WHP_SLIST_END );
 }
 
@@ -1774,7 +1824,9 @@ static void output_blist_file( void )
         }
         if( ctx != NULL ) {
             if( is_special_topic( ctx, Dump_popup_b ) ) {
-                /* kludge fix to make life easier for the FET books */
+                /*
+                 * kludge fix to make life easier for the FET books
+                 */
                 continue;
             }
 
@@ -2106,9 +2158,10 @@ int main( int argc, char *argv[] )
             print_help();
             error_quit();
         }
-
-        /* This program can be a memory pig, so, to avoid fragmentation,
-           do some big allocs to block out the space */
+        /*
+         * This program can be a memory pig, so, to avoid fragmentation,
+         * do some big allocs to block out the space
+         */
         for( size = 10; size > 0; size-- ) {
             start_alloc = malloc( size * 1000 * 1024 );
             if( start_alloc != NULL ) {
@@ -2134,8 +2187,9 @@ int main( int argc, char *argv[] )
             printf( "Could not open input file: %s\n", file );
             error_quit();
         }
-
-        /* this is for the RTF 'Up' button support */
+        /*
+         * this is for the RTF 'Up' button support
+         */
         if( Output_type == OUT_RTF ) {
             Help_File = malloc( strlen( file ) + sizeof( EXT_HLP_FILE ) );
             strcpy( Help_File, file );
@@ -2287,7 +2341,9 @@ int main( int argc, char *argv[] )
             break;
         }
         if( Do_contents ) {
-            /* do this before sorting the context lists */
+            /*
+             * do this before sorting the context lists
+             */
             output_contents_file();
         }
         sort_ctx_list();
