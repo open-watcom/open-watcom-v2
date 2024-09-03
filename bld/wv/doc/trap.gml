@@ -401,7 +401,7 @@ A line of dashes indicates where an
 .id mx_entry
 is allowed (but not required) to start.
 The debugger allows
-(via REQ_GET_SUPPLEMENTARY_SERVICE/REQ_PERFORM_SUPPLEMENTARY_SERVICE) optional
+(via REQ_GET_SUPPLEMENTARY_SERVICE and REQ_PERFORM_SUPPLEMENTARY_SERVICE) optional
 components to be implemented only on specific systems.
 .np
 The numeric value of the request which is placed in the
@@ -597,9 +597,9 @@ Request to perform a supplementary service.
 .np
 Request message:
 .millust begin
-trap_req    req
-unsigned_32 service_id
-------------------------
+trap_req        req
+trap_shandle    id
+---------------------
 unspecified
 .millust end
 .pp
@@ -972,7 +972,9 @@ field tells the number of bytes actually written out.
 If an error has occurred in writing, the length returned will not be equal
 to the number of bytes requested.
 .*
-.section REQ_PROG_GO/REQ_PROG_STEP
+.section REQ_PROG_GO
+.*
+.section REQ_PROG_STEP
 .*
 .np
 Requests to execute the debuggee.
@@ -1437,7 +1439,9 @@ MSG_WARNING indicates that the message is a warning level message while
 MSG_ERROR is an error level message.
 If neither of these bits are on, the message is merely informational.
 .*
-.section REQ_REDIRECT_STDIN/REQ_REDIRECT_STDOUT
+.section REQ_REDIRECT_STDIN
+.*
+.section REQ_REDIRECT_STDOUT
 .*
 .np
 Request to redirect the standard input (REQ_REDIRECT_STDIN) or
