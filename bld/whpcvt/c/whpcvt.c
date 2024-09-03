@@ -1610,7 +1610,7 @@ static void output_idx_file( void )
     }
     new_topic = false;
     for( ctx = Ctx_list; ctx != NULL; ctx = ctx->next ) {
-        if( ctx->empty || ( Dump_popup_i && ctx->title_fmt == TITLE_FMT_NOLINE ) ) {
+        if( ctx->empty && Remove_empty || ( Dump_popup_i && ctx->title_fmt == TITLE_FMT_NOLINE ) ) {
             continue;
         }
         ch2 = (char)toupper( *(unsigned char *)skip_prep( ctx->title ) );
@@ -1925,7 +1925,7 @@ static void output_def_file( void )
     max_len = 0;
     buf = NULL;
     for( ctx = Ctx_list; ctx != NULL; ctx = ctx->next ) {
-        if( ctx->empty ) {
+        if( ctx->empty && Remove_empty ) {
             continue;
         }
         len = strlen( ctx->ctx_name ) + 1;
@@ -1949,7 +1949,7 @@ static void output_hdef_file( void )
     whp_fprintf( Hdef_file, "/* This file was created by WHPCVT.EXE. DO NOT MODIFY BY HAND! */\n\n" );
 
     for( ctx = Ctx_list; ctx != NULL; ctx = ctx->next ) {
-        if( !ctx->empty ) {
+        if( !ctx->empty && !Remove_empty ) {
             whp_fprintf( Hdef_file, "#define %-50s\t%d\n", ctx->ctx_name, ctx->ctx_id );
         }
     }
