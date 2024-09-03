@@ -436,8 +436,8 @@ bool Redirect( bool input, char *hndlname )
 {
     in_mx_entry         in[2];
     mx_entry            out[1];
-    redirect_stdin_req  acc;
-    redirect_stdin_ret  ret;
+    redirect_stdio_req  acc;
+    redirect_stdio_ret  ret;
     obj_attrs           oattrs;
 
     oattrs = 0;

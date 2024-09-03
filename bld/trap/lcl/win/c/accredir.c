@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -42,7 +42,7 @@
 #include "dbgrmsg.h"
 
 
-static redirect_stdin_ret       *redirect_ret;
+static redirect_stdio_ret       *redirect_ret;
 static bool                     redirect_input;
 static char                     *redirect_filename;
 
@@ -100,9 +100,9 @@ static trap_elen doRedirect( bool isin )
 {
     redirect_ret = GetOutPtr( 0 );
     redirect_input = isin;
-    redirect_filename = GetInPtr( sizeof( redirect_stdin_req ) );
+    redirect_filename = GetInPtr( sizeof( redirect_stdio_req ) );
     DebuggerWaitForMessage( RUNNING_DEBUGEE, TaskAtFault, RUN_REDIRECT );
-    return( sizeof( redirect_stdin_ret ) );
+    return( sizeof( redirect_stdio_ret ) );
 } /* doRedirect */
 
 trap_retval TRAP_CORE( Redirect_stdin )( void  )

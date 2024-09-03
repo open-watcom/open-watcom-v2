@@ -34,6 +34,18 @@
 #include <stdlib.h>
 #include "stdrdos.h"
 
+
+static trap_retval redirect( bool input )
+{
+    redirect_stdio_ret *ret;
+
+    /* unused parameters */ (void)input;
+
+    ret = GetOutPtr( 0 );
+    ret->err = 1;
+    return( sizeof( *ret ) );
+}
+
 trap_retval TRAP_CORE( Redirect_stdin )( void )
 {
     return( 0 );
@@ -41,9 +53,5 @@ trap_retval TRAP_CORE( Redirect_stdin )( void )
 
 trap_retval TRAP_CORE( Redirect_stdout )( void )
 {
-    redirect_stdout_ret *ret;
-
-    ret = GetOutPtr( 0 );
-    ret->err = 1;
-    return( sizeof( *ret ) );
+    return( redirect( false ) );
 }

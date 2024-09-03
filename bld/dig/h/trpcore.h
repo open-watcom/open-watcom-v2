@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -371,15 +371,11 @@ typedef struct {
 typedef struct {
     trap_req            req;
     /* followed by filename to redirect to */
-} redirect_stdin_req;
+} redirect_stdio_req;
 
 typedef struct {
     trap_error          err;
-} redirect_stdin_ret;
-
-typedef redirect_stdin_req      redirect_stdout_req;
-typedef redirect_stdin_ret      redirect_stdout_ret;
-
+} redirect_stdio_ret;
 
 typedef struct {
     trap_req            req;

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -79,7 +79,7 @@ static trap_retval Redirect( bool input )
     t_handle            std_hndl;
     t_handle            *var;
     char                *name;
-    redirect_stdin_ret  *ret;
+    redirect_stdio_ret  *ret;
     t_rc                rc;
 
     ret = GetOutPtr( 0 );
@@ -91,7 +91,7 @@ static trap_retval Redirect( bool input )
 #else
     SetUsrTask();
 #endif
-    name = GetInPtr( sizeof( redirect_stdin_req ) );
+    name = GetInPtr( sizeof( redirect_stdio_req ) );
     ret->err = 0;
     if( input ) {
         std_hndl = HANDLE_INP;

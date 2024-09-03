@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -1289,13 +1289,13 @@ static unsigned_16 Redir32( bool input )
     struct  _reg_struct save, new;
     int                 *save_hdl;
     unsigned            len;
-    redirect_stdin_ret  *ret;
+    redirect_stdio_ret  *ret;
     char                *file_name;
     dword               code;
     addr48_ptr          slib;
 
     ret = GetOutPtr( 0 );
-    file_name = GetInPtr( sizeof( redirect_stdin_req ) );
+    file_name = GetInPtr( sizeof( redirect_stdio_req ) );
     ret->err = 1;
     if( ProcInfo.pid == 0 ) {
         return( sizeof( *ret ) );
@@ -1368,11 +1368,11 @@ static unsigned Redir16( bool input )
     addr32_ptr          func;
     int                 *save_hdl;
     unsigned            len;
-    redirect_stdin_ret  *ret;
+    redirect_stdio_ret  *ret;
     char                *file_name;
 
     ret = GetOutPtr( 0 );
-    file_name = GetInPtr( sizeof( redirect_stdin_req ) );
+    file_name = GetInPtr( sizeof( redirect_stdio_req ) );
     ret->err = 1;
     if( ProcInfo.pid == 0 ) {
         return( sizeof( *ret ) );
