@@ -207,8 +207,8 @@ bool    OtherVerify( vertype kind, instruction *ins,
             return( false );
         if( op1 == op2 ) {
             if( ins->head.opcode == OP_CMP_NOT_EQUAL
-             || ins->head.opcode == OP_CMP_GREATER
-             || ins->head.opcode == OP_CMP_LESS ) {
+              || ins->head.opcode == OP_CMP_GREATER
+              || ins->head.opcode == OP_CMP_LESS ) {
                 return( true );
             }
         }
@@ -229,8 +229,8 @@ bool    OtherVerify( vertype kind, instruction *ins,
             return( false );
         if( op1 == op2 ) {
             if( ins->head.opcode == OP_CMP_EQUAL
-             || ins->head.opcode == OP_CMP_GREATER_EQUAL
-             || ins->head.opcode == OP_CMP_LESS_EQUAL ) {
+              || ins->head.opcode == OP_CMP_GREATER_EQUAL
+              || ins->head.opcode == OP_CMP_LESS_EQUAL ) {
                 return( true );
             }
         }
@@ -269,7 +269,7 @@ bool    OtherVerify( vertype kind, instruction *ins,
     case V_OP2NEG:
         if( ( op2->c.const_type == CONS_ABSOLUTE )
           && ( op2->c.lo.u.int_value < 0 )
-          && ( op2->c.lo.u.int_value & 0xffff ) != 0x8000
+          && ( (op2->c.lo.u.int_value & 0xffff) != 0x8000 )
           && ( op2->c.lo.u.int_value != 0x80000000 ) )
             return( true );
         break;
@@ -290,8 +290,8 @@ bool    OtherVerify( vertype kind, instruction *ins,
         break;
     case V_OP2ZERO:
         if( op2->c.const_type == CONS_ABSOLUTE
-          &&  CFIsI16( op2->c.value )
-          &&  op2->c.lo.u.int_value == 0 )
+          && CFIsI16( op2->c.value )
+          && op2->c.lo.u.int_value == 0 )
             return( true );
         break;
     case V_OP2_FFFFFFFF:

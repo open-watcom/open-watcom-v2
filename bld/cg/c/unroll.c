@@ -126,8 +126,6 @@ block   *DupBlock( block *blk )
     copy->depth = blk->depth;
     copy->gen_id = blk->gen_id;
     copy->ins.head.line_num = 0;
-    copy->next_block = NULL;
-    copy->prev_block = NULL;
     DupInstrs( (instruction *)&copy->ins, blk->ins.head.next, blk->ins.head.prev, NULL, 0 );
     return( copy );
 }
@@ -991,8 +989,6 @@ static  void    MakeWorldGoAround( block *loop, loop_abstract *cleanup_copy, loo
         new_blk = MakeBlock( AskForNewLabel(), 2 );
         _SetBlkAttr( new_blk, BLK_CONDITIONAL );
         new_blk->loop_head = PreHead->loop_head;
-        new_blk->next_block = NULL;
-        new_blk->prev_block = NULL;
         new_blk->input_edges = NULL;
         new_blk->id = NO_BLOCK_ID;
         new_blk->gen_id = PreHead->gen_id;

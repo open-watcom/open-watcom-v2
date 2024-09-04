@@ -744,16 +744,19 @@ void    CheckCC( instruction *ins, instruction *new_ins )
 {
     if( ins->head.opcode == OP_EXT_ADD
       || ins->head.opcode == OP_EXT_SUB ) {
-        new_ins->table = GetMoveNoCCEntry(); /* ensure it doesn't set the condition codes */
+        /*
+         * ensure it doesn't set the condition codes
+         */
+        new_ins->table = GetMoveNoCCEntry();
         new_ins->ins_flags |= INS_CC_USED;
     }
 }
 
 
 
-static  instruction     *SplitPush( instruction *ins, type_length size ) {
-/************************************************************************/
-
+static  instruction     *SplitPush( instruction *ins, type_length size )
+/**********************************************************************/
+{
     instruction         *new_ins;
     instruction         *first_ins;
     name                *op;
@@ -830,7 +833,9 @@ instruction     *rDOLONGPUSH( instruction *ins )
         move = MakeMove( ins->operands[0], at_sp, XX );
         ReplIns( ins, move );
         ins = LoadStringOps( move, &move->operands[0], &move->result );
-        /*% mov CX,const will be the first if it's there so try for SUB SP,CX*/
+        /*
+         * % mov CX,const will be the first if it's there so try for SUB SP,CX
+         */
         sub_sp = MakeBinary( OP_SUB, sp, AllocIntConst( _RoundUp( size, WORD_SIZE ) ), sp, WD );
         if( ins->result != NULL
           && HW_CEqual( ins->result->r.reg, HW_xCX ) ) {
@@ -846,10 +851,10 @@ instruction     *rDOLONGPUSH( instruction *ins )
 
 
 name    *OpAdjusted( name *op, int bias, type_class_def type_class )
-/*********************************************************************
-    Return a new op of type 'type' which is offset from the old op by the
-    amount specified by 'bias'.
-*/
+/*******************************************************************
+ * Return a new op of type 'type' which is offset from the old op by the
+ * amount specified by 'bias'.
+ */
 {
     name        *new_op = NULL;
 
