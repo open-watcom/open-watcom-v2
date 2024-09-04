@@ -150,7 +150,7 @@ static  void            PreOptimize( void )
     bool        change;
 
     if( _IsntModel( CGSW_GEN_NO_OPTIMIZATION ) ) {
-//      CharsAndShortsToInts();
+//        CharsAndShortsToInts();
         MakeMovAddrConsts();
         PushPostOps();
         DeadTemps();
@@ -217,13 +217,17 @@ static  void            PostOptimize( void )
 /******************************************/
 {
     if( _IsntModel( CGSW_GEN_NO_OPTIMIZATION ) ) {
-        // Run peephole optimizer again. Important: It is critical that the
-        // new instructions can be directly generated because RegAlloc is
-        // done by now. PeepOpt() is responsible for verifying that.
+        /*
+         * Run peephole optimizer again. Important: It is critical that the
+         * new instructions can be directly generated because RegAlloc is
+         * done by now. PeepOpt() is responsible for verifying that.
+         */
         if( PeepOpt( HeadBlock, NextBlock, NULL, true ) ) {
             LiveInfoUpdate();
         }
-        // this is important as BuildIndex cannot handle instructions with no operands
+        /*
+         * this is important as BuildIndex cannot handle instructions with no operands
+         */
         DeadInstructions();
         BuildIndex();
         DeadInstructions();
@@ -231,36 +235,44 @@ static  void            PostOptimize( void )
     MergeIndex();
     if( _IsntModel( CGSW_GEN_NO_OPTIMIZATION ) ) {
 #if !_TARGET_RISC
-        //
-        // Calling Conditions() at this point has nice optimization effect,
-        // but doesn't working correctly right now. It optimizes conditions
-        // making them dependent from previous conditions codes, but riscifier
-        // generates XOR's which will trash cond. codes. Either Conditions()
-        // either riscifier must be fixed to handle this situation.
-        //
+        /*
+         * Calling Conditions() at this point has nice optimization effect,
+         * but doesn't working correctly right now. It optimizes conditions
+         * making them dependent from previous conditions codes, but riscifier
+         * generates XOR's which will trash cond. codes. Either Conditions()
+         * either riscifier must be fixed to handle this situation.
+         */
     #if 0
-        // Get rid of unused conditions on variables level
-        // to decrease number of referenced vars in LdStAlloc() and Score()
+        /*
+         * et rid of unused conditions on variables level
+         * to decrease number of referenced vars in LdStAlloc() and Score()
+         */
         if( _IsntTargetModel( CGSW_X86_STATEMENT_COUNTING ) ) {
             Conditions();
-            DeadInstructions(); // cleanup junk after Conditions()
+            DeadInstructions(); /* cleanup junk after Conditions() */
         }
     #endif
 #endif
-        // OptCloseMoves();  // todo: merge constant moves before riscifier
+//        OptCloseMoves();  /* todo: merge constant moves before riscifier */
         LdStAlloc();
         Score();
-        DeadInstructions(); // cleanup junk after Score()
-        // deRISCify before LoopRegInvariant() or Shedule() are run:
-        // they're moving RISCified pair.
+        DeadInstructions(); /* cleanup junk after Score() */
+        /*
+         * deRISCify before LoopRegInvariant() or Shedule() are run:
+         * they're moving RISCified pair.
+         */
         LdStCompress();
-        // Reuse registers freed by deriscifier
+        /*
+         * Reuse registers freed by deriscifier
+         */
         Score();
-        DeadInstructions(); // cleanup junk after Score()
+        DeadInstructions(); /* cleanup junk after Score() */
         if( !BlockByBlock )
             LoopRegInvariant();
 #if !_TARGET_RISC
-        // Get rid of remaining unused conditions on register level.
+        /*
+         * Get rid of remaining unused conditions on register level.
+         */
         if( _IsntTargetModel( CGSW_X86_STATEMENT_COUNTING ) ) {
             Conditions();
         }
@@ -268,15 +280,19 @@ static  void            PostOptimize( void )
     }
     FPExpand();
     if( _IsntModel( CGSW_GEN_NO_OPTIMIZATION ) ) {
-        DeadInstructions();   // cleanup junk after Conditions()
-        // Run scheduler last, when all instructions are stable
+        DeadInstructions();   /* cleanup junk after Conditions() */
+        /*
+         * Run scheduler last, when all instructions are stable
+         */
         if( _IsModel( CGSW_GEN_INS_SCHEDULING ) ) {
             HaveLiveInfo = false;
             Schedule(); /* NOTE: Schedule messes up live information */
             LiveInfoUpdate();
             HaveLiveInfo = true;
         }
-        // run this again in case Scheduler messed around with indices
+        /*
+         * run this again in case Scheduler messed around with indices
+         */
         if( PeepOpt( HeadBlock, NextBlock, NULL, true ) ) {
             LiveInfoUpdate();
         }
@@ -641,7 +657,9 @@ void    Generate( bool routine_done )
     HaveLiveInfo = false;
     HaveDominatorInfo = false;
 #if _TARGET_RISC == 0 && ( _TARGET & _TARG_370 ) == 0
-    /* if we want to go fast, generate statement at a time */
+    /*
+     * if we want to go fast, generate statement at a time
+     */
     if( _IsModel( CGSW_GEN_NO_OPTIMIZATION ) ) {
         if( !BlockByBlock ) {
             InitStackMap();
@@ -656,8 +674,9 @@ void    Generate( bool routine_done )
         return;
     }
 #endif
-
-    /* if we couldn't get the whole procedure in memory, generate part of it */
+    /*
+     * if we couldn't get the whole procedure in memory, generate part of it
+     */
     if( BlockByBlock ) {
         if( _MemLow
           || routine_done ) {
@@ -667,22 +686,25 @@ void    Generate( bool routine_done )
         }
         return;
     }
-
-    /* if we're low on memory, go into BlockByBlock mode */
+    /*
+     * if we're low on memory, go into BlockByBlock mode
+     */
     if( _MemLow ) {
         InitStackMap();
         GenPartialRoutine( routine_done );
         BlowAwayFreeLists();
         return;
     }
-
-    /* check to see that no basic block gets too unwieldy */
+    /*
+     * check to see that no basic block gets too unwieldy
+     */
     if( !routine_done ) {
         BlkTooBig();
         return;
     }
-
-    /* The routine is all in memory. Optimize and generate it */
+    /*
+     * The routine is all in memory. Optimize and generate it
+     */
     FixReturns();
     FixEdges();
     Renumber();
@@ -708,7 +730,8 @@ void    Generate( bool routine_done )
     MakeLiveInfo();
     HaveLiveInfo = true;
     AxeDeadCode();
-    /* AxeDeadCode() may have emptied some blocks. Run BlockTrim() to get rid
+    /*
+     * AxeDeadCode() may have emptied some blocks. Run BlockTrim() to get rid
      * of useless conditionals, then redo conflicts etc. if any blocks died.
      */
     if( BlockTrim() ) {

@@ -51,7 +51,7 @@
  *       in longest of these tables!
  */
 
-static const hw_reg_set      Reg64Order[] = {
+static const hw_reg_set     Reg64Order[] = {
     HW_D_1( HW_EAX ),
     HW_D_1( HW_EBX ),
     HW_D_1( HW_ESI ),
@@ -62,62 +62,62 @@ static const hw_reg_set      Reg64Order[] = {
     HW_D_1( HW_ESP ),
     HW_D_1( HW_EMPTY )
 };
-static const hw_reg_set      Empty[] = {
+static const hw_reg_set     Empty[] = {
     HW_D_1( HW_EMPTY )
 };
-static const hw_reg_set      ALReg[] = {
+static const hw_reg_set     ALReg[] = {
     HW_D_1( HW_AL ),
     HW_D_1( HW_EMPTY )
 };
-static const hw_reg_set      AHReg[] = {
+static const hw_reg_set     AHReg[] = {
     HW_D_1( HW_AH ),
     HW_D_1( HW_EMPTY )
 };
-static const hw_reg_set      AXReg[] = {
+static const hw_reg_set     AXReg[] = {
     HW_D_1( HW_AX ),
     HW_D_1( HW_EMPTY )
 };
-static const hw_reg_set      EAXReg[] = {
+static const hw_reg_set     EAXReg[] = {
     HW_D_1( HW_EAX ),
     HW_D_1( HW_EMPTY )
 };
-static const hw_reg_set      ECXReg[] = {
+static const hw_reg_set     ECXReg[] = {
     HW_D_1( HW_ECX ),
     HW_D_1( HW_EMPTY )
 };
-static const hw_reg_set      CLReg[] = {
+static const hw_reg_set     CLReg[] = {
     HW_D_1( HW_CL ),
     HW_D_1( HW_EMPTY )
 };
-static const hw_reg_set      CXReg[] = {
+static const hw_reg_set     CXReg[] = {
     HW_D_1( HW_CX ),
     HW_D_1( HW_EMPTY )
 };
-static const hw_reg_set      DXReg[] = {
+static const hw_reg_set     DXReg[] = {
     HW_D_1( HW_DX ),
     HW_D_1( HW_EMPTY )
 };
-static const hw_reg_set      EDXReg[] = {
+static const hw_reg_set     EDXReg[] = {
     HW_D_1( HW_EDX ),
     HW_D_1( HW_EMPTY )
 };
-static const hw_reg_set      DXAXReg[] = {
+static const hw_reg_set     DXAXReg[] = {
     HW_D_2( HW_DX, HW_AX ),
     HW_D_1( HW_EMPTY )
 };
-static const hw_reg_set      DXEAXReg[] = {
+static const hw_reg_set     DXEAXReg[] = {
     HW_D_2( HW_DX, HW_EAX ),
     HW_D_1( HW_EMPTY )
 };
-static const hw_reg_set      EDXEAXReg[] = {
+static const hw_reg_set     EDXEAXReg[] = {
     HW_D_2( HW_EDX, HW_EAX ),
     HW_D_1( HW_EMPTY )
 };
-static hw_reg_set      FPParm2Reg[] = {
-    HW_D_1( HW_EMPTY ),         /* filled in by InitRegTbl */
+static hw_reg_set           FPParm2Reg[] = {
+    HW_D_1( HW_EMPTY ),     /* filled in by InitRegTbl */
     HW_D_1( HW_EMPTY )
 };
-static const hw_reg_set      ByteRegs[] = {
+static const hw_reg_set     ByteRegs[] = {
     HW_D_1( HW_AL ),
     HW_D_1( HW_AH ),
     HW_D_1( HW_DL ),
@@ -128,7 +128,7 @@ static const hw_reg_set      ByteRegs[] = {
     HW_D_1( HW_CH ),
     HW_D_1( HW_EMPTY )
 };
-static const hw_reg_set      WordOrSegReg[] = {
+static const hw_reg_set     WordOrSegReg[] = {
     HW_D_1( HW_AX ),
     HW_D_1( HW_DX ),
     HW_D_1( HW_BX ),
@@ -143,7 +143,7 @@ static const hw_reg_set      WordOrSegReg[] = {
     HW_D_1( HW_SS ),
     HW_D_1( HW_EMPTY )
 };
-static const hw_reg_set      WordRegs[] = {
+static const hw_reg_set     WordRegs[] = {
     HW_D_1( HW_AX ),
     HW_D_1( HW_DX ),
     HW_D_1( HW_BX ),
@@ -169,7 +169,6 @@ static const hw_reg_set     SegRegs[] = {
     HW_D_1( HW_EMPTY )
 };
 static const hw_reg_set     FarPointerRegs[] = {
-
     HW_D_2( HW_DX, HW_EAX ),
     HW_D_2( HW_CX, HW_EBX ),
     HW_D_2( HW_CX, HW_EAX ),
@@ -228,7 +227,7 @@ static const hw_reg_set     FarPointerRegs[] = {
 
     HW_D_1( HW_EMPTY )
 };
-static const hw_reg_set      LongIndexRegs[] = {
+static const hw_reg_set     LongIndexRegs[] = {
     HW_D_2( HW_DS, HW_EAX ),
     HW_D_2( HW_DS, HW_EDX ),
     HW_D_2( HW_DS, HW_EBX ),
@@ -279,14 +278,14 @@ static const hw_reg_set      LongIndexRegs[] = {
 
     HW_D_1( HW_EMPTY )
 };
-static const hw_reg_set      ABCDRegs[] = {
+static const hw_reg_set     ABCDRegs[] = {
     HW_D_1( HW_EAX ),
     HW_D_1( HW_EDX ),
     HW_D_1( HW_EBX ),
     HW_D_1( HW_ECX ),
     HW_D_1( HW_EMPTY )
 };
-static const hw_reg_set      DoubleRegs[] = {
+static const hw_reg_set     DoubleRegs[] = {
     HW_D_1( HW_EAX ),
     HW_D_1( HW_EDX ),
     HW_D_1( HW_ECX ),
@@ -297,7 +296,7 @@ static const hw_reg_set      DoubleRegs[] = {
     HW_D_1( HW_ESP ),
     HW_D_1( HW_EMPTY )
 };
-static const hw_reg_set      DoubleParmRegs[] = {
+static const hw_reg_set     DoubleParmRegs[] = {
     HW_D_1( HW_EAX ),
     HW_D_1( HW_EDX ),
     HW_D_1( HW_EBX ),
@@ -308,7 +307,7 @@ static const hw_reg_set      DoubleParmRegs[] = {
     HW_D_1( HW_ESP ),
     HW_D_1( HW_EMPTY )
 };
-static const hw_reg_set      QuadReg[] = {
+static const hw_reg_set     QuadReg[] = {
     HW_D_2( HW_EDX, HW_EAX ),
     HW_D_2( HW_ECX, HW_EBX ),
     HW_D_2( HW_ECX, HW_EAX ),
@@ -358,31 +357,31 @@ static hw_reg_set           STParmReg[] = {
     HW_D_1( HW_EMPTY )
 };
 
-const hw_reg_set * const RegSets[] = {
-/*****************************
-    define the possible register lists
-*/
+const hw_reg_set            * const RegSets[] = {
+/****************************************
+ * define the possible register lists
+ */
     #define RL(a,b,c,d) a
     #include "rl.h"
     #undef RL
     NULL
 };
 
-const op_regs RegList[] = {
-/********************
-    define the possible combinations of register lists for operands/results
-*/
+const op_regs               RegList[] = {
+/****************************************
+ * define the possible combinations of register lists for operands/results
+ */
     #define RG( a,b,c,d,e,f ) {a,b,c,d,e}
     #include "rg.h"
     #undef RG
 };
 
-static const reg_set_index   ClassSets[] = {
+static const reg_set_index  ClassSets[] = {
 /**************************************
-       define the class set associated with a given register set
-       RL_ indicates that the class is already identified
-       (e.g. I1 already identified as U1)
-*/
+ * define the class set associated with a given register set
+ * RL_ indicates that the class is already identified
+ * (e.g. I1 already identified as U1)
+ */
     RL_BYTE,                /* U1 */
     RL_,                    /* I1 */
     RL_WORD,                /* U2 */
@@ -399,10 +398,10 @@ static const reg_set_index   ClassSets[] = {
     RL_                     /* XX */
 };
 
-static const hw_reg_set * const ParmSets[] = {
-/**************************************
-    define the set of register that a parameter of a given class could use
-*/
+static const hw_reg_set     * const ParmSets[] = {
+/*************************************************
+ * define the set of register that a parameter of a given class could use
+ */
     ByteRegs,               /* U1 */
     ByteRegs,               /* I1 */
     WordRegs,               /* U2 */
@@ -419,11 +418,11 @@ static const hw_reg_set * const ParmSets[] = {
     Empty                   /* XX */
 };
 
-static const hw_reg_set * const ParmSets8087[] = {
-/******************************************
-    define the set of register that a parameter of a given class could use
-    when generating 8087 code
-*/
+static const hw_reg_set     * const ParmSets8087[] = {
+/*****************************************************
+ * define the set of register that a parameter of a given class could use
+ * when generating 8087 code
+ */
     ByteRegs,               /* U1 */
     ByteRegs,               /* I1 */
     WordRegs,               /* U2 */
@@ -440,10 +439,10 @@ static const hw_reg_set * const ParmSets8087[] = {
     Empty                   /* XX */
 };
 
-static const reg_set_index   IsSets[] = {
+static const reg_set_index  IsSets[] = {
 /***********************************
-    define the normal register list associated with a given class
-*/
+ * define the normal register list associated with a given class
+ */
     RL_BYTE,                /* U1 */
     RL_BYTE,                /* I1 */
     RL_WORD,                /* U2 */
@@ -460,10 +459,10 @@ static const reg_set_index   IsSets[] = {
     RL_                     /* XX */
 };
 
-static const reg_set_index   ReturnSets[] = {
+static const reg_set_index  ReturnSets[] = {
 /***************************************
-    define the set a register normally used to return a given class
-*/
+ * define the set a register normally used to return a given class
+ */
     RL_AL,                  /* U1 */
     RL_AL,                  /* I1 */
     RL_AX,                  /* U2 */
@@ -480,10 +479,10 @@ static const reg_set_index   ReturnSets[] = {
     RL_                     /* XX */
 };
 
-static const reg_set_index   Return8087[] = {
+static const reg_set_index  Return8087[] = {
 /***************************************
-    define the set a register normally used to return a given class with 8087
-*/
+ * define the set a register normally used to return a given class with 8087
+ */
     RL_AL,                  /* U1 */
     RL_AL,                  /* I1 */
     RL_AX,                  /* U2 */
@@ -500,10 +499,10 @@ static const reg_set_index   Return8087[] = {
     RL_                     /* XX */
 };
 
-static const reg_set_index   IndexSets[] = {
+static const reg_set_index  IndexSets[] = {
 /**************************************
-    define the sets of index registers of a given class
-*/
+ * define the sets of index registers of a given class
+ */
     RL_,                    /* U1 */
     RL_,                    /* I1 */
     RL_,                    /* U2 */
@@ -521,11 +520,12 @@ static const reg_set_index   IndexSets[] = {
 };
 
 /*
-   Information for register set intersections
-       if sets are of different classes
-            intersection is empty
-       else
-            intersection given in square matrix for class
+ * Information for register set intersections
+ *
+ *  if sets are of different classes
+ *      intersection is empty
+ *  else
+ *      intersection given in square matrix for class
  */
 
 #define INTERSECT_DEFS \
@@ -549,20 +549,20 @@ typedef struct reg_class {
     byte            index;
 } reg_class;
 
-static const reg_class       IntersectInfo[] = {
+static const reg_class      IntersectInfo[] = {
     #define RL(a,b,c,d) {c,d}
     #include "rl.h"
     #undef RL
     {OTHER, 0}          /* RL_NUMBER_OF_SETS */
 };
 
-static const byte    Width[] = {
+static const byte           Width[] = {
     #define pick(e,w,l) w,
         INTERSECT_DEFS
     #undef pick
 };
 
-static const reg_set_index   OneByteInter[] = {
+static const reg_set_index  OneByteInter[] = {
 /*  AL      AH      CL      BYTE                */
     RL_AL,  RL_,    RL_,    RL_AL,      /* AL   */
     RL_,    RL_AH,  RL_,    RL_AH,      /* AH   */
@@ -571,13 +571,15 @@ static const reg_set_index   OneByteInter[] = {
 };
 
 
-/* short forms used in this table*/
-/* - RL_WD == RL_WORD*/
-/* - RL_2B == RL_TWOBYTE*/
-/* - RL_WS == RL_ANYWORD*/
-/* - RL_SG == RL_SEG*/
+/*
+ * short forms used in this table
+ * - RL_WD == RL_WORD
+ * - RL_2B == RL_TWOBYTE
+ * - RL_WS == RL_ANYWORD
+ * - RL_SG == RL_SEG
+ */
 
-static const reg_set_index   TwoByteInter[] = {
+static const reg_set_index  TwoByteInter[] = {
 /*  AX     CX     DX     WD     2B     SG     WS            */
     RL_AX, RL_,   RL_,   RL_AX, RL_AX, RL_,   RL_AX,  /* AX */
     RL_,   RL_CX, RL_,   RL_CX, RL_CX, RL_,   RL_CX,  /* CX */
@@ -588,7 +590,7 @@ static const reg_set_index   TwoByteInter[] = {
     RL_AX, RL_CX, RL_DX, RL_WD, RL_2B, RL_SG, RL_WS   /* WS */
 };
 
-static const reg_set_index   FourByteInter[] = {
+static const reg_set_index  FourByteInter[] = {
 /*  RL_EAX     RL_EDX      RL_DX_AX    RL_DOUBLE   RL_ABCD  RL_ECX              */
     RL_EAX,    RL_,        RL_,        RL_EAX,     RL_EAX,  RL_,   /* RL_EAX    */
     RL_,       RL_EDX,     RL_,        RL_EDX,     RL_EDX,  RL_,   /* RL_EDX    */
@@ -598,7 +600,7 @@ static const reg_set_index   FourByteInter[] = {
     RL_,       RL_,        RL_,        RL_,        RL_,     RL_ECX /* RL_ECX    */
 };
 
-static const reg_set_index   SixByteInter[] = {
+static const reg_set_index  SixByteInter[] = {
 /*  RL_DX_EAX    RL_LONG_INDEX     RL_FAR_POINTER                    */
     RL_DX_EAX,   RL_,              RL_DX_EAX,      /* RL_DX_EAX      */
     RL_,         RL_LONG_INDEX,    RL_LONG_INDEX,  /* RL_LONG_INDEX  */
@@ -606,24 +608,24 @@ static const reg_set_index   SixByteInter[] = {
 };
 
 
-static const reg_set_index   EightByteInter[] = {
+static const reg_set_index  EightByteInter[] = {
 /*  RL_EDX_EAX      RL_FPPARM2      RL_8                      */
     RL_EDX_EAX,     RL_,            RL_EDX_EAX, /* RL_EDX_EAX */
     RL_,            RL_FPPARM2,     RL_FPPARM2, /* RL_FPPARM2 */
     RL_EDX_EAX,     RL_FPPARM2,     RL_8        /* RL_8       */
 };
 
-static const reg_set_index   FloatingInter[] = {
+static const reg_set_index  FloatingInter[] = {
 /*  RL_ST0  RL_STI               */
     RL_ST0, RL_,      /*  RL_ST0 */
     RL_,    RL_STI    /*  RL_STI */
 };
 
-static const reg_set_index   OtherInter[] = {
+static const reg_set_index  OtherInter[] = {
     RL_
 };
 
-static const reg_set_index * const InterTable[] = {
+static const reg_set_index  * const InterTable[] = {
     #define pick(e,w,l) l,
         INTERSECT_DEFS
     #undef pick
@@ -631,8 +633,8 @@ static const reg_set_index * const InterTable[] = {
 
 void            InitRegTbl( void )
 /*********************************
-    Initialize the tables.
-*/
+ * Initialize the tables.
+ */
 {
     if( _FPULevel( FPU_87 ) ) {
         HW_CAsgn( STParmReg[Max87Stk], HW_EMPTY );
@@ -647,8 +649,8 @@ void            InitRegTbl( void )
 
 reg_set_index   RegIntersect( reg_set_index s1, reg_set_index s2 )
 /*****************************************************************
-    return the intersection of two register lists
-*/
+ * return the intersection of two register lists
+ */
 {
     const reg_class     *set1;
     const reg_class     *set2;
@@ -673,8 +675,8 @@ reg_set_index   RegIntersect( reg_set_index s1, reg_set_index s2 )
 
 const hw_reg_set    *ParmChoices( type_class_def type_class )
 /************************************************************
-    return a list of register which could be used to return type "class"
-*/
+ * return a list of register which could be used to return type "class"
+ */
 {
     const hw_reg_set    *list;
 
@@ -689,8 +691,8 @@ const hw_reg_set    *ParmChoices( type_class_def type_class )
 
 hw_reg_set      InLineParm( hw_reg_set regs, hw_reg_set used )
 /*************************************************************
-    for parm [8087]. returns the next available 8087 parameter register
-*/
+ * for parm [8087]. returns the next available 8087 parameter register
+ */
 {
     if( HW_COvlap( regs, HW_FLTS ) ) {
         HW_CAsgn( regs, HW_EMPTY );
@@ -719,8 +721,8 @@ hw_reg_set      StructReg( void )
 
 hw_reg_set      ReturnReg( type_class_def type_class, bool use_87 )
 /******************************************************************
-    return the "normal" return register used for type "class"
-*/
+ * return the "normal" return register used for type "class"
+ */
 {
     const hw_reg_set  *list;
 
@@ -742,8 +744,8 @@ reg_set_index   SegIndex( void )
 
 reg_set_index   NoSegments( reg_set_index regs_idx )
 /***************************************************
-    return a register list like "idx" that doesn't include any segment regs
-*/
+ * return a register list like "idx" that doesn't include any segment regs
+ */
 {
     if( regs_idx == RL_ANYWORD ) {
         regs_idx = RL_WORD;
@@ -754,9 +756,9 @@ reg_set_index   NoSegments( reg_set_index regs_idx )
 
 reg_set_index   IndexIntersect( reg_set_index curr, type_class_def type_class, bool is_temp_index )
 /***********************************************************
-    return the intersection of "curr" with the set of index
-    registers of type "class"
-*/
+ * return the intersection of "curr" with the set of index
+ * registers of type "class"
+ */
 {
     /* unused parameters */ (void)is_temp_index;
 
@@ -766,8 +768,8 @@ reg_set_index   IndexIntersect( reg_set_index curr, type_class_def type_class, b
 
 bool    IsIndexReg( hw_reg_set reg, type_class_def type_class, bool is_temp_index )
 /*****************************************************************************
-    return true if "reg" can be used as an index of type "class"
-*/
+ * return true if "reg" can be used as an index of type "class"
+ */
 {
     const hw_reg_set    *list;
 
@@ -805,8 +807,8 @@ static  type_class_def  NotFloatRegClass( hw_reg_set regs )
 
 type_class_def  RegClass( hw_reg_set regs )
 /******************************************
-    return the type associated with "regs".
-*/
+ * return the type associated with "regs".
+ */
 {
     const hw_reg_set    *possible;
 
@@ -826,10 +828,10 @@ type_class_def  RegClass( hw_reg_set regs )
 
 bool    IndexRegOk( hw_reg_set reg, bool is_temp_index )
 /*******************************************************
-    return true if "reg" is ok to be used as in index reg.
-    "is_temp_index" means we'll also need to incorporate the
-    AR/BP register into the index, since we're indexing an auto
-*/
+ * return true if "reg" is ok to be used as in index reg.
+ * "is_temp_index" means we'll also need to incorporate the
+ * AR/BP register into the index, since we're indexing an auto
+ */
 {
     const hw_reg_set    *list;
 
@@ -851,8 +853,8 @@ bool    IndexRegOk( hw_reg_set reg, bool is_temp_index )
 
 bool    IsSegReg( hw_reg_set regs )
 /**********************************
-    return true if "regs" is a segment register
-*/
+ * return true if "regs" is a segment register
+ */
 {
     hw_reg_set  tmp;
 
@@ -864,8 +866,8 @@ bool    IsSegReg( hw_reg_set regs )
 
 hw_reg_set      Low16Reg( hw_reg_set regs )
 /******************************************
-    return the low order part of 16 bit register "regs"
-*/
+ * return the low order part of 16 bit register "regs"
+ */
 {
     HW_COnlyOn( regs, HW_AL_BL_CL_DL );
     return( regs );
@@ -874,8 +876,8 @@ hw_reg_set      Low16Reg( hw_reg_set regs )
 
 hw_reg_set      High16Reg( hw_reg_set regs )
 /*******************************************
-    return the high order part of 16 bit register "regs"
-*/
+ * return the high order part of 16 bit register "regs"
+ */
 {
     HW_COnlyOn( regs, HW_AH_BH_CH_DH );
     return( regs );
@@ -884,8 +886,8 @@ hw_reg_set      High16Reg( hw_reg_set regs )
 
 hw_reg_set      Low32Reg( hw_reg_set regs )
 /******************************************
-    return the low order part of 32 bit register "regs"
-*/
+ * return the low order part of 32 bit register "regs"
+ */
 {
     if( HW_CEqual( regs, HW_DX_AX ) ) {
         return( HW_AX );
@@ -897,8 +899,8 @@ hw_reg_set      Low32Reg( hw_reg_set regs )
 
 hw_reg_set      High32Reg( hw_reg_set regs )
 /*******************************************
-    return the high order part of 32 bit register "regs"
-*/
+ * return the high order part of 32 bit register "regs"
+ */
 {
     if( HW_CEqual( regs, HW_DX_AX ) ) {
         return( HW_DX );
@@ -908,8 +910,8 @@ hw_reg_set      High32Reg( hw_reg_set regs )
 
 hw_reg_set      FullReg( hw_reg_set regs )
 /*****************************************
-    given a register (eg AL), return the full register (eg EAX)
-*/
+ * given a register (eg AL), return the full register (eg EAX)
+ */
 {
     if( HW_COvlap( regs, HW_EAX ) ) {
         HW_CTurnOn( regs, HW_EAX );
@@ -940,8 +942,8 @@ hw_reg_set      FullReg( hw_reg_set regs )
 
 hw_reg_set      Low48Reg( hw_reg_set regs )
 /******************************************
-    return the low order part of 48 bit register "regs"
-*/
+ * return the low order part of 48 bit register "regs"
+ */
 {
     if( HW_CEqual( regs, HW_EMPTY ) )
         return( HW_EMPTY );
@@ -956,8 +958,8 @@ hw_reg_set      Low48Reg( hw_reg_set regs )
 
 hw_reg_set      High48Reg( hw_reg_set regs )
 /*******************************************
-    return the high order part of 48 bit register "regs"
-*/
+ * return the high order part of 48 bit register "regs"
+ */
 {
     hw_reg_set  high;
 
@@ -971,8 +973,8 @@ hw_reg_set      High48Reg( hw_reg_set regs )
 
 hw_reg_set      Low64Reg( hw_reg_set regs )
 /******************************************
-    return the low order part of 64 bit register "regs"
-*/
+ * return the low order part of 64 bit register "regs"
+ */
 {
     hw_reg_set          low;
     const hw_reg_set    *order;
@@ -996,8 +998,8 @@ hw_reg_set      Low64Reg( hw_reg_set regs )
 
 hw_reg_set      High64Reg( hw_reg_set regs )
 /*******************************************
-    return the high order part of 64 bit register "regs"
-*/
+ * return the high order part of 64 bit register "regs"
+ */
 {
     hw_reg_set  high;
 
@@ -1013,8 +1015,8 @@ hw_reg_set      High64Reg( hw_reg_set regs )
 
 hw_reg_set      HighReg( hw_reg_set regs )
 /*****************************************
-    return the high order portion of "regs"
-*/
+ * return the high order portion of "regs"
+ */
 {
     switch( RegClass( regs ) ) {
     case CP:
@@ -1036,8 +1038,8 @@ hw_reg_set      HighReg( hw_reg_set regs )
 
 hw_reg_set      HighOffsetReg( hw_reg_set regs )
 /***********************************************
-    return the portion of "regs" which would occupy the high memory address
-*/
+ * return the portion of "regs" which would occupy the high memory address
+ */
 {
     return( HighReg( regs ) );
 }
@@ -1045,8 +1047,8 @@ hw_reg_set      HighOffsetReg( hw_reg_set regs )
 
 hw_reg_set      LowReg( hw_reg_set regs )
 /****************************************
-    return the low order portion of "regs"
-*/
+ * return the low order portion of "regs"
+ */
 {
     switch( RegClass( regs ) ) {
     case CP:
@@ -1067,8 +1069,8 @@ hw_reg_set      LowReg( hw_reg_set regs )
 
 hw_reg_set      LowOffsetReg( hw_reg_set regs )
 /**********************************************
-    return the portion of "regs" which would occupy the low memory address
-*/
+ * return the portion of "regs" which would occupy the low memory address
+ */
 {
     return( LowReg( regs ) );
 }
@@ -1077,8 +1079,8 @@ hw_reg_set      LowOffsetReg( hw_reg_set regs )
 
 bool    IsRegClass( hw_reg_set regs, type_class_def type_class )
 /***************************************************************
-    return true if "regs" has type "class" (eg I4, U4, etc)
-*/
+ * return true if "regs" has type "class" (eg I4, U4, etc)
+ */
 {
     const hw_reg_set    *list;
 
@@ -1093,10 +1095,10 @@ bool    IsRegClass( hw_reg_set regs, type_class_def type_class )
 
 hw_reg_set      ActualParmReg( hw_reg_set reg )
 /**********************************************
-    given a register "reg", to be used to pass a parameter,
-    decide which register name should really be used in
-    the instruction generated to load it.
-*/
+ * given a register "reg", to be used to pass a parameter,
+ * decide which register name should really be used in
+ * the instruction generated to load it.
+ */
 {
     if( HW_COvlap( reg, HW_FLTS ) ) {
         HW_CAsgn( reg, HW_ST0 );
@@ -1106,8 +1108,8 @@ hw_reg_set      ActualParmReg( hw_reg_set reg )
 
 hw_reg_set      FixedRegs( void )
 /********************************
-    return the set of register which may not be modified within this routine
-*/
+ * return the set of register which may not be modified within this routine
+ */
 {
     hw_reg_set  fixed;
 
@@ -1160,8 +1162,8 @@ hw_reg_set      DisplayReg( void )
 
 int     SizeDisplayReg( void )
 /*****************************
-    return the size of the "pascal" display register entry on the stack
-*/
+ * return the size of the "pascal" display register entry on the stack
+ */
 {
     return( WORD_SIZE );
 }
@@ -1169,8 +1171,8 @@ int     SizeDisplayReg( void )
 
 hw_reg_set      AllCacheRegs( void )
 /***********************************
-    return the set of all registers that could be used to cache values
-*/
+ * return the set of all registers that could be used to cache values
+ */
 {
     hw_reg_set  all;
 
@@ -1193,22 +1195,22 @@ hw_reg_set      AllCacheRegs( void )
 
 const hw_reg_set    *IdxRegs( void )
 /***********************************
-    return a pointer to the set of "indexable" registers
-*/
+ * return a pointer to the set of "indexable" registers
+ */
 {
     return( DoubleRegs );
 }
 
 hw_reg_set      FirstReg( reg_set_index regs_idx )
 /*************************************************
-    The table RTInfo[] uses reg_set_indexes instead of hw_reg_sets since
-    they are only one byte long.  This retrieves the first hw_reg_set
-    from the reg_set table "index".
-
-    the tables above use RL_ consts rather that hw_reg_sets cause
-    it cheaper. This just picks off the first register from a
-    register list and returns it.
-*/
+ * The table RTInfo[] uses reg_set_indexes instead of hw_reg_sets since
+ * they are only one byte long.  This retrieves the first hw_reg_set
+ * from the reg_set table "index".
+ *
+ * the tables above use RL_ consts rather that hw_reg_sets cause
+ * it cheaper. This just picks off the first register from a
+ * register list and returns it.
+ */
 {
     return( *RegSets[regs_idx] );
 }
