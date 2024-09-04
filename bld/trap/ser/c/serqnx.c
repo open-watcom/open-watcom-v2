@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -43,6 +43,7 @@
 #include "bool.h"
 #include "serial.h"
 #include "serlink.h"
+#include "nothing.h"
 #include "trpimp.h"
 #include "trperr.h"
 
@@ -283,7 +284,7 @@ void Wait( unsigned timer_ticks )
 
     wait_time = GetTimerTicks() + timer_ticks;
     while( GetTimerTicks() < wait_time ) {
-        Yield();
+        NothingToDo();
     }
 }
 

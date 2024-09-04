@@ -38,6 +38,7 @@
 #ifdef SERVER
 #include "servio.h"
 #endif
+#include "nothing.h"
 #include "serlink.h"
 
 
@@ -462,7 +463,7 @@ static bool BlockSend( trap_elen len, const void *data, unsigned timeout )
                     break;                  /* break out ackno loop; re-send block */
                 } else {                    /* things are totally messed up */
                     while( WaitByte( MSEC2TICK( 750 ) ) != SDATA_NO_DATA )
-                        {}                  /* discard all characters sent */
+                        NothingToDo();      /* discard all characters sent */
                     SendByte( SDATA_RLR );  /* request last response */
                     ++Errors;
                 }
@@ -606,7 +607,7 @@ static bool ReSync( void )
     if( BaudCounter > MODEM_BAUD )
         BaudCounter = MODEM_BAUD;
     while( !SetSyncTime() )
-        {}
+        NothingToDo();
     return( Speed() );  /* sync */
 }
 
