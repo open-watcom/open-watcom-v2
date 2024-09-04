@@ -1,5 +1,5 @@
 .*
-.chap Overlay manager interface
+.chap *refid=ovlman Overlay manager interface
 .*
 For &company Debugger to be able to debug overlays, it must be able to make
 requests of the overlay manager for certain operations.

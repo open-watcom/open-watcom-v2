@@ -2062,7 +2062,7 @@ field stores the address section number.
 Request to return the size of the overlay state information in bytes of the
 task program.
 This request maps onto the overlay manager's GET_STATE_SIZE request.
-See the Overlay Manager Interface document for more information on the
+See the :HDREF refid='ovlman'. document for more information on the
 contents of the return message.
 .np
 Request message:
@@ -2090,7 +2090,7 @@ of the other requests dealing with overlays will ever be called.
 .np
 Request to get the address and size of an overlay section.
 This request maps onto the overlay manager's GET_SECTION_DATA request.
-See the Overlay Manager Interface document for more information on
+See the :HDREF refid='ovlman'. document for more information on
 the contents of the return message.
 .np
 Request message:
@@ -2124,7 +2124,7 @@ field will be zero.
 .np
 Request to read the overlay table state.
 This request maps onto the overlay manager's GET_OVERLAY_STATE request.
-See the Overlay Manager Interface document for more information on
+See the :HDREF refid='ovlman'. document for more information on
 the contents of the return message.
 The size of the returned data is provided by the REQ_OVL_STATE_SIZE
 trap file request.
@@ -2148,7 +2148,7 @@ field contains the overlay state information requested.
 .np
 Request to write the overlay table state.
 This request maps onto the overlay manager's SET_OVERLAY_STATE request.
-See the Overlay Manager Interface document for more information on
+See the :HDREF refid='ovlman'. document for more information on
 the contents of the return message.
 .np
 Request message:
@@ -2172,7 +2172,7 @@ NONE
 .np
 Request to check if the input overlay address is actually an overlay vector.
 This request maps onto the overlay manager's TRANSLATE_VECTOR_ADDR request.
-See the Overlay Manager Interface document for more information on
+See the :HDREF refid='ovlman'. document for more information on
 the contents of the messages.
 .np
 Request message:
@@ -2207,7 +2207,7 @@ field will be zero.
 Request to check if the address is the overlay manager parallel return
 code.
 This request maps onto the overlay manager's TRANSLATE_RETURN_ADDR request.
-See the Overlay Manager Interface document for more information on
+See the :HDREF refid='ovlman'. document for more information on
 the contents of the messages.
 .np
 Request message:
@@ -2236,7 +2236,7 @@ will be zero.
 .np
 Request to check if the overlay address needs to be remapped.
 This request maps onto the overlay manager's GET_MOVED_SECTION request.
-See the Overlay Manager Interface document for more information on
+See the :HDREF refid='ovlman'. document for more information on
 the contents of the messages.
 .np
 Request message:
