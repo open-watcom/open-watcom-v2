@@ -96,10 +96,10 @@ void ExecuteRedirect( void )
  * do file redirection by swapping to the debugee, and having him run
  * the ExecuteRedirect code.
  */
-static trap_elen doRedirect( bool isin )
+static trap_elen doRedirect( bool input )
 {
     redirect_ret = GetOutPtr( 0 );
-    redirect_input = isin;
+    redirect_input = input;
     redirect_filename = GetInPtr( sizeof( redirect_stdio_req ) );
     DebuggerWaitForMessage( RUNNING_DEBUGEE, TaskAtFault, RUN_REDIRECT );
     return( sizeof( redirect_stdio_ret ) );

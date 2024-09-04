@@ -390,7 +390,7 @@ static trap_elen Redirect( bool input )
     HFILE                   std_hndl;
     HFILE                   *var;
     long                    bigint;
-    redirect_stdio_ret     *ret;
+    redirect_stdio_ret      *ret;
     char                    *file_name;
 
     ret = GetOutPtr( 0 );

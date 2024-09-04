@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -48,6 +48,7 @@ static trap_retval redirect( bool input )
 
 trap_retval TRAP_CORE( Redirect_stdin )( void )
 {
+//    return( redirect( true ) );
     return( 0 );
 }
 

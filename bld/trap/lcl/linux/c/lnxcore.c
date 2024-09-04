@@ -561,6 +561,7 @@ static trap_retval redirect( bool input )
     /* unused parameters */ (void)input;
 
     ret = GetOutPtr( 0 );
+//    ret->err = 1;
     ret->err = 0;
     return( sizeof( *ret ) );
 }
