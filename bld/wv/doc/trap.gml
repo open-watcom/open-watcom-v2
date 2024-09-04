@@ -566,6 +566,29 @@ The
 field contains a string identifying the supplementary service.
 This string is case insensitive.
 .np
+.begnote
+.notehd1 service_name
+.notehd2 Description
+.note "FileInfo"
+.refalso fileinfo
+.note "Environment"
+.refalso envir
+.note "Files"
+.refalso fileio
+.note "Overlays"
+.refalso overlays
+.note "Threads"
+.refalso threads
+.note "RunThread"
+.refalso runthread
+.note "Rfx"
+.refalso rfx
+.note "Capabilities"
+.refalso capab
+.note "Asynch"
+.refalso asynch
+.endnote
+.np
 Return message:
 .millust begin
 trap_error      err;
@@ -1580,7 +1603,7 @@ The return message content is specific to the MAD in use.
 .endlevel
 .*
 .*
-.section File I/O requests
+.section *refid=fileio File I/O requests
 .*
 .np
 This section describes requests that deal with file input/output on the
@@ -1978,7 +2001,7 @@ field will return the error code number.
 .endlevel
 .*
 .*
-.section Overlay requests
+.section *refid=overlays Overlay requests
 .*
 .np
 This section describes requests that deal with overlays (supported
@@ -2242,7 +2265,7 @@ The input address will be unchanged if the address has not been remapped.
 .endlevel
 .*
 .*
-.section Thread requests
+.section *refid=threads Thread requests
 .*
 .np
 This section descibes requests that deal with threads.
@@ -2408,7 +2431,7 @@ field.
 .endlevel
 .*
 .*
-.section RFX requests
+.section *refid=rfx Remote File transfer (RFX) requests
 .*
 .np
 This section deals with requests that are only used by the RFX (Remote File
@@ -2868,7 +2891,7 @@ field will be zero, otherwise the system error code will be returned.
 .endlevel
 .*
 .*
-.section Environment requests
+.section *refid=envir Environment requests
 .*
 .np
 This section describes requests that deal with Environment on the
@@ -2933,9 +2956,20 @@ on the remote system.
 .endlevel
 .*
 .*
-.section File Info requests
+.section *refid=fileinfo File Info requests
 .*
 .np
+This section describes requests that deal with file information on the
+target (debuggee) machine.
+These requests are actually performed by the
+core request REQ_PERFORM_SUPPLEMENTARY_SERVICE and appropriate service ID.
+The following descriptions do not show that "prefix" to the
+request messages.
+.np
+The service name to be used in the REQ_GET_SUPPLEMENTARY_SERVICE is
+"FileInfo".
+.np
+.*
 .beglevel
 .*
 .section REQ_FILE_INFO_GET_DATE
@@ -2968,9 +3002,20 @@ trap_error      err
 .endlevel
 .*
 .*
-.section Asynchronous Debugging requests
+.section *refid=asynch Asynchronous Debugging requests
 .*
 .np
+This section describes requests that deal with asynchronous debugging on the
+target (debuggee) machine.
+These requests are actually performed by the
+core request REQ_PERFORM_SUPPLEMENTARY_SERVICE and appropriate service ID.
+The following descriptions do not show that "prefix" to the
+request messages.
+.np
+The service name to be used in the REQ_GET_SUPPLEMENTARY_SERVICE is
+"Asynch".
+.np
+.*
 .beglevel
 .*
 .section REQ_ASYNC_GO
@@ -3059,9 +3104,20 @@ trap_error      err
 .endlevel
 .*
 .*
-.section Non-blocking Thread requests
+.section *refid=runthread Non-blocking Thread requests
 .*
 .np
+This section describes requests that deal with Non-blocking Thread requests on the
+target (debuggee) machine.
+These requests are actually performed by the
+core request REQ_PERFORM_SUPPLEMENTARY_SERVICE and appropriate service ID.
+The following descriptions do not show that "prefix" to the
+request messages.
+.np
+The service name to be used in the REQ_GET_SUPPLEMENTARY_SERVICE is
+"RunThread".
+.np
+.*
 .beglevel
 .*
 .section REQ_RUN_THREAD_INFO
@@ -3178,9 +3234,20 @@ trap_error      err
 .endlevel
 .*
 .*
-.section Capabilities requests
+.section *refid=capab Capabilities requests
 .*
 .np
+This section describes requests that deal with capabilities information on the
+target (debuggee) machine.
+These requests are actually performed by the
+core request REQ_PERFORM_SUPPLEMENTARY_SERVICE and appropriate service ID.
+The following descriptions do not show that "prefix" to the
+request messages.
+.np
+The service name to be used in the REQ_GET_SUPPLEMENTARY_SERVICE is
+"Capabilities".
+.np
+.*
 .beglevel
 .*
 .section REQ_CAPABILITIES_GET_EXACT_BP
