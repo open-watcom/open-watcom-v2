@@ -724,7 +724,6 @@ static unsigned long GetLineTestWait( void )
 static bool LineTest( void )
 {
     int                 send;
-    unsigned long       time;
 #ifdef SERVER
     int                 ret;
 
