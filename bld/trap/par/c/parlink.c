@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -705,6 +705,18 @@ static bool Twidle( bool check ) {
     return( false );
 }
 
+static unsigned long GetLineTestWait( void )
+{
+    unsigned long       time;
+
+    time = Ticks() + LINE_TEST_WAIT;
+    if( time == RELINQUISH )
+        time++;
+    if( time == KEEP )
+        time++;
+    return( time );
+}
+
 /*
  * LineTest - make sure that all lines are working
  */
@@ -718,54 +730,29 @@ static bool LineTest( void )
 
     dbgrtn( "\r\n-LineTest-" );
     for( send = 1; send != 256; send *= 2 ) {
-        time = Ticks() + LINE_TEST_WAIT;
-        if( time == RELINQUISH )
-            time++;
-        if( time == KEEP )
-            time++;
-        ret = DataPut( send, time );
+        ret = DataPut( send, GetLineTestWait() );
         if( ret == TIMEOUT )
             return( false );
-        time = Ticks() + LINE_TEST_WAIT;
-        if( time == RELINQUISH )
-            time++;
-        if( time == KEEP )
-            time++;
-        ret = DataGet( time );
+        ret = DataGet( GetLineTestWait() );
         if( ret == TIMEOUT )
             return( false );
         if( ret != send ) {
             return( false );
         }
     }
-    time = Ticks() + LINE_TEST_WAIT;
-    if( time == RELINQUISH )
-        time++;
-    if( time == KEEP )
-        time++;
-    ret = DataPut( DONE_LINE_TEST, time );
+    ret = DataPut( DONE_LINE_TEST, GetLineTestWait() );
     if( ret == TIMEOUT )
         return( false );
 #else
     dbgrtn( "\r\n-LineTest-" );
     send = 0;
     for( ;; ) {
-        time = Ticks() + LINE_TEST_WAIT;
-        if( time == RELINQUISH )
-            time++;
-        if( time == KEEP )
-            time++;
-        send = DataGet( time );
+        send = DataGet( GetLineTestWait() );
         if( send == TIMEOUT )
             return( false );
         if( send == DONE_LINE_TEST )
             break;
-        time = Ticks() + LINE_TEST_WAIT;
-        if( time == RELINQUISH )
-            time++;
-        if( time == KEEP )
-            time++;
-        send = DataPut( send, time );
+        send = DataPut( send, GetLineTestWait() );
         if( send == TIMEOUT ) {
             return( false );
         }

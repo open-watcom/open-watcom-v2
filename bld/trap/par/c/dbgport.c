@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -721,6 +721,18 @@ static bool Twidle(
     return( FALSE );
 }
 
+static unsigned long GetLineTestWait( void )
+{
+    unsigned long       time;
+
+    time = Ticks() + LINE_TEST_WAIT;
+    if( time == RELINQUISH )
+        time++;
+    if( time == KEEP )
+        time++;
+    return( time );
+}
+
 /*
  * LineTest - make sure that all lines are working
  */
@@ -729,36 +741,20 @@ static bool LineTestServer(
     PDEVICE_EXTENSION ext)
 {
     unsigned            send;
-    unsigned long       time;
     unsigned            ret;
 
     for( send = 1; send != 256; send *= 2 ) {
-        time = Ticks() + LINE_TEST_WAIT;
-        if( time == RELINQUISH )
-            time++;
-        if( time == KEEP )
-            time++;
-        ret = DataPut( ext, send, time );
+        ret = DataPut( ext, send, GetLineTestWait() );
         if( ret == TIMEOUT )
             return( FALSE );
-        time = Ticks() + LINE_TEST_WAIT;
-        if( time == RELINQUISH )
-            time++;
-        if( time == KEEP )
-            time++;
-        ret = DataGet( ext, time );
+        ret = DataGet( ext, GetLineTestWait() );
         if( ret == TIMEOUT )
             return( FALSE );
         if( ret != send ) {
             return( FALSE );
         }
     }
-    time = Ticks() + LINE_TEST_WAIT;
-    if( time == RELINQUISH )
-        time++;
-    if( time == KEEP )
-        time++;
-    ret = DataPut( ext, DONE_LINE_TEST, time );
+    ret = DataPut( ext, DONE_LINE_TEST, GetLineTestWait() );
     if( ret == TIMEOUT )
         return( FALSE );
     return( TRUE );
@@ -772,26 +768,15 @@ static bool LineTestClient(
     PDEVICE_EXTENSION ext)
 {
     unsigned            send;
-    unsigned long       time;
 
     send = 0;
     for( ;; ) {
-        time = Ticks() + LINE_TEST_WAIT;
-        if( time == RELINQUISH )
-            time++;
-        if( time == KEEP )
-            time++;
-        send = DataGet( ext, time );
+        send = DataGet( ext, GetLineTestWait() );
         if( send == TIMEOUT )
             return( FALSE );
         if( send == DONE_LINE_TEST )
             break;
-        time = Ticks() + LINE_TEST_WAIT;
-        if( time == RELINQUISH )
-            time++;
-        if( time == KEEP )
-            time++;
-        DataPut( ext, send, time );
+        DataPut( ext, send, GetLineTestWait() );
         if( send == TIMEOUT ) {
             return( FALSE );
         }
