@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -71,18 +71,19 @@ unsigned PrnAddress( int printer )
     return( PortAddress[printer] );
 }
 
-unsigned AccessPorts( unsigned first, unsigned last )
+bool AccessPorts( unsigned first, unsigned last )
 {
     /* unused parameters */ (void)first; (void)last;
 
-    // We have direct I/O port access
-    return( 1 );
+    /*
+     * We have direct I/O port access
+     */
+    return( true );
 }
 
 void FreePorts( unsigned first, unsigned last )
 {
-    first = first;
-    last = last;
+    /* unused parameters */ (void)first; (void)last;
 }
 
 static int CheckForPort( int i, unsigned char value )

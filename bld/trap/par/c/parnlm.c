@@ -140,11 +140,12 @@ unsigned PrnAddress( int n )
 
 void FreePorts( unsigned first, unsigned last )
 {
-    first = first; last = last;
+    /* unused parameters */ (void)first; (void)last;
 }
 
-unsigned AccessPorts( unsigned first, unsigned last )
+bool AccessPorts( unsigned first, unsigned last )
 {
-    first = first; last = last;
-    return( 1 );
+    /* unused parameters */ (void)first; (void)last;
+
+    return( true );
 }

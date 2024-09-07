@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,30 +34,36 @@
 #include <stddef.h>
 #include <dos.h>
 #include "parlink.h"
+#include "realmod.h"
+
+
+#ifdef SERVER
+extern int CurrentPort;
+#endif
 
 static  unsigned long __far *BiosTime;
 
-char *InitSys()
+char *InitSys( void )
 {
-    BiosTime = _MK_FP( 0x40, 0x6c );
+    BiosTime = _MK_FP( BDATA_SEG, BDATA_SYSTEM_CLOCK );
     return( 0 );
 }
 
-void FiniSys()
+void FiniSys( void )
 {
 }
 
-unsigned long Ticks()
+unsigned long Ticks( void )
 {
     return( *BiosTime >> 1 );
 }
 
 
-int NumPrinters()
+int NumPrinters( void )
 {
     unsigned short __far *pp;
 
-    pp = _MK_FP(0x40,8);
+    pp = _MK_FP( BDATA_SEG, BDATA_PRINTER_BASE );
     if( pp[0] == 0 )
         return( 0 );
     if( pp[1] == 0 )
@@ -68,30 +74,26 @@ int NumPrinters()
 }
 
 
-#pragma off(unreferenced);
 unsigned PrnAddress( int printer )
-#pragma on(unreferenced);
 {
     unsigned short __far *pp;
-    #ifdef SERVER
-    {
-        extern int CurrentPort;
-        CurrentPort = printer;
-    }
-    #endif
 
-    pp = _MK_FP(0x40,8);
+#ifdef SERVER
+    CurrentPort = printer;
+#endif
+    pp = _MK_FP( BDATA_SEG, BDATA_PRINTER_BASE );
     return( pp[printer] );
 
 }
 
-void AccessPorts( unsigned first, unsigned last )
+bool AccessPorts( unsigned first, unsigned last )
 {
-  first = first; last = last;
+    /* unused parameters */ (void)first; (void)last;
+
+    return( true );
 }
 
-unsigned FreePorts( unsigned first, unsigned last )
+void FreePorts( unsigned first, unsigned last )
 {
-  first = first; last = last;
-  return( 1 );
+    /* unused parameters */ (void)first; (void)last;
 }

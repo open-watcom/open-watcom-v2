@@ -74,10 +74,10 @@ int NumPrinters( void )
     return( num_printers );
 }
 
-unsigned AccessPorts( unsigned first, unsigned last )
+bool AccessPorts( unsigned first, unsigned last )
 {
     DosPortAccess( 0, 0, first, last );
-    return( 1 );
+    return( true );
 }
 
 void FreePorts( unsigned first, unsigned last )

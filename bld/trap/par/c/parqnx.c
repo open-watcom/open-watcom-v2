@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,12 +37,25 @@
 #include "trperr.h"
 #include "parlink.h"
 
+
 #define INFO_SEG    0x40
 #define PAR_BASE    0x08
 
+#define PRIV_MASK   3
+#define IOPL_SHIFT  12
+
+#define CPL()       (get_cs() & PRIV_MASK)
+#define IOPL()      ((get_flags() >> IOPL_SHIFT) & PRIV_MASK)
+
+extern unsigned short get_cs( void );
+#pragma aux get_cs = "mov ax,cs" __value [__ax]
+
+extern unsigned get_flags( void );
+#pragma aux get_flags = "pushfd" "pop eax" __value [__eax]
+
 static struct _timesel  __far *SysTime;
 
-int NumPrinters()
+int NumPrinters( void )
 {
     unsigned short  __far *par;
     int i;
@@ -65,32 +78,19 @@ unsigned PrnAddress( int printer )
     return( par[printer] );
 }
 
-#pragma aux get_cs = "mov ax,cs" __value [__ax]
-#pragma aux get_flags = "pushfd" "pop eax" __value [__eax]
-
-extern unsigned short get_cs( void );
-extern unsigned get_flags( void );
-
-#define PRIV_MASK       3
-#define IOPL_SHIFT      12
-
-#define CPL()   (get_cs() & PRIV_MASK)
-#define IOPL()  ((get_flags() >> IOPL_SHIFT) & PRIV_MASK)
-
-unsigned AccessPorts( unsigned first, unsigned last )
+bool AccessPorts( unsigned first, unsigned last )
 {
-    first = first;
-    last = last;
+    /* unused parameters */ (void)first; (void)last;
+
     return( CPL() <= IOPL() );
 }
 
 void FreePorts( unsigned first, unsigned last )
 {
-    first = first;
-    last = last;
+    /* unused parameters */ (void)first; (void)last;
 }
 
-char *InitSys()
+char *InitSys( void )
 {
     struct _osinfo  osinfo;
 
@@ -102,11 +102,11 @@ char *InitSys()
     return( NULL );
 }
 
-void FiniSys()
+void FiniSys( void )
 {
 }
 
-unsigned long Ticks() {
-
+unsigned long Ticks( void )
+{
     return( SysTime->nsec / 100000000 + SysTime->seconds * 10 );
 }

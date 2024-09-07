@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,28 +34,30 @@
 #include <dos.h>
 #include "dosequip.h"
 #include "parlink.h"
+#include "realmod.h"
+
 
 static  unsigned long __far *BiosTime;
 
-char *InitSys()
+char *InitSys( void )
 {
-    BiosTime = _MK_FP( 0x40, 0x6c );
+    BiosTime = _MK_FP( BDATA_SEG, BDATA_SYSTEM_CLOCK );
     return( 0 );
 }
 
-void FiniSys()
+void FiniSys( void )
 {
 }
 
 /* value of Ticks is incremented approx every 1/10 th of a second */
 
-unsigned long Ticks()
+unsigned long Ticks( void )
 {
     return( *BiosTime >> 1 );
 }
 
 
-int NumPrinters()
+int NumPrinters( void )
 {
     return( Equipment().num_printers );
 }
@@ -63,18 +65,17 @@ int NumPrinters()
 
 unsigned PrnAddress( int printer )
 {
-    return( *(unsigned __far *)_MK_FP( BIOS_SEG, PRINTER_BASE + printer*2 ) );
+    return( *(unsigned short __far *)_MK_FP( BDATA_SEG, BDATA_PRINTER_BASE + printer * 2 ) );
 }
 
-#pragma off(unreferenced);
 void FreePorts( unsigned first, unsigned last )
-#pragma on(unreferenced);
 {
+    /* unused parameters */ (void)first; (void)last;
 }
 
-#pragma off(unreferenced);
-unsigned AccessPorts( unsigned first, unsigned last )
-#pragma on(unreferenced);
+bool AccessPorts( unsigned first, unsigned last )
 {
-    return( 1 );
+    /* unused parameters */ (void)first; (void)last;
+
+    return( true );
 }
