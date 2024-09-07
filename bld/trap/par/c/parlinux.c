@@ -36,6 +36,7 @@
 #include <time.h>
 #include <conio.h>
 #include <unistd.h>
+#include "bool.h"
 #include "parlink.h"
 
 

@@ -189,6 +189,7 @@
  */
 
 #include <ntddk.h>
+#include "bool.h"
 #include "parallel.h"
 #include "dbgioctl.h"
 
@@ -197,12 +198,6 @@ typedef __int64 _int64;
 #define PORTSTDCALL __stdcall
 #else
 #define PORTSTDCALL
-#endif
-
-#ifdef TRUE
-typedef UCHAR bool;
-#else
-#include "bool.h"
 #endif
 
 #define my_inp(p)       READ_PORT_UCHAR((PUCHAR)(ext->Controller + (p)))

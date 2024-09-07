@@ -194,6 +194,7 @@
 #else
 #include <i86.h>
 #endif
+#include "bool.h"
 #include "trptypes.h"
 #include "trperr.h"
 #include "packet.h"

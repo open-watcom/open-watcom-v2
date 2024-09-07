@@ -32,6 +32,7 @@
 
 
 #include <dos.h>
+#include "bool.h"
 #include "dosequip.h"
 #include "parlink.h"
 #include "realmod.h"

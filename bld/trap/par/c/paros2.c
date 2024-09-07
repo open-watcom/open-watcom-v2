@@ -36,7 +36,8 @@
 #define INCL_DOSPROCESS
 #define INCL_DOSMISC
 #include <wos2.h>
-#include "i86.h"
+#include <i86.h>
+#include "bool.h"
 #include "parlink.h"
 #include "portio.h"
 
