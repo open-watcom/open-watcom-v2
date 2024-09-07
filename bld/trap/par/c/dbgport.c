@@ -205,8 +205,8 @@ typedef UCHAR bool;
 #include "bool.h"
 #endif
 
-#define _inp(p)         READ_PORT_UCHAR((PUCHAR)(ext->Controller + (p)))
-#define _outp(p,v)      WRITE_PORT_UCHAR((PUCHAR)(ext->Controller + (p)), (UCHAR)(v))
+#define my_inp(p)       READ_PORT_UCHAR((PUCHAR)(ext->Controller + (p)))
+#define my_outp(p,v)    WRITE_PORT_UCHAR((PUCHAR)(ext->Controller + (p)), (UCHAR)(v))
 
 /* 0x18 is used to ensure that the control lines stay in a high state
  * until Synch is called
@@ -262,66 +262,66 @@ typedef UCHAR bool;
 /*********************** WATCOM CABLE MACROS **************************/
 #define PC_CTL1 0x08
 #define PC_CTL2 0x08
-#define Ctl1Hi()        ((_inp( ext->CtlPort2 ) & PC_CTL1) != 0)
-#define Ctl1Lo()        ((_inp( ext->CtlPort2 ) & PC_CTL1) == 0)
-#define RaiseCtl1()     (_outp( ext->CtlPort2, PC_CTL1 | 0x04 ))
-#define LowerCtl1()     (_outp( ext->CtlPort2, 0x04 ))
+#define Ctl1Hi()        ((my_inp( ext->CtlPort2 ) & PC_CTL1) != 0)
+#define Ctl1Lo()        ((my_inp( ext->CtlPort2 ) & PC_CTL1) == 0)
+#define RaiseCtl1()     (my_outp( ext->CtlPort2, PC_CTL1 | 0x04 ))
+#define LowerCtl1()     (my_outp( ext->CtlPort2, 0x04 ))
 
-#define Ctl2Hi()        ((_inp( ext->CtlPort1 ) & PC_CTL2) != 0 )
-#define Ctl2Lo()        ((_inp( ext->CtlPort1 ) & PC_CTL2) == 0 )
-#define RaiseCtl2()     (_outp( ext->DataPort, PC_CTL2 ))
-#define LowerCtl2()     (_outp( ext->DataPort, 0x00 ))
+#define Ctl2Hi()        ((my_inp( ext->CtlPort1 ) & PC_CTL2) != 0 )
+#define Ctl2Lo()        ((my_inp( ext->CtlPort1 ) & PC_CTL2) == 0 )
+#define RaiseCtl2()     (my_outp( ext->DataPort, PC_CTL2 ))
+#define LowerCtl2()     (my_outp( ext->DataPort, 0x00 ))
 
-#define ReadData()      (((_inp( ext->CtlPort1 ) ^ 0x80) & 0xF8) \
-                                                | ((_inp( ext->CtlPort2 ) ^ 0x03) & 0x07))
-#define WriteData(data) (_outp( ext->DataPort, data ))
+#define ReadData()      (((my_inp( ext->CtlPort1 ) ^ 0x80) & 0xF8) \
+                                                | ((my_inp( ext->CtlPort2 ) ^ 0x03) & 0x07))
+#define WriteData(data) (my_outp( ext->DataPort, data ))
 
 /*********************** WATCOM FMR CABLE MACROS **********************/
 #define FM_CTL1 0x40
 /* Can't use ext->CtlPort2 & 0x08 (line disabled) */
-#define FM_Ctl1Hi()     ((_inp( ext->CtlPort1 ) & FM_CTL1) != 0)
-#define FM_Ctl1Lo()     ((_inp( ext->CtlPort1 ) & FM_CTL1) == 0)
+#define FM_Ctl1Hi()     ((my_inp( ext->CtlPort1 ) & FM_CTL1) != 0)
+#define FM_Ctl1Lo()     ((my_inp( ext->CtlPort1 ) & FM_CTL1) == 0)
 
 /********************** LAPLINK CABLE MACROS **************************/
-#define LL_Ctl1Hi()     ((_inp( ext->CtlPort1 ) & 0x80) == 0)
-#define LL_Ctl1Lo()     ((_inp( ext->CtlPort1 ) & 0x80) != 0)
+#define LL_Ctl1Hi()     ((my_inp( ext->CtlPort1 ) & 0x80) == 0)
+#define LL_Ctl1Lo()     ((my_inp( ext->CtlPort1 ) & 0x80) != 0)
 
-#define LL_RaiseCtl1()  (_outp( ext->DataPort, 0x10 ))
-#define LL_LowerCtl1()  (_outp( ext->DataPort, 0x00 ))
+#define LL_RaiseCtl1()  (my_outp( ext->DataPort, 0x10 ))
+#define LL_LowerCtl1()  (my_outp( ext->DataPort, 0x00 ))
 
-#define LL_Ctl2Hi()     ((_inp( ext->CtlPort1 ) & 0x40) != 0)
-#define LL_Ctl2Lo()     ((_inp( ext->CtlPort1 ) & 0x40) == 0)
+#define LL_Ctl2Hi()     ((my_inp( ext->CtlPort1 ) & 0x40) != 0)
+#define LL_Ctl2Lo()     ((my_inp( ext->CtlPort1 ) & 0x40) == 0)
 
-#define LL_RaiseCtl2()  (_outp( ext->DataPort, 0x08 ))
-#define LL_LowerCtl2()  (_outp( ext->DataPort, 0x00 ))
+#define LL_RaiseCtl2()  (my_outp( ext->DataPort, 0x08 ))
+#define LL_LowerCtl2()  (my_outp( ext->DataPort, 0x00 ))
 
-#define LL_ReadData()   ((_inp( ext->CtlPort1 ) >> 3) & 0x0f)
+#define LL_ReadData()   ((my_inp( ext->CtlPort1 ) >> 3) & 0x0f)
 /* write the data and raise control line 1 */
-#define LL_WriteData(data) (_outp( ext->DataPort, (data | 0x10) ))
+#define LL_WriteData(data) (my_outp( ext->DataPort, (data | 0x10) ))
 
 /***************** FLYING DUTCHMAN CABLE MACROS ***********************/
 
-#define FD_Ctl1Hi()      ((_inp( ext->CtlPort1 ) & 0x80) != 0)
-#define FD_Ctl1Lo()      ((_inp( ext->CtlPort1 ) & 0x80) == 0)
+#define FD_Ctl1Hi()      ((my_inp( ext->CtlPort1 ) & 0x80) != 0)
+#define FD_Ctl1Lo()      ((my_inp( ext->CtlPort1 ) & 0x80) == 0)
 
-#define FD_RaiseCtl1()   (_outp( ext->CtlPort2, 0x01 ))
-#define FD_LowerCtl1()   (_outp( ext->CtlPort2, 0x00 ))
+#define FD_RaiseCtl1()   (my_outp( ext->CtlPort2, 0x01 ))
+#define FD_LowerCtl1()   (my_outp( ext->CtlPort2, 0x00 ))
 
-#define FD_Ctl2Hi()      ((_inp( ext->CtlPort1 ) & 0x40) != 0)
-#define FD_Ctl2Lo()      ((_inp( ext->CtlPort1 ) & 0x40) == 0)
+#define FD_Ctl2Hi()      ((my_inp( ext->CtlPort1 ) & 0x40) != 0)
+#define FD_Ctl2Lo()      ((my_inp( ext->CtlPort1 ) & 0x40) == 0)
 
-#define FD_RaiseCtl2()   (_outp( ext->DataPort, 0x08 ))
-#define FD_LowerCtl2()   (_outp( ext->DataPort, 0x00 ))
+#define FD_RaiseCtl2()   (my_outp( ext->DataPort, 0x08 ))
+#define FD_LowerCtl2()   (my_outp( ext->DataPort, 0x00 ))
 
-#define FD_ReadData()    ((_inp( ext->CtlPort1 ) >> 3) & 0x0f)
-#define FD_WriteData(data) (_outp( ext->DataPort, data ))
+#define FD_ReadData()    ((my_inp( ext->CtlPort1 ) >> 3) & 0x0f)
+#define FD_WriteData(data) (my_outp( ext->DataPort, data ))
 
 /***************** Cable Detection MACROS ****************************/
 
 /*
  * This operation disables bits 3,2,0 in CtrlPort2 (LowerCtl1 fixes it)
  */
-#define XX_RaiseCtl1()   (_outp( ext->CtlPort2, 0x01 ))
+#define XX_RaiseCtl1()   (my_outp( ext->CtlPort2, 0x01 ))
 
 /*********************************************************************/
 

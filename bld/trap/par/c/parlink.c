@@ -206,6 +206,14 @@ extern void Wait( void );
 #pragma aux Wait = ;
 
 #if defined(_DBG)
+    #define my_inp  dbg_inp
+    #define my_outp dbg_outp
+#else
+    #define my_inp  inp
+    #define my_outp outp
+#endif
+
+#if defined(_DBG)
 #ifdef SERVER
     #include <stdio.h>
     #define dbgrtn(x) printf( x )
@@ -214,7 +222,7 @@ extern void Wait( void );
     #include <conio.h>
     #define dbgrtn(x) cputs( x )
 #endif
-char _inp( int port )
+char dbg_inp( int port )
 {
     char x;
 
@@ -234,7 +242,7 @@ char _inp( int port )
     return( x );
 }
 
-void _outp( int port, char x )
+void dbg_outp( int port, char x )
 {
 
     outp( port, x );
@@ -252,8 +260,6 @@ void _outp( int port, char x )
 #endif
 }
 #else
-    #define _inp inp
-    #define _outp outp
     #define dbgrtn(x)
 #endif
 
@@ -323,66 +329,66 @@ static bool     TwidleOn;
 /*********************** WATCOM CABLE MACROS **************************/
 #define PC_CTL1 0x08
 #define PC_CTL2 0x08
-#define Ctl1Hi()        ( ( Wait(),_inp( CtlPort2 ) & PC_CTL1 ) != 0 )
-#define Ctl1Lo()        ( ( Wait(),_inp( CtlPort2 ) & PC_CTL1 ) == 0 )
-#define RaiseCtl1()     ( Wait(),_outp( CtlPort2, PC_CTL1 | 0x04 ) )
-#define LowerCtl1()     ( Wait(),_outp( CtlPort2, 0x04 ) )
+#define Ctl1Hi()        ( ( Wait(),my_inp( CtlPort2 ) & PC_CTL1 ) != 0 )
+#define Ctl1Lo()        ( ( Wait(),my_inp( CtlPort2 ) & PC_CTL1 ) == 0 )
+#define RaiseCtl1()     ( Wait(),my_outp( CtlPort2, PC_CTL1 | 0x04 ) )
+#define LowerCtl1()     ( Wait(),my_outp( CtlPort2, 0x04 ) )
 
-#define Ctl2Hi()        ( ( Wait(),_inp( CtlPort1 ) & PC_CTL2 ) != 0 )
-#define Ctl2Lo()        ( ( Wait(),_inp( CtlPort1 ) & PC_CTL2 ) == 0 )
-#define RaiseCtl2()     ( Wait(),_outp( DataPort, PC_CTL2 ) )
-#define LowerCtl2()     ( Wait(),_outp( DataPort, 0x00 ) )
+#define Ctl2Hi()        ( ( Wait(),my_inp( CtlPort1 ) & PC_CTL2 ) != 0 )
+#define Ctl2Lo()        ( ( Wait(),my_inp( CtlPort1 ) & PC_CTL2 ) == 0 )
+#define RaiseCtl2()     ( Wait(),my_outp( DataPort, PC_CTL2 ) )
+#define LowerCtl2()     ( Wait(),my_outp( DataPort, 0x00 ) )
 
-#define ReadData()      ( ( ( Wait(),_inp( CtlPort1 ) ^ 0x80 ) & 0xF8 ) \
-                        | ( ( Wait(),_inp( CtlPort2 ) ^ 0x03 ) & 0x07 ) )
-#define WriteData(data) ( Wait(),_outp( DataPort, data ) )
+#define ReadData()      ( ( ( Wait(),my_inp( CtlPort1 ) ^ 0x80 ) & 0xF8 ) \
+                        | ( ( Wait(),my_inp( CtlPort2 ) ^ 0x03 ) & 0x07 ) )
+#define WriteData(data) ( Wait(),my_outp( DataPort, data ) )
 
 /*********************** WATCOM FMR CABLE MACROS **********************/
 #define FM_CTL1 0x40
 /* Can't use CtlPort2 & 0x08 (line disabled) */
-#define FM_Ctl1Hi()     ( ( Wait(),_inp( CtlPort1 ) & FM_CTL1 ) != 0 )
-#define FM_Ctl1Lo()     ( ( Wait(),_inp( CtlPort1 ) & FM_CTL1 ) == 0 )
+#define FM_Ctl1Hi()     ( ( Wait(),my_inp( CtlPort1 ) & FM_CTL1 ) != 0 )
+#define FM_Ctl1Lo()     ( ( Wait(),my_inp( CtlPort1 ) & FM_CTL1 ) == 0 )
 
 /********************** LAPLINK CABLE MACROS **************************/
-#define LL_Ctl1Hi()     ( ( Wait(),_inp( CtlPort1 ) & 0x80 ) == 0 )
-#define LL_Ctl1Lo()     ( ( Wait(),_inp( CtlPort1 ) & 0x80 ) != 0 )
+#define LL_Ctl1Hi()     ( ( Wait(),my_inp( CtlPort1 ) & 0x80 ) == 0 )
+#define LL_Ctl1Lo()     ( ( Wait(),my_inp( CtlPort1 ) & 0x80 ) != 0 )
 
-#define LL_RaiseCtl1()  ( Wait(),_outp( DataPort, 0x10 ) )
-#define LL_LowerCtl1()  ( Wait(),_outp( DataPort, 0x00 ) )
+#define LL_RaiseCtl1()  ( Wait(),my_outp( DataPort, 0x10 ) )
+#define LL_LowerCtl1()  ( Wait(),my_outp( DataPort, 0x00 ) )
 
-#define LL_Ctl2Hi()     ( ( Wait(),_inp( CtlPort1 ) & 0x40 ) != 0 )
-#define LL_Ctl2Lo()     ( ( Wait(),_inp( CtlPort1 ) & 0x40 ) == 0 )
+#define LL_Ctl2Hi()     ( ( Wait(),my_inp( CtlPort1 ) & 0x40 ) != 0 )
+#define LL_Ctl2Lo()     ( ( Wait(),my_inp( CtlPort1 ) & 0x40 ) == 0 )
 
-#define LL_RaiseCtl2()  ( Wait(),_outp( DataPort, 0x08 ) )
-#define LL_LowerCtl2()  ( Wait(),_outp( DataPort, 0x00 ) )
+#define LL_RaiseCtl2()  ( Wait(),my_outp( DataPort, 0x08 ) )
+#define LL_LowerCtl2()  ( Wait(),my_outp( DataPort, 0x00 ) )
 
-#define LL_ReadData()   ( ( Wait(),_inp( CtlPort1 ) >> 3 ) & 0x0f  )
+#define LL_ReadData()   ( ( Wait(),my_inp( CtlPort1 ) >> 3 ) & 0x0f  )
 /* write the data and raise control line 1 */
-#define LL_WriteData(data) ( Wait(),_outp( DataPort, ( data | 0x10 ) ) )
+#define LL_WriteData(data) ( Wait(),my_outp( DataPort, ( data | 0x10 ) ) )
 
 /***************** FLYING DUTCHMAN CABLE MACROS ***********************/
 
-#define FD_Ctl1Hi()      ( ( Wait(),_inp( CtlPort1 ) & 0x80 ) != 0 )
-#define FD_Ctl1Lo()      ( ( Wait(),_inp( CtlPort1 ) & 0x80 ) == 0 )
+#define FD_Ctl1Hi()      ( ( Wait(),my_inp( CtlPort1 ) & 0x80 ) != 0 )
+#define FD_Ctl1Lo()      ( ( Wait(),my_inp( CtlPort1 ) & 0x80 ) == 0 )
 
-#define FD_RaiseCtl1()   ( Wait(),_outp( CtlPort2, 0x01 ) )
-#define FD_LowerCtl1()   ( Wait(),_outp( CtlPort2, 0x00 ) )
+#define FD_RaiseCtl1()   ( Wait(),my_outp( CtlPort2, 0x01 ) )
+#define FD_LowerCtl1()   ( Wait(),my_outp( CtlPort2, 0x00 ) )
 
-#define FD_Ctl2Hi()      ( ( Wait(),_inp( CtlPort1 ) & 0x40 ) != 0 )
-#define FD_Ctl2Lo()      ( ( Wait(),_inp( CtlPort1 ) & 0x40 ) == 0 )
+#define FD_Ctl2Hi()      ( ( Wait(),my_inp( CtlPort1 ) & 0x40 ) != 0 )
+#define FD_Ctl2Lo()      ( ( Wait(),my_inp( CtlPort1 ) & 0x40 ) == 0 )
 
-#define FD_RaiseCtl2()   ( Wait(),_outp( DataPort, 0x08 ) )
-#define FD_LowerCtl2()   ( Wait(),_outp( DataPort, 0x00 ) )
+#define FD_RaiseCtl2()   ( Wait(),my_outp( DataPort, 0x08 ) )
+#define FD_LowerCtl2()   ( Wait(),my_outp( DataPort, 0x00 ) )
 
-#define FD_ReadData()     ( ( Wait(),_inp( CtlPort1 ) >> 3 ) & 0x0f  )
-#define FD_WriteData(data) ( Wait(),_outp( DataPort, data ) )
+#define FD_ReadData()     ( ( Wait(),my_inp( CtlPort1 ) >> 3 ) & 0x0f  )
+#define FD_WriteData(data) ( Wait(),my_outp( DataPort, data ) )
 
 /***************** Cable Detection MACROS ****************************/
 
 /*
  * This operation disables bits 3,2,0 in CtrlPort2 (LowerCtl1 fixes it)
  */
-#define XX_RaiseCtl1()   ( Wait(),_outp( CtlPort2, 0x01 ) )
+#define XX_RaiseCtl1()   ( Wait(),my_outp( CtlPort2, 0x01 ) )
 
 /*********************************************************************/
 
