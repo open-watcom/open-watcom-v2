@@ -326,30 +326,34 @@ typedef __int64 _int64;
 #define PARALLEL_REGISTER_SPAN 3
 
 typedef struct _DEVICE_EXTENSION {
-    // Points to the device object that contains
-    // this device extension.
+    /*
+     * Points to the device object that contains this device extension.
+     */
     PDEVICE_OBJECT                  DeviceObject;
-
-    // Points to the port device object that this class device is
-    // connected to.
+    /*
+     * Points to the port device object that this class device is connected to.
+     */
     PDEVICE_OBJECT                  PortDeviceObject;
-
-    // This holds the result of the get parallel port info
-    // request to the port driver.
+    /*
+     * This holds the result of the get parallel port info
+     * request to the port driver.
+     */
     PHYSICAL_ADDRESS                OriginalController;
     PUCHAR                          Controller;
     ULONG                           SpanOfController;
     PPARALLEL_FREE_ROUTINE          FreePort;
     PPARALLEL_TRY_ALLOCATE_ROUTINE  TryAllocatePort;
     PVOID                           AllocFreePortContext;
-
-    // Records whether we actually created the symbolic link name
-    // at driver load time and the symbolic link itself.  If we didn't
-    // create it, we won't try to destroy it when we unload.
+    /*
+     * Records whether we actually created the symbolic link name
+     * at driver load time and the symbolic link itself.  If we didn't
+     * create it, we won't try to destroy it when we unload.
+     */
     BOOLEAN                         CreatedSymbolicLink;
     UNICODE_STRING                  SymbolicLinkName;
-
-    // Internal variables used by the driver
+    /*
+     * Internal variables used by the driver
+     */
     unsigned                        DataPort;
     unsigned                        CtlPort1;
     unsigned                        CtlPort2;
@@ -358,33 +362,39 @@ typedef struct _DEVICE_EXTENSION {
     bool                            TwidleOn;
 } DEVICE_EXTENSION, *PDEVICE_EXTENSION;
 
-// This is the "structure" of the IOPM.  It is just a simple
-// character array of length 0x2000.
-//
-// This holds 8K * 8 bits -> 64K bits of the IOPM, which maps the
-// entire 64K I/O space of the x86 processor.  Any 0 bits will give
-// access to the corresponding port for user mode processes.  Any 1
-// bits will disallow I/O access to the corresponding port.
+/*
+ * This is the "structure" of the IOPM.  It is just a simple
+ * character array of length 0x2000.
+ *
+ * This holds 8K * 8 bits -> 64K bits of the IOPM, which maps the
+ * entire 64K I/O space of the x86 processor.  Any 0 bits will give
+ * access to the corresponding port for user mode processes.  Any 1
+ * bits will disallow I/O access to the corresponding port.
+ */
 #define IOPM_SIZE       0x2000
 typedef UCHAR IOPM[IOPM_SIZE];
 
-// This will hold simply an array of 0's which will be copied
-// into our actual IOPM in the TSS by Ke386SetIoAccessMap().
-// The memory is allocated at driver load time.
+/*
+ * This will hold simply an array of 0's which will be copied
+ * into our actual IOPM in the TSS by Ke386SetIoAccessMap().
+ * The memory is allocated at driver load time.
+ */
 IOPM *IOPM_local = 0;
 IOPM *IOPM_saved = 0;
 
 /*-------------------------- Implementation -------------------------------*/
 
-// These are the three undocumented calls that we will use to give
-// the calling process I/O access.
-//
-// Ke386IoSetAccessMap() copies the passed map to the TSS.
-//
-// Ke386IoSetAccessProcess() adjusts the IOPM offset pointer so that
-// the newly copied map is actually used.  Otherwise, the IOPM offset
-// points beyond the end of the TSS segment limit, causing any I/O
-// access by the user mode process to generate an exception.
+/*
+ * These are the three undocumented calls that we will use to give
+ * the calling process I/O access.
+ *
+ * Ke386IoSetAccessMap() copies the passed map to the TSS.
+ *
+ * Ke386IoSetAccessProcess() adjusts the IOPM offset pointer so that
+ * the newly copied map is actually used.  Otherwise, the IOPM offset
+ * points beyond the end of the TSS segment limit, causing any I/O
+ * access by the user mode process to generate an exception.
+ */
 void PORTSTDCALL Ke386SetIoAccessMap( int, IOPM * );
 void PORTSTDCALL Ke386QueryIoAccessMap( int, IOPM * );
 void PORTSTDCALL Ke386IoSetAccessProcess( PEPROCESS, int );
@@ -908,7 +918,9 @@ static BOOLEAN ParMakeNames(
     UNICODE_STRING  portSuffix, classSuffix, linkSuffix;
     NTSTATUS        status;
 
-    // Put together local variables for constructing names.
+    /*
+     * Put together local variables for constructing names.
+     */
     RtlInitUnicodeString( &prefix, L"\\Device\\" );
     RtlInitUnicodeString( &linkPrefix, L"\\DosDevices\\" );
     RtlInitUnicodeString( &portSuffix, DD_PARALLEL_PORT_BASE_NAME_U );
@@ -926,8 +938,9 @@ static BOOLEAN ParMakeNames(
     status = RtlIntegerToUnicodeString( ParallelPortNumber + 1, 10, &linkDigits );
     if( !NT_SUCCESS( status ) )
         return( FALSE );
-
-    // Make the port name.
+    /*
+     * Make the port name.
+     */
     PortName->Length = 0;
     PortName->MaximumLength = prefix.Length + portSuffix.Length + digits.Length + sizeof( WCHAR );
     PortName->Buffer = ExAllocatePool( PagedPool, PortName->MaximumLength );
@@ -937,8 +950,9 @@ static BOOLEAN ParMakeNames(
     RtlAppendUnicodeStringToString( PortName, &prefix );
     RtlAppendUnicodeStringToString( PortName, &portSuffix );
     RtlAppendUnicodeStringToString( PortName, &digits );
-
-    // Make the class name.
+    /*
+     * Make the class name.
+     */
     ClassName->Length = 0;
     ClassName->MaximumLength = prefix.Length + classSuffix.Length + digits.Length + sizeof( WCHAR );
     ClassName->Buffer = ExAllocatePool( PagedPool, ClassName->MaximumLength );
@@ -950,8 +964,9 @@ static BOOLEAN ParMakeNames(
     RtlAppendUnicodeStringToString( ClassName, &prefix );
     RtlAppendUnicodeStringToString( ClassName, &classSuffix );
     RtlAppendUnicodeStringToString( ClassName, &digits );
-
-    // Make the link name.
+    /*
+     * Make the link name.
+     */
     LinkName->Length = 0;
     LinkName->MaximumLength = linkPrefix.Length + linkSuffix.Length + linkDigits.Length + sizeof( WCHAR );
     LinkName->Buffer = ExAllocatePool( PagedPool, LinkName->MaximumLength );
@@ -1032,11 +1047,14 @@ static VOID ParInitializeDeviceObject(
     PDEVICE_EXTENSION   ext;
     PFILE_OBJECT        fileObject;
 
-    // Cobble together the port and class device names.
+    /*
+     * Cobble together the port and class device names.
+     */
     if( !ParMakeNames( ParallelPortNumber, &portName, &className, &linkName ) )
         return;
-
-    // Create the device object.
+    /*
+     * Create the device object.
+     */
     status = IoCreateDevice( DriverObject, sizeof( DEVICE_EXTENSION ),
         &className, FILE_DEVICE_PARALLEL_PORT, 0, TRUE,
         &deviceObject );
@@ -1044,9 +1062,10 @@ static VOID ParInitializeDeviceObject(
         ExFreePool( linkName.Buffer );
         goto Cleanup;
     }
-
-    // Now that the device has been created,
-    // set up the device extension.
+    /*
+     * Now that the device has been created,
+     * set up the device extension.
+     */
     ext = deviceObject->DeviceExtension;
     RtlZeroMemory( ext, sizeof( DEVICE_EXTENSION ) );
     ext->DeviceObject = deviceObject;
@@ -1061,25 +1080,28 @@ static VOID ParInitializeDeviceObject(
     }
     ObDereferenceObject( fileObject );
     ext->DeviceObject->StackSize = ext->PortDeviceObject->StackSize + 1;
-
-    // Get the port information from the port device object.
+    /*
+     * Get the port information from the port device object.
+     */
     status = ParGetPortInfoFromPortDevice( ext );
     if( !NT_SUCCESS( status ) ) {
         IoDeleteDevice( deviceObject );
         ExFreePool( linkName.Buffer );
         goto Cleanup;
     }
-
-    // Set up the symbolic link for windows apps.
+    /*
+     * Set up the symbolic link for windows apps.
+     */
     status = IoCreateSymbolicLink( &linkName, &className );
     if( !NT_SUCCESS( status ) ) {
         ext->CreatedSymbolicLink = FALSE;
         ExFreePool( linkName.Buffer );
         goto Cleanup;
     }
-
-    // We were able to create the symbolic link, so record this
-    // value in the extension for cleanup at unload time.
+    /*
+     * We were able to create the symbolic link, so record this
+     * value in the extension for cleanup at unload time.
+     */
     ext->CreatedSymbolicLink = TRUE;
     ext->SymbolicLinkName = linkName;
 
@@ -1130,12 +1152,15 @@ NTSTATUS ParCreate(
     NTSTATUS            status;
     PDEVICE_EXTENSION   ext;
 
-    // Give the debugger process full I/O port access. Ideally we should
-    // restrict this to the actual I/O ports in use, and this can be done
-    // in the future if desired.
+    /*
+     * Give the debugger process full I/O port access. Ideally we should
+     * restrict this to the actual I/O ports in use, and this can be done
+     * in the future if desired.
+     */
     SetIOPermissionMap( 1 );
-
-    // Now create the parallel port extension device
+    /*
+     * Now create the parallel port extension device
+     */
     ext = DeviceObject->DeviceExtension;
     irpSp = IoGetCurrentIrpStackLocation( Irp );
     if( irpSp->Parameters.Create.Options & FILE_DIRECTORY_FILE ) {
@@ -1190,9 +1215,10 @@ NTSTATUS ParIOCTL(
     ext = DeviceObject->DeviceExtension;
     irpSp = IoGetCurrentIrpStackLocation( Irp );
     IOBuffer = (DBGPORT_IO *)Irp->AssociatedIrp.SystemBuffer;
-
-    // NT copies inbuf here before entry and copies this to outbuf after
-    // return, for METHOD_BUFFERED IOCTL's.
+    /*
+     * NT copies inbuf here before entry and copies this to outbuf after
+     * return, for METHOD_BUFFERED IOCTL's.
+     */
     switch( irpSp->Parameters.DeviceIoControl.IoControlCode ) {
     case IOCTL_DBG_READ_PORT_U8:
         IOBuffer->data.u8 = READ_PORT_UCHAR( (PUCHAR)( ext->Controller + IOBuffer->port ) );
@@ -1276,7 +1302,9 @@ NTSTATUS ParClose(
 {
     PDEVICE_EXTENSION   ext;
 
-    // Restore the original I/O port mappings
+    /*
+     * Restore the original I/O port mappings
+     */
     SetIOPermissionMap( 0 );
 
     ext = DeviceObject->DeviceExtension;
@@ -1310,8 +1338,9 @@ VOID ParUnload(
         }
         IoDeleteDevice( currentDevice );
     }
-
-    // Free the local IOPM table if allocated
+    /*
+     * Free the local IOPM table if allocated
+     */
     if( IOPM_local )
         MmFreeNonCachedMemory( IOPM_local, sizeof( IOPM ) );
     if( IOPM_saved ) {
@@ -1337,26 +1366,30 @@ NTSTATUS DriverEntry(
 
     /* unused parameters */ (void)RegistryPath;
 
-    // TODO: We should be able to re-code this driver to use a call-gate
-    //               to give the calling process full IOPL access, without needing
-    //               the gross IOPM hack we currently use. This would make it
-    //               slightly faster also.
-
-    // Allocate a buffer for the local IOPM and zero it.
+    /*
+     * TODO: We should be able to re-code this driver to use a call-gate
+     *               to give the calling process full IOPL access, without needing
+     *               the gross IOPM hack we currently use. This would make it
+     *               slightly faster also.
+     *
+     * Allocate a buffer for the local IOPM and zero it.
+     */
     IOPM_local = MmAllocateNonCachedMemory( sizeof( IOPM ) );
     IOPM_saved = MmAllocateNonCachedMemory( sizeof( IOPM ) );
     if( !IOPM_local || !IOPM_saved )
         return( STATUS_INSUFFICIENT_RESOURCES );
     RtlZeroMemory( IOPM_local, sizeof( IOPM ) );
     Ke386QueryIoAccessMap( 1, IOPM_saved );
-
-    // Initialise all the device objects
+    /*
+     * Initialise all the device objects
+     */
     for( i = 0; i < IoGetConfigurationInformation()->ParallelCount; i++ )
         ParInitializeDeviceObject( DriverObject, i );
     if( !DriverObject->DeviceObject )
         return( STATUS_NO_SUCH_DEVICE );
-
-    // Initialize the Driver Object with driver's entry points
+    /*
+     * Initialize the Driver Object with driver's entry points
+     */
     DriverObject->MajorFunction[IRP_MJ_CREATE] = ParCreate;
     DriverObject->MajorFunction[IRP_MJ_CLOSE] = ParClose;
     DriverObject->MajorFunction[IRP_MJ_CLEANUP] = ParCleanup;

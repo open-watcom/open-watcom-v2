@@ -58,28 +58,32 @@ static BOOL InstallDriver(
     unsigned   err;
 
 
-    // NOTE: This creates an entry for a standalone driver. If this
-    //       is modified for use with a driver that requires a Tag,
-    //       Group, and/or Dependencies, it may be necessary to
-    //       query the registry for existing driver information
-    //       (in order to determine a unique Tag, etc.).
-    schService = CreateService( SchSCManager,               // SCManager database
-                                    DriverName,             // name of service
-                                    DriverName,             // name to display
-                                    SERVICE_ALL_ACCESS,     // desired access
-                                    SERVICE_KERNEL_DRIVER,  // service type
-                                    StartType,              // start type
-                                    ErrorControl,           // error control type
-                                    ServiceExe,             // service's binary
-                                    NULL,                   // no load ordering group
-                                    NULL,                   // no tag identifier
+    /*
+     * NOTE: This creates an entry for a standalone driver. If this
+     *       is modified for use with a driver that requires a Tag,
+     *       Group, and/or Dependencies, it may be necessary to
+     *       query the registry for existing driver information
+     *       (in order to determine a unique Tag, etc.).
+     */
+    schService = CreateService( SchSCManager,               /* SCManager database */
+                                    DriverName,             /* name of service */
+                                    DriverName,             /* name to display */
+                                    SERVICE_ALL_ACCESS,     /* desired access */
+                                    SERVICE_KERNEL_DRIVER,  /* service type */
+                                    StartType,              /* start type */
+                                    ErrorControl,           /* error control type */
+                                    ServiceExe,             /* service's binary */
+                                    NULL,                   /* no load ordering group */
+                                    NULL,                   /* no tag identifier */
                                     ( DependencyList[0] == '\0' ) ? NULL : DependencyList,
-                                    NULL,                   // LocalSystem account
-                                    NULL );                 // no password
+                                    NULL,                   /* LocalSystem account */
+                                    NULL );                 /* no password */
     if( schService == NULL ) {
         err = (unsigned)GetLastError();
         if( err == ERROR_SERVICE_EXISTS ) {
-            // A common cause of failure (easier to read than an error code)
+            /*
+             * A common cause of failure (easier to read than an error code)
+             */
             fprintf( stderr, "failure: CreateService, ERROR_SERVICE_EXISTS\n" );
         } else {
             fprintf( stderr, "failure: CreateService (0x%02x)\n", err );
@@ -139,14 +143,16 @@ static BOOL StartDriver(
         fprintf( stderr, "failure: OpenService (0x%02x)\n", err );
         return( FALSE );
     }
-    ret = StartService( schService,    // service identifier
-                        0,             // number of arguments
-                        NULL           // pointer to arguments
+    ret = StartService( schService,    /* service identifier */
+                        0,             /* number of arguments */
+                        NULL           /* pointer to arguments */
                         );
     if( ret == 0 ) {
         err = (unsigned)GetLastError();
         if( err == ERROR_SERVICE_ALREADY_RUNNING ) {
-            // A common cause of failure (easier to read than an error code)
+            /*
+             * A common cause of failure (easier to read than an error code)
+             */
             fprintf( stderr, "failure: StartService, ERROR_SERVICE_ALREADY_RUNNING\n" );
         } else {
             fprintf( stderr, "failure: StartService (0x%02x)\n", err );
@@ -276,8 +282,9 @@ int main( int argc, char *argv[] )
             break;
         }
     }
-
-    // Handle defaults if driver names are not specified
+    /*
+     * Handle defaults if driver names are not specified
+     */
     if( curr_dep == &DependencyList[0] ) {
         strcpy( curr_dep, "ParPort" );
         curr_dep += strlen( curr_dep ) + 1;
@@ -306,9 +313,9 @@ int main( int argc, char *argv[] )
             printf( "Driver already running\n" );
         return( 0 );
     }
-    schSCManager = OpenSCManager( NULL,                     // machine (NULL == local)
-                                    NULL,                   // database (NULL == default)
-                                    SC_MANAGER_ALL_ACCESS   // access required
+    schSCManager = OpenSCManager( NULL,                     /* machine (NULL == local) */
+                                    NULL,                   /* database (NULL == default) */
+                                    SC_MANAGER_ALL_ACCESS   /* access required */
                                 );
     if( schSCManager == NULL ) {
         err = (unsigned)GetLastError();
