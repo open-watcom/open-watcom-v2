@@ -192,6 +192,8 @@
 #include "bool.h"
 #include "parallel.h"
 #include "dbgioctl.h"
+#include "pardata.h"
+
 
 #if defined( __WATCOMC__ )
 typedef __int64 _int64;
@@ -243,11 +245,6 @@ typedef __int64 _int64;
 #define TWIDLE_NUM      2
 
 #define DONE_LINE_TEST  255
-/*
- * relinquish must be less than keep
- */
-#define RELINQUISH      0
-#define KEEP            1
 
 #define LINE_TEST_WAIT  20
 #define SYNCH_WAIT      40

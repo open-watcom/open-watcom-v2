@@ -188,11 +188,15 @@
  */
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #if defined(__NETWARE__)
 #include <dos.h>
 #else
 #include <i86.h>
+#endif
+#if defined(_DBG) && !defined( SERVER )
+    #include <conio.h>
 #endif
 #include "bool.h"
 #include "trptypes.h"
@@ -201,67 +205,63 @@
 #include "nothing.h"
 #include "parlink.h"
 #include "portio.h"
+#include "pardata.h"
 
+
+#if !defined(_DBG)
+    #define my_inp  inp
+    #define my_outp outp
+    #define dbgrtn(x)
+#else
+    #define my_inp  dbg_inp
+    #define my_outp dbg_outp
+  #ifdef SERVER
+    #define dbgrtn(x) printf( x )
+  #else
+    #define dbgrtn(x) cputs( x )
+  #endif
+#endif
 
 extern void Wait( void );
 #pragma aux Wait = ;
 
 #if defined(_DBG)
-    #define my_inp  dbg_inp
-    #define my_outp dbg_outp
-#else
-    #define my_inp  inp
-    #define my_outp outp
-#endif
-
-#if defined(_DBG)
-#ifdef SERVER
-    #include <stdio.h>
-    #define dbgrtn(x) printf( x )
-#else
-    #include <stdlib.h>
-    #include <conio.h>
-    #define dbgrtn(x) cputs( x )
-#endif
 char dbg_inp( int port )
 {
     char x;
 
     x = inp( port );
-#ifdef SERVER
+  #ifdef SERVER
     printf( "in %x=%2.2x ", port, x );
-#else
+  #else
     {
-    char buf[10];
+        char buf[10];
 
-    itoa( port, buf, 16 );
-    cputs( " in " ); cputs( buf );
-    itoa( x, buf, 16 );
-    cputs( "=" ); cputs( buf );
+        itoa( port, buf, 16 );
+        cputs( " in " ); cputs( buf );
+        itoa( x, buf, 16 );
+        cputs( "=" ); cputs( buf );
     }
-#endif
+  #endif
     return( x );
 }
 
 void dbg_outp( int port, char x )
 {
-
     outp( port, x );
-#ifdef SERVER
+  #ifdef SERVER
     printf( "out %x=%2.2x ", port, x );
-#else
+  #else
     {
-    char buf[10];
+        char buf[10];
 
-    itoa( port, buf, 16 );
-    cputs( " out " ); cputs( buf );
-    itoa( x, buf, 16 );
-    cputs( "=" ); cputs( buf );
+        itoa( port, buf, 16 );
+        cputs( " out " ); cputs( buf );
+        itoa( x, buf, 16 );
+        cputs( "=" ); cputs( buf );
     }
-#endif
+  #endif
 }
-#else
-    #define dbgrtn(x)
 #endif
 
 
@@ -317,12 +317,6 @@ static bool     TwidleOn;
 #define TWIDLE_NUM      2
 
 #define DONE_LINE_TEST  255
-
-/*
- * relinquish must be less than keep
- */
-#define RELINQUISH      0
-#define KEEP            1
 
 #define LINE_TEST_WAIT  20
 #define SYNCH_WAIT      40
@@ -406,7 +400,7 @@ static bool     TwidleOn;
  * operation should take before it times out
  */
 
-static int DataGet( unsigned long wait )
+static int DataGetByte( unsigned long wait )
 {
     byte            data = 0;
 
@@ -512,7 +506,7 @@ static int DataGet( unsigned long wait )
  * if wait is not KEEP or RELINQUISH it is the latest time that this
  * operation should take before it times out
  */
-static int DataPut( byte data, unsigned long wait )
+static int DataPutByte( byte data, unsigned long wait )
 {
     dbgrtn( "\r\n-DataPut-" );
     switch( CableType ) {
@@ -603,12 +597,12 @@ trap_retval RemoteGet( void *data, trap_elen len )
     trap_elen  i;
 
     len = len;
-    get_len = DataGet( RELINQUISH );
+    get_len = DataGetByte( RELINQUISH );
     if( get_len & 0x80 ) {
-        get_len = ((get_len & 0x7f) << 8) | DataGet( KEEP );
+        get_len = ((get_len & 0x7f) << 8) | DataGetByte( KEEP );
     }
     for( i = get_len; i != 0; --i ) {
-        *(char *)data = DataGet( KEEP );
+        *(char *)data = DataGetByte( KEEP );
         data = (char *)data + 1;
     }
     return( get_len );
@@ -619,11 +613,11 @@ trap_retval RemotePut( void *data, trap_elen len )
     trap_elen  count;
 
     if( len >= 0x80 ) {
-        DataPut( (len >> 8) | 0x80, RELINQUISH );
+        DataPutByte( (len >> 8) | 0x80, RELINQUISH );
     }
-    DataPut( len & 0xff, RELINQUISH );
+    DataPutByte( len & 0xff, RELINQUISH );
     for( count = len; count != 0; --count ) {
-        DataPut( *(char *)data, KEEP );
+        DataPutByte( *(char *)data, KEEP );
         data = (char *)data + 1;
     }
     return( len );
@@ -762,29 +756,29 @@ static bool LineTest( void )
 
     dbgrtn( "\r\n-LineTest-" );
     for( send = 1; send != 256; send *= 2 ) {
-        ret = DataPut( send, GetLineTestWait() );
+        ret = DataPutByte( send, GetLineTestWait() );
         if( ret == TIMEOUT )
             return( false );
-        ret = DataGet( GetLineTestWait() );
+        ret = DataGetByte( GetLineTestWait() );
         if( ret == TIMEOUT )
             return( false );
         if( ret != send ) {
             return( false );
         }
     }
-    ret = DataPut( DONE_LINE_TEST, GetLineTestWait() );
+    ret = DataPutByte( DONE_LINE_TEST, GetLineTestWait() );
     if( ret == TIMEOUT )
         return( false );
 #else
     dbgrtn( "\r\n-LineTest-" );
     send = 0;
     for( ;; ) {
-        send = DataGet( GetLineTestWait() );
+        send = DataGetByte( GetLineTestWait() );
         if( send == TIMEOUT )
             return( false );
         if( send == DONE_LINE_TEST )
             break;
-        send = DataPut( send, GetLineTestWait() );
+        send = DataPutByte( send, GetLineTestWait() );
         if( send == TIMEOUT ) {
             return( false );
         }
@@ -858,8 +852,6 @@ void RemoteDisco( void )
     TwidleOn = false;
 
 }
-
-static char InvalidPort[] = TRP_ERR_invalid_parallel_port_number;
 
 #ifdef SERVER
 #ifdef TRAPGUI
