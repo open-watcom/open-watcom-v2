@@ -214,7 +214,7 @@ typedef UCHAR bool;
 
 #define WATCOM_VAL      0x1A
 #define TWIDLE_ON       WATCOM_VAL
-#define TWIDLE_OFF      ( WATCOM_VAL & 0xFD )
+#define TWIDLE_OFF      (WATCOM_VAL & 0xFD)
 
 /*
  * The Fujitsu FMR link looks like a busted WATCOM cable
@@ -232,7 +232,7 @@ typedef UCHAR bool;
  *                written when XX_RaiseCtl1 is called
  */
 
-#define LAPLINK_VAL     ( ( TWIDLE_ON << 3 ) | 0x2 )
+#define LAPLINK_VAL     ((TWIDLE_ON << 3) | 0x2)
 
 /*
  * The DUTCHMAN_VAL calculation works the same as the LAPLINK_VAL
@@ -242,7 +242,7 @@ typedef UCHAR bool;
  *              flying dutchman cable
  */
 
-#define DUTCHMAN_VAL    ( ( ( TWIDLE_ON & 0x0f ) << 3 ) | 0x02 )
+#define DUTCHMAN_VAL    (((TWIDLE_ON & 0x0f) << 3) | 0x02)
 
 #define NULL_VAL        0
 
@@ -262,66 +262,66 @@ typedef UCHAR bool;
 /*********************** WATCOM CABLE MACROS **************************/
 #define PC_CTL1 0x08
 #define PC_CTL2 0x08
-#define Ctl1Hi()        ( ( _inp( ext->CtlPort2 ) & PC_CTL1 ) != 0 )
-#define Ctl1Lo()        ( ( _inp( ext->CtlPort2 ) & PC_CTL1 ) == 0 )
-#define RaiseCtl1()     ( _outp( ext->CtlPort2, PC_CTL1 | 0x04 ) )
-#define LowerCtl1()     ( _outp( ext->CtlPort2, 0x04 ) )
+#define Ctl1Hi()        ((_inp( ext->CtlPort2 ) & PC_CTL1) != 0)
+#define Ctl1Lo()        ((_inp( ext->CtlPort2 ) & PC_CTL1) == 0)
+#define RaiseCtl1()     (_outp( ext->CtlPort2, PC_CTL1 | 0x04 ))
+#define LowerCtl1()     (_outp( ext->CtlPort2, 0x04 ))
 
-#define Ctl2Hi()        ( ( _inp( ext->CtlPort1 ) & PC_CTL2 ) != 0 )
-#define Ctl2Lo()        ( ( _inp( ext->CtlPort1 ) & PC_CTL2 ) == 0 )
-#define RaiseCtl2()     ( _outp( ext->DataPort, PC_CTL2 ) )
-#define LowerCtl2()     ( _outp( ext->DataPort, 0x00 ) )
+#define Ctl2Hi()        ((_inp( ext->CtlPort1 ) & PC_CTL2) != 0 )
+#define Ctl2Lo()        ((_inp( ext->CtlPort1 ) & PC_CTL2) == 0 )
+#define RaiseCtl2()     (_outp( ext->DataPort, PC_CTL2 ))
+#define LowerCtl2()     (_outp( ext->DataPort, 0x00 ))
 
-#define ReadData()      ( ( ( _inp( ext->CtlPort1 ) ^ 0x80 ) & 0xF8 ) \
-                                                | ( ( _inp( ext->CtlPort2 ) ^ 0x03 ) & 0x07 ) )
-#define WriteData(data) ( _outp( ext->DataPort, data ) )
+#define ReadData()      (((_inp( ext->CtlPort1 ) ^ 0x80) & 0xF8) \
+                                                | ((_inp( ext->CtlPort2 ) ^ 0x03) & 0x07))
+#define WriteData(data) (_outp( ext->DataPort, data ))
 
 /*********************** WATCOM FMR CABLE MACROS **********************/
 #define FM_CTL1 0x40
 /* Can't use ext->CtlPort2 & 0x08 (line disabled) */
-#define FM_Ctl1Hi()     ( ( _inp( ext->CtlPort1 ) & FM_CTL1 ) != 0 )
-#define FM_Ctl1Lo()     ( ( _inp( ext->CtlPort1 ) & FM_CTL1 ) == 0 )
+#define FM_Ctl1Hi()     ((_inp( ext->CtlPort1 ) & FM_CTL1) != 0)
+#define FM_Ctl1Lo()     ((_inp( ext->CtlPort1 ) & FM_CTL1) == 0)
 
 /********************** LAPLINK CABLE MACROS **************************/
-#define LL_Ctl1Hi()     ( ( _inp( ext->CtlPort1 ) & 0x80 ) == 0 )
-#define LL_Ctl1Lo()     ( ( _inp( ext->CtlPort1 ) & 0x80 ) != 0 )
+#define LL_Ctl1Hi()     ((_inp( ext->CtlPort1 ) & 0x80) == 0)
+#define LL_Ctl1Lo()     ((_inp( ext->CtlPort1 ) & 0x80) != 0)
 
-#define LL_RaiseCtl1()  ( _outp( ext->DataPort, 0x10 ) )
-#define LL_LowerCtl1()  ( _outp( ext->DataPort, 0x00 ) )
+#define LL_RaiseCtl1()  (_outp( ext->DataPort, 0x10 ))
+#define LL_LowerCtl1()  (_outp( ext->DataPort, 0x00 ))
 
-#define LL_Ctl2Hi()     ( ( _inp( ext->CtlPort1 ) & 0x40 ) != 0 )
-#define LL_Ctl2Lo()     ( ( _inp( ext->CtlPort1 ) & 0x40 ) == 0 )
+#define LL_Ctl2Hi()     ((_inp( ext->CtlPort1 ) & 0x40) != 0)
+#define LL_Ctl2Lo()     ((_inp( ext->CtlPort1 ) & 0x40) == 0)
 
-#define LL_RaiseCtl2()  ( _outp( ext->DataPort, 0x08 ) )
-#define LL_LowerCtl2()  ( _outp( ext->DataPort, 0x00 ) )
+#define LL_RaiseCtl2()  (_outp( ext->DataPort, 0x08 ))
+#define LL_LowerCtl2()  (_outp( ext->DataPort, 0x00 ))
 
-#define LL_ReadData()   ( ( _inp( ext->CtlPort1 ) >> 3 ) & 0x0f  )
+#define LL_ReadData()   ((_inp( ext->CtlPort1 ) >> 3) & 0x0f)
 /* write the data and raise control line 1 */
-#define LL_WriteData(data) ( _outp( ext->DataPort, ( data | 0x10 ) ) )
+#define LL_WriteData(data) (_outp( ext->DataPort, (data | 0x10) ))
 
 /***************** FLYING DUTCHMAN CABLE MACROS ***********************/
 
-#define FD_Ctl1Hi()      ( ( _inp( ext->CtlPort1 ) & 0x80 ) != 0 )
-#define FD_Ctl1Lo()      ( ( _inp( ext->CtlPort1 ) & 0x80 ) == 0 )
+#define FD_Ctl1Hi()      ((_inp( ext->CtlPort1 ) & 0x80) != 0)
+#define FD_Ctl1Lo()      ((_inp( ext->CtlPort1 ) & 0x80) == 0)
 
-#define FD_RaiseCtl1()   ( _outp( ext->CtlPort2, 0x01 ) )
-#define FD_LowerCtl1()   ( _outp( ext->CtlPort2, 0x00 ) )
+#define FD_RaiseCtl1()   (_outp( ext->CtlPort2, 0x01 ))
+#define FD_LowerCtl1()   (_outp( ext->CtlPort2, 0x00 ))
 
-#define FD_Ctl2Hi()      ( ( _inp( ext->CtlPort1 ) & 0x40 ) != 0 )
-#define FD_Ctl2Lo()      ( ( _inp( ext->CtlPort1 ) & 0x40 ) == 0 )
+#define FD_Ctl2Hi()      ((_inp( ext->CtlPort1 ) & 0x40) != 0)
+#define FD_Ctl2Lo()      ((_inp( ext->CtlPort1 ) & 0x40) == 0)
 
-#define FD_RaiseCtl2()   ( _outp( ext->DataPort, 0x08 ) )
-#define FD_LowerCtl2()   ( _outp( ext->DataPort, 0x00 ) )
+#define FD_RaiseCtl2()   (_outp( ext->DataPort, 0x08 ))
+#define FD_LowerCtl2()   (_outp( ext->DataPort, 0x00 ))
 
-#define FD_ReadData()     ( ( _inp( ext->CtlPort1 ) >> 3 ) & 0x0f  )
-#define FD_WriteData(data) ( _outp( ext->DataPort, data ) )
+#define FD_ReadData()    ((_inp( ext->CtlPort1 ) >> 3) & 0x0f)
+#define FD_WriteData(data) (_outp( ext->DataPort, data ))
 
 /***************** Cable Detection MACROS ****************************/
 
 /*
  * This operation disables bits 3,2,0 in CtrlPort2 (LowerCtl1 fixes it)
  */
-#define XX_RaiseCtl1()   ( _outp( ext->CtlPort2, 0x01 ) )
+#define XX_RaiseCtl1()   (_outp( ext->CtlPort2, 0x01 ))
 
 /*********************************************************************/
 
@@ -656,10 +656,10 @@ static bool CountTwidle(
 
     type = ReadData();
     if( !ext->TwidleOn ) {
-        if( type == WATCOM_VAL ||
-            type == FMR_VAL ||
-            type == LAPLINK_VAL ||
-            type == DUTCHMAN_VAL ) {
+        if( type == WATCOM_VAL
+          || type == FMR_VAL
+          || type == LAPLINK_VAL
+          || type == DUTCHMAN_VAL ) {
             ext->TwidleOn = TRUE;
             if( type != ext->CableType ) {
                 ext->TwidleCount = 0;
@@ -866,7 +866,8 @@ static void RemoteDisco(
     unsigned long       time;
 
     time = Ticks() + TWIDLE_TIME;
-    while( time > Ticks() ) { /* delay while other side catches up */ }
+    while( time > Ticks() )
+        { /* delay while other side catches up */ }
     WriteData( TWIDLE_OFF );            /* initialize control ports */
     XX_RaiseCtl1();
     ext->TwidleCount = 0;
@@ -878,8 +879,8 @@ static void RemoteLink(
     PDEVICE_EXTENSION ext)
 {
     ext->DataPort = 0;
-    ext->CtlPort1 = ext->DataPort + 1;
-    ext->CtlPort2 = ext->CtlPort1 + 1;
+    ext->CtlPort1 = 1;
+    ext->CtlPort2 = 2;
     WriteData( TWIDLE_OFF );            /* initialize the control ports */
     XX_RaiseCtl1();
     ext->TwidleCount = 0;
@@ -913,62 +914,62 @@ static BOOLEAN ParMakeNames(
     NTSTATUS        status;
 
     // Put together local variables for constructing names.
-    RtlInitUnicodeString(&prefix, L"\\Device\\");
-    RtlInitUnicodeString(&linkPrefix, L"\\DosDevices\\");
-    RtlInitUnicodeString(&portSuffix, DD_PARALLEL_PORT_BASE_NAME_U);
-    RtlInitUnicodeString(&classSuffix, L"ParallelDebug");
-    RtlInitUnicodeString(&linkSuffix, L"DBGPORT");
+    RtlInitUnicodeString( &prefix, L"\\Device\\" );
+    RtlInitUnicodeString( &linkPrefix, L"\\DosDevices\\" );
+    RtlInitUnicodeString( &portSuffix, DD_PARALLEL_PORT_BASE_NAME_U );
+    RtlInitUnicodeString( &classSuffix, L"ParallelDebug" );
+    RtlInitUnicodeString( &linkSuffix, L"DBGPORT" );
     digits.Length = 0;
     digits.MaximumLength = 20;
     digits.Buffer = digitsBuffer;
     linkDigits.Length = 0;
     linkDigits.MaximumLength = 20;
     linkDigits.Buffer = linkDigitsBuffer;
-    status = RtlIntegerToUnicodeString(ParallelPortNumber, 10, &digits);
-    if (!NT_SUCCESS(status))
-        return FALSE;
-    status = RtlIntegerToUnicodeString(ParallelPortNumber + 1, 10, &linkDigits);
-    if (!NT_SUCCESS(status))
-        return FALSE;
+    status = RtlIntegerToUnicodeString( ParallelPortNumber, 10, &digits );
+    if( !NT_SUCCESS( status ) )
+        return( FALSE );
+    status = RtlIntegerToUnicodeString( ParallelPortNumber + 1, 10, &linkDigits );
+    if( !NT_SUCCESS( status ) )
+        return( FALSE );
 
     // Make the port name.
     PortName->Length = 0;
-    PortName->MaximumLength = prefix.Length + portSuffix.Length + digits.Length + sizeof(WCHAR);
-    PortName->Buffer = ExAllocatePool(PagedPool, PortName->MaximumLength);
-    if (!PortName->Buffer)
-        return FALSE;
-    RtlZeroMemory(PortName->Buffer, PortName->MaximumLength);
-    RtlAppendUnicodeStringToString(PortName, &prefix);
-    RtlAppendUnicodeStringToString(PortName, &portSuffix);
-    RtlAppendUnicodeStringToString(PortName, &digits);
+    PortName->MaximumLength = prefix.Length + portSuffix.Length + digits.Length + sizeof( WCHAR );
+    PortName->Buffer = ExAllocatePool( PagedPool, PortName->MaximumLength );
+    if( !PortName->Buffer )
+        return( FALSE );
+    RtlZeroMemory( PortName->Buffer, PortName->MaximumLength );
+    RtlAppendUnicodeStringToString( PortName, &prefix );
+    RtlAppendUnicodeStringToString( PortName, &portSuffix );
+    RtlAppendUnicodeStringToString( PortName, &digits );
 
     // Make the class name.
     ClassName->Length = 0;
-    ClassName->MaximumLength = prefix.Length + classSuffix.Length + digits.Length + sizeof(WCHAR);
-    ClassName->Buffer = ExAllocatePool(PagedPool, ClassName->MaximumLength);
-    if (!ClassName->Buffer) {
-        ExFreePool(PortName->Buffer);
-        return FALSE;
+    ClassName->MaximumLength = prefix.Length + classSuffix.Length + digits.Length + sizeof( WCHAR );
+    ClassName->Buffer = ExAllocatePool( PagedPool, ClassName->MaximumLength );
+    if( !ClassName->Buffer ) {
+        ExFreePool( PortName->Buffer );
+        return( FALSE );
     }
-    RtlZeroMemory(ClassName->Buffer, ClassName->MaximumLength);
-    RtlAppendUnicodeStringToString(ClassName, &prefix);
-    RtlAppendUnicodeStringToString(ClassName, &classSuffix);
-    RtlAppendUnicodeStringToString(ClassName, &digits);
+    RtlZeroMemory( ClassName->Buffer, ClassName->MaximumLength );
+    RtlAppendUnicodeStringToString( ClassName, &prefix );
+    RtlAppendUnicodeStringToString( ClassName, &classSuffix );
+    RtlAppendUnicodeStringToString( ClassName, &digits );
 
     // Make the link name.
     LinkName->Length = 0;
-    LinkName->MaximumLength = linkPrefix.Length + linkSuffix.Length + linkDigits.Length + sizeof(WCHAR);
-    LinkName->Buffer = ExAllocatePool(PagedPool, LinkName->MaximumLength);
-    if (!LinkName->Buffer) {
-        ExFreePool(PortName->Buffer);
-        ExFreePool(ClassName->Buffer);
-        return FALSE;
+    LinkName->MaximumLength = linkPrefix.Length + linkSuffix.Length + linkDigits.Length + sizeof( WCHAR );
+    LinkName->Buffer = ExAllocatePool( PagedPool, LinkName->MaximumLength );
+    if( !LinkName->Buffer ) {
+        ExFreePool( PortName->Buffer );
+        ExFreePool( ClassName->Buffer );
+        return( FALSE );
     }
-    RtlZeroMemory(LinkName->Buffer, LinkName->MaximumLength);
-    RtlAppendUnicodeStringToString(LinkName, &linkPrefix);
-    RtlAppendUnicodeStringToString(LinkName, &linkSuffix);
-    RtlAppendUnicodeStringToString(LinkName, &linkDigits);
-    return TRUE;
+    RtlZeroMemory( LinkName->Buffer, LinkName->MaximumLength );
+    RtlAppendUnicodeStringToString( LinkName, &linkPrefix );
+    RtlAppendUnicodeStringToString( LinkName, &linkSuffix );
+    RtlAppendUnicodeStringToString( LinkName, &linkDigits );
+    return( TRUE );
 }
 
 /****************************************************************************
@@ -983,7 +984,7 @@ This routine will request the port information from the port driver
 and fill it in the device extension.
 ****************************************************************************/
 static NTSTATUS ParGetPortInfoFromPortDevice(
-    IN OUT  PDEVICE_EXTENSION   Extension)
+    IN OUT  PDEVICE_EXTENSION   ext)
 {
     KEVENT                      event;
     PIRP                        irp;
@@ -991,29 +992,29 @@ static NTSTATUS ParGetPortInfoFromPortDevice(
     IO_STATUS_BLOCK             ioStatus;
     NTSTATUS                    status;
 
-    KeInitializeEvent(&event, NotificationEvent, FALSE);
-    irp = IoBuildDeviceIoControlRequest(IOCTL_INTERNAL_GET_PARALLEL_PORT_INFO,
-        Extension->PortDeviceObject,
+    KeInitializeEvent( &event, NotificationEvent, FALSE );
+    irp = IoBuildDeviceIoControlRequest( IOCTL_INTERNAL_GET_PARALLEL_PORT_INFO,
+        ext->PortDeviceObject,
         NULL, 0, &portInfo,
-        sizeof(PARALLEL_PORT_INFORMATION),
-        TRUE, &event, &ioStatus);
-    if (!irp)
-        return STATUS_INSUFFICIENT_RESOURCES;
-    status = IoCallDriver(Extension->PortDeviceObject, irp);
-    if (!NT_SUCCESS(status))
-        return status;
-    status = KeWaitForSingleObject(&event, Executive, KernelMode, FALSE, NULL);
-    if (!NT_SUCCESS(status))
-        return status;
-    Extension->OriginalController = portInfo.OriginalController;
-    Extension->Controller = portInfo.Controller;
-    Extension->SpanOfController = portInfo.SpanOfController;
-    Extension->TryAllocatePort = portInfo.TryAllocatePort;
-    Extension->FreePort = portInfo.FreePort;
-    Extension->AllocFreePortContext = portInfo.Context;
-    if (Extension->SpanOfController < PARALLEL_REGISTER_SPAN)
-        return STATUS_INSUFFICIENT_RESOURCES;
-    return status;
+        sizeof( PARALLEL_PORT_INFORMATION ),
+        TRUE, &event, &ioStatus );
+    if( !irp )
+        return( STATUS_INSUFFICIENT_RESOURCES );
+    status = IoCallDriver( ext->PortDeviceObject, irp );
+    if( !NT_SUCCESS( status ) )
+        return( status );
+    status = KeWaitForSingleObject( &event, Executive, KernelMode, FALSE, NULL );
+    if( !NT_SUCCESS( status ) )
+        return( status );
+    ext->OriginalController = portInfo.OriginalController;
+    ext->Controller = portInfo.Controller;
+    ext->SpanOfController = portInfo.SpanOfController;
+    ext->TryAllocatePort = portInfo.TryAllocatePort;
+    ext->FreePort = portInfo.FreePort;
+    ext->AllocFreePortContext = portInfo.Context;
+    if( ext->SpanOfController < PARALLEL_REGISTER_SPAN )
+        return( STATUS_INSUFFICIENT_RESOURCES );
+    return( status );
 }
 
 /****************************************************************************
@@ -1037,48 +1038,48 @@ static VOID ParInitializeDeviceObject(
     PFILE_OBJECT        fileObject;
 
     // Cobble together the port and class device names.
-    if (!ParMakeNames(ParallelPortNumber, &portName, &className, &linkName))
+    if( !ParMakeNames( ParallelPortNumber, &portName, &className, &linkName ) )
         return;
 
     // Create the device object.
-    status = IoCreateDevice(DriverObject, sizeof(DEVICE_EXTENSION),
+    status = IoCreateDevice( DriverObject, sizeof( DEVICE_EXTENSION ),
         &className, FILE_DEVICE_PARALLEL_PORT, 0, TRUE,
-        &deviceObject);
-    if (!NT_SUCCESS(status)) {
-        ExFreePool(linkName.Buffer);
+        &deviceObject );
+    if( !NT_SUCCESS( status ) ) {
+        ExFreePool( linkName.Buffer );
         goto Cleanup;
     }
 
     // Now that the device has been created,
     // set up the device extension.
     ext = deviceObject->DeviceExtension;
-    RtlZeroMemory(ext, sizeof(DEVICE_EXTENSION));
+    RtlZeroMemory( ext, sizeof( DEVICE_EXTENSION ) );
     ext->DeviceObject = deviceObject;
     deviceObject->Flags |= DO_BUFFERED_IO;
-    status = IoGetDeviceObjectPointer(&portName, FILE_READ_ATTRIBUTES,
+    status = IoGetDeviceObjectPointer( &portName, FILE_READ_ATTRIBUTES,
         &fileObject,
-        &ext->PortDeviceObject);
-    if (!NT_SUCCESS(status)) {
-        IoDeleteDevice(deviceObject);
-        ExFreePool(linkName.Buffer);
+        &ext->PortDeviceObject );
+    if( !NT_SUCCESS( status ) ) {
+        IoDeleteDevice( deviceObject );
+        ExFreePool( linkName.Buffer );
         goto Cleanup;
     }
-    ObDereferenceObject(fileObject);
+    ObDereferenceObject( fileObject );
     ext->DeviceObject->StackSize = ext->PortDeviceObject->StackSize + 1;
 
     // Get the port information from the port device object.
     status = ParGetPortInfoFromPortDevice( ext );
-    if (!NT_SUCCESS(status)) {
-        IoDeleteDevice(deviceObject);
-        ExFreePool(linkName.Buffer);
+    if( !NT_SUCCESS( status ) ) {
+        IoDeleteDevice( deviceObject );
+        ExFreePool( linkName.Buffer );
         goto Cleanup;
     }
 
     // Set up the symbolic link for windows apps.
-    status = IoCreateSymbolicLink(&linkName, &className);
-    if (!NT_SUCCESS(status)) {
+    status = IoCreateSymbolicLink( &linkName, &className );
+    if( !NT_SUCCESS( status ) ) {
         ext->CreatedSymbolicLink = FALSE;
-        ExFreePool(linkName.Buffer);
+        ExFreePool( linkName.Buffer );
         goto Cleanup;
     }
 
@@ -1088,8 +1089,8 @@ static VOID ParInitializeDeviceObject(
     ext->SymbolicLinkName = linkName;
 
 Cleanup:
-    ExFreePool(portName.Buffer);
-    ExFreePool(className.Buffer);
+    ExFreePool( portName.Buffer );
+    ExFreePool( className.Buffer );
 }
 
 /****************************************************************************
@@ -1101,15 +1102,15 @@ access.  If it is 0, access is removed.
 ****************************************************************************/
 static VOID SetIOPermissionMap( int OnFlag )
 {
-    if (OnFlag) {
+    if( OnFlag ) {
         /* Enable I/O for the process */
-        Ke386QueryIoAccessMap(1,IOPM_saved);
-        Ke386IoSetAccessProcess(PsGetCurrentProcess(), 1);
-        Ke386SetIoAccessMap(1, IOPM_local);
+        Ke386QueryIoAccessMap( 1, IOPM_saved );
+        Ke386IoSetAccessProcess( PsGetCurrentProcess(), 1 );
+        Ke386SetIoAccessMap( 1, IOPM_local );
     } else {
         /* Disable I/O for the process, restoring old IOPM table */
-        Ke386IoSetAccessProcess(PsGetCurrentProcess(), 0);
-        Ke386SetIoAccessMap(1, IOPM_saved);
+        Ke386IoSetAccessProcess( PsGetCurrentProcess(), 0 );
+        Ke386SetIoAccessMap( 1, IOPM_saved );
     }
 }
 
@@ -1137,21 +1138,22 @@ NTSTATUS ParCreate(
     // Give the debugger process full I/O port access. Ideally we should
     // restrict this to the actual I/O ports in use, and this can be done
     // in the future if desired.
-    SetIOPermissionMap(1);
+    SetIOPermissionMap( 1 );
 
     // Now create the parallel port extension device
     ext = DeviceObject->DeviceExtension;
-    irpSp = IoGetCurrentIrpStackLocation(Irp);
-    if (irpSp->Parameters.Create.Options & FILE_DIRECTORY_FILE)
+    irpSp = IoGetCurrentIrpStackLocation( Irp );
+    if( irpSp->Parameters.Create.Options & FILE_DIRECTORY_FILE ) {
         status = STATUS_NOT_A_DIRECTORY;
-    else if (!ext->TryAllocatePort(ext->AllocFreePortContext))
+    } else if( !ext->TryAllocatePort( ext->AllocFreePortContext ) ) {
         status = STATUS_DEVICE_BUSY;
-    else
+    } else {
         status = STATUS_SUCCESS;
+    }
     Irp->IoStatus.Status = status;
     Irp->IoStatus.Information = 0;
-    IoCompleteRequest(Irp, IO_NO_INCREMENT);
-    return status;
+    IoCompleteRequest( Irp, IO_NO_INCREMENT );
+    return( status );
 }
 
 /****************************************************************************
@@ -1186,40 +1188,40 @@ NTSTATUS ParIOCTL(
     PIO_STACK_LOCATION  irpSp;
     NTSTATUS            status;
     PDEVICE_EXTENSION   ext;
-    DBGPORT_IO                      *IOBuffer;
+    DBGPORT_IO          *IOBuffer;
 
     status = STATUS_SUCCESS;
     Irp->IoStatus.Information = sizeof( *IOBuffer );
     ext = DeviceObject->DeviceExtension;
-    irpSp = IoGetCurrentIrpStackLocation(Irp);
+    irpSp = IoGetCurrentIrpStackLocation( Irp );
     IOBuffer = (DBGPORT_IO *)Irp->AssociatedIrp.SystemBuffer;
 
     // NT copies inbuf here before entry and copies this to outbuf after
     // return, for METHOD_BUFFERED IOCTL's.
     switch( irpSp->Parameters.DeviceIoControl.IoControlCode ) {
     case IOCTL_DBG_READ_PORT_U8:
-        IOBuffer->data.u8 = _inp(IOBuffer->port);
+        IOBuffer->data.u8 = READ_PORT_UCHAR( (PUCHAR)( ext->Controller + IOBuffer->port ) );
         break;
     case IOCTL_DBG_READ_PORT_U16:
-        IOBuffer->data.u16 = READ_PORT_USHORT((PUSHORT)(ext->Controller + IOBuffer->port));
+        IOBuffer->data.u16 = READ_PORT_USHORT( (PUSHORT)( ext->Controller + IOBuffer->port ) );
         break;
     case IOCTL_DBG_READ_PORT_U32:
-        IOBuffer->data.u32 = READ_PORT_ULONG((PULONG)(ext->Controller + IOBuffer->port));
+        IOBuffer->data.u32 = READ_PORT_ULONG( (PULONG)( ext->Controller + IOBuffer->port ) );
         break;
     case IOCTL_DBG_WRITE_PORT_U8:
-        _outp(IOBuffer->port,IOBuffer->data.u8);
+        WRITE_PORT_UCHAR( (PUCHAR)( ext->Controller + IOBuffer->port ), IOBuffer->data.u8 );
         break;
     case IOCTL_DBG_WRITE_PORT_U16:
-        WRITE_PORT_USHORT((PUSHORT)(ext->Controller + IOBuffer->port), IOBuffer->data.u16);
+        WRITE_PORT_USHORT( (PUSHORT)( ext->Controller + IOBuffer->port ), IOBuffer->data.u16 );
         break;
     case IOCTL_DBG_WRITE_PORT_U32:
-        WRITE_PORT_ULONG((PULONG)(ext->Controller + IOBuffer->port), IOBuffer->data.u32);
+        WRITE_PORT_ULONG( (PULONG)( ext->Controller + IOBuffer->port ), IOBuffer->data.u32 );
         break;
     case IOCTL_DBG_REMOTE_GET:
-        IOBuffer->status = RemoteGet(ext,IOBuffer->buffer,IOBuffer->len);
+        IOBuffer->status = RemoteGet( ext, IOBuffer->buffer, IOBuffer->len );
         break;
     case IOCTL_DBG_REMOTE_PUT:
-        IOBuffer->status = RemotePut(ext,IOBuffer->buffer,IOBuffer->len);
+        IOBuffer->status = RemotePut( ext, IOBuffer->buffer, IOBuffer->len );
         break;
     case IOCTL_DBG_REMOTE_CONNECT_SERV:
         IOBuffer->status = RemoteConnectServer( ext );
@@ -1239,8 +1241,8 @@ NTSTATUS ParIOCTL(
         break;
     }
     Irp->IoStatus.Status = status;
-    IoCompleteRequest(Irp, IO_NO_INCREMENT);
-    return status;
+    IoCompleteRequest( Irp, IO_NO_INCREMENT );
+    return( status );
 }
 
 /****************************************************************************
@@ -1260,8 +1262,8 @@ NTSTATUS ParCleanup(
 
     Irp->IoStatus.Status = STATUS_CANCELLED;
     Irp->IoStatus.Information = 0;
-    IoCompleteRequest(Irp, IO_NO_INCREMENT);
-    return STATUS_CANCELLED;
+    IoCompleteRequest( Irp, IO_NO_INCREMENT );
+    return( STATUS_CANCELLED );
 }
 
 /****************************************************************************
@@ -1280,14 +1282,14 @@ NTSTATUS ParClose(
     PDEVICE_EXTENSION   ext;
 
     // Restore the original I/O port mappings
-    SetIOPermissionMap(0);
+    SetIOPermissionMap( 0 );
 
     ext = DeviceObject->DeviceExtension;
-    ext->FreePort(ext->AllocFreePortContext);
+    ext->FreePort( ext->AllocFreePortContext );
     Irp->IoStatus.Status = STATUS_SUCCESS;
     Irp->IoStatus.Information = 0;
-    IoCompleteRequest(Irp, IO_NO_INCREMENT);
-    return STATUS_SUCCESS;
+    IoCompleteRequest( Irp, IO_NO_INCREMENT );
+    return( STATUS_SUCCESS );
 }
 
 /****************************************************************************
@@ -1305,20 +1307,20 @@ VOID ParUnload(
     PDEVICE_OBJECT          currentDevice;
     PDEVICE_EXTENSION   ext;
 
-    while (currentDevice = DriverObject->DeviceObject) {
+    while( (currentDevice = DriverObject->DeviceObject) != 0 ) {
         ext = currentDevice->DeviceExtension;
-        if (ext->CreatedSymbolicLink) {
-            IoDeleteSymbolicLink(&ext->SymbolicLinkName);
-            ExFreePool(ext->SymbolicLinkName.Buffer);
+        if( ext->CreatedSymbolicLink ) {
+            IoDeleteSymbolicLink( &ext->SymbolicLinkName );
+            ExFreePool( ext->SymbolicLinkName.Buffer );
         }
-        IoDeleteDevice(currentDevice);
+        IoDeleteDevice( currentDevice );
     }
 
     // Free the local IOPM table if allocated
-    if (IOPM_local)
-        MmFreeNonCachedMemory(IOPM_local, sizeof(IOPM));
-    if (IOPM_saved) {
-        MmFreeNonCachedMemory(IOPM_saved, sizeof(IOPM));
+    if( IOPM_local )
+        MmFreeNonCachedMemory( IOPM_local, sizeof( IOPM ) );
+    if( IOPM_saved ) {
+        MmFreeNonCachedMemory( IOPM_saved, sizeof( IOPM ) );
     }
 }
 
@@ -1346,18 +1348,18 @@ NTSTATUS DriverEntry(
     //               slightly faster also.
 
     // Allocate a buffer for the local IOPM and zero it.
-    IOPM_local = MmAllocateNonCachedMemory(sizeof(IOPM));
-    IOPM_saved = MmAllocateNonCachedMemory(sizeof(IOPM));
-    if (!IOPM_local || !IOPM_saved)
-        return STATUS_INSUFFICIENT_RESOURCES;
-    RtlZeroMemory(IOPM_local, sizeof(IOPM));
-    Ke386QueryIoAccessMap(1,IOPM_saved);
+    IOPM_local = MmAllocateNonCachedMemory( sizeof( IOPM ) );
+    IOPM_saved = MmAllocateNonCachedMemory( sizeof( IOPM ) );
+    if( !IOPM_local || !IOPM_saved )
+        return( STATUS_INSUFFICIENT_RESOURCES );
+    RtlZeroMemory( IOPM_local, sizeof( IOPM ) );
+    Ke386QueryIoAccessMap( 1, IOPM_saved );
 
     // Initialise all the device objects
-    for (i = 0; i < IoGetConfigurationInformation()->ParallelCount; i++)
-        ParInitializeDeviceObject(DriverObject, i);
-    if (!DriverObject->DeviceObject)
-        return STATUS_NO_SUCH_DEVICE;
+    for( i = 0; i < IoGetConfigurationInformation()->ParallelCount; i++ )
+        ParInitializeDeviceObject( DriverObject, i );
+    if( !DriverObject->DeviceObject )
+        return( STATUS_NO_SUCH_DEVICE );
 
     // Initialize the Driver Object with driver's entry points
     DriverObject->MajorFunction[IRP_MJ_CREATE] = ParCreate;
@@ -1365,5 +1367,5 @@ NTSTATUS DriverEntry(
     DriverObject->MajorFunction[IRP_MJ_CLEANUP] = ParCleanup;
     DriverObject->MajorFunction[IRP_MJ_DEVICE_CONTROL] = ParIOCTL;
     DriverObject->DriverUnload = ParUnload;
-    return STATUS_SUCCESS;
+    return( STATUS_SUCCESS );
 }
