@@ -272,9 +272,10 @@ static int      CableType;
 static char     TwidleCount;
 static bool     TwidleOn;
 
-/* 0x18 is used to ensure that the control lines stay in a high state
- * until Synch is called */
-
+/*
+ * 0x18 is used to ensure that the control lines stay in a high state
+ * until Synch is called
+ */
 // #define TWIDLE_OFF      0x18
 // #define TWIDLE_ON       ( TWIDLE_OFF | 2 )
 
@@ -299,7 +300,6 @@ static bool     TwidleOn;
  *                ReadData).  This value is dependent on the value
  *                written when XX_RaiseCtl1 is called
  */
-
 #define LAPLINK_VAL     ( ( TWIDLE_ON << 3 ) | 0x2 )
 
 /*
@@ -309,7 +309,6 @@ static bool     TwidleOn;
  * &0x0f        acounts for the fact that pin 6 is not connected in the
  *              flying dutchman cable
  */
-
 #define DUTCHMAN_VAL    ( ( ( TWIDLE_ON & 0x0f ) << 3 ) | 0x02 )
 
 #define NULL_VAL        0
@@ -319,7 +318,9 @@ static bool     TwidleOn;
 
 #define DONE_LINE_TEST  255
 
-/* relinquish must be less than keep */
+/*
+ * relinquish must be less than keep
+ */
 #define RELINQUISH      0
 #define KEEP            1
 
@@ -346,7 +347,9 @@ static bool     TwidleOn;
 
 /*********************** WATCOM FMR CABLE MACROS **********************/
 #define FM_CTL1 0x40
-/* Can't use CtlPort2 & 0x08 (line disabled) */
+/*
+ * Can't use CtlPort2 & 0x08 (line disabled)
+ */
 #define FM_Ctl1Hi()     ( ( Wait(),my_inp( CtlPort1 ) & FM_CTL1 ) != 0 )
 #define FM_Ctl1Lo()     ( ( Wait(),my_inp( CtlPort1 ) & FM_CTL1 ) == 0 )
 
@@ -364,7 +367,9 @@ static bool     TwidleOn;
 #define LL_LowerCtl2()  ( Wait(),my_outp( DataPort, 0x00 ) )
 
 #define LL_ReadData()   ( ( Wait(),my_inp( CtlPort1 ) >> 3 ) & 0x0f  )
-/* write the data and raise control line 1 */
+/*
+ * write the data and raise control line 1
+ */
 #define LL_WriteData(data) ( Wait(),my_outp( DataPort, ( data | 0x10 ) ) )
 
 /***************** FLYING DUTCHMAN CABLE MACROS ***********************/
@@ -419,8 +424,11 @@ static int DataGet( unsigned long wait )
         }
         break;
     case FMR_VAL:
-        /* We're talking to the FMR which can't RaiseCtl1/LowerCtl1 */
-        /* get the low nibble */
+        /*
+         * We're talking to the FMR which can't RaiseCtl1/LowerCtl1
+         *
+         * get the low nibble
+         */
         RaiseCtl2();                    /* ready to read */
         while( FM_Ctl1Lo() ) {          /* wait for data */
             TWIDDLE_THUMBS;
@@ -430,7 +438,9 @@ static int DataGet( unsigned long wait )
         while( FM_Ctl1Hi() ) {          /* Wait till he heard us */
             TWIDDLE_THUMBS;
         }
-        /*get the high nibble */
+        /*
+         * get the high nibble
+         */
         RaiseCtl2();                    /* ready to read */
         while( FM_Ctl1Lo() ) {          /* wait for data */
             TWIDDLE_THUMBS;
@@ -442,7 +452,9 @@ static int DataGet( unsigned long wait )
         }
         break;
     case LAPLINK_VAL:
-        /* get the low nibble */
+        /*
+         * get the low nibble
+         */
         LL_RaiseCtl2();                 /* ready to read */
         while( LL_Ctl1Lo() ) {          /* wait for data */
             TWIDDLE_THUMBS;
@@ -452,7 +464,9 @@ static int DataGet( unsigned long wait )
         while( LL_Ctl1Hi() ) {          /* Wait till he heard us */
             TWIDDLE_THUMBS;
         }
-        /*get the high nibble */
+        /*
+         * get the high nibble
+         */
         LL_RaiseCtl2();                 /* ready to read */
         while( LL_Ctl1Lo() ) {          /* wait for data */
             TWIDDLE_THUMBS;
@@ -464,7 +478,9 @@ static int DataGet( unsigned long wait )
         }
         break;
     case DUTCHMAN_VAL:
-        /* get the low nibble */
+        /*
+         * get the low nibble
+         */
         FD_RaiseCtl2();                 /* ready to read */
         while( FD_Ctl1Lo() ) {          /* wait for data */
             TWIDDLE_THUMBS;
@@ -474,7 +490,9 @@ static int DataGet( unsigned long wait )
         while( FD_Ctl1Hi() ) {          /* Wait till he heard us */
             TWIDDLE_THUMBS;
         }
-        /*get the high nibble */
+        /*
+         * get the high nibble
+         */
         FD_RaiseCtl2();                 /* ready to read */
         while( FD_Ctl1Lo() ) {          /* wait for data */
             TWIDDLE_THUMBS;
@@ -490,9 +508,10 @@ static int DataGet( unsigned long wait )
 }
 
 
-/* if wait is not KEEP or RELINQUISH it is the latest time that this
- * operation should take before it times out */
-
+/*
+ * if wait is not KEEP or RELINQUISH it is the latest time that this
+ * operation should take before it times out
+ */
 static int DataPut( byte data, unsigned long wait )
 {
     dbgrtn( "\r\n-DataPut-" );
@@ -509,7 +528,9 @@ static int DataPut( byte data, unsigned long wait )
         LowerCtl1();                    /* clear control line */
         break;
     case FMR_VAL:
-        /* We're talking to the FMR which can RaiseCtl2/LowerCtl2 */
+        /*
+         * We're talking to the FMR which can RaiseCtl2/LowerCtl2
+         */
         while( Ctl2Lo() ) {             /* wait till he's ready to read */
             TWIDDLE_THUMBS;
         }
@@ -521,7 +542,9 @@ static int DataPut( byte data, unsigned long wait )
         LowerCtl1();                    /* clear control line */
         break;
    case LAPLINK_VAL:
-        /* send low nibble */
+        /*
+         * send low nibble
+         */
         while( LL_Ctl2Lo() ) {          /* wait till he's ready to read */
             TWIDDLE_THUMBS;
         }
@@ -531,7 +554,9 @@ static int DataPut( byte data, unsigned long wait )
             TWIDDLE_THUMBS;
         }
         LL_LowerCtl1();                 /* clear control line */
-        /* send high nibble */
+        /*
+         * send high nibble
+         */
         while( LL_Ctl2Lo() ) {          /* wait till he's ready to read */
             TWIDDLE_THUMBS;
         }
@@ -543,7 +568,9 @@ static int DataPut( byte data, unsigned long wait )
         LL_LowerCtl1();                 /* clear control line */
         break;
     case DUTCHMAN_VAL:
-        /* send low nibble */
+        /*
+         * send low nibble
+         */
         while( FD_Ctl2Lo() ) {          /* wait till he's ready to read */
             TWIDDLE_THUMBS;
         }
@@ -553,7 +580,9 @@ static int DataPut( byte data, unsigned long wait )
             TWIDDLE_THUMBS;
         }
         FD_LowerCtl1();                 /* clear control line */
-        /* send high nibble */
+        /*
+         * send high nibble
+         */
         while( FD_Ctl2Lo() ) {          /* wait till he's ready to read */
             TWIDDLE_THUMBS;
         }
@@ -603,7 +632,6 @@ trap_retval RemotePut( void *data, trap_elen len )
 /*
  * Synch - see if server and client are ready
  */
-
 static bool Synch( void )
 {
     dbgrtn( "\r\n-Synch-" );
@@ -674,7 +702,6 @@ static bool CountTwidle( void )
  * Twidle - send an intermittent pulse over a line to let the person
  *          at the other end know you're there
  */
-
 static bool Twidle( bool check ) {
 
     unsigned            i;
@@ -727,7 +754,6 @@ static unsigned long GetLineTestWait( void )
 /*
  * LineTest - make sure that all lines are working
  */
-
 static bool LineTest( void )
 {
     int                 send;
@@ -823,7 +849,8 @@ void RemoteDisco( void )
 
     dbgrtn( "\r\n-RemoteDisco-" );
     time = Ticks() + TWIDLE_TIME;
-    while( time > Ticks() ) { /* delay while other side catches up */ }
+    while( time > Ticks() )
+        { /* delay while other side catches up */ }
     WriteData( TWIDLE_OFF );            /* initialize control ports */
     XX_RaiseCtl1();
     TwidleCount = 0;
