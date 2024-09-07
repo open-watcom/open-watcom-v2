@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -55,7 +55,7 @@ static BOOL InstallDriver(
     IN LPCTSTR    ServiceExe)
 {
     SC_HANDLE  schService;
-    DWORD      err;
+    unsigned   err;
 
 
     // NOTE: This creates an entry for a standalone driver. If this
@@ -77,7 +77,7 @@ static BOOL InstallDriver(
                                     NULL,                   // LocalSystem account
                                     NULL );                 // no password
     if( schService == NULL ) {
-        err = GetLastError();
+        err = (unsigned)GetLastError();
         if( err == ERROR_SERVICE_EXISTS ) {
             // A common cause of failure (easier to read than an error code)
             fprintf( stderr, "failure: CreateService, ERROR_SERVICE_EXISTS\n" );
@@ -102,15 +102,18 @@ static BOOL RemoveDriver(
 {
     SC_HANDLE  schService;
     BOOL       ret;
+    unsigned   err;
 
     schService = OpenService( SchSCManager, DriverName, SERVICE_ALL_ACCESS );
     if( schService == NULL ) {
-        fprintf( stderr, "failure: OpenService (0x%02x)\n", GetLastError() );
+        err = (unsigned)GetLastError();
+        fprintf( stderr, "failure: OpenService (0x%02x)\n", err );
         return( FALSE );
     }
     ret = DeleteService( schService );
     if( ret == 0 ) {
-        printf( "failure: DeleteService (0x%02x)\n", GetLastError() );
+        err = (unsigned)GetLastError();
+        printf( "failure: DeleteService (0x%02x)\n", err );
     } else if( !Quiet ) {
         printf( "DeleteService SUCCESS\n" );
     }
@@ -128,11 +131,12 @@ static BOOL StartDriver(
 {
     SC_HANDLE  schService;
     BOOL       ret;
-    DWORD      err;
+    unsigned   err;
 
     schService = OpenService( SchSCManager, DriverName, SERVICE_ALL_ACCESS );
     if( schService == NULL ) {
-        fprintf( stderr, "failure: OpenService (0x%02x)\n", GetLastError() );
+        err = (unsigned)GetLastError();
+        fprintf( stderr, "failure: OpenService (0x%02x)\n", err );
         return( FALSE );
     }
     ret = StartService( schService,    // service identifier
@@ -140,7 +144,7 @@ static BOOL StartDriver(
                         NULL           // pointer to arguments
                         );
     if( ret == 0 ) {
-        err = GetLastError();
+        err = (unsigned)GetLastError();
         if( err == ERROR_SERVICE_ALREADY_RUNNING ) {
             // A common cause of failure (easier to read than an error code)
             fprintf( stderr, "failure: StartService, ERROR_SERVICE_ALREADY_RUNNING\n" );
@@ -165,15 +169,18 @@ static BOOL StopDriver(
     SC_HANDLE       schService;
     BOOL            ret;
     SERVICE_STATUS  serviceStatus;
+    unsigned        err;
 
     schService = OpenService( SchSCManager, DriverName, SERVICE_ALL_ACCESS );
     if( schService == NULL ) {
-        fprintf( stderr, "failure: OpenService (0x%02x)\n", GetLastError() );
+        err = (unsigned)GetLastError();
+        fprintf( stderr, "failure: OpenService (0x%02x)\n", err );
         return( FALSE );
     }
     ret = ControlService( schService, SERVICE_CONTROL_STOP, &serviceStatus );
     if( ret == 0 ) {
-        fprintf( stderr, "failure: ControlService (0x%02x)\n", GetLastError() );
+        err = (unsigned)GetLastError();
+        fprintf( stderr, "failure: ControlService (0x%02x)\n", err );
     } else if( !Quiet ) {
         printf ("ControlService SUCCESS\n");
     }
@@ -230,6 +237,7 @@ int main( int argc, char *argv[] )
     char        *curr_dep;
     char        ServiceName[256] = "";
     char        ServiceExe[256] = "";
+    unsigned    err;
 
     curr_dep = &DependencyList[0];
     for( ;; ) {
@@ -303,7 +311,8 @@ int main( int argc, char *argv[] )
                                     SC_MANAGER_ALL_ACCESS   // access required
                                 );
     if( schSCManager == NULL ) {
-        fprintf( stderr, "Can not open service manager (%ld)\n", GetLastError() );
+        err = (unsigned)GetLastError();
+        fprintf( stderr, "Can not open service manager (%u)\n", err );
         return( 1 );
     }
     if( remove ) {
