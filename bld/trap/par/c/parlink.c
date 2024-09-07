@@ -209,12 +209,12 @@
 
 
 #if !defined(_DBG)
-    #define my_inp  inp
-    #define my_outp outp
+    #define my_inp(x)       inp(hwdata.controller.port + x)
+    #define my_outp(x,y)    outp(hwdata.controller.port + x,y)
     #define dbgrtn(x)
 #else
-    #define my_inp  dbg_inp
-    #define my_outp dbg_outp
+    #define my_inp(x)       dbg_inp(hwdata.controller.port + x)
+    #define my_outp(x,y)    dbg_outp(hwdata.controller.port + x,y)
   #ifdef SERVER
     #define dbgrtn(x) printf( x )
   #else
@@ -224,6 +224,8 @@
 
 extern void Wait( void );
 #pragma aux Wait = ;
+
+static hw_data  hwdata;
 
 #if defined(_DBG)
 char dbg_inp( int port )
@@ -263,14 +265,6 @@ void dbg_outp( int port, char x )
   #endif
 }
 #endif
-
-
-static unsigned DataPort;
-static unsigned CtlPort1;
-static unsigned CtlPort2;
-static int      CableType;
-static char     TwidleCount;
-static bool     TwidleOn;
 
 /*
  * 0x18 is used to ensure that the control lines stay in a high state
@@ -325,70 +319,70 @@ static bool     TwidleOn;
 /*********************** WATCOM CABLE MACROS **************************/
 #define PC_CTL1 0x08
 #define PC_CTL2 0x08
-#define Ctl1Hi()        ( ( Wait(),my_inp( CtlPort2 ) & PC_CTL1 ) != 0 )
-#define Ctl1Lo()        ( ( Wait(),my_inp( CtlPort2 ) & PC_CTL1 ) == 0 )
-#define RaiseCtl1()     ( Wait(),my_outp( CtlPort2, PC_CTL1 | 0x04 ) )
-#define LowerCtl1()     ( Wait(),my_outp( CtlPort2, 0x04 ) )
+#define Ctl1Hi()        ( ( Wait(),my_inp( CTLPORT2 ) & PC_CTL1 ) != 0 )
+#define Ctl1Lo()        ( ( Wait(),my_inp( CTLPORT2 ) & PC_CTL1 ) == 0 )
+#define RaiseCtl1()     ( Wait(),my_outp( CTLPORT2, PC_CTL1 | 0x04 ) )
+#define LowerCtl1()     ( Wait(),my_outp( CTLPORT2, 0x04 ) )
 
-#define Ctl2Hi()        ( ( Wait(),my_inp( CtlPort1 ) & PC_CTL2 ) != 0 )
-#define Ctl2Lo()        ( ( Wait(),my_inp( CtlPort1 ) & PC_CTL2 ) == 0 )
-#define RaiseCtl2()     ( Wait(),my_outp( DataPort, PC_CTL2 ) )
-#define LowerCtl2()     ( Wait(),my_outp( DataPort, 0x00 ) )
+#define Ctl2Hi()        ( ( Wait(),my_inp( CTLPORT1 ) & PC_CTL2 ) != 0 )
+#define Ctl2Lo()        ( ( Wait(),my_inp( CTLPORT1 ) & PC_CTL2 ) == 0 )
+#define RaiseCtl2()     ( Wait(),my_outp( DATAPORT, PC_CTL2 ) )
+#define LowerCtl2()     ( Wait(),my_outp( DATAPORT, 0x00 ) )
 
-#define ReadData()      ( ( ( Wait(),my_inp( CtlPort1 ) ^ 0x80 ) & 0xF8 ) \
-                        | ( ( Wait(),my_inp( CtlPort2 ) ^ 0x03 ) & 0x07 ) )
-#define WriteData(data) ( Wait(),my_outp( DataPort, data ) )
+#define ReadData()      ( ( ( Wait(),my_inp( CTLPORT1 ) ^ 0x80 ) & 0xF8 ) \
+                        | ( ( Wait(),my_inp( CTLPORT2 ) ^ 0x03 ) & 0x07 ) )
+#define WriteData(data) ( Wait(),my_outp( DATAPORT, data ) )
 
 /*********************** WATCOM FMR CABLE MACROS **********************/
 #define FM_CTL1 0x40
 /*
  * Can't use CtlPort2 & 0x08 (line disabled)
  */
-#define FM_Ctl1Hi()     ( ( Wait(),my_inp( CtlPort1 ) & FM_CTL1 ) != 0 )
-#define FM_Ctl1Lo()     ( ( Wait(),my_inp( CtlPort1 ) & FM_CTL1 ) == 0 )
+#define FM_Ctl1Hi()     ( ( Wait(),my_inp( CTLPORT1 ) & FM_CTL1 ) != 0 )
+#define FM_Ctl1Lo()     ( ( Wait(),my_inp( CTLPORT1 ) & FM_CTL1 ) == 0 )
 
 /********************** LAPLINK CABLE MACROS **************************/
-#define LL_Ctl1Hi()     ( ( Wait(),my_inp( CtlPort1 ) & 0x80 ) == 0 )
-#define LL_Ctl1Lo()     ( ( Wait(),my_inp( CtlPort1 ) & 0x80 ) != 0 )
+#define LL_Ctl1Hi()     ( ( Wait(),my_inp( CTLPORT1 ) & 0x80 ) == 0 )
+#define LL_Ctl1Lo()     ( ( Wait(),my_inp( CTLPORT1 ) & 0x80 ) != 0 )
 
-#define LL_RaiseCtl1()  ( Wait(),my_outp( DataPort, 0x10 ) )
-#define LL_LowerCtl1()  ( Wait(),my_outp( DataPort, 0x00 ) )
+#define LL_RaiseCtl1()  ( Wait(),my_outp( DATAPORT, 0x10 ) )
+#define LL_LowerCtl1()  ( Wait(),my_outp( DATAPORT, 0x00 ) )
 
-#define LL_Ctl2Hi()     ( ( Wait(),my_inp( CtlPort1 ) & 0x40 ) != 0 )
-#define LL_Ctl2Lo()     ( ( Wait(),my_inp( CtlPort1 ) & 0x40 ) == 0 )
+#define LL_Ctl2Hi()     ( ( Wait(),my_inp( CTLPORT1 ) & 0x40 ) != 0 )
+#define LL_Ctl2Lo()     ( ( Wait(),my_inp( CTLPORT1 ) & 0x40 ) == 0 )
 
-#define LL_RaiseCtl2()  ( Wait(),my_outp( DataPort, 0x08 ) )
-#define LL_LowerCtl2()  ( Wait(),my_outp( DataPort, 0x00 ) )
+#define LL_RaiseCtl2()  ( Wait(),my_outp( DATAPORT, 0x08 ) )
+#define LL_LowerCtl2()  ( Wait(),my_outp( DATAPORT, 0x00 ) )
 
-#define LL_ReadData()   ( ( Wait(),my_inp( CtlPort1 ) >> 3 ) & 0x0f  )
+#define LL_ReadData()   ( ( Wait(),my_inp( CTLPORT1 ) >> 3 ) & 0x0f  )
 /*
  * write the data and raise control line 1
  */
-#define LL_WriteData(data) ( Wait(),my_outp( DataPort, ( data | 0x10 ) ) )
+#define LL_WriteData(data) ( Wait(),my_outp( DATAPORT, ( data | 0x10 ) ) )
 
 /***************** FLYING DUTCHMAN CABLE MACROS ***********************/
 
-#define FD_Ctl1Hi()      ( ( Wait(),my_inp( CtlPort1 ) & 0x80 ) != 0 )
-#define FD_Ctl1Lo()      ( ( Wait(),my_inp( CtlPort1 ) & 0x80 ) == 0 )
+#define FD_Ctl1Hi()      ( ( Wait(),my_inp( CTLPORT1 ) & 0x80 ) != 0 )
+#define FD_Ctl1Lo()      ( ( Wait(),my_inp( CTLPORT1 ) & 0x80 ) == 0 )
 
-#define FD_RaiseCtl1()   ( Wait(),my_outp( CtlPort2, 0x01 ) )
-#define FD_LowerCtl1()   ( Wait(),my_outp( CtlPort2, 0x00 ) )
+#define FD_RaiseCtl1()   ( Wait(),my_outp( CTLPORT2, 0x01 ) )
+#define FD_LowerCtl1()   ( Wait(),my_outp( CTLPORT2, 0x00 ) )
 
-#define FD_Ctl2Hi()      ( ( Wait(),my_inp( CtlPort1 ) & 0x40 ) != 0 )
-#define FD_Ctl2Lo()      ( ( Wait(),my_inp( CtlPort1 ) & 0x40 ) == 0 )
+#define FD_Ctl2Hi()      ( ( Wait(),my_inp( CTLPORT1 ) & 0x40 ) != 0 )
+#define FD_Ctl2Lo()      ( ( Wait(),my_inp( CTLPORT1 ) & 0x40 ) == 0 )
 
-#define FD_RaiseCtl2()   ( Wait(),my_outp( DataPort, 0x08 ) )
-#define FD_LowerCtl2()   ( Wait(),my_outp( DataPort, 0x00 ) )
+#define FD_RaiseCtl2()   ( Wait(),my_outp( DATAPORT, 0x08 ) )
+#define FD_LowerCtl2()   ( Wait(),my_outp( DATAPORT, 0x00 ) )
 
-#define FD_ReadData()     ( ( Wait(),my_inp( CtlPort1 ) >> 3 ) & 0x0f  )
-#define FD_WriteData(data) ( Wait(),my_outp( DataPort, data ) )
+#define FD_ReadData()     ( ( Wait(),my_inp( CTLPORT1 ) >> 3 ) & 0x0f  )
+#define FD_WriteData(data) ( Wait(),my_outp( DATAPORT, data ) )
 
 /***************** Cable Detection MACROS ****************************/
 
 /*
  * This operation disables bits 3,2,0 in CtrlPort2 (LowerCtl1 fixes it)
  */
-#define XX_RaiseCtl1()   ( Wait(),my_outp( CtlPort2, 0x01 ) )
+#define XX_RaiseCtl1()   ( Wait(),my_outp( CTLPORT2, 0x01 ) )
 
 /*********************************************************************/
 
@@ -405,7 +399,7 @@ static int DataGetByte( unsigned long wait )
     byte            data = 0;
 
     dbgrtn( "\r\n-DataGet-" );
-    switch( CableType ) {
+    switch( hwdata.cable_type ) {
     case WATCOM_VAL:
         RaiseCtl2();            /* Hi, I'm ready to read */
         while( Ctl1Lo() ) {     /* wait till he's written the data */
@@ -509,7 +503,7 @@ static int DataGetByte( unsigned long wait )
 static int DataPutByte( byte data, unsigned long wait )
 {
     dbgrtn( "\r\n-DataPut-" );
-    switch( CableType ) {
+    switch( hwdata.cable_type ) {
     case WATCOM_VAL:
         while( Ctl2Lo() ) {             /* wait till he's ready to read */
             TWIDDLE_THUMBS;
@@ -629,7 +623,7 @@ trap_retval RemotePut( void *data, trap_elen len )
 static bool Synch( void )
 {
     dbgrtn( "\r\n-Synch-" );
-    switch( CableType ) {
+    switch( hwdata.cable_type ) {
     case WATCOM_VAL:
     case FMR_VAL:
         if( Ctl2Lo() ) {
@@ -669,22 +663,22 @@ static bool CountTwidle( void )
     }
   #endif
 #endif
-    if( !TwidleOn ) {
-        if( type == WATCOM_VAL ||
-            type == FMR_VAL ||
-            type == LAPLINK_VAL ||
-            type == DUTCHMAN_VAL ) {
-            TwidleOn = true;
-            if( type != CableType ) {
-                TwidleCount = 0;
-                CableType = type;
+    if( !hwdata.twidle_on ) {
+        if( type == WATCOM_VAL
+          || type == FMR_VAL
+          || type == LAPLINK_VAL
+          || type == DUTCHMAN_VAL ) {
+            hwdata.twidle_on = true;
+            if( type != hwdata.cable_type ) {
+                hwdata.twidle_count = 0;
+                hwdata.cable_type = type;
             }
         }
     } else {
-        if( type != CableType )  {
-            TwidleCount++;
-            TwidleOn = false;
-            if( TwidleCount == TWIDLE_NUM ) {
+        if( type != hwdata.cable_type )  {
+            hwdata.twidle_count++;
+            hwdata.twidle_on = false;
+            if( hwdata.twidle_count == TWIDLE_NUM ) {
                 return( true );
             }
         }
@@ -804,7 +798,7 @@ bool RemoteConnect( void )
         return( false );
 #endif
 
-    switch( CableType ) {
+    switch( hwdata.cable_type ) {
     case WATCOM_VAL:
         LowerCtl1();
         LowerCtl2();
@@ -847,10 +841,9 @@ void RemoteDisco( void )
         { /* delay while other side catches up */ }
     WriteData( TWIDLE_OFF );            /* initialize control ports */
     XX_RaiseCtl1();
-    TwidleCount = 0;
-    CableType = NULL_VAL;
-    TwidleOn = false;
-
+    hwdata.twidle_count = 0;
+    hwdata.cable_type = NULL_VAL;
+    hwdata.twidle_on = false;
 }
 
 #ifdef SERVER
@@ -864,17 +857,17 @@ const char *RemoteLinkGet( char *parms, size_t len )
     num = NumPrinters();
     if( num == 0 )
         return( TRP_ERR_parallel_port_not_present );
-    if( num >= 1 && PrnAddress( 0 ) == DataPort ) {
+    if( num >= 1 && PrnAddress( 0 ) == hwdata.controller.port ) {
         parms[0] = '1';
         parms[1] = '\0';
-    } else if( num >= 2 && PrnAddress( 1 ) == DataPort ) {
+    } else if( num >= 2 && PrnAddress( 1 ) == hwdata.controller.port ) {
         parms[0] = '2';
         parms[1] = '\0';
-    } else if( num >= 3 && PrnAddress( 2 ) == DataPort ) {
+    } else if( num >= 3 && PrnAddress( 2 ) == hwdata.controller.port ) {
         parms[0] = '3';
         parms[1] = '\0';
     } else {
-        sprintf( parms, "P%X", DataPort );
+        sprintf( parms, "P%X", hwdata.controller.port );
     }
     return( NULL );
 }
@@ -913,15 +906,15 @@ const char *RemoteLinkSet( const char *parms )
             printer <<= 4;
             printer += ch;
         }
-        DataPort = printer;
+        hwdata.controller.port = printer;
     } else {
         return( InvalidPort );
     }
-    if( DataPort == 0 ) {
+    if( hwdata.controller.port == 0 ) {
         if( NumPrinters() <= printer ) {
             return( TRP_ERR_parallel_port_not_present );
         }
-        DataPort = PrnAddress( printer );
+        hwdata.controller.port = PrnAddress( printer );
     }
     return( NULL );
 }
@@ -944,21 +937,18 @@ const char *RemoteLink( const char *parms, bool server )
             return( err );
         }
     }
-    CtlPort1 = DataPort + 1;
-    CtlPort2 = CtlPort1 + 1;
-
-    if( !AccessPorts( DataPort, CtlPort2 ) ) {
+    if( !AccessPorts( hwdata.controller.port + DATAPORT, hwdata.controller.port + CTLPORT2 ) ) {
         return( TRP_ERR_cannot_access_parallel_ports );
     }
     WriteData( TWIDLE_OFF );            /* initialize the control ports */
     XX_RaiseCtl1();
-    TwidleOn = false;
+    hwdata.twidle_on = false;
     return( NULL );
 }
 
 void RemoteUnLink( void )
 {
     FiniSys();
-    FreePorts( DataPort, CtlPort2 );
-    DataPort = 0;
+    FreePorts( hwdata.controller.port + DATAPORT, hwdata.controller.port + CTLPORT2 );
+    hwdata.controller.port = 0;
 }

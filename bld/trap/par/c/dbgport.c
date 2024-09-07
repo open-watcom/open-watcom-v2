@@ -202,8 +202,8 @@ typedef __int64 _int64;
 #define PORTSTDCALL
 #endif
 
-#define my_inp(p)       READ_PORT_UCHAR((PUCHAR)(ext->Controller + (p)))
-#define my_outp(p,v)    WRITE_PORT_UCHAR((PUCHAR)(ext->Controller + (p)), (UCHAR)(v))
+#define my_inp(p)       READ_PORT_UCHAR((PUCHAR)(ext->hwdata.controller.ptr + (p)))
+#define my_outp(p,v)    WRITE_PORT_UCHAR((PUCHAR)(ext->hwdata.controller.ptr + (p)), (UCHAR)(v))
 
 /*
  * 0x18 is used to ensure that the control lines stay in a high state
@@ -253,70 +253,70 @@ typedef __int64 _int64;
 /*********************** WATCOM CABLE MACROS **************************/
 #define PC_CTL1 0x08
 #define PC_CTL2 0x08
-#define Ctl1Hi()        ((my_inp( ext->CtlPort2 ) & PC_CTL1) != 0)
-#define Ctl1Lo()        ((my_inp( ext->CtlPort2 ) & PC_CTL1) == 0)
-#define RaiseCtl1()     (my_outp( ext->CtlPort2, PC_CTL1 | 0x04 ))
-#define LowerCtl1()     (my_outp( ext->CtlPort2, 0x04 ))
+#define Ctl1Hi()        ((my_inp( CTLPORT2 ) & PC_CTL1) != 0)
+#define Ctl1Lo()        ((my_inp( CTLPORT2 ) & PC_CTL1) == 0)
+#define RaiseCtl1()     (my_outp( CTLPORT2, PC_CTL1 | 0x04 ))
+#define LowerCtl1()     (my_outp( CTLPORT2, 0x04 ))
 
-#define Ctl2Hi()        ((my_inp( ext->CtlPort1 ) & PC_CTL2) != 0 )
-#define Ctl2Lo()        ((my_inp( ext->CtlPort1 ) & PC_CTL2) == 0 )
-#define RaiseCtl2()     (my_outp( ext->DataPort, PC_CTL2 ))
-#define LowerCtl2()     (my_outp( ext->DataPort, 0x00 ))
+#define Ctl2Hi()        ((my_inp( CTLPORT1 ) & PC_CTL2) != 0 )
+#define Ctl2Lo()        ((my_inp( CTLPORT1 ) & PC_CTL2) == 0 )
+#define RaiseCtl2()     (my_outp( DATAPORT, PC_CTL2 ))
+#define LowerCtl2()     (my_outp( DATAPORT, 0x00 ))
 
-#define ReadData()      (((my_inp( ext->CtlPort1 ) ^ 0x80) & 0xF8) \
-                                                | ((my_inp( ext->CtlPort2 ) ^ 0x03) & 0x07))
-#define WriteData(data) (my_outp( ext->DataPort, data ))
+#define ReadData()      (((my_inp( CTLPORT1 ) ^ 0x80) & 0xF8) \
+                                                | ((my_inp( CTLPORT2 ) ^ 0x03) & 0x07))
+#define WriteData(data) (my_outp( DATAPORT, data ))
 
 /*********************** WATCOM FMR CABLE MACROS **********************/
 #define FM_CTL1 0x40
 /*
  * Can't use ext->CtlPort2 & 0x08 (line disabled)
  */
-#define FM_Ctl1Hi()     ((my_inp( ext->CtlPort1 ) & FM_CTL1) != 0)
-#define FM_Ctl1Lo()     ((my_inp( ext->CtlPort1 ) & FM_CTL1) == 0)
+#define FM_Ctl1Hi()     ((my_inp( CTLPORT1 ) & FM_CTL1) != 0)
+#define FM_Ctl1Lo()     ((my_inp( CTLPORT1 ) & FM_CTL1) == 0)
 
 /********************** LAPLINK CABLE MACROS **************************/
-#define LL_Ctl1Hi()     ((my_inp( ext->CtlPort1 ) & 0x80) == 0)
-#define LL_Ctl1Lo()     ((my_inp( ext->CtlPort1 ) & 0x80) != 0)
+#define LL_Ctl1Hi()     ((my_inp( CTLPORT1 ) & 0x80) == 0)
+#define LL_Ctl1Lo()     ((my_inp( CTLPORT1 ) & 0x80) != 0)
 
-#define LL_RaiseCtl1()  (my_outp( ext->DataPort, 0x10 ))
-#define LL_LowerCtl1()  (my_outp( ext->DataPort, 0x00 ))
+#define LL_RaiseCtl1()  (my_outp( DATAPORT, 0x10 ))
+#define LL_LowerCtl1()  (my_outp( DATAPORT, 0x00 ))
 
-#define LL_Ctl2Hi()     ((my_inp( ext->CtlPort1 ) & 0x40) != 0)
-#define LL_Ctl2Lo()     ((my_inp( ext->CtlPort1 ) & 0x40) == 0)
+#define LL_Ctl2Hi()     ((my_inp( CTLPORT1 ) & 0x40) != 0)
+#define LL_Ctl2Lo()     ((my_inp( CTLPORT1 ) & 0x40) == 0)
 
-#define LL_RaiseCtl2()  (my_outp( ext->DataPort, 0x08 ))
-#define LL_LowerCtl2()  (my_outp( ext->DataPort, 0x00 ))
+#define LL_RaiseCtl2()  (my_outp( DATAPORT, 0x08 ))
+#define LL_LowerCtl2()  (my_outp( DATAPORT, 0x00 ))
 
-#define LL_ReadData()   ((my_inp( ext->CtlPort1 ) >> 3) & 0x0f)
+#define LL_ReadData()   ((my_inp( CTLPORT1 ) >> 3) & 0x0f)
 /*
  * write the data and raise control line 1
  */
-#define LL_WriteData(data) (my_outp( ext->DataPort, (data | 0x10) ))
+#define LL_WriteData(data) (my_outp( DATAPORT, (data | 0x10) ))
 
 /***************** FLYING DUTCHMAN CABLE MACROS ***********************/
 
-#define FD_Ctl1Hi()      ((my_inp( ext->CtlPort1 ) & 0x80) != 0)
-#define FD_Ctl1Lo()      ((my_inp( ext->CtlPort1 ) & 0x80) == 0)
+#define FD_Ctl1Hi()      ((my_inp( CTLPORT1 ) & 0x80) != 0)
+#define FD_Ctl1Lo()      ((my_inp( CTLPORT1 ) & 0x80) == 0)
 
-#define FD_RaiseCtl1()   (my_outp( ext->CtlPort2, 0x01 ))
-#define FD_LowerCtl1()   (my_outp( ext->CtlPort2, 0x00 ))
+#define FD_RaiseCtl1()   (my_outp( CTLPORT2, 0x01 ))
+#define FD_LowerCtl1()   (my_outp( CTLPORT2, 0x00 ))
 
-#define FD_Ctl2Hi()      ((my_inp( ext->CtlPort1 ) & 0x40) != 0)
-#define FD_Ctl2Lo()      ((my_inp( ext->CtlPort1 ) & 0x40) == 0)
+#define FD_Ctl2Hi()      ((my_inp( CTLPORT1 ) & 0x40) != 0)
+#define FD_Ctl2Lo()      ((my_inp( CTLPORT1 ) & 0x40) == 0)
 
-#define FD_RaiseCtl2()   (my_outp( ext->DataPort, 0x08 ))
-#define FD_LowerCtl2()   (my_outp( ext->DataPort, 0x00 ))
+#define FD_RaiseCtl2()   (my_outp( DATAPORT, 0x08 ))
+#define FD_LowerCtl2()   (my_outp( DATAPORT, 0x00 ))
 
-#define FD_ReadData()    ((my_inp( ext->CtlPort1 ) >> 3) & 0x0f)
-#define FD_WriteData(data) (my_outp( ext->DataPort, data ))
+#define FD_ReadData()    ((my_inp( CTLPORT1 ) >> 3) & 0x0f)
+#define FD_WriteData(data) (my_outp( DATAPORT, data ))
 
 /***************** Cable Detection MACROS ****************************/
 
 /*
  * This operation disables bits 3,2,0 in CtrlPort2 (LowerCtl1 fixes it)
  */
-#define XX_RaiseCtl1()   (my_outp( ext->CtlPort2, 0x01 ))
+#define XX_RaiseCtl1()   (my_outp( CTLPORT2, 0x01 ))
 
 /*********************************************************************/
 
@@ -339,7 +339,6 @@ typedef struct _DEVICE_EXTENSION {
      * request to the port driver.
      */
     PHYSICAL_ADDRESS                OriginalController;
-    PUCHAR                          Controller;
     ULONG                           SpanOfController;
     PPARALLEL_FREE_ROUTINE          FreePort;
     PPARALLEL_TRY_ALLOCATE_ROUTINE  TryAllocatePort;
@@ -354,12 +353,7 @@ typedef struct _DEVICE_EXTENSION {
     /*
      * Internal variables used by the driver
      */
-    unsigned                        DataPort;
-    unsigned                        CtlPort1;
-    unsigned                        CtlPort2;
-    UCHAR                           CableType;
-    UCHAR                           TwidleCount;
-    bool                            TwidleOn;
+    hw_data                         hwdata;
 } DEVICE_EXTENSION, *PDEVICE_EXTENSION;
 
 /*
@@ -418,13 +412,13 @@ static unsigned long Ticks( void )
  * if wait is not KEEP or RELINQUISH it is the latest time that this
  * operation should take before it times out
  */
-static int DataGet(
+static int DataGetByte(
     PDEVICE_EXTENSION ext,
     unsigned long wait )
 {
     UCHAR                data;
 
-    switch( ext->CableType ) {
+    switch( ext->hwdata.cable_type ) {
     case WATCOM_VAL:
         RaiseCtl2();            /* Hi, I'm ready to read */
         while( Ctl1Lo() ) {     /* wait till he's written the data */
@@ -520,16 +514,16 @@ static int DataGet(
     return( data );
 }
 
-/* if wait is not KEEP or RELINQUISH it is the latest time that this
+/*
+ * if wait is not KEEP or RELINQUISH it is the latest time that this
  * operation should take before it times out
  */
-
-static int DataPut(
+static int DataPutByte(
     PDEVICE_EXTENSION ext,
     unsigned data,
     unsigned long wait )
 {
-    switch( ext->CableType ) {
+    switch( ext->hwdata.cable_type ) {
     case WATCOM_VAL:
         while( Ctl2Lo() ) {             /* wait till he's ready to read */
             TWIDDLE_THUMBS;
@@ -542,7 +536,9 @@ static int DataPut(
         LowerCtl1();                    /* clear control line */
         break;
     case FMR_VAL:
-        /* We're talking to the FMR which can RaiseCtl2/LowerCtl2 */
+        /*
+         * We're talking to the FMR which can RaiseCtl2/LowerCtl2
+         */
         while( Ctl2Lo() ) {             /* wait till he's ready to read */
             TWIDDLE_THUMBS;
         }
@@ -619,13 +615,13 @@ static unsigned RemoteGet(
 
     /* unused parameters */ (void)len;
 
-    get_len = DataGet( ext, RELINQUISH );
+    get_len = DataGetByte( ext, RELINQUISH );
     if( get_len & 0x80 ) {
-        get_len = ((get_len & 0x7f) << 8) | DataGet( ext, KEEP );
+        get_len = ((get_len & 0x7f) << 8) | DataGetByte( ext, KEEP );
     }
     i = get_len;
     while( i-- > 0 ) {
-        *data++ = DataGet( ext, KEEP );
+        *data++ = DataGetByte( ext, KEEP );
     }
     return( get_len );
 }
@@ -638,12 +634,12 @@ static unsigned RemotePut(
     unsigned    count;
 
     if( len >= 0x80 ) {
-        DataPut( ext, ((len >> 8) | 0x80), RELINQUISH );
+        DataPutByte( ext, ((len >> 8) | 0x80), RELINQUISH );
     }
-    DataPut( ext, (len & 0xff), RELINQUISH );
+    DataPutByte( ext, (len & 0xff), RELINQUISH );
     count = len;
     while( count-- > 0 ) {
-        DataPut( ext, *data++, KEEP );
+        DataPutByte( ext, *data++, KEEP );
     }
     return( len );
 }
@@ -654,23 +650,23 @@ static unsigned RemotePut(
 static bool Synch(
     PDEVICE_EXTENSION ext)
 {
-    switch( ext->CableType ) {
+    switch( ext->hwdata.cable_type ) {
     case WATCOM_VAL:
     case FMR_VAL:
         if( Ctl2Lo() ) {
-            return( TRUE );
+            return( true );
         }
         break;
     case LAPLINK_VAL:
         if( LL_Ctl1Lo() )
-            return( TRUE );
+            return( true );
         break;
     case DUTCHMAN_VAL:
         if( FD_Ctl1Lo() )
-            return( TRUE );
+            return( true );
         break;
     }
-    return( FALSE );
+    return( false );
 }
 
 static bool CountTwidle(
@@ -679,27 +675,27 @@ static bool CountTwidle(
     UCHAR                type;
 
     type = ReadData();
-    if( !ext->TwidleOn ) {
+    if( !ext->hwdata.twidle_on ) {
         if( type == WATCOM_VAL
           || type == FMR_VAL
           || type == LAPLINK_VAL
           || type == DUTCHMAN_VAL ) {
-            ext->TwidleOn = TRUE;
-            if( type != ext->CableType ) {
-                ext->TwidleCount = 0;
-                ext->CableType = type;
+            ext->hwdata.twidle_on = true;
+            if( type != ext->hwdata.cable_type ) {
+                ext->hwdata.twidle_count = 0;
+                ext->hwdata.cable_type = type;
             }
         }
     } else {
-        if( type != ext->CableType )  {
-            ext->TwidleCount ++;
-            ext->TwidleOn = FALSE;
-            if( ext->TwidleCount == TWIDLE_NUM ) {
-                return( TRUE );
+        if( type != ext->hwdata.cable_type )  {
+            ext->hwdata.twidle_count++;
+            ext->hwdata.twidle_on = false;
+            if( ext->hwdata.twidle_count == TWIDLE_NUM ) {
+                return( true );
             }
         }
     }
-    return( FALSE );
+    return( false );
 }
 
 /*
@@ -719,11 +715,11 @@ static bool Twidle(
         while( time > Ticks() ) {
             if( check ) {
                 if( CountTwidle( ext ) ) {
-                    return( TRUE );
+                    return( true );
                 }
             } else {
                 if( Synch( ext ) ) {
-                    return( TRUE );
+                    return( true );
                 }
             }
         }
@@ -732,16 +728,16 @@ static bool Twidle(
         while( time > Ticks() ) {
             if( check ) {
                 if( CountTwidle( ext ) ) {
-                    return( TRUE );
+                    return( true );
                 }
             } else {
                 if( Synch( ext ) ) {
-                    return( TRUE );
+                    return( true );
                 }
             }
         }
     }
-    return( FALSE );
+    return( false );
 }
 
 static unsigned long GetLineTestWait( void )
@@ -766,20 +762,20 @@ static bool LineTestServer(
     unsigned            ret;
 
     for( send = 1; send != 256; send *= 2 ) {
-        ret = DataPut( ext, send, GetLineTestWait() );
+        ret = DataPutByte( ext, send, GetLineTestWait() );
         if( ret == TIMEOUT )
-            return( FALSE );
-        ret = DataGet( ext, GetLineTestWait() );
+            return( false );
+        ret = DataGetByte( ext, GetLineTestWait() );
         if( ret == TIMEOUT )
-            return( FALSE );
+            return( false );
         if( ret != send ) {
-            return( FALSE );
+            return( false );
         }
     }
-    ret = DataPut( ext, DONE_LINE_TEST, GetLineTestWait() );
+    ret = DataPutByte( ext, DONE_LINE_TEST, GetLineTestWait() );
     if( ret == TIMEOUT )
-        return( FALSE );
-    return( TRUE );
+        return( false );
+    return( true );
 }
 
 /*
@@ -792,17 +788,17 @@ static bool LineTestClient(
 
     send = 0;
     for( ;; ) {
-        send = DataGet( ext, GetLineTestWait() );
+        send = DataGetByte( ext, GetLineTestWait() );
         if( send == TIMEOUT )
-            return( FALSE );
+            return( false );
         if( send == DONE_LINE_TEST )
             break;
-        DataPut( ext, send, GetLineTestWait() );
+        DataPutByte( ext, send, GetLineTestWait() );
         if( send == TIMEOUT ) {
-            return( FALSE );
+            return( false );
         }
     }
-    return( TRUE );
+    return( true );
 }
 
 static int RemoteConnectServer(
@@ -813,8 +809,8 @@ static int RemoteConnectServer(
 
     if( !CountTwidle( ext ) )
         return( 0 );
-    got_twidles = Twidle( ext, FALSE );
-    switch( ext->CableType ) {
+    got_twidles = Twidle( ext, false );
+    switch( ext->hwdata.cable_type ) {
     case WATCOM_VAL:
         LowerCtl1();
         LowerCtl2();
@@ -850,9 +846,9 @@ static int RemoteConnectClient(
 {
     unsigned long       time;
 
-    if( !Twidle( ext, TRUE ) )
+    if( !Twidle( ext, true ) )
         return( FALSE );
-    switch( ext->CableType ) {
+    switch( ext->hwdata.cable_type ) {
     case WATCOM_VAL:
         LowerCtl1();
         LowerCtl2();
@@ -891,22 +887,19 @@ static void RemoteDisco(
         { /* delay while other side catches up */ }
     WriteData( TWIDLE_OFF );            /* initialize control ports */
     XX_RaiseCtl1();
-    ext->TwidleCount = 0;
-    ext->CableType = NULL_VAL;
-    ext->TwidleOn = FALSE;
+    ext->hwdata.twidle_count = 0;
+    ext->hwdata.cable_type = NULL_VAL;
+    ext->hwdata.twidle_on = false;
 }
 
 static void RemoteLink(
     PDEVICE_EXTENSION ext)
 {
-    ext->DataPort = 0;
-    ext->CtlPort1 = 1;
-    ext->CtlPort2 = 2;
     WriteData( TWIDLE_OFF );            /* initialize the control ports */
     XX_RaiseCtl1();
-    ext->TwidleCount = 0;
-    ext->CableType = NULL_VAL;
-    ext->TwidleOn = FALSE;
+    ext->hwdata.twidle_count = 0;
+    ext->hwdata.cable_type = NULL_VAL;
+    ext->hwdata.twidle_on = false;
 }
 
 /****************************************************************************
@@ -1033,7 +1026,7 @@ static NTSTATUS ParGetPortInfoFromPortDevice(
     if( !NT_SUCCESS( status ) )
         return( status );
     ext->OriginalController = portInfo.OriginalController;
-    ext->Controller = portInfo.Controller;
+    ext->hwdata.controller.ptr = portInfo.Controller;
     ext->SpanOfController = portInfo.SpanOfController;
     ext->TryAllocatePort = portInfo.TryAllocatePort;
     ext->FreePort = portInfo.FreePort;
@@ -1241,22 +1234,22 @@ NTSTATUS ParIOCTL(
      */
     switch( irpSp->Parameters.DeviceIoControl.IoControlCode ) {
     case IOCTL_DBG_READ_PORT_U8:
-        IOBuffer->data.u8 = READ_PORT_UCHAR( (PUCHAR)( ext->Controller + IOBuffer->port ) );
+        IOBuffer->data.u8 = READ_PORT_UCHAR( (PUCHAR)( ext->hwdata.controller.ptr + IOBuffer->port ) );
         break;
     case IOCTL_DBG_READ_PORT_U16:
-        IOBuffer->data.u16 = READ_PORT_USHORT( (PUSHORT)( ext->Controller + IOBuffer->port ) );
+        IOBuffer->data.u16 = READ_PORT_USHORT( (PUSHORT)( ext->hwdata.controller.ptr + IOBuffer->port ) );
         break;
     case IOCTL_DBG_READ_PORT_U32:
-        IOBuffer->data.u32 = READ_PORT_ULONG( (PULONG)( ext->Controller + IOBuffer->port ) );
+        IOBuffer->data.u32 = READ_PORT_ULONG( (PULONG)( ext->hwdata.controller.ptr + IOBuffer->port ) );
         break;
     case IOCTL_DBG_WRITE_PORT_U8:
-        WRITE_PORT_UCHAR( (PUCHAR)( ext->Controller + IOBuffer->port ), IOBuffer->data.u8 );
+        WRITE_PORT_UCHAR( (PUCHAR)( ext->hwdata.controller.ptr + IOBuffer->port ), IOBuffer->data.u8 );
         break;
     case IOCTL_DBG_WRITE_PORT_U16:
-        WRITE_PORT_USHORT( (PUSHORT)( ext->Controller + IOBuffer->port ), IOBuffer->data.u16 );
+        WRITE_PORT_USHORT( (PUSHORT)( ext->hwdata.controller.ptr + IOBuffer->port ), IOBuffer->data.u16 );
         break;
     case IOCTL_DBG_WRITE_PORT_U32:
-        WRITE_PORT_ULONG( (PULONG)( ext->Controller + IOBuffer->port ), IOBuffer->data.u32 );
+        WRITE_PORT_ULONG( (PULONG)( ext->hwdata.controller.ptr + IOBuffer->port ), IOBuffer->data.u32 );
         break;
     case IOCTL_DBG_REMOTE_GET:
         IOBuffer->status = RemoteGet( ext, IOBuffer->buffer, IOBuffer->len );
