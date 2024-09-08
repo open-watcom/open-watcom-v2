@@ -76,6 +76,7 @@
  strcpy,
  strchr,
  strlen,
+ strncpy,
  SuspendThread,
  sys_errlist,
  sys_nerr,
