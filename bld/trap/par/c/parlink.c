@@ -227,6 +227,8 @@ extern void Wait( void );
 
 static hw_data  hwdata;
 
+static char     InvalidPort[] = TRP_ERR_invalid_parallel_port_number;
+
 #if defined(_DBG)
 char dbg_inp( int port )
 {
