@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -95,7 +95,8 @@ static trap_retval ReqRemoteConnect( void )
     connect = GetOutPtr( 0 );
     data = GetOutPtr( sizeof( connect_ret ) );
     if( !RemoteConnect() ) {
-        strcpy( data, TRP_ERR_CANT_CONNECT );
+        strncpy( data, TRP_ERR_CANT_CONNECT, TRAP_MSG_MIN_LEN - 1 );
+        data[TRAP_MSG_MIN_LEN - 1] = '\0';
         _DBG_WriteErr( "!RemoteConnect" );
         _DBG_ExitFunc( "AccRemoteConnect" );
         return( sizeof( connect_ret ) + sizeof( TRP_ERR_CANT_CONNECT ) );

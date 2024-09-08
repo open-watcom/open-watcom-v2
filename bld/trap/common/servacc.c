@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -70,8 +70,9 @@ static bool AccConnect( void )
     ret = GetOutPtr( 0 );
     data = GetOutPtr( sizeof( *ret ) );
     if( acc->ver.major != TrapVersion.major || acc->ver.minor > TrapVersion.minor ) {
-        strcpy( data, TRP_ERR_WRONG_SERVER_VERSION );
-        PutBuffPacket( RWBuff, sizeof( *acc ) + sizeof( TRP_ERR_WRONG_SERVER_VERSION ) );
+        strncpy( data, TRP_ERR_WRONG_SERVER_VERSION, TRAP_MSG_MIN_LEN - 1 );
+        data[TRAP_MSG_MIN_LEN - 1] = '\0';
+        PutBuffPacket( RWBuff, sizeof( *ret ) + sizeof( TRP_ERR_WRONG_SERVER_VERSION ) );
     } else {
         len = TrapAccess( 1, &In[0], 1, &Out[0] );
         max = MaxPacketSize();
