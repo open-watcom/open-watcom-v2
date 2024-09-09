@@ -743,36 +743,35 @@ static unsigned long GetLineTestWait( void )
  */
 static bool LineTest( void )
 {
-    int                 send;
-#ifdef SERVER
+    int                 data;
     int                 ret;
 
     dbgrtn( "\r\n-LineTest-" );
-    for( send = 1; send != 256; send *= 2 ) {
-        ret = DataPutByte( send, GetLineTestWait() );
+#ifdef SERVER
+    for( data = 1; data != 256; data *= 2 ) {
+        ret = DataPutByte( data, GetLineTestWait() );
         if( ret == TIMEOUT )
             return( false );
         ret = DataGetByte( GetLineTestWait() );
         if( ret == TIMEOUT )
             return( false );
-        if( ret != send ) {
+        if( ret != data ) {
             return( false );
         }
     }
     ret = DataPutByte( DONE_LINE_TEST, GetLineTestWait() );
-    if( ret == TIMEOUT )
+    if( ret == TIMEOUT ) {
         return( false );
+    }
 #else
-    dbgrtn( "\r\n-LineTest-" );
-    send = 0;
     for( ;; ) {
-        send = DataGetByte( GetLineTestWait() );
-        if( send == TIMEOUT )
+        data = DataGetByte( GetLineTestWait() );
+        if( data == TIMEOUT )
             return( false );
-        if( send == DONE_LINE_TEST )
+        if( data == DONE_LINE_TEST )
             break;
-        send = DataPutByte( send, GetLineTestWait() );
-        if( send == TIMEOUT ) {
+        ret = DataPutByte( data, GetLineTestWait() );
+        if( ret == TIMEOUT ) {
             return( false );
         }
     }

@@ -760,17 +760,17 @@ static unsigned long GetLineTestWait( void )
 static bool LineTestServer(
     PDEVICE_EXTENSION ext)
 {
-    unsigned            send;
-    unsigned            ret;
+    int         data;
+    int         ret;
 
-    for( send = 1; send != 256; send *= 2 ) {
-        ret = DataPutByte( ext, send, GetLineTestWait() );
+    for( data = 1; data != 256; data *= 2 ) {
+        ret = DataPutByte( ext, data, GetLineTestWait() );
         if( ret == TIMEOUT )
             return( false );
         ret = DataGetByte( ext, GetLineTestWait() );
         if( ret == TIMEOUT )
             return( false );
-        if( ret != send ) {
+        if( ret != data ) {
             return( false );
         }
     }
@@ -786,17 +786,16 @@ static bool LineTestServer(
 static bool LineTestClient(
     PDEVICE_EXTENSION ext)
 {
-    unsigned            send;
+    int         data;
 
-    send = 0;
     for( ;; ) {
-        send = DataGetByte( ext, GetLineTestWait() );
-        if( send == TIMEOUT )
+        data = DataGetByte( ext, GetLineTestWait() );
+        if( data == TIMEOUT )
             return( false );
-        if( send == DONE_LINE_TEST )
+        if( data == DONE_LINE_TEST )
             break;
-        DataPutByte( ext, send, GetLineTestWait() );
-        if( send == TIMEOUT ) {
+        data = DataPutByte( ext, data, GetLineTestWait() );
+        if( data == TIMEOUT ) {
             return( false );
         }
     }
