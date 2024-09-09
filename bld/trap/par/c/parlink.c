@@ -829,9 +829,7 @@ bool RemoteConnect( void )
 #ifdef SERVER
     }
 #endif
-    if( !LineTest() )
-        return( false );
-    return( true );
+    return( LineTest() );
 }
 
 void RemoteDisco( void )

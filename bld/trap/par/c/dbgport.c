@@ -419,9 +419,7 @@ static unsigned long Ticks( void )
  * if wait is not KEEP or RELINQUISH it is the latest time that this
  * operation should take before it times out
  */
-static int DataGetByte(
-    PDEVICE_EXTENSION ext,
-    unsigned long wait )
+static int DataGetByte( PDEVICE_EXTENSION ext, unsigned long wait )
 {
     unsigned char   data;
 
@@ -526,10 +524,7 @@ static int DataGetByte(
  * if wait is not KEEP or RELINQUISH it is the latest time that this
  * operation should take before it times out
  */
-static int DataPutByte(
-    PDEVICE_EXTENSION ext,
-    unsigned char data,
-    unsigned long wait )
+static int DataPutByte( PDEVICE_EXTENSION ext, unsigned char data, unsigned long wait )
 {
     switch( ext->hwdata.cable_type ) {
     case WATCOM_VAL:
@@ -613,10 +608,7 @@ static int DataPutByte(
     return( 0 );
 }
 
-static unsigned RemoteGet(
-    PDEVICE_EXTENSION ext,
-    char *data,
-    unsigned len )
+static unsigned RemoteGet( PDEVICE_EXTENSION ext, char *data, unsigned len )
 {
     unsigned    get_len;
     unsigned    i;
@@ -635,10 +627,7 @@ static unsigned RemoteGet(
     return( get_len );
 }
 
-static unsigned RemotePut(
-    PDEVICE_EXTENSION ext,
-    char *data,
-    unsigned len )
+static unsigned RemotePut( PDEVICE_EXTENSION ext, char *data, unsigned len )
 {
     unsigned    count;
 
@@ -656,8 +645,7 @@ static unsigned RemotePut(
 /*
  * Synch - see if server and client are ready
  */
-static bool Synch(
-    PDEVICE_EXTENSION ext)
+static bool Synch( PDEVICE_EXTENSION ext )
 {
     switch( ext->hwdata.cable_type ) {
     case WATCOM_VAL:
@@ -678,8 +666,7 @@ static bool Synch(
     return( false );
 }
 
-static bool CountTwidle(
-    PDEVICE_EXTENSION ext)
+static bool CountTwidle( PDEVICE_EXTENSION ext )
 {
     unsigned char   type;
 
@@ -711,9 +698,7 @@ static bool CountTwidle(
  * Twidle - send an intermittent pulse over a line to let the person
  *          at the other end know you're there
  */
-static bool Twidle(
-    PDEVICE_EXTENSION ext,
-    bool check )
+static bool Twidle( PDEVICE_EXTENSION ext, bool check )
 {
     unsigned            i;
     unsigned long       time;
@@ -764,8 +749,7 @@ static unsigned long GetLineTestWait( void )
 /*
  * LineTest - make sure that all lines are working
  */
-static bool LineTestServer(
-    PDEVICE_EXTENSION ext)
+static bool LineTestServer( PDEVICE_EXTENSION ext )
 {
     int         data;
     int         ret;
@@ -790,8 +774,7 @@ static bool LineTestServer(
 /*
  * LineTest - make sure that all lines are working
  */
-static bool LineTestClient(
-    PDEVICE_EXTENSION ext)
+static bool LineTestClient( PDEVICE_EXTENSION ext )
 {
     int         data;
 
@@ -809,14 +792,13 @@ static bool LineTestClient(
     return( true );
 }
 
-static int RemoteConnectServer(
-    PDEVICE_EXTENSION ext)
+static bool RemoteConnectServer( PDEVICE_EXTENSION ext )
 {
     unsigned long       time;
     bool                got_twidles;
 
     if( !CountTwidle( ext ) )
-        return( 0 );
+        return( false );
     got_twidles = Twidle( ext, false );
     switch( ext->hwdata.cable_type ) {
     case WATCOM_VAL:
@@ -840,22 +822,19 @@ static int RemoteConnectServer(
             if( Synch( ext ) ) {
                 break;
             } else if( time < Ticks() ) {
-                return( 0 );
+                return( false );
             }
         }
     }
-    if( !LineTestServer( ext ) )
-        return( FALSE );
-    return( TRUE );
+    return( LineTestServer( ext ) );
 }
 
-static int RemoteConnectClient(
-    PDEVICE_EXTENSION ext)
+static bool RemoteConnectClient( PDEVICE_EXTENSION ext )
 {
     unsigned long       time;
 
     if( !Twidle( ext, true ) )
-        return( FALSE );
+        return( false );
     switch( ext->hwdata.cable_type ) {
     case WATCOM_VAL:
         LowerCtl1();
@@ -877,16 +856,13 @@ static int RemoteConnectClient(
         if( Synch( ext ) ) {
             break;
         } else if( time < Ticks() ) {
-            return( 0 );
+            return( false );
         }
     }
-    if( !LineTestClient( ext ) )
-        return( FALSE );
-    return( TRUE );
+    return( LineTestClient( ext ) );
 }
 
-static void RemoteDisco(
-    PDEVICE_EXTENSION ext)
+static void RemoteDisco( PDEVICE_EXTENSION ext )
 {
     unsigned long       time;
 
@@ -900,8 +876,7 @@ static void RemoteDisco(
     ext->hwdata.twidle_on = false;
 }
 
-static void RemoteLink(
-    PDEVICE_EXTENSION ext)
+static void RemoteLink( PDEVICE_EXTENSION ext )
 {
     WriteData( TWIDLE_OFF );            /* initialize the control ports */
     XX_RaiseCtl1();
