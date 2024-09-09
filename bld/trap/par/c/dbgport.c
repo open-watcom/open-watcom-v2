@@ -209,9 +209,9 @@ typedef __int64 _int64;
  * 0x18 is used to ensure that the control lines stay in a high state
  * until Synch is called
  */
-#define WATCOM_VAL      0x1A
+#define WATCOM_VAL      (0x18 | 2)
 #define TWIDLE_ON       WATCOM_VAL
-#define TWIDLE_OFF      (WATCOM_VAL & 0xFD)
+#define TWIDLE_OFF      (WATCOM_VAL & ~2)
 
 /*
  * The Fujitsu FMR link looks like a busted WATCOM cable
@@ -251,8 +251,8 @@ typedef __int64 _int64;
 #define TIMEOUT         -1
 
 /*********************** WATCOM CABLE MACROS **************************/
-#define PC_CTL1 0x08
-#define PC_CTL2 0x08
+#define PC_CTL1         0x08
+#define PC_CTL2         0x08
 #define Ctl1Hi()        ((my_inp( CTLPORT2 ) & PC_CTL1) != 0)
 #define Ctl1Lo()        ((my_inp( CTLPORT2 ) & PC_CTL1) == 0)
 #define RaiseCtl1()     (my_outp( CTLPORT2, PC_CTL1 | 0x04 ))
@@ -264,13 +264,13 @@ typedef __int64 _int64;
 #define LowerCtl2()     (my_outp( DATAPORT, 0x00 ))
 
 #define ReadData()      (((my_inp( CTLPORT1 ) ^ 0x80) & 0xF8) \
-                                                | ((my_inp( CTLPORT2 ) ^ 0x03) & 0x07))
-#define WriteData(data) (my_outp( DATAPORT, data ))
+                          | ((my_inp( CTLPORT2 ) ^ 0x03) & 0x07))
+#define WriteData(d)    (my_outp( DATAPORT, d ))
 
 /*********************** WATCOM FMR CABLE MACROS **********************/
-#define FM_CTL1 0x40
+#define FM_CTL1         0x40
 /*
- * Can't use ext->CtlPort2 & 0x08 (line disabled)
+ * Can't use bit 0x08 in CtlPort2 (line disabled)
  */
 #define FM_Ctl1Hi()     ((my_inp( CTLPORT1 ) & FM_CTL1) != 0)
 #define FM_Ctl1Lo()     ((my_inp( CTLPORT1 ) & FM_CTL1) == 0)
@@ -292,35 +292,35 @@ typedef __int64 _int64;
 /*
  * write the data and raise control line 1
  */
-#define LL_WriteData(data) (my_outp( DATAPORT, (data | 0x10) ))
+#define LL_WriteData(d) (my_outp( DATAPORT, (d | 0x10) ))
 
 /***************** FLYING DUTCHMAN CABLE MACROS ***********************/
 
-#define FD_Ctl1Hi()      ((my_inp( CTLPORT1 ) & 0x80) != 0)
-#define FD_Ctl1Lo()      ((my_inp( CTLPORT1 ) & 0x80) == 0)
+#define FD_Ctl1Hi()     ((my_inp( CTLPORT1 ) & 0x80) != 0)
+#define FD_Ctl1Lo()     ((my_inp( CTLPORT1 ) & 0x80) == 0)
 
-#define FD_RaiseCtl1()   (my_outp( CTLPORT2, 0x01 ))
-#define FD_LowerCtl1()   (my_outp( CTLPORT2, 0x00 ))
+#define FD_RaiseCtl1()  (my_outp( CTLPORT2, 0x01 ))
+#define FD_LowerCtl1()  (my_outp( CTLPORT2, 0x00 ))
 
-#define FD_Ctl2Hi()      ((my_inp( CTLPORT1 ) & 0x40) != 0)
-#define FD_Ctl2Lo()      ((my_inp( CTLPORT1 ) & 0x40) == 0)
+#define FD_Ctl2Hi()     ((my_inp( CTLPORT1 ) & 0x40) != 0)
+#define FD_Ctl2Lo()     ((my_inp( CTLPORT1 ) & 0x40) == 0)
 
-#define FD_RaiseCtl2()   (my_outp( DATAPORT, 0x08 ))
-#define FD_LowerCtl2()   (my_outp( DATAPORT, 0x00 ))
+#define FD_RaiseCtl2()  (my_outp( DATAPORT, 0x08 ))
+#define FD_LowerCtl2()  (my_outp( DATAPORT, 0x00 ))
 
-#define FD_ReadData()    ((my_inp( CTLPORT1 ) >> 3) & 0x0f)
-#define FD_WriteData(data) (my_outp( DATAPORT, data ))
+#define FD_ReadData()   ((my_inp( CTLPORT1 ) >> 3) & 0x0f)
+#define FD_WriteData(d) (my_outp( DATAPORT, d ))
 
 /***************** Cable Detection MACROS ****************************/
 
 /*
  * This operation disables bits 3,2,0 in CtrlPort2 (LowerCtl1 fixes it)
  */
-#define XX_RaiseCtl1()   (my_outp( CTLPORT2, 0x01 ))
+#define XX_RaiseCtl1()  (my_outp( CTLPORT2, 0x01 ))
 
 /*********************************************************************/
 
-#define TWIDDLE_THUMBS  if( wait == RELINQUISH ) { NothingToDo(); }\
+#define TWIDDLE_THUMBS  if( wait == RELINQUISH ) { NothingToDo(); } \
                 else if( wait != KEEP && wait < Ticks() ) return( TIMEOUT )
 
 #define PARALLEL_REGISTER_SPAN 3
@@ -416,8 +416,9 @@ static int DataGetByte(
     PDEVICE_EXTENSION ext,
     unsigned long wait )
 {
-    UCHAR                data;
+    unsigned char   data;
 
+    data = 0;
     switch( ext->hwdata.cable_type ) {
     case WATCOM_VAL:
         RaiseCtl2();            /* Hi, I'm ready to read */
@@ -520,7 +521,7 @@ static int DataGetByte(
  */
 static int DataPutByte(
     PDEVICE_EXTENSION ext,
-    unsigned data,
+    unsigned char data,
     unsigned long wait )
 {
     switch( ext->hwdata.cable_type ) {
@@ -612,16 +613,17 @@ static unsigned RemoteGet(
 {
     unsigned    get_len;
     unsigned    i;
-
-    /* unused parameters */ (void)len;
+    char        c;
 
     get_len = DataGetByte( ext, RELINQUISH );
     if( get_len & 0x80 ) {
         get_len = ((get_len & 0x7f) << 8) | DataGetByte( ext, KEEP );
     }
-    i = get_len;
-    while( i-- > 0 ) {
-        *data++ = DataGetByte( ext, KEEP );
+    for( i = 0; i < get_len; i++ ) {
+        c = DataGetByte( ext, KEEP );
+        if( i < len ) {
+            *data++ = c;
+        }
     }
     return( get_len );
 }
@@ -636,7 +638,7 @@ static unsigned RemotePut(
     if( len >= 0x80 ) {
         DataPutByte( ext, ((len >> 8) | 0x80), RELINQUISH );
     }
-    DataPutByte( ext, (len & 0xff), RELINQUISH );
+    DataPutByte( ext, len, ( len >= 0x80 ) ? KEEP : RELINQUISH );
     count = len;
     while( count-- > 0 ) {
         DataPutByte( ext, *data++, KEEP );
@@ -672,7 +674,7 @@ static bool Synch(
 static bool CountTwidle(
     PDEVICE_EXTENSION ext)
 {
-    UCHAR                type;
+    unsigned char   type;
 
     type = ReadData();
     if( !ext->hwdata.twidle_on ) {
