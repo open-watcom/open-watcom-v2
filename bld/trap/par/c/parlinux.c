@@ -105,4 +105,3 @@ unsigned long Ticks( void )
 {
     return( clock() / ( CLOCKS_PER_SEC / 10 ) );
 }
-

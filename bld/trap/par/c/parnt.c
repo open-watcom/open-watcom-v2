@@ -40,6 +40,7 @@
 #include "trperr.h"
 #include "trpimp.h"
 #include "parlink.h"
+#include "parfind.h"
 
 
 static HANDLE   PortHdl = INVALID_HANDLE_VALUE;

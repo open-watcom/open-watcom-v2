@@ -37,6 +37,7 @@
 #include "nwtypes.h"
 #include "parlink.h"
 #include "portio.h"
+#include "parfind.h"
 
 
 extern struct ResourceTagStructure      *TimerTag;
