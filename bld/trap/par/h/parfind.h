@@ -31,36 +31,11 @@
 ****************************************************************************/
 
 
-#include <dos.h>
-#include <dosequip.h>
-#include "parlink.h"
+#if defined(__NETWARE__)
+#define PORT_ADDRESSES  0x3bc, 0x378, 0x278
+#else
+#define PORT_ADDRESSES  0x378, 0x3bc, 0x278
+#endif
 
+#define ACOUNT(a)       (sizeof( a ) / sizeof( a[0] ))
 
-int NumPrinters( void )
-{
-    equip_list __far *equip;
-
-    equip = _MK_FP( 0x60, BIOS_SEG * 16 + EQUIPMENT );
-    return( equip->num_printers );
-}
-
-
-unsigned PrnAddress( int printer )
-{
-    unsigned short __far *addr;
-
-    addr = _MK_FP( 0x60, BIOS_SEG * 16 + 2 * printer + PRINTER_BASE );
-    return( *addr );
-}
-
-void FreePorts( unsigned first, unsigned count )
-{
-    /* unused parameters */ (void)first; (void)count;
-}
-
-bool AccessPorts( unsigned first, unsigned count )
-{
-    /* unused parameters */ (void)first; (void)count;
-
-    return( true );
-}

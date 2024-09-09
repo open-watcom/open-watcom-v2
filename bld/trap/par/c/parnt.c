@@ -44,11 +44,9 @@
 
 static HANDLE   PortHdl = INVALID_HANDLE_VALUE;
 
-#define NUM_ELTS( a )   (sizeof( a ) / sizeof( a[0] ))
-
-static unsigned short PortTest[] = { 0x378, 0x3bc, 0x278 };
-static unsigned short PortAddress[NUM_ELTS( PortTest )];
-static unsigned PortsFound = 0;
+static unsigned short   PortTest[] = { PORT_ADDRESSES };
+static unsigned short   PortAddress[ACOUNT( PortTest )] = { 0 };
+static int              PortsFound = 0;
 
 #if 0
 /* Forward declarations */
@@ -115,7 +113,7 @@ char *InitSys( void )
         }
     }
     PortsFound = 0;
-    for( i = 0; i < NUM_ELTS( PortTest ); ++i ) {
+    for( i = 0; i < ACOUNT( PortTest ); ++i ) {
         if( CheckForPort( i, 0x55 ) && CheckForPort( i, 0xaa ) ) {
             PortAddress[PortsFound++] = PortTest[i];
         }

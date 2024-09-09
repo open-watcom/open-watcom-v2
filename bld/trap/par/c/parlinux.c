@@ -38,13 +38,12 @@
 #include <unistd.h>
 #include "bool.h"
 #include "parlink.h"
+#include "parfind.h"
 
 
-#define NUM_ELTS( a )   (sizeof( a ) / sizeof( a[0] ))
-
-static unsigned short PortTest[] = { 0x378, 0x3bc, 0x278 };
-static unsigned short PortAddress[NUM_ELTS( PortTest )];
-static unsigned PortsFound = 0;
+static unsigned short   PortTest[] = { PORT_ADDRESSES };
+static unsigned short   PortAddress[ACOUNT( PortTest )] = { 0 };
+static int              PortsFound = 0;
 
 int NumPrinters( void )
 {
@@ -85,7 +84,7 @@ char *InitSys( void )
     int i;
 
     PortsFound = 0;
-    for( i = 0; i < NUM_ELTS( PortTest ); ++i ) {
+    for( i = 0; i < ACOUNT( PortTest ); ++i ) {
         if( !AccessPorts( PortTest[i], 1 ) ) {
             printf( "Failed to get I/O permissions. This program must run as root!\n" );
             exit( -1 );

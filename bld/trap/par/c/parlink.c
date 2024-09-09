@@ -875,16 +875,21 @@ const char *RemoteLinkGet( char *parms, size_t len )
 
 const char *RemoteLinkSet( const char *parms )
 {
-    unsigned    printer;
-    char        ch;
+    int             printer;
+    unsigned short  port;
+    char            ch;
 
     ch = *parms++;
-    if( ch == '\0' ) {
-        printer = 0;
-    } else if( ch >= '1' && ch <= '3' && *parms == '\0' ) {
+    port = 0;
+    if( ch == '\0' || ch >= '1' && ch <= '3' && *parms == '\0' ) {
+        if( ch == '\0' )
+            ch = '1';
         printer = ch - '1';
+        if( NumPrinters() <= printer ) {
+            return( TRP_ERR_parallel_port_not_present );
+        }
+        port = PrnAddress( printer );
     } else if( ch == 'p' || ch == 'P' ) {
-        printer = 0;
         for( ;; ) {
             ch = *parms++;
             if( ch == 0 )
@@ -902,19 +907,13 @@ const char *RemoteLinkSet( const char *parms )
             } else {
                 return( InvalidPort );
             }
-            printer <<= 4;
-            printer += ch;
+            port <<= 4;
+            port += ch;
         }
-        hwdata.controller.port = printer;
     } else {
         return( InvalidPort );
     }
-    if( hwdata.controller.port == 0 ) {
-        if( NumPrinters() <= printer ) {
-            return( TRP_ERR_parallel_port_not_present );
-        }
-        hwdata.controller.port = PrnAddress( printer );
-    }
+    hwdata.controller.port = port;
     return( NULL );
 }
 

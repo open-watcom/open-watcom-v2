@@ -42,19 +42,11 @@
 extern struct ResourceTagStructure      *TimerTag;
 
 static struct TimerDataStructure        TimerData;
-static unsigned long                    NumTicks;
+static unsigned long                    NumTicks = 0;
 
-short PortTest[] =
-{
-        0x3bc, 0x378, 0x278
-};
-
-
-short PortAddress[3] =
-{
-        0,0,0
-};
-
+static unsigned short   PortTest[] = { PORT_ADDRESSES };
+static unsigned short   PortAddress[ACOUNT( PortTest )] = { 0 };
+static int              PortsFound = 0;
 
 static int CheckForPort( int i, unsigned char value )
 {
@@ -69,13 +61,12 @@ static int CheckForPort( int i, unsigned char value )
 
 static void InitPorts( void )
 {
-    int                 i;
-    int                 portnum;
+    int         i;
 
-    portnum = 0;
-    for( i = 0; i < 3; ++i ) {
+    PortsFound = 0;
+    for( i = 0; i < ACOUNT( PortTest ); ++i ) {
         if( CheckForPort( i, 0x55 ) && CheckForPort( i, 0xaa ) ) {
-            PortAddress[portnum++] = PortTest[i];
+            PortAddress[PortsFound++] = PortTest[i];
         }
     }
 }
@@ -123,14 +114,7 @@ void FiniSys( void )
 
 int NumPrinters( void )
 {
-    int         i;
-
-    for( i = 0; i < 3; ++i ) {
-        if( PortAddress[i] == 0 ) {
-            break;
-        }
-    }
-    return( i );
+    return( PortsFound );
 }
 
 

@@ -41,14 +41,13 @@
 #include "trperr.h"
 #include "parlink.h"
 
-extern unsigned NumPrinters( void );
+
+extern HANDLE   CProcHandle;
+extern HWND     MainWindowHandle;
+extern HWND     DebugWindow;
+extern BOOL     RemoteLinkObtained;
 
 int CurrentPort = -1;    /* ports 0,1,2 */
-
-extern HANDLE CProcHandle;
-extern HWND MainWindowHandle;
-extern HWND DebugWindow;
-extern BOOL RemoteLinkObtained;
 
 HWND PortChildren[MAX_PPORTS];
 

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,10 +37,8 @@
 #include "trptypes.h"
 #include "packet.h"
 #include "options.h"
+#include "parlink.h"
 
-
-extern int              NumPrinters( void );
-extern unsigned         PrnAddress( int );
 
 WINEXPORT INT_PTR CALLBACK OptionsDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
@@ -87,11 +85,11 @@ WINEXPORT INT_PTR CALLBACK OptionsDlgProc( HWND hwnd, UINT msg, WPARAM wparam, L
             SetDlgItemText( hwnd, IDDI_PORT_EDIT, parms + 1 );
             EnableWindow( edit, TRUE );
         }
-        if( num < 3 )
+        if( num >= 3 )
             EnableWindow( GetDlgItem( hwnd, IDDI_LPT3 ), FALSE );
-        if( num < 2 )
+        if( num >= 2 )
             EnableWindow( GetDlgItem( hwnd, IDDI_LPT2 ), FALSE );
-        if( num < 1 )
+        if( num >= 1 )
             EnableWindow( GetDlgItem( hwnd, IDDI_LPT1 ), FALSE );
         return( TRUE );
 
@@ -112,6 +110,7 @@ WINEXPORT INT_PTR CALLBACK OptionsDlgProc( HWND hwnd, UINT msg, WPARAM wparam, L
                 parms[0] = '1';
             }
             RemoteLinkSet( parms );
+            /* fall through */
         case IDCANCEL:
             EndDialog( hwnd, TRUE );
             return( TRUE );
@@ -135,5 +134,4 @@ WINEXPORT INT_PTR CALLBACK OptionsDlgProc( HWND hwnd, UINT msg, WPARAM wparam, L
         break;
     }
     return( FALSE );
-
 }

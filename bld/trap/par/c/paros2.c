@@ -42,37 +42,17 @@
 #include "portio.h"
 
 
-#define NUM_ELTS( a )   (sizeof( a ) / sizeof( a[0] ))
-
 #ifdef _M_I86
 GINFOSEG    __far *GInfoSeg;
 #endif
 
-USHORT      PortTest[] = {
-    0x378, 0x3bc, 0x278
-};
-
-USHORT      PortAddress[NUM_ELTS( PortTest )] = {
-    0, 0, 0
-};
-
-USHORT      PortsFound;
+static unsigned short   PortTest[] = { PORT_ADDRESSES };
+static unsigned short   PortAddress[ACOUNT( PortTest )] = { 0 };
+static int              PortsFound = 0;
 
 int NumPrinters( void )
 {
-    char                num_printers;
-    APIRET              rc;
-
-#ifdef _M_I86
-    rc = DosDevConfig( &num_printers, 0, 0 );
-#else
-    rc = DosDevConfig( &num_printers, DEVINFO_PRINTER );
-#endif
-    if( rc != 0 )
-        return( 0 );
-    if( num_printers > PortsFound )
-        num_printers = PortsFound;
-    return( num_printers );
+    return( PortsFound );
 }
 
 bool AccessPorts( unsigned first, unsigned count )
@@ -117,7 +97,7 @@ char *InitSys( void )
     GInfoSeg = _MK_FP( sel_global, 0 );
 #endif
     PortsFound = 0;
-    for( i = 0; i < NUM_ELTS( PortTest ); ++i ) {
+    for( i = 0; i < ACOUNT( PortTest ); ++i ) {
         if( AccessPorts( PortTest[i], 1 ) ) {
             if( CheckForPort( i, 0x55 ) && CheckForPort( i, 0xaa ) ) {
                 PortAddress[PortsFound++] = PortTest[i];
