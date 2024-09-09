@@ -204,8 +204,17 @@ typedef __int64 _int64;
 
 #define my_inp(p)       READ_PORT_UCHAR((PUCHAR)(ext->hwdata.controller.ptr + (p)))
 #define my_outp(p,v)    WRITE_PORT_UCHAR((PUCHAR)(ext->hwdata.controller.ptr + (p)), (UCHAR)(v))
+#define dbgrtn(x)
+
+/*********************** CABLE TYPE DEFINITIONS ***********************/
 
 /*
+ * The undefined/uninitialized link protocol (cable type).
+ */
+#define NULL_VAL        0
+
+/*
+ * The WATCOM cable link.
  * 0x18 is used to ensure that the control lines stay in a high state
  * until Synch is called
  */
@@ -238,17 +247,6 @@ typedef __int64 _int64;
  *              flying dutchman cable
  */
 #define DUTCHMAN_VAL    (((TWIDLE_ON & 0x0f) << 3) | 0x02)
-
-#define NULL_VAL        0
-
-#define TWIDLE_TIME     1
-#define TWIDLE_NUM      2
-
-#define DONE_LINE_TEST  255
-
-#define LINE_TEST_WAIT  20
-#define SYNCH_WAIT      40
-#define TIMEOUT         -1
 
 /*********************** WATCOM CABLE MACROS **************************/
 #define PC_CTL1         0x08
@@ -323,6 +321,15 @@ typedef __int64 _int64;
 #define TWIDDLE_THUMBS  if( wait == RELINQUISH ) { NothingToDo(); } \
                 else if( wait != KEEP && wait < Ticks() ) return( TIMEOUT )
 
+#define TWIDLE_TIME     1
+#define TWIDLE_NUM      2
+
+#define DONE_LINE_TEST  255
+
+#define LINE_TEST_WAIT  20
+#define SYNCH_WAIT      40
+#define TIMEOUT         -1
+
 #define PARALLEL_REGISTER_SPAN 3
 
 typedef struct _DEVICE_EXTENSION {
@@ -368,19 +375,11 @@ typedef struct _DEVICE_EXTENSION {
 #define IOPM_SIZE       0x2000
 typedef UCHAR IOPM[IOPM_SIZE];
 
-/*
- * This will hold simply an array of 0's which will be copied
- * into our actual IOPM in the TSS by Ke386SetIoAccessMap().
- * The memory is allocated at driver load time.
- */
-IOPM *IOPM_local = 0;
-IOPM *IOPM_saved = 0;
-
 /*-------------------------- Implementation -------------------------------*/
 
 /*
- * These are the three undocumented calls that we will use to give
- * the calling process I/O access.
+ * The following are undocumented calls that are used to grant
+ * I/O access to the calling process.
  *
  * Ke386IoSetAccessMap() copies the passed map to the TSS.
  *
@@ -389,11 +388,19 @@ IOPM *IOPM_saved = 0;
  * points beyond the end of the TSS segment limit, causing any I/O
  * access by the user mode process to generate an exception.
  */
-void PORTSTDCALL Ke386SetIoAccessMap( int, IOPM * );
-void PORTSTDCALL Ke386QueryIoAccessMap( int, IOPM * );
-void PORTSTDCALL Ke386IoSetAccessProcess( PEPROCESS, int );
+extern void PORTSTDCALL Ke386SetIoAccessMap( int, IOPM * );
+extern void PORTSTDCALL Ke386QueryIoAccessMap( int, IOPM * );
+extern void PORTSTDCALL Ke386IoSetAccessProcess( PEPROCESS, int );
 
-void NTAPI ZwYieldExecution( void );
+extern void NTAPI ZwYieldExecution( void );
+
+/*
+ * This will hold simply an array of 0's which will be copied
+ * into our actual IOPM in the TSS by Ke386SetIoAccessMap().
+ * The memory is allocated at driver load time.
+ */
+static IOPM *IOPM_local = 0;
+static IOPM *IOPM_saved = 0;
 
 static void NothingToDo( void )
 {

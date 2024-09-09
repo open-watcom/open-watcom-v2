@@ -265,7 +265,15 @@ void dbg_outp( int port, char x )
 }
 #endif
 
+/*********************** CABLE TYPE DEFINITIONS ***********************/
+
 /*
+ * The undefined/uninitialized link protocol (cable type).
+ */
+#define NULL_VAL        0
+
+/*
+ * The WATCOM cable link.
  * 0x18 is used to ensure that the control lines stay in a high state
  * until Synch is called
  */
@@ -298,17 +306,6 @@ void dbg_outp( int port, char x )
  *              flying dutchman cable
  */
 #define DUTCHMAN_VAL    (((TWIDLE_ON & 0x0f) << 3) | 0x02)
-
-#define NULL_VAL        0
-
-#define TWIDLE_TIME     1
-#define TWIDLE_NUM      2
-
-#define DONE_LINE_TEST  255
-
-#define LINE_TEST_WAIT  20
-#define SYNCH_WAIT      40
-#define TIMEOUT         -1
 
 /*********************** WATCOM CABLE MACROS **************************/
 #define PC_CTL1         0x08
@@ -383,11 +380,19 @@ void dbg_outp( int port, char x )
 #define TWIDDLE_THUMBS  if( wait == RELINQUISH ) { NothingToDo(); } \
                 else if( wait != KEEP && wait < Ticks() ) return( TIMEOUT )
 
+#define TWIDLE_TIME     1
+#define TWIDLE_NUM      2
+
+#define DONE_LINE_TEST  255
+
+#define LINE_TEST_WAIT  20
+#define SYNCH_WAIT      40
+#define TIMEOUT         -1
+
 /*
  * if wait is not KEEP or RELINQUISH it is the latest time that this
  * operation should take before it times out
  */
-
 static int DataGetByte( unsigned long wait )
 {
     unsigned char   data;
