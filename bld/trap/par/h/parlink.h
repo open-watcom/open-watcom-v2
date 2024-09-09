@@ -32,8 +32,8 @@
 
 extern int              NumPrinters( void );
 extern unsigned         PrnAddress( int );
-extern bool             AccessPorts( unsigned, unsigned );
-extern void             FreePorts( unsigned, unsigned );
+extern bool             AccessPorts( unsigned port, unsigned count );
+extern void             FreePorts( unsigned port, unsigned count );
 extern unsigned long    Ticks( void );
 extern char             *InitSys( void );
 extern void             FiniSys( void );

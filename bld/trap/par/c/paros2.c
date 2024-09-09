@@ -75,15 +75,18 @@ int NumPrinters( void )
     return( num_printers );
 }
 
-bool AccessPorts( unsigned first, unsigned last )
+bool AccessPorts( unsigned first, unsigned count )
 {
-    DosPortAccess( 0, 0, first, last );
+    if( count > 0 )
+        return( DosPortAccess( 0, 0, first, first + count - 1 ) == 0 );
     return( true );
 }
 
-void FreePorts( unsigned first, unsigned last )
+void FreePorts( unsigned first, unsigned count )
 {
-    DosPortAccess( 0, 1, first, last );
+    if( count > 0 ) {
+        DosPortAccess( 0, 1, first, first + count - 1 );
+    }
 }
 
 static int CheckForPort( int i, unsigned char value )
@@ -115,11 +118,12 @@ char *InitSys( void )
 #endif
     PortsFound = 0;
     for( i = 0; i < NUM_ELTS( PortTest ); ++i ) {
-        AccessPorts( PortTest[i], PortTest[i] );
-        if( CheckForPort( i, 0x55 ) && CheckForPort( i, 0xaa ) ) {
-            PortAddress[PortsFound++] = PortTest[i];
+        if( AccessPorts( PortTest[i], 1 ) ) {
+            if( CheckForPort( i, 0x55 ) && CheckForPort( i, 0xaa ) ) {
+                PortAddress[PortsFound++] = PortTest[i];
+            }
+            FreePorts( PortTest[i], 1 );
         }
-        FreePorts( PortTest[i], PortTest[i] );
     }
     return( 0 );
 }

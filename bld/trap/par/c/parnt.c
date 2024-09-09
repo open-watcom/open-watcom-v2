@@ -71,9 +71,9 @@ unsigned PrnAddress( int printer )
     return( PortAddress[printer] );
 }
 
-bool AccessPorts( unsigned first, unsigned last )
+bool AccessPorts( unsigned first, unsigned count )
 {
-    /* unused parameters */ (void)first; (void)last;
+    /* unused parameters */ (void)first; (void)count;
 
     /*
      * We have direct I/O port access
@@ -81,9 +81,9 @@ bool AccessPorts( unsigned first, unsigned last )
     return( true );
 }
 
-void FreePorts( unsigned first, unsigned last )
+void FreePorts( unsigned first, unsigned count )
 {
-    /* unused parameters */ (void)first; (void)last;
+    /* unused parameters */ (void)first; (void)count;
 }
 
 static int CheckForPort( int i, unsigned char value )
@@ -125,7 +125,7 @@ char *InitSys( void )
 
 void FiniSys( void )
 {
-        if( PortHdl != INVALID_HANDLE_VALUE ) {
+    if( PortHdl != INVALID_HANDLE_VALUE ) {
         CloseHandle( PortHdl );
         PortHdl = INVALID_HANDLE_VALUE;
     }

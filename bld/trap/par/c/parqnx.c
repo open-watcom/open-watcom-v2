@@ -76,16 +76,16 @@ unsigned PrnAddress( int printer )
     return( par[printer] );
 }
 
-bool AccessPorts( unsigned first, unsigned last )
+bool AccessPorts( unsigned first, unsigned count )
 {
-    /* unused parameters */ (void)first; (void)last;
+    /* unused parameters */ (void)first; (void)count;
 
     return( CPL() <= IOPL() );
 }
 
-void FreePorts( unsigned first, unsigned last )
+void FreePorts( unsigned first, unsigned count )
 {
-    /* unused parameters */ (void)first; (void)last;
+    /* unused parameters */ (void)first; (void)count;
 }
 
 char *InitSys( void )

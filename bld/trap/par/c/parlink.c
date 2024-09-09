@@ -939,7 +939,7 @@ const char *RemoteLink( const char *parms, bool server )
             return( err );
         }
     }
-    if( !AccessPorts( hwdata.controller.port + DATAPORT, hwdata.controller.port + CTLPORT2 ) ) {
+    if( !AccessPorts( hwdata.controller.port, 3 ) ) {
         return( TRP_ERR_cannot_access_parallel_ports );
     }
     WriteData( TWIDLE_OFF );            /* initialize the control ports */
@@ -951,6 +951,6 @@ const char *RemoteLink( const char *parms, bool server )
 void RemoteUnLink( void )
 {
     FiniSys();
-    FreePorts( hwdata.controller.port + DATAPORT, hwdata.controller.port + CTLPORT2 );
+    FreePorts( hwdata.controller.port, 3 );
     hwdata.controller.port = 0;
 }

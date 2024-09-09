@@ -69,14 +69,14 @@ unsigned PrnAddress( int printer )
     return( *(unsigned short __far *)_MK_FP( BDATA_SEG, BDATA_PRINTER_BASE + printer * 2 ) );
 }
 
-void FreePorts( unsigned first, unsigned last )
+void FreePorts( unsigned first, unsigned count )
 {
-    /* unused parameters */ (void)first; (void)last;
+    /* unused parameters */ (void)first; (void)count;
 }
 
-bool AccessPorts( unsigned first, unsigned last )
+bool AccessPorts( unsigned first, unsigned count )
 {
-    /* unused parameters */ (void)first; (void)last;
+    /* unused parameters */ (void)first; (void)count;
 
     return( true );
 }

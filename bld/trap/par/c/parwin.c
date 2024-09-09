@@ -86,14 +86,14 @@ unsigned PrnAddress( int printer )
 
 }
 
-bool AccessPorts( unsigned first, unsigned last )
+bool AccessPorts( unsigned first, unsigned count )
 {
-    /* unused parameters */ (void)first; (void)last;
+    /* unused parameters */ (void)first; (void)count;
 
     return( true );
 }
 
-void FreePorts( unsigned first, unsigned last )
+void FreePorts( unsigned first, unsigned count )
 {
-    /* unused parameters */ (void)first; (void)last;
+    /* unused parameters */ (void)first; (void)count;
 }

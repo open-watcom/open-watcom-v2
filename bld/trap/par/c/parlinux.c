@@ -56,14 +56,18 @@ unsigned PrnAddress( int printer )
     return( PortAddress[printer] );
 }
 
-bool AccessPorts( unsigned first, unsigned last )
+bool AccessPorts( unsigned first, unsigned count )
 {
-    return( ioperm( first, last - first + 1, 1 ) == 0 );
+    if( count > 0 )
+        return( ioperm( first, count, 1 ) == 0 );
+    return( true );
 }
 
-void FreePorts( unsigned first, unsigned last )
+void FreePorts( unsigned first, unsigned count )
 {
-    ioperm( first, last - first, 0 );
+    if( count > 0 ) {
+        ioperm( first, count, 0 );
+    }
 }
 
 static int CheckForPort( int i, unsigned char value )
@@ -82,14 +86,14 @@ char *InitSys( void )
 
     PortsFound = 0;
     for( i = 0; i < NUM_ELTS( PortTest ); ++i ) {
-        if( !AccessPorts( PortTest[i], PortTest[i] ) ) {
+        if( !AccessPorts( PortTest[i], 1 ) ) {
             printf( "Failed to get I/O permissions. This program must run as root!\n" );
             exit( -1 );
         }
         if( CheckForPort( i, 0x55 ) && CheckForPort( i, 0xaa ) ) {
             PortAddress[PortsFound++] = PortTest[i];
         }
-        FreePorts( PortTest[i], PortTest[i] );
+        FreePorts( PortTest[i], 1 );
     }
     return( NULL );
 }
