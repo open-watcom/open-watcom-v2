@@ -420,8 +420,8 @@ static int DataGetByte( hw_data *hwd, unsigned long wait )
 
 static unsigned DataGet( hw_data *hwd, char *data, unsigned len )
 {
-    unsigned   	get_len;
-    unsigned   	i;
+    unsigned    get_len;
+    unsigned    i;
     char        c;
 
     get_len = DataGetByte( hwd, RELINQUISH );
@@ -528,7 +528,7 @@ static int DataPutByte( hw_data *hwd, unsigned char data, unsigned long wait )
 
 static unsigned DataPut( hw_data *hwd, char *data, unsigned len )
 {
-    unsigned   	count;
+    unsigned    count;
 
     if( len >= 0x80 ) {
         DataPutByte( hwd, (len >> 8) | 0x80, RELINQUISH );
@@ -580,7 +580,7 @@ static bool CountTwidle( hw_data *hwd )
         char buf[10];
 
         itoa( type, buf, 16 );
-        cputs( " Type " ); cputs( buf );
+        dbgrtn( " Type " ); dbgrtn( buf );
     }
   #endif
 #endif
@@ -766,4 +766,3 @@ static void DataDisconnect( hw_data *hwd )
         { /* delay while other side catches up */ }
     DataReset( hwd, true );
 }
-

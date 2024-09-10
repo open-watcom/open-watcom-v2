@@ -199,6 +199,9 @@ const char *RemoteLinkSet( const char *parms )
             port <<= 4;
             port += ch;
         }
+        if( port == 0 ) {
+            return( InvalidPort );
+        }
     } else {
         return( InvalidPort );
     }
