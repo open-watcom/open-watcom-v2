@@ -38,9 +38,6 @@
 #else
 #include <i86.h>
 #endif
-#if defined(_DBG) && !defined( SERVER )
-    #include <conio.h>
-#endif
 #include "bool.h"
 #include "trptypes.h"
 #include "trperr.h"
@@ -51,18 +48,21 @@
 #include "pardata.h"
 
 
-#if !defined(_DBG)
-    #define my_inp(x)       inp(hwdata.controller.port + x)
-    #define my_outp(x,y)    outp(hwdata.controller.port + x,y)
-    #define dbgrtn(x)
+#if defined(_DBG)
+    #define my_inp(x)       dbg_inp(hwd->controller.port + x)
+    #define my_outp(x,y)    dbg_outp(hwd->controller.port + x,y)
 #else
-    #define my_inp(x)       dbg_inp(hwdata.controller.port + x)
-    #define my_outp(x,y)    dbg_outp(hwdata.controller.port + x,y)
-  #ifdef SERVER
+    #define my_inp(x)       inp(hwd->controller.port + x)
+    #define my_outp(x,y)    outp(hwd->controller.port + x,y)
+#endif
+
+#if !defined(_DBG)
+    #define dbgrtn(x)
+#elif defined( SERVER )
     #define dbgrtn(x)       printf( x )
-  #else
+#else
+    #include <conio.h>
     #define dbgrtn(x)       cputs( x )
-  #endif
 #endif
 
 static hw_data  hwdata;
@@ -213,7 +213,6 @@ const char *RemoteLink( const char *parms, bool server )
     /* unused parameters */ (void)server;
 
     dbgrtn( "\r\n-RemoteLink-" );
-
     err = InitSys();
     if( err != NULL ) {
         return( err );
