@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -312,7 +312,7 @@ trap_retval TRAP_CORE( Prog_load )( void )
         ret->err = ERROR_FILE_NOT_FOUND;
         return( sizeof( *ret ) );
     }
-    err = RemoteLink( LinkParms, FALSE );
+    err = RemoteLink( LinkParms, false );
     if( err != NULL ) {
         strcpy( SavedError, err );
         ret->err = ERR_JVM_SAVED_ERROR;
@@ -333,7 +333,7 @@ trap_retval TRAP_CORE( Prog_load )( void )
     len = GetPacket();
     RemovePacket( ret, sizeof( *ret ) );
     if( ret->err == 0 ) {
-        TaskLoaded = TRUE;
+        TaskLoaded = true;
         if( DebuggerHwnd != NULL )
             SetForegroundWindow( DebuggerHwnd );
         return( len );
@@ -348,7 +348,7 @@ trap_retval TRAP_CORE( Prog_load )( void )
         //RemovePacket( &erracc, msg_len );
         RemoteUnLink();
 
-        TaskLoaded = FALSE;
+        TaskLoaded = false;
         return( sizeof( *ret ) );
     }
 }
@@ -359,7 +359,7 @@ trap_retval TRAP_CORE( Prog_kill )( void )
 
     if( TaskLoaded ) {
         DoAccess();
-        TaskLoaded = FALSE;
+        TaskLoaded = false;
         RemoteUnLink();
     }
     ret = GetOutPtr( 0 );
@@ -557,13 +557,13 @@ trap_version TRAPENTRY TrapInit( const char *parms, char *err, bool remote )
 
     /* unused parameters */ (void)remote;
 
-    ver.remote = FALSE;
+    ver.remote = false;
     ver.major = TRAP_VERSION_MAJOR;
     ver.minor = TRAP_VERSION_MINOR;
     FakeHandle = GetStdHandle( STD_INPUT_HANDLE );
     err[0] = '\0';
     strcpy( LinkParms, parms );
-    TaskLoaded = FALSE;
+    TaskLoaded = false;
     return( ver );
 }
 

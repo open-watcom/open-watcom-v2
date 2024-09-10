@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -84,16 +84,16 @@ bool Session( void )
         req = TRP_REQUEST( In );
         if( req & REQ_WANT_RETURN ) {
             req &= ~REQ_WANT_RETURN;
-            want_return = FALSE;
+            want_return = false;
         } else {
-            want_return = TRUE;
+            want_return = true;
         }
         TRP_REQUEST( In ) = req;
         switch( req ) {
         case REQ_PROG_KILL:
             _DBG(("REQ_KILL_PROG\n"));
-            AccTrap( TRUE );
-            return( TRUE );
+            AccTrap( true );
+            return( true );
         default:
             _DBG(("AccTrap\n"));
             AccTrap( want_return );
@@ -109,7 +109,7 @@ const char *ServInitialize( void )
     const char  *err;
 
     _DBG(("About to remote link in initialize.\n" ));
-    err = RemoteLink( "", 1 );
+    err = RemoteLink( "", true );
     _DBG(( "Back from PM remote link\n" ));
     if( err != NULL ) {
         _DBG(( "ERROR! '%s'\n", err ));
@@ -118,7 +118,7 @@ const char *ServInitialize( void )
         return( err );
     }
     _DBG(( "No Remote link error. About to TrapInit." ));
-    TrapVer = TrapInit( "", RWBuff, FALSE );
+    TrapVer = TrapInit( "", RWBuff, false );
     if( RWBuff[0] != '\0' ) {
 // NO, NO, NO!  RemoteUnLink();
         err = RWBuff;

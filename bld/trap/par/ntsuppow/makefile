@@ -1,4 +1,4 @@
-#pmake: nobuild remote os_nt cpu_386 par
+#pmake: build remote os_nt cpu_386 par
 
 tree_depth = 4
 
@@ -27,7 +27,7 @@ ddk_lib_dir = $(w32api_dir)/nt386/lib/ddk
 
 dbgport.sys : dbgport.obj $(__MAKEFILES__)
     $(noecho)%create dbgport.lnk
-    @%append dbgport.lnk system nt_dll
+    @%append dbgport.lnk system nt
     @%append dbgport.lnk runtime native=4.0
     @%append dbgport.lnk option osversion=4.0
     @%append dbgport.lnk option version=4.0

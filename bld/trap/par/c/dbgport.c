@@ -111,7 +111,7 @@ extern void PORTSTDCALL Ke386SetIoAccessMap( int, IOPM * );
 extern void PORTSTDCALL Ke386QueryIoAccessMap( int, IOPM * );
 extern void PORTSTDCALL Ke386IoSetAccessProcess( PEPROCESS, int );
 
-extern void NTAPI ZwYieldExecution( void );
+extern void NTAPI       ZwYieldExecution( void );
 
 /*
  * This will hold simply an array of 0's which will be copied
