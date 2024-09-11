@@ -1004,12 +1004,14 @@ static void addDefaultLibs( void )
                 CgInfoAddCompLib( WCPPLIB_Name );
             }
         }
-        CgInfoAddCompLib( MATHLIB_Name );
+        if( CompFlags.float_used ) {
+            CgInfoAddCompLib( MATHLIB_Name );
 #if _INTEL_CPU
-        if( EmuLib_Name != NULL ) {
-            CgInfoAddCompLib( EmuLib_Name );
-        }
+            if( EmuLib_Name != NULL ) {
+                CgInfoAddCompLib( EmuLib_Name );
+            }
 #endif
+        }
     }
 }
 
@@ -1098,7 +1100,8 @@ static void addDefaultImports( void )
             }
         }
     #endif
-        if( CompFlags.pgm_used_8087 || CompFlags.float_used ) {
+        if( CompFlags.pgm_used_8087
+          || CompFlags.float_used ) {
             if( GET_FPU_EMU( CpuSwitches ) ) {
     #if _CPU == 8086
                 CgInfoAddImport( "__init_87_emulator" );
