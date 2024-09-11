@@ -1004,7 +1004,8 @@ static void addDefaultLibs( void )
                 CgInfoAddCompLib( WCPPLIB_Name );
             }
         }
-        if( CompFlags.float_used ) {
+        if( CompFlags.pgm_used_8087
+          || CompFlags.float_used ) {
             CgInfoAddCompLib( MATHLIB_Name );
 #if _INTEL_CPU
             if( EmuLib_Name != NULL ) {

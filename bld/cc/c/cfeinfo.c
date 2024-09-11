@@ -611,7 +611,8 @@ static void addDefaultLibs( void )
           || CompFlags.emit_all_default_libs ) {
             AddLibraryName( CLIB_Name + 1, CLIB_Name[0] );
         }
-        if( CompFlags.float_used ) {
+        if( CompFlags.pgm_used_8087
+          || CompFlags.float_used ) {
             AddLibraryName( MATHLIB_Name + 1, MATHLIB_Name[0] );
             if( EmuLib_Name != NULL ) {
                 AddLibraryName( EmuLib_Name + 1, EmuLib_Name[0] );
