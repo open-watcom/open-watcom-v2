@@ -40,9 +40,6 @@
 
 #if defined( __WATCOMC__ )
 typedef __int64 _int64;
-#define PORTSTDCALL __stdcall
-#else
-#define PORTSTDCALL
 #endif
 
 #define my_inp(p)       READ_PORT_UCHAR((PUCHAR)(hwd->controller.ptr + (p)))
@@ -107,11 +104,11 @@ typedef UCHAR IOPM[IOPM_SIZE];
  * points beyond the end of the TSS segment limit, causing any I/O
  * access by the user mode process to generate an exception.
  */
-extern void PORTSTDCALL Ke386SetIoAccessMap( int, IOPM * );
-extern void PORTSTDCALL Ke386QueryIoAccessMap( int, IOPM * );
-extern void PORTSTDCALL Ke386IoSetAccessProcess( PEPROCESS, int );
+NTKERNELAPI extern void     NTAPI Ke386SetIoAccessMap( int, IOPM * );
+NTKERNELAPI extern void     NTAPI Ke386QueryIoAccessMap( int, IOPM * );
+NTKERNELAPI extern void     NTAPI Ke386IoSetAccessProcess( PEPROCESS, int );
 
-extern void NTAPI       ZwYieldExecution( void );
+NTKERNELAPI extern void     NTAPI ZwYieldExecution( void );
 
 /*
  * This will hold simply an array of 0's which will be copied
