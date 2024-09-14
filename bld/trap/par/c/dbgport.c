@@ -514,10 +514,10 @@ NTSTATUS ParIOCTL(
         WRITE_PORT_ULONG( (PULONG)( ext->hwdata.controller.ptr + IOBuffer->port ), IOBuffer->data.u32 );
         break;
     case IOCTL_DBG_REMOTE_GET:
-        IOBuffer->status = RemoteGet( ext, IOBuffer->buffer, IOBuffer->len );
+        IOBuffer->status = RemoteGet( ext, Irp->AssociatedIrp.SystemBuffer, irpSp->Parameters.DeviceIoControl.OutputBufferLength );
         break;
     case IOCTL_DBG_REMOTE_PUT:
-        IOBuffer->status = RemotePut( ext, IOBuffer->buffer, IOBuffer->len );
+        IOBuffer->status = RemotePut( ext, Irp->AssociatedIrp.SystemBuffer, irpSp->Parameters.DeviceIoControl.InputBufferLength );
         break;
     case IOCTL_DBG_REMOTE_CONNECT_SERV:
         IOBuffer->status = RemoteConnectServer( ext );
