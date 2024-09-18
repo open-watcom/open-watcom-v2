@@ -5093,7 +5093,7 @@ typedef struct _ACCESS_STATE {
 typedef ACCESS_STATE    *PACCESS_STATE;
 
 /* NTFS dereference exported security descriptor callback */
-typedef             (NTAPI *PNTFS_DEREF_EXPORTED_SECURITY_DESCRIPTOR)( PVOID, PSECURITY_DESCRIPTOR );
+typedef VOID        (NTAPI *PNTFS_DEREF_EXPORTED_SECURITY_DESCRIPTOR)( PVOID, PSECURITY_DESCRIPTOR );
 
 /* IoCreateFile() types */
 typedef enum _CREATE_FILE_TYPE {
