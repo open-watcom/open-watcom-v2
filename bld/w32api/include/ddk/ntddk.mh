@@ -1514,7 +1514,7 @@ typedef struct _SYSTEM_FIRMWARE_TABLE_INFORMATION {
 typedef SYSTEM_FIRMWARE_TABLE_INFORMATION   *PSYSTEM_FIRMWARE_TABLE_INFORMATION;
 
 /* Firmware table handler callback */
-typedef NTSTATUS (__cdecl *PFNFTH)( PSYSTEM_FIRMWARE_TABLE_INFORMATION );
+typedef NTSTATUS    (__cdecl *PFNFTH)( PSYSTEM_FIRMWARE_TABLE_INFORMATION );
 
 /* System firmware table handler */
 typedef struct _SYSTEM_FIRMWARE_TABLE_HANDLER {
