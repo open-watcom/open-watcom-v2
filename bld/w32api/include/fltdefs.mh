@@ -12,12 +12,7 @@
 :include cpluspro.sp
 
 /* Macro to specify filter functions */
-#ifdef __cplusplus
-    #define EXTERNCDECL EXTERN_C
-#else
-    #define EXTERNCDECL
-#endif
-#define PFAPIENTRY      EXTERNCDECL DWORD WINAPI
+#define PFAPIENTRY      EXTERN_C DWORD WINAPI
 
 /* Handle data types */
 typedef PVOID   FILTER_HANDLE;
