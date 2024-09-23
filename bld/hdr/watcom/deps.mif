@@ -328,7 +328,7 @@ h/sys/time.h      : $(mh_dir)/sys/time.mh $(sys_time_deps)
 
 !else ifeq system linux
 
-h/dirent.h        : $(mh_dir)/linux/dirent.mh $(owhdr) ../ino_t.sp ../off_t.sp ../dirfind.sp $(cplus) $(packll)
+h/dirent.h        : $(mh_dir)/dirent.mh $(owhdr) ../ino_t.sp ../off_t.sp ../dirfind.sp $(cplus) $(packll)
 h/grp.h           : $(mh_dir)/grp.mh $(crwatqnx_sp) ../readonly.sp ../size_t.sp ../gid_t.sp $(cplus) $(packll)
 h/pthread.h       : $(mh_dir)/pthread.mh $(owhdr) ../sem_t.sp $(cplus) $(packll) ../pthread1.sp ../pthread2.sp
 h/pwd.h           : $(mh_dir)/pwd.mh $(crwatqnx_sp) ../readonly.sp ../owrtlink.sp ../systypes.sp $(cplus) $(packll)
