@@ -26,21 +26,21 @@ maxpath_sp  = ../maxpath.sp $(extension)
 
 assert_deps   = $(mh_dir)/assert.mh $(owhdr) $(cplus) $(extension)
 ctype_deps    = $(mh_dir)/ctype.mh $(owhdr) $(cplus) $(extension) $(c99ext) $(ns_std)
-errno_deps    = $(mh_dir)/errno.mh $(crwatqnx_sp) ../readonly.sp ../owrtlink.sp $(cplus) ../errno.sp $(saferc) ../incdir.sp ../errsbase.sp
+errno_deps    = $(mh_dir)/errno.mh $(owhdrqnx) $(cplus) ../errno.sp $(saferc) ../incdir.sp ../errsbase.sp
 float_deps    = $(mh_dir)/float.mh $(owhdr) $(cplus) ../null.sp $(extension)
-inttypes_deps = $(mh_dir)/inttypes.mh $(crwatqnx_sp) ../readonly.sp ../owrtlink.sp $(packll) $(cplus) ../wchar_t.sp $(ns_std)
+inttypes_deps = $(mh_dir)/inttypes.mh $(owhdrqnx) $(packll) $(cplus) ../wchar_t.sp $(ns_std)
 iso646_deps   = $(mh_dir)/iso646.mh $(owhdr)
 limits_deps   = $(mh_dir)/limits.mh $(crwatqnx_sp) $(owhdrcnt) ../mblenmax.sp $(unixext) $(extension) $(ns_std)
 locale_deps   = $(mh_dir)/locale.mh $(crwatqnx_sp) $(owhdrcnt) ../owrtlink.sp $(cplus) $(packll) ../wchar_t.sp ../null.sp $(ns_std) ../nyi.sp
 math_deps     = $(mh_dir)/math.mh $(owhdr) $(extension) $(c99ext) $(cplus) $(packll) $(ns_std)
-setjmp_deps   = $(mh_dir)/setjmp.mh $(crwatqnx_sp) ../readonly.sp ../owrtlink.sp $(cplus) $(unixext) $(packll)
-signal_deps   = $(mh_dir)/signal.mh $(crwatqnx_sp) ../readonly.sp ../owrtlink.sp $(cplus) $(packll) $(ns_std) ../size_t.sp ../uid_t.sp ../timespec.sp ../systypes.sp ../pthread1.sp ../sigevent.sp ../incdir.sp $(posixext) $(unixext)
+setjmp_deps   = $(mh_dir)/setjmp.mh $(owhdrqnx) $(cplus) $(unixext) $(packll)
+signal_deps   = $(mh_dir)/signal.mh $(owhdrqnx) $(cplus) $(packll) $(ns_std) ../size_t.sp ../uid_t.sp ../timespec.sp ../systypes.sp ../pthread1.sp ../sigevent.sp ../incdir.sp $(posixext) $(unixext)
 stdarg_deps   = $(mh_dir)/stdarg.mh $(owhdr) $(cplus) ../_valist.sp ../valist.sp $(extension) $(ns_std)
 stdbool_deps  = $(mh_dir)/stdbool.mh $(owhdr)
 stddef_deps   = $(mh_dir)/stddef.mh $(owhdr) $(cplus) ../size_t.sp ../wchar_t.sp ../null.sp ../ptrdifft.sp $(saferc) $(extension) ../thrdhndl.sp
 stdint_deps   = $(mh_dir)/stdint.mh $(owhdr) $(saferc) ../exactint.sp ../intptr_t.sp ../uintptrt.sp $(ns_std)
-stdio_deps    = $(mh_dir)/stdio.mh $(crwatqnx_sp) ../readonly.sp $(extension) $(c99ext) $(unixext) ../owrtlink.sp ../lfndos.sp ../systypes.sp $(cplus) $(packll) ../size_t.sp ../null.sp ../_valist.sp ../seekpos.sp ../wchar_t.sp ../wint_t.sp $(saferc) $(maxpath_sp) $(ns_std) ../weof.sp ../file.sp ../tempnam.sp ../tmpnam.sp ../remove.sp ../rename.sp
-stdlib_deps   = $(mh_dir)/stdlib.mh $(crwatqnx_sp) ../readonly.sp $(extension) $(unixext) ../owrtlink.sp ../lfndos.sp $(cplus) $(packll) ../wchar_t.sp ../size_t.sp $(saferc) ../null.sp ../mbcurmax.sp $(maxpath_sp) ../errno.sp ../alloca.sp ../brk.sp ../getenv.sp ../putenv.sp ../setenv.sp ../unsetenv.sp ../system.sp ../abort.sp ../exit.sp ../_exit.sp $(ns_std) ../far2.sp ../farepi.sp ../onexit.sp
+stdio_deps    = $(mh_dir)/stdio.mh $(owhdrqnx) $(extension) $(c99ext) $(unixext) ../lfndos.sp ../systypes.sp $(cplus) $(packll) ../size_t.sp ../null.sp ../_valist.sp ../seekpos.sp ../wchar_t.sp ../wint_t.sp $(saferc) $(maxpath_sp) $(ns_std) ../weof.sp ../file.sp ../tempnam.sp ../tmpnam.sp ../remove.sp ../rename.sp
+stdlib_deps   = $(mh_dir)/stdlib.mh $(owhdrqnx) $(extension) $(unixext) ../lfndos.sp $(cplus) $(packll) ../wchar_t.sp ../size_t.sp $(saferc) ../null.sp ../mbcurmax.sp $(maxpath_sp) ../errno.sp ../alloca.sp ../brk.sp ../getenv.sp ../putenv.sp ../setenv.sp ../unsetenv.sp ../system.sp ../abort.sp ../exit.sp ../_exit.sp $(ns_std) ../far2.sp ../farepi.sp ../onexit.sp
 stdnoret_deps = $(mh_dir)/stdnoret.mh $(owhdr)
 string_deps   = $(mh_dir)/string.mh $(owhdr) $(crwatcnt_sp)  $(extension) $(cplus) ../wchar_t.sp ../wint_t.sp ../size_t.sp $(saferc) ../null.sp ../nlserror.sp ../namwat.sp $(ns_std) ../windowsx.sp ../msstr1.sp ../msstr2.sp ../msstrdup.sp ../pxstrdup.sp ../memicmp.sp ../memccpy.sp ../strerror.sp
 time_deps     = $(mh_dir)/time.mh $(owhdr) ../systypes.sp $(cplus) $(packll) ../wchar_t.sp ../size_t.sp ../null.sp ../time_t.sp ../clock_t.sp $(saferc) $(unixext) $(extension) ../timer_t.sp ../clockidt.sp $(ns_std) ../timespec.sp ../tm.sp
@@ -179,11 +179,11 @@ h/vector       : $(vector_deps)
 
 # The follow describe the dependences for the various *.h files.
 
-fcntl_deps      = $(crwatqnx_sp) ../readonly.sp ../owrtlink.sp ../systypes.sp $(cplus) $(packll) $(packlnxk) ../off_t.sp ../pid_t.sp ../mode_t.sp ../wchar_t.sp ../modedef.sp ../loff_t.sp ../incdir.sp ../sopen.sp ../open.sp ../creat.sp $(extension) $(posixext)
+fcntl_deps      = $(owhdrqnx) ../systypes.sp $(cplus) $(packll) $(packlnxk) ../off_t.sp ../pid_t.sp ../mode_t.sp ../wchar_t.sp ../modedef.sp ../loff_t.sp ../incdir.sp ../sopen.sp ../open.sp ../creat.sp $(extension) $(posixext)
 graph_deps      = $(owhdr) $(cplus) $(packll)
 pgchart_deps    = $(owhdr) $(cplus) $(packll)
-process_deps    = $(crwatqnx_sp) ../readonly.sp ../owrtlink.sp ../lfndos.sp ../systypes.sp $(cplus) ../pid_t.sp ../wchar_t.sp ../thrdhndl.sp ../getenv.sp ../putenv.sp ../setenv.sp ../system.sp ../abort.sp ../exit.sp ../_exit.sp ../getpid.sp ../msexec.sp ../pxexec.sp ../msspawn.sp $(extension)
-unistd_deps     = $(crwatqnx_sp) ../readonly.sp ../owrtlink.sp ../systypes.sp $(cplus) ../null.sp ../access.sp ../seekpos.sp ../pid_t.sp ../uid_t.sp ../gid_t.sp ../off_t.sp ../size_t.sp ../ssize_t.sp ../_exit.sp ../brk.sp ../fileio.sp ../msioext.sp ../dosflock.sp ../getpid.sp ../msexec.sp ../pxexec.sp ../pxexec.sp ../getcwd.sp ../chdir.sp ../mkdir.sp ../rmdir.sp ../remove.sp ../rename.sp ../stdfilno.sp $(posixext) $(unixext) $(extension)
+process_deps    = $(owhdrqnx) ../lfndos.sp ../systypes.sp $(cplus) ../pid_t.sp ../wchar_t.sp ../thrdhndl.sp ../getenv.sp ../putenv.sp ../setenv.sp ../system.sp ../abort.sp ../exit.sp ../_exit.sp ../getpid.sp ../msexec.sp ../pxexec.sp ../msspawn.sp $(extension)
+unistd_deps     = $(owhdrqnx) ../systypes.sp $(cplus) ../null.sp ../access.sp ../seekpos.sp ../pid_t.sp ../uid_t.sp ../gid_t.sp ../off_t.sp ../size_t.sp ../ssize_t.sp ../_exit.sp ../brk.sp ../fileio.sp ../msioext.sp ../dosflock.sp ../getpid.sp ../msexec.sp ../pxexec.sp ../pxexec.sp ../getcwd.sp ../chdir.sp ../mkdir.sp ../rmdir.sp ../remove.sp ../rename.sp ../stdfilno.sp $(posixext) $(unixext) $(extension)
 sys_select_deps = $(owhdrcnt) ../owrtlink.sp $(cplus) $(packll) $(packlnxk) ../fdset.sp ../time_t.sp ../susecond.sp ../timeval.sp ../select.sp
 sys_stat_deps   = $(owhdr) ../lfndos.sp $(cplus) $(packll) $(packlnxk) ../incdir.sp ../time_t.sp ../off_t.sp ../dev_t.sp ../ino_t.sp ../mode_t.sp ../nlink_t.sp ../uid_t.sp ../gid_t.sp ../wchar_t.sp ../modedef.sp ../umask.sp ../chmod.sp ../stat.sp ../mkdir.sp $(extension) $(posixext)
 sys_time_deps   = $(owhdrcnt) ../owrtlink.sp $(cplus) $(packll) $(packlnxk) ../fdset.sp ../time_t.sp ../susecond.sp ../timeval.sp ../select.sp
@@ -254,7 +254,7 @@ h/pgchart.h       : $(mh_dir)/pgchart.mh $(pgchart_deps)
 h/process.h       : $(mh_dir)/process.mh $(process_deps)
 h/search.h        : $(mh_dir)/search.mh $(owhdr) $(cplus)
 h/setjmp.h        : $(setjmp_deps)
-h/setjmpex.h      : $(mh_dir)/setjmpex.mh $(crwatqnx_sp) ../readonly.sp ../owrtlink.sp $(cplus)
+h/setjmpex.h      : $(mh_dir)/setjmpex.mh $(owhdrqnx) $(cplus)
 h/share.h         : $(mh_dir)/share.mh $(owhdr) $(extension)
 h/signal.h        : $(signal_deps)
 h/sstream.h       : $(sstream_deps)
@@ -276,7 +276,7 @@ h/tchar.h         : $(mh_dir)/tchar.mh $(owhdr) ../null.sp $(cplus) $(extension)
 h/time.h          : $(time_deps)
 h/typeinfo.h      : $(typeinfo_deps)
 h/unistd.h        : $(mh_dir)/unistd.mh $(unistd_deps)
-h/utime.h         : $(mh_dir)/utime.mh $(crwatqnx_sp) ../readonly.sp ../owrtlink.sp $(cplus) $(packll) ../time_t.sp ../wchar_t.sp ../utime.sp
+h/utime.h         : $(mh_dir)/utime.mh $(owhdrqnx) $(cplus) $(packll) ../time_t.sp ../wchar_t.sp ../utime.sp
 h/varargs.h       : $(mh_dir)/varargs.mh $(owhdr) $(cplus)
 h/wcdefs.h        : $(mh_dir)/wcdefs.mh $(owhdr) ../cpponly.sp ../size_t.sp
 h/wcexcept.h      : $(mh_dir)/wcexcept.mh $(owhdr) ../cpponly.sp $(packll)
@@ -316,22 +316,24 @@ h/sys/socket.h    : $(mh_dir)/sys/socket.mh $(owhdr) $(cplus) $(packlnxk) ../inc
 
 !ifeq system dos
 
+h/dirent.h        : $(mh_dir)/dirent.mh $(owhdr) ../lfndos.sp ../wchar_t.sp $(maxpath_sp) ../dirfind.sp $(cplus) $(packll)
 h/sys/_lfndos.h   : $(mh_dir)/dos/sys/_lfndos.mh $(owhdrcnt)
 h/sys/_pc98.h     : $(mh_dir)/dos/sys/_pc98.mh $(owhdrcnt)
 h/sys/stat.h      : $(mh_dir)/sys/stat.mh $(sys_stat_deps)
 
 !else ifeq system rdos
 
+h/dirent.h        : $(mh_dir)/dirent.mh $(owhdr) $(maxpath_sp) ../dirfind.sp $(cplus) $(packll)
 h/sys/wait.h      : $(mh_dir)/sys/wait.mh $(owhdr) $(cplus) ../wait.sp
 h/sys/select.h    : $(mh_dir)/sys/select.mh $(sys_select_deps)
 h/sys/time.h      : $(mh_dir)/sys/time.mh $(sys_time_deps)
 
 !else ifeq system linux
 
-h/dirent.h        : $(mh_dir)/dirent.mh $(owhdr) ../ino_t.sp ../off_t.sp ../dirfind.sp $(cplus) $(packll)
+h/dirent.h        : $(mh_dir)/dirent.mh $(owhdr) $(maxpath_sp) ../ino_t.sp ../off_t.sp ../dirfind.sp $(cplus) $(packll)
 h/grp.h           : $(mh_dir)/grp.mh $(crwatqnx_sp) ../readonly.sp ../size_t.sp ../gid_t.sp $(cplus) $(packll)
 h/pthread.h       : $(mh_dir)/pthread.mh $(owhdr) ../sem_t.sp $(cplus) $(packll) ../pthread1.sp ../pthread2.sp
-h/pwd.h           : $(mh_dir)/pwd.mh $(crwatqnx_sp) ../readonly.sp ../owrtlink.sp ../systypes.sp $(cplus) $(packll)
+h/pwd.h           : $(mh_dir)/pwd.mh $(owhdrqnx) ../systypes.sp $(cplus) $(packll)
 h/sched.h         : $(mh_dir)/sched.mh $(owhdrcnt) ../owrtlink.sp $(cplus) ../pid_t.sp ../time_t.sp ../timespec.sp ../schedp.sp
 h/semaphor.h      : $(mh_dir)/semaphor.mh $(owhdrcnt) ../owrtlink.sp $(cplus) ../time_t.sp ../timespec.sp ../sem_t.sp
 h/termios.h       : $(mh_dir)/linux/termios.mh $(owhdr) $(cplus) $(packlnxk) ../pid_t.sp

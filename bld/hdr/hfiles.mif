@@ -51,7 +51,7 @@
 !inject h/cwchar                    hcpp
 !inject h/deque                     hcpp
 !inject h/direct.h                       hdos           hrdos
-!inject h/dirent.h                            hlnx hqnx
+!inject h/dirent.h                       hdos hlnx hqnx hrdos
 !inject h/dos.h                          hdos
 !inject h/dosfunc.h                      hdos
 !inject h/endian.h                       hdos hlnx hqnx hrdos
