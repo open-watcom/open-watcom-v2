@@ -42,6 +42,7 @@ additional_clean_subdirs = $(bin_subdir)
 !include $(ui_dir)/client.mif
 !include $(rcsdll_dir)/client.mif
 
+!include ../mif/vihost.mif
 !include ../mif/include.mif
 !include ../mif/objects.mif
 !include ../mif/compile.mif

@@ -1,17 +1,11 @@
-c_dirs_root = $(vi_dir)/$(host_os)
-!if "$(host_os)" == "linux" || "$(host_os)" == "bsd" || "$(host_os)" == "osx" || "$(host_os)" == "haiku"
-c_dirs_root = $(vi_dir)/unix
-!endif
-
 !ifdef sys_windowed
 ! ifeq host_os nt
-c_dirs_root = $(vi_dir)/nt;$(vi_dir)/win
+c_dirs = $(vi_dir)/c;$(vi_dir)/$(vi_host_os);$(vi_dir)/win;$(vi_dir)/win/ctl;$(watcom_dir)/c
 ! else
-c_dirs_root = $(vi_dir)/win
+c_dirs = $(vi_dir)/c;$(vi_dir)/$(vi_host_os);$(vi_dir)/dos;$(vi_dir)/win/ctl;$(watcom_dir)/c
 ! endif
-c_dirs = $(vi_dir)/c;$(c_dirs_root);$(vi_dir)/dos;$(vi_dir)/win/ctl;$(watcom_dir)/c
 !else
-c_dirs = $(vi_dir)/c;$(c_dirs_root);$(vi_dir)/ui;$(watcom_dir)/c
+c_dirs = $(vi_dir)/c;$(vi_dir)/$(vi_host_os);$(vi_dir)/ui;$(watcom_dir)/c
 !endif
 
 .c : $(c_dirs)

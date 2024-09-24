@@ -64,11 +64,7 @@ objsize = &
 !include $(vi_dir)/win/win.mif
 !endif
 !else
-!if "$(host_os)" == "linux" || "$(host_os)" == "bsd" || "$(host_os)" == "osx" || "$(host_os)" == "haiku"
-!include $(vi_dir)/unix/unix.mif
-!else
-!include $(vi_dir)/$(host_os)/$(host_os).mif
-!endif
+!include $(vi_dir)/$(vi_host_os)/$(vi_host_os).mif
 !include $(vi_dir)/ui/ui.mif
 !endif
 
