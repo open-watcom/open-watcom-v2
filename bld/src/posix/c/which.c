@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,15 +31,11 @@
 ****************************************************************************/
 
 
-#ifdef __UNIX__
-#include <dirent.h>
-#else
-#include <direct.h>  // FIXME: provide dirent.h for non-UNIX platforms
-#endif
-#include <unistd.h>
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include "wio.h"
+#include "wdirent.h"
 #include "util.h"
 
 
