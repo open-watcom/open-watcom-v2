@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -28,6 +28,9 @@
 * Description:  __dirstream structure
 *
 ****************************************************************************/
+
+
+#define _DIRBUF  8  /*  Max number of dir entries buffered  */
 
 struct __dirstream
 {
