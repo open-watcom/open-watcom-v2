@@ -37,6 +37,7 @@
 #include <ctype.h>
 #if defined( __UNIX__ )
     #include <sys/stat.h>
+    #include "stat2.h"
 #endif
 #if defined( __UNIX__ ) || defined( __WATCOMC__ )
     #include <fnmatch.h>
@@ -101,16 +102,6 @@ void MemFree( void *ptr )
 {
     free( ptr );
 }
-
-#if defined( __UNIX__ )
-static int _stat2( const char *path, const char *name, struct stat *st )
-{
-    char        full_name[_MAX_PATH];
-
-    _makepath( full_name, NULL, path, name, NULL );
-    return( stat( full_name, st ) );
-}
-#endif
 
 static bool skipEntry( const char *path, const char *mask, struct dirent *dire )
 {
