@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,11 +35,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
-#ifndef __UNIX__
-#include <direct.h>
-#else
-#include <dirent.h>
-#endif
+#include "wdirent.h"
 #include "wio.h"
 #include "diskos.h"
 #include "clcommon.h"

@@ -40,14 +40,9 @@
     #include <sys/utime.h>
 #endif
 #include <sys/types.h>
-#include <sys/stat.h>
 #ifdef __UNIX__
     #include <sys/wait.h>
-    #include <dirent.h>
 #else
-    #include <direct.h>
-#endif
-#if defined( __WATCOMC__ ) || !defined( __UNIX__ )
     #include <process.h>
 #endif
 #ifdef __RDOS__
@@ -57,6 +52,7 @@
     #include "idedrv.h"
 #endif
 #include "make.h"
+#include "wdirent.h"
 #include "wio.h"
 #include "mtarget.h"
 #include "macros.h"

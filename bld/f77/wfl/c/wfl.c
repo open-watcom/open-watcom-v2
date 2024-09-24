@@ -36,11 +36,6 @@
 #include <string.h>
 #include <ctype.h>
 #include <errno.h>
-#ifdef __UNIX__
-    #include <dirent.h>
-#else
-    #include <direct.h>
-#endif
 #if defined( __WATCOMC__ ) || !defined( __UNIX__ )
     #include <process.h>
 #endif
@@ -49,6 +44,7 @@
 #endif
 #include "switch.h"
 #include "bool.h"
+#include "wdirent.h"
 #include "wio.h"
 #include "banner.h"
 #include "swchar.h"

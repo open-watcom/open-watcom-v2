@@ -30,13 +30,9 @@
 ****************************************************************************/
 
 
-#if defined( __UNIX__ )
-    #include <dirent.h>
-#else
-    #include <direct.h>
-#endif
 #include <ctype.h>
 #include <sys/types.h>
+#include "wdirent.h"
 #include "make.h"
 #include "mmemory.h"
 #include "mmisc.h"

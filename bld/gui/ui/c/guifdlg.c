@@ -35,7 +35,6 @@
 #include <stdlib.h>
 #include <ctype.h>
 #if defined( __UNIX__ )
-    #include <dirent.h>
   #if defined( __QNX__ )
     #include <sys/disk.h>
   #endif
@@ -45,7 +44,6 @@
         #include <fnmatch.h>    // fnmatch is found in the standard library
     #endif
 #else
-    #include <direct.h>
   #if defined( __NETWARE__ )
     #include <fnmatch.h>
   #endif
@@ -58,6 +56,7 @@
 #elif defined(__RDOS__)
     #include "rdos.h"
 #endif
+#include "wdirent.h"
 #include "wio.h"
 #include "walloca.h"
 #include "guifdlg.h"

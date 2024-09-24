@@ -32,8 +32,6 @@
 
 #if defined( __UNIX__ )
     #include <sys/types.h>  /* Implicitly included by <direct.h> */
-#else
-    #include <direct.h>     /* Needed for getcwd() */
 #endif
 #include <stdlib.h>
 #include <ctype.h>

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -391,7 +391,6 @@ static bool UseDDE( bool uninstall )
 
 #if defined( __NT__ )
 
-#include <direct.h>
 #include <shlobj.h>
 
 // DDE method does not work reliably under Windows 95. Preferred

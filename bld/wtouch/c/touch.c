@@ -44,11 +44,7 @@
 #else
     #include <sys/utime.h>
 #endif
-#if defined( __UNIX__ )
-#include <dirent.h>
-#else
-#include <direct.h>
-#endif
+#include "wdirent.h"
 #include "bool.h"
 #include "wio.h"
 #include "watcom.h"

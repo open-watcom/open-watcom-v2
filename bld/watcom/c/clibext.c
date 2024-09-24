@@ -39,12 +39,10 @@
 #include <ctype.h>
 #include <errno.h>
 #if defined(__UNIX__)
-    #include <dirent.h>
   #if defined(__QNX__)
     #include <sys/io_msg.h>
   #endif
 #else
-    #include <direct.h>
   #if defined(__OS2__)
     #include <wos2.h>
   #elif defined(__NT__)

@@ -47,11 +47,9 @@
 #endif
 #ifdef __UNIX__
     #include <sys/utsname.h>
-    #include <dirent.h>
-#else
-    #include <direct.h>
 #endif
 #include <errno.h>
+#include "wdirent.h"
 #include "wio.h"
 #include "watcom.h"
 #include "walloca.h"

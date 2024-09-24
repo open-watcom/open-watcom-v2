@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,11 +30,6 @@
 ****************************************************************************/
 
 
-#if defined( __UNIX__ )
-  #include <dirent.h>
-#else
-  #include <direct.h>
-#endif
 #if defined( __WATCOMC__ ) || defined( __UNIX__ )
   #include <fnmatch.h>
 #endif
@@ -43,6 +38,7 @@
 #include <string.h>
 #include <assert.h>
 #include "bool.h"
+#include "wdirent.h"
 #include "watcom.h"
 #include "misc.h"
 #include "pathgrp2.h"

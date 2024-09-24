@@ -36,14 +36,12 @@
 #include <stdarg.h>
 #include <ctype.h>
 #if defined( __UNIX__ )
-    #include <dirent.h>
     #include <sys/stat.h>
-#else
-    #include <direct.h>
 #endif
 #if defined( __UNIX__ ) || defined( __WATCOMC__ )
     #include <fnmatch.h>
 #endif
+#include "wdirent.h"
 #include "pathgrp2.h"
 #include "ctags.h"
 #include "banner.h"

@@ -32,13 +32,9 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#ifdef __UNIX__
-    #include <dirent.h>
-#else
-    #include <direct.h>
-#endif
 #include <string.h>
 #include "bool.h"
+#include "wdirent.h"
 #include "help.h"
 #include "helpmem.h"
 #include "filelist.h"

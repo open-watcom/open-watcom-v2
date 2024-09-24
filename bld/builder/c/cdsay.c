@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,11 +35,7 @@
 #include <time.h>
 #include <string.h>
 #include <ctype.h>
-#ifdef __UNIX__
-#include <unistd.h>
-#else
-#include <direct.h>
-#endif
+#include "wio.h"
 
 
 #define BSIZE   256

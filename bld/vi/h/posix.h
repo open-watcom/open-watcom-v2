@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,14 +33,13 @@
 #ifndef _POSIX_INCLUDED
 #define _POSIX_INCLUDED
 
+#include "wdirent.h"
 #include "wio.h"
 #if defined( __UNIX__ )
-  #include <dirent.h>
   #define _mkdir( a, b )    mkdir( a, b )
   #define DIRFLAGS          (PMODE_RW)
   #define WRITEATTRS        (CurrentFile->attr)
 #else
-  #include <direct.h>
   #define _mkdir( a, b )    mkdir( a )
   #define DIRFLAGS          0
   #define WRITEATTRS        (PMODE_RW)

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,15 +35,13 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#ifdef __UNIX__
-#include <dirent.h>
-#else
-#include <direct.h>
+#ifndef __UNIX__
 #include <dos.h>
 #endif
 #include <assert.h>
 #include <setjmp.h>
 #include <stdarg.h>
+#include "wdirent.h"
 #include "wio.h"
 #include "bool.h"
 #include "watcom.h"
