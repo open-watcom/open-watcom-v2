@@ -95,6 +95,8 @@ typedef struct dirent   DIR;
 :endsegment
 
 :include poppack.sp
+
+:include dirattr.sp
 :endsegment
 
 /*

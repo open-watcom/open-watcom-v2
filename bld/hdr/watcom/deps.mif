@@ -208,7 +208,7 @@ h/conio.h         : $(mh_dir)/conio.mh $(owhdr) $(cplus) ../_valist.sp
 h/crtdbg.h        : $(mh_dir)/crtdbg.mh $(owhdr) $(cplus)
 h/ctype.h         : $(ctype_deps)
 h/direct.h        : $(mh_dir)/direct.mh $(owhdr) ../lfndos.sp ../systypes.sp $(cplus) $(packll) ../wchar_t.sp $(maxpath_sp) ../dskfreet.sp ../getdcwd.sp ../getcwd.sp ../dirfind.sp ../chdir.sp ../mkdir.sp ../rmdir.sp
-h/dos.h           : $(mh_dir)/dos.mh $(owhdr) ../lfndos.sp $(cplus) $(packll) ../wchar_t.sp $(maxpath_sp) ../dskfreet.sp ../delay.sp
+h/dos.h           : $(mh_dir)/dos.mh $(owhdr) ../lfndos.sp $(cplus) $(packll) ../wchar_t.sp $(maxpath_sp) ../dirattr.sp ../dskfreet.sp ../delay.sp
 h/dosfunc.h       : $(mh_dir)/dosfunc.mh $(owhdr)
 h/eh.h            : $(mh_dir)/eh.mh $(owhdr) ../cpponly.sp
 h/endian.h        : $(mh_dir)/endian.mh $(owhdrcnt) $(posixext)
@@ -227,7 +227,7 @@ h/graph.h         : $(mh_dir)/graph.mh $(graph_deps)
 h/graph2.h        : $(mh_dir)/graph2.mh graph.mh $(graph_deps)
 h/i86.h           : $(mh_dir)/i86.mh $(owhdr) $(cplus) $(packll) ../delay.sp
 h/inttypes.h      : $(inttypes_deps)
-h/io.h            : $(mh_dir)/io.mh $(owhdr) ../lfndos.sp ../systypes.sp $(cplus) $(packll) ../time_t.sp ../wchar_t.sp $(maxpath_sp) ../intptr_t.sp ../access.sp ../seekpos.sp ../mktemp.sp ../msioext.sp ../sopen.sp ../dosflock.sp ../umask.sp ../fileio.sp ../chmod.sp ../msffind.sp ../open.sp ../creat.sp ../locking.sp ../remove.sp ../rename.sp ../stdfilno.sp $(extension)
+h/io.h            : $(mh_dir)/io.mh $(owhdr) ../lfndos.sp ../systypes.sp $(cplus) $(packll) ../time_t.sp ../wchar_t.sp $(maxpath_sp) ../intptr_t.sp ../access.sp ../seekpos.sp ../dirattr.sp ../mktemp.sp ../msioext.sp ../sopen.sp ../dosflock.sp ../umask.sp ../fileio.sp ../chmod.sp ../msffind.sp ../open.sp ../creat.sp ../locking.sp ../remove.sp ../rename.sp ../stdfilno.sp $(extension)
 h/iomanip.h       : $(iomanip_deps)
 h/ios.h           : $(ios_deps)
 h/iosfwd.h        : $(iosfwd_deps)
@@ -316,14 +316,14 @@ h/sys/socket.h    : $(mh_dir)/sys/socket.mh $(owhdr) $(cplus) $(packlnxk) ../inc
 
 !ifeq system dos
 
-h/dirent.h        : $(mh_dir)/dirent.mh $(owhdr) ../lfndos.sp ../wchar_t.sp $(maxpath_sp) ../dirfind.sp $(cplus) $(packll)
+h/dirent.h        : $(mh_dir)/dirent.mh $(owhdr) ../lfndos.sp ../wchar_t.sp $(maxpath_sp) ../dirattr.sp ../dirfind.sp $(cplus) $(packll)
 h/sys/_lfndos.h   : $(mh_dir)/dos/sys/_lfndos.mh $(owhdrcnt)
 h/sys/_pc98.h     : $(mh_dir)/dos/sys/_pc98.mh $(owhdrcnt)
 h/sys/stat.h      : $(mh_dir)/sys/stat.mh $(sys_stat_deps)
 
 !else ifeq system rdos
 
-h/dirent.h        : $(mh_dir)/dirent.mh $(owhdr) $(maxpath_sp) ../dirfind.sp $(cplus) $(packll)
+h/dirent.h        : $(mh_dir)/dirent.mh $(owhdr) $(maxpath_sp) ../dirattr.sp ../dirfind.sp $(cplus) $(packll)
 h/sys/wait.h      : $(mh_dir)/sys/wait.mh $(owhdr) $(cplus) ../wait.sp
 h/sys/select.h    : $(mh_dir)/sys/select.mh $(sys_select_deps)
 h/sys/time.h      : $(mh_dir)/sys/time.mh $(sys_time_deps)
