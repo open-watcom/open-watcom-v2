@@ -37,6 +37,9 @@
     #include <dirent.h>
 #elif defined( __WATCOMC__ )
   #if __WATCOMC__ < 1300
+    /*
+     * OW 1.9 workaround
+     */
     #include <direct.h>
   #else
     #include <dirent.h>
