@@ -351,7 +351,7 @@ STRM_T GetCHR( void )
             if( head->data.file.cur == head->data.file.max ) {
                 if( !fillBuffer() ) {
                     if( head->data.file.nestLevel != GetNestLevel() ) {
-                        PrtMsg( WRN | EOF_BEFORE_ENDIF, "endif" );
+                        PrtMsg( WRN | LOC | EOF_BEFORE_ENDIF, "endif" );
                     }
                     popSENT();
                     flagEOF = true;
