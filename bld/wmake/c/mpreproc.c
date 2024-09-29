@@ -243,8 +243,8 @@ STATIC directiveTok getPreTok( void )
         return( D_BLANK );
     }
 
-    assert( ( key - (char **)directives >= 0 ) &&
-            ( key - (char **)directives <= D_MAX ) );
+    assert( ( key - (char **)directives >= 0 )
+        && ( key - (char **)directives <= D_MAX ) );
 
     return( (int)( key - (char **)directives ) );
 }
@@ -1095,14 +1095,14 @@ STRM_T PreGetCHR( void )
         atStartOfLine = s;
         temp          = s;
 
-        skip = curNest.skip && !doingPreProc;
+        skip = ( curNest.skip && !doingPreProc );
 
         if( s == STRM_TMP_EOL ) {
             s = GetCHR();
         }
         if( s == COMMENT_C
           && lastChar != '$'
-           && inlineLevel == 0 ) {
+          && inlineLevel == 0 ) {
             s = GetCHR();
             while( s != '\n' && s != STRM_END ) {
                 s = GetCHR();
@@ -1677,7 +1677,8 @@ STATIC void parseExpr( DATAVALUE *leftVal, char *inString )
  * parsed)
  */
 {
-    assert( inString != NULL && leftVal != NULL );
+    assert( inString != NULL
+        && leftVal != NULL );
     currentPtr = inString;
     nextToken();
     logorExpr( leftVal );
@@ -1723,7 +1724,7 @@ STATIC void logandExpr( DATAVALUE *leftVal )
         nextToken();
         bitorExpr( &rightVal );
         if( rightVal.type == OP_INTEGER ) {
-            leftVal->data.number = leftVal->data.number && rightVal.data.number;
+            leftVal->data.number = ( leftVal->data.number && rightVal.data.number );
         } else {
             leftVal->type = OP_ERROR;
         }

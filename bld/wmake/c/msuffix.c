@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -124,7 +124,9 @@ STATIC SUFFIX *findSuffixNode( const char *name, const char **sufdest )
     char        sufname[MAX_SUFFIX];
     char        *p;
 
-    assert( name != NULL && ( name[0] == '.' || name[0] == NULLCHAR ) );
+    assert( name != NULL
+        && ( name[0] == '.'
+        || name[0] == NULLCHAR ) );
 
     if( name[0] != NULLCHAR ) {
         name++; /* skip leading '.' */
@@ -170,7 +172,8 @@ bool SufExists( const char *sufname )
  * sufname with leading dot
  */
 {
-    assert( sufname != NULL && sufname[0] == '.' );
+    assert( sufname != NULL
+        && sufname[0] == '.' );
 
     return( findSuffixNode( sufname, NULL ) != NULL );
 }
@@ -187,7 +190,9 @@ STATIC void AddFrontSuffix( char const *sufname )
 {
     SUFFIX  *new;
 
-    assert( sufname != NULL && sufname[0] == '.' && !SufExists( sufname ) );
+    assert( sufname != NULL
+        && sufname[0] == '.'
+        && !SufExists( sufname ) );
 
     new = CallocSafe( sizeof( *new ) );
     new->node.name = FixName( StrDupSafe( sufname + 1 ) );
@@ -206,7 +211,9 @@ bool SufBothExist( const char *sufsuf )   /* .src.dest */
 {
     char const  *sufdest;
 
-    assert( sufsuf != NULL && sufsuf[0] == '.' && strchr( sufsuf + 1, '.' ) != NULL );
+    assert( sufsuf != NULL
+        && sufsuf[0] == '.'
+        && strchr( sufsuf + 1, '.' ) != NULL );
 
     if( findSuffixNode( sufsuf, &sufdest ) == NULL ) {
         return( false );
@@ -232,9 +239,13 @@ void AddSuffix( const char *sufname )
 {
     SUFFIX  *new;
 
-    assert( ( sufname != NULL && sufname[0] == '.' && !SufExists( sufname ) ) ||
-            ( sufname != NULL && sufname[0] == '.' && SufExists( sufname ) &&
-            Glob.compat_nmake ) );
+    assert( ( sufname != NULL
+        && sufname[0] == '.'
+        && !SufExists( sufname ) )
+        || ( sufname != NULL
+        && sufname[0] == '.'
+        && SufExists( sufname )
+        && Glob.compat_nmake ) );
 
     new = CallocSafe( sizeof( *new ) );
     new->node.name = FixName( StrDupSafe( sufname + 1 ) ); /* skip leading dot */
@@ -253,7 +264,8 @@ STATIC void addPathToPathRing( PATHRING *pathring, const char *path )
     const char  *p;
     size_t      len;
 
-    assert( pathring != NULL && path != NULL );
+    assert( pathring != NULL
+        && path != NULL );
 
     tail = pathring;            /* find "tail" of ring */
     if( *tail != NULL ) {
@@ -296,7 +308,8 @@ void SetSufPath( const char *sufname, const char *path )
 {
     SUFFIX      *suffix;
 
-    assert( sufname != NULL && sufname[0] == '.' );
+    assert( sufname != NULL
+        && sufname[0] == '.' );
 
     suffix = findSuffixNode( sufname, NULL );
 
@@ -357,14 +370,19 @@ char *AddCreator( const char *sufsuf )
     char        *cur_dep_path;
     char        buf[_MAX_PATH];
 
-    assert( sufsuf != NULL && sufsuf[0] == '.' && strchr( sufsuf + 1, '.' ) != NULL );
+    assert( sufsuf != NULL
+        && sufsuf[0] == '.'
+        && strchr( sufsuf + 1, '.' ) != NULL );
 
     src = findSuffixNode( sufsuf, &sufdest );
     dest = findSuffixNode( sufdest, NULL );
 
-    assert( src != NULL && dest != NULL );
+    assert( src != NULL
+        && dest != NULL );
 
-    if( !Glob.compat_nmake && !Glob.compat_posix && src->id < dest->id ) {
+    if( !Glob.compat_nmake
+      && !Glob.compat_posix
+      && src->id < dest->id ) {
         PrtMsg( ERR | LOC | EXTENSIONS_REVERSED );
     }
     for( cur = &dest->creator; *cur != NULL; cur = &(*cur)->next ) {
@@ -385,9 +403,11 @@ char *AddCreator( const char *sufsuf )
     }
 
     pslist = NULL;
-    if( *cur != NULL && src->id == (*cur)->suffix->id ) {
+    if( *cur != NULL
+      && src->id == (*cur)->suffix->id ) {
         for( slist = (*cur)->slist; ; slist = slist->next ) {
-            if( stricmp( slist->targ_path, cur_targ_path ) == 0 && stricmp( slist->dep_path, cur_dep_path ) == 0 ) {
+            if( stricmp( slist->targ_path, cur_targ_path ) == 0
+              && stricmp( slist->dep_path, cur_dep_path ) == 0 ) {
                 if( *cur_targ_path != NULLCHAR ) {
                     FreeSafe( cur_targ_path );
                 }

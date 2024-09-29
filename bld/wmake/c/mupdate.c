@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -110,7 +110,8 @@ void exPop( void )
 STATIC signed int dateCmp( time_t targ, time_t dep )
 /**************************************************/
 {
-    if( (targ < dep) || Glob.all ) {
+    if( (targ < dep)
+      || Glob.all ) {
         return( -1 );
     } else if( targ > dep ) {
         return( 1 );
@@ -208,11 +209,14 @@ STATIC RET_T carryOut( TARGET *targ, CLIST *clist, time_t max_time )
     struct utimbuf      times;
     char                msg[max( MAX_RESOURCE_SIZE, _MAX_PATH )];
 
-    assert( targ != NULL && clist != NULL );
+    assert( targ != NULL
+        && clist != NULL );
 
     ++cListCount;
     if( ExecCList( clist ) ) {
-        if( Glob.rcs_make && !Glob.noexec && !Glob.touch ) {
+        if( Glob.rcs_make
+          && !Glob.noexec
+          && !Glob.touch ) {
             if( max_time != OLDEST_DATE ) {
                 targ->date = max_time;
                 targ->backdated = true;
@@ -257,9 +261,12 @@ STATIC RET_T carryOut( TARGET *targ, CLIST *clist, time_t max_time )
             ExitFatal();
             // never return
         }
-    } else if( !(targ->attr.precious || targ->attr.symbolic) ) {
-        if( !Glob.hold && targExists( targ ) ) {
-            if( Glob.erase || GetYes( SHOULD_FILE_BE_DELETED ) ) {
+    } else if( !(targ->attr.precious
+      || targ->attr.symbolic) ) {
+        if( !Glob.hold
+          && targExists( targ ) ) {
+            if( Glob.erase
+              || GetYes( SHOULD_FILE_BE_DELETED ) ) {
                 if( remove( targ->node.name ) != 0 ) {
                     PrtMsg( FTL | SYSERR_DELETING_ITEM, targ->node.name );
                     ExitFatal();
@@ -318,7 +325,8 @@ STATIC RET_T perform( TARGET *targ, DEPEND *dep, DEPEND *impldep, time_t max_tim
 
     depend = NULL;
     impliedDepend = NULL;
-    assert( targ != NULL && dep != NULL );
+    assert( targ != NULL
+        && dep != NULL );
 
     if( Glob.query ) {
         ++cListCount;
@@ -353,7 +361,8 @@ STATIC RET_T perform( TARGET *targ, DEPEND *dep, DEPEND *impldep, time_t max_tim
         if( clist == NULL ) {
             // No commands in Microsoft and POSIX mode is considered OK
             // and executed
-            if( Glob.compat_nmake || Glob.compat_posix ) {
+            if( Glob.compat_nmake
+              || Glob.compat_posix ) {
                 targ->cmds_done = true;
                 return( RET_SUCCESS );
             }
@@ -472,11 +481,14 @@ STATIC bool isOutOfDate( TARGET *targ, TARGET *deptarg, bool *outofdate )
  */
 {
     getDate( targ );
-    if( targ->existing && targ->attr.existsonly ) {
+    if( targ->existing
+      && targ->attr.existsonly ) {
         return( true );
     }
     getDate( deptarg );
-    if( targ->existing && deptarg->existing && deptarg->attr.existsonly ) {
+    if( targ->existing
+      && deptarg->existing
+      && deptarg->attr.existsonly ) {
         return( true );
     }
     if( dateCmp( targ->date, deptarg->date ) < 0 ) {
@@ -491,7 +503,9 @@ STATIC bool isOutOfDate( TARGET *targ, TARGET *deptarg, bool *outofdate )
         */
         return( false );
     }
-    if( (!deptarg->attr.recheck && deptarg->cmds_done) || deptarg->backdated ) {
+    if( (!deptarg->attr.recheck
+      && deptarg->cmds_done)
+      || deptarg->backdated ) {
         *outofdate = true;
     }
     return( true );
@@ -525,7 +539,8 @@ STATIC RET_T implyMaybePerform( TARGET *targ, TARGET *imptarg, TARGET *cretarg, 
         return( RET_ERROR );
     }
 
-    if( !must && USE_AUTO_DEP( cretarg ) ) {
+    if( !must
+      && USE_AUTO_DEP( cretarg ) ) {
         if( autoOutOfDate( targ, &max_time ) ) {
             must = true;
         }
@@ -549,7 +564,8 @@ STATIC RET_T implyMaybePerform( TARGET *targ, TARGET *imptarg, TARGET *cretarg, 
             return( RET_ERROR );
         }
 
-        if( Glob.noexec || Glob.query ) {
+        if( Glob.noexec
+          || Glob.query ) {
             targ->executed = true;
             targ->touched = true;
         }
@@ -634,17 +650,21 @@ STATIC RET_T imply( TARGET *targ, const char *drive, const char *dir,
                     slistDef = curslist;
                 }
             }
-            if( *curslist->targ_path == NULLCHAR && *curslist->dep_path == NULLCHAR ) {
+            if( *curslist->targ_path == NULLCHAR
+              && *curslist->dep_path == NULLCHAR ) {
                 slistEmptyTargDepPath = curslist;
             }
 
-            if( slistCount > 0 && slistEmptyTargDepPath != NULL ) {
+            if( slistCount > 0
+              && slistEmptyTargDepPath != NULL ) {
                 UseDefaultSList = false;
             }
             ++slistCount;
         }
 
-        if( UseDefaultSList && slist == NULL && !Glob.compat_nmake ) {
+        if( UseDefaultSList
+          && slist == NULL
+          && !Glob.compat_nmake ) {
             _makepath( buf, NULL, NULL, fname, cursuf->node.name );
             /* try to find this file on path or in targets */
             ok = TrySufPath( buf, buf, &imptarg, false );
@@ -657,7 +677,8 @@ STATIC RET_T imply( TARGET *targ, const char *drive, const char *dir,
             }
         }
 
-        if( !ok && slistDef == NULL ) {
+        if( !ok
+          && slistDef == NULL ) {
             /*
              * No Default Slist found so must continue and find
              * another slist
@@ -666,7 +687,9 @@ STATIC RET_T imply( TARGET *targ, const char *drive, const char *dir,
             continue;
         }
 
-        if( (ok && imptarg == NULL) || !ok ) {
+        if( (ok
+          && imptarg == NULL)
+          || !ok ) {
             /* Either file doesn't exist, or it exists and we don't already
              * have a target for it.  Either way, we create a new target.
              */
@@ -686,7 +709,9 @@ STATIC RET_T imply( TARGET *targ, const char *drive, const char *dir,
             if( ret == RET_ERROR ) {
                 imptarg->error = true;
             }
-            if( startcount != cListCount && (Glob.noexec || Glob.query) ) {
+            if( startcount != cListCount
+              && (Glob.noexec
+              || Glob.query) ) {
                 imptarg->touched = true;
                 imptarg->executed = true;
             }
@@ -706,7 +731,8 @@ STATIC RET_T imply( TARGET *targ, const char *drive, const char *dir,
         if( targExists( imptarg ) ) {
             /* it exists - now we perform the implicit cmd list, and return */
             ret = implyMaybePerform( targ, imptarg, slist->cretarg, must );
-            if( newtarg && !Glob.noexec ) {
+            if( newtarg
+              && !Glob.noexec ) {
                 /* destroy the implied target, because the info in the target
                  * structure is nicely stored on disk (unless Glob.noexec)
                  */
@@ -817,17 +843,20 @@ STATIC RET_T resolve( TARGET *targ, DEPEND *depend )
         /* make the target if it doesn't exist or it's symbolic */
         /* a "::" target with no dependents must be made */
         exec_cmds = false;
-        if( !targ->scolon || !targ->existing ) {
+        if( !targ->scolon
+          || !targ->existing ) {
             exec_cmds = true;
         }
-        if( targ->attr.symbolic || targ->attr.always ) {
+        if( targ->attr.symbolic
+          || targ->attr.always ) {
             exec_cmds = true;
         }
         /* if all targets must be made, so should this one */
         if( Glob.all ) {
             exec_cmds = true;
         }
-        if( !exec_cmds && USE_AUTO_DEP( targ ) ) {
+        if( !exec_cmds
+          && USE_AUTO_DEP( targ ) ) {
             if( autoOutOfDate( targ, &max_time ) ) {
                 exec_cmds = true;
             }
@@ -852,7 +881,8 @@ STATIC RET_T resolve( TARGET *targ, DEPEND *depend )
     if( targ->attr.always ) {
         outofdate = true;
     }
-    if( !outofdate && USE_AUTO_DEP( targ ) ) {
+    if( !outofdate
+      && USE_AUTO_DEP( targ ) ) {
         if( autoOutOfDate( targ, &max_time ) ) {
             outofdate = true;
         }
@@ -907,7 +937,9 @@ bool Update( TARGET *targ )
     targExists( targ );     /* find file using sufpath */
     startcount = cListCount;
 
-    if( targ->depend == NULL || (targ->depend->clist == NULL && targ->depend->targs == NULL) ) {
+    if( targ->depend == NULL
+      || (targ->depend->clist == NULL
+      && targ->depend->targs == NULL) ) {
         /* has no depend/explicit rules */
         PrtMsg( DBG | INF | M_EXPLICIT_RULE, M_NO );
         ret = tryImply( targ, false );
@@ -947,7 +979,10 @@ bool Update( TARGET *targ )
         }
     }
 
-    if( (targ->attr.symbolic || Glob.noexec || Glob.query) && startcount != cListCount ) {
+    if( (targ->attr.symbolic
+      || Glob.noexec
+      || Glob.query)
+      && startcount != cListCount ) {
         targ->existing = true;
         targ->touched = true;
         targ->executed = false;
@@ -957,13 +992,15 @@ bool Update( TARGET *targ )
     target_exists = targExists( targ );
 //    if( target_exists || targ->attr.symbolic || Glob.ignore ) {
 //        // Target exists or it is symbolic or we're ignoring errors,
-    if( target_exists || targ->attr.symbolic ) {
+    if( target_exists
+      || targ->attr.symbolic ) {
         // Target exists or it is symbolic,
         // therefore everyone's happy and we can charge forward
         PrtMsg( DBG | INF | TARGET_IS_UPDATED, targ->node.name );
     } else {
         // Target doesn't exist, we may be in trouble
-        if( targ->cmds_done && Glob.nocheck ) {
+        if( targ->cmds_done
+          && Glob.nocheck ) {
             // Target doesn't exist even though we processed some commands,
             // but we're not checking existence of files. Consider it uptodate.
             targ->existing = true;
@@ -1012,19 +1049,22 @@ static struct exStack exGetCurVars( void )
     for( walk = top; walk >= 0; --walk ) {
         if( buf.dep == NULL ) {
             curdep = exStack[walk].dep;
-            if( curdep != NULL && curdep->targs != NULL ) {
+            if( curdep != NULL
+              && curdep->targs != NULL ) {
                 buf.dep = curdep;
             }
         }
         if( buf.impDep == NULL ) {
             curimpDep = exStack[walk].impDep;
-            if( curimpDep != NULL && curimpDep->targs != NULL ) {
+            if( curimpDep != NULL
+              && curimpDep->targs != NULL ) {
                 buf.impDep = curimpDep;
             }
         }
         if( buf.targ == NULL ) {
             curtarg = exStack[walk].targ;
-            if( curtarg != NULL && ! curtarg->attr.symbolic ) {
+            if( curtarg != NULL
+              && ! curtarg->attr.symbolic ) {
                 /* we want non-NULL and non-SYMBOLIC! */
                 buf.targ = curtarg;
             }
@@ -1064,8 +1104,10 @@ char *GetCurDeps( bool younger, bool isMacInf )
         }
     }
 
-    if( (younger && cur.targ == NULL) ||
-        cur.dep == NULL || cur.dep->targs == NULL ) {
+    if( (younger
+      && cur.targ == NULL)
+      || cur.dep == NULL
+      || cur.dep->targs == NULL ) {
         return( CharToStrSafe( NULLCHAR ) );
     }
 
@@ -1074,7 +1116,8 @@ char *GetCurDeps( bool younger, bool isMacInf )
 
     for( tlist = cur.dep->targs; tlist != NULL; tlist = tlist->next ) {
         targ = tlist->target;
-        if( !younger || dateCmp( cur.targ->date, targ->date ) < 0 ) {
+        if( !younger
+          || dateCmp( cur.targ->date, targ->date ) < 0 ) {
             if( written ) {
                 WriteVec( vec, " " );
             }
@@ -1111,7 +1154,8 @@ const char *GetFirstDep( void )
     if( cur.impDep != NULL ) {
         cur.dep = cur.impDep;
     }
-    if( cur.dep != NULL && cur.dep->targs != NULL ) {
+    if( cur.dep != NULL
+      && cur.dep->targs != NULL ) {
         return( cur.dep->targs->target->node.name );
     }
     return( NULL );
@@ -1128,7 +1172,8 @@ const char *GetLastDep( void )
     if( cur.impDep != NULL ) {
         cur.dep = cur.impDep;
     }
-    if( cur.dep != NULL && cur.dep->targs != NULL ) {
+    if( cur.dep != NULL
+      && cur.dep->targs != NULL ) {
         tlist = cur.dep->targs;
         while( tlist->next != NULL ) {
             tlist = tlist->next;
@@ -1144,7 +1189,9 @@ void UpdateInit( void )
 {
     /* according to ANSI standard... this should be true */
 
-    assert( !doneBefore && cListCount == 0ul && exStackP == 0 );
+    assert( !doneBefore
+        && cListCount == 0UL
+        && exStackP == 0 );
     DoingUpdate = true;
 }
 
@@ -1157,7 +1204,8 @@ void UpdateFini( void )
     assert( exStackP == 0 );
 
     after = DotCList( DOT_AFTER );
-    if( doneBefore && after != NULL ) {
+    if( doneBefore
+      && after != NULL ) {
         ++cListCount;
         if( !ExecCList( DotCList( DOT_AFTER ) ) ) {
             PrtMsg( ERR | S_COMMAND_RET_BAD, DotNames[DOT_AFTER] );
