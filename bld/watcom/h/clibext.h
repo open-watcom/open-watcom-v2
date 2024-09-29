@@ -204,7 +204,7 @@ extern char     *get_dllname( char *buf, int len );
 /*
  * temporary fix for older builds of OW 2.0
  */
-#if __WATCOMC__ == 1300
+#if ( __WATCOMC__ == 1300 ) && defined( BOOTSTRAP )
 #ifndef _WCI86NEAR
 #define _WCI86NEAR
 #endif
