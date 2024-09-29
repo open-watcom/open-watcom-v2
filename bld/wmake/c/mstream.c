@@ -236,7 +236,7 @@ STATIC bool fillBuffer( void )
 static bool needQuotes( const char *name )
 /****************************************/
 {
-    return( strchr( name, ' ' ) != NULL || strchr( name, '#' ) != NULL );
+	return( strchr( name, ' ' ) != NULL );
 }
 
 #ifdef __WATCOMC__
