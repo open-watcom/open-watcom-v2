@@ -36,9 +36,9 @@
 #if defined( __UNIX__ )
     #include <dirent.h>
 #elif defined( __WATCOMC__ )
-  #if ( __WATCOMC__ < 1300 ) || defined( BOOTSTRAP )
+  #if ( __WATCOMC__ < 1300 ) || ( __WATCOMC__ == 1300 ) && defined( BOOTSTRAP )
     /*
-     * OW 1.9 workaround
+     * OW 1.9 and old OW 2.0 workaround
      */
     #include <direct.h>
   #else
