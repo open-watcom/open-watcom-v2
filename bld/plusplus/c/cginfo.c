@@ -202,7 +202,9 @@ void FEMessage(                 // MESSAGES FROM CODE-GENERATOR
 const char *FEModuleName(       // RETURN MODULE NAME
     void )
 {
-    return( ModuleName );
+    if( ModuleName != NULL && ModuleName[0] != '\0' )
+        return( ModuleName );
+    return( SrcFName );
 }
 
 
@@ -1334,15 +1336,11 @@ void *FEAuxInfo(                // REQUEST AUXILLIARY INFORMATION
     case FEINF_SOURCE_NAME:
         DbgNotSym();
         DbgNotRetn();
-        if( strcmp( SrcFName, ModuleName ) == 0 ) {
-            SRCFILE src_file = SrcFileGetPrimary();
-            if( src_file != NULL ) {
-                retn = SrcFileFullName( src_file );
-            } else {
-                retn = IoSuppFullPath( WholeFName, Buffer, sizeof( Buffer ) );
-            }
+        SRCFILE src_file = SrcFileGetPrimary();
+        if( src_file != NULL ) {
+            retn = SrcFileFullName( src_file );
         } else {
-            retn = ModuleName;
+            retn = IoSuppFullPath( WholeFName, Buffer, sizeof( Buffer ) );
         }
         break;
     case FEINF_CALL_CLASS:
