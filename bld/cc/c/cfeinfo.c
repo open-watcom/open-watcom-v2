@@ -1137,11 +1137,9 @@ CGPOINTER FEAuxInfo( CGPOINTER req_handle, aux_class request )
   #endif
 #endif
     case FEINF_SOURCE_NAME:
-        if( SrcFName == ModuleName ) {
-            return( (CGPOINTER)FNameFullPath( FNames ) );
-        } else {
+        if( ModuleName != NULL && ModuleName[0] != '\0' )
             return( (CGPOINTER)ModuleName );
-        }
+        return( (CGPOINTER)FNameFullPath( FNames ) );
     case FEINF_CALL_CLASS:
         return( (CGPOINTER)getCallClass( req_handle ) );
     case FEINF_CALL_CLASS_TARGET:

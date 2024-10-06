@@ -210,6 +210,7 @@ static char *createFileName( const char *template, const char *ext, bool forceex
 {
     pgroup2     pg;
     bool        use_defaults;
+    const char  *module_name;
 
     use_defaults = ( template == NULL );
     if( use_defaults )
@@ -222,13 +223,14 @@ static char *createFileName( const char *template, const char *ext, bool forceex
         pg.drive = "";
         pg.dir = "";
     }
-    if( pg.fname[0] == '\0' || pg.fname[0] == '*' ) {
-        pg.fname = ModuleName;
-    }
     if( !forceext && pg.ext[0] != '\0' && !use_defaults ) {
         ext = pg.ext;
     }
-    _makepath( FNameBuf, pg.drive, pg.dir, pg.fname, ext );
+    module_name = pg.fname;
+    if( module_name[0] == '\0' || module_name[0] == '*' ) {
+        module_name = FEModuleName();
+    }
+    _makepath( FNameBuf, pg.drive, pg.dir, module_name, ext );
     return( FNameBuf );
 }
 
@@ -350,21 +352,15 @@ static void MakePgmName( void )
         WholeFName = CMemAlloc( sizeof( STDIN_NAME ) );
         strcpy( WholeFName, STDIN_NAME );
         pg.fname = WholeFName;
-        len = sizeof( STDIN_NAME );
     } else {
         _splitpath2( WholeFName, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
         if( pg.ext[0] == '\0' ) { // no extension
             len = strlen( WholeFName );
-            WholeFName = CMemRealloc( WholeFName, len + ( 1 + sizeof( C_EXT ) ) + 1 );
+            WholeFName = CMemRealloc( WholeFName, len + 1 + ( sizeof( C_EXT ) - 1 ) + 1 );
             strcat( WholeFName + len, "." C_EXT );
         }
-        len = strlen( pg.fname ) + 1;
     }
-    SrcFName = CMemAlloc( len );
-    strcpy( SrcFName, pg.fname );
-    if( ModuleName == NULL ) {
-        ModuleName = SrcFName;
-    }
+    SrcFName = CMemStrDup( pg.fname );
 }
 
 static void CantOpenFile( const char *name )
