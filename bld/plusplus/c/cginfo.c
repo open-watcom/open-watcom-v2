@@ -1334,14 +1334,18 @@ void *FEAuxInfo(                // REQUEST AUXILLIARY INFORMATION
         break;
 #endif
     case FEINF_SOURCE_NAME:
+      {
+        SRCFILE src_file
+
         DbgNotSym();
         DbgNotRetn();
-        SRCFILE src_file = SrcFileGetPrimary();
+        src_file = SrcFileGetPrimary();
         if( src_file != NULL ) {
             retn = SrcFileFullName( src_file );
         } else {
             retn = IoSuppFullPath( WholeFName, Buffer, sizeof( Buffer ) );
         }
+      }
         break;
     case FEINF_CALL_CLASS:
         DbgNotRetn();
