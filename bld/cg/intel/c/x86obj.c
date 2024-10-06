@@ -1139,8 +1139,12 @@ void    ObjInit( void )
     CurrFNo = 0;
     OpenObj();
     names = InitArray( sizeof( byte ), MODEST_HDR, INCREMENT_HDR );
-    OutName( FEAuxInfo( NULL, FEINF_SOURCE_NAME ), names );
+    OutName( FEModuleName(), names );
     PutObjOMFRec( CMD_THEADR, names );
+    if( _IsModel( CGSW_GEN_DBG_NUMBERS ) ) {
+        OutName( FEAuxInfo( NULL, FEINF_SOURCE_NAME ), names );
+        PutObjOMFRec( CMD_THEADR, names );
+    }
 #if _TARGET & _TARG_80386
     if( _IsTargetModel( CGSW_X86_EZ_OMF )
       || _IsTargetModel( CGSW_X86_FLAT_MODEL ) ) {
