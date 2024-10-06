@@ -247,6 +247,9 @@ static void SetGenSwitches( OPT_STORAGE *data )
         TargetSwitches |= CGSW_RISC_OWL_LOGGING;
     }
 #endif
+    if( data->nm ) {
+        SetStringOption( &ModuleName, &(data->nm_value) );
+    }
 #if _CPU == _AXP /* || _CPU == _MIPS */
     if( data->si ) {
         TargetSwitches |= CGSW_RISC_STACK_INIT;

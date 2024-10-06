@@ -654,9 +654,6 @@ static void AnalyseAnyTargetOptions( OPT_STORAGE *data )
         GenSwitches |= CGSW_GEN_ECHO_API_CALLS;
     }
 #endif
-    if( data->nm ) {
-        SetStringOption( &ModuleName, &(data->nm_value) );
-    }
     if( data->oa ) {
         GenSwitches |= CGSW_GEN_RELAX_ALIAS;
     }
@@ -785,10 +782,6 @@ static void AnalyseAnyTargetOptions( OPT_STORAGE *data )
     }
     if( data->zls ) {
         CompFlags.emit_targimp_symbols = false;
-    }
-    if( data->zm ) {
-        CompFlags.multiple_code_segments = true;
-        CompFlags.zm_switch_used = true;
     }
     if( data->zp ) {
         PackAmount = data->zp_value;
