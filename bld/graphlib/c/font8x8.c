@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,7 +31,7 @@
 
 
 #include "gdefn.h"
-#include "8x8font.h"
+#include "font8x8.h"
 
 char _WCI86FAR _8x8Font[] = {
      '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00',

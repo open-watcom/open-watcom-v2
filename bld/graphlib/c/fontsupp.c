@@ -47,7 +47,7 @@
   #include "exedos.h"
 #endif
 #if !defined( _DEFAULT_WINDOWS )
-  #include "8x8font.h"
+  #include "font8x8.h"
 #endif
 
 

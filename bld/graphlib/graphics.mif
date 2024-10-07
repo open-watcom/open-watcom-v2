@@ -177,7 +177,7 @@ common_objs = &
     $(_subdir_)zrectang.obj
 
 eng_nonwin_objs = &
-    $(_subdir_)8x8font.obj &
+    $(_subdir_)font8x8.obj &
     $(_subdir_)bit.obj &
     $(_subdir_)gstklow.obj &
     $(_subdir_)hercfont.obj &
