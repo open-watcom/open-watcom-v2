@@ -2192,7 +2192,6 @@ void ModuleInit( void )
     ModuleInfo.model_cmdline = false;
     ModuleInfo.mseg = false;
     ModuleInfo.flat_grp = NULL;
-    ModuleInfo.name = NULL;
     /*
      * add source file to autodependency list
      */
@@ -2202,30 +2201,6 @@ void ModuleInit( void )
 void ModuleFini( void )
 /*********************/
 {
-    AsmFree( ModuleInfo.name );
-}
-
-static void get_module_name( void )
-/*********************************/
-{
-    char        *p;
-    int         c;
-
-    ModuleInfo.name = AsmStrDup( ModuleName );
-    for( p = ModuleInfo.name; (c = *(unsigned char *)p) != '\0'; ++p ) {
-        if( !IS_VALID_ID_CHAR( c ) ) {
-            /*
-             * it's not a legal character for a symbol name
-             */
-            *p = '_';
-        }
-    }
-    /*
-     * first character can't be a number either
-     */
-    if( isdigit( ModuleInfo.name[0] ) ) {
-        ModuleInfo.name[0] = '_';
-    }
 }
 
 static void set_def_seg_name( int type )
@@ -2241,7 +2216,7 @@ static void set_def_seg_name( int type )
         case TOK_MEDIUM:
         case TOK_LARGE:
         case TOK_HUGE:
-            sprintf( buffer, "%s%s", ModuleInfo.name, get_sim_name( SIM_CODE, NULL ) );
+            sprintf( buffer, "%s%s", GetModuleName(), get_sim_name( SIM_CODE, NULL ) );
             Options.text_seg = AsmStrDup( buffer );
             break;
         default:
@@ -2276,8 +2251,6 @@ bool Model( token_buffer *tokbuf, token_idx i )
         return( RC_ERROR );
     }
     ModuleInfo.model_cmdline = false;
-
-    get_module_name();
 
     if( Options.mode & MODE_IDEAL ) {
         token = tokbuf->tokens[i + 1].string_ptr;
@@ -4175,8 +4148,10 @@ bool AddAlias( token_buffer *tokbuf, token_idx i )
 bool NameDirective( token_buffer *tokbuf, token_idx i )
 /*****************************************************/
 {
-    if( Options.module_name == NULL )
+    if( Options.module_name == NULL ) {
         Options.module_name = AsmStrDup( tokbuf->tokens[i + 1].string_ptr );
+        ConvertModuleName( Options.module_name );
+    }
     return( RC_OK );
 }
 
