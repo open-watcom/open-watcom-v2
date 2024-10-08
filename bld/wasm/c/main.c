@@ -66,8 +66,8 @@ struct  option {
     void        (*function)( void );
 };
 
-#define MAX_NESTING 15
-#define BUF_SIZE    512
+#define MAX_NESTING     15
+#define BUF_SIZE        512
 
 sw_data SWData = {
     false, // real mode CPU instructions set
@@ -80,6 +80,7 @@ sw_data SWData = {
 static char             *ForceInclude = NULL;
 static const char       *switch_start = NULL;
 static char             *SrcFName = NULL;
+static char             *SrcModuleName = NULL;
 
 global_options Options = {
     false,              // sign_value
@@ -237,7 +238,7 @@ const char *GetModuleName( void )
 {
     if( Options.module_name != NULL )
         return( Options.module_name );
-    return( SrcFName );
+    return( SrcModuleName );
 }
 
 char *CreateFileName( const char *template, const char *ext, bool forceext )
@@ -261,7 +262,7 @@ char *CreateFileName( const char *template, const char *ext, bool forceext )
     }
     fn = pg.fname;
     if( fn[0] == '\0' || fn[0] == '*' && fn[1] == '\0' ) {
-        fn = GetModuleName();
+        fn = SrcFName;
     }
     if( !forceext && pg.ext[0] != '\0' && !use_defaults ) {
         ext = pg.ext;
@@ -315,7 +316,8 @@ static void srcFileName( char *token )
         pg.ext = ASM_EXT;
     }
     SrcFName = AsmStrDup( pg.fname );
-    ConvertModuleName( SrcFName );
+    SrcModuleName = AsmStrDup( pg.fname );
+    ConvertModuleName( SrcModuleName );
     _makepath( name, pg.drive, pg.dir, pg.fname, pg.ext );
     AsmFiles.fname[ASM] = AsmStrDup( name );
 }
