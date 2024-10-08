@@ -28,8 +28,9 @@ memory_model_386 = s
 memory_model_386 = s
 !endif
 
-suffix_register = r
-suffix_stack = s
+sign_register = r
+sign_stack = s
+modsign_=$(sign_$(convention))
 
 !include cproj.mif
 !include defrule.mif
@@ -61,14 +62,14 @@ extra_cpp_flags_386 += -D__STACK
 extra_cpp_flags_win = $(def_windowing)
 extra_cpp_flags_os2 = $(def_windowing)
 
-extra_c_flags = -os -zl -nm=$[&$(suffix_$(convention)) $(extra_c_flags_$(machine)) -fo=$@
+extra_c_flags = -os -zl $(extra_c_flags_$(machine))
 
-extra_c_flags_i86 = -nt=GRAPH_TEXT
+extra_c_flags_i86 = -nm=$[& -nt=GRAPH_TEXT
 extra_c_flags_386_ms_dos = -r
 extra_c_flags_386_ms_qnx = -r
 extra_c_flags_386_register = -3r
 extra_c_flags_386_stack = -3s
-extra_c_flags_386 = $(extra_c_flags_386_$(convention)) $(extra_c_flags_386_m$(memory_model_386)_$(host_os))
+extra_c_flags_386 = -nm=$(modsign_$(modshared_$[&))$[& $(extra_c_flags_386_$(convention)) $(extra_c_flags_386_m$(memory_model_386)_$(host_os))
 
 #
 # aflags
@@ -78,7 +79,7 @@ extra_c_flags_386 = $(extra_c_flags_386_$(convention)) $(extra_c_flags_386_m$(me
 !endif
 .asm: $(graphlib_dir)/asm
 
-extra_a_flags = $(supervga_support) -ms -i"$(graphlib_dir)/inc" $(extra_a_flags_$(machine)) -fo=$@
+extra_a_flags = $(supervga_support) -ms -i"$(graphlib_dir)/inc" $(extra_a_flags_$(machine))
 
 extra_a_flags_i86 = -D_TEXT=GRAPH_TEXT
 extra_a_flags_386_register = -3r
