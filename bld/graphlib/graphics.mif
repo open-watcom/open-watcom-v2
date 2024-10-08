@@ -190,7 +190,7 @@ eng_nonwin_objs = &
     $(_subdir_)transpar.obj &
     $(_subdir_)visit.obj
 
-english_objs = &
+eng_objs = &
     $(_subdir_)cgautils.obj &
     $(_subdir_)cnvcolor.obj &
     $(_subdir_)egautils.obj &
@@ -219,7 +219,7 @@ special_objs = &
     dummy.obj
 
 !ifdef supervga_support
-svga_english_objs = &
+eng_svga_objs = &
     $(_subdir_)grsvga.obj &
     $(_subdir_)svgautil.obj &
     $(_subdir_)svgainfo.obj
@@ -230,7 +230,7 @@ grlib_template = $(common_objs) $(win_objs)
 !else ifeq host_os os2
 grlib_template = $(common_objs) $(os2_objs)
 !else
-grlib_template = $(common_objs) $(eng_nonwin_objs) $(english_objs) $(svga_english_objs)
+grlib_template = $(common_objs) $(eng_nonwin_objs) $(eng_objs) $(eng_svga_objs)
 !endif
 
 #
