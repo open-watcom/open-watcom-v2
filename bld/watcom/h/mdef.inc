@@ -100,9 +100,7 @@ endif
 if _MODEL and _BIG_CODE
 
 modstart        macro   modname,alignment
-ifdef NDEBUG
-;                name    modname
-endif
+                name    modname
                 ifb <alignment>
 _TEXT           segment word public 'CODE'
                 else
@@ -198,9 +196,7 @@ lcall           macro   dest
 else
 
 modstart        macro   modname,alignment
-ifdef NDEBUG
-;                name    modname
-endif
+                name    modname
                 if _MODEL and _USE_32_SEGS
 _TEXT               segment use32 alignment public 'CODE'
                 else
