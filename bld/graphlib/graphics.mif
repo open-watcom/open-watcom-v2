@@ -77,7 +77,7 @@ extra_c_flags_386 = -nm=$(modsign_$(modshared_$[&))$[& $(extra_c_flags_386_$(con
 !ifeq host_cpu 386
 .asm: $(graphlib_dir)/386asm
 !endif
-.asm: $(graphlib_dir)/asm
+.asm: $(graphlib_dir)/asm;$(graphlib_dir)/font
 
 extra_a_flags = $(supervga_support) -ms -i"$(graphlib_dir)/inc" $(extra_a_flags_$(machine))
 
