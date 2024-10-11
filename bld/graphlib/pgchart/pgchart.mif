@@ -16,9 +16,6 @@ pgchart_distrib_lib = 1
 
 suppress_zc = 1
 
-suffix_register = r
-suffix_stack = s
-
 memory_model_i86 = s
 memory_model_386 = s
 !ifeq host_os os2
