@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -85,8 +85,7 @@ short                   _PlotAct = 0;               // plotting action
 struct textsettings     _TextSettings =             // default text settings
                             { 1, 0, _PATH_RIGHT, 0,
                               0, 0, _NORMAL, _NORMAL };
-extern font_def _WCI86FAR    _StdFont;              // standard font
-font_def _WCI86FAR           *_CurrFont = &_StdFont; // current font
+font_def _WCI86FAR      *_CurrFont = &_StdFont; // current font
 
 struct arcinfo          _ArcInfo =                  // arc information
                             { { 0, 0 }, { 0, 0 }, { 0, 0 } };

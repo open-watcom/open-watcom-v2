@@ -1221,7 +1221,7 @@ _WCRTLINK void _WCI86FAR _CGRAPH _outgtext( char _WCI86FAR *str )
   #if defined( __OS2__ )
         _CurFnt = LCID_DEFAULT;
   #else
-        _CurFnt = GetStockObject( SYSTEM_FONT);
+        _CurFnt = GetStockObject( SYSTEM_FONT );
   #endif
     }
     dc = _Mem_dc;
