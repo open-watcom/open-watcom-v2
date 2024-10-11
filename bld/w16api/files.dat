@@ -35,6 +35,7 @@ usr="ver.h"
 usr="win16.h"
 usr="win386.h"
 usr="windows.h"
+usr="windowsx.h"
 usr="winsock.h"
 
 #
