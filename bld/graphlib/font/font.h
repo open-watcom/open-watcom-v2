@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -29,15 +30,9 @@
 ****************************************************************************/
 
 
-#if defined( _M_I86 )
-    #define _FAR    __far
-#else
-    #define _FAR
-#endif
+extern font_def     _WCI86FAR _StdFont;
+extern font_def     _WCI86FAR _Std2Font;
+extern font_def     _WCI86FAR _RomanFont;
+extern font_def     _WCI86FAR _ItalicFont;
 
-extern char _FAR            _StdFont[];
-extern char _FAR            _Std2Font[];
-extern char _FAR            _RomanFont[];
-extern char _FAR            _ItalicFont[];
-
-void _FAR * _FAR            _selectfont( void _FAR * );
+font_def _WCI86FAR * _WCI86FAR _CGRAPH _selectfont( font_def _WCI86FAR *new_font );
