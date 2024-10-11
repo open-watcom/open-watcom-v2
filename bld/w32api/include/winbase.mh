@@ -3108,7 +3108,7 @@ WINADVAPI BOOL      WINAPI AddConditionalAce( PACL, DWORD, DWORD, UCHAR, DWORD, 
 #define GetFreeSpace( x )               0x00100000L
 #define InterlockedExchangePointer( p1, p2 )    (PVOID)InterlockedExchange( (PLONG)(p1), (LONG)(p2) )
 #define InterlockedCompareExchangePointer( p1, p2, p3)  (PVOID)(LONG_PTR)InterlockedCompareExchange( (LONG volatile *)(p1), (LONG)(LONG_PTR)(p2), (LONG)(LONG_PTR)(p3) )
-#define UnlockResource( x )             ((x), 0)
+#define UnlockResource( x )             ((void)(x), 0)
 #define HasOverlappedIoCompleted( x )   (((DWORD)(x)->Internal) != STATUS_PENDING)
 #if (_WIN32_WINNT >= 0x0600)
     #define ProcThreadAttributeValue( p1, p2, p3, p4 ) \
