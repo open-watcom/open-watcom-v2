@@ -217,7 +217,7 @@ static bool ProcessMousePos( gui_event gui_ev, ORD row, ORD col, gui_window * wn
 ui_event GUICreatePopup( gui_window *wnd, const guix_coord *scr_point )
 {
     ui_event    ui_ev;
-    guix_coord  scr_location;
+    guix_point  scr_location;
 
     scr_location.x = scr_point->x - wnd->vs.area.col;
     scr_location.y = scr_point->y - (wnd->vs.area.row - 1);
