@@ -35,8 +35,10 @@ wgml_subdir = \docs\$(dotarget)
 
 !ifdef __UNIX__
 dosbox_cfg = $(%OWROOT)/build/dosbox.cfg
+dosbox_null_dev = /dev/null
 !else
 dosbox_cfg = $(%OWROOT)\build\dosbox.cfg
+dosbox_null_dev = NUL
 !endif
 
 !ifdef %OWWGMLDEBUG
@@ -74,7 +76,7 @@ run_wgml : .PROCEDURE .EXPLICIT
 ! ifndef %OWWGMLDEBUG
     $(noecho)set SDL_VIDEODRIVER=dummy
     $(noecho)set SDL_AUDIODRIVER=disk
-    $(noecho)set SDL_DISKAUDIOFILE=NUL
+    $(noecho)set SDL_DISKAUDIOFILE=$(dosbox_null_dev)
 ! endif
     @%create $(dos_wgml_tmp_batch)
     @%append $(dos_wgml_tmp_batch) c:
@@ -108,7 +110,7 @@ run_gendev : .PROCEDURE .EXPLICIT
 ! ifndef %OWWGMLDEBUG
     $(noecho)set SDL_VIDEODRIVER=dummy
     $(noecho)set SDL_AUDIODRIVER=disk
-    $(noecho)set SDL_DISKAUDIOFILE=NUL
+    $(noecho)set SDL_DISKAUDIOFILE=$(dosbox_null_dev)
 ! endif
     #-------------------------------------------------------
     # create DOS batch file to run gendev utility
