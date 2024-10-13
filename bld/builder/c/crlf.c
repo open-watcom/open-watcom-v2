@@ -1,3 +1,16 @@
+/****************************************************************************
+*
+*                            Open Watcom Project
+*
+* Copyright (c) 2016-2024 The Open Watcom Contributors. All Rights Reserved.
+*
+*  ========================================================================
+*
+* Description:  EOL conversion tool
+*
+****************************************************************************/
+
+
 #include <stdio.h>
 #include "bool.h"
 
