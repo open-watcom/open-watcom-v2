@@ -12,6 +12,8 @@ int main( int argc, char **argv )
     FILE    *fo;
     int     c;
     int     prev;
+    char    *out_file;
+    int     rc;
 
     /* unused parameters */ (void)argc;
 
@@ -41,40 +43,82 @@ int main( int argc, char **argv )
         printf( "Cannot open input file '%s'.\n", *argv );
         return( 3 );
     }
-    ++argv;
-    if( *argv == NULL ) {
-        fclose( fi );
-        printf( "Missing output file name.\n" );
-        return( 4 );
+    /*
+     * if defined output file name then use it
+     * otherwise temporary file is used for processing
+     * and t file name is used as output file name
+     * then temporary file is copied to input file
+     */
+    rc = 0;
+    out_file = NULL;
+    if( *( argv + 1 ) == NULL ) {
+        out_file = *argv;
+        fo = tmpfile();
+        if( fo == NULL ) {
+            printf( "Cannot open output temporary file.\n" );
+            rc = 4;
+        }
+    } else {
+        argv++;
+        fo = fopen( *argv, "wb" );
+        if( fo == NULL ) {
+            printf( "Cannot open output file '%s'.\n", *argv );
+            rc = 5;
+        }
     }
-    fo = fopen( *argv, "wb" );
-    if( fo == NULL ) {
-        printf( "Cannot open output file '%s'.\n", *argv );
-        fclose( fi );
-        return( 5 );
-    }
-    prev = '\0';
-    while( (c = fgetc( fi )) != EOF ) {
-        if( c == CR ) {
-            if( prev == CR ) {
-                fputc( CR, fo );
+    if( fo != NULL ) {
+        prev = '\0';
+        while( (c = fgetc( fi )) != EOF ) {
+            if( c == CR ) {
+                if( prev != CR ) {
+                    prev = c;
+                    continue;
+                }
+            } else if( c == LF ) {
+                if( to_crlf ) {
+                    fputc( CR, fo );
+                }
             }
-        } else if( c == LF ) {
-            if( to_crlf ) {
-                fputc( CR, fo );
-                fputc( LF, fo );
+            fputc( c, fo );
+            prev = c;
+        }
+        if( prev == CR ) {
+            fputc( CR, fo );
+        }
+        if( out_file != NULL ) {
+            fclose( fi );
+            /*
+             * flush and rewind temporary file
+             */
+            fflush( fo );
+            rewind( fo );
+            fi = fo;
+            fo = fopen( out_file, "wb" );
+            if( fo == NULL ) {
+                printf( "Cannot open output file '%s'.\n", *argv );
+                rc = 5;
             } else {
-                fputc( LF, fo );
+                size_t  numread;
+                char    buffer[0x8000];
+
+                while( (numread = fread( buffer, 1, sizeof( buffer ), fi )) != 0 ) {
+                    if( numread != sizeof( buffer ) && ferror( fi ) ) {
+                        printf( "File read error.\n" );
+                        rc = 6;
+                        break;
+                    }
+                    if( fwrite( buffer, 1, numread, fo ) != numread ) {
+                        printf( "File write error.\n" );
+                        rc = 7;
+                        break;
+                    }
+                }
+                fclose( fo );
             }
         } else {
-            fputc( c, fo );
+            fclose( fo );
         }
-        prev = c;
-    }
-    if( prev == CR ) {
-        fputc( CR, fo );
     }
     fclose( fi );
-    fclose( fo );
-    return( 0 );
+    return( rc );
 }
