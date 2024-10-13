@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -48,7 +49,7 @@ unsigned short  _ExtenderRealModeSelector;
 
 static void init( void )
 {
-#ifndef __WINDOWS_386__
+#ifdef __DOS__
     if( _IsFlashTek() ) {
         _ExtenderRealModeSelector = __x386_zero_base_selector;
     } else if( _IsPharLap() || _IsOS386() ) {
@@ -70,7 +71,7 @@ static void init( void )
             __fatal_runtime_error( "Unable to set limit of real mode selector", -1 );
             // never return
         }
-#ifndef __WINDOWS_386__
+#ifdef __DOS__
     } else {
         _ExtenderRealModeSelector = 0;
     }
@@ -79,11 +80,11 @@ static void init( void )
 
 static void fini( void )
 {
-#ifndef __WINDOWS_386__
+#ifdef __DOS__
     if( _IsRationalNonZeroBase() ) {
 #endif
         DPMIFreeLDTDescriptor( _ExtenderRealModeSelector );
-#ifndef __WINDOWS_386__
+#ifdef __DOS__
     }
 #endif
 }
