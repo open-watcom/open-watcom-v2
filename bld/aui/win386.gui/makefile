@@ -1,4 +1,4 @@
-#pmake: build os_win cpu_386 guitool
+#pmake: build guitool os_win cpu_386
 host_os  = win
 host_cpu = 386
 
