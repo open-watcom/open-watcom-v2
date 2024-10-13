@@ -59,8 +59,8 @@ int main( int argc, char **argv )
     /*
      * if defined output file name then use it
      * otherwise temporary file is used for processing
-     * and t file name is used as output file name
-     * then temporary file is copied to input file
+     * and input file name is used also as output file name
+     * after processing temporary file is copied to input file
      */
     rc = 0;
     out_file = NULL;
