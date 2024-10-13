@@ -64,7 +64,7 @@ wgml_ucase = 1
 #-------------------------------------------------------
 set_sdl : .PROCEDURE .EXPLICIT
 !ifndef %OWWGMLDEBUG
-#    $(noecho)set SDL_VIDEODRIVER=dummy
+    $(noecho)set SDL_VIDEODRIVER=dummy
     $(noecho)set SDL_AUDIODRIVER=disk
     $(noecho)set SDL_DISKAUDIOFILE=$(nulldevice)
 !endif
