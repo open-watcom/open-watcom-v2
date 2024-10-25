@@ -6,10 +6,9 @@
 
 :include readonly.sp
 
-/* Define default version number */
-#ifndef WINVER
-    #define WINVER  0x0400
-#endif
+/* Define default Windows version number. */
+:: this define WINVER only
+:include winverdf.sp
 
 #include <winresrc.h>
 

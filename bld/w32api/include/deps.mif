@@ -238,8 +238,8 @@ h/mprapi.h :              $(mh_dir)/mprapi.mh $(owhdr) $(cplus)
 h/mq.h :                  $(mh_dir)/mq.mh $(owhdr) $(cplus)
 h/msacm.h :               $(mh_dir)/msacm.mh $(owhdr) $(cplus)
 h/mshtml.h :              $(mh_dir)/mshtml.mh $(owhdr) $(cplus)
-h/msi.h :                 $(mh_dir)/msi.mh $(owhdr) $(mh_dir)/winver.sp $(cplus)
-h/msidefs.h :             $(mh_dir)/msidefs.mh $(owhdr) $(mh_dir)/winver.sp
+h/msi.h :                 $(mh_dir)/msi.mh $(owhdr) $(mh_dir)/winverdf.sp $(mh_dir)/winver.sp $(cplus)
+h/msidefs.h :             $(mh_dir)/msidefs.mh $(owhdr) $(mh_dir)/winverdf.sp $(mh_dir)/winver.sp
 h/msiquery.h :            $(mh_dir)/msiquery.mh $(owhdr) $(cplus)
 h/mstcpip.h :             $(mh_dir)/mstcpip.mh $(owhdr) $(cplus)
 h/mswsock.h :             $(mh_dir)/mswsock.mh $(owhdr) $(cplus)
@@ -314,7 +314,7 @@ h/rtutils.h :             $(mh_dir)/rtutils.mh $(owhdr) $(cplus)
 h/sal.h :                 $(mh_dir)/sal.mh $(owhdr)
 h/scode.h :               $(mh_dir)/scode.mh $(owhdr)
 h/sddl.h :                $(mh_dir)/sddl.mh $(owhdr) $(cplus)
-h/sdkddkve.h :            $(mh_dir)/sdkddkve.mh $(owhdr) $(cplus) $(mh_dir)/winver.sp
+h/sdkddkve.h :            $(mh_dir)/sdkddkve.mh $(owhdr) $(cplus) $(mh_dir)/winverdf.sp $(mh_dir)/winver.sp
 h/secext.h :              $(mh_dir)/secext.mh $(owhdr) $(cplus)
 h/security.h :            $(mh_dir)/security.mh $(owhdr) $(cplus)
 h/servprov.h :            $(mh_dir)/servprov.mh $(owhdr) $(cplus)
@@ -376,7 +376,7 @@ h/winbase.h :             $(mh_dir)/winbase.mh $(owhdr) $(cplus)
 h/winber.h :              $(mh_dir)/winber.mh $(owhdr) $(cplus)
 h/wincon.h :              $(mh_dir)/wincon.mh $(owhdr) $(cplus)
 h/wincrypt.h :            $(mh_dir)/wincrypt.mh $(owhdr) $(cplus) $(mh_dir)/algid.sp
-h/windef.h :              $(mh_dir)/windef.mh $(owhdr) $(cplus) $(hdr_dir)/null.sp
+h/windef.h :              $(mh_dir)/windef.mh $(owhdr) $(cplus) $(mh_dir)/winverdf.sp $(hdr_dir)/null.sp
 h/windns.h :              $(mh_dir)/windns.mh $(owhdr) $(cplus)
 h/windot11.h :            $(mh_dir)/windot11.mh $(owhdr) $(cplus)
 h/windows.h :             $(mh_dir)/windows.mh $(owhdr)
@@ -393,8 +393,8 @@ h/winnt.h :               $(mh_dir)/winnt.mh $(owhdr) $(cplus) $(externc_sp) $(m
 h/winnt.rh :              $(mh_dir)/winnt.mh $(crwatcnt_sp)
 h/winperf.h :             $(mh_dir)/winperf.mh $(owhdr) $(cplus)
 h/winreg.h :              $(mh_dir)/winreg.mh $(owhdr) $(cplus)
-h/winres.h :              $(mh_dir)/winres.mh $(owhdr) $(mh_dir)/static.sp
-h/winresrc.h :            $(mh_dir)/winresrc.mh $(owhdr) $(mh_dir)/winver.sp
+h/winres.h :              $(mh_dir)/winres.mh $(owhdr) $(mh_dir)/winverdf.sp $(mh_dir)/static.sp
+h/winresrc.h :            $(mh_dir)/winresrc.mh $(owhdr) $(mh_dir)/winverdf.sp $(mh_dir)/winver.sp
 h/winscard.h :            $(mh_dir)/winscard.mh $(owhdr) $(cplus)
 h/winsmcrd.h :            $(mh_dir)/winsmcrd.mh $(owhdr) $(cplus)
 h/winsnmp.h :             $(mh_dir)/winsnmp.mh $(owhdr) $(cplus)
@@ -403,7 +403,7 @@ h/winsock2.h :            $(mh_dir)/winsock.mh $(owhdr) $(cplus) $(hdr_dir)/time
 h/winspool.h :            $(mh_dir)/winspool.mh $(owhdr) $(cplus)
 h/winsvc.h :              $(mh_dir)/winsvc.mh $(owhdr) $(cplus)
 h/wintrust.h :            $(mh_dir)/wintrust.mh $(owhdr) $(cplus)
-h/winuser.h :             $(mh_dir)/winuser.mh $(owhdr) $(cplus) $(mh_dir)/powernot.sp $(mh_dir)/statesys.sp
+h/winuser.h :             $(mh_dir)/winuser.mh $(owhdr) $(cplus) $(mh_dir)/winverdf.sp $(mh_dir)/powernot.sp $(mh_dir)/statesys.sp
 h/winuser.rh :            $(mh_dir)/winuser.mh $(crwatcnt_sp)
 h/winver.h :              $(mh_dir)/winver.mh $(owhdr) $(cplus)
 h/wlantype.h :            $(mh_dir)/wlantype.mh $(owhdr) $(cplus)

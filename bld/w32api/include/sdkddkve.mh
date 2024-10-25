@@ -109,6 +109,10 @@
 #define NTDDI_VERSION_FROM_WIN32_WINNT2( x )    x##0000
 #define NTDDI_VERSION_FROM_WIN32_WINNT( x )     NTDDI_VERSION_FROM_WIN32_WINNT2( x )
 
+/* Define default version numbers. */
+:: this define WINVER only
+:include winverdf.sp
+:: this define others _WIN32_WINNT, _WIN32_IE, ...
 :include winver.sp
 
 :include cplusepi.sp

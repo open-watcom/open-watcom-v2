@@ -9,6 +9,10 @@
 
 :include readonly.sp
 
+/* Define default version numbers. */
+:: this define WINVER only
+:include winverdf.sp
+:: this define others _WIN32_WINNT, _WIN32_IE, ...
 :include winver.sp
 
 #ifndef _WIN32_MSI
