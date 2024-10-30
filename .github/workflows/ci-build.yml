@@ -29,40 +29,54 @@ jobs:
     steps:
     - name: checkout
       uses: actions/checkout@v4
-  bootow-lnx:
+  bootow19-lnx:
     needs: start-start
-    name: Bootstrap Linux OW
+    name: Test OW 1.9 Bootstrap Linux
     runs-on: ubuntu-latest
     steps:
     - name: checkout
       uses: actions/checkout@v4
-    - name: Test OW 1.9 Bootstrap Linux
+    - name: Test Bootstrap
       uses: "./.github/actions/testboot"
       with:
         hostos:     'lnx'
         owversion:  '1.9'
         owdebug:    ${{ vars.OWDEBUG }}
-    - name: Test OW 2.0 Bootstrap Linux
+  bootow20-lnx:
+    needs: start-start
+    name: Test OW 2.0 Bootstrap Linux
+    runs-on: ubuntu-latest
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4
+    - name: Test Bootstrap
       uses: "./.github/actions/testboot"
       with:
         hostos:     'lnx'
         owversion:  '2.0'
         owtag:      '2023-01-01-Build'
         owdebug:    ${{ vars.OWDEBUG }}
-  bootow-nt:
+  bootow19-nt:
     needs: start-start
-    name: Bootstrap Windows OW
+    name: Test OW 1.9 Bootstrap Windows
     runs-on: windows-latest
     steps:
     - name: checkout
       uses: actions/checkout@v4
-    - name: Test OW 1.9 Bootstrap Windows
+    - name: Test Bootstrap
       uses: "./.github/actions/testboot"
       with:
         hostos:     'nt'
         owversion:  '1.9'
         owdebug:    ${{ vars.OWDEBUG }}
-    - name: Test OW 2.0 Bootstrap Windows
+  bootow20-nt:
+    needs: start-start
+    name: Test OW 2.0 Bootstrap Windows
+    runs-on: windows-latest
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4
+    - name: Test Bootstrap
       uses: "./.github/actions/testboot"
       with:
         hostos:     'nt'
@@ -70,7 +84,9 @@ jobs:
         owtag:      '2023-01-01 Build'
         owdebug:    ${{ vars.OWDEBUG }}
   workflow-lnx:
-    needs: bootow-lnx
+    needs:
+    - bootow19-lnx
+    - bootow20-lnx
     name: Linux
     strategy:
       matrix:
@@ -87,7 +103,9 @@ jobs:
       image:        'ubuntu-latest'
       owdebug:      ${{ vars.OWDEBUG }}
   workflow-nt:
-    needs: bootow-nt
+    needs:
+    - bootow19-nt
+    - bootow20-nt
     name: Windows
     strategy:
       matrix:
