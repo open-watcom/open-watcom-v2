@@ -29,30 +29,35 @@ jobs:
     steps:
     - name: checkout
       uses: actions/checkout@v4
-  test-bootstrap:
+  test-bootstrap-nt:
     needs: start-start
     strategy:
       matrix:
         owversion: [ 1.9, 2.0 ]
-        include:
-        - title:      'Windows'
-          image:      'windows-2022'
-          hostos:     'nt'
-        include:
-        - title:      'Linux'
-          image:      'ubuntu-latest'
-          hostos:     'lnx'
-    runs-on: ${{ matrix.image }}
-    name: OW ${{ matrix.owversion }} ${{ matrix.title }}
+    runs-on: 'windows-2022'
+    name: OW ${{ matrix.owversion }} Windows
     uses: "./.github/actions/testboot"
     with:
-      hostos:     ${{ matrix.hostos }}
+      hostos:     'nt'
+      owversion:  ${{ matrix.owversion }}
+      owtag:      '2023-01-01-Build'
+      owdebug:    ${{ vars.OWDEBUG }}
+  test-bootstrap-lnx:
+    needs: start-start
+    strategy:
+      matrix:
+        owversion: [ 1.9, 2.0 ]
+    runs-on: 'ubuntu-latest'
+    name: OW ${{ matrix.owversion }} Linux
+    uses: "./.github/actions/testboot"
+    with:
+      hostos:     'lnx'
       owversion:  ${{ matrix.owversion }}
       owtag:      '2023-01-01-Build'
       owdebug:    ${{ vars.OWDEBUG }}
   Linux:
     needs:
-    - test-bootstrap
+    - test-bootstrap-lnx
     strategy:
       matrix:
         include:
@@ -72,7 +77,7 @@ jobs:
       owdebug:      ${{ vars.OWDEBUG }}
   Windows:
     needs:
-    - test-bootstrap
+    - test-bootstrap-nt
     name: Windows ${{ matrix.title }}
     strategy:
       matrix:
