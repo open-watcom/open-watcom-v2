@@ -39,7 +39,7 @@ jobs:
     steps:
     - name: checkout
       uses: actions/checkout@v4
-    - name: OW ${{ matrix.owversion }} Windows
+    - name: OW ${{ matrix.owversion }}
       uses: "./.github/actions/testboot"
       with:
         hostos:     'nt'
@@ -56,7 +56,7 @@ jobs:
     steps:
     - name: checkout
       uses: actions/checkout@v4
-    - name: OW ${{ matrix.owversion }} Linux
+    - name: OW ${{ matrix.owversion }}
       uses: "./.github/actions/testboot"
       with:
         hostos:     'lnx'
