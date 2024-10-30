@@ -47,7 +47,7 @@ jobs:
       with:
         hostos:     'lnx'
         owversion:  '2.0'
-        owtag:      '2023-01-01 Build'
+        owtag:      '2023-01-01-Build'
         owdebug:    ${{ vars.OWDEBUG }}
   bootow-nt:
     needs: start-start
