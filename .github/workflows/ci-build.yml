@@ -84,17 +84,20 @@ jobs:
         owtag:      '2023-01-01-Build'
         owdebug:    ${{ vars.OWDEBUG }}
   workflow-lnx:
+    name: Linux
     needs:
     - bootow19-lnx
     - bootow20-lnx
-    name: Linux
     strategy:
       matrix:
         include:
         - owtools: 'GCC'
           tools:   'gcc'
+          title:   'x64 gcc'
         - owtools: 'CLANG'
           tools:   'clang'
+          title:   'x64 clang'
+    name: Linux ${{ matrix.title }}
     uses: "./.github/workflows/cibldlnx.yml"
     with:
       arch:         'x64'
@@ -103,15 +106,17 @@ jobs:
       image:        'ubuntu-latest'
       owdebug:      ${{ vars.OWDEBUG }}
   workflow-nt:
+    name: Windows
     needs:
     - bootow19-nt
     - bootow20-nt
-    name: Windows
+    name: Windows ${{ matrix.title }}
     strategy:
       matrix:
         include:
         - owtools: 'VISUALC'
           tools:   'vs2022'
+          title:   'x64 vs2022'
     uses: "./.github/workflows/cibldnt.yml"
     with:
       arch:         'x64'
@@ -120,8 +125,8 @@ jobs:
       image:        'windows-2022'
       owdebug:      ${{ vars.OWDEBUG }}
   workflow-osx:
-    needs: start-start
     name: OSX
+    needs: start-start
     strategy:
       matrix:
         include:
@@ -129,10 +134,13 @@ jobs:
           arch:     'x64'
           image:    'macos-13'
           relpath:  'rel bino64'
+          title:    'x64 clang'
         - owtools:  'CLANG'
           arch:     'a64'
           image:    'macos-14'
           relpath:  'rel armo64'
+          title:    'arm64 clang'
+    name: OSX ${{ matrix.title }}
     uses: "./.github/workflows/cibldosx.yml"
     with:
       arch:         ${{ matrix.arch }}
