@@ -33,7 +33,7 @@ jobs:
     needs: start-start
     strategy:
       matrix:
-        owversion: [ 1.9, 2.0 ]
+        owversion: [1.8, 1.9, 2.0]
     runs-on: 'windows-2022'
     name: OW ${{ matrix.owversion }} Windows
     uses: "./.github/actions/testboot"
@@ -46,7 +46,7 @@ jobs:
     needs: start-start
     strategy:
       matrix:
-        owversion: [ 1.9, 2.0 ]
+        owversion: [1.8, 1.9, 2.0]
     runs-on: 'ubuntu-latest'
     name: OW ${{ matrix.owversion }} Linux
     uses: "./.github/actions/testboot"
