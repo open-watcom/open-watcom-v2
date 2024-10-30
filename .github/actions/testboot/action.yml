@@ -19,6 +19,10 @@ inputs:
 runs:
   using: composite
   steps:
+  - name: Open Watcom setup
+    uses: open-watcom/setup-watcom@v0
+    with:
+      version: 1.9
   - if: inputs.hostos == 'lnx'
     name: Test Bootstrap OW
     run: ci/buildx.sh
@@ -26,9 +30,6 @@ runs:
       OWBUILD_STAGE: 'boot'
       OWTOOLS:       'WATCOM'
       OWROOT:        ${{ github.workspace }}
-      WATCOM:        ${{ github.workspace }}/${{ inputs.gitpath }}
-      INCLUDE:       ${{ github.workspace }}/${{ inputs.gitpath }}/lh
-      WATCOM_PATH:   ${{ github.workspace }}/${{ inputs.gitpath }}/binl
       OWDEBUG:       ${{ inputs.owdebug }}
       OWVERBOSE:     1
     shell: bash
@@ -39,9 +40,6 @@ runs:
       OWBUILD_STAGE: 'boot'
       OWTOOLS:       'WATCOM'
       OWROOT:        ${{ github.workspace }}
-      WATCOM:        ${{ github.workspace }}\${{ inputs.gitpath }}
-      INCLUDE:       ${{ github.workspace }}\${{ inputs.gitpath }}\h;${{ github.workspace }}\${{ inputs.gitpath }}\h\nt
-      WATCOM_PATH:   ${{ github.workspace }}\${{ inputs.gitpath }}\binnt
       OWDEBUG:       ${{ inputs.owdebug }}
       OWVERBOSE:     1
     shell: cmd
