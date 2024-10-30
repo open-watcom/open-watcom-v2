@@ -29,64 +29,30 @@ jobs:
     steps:
     - name: checkout
       uses: actions/checkout@v4
-  bootow19-lnx:
+  test-bootstrap:
     needs: start-start
-    name: Test OW 1.9 Bootstrap Linux
-    runs-on: ubuntu-latest
-    steps:
-    - name: checkout
-      uses: actions/checkout@v4
-    - name: Test Bootstrap
-      uses: "./.github/actions/testboot"
-      with:
-        hostos:     'lnx'
-        owversion:  '1.9'
-        owdebug:    ${{ vars.OWDEBUG }}
-  bootow20-lnx:
-    needs: start-start
-    name: Test OW 2.0 Bootstrap Linux
-    runs-on: ubuntu-latest
-    steps:
-    - name: checkout
-      uses: actions/checkout@v4
-    - name: Test Bootstrap
-      uses: "./.github/actions/testboot"
-      with:
-        hostos:     'lnx'
-        owversion:  '2.0'
-        owtag:      '2023-01-01-Build'
-        owdebug:    ${{ vars.OWDEBUG }}
-  bootow19-nt:
-    needs: start-start
-    name: Test OW 1.9 Bootstrap Windows
-    runs-on: windows-latest
-    steps:
-    - name: checkout
-      uses: actions/checkout@v4
-    - name: Test Bootstrap
-      uses: "./.github/actions/testboot"
-      with:
-        hostos:     'nt'
-        owversion:  '1.9'
-        owdebug:    ${{ vars.OWDEBUG }}
-  bootow20-nt:
-    needs: start-start
-    name: Test OW 2.0 Bootstrap Windows
-    runs-on: windows-latest
-    steps:
-    - name: checkout
-      uses: actions/checkout@v4
-    - name: Test Bootstrap
-      uses: "./.github/actions/testboot"
-      with:
-        hostos:     'nt'
-        owversion:  '2.0'
-        owtag:      '2023-01-01-Build'
-        owdebug:    ${{ vars.OWDEBUG }}
+    strategy:
+      matrix:
+        owversion: [ 1.9, 2.0 ]
+        include:
+        - title:      'Windows'
+          image:      'windows-2022'
+          hostos:     'nt'
+        include:
+        - title:      'Linux'
+          image:      'ubuntu-latest'
+          hostos:     'lnx'
+    runs-on: ${{ matrix.image }}
+    name: OW ${{ matrix.owversion }} ${{ matrix.title }}
+    uses: "./.github/actions/testboot"
+    with:
+      hostos:     ${{ matrix.hostos }}
+      owversion:  ${{ matrix.owversion }}
+      owtag:      '2023-01-01-Build'
+      owdebug:    ${{ vars.OWDEBUG }}
   Linux:
     needs:
-    - bootow19-lnx
-    - bootow20-lnx
+    - test-bootstrap
     strategy:
       matrix:
         include:
@@ -106,8 +72,7 @@ jobs:
       owdebug:      ${{ vars.OWDEBUG }}
   Windows:
     needs:
-    - bootow19-nt
-    - bootow20-nt
+    - test-bootstrap
     name: Windows ${{ matrix.title }}
     strategy:
       matrix:
