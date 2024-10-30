@@ -31,30 +31,38 @@ jobs:
       uses: actions/checkout@v4
   test-bootstrap-nt:
     needs: start-start
+    name: Test Bootstrap Windows
     strategy:
       matrix:
         owversion: [1.8, 1.9, 2.0]
     runs-on: 'windows-2022'
-    name: OW ${{ matrix.owversion }} Windows
-    uses: "./.github/actions/testboot"
-    with:
-      hostos:     'nt'
-      owversion:  ${{ matrix.owversion }}
-      owtag:      '2023-01-01-Build'
-      owdebug:    ${{ vars.OWDEBUG }}
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4
+    - name: OW ${{ matrix.owversion }} Windows
+      uses: "./.github/actions/testboot"
+      with:
+        hostos:     'nt'
+        owversion:  ${{ matrix.owversion }}
+        owtag:      '2023-01-01-Build'
+        owdebug:    ${{ vars.OWDEBUG }}
   test-bootstrap-lnx:
     needs: start-start
+    name: Test Bootstrap Linux
     strategy:
       matrix:
         owversion: [1.8, 1.9, 2.0]
     runs-on: 'ubuntu-latest'
-    name: OW ${{ matrix.owversion }} Linux
-    uses: "./.github/actions/testboot"
-    with:
-      hostos:     'lnx'
-      owversion:  ${{ matrix.owversion }}
-      owtag:      '2023-01-01-Build'
-      owdebug:    ${{ vars.OWDEBUG }}
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4
+    - name: OW ${{ matrix.owversion }} Linux
+      uses: "./.github/actions/testboot"
+      with:
+        hostos:     'lnx'
+        owversion:  ${{ matrix.owversion }}
+        owtag:      '2023-01-01-Build'
+        owdebug:    ${{ vars.OWDEBUG }}
   Linux:
     needs:
     - test-bootstrap-lnx
