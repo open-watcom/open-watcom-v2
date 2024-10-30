@@ -34,7 +34,7 @@ jobs:
     name: Test Bootstrap Windows
     strategy:
       matrix:
-        owversion: ['1.8', '1.9', '2.0']
+        owversion: ['1.9', '2.0']
     runs-on: 'windows-2022'
     steps:
     - name: checkout
@@ -51,7 +51,7 @@ jobs:
     name: Test Bootstrap Linux
     strategy:
       matrix:
-        owversion: ['1.8', '1.9', '2.0']
+        owversion: ['1.9', '2.0']
     runs-on: 'ubuntu-latest'
     steps:
     - name: checkout
