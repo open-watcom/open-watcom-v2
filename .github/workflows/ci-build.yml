@@ -36,11 +36,18 @@ jobs:
     steps:
     - name: checkout
       uses: actions/checkout@v4
-    - name: Bootstrap Linux OW
+    - name: Test OW 1.9 Bootstrap Linux
       uses: "./.github/actions/testboot"
       with:
         hostos:     'lnx'
-        gitpath:    'ci/ow'
+        owversion:  '1.9'
+        owdebug:    ${{ vars.OWDEBUG }}
+    - name: Test OW 2.0 Bootstrap Linux
+      uses: "./.github/actions/testboot"
+      with:
+        hostos:     'lnx'
+        owversion:  '2.0'
+        owtag:      '2023-01-01 Build'
         owdebug:    ${{ vars.OWDEBUG }}
   bootow-nt:
     needs: start-start
@@ -49,11 +56,18 @@ jobs:
     steps:
     - name: checkout
       uses: actions/checkout@v4
-    - name: Bootstrap Windows OW
+    - name: Test OW 1.9 Bootstrap Windows
       uses: "./.github/actions/testboot"
       with:
         hostos:     'nt'
-        gitpath:    'ci\ow'
+        owversion:  '1.9'
+        owdebug:    ${{ vars.OWDEBUG }}
+    - name: Test OW 2.0 Bootstrap Windows
+      uses: "./.github/actions/testboot"
+      with:
+        hostos:     'nt'
+        owversion:  '2.0'
+        owtag:      '2023-01-01 Build'
         owdebug:    ${{ vars.OWDEBUG }}
   workflow-lnx:
     needs: bootow-lnx

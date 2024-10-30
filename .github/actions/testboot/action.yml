@@ -6,8 +6,13 @@ inputs:
     required: false
     default: ''
     type: string
-  gitpath:
-    description: 'git subdirectory'
+  owversion:
+    description: 'Open Watcom version'
+    required: false
+    default: '1.9'
+    type: string
+  owtag:
+    description: 'Open Watcom 2.0 build tag'
     required: false
     default: ''
     type: string
@@ -19,10 +24,12 @@ inputs:
 runs:
   using: composite
   steps:
-  - name: Open Watcom setup
+  - if: inputs.hostos == 'lnx' || inputs.hostos == 'nt'
+    name: Open Watcom setup
     uses: open-watcom/setup-watcom@v0
     with:
-      version: 1.9
+      version: ${{ inputs.owversion }}
+      tag: ${{ inputs.owtag }}
   - if: inputs.hostos == 'lnx'
     name: Test Bootstrap OW
     run: ci/buildx.sh
