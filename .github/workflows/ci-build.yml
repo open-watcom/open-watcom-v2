@@ -83,7 +83,7 @@ jobs:
         owversion:  '2.0'
         owtag:      '2023-01-01-Build'
         owdebug:    ${{ vars.OWDEBUG }}
-  workflow-lnx:
+  Linux:
     needs:
     - bootow19-lnx
     - bootow20-lnx
@@ -104,7 +104,7 @@ jobs:
       owtools:      ${{ matrix.owtools }}
       image:        'ubuntu-latest'
       owdebug:      ${{ vars.OWDEBUG }}
-  workflow-nt:
+  Windows:
     needs:
     - bootow19-nt
     - bootow20-nt
@@ -122,7 +122,7 @@ jobs:
       owtools:      ${{ matrix.owtools }}
       image:        'windows-2022'
       owdebug:      ${{ vars.OWDEBUG }}
-  workflow-osx:
+  OSX:
     needs: start-start
     strategy:
       matrix:
@@ -148,9 +148,9 @@ jobs:
       owdebug:      ${{ vars.OWDEBUG }}
   snapshot-both:
     needs:
-    - workflow-lnx
-    - workflow-nt
-    - workflow-osx
+    - Linux
+    - Windows
+    - OSX
     name: CI Release
     runs-on: ubuntu-latest
     steps:
