@@ -61,21 +61,21 @@ jobs:
         OWDOCTARGET:    'bootdocs'
   wiki-build:
     needs: wiki-boot
-    name: Wiki build
+    name: Build
     runs-on: windows-2019
     strategy:
       matrix:
         include:
-        - display:  'HTML'
+        - title:  'HTML'
           doctype:  'wikihtml'
           owtarget: '.and wikihtml .or -- -- docset=wikihtml -i'
-        - display:  'PDF'
+        - title:  'PDF'
           doctype:  'wikipdf'
           owtarget: '.and wikipdf .or -- -- docset=wikipdf -i'
     steps:
     - name: checkout
       uses: actions/checkout@v4
-    - name: Docs Build
+    - name: Build ${{ matrix.title }}
       uses: "./.github/actions/docbuild"
       with:
         hostos:     'nt'
@@ -89,7 +89,7 @@ jobs:
         owdebug:    ${{ vars.OWDEBUG }}
         noarchive:  '1'
   wiki-update:
-    name: Wiki Update
+    name: Update Wiki
     needs: wiki-build
     runs-on: windows-2019
     steps:

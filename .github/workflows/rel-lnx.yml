@@ -25,7 +25,7 @@ jobs:
     steps:
     - name: checkout
       uses: actions/checkout@v4
-    - name: Bootstrap Linux
+    - name: Bootstrap
       uses: "./.github/actions/boot"
       with:
         hostos:     'lnx'
