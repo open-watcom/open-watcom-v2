@@ -39,7 +39,7 @@ jobs:
     steps:
     - name: checkout
       uses: actions/checkout@v4
-    - name: Bootstrap Test
+    - name: Test
       uses: "./.github/actions/testboot"
       with:
         hostos:     'nt'
@@ -56,7 +56,7 @@ jobs:
     steps:
     - name: checkout
       uses: actions/checkout@v4
-    - name: Bootstrap Test
+    - name: Test
       uses: "./.github/actions/testboot"
       with:
         hostos:     'lnx'

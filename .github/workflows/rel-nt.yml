@@ -57,17 +57,17 @@ jobs:
     strategy:
       matrix:
         include:
-        - display: DOS
+        - title: DOS
           doctype: docdos
-        - display: OS/2
+        - title: OS/2
           doctype: docos2
-        - display: NT
+        - title: NT
           doctype: docnt
-        - display: CHM
+        - title: CHM
           doctype: docchm
-        - display: PDF
+        - title: PDF
           doctype: docpdf
-        - display: WIN
+        - title: WIN
           doctype: docwin
     steps:
     - name: checkout

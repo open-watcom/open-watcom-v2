@@ -75,7 +75,7 @@ jobs:
         gitpath:  'rel'
         artifact: "rel lnx ${{ inputs.arch }} ${{ inputs.tools }}"
         owdebug:  ${{ inputs.owdebug }}
-    - name: Test Bootstrap
+    - name: Test
       uses: "./.github/actions/testboot"
       with:
         hostos:     'lnx'
