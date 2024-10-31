@@ -29,12 +29,12 @@ jobs:
     steps:
     - name: checkout
       uses: actions/checkout@v4
-  test-bootstrap-nt:
+  Windows-pre:
     needs: start-start
-    name: Bootstrap Test (OW ${{ matrix.owversion }}) Windows
     strategy:
       matrix:
         owversion: ['1.9', '2.0']
+    name: Bootstrap Test OW ${{ matrix.owversion }} Windows
     runs-on: 'windows-2022'
     steps:
     - name: checkout
@@ -46,12 +46,12 @@ jobs:
         owversion:  ${{ matrix.owversion }}
         owtag:      '2023-01-01-Build'
         owdebug:    ${{ vars.OWDEBUG }}
-  test-bootstrap-lnx:
+  Linux-pre:
     needs: start-start
-    name: Bootstrap Test (OW ${{ matrix.owversion }}) Linux
     strategy:
       matrix:
         owversion: ['1.9', '2.0']
+    name: Bootstrap Test OW ${{ matrix.owversion }} Linux
     runs-on: 'ubuntu-latest'
     steps:
     - name: checkout
@@ -65,7 +65,7 @@ jobs:
         owdebug:    ${{ vars.OWDEBUG }}
   Linux:
     needs:
-    - test-bootstrap-lnx
+    - Linux-pre
     strategy:
       matrix:
         include:
@@ -85,14 +85,14 @@ jobs:
       owdebug:      ${{ vars.OWDEBUG }}
   Windows:
     needs:
-    - test-bootstrap-nt
-    name: Windows ${{ matrix.title }}
+    - Windows-pre
     strategy:
       matrix:
         include:
         - owtools: 'VISUALC'
           tools:   'vs2022'
           title:   'x64 vs2022'
+    name: Windows ${{ matrix.title }}
     uses: "./.github/workflows/cibldnt.yml"
     with:
       arch:         'x64'
