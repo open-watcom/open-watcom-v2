@@ -243,7 +243,8 @@ type_modifiers TypeQualifier( void )
         default:
             return( flags );
         }
-        if( (flags & bit) && CHECK_STD( < , C99 ) )
+        if( (flags & bit)
+          && ( CompVars.cstd < STD_C99 ) )
             CErr1( ERR_REPEATED_MODIFIER );
         flags |= bit;
         NextToken();
@@ -1353,7 +1354,8 @@ static void CheckBitfieldType( TYPEPTR typ )
     }
     switch( typ->decl_type ) {
     case TYP_BOOL:
-        if( !CompFlags.extensions_enabled && CHECK_STD( < , C99 ) ) {
+        if( !CompFlags.extensions_enabled
+          && ( CompVars.cstd < STD_C99 ) ) {
             break;
         }
         /* fall through */

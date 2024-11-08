@@ -130,7 +130,7 @@ typedef enum sym_flags {
     SYM_EMITTED             = 0x00000004,   /* symbol has been emitted to cgen */
     SYM_DEFINED             = 0x00000008,   /* symbol has been defined */
     SYM_INITIALIZED         = 0x00000010,   /* variable has been initialized */
-    SYM_TEMP                = 0x00000020,   /* this is a temp created by MakeNewSym */
+    SYM_TEMP                = 0x00000020,   /* this is a temp created by MakeNewDotSym */
     SYM_ASSIGNED            = 0x00000040,   /* variable has been assigned to */
     SYM_ADDR_TAKEN          = 0x00000080,   /* variable/func has had its address taken */
     SYM_IGNORE_UNREFERENCE  = 0x00000100,   /* don't print msg if unreferenced */
@@ -686,9 +686,6 @@ typedef enum {
 typedef struct comp_vars {
     cstd_ver    cstd;
 } comp_vars;
-
-#define CHECK_STD(o,v)  (CompVars.cstd o STD_ ## v)
-#define SET_STD(v)      CompVars.cstd = STD_ ## v
 
 /* Target System types */
 enum {

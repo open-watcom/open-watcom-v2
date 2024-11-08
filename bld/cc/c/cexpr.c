@@ -2358,7 +2358,7 @@ static TREEPTR DummyFuncName( void )
     SYM_ENTRY           sym;
 
     typ = FuncNode( GetType( TYP_INT ), FLAG_NONE, NULL );
-    sym_handle = MakeNewSym( &sym, 'F', typ, SC_AUTO );
+    sym_handle = MakeNewDotSym( &sym, 'F', typ, SC_AUTO );
     sym.flags |= SYM_FUNCTION;
     sym.mods = FLAG_NONE;
     SymReplace( &sym, sym_handle );
@@ -2415,7 +2415,7 @@ static TREEPTR StartFunc( TREEPTR tree, TYPEPTR **plistptr )
             if( tree->op.opr == OPR_POINTS ) {  /* need to recover decl flags */
                 decl_flags = typ->u.fn.decl_flags;
             }
-            sym_handle = MakeNewSym( &sym, 'F', orig_typ, SC_AUTO );
+            sym_handle = MakeNewDotSym( &sym, 'F', orig_typ, SC_AUTO );
             sym.flags |= SYM_FUNCTION;
             sym.mods = decl_flags;
             SymReplace( &sym, sym_handle );

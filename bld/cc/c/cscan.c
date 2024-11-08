@@ -210,7 +210,7 @@ TOKEN KwLookup( const char *buf, size_t len )
     /*
      * look up id in keyword table
      */
-    if( CHECK_STD( < , C99 ) ) {
+    if( CompVars.cstd < STD_C99 ) {
         switch( token ) {
         case T__BOOL:
         case T_INLINE:
@@ -460,7 +460,8 @@ static TOKEN doScanPPNumber( void )
           || c == '.' ) {
             WriteBufferChar( c );
         } else if( ( prevc == 'e' || prevc == 'E'
-          || CHECK_STD( > , C89 ) && ( prevc == 'p' || prevc == 'P' ) )
+          || ( CompVars.cstd > STD_C89 )
+          && ( prevc == 'p' || prevc == 'P' ) )
           && ( c == '+' || c == '-' ) ) {
             WriteBufferChar( c );
             if( CompFlags.extensions_enabled ) {
@@ -678,7 +679,7 @@ static TOKEN doScanNum( void )
                 c = WriteBufferCharNextChar( c );
             }
 
-            if( CHECK_STD( > , C89 ) ) {
+            if( CompVars.cstd > STD_C89 ) {
                 if( c == '.'
                   || c == 'p'
                   || c == 'P' ) {

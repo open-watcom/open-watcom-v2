@@ -496,7 +496,7 @@ SYM_HANDLE SymAddL0( id_hash_idx hash, SYMPTR new_sym )
 }
 
 
-static SYM_HANDLE GetNewSym( SYMPTR sym, char id, TYPEPTR typ, stg_classes stg_class )
+static SYM_HANDLE GetNewDotSym( SYMPTR sym, char id, TYPEPTR typ, stg_classes stg_class )
 {
     char            name[3];
     SYM_HANDLE      sym_handle;
@@ -513,11 +513,11 @@ static SYM_HANDLE GetNewSym( SYMPTR sym, char id, TYPEPTR typ, stg_classes stg_c
 }
 
 
-SYM_HANDLE MakeNewSym( SYMPTR sym, char id, TYPEPTR typ, stg_classes stg_class )
+SYM_HANDLE MakeNewDotSym( SYMPTR sym, char id, TYPEPTR typ, stg_classes stg_class )
 {
     SYM_HANDLE  sym_handle;
 
-    sym_handle = GetNewSym( sym, id, typ, stg_class );
+    sym_handle = GetNewDotSym( sym, id, typ, stg_class );
     if( SymLevel != 0 ) {
         sym->handle = CurFunc->u.func.locals;
         CurFunc->u.func.locals = sym_handle;

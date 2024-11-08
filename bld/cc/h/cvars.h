@@ -764,7 +764,7 @@ extern SYMPTR       SymGetPtr( SYM_HANDLE );
 extern void         SymReplace( SYMPTR, SYM_HANDLE );
 extern void         EndBlock( void );
 extern SYM_HANDLE   MakeFunction( const char *, TYPEPTR );
-extern SYM_HANDLE   MakeNewSym( SYMPTR, char, TYPEPTR, stg_classes );
+extern SYM_HANDLE   MakeNewDotSym( SYMPTR, char, TYPEPTR, stg_classes );
 extern LABELPTR     LkLabel( const char * );
 extern void         FreeLabels( void );
 extern XREFPTR      NewXref( XREFPTR );

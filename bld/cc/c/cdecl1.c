@@ -584,7 +584,7 @@ static void CheckParms( void )
                 if( VarParm( CurFunc ) ) {
                     typ = ArrayNode( GetType( TYP_CHAR ) );
                     typ->u.array->dimension = 160;
-                    sym_handle = GetNewSym( &var_parm, 'V', typ, SC_AUTO );
+                    sym_handle = GetNewDotSym( &var_parm, 'V', typ, SC_AUTO );
                     SymReplace( &var_parm, sym_handle );
                     prev_parm->sym.handle = sym_handle;
                 }
