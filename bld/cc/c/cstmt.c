@@ -703,7 +703,7 @@ static void ForStmt( void )
 
     NextToken();
     MustRecog( T_LEFT_PAREN );
-    if( CompVars.cstd > STD_C99 ) {
+    if( CompVars.cstd > STD_C89 ) {
         PushBlock();    // 'for' opens new scope
     }
     if( CurToken != T_SEMI_COLON ) {
