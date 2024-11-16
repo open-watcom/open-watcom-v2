@@ -579,14 +579,6 @@ void RdosFreePhysical(long long ads);
 
 void RdosRegisterSwapProc(__rdos_swap_callback *callb_proc);
 
-void RdosStartTimer(    int sel_id,
-                        unsigned long expire_msb,
-                        unsigned long expire_lsb,
-                        __rdos_timer_callback *callb_proc,
-                        int callb_sel);
-
-void RdosStopTimer(     int sel_id);
-
 long RdosGetApicId();
 int RdosGetCoreCount();
 int RdosGetCore();
@@ -746,20 +738,13 @@ int RdosCacheDir(int dir_sel, int dir_entry);
 void RdosInsertDirEntry(int dir_sel, int dir_entry);
 void RdosInsertFileEntry(int dir_sel, int file_entry);
 
-int RdosGetFileInfo(int handle, char *access, char *drive, int *file_sel);
-int RdosDuplFileInfo(char access, char drive, int file_sel);
-
-int RdosOpenKernelFile(const char *FileName, int Mode);
-void RdosCloseKernelFile(int Handle);
-int RdosReadKernelFile(int Handle, void *Buf, int Size, long Pos);
-int RdosWriteKernelFile(int Handle, const void *Buf, int Size, long Pos);
-long RdosGetCFileSize(int Handle);
-void RdosSetCFileSize(int Handle, long Size);
-void RdosGetCFileTime(int Handle, unsigned long *MsbTime, unsigned long *LsbTime);
-void RdosSetCFileTime(int Handle, unsigned long MsbTime, unsigned long LsbTime);
-
-void RdosLockFile(int file_sel);
-void RdosUnlockFile(int file_sel);
+int RdosOpenKernelHandle(const char *FileName, int Mode);
+void RdosCloseKernelHandle(int Handle);
+int RdosReadKernelHandle(int Handle, void *Buf, int Size, long long Pos);
+int RdosWriteKernelHandle(int Handle, const void *Buf, int Size, long long Pos);
+long long RdosGetKernelHandleSize(int Handle);
+void RdosSetKernelHandleSize(int Handle, long long Size);
+long long RdosGetKernelHandleTime(int Handle, unsigned long *Msb, unsigned long *Lsb);
 
 char RdosReadPciByte(char bus, char dev, char func, char reg);
 short int RdosReadPciWord(char bus, char dev, char func, char reg);
@@ -1088,22 +1073,6 @@ int RdosGetSignedHidOutput(int Sel, int Usage);
     __parm [__eax]  \
     __value [__ebx]
 
-#pragma aux RdosAllocateBigLocalSelector = \
-    "push es" \
-    OsGate_allocate_big_mem  \
-    "mov ebx,es" \
-    "pop es" \
-    __parm [__eax]  \
-    __value [__ebx]
-
-#pragma aux RdosAllocateSmallLocalSelector = \
-    "push es" \
-    OsGate_allocate_small_mem  \
-    "mov ebx,es" \
-    "pop es" \
-    __parm [__eax]  \
-    __value [__ebx]
-
 #pragma aux RdosAllocateSmallKernelSelector = \
     "push es" \
     OsGate_allocate_small_kernel_mem  \
@@ -1124,24 +1093,6 @@ int RdosGetSignedHidOutput(int Sel, int Usage);
 #pragma aux RdosAllocateSmallGlobalMem = \
     "push es" \
     OsGate_allocate_small_global_mem  \
-    "mov dx,es" \
-    "xor eax,eax" \
-    "pop es" \
-    __parm [__eax]  \
-    __value [__dx __eax]
-
-#pragma aux RdosAllocateBigLocalMem = \
-    "push es" \
-    OsGate_allocate_big_mem  \
-    "mov dx,es" \
-    "xor eax,eax" \
-    "pop es" \
-    __parm [__eax]  \
-    __value [__dx __eax]
-
-#pragma aux RdosAllocateSmallLocalMem = \
-    "push es" \
-    OsGate_allocate_small_mem  \
     "mov dx,es" \
     "xor eax,eax" \
     "pop es" \
@@ -1257,14 +1208,6 @@ int RdosGetSignedHidOutput(int Sel, int Usage);
 #pragma aux RdosRegisterSwapProc = \
     OsGate_register_swap_proc  \
     __parm [__es __edi]
-
-#pragma aux RdosStartTimer = \
-    OsGate_start_timer  \
-    __parm [__ebx] [__edx] [__eax] [__es __edi] [__ecx]
-
-#pragma aux RdosStopTimer = \
-    OsGate_stop_timer  \
-    __parm [__ebx]
 
 #pragma aux RdosGetApicId = \
     OsGate_get_apic_id  \
@@ -1704,6 +1647,13 @@ int RdosGetSignedHidOutput(int Sel, int Usage);
     __value [__ecx] \
     __modify [__es __esi]
 
+#pragma aux RdosStartTcpConnectionNotify = \
+    OsGate_start_tcp_conn_notify  \
+    __parm [__ebx]
+
+#pragma aux RdosStopTcpConnectionNotify = \
+    OsGate_stop_tcp_conn_notify  \
+    __parm [__ebx]
 
 #pragma aux RdosRegisterDiscChange = \
     OsGate_register_disc_change \
@@ -1906,80 +1856,39 @@ int RdosGetSignedHidOutput(int Sel, int Usage);
     OsGate_insert_file_entry \
     __parm [__ebx] [__edx]
 
-#pragma aux RdosGetFileInfo = \
-    OsGate_get_file_info \
-    "push eax" \
-    CarryToBool \
-    "mov es:[edi],cl" \
-    "mov fs:[esi],ch" \
-    "pop ecx" \
-    "movzx ecx,cx" \
-    "mov gs:[edx],ecx" \
-    __parm [__ebx] [__es __edi] [__fs __esi] [__gs __edx] \
-    __value [__eax] \
-    __modify [__ecx]
-
-#pragma aux RdosDuplFileInfo = \
-    OsGate_dupl_file_info \
-    __parm [__cl] [__ch] [__eax] \
+#pragma aux RdosOpenKernelHandle = \
+    OsGate_open_kernel_handle \
+    __parm [__es __edi] [__ecx] \
     __value [__ebx]
 
-#pragma aux RdosLockFile = \
-    OsGate_lock_file \
-    CarryToBool \
-    __parm [__eax] \
-    __value [__eax]
-
-#pragma aux RdosUnlockFile = \
-    OsGate_unlock_file \
-    CarryToBool \
-    __parm [__eax] \
-    __value [__eax]
-
-#pragma aux RdosOpenKernelFile = \
-    OsGate_open_kernel_file \
-    ValidateHandle  \
-    __parm [__es __edi] [__cx] \
-    __value [__ebx]
-
-#pragma aux RdosCloseKernelFile = \
-    OsGate_close_kernel_handle  \
+#pragma aux RdosCloseKernelHandle = \
+    OsGate_close_kernel_handle \
     __parm [__ebx]
 
-#pragma aux RdosReadKernelFile = \
-    OsGate_read_kernel_handle  \
-    ValidateEax \
-    __parm [__ebx] [__es __edi] [__ecx] [__edx]  \
-    __value [__eax] \
-    __modify [__edx]
+#pragma aux RdosReadKernelHandle = \
+    OsGate_read_kernel_handle \
+    __parm [__ebx] [__es __edi] [__ecx] [__edx __eax] \
+    __value [__ecx]
 
-#pragma aux RdosWriteKernelFile = \
-    OsGate_write_kernel_handle  \
-    ValidateEax \
-    __parm [__ebx] [__es __edi] [__ecx] [__edx]  \
-    __value [__eax] \
-    __modify [__edx]
+#pragma aux RdosWriteKernelHandle = \
+    OsGate_write_kernel_handle \
+    __parm [__ebx] [__es __edi] [__ecx] [__edx __eax] \
+    __value [__ecx]
 
-#pragma aux RdosGetCFileSize = \
-    OsGate_get_c_file_size  \
-    ValidateEax \
-    __parm [__ebx]  \
-    __value [__eax]
+#pragma aux RdosGetKernelHandleSize = \
+    OsGate_get_kernel_handle_size \
+    __parm [__ebx] \
+    __value [__edx __eax]
 
-#pragma aux RdosSetCFileSize = \
-    OsGate_set_c_file_size  \
-    __parm [__ebx] [__eax]
+#pragma aux RdosSetKernelHandleSize = \
+    OsGate_set_kernel_handle_size \
+    __parm [__ebx] [__edx __eax]
 
-#pragma aux RdosGetCFileTime = \
-    OsGate_get_c_file_time  \
+#pragma aux RdosGetKernelHandleTime = \
+    OsGate_get_kernel_handle_time \
     "mov fs:[esi],edx" \
     "mov es:[edi],eax" \
-    __parm [__ebx] [__fs __esi] [__es __edi]  \
-    __modify [__eax __edx]
-
-#pragma aux RdosSetCFileTime = \
-    OsGate_set_c_file_time  \
-    __parm [__ebx] [__edx] [__eax]
+    __parm [__ebx] [__fs __esi] [__es __edi] \
 
 #pragma aux RdosReadPciByte = \
     OsGate_read_pci_byte \

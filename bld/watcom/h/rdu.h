@@ -139,7 +139,6 @@
 #define usergate_create_file 0x0000007C
 #define usergate_close_file 0x0000007D
 #define usergate_dupl_file 0x0000007E
-#define usergate_get_ioctl_data 0x0000007F
 #define usergate_get_file_size32 0x00000080
 #define usergate_set_file_size32 0x00000081
 #define usergate_get_file_pos32 0x00000082
@@ -151,10 +150,7 @@
 
 #define usergate_create_mapping 0x00000089
 #define usergate_create_named_mapping 0x0000008A
-#define usergate_create_file_mapping 0x0000008B
-#define usergate_create_named_file_mapping 0x0000008C
 #define usergate_open_named_mapping 0x0000008D
-#define usergate_sync_mapping 0x0000008E
 #define usergate_close_mapping 0x0000008F
 #define usergate_map_view 0x00000090
 #define usergate_unmap_view 0x00000091
@@ -277,9 +273,6 @@
 
 #define usergate_read_serial_val 0x000000FC
 #define usergate_write_serial_val 0x000000FD
-
-#define usergate_create_file_drive 0x000000FE
-#define usergate_open_file_drive 0x000000FF
 
 #define usergate_open_sys_env 0x00000101
 #define usergate_open_proc_env 0x00000102
@@ -955,8 +948,6 @@
 #define usergate_wait_thread_block 0x0000030F
 #define usergate_close_thread_block 0x00000310
 
-#define usergate_read_file_legacy 0x00000311
-
 #define usergate_used_user_sections 0x00000313
 
 #define usergate_user_get_system_time 0x00000314
@@ -1002,6 +993,44 @@
 #define usergate_get_handle_map 0x00000336
 #define usergate_map_handle 0x00000337
 #define usergate_grow_handle 0x00000338
+
+#define usergate_create_secure_session 0x00000339
+#define usergate_close_secure_session 0x0000033A
+#define usergate_close_secure_connection 0x0000033B
+#define usergate_wait_for_secure_connection 0x0000033D
+#define usergate_is_secure_connection_closed 0x0000033F
+#define usergate_add_wait_for_secure_connection 0x0000033E
+#define usergate_read_secure_connection 0x00000340
+#define usergate_write_secure_connection 0x00000341
+#define usergate_poll_secure_connection 0x00000342
+
+#define usergate_push_secure_connection 0x00000344
+#define usergate_get_remote_secure_ip 0x00000345
+#define usergate_get_remote_secure_port 0x00000346
+#define usergate_get_local_secure_port 0x00000347
+#define usergate_is_secure_connection_idle 0x00000348
+#define usergate_get_secure_write_space 0x00000349
+
+#define usergate_add_wait_for_secure_listen 0x0000034A
+#define usergate_create_secure_listen 0x0000034B
+#define usergate_get_secure_listen 0x0000034C
+#define usergate_close_secure_listen 0x0000034D
+#define usergate_set_secure_cert 0x0000034E
+
+#define usergate_wait_for_tcp_connection_write_space 0x0000034F
+
+#define usergate_get_secure_connection_cert 0x00000350
+#define usergate_get_cert_json 0x00000351
+
+#define usergate_update_handle 0x00000352
+#define usergate_delete_handle 0x00000353
+
+#define usergate_start_user_timer 0x00000354
+#define usergate_start_user_timeout 0x00000355
+#define usergate_update_user_timer 0x00000356
+#define usergate_update_user_timeout 0x00000357
+#define usergate_stop_user_timer 0x00000358
+#define usergate_init_user_timer 0x00000359
 
 
 
@@ -1147,7 +1176,6 @@
 #define CallGate_create_file 0x55 0x67 0x9a 124 0 0 0 3 0 0x5d
 #define CallGate_close_file 0x55 0x67 0x9a 125 0 0 0 3 0 0x5d
 #define CallGate_dupl_file 0x55 0x67 0x9a 126 0 0 0 3 0 0x5d
-#define CallGate_get_ioctl_data 0x55 0x67 0x9a 127 0 0 0 3 0 0x5d
 #define CallGate_get_file_size32 0x55 0x67 0x9a 128 0 0 0 3 0 0x5d
 #define CallGate_set_file_size32 0x55 0x67 0x9a 129 0 0 0 3 0 0x5d
 #define CallGate_get_file_pos32 0x55 0x67 0x9a 130 0 0 0 3 0 0x5d
@@ -1159,10 +1187,7 @@
 
 #define CallGate_create_mapping 0x55 0x67 0x9a 137 0 0 0 3 0 0x5d
 #define CallGate_create_named_mapping 0x55 0x67 0x9a 138 0 0 0 3 0 0x5d
-#define CallGate_create_file_mapping 0x55 0x67 0x9a 139 0 0 0 3 0 0x5d
-#define CallGate_create_named_file_mapping 0x55 0x67 0x9a 140 0 0 0 3 0 0x5d
 #define CallGate_open_named_mapping 0x55 0x67 0x9a 141 0 0 0 3 0 0x5d
-#define CallGate_sync_mapping 0x55 0x67 0x9a 142 0 0 0 3 0 0x5d
 #define CallGate_close_mapping 0x55 0x67 0x9a 143 0 0 0 3 0 0x5d
 #define CallGate_map_view 0x55 0x67 0x9a 144 0 0 0 3 0 0x5d
 #define CallGate_unmap_view 0x55 0x67 0x9a 145 0 0 0 3 0 0x5d
@@ -1285,9 +1310,6 @@
 
 #define CallGate_read_serial_val 0x55 0x67 0x9a 252 0 0 0 3 0 0x5d
 #define CallGate_write_serial_val 0x55 0x67 0x9a 253 0 0 0 3 0 0x5d
-
-#define CallGate_create_file_drive 0x55 0x67 0x9a 254 0 0 0 3 0 0x5d
-#define CallGate_open_file_drive 0x55 0x67 0x9a 255 0 0 0 3 0 0x5d
 
 #define CallGate_open_sys_env 0x55 0x67 0x9a 1 1 0 0 3 0 0x5d
 #define CallGate_open_proc_env 0x55 0x67 0x9a 2 1 0 0 3 0 0x5d
@@ -1963,8 +1985,6 @@
 #define CallGate_wait_thread_block 0x55 0x67 0x9a 15 3 0 0 3 0 0x5d
 #define CallGate_close_thread_block 0x55 0x67 0x9a 16 3 0 0 3 0 0x5d
 
-#define CallGate_read_file_legacy 0x55 0x67 0x9a 17 3 0 0 3 0 0x5d
-
 #define CallGate_used_user_sections 0x55 0x67 0x9a 19 3 0 0 3 0 0x5d
 
 #define CallGate_user_get_system_time 0x55 0x67 0x9a 20 3 0 0 3 0 0x5d
@@ -2010,6 +2030,44 @@
 #define CallGate_get_handle_map 0x55 0x67 0x9a 54 3 0 0 3 0 0x5d
 #define CallGate_map_handle 0x55 0x67 0x9a 55 3 0 0 3 0 0x5d
 #define CallGate_grow_handle 0x55 0x67 0x9a 56 3 0 0 3 0 0x5d
+
+#define CallGate_create_secure_session 0x55 0x67 0x9a 57 3 0 0 3 0 0x5d
+#define CallGate_close_secure_session 0x55 0x67 0x9a 58 3 0 0 3 0 0x5d
+#define CallGate_close_secure_connection 0x55 0x67 0x9a 59 3 0 0 3 0 0x5d
+#define CallGate_wait_for_secure_connection 0x55 0x67 0x9a 61 3 0 0 3 0 0x5d
+#define CallGate_is_secure_connection_closed 0x55 0x67 0x9a 63 3 0 0 3 0 0x5d
+#define CallGate_add_wait_for_secure_connection 0x55 0x67 0x9a 62 3 0 0 3 0 0x5d
+#define CallGate_read_secure_connection 0x55 0x67 0x9a 64 3 0 0 3 0 0x5d
+#define CallGate_write_secure_connection 0x55 0x67 0x9a 65 3 0 0 3 0 0x5d
+#define CallGate_poll_secure_connection 0x55 0x67 0x9a 66 3 0 0 3 0 0x5d
+
+#define CallGate_push_secure_connection 0x55 0x67 0x9a 68 3 0 0 3 0 0x5d
+#define CallGate_get_remote_secure_ip 0x55 0x67 0x9a 69 3 0 0 3 0 0x5d
+#define CallGate_get_remote_secure_port 0x55 0x67 0x9a 70 3 0 0 3 0 0x5d
+#define CallGate_get_local_secure_port 0x55 0x67 0x9a 71 3 0 0 3 0 0x5d
+#define CallGate_is_secure_connection_idle 0x55 0x67 0x9a 72 3 0 0 3 0 0x5d
+#define CallGate_get_secure_write_space 0x55 0x67 0x9a 73 3 0 0 3 0 0x5d
+
+#define CallGate_add_wait_for_secure_listen 0x55 0x67 0x9a 74 3 0 0 3 0 0x5d
+#define CallGate_create_secure_listen 0x55 0x67 0x9a 75 3 0 0 3 0 0x5d
+#define CallGate_get_secure_listen 0x55 0x67 0x9a 76 3 0 0 3 0 0x5d
+#define CallGate_close_secure_listen 0x55 0x67 0x9a 77 3 0 0 3 0 0x5d
+#define CallGate_set_secure_cert 0x55 0x67 0x9a 78 3 0 0 3 0 0x5d
+
+#define CallGate_wait_for_tcp_connection_write_space 0x55 0x67 0x9a 79 3 0 0 3 0 0x5d
+
+#define CallGate_get_secure_connection_cert 0x55 0x67 0x9a 80 3 0 0 3 0 0x5d
+#define CallGate_get_cert_json 0x55 0x67 0x9a 81 3 0 0 3 0 0x5d
+
+#define CallGate_update_handle 0x55 0x67 0x9a 82 3 0 0 3 0 0x5d
+#define CallGate_delete_handle 0x55 0x67 0x9a 83 3 0 0 3 0 0x5d
+
+#define CallGate_start_user_timer 0x55 0x67 0x9a 84 3 0 0 3 0 0x5d
+#define CallGate_start_user_timeout 0x55 0x67 0x9a 85 3 0 0 3 0 0x5d
+#define CallGate_update_user_timer 0x55 0x67 0x9a 86 3 0 0 3 0 0x5d
+#define CallGate_update_user_timeout 0x55 0x67 0x9a 87 3 0 0 3 0 0x5d
+#define CallGate_stop_user_timer 0x55 0x67 0x9a 88 3 0 0 3 0 0x5d
+#define CallGate_init_user_timer 0x55 0x67 0x9a 89 3 0 0 3 0 0x5d
 
 #else
 
@@ -2153,7 +2211,6 @@
 #define CallGate_create_file 0x3e 0x67 0x9a 124 0 0 0 3 0
 #define CallGate_close_file 0x3e 0x67 0x9a 125 0 0 0 3 0
 #define CallGate_dupl_file 0x3e 0x67 0x9a 126 0 0 0 3 0
-#define CallGate_get_ioctl_data 0x3e 0x67 0x9a 127 0 0 0 3 0
 #define CallGate_get_file_size32 0x3e 0x67 0x9a 128 0 0 0 3 0
 #define CallGate_set_file_size32 0x3e 0x67 0x9a 129 0 0 0 3 0
 #define CallGate_get_file_pos32 0x3e 0x67 0x9a 130 0 0 0 3 0
@@ -2165,10 +2222,7 @@
 
 #define CallGate_create_mapping 0x3e 0x67 0x9a 137 0 0 0 3 0
 #define CallGate_create_named_mapping 0x3e 0x67 0x9a 138 0 0 0 3 0
-#define CallGate_create_file_mapping 0x3e 0x67 0x9a 139 0 0 0 3 0
-#define CallGate_create_named_file_mapping 0x3e 0x67 0x9a 140 0 0 0 3 0
 #define CallGate_open_named_mapping 0x3e 0x67 0x9a 141 0 0 0 3 0
-#define CallGate_sync_mapping 0x3e 0x67 0x9a 142 0 0 0 3 0
 #define CallGate_close_mapping 0x3e 0x67 0x9a 143 0 0 0 3 0
 #define CallGate_map_view 0x3e 0x67 0x9a 144 0 0 0 3 0
 #define CallGate_unmap_view 0x3e 0x67 0x9a 145 0 0 0 3 0
@@ -2291,9 +2345,6 @@
 
 #define CallGate_read_serial_val 0x3e 0x67 0x9a 252 0 0 0 3 0
 #define CallGate_write_serial_val 0x3e 0x67 0x9a 253 0 0 0 3 0
-
-#define CallGate_create_file_drive 0x3e 0x67 0x9a 254 0 0 0 3 0
-#define CallGate_open_file_drive 0x3e 0x67 0x9a 255 0 0 0 3 0
 
 #define CallGate_open_sys_env 0x3e 0x67 0x9a 1 1 0 0 3 0
 #define CallGate_open_proc_env 0x3e 0x67 0x9a 2 1 0 0 3 0
@@ -2969,8 +3020,6 @@
 #define CallGate_wait_thread_block 0x3e 0x67 0x9a 15 3 0 0 3 0
 #define CallGate_close_thread_block 0x3e 0x67 0x9a 16 3 0 0 3 0
 
-#define CallGate_read_file_legacy 0x3e 0x67 0x9a 17 3 0 0 3 0
-
 #define CallGate_used_user_sections 0x3e 0x67 0x9a 19 3 0 0 3 0
 
 #define CallGate_user_get_system_time 0x3e 0x67 0x9a 20 3 0 0 3 0
@@ -3016,5 +3065,43 @@
 #define CallGate_get_handle_map 0x3e 0x67 0x9a 54 3 0 0 3 0
 #define CallGate_map_handle 0x3e 0x67 0x9a 55 3 0 0 3 0
 #define CallGate_grow_handle 0x3e 0x67 0x9a 56 3 0 0 3 0
+
+#define CallGate_create_secure_session 0x3e 0x67 0x9a 57 3 0 0 3 0
+#define CallGate_close_secure_session 0x3e 0x67 0x9a 58 3 0 0 3 0
+#define CallGate_close_secure_connection 0x3e 0x67 0x9a 59 3 0 0 3 0
+#define CallGate_wait_for_secure_connection 0x3e 0x67 0x9a 61 3 0 0 3 0
+#define CallGate_is_secure_connection_closed 0x3e 0x67 0x9a 63 3 0 0 3 0
+#define CallGate_add_wait_for_secure_connection 0x3e 0x67 0x9a 62 3 0 0 3 0
+#define CallGate_read_secure_connection 0x3e 0x67 0x9a 64 3 0 0 3 0
+#define CallGate_write_secure_connection 0x3e 0x67 0x9a 65 3 0 0 3 0
+#define CallGate_poll_secure_connection 0x3e 0x67 0x9a 66 3 0 0 3 0
+
+#define CallGate_push_secure_connection 0x3e 0x67 0x9a 68 3 0 0 3 0
+#define CallGate_get_remote_secure_ip 0x3e 0x67 0x9a 69 3 0 0 3 0
+#define CallGate_get_remote_secure_port 0x3e 0x67 0x9a 70 3 0 0 3 0
+#define CallGate_get_local_secure_port 0x3e 0x67 0x9a 71 3 0 0 3 0
+#define CallGate_is_secure_connection_idle 0x3e 0x67 0x9a 72 3 0 0 3 0
+#define CallGate_get_secure_write_space 0x3e 0x67 0x9a 73 3 0 0 3 0
+
+#define CallGate_add_wait_for_secure_listen 0x3e 0x67 0x9a 74 3 0 0 3 0
+#define CallGate_create_secure_listen 0x3e 0x67 0x9a 75 3 0 0 3 0
+#define CallGate_get_secure_listen 0x3e 0x67 0x9a 76 3 0 0 3 0
+#define CallGate_close_secure_listen 0x3e 0x67 0x9a 77 3 0 0 3 0
+#define CallGate_set_secure_cert 0x3e 0x67 0x9a 78 3 0 0 3 0
+
+#define CallGate_wait_for_tcp_connection_write_space 0x3e 0x67 0x9a 79 3 0 0 3 0
+
+#define CallGate_get_secure_connection_cert 0x3e 0x67 0x9a 80 3 0 0 3 0
+#define CallGate_get_cert_json 0x3e 0x67 0x9a 81 3 0 0 3 0
+
+#define CallGate_update_handle 0x3e 0x67 0x9a 82 3 0 0 3 0
+#define CallGate_delete_handle 0x3e 0x67 0x9a 83 3 0 0 3 0
+
+#define CallGate_start_user_timer 0x3e 0x67 0x9a 84 3 0 0 3 0
+#define CallGate_start_user_timeout 0x3e 0x67 0x9a 85 3 0 0 3 0
+#define CallGate_update_user_timer 0x3e 0x67 0x9a 86 3 0 0 3 0
+#define CallGate_update_user_timeout 0x3e 0x67 0x9a 87 3 0 0 3 0
+#define CallGate_stop_user_timer 0x3e 0x67 0x9a 88 3 0 0 3 0
+#define CallGate_init_user_timer 0x3e 0x67 0x9a 89 3 0 0 3 0
 
 #endif

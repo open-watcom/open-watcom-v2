@@ -49,8 +49,6 @@
 
 #define osgate_allocate_global_mem 47
 #define osgate_allocate_small_global_mem 48
-#define osgate_allocate_small_mem 49
-#define osgate_allocate_big_mem 50
 #define osgate_allocate_big_linear 51
 #define osgate_allocate_small_linear 52
 #define osgate_allocate_local_linear 53
@@ -226,9 +224,6 @@
 #define osgate_insert_dir_entry 241
 #define osgate_insert_file_entry 242
 #define osgate_set_disc_use32 244
-
-#define osgate_get_file_info 247
-#define osgate_dupl_file_info 248
 
 #define osgate_get_utf8_bitmap 250
 #define osgate_register_video_mode 251
@@ -438,9 +433,6 @@
 
 #define osgate_get_ioapic_state 430
 
-#define osgate_lock_file 431
-#define osgate_unlock_file 432
-
 #define osgate_app_patch 435
 
 #define osgate_copy_page_entries 436
@@ -614,20 +606,6 @@
 #define osgate_notify_core_dump 580
 #define osgate_setup_nmi_core_dump 581
 
-#define osgate_allocate_c_handle 584
-#define osgate_open_legacy_file 585
-#define osgate_close_legacy_file 586
-#define osgate_ref_c_handle 587
-#define osgate_read_legacy_file 588
-#define osgate_write_legacy_file 589
-#define osgate_get_c_file_size 590
-#define osgate_set_c_file_size 591
-#define osgate_get_c_file_time 592
-#define osgate_set_c_file_time 593
-#define osgate_read_c_console 594
-#define osgate_write_c_console 595
-#define osgate_open_kernel_file 596
-
 #define osgate_fork_process 597
 
 #define osgate_reset_process 601
@@ -635,8 +613,7 @@
 
 #define osgate_create_fork 610
 
-#define osgate_dupl_c_file_to_file 611
-#define osgate_c_handle_to_file_sel 612
+#define osgate_dupl_kernel_handle 611
 
 #define osgate_add_serio_device 613
 
@@ -685,10 +662,6 @@
 
 #define osgate_create_private_ldt 651
 #define osgate_destroy_ldt 652
-
-#define osgate_create_c_handle 653
-#define osgate_clone_c_handle 654
-#define osgate_delete_c_handle 655
 
 #define osgate_close_console 656
 #define osgate_set_focus_console 657
@@ -756,8 +729,8 @@
 #define osgate_start_read_stdin 701
 #define osgate_stop_read_stdin 702
 
-#define osgate_start_read_c_file 703
-#define osgate_stop_read_c_file 704
+#define osgate_start_read_legacy_file 703
+#define osgate_stop_read_legacy_file 704
 
 #define osgate_poll_udp_socket 705
 #define osgate_poll_tcp_socket 706
@@ -874,7 +847,7 @@
 #define osgate_get_vfs_disc_vendor_info 798
 #define osgate_read_vfs_disc 799
 #define osgate_remove_vfs_disc 800
-#define osgate_allocate_vfs_drive 801
+#define osgate_wait_for_vfs_discs 801
 #define osgate_check_vfs_drive 802
 #define osgate_get_vfs_cur_dir 803
 
@@ -910,6 +883,44 @@
 #define osgate_read_kernel_handle 825
 #define osgate_write_kernel_handle 826
 #define osgate_close_kernel_handle 827
+
+#define osgate_start_tcp_conn_notify 828
+#define osgate_stop_tcp_conn_notify 829
+#define osgate_get_acpi_pci_dsd 830
+#define osgate_get_pci_dsd_config 831
+
+#define osgate_reset_can_modules 832
+
+#define osgate_allocate_static_vfs_drive 833
+#define osgate_allocate_dynamic_vfs_drive 834
+
+#define osgate_begin_vfs_disc 835
+#define osgate_end_vfs_disc 836
+
+#define osgate_allocate_fixed_vfs_drive 837
+#define osgate_open_kernel_handle 838
+
+#define osgate_create_proc_handle 840
+#define osgate_clone_proc_handle 841
+#define osgate_apply_proc_handle 842
+#define osgate_delete_proc_handle 843
+
+#define osgate_create_input_handle 844
+#define osgate_create_output_handle 845
+
+#define osgate_init_handle 846
+#define osgate_open_legacy_handle 849
+#define osgate_init_kernel_handle 850
+#define osgate_open_legacy_kernel 851
+
+#define osgate_clone_ldt 852
+#define osgate_reset_ldt 853
+#define osgate_exec_close_proc_handle 854
+#define osgate_exec_update_proc_handle 855
+
+#define osgate_get_kernel_handle_size 856
+#define osgate_set_kernel_handle_size 857
+#define osgate_get_kernel_handle_time 858
 
 
 
@@ -964,8 +975,6 @@
 
 #define OsGate_allocate_global_mem 0x3E 0x67 0x9a 47 0 0 0 2 0
 #define OsGate_allocate_small_global_mem 0x3E 0x67 0x9a 48 0 0 0 2 0
-#define OsGate_allocate_small_mem 0x3E 0x67 0x9a 49 0 0 0 2 0
-#define OsGate_allocate_big_mem 0x3E 0x67 0x9a 50 0 0 0 2 0
 #define OsGate_allocate_big_linear 0x3E 0x67 0x9a 51 0 0 0 2 0
 #define OsGate_allocate_small_linear 0x3E 0x67 0x9a 52 0 0 0 2 0
 #define OsGate_allocate_local_linear 0x3E 0x67 0x9a 53 0 0 0 2 0
@@ -1141,9 +1150,6 @@
 #define OsGate_insert_dir_entry 0x3E 0x67 0x9a 241 0 0 0 2 0
 #define OsGate_insert_file_entry 0x3E 0x67 0x9a 242 0 0 0 2 0
 #define OsGate_set_disc_use32 0x3E 0x67 0x9a 244 0 0 0 2 0
-
-#define OsGate_get_file_info 0x3E 0x67 0x9a 247 0 0 0 2 0
-#define OsGate_dupl_file_info 0x3E 0x67 0x9a 248 0 0 0 2 0
 
 #define OsGate_get_utf8_bitmap 0x3E 0x67 0x9a 250 0 0 0 2 0
 #define OsGate_register_video_mode 0x3E 0x67 0x9a 251 0 0 0 2 0
@@ -1353,9 +1359,6 @@
 
 #define OsGate_get_ioapic_state 0x3E 0x67 0x9a 174 1 0 0 2 0
 
-#define OsGate_lock_file 0x3E 0x67 0x9a 175 1 0 0 2 0
-#define OsGate_unlock_file 0x3E 0x67 0x9a 176 1 0 0 2 0
-
 #define OsGate_app_patch 0x3E 0x67 0x9a 179 1 0 0 2 0
 
 #define OsGate_copy_page_entries 0x3E 0x67 0x9a 180 1 0 0 2 0
@@ -1529,20 +1532,6 @@
 #define OsGate_notify_core_dump 0x3E 0x67 0x9a 68 2 0 0 2 0
 #define OsGate_setup_nmi_core_dump 0x3E 0x67 0x9a 69 2 0 0 2 0
 
-#define OsGate_allocate_c_handle 0x3E 0x67 0x9a 72 2 0 0 2 0
-#define OsGate_open_legacy_file 0x3E 0x67 0x9a 73 2 0 0 2 0
-#define OsGate_close_legacy_file 0x3E 0x67 0x9a 74 2 0 0 2 0
-#define OsGate_ref_c_handle 0x3E 0x67 0x9a 75 2 0 0 2 0
-#define OsGate_read_legacy_file 0x3E 0x67 0x9a 76 2 0 0 2 0
-#define OsGate_write_legacy_file 0x3E 0x67 0x9a 77 2 0 0 2 0
-#define OsGate_get_c_file_size 0x3E 0x67 0x9a 78 2 0 0 2 0
-#define OsGate_set_c_file_size 0x3E 0x67 0x9a 79 2 0 0 2 0
-#define OsGate_get_c_file_time 0x3E 0x67 0x9a 80 2 0 0 2 0
-#define OsGate_set_c_file_time 0x3E 0x67 0x9a 81 2 0 0 2 0
-#define OsGate_read_c_console 0x3E 0x67 0x9a 82 2 0 0 2 0
-#define OsGate_write_c_console 0x3E 0x67 0x9a 83 2 0 0 2 0
-#define OsGate_open_kernel_file 0x3E 0x67 0x9a 84 2 0 0 2 0
-
 #define OsGate_fork_process 0x3E 0x67 0x9a 85 2 0 0 2 0
 
 #define OsGate_reset_process 0x3E 0x67 0x9a 89 2 0 0 2 0
@@ -1550,8 +1539,7 @@
 
 #define OsGate_create_fork 0x3E 0x67 0x9a 98 2 0 0 2 0
 
-#define OsGate_dupl_c_file_to_file 0x3E 0x67 0x9a 99 2 0 0 2 0
-#define OsGate_c_handle_to_file_sel 0x3E 0x67 0x9a 100 2 0 0 2 0
+#define OsGate_dupl_kernel_handle 0x3E 0x67 0x9a 99 2 0 0 2 0
 
 #define OsGate_add_serio_device 0x3E 0x67 0x9a 101 2 0 0 2 0
 
@@ -1600,10 +1588,6 @@
 
 #define OsGate_create_private_ldt 0x3E 0x67 0x9a 139 2 0 0 2 0
 #define OsGate_destroy_ldt 0x3E 0x67 0x9a 140 2 0 0 2 0
-
-#define OsGate_create_c_handle 0x3E 0x67 0x9a 141 2 0 0 2 0
-#define OsGate_clone_c_handle 0x3E 0x67 0x9a 142 2 0 0 2 0
-#define OsGate_delete_c_handle 0x3E 0x67 0x9a 143 2 0 0 2 0
 
 #define OsGate_close_console 0x3E 0x67 0x9a 144 2 0 0 2 0
 #define OsGate_set_focus_console 0x3E 0x67 0x9a 145 2 0 0 2 0
@@ -1671,8 +1655,8 @@
 #define OsGate_start_read_stdin 0x3E 0x67 0x9a 189 2 0 0 2 0
 #define OsGate_stop_read_stdin 0x3E 0x67 0x9a 190 2 0 0 2 0
 
-#define OsGate_start_read_c_file 0x3E 0x67 0x9a 191 2 0 0 2 0
-#define OsGate_stop_read_c_file 0x3E 0x67 0x9a 192 2 0 0 2 0
+#define OsGate_start_read_legacy_file 0x3E 0x67 0x9a 191 2 0 0 2 0
+#define OsGate_stop_read_legacy_file 0x3E 0x67 0x9a 192 2 0 0 2 0
 
 #define OsGate_poll_udp_socket 0x3E 0x67 0x9a 193 2 0 0 2 0
 #define OsGate_poll_tcp_socket 0x3E 0x67 0x9a 194 2 0 0 2 0
@@ -1789,7 +1773,7 @@
 #define OsGate_get_vfs_disc_vendor_info 0x3E 0x67 0x9a 30 3 0 0 2 0
 #define OsGate_read_vfs_disc 0x3E 0x67 0x9a 31 3 0 0 2 0
 #define OsGate_remove_vfs_disc 0x3E 0x67 0x9a 32 3 0 0 2 0
-#define OsGate_allocate_vfs_drive 0x3E 0x67 0x9a 33 3 0 0 2 0
+#define OsGate_wait_for_vfs_discs 0x3E 0x67 0x9a 33 3 0 0 2 0
 #define OsGate_check_vfs_drive 0x3E 0x67 0x9a 34 3 0 0 2 0
 #define OsGate_get_vfs_cur_dir 0x3E 0x67 0x9a 35 3 0 0 2 0
 
@@ -1825,4 +1809,42 @@
 #define OsGate_read_kernel_handle 0x3E 0x67 0x9a 57 3 0 0 2 0
 #define OsGate_write_kernel_handle 0x3E 0x67 0x9a 58 3 0 0 2 0
 #define OsGate_close_kernel_handle 0x3E 0x67 0x9a 59 3 0 0 2 0
+
+#define OsGate_start_tcp_conn_notify 0x3E 0x67 0x9a 60 3 0 0 2 0
+#define OsGate_stop_tcp_conn_notify 0x3E 0x67 0x9a 61 3 0 0 2 0
+#define OsGate_get_acpi_pci_dsd 0x3E 0x67 0x9a 62 3 0 0 2 0
+#define OsGate_get_pci_dsd_config 0x3E 0x67 0x9a 63 3 0 0 2 0
+
+#define OsGate_reset_can_modules 0x3E 0x67 0x9a 64 3 0 0 2 0
+
+#define OsGate_allocate_static_vfs_drive 0x3E 0x67 0x9a 65 3 0 0 2 0
+#define OsGate_allocate_dynamic_vfs_drive 0x3E 0x67 0x9a 66 3 0 0 2 0
+
+#define OsGate_begin_vfs_disc 0x3E 0x67 0x9a 67 3 0 0 2 0
+#define OsGate_end_vfs_disc 0x3E 0x67 0x9a 68 3 0 0 2 0
+
+#define OsGate_allocate_fixed_vfs_drive 0x3E 0x67 0x9a 69 3 0 0 2 0
+#define OsGate_open_kernel_handle 0x3E 0x67 0x9a 70 3 0 0 2 0
+
+#define OsGate_create_proc_handle 0x3E 0x67 0x9a 72 3 0 0 2 0
+#define OsGate_clone_proc_handle 0x3E 0x67 0x9a 73 3 0 0 2 0
+#define OsGate_apply_proc_handle 0x3E 0x67 0x9a 74 3 0 0 2 0
+#define OsGate_delete_proc_handle 0x3E 0x67 0x9a 75 3 0 0 2 0
+
+#define OsGate_create_input_handle 0x3E 0x67 0x9a 76 3 0 0 2 0
+#define OsGate_create_output_handle 0x3E 0x67 0x9a 77 3 0 0 2 0
+
+#define OsGate_init_handle 0x3E 0x67 0x9a 78 3 0 0 2 0
+#define OsGate_open_legacy_handle 0x3E 0x67 0x9a 81 3 0 0 2 0
+#define OsGate_init_kernel_handle 0x3E 0x67 0x9a 82 3 0 0 2 0
+#define OsGate_open_legacy_kernel 0x3E 0x67 0x9a 83 3 0 0 2 0
+
+#define OsGate_clone_ldt 0x3E 0x67 0x9a 84 3 0 0 2 0
+#define OsGate_reset_ldt 0x3E 0x67 0x9a 85 3 0 0 2 0
+#define OsGate_exec_close_proc_handle 0x3E 0x67 0x9a 86 3 0 0 2 0
+#define OsGate_exec_update_proc_handle 0x3E 0x67 0x9a 87 3 0 0 2 0
+
+#define OsGate_get_kernel_handle_size 0x3E 0x67 0x9a 88 3 0 0 2 0
+#define OsGate_set_kernel_handle_size 0x3E 0x67 0x9a 89 3 0 0 2 0
+#define OsGate_get_kernel_handle_time 0x3E 0x67 0x9a 90 3 0 0 2 0
 

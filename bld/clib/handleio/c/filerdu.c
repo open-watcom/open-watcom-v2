@@ -138,12 +138,12 @@ _WCRTLINK int _eof( int handle )
     return( RdosEofHandle( handle ) );
 }
 
-_WCRTLINK long _filelength( int handle )
+_WCRTLINK long long _filelength( int handle )
 {
     return( RdosGetHandleSize( handle ) );
 }
 
-_WCRTLINK int _chsize( int handle, long size )
+_WCRTLINK int _chsize( int handle, long long size )
 {
     return( RdosSetHandleSize( handle, size ) );
 }

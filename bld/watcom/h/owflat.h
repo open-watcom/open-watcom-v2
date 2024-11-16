@@ -1543,10 +1543,17 @@
     __value [__eax] \
     __modify [__edx]
 
+
 #pragma aux RdosOpenHandle = \
     CallGate_open_handle  \
     __parm [__edi] [__ecx] \
     __value [__ebx]
+
+#pragma aux RdosDeleteHandle = \
+    CallGate_delete_handle  \
+    CarryToBool \
+    __parm [__ebx] \
+    __value [__eax]
 
 #pragma aux RdosCloseHandle = \
     CallGate_close_handle  \
@@ -1562,6 +1569,10 @@
     "mov [esi],eax" \
     __parm [__ebx] [__esi] \
     __value [__edi]
+
+#pragma aux RdosUpdateHandle = \
+    CallGate_update_handle  \
+    __parm [__ebx]
 
 #pragma aux RdosMapHandle = \
     CallGate_map_handle  \
@@ -1692,7 +1703,7 @@
     __modify [__edx] \
     __value [__eax]
 
-#pragma aux RdosSetModifyHandleTime = \
+#pragma aux RdosSetHandleModifyTime = \
     CallGate_set_handle_modify_time  \
     __parm [__ebx] [__edx] [__eax] \
     __value [__eax]
@@ -1751,13 +1762,6 @@
 #pragma aux RdosCloseFile = \
     CallGate_close_file  \
     __parm [__ebx]
-
-#pragma aux RdosIsDevice = \
-    CallGate_get_ioctl_data  \
-    0x33 0xC0 0xF6 0xC6 0x80 0x74 1 0x40 \
-    __parm [__ebx]  \
-    __value [__eax] \
-    __modify [__dx]
 
 #pragma aux RdosDuplFile = \
     CallGate_dupl_file  \
@@ -1835,21 +1839,11 @@
     __parm [__edi] [__eax]  \
     __value [__ebx]
 
-#pragma aux RdosCreateNamedFileMapping = \
-    CallGate_create_named_file_mapping  \
-    ValidateHandle  \
-    __parm [__edi] [__eax] [__ebx]  \
-    __value [__ebx]
-
 #pragma aux RdosOpenNamedMapping = \
     CallGate_open_named_mapping  \
     ValidateHandle  \
     __parm [__edi] \
     __value [__ebx]
-
-#pragma aux RdosSyncMapping = \
-    CallGate_sync_mapping  \
-    __parm [__ebx]
 
 #pragma aux RdosCloseMapping = \
     CallGate_close_mapping  \
@@ -2258,6 +2252,30 @@
     CallGate_has_global_timer \
     CarryToBool \
     __value [__eax]
+
+#pragma aux RdosStartTimer = \
+    CallGate_start_user_timer \
+    __parm [__edi] [__esi] [__ebx] [__edx __eax]
+
+#pragma aux RdosStartTimeout = \
+    CallGate_start_user_timeout \
+    __parm [__edi] [__esi] [__ebx] [__eax]
+
+#pragma aux RdosUpdateTimer = \
+    CallGate_update_user_timer \
+    CarryToBool \
+    __parm [__ebx] [__edx __eax] \
+    __value [__eax]
+
+#pragma aux RdosUpdateTimeout = \
+    CallGate_update_user_timeout \
+    CarryToBool \
+    __parm [__ebx] [__eax] \
+    __value [__eax]
+
+#pragma aux RdosStopTimer = \
+    CallGate_stop_user_timer \
+    __parm [__ebx]
 
 #pragma aux RdosGetActiveCores = \
     CallGate_get_active_cores \
@@ -2900,6 +2918,32 @@
     CallGate_add_wait_for_tcp_listen  \
     __parm [__ebx] [__eax] [__ecx]
 
+#pragma aux RdosCreateSecureListen = \
+    CallGate_create_secure_listen  \
+    ValidateHandle \
+    __parm [__esi] [__eax] [__ecx] \
+    __value [__ebx]
+
+#pragma aux RdosGetSecureListen = \
+    CallGate_get_secure_listen  \
+    "movzx ebx,ax" \
+    ValidateHandle \
+    __parm [__ebx] \
+    __value [__ebx] \
+    __modify [__ax]
+
+#pragma aux RdosCloseSecureListen = \
+    CallGate_close_secure_listen  \
+    __parm [__ebx]
+
+#pragma aux RdosSetSecureCertificate = \
+    CallGate_set_secure_cert  \
+    __parm [__ebx] [__esi] [__edi] [__edx]
+
+#pragma aux RdosAddWaitForSecureListen = \
+    CallGate_add_wait_for_secure_listen  \
+    __parm [__ebx] [__eax] [__ecx]
+
 #pragma aux RdosCreateUdpListen = \
     CallGate_create_udp_listen  \
     ValidateHandle \
@@ -3034,6 +3078,10 @@
     __parm [__ebx] \
     __value [__eax]
 
+#pragma aux RdosWaitForTcpConnectionWriteSpace = \
+    CallGate_wait_for_tcp_connection_write_space  \
+    __parm [__ebx]
+
 #pragma aux RdosCreateTcpSocket = \
     CallGate_create_tcp_socket  \
     ValidateHandle \
@@ -3081,11 +3129,113 @@
     __parm [__edi] [__ecx] [__edx] \
     __value [__ecx]
 
+#pragma aux RdosCreateSecureSession = \
+    CallGate_create_secure_session  \
+    __value [__ebx]
+
+#pragma aux RdosCloseSecureSession = \
+    CallGate_close_secure_session  \
+    __parm [__ebx]
+
 #pragma aux RdosCreateSecureConnection = \
     CallGate_create_secure_connection  \
     ValidateHandle \
-    __parm [__ebx] \
+    __parm [__ebx] [__edx] [__esi] [__edi] [__eax] [__ecx] \
     __value [__ebx]
+
+#pragma aux RdosCloseSecureConnection = \
+    CallGate_close_secure_connection  \
+    __parm [__ebx]
+
+#pragma aux RdosWaitForSecureConnection = \
+    CallGate_wait_for_secure_connection  \
+    CarryToBool \
+    __parm [__ebx] [__eax] \
+    __value [__eax]
+
+#pragma aux RdosAddWaitForSecureConnection = \
+    CallGate_add_wait_for_secure_connection  \
+    __parm [__ebx] [__eax] [__ecx]
+
+#pragma aux RdosIsSecureConnectionClosed = \
+    CallGate_is_secure_connection_closed  \
+    "cmc"   \
+    CarryToBool \
+    __parm [__ebx] \
+    __value [__eax]
+
+#pragma aux RdosIsSecureConnectionIdle = \
+    CallGate_is_secure_connection_idle  \
+    CarryToBool \
+    __parm [__ebx] \
+    __value [__eax]
+
+#pragma aux RdosGetRemoteSecureConnectionIP = \
+    CallGate_get_remote_secure_ip  \
+    ValidateEax \
+    __parm [__ebx] \
+    __value [__eax]
+
+#pragma aux RdosGetRemoteSecureConnectionPort = \
+    CallGate_get_remote_secure_port  \
+    "movzx eax,ax"\
+    ValidateEax \
+    __parm [__ebx] \
+    __value [__eax]
+
+#pragma aux RdosGetLocalSecureConnectionPort = \
+    CallGate_get_local_secure_port  \
+    "movzx eax,ax"\
+    ValidateEax \
+    __parm [__ebx] \
+    __value [__eax]
+
+#pragma aux RdosReadSecureConnection = \
+    CallGate_read_secure_connection  \
+    ValidateEax \
+    __parm [__ebx] [__edi] [__ecx] \
+    __value [__eax]
+
+#pragma aux RdosWriteSecureConnection = \
+    CallGate_write_secure_connection  \
+    ValidateEax \
+    __parm [__ebx] [__edi] [__ecx] \
+    __value [__eax]
+
+#pragma aux RdosPollSecureConnection = \
+    CallGate_poll_secure_connection  \
+    ValidateEax \
+    __parm [__ebx] \
+    __value [__eax]
+
+#pragma aux RdosPushSecureConnection = \
+    CallGate_push_secure_connection  \
+    __parm [__ebx]
+
+#pragma aux RdosGetSecureConnectionWriteSpace = \
+    CallGate_get_secure_write_space  \
+    "jnc ok" \
+    "mov eax,07FFFFFFFh" \
+    "ok:" \
+    __parm [__ebx] \
+    __value [__eax]
+
+#pragma aux RdosGetSecureConnectionCertificate = \
+    CallGate_get_secure_connection_cert  \
+    "jnc ok" \
+    "xor ecx,ecx" \
+    "ok:" \
+    __parm [__ebx] [__edi] [__ecx] \
+    __value [__ecx]
+
+#pragma aux RdosGetCertificateJson = \
+    CallGate_get_cert_json  \
+    "jnc ok" \
+    "xor ecx,ecx" \
+    "ok:" \
+    __parm [__esi] [__edi] [__ecx] \
+    __value [__ecx]
+
 
 #pragma aux RdosGetLocalMailslot = \
     CallGate_get_local_mailslot  \
@@ -3562,18 +3712,6 @@
 #pragma aux RdosCloseVfsDir = \
     CallGate_close_vfs_dir  \
     __parm [__ebx]
-
-#pragma aux RdosCreateFileDrive = \
-    CallGate_create_file_drive  \
-    CarryToBool \
-    __parm [__eax] [__ecx] [__esi] [__edi] \
-    __value [__eax]
-
-#pragma aux RdosOpenFileDrive = \
-    CallGate_open_file_drive  \
-    CarryToBool \
-    __parm [__eax] [__edi] \
-    __value [__eax]
 
 #pragma aux RdosCreateCrc = \
     CallGate_create_crc  \

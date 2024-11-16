@@ -16,13 +16,21 @@ _WCRTLINK extern int        eof( int __handle );
 :: Wide character version
 :elsesegment ANSINAME
 :: ANSI name version
+:segment RDOS
+_WCRTLINK extern long long  _filelength( int __handle );
+:elsesegment
 _WCRTLINK extern long       _filelength( int __handle );
+:endsegment
 :segment DOS | QNX | LINUX
 _WCRTLINK extern long long  _filelengthi64( int __handle );
 :endsegment
 :elsesegment
+:segment RDOS
+_WCRTLINK extern long long  filelength( int __handle );
+:elsesegment
 :: MS deprecated
 _WCRTLINK extern long       filelength( int __handle );
+:endsegment
 :endsegment
 ::
 ::                          <io.h>
@@ -44,10 +52,18 @@ _WCRTLINK extern off_t      tell( int __handle );
 :: Wide character version
 :elsesegment ANSINAME
 :: ANSI name version
+:segment RDOS
+_WCRTLINK extern int        _chsize( int __handle, long long __size );
+:elsesegment
 _WCRTLINK extern int        _chsize( int __handle, long __size );
+:endsegment
+:elsesegment
+:segment RDOS
+_WCRTLINK extern int        chsize( int __handle, long long __size );
 :elsesegment
 :: MS deprecated
 _WCRTLINK extern int        chsize( int __handle, long __size );
+:endsegment
 :endsegment
 ::
 ::                          <io.h> (<fcntl.h>)

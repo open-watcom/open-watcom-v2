@@ -544,13 +544,6 @@
     CallGate_close_file  \
     __parm [__ebx]
 
-#pragma aux RdosIsDevice = \
-    CallGate_get_ioctl_data  \
-    0x33 0xC0 0xF6 0xC6 0x80 0x74 1 0x40 \
-    __parm [__ebx]  \
-    __value [__eax] \
-    __modify [__dx]
-
 #pragma aux RdosDuplFile = \
     CallGate_dupl_file  \
     ValidateHandle  \
@@ -627,21 +620,11 @@
     __parm [__es __edi] [__eax]  \
     __value [__ebx]
 
-#pragma aux RdosCreateNamedFileMapping = \
-    CallGate_create_named_file_mapping  \
-    ValidateHandle  \
-    __parm [__es __edi] [__eax] [__ebx]  \
-    __value [__ebx]
-
 #pragma aux RdosOpenNamedMapping = \
     CallGate_open_named_mapping  \
     ValidateHandle  \
     __parm [__es __edi] \
     __value [__ebx]
-
-#pragma aux RdosSyncMapping = \
-    CallGate_sync_mapping  \
-    __parm [__ebx]
 
 #pragma aux RdosCloseMapping = \
     CallGate_close_mapping  \
@@ -1389,6 +1372,14 @@
     __parm [__ebx] \
     __value [__eax]
 
+#pragma aux RdosGetTcpConnectionWriteSpace = \
+    CallGate_get_tcp_connection_write_space  \
+    "jnc ok" \
+    "mov eax,07FFFFFFFh" \
+    "ok:" \
+    __parm [__ebx] \
+    __value [__eax]
+
 #pragma aux RdosGetLocalMailslot = \
     CallGate_get_local_mailslot  \
     ValidateHandle \
@@ -1726,21 +1717,6 @@
     __value [__eax] \
     __modify [__ecx __edx]
 
-#pragma aux RdosCreateFileDrive = \
-    "push ds" \
-    "mov ds,edx" \
-    CallGate_create_file_drive  \
-    CarryToBool \
-    "pop ds" \
-    __parm [__eax] [__ecx] [__edx __esi] [__es __edi] \
-    __value [__eax]
-
-#pragma aux RdosOpenFileDrive = \
-    CallGate_open_file_drive  \
-    CarryToBool \
-    __parm [__eax] [__es __edi] \
-    __value [__eax]
-
 #pragma aux RdosCreateCrc = \
     CallGate_create_crc  \
     ValidateHandle \
@@ -1970,7 +1946,6 @@
 
 #pragma aux RdosStopNetCapture = \
     CallGate_stop_net_capture
-
 
 #pragma aux RdosGetUsbConfig = \
     CallGate_get_usb_config \
