@@ -1146,10 +1146,10 @@ static void Define_Memory_Model( OPT_STORAGE *data )
 
 #if _CPU == 8086
     strcpy( CLIB_Name, "1clib?" );
-    if( data->bm ) {
+    if( CompFlags.bm_switch_used ) {
         strcpy( CLIB_Name, "1clibmt?" );
     }
-    if( data->bd ) {
+    if( CompFlags.bd_switch_used ) {
         if( TargetSystem == TS_WINDOWS || TargetSystem == TS_CHEAP_WINDOWS ) {
             strcpy( CLIB_Name, "1clib?" );
         } else {
@@ -1175,20 +1175,20 @@ static void Define_Memory_Model( OPT_STORAGE *data )
         lib_model = 's';
         PreDefine_Macro( "__3S__" );
     }
-    if( data->br ) {
+    if( CompFlags.br_switch_used ) {
         strcpy( CLIB_Name, "1clb?dll" );
     } else {
         strcpy( CLIB_Name, "1clib3?" );     /* There is only 1 CLIB now! */
     }
     if( GET_FPU_FPC( ProcRevision ) ) {
-        if( data->br ) {
+        if( CompFlags.br_switch_used ) {
             strcpy( MATHLIB_Name, "5mth?dll" );
         } else {
             strcpy( MATHLIB_Name, "5math3?" );
         }
         EmuLib_Name = NULL;
     } else {
-        if( data->br ) {
+        if( CompFlags.br_switch_used ) {
             strcpy( MATHLIB_Name, "7mt7?dll" );
         } else {
             strcpy( MATHLIB_Name, "7math387?" );

@@ -855,7 +855,7 @@ static char *ReadIndirectFile( const char *fname )
             /*
              * if DOS end of file (^Z) -> mark end of str
              */
-            if( ch == 0x1A ) {
+            if( ch == DOS_EOF_CHAR ) {
                 *str = '\0';
                 break;
             }

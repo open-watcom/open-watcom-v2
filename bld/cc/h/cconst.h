@@ -62,3 +62,5 @@
 #define ARRAY_SIZE(x)               (sizeof( x ) / sizeof( *x ))
 
 #define IsHugeData()                ((TargetSwitches & (CGSW_X86_BIG_DATA | CGSW_X86_CHEAP_POINTER)) == CGSW_X86_BIG_DATA)
+
+#define DOS_EOF_CHAR                0x1A

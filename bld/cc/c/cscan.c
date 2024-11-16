@@ -1784,9 +1784,9 @@ static TOKEN ScanCarriageReturn( void )
 }
 
 #if defined(__DOS__) || defined(__OS2__) || defined(__NT__)
-    #define     SYS_EOF_CHAR 0x1A
+    #define SYS_EOF_CHAR    DOS_EOF_CHAR
 #elif defined(__UNIX__) || defined(__RDOS__)
-    #undef      SYS_EOF_CHAR
+    #undef  SYS_EOF_CHAR
 #else
     #error System end of file character not configured.
 #endif
