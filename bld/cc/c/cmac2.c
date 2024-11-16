@@ -149,7 +149,7 @@ static void IncLevel( bool value )
     cpp = (struct cpp_info *)CMemAlloc( sizeof( struct cpp_info ) );
     cpp->prev_cpp = CppStack;
     cpp->src_loc = TokenLoc;
-    cpp->flist = SrcFile->src_flist;
+    cpp->flist = SrcFiles->src_flist;
     cpp->cpp_type = PRE_IF;
     cpp->processing = false;
     CppStack = cpp;
@@ -246,8 +246,8 @@ TOKEN CheckControl( void )
         }
         if( CompFlags.cpp_mode ) {
             if( lines_skipped ) {
-                if( SrcFile != NULL ) {
-                    CppEmitPoundLine( SrcFile->src_loc.line, SrcFile->src_name, false );
+                if( SrcFiles != NULL ) {
+                    CppEmitPoundLine( SrcFiles->src_loc.line, SrcFiles->src_name, false );
                 }
             }
         }
@@ -304,8 +304,8 @@ void CInclude( void )
         }
 #if _CPU == 370
         if( !CompFlags.use_precompiled_header ) {
-            SrcFile->colum = Column;    /* do trunc and col on  */
-            SrcFile->trunc = Trunc;     /* on user source files */
+            SrcFiles->colum = Column;    /* do trunc and col on  */
+            SrcFiles->trunc = Trunc;     /* on user source files */
         }
 #endif
     } else if( CurToken == T_LT ) {
@@ -693,7 +693,7 @@ static void CEndif( void )
 
         --NestLevel;
         cpp = CppStack;
-        if( SrcFile != NULL && cpp->flist != SrcFile->src_flist ) {
+        if( SrcFiles != NULL && cpp->flist != SrcFiles->src_flist ) {
              CWarn2p( ERR_WEIRD_ENDIF_ENCOUNTER, FileIndexToCorrectName( cpp->src_loc.fno ) );
         }
         CppStack = cpp->prev_cpp;
@@ -774,13 +774,13 @@ static void CLine( void )
     if( ExpectingConstant() ) {
         if( !CompFlags.cpp_ignore_line ) {
             src_line = Constant; // stash in case of side effects
-            SrcFile->src_loc.line = src_line - 1; /* don't count this line */
+            SrcFiles->src_loc.line = src_line - 1; /* don't count this line */
         }
         PPNextToken();
         if( CurToken == T_NULL ) {
             if( !CompFlags.cpp_ignore_line ) {
                 if( CompFlags.cpp_mode ) {
-                    CppEmitPoundLine( src_line, SrcFile->src_name, false );
+                    CppEmitPoundLine( src_line, SrcFiles->src_name, false );
                 }
             }
         } else {
@@ -795,10 +795,10 @@ static void CLine( void )
 //                        RemoveEscapes( Buffer );
                         flist = AddFlist( Buffer );
                         flist->rwflag = false;  // not a real file so no autodep
-                        SrcFile->src_name = flist->name;
-                        SrcFile->src_loc.fno = flist->index;
+                        SrcFiles->src_name = flist->name;
+                        SrcFiles->src_loc.fno = flist->index;
                         if( CompFlags.cpp_mode ) {
-                            CppEmitPoundLine( src_line, SrcFile->src_name, false );
+                            CppEmitPoundLine( src_line, SrcFiles->src_name, false );
                         }
                     }
                 }
