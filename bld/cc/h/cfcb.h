@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,7 +37,7 @@ typedef struct fcb_struct {                 /* file control block structure */
     source_loc              src_loc;        /* source file current location (alias) */
     FNAMEPTR                src_flist;      /* pointer to flist_name struct */
     unsigned                src_line_cnt;   /* source file line counter */
-    FILE                    *src_fp;        /* pointer to FILE struct */
+    FILE                    *fp;            /* pointer to FILE struct */
     struct fcb_struct       *prev_file;     /* pointer to previous fcb */
     int                     prev_currchar;  /* value of CurrChar */
     const unsigned char     *src_ptr;       /* pointer to next character in buffer */

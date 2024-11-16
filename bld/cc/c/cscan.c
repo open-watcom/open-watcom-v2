@@ -51,7 +51,7 @@ enum scan_class {
 
 extern const unsigned char  TokValue[];
 
-static FCB              rescan_tmp_file;
+static FCB              rescan_fcb;
 #ifdef CHAR_MACRO
 static int              SavedCurrChar;      /* used when get tokens from macro */
 #endif
@@ -108,19 +108,19 @@ void NewLineStartPos( FCB *srcfile )
 void ReScanInit( const char *ptr )
 /********************************/
 {
-    rescan_tmp_file.src_ptr = (const unsigned char *)ptr;
+    rescan_fcb.src_ptr = (const unsigned char *)ptr;
 }
 
 const char *ReScanPos( void )
 /***************************/
 {
-    return( (const char *)rescan_tmp_file.src_ptr );
+    return( (const char *)rescan_fcb.src_ptr );
 }
 
 static int reScanGetNextChar( void )
 /**********************************/
 {
-    CurrChar = *rescan_tmp_file.src_ptr++;
+    CurrChar = *rescan_fcb.src_ptr++;
     if( CurrChar == '\0' ) {
         CompFlags.rescan_buffer_done = true;
     }
@@ -141,7 +141,7 @@ static void reScanGetNextCharUndo( int c )
 {
     /* unused parameters */ (void)c;
 
-    rescan_tmp_file.src_ptr--;
+    rescan_fcb.src_ptr--;
     CompFlags.rescan_buffer_done = false;
 }
 
@@ -242,7 +242,7 @@ static int getIDName( int c )
     while( CharSet[c] & (C_AL | C_DI) ) {
         while( CharSet[c] & (C_AL | C_DI) ) {
             WriteBufferChar( c );
-            c = *SrcFile->src_ptr++;
+            c = *SrcFiles->src_ptr++;
         }
         if( (CharSet[c] & C_EX) == 0 )
             break;
@@ -1177,7 +1177,7 @@ static void doScanComment( void )
             }
             if( c == '\n' ) {
                 CppPrtChar( c );
-                NewLineStartPos( SrcFile );
+                NewLineStartPos( SrcFiles );
             } else if( c != '\r'
               && CompFlags.cpp_keep_comments ) {
                 CppPrtChar( c );
@@ -1195,13 +1195,13 @@ static void doScanComment( void )
         c = '\0';
         for( ; c != LCHR_EOF; ) {
             if( c == '\n' ) {
-                NewLineStartPos( SrcFile );
-                TokenLoc = SrcFileLoc = SrcFile->src_loc;
+                NewLineStartPos( SrcFiles );
+                TokenLoc = SrcFileLoc = SrcFiles->src_loc;
             }
             do {
                 do {
                     prev_char = c;
-                    c = *SrcFile->src_ptr++;
+                    c = *SrcFiles->src_ptr++;
                 } while( (CharSet[c] & C_EX) == 0 );
                 c = GetCharCheck( c );
                 if( c == LCHR_EOF ) {
@@ -1703,7 +1703,7 @@ static TOKEN ScanWhiteSpace( void )
     } else {
         do {
             do {
-                c = *SrcFile->src_ptr++;
+                c = *SrcFiles->src_ptr++;
             } while( CharSet[c] & C_WS );
             if( (CharSet[c] & C_EX) == 0 )
                 break;
@@ -1745,8 +1745,8 @@ void SkipAhead( void )
               && IS_PPCTL_NORMAL() ) {
                 CppPrtChar( '\n' );
             }
-            NewLineStartPos( SrcFile );
-            SrcFileLoc = SrcFile->src_loc;
+            NewLineStartPos( SrcFiles );
+            SrcFileLoc = SrcFiles->src_loc;
             NextChar();
         }
         if( CurrChar != '/' )
@@ -1766,8 +1766,8 @@ void SkipAhead( void )
 static TOKEN ScanNewline( void )
 /******************************/
 {
-    NewLineStartPos( SrcFile );
-    SrcFileLoc = SrcFile->src_loc;
+    NewLineStartPos( SrcFiles );
+    SrcFileLoc = SrcFiles->src_loc;
     if( PPControl & PPCTL_EOL )
         return( T_NULL );
     return( CheckControl() );
@@ -1784,9 +1784,9 @@ static TOKEN ScanCarriageReturn( void )
 }
 
 #if defined(__DOS__) || defined(__OS2__) || defined(__NT__)
-    #define     SYS_EOF_CHAR 0x1A
+    #define SYS_EOF_CHAR    DOS_EOF_CHAR
 #elif defined(__UNIX__) || defined(__RDOS__)
-    #undef      SYS_EOF_CHAR
+    #undef  SYS_EOF_CHAR
 #else
     #error System end of file character not configured.
 #endif
@@ -1804,7 +1804,7 @@ static TOKEN ScanInvalid( void )
     TokenLen = 1;
 #ifdef SYS_EOF_CHAR
     if( CurrChar == SYS_EOF_CHAR ) {
-        CloseSrcFile( SrcFile );
+        CloseSrcFile( SrcFiles );
         token = T_WHITE_SPACE;
     }
 #endif
@@ -1912,9 +1912,9 @@ TOKEN ReScanToken( void )
     saved_nextchar = NextChar;
     saved_ungetchar = UnGetChar;
     saved_getcharcheck = GetCharCheck;
-    oldSrcFile = SrcFile;
+    oldSrcFile = SrcFiles;
 
-    SrcFile = &rescan_tmp_file;
+    SrcFiles = &rescan_fcb;
     NextChar = reScanGetNextChar;
     UnGetChar = reScanGetNextCharUndo;
     GetCharCheck = reScanGetCharCheck;
@@ -1928,9 +1928,9 @@ TOKEN ReScanToken( void )
       && CompFlags.wide_char_string ) {
         token = T_LSTRING;
     }
-    SrcFile->src_ptr--;
+    SrcFiles->src_ptr--;
 
-    SrcFile = oldSrcFile;
+    SrcFiles = oldSrcFile;
     CurrChar = saved_currchar;
     NextChar = saved_nextchar;
     UnGetChar = saved_ungetchar;

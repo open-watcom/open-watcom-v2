@@ -75,17 +75,17 @@ void InitIncFile( void )
     IncFileDepth = MAX_INC_DEPTH;
 }
 
-static bool ReadBuffer( FCB *srcfcb )
+static bool ReadBuffer( FCB *fcb )
 {
     int         last_char;
     size_t      read_amount;
 
-    if( srcfcb->src_fp == NULL ) {          /* in-memory buffer */
-        CloseSrcFile( srcfcb );
+    if( fcb->fp == NULL ) {          /* in-memory buffer */
+        CloseSrcFile( fcb );
         return( false );
     }
-    if( srcfcb->src_end == notFilled + 1 ) {
-        if( srcfcb->typ == FT_HEADER_FORCED ) {
+    if( fcb->src_end == notFilled + 1 ) {
+        if( fcb->typ == FT_HEADER_FORCED ) {
             InitialMacroFlags = MFLAG_NONE;
             if( PCH_FileName != NULL && CompFlags.make_precompiled_header == 0 ) {
                 if( CompFlags.ok_to_use_precompiled_hdr ) {
@@ -97,7 +97,7 @@ static bool ReadBuffer( FCB *srcfcb )
             }
             if( CompFlags.use_precompiled_header ) {
                 CompFlags.use_precompiled_header = false;
-                if( UsePreCompiledHeader( srcfcb->src_name ) ) {
+                if( UsePreCompiledHeader( fcb->src_name ) ) {
                     return( true );
                 }
             }
@@ -109,32 +109,32 @@ static bool ReadBuffer( FCB *srcfcb )
      * whatever comes next will be tacked onto that unterminated
      * line, possibly confusing the hell out of the user.
      */
-    if( srcfcb->src_buf != srcfcb->src_end ) {
-        last_char = *( srcfcb->src_end - 1 );
+    if( fcb->src_buf != fcb->src_end ) {
+        last_char = *( fcb->src_end - 1 );
     } else {
         last_char = '\n';
     }
-    srcfcb->src_end = srcfcb->src_ptr = srcfcb->src_buf;
-    read_amount = fread( srcfcb->src_buf, 1, SRC_BUF_SIZE, srcfcb->src_fp );
+    fcb->src_end = fcb->src_ptr = fcb->src_buf;
+    read_amount = fread( fcb->src_buf, 1, SRC_BUF_SIZE, fcb->fp );
     if( read_amount != SRC_BUF_SIZE ) {
-        if( ferror( srcfcb->src_fp ) ) {
-            CErr3p( ERR_IO_ERR, srcfcb->src_name, strerror( errno ) );
-            CloseSrcFile( srcfcb );
+        if( ferror( fcb->fp ) ) {
+            CErr3p( ERR_IO_ERR, fcb->src_name, strerror( errno ) );
+            CloseSrcFile( fcb );
             return( true );
         }
         if( read_amount == 0 && last_char == '\n' ) {
-            CloseSrcFile( srcfcb );
+            CloseSrcFile( fcb );
             return( true );
         }
     }
     if( read_amount > 0 ) {
-        last_char = srcfcb->src_buf[read_amount - 1];
+        last_char = fcb->src_buf[read_amount - 1];
     }
     if( ( read_amount < SRC_BUF_SIZE ) && ( last_char != '\n' ) ) {
-        srcfcb->no_eol = true;                  // emit warning later so line # is right
+        fcb->no_eol = true;                  // emit warning later so line # is right
     }
-    srcfcb->src_buf[read_amount] = '\0';
-    srcfcb->src_end += read_amount;             // mark end of buffer
+    fcb->src_buf[read_amount] = '\0';
+    fcb->src_end += read_amount;             // mark end of buffer
     return( false );                            // indicate CurrChar does not contain a character
 }
 
@@ -143,9 +143,9 @@ int GetNextChar( void )
 {
     int c;
 
-    c = *SrcFile->src_ptr++;
+    c = *SrcFiles->src_ptr++;
     if(( CharSet[c] & C_EX ) == 0 ) {
-//        SrcFile->column++;
+//        SrcFiles->column++;
         CurrChar = c;
         return( c );
     }
@@ -162,7 +162,7 @@ static int getCharAfterOneQuestion( void )
     NextChar = GetNextChar;
     c = LastChar;
     if( c == '?' ) {
-//        SrcFile->column++;
+//        SrcFiles->column++;
         CurrChar = c;
         return( c );
     }
@@ -171,7 +171,7 @@ static int getCharAfterOneQuestion( void )
 
 static int getCharAfterTwoQuestion( void )
 {
-//    SrcFile->column++;
+//    SrcFiles->column++;
     CurrChar = '?';
     NextChar = getCharAfterOneQuestion;
     return( CurrChar );
@@ -199,15 +199,15 @@ static int getTestCharFromFile( void )
 {
     int c;
 
-    for( ; (c = *SrcFile->src_ptr++) == '\0'; ) {
+    for( ; (c = *SrcFiles->src_ptr++) == '\0'; ) {
         /*
          * check to make sure the NUL character we just found is at the
          * end of the buffer, and not an embedded NUL character in the
          * source file.
          */
-        if( SrcFile->src_ptr != SrcFile->src_end + 1 )
+        if( SrcFiles->src_ptr != SrcFiles->src_end + 1 )
             break;
-        if( ReadBuffer( SrcFile ) ) {
+        if( ReadBuffer( SrcFiles ) ) {
             return( CurrChar );
         }
     }
@@ -249,7 +249,7 @@ static int tryBackSlashNewLine( void )
     int nc;
 
     /*
-     * CurrChar is '\\' and SrcFile->column is up to date
+     * CurrChar is '\\' and SrcFiles->column is up to date
      */
     Blank1Count = 0;
     Blank2Count = 0;
@@ -284,9 +284,9 @@ static int tryBackSlashNewLine( void )
                 CppPrtChar( '\n' );
             }
         }
-        NewLineStartPos( SrcFile );
-        SrcFileLoc = SrcFile->src_loc;
-//        SrcFile->column = 0;
+        NewLineStartPos( SrcFiles );
+        SrcFileLoc = SrcFiles->src_loc;
+//        SrcFiles->column = 0;
         return( GetNextChar() );
     }
     LastChar = nc;
@@ -299,12 +299,12 @@ static int tryTrigraphAgain( void )
     int c;
     int xc;
 
-//    SrcFile->column++;
+//    SrcFiles->column++;
     c = getTestCharFromFile();
     if( c != '?' ) {
         xc = translateTriGraph( c );
         if( c != xc ) {
-//            SrcFile->column += 2;
+//            SrcFiles->column += 2;
             CurrChar = xc;
             NextChar = GetNextChar;
             if( xc == '\\' ) {
@@ -342,31 +342,31 @@ int GetCharCheckFile( int c )
              * source file.
              */
             CurrChar = '\0';
-            if( SrcFile->no_eol ) {
+            if( SrcFiles->no_eol ) {
                 CurrChar = '\n';
             }
-            if( SrcFile->src_ptr == SrcFile->src_end + 1 ) {
-                if( !ReadBuffer( SrcFile ) ) {
+            if( SrcFiles->src_ptr == SrcFiles->src_end + 1 ) {
+                if( !ReadBuffer( SrcFiles ) ) {
                     return( GetNextChar() );
                 }
             }
             return( CurrChar );
         case '\n':
-//            NewLineStartPos( SrcFile );
-//            SrcFile->column = 0;
+//            NewLineStartPos( SrcFiles );
+//            SrcFiles->column = 0;
             break;
         case '\t':
-//            SrcFile->column +=
-//              ( ( TAB_WIDTH + 1 ) - (( SrcFile->column + 1 ) % TAB_WIDTH ) );
+//            SrcFiles->column +=
+//              ( ( TAB_WIDTH + 1 ) - (( SrcFiles->column + 1 ) % TAB_WIDTH ) );
             break;
         case '\\':
-//            SrcFile->column++;
+//            SrcFiles->column++;
             CurrChar = c;
             return( tryBackSlashNewLine() );
         case '\r':
             break;
         default:
-//            SrcFile->column++;
+//            SrcFiles->column++;
             if( c > 0x7f && (CharSet[c] & C_DB) ) {
                 /*
                  * we should not process the second byte through
@@ -383,7 +383,7 @@ int GetCharCheckFile( int c )
     /*
      * we have one '?'
      */
-//    SrcFile->column++;
+//    SrcFiles->column++;
     nc = getTestCharFromFile();
     if( nc != '?' ) {
         LastChar = nc;
@@ -397,7 +397,7 @@ int GetCharCheckFile( int c )
     nnc = getTestCharFromFile();
     xc = translateTriGraph( nnc );
     if( nnc != xc ) {
-//        SrcFile->column += 2;
+//        SrcFiles->column += 2;
         CurrChar = xc;
         if( xc == '\\' ) {
             return( tryBackSlashNewLine() );
@@ -511,58 +511,58 @@ void GetNextCharUndo( int c )
 
 static bool FCB_Alloc( FILE *fp, const char *filename, src_file_type typ )
 {
-    FCB             *srcfcb;
+    FCB             *fcb;
     unsigned char   *src_buffer;
     FNAMEPTR        flist;
 
     --IncFileDepth;
-    srcfcb = (FCB *)CMemAlloc( sizeof( FCB ) );
+    fcb = (FCB *)CMemAlloc( sizeof( FCB ) );
     src_buffer = FEmalloc( SRC_BUF_SIZE + 3 );
-    if( srcfcb != NULL ) {
-        srcfcb->src_buf = src_buffer;
+    if( fcb != NULL ) {
+        fcb->src_buf = src_buffer;
         src_buffer[0] = '\0';
         flist = AddFlist( filename );
         FNameFullPath( flist );
-        srcfcb->src_name = flist->name;
-        srcfcb->src_line_cnt = 0;
-        srcfcb->src_loc.line = 0;
-        srcfcb->src_loc.column = 0;
-        srcfcb->src_loc.fno = flist->index;
-        SrcFileLoc = srcfcb->src_loc;
-        srcfcb->src_flist = flist;
-        srcfcb->src_fp = fp;
-        srcfcb->src_ptr = notFilled + 1;
-        srcfcb->src_end = notFilled + 1;
-        srcfcb->prev_file = SrcFile;
-        srcfcb->prev_currchar = CurrChar;
+        fcb->src_name = flist->name;
+        fcb->src_line_cnt = 0;
+        fcb->src_loc.line = 0;
+        fcb->src_loc.column = 0;
+        fcb->src_loc.fno = flist->index;
+        SrcFileLoc = fcb->src_loc;
+        fcb->src_flist = flist;
+        fcb->fp = fp;
+        fcb->src_ptr = notFilled + 1;
+        fcb->src_end = notFilled + 1;
+        fcb->prev_file = SrcFiles;
+        fcb->prev_currchar = CurrChar;
 #if _CPU == 370
-        srcfcb->column = 0;     /* init colum, trunc info */
-        srcfcb->trunc = 0;
-        srcfcb->prevcount = 0;
+        fcb->column = 0;     /* init colum, trunc info */
+        fcb->trunc = 0;
+        fcb->prevcount = 0;
 #endif
-        if( SrcFile != NULL ) {
-            if( SrcFile == MainSrcFile ) {
+        if( SrcFiles != NULL ) {
+            if( SrcFiles == MainSrcFile ) {
                 /*
                  * remember name of included file
                  */
                 AddIncFileList( filename );
             }
         }
-        srcfcb->rseekpos = 0;
-        srcfcb->typ = typ;
-        srcfcb->no_eol = false;
-        SrcFile = srcfcb;
+        fcb->rseekpos = 0;
+        fcb->typ = typ;
+        fcb->no_eol = false;
+        SrcFiles = fcb;
         CurrChar = '\n';    /* set next character to newline */
         return( true );
     }
     return( false );
 }
 
-static void FCB_Free( FCB *srcfcb )
+static void FCB_Free( FCB *fcb )
 {
     ++IncFileDepth;
-    FEfree( srcfcb->src_buf );
-    CMemFree( srcfcb );
+    FEfree( fcb->src_buf );
+    CMemFree( fcb );
 }
 
 bool OpenFCB( FILE *fp, const char *filename, src_file_type typ )
@@ -589,34 +589,34 @@ bool OpenFCB( FILE *fp, const char *filename, src_file_type typ )
     return( false );
 }
 
-void CloseFCB( FCB *srcfcb )
+void CloseFCB( FCB *fcb )
 {
     if( CompFlags.scanning_comment ) {
         CErr2( ERR_INCOMPLETE_COMMENT, CommentLoc.line );
     }
-    if( srcfcb->no_eol ) {
+    if( fcb->no_eol ) {
         source_loc  err_loc;
 
-        err_loc.line = srcfcb->src_line_cnt;
-        err_loc.column = srcfcb->src_loc.column;
-        err_loc.fno = srcfcb->src_flist->index;
+        err_loc.line = fcb->src_line_cnt;
+        err_loc.column = fcb->src_loc.column;
+        err_loc.fno = fcb->src_flist->index;
         SetErrLoc( &err_loc );
         CWarn1( ERR_NO_EOL_BEFORE_EOF );
         InitErrLoc();
     }
-    SrcFile = srcfcb->prev_file;
-    CurrChar = srcfcb->prev_currchar;
-    if( SrcFile != NULL ) {
-        if( SrcFile->src_fp == NULL ) {
+    SrcFiles = fcb->prev_file;
+    CurrChar = fcb->prev_currchar;
+    if( SrcFiles != NULL ) {
+        if( SrcFiles->fp == NULL ) {
             /*
              * physical file name must be used, not logical
              */
-            SrcFile->src_fp = fopen( SrcFile->src_flist->name, "rb" );
-            fseek( SrcFile->src_fp, SrcFile->rseekpos, SEEK_SET );
+            SrcFiles->fp = fopen( SrcFiles->src_flist->name, "rb" );
+            fseek( SrcFiles->fp, SrcFiles->rseekpos, SEEK_SET );
         }
-        SrcFileLoc = SrcFile->src_loc;
-        IncLineCount += srcfcb->src_line_cnt;
-        if( SrcFile == MainSrcFile ) {
+        SrcFileLoc = SrcFiles->src_loc;
+        IncLineCount += fcb->src_line_cnt;
+        if( SrcFiles == MainSrcFile ) {
             if( CompFlags.make_precompiled_header ) {
                 CompFlags.make_precompiled_header = false;
                 if( ErrCount == 0 ) {
@@ -625,23 +625,24 @@ void CloseFCB( FCB *srcfcb )
             }
         }
         if( CompFlags.cpp_mode ) {
-            CppEmitPoundLine( SrcFile->src_loc.line, SrcFile->src_name, true );
+            CppEmitPoundLine( SrcFiles->src_loc.line, SrcFiles->src_name, true );
         }
     } else {
-        SrcLineCount = srcfcb->src_line_cnt;
+        SrcLineCount = fcb->src_line_cnt;
         CurrChar = LCHR_EOF;
     }
-    FCB_Free( srcfcb );
+    FCB_Free( fcb );
 }
 
 void SrcPurge( void )
 /*******************/
 {
-    FCB *src_file;
+    FCB *fcb;
 
-    while( (src_file = SrcFile) != NULL ) {
-        SrcFile = src_file->prev_file;
-        CClose( src_file->src_fp );
-        FCB_Free( src_file );
+    while( (fcb = SrcFiles) != NULL ) {
+        SrcFiles = fcb->prev_file;
+        if( fcb->fp != NULL && fcb->fp != stdin )
+            fclose( fcb->fp );
+        FCB_Free( fcb );
     }
 }
