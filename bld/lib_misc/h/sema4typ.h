@@ -38,7 +38,7 @@
 #elif defined( __UNIX__ )
   #define       _SEM           sem_t
 #elif defined(__RDOS__)
-  #define       _SEM           int
+  #define       _SEM           struct RdosFutex
 #elif defined(__RDOSDEV__)
   #define       _SEM           struct TKernelSection
 #endif

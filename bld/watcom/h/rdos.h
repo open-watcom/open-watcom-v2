@@ -592,15 +592,6 @@ int RDOSAPI RdosGetCanBridgeVersion(int *MajorVersion, int *MinorVersion, int *S
 int RDOSAPI RdosProgramCanBridge(const char *ProgramName);
 int RDOSAPI RdosWaitForCanBridgeProgramming(int *ErrorCode, int *Position);
 
-int RDOSAPI RdosOpenNewHandle(const char *Name, int Mode);
-int RDOSAPI RdosCloseNewHandle(int Handle);
-int RDOSAPI RdosReadNewHandle(int Handle, void *Buf, int Size);
-int RDOSAPI RdosWriteNewHandle(int Handle, const void *Buf, int Size);
-long long RDOSAPI RdosGetNewHandlePos(int Handle);
-long long RDOSAPI RdosSetNewHandlePos(int Handle, long long Size);
-long long RDOSAPI RdosGetNewHandleSize(int Handle);
-
-
 int RDOSAPI RdosOpenHandle(const char *Name, int Mode);
 int RDOSAPI RdosCloseHandle(int Handle);
 int RDOSAPI RdosDeleteHandle(int Handle);
@@ -802,11 +793,12 @@ void RDOSAPI RdosAddHour(unsigned long *msb, unsigned long *lsb, long hour);
 void RDOSAPI RdosAddDay(unsigned long *msb, unsigned long *lsb, long day);
 int RDOSAPI RdosSyncTime(long IP);
 
-int RDOSAPI RdosCreateSection(const char *Name);
-void RDOSAPI RdosDeleteSection(int Handle);
-void RDOSAPI RdosEnterSection(int Handle);
-void RDOSAPI RdosLeaveSection(int Handle);
 int RDOSAPI RdosUsedSections();
+
+void RDOSAPI RdosInitFutex(struct RdosFutex *f, const char *n);
+void RDOSAPI RdosEnterFutex(const struct RdosFutex *f);
+void RDOSAPI RdosLeaveFutex(const struct RdosFutex *f);
+void RDOSAPI RdosResetFutex(struct RdosFutex *f);
 
 int RDOSAPI RdosCreateWait(void);
 void RDOSAPI RdosCloseWait(int Handle);

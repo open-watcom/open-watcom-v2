@@ -35,6 +35,8 @@
 
 #if defined(__UNIX__)
 #include <semaphore.h>
+#elif defined(__RDOS__)
+#include "rdos.h"
 #elif defined(__RDOSDEV__)
 #include "rdosdev.h"
 #endif
