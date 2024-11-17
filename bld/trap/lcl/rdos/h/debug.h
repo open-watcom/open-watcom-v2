@@ -134,11 +134,11 @@ struct TDebugModule
     int FileHandle;
     int Handle;
     unsigned int ImageBase;
-        unsigned int ImageSize;
-        unsigned int ObjectRva;
-        unsigned short CodeSel;
-        unsigned short DataSel;
-        unsigned int DataSize;
+    unsigned int ImageSize;
+    unsigned int ObjectRva;
+    unsigned short CodeSel;
+    unsigned short DataSel;
+    unsigned int DataSize;
 
     int FNew;
 
@@ -154,7 +154,7 @@ struct TDebug
     char *FStartDir;
     int FHandle;
 
-    int FSection;
+    struct RdosFutex FFutex;
 
     struct TDebugThread *CurrentThread;
     struct TDebugThread *ThreadList;
