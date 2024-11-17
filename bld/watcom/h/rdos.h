@@ -793,6 +793,10 @@ void RDOSAPI RdosAddHour(unsigned long *msb, unsigned long *lsb, long hour);
 void RDOSAPI RdosAddDay(unsigned long *msb, unsigned long *lsb, long day);
 int RDOSAPI RdosSyncTime(long IP);
 
+int RDOSAPI RdosCreateSection(const char *Name);
+void RDOSAPI RdosDeleteSection(int Handle);
+void RDOSAPI RdosEnterSection(int Handle);
+void RDOSAPI RdosLeaveSection(int Handle);
 int RDOSAPI RdosUsedSections();
 
 void RDOSAPI RdosInitFutex(struct RdosFutex *f, const char *n);

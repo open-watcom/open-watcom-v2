@@ -2663,7 +2663,8 @@
     "mov [ebx+4],eax" \
     "mov [ebx+10],ax" \
     "mov [ebx+12],edi" \
-    __parm [__ebx] [__edi]
+    __parm [__ebx] [__edi] \
+    __modify [__eax]
 
 #pragma aux RdosEnterFutex = \
     "str ax" \
@@ -2720,6 +2721,27 @@
     CallGate_used_user_sections  \
     ValidateEax \
     __value [__eax]
+
+#pragma aux RdosCreateSection = \
+    CallGate_create_named_user_section  \
+    "jnc Validate" \
+    CallGate_create_user_section  \
+    "Validate:" \
+    ValidateHandle  \
+    __parm [__edi] \
+    __value [__ebx]
+
+#pragma aux RdosDeleteSection = \
+    CallGate_delete_user_section  \
+    __parm [__ebx]
+
+#pragma aux RdosEnterSection = \
+    CallGate_enter_user_section  \
+    __parm [__ebx]
+
+#pragma aux RdosLeaveSection = \
+    CallGate_leave_user_section  \
+    __parm [__ebx]
 
 #pragma aux RdosGetFreeHandles = \
     CallGate_get_free_handles  \
