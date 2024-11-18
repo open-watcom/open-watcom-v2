@@ -1,7 +1,7 @@
 #ifndef _TIMESPEC_DEFINED
  #define _TIMESPEC_DEFINED
-:segment DOS | IBMTOOLKIT
-:segment DOS
+:segment DOS | IBMTOOLKIT | RDOS
+:segment DOS | RDOS
 
 #ifdef __OS2__
 :endsegment
@@ -17,7 +17,7 @@
    };
  };
 :include poppack.sp
-:segment DOS
+:segment DOS | RDOS
 #else
 :endsegment
 :endsegment
@@ -27,7 +27,7 @@
      long       tv_nsec;
  };
 :endsegment
-:segment DOS
+:segment DOS | RDOS
 #endif
 
 :endsegment

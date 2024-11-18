@@ -150,6 +150,36 @@ using std::time;
 ::
 :: Begin of extension section
 ::
+
+:segment RDOS
+
+:include timer_t.sp
+:include clockidt.sp
+:include sigevent.sp
+:include timespec.sp
+
+/* 1003.4/D12 Clocks and Timers */
+#ifndef __POSIX_TIMERS
+#define __POSIX_TIMERS
+
+struct itimerspec {
+    struct timespec it_interval;
+    struct timespec it_value;
+    int             notify_type;            /* Uses native int size */
+    int             timer_type;
+    long            data;                   /* Used by gettimer only */
+};
+
+#endif /* __POSIX_TIMERS */
+
+_WCRTLINK extern int    timer_create( clockid_t __clock_id, struct sigevent *__evp, timer_t *__tmr );
+_WCRTLINK extern int    timer_delete( timer_t __timerid );
+_WCRTLINK extern int    timer_getoverrun( timer_t __timerid );
+_WCRTLINK extern int    timer_gettime( timer_t __timerid, struct itimerspec *__value );
+_WCRTLINK extern int    timer_settime( timer_t __timerid, int __flags, struct itimerspec *__value, struct itimerspec *__ovalue );
+
+:endsegment
+
 :segment LINUX | QNX
 :include extunix.sp
 
