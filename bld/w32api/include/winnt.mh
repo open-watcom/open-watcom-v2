@@ -4115,6 +4115,8 @@ typedef struct _JOB_SET_ARRAY {
 } JOB_SET_ARRAY;
 typedef JOB_SET_ARRAY   *PJOB_SET_ARRAY;
 
+:include nttib.sp
+
 /* Quota limits */
 typedef struct _QUOTA_LIMITS {
     SIZE_T          PagedPoolLimit;
