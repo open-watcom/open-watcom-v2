@@ -82,6 +82,7 @@
 *.rtp
 *.sav
 *.so
+!*.so/
 *.stb
 *.sym
 *.sys
