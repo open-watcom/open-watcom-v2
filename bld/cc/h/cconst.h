@@ -64,3 +64,10 @@
 #define IsHugeData()                ((TargetSwitches & (CGSW_X86_BIG_DATA | CGSW_X86_CHEAP_POINTER)) == CGSW_X86_BIG_DATA)
 
 #define DOS_EOF_CHAR                0x1A
+
+#if defined(__DOS__) || defined(__OS2__) || defined(__NT__)
+    #define SYS_EOF_CHAR            DOS_EOF_CHAR
+#elif defined(__UNIX__) || defined(__RDOS__)
+#else
+    #error System end of file character not configured.
+#endif
