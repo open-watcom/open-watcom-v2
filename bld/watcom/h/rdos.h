@@ -658,10 +658,6 @@ int RDOSAPI RdosRenameFile(const char *ToName, const char *FromName);
 int RDOSAPI RdosDeleteFile(const char *PathName);
 int RDOSAPI RdosGetFileAttribute(const char *PathName, int *Attribute);
 int RDOSAPI RdosSetFileAttribute(const char *PathName, int Attribute);
-int RDOSAPI RdosOpenDir(const char *PathName);
-void RDOSAPI RdosCloseDir(int Handle);
-int RDOSAPI RdosReadDir(int Handle, int EntryNr, int MaxNameSize, char *PathName, long *FileSize, int *Attribute, unsigned long *MsbTime, unsigned long *LsbTime);
-long long RDOSAPI RdosReadLongDir(int Handle, int EntryNr, int MaxNameSize, char *PathName, long *FileSize, int *Attribute);
 
 int RDOSAPI RdosCreateVfsDiscCmd(int DiscNr, const char *Cmd);
 void RDOSAPI RdosCloseVfsCmd(int Handle);
@@ -792,12 +788,6 @@ void RDOSAPI RdosAddMin(unsigned long *msb, unsigned long *lsb, long min);
 void RDOSAPI RdosAddHour(unsigned long *msb, unsigned long *lsb, long hour);
 void RDOSAPI RdosAddDay(unsigned long *msb, unsigned long *lsb, long day);
 int RDOSAPI RdosSyncTime(long IP);
-
-int RDOSAPI RdosCreateSection(const char *Name);
-void RDOSAPI RdosDeleteSection(int Handle);
-void RDOSAPI RdosEnterSection(int Handle);
-void RDOSAPI RdosLeaveSection(int Handle);
-int RDOSAPI RdosUsedSections();
 
 void RDOSAPI RdosInitFutex(struct RdosFutex *f, const char *n);
 void RDOSAPI RdosEnterFutex(const struct RdosFutex *f);
@@ -997,8 +987,9 @@ long long RDOSAPI RdosGetVfsDriveStart(int DriveNr);
 long long RDOSAPI RdosGetVfsDriveSize(int DriveNr);
 long long RDOSAPI RdosGetVfsDriveFree(int DriveNr);
 int RDOSAPI RdosIsVfsPath(const char *PathName);
-int RDOSAPI RdosOpenVfsDir(const char *PathName, struct RdosDirInfo *Info);
-void RDOSAPI RdosCloseVfsDir(int Handle);
+
+int RDOSAPI RdosOpenDir(const char *PathName, struct RdosDirInfo *Info);
+void RDOSAPI RdosCloseDir(int Handle);
 
 int RDOSAPI RdosCreateCrc(unsigned short int CrcPoly);
 void RDOSAPI RdosCloseCrc(int Handle);

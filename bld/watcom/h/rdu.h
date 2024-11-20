@@ -131,9 +131,9 @@
 #define usergate_delete_file 0x00000075
 #define usergate_get_file_attribute 0x00000076
 #define usergate_set_file_attribute 0x00000077
-#define usergate_open_dir 0x00000078
-#define usergate_close_dir 0x00000079
-#define usergate_read_dir 0x0000007A
+#define usergate_open_legacy_dir 0x00000078
+#define usergate_close_legacy_dir 0x00000079
+#define usergate_read_legacy_dir 0x0000007A
 
 #define usergate_open_file 0x0000007B
 #define usergate_create_file 0x0000007C
@@ -941,8 +941,8 @@
 #define usergate_get_vfs_drive_size 0x00000309
 #define usergate_get_vfs_drive_free 0x0000030A
 #define usergate_is_vfs_path 0x0000030B
-#define usergate_open_vfs_dir 0x0000030C
-#define usergate_close_vfs_dir 0x0000030D
+#define usergate_open_dir 0x0000030C
+#define usergate_close_dir 0x0000030D
 
 #define usergate_create_thread_block 0x0000030E
 #define usergate_wait_thread_block 0x0000030F
@@ -1168,9 +1168,9 @@
 #define CallGate_delete_file 0x55 0x67 0x9a 117 0 0 0 3 0 0x5d
 #define CallGate_get_file_attribute 0x55 0x67 0x9a 118 0 0 0 3 0 0x5d
 #define CallGate_set_file_attribute 0x55 0x67 0x9a 119 0 0 0 3 0 0x5d
-#define CallGate_open_dir 0x55 0x67 0x9a 120 0 0 0 3 0 0x5d
-#define CallGate_close_dir 0x55 0x67 0x9a 121 0 0 0 3 0 0x5d
-#define CallGate_read_dir 0x55 0x67 0x9a 122 0 0 0 3 0 0x5d
+#define CallGate_open_legacy_dir 0x55 0x67 0x9a 120 0 0 0 3 0 0x5d
+#define CallGate_close_legacy_dir 0x55 0x67 0x9a 121 0 0 0 3 0 0x5d
+#define CallGate_read_legacy_dir 0x55 0x67 0x9a 122 0 0 0 3 0 0x5d
 
 #define CallGate_open_file 0x55 0x67 0x9a 123 0 0 0 3 0 0x5d
 #define CallGate_create_file 0x55 0x67 0x9a 124 0 0 0 3 0 0x5d
@@ -1978,8 +1978,8 @@
 #define CallGate_get_vfs_drive_size 0x55 0x67 0x9a 9 3 0 0 3 0 0x5d
 #define CallGate_get_vfs_drive_free 0x55 0x67 0x9a 10 3 0 0 3 0 0x5d
 #define CallGate_is_vfs_path 0x55 0x67 0x9a 11 3 0 0 3 0 0x5d
-#define CallGate_open_vfs_dir 0x55 0x67 0x9a 12 3 0 0 3 0 0x5d
-#define CallGate_close_vfs_dir 0x55 0x67 0x9a 13 3 0 0 3 0 0x5d
+#define CallGate_open_dir 0x55 0x67 0x9a 12 3 0 0 3 0 0x5d
+#define CallGate_close_dir 0x55 0x67 0x9a 13 3 0 0 3 0 0x5d
 
 #define CallGate_create_thread_block 0x55 0x67 0x9a 14 3 0 0 3 0 0x5d
 #define CallGate_wait_thread_block 0x55 0x67 0x9a 15 3 0 0 3 0 0x5d
@@ -2203,9 +2203,9 @@
 #define CallGate_delete_file 0x3e 0x67 0x9a 117 0 0 0 3 0
 #define CallGate_get_file_attribute 0x3e 0x67 0x9a 118 0 0 0 3 0
 #define CallGate_set_file_attribute 0x3e 0x67 0x9a 119 0 0 0 3 0
-#define CallGate_open_dir 0x3e 0x67 0x9a 120 0 0 0 3 0
-#define CallGate_close_dir 0x3e 0x67 0x9a 121 0 0 0 3 0
-#define CallGate_read_dir 0x3e 0x67 0x9a 122 0 0 0 3 0
+#define CallGate_open_legacy_dir 0x3e 0x67 0x9a 120 0 0 0 3 0
+#define CallGate_close_legacy_dir 0x3e 0x67 0x9a 121 0 0 0 3 0
+#define CallGate_read_legacy_dir 0x3e 0x67 0x9a 122 0 0 0 3 0
 
 #define CallGate_open_file 0x3e 0x67 0x9a 123 0 0 0 3 0
 #define CallGate_create_file 0x3e 0x67 0x9a 124 0 0 0 3 0
@@ -3013,8 +3013,8 @@
 #define CallGate_get_vfs_drive_size 0x3e 0x67 0x9a 9 3 0 0 3 0
 #define CallGate_get_vfs_drive_free 0x3e 0x67 0x9a 10 3 0 0 3 0
 #define CallGate_is_vfs_path 0x3e 0x67 0x9a 11 3 0 0 3 0
-#define CallGate_open_vfs_dir 0x3e 0x67 0x9a 12 3 0 0 3 0
-#define CallGate_close_vfs_dir 0x3e 0x67 0x9a 13 3 0 0 3 0
+#define CallGate_open_dir 0x3e 0x67 0x9a 12 3 0 0 3 0
+#define CallGate_close_dir 0x3e 0x67 0x9a 13 3 0 0 3 0
 
 #define CallGate_create_thread_block 0x3e 0x67 0x9a 14 3 0 0 3 0
 #define CallGate_wait_thread_block 0x3e 0x67 0x9a 15 3 0 0 3 0

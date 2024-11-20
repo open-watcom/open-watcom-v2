@@ -57,12 +57,18 @@ typedef struct __dirstream DIR;
 :segment RDOS
 struct dirent {
     int                 d_handle;                   /* directory handle */
+    int                 d_entry_count;              /* directory entry count */
+    int                 d_header_size;              /* internal header size */
+    char *              d_entry_head;               /* internal entry head */
+    char *              d_entry_chain;              /* internal entry chain */
     char                d_match_mask[NAME_MAX+1];   /* mask for matching files */
     int                 d_entry_nr;                 /* current entry number (first = 0) */
+    long long           d_ino;                      /* inode */
     int                 d_attr;                     /* file's attribute */
-    unsigned long       d_msb_time;
-    unsigned long       d_lsb_time;                 /* timestamp, rdos formatted */
-    long                d_size;                     /* file's size */
+    unsigned long long  d_create_time;              /* create timestamp, rdos formatted */
+    unsigned long long  d_modify_time;              /* modify timestamp, rdos formatted */
+    unsigned long long  d_access_time;              /* access timestamp, rdos formatted */
+    long long           d_size;                     /* file's size */
     char                d_name[NAME_MAX+1];         /* file's name */
 };
 typedef struct dirent   DIR;

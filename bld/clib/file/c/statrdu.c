@@ -46,25 +46,22 @@
 
 
 static unsigned short at2mode();
+extern time_t   __rdos_filetime_cvt( unsigned long long tics );
 
 _WCRTLINK int stat( CHAR_TYPE const *path, struct stat *buf )
 {
-    const CHAR_TYPE *   ptr;
-    CHAR_TYPE           fullpath[_MAX_PATH];
-    CHAR_TYPE       *   fullp;
-    int                 isrootdir = 0;
-    int                 handle;
-    int                 RdosAttrib;
-    int                 ok;
-    CHAR_TYPE           name[_MAX_PATH];
-    int                 attrib;
-    unsigned long       wr_msb;
-    unsigned long       wr_lsb;
-    long                size;
-    int                 ms;
-    int                 us;
-    struct tm           tm;
-    int                 i;
+    const CHAR_TYPE     *ptr;
+    CHAR_TYPE            fullpath[_MAX_PATH];
+    CHAR_TYPE           *fullp;
+    struct RdosDirInfo   dinf;
+    struct RdosDirEntry *dirent;
+    int                  isrootdir = 0;
+    int                  handle;
+    int                  ok;
+    CHAR_TYPE            name[_MAX_PATH];
+    char                *chainptr;
+    int                  attrib;
+    int                  i;
 
     /* reject null string and names that has wildcard */
     if( *path == NULLCHAR || strpbrk( path, "*?" ) != NULL )
@@ -96,9 +93,6 @@ _WCRTLINK int stat( CHAR_TYPE const *path, struct stat *buf )
         chdir( cwd );
 
         attrib   = _A_SUBDIR;
-        wr_msb   = 0;
-        wr_lsb   = 0;
-        size     = 0;
         name[0] = NULLCHAR;
     } else {                            /* not a root directory */
         fullp = fullpath + strlen( fullpath ) - 1;
@@ -109,18 +103,24 @@ _WCRTLINK int stat( CHAR_TYPE const *path, struct stat *buf )
         if( strlen( fullpath ) == 0 )
             strcpy( fullpath, "*" );
 
-        handle = RdosOpenDir( fullpath );
+        dinf.Count = 0;
+        handle = RdosOpenDir( fullpath, &dinf );
 
         ok = 0;
         i = 0;
         _strlwr( fullp );
-        while( RdosReadDir( handle, i, _MAX_PATH, name, &size, &RdosAttrib, &wr_msb, &wr_lsb ) ) {
+        chainptr = (char *)dinf.Entry;
+        dirent = (struct RdosDirEntry *)chainptr;
+        while( i < dinf.Count ) {
+            strcpy( name, dirent->PathName );
             _strlwr( name );
-            if( !strcmp( name, fullp ) ) {
+            if( ( *fullpath == '*') || !strcmp( fullp, name ) ) {
                 ok = 1;
                 break;
             }
             i++;
+            chainptr += dinf.HeaderSize;
+            chainptr += dirent->PathNameSize;
         }
 
         RdosCloseDir( handle );
@@ -129,22 +129,22 @@ _WCRTLINK int stat( CHAR_TYPE const *path, struct stat *buf )
             return( -1 );
 
         attrib = 0;
-        if( RdosAttrib & FILE_ATTRIBUTE_ARCHIVE ) {
+        if( dirent->Attrib & FILE_ATTRIBUTE_ARCHIVE ) {
             attrib |= _A_ARCH;
         }
-        if( RdosAttrib & FILE_ATTRIBUTE_DIRECTORY ) {
+        if( dirent->Attrib & FILE_ATTRIBUTE_DIRECTORY ) {
             attrib |= _A_SUBDIR;
         }
-        if( RdosAttrib & FILE_ATTRIBUTE_HIDDEN ) {
+        if( dirent->Attrib & FILE_ATTRIBUTE_HIDDEN ) {
             attrib |= _A_HIDDEN;
         }
-        if( RdosAttrib & FILE_ATTRIBUTE_NORMAL ) {
+        if( dirent->Attrib & FILE_ATTRIBUTE_NORMAL ) {
             attrib |= _A_NORMAL;
         }
-        if( RdosAttrib & FILE_ATTRIBUTE_READONLY ) {
+        if( dirent->Attrib & FILE_ATTRIBUTE_READONLY ) {
             attrib |= _A_RDONLY;
         }
-        if( RdosAttrib & FILE_ATTRIBUTE_SYSTEM ) {
+        if( dirent->Attrib & FILE_ATTRIBUTE_SYSTEM ) {
             attrib |= _A_SYSTEM;
         }
     }
@@ -157,32 +157,18 @@ _WCRTLINK int stat( CHAR_TYPE const *path, struct stat *buf )
     }
     buf->st_rdev = buf->st_dev;
 
-    buf->st_size = size;
+    buf->st_size = dirent->Size;
     buf->st_mode = at2mode( attrib, name );
 
-    RdosDecodeMsbTics( wr_msb,
-                       &tm.tm_year,
-                       &tm.tm_mon,
-                       &tm.tm_mday,
-                       &tm.tm_hour );
-
-    RdosDecodeLsbTics( wr_lsb,
-                       &tm.tm_min,
-                       &tm.tm_sec,
-                       &ms,
-                       &us );
-
-    tm.tm_year -= 1900;
-    tm.tm_mon--;
-    tm.tm_isdst = -1;
-    tm.tm_wday = -1;
-    tm.tm_yday = -1;
-
-    buf->st_mtime = mktime( &tm );
-    buf->st_atime = buf->st_ctime = buf->st_btime = buf->st_mtime;
+    buf->st_ctime =__rdos_filetime_cvt( dirent->CreateTime );
+    buf->st_mtime = __rdos_filetime_cvt( dirent->ModifyTime );
+    buf->st_atime = __rdos_filetime_cvt( dirent->AccessTime );
+    buf->st_btime = __rdos_filetime_cvt( dirent->AccessTime );
 
     buf->st_nlink = 1;
-    buf->st_ino = buf->st_uid = buf->st_gid = 0;
+    buf->st_ino = dirent->Inode;
+    buf->st_uid = dirent->Uid;
+    buf->st_gid = dirent->Gid;
 
     buf->st_attr = attrib;
     buf->st_archivedID = 0;

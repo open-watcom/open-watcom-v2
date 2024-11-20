@@ -47,7 +47,11 @@
 
 :include stdfilno.sp
 
+:segment RDOS
+typedef long long       _fsize_t;
+:elsesegment
 typedef unsigned long   _fsize_t;
+:endsegment
 
 struct _finddata_t {
     unsigned    attrib;

@@ -46,6 +46,7 @@
     #include "os2fil64.h"
 #elif defined( __RDOS__ )
     #include <rdos.h>
+    #include <time.h>
 #else
     #include <dos.h>
 #endif
@@ -132,21 +133,29 @@
  #endif
     return( (intptr_t)h );
 #elif defined( __RDOS__ )
-    RDOSFINDTYPE    *findbuf;
+    RDOSFINDTYPE       *findbuf;
+    struct RdosDirInfo dinf;
 
     findbuf = (RDOSFINDTYPE *)lib_malloc( sizeof( RDOSFINDTYPE ) );
     if( findbuf == NULL )
         return( -1 );
 
-    findbuf->handle = RdosOpenDir( filespec );
+    findbuf->handle = RdosOpenDir( filespec, &dinf );
     findbuf->entry = 0;
+    findbuf->count = dinf.Count;
+    findbuf->header_size = dinf.HeaderSize;
+    findbuf->chain = (char *)dinf.Entry;
 
-    if( __rdos_finddata_get( findbuf, fileinfo ) )
-        return( (intptr_t)findbuf );
-    else {
-        lib_free( findbuf );
-        return( -1 );
+    if( findbuf->handle ) {
+        if( __rdos_finddata_get( findbuf, fileinfo ) )
+            return( (intptr_t)findbuf );
+        else
+            RdosCloseDir( findbuf->handle );
     }
+
+    lib_free( findbuf );
+    return( -1 );
+
 #else   /* DOS */
     DOSFINDTYPE     *findbuf;
     unsigned       rc;
@@ -260,50 +269,73 @@
 
 #elif __RDOS__
 
+time_t __rdos_filetime_cvt( unsigned long long tics )
+{
+    unsigned long        msb = (tics >> 32) & 0xFFFFFFFF;
+    unsigned long        lsb = tics & 0xFFFFFFFF;
+    int                  ms;
+    int                  us;
+    struct tm            tm;
+
+    RdosDecodeMsbTics( msb,
+                       &tm.tm_year,
+                       &tm.tm_mon,
+                       &tm.tm_mday,
+                       &tm.tm_hour );
+
+    RdosDecodeLsbTics( lsb,
+                       &tm.tm_min,
+                       &tm.tm_sec,
+                       &ms,
+                       &us );
+
+    tm.tm_year -= 1900;
+    tm.tm_mon--;
+    tm.tm_isdst = -1;
+    tm.tm_wday = -1;
+    tm.tm_yday = -1;
+
+    return mktime( &tm );
+}
+
 int __rdos_finddata_get( RDOSFINDTYPE *findbuf, struct _finddata_t *fileinfo )
 {
-    long            FileSize;
-    int             Attribute;
-    unsigned long   MsbTime;
-    unsigned long   LsbTime;
-    int             stat;
+    struct RdosDirEntry *entry;
 
-    stat = RdosReadDir( findbuf->handle,
-                        findbuf->entry,
-                        _MAX_PATH,
-                        fileinfo->name,
-                        &FileSize,
-                        &Attribute,
-                        &MsbTime,
-                        &LsbTime );
+    if( findbuf->entry < findbuf->count ) {
+        entry = (struct RdosDirEntry *)findbuf->chain;
 
-    if( stat ) {
-        fileinfo->time_create = -1L;
-        fileinfo->time_access = -1L;
-        fileinfo->time_write = __rdos_filetime_cvt( MsbTime, LsbTime );
-        fileinfo->size = FileSize;
+        findbuf->chain += findbuf->header_size;
+        findbuf->chain += entry->PathNameSize;
+        findbuf->entry++;
+
+        fileinfo->time_create = __rdos_filetime_cvt( entry->CreateTime );
+        fileinfo->time_access = __rdos_filetime_cvt( entry->AccessTime );
+        fileinfo->time_write = __rdos_filetime_cvt( entry->ModifyTime );
+        fileinfo->size = entry->Size;
 
         fileinfo->attrib = 0;
-        if( Attribute & FILE_ATTRIBUTE_ARCHIVE ) {
+        if( entry->Attrib & FILE_ATTRIBUTE_ARCHIVE ) {
             fileinfo->attrib |= _A_ARCH;
         }
-        if( Attribute & FILE_ATTRIBUTE_DIRECTORY ) {
+        if( entry->Attrib & FILE_ATTRIBUTE_DIRECTORY ) {
             fileinfo->attrib |= _A_SUBDIR;
         }
-        if( Attribute & FILE_ATTRIBUTE_HIDDEN ) {
+        if( entry->Attrib & FILE_ATTRIBUTE_HIDDEN ) {
             fileinfo->attrib |= _A_HIDDEN;
         }
-        if( Attribute & FILE_ATTRIBUTE_NORMAL ) {
+        if( entry->Attrib & FILE_ATTRIBUTE_NORMAL ) {
             fileinfo->attrib |= _A_NORMAL;
         }
-        if( Attribute & FILE_ATTRIBUTE_READONLY ) {
+        if( entry->Attrib & FILE_ATTRIBUTE_READONLY ) {
             fileinfo->attrib |= _A_RDONLY;
         }
-        if( Attribute & FILE_ATTRIBUTE_SYSTEM ) {
+        if( entry->Attrib & FILE_ATTRIBUTE_SYSTEM ) {
             fileinfo->attrib |= _A_SYSTEM;
         }
+        return( 1 );
     }
-    return( stat );
+    return( 0 );
 }
 
 #else   /* DOS */
