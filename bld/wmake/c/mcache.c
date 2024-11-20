@@ -164,8 +164,10 @@ static time_t get_direntry_timestamp( struct dirent *entry )
 #elif defined( __RDOS__ )
     unsigned short date;
     unsigned short time;
+    unsigned long msb = (entry->d_modify_time >> 32) & 0xFFFFFFFF;
+    unsigned long lsb = entry->d_modify_time & 0xFFFFFFFF;
 
-    RdosTicsToDosTimeDate(entry->d_msb_time, entry->d_lsb_time, &date, &time);
+    RdosTicsToDosTimeDate(msb, lsb, &date, &time);
     return( _dos2timet( date * 0x10000L + time ) );
 #else
     return( _dos2timet( entry->d_date * 0x10000L + entry->d_time ) );
