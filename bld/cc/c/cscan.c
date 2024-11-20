@@ -1783,14 +1783,6 @@ static TOKEN ScanCarriageReturn( void )
     }
 }
 
-#if defined(__DOS__) || defined(__OS2__) || defined(__NT__)
-    #define SYS_EOF_CHAR    DOS_EOF_CHAR
-#elif defined(__UNIX__) || defined(__RDOS__)
-    #undef  SYS_EOF_CHAR
-#else
-    #error System end of file character not configured.
-#endif
-
 static TOKEN ScanInvalid( void )
 /*******************************
  * TokenLen is alway lower then BUF_SIZE that
