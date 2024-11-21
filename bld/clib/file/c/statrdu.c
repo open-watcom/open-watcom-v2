@@ -56,8 +56,9 @@ _WCRTLINK int stat( CHAR_TYPE const *path, struct stat *buf )
     struct RdosDirInfo   dinf;
     struct RdosDirEntry *dirent;
     int                  isrootdir = 0;
-    int                  handle;
+    int                  handle = 0;
     int                  ok;
+    CHAR_TYPE            check[_MAX_PATH];
     CHAR_TYPE            name[_MAX_PATH];
     char                *chainptr;
     int                  attrib;
@@ -98,23 +99,32 @@ _WCRTLINK int stat( CHAR_TYPE const *path, struct stat *buf )
         fullp = fullpath + strlen( fullpath ) - 1;
         while( !IS_DIR_SEP( *fullp ) && fullp != fullpath )
             fullp--;
+
+        fullp++;
+        strcpy( check, fullp );
+        _strlwr( check );
+
+        fullp -= 2;
+        if( *fullp == ':' )
+            fullp++;
+        fullp++;
         *fullp = 0;
+
         fullp++;
         if( strlen( fullpath ) == 0 )
-            strcpy( fullpath, "*" );
+            return( -1 );
 
         dinf.Count = 0;
         handle = RdosOpenDir( fullpath, &dinf );
 
         ok = 0;
         i = 0;
-        _strlwr( fullp );
         chainptr = (char *)dinf.Entry;
-        dirent = (struct RdosDirEntry *)chainptr;
         while( i < dinf.Count ) {
+            dirent = (struct RdosDirEntry *)chainptr;
             strcpy( name, dirent->PathName );
             _strlwr( name );
-            if( ( *fullpath == '*') || !strcmp( fullp, name ) ) {
+            if( ( *fullpath == '*') || !strcmp( check, name ) ) {
                 ok = 1;
                 break;
             }
@@ -123,10 +133,10 @@ _WCRTLINK int stat( CHAR_TYPE const *path, struct stat *buf )
             chainptr += dirent->PathNameSize;
         }
 
-        RdosCloseDir( handle );
-
-        if( !ok )
+        if( !ok ) {
+            RdosCloseDir( handle );
             return( -1 );
+        }
 
         attrib = 0;
         if( dirent->Attrib & FILE_ATTRIBUTE_ARCHIVE ) {
@@ -157,18 +167,33 @@ _WCRTLINK int stat( CHAR_TYPE const *path, struct stat *buf )
     }
     buf->st_rdev = buf->st_dev;
 
-    buf->st_size = dirent->Size;
+    if( handle )
+        buf->st_size = dirent->Size;
+    else
+        buf->st_size = 0;
+
     buf->st_mode = at2mode( attrib, name );
 
-    buf->st_ctime =__rdos_filetime_cvt( dirent->CreateTime );
-    buf->st_mtime = __rdos_filetime_cvt( dirent->ModifyTime );
-    buf->st_atime = __rdos_filetime_cvt( dirent->AccessTime );
-    buf->st_btime = __rdos_filetime_cvt( dirent->AccessTime );
+    if( handle ) {
+        buf->st_ctime = __rdos_filetime_cvt( dirent->CreateTime );
+        buf->st_mtime = __rdos_filetime_cvt( dirent->ModifyTime );
+        buf->st_atime = __rdos_filetime_cvt( dirent->AccessTime );
+        buf->st_ino = dirent->Inode;
+        buf->st_uid = dirent->Uid;
+        buf->st_gid = dirent->Gid;
+        RdosCloseDir( handle );
+    } else {
+        buf->st_ctime = -1;
+        buf->st_mtime = -1;
+        buf->st_atime = -1;
+        buf->st_ino = -1;
+        buf->st_uid = -1;
+        buf->st_gid = -1;
+    }
+
+    buf->st_btime = -1;
 
     buf->st_nlink = 1;
-    buf->st_ino = dirent->Inode;
-    buf->st_uid = dirent->Uid;
-    buf->st_gid = dirent->Gid;
 
     buf->st_attr = attrib;
     buf->st_archivedID = 0;
