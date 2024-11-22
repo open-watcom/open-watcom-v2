@@ -528,7 +528,8 @@ static bool GetToken( char op )
 // INITIALIZE TO PROCESS RECORD
 static KW RecordInitialize( const char *record )
 {
-    KW  i;
+    KW          i;
+    const char  *token;
 
     Rptr = record;
     if( !ScanString() )
@@ -543,8 +544,13 @@ static KW RecordInitialize( const char *record )
         }
         return( KW_COMMENT );
     }
+    token = Token + 1;
+    if( *token == '\0' ) {
+        ScanString();
+        token = Token;
+    }
     for( i = 0; i < ARRAY_SIZE( KwTable ); ++i ) {
-        if( 0 == stricmp( KwTable[i], &Token[1] ) ) {
+        if( 0 == stricmp( KwTable[i], token ) ) {
             return( i );
         }
     }
