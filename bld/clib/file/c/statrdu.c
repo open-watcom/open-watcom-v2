@@ -110,7 +110,6 @@ _WCRTLINK int stat( CHAR_TYPE const *path, struct stat *buf )
         fullp++;
         *fullp = 0;
 
-        fullp++;
         if( strlen( fullpath ) == 0 )
             return( -1 );
 
@@ -124,7 +123,7 @@ _WCRTLINK int stat( CHAR_TYPE const *path, struct stat *buf )
             dirent = (struct RdosDirEntry *)chainptr;
             strcpy( name, dirent->PathName );
             _strlwr( name );
-            if( ( *fullpath == '*') || !strcmp( check, name ) ) {
+            if( !strcmp( check, name ) ) {
                 ok = 1;
                 break;
             }
