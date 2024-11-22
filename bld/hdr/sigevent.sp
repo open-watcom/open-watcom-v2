@@ -9,11 +9,6 @@
 #define SIGEV_NONE      1
 #define SIGEV_THREAD    2
 
-union sigval {
-    int     sival_int;
-    void    *sival_ptr;
-};
-
 :endsegment
 struct sigevent {
     int          sigev_signo;

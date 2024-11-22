@@ -86,13 +86,15 @@ typedef void (_WCCALLBACK *__sig_func)( int );
 typedef void _WCCALLBACK __sigfpe_func( int, int );
 :include extepi.sp
 :endsegment
-:segment LINUX
 
+:segment LINUX
 :include incdir.sp
 
 #include _ARCH_INCLUDE(signal.h)
 
 :include extposix.sp
+
+:include sigval.sp
 
 #include _ARCH_INCLUDE(siginfo.h)
 typedef struct siginfo siginfo_t;
@@ -111,14 +113,19 @@ typedef struct siginfo siginfo_t;
 :: Begin of extension section
 ::
 
+:include sigval.sp
+
 #ifdef __NEUTRINO__
 typedef struct {
     long    nrt;
     long    rt;
 } sigset_t;
 #else
+:include sigevent.sp
+
 typedef long    sigset_t;       /* Used for signal sets             */
 #endif
+
 struct sigaction {
     void        (__SIG_FAR _WCCALLBACK *sa_handler)(int);
     sigset_t    sa_mask;
@@ -128,11 +135,6 @@ struct _sigaction {
     void        (__SIG_FAR _WCCALLBACK *sa_handler)(int);
     sigset_t    sa_mask;
     short       sa_flags;
-};
-
-union sigval {
-    int         sigval_int;
-    void        *sigval_ptr;
 };
 
 #ifdef __386__
@@ -155,10 +157,6 @@ struct stack_t {
 
 extern int sigaltstack(const stack_t *__ss, stack_t *__oss);
 
-#endif
-
-#ifndef __NEUTRINO__
-:include sigevent.sp
 #endif
 
 ::
@@ -212,6 +210,16 @@ typedef void (__SIG_FAR _WCCALLBACK *__far_sig_func)( int );
 #define _SIGMAX     32
 :elsesegment
 
+:segment RDOS
+:include extposix.sp
+
+:include sigval.sp
+
+:include sigevent.sp
+
+:include extepi.sp
+
+:endsegment
 #define SIG_IGN         ((__sig_func)1)
 #define SIG_DFL         ((__sig_func)2)
 #define SIG_ERR         ((__sig_func)3)
@@ -223,11 +231,15 @@ typedef void (__SIG_FAR _WCCALLBACK *__far_sig_func)( int );
 #define SIGSEGV  5
 #define SIGTERM  6
 #define SIGBREAK 7
+:segment DOS
 /* following are OS/2 1.x process flag A,B and C */
+:endsegment
 #define SIGUSR1  8
 #define SIGUSR2  9
 #define SIGUSR3  10
+:segment DOS
 /* following are for OS/2 2.x only */
+:endsegment
 #define SIGIDIVZ 11
 #define SIGIOVFL 12
 

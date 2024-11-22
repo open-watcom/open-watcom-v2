@@ -140,52 +140,22 @@ using std::time;
 :keep DECLARE_STRUCT
 :include tm.sp
 :remove DECLARE_STRUCT
-:segment DOS | LINUX | QNX
 
 :include extc99po.sp
 :include timespec.sp
 :include extepi.sp
-:endsegment
 
 ::
 :: Begin of extension section
 ::
-
-:segment RDOS
-
-:include timer_t.sp
-:include clockidt.sp
-:include sigevent.sp
-:include timespec.sp
-
-/* 1003.4/D12 Clocks and Timers */
-#ifndef __POSIX_TIMERS
-#define __POSIX_TIMERS
-
-struct itimerspec {
-    struct timespec it_interval;
-    struct timespec it_value;
-    int             notify_type;            /* Uses native int size */
-    int             timer_type;
-    long            data;                   /* Used by gettimer only */
-};
-
-#endif /* __POSIX_TIMERS */
-
-_WCRTLINK extern int    timer_create( clockid_t __clock_id, struct sigevent *__evp, timer_t *__tmr );
-_WCRTLINK extern int    timer_delete( timer_t __timerid );
-_WCRTLINK extern int    timer_getoverrun( timer_t __timerid );
-_WCRTLINK extern int    timer_gettime( timer_t __timerid, struct itimerspec *__value );
-_WCRTLINK extern int    timer_settime( timer_t __timerid, int __flags, struct itimerspec *__value, struct itimerspec *__ovalue );
-
-:endsegment
-
-:segment LINUX | QNX
+:segment LINUX | QNX | RDOS
 :include extunix.sp
 
 :include timer_t.sp
 :include clockidt.sp
 
+struct sigevent;
+
 /* 1003.4/D12 Clocks and Timers */
 #ifndef __POSIX_TIMERS
 #define __POSIX_TIMERS
@@ -198,6 +168,7 @@ struct itimerspec {
     long            data;                   /* Used by gettimer only */
 };
 
+:segment LINUX | QNX
 struct itimercb {
     struct /*event*/ {
         long  evt_value;              /* Will hold a proxy or a signal */
@@ -205,9 +176,8 @@ struct itimercb {
     int  itcb_count;
 };
 
+:endsegment
 #endif /* __POSIX_TIMERS */
-
-struct sigevent;               /* for C++ */
 
 :include extepi.sp
 
@@ -263,10 +233,8 @@ _WCRTLINK extern wchar_t    *__wctime( const __w_time_t *, wchar_t * );
 _WCRTLINK extern wchar_t    *__wasctime( const __w_tm *, wchar_t * );
 :include extepi.sp
 
-:segment LINUX | QNX
+:segment LINUX | QNX | RDOS
 :include extunix.sp
-
-_WCRTLINK extern int    nanosleep( const struct timespec *__rqtp, struct timespec *__rmtp );
 
 _WCRTLINK extern int    timer_create( clockid_t __clock_id, struct sigevent *__evp, timer_t *__tmr );
 _WCRTLINK extern int    timer_delete( timer_t __timerid );
@@ -274,6 +242,8 @@ _WCRTLINK extern int    timer_getoverrun( timer_t __timerid );
 _WCRTLINK extern int    timer_gettime( timer_t __timerid, struct itimerspec *__value );
 _WCRTLINK extern int    timer_settime( timer_t __timerid, int __flags, struct itimerspec *__value, struct itimerspec *__ovalue );
 
+:endsegment
+:segment LINUX | QNX
 _WCRTLINK extern int    clock_gettime( clockid_t __clock_id, struct timespec *__tp );
 _WCRTLINK extern int    clock_getres( clockid_t __clock_id, struct timespec *__res );
 :segment QNX
@@ -283,9 +253,11 @@ _WCRTLINK extern int    clock_settime( clockid_t __clock_id, const struct timesp
 _WCRTLINK extern int    clock_nanosleep( clockid_t __clock_id, int __flags, const struct timespec *__req, struct timespec *__rmdr );
 :endsegment
 
-:include extepi.sp
+_WCRTLINK extern int    nanosleep( const struct timespec *__rqtp, struct timespec *__rmtp );
 
 :endsegment
+:include extepi.sp
+
 :segment QNX
 :include ext.sp
 
@@ -302,10 +274,8 @@ _WCRTLINK extern int    qnx_adj_time( long, long, long *, long * );
 :include extepi.sp
 
 :endsegment
-:segment LINUX | QNX
 :include extunix.sp
 
-:endsegment
 _WCRTLINK extern void   tzset( void );
 _WCRTLINK extern char   **__get_tzname_ptr( void );
 #ifdef __FUNCTION_DATA_ACCESS
@@ -315,12 +285,6 @@ _WCRTLINK extern char   **__get_tzname_ptr( void );
 #endif
 _WCRTDATA extern char * _WCDATA tzname[2];  /*  time zone names */
 
-:segment LINUX | QNX
-:include extepi.sp
-
-:include ext.sp
-
-:endsegment
 _WCRTLINK extern long   *__get_timezone_ptr( void );
 _WCRTLINK extern int    *__get_daylight_ptr( void );
 #ifdef __FUNCTION_DATA_ACCESS
@@ -333,10 +297,8 @@ _WCRTLINK extern int    *__get_daylight_ptr( void );
 _WCRTDATA extern long   _WCDATA timezone;   /* # of seconds from GMT */
 _WCRTDATA extern int    _WCDATA daylight;   /* d.s.t. indicator */
 
-:segment LINUX | QNX
 :include extepi.sp
 
-:endsegment
 ::
 :: End of extension section
 ::

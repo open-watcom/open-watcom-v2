@@ -6,11 +6,6 @@
 
 :include clock_t.sp
 
-union sigval {
-    int         sival_int;
-    void        *sival_ptr;
-};
-
 /* Generic definition of siginfo struct borrowed from
  * the musl-libc implementation.
  */
