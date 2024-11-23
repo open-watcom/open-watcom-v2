@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -43,7 +43,7 @@ pick( SCAN_CR,         ScanCarriageReturn )  // '\r'
 pick( SCAN_NEWLINE,    ScanNewline        )  // '\n'
 pick( SCAN_WHITESPACE, ScanWhiteSpace     )  // all whitespace
 pick( SCAN_INVALID,    ScanInvalid        )  // all other characters
+pick( SCAN_EOF,        ScanEof            )  // end-of-file
 #ifdef CHAR_MACRO
 pick( SCAN_MACRO,      ScanMacroToken     )  // get next token from macro
 #endif
-pick( SCAN_EOF,        ScanEof            )  // end-of-file
