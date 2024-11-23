@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -77,7 +77,6 @@ void InitIncFile( void )
 
 static bool ReadBuffer( FCB *fcb )
 {
-    int         last_char;
     size_t      read_amount;
 
     if( fcb->fp == NULL ) {          /* in-memory buffer */
@@ -85,6 +84,9 @@ static bool ReadBuffer( FCB *fcb )
         return( false );
     }
     if( fcb->src_end == notFilled + 1 ) {
+        /*
+         * no data read yet
+         */
         if( fcb->typ == FT_HEADER_FORCED ) {
             InitialMacroFlags = MFLAG_NONE;
             if( PCH_FileName != NULL && CompFlags.make_precompiled_header == 0 ) {
@@ -104,38 +106,73 @@ static bool ReadBuffer( FCB *fcb )
         }
     }
     /*
+     * if end of file was read already then close file and no other reading from file
+     */
+    if( fcb->eof ) {
+        CloseSrcFile( fcb );
+        return( true );
+    }
+    /* copy last byte to begining of next data */
+    fcb->src_buf[0] = fcb->src_end[-1];
+    fcb->src_end = fcb->src_ptr = fcb->src_buf + 1;
+    read_amount = fread( fcb->src_buf + 1, 1, SRC_BUF_SIZE, fcb->fp );
+    fcb->src_end += read_amount;            // mark end of buffer
+    fcb->src_buf[1 + read_amount] = '\0';
+    if( fcb->src_end[-1] == DOS_EOF_CHAR ) {
+        read_amount--;
+        fcb->src_end--;
+        fcb->src_buf[1 + read_amount] = '\0';
+    } else if( read_amount == SRC_BUF_SIZE ) {
+        /*
+         * full buffer was read, no EOL check
+         *
+         * returned false indicates CurrChar is invalid and requires
+         * read new character
+         */
+        return( false );
+    }
+    fcb->eof = true;
+    /*
+     * check for file read error
+     */
+    if( ferror( fcb->fp ) ) {
+        CErr3p( ERR_IO_ERR, fcb->src_name, strerror( errno ) );
+        CloseSrcFile( fcb );
+        return( true );
+    }
+    /*
      * ANSI/ISO C says a non-empty source file must be terminated
      * with a newline. If it's not, we insert one, otherwise
      * whatever comes next will be tacked onto that unterminated
      * line, possibly confusing the hell out of the user.
      */
-    if( fcb->src_buf != fcb->src_end ) {
-        last_char = *( fcb->src_end - 1 );
-    } else {
-        last_char = '\n';
+    if( fcb->src_end[-1] != '\n' ) {
+        /*
+         * set no_eol flag to emit warning later so line # is right
+         */
+        fcb->no_eol = true;
+        /*
+         * append missing newline character and correct end of buffer pointer
+         */
+        read_amount += 1;
+        fcb->src_buf[read_amount++] = '\n';
+        fcb->src_buf[read_amount] = '\0';
+        fcb->src_end++;
+        /*
+         * returned false indicates CurrChar is invalid and
+         * requires read new character
+         */
+        return( false );
     }
-    fcb->src_end = fcb->src_ptr = fcb->src_buf;
-    read_amount = fread( fcb->src_buf, 1, SRC_BUF_SIZE, fcb->fp );
-    if( read_amount != SRC_BUF_SIZE ) {
-        if( ferror( fcb->fp ) ) {
-            CErr3p( ERR_IO_ERR, fcb->src_name, strerror( errno ) );
-            CloseSrcFile( fcb );
-            return( true );
-        }
-        if( read_amount == 0 && last_char == '\n' ) {
-            CloseSrcFile( fcb );
-            return( true );
-        }
+    if( read_amount == 0 ) {
+        CloseSrcFile( fcb );
+        return( true );
     }
-    if( read_amount > 0 ) {
-        last_char = fcb->src_buf[read_amount - 1];
-    }
-    if( ( read_amount < SRC_BUF_SIZE ) && ( last_char != '\n' ) ) {
-        fcb->no_eol = true;                  // emit warning later so line # is right
-    }
-    fcb->src_buf[read_amount] = '\0';
-    fcb->src_end += read_amount;             // mark end of buffer
-    return( false );                            // indicate CurrChar does not contain a character
+    /*
+     * returned false indicates CurrChar is invalid and
+     * requires read new character
+     */
+    return( false );
 }
 
 
@@ -519,8 +556,10 @@ static bool FCB_Alloc( FILE *fp, const char *filename, src_file_type typ )
     fcb = (FCB *)CMemAlloc( sizeof( FCB ) );
     src_buffer = FEmalloc( SRC_BUF_SIZE + 3 );
     if( fcb != NULL ) {
+        src_buffer[0] = '\n';
+        src_buffer[1] = '\0';
         fcb->src_buf = src_buffer;
-        src_buffer[0] = '\0';
+        fcb->src_ptr = fcb->src_end = src_buffer + 1;
         flist = AddFlist( filename );
         FNameFullPath( flist );
         fcb->src_name = flist->name;
@@ -531,8 +570,6 @@ static bool FCB_Alloc( FILE *fp, const char *filename, src_file_type typ )
         SrcFileLoc = fcb->src_loc;
         fcb->src_flist = flist;
         fcb->fp = fp;
-        fcb->src_ptr = notFilled + 1;
-        fcb->src_end = notFilled + 1;
         fcb->prev_file = SrcFiles;
         fcb->prev_currchar = CurrChar;
 #if _CPU == 370
@@ -551,6 +588,7 @@ static bool FCB_Alloc( FILE *fp, const char *filename, src_file_type typ )
         fcb->rseekpos = 0;
         fcb->typ = typ;
         fcb->no_eol = false;
+        fcb->eof = false;
         SrcFiles = fcb;
         CurrChar = '\n';    /* set next character to newline */
         return( true );

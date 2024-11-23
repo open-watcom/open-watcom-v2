@@ -1800,14 +1800,8 @@ static TOKEN ScanInvalid( void )
 
     token = T_BAD_CHAR;
     Buffer[0] = CurrChar;
+    Buffer[1] = '\0';
     TokenLen = 1;
-#ifdef SYS_EOF_CHAR
-    if( CurrChar == SYS_EOF_CHAR ) {
-        CloseSrcFile( SrcFiles );
-        token = T_WHITE_SPACE;
-    }
-#endif
-    Buffer[TokenLen] = '\0';
     NextChar();
     return( token );
 }

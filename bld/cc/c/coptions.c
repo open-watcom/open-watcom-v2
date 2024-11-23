@@ -851,7 +851,6 @@ static char *ReadIndirectFile( const char *fname )
               || ch == '\n' ) {
                 *str = ' ';
             }
-#if !defined( __UNIX__ )
             /*
              * if DOS end of file (^Z) -> mark end of str
              */
@@ -859,7 +858,6 @@ static char *ReadIndirectFile( const char *fname )
                 *str = '\0';
                 break;
             }
-#endif
         }
     }
     return( env );

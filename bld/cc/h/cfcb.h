@@ -51,4 +51,5 @@ typedef struct fcb_struct {                 /* file control block structure */
     long                    rseekpos;       /* if closed because of too many files reopen */
     src_file_type           typ;            /* source file type */
     bool                    no_eol;         /* set if no EOL before EOF */
+    bool                    eof;            /* set if no more reading from file */
 } FCB;
