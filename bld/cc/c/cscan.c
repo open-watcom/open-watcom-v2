@@ -96,9 +96,9 @@ static struct {
     '|',        SCAN_DELIM2,        // |, |=, ||
     '_',        SCAN_NAME,
     'L',        SCAN_WIDE,
-    LCHR_EOF,   SCAN_EOF;
+    LCHR_EOF,   SCAN_EOF,
 #ifdef CHAR_MACRO
-    LCHR_MACRO, SCAN_MACRO;
+    LCHR_MACRO, SCAN_MACRO,
 #endif
     '\0',       0
 };
