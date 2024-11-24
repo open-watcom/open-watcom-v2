@@ -635,7 +635,7 @@ void CloseFCB( FCB *fcb )
     if( fcb->no_eol ) {
         source_loc  err_loc;
 
-        err_loc.line = fcb->src_line_cnt;
+        err_loc.line = fcb->src_line_cnt - 1;
         err_loc.column = fcb->src_loc.column;
         err_loc.fno = fcb->src_flist->index;
         SetErrLoc( &err_loc );
