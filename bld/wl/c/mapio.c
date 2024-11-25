@@ -599,6 +599,7 @@ static void InitDwarfVMState( line_state_info *state, bool default_is_stmt )
 static void DumpDwarfVMState( line_state_info *state )
 /****************************************************/
 {
+    char        str[40];
     const char  *fmt;
 
     if( state->has_seg ) {
@@ -607,15 +608,16 @@ static void DumpDwarfVMState( line_state_info *state )
         } else {
             fmt = "%5d %04Xh:%04Xh ";
         }
-        WriteMapPrintf( fmt, state->line, state->segment, state->address );
+        sprintf( str, fmt, state->line, state->segment, state->address );
     } else {
         if( state->is_32 ) {
             fmt = "%6d %08Xh ";
         } else {
             fmt = "%6d %04Xh ";
         }
-        WriteMapPrintf( fmt, state->line, state->address );
+        sprintf( str, fmt, state->line, state->address );
     }
+    WriteMapString( str );
     state->col++;
     if( state->col == 4 ) {
         WriteMapNL();

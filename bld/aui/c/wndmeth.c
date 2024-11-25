@@ -270,6 +270,7 @@ bool WndGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *lin
     line->use_key = true;
     line->text = "";
     line->hint = "";
+    line->length = 0;
     if( virtual_row < -wnd->title_rows )
         return( false );
     if( row == wnd->button_down.row && piece == wnd->button_down.piece ) {
