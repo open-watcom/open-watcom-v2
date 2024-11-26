@@ -52,6 +52,7 @@ typedef unsigned    __stdcall thread_fnex( void * );
   #if defined(__RDOS__) || defined(__RDOSDEV__)
     typedef int     beginner( thread_fn *start_addr, int prio, const char *thread_name,
                                   unsigned stack_size, void *arglist );
+    typedef void    timerbeginner( thread_fn *start_addr );
   #else
     typedef int     beginner( thread_fn *start_addr, void *stack_bottom,
                                   unsigned stack_size, void *arglist );

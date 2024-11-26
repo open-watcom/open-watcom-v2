@@ -57,12 +57,14 @@
   extern void *__tls_get_value(int index);
   extern void __tls_set_value(int index, void *data);
   extern void __create_thread(void (*Start)(void *Param), int Prio, const char *Name, void *Param, int StackSize);
+  extern int __create_timer_thread(void (*Start)(void *Param), void *Param);
 
   #pragma aux __tls_alloc "*" __value [__eax] __modify [__ecx]
   #pragma aux __tls_free "*" __parm [__ecx] __modify [__eax]
   #pragma aux __tls_get_value "*" __parm [__ecx] __value [__eax] __modify [__edx]
   #pragma aux __tls_set_value "*" __parm [__ecx] [__eax] __modify [__edx]
   #pragma aux __create_thread "*" __parm [__edx] [__ebx] [__edi] [__eax] [__ecx]
+  #pragma aux __create_timer_thread "*" __parm [__edx] [__eax] __value [__eax]
 #elif defined( __RDOSDEV__ )
   #define GetCurrentThreadId()  (RdosGetThreadHandle())
 #elif defined( __OS2__ )

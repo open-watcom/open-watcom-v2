@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+* Copyright (c) 2015-2019 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -24,17 +24,53 @@
 *
 *  ========================================================================
 *
-* Description:  C default registered thread functions
+* Description:  RDOS/POSIX timer implementations
+*
+* Author: L. Ekblad
 *
 ****************************************************************************/
 
 
-extern beginner     __CBeginThread;
-extern ender        __CEndThread;
-#if defined( __NT__ )
-extern beginnerex   __CBeginThreadEx;
-extern enderex      __CEndThreadEx;
-#endif
-#if defined( __RDOS__ )
-extern timerbeginner __CBeginTimerThread;
-#endif
+#include "variety.h"
+#include <string.h>
+#include <signal.h>
+#include <stdio.h>
+#include <stddef.h>
+#include <time.h>
+#include "rdos.h"
+
+_WCRTLINK int timer_create( clockid_t __clk, struct sigevent *__sevp, timer_t *__tmr )
+{
+    /* unused parameters */ (void)__clk; (void)__sevp, (void)__tmr;
+
+    return( 0 );
+}
+
+
+_WCRTLINK int timer_delete( timer_t __tmr )
+{
+    /* unused parameters */ (void)__tmr;
+
+    return( 0 );
+}
+
+_WCRTLINK int timer_getoverrun( timer_t __tmr )
+{
+    /* unused parameters */ (void)__tmr;
+
+    return( 0 );
+}
+
+_WCRTLINK int timer_gettime( timer_t __tmr, struct itimerspec *__v )
+{
+    /* unused parameters */ (void)__tmr, (void)__v;
+
+    return( 0 );
+}
+
+_WCRTLINK int timer_settime( timer_t __tmr, int flags, struct itimerspec *__new, struct itimerspec *__old )
+{
+    /* unused parameters */ (void)__tmr, (void)flags, (void)__new, (void)__old;
+
+    return( 0 );
+}

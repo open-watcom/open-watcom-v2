@@ -50,6 +50,7 @@ __tls_array = 2Ch
 wait_milli_nr	            = 25
 create_thread_nr            = 28
 terminate_thread_nr         = 29
+create_timer_thread_nr      = 853
 
 UserGate macro gate_nr
 	db 67h
@@ -66,44 +67,44 @@ _TEXT           SEGMENT BYTE PUBLIC USE32 'CODE'
 ; OUT: EAX = TLS index
 
 __tls_alloc:
-	mov ecx,fs:__tls_bitmap
-	bsf eax, dword ptr [ecx]
-	jnz __tls_alloc_ok
+    mov ecx,fs:__tls_bitmap
+    bsf eax, dword ptr [ecx]
+    jnz __tls_alloc_ok
 
-	bsf eax, dword ptr [ecx+4]
-	lea eax, [eax+32]
-	jnz __tls_alloc_ok
+    bsf eax, dword ptr [ecx+4]
+    lea eax, [eax+32]
+    jnz __tls_alloc_ok
 
-	or eax,-1
-	ret
+    or eax,-1
+    ret
 
 __tls_alloc_ok:
-	btr dword ptr [ecx], eax
-	ret
+    btr dword ptr [ecx], eax
+    ret
 
 ; IN:  ECX = TLS index
 
 __tls_free:
-	cmp ecx, 64
-	sbb eax, eax
-	jnc __tls_free_ok
+    cmp ecx, 64
+    sbb eax, eax
+    jnc __tls_free_ok
 
-	mov eax,fs:__tls_bitmap
-	bts dword ptr [eax],ecx
+    mov eax,fs:__tls_bitmap
+    bts dword ptr [eax],ecx
 
 __tls_free_ok:
-	ret
+    ret
 
 ; IN:  ECX = TLS index
 ; OUT: EAX = Value
 
 __tls_get_value:
-	xor eax, eax
-	cmp ecx, 64
-	jnc __tls_get_done
+    xor eax, eax
+    cmp ecx, 64
+    jnc __tls_get_done
 
-	mov edx, fs:__tls_array
-	mov eax, [edx + ecx * 4]
+    mov edx, fs:__tls_array
+    mov eax, [edx + ecx * 4]
 
 __tls_get_done:
     ret
@@ -112,11 +113,11 @@ __tls_get_done:
 ; IN:  EAX = Value
 
 __tls_set_value:
-	cmp ecx, 64
-	jnc __tls_set_done
+    cmp ecx, 64
+    jnc __tls_set_done
 
-	mov edx, fs:__tls_array
-	mov [edx + ecx * 4], eax
+    mov edx, fs:__tls_array
+    mov [edx + ecx * 4], eax
 
 __tls_set_done:
     ret
@@ -125,12 +126,12 @@ __task_end:
     UserGate terminate_thread_nr   ; won't return
 
 __task_start:
-	mov eax,ds
-	mov es,eax
-	mov esi,fs:__pv_arbitrary
-	push OFFSET __task_end
-	push edx
-	ret
+    mov eax,ds
+    mov es,eax
+    mov esi,fs:__pv_arbitrary
+    push OFFSET __task_end
+    push edx
+    ret
 
 ; IN: EDX   Task callback
 ; IN: EDI   Task name
@@ -139,24 +140,62 @@ __task_start:
 ; IN: ECX   Stack size
 
 __create_thread:
-	push ds
-	pushad
+    push ds
+    pushad
 ;
     push ebx
-	mov ebx,cs
-	mov ds,ebx
-	mov esi,OFFSET __task_start
-	mov fs:__pv_arbitrary,eax
-	mov ebx,fs
-	pop eax
-	UserGate create_thread_nr
+    mov ebx,cs
+    mov ds,ebx
+    mov esi,OFFSET __task_start
+    mov fs:__pv_arbitrary,eax
+    mov ebx,fs
+    pop eax
+    UserGate create_thread_nr
 ;
-	mov eax,10
-	UserGate wait_milli_nr
+    mov eax,10
+    UserGate wait_milli_nr
 ;
-	popad
-	pop ds
-	ret
+    popad
+    pop ds
+    ret
+
+; IN: EDX   Task callback
+; IN: EBX   Task data
+
+__timer_start:
+    mov eax,ds
+    mov es,eax
+    push OFFSET __task_end
+    push edx
+    ret
+
+; IN:  EDX   Task callback
+; IN:  EAX   Task data
+; OUT: EAX   1 = Thread created, 0 = thread already running
+
+__create_timer_thread:
+    push es
+    push ebx
+    push edi
+;
+    mov ebx,cs
+    mov es,ebx
+    mov edi,OFFSET __timer_start
+    mov ebx,eax
+    UserGate create_timer_thread_nr
+    jc __create_timer_running
+
+    mov eax,1
+    jmp __create_timer_done
+
+__create_timer_running:
+    xor eax,eax
+
+__create_timer_done:
+    pop edi
+    pop ebx
+    pop es
+    ret
 
 _TEXT           ENDS
 

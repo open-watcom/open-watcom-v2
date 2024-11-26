@@ -76,7 +76,8 @@ static void begin_thread_helper( void *param )
     start_addr = (__thread_fn *)td->start_addr;
     arg = td->argument;
     thread_handle = td->thread_handle;
-    RdosSetSignal( td->signal );
+    if( td->signal )
+        RdosSetSignal( td->signal );
 
     tdata = (thread_data *)RdosAllocateMem( __ThreadDataSize );
 
@@ -144,6 +145,40 @@ int __CBeginThread( thread_fn *start_addr, int prio, const char *thread_name,
     free( td );
 
     return( th );
+}
+
+void __CBeginTimerThread( thread_fn *start_addr )
+/************************************************************/
+{
+    thread_args *td;
+    int         wait_handle;
+
+    if( __TlsIndex == NO_INDEX ) {
+        if( !__RdosThreadInit() )
+            return;
+        __InitMultipleThread();
+    }
+
+    td = malloc( sizeof( *td ) );
+    if( td == NULL ) {
+        _RWD_errno = ENOMEM;
+        return;
+    }
+
+    wait_handle = RdosCreateWait();
+
+    td->start_addr = start_addr;
+    td->argument = 0;
+    td->signal = RdosCreateSignal();
+    RdosResetSignal( td->signal );
+    RdosAddWaitForSignal( wait_handle, td->signal, 0 );
+
+    if( __create_timer_thread( begin_thread_helper, td ) )
+        RdosWaitForever( wait_handle );
+
+    RdosFreeSignal( td->signal );
+    RdosCloseWait( wait_handle );
+    free( td );
 }
 
 void __CEndThread( void )
