@@ -38,6 +38,7 @@
                 PUBLIC  __tls_set_value
                 PUBLIC  __tls_get_value
                 PUBLIC  __create_thread
+                PUBLIC  __create_timer_thread
 
 ; Offsets within FS
 
