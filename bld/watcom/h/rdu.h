@@ -1025,12 +1025,8 @@
 #define usergate_update_handle 0x00000352
 #define usergate_delete_handle 0x00000353
 
-#define usergate_start_user_timer 0x00000354
-#define usergate_start_user_timeout 0x00000355
-#define usergate_update_user_timer 0x00000356
-#define usergate_update_user_timeout 0x00000357
-#define usergate_stop_user_timer 0x00000358
-#define usergate_init_user_timer 0x00000359
+#define usergate_get_handle_count 0x00000354
+#define usergate_create_timer_thread 0x00000355
 
 
 
@@ -2062,12 +2058,8 @@
 #define CallGate_update_handle 0x55 0x67 0x9a 82 3 0 0 3 0 0x5d
 #define CallGate_delete_handle 0x55 0x67 0x9a 83 3 0 0 3 0 0x5d
 
-#define CallGate_start_user_timer 0x55 0x67 0x9a 84 3 0 0 3 0 0x5d
-#define CallGate_start_user_timeout 0x55 0x67 0x9a 85 3 0 0 3 0 0x5d
-#define CallGate_update_user_timer 0x55 0x67 0x9a 86 3 0 0 3 0 0x5d
-#define CallGate_update_user_timeout 0x55 0x67 0x9a 87 3 0 0 3 0 0x5d
-#define CallGate_stop_user_timer 0x55 0x67 0x9a 88 3 0 0 3 0 0x5d
-#define CallGate_init_user_timer 0x55 0x67 0x9a 89 3 0 0 3 0 0x5d
+#define CallGate_get_handle_count 0x55 0x67 0x9a 84 3 0 0 3 0 0x5d
+#define CallGate_create_timer_thread 0x55 0x67 0x9a 85 3 0 0 3 0 0x5d
 
 #else
 
@@ -3097,11 +3089,7 @@
 #define CallGate_update_handle 0x3e 0x67 0x9a 82 3 0 0 3 0
 #define CallGate_delete_handle 0x3e 0x67 0x9a 83 3 0 0 3 0
 
-#define CallGate_start_user_timer 0x3e 0x67 0x9a 84 3 0 0 3 0
-#define CallGate_start_user_timeout 0x3e 0x67 0x9a 85 3 0 0 3 0
-#define CallGate_update_user_timer 0x3e 0x67 0x9a 86 3 0 0 3 0
-#define CallGate_update_user_timeout 0x3e 0x67 0x9a 87 3 0 0 3 0
-#define CallGate_stop_user_timer 0x3e 0x67 0x9a 88 3 0 0 3 0
-#define CallGate_init_user_timer 0x3e 0x67 0x9a 89 3 0 0 3 0
+#define CallGate_get_handle_count 0x3e 0x67 0x9a 84 3 0 0 3 0
+#define CallGate_create_timer_thread 0x3e 0x67 0x9a 85 3 0 0 3 0
 
 #endif

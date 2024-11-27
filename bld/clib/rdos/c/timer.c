@@ -37,7 +37,18 @@
 #include <stdio.h>
 #include <stddef.h>
 #include <time.h>
+#include <process.h>
 #include "rdos.h"
+
+static void TimerThread( void *param )
+{
+    /* unused parameters */ (void)param;
+}
+
+void RdosCreateTimerThread( void )
+{
+    _begintimerthread( &TimerThread );
+}
 
 _WCRTLINK int timer_create( clockid_t __clk, struct sigevent *__sevp, timer_t *__tmr )
 {

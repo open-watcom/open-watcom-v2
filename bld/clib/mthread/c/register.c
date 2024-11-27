@@ -45,9 +45,12 @@
 
 static int __CInitThread( void *p ) { p=p; return( 0 ); }
 
-static beginner     *__BeginThread      = __CBeginThread;
-static ender        *__EndThread        = __CEndThread;
-static initializer  *__InitThread       = __CInitThread;
+static beginner      *__BeginThread      = __CBeginThread;
+static ender         *__EndThread        = __CEndThread;
+static initializer   *__InitThread       = __CInitThread;
+#if defined( __RDOS__ )
+static timerbeginner *__BeginTimerThread = __CBeginTimerThread;
+#endif
 
 int __initthread( void *p )
 {
@@ -66,6 +69,10 @@ _WCRTLINK int _beginthread( thread_fn *start_addr, int prio,
                         unsigned stack_size, void *arglist )
 {
     return( __BeginThread( start_addr, prio, thread_name, stack_size, arglist ) );
+}
+_WCRTLINK void _begintimerthread( thread_fn *start_addr )
+{
+    __BeginTimerThread( start_addr );
 }
 #elif defined( __RDOSDEV__ )
 _WCRTLINK int _beginthread( thread_fn *start_addr, int prio,

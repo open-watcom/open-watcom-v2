@@ -1543,6 +1543,12 @@
     __value [__eax] \
     __modify [__edx]
 
+#pragma aux RdosGetHandleCount = \
+    CallGate_get_handle_count  \
+    "jnc ok" \
+    "mov ecx,256" \
+    "ok: " \ 
+    __value [__ecx]
 
 #pragma aux RdosOpenHandle = \
     CallGate_open_handle  \
@@ -2225,30 +2231,6 @@
     CallGate_has_global_timer \
     CarryToBool \
     __value [__eax]
-
-#pragma aux RdosStartTimer = \
-    CallGate_start_user_timer \
-    __parm [__edi] [__esi] [__ebx] [__edx __eax]
-
-#pragma aux RdosStartTimeout = \
-    CallGate_start_user_timeout \
-    __parm [__edi] [__esi] [__ebx] [__eax]
-
-#pragma aux RdosUpdateTimer = \
-    CallGate_update_user_timer \
-    CarryToBool \
-    __parm [__ebx] [__edx __eax] \
-    __value [__eax]
-
-#pragma aux RdosUpdateTimeout = \
-    CallGate_update_user_timeout \
-    CarryToBool \
-    __parm [__ebx] [__eax] \
-    __value [__eax]
-
-#pragma aux RdosStopTimer = \
-    CallGate_stop_user_timer \
-    __parm [__ebx]
 
 #pragma aux RdosGetActiveCores = \
     CallGate_get_active_cores \

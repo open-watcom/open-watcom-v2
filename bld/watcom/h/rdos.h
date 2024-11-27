@@ -153,9 +153,9 @@ struct RdosDirEntry
 {
     long long Inode;
     long long Size;
-    long long CreateTime;
-    long long AccessTime;
-    long long ModifyTime;
+    unsigned long long CreateTime;
+    unsigned long long AccessTime;
+    unsigned long long ModifyTime;
     int Attrib;
     int Flags;
     int Uid;
@@ -592,6 +592,7 @@ int RDOSAPI RdosGetCanBridgeVersion(int *MajorVersion, int *MinorVersion, int *S
 int RDOSAPI RdosProgramCanBridge(const char *ProgramName);
 int RDOSAPI RdosWaitForCanBridgeProgramming(int *ErrorCode, int *Position);
 
+int RDOSAPI RdosGetHandleCount();
 int RDOSAPI RdosOpenHandle(const char *Name, int Mode);
 int RDOSAPI RdosCloseHandle(int Handle);
 int RDOSAPI RdosDeleteHandle(int Handle);
@@ -723,11 +724,7 @@ void RDOSAPI RdosTerminateThread();
 int RDOSAPI RdosGetThreadHandle(void);
 int RDOSAPI RdosGetProcessHandle(void);
 
-void RDOSAPI RdosStartTimer(long long (*Callback)(void *Param, long long Expire), void *Param, int ID, long long Expire);
-void RDOSAPI RdosStartTimeout(long long (*Callback)(void *Param, long long Expire), void *Param, int ID, int Ms);
-int RDOSAPI RdosUpdateTimer(int ID, long long Expire);
-int RDOSAPI RdosUpdateTimeout(int ID, int Ms);
-void RDOSAPI RdosStopTimer(int ID);
+void RDOSAPI RdosCreateTimerThread(void);
 
 int RDOSAPI RdosHasGlobalTimer();
 int RDOSAPI RdosGetActiveCores();
