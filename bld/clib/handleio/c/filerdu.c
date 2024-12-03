@@ -52,8 +52,6 @@
 #include "qwrite.h"
 #include "_rdos.h"
 
-#define MAX_HANDLE_COUNT 512
-
 struct HandleMap
 {
     struct RdosFileMap *map;
@@ -61,15 +59,46 @@ struct HandleMap
     int index;
 };
 
-static struct HandleMap *MapArr[ MAX_HANDLE_COUNT ];
+static struct HandleMap *StdioMapArr[ 3 ] = { NULL, NULL, NULL };
+static int              MapCount = 3;
+static struct HandleMap **MapArr = StdioMapArr;
+
+
+static void GrowMapArr( int size )
+{
+    int                 i;
+    int                 count;;
+    struct HandleMap  **maparr;
+
+    count = MapCount + MapCount / 2;
+    if ( count < size )
+        count = size;
+
+    maparr = (struct HandleMap **)lib_calloc( 4, count );
+
+    for( i = 0; i < MapCount; i++ )
+        maparr[ i ] = MapArr[i];
+
+    for( i = MapCount; i < count; i++ )
+        maparr[ i ] = 0;
+
+    if ( MapCount != 3 )
+        lib_free( MapArr );
+
+    MapArr = maparr;
+    MapCount = count;
+}
 
 static void CreateMap( int handle )
 {
     struct RdosFileMap *map;
     int                 mhandle;
-    struct HandleMap    *hmap;
+    struct HandleMap   *hmap;
 
-    if( handle >= 0 && handle < MAX_HANDLE_COUNT ) {
+    if( handle >= MapCount )
+        GrowMapArr( handle + 1 );
+
+    if( handle >= 0) {
         map = RdosGetHandleMap( handle, &mhandle );
         if( map ) {
             hmap = (struct HandleMap *)lib_calloc( 1, sizeof( struct HandleMap ) );
@@ -85,7 +114,7 @@ static void FreeMap( int handle )
 {
     struct HandleMap    *map;
 
-    if( handle >= 0 && handle < MAX_HANDLE_COUNT ) {
+    if( handle >= 0 && handle < MapCount ) {
         map = MapArr[ handle ];
         if( map ) {
             MapArr[ handle ] = 0;
@@ -93,7 +122,7 @@ static void FreeMap( int handle )
         }
     }
 }
-        
+
 _WCRTLINK int unlink( const CHAR_TYPE *filename )
 {
     __ptr_check( filename, 0 );
@@ -334,7 +363,7 @@ _WCRTLINK off_t _tell( int handle )
     return( RdosGetHandlePos( handle ) );
 }
 
-static int vfs_find( struct HandleMap *hm, long long Pos )
+static int vfs_find( int handle, struct HandleMap *hm, long long Pos )
 {
     struct RdosFileMap *map = hm->map;
     int                Step = 0x80;
@@ -345,7 +374,7 @@ static int vfs_find( struct HandleMap *hm, long long Pos )
     for( ;; )
     {
         if( map->Update )
-            RdosUpdateHandle( hm->handle );
+            RdosUpdateHandle( handle );
 
         index = map->SortedArr[ Curr + Step ];
         if( index != 0xFF ) {
@@ -418,7 +447,7 @@ static int vfs_read( int handle, void *buffer, unsigned len )
     char                    *ptr = (char *)buffer;
 
     if (map->Update)
-        RdosUpdateHandle( hm->handle );
+        RdosUpdateHandle( handle );
 
     if( Pos + Size > TotalSize )
         Size = TotalSize - Pos;
@@ -429,7 +458,7 @@ static int vfs_read( int handle, void *buffer, unsigned len )
     RdosEnterFutex( &map->Handle->Futex );
 
     if( hm->index < 0)
-        hm->index = vfs_find( hm, Pos );
+        hm->index = vfs_find( handle, hm, Pos );
 
     while( Size ) {
         if( hm->index >= 0 ) {
@@ -444,10 +473,10 @@ static int vfs_read( int handle, void *buffer, unsigned len )
             for( i = 0; i < 10; i++ ) {
                 RdosLeaveFutex(&map->Handle->Futex);
 
-                RdosMapHandle( hm->handle, Pos, Size );
+                RdosMapHandle( handle, Pos, Size );
 
                 RdosEnterFutex( &map->Handle->Futex );
-                hm->index = vfs_find( hm, Pos );
+                hm->index = vfs_find( handle, hm, Pos );
                 if( hm->index >= 0 )
                     break;
             }
@@ -523,17 +552,17 @@ static int vfs_write( int handle, const void *buffer, unsigned len )
     long long                Grow;
 
     if( map->Update )
-        RdosUpdateHandle( hm->handle );
+        RdosUpdateHandle( handle );
 
     Grow = Pos + Size - info->DiscSize;
 
     if( Grow > 0 )
-        RdosGrowHandle( hm->handle, info->DiscSize, Grow );
+        RdosGrowHandle( handle, info->DiscSize, Grow );
 
     RdosEnterFutex( &map->Handle->Futex );
 
     if( hm->index < 0 || Grow > 0 )
-        hm->index = vfs_find( hm, Pos );
+        hm->index = vfs_find( handle, hm, Pos );
 
     while( Size ) {
         if( hm->index >= 0 ) {
@@ -551,12 +580,12 @@ static int vfs_write( int handle, const void *buffer, unsigned len )
                 Grow = Pos + Size - info->DiscSize;
 
                 if( Grow > 0 )
-                    RdosGrowHandle( hm->handle, info->DiscSize, Grow );
+                    RdosGrowHandle( handle, info->DiscSize, Grow );
                 else
-                    RdosMapHandle( hm->handle, Pos, Size );
+                    RdosMapHandle( handle, Pos, Size );
 
                 RdosEnterFutex( &map->Handle->Futex );
-                hm->index = vfs_find( hm, Pos );
+                hm->index = vfs_find( handle, hm, Pos );
                 if( hm->index >= 0 )
                     break;
             }
@@ -574,7 +603,7 @@ static int vfs_write( int handle, const void *buffer, unsigned len )
 
 int __qread( int handle, void *buffer, unsigned len )
 {
-    if( handle >= 0 && handle < MAX_HANDLE_COUNT )
+    if( handle >= 0 && handle < MapCount )
         if( MapArr[ handle ] )
             return( vfs_read( handle, buffer, len ) );
     return( RdosReadHandle( handle, buffer, len ) );
@@ -582,7 +611,7 @@ int __qread( int handle, void *buffer, unsigned len )
 
 int __qwrite( int handle, const void *buffer, unsigned len )
 {
-    if( handle >= 0 && handle < MAX_HANDLE_COUNT )
+    if( handle >= 0 && handle < MapCount )
         if( MapArr[ handle ] )
             return( vfs_write( handle, buffer, len ) );
     return( RdosWriteHandle( handle, buffer, len ) );
@@ -590,7 +619,7 @@ int __qwrite( int handle, const void *buffer, unsigned len )
 
 _WCRTLINK int read( int handle, void *buffer, unsigned len )
 {
-    if( handle >= 0 && handle < MAX_HANDLE_COUNT )
+    if( handle >= 0 && handle < MapCount )
         if( MapArr[ handle ] )
             return( vfs_read( handle, buffer, len ) );
     return( RdosReadHandle( handle, buffer, len ) );
@@ -598,7 +627,7 @@ _WCRTLINK int read( int handle, void *buffer, unsigned len )
 
 _WCRTLINK int write( int handle, const void *buffer, unsigned len )
 {
-    if( handle >= 0 && handle < MAX_HANDLE_COUNT )
+    if( handle >= 0 && handle < MapCount )
         if( MapArr[ handle ] )
             return( vfs_write( handle, buffer, len ) );
     return( RdosWriteHandle( handle, buffer, len ) );
@@ -608,11 +637,8 @@ static void init( void )
 {
     int i;
 
-    for( i = 0; i < 3; i++ ) 
+    for( i = 0; i < 3; i++ )
         CreateMap( i );
-
-    for( i = 3; i < MAX_HANDLE_COUNT; i++ ) 
-        MapArr[ i ] = 0;
 }
 
 AXI( init, INIT_PRIORITY_RUNTIME )
