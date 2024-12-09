@@ -166,13 +166,14 @@ __create_thread:
 __timer_start:
     mov eax,ds
     mov es,eax
+    mov esi,fs:__pv_arbitrary
     push OFFSET __task_end
     push edx
     ret
 
 ; IN:  EDX   Task callback
 ; IN:  EAX   Task data
-; OUT: EAX   1 = Thread created, 0 = thread already running
+; OUT: EAX   0 = thread already running, else timer base address
 
 __create_timer_thread:
     push es
@@ -182,14 +183,11 @@ __create_timer_thread:
     mov ebx,cs
     mov es,ebx
     mov edi,OFFSET __timer_start
-    mov ebx,eax
+    mov fs:__pv_arbitrary,eax
+    mov ebx,fs
     UserGate create_timer_thread_nr
-    jc __create_timer_running
-
-    mov eax,1
-    jmp __create_timer_done
-
-__create_timer_running:
+    jnc __create_timer_done
+;
     xor eax,eax
 
 __create_timer_done:
