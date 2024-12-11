@@ -39,6 +39,7 @@
                 PUBLIC  __tls_get_value
                 PUBLIC  __create_thread
                 PUBLIC  __create_timer_thread
+                PUBLIC  __wait_timer_event
 
 ; Offsets within FS
 
@@ -52,6 +53,7 @@ wait_milli_nr	            = 25
 create_thread_nr            = 28
 terminate_thread_nr         = 29
 create_timer_thread_nr      = 853
+wait_timer_event_nr         = 854
 
 UserGate macro gate_nr
 	db 67h
@@ -173,7 +175,7 @@ __timer_start:
 
 ; IN:  EDX   Task callback
 ; IN:  EAX   Task data
-; OUT: EAX   0 = thread already running, else timer base address
+; OUT: EAX   0 = thread already running
 
 __create_timer_thread:
     push es
@@ -195,6 +197,18 @@ __create_timer_done:
     pop ebx
     pop es
     ret
+
+; OUT: EAX   0 = terminate thread
+
+__wait_timer_event:
+    UserGate wait_timer_event_nr
+    jnc __wait_timer_done
+;
+    xor eax,eax
+
+__wait_timer_done:
+    ret
+
 
 _TEXT           ENDS
 

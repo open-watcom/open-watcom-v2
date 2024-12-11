@@ -39,10 +39,19 @@
 #include <time.h>
 #include <process.h>
 #include "rdos.h"
+#include "_rdos.h"
+
+static void *timer_data = 0;
 
 static void TimerThread( void *param )
 {
-    /* unused parameters */ (void)param;
+    timer_data = param;
+
+    for( ;; )
+        if( !__wait_timer_event( ) )
+            break;
+
+    timer_data = 0;
 }
 
 void RdosCreateTimerThread( void )
