@@ -724,7 +724,8 @@ void RDOSAPI RdosTerminateThread();
 int RDOSAPI RdosGetThreadHandle(void);
 int RDOSAPI RdosGetProcessHandle(void);
 
-void RDOSAPI RdosCreateTimerThread(void);
+int RDOSAPI RdosStartAppTimer(void (*Start)(void *Param), void *Param, long long Timeout);
+int RDOSAPI RdosStopAppTimer(int index);
 
 int RDOSAPI RdosHasGlobalTimer();
 int RDOSAPI RdosGetActiveCores();
@@ -1087,6 +1088,7 @@ void RDOSAPI RdosStopCanCapture();
 void RDOSAPI RdosStartLonCapture(long FileHandle);
 void RDOSAPI RdosStopLonCapture();
 
+int RDOSAPI RdosGetUsbConfig(int Controller, int Device, int Config, void *ptr, int maxsize);
 int RDOSAPI RdosHasUsbCardReaderError();
 int RDOSAPI RdosHasUsbCardDevReset();
 int RDOSAPI RdosHasUsbCardUsbReset();
