@@ -16,3 +16,9 @@ extern int __create_timer_thread(void (*Start)(void *Args, void *Param), void *A
 extern int __wait_timer_event();
 #pragma aux __wait_timer_event "*"  __value [__eax]
 
+extern void __signal_timer();
+#pragma aux __signal_timer "*"
+
+void __locked_set_bit( void *base, int bit );
+#pragma aux __locked_set_bit __parm [__ebx] [__eax] = \
+    "lock bts [ebx],eax "

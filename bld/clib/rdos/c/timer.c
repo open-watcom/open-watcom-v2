@@ -151,12 +151,12 @@ static int StartTimer( void (*callback)( void *param ), void *param, long long t
             mask = 1;
             for( bit = 0; bit < 32; bit++ ) {
                 if( ( active & mask ) == 0 ) {
-                    index = 32 * i + bit - 4;
-                    entry = &timer->Req.EntryArr[index];
+                    index = 32 * i + bit;
+                    entry = &timer->Req.EntryArr[index - 4];
                     entry->timeout = timeout;
                     entry->callback = callback;
                     entry->param = param;
-                    timer->Req.ReqBitmap[i] |= mask;
+                    __locked_set_bit( timer->Req.ReqBitmap, index );
                     done = 1;
                     break;
                 }
@@ -164,7 +164,11 @@ static int StartTimer( void (*callback)( void *param ), void *param, long long t
             }
         }
     }
-    return( index + 4 );
+
+    if( done )
+        return( index );
+    else
+        return( 0 );
 }
 
 static int StopTimer( int index )
@@ -190,17 +194,18 @@ static int StopTimer( int index )
     }
 }
 
-int RdosStartAppTimer(void (*Start)(void *Param), void *Param, long long Timeout)
+int RdosStartAppTimer(void (*Start)(void *Param), void *Param, int Ms)
 {
     int index;
-    int id;
+    int id = 0;
+    long long timeout = RdosUserGetLongSysTime() + 1193 * Ms;
 
     RdosEnterFutex( &timer_futex );
 
     if( !timer )
         CreateTimerThread( );
 
-    index = StartTimer( Start, Param, Timeout );
+    index = StartTimer( Start, Param, timeout );
 
     if( index ) {
         timer_no++;
@@ -209,6 +214,9 @@ int RdosStartAppTimer(void (*Start)(void *Param), void *Param, long long Timeout
     }
 
     RdosLeaveFutex( &timer_futex );
+
+    if( Ms < 100 )
+        __signal_timer( );
 
     return( id );
 }

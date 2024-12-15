@@ -40,6 +40,7 @@
                 PUBLIC  __create_thread
                 PUBLIC  __create_timer_thread
                 PUBLIC  __wait_timer_event
+                PUBLIC  __signal_timer
 
 ; Offsets within FS
 
@@ -54,6 +55,7 @@ create_thread_nr            = 28
 terminate_thread_nr         = 29
 create_timer_thread_nr      = 853
 wait_timer_event_nr         = 854
+signal_timer_nr             = 855
 
 UserGate macro gate_nr
 	db 67h
@@ -207,6 +209,10 @@ __wait_timer_event:
     xor eax,eax
 
 __wait_timer_done:
+    ret
+
+__signal_timer:
+    UserGate signal_timer_nr
     ret
 
 
