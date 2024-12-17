@@ -342,6 +342,7 @@
 
 :option. l
 :file.
+:optional.
 :usage.  list file name
 :jusage. リストファイル名
 
