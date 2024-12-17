@@ -191,11 +191,11 @@ optencod_targets = $(host_os)
 optencod_targets += dbg
 !endif
 
-usagew.gh $(qnx_usage) : ../optionsw.gml $(__MAKEFILES__)
+usagew.gh $(qnx_usage) : ../gml/optionsw.gml $(__MAKEFILES__)
     @%make echo_optencod
     $(optencod) -rc=MSG_USAGE_WLIB_BASE -x=_W -utf8 $(optencod_opt_$(host_os)) $[@ cmdlprsw.gh cmdlprsw.gc $@ cmdlnprs.gh $(optencod_targets)
 
-usagea.gh : ../optionsa.gml $(__MAKEFILES__)
+usagea.gh : ../gml/optionsa.gml $(__MAKEFILES__)
     @%make echo_optencod
     $(optencod) -p -x=_B -utf8 $[@ cmdlprsb.gh cmdlprsb.gc . . $(optencod_targets)
     $(optencod) -rc=MSG_USAGE_AR_BASE -x=_A -utf8 $[@ cmdlprsa.gh cmdlprsa.gc $@ cmdlnprs.gh targ1 $(optencod_targets)

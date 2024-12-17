@@ -1324,7 +1324,9 @@ static void ListContentsWlib( void )
         name = FormSym( sym->name );
         namelen = strlen( name );
         listPrintWlib( fp, "%s..", name );
-        fpadchWlib( fp, '.', WLIB_LIST_LINE_WIDTH - 2 - namelen - sym->file->name_length );
+        if( WLIB_LIST_LINE_WIDTH > 2 + namelen + sym->file->name_length ) {
+            fpadchWlib( fp, '.', WLIB_LIST_LINE_WIDTH - 2 - namelen - sym->file->name_length );
+        }
         listPrintWlib( fp, "%s", sym->file->arch.name );
         listNewLineWlib( fp );
     }
@@ -1337,7 +1339,9 @@ static void ListContentsWlib( void )
         } else {
             listPrintWlib( fp, "%s ", sfile->arch.name );
         }
-        fpadchWlib( fp, ' ', WLIB_LIST_OFF_COLUMN - 1 - sfile->name_length - 16 );
+        if( WLIB_LIST_OFF_COLUMN > 1 - sfile->name_length - 16 ) {
+            fpadchWlib( fp, ' ', WLIB_LIST_OFF_COLUMN - 1 - sfile->name_length - 16 );
+        }
         listPrintWlib( fp, "Offset=%8.8xH", sfile->inlib_offset );
         listNewLineWlib( fp );
         for( sym = sfile->first; sym != NULL; sym = sym->next ) {
