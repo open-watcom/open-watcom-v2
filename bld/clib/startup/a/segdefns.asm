@@ -57,6 +57,9 @@ ifdef __NT__
 DGROUP group _NULL,_AFTERNULL,CONST,_DATA,DATA,_BSS,TIB,TI,TIE,XIB,XI,XIE,YIB,YI,YIE
 else
 DGROUP group _NULL,_AFTERNULL,CONST,_DATA,DATA,_BSS,STACK,TIB,TI,TIE,XIB,XI,XIE,YIB,YI,YIE
+ifdef __RDOSDEV__
+DGROUP group _NULL,_AFTERNULL,CONST,_DATA,DATA,_BSS
+endif
 endif
 endif
 endif
@@ -96,6 +99,9 @@ _AFTERNULL ends
 CONST   segment word public 'DATA'
 CONST   ends
 
+ifndef __RDOSDEV__
+
+
 if COMP_CFG_COFF eq 0
 
 XIB     segment word public 'DATA'
@@ -120,6 +126,8 @@ YIE     ends
 
 endif
 
+endif
+
 _DATA   segment word public 'DATA'
 _DATA   ends
 
@@ -129,9 +137,16 @@ DATA    ends
 _BSS    segment word public 'BSS'
 _BSS    ends
 
+
 ifndef __LINUX__
 ifndef __NT__
+
+
+ifdef __RDOSDEV__
+STACK_SIZE      equ     10h
+else
 STACK_SIZE      equ     10000h
+endif
 
 STACK   segment para stack 'STACK'
         db      (STACK_SIZE) dup(?)

@@ -46,7 +46,6 @@ include struct.inc
 
         xdefp   __CHK
         defpe   __CHK                   ; new style stack check
-        movzx   esp,sp                  ; make sure high part of ESP i valid
         push    ebp
         mov     ebp,esp
         sub     ebp,[ebp+8]

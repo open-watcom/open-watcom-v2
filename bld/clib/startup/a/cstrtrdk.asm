@@ -38,7 +38,6 @@ include xinit.inc
         assume  nothing
 
         extrn   __RdosMain              : near
-        extrn   __FiniRtns              : near
 
         extrn   ___begtext              : near
 
