@@ -186,7 +186,7 @@ static int StopTimer( int index )
     if( timer->Req.DoneBitmap[i] & mask )
         return( 0 );
     else {
-        if( timer->Req.ReqBitmap[i] | timer->Active.PendingBitmap[i] | timer->Active.CompletedBitmap[i] ) {
+        if( ( timer->Req.ReqBitmap[i] & mask ) || ( timer->Active.PendingBitmap[i] & mask ) || ( timer->Active.CompletedBitmap[i] & mask ) ) {
             timer->Req.DoneBitmap[i] |= mask;
             return( 1 );
         } else
@@ -209,6 +209,8 @@ int RdosStartAppTimer(void (*Start)(void *Param), void *Param, int Ms)
 
     if( index ) {
         timer_no++;
+        if( timer_no == 0 )
+            timer_no++;
         id = timer_no;
         id_arr[index] = id;
     }
