@@ -3741,73 +3741,64 @@ rv46_DPMI_0801:
         jmp     rv46_Done
         ;
 rv46_DPMI_0900:
-        cmp     al,00h          ;get & disable virtual interupts.
+        cmp     al,00h          ;get & disable virtual interupts func
         jnz     rv46_DPMI_0901
-        push    ebp
         assume ds:nothing
         test    BYTE PTR cs:DpmiEmuSystemFlags,1
         assume ds:_cwDPMIEMU
         jz      rv46_1
-        movzx   ebp,bp
-        mov     al,[ebp+(4)+(2+2+2)+(2+2)+1]
-        and     al,2
+        push    ebp
+        mov     ebp,esp
+        mov     al,[bp+(4)+(2+2)+1]
+        and     b[bp+(4)+(2+2)+1],not 2
         shr     al,1
-        and     b[ebp+(4)+(2+2+2)+(2+2)+1],255-2
+        and     al,1
         pop     ebp
-        clc
         jmp     rv46_Done
-rv46_1: mov     al,[ebp+(4)+(4+4+4)+(4+4)+1]
-        and     al,2
+rv46_1: mov     al,[esp+(4+4)+1]
+        and     b[esp+(4+4)+1],not 2
         shr     al,1
-        and     b[ebp+(4)+(4+4+4)+(4+4)+1],255-2
-        pop     ebp
-        clc
+        and     al,1
         jmp     rv46_Done
         ;
 rv46_DPMI_0901:
-        cmp     al,01h          ;get & enable virtual interupts.
+        cmp     al,01h          ;get & enable virtual interupts func
         jnz     rv46_DPMI_0902
-        push    ebp
         assume ds:nothing
         test    BYTE PTR cs:DpmiEmuSystemFlags,1
         assume ds:_cwDPMIEMU
         jz      rv46_2
-        movzx   ebp,bp
-        mov     al,[ebp+(4)+(2+2+2)+(2+2)+1]
-        and     al,2
+        push    ebp
+        mov     ebp,esp
+        mov     al,[bp+(4)+(2+2)+1]
+        or      b[bp+(4)+(2+2)+1],2
         shr     al,1
-        or      b[ebp+(4)+(2+2+2)+(2+2)+1],2
+        and     al,1
         pop     ebp
-        clc
         jmp     rv46_Done
-rv46_2: mov     al,[ebp+(4)+(4+4+4)+(4+4)+1]
-        and     al,2
+rv46_2: mov     al,[esp+(4+4)+1]
+        or      b[esp+(4+4)+1],2
         shr     al,1
-        or      b[ebp+(4)+(4+4+4)+(4+4)+1],2
-        pop     ebp
-        clc
+        and     al,1
         jmp     rv46_Done
         ;
 rv46_DPMI_0902:
-        cmp     al,02h          ;get virtual interupt state?
+        cmp     al,02h          ;get virtual interupt state func
         jnz     rv46_NotOurs
-        push    ebp
         assume ds:nothing
         test    BYTE PTR cs:DpmiEmuSystemFlags,1
         assume ds:_cwDPMIEMU
         jz      rv46_3
-        movzx   ebp,bp
-        mov     al,[ebp+(4)+(2+2+2)+(2+2)+1]
-        and     al,2
+        push    ebp
+        mov     ebp,esp
+        mov     al,[bp+(4)+(2+2)+1]
         shr     al,1
+        and     al,1
         pop     ebp
-        clc
         jmp     rv46_Done
-rv46_3: mov     al,[ebp+(4)+(4+4+4)+(4+4)+1]
-        and     al,2
+rv46_3: mov     al,[esp+(4+4)+1]
         shr     al,1
-        pop     ebp
-        clc
+        and     al,1
         jmp     rv46_Done
         ;
 rv46_DPMI_0A00:
