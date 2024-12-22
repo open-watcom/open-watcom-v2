@@ -99,8 +99,8 @@ static void UpdateTimers(  )
                 if( timer->Active.CompletedBitmap[i] & mask ) {
                     if( ( timer->Req.DoneBitmap[i] & mask ) == 0 ) {
                         timer->Req.DoneBitmap[i] |= mask;
-                        FCurrIndex = 32 * i + bit - 4;
-                        FCurrEntry = &timer->Req.EntryArr[FCurrIndex];
+                        FCurrIndex = 32 * i + bit;
+                        FCurrEntry = &timer->Req.EntryArr[FCurrIndex - 4];
                         ( *FCurrEntry->callback )( FCurrEntry->param );
                         FCurrEntry = 0;
                         FCurrIndex = 0;
@@ -198,8 +198,17 @@ static int StopTimer( int index )
 
 static int RestartCurrTimer( long long timeout )
 {
+    int                    i;
+    int                    bit;
+    int                    mask;
+
     if( FCurrEntry == 0 )
         return( 0 );
+
+    i = FCurrIndex / 32;
+    bit = FCurrIndex % 32;
+    mask = 1 << bit;
+    timer->Req.DoneBitmap[i] &= ~mask;
 
     FCurrEntry->timeout = timeout;
     __locked_set_bit( timer->Req.ReqBitmap, FCurrIndex );
