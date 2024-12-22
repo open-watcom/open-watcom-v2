@@ -79,18 +79,18 @@ struct RdosTimer
     struct RdosActiveTimers Active;
 };
 
-static struct RdosTimer *timer = 0;
-static int               timer_no = 0;
-static struct RdosFutex  timer_futex;
-static int               id_arr[TIMER_ENTRIES];
+static struct RdosTimer      *timer = 0;
+static int                    timer_no = 0;
+static struct RdosFutex       timer_futex;
+static int                    id_arr[TIMER_ENTRIES];
+static int                    FCurrIndex = 0;
+static struct RdosTimerEntry *FCurrEntry = 0;
 
 static void UpdateTimers(  )
 {
     int                    i;
     int                    bit;
     int                    mask;
-    int                    index;
-    struct RdosTimerEntry *entry;
 
     for( i = 0; i < 8; i++ ) {
         if( timer->Active.CompletedBitmap[i] ) {
@@ -99,9 +99,11 @@ static void UpdateTimers(  )
                 if( timer->Active.CompletedBitmap[i] & mask ) {
                     if( ( timer->Req.DoneBitmap[i] & mask ) == 0 ) {
                         timer->Req.DoneBitmap[i] |= mask;
-                        index = 32 * i + bit - 4;
-                        entry = &timer->Req.EntryArr[index];
-                        ( *entry->callback )( entry->param );
+                        FCurrIndex = 32 * i + bit - 4;
+                        FCurrEntry = &timer->Req.EntryArr[FCurrIndex];
+                        ( *FCurrEntry->callback )( FCurrEntry->param );
+                        FCurrEntry = 0;
+                        FCurrIndex = 0;
                     }
                 }
                 mask = mask << 1;
@@ -194,6 +196,41 @@ static int StopTimer( int index )
     }
 }
 
+static int RestartCurrTimer( long long timeout )
+{
+    if( FCurrEntry == 0 )
+        return( 0 );
+
+    FCurrEntry->timeout = timeout;
+    __locked_set_bit( timer->Req.ReqBitmap, FCurrIndex );
+    return( 1 );
+}
+
+static int ResetTimer( int index, long long timeout )
+{
+    int                    i;
+    int                    bit;
+    int                    mask;
+    struct RdosTimerEntry *entry;
+
+    if( index < 4 || index >= 256 )
+        return( 0 );
+
+    i = index / 32;
+    bit = index % 32;
+    mask = 1 << bit;
+    if( timer->Req.DoneBitmap[i] & mask )
+        return( 0 );
+    else {
+        if( timer->Active.PendingBitmap[i] & mask ) {
+            entry = &timer->Req.EntryArr[index - 4];
+            entry->timeout = timeout;
+            return( 1 );
+        } else
+            return( 0 );
+    }
+}
+
 int RdosStartAppTimer(void (*Start)(void *Param), void *Param, int Ms)
 {
     int index;
@@ -242,40 +279,36 @@ int RdosStopAppTimer(int id)
     return( res );
 }
 
-_WCRTLINK int timer_create( clockid_t __clk, struct sigevent *__sevp, timer_t *__tmr )
+int RdosRestartCurrentAppTimer(int Ms)
 {
-    /* unused parameters */ (void)__clk; (void)__sevp, (void)__tmr;
+    int  res;
+    long long timeout = RdosUserGetLongSysTime() + 1193 * Ms;
 
-    return( 0 );
+    RdosEnterFutex( &timer_futex );
+    res = RestartCurrTimer( timeout );
+    RdosLeaveFutex( &timer_futex );
+
+    return( res );
 }
 
-
-_WCRTLINK int timer_delete( timer_t __tmr )
+int RdosResetAppTimer(int id, int Ms)
 {
-    /* unused parameters */ (void)__tmr;
+    int  i;
+    int  res = 0;
+    long long timeout = RdosUserGetLongSysTime() + 1193 * Ms;
 
-    return( 0 );
-}
+    RdosEnterFutex( &timer_futex );
 
-_WCRTLINK int timer_getoverrun( timer_t __tmr )
-{
-    /* unused parameters */ (void)__tmr;
+    for( i = 0; i < TIMER_ENTRIES; i++ ) {
+        if( id_arr[i] == id ) {
+            res = ResetTimer( i, timeout );
+            break;
+        }
+    }
 
-    return( 0 );
-}
+    RdosLeaveFutex( &timer_futex );
 
-_WCRTLINK int timer_gettime( timer_t __tmr, struct itimerspec *__v )
-{
-    /* unused parameters */ (void)__tmr, (void)__v;
-
-    return( 0 );
-}
-
-_WCRTLINK int timer_settime( timer_t __tmr, int flags, struct itimerspec *__new, struct itimerspec *__old )
-{
-    /* unused parameters */ (void)__tmr, (void)flags, (void)__new, (void)__old;
-
-    return( 0 );
+    return( res );
 }
 
 static void init( void )
