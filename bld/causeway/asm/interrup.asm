@@ -1839,6 +1839,7 @@ inter19_Use16Bit678:
 ;
 ;Now switch back to exit code.
 ;
+if 0
         mov     ax,InitDS
         mov     ds,ax
         assume ds:_cwInit
@@ -1849,5 +1850,10 @@ inter19_Use16Bit678:
         push    ax
         db 66h
         retf
-        assume ds:_cwDPMIEMU
+else
+        mov     ax,MainDS
+        mov     ds,ax
+        assume ds:_cwMain
+        jmp     f[TerminationHandler]
+endif
 ExcepNN386      endp
