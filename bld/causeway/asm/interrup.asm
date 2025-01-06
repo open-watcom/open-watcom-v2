@@ -7,6 +7,7 @@
 
 ;
 DpmiEmuSystemFlags dd 0
+ExceptionType   dd 0
 ;
 ; do NOT change order of these variables (you can add at the end), MED 01/08/96
 ExceptionCode   dd 0
@@ -919,8 +920,8 @@ mednoem:
         mov     eax,[esp+(4+4)+(4)]             ;get error code.
         mov     ExceptionCode,eax               ;/
         mov     eax,[esp+(4+4)+(4)+(4)+(4+4)]   ;Get flags.
-        or      eax,65536
-        mov     ExceptionFlags,eax              ;Let dispatch know its an exception.
+        mov     ExceptionFlags,eax              ;/
+        mov     b ExceptionType,1               ;Let dispatch know its an exception.
         mov     eax,cr2                         ;Grab this now to save more PL
         mov     ExceptionCR2,eax                ;switches for page faults.
         pop     eax
@@ -930,15 +931,14 @@ mednoem:
 inter14_NoCode:
         and     w[esp+(4+4)+(4)+(4+4)],0011111111010101b
         mov     eax,[esp+(4+4)+(4)+(4+4)]       ;Get flags.
-        and     eax,not 65536
-        mov     ExceptionFlags,eax
-        cmp ExceptionIndex,0
+        mov     ExceptionFlags,eax              ;/
+        mov     b ExceptionType,0               ;unset exception
+        cmp     ExceptionIndex,0        ;int 0
         jz inter14_ForceException
         cmp     ExceptionIndex,1        ;int 1
         jnz     inter14_SortedCode
 inter14_ForceException:
-;       or      ExceptionFlags,65535    ;force an exception.
-        or      ExceptionFlags,65536    ;force an exception.
+        mov     b ExceptionType,1               ;set exception
 
 inter14_SortedCode:
         pop     eax
@@ -954,7 +954,7 @@ inter14_SortedCode2:
         jz      KernalStack             ;Already on system stack?
         mov     ax,DpmiEmuDS
         mov     ds,ax
-        test    ExceptionFlags,65536    ;exception?
+        test    b ExceptionType,1       ;exception?
         jnz     KernalStack
         ;
         push    ebx
@@ -1235,7 +1235,7 @@ IntDispatch     proc    near
         mov     eax,esi
         add     esi,esi         ;*4
         add     esi,eax         ;*6
-        test    ExceptionFlags,65536
+        test    b ExceptionType,1       ;exception?
         jnz     inter17_Excep
         ;
         ;Dispatch normal interrupt.
