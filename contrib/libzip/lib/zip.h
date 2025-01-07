@@ -111,6 +111,7 @@ extern "C" {
 #define ZIP_CM_DEFLATE         8  /* deflated */
 #define ZIP_CM_DEFLATE64       9  /* deflate64 */
 #define ZIP_CM_PKWARE_IMPLODE 10  /* PKWARE imploding */
+/* 11 - Reserved by PKWARE */
 
 
 

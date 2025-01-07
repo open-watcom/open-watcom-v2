@@ -35,11 +35,11 @@
 
 
 
+#include <sys/stat.h>
+#include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <errno.h>
-#include <sys/types.h>
 
 #include "wio.h"
 
@@ -53,7 +53,7 @@ static int _zip_headercomp(struct zip_dirent *, int,
 static void *_zip_memdup(const void *, size_t, struct zip_error *);
 static void *_zip_memmem(const void *, size_t, const void *, size_t);
 static struct zip_cdir *_zip_readcdir(FILE *, unsigned char *, unsigned char *,
-				 int, struct zip_error *);
+				 int, int, struct zip_error *);
 
 
 
@@ -142,7 +142,8 @@ zip_open(const char *fn, int flags, int *zep)
 	/* found match -- check, if good */
 	/* to avoid finding the same match all over again */
 	match++;
-	if ((cdirnew=_zip_readcdir(fp, buf, match-1, buflen, &err2)) == NULL)
+	if ((cdirnew=_zip_readcdir(fp, buf, match-1, buflen, flags, 
+		&err2)) == NULL)
 	    continue;	    
 
 	if (cdir) {
@@ -193,7 +194,8 @@ zip_open(const char *fn, int flags, int *zep)
 	return NULL;
     }
 
-    if ((za->entry=malloc(sizeof(*(za->entry))*cdir->nentry)) == NULL) {
+    if ((za->entry=(struct zip_entry *)malloc(sizeof(*(za->entry))
+		* cdir->nentry)) == NULL) {
 	set_error(zep, NULL, ZIP_ER_MEMORY);
 	_zip_free(za);
 	return NULL;
@@ -231,7 +233,7 @@ set_error(int *zep, struct zip_error *err, int ze)
 
 static struct zip_cdir *
 _zip_readcdir(FILE *fp, unsigned char *buf, unsigned char *eocd, int buflen,
-	      struct zip_error *error)
+	      int flags, struct zip_error *error)
 {
     struct zip_cdir *cd;
     unsigned char *cdp, **bufp;
@@ -269,13 +271,13 @@ _zip_readcdir(FILE *fp, unsigned char *buf, unsigned char *eocd, int buflen,
     cd->comment = NULL;
     cd->comment_len = _zip_read2(&cdp);
 
-    /* some zip files are broken; their internal comment length
-       says 0, but they have 1 or 2 comment bytes */
-    if ((comlen-cd->comment_len < 0) || (comlen-cd->comment_len > 2)
-	|| (cd->nentry != i)) {
-	/* comment size wrong -- too few or too many left after central dir */
-	/* or number of cdir-entries on this disk != number of cdir-entries */
+    if ((comlen < cd->comment_len) || (cd->nentry != i)) {
 	_zip_error_set(error, ZIP_ER_NOZIP, 0);
+	free(cd);
+	return NULL;
+    }
+    if ((flags & ZIP_CHECKCONS) && comlen != cd->comment_len) {
+	_zip_error_set(error, ZIP_ER_INCONS, 0);
 	free(cd);
 	return NULL;
     }
@@ -288,7 +290,7 @@ _zip_readcdir(FILE *fp, unsigned char *buf, unsigned char *eocd, int buflen,
 	}
 
     cdp = eocd;
-    if (cd->size < eocd-buf) {
+    if (cd->size < (unsigned int)(eocd-buf)) {
 	/* if buffer already read in, use it */
 	cdp = eocd - cd->size;
 	bufp = &cdp;
@@ -298,7 +300,7 @@ _zip_readcdir(FILE *fp, unsigned char *buf, unsigned char *eocd, int buflen,
 	bufp = NULL;
 	clearerr(fp);
 	fseek(fp, -(long)(cd->size+cd->comment_len+EOCDLEN), SEEK_END);
-	if (ferror(fp) || (ftell(fp) != cd->offset)) {
+	if (ferror(fp) || ((unsigned int)ftell(fp) != cd->offset)) {
 	    /* seek error or offset of cdir wrong */
 	    if (ferror(fp))
 		_zip_error_set(error, ZIP_ER_SEEK, errno);
@@ -332,8 +334,9 @@ _zip_readcdir(FILE *fp, unsigned char *buf, unsigned char *eocd, int buflen,
 static int
 _zip_checkcons(FILE *fp, struct zip_cdir *cd, struct zip_error *error)
 {
-    int min, max, i, j;
-    struct zip_dirent temp;
+    int i;
+    unsigned int min, max, j;
+	struct zip_dirent temp;
 
     if (cd->nentry) {
 	max = cd->entry[0].offset;
@@ -345,7 +348,7 @@ _zip_checkcons(FILE *fp, struct zip_cdir *cd, struct zip_error *error)
     for (i=0; i<cd->nentry; i++) {
 	if (cd->entry[i].offset < min)
 	    min = cd->entry[i].offset;
-	if (min < 0) {
+	if (min > cd->offset) {
 	    _zip_error_set(error, ZIP_ER_NOZIP, 0);
 	    return -1;
 	}
@@ -439,7 +442,9 @@ _zip_memmem(const void *big, size_t biglen, const void *little, size_t littlelen
     if ((biglen < littlelen) || (littlelen == 0))
 	return NULL;
     p = (char *)big-1;
-    while ((p=memchr(p+1, ((unsigned char *)little)[0],(char *)big-(p+1)+biglen-littlelen+1))!=NULL) {
+    while ((p=(const unsigned char *) 
+		memchr(p+1, little[0], (size_t)(big-(p+1)+biglen-littlelen+1)))
+		!= NULL) {
 	if (memcmp(p+1, (char *)little+1, littlelen-1)==0)
 	    return (void *)p;
     }

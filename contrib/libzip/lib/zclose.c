@@ -66,6 +66,12 @@ zip_close(struct zip *za)
     mode_t mask;
     struct zip_cdir *cd;
     struct zip_dirent de;
+    int reopen_on_error;
+    
+    reopen_on_error = 0;
+	
+    if (za == NULL)
+	return -1;
 
     changed = survivors = 0;
     for (i=0; i<za->nentry; i++) {
@@ -95,7 +101,7 @@ zip_close(struct zip *za)
     if ((cd=_zip_cdir_new(survivors, &za->error)) == NULL)
 	return -1;
 
-    if ((temp=malloc(strlen(za->zn)+8)) == NULL) {
+    if ((temp=(char *)malloc(strlen(za->zn)+8)) == NULL) {
 	_zip_error_set(&za->error, ZIP_ER_MEMORY, 0);
 	_zip_cdir_free(cd);
 	return -1;
@@ -217,21 +223,27 @@ zip_close(struct zip *za)
 	return -1;
     }
     
+    if (za->zp) {
+	fclose(za->zp);
+	za->zp = NULL;
+	reopen_on_error = 1;
+    }
     if (rename(temp, za->zn) != 0) {
 	_zip_error_set(&za->error, ZIP_ER_RENAME, errno);
 	remove(temp);
 	free(temp);
-	return -1;
+    if (reopen_on_error) {
+		/* ignore errors, since we're already in an error case */
+		za->zp = fopen(za->zn, "rb");
     }
-    if (za->zp) {
-	fclose(za->zp);
-	za->zp = NULL;
+	return -1;
     }
     mask = umask(0);
     umask(mask);
     chmod(za->zn, 0666&~mask);
 
     _zip_free(za);
+	free(temp);
     
     return 0;
 }
@@ -254,7 +266,7 @@ add_data(struct zip *za, int idx, struct zip_dirent *de, FILE *ft)
 	return -1;
     }
 
-    if (cb(ud, &st, sizeof(st), ZIP_SOURCE_STAT) < sizeof(st)) {
+    if (cb(ud, &st, sizeof(st), ZIP_SOURCE_STAT) < (ssize_t)sizeof(st)) {
 	ch_set_error(&za->error, cb, ud);
 	return -1;
     }
@@ -337,6 +349,7 @@ add_data_uncomp(zip_source_callback cb, void *ud, struct zip_stat *st,
     char b1[BUFSIZE], b2[BUFSIZE];
     int end, flush, ret;
     ssize_t n;
+	size_t n2;
     z_stream zstr;
 
     st->comp_method = ZIP_CM_DEFLATE;
@@ -383,16 +396,16 @@ add_data_uncomp(zip_source_callback cb, void *ud, struct zip_stat *st,
 	}
 	
 	if (zstr.avail_out != sizeof(b2)) {
-	    n = sizeof(b2) - zstr.avail_out;
+	    n2 = sizeof(b2) - zstr.avail_out;
 	    
-	    if (fwrite(b2, 1, n, ft) != n) {
+	    if (fwrite(b2, 1, n, ft) != n2) {
 		_zip_error_set(error, ZIP_ER_WRITE, errno);
 		return -1;
 	    }
 	
 	    zstr.next_out = (Bytef *)b2;
 	    zstr.avail_out = sizeof(b2);
-	    st->comp_size += n;
+	    st->comp_size += n2;
 	}
 
 	if (ret == Z_STREAM_END) {
@@ -411,7 +424,7 @@ ch_set_error(struct zip_error *error, zip_source_callback cb, void *ud)
 {
     int e[2];
 
-    if ((cb(ud, e, sizeof(e), ZIP_SOURCE_ERROR)) < sizeof(e)) {
+    if ((cb(ud, e, sizeof(e), ZIP_SOURCE_ERROR)) < (ssize_t)sizeof(e)) {
 	error->zip_err = ZIP_ER_INTERNAL;
 	error->sys_err = 0;
     }

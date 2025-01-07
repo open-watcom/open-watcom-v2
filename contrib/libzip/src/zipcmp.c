@@ -160,7 +160,7 @@ compare_zip(char * const zn[], int verbose)
     char errstr[1024];
 
     for (i=0; i<2; i++) {
-	if ((za=zip_open(zn[i], ZIP_CHECKCONS, &err)) == NULL) {
+	if ((za=zip_open(zn[i], 0, &err)) == NULL) {
 	    zip_error_to_str(errstr, sizeof(errstr), err, errno);
 	    fprintf(stderr, "%s: cannot open zip archive `%s': %s\n",
 		    prg, zn[i], errstr);

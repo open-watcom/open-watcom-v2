@@ -49,7 +49,7 @@
 static time_t _zip_d2u_time(int, int);
 static char *_zip_readfpstr(FILE *, unsigned int, int, struct zip_error *);
 static char *_zip_readstr(unsigned char **, int, int, struct zip_error *);
-static void _zip_u2d_time(time_t, int *, int *);
+static void _zip_u2d_time(time_t, unsigned short *, unsigned short *);
 static void _zip_write2(unsigned short, FILE *);
 static void _zip_write4(unsigned int, FILE *);
 
@@ -77,12 +77,13 @@ _zip_cdir_new(int nentry, struct zip_error *error)
 {
     struct zip_cdir *cd;
     
-    if ((cd=malloc(sizeof(*cd))) == NULL) {
+    if ((cd=(struct zip_cdir *)malloc(sizeof(*cd))) == NULL) {
 	_zip_error_set(error, ZIP_ER_MEMORY, 0);
 	return NULL;
     }
 
-    if ((cd->entry=malloc(sizeof(*(cd->entry))*nentry)) == NULL) {
+    if ( nentry > ((size_t)-1)/sizeof(*(cd->entry)) || (cd->entry=(struct zip_dirent *)malloc(sizeof(*(cd->entry))*(size_t)nentry))
+		== NULL) {
 	_zip_error_set(error, ZIP_ER_MEMORY, 0);
 	free(cd);
 	return NULL;
@@ -117,8 +118,8 @@ _zip_cdir_write(struct zip_cdir *cd, FILE *fp, struct zip_error *error)
     /* clearerr(fp); */
     fwrite(EOCD_MAGIC, 1, 4, fp);
     _zip_write4(0, fp);
-    _zip_write2(cd->nentry, fp);
-    _zip_write2(cd->nentry, fp);
+    _zip_write2((unsigned short)cd->nentry, fp);
+    _zip_write2((unsigned short)cd->nentry, fp);
     _zip_write4(cd->size, fp);
     _zip_write4(cd->offset, fp);
     _zip_write2(cd->comment_len, fp);
@@ -335,7 +336,7 @@ int
 _zip_dirent_write(struct zip_dirent *zde, FILE *fp, int localp,
 		  struct zip_error *error)
 {
-    int dostime, dosdate;
+    unsigned short dostime, dosdate;
 
     fwrite(localp ? LOCAL_MAGIC : CENTRAL_MAGIC, 1, 4, fp);
 
@@ -438,7 +439,7 @@ _zip_readfpstr(FILE *fp, unsigned int len, int nulp, struct zip_error *error)
 {
     char *r, *o;
 
-    r = (char *)malloc(nulp?len+1:len);
+    r = (char *)malloc(nulp ? len+1 : len);
     if (!r) {
 	_zip_error_set(error, ZIP_ER_MEMORY, 0);
 	return NULL;
@@ -468,7 +469,7 @@ _zip_readstr(unsigned char **buf, int len, int nulp, struct zip_error *error)
 {
     char *r, *o;
 
-    r = (char *)malloc(nulp?len+1:len);
+    r = (char *)malloc(nulp ? len+1 : len);
     if (!r) {
 	_zip_error_set(error, ZIP_ER_MEMORY, 0);
 	return NULL;
@@ -515,7 +516,7 @@ _zip_write4(unsigned int i, FILE *fp)
 
 
 static void
-_zip_u2d_time(time_t time, int *dtime, int *ddate)
+_zip_u2d_time(time_t time, unsigned short *dtime, unsigned short *ddate)
 {
     struct tm *tm;
 

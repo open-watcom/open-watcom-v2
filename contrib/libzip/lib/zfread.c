@@ -43,8 +43,9 @@
 ssize_t
 zip_fread(struct zip_file *zf, void *outbuf, size_t toread)
 {
-    int out_before, ret;
-    int len;
+    int ret;
+    size_t out_before, len;
+	int i;
 
     if (!zf)
 	return -1;
@@ -101,15 +102,15 @@ zip_fread(struct zip_file *zf, void *outbuf, size_t toread)
 
 	case Z_BUF_ERROR:
 	    if (zf->zstr->avail_in == 0) {
-		len = _zip_file_fillbuf(zf->buffer, BUFSIZE, zf);
-		if (len == 0) {
+		i = _zip_file_fillbuf(zf->buffer, BUFSIZE, zf);
+		if (i == 0) {
 		    _zip_error_set(&zf->error, ZIP_ER_INCONS, 0);
 		    return -1;
 		}
-		else if (len < 0)
+		else if (i < 0)
 		    return -1;
 		zf->zstr->next_in = (Bytef *)zf->buffer;
-		zf->zstr->avail_in = len;
+		zf->zstr->avail_in = i;
 		continue;
 	    }
 	    /* fallthrough */

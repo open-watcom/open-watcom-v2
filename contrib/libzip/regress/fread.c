@@ -62,12 +62,14 @@ main(int argc, char *argv[])
     int fail, ze;
     struct zip *z;
     struct zip_source *zs;
+    char errstr[1024];
 
     fail = 0;
 
     if ((z=zip_open(mkname(TEST_ZIP), 0, &ze)) == NULL) {
-	printf("fail: opening zip archive ``%s'' failed (%d)\n",
-	       TEST_ZIP, ze);
+	zip_error_to_str(errstr, sizeof(errstr), ze, errno);
+	printf("%s: opening zip archive ``%s'' failed: %s\n",
+		prg, archive, errstr);
 	return 1;
     }
 
