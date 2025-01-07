@@ -8,7 +8,7 @@
 	#include <sstream>
 	using namespace std;
 #else
-	#include <stdio.h>
+	#include <cstdio>
 #endif
 
 #if defined( WIN32 ) && defined( TUNE )
