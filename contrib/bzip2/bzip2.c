@@ -829,10 +829,9 @@ void mySignalCatcher ( IntNative n )
 static 
 void mySIGSEGVorSIGBUScatcher ( IntNative n )
 {
+   const char *msg;
    if (opMode == OM_Z)
-      fprintf ( 
-      stderr,
-      "\n%s: Caught a SIGSEGV or SIGBUS whilst compressing.\n"
+      msg = ": Caught a SIGSEGV or SIGBUS whilst compressing.\n"
       "\n"
       "   Possible causes are (most likely first):\n"
       "   (1) This computer has unreliable memory or cache hardware\n"
@@ -848,12 +847,9 @@ void mySIGSEGVorSIGBUScatcher ( IntNative n )
       "   bug report should have.  If the manual is available on your\n"
       "   system, please try and read it before mailing me.  If you don't\n"
       "   have the manual or can't be bothered to read it, mail me anyway.\n"
-      "\n",
-      progName );
-      else
-      fprintf ( 
-      stderr,
-      "\n%s: Caught a SIGSEGV or SIGBUS whilst decompressing.\n"
+      "\n";
+   else
+      msg = ": Caught a SIGSEGV or SIGBUS whilst decompressing.\n"
       "\n"
       "   Possible causes are (most likely first):\n"
       "   (1) The compressed data is corrupted, and bzip2's usual checks\n"
@@ -871,13 +867,25 @@ void mySIGSEGVorSIGBUScatcher ( IntNative n )
       "   bug report should have.  If the manual is available on your\n"
       "   system, please try and read it before mailing me.  If you don't\n"
       "   have the manual or can't be bothered to read it, mail me anyway.\n"
-      "\n",
-      progName );
+      "\n";
+   write ( STDERR_FILENO, "\n", 1 );
+   write ( STDERR_FILENO, progName, strlen ( progName ) );
+   write ( STDERR_FILENO, msg, strlen ( msg ) );
 
-   showFileNames();
-   if (opMode == OM_Z)
-      cleanUpAndFail( 3 ); else
-      { cadvise(); cleanUpAndFail( 2 ); }
+   msg = "\tInput file = ";
+   write ( STDERR_FILENO, msg, strlen (msg) );
+   write ( STDERR_FILENO, inName, strlen (inName) );
+   write ( STDERR_FILENO, "\n", 1 );
+   msg = "\tOutput file = ";
+   write ( STDERR_FILENO, msg, strlen (msg) );
+   write ( STDERR_FILENO, outName, strlen (outName) );
+   write ( STDERR_FILENO, "\n", 1 );
+
+   /* Don't call cleanupAndFail. If we ended up here something went
+      terribly wrong. Trying to clean up might fail spectacularly. */
+
+   if (opMode == OM_Z) setExit(3); else setExit(2);
+   _exit(exitValue);
 }
 
 
@@ -1616,7 +1624,7 @@ void testf ( Char *name )
 static 
 void license ( void )
 {
-   fprintf ( stderr,
+   fprintf ( stdout,
 
     "bzip2, a block-sorting file compressor.  "
     "Version %s.\n"
@@ -1906,7 +1914,10 @@ IntNative main ( IntNative argc, Char *argv[] )
                case '8': blockSize100k    = 8; break;
                case '9': blockSize100k    = 9; break;
                case 'V':
-               case 'L': license();            break;
+			   case 'L': license();
+			             exit ( 0 );
+			             break;
+						
                case 'v': verbosity++; break;
                case 'h': usage ( progName );
                          exit ( 0 );
@@ -1932,8 +1943,8 @@ IntNative main ( IntNative argc, Char *argv[] )
       if (ISFLAG("--keep"))              keepInputFiles   = True;    else
       if (ISFLAG("--small"))             smallMode        = True;    else
       if (ISFLAG("--quiet"))             noisy            = False;   else
-      if (ISFLAG("--version"))           license();                  else
-      if (ISFLAG("--license"))           license();                  else
+      if (ISFLAG("--version"))           { license(); exit ( 0 ); }  else
+      if (ISFLAG("--license"))           { license(); exit ( 0 ); }  else
       if (ISFLAG("--exponential"))       workFactor = 1;             else 
       if (ISFLAG("--repetitive-best"))   redundant(aa->name);        else
       if (ISFLAG("--repetitive-fast"))   redundant(aa->name);        else
