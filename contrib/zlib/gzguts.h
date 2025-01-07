@@ -51,6 +51,10 @@
 #  include <sys/stat.h>
 #endif
 
+#if defined(__clang__) && !defined(_WIN32)
+#  include <unistd.h>
+#endif
+
 #if defined(_WIN32) && !defined(WIDECHAR)
 #  define WIDECHAR
 #endif

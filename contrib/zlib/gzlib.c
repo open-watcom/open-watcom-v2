@@ -11,9 +11,6 @@
 #  define LSEEK _lseeki64
 #elif defined(_LARGEFILE64_SOURCE) && _LFS64_LARGEFILE-0
 #  define LSEEK lseek64
-#elif defined(__clang__) && !defined(_WIN32) /* Clang bootstrap fix */
-#  include <unistd.h>
-#  define LSEEK lseek
 #else
 #  define LSEEK lseek
 #endif
