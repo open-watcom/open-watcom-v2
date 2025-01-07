@@ -55,6 +55,8 @@ extern "C" {
 #define ZIP_EXCL             2
 #define ZIP_CHECKCONS        4
 
+#define ZIP_OVERWRITE        8
+
 
 /* flags for zip_name_locate, zip_fopen, zip_stat, ... */
 

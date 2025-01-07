@@ -42,11 +42,18 @@
 
 
 
+#ifndef HAVE_FSEEKO
+#define fseeko(s, o, w)	(fseek((s), (long int)(o), (w)))
+#endif
+#ifndef HAVE_FTELLO
+#define ftello(s)	((long)ftell((s)))
+#endif
+
 #define CENTRAL_MAGIC "PK\1\2"
 #define LOCAL_MAGIC   "PK\3\4"
 #define EOCD_MAGIC    "PK\5\6"
 #define DATADES_MAGIC "PK\7\8"
-#define CDENTRYSIZE         46
+#define CDENTRYSIZE         46u
 #define LENTRYSIZE          30
 #define MAXCOMLEN        65536
 #define EOCDLEN             22
@@ -65,6 +72,10 @@ enum zip_state { ZIP_ST_UNCHANGED, ZIP_ST_DELETED, ZIP_ST_REPLACED,
 #define ZIP_ZF_EOF	1 /* EOF reached */
 #define ZIP_ZF_DECOMP	2 /* decompress data */
 #define ZIP_ZF_CRC	4 /* compute and compare CRC */
+
+/* directory entry: general purpose bit flags */
+
+#define ZIP_GPBF_DATA_DESCRIPTOR	0x0008	/* crc/size after file data */
 
 /* error information */
 
@@ -98,7 +109,7 @@ struct zip_file {
     int flags;			/* -1: eof, >0: error */
 
     int method;			/* compression method */
-    long fpos;			/* position within zip file (fread/fwrite) */
+    off_t fpos;			/* position within zip file (fread/fwrite) */
     unsigned long bytes_left;	/* number of bytes left to read */
     unsigned long cbytes_left;  /* number of bytes of compressed data left */
     
@@ -174,13 +185,14 @@ extern const int _zip_err_type[];
 
 
 void _zip_cdir_free(struct zip_cdir *);
+int _zip_cdir_grow(struct zip_cdir *, int, struct zip_error *);
 struct zip_cdir *_zip_cdir_new(int, struct zip_error *);
 int _zip_cdir_write(struct zip_cdir *, FILE *, struct zip_error *);
 
 void _zip_dirent_finalize(struct zip_dirent *);
 void _zip_dirent_init(struct zip_dirent *);
-int _zip_dirent_read(struct zip_dirent *, FILE *,
-		     unsigned char **, unsigned int, int, struct zip_error *);
+int _zip_dirent_read(struct zip_dirent *, FILE *, unsigned char **,
+		     		 unsigned int *, int, struct zip_error *);
 int _zip_dirent_write(struct zip_dirent *, FILE *, int, struct zip_error *);
 
 void _zip_entry_free(struct zip_entry *);
