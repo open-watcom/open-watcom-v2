@@ -1,12 +1,8 @@
-.\" Converted with mdoc2man 0.2
-.\" from NiH: zip_source_filep.mdoc,v 1.6 2005/06/09 21:14:54 wiz Exp 
-.\" $NiH: zip_source_filep.man,v 1.4 2005/06/17 12:59:06 wiz Exp $
-.\"
 .\" zip_source_filep.mdoc \-- create data source from a file stream
-.\" Copyright (C) 2004, 2005 Dieter Baron and Thomas Klausner
+.\" Copyright (C) 2004-2008 Dieter Baron and Thomas Klausner
 .\"
 .\" This file is part of libzip, a library to manipulate ZIP archives.
-.\" The authors can be contacted at <nih@giga.or.at>
+.\" The authors can be contacted at <libzip@nih.at>
 .\"
 .\" Redistribution and use in source and binary forms, with or without
 .\" modification, are permitted provided that the following conditions
@@ -33,19 +29,21 @@
 .\" OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN
 .\" IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 .\"
-.TH ZIP_SOURCE_FILEP 3 "November 4, 2004" NiH
+.TH ZIP_SOURCE_FILEP 3 "August 1, 2008" NiH
 .SH "NAME"
 zip_source_filep \- create data source from FILE *
 .SH "LIBRARY"
 libzip (-lzip)
 .SH "SYNOPSIS"
-.Ft int
-.Fn zip_source_filep "struct zip *archive" "FILE *file" "off_t start" "off_t len"
+.PP
+struct zip_source *
+zip_source_filep(struct zip *archive, FILE *file); \
+"zip_uint64_t start" "zip_int64_t len"
 .SH "DESCRIPTION"
 The function
-.Fn zip_source_filep
+zip_source_filep
 creates a zip source from a file stream.
-.Fn zip_source_filep
+zip_source_filep
 reads
 \fBlen\fR
 bytes from offset
@@ -65,18 +63,18 @@ is returned and the error code in
 \fBarchive\fR
 is set to indicate the error.
 .SH "ERRORS"
-.Fn zip_source_filep
+zip_source_filep
 fails if:
 .RS
 .TP 4
-Bq Er ZIP_ER_INVAL
+[ZIP_ER_INVAL]
 \fBfile,\fR
 \fBstart,\fR
 or
 \fBlen\fR
 are invalid.
 .TP 4
-Bq Er ZIP_ER_MEMORY
+[ZIP_ER_MEMORY]
 Required memory could not be allocated.
 .RE
 .SH "SEE ALSO"

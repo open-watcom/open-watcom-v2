@@ -1,11 +1,9 @@
 /*
-  $NiH: zip_add.c,v 1.14 2004/11/18 15:04:04 wiz Exp $
-
   zip_add.c -- add file via callback function
-  Copyright (C) 1999, 2003, 2004 Dieter Baron and Thomas Klausner
+  Copyright (C) 1999-2007 Dieter Baron and Thomas Klausner
 
   This file is part of libzip, a library to manipulate ZIP archives.
-  The authors can be contacted at <nih@giga.or.at>
+  The authors can be contacted at <libzip@nih.at>
 
   Redistribution and use in source and binary forms, with or without
   modification, are permitted provided that the following conditions
@@ -35,12 +33,18 @@
 
 
 
-#include "zip.h"
 #include "zipint.h"
 
 
 
-int
+/*
+  NOTE: Return type is signed so we can return -1 on error.
+        The index can not be larger than ZIP_INT64_MAX since the size
+        of the central directory cannot be larger than
+        ZIP_UINT64_MAX, and each entry is larger than 2 bytes.
+*/
+
+ZIP_EXTERN zip_int64_t
 zip_add(struct zip *za, const char *name, struct zip_source *source)
 {
     if (name == NULL || source == NULL) {
@@ -48,5 +52,5 @@ zip_add(struct zip *za, const char *name, struct zip_source *source)
 	return -1;
     }
 	
-    return _zip_replace(za, -1, name, source);
+    return _zip_replace(za, ZIP_UINT64_MAX, name, source);
 }

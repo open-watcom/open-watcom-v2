@@ -1,7 +1,7 @@
 //
 // © Copyright Henrik Ravn 2004
 //
-// Use, modification and distribution are subject to the Boost Software License, Version 1.0. 
+// Use, modification and distribution are subject to the Boost Software License, Version 1.0.
 // (See accompanying file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 //
 
@@ -84,7 +84,7 @@ namespace DotZLib
                 return !_isWriting;
             }
         }
-    
+
 
         /// <summary>
         /// Returns false.
@@ -96,7 +96,7 @@ namespace DotZLib
                 return false;
             }
         }
-    
+
         /// <summary>
         /// Returns true if this tsream is writeable, false otherwise
         /// </summary>
@@ -108,7 +108,7 @@ namespace DotZLib
             }
         }
         #endregion
-    
+
         #region Destructor & IDispose stuff
 
         /// <summary>
@@ -137,7 +137,7 @@ namespace DotZLib
             }
         }
         #endregion
-    
+
         #region Basic reading and writing
         /// <summary>
         /// Attempts to read a number of bytes from the stream.
@@ -244,9 +244,9 @@ namespace DotZLib
         {
             throw new NotSupportedException();
         }
-    
+
         /// <summary>
-        ///  Not suppported.
+        ///  Not supported.
         /// </summary>
         /// <param name="offset"></param>
         /// <param name="origin"></param>
@@ -256,7 +256,7 @@ namespace DotZLib
         {
             throw new NotSupportedException();
         }
-    
+
         /// <summary>
         /// Flushes the <c>GZipStream</c>.
         /// </summary>
@@ -266,9 +266,9 @@ namespace DotZLib
         {
             // left empty on purpose
         }
-    
+
         /// <summary>
-        /// Gets/sets the current position in the <c>GZipStream</c>. Not suppported.
+        /// Gets/sets the current position in the <c>GZipStream</c>. Not supported.
         /// </summary>
         /// <remarks>In this implementation this property is not supported</remarks>
         /// <exception cref="NotSupportedException">Always thrown</exception>
@@ -283,9 +283,9 @@ namespace DotZLib
                 throw new NotSupportedException();
             }
         }
-    
+
         /// <summary>
-        /// Gets the size of the stream. Not suppported.
+        /// Gets the size of the stream. Not supported.
         /// </summary>
         /// <remarks>In this implementation this property is not supported</remarks>
         /// <exception cref="NotSupportedException">Always thrown</exception>

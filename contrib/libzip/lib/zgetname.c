@@ -1,11 +1,9 @@
 /*
-  $NiH: zip_get_name.c,v 1.13 2005/01/20 21:00:54 dillo Exp $
-
   zip_get_name.c -- get filename for a file in zip file
-  Copyright (C) 1999, 2003, 2004, 2005 Dieter Baron and Thomas Klausner
+  Copyright (C) 1999-2007 Dieter Baron and Thomas Klausner
 
   This file is part of libzip, a library to manipulate ZIP archives.
-  The authors can be contacted at <nih@giga.or.at>
+  The authors can be contacted at <libzip@nih.at>
 
   Redistribution and use in source and binary forms, with or without
   modification, are permitted provided that the following conditions
@@ -35,23 +33,23 @@
 
 
 
-#include "zip.h"
 #include "zipint.h"
 
 
 
-const char *
-zip_get_name(struct zip *za, int idx, int flags)
+ZIP_EXTERN const char *
+zip_get_name(struct zip *za, zip_uint64_t idx, int flags)
 {
     return _zip_get_name(za, idx, flags, &za->error);
 }
 
-
+
 
 const char *
-_zip_get_name(struct zip *za, int idx, int flags, struct zip_error *error)
+_zip_get_name(struct zip *za, zip_uint64_t idx, int flags,
+	      struct zip_error *error)
 {
-    if (idx < 0 || idx >= za->nentry) {
+    if (idx >= za->nentry) {
 	_zip_error_set(error, ZIP_ER_INVAL, 0);
 	return NULL;
     }

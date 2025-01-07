@@ -1,0 +1,6 @@
+# zip_open: file is not a zip archive
+program tryopen
+file Makefile.am Makefile.am Makefile.am
+args Makefile.am
+return 1
+stdout opening `Makefile.am' returned error 19

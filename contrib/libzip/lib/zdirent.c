@@ -1,11 +1,9 @@
 /*
-  $NiH: zip_dirent.c,v 1.7 2005/06/18 00:54:08 wiz Exp $
-
   zip_dirent.c -- read directory entry (local or central), clean dirent
-  Copyright (C) 1999, 2003, 2004, 2005 Dieter Baron and Thomas Klausner
+  Copyright (C) 1999-2009 Dieter Baron and Thomas Klausner
 
   This file is part of libzip, a library to manipulate ZIP archives.
-  The authors can be contacted at <nih@giga.or.at>
+  The authors can be contacted at <libzip@nih.at>
 
   Redistribution and use in source and binary forms, with or without
   modification, are permitted provided that the following conditions
@@ -40,16 +38,13 @@
 #include <string.h>
 #include <errno.h>
 #include <sys/types.h>
+#include <sys/stat.h>
 
-#include "wio.h"
-
-#include "zip.h"
 #include "zipint.h"
 
 static time_t _zip_d2u_time(int, int);
 static char *_zip_readfpstr(FILE *, unsigned int, int, struct zip_error *);
 static char *_zip_readstr(unsigned char **, int, int, struct zip_error *);
-static void _zip_u2d_time(time_t, int *, int *);
 static void _zip_write2(unsigned short, FILE *);
 static void _zip_write4(unsigned int, FILE *);
 
@@ -72,17 +67,42 @@ _zip_cdir_free(struct zip_cdir *cd)
 
 
 
+int
+_zip_cdir_grow(struct zip_cdir *cd, int nentry, struct zip_error *error)
+{
+    struct zip_dirent *entry;
+
+    if (nentry < cd->nentry) {
+	_zip_error_set(error, ZIP_ER_INTERNAL, 0);
+	return -1;
+    }
+
+    if ((entry=((struct zip_dirent *)
+		realloc(cd->entry, sizeof(*(cd->entry))*nentry))) == NULL) {
+	_zip_error_set(error, ZIP_ER_MEMORY, 0);
+	return -1;
+    }
+
+    cd->nentry = nentry;
+    cd->entry = entry;
+
+    return 0;
+}
+
+
+
 struct zip_cdir *
 _zip_cdir_new(int nentry, struct zip_error *error)
 {
     struct zip_cdir *cd;
     
-    if ((cd=malloc(sizeof(*cd))) == NULL) {
+    if ((cd=(struct zip_cdir *)malloc(sizeof(*cd))) == NULL) {
 	_zip_error_set(error, ZIP_ER_MEMORY, 0);
 	return NULL;
     }
 
-    if ((cd->entry=malloc(sizeof(*(cd->entry))*nentry)) == NULL) {
+    if ((cd->entry=(struct zip_dirent *)malloc(sizeof(*(cd->entry))*nentry))
+	== NULL) {
 	_zip_error_set(error, ZIP_ER_MEMORY, 0);
 	free(cd);
 	return NULL;
@@ -105,20 +125,20 @@ _zip_cdir_write(struct zip_cdir *cd, FILE *fp, struct zip_error *error)
 {
     int i;
 
-    cd->offset = ftell(fp);
+    cd->offset = ftello(fp);
 
     for (i=0; i<cd->nentry; i++) {
 	if (_zip_dirent_write(cd->entry+i, fp, 0, error) != 0)
 	    return -1;
     }
 
-    cd->size = ftell(fp) - cd->offset;
+    cd->size = ftello(fp) - cd->offset;
     
     /* clearerr(fp); */
     fwrite(EOCD_MAGIC, 1, 4, fp);
     _zip_write4(0, fp);
-    _zip_write2(cd->nentry, fp);
-    _zip_write2(cd->nentry, fp);
+    _zip_write2((unsigned short)cd->nentry, fp);
+    _zip_write2((unsigned short)cd->nentry, fp);
     _zip_write4(cd->size, fp);
     _zip_write4(cd->offset, fp);
     _zip_write2(cd->comment_len, fp);
@@ -176,38 +196,43 @@ _zip_dirent_init(struct zip_dirent *de)
    Fills the zip directory entry zde.
 
    If bufp is non-NULL, data is taken from there and bufp is advanced
-   by the amount of data used; no more than left bytes are used.
-   Otherwise data is read from fp as needed.
+   by the amount of data used; otherwise data is read from fp as needed.
+   
+   if leftp is non-NULL, no more bytes than specified by it are used,
+   and *leftp is reduced by the number of bytes used.
 
-   If localp != 0, it reads a local header instead of a central
+   If local != 0, it reads a local header instead of a central
    directory entry.
 
    Returns 0 if successful. On error, error is filled in and -1 is
    returned.
+
+   XXX: leftp and file position undefined on error.
 */
 
 int
 _zip_dirent_read(struct zip_dirent *zde, FILE *fp,
-		 unsigned char **bufp, unsigned int left, int localp,
+		 unsigned char **bufp, zip_uint32_t *leftp, int local,
 		 struct zip_error *error)
 {
     unsigned char buf[CDENTRYSIZE];
     unsigned char *cur;
     unsigned short dostime, dosdate;
-    unsigned int size;
+    zip_uint32_t size;
 
-    if (localp)
+    if (local)
 	size = LENTRYSIZE;
     else
 	size = CDENTRYSIZE;
-    
+
+    if (leftp && (*leftp < size)) {
+	_zip_error_set(error, ZIP_ER_NOZIP, 0);
+	return -1;
+    }
+
     if (bufp) {
 	/* use data from buffer */
 	cur = *bufp;
-	if (left < size) {
-	    _zip_error_set(error, ZIP_ER_NOZIP, 0);
-	    return -1;
-	}
     }
     else {
 	/* read entry from disk */
@@ -215,11 +240,10 @@ _zip_dirent_read(struct zip_dirent *zde, FILE *fp,
 	    _zip_error_set(error, ZIP_ER_READ, errno);
 	    return -1;
 	}
-	left = size;
 	cur = buf;
     }
 
-    if (memcmp(cur, (localp ? LOCAL_MAGIC : CENTRAL_MAGIC), 4) != 0) {
+    if (memcmp(cur, (local ? LOCAL_MAGIC : CENTRAL_MAGIC), 4) != 0) {
 	_zip_error_set(error, ZIP_ER_NOZIP, 0);
 	return -1;
     }
@@ -228,7 +252,7 @@ _zip_dirent_read(struct zip_dirent *zde, FILE *fp,
     
     /* convert buffercontents to zip_dirent */
     
-    if (!localp)
+    if (!local)
 	zde->version_madeby = _zip_read2(&cur);
     else
 	zde->version_madeby = 0;
@@ -248,7 +272,7 @@ _zip_dirent_read(struct zip_dirent *zde, FILE *fp,
     zde->filename_len = _zip_read2(&cur);
     zde->extrafield_len = _zip_read2(&cur);
     
-    if (localp) {
+    if (local) {
 	zde->comment_len = 0;
 	zde->disk_number = 0;
 	zde->int_attrib = 0;
@@ -266,13 +290,14 @@ _zip_dirent_read(struct zip_dirent *zde, FILE *fp,
     zde->extrafield = NULL;
     zde->comment = NULL;
 
-    if (bufp) {
-	if (left < CDENTRYSIZE + (zde->filename_len+zde->extrafield_len
-				  +zde->comment_len)) {
-	    _zip_error_set(error, ZIP_ER_NOZIP, 0);
-	    return -1;
-	}
+    size += zde->filename_len+zde->extrafield_len+zde->comment_len;
 
+    if (leftp && (*leftp < size)) {
+	_zip_error_set(error, ZIP_ER_NOZIP, 0);
+	return -1;
+    }
+
+    if (bufp) {
 	if (zde->filename_len) {
 	    zde->filename = _zip_readstr(&cur, zde->filename_len, 1, error);
 	    if (!zde->filename)
@@ -315,8 +340,67 @@ _zip_dirent_read(struct zip_dirent *zde, FILE *fp,
 
     if (bufp)
       *bufp = cur;
+    if (leftp)
+	*leftp -= size;
 
     return 0;
+}
+
+
+
+/* _zip_dirent_torrent_normalize(de);
+   Set values suitable for torrentzip.
+*/
+
+void
+_zip_dirent_torrent_normalize(struct zip_dirent *de)
+{
+    static struct tm torrenttime;
+    static time_t last_mod = 0;
+
+    if (last_mod == 0) {
+#ifdef HAVE_STRUCT_TM_TM_ZONE
+	time_t now;
+	struct tm *l;
+#endif
+
+	torrenttime.tm_sec = 0;
+	torrenttime.tm_min = 32;
+	torrenttime.tm_hour = 23;
+	torrenttime.tm_mday = 24;
+	torrenttime.tm_mon = 11;
+	torrenttime.tm_year = 96;
+	torrenttime.tm_wday = 0;
+	torrenttime.tm_yday = 0;
+	torrenttime.tm_isdst = 0;
+
+#ifdef HAVE_STRUCT_TM_TM_ZONE
+	time(&now);
+	l = localtime(&now);
+	torrenttime.tm_gmtoff = l->tm_gmtoff;
+	torrenttime.tm_zone = l->tm_zone;
+#endif
+
+	last_mod = mktime(&torrenttime);
+    }
+    
+    de->version_madeby = 0;
+    de->version_needed = 20; /* 2.0 */
+    de->bitflags = 2; /* maximum compression */
+    de->comp_method = ZIP_CM_DEFLATE;
+    de->last_mod = last_mod;
+
+    de->disk_number = 0;
+    de->int_attrib = 0;
+    de->ext_attrib = 0;
+    de->offset = 0;
+
+    free(de->extrafield);
+    de->extrafield = NULL;
+    de->extrafield_len = 0;
+    free(de->comment);
+    de->comment = NULL;
+    de->comment_len = 0;
 }
 
 
@@ -335,7 +419,7 @@ int
 _zip_dirent_write(struct zip_dirent *zde, FILE *fp, int localp,
 		  struct zip_error *error)
 {
-    int dostime, dosdate;
+    unsigned short dostime, dosdate;
 
     fwrite(localp ? LOCAL_MAGIC : CENTRAL_MAGIC, 1, 4, fp);
 
@@ -388,21 +472,22 @@ _zip_dirent_write(struct zip_dirent *zde, FILE *fp, int localp,
 static time_t
 _zip_d2u_time(int dtime, int ddate)
 {
-    struct tm *tm;
-    time_t now;
+    struct tm tm;
 
-    now = time(NULL);
-    tm = localtime(&now);
+    memset(&tm, 0, sizeof(tm));
     
-    tm->tm_year = ((ddate>>9)&127) + 1980 - 1900;
-    tm->tm_mon = ((ddate>>5)&15) - 1;
-    tm->tm_mday = ddate&31;
+    /* let mktime decide if DST is in effect */
+    tm.tm_isdst = -1;
+    
+    tm.tm_year = ((ddate>>9)&127) + 1980 - 1900;
+    tm.tm_mon = ((ddate>>5)&15) - 1;
+    tm.tm_mday = ddate&31;
 
-    tm->tm_hour = (dtime>>11)&31;
-    tm->tm_min = (dtime>>5)&63;
-    tm->tm_sec = (dtime<<1)&62;
+    tm.tm_hour = (dtime>>11)&31;
+    tm.tm_min = (dtime>>5)&63;
+    tm.tm_sec = (dtime<<1)&62;
 
-    return mktime(tm);
+    return mktime(&tm);
 }
 
 
@@ -438,7 +523,7 @@ _zip_readfpstr(FILE *fp, unsigned int len, int nulp, struct zip_error *error)
 {
     char *r, *o;
 
-    r = (char *)malloc(nulp?len+1:len);
+    r = (char *)malloc(nulp ? len+1 : len);
     if (!r) {
 	_zip_error_set(error, ZIP_ER_MEMORY, 0);
 	return NULL;
@@ -468,7 +553,7 @@ _zip_readstr(unsigned char **buf, int len, int nulp, struct zip_error *error)
 {
     char *r, *o;
 
-    r = (char *)malloc(nulp?len+1:len);
+    r = (char *)malloc(nulp ? len+1 : len);
     if (!r) {
 	_zip_error_set(error, ZIP_ER_MEMORY, 0);
 	return NULL;
@@ -514,8 +599,8 @@ _zip_write4(unsigned int i, FILE *fp)
 
 
 
-static void
-_zip_u2d_time(time_t time, int *dtime, int *ddate)
+void
+_zip_u2d_time(time_t time, unsigned short *dtime, unsigned short *ddate)
 {
     struct tm *tm;
 

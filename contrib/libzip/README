@@ -19,4 +19,9 @@ distribution site:
 	ftp.nih.at /pub/nih/libzip
 The latest version can always be found there.
 
-Mail suggestions and bug reports to <nih@giga.or.at>.
+  Mail suggestions and bug reports to <libzip@nih.at>.
+
+  There is also a mailing list for developers using libzip.  You can
+subscribe to it by sending a mail with the subject "subscribe libzip-discuss"
+to minimalist at nih.at. List mail should be sent to libzip-discuss at
+nih.at.

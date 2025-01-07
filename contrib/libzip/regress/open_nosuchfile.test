@@ -1,0 +1,5 @@
+# zip_open: file doesn't exist
+program tryopen
+args nosuchfile
+return 1
+stdout opening `nosuchfile' returned error 11/2

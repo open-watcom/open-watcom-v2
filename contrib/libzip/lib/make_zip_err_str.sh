@@ -1,12 +1,10 @@
 #!/bin/sh
 
-#  $NiH: make_zip_err_str.sh,v 1.8 2004/11/17 21:55:09 wiz Exp $
-#
 #  make_zip_err_str.sh: create zip_err_str.c from zip.h
-#  Copyright (C) 1999, 2003, 2004 Dieter Baron and Thomas Klausner
+#  Copyright (C) 1999-2007 Dieter Baron and Thomas Klausner
 #
 #  This file is part of libzip, a library to manipulate ZIP archives.
-#  The authors can be contacted at <nih@giga.or.at>
+#  The authors can be contacted at <libzip@nih.at>
 #
 #  Redistribution and use in source and binary forms, with or without
 #  modification, are permitted provided that the following conditions
@@ -37,7 +35,7 @@
 if [ "$#" -ne 2 ]
 then
     echo "Usage: $0 in_file out_file" >&2
-    echo "       e.g. $0 zip.h zip_err_str.c" >&2
+    echo "       e.g. $0 zip.h zerrstr.c" >&2
     exit 1
 fi
 
@@ -47,19 +45,12 @@ then
     exit 1
 fi
 
-rcsid=`echo '$NiH: make_zip_err_str.sh,v 1.8 2004/11/17 21:55:09 wiz Exp $' | tr -d '$'`
-inrcsid=`sed -n 's/^  \$\([^$]*[^ ]\) *\$$/\1/p' "$1"`
-
 cat <<EOF >> "$2.$$" || exit 1
 /*
    This file was generated automatically by $0
    from $1; make changes there.
-
-	$rcsid
-	$inrcsid
  */
 
-#include "zip.h"
 #include "zipint.h"
 
 

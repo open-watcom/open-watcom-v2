@@ -1,12 +1,8 @@
-.\" Converted with mdoc2man 0.2
-.\" from NiH: libzip.mdoc,v 1.5 2005/06/09 21:14:54 wiz Exp 
-.\" $NiH: libzip.man,v 1.3 2005/06/17 12:59:05 wiz Exp $
-.\"
 .\" libzip.mdoc \-- general overview of available functions
-.\" Copyright (C) 2005 Dieter Baron and Thomas Klausner
+.\" Copyright (C) 2005-2011 Dieter Baron and Thomas Klausner
 .\"
 .\" This file is part of libzip, a library to manipulate ZIP archives.
-.\" The authors can be contacted at <nih@giga.or.at>
+.\" The authors can be contacted at <libzip@nih.at>
 .\"
 .\" Redistribution and use in source and binary forms, with or without
 .\" modification, are permitted provided that the following conditions
@@ -33,13 +29,13 @@
 .\" OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN
 .\" IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 .\"
-.TH LIBZIP 3 "April 15, 2005" NiH
+.TH LIBZIP 3 "February 14, 2011" NiH
 .SH "NAME"
 libzip \- library for manipulating zip archives
 .SH "LIBRARY"
 libzip (-lzip)
 .SH "SYNOPSIS"
-.In zip.h
+#include <zip.h>
 .SH "DESCRIPTION"
 .B libzip
 is a library for reading, creating, and modifying zip archives.
@@ -49,25 +45,34 @@ from zip archives and one for how to create/modify them.
 .SH "READING ZIP ARCHIVES"
 .SS "open archive"
 zip_open(3)
+zip_fdopen(3)
 .SS "find files"
 zip_name_locate(3)
 .SS "read files"
 zip_fopen(3)
+zip_fopen_encrypted(3)
 zip_fopen_index(3)
+zip_fopen_index_encrypted(3)
 zip_fread(3)
 zip_fclose(3)
 .SS "close archive"
 zip_close(3)
 .SS "miscellaneous"
 zip_stat(3)
+zip_get_archive_comment(3)
+zip_get_archive_flag(3)
+zip_get_file_comment(3)
 zip_get_name(3)
-zip_get_num_files(3)
+zip_get_num_entries(3)
+zip_set_default_password(3)
 .SH "CREATING/MODIFYING ZIP ARCHIVES"
 .SS "create/open archive"
 zip_open(3)
-.SS "add/change files"
+.SS "add/change files and directories"
 zip_add(3)
+zip_add_dir(3)
 zip_replace(3)
+zip_set_file_comment(3)
 zip_source_buffer(3)
 zip_source_file(3)
 zip_source_filep(3)
@@ -81,8 +86,12 @@ zip_delete(3)
 .SS "revert changes"
 zip_unchange(3)
 zip_unchange_all(3)
+zip_unchange_archive(3)
 .SS "close archive"
 zip_close(3)
+.SS "miscellaneous"
+zip_set_archive_comment(3)
+zip_set_archive_flag(3)
 .SH "ERROR HANDLING"
 zip_error_to_str(3)
 zip_strerror(3)

@@ -1,11 +1,9 @@
 /*
-  $NiH: name_locate.c,v 1.4 2005/06/09 18:49:38 dillo Exp $
-
   name_locate.c -- test cases for finding files in zip archives
-  Copyright (C) 2005 Dieter Baron and Thomas Klausner
+  Copyright (C) 2005-2006 Dieter Baron and Thomas Klausner
 
   This file is part of libzip, a library to manipulate ZIP archives.
-  The authors can be contacted at <nih@giga.or.at>
+  The authors can be contacted at <libzip@nih.at>
 
   Redistribution and use in source and binary forms, with or without
   modification, are permitted provided that the following conditions
@@ -40,12 +38,11 @@
 #include <stdlib.h>
 
 #include "zip.h"
-#include "mkname.h"
-
-#define TEST_ZIP	"test.zip"
 
 int find_fail(struct zip *, const char *, int, int);
 int find_success(struct zip *, const char *, int);
+
+const char *prg;
 
 
 
@@ -54,12 +51,21 @@ main(int argc, char *argv[])
 {
     int fail, ze;
     struct zip *z;
+    const char *archive;
 
     fail = 0;
+    prg = argv[0];
 
-    if ((z=zip_open(mkname(TEST_ZIP), 0, &ze)) == NULL) {
-	printf("fail: opening zip archive ``%s'' failed (%d)\n",
-	       TEST_ZIP, ze);
+    if (argc != 2) {
+        fprintf(stderr, "usage: %s archive\n", prg);
+        return 1;
+    }
+
+    archive = argv[1];
+
+    if ((z=zip_open(archive, 0, &ze)) == NULL) {
+	printf("%s: opening zip archive ``%s'' failed (%d)\n", prg,
+	       archive, ze);
 	return 1;
     }
 
@@ -81,6 +87,12 @@ main(int argc, char *argv[])
     zip_unchange_all(z);
     fail += find_success(z, "test", 0);
 
+    if (zip_close(z) == -1) {
+	fprintf(stderr, "%s: can't close zip archive %s\n", prg,
+		archive);
+	return 1;
+    }
+
     exit(fail ? 1 : 0);
 }
 
@@ -96,9 +108,9 @@ find_fail(struct zip *z, const char *name, int flags, int zerr)
 	zip_error_get(z, &ze, &se);
 	if (ze != zerr) {
 	    zip_error_to_str(expected, sizeof(expected), zerr, 0);
-	    printf("unexpected error while looking for ``%s'': "
-		   "got ``%s'', expected ``%s''\n", name, zip_strerror(z),
-		   expected);
+	    printf("%s: unexpected error while looking for ``%s'': "
+		   "got ``%s'', expected ``%s''\n", prg, name,
+		   zip_strerror(z), expected);
 	    return 1;
 	}
 
@@ -115,8 +127,8 @@ find_success(struct zip *z, const char *name, int flags)
 {
 
     if (zip_name_locate(z, name, flags) < 0) {
-	printf("unexpected error while looking for ``%s'': %s\n",
-	       name, zip_strerror(z));
+	printf("%s: unexpected error while looking for ``%s'': %s\n",
+	       prg, name, zip_strerror(z));
 	return 1;
     }
 

@@ -1,0 +1,5 @@
+# add buffer contents as file to zip
+program add_from_buffer
+return 0
+args testbuffer.zip
+file-new testbuffer.zip testbuffer.zip

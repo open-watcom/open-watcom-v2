@@ -1,11 +1,9 @@
 /*
-  $NiH: zip_error_strerror.c,v 1.3 2004/11/17 21:55:11 wiz Exp $
-
   zip_error_sterror.c -- get string representation of struct zip_error
-  Copyright (C) 1999, 2003 Dieter Baron and Thomas Klausner
+  Copyright (C) 1999-2007 Dieter Baron and Thomas Klausner
 
   This file is part of libzip, a library to manipulate ZIP archives.
-  The authors can be contacted at <nih@giga.or.at>
+  The authors can be contacted at <libzip@nih.at>
 
   Redistribution and use in source and binary forms, with or without
   modification, are permitted provided that the following conditions
@@ -40,7 +38,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "zip.h"
 #include "zipint.h"
 
 
@@ -78,7 +75,8 @@ _zip_error_strerror(struct zip_error *err)
     if (ss == NULL)
 	return zs;
     else {
-	if ((s=malloc(strlen(ss) + (zs ? strlen(zs)+2 : 0) + 1)) == NULL)
+	if ((s=(char *)malloc(strlen(ss)
+			      + (zs ? strlen(zs)+2 : 0) + 1)) == NULL)
 	    return _zip_err_str[ZIP_ER_MEMORY];
 	
 	sprintf(s, "%s%s%s",
@@ -87,6 +85,6 @@ _zip_error_strerror(struct zip_error *err)
 		ss);
 	err->str = s;
 
-	return ss;
+	return s;
     }
 }

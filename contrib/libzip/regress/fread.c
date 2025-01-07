@@ -1,11 +1,9 @@
 /*
-  $NiH: fread.c,v 1.4 2005/06/09 18:49:38 dillo Exp $
-
   fread.c -- test cases for reading from zip archives
-  Copyright (C) 2004, 2005 Dieter Baron and Thomas Klausner
+  Copyright (C) 2004-2009 Dieter Baron and Thomas Klausner
 
   This file is part of libzip, a library to manipulate ZIP archives.
-  The authors can be contacted at <nih@giga.or.at>
+  The authors can be contacted at <libzip@nih.at>
 
   Redistribution and use in source and binary forms, with or without
   modification, are permitted provided that the following conditions
@@ -40,9 +38,6 @@
 #include <stdlib.h>
 
 #include "zip.h"
-#include "mkname.h"
-
-#define TEST_ZIP "broken.zip"
 
 enum when {
     WHEN_NEVER, WHEN_OPEN, WHEN_READ, WHEN_CLOSE
@@ -56,18 +51,32 @@ int do_read(struct zip *, const char *, int, enum when, int, int);
 
 
 
+const char *prg;
+
 int
 main(int argc, char *argv[])
 {
     int fail, ze;
     struct zip *z;
     struct zip_source *zs;
+    char *archive;
+    char errstr[1024];
 
     fail = 0;
 
-    if ((z=zip_open(mkname(TEST_ZIP), 0, &ze)) == NULL) {
-	printf("fail: opening zip archive ``%s'' failed (%d)\n",
-	       TEST_ZIP, ze);
+    prg = argv[0];
+
+    if (argc != 2) {
+        fprintf(stderr, "usage: %s archive\n", prg);
+        return 1;
+    }
+
+    archive = argv[1];
+
+    if ((z=zip_open(archive, 0, &ze)) == NULL) {
+	zip_error_to_str(errstr, sizeof(errstr), ze, errno);
+	printf("%s: opening zip archive ``%s'' failed: %s\n",
+	       prg, archive, errstr);
 	return 1;
     }
 
@@ -84,6 +93,13 @@ main(int argc, char *argv[])
 		    WHEN_READ, ZIP_ER_CRC, 0);
     fail += do_read(z, "storedok", ZIP_FL_COMPRESSED, WHEN_NEVER, 0, 0);
 
+    fail += do_read(z, "cryptok", 0, WHEN_OPEN, ZIP_ER_NOPASSWD, 0);
+    zip_set_default_password(z, "crypt");
+    fail += do_read(z, "cryptok", 0, WHEN_OPEN, 0, 0);
+    zip_set_default_password(z, "wrong");
+    fail += do_read(z, "cryptok", 0, WHEN_OPEN, ZIP_ER_WRONGPASSWD, 0);
+    zip_set_default_password(z, NULL);
+
     zs = zip_source_buffer(z, "asdf", 4, 0);
     zip_replace(z, zip_name_locate(z, "storedok", 0), zs);
     fail += do_read(z, "storedok", 0, WHEN_OPEN, ZIP_ER_CHANGED, 0);
@@ -95,6 +111,11 @@ main(int argc, char *argv[])
     zip_add(z, "new_file", zs);
     fail += do_read(z, "new_file", 0, WHEN_OPEN, ZIP_ER_CHANGED, 0);
     zip_unchange_all(z);
+
+    if (zip_close(z) == -1) {
+        fprintf(stderr, "%s: can't close zip archive `%s'\n", prg, archive);
+        return 1;
+    }
 
     exit(fail ? 1 : 0);
 }
@@ -138,11 +159,14 @@ do_read(struct zip *z, const char *name, int flags,
     if (when_got != when_ex || ze_got != ze_ex || se_got != se_ex) {
 	zip_error_to_str(expected, sizeof(expected), ze_ex, se_ex);
 	zip_error_to_str(got, sizeof(got), ze_got, se_got);
-	printf("got %s error (%s), expected %s error (%s)\n",
+	printf("%s: %s: got %s error (%s), expected %s error (%s)\n",
+	       prg, name,
 	       when_name[when_got], got, 
 	       when_name[when_ex], expected);
 	return 1;
     }
+    else if (getenv("VERBOSE"))
+	printf("%s: %s: passed\n", prg, name);
 
     return 0;
 }

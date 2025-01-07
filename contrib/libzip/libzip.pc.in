@@ -2,6 +2,7 @@ prefix=@prefix@
 exec_prefix=@exec_prefix@
 libdir=@libdir@
 includedir=@includedir@
+libincludedir=@libdir@/libzip/include
 
 zipcmp=@prefix@/bin/zipcmp
 
@@ -9,5 +10,5 @@ Name: libzip
 Description: library for handling zip archives
 Version: @VERSION@
 Libs: -L${libdir} -lzip @LIBS@
-Cflags: -I${includedir}
+Cflags: -I${includedir} -I${libincludedir}
 

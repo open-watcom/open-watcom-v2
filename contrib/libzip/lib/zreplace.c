@@ -1,11 +1,9 @@
 /*
-  $NiH: zip_replace.c,v 1.19 2004/11/30 22:19:38 wiz Exp $
-
   zip_replace.c -- replace file via callback function
-  Copyright (C) 1999, 2003, 2004 Dieter Baron and Thomas Klausner
+  Copyright (C) 1999-2009 Dieter Baron and Thomas Klausner
 
   This file is part of libzip, a library to manipulate ZIP archives.
-  The authors can be contacted at <nih@giga.or.at>
+  The authors can be contacted at <libzip@nih.at>
 
   Redistribution and use in source and binary forms, with or without
   modification, are permitted provided that the following conditions
@@ -35,30 +33,39 @@
 
 
 
-#include "zip.h"
 #include "zipint.h"
 
 
 
-int
-zip_replace(struct zip *za, int idx, struct zip_source *source)
+ZIP_EXTERN int
+zip_replace(struct zip *za, zip_uint64_t idx, struct zip_source *source)
 {
-    if (idx < 0 || idx >= za->nentry || source == NULL) {
+    if (idx >= za->nentry || source == NULL) {
 	_zip_error_set(&za->error, ZIP_ER_INVAL, 0);
 	return -1;
     }
 
-    return _zip_replace(za, idx, NULL, source);
+    if (_zip_replace(za, idx, NULL, source) == -1)
+	return -1;
+
+    return 0;
 }
 
 
 
 
-int
-_zip_replace(struct zip *za, int idx, const char *name,
+/* NOTE: Signed due to -1 on error.  See zip_add.c for more details. */
+
+zip_int64_t
+_zip_replace(struct zip *za, zip_uint64_t idx, const char *name,
 	     struct zip_source *source)
 {
-    if (idx == -1) {
+    if (ZIP_IS_RDONLY(za)) {
+	_zip_error_set(&za->error, ZIP_ER_RDONLY, 0);
+	return -1;
+    }
+
+    if (idx == ZIP_UINT64_MAX) {
 	if (_zip_entry_new(za) == NULL)
 	    return -1;
 
@@ -74,5 +81,5 @@ _zip_replace(struct zip *za, int idx, const char *name,
 			    ? ZIP_ST_ADDED : ZIP_ST_REPLACED);
     za->entry[idx].source = source;
 
-    return 0;
+    return idx;
 }

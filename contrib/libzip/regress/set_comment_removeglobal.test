@@ -1,0 +1,7 @@
+# remove archive comment
+program set_comment_removeglobal
+return 0
+# need filename extension != zip to avoid using zipcmp,
+# which doesn't look at comments
+args testcomment.reg
+file testcomment.reg testcomment.zip testcommentremoved.zip

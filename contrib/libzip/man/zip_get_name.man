@@ -1,12 +1,8 @@
-.\" Converted with mdoc2man 0.2
-.\" from NiH: zip_get_name.mdoc,v 1.10 2005/06/09 21:14:54 wiz Exp 
-.\" $NiH: zip_get_name.man,v 1.10 2005/06/17 12:59:05 wiz Exp $
-.\"
 .\" zip_get_name.mdoc \-- get name of file by index
 .\" Copyright (C) 2003, 2004, 2005 Dieter Baron and Thomas Klausner
 .\"
 .\" This file is part of libzip, a library to manipulate ZIP archives.
-.\" The authors can be contacted at <nih@giga.or.at>
+.\" The authors can be contacted at <libzip@nih.at>
 .\"
 .\" Redistribution and use in source and binary forms, with or without
 .\" modification, are permitted provided that the following conditions
@@ -39,12 +35,13 @@ zip_get_name \- get name of file by index
 .SH "LIBRARY"
 libzip (-lzip)
 .SH "SYNOPSIS"
-.In zip.h
-.Ft const char *
-.Fn zip_get_name "struct zip *archive" "int index" "int flags"
+#include <zip.h>
+.PP
+const char *
+zip_get_name(struct zip *archive, int index, int flags);
 .SH "DESCRIPTION"
 The
-.Fn zip_get_name
+zip_get_name
 function returns the name of the file at position
 \fBindex\fR
 in
@@ -65,18 +62,18 @@ and the error code in
 \fBarchive\fR
 is set to indicate the error.
 .SH "ERRORS"
-.Fn zip_get_name
+zip_get_name
 fails if:
 .RS
 .TP 4
-Bq Er ZIP_ER_DELETED
+[ZIP_ER_DELETED]
 \fBindex\fR
 refers to a file that has been deleted
 (see
 zip_delete(3)
 ).
 .TP 4
-Bq Er ZIP_ER_INVAL
+[ZIP_ER_INVAL]
 \fBindex\fR
 is not a valid file index in
 \fBarchive,\fR

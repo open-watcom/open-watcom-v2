@@ -1,11 +1,9 @@
 /*
-  $NiH: zip_source_file.c,v 1.2 2004/11/18 16:28:13 wiz Exp $
-
   zip_source_file.c -- create data source from file
-  Copyright (C) 1999, 2003, 2004 Dieter Baron and Thomas Klausner
+  Copyright (C) 1999-2009 Dieter Baron and Thomas Klausner
 
   This file is part of libzip, a library to manipulate ZIP archives.
-  The authors can be contacted at <nih@giga.or.at>
+  The authors can be contacted at <libzip@nih.at>
 
   Redistribution and use in source and binary forms, with or without
   modification, are permitted provided that the following conditions
@@ -38,27 +36,21 @@
 #include <errno.h>
 #include <stdio.h>
 
-#include "zip.h"
 #include "zipint.h"
 
 
 
-struct zip_source *
-zip_source_file(struct zip *za, const char *fname, off_t start, off_t len)
+ZIP_EXTERN struct zip_source *
+zip_source_file(struct zip *za, const char *fname, zip_uint64_t start,
+		zip_int64_t len)
 {
-    struct zip_source *zs;
-
     if (za == NULL)
-        return NULL;
+	return NULL;
 
-    if (fname == NULL || start < 0 || len < -1) {
-        _zip_error_set(&za->error, ZIP_ER_INVAL, 0);
-        return NULL;
+    if (fname == NULL || len < -1) {
+	_zip_error_set(&za->error, ZIP_ER_INVAL, 0);
+	return NULL;
     }
 
-    if ((zs=zip_source_filep(za, fname, start, len)) == NULL) {
-        return NULL;
-    }
-
-    return zs;
+    return _zip_source_file_or_p(za, fname, NULL, start, len, 1, NULL);
 }
