@@ -66,12 +66,12 @@ zip_source_buffer(struct zip *za, const void *data, off_t len, int freep)
 	return NULL;
     }
 
-    if ((f=malloc(sizeof(*f))) == NULL) {
+    if ((f=(struct read_data *)malloc(sizeof(*f))) == NULL) {
 	_zip_error_set(&za->error, ZIP_ER_MEMORY, 0);
 	return NULL;
     }
 
-    f->data = data;
+    f->data = (const char *)data;
     f->end = ((const char *)data)+len;
     f->freep = freep;
     f->mtime = time(NULL);
@@ -91,7 +91,7 @@ read_data(void *state, void *data, size_t len, enum zip_source_cmd cmd)
 {
     struct read_data *z;
     char *buf;
-    int n;
+    size_t n;
 
     z = (struct read_data *)state;
     buf = (char *)data;

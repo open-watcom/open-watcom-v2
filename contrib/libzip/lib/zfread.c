@@ -43,8 +43,8 @@
 ssize_t
 zip_fread(struct zip_file *zf, void *outbuf, size_t toread)
 {
-    int out_before, ret;
-    int len;
+    int ret;
+    size_t out_before, len;
 
     if (!zf)
 	return -1;
@@ -70,13 +70,13 @@ zip_fread(struct zip_file *zf, void *outbuf, size_t toread)
 	ret = _zip_file_fillbuf(outbuf, toread, zf);
 	if (ret > 0) {
 	    if (zf->flags & ZIP_ZF_CRC)
-		zf->crc = crc32(zf->crc, outbuf, ret);
+		zf->crc = crc32(zf->crc, (Bytef *)outbuf, ret);
 	    zf->bytes_left -= ret;
 	}
 	return ret;
     }
     
-    zf->zstr->next_out = outbuf;
+    zf->zstr->next_out = (Bytef *)outbuf;
     zf->zstr->avail_out = toread;
     out_before = zf->zstr->total_out;
     
@@ -85,15 +85,23 @@ zip_fread(struct zip_file *zf, void *outbuf, size_t toread)
 	ret = inflate(zf->zstr, Z_SYNC_FLUSH);
 
 	switch (ret) {
-	case Z_OK:
 	case Z_STREAM_END:
-	    /* all ok */
-	    /* Z_STREAM_END probably won't happen, since we didn't
-	       have a header */
+	    if (zf->zstr->total_out == out_before) {
+		if (zf->crc != zf->crc_orig) {
+		    _zip_error_set(&zf->error, ZIP_ER_CRC, 0);
+		    return -1;
+		}
+		else
+		    return 0;
+	    }
+		
+	    /* fallthrough */
+		
+	case Z_OK:
 	    len = zf->zstr->total_out - out_before;
 	    if (len >= zf->bytes_left || len >= toread) {
 		if (zf->flags & ZIP_ZF_CRC)
-		    zf->crc = crc32(zf->crc, outbuf, len);
+		    zf->crc = crc32(zf->crc, (Bytef *)outbuf, len);
 		zf->bytes_left -= len;
 	        return len;
 	    }
