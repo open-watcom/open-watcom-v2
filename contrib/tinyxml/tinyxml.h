@@ -26,6 +26,10 @@ distribution.
 #ifndef TINYXML_INCLUDED
 #define TINYXML_INCLUDED
 
+#ifndef TIXML_USE_STL
+	#define TIXML_USE_STL
+#endif
+
 #ifdef _MSC_VER
 #pragma warning( push )
 #pragma warning( disable : 4530 )
@@ -1061,18 +1065,18 @@ public:
 	///< STL std::string form.
 	void SetAttribute( const std::string& name, int _value );
 	///< STL std::string form.
-	void SetDoubleAttribute( const std::string& name, double value );
+	void SetDoubleAttribute( const std::string& name, double );
 	#endif
 
 	/** Sets an attribute of name to a given value. The attribute
 		will be created if it does not exist, or changed if it does.
 	*/
-	void SetAttribute( const char * name, int value );
+	void SetAttribute( const char * name, int );
 
 	/** Sets an attribute of name to a given value. The attribute
 		will be created if it does not exist, or changed if it does.
 	*/
-	void SetDoubleAttribute( const char * name, double value );
+	void SetDoubleAttribute( const char * name, double );
 
 	/** Deletes an attribute with the given name.
 	*/

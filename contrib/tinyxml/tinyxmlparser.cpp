@@ -598,6 +598,8 @@ const char* TiXmlBase::ReadText(	const char* p,
 			p = GetChar( p, cArr, &len, encoding );
 			text->append( cArr, len );
 		}
+		if ( p && !*p )
+			p = 0;
 	}
 	else
 	{
@@ -636,6 +638,8 @@ const char* TiXmlBase::ReadText(	const char* p,
 					text->append( cArr, len );
 			}
 		}
+		if ( p && !*p )
+			p = 0;
 	}
 	if ( p && *p )
 		p += strlen( endTag );
@@ -1352,8 +1356,9 @@ const char* TiXmlComment::Parse( const char* p, TiXmlParsingData* data, TiXmlEnc
 		data->Stamp( p, encoding );
 		location = data->Cursor();
 	}
-	const char* startTag = "<!--";
-	const char* endTag   = "-->";
+	const char* startTag  = "<!--";
+	const char* endTag    = "-->";
+	const char* forbidden = "--";
 
 	if ( !StringEqual( p, startTag, false, encoding ) )
 	{
@@ -1385,6 +1390,8 @@ const char* TiXmlComment::Parse( const char* p, TiXmlParsingData* data, TiXmlEnc
 	// Keep all the white space.
 	while (	p && *p && !StringEqual( p, endTag, false, encoding ) )
 	{
+		if ( StringEqual( p, forbidden, false, encoding ) )
+			document->SetError( TIXML_ERROR_PARSING_ELEMENT, p, data, encoding );
 		value.append( p, 1 );
 		++p;
 	}

@@ -1324,8 +1324,14 @@ int main()
 	}
 
 	{
+		TiXmlDocument xml;
+		xml.Parse( "<!-- <!----> -->" );
+		XmlTest( "Double hyphen in comment throws error.", true, xml.Error() );
+	}
+
+	{
 		// trying to repro ]1874301]. If it doesn't go into an infinite loop, all is well.
-		unsigned char buf[] = "<?xml version=\"1.0\" encoding=\"utf-8\"?><feed><![CDATA[Test XMLblablablalblbl";
+		unsigned char buf[] = "<?xml version=\"1.0\" encoding=\"utf-8\"?><feed><![CDATA[Test XMLblabl ablalblbl";
 		buf[60] = 239;
 		buf[61] = 0;
 
@@ -1365,6 +1371,16 @@ int main()
 			fprintf( stdout, "%s", printer.CStr() );
 		}*/
 	}
+
+	#ifdef TIXML_USE_STL
+	{
+		TiXmlDocument xml;
+		xml.Parse("<foo>foo&amp;#xa+bar</foo>");
+		std::string str;
+		str << xml;
+		XmlTest( "Entity escaping", "<foo>foo&amp;#xa+bar</foo>", str.c_str() );
+	}
+	#endif
 
 	/*  1417717 experiment
 	{

@@ -57,30 +57,7 @@ void TiXmlBase::EncodeString( const TIXML_STRING& str, TIXML_STRING* outString )
 	{
 		unsigned char c = (unsigned char) str[i];
 
-		if (    c == '&' 
-		     && i < ( (int)str.length() - 2 )
-			 && str[i+1] == '#'
-			 && str[i+2] == 'x' )
-		{
-			// Hexadecimal character reference.
-			// Pass through unchanged.
-			// &#xA9;	-- copyright symbol, for example.
-			//
-			// The -1 is a bug fix from Rob Laveaux. It keeps
-			// an overflow from happening if there is no ';'.
-			// There are actually 2 ways to exit this loop -
-			// while fails (error case) and break (semicolon found).
-			// However, there is no mechanism (currently) for
-			// this function to return an error.
-			while ( i<(int)str.length()-1 )
-			{
-				outString->append( str.c_str() + i, 1 );
-				++i;
-				if ( str[i] == ';' )
-					break;
-			}
-		}
-		else if ( c == '&' )
+		if ( c == '&' )
 		{
 			outString->append( entity[0].str, entity[0].strLength );
 			++i;
@@ -667,7 +644,7 @@ int TiXmlElement::QueryIntAttribute( const char* name, int* ival ) const
 }
 
 
-int TiXmlElement::QueryUnsignedAttribute( const char* name, unsigned* value ) const
+int TiXmlElement::QueryUnsignedAttribute( const char* name, unsigned* _value ) const
 {
 	const TiXmlAttribute* node = attributeSet.Find( name );
 	if ( !node )
@@ -675,7 +652,7 @@ int TiXmlElement::QueryUnsignedAttribute( const char* name, unsigned* value ) co
 
 	int ival = 0;
 	int result = node->QueryIntValue( &ival );
-	*value = (unsigned)ival;
+	*_value = (unsigned)ival;
 	return result;
 }
 
