@@ -50,7 +50,7 @@ zip_source_function(struct zip *za, zip_source_callback zcb, void *ud)
     if (za == NULL)
 	return NULL;
 
-    if ((zs=(struct zip_source *)malloc(sizeof(*zs))) == NULL) {
+    if ((zs=malloc(sizeof(*zs))) == NULL) {
 	_zip_error_set(&za->error, ZIP_ER_MEMORY, 0);
 	return NULL;
     }

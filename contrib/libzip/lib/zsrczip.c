@@ -82,7 +82,7 @@ zip_source_zip(struct zip *za, struct zip *srcza, int srcidx, int flags,
     else
 	flags &= ~ZIP_FL_COMPRESSED;
 
-    if ((p=(struct read_zip *)malloc(sizeof(*p))) == NULL) {
+    if ((p=malloc(sizeof(*p))) == NULL) {
 	_zip_error_set(&za->error, ZIP_ER_MEMORY, 0);
 	return NULL;
     }
