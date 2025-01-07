@@ -1,10 +1,8 @@
-.\" $NiH: zip_stat.mdoc,v 1.10 2005/06/09 21:14:54 wiz Exp $
-.\"
 .\" zip_stat.mdoc -- get information about file
-.\" Copyright (C) 2003, 2004, 2005 Dieter Baron and Thomas Klausner
+.\" Copyright (C) 2003-2011 Dieter Baron and Thomas Klausner
 .\"
 .\" This file is part of libzip, a library to manipulate ZIP archives.
-.\" The authors can be contacted at <nih@giga.or.at>
+.\" The authors can be contacted at <libzip@nih.at>
 .\"
 .\" Redistribution and use in source and binary forms, with or without
 .\" modification, are permitted provided that the following conditions
@@ -31,7 +29,7 @@
 .\" OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN
 .\" IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 .\"
-.Dd June 9, 2005
+.Dd February 14, 2011
 .Dt ZIP_STAT 3
 .Os
 .Sh NAME
@@ -77,14 +75,51 @@ argument is a pointer to a
 (shown below), into which information about the file is placed.
 .Bd -literal
 struct zip_stat {
-    const char *name;			/* name of the file */
-    int index;				/* index within archive */
-    unsigned int crc;			/* crc of file data */
-    unsigned int size;			/* size of file (uncompressed) */
-    time_t mtime;			/* modification time */
-    unsigned int comp_size;		/* size of file (compressed) */
-    unsigned short comp_method;		/* compression method used */
+    zip_uint64_t valid;                 /* which fields have valid values */
+    const char *name;                   /* name of the file */
+    zip_uint64_t index;                 /* index within archive */
+    zip_uint64_t size;                  /* size of file (uncompressed) */
+    zip_uint64_t comp_size;             /* size of file (compressed) */
+    time_t mtime;                       /* modification time */
+    zip_uint32_t crc;                   /* crc of file data */
+    zip_uint16_t comp_method;           /* compression method used */
+    zip_uint16_t encryption_method;     /* encryption method used */
+    zip_uint32_t flags;                 /* reserved for future use */
 };
+.Ed
+The structure pointed to by
+.Ar sb
+must be allocated before calling
+.Fn zip_stat
+or
+.Fn zip_stat_index .
+.Pp
+The
+.Ar valid
+field of the structure specifies which other fields are valid.
+Check if the flag defined by the following defines are in
+.Ar valid
+before accessing the fields:
+.Bl -tag -width ZIP_STAT_ENCRYPTION_METHODXX -compact -offset indent
+.It ZIP_STAT_NAME
+.Ar name
+.It ZIP_STAT_INDEX
+.Ar index
+.It ZIP_STAT_SIZE
+.Ar size
+.It ZIP_STAT_COMP_SIZE
+.Ar comp_size
+.It ZIP_STAT_MTIME
+.Ar mtime
+.It ZIP_STAT_CRC
+.Ar crc
+.It ZIP_STAT_COMP_METHOD
+.Ar comp_method
+.It ZIP_STAT_ENCRYPTION_METHOD
+.Ar encryption_method
+.It ZIP_STAT_FLAGS
+.Ar flags
+.El
 .Sh RETURN VALUES
 Upon successful completion 0 is returned.
 Otherwise, \-1 is returned and the error information in
@@ -110,7 +145,9 @@ callback, the error information is set to
 .Er ZIP_ER_CHANGED .
 .Sh SEE ALSO
 .Xr libzip 3 ,
-.Xr zip_name_locate 3
+.Xr zip_get_num_entries 3 ,
+.Xr zip_name_locate 3 ,
+.Xr zip_stat_init 3
 .Sh AUTHORS
 .An -nosplit
 .An Dieter Baron Aq dillo@giga.or.at

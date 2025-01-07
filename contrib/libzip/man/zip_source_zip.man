@@ -1,12 +1,8 @@
-.\" Converted with mdoc2man 0.2
-.\" from NiH: zip_source_zip.mdoc,v 1.6 2005/06/09 21:14:54 wiz Exp 
-.\" $NiH: zip_source_zip.man,v 1.4 2005/06/17 12:59:06 wiz Exp $
-.\"
 .\" zip_source_zip.mdoc \-- create data source from zip file
-.\" Copyright (C) 2004, 2005 Dieter Baron and Thomas Klausner
+.\" Copyright (C) 2004, 2005, 2008 Dieter Baron and Thomas Klausner
 .\"
 .\" This file is part of libzip, a library to manipulate ZIP archives.
-.\" The authors can be contacted at <nih@giga.or.at>
+.\" The authors can be contacted at <libzip@nih.at>
 .\"
 .\" Redistribution and use in source and binary forms, with or without
 .\" modification, are permitted provided that the following conditions
@@ -33,19 +29,20 @@
 .\" OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN
 .\" IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 .\"
-.TH ZIP_SOURCE_ZIP 3 "November 4, 2004" NiH
+.TH ZIP_SOURCE_ZIP 3 "June 4, 2008" NiH
 .SH "NAME"
 zip_source_zip \- create data source from zip file
 .SH "LIBRARY"
 libzip (-lzip)
 .SH "SYNOPSIS"
-.In zip.h
-.Ft int
-.Fn zip_source_zip "struct zip *archive" "struct zip *srcarchive" \
-"int srcidx" "int flags" "off_t start" "off_t len"
+#include <zip.h>
+.PP
+struct zip_source *
+zip_source_zip(struct zip *archive, struct zip *srcarchive); \
+"zip_uint64_t srcidx" "int flags" "zip_uint64_t start" "zip_int64_t len"
 .SH "DESCRIPTION"
 The function
-.Fn zip_source_zip
+zip_source_zip
 creates a zip source from a file in a zip archive.
 The
 \fBsrcarchive\fR
@@ -58,23 +55,30 @@ bytes from offset
 will be used in the zip_source.
 If
 \fBlen\fR
-is 0 or \-1, the whole file (starting from
-\fBstart )\fR
+is 0 or \-1, the rest of the file, starting from
+\fBstart,\fR
 is used.
 If
 \fBstart\fR
 is zero and
 \fBlen\fR
 is \-1, the whole file will be copied without decompressing it.
-If
-\fBflags\fR
-is
-\fBZIP_FL_UNCHANGED,\fR
-.Fn zip_source_zip
-will try to get the original data without any changes that may
-have been made to
+.PP
+Supported flags are:
+.RS
+.TP 23
+\fBZIP_FL_UNCHANGED\fR
+Try to get the original data without any changes that may have been
+made to
 \fBsrcarchive\fR
 after opening it.
+.TP 23
+\fBZIP_FL_RECOMPRESS\fR
+When adding the data from
+\fBsrcarchive,\fR
+re-compress it using the current settings instead of copying the
+compressed data.
+.RE
 .SH "RETURN VALUES"
 Upon successful completion, the created source is returned.
 Otherwise,
@@ -83,14 +87,14 @@ is returned and the error code in
 \fBarchive\fR
 is set to indicate the error.
 .SH "ERRORS"
-.Fn zip_source_zip
+zip_source_zip
 fails if:
 .RS
 .TP 4
-Bq Er ZIP_ER_CHANGED
+[ZIP_ER_CHANGED]
 Unchanged data was requested, but it is not available.
 .TP 4
-Bq Er ZIP_ER_INVAL
+[ZIP_ER_INVAL]
 \fBsrcarchive,\fR
 \fBsrcidx,\fR
 \fBstart,\fR
@@ -98,13 +102,13 @@ or
 \fBlen\fR
 are invalid.
 .TP 4
-Bq Er ZIP_ER_MEMORY
+[ZIP_ER_MEMORY]
 Required memory could not be allocated.
 .RE
 Additionally, it can return all error codes from
-.Fn zip_stat_index
+zip_stat_index
 and
-.Fn zip_fopen_index.
+zip_fopen_index.
 .SH "SEE ALSO"
 libzip(3),
 zip_add(3),

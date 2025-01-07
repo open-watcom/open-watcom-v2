@@ -1,11 +1,9 @@
 /*
-  $NiH: zip_name_locate.c,v 1.19 2005/06/09 19:57:10 dillo Exp $
-
   zip_name_locate.c -- get index by name
-  Copyright (C) 1999, 2003, 2004, 2005 Dieter Baron and Thomas Klausner
+  Copyright (C) 1999-2011 Dieter Baron and Thomas Klausner
 
   This file is part of libzip, a library to manipulate ZIP archives.
-  The authors can be contacted at <nih@giga.or.at>
+  The authors can be contacted at <libzip@nih.at>
 
   Redistribution and use in source and binary forms, with or without
   modification, are permitted provided that the following conditions
@@ -37,14 +35,11 @@
 
 #include <string.h>
 
-#include "wio.h"
-
-#include "zip.h"
 #include "zipint.h"
 
 
 
-int
+ZIP_EXTERN int
 zip_name_locate(struct zip *za, const char *fname, int flags)
 {
     return _zip_name_locate(za, fname, flags, &za->error);
@@ -60,12 +55,20 @@ _zip_name_locate(struct zip *za, const char *fname, int flags,
     const char *fn, *p;
     int i, n;
 
+    if (za == NULL)
+	return -1;
+
     if (fname == NULL) {
 	_zip_error_set(error, ZIP_ER_INVAL, 0);
 	return -1;
     }
-    
-    cmp = (flags & ZIP_FL_NOCASE) ? stricmp : strcmp;
+
+    if ((flags & ZIP_FL_UNCHANGED)  && za->cdir == NULL) {
+        _zip_error_set(error, ZIP_ER_NOENT, 0);
+        return -1;
+    }
+
+    cmp = (flags & ZIP_FL_NOCASE) ? strcasecmp : strcmp;
 
     n = (flags & ZIP_FL_UNCHANGED) ? za->cdir->nentry : za->nentry;
     for (i=0; i<n; i++) {

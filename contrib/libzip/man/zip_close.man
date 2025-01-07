@@ -1,12 +1,8 @@
-.\" Converted with mdoc2man 0.2
-.\" from NiH: zip_close.mdoc,v 1.14 2005/06/09 21:14:54 wiz Exp 
-.\" $NiH: zip_close.man,v 1.10 2005/06/17 12:59:05 wiz Exp $
-.\"
 .\" zip_close.mdoc \-- close zip archive
-.\" Copyright (C) 2003, 2005 Dieter Baron and Thomas Klausner
+.\" Copyright (C) 2003-2009 Dieter Baron and Thomas Klausner
 .\"
 .\" This file is part of libzip, a library to manipulate ZIP archives.
-.\" The authors can be contacted at <nih@giga.or.at>
+.\" The authors can be contacted at <libzip@nih.at>
 .\"
 .\" Redistribution and use in source and binary forms, with or without
 .\" modification, are permitted provided that the following conditions
@@ -33,73 +29,78 @@
 .\" OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN
 .\" IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 .\"
-.TH ZIP_CLOSE 3 "June 9, 2005" NiH
+.TH ZIP_CLOSE 3 "February 15, 2009" NiH
 .SH "NAME"
 zip_close \- close zip archive
 .SH "LIBRARY"
 libzip (-lzip)
 .SH "SYNOPSIS"
-.In zip.h
-.Ft int
-.Fn zip_close "struct zip *archive"
+#include <zip.h>
+.PP
+int
+zip_close(struct zip *archive);
 .SH "DESCRIPTION"
 The
-.Fn zip_close
+zip_close
 function closes
 \fBarchive\fR
 and frees the memory allocated for it.
 If any files within were changed, those changes are written to disk
 first.
 If writing changes fails,
-.Fn zip_close
+zip_close
 fails and
 \fBarchive\fR
 is left unchanged.
+If
+\fBarchive\fR
+contains no files, the file is completely removed (no empty archive is
+written).
 .SH "RETURN VALUES"
 Upon successful completion 0 is returned.
 Otherwise, \-1 is returned and the error code in
 \fBarchive\fR
 is set to indicate the error.
 .SH "ERRORS"
-.Fn zip_close
+zip_close
 will fail if:
 .RS
 .TP 4
-Bq Er ZIP_ER_EOF
+[ZIP_ER_EOF]
 Unexpected end-of-file found while reading from a file.
 .TP 4
-Bq Er ZIP_ER_INTERNAL
+[ZIP_ER_INTERNAL]
 The callback function of an added or replaced file returned an
 error but failed to report which.
 .TP 4
-Bq Er ZIP_ER_INVAL
+[ZIP_ER_INVAL]
 The
 \fBpath\fR
 argument is
 \fBNULL.\fR
 .TP 4
-Bq Er ZIP_ER_MEMORY
+[ZIP_ER_MEMORY]
 Required memory could not be allocated.
 .TP 4
-Bq Er ZIP_ER_NOZIP
+[ZIP_ER_NOZIP]
 File is not a zip archive.
 .TP 4
-Bq Er ZIP_ER_READ
+[ZIP_ER_READ]
 A file read failed.
 .TP 4
-Bq Er ZIP_ER_RENAME
+[ZIP_ER_RENAME]
 A temporary file could not be renamed to its final name.
 .TP 4
-Bq Er ZIP_ER_SEEK
+[ZIP_ER_SEEK]
 A file seek failed.
 .TP 4
-Bq Er ZIP_ER_TMPOPEN
+[ZIP_ER_TMPOPEN]
 A temporary file could not be created.
 .TP 4
-Bq Er ZIP_ER_WRITE
+[ZIP_ER_WRITE]
 A file write failed.
 .TP 4
-Bq Er ZIP_ER_ZLIB
+[ZIP_ER_ZLIB]
 An error occurred while (de)compressing a stream with
 zlib(3).
 .RE
@@ -108,6 +109,7 @@ for added or replaced files will be passed back.
 .SH "SEE ALSO"
 libzip(3),
 zip_error_get(3),
+zip_fdopen(3),
 zip_open(3),
 zip_strerror(3)
 .SH "AUTHORS"

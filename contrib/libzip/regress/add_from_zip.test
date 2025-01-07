@@ -1,0 +1,6 @@
+# add file from zip to zip
+program add_from_zip
+return 0
+args teststored.zip testfile.zip empty.txt
+file teststored.zip teststored.zip teststored.zip
+file-new testfile.zip teststored.zip

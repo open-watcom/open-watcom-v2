@@ -1,0 +1,42 @@
+Torrentzip is a program that brings zip archives into a ``normal
+form'': if the contained files (and their names) are identical, the
+zip archive will always be the same, byte-wise.  Below is the
+definition fo the Torrentzip normal form.
+
+* order of files in archive
+
+  In ascending order, as determined by strcasecmp(3).
+
+  XXX: How does it deal with file names differing in case only?
+
+
+* compression used
+
+  Deflate at best compression level:
+
+  deflateInit2(..., Z_BEST_COMPRESSION, Z_DEFLATED,
+  		    -MAX_WBITS, 8, Z_DEFAULT_STRATEGY);
+
+* fields in local/central directory
+
+  version made by		0
+  version needed to extract	20
+  general purpose flag		2 (maximum compression)
+  compression method		8 (Deflated)
+  last mod file time		0xbc00 (23:32 GMT+1)
+  last mod file date		0x2198 (1996/12/24)
+  extra fields			none
+  file comment			none
+  disk number start		0
+  internal file attributes	0
+  external file attributes	0
+
+* archive comment:
+
+  The archive comment contains a signature and a crc32 checksum of the
+central directory (as specified by size/offset in EOCD record).  This
+is used to detect wether a torrentziped archive was modified by a
+non-torrentzip aware program.
+
+  TORRENTZIPPED-XXXXXXXX where XXXXXXX is the crc32 checksum of
+central dir in hex, using uppercase letters A-F.

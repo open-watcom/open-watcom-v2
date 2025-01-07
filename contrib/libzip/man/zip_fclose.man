@@ -1,12 +1,8 @@
-.\" Converted with mdoc2man 0.2
-.\" from NiH: zip_fclose.mdoc,v 1.9 2005/06/09 21:14:54 wiz Exp 
-.\" $NiH: zip_fclose.man,v 1.8 2005/06/17 12:59:05 wiz Exp $
-.\"
 .\" zip_fclose.mdoc \-- close file in zip archive
 .\" Copyright (C) 2003, 2005 Dieter Baron and Thomas Klausner
 .\"
 .\" This file is part of libzip, a library to manipulate ZIP archives.
-.\" The authors can be contacted at <nih@giga.or.at>
+.\" The authors can be contacted at <libzip@nih.at>
 .\"
 .\" Redistribution and use in source and binary forms, with or without
 .\" modification, are permitted provided that the following conditions
@@ -39,12 +35,13 @@ zip_fclose \- close file in zip archive
 .SH "LIBRARY"
 libzip (-lzip)
 .SH "SYNOPSIS"
-.In zip.h
-.Ft int
-.Fn zip_fclose "struct zip_file *file"
+#include <zip.h>
+.PP
+int
+zip_fclose(struct zip_file *file);
 .SH "DESCRIPTION"
 The
-.Fn zip_fclose
+zip_fclose
 function closes
 \fBfile\fR
 and frees the memory allocated for it.

@@ -1,11 +1,9 @@
 /*
-  $NiH: zipmerge.c,v 1.11 2005/06/09 19:57:10 dillo Exp $
-
   zipmerge.c -- merge zip archives
-  Copyright (C) 2004, 2005 Dieter Baron and Thomas Klausner
+  Copyright (C) 2004-2008 Dieter Baron and Thomas Klausner
 
   This file is part of libzip, a library to manipulate ZIP archives.
-  The authors can be contacted at <nih@giga.or.at>
+  The authors can be contacted at <libzip@nih.at>
 
   Redistribution and use in source and binary forms, with or without
   modification, are permitted provided that the following conditions
@@ -40,9 +38,17 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <unistd.h>
 
 #include "config.h"
+
+#ifdef HAVE_UNISTD_H
+#include <unistd.h>
+#endif
+
+#ifndef HAVE_GETOPT
+#include "getopt.h"
+#endif
+
 #include "zip.h"
 
 
@@ -65,14 +71,11 @@ char help[] = "\n\
   -S       don't overwrite identical files\n\
   -s       overwrite identical files without asking\n\
 \n\
-Report bugs to <nih@giga.or.at>.\n";
+Report bugs to <libizp@nih.at>.\n";
 
 char version_string[] = PROGRAM " (" PACKAGE " " VERSION ")\n\
-Copyright (C) 2003 Dieter Baron and Thomas Klausner\n\
-" PACKAGE " comes with ABSOLUTELY NO WARRANTY, to the extent permitted by law.\n\
-You may redistribute copies of\n\
-" PACKAGE " under the terms of the GNU General Public License.\n\
-For more information about these matters, see the files named COPYING.\n";
+Copyright (C) 2008 Dieter Baron and Thomas Klausner\n\
+" PACKAGE " comes with ABSOLUTELY NO WARRANTY, to the extent permitted by law.\n";
 
 #define OPTIONS "hVDiIsS"
 
@@ -86,7 +89,7 @@ int name_flags;
 
 static int confirm_replace(struct zip *, const char *, int,
 			   struct zip *, const char *, int);
-static int merge_zip(struct zip *za, const char *, const char *);
+static int merge_zip(struct zip *za, const char *, const char *, struct zip **);
 
 
 
@@ -94,7 +97,8 @@ int
 main(int argc, char *argv[])
 {
     struct zip *za;
-    int c, err;
+    struct zip **zs;
+    int c, err, i;
     char errstr[1024], *tname;
 
     prg = argv[0];
@@ -143,6 +147,12 @@ main(int argc, char *argv[])
     }
 
     tname = argv[optind++];
+
+    if ((zs=malloc(sizeof(zs[0])*(argc-optind))) == NULL) {
+	fprintf(stderr, "%s: out of memory\n", prg);
+	exit(1);
+    }
+
     if ((za=zip_open(tname, ZIP_CREATE, &err)) == NULL) {
 	zip_error_to_str(errstr, sizeof(errstr), err, errno);
 	fprintf(stderr, "%s: cannot open zip archive `%s': %s\n",
@@ -150,8 +160,8 @@ main(int argc, char *argv[])
 	exit(1);
     }
 
-    while (optind<argc) {
-	if (merge_zip(za, tname, argv[optind++]) < 0)
+    for (i=0; i<argc-optind; i++) {
+	if (merge_zip(za, tname, argv[optind+i], zs+i) < 0)
 	    exit(1);
     }
 
@@ -160,6 +170,9 @@ main(int argc, char *argv[])
 		prg, tname, zip_strerror(za));
 	exit(1);
     }
+
+    for (i=0; i<argc-optind; i++)
+	zip_close(zs[i]);
 
     exit(0);
 }
@@ -217,7 +230,8 @@ confirm_replace(struct zip *za, const char *tname, int it,
 
 
 static int
-merge_zip(struct zip *za, const char *tname, const char *sname)
+merge_zip(struct zip *za, const char *tname, const char *sname,
+	  struct zip **zsp)
 {
     struct zip *zs;
     struct zip_source *source;
@@ -252,12 +266,14 @@ merge_zip(struct zip *za, const char *tname, const char *sname)
 		break;
 
 	    case -1:
+		zip_close(zs);
 		return -1;
 		
 	    default:
 		fprintf(stderr,	"%s: internal error: "
 			"unexpected return code from confirm (%d)\n",
 			prg, err);
+		zip_close(zs);
 		return -1;
 	    }
 	}
@@ -268,10 +284,12 @@ merge_zip(struct zip *za, const char *tname, const char *sname)
 		fprintf(stderr,
 			"%s: cannot add `%s' to `%s': %s\n",
 			prg, fname, tname, zip_strerror(za));
+		zip_close(zs);
 		return -1;
 	    }
 	}
     }
 
+    *zsp = zs;
     return 0;
 }

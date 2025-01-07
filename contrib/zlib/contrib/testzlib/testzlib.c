@@ -103,12 +103,12 @@ DWORD GetMsecSincePerfCounter(LARGE_INTEGER beginTime64,BOOL fComputeTimeQueryPe
         MyDoMinus64(&ticks,endTime64,beginTime64);
         QueryPerformanceFrequency(&ticksPerSecond);
 
-    
+
         {
             ticksShifted = Int64ShrlMod32(*(DWORDLONG*)&ticks,dwLog);
             tickSecShifted = Int64ShrlMod32(*(DWORDLONG*)&ticksPerSecond,dwLog);
-        
-        } 
+
+        }
 
         dwRet = (DWORD)((((DWORD)ticksShifted)*1000)/(DWORD)(tickSecShifted));
         dwRet *=1;
@@ -116,10 +116,10 @@ DWORD GetMsecSincePerfCounter(LARGE_INTEGER beginTime64,BOOL fComputeTimeQueryPe
     return dwRet;
 }
 
-int ReadFileMemory(const char* filename,long* plFileSize,void** pFilePtr)
+int ReadFileMemory(const char* filename,long* plFileSize,unsigned char** pFilePtr)
 {
     FILE* stream;
-    void* ptr;
+    unsigned char* ptr;
     int retVal=1;
     stream=fopen(filename, "rb");
     if (stream==NULL)
@@ -169,7 +169,7 @@ int main(int argc, char *argv[])
         printf("error reading %s\n",argv[1]);
         return 1;
     }
-    else printf("file %s read, %u bytes\n",argv[1],lFileSize);
+    else printf("file %s read, %ld bytes\n",argv[1],lFileSize);
 
     if (argc>=3)
         BlockSizeCompress=atol(argv[2]);

@@ -1,12 +1,8 @@
-.\" Converted with mdoc2man 0.2
-.\" from NiH: zipmerge.mdoc,v 1.6 2005/06/09 21:14:54 wiz Exp 
-.\" $NiH: zipmerge.man,v 1.4 2005/06/17 12:59:06 wiz Exp $
-.\"
 .\" zipmerge.mdoc \-- merge zip archives
-.\" Copyright (C) 2004, 2005 Dieter Baron and Thomas Klausner
+.\" Copyright (C) 2004, 2005, 2008 Dieter Baron and Thomas Klausner
 .\"
 .\" This file is part of libzip, a library to manipulate ZIP archives.
-.\" The authors can be contacted at <nih@giga.or.at>
+.\" The authors can be contacted at <libzip@nih.at>
 .\"
 .\" Redistribution and use in source and binary forms, with or without
 .\" modification, are permitted provided that the following conditions
@@ -33,7 +29,7 @@
 .\" OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN
 .\" IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 .\"
-.TH ZIPMERGE 1 "December 22, 2004" NiH
+.TH ZIPMERGE 1 "June 4, 2008" NiH
 .SH "NAME"
 zipmerge \- merge zip archives
 .SH "SYNOPSIS"
@@ -82,9 +78,10 @@ Display version information and exit.
 .RE
 .SH "EXIT STATUS"
 .B zipmerge
-exits 0 on success and \*[Gt]1 if an error code.
+exits 0 on success and \*[Gt]1 if an error occurred.
 .SH "SEE ALSO"
 zipcmp(1),
+ziptorrent(1),
 libzip(3)
 .SH "AUTHORS"
 

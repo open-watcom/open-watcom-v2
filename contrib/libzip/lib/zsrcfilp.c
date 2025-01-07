@@ -1,11 +1,9 @@
 /*
-  $NiH: zip_source_filep.c,v 1.6 2005/06/09 19:57:10 dillo Exp $
-
   zip_source_filep.c -- create data source from FILE *
-  Copyright (C) 1999, 2003, 2004, 2005 Dieter Baron and Thomas Klausner
+  Copyright (C) 1999-2009 Dieter Baron and Thomas Klausner
 
   This file is part of libzip, a library to manipulate ZIP archives.
-  The authors can be contacted at <nih@giga.or.at>
+  The authors can be contacted at <libzip@nih.at>
 
   Redistribution and use in source and binary forms, with or without
   modification, are permitted provided that the following conditions
@@ -19,7 +17,7 @@
   3. The names of the authors may not be used to endorse or promote
      products derived from this software without specific prior
      written permission.
-
+ 
   THIS SOFTWARE IS PROVIDED BY THE AUTHORS ``AS IS'' AND ANY EXPRESS
   OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -41,50 +39,80 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "zip.h"
 #include "zipint.h"
 
 struct read_file {
-    FILE *f;            /* file to copy from */
-    char *fname;        /* file name to copy */
-    off_t off;          /* start offset of */
-    off_t len;          /* lengt of data to copy */
-    off_t remain;       /* bytes remaining to be copied */
-    int e[2];           /* error codes */
+    char *fname;	/* name of file to copy from */
+    FILE *f;		/* file to copy from */
+    int closep;		/* close f */
+    struct zip_stat st;	/* stat information passed in */
+
+    zip_uint64_t off;	/* start offset of */
+    zip_int64_t len;	/* length of data to copy */
+    zip_int64_t remain;	/* bytes remaining to be copied */
+    int e[2];		/* error codes */
 };
 
-static ssize_t read_file(void *state, void *data, size_t len,
-                     enum zip_source_cmd cmd);
+static zip_int64_t read_file(void *state, void *data, zip_uint64_t len,
+		     enum zip_source_cmd cmd);
+
+
+
+ZIP_EXTERN struct zip_source *
+zip_source_filep(struct zip *za, FILE *file, zip_uint64_t start,
+		 zip_int64_t len)
+{
+    if (za == NULL)
+	return NULL;
+
+    if (file == NULL || start < 0 || len < -1) {
+	_zip_error_set(&za->error, ZIP_ER_INVAL, 0);
+	return NULL;
+    }
+
+    return _zip_source_file_or_p(za, NULL, file, start, len, 1, NULL);
+}
 
 
 
 struct zip_source *
-zip_source_filep(struct zip *za, const char *file, off_t start, off_t len)
+_zip_source_file_or_p(struct zip *za, const char *fname, FILE *file,
+		      zip_uint64_t start, zip_int64_t len, int closep,
+		      const struct zip_stat *st)
 {
     struct read_file *f;
     struct zip_source *zs;
 
-    if (za == NULL)
-        return NULL;
-
-    if (file == NULL || start < 0 || len < -1) {
-        _zip_error_set(&za->error, ZIP_ER_INVAL, 0);
-        return NULL;
+    if (file == NULL && fname == NULL) {
+	_zip_error_set(&za->error, ZIP_ER_INVAL, 0);
+	return NULL;
     }
 
     if ((f=(struct read_file *)malloc(sizeof(struct read_file))) == NULL) {
-        _zip_error_set(&za->error, ZIP_ER_MEMORY, 0);
-        return NULL;
+	_zip_error_set(&za->error, ZIP_ER_MEMORY, 0);
+	return NULL;
     }
 
-    f->f = NULL;
-    f->fname = strdup(file);
+    f->fname = NULL;
+    if (fname) {
+	if ((f->fname=strdup(fname)) == NULL) {
+	    _zip_error_set(&za->error, ZIP_ER_MEMORY, 0);
+	    free(f);
+	    return NULL;
+	}
+    }
+    f->f = file;
     f->off = start;
     f->len = (len ? len : -1);
+    f->closep = f->fname ? 1 : closep;
+    if (st)
+	memcpy(&f->st, st, sizeof(f->st));
+    else
+	zip_stat_init(&f->st);
 
     if ((zs=zip_source_function(za, read_file, f)) == NULL) {
-        free(f);
-        return NULL;
+	free(f);
+	return NULL;
     }
 
     return zs;
@@ -92,8 +120,8 @@ zip_source_filep(struct zip *za, const char *file, off_t start, off_t len)
 
 
 
-static ssize_t
-read_file(void *state, void *data, size_t len, enum zip_source_cmd cmd)
+static zip_int64_t
+read_file(void *state, void *data, zip_uint64_t len, enum zip_source_cmd cmd)
 {
     struct read_file *z;
     char *buf;
@@ -104,97 +132,115 @@ read_file(void *state, void *data, size_t len, enum zip_source_cmd cmd)
 
     switch (cmd) {
     case ZIP_SOURCE_OPEN:
-        if( z->f == NULL )
-            z->f = fopen( z->fname, "rb" );
-#if defined( __WATCOMC__ ) || defined( _MSC_VER )
-        if (fseek(z->f, z->off, SEEK_SET) < 0) {
-#else
-        if (fseeko(z->f, z->off, SEEK_SET) < 0) {
-#endif
-            z->e[0] = ZIP_ER_SEEK;
-            z->e[1] = errno;
-            return -1;
-        }
-        z->remain = z->len;
-        return 0;
+	if (z->fname) {
+	    if ((z->f=fopen(z->fname, "rbe")) == NULL) {
+		z->e[0] = ZIP_ER_OPEN;
+		z->e[1] = errno;
+		return -1;
+	    }
+	}
 
+	if (z->closep) {
+	    if (fseeko(z->f, (off_t)z->off, SEEK_SET) < 0) {
+		z->e[0] = ZIP_ER_SEEK;
+		z->e[1] = errno;
+		return -1;
+	    }
+	}
+	z->remain = z->len;
+	return 0;
+	
     case ZIP_SOURCE_READ:
-        if (z->remain != -1)
-            n = len > z->remain ? z->remain : len;
-        else
-            n = len;
+	/* XXX: return INVAL if len > size_t max */
+	if (z->remain != -1)
+	    n = len > z->remain ? z->remain : len;
+	else
+	    n = len;
 
-        if ((i=fread(buf, 1, n, z->f)) < 0) {
-            z->e[0] = ZIP_ER_READ;
-            z->e[1] = errno;
-            return -1;
-        }
+	if (!z->closep) {
+	    /* we might share this file with others, so let's be safe */
+	    if (fseeko(z->f, (off_t)(z->off + z->len-z->remain),
+		       SEEK_SET) < 0) {
+		z->e[0] = ZIP_ER_SEEK;
+		z->e[1] = errno;
+		return -1;
+	    }
+	}
 
-        if (z->remain != -1)
-            z->remain -= i;
+	if ((i=fread(buf, 1, n, z->f)) < 0) {
+	    z->e[0] = ZIP_ER_READ;
+	    z->e[1] = errno;
+	    return -1;
+	}
 
-        return i;
+	if (z->remain != -1)
+	    z->remain -= i;
 
+	return i;
+	
     case ZIP_SOURCE_CLOSE:
-        if( z->f != NULL ) {
-            fclose(z->f);
-            z->f = NULL;
-        }
-        return 0;
+	if (z->fname) {
+	    fclose(z->f);
+	    z->f = NULL;
+	}
+	return 0;
 
     case ZIP_SOURCE_STAT:
         {
-            struct zip_stat *st;
-            struct stat fst;
-            FILE *f;
+	    if (len < sizeof(z->st))
+		return -1;
 
-            if (len < sizeof(*st))
-                return -1;
+	    if (z->st.valid != 0)
+		memcpy(data, &z->st, sizeof(z->st));
+	    else {
+		struct zip_stat *st;
+		struct stat fst;
+		int err;
+	    
+		if (z->f)
+		    err = fstat(fileno(z->f), &fst);
+		else
+		    err = stat(z->fname, &fst);
 
-            f = z->f;
-            if( f == NULL )
-                f = fopen( z->fname, "rb" );
+		if (err != 0) {
+		    z->e[0] = ZIP_ER_READ; /* best match */
+		    z->e[1] = errno;
+		    return -1;
+		}
 
-            st = (struct zip_stat *)data;
-
-            if (fstat(fileno(f), &fst) != 0) {
-                z->e[0] = ZIP_ER_READ; /* best match */
-                z->e[1] = errno;
-                if( z->f == NULL )
-                    fclose( f );
-                return -1;
-            }
-
-            st->mtime = fst.st_mtime;
-            st->crc = 0;
-            if (z->len != -1)
-                st->size = z->len;
-            else if ((fst.st_mode&S_IFMT) == S_IFREG)
-                st->size = fst.st_size;
-            else
-                st->size = -1;
-            st->comp_size = -1;
-            st->comp_method = ZIP_CM_STORE;
-
-            if( z->f == NULL )
-                fclose( f );
-            return sizeof(*st);
-        }
+		st = (struct zip_stat *)data;
+		
+		zip_stat_init(st);
+		st->mtime = fst.st_mtime;
+		st->valid |= ZIP_STAT_MTIME;
+		if (z->len != -1) {
+		    st->size = z->len;
+		    st->valid |= ZIP_STAT_SIZE;
+		}
+		else if ((fst.st_mode&S_IFMT) == S_IFREG) {
+		    st->size = fst.st_size;
+		    st->valid |= ZIP_STAT_SIZE;
+		}
+	    }
+	    return sizeof(z->st);
+	}
 
     case ZIP_SOURCE_ERROR:
-        if (len < sizeof(int)*2)
-            return -1;
+	if (len < sizeof(int)*2)
+	    return -1;
 
-        memcpy(data, z->e, sizeof(int)*2);
-        return sizeof(int)*2;
+	memcpy(data, z->e, sizeof(int)*2);
+	return sizeof(int)*2;
 
     case ZIP_SOURCE_FREE:
-        free(z->fname);
-        free(z);
-        return 0;
+	free(z->fname);
+	if (z->closep && z->f)
+	    fclose(z->f);
+	free(z);
+	return 0;
 
     default:
-        ;
+	;
     }
 
     return -1;

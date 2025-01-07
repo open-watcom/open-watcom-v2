@@ -1,11 +1,9 @@
 /*
-  $NiH: zip_source_buffer.c,v 1.5 2005/06/09 19:57:10 dillo Exp $
-
   zip_source_buffer.c -- create zip data source from buffer
-  Copyright (C) 1999, 2003, 2004, 2005 Dieter Baron and Thomas Klausner
+  Copyright (C) 1999-2009 Dieter Baron and Thomas Klausner
 
   This file is part of libzip, a library to manipulate ZIP archives.
-  The authors can be contacted at <nih@giga.or.at>
+  The authors can be contacted at <libzip@nih.at>
 
   Redistribution and use in source and binary forms, with or without
   modification, are permitted provided that the following conditions
@@ -38,7 +36,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "zip.h"
 #include "zipint.h"
 
 struct read_data {
@@ -47,13 +44,12 @@ struct read_data {
     int freep;
 };
 
-static ssize_t read_data(void *state, void *data, size_t len,
-			 enum zip_source_cmd cmd);
+static zip_int64_t read_data(void *, void *, zip_uint64_t, enum zip_source_cmd);
 
 
 
-struct zip_source *
-zip_source_buffer(struct zip *za, const void *data, off_t len, int freep)
+ZIP_EXTERN struct zip_source *
+zip_source_buffer(struct zip *za, const void *data, zip_uint64_t len, int freep)
 {
     struct read_data *f;
     struct zip_source *zs;
@@ -61,17 +57,17 @@ zip_source_buffer(struct zip *za, const void *data, off_t len, int freep)
     if (za == NULL)
 	return NULL;
 
-    if (len < 0 || (data == NULL && len > 0)) {
+    if (data == NULL && len > 0) {
 	_zip_error_set(&za->error, ZIP_ER_INVAL, 0);
 	return NULL;
     }
 
-    if ((f=malloc(sizeof(*f))) == NULL) {
+    if ((f=(struct read_data *)malloc(sizeof(*f))) == NULL) {
 	_zip_error_set(&za->error, ZIP_ER_MEMORY, 0);
 	return NULL;
     }
 
-    f->data = data;
+    f->data = (const char *)data;
     f->end = ((const char *)data)+len;
     f->freep = freep;
     f->mtime = time(NULL);
@@ -86,12 +82,12 @@ zip_source_buffer(struct zip *za, const void *data, off_t len, int freep)
 
 
 
-static ssize_t
-read_data(void *state, void *data, size_t len, enum zip_source_cmd cmd)
+static zip_int64_t
+read_data(void *state, void *data, zip_uint64_t len, enum zip_source_cmd cmd)
 {
     struct read_data *z;
     char *buf;
-    int n;
+    zip_uint64_t n;
 
     z = (struct read_data *)state;
     buf = (char *)data;
@@ -102,11 +98,11 @@ read_data(void *state, void *data, size_t len, enum zip_source_cmd cmd)
 	return 0;
 	
     case ZIP_SOURCE_READ:
+	/* XXX: return error if (len > ZIP_INT64_MAX) */
+
 	n = z->end - z->buf;
 	if (n > len)
 	    n = len;
-	if (n < 0)
-	    n = 0;
 
 	if (n) {
 	    memcpy(buf, z->buf, n);
@@ -127,11 +123,14 @@ read_data(void *state, void *data, size_t len, enum zip_source_cmd cmd)
 
 	    st = (struct zip_stat *)data;
 
+	    zip_stat_init(st);
 	    st->mtime = z->mtime;
-	    st->crc = 0;
 	    st->size = z->end - z->data;
-	    st->comp_size = -1;
+	    st->comp_size = st->size;
 	    st->comp_method = ZIP_CM_STORE;
+	    st->encryption_method = ZIP_EM_NONE;
+	    st->valid = ZIP_STAT_MTIME|ZIP_STAT_SIZE|ZIP_STAT_COMP_SIZE
+		|ZIP_STAT_COMP_METHOD|ZIP_STAT_ENCRYPTION_METHOD;
 	    
 	    return sizeof(*st);
 	}

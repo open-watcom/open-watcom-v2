@@ -1,12 +1,8 @@
-.\" Converted with mdoc2man 0.2
-.\" from NiH: zip_stat.mdoc,v 1.10 2005/06/09 21:14:54 wiz Exp 
-.\" $NiH: zip_stat.man,v 1.9 2005/06/17 12:59:06 wiz Exp $
-.\"
 .\" zip_stat.mdoc \-- get information about file
-.\" Copyright (C) 2003, 2004, 2005 Dieter Baron and Thomas Klausner
+.\" Copyright (C) 2003-2011 Dieter Baron and Thomas Klausner
 .\"
 .\" This file is part of libzip, a library to manipulate ZIP archives.
-.\" The authors can be contacted at <nih@giga.or.at>
+.\" The authors can be contacted at <libzip@nih.at>
 .\"
 .\" Redistribution and use in source and binary forms, with or without
 .\" modification, are permitted provided that the following conditions
@@ -33,21 +29,23 @@
 .\" OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN
 .\" IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 .\"
-.TH ZIP_STAT 3 "June 9, 2005" NiH
+.TH ZIP_STAT 3 "February 14, 2011" NiH
 .SH "NAME"
 zip_stat , \- .Nm zip_stat_index
 get information about file
 .SH "LIBRARY"
 libzip (-lzip)
 .SH "SYNOPSIS"
-.In zip.h
-.Ft int
-.Fn zip_stat "struct zip *archive" "const char *fname" "int flags" "struct zip_stat *sb"
-.Ft int
-.Fn zip_stat_index "struct zip *archive" "int index" "int flags" "struct zip_stat *sb"
+#include <zip.h>
+.PP
+int
+zip_stat(struct zip *archive, const char *fname, int flags, struct zip_stat *sb);
+.PP
+int
+zip_stat_index(struct zip *archive, int index, int flags, struct zip_stat *sb);
 .SH "DESCRIPTION"
 The
-.Fn zip_stat
+zip_stat
 function obtains information about the file named
 \fBfname\fR
 in
@@ -65,25 +63,72 @@ to it to request information about the original file in the archive,
 ignoring any changes made.
 .PP
 The
-.Fn zip_stat_index
+zip_stat_index
 function obtains information about the file at position
 \fBindex.\fR
 .PP
 The
 \fBsb\fR
 argument is a pointer to a
-.Ft struct zip_stat
+.PP
+struct zip_stat
 (shown below), into which information about the file is placed.
 .Bd \-literal
 struct zip_stat {
-    const char *name;			/* name of the file */
-    int index;				/* index within archive */
-    unsigned int crc;			/* crc of file data */
-    unsigned int size;			/* size of file (uncompressed) */
-    time_t mtime;			/* modification time */
-    unsigned int comp_size;		/* size of file (compressed) */
-    unsigned short comp_method;		/* compression method used */
+    zip_uint64_t valid;                 /* which fields have valid values */
+    const char *name;                   /* name of the file */
+    zip_uint64_t index;                 /* index within archive */
+    zip_uint64_t size;                  /* size of file (uncompressed) */
+    zip_uint64_t comp_size;             /* size of file (compressed) */
+    time_t mtime;                       /* modification time */
+    zip_uint32_t crc;                   /* crc of file data */
+    zip_uint16_t comp_method;           /* compression method used */
+    zip_uint16_t encryption_method;     /* encryption method used */
+    zip_uint32_t flags;                 /* reserved for future use */
 };
+.Ed
+The structure pointed to by
+\fBsb\fR
+must be allocated before calling
+zip_stat
+or
+zip_stat_index.
+.PP
+The
+\fBvalid\fR
+field of the structure specifies which other fields are valid.
+Check if the flag defined by the following defines are in
+\fBvalid\fR
+before accessing the fields:
+.RS
+.TP 30
+ZIP_STAT_NAME
+\fBname\fR
+.TP 30
+ZIP_STAT_INDEX
+\fBindex\fR
+.TP 30
+ZIP_STAT_SIZE
+\fBsize\fR
+.TP 30
+ZIP_STAT_COMP_SIZE
+\fBcomp_size\fR
+.TP 30
+ZIP_STAT_MTIME
+\fBmtime\fR
+.TP 30
+ZIP_STAT_CRC
+\fBcrc\fR
+.TP 30
+ZIP_STAT_COMP_METHOD
+\fBcomp_method\fR
+.TP 30
+ZIP_STAT_ENCRYPTION_METHOD
+\fBencryption_method\fR
+.TP 30
+ZIP_STAT_FLAGS
+\fBflags\fR
+.RE
 .SH "RETURN VALUES"
 Upon successful completion 0 is returned.
 Otherwise, \-1 is returned and the error information in
@@ -91,14 +136,14 @@ Otherwise, \-1 is returned and the error information in
 is set to indicate the error.
 .SH "ERRORS"
 The function
-.Fn zip_stat
+zip_stat
 can fail for any of the errors specified for the routine
 zip_name_locate(3).
 .PP
 The function
-.Fn zip_stat_index
+zip_stat_index
 fails and sets the error information to
-.Er ZIP_ER_INVAL
+ZIP_ER_INVAL
 if
 \fBindex\fR
 is invalid.
@@ -106,10 +151,12 @@ If
 \fBZIP_FL_UNCHANGED\fR
 is not set and no information can be obtained from the source
 callback, the error information is set to
-.Er ZIP_ER_CHANGED.
+ZIP_ER_CHANGED.
 .SH "SEE ALSO"
 libzip(3),
-zip_name_locate(3)
+zip_get_num_entries(3),
+zip_name_locate(3),
+zip_stat_init(3)
 .SH "AUTHORS"
 
 Dieter Baron <dillo@giga.or.at>

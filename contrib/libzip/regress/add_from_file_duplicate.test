@@ -1,0 +1,7 @@
+# add already existing file to zip, making duplicate names
+program add_from_file
+return 1
+args testfile.zip testfile.txt
+file testfile.txt testfile.txt testfile.txt
+file testfile.zip testfile.zip testfile.zip
+stderr can't add file `testfile.txt': File already exists

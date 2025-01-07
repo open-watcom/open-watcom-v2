@@ -1,12 +1,8 @@
-.\" Converted with mdoc2man 0.2
-.\" from NiH: zip_rename.mdoc,v 1.8 2005/06/09 21:14:54 wiz Exp 
-.\" $NiH: zip_rename.man,v 1.7 2005/06/17 12:59:06 wiz Exp $
-.\"
 .\" zip_rename.mdoc \-- rename file in zip archive
-.\" Copyright (C) 2003, 2005 Dieter Baron and Thomas Klausner
+.\" Copyright (C) 2003-2009 Dieter Baron and Thomas Klausner
 .\"
 .\" This file is part of libzip, a library to manipulate ZIP archives.
-.\" The authors can be contacted at <nih@giga.or.at>
+.\" The authors can be contacted at <libzip@nih.at>
 .\"
 .\" Redistribution and use in source and binary forms, with or without
 .\" modification, are permitted provided that the following conditions
@@ -33,15 +29,16 @@
 .\" OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN
 .\" IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 .\"
-.TH ZIP_RENAME 3 "November 30, 2003" NiH
+.TH ZIP_RENAME 3 "March 10, 2009" NiH
 .SH "NAME"
 zip_rename \- rename file in zip archive
 .SH "LIBRARY"
 libzip (-lzip)
 .SH "SYNOPSIS"
-.In zip.h
-.Ft int
-.Fn zip_rename "struct zip *archive" "int index" "const char *name"
+#include <zip.h>
+.PP
+int
+zip_rename(struct zip *archive, zip_uint64_t index, const char *name);
 .SH "DESCRIPTION"
 The file at position
 \fBindex\fR
@@ -55,19 +52,27 @@ Otherwise, \-1 is returned and the error code in
 \fBarchive\fR
 is set to indicate the error.
 .SH "ERRORS"
-.Fn zip_rename
+zip_rename
 fails if:
 .RS
 .TP 4
-Bq Er ZIP_ER_EXISTS
+[ZIP_ER_DELETED]
+The file to be renamed has been deleted from the archive.
+.TP 4
+[ZIP_ER_EXISTS]
 There is already a file called
 \fBname\fR
 in the archive.
 .TP 4
-Bq Er ZIP_ER_INVAL
+[ZIP_ER_INVAL]
 \fBindex\fR
 is not a valid file index in
-\fBarchive.\fR
+\fBarchive,\fR
+\fBname is\fR
+\fBNULL\fR
+or the empty string.
+Also a file cannot be renamed to a directory or vice versa.
+Directories are denoted by a trailing slash.
 .RE
 .SH "SEE ALSO"
 libzip(3),

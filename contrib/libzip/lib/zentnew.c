@@ -1,11 +1,9 @@
 /*
-  $NiH: zip_entry_new.c,v 1.1 2004/11/30 21:42:22 wiz Exp $
-
   zip_entry_new.c -- create and init struct zip_entry
-  Copyright (C) 1999, 2003, 2004 Dieter Baron and Thomas Klausner
+  Copyright (C) 1999-2009 Dieter Baron and Thomas Klausner
 
   This file is part of libzip, a library to manipulate ZIP archives.
-  The authors can be contacted at <nih@giga.or.at>
+  The authors can be contacted at <libzip@nih.at>
 
   Redistribution and use in source and binary forms, with or without
   modification, are permitted provided that the following conditions
@@ -37,7 +35,6 @@
 
 #include <stdlib.h>
 
-#include "zip.h"
 #include "zipint.h"
 
 
@@ -46,25 +43,24 @@ struct zip_entry *
 _zip_entry_new(struct zip *za)
 {
     struct zip_entry *ze;
-    int increment = 64;
     if (!za) {
 	ze = (struct zip_entry *)malloc(sizeof(struct zip_entry));
 	if (!ze) {
-	    _zip_error_set(&za->error, ZIP_ER_MEMORY, 0);
 	    return NULL;
 	}
     }
     else {
-	if (za->nentry >= za->nentry_alloc-1) {
-	    za->nentry_alloc += increment;
-	    increment *= 2;
-	    za->entry = (struct zip_entry *)realloc(za->entry,
-						    sizeof(struct zip_entry)
-						    * za->nentry_alloc);
-	    if (!za->entry) {
+	if (za->nentry+1 >= za->nentry_alloc) {
+	    struct zip_entry *rentries;
+	    za->nentry_alloc += 16;
+	    rentries = (struct zip_entry *)realloc(za->entry,
+						   sizeof(struct zip_entry)
+						   * za->nentry_alloc);
+	    if (!rentries) {
 		_zip_error_set(&za->error, ZIP_ER_MEMORY, 0);
 		return NULL;
 	    }
+	    za->entry = rentries;
 	}
 	ze = za->entry+za->nentry;
     }
@@ -72,6 +68,10 @@ _zip_entry_new(struct zip *za)
     ze->state = ZIP_ST_UNCHANGED;
 
     ze->ch_filename = NULL;
+    ze->ch_extra = NULL;
+    ze->ch_extra_len = -1;
+    ze->ch_comment = NULL;
+    ze->ch_comment_len = -1;
     ze->source = NULL;
 
     if (za)

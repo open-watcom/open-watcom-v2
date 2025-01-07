@@ -1,11 +1,9 @@
 /*
-  $NiH: mkname.c,v 1.1 2005/06/09 18:49:38 dillo Exp $
-
   mkname.c -- add srcdir to name
   Copyright (C) 2005 Dieter Baron and Thomas Klausner
 
   This file is part of libzip, a library to manipulate ZIP archives.
-  The authors can be contacted at <nih@giga.or.at>
+  The authors can be contacted at <libzip@nih.at>
 
   Redistribution and use in source and binary forms, with or without
   modification, are permitted provided that the following conditions
@@ -37,6 +35,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "mkname.h"
 

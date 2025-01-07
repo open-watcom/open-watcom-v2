@@ -1,11 +1,9 @@
 /*
-  $NiH: zipcmp.c,v 1.18 2005/06/18 00:54:08 wiz Exp $
-
   zipcmp.c -- compare zip files
-  Copyright (C) 2003, 2004, 2005 Dieter Baron and Thomas Klausner
+  Copyright (C) 2003-2010 Dieter Baron and Thomas Klausner
 
   This file is part of libzip, a library to manipulate ZIP archives.
-  The authors can be contacted at <nih@giga.or.at>
+  The authors can be contacted at <libzip@nih.at>
 
   Redistribution and use in source and binary forms, with or without
   modification, are permitted provided that the following conditions
@@ -35,14 +33,21 @@
 
 
 
+#include "config.h"
+
 #include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#ifdef HAVE_UNISTD_H
 #include <unistd.h>
+#endif
 #include <zlib.h>
 
-#include "config.h"
+#ifndef HAVE_GETOPT
+#include "getopt.h"
+#endif
+
 #include "zip.h"
 
 struct entry {
@@ -55,7 +60,7 @@ struct entry {
 
 const char *prg;
 
-#define PROGRAM	"zipmerge"
+#define PROGRAM	"zipcmp"
 
 char *usage = "usage: %s [-hiqtVv] zip1 zip2\n";
 
@@ -70,14 +75,11 @@ char help[] = "\n\
   -t       test zip files\n\
   -v       be verbose (print differences, default)\n\
 \n\
-Report bugs to <nih@giga.or.at>.\n";
+Report bugs to <libzip@nih.at>.\n";
 
 char version_string[] = PROGRAM " (" PACKAGE " " VERSION ")\n\
-Copyright (C) 2003 Dieter Baron and Thomas Klausner\n\
-" PACKAGE " comes with ABSOLUTELY NO WARRANTY, to the extent permitted by law.\n\
-You may redistribute copies of\n\
-" PACKAGE " under the terms of the GNU General Public License.\n\
-For more information about these matters, see the files named COPYING.\n";
+Copyright (C) 2010 Dieter Baron and Thomas Klausner\n\
+" PACKAGE " comes with ABSOLUTELY NO WARRANTY, to the extent permitted by law.\n";
 
 #define OPTIONS "hViqtv"
 
@@ -160,7 +162,7 @@ compare_zip(char * const zn[], int verbose)
     char errstr[1024];
 
     for (i=0; i<2; i++) {
-	if ((za=zip_open(zn[i], ZIP_CHECKCONS, &err)) == NULL) {
+	if ((za=zip_open(zn[i], 0, &err)) == NULL) {
 	    zip_error_to_str(errstr, sizeof(errstr), err, errno);
 	    fprintf(stderr, "%s: cannot open zip archive `%s': %s\n",
 		    prg, zn[i], errstr);
@@ -266,7 +268,7 @@ entry_cmp(const void *p1, const void *p2)
     e1 = p1;
     e2 = p2;
 
-    if ((c=(ignore_case ? stricmp : strcmp)(e1->name, e2->name)) != 0)
+    if ((c=(ignore_case ? strcasecmp : strcmp)(e1->name, e2->name)) != 0)
 	return c;
     if (e1->size != e2->size)
 	return e1->size - e2->size;

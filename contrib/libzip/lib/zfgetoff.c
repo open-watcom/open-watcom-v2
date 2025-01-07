@@ -1,11 +1,9 @@
 /*
-  $NiH: zip_file_get_offset.c,v 1.3 2004/11/17 21:55:11 wiz Exp $
-
   zip_file_get_offset.c -- get offset of file data in archive.
-  Copyright (C) 1999, 2003, 2004 Dieter Baron and Thomas Klausner
+  Copyright (C) 1999-2007 Dieter Baron and Thomas Klausner
 
   This file is part of libzip, a library to manipulate ZIP archives.
-  The authors can be contacted at <nih@giga.or.at>
+  The authors can be contacted at <libzip@nih.at>
 
   Redistribution and use in source and binary forms, with or without
   modification, are permitted provided that the following conditions
@@ -40,10 +38,8 @@
 #include <string.h>
 #include <errno.h>
 #include <sys/types.h>
+#include <sys/stat.h>
 
-#include "wio.h"
-
-#include "zip.h"
 #include "zipint.h"
 
 
@@ -62,12 +58,12 @@ _zip_file_get_offset(struct zip *za, int idx)
 
     offset = za->cdir->entry[idx].offset;
 
-    if (fseek(za->zp, offset, SEEK_SET) != 0) {
+    if (fseeko(za->zp, offset, SEEK_SET) != 0) {
 	_zip_error_set(&za->error, ZIP_ER_SEEK, errno);
 	return 0;
     }
 
-    if (_zip_dirent_read(&de, za->zp, NULL, 0, 1, &za->error) != 0)
+    if (_zip_dirent_read(&de, za->zp, NULL, NULL, 1, &za->error) != 0)
 	return 0;
 
     offset += LENTRYSIZE + de.filename_len + de.extrafield_len;

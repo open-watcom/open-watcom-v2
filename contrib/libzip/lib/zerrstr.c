@@ -1,12 +1,8 @@
 /*
    This file was generated automatically by ./make_zip_err_str.sh
    from ./zip.h; make changes there.
-
-	NiH: make_zip_err_str.sh,v 1.8 2004/11/17 21:55:09 wiz Exp 
-	NiH: zip.h,v 1.50 2005/07/14 14:08:11 dillo Exp
  */
 
-#include "zip.h"
 #include "zipint.h"
 
 
@@ -36,6 +32,10 @@ const char * const _zip_err_str[] = {
     "Zip archive inconsistent",
     "Can't remove file",
     "Entry has been deleted",
+    "Encryption method not supported",
+    "Read-only archive", 
+    "No password provided",
+    "Wrong password provided",
 };
 
 const int _zip_nerr_str = sizeof(_zip_err_str)/sizeof(_zip_err_str[0]);
@@ -68,5 +68,9 @@ const int _zip_err_type[] = {
     N,
     N,
     S,
+    N,
+    N,
+    N, 
+    N,
     N,
 };

@@ -1,8 +1,67 @@
+! [doc] zip_source_function: mention that stat is called after close
+! [cleanup] get rid of zip_get_{compression,encryption}_implementation
+! [compat] test calls against old API
++ [portability] use _setmode(_fileno(fp), _O_BINARY); where present
++ [bug] fix permissions of new file to match old one
++ [bug] _zip_checkcons return value can overflow
++ [bug] _zip_u2d_time: handle localtime(3) failure
++ [bug] missing -Wl,-R in pkg-config file
++ [cleanup] use zip_*int*_t internally
++ [cleanup] don't make zip_source_zip go through zip_fread
++ [bug] set "version of encoding software" to 2.0
++ [bug?] keep extended local headers when copying?
+- [cleanup] remove now useless check of fseek 
+- [consistency check] check that local headers come before central dir
+- [consistency] check arguments for every entry point into libzip
+- [bug] zip_open: consistency check: check data descriptor
+- [bug] do not compress if storing is smaller
+- [bug] zip_open: check whether file can be created and fail if not
+- [bug] check for limits imposed by format (central dir size, file size, ...)
+- [feature] handle zip_open/zip_close "race" for new files
+- [feature] support streaming output (creating new archive to e.g. stdout)
+- [feature] add functions to:
+  . set compression method for new/changed entry
+  . set last modification time for entry
+  . read/set EAs
+  . parse/create some EAs?
+  . read/set ASCII file flag
++ [test] run regression tests also from CMake framework
+- [test] rename deleted (fails)
+- [test] rename file to dir/ and vice versa (fails)
+------------------------------------------------ API issues
+- character encoding in file names and comments (ZIP_AFL_UTF8, see mail)
+- parameters for compression/crypt implementations (extra function)
+  ZIP_CM_DEFLATE/ZIP_CM_BZIP2: compression level
+  			       memlevel?
+* compression/crypt implementations: how to set error code on failure
++ compression/crypt error messages a la ZIP_ER_ZLIB (no detailed info passing)
+* I/O methods
+------------------------------------------------ API ideas
+struct zip *zip_open_encrypted(const char *path, int flags,
+                               const char *password, int *errorp);
+
+int zip_set_file_compression(struct zip *archive, zip_uint64_t idx,
+    			zip_uint16_t method, zip_uint32_t flags);
+	flags: 0-15: compression ratio (0: fast, 15: best)
+		16: default	
+		higher bits: method specific
+int zip_set_encryption(struct zip *archive, zip_uint64_t idx,
+    		       zip_uint16_t method, const char *password);
+void zip_set_archive_encryption(struct zip *archive,
+     				zip_uint16_t method, const char *password);
+
+struct zip_source *zip_source_writable(struct zip *archive);
+zip_source_write(struct zip_source *, const void *data, size_t len);
+zip_source_printf(struct zip_source *, const char *fmt, ...);
+/* maybe
+zip_source_vprintf(struct zip_source *, const char *fmt, va_list ap);
+*/
 ------------------------------------------------ others
 * regression tests (duplicate file names, unchange, .{200})
 * zip_commit
 * zip_replace_zip: allow rewinding
-* API for (file and archive) comments
+* API for parsing extra fields?
+* API for setting/getting extra fields in cdir?
 * zipcmp: add option for file content comparison
 * support for zip64 (large file)
 
@@ -10,7 +69,6 @@
 * add custom compression function support
 * zip_replace_zip: remember compression method, recompress if different speced
 * close even if error...
-* update-zip (instead of close, reopen)
 * support for old compression methods?????
 ------------------------------------------------ regression tests
 * (add, replace)
@@ -20,6 +78,7 @@
 	replace ok
 	replace w/ illegal index [E]
 	replace w/ deleted name [E]
+	unchange added/replaced file
 * (close)
 	copy zip file
 	open copy
@@ -31,6 +90,7 @@
 * (error_get)
 * (error_get_sys_type)
 * (error_to_str)
+* (extra_fields)
 * (file_error_get)
 * (file_strerror)
 * (fopen_index)

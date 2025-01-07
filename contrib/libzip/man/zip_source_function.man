@@ -1,12 +1,8 @@
-.\" Converted with mdoc2man 0.2
-.\" from NiH: zip_source_function.mdoc,v 1.13 2005/06/09 21:14:54 wiz Exp 
-.\" $NiH: zip_source_function.man,v 1.4 2005/06/17 12:59:06 wiz Exp $
-.\"
 .\" zip_source_function.mdoc \-- create data source from function
-.\" Copyright (C) 2004, 2005 Dieter Baron and Thomas Klausner
+.\" Copyright (C) 2004-2009 Dieter Baron and Thomas Klausner
 .\"
 .\" This file is part of libzip, a library to manipulate ZIP archives.
-.\" The authors can be contacted at <nih@giga.or.at>
+.\" The authors can be contacted at <libzip@nih.at>
 .\"
 .\" Redistribution and use in source and binary forms, with or without
 .\" modification, are permitted provided that the following conditions
@@ -33,30 +29,31 @@
 .\" OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN
 .\" IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 .\"
-.TH ZIP_SOURCE_FUNCTION 3 "December 22, 2004" NiH
+.TH ZIP_SOURCE_FUNCTION 3 "March 30, 2009" NiH
 .SH "NAME"
 zip_source_function \- create data source from function
 .SH "LIBRARY"
 libzip (-lzip)
 .SH "SYNOPSIS"
-.In zip.h
-.Ft int
-.Fn zip_source_function "struct zip *archive" "zip_source_callback fn" "void *userdata"
+#include <zip.h>
+.PP
+struct zip_source *
+zip_source_function(struct zip *archive, zip_source_callback fn, void *userdata);
 .SH "DESCRIPTION"
 The function
-.Fn zip_source_function
+zip_source_function
 creates a zip source from the user-provided function
 \fBfn,\fR
 which must be of the following type:
 .Bd \-literal
-typedef ssize_t (*zip_source_callback)(void *state,
-    void *data, size_t len, enum zip_source_cmd cmd);
+typedef zip_int64_t (*zip_source_callback)(void *state,
+    void *data, zip_uint64_t len, enum zip_source_cmd cmd);
 .Ed
 .PP
 When called by the library, the first argument is the
-\fBstate\fR
+\fBuserdata\fR
 argument supplied to
-.Fn zip_source_function.
+zip_source_function.
 The next two arguments are a buffer
 \fBdata\fR
 of size
@@ -84,12 +81,19 @@ on success, \-1 on error.
 .TP 21
 \fBZIP_SOURCE_CLOSE\fR
 Reading is done.
+Return 0.
 .TP 21
 \fBZIP_SOURCE_STAT\fR
 Get meta information for the input data.
 \fBdata\fR
-points to a struct zip_stat, which should be filled in.
-Return 0 on success, \-1 on error.
+points to an initialized
+.Vt struct zip_stat,
+which should be filled in.
+(See
+zip_stat_init(3). )
+Information only available after the source has been read (e.g. size)
+can be omitted in an earlier call.
+Return sizeof(struct zip_stat) on success, \-1 on error.
 .TP 21
 \fBZIP_SOURCE_ERROR\fR
 Get error information.
@@ -100,7 +104,7 @@ occurred.
 See
 zip_errors(3)
 for details on the error codes.
-Return 0.
+Return return(2 * sizeof(int)).
 .TP 21
 \fBZIP_SOURCE_FREE\fR
 Clean up and free all resources.
@@ -125,7 +129,13 @@ can be issued at any time.
 will only be issued in response to the function
 returning \-1.
 \fBZIP_SOURCE_FREE\fR
-will be the last command issued.
+will be the last command issued;
+if
+\fBZIP_SOURCE_OPEN\fR
+was called and succeeded,
+\fBZIP_SOURCE_CLOSE\fR
+will be called before
+\fBZIP_SOURCE_FREE.\fR
 .SH "RETURN VALUES"
 Upon successful completion, the created source is returned.
 Otherwise,
@@ -134,11 +144,11 @@ is returned and the error code in
 \fBarchive\fR
 is set to indicate the error.
 .SH "ERRORS"
-.Fn zip_source_function
+zip_source_function
 fails if:
 .RS
 .TP 4
-Bq Er ZIP_ER_MEMORY
+[ZIP_ER_MEMORY]
 Required memory could not be allocated.
 .RE
 .SH "SEE ALSO"
@@ -149,9 +159,10 @@ zip_source_buffer(3),
 zip_source_file(3),
 zip_source_filep(3),
 zip_source_free(3),
-zip_source_zip(3)
+zip_source_zip(3),
+zip_stat_init(3)
 .SH "AUTHORS"
 
-Dieter Baron <dillo@giga.or.at>
+Dieter Baron <dillo@nih.at>
 and
 Thomas Klausner <tk@giga.or.at>
