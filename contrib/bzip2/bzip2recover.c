@@ -479,7 +479,7 @@ Int32 main ( Int32 argc, Char** argv )
 	 }
 	 /* Now split points to the start of the basename. */
          ofs  = split - outFileName;
-         sprintf (split, "rec%5d", wrBlock+1);
+         snprintf (split, BZ_MAX_FILENAME - ofs, "rec%5d", wrBlock+1);
          for (p = split; *p != 0; p++) if (*p == ' ') *p = '0';
          strcat (outFileName, inFileName + ofs);
 

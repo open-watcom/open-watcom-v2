@@ -162,6 +162,8 @@
          ERROR_IF_MINUS_ONE ( retVal );               \
       } while ( 0 )
 
+#   define STDERR_FILENO _fileno(stderr)
+
 #endif /* BZ_LCCWIN32 */
 
 
@@ -1771,8 +1773,8 @@ void addFlagsFromEnvVar ( Cell** argList, Char* varName )
          if (p[i] == 0) break;
          p += i;
          i = 0;
-         while (isspace((Int32)(p[0]))) p++;
-         while (p[i] != 0 && !isspace((Int32)(p[i]))) i++;
+         while (isspace((UChar)(p[0]))) p++;
+         while (p[i] != 0 && !isspace((UChar)(p[i]))) i++;
          if (i > 0) {
             k = i; if (k > FILE_NAME_LEN-10) k = FILE_NAME_LEN-10;
             for (j = 0; j < k; j++) tmpName[j] = p[j];

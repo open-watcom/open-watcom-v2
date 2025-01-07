@@ -135,7 +135,7 @@ bzip2recover.o: bzip2recover.c
 
 
 distclean: clean
-	rm -f manual.ps manual.html manual.pdf
+	rm -f manual.ps manual.html manual.pdf bzip2.txt bzip2.1.preformatted
 
 DISTNAME=bzip2-1.0.8
 dist: check manual
@@ -205,7 +205,13 @@ dist: check manual
 MANUAL_SRCS= 	bz-common.xsl bz-fo.xsl bz-html.xsl bzip.css \
 		entities.xml manual.xml 
 
-manual: manual.html manual.ps manual.pdf
+bzip2.txt: bzip2.1
+	MANWIDTH=67 man --ascii ./$^ > $@
+
+bzip2.1.preformatted: bzip2.1
+	MAN_KEEP_FORMATTING=1 MANWIDTH=67 man -E UTF-8 ./$^ > $@
+
+manual: manual.html manual.ps manual.pdf bzip2.txt bzip2.1.preformatted
 
 manual.ps: $(MANUAL_SRCS)
 	./xmlproc.sh -ps manual.xml
