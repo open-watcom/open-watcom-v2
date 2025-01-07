@@ -24,11 +24,7 @@ FILES=
 for ARG
 do
     case "$ARG" in
-    -*)	if test -z "$OPTIONS"; then
-	    OPTIONS="$ARG"
-        else
-            OPTIONS="$OPTIONS $ARG"
-        fi ;;
+    -*)	OPTIONS="$OPTIONS $ARG";;
      *)	if test -f "$ARG"; then
             FILES="$FILES $ARG"
         else

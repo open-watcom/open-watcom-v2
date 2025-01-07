@@ -94,19 +94,14 @@ zip_close(struct zip *za)
 	
     if ((cd=_zip_cdir_new(survivors, &za->error)) == NULL)
 	return -1;
-    
-    for (i=0; i<survivors; i++)
-	_zip_dirent_init(&cd->entry[i]);
 
-    int len = strlen(za->zn) + 8;
-
-    if ((temp=(char *)malloc(len)) == NULL) {
+    if ((temp=malloc(strlen(za->zn)+8)) == NULL) {
 	_zip_error_set(&za->error, ZIP_ER_MEMORY, 0);
 	_zip_cdir_free(cd);
 	return -1;
     }
 
-    snprintf(temp, len, "%s.XXXXXX", za->zn);
+    sprintf(temp, "%s.XXXXXX", za->zn);
 
     if ((tfd=mkstemp(temp)) == -1) {
 	_zip_error_set(&za->error, ZIP_ER_TMPOPEN, errno);
@@ -148,12 +143,12 @@ zip_close(struct zip *za)
 	    }
 	}
 	else {
-	    if (fseeko(za->zp, za->cdir->entry[i].offset, SEEK_SET) != 0) {
+	    if (fseek(za->zp, za->cdir->entry[i].offset, SEEK_SET) != 0) {
 		_zip_error_set(&za->error, ZIP_ER_SEEK, errno);
 		error = 1;
 		break;
 	    }
-	    if (_zip_dirent_read(&de, za->zp, NULL, NULL, 1, &za->error) != 0) {
+	    if (_zip_dirent_read(&de, za->zp, NULL, 0, 1, &za->error) != 0) {
 		error = 1;
 		break;
 	    }
@@ -168,7 +163,7 @@ zip_close(struct zip *za)
 	    cd->entry[j].filename_len = de.filename_len;
 	}
 
-	cd->entry[j].offset = ftello(tfp);
+	cd->entry[j].offset = ftell(tfp);
 
 	if (ZIP_ENTRY_DATA_CHANGED(za->entry+i)) {
 	    if (add_data(za, i, &de, tfp) < 0) {
@@ -187,7 +182,7 @@ zip_close(struct zip *za)
 		break;
 	    }
 	    /* we just read the local dirent, file is at correct position */
-	    if (copy_data(za->zp, cd->entry[j].comp_size, out, &za->error) < 0) {
+	    if (copy_data(za->zp, de.comp_size, tfp, &za->error) < 0) {
 		error = 1;
 		break;
 	    }
@@ -254,9 +249,9 @@ add_data(struct zip *za, int idx, struct zip_dirent *de, FILE *ft)
     cb = za->entry[idx].source->f;
     ud = za->entry[idx].source->ud;
 
-    if (cb(ud, &st, sizeof(st), ZIP_SOURCE_STAT) < (ssize_t)sizeof(st)) {
-		ch_set_error(&za->error, cb, ud);
-		return -1;
+    if (cb(ud, NULL, 0, ZIP_SOURCE_OPEN) < 0) {
+	ch_set_error(&za->error, cb, ud);
+	return -1;
     }
 
     if (cb(ud, &st, sizeof(st), ZIP_SOURCE_STAT) < sizeof(st)) {
@@ -264,7 +259,7 @@ add_data(struct zip *za, int idx, struct zip_dirent *de, FILE *ft)
 	return -1;
     }
 
-    offstart = ftello(ft);
+    offstart = ftell(ft);
 
     if (_zip_dirent_write(de, ft, 1, &za->error) < 0)
 	return -1;
@@ -283,7 +278,7 @@ add_data(struct zip *za, int idx, struct zip_dirent *de, FILE *ft)
 	return -1;
     }
 
-    offend = ftello(ft);
+    offend = ftell(ft);
 
     if (fseek(ft, offstart, SEEK_SET) < 0) {
 	_zip_error_set(&za->error, ZIP_ER_SEEK, errno);
@@ -299,7 +294,7 @@ add_data(struct zip *za, int idx, struct zip_dirent *de, FILE *ft)
     if (_zip_dirent_write(de, ft, 1, &za->error) < 0)
 	return -1;
     
-    if (fseeko(ft, offend, SEEK_SET) < 0) {
+    if (fseek(ft, offend, SEEK_SET) < 0) {
 	_zip_error_set(&za->error, ZIP_ER_SEEK, errno);
 	return -1;
     }
@@ -342,7 +337,6 @@ add_data_uncomp(zip_source_callback cb, void *ud, struct zip_stat *st,
     char b1[BUFSIZE], b2[BUFSIZE];
     int end, flush, ret;
     ssize_t n;
-	size_t n2;
     z_stream zstr;
 
     st->comp_method = ZIP_CM_DEFLATE;
@@ -389,16 +383,16 @@ add_data_uncomp(zip_source_callback cb, void *ud, struct zip_stat *st,
 	}
 	
 	if (zstr.avail_out != sizeof(b2)) {
-	    n2 = sizeof(b2) - zstr.avail_out;
+	    n = sizeof(b2) - zstr.avail_out;
 	    
-	    if (fwrite(b2, 1, n2, ft) != n2) {
+	    if (fwrite(b2, 1, n, ft) != n) {
 		_zip_error_set(error, ZIP_ER_WRITE, errno);
 		return -1;
 	    }
 	
 	    zstr.next_out = (Bytef *)b2;
 	    zstr.avail_out = sizeof(b2);
-	    st->comp_size += n2;
+	    st->comp_size += n;
 	}
 
 	if (ret == Z_STREAM_END) {
@@ -417,7 +411,7 @@ ch_set_error(struct zip_error *error, zip_source_callback cb, void *ud)
 {
     int e[2];
 
-    if ((cb(ud, e, sizeof(e), ZIP_SOURCE_ERROR)) < (ssize_t)sizeof(e)) {
+    if ((cb(ud, e, sizeof(e), ZIP_SOURCE_ERROR)) < sizeof(e)) {
 	error->zip_err = ZIP_ER_INTERNAL;
 	error->sys_err = 0;
     }

@@ -152,7 +152,7 @@ _zip_file_fillbuf(void *buf, size_t buflen, struct zip_file *zf)
     if ((zf->flags & ZIP_ZF_EOF) || zf->cbytes_left == 0 || buflen == 0)
 	return 0;
     
-    if (fseeko(zf->za->zp, zf->fpos, SEEK_SET) < 0) {
+    if (fseek(zf->za->zp, zf->fpos, SEEK_SET) < 0) {
 	_zip_error_set(&zf->error, ZIP_ER_SEEK, errno);
 	return -1;
     }
