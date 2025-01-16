@@ -144,8 +144,8 @@ _WCRTLINK extern void     _harderr( int (_DOSFAR *__func)(unsigned __deverr, uns
 _WCRTLINK extern void     _hardresume( int __result );
 _WCRTLINK extern void     _hardretn( int __error );
 #ifdef _M_IX86
-_WCRTLINK extern int      intdos( union REGS *, union REGS * );
-_WCRTLINK extern int      intdosx( union REGS *, union REGS *, struct SREGS * );
+_WCRTLINK extern int      intdos( const union REGS *, union REGS * );
+_WCRTLINK extern int      intdosx( const union REGS *, union REGS *, struct SREGS * );
 #endif
 _WCRTLINK extern unsigned sleep( unsigned __seconds );
 
