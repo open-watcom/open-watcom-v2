@@ -257,12 +257,12 @@ _WCIRTLINK extern void _enable( void );
 :include delay.sp
 :segment BITS16
 #if defined(_M_I86) || defined(__WINDOWS_386__)
-_WCRTLINK extern int     int86( int, union REGS *, union REGS * );
-_WCRTLINK extern int     int86x( int, union REGS *, union REGS *, struct SREGS * );
+_WCRTLINK extern int     int86( int, const union REGS *, union REGS * );
+_WCRTLINK extern int     int86x( int, const union REGS *, union REGS *, struct SREGS * );
 #else
 :endsegment
-_WCRTLINK extern int     int386( int, union REGS *, union REGS * );
-_WCRTLINK extern int     int386x( int, union REGS *, union REGS *, struct SREGS * );
+_WCRTLINK extern int     int386( int, const union REGS *, union REGS * );
+_WCRTLINK extern int     int386x( int, const union REGS *, union REGS *, struct SREGS * );
 :segment BITS16
 #endif
 :endsegment
