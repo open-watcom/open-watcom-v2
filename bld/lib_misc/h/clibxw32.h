@@ -37,10 +37,10 @@
 #define _FAR
 #endif
 
-extern int            _FAR __pascal _clib_intdos( union REGS _FAR *in_regs, union REGS _FAR *out_regs );
-extern int            _FAR __pascal _clib_intdosx( union REGS _FAR *in_regs, union REGS _FAR *out_regs, struct SREGS _FAR *seg_regs );
-extern int            _FAR __pascal _clib_int86( int inter_no, union REGS _FAR *in_regs, union REGS _FAR *out_regs );
-extern int            _FAR __pascal _clib_int86x( int inter_no, union REGS _FAR *in_regs, union REGS _FAR *out_regs, struct SREGS _FAR *seg_regs );
+extern int            _FAR __pascal _clib_intdos( const union REGS _FAR *in_regs, union REGS _FAR *out_regs );
+extern int            _FAR __pascal _clib_intdosx( const union REGS _FAR *in_regs, union REGS _FAR *out_regs, struct SREGS _FAR *seg_regs );
+extern int            _FAR __pascal _clib_int86( int inter_no, const union REGS _FAR *in_regs, union REGS _FAR *out_regs );
+extern int            _FAR __pascal _clib_int86x( int inter_no, const union REGS _FAR *in_regs, union REGS _FAR *out_regs, struct SREGS _FAR *seg_regs );
 extern void           _FAR __pascal _clib_intr( int inter_no, union REGPACK _FAR *regs );
 extern void           _FAR __pascal _clib_intrf( int inter_no, union REGPACK _FAR *regs );
 extern unsigned       _FAR __pascal _clib_dos_findfirst( char _FAR *__path,unsigned __attr, struct find_t _FAR *__buf );

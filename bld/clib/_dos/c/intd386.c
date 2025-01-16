@@ -41,7 +41,7 @@
 #endif
 
 
-_WCRTLINK int intdos( union REGS *inregs, union REGS *outregs )
+_WCRTLINK int intdos( const union REGS *inregs, union REGS *outregs )
 {
 #if defined( __WINDOWS_386__ )
     return( _clib_intdos( inregs, outregs ) );

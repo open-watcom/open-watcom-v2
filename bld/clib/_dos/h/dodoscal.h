@@ -37,8 +37,8 @@
 #define WIN386FAR
 #endif
 
-extern int  DoDosCall( union REGS WIN386FAR *in, union REGS WIN386FAR *out );
-extern int  DoDosxCall( union REGS WIN386FAR *in, union REGS WIN386FAR *out, struct SREGS WIN386FAR *sr );
+extern int  DoDosCall( const union REGS WIN386FAR *in, union REGS WIN386FAR *out );
+extern int  DoDosxCall( const union REGS WIN386FAR *in, union REGS WIN386FAR *out, struct SREGS WIN386FAR *sr );
 
 #if defined( _M_I86 )
 

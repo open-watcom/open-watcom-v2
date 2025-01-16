@@ -37,7 +37,7 @@
 #include "seterrno.h"
 
 
-_WCRTLINK int intdos( union REGS *inregs, union REGS *outregs )
+_WCRTLINK int intdos( const union REGS *inregs, union REGS *outregs )
 {
     int reg_ax;
 

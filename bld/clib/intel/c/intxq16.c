@@ -36,7 +36,7 @@
 
 
 _WCRTLINK int (int86x)( int intno,
-                union REGS *inregs,
+                const union REGS *inregs,
                 union REGS *outregs,
                 struct SREGS *segregs )
 {

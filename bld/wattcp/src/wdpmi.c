@@ -288,7 +288,7 @@ int dpmi_dos_yield (void)
     return (-1);
   }
 
-  int int386 (int intno, union REGS *ireg, union REGS *oreg)
+  int int386 (int intno, const union REGS *ireg, union REGS *oreg)
   {
     struct SREGS sreg;
 
@@ -296,7 +296,7 @@ int dpmi_dos_yield (void)
     return int386x (intno, ireg, oreg, &sreg);
   }
 
-  int int386x (int intno, union REGS *ireg, union REGS *oreg, struct SREGS *sreg)
+  int int386x (int intno, const union REGS *ireg, union REGS *oreg, struct SREGS *sreg)
   {
     static struct DPMI_regs rm_reg;
 

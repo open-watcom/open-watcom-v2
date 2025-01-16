@@ -35,13 +35,13 @@
 #include <i86.h>
 
 
-extern void __int386x( unsigned char intno, void _WCNEAR *inregs, void _WCNEAR *outregs, void _WCNEAR *segregs );
+extern void __int386x( unsigned char intno, const void _WCNEAR *inregs, void _WCNEAR *outregs, void _WCNEAR *segregs );
 #pragma aux __int386x "*_" \
     __parm __caller [__eax] [__edi] [__edx] [__ebx] \
     __modify        [__ecx __esi]
 
 
-_WCRTLINK int int386x( int intno, union REGS *inregs, union REGS *outregs, struct SREGS *segregs )
+_WCRTLINK int int386x( int intno, const union REGS *inregs, union REGS *outregs, struct SREGS *segregs )
 {
     __int386x( intno, inregs, outregs, segregs );
     return( outregs->x.eax );

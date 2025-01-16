@@ -36,7 +36,7 @@
 #include "dointr.h"
 
 
-_WCRTLINK int int86x( int intno, union REGS *inregs, union REGS *outregs, struct SREGS *segregs )
+_WCRTLINK int int86x( int intno, const union REGS *inregs, union REGS *outregs, struct SREGS *segregs )
 {
     union REGPACK regs;
 
@@ -65,7 +65,7 @@ _WCRTLINK int int86x( int intno, union REGS *inregs, union REGS *outregs, struct
     return( regs.x.ax );
 }
 
-_WCRTLINK int int86( int intno, union REGS *inregs, union REGS *outregs )
+_WCRTLINK int int86( int intno, const union REGS *inregs, union REGS *outregs )
 {
     struct SREGS segregs;
 

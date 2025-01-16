@@ -41,7 +41,7 @@
 #endif
 
 
-_WCRTLINK int intdosx( union REGS *inregs, union REGS *outregs, struct SREGS *segregs )
+_WCRTLINK int intdosx( const union REGS *inregs, union REGS *outregs, struct SREGS *segregs )
 {
 #if defined( __WINDOWS_386__ )
     return( _clib_intdosx( inregs, outregs, segregs ) );
