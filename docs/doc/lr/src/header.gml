@@ -151,11 +151,19 @@ which describes an entry in a directory.
 .*------------------------------
 .if '&machsys' ne 'QNX' .do begin
 .df dos.h
-This header file declares functions that interact with DOS and define
-the following structures.
-.sfbeg
-.sf DOSERROR
-.sfend
+This header file declares functions that interact with DOS and defines
+the following structures:
+.kw _DOSERROR
+, 
+.kw dosdate_t
+,
+.kw dostime_t
+,
+.kw find_t
+,
+.kw _wfind_t
+.
+
 .do end
 .*------------------------------
 .df env.h
