@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -192,7 +192,11 @@ static bool checkSTD( unsigned *value )
                 cstd = STD_C89;
             } else if( CmdRecogChar( '9' ) && CmdRecogChar( '9' ) ) {
                 cstd = STD_C99;
+            } else {
+                BadCmdLineChar();
             }
+        } else {
+            BadCmdLineChar();
         }
     }
     if( cstd != STD_NONE ) {
