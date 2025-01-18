@@ -4776,7 +4776,7 @@ cw16_IsHandler:
         mov     es:[(67h*4)+2],di
         sti
         ;
-        cmp     al,0
+        cmp     ah,0
         jne     cw16_NotThere
         or      bx,3030h                ;Turn to ASCII
         cmp     bh,'1'
