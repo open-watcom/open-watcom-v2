@@ -60,8 +60,15 @@ VersionMinor    db '05'
 ;
 RealPSPSegment  dw ?            ;Real mode PSP segment.
 RealEnvSegment  dw ?            ;Real mode environment segment.
-ProtectedFlags  dw 0            ;Bit significant, 0-DPMI,1-VCPI,2-RAW.
-ProtectedType   dw 0            ;0-RAW,1-VCPI,2-DPMI.
+PF_NONE equ     0
+PF_DPMI equ     1
+PF_VCPI equ     2
+PF_RAW  equ     4
+ProtectedFlags  dw PF_NONE      ;Bit significant, 0-DPMI,1-VCPI,2-RAW.
+PT_RAW  equ     0
+PT_VCPI equ     1
+PT_DPMI equ     2
+ProtectedType   dw PT_RAW       ;0-RAW,1-VCPI,2-DPMI.
 ProtectedForce  db 0
 DOSVersion      dw 0
 SystemFlags     dd 0
@@ -270,7 +277,7 @@ cwOpen  proc    near
         mov     ax,RealPSPSegment
         mov     es:RealRegsStruc.Real_ES[edi],ax
         mov     bx,_cwDPMIEMU
-        cmp     ProtectedType,2
+        cmp     ProtectedType,PT_DPMI
         jnz     cw1_KeepRaw
         mov     bx,_cwRaw
 cw1_KeepRaw:
@@ -533,7 +540,7 @@ cw2_Use0:
         assume es:nothing
         ;
 cw2_noAPI:
-        cmp     ProtectedType,2 ;DPMI?
+        cmp     ProtectedType,PT_DPMI
         jz      cw2_DPMI
 
 ;
@@ -762,7 +769,7 @@ dpmiSelBuffer   db 8 dup (0)
 ;
 apiDataSegi     dw 0
 IProtectedMode  db 0
-IProtectedType  dw 0
+IProtectedType  dw PT_RAW
 DPMISwitch      dw ?,?
 dpmiSelBase     dd 0
 dpmiCodeSel     dw ?
@@ -952,7 +959,7 @@ chk386:
 ;
         call    GetProtectedType
         mov     cs:IErrorNumber,3
-        cmp     ProtectedFlags,0        ;Any types available?
+        cmp     ProtectedFlags,PF_NONE
         jz      InitError
 ;
 ;Get CAUSEWAY environment variable settings.
@@ -971,7 +978,7 @@ chk386:
 ;
 ;now see about type specific initialisations.
 ;
-        cmp     ProtectedType,2 ;DPMI initialiseation?
+        cmp     ProtectedType,PT_DPMI
         jz      cw5_InitDPMI
 ;
 ;Useing either RAW or VCPI so do the stuff that's common to both for now.
@@ -1712,7 +1719,7 @@ END COMMENT !
         mov     ax,_cwMain
         mov     ds,ax
         assume ds:_cwMain
-        cmp     ProtectedType,1         ;VCPI?
+        cmp     ProtectedType,PT_VCPI
         assume ds:_cwRaw
         pop     ds
         jz      cw5_VCPI
@@ -3726,7 +3733,7 @@ cw6_Use0:
         ;
 cw6_noAPI:
         assume ds:nothing
-        cmp     cs:IProtectedType,2     ;DPMI?
+        cmp     cs:IProtectedType,PT_DPMI
         assume ds:_cwInit
         jz      cw6_DPMI
 ;
@@ -4681,13 +4688,13 @@ GetProtectedType proc near
 ;
         call    ChkDPMI                 ;32 bit DPMI server present?
         jc      cw13_0
-        or      ProtectedFlags,1
+        or      ProtectedFlags,PF_DPMI
 cw13_0: call    ChkVCPI                 ;VCPI >= v1.0 present?
         jc      cw13_1
-        or      ProtectedFlags,2
+        or      ProtectedFlags,PF_VCPI
 cw13_1: call    ChkRAW                  ;Running in real mode?
         jc      cw13_2
-        or      ProtectedFlags,4
+        or      ProtectedFlags,PF_RAW
 cw13_2: ret
 GetProtectedType endp
 
@@ -4696,19 +4703,19 @@ GetProtectedType endp
 SetProtectedType proc near
         cmp     ProtectedForce,0
         jz      cw14_NoDPMIForce
-        test    BYTE PTR ProtectedFlags,1
+        test    BYTE PTR ProtectedFlags,PF_DPMI
         jnz     cw14_2
         ;
 cw14_NoDPMIForce:
-        test    BYTE PTR ProtectedFlags,4
+        test    BYTE PTR ProtectedFlags,PF_RAW
         jz      cw14_1
-        mov     ProtectedType,0         ;Use real mode.
+        mov     ProtectedType,PT_RAW    ;Use real mode.
         jmp     cw14_3
-cw14_1: test    BYTE PTR ProtectedFlags,2
+cw14_1: test    BYTE PTR ProtectedFlags,PF_VCPI
         jz      cw14_2
-        mov     ProtectedType,1         ;Use VCPI.
+        mov     ProtectedType,PT_VCPI   ;Use VCPI.
         jmp     cw14_3
-cw14_2: mov     ProtectedType,2         ;Use DPMI.
+cw14_2: mov     ProtectedType,PT_DPMI   ;Use DPMI.
 cw14_3: push    es
         mov     ax,_cwInit
         mov     es,ax

@@ -822,7 +822,7 @@ api15_0:
         assume ds:nothing
         mov     ds,cs:apiDSeg
         assume ds:_cwMain
-        cmp     ProtectedType,2
+        cmp     ProtectedType,PT_DPMI
         assume ds:_apiCode
         jnz     api15_NoStack0
         assume ds:nothing
@@ -866,7 +866,7 @@ api15_DoneStack0:
         assume ds:nothing
         mov     ds,cs:apiDSeg
         assume ds:_cwMain
-        cmp     ProtectedType,2
+        cmp     ProtectedType,PT_DPMI
         assume ds:_apiCode
         jnz     api15_DoneStack1
         assume ds:nothing
@@ -915,7 +915,7 @@ api16_0:
         assume ds:nothing
         mov     ds,cs:apiDSeg
         assume ds:_cwMain
-        cmp     ProtectedType,2
+        cmp     ProtectedType,PT_DPMI
         assume ds:_apiCode
         jnz     api16_NoStack1
         assume ds:nothing
@@ -941,7 +941,7 @@ api16_DoneStack2:
         assume ds:nothing
         mov     ds,cs:apiDSeg
         assume ds:_cwMain
-        cmp     ProtectedType,2
+        cmp     ProtectedType,PT_DPMI
         assume ds:_apiCode
         jnz     api16_DoneStack3
         assume ds:nothing
@@ -4201,7 +4201,7 @@ COMMENT ! MED 02/15/96
         push    ds
         mov     ds,apiDSeg
         assume ds:_cwMain
-        cmp     ProtectedType,2
+        cmp     ProtectedType,PT_DPMI
         assume ds:_apiCode
         pop     ds
         jz      api74_normal
