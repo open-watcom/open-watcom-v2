@@ -11,6 +11,16 @@
 _cwRaw  segment para public 'raw kernal code' use16
         assume cs:_cwRaw, ds:_cwRaw
 ;
+VCPI_SwitchData struc
+VCPI_CR3        dd 0            ;CR3
+VCPI_pGDT       dd ?            ;Pointer to GDT descriptor.
+VCPI_pIDT       dd ?            ;Pointer to IDT descriptor.
+VCPI_LDT        dw 0            ;LDTR
+VCPI_TR         dw 0            ;TR
+VCPI_EIP        dd 0            ;CS:EIP client entry point.
+VCPI_CS         dw 0            ;/
+VCPI_SwitchData ends
+;
 InWindows       db 0
 BreakAddress    dd ?
 VMMHandle       dw ?
@@ -89,13 +99,7 @@ Big1Flag        DB      0
 ENDIF
 
 ;
-VCPI_CR3        dd 0            ;CR3
-VCPI_pGDT       dd ?            ;Pointer to GDT descriptor.
-VCPI_pIDT       dd ?            ;Pointer to IDT descriptor.
-VCPI_LDT        dw 0            ;LDTR
-VCPI_TR         dw 0            ;TR
-VCPI_EIP        dd 0            ;CS:EIP client entry point.
-VCPI_CS         dw 0            ;/
+VCPISW  VCPI_SwitchData < 0, ?, ?, 0, 0, 0, 0 >
 ;
 VCPI_GDT        df 0            ;GDTR
 VCPI_IDT        df 0            ;IDTR
@@ -331,7 +335,7 @@ rv1_NoALIASMove:
         mov     eax,PageDirLinear+4
         mov     PageDirLinear,eax
         mov     eax,PageDirLinear+8
-        mov     VCPI_CR3,eax
+        mov     VCPISW.VCPI_CR3,eax
         call    CR3Flush
 ;
 ;Release VCPI memory.
@@ -617,7 +621,7 @@ CR3Flush        proc    near
         call    RawPL3toPL0
         ;
 ;       mov     eax,cr3
-        mov     eax,VCPI_CR3
+        mov     eax,VCPISW.VCPI_CR3
         mov     cr3,eax         ;flush page cache.
         ;
         mov     edx,d[rv10_StackAdd]
@@ -1106,7 +1110,7 @@ RawReal2Prot    proc    near
         mov     CR3Sav,eax
         mov     eax,cr0
         mov     CR0Sav,eax
-        mov     eax,VCPI_CR3            ;PageDirLinear
+        mov     eax,VCPISW.VCPI_CR3     ;PageDirLinear
         mov     cr3,eax                 ;set page dir address.
 
 ; MED 10/15/96
@@ -1232,13 +1236,13 @@ VCPIReal2Prot   proc    near
         pop     w[rv18_Return]
         mov     d[rv18_ReturnStack],edx
         mov     w[rv18_ReturnStack+4],cx
-        mov     VCPI_CS,KernalCS0
-        mov     VCPI_EIP,offset rv18_Resume486
+        mov     VCPISW.VCPI_CS,KernalCS0
+        mov     VCPISW.VCPI_EIP,offset rv18_Resume486
         mov     ax,0de0ch
         mov     si,seg _cwRaw
         movzx   esi,si
         shl     esi,4
-        add     esi,offset VCPI_CR3
+        add     esi,offset VCPISW
         int     67h
         ;
 rv18_Resume486:
