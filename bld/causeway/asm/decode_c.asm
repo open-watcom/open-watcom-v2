@@ -21,7 +21,7 @@ OutAddr df ?
 decode_c_handle dw ?
 ;
         align 4
-decode_c_buffer db size v86CallStruc dup (?)
+decode_c_buffer db size RealRegsStruc dup (?)
 ;
         align 4
 decode_c_head   decode_c_struc <>

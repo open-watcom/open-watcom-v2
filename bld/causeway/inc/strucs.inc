@@ -197,29 +197,6 @@ Desc386Trap             equ     15      ;386 trap gate.
 
 
 ;=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
-v86CallStruc            struc
-v86CallEDI              dd ?
-v86CallESI              dd ?
-v86CallEBP              dd ?
-                dd ?
-v86CallEBX              dd ?
-v86CallEDX              dd ?
-v86CallECX              dd ?
-v86CallEAX              dd ?
-v86CallFlags            dw ?
-v86CallES               dw ?
-v86CallDS               dw ?
-v86CallFS               dw ?
-v86CallGS               dw ?
-v86CallIP               dw ?
-v86CallCS               dw ?
-v86CallSP               dw ?
-v86CallSS               dw ?
-v86CallStruc            ends
-;
-
-
-;=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 TSSFields               struc
 ;
 ;Task segment structure.

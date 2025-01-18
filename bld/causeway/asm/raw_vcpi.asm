@@ -142,7 +142,7 @@ LinearLimit     dd ?
 ;
 PageBufferReal  dw ?
 PageBufferLinear dd ?
-PageInt         db size v86CallStruc dup (0)
+PageInt         db size RealRegsStruc dup (0)
 ;
 RawSystemFlags  dw 0,0
 ;
@@ -736,27 +736,27 @@ rv11_0: or      cx,cx
         push    dx
         push    ax
         mov     ax,w[XMSControl]
-        mov     [edi].v86CallStruc.v86CallIP,ax
+        mov     [edi].RealRegsStruc.Real_IP,ax
         mov     ax,w[XMSControl+2]
-        mov     [edi].v86CallStruc.v86CallCS,ax
+        mov     [edi].RealRegsStruc.Real_CS,ax
         pop     ax
-        mov     [edi].v86CallStruc.v86CallEAX,eax
-        mov     [edi].v86CallStruc.v86CallEDX,edx
-        mov     [edi].v86CallStruc.v86CallSS,0
-        mov     [edi].v86CallStruc.v86CallSP,0
+        mov     [edi].RealRegsStruc.Real_EAX,eax
+        mov     [edi].RealRegsStruc.Real_EDX,edx
+        mov     [edi].RealRegsStruc.Real_SS,0
+        mov     [edi].RealRegsStruc.Real_SP,0
         call    RawSimulateFarCall        ;un-lock it first.
         pop     dx
         mov     ah,0ah
         push    ax
         mov     ax,w[XMSControl]
-        mov     [edi].v86CallStruc.v86CallIP,ax
+        mov     [edi].RealRegsStruc.Real_IP,ax
         mov     ax,w[XMSControl+2]
-        mov     [edi].v86CallStruc.v86CallCS,ax
+        mov     [edi].RealRegsStruc.Real_CS,ax
         pop     ax
-        mov     [edi].v86CallStruc.v86CallEAX,eax
-        mov     [edi].v86CallStruc.v86CallEDX,edx
-        mov     [edi].v86CallStruc.v86CallSS,0
-        mov     [edi].v86CallStruc.v86CallSP,0
+        mov     [edi].RealRegsStruc.Real_EAX,eax
+        mov     [edi].RealRegsStruc.Real_EDX,edx
+        mov     [edi].RealRegsStruc.Real_SS,0
+        mov     [edi].RealRegsStruc.Real_SP,0
         call    RawSimulateFarCall        ;un-lock it first.
         pop     si
         pop     cx
@@ -2489,7 +2489,7 @@ A20Handler      proc    far
         or      ax,ax
         jnz     rv34_XMSA20ON
 rv34_XMSA20OFF:
-        sub     esp,size v86CallStruc.v86CallStruc
+        sub     esp,size RealRegsStruc
         mov     ax,ss
         mov     es,ax
         mov     edi,esp
@@ -2502,11 +2502,11 @@ rv34_XMSA20OFF:
         mov     es:RealRegsStruc.Real_SS[edi],0
         mov     es:RealRegsStruc.Real_SP[edi],0
         call    RawSimulateFarCall
-        add     esp,size v86CallStruc.v86CallStruc
+        add     esp,size RealRegsStruc
         jmp     rv34_A20Done
         ;
 rv34_XMSA20ON:
-        sub     esp,size v86CallStruc.v86CallStruc
+        sub     esp,size RealRegsStruc
         mov     ax,ss
         mov     es,ax
         mov     edi,esp
@@ -2530,7 +2530,7 @@ rv34_XMSA20ON:
         call    RawSimulateFarCall
         mov     eax,es:RealRegsStruc.Real_EAX[edi]
         xor     ax,1
-        add     esp,size v86CallStruc.v86CallStruc
+        add     esp,size RealRegsStruc
         or      ax,ax
         jmp     rv34_A20Done
         ;
