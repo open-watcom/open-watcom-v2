@@ -406,7 +406,7 @@ rv1_pl0:
         mov     ax,MainDS
         mov     ds,ax
         assume ds:_cwMain
-        cmp     ProtectedType,1 ;VCPI?
+        cmp     ProtectedType,PT_VCPI
         mov     ax,KernalDS
         mov     ds,ax
         assume ds:_cwRaw
@@ -778,7 +778,7 @@ VCPIRelExtended proc far
         mov     ax,MainCS
         mov     ds,ax
         assume ds:_cwMain
-        cmp     ProtectedType,1
+        cmp     ProtectedType,PT_VCPI
         assume ds:_cwRaw
         pop     ds
         jnz     rv12_9
@@ -1037,7 +1037,7 @@ Int15Rel        proc    far
         mov     ax,MainDS
         mov     ds,ax
         assume ds:_cwMain
-        cmp     ProtectedType,1 ;VCPI?
+        cmp     ProtectedType,PT_VCPI
         assume ds:_cwRaw
         pop     ds
         jnc     rv15_9
@@ -2477,7 +2477,7 @@ A20Handler      proc    far
         mov     ax,MainDS
         mov     ds,ax
         assume ds:_cwMain
-        cmp     ProtectedType,0
+        cmp     ProtectedType,PT_RAW
         assume ds:_cwRaw
         pop     ax
         pop     ds
@@ -4512,7 +4512,7 @@ GetVCPIPage     proc    near
         mov     ax,MainDS
         mov     ds,ax
         assume ds:_cwMain
-        cmp     ProtectedType,1 ;VCPI?
+        cmp     ProtectedType,PT_VCPI
         assume ds:_cwDPMIEMU
         jnz     rv52_9
 
@@ -4578,7 +4578,7 @@ GetVCPIPages    proc    near
         mov     ax,MainDS
         mov     ds,ax
         assume ds:_cwMain
-        cmp     ProtectedType,1 ;VCPI?
+        cmp     ProtectedType,PT_VCPI
         assume ds:_cwDPMIEMU
         jnz     rv53_9
         ;
@@ -4827,7 +4827,7 @@ GetXMSPages     proc    near
         assume ds:_cwMain
 
 ; MED, 11/11/99
-;       cmp     ProtectedType,1 ;VCPI?
+;       cmp     ProtectedType,PT_VCPI
         cmp     VCPIHasNoMem,0  ; see if VCPI provided no memory, bail if it did
 
         assume ds:_cwRaw
@@ -5319,7 +5319,7 @@ GetInt15Pages   proc    near
         mov     ax,MainDS
         mov     ds,ax
         assume ds:_cwMain
-        cmp     ProtectedType,1 ;VCPI?
+        cmp     ProtectedType,PT_VCPI
         assume ds:_cwRaw
         pop     ds
         jnc     rv57_9
