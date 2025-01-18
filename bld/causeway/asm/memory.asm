@@ -814,11 +814,11 @@ mem5_2: call    PhysicalGetPage
         jnc     mem5_3
         call    UnMapPhysical
         jc      mem5_10
-mem5_3: and     ecx,1           ;put user bits in useful place.
+mem5_3: and     ecx,1                   ;put user bits in useful place.
         shl     ecx,10
-        and     edx,0FFFFFFFFh-4095     ;lose user bits.
+        and     edx,NOT 4095            ;lose user bits.
         or      edx,111b                ;present+user+write.
-        or      edx,ecx         ;set use flags.
+        or      edx,ecx                 ;set use flags.
         mov     DWORD PTR es:[edi],edx  ;store this tables address.
         push    edi
         sub     edi,PageDirLinear
@@ -1126,10 +1126,10 @@ RawUnLockMemory proc near
         shl     esi,16
         mov     si,di
         add     esi,ebx
-        and     ebx,0FFFFFFFFh-4095     ;round down to nearest page.
+        and     ebx,NOT 4095            ;round down to nearest page.
         mov     d[_LM_BlockBase],ebx
         add     esi,4095
-        and     esi,0FFFFFFFFh-4095     ;round up to next page.
+        and     esi,NOT 4095            ;round up to next page.
         dec     esi
         mov     d[_LM_BlockEnd],esi     ;store address of last page.
         ;
@@ -1737,11 +1737,11 @@ MapPhysical     proc    near
         mov     ax,KernalZero   ;make everything addresable.
         mov     es,ax
         ;
-        and     ecx,1           ;put user bits in useful place.
+        and     ecx,1                   ;put user bits in useful place.
         shl     ecx,10
-        and     edx,0FFFFFFFFh-4095     ;lose user bits.
-        mov     eax,LinearEntry ;get new entry number.
-        shr     eax,10          ;/1024 for page dir entry.
+        and     edx,NOT 4095            ;lose user bits.
+        mov     eax,LinearEntry         ;get new entry number.
+        shr     eax,10                  ;/1024 for page dir entry.
         ;
         mov     esi,PageDirLinear       ;get page table address.
         test    DWORD PTR es:[esi+eax*4],1      ;this page present?
@@ -1909,7 +1909,7 @@ mem11_ok:
         ;
         mov     eax,LinearEntry ;get new entry number.
         mov     esi,1024*4096*1023      ;base of page alias's.
-        and     DWORD PTR es:[esi+eax*4],0FFFFFFFFh-(3 shl 5)   ;clear accesed & dirty bits.
+        and     DWORD PTR es:[esi+eax*4],NOT (3 shl 5)   ;clear accesed & dirty bits.
         call    EmuCR3Flush
         ;
 mem11_NoRead:
@@ -2166,10 +2166,10 @@ mem12_error_anyway:
 mem12_5:
         ;Now remove it from the page table and exit.
         ;
-        and     DWORD PTR fs:[edi],0FFFFFFFFh-1 ;mark as not present.
+        and     DWORD PTR fs:[edi],NOT 1;mark as not present.
         mov     edx,fs:[edi]            ;get page entry.
         mov     ecx,edx
-        and     edx,0FFFFFFFFh-4095     ;lose flag bits.
+        and     edx,NOT 4095            ;lose flag bits.
         shr     ecx,10
         and     ecx,1           ;preserve user flags.
         call    EmuCR3Flush
@@ -2779,29 +2779,29 @@ RawRelDOSMemory proc near
         push    ebx
         push    ecx
         mov     ebx,edx
-        and     ebx,0ffffh-7
+        and     ebx,0ffffh AND (NOT 7)  ;lose RPL & TI
         xor     ecx,ecx
         xor     eax,eax
         mov     ax,ds
-        and     eax,not 7
+        and     eax,not 7               ;lose RPL & TI
         cmp     eax,ebx
         jnz     mem21_z0
         mov     ds,cx
 mem21_z0:
         mov     ax,es
-        and     eax,not 7
+        and     eax,not 7               ;lose RPL & TI
         cmp     eax,ebx
         jnz     mem21_z1
         mov     es,cx
 mem21_z1:
         mov     ax,fs
-        and     eax,not 7
+        and     eax,not 7               ;lose RPL & TI
         cmp     eax,ebx
         jnz     mem21_z2
         mov     fs,cx
 mem21_z2:
         mov     ax,gs
-        and     eax,not 7
+        and     eax,not 7               ;lose RPL & TI
         cmp     eax,ebx
         jnz     mem21_z3
         mov     gs,cx

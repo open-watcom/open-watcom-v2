@@ -1607,32 +1607,32 @@ cwAPI_RelMemSO  proc    near
 ;Zero any segment registers using this selector.
 ;
         mov     bx,w[ebp+Int_SI]
-        and     bx,0ffffh-3
+        and     bx,NOT 3
         jz      api33_bad               ; MED 11/18/96, screen out null pointer releases
         xor     cx,cx
         mov     ax,w[ebp+Int_DS]
-        and     ax,0ffffh-3
+        and     ax,NOT 3
         cmp     ax,bx
         jnz     api33_0
         mov     w[ebp+Int_DS],cx
         mov     ds,cx
 api33_0:
         mov     ax,w[ebp+Int_ES]
-        and     ax,0ffffh-3
+        and     ax,NOT 3
         cmp     ax,bx
         jnz     api33_1
         mov     w[ebp+Int_ES],cx
         mov     es,cx
 api33_1:
         mov     ax,w[ebp+Int_FS]
-        and     ax,0ffffh-3
+        and     ax,NOT 3
         cmp     ax,bx
         jnz     api33_2
         mov     w[ebp+Int_FS],cx
         mov     fs,cx
 api33_2:
         mov     ax,w[ebp+Int_GS]
-        and     ax,0ffffh-3
+        and     ax,NOT 3
         cmp     ax,bx
         jnz     api33_3
         mov     w[ebp+Int_GS],cx
@@ -2715,7 +2715,7 @@ _SetSelector    proc near
         cmp     ebx,-1
         jz      api61_ok
         add     ebx,4095
-        and     ebx,0FFFFFFFFh-4095
+        and     ebx,NOT 4095
         dec     ebx
         ;
 api61_ok:
@@ -2820,28 +2820,28 @@ _RelSelector    proc    near
         push    ax
         push    bx
         push    cx
-        and     bx,0ffffh-3
+        and     bx,NOT 3
         xor     cx,cx
         mov     ax,ds
-        and     ax,0ffffh-3
+        and     ax,NOT 3
         cmp     ax,bx
         jnz     api62_0
         mov     ds,cx
 api62_0:
         mov     ax,es
-        and     ax,0ffffh-3
+        and     ax,NOT 3
         cmp     ax,bx
         jnz     api62_1
         mov     es,cx
 api62_1:
         mov     ax,fs
-        and     ax,0ffffh-3
+        and     ax,NOT 3
         cmp     ax,bx
         jnz     api62_2
         mov     fs,cx
 api62_2:
         mov     ax,gs
-        and     ax,0ffffh-3
+        and     ax,NOT 3
         cmp     ax,bx
         jnz     api62_3
         mov     gs,cx
