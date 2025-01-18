@@ -1163,7 +1163,7 @@ cw5_A20OFF:
         shl     eax,4                   ;linear address.
         mov     ebx,eax
         add     eax,4095
-        and     eax,0ffffffffh-4095     ;round up to next page.
+        and     eax,NOT 4095            ;round up to next page.
         sub     eax,ebx
         shr     eax,4
         mov     bx,ax
@@ -1193,7 +1193,7 @@ cw5_OldWay:
         shl     eax,4                   ;make linear.
         mov     ebx,eax
         add     eax,4095
-        and     eax,0FFFFFFFFh-4095     ;round up to nearest page.
+        and     eax,NOT 4095            ;round up to nearest page.
         mov     ecx,eax
         sub     ecx,ebx
         shr     ecx,4
@@ -1823,7 +1823,7 @@ cw5_VCPI:
         shr     edi,12                  ;page number.
         shl     edi,2                   ;*4 bytes per entry.
         mov     eax,es:[di]             ;get physical address.
-        and     eax,0FFFFFFFFh-4095     ;clear status bits.
+        and     eax,NOT 4095            ;clear status bits.
         mov     VCPI_CR3,eax            ;set VCPI CR3 value as well.
         mov     es,KernalTSSReal
         xor     di,di
@@ -1835,7 +1835,7 @@ cw5_VCPI:
         shr     edi,12                  ;page number.
         shl     edi,2                   ;*4 bytes per entry.
         mov     eax,es:[di]             ;get physical address.
-        and     eax,0FFFFFFFFh-4095     ;clear status bits.
+        and     eax,NOT 4095            ;clear status bits.
         or      eax,111b                ;user+write+present.
         mov     es,PageDirReal
         mov     di,1023*4

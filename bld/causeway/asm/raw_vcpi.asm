@@ -801,8 +801,8 @@ rv12_d0:
         push    ds
         push    es
         mov     edx,es:[esi]
-        and     edx,0FFFFFFFFh-4095
-        and     DWORD PTR es:[esi],0FFFFFFFFh-1 ;mark as no longer present.
+        and     edx,NOT 4095
+        and     DWORD PTR es:[esi],NOT 1;mark as no longer present.
         call    CR3Flush
 
         push    edi
@@ -880,8 +880,8 @@ notzeroth:
         push    ds
         push    es
         mov     edx,es:[edi]
-        and     DWORD PTR es:[edi],0FFFFFFFFh-1 ;mark as no longer present.
-        and     edx,0FFFFFFFFh-4095
+        and     DWORD PTR es:[edi],NOT 1;mark as no longer present.
+        and     edx,NOT 4095
 
         call    CR3Flush
 
@@ -934,8 +934,8 @@ rv12_3:
         push    ds
         push    es
         mov     edx,es:[esi]
-        and     edx,0FFFFFFFFh-4095
-        and     DWORD PTR es:[esi],0FFFFFFFFh-1 ;mark as no longer present.
+        and     edx,NOT 4095
+        and     DWORD PTR es:[esi],NOT 1;mark as no longer present.
 
         call    CR3Flush
 
@@ -1107,20 +1107,20 @@ RawReal2Prot    proc    near
         mov     eax,cr0
         mov     CR0Sav,eax
         mov     eax,VCPI_CR3            ;PageDirLinear
-        mov     cr3,eax         ;set page dir address.
+        mov     cr3,eax                 ;set page dir address.
 
 ; MED 10/15/96
-;       mov     eax,cr0         ;Get machine status &
-;       or      eax,080000001h  ;set PM+PG bits.
-        mov     eax,CR0ProtSav  ; restore protected mode cr0 status
+;       mov     eax,cr0                 ;Get machine status &
+;       or      eax,080000001h          ;set PM+PG bits.
+        mov     eax,CR0ProtSav          ; restore protected mode cr0 status
 
-        mov     cr0,eax         ;/
-        db 0eah         ;Absolute 16-bit jump, to clear
+        mov     cr0,eax                 ;/
+        db 0eah                         ;Absolute 16-bit jump, to clear
         dw rv16_0,KernalCS0             ;instruction pre-fetch & load CS.
 rv16_0: mov     ax,KernalLDT            ;Point to empty LDT descriptor.
-        lldt    ax              ;and set LDT.
+        lldt    ax                      ;and set LDT.
         mov     cx,KernalTS             ;Get value for task register.
-        ltr     cx              ;and set it.
+        ltr     cx                      ;and set it.
         ;
         ;Make our stuff addresable.
         ;
@@ -1130,9 +1130,9 @@ rv16_0: mov     ax,KernalLDT            ;Point to empty LDT descriptor.
         mov     esp,tPL0StackSize-4
 
         mov     ax,KernalDS             ;Get data descriptor.
-        mov     ds,ax           ;/
-        mov     es,ax           ;/
-        mov     gs,ax           ;/
+        mov     ds,ax                   ;/
+        mov     es,ax                   ;/
+        mov     gs,ax                   ;/
         mov     fs,ax
         ;
         cld
@@ -4743,7 +4743,7 @@ rv54_nomaxlimit:
         mov     RealRegsStruc.Real_SS[edi],0
         mov     RealRegsStruc.Real_SP[edi],0
         pop     ax
-        call    EmuRawSimulateFarCall     ;lock block & get address.
+        call    EmuRawSimulateFarCall   ;lock block & get address.
         pop     cx
         pop     bp
         pop     esi
@@ -4751,24 +4751,24 @@ rv54_nomaxlimit:
         mov     ebx,RealRegsStruc.Real_EBX[edi]
         mov     eax,RealRegsStruc.Real_EAX[edi]
         cmp     ax,1
-        jnz     rv54_9          ;should never happen.
+        jnz     rv54_9                  ;should never happen.
         ;
         ;BP    - Block size in K.
         ;DX:BX - Block linear address.
         ;
-        movzx   edi,dx          ;get base into 1 reg.
-        shl     edi,16          ;/
-        mov     di,bx           ;/
-        mov     ebx,edi         ;copy into high address.
-        movzx   ebp,bp          ;fetch size.
-        shl     ebp,10          ;*1024 (1k)
-        add     ebx,ebp         ;get real top.
+        movzx   edi,dx                  ;get base into 1 reg.
+        shl     edi,16                  ;/
+        mov     di,bx                   ;/
+        mov     ebx,edi                 ;copy into high address.
+        movzx   ebp,bp                  ;fetch size.
+        shl     ebp,10                  ;*1024 (1k)
+        add     ebx,ebp                 ;get real top.
         add     edi,4095                ;round up to next page.
-        and     edi,0FFFFFFFFh-4095     ;/
-        and     ebx,0FFFFFFFFh-4095     ;round down to nearest page.
+        and     edi,NOT 4095            ;/
+        and     ebx,NOT 4095            ;round down to nearest page.
         mov     2[esi],edi
         mov     6[esi],ebx              ;store base and end.
-        jmp     rv54_3          ;start again.
+        jmp     rv54_3                  ;start again.
         ;
 rv54_GotOne:
         ;Update table entry indicated and return physical address.
@@ -5166,10 +5166,10 @@ use88hResult2:
 ;       movzx   eax,ax
 
 GIComputeBytes2:
-        shl     eax,10          ; * 1024
+        shl     eax,10                  ; * 1024
         add     eax,100000h             ;add in 1 meg base address.
         dec     eax
-        and     eax,0FFFFFFFFh-4095     ;round down to nearest page.
+        and     eax,NOT 4095            ;round down to nearest page.
         mov     ebx,eax
         pop     esi
         pop     edi
@@ -5178,24 +5178,24 @@ GIComputeBytes2:
         ;EBX - limit.
         ;
         cmp     esi,ebx
-        jnc     rv56_9          ;No more available.
+        jnc     rv56_9                  ;No more available.
         mov     ecx,ebx
-        sub     ecx,esi         ;block size.
+        sub     ecx,esi                 ;block size.
         cmp     ecx,4096                ;check enough for 1 page.
         jc      rv56_9
         ;
         pushad
         cmp     Int15Size,0             ;set size yet?
         jnz     rv56_GotSize
-        mov     eax,ecx         ;get proposed maximum size.
-        mov     ecx,8           ;number of chunks.
+        mov     eax,ecx                 ;get proposed maximum size.
+        mov     ecx,8                   ;number of chunks.
         xor     edx,edx
-        div     ecx             ;get chunk size.
+        div     ecx                     ;get chunk size.
         inc     eax
         or      Int15Size,-1            ;set chunk size to use.
         and     eax,not 4095
         jz      rv56_GotSize
-        mov     Int15Size,eax   ;set chunk size to use.
+        mov     Int15Size,eax           ;set chunk size to use.
 rv56_GotSize:
         popad
         cmp     ecx,Int15Size
@@ -5418,13 +5418,13 @@ rv57_GotBottom:
         ;
 ;       push    esi
 
-;       movzx   eax,w[Int15Value]      ;get pretend value.
-        mov     eax,[Int15Value]       ;get pretend value.
+;       movzx   eax,w[Int15Value]       ;get pretend value.
+        mov     eax,[Int15Value]        ;get pretend value.
 
-        shl     eax,10          ; * 1024
+        shl     eax,10                  ; * 1024
         add     eax,100000h             ;add in 1 meg base address.
         dec     eax
-        and     eax,0FFFFFFFFh-4095     ;round down to nearest page.
+        and     eax,NOT 4095            ;round down to nearest page.
         mov     ebx,eax
 ;       pop     esi
 
@@ -5433,45 +5433,45 @@ rv57_GotBottom:
         ;EBX - limit.
         ;
         cmp     esi,ebx
-        jnc     rv57_1          ;No more available.
+        jnc     rv57_1                  ;No more available.
         mov     ecx,ebx
-        sub     ecx,esi         ;block size.
+        sub     ecx,esi                 ;block size.
         cmp     ecx,4096                ;check enough for 1 page.
         jc      rv57_1
         ;
         pushad
         cmp     Int15Size,0             ;set size yet?
         jnz     rv57_GotSize
-        mov     eax,ecx         ;get proposed maximum size.
-        mov     ecx,8           ;number of chunks.
+        mov     eax,ecx                 ;get proposed maximum size.
+        mov     ecx,8                   ;number of chunks.
         xor     edx,edx
-        div     ecx             ;get chunk size.
+        div     ecx                     ;get chunk size.
         mov     Int15Size,-1            ;default to maximum.
         cmp     eax,4096                ;too small?
         jc      rv57_GotSize
-        mov     Int15Size,eax   ;set chunk size to use.
+        mov     Int15Size,eax           ;set chunk size to use.
 rv57_GotSize:
         popad
         cmp     ecx,Int15Size
         jc      rv57_SizeOK
         mov     ecx,Int15Size
 rv57_SizeOK:
-        sub     ebx,ecx         ;new int 15 value.
+        sub     ebx,ecx                 ;new int 15 value.
         ;
         ;EBX - base.
         ;ECX - size.
         ;
-        shr     ecx,12          ;get number of pages.
+        shr     ecx,12                  ;get number of pages.
         add     [Int15Total],ecx
         ;
-        dec     ebx             ;move back to previous byte.
+        dec     ebx                     ;move back to previous byte.
         sub     ebx,100000h             ;remove starting point.
-        shr     ebx,10          ;convert to K.
+        shr     ebx,10                  ;convert to K.
 
-;       mov     w[Int15Value],bx       ;set new base value.
-        mov     [Int15Value],ebx       ;set new base value.
+;       mov     w[Int15Value],bx        ;set new base value.
+        mov     [Int15Value],ebx        ;set new base value.
 
-        inc     [Int15Level2]  ;move to next level.
+        inc     [Int15Level2]           ;move to next level.
         jmp     rv57_0
         ;
 rv57_1: ;Now include any remains of existing blocks.
@@ -5638,14 +5638,14 @@ rv58_2: add     esi,4           ;next entry.
         mov     eax,es:RealRegsStruc.Real_EAX[edi]      ;get segment address.
         mov     [esi],ax                ;store it in the table.
         movzx   eax,ax
-        shl     eax,4           ;linear address.
+        shl     eax,4                   ;linear address.
         mov     ebx,eax
         add     eax,4095
-        and     eax,0ffffffffh-4095     ;round up to next page.
+        and     eax,NOT 4095            ;round up to next page.
         sub     eax,ebx
         shr     eax,4
         mov     2[esi],ax               ;store new size.
-        jmp     rv58_3          ;start again.
+        jmp     rv58_3                  ;start again.
         ;
 rv58_GotOne:
         ;Update table entry indicated and return physical address.
@@ -5653,13 +5653,13 @@ rv58_GotOne:
         movzx   eax,w[esi]              ;Get block base segment.
         add     ax,2[esi]               ;Add old length.
         add     w[esi+2],4096/16        ;update length.
-        shl     eax,4           ;linear address.
-        shr     eax,12          ;get page number.
+        shl     eax,4                   ;linear address.
+        shr     eax,12                  ;get page number.
         mov     bx,KernalZero
         mov     es,bx
         mov     esi,1024*4096*1023      ;base of page alias's.
         mov     eax,es:[esi+eax*4]      ;get physical address.
-        and     eax,0ffffffffh-4095     ;lose user bits.
+        and     eax,NOT 4095            ;lose user bits.
         mov     edx,eax
         ;
         xor     ecx,ecx
