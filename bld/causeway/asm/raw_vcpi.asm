@@ -1329,7 +1329,7 @@ VCPIProt2Real   proc    near
         mov     ds,ax
         mov     ax,0DE0Ch
         assume ds:nothing
-        call    FWORD PTR cs:[VCPI_Entry]       ;switch back.
+        call    FWORD PTR cs:[VCPI_Entry]       ;switch back to RM.
         assume ds:_cwRaw
         ;
 rv19_Resume:

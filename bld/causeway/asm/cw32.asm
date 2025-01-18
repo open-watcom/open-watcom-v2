@@ -1801,7 +1801,7 @@ cw5_VCPI:
         pop     ds
         or      ah,ah
         jnz     InitError
-        mov     d[VCPI_Entry],ebx       ;Store entry point.
+        mov     d[VCPI_Entry],ebx       ;Store PM VCPI entry point.
 
 ; MED 11/05/96
         mov     FirstUninitPage,di      ; VCPI server advanced to first uninitialized page
