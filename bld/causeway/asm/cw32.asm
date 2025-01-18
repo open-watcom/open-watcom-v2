@@ -1228,7 +1228,7 @@ cw5_GotSeg:
         movzx   eax,PageDirReal
         shl     eax,4
         mov     PageDirLinear,eax
-        mov     VCPI_CR3,eax
+        mov     VCPISW.VCPI_CR3,eax
         movzx   eax,PageAliasReal
         shl     eax,4
         mov     PageAliasLinear,eax
@@ -1757,7 +1757,7 @@ cw5_RAW:
         cli                             ;Don't want interupts interfering.
         lgdt    GDTVal                  ;Setup GDT &
         lidt    f[IDTVal]               ;IDT.
-        mov     eax,VCPI_CR3
+        mov     eax,VCPISW.VCPI_CR3
         mov     cr3,eax                 ;set page dir address.
         mov     eax,cr0                 ;Get machine status &
         or      eax,080000001h          ;set PM+PG bits.
@@ -1824,7 +1824,7 @@ cw5_VCPI:
         shl     edi,2                   ;*4 bytes per entry.
         mov     eax,es:[di]             ;get physical address.
         and     eax,NOT 4095            ;clear status bits.
-        mov     VCPI_CR3,eax            ;set VCPI CR3 value as well.
+        mov     VCPISW.VCPI_CR3,eax     ;set VCPI CR3 value as well.
         mov     es,KernalTSSReal
         xor     di,di
         mov     es:[di].TSSFields.tCR3,eax  ;set CR3 in TSS as well.
@@ -1841,26 +1841,26 @@ cw5_VCPI:
         mov     di,1023*4
         mov     es:[di],eax             ;setup in last page dir entry.
         ;
-        mov     VCPI_LDT,KernalLDT
-        mov     VCPI_EIP,offset cw5_InProt
-        mov     VCPI_TR,KernalTS        ;Get value for task register.
-        mov     VCPI_CS,InitCS0
+        mov     VCPISW.VCPI_LDT,KernalLDT
+        mov     VCPISW.VCPI_EIP,offset cw5_InProt
+        mov     VCPISW.VCPI_TR,KernalTS ;Get value for task register.
+        mov     VCPISW.VCPI_CS,InitCS0
         xor     eax,eax
         mov     ax,seg _cwRaw
         shl     eax,4
         add     eax,offset GDTVal
-        mov     VCPI_pGDT,eax
+        mov     VCPISW.VCPI_pGDT,eax
         xor     eax,eax
         mov     ax,seg _cwRaw
         shl     eax,4
         add     eax,offset IDTVal
-        mov     VCPI_pIDT,eax
+        mov     VCPISW.VCPI_pIDT,eax
         cli
         mov     ax,0de0ch
         mov     si,seg _cwRaw
         movzx   esi,si
         shl     esi,4
-        add     esi,offset VCPI_CR3
+        add     esi,offset VCPISW
         int     67h
         ;
         mov     ax,_cwStack
@@ -2263,10 +2263,10 @@ END COMMENT !
         mov     eax,LinearEntry
         shl     eax,12                  ;get linear address.
         mov     PageDirLinear,eax       ;set new value.
-        mov     eax,VCPI_CR3
+        mov     eax,VCPISW.VCPI_CR3
         mov     PageDirLinear+8,eax     ;store old physical address.
         mov     eax,LinearEntry+8
-        mov     VCPI_CR3,eax            ;set new physical address.
+        mov     VCPISW.VCPI_CR3,eax     ;set new physical address.
         movzx   edi,KernalTSSReal
         shl     edi,4
         mov     es:[edi].TSSFields.tCR3,eax ;set CR3 in TSS as well.
