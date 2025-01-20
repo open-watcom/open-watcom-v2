@@ -33,6 +33,40 @@ ENGLISH equ     0
 SPANISH equ     0
         endif
 
+RoundUP macro r,v
+        add     r,v-1
+        and     r,not (v-1)
+        endm
+
+RoundDN macro r,v
+        and     r,not (v-1)
+        endm
+
+InitBits   macro r,v
+        and     r,not 0FFFh     ;reset user bits
+        or      r,7             ;set user+write+present bits.
+    ifnb    <v>
+        or      r,v             ;set other bits.
+    endif
+        endm
+
+EFLAG_CF    equ (1 shl 0)       ; carry
+EFLAG_PF    equ (1 shl 2)       ; parity
+EFLAG_AF    equ (1 shl 4)       ; auxiliary carry
+EFLAG_ZF    equ (1 shl 6)       ; zero
+EFLAG_SF    equ (1 shl 7)       ; sign
+EFLAG_TF    equ (1 shl 8)       ; trace
+EFLAG_IF    equ (1 shl 9)       ; interrupt
+EFLAG_DF    equ (1 shl 10)      ; direction
+EFLAG_OF    equ (1 shl 11)      ; overflow
+EFLAG_IOPL  equ (3 shl 12)      ; I/O privilege level
+EFLAG_NT    equ (1 shl 14)      ; nested task
+
+EFLAGS_UNUSED equ 1000000000101010b
+
+EFLAGS_MASK1 equ (0FFFFh and NOT (EFLAGS_UNUSED or EFLAG_NT))
+EFLAGS_MASK2 equ (0FFFFh and NOT (EFLAGS_UNUSED or EFLAG_NT or EFLAG_IOPL or EFLAG_IF or EFLAG_TF))
+
 b       equ     byte ptr
 w       equ     word ptr
 d       equ     dword ptr
@@ -289,7 +323,7 @@ cw1_KeepRaw:
         mov     bl,21h
         mov     ErrorNumber,1
         Sys     IntXX
-        test    WORD PTR es:[edi+RealRegsStruc.Real_Flags],1
+        test    WORD PTR es:[edi+RealRegsStruc.Real_Flags],EFLAG_CF
         jnz     cw1_9
         mov     ErrorNumber,0           ;clear error number.
 ;
@@ -1169,8 +1203,7 @@ cw5_A20OFF:
         movzx   eax,ax
         shl     eax,4                   ;linear address.
         mov     ebx,eax
-        add     eax,4095
-        and     eax,NOT 4095            ;round up to next page.
+        RoundUP eax,4096                ;round up to next page.
         sub     eax,ebx
         shr     eax,4
         mov     bx,ax
@@ -1199,8 +1232,7 @@ cw5_OldWay:
         movzx   eax,ax                  ;get segment address.
         shl     eax,4                   ;make linear.
         mov     ebx,eax
-        add     eax,4095
-        and     eax,NOT 4095            ;round up to nearest page.
+        RoundUP eax,4096                ;round up to nearest page.
         mov     ecx,eax
         sub     ecx,ebx
         shr     ecx,4
@@ -1816,8 +1848,7 @@ cw5_VCPI:
         shr     edi,12                  ;page number.
         shl     edi,2                   ;*4 bytes per entry.
         mov     eax,es:[di]             ;get physical address.
-        and     eax,not 4095            ;clear status bits.
-        or      eax,111b                ;set our bits.
+        InitBits eax                    ;clear and init status bits.
         mov     es,PageDirReal
         xor     di,di
         mov     es:[di],eax
@@ -1830,7 +1861,7 @@ cw5_VCPI:
         shr     edi,12                  ;page number.
         shl     edi,2                   ;*4 bytes per entry.
         mov     eax,es:[di]             ;get physical address.
-        and     eax,NOT 4095            ;clear status bits.
+        and     eax,NOT 0FFFh           ;clear status bits.
         mov     VCPISW.VCPI_CR3,eax     ;set VCPI CR3 value as well.
         mov     es,KernalTSSReal
         xor     di,di
@@ -1842,8 +1873,7 @@ cw5_VCPI:
         shr     edi,12                  ;page number.
         shl     edi,2                   ;*4 bytes per entry.
         mov     eax,es:[di]             ;get physical address.
-        and     eax,NOT 4095            ;clear status bits.
-        or      eax,111b                ;user+write+present.
+        InitBits eax                    ;clear and init status bits.
         mov     es,PageDirReal
         mov     di,1023*4
         mov     es:[di],eax             ;setup in last page dir entry.
@@ -1941,8 +1971,8 @@ nosse:
         push    edx                     ;ESP
         pushfd                          ;EFlags
         pop     eax
-        and     ax,1000111111111111b    ;clear NT & IOPL.
-        or      ax,0011000000000000b    ;force IOPL.
+        and     ax,NOT (EFLAG_NT or EFLAG_IOPL) ;clear NT & IOPL.
+        or      ax,EFLAG_IOPL                   ;force IOPL 3.
         push    eax
         popfd
         push    eax
@@ -2015,10 +2045,7 @@ cw5_1:  jnz     InitError
         jc      InitError
         and     ecx,1                   ;put user bits in useful place.
         shl     ecx,10
-        and     edx,not 4095            ;lose user bits.
-
-        or      edx,111b                ;present+user+write.
-        or      edx,ecx                 ;set use flags.
+        InitBits edx,ecx                ;clear and init status bits.
         mov     eax,1
         mov     esi,PageDirLinear
         mov     DWORD PTR es:[esi+eax*4],edx    ;store this tables address.
@@ -2042,9 +2069,7 @@ cw5_1:  jnz     InitError
         mov     LinearEntry+8,edx       ;store physical address.
         and     ecx,1                   ;put user bits in useful place.
         shl     ecx,10
-        and     edx,not 4095            ;lose user bits.
-        or      edx,111b                ;present+user+write.
-        or      edx,ecx                 ;set use flags.
+        InitBits edx,ecx                ;clear and init status bits.
         mov     eax,LinearEntry         ;get the entry number again.
         mov     esi,1024*4096*1023      ;base of page alias's.
         mov     DWORD PTR es:[esi+eax*4],edx    ;set physical address.
@@ -2075,9 +2100,7 @@ cw5_1:  jnz     InitError
         mov     LinearEntry+8,edx       ;store physical address.
         and     ecx,1                   ;put user bits in useful place.
         shl     ecx,10
-        and     edx,not 4095            ;lose user bits.
-        or      edx,111b                ;present+user+write.
-        or      edx,ecx                 ;set use flags.
+        InitBits edx,ecx                ;clear and init status bits.
         mov     esi,1024*4096*1023      ;base of page alias's.
         mov     eax,LinearEntry         ;get the entry number again.
         mov     DWORD PTR es:[esi+eax*4],edx    ;set physical address.
@@ -2103,9 +2126,7 @@ cw5_1:  jnz     InitError
         mov     LinearEntry+8,edx       ;store physical address.
         and     ecx,1                   ;put user bits in useful place.
         shl     ecx,10
-        and     edx,not 4095            ;lose user bits.
-        or      edx,111b                ;present+user+write.
-        or      edx,ecx                 ;set use flags.
+        InitBits edx,ecx                ;clear and init status bits.
         mov     esi,1024*4096*1023      ;base of page alias's.
         mov     eax,LinearEntry         ;get the entry number again.
         mov     DWORD PTR es:[esi+eax*4],edx    ;set physical address.
@@ -2131,9 +2152,7 @@ cw5_1:  jnz     InitError
         mov     LinearEntry+8,edx       ;store physical address.
         and     ecx,1                   ;put user bits in useful place.
         shl     ecx,10
-        and     edx,not 4095            ;lose user bits.
-        or      edx,111b                ;present+user+write.
-        or      edx,ecx                 ;set use flags.
+        InitBits edx,ecx                ;clear and init status bits.
         mov     eax,LinearEntry         ;get the entry number again.
         mov     esi,1024*4096*1023      ;base of page alias's.
         mov     DWORD PTR es:[esi+eax*4],edx    ;set physical address.
@@ -2178,9 +2197,7 @@ COMMENT !
         mov     LinearEntry+8,edx       ;store physical address.
         and     ecx,1                   ;put user bits in useful place.
         shl     ecx,10
-        and     edx,not 4095            ;lose user bits.
-        or      edx,111b                ;present+user+write.
-        or      edx,ecx                 ;set use flags.
+        InitBits edx,ecx                ;clear and init status bits.
         ;
         ;Map it into general linear address space.
         ;
@@ -2239,9 +2256,7 @@ END COMMENT !
         mov     LinearEntry+8,edx       ;store physical address.
         and     ecx,1                   ;put user bits in useful place.
         shl     ecx,10
-        and     edx,not 4095            ;lose user bits.
-        or      edx,111b                ;present+user+write.
-        or      edx,ecx                 ;set use flags.
+        InitBits edx,ecx                ;clear and init status bits.
         ;
         ;Map it into normal linear address space.
         ;
@@ -2287,9 +2302,7 @@ END COMMENT !
         mov     LinearEntry+8,edx       ;store physical address.
         and     ecx,1                   ;put user bits in useful place.
         shl     ecx,10
-        and     edx,not 4095            ;lose user bits.
-        or      edx,111b                ;present+user+write.
-        or      edx,ecx                 ;set use flags.
+        InitBits edx,ecx                ;clear and init status bits.
         mov     eax,LinearEntry         ;get the entry number again.
         mov     esi,1024*4096*1023      ;base of page alias's.
         mov     DWORD PTR es:[esi+eax*4],edx    ;set physical address.
@@ -2345,9 +2358,7 @@ cw5_2:  call    d[fPhysicalGetPage]     ;try to allocate a page.
         jc      InitError
         and     ecx,1                   ;put user bits in useful place.
         shl     ecx,10
-        and     edx,not 4095            ;lose user bits.
-        or      edx,111b                ;present+user+write.
-        or      edx,ecx                 ;set use flags.
+        InitBits edx,ecx                ;clear and init status bits.
         mov     eax,LinearEntry         ;get the entry number again.
         mov     esi,1024*4096*1023      ;base of page alias's.
         mov     DWORD PTR es:[esi+eax*4],edx    ;set physical address.
@@ -2425,9 +2436,7 @@ cw5_6:  call    d[fPhysicalGetPage]     ;try to allocate a page.
         jc      InitError
         and     ecx,1                   ;put user bits in useful place.
         shl     ecx,10
-        and     edx,not 4095            ;lose user bits.
-        or      edx,111b                ;present+user+write.
-        or      edx,ecx                 ;set use flags.
+        InitBits edx,ecx                ;clear and init status bits.
         mov     eax,LinearEntry         ;get the entry number again.
         mov     esi,1024*4096*1023      ;base of page alias's.
         mov     DWORD PTR es:[esi+eax*4],edx    ;set physical address.
@@ -2569,9 +2578,7 @@ cw5_LDT:
 
         and     ecx,1                   ;put user bits in useful place.
         shl     ecx,10
-        and     edx,not 4095            ;lose user bits.
-        or      edx,111b                ;present+user+write.
-        or      edx,ecx                 ;set use flags.
+        InitBits edx,ecx                ;clear and init status bits.
         mov     eax,LinearEntry         ;get the entry number again.
         mov     esi,1024*4096*1023      ;base of page alias's.
         mov     DWORD PTR es:[esi+eax*4],edx    ;set physical address.
@@ -2718,7 +2725,7 @@ medtransloop:
         mov     RealRegsStruc.Real_SP[edi],0
         mov     bl,21h
         call    d[fRawSimulateInt]
-        test    BYTE PTR RealRegsStruc.Real_Flags[edi],1
+        test    BYTE PTR RealRegsStruc.Real_Flags[edi],EFLAG_CF
         mov     eax,RealRegsStruc.Real_EAX[edi]
         pop     di
         jz      cw5_v8
@@ -2739,7 +2746,7 @@ med5a:
         mov     RealRegsStruc.Real_SP[edi],0
         mov     bl,21h
         call    d[fRawSimulateInt]
-        test    BYTE PTR RealRegsStruc.Real_Flags[edi],1
+        test    BYTE PTR RealRegsStruc.Real_Flags[edi],EFLAG_CF
         mov     eax,RealRegsStruc.Real_EAX[edi]
         pop     di
         jz      cw5_v8

@@ -492,7 +492,7 @@ dec2_FB_2:
         mov     RealRegsStruc.Real_EBX[edi],eax
         mov     bl,21h
         Sys     IntXX           ;fill the buffer again.
-        test    RealRegsStruc.Real_Flags[edi],1
+        test    RealRegsStruc.Real_Flags[edi],EFLAG_CF
         jnz     dec2_read_error
         mov     eax,RealRegsStruc.Real_EAX[edi]
         mov     ecx,RealRegsStruc.Real_ECX[edi]

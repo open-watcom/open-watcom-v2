@@ -158,9 +158,9 @@ api1_GotCall:
         movzx   ebp,bp
         mov     esi,Int_Flags16
 api1_32Bit0:
-        and     BYTE PTR ss:[ebp+esi],not 1     ;clear carry.
-        cld                                     ;Default direction.
-        test    WORD PTR ss:[ebp+esi],1 shl 9   ;Were interrupts enabled?
+        and     BYTE PTR ss:[ebp+esi],not EFLAG_CF  ;clear carry.
+        cld                                         ;Default direction.
+        test    WORD PTR ss:[ebp+esi],EFLAG_IF      ;Were interrupts enabled?
         jz      api1_NoInts
         sti                                     ;Turn interrupts back on.
 ;
@@ -846,7 +846,7 @@ medUse32Bit8:
 
 medUse16Bit8:
         mov     ax,ss:[ebp+ebx]
-        and     ax,1111110011111111b                ;clear Trap and INT flag.
+        and     ax,NOT (EFLAG_IF or EFLAG_TF)       ;clear Trap and INT flag.
         mov     es:RealRegsStruc.Real_Flags[edi],ax ; explicitly set flags on DPMI 300h call
 
         assume ds:_apiCode
@@ -885,8 +885,8 @@ api15_Use32Bit8:
         mov     ebx,Int_Flags32
 api15_Use16Bit8:
         mov     ax,ss:[ebp+ebx]
-        and     ax,0000011000000000b                ;retain IF.
-        and     es:RealRegsStruc.Real_Flags[edi],1111100111111111b  ;lose IF.
+        and     ax,EFLAG_IF or EFLAG_DF                                     ;retain IF & DF.
+        and     es:RealRegsStruc.Real_Flags[edi],NOT (EFLAG_IF or EFLAG_DF) ;lose IF & DF.
         or      es:RealRegsStruc.Real_Flags[edi],ax
         ret
 cwAPI_IntXX     endp
@@ -960,8 +960,8 @@ api16_Use32Bit8:
         mov     ebx,Int_Flags32
 api16_Use16Bit8:
         mov     ax,ss:[ebp+ebx]
-        and     ax,0000011000000000b            ;retain IF.
-        and     es:RealRegsStruc.Real_Flags[edi],1111100111111111b  ;lose IF.
+        and     ax,EFLAG_IF or EFLAG_DF                                     ;retain IF & DF.
+        and     es:RealRegsStruc.Real_Flags[edi],NOT (EFLAG_IF or EFLAG_DF) ;lose IF & DF.
         or      es:RealRegsStruc.Real_Flags[edi],ax
         ret
 cwAPI_FarCallReal endp
@@ -1245,8 +1245,7 @@ cwAPI_GetMem    proc    near
         je      gm2             ; padding flag not turned on
         test    ecx,0ffff0000h
         jne     gm2             ; don't pad >64K allocation
-        add     ecx,1023
-        and     ecx,NOT 1023    ; pad to 1K-boundary allocation
+        RoundUP ecx,1024        ; pad to 1K-boundary allocation
 gm2:
 
         call    mcbGetMemLinear32
@@ -2714,8 +2713,7 @@ _SetSelector    proc near
         jc      api61_ok
         cmp     ebx,-1
         jz      api61_ok
-        add     ebx,4095
-        and     ebx,NOT 4095
+        RoundUP ebx,4096
         dec     ebx
         ;
 api61_ok:
@@ -3249,8 +3247,7 @@ cwAPI_GetMCBSize endp
 ;
 cwAPI_SetMCBSize proc near
         mov     ecx,[ebp+Int_ECX]
-        add     ecx,4095
-        and     ecx,not 4095
+        RoundUP ecx,4096
         cmp     ecx,65536+1
         jc      api68_1
         stc
@@ -3307,8 +3304,7 @@ mcbGetMemLinear32 proc near
         jz      api69_GetMax
         cmp     ecx,-2
         jz      api69_GetMax
-        add     ecx,3
-        and     ecx,not 3
+        RoundUP ecx,4
 ;
 ;Check MCB allocation system is enabled.
 ;
@@ -3567,8 +3563,7 @@ mcbResMemLinear32 proc near
         pop     ds
         ;
         mov     edi,esi
-        add     ecx,3
-        and     ecx,not 3
+        RoundUP ecx,4
 ;
 ;See if MCB allocations are enabled.
 ;
@@ -7890,27 +7885,24 @@ CtrlBrkEvent    proc    far
         pop     ds
         jz      api96_start32
         ;
-        mov     ax,[si]                 ;get stacked offset.
+        mov     ax,[si+IFrame16.i16_ip] ;get stacked offset.
         mov     es:RealRegsStruc.Real_IP[di],ax
-        mov     ax,2[si]
+        mov     ax,[si+IFrame16.i16_cs]
         mov     es:RealRegsStruc.Real_CS[di],ax
-        mov     ax,4[si]
+        mov     ax,[si+IFrame16.i16_flags]
         mov     es:RealRegsStruc.Real_Flags[di],ax
         add     es:RealRegsStruc.Real_SP[di],6
         jmp     api96_start0
         ;
 api96_start32:
 ;       mov     ax,[esi]                ;get stacked offset.
-        mov     ax,[si]                 ;get stacked offset. MED 01/24/96
-
+        mov     ax,[si+IFrame16.i16_ip] ;get stacked offset.
         mov     es:RealRegsStruc.Real_IP[edi],ax
 ;       mov     ax,2[esi]
-        mov     ax,2[si]
-
+        mov     ax,[si+IFrame16.i16_cs]
         mov     es:RealRegsStruc.Real_CS[edi],ax
 ;       mov     ax,4[esi]
-        mov     ax,4[si]
-
+        mov     ax,[si+IFrame16.i16_flags]
         mov     es:RealRegsStruc.Real_Flags[edi],ax
         add     es:RealRegsStruc.Real_SP[edi],6
         ;

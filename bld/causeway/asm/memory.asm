@@ -662,8 +662,7 @@ RawDiscardPages proc    near
 ;Round start up a page.
 ;
         mov     eax,ebx
-        add     ebx,4095
-        and     ebx,not 4095
+        RoundUP ebx,4096
         sub     eax,ebx
         neg     eax
         cmp     eax,esi
@@ -672,7 +671,7 @@ RawDiscardPages proc    near
 ;
 ;Round length down a page.
 ;
-        and     esi,not 4095
+        RoundDN esi,4096
         or      esi,esi
         jz      mem4_8
 ;
@@ -816,9 +815,7 @@ mem5_2: call    PhysicalGetPage
         jc      mem5_10
 mem5_3: and     ecx,1                   ;put user bits in useful place.
         shl     ecx,10
-        and     edx,NOT 4095            ;lose user bits.
-        or      edx,111b                ;present+user+write.
-        or      edx,ecx                 ;set use flags.
+        InitBits edx,ecx                ;clear and init status bits.
         mov     DWORD PTR es:[edi],edx  ;store this tables address.
         push    edi
         sub     edi,PageDirLinear
@@ -945,10 +942,9 @@ RawLockMemory   proc    near
         shl     esi,16
         mov     si,di
         add     esi,ebx
-        and     ebx,not 4095            ;round down to nearest page.
+        RoundDN ebx,4096                ;round down to nearest page.
         mov     d[_LM_BlockBase],ebx
-        add     esi,4095
-        and     esi,not 4095            ;round up to next page.
+        RoundUP esi,4096                ;round up to next page.
         dec     esi
         mov     d[_LM_BlockEnd],esi     ;store address of last page.
         ;
@@ -1126,10 +1122,9 @@ RawUnLockMemory proc near
         shl     esi,16
         mov     si,di
         add     esi,ebx
-        and     ebx,NOT 4095            ;round down to nearest page.
+        RoundDN ebx,4096                ;round down to nearest page.
         mov     d[_LM_BlockBase],ebx
-        add     esi,4095
-        and     esi,NOT 4095            ;round up to next page.
+        RoundUP esi,4096                ;round up to next page.
         dec     esi
         mov     d[_LM_BlockEnd],esi     ;store address of last page.
         ;
@@ -1344,7 +1339,7 @@ mem9_l7:
         mov     dx,ax
         pop     eax
         add     edx,eax
-        and     edx,not 65535
+        RoundDN edx,65536
         shr     edx,12
         pop     ebp
         pop     ebx
@@ -1511,7 +1506,7 @@ mem10_Virtual:
         mul     bx              ;Get bytes available.
         shl     edx,16
         mov     dx,ax           ;make 32 bit.
-        and     edx,not 65535
+        RoundDN edx,65536
         add     edx,SwapFileLength      ;add existing size.
         mov     eax,LinearLimit
         sub     eax,LinearBase  ;get current real memory.
@@ -1626,8 +1621,7 @@ mem10_v4:
         add     ecx,eax         ;New extremity desired.
         cmp     ecx,SwapFileLength
         jc      mem10_Extended
-        add     ecx,65535
-        and     ecx,not 65535
+        RoundUP ecx,65536
         push    ecx
         mov     dx,cx
         shr     ecx,16
@@ -1663,7 +1657,7 @@ mem10_v4:
         call    EmuRawSimulateInt       ;move to right place.
         pop     edi
         pop     ecx
-        test    RealRegsStruc.Real_Flags[edi],1
+        test    RealRegsStruc.Real_Flags[edi],EFLAG_CF
         jnz     mem10_Disk_Error
         mov     SwapFileLength,ecx
         ;
@@ -1684,7 +1678,7 @@ mem10_v4:
         pop     es
         call    EmuRawSimulateInt       ;move to right place.
         pop     edi
-        test    RealRegsStruc.Real_Flags[edi],1
+        test    RealRegsStruc.Real_Flags[edi],EFLAG_CF
         jnz     mem10_Disk_Error
         mov     edx,RealRegsStruc.Real_EDX[edi]
         mov     eax,RealRegsStruc.Real_EAX[edi]
@@ -1739,7 +1733,7 @@ MapPhysical     proc    near
         ;
         and     ecx,1                   ;put user bits in useful place.
         shl     ecx,10
-        and     edx,NOT 4095            ;lose user bits.
+        and     edx,NOT 0FFFh           ;lose user bits.
         mov     eax,LinearEntry         ;get new entry number.
         shr     eax,10                  ;/1024 for page dir entry.
         ;
@@ -1884,7 +1878,7 @@ mem11_NoLocking:
         mov     bl,21h
         call    EmuRawSimulateInt       ;read it from disk.
         pop     es
-        test    RealRegsStruc.Real_Flags[edi],1
+        test    RealRegsStruc.Real_Flags[edi],EFLAG_CF
         jz      mem11_ok
         mov     esi,BreakAddress
         pop     eax
@@ -2124,7 +2118,7 @@ mem12_GotPage:
         pop     es
         call    EmuRawSimulateInt       ;move to right place.
         ;
-        test    RealRegsStruc.Real_Flags[edi],1
+        test    RealRegsStruc.Real_Flags[edi],EFLAG_CF
         stc
         jnz     mem12_error_anyway
         mov     edx,RealRegsStruc.Real_EDX[edi]
@@ -2146,7 +2140,7 @@ mem12_GotPage:
         mov     RealRegsStruc.Real_SP[edi],0
         mov     bl,21h
         call    EmuRawSimulateInt       ;write it to disk.
-        test    RealRegsStruc.Real_Flags[edi],1
+        test    RealRegsStruc.Real_Flags[edi],EFLAG_CF
         stc
         jnz     mem12_error_anyway
         mov     eax,RealRegsStruc.Real_EAX[edi]
@@ -2169,7 +2163,7 @@ mem12_5:
         and     DWORD PTR fs:[edi],NOT 1;mark as not present.
         mov     edx,fs:[edi]            ;get page entry.
         mov     ecx,edx
-        and     edx,NOT 4095            ;lose flag bits.
+        and     edx,NOT 0FFFh           ;lose flag bits.
         shr     ecx,10
         and     ecx,1           ;preserve user flags.
         call    EmuCR3Flush
@@ -2492,7 +2486,7 @@ mem19_0:
         pop     ecx
         mov     eax,RealRegsStruc.Real_EAX[edi] ;get result.
         mov     ebx,RealRegsStruc.Real_EBX[edi]
-        test    RealRegsStruc.Real_Flags[edi],1
+        test    RealRegsStruc.Real_Flags[edi],EFLAG_CF
         jz      mem19_1
         or      bx,bx           ;nothing available?
         jz      mem19_9
@@ -2538,8 +2532,7 @@ mem19_2:
         push    ecx
         push    eax
         mov     edi,offset RawSelBuffer
-        add     edi,7
-        and     edi,not 7
+        RoundUP edi,8
         movzx   esi,bx
         shl     esi,4
         movzx   ecx,cx
@@ -2645,7 +2638,7 @@ mem20_Shrink:
         call    EmuRawSimulateInt
         mov     eax,RealRegsStruc.Real_EAX[edi]
         mov     ebx,RealRegsStruc.Real_EBX[edi]
-        test    RealRegsStruc.Real_Flags[edi],1
+        test    RealRegsStruc.Real_Flags[edi],EFLAG_CF
         pop     edx
         pop     ecx
         jnz     mem20_9         ;DOS failed it!
@@ -2865,7 +2858,7 @@ mem21_0:
         mov     bl,21h
         call    EmuRawSimulateInt       ;release it.
         mov     eax,RealRegsStruc.Real_EAX[edi]
-        test    RealRegsStruc.Real_Flags[edi],1
+        test    RealRegsStruc.Real_Flags[edi],EFLAG_CF
         clc
         jz      mem21_noc
         stc

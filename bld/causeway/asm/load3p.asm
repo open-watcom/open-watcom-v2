@@ -601,8 +601,7 @@ api89_sl0:
         mov     eax,es:[esi]                        ;get fixup address.
         and     eax,0FFFFFFFh
         add     eax,4                               ;allow for cross page fixup.
-        add     eax,8191
-        and     eax,not 8191                        ;get terminal offset.
+        RoundUP eax,8192                            ;get terminal offset.
         mov     ebx,d[api89_SL_LoadPnt]
         sub     ebx,d[api89_ProgBase]
         sub     eax,ebx                             ;get relative offset.

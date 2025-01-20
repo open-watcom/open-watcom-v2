@@ -2122,8 +2122,7 @@ exc22_mcbmc1:
         ;Update Total memory value and skip this block.
         ;
         mov     eax,es:[esi+8]
-        add     eax,4095
-        and     eax,0fffff000h
+        RoundUP eax,4096
         add     TotalLinearMem+4,eax
         pop     edi
         jmp     exc22_m1
@@ -2145,8 +2144,7 @@ exc22_MEM:
         mov     eax,es:[esi+8]
         add     TotalLinearMem,eax
         push    eax
-        add     eax,4095
-        and     eax,0fffff000h
+        RoundUP eax,4096
         add     TotalLinearMem+4,eax
         pop     eax
         inc     TotalLinearMem+8

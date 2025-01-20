@@ -790,20 +790,20 @@ IntHandler      proc    near
 ;Check if this is an exception or interrupt (any error code)
 ;
         cmp     esp,tPL0StackSize-4-((4+4)+(4)+(4)+(4+4+4)+(4+4))
-        ;                            |    |   |     |      |
-        ; EAX:DS --------------------/    |   |     |      |
-        ;                                 |   |     |      |
-        ; Return address -----------------/   |     |      |
-        ;                                     |     |      |
-        ; Error code -------------------------/     |      |
-        ;                                           |      |
-        ; EIP:CS -----------------------------------/      |
+        ;                            |     |   |   |       |
+        ; EAX:DS --------------------/     |   |   |       |
+        ;                                  |   |   |       |
+        ; Return address ------------------/   |   |       |
+        ;                                      |   |       |
+        ; Error code --------------------------/   |       |
+        ;                                          |       |
+        ; EIP:CS ----------------------------------/       |
         ; Eflags                                           |
         ;                                                  |
         ; ESP:SS ------------------------------------------/
         ;
         jnz     inter14_NoCode
-        and     w[esp+(4+4)+(4)+(4)+(4+4)],0011111111010101b
+        and     w[esp+(4+4)+(4)+(4)+IFrame.i_eflags],EFLAGS_MASK1
 
 ; MED 12/02/95
 ; check if Exception Index is 0dh
@@ -824,11 +824,11 @@ IntHandler      proc    near
         cmp     eax,0dh
         jne     mednoem                         ; not a GPF
 
-        mov     ax,ss:[esp+(4+4)+(4)+(4+4)+4]   ; ax==original CS
+        mov     ax,ss:[esp+4+(4+4)+(4)+(4)+IFrame.i_cs]     ; ax==original CS
 ;       verr    ax                              ; check for looping lockup invalid value
 ;       jnz     mednoem
         mov     ds,ax
-        mov     eax,ss:[esp+(4+4)+(4)+(4)+4]    ; eax==original EIP
+        mov     eax,ss:[esp+4+(4+4)+(4)+(4)+IFrame.i_eip]   ; eax==original EIP
 
         cmp     BYTE PTR ds:[eax],0fh           ; first opcode byte
         jne     mednoem                         ; no match
@@ -907,7 +907,7 @@ med11b:
 medemu2:
         mov     eax,2
 medemu:
-        add     ss:[esp+(4+4)+(4)+(4)+4],eax    ; adjust EIP past emulated instruction
+        add     ss:[esp+4+(4+4)+(4)+(4)+IFrame.i_eip],eax   ; adjust EIP past emulated instruction
         pop     ds
         pop     eax
         pop     ds
@@ -920,7 +920,7 @@ mednoem:
 
         mov     eax,[esp+(4+4)+(4)]             ;get error code.
         mov     ExceptionCode,eax               ;/
-        mov     eax,[esp+(4+4)+(4)+(4)+(4+4)]   ;Get flags.
+        mov     eax,[esp+(4+4)+(4)+(4)+IFrame.i_eflags] ;Get flags.
         mov     ExceptionFlags,eax              ;/
         mov     b ExceptionType,1               ;Let dispatch know its an exception.
         mov     eax,cr2                         ;Grab this now to save more PL
@@ -930,8 +930,8 @@ mednoem:
         add     esp,4                           ;skip error code.
         jmp     inter14_SortedCode2
 inter14_NoCode:
-        and     w[esp+(4+4)+(4)+(4+4)],0011111111010101b
-        mov     eax,[esp+(4+4)+(4)+(4+4)]       ;Get flags.
+        and     w[esp+(4+4)+(4)+IFrame.i_eflags],EFLAGS_MASK1
+        mov     eax,[esp+(4+4)+(4)+IFrame.i_eflags] ;Get flags.
         mov     ExceptionFlags,eax              ;/
         mov     b ExceptionType,0               ;unset exception
         cmp     ExceptionIndex,0        ;int 0
@@ -951,7 +951,7 @@ inter14_SortedCode2:
         ;
         push    ds
         push    eax
-        cmp     w[esp+(4+4)+(4+4+4)+(4)],KernalSS
+        cmp     w[esp+(4+4)+IFrame.i_ss],KernalSS
         jz      KernalStack             ;Already on system stack?
         mov     ax,DpmiEmuDS
         mov     ds,ax
@@ -999,37 +999,37 @@ IntStack        proc    near
         ;
         test    BYTE PTR cs:DpmiEmuSystemFlags,1
         jz      inter15_iUse32
-        mov     eax,[esp+(4+4+4)+(4+4+4+4)]
+        mov     eax,[esp+(4+4+4)+IFrame.i_ss]
         sub     ebx,2
         mov     [ebx],ax                ;SS
-        mov     eax,[esp+(4+4+4)+(4+4+4)]
+        mov     eax,[esp+(4+4+4)+IFrame.i_esp]
         sub     ebx,2
         mov     [ebx],ax                ;ESP
-        mov     eax,[esp+(4+4+4)+(4+4)]
+        mov     eax,[esp+(4+4+4)+IFrame.i_eflags]
         sub     ebx,2
         mov     [ebx],ax                ;EFlags
-        mov     eax,[esp+(4+4+4)+(4)]
+        mov     eax,[esp+(4+4+4)+IFrame.i_cs]
         sub     ebx,2
         mov     [ebx],ax                ;CS
-        mov     eax,[esp+(4+4+4)+(0)]
+        mov     eax,[esp+(4+4+4)+IFrame.i_eip]
         sub     ebx,2
         mov     [ebx],ax                ;EIP
         jmp     inter15_iUse0
         ;
 inter15_iUse32:
-        mov     eax,[esp+(4+4+4)+(4+4+4+4)]
+        mov     eax,[esp+(4+4+4)+IFrame.i_ss]
         sub     ebx,4
         mov     [ebx],eax               ;SS
-        mov     eax,[esp+(4+4+4)+(4+4+4)]
+        mov     eax,[esp+(4+4+4)+IFrame.i_esp]
         sub     ebx,4
         mov     [ebx],eax               ;ESP
-        mov     eax,[esp+(4+4+4)+(4+4)]
+        mov     eax,[esp+(4+4+4)+IFrame.i_eflags]
         sub     ebx,4
         mov     [ebx],eax               ;EFlags
-        mov     eax,[esp+(4+4+4)+(4)]
+        mov     eax,[esp+(4+4+4)+IFrame.i_cs]
         sub     ebx,4
         mov     [ebx],eax               ;CS
-        mov     eax,[esp+(4+4+4)+(0)]
+        mov     eax,[esp+(4+4+4)+IFrame.i_eip]
         sub     ebx,4
         mov     [ebx],eax               ;EIP
         ;
@@ -1037,17 +1037,17 @@ inter15_iUse0:
         ;Put new details into current stack.
         ;
         mov     eax,offset inter15_Int
-        mov     [esp+(4+4+4)+(0)],eax   ;EIP
+        mov     [esp+(4+4+4)+IFrame.i_eip],eax      ;EIP
         xor     eax,eax
         mov     ax,DpmiEmuCS
-        mov     [esp+(4+4+4)+(4)],eax   ;CS
+        mov     [esp+(4+4+4)+IFrame.i_cs],eax       ;CS
         pushfd
         pop     eax
-        mov     [esp+(4+4+4)+(4+4)],eax ;EFlags
-        mov     [esp+(4+4+4)+(4+4+4)],ebx       ;ESP
+        mov     [esp+(4+4+4)+IFrame.i_eflags],eax   ;EFlags
+        mov     [esp+(4+4+4)+IFrame.i_esp],ebx      ;ESP
         xor     eax,eax
         mov     ax,KernalSS
-        mov     [esp+(4+4+4)+(4+4+4+4)],eax ;SS
+        mov     [esp+(4+4+4)+IFrame.i_ss],eax       ;SS
         pop     ds
         pop     ebx
         pop     eax
@@ -1069,16 +1069,16 @@ inter15_Int:
         mov     ax,ss
         mov     ds,ax
         mov     bx,sp
-        lss     sp,[ebx+(4+4+4+4+4)+(2+2+2)] ;get original stack again.
-        mov     ax,[ebx+(4+4+4+4+4)+(2+2)] ;get flags.
+        lss     sp,[ebx+(4+4+4+4+4)+IFrame16.i16_sp]    ;get original stack again.
+        mov     ax,[ebx+(4+4+4+4+4)+IFrame16.i16_flags] ;get flags.
         push    ax
-        mov     ax,[ebx+(4+4+4+4+4)+(2)]        ;get CS
+        mov     ax,[ebx+(4+4+4+4+4)+IFrame16.i16_cs]    ;get CS
         push    ax
-        mov     ax,[ebx+(4+4+4+4+4)+(0)]        ;get IP
+        mov     ax,[ebx+(4+4+4+4+4)+IFrame16.i16_ip]    ;get IP
         push    ax
         xor     eax,eax
-        mov     ax,[ebx+(4+4+4+4+4)+(2+2)] ;get flags again.
-        and     ax,1111110011111111b    ;lose IF & TF
+        mov     ax,[ebx+(4+4+4+4+4)+IFrame16.i16_flags] ;get flags again.
+        and     ax,NOT (EFLAG_IF or EFLAG_TF)           ;lose IF & TF
         push    eax             ;int handler flags.
         jmp     inter15_i2Use0
         ;
@@ -1086,15 +1086,15 @@ inter15_i2Use32:
         mov     ax,ss
         mov     ds,ax
         mov     ebx,esp
-        lss     esp,[ebx+(4+4+4+4+4)+(4+4+4)] ;get original stack again.
-        mov     eax,[ebx+(4+4+4+4+4)+(4+4)] ;get flags.
+        lss     esp,[ebx+(4+4+4+4+4)+IFrame.i_esp]      ;get original stack again.
+        mov     eax,[ebx+(4+4+4+4+4)+IFrame.i_eflags]   ;get flags.
         push    eax
-        mov     eax,[ebx+(4+4+4+4+4)+(4)]       ;get CS
+        mov     eax,[ebx+(4+4+4+4+4)+IFrame.i_cs]       ;get CS
         push    eax
-        mov     eax,[ebx+(4+4+4+4+4)+(0)]       ;get IP
+        mov     eax,[ebx+(4+4+4+4+4)+IFrame.i_eip]      ;get IP
         push    eax
-        mov     eax,[ebx+(4+4+4+4+4)+(4+4)] ;get flags again.
-        and     ax,1111110011111111b    ;lose IF & TF
+        mov     eax,[ebx+(4+4+4+4+4)+IFrame.i_eflags]   ;get flags again.
+        and     ax,NOT (EFLAG_IF or EFLAG_TF)           ;lose IF & TF
         push    eax             ;int handler flags.
         ;
 inter15_i2Use0:
@@ -1159,37 +1159,37 @@ inter16_Update:
         ;
         test    BYTE PTR cs:DpmiEmuSystemFlags,1
         jz      inter16_Use32
-        mov     eax,[esp+(4+4+4)+(4+4+4+4)]
+        mov     eax,[esp+(4+4+4)+IFrame.i_ss]
         sub     ebx,2
         mov     [ebx],ax                ;SS
-        mov     eax,[esp+(4+4+4)+(4+4+4)]
+        mov     eax,[esp+(4+4+4)+IFrame.i_esp]
         sub     ebx,2
         mov     [ebx],ax                ;ESP
-        mov     eax,[esp+(4+4+4)+(4+4)]
+        mov     eax,[esp+(4+4+4)+IFrame.i_eflags]
         sub     ebx,2
         mov     [ebx],ax                ;EFlags
-        mov     eax,[esp+(4+4+4)+(4)]
+        mov     eax,[esp+(4+4+4)+IFrame.i_cs]
         sub     ebx,2
         mov     [ebx],ax                ;CS
-        mov     eax,[esp+(4+4+4)+(0)]
+        mov     eax,[esp+(4+4+4)+IFrame.i_eip]
         sub     ebx,2
         mov     [ebx],ax                ;EIP
         jmp     inter16_Use0
         ;
 inter16_Use32:
-        mov     eax,[esp+(4+4+4)+(4+4+4+4)]
+        mov     eax,[esp+(4+4+4)+IFrame.i_ss]
         sub     ebx,4
         mov     [ebx],eax               ;SS
-        mov     eax,[esp+(4+4+4)+(4+4+4)]
+        mov     eax,[esp+(4+4+4)+IFrame.i_esp]
         sub     ebx,4
         mov     [ebx],eax               ;ESP
-        mov     eax,[esp+(4+4+4)+(4+4)]
+        mov     eax,[esp+(4+4+4)+IFrame.i_eflags]
         sub     ebx,4
         mov     [ebx],eax               ;EFlags
-        mov     eax,[esp+(4+4+4)+(4)]
+        mov     eax,[esp+(4+4+4)+IFrame.i_cs]
         sub     ebx,4
         mov     [ebx],eax               ;CS
-        mov     eax,[esp+(4+4+4)+(0)]
+        mov     eax,[esp+(4+4+4)+IFrame.i_eip]
         sub     ebx,4
         mov     [ebx],eax               ;EIP
         ;
@@ -1197,17 +1197,17 @@ inter16_Use0:
         ;Put new details into current stack.
         ;
         mov     eax,offset IntDispatch
-        mov     [esp+(4+4+4)+(0)],eax   ;EIP
+        mov     [esp+(4+4+4)+IFrame.i_eip],eax      ;EIP
         xor     eax,eax
         mov     ax,DpmiEmuCS
-        mov     [esp+(4+4+4)+(4)],eax   ;CS
+        mov     [esp+(4+4+4)+IFrame.i_cs],eax       ;CS
         pushfd
         pop     eax
-        mov     [esp+(4+4+4)+(4+4)],eax ;EFlags
-        mov     [esp+(4+4+4)+(4+4+4)],ebx       ;ESP
+        mov     [esp+(4+4+4)+IFrame.i_eflags],eax   ;EFlags
+        mov     [esp+(4+4+4)+IFrame.i_esp],ebx      ;ESP
         xor     eax,eax
         mov     ax,KernalSS
-        mov     [esp+(4+4+4)+(4+4+4+4)],eax ;SS
+        mov     [esp+(4+4+4)+IFrame.i_ss],eax       ;SS
         pop     ds
         pop     ebx
         pop     eax
@@ -1230,7 +1230,7 @@ IntDispatch     proc    near
         push    ds
         mov     ax,DpmiEmuDS
         mov     ds,ax
-        and     w[ExceptionFlags],1111110011111111b
+        and     w[ExceptionFlags],NOT (EFLAG_IF or EFLAG_TF)
         mov     esi,ExceptionIndex      ;Get the exception number.
         add     esi,esi         ;*2
         mov     eax,esi
@@ -1301,15 +1301,15 @@ inter17_Resume:
         jz      inter17_Use32
         ;
         movzx   ebx,bx
-        lss     sp,d[ebx+(4+4+4+4)+(2+2+2)] ;get old stack address.
-        and     w[ebx+(4+4+4+4)+(2+2)],0000011100000000b ;retain IF & TF.
-        and     w[ebx+(4+4+4)],1111100011111111b        ;lose IF & TF.
+        lss     sp,d[ebx+(4+4+4+4)+IFrame16.i16_sp] ;get old stack address.
+        and     w[ebx+(4+4+4+4)+IFrame16.i16_flags],EFLAG_IF or EFLAG_TF or EFLAG_DF ;retain IF & TF & DF.
+        and     w[ebx+(4+4+4)],NOT (EFLAG_IF or EFLAG_TF or EFLAG_DF) ;lose IF & TF & DF.
         mov     ax,[ebx+(4+4+4)]
-        or      ax,[ebx+(4+4+4+4)+(2+2)]
+        or      ax,[ebx+(4+4+4+4)+IFrame16.i16_flags]
         push    ax              ;EFlags.
-        mov     ax,[ebx+(4+4+4+4)+(2)]
+        mov     ax,[ebx+(4+4+4+4)+IFrame16.i16_cs]
         push    ax              ;CS
-        mov     ax,[ebx+(4+4+4+4)+(0)]
+        mov     ax,[ebx+(4+4+4+4)+IFrame16.i16_ip]
         push    ax              ;EIP
         mov     eax,[ebx+(4+4)]
         push    eax             ;EAX
@@ -1329,15 +1329,15 @@ inter17_Resume:
         iret
         ;
 inter17_Use32:
-        lss     esp,f[ebx+(4+4+4+4)+(4+4+4)] ;get old stack address.
-        and     w[ebx+(4+4+4+4)+(4+4)],0000011100000000b ;retain IF & TF.
-        and     w[ebx+(4+4+4)],1111100011111111b        ;lose IF & TF.
+        lss     esp,f[ebx+(4+4+4+4)+IFrame.i_esp] ;get old stack address.
+        and     w[ebx+(4+4+4+4)+IFrame.i_eflags],EFLAG_IF or EFLAG_TF or EFLAG_DF ;retain IF & TF & DF.
+        and     w[ebx+(4+4+4)],NOT (EFLAG_IF or EFLAG_TF or EFLAG_DF) ;lose IF & TF & DF.
         mov     eax,[ebx+(4+4+4)]
-        or      eax,[ebx+(4+4+4+4)+(4+4)]
+        or      eax,[ebx+(4+4+4+4)+IFrame.i_eflags]
         push    eax             ;EFlags.
-        mov     eax,[ebx+(4+4+4+4)+(4)]
+        mov     eax,[ebx+(4+4+4+4)+IFrame.i_cs]
         push    eax             ;CS
-        mov     eax,[ebx+(4+4+4+4)+(0)]
+        mov     eax,[ebx+(4+4+4+4)+IFrame.i_eip]
         push    eax             ;EIP
         mov     eax,[ebx+(4+4)]
         push    eax             ;EAX
@@ -1416,12 +1416,12 @@ inter17_ResumeExp:
         mov     ds,ax
         mov     ebx,esp
         movzx   ebx,bx
-        lss     sp,d[ebx+(4+4+4+4)+(2+2+2)] ;get old stack address.
-        mov     ax,[ebx+(4+4+4+4)+(2+2)]
+        lss     sp,d[ebx+(4+4+4+4)+IFrame16.i16_sp] ;get old stack address.
+        mov     ax,[ebx+(4+4+4+4)+IFrame16.i16_flags]
         push    ax              ;EFlags.
-        mov     ax,[ebx+(4+4+4+4)+(2)]
+        mov     ax,[ebx+(4+4+4+4)+IFrame16.i16_cs]
         push    ax              ;CS
-        mov     ax,[ebx+(4+4+4+4)+(0)]
+        mov     ax,[ebx+(4+4+4+4)+IFrame16.i16_ip]
         push    ax              ;EIP
         mov     eax,[ebx+(4+4)]
         push    eax             ;EAX
@@ -1449,12 +1449,12 @@ inter17_ExpUse32:
         mov     ax,ss
         mov     ds,ax
         mov     ebx,esp
-        lss     esp,f[ebx+(4+4+4+4)+(4+4+4)] ;get old stack address.
-        mov     eax,[ebx+(4+4+4+4)+(4+4)]
+        lss     esp,f[ebx+(4+4+4+4)+IFrame.i_esp] ;get old stack address.
+        mov     eax,[ebx+(4+4+4+4)+IFrame.i_eflags]
         push    eax             ;EFlags.
-        mov     eax,[ebx+(4+4+4+4)+(4)]
+        mov     eax,[ebx+(4+4+4+4)+IFrame.i_cs]
         push    eax             ;CS
-        mov     eax,[ebx+(4+4+4+4)+(0)]
+        mov     eax,[ebx+(4+4+4+4)+IFrame.i_eip]
         push    eax             ;EIP
         mov     eax,[ebx+(4+4)]
         push    eax             ;EAX
@@ -1497,10 +1497,10 @@ IntNN386        proc    far
         test    BYTE PTR DpmiEmuSystemFlags,1
         jz      inter18_Use32Bit19
         movzx   ebp,bp
-        movzx   eax,w[ebp+(4+4+4+4+4+4+4+4)+(10*2)+(4+4+4+4)+(4+4+4)+(2+2)]
+        movzx   eax,w[ebp+(4+4+4+4+4+4+4+4)+(10*2)+(4+4+4+4)+(4+4+4)+IFrame16.i16_flags]
         jmp     inter18_Use16Bit19
 inter18_Use32Bit19:
-        mov     eax,[ebp+(4+4+4+4+4+4+4+4)+(10*2)+(4+4+4+4)+(4+4+4)+(4+4)]
+        mov     eax,[ebp+(4+4+4+4+4+4+4+4)+(10*2)+(4+4+4+4)+(4+4+4)+IFrame.i_eflags]
 inter18_Use16Bit19:
         mov     [ebp+(4+4+4+4+4+4+4+4)+(10*2)+(4+4+4+4)],eax
         mov     edx,[ebp+(4+4+4+4+4+4+4+4)+(10*2)+(4+4+4+4)+(4+4)]
@@ -1542,7 +1542,7 @@ inter18_c2:
         ;Now pass control to the INT simulator.
         ;
         mov     eax,[ebp+(4+4+4+4+4+4+4+4)+(10*2)+(4+4+4+4)]
-        and     eax,1111100011111111b
+        and     eax,0ffffh and NOT (EFLAG_IF or EFLAG_TF or EFLAG_DF)
         push    eax
         popfd
         mov     ebx,edx
@@ -1565,14 +1565,14 @@ inter18_NoCall:
         ;Update the flags.
         ;
         mov     ax,es:RealRegsStruc.Real_Flags[edi]
-        and     ax,1000100011111111b            ;lose IF.
+        and     ax,NOT (EFLAG_NT or EFLAG_IOPL or EFLAG_IF or EFLAG_TF or EFLAG_DF) ;lose IF & TF & DF & NT & IOPL.
         ;
         test    BYTE PTR DpmiEmuSystemFlags,1
         jz      inter18_Use32Bit
-        mov     bx,[ebp+(4+4+4+4+4+4+4+4)+(10*2)+(4+4+4+4)+(4+4+4)+(2+2)]
-        and     bx,0111011100000000b            ;retain IF.
+        mov     bx,[ebp+(4+4+4+4+4+4+4+4)+(10*2)+(4+4+4+4)+(4+4+4)+IFrame16.i16_flags]
+        and     bx,EFLAG_NT or EFLAG_IOPL or EFLAG_IF or EFLAG_TF or EFLAG_DF ;retain IF & TF & DF & NT & IOPL.
         or      ax,bx
-        mov     [ebp+(4+4+4+4+4+4+4+4)+(10*2)+(4+4+4+4)+(4+4+4)+(2+2)],ax
+        mov     [ebp+(4+4+4+4+4+4+4+4)+(10*2)+(4+4+4+4)+(4+4+4)+IFrame16.i16_flags],ax
         popad
         add     sp,10*2
         pop     gs
@@ -1584,10 +1584,10 @@ inter18_NoCall:
         iret                    ;Switch back to calling program.
         ;
 inter18_Use32Bit:
-        mov     bx,[ebp+(4+4+4+4+4+4+4+4)+(10*2)+(4+4+4+4)+(4+4+4)+(4+4)]
-        and     bx,0111011100000000b            ;retain IF.
+        mov     bx,[ebp+(4+4+4+4+4+4+4+4)+(10*2)+(4+4+4+4)+(4+4+4)+IFrame.i_eflags]
+        and     bx,EFLAG_NT or EFLAG_IOPL or EFLAG_IF or EFLAG_TF or EFLAG_DF ;retain IF & TF & DF & NT & IOPL.
         or      ax,bx
-        mov     [ebp+(4+4+4+4+4+4+4+4)+(10*2)+(4+4+4+4)+(4+4+4)+(4+4)],ax
+        mov     [ebp+(4+4+4+4+4+4+4+4)+(10*2)+(4+4+4+4)+(4+4+4)+IFrame.i_eflags],ax
         popad
         add     esp,10*2
         pop     gs
@@ -1631,11 +1631,11 @@ ExcepNN386      proc    far
         mov     ds,ax           ;/
         test    BYTE PTR DpmiEmuSystemFlags,1
         jz      inter19_Use32Bit16
-        movzx   eax,w[esp+(4+4+4+4)+(4+4+4+4+4+4+4)+(2+2)]
+        movzx   eax,w[esp+(4+4+4+4)+(4+4+4+4+4+4+4)+IFrame16.i16_flags]
         mov     ExceptionEFL,eax
         jmp     inter19_Use16Bit16
 inter19_Use32Bit16:
-        mov     eax,[esp+(4+4+4+4)+(4+4+4+4+4+4+4)+(4+4)]
+        mov     eax,[esp+(4+4+4+4)+(4+4+4+4+4+4+4)+IFrame.i_eflags]
         mov     ExceptionEFL,eax
         ;
 inter19_Use16Bit16:
