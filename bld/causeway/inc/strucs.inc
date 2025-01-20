@@ -426,3 +426,19 @@ LE_Reserved             db 20 dup (?) ;reserved.
 LE_DeviceID             dw ?    ;device ID (Windows VxD only).
 LE_DDK          dw ?    ;DDK version number.
 LE_Header               ends
+
+IFrame16 struct
+    i16_ip      dw 0
+    i16_cs      dw 0
+    i16_flags   dw 0
+    i16_sp      dw 0
+    i16_ss      dw 0
+IFrame16 ends
+
+IFrame struct
+    i_eip       dd 0
+    i_cs        dw 0,0
+    i_eflags    dd 0
+    i_esp       dd 0
+    i_ss        dw 0,0
+IFrame ends
