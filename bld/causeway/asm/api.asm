@@ -202,7 +202,8 @@ api1_n32:
 ;
 OldIntSys       df 0
 ;
-APICallTable    dd cwAPI_Info       ;00
+APICallTable    label   dword
+        dd cwAPI_Info               ;00
         dd cwAPI_IntXX              ;01
         dd cwAPI_FarCallReal        ;02
         dd cwAPI_GetSel             ;03

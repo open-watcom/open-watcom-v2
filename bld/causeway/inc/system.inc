@@ -411,7 +411,7 @@
 FIO_struc       struc
 FIO_Flags       dd ?            ;Control flags.
 FIO_Flags_DOS   equ 1           ;Buffer is in conventional memory.
-FIO_Flags_Dirty equ 2   ;Buffer is dirty.
+FIO_Flags_Dirty equ 2           ;Buffer is dirty.
 FIO_Handle      dd ?            ;File's DOS handle.
 FIO_Pointer     dd ?            ;Current file pointer position.
 FIO_BPointer    dd ?            ;Buffer file pointer position.
@@ -537,12 +537,12 @@ FIO_struc       ends
         externdef GetKey:near
 SK_SHIFTR       equ     1
 SK_SHIFTL       equ     2
-SK_CTRL equ     4
-SK_ALT  equ     8
+SK_CTRL         equ     4
+SK_ALT          equ     8
 SK_SCROLL       equ     16
-SK_NUM  equ     32
-SK_CAPS equ     64
-SK_INS  equ     128
+SK_NUM          equ     32
+SK_CAPS         equ     64
+SK_INS          equ     128
 
 
 ;******************************************************************************
@@ -1048,6 +1048,3 @@ SK_INS  equ     128
 ;do anything. Saves keep checking for zero before makeing a CALL or JMP.
 ;*******************************************************************************
         externdef DummyRET:near
-
-
-
