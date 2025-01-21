@@ -70,18 +70,20 @@ jobs:
       matrix:
         include:
         - owtools: 'GCC'
+          arch:    'x64'
+          image:   'ubuntu-latest'
           tools:   'gcc'
-          title:   'x64 gcc'
         - owtools: 'CLANG'
+          arch:    'x64'
+          image:   'ubuntu-latest'
           tools:   'clang'
-          title:   'x64 clang'
-    name: Linux ${{ matrix.title }}
+    name: Linux ${{ matrix.arch }} ${{ matrix.tools }}
     uses: "./.github/workflows/cibldlnx.yml"
     with:
-      arch:         'x64'
+      arch:         ${{ matrix.arch }}
       tools:        ${{ matrix.tools }}
       owtools:      ${{ matrix.owtools }}
-      image:        'ubuntu-latest'
+      image:        ${{ matrix.image }}
       owdebug:      ${{ vars.OWDEBUG }}
   Windows:
     needs:
@@ -90,15 +92,16 @@ jobs:
       matrix:
         include:
         - owtools: 'VISUALC'
+          arch:    'x64'
+          image:   'windows-2022'
           tools:   'vs2022'
-          title:   'x64 vs2022'
-    name: Windows ${{ matrix.title }}
+    name: Windows ${{ matrix.arch }} ${{ matrix.tools }}
     uses: "./.github/workflows/cibldnt.yml"
     with:
-      arch:         'x64'
+      arch:         ${{ matrix.arch }}
       tools:        ${{ matrix.tools }}
       owtools:      ${{ matrix.owtools }}
-      image:        'windows-2022'
+      image:        ${{ matrix.image }}
       owdebug:      ${{ vars.OWDEBUG }}
   OSX:
     needs: start-start
@@ -108,18 +111,18 @@ jobs:
         - owtools:  'CLANG'
           arch:     'x64'
           image:    'macos-13'
+          tools:    'clang'
           relpath:  'rel bino64'
-          title:    'x64 clang'
         - owtools:  'CLANG'
           arch:     'a64'
           image:    'macos-14'
+          tools:    'clang'
           relpath:  'rel armo64'
-          title:    'arm64 clang'
-    name: OSX ${{ matrix.title }}
+    name: OSX ${{ matrix.arch }} ${{ matrix.tools }}
     uses: "./.github/workflows/cibldosx.yml"
     with:
       arch:         ${{ matrix.arch }}
-      tools:        'clang'
+      tools:        ${{ matrix.tools }}
       relpath:      ${{ matrix.relpath }}
       owtools:      ${{ matrix.owtools }}
       image:        ${{ matrix.image }}

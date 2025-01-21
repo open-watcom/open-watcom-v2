@@ -30,13 +30,13 @@ jobs:
       matrix:
         include:
         - owtools: 'GCC'
-          tools:   'gcc'
+          arch:    'x64'
           image:   'ubuntu-20.04'
-          title:   'x64 gcc'
-    name: Linux ${{ matrix.title }}
+          tools:   'gcc'
+    name: Linux ${{ matrix.arch }} ${{ matrix.tools }}
     uses: "./.github/workflows/rel-lnx.yml"
     with:
-      arch:         'x64'
+      arch:         ${{ matrix.arch }}
       tools:        ${{ matrix.tools }}
       owtools:      ${{ matrix.owtools }}
       image:        ${{ matrix.image }}
@@ -48,13 +48,13 @@ jobs:
       matrix:
         include:
         - owtools: 'VISUALC'
-          tools:   'vs2019'
+          arch:    'x64'
           image:   'windows-2019'
-          title:   'x64 vs2019'
-    name: Windows ${{ matrix.title }}
+          tools:   'vs2019'
+    name: Windows ${{ matrix.arch }} ${{ matrix.tools }}
     uses: "./.github/workflows/rel-nt.yml"
     with:
-      arch:         'x64'
+      arch:         ${{ matrix.arch }}
       tools:        ${{ matrix.tools }}
       owtools:      ${{ matrix.owtools }}
       image:        ${{ matrix.image }}
@@ -68,18 +68,18 @@ jobs:
         - owtools: 'CLANG'
           arch:    'x64'
           image:   'macos-13'
+          tools:   'clang'
           relpath: 'rel bino64'
-          title:   'x64 clang'
         - owtools: 'CLANG'
           arch:    'a64'
           image:   'macos-14'
+          tools:   'clang'
           relpath: 'rel armo64'
-          title:   'arm64 clang'
-    name: OSX ${{ matrix.title }}
+    name: OSX ${{ matrix.arch }} ${{ matrix.tools }}
     uses: "./.github/workflows/rel-osx.yml"
     with:
       arch:         ${{ matrix.arch }}
-      tools:        'clang'
+      tools:        ${{ matrix.tools }}
       relpath:      ${{ matrix.relpath }}
       owtools:      ${{ matrix.owtools }}
       image:        ${{ matrix.image }}
