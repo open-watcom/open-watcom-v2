@@ -69,6 +69,6 @@ clean: .SYMBOLIC
 !ifdef __UNIX__
     rm -f $(build_dir)/$(%OWOBJDIR)/builder
 !else
-    rm -f $(build_dir)/$(%OWOBJDIR)/builder
+    rm -f $(build_dir)/$(%OWOBJDIR)/builder.exe
 !endif
 
