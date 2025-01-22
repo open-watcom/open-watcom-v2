@@ -54,6 +54,7 @@
 #include "virtmem.h"
 #include "impexp.h"
 #include "objomf.h"
+#include "liballoc.h"
 
 
 enum dll_entry_type {
@@ -162,7 +163,7 @@ void OMFSkipObj( file_list *list, unsigned long *loc )
 static void ProcTHEADR( void )
 /****************************/
 {
-    char    name[256];
+    char   *name;
     int     sym_len;
 
     if( CurrMod->omfdbg == OMF_DBG_CODEVIEW ) {
@@ -170,8 +171,10 @@ static void ProcTHEADR( void )
         if( sym_len == 0 ) {
             BadObject();
         }
+        name = (char *)lib_calloc( 1, sym_len + 1 );
         memcpy( name, ObjBuff, sym_len );
         name[sym_len] = '\0';
+        CurrMod->name.u.ptr = name;
     }
 }
 
