@@ -65,11 +65,10 @@ $(build_dir)/$(%OWOBJDIR)/builder.exe : $(builder_srcs)
     %copy builder.exe $@
 
 clean: .SYMBOLIC
-!ifdef __UNIX__
     rm -f builder.exe
+!ifdef __UNIX__
     rm -f $(build_dir)/$(%OWOBJDIR)/builder
 !else
-    del builder.exe
-    del $(build_dir)\$(%OWOBJDIR)\builder.exe
+    rm -f $(build_dir)/$(%OWOBJDIR)/builder
 !endif
 
