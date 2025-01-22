@@ -43,7 +43,7 @@ bootutil_proc()
         #
         mkdir $OWROOT/bld/builder/$OWOBJDIR
         cd $OWROOT/bld/builder/$OWOBJDIR
-        $OWROOT/build/$OWOBJDIR/wmake -f ../binmake bootstrap=1
+        $OWROOT/build/$OWOBJDIR/wmake -f ../preboot
         RC=$?
     fi
 }
