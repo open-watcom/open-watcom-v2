@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -347,15 +347,13 @@ void _makepath( char *path, const char *drive,
         ch = _mbsnextc( fname );
         if( pickup( ch, &first_pc ) != first_pc && *path == first_pc )
             path++;
-
         while( *fname != '\0' ) {
-        //do {
             ch = pickup( _mbsnextc( fname ), &first_pc );
             _mbvtop( ch, path );
             path[_mbclen( path )] = '\0';
             path = _mbsinc( path );
             fname = _mbsinc( fname );
-        } //while( *fname != '\0' );
+        }
     } else {
         if( *path == first_pc ) {
             path++;
@@ -429,10 +427,12 @@ char *_sys_fullpath( char *buff, const char *path, size_t size )
 
     /*** Get the full pathname ***/
     rc = GetFullPathNameA( path, (DWORD)size, buff, &filepart );
-    // If the buffer is too small, the return value is the size of
-    // the buffer, in TCHARs, required to hold the path.
-    // If the function fails, the return value is zero. To get extended error
-    // information, call GetLastError.
+    /*
+     * If the buffer is too small, the return value is the size of
+     * the buffer, in TCHARs, required to hold the path.
+     * If the function fails, the return value is zero. To get extended error
+     * information, call GetLastError.
+     */
     if( (rc == 0) || (rc > (DWORD)size) ) {
         errno = ERANGE;
         return( NULL );
@@ -632,7 +632,7 @@ char *_sys_fullpath( char *buff, const char *path, size_t size )
                 *(q++) = *(p++);
                 continue;
             }
-            ++p;     // at least '.'
+            ++p;     /* at least '.' */
             if( _IS_SLASH( p[0] ) ) {
                 /* ignore "./" in directory specs */
                 if( ! _IS_SLASH( q[-1] ) ) {            /* 14-jan-93 */
@@ -962,7 +962,7 @@ int (_bgetcmd)( char *buffer, int len )
 
     if( ( buffer != NULL ) && ( len > 0 ) ) {
         p = buffer;
-        --len;          // reserve space for terminating NULL byte
+        --len;          /* reserve space for terminating NULL byte */
     } else {
         p = NULL;
         len = 0;
@@ -1003,7 +1003,7 @@ int (_bgetcmd)( char *buffer, int len )
         }
     }
     if( p != NULL ) {
-        *p = '\0';  // terminate string
+        *p = '\0';  /* terminate string */
     }
 
     return( total );
@@ -1734,17 +1734,17 @@ int closedir( DIR *dirp )
     return( 0 );
 }
 
-char        *optarg;            // pointer to option argument
-int         optind = 1;         // current argv[] index
-int         optopt;             // currently processed chracter
-int         opterr = 1;         // error output control flag
+char        *optarg;            /* pointer to option argument */
+int         optind = 1;         /* current argv[] index */
+int         optopt;             /* currently processed chracter */
+int         opterr = 1;         /* error output control flag */
 
-char        __altoptchar = '/'; // alternate option character
-char        __optchar;          // matched option char ('-' or altoptchar)
+char        __altoptchar = '/'; /* alternate option character */
+char        __optchar;          /* matched option char ('-' or altoptchar) */
 
-static int  opt_offset = 0;     // position in currently parsed argument
+static int  opt_offset = 0;     /* position in currently parsed argument */
 
-// Error messages suggested by Single UNIX Specification
+/* Error messages suggested by Single UNIX Specification */
 #define NO_ARG_MSG      "%s: option requires an argument -- %c\n"
 #define BAD_OPT_MSG     "%s: illegal option -- %c\n"
 
@@ -1781,22 +1781,22 @@ int getopt( int argc, char * const argv[], const char *optstring )
             opt_offset++;
             optopt = curr_arg[opt_offset];
         }
-        if( optopt == '\0' ) {  // option char by itself should be
-            return( -1 );       // left alone
+        if( optopt == '\0' ) {  /* option char by itself should be */
+            return( -1 );       /* left alone */
         }
         if( optopt == '-' && curr_arg[opt_offset + 1] == '\0' ) {
             opt_offset = 0;
             ++optind;
-            return( -1 );   // "--" POSIX end of options delimiter
+            return( -1 );   /* "--" POSIX end of options delimiter */
         }
         ptr = strchr( optstring, optopt );
         if( ptr == NULL ) {
             if( opterr && *optstring != ':' ) {
                 fprintf( stderr, BAD_OPT_MSG, argv[0], optopt );
             }
-            return( '?' );  // unrecognized option
+            return( '?' );  /* unrecognized option */
         }
-        if( *(ptr + 1) == ':' ) {   // check if option requires argument
+        if( *(ptr + 1) == ':' ) {   /* check if option requires argument */
             if( curr_arg[opt_offset + 1] == '\0' ) {
                 if( argv[optind + 1] == NULL ) {
                     if( *optstring == ':' ) {
@@ -1817,14 +1817,14 @@ int getopt( int argc, char * const argv[], const char *optstring )
             ++optind;
         } else {
             opt_offset++;
-            if( curr_arg[opt_offset] == '\0' ) {    // last char in argv element
+            if( curr_arg[opt_offset] == '\0' ) {    /* last char in argv element */
                 opt_offset = 0;
                 ++optind;
             }
         }
-        return( optopt );   // return recognized option char
+        return( optopt );   /* return recognized option char */
     } else {
-        return( -1 );       // no more options
+        return( -1 );       /* no more options */
     }
 }
 

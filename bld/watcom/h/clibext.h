@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -103,9 +103,11 @@
 
 #define _MAX_PATH2 (_MAX_PATH + 3)
 
-//#ifndef getch
-//#define getch getchar
-//#endif
+#if 0
+#ifndef getch
+#define getch getchar
+#endif
+#endif
 #define __Strtold(s,ld,endptr) ((*(double *)(ld))=strtod(s,endptr))
 
 #ifndef __cplusplus

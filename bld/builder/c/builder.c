@@ -321,7 +321,7 @@ static void PushInclude( const char *name )
     new->lineno = 0;
     new->reset_abit = NULL;
     includeStk = new;
-    new->fp = fopen( name, "rb" );      // We will cook (handle \r) internally
+    new->fp = fopen( name, "rb" );      /* We will cook (handle \r) internally */
     if( new->fp == NULL ) {
         Fatal( "Could not open '%s': %s\n", name, strerror( errno ) );
     }
@@ -380,8 +380,10 @@ static char *SubstOne( const char **inp, char *out )
         switch( *in ) {
         case '>':
             *p = '\0';
-            // If the parameter is a number (n) followed by an asterisk,
-            // copy from parameter n to the end to out. E.g. <2*>
+            /*
+             * If the parameter is a number (n) followed by an asterisk,
+             * copy from parameter n to the end to out. E.g. <2*>
+             */
             parm = 1;
             for( starpos = out; isdigit( *starpos ); starpos++ )
                 ;
@@ -438,20 +440,20 @@ static void SubstLine( const char *in, char *out )
     SKIP_BLANKS( in );
     for( ;; ) {
         switch( *in ) {
-        case '^':                       // Escape next byte special meaning
+        case '^':                       /* Escape next byte special meaning */
             ++in;
             switch( *in ) {
             case '\n':
             case '\0':
-            case '\r':                  // Allow DOS line in UNIX port
-            case DOS_EOF_CHAR:          // Allow DOS EOF in UNIX port
+            case '\r':                  /* Allow DOS line in UNIX port */
+            case DOS_EOF_CHAR:          /* Allow DOS EOF in UNIX port */
                 break;
             default:
                 *out++ = *in++;
                 break;
             }
             break;
-        case '[':                       // Surround special chars with a space
+        case '[':                       /* Surround special chars with a space */
         case ']':
         case '(':
         case ')':
@@ -466,8 +468,8 @@ static void SubstLine( const char *in, char *out )
             break;
         case '\n':
         case '\0':
-        case '\r':                      // Allow DOS line in UNIX port
-        case DOS_EOF_CHAR:              // Allow DOS EOF in UNIX port
+        case '\r':                      /* Allow DOS line in UNIX port */
+        case DOS_EOF_CHAR:              /* Allow DOS EOF in UNIX port */
             *out = '\0';
             return;
         default:
@@ -499,7 +501,7 @@ static char *GetWord( char *p, char **start )
 ***************************************************************************/
 static int MatchFound( char *p )
 {
-    char    *Match[20];                     // 20 is enough for builder
+    char    *Match[20];                     /* 20 is enough for builder */
     int     MatchWords = 0;
     int     i;
     int     EmptyOk = false;
@@ -510,12 +512,12 @@ static int MatchFound( char *p )
     if( *word == '\0' )
         Fatal( "Missing match word\n" );
 
-    if( *word == '(' ) { // Multiple match words, store them
+    if( *word == '(' ) { /* Multiple match words, store them */
         p = GetWord( p, &word );
         for( ; MatchWords < 20; ) {
             if( *word == '\0' )
                 Fatal( "Missing match word\n" );
-            if( stricmp( word, "\"\"" ) == 0 ) { // 'No parameter' indicator
+            if( stricmp( word, "\"\"" ) == 0 ) { /* 'No parameter' indicator */
                 EmptyOk = true;
             } else {
                 Match[MatchWords++] = word;
@@ -530,11 +532,11 @@ static int MatchFound( char *p )
         Match[MatchWords++] = word;
         p = GetWord( p, &word );
     }
-
-    // At this point, p must point to the first word after the (last) match word
-
+    /*
+     * At this point, p must point to the first word after the (last) match word
+     */
     for( ;; ) {
-        if( *word == '\0' || strcmp( word, "]" ) == 0 ) { // End of string
+        if( *word == '\0' || strcmp( word, "]" ) == 0 ) { /* End of string */
             if( WordsExamined == 0 && EmptyOk ) {
                 return( 1 );
             } else {
@@ -597,7 +599,7 @@ static int ProcessCtlFile( const char *name )
                     }
                 }
             } else if( stricmp( word, "BLOCK" ) == 0 ) {
-                includeStk->skipping = 0;   // New block: reset skip flags
+                includeStk->skipping = 0;   /* New block: reset skip flags */
                 includeStk->ifdefskipping = 0;
                 if( !MatchFound( p ) )
                     includeStk->skipping++;
