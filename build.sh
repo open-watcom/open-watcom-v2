@@ -56,8 +56,8 @@ else
     if [ ! -d $OWOBJDIR ]; then mkdir $OWOBJDIR; fi
     cd $OWOBJDIR
     rm -f ../../../build/$OWOBJDIR/builder
-    output_redirect ../../../build/$OWOBJDIR/wmake -f ../binmake clean
-    output_redirect ../../../build/$OWOBJDIR/wmake -f ../binmake bootstrap=1
+    output_redirect ../../../build/$OWOBJDIR/wmake -f ../preboot clean
+    output_redirect ../../../build/$OWOBJDIR/wmake -f ../preboot
     cd "$OWROOT"
     if [ "$1" != "preboot" ]; then
         cd bld

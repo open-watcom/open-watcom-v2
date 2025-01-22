@@ -26,8 +26,8 @@ cd "%OWROOT%\bld\builder"
 if not exist "%OWOBJDIR%\%NUL%" mkdir "%OWOBJDIR%"
 cd "%OWOBJDIR%"
 if exist "%OWROOT%\build\%OWOBJDIR%\builder.exe" del "%OWROOT%\build\%OWOBJDIR%\builder.exe"
-"%OWROOT%\build\%OWOBJDIR%\wmake" -f ..\binmake clean >>"%OWBUILDER_BOOTX_OUTPUT%" %OWBUILDER_REDIR_ERROUT%
-"%OWROOT%\build\%OWOBJDIR%\wmake" -f ..\binmake bootstrap=1 >>"%OWBUILDER_BOOTX_OUTPUT%" %OWBUILDER_REDIR_ERROUT%
+"%OWROOT%\build\%OWOBJDIR%\wmake" -f ..\preboot clean >>"%OWBUILDER_BOOTX_OUTPUT%" %OWBUILDER_REDIR_ERROUT%
+"%OWROOT%\build\%OWOBJDIR%\wmake" -f ..\preboot >>"%OWBUILDER_BOOTX_OUTPUT%" %OWBUILDER_REDIR_ERROUT%
 if errorlevel == 1 goto exiterr
 if '%1' == 'preboot' goto exiterr
 cd "%OWROOT%\bld"

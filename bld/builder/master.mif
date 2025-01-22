@@ -20,15 +20,6 @@ all_commands    += builder.exe
 !endif
 #all_commands    += wgrep.exe
 
-!ifndef __WATCOM_TOOLS__
-!ifdef bootstrap
-!ifndef %LOGFNAME
-bld_cl_extra_libs_gen =
-bld_cl_extra_objs_gen = clibext.obj
-!endif
-!endif
-!endif
-
 inc_dirs = -I"../h" -I"$(pmake_dir)"
 
 .c : ../c;$(pmake_dir);$(watcom_dir)/c;$(trmem_dir)
@@ -55,17 +46,6 @@ extra_cpp_flags_genverrc = -D_VERSION=$(bld_ver)
 extra_cpp_flags_utils = $(trmem_cpp_flags)
 
 extra_c_flags_utils = $(trmem_cover_cflags)
-
-!if "$(host_os)" == "$(bld_os)"     # Don't copy unless host_os=build_os
-!ifndef %LOGFNAME                   # Don't copy unless build outside builder
-!ifdef __UNIX__
-$(build_dir)/$(%OWOBJDIR)/builder : builder.exe         # Remove .exe from working name
-!else
-$(build_dir)/$(%OWOBJDIR)/builder.exe : builder.exe
-!endif
-    %copy $[@ $@
-!endif
-!endif
 
 all : $(all_commands) .SYMBOLIC
 full : $(full_commands) .SYMBOLIC

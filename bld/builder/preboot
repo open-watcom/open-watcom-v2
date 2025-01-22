@@ -1,0 +1,75 @@
+#pmake: binmake
+
+inc_dirs = -I"../h" -I"$(pmake_dir)" -I"$(watcom_dir)/h"
+
+.c : ../c;$(pmake_dir);$(watcom_dir)/c
+
+!ifdef __WATCOM_TOOLS__
+!ifeq bld_cpu x64
+!undef __WATCOM_TOOLS__
+!else ifeq bld_cpu arm
+!undef __WATCOM_TOOLS__
+!else ifeq bld_cpu a64
+!undef __WATCOM_TOOLS__
+!endif
+!endif
+
+!ifdef __WATCOM_TOOLS__
+cc_opts_dos   = -bt=dos -l=dos4g
+cc_opts_os2   = -bt=os2 -l=os2v2
+cc_opts_nt    = -bcl=nt
+cc_opts_linux = -bcl=linux
+!endif
+!ifdef __WATCOM_TOOLS__
+CL = wcl386 -zq -fe=builder.exe
+!else ifdef __NT__
+CL = cl /nologo /Fe:builder.exe
+!else
+CL = cc -g -O2 -obuilder.exe
+!endif
+srcs_dos   = sysdos.c
+srcs_os2   = sysos2.c
+srcs_nt    = sysnt.c
+srcs_linux = sysposix.c
+srcs_bsd   = sysposix.c
+srcs_haiku = sysposix.c
+srcs_osx   = sysposix.c
+!ifdef __WATCOM_TOOLS__
+builder_srcs = $(srcs_$(bld_os)) utils.c runit.c pmake.c builder.c
+!else
+builder_srcs = $(srcs_$(bld_os)) utils.c runit.c pmake.c builder.c clibext.c
+!endif
+!ifdef __WATCOM_TOOLS__
+cpp_defines_dos =
+cpp_defines_os2 =
+cpp_defines_nt =
+cpp_defines_linux =
+cpp_defines = $(cpp_defines_$(bld_os))
+!else ifdef __NT__
+cpp_defines = -D__NT__
+!else
+cpp_defines_linux = -D__LINUX__
+cpp_defines_bsd = -D__BSD__
+cpp_defines_haiku = -D__HAIKU__
+cpp_defines_osx = -D__OSX__
+cpp_defines = $(cpp_defines_$(bld_os)) -D__UNIX__ -D_XOPEN_SOURCE=600
+!endif
+builder_defines = -DBOOTSTRAP -DSTANDALONE_RX -D_BLDVER=$(bld_ver) -D_CYEAR=$(curr_year) $(cpp_defines)
+
+!ifdef __UNIX__
+$(build_dir)/$(%OWOBJDIR)/builder : $(builder_srcs)         # Remove .exe from working name
+!else
+$(build_dir)/$(%OWOBJDIR)/builder.exe : $(builder_srcs)
+!endif
+    $(CL) $(builder_defines) $(inc_dirs) $<
+    %copy builder.exe $@
+
+clean: .SYMBOLIC
+!ifdef __UNIX__
+    rm -f builder.exe
+    rm -f $(build_dir)/$(%OWOBJDIR)/builder
+!else
+    del builder.exe
+    del $(build_dir)\$(%OWOBJDIR)\builder.exe
+!endif
+
