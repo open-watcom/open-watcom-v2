@@ -162,7 +162,7 @@ void OMFSkipObj( file_list *list, unsigned long *loc )
 static void ProcTHEADR( void )
 /****************************/
 {
-    char    name[256];
+    char   *name;
     int     sym_len;
 
     if( CurrMod->omfdbg == OMF_DBG_CODEVIEW ) {
@@ -170,8 +170,11 @@ static void ProcTHEADR( void )
         if( sym_len == 0 ) {
             BadObject();
         }
+
+        _ChkAlloc( name, sym_len + 1 );
         memcpy( name, ObjBuff, sym_len );
         name[sym_len] = '\0';
+        CurrMod->name.u.ptr = name;
     }
 }
 
