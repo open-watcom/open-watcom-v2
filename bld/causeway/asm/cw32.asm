@@ -33,21 +33,137 @@ ENGLISH equ     0
 SPANISH equ     0
         endif
 
-RoundUP macro r,v
-        add     r,v-1
-        and     r,not (v-1)
+r16_eax equ ax
+r16_ebx equ bx
+r16_ecx equ cx
+r16_edx equ dx
+r16_edi equ di
+r16_esi equ si
+r8_eax  equ al
+r8_ebx  equ bl
+r8_ecx  equ cl
+r8_edx  equ dl
+r8_ax   equ al
+r8_bx   equ bl
+r8_cx   equ cl
+r8_dx   equ dl
+
+_or_7 macro r
+    ifdef r8_&r
+        or      r8_&r,7
+    elseifdef r16_&r
+        or      r16_&r,7
+    else
+        or      r,7
+    endif
+        endm
+
+_and_not_7 macro r
+    ifdef r8_&r
+        and     r8_&r,NOT 7
+    elseifdef r16_&r
+        and     r16_&r,NOT 7
+    else
+        and     r,NOT 7
+    endif
+        endm
+
+_and_not_fff macro r
+    ifdef r16_&r
+        and     r16_&r,NOT 0fffh
+    else
+        and     r,NOT 0fffh
+    endif
+        endm
+
+_and_not_ffff macro r
+    ifdef r16_&r
+        xor     r16_&r,r16_&r
+    else
+        and     r,NOT 0ffffh
+    endif
         endm
 
 RoundDN macro r,v
         and     r,not (v-1)
         endm
 
+RoundUP macro r,v
+        add     r,v-1
+        and     r,not (v-1)
+        endm
+
+Round8DN macro r
+        _and_not_7 r
+        endm
+
+Round8UP macro r
+        add     r,7
+        _and_not_7 r
+        endm
+
+Round64kDN macro r
+        _and_not_ffff r
+        endm
+
+Round64kUP macro r
+        add     r,0ffffh
+        _and_not_ffff r
+        endm
+
+GetPara64kCount macro r
+        ;register value is in para (16 bytes)
+        add     r,0fffh
+        shr     r,16-4
+        endm
+
+GetPara64kIndex macro r
+        ;register value is in para (16 bytes)
+        shr     r,16-4
+        endm
+
+RoundPageDN macro r
+        _and_not_fff r
+        endm
+
+RoundPageUP macro r
+        add     r,0fffh
+        _and_not_fff r
+        endm
+
+GetPageCount macro r
+        add     r,0fffh
+        shr     r,12
+        endm
+
+GetPageIndex macro r
+        shr     r,12
+        endm
+
+SetUserBits macro r,v1,v2
+    ifnb    <v2>
+        or      r,v2            ;set other bits.
+    endif
+        _or_7 r                 ;set user+write+present bits.
+    ifnb    <v1>
+        or      r,v1            ;set other bits.
+    endif
+        endm
+
 InitBits   macro r,v
-        and     r,not 0FFFh     ;reset user bits
-        or      r,7             ;set user+write+present bits.
+    ifnb    <v>
+        and     v,1             ;shift user bit to correct place.
+        shl     v,10
+    endif
+        _and_not_fff r
+        _or_7 r                 ;set user+write+present bits.
     ifnb    <v>
         or      r,v             ;set other bits.
     endif
+        endm
+
+ClearRPLandTI macro r
+        _and_not_7 r            ;clear RPL & TI bits
         endm
 
 EFLAG_CF    equ (1 shl 0)       ; carry
@@ -2043,8 +2159,6 @@ cw5_1:  jnz     InitError
 ;
         call    d[fPhysicalGetPage]
         jc      InitError
-        and     ecx,1                   ;put user bits in useful place.
-        shl     ecx,10
         InitBits edx,ecx                ;clear and init status bits.
         mov     eax,1
         mov     esi,PageDirLinear
@@ -2067,8 +2181,6 @@ cw5_1:  jnz     InitError
         call    d[fPhysicalGetPage]     ;get page for new page 1st DET.
         jc      InitError
         mov     LinearEntry+8,edx       ;store physical address.
-        and     ecx,1                   ;put user bits in useful place.
-        shl     ecx,10
         InitBits edx,ecx                ;clear and init status bits.
         mov     eax,LinearEntry         ;get the entry number again.
         mov     esi,1024*4096*1023      ;base of page alias's.
@@ -2098,8 +2210,6 @@ cw5_1:  jnz     InitError
         call    d[fPhysicalGetPage]     ;get page for new page 1st.
         jc      InitError
         mov     LinearEntry+8,edx       ;store physical address.
-        and     ecx,1                   ;put user bits in useful place.
-        shl     ecx,10
         InitBits edx,ecx                ;clear and init status bits.
         mov     esi,1024*4096*1023      ;base of page alias's.
         mov     eax,LinearEntry         ;get the entry number again.
@@ -2124,8 +2234,6 @@ cw5_1:  jnz     InitError
         call    d[fPhysicalGetPage]     ;get page for new page 1st.
         jc      InitError
         mov     LinearEntry+8,edx       ;store physical address.
-        and     ecx,1                   ;put user bits in useful place.
-        shl     ecx,10
         InitBits edx,ecx                ;clear and init status bits.
         mov     esi,1024*4096*1023      ;base of page alias's.
         mov     eax,LinearEntry         ;get the entry number again.
@@ -2150,8 +2258,6 @@ cw5_1:  jnz     InitError
         call    d[fPhysicalGetPage]     ;get page for new page 1st.
         jc      InitError
         mov     LinearEntry+8,edx       ;store physical address.
-        and     ecx,1                   ;put user bits in useful place.
-        shl     ecx,10
         InitBits edx,ecx                ;clear and init status bits.
         mov     eax,LinearEntry         ;get the entry number again.
         mov     esi,1024*4096*1023      ;base of page alias's.
@@ -2195,8 +2301,6 @@ COMMENT !
         call    d[fPhysicalGetPage]     ;get page for new page 1st.
         jc      InitError
         mov     LinearEntry+8,edx       ;store physical address.
-        and     ecx,1                   ;put user bits in useful place.
-        shl     ecx,10
         InitBits edx,ecx                ;clear and init status bits.
         ;
         ;Map it into general linear address space.
@@ -2254,8 +2358,6 @@ END COMMENT !
         call    d[fPhysicalGetPage]     ;get page for new page DIR.
         jc      InitError
         mov     LinearEntry+8,edx       ;store physical address.
-        and     ecx,1                   ;put user bits in useful place.
-        shl     ecx,10
         InitBits edx,ecx                ;clear and init status bits.
         ;
         ;Map it into normal linear address space.
@@ -2300,8 +2402,6 @@ END COMMENT !
         call    d[fPhysicalGetPage]     ;get page for new page DIR.
         jc      InitError
         mov     LinearEntry+8,edx       ;store physical address.
-        and     ecx,1                   ;put user bits in useful place.
-        shl     ecx,10
         InitBits edx,ecx                ;clear and init status bits.
         mov     eax,LinearEntry         ;get the entry number again.
         mov     esi,1024*4096*1023      ;base of page alias's.
@@ -2356,8 +2456,6 @@ cw5_3:  call    MakeDesc2
         mov     LinearEntry+4,eax       ;Store start address.
 cw5_2:  call    d[fPhysicalGetPage]     ;try to allocate a page.
         jc      InitError
-        and     ecx,1                   ;put user bits in useful place.
-        shl     ecx,10
         InitBits edx,ecx                ;clear and init status bits.
         mov     eax,LinearEntry         ;get the entry number again.
         mov     esi,1024*4096*1023      ;base of page alias's.
@@ -2434,8 +2532,6 @@ cw5_2:  call    d[fPhysicalGetPage]     ;try to allocate a page.
         mov     LinearEntry+4,eax       ;Store start address.
 cw5_6:  call    d[fPhysicalGetPage]     ;try to allocate a page.
         jc      InitError
-        and     ecx,1                   ;put user bits in useful place.
-        shl     ecx,10
         InitBits edx,ecx                ;clear and init status bits.
         mov     eax,LinearEntry         ;get the entry number again.
         mov     esi,1024*4096*1023      ;base of page alias's.
@@ -2575,9 +2671,6 @@ cw5_LDT:
         ;
         call    d[fPhysicalGetPage]     ;try to allocate a page.
         jc      InitError
-
-        and     ecx,1                   ;put user bits in useful place.
-        shl     ecx,10
         InitBits edx,ecx                ;clear and init status bits.
         mov     eax,LinearEntry         ;get the entry number again.
         mov     esi,1024*4096*1023      ;base of page alias's.

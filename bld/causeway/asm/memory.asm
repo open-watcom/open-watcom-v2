@@ -813,9 +813,7 @@ mem5_2: call    PhysicalGetPage
         jnc     mem5_3
         call    UnMapPhysical
         jc      mem5_10
-mem5_3: and     ecx,1                   ;put user bits in useful place.
-        shl     ecx,10
-        InitBits edx,ecx                ;clear and init status bits.
+mem5_3: InitBits edx,ecx                ;clear and init status bits.
         mov     DWORD PTR es:[edi],edx  ;store this tables address.
         push    edi
         sub     edi,PageDirLinear
