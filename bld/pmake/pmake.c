@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -337,23 +337,23 @@ static const char *RelativePath( const char *oldpath, const char *newpath )
     if( oldpath == NULL )
         return( newpath );
     for( ofs = 0; newpath[ofs] == oldpath[ofs]; ++ofs ) {
-        // newpath and oldpath are identical
+        /* newpath and oldpath are identical */
         if( newpath[ofs] == '\0' ) {
             return( "" );
         }
     }
-    // oldpath is a prefix of newpath
+    /* oldpath is a prefix of newpath */
     if( oldpath[ofs] == '\0' && IS_DIR_SEP( newpath[ofs] ) ) {
         return( newpath + ofs + 1 );
     }
     Buff[0] = '\0';
-    // newpath is a prefix of oldpath
+    /* newpath is a prefix of oldpath */
     if( newpath[0] == '\0' && IS_DIR_SEP( oldpath[ofs] ) ) {
         newdepth = CountDepth( newpath, 0 );
         olddepth = CountDepth( oldpath, 0 );
         if( olddepth > newdepth ) {
             tp = PrependDotDotSlash( Buff, olddepth - newdepth );
-            *(--tp) = '\0'; // remove trailing slash
+            *(--tp) = '\0'; /* remove trailing slash */
         }
         return( Buff );
     }

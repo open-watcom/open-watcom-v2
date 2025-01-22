@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -125,7 +125,7 @@ static int RunCommand( char *cmd )
     }
     argv = (const char **)MAlloc( i * sizeof( char * ) );
     if( argv == NULL )
-        return( 1 );    // error no memory
+        return( 1 );    /* error no memory */
     skip_sp = true;
     i = 0;
     for( p = cmd; *p != '\0'; ++p ) {
