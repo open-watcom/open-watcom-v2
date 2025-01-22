@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -96,7 +96,7 @@ typedef struct struct_copy {
 
 typedef struct dd {
     struct dd   *next;
-//    char        attr;
+/*    char        attr; */
     char        name[1];
 } iolist;
 
@@ -397,7 +397,7 @@ static int ProcOneCopy( const char *src, char *dst, bool cond_copy, char *copy_b
     sp = fopen( src, "rb" );
     if( sp == NULL ) {
         if( cond_copy ) {
-            return( 0 );    // Quietly ignore missing source
+            return( 0 );    /* Quietly ignore missing source */
         } else {
             Log( false, "Can not open '%s' for reading: %s\n", src, strerror( errno ) );
             return( 1 );
@@ -453,9 +453,11 @@ static int ProcOneCopy( const char *src, char *dst, bool cond_copy, char *copy_b
     dstbuf.modtime = srcbuf.st_mtime;
     utime( dst, &dstbuf );
 #ifdef __UNIX__
-    /* copy permissions: mostly necessary for the "x" bit */
-    // some files is copied from the source tree with the read-only permission
-    // for next run we need the write permission for the current user as minimum
+    /*
+     * copy permissions: mostly necessary for the "x" bit
+     * some files is copied from the source tree with the read-only permission
+     * for next run we need the write permission for the current user as minimum
+     */
     chmod( dst, srcbuf.st_mode | S_IWUSR );
 #endif
     return( 0 );
@@ -763,7 +765,7 @@ static int ProcRm( const char *cmd )
                     retval = rc;
                 }
             } else if( strpbrk( buffer, WILD_METAS ) != NULL ) {
-                // wild cards is not processed for directories
+                /* wild cards is not processed for directories */
                 continue;
             } else {
                 struct stat buf;

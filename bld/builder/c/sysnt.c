@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -85,12 +85,14 @@ static void SysSetTitle( char *title )
     SetConsoleTitle( Title );
 }
 
-// CreateProcessA does not return process id as result
-// but fills pinfo on success
-// return value
-//    == 0 means that child process was not created
-//    != 0 means success
-// save pinfo for closing child
+/*
+ * CreateProcessA does not return process id as result
+ * but fills pinfo on success
+ * return value
+ *    == 0 means that child process was not created
+ *    != 0 means success
+ * save pinfo for closing child
+ */
 
 static DWORD RunChildProcessCmdl( const char *cmdl, LPPROCESS_INFORMATION pinfo, LPHANDLE pipe_input )
 {
