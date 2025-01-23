@@ -386,7 +386,7 @@ rv1_NoDIRMove:
         ;
         mov     edi,GDTLinear
         add     edi,KernalPL3_2_PL0
-        and     edi,not 7
+        GetDescIndex edi
         push    es
         push    ax
         mov     ax,KernalZero
@@ -803,7 +803,7 @@ rv12_d0:
         push    ds
         push    es
         mov     edx,es:[esi]
-        RoundDN edx,4096
+        RoundPageDN edx
         and     DWORD PTR es:[esi],NOT 1;mark as no longer present.
         call    CR3Flush
 
@@ -883,7 +883,7 @@ notzeroth:
         push    es
         mov     edx,es:[edi]
         and     DWORD PTR es:[edi],NOT 1;mark as no longer present.
-        RoundDN edx,4096
+        RoundPageDN edx
 
         call    CR3Flush
 
@@ -936,7 +936,7 @@ rv12_3:
         push    ds
         push    es
         mov     edx,es:[esi]
-        RoundDN edx,4096
+        RoundPageDN edx
         and     DWORD PTR es:[esi],NOT 1;mark as no longer present.
 
         call    CR3Flush
@@ -1385,7 +1385,7 @@ RawPL3toPL0     proc    near
         push    edi
         mov     edi,GDTLinear
         add     edi,KernalPL3_2_PL0
-        and     edi,not 7
+        GetDescIndex edi
         push    es
         push    ax
         mov     ax,KernalZero
@@ -2058,7 +2058,7 @@ rv30_oops:
         mov     ax,KernalZero
         mov     es,ax
         movzx   eax,w[CallBackStruc.CallBackStackSel+bx]
-        and     ax,not 7
+        GetDescIndex eax
         mov     edi,GDTLinear
         add     edi,eax
         mov     es:[edi+2],si   ;store low word of linear base.
@@ -2830,7 +2830,7 @@ EmuRawPL3toPL0  proc    near
         pop     ds
         pop     eax
         add     edi,DpmiEmuPL3_2_PL0
-        and     edi,not 7
+        GetDescIndex edi
         push    es
         push    ax
         mov     ax,KernalZero
@@ -2968,6 +2968,7 @@ rv46_000A_0:
         push    es
         push    eax
         mov     edi,offset RawSelBuffer
+        Round8UP edi
         mov     ax,KernalDS     ;DpmiEmuDS
         mov     es,ax
         call    RawBGetDescriptor       ;copy original details.
@@ -4381,7 +4382,7 @@ PhysicalGetPage proc near
         jnc     rv50_8
         jmp     rv50_9
         ;
-rv50_8: RoundDN edx,4096
+rv50_8: RoundPageDN edx
         mov     ax,KernalDS
         mov     ds,ax
         assume ds:_cwRaw
@@ -4764,8 +4765,8 @@ rv54_nomaxlimit:
         movzx   ebp,bp                  ;fetch size.
         shl     ebp,10                  ;*1024 (1k)
         add     ebx,ebp                 ;get real top.
-        RoundUP edi,4096                ;round up to next page.
-        RoundDN ebx,4096                ;round down to nearest page.
+        RoundPageUP edi                 ;round up to next page.
+        RoundPageDN ebx                 ;round down to nearest page.
         mov     2[esi],edi
         mov     6[esi],ebx              ;store base and end.
         jmp     rv54_3                  ;start again.
@@ -5169,7 +5170,7 @@ GIComputeBytes2:
         shl     eax,10                  ; * 1024
         add     eax,100000h             ;add in 1 meg base address.
         dec     eax
-        RoundDN eax,4096                ;round down to nearest page.
+        RoundPageDN eax                 ;round down to nearest page.
         mov     ebx,eax
         pop     esi
         pop     edi
@@ -5193,7 +5194,7 @@ GIComputeBytes2:
         div     ecx                     ;get chunk size.
         inc     eax
         or      Int15Size,-1            ;set chunk size to use.
-        RoundDN eax,4096
+        RoundPageDN eax
         jz      rv56_GotSize
         mov     Int15Size,eax           ;set chunk size to use.
 rv56_GotSize:
@@ -5424,7 +5425,7 @@ rv57_GotBottom:
         shl     eax,10                  ; * 1024
         add     eax,100000h             ;add in 1 meg base address.
         dec     eax
-        RoundDN eax,4096                ;round down to nearest page.
+        RoundPageDN eax                 ;round down to nearest page.
         mov     ebx,eax
 ;       pop     esi
 
@@ -5640,7 +5641,7 @@ rv58_2: add     esi,4           ;next entry.
         movzx   eax,ax
         shl     eax,4                   ;linear address.
         mov     ebx,eax
-        RoundUP eax,4096                ;round up to next page.
+        RoundPageUP eax                 ;round up to next page.
         sub     eax,ebx
         shr     eax,4
         mov     2[esi],ax               ;store new size.
@@ -5906,12 +5907,12 @@ GetCONVPages    endp
 ;
 EMUMakeDesc     proc    near
         pushad
-        and     edi,not 7               ;lose RPL & TI
+        GetDescIndex edi        ;lose RPL & TI
         cmp     ecx,0100000h    ; see if we need to set g bit
         jc      rv60_0
         shr     ecx,12          ; div by 4096
         or      al,80h          ; set g bit
-rv60_0: mov     es:[edi],cx             ;store low word of limit.
+rv60_0: mov     es:[edi],cx     ;store low word of limit.
         shr     ecx,16
         or      cl,al
         mov     es:[edi+6],cl   ;store high bits of limit and gran/code size bits.

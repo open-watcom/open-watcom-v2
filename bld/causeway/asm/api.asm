@@ -2714,7 +2714,7 @@ _SetSelector    proc near
         jc      api61_ok
         cmp     ebx,-1
         jz      api61_ok
-        RoundUP ebx,4096
+        RoundPageUP ebx
         dec     ebx
         ;
 api61_ok:
@@ -3248,7 +3248,7 @@ cwAPI_GetMCBSize endp
 ;
 cwAPI_SetMCBSize proc near
         mov     ecx,[ebp+Int_ECX]
-        RoundUP ecx,4096
+        RoundPageUP ecx
         cmp     ecx,65536+1
         jc      api68_1
         stc

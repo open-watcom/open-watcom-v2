@@ -391,7 +391,7 @@ load1_NoExports:
         xor     ebp,ebp                 ;clear memory requirement.
 load1_objup0:
         mov     eax,es:LE_OBJ.LE_OBJ_Size[esi]
-        RoundUP eax,4096                ;page align objects
+        RoundPageUP eax                 ;page align objects
         mov     es:LE_OBJ.LE_OBJ_Size[esi],eax
         add     ebp,eax                 ;update program memory length.
         add     esi,size LE_OBJ

@@ -162,7 +162,7 @@ InitBits   macro r,v
     endif
         endm
 
-ClearRPLandTI macro r
+GetDescIndex macro r
         _and_not_7 r            ;clear RPL & TI bits
         endm
 
@@ -1319,7 +1319,7 @@ cw5_A20OFF:
         movzx   eax,ax
         shl     eax,4                   ;linear address.
         mov     ebx,eax
-        RoundUP eax,4096                ;round up to next page.
+        RoundPageUP eax                 ;round up to next page.
         sub     eax,ebx
         shr     eax,4
         mov     bx,ax
@@ -1348,7 +1348,7 @@ cw5_OldWay:
         movzx   eax,ax                  ;get segment address.
         shl     eax,4                   ;make linear.
         mov     ebx,eax
-        RoundUP eax,4096                ;round up to nearest page.
+        RoundPageUP eax                 ;round up to nearest page.
         mov     ecx,eax
         sub     ecx,ebx
         shr     ecx,4
@@ -5006,7 +5006,7 @@ MakeDesc        proc    near
 ;
         .386
         pushad
-        and     di,not 7                ;lose RPL & TI
+        GetDescIndex di                 ;lose RPL & TI
         cmp     ecx,0100000h            ; see if we need to set g bit
         jc      cw18_0
         shr     ecx,12                  ; div by 4096
@@ -5041,7 +5041,7 @@ MakeDesc        endp
 MakeDesc2       proc    near
         .386
         pushad
-        and     edi,not 7               ;lose RPL & TI
+        GetDescIndex edi                ;lose RPL & TI
         cmp     ecx,0100000h            ; see if we need to set g bit
         jc      cw19_0
         shr     ecx,12                  ; div by 4096

@@ -662,7 +662,7 @@ RawDiscardPages proc    near
 ;Round start up a page.
 ;
         mov     eax,ebx
-        RoundUP ebx,4096
+        RoundPageUP ebx
         sub     eax,ebx
         neg     eax
         cmp     eax,esi
@@ -671,7 +671,7 @@ RawDiscardPages proc    near
 ;
 ;Round length down a page.
 ;
-        RoundDN esi,4096
+        RoundPageDN esi
         or      esi,esi
         jz      mem4_8
 ;
@@ -940,9 +940,9 @@ RawLockMemory   proc    near
         shl     esi,16
         mov     si,di
         add     esi,ebx
-        RoundDN ebx,4096                ;round down to nearest page.
+        RoundPageDN ebx                 ;round down to nearest page.
         mov     d[_LM_BlockBase],ebx
-        RoundUP esi,4096                ;round up to next page.
+        RoundPageUP esi                 ;round up to next page.
         dec     esi
         mov     d[_LM_BlockEnd],esi     ;store address of last page.
         ;
@@ -1120,9 +1120,9 @@ RawUnLockMemory proc near
         shl     esi,16
         mov     si,di
         add     esi,ebx
-        RoundDN ebx,4096                ;round down to nearest page.
+        RoundPageDN ebx                 ;round down to nearest page.
         mov     d[_LM_BlockBase],ebx
-        RoundUP esi,4096                ;round up to next page.
+        RoundPageUP esi                 ;round up to next page.
         dec     esi
         mov     d[_LM_BlockEnd],esi     ;store address of last page.
         ;
@@ -2467,6 +2467,7 @@ RawGetDOSMemory proc near
         mov     ds,ax
         assume ds:_cwRaw
         ;
+        movzx   ebx,bx
         cmp     bx,-1           ;maximum?
         jz      mem19_0
         inc     ebx             ;para extra for us.
@@ -2530,7 +2531,7 @@ mem19_2:
         push    ecx
         push    eax
         mov     edi,offset RawSelBuffer
-        RoundUP edi,8
+        Round8UP edi
         movzx   esi,bx
         shl     esi,4
         movzx   ecx,cx
@@ -2713,8 +2714,7 @@ mem20_2:
         push    ecx
         push    eax
         mov     edi,offset RawSelBuffer
-        add     edi,7
-        and     edi,0fffffff8h
+        Round8UP edi
         movzx   esi,bx
         shl     esi,4
         movzx   ecx,cx
@@ -2769,30 +2769,30 @@ RawRelDOSMemory proc near
         push    eax
         push    ebx
         push    ecx
-        mov     ebx,edx
-        and     ebx,0ffffh AND (NOT 7)  ;lose RPL & TI
+        movzx   ebx,dx
+        GetDescIndex ebx                ;lose RPL & TI
         xor     ecx,ecx
         xor     eax,eax
         mov     ax,ds
-        and     eax,not 7               ;lose RPL & TI
+        GetDescIndex eax                ;lose RPL & TI
         cmp     eax,ebx
         jnz     mem21_z0
         mov     ds,cx
 mem21_z0:
         mov     ax,es
-        and     eax,not 7               ;lose RPL & TI
+        GetDescIndex eax                ;lose RPL & TI
         cmp     eax,ebx
         jnz     mem21_z1
         mov     es,cx
 mem21_z1:
         mov     ax,fs
-        and     eax,not 7               ;lose RPL & TI
+        GetDescIndex eax                ;lose RPL & TI
         cmp     eax,ebx
         jnz     mem21_z2
         mov     fs,cx
 mem21_z2:
         mov     ax,gs
-        and     eax,not 7               ;lose RPL & TI
+        GetDescIndex eax                ;lose RPL & TI
         cmp     eax,ebx
         jnz     mem21_z3
         mov     gs,cx
