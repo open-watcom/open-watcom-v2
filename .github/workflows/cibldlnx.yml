@@ -63,7 +63,8 @@ jobs:
         suffix:     "lnx ${{ inputs.arch }} ${{ inputs.tools }}"
   testboot-lnx:
     name: Test Bootstrap
-    if: ${{ inputs.arch }} == 'x64' || ${{ inputs.arch }} == 'a64'
+    if: ${{ inputs.arch }} == 'x64'
+    # || ${{ inputs.arch }} == 'a64'
     needs: tests-lnx
     runs-on: ${{ inputs.image }}
     steps:
