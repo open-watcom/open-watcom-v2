@@ -64,7 +64,6 @@ jobs:
   testboot-lnx:
     name: Test Bootstrap
     if: ${{ inputs.arch }} == 'x64'
-    # || ${{ inputs.arch }} == 'a64'
     needs: tests-lnx
     runs-on: ${{ inputs.image }}
     steps:
@@ -91,6 +90,7 @@ jobs:
         echo "INCLUDE=${{github.workspace}}/rel/lh" >> "$GITHUB_ENV"
       shell: bash
     - name: Test
+      if: ${{ inputs.arch }} == 'x64'
       uses: "./.github/actions/testboot"
       with:
         hostos:     'lnx'
