@@ -96,7 +96,7 @@ jobs:
         suffix:     "nt ${{ inputs.arch }} ${{ inputs.tools }}"
   testboot-nt:
     name: Test Bootstrap
-    if: ${{ inputs.arch }} == 'x64'
+    if: inputs.arch == 'x64'
     needs: tests-nt
     runs-on: ${{ inputs.image }}
     steps:

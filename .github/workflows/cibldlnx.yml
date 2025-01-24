@@ -63,7 +63,7 @@ jobs:
         suffix:     "lnx ${{ inputs.arch }} ${{ inputs.tools }}"
   testboot-lnx:
     name: Test Bootstrap
-    if: ${{ inputs.arch }} == 'x64'
+    if: inputs.arch == 'x64'
     needs: tests-lnx
     runs-on: ${{ inputs.image }}
     steps:
@@ -77,20 +77,20 @@ jobs:
         artifact: "rel lnx ${{ inputs.arch }} ${{ inputs.tools }}"
         owdebug:  ${{ inputs.owdebug }}
     - name: Setup new OW
-      if: ${{ inputs.arch }} == 'x64'
+      if: inputs.arch == 'x64'
       run: |
         echo "${{github.workspace}}/rel/binl" >> "$GITHUB_PATH"
         echo "INCLUDE=${{github.workspace}}/rel/lh" >> "$GITHUB_ENV"
       shell: bash
     - name: Setup new OW
-      if: ${{ inputs.arch }} == 'a64'
+      if: inputs.arch == 'a64'
       run: |
         echo "${{github.workspace}}/rel/arm64" >> "$GITHUB_PATH"
         echo "WATCOM=${{github.workspace}}/rel" >> "$GITHUB_ENV"
         echo "INCLUDE=${{github.workspace}}/rel/lh" >> "$GITHUB_ENV"
       shell: bash
     - name: Test
-      if: ${{ inputs.arch }} == 'x64'
+      if: inputs.arch == 'x64'
       uses: "./.github/actions/testboot"
       with:
         hostos:     'lnx'
