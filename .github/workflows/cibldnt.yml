@@ -112,8 +112,8 @@ jobs:
     - name: Setup new OW
       run: |
         echo ${{github.workspace}}\rel\binnt>> "%GITHUB_PATH%"
+        echo WATCOM=${{github.workspace}}\rel>> "%GITHUB_ENV%"
         echo INCLUDE=${{github.workspace}}\rel\h;${{github.workspace}}\rel\h\nt>> "%GITHUB_ENV%"
-        set
       shell: cmd
     - name: Test Bootstrap
       uses: "./.github/actions/testboot"

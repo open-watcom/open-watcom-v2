@@ -16,7 +16,9 @@ runs:
   steps:
   - if: inputs.hostos == 'lnx'
     name: Test Bootstrap OW
-    run: ci/buildx.sh
+    run: |
+      env | sort
+      ci/buildx.sh
     env:
       OWBUILD_STAGE: 'boot'
       OWTOOLS:       'WATCOM'
@@ -26,7 +28,9 @@ runs:
     shell: bash
   - if: inputs.hostos == 'nt'
     name: Test Bootstrap OW
-    run: ci/buildx.cmd
+    run: |
+      set
+      ci/buildx.cmd
     env:
       OWBUILD_STAGE: 'boot'
       OWTOOLS:       'WATCOM'
