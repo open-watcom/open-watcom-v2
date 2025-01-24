@@ -50,8 +50,9 @@ jobs:
         owtools:    ${{ inputs.owtools }}
         owdebug:    ${{ inputs.owdebug }}
   tests-lnx:
-    needs: build-lnx
     name: Tests
+    if: inputs.arch == 'x64'
+    needs: build-lnx
     runs-on: ${{ inputs.image }}
     steps:
     - name: checkout
