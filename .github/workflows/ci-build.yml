@@ -95,6 +95,10 @@ jobs:
           arch:    'x64'
           image:   'ubuntu-latest'
           tools:   'clang'
+        - owtools: 'GCC'
+          arch:    'a64'
+          image:   'ubuntu-24.04-arm'
+          tools:   'gcc'
     name: Linux ${{ matrix.bld.arch }} ${{ matrix.bld.tools }}
     uses: "./.github/workflows/cibldlnx.yml"
     with:
