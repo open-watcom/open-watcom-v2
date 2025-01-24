@@ -33,42 +33,60 @@ jobs:
     needs: start-start
     strategy:
       matrix:
-        owversion: ['1.9', '2.0']
-    name: Bootstrap Test OW ${{ matrix.owversion }} Windows
-    runs-on: 'windows-2022'
+        pre:
+        - name:  '1.9'
+          id:    '1.9'
+          os:    'nt'
+          image: 'windows-2022'
+        - name: '2.0'
+          id:   '2.0'
+          tag:  '2023-01-01-Build'
+          os:   'nt'
+          image: 'windows-2022'
+    name: Bootstrap Test OW ${{ matrix.pre.name }} Windows
+    runs-on: ${{ matrix.pre.image }}
     steps:
     - name: checkout
       uses: actions/checkout@v4
     - name: Test
       uses: "./.github/actions/testboot"
       with:
-        hostos:     'nt'
-        owversion:  ${{ matrix.owversion }}
-        owtag:      '2023-01-01-Build'
+        hostos:     ${{ matrix.pre.os }}
+        owversion:  ${{ matrix.pre.id }}
+        owtag:      ${{ matrix.pre.tag }}
         owdebug:    ${{ vars.OWDEBUG }}
   Linux-pre:
     needs: start-start
     strategy:
       matrix:
-        owversion: ['1.9', '2.0']
-    name: Bootstrap Test OW ${{ matrix.owversion }} Linux
-    runs-on: 'ubuntu-latest'
+        pre:
+        - name:  '1.9'
+          id:    '1.9'
+          os:    'lnx'
+          image: 'ubuntu-latest'
+        - name:  '2.0'
+          id:    '2.0'
+          tag:   '2023-01-01-Build'
+          os:    'lnx'
+          image: 'ubuntu-latest'
+    name: Bootstrap Test OW ${{ matrix.pre.name }} Linux
+    runs-on: ${{ matrix.pre.image }}
     steps:
     - name: checkout
       uses: actions/checkout@v4
     - name: Test
       uses: "./.github/actions/testboot"
       with:
-        hostos:     'lnx'
-        owversion:  ${{ matrix.owversion }}
-        owtag:      '2023-01-01-Build'
+        hostos:     ${{ matrix.pre.os }}
+        owversion:  ${{ matrix.pre.id }}
+        owtag:      ${{ matrix.pre.tag }}
         owdebug:    ${{ vars.OWDEBUG }}
   Linux:
     needs:
     - Linux-pre
     strategy:
       matrix:
-        include:
+        bld:
         - owtools: 'GCC'
           arch:    'x64'
           image:   'ubuntu-latest'
@@ -77,37 +95,37 @@ jobs:
           arch:    'x64'
           image:   'ubuntu-latest'
           tools:   'clang'
-    name: Linux ${{ matrix.arch }} ${{ matrix.tools }}
+    name: Linux ${{ matrix.bld.arch }} ${{ matrix.bld.tools }}
     uses: "./.github/workflows/cibldlnx.yml"
     with:
-      arch:         ${{ matrix.arch }}
-      tools:        ${{ matrix.tools }}
-      owtools:      ${{ matrix.owtools }}
-      image:        ${{ matrix.image }}
+      arch:         ${{ matrix.bld.arch }}
+      tools:        ${{ matrix.bld.tools }}
+      owtools:      ${{ matrix.bld.owtools }}
+      image:        ${{ matrix.bld.image }}
       owdebug:      ${{ vars.OWDEBUG }}
   Windows:
     needs:
     - Windows-pre
     strategy:
       matrix:
-        include:
+        bld:
         - owtools: 'VISUALC'
           arch:    'x64'
           image:   'windows-2022'
           tools:   'vs2022'
-    name: Windows ${{ matrix.arch }} ${{ matrix.tools }}
+    name: Windows ${{ matrix.bld.arch }} ${{ matrix.bld.tools }}
     uses: "./.github/workflows/cibldnt.yml"
     with:
-      arch:         ${{ matrix.arch }}
-      tools:        ${{ matrix.tools }}
-      owtools:      ${{ matrix.owtools }}
-      image:        ${{ matrix.image }}
+      arch:         ${{ matrix.bld.arch }}
+      tools:        ${{ matrix.bld.tools }}
+      owtools:      ${{ matrix.bld.owtools }}
+      image:        ${{ matrix.bld.image }}
       owdebug:      ${{ vars.OWDEBUG }}
   OSX:
     needs: start-start
     strategy:
       matrix:
-        include:
+        bld:
         - owtools:  'CLANG'
           arch:     'x64'
           image:    'macos-13'
@@ -118,14 +136,14 @@ jobs:
           image:    'macos-14'
           tools:    'clang'
           relpath:  'rel armo64'
-    name: OSX ${{ matrix.arch }} ${{ matrix.tools }}
+    name: OSX ${{ matrix.bld.arch }} ${{ matrix.bld.tools }}
     uses: "./.github/workflows/cibldosx.yml"
     with:
-      arch:         ${{ matrix.arch }}
-      tools:        ${{ matrix.tools }}
-      relpath:      ${{ matrix.relpath }}
-      owtools:      ${{ matrix.owtools }}
-      image:        ${{ matrix.image }}
+      arch:         ${{ matrix.bld.arch }}
+      tools:        ${{ matrix.bld.tools }}
+      relpath:      ${{ matrix.bld.relpath }}
+      owtools:      ${{ matrix.bld.owtools }}
+      image:        ${{ matrix.bld.image }}
       owdebug:      ${{ vars.OWDEBUG }}
   snapshot-both:
     needs:
