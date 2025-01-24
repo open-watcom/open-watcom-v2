@@ -96,6 +96,7 @@ jobs:
         suffix:     "nt ${{ inputs.arch }} ${{ inputs.tools }}"
   testboot-nt:
     name: Test Bootstrap
+    if: ${{ inputs.arch }} == 'x64'
     needs: tests-nt
     runs-on: ${{ inputs.image }}
     steps:
@@ -108,9 +109,13 @@ jobs:
         gitpath:  'rel'
         artifact: "rel nt ${{ inputs.arch }} ${{ inputs.tools }}"
         owdebug:  ${{ inputs.owdebug }}
+    - name: Setup new OW
+      run: |
+        echo ${{github.workspace}}\rel\binnt64>> "%GITHUB_PATH%"
+        echo INCLUDE=${{github.workspace}}\rel\h;${{github.workspace}}\rel\h\nt>> "%GITHUB_ENV%"
+      shell: cmd
     - name: Test Bootstrap
       uses: "./.github/actions/testboot"
       with:
         hostos:     'nt'
-        gitpath:    'rel'
         owdebug:    ${{ inputs.owdebug }}

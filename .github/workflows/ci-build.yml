@@ -48,6 +48,11 @@ jobs:
     steps:
     - name: checkout
       uses: actions/checkout@v4
+    - name: Open Watcom setup
+      uses: open-watcom/setup-watcom@v0
+      with:
+        version: ${{ matrix.pre.id }}
+        tag:     ${{ matrix.pre.tag }}
     - name: Test
       uses: "./.github/actions/testboot"
       with:
@@ -74,6 +79,11 @@ jobs:
     steps:
     - name: checkout
       uses: actions/checkout@v4
+    - name: Open Watcom setup
+      uses: open-watcom/setup-watcom@v0
+      with:
+        version: ${{ matrix.pre.id }}
+        tag:     ${{ matrix.pre.tag }}
     - name: Test
       uses: "./.github/actions/testboot"
       with:
