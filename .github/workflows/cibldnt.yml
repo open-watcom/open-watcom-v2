@@ -111,8 +111,9 @@ jobs:
         owdebug:  ${{ inputs.owdebug }}
     - name: Setup new OW
       run: |
-        echo ${{github.workspace}}\rel\binnt64>> "%GITHUB_PATH%"
+        echo ${{github.workspace}}\rel\binnt>> "%GITHUB_PATH%"
         echo INCLUDE=${{github.workspace}}\rel\h;${{github.workspace}}\rel\h\nt>> "%GITHUB_ENV%"
+        set
       shell: cmd
     - name: Test Bootstrap
       uses: "./.github/actions/testboot"

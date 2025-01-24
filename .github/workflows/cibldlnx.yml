@@ -80,8 +80,9 @@ jobs:
     - name: Setup new OW
       if: ${{ inputs.arch }} == 'x64'
       run: |
-        echo "${{github.workspace}}/rel/binl64" >> "$GITHUB_PATH"
+        echo "${{github.workspace}}/rel/binl" >> "$GITHUB_PATH"
         echo "INCLUDE=${{github.workspace}}/rel/lh" >> "$GITHUB_ENV"
+        env | sort
       shell: bash
     - name: Setup new OW
       if: ${{ inputs.arch }} == 'a64'
