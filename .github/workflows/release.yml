@@ -96,23 +96,23 @@ jobs:
     strategy:
       matrix:
         include:
-        - insttype: instdos
-          title:   'DOS'
-        - insttype: instos2
-          title:   'OS/2'
-        - insttype: instlnx32
-          title:   'Linux(32-bit)'
-        - insttype: instlnx64
-          title:   'Linux(64-bit)'
-        - insttype: instwin16
-          title:   'Windows(16-bit)'
-        - insttype: instwin32
-          title:   'Windows(32-bit)'
-        - insttype: instwin64
-          title:   'Windows(64-bit)'
-        - insttype: snapshot
-          title:   'OW full snapshot'
-    name: Installer ${{ matrix.title }}
+        - asset: instdos
+          title:   'Build DOS Installer'
+        - asset: instos2
+          title:   'Build OS/2 Installer'
+        - asset: instlnx32
+          title:   'Build Linux(32-bit) Installer'
+        - asset: instlnx64
+          title:   'Build Linux(64-bit) Installer'
+        - asset: instwin16
+          title:   'Build Windows(16-bit) Installer'
+        - asset: instwin32
+          title:   'Build Windows(32-bit) Installer'
+        - asset: instwin64
+          title:   'Build Windows(64-bit) Installer'
+        - asset: snapshot
+          title:   'Create OW full snapshot'
+    name: ${{ matrix.title }}
     runs-on: ubuntu-latest
     steps:
     - name: checkout
@@ -120,7 +120,7 @@ jobs:
     - name: ${{ matrix.title }}
       uses: "./.github/actions/install"
       with:
-        target:     ${{ matrix.insttype }}
+        target:     ${{ matrix.asset }}
         owdebug:    ${{ vars.OWDEBUG }}
   release:
     needs: Installers
@@ -145,23 +145,23 @@ jobs:
     strategy:
       matrix:
         include:
-        - title: DOS
-          asset: instdos
-        - title: OS/2
-          asset: instos2
-        - title: Linux(32-bit)
-          asset: instlnx32
-        - title: Linux(64-bit)
-          asset: instlnx64
-        - title: Windows(16-bit)
-          asset: instwin16
-        - title: Windows(32-bit)
-          asset: instwin32
-        - title: Windows(64-bit)
-          asset: instwin64
-        - title: OW full snapshot
-          asset: snapshot
-    name: Upload ${{ matrix.title }} installer
+        - asset: instdos
+          title:   'DOS Installer'
+        - asset: instos2
+          title:   'OS/2 Installer'
+        - asset: instlnx32
+          title:   'Linux(32-bit) Installer'
+        - asset: instlnx64
+          title:   'Linux(64-bit) Installer'
+        - asset: instwin16
+          title:   'Windows(16-bit) Installer'
+        - asset: instwin32
+          title:   'Windows(32-bit) Installer'
+        - asset: instwin64
+          title:   'Windows(64-bit) Installer'
+        - asset: snapshot
+          title:   'OW full snapshot'
+    name: Upload ${{ matrix.title }}
     runs-on: ubuntu-latest
     steps:
     - name: checkout
