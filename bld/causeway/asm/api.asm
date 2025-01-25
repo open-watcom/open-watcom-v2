@@ -4237,12 +4237,12 @@ COMMENT ! MED 02/15/96
         ;
         mov     eax,LinearLimit
         sub     eax,LinearBase
-        shr     eax,12
+        GetPageIndex eax
         sub     edx,eax
         jmp     api74_500_2
         ;
 api74_500_1:
-        mov     edx,TotalPhysical
+        mov     edx,TotalPhysPages
 api74_500_2:
         add     edx,FreePages
         ;

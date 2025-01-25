@@ -33,6 +33,33 @@ ENGLISH equ     0
 SPANISH equ     0
         endif
 
+EFLAG_CF    equ (1 shl 0)       ; carry
+EFLAG_PF    equ (1 shl 2)       ; parity
+EFLAG_AF    equ (1 shl 4)       ; auxiliary carry
+EFLAG_ZF    equ (1 shl 6)       ; zero
+EFLAG_SF    equ (1 shl 7)       ; sign
+EFLAG_TF    equ (1 shl 8)       ; trace
+EFLAG_IF    equ (1 shl 9)       ; interrupt
+EFLAG_DF    equ (1 shl 10)      ; direction
+EFLAG_OF    equ (1 shl 11)      ; overflow
+EFLAG_IOPL  equ (3 shl 12)      ; I/O privilege level
+EFLAG_NT    equ (1 shl 14)      ; nested task
+
+EFLAGS_UNUSED equ 1000000000101010b
+
+EFLAGS_MASK1 equ (0FFFFh and NOT (EFLAGS_UNUSED or EFLAG_NT))
+EFLAGS_MASK2 equ (0FFFFh and NOT (EFLAGS_UNUSED or EFLAG_NT or EFLAG_IOPL or EFLAG_IF or EFLAG_TF))
+
+PAGE_PRESENT equ (1 shl 0)
+PAGE_WRITE   equ (1 shl 1)
+PAGE_USER    equ (1 shl 2)
+PAGE_ACCESED equ (1 shl 5)
+PAGE_DIRTY   equ (1 shl 6)
+PAGE_VCPI    equ (1 shl 10)
+PAGE_ON_DISK equ (1 shl 11)
+
+PAGE_DEFAULT equ (PAGE_PRESENT or PAGE_WRITE or PAGE_USER)
+
 r16_eax equ ax
 r16_ebx equ bx
 r16_ecx equ cx
@@ -48,31 +75,31 @@ r8_bx   equ bl
 r8_cx   equ cl
 r8_dx   equ dl
 
-_or_7 macro r
+_or_byte macro r,v
     ifdef r8_&r
-        or      r8_&r,7
+        or      r8_&r,v
     elseifdef r16_&r
-        or      r16_&r,7
+        or      r16_&r,v
     else
-        or      r,7
+        or      r,v
     endif
         endm
 
-_and_not_7 macro r
+_and_not_byte macro r,v
     ifdef r8_&r
-        and     r8_&r,NOT 7
+        and     r8_&r,NOT v
     elseifdef r16_&r
-        and     r16_&r,NOT 7
+        and     r16_&r,NOT v
     else
-        and     r,NOT 7
+        and     r,NOT v
     endif
         endm
 
-_and_not_fff macro r
+_and_not_word macro r,v
     ifdef r16_&r
-        and     r16_&r,NOT 0fffh
+        and     r16_&r,NOT v
     else
-        and     r,NOT 0fffh
+        and     r,NOT v
     endif
         endm
 
@@ -99,7 +126,7 @@ Round8DN macro r
 
 Round8UP macro r
         add     r,7
-        _and_not_7 r
+        _and_not_byte r,7
         endm
 
 Round64kDN macro r
@@ -123,12 +150,12 @@ GetPara64kIndex macro r
         endm
 
 RoundPageDN macro r
-        _and_not_fff r
+        _and_not_word r,0fffh
         endm
 
 RoundPageUP macro r
         add     r,0fffh
-        _and_not_fff r
+        _and_not_word r,0fffh
         endm
 
 GetPageCount macro r
@@ -140,48 +167,40 @@ GetPageIndex macro r
         shr     r,12
         endm
 
-SetUserBits macro r,v1,v2
-    ifnb    <v2>
-        or      r,v2            ;set other bits.
-    endif
-        _or_7 r                 ;set user+write+present bits.
-    ifnb    <v1>
-        or      r,v1            ;set other bits.
-    endif
-        endm
-
-InitBits   macro r,v
-    ifnb    <v>
-        and     v,1             ;shift user bit to correct place.
-        shl     v,10
-    endif
-        _and_not_fff r
-        _or_7 r                 ;set user+write+present bits.
+SetUseBits  macro r,v
+        _or_byte r,PAGE_DEFAULT ;set user+write+present bits.
     ifnb    <v>
         or      r,v             ;set other bits.
     endif
         endm
 
-GetDescIndex macro r
-        _and_not_7 r            ;clear RPL & TI bits
+InitUseBits macro r,v
+    ifnb    <v>
+        and     v,1             ;shift VCPI bit to correct place.
+        shl     v,10
+    endif
+        _and_not_word r,0fffh
+        _or_byte r,PAGE_DEFAULT ;set user+write+present bits.
+    ifnb    <v>
+        or      r,v             ;set VCPI bits.
+    endif
         endm
 
-EFLAG_CF    equ (1 shl 0)       ; carry
-EFLAG_PF    equ (1 shl 2)       ; parity
-EFLAG_AF    equ (1 shl 4)       ; auxiliary carry
-EFLAG_ZF    equ (1 shl 6)       ; zero
-EFLAG_SF    equ (1 shl 7)       ; sign
-EFLAG_TF    equ (1 shl 8)       ; trace
-EFLAG_IF    equ (1 shl 9)       ; interrupt
-EFLAG_DF    equ (1 shl 10)      ; direction
-EFLAG_OF    equ (1 shl 11)      ; overflow
-EFLAG_IOPL  equ (3 shl 12)      ; I/O privilege level
-EFLAG_NT    equ (1 shl 14)      ; nested task
+ClearUseBits macro r
+        _and_not_word r,0fffh
+        endm
 
-EFLAGS_UNUSED equ 1000000000101010b
+GetDescIndex macro r
+        _and_not_byte r,7       ;clear RPL & TI bits
+        endm
 
-EFLAGS_MASK1 equ (0FFFFh and NOT (EFLAGS_UNUSED or EFLAG_NT))
-EFLAGS_MASK2 equ (0FFFFh and NOT (EFLAGS_UNUSED or EFLAG_NT or EFLAG_IOPL or EFLAG_IF or EFLAG_TF))
+ClearDescRPL macro r
+        _and_not_byte r,3       ;clear RPL bits
+        endm
+
+ClearDescTIRPL macro r
+        _and_not_byte r,7       ;clear RPL & TI bits
+        endm
 
 b       equ     byte ptr
 w       equ     word ptr
@@ -1487,7 +1506,8 @@ cw5_GDTGot:
         mov     es,Page1stReal
         xor     di,di
         mov     cx,256+16               ;1st 1 meg + 64k.
-        mov     esi,111b                ;user+write+present
+        xor     esi,esi                 ;1st page addr=0
+        SetUseBits esi                  ;user+write+present
 cw5_0:  mov     es:[di],esi
         add     di,4                    ;next page table entry.
         add     esi,4096                ;next physical page address.
@@ -1881,7 +1901,7 @@ cw5_RAW:
 ;
         movzx   eax,Page1stReal
         shl     eax,4
-        or      eax,111b                ;user+write+present
+        SetUseBits eax                  ;user+write+present
         mov     es,PageDirReal
         xor     di,di
         mov     es:[di],eax
@@ -1894,7 +1914,7 @@ cw5_RAW:
         ;
         movzx   eax,PageAliasReal       ;get para address.
         shl     eax,4                   ;make linear.
-        or      eax,111b                ;user+write+present.
+        SetUseBits eax                  ;user+write+present.
         mov     es,PageDirReal
         mov     di,1023*4
         mov     es:[di],eax             ;setup in last page dir entry.
@@ -1961,10 +1981,10 @@ cw5_VCPI:
         mov     es,Page1stReal
         movzx   edi,Page1stReal         ;get linear address.
         shl     edi,4                   ;/
-        shr     edi,12                  ;page number.
+        GetPageIndex edi                ;page number.
         shl     edi,2                   ;*4 bytes per entry.
         mov     eax,es:[di]             ;get physical address.
-        InitBits eax                    ;clear and init status bits.
+        InitUseBits eax                 ;clear and set user+write+present.
         mov     es,PageDirReal
         xor     di,di
         mov     es:[di],eax
@@ -1974,10 +1994,10 @@ cw5_VCPI:
         mov     es,Page1stReal
         movzx   edi,PageDirReal         ;get linear address.
         shl     edi,4                   ;/
-        shr     edi,12                  ;page number.
+        GetPageIndex edi                ;page number.
         shl     edi,2                   ;*4 bytes per entry.
         mov     eax,es:[di]             ;get physical address.
-        and     eax,NOT 0FFFh           ;clear status bits.
+        ClearUseBits eax                ;clear status bits.
         mov     VCPISW.VCPI_CR3,eax     ;set VCPI CR3 value as well.
         mov     es,KernalTSSReal
         xor     di,di
@@ -1986,10 +2006,10 @@ cw5_VCPI:
         mov     es,Page1stReal
         movzx   edi,PageAliasReal       ;get linear address.
         shl     edi,4                   ;/
-        shr     edi,12                  ;page number.
+        GetPageIndex edi                ;page number.
         shl     edi,2                   ;*4 bytes per entry.
         mov     eax,es:[di]             ;get physical address.
-        InitBits eax                    ;clear and init status bits.
+        InitUseBits eax                 ;clear and set user+write+present.
         mov     es,PageDirReal
         mov     di,1023*4
         mov     es:[di],eax             ;setup in last page dir entry.
@@ -2159,7 +2179,7 @@ cw5_1:  jnz     InitError
 ;
         call    d[fPhysicalGetPage]
         jc      InitError
-        InitBits edx,ecx                ;clear and init status bits.
+        InitUseBits edx,ecx             ;clear and set user+write+present+vcpi(cl).
         mov     eax,1
         mov     esi,PageDirLinear
         mov     DWORD PTR es:[esi+eax*4],edx    ;store this tables address.
@@ -2181,7 +2201,7 @@ cw5_1:  jnz     InitError
         call    d[fPhysicalGetPage]     ;get page for new page 1st DET.
         jc      InitError
         mov     LinearEntry+8,edx       ;store physical address.
-        InitBits edx,ecx                ;clear and init status bits.
+        InitUseBits edx,ecx             ;clear and set user+write+present+vcpi(cl).
         mov     eax,LinearEntry         ;get the entry number again.
         mov     esi,1024*4096*1023      ;base of page alias's.
         mov     DWORD PTR es:[esi+eax*4],edx    ;set physical address.
@@ -2198,7 +2218,7 @@ cw5_1:  jnz     InitError
         mov     eax,1022
         mov     esi,PageDirLinear
         mov     edx,LinearEntry+8       ;get physical address again.
-        or      edx,111b
+        SetUseBits edx
         mov     es:[esi+eax*4],edx      ;put new page into the map.
         mov     esi,PageAliasLinear
         mov     es:[esi+eax*4],edx      ;put new page into the map.
@@ -2210,7 +2230,7 @@ cw5_1:  jnz     InitError
         call    d[fPhysicalGetPage]     ;get page for new page 1st.
         jc      InitError
         mov     LinearEntry+8,edx       ;store physical address.
-        InitBits edx,ecx                ;clear and init status bits.
+        InitUseBits edx,ecx             ;clear and set user+write+present+vcpi(cl).
         mov     esi,1024*4096*1023      ;base of page alias's.
         mov     eax,LinearEntry         ;get the entry number again.
         mov     DWORD PTR es:[esi+eax*4],edx    ;set physical address.
@@ -2224,7 +2244,7 @@ cw5_1:  jnz     InitError
         mov     esi,PageDETLinear
         mov     eax,0
         mov     edx,LinearEntry+8       ;get physical address again.
-        or      edx,111b
+        SetUseBits edx
         mov     es:[esi+eax*4],edx      ;put new page into the map.
         call    d[fCR3Flush]
         inc     LinearEntry
@@ -2234,7 +2254,7 @@ cw5_1:  jnz     InitError
         call    d[fPhysicalGetPage]     ;get page for new page 1st.
         jc      InitError
         mov     LinearEntry+8,edx       ;store physical address.
-        InitBits edx,ecx                ;clear and init status bits.
+        InitUseBits edx,ecx             ;clear and set user+write+present+vcpi(cl).
         mov     esi,1024*4096*1023      ;base of page alias's.
         mov     eax,LinearEntry         ;get the entry number again.
         mov     DWORD PTR es:[esi+eax*4],edx    ;set physical address.
@@ -2248,7 +2268,7 @@ cw5_1:  jnz     InitError
         mov     esi,PageDETLinear
         mov     eax,1
         mov     edx,LinearEntry+8       ;get physical address again.
-        or      edx,111b
+        SetUseBits edx
         mov     es:[esi+eax*4],edx      ;put new page into the map.
         call    d[fCR3Flush]
         inc     LinearEntry
@@ -2258,7 +2278,7 @@ cw5_1:  jnz     InitError
         call    d[fPhysicalGetPage]     ;get page for new page 1st.
         jc      InitError
         mov     LinearEntry+8,edx       ;store physical address.
-        InitBits edx,ecx                ;clear and init status bits.
+        InitUseBits edx,ecx             ;clear and set user+write+present+vcpi(cl).
         mov     eax,LinearEntry         ;get the entry number again.
         mov     esi,1024*4096*1023      ;base of page alias's.
         mov     DWORD PTR es:[esi+eax*4],edx    ;set physical address.
@@ -2281,14 +2301,14 @@ cw5_1:  jnz     InitError
         mov     esi,PageDirLinear
         mov     eax,1023
         mov     edx,LinearEntry+8       ;get physical address again.
-        or      edx,111b
+        SetUseBits edx
         mov     ecx,es:[esi+eax*4]      ;get original value.
         mov     PageAliasLinear+8,ecx
         mov     es:[esi+eax*4],edx      ;put new page into the map.
         mov     esi,PageAliasLinear
         mov     eax,1023
         mov     edx,LinearEntry+8       ;get physical address again.
-        or      edx,111b
+        SetUseBits edx
         mov     es:[esi+eax*4],edx      ;put new page into the map.
         call    d[fCR3Flush]
         inc     LinearEntry
@@ -2301,7 +2321,7 @@ COMMENT !
         call    d[fPhysicalGetPage]     ;get page for new page 1st.
         jc      InitError
         mov     LinearEntry+8,edx       ;store physical address.
-        InitBits edx,ecx                ;clear and init status bits.
+        InitUseBits edx,ecx             ;clear and set user+write+present+vcpi(cl).
         ;
         ;Map it into general linear address space.
         ;
@@ -2334,7 +2354,7 @@ COMMENT !
         ;Set new address in page dir.
         ;
         mov     edx,LinearEntry+8       ;get physical address again.
-        or      edx,111b
+        SetUseBits edx
         ;
         mov     esi,PageDirLinear
         mov     eax,0
@@ -2358,7 +2378,7 @@ END COMMENT !
         call    d[fPhysicalGetPage]     ;get page for new page DIR.
         jc      InitError
         mov     LinearEntry+8,edx       ;store physical address.
-        InitBits edx,ecx                ;clear and init status bits.
+        InitUseBits edx,ecx             ;clear and set user+write+present+vcpi(cl).
         ;
         ;Map it into normal linear address space.
         ;
@@ -2402,7 +2422,7 @@ END COMMENT !
         call    d[fPhysicalGetPage]     ;get page for new page DIR.
         jc      InitError
         mov     LinearEntry+8,edx       ;store physical address.
-        InitBits edx,ecx                ;clear and init status bits.
+        InitUseBits edx,ecx             ;clear and set user+write+present+vcpi(cl).
         mov     eax,LinearEntry         ;get the entry number again.
         mov     esi,1024*4096*1023      ;base of page alias's.
         mov     DWORD PTR es:[esi+eax*4],edx    ;set physical address.
@@ -2449,14 +2469,13 @@ cw5_3:  call    MakeDesc2
         pop     ds
         ;
         mov     ebp,offset cwDPMIEMUEnd-cwDPMIEMUStart
-        add     ebp,4095
-        shr     ebp,12                  ;Get number of pages needed.
+        GetPageCount ebp                ;Get number of pages needed.
         mov     eax,LinearEntry
         shl     eax,12
         mov     LinearEntry+4,eax       ;Store start address.
 cw5_2:  call    d[fPhysicalGetPage]     ;try to allocate a page.
         jc      InitError
-        InitBits edx,ecx                ;clear and init status bits.
+        InitUseBits edx,ecx             ;clear and set user+write+present+vcpi(cl).
         mov     eax,LinearEntry         ;get the entry number again.
         mov     esi,1024*4096*1023      ;base of page alias's.
         mov     DWORD PTR es:[esi+eax*4],edx    ;set physical address.
@@ -2526,13 +2545,13 @@ cw5_2:  call    d[fPhysicalGetPage]     ;try to allocate a page.
         pop     ds
         ;
         mov     ebp,(8192*8)+8192
-        shr     ebp,12                  ;Get number of pages needed.
+        GetPageIndex ebp                ;Get number of pages needed.
         mov     eax,LinearEntry
         shl     eax,12
         mov     LinearEntry+4,eax       ;Store start address.
 cw5_6:  call    d[fPhysicalGetPage]     ;try to allocate a page.
         jc      InitError
-        InitBits edx,ecx                ;clear and init status bits.
+        InitUseBits edx,ecx             ;clear and set user+write+present+vcpi(cl).
         mov     eax,LinearEntry         ;get the entry number again.
         mov     esi,1024*4096*1023      ;base of page alias's.
         mov     DWORD PTR es:[esi+eax*4],edx    ;set physical address.
@@ -2671,7 +2690,7 @@ cw5_LDT:
         ;
         call    d[fPhysicalGetPage]     ;try to allocate a page.
         jc      InitError
-        InitBits edx,ecx                ;clear and init status bits.
+        InitUseBits edx,ecx             ;clear and set user+write+present+vcpi(cl).
         mov     eax,LinearEntry         ;get the entry number again.
         mov     esi,1024*4096*1023      ;base of page alias's.
         mov     DWORD PTR es:[esi+eax*4],edx    ;set physical address.
@@ -4210,12 +4229,12 @@ cw10_hm1:
         jnc     cw10_3
 
         shl     edx,10                  ;turn K into byte's
-        shr     edx,12                  ;get number of pages.
+        GetPageIndex edx                ;get number of pages.
         push    ds
         mov     bx,_cwRaw
         mov     ds,bx
         assume ds:_cwRaw
-        mov     d[MaxMemPhys],edx
+        mov     d[MaxMemPhysPages],edx
         assume ds:_cwMain
         pop     ds
         jmp     cw10_3

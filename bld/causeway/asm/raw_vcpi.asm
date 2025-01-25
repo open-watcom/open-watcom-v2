@@ -40,7 +40,7 @@ SwapFileLength  dd 0
 FreePages       dd 1
 medAllocPages   dd      0
 TotalPages      dd 1
-TotalPhysical   dd 0
+TotalPhysPages  dd 0
 ;
 RawSelBuffer    db 16 dup (?)
 ;
@@ -200,7 +200,7 @@ Dbg     ends
 DbgTable        db 4*size Dbg dup (0)
 ;
 MaxMemLin       dd 1021 shl 20
-MaxMemPhys      dd -1
+MaxMemPhysPages dd -1
 ;
 ExtALLSwitch    db 0
 NoPassFlag      DB      0       ; nonzero if not passing real mode hardware interrupts up to protect mode
@@ -286,7 +286,7 @@ rv1_NoGDTMove:
         mov     esi,PageDirLinear
         mov     eax,0
         mov     ebx,Page1stLinear+8
-        InitBits ebx                    ;clear and init status bits.
+        InitUseBits ebx                 ;clear and init status bits.
         mov     es:[esi+eax*4],ebx
         call    CR3Flush
 ;
@@ -311,7 +311,7 @@ rv1_No1stMove:
         mov     esi,PageDirLinear
         mov     eax,1023
         mov     ebx,PageAliasLinear+8
-        InitBits ebx                    ;clear and init status bits.
+        InitUseBits ebx                 ;clear and init status bits.
         mov     es:[esi+eax*4],ebx
         call    CR3Flush
 ;
@@ -3544,7 +3544,7 @@ rv46_500_0:
         ;
         mov     eax,LinearLimit
         sub     eax,LinearBase
-        shr     eax,12
+        GetPageIndex eax
         sub     edx,eax
         ;
 rv46_500_1:
@@ -3565,7 +3565,7 @@ rv46_500_1:
 med2:
         mov     eax,LinearLimit
         sub     eax,LinearBase
-        shr     eax,12
+        GetPageIndex eax
         add     ebx,eax
         mov     DWORD PTR es:[edi+0ch],ebx
 
@@ -3597,7 +3597,7 @@ med3:
         add     DWORD PTR es:[edi+10h],edx      ; MED 01/25/96
 
         mov     eax,TotalPages
-        add     eax,TotalPhysical       ; MED 01/25/96
+        add     eax,TotalPhysPages       ; MED 01/25/96
         mov     DWORD PTR es:[edi+18h],eax
 
         mov     eax,SwapFileLength
@@ -4367,7 +4367,7 @@ PhysicalGetPage proc near
         mov     ax,KernalDS
         mov     ds,ax
         assume ds:_cwRaw
-        cmp     MaxMemPhys,0
+        cmp     MaxMemPhysPages,0
         assume ds:_cwDPMIEMU
         stc
         jz      rv50_9
@@ -4386,10 +4386,10 @@ rv50_8: RoundPageDN edx
         mov     ax,KernalDS
         mov     ds,ax
         assume ds:_cwRaw
-        dec     MaxMemPhys
-        dec     TotalPhysical
+        dec     MaxMemPhysPages
+        dec     TotalPhysPages
         jns     rv50_nowrap
-        mov     TotalPhysical,0
+        mov     TotalPhysPages,0
 rv50_nowrap:
         assume ds:_cwDPMIEMU
         clc
@@ -4469,10 +4469,10 @@ pgp3:
         mov     ax,KernalDS
         mov     ds,ax
         assume ds:_cwRaw
-        cmp     edx,MaxMemPhys
+        cmp     edx,MaxMemPhysPages
         jc      rv51_0
-        mov     edx,MaxMemPhys
-rv51_0: mov     TotalPhysical,edx
+        mov     edx,MaxMemPhysPages
+rv51_0: mov     TotalPhysPages,edx
         assume ds:_cwDPMIEMU
         clc                     ;exit with success.
         ;
@@ -4700,10 +4700,10 @@ rv54_SizeOK:
         movzx   eax,ax
         add     eax,3
         shr     eax,2
-        cmp     eax,MaxMemPhys
+        cmp     eax,MaxMemPhysPages
         pop     eax
         jc      rv54_nomaxlimit
-        mov     eax,MaxMemPhys
+        mov     eax,MaxMemPhysPages
         shl     eax,2
 rv54_nomaxlimit:
 
@@ -4934,9 +4934,8 @@ rv55_SizeOK:
         movzx   ebp,bp          ;fetch size.
         shl     ebp,10          ;*1024 (1k)
         add     ebx,ebp         ;get real top.
-        add     edi,4095                ;round up to next page.
-        shr     edi,12
-        shr     ebx,12
+        GetPageCount edi        ;round up to next page.
+        GetPageIndex ebx
         sub     ebx,edi
         js      rv55_1
         dec     ebx
@@ -5207,11 +5206,10 @@ rv56_GotSize:
 rv56_SizeOK:
 
         mov     eax,ecx
-        add     eax,4095
-        shr     eax,12
-        cmp     eax,MaxMemPhys
+        GetPageCount eax
+        cmp     eax,MaxMemPhysPages
         jc      rv56_nomaxlimit
-        mov     ecx,MaxMemPhys
+        mov     ecx,MaxMemPhysPages
         shl     ecx,12
 rv56_nomaxlimit:
 
@@ -5462,7 +5460,7 @@ rv57_SizeOK:
         ;EBX - base.
         ;ECX - size.
         ;
-        shr     ecx,12                  ;get number of pages.
+        GetPageIndex ecx                ;get number of pages.
         add     [Int15Total],ecx
         ;
         dec     ebx                     ;move back to previous byte.
@@ -5804,9 +5802,8 @@ rv59_0:
         movzx   ebx,bx
         shl     ebx,4
         add     ebx,eax         ;linear limit.
-        add     eax,4095
-        shr     eax,12          ;round up to next page.
-        shr     ebx,12          ;round down to next page.
+        GetPageCount eax        ;round up to next page.
+        GetPageIndex ebx        ;round down to next page.
         sub     ebx,eax
         js      rv59_1
         add     d[CONVTotal],ebx
