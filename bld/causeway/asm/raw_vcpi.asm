@@ -793,9 +793,9 @@ VCPIRelExtended proc far
         mov     ecx,1024
         mov     esi,PageDETLinear
 rv12_d0:
-        test    DWORD PTR es:[esi],1            ;present?
+        test    DWORD PTR es:[esi],PAGE_PRESENT ;present?
         jz      rv12_d1
-        test    DWORD PTR es:[esi],1 shl 10     ;VCPI bit set?
+        test    DWORD PTR es:[esi],PAGE_VCPI    ;VCPI bit set?
         jz      rv12_d1
         push    ecx
         push    esi
@@ -804,7 +804,7 @@ rv12_d0:
         push    es
         mov     edx,es:[esi]
         ClearUseBits edx
-        and     DWORD PTR es:[esi],NOT 1;mark as no longer present.
+        and     DWORD PTR es:[esi],NOT PAGE_PRESENT ;mark as no longer present.
         call    CR3Flush
 
         push    edi
@@ -853,7 +853,7 @@ rv12_NoDET:
         mov     edi,1024*4096*1023      ;base of page alias's.
 
 rv12_0:
-        test    DWORD PTR es:[esi],1            ;Page table present?
+        test    DWORD PTR es:[esi],PAGE_PRESENT ;Page table present?
         jz      rv12_1
 
         push    ecx
@@ -861,9 +861,9 @@ rv12_0:
         push    edi
         mov     ecx,1024
 rv12_2:
-        test    DWORD PTR es:[edi],1            ;Page present?
+        test    DWORD PTR es:[edi],PAGE_PRESENT ;Page present?
         jz      rv12_3
-        test    DWORD PTR es:[edi],1 shl 10     ;VCPI bit set?
+        test    DWORD PTR es:[edi],PAGE_VCPI    ;VCPI bit set?
         jz      rv12_3
 
 ; MED 11/05/96
@@ -882,7 +882,7 @@ notzeroth:
         push    ds
         push    es
         mov     edx,es:[edi]
-        and     DWORD PTR es:[edi],NOT 1;mark as no longer present.
+        and     DWORD PTR es:[edi],NOT PAGE_PRESENT ;mark as no longer present.
         ClearUseBits edx
 
         call    CR3Flush
@@ -927,7 +927,7 @@ rv12_3:
         pop     esi
         pop     ecx
 
-        test    DWORD PTR es:[esi],1 shl 10     ;VCPI bit set?
+        test    DWORD PTR es:[esi],PAGE_VCPI    ;VCPI bit set?
         jz      rv12_1
 
         push    ecx
@@ -937,7 +937,7 @@ rv12_3:
         push    es
         mov     edx,es:[esi]
         ClearUseBits edx
-        and     DWORD PTR es:[esi],NOT 1;mark as no longer present.
+        and     DWORD PTR es:[esi],NOT PAGE_PRESENT ;mark as no longer present.
 
         call    CR3Flush
 
@@ -4939,7 +4939,7 @@ rv55_SizeOK:
         shl     ebp,10          ;*1024 (1k)
         add     ebx,ebp         ;get real top.
         GetPageCount edi        ;round up to next page.
-        GetPageIndex ebx
+        GetPageIndex ebx        ;get page number.
         sub     ebx,edi
         js      rv55_1
         dec     ebx
@@ -5197,7 +5197,7 @@ GIComputeBytes2:
         div     ecx                     ;get chunk size.
         inc     eax
         or      Int15Size,-1            ;set chunk size to use.
-        RoundPageDN eax
+        RoundPageDN eax                 ;round down to nearest page.
         jz      rv56_GotSize
         mov     Int15Size,eax           ;set chunk size to use.
 rv56_GotSize:
@@ -5807,7 +5807,7 @@ rv59_0:
         shl     ebx,4
         add     ebx,eax         ;linear limit.
         GetPageCount eax        ;round up to next page.
-        GetPageIndex ebx        ;round down to next page.
+        GetPageIndex ebx        ;round down to nearest page.
         sub     ebx,eax
         js      rv59_1
         add     d[CONVTotal],ebx

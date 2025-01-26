@@ -349,7 +349,7 @@ mem2_Smaller:
 mem2_s0:
         and     DWORD PTR es:[(1024*4096*1022)+edx*4],not MEM_MASK
         or      DWORD PTR es:[(1024*4096*1022)+edx*4],MEM_FREE
-        and     DWORD PTR es:[(1024*4096*1023)+edx*4],not (1 shl 6)
+        and     DWORD PTR es:[(1024*4096*1023)+edx*4],not PAGE_DIRTY
         inc     edx
         dec     ecx
         jnz     mem2_s0
@@ -582,7 +582,7 @@ RawRelMemory    proc    near
         ;
         and     DWORD PTR es:[1024*4096*1022+esi*4],not MEM_MASK
         or      DWORD PTR es:[1024*4096*1022+esi*4],MEM_FREE
-        and     DWORD PTR es:[1024*4096*1023+esi*4],not (1 shl 6)
+        and     DWORD PTR es:[1024*4096*1023+esi*4],not PAGE_DIRTY
         inc     esi
         mov     ecx,LinearLimit
         GetPageIndex ecx
@@ -596,7 +596,7 @@ mem3_0: mov     eax,DWORD PTR es:[1024*4096*1022+esi*4]
         dec     medAllocPages
         and     DWORD PTR es:[1024*4096*1022+esi*4],not MEM_MASK
         or      DWORD PTR es:[1024*4096*1022+esi*4],MEM_FREE
-        and     DWORD PTR es:[1024*4096*1023+esi*4],not (1 shl 6)
+        and     DWORD PTR es:[1024*4096*1023+esi*4],not PAGE_DIRTY
         inc     esi
         dec     ecx
         jnz     mem3_0
@@ -660,7 +660,7 @@ RawDiscardPages proc    near
 ;Round start up a page.
 ;
         mov     eax,ebx
-        RoundPageUP ebx
+        RoundPageUP ebx                 ;round up to next page.
         sub     eax,ebx
         neg     eax
         cmp     eax,esi
@@ -669,7 +669,7 @@ RawDiscardPages proc    near
 ;
 ;Round length down a page.
 ;
-        RoundPageDN esi
+        RoundPageDN esi                 ;round down to nearest page.
         or      esi,esi
         jz      mem4_8
 ;
@@ -687,7 +687,7 @@ mem4_0: cmp     edx,LinearBase
         jc      mem4_1
         cmp     edx,LinearLimit
         jnc     mem4_2
-        and     DWORD PTR es:[esi+ebx*4],not ((1 shl 6)+(1 shl 11)) ;clear dirty & disk bits.
+        and     DWORD PTR es:[esi+ebx*4],not (PAGE_DIRTY or PAGE_ON_DISK)   ;clear dirty & disk bits.
 mem4_1: add     edx,4096
         inc     ebx
         dec     ecx
@@ -770,7 +770,7 @@ mem5_0:
 
 ; MED 04/18/96
         mov     ecx,es:[ebp+eax*4]
-        and     ecx,(NOT 4095)  ; get linear address
+        ClearUseBits ecx                ; get linear address
         cmp     ecx,ebx                 ; see if matches desired linear address
         jne     med2c                   ; no, continue as before
         mov     edi,eax
@@ -956,17 +956,17 @@ RawLockMemory   proc    near
         mov     d[_LM_Got],eax
         mov     eax,d[_LM_BlockBase]
 mem7_04:
-        cmp     eax,LinearBase  ;must be in our memory pool.
+        cmp     eax,LinearBase          ;must be in our memory pool.
         jc      mem7_05
         cmp     eax,LinearLimit
         jnc     mem7_05
         push    eax
         call    GetPageStatus
         pop     eax
-        jc      mem7_15         ;ignore not present tables.
-        test    edx,1
+        jc      mem7_15                 ;ignore not present tables.
+        test    edx,PAGE_PRESENT
         jz      mem7_005                ;already present.
-        call    RawPageLocked   ;locked page?
+        call    RawPageLocked           ;locked page?
         jnz     mem7_05
         dec     d[_LM_Got]              ;reduce available pages.
         jmp     mem7_05
@@ -997,25 +997,25 @@ mem7_05:
 ;
 mem7_VMM:
         mov     eax,d[_LM_Needed]
-        add     eax,16          ;arbitrary safety buffer.
+        add     eax,16                   ;arbitrary safety buffer.
         cmp     eax,d[_LM_Got]
         jc      mem7_OK
         jz      mem7_OK
         jmp     mem7_15
 ;
 ;Enough free pages so lock the region.
-;
+
 mem7_OK:
         mov     eax,d[_LM_BlockBase]
-mem7_4: cmp     eax,LinearBase  ;must be in our memory pool.
+mem7_4: cmp     eax,LinearBase          ;must be in our memory pool.
         jc      mem7_5
         cmp     eax,LinearLimit
         jnc     mem7_5
         push    eax
         call    GetPageStatus
         pop     eax
-        jc      mem7_15         ;ignore not present tables.
-        test    edx,1           ;is it present?
+        jc      mem7_15                 ;ignore not present tables.
+        test    edx,PAGE_PRESENT        ;is it present?
         jnz     mem7_6
         ;
 mem7_11:
@@ -1024,9 +1024,9 @@ mem7_11:
         push    eax
         call    UnMapPhysical
         pop     eax
-        jc      mem7_15         ;this shouldn't happen.
+        jc      mem7_15                 ;this shouldn't happen.
         mov     LinearEntry,eax
-        shr     LinearEntry,12  ;store page number to allocate at.
+        shr     LinearEntry,12          ;store page number to allocate at.
         push    eax
         call    MapPhysical             ;map this page in.
         pop     eax
@@ -1133,8 +1133,8 @@ mem8_4: cmp     eax,LinearBase  ;must be in our memory pool.
         push    eax
         call    GetPageStatus
         pop     eax
-        jc      mem8_5          ;ignore not present tables.
-        test    edx,1           ;is it present?
+        jc      mem8_5                  ;ignore not present tables.
+        test    edx,PAGE_PRESENT        ;is it present?
         jz      mem8_5
         call    RawUnLockPage   ;unlock the page.
 mem8_5: add     eax,4096
@@ -1434,7 +1434,7 @@ mem10_f0:
         shr     eax,10          ;/1024 for page dir entry.
         mov     edi,PageDirLinear       ;get page table address.
         mov     eax,DWORD PTR es:[edi+eax*4]    ;this page present?
-        test    eax,1           ;do we have a page table?
+        test    eax,PAGE_PRESENT        ;do we have a page table?
         jnz     mem10_f1                ;keep going till we do.
 ;
 ;No page table so make sure we can get 2 pages (page and det)
@@ -1547,7 +1547,7 @@ mem10_OK:
 mem10_v2:
         mov     eax,edx         ;get new entry number.
         shr     eax,10          ;/1024 for page dir entry.
-        test    DWORD PTR es:[esi+eax*4],1      ;this page present?
+        test    DWORD PTR es:[esi+eax*4],PAGE_PRESENT   ;this page present?
         jnz     mem10_v3
         ;
         ;get DET page.
@@ -1723,21 +1723,21 @@ MapPhysical     proc    near
         mov     ax,KernalDS
         mov     ds,ax
         assume ds:_cwRaw
-        mov     ax,KernalZero   ;make everything addresable.
+        mov     ax,KernalZero           ;make everything addresable.
         mov     es,ax
         ;
-        InitUseBits edx,ecx             ;clear and set present+user+write+vcpi(cl).
+        InitUseBits edx,ecx             ;clear and init user+write+present+VCPI(cl).
         mov     eax,LinearEntry         ;get new entry number.
         shr     eax,10                  ;/1024 for page dir entry.
         ;
         mov     esi,PageDirLinear       ;get page table address.
-        test    DWORD PTR es:[esi+eax*4],1      ;this page present?
+        test    DWORD PTR es:[esi+eax*4],PAGE_PRESENT   ;this page present?
         jnz     mem11_AddPage
         ;
-        cmp     PageDETLinear,0 ;DET in use yet?
+        cmp     PageDETLinear,0         ;DET in use yet?
         jz      mem11_AddTable
         mov     esi,PageDETLinear       ;get page table address.
-        test    DWORD PTR es:[esi+eax*4],1      ;DET page present?
+        test    DWORD PTR es:[esi+eax*4],PAGE_PRESENT   ;DET page present?
         jnz     mem11_AddTable
         ;
 mem11_AddDET:
@@ -1748,8 +1748,8 @@ mem11_AddDET:
         ;Clear this page to locked.
         ;
         mov     edi,1024*4096*1022      ;base of page DET's.
-        mov     eax,LinearEntry ;get the entry number again.
-        shl     eax,2           ;4 bytes per entry.
+        mov     eax,LinearEntry         ;get the entry number again.
+        shl     eax,2                   ;4 bytes per entry.
         add     edi,eax
         mov     ecx,4096/4
         mov     eax,MEM_FILL
@@ -1761,8 +1761,8 @@ mem11_AddDET:
 mem11_AddTable:
         ;Need a new page table.
         ;
-        mov     eax,LinearEntry ;get new entry number.
-        shr     eax,10          ;/1024 for page dir entry.
+        mov     eax,LinearEntry         ;get new entry number.
+        shr     eax,10                  ;/1024 for page dir entry.
         mov     esi,PageDirLinear       ;get page table address.
         mov     DWORD PTR es:[esi+eax*4],edx    ;store this tables address.
         mov     esi,PageAliasLinear     ;get alias table address.
@@ -1771,8 +1771,8 @@ mem11_AddTable:
         ;Clear this page to 0.
         ;
         mov     edi,1024*4096*1023      ;base of page alias's.
-        mov     eax,LinearEntry ;get the entry number again.
-        shl     eax,2           ;4 bytes per entry.
+        mov     eax,LinearEntry         ;get the entry number again.
+        shl     eax,2                   ;4 bytes per entry.
         add     edi,eax
         mov     ecx,4096/4
         xor     eax,eax
@@ -1800,11 +1800,11 @@ mem11_AddPage:
         ;
         ;Add this to the relavent page table.
         ;
-        mov     eax,LinearEntry ;get the entry number again.
+        mov     eax,LinearEntry         ;get the entry number again.
         mov     esi,1024*4096*1023      ;base of page alias's.
         mov     ebx,DWORD PTR es:[esi+eax*4]    ;get current details.
-        and     ebx,1 shl 11
-        or      edx,ebx
+        and     ebx,PAGE_ON_DISK                ;pass living on disk bit.
+        or      edx,ebx                         ;/
         mov     DWORD PTR es:[esi+eax*4],edx    ;set physical address.
         ;
         cmp     PageDETLinear,0
@@ -1823,7 +1823,7 @@ mem11_NoLocking:
         cmp     VMMHandle,0
         jz      mem11_NoRead
         ;
-        test    ebx,1 shl 11
+        test    ebx,PAGE_ON_DISK        ;check if page living on disk.
         jz      mem11_NoRead
         ;
         mov     esi,BreakAddress
@@ -1831,8 +1831,8 @@ mem11_NoLocking:
         mov     BYTE PTR es:[esi],0
         push    eax
         ;
-        mov     ecx,LinearEntry ;get page number.
-        shl     ecx,12          ;get linear address.
+        mov     ecx,LinearEntry         ;get page number.
+        shl     ecx,12                  ;get linear address.
         sub     ecx,LinearBase
         mov     dx,cx       ;ecx -> cx:dx
         shr     ecx,16      ;/
@@ -1888,7 +1888,7 @@ mem11_ok:
         ;
         mov     eax,LinearEntry ;get new entry number.
         mov     esi,1024*4096*1023      ;base of page alias's.
-        and     DWORD PTR es:[esi+eax*4],NOT (3 shl 5)   ;clear accesed & dirty bits.
+        and     DWORD PTR es:[esi+eax*4],NOT (PAGE_ACCESED or PAGE_DIRTY)    ;clear accesed & dirty bits.
         call    EmuCR3Flush
         ;
 mem11_NoRead:
@@ -1971,7 +1971,7 @@ mem12_80_0:
 mem12_NoWrap:
         mov     eax,ecx
         GetPageIndex eax        ;get page number.
-        test    DWORD PTR fs:[edi+eax*4],1      ;this page present?
+        test    DWORD PTR fs:[edi+eax*4],PAGE_PRESENT   ;this page present?
         jz      mem12_ScanLoop
         test    DWORD PTR fs:[ebp+eax*4],MEM_LOCK_MASK shl MEM_LOCK_SHIFT
         jnz     mem12_ScanLoop
@@ -1990,7 +1990,7 @@ mem12_NoWrap:
         pop     ecx
         jz      mem12_IsRecent
         GetPageIndex eax        ;get page number again.
-        test    DWORD PTR fs:[edi+eax*4],1 shl 6
+        test    DWORD PTR fs:[edi+eax*4],PAGE_DIRTY
         jz      mem12_GotPage
         ;
         cmp     ProposedPresentFlag,0
@@ -2056,7 +2056,7 @@ mem12_GotPage:
         ;
         ;Check if it needs to go to the swap file.
         ;
-        test    DWORD PTR fs:[edi],1 shl 6      ;is it dirty?
+        test    DWORD PTR fs:[edi],PAGE_DIRTY   ;is it dirty?
         jz      mem12_5         ;no need to write it if not.
         ;
         ;Flush this page to disk.
@@ -2140,12 +2140,12 @@ mem12_error_anyway:
         ;
         pop     edi
         jc      mem12_8
-        or      DWORD PTR fs:[edi],1 shl 11     ;signal it living on disk.
+        or      DWORD PTR fs:[edi],PAGE_ON_DISK ;signal it living on disk.
         ;
 mem12_5:
         ;Now remove it from the page table and exit.
         ;
-        and     DWORD PTR fs:[edi],NOT 1;mark as not present.
+        and     DWORD PTR fs:[edi],NOT PAGE_PRESENT ;mark as not present.
         mov     edx,fs:[edi]            ;get page entry.
         mov     ecx,edx
         ClearUseBits edx                ;lose use bits.
@@ -2360,7 +2360,7 @@ GetPageStatus   proc    near
         mov     esi,PageDirLinear
         GetPageIndex eax        ;get page number.
         shr     eax,10          ;get dir entry number.
-        test    DWORD PTR es:[esi+eax*4],1      ;page table present?
+        test    DWORD PTR es:[esi+eax*4],PAGE_PRESENT   ;page table present?
         pop     eax
         jz      mem17_8
         mov     esi,4096*1024*1023      ;base of page alias memory.
