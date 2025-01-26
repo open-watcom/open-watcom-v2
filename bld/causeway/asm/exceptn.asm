@@ -957,9 +957,9 @@ DebugSegmentDPMI proc near
         push    dx
         mov     ax,0006h
         int     31h
-        mov     ax,cx
-        shl     eax,16
-        mov     ax,dx
+        mov     ax,cx           ;cx:dx -> eax
+        shl     eax,16          ;/
+        mov     ax,dx           ;/
         pop     dx
         pop     cx
         sub     eax,DWORD PTR fs:[EPSP_Struc.EPSP_MemBase]  ;get offset within application.

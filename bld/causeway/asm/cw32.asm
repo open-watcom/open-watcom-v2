@@ -198,10 +198,6 @@ ClearDescRPL macro r
         _and_not_byte r,3       ;clear RPL bits
         endm
 
-ClearDescTIRPL macro r
-        _and_not_byte r,7       ;clear RPL & TI bits
-        endm
-
 b       equ     byte ptr
 w       equ     word ptr
 d       equ     dword ptr
@@ -1962,7 +1958,7 @@ cw5_VCPI:
         xor     di,di                   ;Page table offset.
         mov     es,Page1stReal          ;Page table segment
         mov     si,VCPI_0               ;VCPI GDT entries offset.
-        and     si,not 3
+        ClearDescRPL si
         mov     ds,GDTReal              ;GDT segment.
         mov     ax,0de01h               ;Let VCPI server prepare.
         int     67h
@@ -1997,7 +1993,7 @@ cw5_VCPI:
         GetPageIndex edi                ;page number.
         shl     edi,2                   ;*4 bytes per entry.
         mov     eax,es:[di]             ;get physical address.
-        ClearUseBits eax                ;clear status bits.
+        ClearUseBits eax                ;clear use bits.
         mov     VCPISW.VCPI_CR3,eax     ;set VCPI CR3 value as well.
         mov     es,KernalTSSReal
         xor     di,di
@@ -2218,7 +2214,7 @@ cw5_1:  jnz     InitError
         mov     eax,1022
         mov     esi,PageDirLinear
         mov     edx,LinearEntry+8       ;get physical address again.
-        SetUseBits edx
+        SetUseBits edx                  ;user+write+present
         mov     es:[esi+eax*4],edx      ;put new page into the map.
         mov     esi,PageAliasLinear
         mov     es:[esi+eax*4],edx      ;put new page into the map.
@@ -2244,7 +2240,7 @@ cw5_1:  jnz     InitError
         mov     esi,PageDETLinear
         mov     eax,0
         mov     edx,LinearEntry+8       ;get physical address again.
-        SetUseBits edx
+        SetUseBits edx                  ;user+write+present
         mov     es:[esi+eax*4],edx      ;put new page into the map.
         call    d[fCR3Flush]
         inc     LinearEntry
@@ -2268,7 +2264,7 @@ cw5_1:  jnz     InitError
         mov     esi,PageDETLinear
         mov     eax,1
         mov     edx,LinearEntry+8       ;get physical address again.
-        SetUseBits edx
+        SetUseBits edx                  ;user+write+present
         mov     es:[esi+eax*4],edx      ;put new page into the map.
         call    d[fCR3Flush]
         inc     LinearEntry
@@ -2301,14 +2297,14 @@ cw5_1:  jnz     InitError
         mov     esi,PageDirLinear
         mov     eax,1023
         mov     edx,LinearEntry+8       ;get physical address again.
-        SetUseBits edx
+        SetUseBits edx                  ;user+write+present
         mov     ecx,es:[esi+eax*4]      ;get original value.
         mov     PageAliasLinear+8,ecx
         mov     es:[esi+eax*4],edx      ;put new page into the map.
         mov     esi,PageAliasLinear
         mov     eax,1023
         mov     edx,LinearEntry+8       ;get physical address again.
-        SetUseBits edx
+        SetUseBits edx                  ;user+write+present
         mov     es:[esi+eax*4],edx      ;put new page into the map.
         call    d[fCR3Flush]
         inc     LinearEntry
@@ -2354,7 +2350,7 @@ COMMENT !
         ;Set new address in page dir.
         ;
         mov     edx,LinearEntry+8       ;get physical address again.
-        SetUseBits edx
+        SetUseBits edx                  ;user+write+present
         ;
         mov     esi,PageDirLinear
         mov     eax,0
@@ -2781,8 +2777,8 @@ drivefree:
         jz      cw5_v7
         mul     cx                      ;Get bytes per cluster.
         mul     bx                      ;Get bytes available.
-        shl     edx,16
-        mov     dx,ax
+        shl     edx,16                  ;dx:ax -> edx
+        mov     dx,ax                   ;/
         cmp     edx,ebp                 ;Enough free space.
         jc      cw5_v7
         ;
@@ -2889,8 +2885,8 @@ cw5_v2: mov     VMMName,al
         je      medpre2
         mov     bx,VMMHandle
         mov     ecx,PreAllocSize
-        mov     dx,cx
-        shr     ecx,16
+        mov     dx,cx                   ;ecx -> cx:dx
+        shr     ecx,16                  ;/
         mov     ax,4200h                ; seek from beginning of file
         int     21h
         xor     cx,cx                   ; write zero bytes (pre-allocating based on seek)
@@ -3220,8 +3216,8 @@ cw5_InProtected:
         mov     ax,0600h
         int     31h                     ;Lock memory.
         jc      InitError
-        shl     ebx,16
-        mov     bx,cx
+        shl     ebx,16                  ;bx:cx -> ebx
+        mov     bx,cx                   ;/
         mov     dpmiSelBase,ebx
 ;
 ;Allocate code selector.

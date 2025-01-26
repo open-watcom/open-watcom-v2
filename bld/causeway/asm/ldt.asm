@@ -210,8 +210,8 @@ ldt3_0: cmp     w[esi],0                ;end of the list?
         push    ecx
         mov     bx,[esi]
         call    RawGetSelBase
-        shl     ecx,16
-        mov     cx,dx
+        shl     ecx,16          ;cx:dx -> ecx
+        mov     cx,dx           ;/
         mov     edx,ecx
         pop     ecx
         pop     ebx
@@ -232,9 +232,9 @@ ldt3_New:
         push    eax
         push    ebx
         push    ecx
-        mov     dx,bx
-        shr     ebx,16
-        mov     cx,bx
+        mov     dx,bx           ;ebx -> cx:dx
+        shr     ebx,16          ;/
+        mov     cx,bx           ;/
         mov     bx,ax
         call    RawSetSelBase
         pop     ecx
@@ -339,8 +339,8 @@ RawSetSelLimit  proc    near
         movzx   esi,bx                  ;Get the selector.
         GetDescIndex esi                ;lose RPL & TI.
         add     esi,MDTLinear           ;offset into descriptor table.
-        shl     ecx,16
-        mov     cx,dx
+        shl     ecx,16                  ;cx:dx -> ecx
+        mov     cx,dx                   ;/
         xor     al,al
         cmp     ecx,100000h             ; see if we need to set g bit
         jc      ldt5_2

@@ -308,10 +308,10 @@ dpmiAPI_Lock    proc    near
         mov     si,[ebp+Int_SI]
         mov     di,[ebp+Int_DI]
         pushad
-        shl     ebx,16
-        mov     bx,cx
-        shl     esi,16
-        mov     si,di
+        shl     ebx,16      ;bx:cx -> ebx
+        mov     bx,cx       ;/
+        shl     esi,16      ;si:di -> esi
+        mov     si,di       ;/
         mov     edx,ebx
         mov     ecx,esi
         mov     ax,Res_LOCK
@@ -338,10 +338,10 @@ dpmiAPI_UnLock  proc    near
         mov     si,[ebp+Int_SI]
         mov     di,[ebp+Int_DI]
         pushad
-        shl     ebx,16
-        mov     bx,cx
-        shl     esi,16
-        mov     si,di
+        shl     ebx,16      ;bx:cx -> ebx
+        mov     bx,cx       ;/
+        shl     esi,16      ;si:di -> esi
+        mov     si,di       ;/
         mov     edx,ebx
         mov     ecx,esi
         mov     ax,Res_LOCK
@@ -380,8 +380,8 @@ dpmiAPI_GetCallBack proc near
         mov     [ebp+Int_CX],cx
         mov     [ebp+Int_DX],dx
 ;
-        shl     ecx,16
-        mov     cx,dx
+        shl     ecx,16      ;cx:dx -> ecx
+        mov     cx,dx       ;/
         mov     edx,ecx
         mov     ecx,esi
         xor     ebx,ebx
@@ -406,8 +406,8 @@ dpmiAPI_RelCallBack proc near
         cwAPI_C2C
         jc      api5_9
 ;
-        shl     ecx,16
-        mov     cx,dx
+        shl     ecx,16      ;cx:dx -> ecx
+        mov     cx,dx       ;/
         mov     edx,ecx
         mov     ax,Res_CALLBACK
         call    ReleaseResource
@@ -1124,11 +1124,11 @@ cwAPI_GetSelDet proc near
         jc      api22_9
 ;
         mov     ecx,eax         ;get base.
-        mov     dx,cx
-        shr     ecx,16
+        mov     dx,cx           ;ecx -> cx:dx
+        shr     ecx,16          ;/
         mov     esi,ebx         ;get limit.
-        mov     di,si
-        shr     esi,16
+        mov     di,si           ;esi -> si:di
+        shr     esi,16          ;/
         mov     [ebp+Int_CX],cx
         mov     [ebp+Int_DX],dx
         mov     [ebp+Int_SI],si
@@ -1181,11 +1181,11 @@ cwAPI_SetSelDet proc near
         mov     dx,[ebp+Int_DX]
         mov     si,[ebp+Int_SI]
         mov     di,[ebp+Int_DI]
-        shl     ecx,16          ;Get base to somewhere useful.
-        mov     cx,dx
+        shl     ecx,16          ;Get base cx:dx -> ecx.
+        mov     cx,dx           ;/
         mov     eax,ecx
-        shl     esi,16          ;get limit to somewhere useful.
-        mov     si,di
+        shl     esi,16          ;get limit si:di -> esi.
+        mov     si,di           ;/
         mov     ebx,esi
         mov     cx,[ebp+Int_BX]
         call    _SizeSelector
@@ -1233,8 +1233,8 @@ cwAPI_SetSelDet32 endp
 cwAPI_GetMem    proc    near
         mov     cx,[ebp+Int_CX]
         mov     dx,[ebp+Int_DX]
-        shl     ecx,16
-        mov     cx,dx
+        shl     ecx,16          ;cx:dx ->ecx
+        mov     cx,dx           ;/
 
 ; MED 06/25/97
         push    ds              ; test padding flag
@@ -1267,11 +1267,11 @@ api26_0:
         jmp     api26_1
         ;
 api26_2:
-        mov     dx,cx
-        shr     ecx,16
-        mov     ax,[ebp+Int_CX]
-        shl     eax,16
-        mov     ax,[ebp+Int_DX]
+        mov     dx,cx               ;ecx -> cx:dx
+        shr     ecx,16              ;/
+        mov     ax,[ebp+Int_CX]     ;Int_CX:Int_DX -> eax
+        shl     eax,16              ;/
+        mov     ax,[ebp+Int_DX]     ;/
         cmp     eax,-2
         jz      api26_5
         cmp     eax,-1
@@ -1303,10 +1303,10 @@ cwAPI_GetMem    endp
 ;SI:DI  - selector:offset of allocated memory.
 ;
 cwAPI_GetMemSO  proc    near
-        mov     cx,[ebp+Int_CX]
-        mov     dx,[ebp+Int_DX]
-        shl     ecx,16
-        mov     cx,dx
+        mov     cx,[ebp+Int_CX]         ;Int_CX:Int_DX -> ecx
+        mov     dx,[ebp+Int_DX]         ;/
+        shl     ecx,16                  ;/
+        mov     cx,dx                   ;/
         call    mcbGetMemLinear32       ;allocate some memory.
         jc      api27_9
         assume ds:nothing
@@ -1424,8 +1424,8 @@ cwAPI_ResMem    proc    near
         mov     bx,[ebp+Int_BX]
         mov     cx,[ebp+Int_CX]
         mov     dx,[ebp+Int_DX]
-        shl     ecx,16                  ;convert new size to 32-bit.
-        mov     cx,dx
+        shl     ecx,16                  ;convert new size Int_CX:Int_DX -> ecx.
+        mov     cx,dx                   ;/
         push    ecx
         Sys     GetSelDet32             ;Get selector base address.
         mov     esi,edx
@@ -1471,7 +1471,7 @@ cwAPI_ResMemSO  proc    near
         add     esi,eax                 ;get memory blocks address.
         mov     cx,[ebp+Int_CX]
         mov     dx,[ebp+Int_DX]
-        shl     ecx,16                  ;convert new size to 32-bit.
+        shl     ecx,16                  ;convert new size Int_CX:Int_DX -> ecx.
         mov     cx,dx
         call    mcbResMemLinear32       ;re-size the memory.
         jc      api30_9
@@ -1607,32 +1607,32 @@ cwAPI_RelMemSO  proc    near
 ;Zero any segment registers using this selector.
 ;
         mov     bx,w[ebp+Int_SI]
-        and     bx,NOT 3
+        ClearDescRPL bx
         jz      api33_bad               ; MED 11/18/96, screen out null pointer releases
         xor     cx,cx
         mov     ax,w[ebp+Int_DS]
-        and     ax,NOT 3
+        ClearDescRPL ax
         cmp     ax,bx
         jnz     api33_0
         mov     w[ebp+Int_DS],cx
         mov     ds,cx
 api33_0:
         mov     ax,w[ebp+Int_ES]
-        and     ax,NOT 3
+        ClearDescRPL ax
         cmp     ax,bx
         jnz     api33_1
         mov     w[ebp+Int_ES],cx
         mov     es,cx
 api33_1:
         mov     ax,w[ebp+Int_FS]
-        and     ax,NOT 3
+        ClearDescRPL ax
         cmp     ax,bx
         jnz     api33_2
         mov     w[ebp+Int_FS],cx
         mov     fs,cx
 api33_2:
         mov     ax,w[ebp+Int_GS]
-        and     ax,NOT 3
+        ClearDescRPL ax
         cmp     ax,bx
         jnz     api33_3
         mov     w[ebp+Int_GS],cx
@@ -1682,10 +1682,10 @@ cwAPI_RelMemSO  endp
 ;SI:DI  - Linear address of block allocated.
 ;
 cwAPI_GetMemLinear proc near
-        mov     cx,[ebp+Int_CX]
-        mov     dx,[ebp+Int_DX]
-        shl     ecx,16
-        mov     cx,dx
+        mov     cx,[ebp+Int_CX]     ;Int_CX:Int_DX -> ecx
+        mov     dx,[ebp+Int_DX]     ;/
+        shl     ecx,16              ;/
+        mov     cx,dx               ;/
         call    mcbGetMemLinear32
         jc      api34_9
         mov     di,si
@@ -1744,10 +1744,10 @@ cwAPI_ResMemLinear proc near
         mov     di,[ebp+Int_DI]
         mov     cx,[ebp+Int_CX]
         mov     dx,[ebp+Int_DX]
-        shl     ecx,16
-        mov     cx,dx
-        shl     esi,16
-        mov     si,di
+        shl     ecx,16      ;Int_CX:Int_DX -> ecx
+        mov     cx,dx       ;/
+        shl     esi,16      ;Int_SI:Int_DI -> esi
+        mov     si,di       ;/
         call    mcbResMemLinear32
         jc      api36_9
         mov     di,si
@@ -1801,8 +1801,8 @@ cwAPI_ResMemLinear32 endp
 cwAPI_RelMemLinear proc near
         mov     si,[ebp+Int_SI]
         mov     di,[ebp+Int_DI]
-        shl     esi,16
-        mov     si,di
+        shl     esi,16      ;Int_SI:Int_DI -> esi
+        mov     si,di       ;/
         call    mcbRelMemLinear32
         cwAPI_C2C
         ret
@@ -1993,12 +1993,12 @@ cwAPI_LockMem   proc    near
         cwAPI_CallOld
         jc      api45_9
 ;
-        mov     dx,bx
-        shl     edx,16
-        mov     dx,cx
-        mov     cx,si
-        shl     ecx,16
-        mov     cx,di
+        mov     dx,bx       ;bx:cx -> edx
+        shl     edx,16      ;/
+        mov     dx,cx       ;/
+        mov     cx,si       ;si:di -> ecx
+        shl     ecx,16      ;/
+        mov     cx,di       ;/
         mov     ax,Res_LOCK
         call    RegisterResource
         clc
@@ -2033,12 +2033,12 @@ cwAPI_LockMem32 proc near
         mov     ax,0600h
         cwAPI_CallOld
         jc      api46_9
-        mov     dx,bx
-        shl     edx,16
-        mov     dx,cx
-        mov     cx,si
-        shl     ecx,16
-        mov     cx,di
+        mov     dx,bx       ;bx:cx -> edx
+        shl     edx,16      ;/
+        mov     dx,cx       ;/
+        mov     cx,si       ;si:di -> ecx
+        shl     ecx,16      ;/
+        mov     cx,di       ;/
         mov     ax,Res_LOCK
         call    RegisterResource
         clc
@@ -2065,12 +2065,12 @@ cwAPI_UnLockMem proc near
         mov     ax,0601h
         cwAPI_CallOld
         jc      api47_9
-        mov     dx,bx
-        shl     edx,16
-        mov     dx,cx
-        mov     cx,si
-        shl     ecx,16
-        mov     cx,di
+        mov     dx,bx       ;bx:cx -> edx
+        shl     edx,16      ;/
+        mov     dx,cx       ;/
+        mov     cx,si       ;si:di -> ecx
+        shl     ecx,16      ;/
+        mov     cx,di       ;/
         mov     ax,Res_LOCK
         call    ReleaseResource
         clc
@@ -2106,12 +2106,12 @@ cwAPI_UnLockMem32 proc near
         mov     ax,0601h
         cwAPI_CallOld
         jc      api48_9
-        mov     dx,bx
-        shl     edx,16
-        mov     dx,cx
-        mov     cx,si
-        shl     ecx,16
-        mov     cx,di
+        mov     dx,bx       ;bx:cx -> edx
+        shl     edx,16      ;/
+        mov     dx,cx       ;/
+        mov     cx,si       ;si:di -> ecx
+        shl     ecx,16      ;/
+        mov     cx,di       ;/
         mov     ax,Res_LOCK
         call    ReleaseResource
         clc
@@ -2151,12 +2151,12 @@ cwAPI_LockMemNear proc near
         mov     ax,0600h
         cwAPI_CallOld
         jc      api49_9
-        mov     dx,bx
-        shl     edx,16
-        mov     dx,cx
-        mov     cx,si
-        shl     ecx,16
-        mov     cx,di
+        mov     dx,bx       ;bx:cx -> edx
+        shl     edx,16      ;/
+        mov     dx,cx       ;/
+        mov     cx,si       ;si:di -> ecx
+        shl     ecx,16      ;/
+        mov     cx,di       ;/
         mov     ax,Res_LOCK
         call    RegisterResource
         clc
@@ -2192,12 +2192,12 @@ cwAPI_UnLockMemNear proc near
         mov     ax,0601h
         cwAPI_CallOld
         jc      api50_9
-        mov     dx,bx
-        shl     edx,16
-        mov     dx,cx
-        mov     cx,si
-        shl     ecx,16
-        mov     cx,di
+        mov     dx,bx       ;bx:cx -> edx
+        shl     edx,16      ;/
+        mov     dx,cx       ;/
+        mov     cx,si       ;si:di -> ecx
+        shl     ecx,16      ;/
+        mov     cx,di       ;/
         mov     ax,Res_LOCK
         call    ReleaseResource
         clc
@@ -2525,8 +2525,8 @@ cwAPI_ExecDebug proc near
         jmp     api58_9
 ;
 api58_0:
-        shl     esi,16
-        mov     si,di
+        shl     esi,16      ;si:di -> esi
+        mov     si,di       ;/
         mov     edi,ebp
         pop     ebp
         mov     [ebp+Int_EAX],eax
@@ -2819,28 +2819,28 @@ _RelSelector    proc    near
         push    ax
         push    bx
         push    cx
-        and     bx,NOT 3
+        ClearDescRPL bx
         xor     cx,cx
         mov     ax,ds
-        and     ax,NOT 3
+        ClearDescRPL ax
         cmp     ax,bx
         jnz     api62_0
         mov     ds,cx
 api62_0:
         mov     ax,es
-        and     ax,NOT 3
+        ClearDescRPL ax
         cmp     ax,bx
         jnz     api62_1
         mov     es,cx
 api62_1:
         mov     ax,fs
-        and     ax,NOT 3
+        ClearDescRPL ax
         cmp     ax,bx
         jnz     api62_2
         mov     fs,cx
 api62_2:
         mov     ax,gs
-        and     ax,NOT 3
+        ClearDescRPL ax
         cmp     ax,bx
         jnz     api62_3
         mov     gs,cx
@@ -4139,11 +4139,11 @@ api73_NotSpecial:
         mov     ax,0501h                ;Allocate memory block.
         cwAPI_CallOld
         jc      api73_9
-        shl     ebx,16
-        mov     bx,cx
+        shl     ebx,16      ;bx:cx -> ebx
+        mov     bx,cx       ;/
         mov     d[api73_BlockBase],ebx  ;store linear base address.
-        shl     esi,16
-        mov     si,di
+        shl     esi,16      ;si:di -> esi
+        mov     si,di       ;/
         mov     d[api73_BlockHandle],esi    ;store access handle.
         ;
         mov     ax,Res_MEM
@@ -4228,8 +4228,8 @@ COMMENT ! MED 02/15/96
         jz      api74_500_1
         mul     cx                      ;Get bytes per cluster.
         mul     bx                      ;Get bytes available.
-        shl     edx,16
-        mov     dx,ax
+        shl     edx,16                  ;dx:ax -> edx
+        mov     dx,ax                   ;/
         add     edx,SwapFileLength      ;include current size.
         shr     edx,12
         ;
@@ -4335,10 +4335,10 @@ _ResMemory      proc    near
         mov     ax,0503h                ;release the block.
         cwAPI_CallOld
         jc      api75_9
-        shl     ebx,16
-        mov     bx,cx
-        shl     esi,16
-        mov     si,di
+        shl     ebx,16                  ;bx:cx -> ebx
+        mov     bx,cx                   ;/
+        shl     esi,16                  ;si:di -> esi
+        mov     si,di                   ;/
         xchg    esi,ebx
         ;
         mov     es,apiDSeg
@@ -4665,10 +4665,10 @@ api77_GetAndInit:
         mov     ax,0501h                ;Allocate memory block.
         cwAPI_CallOld
         jc      api77_GAIerror
-        shl     esi,16
-        mov     si,di
-        shl     ebx,16
-        mov     bx,cx
+        shl     esi,16                  ;si:di -> esi
+        mov     si,di                   ;/
+        shl     ebx,16                  ;bx:cx -> ebx
+        mov     bx,cx                   ;/
         xchg    esi,ebx
         mov     edi,esi
         xor     eax,eax

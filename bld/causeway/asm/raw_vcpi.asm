@@ -286,7 +286,7 @@ rv1_NoGDTMove:
         mov     esi,PageDirLinear
         mov     eax,0
         mov     ebx,Page1stLinear+8
-        InitUseBits ebx                 ;clear and init status bits.
+        InitUseBits ebx                 ;clear and set user+write+present.
         mov     es:[esi+eax*4],ebx
         call    CR3Flush
 ;
@@ -311,7 +311,7 @@ rv1_No1stMove:
         mov     esi,PageDirLinear
         mov     eax,1023
         mov     ebx,PageAliasLinear+8
-        InitUseBits ebx                 ;clear and init status bits.
+        InitUseBits ebx                 ;clear and set user+write+present.
         mov     es:[esi+eax*4],ebx
         call    CR3Flush
 ;
@@ -803,7 +803,7 @@ rv12_d0:
         push    ds
         push    es
         mov     edx,es:[esi]
-        RoundPageDN edx
+        ClearUseBits edx
         and     DWORD PTR es:[esi],NOT 1;mark as no longer present.
         call    CR3Flush
 
@@ -883,7 +883,7 @@ notzeroth:
         push    es
         mov     edx,es:[edi]
         and     DWORD PTR es:[edi],NOT 1;mark as no longer present.
-        RoundPageDN edx
+        ClearUseBits edx
 
         call    CR3Flush
 
@@ -936,7 +936,7 @@ rv12_3:
         push    ds
         push    es
         mov     edx,es:[esi]
-        RoundPageDN edx
+        ClearUseBits edx
         and     DWORD PTR es:[esi],NOT 1;mark as no longer present.
 
         call    CR3Flush
@@ -1259,7 +1259,7 @@ rv18_Resume486:
         ;
         pushfd
         pop     eax
-        and     ax,1011111111111111b    ;clear NT.
+        and     ax,NOT EFLAG_NT         ;clear NT.
         push    eax
         popfd
         cld
@@ -1357,8 +1357,8 @@ RawPL0toPL3     proc    near
         push    edx             ;ESP
         pushfd          ;EFlags
         pop     eax
-        and     ax,1000111111111111b    ;clear NT & IOPL.
-        or      ax,0011000000000000b    ;force IOPL.
+        and     ax,NOT (EFLAG_NT or EFLAG_IOPL) ;clear NT & IOPL.
+        or      ax,EFLAG_IOPL                   ;force IOPL 3.
         push    eax
         popfd
         push    eax
@@ -1385,7 +1385,7 @@ RawPL3toPL0     proc    near
         push    edi
         mov     edi,GDTLinear
         add     edi,KernalPL3_2_PL0
-        GetDescIndex edi
+        GetDescIndex edi                ;lose RPL & TI
         push    es
         push    ax
         mov     ax,KernalZero
@@ -1698,7 +1698,8 @@ rv29_Its32:
         mov     ax,[ebp+(2+4+4)+(2+2+2+2)+(4+4+4+4+4+4+4+4)+2]
         or      bh,bh           ;int or far?
         jnz     rv29_NoIF
-        and     ax,1111110011111111b    ;clear Trap and INT flag.
+        ;clear IF & TF.
+        and     ax,NOT (EFLAG_IF or EFLAG_TF)
 rv29_NoIF:
         sub     esi,2
         mov     fs:[esi],ax
@@ -2830,13 +2831,13 @@ EmuRawPL3toPL0  proc    near
         pop     ds
         pop     eax
         add     edi,DpmiEmuPL3_2_PL0
-        GetDescIndex edi
+        GetDescIndex edi                ;lose RPL & TI
         push    es
         push    ax
         mov     ax,KernalZero
         mov     es,ax
         mov     eax,offset rv45_pl0
-        mov     WORD PTR es:[edi],ax            ;store low word of limit.
+        mov     WORD PTR es:[edi],ax    ;store low word of limit.
         pop     ax
         pop     es
         pop     edi
@@ -3535,8 +3536,8 @@ rv46_500_0:
         jz      rv46_500_1
         mul     cx              ;Get bytes per cluster.
         mul     bx              ;Get bytes available.
-        shl     edx,16
-        mov     dx,ax
+        shl     edx,16          ;dx:ax -> edx
+        mov     dx,ax           ;/
         add     edx,SwapFileLength      ;include current size.
         shr     edx,12
         ;
@@ -3889,8 +3890,8 @@ rv46_DPMI_0B00:
         mov     ax,KernalDS
         mov     ds,ax
         assume ds:_cwRaw
-        shl     ebx,16
-        mov     bx,cx
+        shl     ebx,16      ;bx:cx -> ebx
+        mov     bx,cx       ;/
         ;
         ;Find a free table entry.
         ;
@@ -4382,7 +4383,7 @@ PhysicalGetPage proc near
         jnc     rv50_8
         jmp     rv50_9
         ;
-rv50_8: RoundPageDN edx
+rv50_8: ClearUseBits edx
         mov     ax,KernalDS
         mov     ds,ax
         assume ds:_cwRaw
@@ -4531,6 +4532,7 @@ GetVCPIPage     proc    near
         or      ah,ah           ;get anything?
         jnz     rv52_9
         mov     edx,RealRegsStruc.Real_EDX[edi]
+        ClearUseBits edx
         mov     ecx,1           ;mark it as VCPI memory.
         clc
         jmp     rv52_10
@@ -4697,11 +4699,13 @@ rv54_2: add     esi,2+4+4               ;next entry.
         mov     ax,XMSBlockSize
 rv54_SizeOK:
         push    eax
+        ;convert size from 1024 to 4096 bytes pages for comparision
         movzx   eax,ax
         add     eax,3
         shr     eax,2
         cmp     eax,MaxMemPhysPages
         pop     eax
+        ;restore size in 1024 pages
         jc      rv54_nomaxlimit
         mov     eax,MaxMemPhysPages
         shl     eax,2
@@ -4758,7 +4762,7 @@ rv54_nomaxlimit:
         ;BP    - Block size in K.
         ;DX:BX - Block linear address.
         ;
-        movzx   edi,dx                  ;get base into 1 reg.
+        movzx   edi,dx                  ;get base into edi reg.
         shl     edi,16                  ;/
         mov     di,bx                   ;/
         mov     ebx,edi                 ;copy into high address.
@@ -4767,8 +4771,8 @@ rv54_nomaxlimit:
         add     ebx,ebp                 ;get real top.
         RoundPageUP edi                 ;round up to next page.
         RoundPageDN ebx                 ;round down to nearest page.
-        mov     2[esi],edi
-        mov     6[esi],ebx              ;store base and end.
+        mov     2[esi],edi              ;store base rounded up to 4096 boundary.
+        mov     6[esi],ebx              ;store end rounded down to 4096 boundary.
         jmp     rv54_3                  ;start again.
         ;
 rv54_GotOne:
@@ -5652,12 +5656,12 @@ rv58_GotOne:
         add     ax,2[esi]               ;Add old length.
         add     w[esi+2],4096/16        ;update length.
         shl     eax,4                   ;linear address.
-        shr     eax,12                  ;get page number.
+        GetPageIndex eax                ;get page number.
         mov     bx,KernalZero
         mov     es,bx
         mov     esi,1024*4096*1023      ;base of page alias's.
         mov     eax,es:[esi+eax*4]      ;get physical address.
-        and     eax,NOT 0FFFh           ;lose user bits.
+        ClearUseBits eax                ;lose user bits.
         mov     edx,eax
         ;
         xor     ecx,ecx

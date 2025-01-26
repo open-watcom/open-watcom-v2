@@ -231,8 +231,8 @@ ENDIF
         ;
         mov     ecx,d[LEHeader.LE_ResidentNames]
         add     ecx,d[load1_LEOffset]
-        mov     dx,cx
-        shr     ecx,16
+        mov     dx,cx       ;ecx -> cx:dx
+        shr     ecx,16      ;/
         mov     bx,w[load1_Handle]
         mov     ax,4200h
         int     21h
@@ -292,8 +292,8 @@ load1_ge1:
         push    edx
         mov     ecx,d[LEHeader.LE_ResidentNames]
         add     ecx,d[load1_LEOffset]
-        mov     dx,cx
-        shr     ecx,16
+        mov     dx,cx       ;ecx -> cx:dx
+        shr     ecx,16      ;/
         mov     ax,4200h
         int     21h
         pop     edx
@@ -362,8 +362,8 @@ load1_NoExports:
         mov     bx,w[load1_Handle]
         mov     ecx,d[LEHeader.LE_ObjOffset] ;Get object table offset.
         add     ecx,d[load1_LEOffset]
-        mov     dx,cx
-        shr     ecx,16
+        mov     dx,cx       ;ecx -> cx:dx
+        shr     ecx,16      ;/
         mov     ax,4200h
         int     21h
         pop     ecx
@@ -461,8 +461,8 @@ load1_objup1:
         mov     ecx,d[LEHeader.LE_EntryTable]
         add     ecx,d[load1_LEOffset]
         mov     bx,w[load1_Handle]
-        mov     dx,cx
-        shr     ecx,16
+        mov     dx,cx       ;ecx -> cx:dx
+        shr     ecx,16      ;/
         mov     ax,4200h
         int     21h
         ;
@@ -684,9 +684,9 @@ load1_load1:
         dec     eax
         mul     d[LEHeader.LE_PageSize]             ;* page size.
         add     eax,d[LEHeader.LE_Data]             ;data offset.
-        mov     dx,ax
-        shr     eax,16
-        mov     cx,ax
+        mov     dx,ax       ;eax -> cx:dx
+        shr     eax,16      ;/
+        mov     cx,ax       ;/
         mov     ax,4200h
         mov     bx,w[load1_Handle]
         int     21h                                 ;set the file pointer.
@@ -771,8 +771,8 @@ load1_loadz:
         push    ecx
         mov     ecx,d[LEHeader.LE_Fixups]
         add     ecx,d[load1_LEOffset]
-        mov     dx,cx
-        shr     ecx,16
+        mov     dx,cx       ;ecx -> cx:dx
+        shr     ecx,16      ;/
         mov     bx,w[load1_Handle]
         mov     ax,4200h
         int     21h                     ;move to fixup data.

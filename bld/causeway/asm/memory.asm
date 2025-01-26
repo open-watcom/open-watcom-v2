@@ -51,7 +51,7 @@ RawGetMemory    proc    near
 
         mov     ax,KernalZero
         mov     es,ax
-        shl     ebx,16          ;get block size as 32-bit.
+        shl     ebx,16          ;get block size bx:cx -> ebx.
         mov     bx,cx           ;/
         GetPageCount ebx        ;round up to next 4k.
         or      ebx,ebx
@@ -201,8 +201,8 @@ mem1_MarkMemRet:
         ;Now return details to caller.
         ;
         shl     esi,12          ;Convert back to a real address.
-        mov     di,si
-        shr     esi,16
+        mov     di,si           ;esi -> si:di
+        shr     esi,16          ;/
         mov     cx,di
         mov     bx,si
         clc
@@ -280,10 +280,10 @@ RawResMemory    proc    near
 
         mov     ax,KernalZero
         mov     es,ax
-        shl     esi,16
-        mov     si,di           ;Get real address.
-        shl     ecx,16
-        mov     cx,bx
+        shl     esi,16          ;Get real address si:di -> esi
+        mov     si,di           ;/
+        shl     ecx,16          ;cx:bx -> ecx
+        mov     cx,bx           ;/
         ror     ecx,16
         GetPageCount ecx        ;Get new block size.
         or      ecx,ecx
@@ -446,8 +446,8 @@ mem2_NewBlock:
         shr     ebx,16
         call    RawGetMemory
         pushf
-        shl     ebx,16
-        mov     bx,cx
+        shl     ebx,16      ;bx:cx -> ebx
+        mov     bx,cx       ;/
         popf
         pop     esi
         pop     ebp
@@ -473,8 +473,8 @@ mem2_NewBlock:
         ;
         pushad
         shl     esi,12
-        mov     di,si
-        shr     esi,16
+        mov     di,si           ;esi -> si:di
+        shr     esi,16          ;/
         call    RawRelMemory
         popad
         ;
@@ -488,9 +488,9 @@ mem2_RetNewAddr:
         ;
         shl     esi,12          ;Get a real address again and
         mov     di,si           ;use it as both the memory
-        mov     cx,si           ;address to return and the handle.
-        shr     esi,16
-        mov     bx,si
+        mov     cx,si           ;address to return and the handle esi -> bx:cx.
+        shr     esi,16          ;/
+        mov     bx,si           ;/
         clc
         jmp     mem2_exit
         ;
@@ -527,8 +527,8 @@ RawRelMemory    proc    near
         push    ds
         push    es
         ;
-        shl     esi,16          ;Get block base address.
-        mov     si,di
+        shl     esi,16          ;Get block base address si:di -> esi.
+        mov     si,di           ;/
         mov     ax,KernalDS             ;make data addresable.
         mov     ds,ax
         assume ds:_cwRaw
@@ -649,13 +649,13 @@ RawDiscardPages proc    near
 ;
 ;Get base address.
 ;
-        shl     ebx,16
-        mov     bx,cx
+        shl     ebx,16      ;bx:cx -> ebx
+        mov     bx,cx       ;/
 ;
 ;Get length.
 ;
-        shl     esi,16
-        mov     si,di
+        shl     esi,16      ;si:di -> esi
+        mov     si,di       ;/
 ;
 ;Round start up a page.
 ;
@@ -733,15 +733,15 @@ RawMapPhys2Lin  proc    near
 ;
 ;Get physical address as 32-bit & check for none-page boundary.
 ;
-        shl     ebx,16
-        mov     bx,cx
+        shl     ebx,16          ;bx:cx -> ebx
+        mov     bx,cx           ;/
         test    ebx,4095
         jnz     mem5_9
 ;
 ;Get length as number of pages.
 ;
-        shl     esi,16
-        mov     si,di
+        shl     esi,16          ;si:di -> esi
+        mov     si,di           ;/
         GetPageCount esi
         test    esi,esi
         jz      mem5_9
@@ -810,7 +810,7 @@ mem5_2: call    PhysicalGetPage
         jnc     mem5_3
         call    UnMapPhysical
         jc      mem5_10
-mem5_3: InitUseBits edx,ecx             ;clear and init status bits.
+mem5_3: InitUseBits edx,ecx             ;clear and set user+write+present+vcpi(cl).
         mov     DWORD PTR es:[edi],edx  ;store this tables address.
         push    edi
         sub     edi,PageDirLinear
@@ -843,7 +843,7 @@ mem5_3: InitUseBits edx,ecx             ;clear and init status bits.
         shl     edi,10          ;start of first page table
         push    edi
         add     edi,1024*4096*1023
-        SetUseBits ebx
+        SetUseBits ebx          ;user+write+present
 mem5_4: mov     es:[edi],ebx
         add     edi,4
         add     ebx,4096
@@ -856,9 +856,9 @@ mem5_4: mov     es:[edi],ebx
         shl     edi,12-2
 mem5_8: xor     ecx,ecx
         xor     ebx,ebx
-        mov     cx,di
-        shr     edi,16
-        mov     bx,di
+        mov     cx,di       ;edi -> bx:cx
+        shr     edi,16      ;/
+        mov     bx,di       ;/
         clc
         jmp     mem5_11
 ;
@@ -932,10 +932,10 @@ RawLockMemory   proc    near
         pop     es
 
         ;
-        shl     ebx,16
-        mov     bx,cx
-        shl     esi,16
-        mov     si,di
+        shl     ebx,16      ;bx:cx -> ebx
+        mov     bx,cx       ;/
+        shl     esi,16      ;si:di -> esi
+        mov     si,di       ;/
         add     esi,ebx
         RoundPageDN ebx                 ;round down to nearest page.
         mov     d[_LM_BlockBase],ebx
@@ -1112,10 +1112,10 @@ RawUnLockMemory proc near
         mov     ecx,es:[ecx+4]
         pop     es
 
-        shl     ebx,16
-        mov     bx,cx
-        shl     esi,16
-        mov     si,di
+        shl     ebx,16      ;bx:cx -> ebx
+        mov     bx,cx       ;/
+        shl     esi,16      ;si:di -> esi
+        mov     si,di       ;/
         add     esi,ebx
         RoundPageDN ebx                 ;round down to nearest page.
         mov     d[_LM_BlockBase],ebx
@@ -1318,8 +1318,8 @@ mem9_l5:
         jz      mem9_l7
         mul     cx              ;Get bytes per cluster.
         mul     bx              ;Get bytes available.
-        shl     edx,16
-        mov     dx,ax
+        shl     edx,16          ;dx:ax -> edx
+        mov     dx,ax           ;/
 mem9_l7:
         ;
         ;Get current swap file size.
@@ -1330,8 +1330,8 @@ mem9_l7:
         xor     cx,cx
         mov     dx,cx
         int     21h
-        shl     edx,16
-        mov     dx,ax
+        shl     edx,16      ;dx:ax -> edx
+        mov     dx,ax       ;/
         pop     eax
         add     edx,eax
         RoundDN edx,65536
@@ -1499,8 +1499,8 @@ mem10_Virtual:
         jz      mem10_error
         mul     cx              ;Get bytes per cluster.
         mul     bx              ;Get bytes available.
-        shl     edx,16
-        mov     dx,ax           ;make 32 bit.
+        shl     edx,16          ;dx:ax -> edx
+        mov     dx,ax           ;/
         RoundDN edx,65536
         add     edx,SwapFileLength      ;add existing size.
         mov     eax,LinearLimit
@@ -1618,8 +1618,8 @@ mem10_v4:
         jc      mem10_Extended
         RoundUP ecx,65536
         push    ecx
-        mov     dx,cx
-        shr     ecx,16
+        mov     dx,cx       ;ecx ->cx:dx
+        shr     ecx,16      ;/
         mov     bx,VMMHandle            ;get swap file handle.
         mov     ax,4200h
         mov     edi,offset PageInt
@@ -1677,8 +1677,8 @@ mem10_v4:
         jnz     mem10_Disk_Error
         mov     edx,RealRegsStruc.Real_EDX[edi]
         mov     eax,RealRegsStruc.Real_EAX[edi]
-        shl     edx,16
-        mov     dx,ax
+        shl     edx,16      ;dx:ax -> edx
+        mov     dx,ax       ;/
         cmp     edx,SwapFileLength
         jnz     mem10_Disk_Error
         ;
@@ -1834,8 +1834,8 @@ mem11_NoLocking:
         mov     ecx,LinearEntry ;get page number.
         shl     ecx,12          ;get linear address.
         sub     ecx,LinearBase
-        mov     dx,cx
-        shr     ecx,16
+        mov     dx,cx       ;ecx -> cx:dx
+        shr     ecx,16      ;/
         mov     bx,VMMHandle
         mov     ax,4200h
         mov     edi,offset PageInt
@@ -2086,9 +2086,9 @@ mem12_GotPage:
         ;
         sub     edi,LinearBase
         mov     ebp,edi
-        mov     dx,di
-        shr     edi,16
-        mov     cx,di
+        mov     dx,di       ;edi -> cx:dx
+        shr     edi,16      ;/
+        mov     cx,di       ;/
         mov     ax,4200h
         mov     bx,VMMHandle
         mov     edi,offset PageInt
@@ -2108,8 +2108,8 @@ mem12_GotPage:
         jnz     mem12_error_anyway
         mov     edx,RealRegsStruc.Real_EDX[edi]
         mov     eax,RealRegsStruc.Real_EAX[edi]
-        shl     edx,16
-        mov     dx,ax
+        shl     edx,16      ;dx:ax -> edx
+        mov     dx,ax       ;/
         cmp     edx,ebp
         jnz     mem12_force_error
         ;
@@ -2148,9 +2148,9 @@ mem12_5:
         and     DWORD PTR fs:[edi],NOT 1;mark as not present.
         mov     edx,fs:[edi]            ;get page entry.
         mov     ecx,edx
-        and     edx,NOT 0FFFh           ;lose flag bits.
+        ClearUseBits edx                ;lose use bits.
         shr     ecx,10
-        and     ecx,1           ;preserve user flags.
+        and     ecx,1                   ;preserve VCPI bit.
         call    EmuCR3Flush
         ;
         ;Update number of un-locked physical pages present.
@@ -2597,8 +2597,8 @@ RawResDOSMemory proc near
         push    dx
         mov     bx,dx
         call    RawGetSelBase
-        shl     ecx,16
-        mov     cx,dx
+        shl     ecx,16      ;cx:dx -> ecx
+        mov     cx,dx       ;/
         mov     esi,ecx
         sub     esi,16          ;back to our stuff.
         pop     dx
@@ -2640,8 +2640,8 @@ mem20_Shrink:
         push    edx
         mov     ebx,edx
         call    RawGetSelBase
-        shl     ecx,16
-        mov     cx,dx
+        shl     ecx,16      ;cx:dx -> ecx
+        mov     cx,dx       ;/
         mov     esi,ecx
         sub     esi,16          ;back to our stuff.
         pop     edx
@@ -2688,8 +2688,8 @@ mem20_0:
         push    edx
         mov     ebx,edx
         call    RawGetSelBase
-        shl     ecx,16
-        mov     cx,dx
+        shl     ecx,16      ;cx:dx -> ecx
+        mov     cx,dx       ;/
         mov     ebx,ecx
         shr     ebx,4           ;get real mode segment.
         pop     edx
@@ -2810,8 +2810,8 @@ mem21_z3:
         push    edx
         mov     ebx,edx
         call    RawGetSelBase
-        shl     ecx,16
-        mov     cx,dx
+        shl     ecx,16      ;cx:dx -> ecx
+        mov     cx,dx       ;/
         mov     esi,ecx
         pop     ebx
         sub     esi,16          ;back to our stuff.
