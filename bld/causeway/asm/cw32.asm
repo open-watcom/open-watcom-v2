@@ -60,6 +60,12 @@ PAGE_ON_DISK equ (1 shl 11)
 
 PAGE_DEFAULT equ (PAGE_PRESENT or PAGE_WRITE or PAGE_USER)
 
+r32_ax equ eax
+r32_bx equ ebx
+r32_cx equ ecx
+r32_dx equ edx
+r32_di equ edi
+r32_si equ esi
 r16_eax equ ax
 r16_ebx equ bx
 r16_ecx equ cx
@@ -108,6 +114,53 @@ _and_not_ffff macro r
         xor     r16_&r,r16_&r
     else
         and     r,NOT 0ffffh
+    endif
+        endm
+
+;_reg16_to_reg32 macro r16hi,r16lo,r32
+;    ifdifi  r16_&r32, r16hi
+;        mov r32,r32_&r16hi
+;    endif
+;        shl r32,16
+;        mov r16_&r32,r16lo
+;        endm
+
+;_reg32_to_reg16 macro r32,r16hi,r16lo
+;        mov r16lo,r16_&r32
+;        shr r32,16
+;    ifdifi  r16_&r32, r16hi
+;        mov r32_&r16hi,r32
+;    endif
+;        endm
+
+_reg16_to_reg32 macro r16hi,r16lo,r32
+    ifidni r16_&r32, r16hi
+        shl r32,16
+        mov r16_&r32,r16lo
+    elseifidni r16_&r32, r16lo
+        shl r32,16
+        mov r16_&r32,r16hi
+        ror r32,16
+    else
+        mov r32, r32_&r16hi
+        shl r32,16
+        mov r16_&r32,r16lo
+    endif
+        endm
+
+_reg32_to_reg16 macro r32,r16hi,r16lo
+    ifdifi r16_&r32, r16hi
+        mov r32_&r16hi,r32
+        shr r32_&r16hi,16
+    endif
+    ifdifi r16_&r32, r16lo
+        movzx r32_&r16lo,r16_&r32
+    endif
+    ifidni r16_&r32, r16hi
+        shr r32,16
+    endif
+    ifidni r16_&r32, r16lo
+        movzx r32,r16_&r32
     endif
         endm
 
@@ -196,6 +249,14 @@ GetDescIndex macro r
 
 ClearDescRPL macro r
         _and_not_byte r,3       ;clear RPL bits
+        endm
+
+Reg16hiloTo32 macro rhi,rlo,r32
+        _reg16_to_reg32 rhi,rlo,r32
+        endm
+
+Reg32To16hilo macro r32,rhi,rlo
+        _reg32_to_reg16 r32,rhi,rlo
         endm
 
 b       equ     byte ptr
