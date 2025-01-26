@@ -2164,8 +2164,10 @@ nosse:
         push    edx                     ;ESP
         pushfd                          ;EFlags
         pop     eax
-        and     ax,NOT (EFLAG_NT or EFLAG_IOPL) ;clear NT & IOPL.
-        or      ax,EFLAG_IOPL                   ;force IOPL 3.
+        ;clear NT & IOPL.
+        and     ax,NOT (EFLAG_NT or EFLAG_IOPL)
+        ;force IOPL 3.
+        or      ax,EFLAG_IOPL
         push    eax
         popfd
         push    eax
@@ -5108,7 +5110,7 @@ MakeDesc        endp
 ;
 ;On Entry:-
 ;
-;ES:DI  - Descriptor entry to use.
+;ES:EDI - Descriptor entry to use.
 ;ESI    - Linear base to set.
 ;ECX    - limit in bytes.
 ;AL     - Code size bit.

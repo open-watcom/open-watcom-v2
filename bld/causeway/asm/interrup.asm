@@ -1078,7 +1078,8 @@ inter15_Int:
         push    ax
         xor     eax,eax
         mov     ax,[ebx+(4+4+4+4+4)+IFrame16.i16_flags] ;get flags again.
-        and     ax,NOT (EFLAG_IF or EFLAG_TF)           ;lose IF & TF
+        ;clear IF & TF
+        and     ax,NOT (EFLAG_IF or EFLAG_TF)
         push    eax             ;int handler flags.
         jmp     inter15_i2Use0
         ;
@@ -1094,7 +1095,8 @@ inter15_i2Use32:
         mov     eax,[ebx+(4+4+4+4+4)+IFrame.i_eip]      ;get IP
         push    eax
         mov     eax,[ebx+(4+4+4+4+4)+IFrame.i_eflags]   ;get flags again.
-        and     ax,NOT (EFLAG_IF or EFLAG_TF)           ;lose IF & TF
+        ;clear IF & TF
+        and     ax,NOT (EFLAG_IF or EFLAG_TF)
         push    eax             ;int handler flags.
         ;
 inter15_i2Use0:
@@ -1230,6 +1232,7 @@ IntDispatch     proc    near
         push    ds
         mov     ax,DpmiEmuDS
         mov     ds,ax
+        ;clear IF & TF.
         and     w[ExceptionFlags],NOT (EFLAG_IF or EFLAG_TF)
         mov     esi,ExceptionIndex      ;Get the exception number.
         add     esi,esi         ;*2
@@ -1302,8 +1305,10 @@ inter17_Resume:
         ;
         movzx   ebx,bx
         lss     sp,d[ebx+(4+4+4+4)+IFrame16.i16_sp] ;get old stack address.
-        and     w[ebx+(4+4+4+4)+IFrame16.i16_flags],EFLAG_IF or EFLAG_TF or EFLAG_DF ;retain IF & TF & DF.
-        and     w[ebx+(4+4+4)],NOT (EFLAG_IF or EFLAG_TF or EFLAG_DF) ;lose IF & TF & DF.
+        ;retain IF & TF & DF.
+        and     w[ebx+(4+4+4+4)+IFrame16.i16_flags],EFLAG_IF or EFLAG_TF or EFLAG_DF
+        ;clear IF & TF & DF.
+        and     w[ebx+(4+4+4)],NOT (EFLAG_IF or EFLAG_TF or EFLAG_DF)
         mov     ax,[ebx+(4+4+4)]
         or      ax,[ebx+(4+4+4+4)+IFrame16.i16_flags]
         push    ax              ;EFlags.
@@ -1330,8 +1335,10 @@ inter17_Resume:
         ;
 inter17_Use32:
         lss     esp,f[ebx+(4+4+4+4)+IFrame.i_esp] ;get old stack address.
-        and     w[ebx+(4+4+4+4)+IFrame.i_eflags],EFLAG_IF or EFLAG_TF or EFLAG_DF ;retain IF & TF & DF.
-        and     w[ebx+(4+4+4)],NOT (EFLAG_IF or EFLAG_TF or EFLAG_DF) ;lose IF & TF & DF.
+        ;retain IF & TF & DF.
+        and     w[ebx+(4+4+4+4)+IFrame.i_eflags],EFLAG_IF or EFLAG_TF or EFLAG_DF
+        ;clear IF & TF & DF.
+        and     w[ebx+(4+4+4)],NOT (EFLAG_IF or EFLAG_TF or EFLAG_DF)
         mov     eax,[ebx+(4+4+4)]
         or      eax,[ebx+(4+4+4+4)+IFrame.i_eflags]
         push    eax             ;EFlags.
@@ -1542,7 +1549,8 @@ inter18_c2:
         ;Now pass control to the INT simulator.
         ;
         mov     eax,[ebp+(4+4+4+4+4+4+4+4)+(10*2)+(4+4+4+4)]
-        and     eax,0ffffh and NOT (EFLAG_IF or EFLAG_TF or EFLAG_DF)
+        ;clear IF & TF & DF.
+        and     ax,NOT (EFLAG_IF or EFLAG_TF or EFLAG_DF)
         push    eax
         popfd
         mov     ebx,edx
@@ -1565,12 +1573,14 @@ inter18_NoCall:
         ;Update the flags.
         ;
         mov     ax,es:RealRegsStruc.Real_Flags[edi]
-        and     ax,NOT (EFLAG_NT or EFLAG_IOPL or EFLAG_IF or EFLAG_TF or EFLAG_DF) ;lose IF & TF & DF & NT & IOPL.
+        ;clear IF & TF & DF & NT & IOPL.
+        and     ax,NOT (EFLAG_NT or EFLAG_IOPL or EFLAG_IF or EFLAG_TF or EFLAG_DF)
         ;
         test    BYTE PTR DpmiEmuSystemFlags,1
         jz      inter18_Use32Bit
         mov     bx,[ebp+(4+4+4+4+4+4+4+4)+(10*2)+(4+4+4+4)+(4+4+4)+IFrame16.i16_flags]
-        and     bx,EFLAG_NT or EFLAG_IOPL or EFLAG_IF or EFLAG_TF or EFLAG_DF ;retain IF & TF & DF & NT & IOPL.
+        ;retain IF & TF & DF & NT & IOPL.
+        and     bx,EFLAG_NT or EFLAG_IOPL or EFLAG_IF or EFLAG_TF or EFLAG_DF
         or      ax,bx
         mov     [ebp+(4+4+4+4+4+4+4+4)+(10*2)+(4+4+4+4)+(4+4+4)+IFrame16.i16_flags],ax
         popad
@@ -1585,7 +1595,8 @@ inter18_NoCall:
         ;
 inter18_Use32Bit:
         mov     bx,[ebp+(4+4+4+4+4+4+4+4)+(10*2)+(4+4+4+4)+(4+4+4)+IFrame.i_eflags]
-        and     bx,EFLAG_NT or EFLAG_IOPL or EFLAG_IF or EFLAG_TF or EFLAG_DF ;retain IF & TF & DF & NT & IOPL.
+        ;retain IF & TF & DF & NT & IOPL.
+        and     bx,EFLAG_NT or EFLAG_IOPL or EFLAG_IF or EFLAG_TF or EFLAG_DF
         or      ax,bx
         mov     [ebp+(4+4+4+4+4+4+4+4)+(10*2)+(4+4+4+4)+(4+4+4)+IFrame.i_eflags],ax
         popad

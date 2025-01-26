@@ -123,7 +123,8 @@ Int21h  proc    near
         mov     esi,Int_Flags16
 int211_32Bit0:
         add     esi,ebp
-        and     BYTE PTR ss:[esi],not EFLAG_CF
+        ;clear CF (carry)
+        and     BYTE PTR ss:[esi],NOT EFLAG_CF
         cld                     ;Default direction.
         test    WORD PTR ss:[esi],EFLAG_IF  ;Were interrupts enabled?
         jz      int211_NoInts
@@ -1109,7 +1110,7 @@ int2121_Ef15:
         ;
         pop     ax
 int2121_Ef13:
-        and     ax,EFLAG_CF
+        and     al,EFLAG_CF
         call    Int21hAL2Carry
         ret
 Int21hExecFile  endp

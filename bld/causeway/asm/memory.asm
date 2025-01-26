@@ -687,7 +687,7 @@ mem4_0: cmp     edx,LinearBase
         jc      mem4_1
         cmp     edx,LinearLimit
         jnc     mem4_2
-        and     DWORD PTR es:[esi+ebx*4],not (PAGE_DIRTY or PAGE_ON_DISK)   ;clear dirty & disk bits.
+        and     DWORD PTR es:[esi+ebx*4],NOT (PAGE_DIRTY or PAGE_ON_DISK)   ;clear dirty & disk bits.
 mem4_1: add     edx,4096
         inc     ebx
         dec     ecx
@@ -1308,7 +1308,7 @@ mem9_l5:
         ;
         ;Get free disk space remaining.
         ;
-        mov     dl,VMMName              ;get drive letter for this media.
+        mov     dl,VMMName      ;get drive letter for this media.
         sub     dl,'A'          ;make it real.
         inc     dl              ;adjust for current type select.
         mov     ah,36h          ;get free space.
@@ -1334,7 +1334,7 @@ mem9_l7:
         mov     dx,ax       ;/
         pop     eax
         add     edx,eax
-        RoundDN edx,65536
+        Round64kDN edx
         GetPageIndex edx
         pop     ebp
         pop     ebx
@@ -1428,10 +1428,10 @@ ExtendLinearMemory proc near
         ;Try extending useing physical memory first.
         ;
 mem10_f0:
-        mov     eax,LinearLimit ;get new entry number.
-        GetPageIndex eax        ;page number.
+        mov     eax,LinearLimit         ;get new entry number.
+        GetPageIndex eax                ;page number.
         mov     LinearEntry,eax
-        shr     eax,10          ;/1024 for page dir entry.
+        shr     eax,10                  ;/1024 for page dir entry.
         mov     edi,PageDirLinear       ;get page table address.
         mov     eax,DWORD PTR es:[edi+eax*4]    ;this page present?
         test    eax,PAGE_PRESENT        ;do we have a page table?
@@ -1501,7 +1501,7 @@ mem10_Virtual:
         mul     bx              ;Get bytes available.
         shl     edx,16          ;dx:ax -> edx
         mov     dx,ax           ;/
-        RoundDN edx,65536
+        Round64kDN edx
         add     edx,SwapFileLength      ;add existing size.
         mov     eax,LinearLimit
         sub     eax,LinearBase  ;get current real memory.
@@ -1616,7 +1616,7 @@ mem10_v4:
         add     ecx,eax         ;New extremity desired.
         cmp     ecx,SwapFileLength
         jc      mem10_Extended
-        RoundUP ecx,65536
+        Round64kUP ecx
         push    ecx
         mov     dx,cx       ;ecx ->cx:dx
         shr     ecx,16      ;/
@@ -1888,7 +1888,7 @@ mem11_ok:
         ;
         mov     eax,LinearEntry ;get new entry number.
         mov     esi,1024*4096*1023      ;base of page alias's.
-        and     DWORD PTR es:[esi+eax*4],NOT (PAGE_ACCESED or PAGE_DIRTY)    ;clear accesed & dirty bits.
+        and     DWORD PTR es:[esi+eax*4],NOT (PAGE_ACCESED or PAGE_DIRTY)   ;clear accesed & dirty bits.
         call    EmuCR3Flush
         ;
 mem11_NoRead:
@@ -2409,7 +2409,7 @@ VirtualFault    proc    far
         call    UnMapPhysical   ;retrieve a physical page to use.
         pop     eax
         jc      mem18_Disk_Error                ;This should only happen on disk errors.
-        shr     eax,12
+        GetPageIndex eax
         push    LinearEntry
         mov     LinearEntry,eax ;setup linear address we want to map.
         call    MapPhysical             ;map new page into faulting linear address space.
@@ -2489,9 +2489,9 @@ mem19_1:
         ;
         push    eax
         push    ecx
-        dec     cx              ;lose our para.
-        shr     cx,12           ;get number of 64k chunks.
-        inc     cx              ;+1 for base.
+        dec     cx                      ;lose our para.
+        shr     cx,12                   ;get number of 64k chunks.
+        inc     cx                      ;+1 for base.
         call    RawGetDescriptors
         pop     ecx
         pop     ebx
@@ -2502,16 +2502,16 @@ mem19_1:
         push    ecx
         mov     dx,KernalZero
         mov     es,dx
-        movzx   esi,bx          ;get segment address.
-        shl     esi,4           ;get linear address.
-        mov     WORD PTR es:[esi],cx            ;store block size.
-        dec     WORD PTR es:[esi]               ;lose our para.
+        movzx   esi,bx                  ;get segment address.
+        shl     esi,4                   ;get linear address.
+        mov     WORD PTR es:[esi],cx    ;store block size.
+        dec     WORD PTR es:[esi]       ;lose our para.
         pop     ecx
         ;
         ;Setup selectors.
         ;
-        dec     cx              ;lose our para.
-        inc     bx              ;/
+        dec     cx                      ;lose our para.
+        inc     bx                      ;/
         push    ds
         pop     es
         push    eax
@@ -2523,7 +2523,7 @@ mem19_2:
         push    ecx
         push    eax
         mov     edi,offset RawSelBuffer
-        Round8UP edi
+        Round8UP edi                    ;allign pointer to 8 bytes
         movzx   esi,bx
         shl     esi,4
         movzx   ecx,cx
@@ -2537,14 +2537,14 @@ mem19_2:
         pop     ecx
         pop     ebx
         pop     eax
-        add     eax,8           ;next selector.
+        add     eax,8                   ;next selector.
         add     ebx,1000h               ;update segment base.
         movzx   ecx,cx
         sub     ecx,1000h               ;reduce segment size.
-        jns     mem19_2         ;keep going till all done.
+        jns     mem19_2                 ;keep going till all done.
         ;
-        pop     eax             ;Get base segment again.
-        pop     edx             ;Get base selector again.
+        pop     eax                     ;Get base segment again.
+        pop     edx                     ;Get base selector again.
         clc
         jmp     mem19_10
         ;
@@ -2600,12 +2600,12 @@ RawResDOSMemory proc near
         shl     ecx,16      ;cx:dx -> ecx
         mov     cx,dx       ;/
         mov     esi,ecx
-        sub     esi,16          ;back to our stuff.
+        sub     esi,16                  ;back to our stuff.
         pop     dx
         pop     bx
         mov     ax,KernalZero
         mov     es,ax
-        cmp     bx,WORD PTR es:[esi]            ;shrinking or expanding?
+        cmp     bx,WORD PTR es:[esi]    ;shrinking or expanding?
         jz      mem20_8
         jnc     mem20_Expand
         ;
@@ -2614,12 +2614,12 @@ mem20_Shrink:
         ;
         push    ebx
         push    edx
-        inc     ebx             ;include our para.
+        inc     ebx                     ;include our para.
         push    ds
         pop     es
         mov     edi,offset MemIntBuffer
         mov     eax,esi
-        shr     eax,4           ;get real mode segment.
+        shr     eax,4                   ;get real mode segment.
         mov     RealRegsStruc.Real_EAX[edi],4a00h
         mov     RealRegsStruc.Real_EBX[edi],ebx
         mov     RealRegsStruc.Real_ES[edi],ax
@@ -2632,7 +2632,7 @@ mem20_Shrink:
         test    RealRegsStruc.Real_Flags[edi],EFLAG_CF
         pop     edx
         pop     ecx
-        jnz     mem20_9         ;DOS failed it!
+        jnz     mem20_9                 ;DOS failed it!
         ;
         ;Lose any selectors that are no longer needed.
         ;
@@ -2643,31 +2643,31 @@ mem20_Shrink:
         shl     ecx,16      ;cx:dx -> ecx
         mov     cx,dx       ;/
         mov     esi,ecx
-        sub     esi,16          ;back to our stuff.
+        sub     esi,16                  ;back to our stuff.
         pop     edx
         pop     ecx
         push    ecx
         push    edx
         mov     ax,KernalZero
         mov     es,ax
-        mov     ax,WORD PTR es:[esi]            ;get old size.
-        mov     WORD PTR es:[esi],cx            ;store new size.
+        mov     ax,WORD PTR es:[esi]    ;get old size.
+        mov     WORD PTR es:[esi],cx    ;store new size.
         shr     ax,12
         inc     eax
-        mov     ebx,eax         ;need existing number.
-        shr     cx,12           ;get 64k chunks.
-        inc     ecx             ;+ base.
-        sub     ax,cx           ;get number of selectors to lose.
+        mov     ebx,eax                 ;need existing number.
+        shr     cx,12                   ;get 64k chunks.
+        inc     ecx                     ;+ base.
+        sub     ax,cx                   ;get number of selectors to lose.
         jz      mem20_0
         pop     edx
         pop     ecx
         push    ecx
         push    edx
         shl     bx,3
-        add     dx,bx           ;move to end of descriptors.
+        add     dx,bx                   ;move to end of descriptors.
         movzx   ecx,ax
         shl     ax,3
-        sub     edx,eax         ;reduce by number to lose.
+        sub     edx,eax                 ;reduce by number to lose.
         mov     ebx,edx
 mem20_1:
         push    ebx
@@ -2691,12 +2691,12 @@ mem20_0:
         shl     ecx,16      ;cx:dx -> ecx
         mov     cx,dx       ;/
         mov     ebx,ecx
-        shr     ebx,4           ;get real mode segment.
+        shr     ebx,4                   ;get real mode segment.
         pop     edx
         pop     ecx
         mov     eax,edx
-;       shr     ax,3            ;lose TI & RPL
-;       shr     ax,3            ;get descriptor number.
+;       shr     ax,3                    ;lose TI & RPL
+;       shr     ax,3                    ;get descriptor number.
         push    ds
         pop     es
         ;
@@ -2706,7 +2706,7 @@ mem20_2:
         push    ecx
         push    eax
         mov     edi,offset RawSelBuffer
-        Round8UP edi
+        Round8UP edi                    ;allign pointer to 8 bytes
         movzx   esi,bx
         shl     esi,4
         movzx   ecx,cx
@@ -2720,11 +2720,11 @@ mem20_2:
         pop     ecx
         pop     ebx
         pop     eax
-        add     eax,8           ;next selector.
+        add     eax,8                   ;next selector.
         add     ebx,1000h               ;update segment base.
         movzx   ecx,cx
         sub     ecx,1000h               ;reduce segment size.
-        jns     mem20_2         ;keep going till all done.
+        jns     mem20_2                 ;keep going till all done.
         ;
 mem20_8:
         clc
@@ -2733,7 +2733,7 @@ mem20_8:
 mem20_Expand:
         ;Attempt to expand the memory block.
         ;
-        mov     bx,WORD PTR es:[esi]            ;return current length as maximum.
+        mov     bx,WORD PTR es:[esi]    ;return current length as maximum.
         mov     ax,8
 mem20_9:
         stc
@@ -2814,12 +2814,12 @@ mem21_z3:
         mov     cx,dx       ;/
         mov     esi,ecx
         pop     ebx
-        sub     esi,16          ;back to our stuff.
+        sub     esi,16                  ;back to our stuff.
         mov     eax,esi
-        shr     eax,4           ;real mode paragraph address.
+        shr     eax,4                   ;real mode paragraph address.
         mov     dx,KernalZero
         mov     es,dx
-        mov     cx,WORD PTR es:[esi]            ;get block size.
+        mov     cx,WORD PTR es:[esi]    ;get block size.
         ;
         ;Release selectors.
         ;
@@ -2831,10 +2831,10 @@ mem21_0:
         pop     ecx
         pop     ebx
         pop     eax
-        add     ebx,8           ;next descriptor.
+        add     ebx,8                   ;next descriptor.
         movzx   ecx,cx
         sub     ecx,1000h
-        jns     mem21_0         ;release all selectors.
+        jns     mem21_0                 ;release all selectors.
         ;
         ;Release DOS memory block.
         ;
@@ -2842,11 +2842,11 @@ mem21_0:
         pop     es
         mov     edi,offset MemIntBuffer
         mov     RealRegsStruc.Real_EAX[edi],4900h       ;release block.
-        mov     RealRegsStruc.Real_ES[edi],ax   ;block to release.
+        mov     RealRegsStruc.Real_ES[edi],ax           ;block to release.
         mov     RealRegsStruc.Real_SS[edi],0
         mov     RealRegsStruc.Real_SP[edi],0
         mov     bl,21h
-        call    EmuRawSimulateInt       ;release it.
+        call    EmuRawSimulateInt                       ;release it.
         mov     eax,RealRegsStruc.Real_EAX[edi]
         test    RealRegsStruc.Real_Flags[edi],EFLAG_CF
         clc

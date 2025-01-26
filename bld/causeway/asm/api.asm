@@ -158,7 +158,8 @@ api1_GotCall:
         movzx   ebp,bp
         mov     esi,Int_Flags16
 api1_32Bit0:
-        and     BYTE PTR ss:[ebp+esi],not EFLAG_CF  ;clear carry.
+        ;clear CF (carry).
+        and     BYTE PTR ss:[ebp+esi],not EFLAG_CF
         cld                                         ;Default direction.
         test    WORD PTR ss:[ebp+esi],EFLAG_IF      ;Were interrupts enabled?
         jz      api1_NoInts
@@ -847,7 +848,8 @@ medUse32Bit8:
 
 medUse16Bit8:
         mov     ax,ss:[ebp+ebx]
-        and     ax,NOT (EFLAG_IF or EFLAG_TF)       ;clear Trap and INT flag.
+        ;clear IF & TF (Trap and INT).
+        and     ax,NOT (EFLAG_IF or EFLAG_TF)
         mov     es:RealRegsStruc.Real_Flags[edi],ax ; explicitly set flags on DPMI 300h call
 
         assume ds:_apiCode
@@ -886,8 +888,10 @@ api15_Use32Bit8:
         mov     ebx,Int_Flags32
 api15_Use16Bit8:
         mov     ax,ss:[ebp+ebx]
-        and     ax,EFLAG_IF or EFLAG_DF                                     ;retain IF & DF.
-        and     es:RealRegsStruc.Real_Flags[edi],NOT (EFLAG_IF or EFLAG_DF) ;lose IF & DF.
+        ;retain IF & DF.
+        and     ax,EFLAG_IF or EFLAG_DF
+        ;clear IF & DF.
+        and     es:RealRegsStruc.Real_Flags[edi],NOT (EFLAG_IF or EFLAG_DF)
         or      es:RealRegsStruc.Real_Flags[edi],ax
         ret
 cwAPI_IntXX     endp
@@ -961,8 +965,10 @@ api16_Use32Bit8:
         mov     ebx,Int_Flags32
 api16_Use16Bit8:
         mov     ax,ss:[ebp+ebx]
-        and     ax,EFLAG_IF or EFLAG_DF                                     ;retain IF & DF.
-        and     es:RealRegsStruc.Real_Flags[edi],NOT (EFLAG_IF or EFLAG_DF) ;lose IF & DF.
+        ;retain IF & DF.
+        and     ax,EFLAG_IF or EFLAG_DF
+        ;clear IF & DF.
+        and     es:RealRegsStruc.Real_Flags[edi],NOT (EFLAG_IF or EFLAG_DF)
         or      es:RealRegsStruc.Real_Flags[edi],ax
         ret
 cwAPI_FarCallReal endp

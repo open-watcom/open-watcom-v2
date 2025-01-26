@@ -1870,6 +1870,7 @@ rv29_Back:
         pop     edi
         pop     esi
         mov     bx,[esp+(2+2+2+2)+(4+4+4+4+4+4+4+4)+(4+4+2)+2]
+        ;clear OF & DF & SF & ZF & AF & PF & CF
         and     bx,NOT (EFLAG_OF or EFLAG_DF or EFLAG_SF or EFLAG_ZF or EFLAG_AF or EFLAG_PF or EFLAG_CF)
         or      es:RealRegsStruc.Real_Flags[edi],bx
         ;
@@ -2374,7 +2375,9 @@ rv31_Use16Bit13:
         shl     esi,4
         add     esi,eax
         mov     ax,w[rv31_FlagsStore]
+        ;clear IF & TF & DF
         and     ax,NOT (EFLAG_IF or EFLAG_TF or EFLAG_DF)
+        ;retain IF & TF & DF
         and     WORD PTR fs:[esi+IFrame16.i16_flags],EFLAG_IF or EFLAG_TF or EFLAG_DF
         or      fs:[esi+IFrame16.i16_flags],ax
         ;
@@ -2797,8 +2800,10 @@ EmuRawPL0toPL3  proc    near
         push    edx             ;ESP
         pushfd          ;EFlags
         pop     eax
-        and     ax,NOT (EFLAG_NT or EFLAG_IOPL) ;clear NT & IOPL.
-        or      ax,EFLAG_IOPL                   ;force IOPL 3.
+        ;clear NT & IOPL.
+        and     ax,NOT (EFLAG_NT or EFLAG_IOPL)
+        ;force IOPL 3.
+        or      ax,EFLAG_IOPL
         push    eax
         popfd
         push    eax
@@ -2969,8 +2974,8 @@ rv46_000A_0:
         push    es
         push    eax
         mov     edi,offset RawSelBuffer
-        Round8UP edi
-        mov     ax,KernalDS     ;DpmiEmuDS
+        Round8UP edi                    ;allign pointer to 8 bytes
+        mov     ax,KernalDS             ;DpmiEmuDS
         mov     es,ax
         call    RawBGetDescriptor       ;copy original details.
         mov     BYTE PTR es:[edi+5],DescPresent+DescPL3+DescMemory+DescRWData
@@ -3055,7 +3060,7 @@ rv46_DPMI_0101:
         cmp     ax,dx
         pop     eax
         push    eax
-        jne     med2_0101       ; not attempting to release SS selector
+        jne     med2_0101               ; not attempting to release SS selector
         stc                             ; flag failure, but no error code update
         jmp     med3_0101
 
@@ -3075,7 +3080,7 @@ rv46_0101_0:
         jmp     rv46_Done
         ;
 rv46_DPMI_0102:
-        cmp     al,02h          ;re-size DOS memory?
+        cmp     al,02h                  ;re-size DOS memory?
         jnz     rv46_NotOurs
         push    ebp
         push    eax
@@ -3097,19 +3102,19 @@ rv46_0102_0:
         jmp     rv46_Done
         ;
 rv46_DPMI_0200:
-        cmp     al,00h          ;get real mode vector?
+        cmp     al,00h                  ;get real mode vector?
         jnz     rv46_DPMI_0201
         call    RawGetRVector
         jmp     rv46_Done
         ;
 rv46_DPMI_0201:
-        cmp     al,01h          ;set real mode vector?
+        cmp     al,01h                  ;set real mode vector?
         jnz     rv46_DPMI_0202
         call    RawSetRVector
         jmp     rv46_Done
         ;
 rv46_DPMI_0202:
-        cmp     al,02h          ;get exception vector?
+        cmp     al,02h                  ;get exception vector?
         jnz     rv46_DPMI_0203
         push    eax
         push    ecx
@@ -3134,7 +3139,7 @@ rv46_0202_1:
         jmp     rv46_Done
         ;
 rv46_DPMI_0203:
-        cmp     al,03h          ;set exception vector?
+        cmp     al,03h                  ;set exception vector?
         jnz     rv46_DPMI_0204
         push    edx
         assume ds:nothing
@@ -3148,7 +3153,7 @@ rv46_0203_0:
         jmp     rv46_Done
         ;
 rv46_DPMI_0204:
-        cmp     al,04h          ;get vector?
+        cmp     al,04h                  ;get vector?
         jnz     rv46_DPMI_0205
         push    eax
         push    ecx
@@ -3173,7 +3178,7 @@ rv46_0204_1:
         jmp     rv46_Done
         ;
 rv46_DPMI_0205:
-        cmp     al,05h          ;set vector?
+        cmp     al,05h                  ;set vector?
         jnz     rv46_NotOurs
         push    edx
         assume ds:nothing
@@ -3187,7 +3192,7 @@ rv46_0205_0:
         jmp     rv46_Done
         ;
 rv46_DPMI_0300:
-        cmp     al,00h          ;Simulate int?
+        cmp     al,00h                  ;Simulate int?
         jnz     rv46_DPMI_0301
 ;
 ;Extend [E]DI to EDI
@@ -3233,7 +3238,8 @@ rv46_0300_0:
         mov     bx,ss:[esp+(4+4+4+2)+IFrame.i_eflags]   ;get original flags.
         and     bx,EFLAG_IF or EFLAG_DF or EFLAG_OF     ;retain IF.
 rv46_0300_1:
-        and     es:RealRegsStruc.Real_Flags[edi],NOT (EFLAG_IF or EFLAG_DF or EFLAG_OF) ;lose IF.
+        ;clear IF & DF & OF.
+        and     es:RealRegsStruc.Real_Flags[edi],NOT (EFLAG_IF or EFLAG_DF or EFLAG_OF)
         or      es:RealRegsStruc.Real_Flags[edi],bx
         popf
 ;
@@ -3291,7 +3297,8 @@ rv46_0301_0:
         mov     bx,ss:[esp+(4+4+4+2)+IFrame.i_eflags]   ;get original flags.
         and     bx,EFLAG_IF or EFLAG_DF or EFLAG_OF     ;retain IF.
 rv46_0301_1:
-        and     es:RealRegsStruc.Real_Flags[edi],NOT (EFLAG_IF or EFLAG_DF or EFLAG_OF) ;lose IF.
+        ;clear IF & DF & OF.
+        and     es:RealRegsStruc.Real_Flags[edi],NOT (EFLAG_IF or EFLAG_DF or EFLAG_OF)
         or      es:RealRegsStruc.Real_Flags[edi],bx
         popf
 ;
@@ -3348,7 +3355,8 @@ rv46_0302_0:
         mov     bx,ss:[esp+(4+4+4+2)+IFrame.i_eflags]   ;get original flags.
         and     bx,EFLAG_IF or EFLAG_DF or EFLAG_OF     ;retain IF.
 rv46_0302_1:
-        and     es:RealRegsStruc.Real_Flags[edi],NOT (EFLAG_IF or EFLAG_DF or EFLAG_OF) ;lose IF.
+        ;clear IF & DF & OF.
+        and     es:RealRegsStruc.Real_Flags[edi],NOT (EFLAG_IF or EFLAG_DF or EFLAG_OF)
         or      es:RealRegsStruc.Real_Flags[edi],bx
         popf
 ;
@@ -4243,8 +4251,10 @@ rv46_Done:
 rv46_Use32Bit8:
         mov     bx,[esp+(4+4)+IFrame.i_eflags]      ;get original flags.
 rv46_Use16Bit8:
-        and     bx,EFLAG_IF or EFLAG_DF or EFLAG_OF ;retain IF.
-        and     ax,NOT (EFLAG_IF or EFLAG_DF or EFLAG_OF) ;lose IF.
+        ;retain IF & DF & OF.
+        and     bx,EFLAG_IF or EFLAG_DF or EFLAG_OF
+        ;clear IF & DF & OF.
+        and     ax,NOT (EFLAG_IF or EFLAG_DF or EFLAG_OF)
         or      ax,bx                   ;get old IF.
         assume ds:nothing
         test    BYTE PTR cs:DpmiEmuSystemFlags,1
@@ -5993,8 +6003,10 @@ rv64_Done:
 rv64_Use32Bit8:
         mov     ebx,[esp+(4+4)+IFrame.i_eflags]     ;get original flags.
 rv64_Use16Bit8:
-        and     bx,EFLAG_IF or EFLAG_DF or EFLAG_OF ;retain IF.
-        and     ax,NOT (EFLAG_IF or EFLAG_DF or EFLAG_OF) ;lose IF.
+        ;retain IF & DF & OF.
+        and     bx,EFLAG_IF or EFLAG_DF or EFLAG_OF
+        ;clear IF & DF & OF.
+        and     ax,NOT (EFLAG_IF or EFLAG_DF or EFLAG_OF)
         or      eax,ebx                 ;get old IF.
         assume ds:nothing
         test    BYTE PTR cs:DpmiEmuSystemFlags,1
