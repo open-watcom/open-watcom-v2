@@ -259,6 +259,12 @@ Reg32To16hilo macro r32,rhi,rlo
         _reg32_to_reg16 r32,rhi,rlo
         endm
 
+Mem16hiloToReg32 macro mhi,mlo,r32
+        mov     r16_&r32,mhi
+        shl     r32,16
+        mov     r16_&r32,mlo
+        endm
+
 b       equ     byte ptr
 w       equ     word ptr
 d       equ     dword ptr
