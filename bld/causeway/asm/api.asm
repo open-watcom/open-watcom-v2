@@ -30,10 +30,8 @@ nullCmdl        db 0
 cwAPI_C2C       macro
         push    eax
         pushfd
-        pushfd
         pop     eax
         cwAPI_AL2C
-        popfd
         pop     eax
         endm
 
