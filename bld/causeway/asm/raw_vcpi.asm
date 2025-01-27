@@ -1259,7 +1259,8 @@ rv18_Resume486:
         ;
         pushfd
         pop     eax
-        and     ax,NOT EFLAG_NT         ;clear NT.
+        ;clear NT.
+        and     ax,NOT EFLAG_NT
         push    eax
         popfd
         cld
@@ -1357,8 +1358,10 @@ RawPL0toPL3     proc    near
         push    edx             ;ESP
         pushfd          ;EFlags
         pop     eax
-        and     ax,NOT (EFLAG_NT or EFLAG_IOPL) ;clear NT & IOPL.
-        or      ax,EFLAG_IOPL                   ;force IOPL 3.
+        ;clear NT & IOPL.
+        and     ax,NOT (EFLAG_NT or EFLAG_IOPL)
+        ;force IOPL 3.
+        or      ax,EFLAG_IOPL
         push    eax
         popfd
         push    eax
@@ -3236,7 +3239,8 @@ rv46_0300_0a:
         jmp     rv46_0300_1
 rv46_0300_0:
         mov     bx,ss:[esp+(4+4+4+2)+IFrame.i_eflags]   ;get original flags.
-        and     bx,EFLAG_IF or EFLAG_DF or EFLAG_OF     ;retain IF.
+        ;retain IF & DF & OF.
+        and     bx,EFLAG_IF or EFLAG_DF or EFLAG_OF
 rv46_0300_1:
         ;clear IF & DF & OF.
         and     es:RealRegsStruc.Real_Flags[edi],NOT (EFLAG_IF or EFLAG_DF or EFLAG_OF)
@@ -3295,7 +3299,8 @@ rv46_0301_0a:
         jmp     rv46_0301_1
 rv46_0301_0:
         mov     bx,ss:[esp+(4+4+4+2)+IFrame.i_eflags]   ;get original flags.
-        and     bx,EFLAG_IF or EFLAG_DF or EFLAG_OF     ;retain IF.
+        ;retain IF & DF & OF.
+        and     bx,EFLAG_IF or EFLAG_DF or EFLAG_OF
 rv46_0301_1:
         ;clear IF & DF & OF.
         and     es:RealRegsStruc.Real_Flags[edi],NOT (EFLAG_IF or EFLAG_DF or EFLAG_OF)
@@ -3353,7 +3358,8 @@ rv46_0302_0a:
         jmp     rv46_0302_1
 rv46_0302_0:
         mov     bx,ss:[esp+(4+4+4+2)+IFrame.i_eflags]   ;get original flags.
-        and     bx,EFLAG_IF or EFLAG_DF or EFLAG_OF     ;retain IF.
+        ;retain IF & DF & OF.
+        and     bx,EFLAG_IF or EFLAG_DF or EFLAG_OF
 rv46_0302_1:
         ;clear IF & DF & OF.
         and     es:RealRegsStruc.Real_Flags[edi],NOT (EFLAG_IF or EFLAG_DF or EFLAG_OF)
@@ -4255,7 +4261,8 @@ rv46_Use16Bit8:
         and     bx,EFLAG_IF or EFLAG_DF or EFLAG_OF
         ;clear IF & DF & OF.
         and     ax,NOT (EFLAG_IF or EFLAG_DF or EFLAG_OF)
-        or      ax,bx                   ;get old IF.
+        ;get old flags.
+        or      ax,bx
         assume ds:nothing
         test    BYTE PTR cs:DpmiEmuSystemFlags,1
         assume ds:_cwDPMIEMU
@@ -5141,7 +5148,7 @@ GIGetMem2:
         mov     RealRegsStruc.Real_SP[edi],0
         call    EmuRawSimulateInt
 
-        test    BYTE PTR RealRegsStruc.Real_Flags[edi],EFLAG_CF ; see if carry returned
+        test    BYTE PTR RealRegsStruc.Real_Flags[edi],EFLAG_CF
         je      GIProcess2      ; nope
         cmp     Big1Flag,0
         je      GIProcess2      ; not using alternate extended memory, process anyway
@@ -5357,7 +5364,7 @@ GIGetMem1:
         mov     RealRegsStruc.Real_SP[edi],0
         call    EmuRawSimulateInt
 
-        test    BYTE PTR RealRegsStruc.Real_Flags[edi],EFLAG_CF ; see if carry returned
+        test    BYTE PTR RealRegsStruc.Real_Flags[edi],EFLAG_CF
         je      GIProcess1      ; nope
         cmp     Big1Flag,0
         je      GIProcess1      ; not using alternate extended memory, process anyway

@@ -349,7 +349,6 @@ int2110_ExitCheck:
         mov     [ebp+Int_BX],ax
         DOS4GExtend w[ebp+Int_EBX+2]
         mov     ax,es:RealRegsStruc.Real_Flags[edi]
-        and     al,EFLAG_CF
         call    Int21hAL2Carry  ;Set carry.
         or      al,al
         jnz     int2110_9
@@ -434,7 +433,6 @@ Int21hCreateDir proc near
         mov     bl,21h
         Sys     IntXX
         mov     ax,es:RealRegsStruc.Real_Flags[edi]
-        and     al,EFLAG_CF
         call    Int21hAL2Carry  ;Set carry.
         mov     eax,es:RealRegsStruc.Real_EAX[edi]      ;Get return code.
         mov     [ebp+Int_AX],ax
@@ -475,7 +473,6 @@ Int21hCreateFile proc near
         mov     bl,21h
         Sys     IntXX
         mov     ax,es:RealRegsStruc.Real_Flags[edi]
-        and     al,EFLAG_CF
         call    Int21hAL2Carry  ;Set carry.
         mov     eax,es:RealRegsStruc.Real_EAX[edi]      ;Get return code.
         mov     [ebp+Int_AX],ax
@@ -517,7 +514,6 @@ Int21hOpenFile  proc    near
         mov     bl,21h
         Sys     IntXX
         mov     ax,es:RealRegsStruc.Real_Flags[edi]
-        and     al,EFLAG_CF
         call    Int21hAL2Carry  ;Set carry.
         mov     eax,es:RealRegsStruc.Real_EAX[edi]      ;Get return code.
         mov     [ebp+Int_AX],ax
@@ -561,7 +557,6 @@ int2114_1:
         Sys     IntXX
         pop     ebx
         mov     ax,es:RealRegsStruc.Real_Flags[edi]
-        and     al,EFLAG_CF
         call    Int21hAL2Carry  ;Set carry.
         or      al,al           ;Carry set?
         jz      int2114_2
@@ -648,7 +643,6 @@ int2115_1:
         Sys     IntXX           ;Do the write.
         pop     ebx
         mov     ax,es:RealRegsStruc.Real_Flags[edi]
-        and     al,EFLAG_CF
         call    Int21hAL2Carry  ;Set carry.
         or      al,al           ;Carry set?
         jz      int2115_2
@@ -714,7 +708,6 @@ Int21hGetCurDir proc near
         mov     [ebp+Int_AX],ax
         DOS4GExtend w[ebp+Int_EAX+2]
         mov     ax,es:RealRegsStruc.Real_Flags[edi]
-        and     al,EFLAG_CF
         call    Int21hAL2Carry  ;Set carry.
         or      al,al
         jnz     int2117_9
@@ -769,7 +762,9 @@ int2118_AllocOK:
         DOS4GExtend w[ebp+Int_EBX+2]
         mov     w[ebp+Int_AX],1
         DOS4GExtend w[ebp+Int_EAX+2]
-        call    Int21hAL2Carry  ;Set carry.
+        ;Set carry.
+        mov     al,EFLAG_CF
+        call    Int21hAL2Carry
         ret
 Int21hAllocMem  endp
 
@@ -807,7 +802,6 @@ Int21hResMem    proc    near
         Sys     ResMem
         pushf
         pop     ax
-        and     al,1
         call    Int21hAL2Carry  ;Set carry.
         ret
 Int21hResMem    endp
@@ -820,8 +814,9 @@ Int21hResMem    endp
 Int21hExecFile  proc    near
         cmp     b[ebp+Int_AL],0 ;We only support sub-function 0.
         jz      int2121_OK
-int2121_Done:
-        call    Int21hAL2Carry  ;Set carry.
+        ;Set carry.
+        mov     al,EFLAG_CF
+        call    Int21hAL2Carry
         ret
         ;
 int2121_OK:
@@ -1002,8 +997,8 @@ int2121_3:
         Sys     IntXX           ;allocate this memory.
         mov     eax,es:RealRegsStruc.Real_EAX[edi]      ;get segment address.
         test    es:RealRegsStruc.Real_Flags[edi],EFLAG_CF
-        mov di,ax
-        mov al,1
+        mov     di,ax
+        mov     al,EFLAG_CF
         jnz     int2121_Ef13
         movzx   edi,di
         push    edi
@@ -1110,7 +1105,6 @@ int2121_Ef15:
         ;
         pop     ax
 int2121_Ef13:
-        and     al,EFLAG_CF
         call    Int21hAL2Carry
         ret
 Int21hExecFile  endp
@@ -1152,7 +1146,6 @@ Int21hFindFirstFile proc near
         mov     [ebp+Int_AX],ax
         DOS4GExtend w[ebp+Int_EAX+2]
         mov     ax,es:RealRegsStruc.Real_Flags[edi]
-        and     al,EFLAG_CF
         call    Int21hAL2Carry  ;Set carry.
 
 ;       or      al,al
@@ -1188,7 +1181,6 @@ Int21hFindNextFile proc near
         mov     [ebp+Int_AX],ax
         DOS4GExtend w[ebp+Int_EAX+2]
         mov     ax,es:RealRegsStruc.Real_Flags[edi]
-        and     al,EFLAG_CF
         call    Int21hAL2Carry  ;Set carry.
 ;       or      al,al
 ;       jnz     @@9
@@ -1272,7 +1264,6 @@ Int21hRenameFile proc near
         DOS4GExtend w[ebp+Int_EAX+2]
 
         mov     ax,es:RealRegsStruc.Real_Flags[edi]
-        and     al,EFLAG_CF
         call    Int21hAL2Carry  ;Set carry.
 
         ret
@@ -1308,7 +1299,6 @@ Int21hCreateTemp proc near
         mov     [ebp+Int_AX],ax
         DOS4GExtend w[ebp+Int_EAX+2]
         mov     ax,es:RealRegsStruc.Real_Flags[edi]
-        and     al,EFLAG_CF
         call    Int21hAL2Carry  ;Set carry.
         or      al,al
         jnz     int2127_9
@@ -1350,7 +1340,6 @@ Int21hMSNet     proc    near
         mov     [ebp+Int_AX],ax
         DOS4GExtend w[ebp+Int_EAX+2]
         mov     ax,es:RealRegsStruc.Real_Flags[edi]
-        and     al,EFLAG_CF
         call    Int21hAL2Carry  ;Set carry.
         or      al,al
         jnz     int2128_9
@@ -1383,8 +1372,9 @@ Int21hSetHandles proc near
         Sys     IntXX
         test    es:RealRegsStruc.Real_Flags[edi],EFLAG_CF
         jz      int2129_0
-        mov     al,1
-        call    Int21hAL2Carry  ;Set carry.
+        ;Set carry.
+        mov     al,EFLAG_CF
+        call    Int21hAL2Carry
         mov     eax,es:RealRegsStruc.Real_EAX[edi]
         mov     [ebp+Int_AX],ax
         DOS4GExtend w[ebp+Int_EAX+2]
@@ -1599,13 +1589,12 @@ int2129_shb2:
         stc
         ;
 int2129_sh0:
+        pushf
         ;Finaly we pass our results back to the caller.
         ;
         mov     [ebp+Int_AX],ax
         DOS4GExtend w[ebp+Int_EAX+2]
-        pushf
         pop     ax
-        and     al,1
         call    Int21hAL2Carry  ;Set carry.
         ret
 endif
@@ -1648,7 +1637,6 @@ Int21hExtendOpen proc near
         mov     [ebp+Int_CX],ax
         DOS4GExtend w[ebp+Int_ECX+2]
         mov     ax,es:RealRegsStruc.Real_Flags[edi]
-        and     al,EFLAG_CF
         call    Int21hAL2Carry  ;Set carry.
         ret
 Int21hExtendOpen endp
@@ -1888,6 +1876,7 @@ Int21hStringLen endp
 
 ;------------------------------------------------------------------------------
 Int21hAL2Carry  proc    near
+        and     al,EFLAG_CF
         test    BYTE PTR cs:Int21hSystemFlags,1
         jz      int2136_32Bit
         or      b[ebp+Int_Flags16],al

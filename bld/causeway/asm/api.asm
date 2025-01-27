@@ -32,7 +32,6 @@ cwAPI_C2C       macro
         pushfd
         pushfd
         pop     eax
-        and     al,1
         cwAPI_AL2C
         popfd
         pop     eax
@@ -46,6 +45,7 @@ cwAPI_AL2C      macro
         local __0, __1
         pushfd
         assume ds:nothing
+        and     al,EFLAG_CF
         test    BYTE PTR cs:apiSystemFlags,1
         jz      __0
         or      b[ebp+Int_Flags16],al
