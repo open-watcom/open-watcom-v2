@@ -1018,49 +1018,31 @@ int103_Done:
         ;Now update stacked flags.
         ;
         push    eax
-        push    ebx
+        push    ebp
         pushf
         pop     ax                      ;get new flags.
         push    ds
         mov     ds,cs:Int10hDSeg
         assume ds:_cwMain
         test    BYTE PTR SystemFlags,1
-        assume ds:nothing
-        pop     ds
         jz      int103_Use32Bit8
-        mov     bx,sp
-        mov     bx,ss:[bx+(4+4)+(2+2)]          ;get original flags.
+        movzx   ebp,sp
+        lea     bp,[bp+(4+4+4)+IFrame16.i16_flags]  ;get address of original flags.
         jmp     int103_Use16Bit8
 int103_Use32Bit8:
-        mov     bx,ss:[esp+(4+4)+(4+4)]         ;get original flags.
+        lea     ebp,[esp+(4+4+4)+IFrame.i_eflags]   ;get address of original flags.
 int103_Use16Bit8:
-        ;retain IF & DF.
-        and     bx,EFLAG_IF or EFLAG_DF
         ;clear IF & DF.
         and     ax,NOT (EFLAG_IF or EFLAG_DF)
-        ;get old IF & DF.
-        or      ax,bx
-        push    ds
-        mov     ds,cs:Int10hDSeg
-        assume ds:_cwMain
+        ;retain IF & DF.
+        and     w[ebp],EFLAG_IF or EFLAG_DF
+        ;or new flags
+        or      w[ebp],ax
         test    BYTE PTR SystemFlags,1
         assume ds:nothing
         pop     ds
-        jz      int103_Use32Bit9
-        mov     bx,sp
-        mov     ss:[bx+(4+4)+(2+2)],ax          ;modify stack flags.
-        jmp     int103_Use16Bit9
-int103_Use32Bit9:
-        mov     ss:[esp+(4+4)+(4+4)],ax         ;modify stack flags.
-int103_Use16Bit9:
-        pop     ebx
+        pop     ebp
         pop     eax
-        push    ds
-        mov     ds,cs:Int10hDSeg
-        assume ds:_cwMain
-        test    BYTE PTR SystemFlags,1
-        assume ds:nothing
-        pop     ds
         jz      int103_Use32Bit10
         iret
         ;

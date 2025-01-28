@@ -1703,7 +1703,7 @@ MapPhysical     proc    near
         mov     ax,KernalZero           ;make everything addresable.
         mov     es,ax
         ;
-        InitUseBits edx,ecx             ;clear and init user+write+present+VCPI(cl).
+        InitUseBits edx,ecx             ;clear and init user+write+present+vcpi(cl).
         mov     eax,LinearEntry         ;get new entry number.
         shr     eax,10                  ;/1024 for page dir entry.
         ;
