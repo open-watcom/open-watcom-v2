@@ -1034,9 +1034,12 @@ int103_Done:
 int103_Use32Bit8:
         mov     bx,ss:[esp+(4+4)+(4+4)]         ;get original flags.
 int103_Use16Bit8:
-        and     bx,0000011000000000b            ;retain IF.
-        and     ax,1111100111111111b            ;lose IF.
-        or      ax,bx                   ;get old IF.
+        ;retain IF & DF.
+        and     bx,EFLAG_IF or EFLAG_DF
+        ;clear IF & DF.
+        and     ax,NOT (EFLAG_IF or EFLAG_DF)
+        ;get old IF & DF.
+        or      ax,bx
         push    ds
         mov     ds,cs:Int10hDSeg
         assume ds:_cwMain

@@ -1811,7 +1811,8 @@ rv29_Back:
         cli
         cld
         pop     WORD PTR cs:[rv29_IntAdd]
-        and     WORD PTR cs:[rv29_IntAdd],EFLAGS_MASK2
+        ;clear NT & IOPL & IF & TF
+        and     WORD PTR cs:[rv29_IntAdd],NOT (EFLAG_NT or EFLAG_IOPL or EFLAG_IF or EFLAG_TF)
 ;
 ;Switch back to old stack.
 ;
@@ -1873,8 +1874,8 @@ rv29_Back:
         pop     edi
         pop     esi
         mov     bx,[esp+(2+2+2+2)+(4+4+4+4+4+4+4+4)+(4+4+2)+2]
-        ;clear OF & DF & SF & ZF & AF & PF & CF
-        and     bx,NOT (EFLAG_OF or EFLAG_DF or EFLAG_SF or EFLAG_ZF or EFLAG_AF or EFLAG_PF or EFLAG_CF)
+        ;clear DF & OF & SF & ZF & AF & PF & CF
+        and     bx,NOT (EFLAG_DF or EFLAGS_ARITHM)
         or      es:RealRegsStruc.Real_Flags[edi],bx
         ;
         cmp     w[rv29_ourstack],0
@@ -2206,7 +2207,9 @@ rv31_NotBusy:
         or      cs:CallBackStruc.CallBackFlags[bx],128  ;mark it as busy.
         mov     bx,sp
         mov     ax,ss:[bx+(2+2+2)+(2+2)]
-        and     ax,EFLAGS_MASK2
+        ;clear NT & IOPL & IF & TF
+        and     ax,NOT (EFLAG_NT or EFLAG_IOPL or EFLAG_IF or EFLAG_TF)
+        ;force bit 1 ????
         or      ax,0000000000000010b
         mov     WORD PTR cs:[rv31_FlagsStore],ax
         pop     dx

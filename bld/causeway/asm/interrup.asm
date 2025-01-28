@@ -803,7 +803,8 @@ IntHandler      proc    near
         ; ESP:SS ------------------------------------------/
         ;
         jnz     inter14_NoCode
-        and     w[esp+(4+4)+(4)+(4)+IFrame.i_eflags],EFLAGS_MASK1
+        ;clear NT
+        and     w[esp+(4+4)+(4)+(4)+IFrame.i_eflags],NOT EFLAG_NT
 
 ; MED 12/02/95
 ; check if Exception Index is 0dh
@@ -930,7 +931,8 @@ mednoem:
         add     esp,4                           ;skip error code.
         jmp     inter14_SortedCode2
 inter14_NoCode:
-        and     w[esp+(4+4)+(4)+IFrame.i_eflags],EFLAGS_MASK1
+        ;clear NT.
+        and     w[esp+(4+4)+(4)+IFrame.i_eflags],NOT EFLAG_NT
         mov     eax,[esp+(4+4)+(4)+IFrame.i_eflags] ;Get flags.
         mov     ExceptionFlags,eax              ;/
         mov     b ExceptionType,0               ;unset exception

@@ -46,9 +46,8 @@ EFLAG_IOPL  equ (3 shl 12)      ; I/O privilege level
 EFLAG_NT    equ (1 shl 14)      ; nested task
 
 EFLAGS_UNUSED equ 1000000000101010b
-
-EFLAGS_MASK1 equ (0FFFFh and NOT (EFLAGS_UNUSED or EFLAG_NT))
-EFLAGS_MASK2 equ (0FFFFh and NOT (EFLAGS_UNUSED or EFLAG_NT or EFLAG_IOPL or EFLAG_IF or EFLAG_TF))
+;EFLAGS_ARITHM    0000100011010101b
+EFLAGS_ARITHM equ (EFLAG_OF or EFLAG_SF or EFLAG_ZF or EFLAG_AF or EFLAG_PF or EFLAG_CF)
 
 PAGE_PRESENT equ (1 shl 0)
 PAGE_WRITE   equ (1 shl 1)
@@ -2127,7 +2126,8 @@ cw5_InProt:
         ;
         pushfd
         pop     eax
-        and     ax,1011111111111111b    ;clear NT.
+        ;clear NT.
+        and     ax,NOT EFLAG_NT
         push    eax
         popfd
 
