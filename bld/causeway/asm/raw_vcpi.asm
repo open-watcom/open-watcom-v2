@@ -1712,9 +1712,8 @@ rv29_NoIF:
         or      bh,bh
         jz      rv29_IsInt
         ;
-        mov     cx,es:RealRegsStruc.Real_CS[edi]
-        shl     ecx,16
-        mov     cx,es:RealRegsStruc.Real_IP[edi]
+        ;Real_CS:Real_IP -> ecx
+        Mem16hiloToReg32 es:RealRegsStruc.Real_CS[edi], es:RealRegsStruc.Real_IP[edi], ecx
         mov     w[rv29_CallAdd],offset rv29_fcall
         cmp     bh,2
         jnz     rv29_NotInt
@@ -1811,7 +1810,7 @@ rv29_Back:
         cli
         cld
         pop     WORD PTR cs:[rv29_IntAdd]
-        ;clear NT & IOPL & IF & TF
+        ;clear NT & IOPL & IF & TF.
         and     WORD PTR cs:[rv29_IntAdd],NOT (EFLAG_NT or EFLAG_IOPL or EFLAG_IF or EFLAG_TF)
 ;
 ;Switch back to old stack.
@@ -1874,7 +1873,7 @@ rv29_Back:
         pop     edi
         pop     esi
         mov     bx,[esp+(2+2+2+2)+(4+4+4+4+4+4+4+4)+(4+4+2)+2]
-        ;clear DF & OF & SF & ZF & AF & PF & CF
+        ;clear DF & ARITHM (OF & SF & ZF & AF & PF & CF)
         and     bx,NOT (EFLAG_DF or EFLAGS_ARITHM)
         or      es:RealRegsStruc.Real_Flags[edi],bx
         ;

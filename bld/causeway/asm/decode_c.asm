@@ -50,10 +50,12 @@ __0:
 ;
 ;BX     - File handle.
 ;
-;Carry set on error else,
+;On Exit:-
+;
+;Carry set on error and EAX is error code else,
 ;
 ;ECX    - Expanded data length.
-;EDX    - Compressed data length.
+;EAX    - Compressed data length.
 ;
 GetCWCInfo      proc    near
         push    ebx
@@ -137,13 +139,17 @@ GetCWCInfo      endp
 ;
 ;On Exit:-
 ;
+;Carry set on error and EAX is error code
+;
 ;EAX    - Exit status.
-;       0 = No problems
 ;       1 = Error during file access.
 ;       2 = Bad data.
 ;       3 = Not a CWC'd file.
 ;
+; else
+;
 ;ECX    - Length of data produced.
+;EAX    - 0 (No problems)
 ;
 DecodeCWC       proc    near
         cld

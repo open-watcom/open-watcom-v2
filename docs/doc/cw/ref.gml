@@ -380,9 +380,10 @@ AX= 0ff2bh
 .br
 BX= File handle.
 .note Outputs:
-Carry set if not a CWC'd file, else
+Carry set on error and EAX is error code, else
 .br
 ECX= Expanded data size.
+EAX= Compressed data length.
 .note Errors:
 None.
 .note Notes:
@@ -402,6 +403,7 @@ ES:EDI= Destination memory.
 Carry set on error and EAX is error code, else
 .br
 ECX= Expanded data length.
+EAX= 0
 .note Errors:
 1 - Error during file access.
 .br

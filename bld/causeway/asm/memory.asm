@@ -201,6 +201,7 @@ mem1_MarkMemRet:
         ;
         shl     esi,12          ;Convert back to a real address.
         Reg32To16hilo esi, si, di       ;esi -> si:di
+        mov     cx,di
         mov     bx,si
         clc
         jmp     mem1_exit
@@ -277,8 +278,8 @@ RawResMemory    proc    near
 
         mov     ax,KernalZero
         mov     es,ax
-        Reg16hiloTo32 si, di, esi       ;si:di -> esi
-        Reg16hiloTo32 cx, bx, ecx       ;bx:cx -> ebx
+        Reg16hiloTo32 si, di, esi       ;si:di -> esi (block address)
+        Reg16hiloTo32 cx, bx, ecx       ;cx:bx -> ecx (block size)
         ror     ecx,16
         GetPageCount ecx        ;Get new block size.
         or      ecx,ecx
@@ -344,7 +345,7 @@ mem2_Smaller:
 mem2_s0:
         and     DWORD PTR es:[(1024*4096*1022)+edx*4],not MEM_MASK
         or      DWORD PTR es:[(1024*4096*1022)+edx*4],MEM_FREE
-        and     DWORD PTR es:[(1024*4096*1023)+edx*4],not PAGE_DIRTY
+        and     DWORD PTR es:[(1024*4096*1023)+edx*4],NOT PAGE_DIRTY
         inc     edx
         dec     ecx
         jnz     mem2_s0
@@ -479,9 +480,10 @@ mem2_NewBlock:
 mem2_RetNewAddr:
         ;Return possibly new address/handle to caller.
         ;
-        shl     esi,12          ;Get a real address again and
-        mov     di,si           ;use it as both the memory
-        Reg32To16hilo esi, bx, cx       ;esi -> bx:cx
+        shl     esi,12                  ;Get a real address again and
+        Reg32To16hilo esi, si, di       ;esi -> si:di
+        mov     bx,si                   ;use it as both the memory
+        mov     cx,di                   ;/
         clc
         jmp     mem2_exit
         ;
@@ -572,7 +574,7 @@ RawRelMemory    proc    near
         ;
         and     DWORD PTR es:[1024*4096*1022+esi*4],not MEM_MASK
         or      DWORD PTR es:[1024*4096*1022+esi*4],MEM_FREE
-        and     DWORD PTR es:[1024*4096*1023+esi*4],not PAGE_DIRTY
+        and     DWORD PTR es:[1024*4096*1023+esi*4],NOT PAGE_DIRTY
         inc     esi
         mov     ecx,LinearLimit
         GetPageIndex ecx
@@ -586,7 +588,7 @@ mem3_0: mov     eax,DWORD PTR es:[1024*4096*1022+esi*4]
         dec     medAllocPages
         and     DWORD PTR es:[1024*4096*1022+esi*4],not MEM_MASK
         or      DWORD PTR es:[1024*4096*1022+esi*4],MEM_FREE
-        and     DWORD PTR es:[1024*4096*1023+esi*4],not PAGE_DIRTY
+        and     DWORD PTR es:[1024*4096*1023+esi*4],NOT PAGE_DIRTY
         inc     esi
         dec     ecx
         jnz     mem3_0
@@ -2056,11 +2058,11 @@ mem12_GotPage:
         rep     movsd
         pop     ds
         pop     es
-        pop     edi
+        pop     ecx
         ;
-        sub     edi,LinearBase
-        mov     ebp,edi
-        Reg32To16hilo edi, cx, dx       ;edi -> cx:dx
+        sub     ecx,LinearBase
+        mov     ebp,ecx
+        Reg32To16hilo ecx, cx, dx       ;edi -> cx:dx
         mov     ax,4200h
         mov     bx,VMMHandle
         mov     edi,offset PageInt

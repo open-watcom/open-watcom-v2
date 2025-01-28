@@ -1121,10 +1121,8 @@ cwAPI_GetSelDet proc near
         cwAPI_C2C
         jc      api22_9
 ;
-        mov     ecx,eax         ;get base.
-        Reg32To16hilo ecx, cx, dx       ;ecx -> cx:dx
-        mov     esi,ebx         ;get limit.
-        Reg32To16hilo esi, si, di       ;esi -> si:di
+        Reg32To16hilo eax, cx, dx       ;eax -> cx:dx (base)
+        Reg32To16hilo ebx, si, di       ;ebx -> si:di (limit)
         mov     [ebp+Int_CX],cx
         mov     [ebp+Int_DX],dx
         mov     [ebp+Int_SI],si
@@ -1216,11 +1214,15 @@ cwAPI_SetSelDet32 endp
 ;
 ;On Exit:
 ;
-;Carry clear if OK &
+;Carry clear if OK and
 ;
 ;BX     - Selector to access the block with.
 ;
-;Else if CX:DX was -1, CX:DX is size of largest block available.
+;Else
+;
+;  if CX:DX was -1,
+;
+;CX:DX  - is size of largest block available.
 ;
 cwAPI_GetMem    proc    near
         Mem16hiloToReg32 [ebp+Int_CX], [ebp+Int_DX], ecx
@@ -1256,13 +1258,13 @@ api26_0:
         jmp     api26_1
         ;
 api26_2:
-        Reg32To16hilo ecx, cx, dx       ;ecx -> cx:dx
         Mem16hiloToReg32 [ebp+Int_CX], [ebp+Int_DX], eax
         cmp     eax,-2
         jz      api26_5
         cmp     eax,-1
         jnz     api26_4
 api26_5:
+        Reg32To16hilo ecx, cx, dx       ;ecx -> cx:dx
         mov     [ebp+Int_CX],cx
         mov     [ebp+Int_DX],dx
 api26_4:
@@ -2366,16 +2368,19 @@ cwAPI_Exec      endp
 ;
 ;On Exit:
 ;
-;Carry set if not a CWC'd file else,
+;Carry set on error and EAX is error code else,
 ;
 ;ECX    - Expanded data size.
+;EAX    - Compressed data length.
 ;
 cwAPI_cwcInfo   proc    near
         mov     bx,[ebp+Int_BX]
         call    GetCWCInfo
-        cwAPI_C2C
-        mov     [ebp+Int_ECX],ecx
         mov     [ebp+Int_EAX],eax
+        jc      apixx1_1
+        mov     [ebp+Int_ECX],ecx
+apixx1_1:
+        cwAPI_C2C
         ret
 cwAPI_cwcInfo   endp
 
@@ -6356,16 +6361,15 @@ api86_MZ:
 
 medexe4:
         add     ax,ax                   ;mult by 2
-        mov     dh,0
-        mov     dl,ah
+        mov     ch,0
+        mov     cl,ah
         mov     ah,al
-        mov     al,dh                   ;mult by 256=*512
+        mov     al,ch                   ;mult by 256=*512
         add     ax,w[api86_ID+2]        ;add length mod 512
-        adc     dx,0                    ;add any carry to dx
-        mov     cx,ax
-        sub     cx,1bh                  ;account for the header.
-        sbb     dx,0
-        xchg    cx,dx                   ;swap round for DOS.
+        adc     cx,0                    ;add any carry to dx
+        mov     dx,ax
+        sub     dx,1bh                  ;account for the header.
+        sbb     cx,0
         mov     ax,4201h                ;set new file offset.
         int     21h
         jmp     api86_11
@@ -6484,31 +6488,29 @@ api86_3P:
         ;
         ;Skip segment definitions.
         ;
-        movzx   edx,w[api86_ID+NewHeaderStruc.NewSegments]
-        shl     edx,3
+        movzx   ecx,w[api86_ID+NewHeaderStruc.NewSegments]
+        shl     ecx,3
         Sys     cwcInfo
         jc      api86_3p0
-        mov     edx,eax
+        mov     ecx,eax
 api86_3p0:
-        sub     DWORD PTR [api86_ID+NewHeaderStruc.NewSize],edx
-        Reg32To16hilo edx, dx, cx       ;edx -> dx:cx
-        xchg    cx,dx
+        sub     DWORD PTR [api86_ID+NewHeaderStruc.NewSize],ecx
+        Reg32To16hilo ecx, cx, dx       ;ecx -> cx:dx
         mov     ax,4201h
         int     21h
         ;
         ;Skip relocations.
         ;
-        mov     edx,d[api86_ID+NewHeaderStruc.NewRelocs]
-        shl     edx,2
-        or      edx,edx
+        mov     ecx,d[api86_ID+NewHeaderStruc.NewRelocs]
+        shl     ecx,2
+        or      ecx,ecx
         jz      api86_3p1
         Sys     cwcInfo
         jc      api86_3p1
-        mov     edx,eax
+        mov     ecx,eax
 api86_3p1:
-        sub     d[api86_ID+NewHeaderStruc.NewSize],edx
-        Reg32To16hilo edx, dx, cx       ;edx -> dx:cx
-        xchg    cx,dx
+        sub     d[api86_ID+NewHeaderStruc.NewSize],ecx
+        Reg32To16hilo ecx, cx, dx       ;ecx -> cx:dx
         mov     ax,4201h
         int     21h
         ;
@@ -6602,9 +6604,8 @@ api86_3p7:
         pop     ds
         Sys     RelMemLinear32
 api86_3p6:
-        mov     edx,d[api86_ID+NewHeaderStruc.NewSize]
-        Reg32To16hilo edx, dx, cx       ;edx -> dx:cx
-        xchg    cx,dx
+        mov     ecx,d[api86_ID+NewHeaderStruc.NewSize]
+        Reg32To16hilo ecx, cx, dx       ;ecx -> cx:dx
         mov     ax,4201h
         int     21h
         inc     d[api86_Count]
@@ -7041,14 +7042,13 @@ api88_MZ2:
 
 medexe5:
         add     ax,ax                   ;mult by 2
-        mov     dh,0
-        mov     dl,ah
+        mov     ch,0
+        mov     cl,ah
         mov     ah,al
-        mov     al,dh                   ;mult by 256=*512
+        mov     al,ch                   ;mult by 256=*512
         add     ax,w[api88_Temp]        ;add length mod 512
-        adc     dx,0                    ;add any carry to dx
-        mov     cx,ax
-        xchg    cx,dx                   ;swap round for DOS.
+        adc     cx,0                    ;add any carry to dx
+        mov     dx,ax
         mov     ax,4200h                ;set absolute position.
         mov     bx,w[api88_Handle]
         int     21h
