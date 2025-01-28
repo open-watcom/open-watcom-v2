@@ -386,7 +386,7 @@ rv1_NoDIRMove:
         ;
         mov     edi,GDTLinear
         add     edi,KernalPL3_2_PL0
-        GetDescIndex edi
+        GetDescOffset edi       ;lose RPL & TI
         push    es
         push    ax
         mov     ax,KernalZero
@@ -1388,7 +1388,7 @@ RawPL3toPL0     proc    near
         push    edi
         mov     edi,GDTLinear
         add     edi,KernalPL3_2_PL0
-        GetDescIndex edi                ;lose RPL & TI
+        GetDescOffset edi               ;lose RPL & TI
         push    es
         push    ax
         mov     ax,KernalZero
@@ -2063,7 +2063,7 @@ rv30_oops:
         mov     ax,KernalZero
         mov     es,ax
         movzx   eax,w[CallBackStruc.CallBackStackSel+bx]
-        GetDescIndex eax
+        GetDescOffset eax       ;lose RPL & TI
         mov     edi,GDTLinear
         add     edi,eax
         mov     es:[edi+2],si   ;store low word of linear base.
@@ -2839,7 +2839,7 @@ EmuRawPL3toPL0  proc    near
         pop     ds
         pop     eax
         add     edi,DpmiEmuPL3_2_PL0
-        GetDescIndex edi                ;lose RPL & TI
+        GetDescOffset edi               ;lose RPL & TI
         push    es
         push    ax
         mov     ax,KernalZero
@@ -5919,7 +5919,7 @@ GetCONVPages    endp
 ;
 EMUMakeDesc     proc    near
         pushad
-        GetDescIndex edi        ;lose RPL & TI
+        GetDescOffset edi       ;lose RPL & TI
         cmp     ecx,0100000h    ; see if we need to set g bit
         jc      rv60_0
         shr     ecx,12          ; div by 4096

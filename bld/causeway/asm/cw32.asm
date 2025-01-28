@@ -243,7 +243,7 @@ ClearUseBits macro r
         _and_not_word r,0fffh
         endm
 
-GetDescIndex macro r
+GetDescOffset macro r
         _and_not_byte r,7       ;clear RPL & TI bits
         endm
 
@@ -5087,7 +5087,7 @@ MakeDesc        proc    near
 ;
         .386
         pushad
-        GetDescIndex di                 ;lose RPL & TI
+        GetDescOffset di                ;lose RPL & TI
         cmp     ecx,0100000h            ; see if we need to set g bit
         jc      cw18_0
         shr     ecx,12                  ; div by 4096
@@ -5122,7 +5122,7 @@ MakeDesc        endp
 MakeDesc2       proc    near
         .386
         pushad
-        GetDescIndex edi                ;lose RPL & TI
+        GetDescOffset edi               ;lose RPL & TI
         cmp     ecx,0100000h            ; see if we need to set g bit
         jc      cw19_0
         shr     ecx,12                  ; div by 4096

@@ -2730,29 +2730,29 @@ RawRelDOSMemory proc near
         push    ebx
         push    ecx
         movzx   ebx,dx
-        GetDescIndex ebx                ;lose RPL & TI
+        GetDescOffset ebx               ;lose RPL & TI
         xor     ecx,ecx
         xor     eax,eax
         mov     ax,ds
-        GetDescIndex eax                ;lose RPL & TI
+        GetDescOffset eax               ;lose RPL & TI
         cmp     eax,ebx
         jnz     mem21_z0
         mov     ds,cx
 mem21_z0:
         mov     ax,es
-        GetDescIndex eax                ;lose RPL & TI
+        GetDescOffset eax               ;lose RPL & TI
         cmp     eax,ebx
         jnz     mem21_z1
         mov     es,cx
 mem21_z1:
         mov     ax,fs
-        GetDescIndex eax                ;lose RPL & TI
+        GetDescOffset eax               ;lose RPL & TI
         cmp     eax,ebx
         jnz     mem21_z2
         mov     fs,cx
 mem21_z2:
         mov     ax,gs
-        GetDescIndex eax                ;lose RPL & TI
+        GetDescOffset eax               ;lose RPL & TI
         cmp     eax,ebx
         jnz     mem21_z3
         mov     gs,cx
