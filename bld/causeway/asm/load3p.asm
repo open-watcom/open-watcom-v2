@@ -165,8 +165,7 @@ api89_CheckNew:
         dec     ExecMCount
         mov     edx,d[apiNewHeader.NewSize]
         sub     edx,size NewHeaderStruc
-        mov     cx,dx       ;edx -> dx:cx
-        shr     edx,16      ;/
+        Reg32To16hilo edx, dx, cx       ;edx -> dx:cx
         xchg    cx,dx
         mov     ax,4201h
         int     21h
@@ -180,8 +179,7 @@ api89_emc0:
         xor     dx,dx
         mov     ax,4201h
         int     21h
-        shl     edx,16      ;dx:ax -> edx
-        mov     dx,ax       ;/
+        Reg16hiloTo32 dx, ax, edx       ;dx:ax -> edx
         mov     d[api89_3PStart],edx
 ;
 ;Close the file again.
@@ -216,8 +214,7 @@ api89_emc0:
 ;Move past 3P header again.
 ;
         mov     edx,d[api89_3PStart]
-        mov     cx,dx       ;edx -> dx:cx
-        shr     edx,16      ;/
+        Reg32To16hilo edx, dx, cx       ;edx -> dx:cx
         xchg    dx,cx
         mov     ax,4200h
         mov     bx,w[api89_Handle]

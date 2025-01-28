@@ -51,8 +51,7 @@ RawGetMemory    proc    near
 
         mov     ax,KernalZero
         mov     es,ax
-        shl     ebx,16          ;get block size bx:cx -> ebx.
-        mov     bx,cx           ;/
+        Reg16hiloTo32 bx, cx, ebx       ;bx:cx -> ebx
         GetPageCount ebx        ;round up to next 4k.
         or      ebx,ebx
         jz      mem1_error
@@ -201,9 +200,7 @@ mem1_MarkMemRet:
         ;Now return details to caller.
         ;
         shl     esi,12          ;Convert back to a real address.
-        mov     di,si           ;esi -> si:di
-        shr     esi,16          ;/
-        mov     cx,di
+        Reg32To16hilo esi, si, di       ;esi -> si:di
         mov     bx,si
         clc
         jmp     mem1_exit
@@ -280,10 +277,8 @@ RawResMemory    proc    near
 
         mov     ax,KernalZero
         mov     es,ax
-        shl     esi,16          ;Get real address si:di -> esi
-        mov     si,di           ;/
-        shl     ecx,16          ;cx:bx -> ecx
-        mov     cx,bx           ;/
+        Reg16hiloTo32 si, di, esi       ;si:di -> esi
+        Reg16hiloTo32 cx, bx, ecx       ;bx:cx -> ebx
         ror     ecx,16
         GetPageCount ecx        ;Get new block size.
         or      ecx,ecx
@@ -446,8 +441,7 @@ mem2_NewBlock:
         shr     ebx,16
         call    RawGetMemory
         pushf
-        shl     ebx,16      ;bx:cx -> ebx
-        mov     bx,cx       ;/
+        Reg16hiloTo32 bx, cx, ebx       ;bx:cx -> ebx
         popf
         pop     esi
         pop     ebp
@@ -473,8 +467,7 @@ mem2_NewBlock:
         ;
         pushad
         shl     esi,12
-        mov     di,si           ;esi -> si:di
-        shr     esi,16          ;/
+        Reg32To16hilo esi, si, di       ;esi -> si:di
         call    RawRelMemory
         popad
         ;
@@ -488,9 +481,7 @@ mem2_RetNewAddr:
         ;
         shl     esi,12          ;Get a real address again and
         mov     di,si           ;use it as both the memory
-        mov     cx,si           ;address to return and the handle esi -> bx:cx.
-        shr     esi,16          ;/
-        mov     bx,si           ;/
+        Reg32To16hilo esi, bx, cx       ;esi -> bx:cx
         clc
         jmp     mem2_exit
         ;
@@ -527,8 +518,7 @@ RawRelMemory    proc    near
         push    ds
         push    es
         ;
-        shl     esi,16          ;Get block base address si:di -> esi.
-        mov     si,di           ;/
+        Reg16hiloTo32 si, di, esi       ;si:di -> esi.
         mov     ax,KernalDS             ;make data addresable.
         mov     ds,ax
         assume ds:_cwRaw
@@ -649,13 +639,11 @@ RawDiscardPages proc    near
 ;
 ;Get base address.
 ;
-        shl     ebx,16      ;bx:cx -> ebx
-        mov     bx,cx       ;/
+        Reg16hiloTo32 bx, cx, ebx       ;bx:cx -> ebx
 ;
 ;Get length.
 ;
-        shl     esi,16      ;si:di -> esi
-        mov     si,di       ;/
+        Reg16hiloTo32 si, di, esi       ;si:di -> esi
 ;
 ;Round start up a page.
 ;
@@ -733,15 +721,13 @@ RawMapPhys2Lin  proc    near
 ;
 ;Get physical address as 32-bit & check for none-page boundary.
 ;
-        shl     ebx,16          ;bx:cx -> ebx
-        mov     bx,cx           ;/
+        Reg16hiloTo32 bx, cx, ebx       ;bx:cx -> ebx
         test    ebx,4095
         jnz     mem5_9
 ;
 ;Get length as number of pages.
 ;
-        shl     esi,16          ;si:di -> esi
-        mov     si,di           ;/
+        Reg16hiloTo32 si, di, esi       ;si:di -> esi
         GetPageCount esi
         test    esi,esi
         jz      mem5_9
@@ -856,9 +842,7 @@ mem5_4: mov     es:[edi],ebx
         shl     edi,12-2
 mem5_8: xor     ecx,ecx
         xor     ebx,ebx
-        mov     cx,di       ;edi -> bx:cx
-        shr     edi,16      ;/
-        mov     bx,di       ;/
+        Reg32To16hilo edi, bx, cx       ;edi -> bx:cx
         clc
         jmp     mem5_11
 ;
@@ -932,10 +916,8 @@ RawLockMemory   proc    near
         pop     es
 
         ;
-        shl     ebx,16      ;bx:cx -> ebx
-        mov     bx,cx       ;/
-        shl     esi,16      ;si:di -> esi
-        mov     si,di       ;/
+        Reg16hiloTo32 bx, cx, ebx       ;bx:cx -> ebx
+        Reg16hiloTo32 si, di, esi       ;si:di -> esi
         add     esi,ebx
         RoundPageDN ebx                 ;round down to nearest page.
         mov     d[_LM_BlockBase],ebx
@@ -1112,10 +1094,8 @@ RawUnLockMemory proc near
         mov     ecx,es:[ecx+4]
         pop     es
 
-        shl     ebx,16      ;bx:cx -> ebx
-        mov     bx,cx       ;/
-        shl     esi,16      ;si:di -> esi
-        mov     si,di       ;/
+        Reg16hiloTo32 bx, cx, ebx       ;bx:cx -> ebx
+        Reg16hiloTo32 si, di, esi       ;si:di -> esi
         add     esi,ebx
         RoundPageDN ebx                 ;round down to nearest page.
         mov     d[_LM_BlockBase],ebx
@@ -1318,8 +1298,7 @@ mem9_l5:
         jz      mem9_l7
         mul     cx              ;Get bytes per cluster.
         mul     bx              ;Get bytes available.
-        shl     edx,16          ;dx:ax -> edx
-        mov     dx,ax           ;/
+        Reg16hiloTo32 dx, ax, edx       ;dx:ax -> edx
 mem9_l7:
         ;
         ;Get current swap file size.
@@ -1330,8 +1309,7 @@ mem9_l7:
         xor     cx,cx
         mov     dx,cx
         int     21h
-        shl     edx,16      ;dx:ax -> edx
-        mov     dx,ax       ;/
+        Reg16hiloTo32 dx, ax, edx       ;dx:ax -> edx
         pop     eax
         add     edx,eax
         Round64kDN edx
@@ -1499,8 +1477,7 @@ mem10_Virtual:
         jz      mem10_error
         mul     cx              ;Get bytes per cluster.
         mul     bx              ;Get bytes available.
-        shl     edx,16          ;dx:ax -> edx
-        mov     dx,ax           ;/
+        Reg16hiloTo32 dx, ax, edx       ;dx:ax -> edx
         Round64kDN edx
         add     edx,SwapFileLength      ;add existing size.
         mov     eax,LinearLimit
@@ -1618,8 +1595,7 @@ mem10_v4:
         jc      mem10_Extended
         Round64kUP ecx
         push    ecx
-        mov     dx,cx       ;ecx ->cx:dx
-        shr     ecx,16      ;/
+        Reg32To16hilo ecx, cx, dx       ;ecx ->cx:dx
         mov     bx,VMMHandle            ;get swap file handle.
         mov     ax,4200h
         mov     edi,offset PageInt
@@ -1677,8 +1653,7 @@ mem10_v4:
         jnz     mem10_Disk_Error
         mov     edx,RealRegsStruc.Real_EDX[edi]
         mov     eax,RealRegsStruc.Real_EAX[edi]
-        shl     edx,16      ;dx:ax -> edx
-        mov     dx,ax       ;/
+        Reg16hiloTo32 dx, ax, edx       ;dx:ax -> edx
         cmp     edx,SwapFileLength
         jnz     mem10_Disk_Error
         ;
@@ -1834,8 +1809,7 @@ mem11_NoLocking:
         mov     ecx,LinearEntry         ;get page number.
         shl     ecx,12                  ;get linear address.
         sub     ecx,LinearBase
-        mov     dx,cx       ;ecx -> cx:dx
-        shr     ecx,16      ;/
+        Reg32To16hilo ecx, cx, dx       ;ecx ->cx:dx
         mov     bx,VMMHandle
         mov     ax,4200h
         mov     edi,offset PageInt
@@ -2086,9 +2060,7 @@ mem12_GotPage:
         ;
         sub     edi,LinearBase
         mov     ebp,edi
-        mov     dx,di       ;edi -> cx:dx
-        shr     edi,16      ;/
-        mov     cx,di       ;/
+        Reg32To16hilo edi, cx, dx       ;edi -> cx:dx
         mov     ax,4200h
         mov     bx,VMMHandle
         mov     edi,offset PageInt
@@ -2108,8 +2080,7 @@ mem12_GotPage:
         jnz     mem12_error_anyway
         mov     edx,RealRegsStruc.Real_EDX[edi]
         mov     eax,RealRegsStruc.Real_EAX[edi]
-        shl     edx,16      ;dx:ax -> edx
-        mov     dx,ax       ;/
+        Reg16hiloTo32 dx, ax, edx       ;dx:ax -> edx
         cmp     edx,ebp
         jnz     mem12_force_error
         ;
@@ -2597,8 +2568,7 @@ RawResDOSMemory proc near
         push    dx
         mov     bx,dx
         call    RawGetSelBase
-        shl     ecx,16      ;cx:dx -> ecx
-        mov     cx,dx       ;/
+        Reg16hiloTo32 cx, dx, ecx       ;cx:dx -> ecx
         mov     esi,ecx
         sub     esi,16                  ;back to our stuff.
         pop     dx
@@ -2640,8 +2610,7 @@ mem20_Shrink:
         push    edx
         mov     ebx,edx
         call    RawGetSelBase
-        shl     ecx,16      ;cx:dx -> ecx
-        mov     cx,dx       ;/
+        Reg16hiloTo32 cx, dx, ecx       ;cx:dx -> ecx
         mov     esi,ecx
         sub     esi,16                  ;back to our stuff.
         pop     edx
@@ -2688,8 +2657,7 @@ mem20_0:
         push    edx
         mov     ebx,edx
         call    RawGetSelBase
-        shl     ecx,16      ;cx:dx -> ecx
-        mov     cx,dx       ;/
+        Reg16hiloTo32 cx, dx, ecx       ;cx:dx -> ecx
         mov     ebx,ecx
         shr     ebx,4                   ;get real mode segment.
         pop     edx
@@ -2810,8 +2778,7 @@ mem21_z3:
         push    edx
         mov     ebx,edx
         call    RawGetSelBase
-        shl     ecx,16      ;cx:dx -> ecx
-        mov     cx,dx       ;/
+        Reg16hiloTo32 cx, dx, ecx       ;cx:dx -> ecx
         mov     esi,ecx
         pop     ebx
         sub     esi,16                  ;back to our stuff.

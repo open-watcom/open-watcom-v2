@@ -3550,8 +3550,7 @@ rv46_500_0:
         jz      rv46_500_1
         mul     cx              ;Get bytes per cluster.
         mul     bx              ;Get bytes available.
-        shl     edx,16          ;dx:ax -> edx
-        mov     dx,ax           ;/
+        Reg16hiloTo32 dx, ax, edx       ;dx:ax -> edx
         add     edx,SwapFileLength      ;include current size.
         shr     edx,12
         ;
@@ -3904,8 +3903,7 @@ rv46_DPMI_0B00:
         mov     ax,KernalDS
         mov     ds,ax
         assume ds:_cwRaw
-        shl     ebx,16      ;bx:cx -> ebx
-        mov     bx,cx       ;/
+        Reg16hiloTo32 bx, cx, ebx       ;bx:cx -> ebx
         ;
         ;Find a free table entry.
         ;
@@ -4779,9 +4777,7 @@ rv54_nomaxlimit:
         ;BP    - Block size in K.
         ;DX:BX - Block linear address.
         ;
-        movzx   edi,dx                  ;get base into edi reg.
-        shl     edi,16                  ;/
-        mov     di,bx                   ;/
+        Reg16hiloTo32 dx, bx, edi       ;dx:bx -> edi
         mov     ebx,edi                 ;copy into high address.
         movzx   ebp,bp                  ;fetch size.
         shl     ebp,10                  ;*1024 (1k)
@@ -4948,9 +4944,7 @@ rv55_SizeOK:
         ;BP    - Block size in K.
         ;DX:BX - Block linear address.
         ;
-        movzx   edi,dx          ;get base into 1 reg.
-        shl     edi,16          ;/
-        mov     di,bx           ;/
+        Reg16hiloTo32 dx, bx, edi       ;dx:bx -> edi
         mov     ebx,edi         ;copy into high address.
         movzx   ebp,bp          ;fetch size.
         shl     ebp,10          ;*1024 (1k)

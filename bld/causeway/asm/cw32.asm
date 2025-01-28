@@ -2846,8 +2846,7 @@ drivefree:
         jz      cw5_v7
         mul     cx                      ;Get bytes per cluster.
         mul     bx                      ;Get bytes available.
-        shl     edx,16                  ;dx:ax -> edx
-        mov     dx,ax                   ;/
+        Reg16hiloTo32 dx, ax, edx       ;dx:ax -> edx
         cmp     edx,ebp                 ;Enough free space.
         jc      cw5_v7
         ;
@@ -2954,8 +2953,7 @@ cw5_v2: mov     VMMName,al
         je      medpre2
         mov     bx,VMMHandle
         mov     ecx,PreAllocSize
-        mov     dx,cx                   ;ecx -> cx:dx
-        shr     ecx,16                  ;/
+        Reg32To16hilo ecx, cx, dx       ;ecx -> cx:dx
         mov     ax,4200h                ; seek from beginning of file
         int     21h
         xor     cx,cx                   ; write zero bytes (pre-allocating based on seek)
@@ -3285,8 +3283,7 @@ cw5_InProtected:
         mov     ax,0600h
         int     31h                     ;Lock memory.
         jc      InitError
-        shl     ebx,16                  ;bx:cx -> ebx
-        mov     bx,cx                   ;/
+        Reg16hiloTo32 bx, cx, ebx       ;bx:cx -> ebx
         mov     dpmiSelBase,ebx
 ;
 ;Allocate code selector.

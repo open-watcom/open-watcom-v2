@@ -737,9 +737,7 @@ Int21hAllocMem  proc    near
         jz      int2118_AllocMuch
         movzx   ebx,bx
         shl     ebx,4           ;convert paragraphs to bytes.
-        mov     dx,bx           ;ebx -> cx:dx
-        shr     ebx,16          ;/
-        mov     cx,bx           ;/
+        Reg32To16hilo ebx, cx, dx       ;ebx -> cx:dx
         Sys     GetMem          ;try to allocate memory.
         jc      int2118_AllocMuch               ;report how much free then.
         mov     [ebp+Int_AX],bx ;get the selector allocated.
@@ -750,9 +748,7 @@ int2118_AllocMuch:
         mov     cx,-1
         mov     dx,-1
         Sys     GetMem          ;get free memory size.
-        mov     bx,cx           ;cx:dx ->ebx
-        shl     ebx,16          ;/
-        mov     bx,dx           ;/
+        Reg16hiloTo32 cx, dx, ebx       ;cx:dx ->ebx
         cmp     ebx,0fffeh*16   ;can't report too much.
         jc      int2118_AllocOK
         mov     ebx,0fffeh*16
@@ -795,9 +791,7 @@ Int21hRelMem    endp
 Int21hResMem    proc    near
         movzx   ebx,w[ebp+Int_BX]
         shl     ebx,4           ;convert paragraphs to bytes.
-        mov     dx,bx           ;ebx -> cx:dx
-        shr     ebx,16          ;/
-        mov     cx,bx           ;/
+        Reg32To16hilo ebx, cx, dx       ;ebx -> cx:dx
         mov     bx,[ebp+Int_ES]
         Sys     ResMem
         pushf
