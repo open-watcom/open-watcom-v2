@@ -118,8 +118,8 @@ Int21h  proc    near
         mov     ebp,esp         ;Make registers addressable.
         mov     esi,Int_Flags32
         test    BYTE PTR cs:Int21hSystemFlags,1 ;/
-        jz      int211_32Bit0           ;/
-        movzx   ebp,bp          ;/
+        jz      int211_32Bit0       ;/
+        movzx   ebp,bp              ;/
         mov     esi,Int_Flags16
 int211_32Bit0:
         add     esi,ebp

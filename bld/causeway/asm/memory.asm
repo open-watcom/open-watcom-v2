@@ -677,7 +677,8 @@ mem4_0: cmp     edx,LinearBase
         jc      mem4_1
         cmp     edx,LinearLimit
         jnc     mem4_2
-        and     DWORD PTR es:[esi+ebx*4],NOT (PAGE_DIRTY or PAGE_ON_DISK)   ;clear dirty & disk bits.
+        ;clear dirty & on disk bits.
+        and     DWORD PTR es:[esi+ebx*4],NOT (PAGE_DIRTY or PAGE_ON_DISK)
 mem4_1: add     edx,4096
         inc     ebx
         dec     ecx
@@ -1405,7 +1406,7 @@ ExtendLinearMemory proc near
         jnc     mem10_error
 
         ;
-        ;Try extending useing physical memory first.
+        ;Try extending using physical memory first.
         ;
 mem10_f0:
         mov     eax,LinearLimit         ;get new entry number.
@@ -1780,8 +1781,9 @@ mem11_AddPage:
         mov     eax,LinearEntry         ;get the entry number again.
         mov     esi,1024*4096*1023      ;base of page alias's.
         mov     ebx,DWORD PTR es:[esi+eax*4]    ;get current details.
-        and     ebx,PAGE_ON_DISK                ;pass living on disk bit.
-        or      edx,ebx                         ;/
+        ;retain on disk bit.
+        and     ebx,PAGE_ON_DISK
+        or      edx,ebx
         mov     DWORD PTR es:[esi+eax*4],edx    ;set physical address.
         ;
         cmp     PageDETLinear,0
@@ -1864,7 +1866,8 @@ mem11_ok:
         ;
         mov     eax,LinearEntry ;get new entry number.
         mov     esi,1024*4096*1023      ;base of page alias's.
-        and     DWORD PTR es:[esi+eax*4],NOT (PAGE_ACCESED or PAGE_DIRTY)   ;clear accesed & dirty bits.
+        ;clear accesed & dirty bits.
+        and     DWORD PTR es:[esi+eax*4],NOT (PAGE_ACCESED or PAGE_DIRTY)
         call    EmuCR3Flush
         ;
 mem11_NoRead:
@@ -1949,6 +1952,7 @@ mem12_NoWrap:
         GetPageIndex eax        ;get page number.
         test    DWORD PTR fs:[edi+eax*4],PAGE_PRESENT   ;this page present?
         jz      mem12_ScanLoop
+        ;is locked (lock count != 0)?
         test    DWORD PTR fs:[ebp+eax*4],MEM_LOCK_MASK shl MEM_LOCK_SHIFT
         jnz     mem12_ScanLoop
         ;
@@ -2113,17 +2117,18 @@ mem12_error_anyway:
         ;
         pop     edi
         jc      mem12_8
-        or      DWORD PTR fs:[edi],PAGE_ON_DISK ;signal it living on disk.
+        ;signal it living on disk.
+        or      DWORD PTR fs:[edi],PAGE_ON_DISK
         ;
 mem12_5:
         ;Now remove it from the page table and exit.
         ;
         and     DWORD PTR fs:[edi],NOT PAGE_PRESENT ;mark as not present.
-        mov     edx,fs:[edi]            ;get page entry.
+        mov     edx,fs:[edi]    ;get page entry.
         mov     ecx,edx
-        ClearUseBits edx                ;lose use bits.
+        ClearUseBits edx        ;lose use bits.
         shr     ecx,10
-        and     ecx,1                   ;preserve VCPI bit.
+        and     ecx,1           ;preserve PAGE_VCPI bit.
         call    EmuCR3Flush
         ;
         ;Update number of un-locked physical pages present.
@@ -2185,8 +2190,10 @@ RawLockPage     proc    near
         pop     ax
         ;
 mem13_WasLocked:
+        ;is lock count overflow?
         cmp     ebx,MEM_LOCK_MASK
         jz      mem13_0
+        ;increment lock count
         add     DWORD PTR es:[esi+eax*4],1 shl MEM_LOCK_SHIFT   ;lock it.
 mem13_0:
         pop     es
@@ -2215,6 +2222,7 @@ RawClearPageLock proc near
         mov     es,bx
         GetPageIndex eax
         mov     esi,1024*4096*1022      ;base of page alias's.
+        ;clear lock count
         and     DWORD PTR es:[esi+eax*4],NOT (MEM_LOCK_MASK shl MEM_LOCK_SHIFT) ;un-lock it.
         pop     es
         pop     esi
@@ -2244,6 +2252,7 @@ RawUnLockPage   proc    near
         mov     es,bx
         GetPageIndex eax
         mov     esi,1024*4096*1022      ;base of page alias's.
+        ;decrement lock count
         sub     DWORD PTR es:[esi+eax*4],1 shl MEM_LOCK_SHIFT   ;un-lock it.
         mov     eax,DWORD PTR es:[esi+eax*4]
         shr     eax,MEM_LOCK_SHIFT

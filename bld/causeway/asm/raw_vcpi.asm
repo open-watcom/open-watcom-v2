@@ -2380,9 +2380,9 @@ rv31_Use16Bit13:
         shl     esi,4
         add     esi,eax
         mov     ax,w[rv31_FlagsStore]
-        ;clear IF & TF & DF
+        ;clear IF & TF & DF.
         and     ax,NOT (EFLAG_IF or EFLAG_TF or EFLAG_DF)
-        ;retain IF & TF & DF
+        ;retain IF & TF & DF.
         and     WORD PTR fs:[esi+IFrame16.i16_flags],EFLAG_IF or EFLAG_TF or EFLAG_DF
         or      fs:[esi+IFrame16.i16_flags],ax
         ;
