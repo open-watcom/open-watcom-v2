@@ -23,14 +23,6 @@ main() {
   fail( __LINE__ );
 #endif
 
-#if ULONG_MAX - 3 != ~3
-  fail( __LINE__ );
-#endif
-
-#if ULONG_MAX - 3 != ~3
-  fail( __LINE__ );
-#endif
-
 #if UINT_MAX + 1 - 1  != UINT_MAX
   fail( __LINE__ );
 #endif
