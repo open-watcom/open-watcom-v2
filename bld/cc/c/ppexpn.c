@@ -385,11 +385,7 @@ static bool COperand( void )
         case TYP_LONG_DOUBLE:
             CErr1( ERR_EXPR_MUST_BE_INTEGRAL );
             done = true;
-            if( CompVars.cstd < STD_C99 ) {
-                U32ToU64Set( p, (signed_32)SafeAtof( Buffer ) );
-            } else {
-                p.u.sval.u._64[0] = (long long)SafeAtof( Buffer );
-            }
+            p.u.sval.u._64[0] = (long long)SafeAtof( Buffer );
             // add long double support if available
             p.no_sign = 0;
             break;
@@ -402,27 +398,15 @@ static bool COperand( void )
             p.no_sign = 1;
             break;
         case TYP_ULONG64:
-            if( CompVars.cstd < STD_C99 ) {
-                U32ToU64Set( p, U32FetchTrunc( Constant64 ) );
-            } else {
-                p.u.uval = Constant64;
-            }
+            p.u.uval = Constant64;
             p.no_sign = 1;
             break;
         case TYP_LONG64:
-            if( CompVars.cstd < STD_C99 ) {
-                U32ToU64Set( p, U32FetchTrunc( Constant64 ) );
-            } else {
-                p.u.uval = Constant64;
-            }
+            p.u.uval = Constant64;
             p.no_sign = 0;
             break;
         default:
-            if( CompVars.cstd < STD_C99 ) {
-                U32ToU64Set( p, Constant );
-            } else {
-                I32ToI64( Constant, &(p.u.sval) );
-            }
+            I32ToI64( Constant, &(p.u.sval) );
             p.no_sign = 0;
         }
         if( !done ) {
@@ -657,11 +641,7 @@ static bool COr( void )
     TOKEN token;
 
     if( Binary( &token, &e1, &e2, &loc ) ) {
-        if( CompVars.cstd < STD_C99 ) {
-            U32ToU64Set( e1, U64Low( e1 ) | U64Low( e2 ) );
-        } else {
-            U64OrEq( e1, e2 );
-        }
+        U64OrEq( e1, e2 );
         e1.no_sign |= e2.no_sign;
         PushOperand( e1, &loc );
         return( false );
@@ -680,11 +660,7 @@ static bool CXOr( void )
     TOKEN token;
 
     if( Binary( &token, &e1, &e2, &loc ) ) {
-        if( CompVars.cstd < STD_C99 ) {
-            U32ToU64Set( e1, U64Low( e1 ) ^ U64Low( e2 ) );
-        } else {
-            U64XOrEq( e1, e2 );
-        }
+        U64XOrEq( e1, e2 );
         e1.no_sign |= e2.no_sign;
         PushOperand( e1, &loc );
         return( false );
@@ -703,11 +679,7 @@ static bool CAnd( void )
     TOKEN token;
 
     if( Binary( &token, &e1, &e2, &loc ) ) {
-        if( CompVars.cstd < STD_C99 ) {
-            U32ToU64Set( e1, U64Low( e1 ) & U64Low( e2 ) );
-        } else {
-            U64AndEq( e1, e2 );
-        }
+        U64AndEq( e1, e2 );
         e1.no_sign |= e2.no_sign;
         PushOperand( e1, &loc );
         return( false );
@@ -754,66 +726,34 @@ static bool CRelational( void )
     if( Binary( &token, &e1, &e2, &loc ) ) {
         switch( token ) {
         case T_LT:
-            if( CompVars.cstd < STD_C99 ) {
-                if( e1.no_sign || e2.no_sign ) {
-                    val = U64Low( e1 ) < U64Low( e2 );
-                } else {
-                    val = I64Low( e1 ) < I64Low( e2 );
-                }
+            if( e1.no_sign || e2.no_sign ) {
+                val = U64LT( e1, e2 );
             } else {
-                if( e1.no_sign || e2.no_sign ) {
-                    val = U64LT( e1, e2 );
-                } else {
-                    val = I64LT( e1, e2 );
-                }
+                val = I64LT( e1, e2 );
             }
             U32ToU64Set( e1, val );
             break;
         case T_LE:
-            if( CompVars.cstd < STD_C99 ) {
-                if( e1.no_sign || e2.no_sign ) {
-                    val = U64Low( e1 ) <= U64Low( e2 );
-                } else {
-                    val = I64Low( e1 ) <= I64Low( e2 );
-                }
+            if( e1.no_sign || e2.no_sign ) {
+                val = U64LE( e1, e2 );
             } else {
-                if( e1.no_sign || e2.no_sign ) {
-                    val = U64LE( e1, e2 );
-                } else {
-                    val = I64LE( e1, e2 );
-                }
+                val = I64LE( e1, e2 );
             }
             U32ToU64Set( e1, val );
             break;
         case T_GT:
-            if( CompVars.cstd < STD_C99 ) {
-                if( e1.no_sign || e2.no_sign ) {
-                    val = U64Low( e1 ) > U64Low( e2 );
-                } else {
-                    val = I64Low( e1 ) > I64Low( e2 );
-                }
+            if( e1.no_sign || e2.no_sign ) {
+                val = U64GT( e1, e2 );
             } else {
-                if( e1.no_sign || e2.no_sign ) {
-                    val = U64GT( e1, e2 );
-                } else {
-                    val = I64GT( e1, e2 );
-                }
+                val = I64GT( e1, e2 );
             }
             U32ToU64Set( e1, val );
             break;
         case T_GE:
-            if( CompVars.cstd < STD_C99 ) {
-                if( e1.no_sign || e2.no_sign ) {
-                    val = U64Low( e1 ) >= U64Low( e2 );
-                } else {
-                    val = I64Low( e1 ) >= I64Low( e2 );
-                }
+            if( e1.no_sign || e2.no_sign ) {
+                val = U64GE( e1, e2 );
             } else {
-                if( e1.no_sign || e2.no_sign ) {
-                    val = U64GE( e1, e2 );
-                } else {
-                    val = I64GE( e1, e2 );
-                }
+                val = I64GE( e1, e2 );
             }
             U32ToU64Set( e1, val );
             break;
@@ -839,57 +779,29 @@ static bool CShift( void )
     if( Binary( &token, &e1, &e2, &loc ) ) {
         switch( token ) {
         case T_RSHIFT:
-            if( CompVars.cstd < STD_C99 ) {
-                if( U64Low( e2 ) > 32 || ( U64High( e2 ) != 0 ) ) {
-                    if( e1.no_sign ) {
-                        U64SetZero( e1 );
-                    } else {
-                        if( (signed int)U64Low( e1 ) < 0 ) {
-                            U32ToU64Set( e1, -1 );
-                        } else {
-                            U64SetZero( e1 );
-                        }
-                    }
+            if( U64Low( e2 ) > 64 || ( U64High( e2 ) != 0 ) ) {
+                if( e1.no_sign ) {
+                    U64SetZero( e1 );
                 } else {
-                    if( e1.no_sign ) {
-                        U32ToU64Set( e1, U64Low( e1 ) >> U64Low( e2 ) );
+                    if( (signed int)U64Low( e1 ) < 0 ) {
+                        U32ToU64Set( e1, -1 );
                     } else {
-                        U32ToU64Set( e1, I64Low( e1 ) >> U64Low( e2 ) );
+                        U64SetZero( e1 );
                     }
                 }
             } else {
-                if( U64Low( e2 ) > 64 || ( U64High( e2 ) != 0 ) ) {
-                    if( e1.no_sign ) {
-                        U64SetZero( e1 );
-                    } else {
-                        if( (signed int)U64Low( e1 ) < 0 ) {
-                            U32ToU64Set( e1, -1 );
-                        } else {
-                            U64SetZero( e1 );
-                        }
-                    }
+                if( e1.no_sign ) {
+                    U64ShiftR( &(e1.u.uval), U64Low( e2 ), &e1.u.uval );
                 } else {
-                    if( e1.no_sign ) {
-                        U64ShiftR( &(e1.u.uval), U64Low( e2 ), &e1.u.uval );
-                    } else {
-                        I64ShiftR( &(e1.u.sval), U64Low( e2 ), &e1.u.sval );
-                    }
+                    I64ShiftR( &(e1.u.sval), U64Low( e2 ), &e1.u.sval );
                 }
             }
             break;
         case T_LSHIFT:
-            if( CompVars.cstd < STD_C99 ) {
-                if( U64Low( e2 ) > 32 || ( U64High( e2 ) != 0 ) ) {
-                    U64SetZero( e1 );
-                } else {
-                    U32ToU64Set( e1, U64Low( e1 ) << U64Low( e2 ) );
-                }
+            if( U64Low( e2 ) > 64 || ( U64High( e2 ) != 0 ) ) {
+                U64SetZero( e1 );
             } else {
-                if( U64Low( e2 ) > 64 || ( U64High( e2 ) != 0 ) ) {
-                    U64SetZero( e1 );
-                } else {
-                    U64ShiftL( &(e1.u.uval), U64Low( e2 ), &e1.u.uval );
-                }
+                U64ShiftL( &(e1.u.uval), U64Low( e2 ), &e1.u.uval );
             }
             break;
         DbgDefault( "Default in CShift\n" );
@@ -913,19 +825,11 @@ static bool CAdditive( void )
     if( Binary( &token, &e1, &e2, &loc ) ) {
         switch( token ) {
         case T_PLUS:
-            if( CompVars.cstd < STD_C99 ) {
-                U32ToU64Set( e1, U64Low( e1 ) + U64Low( e2 ) );
-            } else {
-                U64AddEq( e1, e2 );
-            }
+            U64AddEq( e1, e2 );
             e1.no_sign |= e2.no_sign;
             break;
         case T_MINUS:
-            if( CompVars.cstd < STD_C99 ) {
-                U32ToU64Set( e1, U64Low( e1 ) - U64Low( e2 ) );
-            } else {
-                U64SubEq( e1, e2 );
-            }
+            U64SubEq( e1, e2 );
             e1.no_sign = 0;
             break;
         DbgDefault( "Default in CAdditive\n" );
@@ -950,52 +854,28 @@ static bool CMultiplicative( void )
     if( Binary( &token, &e1, &e2, &loc ) ) {
         switch( token ) {
         case T_TIMES:
-            if( CompVars.cstd < STD_C99 ) {
-                U32ToU64Set( e1, U64Low( e1 ) * U64Low( e2 ) );
-            } else {
-                U64MulEq( e1, e2 );
-            }
+            U64MulEq( e1, e2 );
             break;
         case T_DIV:
-            if( CompVars.cstd < STD_C99 ) {
-                if( U64Zero( e2 ) ) {
-                    U64SetZero( e1 );
-                } else if( e1.no_sign || e2.no_sign ) {
-                    U32ToU64Set( e1, U64Low( e1 ) / U64Low( e2 ) );
-                } else {
-                    U32ToU64Set( e1, I64Low( e1 ) / I64Low( e2 ) );
-                }
+            if( U64Zero( e2 ) ) {
+                U64SetZero( e1 );
+            } else if( e1.no_sign || e2.no_sign ) {
+                unsigned_64 unused;
+                U64Div( &(e1.u.uval), &(e2.u.uval), &(e1.u.uval), &unused );
             } else {
-                if( U64Zero( e2 ) ) {
-                    U64SetZero( e1 );
-                } else if( e1.no_sign || e2.no_sign ) {
-                    unsigned_64 unused;
-                    U64Div( &(e1.u.uval), &(e2.u.uval), &(e1.u.uval), &unused );
-                } else {
-                    signed_64 unused;
-                    I64Div( &((e1).u.sval), &((e2).u.sval), &((e1).u.sval), &unused );
-                }
+                signed_64 unused;
+                I64Div( &((e1).u.sval), &((e2).u.sval), &((e1).u.sval), &unused );
             }
             break;
         case T_PERCENT:
-            if( CompVars.cstd < STD_C99 ) {
-                if( U64Zero( e2 ) ) {
-                    U64SetZero( e1 );
-                } else if( e1.no_sign || e2.no_sign ) {
-                    U32ToU64Set( e1, U64Low( e1 ) % U64Low( e2 ) );
-                } else {
-                    U32ToU64Set( e1, I64Low( e1 ) % I64Low( e2 ) );
-                }
+            if( U64Zero( e2 ) ) {
+                U64SetZero( e1 );
+            } else if( e1.no_sign || e2.no_sign ) {
+                unsigned_64 unused;
+                U64Div( &(e1.u.uval), &(e2.u.uval), &unused, &e1.u.uval );
             } else {
-                if( U64Zero( e2 ) ) {
-                    U64SetZero( e1 );
-                } else if( e1.no_sign || e2.no_sign ) {
-                    unsigned_64 unused;
-                    U64Div( &(e1.u.uval), &(e2.u.uval), &unused, &e1.u.uval );
-                } else {
-                    signed_64 unused;
-                    I64Div( &(e1.u.sval), &(e2.u.sval), &unused, &e1.u.sval );
-                }
+                signed_64 unused;
+                I64Div( &(e1.u.sval), &(e2.u.sval), &unused, &e1.u.sval );
             }
             break;
         DbgDefault( "Default in CMultiplicative\n" );
@@ -1024,11 +904,7 @@ static bool CUnary( void )
         case T_UNARY_PLUS:
             break;
         case T_UNARY_MINUS:
-            if( CompVars.cstd < STD_C99 ) {
-                U32ToU64Set( p, - I64Low( p ) );
-            } else {
-                U64Neg( &((p).u.uval), &((p).u.uval ) );
-            }
+            U64Neg( &((p).u.uval), &((p).u.uval ) );
             break;
         case T_EXCLAMATION:
 //        case T_ALT_EXCLAMATION:
@@ -1041,11 +917,7 @@ static bool CUnary( void )
             break;
         case T_TILDE:
 //        case T_ALT_TILDE:
-            if( CompVars.cstd < STD_C99 ) {
-                U32ToU64Set( p, ~U64Low( p ) );
-            } else {
-                U64Not( &(p.u.sval), &(p.u.sval) );
-            }
+            U64Not( &(p.u.sval), &(p.u.sval) );
             break;
         DbgDefault( "Default in CUnary\n" );
         }
