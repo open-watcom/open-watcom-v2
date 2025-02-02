@@ -809,7 +809,7 @@ char *_cmdname( char *name )
     return( name );
 }
 
-#elif defined( __BSD__ )
+#elif defined( __FreeBSD__ )
 
 #include <sys/sysctl.h>
 

@@ -28,7 +28,7 @@ if [ "$OWTOOLS" = "WATCOM" ]; then
     output_redirect wmake -m -f ../wmake
 else
     case `uname` in
-        FreeBSD)
+        FreeBSD|DragonFly)
             output_redirect make -f ../posmake clean
             output_redirect make -f ../posmake TARGETDEF=-D__BSD__
             ;;
