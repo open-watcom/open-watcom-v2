@@ -437,8 +437,8 @@ IFrame16        ends
 
 IFrame          struct
     i_eip       dd 0
-    i_cs        dw 0,0
+    i_cs        dd 0
     i_eflags    dd 0
     i_esp       dd 0
-    i_ss        dw 0,0
+    i_ss        dd 0
 IFrame          ends
