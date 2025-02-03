@@ -568,7 +568,7 @@ static int ck_shift_state( void )
 /*******************************/
 {
 // FIXME: This is nonsense - the two should not be defined at the same time
-#if defined( __LINUX__ ) && !defined( __FreeBSD__ )
+#if defined( __LINUX__ )
     /* read the shift state on the Linux console. Works only locally. */
     /* and WARNING: see console_ioctl(4)                              */
     char ioctl_shift_state = 6;

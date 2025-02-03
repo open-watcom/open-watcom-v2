@@ -809,7 +809,7 @@ char *_cmdname( char *name )
     return( name );
 }
 
-#elif defined( __BSD__ )
+#elif defined( __FreeBSD__ )
 
 #include <sys/sysctl.h>
 
@@ -854,7 +854,11 @@ char *_cmdname( char *name )
     result = readlink( "/proc/self/exe", name, PATH_MAX );
     if( result == -1 ) {
         /* try another way for BSD */
+#if defined( __NetBSD__ )
+        result = readlink( "/proc/curproc/exe", name, PATH_MAX );
+#else
         result = readlink( "/proc/curproc/file", name, PATH_MAX );
+#endif
     }
     errno = save_errno;
 
