@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2016-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2016-2025 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -39,18 +39,11 @@
 #include "_ptint.h"
 #include "rterrno.h"
 #include "thread.h"
-#include "extfunc.h"
 
 /* By default, allow OpenWatcom's thread library
  * to handle this...
  */
 #define STACK_SIZE  0
-
-typedef void            *pthread_fn( void * );
-typedef pthread_fn      __pthread_fn;
-#if defined(_M_IX86)
-#pragma aux (__outside_CLIB) __pthread_fn;
-#endif
 
 struct __thread_pass {
     pthread_t   thread;

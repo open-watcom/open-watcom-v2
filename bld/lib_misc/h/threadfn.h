@@ -3,6 +3,7 @@
 *                            Open Watcom Project
 *
 * Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
+*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -24,22 +25,38 @@
 *
 *  ========================================================================
 *
-* Description:  POSIX thread Obsolescent routines
+* Description:  Internal header with defintions to support the multi-thread
+*               runtime library.
 *
 ****************************************************************************/
 
-#include "variety.h"
-#include <pthread.h>
-#include "rterrno.h"
-#include "thread.h"
+#ifndef _THREADFN_H_INCLUDED
+#define _THREADFN_H_INCLUDED
 
+#if !defined( __DOS__ ) && !defined( __WINDOWS__ )
 
-_WCRTLINK int pthread_atfork( void (*prepare)(void), void (*parent)(void), void (*child)(void) )
-{
-    (void)prepare;
-    (void)parent;
-    (void)child;
+#if defined(_M_IX86)
+    #include "extfunc.h"
+#endif
 
-    _RWD_errno = ENOSYS;
-    return( -1 );
-}
+typedef void            fthread_fn( void * );
+typedef fthread_fn      __fthread_fn;
+
+typedef void            *pthread_fn( void * );
+typedef pthread_fn      __pthread_fn;
+
+typedef void            _WCI86FAR thread_fn( void _WCI86FAR * );
+typedef thread_fn       __thread_fn;
+#ifdef __NT__
+typedef unsigned        __stdcall thread_fnex( void * );
+#endif
+
+#if defined(_M_IX86)
+    #pragma aux (__outside_CLIB) __fthread_fn;
+    #pragma aux (__outside_CLIB) __pthread_fn;
+    #pragma aux (__outside_CLIB) __thread_fn;
+#endif
+
+#endif  /* !defined( __DOS__ ) && !defined( __WINDOWS__ ) */
+
+#endif  /* _THREADFN_H_INCLUDED */
