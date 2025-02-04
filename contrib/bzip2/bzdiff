@@ -12,7 +12,7 @@
 # necessary) and fed to cmp or diff.  The exit status from cmp
 # or diff is preserved.
 
-PATH="/usr/bin:$PATH"; export PATH
+PATH="/usr/bin:/bin:$PATH"; export PATH
 prog=`echo $0 | sed 's|.*/||'`
 case "$prog" in
   *cmp) comp=${CMP-cmp}   ;;
@@ -24,7 +24,11 @@ FILES=
 for ARG
 do
     case "$ARG" in
-    -*)	OPTIONS="$OPTIONS $ARG";;
+    -*)	if test -z "$OPTIONS"; then
+	    OPTIONS="$ARG"
+        else
+            OPTIONS="$OPTIONS $ARG"
+        fi ;;
      *)	if test -f "$ARG"; then
             FILES="$FILES $ARG"
         else
@@ -37,10 +41,6 @@ if test -z "$FILES"; then
 	echo "Usage: $prog [${comp}_options] file [file]"
 	exit 1
 fi
-tmp=`tempfile -d /tmp -p bz` || {
-      echo 'cannot create a temporary file' >&2
-      exit 1
-}
 set $FILES
 if test $# -eq 1; then
 	FILE=`echo "$1" | sed 's/.bz2$//'`
@@ -53,10 +53,14 @@ elif test $# -eq 2; then
                 case "$2" in
 	        *.bz2)
 			F=`echo "$2" | sed 's|.*/||;s|.bz2$||'`
-                        bzip2 -cdfq "$2" > $tmp
-                        bzip2 -cdfq "$1" | $comp $OPTIONS - $tmp
+			tmp=`mktemp "${TMPDIR:-/tmp}"/bzdiff.XXXXXXXXXX` || {
+			      echo 'cannot create a temporary file' >&2
+			      exit 1
+			}
+                        bzip2 -cdfq "$2" > "$tmp"
+                        bzip2 -cdfq "$1" | $comp $OPTIONS - "$tmp"
                         STAT="$?"
-			/bin/rm -f $tmp;;
+			/bin/rm -f "$tmp";;
 
                 *)      bzip2 -cdfq "$1" | $comp $OPTIONS - "$2"
                         STAT="$?";;
@@ -69,8 +73,8 @@ elif test $# -eq 2; then
                         STAT="$?";;
                 esac;;
 	esac
-        exit "$STAT"
 else
 	echo "Usage: $prog [${comp}_options] file [file]"
 	exit 1
 fi
+exit "$STAT"
