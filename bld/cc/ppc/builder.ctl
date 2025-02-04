@@ -54,6 +54,8 @@ set PROJDIR=<CWD>
     <CCCMD> linux386/<OWOBJDIR>/wccppc.sym      "<OWRELROOT>/binl/"
     <CCCMD> linux386/<OWOBJDIR>/wccppc01.int    "<OWRELROOT>/binl/"
 
+    <CCCMD> bsdx64/<OWOBJDIR>/wccppc.exe        "<OWRELROOT>/binb64/wccppc"
+    <CCCMD> bsdx64/<OWOBJDIR>/wccppc01.int      "<OWRELROOT>/binb64/"
     <CCCMD> ntx64.dll/<OWOBJDIR>/wccppc.exe     "<OWRELROOT>/binnt64/"
     <CCCMD> ntx64.dll/<OWOBJDIR>/wccdppc.dll    "<OWRELROOT>/binnt64/"
     <CCCMD> ntx64.dll/<OWOBJDIR>/wccppc01.int   "<OWRELROOT>/binnt64/"

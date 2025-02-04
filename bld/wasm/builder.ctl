@@ -44,6 +44,7 @@ set PROJDIR=<CWD>
     <CCCMD> rdos386/wasm.exe    "<OWRELROOT>/rdos/"
     <CCCMD> rdos386/wasm.sym    "<OWRELROOT>/rdos/"
 
+    <CCCMD> bsdx64/wasm.exe     "<OWRELROOT>/binb64/wasm"
     <CCCMD> ntx64/wasm.exe      "<OWRELROOT>/binnt64/"
     <CCCMD> linuxx64/wasm.exe   "<OWRELROOT>/binl64/wasm"
     <CCCMD> linuxx64/wasm.sym   "<OWRELROOT>/binl64/"

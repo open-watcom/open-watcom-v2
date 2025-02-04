@@ -29,6 +29,7 @@ set PROJDIR=<CWD>
 
     <CCCMD> qnxi86/wmk.exe    "<OWRELROOT>/qnx/binq/wmake"
 
+    <CCCMD> bsdx64/wmk.exe    "<OWRELROOT>/binb64/wmake"
     <CCCMD> ntx64/wmk.exe     "<OWRELROOT>/binnt64/wmake.exe"
     <CCCMD> linuxx64/wmk.exe  "<OWRELROOT>/binl64/wmake"
     <CCCMD> linuxx64/wmk.sym  "<OWRELROOT>/binl64/wmake.sym"

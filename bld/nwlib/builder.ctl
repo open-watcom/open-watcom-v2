@@ -50,6 +50,7 @@ set PROJDIR=<CWD>
     <CCCMD> rdos386/wlib.exe        "<OWRELROOT>/rdos/"
     <CCCMD> rdos386/wlib.sym        "<OWRELROOT>/rdos/"
 
+    <CCCMD> bsdx64/wlib.exe         "<OWRELROOT>/binb64/wlib"
     <CCCMD> ntx64.dll/wlib.exe      "<OWRELROOT>/binnt64/"
     <CCCMD> ntx64.dll/wlibd.dll     "<OWRELROOT>/binnt64/"
     <CCCMD> linuxx64/wlib.exe       "<OWRELROOT>/binl64/wlib"
