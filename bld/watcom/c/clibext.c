@@ -793,9 +793,7 @@ char *strrev( char *str )
 *
 ****************************************************************************/
 
-/* NOTE: This file isn't used for QNX. It's got its own version. */
-
-#ifdef __APPLE__
+#ifdef __OSX__
 
 #include <mach-o/dyld.h>
 
