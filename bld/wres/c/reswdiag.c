@@ -372,20 +372,22 @@ ControlClass *ResNumToControlClass( uint_16 classnum )
 {
     ControlClass *  class;
 
-    if( classnum & 0x80 ) {
+    if( (classnum & 0x80) != 0 || classnum == 0) {
         class = WRESALLOC( sizeof( ControlClass ) );
         if( class == NULL ) {
             WRES_ERROR( WRS_MALLOC_FAILED );
-        } else {
+        } else if( (classnum & 0x80) != 0 ) {
             class->Class = (uint_8)classnum;
+        } else {
+            class->ClassName[0] = '\0';
         }
     } else {
         class = WRESALLOC( sizeof( ControlClass ) + 1 );
         if( class == NULL ) {
             WRES_ERROR( WRS_MALLOC_FAILED );
         } else {
-            *(class->ClassName + 0) = (char)classnum;
-            *(class->ClassName + 1) = '\0';
+            class->ClassName[0] = (char)classnum;
+            class->ClassName[1] = '\0';
         }
     }
     return( class );

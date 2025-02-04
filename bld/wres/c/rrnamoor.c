@@ -78,11 +78,11 @@ ResNameOrOrdinal *ResReadNameOrOrdinal( FILE *fp )
         if( flags == 0xff ) {
             newptr->ord.fFlag = 0xff;
             newptr->ord.wOrdinalID = ord;
+        } else if( flags == 0) {
+            newptr->name[0] = '\0';
         } else {
-            newptr->ord.fFlag = flags;
-            if( restofstr != NULL ) {
-                memcpy( newptr->name + 1, restofstr, stringlen );
-            }
+            newptr->name[0] = flags;
+            memcpy( newptr->name + 1, restofstr, stringlen );
         }
     }
 
@@ -132,10 +132,10 @@ ResNameOrOrdinal *ResRead32NameOrOrdinal( FILE *fp )
     /* copy the new Name or Ordinal into the correct place */
     if( !error ) {
         if( flags == 0xffff ) {
-            newptr->ord.fFlag = 0xffff;
+            newptr->ord.fFlag = 0xff;
             newptr->ord.wOrdinalID = ord;
         } else if( flags == 0 ) {
-            newptr->ord.fFlag = 0;                  /* 16-bit UNICODE NUL character */
+            newptr->name[0] = '\0';                 /* NUL character */
         } else {
             newptr->ord.fFlag = UNI2ASCII( flags ); /* first 16-bit UNICODE character */
             if( restofstr != NULL ) {
@@ -143,7 +143,6 @@ ResNameOrOrdinal *ResRead32NameOrOrdinal( FILE *fp )
             }
         }
     }
-
 
     if( restofstr != NULL ) {
         WRESFREE( restofstr );
