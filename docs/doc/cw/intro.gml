@@ -41,8 +41,7 @@ schemes.
 .np
 A primary objective of CauseWay development was to ensure minimal effort
 would be needed by programmers to adapt their code to work with the
-CauseWay DOS e
-tender.  As a result, most &product. C/C++ and many realmode
+CauseWay DOS extender.  As a result, most &product. C/C++ and many realmode
 assembly language programs need no or minor changes to produce a fully
 operational CauseWay protected mode application.
 .*
