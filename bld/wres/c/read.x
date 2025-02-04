@@ -371,7 +371,7 @@ ResNameOrOrdinal * ResReadNameOrOrdinal( WResFileID handle )
         } else if (newname.ord.fFlag == 0) {
             newptr->name[0] = '\0';
         } else {
-            memcpy( &(newptr->name[1]), restofstr, stringlen );
+            memcpy( newptr->name + 1, restofstr, stringlen );
             WRESFREE( restofstr );
         }
     }

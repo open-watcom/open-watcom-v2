@@ -138,9 +138,7 @@ ResNameOrOrdinal *ResRead32NameOrOrdinal( FILE *fp )
             newptr->name[0] = '\0';                 /* NUL character */
         } else {
             newptr->ord.fFlag = UNI2ASCII( flags ); /* first 16-bit UNICODE character */
-            if( restofstr != NULL ) {
-                memcpy( newptr->name + 1, restofstr, stringlen );
-            }
+            memcpy( newptr->name + 1, restofstr, stringlen );
         }
     }
 
