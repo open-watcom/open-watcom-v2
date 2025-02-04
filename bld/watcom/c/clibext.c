@@ -807,7 +807,9 @@ char *_cmdname( char *name )
     return( name );
 }
 
-#elif defined( __FREEBSD__ )
+#elif defined( __BSD__ )
+
+#if defined( __FREEBSD__ )
 
 #include <sys/sysctl.h>
 
@@ -824,6 +826,36 @@ char *_cmdname( char *name )
     sysctl( mib, 4, name, &cb, NULL, 0 );
     return( name );
 }
+
+#else
+
+char *_cmdname( char *name )
+{
+    int save_errno;
+    int result;
+
+    save_errno = errno;
+    result = readlink( "/proc/self/exe", name, PATH_MAX );
+    if( result == -1 ) {
+        /* try another way for BSD */
+#if defined( __NETBSD__ )
+        result = readlink( "/proc/curproc/exe", name, PATH_MAX );
+#else
+        result = readlink( "/proc/curproc/file", name, PATH_MAX );
+#endif
+    }
+    errno = save_errno;
+
+    /* fall back to argv[0] if readlink doesn't work */
+    if( result == -1 || result == PATH_MAX )
+        return( strcpy( name, _argv[0] ) );
+
+    /* readlink does not add a NUL so we need to do it ourselves */
+    name[result] = '\0';
+    return( name );
+}
+
+#endif
 
 #elif defined (__HAIKU__)
 
@@ -851,12 +883,8 @@ char *_cmdname( char *name )
     save_errno = errno;
     result = readlink( "/proc/self/exe", name, PATH_MAX );
     if( result == -1 ) {
-        /* try another way for BSD */
-#if defined( __NETBSD__ )
-        result = readlink( "/proc/curproc/exe", name, PATH_MAX );
-#else
+        /* try another way */
         result = readlink( "/proc/curproc/file", name, PATH_MAX );
-#endif
     }
     errno = save_errno;
 
