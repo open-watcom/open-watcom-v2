@@ -49,7 +49,17 @@ cpp_defines = $(cpp_defines_$(bld_os))
 cpp_defines = -D__NT__
 !else
 cpp_defines_linux = -D__LINUX__
+!ifdef __FREEBSD__
+cpp_defines_bsd = -D__BSD__ -D__FREEBSD__
+!else ifdef __DRAGONFLY__
+cpp_defines_bsd = -D__BSD__ -D__DRAGONFLY__
+!else ifdef __NETBSD__
+cpp_defines_bsd = -D__BSD__ -D__NETBSD__
+!else ifdef __OPENBSD__
+cpp_defines_bsd = -D__BSD__ -D__OPENBSD__
+!else
 cpp_defines_bsd = -D__BSD__
+!endif
 cpp_defines_haiku = -D__HAIKU__
 cpp_defines_osx = -D__OSX__
 cpp_defines = $(cpp_defines_$(bld_os)) -D__UNIX__ -D_XOPEN_SOURCE=600

@@ -27,22 +27,28 @@ if [ "$OWTOOLS" = "WATCOM" ]; then
     output_redirect wmake -m -f ../wmake clean
     output_redirect wmake -m -f ../wmake
 else
+    output_redirect make -f ../posmake clean
     case `uname` in
         FreeBSD)
-            output_redirect make -f ../posmake clean
-            output_redirect make -f ../posmake TARGETDEF=-D__BSD__
+            output_redirect make -f ../posmake TARGETDEF=-D__FREEBSD__
+            ;;
+        DragonFly)
+            output_redirect make -f ../posmake TARGETDEF=-D__DRAGONFLY__
+            ;;
+        NetBSD)
+            output_redirect make -f ../posmake TARGETDEF=-D__NETBSD__
+            ;;
+        OpenBSD)
+            output_redirect make -f ../posmake TARGETDEF=-D__OPENBSD__
             ;;
         Darwin)
-            output_redirect make -f ../posmake clean
             output_redirect make -f ../posmake TARGETDEF=-D__OSX__
             ;;
         Haiku)
-            output_redirect make -f ../posmake clean
             output_redirect make -f ../posmake TARGETDEF=-D__HAIKU__
             ;;
 #        Linux)
         *)
-            output_redirect make -f ../posmake clean
             output_redirect make -f ../posmake TARGETDEF=-D__LINUX__
             ;;
     esac

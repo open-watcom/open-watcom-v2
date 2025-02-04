@@ -345,7 +345,17 @@ bld_lib = $(noecho)ar crs $@
 common_ppflags          = -D__UNIX__ -D__FLAT__
 
 common_cppflags_linux   = -D__LINUX__
+!ifdef __FREEBSD__
+common_cppflags_bsd     = -D__BSD__ -D__FREEBSD__
+!else ifdef __DRAGONFLY__
+common_cppflags_bsd     = -D__BSD__ -D__DRAGONFLY__
+!else ifdef __NETBSD__
+common_cppflags_bsd     = -D__BSD__ -D__NETBSD__
+!else ifdef __OPENBSD__
+common_cppflags_bsd     = -D__BSD__ -D__OPENBSD__
+!else
 common_cppflags_bsd     = -D__BSD__
+!endif
 common_cppflags_haiku   = -D__HAIKU__
 common_cppflags_osx     = -D__OSX__
 
