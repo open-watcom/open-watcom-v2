@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2016-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2016-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -310,7 +310,7 @@ static ControlClass *Read32ControlClass( FILE *fp )
     if( flags == 0xffff ) {
         error = ResReadUint16( &class, fp );
     } else if( flags == 0 ) {
-        class = UNI2ASCII( flags ); /* first 16-bit UNICODE character */
+        class = 0;                  /* 16-bit UNICODE NUL character */
         error = false;
     } else {
         class = UNI2ASCII( flags ); /* first 16-bit UNICODE character */

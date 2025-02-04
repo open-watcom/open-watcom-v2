@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -290,9 +290,9 @@ bool ResWriteNameOrOrdinal( ResNameOrOrdinal *name, bool use_unicode, FILE *fp )
     } else {
         if( name->ord.fFlag == 0xff ) {
             if( use_unicode ) {
-                error = ResWriteUint16( (uint_16)-1, fp );
+                error = ResWriteUint16( 0xffff, fp );
             } else {
-                error = ResWriteUint8( name->ord.fFlag, fp );
+                error = ResWriteUint8( 0xff, fp );
             }
             if( !error ) {
                 error = ResWriteUint16( name->ord.wOrdinalID, fp );
