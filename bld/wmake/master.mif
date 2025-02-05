@@ -106,6 +106,7 @@ exetarg_name          = wmk
 #
 # rc and others
 #
+wsplice_opts_bsd   = -kUNIX
 wsplice_opts_linux = -kUNIX
 wsplice_opts_qnx   = -kUNIX
 wsplice_opts_osx   = -kUNIX
