@@ -457,7 +457,7 @@ static void doTouch( void )
         }
         _splitpath2( item, pg.buffer, &pg.drive, &pg.dir, NULL, NULL );
         number_of_successful_touches = 0;
-#if defined(__LINUX__) || defined(__OSX__)
+#if defined(__LINUX__) || defined(__OSX__) || defined(__BSD__)
         strcpy( full_name, item );
         dire = NULL;
         number_of_successful_touches += doTouchFile( full_name, dire, &stamp );
