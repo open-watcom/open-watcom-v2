@@ -46,7 +46,7 @@
  * of the indices up to B115200 fit nicely in a 'short', allowing us to retain
  * ospeed's type for compatibility.
  */
-#if defined(__FreeBSD__) || defined(__NetBSD__) || defined(__OpenBSD__)
+#if defined(__NetBSD__)
 #undef B0
 #undef B50
 #undef B75
