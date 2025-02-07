@@ -642,10 +642,9 @@ mod_entry *SearchLib( file_list *lib, const char *name )
      *  update lib struct since we found desired object file
      */
     obj = NewModEntry();
-    obj->location = pos;
-    obj->f.source = lib;
-    obj->modtime = lib->infile->modtime;
-    obj->modinfo = (lib->flags & DBI_MASK) | (ObjFormat & FMT_OBJ_FMT_MASK);
+    /*
+     * correct module start position for modules in archive library
+     */
     objname = IdentifyObject( lib, &pos, &dummy );
     if( objname != NULL ) {
         obj->name.u.ptr = AddStringStringTable( &PermStrings, objname );
@@ -653,6 +652,10 @@ mod_entry *SearchLib( file_list *lib, const char *name )
     } else {
         obj->name.u.ptr = NULL;
     }
+    obj->location = pos;
+    obj->f.source = lib;
+    obj->modtime = lib->infile->modtime;
+    obj->modinfo = (lib->flags & DBI_MASK) | (ObjFormat & FMT_OBJ_FMT_MASK);
     return( obj );
 }
 
