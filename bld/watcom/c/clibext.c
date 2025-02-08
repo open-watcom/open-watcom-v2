@@ -888,7 +888,9 @@ char *_cmdname(char *name)
 
     save_errno = errno;
 
-    if ( ( *_argv[0] == '.' || *_argv[0] == '/' ) && !_cmdname_sub( name, NULL, _argv[0] ) ) {
+    if ( ( _argv != NULL && _argv[0] != NULL )
+      && ( *_argv[0] == '.' || *_argv[0] == '/' )
+      && ( !_cmdname_sub( name, NULL, _argv[0] ) ) ) {
         result = name;
         goto fin0;
     }
@@ -898,11 +900,17 @@ char *_cmdname(char *name)
         goto fin0;
     }
     envpath_len = strlen( envpath ) + 1;
-    path = malloc( envpath_len );
+    path = malloc( envpath_len + 1 );
     if ( path == NULL ) {
         goto fin0;
     }
     memcpy( path, envpath, envpath_len );
+
+    /* last ":" treat as ":." */
+    if ( path[envpath_len - 2] == ':' ) {
+        path[envpath_len - 1] = '.';
+        path[envpath_len] = '\0';
+    }
 
     for ( p = _cmdname_tokenize( path, &pp ); p != NULL;
           p = _cmdname_tokenize( pp, &pp ) ) {
