@@ -55,6 +55,7 @@
 #include "d2ttime.h"
 #include "pathgrp2.h"
 
+#include "clibint.h"
 #include "clibext.h"
 
 
@@ -544,6 +545,11 @@ static void doTouch( void )
 int main( int argc, char **argv )
 /*******************************/
 {
+#ifndef __WATCOMC__
+    _argc = argc;
+    _argv = argv;
+#endif
+
     if( !MsgInit() )
         return( 1 );
     if( !processOptions( argc, argv ) )
