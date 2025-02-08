@@ -749,7 +749,7 @@ namespace std {
      * C++11 and C11 require support for UTF-16 literals
      * TODO: Fix for plain C. Doesn't work on Mac.
      */
-#   if U_CPLUSPLUS_VERSION >= 11 || (defined(__STDC_VERSION__) && __STDC_VERSION__ >= 201112L)
+#   if U_CPLUSPLUS_VERSION >= 11 || (defined(__STDC_VERSION__) && __STDC_VERSION__ >= 201112L) || defined(__OpenBSD__)
 #       define U_HAVE_CHAR16_T 1
 #   else
 #       define U_HAVE_CHAR16_T 0
