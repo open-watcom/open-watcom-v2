@@ -42,9 +42,11 @@ dosbox_cfg = $(%OWROOT)\build\dosbox.cfg
 !ifdef %OWWGMLDEBUG
 dosbox_options_nt =
 dosbox_options_osx = -c "config -set cpu core=normal"
+dosbox_options_bsd = -c "config -set cpu cycles=10000000"
 !else
 dosbox_options_nt = -noconsole
 dosbox_options_osx = -c "config -set cpu core=normal"
+dosbox_options_bsd = -c "config -set cpu cycles=10000000"
 !endif
 
 !ifeq bld_os dos
