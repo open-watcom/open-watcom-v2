@@ -827,6 +827,105 @@ char *_cmdname( char *name )
     return( name );
 }
 
+#elif defined( __OPENBSD__ )
+
+extern const char *__progname;
+#include <sys/stat.h>
+
+static int _cmdname_sub( char *out, const char *path, const char *name )
+{
+    int         path_len, name_len;
+    char        tmp[PATH_MAX];
+    struct stat sb;
+
+    path_len = ( path == NULL ) ? 0 : ( strlen( path ) + 1 );   /* with '/' */
+    name_len = ( name == NULL ) ? 0 : strlen( name );
+
+    if ( ( path_len + name_len ) >= sizeof( tmp ) ) {
+        abort();
+    }
+    if ( path_len ) {
+        memcpy( tmp, path, path_len - 1 );
+        tmp[path_len - 1] = '/';
+    }
+    if ( name_len ) {
+        memcpy( tmp + path_len, name, name_len );
+    }
+    tmp[path_len + name_len] = '\0';
+
+    if ( tmp[0] == '/' ) {
+        memcpy( out, tmp, path_len + name_len + 1 );
+    } else {
+        realpath( tmp, out );
+    }
+    return( stat( out, &sb ) );
+}
+
+static char *_cmdname_tokenize( char *str, char **next )
+{
+    char    *p;
+
+    if ( *str == '\0' ) {
+        return( NULL );
+    }
+
+    p = strchr( str, ':' );
+    if ( p == NULL ) {
+        *next = str + strlen( str );
+    } else {
+        *p = '\0';
+        *next = p + 1;
+    }
+
+    return( str );
+}
+
+char *_cmdname(char *name)
+{
+    int     save_errno, envpath_len;
+    char    *path, *envpath, *result = NULL;
+    char    *p, *pp;
+
+    save_errno = errno;
+
+    if ( ( _argv != NULL && _argv[0] != NULL )
+      && ( *_argv[0] == '.' || *_argv[0] == '/' )
+      && ( !_cmdname_sub( name, NULL, _argv[0] ) ) ) {
+        result = name;
+        goto fin0;
+    }
+
+    envpath = getenv( "PATH" );
+    if ( envpath == NULL ) {
+        goto fin0;
+    }
+    envpath_len = strlen( envpath ) + 1;
+    path = malloc( envpath_len + 1 );
+    if ( path == NULL ) {
+        goto fin0;
+    }
+    memcpy( path, envpath, envpath_len );
+
+    /* last ":" treat as ":." */
+    if ( path[envpath_len - 2] == ':' ) {
+        path[envpath_len - 1] = '.';
+        path[envpath_len] = '\0';
+    }
+
+    for ( p = _cmdname_tokenize( path, &pp ); p != NULL;
+          p = _cmdname_tokenize( pp, &pp ) ) {
+        if ( !_cmdname_sub( name, ( *p == '\0' ) ? "." : p, __progname ) ) {
+            result = name;
+            goto fin1;
+        }
+    }
+fin1:
+    free( path );
+fin0:
+    errno = save_errno;
+    return( result );
+}
+
 #else
 
 char *_cmdname( char *name )
