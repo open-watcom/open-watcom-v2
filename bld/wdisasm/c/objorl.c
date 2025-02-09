@@ -41,22 +41,14 @@
 #define SYMBOL_TO_EXPORT_TABLE_SIZE             53
 #define SECTION_TO_SEGMENT_TABLE_SIZE           29
 
-#define FP2BL(fp)       ((buffer_list *)(fp))
-#define BL2FP(bl)       ((FILE *)(bl))
-
 typedef struct buf_list {
     struct buf_list     *next;
     char                buf[1];
 } buf_list;
 
-typedef struct {
-    FILE               *fp;
-    buf_list            *buflist;
-} buffer_info;
-
 typedef struct section_entry {
-    orl_sec_handle              shnd;
-    struct section_entry        *next;
+    orl_sec_handle          shnd;
+    struct section_entry    *next;
 } section_entry;
 
 typedef struct section_entry    *section_ptr;
@@ -67,7 +59,8 @@ typedef struct section_list {
 } section_list;
 
 struct orl_io_struct {
-    buffer_info         buffInfo;
+    FILE                *fp;
+    buf_list            *buflist;
 };
 
 bool                    UseORL;
@@ -96,26 +89,26 @@ static void *buffRead( struct orl_io_struct *orlio, size_t len )
     buf_list    *buf;
 
     buf = AllocMem( len + sizeof( buf_list ) - 1 );
-    if( fread( buf->buf, 1, len, orlio->buffInfo.fp ) != len ) {
+    if( fread( buf->buf, 1, len, orlio->fp ) != len ) {
         FreeMem( buf );
         return NULL;
     }
-    buf->next = orlio->buffInfo.buflist;
-    orlio->buffInfo.buflist = buf;
+    buf->next = orlio->buflist;
+    orlio->buflist = buf;
     return( buf->buf );
 }
 
 static int buffSeek( struct orl_io_struct *orlio, long pos, int where )
 //*********************************************************************
 {
-    return( fseek( orlio->buffInfo.fp, pos, where ) );
+    return( fseek( orlio->fp, pos, where ) );
 }
 
 static void initBuffer( struct orl_io_struct *orlio, FILE *fp )
 //*************************************************************
 {
-    orlio->buffInfo.fp = fp;
-    orlio->buffInfo.buflist = NULL;
+    orlio->fp = fp;
+    orlio->buflist = NULL;
 }
 
 static void finiBuffer( struct orl_io_struct *orlio )
@@ -124,7 +117,7 @@ static void finiBuffer( struct orl_io_struct *orlio )
     buf_list    *list;
     buf_list    *next;
 
-    list = orlio->buffInfo.buflist;
+    list = orlio->buflist;
     while( list != NULL ) {
         next = list->next;
         FreeMem( list );

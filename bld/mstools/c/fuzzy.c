@@ -75,7 +75,7 @@ typedef struct _MatchingInfo {
 } MatchingInfo;
 
 struct orl_io_struct {
-    FILE        *fp;
+    FILE                *fp;
 };
 
 /*

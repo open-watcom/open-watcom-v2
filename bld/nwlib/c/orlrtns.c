@@ -37,7 +37,7 @@
 
 
 struct orl_io_struct {
-    obj_file        ofile;
+    obj_file            ofile;
 };
 
 static orl_handle       ORLHnd;
@@ -134,7 +134,7 @@ static obj_file *DoOpenORLObjFile( libfile io, long offset, const char *name )
         orlio->ofile.orl = NULL;
         break;
     }
-    return( (obj_file *)orlio );
+    return( &orlio->ofile );
 }
 
 obj_file *OpenORLObjFile( const char *name )
