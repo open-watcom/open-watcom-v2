@@ -213,7 +213,7 @@ static dep_handle AutoORLFirstDep( handle hdl )
     (void)hdl;
     orlIO.orlInfo.curr = (void *)orlIO.orlInfo.buffer;
     if( orlIO.orlInfo.curr->len != 0 ) {
-        return( hdl );
+        return( &orlIO );
     }
     return( NULL );
 }
@@ -229,7 +229,7 @@ static void AutoORLTransDep( dep_handle hdl, char **name, time_t *stamp )
 
 
 static dep_handle AutoORLNextDep( dep_handle hdl )
-/*************************************************/
+/************************************************/
 {
     DepInfo     *p;
 
@@ -241,7 +241,7 @@ static dep_handle AutoORLNextDep( dep_handle hdl )
         return( NULL );
     }
     orlIO.orlInfo.curr = p;
-    return( hdl );
+    return( &orlIO );
 }
 
 

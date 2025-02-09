@@ -59,9 +59,6 @@
 #include "clibext.h"
 
 
-#define FP2FL( fid )   ((file_list *)(fid))
-#define FL2FP( fl )    ((FILE *)(fl))
-
 typedef struct readcache READCACHE;
 
 typedef struct readcache {
