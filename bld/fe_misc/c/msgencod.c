@@ -233,11 +233,11 @@ static struct {
 } examples;
 
 static char ifname[PATH_MAX] = {0};
-static FILE *i_gml;
-static FILE *o_msgc;
-static FILE *o_msgh;
-static FILE *o_levh;
-static FILE *o_attrh;
+static FILE *i_gml = NULL;
+static FILE *o_msgc = NULL;
+static FILE *o_msgh = NULL;
+static FILE *o_levh = NULL;
+static FILE *o_attrh = NULL;
 
 static MSGWORD *allWords;
 static MSGWORD *nameWords;
@@ -1544,12 +1544,13 @@ static void dumpStats( void )
     printf( "max word length                      %u\n", (unsigned)maxWordLen );
     printf( "total input bytes                    %u\n", (unsigned)totalMsgLen );
     printf( "total output bytes                   %u\n", (unsigned)totalBytes );
-    printf( "%% compression                        %u\n", (unsigned)( ( totalBytes * 100 ) / totalMsgLen ) );
+    printf( "%% compression                        %u\n", totalMsgLen ? (unsigned)( ( totalBytes * 100 ) / totalMsgLen ) : 0 );
 }
 
 static void closeFiles( void )
 {
-    fclose( i_gml );
+    if( i_gml != NULL )
+        fclose( i_gml );
     if( o_msgh != NULL )
         fclose( o_msgh );
     if( o_msgc != NULL )
@@ -1818,6 +1819,22 @@ static bool ProcessOptions( char *str )
     return( rc );
 }
 
+static void showUsageAndExit( void )
+{
+    fatal( "usage: msgencod [options] <gml> <msgc> <msgh> <levh>\n"
+           "\n"
+           "Options: (must appear in following order)\n"
+           "  -s no warnings\n"
+           "  -i create international file with non-english data\n"
+           "  -ip ignore matching XXX_ prefix with message type\n"
+           "  -q quiet operation\n"
+           "  -rc <macro_name> generate files for resource compiler\n"
+           "  -p generate pick macros instead of #defines\n"
+           "  -g generate generalized pick macros and tables\n"
+           "  -utf8 output texts use UTF-8 encoding"
+         );
+}
+
 int main( int argc, char **argv )
 {
     int     i;
@@ -1827,19 +1844,13 @@ int main( int argc, char **argv )
         if( ProcessOptions( argv[i] ) ) {
             closeFiles();
             error( "fatal: invalid argument\n\n" );
-            fatal( "usage: msgencod [options] <gml> <msgc> <msgh> <levh>\n"
-                   "\n"
-                   "Options: (must appear in following order)\n"
-                   "  -s no warnings\n"
-                   "  -i create international file with non-english data\n"
-                   "  -ip ignore matching XXX_ prefix with message type\n"
-                   "  -q quiet operation\n"
-                   "  -rc <macro_name> generate files for resource compiler\n"
-                   "  -p generate pick macros instead of #defines\n"
-                   "  -g generate generalized pick macros and tables\n"
-                   "  -utf8 output texts use UTF-8 encoding"
-                 );
+            showUsageAndExit();
         }
+    }
+    if( i_gml == NULL )
+    {
+	    error( "fatal: gml file required\n\n" );
+	    showUsageAndExit();
     }
     if( !flags.out_utf8 ) {
         qsort( cvt_table_932, sizeof( cvt_table_932 ) / sizeof( cvt_table_932[0] ), sizeof( cvt_table_932[0] ), (comp_fn)compare_utf8 );
