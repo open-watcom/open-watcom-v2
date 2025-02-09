@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,13 +31,13 @@
 ****************************************************************************/
 
 
-extern bool     CacheOpen( file_list * );
-extern void     CacheClose( file_list *, unsigned );
-extern void     *CachePermRead( file_list *, unsigned long, size_t );
-extern void     *CacheRead( file_list *, unsigned long, size_t );
-extern bool     CacheEnd( file_list *, unsigned long );
+extern bool     CacheOpen( const file_list * );
+extern void     CacheClose( const file_list *, unsigned );
+extern void     *CachePermRead( const file_list *, unsigned long, size_t );
+extern void     *CacheRead( const file_list *, unsigned long, size_t );
+extern bool     CacheIsEnd( const file_list *, unsigned long );
 extern bool     CacheIsPerm( void );
 extern void     CacheFini( void );
-extern void     CacheFree( file_list *, void * );
-extern void     FreeObjCache( file_list * );
+extern void     CacheFree( const file_list *, void * );
+extern void     FreeObjCache( const file_list * );
 extern bool     DumpObjCache( void );
