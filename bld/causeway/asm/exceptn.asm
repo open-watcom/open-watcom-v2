@@ -17,16 +17,16 @@ DebugEDX        dd ?
 DebugECX        dd ?
 DebugEBX        dd ?
 DebugEAX        dd ?
-DebugGS dw ?
-DebugFS dw ?
-DebugES dw ?
-DebugDS dw ?
+DebugGS         dw ?
+DebugFS         dw ?
+DebugES         dw ?
+DebugDS         dw ?
 DebugEIP        dd ?
-DebugCS dw ?,?
+DebugCS         dw ?,?
 DebugEFL        dd ?
 DebugESP        dd ?
-DebugSS dw ?,?
-DebugTR dw ?
+DebugSS         dw ?,?
+DebugTR         dw ?
 DebugCR0        dd ?
 DebugCR1        dd ?
 DebugCR2        dd ?
@@ -443,21 +443,21 @@ Int00hHandler   proc    near
         jz      exc3_Use32_0
         add     DebugESP,2+2+2
         movzx   ebx,sp
-        mov     ax,ss:[ebx+2+2]
+        mov     ax,ss:[ebx+IFrame16.i16_flags]
         mov     w[DebugEFL],ax
-        mov     ax,ss:[ebx+2]
+        mov     ax,ss:[ebx+IFrame16.i16_cs]
         mov     DebugCS,ax
-        movzx   eax,WORD PTR ss:[ebx]
+        movzx   eax,WORD PTR ss:[ebx+IFrame16.i16_ip]
         mov     DebugEIP,eax
         jmp     exc3_Use0_0
         ;
 exc3_Use32_0:
         add     DebugESP,4+4+4
-        mov     eax,[esp+4+4]
+        mov     eax,[esp+IFrame.i_eflags]
         mov     DebugEFL,eax
-        mov     eax,[esp+4]
+        mov     eax,[esp+IFrame.i_cs]
         mov     DebugCS,ax
-        mov     eax,[esp]
+        mov     eax,[esp+IFrame.i_eip]
         mov     DebugEIP,eax
         ;
 exc3_Use0_0:
@@ -688,7 +688,6 @@ DPMIExc15Patch proc     far
 DPMIExc15Patch endp
 
 
-
 ;-------------------------------------------------------------------------
 DPMIExcPatch    proc    far
         push    ds
@@ -794,12 +793,13 @@ exc20_SP320:
         movzx   eax,w[ebp+(4+4+4+4+4+4+4)+(2+2+2+2)+(2+2)]
         mov     es:DebugExceptionCode,eax
         add     esi,2+2+2               ;skip return address/flags.
-        movs    w[edi],[esi]
-        add     edi,2
-        movs    w[edi],[esi]
-        add     edi,2
-        movs    w[edi],[esi]
-        add     edi,2
+        xor     eax,eax
+        lodsw
+        stosd
+        lodsw
+        stosd
+        lodsw
+        stosd
         jmp     exc20_Use16Bit17
         ;
 exc20_Use32Bit17:
@@ -807,7 +807,6 @@ exc20_Use32Bit17:
         mov     es:DebugExceptionCode,eax
         add     esi,4+4+4               ;skip return address/flags.
         mov     ecx,4+4+4
-        cld
         rep     movs b[edi],[esi]       ;get real return address.
 exc20_Use16Bit17:
         test    BYTE PTR es:ExcepSystemFlags,1
