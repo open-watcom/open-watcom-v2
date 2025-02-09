@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,7 +33,7 @@
 
 extern void             ProcObjFiles( void );
 extern void             LoadObjFiles( section * );
-extern char             *IdentifyObject( file_list *, unsigned long *, unsigned long * );
+extern char             *IdentifyObject( const file_list *, unsigned long *, unsigned long * );
 extern void             ResolveUndefined( void );
 extern unsigned long    ObjPass1( void );
 extern void             SetupFakeModule( void );
