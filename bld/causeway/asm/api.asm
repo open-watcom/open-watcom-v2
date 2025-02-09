@@ -410,7 +410,7 @@ dpmiAPI_RelCallBack endp
 
 ;=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 ;
-;Call user^Aermination routine on exception
+;Call user termination routine on exception
 ;
 ;On Entry:
 ;
