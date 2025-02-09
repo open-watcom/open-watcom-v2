@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -76,7 +77,7 @@ ORL_STRUCT( elf_file_handle ) {
     elf_file_handle     next;
     elf_sec_handle      *sec_handles;
     elf_sec_handle      *orig_sec_handles;
-    FILE                *fp;
+    orl_io_handle       io_hnd;
     unsigned_8          *contents_buffer1;
     unsigned_8          *contents_buffer2;
     elf_half            shentsize;

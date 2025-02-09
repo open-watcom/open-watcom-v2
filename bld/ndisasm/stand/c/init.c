@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -55,13 +55,6 @@
 #include "clibext.h"
 
 
-struct recognized_struct {
-    const char          *name;
-    section_type        type;
-};
-
-typedef struct recognized_struct recognized_struct;
-
 #define SEC_NAME_LEN 8
 
 #define HANDLE_TO_SECTION_TABLE_SIZE 53
@@ -71,6 +64,17 @@ typedef struct recognized_struct recognized_struct;
 
 #define CPP_COMMENT_STRING  "// "
 #define MASM_COMMENT_STRING "; "
+
+struct recognized_struct {
+    const char          *name;
+    section_type        type;
+};
+
+typedef struct recognized_struct recognized_struct;
+
+struct orl_io_struct {
+    FILE        *fp;
+};
 
 char    *CommentString  = CPP_COMMENT_STRING;
 
@@ -448,12 +452,12 @@ static return_val openFiles( void )
     return( RC_OKAY );
 }
 
-static void *objRead( FILE *fp, size_t len )
-/******************************************/
+static void *objRead( struct orl_io_struct *orlio, size_t len )
+/*************************************************************/
 {
     void        *retval;
 
-    /* unused parameters */ (void)fp;
+    /* unused parameters */ (void)orlio;
 
     if( (unsigned long)( objFilePos + len ) > objFileLen )
         return NULL;
@@ -462,10 +466,10 @@ static void *objRead( FILE *fp, size_t len )
     return retval;
 }
 
-static int objSeek( FILE *fp, long pos, int where )
-/*************************************************/
+static int objSeek( struct orl_io_struct *orlio, long pos, int where )
+/********************************************************************/
 {
-    /* unused parameters */ (void)fp;
+    /* unused parameters */ (void)orlio;
 
     if( where == SEEK_SET ) {
         objFilePos = pos;

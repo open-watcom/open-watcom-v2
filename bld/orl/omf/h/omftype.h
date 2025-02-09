@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -169,7 +169,7 @@ ORL_STRUCT( omf_handle ) {
 ORL_STRUCT( omf_file_handle ) {
     omf_handle          omf_hnd;
     omf_file_handle     next;
-    FILE                *fp;
+    orl_io_handle       io_hnd;
     unsigned char       *parsebuf;
     unsigned short      parselen;
     long                status;

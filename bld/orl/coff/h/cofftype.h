@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -79,7 +79,7 @@ ORL_STRUCT( coff_file_handle ) {
     coff_file_handle    next;
     coff_sec_handle     *coff_sec_hnd;
     coff_sec_handle     *orig_sec_hnd;
-    FILE                *fp;
+    orl_io_handle       io_hnd;
     coff_quantity       initial_size;
     coff_file_header    *f_hdr_buffer;
     char                *s_hdr_table_buffer;

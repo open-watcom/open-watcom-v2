@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -69,6 +69,10 @@ typedef struct readcache {
     void        *data;
 } readcache;
 
+struct orl_io_struct {
+    file_list   list;
+};
+
 static orl_handle               ORLHandle;
 static long                     ORLFilePos;
 static long                     ORLPos;
@@ -82,13 +86,13 @@ static ordinal_t                ImpOrdinal;
 
 static readcache                *ReadCacheList;
 
-static void *ORLRead( FILE *fp, size_t len )
-/******************************************/
+static void *ORLRead( struct orl_io_struct *orlio, size_t len )
+/*************************************************************/
 {
     void        *result;
     readcache   *cache;
 
-    result = CachePermRead( FP2FL( fp ), ORLFilePos + ORLPos, len );
+    result = CachePermRead( &orlio->list, ORLFilePos + ORLPos, len );
     ORLPos += len;
     _ChkAlloc( cache, sizeof( readcache ) );
     cache->next = ReadCacheList;
@@ -97,15 +101,15 @@ static void *ORLRead( FILE *fp, size_t len )
     return( result );
 }
 
-static int ORLSeek( FILE *fp, long pos, int where )
-/*************************************************/
+static int ORLSeek( struct orl_io_struct *orlio, long pos, int where )
+/********************************************************************/
 {
     if( where == SEEK_SET ) {
         ORLPos = pos;
     } else if( where == SEEK_CUR ) {
         ORLPos += pos;
     } else {
-        ORLPos = FP2FL( fp )->infile->len - ORLFilePos - pos;
+        ORLPos = orlio->list.infile->len - ORLFilePos - pos;
     }
     return( 0 );
 }
@@ -154,7 +158,7 @@ static orl_file_handle InitFile( void )
     } else {
         type = ORL_COFF;
     }
-    return( ORLFileInit( ORLHandle, FL2FP( CurrMod->f.source ), type ) );
+    return( ORLFileInit( ORLHandle, (struct orl_io_struct *)CurrMod->f.source, type ) );
 }
 
 static void ClearCachedData( file_list *list )
@@ -178,7 +182,7 @@ bool IsORL( file_list *list, unsigned long loc )
 
     isOK = true;
     ORLFileSeek( list, loc, SEEK_SET );
-    type = ORLFileIdentify( ORLHandle, FL2FP( list ) );
+    type = ORLFileIdentify( ORLHandle, (struct orl_io_struct *)list );
     if( type == ORL_ELF ) {
         ObjFormat |= FMT_ELF;
     } else if( type == ORL_COFF ) {

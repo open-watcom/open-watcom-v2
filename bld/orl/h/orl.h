@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,8 +41,8 @@ extern orl_handle           ORLENTRY ORLInit( orl_funcs *funcs );
 extern orl_return           ORLENTRY ORLGetError( orl_handle );
 extern orl_return           ORLENTRY ORLFini( orl_handle );
 
-extern orl_file_format      ORLENTRY ORLFileIdentify( orl_handle, FILE * );
-extern orl_file_handle      ORLENTRY ORLFileInit( orl_handle, FILE *, orl_file_format );
+extern orl_file_format      ORLENTRY ORLFileIdentify( orl_handle, orl_io_handle );
+extern orl_file_handle      ORLENTRY ORLFileInit( orl_handle, orl_io_handle, orl_file_format );
 extern orl_return           ORLENTRY ORLFileFini( orl_file_handle );
 extern orl_return           ORLENTRY ORLFileScan( orl_file_handle, const char *, orl_sec_return_func );
 extern orl_machine_type     ORLENTRY ORLFileGetMachineType( orl_file_handle );

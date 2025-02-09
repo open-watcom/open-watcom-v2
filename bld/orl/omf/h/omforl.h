@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,7 +39,7 @@
 extern omf_handle           OMFENTRY OmfInit( orl_funcs * );
 extern orl_return           OMFENTRY OmfFini( omf_handle );
 
-extern orl_return           OMFENTRY OmfFileInit( omf_handle, FILE *, omf_file_handle * );
+extern orl_return           OMFENTRY OmfFileInit( omf_handle, orl_io_handle, omf_file_handle * );
 extern orl_return           OMFENTRY OmfFileFini( omf_file_handle );
 extern orl_return           OMFENTRY OmfFileScan( omf_file_handle, const char *, orl_sec_return_func );
 extern orl_machine_type     OMFENTRY OmfFileGetMachineType( omf_file_handle );

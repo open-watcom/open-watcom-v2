@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2024-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -760,7 +760,7 @@ int convert_import_library_init( coff_file_handle coff_file_hnd )
 
     i_hdr = (coff_import_object_header *)coff_file_hnd->f_hdr_buffer;
     impsym.processor = i_hdr->machine;
-    impsym.exportedName = ORL_PTR_READ( coff_file_hnd->coff_hnd, coff_file_hnd->fp, i_hdr->size_of_data );
+    impsym.exportedName = ORL_PTR_READ( coff_file_hnd->coff_hnd, coff_file_hnd->io_hnd, i_hdr->size_of_data );
     impsym.DLLName = impsym.exportedName + strlen( impsym.exportedName ) + 1;
     impsym.time_date_stamp = i_hdr->time_date_stamp;
     impsym.type = i_hdr->name_type;

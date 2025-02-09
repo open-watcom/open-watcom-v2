@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,7 +39,7 @@
 extern coff_handle          COFFENTRY CoffInit( orl_funcs * );
 extern orl_return           COFFENTRY CoffFini( coff_handle );
 
-extern orl_return           COFFENTRY CoffFileInit( coff_handle, FILE *, coff_file_handle * );
+extern orl_return           COFFENTRY CoffFileInit( coff_handle, orl_io_handle, coff_file_handle * );
 extern orl_return           COFFENTRY CoffFileFini( coff_file_handle );
 extern orl_return           COFFENTRY CoffFileScan( coff_file_handle, const char *, orl_sec_return_func );
 extern orl_machine_type     COFFENTRY CoffFileGetMachineType( coff_file_handle );

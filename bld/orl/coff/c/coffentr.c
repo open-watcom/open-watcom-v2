@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2024-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -64,7 +64,7 @@ orl_return COFFENTRY CoffFini( coff_handle coff_hnd )
     return( ORL_OKAY );
 }
 
-orl_return COFFENTRY CoffFileInit( coff_handle coff_hnd, FILE *fp, coff_file_handle *pcfh )
+orl_return COFFENTRY CoffFileInit( coff_handle coff_hnd, orl_io_handle io_hnd, coff_file_handle *pcfh )
 {
     coff_file_handle    coff_file_hnd;
     orl_return          return_val;
@@ -73,7 +73,7 @@ orl_return COFFENTRY CoffFileInit( coff_handle coff_hnd, FILE *fp, coff_file_han
     if( coff_file_hnd == NULL )
         return( ORL_OUT_OF_MEMORY );
     memset( coff_file_hnd, 0, ORL_STRUCT_SIZEOF( coff_file_handle ) );
-    coff_file_hnd->fp = fp;
+    coff_file_hnd->io_hnd = io_hnd;
     CoffAddFileLinks( coff_hnd, coff_file_hnd );
     return_val = CoffLoadFileStructure( coff_file_hnd );
     if( return_val != ORL_OKAY ) {
