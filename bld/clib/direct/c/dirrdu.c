@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -32,7 +32,7 @@
 #include "variety.h"
 #include <stdlib.h>
 #include <string.h>
-#include <direct.h>
+#include <dirent.h>
 #include <rdos.h>
 #include "liballoc.h"
 #include "pathmac.h"

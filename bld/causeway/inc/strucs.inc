@@ -243,12 +243,9 @@ IOMap           dw 0            ;displacement to I/O map.
 ;
 tPL3Stack       db tPL2StackSize dup (0)
 tPL2Stack       db tPL1StackSize dup (0)
-
-;tPL1Stack      db tPL0StackSize dup (0)
-tPL1Stack       DD      0       ; make WASM happy
-                db tPL0StackSize-4 dup (0)
-
+tPL1Stack       db tPL0StackSize dup (0)
 tPL0Stack       dw ?
+
 TSSFields       ends
 
 NewHeaderStruc  struc

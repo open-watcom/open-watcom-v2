@@ -113,8 +113,8 @@ RawRelDescriptor proc near
         ;Check segment registers for value we're releasing and clear
         ;if found.
         ;
-        push    eax
         push    ebx
+        push    eax
         push    ecx
         movzx   ebx,bx
         GetDescOffset ebx               ;lose RPL & TI
@@ -142,7 +142,6 @@ ldt2_2: mov     ax,gs
         mov     gs,cx
 ldt2_3:
         pop     ecx
-        pop     ebx
         pop     eax
         ;
         push    eax
@@ -154,12 +153,11 @@ ldt2_3:
         assume ds:_cwRaw
         mov     ax,KernalZero           ;make LDT addresable.
         mov     es,ax
-        movzx   esi,bx                  ;Get selector to use.
+        mov     esi,ebx                 ;Get selector offset to use.
         shr     esi,3                   ;/8 for descriptor number.
         add     esi,MDTLinear+4
         mov     BYTE PTR es:[esi],0     ;mark this entry as free.
-        movzx   esi,bx
-        GetDescOffset esi               ;lose RPL & TI
+        mov     esi,ebx                 ;Get selector offset again.
         add     esi,MDTLinear
         xor     eax,eax
         mov     DWORD PTR es:[esi],eax
@@ -170,6 +168,7 @@ ldt2_3:
         pop     ds
         pop     esi
         pop     eax
+        pop     ebx
         ret
         assume ds:_cwDPMIEMU
 RawRelDescriptor endp
