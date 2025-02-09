@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -58,6 +59,10 @@ typedef struct buff_entry {
     char                buff[1];
 } buff_entry, *buff_list;
 
+struct orl_io_struct {
+    FILE        *fp;
+};
+
 static dw_out_offset   sectsizes[DR_DEBUG_NUM_SECTS];
 unsigned_8      *sections[DR_DEBUG_NUM_SECTS];
 
@@ -97,25 +102,25 @@ orl_return DoSymTable( orl_sec_handle orl_sec_hnd )
 }
 #endif
 
-static void *objRead( FILE *fp, size_t len )
-/******************************************/
+static void *objRead( struct orl_io_struct *orlio, size_t len )
+/*************************************************************/
 {
     buff_list   ptr;
 
     ptr = TRMemAlloc( sizeof( *buffList ) + len - 1 );
     ptr->next = buffList;
     buffList = ptr;
-    if( fread( ptr->buff, 1, len, fp ) != len ) {
+    if( fread( ptr->buff, 1, len, orlio->fp ) != len ) {
         TRMemFree( ptr );
         return( NULL );
     }
     return( ptr->buff );
 }
 
-static int objSeek( FILE *fp, long pos, int where )
-/*************************************************/
+static int objSeek( struct orl_io_struct *orlio, long pos, int where )
+/********************************************************************/
 {
-    return( fseek( fp, pos, where ) );
+    return( fseek( orlio->fp, pos, where ) );
 }
 
 static void freeBuffList( void )
@@ -242,7 +247,7 @@ int main( int argc, char *argv[] )
     orl_file_handle             o_fhnd;
     orl_file_format             type;
     orl_file_flags              o_flags;
-    FILE                        *fp;
+    struct orl_io_struct        orlio;
     int                         c;
     char                        *secs[MAX_SECS];
     int                         num_secs = 0;
@@ -257,8 +262,8 @@ int main( int argc, char *argv[] )
 
     dump.sections++;
 
-    fp = fopen( argv[1], "rb" );
-    if( fp == NULL ) {
+    orlio.fp = fopen( argv[1], "rb" );
+    if( orlio.fp == NULL ) {
         printf( "Error opening file.\n" );
         return( EXIT_FAILURE );
     }
@@ -268,7 +273,7 @@ int main( int argc, char *argv[] )
         printf( "Got NULL orl_handle.\n" );
         return( EXIT_FAILURE );
     }
-    type = ORLFileIdentify( o_hnd, fp );
+    type = ORLFileIdentify( o_hnd, &orlio );
     if( type == ORL_UNRECOGNIZED_FORMAT ) {
         printf( "The object file is not in either ELF, COFF or OMF format." );
         return( EXIT_FAILURE );
@@ -288,7 +293,7 @@ int main( int argc, char *argv[] )
         break;
     }
     printf( " object file.\n" );
-    o_fhnd = ORLFileInit( o_hnd, fp, type );
+    o_fhnd = ORLFileInit( o_hnd, &orlio, type );
     if( o_fhnd == NULL ) {
         printf( "Got NULL orl_file_handle.\n" );
         return( EXIT_FAILURE );
@@ -329,7 +334,7 @@ int main( int argc, char *argv[] )
         printf( "Error calling ORLFileFini.\n" );
         return( EXIT_FAILURE );
     }
-    if( fclose( fp ) ) {
+    if( fclose( orlio.fp ) ) {
         printf( "Error closing file.\n" );
         return( EXIT_FAILURE );
     }

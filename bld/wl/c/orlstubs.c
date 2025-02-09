@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,6 +32,11 @@
 
 #include "orl.h"
 
+
+struct orl_io_struct {
+    file_list   list;
+};
+
 orl_handle ORLInit( orl_funcs *funcs )
 {
     /* unused parameters */ (void)funcs;
@@ -45,16 +51,16 @@ orl_return ORLFini( orl_handle hdl )
     return( ORL_OKAY );
 }
 
-orl_file_format ORLFileIdentify( orl_handle hdl, FILE *fp )
+orl_file_format ORLFileIdentify( orl_handle hdl, struct orl_io_struct *orlio )
 {
-    /* unused parameters */ (void)fp; (void)data;
+    /* unused parameters */ (void)orlio; (void)data;
 
     return( ORL_UNRECOGNIZED_FORMAT );
 }
 
-orl_file_handle ORLFileInit( orl_handle a, FILE *fp, orl_file_format c )
+orl_file_handle ORLFileInit( orl_handle a, struct orl_io_struct *orlio, orl_file_format c )
 {
-    /* unused parameters */ (void)a; (void)fp; (void)c;
+    /* unused parameters */ (void)a; (void)orlio; (void)c;
 
     return( NULL );
 }
