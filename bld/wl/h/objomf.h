@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,9 +35,9 @@ extern list_of_names    *FindName( unsigned_16 );
 extern unsigned_16      GetIdx( void );
 extern void             SkipIdx( void );
 extern unsigned long    OMFPass1( void );
-extern bool             IsOMF( file_list *, unsigned long );
-extern char             *GetOMFName( file_list *, unsigned long * );
-extern void             OMFSkipObj( file_list *, unsigned long * );
+extern bool             IsOMF( const file_list *, unsigned long );
+extern char             *GetOMFName( const file_list *, unsigned long * );
+extern void             OMFSkipObj( const file_list *, unsigned long * );
 extern void             ResetObjOMF( void );
 
 extern byte             OMFAlignTab[];

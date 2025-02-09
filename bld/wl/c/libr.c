@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -612,8 +612,9 @@ static bool ARSearchExtLib( file_list *lib, const char *name, unsigned long *off
 }
 
 mod_entry *SearchLib( file_list *lib, const char *name )
-/********************************************************/
-/* Search the specified library file for the specified name & make a module */
+/*******************************************************
+ * Search the specified library file for the specified name & make a module
+ */
 {
     mod_entry           *obj;
     unsigned long       pos;
@@ -659,8 +660,8 @@ mod_entry *SearchLib( file_list *lib, const char *name )
     return( obj );
 }
 
-char *GetARName( const ar_header *header, file_list *list, unsigned long *loc )
-/*****************************************************************************/
+char *GetARName( const ar_header *header, const file_list *list, unsigned long *loc )
+/***********************************************************************************/
 {
     const char      *buf;
     char            *name;

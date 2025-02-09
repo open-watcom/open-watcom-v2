@@ -208,8 +208,9 @@ void *CachePermRead( const file_list *list, unsigned long pos, size_t len )
 }
 
 void *CacheRead( const file_list *list, unsigned long pos, size_t len )
-/*********************************************************************/
-/* read len bytes out of the cache. */
+/**********************************************************************
+ * read len bytes out of the cache.
+ */
 {
     size_t          bufnum;
     size_t          startnum;
@@ -293,8 +294,9 @@ void CacheFini( void )
 }
 
 void CacheFree( const file_list *list, void *mem )
-/************************************************/
-// used for disposing things allocated by CachePermRead
+/*************************************************
+ * used for disposing things allocated by CachePermRead
+ */
 {
     if( list->infile->status & INSTAT_PAGE_CACHE ) {
         _LnkFree( mem );

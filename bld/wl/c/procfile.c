@@ -63,8 +63,8 @@
 #include "loadpe.h"
 
 
-static void BadSkip( file_list *list, unsigned long *loc )
-/********************************************************/
+static void BadSkip( const file_list *list, unsigned long *loc )
+/**************************************************************/
 {
     /* unused parameters */ (void)list; (void)loc;
 
@@ -72,7 +72,7 @@ static void BadSkip( file_list *list, unsigned long *loc )
 }
 
 static struct {
-    void (*SkipObj)( file_list *, unsigned long * );
+    void (*SkipObj)( const file_list *, unsigned long * );
     unsigned long (*Pass1)( void );
 } Process[] = {
     /* SkipObj       Pass1                                                                  */
@@ -590,8 +590,8 @@ void LoadObjFiles( section *sect )
     }
 }
 
-char *IdentifyObject( file_list *list, unsigned long *loc, unsigned long *size )
-/******************************************************************************/
+char *IdentifyObject( const file_list *list, unsigned long *loc, unsigned long *size )
+/************************************************************************************/
 {
     ar_header       *ar_hdr;
     char            *name;
