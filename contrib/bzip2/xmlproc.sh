@@ -1,5 +1,20 @@
 #!/bin/bash
-# see the README in this directory for usage etc.
+# see the README file for usage etc.
+#
+# ------------------------------------------------------------------
+#  This file is part of bzip2/libbzip2, a program and library for
+#  lossless, block-sorting data compression.
+#
+#  bzip2/libbzip2 version 1.0.8 of 13 July 2019
+#  Copyright (C) 1996-2019 Julian Seward <jseward@acm.org>
+#
+#  Please read the WARNING, DISCLAIMER and PATENTS sections in the 
+#  README file.
+#
+#  This program is released under the terms of the license contained
+#  in the file LICENSE.
+# ----------------------------------------------------------------
+
 
 usage() {
   echo '';
@@ -45,7 +60,7 @@ export XML_CATALOG_FILES=/etc/xml/catalog
 
 # post-processing tidy up
 cleanup() {
-  echo "Cleaning up: # $@" 
+  echo "Cleaning up: $@" 
   while [ $# != 0 ]
   do
     arg=$1; shift;
