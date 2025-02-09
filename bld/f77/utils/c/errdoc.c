@@ -112,6 +112,10 @@ int main( int argc, char **argv )
     } else {
         fi = fopen( "error.msg", "rt" );
     }
+    if ( fi == NULL ) {
+        printf( "input file open error\n" );
+	return( 0 );
+    }
     if( argc > 1 ) {
         fo = fopen( argv[2], "wt" );
         argc--;
