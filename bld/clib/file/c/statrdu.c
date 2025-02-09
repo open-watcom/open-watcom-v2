@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -34,10 +34,10 @@
 #include <stddef.h>
 #include <sys/types.h>
 #include <sys/stat.h>
-#include <io.h>
+#include <unistd.h>
 #include <fcntl.h>
 #include <string.h>
-#include <direct.h>
+#include <dirent.h>
 #include <rdos.h>
 #include <ctype.h>
 #include <time.h>
