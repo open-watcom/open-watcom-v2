@@ -41,9 +41,6 @@
 #define SYMBOL_TO_EXPORT_TABLE_SIZE             53
 #define SECTION_TO_SEGMENT_TABLE_SIZE           29
 
-#define FP2BL(fp)       ((buffer_list *)(fp))
-#define BL2FP(bl)       ((FILE *)(bl))
-
 typedef struct buf_list {
     struct buf_list     *next;
     char                buf[1];
