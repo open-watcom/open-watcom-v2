@@ -937,7 +937,7 @@ Int21hExecPatch proc    near
         mov ax,[bp+2+2]
         and ax,1
 ;       and w[bp+2+2+2+2+2],1
-        and w[bp+2+2+2+2+2],0fffeh      ; MED 01/24/96
+        and b[bp+2+2+2+2+2],NOT 1
 
         or w[bp+2+2+2+2+2],ax
         pop ax

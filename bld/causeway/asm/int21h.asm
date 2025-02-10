@@ -1461,7 +1461,7 @@ int2129_shs1:
         sub     TotalHandles,ax ;update total count needed.
         mov     ax,TotalHandles
         assume ds:nothing
-        or      ax,1
+        or      al,1
         mov     edi,offset Int21Buffer
         mov     es:RealRegsStruc.Real_EAX[edi],6700h
         mov     es:RealRegsStruc.Real_EBX[edi],eax
@@ -1480,7 +1480,7 @@ int2129_shb0:
         pop     es
         add     ax,TotalHandles ;get total count needed.
         assume ds:nothing
-        or      ax,1
+        or      al,1
         mov     edi,offset Int21Buffer
         mov     es:RealRegsStruc.Real_EAX[edi],6700h
         mov     es:RealRegsStruc.Real_EBX[edi],eax
@@ -1574,7 +1574,7 @@ int2129_shb2:
         assume ds:nothing
         push    ds
         pop     es
-        or      ax,1
+        or      al,1
         mov     edi,offset Int21Buffer
         mov     es:RealRegsStruc.Real_EAX[edi],6700h
         mov     es:RealRegsStruc.Real_EBX[edi],eax

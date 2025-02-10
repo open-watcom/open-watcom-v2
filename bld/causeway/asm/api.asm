@@ -2986,7 +2986,7 @@ _DetSelector    proc    near
         test    DescriptorBuffer+6,128  ;granularity
         jz      api64_0
         shl     ebx,12
-        or      ebx,0FFFh
+        or      bx,0FFFh
 api64_0:
         clc
         jmp     api64_10
@@ -7506,7 +7506,7 @@ api92_NoRelHandle:
         mov     edi,offset Int21Buffer
         mov     ax,TotalHandles         ;get current count.
         sub     ax,WORD PTR fs:[PSP_Handles]
-        or      ax,1                    ;force bit 0 for DOS bug.
+        or      al,1                    ;force bit 0 for DOS bug.
         mov     [edi].RealRegsStruc.Real_EAX,6700h
         mov     [edi].RealRegsStruc.Real_EBX,eax
         mov     bl,21h

@@ -81,7 +81,7 @@ ldt1_1: sub     edi,MDTLinear+4
         pop     ds
         ;
 ldt1_2: pop     eax
-        or      ax,3+4          ;RPL=3, TI=1
+        or      al,3+4          ;RPL=3, TI=1
         clc
         jmp     ldt1_9
         ;
