@@ -117,7 +117,7 @@ Int21h  proc    near
         pop     eax
         mov     ebp,esp         ;Make registers addressable.
         mov     esi,Int_Flags32
-        test    BYTE PTR cs:Int21hSystemFlags,1 ;/
+        test    BYTE PTR cs:Int21hSystemFlags,SYSFLAG_16B
         jz      int211_32Bit0       ;/
         movzx   ebp,bp              ;/
         mov     esi,Int_Flags16
@@ -141,7 +141,7 @@ int211_NoInts:
         pop     fs
         pop     es
         pop     ds
-        test    BYTE PTR cs:Int21hSystemFlags,1
+        test    BYTE PTR cs:Int21hSystemFlags,SYSFLAG_16B
         jz      int211_32Bit1
         iret
 int211_32Bit1:
@@ -320,7 +320,7 @@ Int21hGetVect   endp
 ;Function 38 emulation.
 ;
 Int21hGetSetCountry proc near
-        test    BYTE PTR cs:Int21hSystemFlags,1 ;16 or 32-bit -1 check?
+        test    BYTE PTR cs:Int21hSystemFlags,SYSFLAG_16B   ;16 or 32-bit -1 check?
         jz      int2110_32Bit0
         cmp     dx,-1           ;Setting code?
         jmp     int2110_ExitCheck               ;pass to old handler?
@@ -835,7 +835,7 @@ int2121_OK:
         lds     esi,f[ebx+4+2]
         jmp     int2121_Ef4
 int2121_0:
-        test    BYTE PTR cs:Int21hSystemFlags,1
+        test    BYTE PTR cs:Int21hSystemFlags,SYSFLAG_16B
         jz      int2121_Ef3
         movzx   ebx,bx
         movzx   esi,w[ebx+2]            ;Get command line offset.
@@ -866,7 +866,7 @@ if 0
         push    ds
         mov     ds,cs:Int21hDSeg
         assume ds:_cwMain
-        test    BYTE PTR SystemFlags,1
+        test    BYTE PTR SystemFlags,SYSFLAG_16B
         assume ds:nothing
         pop     ds
         jz      int2121_Ef6
@@ -908,7 +908,7 @@ int2121_Ef7:
         push    ds
         mov     ds,cs:Int21hDSeg
         assume ds:_cwMain
-        test    BYTE PTR SystemFlags,1
+        test    BYTE PTR SystemFlags,SYSFLAG_16B
         assume ds:nothing
         pop     ds
         jz      int2121_Ef8
@@ -1644,7 +1644,7 @@ Int21hDOS4GTest proc near
 ;
 ;This check only allowed for 32-bit programs which is what DOS4G uses.
 ;
-        test    BYTE PTR cs:Int21hSystemFlags,1
+        test    BYTE PTR cs:Int21hSystemFlags,SYSFLAG_16B
         jnz     Int21hNotOurs
 ;
 ;Check register setup.
@@ -1871,7 +1871,7 @@ Int21hStringLen endp
 ;------------------------------------------------------------------------------
 Int21hAL2Carry  proc    near
         and     al,EFLAG_CF
-        test    BYTE PTR cs:Int21hSystemFlags,1
+        test    BYTE PTR cs:Int21hSystemFlags,SYSFLAG_16B
         jz      int2136_32Bit
         or      b[ebp+Int_Flags16],al
         ret
@@ -2060,7 +2060,7 @@ Int21hOpen      proc    near
         ;
         mov     bl,21h
         Sys     GetVect
-        test    BYTE PTR es:SystemFlags,1
+        test    BYTE PTR es:SystemFlags,SYSFLAG_16B
         jz      int2137_Use32
         movzx   edx,dx
 int2137_Use32:

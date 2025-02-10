@@ -2403,7 +2403,7 @@ VirtualFault    proc    far
         pop     ecx
         pop     eax
         assume ds:nothing
-        test    BYTE PTR cs:DpmiEmuSystemFlags,1        ;check exit size.
+        test    BYTE PTR cs:DpmiEmuSystemFlags,SYSFLAG_16B  ;check exit size.
         assume ds:_cwRaw
         jz      mem18_Use32Bit3
         db 66h

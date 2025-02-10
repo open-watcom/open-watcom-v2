@@ -27,7 +27,7 @@ Int10hOpen      proc    near
         ;
         mov     bl,10h
         Sys     GetVect
-        test    BYTE PTR es:SystemFlags,1
+        test    BYTE PTR es:SystemFlags,SYSFLAG_16B
         jz      int101_Use32
         mov     w[OldInt10h],dx
         mov     w[OldInt10h+2],cx
@@ -61,7 +61,7 @@ Int10hClose     proc    near
         jz      int102_9
         mov     ds,Int10hDSeg
         assume ds:_cwMain
-        test    BYTE PTR SystemFlags,1
+        test    BYTE PTR SystemFlags,SYSFLAG_16B
         assume ds:nothing
         mov     ds,cs:Int10hDDSeg
         assume ds:_Int10h
@@ -1024,7 +1024,7 @@ int103_Done:
         push    ds
         mov     ds,cs:Int10hDSeg
         assume ds:_cwMain
-        test    BYTE PTR SystemFlags,1
+        test    BYTE PTR SystemFlags,SYSFLAG_16B
         jz      int103_Use32Bit8
         movzx   ebp,sp
         lea     bp,[bp+(4+4+4)+IFrame16.i16_flags]  ;get address of original flags.
@@ -1038,7 +1038,7 @@ int103_Use16Bit8:
         and     w[ebp],EFLAG_IF or EFLAG_DF
         ;or new flags
         or      w[ebp],ax
-        test    BYTE PTR SystemFlags,1
+        test    BYTE PTR SystemFlags,SYSFLAG_16B
         assume ds:nothing
         pop     ds
         pop     ebp
@@ -1055,7 +1055,7 @@ int103_NotOurs:
         push    ds
         mov     ds,cs:Int10hDSeg
         assume ds:_cwMain
-        test    BYTE PTR SystemFlags,1
+        test    BYTE PTR SystemFlags,SYSFLAG_16B
         assume ds:nothing
         pop     ds
         jz      int103_Use32Bit11

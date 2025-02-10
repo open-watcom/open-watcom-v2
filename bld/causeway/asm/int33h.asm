@@ -33,7 +33,7 @@ Int33hOpen      proc    near
         mov     Int33hDSeg,es   ;Store cwCode selector.
         mov     Int33hCSeg,cs   ;store this segment.
         mov     Int33hDDSeg,ds
-        test    BYTE PTR es:SystemFlags,1
+        test    BYTE PTR es:SystemFlags,SYSFLAG_16B
         jz      int331_32bit
         mov     eax,offset Int33hDummy
         mov     w[Int33hUserCode],ax
@@ -72,7 +72,7 @@ int331_0bit:
         ;
         mov     bl,33h
         Sys     GetVect
-        test    BYTE PTR es:SystemFlags,1
+        test    BYTE PTR es:SystemFlags,SYSFLAG_16B
         jz      int331_Use32
         mov     w[OldInt33h],dx
         mov     w[OldInt33h+2],cx
@@ -122,7 +122,7 @@ int332_8:
         jz      int332_9
         mov     ds,Int33hDSeg
         assume ds:_cwMain
-        test    BYTE PTR SystemFlags,1
+        test    BYTE PTR SystemFlags,SYSFLAG_16B
         assume ds:nothing
         mov     ds,cs:Int33hDDSeg
         assume ds:_Int33h
@@ -181,7 +181,7 @@ int333_SwapEvent:
         push    ds
         mov     ds,cs:Int33hDSeg
         assume ds:_cwMain
-        test    BYTE PTR SystemFlags,1
+        test    BYTE PTR SystemFlags,SYSFLAG_16B
         assume ds:_Int33h
         pop     ds
         jz      int333_se1
@@ -223,7 +223,7 @@ int333_se0:
         push    ds
         mov     ds,cs:Int33hDSeg
         assume ds:_cwMain
-        test    BYTE PTR SystemFlags,1
+        test    BYTE PTR SystemFlags,SYSFLAG_16B
         assume ds:_Int33h
         pop     ds
         jz      int333_se3
@@ -293,7 +293,7 @@ int333_Reset:
         push    ds
         mov     ds,Int33hDSeg
         assume ds:_cwMain
-        test    BYTE PTR SystemFlags,1
+        test    BYTE PTR SystemFlags,SYSFLAG_16B
         assume ds:_Int33h
         pop     ds
         jz      int333_r32
@@ -382,7 +382,7 @@ int333_SetEvent:
         push    es
         mov     ds,cs:Int33hDSeg
         assume ds:_cwMain
-        test    BYTE PTR SystemFlags,1
+        test    BYTE PTR SystemFlags,SYSFLAG_16B
         assume ds:nothing
         mov     ds,cs:Int33hDDSeg
         assume ds:_Int33h
@@ -639,7 +639,7 @@ int333_Done:
         push    ds
         mov     ds,cs:Int33hDSeg
         assume ds:_cwMain
-        test    BYTE PTR SystemFlags,1
+        test    BYTE PTR SystemFlags,SYSFLAG_16B
         jz      int333_Use32Bit8
         movzx   ebp,sp
         lea     bp,[bp+(4+4+4)+IFrame16.i16_flags]  ;get address of original flags.
@@ -653,7 +653,7 @@ int333_Use16Bit8:
         and     w[ebp],EFLAG_IF or EFLAG_DF
         ;or new flags
         or      w[ebp],ax
-        test    BYTE PTR SystemFlags,1
+        test    BYTE PTR SystemFlags,SYSFLAG_16B
         assume ds:nothing
         pop     ds
         pop     ebp
@@ -669,7 +669,7 @@ int333_NotOurs:
         push    ds
         mov     ds,cs:Int33hDSeg
         assume ds:_cwMain
-        test    BYTE PTR SystemFlags,1
+        test    BYTE PTR SystemFlags,SYSFLAG_16B
         assume ds:nothing
         pop     ds
         jz      int333_Use32Bit11
@@ -686,7 +686,7 @@ MouseEvent      proc    far
         push    ds
         mov     ds,cs:Int33hDSeg
         assume ds:_cwMain
-        test    BYTE PTR SystemFlags,1
+        test    BYTE PTR SystemFlags,SYSFLAG_16B
         assume ds:nothing
         pop     ds
         jz      int334_start32
@@ -741,7 +741,7 @@ int334_ok:
         push    ds
         mov     ds,Int33hDSeg
         assume ds:_cwMain
-        test    BYTE PTR SystemFlags,1
+        test    BYTE PTR SystemFlags,SYSFLAG_16B
         assume ds:_Int33h
         pop     ds
         jz      int334_its32
@@ -762,7 +762,7 @@ int334_its32:
         ;
         mov     ds,Int33hDSeg
         assume ds:_cwMain
-        test    BYTE PTR SystemFlags,1
+        test    BYTE PTR SystemFlags,SYSFLAG_16B
         assume ds:nothing
         jz      int334_Use32Bit
         db 66h
@@ -782,7 +782,7 @@ int334_Exit:
         popad
         mov     ds,cs:Int33hDSeg
         assume ds:_cwMain
-        test    BYTE PTR SystemFlags,1
+        test    BYTE PTR SystemFlags,SYSFLAG_16B
         assume ds:nothing
         pop     gs
         pop     fs
@@ -800,7 +800,7 @@ Int33hDummy     proc    near
         push    ds
         mov     ds,cs:Int33hDSeg
         assume ds:_cwMain
-        test    BYTE PTR SystemFlags,1
+        test    BYTE PTR SystemFlags,SYSFLAG_16B
         assume ds:nothing
         pop     ds
         jz      int335_32Bit

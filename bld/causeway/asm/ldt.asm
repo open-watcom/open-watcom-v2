@@ -456,7 +456,7 @@ RawBPutDescriptor proc near
         movzx   esi,bx          ;Get the selector.
         GetDescOffset esi       ;lose RPL & TI.
         add     esi,MDTLinear   ;offset into descriptor table.
-        test    BYTE PTR RawSystemFlags,1
+        test    BYTE PTR RawSystemFlags,SYSFLAG_16B
         jz      ldt8_Use32
         movzx   edi,di
 ldt8_Use32:
@@ -508,7 +508,7 @@ RawBGetDescriptor proc near
         movzx   esi,bx          ;Get the selector.
         GetDescOffset esi       ;lose RPL & TI.
         add     esi,MDTLinear   ;offset into descriptor table.
-        test    BYTE PTR RawSystemFlags,1
+        test    BYTE PTR RawSystemFlags,SYSFLAG_16B
         jz      ldt9_Use32
         movzx   edi,di
 ldt9_Use32:

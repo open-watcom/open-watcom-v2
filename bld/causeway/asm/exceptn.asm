@@ -266,7 +266,7 @@ exc1_0:
         ;
         mov     bl,0
         Sys     GetVect
-        test    BYTE PTR ExcepSystemFlags,1
+        test    BYTE PTR ExcepSystemFlags,SYSFLAG_16B
         jz      exc1_i00Use32
         mov     w[OldInt00h],dx
         mov     w[OldInt00h+2],cx
@@ -292,7 +292,7 @@ exc1_1:
         pop     edi
         pop     esi
         pop     ebx
-        test    BYTE PTR ExcepSystemFlags,1
+        test    BYTE PTR ExcepSystemFlags,SYSFLAG_16B
         jz      exc1_Use32
         mov     w[edi],dx
         mov     w[edi+2],cx
@@ -367,7 +367,7 @@ exc2_0:
         ;
         cmp     d[OldInt00h],0
         jz      exc2_i2
-        test    BYTE PTR ExcepSystemFlags,1
+        test    BYTE PTR ExcepSystemFlags,SYSFLAG_16B
         jz      exc2_i00Use32
         mov     dx,w[OldInt00h]
         mov     cx,w[OldInt00h+2]
@@ -384,7 +384,7 @@ exc2_i2:
         clc
         retf
         ;
-exc2_1: test    BYTE PTR ExcepSystemFlags,1
+exc2_1: test    BYTE PTR ExcepSystemFlags,SYSFLAG_16B
         jz      exc2_Use32
         movzx   edx,w[edi]
         mov     cx,w[edi+2]
@@ -439,7 +439,7 @@ Int00hHandler   proc    near
         mov     DebugFS,fs
         mov     DebugGS,gs
         ;
-        test    BYTE PTR ExcepSystemFlags,1
+        test    BYTE PTR ExcepSystemFlags,SYSFLAG_16B
         jz      exc3_Use32_0
         add     DebugESP,2+2+2
         movzx   ebx,sp
@@ -718,7 +718,7 @@ DPMIExcPatch    proc    far
         mov     ds,ExcepDSeg
         assume ds:_cwMain
         mov     LinearAddressCheck,0
-        test    BYTE PTR cs:ExcepSystemFlags,1
+        test    BYTE PTR cs:ExcepSystemFlags,SYSFLAG_16B
         assume ds:_Excep
         pop     ds
         pop     ebp
@@ -778,7 +778,7 @@ exc20_ok:
         mov     ds,ax
         assume ds:nothing
         mov     esi,esp
-        test    BYTE PTR es:ExcepSystemFlags,1
+        test    BYTE PTR es:ExcepSystemFlags,SYSFLAG_16B
         jz      exc20_SP320
         movzx   esi,si
 exc20_SP320:
@@ -787,7 +787,7 @@ exc20_SP320:
         cld
         rep     movs b[edi],[esi]    ;copy registers off the stack.
         ;
-        test    BYTE PTR es:ExcepSystemFlags,1
+        test    BYTE PTR es:ExcepSystemFlags,SYSFLAG_16B
         jz      exc20_Use32Bit17
         movzx   ebp,sp
         movzx   eax,w[ebp+(4+4+4+4+4+4+4)+(2+2+2+2)+(2+2)]
@@ -809,7 +809,7 @@ exc20_Use32Bit17:
         mov     ecx,4+4+4
         rep     movs b[edi],[esi]       ;get real return address.
 exc20_Use16Bit17:
-        test    BYTE PTR es:ExcepSystemFlags,1
+        test    BYTE PTR es:ExcepSystemFlags,SYSFLAG_16B
         jz      exc20_Use32Bit678
         movzx   eax,w[esi]
         mov     es:DebugESP,eax
@@ -881,7 +881,7 @@ exc20_Use16Bit678:
         ;Now modify original CS:EIP,SS:ESP values and return control
         ;to this code via interupt structure to restore stacks.
         ;
-        test    BYTE PTR SystemFlags,1
+        test    BYTE PTR SystemFlags,SYSFLAG_16B
         jz      exc20_Use32_2
         mov     eax,offset exc20_Use0_2
         mov     w[bp+(4+4+2)+(2+2+2)+(0)],ax
@@ -1394,7 +1394,7 @@ SSEBPDEBUGDUMPCOUNT     EQU     256     ; should be multiple of 16
         mov     ecx,CSEIPDEBUGDUMPCOUNT
         mov     fs,DebugCS
         mov     esi,DebugEIP
-        test    BYTE PTR ExcepSystemFlags,1
+        test    BYTE PTR ExcepSystemFlags,SYSFLAG_16B
         jz      exc22_cseip32
         movzx   esi,si
 
@@ -1478,7 +1478,7 @@ exc22_cseip3:
         assume ds:_Excep
         mov     DumpAsciiFlag,al
 
-        test    BYTE PTR ExcepSystemFlags,1
+        test    BYTE PTR ExcepSystemFlags,SYSFLAG_16B
         jz      user32
         movzx   esi,si
 
@@ -1566,7 +1566,7 @@ ssesp:
         mov     ecx,SSESPDEBUGDUMPCOUNT
         mov     fs,DebugSS
         mov     esi,DebugESP
-        test    BYTE PTR ExcepSystemFlags,1
+        test    BYTE PTR ExcepSystemFlags,SYSFLAG_16B
         jz      exc22_ssesp32
         movzx   esi,si
 
@@ -1652,7 +1652,7 @@ exc22_ssesp3:
 med2d:
         sub     esi,ecx
 
-        test    BYTE PTR ExcepSystemFlags,1
+        test    BYTE PTR ExcepSystemFlags,SYSFLAG_16B
         jz      medssebp32
         movzx   esi,si
 
@@ -1749,7 +1749,7 @@ ebpdump:
         mov     ecx,SSEBPDEBUGDUMPCOUNT
         mov     fs,DebugSS
         mov     esi,DebugEBP
-        test    BYTE PTR ExcepSystemFlags,1
+        test    BYTE PTR ExcepSystemFlags,SYSFLAG_16B
         jz      exc22_ssebp32
         movzx   esi,si
 

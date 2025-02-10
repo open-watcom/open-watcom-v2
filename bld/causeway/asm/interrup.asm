@@ -370,7 +370,7 @@ RawSetVector    proc    near
         push    gs
         mov     ax,DpmiEmuDS
         mov     ds,ax
-        test    BYTE PTR DpmiEmuSystemFlags,1
+        test    BYTE PTR DpmiEmuSystemFlags,SYSFLAG_16B
         jz      inter9_use32_add
         movzx   edx,dx
         ;
@@ -1032,7 +1032,7 @@ SFrameA4 ends
         ;
         ;Put old details onto new stack.
         ;
-        test    BYTE PTR cs:DpmiEmuSystemFlags,1
+        test    BYTE PTR cs:DpmiEmuSystemFlags,SYSFLAG_16B
         jz      inter15_iUse32
         mov     eax,[esp+SFrameA4.sa4_iret.i_ss]
         sub     ebx,2
@@ -1108,7 +1108,7 @@ sa5_index    dd ?
 sa5_iret     IFrame <?>
 SFrameA5 ends
         ;
-        test    BYTE PTR cs:DpmiEmuSystemFlags,1
+        test    BYTE PTR cs:DpmiEmuSystemFlags,SYSFLAG_16B
         jz      inter15_i2Use32
         xor     ebx,ebx
         mov     ax,ss
@@ -1212,7 +1212,7 @@ SFrameA6 ends
 inter16_Update:
         ;Put old details onto new stack.
         ;
-        test    BYTE PTR cs:DpmiEmuSystemFlags,1
+        test    BYTE PTR cs:DpmiEmuSystemFlags,SYSFLAG_16B
         jz      inter16_Use32
         mov     eax,[esp+SFrameA6.sa6_iret.i_ss]
         sub     ebx,2
@@ -1298,7 +1298,7 @@ IntDispatch     proc    near
         ;Dispatch normal interrupt.
         ;
         add     esi,offset InterruptTable
-        test    BYTE PTR DpmiEmuSystemFlags,1
+        test    BYTE PTR DpmiEmuSystemFlags,SYSFLAG_16B
         jz      inter17_Use32Bit14
         mov     eax,[esi]
         mov     d[inter17_Call2],eax
@@ -1361,7 +1361,7 @@ SFrameA7 ends
         mov     ds,ax
         mov     ebx,esp
         assume ds:nothing
-        test    BYTE PTR cs:DpmiEmuSystemFlags,1
+        test    BYTE PTR cs:DpmiEmuSystemFlags,SYSFLAG_16B
         assume ds:_cwDPMIEMU
         jz      inter17_Use32
         ;
@@ -1429,7 +1429,7 @@ inter17_Excep:
         ;Dispatch exception.
         ;
         add     esi,offset ExceptionTable
-        test    BYTE PTR DpmiEmuSystemFlags,1
+        test    BYTE PTR DpmiEmuSystemFlags,SYSFLAG_16B
         jz      inter17_eUse32Bit14
         mov     eax,[esi]
         mov     d[inter17_Call2],eax
@@ -1472,7 +1472,7 @@ inter17_ResumeExp:
         ;
         cli
         assume ds:nothing
-        test    BYTE PTR cs:DpmiEmuSystemFlags,1
+        test    BYTE PTR cs:DpmiEmuSystemFlags,SYSFLAG_16B
         assume ds:_cwDPMIEMU
         jz      inter17_ExpUse32
         ;
@@ -1600,7 +1600,7 @@ IntNN386        proc    far
         mov     ax,DpmiEmuDS            ;make our data addresable.
         mov     ds,ax           ;/
         mov     ebp,esp
-        test    BYTE PTR DpmiEmuSystemFlags,1
+        test    BYTE PTR DpmiEmuSystemFlags,SYSFLAG_16B
         jz      inter18_Use32Bit19
         movzx   ebp,bp
         movzx   eax,w[ebp+SFrameA10.sa10_iret.i16_flags]
@@ -1675,7 +1675,7 @@ inter18_NoCall:
         ;clear IF & TF & DF & NT & IOPL.
         and     ax,NOT (EFLAG_NT or EFLAG_IOPL or EFLAG_IF or EFLAG_TF or EFLAG_DF)
         ;
-        test    BYTE PTR DpmiEmuSystemFlags,1
+        test    BYTE PTR DpmiEmuSystemFlags,SYSFLAG_16B
         jz      inter18_Use32Bit
         mov     bx,[ebp+SFrameA10.sa10_iret.i16_flags]
         ;retain IF & TF & DF & NT & IOPL.
@@ -1755,7 +1755,7 @@ SFrameA11 ends
         ;
         mov     ax,DpmiEmuDS            ;make our data addresable.
         mov     ds,ax           ;/
-        test    BYTE PTR DpmiEmuSystemFlags,1
+        test    BYTE PTR DpmiEmuSystemFlags,SYSFLAG_16B
         jz      inter19_Use32Bit16
         movzx   eax,w[esp+SFrameA11.sa11_iret.i16_flags]
         mov     ExceptionEFL,eax
@@ -1779,7 +1779,7 @@ inter19_Use16Bit16:
         cld
         rep     movs b[edi],[esi]       ;copy registers off the stack.
         ;
-        test    BYTE PTR cs:DpmiEmuSystemFlags,1
+        test    BYTE PTR cs:DpmiEmuSystemFlags,SYSFLAG_16B
         jz      inter19_Use32Bit17
         add     esi,2+2+2               ;skip return address/flags.
         xor     eax,eax
@@ -1795,7 +1795,7 @@ inter19_Use32Bit17:
         mov     ecx,4+4+4
         rep     movs b[edi],[esi]       ;get real return address.
 inter19_Use16Bit17:
-        test    BYTE PTR cs:DpmiEmuSystemFlags,1
+        test    BYTE PTR cs:DpmiEmuSystemFlags,SYSFLAG_16B
         jz      inter19_Use32Bit678
         movzx   eax,w[esi]
         mov     es:ExceptionESP,eax

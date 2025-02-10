@@ -33,6 +33,16 @@ ENGLISH equ     0
 SPANISH equ     0
         endif
 
+SYSFLAG_16B     equ (1 shl 0)
+SYSFLAG_VMM     equ (1 shl 1)
+;SYSFLAG_PT0     equ (1 shl 2)
+;SYSFLAG_PT1     equ (1 shl 3)
+;SYSFLAG_PF0     equ (1 shl 4)
+;SYSFLAG_PF1     equ (1 shl 5)
+;SYSFLAG_PF2     equ (1 shl 6)
+SYSFLAG_LDT     equ (1 shl 7)
+SYSFLAG_INPM    equ (1 shl 15)
+
 CBFLAG_INUSE equ (1 shl 0)      ; callback is in use
 CBFLAG_INT  equ (1 shl 1)       ; callback is interrupt type
 CBFLAG_BUSY equ (1 shl 7)       ; callback is busy
@@ -758,7 +768,7 @@ cw2_pe0:
 ;
         mov     es,apiDataSeg
         assume es:_apiCode
-        test    BYTE PTR SystemFlags,1
+        test    BYTE PTR SystemFlags,SYSFLAG_16B
         jz      cw2_Use32
         mov     dx,WORD PTR es:[OldIntSys]
         mov     cx,WORD PTR es:[OldIntSys+2]
@@ -1665,7 +1675,7 @@ END COMMENT !
 
         mov     ecx,65535
         mov     al,b[RawSystemFlags]
-        xor     al,1
+        xor     al,SYSFLAG_16B
         shl     al,6
         mov     ah,DescPresent+DescPL0+DescMemory+DescRWData
         mov     di,KernalPL0
@@ -1731,7 +1741,7 @@ END COMMENT !
         shl     esi,4
         mov     ecx,65535
         mov     al,b[RawSystemFlags]
-        xor     al,1
+        xor     al,SYSFLAG_16B
         shl     al,6
         mov     ah,DescPresent+DescPL3+DescMemory+DescRWData
         mov     di,KernalSS
@@ -1867,7 +1877,7 @@ END COMMENT !
         shl     esi,4
         mov     ecx,65535
         mov     al,b[RawSystemFlags]
-        xor     al,1
+        xor     al,SYSFLAG_16B
         shl     al,6
         mov     ah,DescPresent+DescPL3+DescMemory+DescRWData
         mov     di,MainSS
@@ -2204,7 +2214,7 @@ cw5_pl3:
         mov     ax,MainDS
         mov     ds,ax
         assume ds:_cwMain
-        or      w[SystemFlags],32768    ;Flags us in protected mode.
+        or      w[SystemFlags],SYSFLAG_INPM ;Flags us in protected mode.
         mov     RealSegment,KernalZero
         mov     PSPSegment,MainPSP
         mov     EnvSegment,MainEnv
@@ -2646,7 +2656,7 @@ cw5_6:  call    d[fPhysicalGetPage]     ;try to allocate a page.
         ;
         ;See which table we want to use.
         ;
-        test    BYTE PTR RawSystemFlags,128 ;GDT or LDT?
+        test    BYTE PTR RawSystemFlags,SYSFLAG_LDT ;GDT or LDT?
         jnz     cw5_LDT
         ;
         ;Setup a new GDT.
@@ -2988,20 +2998,20 @@ medpre2:
         mov     ds,ax
         assume ds:_cwDPMIEMU
         add     ebx,offset ExceptionTable
-        mov     edx,[ebx]               ;get offset.
-        mov     cx,4[ebx]               ;get segment selector.
+        mov     edx,[ebx]                       ;get offset.
+        mov     cx,4[ebx]                       ;get segment selector.
         mov     w[OldExcep14+4],cx
-        mov     d[OldExcep14],edx       ;store 32 bit offset.
-        mov     d[ebx],offset VirtualFault  ;set offset.
-        mov     w[ebx+4],DpmiEmuCS      ;set segment selector.
-        or      DpmiEmuSystemFlags,1 shl 1 ;flag VMM's presence.
+        mov     d[OldExcep14],edx               ;store 32 bit offset.
+        mov     d[ebx],offset VirtualFault      ;set offset.
+        mov     w[ebx+4],DpmiEmuCS              ;set segment selector.
+        or      DpmiEmuSystemFlags,SYSFLAG_VMM  ;flag VMM's presence.
         mov     ax,MainDS
         mov     ds,ax
         assume ds:_cwMain
-        or      SystemFlags,1 shl 1     ;flag VMM's presence.
+        or      SystemFlags,SYSFLAG_VMM         ;flag VMM's presence.
         assume ds:_cwRaw
         pop     ds
-        or      RawSystemFlags,1 shl 1  ;flag VMM's presence.
+        or      RawSystemFlags,SYSFLAG_VMM      ;flag VMM's presence.
 cw5_v9:
         push    ds
         pop     fs
@@ -3049,7 +3059,7 @@ cw5_InitDPMI:
         test    SystemFlags,1 shl 14    ;Dual mode?
         jnz     cw5_Use16Bit23
         ;
-        test    BYTE PTR SystemFlags,1
+        test    BYTE PTR SystemFlags,SYSFLAG_16B
         jz      cw5_Use32Bit23
         jmp     cw5_Use16Bit23
 cw5_Use32Bit23:
@@ -3088,7 +3098,7 @@ cw5_d0:
 ;
 ;Attempt to switch mode.
 ;
-        test    BYTE PTR SystemFlags,1
+        test    BYTE PTR SystemFlags,SYSFLAG_16B
         jz      cw5_Use32Bit24
         xor     ax,ax                   ;16 bit segments for this code.
         jmp     cw5_Use16Bit24
@@ -3112,8 +3122,8 @@ cw5_Use16Bit24:
         assume ds:_cwMain
         test    w[SystemFlags+2],1      ;Dual mode?
         jz      InitError
-        xor     SystemFlags,1
-        xor     ax,1                    ;toggle the mode.
+        xor     SystemFlags,SYSFLAG_16B
+        xor     ax,SYSFLAG_16B          ;toggle the mode.
         push    ax
         mov     ax,_cwInit
         mov     ds,ax
@@ -3263,12 +3273,14 @@ cw5_InProtected:
         assume ds:_cwMain
         ;
         mov     ax,ProtectedType        ;Copy protected mode environment type into common
+        ; ProtectedType -> bits 2,3
         shl     ax,1+1                  ;variable for application access. Might become useful
         or      w[SystemFlags],ax       ;at some point. Other flags can be added at will.
         mov     ax,ProtectedFlags
+        ; ProtectedFlags -> bits 4,5,6
         shl     ax,1+1+2
         or      w[SystemFlags],ax
-        or      w[SystemFlags],32768    ;Flags us in protected mode.
+        or      w[SystemFlags],SYSFLAG_INPM ;Flags us in protected mode.
         ;
         mov     ax,DataSegmenti
         mov     ds,ax
@@ -3369,7 +3381,7 @@ cw5_InProtected:
         mov     bl,31h
         mov     ax,204h
         int     31h
-        test    BYTE PTR SystemFlags,1
+        test    BYTE PTR SystemFlags,SYSFLAG_16B
         jz      cw5_Use32
         mov     WORD PTR es:[OldIntSys],dx
         mov     WORD PTR es:[OldIntSys+2],cx
@@ -3437,7 +3449,7 @@ cw5_Use0:
         jc      cw5_NoState
         mov     w[DPMIStateSize],ax
         mov     w[DPMIStateSize+2],0
-        test    BYTE PTR SystemFlags,1
+        test    BYTE PTR SystemFlags,SYSFLAG_16B
         jz      cw5_DS_Use32
         mov     w[DPMIStateAddr+2],si
         mov     w[DPMIStateAddr],di
@@ -3900,7 +3912,7 @@ cw6_pe0:
         assume ds:_cwMain
         mov     es,apiDataSeg
         assume es:_apiCode
-        test    BYTE PTR SystemFlags,1
+        test    BYTE PTR SystemFlags,SYSFLAG_16B
         jz      cw6_Use32
         mov     dx,WORD PTR es:[OldIntSys]
         mov     cx,WORD PTR es:[OldIntSys+2]
@@ -4922,7 +4934,7 @@ ChkDPMI proc    near
         int     2fh
         or      ax,ax                   ;None-zero means its not there.
         jnz     cw15_9
-        test    w[SystemFlags],1
+        test    w[SystemFlags],SYSFLAG_16B
         jz      cw15_Use32Bit21
         jmp     cw15_Use16Bit21
 cw15_Use32Bit21:

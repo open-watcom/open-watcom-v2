@@ -44,7 +44,7 @@ cwAPI_AL2C      macro
         pushfd
         assume ds:nothing
         and     al,EFLAG_CF
-        test    BYTE PTR cs:apiSystemFlags,1
+        test    BYTE PTR cs:apiSystemFlags,SYSFLAG_16B
         jz      __0
         or      b[ebp+Int_Flags16],al
         jmp     __1
@@ -60,7 +60,7 @@ __1:    assume ds:_apiCode
 cwAPI_CallOld   macro
         local __0, __1
         assume ds:nothing
-        test    BYTE PTR cs:apiSystemFlags,1
+        test    BYTE PTR cs:apiSystemFlags,SYSFLAG_16B
         jz      __0
         pushf
         db 66h
@@ -150,7 +150,7 @@ api1_GotCall:
 ;
         mov     esi,Int_Flags32
         assume ds:nothing
-        test    BYTE PTR cs:apiSystemFlags,1
+        test    BYTE PTR cs:apiSystemFlags,SYSFLAG_16B
         assume ds:_apiCode
         jz      api1_32Bit0
         movzx   ebp,bp
@@ -175,7 +175,7 @@ api1_NoInts:
         pop     es
         pop     ds
         assume ds:nothing
-        test    BYTE PTR cs:apiSystemFlags,1
+        test    BYTE PTR cs:apiSystemFlags,SYSFLAG_16B
         assume ds:_apiCode
         jz      api1_32Bit1
         iret
@@ -192,7 +192,7 @@ api1_Nope:
         pop     es
         pop     ds
         assume ds:nothing
-        test    BYTE PTR cs:apiSystemFlags,1
+        test    BYTE PTR cs:apiSystemFlags,SYSFLAG_16B
         jz      api1_n32
         db 66h
 api1_n32:
@@ -501,7 +501,7 @@ cwAPI_CWErrName PROC    NEAR
         mov     ds,cs:apiDSeg
         assume ds:_cwMain
         mov     edx,[ebp+Int_EDX]
-        test    BYTE PTR cs:apiSystemFlags,1
+        test    BYTE PTR cs:apiSystemFlags,SYSFLAG_16B
         jz      cen2
         movzx   edx,dx                  ; 16-bit, zero high word of edx
 
@@ -830,7 +830,7 @@ api15_0:
         mov     es:RealRegsStruc.Real_SS[edi],ax
 
 ; MED 05/23/96
-        test    BYTE PTR cs:apiSystemFlags,1
+        test    BYTE PTR cs:apiSystemFlags,SYSFLAG_16B
         jz      medUse32Bit8
         mov     ebx,Int_Flags16
         jmp     medUse16Bit8
@@ -871,7 +871,7 @@ api15_DoneStack0:
         assume ds:_apiCode
 api15_DoneStack1:
         assume ds:nothing
-        test    BYTE PTR cs:apiSystemFlags,1
+        test    BYTE PTR cs:apiSystemFlags,SYSFLAG_16B
         assume ds:_apiCode
         jz      api15_Use32Bit8
         mov     ebx,Int_Flags16
@@ -948,7 +948,7 @@ api16_DoneStack2:
         assume ds:_apiCode
 api16_DoneStack3:
         assume ds:nothing
-        test    BYTE PTR cs:apiSystemFlags,1
+        test    BYTE PTR cs:apiSystemFlags,SYSFLAG_16B
         assume ds:_apiCode
         jz      api16_Use32Bit8
         mov     ebx,Int_Flags16
@@ -5203,7 +5203,7 @@ api80_GetRVect:
         mov     es,bx
         xor     edi,edi
         mov     al,0
-        test    BYTE PTR SystemFlags,1
+        test    BYTE PTR SystemFlags,SYSFLAG_16B
         jz      api80_DPMISave32
         db 66h
         call    f[DPMIStateAddr]
@@ -5297,7 +5297,7 @@ api81_NoIntRel:
         mov     es,ax
         xor     edi,edi
         mov     al,1
-        test    BYTE PTR SystemFlags,1
+        test    BYTE PTR SystemFlags,SYSFLAG_16B
         jz      api81_SaveDPMI32
         db 66h
         call    f[DPMIStateAddr]
@@ -7228,7 +7228,7 @@ ExecModule      proc    near
         mov     w[api90_OldInt21h+6],-1
         mov     bl,21h
         Sys     GetVect
-        test    BYTE PTR apiSystemFlags,1   ;16/32 bit?
+        test    BYTE PTR apiSystemFlags,SYSFLAG_16B ;16/32 bit?
         jz      api90_Use32Bit100
         mov     w[api90_OldInt21h+2],cx
         mov     w[api90_OldInt21h],dx
@@ -7293,7 +7293,7 @@ api90_Int21Patch:
         jmp     api90_KillIt                ;just incase!
         ;
 api90_OldVect:
-        test    BYTE PTR cs:apiSystemFlags,1    ;16/32?
+        test    BYTE PTR cs:apiSystemFlags,SYSFLAG_16B  ;16/32?
         jz      api90_Use32Bit101
         db 66h
         jmp     FWORD PTR cs:[api90_OldInt21h]  ;pass control to old handler.
@@ -7332,7 +7332,7 @@ api90_KillIt:
         ;
         cmp     w[api90_OldInt21h+6],0
         jz      api90_NoRel21h
-        test    BYTE PTR apiSystemFlags,1   ;16/32?
+        test    BYTE PTR apiSystemFlags,SYSFLAG_16B ;16/32?
         jz      api90_Use32Bit102
         mov     cx,w[api90_OldInt21h+2]
         movzx   edx,w[api90_OldInt21h]
@@ -7358,7 +7358,7 @@ api90_NoRel21h:
         xor     ebx,ebx
         cmp     WORD PTR Int33hUserOK,0
         jz      api90_meventnodum
-        test    BYTE PTR cs:apiSystemFlags,1
+        test    BYTE PTR cs:apiSystemFlags,SYSFLAG_16B
         jz      api90_mevent32
         movzx   eax,w[Int33hUserCode]
         movzx   ebx,w[Int33hUserCode+2]
@@ -7593,7 +7593,7 @@ PatchExc        proc    near
 ;
         mov     bl,23h
         Sys     GetVect
-        test    BYTE PTR apiSystemFlags,1
+        test    BYTE PTR apiSystemFlags,SYSFLAG_16B
         jz      api94_iUse32
         mov     w[OldInt23h],dx
         mov     w[OldInt23h+2],cx
@@ -7609,7 +7609,7 @@ api94_iDone3216:
         ;
         mov     bl,24h
         Sys     GetVect
-        test    BYTE PTR apiSystemFlags,1
+        test    BYTE PTR apiSystemFlags,SYSFLAG_16B
         jz      api94_i24Use32
         mov     w[OldInt24h],dx
         mov     w[OldInt24h+2],cx
@@ -7627,7 +7627,7 @@ api94_i24Done3216:
 ;
         mov     bl,75h
         Sys     GetVect
-        test    BYTE PTR apiSystemFlags,1
+        test    BYTE PTR apiSystemFlags,SYSFLAG_16B
         jz      api94_i75Use32
         mov     w[OldInt75h],dx
         mov     w[OldInt75h+2],cx
@@ -7666,7 +7666,7 @@ api94_i75Done3216:
         push    dx
         mov     bl,1bh
         Sys     GetVect
-        test    BYTE PTR apiSystemFlags,1
+        test    BYTE PTR apiSystemFlags,SYSFLAG_16B
         jz      api94_1
         movzx   edx,dx
 api94_1:
@@ -7743,7 +7743,7 @@ UnPatchExc      proc    near
 api95_no1b:
         cmp     d[OldInt23h],0
         jz      api95_i0
-        test    BYTE PTR apiSystemFlags,1
+        test    BYTE PTR apiSystemFlags,SYSFLAG_16B
         jz      api95_iUse32
         mov     dx,w[OldInt23h]
         mov     cx,w[OldInt23h+2]
@@ -7757,7 +7757,7 @@ api95_iDone3216:
 api95_i0:
         cmp     d[OldInt24h],0
         jz      api95_i1
-        test    BYTE PTR apiSystemFlags,1
+        test    BYTE PTR apiSystemFlags,SYSFLAG_16B
         jz      api95_i24Use32
         mov     dx,w[OldInt24h]
         mov     cx,w[OldInt24h+2]
@@ -7781,7 +7781,7 @@ CtrlBrkEvent    proc    far
         push    ds
         mov     ds,cs:apiDSeg
         assume ds:_cwMain
-        test    BYTE PTR SystemFlags,1
+        test    BYTE PTR SystemFlags,SYSFLAG_16B
         assume ds:_apiCode
         pop     ds
         jz      api96_start32
@@ -7817,7 +7817,7 @@ api96_start0:
         ;Go back to caller.
         ;
         assume ds:nothing
-        test    BYTE PTR cs:apiSystemFlags,1
+        test    BYTE PTR cs:apiSystemFlags,SYSFLAG_16B
         assume ds:_apiCode
         jz      api96_Use32Bit2
         iret
@@ -7858,7 +7858,7 @@ Int1BhHandler    proc    far
         ;
         popad
         pop     es
-        test    BYTE PTR cs:apiSystemFlags,1
+        test    BYTE PTR cs:apiSystemFlags,SYSFLAG_16B
         jz      api97_0
         iret
 api97_0:
@@ -7940,7 +7940,7 @@ api99_0:
         pop     ecx
         pop     ebx
         assume ds:nothing
-        test    BYTE PTR cs:apiSystemFlags,1
+        test    BYTE PTR cs:apiSystemFlags,SYSFLAG_16B
         assume ds:_apiCode
         jz      api99_Use32_2
         iret
@@ -7980,7 +7980,7 @@ Int75hHandler   proc    near
         out     020h, al
         pop     eax
         int     02h             ; call NMI/FPU error handler
-        test    BYTE PTR cs:apiSystemFlags,1
+        test    BYTE PTR cs:apiSystemFlags,SYSFLAG_16B
         jz      api100_0
         iret
 api100_0:

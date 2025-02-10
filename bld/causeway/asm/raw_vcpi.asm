@@ -1662,7 +1662,7 @@ rv29_GotStack:
         mov     ax,ss
         mov     fs:[esi+4],eax
         mov     eax,esp
-        test    BYTE PTR RawSystemFlags,1
+        test    BYTE PTR RawSystemFlags,SYSFLAG_16B
         jz      rv29_noextendstack
         movzx   eax,ax
 rv29_noextendstack:
@@ -1694,7 +1694,7 @@ rv29_copystack0:
 ;
 rv29_NoStacked:
         mov     ebp,esp
-        test    BYTE PTR RawSystemFlags,1
+        test    BYTE PTR RawSystemFlags,SYSFLAG_16B
         jz      rv29_Its32
         movzx   ebp,bp
 rv29_Its32:
@@ -2014,7 +2014,7 @@ rv30_Normal:
         mov     ax,StackAdd+2
         mov     es:RealRegsStruc.Real_SS[edi],ax
         ;
-        test    BYTE PTR RawSystemFlags,1
+        test    BYTE PTR RawSystemFlags,SYSFLAG_16B
         jz      rv30_Use32Bit12
         mov     ax,w[CallBackStruc.CallBackProt+4+bx]
         mov     w[rv30_CallB0+2],ax
@@ -2060,7 +2060,7 @@ rv30_oops:
         movzx   esi,es:RealRegsStruc.Real_SP[edi]
         ;
         assume ds:nothing
-        test    BYTE PTR cs:RawSystemFlags,1
+        test    BYTE PTR cs:RawSystemFlags,SYSFLAG_16B
         jz      rv30_Use32Bit13
         pushf
         call    DWORD PTR cs:[rv30_CallB0]
@@ -2262,7 +2262,7 @@ rv31_NotBusy:
         pop     ds
         pop     ebx
         pop     ax
-        test    BYTE PTR RawSystemFlags,1
+        test    BYTE PTR RawSystemFlags,SYSFLAG_16B
         jz      rv31_Use32Bit12
         mov     w[rv31_CallB0+2],cx
         mov     w[rv31_CallB0],dx
@@ -2295,7 +2295,7 @@ rv31_Use16Bit12:
         push    w[rv31_CallTab]
         push    ds
 
-        test    BYTE PTR RawSystemFlags,1
+        test    BYTE PTR RawSystemFlags,SYSFLAG_16B
         jz      rv31_Use32Bit13
 
         push    w[rv31_FlagsStore]
@@ -3106,7 +3106,7 @@ rv46_DPMI_0202:
         push    edx
         call    RawGetEVector
         assume ds:nothing
-        test    BYTE PTR cs:DpmiEmuSystemFlags,1
+        test    BYTE PTR cs:DpmiEmuSystemFlags,SYSFLAG_16B
         assume ds:_cwDPMIEMU
         jz      rv46_0202_0
         pop     eax
@@ -3128,7 +3128,7 @@ rv46_DPMI_0203:
         jnz     rv46_DPMI_0204
         push    edx
         assume ds:nothing
-        test    BYTE PTR cs:DpmiEmuSystemFlags,1
+        test    BYTE PTR cs:DpmiEmuSystemFlags,SYSFLAG_16B
         assume ds:_cwDPMIEMU
         jz      rv46_0203_0
         movzx   edx,dx
@@ -3145,7 +3145,7 @@ rv46_DPMI_0204:
         push    edx
         call    RawGetVector
         assume ds:nothing
-        test    BYTE PTR cs:DpmiEmuSystemFlags,1
+        test    BYTE PTR cs:DpmiEmuSystemFlags,SYSFLAG_16B
         assume ds:_cwDPMIEMU
         jz      rv46_0204_0
         pop     eax
@@ -3167,7 +3167,7 @@ rv46_DPMI_0205:
         jnz     rv46_NotOurs
         push    edx
         assume ds:nothing
-        test    BYTE PTR cs:DpmiEmuSystemFlags,1
+        test    BYTE PTR cs:DpmiEmuSystemFlags,SYSFLAG_16B
         assume ds:_cwDPMIEMU
         jz      rv46_0205_0
         movzx   edx,dx
@@ -3188,7 +3188,7 @@ rv46_DPMI_0300:
         mov     ebp,esp
         add     ebp,(4+4+4)+(4+4+4)
         assume ds:nothing
-        test    BYTE PTR cs:DpmiEmuSystemFlags,1
+        test    BYTE PTR cs:DpmiEmuSystemFlags,SYSFLAG_16B
         assume ds:_cwDPMIEMU
         jz      rv46_0300_0a
         movzx   edi,di
@@ -3213,7 +3213,7 @@ rv46_0300_0a:
 ;
         pushf
         assume ds:nothing
-        test    BYTE PTR cs:DpmiEmuSystemFlags,1
+        test    BYTE PTR cs:DpmiEmuSystemFlags,SYSFLAG_16B
         assume ds:_cwDPMIEMU
         jz      rv46_0300_0
         mov     bx,sp
@@ -3248,7 +3248,7 @@ rv46_DPMI_0301:
         mov     ebp,esp
         add     ebp,(4+4+4)+(4+4+4)
         assume ds:nothing
-        test    BYTE PTR cs:DpmiEmuSystemFlags,1
+        test    BYTE PTR cs:DpmiEmuSystemFlags,SYSFLAG_16B
         assume ds:_cwDPMIEMU
         jz      rv46_0301_0a
         movzx   edi,di
@@ -3273,7 +3273,7 @@ rv46_0301_0a:
 ;
         pushf
         assume ds:nothing
-        test    BYTE PTR cs:DpmiEmuSystemFlags,1
+        test    BYTE PTR cs:DpmiEmuSystemFlags,SYSFLAG_16B
         assume ds:_cwDPMIEMU
         jz      rv46_0301_0
         mov     bx,sp
@@ -3307,7 +3307,7 @@ rv46_DPMI_0302:
         mov     ebp,esp
         add     ebp,(4+4+4)+(4+4+4)
         assume ds:nothing
-        test    BYTE PTR cs:DpmiEmuSystemFlags,1
+        test    BYTE PTR cs:DpmiEmuSystemFlags,SYSFLAG_16B
         assume ds:_cwDPMIEMU
         jz      rv46_0302_0a
         movzx   edi,di
@@ -3332,7 +3332,7 @@ rv46_0302_0a:
 ;
         pushf
         assume ds:nothing
-        test    BYTE PTR cs:DpmiEmuSystemFlags,1
+        test    BYTE PTR cs:DpmiEmuSystemFlags,SYSFLAG_16B
         assume ds:_cwDPMIEMU
         jz      rv46_0302_0
         mov     bx,sp
@@ -3410,7 +3410,7 @@ rv46_DPMI_0400:
         mov     dx,ds:[RawSystemFlags]
         pop     ds
         assume ds:_cwDPMIEMU
-        and     dx,1 shl 1              ; isolate VMM bit
+        and     dx,SYSFLAG_VMM          ; isolate VMM bit
         shl     dx,1                    ; shift to proper position
         or      bx,dx                   ; turn on VMM bit if set in SystemFlags
 
@@ -3478,7 +3478,7 @@ rv46_DPMI_0500:
         pop     es
         pop     edi
 
-        test    BYTE PTR cs:DpmiEmuSystemFlags,1
+        test    BYTE PTR cs:DpmiEmuSystemFlags,SYSFLAG_16B
         assume ds:_cwRaw
         jz      rv46_0
         movzx   edi,di
@@ -3742,7 +3742,7 @@ rv46_DPMI_0900:
         cmp     al,00h          ;get & disable virtual interupts func
         jnz     rv46_DPMI_0901
         assume ds:nothing
-        test    BYTE PTR cs:DpmiEmuSystemFlags,1
+        test    BYTE PTR cs:DpmiEmuSystemFlags,SYSFLAG_16B
         assume ds:_cwDPMIEMU
         jz      rv46_1
         push    ebp
@@ -3763,7 +3763,7 @@ rv46_DPMI_0901:
         cmp     al,01h          ;get & enable virtual interupts func
         jnz     rv46_DPMI_0902
         assume ds:nothing
-        test    BYTE PTR cs:DpmiEmuSystemFlags,1
+        test    BYTE PTR cs:DpmiEmuSystemFlags,SYSFLAG_16B
         assume ds:_cwDPMIEMU
         jz      rv46_2
         push    ebp
@@ -3784,7 +3784,7 @@ rv46_DPMI_0902:
         cmp     al,02h          ;get virtual interupt state func
         jnz     rv46_NotOurs
         assume ds:nothing
-        test    BYTE PTR cs:DpmiEmuSystemFlags,1
+        test    BYTE PTR cs:DpmiEmuSystemFlags,SYSFLAG_16B
         assume ds:_cwDPMIEMU
         jz      rv46_3
         push    ebp
@@ -4228,7 +4228,7 @@ rv46_Done:
         pushf
         pop     ax                      ;get new flags.
         assume ds:nothing
-        test    BYTE PTR cs:DpmiEmuSystemFlags,1
+        test    BYTE PTR cs:DpmiEmuSystemFlags,SYSFLAG_16B
         assume ds:_cwDPMIEMU
         jz      rv46_Use32Bit8
         mov     bx,sp
@@ -4244,7 +4244,7 @@ rv46_Use16Bit8:
         ;get old flags.
         or      ax,bx
         assume ds:nothing
-        test    BYTE PTR cs:DpmiEmuSystemFlags,1
+        test    BYTE PTR cs:DpmiEmuSystemFlags,SYSFLAG_16B
         assume ds:_cwDPMIEMU
         jz      rv46_Use32Bit9
         mov     bx,sp
@@ -4256,7 +4256,7 @@ rv46_Use16Bit9:
         pop     ebx
         pop     eax
         assume ds:nothing
-        test    BYTE PTR cs:DpmiEmuSystemFlags,1
+        test    BYTE PTR cs:DpmiEmuSystemFlags,SYSFLAG_16B
         assume ds:_cwDPMIEMU
         jz      rv46_Use32Bit10
         db 66h
@@ -4290,7 +4290,7 @@ rv47_Save:
         mov     ax,KernalDS
         mov     ds,ax
         assume ds:_cwRaw
-        test    BYTE PTR RawSystemFlags,1
+        test    BYTE PTR RawSystemFlags,SYSFLAG_16B
         jz      rv47_Save32
         movzx   edi,di
 rv47_Save32:
@@ -4305,7 +4305,7 @@ rv47_Restore:
         push    ds
         mov     ax,KernalDS
         mov     ds,ax
-        test    BYTE PTR RawSystemFlags,1
+        test    BYTE PTR RawSystemFlags,SYSFLAG_16B
         jz      rv47_Restore32
         movzx   edi,di
 rv47_Restore32:
@@ -4317,7 +4317,7 @@ rv47_Restore32:
         ;
 rv47_Done:
         assume ds:nothing
-        test    BYTE PTR cs:DpmiEmuSystemFlags,1
+        test    BYTE PTR cs:DpmiEmuSystemFlags,SYSFLAG_16B
         assume ds:_cwRaw
         jz      rv47_Use32
         db 66h
@@ -5977,7 +5977,7 @@ rv64_Done:
         pushf
         pop     ax                      ;get new flags.
         assume ds:nothing
-        test    BYTE PTR cs:DpmiEmuSystemFlags,1
+        test    BYTE PTR cs:DpmiEmuSystemFlags,SYSFLAG_16B
         assume ds:_cwDPMIEMU
         jz      rv64_Use32Bit8
         mov     bx,sp
@@ -5992,7 +5992,7 @@ rv64_Use16Bit8:
         and     ax,NOT (EFLAG_IF or EFLAG_DF or EFLAG_OF)
         or      eax,ebx                 ;get old IF.
         assume ds:nothing
-        test    BYTE PTR cs:DpmiEmuSystemFlags,1
+        test    BYTE PTR cs:DpmiEmuSystemFlags,SYSFLAG_16B
         assume ds:_cwDPMIEMU
         jz      rv64_Use32Bit9
         mov     bx,sp
@@ -6004,7 +6004,7 @@ rv64_Use16Bit9:
         pop     ebx
         pop     eax
         assume ds:nothing
-        test    BYTE PTR cs:DpmiEmuSystemFlags,1
+        test    BYTE PTR cs:DpmiEmuSystemFlags,SYSFLAG_16B
         assume ds:_cwDPMIEMU
         jz      rv64_Use32Bit10
         db 66h
