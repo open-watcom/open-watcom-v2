@@ -234,9 +234,9 @@ RawVCPIRealMode proc far
         mov     bx,offset CallBackTable ;list of call backs.
         mov     cx,AutoCallBacks        ;number of entries to scan.
 
-rv1_6:  test    CallBackStruc.CallBackFlags[bx],1       ;in use?
+rv1_6:  test    CallBackStruc.CallBackFlags[bx],CBFLAG_INUSE    ;in use?
         jz      rv1_7
-        test    CallBackStruc.CallBackFlags[bx],2       ;interupt?
+        test    CallBackStruc.CallBackFlags[bx],CBFLAG_INT      ;interupt?
         jz      rv1_7
         mov     CallBackStruc.CallBackFlags[bx],0
         push    bx
@@ -1735,7 +1735,7 @@ rv29_IsInt:
         shl     bx,1            ;*16
         add     bx,ax           ;*24
         add     bx,offset CallBackTable
-        test    CallBackStruc.CallBackFlags[bx],128     ;this entry in use?
+        test    CallBackStruc.CallBackFlags[bx],CBFLAG_BUSY ;this entry in use?
         jz      rv29_c3
         mov     ecx,CallBackStruc.CallBackReal[bx]
         jmp     rv29_c2
@@ -1911,12 +1911,14 @@ RawSimulate     endp
 
 ;-------------------------------------------------------------------------------
 RawCallBack     proc    near
+        assume ds:nothing
+        pop     cs:RetAdd               ;get return address.
+        ;
         pushf
         cli
         ;
         ;Check if Windows enhanced mode has been started.
         ;
-        assume ds:nothing
         cmp     cs:InWindows,0
         assume ds:_cwRaw
         jz      rv30_Normal
@@ -1925,22 +1927,15 @@ RawCallBack     proc    near
         ;
 rv30_Normal:
         push    ax
-        push    bp
         push    ds
         mov     ax,_cwRaw
         mov     ds,ax
-        mov     bp,sp
-        mov     ax,[bp+2+2+2+2] ;get return address
-        mov     RetAdd,ax
-        mov     ax,[bp+2+2+2]   ;get flags
-        mov     [bp+2+2+2+2],ax ;ovewrite return address.
-        mov     StackAdd,bp
-        add     StackAdd,2+2+2+2+2      ;correct for stacked registers.
+        mov     ax,sp
+        add     ax,2+2+2        ;correct for stacked registers.
+        mov     StackAdd,ax
         mov     StackAdd+2,ss
         pop     ds
-        pop     bp
         pop     ax
-        add     sp,2            ;remove local return address.
         ;
         push    eax
         push    ebx
@@ -1961,19 +1956,6 @@ rv30_Normal:
         mov     VCPI_SP,sp
         mov     VCPI_SP+2,ss
         ;
-        ;Check if this call back is int &| busy.
-        ;
-        mov     ax,RetAdd               ;get return address.
-        sub     ax,CallBackSize ;back to start of call back entry.
-        sub     ax,offset CallBackList  ;offset from start of list.
-        xor     dx,dx
-        mov     bx,CallBackSize
-        div     bx              ;entry number.
-        mov     bx,size CallBackStruc
-        mul     bx              ;get offset into table.
-        mov     bx,offset CallBackTable
-        add     bx,ax           ;point to this entry.
-        ;
         ;switch to protected mode.
         ;
         mov     cx,KernalSS
@@ -1982,17 +1964,15 @@ rv30_Normal:
         call    Real2Protected
         ;
         mov     ax,RetAdd               ;get return address.
-        sub     ax,CallBackSize ;back to start of call back entry.
+        sub     ax,CallBackSize         ;back to start of call back entry.
         sub     ax,offset CallBackList  ;offset from start of list.
-        jz      rv30_zero
         xor     dx,dx
         mov     bx,CallBackSize
-        div     bx              ;entry number.
-rv30_zero:
+        div     bx                      ;entry number.
         mov     bx,size CallBackStruc
-        mul     bx              ;get offset into table.
+        mul     bx                      ;get offset into table.
         mov     bx,offset CallBackTable
-        add     bx,ax           ;point to this entry.
+        add     bx,ax                   ;point to this entry.
         movzx   esi,w[VCPI_SP+2]        ;point to stacked registers.
         shl     esi,4
         movzx   eax,w[VCPI_SP]
@@ -2184,7 +2164,7 @@ RawICallBack    proc    near
         cmp     cs:InWindows,0
         jnz     rv31_ForceOld
         ;
-        test    cs:CallBackStruc.CallBackFlags[bx],128  ;call back busy?
+        test    cs:CallBackStruc.CallBackFlags[bx],CBFLAG_BUSY  ;call back busy?
         jz      rv31_NotBusy
         ;
         ;This is a busy int call back so pass control to old real mode vector.
@@ -2203,7 +2183,7 @@ rv31_tVCPI_SP:
         dd ?
         ;
 rv31_NotBusy:
-        or      cs:CallBackStruc.CallBackFlags[bx],128  ;mark it as busy.
+        or      cs:CallBackStruc.CallBackFlags[bx],CBFLAG_BUSY  ;mark it as busy.
         mov     bx,sp
         mov     ax,ss:[bx+(2+2+2)+(2+2)]
         ;clear NT & IOPL & IF & TF
@@ -2387,7 +2367,7 @@ rv31_Use16Bit13:
         or      fs:[esi+IFrame16.i16_flags],ax
         ;
         mov     bx,w[rv31_CallTab]      ;restore call back structure.
-        and     CallBackStruc.CallBackFlags[bx],255-128 ;clear busy flag.
+        and     CallBackStruc.CallBackFlags[bx],0FFh AND NOT CBFLAG_BUSY    ;clear busy flag.
         ;
         ;Switch back to v86 mode.
         ;

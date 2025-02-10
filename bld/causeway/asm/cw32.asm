@@ -33,6 +33,10 @@ ENGLISH equ     0
 SPANISH equ     0
         endif
 
+CBFLAG_INUSE equ (1 shl 0)      ; callback is in use
+CBFLAG_INT  equ (1 shl 1)       ; callback is interrupt type
+CBFLAG_BUSY equ (1 shl 7)       ; callback is busy
+
 EFLAG_CF    equ (1 shl 0)       ; carry
 EFLAG_PF    equ (1 shl 2)       ; parity
 EFLAG_AF    equ (1 shl 4)       ; auxiliary carry
@@ -4083,8 +4087,8 @@ cw7_0:  mov     ax,size CallBackStruc
         add     bx,offset CallBackTable
         pushf
         cli
-        mov     CallBackStruc.CallBackNum[bx],cl    ;set interupt number.
-        mov     CallBackStruc.CallBackFlags[bx],1+2 ;mark call back as used interupt.
+        mov     CallBackStruc.CallBackNum[bx],cl                            ;set interupt number.
+        mov     CallBackStruc.CallBackFlags[bx],CBFLAG_INUSE or CBFLAG_INT  ;mark call back as used interupt.
         mov     ax,CallBackSize
         movzx   dx,ch
         mul     dx

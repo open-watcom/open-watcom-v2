@@ -407,7 +407,7 @@ inter9_Restoreing:
         mul     bx
         mov     bx,ax
         add     bx,offset CallBackTable
-        test    CallBackStruc.CallBackFlags[bx],1       ;this one in use?
+        test    CallBackStruc.CallBackFlags[bx],CBFLAG_INUSE    ;this one in use?
         jz      inter9_DoneHardware     ;not likely.
         pushf
         cli
@@ -435,7 +435,7 @@ inter9_Setting:
         mov     dx,bx
         mov     bx,ax
         add     bx,offset CallBackTable
-        test    CallBackStruc.CallBackFlags[bx],1               ;this one in use?
+        test    CallBackStruc.CallBackFlags[bx],CBFLAG_INUSE    ;this one in use?
         jnz     inter9_DoneHardware
         pushf
         cli
@@ -443,7 +443,7 @@ inter9_Setting:
         mov     ax,KernalZero
         mov     es,ax
         mov     CallBackStruc.CallBackNum[bx],cl        ;set interupt number.
-        mov     CallBackStruc.CallBackFlags[bx],1+2     ;mark call back as used interupt.
+        mov     CallBackStruc.CallBackFlags[bx],CBFLAG_INUSE or CBFLAG_INT  ;mark call back as used interupt.
         mov     ax,CallBackSize
         mul     dx
         mov     si,offset ICallBackList
@@ -664,7 +664,7 @@ RawGetCallBack  proc near
         mov     edx,AutoCallBacks
 
 inter12_0:
-        test    CallBackStruc.CallBackFlags[ebx],1              ;this one in use?
+        test    CallBackStruc.CallBackFlags[ebx],CBFLAG_INUSE   ;this one in use?
         jz      inter12_1
         add     ebx,size CallBackStruc
         inc     edx
@@ -697,8 +697,8 @@ inter12_1:
         mov     esi,offset CallBackList
         movzx   eax,ax
         add     esi,eax         ;index list of calls.
-        mov     CallBackStruc.CallBackOff[ebx],si       ;store call back address.
-        mov     CallBackStruc.CallBackFlags[ebx],1      ;flag this entry in use.
+        mov     CallBackStruc.CallBackOff[ebx],si               ;store call back address.
+        mov     CallBackStruc.CallBackFlags[ebx],CBFLAG_INUSE   ;flag this entry in use.
         mov     ax,_cwRaw
         mov     cx,ax           ;get real mode code seg.
         mov     dx,si           ;get real mode offset.
@@ -744,7 +744,7 @@ RawRelCallBack proc near
         mov     esi,offset CallBackTable
         mov     ebx,MaxCallBacks
 inter13_0:
-        test    CallBackStruc.CallBackFlags[esi],1
+        test    CallBackStruc.CallBackFlags[esi],CBFLAG_INUSE
         jz      inter13_1
         cmp     dx,CallBackStruc.CallBackOff[esi]
         jnz     inter13_1
@@ -1635,11 +1635,11 @@ inter18_Use16Bit19:
         shl     ebx,1           ;*16
         add     ebx,eax         ;*24
         add     ebx,offset CallBackTable
-        test    CallBackStruc.CallBackFlags[ebx],1
+        test    CallBackStruc.CallBackFlags[ebx],CBFLAG_INUSE
         jz      inter18_c2
-        test    CallBackStruc.CallBackFlags[ebx],128    ;already busy?
+        test    CallBackStruc.CallBackFlags[ebx],CBFLAG_BUSY    ;already busy?
         jnz     inter18_c2
-        or      CallBackStruc.CallBackFlags[ebx],128    ;mark it as busy.
+        or      CallBackStruc.CallBackFlags[ebx],CBFLAG_BUSY    ;mark it as busy.
         mov     d[ebp+SFrameA10.sa10_callbck],ebx
         assume ds:_cwDPMIEMU
 inter18_c2:
@@ -1664,7 +1664,7 @@ inter18_c2:
         mov     ax,KernalDS
         mov     ds,ax
         assume ds:_cwRaw
-        and     CallBackStruc.CallBackFlags[esi],255-128
+        and     CallBackStruc.CallBackFlags[esi],0FFh AND NOT CBFLAG_BUSY
         assume ds:_cwDPMIEMU
         pop     ds
 inter18_NoCall:
