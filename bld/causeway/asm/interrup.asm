@@ -1716,9 +1716,16 @@ IntNN386        endp
 ExcepNN386      proc    far
         push    eax
         push    ds
+        ;
+SFrameA11 struc
+sa11_ds     dd ?
+sa11_eax    dd ?
+sa11_retaddr dd ?
+SFrameA11 ends
+        ;
         mov     ax,DpmiEmuDS
         mov     ds,ax
-        mov     eax,[esp+(4+4)]
+        mov     eax,[esp+SFrameA11.sa11_retaddr]
         sub     eax,offset ExcepNN386Catch
         shr     eax,3
         mov     ExceptionIndex,eax
@@ -1738,30 +1745,30 @@ ExcepNN386      proc    far
         push    edi
         push    ebp
         ;
-SFrameA11 struc
-sa11_ebp     dd ?
-sa11_edi     dd ?
-sa11_esi     dd ?
-sa11_edx     dd ?
-sa11_ecx     dd ?
-sa11_ebx     dd ?
-sa11_eax     dd ?
-sa11_gs      dd ?
-sa11_fs      dd ?
-sa11_es      dd ?
-sa11_ds      dd ?
-sa11_iret    IFrame <?>
-SFrameA11 ends
+SFrameA12 struc
+sa12_ebp     dd ?
+sa12_edi     dd ?
+sa12_esi     dd ?
+sa12_edx     dd ?
+sa12_ecx     dd ?
+sa12_ebx     dd ?
+sa12_eax     dd ?
+sa12_gs      dd ?
+sa12_fs      dd ?
+sa12_es      dd ?
+sa12_ds      dd ?
+sa12_iret    IFrame <?>
+SFrameA12 ends
         ;
         mov     ax,DpmiEmuDS            ;make our data addresable.
         mov     ds,ax           ;/
         test    BYTE PTR DpmiEmuSystemFlags,SYSFLAG_16B
         jz      inter19_Use32Bit16
-        movzx   eax,w[esp+SFrameA11.sa11_iret.i16_flags]
+        movzx   eax,w[esp+SFrameA12.sa12_iret.i16_flags]
         mov     ExceptionEFL,eax
         jmp     inter19_Use16Bit16
 inter19_Use32Bit16:
-        mov     eax,[esp+SFrameA11.sa11_iret.i_eflags]
+        mov     eax,[esp+SFrameA12.sa12_iret.i_eflags]
         mov     ExceptionEFL,eax
         ;
 inter19_Use16Bit16:
@@ -1775,7 +1782,7 @@ inter19_Use16Bit16:
         assume ds:nothing
         mov     esi,esp
         mov     edi,offset ExceptionEBP
-        mov     ecx,SFrameA11.sa11_iret
+        mov     ecx,SFrameA12.sa12_iret
         cld
         rep     movs b[edi],[esi]       ;copy registers off the stack.
         ;

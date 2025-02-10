@@ -1,5 +1,18 @@
         .386P
 
+excdata macro base,x
+base&x df 0
+        endm                                                                                                              
+
+procbeg macro base,x,suf
+base&x&suf proc far
+        endm                                                                                                              
+
+procend macro base,x,suf
+base&x&suf endp
+        endm                                                                                                              
+
+
 _Excep  segment para public 'Exception code' use16
         assume cs:_Excep, ds:_Excep, es:nothing
 ExcepStart      label byte
@@ -206,8 +219,8 @@ ExcepOpen       proc    near
         ;
         mov     bl,0
         mov     ecx,1
-        mov     edi,offset OldExc00
-        mov     esi,offset DPMIExc00Patch
+        mov     edi,offset OldExc0
+        mov     esi,offset DPMIExc0Patch
 exc1_2:
         push    ebx
         push    ecx
@@ -218,7 +231,7 @@ exc1_2:
         pop     esi
         pop     ecx
         pop     ebx
-        add     esi,DPMIExc01Patch-DPMIExc00Patch
+        add     esi,DPMIExc1Patch-DPMIExc0Patch
         add     edi,6
         inc     bl
         dec     ecx
@@ -226,8 +239,8 @@ exc1_2:
         ;
         mov     bl,4
         mov     ecx,6
-        mov     edi,offset OldExc04
-        mov     esi,offset DPMIExc04Patch
+        mov     edi,offset OldExc4
+        mov     esi,offset DPMIExc4Patch
 exc1_3:
         push    ebx
         push    ecx
@@ -238,7 +251,7 @@ exc1_3:
         pop     esi
         pop     ecx
         pop     ebx
-        add     esi,DPMIExc01Patch-DPMIExc00Patch
+        add     esi,DPMIExc1Patch-DPMIExc0Patch
         add     edi,6
         inc     bl
         dec     ecx
@@ -258,7 +271,7 @@ exc1_0:
         pop     esi
         pop     ecx
         pop     ebx
-        add     esi,DPMIExc01Patch-DPMIExc00Patch
+        add     esi,DPMIExc1Patch-DPMIExc0Patch
         add     edi,6
         inc     bl
         dec     ecx
@@ -319,7 +332,7 @@ ExcepClose      proc    near
         ;
         mov     bl,0
         mov     ecx,1
-        mov     edi,offset OldExc00
+        mov     edi,offset OldExc0
 exc2_2:
         push    ebx
         push    ecx
@@ -335,7 +348,7 @@ exc2_2:
         ;
         mov     bl,4
         mov     ecx,6
-        mov     edi,offset OldExc04
+        mov     edi,offset OldExc4
 exc2_3:
         push    ebx
         push    ecx
@@ -397,22 +410,13 @@ exc2_Use0:
         int     31h
         ret
         ;
-OldExc00        df 0
-OldExc01        df 0
-OldExc02        df 0
-OldExc03        df 0
-OldExc04        df 0
-OldExc05        df 0
-OldExc06        df 0
-OldExc07        df 0
-OldExc08        df 0
-OldExc09        df 0
-OldExc10        df 0
-OldExc11        df 0
-OldExc12        df 0
-OldExc13        df 0
-OldExc14        df 0
-OldExc15        df 0
+
+__num = 0
+        rept 16
+excdata OldExc,%__num
+__num = __num + 1
+        endm
+
 ExcepClose      endp
 
 
@@ -479,214 +483,20 @@ exc3_Use0_0:
 OldInt00h       df 0
 Int00hHandler   endp
 
-
-;-------------------------------------------------------------------------
-DPMIExc00Patch proc     far
+__num = 0
+        rept 16
+procbeg DPMIExc,%__num,Patch
         push    ds
         assume ds:nothing
         mov     ds,cs:ExcepDDSeg
         assume ds:_Excep
-        mov     DebugExceptionIndex,0
+        mov     DebugExceptionIndex,__num
         pop     ds
         db 0e9h
         dw offset DPMIExcPatch-($+2)
-DPMIExc00Patch endp
-
-
-;-------------------------------------------------------------------------
-DPMIExc01Patch proc     far
-        push    ds
-        assume ds:nothing
-        mov     ds,cs:ExcepDDSeg
-        assume ds:_Excep
-        mov     DebugExceptionIndex,1
-        pop     ds
-        db 0e9h
-        dw offset DPMIExcPatch-($+2)
-DPMIExc01Patch endp
-
-
-;-------------------------------------------------------------------------
-DPMIExc02Patch proc     far
-        push    ds
-        assume ds:nothing
-        mov     ds,cs:ExcepDDSeg
-        assume ds:_Excep
-        mov     DebugExceptionIndex,2
-        pop     ds
-        db 0e9h
-        dw offset DPMIExcPatch-($+2)
-DPMIExc02Patch endp
-
-
-;-------------------------------------------------------------------------
-DPMIExc03Patch proc     far
-        push    ds
-        assume ds:nothing
-        mov     ds,cs:ExcepDDSeg
-        assume ds:_Excep
-        mov     DebugExceptionIndex,3
-        pop     ds
-        db 0e9h
-        dw offset DPMIExcPatch-($+2)
-DPMIExc03Patch endp
-
-
-;-------------------------------------------------------------------------
-DPMIExc04Patch proc     far
-        push    ds
-        assume ds:nothing
-        mov     ds,cs:ExcepDDSeg
-        assume ds:_Excep
-        mov     DebugExceptionIndex,4
-        pop     ds
-        db 0e9h
-        dw offset DPMIExcPatch-($+2)
-DPMIExc04Patch endp
-
-
-;-------------------------------------------------------------------------
-DPMIExc05Patch proc     far
-        push    ds
-        assume ds:nothing
-        mov     ds,cs:ExcepDDSeg
-        assume ds:_Excep
-        mov     DebugExceptionIndex,5
-        pop     ds
-        db 0e9h
-        dw offset DPMIExcPatch-($+2)
-DPMIExc05Patch endp
-
-
-;-------------------------------------------------------------------------
-DPMIExc06Patch proc     far
-        push    ds
-        assume ds:nothing
-        mov     ds,cs:ExcepDDSeg
-        assume ds:_Excep
-        mov     DebugExceptionIndex,6
-        pop     ds
-        db 0e9h
-        dw offset DPMIExcPatch-($+2)
-DPMIExc06Patch endp
-
-
-;-------------------------------------------------------------------------
-DPMIExc07Patch proc     far
-        push    ds
-        assume ds:nothing
-        mov     ds,cs:ExcepDDSeg
-        assume ds:_Excep
-        mov     DebugExceptionIndex,7
-        pop     ds
-        db 0e9h
-        dw offset DPMIExcPatch-($+2)
-DPMIExc07Patch endp
-
-
-;-------------------------------------------------------------------------
-DPMIExc08Patch proc     far
-        push    ds
-        assume ds:nothing
-        mov     ds,cs:ExcepDDSeg
-        assume ds:_Excep
-        mov     DebugExceptionIndex,8
-        pop     ds
-        db 0e9h
-        dw offset DPMIExcPatch-($+2)
-DPMIExc08Patch endp
-
-
-;-------------------------------------------------------------------------
-DPMIExc09Patch proc     far
-        push    ds
-        assume ds:nothing
-        mov     ds,cs:ExcepDDSeg
-        assume ds:_Excep
-        mov     DebugExceptionIndex,9
-        pop     ds
-        db 0e9h
-        dw offset DPMIExcPatch-($+2)
-DPMIExc09Patch endp
-
-
-;-------------------------------------------------------------------------
-DPMIExc10Patch proc     far
-        push    ds
-        assume ds:nothing
-        mov     ds,cs:ExcepDDSeg
-        assume ds:_Excep
-        mov     DebugExceptionIndex,10
-        pop     ds
-        db 0e9h
-        dw offset DPMIExcPatch-($+2)
-DPMIExc10Patch endp
-
-
-;-------------------------------------------------------------------------
-DPMIExc11Patch proc     far
-        push    ds
-        assume ds:nothing
-        mov     ds,cs:ExcepDDSeg
-        assume ds:_Excep
-        mov     DebugExceptionIndex,11
-        pop     ds
-        db 0e9h
-        dw offset DPMIExcPatch-($+2)
-DPMIExc11Patch endp
-
-
-;-------------------------------------------------------------------------
-DPMIExc12Patch proc     far
-        push    ds
-        assume ds:nothing
-        mov     ds,cs:ExcepDDSeg
-        assume ds:_Excep
-        mov     DebugExceptionIndex,12
-        pop     ds
-        db 0e9h
-        dw offset DPMIExcPatch-($+2)
-DPMIExc12Patch endp
-
-
-;-------------------------------------------------------------------------
-DPMIExc13Patch proc     far
-        push    ds
-        assume ds:nothing
-        mov     ds,cs:ExcepDDSeg
-        assume ds:_Excep
-        mov     DebugExceptionIndex,13
-        pop     ds
-        db 0e9h
-        dw offset DPMIExcPatch-($+2)
-DPMIExc13Patch endp
-
-
-;-------------------------------------------------------------------------
-DPMIExc14Patch proc     far
-        push    ds
-        assume ds:nothing
-        mov     ds,cs:ExcepDDSeg
-        assume ds:_Excep
-        mov     DebugExceptionIndex,14
-        pop     ds
-        db 0e9h
-        dw offset DPMIExcPatch-($+2)
-DPMIExc14Patch endp
-
-
-;-------------------------------------------------------------------------
-DPMIExc15Patch proc     far
-        push    ds
-        assume ds:nothing
-        mov     ds,cs:ExcepDDSeg
-        assume ds:_Excep
-        mov     DebugExceptionIndex,15
-        pop     ds
-        db 0e9h
-        dw offset DPMIExcPatch-($+2)
-DPMIExc15Patch endp
-
+procend DPMIExc,%__num,Patch
+__num = __num + 1
+        endm
 
 ;-------------------------------------------------------------------------
 DPMIExcPatch    proc    far
@@ -749,7 +559,7 @@ exc20_Not14Special:
         mov     eax,esi
         add     esi,esi
         add     esi,eax
-        add     esi,offset OldExc00
+        add     esi,offset OldExc0
         mov     eax,[esi]
         mov     d[InExcepJMP],eax
         mov     ax,[esi+4]

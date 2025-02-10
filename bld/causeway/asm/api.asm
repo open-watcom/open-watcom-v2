@@ -3046,7 +3046,7 @@ _CodeSelector   proc near
         or      DescriptorBuffer+5,al   ;
         and     DescriptorBuffer+6,255-(1 shl 6)    ;clear code size bit.
         and     cl,1
-        shl     cl,6
+        shl     cl,6                                ;descriptor size bit
         or      DescriptorBuffer+6,cl               ;code size bit.
         ;
         mov     ax,000ch
@@ -3105,7 +3105,7 @@ _DSizeSelector  proc near
         ;
         and     DescriptorBuffer+6,255-(1 shl 6)    ;clear code size bit.
         and     cl,1
-        shl     cl,6
+        shl     cl,6                                ;descriptor size bit
         or      DescriptorBuffer+6,cl               ;code size bit.
         ;
         mov     ax,000ch

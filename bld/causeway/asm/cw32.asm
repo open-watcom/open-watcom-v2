@@ -1626,7 +1626,7 @@ END COMMENT !
 ;
         xor     esi,esi                 ;Null entry at 0.
         xor     ecx,ecx
-        xor     ax,ax
+        xor     ax,ax                   ;descriptor size bit
         xor     di,di
         call    MakeDesc
 ;
@@ -1652,7 +1652,7 @@ END COMMENT !
 ;
         mov     esi,400h
         mov     ecx,65535
-        xor     al,al
+        xor     al,al                   ;descriptor size bit
         mov     ah,DescPresent+DescPL3+DescMemory+DescRWData
         mov     di,Kernal40h
         call    MakeDesc
@@ -1662,7 +1662,7 @@ END COMMENT !
         movzx   esi,KernalTSSReal
         shl     esi,4
         mov     ecx,size TSSFields+2
-        xor     al,al
+        xor     al,al                   ;descriptor size bit
         mov     ah,DescPresent+DescPL3+Desc386Tss
         mov     di,KernalTS
         call    MakeDesc
@@ -1676,7 +1676,7 @@ END COMMENT !
         mov     ecx,65535
         mov     al,b[RawSystemFlags]
         xor     al,SYSFLAG_16B
-        shl     al,6
+        shl     al,6                    ;descriptor size bit
         mov     ah,DescPresent+DescPL0+DescMemory+DescRWData
         mov     di,KernalPL0
         call    MakeDesc
@@ -1688,7 +1688,7 @@ END COMMENT !
         add     esi,TSSFields.tPL1Stack
 
         mov     ecx,65535
-        xor     al,al
+        xor     al,al                   ;descriptor size bit
         mov     ah,DescPresent+DescPL0+DescMemory+DescRWData
         mov     di,KernalSwitchPL0
         call    MakeDesc
@@ -1697,7 +1697,7 @@ END COMMENT !
 ;
         xor     esi,esi
         xor     ecx,ecx
-        xor     al,al
+        xor     al,al                   ;descriptor size bit
         mov     ah,DescPresent+DescPL3+DescLDT
         mov     di,KernalLDT
         call    MakeDesc
@@ -1708,7 +1708,7 @@ END COMMENT !
         mov     si,_cwRaw
         shl     esi,4
         mov     ecx,65535
-        xor     al,al
+        xor     al,al                   ;descriptor size bit
         mov     ah,DescPresent+DescPL3+DescMemory+DescERCode
         mov     di,KernalCS
         call    MakeDesc
@@ -1719,7 +1719,7 @@ END COMMENT !
         mov     si,_cwRaw
         shl     esi,4
         mov     ecx,65535
-        xor     al,al
+        xor     al,al                   ;descriptor size bit
         mov     ah,DescPresent+DescPL0+DescMemory+DescERCode
         mov     di,KernalCS0
         call    MakeDesc
@@ -1730,7 +1730,7 @@ END COMMENT !
         mov     si,_cwRaw
         shl     esi,4
         mov     ecx,65535
-        xor     al,al
+        xor     al,al                   ;descriptor size bit
         mov     ah,DescPresent+DescPL3+DescMemory+DescRWData
         mov     di,KernalDS
         call    MakeDesc
@@ -1742,7 +1742,7 @@ END COMMENT !
         mov     ecx,65535
         mov     al,b[RawSystemFlags]
         xor     al,SYSFLAG_16B
-        shl     al,6
+        shl     al,6                    ;descriptor size bit
         mov     ah,DescPresent+DescPL3+DescMemory+DescRWData
         mov     di,KernalSS
         call    MakeDesc
@@ -1751,7 +1751,7 @@ END COMMENT !
 ;
         xor     ecx,ecx
         mov     esi,KernalCS0
-        xor     al,al
+        xor     al,al                   ;descriptor size bit
         mov     ah,DescPresent+DescPL3+Desc386Call
         mov     di,KernalPL3_2_PL0
         call    MakeDesc
@@ -1762,7 +1762,7 @@ END COMMENT !
         mov     si,_cwDPMIEMU
         shl     esi,4
         mov     ecx,offset cwDPMIEMUEnd-cwDPMIEMUStart
-        mov     al,1 shl 6
+        mov     al,1 shl 6              ;descriptor size bit
         mov     ah,DescPresent+DescPL3+DescMemory+DescERCode
         mov     di,DpmiEmuCS
         call    MakeDesc
@@ -1773,7 +1773,7 @@ END COMMENT !
         mov     si,_cwDPMIEMU
         shl     esi,4
         mov     ecx,offset cwDPMIEMUEnd-cwDPMIEMUStart
-        mov     al,1 shl 6
+        mov     al,1 shl 6              ;descriptor size bit
         mov     ah,DescPresent+DescPL0+DescMemory+DescERCode
         mov     di,DpmiEmuCS0
         call    MakeDesc
@@ -1784,7 +1784,7 @@ END COMMENT !
         mov     si,_cwDPMIEMU
         shl     esi,4
         mov     ecx,offset cwDPMIEMUEnd-cwDPMIEMUStart
-        mov     al,1 shl 6
+        mov     al,1 shl 6              ;descriptor size bit
         mov     ah,DescPresent+DescPL3+DescMemory+DescRWData
         mov     di,DpmiEmuDS
         call    MakeDesc
@@ -1793,7 +1793,7 @@ END COMMENT !
 ;
         xor     ecx,ecx
         mov     esi,InitCS0
-        xor     al,al
+        xor     al,al                   ;descriptor size bit
         mov     ah,DescPresent+DescPL3+Desc386Call
         mov     di,InitPL3_2_PL0
         call    MakeDesc
@@ -1802,7 +1802,7 @@ END COMMENT !
 ;
         xor     ecx,ecx
         mov     esi,DpmiEmuCS0
-        xor     al,al
+        xor     al,al                   ;descriptor size bit
         mov     ah,DescPresent+DescPL3+Desc386Call
         mov     di,DpmiEmuPL3_2_PL0
         call    MakeDesc
@@ -1811,7 +1811,7 @@ END COMMENT !
 ;
         xor     esi,esi
         or      ecx,-1
-        xor     al,al
+        xor     al,al                   ;descriptor size bit
         mov     ah,DescPresent+DescPL3+DescMemory+DescRWData
         mov     di,KernalZero
         call    MakeDesc
@@ -1827,7 +1827,7 @@ END COMMENT !
         pop     ds
         shl     esi,4
         mov     ecx,256
-        mov     al,0
+        xor     al,al                   ;descriptor size bit
         mov     ah,DescPresent+DescPL3+DescMemory+DescRWData
         mov     di,MainPSP
         call    MakeDesc
@@ -1843,7 +1843,7 @@ END COMMENT !
         pop     ds
         shl     esi,4
         mov     ecx,0FFFFh
-        xor     al,al
+        xor     al,al                   ;descriptor size bit
         mov     ah,DescPresent+DescPL3+DescMemory+DescRWData
         mov     di,MainEnv
         call    MakeDesc
@@ -1854,7 +1854,7 @@ END COMMENT !
         mov     si,_cwMain
         shl     esi,4
         mov     ecx,65535
-        xor     al,al
+        xor     al,al                   ;descriptor size bit
         mov     ah,DescPresent+DescPL3+DescMemory+DescERCode
         mov     di,MainCS
         call    MakeDesc
@@ -1865,7 +1865,7 @@ END COMMENT !
         mov     si,_cwMain
         shl     esi,4
         mov     ecx,65535
-        xor     al,al
+        xor     al,al                   ;descriptor size bit
         mov     ah,DescPresent+DescPL3+DescMemory+DescRWData
         mov     di,MainDS
         call    MakeDesc
@@ -1878,7 +1878,7 @@ END COMMENT !
         mov     ecx,65535
         mov     al,b[RawSystemFlags]
         xor     al,SYSFLAG_16B
-        shl     al,6
+        shl     al,6                    ;descriptor size bit
         mov     ah,DescPresent+DescPL3+DescMemory+DescRWData
         mov     di,MainSS
         call    MakeDesc
@@ -1889,7 +1889,7 @@ END COMMENT !
         mov     si,_cwInit
         shl     esi,4
         mov     ecx,65535
-        xor     al,al
+        xor     al,al                   ;descriptor size bit
         mov     ah,DescPresent+DescPL3+DescMemory+DescERCode
         mov     di,InitCS
         call    MakeDesc
@@ -1900,7 +1900,7 @@ END COMMENT !
         mov     si,_cwInit
         shl     esi,4
         mov     ecx,65535
-        xor     al,al
+        xor     al,al                   ;descriptor size bit
         mov     ah,DescPresent+DescPL0+DescMemory+DescERCode
         mov     di,InitCS0
         call    MakeDesc
@@ -1911,7 +1911,7 @@ END COMMENT !
         mov     si,_cwInit
         shl     esi,4
         mov     ecx,65535
-        xor     al,al
+        xor     al,al                   ;descriptor size bit
         mov     ah,DescPresent+DescPL3+DescMemory+DescRWData
         mov     di,InitDS
         call    MakeDesc
@@ -1920,7 +1920,7 @@ END COMMENT !
 ;
         mov     esi,GDTLinear
         mov     ecx,65535
-        xor     al,al
+        xor     al,al                   ;descriptor size bit
         mov     ah,DescPresent+DescPL3+DescMemory+DescRWData
         mov     di,GDTData
         call    MakeDesc
@@ -2514,7 +2514,7 @@ END COMMENT !
         mov     bp,256                  ;number of vectors.
         mov     ecx,offset InterruptHandler ;code address.
         mov     esi,DpmiEmuCS0          ;gate to use.
-        mov     al,0
+        xor     al,al                   ;descriptor size bit
         mov     ah,DescPresent+DescPL3+Desc386Int
         mov     edi,d[IDTVal+2]
 cw5_3:  call    MakeDesc2
@@ -2585,19 +2585,19 @@ cw5_2:  call    d[fPhysicalGetPage]     ;try to allocate a page.
         mov     es,ax
         mov     esi,LinearEntry+4
         mov     ecx,offset cwDPMIEMUEnd-cwDPMIEMUStart
-        mov     al,1 shl 6
+        mov     al,1 shl 6              ;descriptor size bit
         mov     ah,DescPresent+DescPL3+DescMemory+DescERCode
         mov     di,DpmiEmuCS
         call    MakeDesc
         mov     esi,LinearEntry+4
         mov     ecx,offset cwDPMIEMUEnd-cwDPMIEMUStart
-        mov     al,1 shl 6
+        mov     al,1 shl 6              ;descriptor size bit
         mov     ah,DescPresent+DescPL0+DescMemory+DescERCode
         mov     di,DpmiEmuCS0
         call    MakeDesc
         mov     esi,LinearEntry+4
         mov     ecx,offset cwDPMIEMUEnd-cwDPMIEMUStart
-        mov     al,1 shl 6
+        mov     al,1 shl 6              ;descriptor size bit
         mov     ah,DescPresent+DescPL3+DescMemory+DescRWData
         mov     di,DpmiEmuDS
         call    MakeDesc
@@ -2664,7 +2664,7 @@ cw5_6:  call    d[fPhysicalGetPage]     ;try to allocate a page.
         mov     esi,MDTLinear
         mov     GDTLinear+4,esi
         mov     ecx,65535
-        xor     al,al
+        xor     al,al                   ;descriptor size bit
         mov     ah,DescPresent+DescPL3+DescMemory+DescRWData
         mov     di,GDTData
         push    es
@@ -2718,21 +2718,21 @@ cw5_5:  add     edi,8                   ;next descriptor.
         mov     di,KernalB000
         mov     esi,0b0000h
         mov     ecx,65535
-        xor     al,al
+        xor     al,al                   ;descriptor size bit
         mov     ah,DescPresent+DescPL3+DescMemory+DescRWData
         call    MakeDesc
         ;
         mov     di,KernalB800
         mov     esi,0b8000h
         mov     ecx,65535
-        xor     al,al
+        xor     al,al                   ;descriptor size bit
         mov     ah,DescPresent+DescPL3+DescMemory+DescRWData
         call    MakeDesc
         ;
         mov     di,KernalA000
         mov     esi,0a0000h
         mov     ecx,65535
-        xor     al,al
+        xor     al,al                   ;descriptor size bit
         mov     ah,DescPresent+DescPL3+DescMemory+DescRWData
         call    MakeDesc
         pop     es
@@ -2751,7 +2751,7 @@ cw5_LDT:
         mov     di,KernalLDT
         mov     esi,LDTLinear
         mov     ecx,8192*8
-        xor     al,al
+        xor     al,al                   ;descriptor size bit
         mov     ah,DescPresent+DescPL3+DescLDT
         call    MakeDesc
         pop     es
@@ -3158,7 +3158,7 @@ cw5_DpmiInProtected:
         movzx   esi,si
         shl     esi,4
         mov     ecx,65535
-        xor     al,al
+        xor     al,al                   ;descriptor size bit
         mov     ah,DescPresent+DescPL3+DescMemory+DescERCode
         call    MakeDesc
         mov     ax,000ch
@@ -3183,7 +3183,7 @@ cw5_DpmiInProtected:
         movzx   esi,si
         shl     esi,4
         mov     ecx,65535
-        xor     al,al
+        xor     al,al                   ;descriptor size bit
         mov     ah,DescPresent+DescPL3+DescMemory+DescRWData
         call    MakeDesc
         mov     ax,000ch
@@ -3206,7 +3206,7 @@ cw5_DpmiInProtected:
         mov     di,offset dpmiSelBuffer
         xor     esi,esi
         or      ecx,-1
-        xor     al,al
+        xor     al,al                   ;descriptor size bit
         mov     ah,DescPresent+DescPL3+DescMemory+DescRWData
         call    MakeDesc
         mov     ax,000ch
@@ -3316,7 +3316,7 @@ cw5_InProtected:
         mov     di,offset dpmiSelBuffer
         mov     esi,dpmiSelBase
         mov     ecx,offset _apiCodeEnd-_apiCodeStart
-        mov     al,1 shl 6
+        mov     al,1 shl 6              ;descriptor size bit
         mov     ah,DescPresent+DescPL3+DescMemory+DescERCode
         call    MakeDesc
         mov     ax,000ch
@@ -3339,7 +3339,7 @@ cw5_InProtected:
         mov     di,offset dpmiSelBuffer
         mov     esi,dpmiSelBase
         mov     ecx,offset _apiCodeEnd-_apiCodeStart
-        xor     al,al
+        xor     al,al                   ;descriptor size bit
         mov     ah,DescPresent+DescPL3+DescMemory+DescRWData
         call    MakeDesc
         mov     ax,000ch

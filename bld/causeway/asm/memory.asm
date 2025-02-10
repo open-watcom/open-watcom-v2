@@ -2511,7 +2511,7 @@ mem19_2:
         movzx   ecx,cx
         shl     ecx,4
         dec     ecx
-        mov     al,0
+        xor     al,al                   ;descriptor size bit
         mov     ah,DescPresent+DescPL3+DescMemory+DescRWData
         call    EMUMakeDesc
         pop     ebx
@@ -2691,7 +2691,7 @@ mem20_2:
         movzx   ecx,cx
         shl     ecx,4
         dec     ecx
-        mov     al,0
+        xor     al,al                   ;descriptor size bit
         mov     ah,DescPresent+DescPL3+DescMemory+DescRWData
         call    EMUMakeDesc
         pop     ebx
