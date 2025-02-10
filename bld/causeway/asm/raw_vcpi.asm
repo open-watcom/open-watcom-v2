@@ -1963,6 +1963,8 @@ rv30_Normal:
         sub     RawStackPos,RawStackDif
         call    Real2Protected
         ;
+        ; Get index and offset into CallBackTable
+        ;
         mov     ax,RetAdd               ;get return address.
         sub     ax,CallBackSize         ;back to start of call back entry.
         sub     ax,offset CallBackList  ;offset from start of list.
@@ -3930,25 +3932,25 @@ rv46_0B00_1:
 rv46_0B00_d3:
         mov     dr3,eax
         mov     eax,dr6
-        and     eax,not 8
+        and     al,not 8
         mov     dr6,eax
         jmp     rv46_0B00_2
 rv46_0B00_d2:
         mov     dr2,eax
         mov     eax,dr6
-        and     eax,not 4
+        and     al,not 4
         mov     dr6,eax
         jmp     rv46_0B00_2
 rv46_0B00_d1:
         mov     dr1,eax
         mov     eax,dr6
-        and     eax,not 2
+        and     al,not 2
         mov     dr6,eax
         jmp     rv46_0B00_2
 rv46_0B00_d0:
         mov     dr0,eax
         mov     eax,dr6
-        and     eax,not 1
+        and     al,not 1
         mov     dr6,eax
         ;
 rv46_0B00_2:

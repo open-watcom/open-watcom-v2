@@ -231,7 +231,7 @@ ENDIF
         ;
         mov     ecx,d[LEHeader.LE_ResidentNames]
         add     ecx,d[load1_LEOffset]
-        Reg32To16hilo ecx, cx, dx	;ecx -> cx:dx
+        Reg32To16hilo ecx, cx, dx       ;ecx -> cx:dx
         mov     bx,w[load1_Handle]
         mov     ax,4200h
         int     21h
@@ -291,7 +291,7 @@ load1_ge1:
         push    edx
         mov     ecx,d[LEHeader.LE_ResidentNames]
         add     ecx,d[load1_LEOffset]
-        Reg32To16hilo ecx, cx, dx	;ecx -> cx:dx
+        Reg32To16hilo ecx, cx, dx       ;ecx -> cx:dx
         mov     ax,4200h
         int     21h
         pop     edx
@@ -360,7 +360,7 @@ load1_NoExports:
         mov     bx,w[load1_Handle]
         mov     ecx,d[LEHeader.LE_ObjOffset] ;Get object table offset.
         add     ecx,d[load1_LEOffset]
-        Reg32To16hilo ecx, cx, dx	;ecx -> cx:dx
+        Reg32To16hilo ecx, cx, dx       ;ecx -> cx:dx
         mov     ax,4200h
         int     21h
         pop     ecx
@@ -458,7 +458,7 @@ load1_objup1:
         mov     ecx,d[LEHeader.LE_EntryTable]
         add     ecx,d[load1_LEOffset]
         mov     bx,w[load1_Handle]
-        Reg32To16hilo ecx, cx, dx	;ecx -> cx:dx
+        Reg32To16hilo ecx, cx, dx       ;ecx -> cx:dx
         mov     ax,4200h
         int     21h
         ;
@@ -680,7 +680,7 @@ load1_load1:
         dec     eax
         mul     d[LEHeader.LE_PageSize]             ;* page size.
         add     eax,d[LEHeader.LE_Data]             ;data offset.
-        Reg32To16hilo eax, cx, dx	;eax -> cx:dx
+        Reg32To16hilo eax, cx, dx       ;eax -> cx:dx
         mov     ax,4200h
         mov     bx,w[load1_Handle]
         int     21h                                 ;set the file pointer.
@@ -765,7 +765,7 @@ load1_loadz:
         push    ecx
         mov     ecx,d[LEHeader.LE_Fixups]
         add     ecx,d[load1_LEOffset]
-        Reg32To16hilo ecx, cx, dx	;ecx -> cx:dx
+        Reg32To16hilo ecx, cx, dx       ;ecx -> cx:dx
         mov     bx,w[load1_Handle]
         mov     ax,4200h
         int     21h                     ;move to fixup data.
@@ -1575,7 +1575,7 @@ load1_SegLoop:
         test    eax,1 shl 20            ;G bit set?
         jz      load1_NoGBit
         shl     ecx,12
-        or      ecx,4095
+        or      cx,4095
 load1_NoGBit:
         or      ecx,ecx
         jz      load1_NoDecLim

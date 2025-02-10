@@ -3474,6 +3474,21 @@ mcbGetMemLinear32 endp
 ;
 ;Replacement for CauseWay API ResMemLinear32 function.
 ;
+;=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+;
+;Re-size a previously allocated block of memory without a selector.
+;
+;On Entry:
+;
+;ESI  - Linear address of block to re-size.
+;ECX  - Size of block required in bytes.
+;
+;On Exit:
+;
+;Carry clear if OK &,
+;
+;ESI  - New linear address of block.
+;
 mcbResMemLinear32 proc near
         push    ds
         push    es

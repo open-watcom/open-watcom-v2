@@ -2112,6 +2112,8 @@ cw5_VCPI:
         add     esi,offset VCPISW
         int     67h
         ;
+        ; Error, not switched to protected mode
+        ;
         mov     ax,_cwStack
         mov     ss,ax
         mov     esp,offset _cwStackEnd-4

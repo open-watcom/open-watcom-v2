@@ -798,7 +798,7 @@ api89_SegLoop:
         test    eax,1 shl 20                        ;G bit set?
         jz      api89_NoGBit
         shl     ecx,12
-        or      ecx,4095
+        or      cx,4095
 api89_NoGBit:
         or      ecx,ecx
         jz      api89_NoDecLim
