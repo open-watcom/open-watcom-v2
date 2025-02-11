@@ -1885,167 +1885,69 @@ Int21hAL2Carry  endp
 ;
 ;The jump table used to pass control to the right routine.
 ;
+__entry macro p1,c1
+        rept    c1+1-__num
+        dd      p1
+__num = __num + 1
+        endm
+        endm
+
+__num = 0
 Int21hTable     label dword
-;       dd 8 dup (Int21hNotOurs)        ;00-07
-        IRP     arg,<1,2,3,4,5,6,7,8>
-        DD      Int21hNotOurs
-        ENDM
-
-        dd Int21hNotOurs                ;08
-        dd Int21hPrintString    ;09
-        dd Int21hGetString              ;0A
-
-;       dd 4 dup (Int21hNotOurs)        ;0B-0E
-        IRP     arg,<1,2,3,4>
-        DD      Int21hNotOurs
-        ENDM
-
-        dd Int21hInvalid                ;0F
-
-;       dd 8 dup (Int21hInvalid)        ;10-17
-        IRP     arg,<1,2,3,4,5,6,7,8>
-        DD      Int21hInvalid
-        ENDM
-
-;       dd 2 dup (Int21hNotOurs)        ;18-19
-        IRP     arg,<1,2>
-        DD      Int21hNotOurs
-        ENDM
-
-        dd Int21hSetDTA         ;1A
-;       dd 5 dup (Int21hNotOurs)        ;1B-1F
-        IRP     arg,<1,2,3,4,5>
-        DD      Int21hNotOurs
-        ENDM
-
-        dd Int21hNotOurs                ;20
-
-;       dd 4 dup (Int21hInvalid)        ;21-24
-        IRP     arg,<1,2,3,4>
-        DD      Int21hInvalid
-        ENDM
-
-        dd Int21hSetVect                ;25
-;       dd 2 dup (Int21hInvalid)        ;26-27
-        IRP     arg,<1,2>
-        DD      Int21hInvalid
-        ENDM
-
-;       dd 2 dup (Int21hInvalid)        ;28-29
-        IRP     arg,<1,2>
-        DD      Int21hInvalid
-        ENDM
-
-;       dd 5 dup (Int21hNotOurs)        ;2A-2E
-        IRP     arg,<1,2,3,4,5>
-        DD      Int21hNotOurs
-        ENDM
-
-        dd Int21hGetDTA         ;2F
-
-;       dd 5 dup (Int21hNotOurs)        ;30-34
-        IRP     arg,<1,2,3,4,5>
-        DD      Int21hNotOurs
-        ENDM
-
-        dd Int21hGetVect                ;35
-;       dd 2 dup (Int21hNotOurs)        ;36-37
-        IRP     arg,<1,2>
-        DD      Int21hNotOurs
-        ENDM
-
-        dd Int21hGetSetCountry  ;38
-        dd Int21hCreateDir              ;39
-        dd Int21hCreateDir              ;3A
-        dd Int21hCreateDir              ;3B
-        dd Int21hCreateFile     ;3C
-        dd Int21hOpenFile               ;3D
-        dd Int21hNotOurs                ;3E
-        dd Int21hReadFile               ;3F
-
-        dd Int21hWriteFile              ;40
-        dd Int21hOpenFile               ;41
-        dd Int21hNotOurs                ;42
-        dd Int21hCreateFile     ;43
-        dd Int21hIOCTLDispatch  ;44
-;       dd 2 dup (Int21hNotOurs)        ;45-46
-        IRP     arg,<1,2>
-        DD      Int21hNotOurs
-        ENDM
-
-        dd Int21hGetCurDir              ;47
-
-        dd Int21hAllocMem               ;48
-        dd Int21hRelMem         ;49
-        dd Int21hResMem         ;4A
-        dd Int21hExecFile               ;4B
-
-;       dd 2 dup (Int21hNotOurs)        ;4C-4D
-        IRP     arg,<1,2>
-        DD      Int21hNotOurs
-        ENDM
-
-        dd Int21hFindFirstFile  ;4E
-        dd Int21hFindNextFile   ;4F
-
-        dd Int21hSetPSP         ;50
-        dd Int21hGetPSP         ;51
-;       dd 4 dup (Int21hNotOurs)        ;52-55
-        IRP     arg,<1,2,3,4>
-        DD      Int21hNotOurs
-        ENDM
-
-        dd Int21hRenameFile     ;56
-        dd Int21hNotOurs                ;57
-
-        dd Int21hNotOurs                ;58
-        dd Int21hGetErrorInfo   ;59
-        dd Int21hCreateTemp     ;5A
-        dd Int21hCreateFile     ;5B
-;       dd 2 dup (Int21hNotOurs)        ;5C-5D
-        IRP     arg,<1,2>
-        DD      Int21hNotOurs
-        ENDM
-
-        dd Int21hMSNet          ;5E
-        dd Int21hNotOurs                ;5F
-
-;       dd 2 dup (Int21hNotOurs)        ;60-61
-        IRP     arg,<1,2>
-        DD      Int21hNotOurs
-        ENDM
-
-        dd Int21hGetPSP                 ;62
-;       dd 4 dup (Int21hNotOurs)        ;63-66
-        IRP     arg,<1,2,3,4>
-        DD      Int21hNotOurs
-        ENDM
-
-        dd Int21hSetHandles             ;67
-
-;       dd 4 dup (Int21hNotOurs)        ;68-6B
-        IRP     arg,<1,2,3,4>
-        DD      Int21hNotOurs
-        ENDM
-
-        dd Int21hExtendOpen             ;6C
-;       dd 3 dup (Int21hNotOurs)        ;6D-6F
-        IRP     arg,<1,2,3>
-        DD      Int21hNotOurs
-        ENDM
-
-;       dd (16*9)-1 dup (Int21hNotOurs) ;70-FE
-        IRP     arg,<1,2,3,4,5,6,7,8>
-        IRP     arg2,<1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16>
-        DD      Int21hNotOurs
-        ENDM
-        ENDM
-        IRP     arg,<1,2,3,4,5,6,7,8,9,10,11,12,13,14,15>
-        DD      Int21hNotOurs
-        ENDM
-
-        dd Int21hDOS4GTest              ;FF
-
+__entry Int21hNotOurs,          8       ;00-08
+__entry Int21hPrintString,      9       ;09
+__entry Int21hGetString,        0Ah     ;0A
+__entry Int21hNotOurs,          0Eh     ;0B-0E
+__entry Int21hInvalid,          17h     ;0F-17
+__entry Int21hNotOurs,          19h     ;18-19
+__entry Int21hSetDTA,           1Ah     ;1A
+__entry Int21hNotOurs,          20h     ;1B-20
+__entry Int21hInvalid,          24h     ;21-24
+__entry Int21hSetVect,          25h     ;25
+__entry Int21hInvalid,          29h     ;26-29
+__entry Int21hNotOurs,          2Eh     ;2A-2E
+__entry Int21hGetDTA,           2Fh     ;2F
+__entry Int21hNotOurs,          34h     ;30-34
+__entry Int21hGetVect,          35h     ;35
+__entry Int21hNotOurs,          37h     ;36-37
+__entry Int21hGetSetCountry,    38h     ;38
+__entry Int21hCreateDir,        3Bh     ;39-3B
+__entry Int21hCreateFile,       3Ch     ;3C
+__entry Int21hOpenFile,         3Dh     ;3D
+__entry Int21hNotOurs,          3Eh     ;3E
+__entry Int21hReadFile,         3Fh     ;3F
+__entry Int21hWriteFile,        40h     ;40
+__entry Int21hOpenFile,         41h     ;41
+__entry Int21hNotOurs,          42h     ;42
+__entry Int21hCreateFile,       43h     ;43
+__entry Int21hIOCTLDispatch,    44h     ;44
+__entry Int21hNotOurs,          46h     ;45-46
+__entry Int21hGetCurDir,        47h     ;47
+__entry Int21hAllocMem,         48h     ;48
+__entry Int21hRelMem,           49h     ;49
+__entry Int21hResMem,           4Ah     ;4A
+__entry Int21hExecFile,         4Bh     ;4B
+__entry Int21hNotOurs,          4Dh     ;4C-4D
+__entry Int21hFindFirstFile,    4Eh     ;4E
+__entry Int21hFindNextFile,     4Fh     ;4F
+__entry Int21hSetPSP,           50h     ;50
+__entry Int21hGetPSP,           51h     ;51
+__entry Int21hNotOurs,          55h     ;52-55
+__entry Int21hRenameFile,       56h     ;56
+__entry Int21hNotOurs,          58h     ;57-58
+__entry Int21hGetErrorInfo,     59h     ;59
+__entry Int21hCreateTemp,       5Ah     ;5A
+__entry Int21hCreateFile,       5Bh     ;5B
+__entry Int21hNotOurs,          5Dh     ;5C-5D
+__entry Int21hMSNet,            5Eh     ;5E
+__entry Int21hNotOurs,          61h     ;5F-61
+__entry Int21hGetPSP,           62h     ;62
+__entry Int21hNotOurs,          66h     ;63-66
+__entry Int21hSetHandles,       67h     ;67
+__entry Int21hNotOurs,          6Bh     ;68-6B
+__entry Int21hExtendOpen,       6Ch     ;6C
+__entry Int21hNotOurs,          0FEh    ;6D-FE
+__entry Int21hDOS4GTest,        0FFh    ;FF
 
 ;=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 ;
