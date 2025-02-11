@@ -1,18 +1,5 @@
         .386P
 
-excdata macro base,x
-base&x df 0
-        endm                                                                                                              
-
-procbeg macro base,x,suf
-base&x&suf proc far
-        endm                                                                                                              
-
-procend macro base,x,suf
-base&x&suf endp
-        endm                                                                                                              
-
-
 _Excep  segment para public 'Exception code' use16
         assume cs:_Excep, ds:_Excep, es:nothing
 ExcepStart      label byte
@@ -409,16 +396,14 @@ exc2_Use0:
         mov     ax,0203h
         int     31h
         ret
-        ;
-
-__num = 0
-        rept 16
-excdata OldExc,%__num
-__num = __num + 1
-        endm
 
 ExcepClose      endp
 
+__num = 0
+        rept 16
+__labeldir OldExc,%__num,,<df 0>
+__num = __num + 1
+        endm
 
 ;-------------------------------------------------------------------------
 ;
@@ -485,7 +470,7 @@ Int00hHandler   endp
 
 __num = 0
         rept 16
-procbeg DPMIExc,%__num,Patch
+__labeldir DPMIExc,%__num,Patch,<proc far>
         push    ds
         assume ds:nothing
         mov     ds,cs:ExcepDDSeg
@@ -494,7 +479,7 @@ procbeg DPMIExc,%__num,Patch
         pop     ds
         db 0e9h
         dw offset DPMIExcPatch-($+2)
-procend DPMIExc,%__num,Patch
+__labeldir DPMIExc,%__num,Patch,endp
 __num = __num + 1
         endm
 
