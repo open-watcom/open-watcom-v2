@@ -635,41 +635,25 @@ CR3Flush        endp
 
 
 ;-------------------------------------------------------------------------------
-Int15PatchTable dw Int15Patch0,Int15Patch1,Int15Patch2,Int15Patch3
-        dw Int15Patch4,Int15Patch5,Int15Patch6,Int15Patch7
-Int15Patch0:
+Int15PatchTable label word
+
+__num = 0
+        rept 8
+__dirlabel dw,Int15Patch,%__num
+__num = __num + 1
+        endm
+
+__num = 0
+__offset = 0
+        rept 8
+__labeldir Int15Patch,%__num,,:
         push    esi
-        mov     si,offset ITable+0
+        mov     si,offset ITable+__offset
         jmp     Int15Patch
-Int15Patch1:
-        push    esi
-        mov     si,offset ITable+8
-        jmp     Int15Patch
-Int15Patch2:
-        push    esi
-        mov     si,offset ITable+16
-        jmp     Int15Patch
-Int15Patch3:
-        push    esi
-        mov     si,offset ITable+24
-        jmp     Int15Patch
-Int15Patch4:
-        push    esi
-        mov     si,offset ITable+32
-        jmp     Int15Patch
-Int15Patch5:
-        push    esi
-        mov     si,offset ITable+40
-        jmp     Int15Patch
-Int15Patch6:
-        push    esi
-        mov     si,offset ITable+48
-        jmp     Int15Patch
-Int15Patch7:
-        push    esi
-        mov     si,offset ITable+56
-        jmp     Int15Patch
-        ;
+__num = __num + 1
+__offset = __offset + 8
+        endm
+
         assume ds:nothing
 Int15Patch:
         cmp     ah,88h          ;get memory size?

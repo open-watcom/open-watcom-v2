@@ -278,6 +278,22 @@ Mem16hiloToReg32 macro mhi,mlo,r32
         mov     r16_&r32,mlo
         endm
 
+__labeldir macro p1,p2,p3,t1
+    ifb <p3>
+p1&p2 t1
+    else
+p1&p2&p3 t1
+    endif
+        endm
+
+__dirlabel macro t1,p1,p2,p3
+    ifb <p3>
+t1 p1&p2
+    else
+t1 p1&p2&p3
+    endif
+        endm
+
 b       equ     byte ptr
 w       equ     word ptr
 d       equ     dword ptr
