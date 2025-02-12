@@ -2754,7 +2754,7 @@ RawDPMIPatch    proc    far
         jz      rv46_DPMI_0A00
         cmp     ah,0bh
         jz      rv46_DPMI_0B00
-        jmp     rv46_NotOurs
+        jmp     rv46_NotAvail
 
 rv46_DPMI_0000:
         cmp     al,00h                  ;Allocate LDT descriptors?
@@ -2873,9 +2873,9 @@ rv46_DPMI_000C:
 
 rv46_DPMI_000D:
         cmp     al,0Dh                  ;allocate specific LDT descriptor?
-        jnz     rv46_NotOurs
-        stc
-        jmp     rv46_Done
+        jnz     rv46_NotAvail
+        ;not implemented
+        jmp     rv46_NotAvail
 
 rv46_DPMI_0100:
         cmp     al,00h                  ;allocate DOS memory?
@@ -2949,7 +2949,7 @@ rv46_0101_0:
 
 rv46_DPMI_0102:
         cmp     al,02h                  ;re-size DOS memory?
-        jnz     rv46_NotOurs
+        jnz     rv46_NotAvail
         push    ebp
         push    eax
         push    ebx
@@ -3056,7 +3056,7 @@ rv46_0204_1:
 
 rv46_DPMI_0205:
         cmp     al,05h                  ;set vector?
-        jnz     rv46_NotOurs
+        jnz     rv46_NotAvail
         push    edx
         ;
         assume ds:nothing
@@ -3291,13 +3291,13 @@ rv46_DPMI_0305:
 
 rv46_DPMI_0306:
         cmp     al,06h                  ;get raw mode switch address.
-        jnz     rv46_NotOurs
-        stc
-        jmp     rv46_Done
+        jnz     rv46_NotAvail
+        ;not implemented
+        jmp     rv46_NotAvail
 
 rv46_DPMI_0400:
         cmp     al,00h                  ;get DPMI version?
-        jnz     rv46_NotOurs
+        jnz     rv46_NotAvail
         mov     ah,0
         mov     al,90                   ; changed from 90h to 90 decimal, MED 01/24/96
         ;
@@ -3537,7 +3537,7 @@ rv46_DPMI_0502:
 
 rv46_DPMI_0503:
         cmp     al,03h                  ;re-size memory block?
-        jnz     rv46_NotOurs
+        jnz     rv46_NotAvail
         push    eax
         push    esi
         push    edi
@@ -3585,7 +3585,7 @@ rv46_DPMI_0603:
 
 rv46_DPMI_0604:
         cmp     al,04h                  ;get page size?
-        jnz     rv46_NotOurs
+        jnz     rv46_NotAvail
         xor     bx,bx
         mov     cx,4096
         clc
@@ -3601,7 +3601,7 @@ rv46_DPMI_0702:
 
 rv46_DPMI_0703:
         cmp     al,03h                  ;discard page contents?
-        jnz     rv46_NotOurs
+        jnz     rv46_NotAvail
         call    RawDiscardPages
         jmp     rv46_Done
 
@@ -3623,7 +3623,7 @@ rv46_DPMI_0800:
 
 rv46_DPMI_0801:
         cmp     al,01h                  ;un-map physical to linear?
-        jnz     rv46_NotOurs
+        jnz     rv46_NotAvail
         call    RawUnMapPhys2Lin
         jmp     rv46_Done
 
@@ -3677,7 +3677,7 @@ rv46_2: mov     al,[esp+(4+4)+1]
 
 rv46_DPMI_0902:
         cmp     al,02h                  ;get virtual interupt state func
-        jnz     rv46_NotOurs
+        jnz     rv46_NotAvail
         ;
         assume ds:nothing
         test    BYTE PTR cs:DpmiEmuSystemFlags,SYSFLAG_16B
@@ -3699,7 +3699,7 @@ rv46_3: mov     al,[esp+(4+4)+1]
 
 rv46_DPMI_0A00:
         cmp     al,00h                  ;get vendor specific API?
-        jnz     rv46_NotOurs
+        jnz     rv46_NotAvail
         ;
         ;MED, 11/30/95
         ; tell inquiring Watcom that CauseWay is DOS4/GW so that it sets up
@@ -3740,9 +3740,7 @@ DPMI_0A00_match:
 DPMI_0A00_NotDOS4G:
         pop     esi
         pop     edi
-        mov     ax,8001h
-        stc
-        jmp     rv46_Done
+        jmp     rv46_NotAvail
         ;
 DPMI_0A00_APIEntryPoint:
         ; dummy entry point
@@ -4058,7 +4056,7 @@ rv46_0B02_10:
 
 rv46_DPMI_0B03:
         cmp     al,03h                  ;reset debug watch point?
-        jnz     rv46_NotOurs
+        jnz     rv46_NotAvail
         ;
         ;Reset hardware breakpoint.
         ;
@@ -4111,11 +4109,10 @@ rv46_0B03_10:
         pop     ds
         popad
         jmp     rv46_Done
-        ;
-rv46_NotOurs:
-        ;
-        ;Not a function recognised by us or not implemented.
-        ;
+
+rv46_NotAvail:
+        ;Not a function recognised by us
+        ;so set carry and return appropriate error.
         mov     ax,8001h
         stc
 rv46_Done:
