@@ -41,7 +41,10 @@ SYSFLAG_VMM     equ (1 shl 1)
 ;SYSFLAG_PF1     equ (1 shl 5)
 ;SYSFLAG_PF2     equ (1 shl 6)
 SYSFLAG_LDT     equ (1 shl 7)
+SYSFLAG_DUALM   equ (1 shl 14)
 SYSFLAG_INPM    equ (1 shl 15)
+
+SYSXFLAG_DUALM  equ (1 shl 0)
 
 CBFLAG_INUSE equ (1 shl 0)      ; callback is in use
 CBFLAG_INT  equ (1 shl 1)       ; callback is interrupt type
@@ -3086,7 +3089,7 @@ cw5_InitDPMI:
         ;
         ;Check for 32-bit support if needed.
         ;
-        test    SystemFlags,1 shl 14    ;Dual mode?
+        test    SystemFlags,SYSFLAG_DUALM   ;Dual mode?
         jnz     cw5_Use16Bit23
         ;
         test    BYTE PTR SystemFlags,SYSFLAG_16B
@@ -3156,7 +3159,7 @@ cw5_Use16Bit24:
         pop     ax
         ;
         assume ds:_cwMain
-        test    w[SystemFlags+2],1      ;Dual mode?
+        test    w[SystemFlags+2],SYSXFLAG_DUALM ;Dual mode?
         jz      InitError
         xor     SystemFlags,SYSFLAG_16B
         xor     ax,SYSFLAG_16B          ;toggle the mode.

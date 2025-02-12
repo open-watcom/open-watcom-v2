@@ -2671,10 +2671,10 @@ api61_GotSel:
         mov     dx,apiSystemFlags           ;use default setting.
         shr     dx,14
         mov     al,dl
-        xor     al,1
+        xor     al,1                        ;dual mode 16/32-bit
         or      al,b[apiSystemFlags+2]
-        and     al,1
-        shl     al,6
+        and     al,SYSXFLAG_DUALM
+        shl     al,6                        ;descriptor size bit
         ;
         cmp     ecx,0fffffh                 ; see if we need to set g bit
         jc      api61_3

@@ -828,9 +828,9 @@ api89_DoSegSet:
         Sys     SetSelDet32
         mov     cx,w[api89_SystemFlags]             ;use default setting.
         shr     cx,14
-        xor     cl,1
+        xor     cl,1                                ;dual mode 16/32-bit
         or      cl,b[api89_SystemFlags+2]
-        and     cl,1
+        and     cl,SYSXFLAG_DUALM                   ;descriptor size bit
         call    _DSizeSelector
         ;
         mov     eax,es:[esi+4]                      ;Get class.
@@ -850,8 +850,8 @@ api89_CodeSeg:
         jnz     api89_Default
         mov     cx,w[api89_SystemFlags]             ;use default setting.
         shr     cx,14
-        and     cx,1                                ;get code size
-        xor     cx,1                                ;flip it for selector function.
+        and     cx,1                                ;dual mode 16/32-bit
+        xor     cx,1                                ;descriptor size bit
 api89_Default:
         Sys     CodeSel
         ;
