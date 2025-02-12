@@ -2217,7 +2217,6 @@ nosse:
         push    eax                     ;CS
         mov     eax,offset cw5_pl3
         push    eax                     ;EIP
-        db 66h
         iretd
         ;
 cw5_pl3:

@@ -1381,7 +1381,6 @@ SFrameA7 ends
         pop     ds
         pop     ebx
         pop     eax
-        db 66h
         iret
         ;
 inter17_Use32:
@@ -1512,7 +1511,6 @@ SFrameA8 ends
         pop     ds
         pop     ebx
         pop     eax
-        db 66h
         iret
         ;
 inter17_ExpUse32:
@@ -1692,7 +1690,6 @@ inter18_NoCall:
         pop     es
         pop     ds
         add     sp,sa10_iret-sa10_eflags
-        db 66h
         iret                    ;Switch back to calling program.
         ;
 inter18_Use32Bit:

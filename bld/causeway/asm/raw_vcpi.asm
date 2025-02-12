@@ -368,7 +368,7 @@ rv1_NoDIRMove:
         ;
         ;Switch back to real mode.
         ;
-        mov     ax,KernalDS             ;Get supervisor data descriptor,
+        mov     ax,KernalDS     ;Get supervisor data descriptor,
         mov     ds,ax           ;DS,ES,FS,GS,SS must be data with 64k limit
         mov     es,ax           ;expand up, read/write for switch back to real
         mov     fs,ax           ;mode.
@@ -384,7 +384,7 @@ rv1_NoDIRMove:
         pop     ax
         pop     es
         pop     edi
-        db 09ah         ;Absolute 16-bit call, to clear
+        db 09ah                 ;Absolute 16-bit call, to clear
         dw rv1_pl0,KernalPL3_2_PL0      ;instruction pre-fetch & load CS.
 rv1_pl0:
         mov     ax,KernalSwitchPL0
@@ -403,13 +403,13 @@ rv1_RAW:
         ;
         ;Use raw mode to switch back.
         ;
-        mov     eax,CR0Sav              ;Get machine control &
+        mov     eax,CR0Sav      ;Get machine control &
         ;
         ; MED 10/15/96, don't clear emulate math coprocessor bit
         ;and     eax,07FFFFFF2h  ;clear PM bit.
         and     eax,07FFFFFF6h  ;clear PM bit.
         mov     cr0,eax         ;/
-        db 0eah         ;Absolute 16-bit jump, to clear
+        db 0eah                 ;Absolute 16-bit jump, to clear
         dw rv1_RAW0,seg _cwRaw  ;instruction pre-fetch & load CS.
 rv1_RAW0:
         mov     ax,_cwRaw               ;set everything up for real mode again.
@@ -1272,7 +1272,6 @@ RawPL0toPL3     proc    near
         push    eax             ;CS
         mov     eax,offset rv20_pl3
         push    eax             ;EIP
-        db 66h
         iretd
         ;
 rv20_pl3:
@@ -4140,11 +4139,11 @@ rv46_Done:
 rv46_Use32Bit8:
         lea     ebp,[esp+(4+4+4)+IFrame.i_eflags]   ;get address of original flags.
 rv46_Use16Bit8:
-        ;clear IF & DF & OF.
+        ;clear IF & DF & OF in new flags.
         and     ax,NOT (EFLAG_IF or EFLAG_DF or EFLAG_OF)
-        ;retain IF & DF & OF.
+        ;retain IF & DF & OF in old flags.
         and     w[ebp],EFLAG_IF or EFLAG_DF or EFLAG_OF
-        ;or new flags
+        ;or flags in new flags.
         or      w[ebp],ax
         ;
         assume ds:nothing
@@ -4154,7 +4153,6 @@ rv46_Use16Bit8:
         pop     ebp
         pop     eax
         jz      rv46_Use32Bit10
-        db 66h
         iret
         ;
 rv46_Use32Bit10:
@@ -5833,7 +5831,7 @@ rv64_Done:
         ;Now update stacked flags.
         ;
         push    eax
-        push    ebx
+        push    ebp
         xor     eax,eax
         pushf
         pop     ax                      ;get new flags.
@@ -5843,45 +5841,32 @@ rv64_Done:
         ;
         assume ds:_cwDPMIEMU
         jz      rv64_Use32Bit8
-        mov     bx,sp
-        mov     bx,ss:[bx+(4+4)+IFrame16.i16_flags] ;get original flags.
+        movzx   ebp,sp
+        lea     bp,[bp+(4+4)+IFrame16.i16_flags] ;get original flags.
         jmp     rv64_Use16Bit8
         ;
 rv64_Use32Bit8:
-        mov     ebx,[esp+(4+4)+IFrame.i_eflags]     ;get original flags.
+        lea     ebp,[esp+(4+4)+IFrame.i_eflags]     ;get original flags.
 rv64_Use16Bit8:
-        ;retain IF & DF & OF.
-        and     bx,EFLAG_IF or EFLAG_DF or EFLAG_OF
-        ;clear IF & DF & OF.
+        ;clear IF & DF & OF in new flags.
         and     ax,NOT (EFLAG_IF or EFLAG_DF or EFLAG_OF)
-        or      eax,ebx                 ;get old IF.
+        ;retain IF & DF & OF in old flags.
+        and     w[ebp],EFLAG_IF or EFLAG_DF or EFLAG_OF
+        ;or flags in new flags.
+        or      w[ebp],ax
         ;
         assume ds:nothing
         test    BYTE PTR cs:DpmiEmuSystemFlags,SYSFLAG_16B
         ;
         assume ds:_cwDPMIEMU
-        jz      rv64_Use32Bit9
-        mov     bx,sp
-        mov     ss:[bx+(4+4)+IFrame16.i16_flags],ax ;modify stack flags.
-        jmp     rv64_Use16Bit9
-        ;
-rv64_Use32Bit9:
-        mov     [esp+(4+4)+IFrame.i_eflags],eax     ;modify stack flags.
-rv64_Use16Bit9:
-        pop     ebx
+        pop     ebp
         pop     eax
-        ;
-        assume ds:nothing
-        test    BYTE PTR cs:DpmiEmuSystemFlags,SYSFLAG_16B
-        ;
-        assume ds:_cwDPMIEMU
         jz      rv64_Use32Bit10
-        db 66h
         iret
         ;
 rv64_Use32Bit10:
         iretd
-        ;
+
 rv64_NotOurs:
         ;
         ;Not a function recognised by us so pass control to previous handler.

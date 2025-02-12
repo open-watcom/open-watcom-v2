@@ -1032,11 +1032,11 @@ int103_Done:
 int103_Use32Bit8:
         lea     ebp,[esp+(4+4+4)+IFrame.i_eflags]   ;get address of original flags.
 int103_Use16Bit8:
-        ;clear IF & DF.
+        ;clear IF & DF in new flags.
         and     ax,NOT (EFLAG_IF or EFLAG_DF)
-        ;retain IF & DF.
+        ;retain IF & DF in old flags.
         and     w[ebp],EFLAG_IF or EFLAG_DF
-        ;or new flags
+        ;or flags in new flags.
         or      w[ebp],ax
         test    BYTE PTR SystemFlags,SYSFLAG_16B
         assume ds:nothing
