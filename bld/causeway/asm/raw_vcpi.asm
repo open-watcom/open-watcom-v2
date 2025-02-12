@@ -2758,7 +2758,7 @@ RawDPMIPatch    proc    far
         jmp     rv46_NotOurs
 
 rv46_DPMI_0000:
-        cmp     al,00h          ;Allocate LDT descriptors?
+        cmp     al,00h                  ;Allocate LDT descriptors?
         jnz     rv46_DPMI_0001
         push    ebx
         push    eax
@@ -2767,17 +2767,17 @@ rv46_DPMI_0000:
         mov     bx,ax
         mov     eax,ebx
         pop     ebx
-        clc                     ; MED, 01/31/99
+        clc                             ; MED, 01/31/99
         jmp     rv46_Done
 
 rv46_DPMI_0001:
-        cmp     al,01h          ;Free LDT descriptor?
+        cmp     al,01h                  ;Free LDT descriptor?
         jnz     rv46_DPMI_0002
         call    RawRelDescriptor
         jmp     rv46_Done
 
 rv46_DPMI_0002:
-        cmp     al,02h          ;Real segment to protected selector?
+        cmp     al,02h                  ;Real segment to protected selector?
         jnz     rv46_DPMI_0003
         push    ebx
         push    eax
@@ -2789,7 +2789,7 @@ rv46_DPMI_0002:
         jmp     rv46_Done
 
 rv46_DPMI_0003:
-        cmp     al,03h          ;Get selector increment value?
+        cmp     al,03h                  ;Get selector increment value?
         jnz     rv46_DPMI_0004
         mov     ax,8
         clc
@@ -2798,31 +2798,31 @@ rv46_DPMI_0003:
 rv46_DPMI_0004:
 rv46_DPMI_0005:
 rv46_DPMI_0006:
-        cmp     al,06h          ;Get selector base address?
+        cmp     al,06h                  ;Get selector base address?
         jnz     rv46_DPMI_0007
         call    RawGetSelBase
         jmp     rv46_Done
 
 rv46_DPMI_0007:
-        cmp     al,07h          ;Set selector base address?
+        cmp     al,07h                  ;Set selector base address?
         jnz     rv46_DPMI_0008
         call    RawSetSelBase
         jmp     rv46_Done
 
 rv46_DPMI_0008:
-        cmp     al,08h          ;Set segment limit?
+        cmp     al,08h                  ;Set segment limit?
         jnz     rv46_DPMI_0009
         call    RawSetSelLimit
         jmp     rv46_Done
 
 rv46_DPMI_0009:
-        cmp     al,09h          ;Set access rights bytes?
+        cmp     al,09h                  ;Set access rights bytes?
         jnz     rv46_DPMI_000A
         call    RawSetSelType
         jmp     rv46_Done
 
 rv46_DPMI_000A:
-        cmp     al,0Ah          ;create data alias of CS?
+        cmp     al,0Ah                  ;create data alias of CS?
         jnz     rv46_DPMI_000B
         push    ebx
         push    eax
@@ -2861,25 +2861,25 @@ rv46_000A_0:
         jmp     rv46_Done
 
 rv46_DPMI_000B:
-        cmp     al,0Bh          ;fetch descriptor?
+        cmp     al,0Bh                  ;fetch descriptor?
         jnz     rv46_DPMI_000C
         call    RawBGetDescriptor
         jmp     rv46_Done
 
 rv46_DPMI_000C:
-        cmp     al,0Ch          ;put descriptor?
+        cmp     al,0Ch                  ;put descriptor?
         jnz     rv46_DPMI_000D
         call    RawBPutDescriptor
         jmp     rv46_Done
 
 rv46_DPMI_000D:
-        cmp     al,0Dh          ;allocate specific LDT descriptor?
+        cmp     al,0Dh                  ;allocate specific LDT descriptor?
         jnz     rv46_NotOurs
         stc
         jmp     rv46_Done
 
 rv46_DPMI_0100:
-        cmp     al,00h          ;allocate DOS memory?
+        cmp     al,00h                  ;allocate DOS memory?
         jnz     rv46_DPMI_0101
         push    ebp
         push    eax
@@ -2909,7 +2909,7 @@ rv46_0100_0:
         jmp     rv46_Done
 
 rv46_DPMI_0101:
-        cmp     al,01h          ;free DOS memory?
+        cmp     al,01h                  ;free DOS memory?
         jnz     rv46_DPMI_0102
         push    ebx
         push    eax
@@ -3134,7 +3134,7 @@ rv46_0300_1:
         jmp     rv46_Done
 
 rv46_DPMI_0301:
-        cmp     al,01h          ;simulate far call?
+        cmp     al,01h                  ;simulate far call?
         jnz     rv46_DPMI_0302
         ;
         ;Extend [E]DI to EDI
@@ -3196,7 +3196,7 @@ rv46_0301_1:
         jmp     rv46_Done
 
 rv46_DPMI_0302:
-        cmp     al,02h          ;call real mode with iret stack frame?
+        cmp     al,02h                  ;call real mode with iret stack frame?
         jnz     rv46_DPMI_0303
         ;
         ;Extend [E]DI to EDI
@@ -3258,7 +3258,7 @@ rv46_0302_1:
         jmp     rv46_Done
 
 rv46_DPMI_0303:
-        cmp     al,03h          ;get CallBack?
+        cmp     al,03h                  ;get CallBack?
         jnz     rv46_DPMI_0304
         push    eax
         push    ecx
@@ -3274,13 +3274,13 @@ rv46_DPMI_0303:
         jmp     rv46_Done
 
 rv46_DPMI_0304:
-        cmp     al,04h          ;release CallBack?
+        cmp     al,04h                  ;release CallBack?
         jnz     rv46_DPMI_0305
         call    RawRelCallBack
         jmp     rv46_Done
 
 rv46_DPMI_0305:
-        cmp     al,05h          ;get state save restore address?
+        cmp     al,05h                  ;get state save restore address?
         jnz     rv46_DPMI_0306
         mov     ax,4
         mov     bx,0
@@ -3291,16 +3291,16 @@ rv46_DPMI_0305:
         jmp     rv46_Done
 
 rv46_DPMI_0306:
-        cmp     al,06h          ;get raw mode switch address.
+        cmp     al,06h                  ;get raw mode switch address.
         jnz     rv46_NotOurs
         stc
         jmp     rv46_Done
 
 rv46_DPMI_0400:
-        cmp     al,00h          ;get DPMI version?
+        cmp     al,00h                  ;get DPMI version?
         jnz     rv46_NotOurs
         mov     ah,0
-        mov     al,90                                   ; changed from 90h to 90 decimal, MED 01/24/96
+        mov     al,90                   ; changed from 90h to 90 decimal, MED 01/24/96
         ;
         ; MED 01/25/96
         ;mov     bx,00000111b
@@ -3335,7 +3335,7 @@ rv46_DPMI_0400:
         pop     eax
         and     eax,00040000H
         and     edx,00040000H
-        mov     cl,3            ; flag 386
+        mov     cl,3                    ; flag 386
         cmp     eax,edx
         je      medcpu
         push    edx
@@ -3352,10 +3352,10 @@ rv46_DPMI_0400:
         popfd
         and     eax,00200000H
         and     edx,00200000H
-        mov     cl,4            ; flag 486
+        mov     cl,4                    ; flag 486
         cmp     eax,edx
         je      medcpu
-        mov     cl,5            ; flag 586/Pentium
+        mov     cl,5                    ; flag 586/Pentium
 medcpu:
         pop     edx
         pop     eax
@@ -3365,7 +3365,7 @@ medcpu:
         jmp     rv46_Done
 
 rv46_DPMI_0500:
-        cmp     al,00h          ;get memory information?
+        cmp     al,00h                  ;get memory information?
         jnz     rv46_DPMI_0501
         push    eax
         push    ebx
@@ -3391,12 +3391,12 @@ rv46_0: mov     DWORD PTR es:[edi+0],ebx
         push    ds
         mov     ax,KernalDS
         mov     ds,ax
-        call PhysicalGetPages   ;get number of un-claimed pages.
+        call PhysicalGetPages           ;get number of un-claimed pages.
         add     edx,NoneLockedPages     ;include currently un-locked pages.
         mov eax,edx
-        shr eax,10                              ;work out page tables needed for this.
-        shl eax,1                               ;2 pages per table.
-        sub edx,eax                             ;lose page tables.
+        shr eax,10                      ;work out page tables needed for this.
+        shl eax,1                       ;2 pages per table.
+        sub edx,eax                     ;lose page tables.
         cmp edx,ebx
         jc rv46_500_0
         mov edx,ebx
@@ -3422,15 +3422,15 @@ rv46_500_0:
         cmp     VMMHandle,0
         jz      rv46_500_1
         mov     dl,VMMName              ;get drive letter for this media.
-        sub     dl,'A'          ;make it real.
-        inc     dl              ;adjust for current type select.
-        mov     ah,36h          ;get free space.
-        int     21h             ;/
+        sub     dl,'A'                  ;make it real.
+        inc     dl                      ;adjust for current type select.
+        mov     ah,36h                  ;get free space.
+        int     21h                     ;/
         xor     edx,edx
-        cmp     ax,-1           ;invalid drive?
+        cmp     ax,-1                   ;invalid drive?
         jz      rv46_500_1
-        mul     cx              ;Get bytes per cluster.
-        mul     bx              ;Get bytes available.
+        mul     cx                      ;Get bytes per cluster.
+        mul     bx                      ;Get bytes available.
         Reg16hiloTo32 dx, ax, edx       ;dx:ax -> edx
         add     edx,SwapFileLength      ;include current size.
         shr     edx,12
@@ -3442,9 +3442,9 @@ rv46_500_0:
         GetPageIndex eax
         sub     edx,eax
 rv46_500_1:
-        mov     ebx,edx         ; MED 01/25/96
+        mov     ebx,edx                 ; MED 01/25/96
         ;add     edx,FreePages
-        mov     edx,FreePages   ; MED 01/25/96
+        mov     edx,FreePages           ; MED 01/25/96
         push    edx
         call    PhysicalGetPages
         ;
@@ -3452,8 +3452,8 @@ rv46_500_1:
         ;
         pop     eax                     ; save edx value off of stack
         pop     edi                     ; restore original edi value
-        push    eax             ; restore edx value to stack
-        test    ebx,ebx ; see if any virtual memory
+        push    eax                     ; restore edx value to stack
+        test    ebx,ebx                 ; see if any virtual memory
         jnz     med2
         mov     ebx,edx
 med2:
@@ -3481,14 +3481,14 @@ med2:
         mov     edx,MaxMemLin
         shr     edx,12
         sub     edx,medAllocPages
-        cmp     eax,edx                         ; see if greater than MAXMEM choke-off point
+        cmp     eax,edx                 ; see if greater than MAXMEM choke-off point
         jbe     med3
         mov     eax,edx
 med3:
         mov     DWORD PTR es:[edi+1ch],eax
-        add     DWORD PTR es:[edi+10h],edx      ; MED 01/25/96
+        add     DWORD PTR es:[edi+10h],edx  ; MED 01/25/96
         mov     eax,TotalPages
-        add     eax,TotalPhysPages       ; MED 01/25/96
+        add     eax,TotalPhysPages      ; MED 01/25/96
         mov     DWORD PTR es:[edi+18h],eax
         mov     eax,SwapFileLength
         shr     eax,12
@@ -3507,7 +3507,7 @@ med3:
         jmp     rv46_Done
 
 rv46_DPMI_0501:
-        cmp     al,01h          ;get memory block?
+        cmp     al,01h                  ;get memory block?
         jnz     rv46_DPMI_0502
         push    eax
         push    esi
@@ -3531,13 +3531,13 @@ rv46_DPMI_0501:
         jmp     rv46_Done
 
 rv46_DPMI_0502:
-        cmp     al,02h          ;free memory block?
+        cmp     al,02h                  ;free memory block?
         jnz     rv46_DPMI_0503
         call    RawRelMemory
         jmp     rv46_Done
 
 rv46_DPMI_0503:
-        cmp     al,03h          ;re-size memory block?
+        cmp     al,03h                  ;re-size memory block?
         jnz     rv46_NotOurs
         push    eax
         push    esi
@@ -3561,31 +3561,31 @@ rv46_DPMI_0503:
         jmp     rv46_Done
 
 rv46_DPMI_0600:
-        cmp     al,00h          ;lock memory?
+        cmp     al,00h                  ;lock memory?
         jnz     rv46_DPMI_0601
         call    RawLockMemory
         jmp     rv46_Done
 
 rv46_DPMI_0601:
-        cmp     al,01h          ;un-lock memory?
+        cmp     al,01h                  ;un-lock memory?
         jnz     rv46_DPMI_0602
         call    RawUnLockMemory
         jmp     rv46_Done
 
 rv46_DPMI_0602:
-        cmp     al,02h          ;mark real mode region as swapable?
+        cmp     al,02h                  ;mark real mode region as swapable?
         jnz     rv46_DPMI_0603
         clc
         jmp     rv46_Done
 
 rv46_DPMI_0603:
-        cmp     al,03h          ;re-lock real mode region?
+        cmp     al,03h                  ;re-lock real mode region?
         jnz     rv46_DPMI_0604
         clc
         jmp     rv46_Done
 
 rv46_DPMI_0604:
-        cmp     al,04h          ;get page size?
+        cmp     al,04h                  ;get page size?
         jnz     rv46_NotOurs
         xor     bx,bx
         mov     cx,4096
@@ -3595,19 +3595,19 @@ rv46_DPMI_0604:
 rv46_DPMI_0700:
 rv46_DPMI_0701:
 rv46_DPMI_0702:
-        cmp     al,02h          ;mark page as demand pageing?
+        cmp     al,02h                  ;mark page as demand pageing?
         jnz     rv46_DPMI_0703
         clc
         jmp     rv46_Done
 
 rv46_DPMI_0703:
-        cmp     al,03h          ;discard page contents?
+        cmp     al,03h                  ;discard page contents?
         jnz     rv46_NotOurs
         call    RawDiscardPages
         jmp     rv46_Done
 
 rv46_DPMI_0800:
-        cmp     al,00h          ;map physical to linear?
+        cmp     al,00h                  ;map physical to linear?
         jnz     rv46_DPMI_0801
         push    eax
         push    ebx
@@ -3623,13 +3623,13 @@ rv46_DPMI_0800:
         jmp     rv46_Done
 
 rv46_DPMI_0801:
-        cmp     al,01h          ;un-map physical to linear?
+        cmp     al,01h                  ;un-map physical to linear?
         jnz     rv46_NotOurs
         call    RawUnMapPhys2Lin
         jmp     rv46_Done
 
 rv46_DPMI_0900:
-        cmp     al,00h          ;get & disable virtual interupts func
+        cmp     al,00h                  ;get & disable virtual interupts func
         jnz     rv46_DPMI_0901
         ;
         assume ds:nothing
@@ -3653,7 +3653,7 @@ rv46_1: mov     al,[esp+(4+4)+1]
         jmp     rv46_Done
 
 rv46_DPMI_0901:
-        cmp     al,01h          ;get & enable virtual interupts func
+        cmp     al,01h                  ;get & enable virtual interupts func
         jnz     rv46_DPMI_0902
         ;
         assume ds:nothing
@@ -3677,7 +3677,7 @@ rv46_2: mov     al,[esp+(4+4)+1]
         jmp     rv46_Done
 
 rv46_DPMI_0902:
-        cmp     al,02h          ;get virtual interupt state func
+        cmp     al,02h                  ;get virtual interupt state func
         jnz     rv46_NotOurs
         ;
         assume ds:nothing
@@ -3699,7 +3699,7 @@ rv46_3: mov     al,[esp+(4+4)+1]
         jmp     rv46_Done
 
 rv46_DPMI_0A00:
-        cmp     al,00h          ;get vendor specific API?
+        cmp     al,00h                  ;get vendor specific API?
         jnz     rv46_NotOurs
         ;
         ;MED, 11/30/95
@@ -3734,8 +3734,8 @@ DPMI_0A00_match:
         pop     edi
         push    cs
         pop     es
-        mov     edi,OFFSET DPMI_0A00_APIEntryPoint      ; es:edi -> dummy extension entry point
-        clc                                     ; flag success
+        mov     edi,OFFSET DPMI_0A00_APIEntryPoint  ; es:edi -> dummy extension entry point
+        clc                             ; flag success
         jmp     rv46_Done
         ;
 DPMI_0A00_NotDOS4G:
@@ -3750,10 +3750,10 @@ DPMI_0A00_APIEntryPoint:
         stc
         retf
         ;
-RationalCopyright       DB      "RATIONAL DOS/4G",0
+RationalCopyright   DB      "RATIONAL DOS/4G",0
 
 rv46_DPMI_0B00:
-        cmp     al,00h          ;set debug watch point?
+        cmp     al,00h                  ;set debug watch point?
         jnz     rv46_DPMI_0B01
         ;
         ;Set hardware break point.
@@ -3917,7 +3917,7 @@ rv46_0B00_10:
         jmp     rv46_Done
 
 rv46_DPMI_0B01:
-        cmp     al,01h          ;clear debug watch point?
+        cmp     al,01h                  ;clear debug watch point?
         jnz     rv46_DPMI_0B02
         ;
         ;Release hardware break point.
@@ -3983,7 +3983,7 @@ rv46_0B01_10:
         jmp     rv46_Done
 
 rv46_DPMI_0B02:
-        cmp     al,02h          ;get debug watch point state?
+        cmp     al,02h                  ;get debug watch point state?
         jnz     rv46_DPMI_0B03
         ;
         ;Get state of break point.
@@ -4058,7 +4058,7 @@ rv46_0B02_10:
         jmp     rv46_Done
 
 rv46_DPMI_0B03:
-        cmp     al,03h          ;reset debug watch point?
+        cmp     al,03h                  ;reset debug watch point?
         jnz     rv46_NotOurs
         ;
         ;Reset hardware breakpoint.
@@ -4113,12 +4113,18 @@ rv46_0B03_10:
         popad
         jmp     rv46_Done
         ;
+rv46_NotOurs:
+        ;
+        ;Not a function recognised by us or not implemented.
+        ;
+        mov     ax,8001h
+        stc
 rv46_Done:
         ;
         ;Now update stacked flags.
         ;
         push    eax
-        push    ebx
+        push    ebp
         pushf
         pop     ax                      ;get new flags.
         ;
@@ -4127,56 +4133,32 @@ rv46_Done:
         ;
         assume ds:_cwDPMIEMU
         jz      rv46_Use32Bit8
-        mov     bx,sp
-        mov     bx,ss:[bx+(4+4)+IFrame16.i16_flags] ;get original flags.
+        movzx   ebp,sp
+        lea     bp,[bp+(4+4+4)+IFrame16.i16_flags]  ;get address of original flags.
         jmp     rv46_Use16Bit8
         ;
 rv46_Use32Bit8:
-        mov     bx,[esp+(4+4)+IFrame.i_eflags]      ;get original flags.
+        lea     ebp,[esp+(4+4+4)+IFrame.i_eflags]   ;get address of original flags.
 rv46_Use16Bit8:
-        ;retain IF & DF & OF.
-        and     bx,EFLAG_IF or EFLAG_DF or EFLAG_OF
         ;clear IF & DF & OF.
         and     ax,NOT (EFLAG_IF or EFLAG_DF or EFLAG_OF)
-        ;get old flags.
-        or      ax,bx
+        ;retain IF & DF & OF.
+        and     w[ebp],EFLAG_IF or EFLAG_DF or EFLAG_OF
+        ;or new flags
+        or      w[ebp],ax
         ;
         assume ds:nothing
         test    BYTE PTR cs:DpmiEmuSystemFlags,SYSFLAG_16B
         ;
         assume ds:_cwDPMIEMU
-        jz      rv46_Use32Bit9
-        mov     bx,sp
-        mov     ss:[bx+(4+4)+IFrame16.i16_flags],ax ;modify stack flags.
-        jmp     rv46_Use16Bit9
-        ;
-rv46_Use32Bit9:
-        mov     [esp+(4+4)+IFrame.i_eflags],ax      ;modify stack flags.
-rv46_Use16Bit9:
-        pop     ebx
+        pop     ebp
         pop     eax
-        ;
-        assume ds:nothing
-        test    BYTE PTR cs:DpmiEmuSystemFlags,SYSFLAG_16B
-        ;
-        assume ds:_cwDPMIEMU
         jz      rv46_Use32Bit10
         db 66h
         iret
         ;
 rv46_Use32Bit10:
         iretd
-        ;
-rv46_NotOurs:
-        ;
-        ;Not a function recognised by us so pass control to previous handler.
-        ;
-        assume ds:nothing
-        jmp     FWORD PTR cs:[OldInt31h]         ;pass it onto previous handler.
-        ;
-        assume ds:_cwDPMIEMU
-OldInt31h       dd offset IntNN386Catch+(31h*8)
-        dw DpmiEmuCS
 RawDPMIPatch    endp
 
 ;-------------------------------------------------------------------------------
