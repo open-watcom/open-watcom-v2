@@ -674,9 +674,9 @@ int333_NotOurs:
         pop     ds
         jz      int333_Use32Bit11
         db 66h
-        jmp     FWORD PTR cs:[OldInt33h]                ;pass it onto previous handler.
 int333_Use32Bit11:
         jmp     FWORD PTR cs:[OldInt33h]                ;pass it onto previous handler.
+        ;
 Int33h  endp
 
 
@@ -766,11 +766,9 @@ int334_its32:
         assume ds:nothing
         jz      int334_Use32Bit
         db 66h
-        call    FWORD PTR cs:[Int33hUserCode]
-        jmp     int334_OldStack
 int334_Use32Bit:
         call    FWORD PTR cs:[Int33hUserCode]
-int334_OldStack:
+        ;get old stack
         lss     esp,FWORD PTR cs:[MouseEventStack]
         push    ds
         mov     ds,cs:Int33hDDSeg
@@ -805,7 +803,6 @@ Int33hDummy     proc    near
         pop     ds
         jz      int335_32Bit
         db 66h
-        retf
 int335_32Bit:
         retf
 Int33hDummy     endp

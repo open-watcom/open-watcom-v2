@@ -147,19 +147,40 @@ PageInt         db size RealRegsStruc dup (0)
 ;
 RawSystemFlags  dw 0,0
 ;
-Int2CallCheck   db 8 dup (0)            ;00-07
-        db 8 dup (8)                    ;08-0F
 
-;; MED 02/16/96, force INT15h to be treated as hardware interrupt
-        db 8 dup (0)                    ;10-17
-;       db      0,0,0,0,0,15h-19,0,0    ;10-17
-
-        db 0,0,0,0,1ch-16,0,0,0         ;18-1F
-        db 0,0,0,23h-17,24h-18,0,0,0    ;20-27
-        db 70h-28h dup (0)              ;28-6F
-        db 8 dup ((70h-8))              ;70-77
-        db 100h-78h dup (0)             ;78-FF
+;------------------------------------------------------------------------------
 ;
+;The callback index table used to process real mode interrupt.
+;
+__cbentry1 macro p1
+        rept    p1+1-__num
+        db 0
+__num = __num + 1
+        endm
+        endm
+
+__cbentry2 macro p1,p2
+local value
+value = __num - p2
+        rept    p1+1-__num
+        db value
+__num = __num + 1
+        endm
+        endm
+
+__num = 0
+Int2CallCheck   label   byte
+;                    int    CB index
+__cbentry1 7        ;00-07  -
+__cbentry2 0Fh, 0   ;08-0F  0-7
+__cbentry1 1Bh      ;10-1B  -
+__cbentry2 1Ch,16   ;1C     16
+__cbentry1 22h      ;1D-22  -
+__cbentry2 24h,17   ;23-24  17-18
+__cbentry1 6Fh      ;25-6F  -
+__cbentry2 77h, 8   ;70-77  8-15
+__cbentry1 0FFh     ;78-FF  -
+
 LastCallBack    dw ?
 CallBackTable   db size CallBackStruc*MaxCallBacks dup (0)
 ALLCallBack     dw ?
@@ -558,6 +579,7 @@ _fPhysicalGetPage proc far
         push    eax
         db 66h
         retf
+        ;
 rv7_0:  ret
 _fPhysicalGetPage endp
 
@@ -577,6 +599,7 @@ _fPhysicalGetPages proc far
         push    eax
         db 66h
         retf
+        ;
 rv8_0:  ret
 _fPhysicalGetPages endp
 
@@ -1504,6 +1527,22 @@ RawSimulateFarCallI endp
 ;
 ;Simulate either a real mode INT or far call.
 ;
+;
+;On Entry:-
+;
+;ES:EDI - Parameter table.
+;SS:EBP - Stacked parameters.
+;CX     - stacked word count.
+;BL     - Interupt number.
+;BH     - simulation type
+;         0 - interrupt
+;         1 - far call
+;         2 - far call with iret stack frame
+;
+;On Exit:-
+;
+;Parameter table updated.
+;
 RawSimulate     proc    near
         pushf                   ;Preserve IF state.
         cli                     ;Stop INTs interfering.
@@ -1521,6 +1560,17 @@ RawSimulate     proc    near
         push    d[rv29_IntAdd]
         push    w[rv29_CallAdd]
         push    w[rv29_ourstack]
+        ;
+SFrameC1 struc
+sc1_ourstack dw  ?
+sc1_CallAdd  dw  ?
+sc1_IntAdd   dd  ?
+sc1_tVCPI_SP dd  ?
+sc1_sr16     SRegs16 <?>
+sc1_gr       GRegs <?>
+sc1_flags    dw ?
+SFrameC1 ends
+        ;
         mov     w[rv29_ourstack],0
         ;
         ;setup the real mode stack.
@@ -1561,7 +1611,7 @@ rv29_GotStack:
         jz      rv29_noextendstack
         movzx   eax,ax
 rv29_noextendstack:
-        mov fs:[esi+0],eax
+        mov     fs:[esi+0],eax
         ;
         ;Store table address on v86 stack.
         ;
@@ -1593,7 +1643,7 @@ rv29_NoStacked:
         jz      rv29_Its32
         movzx   ebp,bp
 rv29_Its32:
-        mov     ax,[ebp+(2+4+4)+(2+2+2+2)+(4+4+4+4+4+4+4+4)+2]
+        mov     ax,[ebp+SFrameC1.sc1_flags]
         or      bh,bh           ;int or far?
         jnz     rv29_NoIF
         ;clear IF & TF.
@@ -1800,7 +1850,6 @@ RawSimulate     endp
 
 ;-------------------------------------------------------------------------------
 RawCallBack     proc    near
-        ;
         assume ds:nothing
         pop     cs:RetAdd               ;get return address.
         pushf
@@ -2545,7 +2594,6 @@ cwDPMIEMUStart  label byte
 ;Call _cwRaw SimulateInt
 ;
 EmuRawSimulateInt proc near
-        ;
         assume ds:nothing
         db 66h
         call    FWORD PTR cs:[rv38_calladd]
@@ -2562,7 +2610,6 @@ EmuRawSimulateInt endp
 ;Call _cwRaw SimulateInt
 ;
 EmuRawSimulateInt2 proc near
-        ;
         assume ds:nothing
         db 66h
         call    FWORD PTR cs:[rv39_calladd]
@@ -2579,7 +2626,6 @@ EmuRawSimulateInt2 endp
 ;Call _cwRaw SimulateFarCall
 ;
 EmuRawSimulateFarCall proc near
-        ;
         assume ds:nothing
         db 66h
         call    FWORD PTR cs:[rv40_calladd]
@@ -2596,7 +2642,6 @@ EmuRawSimulateFarCall endp
 ;Call _cwRaw SimulateFarCall
 ;
 EmuRawSimulateFarCall2 proc near
-        ;
         assume ds:nothing
         db 66h
         call    FWORD PTR cs:[rv41_calladd]
@@ -2613,7 +2658,6 @@ EmuRawSimulateFarCall2 endp
 ;Call _cwRaw SimulateFarCallI
 ;
 EmuRawSimulateFarCallI proc near
-        ;
         assume ds:nothing
         db 66h
         call    FWORD PTR cs:[rv42_calladd]
@@ -4197,15 +4241,12 @@ rv47_Restore32:
         jmp     rv47_Done
         ;
 rv47_Done:
-        ;
         assume ds:nothing
         test    BYTE PTR cs:DpmiEmuSystemFlags,SYSFLAG_16B
         ;
         assume ds:_cwRaw
         jz      rv47_Use32
         db 66h
-        retf
-        ;
 rv47_Use32:
         retf
         ;
@@ -4272,7 +4313,6 @@ rv50_8: ClearUseBits edx
         jns     rv50_nowrap
         mov     TotalPhysPages,0
 rv50_nowrap:
-        ;
         assume ds:_cwDPMIEMU
         clc
 rv50_9:
@@ -5869,7 +5909,7 @@ rv64_NotOurs:
         ;Not a function recognised by us so pass control to previous handler.
         ;
         assume ds:nothing
-        jmp     FWORD PTR cs:[OldpInt2Fh]   ;pass it onto previous handler.
+        jmp     FWORD PTR cs:[OldpInt2Fh]   ;pass it onto previous handler (32-bit).
         ;
         assume ds:_cwDPMIEMU
 OldpInt2Fh      dd offset IntNN386Catch+(2fh*8)
@@ -5880,10 +5920,10 @@ Raw2FPatch      endp
         include ldt.asm
         include memory.asm
 
-
 HexTableE       db '0123456789ABCDEF'
 
 cwDPMIEMUEnd    label byte
+
 _cwDPMIEMU      ends
 
-        .286
+.286

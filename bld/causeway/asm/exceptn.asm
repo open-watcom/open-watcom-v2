@@ -541,11 +541,9 @@ DPMIExcPatch    proc    far
         pop     es
         pop     ds
         mov     esi,0
-        jz      exc20_S14_32
-        retf
-        ;
-exc20_S14_32:
+        jnz      exc20_S14_16
         db 66h
+exc20_S14_16:
         retf
         ;
 exc20_Not14Special:

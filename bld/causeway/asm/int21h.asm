@@ -3,6 +3,7 @@
 ;
         .386P
 _Int21h segment para private 'extension code' use32
+
         assume cs:_Int21h, ds:nothing, es:nothing
 Int21hStart     label byte
 
@@ -19,14 +20,12 @@ Int21hDOS4GFlag db 0
 ;
 DOS16DummySegment       DW      0
 
-
 ;------------------------------------------------------------------------------
 ;
 ;DTA size for find first/next seems to be a little volatile so I'll use an EQU
 ;here incase it needs to change again.
 ;
 DTASize equ     44-1
-
 
 ;------------------------------------------------------------------------------
 ;
@@ -67,7 +66,6 @@ DTASize equ     44-1
 ;Int_Flags16    equ     52
 ;Int_Flags32    equ     56
 
-
 Int21h_repmovs  macro
         push    ecx
         shr     ecx,2
@@ -77,7 +75,6 @@ Int21h_repmovs  macro
         rep     movsb
         endm
 
-
 DOS4GExtend     macro p1
         local __0
         cmp     cs:Int21hDOS4GFlag,0
@@ -85,7 +82,6 @@ DOS4GExtend     macro p1
         mov     p1,0
 __0:
         endm
-
 
 ;------------------------------------------------------------------------------
 ;
@@ -131,8 +127,10 @@ int211_32Bit0:
         sti                     ;Turn interrupts back on.
 int211_NoInts:
         mov     fs,cs:Int21hDSeg
+        ;
         assume fs:_cwMain
         mov     fs,fs:PSPSegment        ;Point to PSP.
+        ;
         assume fs:nothing
         movzx   eax,ah          ;Need extended register version.
         call    d cs:[Int21hTable+eax*4]    ;Pass control to handler.
@@ -144,10 +142,10 @@ int211_NoInts:
         test    BYTE PTR cs:Int21hSystemFlags,SYSFLAG_16B
         jz      int211_32Bit1
         iret
+        ;
 int211_32Bit1:
         iretd                   ;Return to caller.
 Int21h  endp
-
 
 ;------------------------------------------------------------------------------
 ;
@@ -160,16 +158,17 @@ Int21hNotOurs   proc    near
         pop     fs
         pop     es
         pop     ds
-;       cli
-        jmp     FWORD PTR cs:[OldInt21h]        ;pass it onto previous handler.
+        ;cli
+        jmp     FWORD PTR cs:[OldInt21h]        ;pass it onto previous handler (32-bit).
+        ;
 Int21hNotOurs   endp
 
 
 ;------------------------------------------------------------------------------
 Int21hInvalid   proc    near
         jmp     Int21hNotOurs
+        ;
 Int21hInvalid   endp
-
 
 ;------------------------------------------------------------------------------
 ;
@@ -182,11 +181,11 @@ Int21hPrintString proc near
         mov     al,"$"          ;Character to look for.
         call    Int21hStringLen ;Get length of this string.
         mov     edx,ecx
-;
-;Now copy EPSP_Struc.EPSP_TransSize-1 sized chunks into the transfer buffer
-;and pass to the real mode handler.
-;
 int214_0:
+        ;
+        ;Now copy EPSP_Struc.EPSP_TransSize-1 sized chunks into the transfer buffer
+        ;and pass to the real mode handler.
+        ;
         mov     ecx,edx         ;Get current count.
         cmp     ecx,fs:[EPSP_Struc.EPSP_TransSize]
         jc      int214_1
@@ -219,7 +218,6 @@ int214_1:
         ;
         ret
 Int21hPrintString endp
-
 
 ;------------------------------------------------------------------------------
 ;
@@ -260,7 +258,6 @@ Int21hGetString proc near
         ret
 Int21hGetString endp
 
-
 ;------------------------------------------------------------------------------
 ;
 ;Function 1A emulation.
@@ -274,7 +271,6 @@ Int21hSetDTA    proc    near
         ret
 Int21hSetDTA    endp
 
-
 ;------------------------------------------------------------------------------
 ;
 ;Function 25 emulation.
@@ -287,7 +283,6 @@ Int21hSetVect   proc    near
         ret
 Int21hSetVect   endp
 
-
 ;------------------------------------------------------------------------------
 ;
 ;Function 2F emulation.
@@ -299,7 +294,6 @@ Int21hGetDTA    proc    near
         mov     [ebp+Int_ES],ax
         ret
 Int21hGetDTA    endp
-
 
 ;------------------------------------------------------------------------------
 ;
@@ -314,7 +308,6 @@ Int21hGetVect   proc    near
         ret
 Int21hGetVect   endp
 
-
 ;------------------------------------------------------------------------------
 ;
 ;Function 38 emulation.
@@ -324,6 +317,7 @@ Int21hGetSetCountry proc near
         jz      int2110_32Bit0
         cmp     dx,-1           ;Setting code?
         jmp     int2110_ExitCheck               ;pass to old handler?
+        ;
 int2110_32Bit0:
         cmp     edx,-1
 int2110_ExitCheck:
@@ -378,13 +372,13 @@ int2110_ExitCheck:
         mov     eax,offset int2110_RemapCall
         mov     w[esi+12h],ax
         mov     w[esi+14h],cs
-        ;
 int2110_9:
         ret
-;
-;The remap handler.
-;
+        ;
 int2110_RemapCall:
+        ;
+        ;The remap handler.
+        ;
         push    edi
         push    es
         mov     es,cs:Int21hDDSeg
@@ -401,7 +395,6 @@ int2110_RemapCall:
         db 66h
         retf
 Int21hGetSetCountry endp
-
 
 ;------------------------------------------------------------------------------
 ;
@@ -439,7 +432,6 @@ Int21hCreateDir proc near
         DOS4GExtend w[ebp+Int_EAX+2]
         ret
 Int21hCreateDir endp
-
 
 ;------------------------------------------------------------------------------
 ;
@@ -483,7 +475,6 @@ Int21hCreateFile proc near
         ret
 Int21hCreateFile endp
 
-
 ;------------------------------------------------------------------------------
 ;
 ;Function 3D emulation.
@@ -520,7 +511,6 @@ Int21hOpenFile  proc    near
         DOS4GExtend w[ebp+Int_EAX+2]
         ret
 Int21hOpenFile  endp
-
 
 ;------------------------------------------------------------------------------
 ;
@@ -562,6 +552,7 @@ int2114_1:
         jz      int2114_2
         mov     ebx,es:RealRegsStruc.Real_EAX[edi]      ;get return code.
         jmp     int2114_3
+        ;
 int2114_2:
         mov     eax,es:RealRegsStruc.Real_EAX[edi]      ;get bytes read.
         movzx   eax,ax
@@ -597,7 +588,6 @@ int2114_3:
 int2114_5:
         ret
 Int21hReadFile  endp
-
 
 ;------------------------------------------------------------------------------
 ;
@@ -648,6 +638,7 @@ int2115_1:
         jz      int2115_2
         mov     ebx,es:RealRegsStruc.Real_EAX[edi]      ;get return code.
         jmp     int2115_3
+        ;
 int2115_2:
         mov     eax,es:RealRegsStruc.Real_EAX[edi]      ;get bytes read.
         movzx   eax,ax
@@ -666,7 +657,6 @@ int2115_5:
         ret
 Int21hWriteFile endp
 
-
 ;------------------------------------------------------------------------------
 ;
 ;Function 44 emulation.
@@ -682,8 +672,8 @@ Int21hIOCTLDispatch proc near
         cmp     al,05h
         jz      Int21hWriteFile
         jmp     Int21hNotOurs
+        ;
 Int21hIOCTLDispatch endp
-
 
 ;------------------------------------------------------------------------------
 ;
@@ -727,7 +717,6 @@ int2117_9:
         ret
 Int21hGetCurDir endp
 
-
 ;------------------------------------------------------------------------------
 ;
 ;Function 48 emulation.
@@ -764,7 +753,6 @@ int2118_AllocOK:
         ret
 Int21hAllocMem  endp
 
-
 ;------------------------------------------------------------------------------
 ;
 ;Function 49 emulation.
@@ -783,7 +771,6 @@ Int21hRelMem    proc    near
         ret
 Int21hRelMem    endp
 
-
 ;------------------------------------------------------------------------------
 ;
 ;Function 4A emulation.
@@ -800,7 +787,6 @@ Int21hResMem    proc    near
         ret
 Int21hResMem    endp
 
-
 ;------------------------------------------------------------------------------
 ;
 ;Function 4B emulation.
@@ -814,6 +800,7 @@ Int21hExecFile  proc    near
         ret
         ;
 int2121_OK:
+        ;
         ;Copy the file name into transfer buffer.
         ;
         mov     ds,[ebp+Int_DS]
@@ -834,6 +821,7 @@ int2121_OK:
         jz      int2121_0
         lds     esi,f[ebx+4+2]
         jmp     int2121_Ef4
+        ;
 int2121_0:
         test    BYTE PTR cs:Int21hSystemFlags,SYSFLAG_16B
         jz      int2121_Ef3
@@ -841,6 +829,7 @@ int2121_0:
         movzx   esi,w[ebx+2]            ;Get command line offset.
         mov     ds,[ebx+2+2]            ;& segment.
         jmp     int2121_Ef4
+        ;
 int2121_Ef3:
         mov     esi,[ebx+2]
         mov     ds,[ebx+2+4]
@@ -865,8 +854,10 @@ if 0
         push    es
         push    ds
         mov     ds,cs:Int21hDSeg
+        ;
         assume ds:_cwMain
         test    BYTE PTR SystemFlags,SYSFLAG_16B
+        ;
         assume ds:nothing
         pop     ds
         jz      int2121_Ef6
@@ -874,13 +865,16 @@ if 0
         movzx   edi,WORD PTR es:[ebx+(2)+(2+2)] ;Get FCB 1 offset.
         mov     es,es:[ebx+(2)+(2+2)+2] ;& segment.
         jmp     int2121_Ef7
+        ;
 int2121_Ef6:
         mov     edi,es:[ebx+(2)+(4+2)]
         mov     es,es:[ebx+(2)+(4+2)+4]
 int2121_Ef7:
         mov     ds,cs:Int21hDSeg
+        ;
         assume ds:_cwMain
         lds     esi,TransferBuffer
+        ;
         assume ds:nothing
         add     esi,512
         push    esi
@@ -899,7 +893,6 @@ int2121_Ef7:
         pop     edi
         pop     esi
         pop     ecx
-        ;
         push    ecx
         push    esi
         push    edi
@@ -907,8 +900,10 @@ int2121_Ef7:
         push    es
         push    ds
         mov     ds,cs:Int21hDSeg
+        ;
         assume ds:_cwMain
         test    BYTE PTR SystemFlags,SYSFLAG_16B
+        ;
         assume ds:nothing
         pop     ds
         jz      int2121_Ef8
@@ -916,13 +911,16 @@ int2121_Ef7:
         movzx   edi,WORD PTR es:[ebx+(2)+(2+2)+(2+2)] ;Get FCB 2 offset.
         mov     es,es:[ebx+(2)+(2+2)+(2+2)+2] ;& segment.
         jmp     int2121_Ef9
+        ;
 int2121_Ef8:
         mov     edi,es:[ebx+(2)+(4+2)+(4+2)]
         mov     es,es:[ebx+(2)+(4+2)+(4+2)+4]
 int2121_Ef9:
         mov     ds,cs:Int21hDSeg
+        ;
         assume ds:_cwMain
         lds     esi,TransferBuffer
+        ;
         assume ds:nothing
         add     esi,512+16
         push    esi
@@ -942,7 +940,6 @@ int2121_Ef9:
         pop     esi
         pop     ecx
 endif
-
         ;
         ;Sort out the environment.
         ;
@@ -957,12 +954,14 @@ endif
         jz      int2121_2
         lds     esi,FWORD PTR es:[ebx]
         jmp     int2121_Ef12
+        ;
 int2121_1:
         cmp     WORD PTR es:[ebx],0             ;got an environment?
         jnz     int2121_Ef10
 int2121_2:
         mov     ds,WORD PTR fs:[PSP_Struc.PSP_Environment]      ;Get current environment.
         jmp     int2121_Ef12
+        ;
 int2121_Ef10:
         mov     ds,es:[ebx]             ;get environment segment.
 int2121_Ef12:
@@ -998,18 +997,19 @@ int2121_3:
         push    edi
         shl     edi,4
         mov     es,cs:Int21hDSeg
+        ;
         assume es:_cwMain
         mov     es,es:RealSegment
+        ;
         assume es:nothing
         rep     movsb           ;Copy environment.
         pop     edx
-
-
-;
-;Patch INT 21h exec function to preserve the stack.
-;
+        ;
+        ;Patch INT 21h exec function to preserve the stack.
+        ;
         pushad
         mov     ds,cs:Int21hDSeg
+        ;
         assume ds:_cwMain
         cmp     NoEXECPatchFlag,0
         jne     medex1
@@ -1022,15 +1022,12 @@ int2121_3:
         mov     cx,_cwMain
         mov     bl,21h
         mov     ax,201h
-
 IFNDEF DEBUG5
         int     31h
 ENDIF
-
 medex1:
         assume ds:nothing
         popad
-
         ;
         ;Setup real mode parameter block.
         ;
@@ -1044,7 +1041,6 @@ medex1:
         mov     w[esi+8],ax             ;FCB 1 segment.
         mov     w[esi+10],512+16        ;FCB 2 offset.
         mov     w[esi+12],ax            ;FCB 2 segment.
-        ;
         mov     edi,offset Int21Buffer
         mov     es,cs:Int21hDSeg
         mov     es:RealRegsStruc.Real_EAX[edi],4b00h
@@ -1054,11 +1050,12 @@ medex1:
         mov     es:RealRegsStruc.Real_ES[edi],ax
         mov     bl,21h
         Sys     IntXX
-;
-;Restore INT 21h patch.
-;
+        ;
+        ;Restore INT 21h patch.
+        ;
         pushad
         mov     ds,cs:Int21hDSeg
+        ;
         assume ds:_cwMain
         cmp     NoEXECPatchFlag,0
         jne     medex2
@@ -1067,28 +1064,24 @@ medex1:
         mov     cx,w[OldInt21hExec+2]
         mov     d[OldInt21hExec],0
         mov     ax,201h
-
 IFNDEF DEBUG5
         int     31h
 ENDIF
-
 medex2:
         assume ds:nothing
         popad
-
         push es:RealRegsStruc.Real_Flags[edi]   ;save flags.
         mov     eax,es:RealRegsStruc.Real_EAX[edi]
         mov     [ebp+Int_AX],ax ;store errorlevel.
         DOS4GExtend w[ebp+Int_EAX+2]
-        ;
         or      dx,dx
         jz      int2121_Ef15            ;No environment to release.
         mov     es:RealRegsStruc.Real_ES[edi],dx
         mov     es:RealRegsStruc.Real_EAX[edi],4900h    ;release dos memory.
         mov     bl,21h
         Sys     IntXX
-        ;
 int2121_Ef15:
+        ;
         ;Put the DTA back where it's supposed to be.
         ;
         mov     es:RealRegsStruc.Real_EDX[edi],offset DTABuffer
@@ -1096,26 +1089,22 @@ int2121_Ef15:
         mov     es:RealRegsStruc.Real_EAX[edi],1a00h
         mov     bl,21h
         Sys     IntXX
-        ;
         pop     ax
 int2121_Ef13:
         call    Int21hAL2Carry
         ret
 Int21hExecFile  endp
 
-
 ;------------------------------------------------------------------------------
 ;
 ;Function 4E emulation.
 ;
 Int21hFindFirstFile proc near
-
         mov     es,cs:Int21hDSeg        ;point to new source.
         mov     edi,offset DTABuffer    ;use the real DTA buffer.
         lds     esi,FWORD PTR fs:[EPSP_Struc.EPSP_DTA]  ;point to user buffer.
         mov     ecx,DTASize             ;length to copy.
         rep     movsb           ;copy data returned.
-
         mov     esi,[ebp+Int_EDX]       ;Point to source data.
         mov     ds,[ebp+Int_DS]
         call    Int21hExtend_DS_ESI     ;Extend [E]SI.
@@ -1141,10 +1130,8 @@ Int21hFindFirstFile proc near
         DOS4GExtend w[ebp+Int_EAX+2]
         mov     ax,es:RealRegsStruc.Real_Flags[edi]
         call    Int21hAL2Carry  ;Set carry.
-
-;       or      al,al
-;       jnz     @@9
-
+        ;or      al,al
+        ;jnz     @@9
         mov     ds,cs:Int21hDSeg        ;point to new source.
         mov     esi,offset DTABuffer    ;use the real DTA buffer.
         les     edi,FWORD PTR fs:[EPSP_Struc.EPSP_DTA]  ;point to user buffer.
@@ -1153,7 +1140,6 @@ Int21hFindFirstFile proc near
 int2122_9:
         ret
 Int21hFindFirstFile endp
-
 
 ;------------------------------------------------------------------------------
 ;
@@ -1176,8 +1162,8 @@ Int21hFindNextFile proc near
         DOS4GExtend w[ebp+Int_EAX+2]
         mov     ax,es:RealRegsStruc.Real_Flags[edi]
         call    Int21hAL2Carry  ;Set carry.
-;       or      al,al
-;       jnz     @@9
+        ;or      al,al
+        ;jnz     @@9
         mov     ds,cs:Int21hDSeg        ;point to new source.
         mov     esi,offset DTABuffer    ;use the real DTA buffer.
         les     edi,FWORD PTR fs:[EPSP_Struc.EPSP_DTA]  ;point to user buffer.
@@ -1187,20 +1173,20 @@ int2123_9:
         ret
 Int21hFindNextFile endp
 
-
 ;------------------------------------------------------------------------------
 ;
 ;Function 50 emulation.
 ;
 Int21hSetPSP    proc    near
         mov     ds,cs:Int21hDSeg
+        ;
         assume ds:_cwMain
         mov     ax,[ebp+Int_BX]
         mov     PSPSegment,ax   ;Set current PSP.
+        ;
         assume ds:nothing
         ret
 Int21hSetPSP    endp
-
 
 ;------------------------------------------------------------------------------
 ;
@@ -1210,7 +1196,6 @@ Int21hGetPSP    proc    near
         mov     [ebp+Int_BX],fs
         ret
 Int21hGetPSP    endp
-
 
 ;------------------------------------------------------------------------------
 ;
@@ -1228,7 +1213,6 @@ Int21hRenameFile proc near
         push    ecx
         rep     movsb
         pop     edi
-        ;
         mov     ds,[ebp+Int_ES]
         mov     esi,[ebp+Int_EDI]
         call    Int21hExtend_DS_ESI     ;Extend [E]SI.
@@ -1239,7 +1223,6 @@ Int21hRenameFile proc near
         push    edi
         rep     movsb
         pop     edx
-        ;
         mov     edi,offset Int21Buffer
         mov     es,cs:Int21hDSeg
         mov     ax,fs:[EPSP_Struc.EPSP_TransReal]
@@ -1251,18 +1234,16 @@ Int21hRenameFile proc near
         mov     es:RealRegsStruc.Real_EAX[edi],eax
         mov     bl,21h
         Sys     IntXX
-
-; return error status, MED 03/13/96
+        ;
+        ; return error status, MED 03/13/96
+        ;
         mov     ax,WORD PTR es:RealRegsStruc.Real_EAX[edi]
         mov     w[ebp+Int_AX],ax
         DOS4GExtend w[ebp+Int_EAX+2]
-
         mov     ax,es:RealRegsStruc.Real_Flags[edi]
         call    Int21hAL2Carry  ;Set carry.
-
         ret
 Int21hRenameFile endp
-
 
 ;------------------------------------------------------------------------------
 ;
@@ -1309,7 +1290,6 @@ int2127_9:
         ret
 Int21hCreateTemp endp
 
-
 ;------------------------------------------------------------------------------
 ;
 ;Function 5E emulation.
@@ -1317,7 +1297,6 @@ Int21hCreateTemp endp
 Int21hMSNet     proc    near
         cmp     ax,5e00h
         jnz     Int21hNotOurs
-        ;
         mov     edi,offset Int21Buffer
         mov     es,cs:Int21hDSeg
         mov     eax,[ebp+Int_EAX]
@@ -1348,15 +1327,14 @@ int2128_9:
         ret
 Int21hMSNet     endp
 
-
 ;------------------------------------------------------------------------------
 ;
 ;Function 67 emulation.
 ;
 Int21hSetHandles proc near
-;
-;Set handle count with DOS.
-;
+        ;
+        ;Set handle count with DOS.
+        ;
         mov     es,cs:Int21hDSeg
         mov     edi,offset Int21Buffer
         mov     es:RealRegsStruc.Real_EAX[edi],6700h
@@ -1373,15 +1351,18 @@ Int21hSetHandles proc near
         mov     [ebp+Int_AX],ax
         DOS4GExtend w[ebp+Int_EAX+2]
         ret
-;
-;Change succeded so modify handle table selector base.
-;
+        ;
 int2129_0:
+        ;
+        ;Change succeded so modify handle table selector base.
+        ;
         mov     ds,cs:Int21hDSeg
+        ;
         assume ds:_cwMain
         movzx   eax,RealPSPSegment
         shl     eax,4
         mov     ds,RealSegment
+        ;
         assume ds:nothing
         movzx   edx,WORD PTR ds:[PSP_Struc.PSP_HandlePtr+2+eax]
         shl     edx,4
@@ -1390,13 +1371,15 @@ int2129_0:
         movzx   ecx,WORD PTR ds:[PSP_Struc.PSP_Handles+eax]
         mov     bx,WORD PTR fs:[PSP_Struc.PSP_HandlePtr+2]
         Sys     SetSelDet32
-;
-;Now modify all PSP handle counts.
-;
+        ;
+        ;Now modify all PSP handle counts.
+        ;
         mov     ds,cs:Int21hDSeg
+        ;
         assume ds:_cwMain
         mov     esi,BasePSPAddress
         mov     ds,RealSegment
+        ;
         assume ds:nothing
         mov     bx,[ebp+Int_BX]
 int2129_1:
@@ -1405,7 +1388,6 @@ int2129_1:
         or      esi,esi
         jnz     int2129_1
         ret
-
 if 0
         mov     bx,[ebp+Int_BX]
         cmp     bx,WORD PTR fs:[PSP_Struc.PSP_Handles]  ;more or less?
@@ -1439,6 +1421,7 @@ if 0
         jmp     int2129_shs1
         ;
 int2129_shs0:
+        ;
         ;Still more than 20 handles so just re-size the memory.
         ;
         push    bx
@@ -1447,19 +1430,21 @@ int2129_shs0:
         Sys     ResMem32                ;re-size the memory.
         pop     bx
         jc      int2129_sh0             ;not sure if this can happen.
-        ;
 int2129_shs1:
+        ;
         ;Now update the the DOS side of things and the PSP.
         ;
         mov     ax,bx
         sub     ax,WORD PTR fs:[PSP_Struc.PSP_Handles]  ;find out how many less than before.
         mov     WORD PTR fs:[PSP_Struc.PSP_Handles],bx  ;set new number of handles.
         mov     ds,cs:Int21hDSeg
+        ;
         assume ds:_cwMain
         push    ds
         pop     es
         sub     TotalHandles,ax ;update total count needed.
         mov     ax,TotalHandles
+        ;
         assume ds:nothing
         or      al,1
         mov     edi,offset Int21Buffer
@@ -1470,15 +1455,18 @@ int2129_shs1:
         jmp     int2129_sh0
         ;
 int2129_shb0:
+        ;
         ;Want more handles.
         ;
         mov     ax,bx
         sub     ax,WORD PTR fs:[PSP_Struc.PSP_Handles]  ;find out how many more.
         mov     ds,cs:Int21hDSeg
+        ;
         assume ds:_cwMain
         push    ds
         pop     es
         add     ax,TotalHandles ;get total count needed.
+        ;
         assume ds:nothing
         or      al,1
         mov     edi,offset Int21Buffer
@@ -1527,8 +1515,10 @@ int2129_shb0:
         mov     ax,cx
         sub     ax,WORD PTR fs:[PSP_Struc.PSP_Handles]  ;find out how many more.
         mov     ds,cs:Int21hDSeg
+        ;
         assume ds:_cwMain
         add     TotalHandles,ax
+        ;
         assume ds:nothing
         mov     WORD PTR fs:[PSP_Struc.PSP_Handles],cx  ;set new number.
         xor     ax,ax
@@ -1536,6 +1526,7 @@ int2129_shb0:
         jmp     int2129_sh0
         ;
 int2129_shb1:
+        ;
         ;Current table is NOT in the PSP so just do a re-size on the
         ;memory.
         ;
@@ -1556,8 +1547,10 @@ int2129_shb1:
         pop     ecx
         sub     ax,WORD PTR fs:[PSP_Struc.PSP_Handles]  ;find out how many more.
         mov     ds,cs:Int21hDSeg
+        ;
         assume ds:_cwMain
         add     TotalHandles,ax
+        ;
         assume ds:nothing
         mov     WORD PTR fs:[PSP_Struc.PSP_Handles],cx  ;set new number.
         xor     ax,ax
@@ -1565,12 +1558,15 @@ int2129_shb1:
         jmp     int2129_sh0
         ;
 int2129_shb2:
+        ;
         ;Couldn't get the memory at the protected mode end of things
         ;so we need to put the DOS version back to its original size.
         ;
         mov     ds,cs:Int21hDSeg
+        ;
         assume ds:_cwMain
         mov     ax,TotalHandles ;get total count needed.
+        ;
         assume ds:nothing
         push    ds
         pop     es
@@ -1581,9 +1577,9 @@ int2129_shb2:
         mov     bl,21h
         Sys     IntXX
         stc
-        ;
 int2129_sh0:
         pushf
+        ;
         ;Finaly we pass our results back to the caller.
         ;
         mov     [ebp+Int_AX],ax
@@ -1593,7 +1589,6 @@ int2129_sh0:
         ret
 endif
 Int21hSetHandles endp
-
 
 ;------------------------------------------------------------------------------
 ;
@@ -1635,101 +1630,98 @@ Int21hExtendOpen proc near
         ret
 Int21hExtendOpen endp
 
-
 ;------------------------------------------------------------------------------
 ;
 ;Function FF, DOS4G detection.
 ;
 Int21hDOS4GTest proc near
-;
-;This check only allowed for 32-bit programs which is what DOS4G uses.
-;
+        ;
+        ;This check only allowed for 32-bit programs which is what DOS4G uses.
+        ;
         test    BYTE PTR cs:Int21hSystemFlags,SYSFLAG_16B
         jnz     Int21hNotOurs
-;
-;Check register setup.
-;
-        cmp     b[ebp+Int_AL],0 ;AX=0FF00h
+        ;
+        ;Check register setup.
+        ;
+        cmp     b[ebp+Int_AL],0     ;AX=0FF00h
         jnz     Int21hNotOurs
-        cmp     w[ebp+Int_DX],78h       ;DX=0078h
+        cmp     w[ebp+Int_DX],78h   ;DX=0078h
         jnz     Int21hNotOurs
-
-; changed for dummy segment modification
-;       mov     w[ebp+Int_GS],ds
-
+        ;
+        ; changed for dummy segment modification
+        ;mov     w[ebp+Int_GS],ds
         mov     d[ebp+Int_EAX],4734ffffh
-
-;
-;Flag DOS4G mode for INT handling.
-;
+        ;
+        ;Flag DOS4G mode for INT handling.
+        ;
         push    ds
         push    eax
         push    ebx
         push    ecx
-;       mov     ecx,ds                  ; save application DS value
+        ;mov     ecx,ds                  ; save application DS value
         xor     ecx,ecx
         mov     cx,ds                   ; save application DS value
-
+        ;
         assume ds:nothing
         mov     ds,cs:Int21hDDSeg
+        ;
         assume ds:_Int21h
-
-; give Watcom a dummy segment for it to stuff silly __D16SegInfo
-; values in without trashing things, MED 12/12/95
+        ;
+        ; give Watcom a dummy segment for it to stuff silly __D16SegInfo
+        ; values in without trashing things, MED 12/12/95
+        ;
         mov     ax,DOS16DummySegment
         test    ax,ax
         jne     setgs
         push    ecx                     ; save application DS value
-
-; MED 07/15/97
+        ;
+        ; MED 07/15/97
 DUMMYSEGMENTSIZE        EQU     48h     ; must be multiple of four
-;       mov     ecx,44h                 ; dummy segment size
+        ;mov     ecx,44h                 ; dummy segment size
         mov     ecx,DUMMYSEGMENTSIZE
-
         Sys     GetMem32                ; allocate the memory
         jnc     zerodummy               ; no error allocating memory
         pop     ebx
         push    ebx                     ; use application DS value if can't create dummy value
         jmp     savedummy
-
-; MED 07/15/97, zero out dummy segment
+        ;
+        ; MED 07/15/97, zero out dummy segment
+        ;
 zerodummy:
         push    edx
         push    ds
         mov     ds,bx
         mov     ecx,DUMMYSEGMENTSIZE-4
-
 dumloop:
         mov     DWORD PTR ds:[ecx],0
         sub     ecx,4
         jns     dumloop
         pop     ds
         pop     edx
-
 savedummy:
         add     esp,4                   ; throw away application DS value
         mov     DOS16DummySegment,bx
         mov     eax,ebx                 ; allocated memory or application DS selector to put in GS
-
 setgs:
         mov     WORD PTR [ebp+Int_GS],ax
-
         mov     ds,cs:Int21hDSeg
+        ;
         assume ds:_cwMain
         or      DOS4GFlag,-1
+        ;
         assume ds:nothing
         mov     ds,cs:Int21hDDSeg
+        ;
         assume ds:_Int21h
         or      Int21hDOS4GFlag,-1
+        ;
         assume ds:nothing
         pop     ecx
         pop     ebx
         pop     eax
         pop     ds
-;
         ret
 Int21hDOS4GTest endp
-
 
 ;------------------------------------------------------------------------------
 ;
@@ -1753,14 +1745,16 @@ Int21hGetErrorInfo proc near
         mov     eax,es:RealRegsStruc.Real_ECX[edi]
         mov     [ebp+Int_CX],ax
         DOS4GExtend w[ebp+Int_ECX+2]
-;
-;LABEL string?
-;
+        ;
+        ;LABEL string?
+        ;
         cmp     w[ebp+Int_AX],22h
         jnz     int2132_done
         mov     ds,cs:Int21hDSeg
+        ;
         assume ds:_cwMain
         mov     ds,RealSegment
+        ;
         assume ds:nothing
         mov     eax,es:RealRegsStruc.Real_EDI[edi]
         movzx   eax,ax
@@ -1774,11 +1768,9 @@ Int21hGetErrorInfo proc near
         xor     edi,edi
         mov     ecx,11
         rep     movsb
-;
 int2132_done:
         ret
 Int21hGetErrorInfo endp
-
 
 ;------------------------------------------------------------------------------
 ;
@@ -1807,7 +1799,6 @@ int2133_32Bit:
         ret
 Int21hExtend_DS_ESI endp
 
-
 ;------------------------------------------------------------------------------
 ;
 ;Extend DI into EDI if ES's limit is < 64K
@@ -1834,7 +1825,6 @@ int2134_32Bit:
         pop     eax
         ret
 Int21hExtend_ES_EDI endp
-
 
 ;------------------------------------------------------------------------------
 ;
@@ -1879,7 +1869,6 @@ int2136_32Bit:
         or      b[ebp+Int_Flags32],al
         ret
 Int21hAL2Carry  endp
-
 
 ;------------------------------------------------------------------------------
 ;
@@ -1959,7 +1948,6 @@ Int21hOpen      proc    near
         mov     Int21hDSeg,es   ;Store cwCode selector.
         mov     Int21hCSeg,cs   ;store this segment.
         mov     Int21hDDSeg,ds
-        ;
         mov     bl,21h
         Sys     GetVect
         test    BYTE PTR es:SystemFlags,SYSFLAG_16B
@@ -1973,7 +1961,6 @@ int2137_Use0:
         mov     cx,cs
         mov     bl,21h
         Sys     SetVect
-        ;
         mov     eax,es:SystemFlags
         mov     Int21hSystemFlags,eax
         ;
@@ -1985,7 +1972,6 @@ int2137_9:
         retf
 Int21hOpen      endp
 
-
 ;=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 ;
 ;Remove int 21h patch.
@@ -1993,6 +1979,7 @@ Int21hOpen      endp
 Int21hClose     proc    near
         push    ds
         mov     ds,cs:Int21hDDSeg
+        ;
         assume ds:_Int21h
         cmp     d[OldInt21h+2],0
         jz      int2138_9
@@ -2000,16 +1987,16 @@ Int21hClose     proc    near
         mov     cx,w[OldInt21h+4]
         mov     bl,21h
         Sys     SetVect
+        ;
         assume ds:nothing
 int2138_9:
         pop     ds
-        ;
         db 66h
         retf
 Int21hClose     endp
 
-
 Int21hEnd       label byte
+
 _Int21h ends
 
-        .286
+.286

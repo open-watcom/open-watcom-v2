@@ -64,11 +64,11 @@ cwAPI_CallOld   macro
         jz      __0
         pushf
         db 66h
-        call    FWORD PTR cs:[OldIntSys]                ;pass it onto previous handler.
+        call    FWORD PTR cs:[OldIntSys]                ;pass it onto previous handler (16-bit).
         jmp     __1
         ;
 __0:    pushfd
-        call    FWORD PTR cs:[OldIntSys]                ;pass it onto previous handler.
+        call    FWORD PTR cs:[OldIntSys]                ;pass it onto previous handler (32-bit).
 __1:    ;
         assume ds:_apiCode
         endm
@@ -815,7 +815,6 @@ cwAPI_IntXX     proc    near
         jnc     api15_0
         movzx   edi,di
 api15_0:
-        ;
         assume ds:nothing
         mov     ds,cs:apiDSeg
         ;
@@ -2442,7 +2441,6 @@ api57_3:
 api57_2:
         clc
 api57_1:
-        ;
         assume ds:_apiCode
         cwAPI_C2C
         ret
@@ -3171,7 +3169,6 @@ cwAPI_SetMCBSize proc near
         jmp     api68_9
         ;
 api68_1:
-        ;
         assume ds:nothing
         mov     ds,cs:apiDSeg
         ;
@@ -5145,7 +5142,6 @@ api79_Found:
         jmp     api79_9
         ;
 api79_2:
-        ;
         assume ds:nothing
         mov     ds,cs:apiDDSeg
         ;
@@ -5172,7 +5168,6 @@ FindResource    endp
 
 ;=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 SaveExecState   proc    near    uses ds es eax ebx ecx edx edi esi
-        ;
         assume ds:nothing
         mov     ds,cs:apiDSeg
         ;
@@ -5242,9 +5237,6 @@ api80_GetRVect:
         test    BYTE PTR SystemFlags,SYSFLAG_16B
         jz      api80_DPMISave32
         db 66h
-        call    f[DPMIStateAddr]
-        jmp     api80_NoDPMISave
-        ;
 api80_DPMISave32:
         call    f[DPMIStateAddr]
 api80_NoDPMISave:
@@ -5339,9 +5331,6 @@ api81_NoIntRel:
         test    BYTE PTR SystemFlags,SYSFLAG_16B
         jz      api81_SaveDPMI32
         db 66h
-        call    f[DPMIStateAddr]
-        jmp     api81_NoDPMIRel
-        ;
 api81_SaveDPMI32:
         call    f[DPMIStateAddr]
 api81_NoDPMIRel:
@@ -5793,7 +5782,6 @@ api83_NoIRel:
         cmp     es:DebugDump,0
         jnz     api83_NoNRel
 api83_YesRelRes:
-        ;
         assume es:nothing
         mov     es,w[api83_PSP]
         mov     bx,WORD PTR es:[EPSP_Struc.EPSP_Parent]
@@ -7343,7 +7331,7 @@ api90_NoPatch21h:
         sti
         ;
         assume ds:nothing
-        jmp     FWORD PTR cs:[api90_EntryEIP]   ;pass control to program.
+        jmp     FWORD PTR cs:[api90_EntryEIP]   ;pass control to program (32-bit).
         ;
 api90_Int21Patch:
         cmp     ah,4ch                      ;terminate?
@@ -7373,10 +7361,8 @@ api90_OldVect:
         test    BYTE PTR cs:apiSystemFlags,SYSFLAG_16B  ;16/32?
         jz      api90_Use32Bit101
         db 66h
-        jmp     FWORD PTR cs:[api90_OldInt21h]  ;pass control to old handler.
-        ;
 api90_Use32Bit101:
-        jmp     FWORD PTR cs:[api90_OldInt21h]
+        jmp     FWORD PTR cs:[api90_OldInt21h]  ;pass control to old handler.
         ;
 api90_CheckKillIt:
         push    ds
@@ -7960,7 +7946,6 @@ Int1BhHandler    endp
 ;Handle a ctrl-break key press by terminating this application cleanly.
 ;
 Int23hHandler   proc    near
-        ;
         assume ds:nothing
         mov     ds,cs:apiDSeg
         ;
@@ -8040,7 +8025,6 @@ api99_Use32_2:
         iretd
         ;
 api99_Terminate:
-        ;
         assume ds:nothing
         mov     ds,cs:apiDSeg
         ;
