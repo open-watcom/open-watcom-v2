@@ -1819,10 +1819,17 @@ RawCallBack     proc    near
 rv30_Normal:
         push    ax
         push    ds
+;
+SFrameB1 struc
+sb1_ds      dw  ?
+sb1_ax      dw  ?
+sb1_flags   dw  ?
+SFrameB1 ends
+;
         mov     ax,_cwRaw
         mov     ds,ax
         mov     ax,sp
-        add     ax,2+2+2        ;correct for stacked registers.
+        add     ax,SIZE SFrameB1       ;correct for stacked registers.
         mov     StackAdd,ax
         mov     StackAdd+2,ss
         pop     ds
@@ -3655,7 +3662,7 @@ rv46_DPMI_0901:
         assume ds:_cwDPMIEMU
         jz      rv46_2
         push    ebp
-        mov     ebp,esp
+        movzx   ebp,sp
         mov     al,[bp+(4)+(2+2)+1]
         or      b[bp+(4)+(2+2)+1],2
         shr     al,1
@@ -3679,7 +3686,7 @@ rv46_DPMI_0902:
         assume ds:_cwDPMIEMU
         jz      rv46_3
         push    ebp
-        mov     ebp,esp
+        movzx   ebp,sp
         mov     al,[bp+(4)+(2+2)+1]
         shr     al,1
         and     al,1
