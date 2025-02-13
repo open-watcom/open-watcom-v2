@@ -1368,6 +1368,7 @@ ExtendLinearMemory proc near
         GetPageLinearAddr eax
         dec     eax
         add     eax,LinearLimit
+        jc      mem10_error
         dec     eax
         sub     eax,LinearBase
         cmp     eax,MaxMemLin
