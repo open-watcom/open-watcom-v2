@@ -5,7 +5,7 @@ CWCStackSize    equ     1024    ; cannot exceed EXECopyStubLen size (1135 bytes)
         .code
 
 var_struc       struc
-;       db 100h-10h dup (0)
+        ;db 100h-10h dup (0)
         db CWCStackSize-10h dup (0)
 
 var_SourceSeg   dw ?
@@ -26,7 +26,7 @@ start:  cli
         pop     ds
         mov     ax,es:[2]               ;Get highest address.
 
-;       sub     ax,10h
+        ;sub     ax,10h
         sub     ax,(CWCStackSize/10h)
 
         mov     ss,ax
@@ -34,7 +34,7 @@ start:  cli
         push    es
         push    ss
         pop     es
-;       mov     si,100h-10h
+        ;mov     si,100h-10h
         mov     si,CWCStackSize-10h
 
         mov     di,si

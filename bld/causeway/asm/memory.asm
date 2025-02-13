@@ -188,7 +188,7 @@ mem1_MarkMemRet:
         ;
         ;Now return details to caller.
         ;
-        shl     esi,12          ;Convert back to a real address.
+        GetPageLinearAddr esi           ;Convert back to a real address.
         Reg32To16hilo esi, si, di       ;esi -> si:di
         mov     cx,di
         mov     bx,si
@@ -420,7 +420,7 @@ mem2_NewBlock:
         push    ecx
         push    ebp
         push    esi
-        shl     ecx,12
+        GetPageLinearAddr ecx
         mov     ebx,ecx
         shr     ebx,16
         call    RawGetMemory
@@ -436,8 +436,8 @@ mem2_NewBlock:
         ;
         pushad
         mov     ecx,ebp
-        shl     ecx,12
-        shl     esi,12
+        GetPageLinearAddr ecx
+        GetPageLinearAddr esi
         mov     edi,ebx
         push    ds
         push    es
@@ -450,7 +450,7 @@ mem2_NewBlock:
         ;Release current block.
         ;
         pushad
-        shl     esi,12
+        GetPageLinearAddr esi
         Reg32To16hilo esi, si, di       ;esi -> si:di
         call    RawRelMemory
         popad
@@ -463,7 +463,7 @@ mem2_RetNewAddr:
         ;
         ;Return possibly new address/handle to caller.
         ;
-        shl     esi,12                  ;Get a real address again and
+        GetPageLinearAddr esi           ;Get a real address again and
         Reg32To16hilo esi, si, di       ;esi -> si:di
         mov     bx,si                   ;use it as both the memory
         mov     cx,di                   ;/
@@ -572,9 +572,8 @@ mem3_0: mov     eax,DWORD PTR es:[1024*4096*1022+esi*4]
         inc     esi
         dec     ecx
         jnz     mem3_0
-        ;
-mem3_1: call    EmuCR3Flush
-        ;
+mem3_1:
+        call    EmuCR3Flush
         clc
         jmp     mem3_exit
         ;
@@ -722,7 +721,7 @@ RawMapPhys2Lin  proc    near
         ;
         mov     edi,ebx
         mov     eax,esi
-        shl     eax,12
+        GetPageLinearAddr eax
         add     eax,edi
         dec     eax
         cmp     eax,100000h+10000h
@@ -1306,7 +1305,7 @@ mem9_l8:
         ;
         push    ecx
         mov     eax,ebx
-        shl     eax,12
+        GetPageLinearAddr eax
         mov     ecx,LinearLimit
         sub     ecx,LinearBase
         sub     eax,ecx
@@ -1322,7 +1321,7 @@ mem9_l89:
         jnc     mem9_l9
         mov     ebx,ebp
 mem9_l9:
-        shl     ebx,12
+        GetPageLinearAddr ebx
         clc
         lss     esp,f[esp]
         pushf
@@ -1366,7 +1365,7 @@ ExtendLinearMemory proc near
         mov     es,ax
         mov     ebp,ecx
         mov     eax,ecx
-        shl     eax,12
+        GetPageLinearAddr eax
         dec     eax
         add     eax,LinearLimit
         dec     eax
@@ -1562,7 +1561,7 @@ mem10_v4:
         mov     ecx,LinearLimit ;current end position.
         sub     ecx,LinearBase  ;length.
         mov     eax,ebp         ;extension needed in pages.
-        shl     eax,12
+        GetPageLinearAddr eax
         add     ecx,eax         ;New extremity desired.
         cmp     ecx,SwapFileLength
         jc      mem10_Extended
@@ -1634,8 +1633,8 @@ mem10_Extended:
         ;Update the end of the memory map.
         ;
         add     FreePages,ebp
-;       sub     medAllocPages,ebp
-        shl     ebp,12
+        ;sub     medAllocPages,ebp
+        GetPageLinearAddr ebp
         add     LinearLimit,ebp
         clc
         jmp     mem10_Exit
@@ -1741,7 +1740,7 @@ mem11_AddPage:
         pop     es
         cld
         mov     eax,LinearEntry
-        shl     eax,12
+        GetPageLinearAddr eax
         mov     RecentMapStack,eax
         ;
         ;Add this to the relavent page table.
@@ -1756,7 +1755,7 @@ mem11_AddPage:
         cmp     PageDETLinear,0
         jz      mem11_NoLocking
         mov     eax,LinearEntry
-        shl     eax,12
+        GetPageLinearAddr eax
         call    RawClearPageLock        ;clear page locking for this entry.
         ;
         ;Update number of un-locked physical pages present.
@@ -1775,7 +1774,7 @@ mem11_NoLocking:
         mov     BYTE PTR es:[esi],0
         push    eax
         mov     ecx,LinearEntry         ;get page number.
-        shl     ecx,12                  ;get linear address.
+        GetPageLinearAddr ecx           ;get linear address.
         sub     ecx,LinearBase
         Reg32To16hilo ecx, cx, dx       ;ecx ->cx:dx
         mov     bx,VMMHandle
@@ -1818,15 +1817,15 @@ mem11_ok:
         mov     es:[esi],al
         mov     esi,PageBufferLinear
         mov     edi,LinearEntry
-        shl     edi,12          ;get linear address again.
+        GetPageLinearAddr edi           ;get linear address again.
         mov     ecx,4096/4
         push    ds
         push    es
         pop     ds
         cld
-        rep     movsd           ;copy back into place.
+        rep     movsd                   ;copy back into place.
         pop     ds
-        mov     eax,LinearEntry ;get new entry number.
+        mov     eax,LinearEntry         ;get new entry number.
         mov     esi,1024*4096*1023      ;base of page alias's.
         ;clear accesed & dirty bits.
         and     DWORD PTR es:[esi+eax*4],NOT (PAGE_ACCESED or PAGE_DIRTY)
@@ -1987,7 +1986,7 @@ mem12_GotPage:
         ;Check if it needs to go to the swap file.
         ;
         test    DWORD PTR fs:[edi],PAGE_DIRTY   ;is it dirty?
-        jz      mem12_5         ;no need to write it if not.
+        jz      mem12_5                 ;no need to write it if not.
         ;
         ;Flush this page to disk.
         ;
@@ -1997,8 +1996,8 @@ mem12_GotPage:
         mov     BYTE PTR fs:[esi],0
         push    eax
         sub     edi,1024*4096*1023      ;get page table entry number.
-        shr     edi,2           ;page number.
-        shl     edi,12          ;get linear address.
+        shr     edi,2                   ;page number.
+        GetPageLinearAddr edi           ;get linear address.
         push    edi
         mov     esi,edi
         push    ds
@@ -2372,6 +2371,7 @@ mem18_OldExit:
         jmp     FWORD PTR cs:[OldExcep14]       ;32 bit chaining.
         ;
 OldExcep14      df ?
+        ;
         assume ds:_cwDPMIEMU
 VirtualFault    endp
 

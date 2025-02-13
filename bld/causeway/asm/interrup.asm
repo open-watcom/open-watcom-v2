@@ -742,7 +742,6 @@ inter13_2:
         assume ds:_cwDPMIEMU
 RawRelCallBack endp
 
-
 ;-------------------------------------------------------------------------------
 ;
 ;Need to retrieve the interupt number.
