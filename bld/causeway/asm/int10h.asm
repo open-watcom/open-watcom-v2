@@ -1087,16 +1087,24 @@ int103_Done:
         pushf
         pop     ax                      ;get new flags.
         push    ds
+        ;
+SFrameC1 struct
+sc1_ds  dd ?
+sc1_ebp dd ?
+sc1_eax dd ?
+sc1_iret IFrame <?>
+SFrameC1 ends
+        ;
         mov     ds,cs:Int10hDSeg
         assume ds:_cwMain
         test    BYTE PTR SystemFlags,SYSFLAG_16B
         jz      int103_Use32Bit8
         movzx   ebp,sp
-        lea     bp,[bp+(4+4+4)+IFrame16.i16_flags]  ;get address of original flags.
+        lea     bp,[bp+SFrameC1.sc1_iret.i16_flags]  ;get address of original flags.
         jmp     int103_Use16Bit8
         ;
 int103_Use32Bit8:
-        lea     ebp,[esp+(4+4+4)+IFrame.i_eflags]   ;get address of original flags.
+        lea     ebp,[esp+SFrameC1.sc1_iret.i_eflags]   ;get address of original flags.
 int103_Use16Bit8:
         ;clear IF & DF in new flags.
         and     ax,NOT (EFLAG_IF or EFLAG_DF)
