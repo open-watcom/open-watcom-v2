@@ -18,7 +18,7 @@ f       equ     fword ptr
 RepMinSize      equ     2
 
 var_struc       struc
-;       db 100h-10h dup (0)
+        ;db 100h-10h dup (0)
         db CWCStackSize-10h dup (0)
 
 var_SourceSeg   dw ?
@@ -32,9 +32,9 @@ var_struc       ends
         .code
 
 start   proc    near
-;
-;Decompress the EXE and it's header/relocation entries.
-;
+        ;
+        ;Decompress the EXE and it's header/relocation entries.
+        ;
         cld
         push    di
         push    es
@@ -59,14 +59,13 @@ start   proc    near
         mov     ds,dx
         mov     si,ss:w[var_ImageLen]
         and     si,15
-;
-;Process the relocation entries.
-;
+        ;
+        ;Process the relocation entries.
+        ;
         push    ds
         push    si
         mov     cx,[si+6]               ;get number of relocation entries.
         add     si,1bh
-        ;
 L1:     or      cx,cx
         jz      L2
         push    si
@@ -91,9 +90,9 @@ L1:     or      cx,cx
         ;
 L2:     pop     si
         pop     ds
-;
-;Get entry register values setup.
-;
+        ;
+        ;Get entry register values setup.
+        ;
         mov     bx,es
         mov     ax,[si+0eh]
         add     ax,bx
@@ -108,32 +107,33 @@ L2:     pop     si
         mov     ds,ss:w[var_EntryES]
         mov     ss,dx
         mov     sp,bp
-;
-;Pass control to the real program.
-;
+        ;
+        ;Pass control to the real program.
+        ;
         jmp     cs:dword ptr [EntryIP]
+        ;
 start   endp
 
 
-Decode  proc    near
 ;
 ;Get next input bit.
 ;
 _DCD_ReadBit    macro
         local __0
         adc     bp,bp
-;       adc     bx,bx
+        ;adc     bx,bx
         dec     dl
         jnz     __0
         mov     bp,[si]
-;       mov     bx,[si+2]
+        ;mov     bx,[si+2]
         inc     si
         inc     si
-;       lea     si,4[si]
+        ;lea     si,4[si]
         mov     dl,dh
 __0:    ;
         endm
 
+Decode  proc    near
         ;
         ;Check for main ID string.
         ;
@@ -146,17 +146,17 @@ __0:    ;
         sub     cl,8
         mov     cs:b[@@Shifter+1],cl
         add     si,size decode_c_struc
-;
-;Get on with decodeing the data.
-;
+        ;
+        ;Get on with decodeing the data.
+        ;
         mov     bp,[si]
-;       mov     bx,[si+2]
+        ;mov     bx,[si+2]
         add     si,2
         mov     dl,16
         mov     dh,dl
-;
-;The main decompresion loop.
-;
+        ;
+        ;The main decompresion loop.
+        ;
 L4:     _DCD_ReadBit
         jnc     L5
         ;
@@ -184,8 +184,9 @@ L5:     _DCD_ReadBit
         inc     si
         dec     ax
         js      L7
+L6:
         ;
-L6:     ;do a rep.
+        ;do a rep.
         ;
         add     ax,cx
         push    si

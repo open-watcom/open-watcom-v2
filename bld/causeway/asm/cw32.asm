@@ -12,12 +12,12 @@
 ;Put in some sort of system stack overflow checking and terminate the program
 ;if it happens.
 ;
-;       option oldstructs
+        ;option oldstructs
 
-;       include general.inc
+        ;include general.inc
         include strucs.inc
         include cw.inc
-;       include cw-undoc.inc
+        ;include cw-undoc.inc
 
 ; MED 02/03/2003, make sure some language is in there
         IFNDEF  ENGLISH
@@ -234,6 +234,10 @@ GetPageCount macro r
 
 GetPageIndex macro r
         shr     r,12
+        endm
+
+GetPageLinearAddr macro r
+        shl     r,12
         endm
 
 SetUseBits  macro r,v
@@ -638,8 +642,8 @@ debugaout:
         push    ecx
         mov     ecx,100000h
 debugaloop:
-;       dec     ecx
-;       jne     debugaloop
+        ;dec     ecx
+        ;jne     debugaloop
         pop     ecx
 ENDIF
         ;
@@ -2313,13 +2317,13 @@ cw5_1:  jnz     InitError
         mov     DWORD PTR es:[esi+eax*4],edx    ;set physical address.
         call    d[fCR3Flush]
         mov     edi,LinearEntry
-        shl     edi,12
+        GetPageLinearAddr edi
         mov     ecx,4096/4
         xor     eax,eax
         cld
         rep     stos d[edi]             ;clear it.
         mov     eax,LinearEntry
-        shl     eax,12                  ;get linear address.
+        GetPageLinearAddr eax           ;get linear address.
         mov     PageDETLinear,eax
         mov     eax,1022
         mov     esi,PageDirLinear
@@ -2342,7 +2346,7 @@ cw5_1:  jnz     InitError
         mov     DWORD PTR es:[esi+eax*4],edx    ;set physical address.
         call    d[fCR3Flush]
         mov     edi,LinearEntry
-        shl     edi,12
+        GetPageLinearAddr edi
         mov     ecx,4096/4
         mov     eax,MEM_FILL
         cld
@@ -2366,7 +2370,7 @@ cw5_1:  jnz     InitError
         mov     DWORD PTR es:[esi+eax*4],edx    ;set physical address.
         call    d[fCR3Flush]
         mov     edi,LinearEntry
-        shl     edi,12
+        GetPageLinearAddr edi
         mov     ecx,4096/4
         mov     eax,MEM_FILL
         cld
@@ -2392,7 +2396,7 @@ cw5_1:  jnz     InitError
         push    ds
         mov     esi,PageAliasLinear
         mov     edi,LinearEntry
-        shl     edi,12
+        GetPageLinearAddr edi
         mov     ecx,4096/4
         push    es
         pop     ds
@@ -2402,7 +2406,7 @@ cw5_1:  jnz     InitError
         mov     eax,PageAliasLinear
         mov     PageAliasLinear+4,eax
         mov     eax,LinearEntry
-        shl     eax,12                  ;get linear address.
+        GetPageLinearAddr eax           ;get linear address.
         mov     PageAliasLinear,eax
         mov     esi,PageDirLinear
         mov     eax,1023
@@ -2442,7 +2446,7 @@ COMMENT !
         push    ds
         mov     esi,Page1stLinear
         mov     edi,LinearEntry
-        shl     edi,12
+        GetPageLinearAddr edi
         mov     ecx,4096/4
         push    es
         pop     ds
@@ -2455,7 +2459,7 @@ COMMENT !
         mov     eax,Page1stLinear
         mov     Page1stLinear+4,eax     ;store old address.
         mov     eax,LinearEntry
-        shl     eax,12                  ;get linear address.
+        GetPageLinearAddr eax           ;get linear address.
         mov     Page1stLinear,eax       ;set new linear address.
         ;
         ;Set new address in page dir.
@@ -2498,7 +2502,7 @@ END COMMENT !
         push    ds
         mov     esi,PageDirLinear
         mov     edi,LinearEntry
-        shl     edi,12
+        GetPageLinearAddr edi
         mov     ecx,4096/4
         push    es
         pop     ds
@@ -2511,7 +2515,7 @@ END COMMENT !
         mov     eax,PageDirLinear
         mov     PageDirLinear+4,eax     ;store old value.
         mov     eax,LinearEntry
-        shl     eax,12                  ;get linear address.
+        GetPageLinearAddr eax           ;get linear address.
         mov     PageDirLinear,eax       ;set new value.
         mov     eax,VCPISW.VCPI_CR3
         mov     PageDirLinear+8,eax     ;store old physical address.
@@ -2534,7 +2538,7 @@ END COMMENT !
         mov     DWORD PTR es:[esi+eax*4],edx    ;set physical address.
         call    d[fCR3Flush]
         mov     eax,LinearEntry
-        shl     eax,12
+        GetPageLinearAddr eax
         mov     d[IDTVal+2],eax
         mov     w[IDTVal],0+(256*8)-1
         ;
@@ -2578,7 +2582,7 @@ cw5_3:  call    MakeDesc2
         mov     ebp,offset cwDPMIEMUEnd-cwDPMIEMUStart
         GetPageCount ebp                ;Get number of pages needed.
         mov     eax,LinearEntry
-        shl     eax,12
+        GetPageLinearAddr eax
         mov     LinearEntry+4,eax       ;Store start address.
 cw5_2:  call    d[fPhysicalGetPage]     ;try to allocate a page.
         jc      InitError
@@ -2655,7 +2659,7 @@ cw5_2:  call    d[fPhysicalGetPage]     ;try to allocate a page.
         mov     ebp,(8192*8)+8192
         GetPageIndex ebp                ;Get number of pages needed.
         mov     eax,LinearEntry
-        shl     eax,12
+        GetPageLinearAddr eax
         mov     LinearEntry+4,eax       ;Store start address.
 cw5_6:  call    d[fPhysicalGetPage]     ;try to allocate a page.
         jc      InitError
@@ -2791,7 +2795,7 @@ cw5_LDT:
         ;Initialise application memory pool.
         ;
         mov     eax,LinearEntry
-        shl     eax,12
+        GetPageLinearAddr eax
         mov     LinearBase,eax
         add     eax,4096
         mov     LinearLimit,eax
@@ -2811,7 +2815,7 @@ cw5_LDT:
         ;
         call    d[fPhysicalGetPages]    ;find free pages.
         mov     eax,edx
-        shl     eax,12
+        GetPageLinearAddr eax
         add     eax,LinearLimit
         sub     eax,LinearBase
         mov     ebp,eax                 ;save this for comparisons.
@@ -3892,7 +3896,7 @@ cw5_NumXMSHandles:
 ; MED, 09/10/99, increase max XMS size to dword
 ;
 cw5_XMSSize:
-;       dw ?
+        ;dw ?
         dd      0
 
 Startup endp

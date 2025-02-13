@@ -5134,7 +5134,7 @@ rv56_SizeOK:
         cmp     eax,MaxMemPhysPages
         jc      rv56_nomaxlimit
         mov     ecx,MaxMemPhysPages
-        shl     ecx,12
+        GetPageLinearAddr ecx
 rv56_nomaxlimit:
         sub     ebx,ecx         ;new int 15 value.
         ;

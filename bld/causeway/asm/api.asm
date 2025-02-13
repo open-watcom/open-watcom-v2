@@ -4133,6 +4133,18 @@ _GetMemory      endp
 ;
 ;Work out biggest memory block remaining.
 ;
+;On Entry:-
+;
+;EBX    - Size of block required. (-1 to get size of free memory).
+;
+;On Exit:-
+;
+;Carry set on error, else:-
+;
+;EBX    - Size of block.
+;
+;ALL registers may be corrupted.
+;
 _GetMemoryMax proc near
         push    ds
         ;
@@ -4203,7 +4215,7 @@ api74_500_2:
         assume ds:_apiCode
         pop     ds
         mov     ebx,edx
-        shl     ebx,12
+        GetPageLinearAddr ebx
         jmp     api74_exit
         ;
 END COMMENT !
@@ -4221,7 +4233,7 @@ api74_normal:
         cmp     ebx,-2
         jnz     api74_normal2
         mov     ebx,d[api74_dpmembuff+1Ch]
-        shl     ebx,12
+        GetPageLinearAddr ebx
         jmp     api74_exit
         ;
 api74_normal2:
@@ -4229,6 +4241,7 @@ api74_normal2:
 api74_exit:
         pop     ds
         ret
+        ;
 api74_dpmembuff:
         db 30h dup (0)
 _GetMemoryMax   endp
