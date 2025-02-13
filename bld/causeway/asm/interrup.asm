@@ -935,6 +935,8 @@ inter14_NoCode:
         cmp     ExceptionIndex,0        ;int 0
         jz inter14_ForceException
         cmp     ExceptionIndex,1        ;int 1
+        jz inter14_ForceException
+        cmp     ExceptionIndex,6        ;int 6
         jnz     inter14_SortedCode
 inter14_ForceException:
         mov     b ExceptionType,1               ;set exception
