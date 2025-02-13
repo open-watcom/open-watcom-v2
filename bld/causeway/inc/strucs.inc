@@ -439,3 +439,28 @@ IFrame          struct
     i_esp       dd 0
     i_ss        dd 0
 IFrame          ends
+
+GRegs struct
+gr_edi  dd ?
+gr_esi  dd ?
+gr_ebp  dd ?
+gr_esp  dd ?
+gr_ebx  dd ?
+gr_edx  dd ?
+gr_ecx  dd ?
+gr_eax  dd ?
+GRegs ends
+
+SRegs struct
+sr_gs   dw ?,?
+sr_fs   dw ?,?
+sr_es   dw ?,?
+sr_ds   dw ?,?
+SRegs ends
+
+SRegs16 struct
+sr16_gs dw ?
+sr16_fs dw ?
+sr16_es dw ?
+sr16_ds dw ?
+SRegs16 ends

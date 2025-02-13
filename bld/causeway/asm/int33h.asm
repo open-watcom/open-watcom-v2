@@ -637,15 +637,23 @@ int333_Done:
         pushf
         pop     ax                      ;get new flags.
         push    ds
+        ;
+SFrameD1 struct
+sd1_ds  dd ?
+sd1_ebp dd ?
+sd1_eax dd ?
+sd1_iret IFrame <?>
+SFrameD1 ends
+        ;
         mov     ds,cs:Int33hDSeg
         assume ds:_cwMain
         test    BYTE PTR SystemFlags,SYSFLAG_16B
         jz      int333_Use32Bit8
         movzx   ebp,sp
-        lea     bp,[bp+(4+4+4)+IFrame16.i16_flags]  ;get address of original flags.
+        lea     bp,[bp+SFrameD1.sd1_iret.i16_flags]  ;get address of original flags.
         jmp     int333_Use16Bit8
 int333_Use32Bit8:
-        lea     ebp,[esp+(4+4+4)+IFrame.i_eflags]   ;get address of original flags.
+        lea     ebp,[esp+SFrameD1.sd1_iret.i_eflags]   ;get address of original flags.
 int333_Use16Bit8:
         ;clear IF & DF in new flags.
         and     ax,NOT (EFLAG_IF or EFLAG_DF)

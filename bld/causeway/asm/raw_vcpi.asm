@@ -1561,15 +1561,15 @@ RawSimulate     proc    near
         push    w[rv29_CallAdd]
         push    w[rv29_ourstack]
         ;
-SFrameC1 struc
-sc1_ourstack dw  ?
-sc1_CallAdd  dw  ?
-sc1_IntAdd   dd  ?
-sc1_tVCPI_SP dd  ?
-sc1_sr16     SRegs16 <?>
-sc1_gr       GRegs <?>
-sc1_flags    dw ?
-SFrameC1 ends
+SFrameB1 struc
+sb1_ourstack dw  ?
+sb1_CallAdd  dw  ?
+sb1_IntAdd   dd  ?
+sb1_tVCPI_SP dd  ?
+sb1_sr16     SRegs16 <?>
+sb1_gr       GRegs <?>
+sb1_flags    dw ?
+SFrameB1 ends
         ;
         mov     w[rv29_ourstack],0
         ;
@@ -1643,7 +1643,7 @@ rv29_NoStacked:
         jz      rv29_Its32
         movzx   ebp,bp
 rv29_Its32:
-        mov     ax,[ebp+SFrameC1.sc1_flags]
+        mov     ax,[ebp+SFrameB1.sb1_flags]
         or      bh,bh           ;int or far?
         jnz     rv29_NoIF
         ;clear IF & TF.
@@ -1868,16 +1868,16 @@ rv30_Normal:
         push    ax
         push    ds
 ;
-SFrameB1 struc
-sb1_ds      dw  ?
-sb1_ax      dw  ?
-sb1_flags   dw  ?
-SFrameB1 ends
+SFrameB2 struc
+sb2_ds      dw  ?
+sb2_ax      dw  ?
+sb2_flags   dw  ?
+SFrameB2 ends
 ;
         mov     ax,_cwRaw
         mov     ds,ax
         mov     ax,sp
-        add     ax,SIZE SFrameB1       ;correct for stacked registers.
+        add     ax,SIZE SFrameB2       ;correct for stacked registers.
         mov     StackAdd,ax
         mov     StackAdd+2,ss
         pop     ds
@@ -3672,73 +3672,80 @@ rv46_DPMI_0801:
         jmp     rv46_Done
 
 rv46_DPMI_0900:
+        ;
+SFrameB3 struct
+sb3_ebp  dd ?
+sb3_iret IFrame <?>
+SFrameB3 ends
+        ;
         cmp     al,00h                  ;get & disable virtual interupts func
         jnz     rv46_DPMI_0901
+        push    ebp
         ;
         assume ds:nothing
         test    BYTE PTR cs:DpmiEmuSystemFlags,SYSFLAG_16B
         ;
         assume ds:_cwDPMIEMU
-        jz      rv46_1
-        push    ebp
-        mov     ebp,esp
-        mov     al,[bp+(4)+(2+2)+1]
-        and     b[bp+(4)+(2+2)+1],not 2
+        jz      rv46_0900_1
+        movzx   ebp,sp
+        lea     bp,[bp+SFrameB3.sb3_iret.i16_flags+1]
+        jmp     rv46_0900_2
+        ;
+rv46_0900_1:
+        lea     ebp,[esp+SFrameB3.sb3_iret.i_eflags+1]
+rv46_0900_2:
+        mov     al,[ebp]
+        and     b[ebp],not 2
         shr     al,1
         and     al,1
         pop     ebp
-        jmp     rv46_Done
-        ;
-rv46_1: mov     al,[esp+(4+4)+1]
-        and     b[esp+(4+4)+1],not 2
-        shr     al,1
-        and     al,1
         jmp     rv46_Done
 
 rv46_DPMI_0901:
         cmp     al,01h                  ;get & enable virtual interupts func
         jnz     rv46_DPMI_0902
+        push    ebp
         ;
         assume ds:nothing
         test    BYTE PTR cs:DpmiEmuSystemFlags,SYSFLAG_16B
         ;
         assume ds:_cwDPMIEMU
-        jz      rv46_2
-        push    ebp
+        jz      rv46_0901_1
         movzx   ebp,sp
-        mov     al,[bp+(4)+(2+2)+1]
-        or      b[bp+(4)+(2+2)+1],2
+        lea     bp,[bp+SFrameB3.sb3_iret.i16_flags+1]
+        jmp     rv46_0900_2
+        ;
+rv46_0901_1:
+        lea     ebp,[esp+SFrameB3.sb3_iret.i_eflags+1]
+rv46_0901_2:
+        mov     al,[ebp]
+        or      b[ebp],2
         shr     al,1
         and     al,1
         pop     ebp
-        jmp     rv46_Done
-        ;
-rv46_2: mov     al,[esp+(4+4)+1]
-        or      b[esp+(4+4)+1],2
-        shr     al,1
-        and     al,1
         jmp     rv46_Done
 
 rv46_DPMI_0902:
         cmp     al,02h                  ;get virtual interupt state func
         jnz     rv46_NotAvail
+        push    ebp
         ;
         assume ds:nothing
         test    BYTE PTR cs:DpmiEmuSystemFlags,SYSFLAG_16B
         ;
         assume ds:_cwDPMIEMU
-        jz      rv46_3
-        push    ebp
+        jz      rv46_0902_1
         movzx   ebp,sp
-        mov     al,[bp+(4)+(2+2)+1]
+        lea     bp,[bp+SFrameB3.sb3_iret.i16_flags+1]
+        jmp     rv46_0902_2
+        ;
+rv46_0902_1:
+        lea     ebp,[esp+SFrameB3.sb3_iret.i_eflags+1]
+rv46_0902_2:
+        mov     al,[ebp]
         shr     al,1
         and     al,1
         pop     ebp
-        jmp     rv46_Done
-        ;
-rv46_3: mov     al,[esp+(4+4)+1]
-        shr     al,1
-        and     al,1
         jmp     rv46_Done
 
 rv46_DPMI_0A00:
@@ -4168,17 +4175,23 @@ rv46_Done:
         pushf
         pop     ax                      ;get new flags.
         ;
+SFrameB4 struct
+sb4_ebp dd ?
+sb4_eax dd ?
+sb4_iret IFrame <?>
+SFrameB4 ends
+        ;
         assume ds:nothing
         test    BYTE PTR cs:DpmiEmuSystemFlags,SYSFLAG_16B
         ;
         assume ds:_cwDPMIEMU
         jz      rv46_Use32Bit8
         movzx   ebp,sp
-        lea     bp,[bp+(4+4+4)+IFrame16.i16_flags]  ;get address of original flags.
+        lea     bp,[bp+SFrameB4.sb4_iret.i16_flags]  ;get address of original flags.
         jmp     rv46_Use16Bit8
         ;
 rv46_Use32Bit8:
-        lea     ebp,[esp+(4+4+4)+IFrame.i_eflags]   ;get address of original flags.
+        lea     ebp,[esp+SFrameB4.sb4_iret.i_eflags]   ;get address of original flags.
 rv46_Use16Bit8:
         ;clear IF & DF & OF in new flags.
         and     ax,NOT (EFLAG_IF or EFLAG_DF or EFLAG_OF)
@@ -5873,17 +5886,23 @@ rv64_Done:
         pushf
         pop     ax                      ;get new flags.
         ;
+SFrameB5 struct
+sb5_ebp dd ?
+sb5_eax dd ?
+sb5_iret IFrame <?>
+SFrameB5 ends
+        ;
         assume ds:nothing
         test    BYTE PTR cs:DpmiEmuSystemFlags,SYSFLAG_16B
         ;
         assume ds:_cwDPMIEMU
         jz      rv64_Use32Bit8
         movzx   ebp,sp
-        lea     bp,[bp+(4+4)+IFrame16.i16_flags] ;get original flags.
+        lea     bp,[bp+SFrameB5.sb5_iret.i16_flags] ;get original flags.
         jmp     rv64_Use16Bit8
         ;
 rv64_Use32Bit8:
-        lea     ebp,[esp+(4+4)+IFrame.i_eflags]     ;get original flags.
+        lea     ebp,[esp+SFrameB5.sb5_iret.i_eflags]     ;get original flags.
 rv64_Use16Bit8:
         ;clear IF & DF & OF in new flags.
         and     ax,NOT (EFLAG_IF or EFLAG_DF or EFLAG_OF)
