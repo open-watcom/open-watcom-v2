@@ -268,12 +268,6 @@ static TYPEPTR StringLeafType( void )
     return( typ );
 }
 
-
-static str_hash_idx CalcStringHash( STR_HANDLE lit )
-{
-    return( (str_hash_idx)( hashpjw( lit->literal ) % STRING_HASH_SIZE ) );
-}
-
 TREEPTR StringLeaf( string_flags flags )
 {
     STR_HANDLE          new_lit;

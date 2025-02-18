@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -714,7 +714,7 @@ extern bool         InitPPScan( void );
 extern void         FiniPPScan( bool );
 extern id_hash_idx  CalcHashID( const char * );
 extern mac_hash_idx CalcHashMacro( const char * );
-extern unsigned     hashpjw( const char * );
+extern str_hash_idx CalcStringHash( STR_HANDLE lit );
 extern void         SkipAhead( void );
 extern TOKEN        ScanToken( void );
 extern void         ReScanInit( const char * );

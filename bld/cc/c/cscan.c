@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -152,8 +152,8 @@ static void reScanGetNextCharUndo( int c )
     CompFlags.rescan_buffer_done = false;
 }
 
-unsigned hashpjw( const char *s )
-/*******************************/
+static unsigned hashpjw( const char *s )
+/***************************************/
 {
     unsigned        h;
     unsigned char   c;
@@ -205,6 +205,12 @@ mac_hash_idx CalcHashMacro( const char *id )
     hash = hash % MACRO_HASH_SIZE;
 #endif
     return( (mac_hash_idx)hash );
+}
+
+str_hash_idx CalcStringHash( STR_HANDLE lit )
+/*******************************************/
+{
+    return( (str_hash_idx)( hashpjw( lit->literal ) % STRING_HASH_SIZE ) );
 }
 
 TOKEN KwLookup( const char *buf, size_t len )
