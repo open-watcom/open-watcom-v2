@@ -152,30 +152,18 @@ static void reScanGetNextCharUndo( int c )
     CompFlags.rescan_buffer_done = false;
 }
 
-static unsigned hashpjw( const char *s )
-/***************************************/
+static unsigned hashpjw( const char *s, size_t len )
+/**************************************************/
 {
     unsigned        h;
-    unsigned char   c;
+    size_t          i;
 
     h = *(const unsigned char *)s++;
-    if( h != 0 ) {
-        c = *s++;
-        if( c != '\0' ) {
-            h = ( h << 4 ) + c;
-            for( ;; ) {
-                h &= 0x0fff;
-                c = *s++;
-                if( c == '\0' )
-                    break;
-                h = ( h << 4 ) + c;
-                h = ( h ^ (h >> 12) ) & 0x0fff;
-                c = *s++;
-                if( c == '\0' )
-                    break;
-                h = ( h << 4 ) + c;
-                h = h ^ (h >> 12);
-            }
+    if( len > 1 ) {
+        h = ( ( h << 4 ) + *(const unsigned char *)s++ ) & 0x0fff;
+        for( i = 2; i < len; i++) {
+            h = ( h << 4 ) + *(const unsigned char *)s++;
+            h = ( h ^ ( h >> 12 ) ) & 0x0fff;
         }
     }
     return( h );
@@ -186,7 +174,9 @@ id_hash_idx CalcHashID( const char *id )
 {
     unsigned    hash;
 
-    hash = hashpjw( id );
+    if( *id == '\0' )
+        return( 0 );
+    hash = hashpjw( id, strlen( id ) );
     return( (id_hash_idx)( hash % ID_HASH_SIZE ) );
 }
 
@@ -195,9 +185,10 @@ mac_hash_idx CalcHashMacro( const char *id )
 {
     unsigned    hash;
 
-    hash = hashpjw( id );
+    if( *id == '\0' )
+        return( 0 );
+    hash = hashpjw( id, strlen( id ) );
 #if ( MACRO_HASH_SIZE > 0x0ff0 ) && ( MACRO_HASH_SIZE < 0x0fff )
-    hash &= 0x0fff;
     if( hash >= MACRO_HASH_SIZE ) {
         hash -= MACRO_HASH_SIZE;
     }
@@ -210,7 +201,9 @@ mac_hash_idx CalcHashMacro( const char *id )
 str_hash_idx CalcStringHash( STR_HANDLE lit )
 /*******************************************/
 {
-    return( (str_hash_idx)( hashpjw( lit->literal ) % STRING_HASH_SIZE ) );
+    if( lit->length == 0 )
+        return( 0 );
+    return( (str_hash_idx)( hashpjw( lit->literal, lit->length ) % STRING_HASH_SIZE ) );
 }
 
 TOKEN KwLookup( const char *buf, size_t len )
