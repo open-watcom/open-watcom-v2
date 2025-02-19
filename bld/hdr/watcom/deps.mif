@@ -208,7 +208,7 @@ h/conio.h         : $(mh_dir)/conio.mh $(owhdr) $(cplus) ../_valist.sp
 h/crtdbg.h        : $(mh_dir)/crtdbg.mh $(owhdr) $(cplus)
 h/ctype.h         : $(ctype_deps)
 h/direct.h        : $(mh_dir)/direct.mh $(owhdr) ../lfndos.sp ../systypes.sp $(cplus) $(packll) ../wchar_t.sp $(maxpath_sp) ../dskfreet.sp ../getdcwd.sp ../getcwd.sp ../dirfind.sp ../chdir.sp ../mkdir.sp ../rmdir.sp
-h/dos.h           : $(mh_dir)/dos.mh $(owhdr) ../lfndos.sp $(cplus) $(packll) ../wchar_t.sp $(maxpath_sp) ../dirattr.sp ../dskfreet.sp ../delay.sp
+h/dos.h           : $(mh_dir)/dos.mh $(owhdr) ../lfndos.sp $(cplus) $(packll) ../wchar_t.sp $(maxpath_sp) ../dirattr.sp ../dskfreet.sp
 h/dosfunc.h       : $(mh_dir)/dosfunc.mh $(owhdr)
 h/eh.h            : $(mh_dir)/eh.mh $(owhdr) ../cpponly.sp
 h/endian.h        : $(mh_dir)/endian.mh $(owhdrcnt) $(posixext)
