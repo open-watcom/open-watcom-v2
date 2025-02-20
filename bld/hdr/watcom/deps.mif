@@ -308,9 +308,9 @@ h/sys/utime.h     : $(mh_dir)/sys/utime.mh $(owhdr) $(cplus) $(packll) ../time_t
 
 h/netdb.h         : $(mh_dir)/netdb.mh $(owhdr) $(cplus) $(packlnxk)
 h/arpa/inet.h     : $(mh_dir)/arpa/inet.mh $(owhdr) ../systypes.sp $(cplus) $(packlnxk)
-h/netinet/in.h    : $(mh_dir)/netinet/in.mh $(owhdr) ../systypes.sp ../syssock.sp $(cplus) $(packlnxk)
+h/netinet/in.h    : $(mh_dir)/netinet/in.mh $(owhdr) ../systypes.sp ../syssock.sp ../safamilt.sp $(cplus) $(packlnxk)
 h/netinet/tcp.h   : $(mh_dir)/netinet/tcp.mh $(owhdr) $(cplus) $(packlnxk)
-h/sys/socket.h    : $(mh_dir)/sys/socket.mh $(owhdr) $(cplus) $(packlnxk) ../incdir.sp ../unistd.sp
+h/sys/socket.h    : $(mh_dir)/sys/socket.mh $(owhdr) $(cplus) $(packlnxk) ../incdir.sp ../unistd.sp ../safamilt.sp
 
 # The follow describe the system specific dependencies
 
@@ -352,7 +352,7 @@ h/sys/sysmips.h   : $(mh_dir)/linux/sys/sysmips.mh $(owhdr) $(cplus)
 h/sys/time.h      : $(mh_dir)/sys/time.mh $(sys_time_deps)
 h/sys/times.h     : $(mh_dir)/linux/sys/times.mh $(owhdr) $(cplus) $(packlnxk)
 h/sys/uio.h       : $(mh_dir)/linux/sys/uio.mh $(owhdr) ../systypes.sp $(cplus) $(packlnxk)
-h/sys/un.h        : $(mh_dir)/linux/sys/un.mh $(owhdr) $(cplus) $(packlnxk)
+h/sys/un.h        : $(mh_dir)/linux/sys/un.mh $(owhdr) $(cplus) $(packlnxk) ../safamilt.sp
 h/sys/utsname.h   : $(mh_dir)/linux/sys/utsname.mh $(owhdr) $(cplus) $(packlnxk)
 h/sys/wait.h      : $(mh_dir)/sys/wait.mh $(owhdr) ../wait.sp $(cplus)
 
