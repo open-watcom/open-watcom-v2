@@ -238,8 +238,8 @@ h/mprapi.h :              $(mh_dir)/mprapi.mh $(owhdr) $(cplus)
 h/mq.h :                  $(mh_dir)/mq.mh $(owhdr) $(cplus)
 h/msacm.h :               $(mh_dir)/msacm.mh $(owhdr) $(cplus)
 h/mshtml.h :              $(mh_dir)/mshtml.mh $(owhdr) $(cplus)
-h/msi.h :                 $(mh_dir)/msi.mh $(owhdr) $(mh_dir)/winverdf.sp $(mh_dir)/winver.sp $(cplus)
-h/msidefs.h :             $(mh_dir)/msidefs.mh $(owhdr) $(mh_dir)/winverdf.sp $(mh_dir)/winver.sp
+h/msi.h :                 $(mh_dir)/msi.mh $(owhdr) $(mh_dir)/msiverdf.sp $(cplus)
+h/msidefs.h :             $(mh_dir)/msidefs.mh $(owhdr) $(mh_dir)/msiverdf.sp
 h/msiquery.h :            $(mh_dir)/msiquery.mh $(owhdr) $(cplus)
 h/mstcpip.h :             $(mh_dir)/mstcpip.mh $(owhdr) $(cplus)
 h/mswsock.h :             $(mh_dir)/mswsock.mh $(owhdr) $(cplus)

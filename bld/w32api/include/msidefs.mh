@@ -9,27 +9,7 @@
 
 :include readonly.sp
 
-/* Define default version numbers. */
-:: this define WINVER only
-:include winverdf.sp
-:: this define others _WIN32_WINNT, _WIN32_IE, ...
-:include winver.sp
-
-#ifndef _WIN32_MSI
-#if (defined(NTDDI_VERSION) && NTDDI_VERSION >= NTDDI_WS03SP1)
-#define _WIN32_MSI 310
-#elif (defined(NTDDI_VERSION) && NTDDI_VERSION >= NTDDI_WINXPSP2)
-#define _WIN32_MSI 300
-#else
-#define _WIN32_MSI 200
-#endif
-#endif
-
-#if (_WIN32_MSI >= 150)
-#ifndef _MSI_NO_CRYPTO
-#include <wincrypt.h>
-#endif /* _MSI_NO_CRYPTO */
-#endif /* _WIN32_MSI >= 150 */
+:include msiverdf.sp
 
 #define IPROPNAME_ACTION                        TEXT("ACTION")
 #define IPROPNAME_ADMIN_PROPERTIES              TEXT("AdminProperties")
