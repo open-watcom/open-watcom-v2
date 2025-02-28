@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -361,6 +361,7 @@ typedef struct seg_leader {
     SEGDATA             *pieces;
     group_entry         *group;
     class_entry         *class;
+    int                 ord;                // definition order
     offset              size;               // total size of segment
     offset              vsize;              // total virtual size of segment
     SEG_LEADER          *DupSeg;            // Segment to get data from for output
