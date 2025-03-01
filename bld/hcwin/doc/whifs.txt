@@ -19,12 +19,12 @@ The WinHelp Header
 
 Each *.hlp file starts with a 16-byte header, arranged as follows:
 
-        Bytes           Meaning
-        -----------------------
-        0-3             Magic Number:   0x00035FF3
-        4-7             Offset of the directory within the .hlp file
-        8-11            Constant Value: 0xFFFFFFFF
-        12-15           File Size in bytes
+    Bytes           Meaning
+    -----------------------
+    0-3             Magic Number:   0x00035FF3
+    4-7             Offset of the directory within the .hlp file
+    8-11            Constant Value: 0xFFFFFFFF
+    12-15           File Size in bytes
 
 This header allows WinHelp to find the directory file, and hence all of
 the other internal files.
@@ -34,11 +34,11 @@ Internal File Headers
 
 Each internal file within the *.hlp file starts with a 9-byte header:
 
-        Bytes           Meaning
-        -----------------------
-        0-3             File Size, including this header
-        4-7             File Size, not including this header
-        8               Constant Value: 0x00 (0x04 for directory internal file)
+    Bytes           Meaning
+    -----------------------
+    0-3             File Size, including this header
+    4-7             File Size, not including this header
+    8               Constant Value: 0x00 (0x04 for directory internal file)
 
 Here 'File Size' refers to the size of this internal file in bytes.
 Presumably, both sizes are included as a checksum technique.  In many
