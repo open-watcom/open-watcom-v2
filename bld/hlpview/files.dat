@@ -1,3 +1,4 @@
 [ DEFAULT type="e" rel="." where="c jc f77 jf77" ]
 dir="binw"  usr="whelp.exe" cond="doshost"  descr="Help viewer"  old="bin"
 dir="binl"  usr="whelp"     cond="lnxhost"  descr="Help viewer"
+dir="binl64" usr="whelp"    cond="lnx64host"  descr="Help viewer" keys="lx64"
