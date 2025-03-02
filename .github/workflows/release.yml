@@ -31,7 +31,7 @@ jobs:
         include:
         - owtools: 'GCC'
           arch:    'x64'
-          image:   'ubuntu-20.04'
+          image:   'ubuntu-22.04'
           tools:   'gcc'
         - owtools: 'GCC'
           arch:    'a64'
