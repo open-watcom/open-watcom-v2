@@ -365,6 +365,27 @@ int U64Cnv8( unsigned_64 *res, char c )
     return( over );
 }
 
+//res = res*+c res source/dest c value <= 1
+int U64Cnv2( unsigned_64 *res, char c )
+{
+    unsigned_64 tmp2;
+    unsigned_32 save;
+    int         over;
+
+    over = 0;
+    tmp2 = *res;
+    if( tmp2.u._32[H] & 0x80000000 ){ // shift by 1 will overflow
+        over = 1;
+    }
+    save = tmp2.u._32[L];
+    tmp2.u._32[L] <<= 1;
+    tmp2.u._32[H] <<= 1;
+    tmp2.u._32[H] |= save >> (32-1);
+    tmp2.u._32[L] |= c;
+    *res = tmp2;
+    return( over );
+}
+
 int U64Cnv16( unsigned_64 *res, char c )
 { //res = res*16+c res source/dest c value <= 15
     unsigned_64 tmp16;

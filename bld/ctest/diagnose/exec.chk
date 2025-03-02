@@ -319,3 +319,9 @@ source\diag0101.c(20): Error! E1151: Parameter count does not agree with previou
 source\diag0101.c(21): Error! E1151: Parameter count does not agree with previous definition
 source\diag0102.c(4): Warning! W303: Parameter 'argv' has been defined, but not referenced
 source\diag0102.c(4): Warning! W303: Parameter 'argc' has been defined, but not referenced
+source\diag0103.c(4): Error! E1163: Invalid octal constant
+source\diag0103.c(5): Error! E1163: Invalid octal constant
+source\diag0103.c(6): Error! E1163: Invalid octal constant
+source\diag0103.c(7): Error! E1163: Invalid octal constant
+source\diag0104.c(3): Error! E1208: Invalid binary constant
+source\diag0104.c(4): Error! E1208: Invalid binary constant
