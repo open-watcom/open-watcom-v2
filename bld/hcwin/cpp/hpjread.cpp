@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -505,6 +505,8 @@ size_t HPJReader::handleOptions()
         } else if( strcmp( option, SCopyright ) == 0 ) {
             arg = _scanner.getArg( i );
             if( arg != NULL ) {
+                if( strlen( arg ) > 55 )
+                    arg[55] = '\0';
                 _sysFile->addRecord( new SystemText( HFSystem::SYS_COPYRIGHT, arg ) );
             }
         } else if( strcmp( option, SCompress ) == 0 ) {
