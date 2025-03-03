@@ -80,9 +80,9 @@ void U64Shift( const unsigned_64 *a, int shift, unsigned_64 *res );
 
 int  U64Cnv10( unsigned_64 *res, char c );
 int  U64Cnv8( unsigned_64 *res, char c );
+int  U64Cnv2( unsigned_64 *res, char c );
 int  U64Cnv16( unsigned_64 *res, char c );
 #if defined(__386__) && defined( __WATCOMC__ )
-
 #pragma aux U64Cnv10 \
     __parm __caller [__esi] [__eax] = \
         "mov  ecx,4[esi]" \
@@ -111,6 +111,21 @@ int  U64Cnv16( unsigned_64 *res, char c );
         "shld edx,ecx,3" \
         "shld ecx,ebx,3" \
         "shl  ebx,3" \
+        "mov  4[esi],ecx" \
+        "or   ebx,eax" \
+        "mov  [esi],ebx" \
+    __value [__edx] \
+    __modify __exact [__ebx __ecx __edx]
+
+
+#pragma aux U64Cnv2 \
+    __parm __caller [__esi] [__eax] = \
+        "mov  ecx,4[esi]" \
+        "xor  edx,edx" \
+        "mov  ebx,[esi]" \
+        "shld edx,ecx,1" \
+        "shld ecx,ebx,1" \
+        "shl  ebx,1" \
         "mov  4[esi],ecx" \
         "or   ebx,eax" \
         "mov  [esi],ebx" \

@@ -18,6 +18,8 @@ no_br_except30 = no
 #
 # special options
 #
+opt_binary01 = -zastd=c23 -za
+opt_binary02 = -zastd=c99 -ze
 opt_bool01 = -za99
 opt_bool02 = -za99
 opt_cmdln01 = /d+XXX=0+1
@@ -97,6 +99,8 @@ positive_tests = &
     bf01.$(exe) &
     bf02.$(exe) &
     bf03.$(exe) &
+    binary01.$(exe) &
+    binary02.$(exe) &
     bool01.$(exe) &
     bool02.$(exe) &
     callc01.$(exe) &

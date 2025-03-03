@@ -614,6 +614,53 @@ is64:
     return( ret );
 }
 
+
+static cnv_cc Cnv2( void )
+/*************************/
+{
+    const char      *curr;
+    unsigned char   c;
+    size_t          len;
+    unsigned        value;
+    uint64          value64;
+    cnv_cc          ret;
+
+    /*
+     * skip the 0b start of the binary number
+     */
+    curr = Buffer + 2;
+    len = TokenLen - 2;
+    value = 0;
+    while( len-- > 0 ) {
+        c = *curr;
+        if( value & 0x80000000 ) {
+            /*
+             * value needs 64 bit
+             */
+            goto is64;
+        }
+        if( c == '0' || c == '1' ) {
+            value = value + value + ( c - '0' );
+        }
+        ++curr;
+    }
+    Constant = value;
+    return( CNV_32 );
+is64:
+    ret = CNV_64;
+    U32ToU64( value, &value64 );
+    do {
+        c = *curr;
+        if( U64Cnv2( &value64, c - '0' ) ) {
+            ret = CNV_OVR;
+        }
+        ++curr;
+    } while( len-- > 0 );
+    Constant64 = value64;
+    return( ret );
+}
+
+
 static cnv_cc Cnv10( void )
 /*************************/
 {
@@ -666,7 +713,7 @@ static TOKEN doScanNum( void )
     TOKEN       token;
 
     struct {
-        enum { CON_DEC, CON_HEX, CON_OCT, CON_ERR } form;
+        enum { CON_DEC, CON_HEX, CON_OCT, CON_BIN, CON_ERR } form;
         enum { SUFF_NONE,SUFF_U, SUFF_L,SUFF_UL,  SUFF_I, SUFF_UI,
                SUFF_LL,SUFF_ULL } suffix;
     } con;
@@ -701,6 +748,25 @@ static TOKEN doScanNum( void )
                 con.form = CON_ERR;
                 if( diagnose_lex_error() ) {
                     CErr1( ERR_INVALID_HEX_CONSTANT );
+                }
+            }
+        } else if(( c == 'b' || c == 'B' ) &&
+            ( CompFlags.extensions_enabled || ( CompVars.cstd >= STD_C23 ))) {
+            bad_token_type = ERR_INVALID_BINARY_CONSTANT;
+            con.form = CON_BIN;
+            c = WriteBufferCharNextChar( c );
+            while( c == '0' || c == '1' ) {
+                c = WriteBufferCharNextChar( c );
+            }
+
+            if( TokenLen == 2 ) {
+                /*
+                 * just collected a 0b
+                 */
+                BadTokenInfo = ERR_INVALID_BINARY_CONSTANT;
+                con.form = CON_ERR;
+                if( diagnose_lex_error() ) {
+                    CErr1( ERR_INVALID_BINARY_CONSTANT );
                 }
             }
         } else {
@@ -761,6 +827,9 @@ static TOKEN doScanNum( void )
         break;
     case CON_DEC:
         ov = Cnv10();
+        break;
+    case CON_BIN:
+        ov = Cnv2();
         break;
     case CON_ERR:
         ov = CNV_32;
