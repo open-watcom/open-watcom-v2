@@ -57,8 +57,6 @@ jobs:
       uses: "./.github/actions/testboot"
       with:
         hostos:     ${{ matrix.pre.os }}
-        owversion:  ${{ matrix.pre.id }}
-        owtag:      ${{ matrix.pre.tag }}
         owdebug:    ${{ vars.OWDEBUG }}
   Linux-pre:
     needs: start-start
@@ -88,8 +86,6 @@ jobs:
       uses: "./.github/actions/testboot"
       with:
         hostos:     ${{ matrix.pre.os }}
-        owversion:  ${{ matrix.pre.id }}
-        owtag:      ${{ matrix.pre.tag }}
         owdebug:    ${{ vars.OWDEBUG }}
   Linux:
     needs:
