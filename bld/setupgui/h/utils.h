@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,7 +34,6 @@ extern bool             ModifyEnvironment( bool );
 extern bool             ModifyStartup( bool );
 extern bool             ModifyAssociations( bool );
 extern bool             ModifyUninstall( bool );
-extern bool             SpawnNextScript( );
 extern COPYFILE_ERROR   DoCopyFile( const VBUF *src, const VBUF *dst, bool );
 extern bool             CopyAllFiles( void );
 extern gui_message_return MsgBox( gui_window *, const char *, gui_message_type, ... );
