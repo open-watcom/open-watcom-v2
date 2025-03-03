@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -141,6 +141,7 @@ static bool ddeGroupAddItem1( DWORD ddeinst, HCONV hconv, const VBUF *prog_name,
     VbufInit( &buff );
     VbufConcStr( &buff, "[AddItem(" );
     VbufConcVbuf( &buff, prog_name );
+    VbufConcChr( &buff, ' ' );
     VbufConcVbuf( &buff, prog_args );
     VbufConcChr( &buff, ',' );
     VbufConcVbuf( &buff, prog_desc );
@@ -170,6 +171,7 @@ static bool ddeGroupAddItem2( DWORD ddeinst, HCONV hconv, const VBUF *prog_name,
     VbufConcStr( &buff, "[AddItem(" );
     VbufConcVbuf( &buff, working_dir );
     VbufConcVbuf( &buff, prog_name );
+    VbufConcChr( &buff, ' ' );
     VbufConcVbuf( &buff, prog_args );
     VbufConcChr( &buff, ',' );
     VbufConcVbuf( &buff, prog_desc );
