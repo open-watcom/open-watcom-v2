@@ -107,6 +107,7 @@ typedef struct a_file_info {
     boolbit             is_nlm      : 1;
     boolbit             is_dll      : 1;
     boolbit             executable  : 1;
+    boolbit             text_crlf   : 1;
 } a_file_info;
 
 typedef enum {
@@ -325,10 +326,6 @@ static size_t           NoLineCount;
 static size_t           *LineCountPointer = &NoLineCount;
 static bool             NeedGetDiskSizes = false;
 static bool             NeedInitAutoSetValues = true;
-static char             *ReadBuf;
-static size_t           ReadBufSize;
-static char             *RawReadBuf;
-static char             *RawBufPos;
 static int              MaxWidthChars;
 static int              CharWidth;
 
@@ -1839,9 +1836,12 @@ static bool ProcLine( char *line, pass_type pass )
                 }
                 line = p; p = NextToken( line, '!' );
                 file->executable = false;
+                file->text_crlf = false;
                 if( p != NULL ) {
                     if( *p == 'e' ) {
                         file->executable = true;
+                    } else if( *p == 'b' ) {
+                        file->text_crlf = true;
                     }
                 }
                 line = p; p = NextToken( line, '!' );
@@ -2195,62 +2195,6 @@ static bool GetDiskSizes( void )
 }
 
 
-static char *readLine( file_handle fh, char *buffer, size_t length )
-/******************************************************************/
-{
-    static int      raw_buf_size;
-    char            *line_start;
-    size_t          len;
-    bool            done;
-
-    done = false;
-    do {
-        // Read data into raw buffer if it's empty
-        if( RawBufPos == NULL ) {
-            raw_buf_size = FileRead( fh, RawReadBuf, BUF_SIZE );
-            if( raw_buf_size <= 0 ) {
-                return( NULL );
-            }
-            RawBufPos = RawReadBuf;
-        }
-
-        line_start = RawBufPos;
-        // Look for a newline; check for end of source buffer and size
-        // of target buffer
-        while( (*RawBufPos != '\n') &&
-               (RawBufPos < RawReadBuf + raw_buf_size) &&
-               ((size_t)( RawBufPos - line_start ) < length) ) {
-            ++RawBufPos;
-        }
-
-        if( *RawBufPos == '\n' ) {
-            // Found a newline; increment past it
-            ++RawBufPos;
-            done = true;
-        } else if( RawBufPos == RawReadBuf + raw_buf_size ) {
-            // We're at the end of the buffer; copy what we have to output buffer
-            len = RawBufPos - line_start;
-            memcpy( buffer, line_start, len );
-            length -= len;
-            buffer += len;
-
-            // Force read of more data into buffer
-            RawBufPos = NULL;
-        } else {
-            // No more space in output buffer
-            done = true;
-        }
-    } while( !done );
-
-    len = RawBufPos - line_start;
-
-    memcpy( buffer, line_start, len );
-    buffer[len] = '\0';
-
-    return( buffer );
-}
-
-
 static int PrepareSetupInfo( file_handle fh, pass_type pass )
 /***********************************************************/
 {
@@ -2259,8 +2203,15 @@ static int PrepareSetupInfo( file_handle fh, pass_type pass )
     bool                done;
     size_t              len;
     char                *p;
+    char                *readbuf;
+    size_t              bufsize;
 
-    RawBufPos = NULL;       // reset buffer position
+    bufsize = BUF_SIZE;
+    readbuf = GUIMemAlloc( BUF_SIZE );
+    if( readbuf == NULL ) {
+        return( SIM_INIT_NOMEM );
+    }
+
     LineCountPointer = &NoLineCount;
     old_cursor = GUISetMouseCursor( GUI_HOURGLASS_CURSOR );
     result = SIM_INIT_NOERROR;
@@ -2273,44 +2224,44 @@ static int PrepareSetupInfo( file_handle fh, pass_type pass )
     for( ;; ) {
         len = 0;
         for( ;; ) {
-            if( readLine( fh, ReadBuf + len, ReadBufSize - len ) == NULL ) {
+            if( FileRead( fh, readbuf + len, bufsize - len ) == 0 ) {
                 done = true;
                 break;
             }
             // Eliminate leading blanks on continued lines
             if( len > 0 ) {
-                p = ReadBuf + len;
+                p = readbuf + len;
                 SKIP_WS( p );
-                memmove( ReadBuf + len, p, strlen( p ) + 1 );
+                memmove( readbuf + len, p, strlen( p ) + 1 );
             }
-            len = strlen( ReadBuf );
+            len = strlen( readbuf );
             if( len == 0 )
                 break;
 
             // Manually convert CR/LF if needed
-            if( (len > 1) && (ReadBuf[len - 1] == '\n') ) {
-                if( ReadBuf[len - 2] == '\r' ) {
-                    ReadBuf[len - 2] = '\n';
-                    ReadBuf[len - 1] = '\0';
+            if( (len > 1) && (readbuf[len - 1] == '\n') ) {
+                if( readbuf[len - 2] == '\r' ) {
+                    readbuf[len - 2] = '\n';
+                    readbuf[len - 1] = '\0';
                     --len;
                 }
             }
 
-            if( ReadBuf[len - 1] == '\n' ) {
+            if( readbuf[len - 1] == '\n' ) {
                 if( len == 1 )
                     break;
-                if( ReadBuf[len - 2] != '\\' )
+                if( readbuf[len - 2] != '\\' )
                     break;
                 len -= 2;
             }
-            if( ReadBufSize - len < BUF_SIZE / 2 ) {
-                ReadBufSize += BUF_SIZE;
-                ReadBuf = GUIMemRealloc( ReadBuf, ReadBufSize );
+            if( bufsize - len < BUF_SIZE / 2 ) {
+                bufsize += BUF_SIZE;
+                readbuf = GUIMemRealloc( readbuf, bufsize );
             }
         }
         if( done )
             break;
-        if( !ProcLine( ReadBuf, pass ) ) {
+        if( !ProcLine( readbuf, pass ) ) {
             result = SIM_INIT_NOMEM;
             break;
         }
@@ -2318,6 +2269,7 @@ static int PrepareSetupInfo( file_handle fh, pass_type pass )
             break;
         }
     }
+    GUIMemFree( readbuf );
     GUIResetMouseCursor( old_cursor );
     return( result );
 }
@@ -2358,28 +2310,15 @@ long SimInit( const VBUF *inf_name )
 #undef setvar
 
     SetDefaultGlobalVarList();
-    ReadBufSize = BUF_SIZE;
-    ReadBuf = GUIMemAlloc( BUF_SIZE );
-    if( ReadBuf == NULL ) {
-        return( SIM_INIT_NOMEM );
-    }
-    RawReadBuf = GUIMemAlloc( BUF_SIZE );
-    if( RawReadBuf == NULL ) {
-        return( SIM_INIT_NOMEM );
-    }
-    fh = FileOpen( inf_name, DATA_BIN );
+    fh = FileOpen( inf_name, DATA_TEXT );
     if( fh == NULL ) {
-        GUIMemFree( ReadBuf );
-        GUIMemFree( RawReadBuf );
         return( SIM_INIT_NOFILE );
     }
     SetVariableByName_vbuf( "SetupInfFile", inf_name );
     result = PrepareSetupInfo( fh, PRESCAN_FILE );
     FileClose( fh );
-    fh = FileOpen( inf_name, DATA_BIN );
+    fh = FileOpen( inf_name, DATA_TEXT );
     if( fh == NULL ) {
-        GUIMemFree( ReadBuf );
-        GUIMemFree( RawReadBuf );
         return( SIM_INIT_NOFILE );
     }
     InitArray( (void **)&DirInfo, sizeof( struct dir_info ), &SetupInfo.dirs );
@@ -2411,8 +2350,6 @@ long SimInit( const VBUF *inf_name )
     }
     result = PrepareSetupInfo( fh, FINAL_SCAN );
     FileClose( fh );
-    GUIMemFree( ReadBuf );
-    GUIMemFree( RawReadBuf );
     for( i = 0; i < SetupInfo.files.num; ++i ) {
         FileInfo[i].condition.p = &FileCondInfo[FileInfo[i].condition.i];
     }
@@ -2653,6 +2590,12 @@ bool SimSubFileExecutable( int parm, int subfile )
 /************************************************/
 {
     return( FileInfo[parm].files[subfile].executable );
+}
+
+bool SimSubFileTextCRLF( int parm, int subfile )
+/**********************************************/
+{
+    return( FileInfo[parm].files[subfile].text_crlf );
 }
 
 bool SimSubFileIsNLM( int parm, int subfile )

@@ -1561,6 +1561,19 @@ static bool CreateDirectoryTree( void )
     return( ok );
 }
 
+static copy_mode getCopyMode( int parm, int subfile )
+/***************************************************/
+{
+    if( SimSubFileTextCRLF( parm, subfile ) ) {
+        if( GetVariableBoolVal( "IsDos" )
+          || GetVariableBoolVal( "IsWin16" )
+          || GetVariableBoolVal( "IsWin95" ) ) {
+            return( COPY_TEXT_CRLF );
+        }
+    }
+    return( COPY_NORMAL );
+}
+
 static bool RelocateFiles( void )
 /*******************************/
 {
@@ -1612,7 +1625,7 @@ static bool RelocateFiles( void )
                 if( SimSubFileInNewDir( filenum, subfilenum ) ) {
                     remove_vbuf( &dst_path );
                 }
-                if( DoCopyFile( &src_path, &dst_path, COPY_NORMAL ) != CFE_NOERROR ) {
+                if( DoCopyFile( &src_path, &dst_path, getCopyMode( filenum, subfilenum ) ) != CFE_NOERROR ) {
                     ok = false;
                     break;
                 }
@@ -1961,7 +1974,7 @@ static bool DoCopyFiles( void )
                         VbufSetVbufAt( &src_path, &file_desc, src_path_pos2 );  // add name to end of src_path
                         StatusLinesVbuf( STAT_COPYINGFILE, &tmp_path );
                         checkForNewName( filenum, subfilenum, &tmp_path );
-                        copy_error = DoCopyFile( &src_path, &tmp_path, COPY_NORMAL );
+                        copy_error = DoCopyFile( &src_path, &tmp_path, getCopyMode( filenum, subfilenum ) );
 
                         switch( copy_error ) {
                         case CFE_ABORT:

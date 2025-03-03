@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -132,6 +132,7 @@ extern bool             SimSubFileInOldDir( int parm, int subfile );
 extern time_t           SimSubFileDate( int parm, int subfile );
 extern bool             SimSubFileNewer( int parm, int subfile );
 extern bool             SimSubFileExecutable( int parm, int subfile );
+extern bool             SimSubFileTextCRLF( int parm, int subfile );
 extern bool             SimSubFileIsNLM( int parm, int subfile );
 extern bool             SimSubFileIsDLL( int parm, int subfile );
 extern bool             SimSubFileReadOnly( int parm, int subfile );
