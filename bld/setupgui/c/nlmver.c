@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -210,7 +210,7 @@ bool CheckInstallNLM( const VBUF *name, vhandle var_handle )
         VbufMakepath( &temp, NULL, &dir, &fname, &ext );
         if( CheckNewer( &unpacked_as, &temp ) ) {
             chmod_vbuf( name, PMODE_RWX );
-            DoCopyFile( &unpacked_as, name, false );
+            DoCopyFile( &unpacked_as, name, COPY_NORMAL );
             VbufSetVbuf( &temp, &fname );
             VbufConcStr( &temp, "_NLM_installed" );
             SetBoolVariableByName_vbuf( &temp, true );

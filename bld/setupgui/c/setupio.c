@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -183,9 +183,11 @@ int FileStat( const VBUF *path, struct stat *buf )
 }
 
 
-file_handle FileOpen( const VBUF *path, const char *flags )
+file_handle FileOpen( const VBUF *path, data_mode mode )
 {
     file_handle     fh;
+
+    (void)mode; /* unused parameters */
 
     fh = malloc( sizeof( *fh ) );
     if( fh == NULL )
@@ -210,7 +212,7 @@ file_handle FileOpen( const VBUF *path, const char *flags )
 #elif defined( USE_LZMA )
 #endif
         /* If that fails, try opening the file directly */
-        fh->u.fp = fopen_vbuf( path, flags );
+        fh->u.fp = fopen_vbuf( path, "rb" );
         fh->type = DS_FILE;
 #if defined( USE_ZIP )
     }

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -1061,7 +1061,7 @@ bool ModifyAutoExec( bool uninstall )
 
 #ifndef __OS2__
             MsgBoxVbuf2( NULL, "IDS_COPYAUTOEXEC", GUI_OK, &newauto, &newcfg );
-            if( DoCopyFile( &OrigAutoExec, &newauto, false ) != CFE_NOERROR ) {
+            if( DoCopyFile( &OrigAutoExec, &newauto, COPY_NORMAL ) != CFE_NOERROR ) {
                 MsgBox( NULL, "IDS_ERRORBACKAUTO", GUI_OK );
             } else {
                 if( !ModAuto( &newauto, &OrigAutoExec, uninstall ) ) {
@@ -1072,7 +1072,7 @@ bool ModifyAutoExec( bool uninstall )
             MsgBoxVbuf( NULL, "IDS_COPYCONFIGSYS", GUI_OK, &newcfg );
 #endif
             if( ok ) {
-                if( DoCopyFile( &OrigConfig, &newcfg, false ) != CFE_NOERROR ) {
+                if( DoCopyFile( &OrigConfig, &newcfg, COPY_NORMAL ) != CFE_NOERROR ) {
                     MsgBox( NULL, "IDS_ERRORBACKCONFIG", GUI_OK );
                 } else {
                     if( !ModConfig( &newcfg, &OrigConfig, uninstall ) ) {
@@ -1481,7 +1481,7 @@ bool CheckInstallDLL( const VBUF *name, vhandle var_handle )
             cancel = replace_file( name, &unpacked_as );
 #endif
         } else if( GetVariableBoolVal( "DLL_Replace_Old" ) ) {
-            DoCopyFile( &unpacked_as, &prev_path, false );
+            DoCopyFile( &unpacked_as, &prev_path, COPY_NORMAL );
             SetVariableByHandle_vbuf( var_handle, &prev_path );
             remove_vbuf( &unpacked_as );
         } else if( GetVariableBoolVal( "DLL_Dont_Install" ) ) {

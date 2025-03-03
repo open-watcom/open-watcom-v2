@@ -30,11 +30,17 @@
 ****************************************************************************/
 
 
+typedef enum {
+    COPY_NORMAL     = 0x00,
+    COPY_APPEND     = 0x01,
+    COPY_TEXT_CRLF  = 0x02
+} copy_mode;
+
 extern bool             ModifyEnvironment( bool );
 extern bool             ModifyStartup( bool );
 extern bool             ModifyAssociations( bool );
 extern bool             ModifyUninstall( bool );
-extern COPYFILE_ERROR   DoCopyFile( const VBUF *src, const VBUF *dst, bool );
+extern COPYFILE_ERROR   DoCopyFile( const VBUF *src, const VBUF *dst, copy_mode copymode );
 extern bool             CopyAllFiles( void );
 extern gui_message_return MsgBox( gui_window *, const char *, gui_message_type, ... );
 extern bool             CheckDrive( bool );

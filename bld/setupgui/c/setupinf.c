@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -1010,7 +1010,7 @@ static bool dialog_textwindow( char *next, DIALOG_PARSER_INFO *parse_dlg, bool l
         if( *line == '@' ) {
             VbufInit( &file_name );
             VbufConcStr( &file_name, line + 1 );
-            fh = FileOpen( &file_name, "rb" );
+            fh = FileOpen( &file_name, DATA_BIN );
             if( fh != NULL ) {
                 FileStat( &file_name, &buf );
                 text = GUIMemAlloc( buf.st_size + 1 );  // 1 for terminating null
@@ -2367,7 +2367,7 @@ long SimInit( const VBUF *inf_name )
     if( RawReadBuf == NULL ) {
         return( SIM_INIT_NOMEM );
     }
-    fh = FileOpen( inf_name, "rb" );
+    fh = FileOpen( inf_name, DATA_BIN );
     if( fh == NULL ) {
         GUIMemFree( ReadBuf );
         GUIMemFree( RawReadBuf );
@@ -2376,7 +2376,7 @@ long SimInit( const VBUF *inf_name )
     SetVariableByName_vbuf( "SetupInfFile", inf_name );
     result = PrepareSetupInfo( fh, PRESCAN_FILE );
     FileClose( fh );
-    fh = FileOpen( inf_name, "rb" );
+    fh = FileOpen( inf_name, DATA_BIN );
     if( fh == NULL ) {
         GUIMemFree( ReadBuf );
         GUIMemFree( RawReadBuf );

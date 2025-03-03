@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -1426,8 +1426,8 @@ bool DoDeleteFile( const VBUF *path )
 
 // ******************* Functions for Copying Files ***************************
 
-COPYFILE_ERROR DoCopyFile( const VBUF *src_path, const VBUF *dst_path, bool append )
-/**********************************************************************************/
+COPYFILE_ERROR DoCopyFile( const VBUF *src_path, const VBUF *dst_path, copy_mode copymode )
+/*****************************************************************************************/
 {
     static char         lastchance[1024];
     size_t              buffer_size = 16 * 1024;
@@ -1436,7 +1436,7 @@ COPYFILE_ERROR DoCopyFile( const VBUF *src_path, const VBUF *dst_path, bool appe
     int                 bytes_read, bytes_written, style;
     char                *pbuff;
 
-    src_files = FileOpen( src_path, "rb" );
+    src_files = FileOpen( src_path, DATA_BIN );
     if( src_files == NULL ) {
         return( CFE_CANTOPENSRC );
     }
@@ -1453,7 +1453,7 @@ COPYFILE_ERROR DoCopyFile( const VBUF *src_path, const VBUF *dst_path, bool appe
         }
     }
 
-    if( append ) {
+    if( copymode & COPY_APPEND ) {
         style = O_RDWR | O_BINARY;
     } else {
         style = O_CREAT | O_TRUNC | O_WRONLY | O_BINARY;
@@ -1471,7 +1471,7 @@ COPYFILE_ERROR DoCopyFile( const VBUF *src_path, const VBUF *dst_path, bool appe
         }
         return( CFE_CANTOPENDST );
     }
-    if( append ) {
+    if( copymode & COPY_APPEND ) {
         lseek( dst_files, 0, SEEK_END );
     }
 
@@ -1612,7 +1612,7 @@ static bool RelocateFiles( void )
                 if( SimSubFileInNewDir( filenum, subfilenum ) ) {
                     remove_vbuf( &dst_path );
                 }
-                if( DoCopyFile( &src_path, &dst_path, false ) != CFE_NOERROR ) {
+                if( DoCopyFile( &src_path, &dst_path, COPY_NORMAL ) != CFE_NOERROR ) {
                     ok = false;
                     break;
                 }
@@ -1734,7 +1734,7 @@ static void CopySetupInfFile( void )
             remove_vbuf( &dst_path );
         } else {
             VbufSetStr( &tmp_path, GetVariableStrVal( "SetupInfFile" ) );
-            DoCopyFile( &tmp_path, &dst_path, false );
+            DoCopyFile( &tmp_path, &dst_path, COPY_NORMAL );
         }
     }
 
@@ -1961,7 +1961,7 @@ static bool DoCopyFiles( void )
                         VbufSetVbufAt( &src_path, &file_desc, src_path_pos2 );  // add name to end of src_path
                         StatusLinesVbuf( STAT_COPYINGFILE, &tmp_path );
                         checkForNewName( filenum, subfilenum, &tmp_path );
-                        copy_error = DoCopyFile( &src_path, &tmp_path, false );
+                        copy_error = DoCopyFile( &src_path, &tmp_path, COPY_NORMAL );
 
                         switch( copy_error ) {
                         case CFE_ABORT:
