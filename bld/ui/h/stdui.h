@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -463,7 +463,7 @@ typedef enum {
 
 typedef unsigned        ORD;
 
-#elif __RDOS__
+#elif defined( __RDOS__ )
 
 /*
     This needs to be fixed so scaling for a mouse also need a larger range!!
@@ -511,7 +511,7 @@ typedef int             CATTR;          /* cursor attributes type */
     #define __FAR       __far
     #define HAVE_FAR
     #define UIDBCS
-#elif defined(__NT__)
+#elif defined( __NT__ )
     typedef struct pixel {
         unsigned short  ch;
         unsigned short  attr;
@@ -519,7 +519,7 @@ typedef int             CATTR;          /* cursor attributes type */
     #define __FAR
     #undef HAVE_FAR
     #define UIDBCS
-#elif defined(__OS2__)
+#elif defined( __OS2__ )
     typedef struct pixel {
         unsigned char   ch;
         ATTR            attr;
@@ -527,7 +527,7 @@ typedef int             CATTR;          /* cursor attributes type */
     #define __FAR
     #undef HAVE_FAR
     #define UIDBCS
-#elif defined(__RDOS__)
+#elif defined( __RDOS__ )
     typedef struct pixel {
         unsigned char   ch;
         ATTR            attr;
@@ -535,7 +535,7 @@ typedef int             CATTR;          /* cursor attributes type */
     #define __FAR
     #undef HAVE_FAR
     #undef UIDBCS
-#elif defined(__UNIX__)
+#elif defined( __UNIX__ )
     typedef struct pixel {
         unsigned char   ch;
         ATTR            attr;
