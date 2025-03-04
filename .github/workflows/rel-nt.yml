@@ -23,6 +23,8 @@ jobs:
     name: Bootstrap
     runs-on: ${{ inputs.image }}
     steps:
+    - name: set EOL to LF
+      run: git config --global core.eol lf
     - name: checkout
       uses: actions/checkout@v4
     - name: Bootstrap
@@ -39,6 +41,8 @@ jobs:
     runs-on: ${{ inputs.image }}
     timeout-minutes: 120
     steps:
+    - name: set EOL to LF
+      run: git config --global core.eol lf
     - name: checkout
       uses: actions/checkout@v4
     - name: Build
@@ -70,6 +74,8 @@ jobs:
         - title: WIN
           doctype: docwin
     steps:
+    - name: set EOL to LF
+      run: git config --global core.eol lf
     - name: checkout
       uses: actions/checkout@v4
     - name: Documentation
