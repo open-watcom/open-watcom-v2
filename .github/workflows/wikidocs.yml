@@ -50,7 +50,7 @@ jobs:
       uses: actions/checkout@v4
     - name: set EOL to LF
       run: git config --local core.eol lf && git config --local core.autocrlf input
-    - run: git reset --hard
+    - run: git reset --hard HEAD
     - name: Bootstrap
       uses: "./.github/actions/boot"
       with:
@@ -62,7 +62,8 @@ jobs:
         owdebug:        ${{ vars.OWDEBUG }}
       env:
         OWDOCTARGET:    'bootdocs'
-    - run: git config --list
+    - run: git config --global --list
+    - run: git config --local --list
   wiki-build:
     needs: wiki-boot
     name: Build
@@ -81,7 +82,7 @@ jobs:
       uses: actions/checkout@v4
     - name: set EOL to LF
       run: git config --local core.eol lf && git config --local core.autocrlf input
-    - run: git reset --hard
+    - run: git reset --hard HEAD
     - name: Build ${{ matrix.title }}
       uses: "./.github/actions/docbuild"
       with:
@@ -95,7 +96,8 @@ jobs:
         owtarget:   ${{ matrix.owtarget }}
         owdebug:    ${{ vars.OWDEBUG }}
         noarchive:  '1'
-    - run: git config --list
+    - run: git config --global --list
+    - run: git config --local --list
   wiki-update:
     name: Update Wiki
     needs: wiki-build
