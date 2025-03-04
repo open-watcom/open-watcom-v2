@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -83,7 +84,7 @@ _WCRTLINK int __plusplus_fstat( int handle, int *pios_mode )
     } else {
         ios_mode |= __in | __out;
     }
-#elif __RDOS__
+#elif defined( __RDOS__ )
 
     /* unused parameters */ (void)handle;
 

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -267,7 +267,7 @@
   #endif
 }
 
-#elif __RDOS__
+#elif defined( __RDOS__ )
 
 time_t __rdos_filetime_cvt( unsigned long long tics )
 {
