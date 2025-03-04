@@ -49,7 +49,7 @@ jobs:
     - name: checkout
       uses: actions/checkout@v4
     - name: set EOL to LF
-      run: sed s/text=auto/text eol=lf/ .gitattributes >.gitattributes
+      run: sed 's/text=auto/text eol=lf/' .gitattributes >.gitattributes
     - run: git reset --hard HEAD --
     - name: Bootstrap
       uses: "./.github/actions/boot"
@@ -80,7 +80,7 @@ jobs:
     - name: checkout
       uses: actions/checkout@v4
     - name: set EOL to LF
-      run: sed s/text=auto/text eol=lf/ .gitattributes >.gitattributes
+      run: sed 's/text=auto/text eol=lf/' .gitattributes >.gitattributes
     - run: git reset --hard HEAD --
     - name: Build ${{ matrix.title }}
       uses: "./.github/actions/docbuild"
