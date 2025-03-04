@@ -24,7 +24,7 @@ jobs:
     runs-on: ${{ inputs.image }}
     steps:
     - name: set EOL to LF
-      run: git config --global core.eol lf
+      run: git config --global core.eol lf && git config --global core.autocrlf input
     - name: checkout
       uses: actions/checkout@v4
     - name: Bootstrap
@@ -42,7 +42,7 @@ jobs:
     timeout-minutes: 120
     steps:
     - name: set EOL to LF
-      run: git config --global core.eol lf
+      run: git config --global core.eol lf && git config --global core.autocrlf input
     - name: checkout
       uses: actions/checkout@v4
     - name: Build
@@ -75,7 +75,7 @@ jobs:
           doctype: docwin
     steps:
     - name: set EOL to LF
-      run: git config --global core.eol lf
+      run: git config --global core.eol lf && git config --global core.autocrlf input
     - name: checkout
       uses: actions/checkout@v4
     - name: Build

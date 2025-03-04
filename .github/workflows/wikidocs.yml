@@ -47,7 +47,7 @@ jobs:
     runs-on: windows-2019
     steps:
     - name: set EOL to LF
-      run: git config --global core.eol lf
+      run: git config --global core.eol lf && git config --global core.autocrlf input
     - name: checkout
       uses: actions/checkout@v4
     - name: Bootstrap
@@ -76,7 +76,7 @@ jobs:
           owtarget: '.and wikipdf .or -- -- docset=wikipdf -i'
     steps:
     - name: set EOL to LF
-      run: git config --global core.eol lf
+      run: git config --global core.eol lf && git config --global core.autocrlf input
     - name: checkout
       uses: actions/checkout@v4
     - name: Build ${{ matrix.title }}
@@ -98,7 +98,7 @@ jobs:
     runs-on: windows-2019
     steps:
     - name: set EOL to LF
-      run: git config --global core.eol lf
+      run: git config --global core.eol lf && git config --global core.autocrlf input
     - name: Setup Git User
       shell: cmd
       run: |
