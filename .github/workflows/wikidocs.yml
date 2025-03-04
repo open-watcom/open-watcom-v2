@@ -46,10 +46,11 @@ jobs:
     name: Bootstrap
     runs-on: windows-2019
     steps:
-    - name: set EOL to LF
-      run: git config --local core.eol lf && git config --local core.autocrlf input
     - name: checkout
       uses: actions/checkout@v4
+    - name: set EOL to LF
+      run: git config --local core.eol lf && git config --local core.autocrlf input
+    - run: git reset --hard
     - name: Bootstrap
       uses: "./.github/actions/boot"
       with:
@@ -76,10 +77,11 @@ jobs:
           doctype:  'wikipdf'
           owtarget: '.and wikipdf .or -- -- docset=wikipdf -i'
     steps:
-    - name: set EOL to LF
-      run: git config --local core.eol lf && git config --local core.autocrlf input
     - name: checkout
       uses: actions/checkout@v4
+    - name: set EOL to LF
+      run: git config --local core.eol lf && git config --local core.autocrlf input
+    - run: git reset --hard
     - name: Build ${{ matrix.title }}
       uses: "./.github/actions/docbuild"
       with:
@@ -99,8 +101,6 @@ jobs:
     needs: wiki-build
     runs-on: windows-2019
     steps:
-    - name: set EOL to LF
-      run: git config --local core.eol lf && git config --local core.autocrlf input
     - name: Setup Git User
       shell: cmd
       run: |
