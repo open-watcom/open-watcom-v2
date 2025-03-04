@@ -100,12 +100,7 @@ makefile text
 *.wbr binary
 *.wri binary
 *.zip binary
-
-unicode.437 binary
-unicode.850 binary
-unicode.852 binary
-unicode1.250 binary
-unicode1.252 binary
+unicode*.* binary
 
 /bld/ctest/regress/positive/source/pp15.c binary
 /bld/plustest/regress/positive/source/pp15.c binary
