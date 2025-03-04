@@ -61,6 +61,7 @@ jobs:
         owdebug:        ${{ vars.OWDEBUG }}
       env:
         OWDOCTARGET:    'bootdocs'
+    - run: git config --list
   wiki-build:
     needs: wiki-boot
     name: Build
@@ -92,6 +93,7 @@ jobs:
         owtarget:   ${{ matrix.owtarget }}
         owdebug:    ${{ vars.OWDEBUG }}
         noarchive:  '1'
+    - run: git config --list
   wiki-update:
     name: Update Wiki
     needs: wiki-build
@@ -127,6 +129,7 @@ jobs:
         git add -v -f .
         git commit -v -m "GitHub Workflow build"
         git push -v
+    - run: git config --list
   cleanup:
     needs: wiki-update
     name: Call to delete Artifacts

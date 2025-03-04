@@ -35,6 +35,7 @@ jobs:
         suffix:     "nt ${{ inputs.arch }} ${{ inputs.tools }}"
         owtools:    ${{ inputs.owtools }}
         owdebug:    ${{ inputs.owdebug }}
+    - run: git config --list
   build-nt:
     name: Build
     needs: boot-nt
@@ -53,6 +54,7 @@ jobs:
         suffix:     "nt ${{ inputs.arch }} ${{ inputs.tools }}"
         owtools:    ${{ inputs.owtools }}
         owdebug:    ${{ inputs.owdebug }}
+    - run: git config --list
   docsbuild:
     name: Docs Build
     needs: boot-nt
@@ -88,6 +90,7 @@ jobs:
         suffixo:    "${{ matrix.doctype }} ${{ inputs.tools }}"
         owtools:    ${{ inputs.owtools }}
         owdebug:    ${{ inputs.owdebug }}
+    - run: git config --list
   tests-nt:
     name: Tests
     needs: build-nt
