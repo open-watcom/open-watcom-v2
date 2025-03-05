@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -201,7 +201,7 @@ static const char   *Rptr;                  // - ptr into record
 static PROCMODE     ProcessMode;            // - processing mode
 static const char   *OutFmt = "%s";         // - output format
 static unsigned     OutNum = 0;             // - output number
-static bool         UnixStyle = false;      // - Unix style newlines?
+static int          EOL_crlf = -1;          // - end-of-line crlf=1, lf=0, host=-1
 static int          TabStop = 0;            // - tab spacing
 static IPATHLST     *IncPathList;           // - list of include paths
 static bool         RestoreTime = false;    // - set tgt-file timestamp to src-file
@@ -693,10 +693,13 @@ static void OutputChar( char p )
 
 static void PutNL( void )
 {
+    if( EOL_crlf == 1 ) {
+        OutputChar( '\r' );
 #if !defined( __UNIX__ )
-    if( !UnixStyle )
+    } else if( EOL_crlf == -1 ) {
         OutputChar( '\r' );
 #endif
+    }
     OutputChar( '\n' );
 }
 
@@ -993,6 +996,7 @@ int main(               // MAIN-LINE
         puts( "    -o string\t\tOutput <string> to tgt-file" );
         puts( "    -t tabstop\t\tSet tab character spacing" );
         puts( "    -u\t\t\tUse Unix style newlines for output file" );
+        puts( "    -u0\t\t\tUse DOS style newlines for output file" );
         puts( "    -p\t\t\tpreserve same time stamp as src-file on tgt-file" );
     } else {
 #define src_file arg                    // - name of source file
@@ -1045,7 +1049,15 @@ int main(               // MAIN-LINE
                         }
                         break;
                     case 'u':
-                        UnixStyle = true;
+                        if( arg[2] == '0' ) {
+                            EOL_crlf = 1;
+                        } else {
+#if defined( __UNIX__ )
+                            EOL_crlf = -1;
+#else
+                            EOL_crlf = 0;
+#endif
+                        }
                         break;
                     case 'p':
                         RestoreTime = true;
