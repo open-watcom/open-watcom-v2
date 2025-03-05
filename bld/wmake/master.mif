@@ -106,10 +106,14 @@ exetarg_name          = wmk
 #
 # rc and others
 #
-wsplice_opts_bsd   = -kUNIX
-wsplice_opts_linux = -kUNIX
-wsplice_opts_qnx   = -kUNIX
-wsplice_opts_osx   = -kUNIX
+wsplice_opts_dos   = -u0
+wsplice_opts_nt    = -u0
+wsplice_opts_os2   = -u0
+wsplice_opts_rdos  = -u0
+wsplice_opts_bsd   = -u -kUNIX
+wsplice_opts_linux = -u -kUNIX
+wsplice_opts_qnx   = -u -kUNIX
+wsplice_opts_osx   = -u -kUNIX
 
 $(proj_name).res : ../h/wmake.rc ../h/mrcmsg.h usage.gh usagej.gh $(__MAKEFILES__)
     @%make echo_rc

@@ -27,9 +27,13 @@ objs = &
 
 all: $(objs) .SYMBOLIC
 
-.sp.bat .sp.cmd :
+.sp.bat :
     @%make echo_wsplice
-    $(noecho)*wsplice -k $(host_os) -k $(host_cpu) $[@ $@
+    $(noecho)*wsplice -u0 -k $(host_os) -k $(host_cpu) $[@ $@
+
+.sp.cmd :
+    @%make echo_wsplice
+    $(noecho)*wsplice -u -k $(host_os) -k $(host_cpu) $[@ $@
 
 clean: .SYMBOLIC
     rm -f *.bat *.cmd

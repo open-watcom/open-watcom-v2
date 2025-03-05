@@ -19,7 +19,7 @@ wsplice_extra_opts =
 !else
 wsplice_extra_opts = -d"depends.dep"
 !endif
-wsplice_opts = $(wsplice_extra_opts) -i".." -i"$(hdr_dir)" -i"$(mh_dir)" $[@ $@
+wsplice_opts = -u $(wsplice_extra_opts) -i".." -i"$(hdr_dir)" -i"$(mh_dir)" $[@ $@
 
 dirs = h lib
 

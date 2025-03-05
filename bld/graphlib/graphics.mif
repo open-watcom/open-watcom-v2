@@ -271,11 +271,4 @@ wsplice_extra_opts =
 wsplice_extra_opts = -d"depends.dep"
 !endif
 
-wsplice_opts_dos = -kDOS
-wsplice_opts_os2 = -kDOS
-wsplice_opts_qnx = -kQNX -u
-wsplice_opts_win = -kDOS
-
-wsplice_opts = $(wsplice_extra_opts) $(wsplice_opts_$(host_os))
-
 !include $(graphlib_dir)/headers.mif

@@ -207,7 +207,7 @@ asi_msg.grh : $(as_dir)/h/as.msg $(__MAKEFILES__)
 wsplice_opts_axp = -kAS_ALPHA
 wsplice_opts_mps = -kAS_MIPS
 wsplice_opts_ppc = -kAS_PPC
-wsplice_opts     = $(wsplice_opts_$(target_cpu))
+wsplice_opts     = -u $(wsplice_opts_$(target_cpu))
 
 as_in.y : $(yacc_src) $(yacc_driver) $(__MAKEFILES__)
     @%make echo_wsplice

@@ -66,7 +66,7 @@ exetarg_objs          = clcommon.obj $(trmem_objs) owcc.obj getopt.obj argvenv.o
 !ifdef owcc_specs
 $(owcc_specs): $(wlink_dir)/lnk/specs.sp $(__MAKEFILES__)
     @%make echo_wsplice
-    $(noecho)*wsplice -k Pspecs $[@ $@
+    $(noecho)*wsplice -u -k Pspecs $[@ $@
 !endif
 
 # optencod options and targets for various hosts

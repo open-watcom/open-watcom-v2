@@ -444,16 +444,25 @@ litdui.gh : wddui.gh $(__MAKEFILES__)
 wsplice_keys = -kHIDDEN
 !endif
 
+wsplice_opts_dos   = -u0
+wsplice_opts_nt    = -u0
+wsplice_opts_os2   = -u0
+wsplice_opts_rdos  = -u0
+wsplice_opts_bsd   = -u
+wsplice_opts_linux = -u
+wsplice_opts_qnx   = -u
+wsplice_opts_osx   = -u
+
 usage.gh : ../../h/usage.sp $(__MAKEFILES__)
     @%make echo_wsplice
-    $(noecho)*wsplice -kENGLISH -k$(host_os) $(wsplice_keys) -t8 -f "pick((MSG_USAGE_BASE+%$#%+), \"%s\", \"\")" $[@ $@
+    $(noecho)*wsplice -kENGLISH -k$(host_os) $(wsplice_opts_$(host_os)) $(wsplice_keys) -t8 -f "pick((MSG_USAGE_BASE+%$#%+), \"%s\", \"\")" $[@ $@
 
 usagej.gh : ../../h/usage.sp $(__MAKEFILES__)
     @%make echo_wsplice
-    $(noecho)*wsplice -kJAPANESE -k$(host_os) $(wsplice_keys) -t8 -f "pick((MSG_USAGE_BASE+%$#%+), \"\", \"%s\")" $[@ $@
+    $(noecho)*wsplice -kJAPANESE -k$(host_os) $(wsplice_opts_$(host_os)) $(wsplice_keys) -t8 -f "pick((MSG_USAGE_BASE+%$#%+), \"\", \"%s\")" $[@ $@
 
 !ifdef qnx_usage
 $(qnx_usage) : ../../h/usage.sp $(__MAKEFILES__)
     @%make echo_wsplice
-    $(noecho)*wsplice -u -kENGLISH -k$(host_os) -kLINKRES $[@ $@
+    $(noecho)*wsplice -kENGLISH -k$(host_os) $(wsplice_opts_$(host_os)) -kLINKRES $[@ $@
 !endif

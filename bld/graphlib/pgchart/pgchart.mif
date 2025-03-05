@@ -92,9 +92,4 @@ libtarg_name          = chart2
 #
 # rc and others
 #
-wsplice_opts_dos = -kDOS
-wsplice_opts_os2 = -kDOS
-wsplice_opts_qnx = -kQNX -u
-wsplice_opts_win = -kDOS
-
 !include $(graphlib_dir)/headers.mif
