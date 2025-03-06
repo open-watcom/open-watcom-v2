@@ -45,8 +45,6 @@
 #endif
 
 
-#define TEXTBUF_SIZE    8196
-
 typedef enum ds_type {
     DS_INVALID,
     DS_FILE,
@@ -73,7 +71,8 @@ static ds_type          srcType;
 #if defined( USE_ZIP )
 static struct zip       *srcZip;
 
-/* At the moment the incoming path may have either forward or backward
+/*
+ * At the moment the incoming path may have either forward or backward
  * slashes as path separators. However, ziplib only likes forward slashes,
  * so we must manually flip them.
  */
@@ -82,7 +81,8 @@ static void flipBackSlashes( const VBUF *old_path, VBUF *new_path )
     char        *s;
 
     VbufSetVbuf( new_path, old_path );
-    /* Need to flip slashes - at the moment they may be
+    /*
+     * Need to flip slashes - at the moment they may be
      * forward or backward, and ziplib requires forward
      * slashes only.
      */
@@ -161,8 +161,9 @@ int FileStat( const VBUF *path, struct stat *buf )
         VBUF    alt_path;
 
         VbufInit( &alt_path );
-
-        /* First try a file inside a ZIP archive */
+        /*
+         * First try a file inside a ZIP archive
+         */
         flipBackSlashes( path, &alt_path );
         if( VbufLen( &alt_path ) > 0 ) {
             rc = zip_stat( srcZip, VbufString( &alt_path ), 0, &zs );
@@ -178,7 +179,9 @@ int FileStat( const VBUF *path, struct stat *buf )
     if( rc != 0 ) {
 #elif defined( USE_LZMA )
 #endif
-        /* If that fails, try local file */
+        /*
+         * If that fails, try local file
+         */
         rc = stat_vbuf( path, buf );
 #if defined( USE_ZIP )
     }
@@ -209,8 +212,9 @@ file_handle FileOpen( const VBUF *path, data_mode mode )
         VBUF    alt_path;
 
         VbufInit( &alt_path );
-
-        /* First try opening the file inside a ZIP archive */
+        /*
+         * First try opening the file inside a ZIP archive
+         */
         flipBackSlashes( path, &alt_path );
         if( VbufLen( &alt_path ) > 0 ) {
             fh->u.zf = zip_fopen( srcZip, VbufString( &alt_path ), 0 );
@@ -221,7 +225,9 @@ file_handle FileOpen( const VBUF *path, data_mode mode )
     if( fh->u.zf == NULL ) {
 #elif defined( USE_LZMA )
 #endif
-        /* If that fails, try opening the file directly */
+        /*
+         * If that fails, try opening the file directly
+         */
         fh->u.fp = fopen_vbuf( path, "rb" );
         fh->type = DS_FILE;
 #if defined( USE_ZIP )
@@ -262,6 +268,9 @@ int FileClose( file_handle fh )
 
 
 static size_t file_read( file_handle fh, void *buffer, size_t length )
+/*********************************************************************
+ * binary data mode processing
+ */
 {
     size_t          amt;
 
@@ -282,12 +291,13 @@ static size_t file_read( file_handle fh, void *buffer, size_t length )
     default:
         amt = 0;
     }
-
     return( amt );
 }
 
 static size_t read_line( file_handle fh, char *buffer, size_t length )
-/********************************************************************/
+/*********************************************************************
+ * text data mode processing
+ */
 {
     char            *start;
     size_t          len;

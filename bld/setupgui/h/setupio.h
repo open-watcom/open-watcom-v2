@@ -33,6 +33,9 @@
 #ifndef SETUPIO_H
 #define SETUPIO_H
 
+
+#define TEXTBUF_SIZE        8192
+
 typedef enum {
     DATA_BIN,
     DATA_TEXT
