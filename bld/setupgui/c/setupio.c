@@ -296,7 +296,7 @@ static size_t read_line( file_handle fh, char *buffer, size_t length )
     done = false;
     do {
         /*
-         * Read data into raw buffer if it's empty
+         * Read data into text buffer if it's empty
          */
         if( fh->textpos == NULL ) {
             len = file_read( fh, fh->textbuf, TEXTBUF_SIZE );
@@ -304,7 +304,7 @@ static size_t read_line( file_handle fh, char *buffer, size_t length )
                 return( len );
             }
             fh->textpos = fh->textbuf;
-            fh->textend = fh->textbuf;
+            fh->textend = fh->textbuf + len;
         }
         /*
          * Look for a newline
