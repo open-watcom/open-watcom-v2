@@ -802,6 +802,10 @@ IDS_WRITEERROR=\
     //0"Error writing to destination file"\
     //1"コピー先ファイルへの書き込みエラー"\
     //-1
+IDS_READERROR=\
+    //0"Error reading from source file"\
+    //1"ソースファイルからの読み取りエラー"\
+    //-1
 IDS_NULLSTRING=\
     //0"NULL String"\
     //1"空(NULL)の文字列"\

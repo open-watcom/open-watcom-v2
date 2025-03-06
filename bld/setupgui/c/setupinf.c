@@ -2224,7 +2224,7 @@ static int PrepareSetupInfo( file_handle fh, pass_type pass )
     for( ;; ) {
         len = 0;
         for( ;; ) {
-            if( FileRead( fh, readbuf + len, bufsize - len ) == 0 ) {
+            if( (int)FileRead( fh, readbuf + len, bufsize - len ) <= 0 ) {
                 done = true;
                 break;
             }
