@@ -52,6 +52,7 @@
 *.ilk
 *.int
 *.lbc
+# ignore *.lib files, but include *.lib subdirectories
 *.lib
 !*.lib/
 *.lk1
@@ -81,6 +82,7 @@
 *.rex
 *.rtp
 *.sav
+# ignore *.so files, but include *.so subdirectories
 *.so
 !*.so/
 *.stb
