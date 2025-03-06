@@ -45,7 +45,7 @@
 #endif
 
 
-#define RAWBUF_SIZE     8196
+#define TEXTBUF_SIZE    8196
 
 typedef enum ds_type {
     DS_INVALID,
@@ -63,8 +63,9 @@ typedef struct file_handle_t {
 #elif defined( USE_LZMA )
 #endif
     } u;
-    char                *rawpos;
-    char                *rawbuf;
+    char                *textbuf;
+    char                *textpos;
+    char                *textend;
 } *file_handle;
 
 static ds_type          srcType;
@@ -197,10 +198,11 @@ file_handle FileOpen( const VBUF *path, data_mode mode )
     if( fh == NULL )
         return( NULL );
 
-    fh->rawbuf = NULL;
-    fh->rawpos = NULL;
+    fh->textbuf = NULL;
+    fh->textpos = NULL;
+    fh->textend = NULL;
     if( mode == DATA_TEXT )
-        fh->rawbuf = malloc( RAWBUF_SIZE );
+        fh->textbuf = malloc( TEXTBUF_SIZE );
 #if defined( USE_ZIP )
     fh->u.zf = NULL;
     if( srcType == DS_ZIP ) {
@@ -252,8 +254,8 @@ int FileClose( file_handle fh )
         rc = -1;
     }
 
-    if( fh->rawbuf != NULL )
-        free( fh->rawbuf );
+    if( fh->textbuf != NULL )
+        free( fh->textbuf );
     free( fh );
     return( rc );
 }
@@ -287,63 +289,71 @@ static size_t file_read( file_handle fh, void *buffer, size_t length )
 static size_t read_line( file_handle fh, char *buffer, size_t length )
 /********************************************************************/
 {
-    static int      len;
     char            *start;
-    size_t          len1;
+    size_t          len;
     bool            done;
 
     done = false;
     do {
-        // Read data into raw buffer if it's empty
-        if( fh->rawpos == NULL ) {
-            len = file_read( fh, fh->rawbuf, RAWBUF_SIZE );
-            if( len <= 0 ) {
+        /*
+         * Read data into raw buffer if it's empty
+         */
+        if( fh->textpos == NULL ) {
+            len = file_read( fh, fh->textbuf, TEXTBUF_SIZE );
+            if( (int)len <= 0 ) {
                 return( len );
             }
-            fh->rawpos = fh->rawbuf;
+            fh->textpos = fh->textbuf;
+            fh->textend = fh->textbuf;
         }
-
-        start = fh->rawpos;
-        // Look for a newline; check for end of source buffer and size
-        // of target buffer
-        while( (fh->rawpos[0] != '\n') &&
-               (fh->rawpos < fh->rawbuf + len) &&
-               ((size_t)( fh->rawpos - start ) < length) ) {
-            fh->rawpos++;
+        /*
+         * Look for a newline
+         * check for end of source buffer and size of target buffer
+         */
+        start = fh->textpos;
+        while( (fh->textpos[0] != '\n')
+          && (fh->textpos < fh->textend)
+          && ((size_t)( fh->textpos - start ) < length) ) {
+            fh->textpos++;
         }
-
-        if( fh->rawpos[0] == '\n' ) {
-            // Found a newline; increment past it
-            fh->rawpos++;
+        if( fh->textpos[0] == '\n' ) {
+            /*
+             * Found a newline; increment past it
+             */
+            fh->textpos++;
             done = true;
-        } else if( fh->rawpos == fh->rawbuf + len ) {
-            // We're at the end of the buffer; copy what we have to output buffer
-            len1 = fh->rawpos - start;
-            memcpy( buffer, start, len1 );
-            length -= len1;
-            buffer += len1;
-
-            // Force read of more data into buffer
-            fh->rawpos = NULL;
+        } else if( fh->textpos == fh->textend ) {
+            /*
+             * We're at the end of the buffer
+             * copy what we have to output buffer
+             */
+            len = fh->textpos - start;
+            memcpy( buffer, start, len );
+            length -= len;
+            buffer += len;
+            /*
+             * Force read of more data into buffer
+             */
+            fh->textpos = NULL;
         } else {
-            // No more space in output buffer
+            /*
+             * No more space in output buffer
+             */
             done = true;
         }
     } while( !done );
 
-    len1 = fh->rawpos - start;
-
-    memcpy( buffer, start, len1 );
-    buffer[len1] = '\0';
-
-    return( len1 );
+    len = fh->textpos - start;
+    memcpy( buffer, start, len );
+    buffer[len] = '\0';
+    return( len );
 }
 
 size_t FileRead( file_handle fh, void *buffer, size_t length )
 {
     size_t          amt;
 
-    if( fh->rawbuf != NULL ) {
+    if( fh->textbuf != NULL ) {
         amt = read_line( fh, buffer, length );
     } else {
         amt = file_read( fh, buffer, length );
