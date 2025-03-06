@@ -1435,6 +1435,7 @@ COPYFILE_ERROR DoCopyFile( const VBUF *src_path, const VBUF *dst_path, copy_mode
     int                 dst_files;
     int                 bytes_read, bytes_written, style;
     char                *pbuff;
+    COPYFILE_ERROR      ret;
 
     src_files = FileOpen( src_path, DATA_BIN );
     if( src_files == NULL ) {
@@ -1475,34 +1476,41 @@ COPYFILE_ERROR DoCopyFile( const VBUF *src_path, const VBUF *dst_path, copy_mode
         lseek( dst_files, 0, SEEK_END );
     }
 
+    ret = CFE_NOERROR;
     do {
         bytes_read = FileRead( src_files, pbuff, buffer_size );
+        if( bytes_read < 0 ) {
+            SetupError( "IDS_READERROR" );
+            ret = CFE_ERROR;
+            break;
+        }
         bytes_written = write( dst_files, pbuff, bytes_read );
         BumpStatus( bytes_written );
         if( bytes_written != bytes_read || StatusCancelled() ) {
-            close( dst_files );
-            FileClose( src_files );
             if( bytes_written == bytes_read ) {
                 // copy was aborted, delete destination file
-                DoDeleteFile( dst_path );
-                return( CFE_ABORT );
+                ret = CFE_ABORT;
+                break;
             }
             // error writing file - probably disk full
-            if( pbuff != lastchance )
-                GUIMemFree( pbuff );
             SetupError( "IDS_WRITEERROR" );
-            return( CFE_ERROR );
+            ret = CFE_ERROR;
+            break;
         }
     } while( bytes_read == buffer_size );
-
-    // Make the destination file have the same time stamp as the source file.
     close( dst_files );
-
-    SameFileDate( src_path, dst_path );
+    FileClose( src_files );
     if( pbuff != lastchance )
         GUIMemFree( pbuff );
-    FileClose( src_files );
-    return( CFE_NOERROR );
+    if( ret == CFE_NOERROR ) {
+        // Make the destination file have the same time stamp as the source file.
+        SameFileDate( src_path, dst_path );
+    } else if( ret == CFE_ABORT ) {
+        DoDeleteFile( dst_path );
+    } else if( ret == CFE_ERROR ) {
+        DoDeleteFile( dst_path );
+    }
+    return( ret );
 }
 
 

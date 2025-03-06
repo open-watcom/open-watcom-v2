@@ -104,6 +104,7 @@ IDS_CANTFINDOUTPUT=     "Cannot find output file (to be patched) %s."
 
 [SetupErrorMessage]
 IDS_WRITEERROR=         "Error writing to destination file"
+IDS_READERROR=          "Error reading from source file"
 IDS_NULLSTRING=         "NULL String"
 IDS_HEAPOK=             "Heap OK"
 IDS_HEAPEND=            "End of Heap"
