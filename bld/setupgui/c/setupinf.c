@@ -2309,7 +2309,7 @@ static int PrepareSetupInfo( file_handle fh, pass_type pass )
     char                *p;
     char                *buffer;
     size_t              bufsize;
-    char                readbuf[1024]
+    char                readbuf[1024 + 1];
 
     bufsize = TEXTBUF_SIZE;
     buffer = GUIMemAlloc( bufsize );
@@ -2330,7 +2330,7 @@ static int PrepareSetupInfo( file_handle fh, pass_type pass )
     for( ;; ) {
         len = 0;
         for( ;; ) {
-            if( (int)FileRead( fh, readbuf + len, bufsize - len ) <= 0 ) {
+            if( (int)FileRead( fh, readbuf, 1024 ) <= 0 ) {
                 done = true;
                 break;
             }
