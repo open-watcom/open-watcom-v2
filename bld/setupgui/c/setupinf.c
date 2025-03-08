@@ -381,7 +381,8 @@ static tree_node *BuildExprTree( const char *str )
 
     #define STACK_SIZE  ( sizeof( stack ) / sizeof( *stack ) )
 
-    if( str == NULL || IS_EMPTY( str ) ) {
+    if( str == NULL
+      || IS_EMPTY( str ) ) {
         return( TreeNodeUni( OP_TRUE ) );
     }
     stack_top = -1;
@@ -545,7 +546,8 @@ bool GetOptionVarValue( vhandle var_handle )
          * uninstall makes everything false
          */
         return( false );
-    } else if( VarGetBoolVal( FullInstall ) && VarGetAutoSetCond( var_handle ) != NULL ) {
+    } else if( VarGetBoolVal( FullInstall )
+      && VarGetAutoSetCond( var_handle ) != NULL ) {
         /*
          * fullinstall pretends all options are turned on
          */
@@ -608,7 +610,8 @@ static bool DoEvalCondition( const char *str )
 bool EvalCondition( const char *str )
 /***********************************/
 {
-    if( str == NULL || *str == '\0' )
+    if( str == NULL
+      || *str == '\0' )
         return( true );
     return( DoEvalCondition( str ) );
 }
@@ -703,7 +706,9 @@ static char *StripQuotes( char *p )
 
     if( p != NULL ) {
         len = strlen( p );
-        if( len > 1 && p[0] == '"' && p[len - 1] == '"' ) {
+        if( len > 1
+          && p[0] == '"'
+          && p[len - 1] == '"' ) {
             p[len - 1] = '\0';
             p++;
         }
@@ -756,8 +761,8 @@ static bool valid_first_char( char *p )
          * Kanji
          */
         kanji_char = (*p << 8) + *(p + 1);
-        if( kanji_char < InvalidFirst[0] ||
-            kanji_char > InvalidFirst[NUM_INVALID_FIRST - 1] ) {
+        if( kanji_char < InvalidFirst[0]
+          || kanji_char > InvalidFirst[NUM_INVALID_FIRST - 1] ) {
             /*
              * list is sorted
              */
@@ -788,8 +793,8 @@ static bool valid_last_char( char *p )
          * Kanji
          */
         kanji_char = (*p << 8) + *(p + 1);
-        if( kanji_char < InvalidLast[0] ||
-            kanji_char > InvalidLast[NUM_INVALID_LAST - 1] ) {
+        if( kanji_char < InvalidLast[0]
+          || kanji_char > InvalidLast[NUM_INVALID_LAST - 1] ) {
             /* list is sorted */
             return( true );
         }
@@ -845,7 +850,8 @@ static char *find_break( char *text, DIALOG_PARSER_INFO *parse_dlg, int *chwidth
     for( e = text;; ) {
         if( *e == '\0' )
             return( text );
-        if( *e == '\\' && *( e + 1 ) == 'n' )
+        if( *e == '\\'
+          && *( e + 1 ) == 'n' )
             return( e );
         n = e + GUICharLen( UCHAR_VALUE( *e ) );
         width = GUIGetExtentX( MainWnd, text, n - text );
@@ -856,7 +862,8 @@ static char *find_break( char *text, DIALOG_PARSER_INFO *parse_dlg, int *chwidth
          */
         if( IS_WS( *e ) ) { /* English */
             br = n;
-        } else if( valid_last_char( e ) && valid_first_char( n ) ) {
+        } else if( valid_last_char( e )
+          && valid_first_char( n ) ) {
             br = n;
         }
         e = n;
@@ -986,17 +993,22 @@ static char *textwindow_wrap( char *text, DIALOG_PARSER_INFO *parse_dlg, bool co
             SKIP_WS( orig_index );
         }
 
-        if( convert_newline && *orig_index == '\\' && *(orig_index + 1) == 'n' ) {
+        if( convert_newline
+          && *orig_index == '\\'
+          && *(orig_index + 1) == 'n' ) {
             *(new_index++) = '\r';
             *(new_index++) = '\n';
             orig_index++;
             break_candidate = find_break( orig_index + 1, parse_dlg, &chwidth );
-        } else if( !convert_newline && *orig_index == '\r' ) {
-        } else if( !convert_newline && *orig_index == '\n' ) {
+        } else if( !convert_newline
+          && *orig_index == '\r' ) {
+        } else if( !convert_newline
+          && *orig_index == '\n' ) {
             *(new_index++) = '\r';
             *(new_index++) = '\n';
             break_candidate = find_break( orig_index + 1, parse_dlg, &chwidth );
-        } else if( break_candidate != NULL && orig_index == break_candidate ) {
+        } else if( break_candidate != NULL
+          && orig_index == break_candidate ) {
             *(new_index++) = '\r';
             *(new_index++) = '\n';
             *(new_index++) = *break_candidate;
@@ -1067,7 +1079,8 @@ static bool dialog_textwindow( char *next, DIALOG_PARSER_INFO *parse_dlg, bool l
 
         line = next; next = NextToken( line, ',' );
         line = next; next = NextToken( line, ',' );
-        if( EvalCondition( line ) && text != NULL ) {
+        if( EvalCondition( line )
+          && text != NULL ) {
             line = next; next = NextToken( line, ',' );
             /*
              * condition for visibility (dynamic)
@@ -1229,14 +1242,16 @@ static bool dialog_edit_button( char *next, DIALOG_PARSER_INFO *parse_dlg )
                 }
 #endif
             }
-            if( val == NULL && line[1] != '\0' ) {
+            if( val == NULL
+              && line[1] != '\0' ) {
                 val = getenv( &line[1] );
             }
         } else {
             val = line;
         }
     }
-    if( val == NULL || val[0] == '\0' )
+    if( val == NULL
+      || val[0] == '\0' )
         val = VarGetStrVal( var_handle );
     SetVariableByHandle( var_handle, val );
     if( VariablesFile != NULL ) {
@@ -1554,14 +1569,16 @@ static bool dialog_editcontrol( char *next, DIALOG_PARSER_INFO *parse_dlg )
                 }
 #endif
             }
-            if( val == NULL && line[1] != '\0' ) {
+            if( val == NULL
+              && line[1] != '\0' ) {
                 val = getenv( &line[1] );
             }
         } else {
             val = line;
         }
     }
-    if( val == NULL || val[0] == '\0' ) {
+    if( val == NULL
+      || val[0] == '\0' ) {
         val = VarGetStrVal( var_handle );
     }
     SetVariableByHandle( var_handle, val );
@@ -1722,7 +1739,8 @@ static bool ProcLine( char *line, pass_type pass )
     /*
      * line is part of the current state.
      */
-    if( *line == ';' || *line == '\0' )
+    if( *line == ';'
+      || *line == '\0' )
         return( true );
     if( pass == PRESCAN_FILE ) {
         ++*LineCountPointer;
@@ -1753,7 +1771,8 @@ static bool ProcLine( char *line, pass_type pass )
             } else if( stricmp( line, "width" ) == 0 ) {
                 int         wrap_width;
                 wrap_width = atoi( next );
-                if( wrap_width > 0 && wrap_width <= MaxWidthChars ) {
+                if( wrap_width > 0
+                  && wrap_width <= MaxWidthChars ) {
                     parse_dlg.wrap_width = wrap_width;
                 }
             } else if( stricmp( line, "vis_condition" ) == 0 ) {
@@ -1923,13 +1942,17 @@ static bool ProcLine( char *line, pass_type pass )
                 file->is_dll = VbufCompExt( &buff, "dll", true ) == 0;
                 line = p; p = NextToken( line, '!' );
                 file->size = decode36( line ) * 512UL;
-                if( p != NULL && *p != '\0' && *p != '!' ) {
+                if( p != NULL
+                  && *p != '\0'
+                  && *p != '!' ) {
                     file->date = decode36( p );
                 } else {
                     file->date = SetupInfo.stamp;
                 }
                 line = p; p = NextToken( line, '!' );
-                if( p != NULL && *p != '\0' && *p != '!' ) {
+                if( p != NULL
+                  && *p != '\0'
+                  && *p != '!' ) {
                     file->dst_var = AddVariable( p );
                 } else {
                     file->dst_var = NO_VAR;
@@ -2079,7 +2102,8 @@ static bool ProcLine( char *line, pass_type pass )
         next = NextToken( line, ',' );
         TargetInfo[num].name = GUIStrDup( line, NULL );
         TargetInfo[num].supplemental = false;
-        if( next != NULL && stricmp( next, "supplemental" ) == 0 ) {
+        if( next != NULL
+          && stricmp( next, "supplemental" ) == 0 ) {
             TargetInfo[num].supplemental = true;
         }
         TargetInfo[num].temp_disk = GUIMemAlloc( _MAX_PATH );
@@ -2214,9 +2238,9 @@ static bool GetFileInfo( int dir_index, int i, bool in_old_dir, bool *pzeroed )
                     *pzeroed = true;
                 }
                 PropagateValue( FileInfo[i].condition.p->cond, true );
-                if( file->in_new_dir &&
-                    RoundUp( file->disk_size, 512 ) == file->size &&
-                    file->date == file->disk_date ) {
+                if( file->in_new_dir
+                  && RoundUp( file->disk_size, 512 ) == file->size
+                  && file->date == file->disk_date ) {
                     FileInfo[i].condition.p->one_uptodate = true;
                 }
             }
@@ -2284,10 +2308,10 @@ static bool GetDiskSizes( void )
         asked = false;
     }
     for( i = 0; i < SetupInfo.files.num; ++i ) {
-        if( FileInfo[i].condition.p->one_uptodate &&
-            FileInfo[i].num_files != 0 &&
-            !FileInfo[i].supplemental &&
-            !SimFileUpToDate( i ) ) {
+        if( FileInfo[i].condition.p->one_uptodate
+          && FileInfo[i].num_files != 0
+          && !FileInfo[i].supplemental
+          && !SimFileUpToDate( i ) ) {
             if( !asked ) {
                 dont_touch = MsgBox( NULL, "IDS_INCONSISTENT", GUI_YES_NO ) == GUI_RET_NO;
                 asked = true;
@@ -2346,7 +2370,8 @@ static int PrepareSetupInfo( file_handle fh, pass_type pass )
             /*
              * Manually convert CR/LF if needed
              */
-            if( (len > 1) && (buffer[len - 1] == '\n') ) {
+            if( (len > 1)
+              && (buffer[len - 1] == '\n') ) {
                 if( buffer[len - 2] == '\r' ) {
                     buffer[len - 2] = '\n';
                     buffer[len - 1] = '\0';
@@ -3147,8 +3172,10 @@ const char *SimGetTargetDriveLetter( int parm, VBUF *buff )
     if( VbufLen( buff ) == 0 ) {
         getcwd( temp, sizeof( temp ) );
         VbufSetStr( buff, temp );
-    } else if( VbufString( buff )[0] != '\\' || VbufString( buff )[1] != '\\' ) {
-        if( VbufString( buff )[0] == '\\' && VbufString( buff )[1] != '\\' ) {
+    } else if( VbufString( buff )[0] != '\\'
+      || VbufString( buff )[1] != '\\' ) {
+        if( VbufString( buff )[0] == '\\'
+          && VbufString( buff )[1] != '\\' ) {
             getcwd( temp, sizeof( temp ) );
             VbufPrepStr( buff, temp );
         } else if( VbufString( buff )[1] != ':' ) {
@@ -3187,8 +3214,10 @@ void CheckDLLCount( const char *install_name )
         if( FileInfo[DLLsToCheck[i].index].core_component ) {
             continue;
         }
-        if( VarGetBoolVal( UnInstall ) || FileInfo[DLLsToCheck[i].index].remove
-          || ( !FileInfo[DLLsToCheck[i].index].add && GetVariableBoolVal( "ReInstall" ) ) ) {
+        if( VarGetBoolVal( UnInstall )
+          || FileInfo[DLLsToCheck[i].index].remove
+          || ( !FileInfo[DLLsToCheck[i].index].add
+          && GetVariableBoolVal( "ReInstall" ) ) ) {
             if( DecrementDLLUsageCount( &DLLsToCheck[i].full_path ) == 0 ) {
                 if( MsgBoxVbuf( MainWnd, "IDS_REMOVE_DLL", GUI_YES_NO, &DLLsToCheck[i].full_path ) == GUI_RET_YES ) {
                     FileInfo[DLLsToCheck[i].index].add = false;
@@ -3299,7 +3328,8 @@ void SimCalcAddRemove( void )
                 add = false;
             }
         } else {
-            if( uninstall && !FileInfo[i].core_component ) {
+            if( uninstall
+              && !FileInfo[i].core_component ) {
                 add = false;
                 remove = true;
             } else if( FileInfo[i].condition.p->dont_touch ) {
@@ -3758,7 +3788,8 @@ void FreeAllStructs( void )
 bool SimGetSpawnCommand( int i, VBUF *buff )
 /******************************************/
 {
-    if( SpawnInfo[i].command == NULL || SpawnInfo[i].command[0] == '\0' ) {
+    if( SpawnInfo[i].command == NULL
+      || SpawnInfo[i].command[0] == '\0' ) {
         VbufRewind( buff );
         return( true );
     }
@@ -3821,15 +3852,17 @@ static void InitAutoSetValues( void )
 
 
 static char *CompileCondition( const char *str )
-/**********************************************/
-// turn token names in an expression into #<var_handle>
+/***********************************************
+ * turn token names in an expression into #<var_handle>
+ */
 {
     char        buff[MAXBUF];
     vhandle     var_handle;
     char        *str2;
     char        *token;
 
-    if( str == NULL || IS_EMPTY( str ) ) {
+    if( str == NULL
+      || IS_EMPTY( str ) ) {
         return( NULL );
     }
     var_handle = NO_VAR;

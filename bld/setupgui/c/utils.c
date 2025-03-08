@@ -108,9 +108,12 @@ void ConcatDirSep( char *dir )
         len = strlen( dir );
         c = dir[len - 1];
         if( !IS_PATH_SEP( c ) ) {
-            if( len > 1 && IS_PATH_SEP( dir[len - 2] ) && dir[len - 1] == '.' ) {
+            if( len > 1
+              && IS_PATH_SEP( dir[len - 2] )
+              && dir[len - 1] == '.' ) {
                 dir[len - 1] = '\0';
-            } else if( len == 2 && dir[1] == ':' ) {
+            } else if( len == 2
+              && dir[1] == ':' ) {
                 dir[2] = '.';
                 dir[3] = DIR_SEP;
                 dir[4] = '\0';
@@ -135,14 +138,17 @@ void RemoveDirSep( char *dir )
         len = strlen( dir );
         c = dir[len - 1];
         if( IS_PATH_SEP( c ) ) {
-            if( len == 1 || len == 3 && dir[1] == ':' ) {
+            if( len == 1
+              || len == 3
+              && dir[1] == ':' ) {
                 dir[len++] = '.';
                 dir[len] = '\0';
             } else {
                 dir[len - 1] = '\0';
             }
         } else {
-            if( len == 2 && dir[1] == ':' ) {
+            if( len == 2
+              && dir[1] == ':' ) {
                 dir[len++] = '.';
                 dir[len] = '\0';
             }
@@ -160,7 +166,7 @@ bool ModifyEnvironment( bool uninstall )
         /* unused parameters */ (void)uninstall;
 #else
         ret = CreatePMInfo( uninstall );
-        if( !ret ) {                   // create folder and icons
+        if( !ret ) {                   /* create folder and icons */
             gui_message_return  gui_ret;
 
             if( uninstall != 0 ) {
@@ -182,9 +188,16 @@ bool ModifyStartup( bool uninstall )
 {
     bool        ret = true;
 
+#if defined( __UNIX__ ) && !defined( GUI_IS_GUI )
+    /* unused parameters */ (void)uninstall;
+#endif
+
     if( StartupChange ) {
 #if defined( GUI_IS_GUI )
-        WriteProfileStrings( uninstall );  // will write to the win.ini file.
+        /*
+         * will write to the win.ini file.
+         */
+        WriteProfileStrings( uninstall );
 #endif
 
 //        if( !uninstall ) {
@@ -199,10 +212,6 @@ bool ModifyStartup( bool uninstall )
         }
   #endif
 #elif defined( __UNIX__ )
-  #if !defined( GUI_IS_GUI )
-    /* unused parameters */ (void)uninstall;
-  #endif
-
 //        ret = ModifyAutoExec( uninstall );
 #else
         ret = ModifyAutoExec( uninstall );
@@ -285,11 +294,15 @@ static bool NTSpawnWait( const char *cmd, DWORD *exit_code, HANDLE in, HANDLE ou
     start.cb = sizeof( start );
     if( cmd[0] == '-' ) {
         cmd++;
-        // set ShowWindow default value for nCmdShow parameter
+        /*
+         * set ShowWindow default value for nCmdShow parameter
+         */
         start.dwFlags |= STARTF_USESHOWWINDOW;
         start.wShowWindow = SW_HIDE;
     }
-    if( in || out || err ) {
+    if( in
+      || out
+      || err ) {
         start.dwFlags |= STARTF_USESTDHANDLES;
         start.hStdInput = in;
         start.hStdOutput = GetStdHandle( STD_OUTPUT_HANDLE );
@@ -370,7 +383,7 @@ static bool WinSpawnWait( const char *cmd )
             if( task.hInst == inst )
                 stillthere = true;
             ok = ( tasknext( &task ) != 0 );
-            StatusCancelled(); // yield
+            StatusCancelled(); /* yield */
         }
     } while( stillthere );
     return( true );
@@ -464,7 +477,8 @@ void DoSpawn( when_time when )
 static void GetTmpFileNameUNC( const VBUF *unc_path, VBUF *buff )
 /***************************************************************/
 {
-    if( unc_path == NULL || buff == NULL ) {
+    if( unc_path == NULL
+      || buff == NULL ) {
         return;
     }
     VbufRewind( buff );
@@ -498,7 +512,8 @@ static void GetTmpFileNameInTarget( char drive, VBUF *buff )
 
     for( i = 0; i < max_targets; ++i ) {
         SimTargetDir( i, buff );
-        if( tolower( VbufString( buff )[0] ) == tolower( drive ) && VbufString( buff )[1] == ':' ) {
+        if( tolower( VbufString( buff )[0] ) == tolower( drive )
+          && VbufString( buff )[1] == ':' ) {
             VbufAddDirSep( buff );
             VbufConcStr( buff, TMPFILENAME );
             return;
@@ -525,7 +540,8 @@ static int GetDriveNum( char drive )
     int     drive_num;
 
     drive_num = toupper( drive ) - 'A' + 1;
-    if( drive_num < 1 || drive_num > 26 )
+    if( drive_num < 1
+      || drive_num > 26 )
         drive_num = 0;
     return( drive_num );
 }
@@ -545,7 +561,8 @@ static int GetDriveInfo( char drive, bool removable )
 #else
     drive_num = GetDriveNum( drive );
     info = &Drives[drive_num];
-    if( (info->cluster_size == 0 || removable /* recheck - could have been replaced */) ) {
+    if( (info->cluster_size == 0
+      || removable /* recheck - could have been replaced */) ) {
         memset( info, 0, sizeof( *info ) );
         if( drive_num == 0 )
             return( 0 );
@@ -615,18 +632,18 @@ static int GetDriveInfo( char drive, bool removable )
                 if( rc == 0 ) {
                     if( dataBuffer.b.iType == FSAT_LOCALDRV ) {
                         switch( r.type ) {
-                        case 5: // fixed disk
+                        case 5: /* fixed disk */
                             info->fixed = true;
                             break;
-                        case 6: // tape
+                        case 6: /* tape */
                             break;
-                        default: // removable media
+                        default: /* removable media */
                             info->removable = true;
                             break;
                         }
                     }
                 } else if( rc == ERROR_NOT_READY ) {
-                    info->removable = true; // removable media not in drive
+                    info->removable = true; /* removable media not in drive */
                 }
             }
         }
@@ -661,20 +678,23 @@ static int GetDriveInfo( char drive, bool removable )
             info->fixed = false;
             info->cluster_size = 0;
             info->free_space = (disk_size)-1;
-            r.w.ax = 0x440E;    // get logical drive
+            r.w.ax = 0x440E;    /* get logical drive */
             r.w.bx = drive_num;
             intdos( &r, &r );
-            if( r.w.cflag || (r.h.al && (r.h.al != drive_num)) ) {
+            if( r.w.cflag
+              || (r.h.al
+              && (r.h.al != drive_num)) ) {
                 return( drive_num );
             }
             info->fixed = true;
-            r.w.ax = 0x4409;    // query device local/remote
+            r.w.ax = 0x4409;    /* query device local/remote */
             r.w.bx = drive_num;
             intdos( &r, &r );
-            if( r.w.cflag == 0 && (r.w.dx & 0x1000) ) {
+            if( r.w.cflag == 0
+              && (r.w.dx & 0x1000) ) {
                 info->fixed = false;
             }
-            r.w.ax = 0x4408;    // query device removable
+            r.w.ax = 0x4408;    /* query device removable */
             r.w.bx = drive_num;
             intdos( &r, &r );
             if( r.w.cflag == 0 ) {
@@ -690,17 +710,21 @@ static int GetDriveInfo( char drive, bool removable )
                                      FreeSpace.bytes_per_sector;
                 info->free_space = FreeSpace.avail_clusters *
                                    (disk_size)info->cluster_size;
-                /* If reported cluster size is ridiculously large, it's likely faked; assume the
-                 * real cluster size is much smaller - 4096 should be a conservative estimate.
+                /*
+                 * If reported cluster size is ridiculously large, it's likely faked;
+                 * assume the real cluster size is much smaller - 4096 should be
+                 * a conservative estimate.
                  */
                 if( info->cluster_size > 64 * 1024UL ) {
                     info->cluster_size = 4096;
                 }
-            } else if( removable ) { // removable media not present
+            } else if( removable ) { /* removable media not present */
                 info->cluster_size = 0;
                 info->free_space = (disk_size)-1;
             } else {
-                /* doesn't work on network drive - assume 4K cluster, max free */
+                /*
+                 * doesn't work on network drive - assume 4K cluster, max free
+                 */
                 info->cluster_size = 4096;
                 info->free_space = (disk_size)-1;
             }
@@ -754,7 +778,9 @@ bool IsFixedDisk( char drive )
 {
     if( drive == '\0' )
         return( false );
-    // don't bang removable media every time!
+    /*
+     * don't bang removable media every time!
+     */
     if( Drives[GetDriveNum( drive )].removable )
         return( false );
     return( Drives[GetDriveInfo( drive, false )].fixed != 0 );
@@ -782,18 +808,23 @@ static bool GetRootFromPathUNC( VBUF *root, const char *unc_path )
     char        curr_dir[_MAX_PATH];
     int         i;
 
-    if( unc_path == NULL || root == NULL ) {
+    if( unc_path == NULL
+      || root == NULL ) {
         return( false );
     }
     VbufRewind( root );
     if( TEST_DRIVE( unc_path ) ) {
-        // turn a path like "c:\dir" into "c:\"
+        /*
+         * turn a path like "c:\dir" into "c:\"
+         */
         VbufConcChr( root, unc_path[0] );
         VbufConcChr( root, unc_path[1] );
         VbufConcChr( root, DIR_SEP );
         return( true );
     } else if( TEST_UNC( unc_path ) ) {
-        // turn a UNC name like "\\root\share\dir\subdir" into "\\root\share\"
+        /*
+         * turn a UNC name like "\\root\share\dir\subdir" into "\\root\share\"
+         */
         index = unc_path;
         i = 0;
         while( *index != '\0' ) {
@@ -801,16 +832,24 @@ static bool GetRootFromPathUNC( VBUF *root, const char *unc_path )
                 i++;
             }
             index++;
-            if( i == 4 ) { // cut off string at character after 4th backslash
+            if( i == 4 ) {
+                /*
+                 * cut off string at character after 4th backslash
+                 */
                 VbufConcBuffer( root, unc_path, index - unc_path );
                 return( true );
             }
         }
-        return( false );  // invalid UNC name such as: "\\missingshare\"
+        /*
+         * invalid UNC name such as: "\\missingshare\"
+         */
+        return( false );
     } else {
         VBUF    temp;
 
-        // for relative paths like "\dir" use the current drive.
+        /*
+         * for relative paths like "\dir" use the current drive.
+         */
         if( getcwd( curr_dir, sizeof( curr_dir ) ) == NULL ) {
             return( false );
         }
@@ -956,8 +995,9 @@ static bool DriveInfoIsAvailableUNC( const char *unc_path )
 }
 #endif
 
-// ********** Functions for Creating the destination directory tree **********
-
+/********************************************************************
+ * Functions for Creating the destination directory tree
+ */
 
 static void RemoveDstDir( int dir_index, VBUF *buff )
 /***************************************************/
@@ -975,7 +1015,7 @@ static void RemoveDstDir( int dir_index, VBUF *buff )
         }
     }
     if( SimDirParent( dir_index ) == -1 ) {
-//        return; // leave root dir (for config.new, etc)
+//        return; /* leave root dir (for config.new, etc) */
     }
     SimDirNoEndSlash( dir_index, buff );
     rmdir_vbuf( buff );
@@ -1012,9 +1052,11 @@ static void MakeParentDir( const VBUF *dir, pgroup2 *pg )
 
 
 static bool CreateDstDir( int i, VBUF *buff )
-/*******************************************/
-// check for directory existance.  If dir exists return true.
-// Else try and create directory.
+/********************************************
+ * check for directory existance
+ * if dir exists return true
+ * else try and create directory
+ */
 {
     bool                ok;
     int                 parent;
@@ -1028,7 +1070,10 @@ static bool CreateDstDir( int i, VBUF *buff )
         }
     }
     SimDirNoEndSlash( i, buff );
-    if( access_vbuf( buff, F_OK ) == 0 )          // check for existance
+    /*
+     * check for existance
+     */
+    if( access_vbuf( buff, F_OK ) == 0 )
         return( true );
     MakeParentDir( buff, &pg );
 #if defined( __UNIX__ )
@@ -1212,8 +1257,9 @@ static void free_disks( char **unc_disks, int max_targs )
 }
 
 bool CheckDrive( bool issue_message )
-/***********************************/
-//check if there is enough disk space
+/************************************
+ * check if there is enough disk space
+ */
 {
     bool                ok;
     disk_size           free_disk_space;
@@ -1251,7 +1297,9 @@ bool CheckDrive( bool issue_message )
     ok = true;
     VbufInit( &tmp_dir );
     for( i = 0; i < max_targs; i++ ) {
-        // get drive letter for each target (actually the path including the drive letter)
+        /*
+         * get drive letter for each target (actually the path including the drive letter)
+         */
         if( SimGetTargetDriveLetter( i, &tmp_dir ) == NULL ) {
             ok = false;
             max_targs = i;
@@ -1267,7 +1315,9 @@ bool CheckDrive( bool issue_message )
         VbufInit( &unc_root1 );
         VbufInit( &unc_root2 );
 #endif
-        // check for enough disk space, combine drives that are the same
+        /*
+         * check for enough disk space, combine drives that are the same
+         */
         for( i = 0; i < max_targs; i++ ) {
             if( !disk_counted[i] ) {
                 targ_num = i;
@@ -1276,13 +1326,16 @@ bool CheckDrive( bool issue_message )
 #ifdef UNC_SUPPORT
                     GetRootFromPathUNC( &unc_root1, unc_disks[i] );
                     GetRootFromPathUNC( &unc_root2, unc_disks[j] );
-                    // identical drives are combined, and so are UNC paths pointing to the same share
-                    // BUT:  drives and UNC paths that happen to be the same are NOT combined. (I am lazy)
-
-                    if( ( tolower( *unc_disks[j] ) == tolower( *unc_disks[i] ) && isalpha( *unc_disks[i] ) )
-                        || VbufCompVbuf( &unc_root1, &unc_root2, true ) == 0 ) {
+                    /*
+                     * identical drives are combined, and so are UNC paths pointing to the same share
+                     * BUT:  drives and UNC paths that happen to be the same are NOT combined. (I am lazy)
+                     */
+                    if( ( tolower( *unc_disks[j] ) == tolower( *unc_disks[i] )
+                      && isalpha( *unc_disks[i] ) )
+                      || VbufCompVbuf( &unc_root1, &unc_root2, true ) == 0 ) {
 #else
-                    if( tolower( *unc_disks[j] ) == tolower( *unc_disks[i] ) && isalpha( *unc_disks[i] ) ) {
+                    if( tolower( *unc_disks[j] ) == tolower( *unc_disks[i] )
+                      && isalpha( *unc_disks[i] ) ) {
 #endif
                         targ_num = j;
                         disk_space_needed += SimTargetSpaceNeeded( j );
@@ -1318,7 +1371,8 @@ bool CheckDrive( bool issue_message )
                 space[i].num_files = SimGetTargNumFiles( targ_num );
 #if !defined( __UNIX__ )
                 if( issue_message ) {
-                    if( disk_space_needed > 0 && free_disk_space < (disk_size)disk_space_needed ) {
+                    if( disk_space_needed > 0
+                      && free_disk_space < (disk_size)disk_space_needed ) {
     #ifdef UNC_SUPPORT
                         if( TEST_UNC( unc_disks[i] ) ) {
                             if( DriveInfoIsAvailableUNC( unc_disks[i] ) ) {
@@ -1357,7 +1411,8 @@ bool CheckDrive( bool issue_message )
 #endif
         for( i = 0; i < max_targs; ++i ) {
             strcpy( drive_freesp, "DriveFreeN" );
-            if( *space[i].unc_drive != '\0' && SimTargetNeedsUpdate( i ) ) {
+            if( *space[i].unc_drive != '\0'
+              && SimTargetNeedsUpdate( i ) ) {
 #ifdef UNC_SUPPORT
                 if( TEST_UNC( space[i].unc_drive ) ) {
                     GetRootFromPathUNC( &unc_root1, space[i].unc_drive );
@@ -1383,7 +1438,8 @@ bool CheckDrive( bool issue_message )
             drive_freesp[strlen( drive_freesp ) - 1] = i + 1 + '0';
 #ifdef UNC_SUPPORT
             if( TEST_UNC( space[i].unc_drive )
-              && (!DriveInfoIsAvailableUNC( space[i].unc_drive ) || !IsDriveWritableUNC( space[i].unc_drive )) ) {
+              && (!DriveInfoIsAvailableUNC( space[i].unc_drive )
+              || !IsDriveWritableUNC( space[i].unc_drive )) ) {
                 strcpy( buff, "" );
             }
 #endif
@@ -1416,7 +1472,9 @@ static void SameFileDate( const VBUF *src_path, const VBUF *dst_path )
     SetFileDate( dst_path, statblk.st_mtime );
 }
 
-// ********************Functions for Deleting Files***********************
+/********************************************************************
+ * Functions for Deleting Files
+ */
 
 bool DoDeleteFile( const VBUF *path )
 /***********************************/
@@ -1424,7 +1482,9 @@ bool DoDeleteFile( const VBUF *path )
     return( remove_vbuf( path ) == 0 );
 }
 
-// ******************* Functions for Copying Files ***************************
+/********************************************************************
+ * Functions for Copying Files
+ */
 
 COPYFILE_ERROR DoCopyFile( const VBUF *src_path, const VBUF *dst_path, copy_mode copymode )
 /*****************************************************************************************/
@@ -1466,7 +1526,9 @@ COPYFILE_ERROR DoCopyFile( const VBUF *src_path, const VBUF *dst_path, copy_mode
             GUIMemFree( pbuff );
         dst_files = open_vbuf( dst_path, O_RDONLY );
         if( dst_files != -1 ) {
-            // read only file
+            /*
+             * read only file
+             */
             close( dst_files );
             return( CFE_DSTREADONLY );
         }
@@ -1486,13 +1548,18 @@ COPYFILE_ERROR DoCopyFile( const VBUF *src_path, const VBUF *dst_path, copy_mode
         }
         bytes_written = write( dst_files, pbuff, bytes_read );
         BumpStatus( bytes_written );
-        if( bytes_written != bytes_read || StatusCancelled() ) {
+        if( bytes_written != bytes_read
+          || StatusCancelled() ) {
             if( bytes_written == bytes_read ) {
-                // copy was aborted, delete destination file
+                /*
+                 * copy was aborted, delete destination file
+                 */
                 ret = CFE_ABORT;
                 break;
             }
-            // error writing file - probably disk full
+            /*
+             * error writing file - probably disk full
+             */
             SetupError( "IDS_WRITEERROR" );
             ret = CFE_ERROR;
             break;
@@ -1503,7 +1570,9 @@ COPYFILE_ERROR DoCopyFile( const VBUF *src_path, const VBUF *dst_path, copy_mode
     if( pbuff != lastchance )
         GUIMemFree( pbuff );
     if( ret == CFE_NOERROR ) {
-        // Make the destination file have the same time stamp as the source file.
+        /*
+         * Make the destination file have the same time stamp as the source file.
+         */
         SameFileDate( src_path, dst_path );
     } else if( ret == CFE_ABORT ) {
         DoDeleteFile( dst_path );
@@ -1521,8 +1590,10 @@ typedef struct split_file {
     char                *src_path;
 } split_file;
 
-#define OVERHEAD_SIZE 10000 // removing a file is about like copying a small file
-
+#define OVERHEAD_SIZE 10000
+/*
+ * removing a file is about like copying a small file
+ */
 static bool CreateDirectoryTree( void )
 /*************************************/
 {
@@ -1745,7 +1816,9 @@ static void CopySetupInfFile( void )
     VbufInit( &tmp_path );
     VbufInit( &fname );
 
-    // if DoCopyInf variable is set, copy/delete setup.inf
+    /*
+     * if DoCopyInf variable is set, copy/delete setup.inf
+     */
     VbufSetStr( &tmp_path, GetVariableStrVal( "DoCopyInf" ) );
     if( VbufLen( &tmp_path ) > 0 ) {
         ReplaceVars1( &tmp_path );
@@ -1836,7 +1909,8 @@ static bool DoCopyFiles( void )
     ok = true;
     for( filenum = 0; ok && filenum < max_files; filenum++ ) {
         SimFileDir( filenum, &dir );
-        if( SimFileAdd( filenum ) && !SimFileUpToDate( filenum ) ) {
+        if( SimFileAdd( filenum )
+          && !SimFileUpToDate( filenum ) ) {
             num_total_install += SimFileSize( filenum );
             max_subfiles = SimNumSubFiles( filenum );
             for( subfilenum = 0; subfilenum < max_subfiles; ++subfilenum ) {
@@ -1853,7 +1927,7 @@ static bool DoCopyFiles( void )
                 }
                 if( SimSubFileNewer( filenum, subfilenum ) ) {
                     SimSubFileName( filenum, subfilenum, &file_desc );
-//                  _splitpath( file_desc, NULL, NULL, NULL, file_ext );
+//                    _splitpath( file_desc, NULL, NULL, NULL, file_ext );
                     VbufMakepath( &tmp_path, NULL, &dir, &file_desc, NULL );
                     if( !PromptUser( &tmp_path, "NewerFile", "Newer_Skip_Dialog", "Newer_Replace_Old", &resp_replace ) ) {
                         ok = false;
@@ -1932,7 +2006,8 @@ static bool DoCopyFiles( void )
                 src_path_pos1 = 0;
             }
             for( filenum = 0; ok && filenum < max_files; filenum++ ) {
-                if( !SimFileAdd( filenum ) || SimFileUpToDate( filenum ) ) {
+                if( !SimFileAdd( filenum )
+                  || SimFileUpToDate( filenum ) ) {
                     while( split != NULL ) {
                         junk = split;
                         split = split->next;
@@ -1949,20 +2024,31 @@ static bool DoCopyFiles( void )
 //                _splitpath( file_desc, NULL, NULL, NULL, file_ext );
 //                VbufMakepath( &dst_path, NULL, &dir, &file_desc, NULL );
 
-                VbufSetLen( &src_path, src_path_pos1 );     // nuke sub-dir and name from end of src_path
+                /*
+                 * nuke sub-dir and name from end of src_path
+                 */
+                VbufSetLen( &src_path, src_path_pos1 );
                 dst_dir = GetVariableStrVal( "DstDir" );
                 len = strlen( dst_dir );
                 if( strncmp( dir.buf, dst_dir, len ) == 0 ) {
-                    if( VbufString( &dir )[len] == DIR_SEP ) {      // if 1st char to concat is a backslash, skip it
+                    /*
+                     * if 1st char to concat is a backslash, skip it
+                     */
+                    if( VbufString( &dir )[len] == DIR_SEP ) {
                         len++;
                     }
                 } else {
-                    // use the macro as the directory name   eg: cd_drive:\winsys\filename
+                    /*
+                     * use the macro as the directory name   eg: cd_drive:\winsys\filename
+                     */
                     SimTargetDirName( SimDirTargNum( SimFileDirNum( filenum ) ), &tmp );
                     len = strlen( GetVariableStrVal_vbuf( &tmp ) );
                     VbufConcVbuf( &src_path, &tmp );
                 }
-                VbufConcVbufPos( &src_path, &dir, len );  // get rid of the dest directory, just keep the subdir
+                /*
+                 * get rid of the dest directory, just keep the subdir
+                 */
+                VbufConcVbufPos( &src_path, &dir, len );
 
                 src_path_pos2 = VbufLen( &src_path );
                 VbufConcVbuf( &src_path, &file_desc );
@@ -1978,8 +2064,10 @@ static bool DoCopyFiles( void )
                         SimSubFileName( filenum, subfilenum, &file_desc );
                         var_handle = SimSubFileVar( filenum, subfilenum );
                         VbufMakepath( &tmp_path, NULL, &dir, &file_desc, NULL );
-
-                        VbufSetVbufAt( &src_path, &file_desc, src_path_pos2 );  // add name to end of src_path
+                        /*
+                         * add name to end of src_path
+                         */
+                        VbufSetVbufAt( &src_path, &file_desc, src_path_pos2 );
                         StatusLinesVbuf( STAT_COPYINGFILE, &tmp_path );
                         checkForNewName( filenum, subfilenum, &tmp_path );
                         copy_error = DoCopyFile( &src_path, &tmp_path, getCopyMode( filenum, subfilenum ) );
@@ -2066,11 +2154,14 @@ static void RemoveUnusedDirs( void )
     VbufFree( &dst_path );
 }
 
-//  TODO: Figure out what supplemental files will be applicable for the UNIX environment
+/********************************************************************
+ * TODO: Figure out what supplemental files will be applicable for the UNIX environment
+ */
 
 static void RemoveExtraFiles( void )
-/**********************************/
-// remove supplemental files
+/***********************************
+ * remove supplemental files
+ */
 {
     bool                uninstall;
 
@@ -2080,16 +2171,22 @@ static void RemoveExtraFiles( void )
         const char      *p;
         char            dst_path[_MAX_PATH];
 
-        // delete saved autoexec's and config's
+        /*
+         * delete saved autoexec's and config's
+         */
         p = GetVariableStrVal( "DstDir" );
     #if defined( __NT__ )
-        // Windows NT
+        /*
+         * Windows NT
+         */
         strcpy( dst_path, p );
         strcat( dst_path, "\\CHANGES.ENV" );
         remove( dst_path );
     #endif
     #if defined( __NT__ ) || defined( __WINDOWS__ ) || defined( __DOS__ )
-        // Windows 95, Windows 3.x, DOS
+        /*
+         * Windows 95, Windows 3.x, DOS
+         */
         strcpy( dst_path, p );
         strcat( dst_path, "\\AUTOEXEC." BATCH_EXT_SAVED );
         remove( dst_path );
@@ -2098,7 +2195,9 @@ static void RemoveExtraFiles( void )
         strcat( dst_path, "\\CONFIG." BATCH_EXT_SAVED );
         remove( dst_path );
 #endif
-        // delete saved environment setup batch script file
+        /*
+         * delete saved environment setup batch script file
+         */
         if( GetVariableBoolVal( "GenerateBatchFile" ) ) {
             GenerateBatchFile( uninstall );
         }
@@ -2117,7 +2216,10 @@ bool CopyAllFiles( void )
     if( !RelocateFiles() )
         return( false );
 #if defined( __OS2__ ) && defined( GUI_IS_GUI )
-    LabelDirs();    // add labels (long names) to directories
+    /*
+     * add labels (long names) to directories
+     */
+    LabelDirs();
 #endif
     if( !DoCopyFiles() )
         return( false );
@@ -2162,7 +2264,8 @@ static bool NukePath( VBUF *path, int status )
                 }
             } else {
 #if defined( __UNIX__ )
-                if( (statbuf.st_mode & S_IWUSR) == 0 || !S_ISREG( statbuf.st_mode ) ) {
+                if( (statbuf.st_mode & S_IWUSR) == 0
+                  || !S_ISREG( statbuf.st_mode ) ) {
 #else
                 if( dire->d_attr & (_A_RDONLY | _A_SYSTEM | _A_HIDDEN) ) {
 #endif
@@ -2182,7 +2285,9 @@ static bool NukePath( VBUF *path, int status )
 }
 
 
-// *********************** Miscellaneous Function ****************************
+/********************************************************************
+ * Miscellaneous Function
+ */
 
 void DeleteObsoleteFiles( void )
 /******************************/
@@ -2274,10 +2379,12 @@ void AddInstallName( VBUF *str )
     VbufInit( &temp );
     VbufInit( &inst_name );
 
-    // DBCS should be handled on more places
-    // code need rework
+    /*
+     * DBCS should be handled on more places
+     * code need rework
+     */
     GetInstallName( &inst_name );
-    // p = strchr( text, '@' ); no good for dbcs!!!
+//    p = strchr( text, '@' ); no good for dbcs!!!
     p = VbufString( str );
     while( *p != '\0' ) {
         if( *p != '@' ) {
@@ -2332,8 +2439,10 @@ gui_message_return MsgBox( gui_window *gui, const char *msg_id,
 
     if( !SkipDialogs ) {
         if( stricmp( msg_id, "IDS_NOSETUPINFOFILE" ) == 0 ) {
-            // If the message is "can't find the setup.inf file", then
-            // don't look up the string, because it is in the file we can't find
+            /*
+             * If the message is "can't find the setup.inf file", then
+             * don't look up the string, because it is in the file we can't find
+             */
             errormessage = "The file %s cannot be found.";
         } else {
             errormessage = GetVariableStrVal( msg_id );
@@ -2402,12 +2511,14 @@ bool PromptUser( const VBUF *name, const char *dlg, const char *skip, const char
     dlg_state       return_state;
 
     SetVariableByName_vbuf( "FileDesc", name );
-
-    // don't display the dialog if the user selected the "Skip dialog" option
+    /*
+     * don't display the dialog if the user selected the "Skip dialog" option
+     */
     if( !GetVariableBoolVal( skip ) ) {
         for( ;; ) {
             return_state = DoDialog( dlg );
-            if( return_state != DLG_DONE && return_state != DLG_CANCEL )
+            if( return_state != DLG_DONE
+              && return_state != DLG_CANCEL )
                 break;
             if( MsgBox( NULL, "IDS_QUERYABORT", GUI_YES_NO ) == GUI_RET_YES ) {
                 CancelSetup = true;
@@ -2420,9 +2531,10 @@ bool PromptUser( const VBUF *name, const char *dlg, const char *skip, const char
 }
 
 static void AddDefine( char *def )
-/********************************/
-// Process command line switch to set a variable
-//     -dvariable=value
+/*********************************
+ * Process command line switch to set a variable
+ *     -dvariable=value
+ */
 {
     char                *p;
     DEF_VAR             *var;
@@ -2440,8 +2552,9 @@ static void AddDefine( char *def )
 }
 
 static void DefineVars( void )
-/****************************/
-// Create variables specified on command line
+/*****************************
+ * Create variables specified on command line
+ */
 {
     DEF_VAR             *var;
 
@@ -2451,8 +2564,9 @@ static void DefineVars( void )
 }
 
 static void FreeDefinedVars( void )
-/*********************************/
-// Create variables specified on command line
+/**********************************
+ * Create variables specified on command line
+ */
 {
     DEF_VAR             *var;
 
@@ -2560,16 +2674,23 @@ bool GetDirParams( int argc, char **argv, VBUF *inf_name, VBUF *src_path, VBUF *
 #if defined( __UNIX__ )
         if( argv[i][0] == '-' ) {
 #else
-        if( argv[i][0] == '-' || argv[i][0] == '/' ) {
+        if( argv[i][0] == '-'
+          || argv[i][0] == '/' ) {
 #endif
             switch( argv[i][1] ) {
             case '?':
                 dispUsage();
-                /* return false to terminate installer */
+                /*
+                 * return false to terminate installer
+                 */
                 return( false );
-            case 'f': // Process "script" file to override variables in setup.inf
+            case 'f':
             case 'F':
-                if( argv[i][2] == '=' && argv[i][3] != '\0'
+                /*
+                 * Process "script" file to override variables in setup.inf
+                 */
+                if( argv[i][2] == '='
+                  && argv[i][3] != '\0'
                   && access( &argv[i][3], R_OK ) == 0 ) {
                     GUIMemFree( VariablesFile );
                     VariablesFile = GUIStrDup( &argv[i][3], NULL );
@@ -2579,19 +2700,27 @@ bool GetDirParams( int argc, char **argv, VBUF *inf_name, VBUF *src_path, VBUF *
             case 'D':
                 AddDefine( &argv[i][2] );
                 break;
-            case 'i': // No screen output (requires SkipDialogs below as well)
+            case 'i':
             case 'I':
+                /*
+                 * No screen output (requires SkipDialogs below as well)
+                 */
                 Invisible = true;
                 /* fall through */
-            case 's': // Skip dialogs
+            case 's':
             case 'S':
+                /*
+                 * Skip dialogs
+                 */
                 SkipDialogs = true;
                 break;
             case 'n':
             case 'N':
-                if( argv[i][2] == 's' || argv[i][2] == 'S' ) {
+                if( argv[i][2] == 's'
+                  || argv[i][2] == 'S' ) {
                     StartupChange = false;
-                } else if( argv[i][2] == 'p' || argv[i][2] == 'P' ) {
+                } else if( argv[i][2] == 'p'
+                  || argv[i][2] == 'P' ) {
                     ProgramGroups = false;
                 }
                 break;
@@ -2615,8 +2744,10 @@ bool GetDirParams( int argc, char **argv, VBUF *inf_name, VBUF *src_path, VBUF *
     if( i < argc ) {
         VbufSetStr( inf_name, argv[i++] );
     } else {
-        // If archive exists, expect setup.inf inside. Otherwise assume
-        // it's right next to the setup executable.
+        /*
+         * If archive exists, expect setup.inf inside. Otherwise assume
+         * it's right next to the setup executable.
+         */
         if( access_vbuf( arc_name, R_OK ) == 0 ) {
             VbufSetStr( inf_name, "setup.inf" );
         } else {
@@ -2682,7 +2813,8 @@ void ReadVariablesFile( const char *name )
 
     while( (line = fgets( buf, sizeof( buf ), fp )) != NULL ) {
         SKIP_SPACES( line );
-        if( *line == '#' || *line == '\0' ) {
+        if( *line == '#'
+          || *line == '\0' ) {
             continue;
         }
         removeTrailingSpaces( line );
@@ -2692,7 +2824,8 @@ void ReadVariablesFile( const char *name )
             if( value != NULL ) {
                 SKIP_SPACES( value );
                 removeTrailingSpaces( value );
-                if( name == NULL || stricmp( name, variable ) == 0 ) {
+                if( name == NULL
+                  || stricmp( name, variable ) == 0 ) {
                     if( stricmp( value, "true" ) == 0 ) {
                         SetBoolVariableByName( variable, true );
                     } else if( stricmp( value, "false" ) == 0 ) {
@@ -2708,8 +2841,9 @@ void ReadVariablesFile( const char *name )
 }
 
 bool InitInfo( const VBUF *inf_name, const VBUF *src_path )
-/*********************************************************/
-// initialize global vbls. and read setup.inf into memory.
+/**********************************************************
+ * initialize global vbls. and read setup.inf into memory.
+ */
 {
 //    char                dir[_MAX_DIR];
 //    char                drive[_MAX_DRIVE];
@@ -2728,7 +2862,7 @@ bool InitInfo( const VBUF *inf_name, const VBUF *src_path )
     }
     if( ret == SIM_INIT_NOMEM ) {
         MsgBoxVbuf( NULL, "IDS_NOMEMORY", GUI_OK, inf_name );
-    } else { // SIM_INIT_NOFILE
+    } else { /* SIM_INIT_NOFILE */
         MsgBoxVbuf( NULL, "IDS_NOSETUPINFOFILE", GUI_OK, inf_name );
     }
     return( false );

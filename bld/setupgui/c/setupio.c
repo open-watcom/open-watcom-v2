@@ -234,7 +234,8 @@ file_handle FileOpen( const VBUF *path, data_mode mode )
     }
 #elif defined( USE_LZMA )
 #endif
-    if( fh->type == DS_FILE && fh->u.fp == NULL ) {
+    if( fh->type == DS_FILE
+      && fh->u.fp == NULL ) {
         free( fh );
         fh = NULL;
     }
@@ -277,7 +278,8 @@ static size_t file_read( file_handle fh, void *buffer, size_t length )
     switch( fh->type ) {
     case DS_FILE:
         amt = fread( buffer, 1, length, fh->u.fp );
-        if( amt == 0 && ferror( fh->u.fp ) )
+        if( amt == 0
+          && ferror( fh->u.fp ) )
             amt = (size_t)-1;
         break;
 #if defined( USE_ZIP )
