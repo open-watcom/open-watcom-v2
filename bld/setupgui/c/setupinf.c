@@ -2359,7 +2359,7 @@ static int PrepareSetupInfo( file_handle fh, pass_type pass )
                 break;
             }
             /*
-             * Eliminate leading blanks on continued lines
+             * Eliminate leading blanks on lines
              */
             p = readbuf;
             SKIP_WS( p );
@@ -3282,13 +3282,13 @@ static bool CheckDLLSupplemental( int i, const VBUF *filename )
 }
 #endif
 
-void SimCalcAddRemove( void )
-/***************************/
+static void CalcAddRemove( void )
+/*******************************/
 {
     int                 i;
     int                 j;
     int                 k;
-    int                 targ_index = 0;
+    int                 target_index = 0;
     int                 dir_index;
     unsigned            cs; /* cluster size */
     bool                previous;
@@ -3320,7 +3320,7 @@ void SimCalcAddRemove( void )
     ok = true;
     for( i = 0; ok && i < SetupInfo.files.num; ++i ) {
         dir_index = FileInfo[i].dir_index;
-        targ_index = DirInfo[dir_index].target;
+        target_index = DirInfo[dir_index].target;
         add = EvalExprTree( FileInfo[i].condition.p->cond );
         if( FileInfo[i].supplemental ) {
             remove = false;
@@ -3346,8 +3346,8 @@ void SimCalcAddRemove( void )
             MarkUsed( dir_index );
             DirInfo[dir_index].num_files += FileInfo[i].num_files;
         }
-        TargetInfo[targ_index].num_files += FileInfo[i].num_files;
-        cs = GetClusterSize( TargetInfo[targ_index].temp_disk[0] );
+        TargetInfo[target_index].num_files += FileInfo[i].num_files;
+        cs = GetClusterSize( TargetInfo[target_index].temp_disk[0] );
         FileInfo[i].remove = remove;
         FileInfo[i].add = add;
         for( k = 0; k < FileInfo[i].num_files; ++k ) {
@@ -3356,7 +3356,7 @@ void SimCalcAddRemove( void )
                 continue;
             if( file->disk_size != 0 ) {
                 DirInfo[dir_index].num_existing++;
-                if( !TargetInfo[targ_index].supplemental ) {
+                if( !TargetInfo[target_index].supplemental ) {
                     SetBoolVariableByHandle( PreviousInstall, true );
                 }
             }
@@ -3373,18 +3373,18 @@ void SimCalcAddRemove( void )
 #endif
 
             if( add ) {
-                TargetInfo[targ_index].space_needed += RoundUp( file->size, cs );
+                TargetInfo[target_index].space_needed += RoundUp( file->size, cs );
 #if 0   // I don't think this logic is right...
                 if( !file->is_nlm ) {
-                    TargetInfo[targ_index].space_needed -= RoundUp( file->disk_size, cs );
+                    TargetInfo[target_index].space_needed -= RoundUp( file->disk_size, cs );
                 }
 #else
-                TargetInfo[targ_index].space_needed -= RoundUp( file->disk_size, cs );
+                TargetInfo[target_index].space_needed -= RoundUp( file->disk_size, cs );
 #endif
-                TargetInfo[targ_index].needs_update = true;
+                TargetInfo[target_index].needs_update = true;
             } else if( remove ) {
-                TargetInfo[targ_index].space_needed -= RoundUp( FileInfo[i].files[k].disk_size, cs );
-                TargetInfo[targ_index].needs_update = true;
+                TargetInfo[target_index].space_needed -= RoundUp( FileInfo[i].files[k].disk_size, cs );
+                TargetInfo[target_index].needs_update = true;
             }
         }
     }
@@ -3456,7 +3456,7 @@ bool SimCalcTargetSpaceNeeded( void )
      * setup Targets and Dirs info
      */
     if( ok ) {
-        SimCalcAddRemove();
+        CalcAddRemove();
     }
     GUIResetMouseCursor( old_cursor );
     return( ok );

@@ -48,7 +48,9 @@
 #define FILE_SIZE       _MAX_PATH
 #define VALUE_SIZE      MAXVALUE
 
-// *********************** Function for writing to WIN.INI *******************
+/********************************************************************
+ * Function for writing to WIN.INI
+ */
 
 #if defined( __NT__ )
 
@@ -84,10 +86,10 @@ static void CreateRegEntry( const VBUF *hive_key, const VBUF *app_name, const VB
         rc = RegCreateKeyEx( key, VbufString( &buf ), 0, NULL, REG_OPTION_NON_VOLATILE,
                              KEY_WRITE, NULL, &hkey1, &disposition );
         if( VbufLen( key_name ) > 0 ) {
-            if( VbufString( value )[0] == '#' ) {     // dword
+            if( VbufString( value )[0] == '#' ) {           /* dword */
                 dword_val = atoi( VbufString( value ) + 1 );
                 rc = RegSetValueEx( hkey1, VbufString( key_name ), 0, REG_DWORD, (CONST BYTE *)&dword_val, sizeof( long ) );
-            } else if( VbufString( value )[0] == '%' ) {      // binary
+            } else if( VbufString( value )[0] == '%' ) {    /* binary */
                 const char *p;
 
                 p = VbufString( value ) + 1;
@@ -142,7 +144,9 @@ bool GetRegString( HKEY hive, const char *section, const char *value, VBUF *str 
     ret = false;
     rc = RegOpenKeyEx( hive, section, 0L, KEY_ALL_ACCESS, &hkey );
     if( rc == ERROR_SUCCESS ) {
-        // get the value
+        /*
+         * get the value
+         */
         rc = RegQueryValueEx( hkey, value, NULL, &type, (LPBYTE)buffer, &buff_size );
         RegCloseKey( hkey );
         VbufConcStr( str, buffer );
@@ -173,17 +177,17 @@ static BYTE *ConvertDWORDToData( DWORD number, DWORD type )
 /*********************************************************/
 {
     int                         i;
-    static BYTE                 buff[5];
+    static BYTE                 temp_data[5];
 
-    memset( buff, 0, sizeof( buff ) );
+    memset( temp_data, 0, sizeof( temp_data ) );
     if( type == REG_DWORD || type == REG_DWORD_LITTLE_ENDIAN || type  == REG_BINARY ) {
-        memcpy( buff, &number, sizeof( number ) );
+        memcpy( temp_data, &number, sizeof( number ) );
     } else if( type == REG_DWORD_BIG_ENDIAN ) {
         for( i = 0; i < sizeof( number ); i++ ) {
-            buff[i] = ((BYTE *)(&number))[sizeof( number ) - 1 - i];
+            temp_data[i] = ((BYTE *)(&number))[sizeof( number ) - 1 - i];
         }
     }
-    return( buff );
+    return( temp_data );
 }
 
 static signed int AddToUsageCount( const VBUF *path, signed int value )
@@ -212,8 +216,9 @@ static signed int AddToUsageCount( const VBUF *path, signed int value )
     } else {
         orig_value = ConvertDataToDWORD( buff, buff_size, value_type );
     }
-
-    // Don't increment if reinstalling and file already has a nonzero count
+    /*
+     * Don't increment if reinstalling and file already has a nonzero count
+     */
     if( GetVariableBoolVal( "ReInstall" ) && orig_value != 0 && value > 0 ) {
         value = 0;
     }
@@ -411,7 +416,9 @@ static void WindowsWriteProfile( const VBUF *app_name, const VBUF *key_name,
         if( add ) {
             WritePrivateProfileString( VbufString( app_name ), VbufString( key_name ), VbufString( value ), VbufString( file_name ) );
         } else {
-            // if file doesn't exist, Windows creates 0-length file
+            /*
+             * if file doesn't exist, Windows creates 0-length file
+             */
             if( access_vbuf( file_name, F_OK ) == 0 ) {
                 WritePrivateProfileString( VbufString( app_name ), VbufString( key_name ), NULL, VbufString( file_name ) );
             }
@@ -444,9 +451,13 @@ static void OS2WriteProfile( const VBUF *app_name, const VBUF *key_name,
     VBUF                dir;
     char                buffer[_MAX_PATH];
 
-    // get an anchor block
+    /*
+     * get an anchor block
+     */
     hab = WinQueryAnchorBlock( HWND_DESKTOP );
-    // find location of os2.ini the file we want should be there too
+    /*
+     * find location of os2.ini the file we want should be there too
+     */
     profile.cchUserName = 1;
     profile.pszUserName = userfname;
     profile.cchSysName = sizeof( buffer ) - 1;
@@ -458,10 +469,14 @@ static void OS2WriteProfile( const VBUF *app_name, const VBUF *key_name,
     VbufInit( &drive );
     VbufInit( &dir );
     VbufConcStr( &inifile, buffer );
-    // replace os2.ini with filename
+    /*
+     * replace os2.ini with filename
+     */
     VbufSplitpath( &inifile, &drive, &dir, NULL, NULL );
     VbufMakepath( &inifile, &drive, &dir, file_name, NULL );
-    // now we can open the correct ini file
+    /*
+     * now we can open the correct ini file
+     */
     hini = PrfOpenProfile( hab, VbufString( &inifile ) );
     if( hini != NULLHANDLE ) {
         PrfWriteProfileString( hini, VbufString( app_name ), VbufString( key_name ), add ? VbufString( value ) : NULL );

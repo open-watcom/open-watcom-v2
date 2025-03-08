@@ -68,7 +68,12 @@
 #include "clibext.h"
 
 
-#define MAX_DRIVES  10
+#if defined( __UNIX__ )
+#define MAX_DRIVES      1
+#else
+#define DRIVE_NUM(x)    ((x) - 'A' + 1)
+#define MAX_DRIVES      (1 + DRIVE_NUM('Z'))
+#endif
 
 #define TMPFILENAME "_watcom_.tmp"
 
@@ -252,16 +257,16 @@ typedef struct {
     bool                removable;
 } drive_info;
 
-static drive_info       Drives[32];
+static drive_info       Drives[MAX_DRIVES];
 
 #if defined( __DOS__ )
 
 static int __far critical_error_handler( unsigned deverr, unsigned errcode, unsigned __far *devhdr )
 /**************************************************************************************************/
 {
-    deverr = deverr;
-    errcode = errcode;
-    devhdr = devhdr;
+    (void)deverr;
+    (void)errcode;
+    (void)devhdr;
     return( _HARDERR_FAIL );
 }
 
@@ -510,9 +515,10 @@ static void GetTmpFileNameInTarget( char drive, VBUF *buff )
     int         i;
     int         max_targets = SimNumTargets();
 
+    drive = tolower( drive );
     for( i = 0; i < max_targets; ++i ) {
         SimTargetDir( i, buff );
-        if( tolower( VbufString( buff )[0] ) == tolower( drive )
+        if( tolower( VbufString( buff )[0] ) == drive
           && VbufString( buff )[1] == ':' ) {
             VbufAddDirSep( buff );
             VbufConcStr( buff, TMPFILENAME );
@@ -529,232 +535,233 @@ void ResetDriveInfo( void )
 {
     int         i;
 
-    for( i = 0; i < sizeof( Drives ) / sizeof( Drives[0] ); ++i ) {
+    for( i = 0; i < MAX_DRIVES; ++i ) {
         Drives[i].cluster_size = 0;
     }
 }
 
+#if !defined( __UNIX__ )
 static int GetDriveNum( char drive )
 /**********************************/
 {
     int     drive_num;
 
-    drive_num = toupper( drive ) - 'A' + 1;
-    if( drive_num < 1
-      || drive_num > 26 )
+    drive_num = DRIVE_NUM( toupper( drive ) );
+    if( drive_num < DRIVE_NUM( 'A' )
+      || drive_num > DRIVE_NUM( 'Z' ) )
         drive_num = 0;
     return( drive_num );
 }
+#endif
 
 static int GetDriveInfo( char drive, bool removable )
 /***************************************************/
 {
-#if defined( __UNIX__ )
     int         drive_num = 0;
-#else
+#if !defined( __UNIX__ )
     drive_info  *info;
-    int         drive_num;
 #endif
 
 #if defined( __UNIX__ )
     /* unused parameters */ (void)drive; (void)removable;
 #else
     drive_num = GetDriveNum( drive );
-    info = &Drives[drive_num];
-    if( (info->cluster_size == 0
-      || removable /* recheck - could have been replaced */) ) {
-        memset( info, 0, sizeof( *info ) );
-        if( drive_num == 0 )
-            return( 0 );
-        NoHardErrors();
-#if defined( __OS2__ )
-        {
-            typedef struct {
-                BYTE    cmdinfo;
-                BYTE    drive_num;
-            } parm;
+    if( drive_num > 0 ) {
+        info = &Drives[drive_num];
+        if( (info->cluster_size == 0
+          || removable /* recheck - could have been replaced */) ) {
+            memset( info, 0, sizeof( *info ) );
+            NoHardErrors();
+    #if defined( __OS2__ )
+            {
+                typedef struct {
+                    BYTE    cmdinfo;
+                    BYTE    drive_num;
+                } parm;
 
-            typedef struct {
-                BYTE    bpb[31];
-                short   cyl;
-                BYTE    type;
-                short   attrs;
-            } ret;
+                typedef struct {
+                    BYTE    bpb[31];
+                    short   cyl;
+                    BYTE    type;
+                    short   attrs;
+                } ret;
 
-            #define BUF_SIZE    40
+                #define BUF_SIZE    40
 
-            UCHAR           fsinfobuf[BUF_SIZE];
-            APIRET          rc;
+                UCHAR           fsinfobuf[BUF_SIZE];
+                APIRET          rc;
 
-            ULONG           sectors_per_cluster;    /* sectors per allocation unit */
-            ULONG           free_clusters;          /* available units */
-            ULONG           bytes_per_sector;       /* bytes per sector */
-            parm            p;
-            ret             r;
-            ULONG           parmLengthInOut;
-            ULONG           dataLengthInOut;
-            char            dev[3];
-            struct {
-                FSQBUFFER2  b;
-                char        stuff[100];
-            } dataBuffer;
-            ULONG           dataBufferLen;
+                ULONG           sectors_per_cluster;    /* sectors per allocation unit */
+                ULONG           free_clusters;          /* available units */
+                ULONG           bytes_per_sector;       /* bytes per sector */
+                parm            p;
+                ret             r;
+                ULONG           parmLengthInOut;
+                ULONG           dataLengthInOut;
+                char            dev[3];
+                struct {
+                    FSQBUFFER2  b;
+                    char        stuff[100];
+                } dataBuffer;
+                ULONG           dataBufferLen;
 
-            rc = DosQueryFSInfo( (ULONG)drive_num, FSIL_ALLOC, fsinfobuf, BUF_SIZE );
+                rc = DosQueryFSInfo( (ULONG)drive_num, FSIL_ALLOC, fsinfobuf, BUF_SIZE );
 
-            if( rc == 0 ) {
-                /* This is a bit strange: the respective values are not */
-                /* returned in a structure but in an array BLAH! from   */
-                /* which one must extract info as below. See OS/2 Manual*/
-                /* for clarification.                                   */
-                sectors_per_cluster = *(ULONG *)(fsinfobuf + (1 * sizeof( ULONG )));
-                free_clusters = *(ULONG *)(fsinfobuf + (3 * sizeof( ULONG )));
-                bytes_per_sector = *(USHORT *)(fsinfobuf + (4 * sizeof( ULONG )));
-                info->cluster_size = sectors_per_cluster * bytes_per_sector;
-                info->free_space = (disk_size)free_clusters * (ULONG)info->cluster_size;
-            } else {
-                info->free_space = (disk_size)-1;
-            }
-            info->fixed = false;
-            info->removable = false;
-            p.cmdinfo = 0;
-            p.drive_num = drive_num - 1;
-            parmLengthInOut = sizeof( p );
-            dataLengthInOut = sizeof( r );
-            if( DosDevIOCtl( -1, 8, 0x63, &p, sizeof( p ), &parmLengthInOut, &r,
-                             sizeof( r ), &dataLengthInOut ) == 0 ) {
-                dev[0] = drive;
-                dev[1] = ':';
-                dev[2] = '\0';
-                dataBufferLen = sizeof( dataBuffer );
-                rc = DosQueryFSAttach( dev, 0, FSAIL_QUERYNAME, (PFSQBUFFER2)&dataBuffer,
-                                       &dataBufferLen );
                 if( rc == 0 ) {
-                    if( dataBuffer.b.iType == FSAT_LOCALDRV ) {
-                        switch( r.type ) {
-                        case 5: /* fixed disk */
-                            info->fixed = true;
-                            break;
-                        case 6: /* tape */
-                            break;
-                        default: /* removable media */
-                            info->removable = true;
-                            break;
+                    /* This is a bit strange: the respective values are not */
+                    /* returned in a structure but in an array BLAH! from   */
+                    /* which one must extract info as below. See OS/2 Manual*/
+                    /* for clarification.                                   */
+                    sectors_per_cluster = *(ULONG *)(fsinfobuf + (1 * sizeof( ULONG )));
+                    free_clusters = *(ULONG *)(fsinfobuf + (3 * sizeof( ULONG )));
+                    bytes_per_sector = *(USHORT *)(fsinfobuf + (4 * sizeof( ULONG )));
+                    info->cluster_size = sectors_per_cluster * bytes_per_sector;
+                    info->free_space = (disk_size)free_clusters * (ULONG)info->cluster_size;
+                } else {
+                    info->free_space = (disk_size)-1;
+                }
+                info->fixed = false;
+                info->removable = false;
+                p.cmdinfo = 0;
+                p.drive_num = drive_num - 1;
+                parmLengthInOut = sizeof( p );
+                dataLengthInOut = sizeof( r );
+                if( DosDevIOCtl( -1, 8, 0x63, &p, sizeof( p ), &parmLengthInOut, &r,
+                                 sizeof( r ), &dataLengthInOut ) == 0 ) {
+                    dev[0] = drive;
+                    dev[1] = ':';
+                    dev[2] = '\0';
+                    dataBufferLen = sizeof( dataBuffer );
+                    rc = DosQueryFSAttach( dev, 0, FSAIL_QUERYNAME, (PFSQBUFFER2)&dataBuffer,
+                                           &dataBufferLen );
+                    if( rc == 0 ) {
+                        if( dataBuffer.b.iType == FSAT_LOCALDRV ) {
+                            switch( r.type ) {
+                            case 5: /* fixed disk */
+                                info->fixed = true;
+                                break;
+                            case 6: /* tape */
+                                break;
+                            default: /* removable media */
+                                info->removable = true;
+                                break;
+                            }
                         }
+                    } else if( rc == ERROR_NOT_READY ) {
+                        info->removable = true; /* removable media not in drive */
                     }
-                } else if( rc == ERROR_NOT_READY ) {
-                    info->removable = true; /* removable media not in drive */
                 }
             }
-        }
-#elif defined( __NT__ )
-        {
-            char        root[4];
-            DWORD       sectors_per_cluster;
-            DWORD       bytes_per_sector;
-            DWORD       free_clusters;
-            DWORD       total_clusters;
-            UINT        drive_type;
+    #elif defined( __NT__ )
+            {
+                char        root[4];
+                DWORD       sectors_per_cluster;
+                DWORD       bytes_per_sector;
+                DWORD       free_clusters;
+                DWORD       total_clusters;
+                UINT        drive_type;
 
-            root[0] = drive;
-            strcpy( &root[1], ":\\" );
-            if( GetDiskFreeSpace( root, &sectors_per_cluster, &bytes_per_sector,
-                                  &free_clusters, &total_clusters ) ) {
-                info->cluster_size = bytes_per_sector * sectors_per_cluster;
-                info->free_space = (disk_size)free_clusters * (disk_size)info->cluster_size;
-            } else {
-                info->free_space = (disk_size)-1;
+                root[0] = drive;
+                strcpy( &root[1], ":\\" );
+                if( GetDiskFreeSpace( root, &sectors_per_cluster, &bytes_per_sector,
+                                      &free_clusters, &total_clusters ) ) {
+                    info->cluster_size = bytes_per_sector * sectors_per_cluster;
+                    info->free_space = (disk_size)free_clusters * (disk_size)info->cluster_size;
+                } else {
+                    info->free_space = (disk_size)-1;
+                }
+                drive_type = GetDriveType( root );
+                info->removable = ( drive_type == DRIVE_REMOVABLE );
+                info->fixed = ( drive_type == DRIVE_FIXED );
             }
-            drive_type = GetDriveType( root );
-            info->removable = ( drive_type == DRIVE_REMOVABLE );
-            info->fixed = ( drive_type == DRIVE_FIXED );
-        }
-#else
-        {
-            struct diskfree_t   FreeSpace;
-            union REGS          r;
+    #else
+            {
+                struct diskfree_t   FreeSpace;
+                union REGS          r;
 
-            info->removable = false;
-            info->fixed = false;
-            info->cluster_size = 0;
-            info->free_space = (disk_size)-1;
-            r.w.ax = 0x440E;    /* get logical drive */
-            r.w.bx = drive_num;
-            intdos( &r, &r );
-            if( r.w.cflag
-              || (r.h.al
-              && (r.h.al != drive_num)) ) {
-                return( drive_num );
-            }
-            info->fixed = true;
-            r.w.ax = 0x4409;    /* query device local/remote */
-            r.w.bx = drive_num;
-            intdos( &r, &r );
-            if( r.w.cflag == 0
-              && (r.w.dx & 0x1000) ) {
+                info->removable = false;
                 info->fixed = false;
-            }
-            r.w.ax = 0x4408;    /* query device removable */
-            r.w.bx = drive_num;
-            intdos( &r, &r );
-            if( r.w.cflag == 0 ) {
-                info->removable = ( r.w.ax == 0 );
-                if( info->removable ) {
-                    info->fixed = false;
-                }
-            } else {
-                info->fixed = false;
-            }
-            if( _getdiskfree( drive_num, &FreeSpace ) == 0 ) {
-                info->cluster_size = (unsigned long)FreeSpace.sectors_per_cluster *
-                                     FreeSpace.bytes_per_sector;
-                info->free_space = FreeSpace.avail_clusters *
-                                   (disk_size)info->cluster_size;
-                /*
-                 * If reported cluster size is ridiculously large, it's likely faked;
-                 * assume the real cluster size is much smaller - 4096 should be
-                 * a conservative estimate.
-                 */
-                if( info->cluster_size > 64 * 1024UL ) {
-                    info->cluster_size = 4096;
-                }
-            } else if( removable ) { /* removable media not present */
                 info->cluster_size = 0;
                 info->free_space = (disk_size)-1;
-            } else {
-                /*
-                 * doesn't work on network drive - assume 4K cluster, max free
-                 */
-                info->cluster_size = 4096;
-                info->free_space = (disk_size)-1;
+                r.w.ax = 0x440E;    /* get logical drive */
+                r.w.bx = drive_num;
+                intdos( &r, &r );
+                if( r.w.cflag
+                  || (r.h.al
+                  && (r.h.al != drive_num)) ) {
+                    return( drive_num );
+                }
+                info->fixed = true;
+                r.w.ax = 0x4409;    /* query device local/remote */
+                r.w.bx = drive_num;
+                intdos( &r, &r );
+                if( r.w.cflag == 0
+                  && (r.w.dx & 0x1000) ) {
+                    info->fixed = false;
+                }
+                r.w.ax = 0x4408;    /* query device removable */
+                r.w.bx = drive_num;
+                intdos( &r, &r );
+                if( r.w.cflag == 0 ) {
+                    info->removable = ( r.w.ax == 0 );
+                    if( info->removable ) {
+                        info->fixed = false;
+                    }
+                } else {
+                    info->fixed = false;
+                }
+                if( _getdiskfree( drive_num, &FreeSpace ) == 0 ) {
+                    info->cluster_size = (unsigned long)FreeSpace.sectors_per_cluster *
+                                         FreeSpace.bytes_per_sector;
+                    info->free_space = FreeSpace.avail_clusters *
+                                       (disk_size)info->cluster_size;
+                    /*
+                     * If reported cluster size is ridiculously large, it's likely faked;
+                     * assume the real cluster size is much smaller - 4096 should be
+                     * a conservative estimate.
+                     */
+                    if( info->cluster_size > 64 * 1024UL ) {
+                        info->cluster_size = 4096;
+                    }
+                } else if( removable ) { /* removable media not present */
+                    info->cluster_size = 0;
+                    info->free_space = (disk_size)-1;
+                } else {
+                    /*
+                     * doesn't work on network drive - assume 4K cluster, max free
+                     */
+                    info->cluster_size = 4096;
+                    info->free_space = (disk_size)-1;
+                }
             }
-        }
-#endif
-        if( !removable ) {
-            int         io;
-            VBUF        path;
+    #endif
+            if( !removable ) {
+                int         io;
+                VBUF        path;
 
-            VbufInit( &path );
-            GetTmpFileNameInTarget( drive, &path );
-            io = open_vbuf( &path, O_RDWR | O_CREAT | O_TRUNC, PMODE_RW );
-            if( io == -1 ) {
-                GetTmpFileName( drive, &path );
+                VbufInit( &path );
+                GetTmpFileNameInTarget( drive, &path );
                 io = open_vbuf( &path, O_RDWR | O_CREAT | O_TRUNC, PMODE_RW );
-                info->use_target_for_tmp_file = false;
-            } else {
-                info->use_target_for_tmp_file = true;
-            }
-            if( io != -1 ) {
-                close( io );
-                remove_vbuf( &path );
-#if 0  // FIXME it doesn't work correctly if target directory doesn't exist
-       // (new installation) and you have insufficient rights to drive root
-            } else {
-                info->cluster_size = 1;
-                info->free_space = (disk_size)-1;
+                if( io == -1 ) {
+                    GetTmpFileName( drive, &path );
+                    io = open_vbuf( &path, O_RDWR | O_CREAT | O_TRUNC, PMODE_RW );
+                    info->use_target_for_tmp_file = false;
+                } else {
+                    info->use_target_for_tmp_file = true;
+                }
+                if( io != -1 ) {
+                    close( io );
+                    remove_vbuf( &path );
+#if 0
+    // FIXME it doesn't work correctly if target directory doesn't exist
+    // (new installation) and you have insufficient rights to drive root
+                } else {
+                    info->cluster_size = 1;
+                    info->free_space = (disk_size)-1;
 #endif
+                }
+                VbufFree( &path );
             }
-            VbufFree( &path );
         }
     }
 #endif
@@ -773,31 +780,37 @@ void ResetDiskInfo( void )
     memset( Drives, 0, sizeof( Drives ) );
 }
 
-bool IsFixedDisk( char drive )
-/****************************/
+#if !defined( __UNIX__ )
+static bool IsFixedDisk( char drive )
+/***********************************/
 {
-    if( drive == '\0' )
-        return( false );
-    /*
-     * don't bang removable media every time!
-     */
-    if( Drives[GetDriveNum( drive )].removable )
-        return( false );
-    return( Drives[GetDriveInfo( drive, false )].fixed != 0 );
+    bool    ret = false;
+
+    if( drive != '\0' ) {
+        /*
+         * don't bang removable media every time!
+         */
+        if( !Drives[GetDriveNum( drive )].removable ) {
+            ret = Drives[GetDriveInfo( drive, false )].fixed;
+        }
+    }
+    return( ret );
 }
+#endif
 
 unsigned GetClusterSize( char drive )
 /***********************************/
 {
+    unsigned    ret = 1;
+
 #if defined( __UNIX__ )
     /* unused parameters */ (void)drive;
-
-    return( 1 );
 #else
-    if( drive == '\0' )
-        return( 1 );
-    return( Drives[GetDriveInfo( drive, false )].cluster_size );
+    if( drive != '\0' ) {
+        ret = Drives[GetDriveInfo( drive, false )].cluster_size;
+    }
 #endif
+    return( ret );
 }
 
 #if defined( UNC_SUPPORT )
@@ -885,7 +898,7 @@ static disk_size GetDiskFreeSpaceUNC( const char *unc_path )
 
     size = 0;
     if( TEST_DRIVE( unc_path ) ) {
-        if( _getdiskfree( toupper( *unc_path ) - 'A' + 1, &info ) == 0 ) {
+        if( _getdiskfree( GetDriveNum( *unc_path ), &info ) == 0 ) {
             size = (disk_size)info.sectors_per_cluster * (disk_size)info.bytes_per_sector * (disk_size)info.avail_clusters;
         }
     }
@@ -919,7 +932,7 @@ static long GetClusterSizeUNC( const char *unc_path )
     struct diskfree_t info;
 
     if( TEST_DRIVE( unc_path ) ) {
-        if( _getdiskfree( toupper( *unc_path ) - 'A' + 1, &info ) == 0 ) {
+        if( _getdiskfree( GetDriveNum( *unc_path ), &info ) == 0 ) {
             size = (long)info.sectors_per_cluster * info.bytes_per_sector;
         }
     }
@@ -986,7 +999,7 @@ static bool DriveInfoIsAvailableUNC( const char *unc_path )
     struct diskfree_t info;
 
     if( TEST_DRIVE( unc_path ) ) {
-        if( _getdiskfree( toupper( *unc_path ) - 'A' + 1, &info ) == 0 ) {
+        if( _getdiskfree( GetDriveNum( *unc_path ), &info ) == 0 ) {
             ok = true;
         }
     }
@@ -1218,6 +1231,9 @@ bool CheckUpgrade( void )
 {
     char                disk[_MAX_PATH];
     dlg_state           return_state;
+#if !defined( __UNIX__ )
+    char                c;
+#endif
 
     if( VarGetBoolVal( PreviousInstall ) )
         return( true );
@@ -1233,8 +1249,9 @@ bool CheckUpgrade( void )
     disk[0] = 'c';
     disk[1] = ':';
     disk[2] = '\\';
-    for( disk[0] = 'c'; disk[0] <= 'z'; disk[0]++ ) {
-        if( !IsFixedDisk( disk[0] ) )
+    for( c = 'c'; c <= 'z'; c++ ) {
+        disk[0] = c;
+        if( !IsFixedDisk( c ) )
             continue;
         StatusCancelled();
         disk[3] = '\0';
@@ -1247,11 +1264,11 @@ bool CheckUpgrade( void )
     return( return_state != DLG_CANCEL && return_state != DLG_DONE );
 }
 
-static void free_disks( char **unc_disks, int max_targs )
+static void free_disks( char **unc_disks, int max_targets )
 {
     int         i;
 
-    for( i = 0; i < max_targs; i++ ) {
+    for( i = 0; i < max_targets; i++ ) {
         GUIMemFree( unc_disks[i] );
     }
 }
@@ -1264,22 +1281,22 @@ bool CheckDrive( bool issue_message )
     bool                ok;
     disk_size           free_disk_space;
     disk_ssize          disk_space_needed;
-    int                 max_targs;
+    int                 max_targets;
     int                 i, j, targ_num;
-    char                *unc_disks[MAX_DRIVES];
-    bool                disk_counted[MAX_DRIVES];
+    char                **unc_disks;
+    bool                *disk_counted;
     VBUF                tmp_dir;
 #if !defined( __UNIX__ )
     gui_message_return  reply;
 #endif
     char                buff[_MAX_PATH];
     char                drive_freesp[20];
-    struct {
+    struct drive_space {
         char        *unc_drive;
         disk_ssize  needed;
         disk_size   free;
         int         num_files;
-    }                   space[MAX_DRIVES];
+    }                   *space;
 #ifdef UNC_SUPPORT
     VBUF                unc_root1;
     VBUF                unc_root2;
@@ -1291,18 +1308,19 @@ bool CheckDrive( bool issue_message )
 
     if( !SimCalcTargetSpaceNeeded() )
         return( false );
-    max_targs = SimNumTargets();
-    if( max_targs > MAX_DRIVES )
-        max_targs = MAX_DRIVES;
+    max_targets = SimNumTargets();
+    unc_disks = GUIMemAlloc( max_targets * sizeof( *unc_disks ) );
+    disk_counted = GUIMemAlloc( max_targets * sizeof( *disk_counted ) );
+    space = GUIMemAlloc( max_targets * sizeof( *space ) );
     ok = true;
     VbufInit( &tmp_dir );
-    for( i = 0; i < max_targs; i++ ) {
+    for( i = 0; i < max_targets; i++ ) {
         /*
          * get drive letter for each target (actually the path including the drive letter)
          */
         if( SimGetTargetDriveLetter( i, &tmp_dir ) == NULL ) {
             ok = false;
-            max_targs = i;
+            max_targets = i;
             break;
         }
         VbufAddDirSep( &tmp_dir );
@@ -1318,11 +1336,11 @@ bool CheckDrive( bool issue_message )
         /*
          * check for enough disk space, combine drives that are the same
          */
-        for( i = 0; i < max_targs; i++ ) {
+        for( i = 0; i < max_targets; i++ ) {
             if( !disk_counted[i] ) {
                 targ_num = i;
                 disk_space_needed = SimTargetSpaceNeeded( i );
-                for( j = i + 1; j < max_targs; ++j ) {
+                for( j = i + 1; j < max_targets; ++j ) {
 #ifdef UNC_SUPPORT
                     GetRootFromPathUNC( &unc_root1, unc_disks[i] );
                     GetRootFromPathUNC( &unc_root2, unc_disks[j] );
@@ -1409,7 +1427,7 @@ bool CheckDrive( bool issue_message )
 #ifdef UNC_SUPPORT
         VbufInit( &unc_root1 );
 #endif
-        for( i = 0; i < max_targs; ++i ) {
+        for( i = 0; i < max_targets; ++i ) {
             strcpy( drive_freesp, "DriveFreeN" );
             if( *space[i].unc_drive != '\0'
               && SimTargetNeedsUpdate( i ) ) {
@@ -1449,7 +1467,10 @@ bool CheckDrive( bool issue_message )
         VbufFree( &unc_root1 );
 #endif
     }
-    free_disks( unc_disks, max_targs );
+    free_disks( unc_disks, max_targets );
+    GUIMemFree( unc_disks );
+    GUIMemFree( disk_counted );
+    GUIMemFree( space );
     return( ok );
 }
 

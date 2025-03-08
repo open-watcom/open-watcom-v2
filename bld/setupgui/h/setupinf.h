@@ -200,7 +200,6 @@ extern void             SimGetLabelDir( int parm, VBUF *buff );
 extern void             SimGetLabelLabel( int parm, VBUF *buff );
 extern bool             SimCalcTargetSpaceNeeded( void );
 extern void             CheckDLLCount( const char * );
-extern void             SimCalcAddRemove( void );
 extern void             SimSetNeedGetDiskSizes( void );
 extern void             MsgPut( int resourceid, va_list args );
 extern void             FreeAllStructs( void );
