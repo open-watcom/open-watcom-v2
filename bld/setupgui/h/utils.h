@@ -49,7 +49,6 @@ extern bool             GetDirParams( int, char **, VBUF *, VBUF *, VBUF * );
 extern bool             FreeDirParams( void );
 extern void             CloseDownMessage( bool state );
 extern bool             IsFixedDisk( char drive );
-extern bool             IsDiskette( unsigned drive );
 extern unsigned         GetClusterSize( char drive );
 extern char             GetDriveLetter( char *desc );
 extern void             AddInstallName( VBUF *str );

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -41,7 +42,6 @@ pick( STAT_CREATEPROGRAMFOLDER, "IDS_CREATEPROGRAMFOLDER" )
 pick( STAT_CREATESERVICE, "IDS_CREATESERVICE" )
 pick( STAT_CREATING_DISKS, "IDS_CREATING_DISKS" )
 pick( STAT_DELETEFILE, "IDS_DELETEFILE" )
-pick( STAT_ERASING_DISKETTE, "IDS_ERASING_DISKETTE" )
 pick( STAT_FORMATTING_DISK, "IDS_FORMATTING_DISK" )
 pick( STAT_RELOCATING, "IDS_RELOCATING" )
 pick( STAT_REMOVING, "IDS_REMOVING" )

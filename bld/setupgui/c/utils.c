@@ -240,7 +240,7 @@ typedef struct {
     unsigned long       cluster_size;
     bool                use_target_for_tmp_file;
     bool                fixed;
-    bool                diskette;
+    bool                removable;
 } drive_info;
 
 static drive_info       Drives[32];
@@ -599,7 +599,7 @@ static int GetDriveInfo( char drive, bool removable )
                 info->free_space = (disk_size)-1;
             }
             info->fixed = false;
-            info->diskette = false;
+            info->removable = false;
             p.cmdinfo = 0;
             p.drive_num = drive_num - 1;
             parmLengthInOut = sizeof( p );
@@ -620,13 +620,13 @@ static int GetDriveInfo( char drive, bool removable )
                             break;
                         case 6: // tape
                             break;
-                        default: // diskette
-                            info->diskette = true;
+                        default: // removable media
+                            info->removable = true;
                             break;
                         }
                     }
                 } else if( rc == ERROR_NOT_READY ) {
-                    info->diskette = true; // diskette not in drive
+                    info->removable = true; // removable media not in drive
                 }
             }
         }
@@ -649,7 +649,7 @@ static int GetDriveInfo( char drive, bool removable )
                 info->free_space = (disk_size)-1;
             }
             drive_type = GetDriveType( root );
-            info->diskette = ( drive_type == DRIVE_REMOVABLE );
+            info->removable = ( drive_type == DRIVE_REMOVABLE );
             info->fixed = ( drive_type == DRIVE_FIXED );
         }
 #else
@@ -657,7 +657,7 @@ static int GetDriveInfo( char drive, bool removable )
             struct diskfree_t   FreeSpace;
             union REGS          r;
 
-            info->diskette = false;
+            info->removable = false;
             info->fixed = false;
             info->cluster_size = 0;
             info->free_space = (disk_size)-1;
@@ -678,8 +678,8 @@ static int GetDriveInfo( char drive, bool removable )
             r.w.bx = drive_num;
             intdos( &r, &r );
             if( r.w.cflag == 0 ) {
-                info->diskette = ( r.w.ax == 0 );
-                if( info->diskette ) {
+                info->removable = ( r.w.ax == 0 );
+                if( info->removable ) {
                     info->fixed = false;
                 }
             } else {
@@ -696,7 +696,7 @@ static int GetDriveInfo( char drive, bool removable )
                 if( info->cluster_size > 64 * 1024UL ) {
                     info->cluster_size = 4096;
                 }
-            } else if( removable ) { // diskette not present
+            } else if( removable ) { // removable media not present
                 info->cluster_size = 0;
                 info->free_space = (disk_size)-1;
             } else {
@@ -738,7 +738,7 @@ static int GetDriveInfo( char drive, bool removable )
 }
 
 static disk_size GetDriveInfoFreeSpace( char drive, bool removable )
-/*************************************************************/
+/******************************************************************/
 {
     return( Drives[GetDriveInfo( drive, removable )].free_space );
 }
@@ -754,8 +754,8 @@ bool IsFixedDisk( char drive )
 {
     if( drive == '\0' )
         return( false );
-    // don't bang diskette every time!
-    if( Drives[GetDriveNum( drive )].diskette )
+    // don't bang removable media every time!
+    if( Drives[GetDriveNum( drive )].removable )
         return( false );
     return( Drives[GetDriveInfo( drive, false )].fixed != 0 );
 }
