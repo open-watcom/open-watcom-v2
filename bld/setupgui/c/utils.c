@@ -249,6 +249,7 @@ bool ModifyUninstall( bool uninstall )
 #endif
 }
 
+#if !defined( __UNIX__ )
 typedef struct {
     disk_size           free_space;
     unsigned long       cluster_size;
@@ -274,7 +275,6 @@ typedef __far (HANDLER)( unsigned deverr, unsigned errcode, unsigned __far *devh
 
 #endif
 
-#if !defined( __UNIX__ )
 static void NoHardErrors( void )
 /******************************/
 {
@@ -286,7 +286,6 @@ static void NoHardErrors( void )
     SetErrorMode( SEM_FAILCRITICALERRORS );
 #endif
 }
-#endif
 
 #ifdef __NT__
 static bool NTSpawnWait( const char *cmd, DWORD *exit_code, HANDLE in, HANDLE out, HANDLE err )
@@ -423,6 +422,8 @@ static bool OS2SpawnWait( const char *cmd, int *rc )
 }
 #endif
 
+#endif /* !defined( __UNIX__ ) */
+
 static bool DoSpawnCmd( const char *cmd )
 /***************************************/
 {
@@ -477,6 +478,7 @@ void DoSpawn( when_time when )
     VbufFree( &buff );
 }
 
+#if !defined( __UNIX__ )
 
 #if defined( UNC_SUPPORT )
 static void GetTmpFileNameUNC( const VBUF *unc_path, VBUF *buff )
@@ -497,8 +499,6 @@ static void GetTmpFileNameUNC( const VBUF *unc_path, VBUF *buff )
     }
 }
 #endif
-
-#if !defined( __UNIX__ )
 
 static void GetTmpFileName( char drive, VBUF *buff )
 /**************************************************/
@@ -528,16 +528,18 @@ static void GetTmpFileNameInTarget( char drive, VBUF *buff )
     GetTmpFileName( drive, buff );
 }
 
-#endif
+#endif /* !defined( __UNIX__ ) */
 
 void ResetDriveInfo( void )
 /*************************/
 {
+#if !defined( __UNIX__ )
     int         i;
 
     for( i = 0; i < MAX_DRIVES; ++i ) {
         Drives[i].cluster_size = 0;
     }
+#endif
 }
 
 #if !defined( __UNIX__ )
@@ -552,7 +554,6 @@ static int GetDriveNum( char drive )
         drive_num = 0;
     return( drive_num );
 }
-#endif
 
 static int GetDriveInfo( char drive, bool removable )
 /***************************************************/
@@ -767,17 +768,26 @@ static int GetDriveInfo( char drive, bool removable )
 #endif
     return( drive_num );
 }
+#endif
 
 static disk_size GetDriveInfoFreeSpace( char drive, bool removable )
 /******************************************************************/
 {
+#if defined( __UNIX__ )
+    (void)drive;
+    (void)removable;
+    return( -1 );
+#else
     return( Drives[GetDriveInfo( drive, removable )].free_space );
+#endif
 }
 
 void ResetDiskInfo( void )
 /************************/
 {
+#if !defined( __UNIX__ )
     memset( Drives, 0, sizeof( Drives ) );
+#endif
 }
 
 #if !defined( __UNIX__ )
