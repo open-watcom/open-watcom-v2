@@ -983,21 +983,21 @@ static bool ModConfig( const VBUF *orig, const VBUF *new, bool uninstall )
 static void BackupName( VBUF *backupname, const VBUF *filename )
 /**************************************************************/
 {
-    VBUF        temp;
+    VBUF        temp_vbuf;
     int         num;
 
-    VbufInit( &temp );
+    VbufInit( &temp_vbuf );
 
     VbufSetVbuf( backupname, filename );
     for( num = 0; num < 999; num++ ) {
-        VbufSetInteger( &temp, num, 3 );
-        VbufSetPathExt( backupname, &temp );
+        VbufSetInteger( &temp_vbuf, num, 3 );
+        VbufSetPathExt( backupname, &temp_vbuf );
         if( access_vbuf( backupname, F_OK ) != 0 ) {
             break;
         }
     }
 
-    VbufFree( &temp );
+    VbufFree( &temp_vbuf );
 }
 
 bool ModifyAutoExec( bool uninstall )
@@ -1731,7 +1731,7 @@ bool ModifyConfiguration( bool uninstall )
 {
     int                 num_env;
     VBUF                changes;
-    VBUF                temp;
+    VBUF                temp_vbuf;
     FILE                *fp;
     int                 i, j;
     bool                bRet;
@@ -1799,12 +1799,12 @@ bool ModifyConfiguration( bool uninstall )
          * handle "ModLater" case
          */
         VbufInit( &changes );
-        VbufInit( &temp );
+        VbufInit( &temp_vbuf );
 
         found = GUIMemAlloc( num_env * sizeof( bool ) );
         memset( found, false, num_env * sizeof( bool ) );
-        VbufConcStr( &temp, GetVariableStrVal( "DstDir" ) );
-        GetOldConfigFileDir( &changes, &temp, uninstall );
+        VbufConcStr( &temp_vbuf, GetVariableStrVal( "DstDir" ) );
+        GetOldConfigFileDir( &changes, &temp_vbuf, uninstall );
         VbufConcStr( &changes, "\\CHANGES.ENV" );
         MsgBoxVbuf( NULL, "IDS_CHANGES", GUI_OK, &changes );
         fp = fopen_vbuf( &changes, "wt" );
@@ -1849,7 +1849,7 @@ bool ModifyConfiguration( bool uninstall )
         GUIMemFree( found );
         bRet = true;
 
-        VbufFree( &temp );
+        VbufFree( &temp_vbuf );
         VbufFree( &changes );
     }
 
@@ -1867,7 +1867,7 @@ bool ModifyRegAssoc( bool uninstall )
 /***********************************/
 {
     HKEY    hkey;
-    VBUF    temp;
+    VBUF    temp_vbuf;
     VBUF    ext;
     VBUF    keyname;
     int     num;
@@ -1880,7 +1880,7 @@ bool ModifyRegAssoc( bool uninstall )
         if( GetVariableBoolVal( "NoModEnv" ) ) {
             return( true );
         }
-        VbufInit( &temp );
+        VbufInit( &temp_vbuf );
         VbufInit( &ext );
         VbufInit( &keyname );
         num = SimNumAssociations();
@@ -1889,40 +1889,40 @@ bool ModifyRegAssoc( bool uninstall )
                 continue;
             SimGetAssociationExt( i, &ext );
             SimGetAssociationKeyName( i, &keyname );
-            VbufSetChr( &temp, '.' );
-            VbufConcVbuf( &temp, &ext );
-            RegCreateKey( HKEY_CLASSES_ROOT, VbufString( &temp ), &hkey );
+            VbufSetChr( &temp_vbuf, '.' );
+            VbufConcVbuf( &temp_vbuf, &ext );
+            RegCreateKey( HKEY_CLASSES_ROOT, VbufString( &temp_vbuf ), &hkey );
             RegSetValue( hkey, NULL, REG_SZ, VbufString( &keyname ), (DWORD)VbufLen( &keyname ) );
             RegCloseKey( hkey );
             RegCreateKey( HKEY_CLASSES_ROOT, VbufString( &keyname ), &hkey );
-            SimGetAssociationDescription( i, &temp );
-            RegSetValue( hkey, NULL, REG_SZ, VbufString( &temp ), (DWORD)VbufLen( &temp ) );
+            SimGetAssociationDescription( i, &temp_vbuf );
+            RegSetValue( hkey, NULL, REG_SZ, VbufString( &temp_vbuf ), (DWORD)VbufLen( &temp_vbuf ) );
             /* process program definition */
-            SimGetAssociationProgram( i, &temp );
-            if( VbufLen( &temp ) > 0 ) {
-                VbufConcStr( &temp, " %1" );
-                ReplaceVars1( &temp );
-                RegSetValue( hkey, "shell\\open\\command", REG_SZ, VbufString( &temp ), (DWORD)VbufLen( &temp ) );
+            SimGetAssociationProgram( i, &temp_vbuf );
+            if( VbufLen( &temp_vbuf ) > 0 ) {
+                VbufConcStr( &temp_vbuf, " %1" );
+                ReplaceVars1( &temp_vbuf );
+                RegSetValue( hkey, "shell\\open\\command", REG_SZ, VbufString( &temp_vbuf ), (DWORD)VbufLen( &temp_vbuf ) );
             }
             /* process icon definition */
-            if( VbufLen( &temp ) > 0 ) {
-                SimGetAssociationIconFileName( i, &temp );
-                if( VbufLen( &temp ) == 0 ) {
+            if( VbufLen( &temp_vbuf ) > 0 ) {
+                SimGetAssociationIconFileName( i, &temp_vbuf );
+                if( VbufLen( &temp_vbuf ) == 0 ) {
                     /* if icon file not defined then use program name */
-                    SimGetAssociationProgram( i, &temp );
+                    SimGetAssociationProgram( i, &temp_vbuf );
                 }
             } else {
-                SimGetAssociationIconFileName( i, &temp );
+                SimGetAssociationIconFileName( i, &temp_vbuf );
             }
-            VbufConcChr( &temp, ',' );
-            VbufConcInteger( &temp, SimGetAssociationIconIndex( i ), 0 );
-            ReplaceVars1( &temp );
-            RegSetValue( hkey, "DefaultIcon", REG_SZ, VbufString( &temp ), (DWORD)VbufLen( &temp ) );
+            VbufConcChr( &temp_vbuf, ',' );
+            VbufConcInteger( &temp_vbuf, SimGetAssociationIconIndex( i ), 0 );
+            ReplaceVars1( &temp_vbuf );
+            RegSetValue( hkey, "DefaultIcon", REG_SZ, VbufString( &temp_vbuf ), (DWORD)VbufLen( &temp_vbuf ) );
             RegCloseKey( hkey );
         }
         VbufFree( &keyname );
         VbufFree( &ext );
-        VbufFree( &temp );
+        VbufFree( &temp_vbuf );
     }
 
     return( true );

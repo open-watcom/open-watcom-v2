@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -155,16 +155,16 @@ static DWORD ConvertDataToDWORD( BYTE *data, DWORD num_bytes, DWORD type )
 /************************************************************************/
 {
     DWORD                       i;
-    DWORD                       temp;
+    DWORD                       temp_data;
 
     if( type == REG_DWORD || type == REG_DWORD_LITTLE_ENDIAN || type  == REG_BINARY ) {
         return( (DWORD)(*data) );
     } else if( type == REG_DWORD_BIG_ENDIAN ) {
-        temp = 0;
+        temp_data = 0;
         for( i = 0; i < num_bytes; i++ ) {
-            temp |= ((DWORD)data[num_bytes - 1 - i]) << (i * 8);
+            temp_data |= ((DWORD)data[num_bytes - 1 - i]) << (i * 8);
         }
-        return( temp );
+        return( temp_data );
     }
     return( 0 );
 }
@@ -422,10 +422,10 @@ static void WindowsWriteProfile( const VBUF *app_name, const VBUF *key_name,
 
 void    GetWindowsDirectoryVbuf( VBUF *windir )
 {
-    char    temp[_MAX_PATH];
+    char    temp_buf[_MAX_PATH];
 
-    GetWindowsDirectory( temp, sizeof( temp ) );
-    VbufSetStr( windir, temp );
+    GetWindowsDirectory( temp_buf, sizeof( temp_buf ) );
+    VbufSetStr( windir, temp_buf );
 }
 
 #endif
@@ -541,7 +541,7 @@ void SetDialogFont( void )
   #if defined( __NT__ ) && defined( _M_X64 )
         GUIChangeCurrentFont( MainWnd, "MS Sans Serif", false );
   #elif defined( __NT__ )
-    	DWORD   ver;
+        DWORD   ver;
 
         ver = GetVersion();
         GUIChangeCurrentFont( MainWnd, "MS Sans Serif", ( ver >= 0x80000000 || LOBYTE( LOWORD( ver ) ) < 4 ) );

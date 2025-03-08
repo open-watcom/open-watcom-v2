@@ -2110,7 +2110,7 @@ static bool ProcLine( char *line, pass_type pass )
         if( TargetInfo[num].temp_disk == NULL ) {
             return( false );
         }
-        *TargetInfo[num].temp_disk = 0;
+        TargetInfo[num].temp_disk[0] = '\0';
         break;
     case RS_LABEL:
         num = SetupInfo.label.num;
@@ -2560,20 +2560,20 @@ disk_ssize SimTargetSpaceNeeded( int i )
     return( TargetInfo[i].space_needed );
 }
 
-int SimGetTargNumFiles( int i )
-/*****************************/
+int SimGetTargetNumFiles( int i )
+/*******************************/
 {
     return( TargetInfo[i].num_files );
 }
 
-void SimSetTargTempDisk( int i, char disk )
-/*****************************************/
+void SimSetTargetTempDisk( int i, char disk )
+/*******************************************/
 {
-    *TargetInfo[i].temp_disk = disk;
+    TargetInfo[i].temp_disk[0] = disk;
 }
 
-const char *SimGetTargTempDisk( int i )
-/*************************************/
+const char *SimGetTargetTempDisk( int i )
+/***************************************/
 {
     return( TargetInfo[i].temp_disk );
 }
@@ -2584,8 +2584,8 @@ const char *SimGetTargTempDisk( int i )
  * =======================================================================
  */
 
-int SimDirTargNum( int i )
-/************************/
+int SimDirTargetNum( int i )
+/**************************/
 {
     return( DirInfo[i].target );
 }
@@ -3166,21 +3166,21 @@ const char *SimGetUpgradeName( int parm )
 const char *SimGetTargetDriveLetter( int parm, VBUF *buff )
 /*********************************************************/
 {
-    char temp[_MAX_PATH];
+    char temp_buf[_MAX_PATH];
 
     SimTargetDir( parm, buff );
     if( VbufLen( buff ) == 0 ) {
-        getcwd( temp, sizeof( temp ) );
-        VbufSetStr( buff, temp );
+        getcwd( temp_buf, sizeof( temp_buf ) );
+        VbufSetStr( buff, temp_buf );
     } else if( VbufString( buff )[0] != '\\'
       || VbufString( buff )[1] != '\\' ) {
         if( VbufString( buff )[0] == '\\'
           && VbufString( buff )[1] != '\\' ) {
-            getcwd( temp, sizeof( temp ) );
-            VbufPrepStr( buff, temp );
+            getcwd( temp_buf, sizeof( temp_buf ) );
+            VbufPrepStr( buff, temp_buf );
         } else if( VbufString( buff )[1] != ':' ) {
-            getcwd( temp, sizeof( temp ) );
-            VbufSetStr( buff, temp );
+            getcwd( temp_buf, sizeof( temp_buf ) );
+            VbufSetStr( buff, temp_buf );
         }
     }
     return( VbufString( buff ) );
@@ -3347,7 +3347,7 @@ void SimCalcAddRemove( void )
             DirInfo[dir_index].num_files += FileInfo[i].num_files;
         }
         TargetInfo[targ_index].num_files += FileInfo[i].num_files;
-        cs = GetClusterSize( *TargetInfo[targ_index].temp_disk );
+        cs = GetClusterSize( TargetInfo[targ_index].temp_disk[0] );
         FileInfo[i].remove = remove;
         FileInfo[i].add = add;
         for( k = 0; k < FileInfo[i].num_files; ++k ) {
@@ -3392,7 +3392,7 @@ void SimCalcAddRemove( void )
         /* Estimate space used for directories. Be generous. */
         if( !uninstall ) {
             for( i = 0; i < SetupInfo.target.num; ++i ) {
-                cs = GetClusterSize( *TargetInfo[i].temp_disk );
+                cs = GetClusterSize( TargetInfo[i].temp_disk[0] );
                 for( j = 0; j < SetupInfo.dirs.num; ++j ) {
                     if( DirInfo[j].target != i )
                         continue;
@@ -3413,8 +3413,8 @@ bool SimCalcTargetSpaceNeeded( void )
 {
     int                 i;
     gui_mcursor_handle  old_cursor;
-    const char          *temp;
-    VBUF                temp_path;
+    const char          *temp_buf;
+    VBUF                temp_vbuf;
     bool                ok;
 
     /* assume power of 2 */
@@ -3429,19 +3429,19 @@ bool SimCalcTargetSpaceNeeded( void )
      * Reset Targets info
      */
     ok = true;
-    VbufInit( &temp_path );
+    VbufInit( &temp_vbuf );
     for( i = 0; i < SetupInfo.target.num; ++i ) {
-        temp = SimGetTargetDriveLetter( i, &temp_path );
-        if( temp == NULL ) {
+        temp_buf = SimGetTargetDriveLetter( i, &temp_vbuf );
+        if( temp_buf == NULL ) {
             ok = false;
             break;
         }
-        strcpy( TargetInfo[i].temp_disk, temp );
+        strcpy( TargetInfo[i].temp_disk, temp_buf );
         TargetInfo[i].space_needed = 0;
         TargetInfo[i].num_files = 0;
         TargetInfo[i].needs_update = false;
     }
-    VbufFree( &temp_path );
+    VbufFree( &temp_vbuf );
     /*
      * Reset Dirs info
      */

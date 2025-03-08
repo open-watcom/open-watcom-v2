@@ -845,7 +845,7 @@ static bool GetRootFromPathUNC( VBUF *root, const char *unc_path )
          */
         return( false );
     } else {
-        VBUF    temp;
+        VBUF    temp_vbuf;
 
         /*
          * for relative paths like "\dir" use the current drive.
@@ -853,11 +853,11 @@ static bool GetRootFromPathUNC( VBUF *root, const char *unc_path )
         if( getcwd( curr_dir, sizeof( curr_dir ) ) == NULL ) {
             return( false );
         }
-        VbufInit( &temp );
-        VbufConcStr( &temp, curr_dir );
-        VbufSplitpath( &temp, root, NULL, NULL, NULL );
+        VbufInit( &temp_vbuf );
+        VbufConcStr( &temp_vbuf, curr_dir );
+        VbufSplitpath( &temp_vbuf, root, NULL, NULL, NULL );
         VbufAddDirSep( root );
-        VbufFree( &temp );
+        VbufFree( &temp_vbuf );
         return( true );
     }
 }
@@ -932,7 +932,7 @@ static bool IsDriveWritableUNC( const char *unc_path )
 /****************************************************/
 {
     int         io;
-    VBUF        tempfile;
+    VBUF        temp_vbuf;
     VBUF        root;
     bool        ok;
 
@@ -941,20 +941,20 @@ static bool IsDriveWritableUNC( const char *unc_path )
     }
 
     VbufInit( &root );
-    VbufInit( &tempfile );
+    VbufInit( &temp_vbuf );
 
     ok = GetRootFromPathUNC( &root, unc_path ) != 0;
     if( ok ) {
-        GetTmpFileNameUNC( &root, &tempfile );
-        io = open_vbuf( &tempfile, O_RDWR | O_CREAT | O_TRUNC, PMODE_RW );
+        GetTmpFileNameUNC( &root, &temp_vbuf );
+        io = open_vbuf( &temp_vbuf, O_RDWR | O_CREAT | O_TRUNC, PMODE_RW );
         ok = io != -1;
         if( ok ) {
             close( io );
-            remove_vbuf( &tempfile );
+            remove_vbuf( &temp_vbuf );
         }
     }
 
-    VbufFree( &tempfile );
+    VbufFree( &temp_vbuf );
     VbufFree( &root );
     return( ok );
 }
@@ -1368,7 +1368,7 @@ bool CheckDrive( bool issue_message )
                 space[i].unc_drive = unc_disks[i];
                 space[i].free = free_disk_space;
                 space[i].needed = disk_space_needed;
-                space[i].num_files = SimGetTargNumFiles( targ_num );
+                space[i].num_files = SimGetTargetNumFiles( targ_num );
 #if !defined( __UNIX__ )
                 if( issue_message ) {
                     if( disk_space_needed > 0
@@ -2041,7 +2041,7 @@ static bool DoCopyFiles( void )
                     /*
                      * use the macro as the directory name   eg: cd_drive:\winsys\filename
                      */
-                    SimTargetDirName( SimDirTargNum( SimFileDirNum( filenum ) ), &tmp );
+                    SimTargetDirName( SimDirTargetNum( SimFileDirNum( filenum ) ), &tmp );
                     len = strlen( GetVariableStrVal_vbuf( &tmp ) );
                     VbufConcVbuf( &src_path, &tmp );
                 }

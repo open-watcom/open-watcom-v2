@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -173,17 +173,17 @@ void VbufPrepVbuf(              // PREPEND A VBUF TO VBUF
     VBUF *vbuf1,                // - VBUF structure
     const VBUF *vbuf2 )         // - VBUF structure to be prepended
 {
-    VBUF    temp;
+    VBUF    temp_vbuf;
 
     if( vbuf2->used > 0 ) {
-        VbufInit( &temp );
-        VbufReqd( &temp, vbuf1->used + vbuf2->used );
-        memcpy( temp.buf, vbuf2->buf, vbuf2->used );
-        memcpy( temp.buf + vbuf2->used, vbuf1->buf, vbuf1->used );
-        temp.used = vbuf1->used + vbuf2->used;
-        temp.buf[temp.used] = '\0';
+        VbufInit( &temp_vbuf );
+        VbufReqd( &temp_vbuf, vbuf1->used + vbuf2->used );
+        memcpy( temp_vbuf.buf, vbuf2->buf, vbuf2->used );
+        memcpy( temp_vbuf.buf + vbuf2->used, vbuf1->buf, vbuf1->used );
+        temp_vbuf.used = vbuf1->used + vbuf2->used;
+        temp_vbuf.buf[temp_vbuf.used] = '\0';
         VbufFree( vbuf1 );
-        *vbuf1 = temp;
+        *vbuf1 = temp_vbuf;
     }
 }
 
@@ -217,19 +217,19 @@ void VbufPrepVbufPos(           // PREPEND A VBUF TO VBUF
     const VBUF *vbuf2,          // - VBUF structure to be prepended
     size_t start_pos )          // - start position in second VBUF
 {
-    VBUF    temp;
+    VBUF    temp_vbuf;
     size_t  len2;
 
     if( vbuf2->used > start_pos ) {
         len2 = vbuf2->used - start_pos;
-        VbufInit( &temp );
-        VbufReqd( &temp, vbuf1->used + len2 );
-        memcpy( temp.buf, vbuf2->buf + start_pos, len2 );
-        memcpy( temp.buf + len2, vbuf1->buf, vbuf1->used );
-        temp.used = vbuf1->used + len2;
-        temp.buf[temp.used] = '\0';
+        VbufInit( &temp_vbuf );
+        VbufReqd( &temp_vbuf, vbuf1->used + len2 );
+        memcpy( temp_vbuf.buf, vbuf2->buf + start_pos, len2 );
+        memcpy( temp_vbuf.buf + len2, vbuf1->buf, vbuf1->used );
+        temp_vbuf.used = vbuf1->used + len2;
+        temp_vbuf.buf[temp_vbuf.used] = '\0';
         VbufFree( vbuf1 );
-        *vbuf1 = temp;
+        *vbuf1 = temp_vbuf;
     }
 }
 
@@ -261,17 +261,17 @@ void VbufPrepBuffer(            // PREPEND A BUFFER TO VBUF
     char const *buffer,         // - size of buffer
     size_t size )               // - buffer
 {
-    VBUF    temp;
+    VBUF    temp_vbuf;
 
     if( size > 0 ) {
-        VbufInit( &temp );
-        VbufReqd( &temp, size + vbuf->used );
-        memcpy( temp.buf, buffer, size );
-        memcpy( temp.buf + size, vbuf->buf, vbuf->used );
-        temp.used = size + vbuf->used;
-        temp.buf[temp.used] = '\0';
+        VbufInit( &temp_vbuf );
+        VbufReqd( &temp_vbuf, size + vbuf->used );
+        memcpy( temp_vbuf.buf, buffer, size );
+        memcpy( temp_vbuf.buf + size, vbuf->buf, vbuf->used );
+        temp_vbuf.used = size + vbuf->used;
+        temp_vbuf.buf[temp_vbuf.used] = '\0';
         VbufFree( vbuf );
-        *vbuf = temp;
+        *vbuf = temp_vbuf;
     }
 }
 

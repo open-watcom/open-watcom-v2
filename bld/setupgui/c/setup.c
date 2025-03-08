@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -168,7 +169,7 @@ static bool DoMainLoop( dlg_state *state )
     char                *diags;
     bool                got_disk_sizes = false;
     int                 i;
-    VBUF                temp;
+    VBUF                temp_vbuf;
     char                *next;
     bool                ret = false;
 
@@ -193,7 +194,7 @@ static bool DoMainLoop( dlg_state *state )
     diag_list[i + 1] = NULL;
     /* process installation dialogs */
 
-    VbufInit( &temp );
+    VbufInit( &temp_vbuf );
     *state = DLG_NEXT;
     i = 0;
     for( ;; ) {
@@ -238,9 +239,9 @@ static bool DoMainLoop( dlg_state *state )
             CancelSetup = true;
             break;
         } else if( *state == DLG_NEXT && stricmp( diag_list[i], "DstDir" ) == 0 ) {
-            VbufSetStr( &temp, GetVariableStrVal( "DstDir" ) );
-            VbufRemEndDirSep( &temp );
-            SetVariableByName_vbuf( "DstDir", &temp );
+            VbufSetStr( &temp_vbuf, GetVariableStrVal( "DstDir" ) );
+            VbufRemEndDirSep( &temp_vbuf );
+            SetVariableByName_vbuf( "DstDir", &temp_vbuf );
         }
         if( got_disk_sizes ) {
             if( !CheckDrive( false ) ) {
@@ -275,7 +276,7 @@ static bool DoMainLoop( dlg_state *state )
             i = 0;
         }
     } /* for */
-    VbufFree( &temp );
+    VbufFree( &temp_vbuf );
     GUIMemFree( list );
 
     return( ret );
