@@ -43,7 +43,7 @@ struct kstatfs32 {
     }                   f_fsid;
     long                f_namelen;
     long                f_frsize;
-    long                f_flags;
+    long                f_flag;
     long                f_spare[4];
 };
 
@@ -60,7 +60,7 @@ struct kstatfs64 {
     }                   f_fsid;
     long                f_namelen;
     long                f_frsize;
-    long                f_flags;
+    long                f_flag;
     long                f_spare[4];
 };
 #pragma pack( __pop )
@@ -68,11 +68,11 @@ struct kstatfs64 {
 #define COPY_STATFS(d,s) \
     d->f_bsize = s.f_bsize; \
     d->f_blocks = s.f_blocks; \
-    d->f_bfree = s.f_bree; \
+    d->f_bfree = s.f_bfree; \
     d->f_bavail = s.f_bavail; \
     d->f_files = s.f_files; \
     d->f_ffree = s.f_ffree; \
-    d->f_fsid = *(unsigned long *)s.f_fsid; \
+    d->f_fsid = *(unsigned long *)s.f_fsid.val; \
     d->f_namemax = s.f_namelen; \
     d->f_frsize = s.f_frsize; \
-    d->f_flags = s.f_flags
+    d->f_flag = s.f_flag
