@@ -34,6 +34,7 @@
 #include <unistd.h>
 #include <sys/stat.h>
 #include "linuxsys.h"
+#include "kstat.h"
 
 
 _WCRTLINK int lstat( const char *filename, struct stat * __buf )

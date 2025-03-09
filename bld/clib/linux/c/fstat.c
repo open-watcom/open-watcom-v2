@@ -33,6 +33,7 @@
 #include "variety.h"
 #include <sys/stat.h>
 #include "linuxsys.h"
+#include "kstat.h"
 
 
 _WCRTLINK int fstat( int __fildes, struct stat * __buf )
