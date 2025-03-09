@@ -38,11 +38,15 @@
 
 _WCRTLINK int fstat( int __fildes, struct stat * __buf )
 {
+#if 0
     struct kstat32  ks;
 
     syscall_res res = sys_call2( SYS_fstat, __fildes, (u_long)&ks );
     if( !__syscall_iserror( res ) ) {
         COPY_STAT( __buf, ks );
     }
+#else
+    syscall_res res = sys_call2( SYS_fstat, __fildes, (u_long)__buf );
+#endif
     __syscall_return( int, res );
 }

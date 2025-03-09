@@ -39,11 +39,15 @@
 
 _WCRTLINK int lstat64( const char *filename, struct stat64 * __buf )
 {
+#if 0
     struct kstat64  ks;
 
     syscall_res res = sys_call2( SYS_lstat64, (u_long)filename, (u_long)&ks );
     if( !__syscall_iserror( res ) ) {
         COPY_STAT( __buf, ks );
     }
+#else
+    syscall_res res = sys_call2( SYS_lstat64, (u_long)filename, (u_long)__buf );
+#endif
     __syscall_return( int, res );
 }

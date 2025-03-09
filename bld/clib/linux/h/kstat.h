@@ -77,6 +77,7 @@ struct kstat64 {
 };
 #pragma pack( __pop )
 
+#if 0
 #define COPY_STAT(d,s) \
     d->st_dev = s.dev; \
     d->st_ino = s.ino; \
@@ -88,9 +89,25 @@ struct kstat64 {
     d->st_size = s.size; \
     d->st_blksize = s.blksize; \
     d->st_blocks = s.blocks; \
-    d->st_atime.tv_sec = s.atime; \
-    d->st_atime.tv_nsec = s.atime_nsec; \
-    d->st_mtime.tv_sec = s.mtime; \
-    d->st_mtime.tv_nsec = s.mtime_nsec; \
-    d->st_ctime.tv_sec = s.ctime; \
-    d->st_ctime.tv_nsec = s.ctime_nsec
+    d->st_atim.tv_sec = s.atime; \
+    d->st_atim.tv_nsec = s.atime_nsec; \
+    d->st_mtim.tv_sec = s.mtime; \
+    d->st_mtim.tv_nsec = s.mtime_nsec; \
+    d->st_ctim.tv_sec = s.ctime; \
+    d->st_ctim.tv_nsec = s.ctime_nsec
+#else
+#define COPY_STAT(d,s) \
+    d->st_dev = s.st_dev; \
+    d->st_ino = s.st_ino; \
+    d->st_mode = s.st_mode; \
+    d->st_nlink = s.st_nlink; \
+    d->st_uid = s.st_uid; \
+    d->st_gid = s.st_gid; \
+    d->st_rdev = s.st_rdev; \
+    d->st_size = s.st_size; \
+    d->st_blksize = s.st_blksize; \
+    d->st_blocks = s.st_blocks; \
+    d->st_atime = s.st_atime; \
+    d->st_mtime = s.st_mtime; \
+    d->st_ctime = s.st_ctime
+#endif

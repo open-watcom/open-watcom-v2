@@ -48,7 +48,11 @@ _WCRTLINK int stat( const char *filename, struct stat * __buf )
  * like st_dev and st_rdev are irrelevant to a compiler and should be ignored.
  */
 {
+#if 0
     struct kstat64  ks;
+#else
+    struct stat64  ks;
+#endif
 
     syscall_res res = sys_call2( SYS_stat64, (u_long)filename, (u_long)&ks );
     if( !__syscall_iserror( res ) ) {
