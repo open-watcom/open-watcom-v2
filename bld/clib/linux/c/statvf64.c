@@ -2,8 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -25,36 +24,25 @@
 *
 *  ========================================================================
 *
-* Description:  Linux stat() implementation.
+* Description:  Linux statvfs64() implementation.
 *
 ****************************************************************************/
 
 
 #include "variety.h"
-#include <sys/stat.h>
+#include <sys/statvfs.h>
 #include "linuxsys.h"
+#include "kstatfs.h"
 
-_WCRTLINK int stat( const char *filename, struct stat * __buf )
-/**************************************************************
- * Even on 64-bit Linux, Open Watcom compiles itself as 32-bit. The problem with stat()
- * for 32-bit processes is that some device nodes are higher than 255 which are normally
- * returned in st_dev, but the Linux kernel will fail the call with EOVERFLOW if the
- * returned st_dev (or any other field) exceeds the storage limits of the plain stat()
- * struct. If compiling on a filesystem mounted from NVME storage (device node 259, x),
- * stat() will fail on every file on that filesystem. To work around this, use stat64()
- * and translate to stat(). Return EOVERFLOW only if the file is too large. Other fields
- * like st_dev and st_rdev are irrelevant to a compiler and should be ignored.
- */
+
+_WCRTLINK int statvfs64( const char *restrict filename, struct statvfs64 *restrict vfs )
+/**************************************************************************************/
 {
-    struct kstat64  ks;
+    struct kstatfs64 kfs;
 
-    syscall_res res = sys_call2( SYS_stat64, (u_long)filename, (u_long)&ks );
+    syscall_res res = sys_call2( SYS_statfs64, (u_long)filename, (u_long)(&kfs) );
     if( !__syscall_iserror( res ) ) {
-        if( ks.st_size <= 0x7FFFFFFFU /*2GB - 1*/ ) {
-            COPY_STAT( __buf, ks );
-        } else {
-            res = (syscall_res)(-EOVERFLOW);
-        }
+        COPY_STATFS( vfs, kfs );
     }
     __syscall_return( int, res );
 }

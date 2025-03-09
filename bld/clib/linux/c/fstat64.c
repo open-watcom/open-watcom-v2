@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,6 +37,11 @@
 
 _WCRTLINK int fstat64( int __fildes, struct stat64 * __buf )
 {
-    syscall_res res = sys_call2( SYS_fstat64, __fildes, (u_long)__buf );
+    struct kstat64  ks;
+
+    syscall_res res = sys_call2( SYS_fstat64, __fildes, (u_long)&ks );
+    if( !__syscall_iserror( res ) ) {
+        COPY_STAT( __buf, ks );
+    }
     __syscall_return( int, res );
 }

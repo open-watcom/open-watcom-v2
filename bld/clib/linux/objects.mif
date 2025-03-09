@@ -26,6 +26,8 @@
 !inject fork.obj                                                                            l32 lpc lmp
 !inject fstat.obj                                                                           l32 lpc lmp
 !inject fstat64.obj                                                                         l32     lmp
+!inject fstatvfs.obj                                                                        l32 lpc lmp
+!inject fstatv64.obj                                                                        l32     lmp
 !inject fsync.obj                                                                           l32 lpc lmp
 !inject ftrunc.obj                                                                          l32 lpc lmp
 !inject ftrunc64.obj                                                                        l32 lpc lmp
@@ -106,6 +108,8 @@
 !inject sockcall.obj                                                                        l32 lpc lmp
 !inject stat.obj                                                                            l32 lpc lmp
 !inject stat64.obj                                                                          l32     lmp
+!inject statvfs.obj                                                                         l32 lpc lmp
+!inject statvf64.obj                                                                        l32     lmp
 !inject symlink.obj                                                                         l32 lpc lmp
 !inject sync.obj                                                                            l32 lpc lmp
 !inject sys_brk.obj                                                                         l32 lpc lmp

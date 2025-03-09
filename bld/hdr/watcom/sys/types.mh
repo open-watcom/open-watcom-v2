@@ -66,13 +66,14 @@ typedef unsigned char   u_char;
 typedef unsigned short  u_short;
 typedef unsigned int    u_int;
 typedef unsigned long   u_long;
-typedef unsigned __int64 u_quad_t;
-typedef __int64         quad_t;
+typedef unsigned long long u_quad_t;
+typedef long long       quad_t;
 typedef quad_t          *qaddr_t;
 typedef int             key_t;
 :include ext.sp
 :include loff_t.sp
 :include off64_t.sp
+:include fstypes.sp
 :include extepi.sp
 
 :elsesegment QNX

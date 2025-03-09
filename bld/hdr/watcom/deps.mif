@@ -346,6 +346,7 @@ h/sys/resource.h  : $(mh_dir)/linux/sys/resource.mh $(owhdr) $(cplus) $(packlnxk
 h/sys/select.h    : $(mh_dir)/sys/select.mh $(sys_select_deps)
 h/sys/sendfile.h  : $(mh_dir)/linux/sys/sendfile.mh $(owhdr) ../systypes.sp $(cplus) $(packlnxk)
 h/sys/stat.h      : $(mh_dir)/sys/stat.mh $(sys_stat_deps)
+h/sys/statvfs.h   : $(mh_dir)/sys/statvfs.mh $(owhdr) $(cplus) $(extension) $(packlnxk) ../fstypes.sp
 h/sys/sysinfo.h   : $(mh_dir)/linux/sys/sysinfo.mh $(owhdr) $(cplus) $(packlnxk) ../incdir.sp
 h/sys/sysmacro.h  : $(mh_dir)/linux/sys/sysmacro.mh $(owhdr) $(cplus) $(packlnxk) ../incdir.sp
 h/sys/sysmips.h   : $(mh_dir)/linux/sys/sysmips.mh $(owhdr) $(cplus)
