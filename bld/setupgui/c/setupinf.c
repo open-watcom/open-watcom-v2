@@ -2550,10 +2550,11 @@ int SimGetTargetNumFiles( int i )
     return( TargetInfo[i].num_files );
 }
 
-void SimSetTargetTempDisk( int i, char disk )
-/*******************************************/
+void SimSetTargetTempDisk( int i, const char *fs_path )
+/*****************************************************/
 {
-    TargetInfo[i].temp_disk[0] = disk;
+    strncpy( TargetInfo[i].temp_disk, fs_path, _MAX_PATH - 1 );
+    TargetInfo[i].temp_disk[_MAX_PATH - 1] = '\0';
 }
 
 const char *SimGetTargetTempDisk( int i )
@@ -3313,7 +3314,7 @@ static void CalcAddRemove( void )
             DirInfo[dir_index].num_files += FileInfo[i].num_files;
         }
         TargetInfo[target_index].num_files += FileInfo[i].num_files;
-        cs = GetClusterSize( TargetInfo[target_index].temp_disk[0] );
+        cs = GetClusterSize( TargetInfo[target_index].temp_disk );
         FileInfo[i].remove = remove;
         FileInfo[i].add = add;
         for( k = 0; k < FileInfo[i].num_files; ++k ) {
@@ -3358,7 +3359,7 @@ static void CalcAddRemove( void )
         /* Estimate space used for directories. Be generous. */
         if( !uninstall ) {
             for( i = 0; i < SetupInfo.target.num; ++i ) {
-                cs = GetClusterSize( TargetInfo[i].temp_disk[0] );
+                cs = GetClusterSize( TargetInfo[i].temp_disk );
                 for( j = 0; j < SetupInfo.dirs.num; ++j ) {
                     if( DirInfo[j].target != i )
                         continue;
