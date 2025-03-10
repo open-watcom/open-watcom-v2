@@ -156,7 +156,6 @@ typedef enum {
     RS_DIALOG,
     RS_TARGET,
     RS_LABEL,
-    RS_UPGRADE,
     RS_ERRORMESSAGE,
     RS_SETUPERRORMESSAGE,
     RS_STATUSLINEMESSAGE,
@@ -205,7 +204,6 @@ static struct setup_info {
     array_info          environment;
     array_info          target;
     array_info          label;
-    array_info          upgrade;
     array_info          spawn;
     array_info          delete;
     array_info          fileconds;
@@ -238,10 +236,6 @@ static struct label_info {
     char                *dir;
     char                *label;
 } *LabelInfo = NULL;
-
-static struct upgrade_info {
-    char                *name;
-} *UpgradeInfo = NULL;
 
 static struct association_info {
     char                *ext;
@@ -1701,9 +1695,6 @@ static bool ProcLine( char *line, pass_type pass )
         } else if( stricmp( line, "[Labels]" ) == 0 ) {
             State = RS_LABEL;
             LineCountPointer = &SetupInfo.label.alloc;
-        } else if( stricmp( line, "[Upgrade]" ) == 0 ) {
-            State = RS_UPGRADE;
-            LineCountPointer = &SetupInfo.upgrade.alloc;
         } else if( stricmp( line, "[ErrorMessage]" ) == 0 ) {
             State = RS_ERRORMESSAGE;
         } else if( stricmp( line, "[SetupErrorMessage]" ) == 0 ) {
@@ -2120,12 +2111,6 @@ static bool ProcLine( char *line, pass_type pass )
         LabelInfo[num].dir = GUIStrDup( line, NULL );
         LabelInfo[num].label = GUIStrDup( next, NULL );
         break;
-    case RS_UPGRADE:
-        num = SetupInfo.upgrade.num;
-        if( !BumpArray( &SetupInfo.upgrade ) )
-            return( false );
-        UpgradeInfo[num].name = GUIStrDup( line, NULL );
-        break;
     case RS_FORCEDLLINSTALL:
         num = SetupInfo.force_DLL_install.num;
         if( !BumpArray( &SetupInfo.force_DLL_install ) )
@@ -2462,7 +2447,6 @@ long SimInit( const VBUF *inf_name )
     InitArray( (void **)&EnvironmentInfo, sizeof( struct config_info ), &SetupInfo.environment );
     InitArray( (void **)&TargetInfo, sizeof( struct target_info ), &SetupInfo.target );
     InitArray( (void **)&LabelInfo, sizeof( struct label_info ), &SetupInfo.label );
-    InitArray( (void **)&UpgradeInfo, sizeof( struct upgrade_info ), &SetupInfo.upgrade );
     InitArray( (void **)&SpawnInfo, sizeof( struct spawn_info ), &SetupInfo.spawn );
     InitArray( (void **)&DeleteInfo, sizeof( struct spawn_info ), &SetupInfo.delete );
     InitArray( (void **)&FileCondInfo, sizeof( struct file_cond_info ), &SetupInfo.fileconds );
@@ -3141,24 +3125,6 @@ void SimGetLabelLabel( int parm, VBUF *buff )
 
 /*
  * =======================================================================
- * API to UpgradeInfo[]
- * =======================================================================
- */
-
-int SimNumUpgrades( void )
-/************************/
-{
-    return( SetupInfo.upgrade.num );
-}
-
-const char *SimGetUpgradeName( int parm )
-/***************************************/
-{
-    return( UpgradeInfo[parm].name );
-}
-
-/*
- * =======================================================================
  *
  * =======================================================================
  */
@@ -3694,21 +3660,6 @@ static void FreeConfigInfo( void )
     }
 }
 
-static void FreeUpgradeInfo( void )
-/*********************************/
-{
-    int i;
-
-    if( UpgradeInfo != NULL ) {
-        for( i = 0; i < SetupInfo.upgrade.num; i++ ) {
-            GUIMemFree( UpgradeInfo[i].name );
-        }
-        GUIMemFree( UpgradeInfo );
-        UpgradeInfo = NULL;
-        SetupInfo.upgrade.num = 0;
-    }
-}
-
 static void FreeLabelInfo( void )
 /*******************************/
 {
@@ -3778,7 +3729,6 @@ void FreeAllStructs( void )
     FreeDeleteInfo();
     FreeDLLsToCheck();
     FreeForceDLLInstall();
-    FreeUpgradeInfo();
     FreeLabelInfo();
     FreeAllPMGroups();
     FreeAssociationInfo();

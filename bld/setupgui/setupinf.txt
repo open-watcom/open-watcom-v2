@@ -496,12 +496,3 @@ Sections
 
   DstDir
   windir,supplimental
-
-
-[Upgrade]
-    Used for products that are sold as upgrade, either to previous version
-    of the same product or as a "competitive upgrade". The Upgrade section
-    contains a simple list of partial pathnames that the system will search
-    for, for instance
-
-   bin\msvc.exe

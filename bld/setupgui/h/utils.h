@@ -53,7 +53,6 @@ extern char             GetDriveLetter( char *desc );
 extern void             AddInstallName( VBUF *str );
 extern char             *stristr( const char *str, const char *substr, size_t substr_len );
 extern void             Log( char *start, ... );
-extern bool             CheckUpgrade( void );
 extern void             GetInstallName( VBUF * );
 extern bool             PromptUser( const VBUF *name, const char *dlg, const char *skip, const char *replace, bool *resp_replace );
 extern void             GetWindowsDirectoryVbuf( VBUF *windir );

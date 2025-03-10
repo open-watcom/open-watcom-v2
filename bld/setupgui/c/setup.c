@@ -65,12 +65,6 @@ static bool SetupOperations( void )
     // are we doing an UnInstall?
     uninstall = VarGetBoolVal( UnInstall );
 
-    if( GetVariableBoolVal( "IsUpgrade" ) ) {
-        if( !CheckUpgrade() ) {
-            return( false );
-        }
-    }
-
     DoSpawn( WHEN_BEFORE );
 
     DeleteObsoleteFiles();

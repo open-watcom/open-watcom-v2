@@ -214,8 +214,6 @@ extern int              SimNumDeletes( void );
 extern const char       *SimDeleteName( int );
 extern bool             SimDeleteIsDialog( int );
 extern bool             SimDeleteIsDir( int );
-extern int              SimNumUpgrades( void );
-extern const char       *SimGetUpgradeName( int );
 extern vhandle          MakeDummyVar( void );
 
 extern bool             GetOptionVarValue( vhandle var_handle );

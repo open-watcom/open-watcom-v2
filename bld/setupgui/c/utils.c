@@ -228,25 +228,27 @@ bool ModifyStartup( bool uninstall )
 bool ModifyAssociations( bool uninstall )
 /***************************************/
 {
+    bool        ret = true;
+
 #ifdef __NT__
-    return( ModifyRegAssoc( uninstall ) );
+    ret = ModifyRegAssoc( uninstall );
 #else
     /* unused parameters */ (void)uninstall;
-
-    return( true );
 #endif
+    return( ret );
 }
 
 bool ModifyUninstall( bool uninstall )
 /************************************/
 {
+    bool        ret = true;
+
 #ifdef __NT__
-    return( AddToUninstallList( uninstall ) );
+    ret = AddToUninstallList( uninstall );
 #else
     /* unused parameters */ (void)uninstall;
-
-    return( true );
 #endif
+    return( ret );
 }
 
 #if !defined( __UNIX__ )
@@ -790,24 +792,6 @@ void ResetDiskInfo( void )
 #endif
 }
 
-#if !defined( __UNIX__ )
-static bool IsFixedDisk( char drive )
-/***********************************/
-{
-    bool    ret = false;
-
-    if( drive != '\0' ) {
-        /*
-         * don't bang removable media every time!
-         */
-        if( !Drives[GetDriveNum( drive )].removable ) {
-            ret = Drives[GetDriveInfo( drive, false )].fixed;
-        }
-    }
-    return( ret );
-}
-#endif
-
 unsigned GetClusterSize( char drive )
 /***********************************/
 {
@@ -830,6 +814,7 @@ static bool GetRootFromPathUNC( VBUF *root, const char *unc_path )
     const char  *index;
     char        curr_dir[_MAX_PATH];
     int         i;
+    VBUF        temp_vbuf;
 
     if( unc_path == NULL
       || root == NULL ) {
@@ -844,7 +829,8 @@ static bool GetRootFromPathUNC( VBUF *root, const char *unc_path )
         VbufConcChr( root, unc_path[1] );
         VbufConcChr( root, DIR_SEP );
         return( true );
-    } else if( TEST_UNC( unc_path ) ) {
+    }
+    if( TEST_UNC( unc_path ) ) {
         /*
          * turn a UNC name like "\\root\share\dir\subdir" into "\\root\share\"
          */
@@ -867,22 +853,19 @@ static bool GetRootFromPathUNC( VBUF *root, const char *unc_path )
          * invalid UNC name such as: "\\missingshare\"
          */
         return( false );
-    } else {
-        VBUF    temp_vbuf;
-
-        /*
-         * for relative paths like "\dir" use the current drive.
-         */
-        if( getcwd( curr_dir, sizeof( curr_dir ) ) == NULL ) {
-            return( false );
-        }
-        VbufInit( &temp_vbuf );
-        VbufConcStr( &temp_vbuf, curr_dir );
-        VbufSplitpath( &temp_vbuf, root, NULL, NULL, NULL );
-        VbufAddDirSep( root );
-        VbufFree( &temp_vbuf );
-        return( true );
     }
+    /*
+     * for relative paths like "\dir" use the current drive.
+     */
+    if( getcwd( curr_dir, sizeof( curr_dir ) ) == NULL ) {
+        return( false );
+    }
+    VbufInit( &temp_vbuf );
+    VbufConcStr( &temp_vbuf, curr_dir );
+    VbufSplitpath( &temp_vbuf, root, NULL, NULL, NULL );
+    VbufAddDirSep( root );
+    VbufFree( &temp_vbuf );
+    return( true );
 }
 
 static disk_size GetDiskFreeSpaceUNC( const char *unc_path )
@@ -1166,112 +1149,6 @@ static void ucatnum( char *buff, unsigned long long num )
         }
     }
     strcat( buff, num_buff );
-}
-
-static bool MatchEnd( const char *path, const char *end )
-/*******************************************************/
-{
-    size_t  plen;
-    size_t  endlen;
-
-    plen = strlen( path );
-    endlen = strlen( end );
-    if( endlen > plen )
-        return( false );
-#if defined( __UNIX__ )
-    return( strcmp( path + plen - endlen, end ) == 0 );
-#else
-    return( stricmp( path + plen - endlen, end ) == 0 );
-#endif
-}
-
-static bool FindUpgradeFile( char *path )
-/***************************************/
-{
-    DIR                 *dirp;
-    struct dirent       *dire;
-    char                *path_end;
-    int                 upgrades;
-    int                 i;
-    bool                ok;
-#if defined( __UNIX__ )
-    struct stat         statbuf;
-#endif
-
-    ok = false;
-    StatusAmount( 0, 1 );
-    StatusLines( STAT_CHECKING, path );
-    if( !StatusCancelled() ) {
-        dirp = opendir( path );
-        if( dirp != NULL ) {
-            upgrades = SimNumUpgrades();
-            ConcatDirSep( path );
-            path_end = path + strlen( path );
-            while( !ok && (dire = readdir( dirp )) != NULL ) {
-                strcpy( path_end, dire->d_name );
-#if defined( __UNIX__ )
-                stat( path, &statbuf );
-                if( S_ISDIR( statbuf.st_mode ) ) {
-#else
-                if( dire->d_attr & _A_SUBDIR ) {
-#endif
-                    if( IS_VALID_DIR( dire ) ) {
-                        if( FindUpgradeFile( path ) ) {
-                            ok = true;
-                        }
-                    }
-                } else {
-                    for( i = 0; i < upgrades; ++i ) {
-                        if( MatchEnd( path, SimGetUpgradeName( i ) ) ) {
-                            ok = true;
-                            break;
-                        }
-                    }
-                }
-            }
-            *path_end = '\0';
-            closedir( dirp );
-        }
-    }
-    return( ok );
-}
-
-bool CheckUpgrade( void )
-/***********************/
-{
-    char                disk[_MAX_PATH];
-    dlg_state           return_state;
-#if !defined( __UNIX__ )
-    char                c;
-#endif
-
-    if( VarGetBoolVal( PreviousInstall ) )
-        return( true );
-    DoDialog( "UpgradeStart" );
-#if defined( __UNIX__ )
-    disk[0] = '/';
-    disk[1] = '\0';
-    StatusCancelled();
-    if( FindUpgradeFile( disk ) ) {
-        return( true );
-    }
-#else
-    disk[0] = 'c';
-    disk[1] = ':';
-    disk[2] = '\\';
-    for( c = 'c'; c <= 'z'; c++ ) {
-        disk[0] = c;
-        if( !IsFixedDisk( c ) )
-            continue;
-        StatusCancelled();
-        disk[3] = '\0';
-        if( FindUpgradeFile( disk ) ) {
-            return( true );
-        }
-    }
-#endif
-    return_state = DoDialog( "UpgradeNotQualified" );
-    return( return_state != DLG_CANCEL && return_state != DLG_DONE );
 }
 
 static void free_disks( char **unc_disks, int max_targets )

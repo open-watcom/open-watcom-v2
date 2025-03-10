@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -128,7 +128,6 @@ static LIST                 *BootTextList = NULL;
 static LIST                 *ExeList = NULL;
 static LIST                 *TargetList = NULL;
 static LIST                 *LabelList = NULL;
-static LIST                 *UpgradeList = NULL;
 static LIST                 *AutoSetList = NULL;
 static LIST                 *AfterList = NULL;
 static LIST                 *BeforeList = NULL;
@@ -140,7 +139,6 @@ static LIST                 *ErrMsgList = NULL;
 static LIST                 *SetupErrMsgList = NULL;
 static wres_lang_id         Lang = LANG_RLE_ENGLISH;
 static bool                 Utf8 = false;
-static bool                 Upgrade = false;
 static bool                 Verbose = false;
 static bool                 IgnoreMissingFiles = false;
 static bool                 CreateMissingFiles = false;
@@ -369,8 +367,6 @@ bool CheckParms( int *pargc, char **pargv[] )
                 AddToList( new, &Include );
             } else if( tolower( (*pargv)[1][1] ) == 'u' && tolower( (*pargv)[1][2] ) == 't' && tolower( (*pargv)[1][3] ) == 'f' && (*pargv)[1][4] == '8') {
                 Utf8 = true;
-            } else if( tolower( (*pargv)[1][1] ) == 'u' ) {
-                Upgrade = true;
             } else if( tolower( (*pargv)[1][1] ) == 'v' ) {
                 Verbose = true;
             } else if( tolower( (*pargv)[1][1] ) == 'f' ) {
@@ -392,7 +388,6 @@ bool CheckParms( int *pargc, char **pargv[] )
         printf( "-v         verbose operation\n" );
         printf( "-i<path>   include path for setup scripts\n" );
         printf( "-l<num>    generate installer for <num> language\n" );
-        printf( "-u         create upgrade setup script\n" );
         printf( "-utf8      input files are in UTF-8 encoding\n" );
         printf( "-d<string> specify string to add to Application section\n" );
         printf( "-f         force script creation if files missing (testing only)\n" );
@@ -943,7 +938,6 @@ bool ReadList( FILE *fp )
 #define STRING_deletefile       "deletefile="
 #define STRING_deletedir        "deletedir="
 #define STRING_language         "language="
-#define STRING_upgrade          "upgrade="
 #define STRING_forcedll         "forcedll="
 #define STRING_assoc            "assoc="
 #define STRING_errmsg           "errmsg="
@@ -1056,8 +1050,6 @@ static bool processLine( const char *line, LIST **list )
         AddToList( new, &ExeList );
     } else if( STRING_IS( line, new, STRING_label ) ) {
         AddToList( new, &LabelList );
-    } else if( STRING_IS( line, new, STRING_upgrade ) ) {
-        AddToList( new, &UpgradeList );
     } else if( STRING_IS( line, new, STRING_deletedialog ) ) {
         new->type = DELETE_DIALOG;
         AddToList( new, &DeleteList );
@@ -1306,9 +1298,6 @@ static void CreateScript( long init_size, unsigned padding )
     for( list = AppSection; list != NULL; list = list->next ) {
         fprintf( fp, "%s\n", list->item );
     }
-    if( Upgrade ) {
-        fprintf( fp, "IsUpgrade=1\n" );
-    }
     fprintf( fp, "\n[Targets]\n" );
     for( list = TargetList; list != NULL; list = list->next ) {
         fprintf( fp, "%s", list->item );
@@ -1418,13 +1407,6 @@ static void CreateScript( long init_size, unsigned padding )
     if( LabelList != NULL ) {
         fprintf( fp, "\n[Labels]\n" );
         for( list = LabelList; list != NULL; list = list->next ) {
-            fprintf( fp, "%s\n", list->item );
-        }
-    }
-
-    if( UpgradeList != NULL ) {
-        fprintf( fp, "\n[Upgrade]\n" );
-        for( list = UpgradeList; list != NULL; list = list->next ) {
             fprintf( fp, "%s\n", list->item );
         }
     }
