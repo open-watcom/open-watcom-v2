@@ -3132,8 +3132,8 @@ void SimGetLabelLabel( int parm, VBUF *buff )
  * =======================================================================
  */
 
-const char *SimGetTargetDriveLetter( int parm, VBUF *buff )
-/*********************************************************/
+const char *SimGetTargetFullPath( int parm, VBUF *buff )
+/******************************************************/
 {
     char temp_buf[_MAX_PATH];
 
@@ -3400,7 +3400,7 @@ bool SimCalcTargetSpaceNeeded( void )
     ok = true;
     VbufInit( &temp_vbuf );
     for( i = 0; i < SetupInfo.target.num; ++i ) {
-        temp_buf = SimGetTargetDriveLetter( i, &temp_vbuf );
+        temp_buf = SimGetTargetFullPath( i, &temp_vbuf );
         if( temp_buf == NULL ) {
             ok = false;
             break;
