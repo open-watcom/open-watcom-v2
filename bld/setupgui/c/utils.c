@@ -725,9 +725,9 @@ static int GetDriveInfo( const char *fs_path, bool removable )
                     info->free_space = FreeSpace.avail_clusters *
                                        (disk_size)info->cluster_size;
                     /*
-                     * If reported cluster size is ridiculously large, it's likely faked;
-                     * assume the real cluster size is much smaller - 4096 should be
-                     * a conservative estimate.
+                     * If reported cluster size is ridiculously large,
+                     * it's likely faked; assume the real cluster size is
+                     * much smaller - 4096 should be a conservative estimate.
                      */
                     if( info->cluster_size > 64 * 1024UL ) {
                         info->cluster_size = 4096;
@@ -740,7 +740,8 @@ static int GetDriveInfo( const char *fs_path, bool removable )
                     info->free_space = (disk_size)-1;
                 } else {
                     /*
-                     * doesn't work on network drive - assume 4K cluster, max free
+                     * doesn't work on network drive - assume 4K cluster,
+                     * max free
                      */
                     info->cluster_size = 4096;
                     info->free_space = (disk_size)-1;
@@ -1070,7 +1071,7 @@ static void MakeParentDir( const VBUF *dir, pgroup2 *pg )
 
 static bool CreateDstDir( int i, VBUF *buff )
 /********************************************
- * check for directory existance
+ * check for directory existence
  * if dir exists return true
  * else try and create directory
  */
@@ -1088,7 +1089,7 @@ static bool CreateDstDir( int i, VBUF *buff )
     }
     SimDirNoEndSlash( i, buff );
     /*
-     * check for existance
+     * check for existence
      */
     if( access_vbuf( buff, F_OK ) == 0 )
         return( true );
@@ -1214,7 +1215,8 @@ bool CheckDrive( bool issue_message )
     VbufInit( &temp_vbuf );
     for( i = 0; i < max_targets; i++ ) {
         /*
-         * get drive letter for each target (actually the path including the drive letter)
+         * get drive letter for each target (actually the path including
+         * the drive letter)
          */
         if( SimGetTargetDriveLetter( i, &temp_vbuf ) == NULL ) {
             ok = false;
@@ -1737,7 +1739,6 @@ static void CopySetupInfFile( void )
     VbufInit( &dst_path );
     VbufInit( &temp_vbuf );
     VbufInit( &fname );
-
     /*
      * if DoCopyInf variable is set, copy/delete setup.inf
      */
@@ -2533,7 +2534,9 @@ static bool check32bitOn64bit( void )
             "Press OK button to continue with installation or Cancel button to abort it.\n";
         SetVariableByName( "IDS_USEINST64BIT", "%s");
         if( MsgBox( NULL, "IDS_USEINST64BIT", GUI_OK_CANCEL, msg ) != GUI_RET_OK ) {
-            /* return true to terminate installer */
+            /*
+             * return true to terminate installer
+             */
             return( true );
         }
     }
