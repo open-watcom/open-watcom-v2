@@ -226,6 +226,7 @@ static struct dir_info {
 static struct target_info {
     char                *name;
     disk_ssize          space_needed;
+    int                 file_system;
     int                 num_files;
     char                *temp_disk;
     boolbit             supplemental    : 1;
@@ -2102,6 +2103,7 @@ static bool ProcLine( char *line, pass_type pass )
             return( false );
         }
         TargetInfo[num].temp_disk[0] = '\0';
+        TargetInfo[num].file_system = -1;
         break;
     case RS_LABEL:
         num = SetupInfo.label.num;
@@ -3407,6 +3409,7 @@ bool SimCalcTargetSpaceNeeded( void )
         TargetInfo[i].space_needed = 0;
         TargetInfo[i].num_files = 0;
         TargetInfo[i].needs_update = false;
+        TargetInfo[i].file_system = -1;
     }
     VbufFree( &temp_vbuf );
     /*
