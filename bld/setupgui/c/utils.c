@@ -77,10 +77,6 @@
 
 #define TMPFILENAME "_watcom_.tmp"
 
-#if defined( __NT__ ) || defined( __WINDOWS__ )
-    #define UNC_SUPPORT
-#endif
-
 #define TEST_UNC(x)     (x[0] == '\\' && x[1] == '\\')
 #define TEST_DRIVE(x)   (isalpha( x[0] ) && x[1] == ':')
 
@@ -672,8 +668,8 @@ static int GetDriveInfo( const char *fs_path, bool removable )
 
                 root[0] = fs_path[0];
                 strcpy( &root[1], ":\\" );
-                if( GetDiskFreeSpace( root, &sectors_per_cluster, &bytes_per_sector,
-                                      &free_clusters, &total_clusters ) ) {
+                if( GetDiskFreeSpace( root, &sectors_per_cluster,
+                        &bytes_per_sector, &free_clusters, &total_clusters ) ) {
                     info->block_size = bytes_per_sector * sectors_per_cluster;
                     info->free_space = (disk_size)free_clusters * (disk_size)info->block_size;
                 } else {
@@ -883,18 +879,21 @@ static disk_size GetDiskFreeSpaceUNC( const char *fs_path )
 /*********************************************************/
 {
     disk_size   size = 0;
-    struct diskfree_t info;
 #ifdef __NT__
+    DWORD       sectors_per_cluster;
+    DWORD       bytes_per_sector;
+    DWORD       avail_clusters;
+    DWORD       total_clusters;
     VBUF        root;
+#else
+    struct diskfree_t info;
 #endif
 
 #ifdef __NT__
     VbufInit( &root );
     if( GetRootFromPathUNC( &root, fs_path ) ) {
-        if( GetDiskFreeSpace( VbufString( &root ), &info.sectors_per_cluster,
-                &info.bytes_per_sector, &info.avail_clusters,
-                &info.total_clusters ) ) {
-            size = (disk_size)info.sectors_per_cluster * (disk_size)info.bytes_per_sector * (disk_size)info.avail_clusters;
+        if( GetDiskFreeSpace( VbufString( &root ), &sectors_per_cluster, &bytes_per_sector, &avail_clusters, &total_clusters ) ) {
+            size = (disk_size)sectors_per_cluster * (disk_size)bytes_per_sector * (disk_size)avail_clusters ;
         }
     }
     VbufFree( &root );
@@ -912,19 +911,23 @@ static disk_size GetDiskFreeSpaceUNC( const char *fs_path )
 static long GetBlockSizeUNC( const char *fs_path )
 /************************************************/
 {
-    long        size = 0;
-    struct diskfree_t info;
+    DWORD       size = 0;
 #ifdef __NT__
+    DWORD       sectors_per_cluster;
+    DWORD       bytes_per_sector;
+    DWORD       avail_clusters;
+    DWORD       total_of_clusters;
     VBUF        root;
+#else
+    struct diskfree_t info;
 #endif
 
 #ifdef __NT__
     VbufInit( &root );
     if( GetRootFromPathUNC( &root, fs_path ) ) {
-        if( GetDiskFreeSpace( VbufString( &root ), &info.sectors_per_cluster,
-                &info.bytes_per_sector, &info.avail_clusters,
-                &info.total_clusters ) ) {
-            size = (long)info.sectors_per_cluster * info.bytes_per_sector;
+        if( GetDiskFreeSpace( VbufString( &root ), &sectors_per_cluster,
+        		&bytes_per_sector, &avail_clusters, &total_of_clusters ) ) {
+            size = sectors_per_cluster * bytes_per_sector;
         }
     }
     VbufFree( &root );
@@ -976,17 +979,21 @@ static bool DriveInfoIsAvailableUNC( const char *fs_path )
 /********************************************************/
 {
     bool        ok = false;
-    struct diskfree_t info;
 #ifdef __NT__
+    DWORD       sectors_per_cluster;
+    DWORD       bytes_per_sector;
+    DWORD       avail_clusters;
+    DWORD       total_clusters;
     VBUF        root;
+#else
+    struct diskfree_t info;
 #endif
 
 #ifdef __NT__
     VbufInit( &root );
     if( GetRootFromPathUNC( &root, fs_path ) ) {
-        if( GetDiskFreeSpace( VbufString( &root ), &info.sectors_per_cluster,
-                &info.bytes_per_sector, &info.avail_clusters,
-                &info.total_clusters ) ) {
+        if( GetDiskFreeSpace( VbufString( &root ), &sectors_per_cluster,
+                &bytes_per_sector, &avail_clusters, &total_clusters ) ) {
             ok = true;
         }
     }

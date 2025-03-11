@@ -3123,21 +3123,42 @@ const char *SimGetTargetFullPath( int parm, VBUF *buff )
 /******************************************************/
 {
     char temp_buf[_MAX_PATH];
+    const char *p;
 
     SimTargetDir( parm, buff );
-    if( VbufLen( buff ) == 0 ) {
+    p = VbufString( buff );
+    if( strlen( p ) == 0 ) {
+        /* no-path, current working directory */
         getcwd( temp_buf, sizeof( temp_buf ) );
         VbufSetStr( buff, temp_buf );
-    } else if( VbufString( buff )[0] != '\\'
-      || VbufString( buff )[1] != '\\' ) {
-        if( VbufString( buff )[0] == '\\'
-          && VbufString( buff )[1] != '\\' ) {
-            getcwd( temp_buf, sizeof( temp_buf ) );
-            VbufPrepStr( buff, temp_buf );
-        } else if( VbufString( buff )[1] != ':' ) {
-            getcwd( temp_buf, sizeof( temp_buf ) );
+#if defined( __UNIX__ )
+    } else if( p[0] == '/' ) {
+        /* root */
+#else
+  #if defined( UNC_SUPPORT )
+    } else if( p[0] == '\\'
+      && p[1] == '\\' ) {
+        /* UNC */
+  #endif
+    } else if( p[0] == '\\'
+      && p[1] != '\\' ) {
+      	/* no-drive, root */
+        getcwd( temp_buf, sizeof( temp_buf ) );
+        VbufPrepChr( buff, ':' );
+        VbufPrepChr( buff, temp_buf[0] );
+    } else if( p[0] != '\0'
+      && p[1] == ':' ) {
+      	/* drive */
+        if( p[2] != '\\' ) {
+        	/* drive, no-root */
+            _fullpath( temp_buf, p, sizeof( temp_buf ) );
             VbufSetStr( buff, temp_buf );
         }
+#endif
+    } else {
+        /* relative path */
+        getcwd( temp_buf, sizeof( temp_buf ) );
+        VbufPrepStr( buff, temp_buf );
     }
     return( VbufString( buff ) );
 }
