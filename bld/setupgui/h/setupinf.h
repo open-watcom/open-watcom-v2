@@ -119,7 +119,7 @@ typedef struct a_dialog_header {
 
 
 extern void             CheckStateVars( void );
-extern const char       *SimGetTargetDriveLetter( int parm, VBUF *buff );
+extern const char       *SimGetTargetFullPath( int parm, VBUF *buff );
 extern bool             SimFileAdd( int parm );
 extern bool             SimFileUpToDate( int parm );
 extern bool             SimFileRemove( int parm );

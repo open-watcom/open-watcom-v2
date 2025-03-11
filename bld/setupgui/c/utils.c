@@ -1207,7 +1207,7 @@ bool CheckDrive( bool issue_message )
          * get drive letter for each target (actually the path including
          * the drive letter)
          */
-        if( SimGetTargetDriveLetter( i, &temp_vbuf ) == NULL ) {
+        if( SimGetTargetFullPath( i, &temp_vbuf ) == NULL ) {
             ok = false;
             max_targets = i;
             break;
