@@ -3259,7 +3259,7 @@ static void CalcAddRemove( void )
     int                 k;
     int                 target_index = 0;
     int                 dir_index;
-    unsigned            cs; /* cluster size */
+    unsigned            block_size; /* filesystem block size */
     bool                previous;
     bool                add;
     bool                uninstall;
@@ -3316,7 +3316,7 @@ static void CalcAddRemove( void )
             DirInfo[dir_index].num_files += FileInfo[i].num_files;
         }
         TargetInfo[target_index].num_files += FileInfo[i].num_files;
-        cs = GetClusterSize( TargetInfo[target_index].temp_disk );
+        block_size = GetBlockSize( TargetInfo[target_index].temp_disk );
         FileInfo[i].remove = remove;
         FileInfo[i].add = add;
         for( k = 0; k < FileInfo[i].num_files; ++k ) {
@@ -3342,17 +3342,17 @@ static void CalcAddRemove( void )
 #endif
 
             if( add ) {
-                TargetInfo[target_index].space_needed += RoundUp( file->size, cs );
+                TargetInfo[target_index].space_needed += RoundUp( file->size, block_size );
 #if 0   // I don't think this logic is right...
                 if( !file->is_nlm ) {
-                    TargetInfo[target_index].space_needed -= RoundUp( file->disk_size, cs );
+                    TargetInfo[target_index].space_needed -= RoundUp( file->disk_size, block_size );
                 }
 #else
-                TargetInfo[target_index].space_needed -= RoundUp( file->disk_size, cs );
+                TargetInfo[target_index].space_needed -= RoundUp( file->disk_size, block_size );
 #endif
                 TargetInfo[target_index].needs_update = true;
             } else if( remove ) {
-                TargetInfo[target_index].space_needed -= RoundUp( FileInfo[i].files[k].disk_size, cs );
+                TargetInfo[target_index].space_needed -= RoundUp( FileInfo[i].files[k].disk_size, block_size );
                 TargetInfo[target_index].needs_update = true;
             }
         }
@@ -3361,7 +3361,7 @@ static void CalcAddRemove( void )
         /* Estimate space used for directories. Be generous. */
         if( !uninstall ) {
             for( i = 0; i < SetupInfo.target.num; ++i ) {
-                cs = GetClusterSize( TargetInfo[i].temp_disk );
+                block_size = GetBlockSize( TargetInfo[i].temp_disk );
                 for( j = 0; j < SetupInfo.dirs.num; ++j ) {
                     if( DirInfo[j].target != i )
                         continue;
@@ -3369,7 +3369,7 @@ static void CalcAddRemove( void )
                         continue;
                     if( DirInfo[j].num_files <= DirInfo[j].num_existing )
                         continue;
-                    TargetInfo[i].space_needed += RoundUp( ((( DirInfo[j].num_files - DirInfo[j].num_existing ) / 10) + 1) * 1024UL, cs);
+                    TargetInfo[i].space_needed += RoundUp( ((( DirInfo[j].num_files - DirInfo[j].num_existing ) / 10) + 1) * 1024UL, block_size);
                 }
             }
         }

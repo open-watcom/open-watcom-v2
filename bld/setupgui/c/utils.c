@@ -254,7 +254,7 @@ bool ModifyUninstall( bool uninstall )
 #if !defined( __UNIX__ )
 typedef struct {
     disk_size           free_space;
-    unsigned long       cluster_size;
+    unsigned long       block_size;
     bool                use_target_for_tmp_file;
     bool                fixed;
     bool                removable;
@@ -540,7 +540,7 @@ void ResetDriveInfo( void )
     int         i;
 
     for( i = 0; i < MAX_DRIVES; ++i ) {
-        Drives[i].cluster_size = 0;
+        Drives[i].block_size = 0;
     }
 #endif
 }
@@ -572,7 +572,7 @@ static int GetDriveInfo( const char *fs_path, bool removable )
     drive_num = GetDriveNum( fs_path );
     if( drive_num > 0 ) {
         info = &Drives[drive_num];
-        if( (info->cluster_size == 0
+        if( (info->block_size == 0
           || removable /* recheck - could have been replaced */) ) {
             memset( info, 0, sizeof( *info ) );
             NoHardErrors();
@@ -621,8 +621,8 @@ static int GetDriveInfo( const char *fs_path, bool removable )
                     sectors_per_cluster = *(ULONG *)(fsinfobuf + (1 * sizeof( ULONG )));
                     free_clusters = *(ULONG *)(fsinfobuf + (3 * sizeof( ULONG )));
                     bytes_per_sector = *(USHORT *)(fsinfobuf + (4 * sizeof( ULONG )));
-                    info->cluster_size = sectors_per_cluster * bytes_per_sector;
-                    info->free_space = (disk_size)free_clusters * (ULONG)info->cluster_size;
+                    info->block_size = sectors_per_cluster * bytes_per_sector;
+                    info->free_space = (disk_size)free_clusters * (ULONG)info->block_size;
                 } else {
                     info->free_space = (disk_size)-1;
                 }
@@ -674,8 +674,8 @@ static int GetDriveInfo( const char *fs_path, bool removable )
                 strcpy( &root[1], ":\\" );
                 if( GetDiskFreeSpace( root, &sectors_per_cluster, &bytes_per_sector,
                                       &free_clusters, &total_clusters ) ) {
-                    info->cluster_size = bytes_per_sector * sectors_per_cluster;
-                    info->free_space = (disk_size)free_clusters * (disk_size)info->cluster_size;
+                    info->block_size = bytes_per_sector * sectors_per_cluster;
+                    info->free_space = (disk_size)free_clusters * (disk_size)info->block_size;
                 } else {
                     info->free_space = (disk_size)-1;
                 }
@@ -690,7 +690,7 @@ static int GetDriveInfo( const char *fs_path, bool removable )
 
                 info->removable = false;
                 info->fixed = false;
-                info->cluster_size = 0;
+                info->block_size = 0;
                 info->free_space = (disk_size)-1;
                 r.w.ax = 0x440E;    /* get logical drive */
                 r.w.bx = drive_num;
@@ -720,30 +720,30 @@ static int GetDriveInfo( const char *fs_path, bool removable )
                     info->fixed = false;
                 }
                 if( _getdiskfree( drive_num, &FreeSpace ) == 0 ) {
-                    info->cluster_size = (unsigned long)FreeSpace.sectors_per_cluster *
+                    info->block_size = (unsigned long)FreeSpace.sectors_per_cluster *
                                          FreeSpace.bytes_per_sector;
                     info->free_space = FreeSpace.avail_clusters *
-                                       (disk_size)info->cluster_size;
+                                       (disk_size)info->block_size;
                     /*
                      * If reported cluster size is ridiculously large,
                      * it's likely faked; assume the real cluster size is
                      * much smaller - 4096 should be a conservative estimate.
                      */
-                    if( info->cluster_size > 64 * 1024UL ) {
-                        info->cluster_size = 4096;
+                    if( info->block_size > 64 * 1024UL ) {
+                        info->block_size = 4096;
                     }
                 } else if( removable ) {
                     /*
                      * removable media not present
                      */
-                    info->cluster_size = 0;
+                    info->block_size = 0;
                     info->free_space = (disk_size)-1;
                 } else {
                     /*
                      * doesn't work on network drive - assume 4K cluster,
                      * max free
                      */
-                    info->cluster_size = 4096;
+                    info->block_size = 4096;
                     info->free_space = (disk_size)-1;
                 }
             }
@@ -769,7 +769,7 @@ static int GetDriveInfo( const char *fs_path, bool removable )
     // FIXME it doesn't work correctly if target directory doesn't exist
     // (new installation) and you have insufficient rights to drive root
                 } else {
-                    info->cluster_size = 1;
+                    info->block_size = 1;
                     info->free_space = (disk_size)-1;
 #endif
                 }
@@ -802,8 +802,8 @@ void ResetDiskInfo( void )
 #endif
 }
 
-unsigned GetClusterSize( const char *fs_path )
-/********************************************/
+unsigned GetBlockSize( const char *fs_path )
+/******************************************/
 {
     unsigned    ret = 1;
 
@@ -811,7 +811,7 @@ unsigned GetClusterSize( const char *fs_path )
     /* unused parameters */ (void)fs_path;
 #else
     if( fs_path != NULL ) {
-        ret = Drives[GetDriveInfo( fs_path, false )].cluster_size;
+        ret = Drives[GetDriveInfo( fs_path, false )].block_size;
     }
 #endif
     return( ret );
@@ -883,21 +883,18 @@ static disk_size GetDiskFreeSpaceUNC( const char *fs_path )
 /*********************************************************/
 {
     disk_size   size = 0;
-#ifdef __NT__
-    DWORD       sectors_per_cluster;
-    DWORD       bytes_per_sector;
-    DWORD       avail_clusters;
-    DWORD       total_clusters;
-    VBUF        root;
-#else
     struct diskfree_t info;
+#ifdef __NT__
+    VBUF        root;
 #endif
 
 #ifdef __NT__
     VbufInit( &root );
     if( GetRootFromPathUNC( &root, fs_path ) ) {
-        if( GetDiskFreeSpace( VbufString( &root ), &sectors_per_cluster, &bytes_per_sector, &avail_clusters, &total_clusters ) ) {
-            size = (disk_size)sectors_per_cluster * (disk_size)bytes_per_sector * (disk_size)avail_clusters ;
+        if( GetDiskFreeSpace( VbufString( &root ), &info.sectors_per_cluster,
+                &info.bytes_per_sector, &info.avail_clusters,
+                &info.total_clusters ) ) {
+            size = (disk_size)info.sectors_per_cluster * (disk_size)info.bytes_per_sector * (disk_size)info.avail_clusters;
         }
     }
     VbufFree( &root );
@@ -912,26 +909,22 @@ static disk_size GetDiskFreeSpaceUNC( const char *fs_path )
 }
 
 #if 0
-static long GetClusterSizeUNC( const char *fs_path )
-/**************************************************/
+static long GetBlockSizeUNC( const char *fs_path )
+/************************************************/
 {
     long        size = 0;
-#ifdef __NT__
-    DWORD       sectors_per_cluster;
-    DWORD       bytes_per_sector;
-    DWORD       avail_clusters;
-    DWORD       total_of_clusters;
-    VBUF        root;
-#else
     struct diskfree_t info;
+#ifdef __NT__
+    VBUF        root;
 #endif
 
 #ifdef __NT__
     VbufInit( &root );
     if( GetRootFromPathUNC( &root, fs_path ) ) {
-        if( GetDiskFreeSpace( VbufString( &root ), &sectors_per_cluster, &bytes_per_sector,
-                              &avail_clusters, &total_of_clusters ) ) {
-            size = sectors_per_cluster * bytes_per_sector;
+        if( GetDiskFreeSpace( VbufString( &root ), &info.sectors_per_cluster,
+                &info.bytes_per_sector, &info.avail_clusters,
+                &info.total_clusters ) ) {
+            size = (long)info.sectors_per_cluster * info.bytes_per_sector;
         }
     }
     VbufFree( &root );
@@ -983,21 +976,17 @@ static bool DriveInfoIsAvailableUNC( const char *fs_path )
 /********************************************************/
 {
     bool        ok = false;
-#ifdef __NT__
-    DWORD       sectors_per_cluster;
-    DWORD       bytes_per_sector;
-    DWORD       avail_clusters;
-    DWORD       total_clusters;
-    VBUF        root;
-#else
     struct diskfree_t info;
+#ifdef __NT__
+    VBUF        root;
 #endif
 
 #ifdef __NT__
     VbufInit( &root );
     if( GetRootFromPathUNC( &root, fs_path ) ) {
-        if( GetDiskFreeSpace( VbufString( &root ), &sectors_per_cluster, &bytes_per_sector,
-                              &avail_clusters, &total_clusters ) ) {
+        if( GetDiskFreeSpace( VbufString( &root ), &info.sectors_per_cluster,
+                &info.bytes_per_sector, &info.avail_clusters,
+                &info.total_clusters ) ) {
             ok = true;
         }
     }
