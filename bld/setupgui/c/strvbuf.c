@@ -507,7 +507,9 @@ void VbufMakepath(              // SET A FILE PATH NAME TO VBUF
         if( VbufLen( drive ) > 0 ) {
 #if defined( __UNIX__ )
             VbufConcVbuf( full, drive );
-            /* if node did not end in '/' then put in a provisional one */
+            /*
+             * if node did not end in '/' then put in a provisional one
+             */
             if( VbufString( full )[VbufLen( full ) - 1] != DIR_SEP ) {
                 VbufConcChr( full, DIR_SEP );
             }
@@ -560,16 +562,17 @@ void VbufSplitpath(             // GET A FILE PATH COMPONENTS FROM VBUF
     VBUF *dir,                  // - VBUF for directory
     VBUF *name,                 // - VBUF for name
     VBUF *ext )                 // - VBUF for extension
-{
-/* split full QNX path name into its components */
-
-/* Under QNX we will map drive to node, dir to dir, and
+/**********************************************************************
+ * split full path name into its components
+ *
+ * Under QNX we will map 'drive' to 'node' and
+ * under Netware, 'drive' maps to 'volume'
+ * rest is maped
+ * dir to dir
  * filename to (filename and extension)
  *          or (filename) if no extension requested.
  */
-
-/* Under Netware, 'drive' maps to 'volume' */
-
+{
     const char *dotp;
     const char *namep;
     const char *startp;
@@ -590,8 +593,12 @@ void VbufSplitpath(             // GET A FILE PATH COMPONENTS FROM VBUF
     }
     path = VbufString( full );
 
-    /* take apart specification like -> //0/hd/user/fred/filename.ext for QNX */
-    /* take apart specification like -> c:\fred\filename.ext for DOS, OS/2 */
+    /*
+     * take apart specification
+     *
+     * for QNX like -> //0/hd/user/fred/filename.ext
+     * for DOS, OS/2 like -> c:\fred\filename.ext
+     */
 
 #if defined(__UNIX__)
 
@@ -641,8 +648,12 @@ void VbufSplitpath(             // GET A FILE PATH COMPONENTS FROM VBUF
 
 #endif
 
-    /* process /user/fred/filename.ext for QNX */
-    /* process /fred/filename.ext for DOS, OS/2 */
+    /*
+     * process
+     *
+     * for QNX /user/fred/filename.ext
+     * for DOS, OS/2 /fred/filename.ext
+     */
     dotp = NULL;
     namep = path;
     startp = path;
