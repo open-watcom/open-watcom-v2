@@ -2552,19 +2552,6 @@ int SimGetTargetNumFiles( int i )
     return( TargetInfo[i].num_files );
 }
 
-void SimSetTargetTempDisk( int i, const char *fs_path )
-/*****************************************************/
-{
-    strncpy( TargetInfo[i].temp_disk, fs_path, _MAX_PATH - 1 );
-    TargetInfo[i].temp_disk[_MAX_PATH - 1] = '\0';
-}
-
-const char *SimGetTargetTempDisk( int i )
-/***************************************/
-{
-    return( TargetInfo[i].temp_disk );
-}
-
 /*
  * =======================================================================
  * API to DirInfo[]
@@ -3454,8 +3441,8 @@ static void FreeSetupInfoVal( void )
 }
 
 
-static void FreeTargetVal( void )
-/*******************************/
+static void FreeTargetInfo( void )
+/********************************/
 {
     int i;
 
@@ -3719,7 +3706,7 @@ static void FreeAssociationInfo( void )
 void FreeAllStructs( void )
 /*************************/
 {
-    FreeTargetVal();
+    FreeTargetInfo();
     FreeDirInfo();
     FreeFileInfo();
     FreeFileCondInfo();

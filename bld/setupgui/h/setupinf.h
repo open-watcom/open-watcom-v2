@@ -138,8 +138,6 @@ extern bool             SimSubFileIsDLL( int parm, int subfile );
 extern bool             SimSubFileReadOnly( int parm, int subfile );
 extern long             SimSubFileSize( int parm, int subfile );
 extern long             SimInit( const VBUF *inf_name );
-extern void             SimSetTargetTempDisk( int parm, const char *fs_path );
-extern const char       *SimGetTargetTempDisk( int parm );
 extern int              SimGetTargetNumFiles( int parm );
 extern int              SimNumTargets( void );
 extern disk_ssize       SimTargetSpaceNeeded( int parm );
