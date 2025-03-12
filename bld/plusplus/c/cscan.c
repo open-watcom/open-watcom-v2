@@ -209,6 +209,39 @@ static bool doScanHex( bool expanding )
     return( true );                 /* indicate characters were matched */
 }
 
+
+static bool doScanBin( bool expanding )
+/*************************************/
+/* scan a binary constant */
+{
+    int c;
+    struct {
+        unsigned too_big        : 1;
+        unsigned at_least_one   : 1;
+    } flag;
+
+    flag.too_big = false;
+    flag.at_least_one = false;
+    c = NextChar();
+    while( c == '0' || c == '1' ) {
+        if( U64Cnv2( &Constant64, DEC2BIN( c ) ) ) {
+            flag.too_big = true;
+        }
+        flag.at_least_one = true;
+        c = WriteBufferCharNextChar( c );
+    }
+    if( !flag.at_least_one ) {
+        /* the C compiler produces a meaningful error for this case */
+        return( false );            /* indicate no characters matched */
+    }
+    if( flag.too_big ) {
+        if( diagnose_lex_error( expanding ) ) {
+            CErr1( WARN_CONSTANT_TOO_BIG );
+        }
+    }
+    return( true );                 /* indicate characters were matched */
+}
+
 static void prt_comment_char( int c )
 {
     switch( c ) {
@@ -835,6 +868,22 @@ static TOKEN doScanNum( bool expanding )
                     unGetChar( CurrChar );      /* put character after 'x' back */
                     CurrChar = c;               /* set current character to 'x' */
                     --TokenLen;                 /* remove character 'x' from Buffer */
+                }
+            }
+        } else if(( ONE_CASE_EQUAL( c, 'B' )) &&
+                  ( CompFlags.extensions_enabled ||
+                    CHECK_STD( >= , CXX14 ))) {
+
+            WriteBufferChar( c );
+            if( doScanBin( expanding ) ) {
+                c = CurrChar;                   /* get next character */
+            } else {
+                if( diagnose_lex_error( expanding ) ) {
+                    CErr1( ERR_INVALID_BINARY_CONSTANT );
+                } else {
+                    unGetChar( CurrChar );      /* put character after 'b' back */
+                    CurrChar = c;               /* set current character to 'b' */
+                    --TokenLen;                 /* remove character 'b' from Buffer */
                 }
             }
         } else {                    /* scan octal number */

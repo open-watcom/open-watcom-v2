@@ -74,6 +74,9 @@ opt_diag0287 = -dMACRO_0287=1
 opt_diag0292 = -zpw -zk0
 opt_diag0296 = -jw
 opt_diag0306 = -za0x
+opt_diag0315 = -za
+opt_diag0316 = -ze
+
 
 diags_sys_i86_defn =
 
@@ -400,6 +403,9 @@ diags_0399_defn = &
     diag0312$(err_sin) &
     diag0313$(err_sin) &
     diag0314$(err_sin) &
+    diag0315$(err_sin) &
+    diag0316$(err_sin) &
+
 
 err_sin = .err
 err_sys = .ser

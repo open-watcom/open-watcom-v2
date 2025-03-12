@@ -102,6 +102,8 @@ no_br_except30 = no
 # special options
 #
 opt_assert1 = -za0x
+opt_binary01 = -zastd=c++14 -za
+opt_binary02 = -zastd=c++98 -ze
 opt_cdisp13 = -xr
 opt_cltemp17 = -za0x
 opt_cmdln01 = -d+XXX=0+1
@@ -203,6 +205,8 @@ positive_tests = &
     bf02.$(ext) &
     bf03.$(ext) &
     bf05.$(ext) &
+    binary01.$(ext) &
+    binary02.$(ext) &
     bool01.$(ext) &
     bool02.$(ext) &
     bool03.$(ext) &
