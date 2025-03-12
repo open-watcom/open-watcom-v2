@@ -216,7 +216,7 @@ static bool DoMainLoop( dlg_state *state )
         if( stricmp( diag_list[i], "GetDiskSizesHere" ) == 0 ) {
             if( *state == DLG_NEXT ) {
                 SimSetNeedGetDiskSizes();
-                ResetDiskInfo();
+                ResetFSInfo();
                 got_disk_sizes = true;
             }
         } else {

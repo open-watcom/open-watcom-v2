@@ -226,9 +226,9 @@ static struct dir_info {
 static struct target_info {
     char                *name;
     disk_ssize          space_needed;
-    int                 file_system;
+    int                 fsys_id;
     int                 num_files;
-    char                *temp_disk;
+    char                *fsys;
     boolbit             supplemental    : 1;
     boolbit             needs_update    : 1;
 } *TargetInfo = NULL;
@@ -2098,12 +2098,12 @@ static bool ProcLine( char *line, pass_type pass )
           && stricmp( next, "supplemental" ) == 0 ) {
             TargetInfo[num].supplemental = true;
         }
-        TargetInfo[num].temp_disk = GUIMemAlloc( _MAX_PATH );
-        if( TargetInfo[num].temp_disk == NULL ) {
+        TargetInfo[num].fsys = GUIMemAlloc( _MAX_PATH );
+        if( TargetInfo[num].fsys == NULL ) {
             return( false );
         }
-        TargetInfo[num].temp_disk[0] = '\0';
-        TargetInfo[num].file_system = -1;
+        TargetInfo[num].fsys[0] = '\0';
+        TargetInfo[num].fsys_id = -1;
         break;
     case RS_LABEL:
         num = SetupInfo.label.num;
@@ -3142,15 +3142,15 @@ const char *SimGetTargetFullPath( int parm, VBUF *buff )
   #endif
     } else if( p[0] == '\\'
       && p[1] != '\\' ) {
-      	/* no-drive, root */
+        /* no-drive, root */
         getcwd( temp_buf, sizeof( temp_buf ) );
         VbufPrepChr( buff, ':' );
         VbufPrepChr( buff, temp_buf[0] );
     } else if( p[0] != '\0'
       && p[1] == ':' ) {
-      	/* drive */
+        /* drive */
         if( p[2] != '\\' ) {
-        	/* drive, no-root */
+            /* drive, no-root */
             _fullpath( temp_buf, p, sizeof( temp_buf ) );
             VbufSetStr( buff, temp_buf );
         }
@@ -3324,7 +3324,7 @@ static void CalcAddRemove( void )
             DirInfo[dir_index].num_files += FileInfo[i].num_files;
         }
         TargetInfo[target_index].num_files += FileInfo[i].num_files;
-        block_size = GetBlockSize( TargetInfo[target_index].temp_disk );
+        block_size = GetFSInfoBlockSize( TargetInfo[target_index].fsys );
         FileInfo[i].remove = remove;
         FileInfo[i].add = add;
         for( k = 0; k < FileInfo[i].num_files; ++k ) {
@@ -3369,7 +3369,7 @@ static void CalcAddRemove( void )
         /* Estimate space used for directories. Be generous. */
         if( !uninstall ) {
             for( i = 0; i < SetupInfo.target.num; ++i ) {
-                block_size = GetBlockSize( TargetInfo[i].temp_disk );
+                block_size = GetFSInfoBlockSize( TargetInfo[i].fsys );
                 for( j = 0; j < SetupInfo.dirs.num; ++j ) {
                     if( DirInfo[j].target != i )
                         continue;
@@ -3413,11 +3413,11 @@ bool SimCalcTargetSpaceNeeded( void )
             ok = false;
             break;
         }
-        strcpy( TargetInfo[i].temp_disk, temp_buf );
+        strcpy( TargetInfo[i].fsys, temp_buf );
         TargetInfo[i].space_needed = 0;
         TargetInfo[i].num_files = 0;
         TargetInfo[i].needs_update = false;
-        TargetInfo[i].file_system = -1;
+        TargetInfo[i].fsys_id = -1;
     }
     VbufFree( &temp_vbuf );
     /*
@@ -3470,7 +3470,7 @@ static void FreeTargetInfo( void )
     if( TargetInfo != NULL ) {
         for( i = 0; i < SetupInfo.target.num; i++ ) {
             GUIMemFree( TargetInfo[i].name );
-            GUIMemFree( TargetInfo[i].temp_disk );
+            GUIMemFree( TargetInfo[i].fsys );
         }
         GUIMemFree( TargetInfo );
         TargetInfo = NULL;
