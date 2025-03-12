@@ -75,7 +75,7 @@
 #define MAX_DRIVES      (1 + DRIVE_NUM('Z'))
 #endif
 
-#define TMPFILENAME "_watcom_.tmp"
+#define TMPFILENAME     "_watcom_.tmp"
 
 #define TEST_UNC(x)     (x[0] == '\\' && x[1] == '\\')
 #define TEST_DRIVE(x)   (isalpha( x[0] ) && x[1] == ':')
@@ -86,6 +86,16 @@ typedef struct def_var {
     struct def_var      *link;
 } DEF_VAR;
 
+typedef struct {
+    disk_size           free_space;
+    unsigned long       block_size;
+#if !defined( __UNIX__ )
+    bool                use_target_for_tmp_file;
+    bool                fixed;
+    bool                removable;
+#endif
+} drive_info;
+
 bool            ConfigModified = false;
 bool            SkipDialogs;
 char            *VariablesFile;
@@ -94,6 +104,8 @@ bool            Invisible;
 bool            ProgramGroups;
 bool            StartupChange;
 char            InstallerFile[_MAX_PATH] = { 0 };
+
+static drive_info       Drives[MAX_DRIVES];
 
 void ConcatDirSep( char *dir )
 /****************************/
@@ -248,15 +260,6 @@ bool ModifyUninstall( bool uninstall )
 }
 
 #if !defined( __UNIX__ )
-typedef struct {
-    disk_size           free_space;
-    unsigned long       block_size;
-    bool                use_target_for_tmp_file;
-    bool                fixed;
-    bool                removable;
-} drive_info;
-
-static drive_info       Drives[MAX_DRIVES];
 
 #if defined( __DOS__ )
 
@@ -276,7 +279,8 @@ typedef __far (HANDLER)( unsigned deverr, unsigned errcode, unsigned __far *devh
 static void NoHardErrors( void )
 /******************************/
 {
-#if defined( __OS2__ )
+#if defined( __UNIX__ )
+#elif defined( __OS2__ )
     DosError( FERR_DISABLEHARDERR );
 #elif defined( __DOS__ )
     _harderr( (HANDLER *)critical_error_handler );
@@ -478,33 +482,24 @@ void DoSpawn( when_time when )
 
 #if !defined( __UNIX__ )
 
-#if defined( UNC_SUPPORT )
-static void GetTmpFileNameUNC( const char *fs_path, VBUF *buff )
-/**************************************************************/
+static void GetTmpFileName( const char *fs_path, VBUF *buff )
+/***********************************************************/
 {
     if( fs_path == NULL
       || buff == NULL ) {
         return;
     }
     VbufRewind( buff );
+#if defined( UNC_SUPPORT )
     if( TEST_UNC( fs_path ) ) {
         VbufConcStr( buff, fs_path );
         VbufAddDirSep( buff );
         VbufConcStr( buff, TMPFILENAME );
-    } else {
-        VbufConcChr( buff, fs_path[0] );
-        VbufConcStr( buff, ":\\" TMPFILENAME );
+        return;
     }
-}
 #endif
-
-static void GetTmpFileName( const char *fs_path, VBUF *buff )
-/***********************************************************/
-{
-    VbufSetChr( buff, fs_path[0] );
-    VbufConcChr( buff, DRIVE_SEP );
-    VbufConcChr( buff, DIR_SEP );
-    VbufConcStr( buff, TMPFILENAME );
+    VbufConcChr( buff, fs_path[0] );
+    VbufConcStr( buff, ":\\" TMPFILENAME );
 }
 
 static void GetTmpFileNameInTarget( const char *fs_path, VBUF *buff )
@@ -532,13 +527,11 @@ static void GetTmpFileNameInTarget( const char *fs_path, VBUF *buff )
 void ResetDriveInfo( void )
 /*************************/
 {
-#if !defined( __UNIX__ )
     int         i;
 
     for( i = 0; i < MAX_DRIVES; ++i ) {
         Drives[i].block_size = 0;
     }
-#endif
 }
 
 #if !defined( __UNIX__ )
@@ -586,14 +579,9 @@ static int GetDriveInfo( const char *fs_path, bool removable )
                     short   attrs;
                 } ret;
 
-                #define BUF_SIZE    40
-
-                UCHAR           fsinfobuf[BUF_SIZE];
+                FSALLOCATE      fsalloc;
                 APIRET          rc;
 
-                ULONG           sectors_per_cluster;    /* sectors per allocation unit */
-                ULONG           free_clusters;          /* available units */
-                ULONG           bytes_per_sector;       /* bytes per sector */
                 parm            p;
                 ret             r;
                 ULONG           parmLengthInOut;
@@ -605,7 +593,7 @@ static int GetDriveInfo( const char *fs_path, bool removable )
                 } dataBuffer;
                 ULONG           dataBufferLen;
 
-                rc = DosQueryFSInfo( (ULONG)drive_num, FSIL_ALLOC, fsinfobuf, BUF_SIZE );
+                rc = DosQueryFSInfo( (ULONG)drive_num, FSIL_ALLOC, (PVOID)&fsalloc, sizeof( fsalloc ) );
 
                 if( rc == 0 ) {
                     /*
@@ -614,11 +602,8 @@ static int GetDriveInfo( const char *fs_path, bool removable )
                      * which one must extract info as below. See OS/2 Manual
                      * for clarification.
                      */
-                    sectors_per_cluster = *(ULONG *)(fsinfobuf + (1 * sizeof( ULONG )));
-                    free_clusters = *(ULONG *)(fsinfobuf + (3 * sizeof( ULONG )));
-                    bytes_per_sector = *(USHORT *)(fsinfobuf + (4 * sizeof( ULONG )));
-                    info->block_size = sectors_per_cluster * bytes_per_sector;
-                    info->free_space = (disk_size)free_clusters * (ULONG)info->block_size;
+                    info->block_size = fsalloc.cSectorUnit * fsalloc.cbSector;
+                    info->free_space = (disk_size)fsalloc.cUnitAvail * (ULONG)info->block_size;
                 } else {
                     info->free_space = (disk_size)-1;
                 }
@@ -793,9 +778,7 @@ static disk_size GetDriveInfoFreeSpace( const char *fs_path, bool removable )
 void ResetDiskInfo( void )
 /************************/
 {
-#if !defined( __UNIX__ )
     memset( Drives, 0, sizeof( Drives ) );
-#endif
 }
 
 unsigned GetBlockSize( const char *fs_path )
@@ -926,7 +909,7 @@ static long GetBlockSizeUNC( const char *fs_path )
     VbufInit( &root );
     if( GetRootFromPathUNC( &root, fs_path ) ) {
         if( GetDiskFreeSpace( VbufString( &root ), &sectors_per_cluster,
-        		&bytes_per_sector, &avail_clusters, &total_of_clusters ) ) {
+                        &bytes_per_sector, &avail_clusters, &total_of_clusters ) ) {
             size = sectors_per_cluster * bytes_per_sector;
         }
     }
@@ -959,7 +942,7 @@ static bool IsDriveWritableUNC( const char *fs_path )
 
     ok = GetRootFromPathUNC( &root, fs_path ) != 0;
     if( ok ) {
-        GetTmpFileNameUNC( VbufString( &root ), &temp_vbuf );
+        GetTmpFileName( VbufString( &root ), &temp_vbuf );
         io = open_vbuf( &temp_vbuf, O_RDWR | O_CREAT | O_TRUNC, PMODE_RW );
         ok = io != -1;
         if( ok ) {
@@ -1326,7 +1309,6 @@ bool CheckDrive( bool issue_message )
         VbufInit( &unc_root1 );
 #endif
         for( i = 0; i < max_targets; ++i ) {
-            strcpy( drive_freesp, "DriveFreeN" );
             if( *space[i].unc_drive != '\0'
               && SimTargetNeedsUpdate( i ) ) {
 #ifdef UNC_SUPPORT
@@ -1351,7 +1333,6 @@ bool CheckDrive( bool issue_message )
             } else {
                 buff[0] = '\0';
             }
-            drive_freesp[strlen( drive_freesp ) - 1] = i + 1 + '0';
 #ifdef UNC_SUPPORT
             if( TEST_UNC( space[i].unc_drive )
               && (!DriveInfoIsAvailableUNC( space[i].unc_drive )
@@ -1359,6 +1340,7 @@ bool CheckDrive( bool issue_message )
                 strcpy( buff, "" );
             }
 #endif
+            sprintf( drive_freesp, "DriveFree%d", i + 1 );
             SetVariableByName( drive_freesp, buff );
         }
 #ifdef UNC_SUPPORT
