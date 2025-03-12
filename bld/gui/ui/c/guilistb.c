@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -153,7 +153,7 @@ a_list *GUICreateEditMLE( const char *text )
         GUIMemFree( list );
         list = NULL;
     } else {
-        text_copy = GUIStrDup( text, NULL );
+        text_copy = GUIStrDup( text );
         line = text_copy;
         absolute_end = text_copy + strlen( text_copy );
         end = strstr( line, MLE_NEWLINE );
@@ -279,7 +279,7 @@ char *GUIGetListBoxText( a_list *list, int choice, bool get_curr )
     if( get_curr ) {
         choice = list->choice;
     }
-    return( GUIStrDup( data[choice], NULL ) );
+    return( GUIStrDup( data[choice] ) );
 }
 
 bool GUIListGetCurr( a_list *list, int *choice )

@@ -1192,7 +1192,7 @@ bool CheckDrive( bool issue_message )
             break;
         }
         VbufAddDirSep( &temp_vbuf );
-        unc_disks[i] = GUIStrDup( VbufString( &temp_vbuf ), NULL );
+        unc_disks[i] = GUIStrDup( VbufString( &temp_vbuf ) );
         disk_counted[i] = false;
     }
     VbufFree( &temp_vbuf );
@@ -2437,8 +2437,8 @@ static void AddDefine( char *def )
         *p = '\0';
         ++p;
         var = GUIMemAlloc( sizeof( DEF_VAR ) );
-        var->variable = GUIStrDup( def, NULL );
-        var->value = GUIStrDup( p, NULL );
+        var->variable = GUIStrDup( def );
+        var->value = GUIStrDup( p );
         var->link = ExtraVariables;
         ExtraVariables = var;
     }
@@ -2592,7 +2592,7 @@ bool GetDirParams( int argc, char **argv, VBUF *inf_name, VBUF *src_path, VBUF *
                   && argv[i][3] != '\0'
                   && access( &argv[i][3], R_OK ) == 0 ) {
                     GUIMemFree( VariablesFile );
-                    VariablesFile = GUIStrDup( &argv[i][3], NULL );
+                    VariablesFile = GUIStrDup( &argv[i][3] );
                 }
                 break;
             case 'd':

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2018-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2018-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -129,7 +129,7 @@ bool GUIAPI GUIDrawStatusText( gui_window *wnd, const char *text )
     if( wnd->status->text != NULL ) {
         GUIMemFree( wnd->status->text );
     }
-    wnd->status->text = GUIStrDup( text, &ok );
+    wnd->status->text = GUIStrDupOK( text, &ok );
     GUIDrawStatus( wnd );
     if( GUI_WND_VISIBLE( wnd ) ) {
         uirefresh();

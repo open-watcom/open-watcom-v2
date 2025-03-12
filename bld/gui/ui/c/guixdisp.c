@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -201,7 +201,7 @@ static char *tabFilter( const char *message )
 
     /* allocate another chunk of memory since */
     /* reallocating space for string literals is a no no */
-    new_message = (char *)GUIStrDup( message, NULL );
+    new_message = (char *)GUIStrDup( message );
     for( ;; ) {
         tab_pos = strcspn( new_message, "\t" );
         len = strlen( new_message );
@@ -292,7 +292,7 @@ static bool getNumStringControls( int *num_controls, const char *old_message, st
         *info = new_info;
         *num_controls = new_num;
         new_info[new_num - 1].length = len;
-        new_info[new_num - 1].text = GUIStrDupLen( start, len, &ok );
+        new_info[new_num - 1].text = GUIStrDupLenOK( start, len, &ok );
         if( !ok ) {
             break;
         }

@@ -679,7 +679,7 @@ static void CheckAutoLine( char *line, int num_auto, bool *found_auto, bool unin
               || ( VbufCompExt( &fext, "com", true ) != 0
               && VbufLen( &fext ) > 0 ) )
                 break;
-            WinDotCom = GUIStrDup( line, NULL );
+            WinDotCom = GUIStrDup( line );
             line[0] = '\0';
         }
         VbufFree( &fext );

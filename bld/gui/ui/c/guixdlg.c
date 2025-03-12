@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -435,7 +435,7 @@ bool GUIDoAddControl( gui_control_info *ctl_info, gui_window *wnd, VFIELD *field
                 return( false );
             }
             RadioGroup->value = -1;
-            RadioGroup->caption = GUIStrDup( ctl_info->text, &ok );
+            RadioGroup->caption = GUIStrDupOK( ctl_info->text, &ok );
             if( !ok ) {
                 CleanUpRadioGroups();
                 return( false );
@@ -466,7 +466,7 @@ bool GUIDoAddControl( gui_control_info *ctl_info, gui_window *wnd, VFIELD *field
         field->u.radio = radio;
         ok = false;
         if( radio != NULL ) {
-            radio->str = GUIStrDup( ctl_info->text, &ok );
+            radio->str = GUIStrDupOK( ctl_info->text, &ok );
         }
         if( !ok ) {
             if( group_allocated ) {
@@ -486,7 +486,7 @@ bool GUIDoAddControl( gui_control_info *ctl_info, gui_window *wnd, VFIELD *field
         field->u.check = check;
         ok = false;
         if( check != NULL )
-            check->str = GUIStrDup( ctl_info->text, &ok );
+            check->str = GUIStrDupOK( ctl_info->text, &ok );
         if( !ok ) {
             return( false );
         }
@@ -540,7 +540,7 @@ bool GUIDoAddControl( gui_control_info *ctl_info, gui_window *wnd, VFIELD *field
         break;
     case FLD_TEXT:
     case FLD_FRAME:
-        field->u.str = GUIStrDup( ctl_info->text, &ok );
+        field->u.str = GUIStrDupOK( ctl_info->text, &ok );
         if( !ok ) {
             return( false );
         }
@@ -831,7 +831,7 @@ bool GUIXCreateDialog( gui_create_info *dlg_info, gui_window *wnd,
     }
     CleanUpRadioGroups();
     fields[num_controls].typ = FLD_NONE;    /* mark end of list, last item must be FLD_NONE typ */
-    title = GUIStrDup( dlg_info->title, &ok );
+    title = GUIStrDupOK( dlg_info->title, &ok );
     if( !ok ) {
         GUIFreeDialog( ui_dlg_info, fields, title, colours_set, true );
         return( false );

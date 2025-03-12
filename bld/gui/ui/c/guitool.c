@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -303,7 +303,7 @@ bool GUIXCreateToolBarWithTips( gui_window *wnd, bool fixed, gui_ord height,
         }
         memset( new_toolinfo, 0, size );
         for( i = 0; i < toolinfo->num_items; i++ ) {
-            new_toolinfo[i].label = GUIStrDup( toolinfo->toolbar[i].label, &ok );
+            new_toolinfo[i].label = GUIStrDupOK( toolinfo->toolbar[i].label, &ok );
             if( !ok ) {
                 while( i-- > 0  ) {
                     GUIMemFree( (void *)new_toolinfo[i].label );

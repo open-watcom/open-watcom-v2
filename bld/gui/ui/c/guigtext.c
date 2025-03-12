@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -52,28 +52,28 @@ static char *GetText( gui_window *wnd, gui_ctl_id id, int choice, bool get_curr 
     if( field != NULL ) {
         switch( field->typ ) {
         case FLD_CHECK:
-            text = GUIStrDup( field->u.check->str, &ok );
+            text = GUIStrDupOK( field->u.check->str, &ok );
             if( ok ) {
                 return( text );
             }
             break;
 
         case FLD_RADIO:
-            text = GUIStrDup( field->u.radio->str, &ok );
+            text = GUIStrDupOK( field->u.radio->str, &ok );
             if( ok ) {
                 return( text );
             }
             break;
 
         case FLD_HOT:
-            text = GUIStrDup( field->u.hs->str, &ok );
+            text = GUIStrDupOK( field->u.hs->str, &ok );
             if( ok ) {
                 return( text );
             }
             break;
 
         case FLD_TEXT:
-            text = GUIStrDup( field->u.str, &ok );
+            text = GUIStrDupOK( field->u.str, &ok );
             if( ok ) {
                 return( text );
             }
