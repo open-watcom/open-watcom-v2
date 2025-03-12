@@ -796,7 +796,7 @@ unsigned GetFSInfoBlockSize( const char *fsys )
 }
 
 #if defined( UNC_SUPPORT )
-static bool GetRootFromPathUNC( VBUF *root, const char *fsys )
+static bool GetFSInfoRootUNC( VBUF *root, const char *fsys )
 /************************************************************/
 {
     char        curr_dir[_MAX_PATH];
@@ -807,15 +807,6 @@ static bool GetRootFromPathUNC( VBUF *root, const char *fsys )
         return( false );
     }
     VbufRewind( root );
-    if( TEST_DRIVE( fsys ) ) {
-        /*
-         * turn a path like "c:\dir" into "c:\"
-         */
-        VbufConcChr( root, fsys[0] );
-        VbufConcChr( root, fsys[1] );
-        VbufConcChr( root, DIR_SEP );
-        return( true );
-    }
     if( TEST_UNC( fsys ) ) {
         const char  *index;
         int         i;
@@ -842,6 +833,15 @@ static bool GetRootFromPathUNC( VBUF *root, const char *fsys )
          * invalid UNC name such as: "\\missingshare\"
          */
         return( false );
+    }
+    if( TEST_DRIVE( fsys ) ) {
+        /*
+         * turn a path like "c:\dir" into "c:\"
+         */
+        VbufConcChr( root, fsys[0] );
+        VbufConcChr( root, fsys[1] );
+        VbufConcChr( root, DIR_SEP );
+        return( true );
     }
     /*
      * for relative paths like "\dir" use the current drive.
@@ -873,7 +873,7 @@ static disk_size GetFSInfoFreeSpaceUNC( const char *fsys )
 
 #ifdef __NT__
     VbufInit( &root );
-    if( GetRootFromPathUNC( &root, fsys ) ) {
+    if( GetFSInfoRootUNC( &root, fsys ) ) {
         if( GetDiskFreeSpace( VbufString( &root ), &sectors_per_cluster, &bytes_per_sector, &avail_clusters, &total_clusters ) ) {
             size = (disk_size)sectors_per_cluster * (disk_size)bytes_per_sector * (disk_size)avail_clusters ;
         }
@@ -906,7 +906,7 @@ static long GetFSInfoBlockSizeUNC( const char *fsys )
 
 #ifdef __NT__
     VbufInit( &root );
-    if( GetRootFromPathUNC( &root, fsys ) ) {
+    if( GetFSInfoRootUNC( &root, fsys ) ) {
         if( GetDiskFreeSpace( VbufString( &root ), &sectors_per_cluster,
                         &bytes_per_sector, &avail_clusters, &total_of_clusters ) ) {
             size = sectors_per_cluster * bytes_per_sector;
@@ -939,7 +939,7 @@ static bool IsFSWritableUNC( const char *fsys )
     VbufInit( &root );
     VbufInit( &temp_vbuf );
 
-    ok = GetRootFromPathUNC( &root, fsys ) != 0;
+    ok = GetFSInfoRootUNC( &root, fsys ) != 0;
     if( ok ) {
         GetTmpFileName( VbufString( &root ), &temp_vbuf );
         io = open_vbuf( &temp_vbuf, O_RDWR | O_CREAT | O_TRUNC, PMODE_RW );
@@ -973,7 +973,7 @@ static bool FSInfoIsAvailableUNC( const char *fsys )
 
 #ifdef __NT__
     VbufInit( &root );
-    if( GetRootFromPathUNC( &root, fsys ) ) {
+    if( GetFSInfoRootUNC( &root, fsys ) ) {
         if( GetDiskFreeSpace( VbufString( &root ), &sectors_per_cluster,
                 &bytes_per_sector, &avail_clusters, &total_clusters ) ) {
             ok = true;
@@ -1038,11 +1038,7 @@ static void MakeParentDir( const VBUF *dir, pgroup2 *pg )
     VbufConcStr( &parent, pg->drive );
     VbufConcStr( &parent, pg->dir );
     MakeParentDir( &parent, pg );
-#if defined( __UNIX__ )
-    mkdir_vbuf( &parent, PMODE_RWX );
-#else
     mkdir_vbuf( &parent );
-#endif
     VbufFree( &parent );
 }
 
@@ -1054,15 +1050,13 @@ static bool CreateDstDir( int i, VBUF *buff )
  * else try and create directory
  */
 {
-    bool                ok;
     int                 parent;
     pgroup2             pg;
 
     parent = SimDirParent( i );
     if( parent != -1 ) {
-        ok = CreateDstDir( parent, buff );
-        if( !ok ) {
-            return( false );
+        if( CreateDstDir( parent, buff ) ) {
+            return( true );
         }
     }
     SimDirNoEndSlash( i, buff );
@@ -1070,16 +1064,12 @@ static bool CreateDstDir( int i, VBUF *buff )
      * check for existence
      */
     if( access_vbuf( buff, F_OK ) == 0 )
-        return( true );
+        return( false );
     MakeParentDir( buff, &pg );
-#if defined( __UNIX__ )
-    if( mkdir_vbuf( buff, PMODE_RWX ) == 0 )
-#else
     if( mkdir_vbuf( buff ) == 0 )
-#endif
-        return( true );
+        return( false );
     MsgBoxVbuf( NULL, "IDS_CANTMAKEDIR", GUI_OK, buff );
-    return( false );
+    return( true );
 }
 
 #define KB  1024UL
@@ -1220,8 +1210,8 @@ bool CheckDrive( bool issue_message )
                 disk_space_needed = SimTargetSpaceNeeded( i );
                 for( j = i + 1; j < max_targets; ++j ) {
 #ifdef UNC_SUPPORT
-                    GetRootFromPathUNC( &unc_root1, unc_disks[i] );
-                    GetRootFromPathUNC( &unc_root2, unc_disks[j] );
+                    GetFSInfoRootUNC( &unc_root1, unc_disks[i] );
+                    GetFSInfoRootUNC( &unc_root2, unc_disks[j] );
                     /*
                      * identical drives are combined, and so are UNC paths
                      * pointing to the same share
@@ -1244,7 +1234,7 @@ bool CheckDrive( bool issue_message )
                 if( TEST_UNC( unc_disks[i] ) ) {
                     if( !IsFSWritableUNC( unc_disks[i] ) ) {
                         if( issue_message ) {
-                            GetRootFromPathUNC( &unc_root1, unc_disks[i] );
+                            GetFSInfoRootUNC( &unc_root1, unc_disks[i] );
                             if( access_vbuf( &unc_root1, F_OK ) == 0 ) {
                                 MsgBoxVbuf( NULL, "IDS_UNCPATH_NOTWRITABLE", GUI_OK, &unc_root1 );
                             } else {
@@ -1278,7 +1268,7 @@ bool CheckDrive( bool issue_message )
                                                 unc_disks[i], free_disk_space / 1000,
                                                 disk_space_needed / 1000 );
                             } else {
-                                GetRootFromPathUNC( &unc_root1, unc_disks[i] );
+                                GetFSInfoRootUNC( &unc_root1, unc_disks[i] );
                                 reply = MsgBoxVbuf( NULL, "IDS_ASSUME_ENOUGHSPACE", GUI_YES_NO, &unc_root1 );
                             }
                         } else {
@@ -1312,7 +1302,7 @@ bool CheckDrive( bool issue_message )
               && SimTargetNeedsUpdate( i ) ) {
 #ifdef UNC_SUPPORT
                 if( TEST_UNC( space[i].unc_drive ) ) {
-                    GetRootFromPathUNC( &unc_root1, space[i].unc_drive );
+                    GetFSInfoRootUNC( &unc_root1, space[i].unc_drive );
                     sprintf( buff, GetVariableStrVal( "IDS_DRIVE_SPEC_UNC" ), &unc_root1 );
                 } else {
 #endif
@@ -1521,7 +1511,7 @@ static bool CreateDirectoryTree( void )
     ok = true;
     for( i = 0; i < max_dirs; i++ ) {
         if( SimDirUsed( i ) ) {
-            if( !CreateDstDir( i, &dst_path ) ) {
+            if( CreateDstDir( i, &dst_path ) ) {
                 ok = false;
                 break;
             }

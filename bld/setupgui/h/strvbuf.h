@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -245,7 +245,7 @@ void VbufSetPathExt(            // SET A FILE EXTENSION FOR FILE PATH IN VBUF
 #define utime_vbuf(n,s)             utime(VbufString(n), s)
 #define stat_vbuf(n,s)              stat(VbufString(n), s)
 #ifdef __UNIX__
-#define mkdir_vbuf(n,m)             mkdir(VbufString(n), m)
+#define mkdir_vbuf(n)               mkdir(VbufString(n), PMODE_RWX)
 #else
 #define mkdir_vbuf(n)               mkdir(VbufString(n))
 #endif
