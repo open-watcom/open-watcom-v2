@@ -140,6 +140,8 @@ extern long             SimSubFileSize( int parm, int subfile );
 extern long             SimInit( const VBUF *inf_name );
 extern int              SimGetTargetNumFiles( int parm );
 extern int              SimNumTargets( void );
+extern bool             SimGetTargetCounted( int i );
+extern bool             SimSetTargetCounted( int i, bool b );
 extern disk_ssize       SimTargetSpaceNeeded( int parm );
 extern void             SimTargetDir( int i, VBUF *buff );
 extern void             SimTargetDirName( int i, VBUF *buff );
