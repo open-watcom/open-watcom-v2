@@ -930,28 +930,25 @@ static bool IsFSWritableUNC( const char *fsys )
     int         io;
     VBUF        temp_vbuf;
     VBUF        root;
-    bool        ok;
+    bool        ok = false;
 
-    if( fsys == NULL ) {
-        return( false );
-    }
+    if( fsys != NULL ) {
+        VbufInit( &root );
+        VbufInit( &temp_vbuf );
 
-    VbufInit( &root );
-    VbufInit( &temp_vbuf );
-
-    ok = GetFSInfoRootUNC( &root, fsys ) != 0;
-    if( ok ) {
-        GetTmpFileName( VbufString( &root ), &temp_vbuf );
-        io = open_vbuf( &temp_vbuf, O_RDWR | O_CREAT | O_TRUNC, PMODE_RW );
-        ok = io != -1;
-        if( ok ) {
-            close( io );
-            remove_vbuf( &temp_vbuf );
+        if( GetFSInfoRootUNC( &root, fsys ) != 0 ) {
+            GetTmpFileName( VbufString( &root ), &temp_vbuf );
+            io = open_vbuf( &temp_vbuf, O_RDWR | O_CREAT | O_TRUNC, PMODE_RW );
+            if( io != -1 ) {
+                close( io );
+                remove_vbuf( &temp_vbuf );
+                ok = true;
+            }
         }
-    }
 
-    VbufFree( &temp_vbuf );
-    VbufFree( &root );
+        VbufFree( &temp_vbuf );
+        VbufFree( &root );
+    }
     return( ok );
 }
 #endif
@@ -1728,7 +1725,7 @@ static bool checkForNewName( int filenum, int subfilenum, VBUF *name )
 /********************************************************************/
 {
     VBUF        ext;
-    bool        rc;
+    bool        rc = false;
 
     VbufInit( &ext );
 
@@ -1744,8 +1741,6 @@ static bool checkForNewName( int filenum, int subfilenum, VBUF *name )
         VbufSetPathExt( name, &ext );
 #endif
         rc = true;
-    } else {
-        rc = false;
     }
 
     VbufFree( &ext );
