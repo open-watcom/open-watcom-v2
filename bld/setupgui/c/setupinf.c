@@ -2569,22 +2569,6 @@ int SimGetTargetNumFiles( int i )
     return( TargetInfo[i].num_files );
 }
 
-bool SimGetTargetMarked( int i )
-/******************************/
-{
-    return( TargetInfo[i].marked );
-}
-
-bool SimSetTargetMarked( int i, bool b )
-/**************************************/
-{
-    bool    old;
-
-    old = TargetInfo[i].marked;
-    TargetInfo[i].marked = b;
-    return( old );
-}
-
 /*
  * =======================================================================
  * API to DirInfo[]
