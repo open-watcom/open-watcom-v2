@@ -225,7 +225,7 @@ static struct dir_info {
 
 static struct target_info {
     char                *name;
-    disk_ssize          space_needed;
+    fsys_ssize          space_needed;
     int                 fsys_id;
     int                 num_files;
     char                *fsys;
@@ -2541,7 +2541,7 @@ bool SimTargetNeedsUpdate( int i )
     return( TargetInfo[i].needs_update );
 }
 
-disk_ssize SimTargetSpaceNeeded( int i )
+fsys_ssize SimTargetSpaceNeeded( int i )
 /**************************************/
 {
     return( TargetInfo[i].space_needed );

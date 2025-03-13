@@ -324,8 +324,8 @@ IDS_NOSETUPINFOFILE=\
     //1"ファイル %s が見つかりません。\nディスケットを確認してください。"\
     //-1
 IDS_NODISKSPACE=\
-    //0"Drive %c: contains %ldK of free disk space.\n@ requires a minimum of %ldK.&\n\nThe installation may fail. Do you want to proceed anyway?"\
-    //1"ドライブ %c: には %ldK のフリーなディスクスペースがあります。\n@ は最低 %ldK 必要です。&\n\nインストールは失敗するかもしれませんが、続けますか?"\
+    //0"Drive %s: contains %ldK of free disk space.\n@ requires a minimum of %ldK.&\n\nThe installation may fail. Do you want to proceed anyway?"\
+    //1"ドライブ %s: には %ldK のフリーなディスクスペースがあります。\n@ は最低 %ldK 必要です。&\n\nインストールは失敗するかもしれませんが、続けますか?"\
     //-1
 IDS_NODISKSPACE_UNC=\
     //0"'%s' contains %ldK of free disk space.\n@ requires a minimum of %ldK.&\n\nThe installation may fail. Do you want to proceed anyway?"\

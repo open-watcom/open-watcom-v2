@@ -87,14 +87,14 @@ typedef struct def_var {
 } DEF_VAR;
 
 typedef struct {
-    disk_size           free_space;
+    fsys_size           free_space;
     unsigned long       block_size;
 #if !defined( __UNIX__ )
     bool                use_target_for_tmp_file;
     bool                fixed;
     bool                removable;
 #endif
-} drive_info;
+} fsys_info;
 
 bool            ConfigModified = false;
 bool            SkipDialogs;
@@ -105,7 +105,7 @@ bool            ProgramGroups;
 bool            StartupChange;
 char            InstallerFile[_MAX_PATH] = { 0 };
 
-static drive_info       Drives[MAX_DRIVES];
+static fsys_info        FsysInfo[MAX_DRIVES];
 
 void ConcatDirSep( char *dir )
 /****************************/
@@ -538,7 +538,7 @@ void ResetDriveInfo( void )
     int         i;
 
     for( i = 0; i < MAX_DRIVES; ++i ) {
-        Drives[i].block_size = 0;
+        FsysInfo[i].block_size = 0;
     }
 }
 
@@ -560,20 +560,20 @@ static int GetFSInfo( const char *fsys, bool removable )
 /******************************************************/
 {
     int         drive_num = 0;
-    drive_info  *info;
+    fsys_info   *info;
 
 #if defined( __UNIX__ )
     /* unused parameters */ (void)fsys;
 #else
     drive_num = GetDriveNum( fsys );
 #endif
-    info = &Drives[drive_num];
+    info = &FsysInfo[drive_num];
     if( (info->block_size == 0
       || removable /* recheck - could have been replaced */) ) {
         if( drive_num == 0 ) {
             info->block_size = 1;
 #if defined( __UNIX__ )
-            info->free_space = (disk_size)-1;
+            info->free_space = (fsys_size)-1;
         }
 #else
             info->free_space = 0;
@@ -618,9 +618,9 @@ static int GetFSInfo( const char *fsys, bool removable )
                      * for clarification.
                      */
                     info->block_size = fsalloc.cSectorUnit * fsalloc.cbSector;
-                    info->free_space = (disk_size)fsalloc.cUnitAvail * (ULONG)info->block_size;
+                    info->free_space = (fsys_size)fsalloc.cUnitAvail * (ULONG)info->block_size;
                 } else {
-                    info->free_space = (disk_size)-1;
+                    info->free_space = (fsys_size)-1;
                 }
                 info->fixed = false;
                 info->removable = false;
@@ -671,9 +671,9 @@ static int GetFSInfo( const char *fsys, bool removable )
                 if( GetDiskFreeSpace( root, &sectors_per_cluster,
                         &bytes_per_sector, &free_clusters, &total_clusters ) ) {
                     info->block_size = bytes_per_sector * sectors_per_cluster;
-                    info->free_space = (disk_size)free_clusters * (disk_size)info->block_size;
+                    info->free_space = (fsys_size)free_clusters * (fsys_size)info->block_size;
                 } else {
-                    info->free_space = (disk_size)-1;
+                    info->free_space = (fsys_size)-1;
                 }
                 drive_type = GetDriveType( root );
                 info->removable = ( drive_type == DRIVE_REMOVABLE );
@@ -687,7 +687,7 @@ static int GetFSInfo( const char *fsys, bool removable )
                 info->removable = false;
                 info->fixed = false;
                 info->block_size = 0;
-                info->free_space = (disk_size)-1;
+                info->free_space = (fsys_size)-1;
                 r.w.ax = 0x440E;    /* get logical drive */
                 r.w.bx = drive_num;
                 intdos( &r, &r );
@@ -719,7 +719,7 @@ static int GetFSInfo( const char *fsys, bool removable )
                     info->block_size = (unsigned long)FreeSpace.sectors_per_cluster *
                                          FreeSpace.bytes_per_sector;
                     info->free_space = FreeSpace.avail_clusters *
-                                       (disk_size)info->block_size;
+                                       (fsys_size)info->block_size;
                     /*
                      * If reported cluster size is ridiculously large,
                      * it's likely faked; assume the real cluster size is
@@ -733,14 +733,14 @@ static int GetFSInfo( const char *fsys, bool removable )
                      * removable media not present
                      */
                     info->block_size = 0;
-                    info->free_space = (disk_size)-1;
+                    info->free_space = (fsys_size)-1;
                 } else {
                     /*
                      * doesn't work on network drive - assume 4K cluster,
                      * max free
                      */
                     info->block_size = 4096;
-                    info->free_space = (disk_size)-1;
+                    info->free_space = (fsys_size)-1;
                 }
             }
     #endif
@@ -766,7 +766,7 @@ static int GetFSInfo( const char *fsys, bool removable )
     // (new installation) and you have insufficient rights to drive root
                 } else {
                     info->block_size = 1;
-                    info->free_space = (disk_size)-1;
+                    info->free_space = (fsys_size)-1;
 #endif
                 }
                 VbufFree( &path );
@@ -777,22 +777,22 @@ static int GetFSInfo( const char *fsys, bool removable )
     return( drive_num );
 }
 
-static disk_size GetFSInfoFreeSpace( const char *fsys, bool removable )
+static fsys_size GetFSInfoFreeSpace( const char *fsys, bool removable )
 /*********************************************************************/
 {
-    return( Drives[GetFSInfo( fsys, removable )].free_space );
+    return( FsysInfo[GetFSInfo( fsys, removable )].free_space );
 }
 
 void ResetFSInfo( void )
 /************************/
 {
-    memset( Drives, 0, sizeof( Drives ) );
+    memset( FsysInfo, 0, sizeof( FsysInfo ) );
 }
 
 unsigned GetFSInfoBlockSize( const char *fsys )
 /*********************************************/
 {
-    return( Drives[GetFSInfo( fsys, false )].block_size );
+    return( FsysInfo[GetFSInfo( fsys, false )].block_size );
 }
 
 #if defined( UNC_SUPPORT )
@@ -857,10 +857,10 @@ static bool GetFSInfoRootUNC( VBUF *root, const char *fsys )
     return( true );
 }
 
-static disk_size GetFSInfoFreeSpaceUNC( const char *fsys )
+static fsys_size GetFSInfoFreeSpaceUNC( const char *fsys )
 /********************************************************/
 {
-    disk_size   size = 0;
+    fsys_size   size = 0;
 #ifdef __NT__
     DWORD       sectors_per_cluster;
     DWORD       bytes_per_sector;
@@ -875,14 +875,14 @@ static disk_size GetFSInfoFreeSpaceUNC( const char *fsys )
     VbufInit( &root );
     if( GetFSInfoRootUNC( &root, fsys ) ) {
         if( GetDiskFreeSpace( VbufString( &root ), &sectors_per_cluster, &bytes_per_sector, &avail_clusters, &total_clusters ) ) {
-            size = (disk_size)sectors_per_cluster * (disk_size)bytes_per_sector * (disk_size)avail_clusters ;
+            size = (fsys_size)sectors_per_cluster * (fsys_size)bytes_per_sector * (fsys_size)avail_clusters ;
         }
     }
     VbufFree( &root );
 #else
     if( TEST_DRIVE( fsys ) ) {
         if( _getdiskfree( GetDriveNum( fsys ), &info ) == 0 ) {
-            size = (disk_size)info.sectors_per_cluster * (disk_size)info.bytes_per_sector * (disk_size)info.avail_clusters;
+            size = (fsys_size)info.sectors_per_cluster * (fsys_size)info.bytes_per_sector * (fsys_size)info.avail_clusters;
         }
     }
 #endif
@@ -1143,8 +1143,8 @@ bool CheckDrive( bool issue_message )
  */
 {
     bool                ok;
-    disk_size           free_disk_space;
-    disk_ssize          disk_space_needed;
+    fsys_size           free_disk_space;
+    fsys_ssize          disk_space_needed;
     int                 max_targets;
     int                 i, j, targ_num;
     char                **unc_disks;
@@ -1156,8 +1156,8 @@ bool CheckDrive( bool issue_message )
     char                drive_freesp[20];
     struct drive_space {
         char        *unc_drive;
-        disk_ssize  needed;
-        disk_size   free;
+        fsys_ssize  needed;
+        fsys_size   free;
         int         num_files;
     }                   *space;
 #ifdef UNC_SUPPORT
@@ -1256,25 +1256,23 @@ bool CheckDrive( bool issue_message )
 #if !defined( __UNIX__ )
             if( issue_message ) {
                 if( disk_space_needed > 0
-                  && free_disk_space < (disk_size)disk_space_needed ) {
+                  && free_disk_space < (fsys_size)disk_space_needed ) {
+                    const char *msg_path = unc_disks[i];
+                    const char *msg_ids = "IDS_NODISKSPACE";
 #ifdef UNC_SUPPORT
                     if( TEST_UNC( unc_disks[i] ) ) {
                         if( FSInfoIsAvailableUNC( unc_disks[i] ) ) {
-                            reply = MsgBox( NULL, "IDS_NODISKSPACE_UNC", GUI_YES_NO,
-                                            unc_disks[i], free_disk_space / 1000,
-                                            disk_space_needed / 1000 );
+                            msg_ids = "IDS_NODISKSPACE_UNC";
                         } else {
                             GetFSInfoRootUNC( &unc_root1, unc_disks[i] );
-                            reply = MsgBoxVbuf( NULL, "IDS_ASSUME_ENOUGHSPACE", GUI_YES_NO, &unc_root1 );
+                            msg_ids = "IDS_ASSUME_ENOUGHSPACE";
+                            msg_path = VbufString( &unc_root1 );
                         }
-                    } else {
-#endif
-                        reply = MsgBox( NULL, "IDS_NODISKSPACE", GUI_YES_NO, *unc_disks[i],
-                                        free_disk_space / 1000,
-                                        disk_space_needed / 1000 );
-#ifdef UNC_SUPPORT
                     }
 #endif
+                    reply = MsgBox( NULL, msg_ids, GUI_YES_NO, msg_path,
+                                    free_disk_space / 1000,
+                                    disk_space_needed / 1000 );
                     if( reply == GUI_RET_NO ) {
                         ok = false;
                         break;

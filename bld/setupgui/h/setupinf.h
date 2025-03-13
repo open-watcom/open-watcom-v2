@@ -53,8 +53,8 @@ typedef enum {
     AM_AFTER
 } append_mode;
 
-typedef unsigned long long      disk_size;
-typedef long long               disk_ssize;
+typedef unsigned long long      fsys_size;
+typedef long long               fsys_ssize;
 
 // Possible return values from sending the SIM_INITIALIZE message.
 typedef enum {
@@ -142,7 +142,7 @@ extern int              SimGetTargetNumFiles( int parm );
 extern int              SimNumTargets( void );
 extern bool             SimTargetMarked( int i );
 extern bool             SimSetTargetMarked( int i, bool b );
-extern disk_ssize       SimTargetSpaceNeeded( int parm );
+extern fsys_ssize       SimTargetSpaceNeeded( int parm );
 extern void             SimTargetDir( int i, VBUF *buff );
 extern void             SimTargetDirName( int i, VBUF *buff );
 extern int              SimNumDirs( void );
