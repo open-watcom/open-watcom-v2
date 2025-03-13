@@ -1151,7 +1151,6 @@ bool CheckDrive( bool issue_message )
     int                 max_targets;
     int                 i, j, targ_num;
     char                **unc_disks;
-    bool                *disk_counted;
     VBUF                temp_vbuf;
 #if !defined( __UNIX__ )
     gui_message_return  reply;
@@ -1177,7 +1176,6 @@ bool CheckDrive( bool issue_message )
         return( false );
     max_targets = SimNumTargets();
     unc_disks = GUIMemAlloc( max_targets * sizeof( *unc_disks ) );
-    disk_counted = GUIMemAlloc( max_targets * sizeof( *disk_counted ) );
     space = GUIMemAlloc( max_targets * sizeof( *space ) );
     ok = true;
     VbufInit( &temp_vbuf );
@@ -1193,7 +1191,7 @@ bool CheckDrive( bool issue_message )
         }
         VbufAddDirSep( &temp_vbuf );
         unc_disks[i] = GUIStrDup( VbufString( &temp_vbuf ) );
-        disk_counted[i] = false;
+        SimSetTargetMarked( i, false );
     }
     VbufFree( &temp_vbuf );
     if( ok ) {
@@ -1205,88 +1203,88 @@ bool CheckDrive( bool issue_message )
          * check for enough disk space, combine drives that are the same
          */
         for( i = 0; i < max_targets; i++ ) {
-            if( !disk_counted[i] ) {
-                targ_num = i;
-                disk_space_needed = SimTargetSpaceNeeded( i );
-                for( j = i + 1; j < max_targets; ++j ) {
+            if( SimTargetMarked( i ) )
+                continue;
+            targ_num = i;
+            disk_space_needed = SimTargetSpaceNeeded( i );
+            for( j = i + 1; j < max_targets; ++j ) {
 #ifdef UNC_SUPPORT
-                    GetFSInfoRootUNC( &unc_root1, unc_disks[i] );
-                    GetFSInfoRootUNC( &unc_root2, unc_disks[j] );
-                    /*
-                     * identical drives are combined, and so are UNC paths
-                     * pointing to the same share
-                     * BUT: drives and UNC paths that happen to be the same
-                     * are NOT combined. (I am lazy)
-                     */
-                    if( ( tolower( *unc_disks[j] ) == tolower( *unc_disks[i] )
-                      && isalpha( *unc_disks[i] ) )
-                      || VbufCompVbuf( &unc_root1, &unc_root2, true ) == 0 ) {
+                GetFSInfoRootUNC( &unc_root1, unc_disks[i] );
+                GetFSInfoRootUNC( &unc_root2, unc_disks[j] );
+                /*
+                 * identical drives are combined, and so are UNC paths
+                 * pointing to the same share
+                 * BUT: drives and UNC paths that happen to be the same
+                 * are NOT combined. (I am lazy)
+                 */
+                if( ( tolower( *unc_disks[j] ) == tolower( *unc_disks[i] )
+                  && isalpha( *unc_disks[i] ) )
+                  || VbufCompVbuf( &unc_root1, &unc_root2, true ) == 0 ) {
 #else
-                    if( tolower( *unc_disks[j] ) == tolower( *unc_disks[i] )
-                      && isalpha( *unc_disks[i] ) ) {
+                if( tolower( *unc_disks[j] ) == tolower( *unc_disks[i] )
+                  && isalpha( *unc_disks[i] ) ) {
 #endif
-                        targ_num = j;
-                        disk_space_needed += SimTargetSpaceNeeded( j );
-                        disk_counted[j] = true;
-                    }
+                    targ_num = j;
+                    disk_space_needed += SimTargetSpaceNeeded( j );
+                    SimSetTargetMarked( j, true );
                 }
-#ifdef UNC_SUPPORT
-                if( TEST_UNC( unc_disks[i] ) ) {
-                    if( !IsFSWritableUNC( unc_disks[i] ) ) {
-                        if( issue_message ) {
-                            GetFSInfoRootUNC( &unc_root1, unc_disks[i] );
-                            if( access_vbuf( &unc_root1, F_OK ) == 0 ) {
-                                MsgBoxVbuf( NULL, "IDS_UNCPATH_NOTWRITABLE", GUI_OK, &unc_root1 );
-                            } else {
-                                MsgBox( NULL, "IDS_UNCPATH_NOTEXIST", GUI_OK, &unc_root1 );
-                            }
-                            ok = false;
-                            break;
-                        }
-                    }
-                    free_disk_space = GetFSInfoFreeSpaceUNC( unc_disks[i] );
-                } else {
-#endif
-                    free_disk_space = GetFSInfoFreeSpace( unc_disks[i], false );
-#ifdef UNC_SUPPORT
-                }
-#endif
-                if( free_disk_space == (unsigned long long)-1 )
-                    free_disk_space = 0;
-                space[i].unc_drive = unc_disks[i];
-                space[i].free = free_disk_space;
-                space[i].needed = disk_space_needed;
-                space[i].num_files = SimGetTargetNumFiles( targ_num );
-#if !defined( __UNIX__ )
-                if( issue_message ) {
-                    if( disk_space_needed > 0
-                      && free_disk_space < (disk_size)disk_space_needed ) {
-    #ifdef UNC_SUPPORT
-                        if( TEST_UNC( unc_disks[i] ) ) {
-                            if( FSInfoIsAvailableUNC( unc_disks[i] ) ) {
-                                reply = MsgBox( NULL, "IDS_NODISKSPACE_UNC", GUI_YES_NO,
-                                                unc_disks[i], free_disk_space / 1000,
-                                                disk_space_needed / 1000 );
-                            } else {
-                                GetFSInfoRootUNC( &unc_root1, unc_disks[i] );
-                                reply = MsgBoxVbuf( NULL, "IDS_ASSUME_ENOUGHSPACE", GUI_YES_NO, &unc_root1 );
-                            }
-                        } else {
-    #endif
-                            reply = MsgBox( NULL, "IDS_NODISKSPACE", GUI_YES_NO, *unc_disks[i],
-                                            free_disk_space / 1000,
-                                            disk_space_needed / 1000 );
-    #ifdef UNC_SUPPORT
-                        }
-    #endif
-                        if( reply == GUI_RET_NO ) {
-                            ok = false;
-                            break;
-                        }
-                    }
-                }
-#endif
             }
+#ifdef UNC_SUPPORT
+            if( TEST_UNC( unc_disks[i] ) ) {
+                if( !IsFSWritableUNC( unc_disks[i] ) ) {
+                    if( issue_message ) {
+                        GetFSInfoRootUNC( &unc_root1, unc_disks[i] );
+                        if( access_vbuf( &unc_root1, F_OK ) == 0 ) {
+                            MsgBoxVbuf( NULL, "IDS_UNCPATH_NOTWRITABLE", GUI_OK, &unc_root1 );
+                        } else {
+                            MsgBox( NULL, "IDS_UNCPATH_NOTEXIST", GUI_OK, &unc_root1 );
+                        }
+                        ok = false;
+                        break;
+                    }
+                }
+                free_disk_space = GetFSInfoFreeSpaceUNC( unc_disks[i] );
+            } else {
+#endif
+                free_disk_space = GetFSInfoFreeSpace( unc_disks[i], false );
+#ifdef UNC_SUPPORT
+            }
+#endif
+            if( free_disk_space == (unsigned long long)-1 )
+                free_disk_space = 0;
+            space[i].unc_drive = unc_disks[i];
+            space[i].free = free_disk_space;
+            space[i].needed = disk_space_needed;
+            space[i].num_files = SimGetTargetNumFiles( targ_num );
+#if !defined( __UNIX__ )
+            if( issue_message ) {
+                if( disk_space_needed > 0
+                  && free_disk_space < (disk_size)disk_space_needed ) {
+#ifdef UNC_SUPPORT
+                    if( TEST_UNC( unc_disks[i] ) ) {
+                        if( FSInfoIsAvailableUNC( unc_disks[i] ) ) {
+                            reply = MsgBox( NULL, "IDS_NODISKSPACE_UNC", GUI_YES_NO,
+                                            unc_disks[i], free_disk_space / 1000,
+                                            disk_space_needed / 1000 );
+                        } else {
+                            GetFSInfoRootUNC( &unc_root1, unc_disks[i] );
+                            reply = MsgBoxVbuf( NULL, "IDS_ASSUME_ENOUGHSPACE", GUI_YES_NO, &unc_root1 );
+                        }
+                    } else {
+#endif
+                        reply = MsgBox( NULL, "IDS_NODISKSPACE", GUI_YES_NO, *unc_disks[i],
+                                        free_disk_space / 1000,
+                                        disk_space_needed / 1000 );
+#ifdef UNC_SUPPORT
+                    }
+#endif
+                    if( reply == GUI_RET_NO ) {
+                        ok = false;
+                        break;
+                    }
+                }
+            }
+#endif
         }
 #ifdef UNC_SUPPORT
         VbufFree( &unc_root2 );
@@ -1338,7 +1336,6 @@ bool CheckDrive( bool issue_message )
     }
     free_disks( unc_disks, max_targets );
     GUIMemFree( unc_disks );
-    GUIMemFree( disk_counted );
     GUIMemFree( space );
     return( ok );
 }

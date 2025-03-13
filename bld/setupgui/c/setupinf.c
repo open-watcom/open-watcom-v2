@@ -231,6 +231,7 @@ static struct target_info {
     char                *fsys;
     boolbit             supplemental    : 1;
     boolbit             needs_update    : 1;
+    boolbit             marked          : 1;
 } *TargetInfo = NULL;
 
 static struct label_info {
@@ -2544,6 +2545,22 @@ disk_ssize SimTargetSpaceNeeded( int i )
 /**************************************/
 {
     return( TargetInfo[i].space_needed );
+}
+
+bool SimTargetMarked( int i )
+/***************************/
+{
+    return( TargetInfo[i].marked );
+}
+
+bool SimSetTargetMarked( int i, bool b )
+/**************************************/
+{
+    bool    old;
+
+    old = TargetInfo[i].marked;
+    TargetInfo[i].marked = b;
+    return( old );
 }
 
 int SimGetTargetNumFiles( int i )
