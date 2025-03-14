@@ -134,8 +134,8 @@ static bool GetOldConfigFileDir( VBUF *newauto, const VBUF *drive_path, bool uni
 
 #endif  /* !__UNIX__ */
 
-static void NoDupPaths( VBUF *old_value, const VBUF *new_value, char list_delim )
-/*******************************************************************************/
+static void NoDupPaths( VBUF *old_value, const VBUF *new_value )
+/**************************************************************/
 {
     const char  *dup;
     const char  *look;
@@ -148,7 +148,7 @@ static void NoDupPaths( VBUF *old_value, const VBUF *new_value, char list_delim 
     VbufInit( &tmp );
     new_start = VbufString( new_value );
     for( ;; ) {
-        new_end = strchr( new_start, list_delim );
+        new_end = strchr( new_start, PATH_LIST_SEP );
         if( new_end == NULL ) {
             len = strlen( new_start );
         } else {
@@ -156,13 +156,13 @@ static void NoDupPaths( VBUF *old_value, const VBUF *new_value, char list_delim 
         }
         value_start = VbufString( old_value );
         for( look = value_start; (dup = stristr( look, new_start, len )) != NULL; look = dup + len ) {
-            if( dup[len] == list_delim ) {
+            if( dup[len] == PATH_LIST_SEP ) {
                 if( dup == value_start ) {
                     /*
                      * no data to copy
                      */
                     value_start = dup + len + 1;
-                } else if( dup[-1] == list_delim ) {
+                } else if( dup[-1] == PATH_LIST_SEP ) {
                     /*
                      * copy previous data
                      */
@@ -180,7 +180,7 @@ static void NoDupPaths( VBUF *old_value, const VBUF *new_value, char list_delim 
                      * no data to copy
                      */
                     value_start = dup + len;
-                } else if( dup[-1] == list_delim ) {
+                } else if( dup[-1] == PATH_LIST_SEP ) {
                     /*
                      * copy previous data
                      */
@@ -212,23 +212,23 @@ static void NoDupPaths( VBUF *old_value, const VBUF *new_value, char list_delim 
         /*
          * remove delimiter from the end
          */
-        if( VbufString( old_value )[len - 1] == list_delim ) {
+        if( VbufString( old_value )[len - 1] == PATH_LIST_SEP ) {
             VbufSetLen( old_value, len - 1 );
         }
     }
     VbufFree( &tmp );
 }
 
-static void modify_value_list( VBUF *value, const VBUF *new_value, char list_delim, append_mode append, bool uninstall )
-/**********************************************************************************************************************/
+static void modify_value_list( VBUF *value, const VBUF *new_value, append_mode append, bool uninstall )
+/*****************************************************************************************************/
 {
-    NoDupPaths( value, new_value, list_delim );
+    NoDupPaths( value, new_value );
     if( !uninstall ) {
         if( append == AM_AFTER ) {
-            VbufConcChr( value, list_delim );
+            VbufConcChr( value, PATH_LIST_SEP );
             VbufConcVbuf( value, new_value );
         } else if( append == AM_BEFORE ) {
-            VbufPrepChr( value, list_delim );
+            VbufPrepChr( value, PATH_LIST_SEP );
             VbufPrepVbuf( value, new_value );
         } else {
             VbufSetVbuf( value, new_value );
@@ -268,19 +268,19 @@ static bool output_line( VBUF *vbuf, var_type vt, const VBUF *name, const VBUF *
 }
 
 static void modify_value_list_libpath( VBUF *val_before, VBUF *val_after,
-                const VBUF *new_value, char list_delim, append_mode append )
+                                const VBUF *new_value, append_mode append )
 /**************************************************************************/
 {
     if( append == AM_AFTER ) {
-        NoDupPaths( val_before, new_value, list_delim );
-        NoDupPaths( val_after, new_value, list_delim );
-        VbufConcChr( val_after, list_delim );
+        NoDupPaths( val_before, new_value );
+        NoDupPaths( val_after, new_value );
+        VbufConcChr( val_after, PATH_LIST_SEP );
         VbufConcVbuf( val_after, new_value );
     } else if( append == AM_BEFORE ) {
-        NoDupPaths( val_before, new_value, list_delim );
-        VbufPrepChr( val_before, list_delim );
+        NoDupPaths( val_before, new_value );
+        VbufPrepChr( val_before, PATH_LIST_SEP );
         VbufPrepVbuf( val_before, new_value );
-        NoDupPaths( val_after, new_value, list_delim );
+        NoDupPaths( val_after, new_value );
     } else {
         VbufSetVbuf( val_before, new_value );
         VbufRewind( val_after );
@@ -416,7 +416,7 @@ static void CheckEnvironmentLine( char *line, int num_env, bool *found_env, bool
              * found an environment variable, replace its value
              */
             found_env[i] = true;
-            modify_value_list( &line_val, &next_val, PATH_LIST_SEP, append, uninstall );
+            modify_value_list( &line_val, &next_val, append, uninstall );
             modified = true;
         }
     }
@@ -497,9 +497,9 @@ static void FinishEnvironmentLines( FILE *fp, int num_env, bool *found_env, bool
             if( VbufCompVbuf( &cur_var, &next_var, true ) == 0 ) {
                 found_env[j] = true;
                 if( libpath_batch ) {
-                    modify_value_list_libpath( &val_before, &val_after, &next_val, PATH_LIST_SEP, append );
+                    modify_value_list_libpath( &val_before, &val_after, &next_val, append );
                 } else {
-                    modify_value_list( &cur_val, &next_val, PATH_LIST_SEP, append, false );
+                    modify_value_list( &cur_val, &next_val, append, false );
                 }
             }
         }
@@ -704,7 +704,7 @@ static void CheckAutoLine( char *line, int num_auto, bool *found_auto, bool unin
              * found an command, replace its value
              */
             found_auto[i] = true;
-            modify_value_list( &line_val, &next_val, PATH_LIST_SEP, append, uninstall );
+            modify_value_list( &line_val, &next_val, append, uninstall );
             modified = true;
         }
     }
@@ -753,7 +753,7 @@ static void FinishAutoLines( FILE *fp, int num_auto, bool *found_auto, bool batc
             append = SimGetAutoExecStrings( j, &next_var, &next_val );
             if( VbufCompVbuf( &cur_var, &next_var, true ) == 0 ) {
                 found_auto[j] = true;
-                modify_value_list( &cur_val, &next_val, PATH_LIST_SEP, append, false );
+                modify_value_list( &cur_val, &next_val, append, false );
             }
         }
         if( output_line( &vbuf, getAutoVarType( &cur_var ), &cur_var, &cur_val ) ) {
@@ -881,7 +881,7 @@ static void CheckConfigLine( char *line, int num_cfg, bool *found_cfg, bool unin
             /*
              * replace its value
              */
-            modify_value_list( &line_val, &next_val, PATH_LIST_SEP, append, uninstall );
+            modify_value_list( &line_val, &next_val, append, uninstall );
             modified = true;
         }
     }
@@ -942,7 +942,7 @@ static void FinishConfigLines( FILE *fp, int num_cfg, bool *found_cfg, bool batc
             append = SimGetConfigStrings( j, &next_var, &next_val );
             if( VbufCompVbuf( &cur_var, &next_var, true ) == 0 ) {
                 found_cfg[j] = true;
-                modify_value_list( &cur_val, &next_val, PATH_LIST_SEP, append, false );
+                modify_value_list( &cur_val, &next_val, append, false );
             }
         }
         if( output_line( &vbuf, getConfigVarType( &cur_var ), &cur_var, &cur_val ) ) {
@@ -1700,7 +1700,7 @@ static bool ModEnv( int num_env, bool uninstall )
                 }
             } else if( rc == 0 ) {
                 VbufSetStr( &reg_val_vbuf, reg_val );
-                modify_value_list( &reg_val_vbuf, &cur_val, PATH_LIST_SEP, append, uninstall );
+                modify_value_list( &reg_val_vbuf, &cur_val, append, uninstall );
                 if( VbufLen( &reg_val_vbuf ) == 0 ) {
                     rc = RegDeleteValue( RegLocation[j].key, VbufString( &cur_var ) );
                 } else {
@@ -1834,7 +1834,7 @@ bool ModifyConfiguration( bool uninstall )
                     append = SimGetEnvironmentStrings( j, &next_var, &next_val );
                     if( VbufCompVbuf( &cur_var, &next_var, true ) == 0 ) {
                         found[j] = true;
-                        modify_value_list( &cur_val, &next_val, PATH_LIST_SEP, append, uninstall );
+                        modify_value_list( &cur_val, &next_val, append, uninstall );
                     }
                 }
                 fprintf( fp, "\n    %s\n", VbufString( &cur_val ) );

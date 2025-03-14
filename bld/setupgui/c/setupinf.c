@@ -226,9 +226,9 @@ static struct dir_info {
 static struct target_info {
     char                *name;
     fsys_ssize          space_needed;
-    int                 fsys_id;
+    int                 fsys;
     int                 num_files;
-    char                *fsys;
+    char                *path;
     boolbit             supplemental    : 1;
     boolbit             needs_update    : 1;
     boolbit             marked          : 1;
@@ -341,14 +341,18 @@ static bool BumpDlgArrays( DIALOG_PARSER_INFO *parse_dlg )
     return( BumpArray( &parse_dlg->controls_array ) && BumpArray( &parse_dlg->controls_ext_array ) );
 }
 
-#ifndef __UNIX__
-static void toBackSlash( char *name )
+static void normalizeDirSep( char *name )
 {
+#ifdef __UNIX__
+    while( (name = strchr( name, '\\' )) != NULL ) {
+        *name = '/';
+    }
+#else
     while( (name = strchr( name, '/' )) != NULL ) {
         *name = '\\';
     }
-}
 #endif
+}
 
 /**********************************************************************/
 /*                   EXPRESSION EVALUTORS                             */
@@ -1891,9 +1895,7 @@ static bool ProcLine( char *line, pass_type pass )
         if( DirInfo[num].parent != -1 ) {
             DirInfo[num].parent--;
         }
-#ifndef __UNIX__
-        toBackSlash( DirInfo[num].desc );
-#endif
+        normalizeDirSep( DirInfo[num].desc );
         break;
     case RS_FILES:
         {
@@ -2099,12 +2101,12 @@ static bool ProcLine( char *line, pass_type pass )
           && stricmp( next, "supplemental" ) == 0 ) {
             TargetInfo[num].supplemental = true;
         }
-        TargetInfo[num].fsys = GUIMemAlloc( _MAX_PATH );
-        if( TargetInfo[num].fsys == NULL ) {
+        TargetInfo[num].path = GUIMemAlloc( _MAX_PATH );
+        if( TargetInfo[num].path == NULL ) {
             return( false );
         }
-        TargetInfo[num].fsys[0] = '\0';
-        TargetInfo[num].fsys_id = -1;
+        TargetInfo[num].path[0] = '\0';
+        TargetInfo[num].fsys = -1;
         break;
     case RS_LABEL:
         num = SetupInfo.label.num;
@@ -2563,6 +2565,12 @@ bool SimSetTargetMarked( int i, bool b )
     return( old );
 }
 
+int SimTargetFsys( int i )
+/************************/
+{
+    return( TargetInfo[i].fsys );
+}
+
 int SimGetTargetNumFiles( int i )
 /*******************************/
 {
@@ -2575,8 +2583,8 @@ int SimGetTargetNumFiles( int i )
  * =======================================================================
  */
 
-int SimDirTargetNum( int i )
-/**************************/
+int SimDirTarget( int i )
+/***********************/
 {
     return( DirInfo[i].target );
 }
@@ -3157,14 +3165,14 @@ const char *SimGetTargetFullPath( int parm, VBUF *buff )
          */
 #else
   #if defined( __NT__ ) || defined( __WINDOWS__ )
-    } else if( p[0] == '\\'
-      && p[1] == '\\' ) {
+    } else if( IS_PATH_SEP( p[0] )
+      && IS_PATH_SEP( p[1] ) ) {
         /*
          * UNC
          */
   #endif
-    } else if( p[0] == '\\'
-      && p[1] != '\\' ) {
+    } else if( IS_PATH_SEP( p[0] )
+      && !IS_PATH_SEP( p[1] ) ) {
         /*
          * no-drive, root
          */
@@ -3176,7 +3184,7 @@ const char *SimGetTargetFullPath( int parm, VBUF *buff )
         /*
          * drive
          */
-        if( p[2] != '\\' ) {
+        if( !IS_PATH_SEP( p[2] ) ) {
             /*
              * drive, no-root
              */
@@ -3355,7 +3363,7 @@ static void CalcAddRemove( void )
             DirInfo[dir_index].num_files += FileInfo[i].num_files;
         }
         TargetInfo[target_index].num_files += FileInfo[i].num_files;
-        block_size = GetFSInfoBlockSize( TargetInfo[target_index].fsys );
+        block_size = GetFSInfoBlockSize( TargetInfo[target_index].path );
         FileInfo[i].remove = remove;
         FileInfo[i].add = add;
         for( k = 0; k < FileInfo[i].num_files; ++k ) {
@@ -3400,7 +3408,7 @@ static void CalcAddRemove( void )
         /* Estimate space used for directories. Be generous. */
         if( !uninstall ) {
             for( i = 0; i < SetupInfo.target.num; ++i ) {
-                block_size = GetFSInfoBlockSize( TargetInfo[i].fsys );
+                block_size = GetFSInfoBlockSize( TargetInfo[i].path );
                 for( j = 0; j < SetupInfo.dirs.num; ++j ) {
                     if( DirInfo[j].target != i )
                         continue;
@@ -3444,11 +3452,11 @@ bool SimCalcTargetSpaceNeeded( void )
             ok = false;
             break;
         }
-        strcpy( TargetInfo[i].fsys, temp_buf );
+        strcpy( TargetInfo[i].path, temp_buf );
         TargetInfo[i].space_needed = 0;
         TargetInfo[i].num_files = 0;
         TargetInfo[i].needs_update = false;
-        TargetInfo[i].fsys_id = -1;
+        TargetInfo[i].fsys = -1;
     }
     VbufFree( &temp_vbuf );
     /*
@@ -3501,7 +3509,7 @@ static void FreeTargetInfo( void )
     if( TargetInfo != NULL ) {
         for( i = 0; i < SetupInfo.target.num; i++ ) {
             GUIMemFree( TargetInfo[i].name );
-            GUIMemFree( TargetInfo[i].fsys );
+            GUIMemFree( TargetInfo[i].path );
         }
         GUIMemFree( TargetInfo );
         TargetInfo = NULL;

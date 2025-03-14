@@ -1321,10 +1321,10 @@ bool CheckDrive( bool issue_message )
             }
 #if defined( __NT__ ) || defined( __WINDOWS__ )
             if( TEST_UNC( space[i].unc_drive ) ) {
-              	if( !FSInfoIsAvailableUNC( space[i].unc_drive )
-              	  || !IsFSWritableUNC( space[i].unc_drive ) ) {
-                	strcpy( buff, "" );
-            	}
+                if( !FSInfoIsAvailableUNC( space[i].unc_drive )
+                  || !IsFSWritableUNC( space[i].unc_drive ) ) {
+                        strcpy( buff, "" );
+                }
             }
 #endif
             sprintf( drive_freesp, "DriveFree%d", i + 1 );
@@ -1928,7 +1928,7 @@ static bool DoCopyFiles( void )
                      * use the macro as the directory name
                      * eg: cd_drive:\winsys\filename
                      */
-                    SimTargetDirName( SimDirTargetNum( SimFileDirNum( filenum ) ), &temp_vbuf );
+                    SimTargetDirName( SimDirTarget( SimFileDirNum( filenum ) ), &temp_vbuf );
                     len = strlen( GetVariableStrVal_vbuf( &temp_vbuf ) );
                     VbufConcVbuf( &src_file, &temp_vbuf );
                 }

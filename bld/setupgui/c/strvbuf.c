@@ -432,29 +432,39 @@ void VbufTruncWhite(            // TRUNCATE TRAILING WHITESPACE FROM VBUF
 void VbufAddDirSep(             // TERMINATE A VBUF AS PATH BY DIR_SEP
     VBUF *vbuf )                // - VBUF structure
 {
-    size_t  len;
-    char    lastChr;
+    size_t      len;
+    char        lastChr;
+    const char  *p;
 
     len = VbufLen( vbuf );
     if( len == 0 ) {
-        // "" -> ".[/\]"
+        /*
+         * "" -> ".[/\]"
+         */
         VbufConcChr( vbuf, '.' );
         VbufConcChr( vbuf, DIR_SEP );
     } else {
-        lastChr = VbufString( vbuf )[len - 1];
+        p = VbufString( vbuf );
+        lastChr = p[len - 1];
         if( !IS_DIR_SEP( lastChr ) ) {
-            if( lastChr == '.' && len > 1 && IS_DIR_SEP( VbufString( vbuf )[len - 2] ) ) {
-                // "...nnn[/\]." -> "...nnn[/\]"
+            if( lastChr == '.' && len > 1 && IS_DIR_SEP( p[len - 2] ) ) {
+                /*
+                 * "...nnn[/\]." -> "...nnn[/\]"
+                 */
                 VbufSetLen( vbuf, len - 1 );
-#ifndef __UNIX__
+#if !defined( __UNIX__ )
             } else if( lastChr == ':' && len == 2 ) {
-                // "x:" -> "x:.[/\]"
+                /*
+                 * "x:" -> "x:.[/\]"
+                 */
                 VbufConcChr( vbuf, '.' );
                 VbufConcChr( vbuf, DIR_SEP );
 #endif
             } else {
-                // "...nnn" -> "...nnn[/\]"
-                // "." -> ".[/\]"
+                /*
+                 * "...nnn" -> "...nnn[/\]"
+                 * "." -> ".[/\]"
+                 */
                 VbufConcChr( vbuf, DIR_SEP );
             }
         }
