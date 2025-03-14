@@ -1264,8 +1264,8 @@ bool CheckDrive( bool issue_message )
                     const char *msg_ids = "IDS_NODISKSPACE";
                     const char *msg_path = drive_freesp;
 
-                    msg_path[0] = unc_disks[i][0];
-                    msg_path[1] = '\0';
+                    drive_freesp[0] = unc_disks[i][0];
+                    drive_freesp[1] = '\0';
 #if defined( __NT__ ) || defined( __WINDOWS__ )
                     if( TEST_UNC( unc_disks[i] ) ) {
                         if( FSInfoIsAvailableUNC( unc_disks[i] ) ) {
@@ -1297,8 +1297,8 @@ bool CheckDrive( bool issue_message )
                 const char *msg_ids = "IDS_DRIVE_SPEC";
                 const char *msg_path = drive_freesp;
 
-                msg_path[0] = toupper( space[i].unc_drive[0] );
-                msg_path[1] = '\0';
+                drive_freesp[0] = toupper( space[i].unc_drive[0] );
+                drive_freesp[1] = '\0';
 #if defined( __NT__ ) || defined( __WINDOWS__ )
                 if( TEST_UNC( space[i].unc_drive ) ) {
                     msg_ids = "IDS_DRIVE_SPEC_UNC";
@@ -1316,17 +1316,17 @@ bool CheckDrive( bool issue_message )
                     ucatnum( buff, space[i].free );
                     strcat( buff, GetVariableStrVal( "IDS_DRIVE_AVAILABLE" ) );
                 }
+#if defined( __NT__ ) || defined( __WINDOWS__ )
+                if( TEST_UNC( space[i].unc_drive ) ) {
+                    if( !FSInfoIsAvailableUNC( space[i].unc_drive )
+                      || !IsFSWritableUNC( space[i].unc_drive ) ) {
+                            strcpy( buff, "" );
+                    }
+                }
+#endif
             } else {
                 buff[0] = '\0';
             }
-#if defined( __NT__ ) || defined( __WINDOWS__ )
-            if( TEST_UNC( space[i].unc_drive ) ) {
-                if( !FSInfoIsAvailableUNC( space[i].unc_drive )
-                  || !IsFSWritableUNC( space[i].unc_drive ) ) {
-                        strcpy( buff, "" );
-                }
-            }
-#endif
             sprintf( drive_freesp, "DriveFree%d", i + 1 );
             SetVariableByName( drive_freesp, buff );
         }
