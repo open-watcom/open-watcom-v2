@@ -308,8 +308,8 @@ IDS_ERROR=\
     //1"%s"\
     //-1
 IDS_NODISKFOROPTION=\
-    //0"This diskette set does not contain the requried option."\
-    //1"このディスケット・セットには、必要なオプションが入っていません。"\
+    //0"This medium or file does not contain the requested option."\
+    //1"このメディアまたはファイルには要求されたオプションが含まれていません。"\
     //-1
 IDS_BADCRC=\
     //0"Internal error unpacking: '%s' - bad CRC."\
@@ -320,8 +320,8 @@ IDS_NOMEMORY=\
     //1"メモリ不足が発生しました @.&\n アプリケーションを終了して、再度、起動してください。"\
     //-1
 IDS_NOSETUPINFOFILE=\
-    //0"The %s file cannot be found.\nPlease verify the distribution diskette."\
-    //1"ファイル %s が見つかりません。\nディスケットを確認してください。"\
+    //0"The %s file cannot be found.\nPlease verify the distribution medium or file."\
+    //1"%s ファイルが見つかりません。\n配布メディアまたはファイルを確認してください。"\
     //-1
 IDS_NODISKSPACE=\
     //0"Drive %s: contains %ldK of free disk space.\n@ requires a minimum of %ldK.&\n\nThe installation may fail. Do you want to proceed anyway?"\
@@ -487,13 +487,9 @@ IDS_SET_VAR_TO=\
     //0"set variable '%s' to"\
     //1"'%s'変数の設定"\
     //-1
-IDS_DISKETTES_NEEDED=\
-    //0"You will need %d diskettes"\
-    //1"%d ディスケットが必要です"\
-    //-1
 IDS_DRIVE_SPEC=\
-    //0"Drive %c: "\
-    //1"ドライブ %c:"\
+    //0"Drive %s: "\
+    //1"ドライブ %s:"\
     //-1
 IDS_DRIVE_SPEC_UNC=\
     //0"Drive '%s' "\
@@ -536,18 +532,6 @@ IDS_REMOVE_DLL=\
     //1"@ は、この削除後には、ファイル %s は使用されないことを決定しています。このファイルを削除しますか?"\
     //-1
 
-IDS_ERASE_OK=\
-    //0"All files on drive '%c' will be erased.\nProceed anyway?"\
-    //1"ドライブ '%c' のすべてのファイルは削除されます。\n続けますか?"\
-    //-1
-IDS_ERASE_ARE_YOU_SURE=\
-    //0"Are you sure you want to erase all files on drive '%c'?"\
-    //1"ドライブ '%c' のすべてのファイルを削除してもよいですか?"\
-    //-1
-IDS_INVALID_DISKETTE_SPEC=\
-    //0"'%s' is not a valid diskette drive name.\n"\
-    //1"'%s' は、正しいディスケット・ドライブ名ではありません。\n"\
-    //-1
 IDS_CANTREPLACE=\
     //0"Cannot replace the file %s.&\nContinue with the install?"\
     //1"ファイル %s を置き換えることができません。&\nインストールを続けますか?"\
@@ -875,14 +859,6 @@ IDS_CREATEFILE=\
 IDS_DELETEFILE=\
     //0"Deleting File"\
     //1"ファイルの削除(delete)"\
-    //-1
-IDS_DISK_NOT_WRITEABLE=\
-    //0"Diskette cannot be written!"\
-    //1"ディスケットは書き込めません!"\
-    //-1
-IDS_DISK_NOT_ENOUGH_FREE=\
-    //0"Diskette does not have enough free space!"\
-    //1"ディスケットには十分な空き容量がありません!"\
     //-1
 IDS_CREATESERVICE=\
     //0"Creating Windows NT Service..."\

@@ -51,7 +51,7 @@ push_button=Cancel
 [ErrorMessage]
 IDS_ERROR=              "%s"
 IDS_NOMEMORY=           "Insufficient memory to run @.\n Close an application and try again."
-IDS_NOSETUPINFOFILE=    "The %s file cannot be found.\nPlease verify the distribution diskette."
+IDS_NOSETUPINFOFILE=    "The %s file cannot be found.\nPlease verify the distribution media or file."
 IDS_NODISKSPACE=        "Drive %s: contains %ldK of free disk space.\n@ requires a minimum of %ldK.\n\nThe installation may fail. Do you want to proceed anyway?"
 IDS_CANTMAKEDIR=        "The %s directory cannot be created.\nEnter another directory or try another drive."
 IDS_QUERYABORT=         "@ has not completed installing the software.\nAre you sure you want to cancel?"

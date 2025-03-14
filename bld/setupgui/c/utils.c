@@ -1191,11 +1191,11 @@ bool CheckDrive( bool issue_message )
         SimSetTargetMarked( i, false );
     }
     VbufFree( &temp_vbuf );
-    if( ok ) {
 #ifdef UNC_SUPPORT
-        VbufInit( &unc_root1 );
-        VbufInit( &unc_root2 );
+    VbufInit( &unc_root1 );
+    VbufInit( &unc_root2 );
 #endif
+    if( ok ) {
         /*
          * check for enough disk space, combine drives that are the same
          */
@@ -1257,15 +1257,19 @@ bool CheckDrive( bool issue_message )
             if( issue_message ) {
                 if( disk_space_needed > 0
                   && free_disk_space < (fsys_size)disk_space_needed ) {
-                    const char *msg_path = unc_disks[i];
                     const char *msg_ids = "IDS_NODISKSPACE";
+                    const char *msg_path = drive_freesp;
+
+                    msg_path[0] = unc_disks[i][0];
+                    msg_path[1] = '\0';
 #ifdef UNC_SUPPORT
                     if( TEST_UNC( unc_disks[i] ) ) {
                         if( FSInfoIsAvailableUNC( unc_disks[i] ) ) {
                             msg_ids = "IDS_NODISKSPACE_UNC";
+                            msg_path = unc_disks[i];
                         } else {
-                            GetFSInfoRootUNC( &unc_root1, unc_disks[i] );
                             msg_ids = "IDS_ASSUME_ENOUGHSPACE";
+                            GetFSInfoRootUNC( &unc_root1, unc_disks[i] );
                             msg_path = VbufString( &unc_root1 );
                         }
                     }
@@ -1281,28 +1285,24 @@ bool CheckDrive( bool issue_message )
             }
 #endif
         }
-#ifdef UNC_SUPPORT
-        VbufFree( &unc_root2 );
-        VbufFree( &unc_root1 );
-#endif
     }
     if( ok ) {
-#ifdef UNC_SUPPORT
-        VbufInit( &unc_root1 );
-#endif
         for( i = 0; i < max_targets; ++i ) {
             if( *space[i].unc_drive != '\0'
               && SimTargetNeedsUpdate( i ) ) {
+                const char *msg_ids = "IDS_DRIVE_SPEC";
+                const char *msg_path = drive_freesp;
+
+				msg_path[0] = toupper( space[i].unc_drive[0] );
+				msg_path[1] = '\0';
 #ifdef UNC_SUPPORT
                 if( TEST_UNC( space[i].unc_drive ) ) {
+                    msg_ids = "IDS_DRIVE_SPEC_UNC";
                     GetFSInfoRootUNC( &unc_root1, space[i].unc_drive );
-                    sprintf( buff, GetVariableStrVal( "IDS_DRIVE_SPEC_UNC" ), &unc_root1 );
-                } else {
-#endif
-                    sprintf( buff, GetVariableStrVal( "IDS_DRIVE_SPEC" ), toupper( *space[i].unc_drive ) );
-#ifdef UNC_SUPPORT
+				    msg_path = VbufString( &unc_root1 );
                 }
 #endif
+                sprintf( buff, GetVariableStrVal( msg_ids ), msg_path );
                 if( space[i].needed < 0 ) {
                     catnum( buff, -space[i].needed );
                     strcat( buff, GetVariableStrVal( "IDS_DRIVE_FREED" ) );
@@ -1325,10 +1325,11 @@ bool CheckDrive( bool issue_message )
             sprintf( drive_freesp, "DriveFree%d", i + 1 );
             SetVariableByName( drive_freesp, buff );
         }
-#ifdef UNC_SUPPORT
-        VbufFree( &unc_root1 );
-#endif
     }
+#ifdef UNC_SUPPORT
+    VbufFree( &unc_root2 );
+    VbufFree( &unc_root1 );
+#endif
     free_disks( unc_disks, max_targets );
     GUIMemFree( unc_disks );
     GUIMemFree( space );
