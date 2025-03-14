@@ -54,12 +54,14 @@ autoset=3r=true
 autoset=3s=true
 autoset=cplusplus=true
 dialogorder=License,DstDir,GetDiskSizesHere,NewInstall,Maintain,Options,Final,MaintainFinal,UnInstallFinal
+#
+# dialogs
+#
 dialog=license.dlg
 dialog=disksize.dlg
 dialog=other.dlg
 dialog=helpfile.dlg
 dialog=options.dlg
-dialog=hopt.dlg
 dialog=dstdir.dlg
 dialog=host.dlg
 dialog=target.dlg
@@ -70,16 +72,25 @@ dialog=maintain.dlg
 dialog=final.dlg
 dialog=maintfin.dlg
 dialog=unfinal.dlg
-dialog=h16bit.dlg
-dialog=h32bit.dlg
-dialog=hhi.dlg
-dialog=hdstdir.dlg
-dialog=hhost.dlg
-dialog=hmaint.dlg
-dialog=hnewinst.dlg
-dialog=htarget.dlg
+#
+# help dialogs
+#
+# no license help
+# no disksize help
 dialog=hother.dlg
 dialog=hhelpfil.dlg
+dialog=hopt.dlg
+dialog=hdstdir.dlg
+dialog=hhost.dlg
+dialog=htarget.dlg
+dialog=h32bit.dlg
+dialog=h16bit.dlg
+dialog=hnewinst.dlg
+dialog=hmaint.dlg
+# no final help
+# no maintfin help
+# no unfinal help
+#
 cfg=++SET HELP=%DstDir%\BINP\HELP,              IsOS2 IsOS2DosBox |
 cfg=++SET BOOKSHELF=%DstDir%\BINP\HELP,         IsOS2 IsOS2DosBox |
 cfg=RUN=%DstDir%\BINP\BATSERV.EXE,              IsOS2DosBox ?%DstDir%\binp\batserv.exe
