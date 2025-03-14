@@ -64,10 +64,6 @@
 #include "strvbuf.h"
 
 
-#if defined( __NT__ ) || defined( __WINDOWS__ )
-    #define UNC_SUPPORT
-#endif
-
 #ifdef __OS2__
     #define     _ID(x) x
 #else

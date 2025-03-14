@@ -494,8 +494,11 @@ static void GetTmpFileName( const char *path, VBUF *buff )
     VbufAddDirSep( buff );
     VbufConcStr( buff, TMPFILENAME );
 #else
-  #if defined( UNC_SUPPORT )
+  #if defined( __NT__ ) || defined( __WINDOWS__ )
     if( TEST_UNC( path ) ) {
+        /*
+         * UNC
+         */
         VbufSetStr( buff, path );
         VbufAddDirSep( buff );
         VbufConcStr( buff, TMPFILENAME );
@@ -795,7 +798,7 @@ unsigned GetFSInfoBlockSize( const char *fsys )
     return( FsysInfo[GetFSInfo( fsys, false )].block_size );
 }
 
-#if defined( UNC_SUPPORT )
+#if defined( __NT__ ) || defined( __WINDOWS__ )
 static bool GetFSInfoRootUNC( VBUF *root, const char *fsys )
 /************************************************************/
 {
@@ -813,7 +816,8 @@ static bool GetFSInfoRootUNC( VBUF *root, const char *fsys )
         char        c;
 
         /*
-         * turn a UNC name like "\\root\share\dir\subdir" into "\\root\share\"
+         * turn a UNC name like "\\root\share\dir\subdir"
+         * into "\\root\share\"
          */
         index = fsys;
         i = 0;
@@ -953,7 +957,7 @@ static bool IsFSWritableUNC( const char *fsys )
 }
 #endif
 
-#ifdef UNC_SUPPORT
+#if defined( __NT__ ) || defined( __WINDOWS__ )
 static bool FSInfoIsAvailableUNC( const char *fsys )
 /**************************************************/
 {
@@ -1160,12 +1164,12 @@ bool CheckDrive( bool issue_message )
         fsys_size   free;
         int         num_files;
     }                   *space;
-#ifdef UNC_SUPPORT
+#if defined( __NT__ ) || defined( __WINDOWS__ )
     VBUF                unc_root1;
     VBUF                unc_root2;
 #endif
 
-#if defined( UNC_SUPPORT ) || defined( __UNIX__ )
+#if defined( __UNIX__ )
     /* unused parameters */ (void)issue_message;
 #endif
 
@@ -1191,7 +1195,7 @@ bool CheckDrive( bool issue_message )
         SimSetTargetMarked( i, false );
     }
     VbufFree( &temp_vbuf );
-#ifdef UNC_SUPPORT
+#if defined( __NT__ ) || defined( __WINDOWS__ )
     VbufInit( &unc_root1 );
     VbufInit( &unc_root2 );
 #endif
@@ -1205,7 +1209,7 @@ bool CheckDrive( bool issue_message )
             targ_num = i;
             disk_space_needed = SimTargetSpaceNeeded( i );
             for( j = i + 1; j < max_targets; ++j ) {
-#ifdef UNC_SUPPORT
+#if defined( __NT__ ) || defined( __WINDOWS__ )
                 GetFSInfoRootUNC( &unc_root1, unc_disks[i] );
                 GetFSInfoRootUNC( &unc_root2, unc_disks[j] );
                 /*
@@ -1214,19 +1218,19 @@ bool CheckDrive( bool issue_message )
                  * BUT: drives and UNC paths that happen to be the same
                  * are NOT combined. (I am lazy)
                  */
-                if( ( tolower( *unc_disks[j] ) == tolower( *unc_disks[i] )
-                  && isalpha( *unc_disks[i] ) )
+                if( ( tolower( unc_disks[j][0] ) == tolower( unc_disks[i][0] )
+                  && isalpha( unc_disks[i][0] ) )
                   || VbufCompVbuf( &unc_root1, &unc_root2, true ) == 0 ) {
 #else
-                if( tolower( *unc_disks[j] ) == tolower( *unc_disks[i] )
-                  && isalpha( *unc_disks[i] ) ) {
+                if( tolower( unc_disks[j][0] ) == tolower( unc_disks[i][0] )
+                  && isalpha( unc_disks[i][0] ) ) {
 #endif
                     targ_num = j;
                     disk_space_needed += SimTargetSpaceNeeded( j );
                     SimSetTargetMarked( j, true );
                 }
             }
-#ifdef UNC_SUPPORT
+#if defined( __NT__ ) || defined( __WINDOWS__ )
             if( TEST_UNC( unc_disks[i] ) ) {
                 if( !IsFSWritableUNC( unc_disks[i] ) ) {
                     if( issue_message ) {
@@ -1242,10 +1246,10 @@ bool CheckDrive( bool issue_message )
                 }
                 free_disk_space = GetFSInfoFreeSpaceUNC( unc_disks[i] );
             } else {
-#endif
                 free_disk_space = GetFSInfoFreeSpace( unc_disks[i], false );
-#ifdef UNC_SUPPORT
             }
+#else
+            free_disk_space = GetFSInfoFreeSpace( unc_disks[i], false );
 #endif
             if( free_disk_space == (unsigned long long)-1 )
                 free_disk_space = 0;
@@ -1262,7 +1266,7 @@ bool CheckDrive( bool issue_message )
 
                     msg_path[0] = unc_disks[i][0];
                     msg_path[1] = '\0';
-#ifdef UNC_SUPPORT
+#if defined( __NT__ ) || defined( __WINDOWS__ )
                     if( TEST_UNC( unc_disks[i] ) ) {
                         if( FSInfoIsAvailableUNC( unc_disks[i] ) ) {
                             msg_ids = "IDS_NODISKSPACE_UNC";
@@ -1288,18 +1292,18 @@ bool CheckDrive( bool issue_message )
     }
     if( ok ) {
         for( i = 0; i < max_targets; ++i ) {
-            if( *space[i].unc_drive != '\0'
+            if( space[i].unc_drive[0] != '\0'
               && SimTargetNeedsUpdate( i ) ) {
                 const char *msg_ids = "IDS_DRIVE_SPEC";
                 const char *msg_path = drive_freesp;
 
-				msg_path[0] = toupper( space[i].unc_drive[0] );
-				msg_path[1] = '\0';
-#ifdef UNC_SUPPORT
+                msg_path[0] = toupper( space[i].unc_drive[0] );
+                msg_path[1] = '\0';
+#if defined( __NT__ ) || defined( __WINDOWS__ )
                 if( TEST_UNC( space[i].unc_drive ) ) {
                     msg_ids = "IDS_DRIVE_SPEC_UNC";
                     GetFSInfoRootUNC( &unc_root1, space[i].unc_drive );
-				    msg_path = VbufString( &unc_root1 );
+                    msg_path = VbufString( &unc_root1 );
                 }
 #endif
                 sprintf( buff, GetVariableStrVal( msg_ids ), msg_path );
@@ -1315,18 +1319,19 @@ bool CheckDrive( bool issue_message )
             } else {
                 buff[0] = '\0';
             }
-#ifdef UNC_SUPPORT
-            if( TEST_UNC( space[i].unc_drive )
-              && (!FSInfoIsAvailableUNC( space[i].unc_drive )
-              || !IsFSWritableUNC( space[i].unc_drive )) ) {
-                strcpy( buff, "" );
+#if defined( __NT__ ) || defined( __WINDOWS__ )
+            if( TEST_UNC( space[i].unc_drive ) ) {
+              	if( !FSInfoIsAvailableUNC( space[i].unc_drive )
+              	  || !IsFSWritableUNC( space[i].unc_drive ) ) {
+                	strcpy( buff, "" );
+            	}
             }
 #endif
             sprintf( drive_freesp, "DriveFree%d", i + 1 );
             SetVariableByName( drive_freesp, buff );
         }
     }
-#ifdef UNC_SUPPORT
+#if defined( __NT__ ) || defined( __WINDOWS__ )
     VbufFree( &unc_root2 );
     VbufFree( &unc_root1 );
 #endif

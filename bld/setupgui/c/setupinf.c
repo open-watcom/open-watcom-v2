@@ -3145,35 +3145,49 @@ const char *SimGetTargetFullPath( int parm, VBUF *buff )
     SimTargetDir( parm, buff );
     p = VbufString( buff );
     if( strlen( p ) == 0 ) {
-        /* no-path, current working directory */
+        /*
+         * no-path, current working directory
+         */
         getcwd( temp_buf, sizeof( temp_buf ) );
         VbufSetStr( buff, temp_buf );
 #if defined( __UNIX__ )
     } else if( p[0] == '/' ) {
-        /* root */
+        /*
+         * root
+         */
 #else
-  #if defined( UNC_SUPPORT )
+  #if defined( __NT__ ) || defined( __WINDOWS__ )
     } else if( p[0] == '\\'
       && p[1] == '\\' ) {
-        /* UNC */
+        /*
+         * UNC
+         */
   #endif
     } else if( p[0] == '\\'
       && p[1] != '\\' ) {
-        /* no-drive, root */
+        /*
+         * no-drive, root
+         */
         getcwd( temp_buf, sizeof( temp_buf ) );
         VbufPrepChr( buff, ':' );
         VbufPrepChr( buff, temp_buf[0] );
     } else if( p[0] != '\0'
       && p[1] == ':' ) {
-        /* drive */
+        /*
+         * drive
+         */
         if( p[2] != '\\' ) {
-            /* drive, no-root */
+            /*
+             * drive, no-root
+             */
             _fullpath( temp_buf, p, sizeof( temp_buf ) );
             VbufSetStr( buff, temp_buf );
         }
 #endif
     } else {
-        /* relative path */
+        /*
+         * relative path
+         */
         getcwd( temp_buf, sizeof( temp_buf ) );
         VbufPrepStr( buff, temp_buf );
     }
