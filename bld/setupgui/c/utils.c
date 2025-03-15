@@ -801,20 +801,31 @@ unsigned GetTargetBlockSize( int target )
 }
 
 #if defined( __NT__ ) || defined( __WINDOWS__ )
-static bool GetFsysInfoRoot( VBUF *root, const char *path )
+static bool GetRootFromPath( VBUF *root, const char *path )
 /*********************************************************/
 {
-#if defined( __UNIX__ )
-    VbufSetChr( root, path[0] );
-    return( true );
-#else
     char        curr_dir[_MAX_PATH];
+    char        c;
 
+#if defined( __UNIX__ )
+    c = path[0];
+    if( c == '/' ) {
+        VbufSetStr( root, path );
+    } else {
+        if( getcwd( curr_dir, sizeof( curr_dir ) ) == NULL ) {
+            return( false );
+        }
+        VbufSetStr( root, curr_dir );
+        if( c != '\0' ) {
+            VbufAddDirSep( buff );
+            VbufConcStr( buff, path );
+        }
+    }
+#else
   #if defined( __NT__ ) || defined( __WINDOWS__ )
     if( TEST_UNC( path ) ) {
         const char  *index;
         int         i;
-        char        c;
 
         /*
          * turn a UNC name like "\\root\share\dir\subdir"
@@ -844,7 +855,7 @@ static bool GetFsysInfoRoot( VBUF *root, const char *path )
         /*
          * turn a path like "c:\dir" into "c:\"
          */
-        VbufSetChr( root, path[0] );
+        c = toupper( path[0] );
     } else {
         /*
          * for relative paths like "\dir" use the current drive.
@@ -852,11 +863,12 @@ static bool GetFsysInfoRoot( VBUF *root, const char *path )
         if( getcwd( curr_dir, sizeof( curr_dir ) ) == NULL ) {
             return( false );
         }
-        VbufSetChr( root, curr_dir[0] );
+        c = toupper( curr_dir[0] );
     }
-    VbufConcStr( root, ":" DIR_SEP );
-    return( true );
+    VbufSetChr( root, c );
+    VbufConcStr( root, ":\\" );
 #endif
+    return( true );
 }
 
 static fsys_size GetTargetFreeSpaceUNC( int target )
@@ -877,7 +889,7 @@ static fsys_size GetTargetFreeSpaceUNC( int target )
     fsys = SimTargetPath( target );
 #ifdef __NT__
     VbufInit( &root );
-    if( GetFsysInfoRoot( &root, fsys ) ) {
+    if( GetRootFromPath( &root, fsys ) ) {
         if( GetDiskFreeSpace( VbufString( &root ), &sectors_per_cluster, &bytes_per_sector, &avail_clusters, &total_clusters ) ) {
             size = (fsys_size)sectors_per_cluster * (fsys_size)bytes_per_sector * (fsys_size)avail_clusters ;
         }
@@ -912,7 +924,7 @@ static long GetTargetBlockSizeUNC( int target )
     fsys = SimTargetPath( target );
 #ifdef __NT__
     VbufInit( &root );
-    if( GetFsysInfoRoot( &root, fsys ) ) {
+    if( GetRootFromPath( &root, fsys ) ) {
         if( GetDiskFreeSpace( VbufString( &root ), &sectors_per_cluster,
                         &bytes_per_sector, &avail_clusters, &total_of_clusters ) ) {
             size = sectors_per_cluster * bytes_per_sector;
@@ -930,8 +942,8 @@ static long GetTargetBlockSizeUNC( int target )
 }
 #endif
 
-static bool IsFSWritableUNC( const char *fsys )
-/*********************************************/
+static bool IsTargetWritable( const char *fsys )
+/**********************************************/
 {
     int         io;
     VBUF        filename;
@@ -942,7 +954,7 @@ static bool IsFSWritableUNC( const char *fsys )
         VbufInit( &root );
         VbufInit( &filename );
 
-        if( GetFsysInfoRoot( &root, fsys ) != 0 ) {
+        if( GetRootFromPath( &root, fsys ) != 0 ) {
             GetTmpFileName( VbufString( &root ), &filename );
             io = open_vbuf( &filename, O_RDWR | O_CREAT | O_TRUNC, PMODE_RW );
             if( io != -1 ) {
@@ -960,8 +972,8 @@ static bool IsFSWritableUNC( const char *fsys )
 #endif
 
 #if defined( __NT__ ) || defined( __WINDOWS__ )
-static bool FSInfoIsAvailableUNC( const char *fsys )
-/**************************************************/
+static bool IsTargetFsysInfoAvailable( const char *fsys )
+/*******************************************************/
 {
     bool        ok = false;
 #ifdef __NT__
@@ -976,7 +988,7 @@ static bool FSInfoIsAvailableUNC( const char *fsys )
 
 #ifdef __NT__
     VbufInit( &root );
-    if( GetFsysInfoRoot( &root, fsys ) ) {
+    if( GetRootFromPath( &root, fsys ) ) {
         if( GetDiskFreeSpace( VbufString( &root ), &sectors_per_cluster,
                 &bytes_per_sector, &avail_clusters, &total_clusters ) ) {
             ok = true;
@@ -1187,8 +1199,8 @@ bool CheckDrive( bool issue_message )
             for( j = i + 1; j < max_targets; ++j ) {
                 const char *targ_path_j = SimTargetPath( j );
 #if defined( __NT__ ) || defined( __WINDOWS__ )
-                GetFsysInfoRoot( &unc_root1, targ_path );
-                GetFsysInfoRoot( &unc_root2, targ_path_j );
+                GetRootFromPath( &unc_root1, targ_path );
+                GetRootFromPath( &unc_root2, targ_path_j );
                 /*
                  * identical drives are combined, and so are UNC paths
                  * pointing to the same share
@@ -1208,9 +1220,9 @@ bool CheckDrive( bool issue_message )
             }
 #if defined( __NT__ ) || defined( __WINDOWS__ )
             if( TEST_UNC( targ_path ) ) {
-                if( !IsFSWritableUNC( targ_path ) ) {
+                if( !IsTargetWritable( targ_path ) ) {
                     if( issue_message ) {
-                        GetFsysInfoRoot( &unc_root1, targ_path );
+                        GetRootFromPath( &unc_root1, targ_path );
                         if( access_vbuf( &unc_root1, F_OK ) == 0 ) {
                             MsgBoxVbuf( NULL, "IDS_UNCPATH_NOTWRITABLE", GUI_OK, &unc_root1 );
                         } else {
@@ -1242,12 +1254,12 @@ bool CheckDrive( bool issue_message )
                     drive_freesp[1] = '\0';
 #if defined( __NT__ ) || defined( __WINDOWS__ )
                     if( TEST_UNC( targ_path ) ) {
-                        if( FSInfoIsAvailableUNC( targ_path ) ) {
+                        if( IsTargetFsysInfoAvailable( targ_path ) ) {
                             msg_ids = "IDS_NODISKSPACE_UNC";
                             msg_path = targ_path;
                         } else {
                             msg_ids = "IDS_ASSUME_ENOUGHSPACE";
-                            GetFsysInfoRoot( &unc_root1, targ_path );
+                            GetRootFromPath( &unc_root1, targ_path );
                             msg_path = VbufString( &unc_root1 );
                         }
                     }
@@ -1277,7 +1289,7 @@ bool CheckDrive( bool issue_message )
 #if defined( __NT__ ) || defined( __WINDOWS__ )
                 if( TEST_UNC( targ_path ) ) {
                     msg_ids = "IDS_DRIVE_SPEC_UNC";
-                    GetFsysInfoRoot( &unc_root1, targ_path );
+                    GetRootFromPath( &unc_root1, targ_path );
                     msg_path = VbufString( &unc_root1 );
                 }
 #endif
@@ -1293,8 +1305,8 @@ bool CheckDrive( bool issue_message )
                 }
 #if defined( __NT__ ) || defined( __WINDOWS__ )
                 if( TEST_UNC( targ_path ) ) {
-                    if( !FSInfoIsAvailableUNC( targ_path )
-                      || !IsFSWritableUNC( targ_path ) ) {
+                    if( !IsTargetFsysInfoAvailable( targ_path )
+                      || !IsTargetWritable( targ_path ) ) {
                             strcpy( buff, "" );
                     }
                 }
@@ -1425,7 +1437,7 @@ COPYFILE_ERROR DoCopyFile( const VBUF *src_file, const VBUF *dst_file, copy_mode
             ret = CFE_ERROR;
             break;
         }
-    } while( bytes_read == buffer_size );
+    } while( (size_t)bytes_read == buffer_size );
     close( dst_fh );
     FileClose( src_fh );
     if( pbuff != lastchance )
