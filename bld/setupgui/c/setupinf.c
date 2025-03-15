@@ -2571,6 +2571,22 @@ int SimTargetFsys( int i )
     return( TargetInfo[i].fsys );
 }
 
+int SimSetTargetFsys( int i, int fsys )
+/*************************************/
+{
+    int     old;
+
+    old = TargetInfo[i].fsys;
+    TargetInfo[i].fsys = fsys;
+    return( old );
+}
+
+const char *SimTargetPath( int i )
+/********************************/
+{
+    return( TargetInfo[i].path );
+}
+
 int SimGetTargetNumFiles( int i )
 /*******************************/
 {
@@ -3144,8 +3160,8 @@ void SimGetLabelLabel( int parm, VBUF *buff )
  * =======================================================================
  */
 
-const char *SimGetTargetFullPath( int parm, VBUF *buff )
-/******************************************************/
+static const char *GetTargetFullPath( int parm, VBUF *buff )
+/**********************************************************/
 {
     char temp_buf[_MAX_PATH];
     const char *p;
@@ -3363,7 +3379,7 @@ static void CalcAddRemove( void )
             DirInfo[dir_index].num_files += FileInfo[i].num_files;
         }
         TargetInfo[target_index].num_files += FileInfo[i].num_files;
-        block_size = GetFSInfoBlockSize( TargetInfo[target_index].path );
+        block_size = GetTargetBlockSize( target_index );
         FileInfo[i].remove = remove;
         FileInfo[i].add = add;
         for( k = 0; k < FileInfo[i].num_files; ++k ) {
@@ -3408,7 +3424,7 @@ static void CalcAddRemove( void )
         /* Estimate space used for directories. Be generous. */
         if( !uninstall ) {
             for( i = 0; i < SetupInfo.target.num; ++i ) {
-                block_size = GetFSInfoBlockSize( TargetInfo[i].path );
+                block_size = GetTargetBlockSize( i );
                 for( j = 0; j < SetupInfo.dirs.num; ++j ) {
                     if( DirInfo[j].target != i )
                         continue;
@@ -3447,7 +3463,7 @@ bool SimCalcTargetSpaceNeeded( void )
     ok = true;
     VbufInit( &temp_vbuf );
     for( i = 0; i < SetupInfo.target.num; ++i ) {
-        temp_buf = SimGetTargetFullPath( i, &temp_vbuf );
+        temp_buf = GetTargetFullPath( i, &temp_vbuf );
         if( temp_buf == NULL ) {
             ok = false;
             break;

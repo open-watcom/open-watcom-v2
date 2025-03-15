@@ -119,7 +119,6 @@ typedef struct a_dialog_header {
 
 
 extern void             CheckStateVars( void );
-extern const char       *SimGetTargetFullPath( int parm, VBUF *buff );
 extern bool             SimFileAdd( int parm );
 extern bool             SimFileUpToDate( int parm );
 extern bool             SimFileRemove( int parm );
@@ -140,10 +139,12 @@ extern long             SimSubFileSize( int parm, int subfile );
 extern long             SimInit( const VBUF *inf_name );
 extern int              SimGetTargetNumFiles( int parm );
 extern int              SimNumTargets( void );
+extern const char       *SimTargetPath( int parm );
 extern bool             SimTargetMarked( int i );
 extern bool             SimSetTargetMarked( int i, bool b );
 extern fsys_ssize       SimTargetSpaceNeeded( int parm );
 extern int              SimTargetFsys( int i );
+extern int              SimSetTargetFsys( int i, int fsys );
 extern void             SimTargetDir( int i, VBUF *buff );
 extern void             SimTargetDirName( int i, VBUF *buff );
 extern int              SimNumDirs( void );

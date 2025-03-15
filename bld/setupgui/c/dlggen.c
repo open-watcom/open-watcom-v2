@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -874,7 +874,7 @@ dlg_state GenericDialog( gui_window *parent, a_dialog_header *dlg )
     GUIDlgOpenModal( parent == NULL ? MainWnd : parent, VbufString( &title ), height, width,
                      dlg->controls, dlg->num_controls,
                      &GenericGUIEventProc, &result );
-    ResetDriveInfo();
+    ResetFsysInfo();
     VbufFree( &title );
     return( result.state );
 }
