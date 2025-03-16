@@ -152,7 +152,7 @@ static void NoDupPaths( VBUF *old_value, const VBUF *new_value )
         if( new_end == NULL ) {
             len = strlen( new_start );
         } else {
-            len = new_end - new_start;
+            len = (size_t)( new_end - new_start );
         }
         value_start = VbufString( old_value );
         for( look = value_start; (dup = stristr( look, new_start, len )) != NULL; look = dup + len ) {
@@ -166,7 +166,7 @@ static void NoDupPaths( VBUF *old_value, const VBUF *new_value )
                     /*
                      * copy previous data
                      */
-                    VbufConcBuffer( &tmp, value_start, dup - value_start );
+                    VbufConcBuffer( &tmp, value_start, (vbuflen)( dup - value_start ) );
                     value_start = dup + len + 1;
                 }
                 /*
@@ -184,7 +184,7 @@ static void NoDupPaths( VBUF *old_value, const VBUF *new_value )
                     /*
                      * copy previous data
                      */
-                    VbufConcBuffer( &tmp, value_start, dup - value_start );
+                    VbufConcBuffer( &tmp, value_start, (vbuflen)( dup - value_start ) );
                     value_start = dup + len;
                 }
             }
@@ -197,7 +197,7 @@ static void NoDupPaths( VBUF *old_value, const VBUF *new_value )
             /*
              * copy rest of data not copied to "tmp"
              */
-            VbufConcBuffer( &tmp, value_start, look - value_start );
+            VbufConcBuffer( &tmp, value_start, (vbuflen)( look - value_start ) );
         }
         /*
          * copy result into "old_value"
@@ -320,7 +320,7 @@ static var_type parse_line( char *line, VBUF *name, VBUF *value, var_type vt_set
             break;
         }
     }
-    VbufConcBuffer( name, s, line - s );
+    VbufConcBuffer( name, s, (vbuflen)( line - s ) );
     VbufRewind( value );
     if( *line == '=' ) {
         SKIP_CHAR_SPACES( line );
@@ -1214,7 +1214,7 @@ void ReplaceVars( VBUF *dst, const char *src )
  * and place the result in buffer.
  */
 {
-    size_t              len;
+    vbuflen             len;
     const char          *p;
     const char          *e;
     const char          *varname;
@@ -1236,7 +1236,7 @@ void ReplaceVars( VBUF *dst, const char *src )
         if( *p++ != '%' )
             continue;
         if( *p == '%' ) {
-            len = p - VbufString( dst );
+            len = (vbuflen)( p - VbufString( dst ) );
             VbufSetStr( &tmp, p + 1 );
             VbufSetVbufAt( dst, &tmp, len );
             p = VbufString( dst ) + len;
@@ -1246,7 +1246,7 @@ void ReplaceVars( VBUF *dst, const char *src )
         if( e == NULL ) {
             break;
         }
-        VbufSetBuffer( &tmp, p, e - p );
+        VbufSetBuffer( &tmp, p, (vbuflen)( e - p ) );
         varname = VbufString( &tmp );
         for( ;; ) {
             /*
@@ -1269,13 +1269,13 @@ void ReplaceVars( VBUF *dst, const char *src )
                  */
                 break;
             }
-            VbufSetBuffer( &var1, varname, quest - varname );
+            VbufSetBuffer( &var1, varname, (vbuflen)( quest - varname ) );
             /*
              * skip '?'
              */
             quest++;
             colon = strchr( quest, ':' );
-            VbufSetBuffer( &var2, quest, colon - quest );
+            VbufSetBuffer( &var2, quest, (vbuflen)( colon - quest ) );
             /*
              * skip ':'
              */
@@ -1286,7 +1286,7 @@ void ReplaceVars( VBUF *dst, const char *src )
             }
             varname = colon;
         }
-        len = p - 1 - VbufString( dst );
+        len = (vbuflen)( p - 1 - VbufString( dst ) );
         VbufSetStr( &tmp, e + 1 );
         if( varval != NULL ) {
             VbufPrepStr( &tmp, varval );
@@ -1344,8 +1344,8 @@ static void secondarysearch( const VBUF *filename, VBUF *buffer )
     VbufFree( &path );
 }
 
-static void VersionStr( int fp, char *ver, int verlen, char *verbuf, size_t verbuflen )
-/*************************************************************************************/
+static void VersionStr( int fh, char *ver, size_t verlen, char *verbuf, size_t verbuflen )
+/****************************************************************************************/
 {
     static char         Buffer[2048];
     int                 len;
@@ -1354,7 +1354,7 @@ static void VersionStr( int fp, char *ver, int verlen, char *verbuf, size_t verb
 
     verbuf[0] = '\0';
     for( ;; ) {
-        len = read( fp, Buffer, sizeof( Buffer ) );
+        len = read( fh, Buffer, sizeof( Buffer ) );
         if( len < sizeof( Buffer ) ) {
             size = len;
             memset( Buffer + size, 0, sizeof( Buffer ) - size );
@@ -1371,7 +1371,7 @@ static void VersionStr( int fp, char *ver, int verlen, char *verbuf, size_t verb
         }
         if( len < sizeof( Buffer ) )
             break;    /* eof */
-        if( lseek( fp, -256L, SEEK_CUR ) == -1L ) {
+        if( lseek( fh, -256L, SEEK_CUR ) == -1L ) {
             break;
         }
     }
@@ -1381,15 +1381,16 @@ static void VersionStr( int fp, char *ver, int verlen, char *verbuf, size_t verb
 static void CheckVersion( VBUF *path, VBUF *drive, VBUF *dir )
 /************************************************************/
 {
-    int                 fp, hours;
+    int                 fh;
+    int                 hours;
     char                am_pm;
     char                buf[100];
     int                 check;
     struct stat         statbuf;
     struct tm           *timeptr;
 
-    fp = open_vbuf( path, O_RDONLY | O_BINARY );
-    if( fp == -1 ) {
+    fh = open_vbuf( path, O_RDONLY | O_BINARY );
+    if( fh == -1 ) {
         /*
          * shouldn't happen
          */
@@ -1398,12 +1399,12 @@ static void CheckVersion( VBUF *path, VBUF *drive, VBUF *dir )
     /*
      * concat date and time to end of path
      */
-    check = fstat( fp, &statbuf );
+    check = fstat( fh, &statbuf );
     if( check == -1 ) {
         /*
          * shouldn't happen
          */
-        close( fp );
+        close( fh );
         return;
     }
 
@@ -1429,18 +1430,18 @@ static void CheckVersion( VBUF *path, VBUF *drive, VBUF *dir )
     /*
      * also concat version number if it exists
      */
-    VersionStr( fp, "VeRsIoN=", 8, buf, sizeof( buf ) );
+    VersionStr( fh, "VeRsIoN=", 8, buf, sizeof( buf ) );
     if( buf[0] != '\0' ) {
         /*
          * Novell DLL
          */
         VbufConcStr( path, buf );
     } else {
-        lseek( fp, 0, SEEK_SET );
+        lseek( fh, 0, SEEK_SET );
         /*
          * includes terminating '\0' of "FileVersion"
          */
-        VersionStr( fp, "FileVersion", 12, buf, sizeof( buf ) );
+        VersionStr( fh, "FileVersion", 12, buf, sizeof( buf ) );
         if( buf[0] != '\0' ) {
             /*
              * Windows DLL
@@ -1448,7 +1449,7 @@ static void CheckVersion( VBUF *path, VBUF *drive, VBUF *dir )
             VbufConcStr( path, buf );
         }
     }
-    close( fp );
+    close( fh );
 }
 
 #ifdef EXTRA_CAUTIOUS_FOR_DLLS

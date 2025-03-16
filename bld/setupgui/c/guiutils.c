@@ -271,7 +271,7 @@ bool SetupPreInit( int argc, char **argv )
 #endif
 
     /* Cancel button may be wider in other languages */
-    NominalButtonWidth = strlen( LIT_GUI( Cancel ) ) + 5;
+    NominalButtonWidth = (int)( strlen( LIT_GUI( Cancel ) ) + 5 );
 
     /* Initialize enough of the GUI lib to let us show message boxes etc. */
     GUIWndInit( 300 /* ms */, GUI_PLAIN ); // 300 uS mouse dbl click rate, no char remapping

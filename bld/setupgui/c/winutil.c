@@ -67,7 +67,7 @@ static void CreateRegEntry( const VBUF *hive_key, const VBUF *app_name, const VB
     long                dword_val;
     HKEY                key;
     unsigned char       *bin_buf;
-    int                 i;
+    size_t              i;
 
     VbufInit( &buf );
     VbufConcVbuf( &buf, file_name );
@@ -384,7 +384,7 @@ static void WindowsWriteProfile( const VBUF *app_name, const VBUF *key_name,
 
                 VbufInit( &tmp );
                 VbufConcStr( &tmp, substr + len );
-                VbufSetVbufAt( &vbuf, &tmp, substr - VbufString( &vbuf ) );
+                VbufSetVbufAt( &vbuf, &tmp, (vbuflen)( substr - VbufString( &vbuf ) ) );
                 VbufFree( &tmp );
             }
         } else {

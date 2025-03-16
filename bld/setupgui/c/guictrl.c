@@ -42,14 +42,13 @@
 #include "dlggen.h"
 #include "setupinf.h"
 #include "genvbl.h"
-#include "dynarray.h"
 #include "genctrl.h"
 
 #include "clibext.h"
 
 
 void set_dlg_textwindow( gui_control_info *gui_controls,
-                        int num_controls, const char *s,
+                        array_idx num_controls, const char *s,
                         gui_ctl_id id,
                         gui_ord x1,                         // top-left x
                         gui_ord y1,                         // top-left y
@@ -74,7 +73,7 @@ void set_dlg_textwindow( gui_control_info *gui_controls,
 
 
 void set_dlg_dynamstring( gui_control_info *gui_controls,
-                        int num_controls, const char *s,
+                        array_idx num_controls, const char *s,
                         gui_ctl_id id, gui_ord x1, gui_ord y1, gui_ord width )
 /****************************************************************************/
 {
@@ -93,7 +92,7 @@ void set_dlg_dynamstring( gui_control_info *gui_controls,
 
 
 void set_dlg_radio( gui_control_info *gui_controls,
-                    int num_controls, int num_radio_buttons, const char *s,
+                    array_idx num_controls, int num_radio_buttons, const char *s,
                     gui_ctl_id id, gui_ord x1, gui_ord y1, gui_ord width )
 /*************************************************************************/
 {
@@ -116,7 +115,7 @@ void set_dlg_radio( gui_control_info *gui_controls,
 }
 
 void set_dlg_check( gui_control_info *gui_controls,
-                    int num_controls, const char *s,
+                    array_idx num_controls, const char *s,
                     gui_ctl_id id, gui_ord x1, gui_ord y1, gui_ord width )
 /************************************************************************/
 {
@@ -134,7 +133,7 @@ void set_dlg_check( gui_control_info *gui_controls,
 }
 
 void set_dlg_edit( gui_control_info *gui_controls,
-                    int num_controls, const char *s,
+                    array_idx num_controls, const char *s,
                     gui_ctl_id id, gui_ord x1, gui_ord y1, gui_ord width )
 /************************************************************************/
 {
@@ -174,7 +173,7 @@ char *TrimQuote( char *text )
 
 gui_ctl_id set_dlg_push_button( vhandle var_handle, const char *text,
                         gui_control_info *gui_controls,
-                        int num_controls, int row, int num_buttons,
+                        array_idx num_controls, int row, int num_buttons,
                         int of, int cols, int bwidth )
 /*****************************************************************/
 {

@@ -415,12 +415,12 @@ static void munge_fname_add( VBUF *buff, const VBUF *name )
         } else {
             continue;
         }
-        VbufConcBuffer( buff, start, p - start );
+        VbufConcBuffer( buff, start, (vbuflen)( p - start ) );
         VbufConcStr( buff, replacement );
         start = p + 1;
     }
     if( p != start ) {
-        VbufConcBuffer( buff, start, p - start );
+        VbufConcBuffer( buff, start, (vbuflen)( p - start ) );
     }
 }
 
@@ -461,7 +461,7 @@ static void delete_dir( const VBUF *dir )
     DIR                 *dirp;
     struct dirent       *dire;
     VBUF                file;
-    size_t              dir_len;
+    vbuflen             dir_len;
 
     VbufInit( &file );
     // Delete contents of directory

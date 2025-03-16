@@ -756,7 +756,7 @@ static void AdjustDialogControls( a_dialog_header *dlg )
             }
             if( j == dlg->num_controls ) {
                 for( curr_button = 1; curr_button <= num_push_buttons; ++curr_button ) {
-                    max_width = strlen( control->text ) + BUTTON_EXTRA;
+                    max_width = (int)strlen( control->text ) + BUTTON_EXTRA;
 #if defined( GUI_IS_GUI )
                     if( max_width < WIN_BW ) {
                         max_width = WIN_BW;
@@ -773,7 +773,7 @@ static void AdjustDialogControls( a_dialog_header *dlg )
                     ++control;
                 }
             } else {
-                max_width = strlen( control->text ) + BUTTON_EXTRA;
+                max_width = (int)strlen( control->text ) + BUTTON_EXTRA;
 #if defined( GUI_IS_GUI )
                 if( max_width < WIN_BW ) {
                     max_width = WIN_BW;
@@ -802,7 +802,7 @@ static void AdjustDialogControls( a_dialog_header *dlg )
                 }
             }
             if( control->text != NULL ) {
-                control->rect.width = width - strlen( control->text ) - BUTTON_EXTRA;
+                control->rect.width = width - (int)strlen( control->text ) - BUTTON_EXTRA;
             } else {
                 control->rect.width = width - C0 - 5;
             }
@@ -866,8 +866,8 @@ dlg_state GenericDialog( gui_window *parent, a_dialog_header *dlg )
 #if defined( __OS2__ ) && defined( GUI_IS_GUI )
     height -= 1;
 #endif
-    if( width < VbufLen( &title ) + WIDTH_BORDER + 2 ) {
-        width = VbufLen( &title ) + WIDTH_BORDER + 2;
+    if( width < (int)VbufLen( &title ) + WIDTH_BORDER + 2 ) {
+        width = (int)VbufLen( &title ) + WIDTH_BORDER + 2;
     }
 
     GUIRefresh();

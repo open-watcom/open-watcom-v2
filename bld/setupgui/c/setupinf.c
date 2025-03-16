@@ -57,7 +57,6 @@
 #include "setupio.h"
 #include "iopath.h"
 #include "watcom.h"
-#include "dynarray.h"
 
 #include "clibext.h"
 
@@ -319,8 +318,8 @@ static struct all_pm_groups {
 } *AllPMGroups = NULL;
 
 static read_state       State;
-static size_t           NoLineCount;
-static size_t           *LineCountPointer = &NoLineCount;
+static array_idx        NoLineCount;
+static array_idx        *LineCountPointer = &NoLineCount;
 static bool             NeedGetDiskSizes = false;
 static bool             NeedInitAutoSetValues = true;
 static int              MaxWidthChars;
@@ -490,15 +489,15 @@ static void BurnTree( tree_node *tree )
     GUIMemFree( tree );
 }
 
-static int NewFileCond( char *str )
-/*********************************/
+static array_idx NewFileCond( char *str )
+/***************************************/
 {
     tree_node   *new_tree;
-    int         num;
+    array_idx   num;
 
     new_tree = BuildExprTree( str );
     num = SetupInfo.fileconds.num;
-    while( --num >= 0 ) {
+    while( num-- > 0 ) {
         if( SameExprTree( new_tree, FileCondInfo[num].cond ) ) {
             BurnTree( new_tree );
             return( num );
@@ -826,9 +825,9 @@ static char *find_break( char *text, DIALOG_PARSER_INFO *parse_dlg, int *chwidth
      * Line endings are word breaks already
      */
     s = text;
-    while( *s && (*s != '\r') && (*s != '\n') )
+    while( *s != '\0' && (*s != '\r') && (*s != '\n') )
         s++;
-    len = s - text;
+    len = (int)( s - text );
 
     winwidth = parse_dlg->wrap_width * CharWidth;
     /*
@@ -877,7 +876,7 @@ static bool dialog_static( char *next, DIALOG_PARSER_INFO *parse_dlg )
 /********************************************************************/
 {
     char                *line;
-    int                 len;
+    vbuflen             len;
     VBUF                text;
     bool                rc = true;
     vhandle             var_handle;
@@ -909,8 +908,8 @@ static bool dialog_static( char *next, DIALOG_PARSER_INFO *parse_dlg )
         set_dlg_dynamstring( parse_dlg->curr_dialog->controls, parse_dlg->controls_array.num - 1,
             VbufString( &text ), VarGetId( var_handle ), parse_dlg->col_num, parse_dlg->row_num, len );
         if( len > 0 ) {
-            if( parse_dlg->max_width < parse_dlg->col_num + len ) {
-                parse_dlg->max_width = parse_dlg->col_num + len;
+            if( parse_dlg->max_width < parse_dlg->col_num + (int)len ) {
+                parse_dlg->max_width = parse_dlg->col_num + (int)len;
             }
         }
     } else {
@@ -1038,7 +1037,7 @@ static bool dialog_textwindow( char *next, DIALOG_PARSER_INFO *parse_dlg, bool l
     VBUF                file_name;
     unsigned int        rows;
     bool                rc = true;
-    file_handle         fh;
+    file_handle         afh;
     struct stat         buf;
     vhandle             var_handle;
 
@@ -1056,15 +1055,15 @@ static bool dialog_textwindow( char *next, DIALOG_PARSER_INFO *parse_dlg, bool l
         if( *line == '@' ) {
             VbufInit( &file_name );
             VbufConcStr( &file_name, line + 1 );
-            fh = FileOpen( &file_name, DATA_BIN );
-            if( fh != NULL ) {
+            afh = FileOpen( &file_name, DATA_BIN );
+            if( afh != NULL ) {
                 FileStat( &file_name, &buf );
                 text = GUIMemAlloc( buf.st_size + 1 );  /* +1 for terminating null */
                 if( text != NULL ) {
-                    FileRead( fh, text, buf.st_size );
+                    FileRead( afh, text, buf.st_size );
                     text[buf.st_size] = '\0';
                 }
-                FileClose( fh );
+                FileClose( afh );
             }
             VbufFree( &file_name );
             /*
@@ -1134,7 +1133,7 @@ static bool dialog_dynamic( char *next, DIALOG_PARSER_INFO *parse_dlg )
         parse_dlg->curr_dialog->pVariables[parse_dlg->num_variables] = var_handle;
         parse_dlg->curr_dialog->pConditions[parse_dlg->num_variables] = NULL;
         parse_dlg->num_variables++;
-        len = strlen( text );
+        len = (int)strlen( text );
         line = next;
         next = NextToken( line, ',' );
         /*
@@ -1305,8 +1304,8 @@ static bool dialog_edit_button( char *next, DIALOG_PARSER_INFO *parse_dlg )
             set_dlg_dynamstring( parse_dlg->curr_dialog->controls, parse_dlg->controls_array.num - 1, VbufString( &buff ),
                                  VarGetId( var_handle ), C0, parse_dlg->row_num, VbufLen( &buff ) );
         }
-        if( parse_dlg->max_width < 2 * VbufLen( &buff ) ) {
-            parse_dlg->max_width = 2 * VbufLen( &buff );
+        if( parse_dlg->max_width < (int)( 2 * VbufLen( &buff ) ) ) {
+            parse_dlg->max_width = (int)( 2 * VbufLen( &buff ) );
         }
     } else {
         rc = false;
@@ -1417,7 +1416,7 @@ static bool dialog_radiobutton( char *next, DIALOG_PARSER_INFO *parse_dlg )
     if( EvalCondition( line ) ) {
         var_handle = dialog_set_variable( parse_dlg, vbl_name, init_cond );
         parse_dlg->num_radio_buttons += 1;
-        len = strlen( text ) + 4; /* room for button */
+        len = (int)strlen( text ) + 4; /* room for button */
         line = next; next = NextToken( line, ',' );
         /*
          * condition for visibility (dynamic)
@@ -1476,7 +1475,7 @@ static bool dialog_checkbox( char *next, DIALOG_PARSER_INFO *parse_dlg, bool det
             SetVariableByHandle( dlg_var_handle, dialog_name );
         }
         var_handle = dialog_set_variable( parse_dlg, vbl_name, init_cond );
-        len = strlen( text ) + 4; /* room for button */
+        len = (int)strlen( text ) + 4; /* room for button */
         line = next; next = NextToken( line, ',' );
         /*
          * condition for visibility (dynamic)
@@ -1615,8 +1614,8 @@ static bool dialog_editcontrol( char *next, DIALOG_PARSER_INFO *parse_dlg )
             set_dlg_dynamstring( parse_dlg->curr_dialog->controls, parse_dlg->controls_array.num - 1, VbufString( &buff ),
                                  VarGetId( var_handle ), C0, parse_dlg->row_num, VbufLen( &buff ) );
         }
-        if( parse_dlg->max_width < 2 * VbufLen( &buff ) ) {
-            parse_dlg->max_width = 2 * VbufLen( &buff );
+        if( parse_dlg->max_width < (int)( 2 * VbufLen( &buff ) ) ) {
+            parse_dlg->max_width = (int)( 2 * VbufLen( &buff ) );
         }
     } else {
         rc = false;
@@ -1631,7 +1630,7 @@ static char *CompileCondition( const char *str );
 static void GrabConfigInfo( char *line, array_info *info )
 /********************************************************/
 {
-   size_t               num;
+   array_idx            num;
    char                 *next;
    struct config_info   *array;
 
@@ -1650,7 +1649,7 @@ static bool ProcLine( char *line, pass_type pass )
 /************************************************/
 {
     char                *next;
-    int                 num;
+    array_idx           num;
     VBUF                buff;
 
     /*
@@ -2176,10 +2175,10 @@ static bool GetFileInfo( int dir_index, int i, bool in_old_dir, bool *pzeroed )
 /*****************************************************************************/
 {
     VBUF        buff;
-    size_t      dir_end;
+    vbuflen     dir_end;
     struct stat buf;
     int         j;
-    int         k;
+    array_idx   k;
     bool        found;
     bool        supp;
     a_file_info *file;
@@ -2243,7 +2242,7 @@ static bool GetFileInfo( int dir_index, int i, bool in_old_dir, bool *pzeroed )
 static bool GetDiskSizes( void )
 /******************************/
 {
-    int         i;
+    array_idx   i;
     int         j;
     long        status_amount;
     long        status_curr;
@@ -2313,8 +2312,8 @@ static bool GetDiskSizes( void )
 }
 
 
-static int PrepareSetupInfo( file_handle fh, pass_type pass )
-/***********************************************************/
+static int PrepareSetupInfo( file_handle afh, pass_type pass )
+/************************************************************/
 {
     int                 result;
     gui_mcursor_handle  old_cursor;
@@ -2344,7 +2343,7 @@ static int PrepareSetupInfo( file_handle fh, pass_type pass )
     for( ;; ) {
         len = 0;
         for( ;; ) {
-            if( (int)FileRead( fh, readbuf, 1024 ) <= 0 ) {
+            if( (int)FileRead( afh, readbuf, 1024 ) <= 0 ) {
                 done = true;
                 break;
             }
@@ -2399,8 +2398,8 @@ static int PrepareSetupInfo( file_handle fh, pass_type pass )
 bool CheckForceDLLInstall( const VBUF *name )
 /*******************************************/
 {
-    int         i;
-    size_t      len;
+    array_idx   i;
+    vbuflen     len;
     const char  *dllname;
 
     len = VbufLen( name );
@@ -2417,9 +2416,9 @@ long SimInit( const VBUF *inf_name )
 /**********************************/
 {
     long                result;
-    file_handle         fh;
+    file_handle         afh;
     struct stat         stat_buf;
-    int                 i;
+    array_idx           i;
     gui_text_metrics    metrics;
 
     memset( &SetupInfo, 0, sizeof( struct setup_info ) );
@@ -2432,15 +2431,15 @@ long SimInit( const VBUF *inf_name )
 #undef setvar
 
     SetDefaultGlobalVarList();
-    fh = FileOpen( inf_name, DATA_TEXT );
-    if( fh == NULL ) {
+    afh = FileOpen( inf_name, DATA_TEXT );
+    if( afh == NULL ) {
         return( SIM_INIT_NOFILE );
     }
     SetVariableByName_vbuf( "SetupInfFile", inf_name );
-    result = PrepareSetupInfo( fh, PRESCAN_FILE );
-    FileClose( fh );
-    fh = FileOpen( inf_name, DATA_TEXT );
-    if( fh == NULL ) {
+    result = PrepareSetupInfo( afh, PRESCAN_FILE );
+    FileClose( afh );
+    afh = FileOpen( inf_name, DATA_TEXT );
+    if( afh == NULL ) {
         return( SIM_INIT_NOFILE );
     }
     InitArray( (void **)&DirInfo, sizeof( struct dir_info ), &SetupInfo.dirs );
@@ -2469,8 +2468,8 @@ long SimInit( const VBUF *inf_name )
     if( MaxWidthChars > MAX_WINDOW_WIDTH )  {
         MaxWidthChars = MAX_WINDOW_WIDTH;
     }
-    result = PrepareSetupInfo( fh, FINAL_SCAN );
-    FileClose( fh );
+    result = PrepareSetupInfo( afh, FINAL_SCAN );
+    FileClose( afh );
     for( i = 0; i < SetupInfo.files.num; ++i ) {
         FileInfo[i].condition.p = &FileCondInfo[FileInfo[i].condition.i];
     }
@@ -2672,12 +2671,12 @@ long SimFileSize( int parm )
 /**************************/
 {
     long        size;
-    int         len;
+    int         i;
 
     size = 0;
-    len = FileInfo[parm].num_files;
-    while( len-- > 0 ) {
-        size += FileInfo[parm].files[len].size;
+    i = FileInfo[parm].num_files;
+    while( i-- > 0 ) {
+        size += FileInfo[parm].files[i].size;
     }
     return( size );
 }
@@ -2874,7 +2873,7 @@ int SimGetPMsNum( void )
 static int SimFindDirForFile( const VBUF *buff )
 /**********************************************/
 {
-    int         i;
+    array_idx   i;
     int         j;
 
     for( i = 0; i < SetupInfo.files.num; i++ ) {
@@ -3241,7 +3240,7 @@ void CheckDLLCount( const char *install_name )
  * agrees to delete them.
  */
 {
-    int         i;
+    array_idx   i;
 
     /* unused parameters */ (void)install_name;
 
@@ -3284,7 +3283,7 @@ static bool CheckDLLSupplemental( int i, const VBUF *filename )
             VBUF        dir;
             VBUF        dst_path;
             bool        flag;
-            int         m;
+            array_idx   m;
 
             VbufInit( &dst_path );
             VbufInit( &dir );
@@ -3320,8 +3319,8 @@ static bool CheckDLLSupplemental( int i, const VBUF *filename )
 static void CalcAddRemove( void )
 /*******************************/
 {
-    int                 i;
-    int                 j;
+    array_idx           i;
+    array_idx           j;
     int                 k;
     int                 target_index = 0;
     int                 dir_index;
@@ -3446,7 +3445,7 @@ static void CalcAddRemove( void )
 bool SimCalcTargetSpaceNeeded( void )
 /***********************************/
 {
-    int                 i;
+    array_idx           i;
     gui_mcursor_handle  old_cursor;
     const char          *temp_buf;
     VBUF                temp_vbuf;
@@ -3523,7 +3522,7 @@ static void FreeSetupInfoVal( void )
 static void FreeTargetInfo( void )
 /********************************/
 {
-    int i;
+    array_idx   i;
 
     if( TargetInfo != NULL ) {
         for( i = 0; i < SetupInfo.target.num; i++ ) {
@@ -3540,7 +3539,7 @@ static void FreeTargetInfo( void )
 static void FreeDirInfo( void )
 /*****************************/
 {
-    int i;
+    array_idx   i;
 
     if( DirInfo != NULL ) {
         for( i = 0; i < SetupInfo.dirs.num; i++ ) {
@@ -3556,8 +3555,8 @@ static void FreeDirInfo( void )
 static void FreeFileInfo( void )
 /******************************/
 {
-    int i;
-    int j;
+    array_idx   i;
+    int         j;
 
     if( FileInfo != NULL ) {
         for( i = 0; i < SetupInfo.files.num; i++ ) {
@@ -3576,7 +3575,7 @@ static void FreeFileInfo( void )
 static void FreeDLLsToCheck( void )
 /*********************************/
 {
-    int i;
+    array_idx   i;
 
     if( DLLsToCheck != NULL ) {
         for( i = 0; i < SetupInfo.dlls_to_count.num; i++ ) {
@@ -3591,7 +3590,7 @@ static void FreeDLLsToCheck( void )
 static void FreeFileCondInfo( void )
 /**********************************/
 {
-    int i;
+    array_idx   i;
 
     if( FileCondInfo != NULL ) {
         for( i = 0; i < SetupInfo.fileconds.num; i++ ) {
@@ -3606,7 +3605,7 @@ static void FreeFileCondInfo( void )
 static void FreeForceDLLInstall( void )
 /*************************************/
 {
-    int i;
+    array_idx   i;
 
     if( ForceDLLInstall != NULL ) {
         for( i = 0; i < SetupInfo.force_DLL_install.num; i++ ) {
@@ -3621,7 +3620,7 @@ static void FreeForceDLLInstall( void )
 static void FreeSpawnInfo( void )
 /*******************************/
 {
-    int i;
+    array_idx   i;
 
     if( SpawnInfo != NULL ) {
         for( i = 0; i < SetupInfo.spawn.num; i++ ) {
@@ -3638,7 +3637,7 @@ static void FreeSpawnInfo( void )
 static void FreeDeleteInfo( void )
 /*******************************/
 {
-    int i;
+    array_idx   i;
 
     if( DeleteInfo != NULL ) {
         for( i = 0; i < SetupInfo.delete.num; i++ ) {
@@ -3654,7 +3653,7 @@ static void FreeDeleteInfo( void )
 static void FreePMInfo( void )
 /****************************/
 {
-    int i;
+    array_idx   i;
 
     if( PMInfo != NULL ) {
         for( i = 0; i < SetupInfo.pm_files.num; i++ ) {
@@ -3674,7 +3673,7 @@ static void FreePMInfo( void )
 static void FreeProfileInfo( void )
 /*********************************/
 {
-    int i;
+    array_idx   i;
 
     if( ProfileInfo != NULL ) {
         for( i = 0; i < SetupInfo.profile.num; i++ ) {
@@ -3695,7 +3694,7 @@ static void FreeProfileInfo( void )
 static void FreeOneConfigInfo( array_info *info, struct config_info *array )
 /**************************************************************************/
 {
-    size_t  i;
+    array_idx   i;
 
     for( i = 0; i < info->num; i++ ) {
         GUIMemFree( array[i].var );
@@ -3733,7 +3732,7 @@ static void FreeConfigInfo( void )
 static void FreeLabelInfo( void )
 /*******************************/
 {
-    int i;
+    array_idx   i;
 
     if( LabelInfo != NULL ) {
         for( i = 0; i < SetupInfo.label.num; i++ ) {
@@ -3749,7 +3748,7 @@ static void FreeLabelInfo( void )
 static void FreeAllPMGroups( void )
 /*********************************/
 {
-    int i;
+    array_idx   i;
 
     if( AllPMGroups != NULL ) {
         for( i = 0; i < SetupInfo.all_pm_groups.num; i++ ) {
@@ -3765,7 +3764,7 @@ static void FreeAllPMGroups( void )
 static void FreeAssociationInfo( void )
 /*************************************/
 {
-    int i;
+    array_idx   i;
 
     if( AssociationInfo != NULL ) {
         for( i = 0; i < SetupInfo.associations.num; i++ ) {

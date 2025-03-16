@@ -55,7 +55,6 @@
 #include "walloca.h"
 #include "setup.h"
 #include "setupinf.h"
-#include "dynarray.h"
 #include "genvbl.h"
 #include "gendlg.h"
 #include "guiutil.h"
@@ -458,7 +457,7 @@ static void GetTmpFileName( const char *path, VBUF *buff )
 void ResetFsysInfo( void )
 /************************/
 {
-    int         i;
+    array_idx   i;
 
     for( i = 0; i < FsysArray.num; ++i ) {
         FsysInfo[i].block_size = 0;
@@ -468,7 +467,7 @@ void ResetFsysInfo( void )
 void ResetAllFsysInfo( void )
 /***************************/
 {
-    int     i;
+    array_idx   i;
 
     for( i = 0; i < FsysArray.num; ++i ) {
         if( FsysInfo[i].root != NULL ) {
@@ -492,7 +491,7 @@ void InitFsysInfo( void )
 void FiniFsysInfo( void )
 /***********************/
 {
-    int     i;
+    array_idx   i;
 
     for( i = 0; i < FsysArray.num; i++ ) {
         GUIMemFree( FsysInfo[i].root );
@@ -540,7 +539,7 @@ static const char *GetRootFromPath( VBUF *root, const char *path )
                 /*
                  * cut off string at character after 4th backslash
                  */
-                VbufConcBuffer( root, path, index - path );
+                VbufConcBuffer( root, path, (vbuflen)( index - path ) );
                 return( VbufString( root ) );
             }
         }
@@ -585,7 +584,7 @@ static int AddFsysInfo( int target )
 /**********************************/
 {
     VBUF        root;
-    int         i;
+    array_idx   i;
     const char  *p;
 
     VbufInit( &root );
@@ -1215,14 +1214,14 @@ COPYFILE_ERROR DoCopyFile( const VBUF *src_file, const VBUF *dst_file, copy_mode
 {
     static char         lastchance[1024];
     size_t              buffer_size = 16 * 1024;
-    file_handle         src_fh;
+    file_handle         src_afh;
     int                 dst_fh;
     int                 bytes_read, bytes_written, style;
     char                *pbuff;
     COPYFILE_ERROR      ret;
 
-    src_fh = FileOpen( src_file, DATA_BIN );
-    if( src_fh == NULL ) {
+    src_afh = FileOpen( src_file, DATA_BIN );
+    if( src_afh == NULL ) {
         return( CFE_CANTOPENSRC );
     }
 
@@ -1245,7 +1244,7 @@ COPYFILE_ERROR DoCopyFile( const VBUF *src_file, const VBUF *dst_file, copy_mode
     }
     dst_fh = open_vbuf( dst_file, style, PMODE_R_USR_W );
     if( dst_fh == -1 ) {
-        FileClose( src_fh );
+        FileClose( src_afh );
         if( pbuff != lastchance )
             GUIMemFree( pbuff );
         dst_fh = open_vbuf( dst_file, O_RDONLY );
@@ -1264,7 +1263,7 @@ COPYFILE_ERROR DoCopyFile( const VBUF *src_file, const VBUF *dst_file, copy_mode
 
     ret = CFE_NOERROR;
     do {
-        bytes_read = FileRead( src_fh, pbuff, buffer_size );
+        bytes_read = FileRead( src_afh, pbuff, buffer_size );
         if( bytes_read < 0 ) {
             SetupError( "IDS_READERROR" );
             ret = CFE_ERROR;
@@ -1290,7 +1289,7 @@ COPYFILE_ERROR DoCopyFile( const VBUF *src_file, const VBUF *dst_file, copy_mode
         }
     } while( (size_t)bytes_read == buffer_size );
     close( dst_fh );
-    FileClose( src_fh );
+    FileClose( src_afh );
     if( pbuff != lastchance )
         GUIMemFree( pbuff );
     if( ret == CFE_NOERROR ) {
@@ -1610,9 +1609,9 @@ static bool DoCopyFiles( void )
     vhandle             var_handle;
     gui_message_return  ret = GUI_RET_OK;
     int                 max_files = SimNumFiles();
-    size_t              len;
-    size_t              src_path_pos1;
-    size_t              src_path_pos2;
+    vbuflen             len;
+    vbuflen             src_path_pos1;
+    vbuflen             src_path_pos2;
     const char          *dst_dir;
     bool                ok;
 
@@ -1751,7 +1750,7 @@ static bool DoCopyFiles( void )
                  */
                 VbufSetLen( &src_file, src_path_pos1 );
                 dst_dir = GetVariableStrVal( "DstDir" );
-                len = strlen( dst_dir );
+                len = (vbuflen)strlen( dst_dir );
                 if( strncmp( dir.buf, dst_dir, len ) == 0 ) {
                     /*
                      * if 1st char to concat is a backslash, skip it
@@ -1765,7 +1764,7 @@ static bool DoCopyFiles( void )
                      * eg: cd_drive:\winsys\filename
                      */
                     SimTargetDirName( SimDirTarget( SimFileDirNum( filenum ) ), &temp_vbuf );
-                    len = strlen( GetVariableStrVal_vbuf( &temp_vbuf ) );
+                    len = (vbuflen)strlen( GetVariableStrVal_vbuf( &temp_vbuf ) );
                     VbufConcVbuf( &src_file, &temp_vbuf );
                 }
                 /*
@@ -1961,7 +1960,7 @@ static bool NukePath( VBUF *path, int status )
     DIR                 *dirp;
     struct dirent       *dire;
     bool                ok;
-    size_t              path_len;
+    vbuflen             path_len;
     VBUF                name;
 #if defined( __UNIX__ )
     struct stat         statbuf;
@@ -2101,7 +2100,7 @@ void AddInstallName( VBUF *str )
     const char          *p;
     VBUF                temp_vbuf;
     VBUF                inst_name;
-    size_t              len;
+    vbuflen             len;
 
     VbufInit( &temp_vbuf );
     VbufInit( &inst_name );
@@ -2118,7 +2117,7 @@ void AddInstallName( VBUF *str )
             p += GUICharLen( UCHAR_VALUE( *p ) );
             continue;
         }
-        len = p - VbufString( str );
+        len = (vbuflen)( p - VbufString( str ) );
         VbufSetStr( &temp_vbuf, p + 1 );
         VbufSetVbufAt( str, &inst_name, len );
         VbufConcVbuf( str, &temp_vbuf );
@@ -2134,7 +2133,7 @@ static void remove_ampersand( VBUF *str )
 {
     const char      *s;
     VBUF            temp_vbuf;
-    size_t          len;
+    vbuflen         len;
 
     VbufInit( &temp_vbuf );
     s = VbufString( str );
@@ -2143,7 +2142,7 @@ static void remove_ampersand( VBUF *str )
             s++;
             continue;
         }
-        len = s - VbufString( str );
+        len = (vbuflen)( s - VbufString( str ) );
         VbufSetStr( &temp_vbuf, s + 1 );
         VbufSetVbufAt( str, &temp_vbuf, len );
         s = VbufString( str ) + len;

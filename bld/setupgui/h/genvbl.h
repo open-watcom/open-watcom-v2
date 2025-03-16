@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,8 +34,6 @@
 /*
 *   COMMENTS: Function prototypes contolling the abstract type "a_variable"
 */
-
-#include "vhandle.h"
 
 extern vhandle      NextGlobalVar( vhandle var_handle );
 extern void         InitGlobalVarList( void );

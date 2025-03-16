@@ -42,7 +42,6 @@
 #include "setupinf.h"
 #include "utils.h"
 #include "dlggen.h"
-#include "dynarray.h"
 #include "hash.h"
 #include "genvbl.h"
 
@@ -455,7 +454,7 @@ void SetDefaultGlobalVarList( void )
 void FreeGlobalVarList( bool including_real_globals )
 /***************************************************/
 {
-    int i;
+    array_idx   i;
 
     if( GlobalVarList == NULL )
         return;

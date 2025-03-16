@@ -53,7 +53,7 @@
 
 void VbufReqd(                  // ENSURE BUFFER IS OF SUFFICIENT SIZE
     VBUF *vbuf,                 // - VBUF structure
-    size_t reqd )               // - required size
+    vbuflen reqd )              // - required size
 {
     char    *new_buffer;        // - old buffer
 
@@ -69,7 +69,7 @@ void VbufReqd(                  // ENSURE BUFFER IS OF SUFFICIENT SIZE
 
 void VbufSetLen(                // SET BUFFER LENGTH
     VBUF *vbuf,                 // - VBUF structure
-    size_t size )               // - new length
+    vbuflen size )              // - new length
 {
     if( vbuf->len > 1 ) {
         vbuf->used = size;
@@ -144,7 +144,7 @@ int VbufCompExt(            // COMPARE A VBUFs
 int VbufCompBuffer(         // COMPARE A VBUFs
     const VBUF *vbuf1,      // - VBUF structure
     char const *buffer,     // - buffer
-    size_t size,            // - size of buffer
+    vbuflen size,           // - size of buffer
     bool igncase )          // - bool ignore case
 {
     if( igncase ) {
@@ -200,9 +200,9 @@ void VbufSetVbuf(               // SET A VBUF TO VBUF
 void VbufConcVbufPos(           // CONCATENATE A VBUF TO VBUF
     VBUF *vbuf1,                // - VBUF structure
     const VBUF *vbuf2,          // - VBUF structure
-    size_t start_pos )          // - start position in second VBUF
+    vbuflen start_pos )         // - start position in second VBUF
 {
-    size_t  len2;
+    vbuflen     len2;
 
     if( vbuf2->used > start_pos ) {
         len2 = vbuf2->used - start_pos;
@@ -216,10 +216,10 @@ void VbufConcVbufPos(           // CONCATENATE A VBUF TO VBUF
 void VbufPrepVbufPos(           // PREPEND A VBUF TO VBUF
     VBUF *vbuf1,                // - VBUF structure
     const VBUF *vbuf2,          // - VBUF structure to be prepended
-    size_t start_pos )          // - start position in second VBUF
+    vbuflen start_pos )         // - start position in second VBUF
 {
-    VBUF    temp_vbuf;
-    size_t  len2;
+    VBUF        temp_vbuf;
+    vbuflen     len2;
 
     if( vbuf2->used > start_pos ) {
         len2 = vbuf2->used - start_pos;
@@ -237,7 +237,7 @@ void VbufPrepVbufPos(           // PREPEND A VBUF TO VBUF
 void VbufSetVbufPos(            // SET A VBUF TO VBUF
     VBUF *vbuf1,                // - VBUF structure
     const VBUF *vbuf2,          // - VBUF structure
-    size_t start_pos )          // - start position in second VBUF
+    vbuflen start_pos )         // - start position in second VBUF
 {
     VbufSetLen( vbuf1, 0 );
     VbufConcVbufPos(  vbuf1, vbuf2, start_pos );
@@ -247,7 +247,7 @@ void VbufSetVbufPos(            // SET A VBUF TO VBUF
 void VbufConcBuffer(            // CONCATENATE A BUFFER TO VBUF
     VBUF *vbuf,                 // - VBUF structure
     char const *buffer,         // - size of buffer
-    size_t size )               // - buffer
+    vbuflen size )              // - buffer
 {
     if( size > 0 ) {
         VbufReqd( vbuf, vbuf->used + size );
@@ -260,7 +260,7 @@ void VbufConcBuffer(            // CONCATENATE A BUFFER TO VBUF
 void VbufPrepBuffer(            // PREPEND A BUFFER TO VBUF
     VBUF *vbuf,                 // - VBUF structure
     char const *buffer,         // - size of buffer
-    size_t size )               // - buffer
+    vbuflen size )              // - buffer
 {
     VBUF    temp_vbuf;
 
@@ -279,7 +279,7 @@ void VbufPrepBuffer(            // PREPEND A BUFFER TO VBUF
 void VbufSetBuffer(             // SET A BUFFER TO VBUF
     VBUF *vbuf,                 // - VBUF structure
     char const *buffer,         // - size of buffer
-    size_t size )               // - buffer
+    vbuflen size )              // - buffer
 {
     VbufSetLen( vbuf, 0 );
     VbufConcBuffer( vbuf, buffer, size );
@@ -290,14 +290,14 @@ void VbufConcStr(               // CONCATENATE A STRING TO VBUF
     VBUF *vbuf,                 // - VBUF structure
     char const *string )        // - string to be concatenated
 {
-    VbufConcBuffer( vbuf, string, strlen( string ) );
+    VbufConcBuffer( vbuf, string, (vbuflen)strlen( string ) );
 }
 
 void VbufPrepStr(               // PREPEND A STRING TO VBUF
     VBUF *vbuf,                 // - VBUF structure
     char const *string )        // - string to be prepended
 {
-    VbufPrepBuffer( vbuf, string, strlen( string ) );
+    VbufPrepBuffer( vbuf, string, (vbuflen)strlen( string ) );
 }
 
 void VbufSetStr(                // SET A STRING TO VBUF
@@ -305,7 +305,7 @@ void VbufSetStr(                // SET A STRING TO VBUF
     char const *string )        // - string to be concatenated
 {
     VbufSetLen( vbuf, 0 );
-    VbufConcBuffer( vbuf, string, strlen( string ) );
+    VbufConcBuffer( vbuf, string, (vbuflen)strlen( string ) );
 }
 
 
@@ -340,8 +340,8 @@ void VbufSetChr(                // SET A CHAR TO VBUF
 void VbufSetBufferAt(           // CONCATENATE A BUFFER TO VBUF AT POSITION
     VBUF *vbuf,                 // - VBUF structure
     char const *buffer,         // - size of buffer
-    size_t size,                // - buffer
-    size_t atpos )              // - at position
+    vbuflen size,               // - buffer
+    vbuflen atpos )             // - at position
 {
     if( atpos > vbuf->used )
         atpos = vbuf->used;
@@ -356,15 +356,15 @@ void VbufSetBufferAt(           // CONCATENATE A BUFFER TO VBUF AT POSITION
 void VbufSetStrAt(              // CONCATENATE A STRING TO VBUF AT POSITION
     VBUF *vbuf,                 // - VBUF structure
     char const *string,         // - string to be concatenated
-    size_t atpos )              // - at position
+    vbuflen atpos )             // - at position
 {
-    VbufSetBufferAt( vbuf, string, strlen( string ), atpos );
+    VbufSetBufferAt( vbuf, string, (vbuflen)strlen( string ), atpos );
 }
 
 void VbufSetVbufAt(             // CONCATENATE A VBUF TO VBUF AT POSITION
     VBUF *vbuf1,                // - VBUF structure
     const VBUF *vbuf2,          // - VBUF structure
-    size_t atpos )              // - at position
+    vbuflen atpos )             // - at position
 {
     if( atpos > vbuf1->used )
         atpos = vbuf1->used;
@@ -421,7 +421,7 @@ void VbufSetInteger(            // SET A INTEGER TO VBUF
 void VbufTruncWhite(            // TRUNCATE TRAILING WHITESPACE FROM VBUF
     VBUF *vbuf )                // - VBUF structure
 {
-    size_t  len;
+    vbuflen     len;
 
     len = vbuf->used;
     while( len-- > 0 && isspace( vbuf->buf[len] ) ) {
@@ -433,7 +433,7 @@ void VbufTruncWhite(            // TRUNCATE TRAILING WHITESPACE FROM VBUF
 void VbufAddDirSep(             // TERMINATE A VBUF AS PATH BY DIR_SEP
     VBUF *vbuf )                // - VBUF structure
 {
-    size_t      len;
+    vbuflen     len;
     char        lastChr;
     const char  *p;
 
@@ -475,8 +475,8 @@ void VbufAddDirSep(             // TERMINATE A VBUF AS PATH BY DIR_SEP
 void VbufRemEndDirSep(          // REMOVE DIR_SEP FROM A VBUF AS PATH
     VBUF *vbuf )                // - VBUF structure
 {
-    size_t  len;
-    char    lastChr;
+    vbuflen     len;
+    char        lastChr;
 
     len = VbufLen( vbuf );
     if( len == 0 ) {
@@ -680,13 +680,13 @@ void VbufSplitpath(             // GET A FILE PATH COMPONENTS FROM VBUF
     if( dotp == NULL )
         dotp = path;
     if( dir != NULL ) {
-        VbufSetBuffer( dir, startp, namep - startp );
+        VbufSetBuffer( dir, startp, (vbuflen)( namep - startp ) );
     }
     if( name != NULL ) {
-        VbufSetBuffer( name, namep, dotp - namep );
+        VbufSetBuffer( name, namep, (vbuflen)( dotp - namep ) );
     }
     if( ext != NULL ) {
-        VbufSetBuffer( ext, dotp, path - dotp );
+        VbufSetBuffer( ext, dotp, (vbuflen)( path - dotp ) );
     }
 }
 

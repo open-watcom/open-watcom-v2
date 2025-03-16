@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,10 +30,8 @@
 ****************************************************************************/
 
 
-#include "vhandle.h"
-
 extern void set_dlg_textwindow( gui_control_info *gui_controls,
-                          int num_controls, const char *s,
+                          array_idx num_controls, const char *s,
                           gui_ctl_id id,
                           gui_ord x1,                       //top-left x
                           gui_ord y1,                       //top-left y
@@ -42,25 +40,25 @@ extern void set_dlg_textwindow( gui_control_info *gui_controls,
                           gui_scroll_styles scroll_style ); // scroll style )
 
 extern void set_dlg_dynamstring( gui_control_info *gui_controls,
-                                 int num_controls, const char *s,
+                                 array_idx num_controls, const char *s,
                                  gui_ctl_id id, gui_ord x1, gui_ord y1, gui_ord width );
 
 
 extern void set_dlg_radio( gui_control_info *gui_controls,
-                           int num_controls, int num_radio_buttons, const char *s,
+                           array_idx num_controls, int num_radio_buttons, const char *s,
                            gui_ctl_id id, gui_ord x1, gui_ord y1, gui_ord width );
 
 extern void set_dlg_check( gui_control_info *gui_controls,
-                           int num_controls, const char *s,
+                           array_idx num_controls, const char *s,
                            gui_ctl_id id, gui_ord x1, gui_ord y1, gui_ord width );
 
 extern void set_dlg_edit( gui_control_info *gui_controls,
-                          int num_controls, const char *s,
+                          array_idx num_controls, const char *s,
                           gui_ctl_id id, gui_ord x1, gui_ord y1, gui_ord width );
 
 extern gui_ctl_id set_dlg_push_button( vhandle var_handle, const char *text,
                                 gui_control_info *gui_controls,
-                                int num_controls, int row, int num_buttons,
+                                array_idx num_controls, int row, int num_buttons,
                                 int of, int cols, int bwidth );
 
 extern int find_width( int );

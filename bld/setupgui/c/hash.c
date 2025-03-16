@@ -37,6 +37,7 @@
 
 #include "gui.h"
 #include "guiutil.h"
+#include "vhandle.h"
 #include "hash.h"
 
 static unsigned int     hashKey( size_t size, hash_key k );
