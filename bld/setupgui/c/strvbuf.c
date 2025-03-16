@@ -541,7 +541,7 @@ void VbufMakepath(              // SET A FILE PATH NAME TO VBUF
     }
     if( dir != NULL ) {
         if( VbufLen( dir ) > 0 ) {
-            if( IS_DIR_SEP( VbufString( dir ) ) && IS_DIR_SEP( VbufString( full )[VbufLen( full ) - 1] ) ) {
+            if( IS_DIR_SEP( VbufString( dir )[0] ) && IS_DIR_SEP( VbufString( full )[VbufLen( full ) - 1] ) ) {
                 VbufConcVbufPos( full, dir, 1 );
             } else {
                 VbufConcVbuf( full, dir );

@@ -3181,8 +3181,7 @@ static const char *GetTargetFullPath( int parm, VBUF *buff )
          */
 #else
   #if defined( __NT__ ) || defined( __WINDOWS__ )
-    } else if( IS_PATH_SEP( p[0] )
-      && IS_PATH_SEP( p[1] ) ) {
+    } else if( TEST_UNC( p ) ) {
         /*
          * UNC
          */
@@ -3195,8 +3194,7 @@ static const char *GetTargetFullPath( int parm, VBUF *buff )
         getcwd( temp_buf, sizeof( temp_buf ) );
         VbufPrepChr( buff, ':' );
         VbufPrepChr( buff, temp_buf[0] );
-    } else if( p[0] != '\0'
-      && p[1] == ':' ) {
+    } else if( TEST_DRIVE( p ) ) {
         /*
          * drive
          */
@@ -3215,6 +3213,11 @@ static const char *GetTargetFullPath( int parm, VBUF *buff )
         getcwd( temp_buf, sizeof( temp_buf ) );
         VbufPrepStr( buff, temp_buf );
     }
+#if !defined( __UNIX__ )
+    if( TEST_DRIVE( VbufString( buff ) ) ) {
+        VbufSetPathDrive( buff, toupper( VbufString( buff )[0] ) );
+    }
+#endif
     return( VbufString( buff ) );
 }
 

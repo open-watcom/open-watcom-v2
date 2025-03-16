@@ -364,8 +364,8 @@ static void WindowsWriteProfile( const VBUF *app_name, const VBUF *key_name,
                             const VBUF *value, const VBUF *file_name, bool add )
 /******************************************************************************/
 {
-    char                *substr;
-    size_t              len;
+    const char      *substr;
+    size_t          len;
 
     switch( VbufString( key_name )[0] ) {
     case '+':

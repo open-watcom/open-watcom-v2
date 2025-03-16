@@ -69,12 +69,7 @@
 #include "clibext.h"
 
 
-#if defined( __UNIX__ )
-#define MAX_DRIVES      1
-#else
 #define DRIVE_NUM(x)    (toupper((x)) - 'A' + 1)
-#define MAX_DRIVES      (1 + 'Z' - 'A' + 1)
-#endif
 
 #define TMPFILENAME     "_watcom_.tmp"
 
@@ -104,11 +99,8 @@ bool            ProgramGroups;
 bool            StartupChange;
 char            InstallerFile[_MAX_PATH] = { 0 };
 
-//static fsys_info      *FsysInfo = NULL;
-static fsys_info        FsysInfo[MAX_DRIVES];
-
-//static fsys_info    *FsysInfo = NULL;
-//static array_info   FsysArray = { 0 };
+static fsys_info    *FsysInfo = NULL;
+static array_info   FsysArray = { 0 };
 
 void ConcatDirSep( char *dir )
 /****************************/
@@ -455,67 +447,20 @@ void DoSpawn( when_time when )
     VbufFree( &buff );
 }
 
-#if !defined( __UNIX__ )
-
 static void GetTmpFileName( const char *path, VBUF *buff )
 /********************************************************/
 {
-    if( path == NULL
-      || buff == NULL ) {
-        return;
-    }
-#if defined( __UNIX__ )
     VbufSetStr( buff, path );
     VbufAddDirSep( buff );
     VbufConcStr( buff, TMPFILENAME );
-#else
-  #if defined( __NT__ ) || defined( __WINDOWS__ )
-    if( TEST_UNC( path ) ) {
-        /*
-         * UNC
-         */
-        VbufSetStr( buff, path );
-        VbufAddDirSep( buff );
-        VbufConcStr( buff, TMPFILENAME );
-        return;
-    }
-  #endif
-    VbufSetChr( buff, path[0] );
-    VbufConcStr( buff, ":\\" TMPFILENAME );
-#endif
 }
-
-static void GetTmpFileNameInTarget( const char *path, VBUF *buff )
-/****************************************************************/
-{
-#if !defined( __UNIX__ )
-    int         i;
-    int         max_targets;
-    char        drive;
-
-    max_targets = SimNumTargets();
-    drive = tolower( path[0] );
-    for( i = 0; i < max_targets; ++i ) {
-        SimTargetDir( i, buff );
-        if( tolower( VbufString( buff )[0] ) == drive
-          && VbufString( buff )[1] == ':' ) {
-            VbufAddDirSep( buff );
-            VbufConcStr( buff, TMPFILENAME );
-            return;
-        }
-    }
-#endif
-    GetTmpFileName( path, buff );
-}
-
-#endif /* !defined( __UNIX__ ) */
 
 void ResetFsysInfo( void )
 /************************/
 {
     int         i;
 
-    for( i = 0; i < MAX_DRIVES; ++i ) {
+    for( i = 0; i < FsysArray.num; ++i ) {
         FsysInfo[i].block_size = 0;
     }
 }
@@ -523,32 +468,30 @@ void ResetFsysInfo( void )
 void ResetAllFsysInfo( void )
 /***************************/
 {
-    int         i;
+    int     i;
 
-    for( i = 0; i < MAX_DRIVES; ++i ) {
+    for( i = 0; i < FsysArray.num; ++i ) {
         if( FsysInfo[i].root != NULL ) {
             GUIMemFree( FsysInfo[i].root );
             FsysInfo[i].root = NULL;
         }
     }
-    memset( FsysInfo, 0, sizeof( FsysInfo ) );
+    memset( FsysInfo, 0, sizeof( *FsysInfo ) * FsysArray.num );
+    FsysArray.num = 0;
 }
 
 void InitFsysInfo( void )
 /***********************/
 {
-#if 0
     FsysArray.num = 0;
     FsysArray.alloc = 2;
     FsysArray.increment = 2;
     InitArray( (void **)&FsysInfo, sizeof( fsys_info ), &FsysArray );
-#endif
 }
 
 void FiniFsysInfo( void )
 /***********************/
 {
-#if 0
     int     i;
 
     for( i = 0; i < FsysArray.num; i++ ) {
@@ -556,10 +499,8 @@ void FiniFsysInfo( void )
     }
     FsysArray.num = 0;
     GUIMemFree( FsysInfo );
-#endif
 }
 
-#if defined( __NT__ ) || defined( __WINDOWS__ )
 static const char *GetRootFromPath( VBUF *root, const char *path )
 /****************************************************************/
 {
@@ -627,18 +568,78 @@ static const char *GetRootFromPath( VBUF *root, const char *path )
 #endif
     return( VbufString( root ) );
 }
-#endif
 
-static bool updateFsysInfo( fsys_info *info, bool removable )
-/***********************************************************/
+static void ResetFsysInfoData( fsys_info *info )
+/**********************************************/
 {
+    info->free_space = 0;
     info->block_size = 0;
-    info->free_space = (fsys_size)-1;
     info->writable = false;
 #if !defined( __UNIX__ )
     info->fixed = false;
     info->removable = false;
 #endif
+}
+
+static int AddFsysInfo( int target )
+/**********************************/
+{
+    VBUF        root;
+    int         i;
+    const char  *p;
+
+    VbufInit( &root );
+    p = GetRootFromPath( &root, SimTargetPath( target ) );
+    for( i = 0; i < FsysArray.num; i++ ) {
+#ifdef __UNIX__
+        if( strcmp( FsysInfo[i].root, p ) == 0 ) {
+#else
+        if( stricmp( FsysInfo[i].root, p ) == 0 ) {
+#endif
+            VbufFree( &root );
+            SimSetTargetFsys( target, i );
+            return( i );
+        }
+    }
+    BumpArray( &FsysArray );
+    ResetFsysInfoData( &FsysInfo[i] );
+    FsysInfo[i].root = GUIStrDup( p );
+    VbufFree( &root );
+    SimSetTargetFsys( target, i );
+    return( i );
+}
+
+static int GetTargetFsys( int target )
+/************************************/
+{
+    int     fsys;
+
+    fsys = SimTargetFsys( target );
+    if( fsys == -1 ) {
+        fsys = AddFsysInfo( target );
+    }
+    return( fsys );
+}
+
+static const char *GetTargetFsysRoot( int target )
+/************************************************/
+{
+    return( FsysInfo[SimTargetFsys( target )].root );
+}
+
+#if defined( __WINDOWS__ ) || defined( __NT__ )
+static bool IsTargetFsysWritable( int target )
+/********************************************/
+{
+    return( FsysInfo[SimTargetFsys( target )].writable );
+}
+#endif
+
+static bool updateFsysInfo( fsys_info *info, bool removable )
+/***********************************************************/
+{
+    ResetFsysInfoData( info );
+    info->free_space = (fsys_size)-1;
 
 #if defined( __UNIX__ )
     /* unused parameters */ (void)removable;
@@ -658,7 +659,7 @@ static bool updateFsysInfo( fsys_info *info, bool removable )
             short   attrs;
         } ret;
 
-        FSALLOCATE      fsalloc;
+        FSALLOCATE      fsinfo;
         APIRET          rc;
 
         parm            p;
@@ -676,17 +677,11 @@ static bool updateFsysInfo( fsys_info *info, bool removable )
         /* unused parameters */ (void)removable;
 
         drive_num = DRIVE_NUM( info->root[0] );
-        rc = DosQueryFSInfo( (ULONG)drive_num, FSIL_ALLOC, (PVOID)&fsalloc, sizeof( fsalloc ) );
 
+        rc = DosQueryFSInfo( (ULONG)drive_num, FSIL_ALLOC, (PVOID)&fsinfo, sizeof( fsinfo ) );
         if( rc == 0 ) {
-            /*
-             * This is a bit strange: the respective values are not
-             * returned in a structure but in an array BLAH! from
-             * which one must extract info as below. See OS/2 Manual
-             * for clarification.
-             */
-            info->block_size = fsalloc.cSectorUnit * fsalloc.cbSector;
-            info->free_space = (fsys_size)fsalloc.cUnitAvail * (ULONG)info->block_size;
+            info->block_size = fsinfo.cSectorUnit * fsinfo.cbSector;
+            info->free_space = (fsys_size)fsinfo.cUnitAvail * (ULONG)info->block_size;
         }
         p.cmdinfo = 0;
         p.drive_num = drive_num - 1;
@@ -763,7 +758,7 @@ static bool updateFsysInfo( fsys_info *info, bool removable )
         if( r.w.cflag
           || (r.h.al
           && (r.h.al != drive_num)) ) {
-            return( fsys );
+            return( true );
         }
         info->fixed = true;
         r.w.ax = 0x4409;    /* query device local/remote */
@@ -816,6 +811,25 @@ static bool updateFsysInfo( fsys_info *info, bool removable )
     return( true );
 }
 
+static bool IsTargetWritable( int target )
+/****************************************/
+{
+    int         io;
+    VBUF        filename;
+    bool        ok = false;
+
+    VbufInit( &filename );
+    GetTmpFileName( SimTargetPath( target ), &filename );
+    io = open_vbuf( &filename, O_RDWR | O_CREAT | O_TRUNC, PMODE_RW );
+    if( io != -1 ) {
+        close( io );
+        remove_vbuf( &filename );
+        ok = true;
+    }
+    VbufFree( &filename );
+    return( ok );
+}
+
 #if defined( __DOS__ )
 static int __far critical_error_handler( unsigned deverr, unsigned errcode, unsigned __far *devhdr )
 /**************************************************************************************************/
@@ -842,204 +856,38 @@ static void NoHardErrors( void )
   #endif
 }
 
-static int GetFsysInfo( const char *fsys, bool removable )
-/********************************************************/
+static int GetFsysInfo( int target, bool removable )
+/**************************************************/
 {
-    int         drive_num = 0;
+    int         fsys;
     fsys_info   *info;
 
-#if defined( __UNIX__ )
-    /* unused parameters */ (void)fsys;
-#else
-    drive_num = DRIVE_NUM( fsys[0] );
-#endif
-    info = &FsysInfo[drive_num];
-    if( (info->block_size == 0
-      || removable /* recheck - could have been replaced */) ) {
-        NoHardErrors();
-
-        updateFsysInfo( info, removable );
-
-        if( !removable ) {
-            int         io;
-            VBUF        filename;
-
-            VbufInit( &filename );
-            GetTmpFileNameInTarget( fsys, &filename );
-            io = open_vbuf( &filename, O_RDWR | O_CREAT | O_TRUNC, PMODE_RW );
-            if( io == -1 ) {
-                GetTmpFileName( fsys, &filename );
-                io = open_vbuf( &filename, O_RDWR | O_CREAT | O_TRUNC, PMODE_RW );
-                info->writable = false;
-            } else {
-                info->writable = true;
+    fsys = GetTargetFsys( target );
+    if( fsys != -1 ) {
+        info = &FsysInfo[fsys];
+        if( (info->block_size == 0
+          || removable /* recheck - could have been replaced */) ) {
+            NoHardErrors();
+            updateFsysInfo( info, removable );
+            if( !removable ) {
+                info->writable = IsTargetWritable( target );
             }
-            if( io != -1 ) {
-                close( io );
-                remove_vbuf( &filename );
-#if 0
-    // FIXME it doesn't work correctly if target directory doesn't exist
-    // (new installation) and you have insufficient rights to drive root
-            } else {
-                info->block_size = 1;
-                info->free_space = (fsys_size)-1;
-#endif
-            }
-            VbufFree( &filename );
         }
     }
-    return( drive_num );
+    return( fsys );
 }
 
 static fsys_size GetTargetFreeSpace( int target, bool removable )
 /***************************************************************/
 {
-    return( FsysInfo[GetFsysInfo( SimTargetPath( target ), removable )].free_space );
+    return( FsysInfo[GetFsysInfo( target, removable )].free_space );
 }
 
 unsigned GetTargetBlockSize( int target )
 /***************************************/
 {
-    return( FsysInfo[GetFsysInfo( SimTargetPath( target ), false )].block_size );
+    return( FsysInfo[GetFsysInfo( target, false )].block_size );
 }
-
-#if defined( __NT__ ) || defined( __WINDOWS__ )
-static fsys_size GetTargetFreeSpaceUNC( int target )
-/**************************************************/
-{
-    fsys_size   size = 0;
-    const char  *fsys;
-#ifdef __NT__
-    DWORD       sectors_per_cluster;
-    DWORD       bytes_per_sector;
-    DWORD       avail_clusters;
-    DWORD       total_clusters;
-    VBUF        root;
-#else
-    struct diskfree_t info;
-#endif
-
-    fsys = SimTargetPath( target );
-#ifdef __NT__
-    VbufInit( &root );
-    if( GetRootFromPath( &root, fsys ) ) {
-        if( GetDiskFreeSpace( VbufString( &root ), &sectors_per_cluster, &bytes_per_sector, &avail_clusters, &total_clusters ) ) {
-            size = (fsys_size)sectors_per_cluster * (fsys_size)bytes_per_sector * (fsys_size)avail_clusters ;
-        }
-    }
-    VbufFree( &root );
-#else
-    if( TEST_DRIVE( fsys ) ) {
-        if( _getdiskfree( DRIVE_NUM( fsys[0] ), &info ) == 0 ) {
-            size = (fsys_size)info.sectors_per_cluster * (fsys_size)info.bytes_per_sector * (fsys_size)info.avail_clusters;
-        }
-    }
-#endif
-    return( size );
-}
-#endif
-
-#if 0
-static long GetTargetBlockSizeUNC( int target )
-/*********************************************/
-{
-    DWORD       size = 0;
-    const char  *fsys;
-#ifdef __NT__
-    DWORD       sectors_per_cluster;
-    DWORD       bytes_per_sector;
-    DWORD       avail_clusters;
-    DWORD       total_of_clusters;
-    VBUF        root;
-#else
-    struct diskfree_t info;
-#endif
-
-    fsys = SimTargetPath( target );
-#ifdef __NT__
-    VbufInit( &root );
-    if( GetRootFromPath( &root, fsys ) ) {
-        if( GetDiskFreeSpace( VbufString( &root ), &sectors_per_cluster,
-                        &bytes_per_sector, &avail_clusters, &total_of_clusters ) ) {
-            size = sectors_per_cluster * bytes_per_sector;
-        }
-    }
-    VbufFree( &root );
-#else
-    if( TEST_DRIVE( fsys ) ) {
-        if( _getdiskfree( DRIVE_NUM( fsys[0] ), &info ) == 0 ) {
-            size = (long)info.sectors_per_cluster * info.bytes_per_sector;
-        }
-    }
-#endif
-    return( size );
-}
-#endif
-
-#if defined( __NT__ ) || defined( __WINDOWS__ )
-static bool IsTargetWritable( const char *fsys )
-/**********************************************/
-{
-    int         io;
-    VBUF        filename;
-    VBUF        root;
-    bool        ok = false;
-
-    if( fsys != NULL ) {
-        VbufInit( &root );
-        VbufInit( &filename );
-
-        if( GetRootFromPath( &root, fsys ) != 0 ) {
-            GetTmpFileName( VbufString( &root ), &filename );
-            io = open_vbuf( &filename, O_RDWR | O_CREAT | O_TRUNC, PMODE_RW );
-            if( io != -1 ) {
-                close( io );
-                remove_vbuf( &filename );
-                ok = true;
-            }
-        }
-
-        VbufFree( &filename );
-        VbufFree( &root );
-    }
-    return( ok );
-}
-#endif
-
-#if defined( __NT__ ) || defined( __WINDOWS__ )
-static bool IsTargetFsysInfoAvailable( const char *fsys )
-/*******************************************************/
-{
-    bool        ok = false;
-#ifdef __NT__
-    DWORD       sectors_per_cluster;
-    DWORD       bytes_per_sector;
-    DWORD       avail_clusters;
-    DWORD       total_clusters;
-    VBUF        root;
-#else
-    struct diskfree_t info;
-#endif
-
-#ifdef __NT__
-    VbufInit( &root );
-    if( GetRootFromPath( &root, fsys ) ) {
-        if( GetDiskFreeSpace( VbufString( &root ), &sectors_per_cluster,
-                &bytes_per_sector, &avail_clusters, &total_clusters ) ) {
-            ok = true;
-        }
-    }
-    VbufFree( &root );
-#else
-    if( TEST_DRIVE( fsys ) ) {
-        if( _getdiskfree( DRIVE_NUM( fsys[0] ), &info ) == 0 ) {
-            ok = true;
-        }
-    }
-#endif
-    return( ok );
-}
-#endif
 
 /********************************************************************
  * Functions for Creating the destination directory tree
@@ -1191,24 +1039,16 @@ bool CheckDrive( bool issue_message )
     fsys_ssize          disk_space_needed;
     int                 max_targets;
     int                 i, j;
-    const char          *targ_path;
+    const char          *targ_root;
     char                buff[_MAX_PATH];
     char                drive_freesp[20];
+    const char          *msg_ids;
+    const char          *msg_path;
     struct drive_space {
         fsys_ssize  needed;
         fsys_size   free;
     }                   *space;
-#if !defined( __UNIX__ )
     gui_message_return  reply;
-#endif
-#if defined( __NT__ ) || defined( __WINDOWS__ )
-    VBUF                unc_root1;
-    VBUF                unc_root2;
-#endif
-
-#if defined( __UNIX__ )
-    /* unused parameters */ (void)issue_message;
-#endif
 
     if( !SimCalcTargetSpaceNeeded() )
         return( false );
@@ -1218,10 +1058,6 @@ bool CheckDrive( bool issue_message )
     for( i = 0; i < max_targets; i++ ) {
         SimSetTargetMarked( i, false );
     }
-#if defined( __NT__ ) || defined( __WINDOWS__ )
-    VbufInit( &unc_root1 );
-    VbufInit( &unc_root2 );
-#endif
     if( ok ) {
         /*
          * check for enough disk space, combine drives that are the same
@@ -1229,75 +1065,55 @@ bool CheckDrive( bool issue_message )
         for( i = 0; i < max_targets; i++ ) {
             if( SimTargetMarked( i ) )
                 continue;
-            targ_path = SimTargetPath( i );
+            targ_root = GetTargetFsysRoot( i );
             disk_space_needed = SimTargetSpaceNeeded( i );
             for( j = i + 1; j < max_targets; ++j ) {
-                const char *targ_path_j = SimTargetPath( j );
-#if defined( __NT__ ) || defined( __WINDOWS__ )
-                GetRootFromPath( &unc_root1, targ_path );
-                GetRootFromPath( &unc_root2, targ_path_j );
-                /*
-                 * identical drives are combined, and so are UNC paths
-                 * pointing to the same share
-                 * BUT: drives and UNC paths that happen to be the same
-                 * are NOT combined. (I am lazy)
-                 */
-                if( ( tolower( targ_path_j[0] ) == tolower( targ_path[0] )
-                  && isalpha( targ_path[0] ) )
-                  || VbufCompVbuf( &unc_root1, &unc_root2, true ) == 0 ) {
-#else
-                if( tolower( targ_path_j[0] ) == tolower( targ_path[0] )
-                  && isalpha( targ_path[0] ) ) {
-#endif
+                if( SimTargetFsys( j ) == SimTargetFsys( i ) ) {
                     disk_space_needed += SimTargetSpaceNeeded( j );
                     SimSetTargetMarked( j, true );
                 }
             }
 #if defined( __NT__ ) || defined( __WINDOWS__ )
-            if( TEST_UNC( targ_path ) ) {
-                if( !IsTargetWritable( targ_path ) ) {
+            if( TEST_UNC( targ_root ) ) {
+                if( !IsTargetFsysWritable( i ) ) {
                     if( issue_message ) {
-                        GetRootFromPath( &unc_root1, targ_path );
-                        if( access_vbuf( &unc_root1, F_OK ) == 0 ) {
-                            MsgBoxVbuf( NULL, "IDS_UNCPATH_NOTWRITABLE", GUI_OK, &unc_root1 );
+                        if( access( targ_root, F_OK ) == 0 ) {
+                            msg_ids = "IDS_UNCPATH_NOTWRITABLE";
                         } else {
-                            MsgBox( NULL, "IDS_UNCPATH_NOTEXIST", GUI_OK, &unc_root1 );
+                            msg_ids = "IDS_UNCPATH_NOTEXIST";
                         }
+                        MsgBox( NULL, msg_ids, GUI_OK, targ_root );
                         ok = false;
                         break;
                     }
                 }
-                free_disk_space = GetTargetFreeSpaceUNC( i );
-            } else {
-                free_disk_space = GetTargetFreeSpace( i, false );
             }
-#else
-            free_disk_space = GetTargetFreeSpace( i, false );
 #endif
-            if( free_disk_space == (unsigned long long)-1 )
+            free_disk_space = GetTargetFreeSpace( i, false );
+            if( free_disk_space == (fsys_size)-1 )
                 free_disk_space = 0;
             space[i].free = free_disk_space;
             space[i].needed = disk_space_needed;
-#if !defined( __UNIX__ )
             if( issue_message ) {
                 if( disk_space_needed > 0
                   && free_disk_space < (fsys_size)disk_space_needed ) {
-                    const char *msg_ids = "IDS_NODISKSPACE";
-                    const char *msg_path = drive_freesp;
-
-                    drive_freesp[0] = targ_path[0];
+                    msg_ids = "IDS_NODISKSPACE";
+#if defined( __UNIX__ )
+                    msg_path = targ_root;
+#else
+                    msg_path = drive_freesp;
+                    drive_freesp[0] = targ_root[0];
                     drive_freesp[1] = '\0';
-#if defined( __NT__ ) || defined( __WINDOWS__ )
-                    if( TEST_UNC( targ_path ) ) {
-                        if( IsTargetFsysInfoAvailable( targ_path ) ) {
-                            msg_ids = "IDS_NODISKSPACE_UNC";
-                            msg_path = targ_path;
-                        } else {
-                            msg_ids = "IDS_ASSUME_ENOUGHSPACE";
-                            GetRootFromPath( &unc_root1, targ_path );
-                            msg_path = VbufString( &unc_root1 );
-                        }
+    #if defined( __NT__ ) || defined( __WINDOWS__ )
+                    if( TEST_UNC( targ_root ) ) {
+                        msg_path = targ_root;
+        #if defined( __NT__ )
+                        msg_ids = "IDS_NODISKSPACE_UNC";
+        #else
+                        msg_ids = "IDS_ASSUME_ENOUGHSPACE";
+        #endif
                     }
+    #endif
 #endif
                     reply = MsgBox( NULL, msg_ids, GUI_YES_NO, msg_path,
                                     free_disk_space / 1000,
@@ -1308,25 +1124,26 @@ bool CheckDrive( bool issue_message )
                     }
                 }
             }
-#endif
         }
     }
     if( ok ) {
         for( i = 0; i < max_targets; ++i ) {
             if( !SimTargetMarked( i )
               && SimTargetNeedsUpdate( i ) ) {
-                const char *msg_ids = "IDS_DRIVE_SPEC";
-                const char *msg_path = drive_freesp;
-
-                targ_path = SimTargetPath( i );
-                drive_freesp[0] = toupper( targ_path[0] );
+                targ_root = GetTargetFsysRoot( i );
+                msg_ids = "IDS_DRIVE_SPEC";
+#if defined( __UNIX__ )
+                msg_path = targ_root;
+#else
+                msg_path = drive_freesp;
+                drive_freesp[0] = targ_root[0];
                 drive_freesp[1] = '\0';
-#if defined( __NT__ ) || defined( __WINDOWS__ )
-                if( TEST_UNC( targ_path ) ) {
+    #if defined( __NT__ ) || defined( __WINDOWS__ )
+                if( TEST_UNC( targ_root ) ) {
+                    msg_path = targ_root;
                     msg_ids = "IDS_DRIVE_SPEC_UNC";
-                    GetRootFromPath( &unc_root1, targ_path );
-                    msg_path = VbufString( &unc_root1 );
                 }
+    #endif
 #endif
                 sprintf( buff, GetVariableStrVal( msg_ids ), msg_path );
                 if( space[i].needed < 0 ) {
@@ -1339,11 +1156,14 @@ bool CheckDrive( bool issue_message )
                     strcat( buff, GetVariableStrVal( "IDS_DRIVE_AVAILABLE" ) );
                 }
 #if defined( __NT__ ) || defined( __WINDOWS__ )
-                if( TEST_UNC( targ_path ) ) {
-                    if( !IsTargetFsysInfoAvailable( targ_path )
-                      || !IsTargetWritable( targ_path ) ) {
-                            strcpy( buff, "" );
+                if( TEST_UNC( targ_root ) ) {
+    #if defined( __NT__ )
+                    if( !IsTargetFsysWritable( i ) ) {
+                        strcpy( buff, "" );
                     }
+    #else
+                    strcpy( buff, "" );
+    #endif
                 }
 #endif
             } else {
@@ -1353,10 +1173,6 @@ bool CheckDrive( bool issue_message )
             SetVariableByName( drive_freesp, buff );
         }
     }
-#if defined( __NT__ ) || defined( __WINDOWS__ )
-    VbufFree( &unc_root2 );
-    VbufFree( &unc_root1 );
-#endif
     GUIMemFree( space );
     return( ok );
 }
@@ -2847,15 +2663,15 @@ void CheckHeap( void )
 }
 #endif
 
-char *stristr( const char *str, const char *substr, size_t substr_len )
-/*********************************************************************/
+const char *stristr( const char *str, const char *substr, size_t substr_len )
+/***************************************************************************/
 {
     size_t  str_len;
 
     str_len = strlen( str );
     while( str_len-- >= substr_len ) {
         if( strnicmp( str, substr, substr_len ) == 0 )
-            return( (char *)str );
+            return( str );
         ++str;
     }
     return( NULL );

@@ -50,7 +50,7 @@ extern bool             FreeDirParams( void );
 extern void             CloseDownMessage( bool state );
 extern unsigned         GetTargetBlockSize( int target );
 extern void             AddInstallName( VBUF *str );
-extern char             *stristr( const char *str, const char *substr, size_t substr_len );
+extern const char       *stristr( const char *str, const char *substr, size_t substr_len );
 extern void             Log( char *start, ... );
 extern void             GetInstallName( VBUF * );
 extern bool             PromptUser( const VBUF *name, const char *dlg, const char *skip, const char *replace, bool *resp_replace );
