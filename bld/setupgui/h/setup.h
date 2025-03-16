@@ -97,6 +97,10 @@
 #define SKIP_SPACES(s)      while(isspace(*s)) s++
 #define SKIP_CHAR_SPACES(s) while(isspace(*++s))
 
+#define TEST_UNC(x)         ((x)[0] == '\\' && (x)[1] == '\\')
+#define TEST_DRIVE(x)       (isalpha( (x)[0] ) && (x)[1] == ':')
+#define TEST_NODE(x)        ((x)[0] == '/' && (x)[1] == '/')
+
 typedef enum {
     CFE_NOERROR,
     CFE_NOMEMORY,

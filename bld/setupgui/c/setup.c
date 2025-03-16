@@ -314,6 +314,8 @@ void GUImain( void )
             ok = false;
             while( !ok && InitInfo( &inf_name, &src_path ) ) {
 
+                InitFsysInfo();
+
                 ok = DoMainLoop( &state );
 
                 if( state == DLG_DONE ) {
@@ -347,6 +349,9 @@ void GUImain( void )
                     VbufMakepath( &src_path, &drive, &dir, NULL, NULL );
                     VbufRemEndDirSep( &src_path );
                 }
+
+                FiniFsysInfo();
+
                 FreeDefaultDialogs();
                 FreeAllStructs();
                 FreeGlobalVarList( false );

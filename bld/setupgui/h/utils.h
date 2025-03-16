@@ -64,4 +64,6 @@ extern void             SetupError( const char * );
 extern void             DoSpawn( when_time when );
 extern void             ResetFsysInfo( void );
 extern void             ResetAllFsysInfo( void );
+extern void             InitFsysInfo( void );
+extern void             FiniFsysInfo( void );
 extern void             DeleteObsoleteFiles( void );

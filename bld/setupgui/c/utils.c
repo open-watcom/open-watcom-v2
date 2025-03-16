@@ -55,6 +55,7 @@
 #include "walloca.h"
 #include "setup.h"
 #include "setupinf.h"
+#include "dynarray.h"
 #include "genvbl.h"
 #include "gendlg.h"
 #include "guiutil.h"
@@ -71,14 +72,11 @@
 #if defined( __UNIX__ )
 #define MAX_DRIVES      1
 #else
-#define DRIVE_NUM(x)    ((x) - 'A' + 1)
-#define MAX_DRIVES      (1 + DRIVE_NUM('Z'))
+#define DRIVE_NUM(x)    (toupper((x)) - 'A' + 1)
+#define MAX_DRIVES      (1 + 'Z' - 'A' + 1)
 #endif
 
 #define TMPFILENAME     "_watcom_.tmp"
-
-#define TEST_UNC(x)     (x[0] == '\\' && x[1] == '\\')
-#define TEST_DRIVE(x)   (isalpha( x[0] ) && x[1] == ':')
 
 typedef struct def_var {
     char                *variable;
@@ -108,6 +106,9 @@ char            InstallerFile[_MAX_PATH] = { 0 };
 
 //static fsys_info      *FsysInfo = NULL;
 static fsys_info        FsysInfo[MAX_DRIVES];
+
+//static fsys_info    *FsysInfo = NULL;
+//static array_info   FsysArray = { 0 };
 
 void ConcatDirSep( char *dir )
 /****************************/
@@ -519,290 +520,48 @@ void ResetFsysInfo( void )
     }
 }
 
-#if !defined( __UNIX__ )
-static int GetDriveNum( const char *fsys )
-/****************************************/
-{
-    int     drive_num;
-
-    drive_num = DRIVE_NUM( toupper( fsys[0] ) );
-    if( drive_num < DRIVE_NUM( 'A' )
-      || drive_num > DRIVE_NUM( 'Z' ) )
-        drive_num = 0;
-    return( drive_num );
-}
-#endif
-
-#if defined( __DOS__ )
-static int __far critical_error_handler( unsigned deverr, unsigned errcode, unsigned __far *devhdr )
-/**************************************************************************************************/
-{
-    (void)deverr;
-    (void)errcode;
-    (void)devhdr;
-    return( _HARDERR_FAIL );
-}
-
-typedef __far (HANDLER)( unsigned deverr, unsigned errcode, unsigned __far *devhdr );
-#endif
-
-#if !defined( __UNIX__ )
-static void NoHardErrors( void )
-/******************************/
-{
-  #if defined( __UNIX__ )
-  #elif defined( __OS2__ )
-    DosError( FERR_DISABLEHARDERR );
-  #elif defined( __DOS__ )
-    _harderr( (HANDLER *)critical_error_handler );
-  #elif defined( __WINDOWS__ ) || defined( __NT__ )
-    SetErrorMode( SEM_FAILCRITICALERRORS );
-  #endif
-}
-#endif
-
-static int GetFSInfo( const char *fsys, bool removable )
-/******************************************************/
-{
-    int         drive_num = 0;
-    fsys_info   *info;
-
-#if defined( __UNIX__ )
-    /* unused parameters */ (void)fsys;
-#else
-    drive_num = GetDriveNum( fsys );
-#endif
-    info = &FsysInfo[drive_num];
-    if( (info->block_size == 0
-      || removable /* recheck - could have been replaced */) ) {
-        if( drive_num == 0 ) {
-            info->block_size = 1;
-#if defined( __UNIX__ )
-            info->free_space = (fsys_size)-1;
-        }
-#else
-            info->free_space = 0;
-        } else {
-            memset( info, 0, sizeof( *info ) );
-            NoHardErrors();
-    #if defined( __OS2__ )
-            {
-                typedef struct {
-                    BYTE    cmdinfo;
-                    BYTE    drive_num;
-                } parm;
-
-                typedef struct {
-                    BYTE    bpb[31];
-                    short   cyl;
-                    BYTE    type;
-                    short   attrs;
-                } ret;
-
-                FSALLOCATE      fsalloc;
-                APIRET          rc;
-
-                parm            p;
-                ret             r;
-                ULONG           parmLengthInOut;
-                ULONG           dataLengthInOut;
-                char            dev[3];
-                struct {
-                    FSQBUFFER2  b;
-                    char        stuff[100];
-                } dataBuffer;
-                ULONG           dataBufferLen;
-
-                rc = DosQueryFSInfo( (ULONG)drive_num, FSIL_ALLOC, (PVOID)&fsalloc, sizeof( fsalloc ) );
-
-                if( rc == 0 ) {
-                    /*
-                     * This is a bit strange: the respective values are not
-                     * returned in a structure but in an array BLAH! from
-                     * which one must extract info as below. See OS/2 Manual
-                     * for clarification.
-                     */
-                    info->block_size = fsalloc.cSectorUnit * fsalloc.cbSector;
-                    info->free_space = (fsys_size)fsalloc.cUnitAvail * (ULONG)info->block_size;
-                } else {
-                    info->free_space = (fsys_size)-1;
-                }
-                info->fixed = false;
-                info->removable = false;
-                p.cmdinfo = 0;
-                p.drive_num = drive_num - 1;
-                parmLengthInOut = sizeof( p );
-                dataLengthInOut = sizeof( r );
-                if( DosDevIOCtl( -1, 8, 0x63, &p, sizeof( p ), &parmLengthInOut, &r,
-                                 sizeof( r ), &dataLengthInOut ) == 0 ) {
-                    dev[0] = fsys[0];
-                    dev[1] = ':';
-                    dev[2] = '\0';
-                    dataBufferLen = sizeof( dataBuffer );
-                    rc = DosQueryFSAttach( dev, 0, FSAIL_QUERYNAME, (PFSQBUFFER2)&dataBuffer,
-                                           &dataBufferLen );
-                    if( rc == 0 ) {
-                        if( dataBuffer.b.iType == FSAT_LOCALDRV ) {
-                            switch( r.type ) {
-                            case 5: /* fixed disk */
-                                info->fixed = true;
-                                break;
-                            case 6: /* tape */
-                                break;
-                            default: /* removable media */
-                                info->removable = true;
-                                break;
-                            }
-                        }
-                    } else if( rc == ERROR_NOT_READY ) {
-                        /*
-                         * removable media not in drive
-                         */
-                        info->removable = true;
-                    }
-                }
-            }
-    #elif defined( __NT__ )
-            {
-                char        root[4];
-                DWORD       sectors_per_cluster;
-                DWORD       bytes_per_sector;
-                DWORD       free_clusters;
-                DWORD       total_clusters;
-                UINT        drive_type;
-
-                root[0] = fsys[0];
-                strcpy( &root[1], ":\\" );
-                if( GetDiskFreeSpace( root, &sectors_per_cluster,
-                        &bytes_per_sector, &free_clusters, &total_clusters ) ) {
-                    info->block_size = bytes_per_sector * sectors_per_cluster;
-                    info->free_space = (fsys_size)free_clusters * (fsys_size)info->block_size;
-                } else {
-                    info->free_space = (fsys_size)-1;
-                }
-                drive_type = GetDriveType( root );
-                info->removable = ( drive_type == DRIVE_REMOVABLE );
-                info->fixed = ( drive_type == DRIVE_FIXED );
-            }
-    #else
-            {
-                struct diskfree_t   FreeSpace;
-                union REGS          r;
-
-                info->removable = false;
-                info->fixed = false;
-                info->block_size = 0;
-                info->free_space = (fsys_size)-1;
-                r.w.ax = 0x440E;    /* get logical drive */
-                r.w.bx = drive_num;
-                intdos( &r, &r );
-                if( r.w.cflag
-                  || (r.h.al
-                  && (r.h.al != drive_num)) ) {
-                    return( drive_num );
-                }
-                info->fixed = true;
-                r.w.ax = 0x4409;    /* query device local/remote */
-                r.w.bx = drive_num;
-                intdos( &r, &r );
-                if( r.w.cflag == 0
-                  && (r.w.dx & 0x1000) ) {
-                    info->fixed = false;
-                }
-                r.w.ax = 0x4408;    /* query device removable */
-                r.w.bx = drive_num;
-                intdos( &r, &r );
-                if( r.w.cflag == 0 ) {
-                    info->removable = ( r.w.ax == 0 );
-                    if( info->removable ) {
-                        info->fixed = false;
-                    }
-                } else {
-                    info->fixed = false;
-                }
-                if( _getdiskfree( drive_num, &FreeSpace ) == 0 ) {
-                    info->block_size = (unsigned long)FreeSpace.sectors_per_cluster *
-                                         FreeSpace.bytes_per_sector;
-                    info->free_space = FreeSpace.avail_clusters *
-                                       (fsys_size)info->block_size;
-                    /*
-                     * If reported cluster size is ridiculously large,
-                     * it's likely faked; assume the real cluster size is
-                     * much smaller - 4096 should be a conservative estimate.
-                     */
-                    if( info->block_size > 64 * 1024UL ) {
-                        info->block_size = 4096;
-                    }
-                } else if( removable ) {
-                    /*
-                     * removable media not present
-                     */
-                    info->block_size = 0;
-                    info->free_space = (fsys_size)-1;
-                } else {
-                    /*
-                     * doesn't work on network drive - assume 4K cluster,
-                     * max free
-                     */
-                    info->block_size = 4096;
-                    info->free_space = (fsys_size)-1;
-                }
-            }
-    #endif
-            if( !removable ) {
-                int         io;
-                VBUF        filename;
-
-                VbufInit( &filename );
-                GetTmpFileNameInTarget( fsys, &filename );
-                io = open_vbuf( &filename, O_RDWR | O_CREAT | O_TRUNC, PMODE_RW );
-                if( io == -1 ) {
-                    GetTmpFileName( fsys, &filename );
-                    io = open_vbuf( &filename, O_RDWR | O_CREAT | O_TRUNC, PMODE_RW );
-                    info->writable = false;
-                } else {
-                    info->writable = true;
-                }
-                if( io != -1 ) {
-                    close( io );
-                    remove_vbuf( &filename );
-#if 0
-    // FIXME it doesn't work correctly if target directory doesn't exist
-    // (new installation) and you have insufficient rights to drive root
-                } else {
-                    info->block_size = 1;
-                    info->free_space = (fsys_size)-1;
-#endif
-                }
-                VbufFree( &filename );
-            }
-        }
-#endif
-    }
-    return( drive_num );
-}
-
-static fsys_size GetTargetFreeSpace( int target, bool removable )
-/***************************************************************/
-{
-    return( FsysInfo[GetFSInfo( SimTargetPath( target ), removable )].free_space );
-}
-
 void ResetAllFsysInfo( void )
 /***************************/
 {
+    int         i;
+
+    for( i = 0; i < MAX_DRIVES; ++i ) {
+        if( FsysInfo[i].root != NULL ) {
+            GUIMemFree( FsysInfo[i].root );
+            FsysInfo[i].root = NULL;
+        }
+    }
     memset( FsysInfo, 0, sizeof( FsysInfo ) );
 }
 
-unsigned GetTargetBlockSize( int target )
-/***************************************/
+void InitFsysInfo( void )
+/***********************/
 {
-    return( FsysInfo[GetFSInfo( SimTargetPath( target ), false )].block_size );
+#if 0
+    FsysArray.num = 0;
+    FsysArray.alloc = 2;
+    FsysArray.increment = 2;
+    InitArray( (void **)&FsysInfo, sizeof( fsys_info ), &FsysArray );
+#endif
+}
+
+void FiniFsysInfo( void )
+/***********************/
+{
+#if 0
+    int     i;
+
+    for( i = 0; i < FsysArray.num; i++ ) {
+        GUIMemFree( FsysInfo[i].root );
+    }
+    FsysArray.num = 0;
+    GUIMemFree( FsysInfo );
+#endif
 }
 
 #if defined( __NT__ ) || defined( __WINDOWS__ )
-static bool GetRootFromPath( VBUF *root, const char *path )
-/*********************************************************/
+static const char *GetRootFromPath( VBUF *root, const char *path )
+/****************************************************************/
 {
     char        curr_dir[_MAX_PATH];
     char        c;
@@ -811,10 +570,9 @@ static bool GetRootFromPath( VBUF *root, const char *path )
     c = path[0];
     if( c == '/' ) {
         VbufSetStr( root, path );
+    } else if( getcwd( curr_dir, sizeof( curr_dir ) ) == NULL ) {
+        return( NULL );
     } else {
-        if( getcwd( curr_dir, sizeof( curr_dir ) ) == NULL ) {
-            return( false );
-        }
         VbufSetStr( root, curr_dir );
         if( c != '\0' ) {
             VbufAddDirSep( buff );
@@ -842,13 +600,13 @@ static bool GetRootFromPath( VBUF *root, const char *path )
                  * cut off string at character after 4th backslash
                  */
                 VbufConcBuffer( root, path, index - path );
-                return( true );
+                return( VbufString( root ) );
             }
         }
         /*
          * invalid UNC name such as: "\\missingshare\"
          */
-        return( false );
+        return( NULL );
     }
   #endif
     if( TEST_DRIVE( path ) ) {
@@ -856,21 +614,296 @@ static bool GetRootFromPath( VBUF *root, const char *path )
          * turn a path like "c:\dir" into "c:\"
          */
         c = toupper( path[0] );
+    } else if( getcwd( curr_dir, sizeof( curr_dir ) ) == NULL ) {
+        return( NULL );
     } else {
         /*
          * for relative paths like "\dir" use the current drive.
          */
-        if( getcwd( curr_dir, sizeof( curr_dir ) ) == NULL ) {
-            return( false );
-        }
         c = toupper( curr_dir[0] );
     }
     VbufSetChr( root, c );
     VbufConcStr( root, ":\\" );
 #endif
+    return( VbufString( root ) );
+}
+#endif
+
+static bool updateFsysInfo( fsys_info *info, bool removable )
+/***********************************************************/
+{
+    info->block_size = 0;
+    info->free_space = (fsys_size)-1;
+    info->writable = false;
+#if !defined( __UNIX__ )
+    info->fixed = false;
+    info->removable = false;
+#endif
+
+#if defined( __UNIX__ )
+    /* unused parameters */ (void)removable;
+
+    info->block_size = 1;
+#elif defined( __OS2__ )
+    {
+        typedef struct {
+            BYTE    cmdinfo;
+            BYTE    drive_num;
+        } parm;
+
+        typedef struct {
+            BYTE    bpb[31];
+            short   cyl;
+            BYTE    type;
+            short   attrs;
+        } ret;
+
+        FSALLOCATE      fsalloc;
+        APIRET          rc;
+
+        parm            p;
+        ret             r;
+        ULONG           parmLengthInOut;
+        ULONG           dataLengthInOut;
+        char            dev[3];
+        struct {
+            FSQBUFFER2  b;
+            char        stuff[100];
+        } dataBuffer;
+        ULONG           dataBufferLen;
+        char            drive_num;
+
+        /* unused parameters */ (void)removable;
+
+        drive_num = DRIVE_NUM( info->root[0] );
+        rc = DosQueryFSInfo( (ULONG)drive_num, FSIL_ALLOC, (PVOID)&fsalloc, sizeof( fsalloc ) );
+
+        if( rc == 0 ) {
+            /*
+             * This is a bit strange: the respective values are not
+             * returned in a structure but in an array BLAH! from
+             * which one must extract info as below. See OS/2 Manual
+             * for clarification.
+             */
+            info->block_size = fsalloc.cSectorUnit * fsalloc.cbSector;
+            info->free_space = (fsys_size)fsalloc.cUnitAvail * (ULONG)info->block_size;
+        }
+        p.cmdinfo = 0;
+        p.drive_num = drive_num - 1;
+        parmLengthInOut = sizeof( p );
+        dataLengthInOut = sizeof( r );
+        if( DosDevIOCtl( -1, 8, 0x63, &p, sizeof( p ), &parmLengthInOut, &r,
+                         sizeof( r ), &dataLengthInOut ) == 0 ) {
+            dev[0] = info->root[0];
+            dev[1] = ':';
+            dev[2] = '\0';
+            dataBufferLen = sizeof( dataBuffer );
+            rc = DosQueryFSAttach( dev, 0, FSAIL_QUERYNAME, (PFSQBUFFER2)&dataBuffer,
+                                   &dataBufferLen );
+            if( rc == 0 ) {
+                if( dataBuffer.b.iType == FSAT_LOCALDRV ) {
+                    switch( r.type ) {
+                    case 5: /* fixed disk */
+                        info->fixed = true;
+                        break;
+                    case 6: /* tape */
+                        break;
+                    default: /* removable media */
+                        info->removable = true;
+                        break;
+                    }
+                }
+            } else if( rc == ERROR_NOT_READY ) {
+                /*
+                 * removable media not in drive
+                 */
+                info->removable = true;
+            }
+        }
+    }
+#elif defined( __NT__ )
+    {
+        DWORD       sectors_per_cluster;
+        DWORD       bytes_per_sector;
+        DWORD       free_clusters;
+        DWORD       total_clusters;
+        UINT        drive_type;
+
+        /* unused parameters */ (void)removable;
+
+        if( GetDiskFreeSpace( info->root, &sectors_per_cluster,
+                &bytes_per_sector, &free_clusters, &total_clusters ) ) {
+            info->block_size = bytes_per_sector * sectors_per_cluster;
+            info->free_space = (fsys_size)free_clusters * (fsys_size)info->block_size;
+        }
+        drive_type = GetDriveType( info->root );
+        if( drive_type == DRIVE_REMOVABLE )
+                info->removable = true;
+        if( drive_type == DRIVE_FIXED ) {
+                info->fixed = true;
+        }
+    }
+#else
+  #if defined( __WINDOWS__ )
+    if( TEST_UNC( info->root ) ) {
+        info->block_size = 1;
+        return( true );
+    }
+  #endif
+    {
+        struct diskfree_t   FreeSpace;
+        union REGS          r;
+        char                            drive_num;
+
+        drive_num = DRIVE_NUM( info->root[0] );
+
+        r.w.ax = 0x440E;    /* get logical drive */
+        r.w.bx = drive_num;
+        intdos( &r, &r );
+        if( r.w.cflag
+          || (r.h.al
+          && (r.h.al != drive_num)) ) {
+            return( fsys );
+        }
+        info->fixed = true;
+        r.w.ax = 0x4409;    /* query device local/remote */
+        r.w.bx = drive_num;
+        intdos( &r, &r );
+        if( r.w.cflag == 0
+          && (r.w.dx & 0x1000) ) {
+            info->fixed = false;
+        }
+        r.w.ax = 0x4408;    /* query device removable */
+        r.w.bx = drive_num;
+        intdos( &r, &r );
+        if( r.w.cflag == 0 ) {
+            info->removable = ( r.w.ax == 0 );
+            if( info->removable ) {
+                info->fixed = false;
+            }
+        } else {
+            info->fixed = false;
+        }
+        if( _getdiskfree( drive_num, &FreeSpace ) == 0 ) {
+            info->block_size = (unsigned long)FreeSpace.sectors_per_cluster *
+                                 FreeSpace.bytes_per_sector;
+            info->free_space = FreeSpace.avail_clusters *
+                               (fsys_size)info->block_size;
+            /*
+             * If reported cluster size is ridiculously large,
+             * it's likely faked; assume the real cluster size is
+             * much smaller - 4096 should be a conservative estimate.
+             */
+            if( info->block_size > 64 * 1024UL ) {
+                info->block_size = 4096;
+            }
+        } else if( removable ) {
+            /*
+             * removable media not present
+             */
+            info->block_size = 0;
+            info->free_space = (fsys_size)-1;
+        } else {
+            /*
+             * doesn't work on network drive - assume 4K cluster,
+             * max free
+             */
+            info->block_size = 4096;
+            info->free_space = (fsys_size)-1;
+        }
+    }
+#endif
     return( true );
 }
 
+#if defined( __DOS__ )
+static int __far critical_error_handler( unsigned deverr, unsigned errcode, unsigned __far *devhdr )
+/**************************************************************************************************/
+{
+    (void)deverr;
+    (void)errcode;
+    (void)devhdr;
+    return( _HARDERR_FAIL );
+}
+
+typedef __far (HANDLER)( unsigned deverr, unsigned errcode, unsigned __far *devhdr );
+#endif
+
+static void NoHardErrors( void )
+/******************************/
+{
+  #if defined( __UNIX__ )
+  #elif defined( __OS2__ )
+    DosError( FERR_DISABLEHARDERR );
+  #elif defined( __DOS__ )
+    _harderr( (HANDLER *)critical_error_handler );
+  #elif defined( __WINDOWS__ ) || defined( __NT__ )
+    SetErrorMode( SEM_FAILCRITICALERRORS );
+  #endif
+}
+
+static int GetFsysInfo( const char *fsys, bool removable )
+/********************************************************/
+{
+    int         drive_num = 0;
+    fsys_info   *info;
+
+#if defined( __UNIX__ )
+    /* unused parameters */ (void)fsys;
+#else
+    drive_num = DRIVE_NUM( fsys[0] );
+#endif
+    info = &FsysInfo[drive_num];
+    if( (info->block_size == 0
+      || removable /* recheck - could have been replaced */) ) {
+        NoHardErrors();
+
+        updateFsysInfo( info, removable );
+
+        if( !removable ) {
+            int         io;
+            VBUF        filename;
+
+            VbufInit( &filename );
+            GetTmpFileNameInTarget( fsys, &filename );
+            io = open_vbuf( &filename, O_RDWR | O_CREAT | O_TRUNC, PMODE_RW );
+            if( io == -1 ) {
+                GetTmpFileName( fsys, &filename );
+                io = open_vbuf( &filename, O_RDWR | O_CREAT | O_TRUNC, PMODE_RW );
+                info->writable = false;
+            } else {
+                info->writable = true;
+            }
+            if( io != -1 ) {
+                close( io );
+                remove_vbuf( &filename );
+#if 0
+    // FIXME it doesn't work correctly if target directory doesn't exist
+    // (new installation) and you have insufficient rights to drive root
+            } else {
+                info->block_size = 1;
+                info->free_space = (fsys_size)-1;
+#endif
+            }
+            VbufFree( &filename );
+        }
+    }
+    return( drive_num );
+}
+
+static fsys_size GetTargetFreeSpace( int target, bool removable )
+/***************************************************************/
+{
+    return( FsysInfo[GetFsysInfo( SimTargetPath( target ), removable )].free_space );
+}
+
+unsigned GetTargetBlockSize( int target )
+/***************************************/
+{
+    return( FsysInfo[GetFsysInfo( SimTargetPath( target ), false )].block_size );
+}
+
+#if defined( __NT__ ) || defined( __WINDOWS__ )
 static fsys_size GetTargetFreeSpaceUNC( int target )
 /**************************************************/
 {
@@ -897,7 +930,7 @@ static fsys_size GetTargetFreeSpaceUNC( int target )
     VbufFree( &root );
 #else
     if( TEST_DRIVE( fsys ) ) {
-        if( _getdiskfree( GetDriveNum( fsys ), &info ) == 0 ) {
+        if( _getdiskfree( DRIVE_NUM( fsys[0] ), &info ) == 0 ) {
             size = (fsys_size)info.sectors_per_cluster * (fsys_size)info.bytes_per_sector * (fsys_size)info.avail_clusters;
         }
     }
@@ -933,7 +966,7 @@ static long GetTargetBlockSizeUNC( int target )
     VbufFree( &root );
 #else
     if( TEST_DRIVE( fsys ) ) {
-        if( _getdiskfree( GetDriveNum( fsys ), &info ) == 0 ) {
+        if( _getdiskfree( DRIVE_NUM( fsys[0] ), &info ) == 0 ) {
             size = (long)info.sectors_per_cluster * info.bytes_per_sector;
         }
     }
@@ -997,7 +1030,7 @@ static bool IsTargetFsysInfoAvailable( const char *fsys )
     VbufFree( &root );
 #else
     if( TEST_DRIVE( fsys ) ) {
-        if( _getdiskfree( GetDriveNum( fsys ), &info ) == 0 ) {
+        if( _getdiskfree( DRIVE_NUM( fsys[0] ), &info ) == 0 ) {
             ok = true;
         }
     }
@@ -1905,7 +1938,7 @@ static bool DoCopyFiles( void )
                     /*
                      * if 1st char to concat is a backslash, skip it
                      */
-                    if( VbufString( &dir )[len] == DIR_SEP ) {
+                    if( IS_DIR_SEP( VbufString( &dir )[len] ) ) {
                         len++;
                     }
                 } else {
