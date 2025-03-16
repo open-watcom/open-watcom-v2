@@ -575,8 +575,8 @@ static const char *GetRootFromPath( VBUF *root, const char *path )
     } else {
         VbufSetStr( root, curr_dir );
         if( c != '\0' ) {
-            VbufAddDirSep( buff );
-            VbufConcStr( buff, path );
+            VbufAddDirSep( root );
+            VbufConcStr( root, path );
         }
     }
 #else
@@ -738,9 +738,9 @@ static bool updateFsysInfo( fsys_info *info, bool removable )
         }
         drive_type = GetDriveType( info->root );
         if( drive_type == DRIVE_REMOVABLE )
-                info->removable = true;
+            info->removable = true;
         if( drive_type == DRIVE_FIXED ) {
-                info->fixed = true;
+            info->fixed = true;
         }
     }
 #else
@@ -753,7 +753,7 @@ static bool updateFsysInfo( fsys_info *info, bool removable )
     {
         struct diskfree_t   FreeSpace;
         union REGS          r;
-        char                            drive_num;
+        char                drive_num;
 
         drive_num = DRIVE_NUM( info->root[0] );
 
@@ -937,6 +937,7 @@ static fsys_size GetTargetFreeSpaceUNC( int target )
 #endif
     return( size );
 }
+#endif
 
 #if 0
 static long GetTargetBlockSizeUNC( int target )
@@ -975,6 +976,7 @@ static long GetTargetBlockSizeUNC( int target )
 }
 #endif
 
+#if defined( __NT__ ) || defined( __WINDOWS__ )
 static bool IsTargetWritable( const char *fsys )
 /**********************************************/
 {
