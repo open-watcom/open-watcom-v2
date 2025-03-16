@@ -45,6 +45,7 @@
 #define FREE_BUFFER(x)      {if(x->len>1)GUIMemFree(x->buf);}
 
 #define EXT_SEP             '.'
+#define IS_EXT_SEP(c)       ((c) == EXT_SEP)
 
 // ************************************
 // Vbuf functions that manage size only
@@ -520,16 +521,16 @@ void VbufMakepath(              // SET A FILE PATH NAME TO VBUF
             /*
              * if node did not end in '/' then put in a provisional one
              */
-            if( VbufString( full )[VbufLen( full ) - 1] != DIR_SEP ) {
+            if( !IS_DIR_SEP( VbufString( full )[VbufLen( full ) - 1] ) ) {
                 VbufConcChr( full, DIR_SEP );
             }
 #elif defined( __NETWARE__ )
             VbufConcVbuf( full, drive );
-            if( VbufString( full )[VbufLen( full ) - 1] != DRIVE_SEP ) {
+            if( !IS_DIR_SEP( VbufString( full )[VbufLen( full ) - 1] ) ) {
                 VbufConcChr( full, DRIVE_SEP );
             }
 #else
-            if( ( VbufString( drive )[0] == DIR_SEP ) && ( VbufString( drive )[1] == DIR_SEP ) ) {
+            if( TEST_UNC( VbufString( drive ) ) ) {
                 VbufConcVbuf( full, drive );
             } else {
                 VbufConcChr( full, VbufString( drive )[0] );
@@ -540,7 +541,7 @@ void VbufMakepath(              // SET A FILE PATH NAME TO VBUF
     }
     if( dir != NULL ) {
         if( VbufLen( dir ) > 0 ) {
-            if( VbufString( dir )[0] == DIR_SEP && VbufString( full )[VbufLen( full ) - 1] == DIR_SEP ) {
+            if( IS_DIR_SEP( VbufString( dir ) ) && IS_DIR_SEP( VbufString( full )[VbufLen( full ) - 1] ) ) {
                 VbufConcVbufPos( full, dir, 1 );
             } else {
                 VbufConcVbuf( full, dir );
@@ -550,7 +551,7 @@ void VbufMakepath(              // SET A FILE PATH NAME TO VBUF
     }
     if( name != NULL ) {
         if( VbufLen( name ) > 0 ) {
-            if( VbufString( name )[0] == DIR_SEP && VbufString( full )[VbufLen( full ) - 1] == DIR_SEP ) {
+            if( IS_DIR_SEP( VbufString( name )[0] ) && IS_DIR_SEP( VbufString( full )[VbufLen( full ) - 1] ) ) {
                 VbufConcVbufPos( full, name, 1 );
             } else {
                 VbufConcVbuf( full, name );
@@ -559,7 +560,7 @@ void VbufMakepath(              // SET A FILE PATH NAME TO VBUF
     }
     if( ext != NULL ) {
         if( VbufLen( ext ) > 0 ) {
-            if( VbufString( ext )[0] != EXT_SEP )
+            if( !IS_EXT_SEP( VbufString( ext )[0] ) )
                 VbufConcChr( full, EXT_SEP );
             VbufConcVbuf( full, ext );
         }
@@ -614,10 +615,10 @@ void VbufSplitpath(             // GET A FILE PATH COMPONENTS FROM VBUF
 
     /* process node/drive specification */
     startp = path;
-    if( path[0] == DIR_SEP && path[1] == DIR_SEP ) {
+    if( TEST_NODE( path ) ) {
         path += 2;
         while( (ch = *path) != '\0' ) {
-            if( IS_DIR_SEP( ch ) || ch == EXT_SEP ) {
+            if( IS_DIR_SEP( ch ) || IS_EXT_SEP( ch ) ) {
                 break;
             }
             path++;
@@ -644,7 +645,7 @@ void VbufSplitpath(             // GET A FILE PATH COMPONENTS FROM VBUF
 #else
 
     /* processs drive specification */
-    if( path[0] != '\0' && path[1] == DRIVE_SEP ) {
+    if( TEST_DRIVE( path ) ) {
         if( drive != NULL ) {
             VbufSetChr( drive, path[0] );
             VbufConcChr( drive, DRIVE_SEP );
@@ -668,7 +669,7 @@ void VbufSplitpath(             // GET A FILE PATH COMPONENTS FROM VBUF
     namep = path;
     startp = path;
     while( (ch = *path) != '\0' ) {
-        if( ch == EXT_SEP ) {
+        if( IS_EXT_SEP( ch ) ) {
             dotp = path;
         } else if( IS_DIR_SEP( ch ) ) {
             namep = path + 1;
