@@ -2,6 +2,10 @@
 bld_os          = dos
 link_sys_dos    = causeway
 wsplice_opts_dos = -u0
+!else ifdef __MSDOS__
+bld_os          = dos
+link_sys_dos    = causeway
+wsplice_opts_dos = -u0
 !else ifdef __NT__
 bld_os          = nt
 link_sys_nt     = nt
