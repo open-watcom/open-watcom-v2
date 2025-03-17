@@ -449,7 +449,6 @@ typedef uint_32 __based( __segname( "_STACK" ) )    *u32_stk_ptr;
 /*
  * match up functions with proper pragma for memory model
  */
-#define TinyFarAccess           _fTinyAccess
 #define TinyFarOpen             _fTinyOpen
 #define TinyFarCreate           _fTinyCreate
 #define TinyFarCreateEx         _fTinyCreateEx
@@ -538,7 +537,6 @@ typedef uint_32 __based( __segname( "_STACK" ) )    *u32_stk_ptr;
 /* handle small/large data models */
 #if defined( _M_I86SM ) || defined( _M_I86MM ) || defined( __386__ )
 
-#define TinyAccess              _nTinyAccess
 #define TinyBufferedInput       _nTinyBufferedInput
 #define TinyOpen                _nTinyOpen
 #define TinyCreate              _nTinyCreate
@@ -576,7 +574,6 @@ typedef uint_32 __based( __segname( "_STACK" ) )    *u32_stk_ptr;
 
 #else
 
-#define TinyAccess              _fTinyAccess
 #define TinyBufferedInput       _fTinyBufferedInput
 #define TinyOpen                _fTinyOpen
 #define TinyCreate              _fTinyCreate
@@ -611,8 +608,6 @@ typedef uint_32 __based( __segname( "_STACK" ) )    *u32_stk_ptr;
  *  WARNING! Don't change a _n or _ prototype without verifying that it
  *      won't break the WINDOWS 386 library code!! DJG
  */
-tiny_ret_t              _fTinyAccess( const char __far *__n, access_mode __amode );
-tiny_ret_t  tiny_call   _nTinyAccess( const char __near *__n, access_mode __amode );
 void                    _fTinyBufferedInput( char __far *__n );
 void        tiny_call   _nTinyBufferedInput( char __near *__n );
 tiny_ret_t              _fTinyOpen( const char __far *__n, open_attr __ax );
@@ -1297,23 +1292,6 @@ tiny_ret_t  tiny_call   _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
     __value             [__eax] \
     __modify __exact    [__eax __ebx __ecx __edx]
 
-#pragma aux _nTinyAccess = \
-        _MOV_AX_W _GET_ DOS_CHMOD \
-        _INT_21         \
-        "jc short finish" \
-        _TEST_BL 0x02   \
-        "jz short finish" \
-        _TEST_CL 0x01   \
-        "jz short finish" \
-        _MOV_AX_W 0x00 TIO_ACCESS_DENIED \
-        _STC            \
-    "finish:"           \
-        "sbb  ecx,ecx"  \
-        "mov  cx,ax"    \
-    __parm __caller     [__edx] [__bl] \
-    __value             [__ecx] \
-    __modify __exact    [__eax __ecx]
-
 #pragma aux _nTinyBufferedInput = \
         _MOV_AH DOS_BUFF_INPUT \
         _INT_21         \
@@ -1826,42 +1804,6 @@ tiny_ret_t  tiny_call   _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
 /**************************
  * 8086 versions of pragmas
  **************************/
-
-#pragma aux _nTinyAccess = \
-        _SET_DS_DGROUP  \
-        _MOV_AX_W _GET_ DOS_CHMOD \
-        _INT_21         \
-        "jc short finish" \
-        _TEST_BL 0x02   \
-        "jz short finish" \
-        _TEST_CL 0x01   \
-        "jz short finish" \
-        _MOV_AX_W 0x00 TIO_ACCESS_DENIED \
-        _STC            \
-    "finish:"           \
-        _SBB_DX_DX      \
-        _RST_DS_DGROUP  \
-    __parm __caller     [__dx] [__bl] \
-    __value             [__dx __ax] \
-    __modify __exact    [__ax __cx __dx]
-
-#pragma aux _fTinyAccess = \
-        _SET_DS_SREG    \
-        _MOV_AX_W _GET_ DOS_CHMOD \
-        _INT_21         \
-        "jc short finish" \
-        _TEST_BL 0x02   \
-        "jz short finish" \
-        _TEST_CL 0x01   \
-        "jz short finish" \
-        _MOV_AX_W 0x00 TIO_ACCESS_DENIED \
-        _STC            \
-    "finish:"           \
-        _SBB_DX_DX      \
-        _RST_DS_SREG    \
-    __parm __caller     [_SREG __dx] [__bl] \
-    __value             [__dx __ax] \
-    __modify __exact    [__ax __cx __dx]
 
 #pragma aux _nTinyBufferedInput = \
         _MOV_AH DOS_BUFF_INPUT \
