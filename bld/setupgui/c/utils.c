@@ -969,63 +969,24 @@ static bool CreateDstDir( int i, VBUF *buff )
     return( true );
 }
 
-#define KB  1024UL
-#define MB  (KB * KB)
-
-static void catnum( char *buff, long long num )
-/*********************************************/
+static int getScale( long long o1, long long o2 )
 {
-
-    char        num_buff[MAXBUF];
-    char        ch;
-
-    ch = ' ';
-    if( num < 0 ) {
-        num = -num;
-        ch = '-';
-    }
-    if( num < KB ) {
-        sprintf( num_buff, "%c%d bytes", ch, (int)num );
-    } else {
-        num /= KB;
-        if( num > MB ) {
-            num /= KB;
-            sprintf( num_buff, "%c%d,%3.3dMB", ch, (int)(num / 1000),
-                     (int)(num % 1000) );
-        } else if( num > KB ) {
-            sprintf( num_buff, "%c%d,%3.3dKB", ch, (int)(num / 1000),
-                     (int)(num % 1000) );
-        } else {
-            sprintf( num_buff, "%c%dKB", ch, (int)num );
-        }
-    }
-    strcat( buff, num_buff );
+    if( o1 < o2 )
+        o1 = o2;
+    if( o1 > ( 1LL << 30 ) * 9 )
+        return( 30 );
+    if( o1 > ( 1LL << 20 ) * 9 )
+        return( 20 );
+    return( 10 );
 }
 
-static void ucatnum( char *buff, unsigned long long num )
-/*******************************************************/
+static const char *getUnit( int scale )
 {
-
-    char        num_buff[MAXBUF];
-    char        ch;
-
-    ch = ' ';
-    if( num < KB ) {
-        sprintf( num_buff, "%c%u bytes", ch, (int)num );
-    } else {
-        num /= KB;
-        if( num > MB ) {
-            num /= KB;
-            sprintf( num_buff, "%c%u,%3.3uMB", ch, (int)(num / 1000),
-                     (int)(num % 1000) );
-        } else if( num > KB ) {
-            sprintf( num_buff, "%c%u,%3.3uKB", ch, (int)(num / 1000),
-                     (int)(num % 1000) );
-        } else {
-            sprintf( num_buff, "%c%uKB", ch, (int)num );
-        }
-    }
-    strcat( buff, num_buff );
+    if( scale == 30 )
+        return( "GB" );
+    if( scale == 20 )
+        return( "MB" );
+    return( "KB" );
 }
 
 bool CheckDrive( bool issue_message )
@@ -1040,6 +1001,7 @@ bool CheckDrive( bool issue_message )
     int                 i, j;
     const char          *targ_root;
     char                buff[_MAX_PATH];
+    char                fmt[_MAX_PATH];
     char                drive_freesp[20];
     const char          *msg_ids;
     const char          *msg_path;
@@ -1096,6 +1058,9 @@ bool CheckDrive( bool issue_message )
             if( issue_message ) {
                 if( disk_space_needed > 0
                   && free_disk_space < (fsys_size)disk_space_needed ) {
+                    int         scale;
+                    const char  *unit;
+
                     msg_ids = "IDS_NODISKSPACE";
 #if defined( __UNIX__ )
                     msg_path = targ_root;
@@ -1114,9 +1079,11 @@ bool CheckDrive( bool issue_message )
                     }
     #endif
 #endif
+                    scale = getScale( free_disk_space, disk_space_needed );
+                    unit = getUnit( scale );
                     reply = MsgBox( NULL, msg_ids, GUI_YES_NO, msg_path,
-                                    free_disk_space / 1000,
-                                    disk_space_needed / 1000 );
+                                    free_disk_space / ( 1LL << scale ), unit,
+                                    disk_space_needed / ( 1LL << scale ), unit );
                     if( reply == GUI_RET_NO ) {
                         ok = false;
                         break;
@@ -1127,44 +1094,52 @@ bool CheckDrive( bool issue_message )
     }
     if( ok ) {
         for( i = 0; i < max_targets; ++i ) {
-            if( !SimTargetMarked( i )
-              && SimTargetNeedsUpdate( i ) ) {
-                targ_root = GetTargetFsysRoot( i );
-                msg_ids = "IDS_DRIVE_SPEC";
-#if defined( __UNIX__ )
-                msg_path = targ_root;
-#else
+            bool        skip;
+            int         scale;
+            const char  *unit;
+
+            skip = ( SimTargetMarked( i ) || !SimTargetNeedsUpdate( i ) );
+#if defined( __WINDOWS__ )
+            if( !skip && TEST_UNC( targ_root ) ) {
+                skip = true;
+            }
+#elif defined( __NT__ )
+            if( !skip && TEST_UNC( targ_root ) && !IsTargetFsysWritable( i ) ) {
+                skip = true;
+            }
+#endif
+            if( !skip ) {
                 msg_path = drive_freesp;
                 drive_freesp[0] = targ_root[0];
                 drive_freesp[1] = '\0';
-    #if defined( __NT__ ) || defined( __WINDOWS__ )
+                msg_ids = "IDS_DRIVE_SPEC";
+#if defined( __UNIX__ )
+                msg_path = targ_root;
+#elif defined( __NT__ )
                 if( TEST_UNC( targ_root ) ) {
                     msg_path = targ_root;
                     msg_ids = "IDS_DRIVE_SPEC_UNC";
                 }
-    #endif
 #endif
-                sprintf( buff, GetVariableStrVal( msg_ids ), msg_path );
                 if( space[i].needed < 0 ) {
-                    catnum( buff, -space[i].needed );
-                    strcat( buff, GetVariableStrVal( "IDS_DRIVE_FREED" ) );
+                    scale = getScale( -space[i].needed, 0 );
+                    unit = getUnit( scale );
+                    sprintf( fmt, "%s %%lld %s %%s", GetVariableStrVal( msg_ids ), unit );
+                    sprintf( buff, fmt,
+                        msg_path,
+                        -space[i].needed/( 1ULL << scale ),
+                        GetVariableStrVal( "IDS_DRIVE_FREED" ) );
                 } else {
-                    catnum( buff, space[i].needed );
-                    strcat( buff, GetVariableStrVal( "IDS_DRIVE_REQUIRED" ) );
-                    ucatnum( buff, space[i].free );
-                    strcat( buff, GetVariableStrVal( "IDS_DRIVE_AVAILABLE" ) );
+                    scale = getScale( space[i].needed, space[i].free );
+                    unit = getUnit( scale );
+                    sprintf( fmt, "%s %%lld %s %%s %%lld %s %%s", GetVariableStrVal( msg_ids ), unit, unit );
+                    sprintf( buff, fmt,
+                        msg_path,
+                        space[i].needed/( 1ULL << scale ),
+                        GetVariableStrVal( "IDS_DRIVE_REQUIRED" ),
+                        space[i].free/( 1ULL << scale ),
+                        GetVariableStrVal( "IDS_DRIVE_AVAILABLE" ) );
                 }
-#if defined( __NT__ ) || defined( __WINDOWS__ )
-                if( TEST_UNC( targ_root ) ) {
-    #if defined( __NT__ )
-                    if( !IsTargetFsysWritable( i ) ) {
-                        strcpy( buff, "" );
-                    }
-    #else
-                    strcpy( buff, "" );
-    #endif
-                }
-#endif
             } else {
                 buff[0] = '\0';
             }
