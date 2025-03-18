@@ -969,24 +969,34 @@ static bool CreateDstDir( int i, VBUF *buff )
     return( true );
 }
 
-static int getScale( long long o1, long long o2 )
+#define SCALING_VALUE(x)    (1ULL << (x))
+
+#define GB_UNITS    "GB"
+#define MB_UNITS    "MB"
+#define KB_UNITS    "KB"
+
+#define GB_SCALE    30
+#define MB_SCALE    20
+#define KB_SCALE    10
+
+static int getScale( unsigned long long o1, unsigned long long o2 )
 {
     if( o1 < o2 )
         o1 = o2;
-    if( o1 > ( 1LL << 30 ) * 9 )
-        return( 30 );
-    if( o1 > ( 1LL << 20 ) * 9 )
-        return( 20 );
-    return( 10 );
+    if( o1 > 99 * SCALING_VALUE( GB_SCALE ) )
+        return( GB_SCALE );
+    if( o1 > 99 * SCALING_VALUE( MB_SCALE ) )
+        return( MB_SCALE );
+    return( KB_SCALE );
 }
 
-static const char *getUnit( int scale )
+static const char *getUnits( int scale )
 {
-    if( scale == 30 )
-        return( "GB" );
-    if( scale == 20 )
-        return( "MB" );
-    return( "KB" );
+    if( scale == GB_SCALE )
+        return( GB_UNITS );
+    if( scale == MB_SCALE )
+        return( MB_UNITS );
+    return( KB_UNITS );
 }
 
 bool CheckDrive( bool issue_message )
@@ -1059,7 +1069,7 @@ bool CheckDrive( bool issue_message )
                 if( disk_space_needed > 0
                   && free_disk_space < (fsys_size)disk_space_needed ) {
                     int         scale;
-                    const char  *unit;
+                    const char  *units;
 
                     msg_ids = "IDS_NODISKSPACE";
 #if defined( __UNIX__ )
@@ -1079,11 +1089,11 @@ bool CheckDrive( bool issue_message )
                     }
     #endif
 #endif
-                    scale = getScale( free_disk_space, disk_space_needed );
-                    unit = getUnit( scale );
+                    scale = getScale( disk_space_needed, free_disk_space );
+                    units = getUnits( scale );
                     reply = MsgBox( NULL, msg_ids, GUI_YES_NO, msg_path,
-                                    free_disk_space / ( 1LL << scale ), unit,
-                                    disk_space_needed / ( 1LL << scale ), unit );
+                                    free_disk_space / SCALING_VALUE( scale ), units,
+                                    disk_space_needed / SCALING_VALUE( scale ), units );
                     if( reply == GUI_RET_NO ) {
                         ok = false;
                         break;
@@ -1096,7 +1106,7 @@ bool CheckDrive( bool issue_message )
         for( i = 0; i < max_targets; ++i ) {
             bool        skip;
             int         scale;
-            const char  *unit;
+            const char  *units;
 
             skip = ( SimTargetMarked( i ) || !SimTargetNeedsUpdate( i ) );
 #if defined( __WINDOWS__ )
@@ -1121,23 +1131,26 @@ bool CheckDrive( bool issue_message )
                     msg_ids = "IDS_DRIVE_SPEC_UNC";
                 }
 #endif
-                if( space[i].needed < 0 ) {
-                    scale = getScale( -space[i].needed, 0 );
-                    unit = getUnit( scale );
-                    sprintf( fmt, "%s %%lld %s %%s", GetVariableStrVal( msg_ids ), unit );
+                free_disk_space = space[i].free;
+                disk_space_needed = space[i].needed;
+                if( disk_space_needed < 0 ) {
+                    disk_space_needed = -disk_space_needed;
+                    scale = getScale( disk_space_needed, 0 );
+                    units = getUnits( scale );
+                    sprintf( fmt, "%s %%lld %s %%s", GetVariableStrVal( msg_ids ), units );
                     sprintf( buff, fmt,
                         msg_path,
-                        -space[i].needed/( 1ULL << scale ),
+                        disk_space_needed / SCALING_VALUE( scale ),
                         GetVariableStrVal( "IDS_DRIVE_FREED" ) );
                 } else {
-                    scale = getScale( space[i].needed, space[i].free );
-                    unit = getUnit( scale );
-                    sprintf( fmt, "%s %%lld %s %%s %%lld %s %%s", GetVariableStrVal( msg_ids ), unit, unit );
+                    scale = getScale( disk_space_needed, free_disk_space );
+                    units = getUnits( scale );
+                    sprintf( fmt, "%s %%lld %s %%s %%lld %s %%s", GetVariableStrVal( msg_ids ), units, units );
                     sprintf( buff, fmt,
                         msg_path,
-                        space[i].needed/( 1ULL << scale ),
+                        disk_space_needed / SCALING_VALUE( scale ),
                         GetVariableStrVal( "IDS_DRIVE_REQUIRED" ),
-                        space[i].free/( 1ULL << scale ),
+                        free_disk_space / SCALING_VALUE( scale ),
                         GetVariableStrVal( "IDS_DRIVE_AVAILABLE" ) );
                 }
             } else {
