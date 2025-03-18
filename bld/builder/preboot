@@ -15,13 +15,13 @@ inc_dirs = -I"../h" -I"$(pmake_dir)" -I"$(watcom_dir)/h"
 !endif
 
 !ifdef __WATCOM_TOOLS__
-cc_opts_dos   = -bt=dos -l=dos4g
+cc_opts_dos   = -bt=dos -l=causeway #-l=dos4g
 cc_opts_os2   = -bt=os2 -l=os2v2
 cc_opts_nt    = -bcl=nt
 cc_opts_linux = -bcl=linux
 !endif
 !ifdef __WATCOM_TOOLS__
-CL = *wcl386 -zq -fe=builder.exe -l=causeway
+CL = *wcl386 -zq -fe=builder.exe
 !else ifdef __NT__
 CL = cl /nologo /Fe:builder.exe
 !else
