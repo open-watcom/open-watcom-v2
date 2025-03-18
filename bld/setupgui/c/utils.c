@@ -47,6 +47,7 @@
 #endif
 #ifdef __UNIX__
     #include <sys/utsname.h>
+    #include <sys/statvfs.h>
 #endif
 #include <errno.h>
 #include "wdirent.h"
@@ -64,6 +65,7 @@
 #include "iopath.h"
 #include "guistats.h"
 #include "pathgrp2.h"
+#include "roundmac.h"
 
 #include "clibext.h"
 
@@ -641,9 +643,18 @@ static bool updateFsysInfo( fsys_info *info, bool removable )
     info->free_space = (fsys_size)-1;
 
 #if defined( __UNIX__ )
-    /* unused parameters */ (void)removable;
+    {
+        struct statvfs      vfs;
 
-    info->block_size = 1;
+        /* unused parameters */ (void)removable;
+
+        if( statvfs( info->root, &vfs ) == 0 ) {
+            info->block_size = ( vfs.f_frsize != 0 ) ? vfs.f_frsize : vfs.f_bsize;
+            info->free_space = (fsys_size)vfs.f_bfree * (fsys_size)info->block_size;
+        } else {
+            info->block_size = 1;
+        }
+    }
 #elif defined( __OS2__ )
     {
         typedef struct {
@@ -1092,8 +1103,8 @@ bool CheckDrive( bool issue_message )
                     scale = getScale( disk_space_needed, free_disk_space );
                     units = getUnits( scale );
                     reply = MsgBox( NULL, msg_ids, GUI_YES_NO, msg_path,
-                                    free_disk_space / SCALING_VALUE( scale ), units,
-                                    disk_space_needed / SCALING_VALUE( scale ), units );
+                                __ROUND_DOWN_SIZE_TO( free_disk_space, SCALING_VALUE( scale ) ), units,
+                                __ROUND_UP_SIZE_TO( disk_space_needed, SCALING_VALUE( scale ) ), units );
                     if( reply == GUI_RET_NO ) {
                         ok = false;
                         break;
@@ -1140,7 +1151,7 @@ bool CheckDrive( bool issue_message )
                     sprintf( fmt, "%s %%lld %s %%s", GetVariableStrVal( msg_ids ), units );
                     sprintf( buff, fmt,
                         msg_path,
-                        disk_space_needed / SCALING_VALUE( scale ),
+                        __ROUND_UP_SIZE_TO( disk_space_needed, SCALING_VALUE( scale ) ),
                         GetVariableStrVal( "IDS_DRIVE_FREED" ) );
                 } else {
                     scale = getScale( disk_space_needed, free_disk_space );
@@ -1148,9 +1159,9 @@ bool CheckDrive( bool issue_message )
                     sprintf( fmt, "%s %%lld %s %%s %%lld %s %%s", GetVariableStrVal( msg_ids ), units, units );
                     sprintf( buff, fmt,
                         msg_path,
-                        disk_space_needed / SCALING_VALUE( scale ),
+                        __ROUND_UP_SIZE_TO( disk_space_needed, SCALING_VALUE( scale ) ),
                         GetVariableStrVal( "IDS_DRIVE_REQUIRED" ),
-                        free_disk_space / SCALING_VALUE( scale ),
+                        __ROUND_DOWN_SIZE_TO( free_disk_space, SCALING_VALUE( scale ) ),
                         GetVariableStrVal( "IDS_DRIVE_AVAILABLE" ) );
                 }
             } else {
