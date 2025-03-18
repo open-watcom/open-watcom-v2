@@ -52,9 +52,6 @@
 #   include "mtarget.h"
 #   include "mupdate.h"
 #   include "mvecstr.h"
-#if defined( __DOS__ )
-#   include "tinyio.h"
-#endif
 #endif
 #include "banner.h"
 
