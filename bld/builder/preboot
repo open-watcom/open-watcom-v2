@@ -21,7 +21,7 @@ cc_opts_nt    = -bcl=nt
 cc_opts_linux = -bcl=linux
 !endif
 !ifdef __WATCOM_TOOLS__
-CL = *wcl386 -zq -fe=builder.exe
+CL = *wcl386 -zq -fe=builder.exe -l=causeway
 !else ifdef __NT__
 CL = cl /nologo /Fe:builder.exe
 !else
