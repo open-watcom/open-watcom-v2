@@ -4,7 +4,7 @@ The class template...
 .*
 .section Status
 .np
-:AUTHOR date='1 Dec 2005'.Peter C. Chapin
+:AUTHOR date='1 Dec 2005'.Peter Chapin
 .np
 Reviewer: Not reviewed
 .np

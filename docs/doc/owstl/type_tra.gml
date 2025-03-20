@@ -2,10 +2,9 @@
 .*
 .sect Introduction
 .*
-The header type_traits is based on the metaprogramming section of n1836
-:Q.Draft Technical Report on C++ Library Extensions:eQ..
-It contains a set of templates that allow compile type testing and modification
-of types.
+The header type_traits is based on the metaprogramming section of n1836 :Q.Draft
+Technical Report on C++ Library Extensions:eQ.. It contains a set of templates
+that allow compile type testing and modification of types.
 .*
 .section Status
 .np
@@ -13,8 +12,8 @@ of types.
 .np
 Reviewer: Not reviewed
 .np
-About half of the required functionality has been implemented so far.
-There are currently a few compiler bugs stopping some parts being implemented.
+About half of the required functionality has been implemented so far. There are
+currently a few compiler bugs stopping some parts being implemented.
 .np
 The missing templates are:
 :UL.
@@ -56,32 +55,28 @@ The missing templates are:
 .*
 .section Design Details
 .*
-.sect Quierying types
+.sect Querying types
 .*
-This is implemented by specialising templates for the types that the test
-holds true.
-The class derives from a helper class that contains a static const value.
+This is implemented by specializing templates for the types that the test holds
+true. The class derives from a helper class that contains a static const value.
 The important cases are when this static const is a bool and is true or false.
-The user can then access is_void< type >::value to see if the test is
-positive.
-A set of macros are used to help make the definitions look a bit less
-cluttered.
+The user can then access is_void<type>::value to see if the test is positive.
+A set of macros are used to help make the definitions look a bit less cluttered.
 There is a default case which declares the main template and is usually false.
-There are then other macros that define the specialisations.
-There are also macros that define 4 specialisations for the const volatile
-qualified variations of the type.
+There are then other macros that define the specializations. There are also
+macros that define 4 specializations for the const volatile qualified variations
+of the type.
 .*
-.sect Modifiying types
+.sect Modifying types
 .*
-This works in a simular way.
-The template is specialised for the type with the modifier and the class
-contains a typedef :Q.type:eQ. that refers to the modified type.
-Macros aren't used for the modifiers as they tend to have subtle differences
-for each template and in many cases there isn't the need for 4 different CV
-variations.
+This works in a similar way. The template is specialized for the type with the
+modifier and the class contains a typedef :Q.type:eQ. that refers to the
+modified type. Macros aren't used for the modifiers as they tend to have subtle
+differences for each template and in many cases there isn't the need for 4
+different CV variations.
 .*
 .sect Use in main library
 .*
 This header should be a help for writing the constructors and member
 functions of the standard containers that are required to have different
-behaviour for iterators and integral types.
+behavior for iterators and integral types.
