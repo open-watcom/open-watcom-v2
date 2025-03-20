@@ -116,9 +116,7 @@ static void checkErrorLimit( unsigned *p )
 static bool checkSTD( unsigned *value )
 {
     cxxstd_ver  cxxstd;
-    bool        fail;
 
-    fail = true;
     cxxstd = STD_NONE;
     CmdRecogEquals();
     while( !CmdScanSwEnd() ) {
@@ -128,11 +126,12 @@ static bool checkSTD( unsigned *value )
             if( CmdRecogChar( '9' )
               && CmdRecogChar( '8' ) ) {
                 cxxstd = STD_CXX98;
-                fail = false;
             } else if( CmdRecogChar( '0' )
               && CmdRecogChar( 'x' ) ) {
                 cxxstd = STD_CXX0X;
-                fail = false;
+            } else if( CmdRecogChar( '1' )
+              && CmdRecogChar( '4' ) ) {
+                cxxstd = STD_CXX14;
             }
         }
     }
