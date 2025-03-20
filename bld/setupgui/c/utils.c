@@ -65,7 +65,6 @@
 #include "iopath.h"
 #include "guistats.h"
 #include "pathgrp2.h"
-#include "roundmac.h"
 
 #include "clibext.h"
 
@@ -980,7 +979,10 @@ static bool CreateDstDir( int i, VBUF *buff )
     return( true );
 }
 
-#define SCALING_VALUE(x)    (1ULL << (x))
+#define SCALE_VALUE(s)              (1ULL << (s))
+#define __ROUND_DOWN_SCALE_TO(x,s)  ((x)/SCALE_VALUE(s))
+#define __ROUND_UP_SCALE_TO(x,s)    (((x)+(SCALE(s)-1))/SCALE_VALUE(s))
+
 
 #define GB_UNITS    "GB"
 #define MB_UNITS    "MB"
@@ -994,9 +996,9 @@ static int getScale( unsigned long long o1, unsigned long long o2 )
 {
     if( o1 < o2 )
         o1 = o2;
-    if( o1 > 99 * SCALING_VALUE( GB_SCALE ) )
+    if( o1 > 99 * SCALE_VALUE( GB_SCALE ) )
         return( GB_SCALE );
-    if( o1 > 99 * SCALING_VALUE( MB_SCALE ) )
+    if( o1 > 99 * SCALE_VALUE( MB_SCALE ) )
         return( MB_SCALE );
     return( KB_SCALE );
 }
@@ -1103,8 +1105,8 @@ bool CheckDrive( bool issue_message )
                     scale = getScale( disk_space_needed, free_disk_space );
                     units = getUnits( scale );
                     reply = MsgBox( NULL, msg_ids, GUI_YES_NO, msg_path,
-                                __ROUND_DOWN_SIZE_TO( free_disk_space, SCALING_VALUE( scale ) ), units,
-                                __ROUND_UP_SIZE_TO( disk_space_needed, SCALING_VALUE( scale ) ), units );
+                                __ROUND_DOWN_SCALE_TO( free_disk_space, scale ), units,
+                                __ROUND_UP_SCALE_TO( disk_space_needed, scale ), units );
                     if( reply == GUI_RET_NO ) {
                         ok = false;
                         break;
@@ -1151,7 +1153,7 @@ bool CheckDrive( bool issue_message )
                     sprintf( fmt, "%s %%lld %s %%s", GetVariableStrVal( msg_ids ), units );
                     sprintf( buff, fmt,
                         msg_path,
-                        __ROUND_UP_SIZE_TO( disk_space_needed, SCALING_VALUE( scale ) ),
+                        __ROUND_UP_SCALE_TO( disk_space_needed, scale ),
                         GetVariableStrVal( "IDS_DRIVE_FREED" ) );
                 } else {
                     scale = getScale( disk_space_needed, free_disk_space );
@@ -1159,9 +1161,9 @@ bool CheckDrive( bool issue_message )
                     sprintf( fmt, "%s %%lld %s %%s %%lld %s %%s", GetVariableStrVal( msg_ids ), units, units );
                     sprintf( buff, fmt,
                         msg_path,
-                        __ROUND_UP_SIZE_TO( disk_space_needed, SCALING_VALUE( scale ) ),
+                        __ROUND_UP_SCALE_TO( disk_space_needed, scale ),
                         GetVariableStrVal( "IDS_DRIVE_REQUIRED" ),
-                        __ROUND_DOWN_SIZE_TO( free_disk_space, SCALING_VALUE( scale ) ),
+                        __ROUND_DOWN_SCALE_TO( free_disk_space, scale ),
                         GetVariableStrVal( "IDS_DRIVE_AVAILABLE" ) );
                 }
             } else {
@@ -1188,10 +1190,10 @@ static void SetFileDate( const VBUF *dst_file, time_t date )
 static void SameFileDate( const VBUF *src_file, const VBUF *dst_file )
 /********************************************************************/
 {
-    struct stat         statblk;
+    struct stat         statbuf;
 
-    FileStat( src_file, &statblk );
-    SetFileDate( dst_file, statblk.st_mtime );
+    FileStat( src_file, &statbuf );
+    SetFileDate( dst_file, statbuf.st_mtime );
 }
 
 /********************************************************************

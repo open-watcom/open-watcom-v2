@@ -45,7 +45,7 @@ typedef struct file_handle_t    *file_handle;
 
 extern int          FileInit( const VBUF *archive );
 extern int          FileFini( void );
-extern int          FileStat( const VBUF *path, struct stat *buf );
+extern int          FileStat( const VBUF *path, struct stat *statbuf );
 extern file_handle  FileOpen( const VBUF *path, data_mode mode );
 extern size_t       FileRead( file_handle fh, void *buffer, size_t length );
 extern int          FileClose( file_handle fh );

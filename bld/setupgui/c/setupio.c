@@ -150,7 +150,7 @@ int FileIsArchive( void )
 }
 
 
-int FileStat( const VBUF *path, struct stat *buf )
+int FileStat( const VBUF *path, struct stat *statbuf )
 {
     int                 rc;
 #if defined( USE_ZIP )
@@ -168,10 +168,10 @@ int FileStat( const VBUF *path, struct stat *buf )
         if( VbufLen( &alt_path ) > 0 ) {
             rc = zip_stat( srcZip, VbufString( &alt_path ), 0, &zs );
             if( rc == 0 ) {
-                memset( buf, 0, sizeof( *buf ) );
-                buf->st_ino   = zs.index;
-                buf->st_size  = zs.size;
-                buf->st_mtime = zs.mtime;
+                memset( statbuf, 0, sizeof( *statbuf ) );
+                statbuf->st_ino   = zs.index;
+                statbuf->st_size  = zs.size;
+                statbuf->st_mtime = zs.mtime;
             }
         }
         VbufFree( &alt_path );
@@ -182,7 +182,7 @@ int FileStat( const VBUF *path, struct stat *buf )
         /*
          * If that fails, try local file
          */
-        rc = stat_vbuf( path, buf );
+        rc = stat_vbuf( path, statbuf );
 #if defined( USE_ZIP )
     }
 #elif defined( USE_LZMA )

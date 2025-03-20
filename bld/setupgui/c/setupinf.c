@@ -1038,7 +1038,7 @@ static bool dialog_textwindow( char *next, DIALOG_PARSER_INFO *parse_dlg, bool l
     unsigned int        rows;
     bool                rc = true;
     file_handle         afh;
-    struct stat         buf;
+    struct stat         statbuf;
     vhandle             var_handle;
 
     text = NULL;
@@ -1057,11 +1057,11 @@ static bool dialog_textwindow( char *next, DIALOG_PARSER_INFO *parse_dlg, bool l
             VbufConcStr( &file_name, line + 1 );
             afh = FileOpen( &file_name, DATA_BIN );
             if( afh != NULL ) {
-                FileStat( &file_name, &buf );
-                text = GUIMemAlloc( buf.st_size + 1 );  /* +1 for terminating null */
+                FileStat( &file_name, &statbuf );
+                text = GUIMemAlloc( statbuf.st_size + 1 );  /* +1 for terminating null */
                 if( text != NULL ) {
-                    FileRead( afh, text, buf.st_size );
-                    text[buf.st_size] = '\0';
+                    FileRead( afh, text, statbuf.st_size );
+                    text[statbuf.st_size] = '\0';
                 }
                 FileClose( afh );
             }
@@ -2176,7 +2176,7 @@ static bool GetFileInfo( int dir_index, int i, bool in_old_dir, bool *pzeroed )
 {
     VBUF        buff;
     vbuflen     dir_end;
-    struct stat buf;
+    struct stat statbuf;
     int         j;
     array_idx   k;
     bool        found;
@@ -2207,16 +2207,16 @@ static bool GetFileInfo( int dir_index, int i, bool in_old_dir, bool *pzeroed )
                 continue;
             VbufSetVbufAt( &buff, &file->name, dir_end );
             if( access_vbuf( &buff, F_OK ) == 0 ) {
-                stat_vbuf( &buff, &buf );
+                stat_vbuf( &buff, &statbuf );
                 found = true;
-                file->disk_size = buf.st_size;
-                file->disk_date = (unsigned long)buf.st_mtime;
+                file->disk_size = statbuf.st_size;
+                file->disk_date = (unsigned long)statbuf.st_mtime;
                 if( in_old_dir ) {
                     file->in_old_dir = true;
                 } else {
                     file->in_new_dir = true;
                 }
-                file->read_only = !(buf.st_mode & S_IWRITE);
+                file->read_only = !(statbuf.st_mode & S_IWRITE);
                 if( supp )
                     continue;
                 if( !*pzeroed ) {
@@ -2417,13 +2417,13 @@ long SimInit( const VBUF *inf_name )
 {
     long                result;
     file_handle         afh;
-    struct stat         stat_buf;
+    struct stat         statbuf;
     array_idx           i;
     gui_text_metrics    metrics;
 
     memset( &SetupInfo, 0, sizeof( struct setup_info ) );
-    FileStat( inf_name, &stat_buf );
-    SetupInfo.stamp = (unsigned long)stat_buf.st_mtime;
+    FileStat( inf_name, &statbuf );
+    SetupInfo.stamp = (unsigned long)statbuf.st_mtime;
 
 #define setvar( x, y ) x = AddVariable( #x );
     MAGICVARS( setvar, 0 )

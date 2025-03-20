@@ -1553,14 +1553,14 @@ bool CheckInstallDLL( const VBUF *name, vhandle var_handle )
     if( ok
       && VbufCompVbuf( &path1, &path2, true ) == 0 ) {
 #ifdef EXTRA_CAUTIOUS_FOR_DLLS
-        struct stat         new, old;
+        struct stat     statnew, statold;
 
         /*
          * both files are going into the same directory
          */
-        stat_vbuf( &prev_path, &old );
-        stat_vbuf( &unpacked_as, &new );
-        if( new.st_mtime < old.st_mtime ) {
+        stat_vbuf( &prev_path, &statold );
+        stat_vbuf( &unpacked_as, &statnew );
+        if( statnew.st_mtime < statold.st_mtime ) {
             remove_vbuf( &unpacked_as );
         } else {
             cancel = replace_file( name, &unpacked_as );
