@@ -26,21 +26,19 @@ All members complete:
 .*
 .section Design Details
 .np
-:CLASS.template < class Type, class Container = std::dequeue > class std::~stack
+:CLASS.template <class Type, class Container = std::dequeue> class std::~stack
 .np
 This template is called an adaptor because it uses a real container (the
-Container template parameter) to do the storing of the objects and just
-provides a different interface to it.
-It lacks begin() and end() so you can't use iterators with it and therefore
-you can't use the standard algorithms.
+Container template parameter) to do the storing of the objects and just provides
+a different interface to it. It lacks begin() and end() so you can't use
+iterators with it and therefore you can't use the standard algorithms.
 .*
 .sect Description of a stack
 .*
 A stack is a bit like a pile of books, where each book is the contained object.
-You can add books to the top of the pile (push), look at the top book (top),
-and discard the top book (pop).
+You can add books to the top of the pile (push), look at the top book (top), and
+discard the top book (pop).
 .*
 .sect Overview of the class
 .*
-This is a very simple wrapper.
-I suggest you just look at the source code.
+This is a very simple wrapper. I suggest you just look at the source code.

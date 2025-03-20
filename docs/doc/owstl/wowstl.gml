@@ -44,7 +44,7 @@
 .do end
 .*
 .sepsect The &owstlname
-:INCLUDE file='Intro'.
+:INCLUDE file='intro'.
 :INCLUDE file='algorith'
 :INCLUDE file='deque'.
 :INCLUDE file='list'.
