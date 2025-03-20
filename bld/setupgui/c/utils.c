@@ -981,7 +981,7 @@ static bool CreateDstDir( int i, VBUF *buff )
 
 #define SCALE_VALUE(s)              (1ULL << (s))
 #define __ROUND_DOWN_SCALE_TO(x,s)  ((x)/SCALE_VALUE(s))
-#define __ROUND_UP_SCALE_TO(x,s)    (((x)+(SCALE(s)-1))/SCALE_VALUE(s))
+#define __ROUND_UP_SCALE_TO(x,s)    (((x)+(SCALE_VALUE(s)-1))/SCALE_VALUE(s))
 
 
 #define GB_UNITS    "GB"

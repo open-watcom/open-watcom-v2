@@ -95,9 +95,9 @@ typedef struct a_file_info {
     VBUF                name;
     vhandle             dst_var;
     unsigned long       disk_size;
-    unsigned long       disk_date;
+    time_t              disk_date;
     unsigned long       size;
-    unsigned long       date;
+    time_t              date;
     boolbit             in_old_dir  : 1;
     boolbit             in_new_dir  : 1;
     boolbit             read_only   : 1;
@@ -190,7 +190,7 @@ NONMAGICVARS( defvar, 0 )
 #undef defvar
 
 static struct setup_info {
-    unsigned long       stamp;
+    time_t              stamp;
     char                *pm_group_file;
     char                *pm_group_name;
     char                *pm_group_iconfile;
@@ -2210,7 +2210,7 @@ static bool GetFileInfo( int dir_index, int i, bool in_old_dir, bool *pzeroed )
                 stat_vbuf( &buff, &statbuf );
                 found = true;
                 file->disk_size = statbuf.st_size;
-                file->disk_date = (unsigned long)statbuf.st_mtime;
+                file->disk_date = statbuf.st_mtime;
                 if( in_old_dir ) {
                     file->in_old_dir = true;
                 } else {
@@ -2423,7 +2423,7 @@ long SimInit( const VBUF *inf_name )
 
     memset( &SetupInfo, 0, sizeof( struct setup_info ) );
     FileStat( inf_name, &statbuf );
-    SetupInfo.stamp = (unsigned long)statbuf.st_mtime;
+    SetupInfo.stamp = statbuf.st_mtime;
 
 #define setvar( x, y ) x = AddVariable( #x );
     MAGICVARS( setvar, 0 )
