@@ -2,7 +2,7 @@
 ;*
 ;*                            Open Watcom Project
 ;*
-;* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+;* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 ;*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 ;*
 ;*  ========================================================================
@@ -382,6 +382,7 @@ nextc:  lodsb                           ; get char
 exit_code_eax:
         or      eax,eax
         je      do_exit
+exit_code_eax2:
         push    eax                     ; don't destroy error code
         call    __CommonTerm            ; terminate the runtime
         pop     eax
@@ -390,8 +391,25 @@ do_exit:
         mov     si,DGROUP
         mov     ds,esi
         lss     esp,caller_stack
+        mov     caller_ss,0             ; caller_ss is used as a flag if do_exit can be jumped to
         ret
 __DLLstart_ endp
+
+__exit  proc    far
+        public  "C",__exit
+ifdef __STACK__
+        pop     eax                     ; get return code into eax
+endif
+        cmp     caller_ss,0             ; exit via do_exit possible?
+        jnz     exit_code_eax2
+
+;--- if caller_ss == 0, then _exit() has been called from inside an exported function.
+;--- this cannot be handled gracefully.
+;--- optionally display an error msg here?
+        mov     ah,4Ch
+        int     21h
+
+__exit  endp
 
         public  __GETDS
         align   4
