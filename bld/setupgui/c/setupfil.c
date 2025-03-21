@@ -1224,6 +1224,7 @@ void ReplaceVars( VBUF *dst, const char *src )
     VBUF                tmp;
     VBUF                var1;
     VBUF                var2;
+    vhandle             var_handle;
 
     VbufInit( &tmp );
     VbufInit( &var1 );
@@ -1280,7 +1281,9 @@ void ReplaceVars( VBUF *dst, const char *src )
              * skip ':'
              */
             colon++;
-            if( GetOptionVarValue( GetVariableByName( VbufString( &var1 ) ) ) ) {
+            var_handle = GetVariableByName( VbufString( &var1 ) );
+            if( var_handle != NO_VAR
+              && GetOptionVarValue( var_handle ) ) {
                 varval = GetVariableStrVal( VbufString( &var2 ) );
                 break;
             }
