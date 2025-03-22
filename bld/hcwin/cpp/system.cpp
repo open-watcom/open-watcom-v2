@@ -155,7 +155,7 @@ HFSystem::HFSystem( HFSDirectory *d_file, HFContext *h_file )
 {
     _compLevel = 0;
     _contentNum = 0;
-    _size = 25; // 12 byte header + default SYS_COPYRIGHT,SYS_CONTENTS
+    _size = 12 + 5 + 8; // 12 byte header + default SYS_COPYRIGHT,SYS_CONTENTS
 
     // Create default copyright and contents records.
     _first = new SystemText( SYS_COPYRIGHT, "" );
