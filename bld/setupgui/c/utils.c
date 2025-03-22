@@ -1012,9 +1012,9 @@ static const char *getUnits( int scale )
     return( KB_UNITS );
 }
 
-bool CheckDrive( bool issue_message )
-/************************************
- * check if there is enough disk space
+bool CheckFsys( bool issue_message )
+/***********************************
+ * check if there is enough space on file system
  */
 {
     bool                ok;

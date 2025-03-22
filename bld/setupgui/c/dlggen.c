@@ -100,18 +100,18 @@ static gui_control_class ControlClass( gui_ctl_id id, a_dialog_header *dlg )
 }
 
 
-static void SetDynamic( gui_window *gui, vhandle var_handle, bool *drive_checked )
-/********************************************************************************/
+static void SetDynamic( gui_window *gui, vhandle var_handle, bool *fsys_checked )
+/*******************************************************************************/
 {
     VBUF        buff;
     const char  *p;
 
-    if( !*drive_checked ) {
+    if( !*fsys_checked ) {
         for( p = VarGetStrVal( var_handle ); *p != '\0'; p++ ) {
             if( *p == '%' ) {
                 if( strnicmp( p + 1, "DriveFree", 9 ) == 0 ) {
-                    CheckDrive( false );
-                    *drive_checked = true;
+                    CheckFsys( false );
+                    *fsys_checked = true;
                 }
             }
         }
@@ -132,10 +132,10 @@ static void SetDefaultVals( gui_window *gui, a_dialog_header *dlg )
     int                 i;
     vhandle             var_handle;
     char                *cond;
-    bool                drive_checked;
+    bool                fsys_checked;
     gui_ctl_id          id;
 
-    drive_checked = false;
+    fsys_checked = false;
     for( i = 0; (var_handle = dlg->pVariables[i]) != NO_VAR; ++i ) {
         cond = dlg->pConditions[i];
         if( !dlg->defaults_set && cond != NULL && !VarGetBoolVal( var_handle ) ) {
@@ -148,7 +148,7 @@ static void SetDefaultVals( gui_window *gui, a_dialog_header *dlg )
         id = VH2ID( var_handle );
         switch( ControlClass( id, dlg ) ) {
         case GUI_STATIC:
-            SetDynamic( gui, var_handle, &drive_checked );
+            SetDynamic( gui, var_handle, &fsys_checked );
             break;
         case GUI_RADIO_BUTTON:
         case GUI_CHECK_BOX:
@@ -214,16 +214,16 @@ static void GetVariableVals( gui_window *gui, a_dialog_header *dlg, bool closing
     char                *text;
     int                 i;
     vhandle             var_handle;
-    bool                drive_checked;
+    bool                fsys_checked;
     gui_ctl_id          id;
 
-    drive_checked = false;
+    fsys_checked = false;
     for( i = 0; (var_handle = dlg->pVariables[i]) != NO_VAR; i++ ) {
         id = VH2ID( var_handle );
         switch( ControlClass( id, dlg ) ) {
         case GUI_STATIC:
             if( !closing ) {
-                SetDynamic( gui, var_handle, &drive_checked );
+                SetDynamic( gui, var_handle, &fsys_checked );
             }
             break;
         case GUI_RADIO_BUTTON:

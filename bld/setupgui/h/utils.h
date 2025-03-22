@@ -43,7 +43,7 @@ extern bool             ModifyUninstall( bool );
 extern COPYFILE_ERROR   DoCopyFile( const VBUF *src, const VBUF *dst, copy_mode copymode );
 extern bool             CopyAllFiles( void );
 extern gui_message_return MsgBox( gui_window *, const char *, gui_message_type, ... );
-extern bool             CheckDrive( bool );
+extern bool             CheckFsys( bool );
 extern bool             InitInfo( const VBUF *, const VBUF * );
 extern bool             GetDirParams( int, char **, VBUF *, VBUF *, VBUF * );
 extern bool             FreeDirParams( void );

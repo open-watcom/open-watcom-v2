@@ -196,7 +196,7 @@ static bool DoMainLoop( dlg_state *state )
             break;
         if( diag_list[i] == NULL ) {
             if( GetVariableBoolVal( "DoCopyFiles" ) ) {
-                if( !CheckDrive( true ) ) {
+                if( !CheckFsys( true ) ) {
                     i = 0;
                 }
             }
@@ -238,7 +238,7 @@ static bool DoMainLoop( dlg_state *state )
             SetVariableByName_vbuf( "DstDir", &temp_vbuf );
         }
         if( got_disk_sizes ) {
-            if( !CheckDrive( false ) ) {
+            if( !CheckFsys( false ) ) {
                 break;
             }
         }
