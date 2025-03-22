@@ -426,8 +426,14 @@ TOKEN SpecialMacro( MEPTR mentry )
             WriteBufferString( "199409L" );
             Constant = 199409;
         } else {
-            WriteBufferString( "199901L" );
-            Constant = 199901;
+            WriteBufferString( "199901L" ); /* C99 */
+//            WriteBufferString( "201112L" ); /* C11 */
+//            WriteBufferString( "201710L" ); /* C17 */
+//            WriteBufferString( "202311L" ); /* C23 */
+            Constant = 199901;  /* C99 */
+//            Constant = 201112;  /* C11 */
+//            Constant = 201710;  /* C17 */
+//            Constant = 202311;  /* C23 */
         }
         ConstType = TYP_LONG;
         return( T_CONSTANT );

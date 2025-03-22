@@ -68,7 +68,7 @@ using std::raise;
 :include uid_t.sp
 :include pid_t.sp
 :segment LINUX
-:include extc99po.sp
+:include extposix.sp
 :include timespec.sp
 :include extepi.sp
 :include pthread1.sp

@@ -192,6 +192,10 @@ static bool checkSTD( unsigned *value )
                 cstd = STD_C89;
             } else if( CmdRecogChar( '9' ) && CmdRecogChar( '9' ) ) {
                 cstd = STD_C99;
+            } else if( CmdRecogChar( '1' ) && CmdRecogChar( '1' ) ) {
+                cstd = STD_C11;
+            } else if( CmdRecogChar( '1' ) && CmdRecogChar( '7' ) ) {
+                cstd = STD_C17;
             } else if( CmdRecogChar( '2' ) && CmdRecogChar( '3' ) ) {
                 cstd = STD_C23;
             } else {

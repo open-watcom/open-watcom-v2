@@ -141,7 +141,7 @@ using std::time;
 :include tm.sp
 :remove DECLARE_STRUCT
 
-:include extc99po.sp
+:include extc11po.sp
 :include timespec.sp
 :include extepi.sp
 

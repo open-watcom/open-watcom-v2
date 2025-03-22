@@ -680,6 +680,8 @@ typedef enum {
     STD_NONE,
     STD_C89,
     STD_C99,
+    STD_C11,
+    STD_C17,
     STD_C23
 } cstd_ver;
 
