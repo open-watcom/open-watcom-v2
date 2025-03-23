@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2023-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2023-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -73,7 +73,7 @@ extern file_handle      FileOpen( char const *, obj_attrs );
 extern error_handle     FileClose( file_handle );
 extern error_handle     FileRemove( char const *, obj_attrs );
 extern const char       *FileLoc( char const *, obj_attrs * );
-extern obj_attrs        FileHandleInfo( file_handle );
+extern bool             FileIsRemote( file_handle );
 extern sys_handle       GetSystemHandle( file_handle );
 extern char             *SetFileLocPrefix( char *buff, obj_attrs oattrs );
 

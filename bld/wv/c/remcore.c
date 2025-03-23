@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -432,7 +432,7 @@ unsigned MakeProgRun( bool single )
     return( ret.conditions );
 }
 
-bool Redirect( bool input, char *hndlname )
+bool RemoteRedirect( bool input, char *hndlname )
 {
     in_mx_entry         in[2];
     mx_entry            out[1];

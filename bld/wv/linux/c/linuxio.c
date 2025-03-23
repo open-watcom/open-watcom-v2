@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -59,7 +59,7 @@ void LocalErrMsg( sys_error code, char *buff )
     StrCopyDst( strerror( code ), buff );
 }
 
-sys_handle LocalOpen( const char *name, obj_attrs oattrs )
+sys_handle LocalFileOpen( const char *name, obj_attrs oattrs )
 {
     unsigned    openmode;
     int         ret;
@@ -87,7 +87,7 @@ sys_handle LocalOpen( const char *name, obj_attrs oattrs )
     return( sh );
 }
 
-size_t LocalRead( sys_handle sh, void *ptr, size_t len )
+size_t LocalFileRead( sys_handle sh, void *ptr, size_t len )
 {
     ssize_t     ret;
     size_t      total;
@@ -114,7 +114,7 @@ size_t LocalRead( sys_handle sh, void *ptr, size_t len )
     return( total );
 }
 
-size_t LocalWrite( sys_handle sh, const void *ptr, size_t len )
+size_t LocalFileWrite( sys_handle sh, const void *ptr, size_t len )
 {
     ssize_t     ret;
     size_t      total;
@@ -141,7 +141,7 @@ size_t LocalWrite( sys_handle sh, const void *ptr, size_t len )
     return( total );
 }
 
-unsigned long LocalSeek( sys_handle sh, unsigned long len, seek_method method )
+unsigned long LocalFileSeek( sys_handle sh, unsigned long len, seek_method method )
 {
     off_t       ret;
 
@@ -153,21 +153,21 @@ unsigned long LocalSeek( sys_handle sh, unsigned long len, seek_method method )
     return( ret );
 }
 
-error_handle LocalClose( sys_handle sh )
+error_handle LocalFileClose( sys_handle sh )
 {
     if( close( SYSH2LH( sh ) ) == 0 )
         return( 0 );
     return( StashErrCode( errno, OP_LOCAL ) );
 }
 
-error_handle LocalErase( const char *name )
+error_handle LocalFileErase( const char *name )
 {
     if( unlink( name ) == 0 )
         return( 0 );
     return( StashErrCode( errno, OP_LOCAL ) );
 }
 
-sys_handle LocalHandleSys( file_handle fh )
+sys_handle LocalFileHandleSys( file_handle fh )
 {
     sys_handle  sh;
 

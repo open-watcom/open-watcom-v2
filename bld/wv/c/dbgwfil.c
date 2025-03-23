@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -502,7 +502,7 @@ static void SeekToTheEnd( file_window *file )
 {
     size_t  len;
 
-    if( file->viewhndl != NULL && !FileIsRemote( file->viewhndl ) ) {
+    if( file->viewhndl != NULL && !FIsRemote( file->viewhndl ) ) {
         len = FReadLine( file->viewhndl, INT_MAX, 0, TxtBuff, TXT_LEN );
         if( len == FREADLINE_ERROR )
             len = 0;

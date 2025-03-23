@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,7 +38,7 @@
 #include "trptypes.h"
 #include "filelcl.h"
 
-long LocalGetFileDate( const char *name )
+long LocalFileGetDate( const char *name )
 /***************************************/
 {
     WIN32_FIND_DATA     ffd;
@@ -54,7 +54,7 @@ long LocalGetFileDate( const char *name )
     return( ( md << 16 ) + mt );
 }
 
-bool LocalSetFileDate( const char *name, long date )
+bool LocalFileSetDate( const char *name, long date )
 /**************************************************/
 {
     HANDLE              h;

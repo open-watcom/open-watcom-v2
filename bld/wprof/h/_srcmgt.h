@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -59,7 +60,7 @@
 #define SMReadStream( fp, buff, len )   fread( buff, 1, len, fp )
 #define SMReadError( fp, len )          ( ferror( fp ) != 0 )
 
-#define SMFileRemote( fp )              0
+#define SMFileIsRemote( fp )            0
 
 
 extern void *ProfAlloc( size_t size );

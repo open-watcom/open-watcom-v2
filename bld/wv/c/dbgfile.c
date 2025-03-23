@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -75,7 +75,6 @@
 #define SYSHANDLE(sh)   SysHandles[sh & ~REMOTE_IND]
 #define SYSERROR(e)     SysErrors[(e & ~REMOTE_IND) - 1]
 #define ISREMOTE(x)     ((x & REMOTE_IND) != 0)
-#define SETREMOTE(x)    x |= REMOTE_IND
 
 #define QQSTR(x)        # x
 #define QSTR(x)         QQSTR(x)
@@ -177,9 +176,9 @@ size_t ReadStream( file_handle fh, void *b, size_t l )
 
     sh = SYSHANDLE( fh );
     if( ISREMOTE( fh ) ) {
-        return( RemoteRead( sh, b, l ) );
+        return( RemoteFileRead( sh, b, l ) );
     } else {
-        return( LocalRead( sh, b, l ) );
+        return( LocalFileRead( sh, b, l ) );
     }
 }
 
@@ -194,9 +193,9 @@ size_t WriteStream( file_handle fh, const void *b, size_t l )
 
     sh = SYSHANDLE( fh );
     if( ISREMOTE( fh ) ) {
-        return( RemoteWrite( sh, b, l ) );
+        return( RemoteFileWrite( sh, b, l ) );
     } else {
-        return( LocalWrite( sh, b, l ) );
+        return( LocalFileWrite( sh, b, l ) );
     }
 }
 
@@ -225,9 +224,9 @@ unsigned long SeekStream( file_handle fh, long p, seek_method m )
 
     sh = SYSHANDLE( fh );
     if( ISREMOTE( fh ) ) {
-        return( RemoteSeek( sh, p, m ) );
+        return( RemoteFileSeek( sh, p, m ) );
     } else {
-        return( LocalSeek( sh, p, m ) );
+        return( LocalFileSeek( sh, p, m ) );
     }
 }
 
@@ -244,14 +243,16 @@ file_handle FileOpen( const char *name, obj_attrs oattrs )
     if( fh == NIL_HANDLE )
         return( NIL_HANDLE );
     if( oattrs & OP_REMOTE ) {
-        SETREMOTE( fh );
-        sh = RemoteOpen( name, oattrs );
+        sh = RemoteFileOpen( name, oattrs );
     } else {
-        sh = LocalOpen( name, oattrs );
+        sh = LocalFileOpen( name, oattrs );
     }
     if( IS_SYSHANDLE_NULL( sh ) )
         return( NIL_HANDLE );
     SYSHANDLE( fh ) = sh;
+    if( oattrs & OP_REMOTE ) {
+        fh |= REMOTE_IND;
+    }
     if( oattrs & OP_APPEND )
         SeekStream( fh, 0, DIO_SEEK_END );
     return( fh );
@@ -259,15 +260,17 @@ file_handle FileOpen( const char *name, obj_attrs oattrs )
 
 error_handle FileClose( file_handle fh )
 {
-    sys_handle  sh;
+    sys_handle      sh;
+    error_handle    errh;
 
     sh = SYSHANDLE( fh );
-    SET_SYSHANDLE_NULL( SYSHANDLE( fh ) );
     if( ISREMOTE( fh ) ) {
-        return( RemoteClose( sh ) );
+        errh = RemoteFileClose( sh );
     } else {
-        return( LocalClose( sh ) );
+        errh = LocalFileClose( sh );
     }
+    SET_SYSHANDLE_NULL( sh );
+    return( errh );
 }
 
 
@@ -275,9 +278,9 @@ error_handle FileRemove( char const *name, obj_attrs oattrs )
 {
     name = FileLoc( name, &oattrs );
     if( oattrs & OP_REMOTE ) {
-        return( RemoteErase( name ) );
+        return( RemoteFileErase( name ) );
     } else {
-        return( LocalErase( name ) );
+        return( LocalFileErase( name ) );
     }
 }
 
@@ -289,11 +292,9 @@ void WriteToPgmScreen( const void *buff, size_t len )
     RemoteWriteConsole( buff, len );
 }
 
-obj_attrs FileHandleInfo( file_handle fh )
+bool FileIsRemote( file_handle fh )
 {
-    if( ISREMOTE( fh ) )
-        return( OP_REMOTE );
-    return( OP_LOCAL );
+    return( ISREMOTE( fh ) );
 }
 
 char *SysErrMsg( error_handle errh, char *buff )
@@ -320,7 +321,7 @@ error_handle StashErrCode( sys_error syserr, obj_attrs oattrs )
     errh = ErrRover + 1;
     SYSERROR( errh ) = syserr;
     if( oattrs & OP_REMOTE )
-        SETREMOTE( errh );
+        errh |= REMOTE_IND;
     LastErr = errh;
     return( errh );
 }
@@ -646,9 +647,9 @@ void SysFileInit( void )
     for( fh = 0; fh < MAX_OPENS; ++fh ) {
         SET_SYSHANDLE_NULL( SYSHANDLE( fh ) );
     }
-    SYSHANDLE( STD_IN ) = LocalHandleSys( STD_IN  );
-    SYSHANDLE( STD_OUT ) = LocalHandleSys( STD_OUT );
-    SYSHANDLE( STD_ERR ) = LocalHandleSys( STD_ERR );
+    SYSHANDLE( STD_IN ) = LocalFileHandleSys( STD_IN  );
+    SYSHANDLE( STD_OUT ) = LocalFileHandleSys( STD_OUT );
+    SYSHANDLE( STD_ERR ) = LocalFileHandleSys( STD_ERR );
 }
 
 #if !defined( BUILD_RFX )

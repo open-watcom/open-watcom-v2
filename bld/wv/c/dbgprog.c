@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -1197,11 +1197,11 @@ static bool CopyToRemote( const char *local, const char *remote, bool strip, voi
 
     /* unused parameters */ (void)strip;
 #ifdef __NT__
-    lcldate = LocalGetFileDate( local );
+    lcldate = LocalFileGetDate( local );
 #else
     lcldate = -1;
 #endif
-    remdate = RemoteGetFileDate( remote );
+    remdate = RemoteFileGetDate( remote );
     if( remdate != -1 && lcldate != -1 && remdate == lcldate )
         return( true );
     fh_lcl = FileOpen( local, OP_READ );
@@ -1242,10 +1242,10 @@ static bool CopyToRemote( const char *local, const char *remote, bool strip, voi
     FileClose( fh_rem );
     _Free( buff );
     if( delete_file ) {
-        RemoteErase( remote );
+        RemoteFileErase( remote );
         return( false );
     } else {
-        RemoteSetFileDate( remote, lcldate );
+        RemoteFileSetDate( remote, lcldate );
         return( true );
     }
 }
