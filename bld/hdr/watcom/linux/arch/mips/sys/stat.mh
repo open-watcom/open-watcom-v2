@@ -28,26 +28,13 @@ struct stat {
     long            st_pad2[2];
     off_t           st_size;
     long            st_pad3;
-    /*
-     * Actually this should be timestruc_t st_atime, st_mtime and st_ctime
-     * but we don't have it under Linux.
-     */
-    time_t          st_atime;
-    long            st_atime_nsec;
-    time_t          st_mtime;
-    long            st_mtime_nsec;
-    time_t          st_ctime;
-    long            st_ctime_nsec;
+    struct timespec st_atim;
+    struct timespec st_mtim;
+    struct timespec st_ctim;
     long            st_blksize;
     long            st_blocks;
     long            st_pad4[14];
 };
-
-/*
- * This matches struct stat64 in glibc2.1, hence the absolutely insane
- * amounts of padding around dev_t's.  The memory layout is the same as of
- * struct stat of the 64-bit kernel.
- */
 
 struct stat64 {
     unsigned long       st_dev;
@@ -60,16 +47,9 @@ struct stat64 {
     unsigned long       st_rdev;
     unsigned long       st_pad1[3];     /* Reserved for st_rdev expansion  */
     long long           st_size;
-    /*
-     * Actually this should be timestruc_t st_atime, st_mtime and st_ctime
-     * but we don't have it under Linux.
-     */
-    time_t              st_atime;
-    unsigned long       st_atime_nsec;  /* Reserved for st_atime expansion  */
-    time_t              st_mtime;
-    unsigned long       st_mtime_nsec;  /* Reserved for st_mtime expansion  */
-    time_t              st_ctime;
-    unsigned long       st_ctime_nsec;  /* Reserved for st_ctime expansion  */
+    struct timespec     st_atim;
+    struct timespec     st_mtim;
+    struct timespec     st_ctim;
     unsigned long       st_blksize;
     unsigned long       st_pad2;
     long long           st_blocks;

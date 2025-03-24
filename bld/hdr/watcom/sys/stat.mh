@@ -38,6 +38,10 @@
 :include off_t.sp
 :segment LINUX
 
+:include extposix.sp
+:include timespec.sp
+:include extepi.sp
+
 /* Versions of the 'struct stat' data structure.  */
 #define _STAT_VER_LINUX_OLD 1
 #define _STAT_VER_KERNEL    1
@@ -48,6 +52,10 @@
 :include incdir.sp
 
 #include _ARCH_INCLUDE(sys/stat.h)
+
+#define st_atime    st_atim.tv_sec
+#define st_mtime    st_mtim.tv_sec
+#define st_ctime    st_ctim.tv_sec
 
 :elsesegment DOS | RDOS
 :include dev_t.sp
