@@ -34,9 +34,6 @@
 #include <errno.h>
 #include <limits.h>
 #include <stddef.h>
-#include <unistd.h>
-#include <sys/stat.h>
-#include <fcntl.h>
 #include "dbgdefn.h"
 #include "dbgdata.h"
 #include "dbgmem.h"

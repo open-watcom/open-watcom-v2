@@ -30,11 +30,8 @@
 ****************************************************************************/
 
 
-#include <io.h>
 #include <limits.h>
 #include <stddef.h>
-#include <sys/stat.h>
-#include <fcntl.h>
 #include "dbgdefn.h"
 #include "dbgdata.h"
 #include "dbgmem.h"

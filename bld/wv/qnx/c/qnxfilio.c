@@ -34,8 +34,6 @@
 #include <limits.h>
 #include <stddef.h>
 #include <unistd.h>
-#include <sys/stat.h>
-#include <fcntl.h>
 #include <errno.h>
 #include <i86.h>
 #include "dbgdefn.h"

@@ -34,8 +34,6 @@
 #include <malloc.h>
 #include <conio.h>
 #include <sys/types.h>
-#include <fcntl.h>
-#include <io.h>
 #include "tinyio.h"
 #include "dbginit.h"
 #include "wio.h"
