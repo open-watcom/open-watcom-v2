@@ -72,9 +72,9 @@
 #define MAX_OPENS       100
 #define MAX_ERRORS      10
 
-#define SYSHANDLE(sh)   SysHandles[sh & ~REMOTE_IND]
-#define SYSERROR(e)     SysErrors[(e & ~REMOTE_IND) - 1]
-#define ISREMOTE(x)     ((x & REMOTE_IND) != 0)
+#define SYSHANDLE(fh)   SysHandles[fh & ~REMOTE_IND]
+#define SYSERROR(eh)    SysErrors[(eh & ~REMOTE_IND) - 1]
+#define ISREMOTE(fh)    ((fh & REMOTE_IND) != 0)
 
 #define QQSTR(x)        # x
 #define QSTR(x)         QQSTR(x)
