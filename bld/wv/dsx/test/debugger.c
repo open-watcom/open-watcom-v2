@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,6 +38,8 @@
 #include <io.h>
 #include "tinyio.h"
 #include "dbginit.h"
+#include "wio.h"
+
 
 #define RM_STACK_SIZE   ( 8 * 1024 )
 #define MAX_STATE_SIZE  100
@@ -142,8 +144,7 @@ static void save_vects( void __far **rmvtable, void __far **pmvtable )
         rmvtable[intnb] = (void __far *)TinyDPMIGetRealVect( intnb );
         pmvtable[intnb] = TinyDPMIGetProtectVect( intnb );
     }
-    fhandle = open( "vtable", O_BINARY | O_CREAT | O_TRUNC | O_WRONLY,
-                    S_IREAD | S_IWRITE );
+    fhandle = open( "vtable", O_BINARY | O_CREAT | O_TRUNC | O_WRONLY, PMODE_RW );
     if( fhandle <= 0 ) {
         _debug16( "error: fhandle <= 0, fhandle=", fhandle );
     } else {

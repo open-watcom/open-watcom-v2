@@ -42,6 +42,7 @@
 #include "errno.h"
 #include "strutil.h"
 #include "filelcl.h"
+#include "wio.h"
 
 
 #define SYSH2LH(sh)     (int)((sh).u._32[0])
@@ -74,7 +75,7 @@ sys_handle LocalFileOpen( const char *name, obj_attrs oattrs )
         openmode |= O_CREAT;
     if( oattrs & OP_TRUNC )
         openmode |= O_TRUNC;
-    ret = open( name, openmode | O_BINARY, 0666 );
+    ret = open( name, openmode | O_BINARY, PMODE_RW );
     if( ret == -1 ) {
         StashErrCode( errno, OP_LOCAL );
         SET_SYSHANDLE_NULL( sh );

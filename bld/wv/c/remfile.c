@@ -282,7 +282,7 @@ sys_handle RemoteFileOpen( const char *name, obj_attrs oattrs )
     fprintf( logf, "%s\n", name );
 #endif
 
-    if( (lochandle = open( name, O_RDONLY | O_BINARY, 0 )) != LOC_NIL_HANDLE ) {
+    if( (lochandle = open( name, O_RDONLY | O_BINARY )) != LOC_NIL_HANDLE ) {
         if( AddCachedHandle( lochandle, ret.handle ) != 0 )
             close( lochandle );
 #ifdef LOGGING
