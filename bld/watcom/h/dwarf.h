@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -48,13 +48,15 @@ extern "C" {
 
 #define DWARF_IMPL_VERSION          2
 
+/*
+ * Watcom producer version related constants and definitions
+ */
 #define DWARF_WATCOM_PRODUCER       DWARF_WATCOM_PRODUCER_V2
 
 #define DWARF_WATCOM_PRODUCER_V3    "V2.0 WATCOM"
 #define DWARF_WATCOM_PRODUCER_V2    "V1.0 WATCOM"
 #define DWARF_WATCOM_PRODUCER_V1    "WATCOM"
 
-/* Watcom producer version enumeration constants */
 typedef enum {
     VER_ERROR = -1,
     VER_NONE,
@@ -62,13 +64,6 @@ typedef enum {
     VER_V2,             /* Watcom 11.0 and early Open Watcom */
     VER_V3,             /* Open Watcom 2.0 and later */
 } df_ver;
-
-/*
-    IMPORTANT:
-        TAG_*, AT_*, and FORM_* MUST be #define's since they are used in
-        the compiling of dwabbrev.dat!  Further, they must expand to an
-        integer constant.
-*/
 
 /* Tag encodings: Figure 14 & 15 */
 
@@ -228,14 +223,18 @@ typedef enum {
     DW_LNE_lo_user                  = 0x80, /* Dwarf V3 */
     DW_LNE_hi_user                  = 0xff, /* Dwarf V3 */
 
-    /* WATCOM extension */
     /*
-    //  Carl Young - 2004-07-05
-    //  Despite recognizing the need for this extended opcode, I disagree with its use. Dwarf 3
-    //  may yet add more extended instructions which will screw us over using enumeration value 4!
-    */
-    DW_LNE_WATCOM_set_segment_OLD   = DW_LNE_set_discriminator, /* for backward compatibility */
-    DW_LNE_WATCOM_set_segment       = DW_LNE_lo_user + 0,       /* new definition compatible with Dwarf 3 and higher */
+     * WATCOM extension
+     *
+     *  Carl Young - 2004-07-05
+     *  Despite recognizing the need for this extended opcode, I disagree with its use. Dwarf 3
+     *  may yet add more extended instructions which will screw us over using enumeration value 4!
+     *
+     * DW_LNE_WATCOM_set_segment_OLD is old definition for backward compatibility
+     * DW_LNE_WATCOM_set_segment is new definition compatible with DWARF 3 and above
+     */
+    DW_LNE_WATCOM_set_segment_OLD   = DW_LNE_set_discriminator,
+    DW_LNE_WATCOM_set_segment       = DW_LNE_lo_user + 0,
 } dw_lne;
 
 /* Macinfo type encodings: figure 36 */
@@ -290,9 +289,10 @@ typedef enum {
 
 #define DWLINE_OPCODE_BASE      10
 
-// these next three constants do not have to be defined this way, but it
-// makes for consistancy between projects (and thus we can steal code).
-
+/*
+ * these next three constants do not have to be defined this way, but it
+ * makes for consistency between projects (and thus we can steal code).
+ */
 #define DW_MIN_INSTR_LENGTH     1
 #define DWLINE_BASE             (-1)
 #define DWLINE_RANGE            4
@@ -311,16 +311,18 @@ typedef struct {
     unsigned_8      standard_opcode_lengths[DWLINE_OPCODE_BASE - 1];
 } _WCUNALIGNED stmt_prologue;
 
-// !!!! WARNING !!!!
-// In Dwarf V4 was specified arange triple structure in different field order
-// { selector, offset, length }.
-// It is big issue, because it can not be simply derived what version was used
-// for records creation.
-// Version of this record is same from Dwarf V2 even if it was changed in V4.
-// Dwarf comitee probably think that changes for segmented architectures are
-// minor nowdays and don't take care about it.
-// Therefore we have hadache how to resolve this compatible way.
-
+/*
+ * !!!! WARNING !!!!
+ *
+ * In Dwarf V4 was specified arange triple structure in different field order
+ * { selector, offset, length }.
+ * It is big issue, because it can not be simply derived what version was used
+ * for records creation.
+ * Version of this record is same from Dwarf V2 even if it was changed in V4.
+ * Dwarf comitee probably think that changes for segmented architectures are
+ * minor nowdays and don't take care about it.
+ * Therefore we have hadache how to resolve this compatible way.
+ */
 typedef struct {
     unsigned_32     offset;
     unsigned_16     segment;
@@ -354,7 +356,6 @@ typedef struct {
     unsigned_32     debug_offset;
     unsigned_8      offset_size;
     unsigned_8      segment_size;
-//   unsigned_8       padding[ 8 ];   // to make it a multiple of a tuple size.
 } _WCUNALIGNED arange_prologue;
 
 typedef struct {
