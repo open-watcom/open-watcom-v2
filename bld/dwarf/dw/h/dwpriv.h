@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -117,7 +118,7 @@ struct dw_client {
     dw_funcs                    funcs;
     char                        *producer_name;
     uint_8                      compiler_options;
-    uint_8                      language;
+    dw_langnum                  language;
     dw_out_offset               section_base[DW_DEBUG_MAX];
     struct handles_private      handles;
     struct debug_line_private   debug_line;

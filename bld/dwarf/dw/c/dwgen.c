@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -99,14 +99,7 @@ dw_handle DWENTRY DWBeginCompileUnit( dw_client cli, dw_cu_info *cu )
     /* AT_stmt_list */
     CLIReloc3( cli, DW_DEBUG_INFO, DW_W_SECTION_POS, DW_DEBUG_LINE );
     /* AT_language */
-    switch( cli->language ) {
-    case DWLANG_C:              tmp = DW_LANG_C89;              break;
-    case DWLANG_CPP:            tmp = DW_LANG_C_plus_plus;      break;
-    case DWLANG_FORTRAN:        tmp = DW_LANG_Fortran77;        break;
-    default:
-        _Abort( ABORT_INVALID_LANGUAGE );
-    }
-    DW_InfoULEB128( cli, tmp );
+    DW_InfoULEB128( cli, cli->language );
     /* AT_comp_dir */
     DW_InfoString( cli, cu->directory );
     /* AT_producer */

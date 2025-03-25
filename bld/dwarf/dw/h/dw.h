@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,6 +35,7 @@
 
 #include <setjmp.h>
 #include "watcom.h"
+#include "dwarf.h"
 
 
 /************************
@@ -55,13 +56,6 @@
 /************************
  * Enumeration constants
  ************************/
-
-/* language constants */
-enum {
-    DWLANG_C,
-    DWLANG_CPP,
-    DWLANG_FORTRAN
-};
 
 /* procedure call type */
 enum {
@@ -330,7 +324,7 @@ typedef struct {
 } dw_funcs;
 
 typedef struct {
-    uint_8              language;
+    dw_langnum          language;
     dw_cm               compiler_options;
     char  const         *producer_name;
     jmp_buf             exception_handler;

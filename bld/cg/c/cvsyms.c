@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -54,16 +54,16 @@
 #include "cgprotos.h"
 
 
-#define MAX_LANG 4
+#define MAX_LANG (sizeof( LangNames ) / sizeof( LangNames[0] ))
 
 struct sf_info {
     char       size;
     s_values   code;
 } sf_info;
 
-struct lang_map{
-     uint       lang;
-     char       name[10];
+struct cv_lang_map {
+     int        cv_lang;
+     const char *name;
 };
 
 // global variables
@@ -76,11 +76,10 @@ static const struct sf_info SInfo[SG_LAST] = {
     #undef SLMAC
 };
 
-static const struct lang_map LangNames[MAX_LANG] = {
+static const struct cv_lang_map LangNames[] = {
     {LANG_C,       "C"},
     {LANG_CPP,     "CPP"},
     {LANG_FORTRAN, "FORTRAN"},
-    {LANG_FORTRAN, "FORTRAN77"},
 };
 
 static  void    NewBuff( cv_out *out, segment_id segid )
@@ -171,7 +170,7 @@ void    CVInitDbgInfo( void )
     TypeIdx   = CV_FIRST_USER_TYPE - 1;
 }
 
-static int SetLang( void )
+static int SetCvLang( void )
 {
     int     ret;
     char    *name;
@@ -181,7 +180,7 @@ static int SetLang( void )
     name =  FEAuxInfo( NULL, FEINF_SOURCE_LANGUAGE );
     for( index = 0; index < MAX_LANG; ++index ) {
         if( strcmp( name, LangNames[index].name ) == 0 ) {
-            ret = LangNames[index].lang;
+            ret = LangNames[index].cv_lang;
             break;
         }
     }
@@ -225,7 +224,7 @@ void    CVObjInitDbgInfo( void )
         buffEnd( out );
         NewBuff( out, CVSyms );
         cptr = StartSym(  out, SG_COMPILE );
-        cptr->language  = SetLang();
+        cptr->language  = SetCvLang();
         cptr->flags.s = 0; /* set default */
     #if _TARGET & _TARG_8086
         cptr->flags.f.Mode32 = false;

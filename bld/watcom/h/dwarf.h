@@ -153,16 +153,77 @@ typedef enum {
 
 /* Language encodings: Figure 28.  */
 typedef enum {
-    DW_LANG_C89             = 1,
+    DW_LANG_C89 = 1,        /* 0x0001 */
     DW_LANG_C,
     DW_LANG_Ada83,
     DW_LANG_C_plus_plus,
     DW_LANG_Cobol74,
     DW_LANG_Cobol85,
     DW_LANG_Fortran77,
-    DW_LANG_Fortran90,
+    DW_LANG_Fortran90,      /* 0x0008 */
     DW_LANG_Pascal83,
     DW_LANG_Modula2,
+    /* Dwarf 3 */
+    DW_LANG_Java,
+    DW_LANG_C99,
+    DW_LANG_Ada95,
+    DW_LANG_Fortran95,
+    DW_LANG_PLI,
+    DW_LANG_ObjC,           /* 0x0010 */
+    DW_LANG_ObjC_plus_plus,
+    DW_LANG_UPC,
+    DW_LANG_D,
+    /* Dwarf 4 */
+    DW_LANG_Python,
+    /* Dwarf 5 */
+    DW_LANG_OpenCL,
+    DW_LANG_Go,
+    DW_LANG_Modula3,
+    DW_LANG_Haskell,        /* 0x0018 */
+    DW_LANG_C_plus_plus_03,
+    DW_LANG_C_plus_plus_11,
+    DW_LANG_OCaml,
+    DW_LANG_Rust,
+    DW_LANG_C11,
+    DW_LANG_Swift,
+    DW_LANG_Julia,
+    DW_LANG_Dylan,          /* 0x0020 */
+    DW_LANG_C_plus_plus_14,
+    DW_LANG_Fortran03,
+    DW_LANG_Fortran08,
+    DW_LANG_RenderScript,
+    DW_LANG_BLISS,
+    /* Dwarf 6 */
+    DW_LANG_Kotlin,
+    DW_LANG_Zig,
+    DW_LANG_Crystal,        /* 0x0028 */
+    DW_LANG_C_plus_plus_17,
+    DW_LANG_C_plus_plus_20,
+    DW_LANG_C17,
+    DW_LANG_Fortran18,
+    DW_LANG_Ada2005,
+    DW_LANG_Ada2012,
+    DW_LANG_HIP,            /* 0x0030 */
+    DW_LANG_Assembly,
+    DW_LANG_C_sharp,
+    DW_LANG_Mojo,
+    DW_LANG_GLSL,
+    DW_LANG_GLSL_ES,
+    DW_LANG_HLSL,
+    DW_LANG_OpenCL_CPP,
+    DW_LANG_CPP_for_OpenCL, /* 0x0038 */
+    DW_LANG_SYCL,
+    DW_LANG_C_plus_plus_23,
+    DW_LANG_Odin,
+    DW_LANG_P4,
+    DW_LANG_Metal,
+    DW_LANG_C23,
+    DW_LANG_Fortran23,
+    DW_LANG_Ruby,           /* 0x0040 */
+    DW_LANG_Move,
+    DW_LANG_Hylo,
+    DW_LANG_V,
+    DW_LANG_Algol68,        /* 0x0044 */
     DW_LANG_lo_user         = 0x8000,
     DW_LANG_hi_user         = 0xffff,
 } dw_langnum;

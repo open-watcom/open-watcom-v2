@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -69,9 +69,9 @@ typedef struct {
     int_32       disp;
 } loc_range;
 
-struct lang_map{
-     uint       lang;
-     char       name[10];
+struct dwarf_lang_map {
+     dw_langnum dwarf_lang;
+     const char *name;
 };
 
 dw_client               Client;
@@ -86,11 +86,10 @@ static sect_info        DwarfSegs[DW_DEBUG_MAX];
 
 static big_patch_handle UnitSize[1];
 
-static const struct lang_map LangNames[] = {
-    {DWLANG_C,       "C"},
-    {DWLANG_CPP,     "CPP"},
-    {DWLANG_FORTRAN, "FORTRAN"},
-    {DWLANG_FORTRAN, "FORTRAN77"},
+static const struct dwarf_lang_map LangNames[] = {
+    {DW_LANG_C89,           "C"},
+    {DW_LANG_C_plus_plus,   "CPP"},
+    {DW_LANG_Fortran77,     "FORTRAN"},
 };
 
 static void CLIWrite( dw_sectnum sect, const void *block, size_t size )
@@ -317,17 +316,17 @@ void    DFInitDbgInfo( void )
     Client = NULL;
 }
 
-static int SetLang( void )
+static dw_langnum SetDwarfLang( void )
 {
-    int     ret;
-    char    *name;
-    int     index;
+    dw_langnum  ret;
+    char        *name;
+    int         index;
 
-    ret = DWLANG_C;
+    ret = DW_LANG_C89;
     name =  FEAuxInfo( NULL, FEINF_SOURCE_LANGUAGE );
     for( index = 0; index < MAX_LANG; ++index ) {
         if( strcmp( name, LangNames[index].name ) == 0 ) {
-            ret = LangNames[index].lang;
+            ret = LangNames[index].dwarf_lang;
             break;
         }
     }
@@ -568,7 +567,7 @@ void    DFObjInitDbgInfo( void )
     info.compiler_options = DW_CM_DEBUGGER;
     info.abbrev_sym = 0;
     info.producer_name = SetDwarfProducer();
-    info.language = SetLang();
+    info.language = SetDwarfLang();
     if( setjmp( info.exception_handler ) == 0 ) {
         info.funcs = cli_funcs;
         InitSegBck(); // start each seg with a ref label
@@ -629,11 +628,10 @@ void    DFObjLineInitDbgInfo( void )
     dw_init_info    info;
     dw_cu_info      cu;
 
-    info.language = DWLANG_C;
     info.compiler_options = DW_CM_DEBUGGER;
     info.abbrev_sym = 0;
     info.producer_name = SetDwarfProducer();
-    info.language = SetLang();
+    info.language = SetDwarfLang();
     if( setjmp( info.exception_handler ) == 0 ) {
         info.funcs = cli_funcs;
         InitLineSegBck(); // start each seg with a ref label
