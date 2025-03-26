@@ -65,6 +65,8 @@
 
 #define CHECK_PATH_ABS(p,i) (CHK_DIR_SEP((p)[0],i) || (p)[0] != NULLCHAR && CHK_DRV_SEP((p)[1],i) && CHK_DIR_SEP((p)[2],i))
 
+#define CHK_ITEM_SEP(c,i)   ((c) == (i)->list_separator)
+
 #define LOC_ESCAPE      '@'
 #define REMOTE_LOC      'r'
 #define LOCAL_LOC       'l'
@@ -659,12 +661,11 @@ void PathFini( void )
     FreeRing( LclPath );
 }
 
-/*
- * parsePathList -- parse string with list of path into separate pieces
- *                  and add it into local path ring
- */
-
 static void parsePathList( char_ring **owner, char *src )
+/********************************************************
+ * parse string with list of path into separate pieces
+ * and add it into local path ring
+ */
 {
     char       *start, *end;
     size_t     len;
@@ -675,7 +676,7 @@ static void parsePathList( char_ring **owner, char *src )
         owner = &(*owner)->next;
     // add items to the end of list
     for( start = end = src; ; ++end ) {
-        if( *end == LclPathSep || *end == NULLCHAR ) {
+        if( CHK_ITEM_SEP( *end, &LclFile ) || *end == NULLCHAR ) {
             while( *start == ' ' ) {
                 ++start;
             }

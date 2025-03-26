@@ -62,6 +62,7 @@ trap_retval TRAP_FILE( get_config )( void )
     ret->file.path_separator[1] = '/';
     ret->file.line_eol[0] = '\r';
     ret->file.line_eol[1] = '\n';
+    ret->file.list_separator = ';';
     return( sizeof( *ret ) );
 }
 

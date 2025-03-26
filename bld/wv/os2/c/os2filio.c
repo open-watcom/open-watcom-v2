@@ -50,8 +50,7 @@
 #define SYSH2LH(sh)     (HFILE)((sh).u._32[0])
 #define LH2SYSH(sh,lh)  (sh).u._32[0]=lh;(sh).u._32[1]=0
 
-const file_components   LclFile = { '.', ':', { '\\', '/' }, { '\r', '\n' } };
-const char              LclPathSep = { ';' };
+const file_components   LclFile = { '.', ':', { '\\', '/' }, { '\r', '\n' }, ';' };
 
 static const OS_UINT    local_seek_method[] = { FILE_BEGIN, FILE_CURRENT, FILE_END };
 

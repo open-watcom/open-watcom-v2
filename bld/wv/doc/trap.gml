@@ -1642,24 +1642,36 @@ trap_req        req
 Return message:
 .millust begin
 char            ext_separator;
-char            path_separator[3];
-char            newline[2];
+char            drv_separator;
+char            path_separator[2];
+char            line_eol[2];
+char            list_separator;
 .millust end
 .pp
 The
 .id ext_separator
 contains the separator for file name extensions.
+.pp
+The
+.id drv_separator
+contains the separator for file name drive.
+.pp
 The possible path separators can be found in array
 .id path_separator
 .period
 The first one is the "preferred" path separator for that operating system.
 This is the path separator that the debugger will use if it needs to construct
 a file name for the remote system.
+.pp
 The new line control characters are stored in array
-.id newline
+.id line_eol
 .period
-If the operating system uses only a single character for newline, put a zero
+If the operating system uses only a single character for new line, put a zero
 in the second element.
+.pp
+The
+.id list_separator
+contains the separator for path list items.
 .*
 .section REQ_FILE_OPEN
 .*

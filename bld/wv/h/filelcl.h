@@ -42,4 +42,3 @@ extern long             LocalFileGetDate( const char *name );
 extern bool             LocalFileSetDate( const char *name, long date );
 
 extern const file_components    LclFile;
-extern const char               LclPathSep;

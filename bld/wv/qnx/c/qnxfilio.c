@@ -49,8 +49,7 @@
 #define SYSH2LH(sh)     (int)((sh).u._32[0])
 #define LH2SYSH(sh,lh)  (sh).u._32[0]=lh;(sh).u._32[1]=0
 
-const file_components   LclFile = { '.', NULLCHAR,{ '/' }, { '\n' } };
-const char              LclPathSep = { ':' };
+const file_components   LclFile = { '.', NULLCHAR,{ '/' }, { '\n' }, ':' };
 
 static const int        local_seek_method[] = { SEEK_SET, SEEK_CUR, SEEK_END };
 

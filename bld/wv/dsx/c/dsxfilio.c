@@ -45,8 +45,7 @@
 #define SYSH2LH(sh)     (tiny_handle_t)((sh).u._32[0])
 #define LH2SYSH(sh,lh)  (sh).u._32[0]=lh;(sh).u._32[1]=0
 
-const file_components   LclFile = { '.', ':', { '\\', '/' }, { '\r', '\n' } };
-const char              LclPathSep = { ';' };
+const file_components   LclFile = { '.', ':', { '\\', '/' }, { '\r', '\n' }, ';' };
 
 static const seek_info  local_seek_method[] = { TIO_SEEK_SET, TIO_SEEK_CUR, TIO_SEEK_END };
 
