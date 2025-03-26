@@ -1,0 +1,6 @@
+cli_zlib_inc_dirs = -I"$(zlib_dir)"
+!ifeq boostrap 1
+cli_zlib_libs = $(setupgui_dir)/zlib/$(objs_subdir)/zlib.lib
+!else ifneq host_cpu i86
+cli_zlib_libs = $(setupgui_dir)/zlib/$(host)/zlib.lib
+!endif

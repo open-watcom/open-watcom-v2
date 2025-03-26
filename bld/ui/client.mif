@@ -17,19 +17,13 @@ ui_ui_inc_dirs_internal_qnx   = -I"$(ui_dir)/qnx/h" -I"$(ui_dir)/unix/h"
 ui_ui_inc_dirs_internal_win   = -I"$(ui_dir)/win/h"
 ui_ui_inc_dirs_internal_unix  = -I"$(ui_dir)/unix/h"
 ! ifeq cli_ui_os unix
-cli_ui_inc_dirs = -I"$(ui_dir)/h" -I"$(ncurses_dir)/h"
-!ifdef bootstrap
-cli_ui_libs = $(ui_dir)/$(cli_ui_os)/$(bin_subdir)/ui.lib $(ncurses_dir)/$(bin_subdir)/ncurses.lib
-!else
-cli_ui_libs = $(ui_dir)/$(cli_ui_os)/$(host)/ui.lib $(ncurses_dir)/$(host)/ncurses.lib
-!endif
+!include $(ncurses_dir)/client.mif
+! endif
+cli_ui_inc_dirs = -I"$(ui_dir)/h" $(cli_ncurses_inc_dirs)
+! ifdef bootstrap
+cli_ui_libs = $(ui_dir)/$(cli_ui_os)/$(bin_subdir)/ui.lib $(cli_ncurses_libs)
 ! else
-cli_ui_inc_dirs = -I"$(ui_dir)/h"
-!ifdef bootstrap
-cli_ui_libs = $(ui_dir)/$(cli_ui_os)/$(bin_subdir)/ui.lib
-!else
-cli_ui_libs = $(ui_dir)/$(cli_ui_os)/$(host)/ui.lib
-!endif
+cli_ui_libs = $(ui_dir)/$(cli_ui_os)/$(host)/ui.lib $(cli_ncurses_libs)
 ! endif
 cli_ui_inc_dirs_internal = $(ui_ui_inc_dirs_internal_$(cli_ui_os))
 !endif

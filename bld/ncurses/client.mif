@@ -1,0 +1,6 @@
+cli_ncurses_inc_dirs = -I"$(ncurses_dir)/h"
+!ifdef bootstrap
+cli_ncurses_libs = $(ncurses_dir)/$(bin_subdir)/ncurses.lib
+!else
+cli_ncurses_libs = $(ncurses_dir)/$(host)/ncurses.lib
+!endif

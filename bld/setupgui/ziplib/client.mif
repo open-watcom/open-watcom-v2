@@ -1,0 +1,6 @@
+cli_libzip_inc_dirs = -I"$(libzip_dir)/lib"
+!ifeq boostrap 1
+cli_libzip_libs = $(setupgui_dir)/ziplib/$(objs_subdir)/ziplib.lib
+!else ifneq host_cpu i86
+cli_libzip_libs = $(setupgui_dir)/ziplib/$(host)/ziplib.lib
+!endif
