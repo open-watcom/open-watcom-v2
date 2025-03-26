@@ -505,8 +505,8 @@ size_t HPJReader::handleOptions()
         } else if( strcmp( option, SCopyright ) == 0 ) {
             arg = _scanner.getArg( i );
             if( arg != NULL ) {
-                if( strlen( arg ) > 55 )
-                    arg[55] = '\0';
+                if( strlen( arg ) > SYS_COPYRIGHT_MAXLEN )
+                    arg[SYS_COPYRIGHT_MAXLEN] = '\0';
                 _sysFile->addRecord( new SystemText( HFSystem::SYS_COPYRIGHT, arg ) );
             }
         } else if( strcmp( option, SCompress ) == 0 ) {

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -108,6 +108,7 @@ public:
 #define HLP_SYS_TYPE    9
 #define HLP_SYS_NAME    8
 #define HLP_SYS_CAP     50
+
 class SystemWin : public SystemRec
 {
     uint_16 _winFlags;
@@ -138,6 +139,8 @@ public:
 //
 //  HFSystem    -- Class to write the |SYSTEM file.
 //
+
+#define SYS_COPYRIGHT_MAXLEN    55
 
 class HFSystem : public Dumpable
 {

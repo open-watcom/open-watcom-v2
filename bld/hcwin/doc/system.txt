@@ -57,6 +57,8 @@ Known flag values, and the associated data, are:
  ASCII string containing the copyright notice, as defined in the .HPJ file.
  If no copyright notice is specified, this record will still be present and
  the data area will contain a single zero byte.
+ It looks like the maximum size of this text can be 55 bytes
+ + null terminator otherwise Windows help viewer crash.
 
  0x0003 -- Contents Record.  The data area will contain the 'table of
  contents' topic as a 4-byte 'Character' offset (see topic.txt for info
