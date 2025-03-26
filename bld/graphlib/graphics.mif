@@ -229,10 +229,10 @@ grlib_template = $(common_objs) $(eng_nonwin_objs) $(eng_objs) $(eng_svga_objs)
 !endif
 special_objs = $(special_common_objs) $(special_eng_svga_objs) $(special_eng_nonwin_objs) $(special_eng_objs)
 
-modshared_dummy=yes
-modshared_font8x8=yes
-modshared_global=yes
-modshared_hercfont=yes
+modshared_f_dummy=yes
+modshared_f_font8x8=yes
+modshared_f_global=yes
+modshared_f_hercfont=yes
 
 #
 # LIB

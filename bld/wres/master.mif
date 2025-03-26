@@ -40,8 +40,8 @@ extra_c_flags_386 = -3s
 extra_c_flags_386 = -3r
 !endif
 
-extra_c_flags_os2_i86 = -zdp
-extra_c_flags_win_i86 = -zw-zu
+extra_c_flags_os2i86 = -zdp
+extra_c_flags_wini86 = -zw-zu
 
 # where to look for various files
 

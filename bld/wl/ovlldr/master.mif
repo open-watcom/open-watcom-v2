@@ -22,48 +22,48 @@ debugobjs = dovlboth.obj dovldata.obj
 
 inc_dirs = -I"../h"
 
-extra_cpp_flags_sovlldr  = -DOVL_SMALL
-extra_cpp_flags_dsovlldr = -DOVL_SMALL -DOVL_DEBUG
-extra_cpp_flags_lovlldr  =
-extra_cpp_flags_dlovlldr = -DOVL_DEBUG
-extra_cpp_flags_novlldr  = -DOVL_WHOOSH
-extra_cpp_flags_dnovlldr = -DOVL_WHOOSH -DOVL_DEBUG
-extra_cpp_flags_movlldr  = -DOVL_WHOOSH -DOVL_MULTITHREAD
-extra_cpp_flags_dmovlldr = -DOVL_WHOOSH -DOVL_MULTITHREAD -DOVL_DEBUG
-extra_cpp_flags_sovldbg  = -DOVL_SMALL
-extra_cpp_flags_lovldbg  =
-extra_cpp_flags_novldbg  = -DOVL_WHOOSH
-extra_cpp_flags_movldbg  = -DOVL_WHOOSH -DOVL_MULTITHREAD
-extra_cpp_flags_dovlboth = -DOVL_DEBUG
+extra_cpp_flags_f_sovlldr  = -DOVL_SMALL
+extra_cpp_flags_f_dsovlldr = -DOVL_SMALL -DOVL_DEBUG
+extra_cpp_flags_f_lovlldr  =
+extra_cpp_flags_f_dlovlldr = -DOVL_DEBUG
+extra_cpp_flags_f_novlldr  = -DOVL_WHOOSH
+extra_cpp_flags_f_dnovlldr = -DOVL_WHOOSH -DOVL_DEBUG
+extra_cpp_flags_f_movlldr  = -DOVL_WHOOSH -DOVL_MULTITHREAD
+extra_cpp_flags_f_dmovlldr = -DOVL_WHOOSH -DOVL_MULTITHREAD -DOVL_DEBUG
+extra_cpp_flags_f_sovldbg  = -DOVL_SMALL
+extra_cpp_flags_f_lovldbg  =
+extra_cpp_flags_f_novldbg  = -DOVL_WHOOSH
+extra_cpp_flags_f_movldbg  = -DOVL_WHOOSH -DOVL_MULTITHREAD
+extra_cpp_flags_f_dovlboth = -DOVL_DEBUG
 
 extra_c_flags = $(inc_path) -Fo=$@ -r -zu -zl -nc=_OVLCODE -nt=_TEXT -nm=$^&
 
-extra_c_flags_sovlldr  = -mc
-extra_c_flags_dsovlldr = -mc
-extra_c_flags_lovlldr  =
-extra_c_flags_dlovlldr =
-extra_c_flags_novlldr  =
-extra_c_flags_dnovlldr =
-extra_c_flags_movlldr  =
-extra_c_flags_dmovlldr =
-extra_c_flags_sovldbg  = -I"$(dig_dir)/h" -mc
-extra_c_flags_lovldbg  = -I"$(dig_dir)/h"
-extra_c_flags_novldbg  = -I"$(dig_dir)/h"
-extra_c_flags_movldbg  = -I"$(dig_dir)/h"
-extra_c_flags_dovlboth =
+extra_c_flags_f_sovlldr  = -mc
+extra_c_flags_f_dsovlldr = -mc
+extra_c_flags_f_lovlldr  =
+extra_c_flags_f_dlovlldr =
+extra_c_flags_f_novlldr  =
+extra_c_flags_f_dnovlldr =
+extra_c_flags_f_movlldr  =
+extra_c_flags_f_dmovlldr =
+extra_c_flags_f_sovldbg  = -I"$(dig_dir)/h" -mc
+extra_c_flags_f_lovldbg  = -I"$(dig_dir)/h"
+extra_c_flags_f_novldbg  = -I"$(dig_dir)/h"
+extra_c_flags_f_movldbg  = -I"$(dig_dir)/h"
+extra_c_flags_f_dovlboth =
 
 extra_a_flags = -Fo=$@ -i"../h" -nc=_OVLCODE -nt=_TEXT
 
-extra_a_flags_ovldata  =
-extra_a_flags_dovldata = -DOVL_DEBUG
+extra_a_flags_f_ovldata  =
+extra_a_flags_f_dovldata = -DOVL_DEBUG
 
-extra_a_flags_sovlmain = -DOVL_SMALL
-extra_a_flags_lovlmain =
-extra_a_flags_novlmain = -DOVL_WHOOSH
-extra_a_flags_movlmain = -DOVL_WHOOSH -DOVL_MULTITHREAD
+extra_a_flags_f_sovlmain = -DOVL_SMALL
+extra_a_flags_f_lovlmain =
+extra_a_flags_f_novlmain = -DOVL_WHOOSH
+extra_a_flags_f_movlmain = -DOVL_WHOOSH -DOVL_MULTITHREAD
 
-extra_a_flags_sovlret  = -DOVL_SMALL
-extra_a_flags_lovlret  =
+extra_a_flags_f_sovlret  = -DOVL_SMALL
+extra_a_flags_f_lovlret  =
 
 wovl : .SYMBOLIC wovl.lib wmovl.lib
     @%null
@@ -98,40 +98,40 @@ dovlmt.lib : dmovlldr.obj $(mtobjs) $(commobjs) $(debugobjs)
 .inc : $(watcom_h)
 
 dsovlldr.obj : ovlldr.c $($(proj_name)_autodepends)
-    $(cc) $(ppflags_common) $(ppflags_autodep) $(ppflags_sys) $(extra_cpp_flags_$^&) $(cflags) $(c_flags) $(extra_c_flags_$^&) $[@
+    $(cc) $(ppflags_common) $(ppflags_autodep) $(ppflags_sys) $(extra_cpp_flags_f_$^&) $(cflags) $(c_flags) $(extra_c_flags_f_$^&) $[@
 
 sovlldr.obj : ovlldr.c $($(proj_name)_autodepends)
-    $(cc) $(ppflags_common) $(ppflags_autodep) $(ppflags_sys) $(extra_cpp_flags_$^&) $(cflags) $(c_flags) $(extra_c_flags_$^&) $[@
+    $(cc) $(ppflags_common) $(ppflags_autodep) $(ppflags_sys) $(extra_cpp_flags_f_$^&) $(cflags) $(c_flags) $(extra_c_flags_f_$^&) $[@
 
 dlovlldr.obj : ovlldr.c $($(proj_name)_autodepends)
-    $(cc) $(ppflags_common) $(ppflags_autodep) $(ppflags_sys) $(extra_cpp_flags_$^&) $(cflags) $(c_flags) $(extra_c_flags_$^&) $[@
+    $(cc) $(ppflags_common) $(ppflags_autodep) $(ppflags_sys) $(extra_cpp_flags_f_$^&) $(cflags) $(c_flags) $(extra_c_flags_f_$^&) $[@
 
 lovlldr.obj : ovlldr.c $($(proj_name)_autodepends)
-    $(cc) $(ppflags_common) $(ppflags_autodep) $(ppflags_sys) $(extra_cpp_flags_$^&) $(cflags) $(c_flags) $(extra_c_flags_$^&) $[@
+    $(cc) $(ppflags_common) $(ppflags_autodep) $(ppflags_sys) $(extra_cpp_flags_f_$^&) $(cflags) $(c_flags) $(extra_c_flags_f_$^&) $[@
 
 dnovlldr.obj : novlldr.c $($(proj_name)_autodepends)
-    $(cc) $(ppflags_common) $(ppflags_autodep) $(ppflags_sys) $(extra_cpp_flags_$^&) $(cflags) $(c_flags) $(extra_c_flags_$^&) $[@
+    $(cc) $(ppflags_common) $(ppflags_autodep) $(ppflags_sys) $(extra_cpp_flags_f_$^&) $(cflags) $(c_flags) $(extra_c_flags_f_$^&) $[@
 
 dmovlldr.obj : movlldr.c $($(proj_name)_autodepends)
-    $(cc) $(ppflags_common) $(ppflags_autodep) $(ppflags_sys) $(extra_cpp_flags_$^&) $(cflags) $(c_flags) $(extra_c_flags_$^&) $[@
+    $(cc) $(ppflags_common) $(ppflags_autodep) $(ppflags_sys) $(extra_cpp_flags_f_$^&) $(cflags) $(c_flags) $(extra_c_flags_f_$^&) $[@
 
 dovlboth.obj : ovlboth.c $($(proj_name)_autodepends)
-    $(cc) $(ppflags_common) $(ppflags_autodep) $(ppflags_sys) $(extra_cpp_flags_$^&) $(cflags) $(c_flags) $(extra_c_flags_$^&) $[@
+    $(cc) $(ppflags_common) $(ppflags_autodep) $(ppflags_sys) $(extra_cpp_flags_f_$^&) $(cflags) $(c_flags) $(extra_c_flags_f_$^&) $[@
 
 sovldbg.obj : ovldbg.c $($(proj_name)_autodepends)
-    $(cc) $(ppflags_common) $(ppflags_autodep) $(ppflags_sys) $(extra_cpp_flags_$^&) $(cflags) $(c_flags) $(extra_c_flags_$^&) $[@
+    $(cc) $(ppflags_common) $(ppflags_autodep) $(ppflags_sys) $(extra_cpp_flags_f_$^&) $(cflags) $(c_flags) $(extra_c_flags_f_$^&) $[@
 
 lovldbg.obj : ovldbg.c $($(proj_name)_autodepends)
-    $(cc) $(ppflags_common) $(ppflags_autodep) $(ppflags_sys) $(extra_cpp_flags_$^&) $(cflags) $(c_flags) $(extra_c_flags_$^&) $[@
+    $(cc) $(ppflags_common) $(ppflags_autodep) $(ppflags_sys) $(extra_cpp_flags_f_$^&) $(cflags) $(c_flags) $(extra_c_flags_f_$^&) $[@
 
 novldbg.obj : ovldbg.c $($(proj_name)_autodepends)
-    $(cc) $(ppflags_common) $(ppflags_autodep) $(ppflags_sys) $(extra_cpp_flags_$^&) $(cflags) $(c_flags) $(extra_c_flags_$^&) $[@
+    $(cc) $(ppflags_common) $(ppflags_autodep) $(ppflags_sys) $(extra_cpp_flags_f_$^&) $(cflags) $(c_flags) $(extra_c_flags_f_$^&) $[@
 
 movldbg.obj : ovldbg.c $($(proj_name)_autodepends)
-    $(cc) $(ppflags_common) $(ppflags_autodep) $(ppflags_sys) $(extra_cpp_flags_$^&) $(cflags) $(c_flags) $(extra_c_flags_$^&) $[@
+    $(cc) $(ppflags_common) $(ppflags_autodep) $(ppflags_sys) $(extra_cpp_flags_f_$^&) $(cflags) $(c_flags) $(extra_c_flags_f_$^&) $[@
 
 dovldata.obj : ovldata.asm $($(proj_name)_autodepends)
-    $(as) $(ppflags_common) $(aflags) $(extra_a_flags_$^&) $[@
+    $(as) $(ppflags_common) $(aflags) $(extra_a_flags_f_$^&) $[@
 
 
 makedbglib: .procedure

@@ -28,10 +28,10 @@ extra_cpp_flags_win = -D_WPI_TEST_
 
 extra_c_flags_i86 = -zu
 
-extra_c_flags_os2_386 = -3r
+extra_c_flags_os2386 = -3r
 
 extra_c_flags_win = -zw
-extra_c_flags_win_i86 = -zc-zW
+extra_c_flags_wini86 = -zc-zW
 
 # explicit rules
 #################

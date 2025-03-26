@@ -44,19 +44,19 @@ extra_cpp_flags    += -DGUI_IS_GUI
 extra_cpp_flags_os2 = -D__OS2_PM__
 !endif
 
-extra_cpp_flags_memutil = $(trmem_cpp_flags)
-extra_cpp_flags_wpdriver = $(trmem_cpp_flags)
+extra_cpp_flags_f_memutil = $(trmem_cpp_flags)
+extra_cpp_flags_f_wpdriver = $(trmem_cpp_flags)
 
 !ifdef check
 extra_c_flags   = -zs
 !endif
 
-extra_c_flags_qnx_i86 = -zt32
-extra_c_flags_win_i86 = -zW
+extra_c_flags_qnxi86 = -zt32
+extra_c_flags_wini86 = -zW
 
-extra_c_flags_memutil = $(trmem_cover_cflags)
-extra_c_flags_dipld = -I"$(dig_dir)/c"
-extra_c_flags_madld = -I"$(dig_dir)/c"
+extra_c_flags_f_memutil = $(trmem_cover_cflags)
+extra_c_flags_f_dipld = -I"$(dig_dir)/c"
+extra_c_flags_f_madld = -I"$(dig_dir)/c"
 
 #
 # lflags

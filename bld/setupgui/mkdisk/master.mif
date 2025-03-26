@@ -15,9 +15,9 @@ mkdisk_trmem = 1
 
 #bld_extra_incs = -I"$(setupgui_dir)/h" $(cli_libzip_inc_dirs) $(cli_zlib_inc_dirs) -I"$(builder_dir)/h" -I"$(fe_misc_dir)/h"
 
-extra_cpp_flags_utils = $(trmem_cpp_flags)
+extra_cpp_flags_f_utils = $(trmem_cpp_flags)
 
-extra_c_flags_utils = $(trmem_cover_cflags)
+extra_c_flags_f_utils = $(trmem_cover_cflags)
 
 .c : ..;$(trmem_dir)
 

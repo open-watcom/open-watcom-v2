@@ -21,7 +21,7 @@ extra_c_flags_os2 = -os
 
 extra_a_flags = -fpc
 
-extra_a_flags_ndptype = -fpi87
+extra_a_flags_f_ndptype = -fpi87
 
 #
 # lflags

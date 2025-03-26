@@ -42,10 +42,10 @@ wgrep_objs   = wgrep.obj $(bld_cl_extra_objs_gen)
 
 extra_cpp_flags = -DSTANDALONE_RX
 
-extra_cpp_flags_genverrc = -D_VERSION=$(bld_ver)
-extra_cpp_flags_utils = $(trmem_cpp_flags)
+extra_cpp_flags_f_genverrc = -D_VERSION=$(bld_ver)
+extra_cpp_flags_f_utils = $(trmem_cpp_flags)
 
-extra_c_flags_utils = $(trmem_cover_cflags)
+extra_c_flags_f_utils = $(trmem_cover_cflags)
 
 all : $(all_commands) .SYMBOLIC
 full : $(full_commands) .SYMBOLIC

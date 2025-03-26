@@ -18,9 +18,9 @@ womp_trmem = 1
 
 inc_dirs = -I. -I"$(womp_dir)/h"
 
-extra_cpp_flags_memory = $(trmem_cpp_flags)
+extra_cpp_flags_f_memory = $(trmem_cpp_flags)
 
-extra_c_flags_memory = $(trmem_cover_cflags)
+extra_c_flags_f_memory = $(trmem_cover_cflags)
 
 # explicit rules
 #################

@@ -2,9 +2,9 @@ pharlap_c_flags = -DWATCOM=7 -DCMPLR=7 -D__STKCALL=__cdecl -D_far=__far -D_near=
 
 extra_c_flags += $(compflags_$[&)
 
-extra_c_flags_dilglue = -3s -zl -wcd=C309 $(pharlap_c_flags)
-extra_c_flags_dosxlink = $(pharlap_c_flags)
-extra_c_flags_plsacc = $(pharlap_c_flags)
+extra_c_flags_f_dilglue = -3s -zl -wcd=C309 $(pharlap_c_flags)
+extra_c_flags_f_dosxlink = $(pharlap_c_flags)
+extra_c_flags_f_plsacc = $(pharlap_c_flags)
 
 pls_objs = &
     plsacc.obj &

@@ -80,8 +80,8 @@ objs_c = $(_subdir_)strsrch.obj
 pch_flags = -fh=pch01.pch
 pch_flags_x = -fh=$(x_subdir)/pch01.pch
 
-pch_flags_strsrch = -fh=pch02.pch
-pch_flags_x_strsrch = -fh=$(x_subdir)/pch02.pch
+pch_flags_f_strsrch = -fh=pch02.pch
+pch_flags_x_f_strsrch = -fh=$(x_subdir)/pch02.pch
 
 dep_dirs_x = $(x_subdir)
 

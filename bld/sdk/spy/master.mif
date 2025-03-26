@@ -37,14 +37,14 @@ inc_dirs = -I. -I"../h" $(cli_commonui_inc_dirs) $(cli_wpi_inc_dirs)
 
 extra_cpp_flags_nt = -DNOUSE3D
 
-extra_cpp_flags_spydll = -DSPYDLL
+extra_cpp_flags_f_spydll = -DSPYDLL
 
 extra_c_flags     = -fh
 extra_c_flags_i86 = -zu -2 -zW
 extra_c_flags_386 = -4
 !ifdef __WATCOM_TOOLS__
 !ifeq host_os win
-extra_c_flags_spydll += -mc
+extra_c_flags_f_spydll += -mc
 !endif
 !endif
 

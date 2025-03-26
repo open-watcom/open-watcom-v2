@@ -26,17 +26,17 @@ extra_cpp_flags     = -DSTANDALONE_MERGER
 extra_cpp_flags     += -DDEBUG -DINSTRUMENTS
 !endif
 
-extra_cpp_flags_brmem = $(trmem_cpp_flags)
+extra_cpp_flags_f_brmem = $(trmem_cpp_flags)
 
 extra_cxx_flags     = -xs-ew
 
-extra_c_flags_brmem  = $(trmem_cover_cflags)
+extra_c_flags_f_brmem = $(trmem_cover_cflags)
 
 #
 # lflags
 #
-extra_l_flags        = op stack=16k
-extra_l_flags_nt_axp = op undefsok
+extra_l_flags       = op stack=16k
+extra_l_flags_ntaxp = op undefsok
 
 # explicit rules
 #################

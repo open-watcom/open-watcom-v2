@@ -43,7 +43,7 @@ extra_cpp_flags += -DCHICAGO
 
 extra_cpp_flags_nt = -DNOUSE3D
 
-extra_cpp_flags_mem = -DWANT_MSGS
+extra_cpp_flags_f_mem = -DWANT_MSGS
 
 extra_c_flags_i86 = -zW -zu -3
 extra_c_flags_axp =
@@ -61,7 +61,7 @@ extra_l_flags = option quiet name $(proj_name).exe
 !ifdef drwatcom_95
 extra_l_flags_nt = lib th32.lib
 !endif
-extra_l_flags_nt_axp = op start=WinMainCRTStartup ref WinMainCRTStartup
+extra_l_flags_ntaxp = op start=WinMainCRTStartup ref WinMainCRTStartup
 
 extra_l_flags_win = lib commdlg.lib
 

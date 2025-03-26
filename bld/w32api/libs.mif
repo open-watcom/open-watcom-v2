@@ -232,19 +232,19 @@ directx/dinput8.lbc: directx/dinput8.def directx/dinpstat.obj
 
 ddk/rtlver.obj: ddk/rtlver.c
     @%make echo_cc
-    $(cc) $(ppflags_common) $(ppflags_autodep) $(ppflags_sys) $(cppflags) $(cflags) $(c_flags) $(extra_c_flags_$[&) $(inc_path) -fo=$@ $[@
+    $(cc) $(ppflags_common) $(ppflags_autodep) $(ppflags_sys) $(cppflags) $(cflags) $(c_flags) $(extra_c_flags_f_$[&) $(inc_path) -fo=$@ $[@
 
 ddk/wdmguid.obj: ddk/wdmguid.c
     @%make echo_cc
-    $(cc) $(ppflags_common) $(ppflags_autodep) $(ppflags_sys) $(cppflags) $(cflags) $(c_flags) $(extra_c_flags_$[&) $(inc_path) -fo=$@ $[@
+    $(cc) $(ppflags_common) $(ppflags_autodep) $(ppflags_sys) $(cppflags) $(cflags) $(c_flags) $(extra_c_flags_f_$[&) $(inc_path) -fo=$@ $[@
 
 directx/dinpstat.obj: directx/dinpstat.c
     @%make echo_cc
-    $(cc) $(ppflags_common) $(ppflags_autodep) $(ppflags_sys) $(cppflags) $(cflags) $(c_flags) $(extra_c_flags_$[&) $(inc_path) -fo=$@ $[@
+    $(cc) $(ppflags_common) $(ppflags_autodep) $(ppflags_sys) $(cppflags) $(cflags) $(c_flags) $(extra_c_flags_f_$[&) $(inc_path) -fo=$@ $[@
 
 directx/dxguid.obj: directx/dxguid.c
     @%make echo_cc
-    $(cc) $(ppflags_common) $(ppflags_autodep) $(ppflags_sys) $(cppflags) $(cflags) $(c_flags) $(extra_c_flags_$[&) $(inc_path) -fo=$@ $[@
+    $(cc) $(ppflags_common) $(ppflags_autodep) $(ppflags_sys) $(cppflags) $(cflags) $(c_flags) $(extra_c_flags_f_$[&) $(inc_path) -fo=$@ $[@
 
 $(dirs):
     mkdir $@

@@ -17,4 +17,4 @@ extra_c_flags_386_ms_dos_graph = -r
 extra_c_flags_386_ms_qnx_graph = -r
 extra_c_flags_386_register = -3r
 extra_c_flags_386_stack = -3s
-extra_c_flags_386 = -nm=$(modsign_$(modshared_$[&))$[& $(extra_c_flags_386_$(convention)) $(extra_c_flags_386_m$(memory_model_386)_$(host_os)_$(proj_name))
+extra_c_flags_386 = -nm=$(modsign_$(modshared_f_$[&))$[& $(extra_c_flags_386_$(convention)) $(extra_c_flags_386_m$(memory_model_386)_$(host_os)_$(proj_name))

@@ -21,9 +21,9 @@ memory_model_i86 = s
 inc_dirs = -I"../h"
 inc_dirs_os2 = -I"$(clib_dir)/process/h"
 
-extra_cpp_flags_mem = $(trmem_cpp_flags)
+extra_cpp_flags_f_mem = $(trmem_cpp_flags)
 
-extra_c_flags_mem   = $(trmem_cover_cflags)
+extra_c_flags_f_mem   = $(trmem_cover_cflags)
 
 #
 # EXE

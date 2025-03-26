@@ -207,7 +207,7 @@ extra_c_flags_wini86 = -bd
 !endif
 !endif
 
-extra_c_flags_trpld = -I"$(dig_dir)/c"
+extra_c_flags_f_trpld = -I"$(dig_dir)/c"
 
 # aflags stuff
 ###############
@@ -226,8 +226,8 @@ extra_a_flags += $(extra_cppflags_$(target_sys))
 extra_a_flags += $(extra_cppflags_$(srv))
 !endif
 
-extra_a_flags_misc7086 = -fpi87
-extra_a_flags_misc7386 = -fpi87
+extra_a_flags_f_misc7086 = -fpi87
+extra_a_flags_f_misc7386 = -fpi87
 
 # lflags stuff
 ###############

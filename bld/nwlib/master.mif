@@ -57,12 +57,12 @@ extra_cpp_flags = -DINSIDE_WLIB
 extra_cpp_flags += -DIDE_PGM
 !endif
 
-extra_cpp_flags_idedrv   = -DSTATIC_LINKAGE
-extra_cpp_flags_maindrv  = -DDLL_NAME=$(dlltarg_name)
-extra_cpp_flags_memfuncs = $(trmem_cpp_flags)
+extra_cpp_flags_f_idedrv   = -DSTATIC_LINKAGE
+extra_cpp_flags_f_maindrv  = -DDLL_NAME=$(dlltarg_name)
+extra_cpp_flags_f_memfuncs = $(trmem_cpp_flags)
 
-extra_c_flags_memfuncs = $(trmem_cover_cflags)
-extra_c_flags_cmdlnprs = $(incl_file_opts)fesupp.h
+extra_c_flags_f_memfuncs = $(trmem_cover_cflags)
+extra_c_flags_f_cmdlnprs = $(incl_file_opts)fesupp.h
 
 #
 # lflags

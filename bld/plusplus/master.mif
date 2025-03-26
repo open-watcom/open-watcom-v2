@@ -74,10 +74,10 @@ extra_cpp_flags += -DAS_DEBUG_DUMP
 extra_cpp_flags_dos   = -DCAUSEWAY
 !endif
 
-extra_cpp_flags_idedrv   = -DSTATIC_LINKAGE
-extra_cpp_flags_initfini = -DSPLIT_REQD
-extra_cpp_flags_maindrv  = -DDLL_NAME=$(dlltarg_name)
-extra_cpp_flags_memmgr = $(trmem_cpp_flags)
+extra_cpp_flags_f_idedrv   = -DSTATIC_LINKAGE
+extra_cpp_flags_f_initfini = -DSPLIT_REQD
+extra_cpp_flags_f_maindrv  = -DDLL_NAME=$(dlltarg_name)
+extra_cpp_flags_f_memmgr = $(trmem_cpp_flags)
 
 #extra_c_flags = -pcl
 extra_c_flags =
@@ -86,18 +86,18 @@ extra_c_flags += -db
 extra_c_flags_axp = -si
 !endif
 
-extra_c_flags_carve    = $(incl_file_opts)carvecpp.h
-extra_c_flags_cmdlnprs = $(incl_file_opts)fesupp.h
+extra_c_flags_f_carve    = $(incl_file_opts)carvecpp.h
+extra_c_flags_f_cmdlnprs = $(incl_file_opts)fesupp.h
 !ifeq debug 2
-extra_c_flags_dbgzap   = $(incl_file_opts)fesupp.h
+extra_c_flags_f_dbgzap   = $(incl_file_opts)fesupp.h
 !endif
-extra_c_flags_initfini = $(incl_file_opts)fesupp.h
-extra_c_flags_intlload = $(incl_file_opts)fesupp.h
-extra_c_flags_pstk     = $(incl_file_opts)fesupp.h
-extra_c_flags_ringcarv = $(incl_file_opts)fesupp.h
-extra_c_flags_ringfns  = $(incl_file_opts)fesupp.h
-extra_c_flags_vbuf     = $(incl_file_opts)fesupp.h
-extra_c_flags_vstk     = $(incl_file_opts)fesupp.h
+extra_c_flags_f_initfini = $(incl_file_opts)fesupp.h
+extra_c_flags_f_intlload = $(incl_file_opts)fesupp.h
+extra_c_flags_f_pstk     = $(incl_file_opts)fesupp.h
+extra_c_flags_f_ringcarv = $(incl_file_opts)fesupp.h
+extra_c_flags_f_ringfns  = $(incl_file_opts)fesupp.h
+extra_c_flags_f_vbuf     = $(incl_file_opts)fesupp.h
+extra_c_flags_f_vstk     = $(incl_file_opts)fesupp.h
 
 !ifdef __WATCOM_TOOLS__
 ! ifndef bootstrap
@@ -106,20 +106,20 @@ extra_c_flags_vstk     = $(incl_file_opts)fesupp.h
 # Using -os generates ENTER/LEAVE and Linux is too brain damaged
 # to handle ENTER instructions properly. Since GCC doesn't generate
 # ENTER, this is supposed to be a "feature".
-extra_c_flags_cmdlnany = -os
+extra_c_flags_f_cmdlnany = -os
 !   endif
 !  endif
-extra_c_flags_cscan_386 = -4r
-extra_c_flags_cscan    = $(extra_c_flags_cscan_$(host_cpu))
+extra_c_flags_f_cscan_386 = -4r
+extra_c_flags_f_cscan    = $(extra_c_flags_f_cscan_$(host_cpu))
 !  ifeq debug 0
-extra_c_flags_pcheader_386 = -oi
-extra_c_flags_pcheader = $(extra_c_flags_pcheader_$(host_cpu))
+extra_c_flags_f_pcheader_386 = -oi
+extra_c_flags_f_pcheader = $(extra_c_flags_f_pcheader_$(host_cpu))
 !  endif
-extra_c_flags_srcfile_386 = -4r
-extra_c_flags_srcfile  = $(extra_c_flags_srcfile_$(host_cpu))
+extra_c_flags_f_srcfile_386 = -4r
+extra_c_flags_f_srcfile  = $(extra_c_flags_f_srcfile_$(host_cpu))
 ! endif
 !endif
-extra_c_flags_memmgr   = $(trmem_cover_cflags)
+extra_c_flags_f_memmgr   = $(trmem_cover_cflags)
 
 #
 # lflags

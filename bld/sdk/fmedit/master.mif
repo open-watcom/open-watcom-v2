@@ -28,7 +28,7 @@ extra_cpp_flags = -DFMEDITDLL
 extra_c_flags_win = -zu -zw
 
 !ifdef __WATCOM_TOOLS__
-extra_c_flags_fmedit = -bd
+extra_c_flags_f_fmedit = -bd
 !endif
 
 #

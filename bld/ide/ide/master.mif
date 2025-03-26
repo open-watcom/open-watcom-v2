@@ -55,12 +55,12 @@ extra_cpp_flags     += -DNOWGML
 extra_cpp_flags_os2 = -D__OS2_PM__
 
 !ifeq host_os win
-extra_cpp_flags_link  = -DSERVER
+extra_cpp_flags_f_link  = -DSERVER
 !endif
 
 !ifdef __WATCOM_TOOLS__
 !ifeq host_os win
-extra_c_flags_link  += -3
+extra_c_flags_f_link  += -3
 !endif
 !endif
 

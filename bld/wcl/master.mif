@@ -26,7 +26,7 @@ inc_dirs = -I. -I"$(wcl_dir)/h"
 inc_dirs = -I. -I"$(wcl_dir)/h" -I"$(posix_dir)/h"
 !endif
 
-extra_cpp_flags_clcommon = $(trmem_cpp_flags)
+extra_cpp_flags_f_clcommon = $(trmem_cpp_flags)
 
 !ifeq dos_extender causeway
 extra_cpp_flags_dos386 = -DCAUSEWAY
@@ -38,7 +38,7 @@ extra_cpp_flags_dos386 = -DDOS4G
 extra_cpp_flags_dos386 = -DDOS4G
 !endif
 
-extra_c_flags_clcommon = $(trmem_cover_cflags)
+extra_c_flags_f_clcommon = $(trmem_cover_cflags)
 
 #
 # lflags

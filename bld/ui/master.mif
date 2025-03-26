@@ -28,7 +28,7 @@ inc_dirs_qnx = -I. -I"../../unix/h"
 extra_cpp_flags_dos = -DCHARMAP
 extra_cpp_flags_nov = -D_NETWARE_CLIB
 
-extra_cpp_flags_uialloc = $(trmem_cpp_flags)
+extra_cpp_flags_f_uialloc = $(trmem_cpp_flags)
 
 !ifeq debug 0
 extra_c_flags = -os
@@ -39,7 +39,7 @@ extra_c_flags_win     = -zu
 extra_c_flags_qnx386 = -4r
 
 # memory tracker routines
-extra_c_flags_uialloc = $(trmem_cover_cflags)
+extra_c_flags_f_uialloc = $(trmem_cover_cflags)
 
 #
 # lflags

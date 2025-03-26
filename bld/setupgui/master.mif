@@ -45,13 +45,13 @@ extra_cpp_flags_os2 = -D__OS2_PM__
 !endif
 
 # memory tracker routines
-extra_cpp_flags_setupmem = $(trmem_cpp_flags)
+extra_cpp_flags_f_setupmem = $(trmem_cpp_flags)
 
 # memory tracker routines
-extra_c_flags_setupmem = $(trmem_cover_cflags)
+extra_c_flags_f_setupmem = $(trmem_cover_cflags)
 
 # custom version of resource finder
-extra_c_flags_loadfind = $(cli_wres_inc_dirs)
+extra_c_flags_f_loadfind = $(cli_wres_inc_dirs)
 
 #
 # lflags

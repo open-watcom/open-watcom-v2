@@ -36,10 +36,10 @@ extra_cpp_flags =-D_STANDALONE_
 extra_cpp_flags += -DDEBUG_OUT
 !endif
 
-extra_cpp_flags_asmalloc = $(trmem_cpp_flags)
+extra_cpp_flags_f_asmalloc = $(trmem_cpp_flags)
 
-extra_c_flags_asmalloc = $(trmem_cover_cflags)
-extra_c_flags_cmdlnprs = $(incl_file_opts)fesupp.h
+extra_c_flags_f_asmalloc = $(trmem_cover_cflags)
+extra_c_flags_f_cmdlnprs = $(incl_file_opts)fesupp.h
 
 #
 # lflags

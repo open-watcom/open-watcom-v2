@@ -42,20 +42,20 @@ extra_cpp_flags     = -DWREDLL
 
 extra_cpp_flags_nt  = -DNOUSE3D
 
-extra_cpp_flags_trmemcvr = $(trmem_cpp_flags)
+extra_cpp_flags_f_trmemcvr = $(trmem_cpp_flags)
 
 extra_c_flags     = -fh
 
 extra_c_flags_win = -zw-zc
 
 !ifdef __WATCOM_TOOLS__
-extra_c_flags_preproc = -zm -fh=preproc.pch
-extra_c_flags_ppexpr  = -zm -fh=preproc.pch
-extra_c_flags_ppmacro = -zm -fh=preproc.pch
-extra_c_flags_ppenv   = -zm -fh=preproc.pch
+extra_c_flags_f_preproc = -zm -fh=preproc.pch
+extra_c_flags_f_ppexpr  = -zm -fh=preproc.pch
+extra_c_flags_f_ppmacro = -zm -fh=preproc.pch
+extra_c_flags_f_ppenv   = -zm -fh=preproc.pch
 !endif
 
-extra_c_flags_trmemcvr = $(trmem_cover_cflags)
+extra_c_flags_f_trmemcvr = $(trmem_cover_cflags)
 
 #
 # lflags

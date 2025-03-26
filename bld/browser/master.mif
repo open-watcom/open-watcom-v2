@@ -55,8 +55,8 @@ extra_cpp_flags += -DUSE_VIRTMEM
 extra_cpp_flags += -DNOWGML
 !endif
 
-extra_cpp_flags_rxwrap = -DALLOC=WBRAlloc
-extra_cpp_flags_brmem  = $(trmem_cpp_flags)
+extra_cpp_flags_f_rxwrap = -DALLOC=WBRAlloc
+extra_cpp_flags_f_brmem  = $(trmem_cpp_flags)
 
 extra_cxx_flags = -ew -xs
 !ifdef gen_browser_file
@@ -70,11 +70,11 @@ extra_c_flags_i86 += -zw
 extra_c_flags_i86 += -zW
 !endif
 
-extra_c_flags_rxwrap = -I"$(posix_dir)/h" -I"$(posix_dir)/misc" $(incl_file_opts)brmem.h
-extra_c_flags_keysym = -I"$(posix_dir)/h"
-extra_c_flags_util = -I"$(posix_dir)/h"
-extra_c_flags_demangle = -I"$(lib_misc_dir)/h"
-extra_c_flags_brmem = $(trmem_cover_cflags)
+extra_c_flags_f_rxwrap = -I"$(posix_dir)/h" -I"$(posix_dir)/misc" $(incl_file_opts)brmem.h
+extra_c_flags_f_keysym = -I"$(posix_dir)/h"
+extra_c_flags_f_util = -I"$(posix_dir)/h"
+extra_c_flags_f_demangle = -I"$(lib_misc_dir)/h"
+extra_c_flags_f_brmem = $(trmem_cover_cflags)
 
 #
 # lflags
@@ -151,4 +151,4 @@ $(docs_host_dir)/wbrw.gh : $(docs_host_dir) .ALWAYS
 
 .gpp.obj: .AUTODEPEND
     @%make echo_cxx
-    $(cxx) $(ppflags_common) $(ppflags_autodep) $(ppflags_sys) $(extra_cpp_flags_$[&) $(cflags) $(extra_cxx_flags) $(extra_c_flags_$[&) $(inc_path) $[@
+    $(cxx) $(ppflags_common) $(ppflags_autodep) $(ppflags_sys) $(extra_cpp_flags_f_$[&) $(cflags) $(extra_cxx_flags) $(extra_c_flags_f_$[&) $(inc_path) $[@

@@ -49,7 +49,7 @@ extra_c_flags_i86 = -zu
 extra_c_flags_win = -zc
 
 !ifdef __WATCOM_TOOLS__
-extra_c_flags_madimp = -zlf -os     # -os ensures byte align for code
+extra_c_flags_f_madimp = -zlf -os     # -os ensures byte align for code
 !endif
 
 #

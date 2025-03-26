@@ -25,7 +25,7 @@ os2v2pio_nocheckstack = 1
 
 inc_dirs = -I"../h"
 
-extra_c_flags_wdio = -nt=port -nc=IOPL_CODE -zls
+extra_c_flags_f_wdio = -nt=port -nc=IOPL_CODE -zls
 
 wdio.dll : wdio.obj
     $(noecho)%create $^&.lnk
