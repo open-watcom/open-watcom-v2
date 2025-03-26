@@ -50,7 +50,7 @@ alt_subdir_dosi86c = ms
 alt_subdir_os2i86c = ms
 
 !ifeq proj_name posix_all
-!ifdef alt_subdir_$(host_os)$(host_cpu)$(model)
+!ifdef alt_subdir_$(host)$(model)
 alt_posixlib = 1
 !endif
 !endif
@@ -74,14 +74,14 @@ posixlib_objs = &
 
 !ifdef bootstrap
 stdlibdir=$(std_subdir_$(host_cpu))
-!ifdef alt_posixlib
-altlibdir=$(alt_subdir_$(host_os)$(host_cpu)$(model))
-!endif
+! ifdef alt_posixlib
+altlibdir=$(alt_subdir_$(host)$(model))
+! endif
 !else
-stdlibdir=../misc/$(objs_subdir)/$(std_subdir_$(host_cpu))
-!ifdef alt_posixlib
-altlibdir=../misc/$(objs_subdir)/$(alt_subdir_$(host_os)$(host_cpu)$(model))
-!endif
+stdlibdir=../misc/$(host)/$(std_subdir_$(host_cpu))
+! ifdef alt_posixlib
+altlibdir=../misc/$(host)/$(alt_subdir_$(host)$(model))
+! endif
 !endif
 
 #
@@ -89,6 +89,6 @@ altlibdir=../misc/$(objs_subdir)/$(alt_subdir_$(host_os)$(host_cpu)$(model))
 #
 
 extra_cppflags_ntaxp = -DWIN32 -D_WIN32
-extra_cpp_flags      = -DSTANDALONE_RX $(extra_cppflags_$(host_os)$(host_cpu)) $(extra_cppflags)
+extra_cpp_flags      = -DSTANDALONE_RX $(extra_cppflags_$(host)) $(extra_cppflags)
 
 extra_c_flags_i86 = -zt=10000

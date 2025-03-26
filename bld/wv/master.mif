@@ -34,8 +34,8 @@ name_os2i86    = wd16
 name_wini86    = wdc
 !endif
 
-!ifdef name_$(host_os)$(host_cpu)
-name = $(name_$(host_os)$(host_cpu))
+!ifdef name_$(host)
+name = $(name_$(host))
 !else ifdef sys_windowed
 name = wdw
 !else

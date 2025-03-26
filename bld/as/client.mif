@@ -3,22 +3,22 @@
 #
 
 !ifdef bootstrap
-cli_asminline_libs = $(as_dir)/$(target_cpu)/$(objs_subdir)/asinline.lib
+cli_asminline_libs = $(as_dir)/$(target_cpu)/$(bin_subdir)/asinline.lib
 !else ifdef $(proj_name)_rtdll
 #
 # AS in-line run-time DLL used
 #
-cli_asminline_libs = $(as_dir)/$(target_cpu)/$(objs_subdir).rtd/asinline.lib
+cli_asminline_libs = $(as_dir)/$(target_cpu)/$(host).rtd/asinline.lib
 !else ifdef $(proj_name)_dll
 #
 # AS in-line DLL used
 #
-cli_asminline_libs = $(as_dir)/$(target_cpu)/$(objs_subdir).dll/asinline.lib
+cli_asminline_libs = $(as_dir)/$(target_cpu)/$(host).dll/asinline.lib
 !else
 #
 # AS in-line library used
 #
-cli_asminline_libs = $(as_dir)/$(target_cpu)/$(objs_subdir)/asinline.lib
+cli_asminline_libs = $(as_dir)/$(target_cpu)/$(host)/asinline.lib
 !endif
 
 #

@@ -82,7 +82,7 @@ extra_c_flags_wlmem         = $(trmem_cover_cflags)
 #
 extra_l_flags_qnx     = op st=24k, off=32k
 
-extra_l_flags_dll     = option implib $(wlink_dllbase_$(host_os)_$(host_cpu))
+extra_l_flags_dll     = option implib $(wlink_dllbase_$(host))
 extra_l_flags_dll_nt  = initinstance terminstance op modname='$(dlltarg_name).dll'
 extra_l_flags_dll_os2 = initinstance terminstance op modname='$(dlltarg_name)'
 

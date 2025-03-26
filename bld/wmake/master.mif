@@ -70,21 +70,21 @@ extra_l_flags = opt statics sort
 extra_l_flags_os2 = opt stack=96k
 extra_l_flags_qnx = opt stack=20k
 !ifdef LARGE
-extra_l_flags_dos_i86 = opt stack=16k
+extra_l_flags_dosi86 = opt stack=16k
 !else ifdef COMPACT
-extra_l_flags_dos_i86 = opt stack=16k
+extra_l_flags_dosi86 = opt stack=16k
 !else
-extra_l_flags_dos_i86 = opt stack=8k
+extra_l_flags_dosi86 = opt stack=8k
 !endif
 
 !ifeq dos_extender causeway
-extra_l_flags_dos_386 = opt stack=16k
+extra_l_flags_dos386 = opt stack=16k
 !else ifeq dos_extender pharlap
-extra_l_flags_dos_386 = opt stack=8k
+extra_l_flags_dos386 = opt stack=8k
 !else ifeq dos_extender dos4g
-extra_l_flags_dos_386 = opt stack=8k
+extra_l_flags_dos386 = opt stack=8k
 !else
-extra_l_flags_dos_386 = opt stack=8k
+extra_l_flags_dos386 = opt stack=8k
 !endif
 
 # explicit rules

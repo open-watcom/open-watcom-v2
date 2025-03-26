@@ -210,5 +210,5 @@ dui_objs_nt       = ntscrn.obj helpio.obj ntdbgpb.obj
 dui_objs_win      = winscrn.obj helpio.obj
 !endif
 
-engine_objs = $(eng_objs) $(eng_objs_$(host_os)) $(eng_objs_$(objs_subdir))
-ui_objs = $(dui_objs) $(dui_objs_$(host_os)) $(dui_objs_$(objs_subdir)) #$(objs_$(host_os)_$(host_cpu))
+engine_objs = $(eng_objs) $(eng_objs_$(host_os)) $(eng_objs_$(host))
+ui_objs = $(dui_objs) $(dui_objs_$(host_os)) $(dui_objs_$(host)) #$(objs_$(host))

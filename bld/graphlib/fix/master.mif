@@ -13,8 +13,8 @@ clibdir = $(clib_dir)/library/msdos.386/ms_r/clib3r.lib
 !include cproj.mif
 !include deftarg.mif
 
-graph_path = $(graphlib_dir)/$(objs_subdir)
-pgchart_path = $(graphlib_dir)/pgchart/$(objs_subdir)
+graph_path = $(graphlib_dir)/$(host)
+pgchart_path = $(graphlib_dir)/pgchart/$(host)
 
 !ifeq host_cpu i86
 

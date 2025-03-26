@@ -16,11 +16,11 @@ sys_x86_qnx   = sys qnx
 sys_x86_linux = sys linux
 sys_axp_nt    = sys ntaxp
 
-trap_suf_os2_i86 = cli1
-trap_suf_win_i86 = cliw
+trap_suf_os2i86 = cli1
+trap_suf_wini86 = cliw
 
-!ifdef trap_suf_$(host_os)_$(host_cpu)
-trap_basename = $(xname)$(trap_suf_$(host_os)_$(host_cpu))
+!ifdef trap_suf_$(host)
+trap_basename = $(xname)$(trap_suf_$(host))
 !else
 trap_basename = $(xname)cli
 !endif
@@ -46,7 +46,7 @@ alias_symbols_nt = alias __DLLstart_='_LibMain@12'
 !endif
 
 !ifeq debug 0
-dllbase = $(trap_dllbase_$(host_os)_$(host_cpu))
+dllbase = $(trap_dllbase_$(host))
 !endif
 
 export_common_intel = export TrapInit_.1, TrapFini_.2, TrapRequest_.3

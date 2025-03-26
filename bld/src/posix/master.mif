@@ -9,7 +9,11 @@ inc_dirs = -I"../h"
 
 .c: ../c
 
-util_lib = ../lib/$(objs_subdir)/util.lib
+!ifdef bootstrap
+util_lib = ../lib/$(bin_subdir)/util.lib
+!else
+util_lib = ../lib/$(host)/util.lib
+!endif
 
 all : cat.exe      &
       cmp.exe      &

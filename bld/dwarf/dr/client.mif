@@ -11,7 +11,11 @@
 #
 # DWARF library
 #
-cli_dwarfr_libs = $(dwarfr_dir)/$(objs_subdir)/dwarfr.lib
+!ifdef bootstrap
+cli_dwarfr_libs = $(dwarfr_dir)/$(bin_subdir)/dwarfr.lib
+!else
+cli_dwarfr_libs = $(dwarfr_dir)/$(host)/dwarfr.lib
+!endif
 
 #
 # DWARF run-time DLL used

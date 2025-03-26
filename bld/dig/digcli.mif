@@ -1,6 +1,6 @@
 dig_os_dos386   = dsx
-!ifdef dig_os_$(objs_subdir)
-dig_srcs = $(dig_dir)/c/$(dig_os_$(objs_subdir));$(dig_dir)/c
+!ifdef dig_os_$(host)
+dig_srcs = $(dig_dir)/c/$(dig_os_$(host));$(dig_dir)/c
 !else
 dig_srcs = $(dig_dir)/c/$(host_os);$(dig_dir)/c
 !endif

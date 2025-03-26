@@ -107,7 +107,7 @@ mem_objs = &
 !inject winutil.obj                 i_nt i_os2 i_win
 !inject winddeml.obj                i_nt       i_win
 
-objs += $(i_$(host_os)) $(i_$(objs_subdir)) $(mem_objs)
+objs += $(i_$(host_os)) $(i_$(host)) $(mem_objs)
 
 # custom version of resource finder
 !ifdef sys_windowed
@@ -116,9 +116,9 @@ objs += loadfind.obj
 !endif
 
 !ifeq host_cpu i86
-libs = $(cli_gui_libs) $(libs_$(host_os)) $(libs_$(objs_subdir))
+libs = $(cli_gui_libs) $(libs_$(host_os)) $(libs_$(host))
 !else
-libs = $(cli_gui_libs) $(libs_$(host_os)) $(libs_$(objs_subdir)) ../ziplib/$(objs_subdir)/ziplib.lib ../zlib/$(objs_subdir)/zlib.lib
+libs = $(cli_gui_libs) $(libs_$(host_os)) $(libs_$(host)) ../ziplib/$(host)/ziplib.lib ../zlib/$(host)/zlib.lib
 !endif
 
 #

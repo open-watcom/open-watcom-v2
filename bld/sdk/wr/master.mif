@@ -53,11 +53,11 @@ extra_c_flags_wrmem = $(trmem_cover_cflags)
 # lflags
 #
 extra_l_flags = debug all option quiet, map, elim, v, static
-#extra_l_flags_win_i86 = sys windows
-#extra_l_flags_nt_386  = sys nt_win
-#extra_l_flags_nt_axp  = sys ntaxp_win
+#extra_l_flags_wini86 = sys windows
+#extra_l_flags_nt386  = sys nt_win
+#extra_l_flags_ntaxp  = sys ntaxp_win
 
-extra_l_flags_dll = op implib $(wr_dllbase_$(host_os)_$(host_cpu))
+extra_l_flags_dll = op implib $(wr_dllbase_$(host))
 extra_l_flags_dll_nt = op heap=16k commit heap=8k
 extra_l_flags_dll_win = op rwr, stack=16k export WEP RESIDENT lib ddeml.lib &
 #    segment  _TEXT PRELOAD FIXED &

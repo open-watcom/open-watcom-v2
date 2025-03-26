@@ -100,6 +100,6 @@ ui_sysobjs_wini86 = &
 
 !include $(hlpview_dir)/client.mif
 
-sysobjs = $(ui_sysobjs) $(ui_sysobjs_$(objs_subdir)) $(sys_hooks) $(cli_hlpview_objs)
+sysobjs = $(ui_sysobjs) $(ui_sysobjs_$(host)) $(sys_hooks) $(cli_hlpview_objs)
 
 !include $(gui_dir)/master.mif

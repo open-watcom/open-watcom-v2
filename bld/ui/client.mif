@@ -18,10 +18,18 @@ ui_ui_inc_dirs_internal_win   = -I"$(ui_dir)/win/h"
 ui_ui_inc_dirs_internal_unix  = -I"$(ui_dir)/unix/h"
 ! ifeq cli_ui_os unix
 cli_ui_inc_dirs = -I"$(ui_dir)/h" -I"$(ncurses_dir)/h"
-cli_ui_libs = $(ui_dir)/$(cli_ui_os)/$(objs_subdir)/ui.lib $(ncurses_dir)/$(objs_subdir)/ncurses.lib
+!ifdef bootstrap
+cli_ui_libs = $(ui_dir)/$(cli_ui_os)/$(bin_subdir)/ui.lib $(ncurses_dir)/$(bin_subdir)/ncurses.lib
+!else
+cli_ui_libs = $(ui_dir)/$(cli_ui_os)/$(host)/ui.lib $(ncurses_dir)/$(host)/ncurses.lib
+!endif
 ! else
 cli_ui_inc_dirs = -I"$(ui_dir)/h"
-cli_ui_libs = $(ui_dir)/$(cli_ui_os)/$(objs_subdir)/ui.lib
+!ifdef bootstrap
+cli_ui_libs = $(ui_dir)/$(cli_ui_os)/$(bin_subdir)/ui.lib
+!else
+cli_ui_libs = $(ui_dir)/$(cli_ui_os)/$(host)/ui.lib
+!endif
 ! endif
 cli_ui_inc_dirs_internal = $(ui_ui_inc_dirs_internal_$(cli_ui_os))
 !endif

@@ -24,26 +24,26 @@ extra_cpp_flags += -DTRACE
 !endif
 
 !ifeq dos_extender causeway
-extra_cpp_flags_dos_386 = -DCAUSEWAY
+extra_cpp_flags_dos386 = -DCAUSEWAY
 !else ifeq dos_extender pharlap
-extra_cpp_flags_dos_386 = -DPHARLAP
+extra_cpp_flags_dos386 = -DPHARLAP
 !else ifeq dos_extender dos4g
-extra_cpp_flags_dos_386 = -DDOS4G
+extra_cpp_flags_dos386 = -DDOS4G
 !else
-extra_cpp_flags_dos_386 = -DDOS4G
+extra_cpp_flags_dos386 = -DDOS4G
 !endif
 
 extra_cpp_flags_mem      = $(trmem_cpp_flags)
 
 extra_c_flags = -fh
 !ifdef is286
-extra_c_flags_dos_i86 = -2
+extra_c_flags_dosi86 = -2
 !endif
-extra_c_flags_dos_386 = -zff
-extra_c_flags_os2_i86 = -2
-extra_c_flags_qnx_i86 = -2
-extra_c_flags_win_i86 = -zW -2 -zc
-extra_c_flags_win_386 = -zw
+extra_c_flags_dos386 = -zff
+extra_c_flags_os2i86 = -2
+extra_c_flags_qnxi86 = -2
+extra_c_flags_wini86 = -zW -2 -zc
+extra_c_flags_win386 = -zw
 
 extra_c_flags_rxwrap   = -I"$(posix_dir)/h" -I"$(posix_dir)/misc"
 extra_c_flags_mem      = $(trmem_cover_cflags)

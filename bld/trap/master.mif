@@ -68,9 +68,9 @@ additional_clean_qnx = usage.u
 
 # target_sys
 ##############
-target_sys_os2_386 = os2v2
-!ifdef target_sys_$(host_os)_$(host_cpu)
-target_sys = $(target_sys_$(host_os)_$(host_cpu))
+target_sys_os2386 = os2v2
+!ifdef target_sys_$(host)
+target_sys = $(target_sys_$(host))
 !else ifndef target_sys
 target_sys = $(host_os)
 !endif
@@ -91,10 +91,10 @@ os_prefix = $(target_sys)
 
 # os_subdir
 ##############
-os_subdir_nov_386 = nlm
-os_subdir_os2_386 = os2v2
-!ifdef os_subdir_$(host_os)_$(host_cpu)
-os_subdir = $(os_subdir_$(host_os)_$(host_cpu))
+os_subdir_nov386 = nlm
+os_subdir_os2386 = os2v2
+!ifdef os_subdir_$(host)
+os_subdir = $(os_subdir_$(host))
 !else
 os_subdir = $(host_os)
 !endif

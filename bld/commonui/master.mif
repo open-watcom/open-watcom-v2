@@ -93,7 +93,7 @@ libtarg_prebuild_objs = uistr.grh
 !ifeq name windbg
 libtarg_objs = $(windbg)
 !else
-libtarg_objs = $($(host_os)) $($(objs_subdir))
+libtarg_objs = $($(host_os)) $($(host))
 !ifeq host_cpu i86
 libtarg_objs += $($(host_os)dbg)
 !endif

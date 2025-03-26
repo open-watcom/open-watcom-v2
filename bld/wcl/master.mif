@@ -29,13 +29,13 @@ inc_dirs = -I. -I"$(wcl_dir)/h" -I"$(posix_dir)/h"
 extra_cpp_flags_clcommon = $(trmem_cpp_flags)
 
 !ifeq dos_extender causeway
-extra_cpp_flags_dos_386 = -DCAUSEWAY
+extra_cpp_flags_dos386 = -DCAUSEWAY
 !else ifeq dos_extender pharlap
-extra_cpp_flags_dos_386 = -DPHARLAP
+extra_cpp_flags_dos386 = -DPHARLAP
 !else ifeq dos_extender dos4g
-extra_cpp_flags_dos_386 = -DDOS4G
+extra_cpp_flags_dos386 = -DDOS4G
 !else
-extra_cpp_flags_dos_386 = -DDOS4G
+extra_cpp_flags_dos386 = -DDOS4G
 !endif
 
 extra_c_flags_clcommon = $(trmem_cover_cflags)
@@ -43,7 +43,7 @@ extra_c_flags_clcommon = $(trmem_cover_cflags)
 #
 # lflags
 #
-extra_l_flags_dos_i86 = option stack=4k
+extra_l_flags_dosi86 = option stack=4k
 
 # explicit rules
 #################

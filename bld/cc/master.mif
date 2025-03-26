@@ -112,7 +112,7 @@ extra_c_flags_cmdlnprs = $(incl_file_opts)fesupp.h
 extra_l_flags_qnx = option stack=16k,offset=24k, priv=3
 extra_l_flags_dos = option stack=32k
 
-extra_l_flags_dll     = option implib $(wcc_dllbase_$(host_os)_$(host_cpu))
+extra_l_flags_dll     = option implib $(wcc_dllbase_$(host))
 extra_l_flags_dll_nt  = initinstance terminstance op modname='$(dllname).dll'
 extra_l_flags_dll_os2 = initinstance terminstance op manyautodata op modname='$(dllname)'
 
