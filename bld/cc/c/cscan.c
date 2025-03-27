@@ -1371,8 +1371,6 @@ static TOKEN ScanSlash( void )
     return( token );
 }
 
-#define OUTC(x)     if(ofn != NULL) ofn(x)
-
 static msg_codes doScanHex( int max, escinp_fn ifn, escout_fn ofn )
 /******************************************************************
  * Warning! this function is also used from cstring.c
@@ -1394,7 +1392,8 @@ static msg_codes doScanHex( int max, escinp_fn ifn, escout_fn ofn )
             break;
         if( ( CharSet[c] & (C_HX | C_DI) ) == 0 )
             break;
-        OUTC( c );
+        if( ofn != NULL )
+            ofn( c );
         if( CharSet[c] & C_HX )
             c = (( c | HEX_MASK ) - HEX_BASE ) + 10 + '0';
         if( value & 0xF0000000 )
@@ -1437,7 +1436,8 @@ int ESCChar( int c, escinp_fn ifn, msg_codes *perr_msg, escout_fn ofn )
         n = 0;
         i = 3;
         while( i-- > 0 && c >= '0' && c <= '7' ) {
-            OUTC( c );
+            if( ofn != NULL )
+                ofn( c );
             n = n * 8 + c - '0';
             c = ifn();
         }
@@ -1445,13 +1445,15 @@ int ESCChar( int c, escinp_fn ifn, msg_codes *perr_msg, escout_fn ofn )
         /*
          * get hex escape sequence
          */
-        OUTC( c );
+        if( ofn != NULL )
+            ofn( c );
         err_msg = doScanHex( 127, ifn, ofn );
         if( err_msg != ERR_NONE )
             *perr_msg = err_msg;
         n = Constant;
     } else {
-        OUTC( c );
+        if( ofn != NULL )
+            ofn( c );
         switch( c ) {
         case 'a':
             c = ESCAPE_a;
