@@ -479,7 +479,7 @@ dw_client DwarfInit( void )
     cu.flags           = 1;
     cu.offset_size     = TARGET_NEAR_POINTER;
     cu.segment_size    = 0;
-    cu.model           = DW_MODEL_NONE;
+    cu.model           = DW_MEM_MODEL_none;
     cu.inc_list        = inclist;
     cu.inc_list_len    = incsize;
     cu.dbg_pch         = NULL;

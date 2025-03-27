@@ -144,7 +144,7 @@ void    BIInit( void ) {
         cu.flags = true;
         cu.offset_size = ARCHITECTURE;
         cu.segment_size = 0;
-        cu.model = DW_MODEL_NONE;
+        cu.model = DW_MEM_MODEL_none;
         cu.inc_list = NULL;
         cu.inc_list_len = 0;
         cu.dbg_pch = NULL;

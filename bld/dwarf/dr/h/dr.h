@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -176,16 +176,6 @@ typedef enum {
     DR_LANG_FORTRAN,
     DR_LANG_C
 } dr_language;
-
-typedef enum {
-    DR_MODEL_NONE    = 0,
-    DR_MODEL_FLAT    = 1,
-    DR_MODEL_SMALL   = 2,
-    DR_MODEL_MEDIUM  = 3,
-    DR_MODEL_COMPACT = 4,
-    DR_MODEL_LARGE   = 5,
-    DR_MODEL_HUGE    = 6,
-} dr_model;
 
 typedef enum {
     DR_SRCH_func_var,
@@ -437,7 +427,7 @@ extern void             DRENTRY DRWalkPubName( DRPUBWLK, void * );
 /* drinfo.c */
 extern dr_language      DRENTRY DRGetLanguageAT( drmem_hdl );
 extern char             * DRENTRY DRGetProducer( drmem_hdl );
-extern dr_model         DRENTRY DRGetMemModelAT( drmem_hdl );
+extern dw_mem_model     DRENTRY DRGetMemModelAT( drmem_hdl );
 extern dr_language      DRENTRY DRGetLanguage( void );
 extern char             * DRENTRY DRGetName( drmem_hdl );
 extern size_t           DRENTRY DRGetNameBuff( drmem_hdl entry, char *buff, size_t length );

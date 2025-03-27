@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -82,17 +82,17 @@ dr_language DRENTRY DRGetLanguageAT( drmem_hdl entry )
     return( result );
 }
 
-dr_model DRENTRY DRGetMemModelAT( drmem_hdl entry )
-/*************************************************/
+dw_mem_model DRENTRY DRGetMemModelAT( drmem_hdl entry )
+/*****************************************************/
 {
-    drmem_hdl   abbrev;
-    dr_model    retval;
+    drmem_hdl       abbrev;
+    dw_mem_model    retval;
 
     abbrev = DR_SkipTag( &entry ) + 1;
     if( DR_ScanForAttrib( &abbrev, &entry, DW_AT_WATCOM_memory_model ) ) {
-        retval = (dr_model)DR_ReadConstant( abbrev, entry );
+        retval = (dw_mem_model)DR_ReadConstant( abbrev, entry );
     } else {
-        retval = DR_MODEL_NONE;
+        retval = DW_MEM_MODEL_none;
     }
     return( retval );
 }

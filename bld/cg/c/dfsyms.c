@@ -403,19 +403,25 @@ static int InitCU( dw_cu_info *cu )
 #endif
     switch( GetMemModel() ) {
     case 'h':
-        cu->model = DW_MODEL_HUGE;
+        cu->model = DW_MEM_MODEL_huge;
         break;
     case 'l':
-        cu->model = DW_MODEL_LARGE;
+        cu->model = DW_MEM_MODEL_large;
         break;
     case 'f':
-        cu->model = DW_MODEL_FLAT;
+        cu->model = DW_MEM_MODEL_flat;
         break;
     case 's':
-        cu->model = DW_MODEL_SMALL;
+        cu->model = DW_MEM_MODEL_small;
+        break;
+    case 'c':
+        cu->model = DW_MEM_MODEL_compact;
+        break;
+    case 'm':
+        cu->model = DW_MEM_MODEL_medium;
         break;
     default:
-        cu->model = DW_MODEL_NONE;
+        cu->model = DW_MEM_MODEL_none;
         break;
     }
     return( 0 );

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2023-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -88,13 +88,13 @@ static bool ModFill( void *_mod, drmem_hdl mod_handle )
  * pick up general info about mod while here for later calls
  */
 {
-    mod_list    *mod = _mod;
-    char        fname[MAX_PATH];
-    char        *name;
-    char        *path;
-    drmem_hdl   cu_tag;
-    dr_model    model;
-    mod_info    *modinfo;
+    mod_list        *mod = _mod;
+    char            fname[MAX_PATH];
+    char            *name;
+    char            *path;
+    drmem_hdl       cu_tag;
+    dw_mem_model    model;
+    mod_info        *modinfo;
 
     modinfo = NextModInfo( mod );
     modinfo->mod_handle = mod_handle;
@@ -136,8 +136,8 @@ static bool ModFill( void *_mod, drmem_hdl mod_handle )
     model = DRGetMemModelAT( cu_tag );
     if( DCCurrArch() == DIG_ARCH_X86 ) {
         switch( model ) {
-        case DR_MODEL_NONE:
-        case DR_MODEL_FLAT:
+        case DW_MEM_MODEL_none:
+        case DW_MEM_MODEL_flat:
             modinfo->is_segment = false;
             break;
         default:
@@ -569,12 +569,12 @@ dip_status DIPIMPENTRY( ModDefault )( imp_image_handle *iih, imp_mod_handle imh,
     case DK_CODE_PTR:
         ti->kind = TK_POINTER;
         switch( modinfo->model ) {
-        case DR_MODEL_NONE:
-        case DR_MODEL_FLAT:
-        case DR_MODEL_SMALL:
+        case DW_MEM_MODEL_none:
+        case DW_MEM_MODEL_flat:
+        case DW_MEM_MODEL_small:
             ti->modifier = TM_NEAR;
             break;
-        case DR_MODEL_MEDIUM:
+        case DW_MEM_MODEL_medium:
             if( dk == DK_CODE_PTR ) {
                 ti->modifier = TM_FAR;
                 ti->size += 2;
@@ -582,7 +582,7 @@ dip_status DIPIMPENTRY( ModDefault )( imp_image_handle *iih, imp_mod_handle imh,
                 ti->modifier = TM_NEAR;
             }
             break;
-        case DR_MODEL_COMPACT:
+        case DW_MEM_MODEL_compact:
             if( dk == DK_CODE_PTR ) {
                 ti->modifier = TM_NEAR;
             } else {
@@ -590,11 +590,11 @@ dip_status DIPIMPENTRY( ModDefault )( imp_image_handle *iih, imp_mod_handle imh,
                 ti->size += 2;
             }
             break;
-        case DR_MODEL_LARGE:
+        case DW_MEM_MODEL_large:
             ti->modifier = TM_FAR;
             ti->size += 2;
             break;
-        case DR_MODEL_HUGE:
+        case DW_MEM_MODEL_huge:
             if( dk == DK_CODE_PTR ) {
                 ti->modifier = TM_FAR;
             } else {
