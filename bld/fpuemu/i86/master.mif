@@ -13,11 +13,11 @@ emui86_qnx_usage = 1
 memory_model_i86 = s
 memory_model_386 = s
 
-fpu_flags_dos_i86 = -fpc
-fpu_flags_os2_i86 = -fpc
-fpu_flags_win_i86 = -fpc
-fpu_flags_qnx_i86 = -fpc
-fpu_flags_qnx_386 = -fpc
+fpu_flags_dosi86 = -fpc
+fpu_flags_os2i86 = -fpc
+fpu_flags_wini86 = -fpc
+fpu_flags_qnxi86 = -fpc
+fpu_flags_qnx386 = -fpc
 
 !include cproj.mif
 !include defrule.mif

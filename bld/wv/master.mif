@@ -117,7 +117,7 @@ extra_c_flags_f_trpld = -I"$(dig_dir)/c"
 #
 # lflags
 #
-lflags_win_i86 += memory font
+lflags_wini86 += memory font
 
 !ifdef sys_windowed
 extra_l_flags_wini86 = op stack=12K, heap=15K import DEATH GDI.121 import RESURRECTION GDI.122

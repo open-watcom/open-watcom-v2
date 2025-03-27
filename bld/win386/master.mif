@@ -2,7 +2,7 @@ proj_name = win386
 
 win386_autodepends = .AUTODEPEND
 
-fpu_flags_win_i86  = -fpc
+fpu_flags_wini86  = -fpc
 
 !include cproj.mif
 !include defrule.mif
