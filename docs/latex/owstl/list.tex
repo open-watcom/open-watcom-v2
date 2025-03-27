@@ -1,0 +1,108 @@
+% !TeX root = owstl.tex
+
+\chapter{List}
+
+\section{Introduction}
+
+\section{Status}
+
+Missing members:
+
+\begin{enumerate}
+    \item Err\ldots need to look through the standard.
+\end{enumerate}
+
+Completed members:
+
+\begin{enumerate}
+\item \code{explicit list( Allocator const & )}
+\item \code{list( list const & )}
+\item \code{~list( )}
+\item \code{operator=( list const & )}
+\item \code{assign( size_type, value_type const & )}
+\item \code{get_allocator( ) const}
+\item \code{iterator}
+\item \code{const_iterator}
+\item \code{reverse_iterator}
+\item \code{const_reverse_iterator}
+\item \code{begin( )} (+const)
+\item \code{end( )} (+const)
+\item \code{rbegin( )} (+const)
+\item \code{rend( )} (+const)
+\item \code{size( )}
+\item \code{empty( )}
+\item \code{front( )}
+\item \code{back( )}
+\item \code{push_front( value_type const & )}
+\item \code{push_back( value_type const & )}
+\item \code{pop_front( )}
+\item \code{pop_back( )}
+\item \code{insert( iterator, value_type const & )}
+\item \code{erase( iterator )}
+\item \code{erase( iterator, iterator )}
+\item \code{swap( list& )}
+\item \code{clear( )}
+\item \code{remove( value_type const & )}
+\item \code{splice( iterator, list & )}
+\item \code{splice( iterator, list &, iterator )}
+\item \code{splice( iterator list &, iterator, literator )}
+\item \code{reverse( )}
+\item \code{merge( list const & )}
+\end{enumerate}
+
+\section{Design Details}
+
+\code{template <class Type, class Allocator>}\\
+\code{class std::list}
+
+\subsection{Description of a Double Linked List}
+
+This is a data structure that is made up of nodes, where each node contains
+the data, a pointer to the next node, and a pointer to the previous node. The
+overall structure also knows where the first element in the list is and
+usually the last. Obviously it requires two pointers for every piece of data
+held in the list, but this allows movement between adjacent nodes in both
+directions in constant time.
+
+\subsection{Overview of the Class}
+
+The class defines an internal \code{DoubleLink} structure that only holds
+forward and backward pointers to itself. It then defines a \code{Node}
+structure that inherits from \code{DoubleLink} and adds to it the space for
+the real data (of type \code{value_type}) that is held in the list nodes. This
+is done so that a special sentinel object can be created that is related to
+every other node in the list, but that doesn't require space for a
+\code{value_type} object. This sentinel is used by the list class to point to
+the first and last elements in the list. A sentinel is useful in this case
+(the alternative would just be individual first and last pointers) because it
+means the insertion and deletion code does not have to check for the special
+case of editing the list at the beginning and end. The sentinel is initialized
+pointing to itself and is used as the reference point of the end of the list.
+When an element is inserted or deleted before the end or at the beginning all
+the pointer manipulation just falls out in the wash. \note{This seems to be a
+good uses of sentinels.}
+
+There are two allocators that need to be rebound for the \code{Node} and
+\code{DoubleLink} types. Two allocators are needed because objects of
+different types are being allocated: the node allocation allocates nodes (with
+their contained \code{value_type}) while the link allocator allocates the
+sentinel node of type \code{DoubleLink}.
+
+\subsection{Inserting Nodes}
+
+The work for the functions \code{push_front}, \code{push_back} and
+\code{insert} is done by the private member \code{push}.
+
+The member is quite simple. It allocates a \code{Node} and then tries to make
+a copy of type in the memory allocated. The usual try-catch wrappings
+deallocate the memory if the construction was unsuccessful. It then modifies
+the pointers of the \code{Node} that was passed, the element before that node,
+and the new node so that the new node is linked into place just before o. The
+end of the list is signaled by the sentinel object, so if we are trying to
+insert before the end o is the sentinel and everything works. If we are trying
+to insert before the first node, the old node before the first is again the
+sentinel, so the pointers are all valid and everything works.
+
+\subsection{Deleting Nodes}
+
+\subsection{Clearing All}

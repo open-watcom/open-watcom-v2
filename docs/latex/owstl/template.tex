@@ -1,0 +1,73 @@
+\documentclass{article}
+
+% Load essential packages
+\usepackage{fontspec}       % Enables system fonts & Unicode support
+\usepackage{graphicx}       % Allows image inclusion
+\usepackage{listings}       % Code listings
+\usepackage{xcolor}         % For syntax highlighting in listings
+\usepackage{hyperref}       % Clickable links in PDF
+\usepackage{luacode}        % Allows Lua scripting
+
+% Set a modern font (optional, replace as needed)
+\setmainfont{Latin Modern Roman} % or "Times New Roman"
+
+% Configure code listings
+\lstset{
+  language=C,                 % Default to C (can be changed per listing)
+  basicstyle=\ttfamily\footnotesize,
+  keywordstyle=\color{blue},
+  commentstyle=\color{gray},
+  stringstyle=\color{red},
+  numbers=left,
+  numberstyle=\tiny,
+  stepnumber=1,
+  breaklines=true
+}
+
+
+\begin{document}
+
+\title{Open Watcom Documentation Example}
+\author{Open Watcom Contributors}
+\date{\today}
+\maketitle
+
+\section{Introduction}
+This is an example of a minimal LuaLaTeX document for Open Watcom documentation.
+
+\section{Including a Code Listing}
+Here is an example C function:
+
+\begin{lstlisting}
+#include <stdio.h>
+
+void hello() {
+    printf("Hello, Open Watcom!\n");
+}
+\end{lstlisting}
+
+\section{Adding an Image}
+Here is a sample image (make sure `screenshot.png' exists in the same folder):
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.7\textwidth]{screenshot.png}
+    \caption{Sample Screenshot}
+    \label{fig:screenshot}
+\end{figure}
+
+\section{Using Lua for Dynamic Content}
+We can run Lua code inside this document:
+
+\begin{luacode}
+  function greet(name)
+    tex.print("Hello, " .. name .. "!")
+  end
+\end{luacode}
+
+\noindent Lua output: \directlua{greet("Open Watcom")}
+
+\section{Hyperlinks}
+This document is available at \href{https://www.openwatcom.org}{Open Watcom's website}.
+
+\end{document}
