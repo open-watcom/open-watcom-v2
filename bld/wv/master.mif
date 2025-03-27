@@ -216,7 +216,7 @@ bitmaps_common = &
     ../../res/down.bmp &
     ../../res/home.bmp
 
-!if host_os os2
+! ifeq host_os os2
 
 bitmaps = $(bitmaps_common) &
     ../../res/os2/zapant.ico &
@@ -239,7 +239,7 @@ bitmaps = $(bitmaps_common) &
     ../../res/os2/thrd.ico &
     ../../res/os2/var.ico
 
-!else
+! else
 
 bitmaps = $(bitmaps_common) &
     ../../res/win/zapant.ico &
@@ -262,7 +262,7 @@ bitmaps = $(bitmaps_common) &
     ../../res/win/thrd.ico &
     ../../res/win/var.ico
 
-!endif
+! endif
 
 !endif
 
