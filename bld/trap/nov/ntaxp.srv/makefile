@@ -5,8 +5,6 @@ tree_depth = 4
 host_cpu = axp
 host_os  = nt
 
-target_cpu = axp
-
 srv = nov
 which = SERVER
 gui = 1

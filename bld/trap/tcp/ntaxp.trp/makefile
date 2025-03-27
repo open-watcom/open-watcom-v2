@@ -5,8 +5,6 @@ tree_depth = 4
 host_os  = nt
 host_cpu = axp
 
-target_cpu = axp
-
 srv   = tcp
 which = TRAP
 remote_link = 1

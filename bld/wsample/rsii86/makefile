@@ -3,6 +3,6 @@
 host_os  = dos
 host_cpu = i86
 
-target = rsi
+target_os = rsi
 
 !include ../master.mif

@@ -97,15 +97,19 @@ OBJS = $(OBJDIR)asmpkt.obj   $(OBJDIR)asmpkt4.obj   &
 #.SILENT
 .SUFFIXES: .l
 
+!ifdef __LINUX__
+BUILD_TARGET = ../lib/wattcpwl.lib
+!else
+BUILD_TARGET = ..\lib\wattcpwl.lib
+!endif
+
 CC     = wcc
 AFLAGS = -0s
 !ifdef __LINUX__
 CFLAGS = -ml -6 -I../inc;$(%WATCOM)/h
-TARGET = ../lib/wattcpwl.lib
 OBJDIR = watcom/large/
 !else
 CFLAGS = -ml -6 -I..\inc;$(%WATCOM)\h
-TARGET = ..\lib\wattcpwl.lib
 OBJDIR = watcom\large\
 !endif
 LIBARG = $(OBJDIR)wlib.arg
@@ -138,10 +142,10 @@ CFLAGS = $(CFLAGS) -zq -bt=dos -fr=nul -w4 -fpc -zm -s -oilrtfm
 
 AS = wasm
 
-all: $(TARGET)
+all: $(BUILD_TARGET)
 
-$(TARGET): $(OBJS) $(LIBARG)
-      wlib -q -b -c $(TARGET) @$(LIBARG)
+$(BUILD_TARGET): $(OBJS) $(LIBARG)
+      wlib -q -b -c $(BUILD_TARGET) @$(LIBARG)
 
 $(OBJDIR)asmpkt.obj:  asmpkt.asm
 $(OBJDIR)asmpkt4.obj: asmpkt4.asm
@@ -166,7 +170,7 @@ clean: .SYMBOLIC
           rm -f $(OBJDIR)*.obj
           rm -f $(C_ARGS)
           rm -f $(LIBARG)
-          rm -f $(TARGET)
+          rm -f $(BUILD_TARGET)
           @echo Cleaning done
 
 $(LIBARG): $(__MAKEFILES__)

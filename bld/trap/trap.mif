@@ -25,7 +25,7 @@ trap_basename = $(xname)$(trap_suf_$(host))
 trap_basename = $(xname)cli
 !endif
 
-target = $(trap_basename).exe
+build_target = $(trap_basename).exe
 
 TRAP_common_objs = testcli.obj
 TRAP_remote_objs =
@@ -123,16 +123,16 @@ trap_ext_win         = .dll
 
 trap_basename = $(xname)
 
-!ifdef trap_ext_$(host_os)_$(target_sys)
-target = $(trap_basename)$(trap_ext_$(host_os)_$(target_sys))
+!ifdef trap_ext_$(host_os)_$(target_os)
+build_target = $(trap_basename)$(trap_ext_$(host_os)_$(target_os))
 !else ifdef trap_ext_$(host_os)
-target = $(trap_basename)$(trap_ext_$(host_os))
+build_target = $(trap_basename)$(trap_ext_$(host_os))
 !else
-target = $(trap_basename).trp
+build_target = $(trap_basename).trp
 !endif
 !ifndef __WATCOM_TOOLS__
 !ifdef ext_lib_shared
-target = $(trap_basename)$(ext_lib_shared)
+build_target = $(trap_basename)$(ext_lib_shared)
 !endif
 !endif
 

@@ -65,10 +65,6 @@ dig_arch = all
 
 !include $(wv_dir)/wvobjs.mif
 
-target_os2 = os2
-target_win = win
-target_nt  = win
-
 #
 # cflags
 #
@@ -167,59 +163,16 @@ libtarg_name          = wd
 # rc and others
 #
 !ifeq host_os os2
-target_rc_inc_dirs = -I"../../res/os2"
+wv_rc_inc_dirs = -I"../../res/os2"
 !else
-target_rc_inc_dirs = -I"../../res/win"
+wv_rc_inc_dirs = -I"../../res/win"
 !endif
-rc_inc_dirs = -I. $(target_rc_inc_dirs) -I"../../res" -I"../../res/dlgs" &
+rc_inc_dirs = -I. $(wv_rc_inc_dirs) -I"../../res" -I"../../res/dlgs" &
     -I"../../h" $(cli_aui_rc_inc_dirs) -I"$(dig_dir)/h"
 
 !ifdef sys_windowed
 
-bitmaps_os2 = &
-    ../../res/os2/zapant.ico &
-    ../../res/os2/8087.ico &
-    ../../res/os2/asm.ico &
-    ../../res/os2/brk.ico &
-    ../../res/os2/call.ico &
-    ../../res/os2/exe.ico &
-    ../../res/os2/func.ico &
-    ../../res/os2/glob.ico &
-    ../../res/os2/hot.ico &
-    ../../res/os2/io.ico &
-    ../../res/os2/log.ico &
-    ../../res/os2/mem.ico &
-    ../../res/os2/mod.ico &
-    ../../res/os2/reg.ico &
-    ../../res/os2/repl.ico &
-    ../../res/os2/src.ico &
-    ../../res/os2/srch.ico &
-    ../../res/os2/thrd.ico &
-    ../../res/os2/var.ico
-
-bitmaps_win = &
-    ../../res/win/zapant.ico &
-    ../../res/win/8087.ico &
-    ../../res/win/asm.ico &
-    ../../res/win/brk.ico &
-    ../../res/win/call.ico &
-    ../../res/win/exe.ico &
-    ../../res/win/func.ico &
-    ../../res/win/glob.ico &
-    ../../res/win/hot.ico &
-    ../../res/win/io.ico &
-    ../../res/win/log.ico &
-    ../../res/win/mem.ico &
-    ../../res/win/mod.ico &
-    ../../res/win/reg.ico &
-    ../../res/win/repl.ico &
-    ../../res/win/src.ico &
-    ../../res/win/srch.ico &
-    ../../res/win/thrd.ico &
-    ../../res/win/var.ico
-
-bitmaps = &
-    $(bitmaps_$(target_$(host_os))) &
+bitmaps_common = &
     ../../res/splash.bmp &
     ../../res/read1.bmp &
     ../../res/read2.bmp &
@@ -262,6 +215,54 @@ bitmaps = &
     ../../res/up.bmp &
     ../../res/down.bmp &
     ../../res/home.bmp
+
+!if host_os os2
+
+bitmaps = $(bitmaps_common) &
+    ../../res/os2/zapant.ico &
+    ../../res/os2/8087.ico &
+    ../../res/os2/asm.ico &
+    ../../res/os2/brk.ico &
+    ../../res/os2/call.ico &
+    ../../res/os2/exe.ico &
+    ../../res/os2/func.ico &
+    ../../res/os2/glob.ico &
+    ../../res/os2/hot.ico &
+    ../../res/os2/io.ico &
+    ../../res/os2/log.ico &
+    ../../res/os2/mem.ico &
+    ../../res/os2/mod.ico &
+    ../../res/os2/reg.ico &
+    ../../res/os2/repl.ico &
+    ../../res/os2/src.ico &
+    ../../res/os2/srch.ico &
+    ../../res/os2/thrd.ico &
+    ../../res/os2/var.ico
+
+!else
+
+bitmaps = $(bitmaps_common) &
+    ../../res/win/zapant.ico &
+    ../../res/win/8087.ico &
+    ../../res/win/asm.ico &
+    ../../res/win/brk.ico &
+    ../../res/win/call.ico &
+    ../../res/win/exe.ico &
+    ../../res/win/func.ico &
+    ../../res/win/glob.ico &
+    ../../res/win/hot.ico &
+    ../../res/win/io.ico &
+    ../../res/win/log.ico &
+    ../../res/win/mem.ico &
+    ../../res/win/mod.ico &
+    ../../res/win/reg.ico &
+    ../../res/win/repl.ico &
+    ../../res/win/src.ico &
+    ../../res/win/srch.ico &
+    ../../res/win/thrd.ico &
+    ../../res/win/var.ico
+
+!endif
 
 !endif
 

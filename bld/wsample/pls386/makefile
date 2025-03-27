@@ -5,6 +5,6 @@ host_cpu = 386
 
 exetarg_ext = .exp
 
-target = pls
+target_os = pls
 
 !include ../master.mif

@@ -6,7 +6,7 @@ host_cpu = 386
 host_os  = nov
 
 target_cpu = x86
-target_sys = nlm5
+target_os  = nlm5
 
 srv = tcp
 which = SERVER

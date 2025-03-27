@@ -107,12 +107,12 @@ case = option caseexact
 
 
 !ifeq targ qnx
-targets = mthread.qnx
+build_targets = mthread.qnx
 !else
-targets = dllsamp.dll mthread.exe
+build_targets = dllsamp.dll mthread.exe
 !endif
 
-all : .SYMBOLIC $(targets)
+all : $(build_targets) .SYMBOLIC
         @%null
 
 !ifeq targ os2

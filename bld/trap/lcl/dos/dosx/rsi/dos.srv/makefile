@@ -6,7 +6,7 @@ host_os  = dos
 host_cpu = i86
 
 target_cpu = x86
-target_sys = rsi
+target_os  = rsi
 
 srv  = rsi
 which = SERVER

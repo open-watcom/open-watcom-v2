@@ -5,9 +5,12 @@
 host_os  = $(bld_os)
 host_cpu = $(bld_cpu)
 
-target_cpu = $(bld_cpu)
-!ifeq bld_cpu 386
+!ifndef target_cpu
+! ifeq bld_cpu 386
 target_cpu = x86
+! else
+target_cpu = $(bld_cpu)
+! endif
 !endif
 
 os      = linux

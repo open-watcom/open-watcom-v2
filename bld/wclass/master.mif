@@ -2,11 +2,6 @@ proj_name = wclass
 
 wclass_autodepends = .AUTODEPEND
 
-target_dos = $(wclass_dir)/dos/cpp
-target_nt  = $(wclass_dir)/win/cpp
-target_os2 = $(wclass_dir)/pm/cpp
-target_win = $(wclass_dir)/win/cpp
-
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif
@@ -15,7 +10,7 @@ target_win = $(wclass_dir)/win/cpp
 #
 # cflags
 #
-.cpp : $(target_$(host_os));$(wclass_dir)/cpp
+.cpp : $(cli_wclass_src_internal)/cpp;$(wclass_dir)/cpp
 
 inc_dirs = $(cli_wclass_inc_dirs)
 
