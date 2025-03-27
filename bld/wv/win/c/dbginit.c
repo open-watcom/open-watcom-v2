@@ -49,7 +49,6 @@
 #include "dbgcmdln.h"
 #include "trptypes.h"
 #include "trpsys.h"
-#include "wininit.h"
 #include "guigsysh.h"
 #include "liteng.h"
 

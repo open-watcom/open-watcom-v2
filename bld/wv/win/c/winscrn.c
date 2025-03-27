@@ -48,7 +48,6 @@
 #include "trpld.h"
 #include "trpsys.h"
 #include "dbginit.h"
-#include "wininit.h"
 #include "setevent.h"
 #include "uiwinhk.h"
 #include "int10.h"
