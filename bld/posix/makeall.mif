@@ -101,4 +101,9 @@ $(additional_remove_subdirs) :
     mkdir $@
 !endif
 
+!else
+
+clean : .SYMBOLIC
+    @%null
+
 !endif
