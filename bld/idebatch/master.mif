@@ -8,6 +8,7 @@ idebatch_autodepend = .AUTODEPEND
 defrule_key = editor
 subdir_editor = eobjs
 extra_cpp_editor_flags = -D__EDITOR__
+additional_remove_subdirs = eobjs
 !include defrule.mif
 !endif
 !include deftarg.mif
@@ -105,4 +106,9 @@ $(subdir_editor)/winint.res : ../win/winint.rc
     @%make echo_rc
     $(rc) $(ppflags_common) $(rc_cppflags) -D__EDITOR__ $(rc_flags) $(inc_dirs) $(rc_inc_path) $[@ -fo=$@
 
+!endif
+
+!ifdef additional_remove_subdirs
+$(additional_remove_subdirs) :
+    mkdir $@
 !endif

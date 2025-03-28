@@ -1,8 +1,5 @@
 !ifdef defrule_key
 defrule_obj_target ={$(subdir_$+$(defrule_key)$-)}.obj
-$(subdir_$+$(defrule_key)$-) : .EXPLICIT
-    mkdir $@
-additional_clean_subdirs += $(subdir_$+$(defrule_key)$-)
 !else
 defrule_obj_target = .obj
 !endif

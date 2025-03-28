@@ -2,14 +2,6 @@
 # Standard project stuff.
 #
 
-# Extra files to delete on clean
-additional_clean = *.gh *.grc *.gc
-
-additional_clean_subdirs = $(bin_subdir)
-
-$(bin_subdir) : .EXPLICIT
-    mkdir $@
-
 exetarg_name = $(bin_subdir)/$(proj_name)
 
 !ifeq target_cpu axp
@@ -31,6 +23,11 @@ extra_cpp_flags = -D__TARGET_386__
 #!else
 #!error undrecognized CPU
 !endif
+
+# Extra files to delete on clean
+additional_clean = *.gh *.grc *.gc
+
+additional_remove_subdirs = $(bin_subdir)
 
 #
 # Include standard .mif files to do the work.
@@ -63,3 +60,6 @@ optencod_targets += dbg
 cmdlnprs.gc cmdlnprs.gh usagemsg.gh : ../../gml/options.gml .EXPLICIT
     @%make echo_optencod
     $(optencod) -n $(optencod_enc_$(host_os)) $]@ cmdlnprs.gh cmdlnprs.gc usagemsg.gh . $(optencod_targets)
+
+$(additional_remove_subdirs) :
+    mkdir $@

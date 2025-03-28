@@ -14,6 +14,8 @@ subdir_bpatch   = bpatch
 subdir_bdump    = bdump
 subdir_bdiff    = bdiff
 
+additional_remove_subdirs = wcpatch wpatch bpatch bdump bdiff
+
 !include cproj.mif
 !include defrule.mif
 defrule_key = wcpatch
@@ -174,3 +176,6 @@ bdiff.res : ../h/bpatch.rc ../h/bpatch.h dusage.gh
 wpatch.res wcpatch.res : ../h/bpatch.rc ../h/bpatch.h
     @%make echo_rc
     $(rcu8j) $(ppflags_common) $(ppflags_wreslib) $(rc_cppflags) $(rc_flags) $(rc_inc_path) $[@ -fo=$@
+
+$(additional_remove_subdirs) :
+    mkdir $@

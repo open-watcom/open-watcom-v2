@@ -1,8 +1,11 @@
 clean: .SYMBOLIC .EXPLICIT
-    @%make killobjs
-!if defined( additional_clean_dll_subdir ) || defined( additional_clean_subdirs )
-    rm -rf $(additional_clean_dll_subdir) $(additional_clean_subdirs)
+!if defined( additional_remove_dll_subdir ) || defined( additional_remove_subdirs )
+    rm -rf $(additional_remove_dll_subdir) $(additional_remove_subdirs)
 !endif
+!ifdef additional_clean_subdirs
+    @%make clean_subdirs
+!endif
+    @%make killobjs
     @%make killnonobjs
 
 killobjs: .PROCEDURE .EXPLICIT

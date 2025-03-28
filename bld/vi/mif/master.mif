@@ -29,7 +29,8 @@ edbind = bedbind
 error_dat = ../dat/error.dat
 
 additional_clean = *.gh *.grh *.grc *.rex *.gdh *.gch $(bind_compiled) $(error_dat)
-additional_clean_subdirs = $(bin_subdir)
+
+additional_remove_subdirs = $(bin_subdir)
 
 !include cproj.mif
 !include defrule.mif
@@ -49,9 +50,6 @@ additional_clean_subdirs = $(bin_subdir)
 !include ../mif/special.mif
 !include ../mif/link.mif
 !include ../mif/bind.mif
-
-$(bin_subdir) : .EXPLICIT
-    mkdir $@
 
 .dat : $(vi_dir)/dat
 
@@ -123,3 +121,6 @@ edbind_data : .PROCEDURE .EXPLICIT
     @echo edbind edbind.tmp $(name).exe $@
 !endif
     $(noecho)$(edbind) -dedbind.tmp -q $(name).exe $@
+
+$(additional_remove_subdirs) :
+    mkdir $@

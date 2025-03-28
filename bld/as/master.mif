@@ -20,6 +20,8 @@ exetarg_name = was$(target_cpu)
 
 ntverrc_exe = $(exetarg_name)
 
+additional_remove_subdirs = stand lib
+
 !include cproj.mif
 !include defrule.mif
 ###########################
@@ -260,3 +262,6 @@ optencod_targets += dbg
 cmdlnprs.gh cmdlnprs.gc usage.gh : ../../h/options.gml $(__MAKEFILES__)
     @%make echo_optencod
     $(optencod) -rc=MSG_USAGE_BASE -utf8 $(optencod_opt_$(host_os)) $[@ cmdlnprs.gh cmdlnprs.gc usage.gh . $(optencod_targets)
+
+$(additional_remove_subdirs) :
+    mkdir $@

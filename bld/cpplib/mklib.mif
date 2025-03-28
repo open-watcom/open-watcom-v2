@@ -4,7 +4,7 @@ proj_name = cpplib
 
 x_subdir = xobjs
 
-additional_clean_subdirs = $(x_subdir)
+additional_remove_subdirs = xobjs
 
 !include $(cpplib_dir)/master.mif
 

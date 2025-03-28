@@ -9,4 +9,4 @@
 $(dll_subdir) : .EXPLICIT
     mkdir $@
 
-additional_clean_dll_subdir = $(dll_subdir)
+additional_remove_dll_subdir = $(dll_subdir)

@@ -6,11 +6,13 @@ proj_name = posix_lib
 
 posix_lib_autodepends = .AUTODEPEND
 
-!include ../common.mif
+!include ../memmodel.mif
 
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif
+
+!include ../common.mif
 
 #
 # cflags

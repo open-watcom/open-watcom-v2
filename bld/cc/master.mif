@@ -41,11 +41,8 @@ ntverrc_exe = $(exename)
 
 additional_clean = *.int *.gh *.grh *.gc *.grc
 !ifndef bootstrap
-additional_clean_subdirs = $(bin_subdir)
+additional_remove_subdirs = $(bin_subdir)
 !endif
-
-$(bin_subdir) : .EXPLICIT
-    mkdir $@
 
 !include cproj.mif
 !include defrule.mif
@@ -230,3 +227,8 @@ optencod_targets += dbg
 cmdlnprs.gh cmdlnprs.gc usage.gh usage01.int $(qnx_usage) : ../../gml/options.gml
     @%make echo_optencod
     $(optencod) -i -n $(optencod_opt_$(host_os)) $(optencod_enc_$(host_os)) $]@ cmdlnprs.gh cmdlnprs.gc usage.gh . $(optencod_targets)
+
+!ifdef additional_remove_subdirs
+$(additional_remove_subdirs) :
+    mkdir $@
+!endif
