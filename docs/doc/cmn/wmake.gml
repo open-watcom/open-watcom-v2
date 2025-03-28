@@ -4497,7 +4497,7 @@ check for Ctrl+Break
 .point call
 nest batch files
 .point cd
-change current directory
+change current directory, intercepted by &makcmdup
 .point chdir
 change current directory
 .point cls

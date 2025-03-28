@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -1523,7 +1523,6 @@ STATIC RET_T handleFor( char *line )
 #endif
 
 
-#if defined( __OS2__ ) || defined( __NT__ ) || defined( __UNIX__ ) || defined( __RDOS__ )
 STATIC RET_T handleCD( char *cmd )
 /********************************/
 {
@@ -1586,7 +1585,6 @@ STATIC RET_T handleChangeDrive( const char *cmd )
     }
     return( RET_SUCCESS );
 }
-#endif
 #endif
 
 
@@ -2277,9 +2275,9 @@ STATIC RET_T shellSpawn( char *cmd, shell_flags flags )
         case COM_MKDIR: my_ret = handleMkdir( cmd );        break;
         case COM_RMDIR: my_ret = handleRmdir( cmd );        break;
 #if defined( __OS2__ ) || defined( __NT__ ) || defined( __UNIX__ ) || defined( __RDOS__ )
-        case COM_CD:
-        case COM_CHDIR: my_ret = handleCD( cmd );           break;
+        case COM_CHDIR:
 #endif
+        case COM_CD:    my_ret = handleCD( cmd );           break;
 #if defined( __OS2__ ) || defined( __NT__ ) || defined( __RDOS__ )
         case CNUM:      my_ret = handleChangeDrive( cmd );  break;
 #endif
