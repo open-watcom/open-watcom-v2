@@ -109,7 +109,7 @@ objs += $(i_$(host_os)) $(mem_objs)
 objs += loadfind.obj
 !endif
 
-libs = $(cli_gui_libs) $(libs_$(host_os)) $(cli_libzip_libs) $(cli_zlib_libs)
+libs = $(cli_gui_libs) $(cli_libzip_libs) $(cli_zlib_libs)
 
 #
 # EXE's
