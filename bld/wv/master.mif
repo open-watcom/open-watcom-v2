@@ -27,21 +27,6 @@ wv_os2pm = 1
 !endif
 !endif
 
-!ifdef sys_windowed
-name_os2i86    = wdw16
-!else
-name_os2i86    = wd16
-name_wini86    = wdc
-!endif
-
-!ifdef name_$(host)
-name = $(name_$(host))
-!else ifdef sys_windowed
-name = wdw
-!else
-name = wd
-!endif
-
 additional_clean = *.gh *.grc
 !ifdef wv_os2pm
 additional_clean += *.dlg
@@ -146,9 +131,21 @@ exetarg_name          = $(wv_engine_noui)
 exetarg_prebuild_objs = liteng.gh litdui.gh litmenu.gh usage.gh usagej.gh
 exetarg_objs          = $(engine_objs) fingmsg.obj $(ui_objs)
 exetarg_libs          = $(cli_aui_libs)
-exetarg_name          = $(name)
+! ifdef sys_windowed
+name_os2i86 = wdw16
+! else
+name_os2i86 = wd16
+name_wini86 = wdc
+! endif
+! ifdef name_$(host)
+exetarg_name = $(name_$(host))
+! else ifdef sys_windowed
+exetarg_name = wdw
+! else
+exetarg_name = wd
+! endif
 !endif
-exetarg_res           = $(proj_name).res
+exetarg_res = $(proj_name).res
 !include exetarg.mif
 
 #
