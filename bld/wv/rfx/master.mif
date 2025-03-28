@@ -20,8 +20,8 @@ rfx_os = $(host_os)
 
 dig_arch = $(host_cpu)
 
-!include $(dig_dir)/digcli.mif
-!include $(dig_dir)/trpcli.mif
+!include $(dig_dir)/client.mif
+!include $(trap_dir)/client.mif
 
 #
 # cflags

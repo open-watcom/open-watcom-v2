@@ -96,7 +96,7 @@ build_target = $(serv_basename)$(server_ext_$(host_os))
 build_target = $(serv_basename).exe
 !endif
 
-!include $(dig_dir)/trpcli.mif
+!include $(trap_dir)/client.mif
 
 !ifndef test
 !ifdef builtin_trap

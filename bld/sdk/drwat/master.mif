@@ -23,9 +23,9 @@ additional_clean = *.gh *.grh *.grc
 
 dig_arch = $(host_cpu)
 
-!include $(dig_dir)/digcli.mif
-!include $(dig_dir)/dipcli.mif
-!include $(dig_dir)/madcli.mif
+!include $(dig_dir)/client.mif
+!include $(dip_dir)/client.mif
+!include $(mad_dir)/client.mif
 
 common_dir = ../../common
 

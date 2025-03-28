@@ -14,8 +14,8 @@ dipdump_autodepends = .AUTODEPEND
 !include defrule.mif
 !include deftarg.mif
 
-!include $(dig_dir)/digcli.mif
-!include $(dig_dir)/dipcli.mif
+!include $(dig_dir)/client.mif
+!include $(dip_dir)/client.mif
 
 #
 # cflags

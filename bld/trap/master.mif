@@ -152,7 +152,7 @@ os_subdir = $(os_subdir_$(host))
 os_subdir = $(host_os)
 !endif
 
-!include $(dig_dir)/digcli.mif
+!include $(dig_dir)/client.mif
 !ifeq which SERVER
 !include $(trap_dir)/serv.mif
 !else

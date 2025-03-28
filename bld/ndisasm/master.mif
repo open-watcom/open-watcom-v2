@@ -23,8 +23,8 @@ additional_clean = *.gh *.grh *.grc
 
 dig_arch = all
 
-!include $(dig_dir)/digcli.mif
-!include ../discli.mif
+!include $(dig_dir)/client.mif
+!include ../client.mif
 
 #
 # cflags

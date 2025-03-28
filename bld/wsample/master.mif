@@ -47,7 +47,7 @@ ntverrc_exe = $(exetarg_name)
 
 dig_arch = $(host_cpu)
 
-!include $(dig_dir)/digcli.mif
+!include $(dig_dir)/client.mif
 
 !include tools.mif
 
