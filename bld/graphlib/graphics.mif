@@ -28,7 +28,7 @@ memory_model_386 = s
 memory_model_386 = s
 !endif
 
-additional_remove_subdirs = v2
+additional_remove_subdirs = v2objs
 
 !include cproj.mif
 !include defrule.mif
