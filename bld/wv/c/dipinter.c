@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -348,7 +348,7 @@ static size_t WVIMPENTRY( ModName )( imp_image_handle *iih, imp_mod_handle imh, 
 }
 
 
-static char *WVIMPENTRY( ModSrcLang )( imp_image_handle *iih, imp_mod_handle imh )
+static const char *WVIMPENTRY( ModSrcLang )( imp_image_handle *iih, imp_mod_handle imh )
 {
     /* unused parameters */ (void)iih; (void)imh;
 

@@ -51,6 +51,7 @@
 #include "dftypes.h"
 #include "targetdb.h"
 #include "namelist.h"
+#include "felang.h"
 #include "cgprotos.h"
 #include "feprotos.h"
 
@@ -87,9 +88,9 @@ static sect_info        DwarfSegs[DW_DEBUG_MAX];
 static big_patch_handle UnitSize[1];
 
 static const struct dwarf_lang_map LangNames[] = {
-    {DW_LANG_C89,           "C"},
-    {DW_LANG_C_plus_plus,   "CPP"},
-    {DW_LANG_Fortran77,     "FORTRAN"},
+    {DW_LANG_C89,           FE_LANG_C        },
+    {DW_LANG_C_plus_plus,   FE_LANG_CPP      },
+    {DW_LANG_Fortran77,     FE_LANG_FORTRAN  },
 };
 
 static void CLIWrite( dw_sectnum sect, const void *block, size_t size )
@@ -319,11 +320,11 @@ void    DFInitDbgInfo( void )
 static dw_langnum SetDwarfLang( void )
 {
     dw_langnum  ret;
-    char        *name;
+    const char  *name;
     int         index;
 
     ret = DW_LANG_C89;
-    name =  FEAuxInfo( NULL, FEINF_SOURCE_LANGUAGE );
+    name = (const char *)FEAuxInfo( NULL, FEINF_SOURCE_LANGUAGE );
     for( index = 0; index < MAX_LANG; ++index ) {
         if( strcmp( name, LangNames[index].name ) == 0 ) {
             ret = LangNames[index].dwarf_lang;

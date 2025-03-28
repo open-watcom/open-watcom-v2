@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -75,6 +75,7 @@
   #error Unknown platform
 #endif
 #include "langenv.h"
+#include "felang.h"
 
 #include "wf77segs.h"
 #include "dwarfid.h"
@@ -2023,7 +2024,7 @@ pointer FEAuxInfo( pointer req_handle, aux_class request )
     case FEINF_DEPENDENCY_NAME :
         return( ((dep_info *)req_handle)->fn );
     case FEINF_SOURCE_LANGUAGE:
-        return( "FORTRAN" );
+        return( FE_LANG_FORTRAN );
     case FEINF_DBG_DWARF_PRODUCER:
         return( DWARF_PRODUCER_ID );
     default:

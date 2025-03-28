@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -105,8 +105,8 @@ void DBIInitModule( mod_entry *obj )
     }
 }
 
-void DBIP1Source( byte *buff, byte *endbuff )
-/*******************************************/
+void DBIP1Source( const byte *buff, const byte *endbuff )
+/*******************************************************/
 {
     byte        major;
     byte        minor;
@@ -119,7 +119,7 @@ void DBIP1Source( byte *buff, byte *endbuff )
     }
     ObjFormat |= FMT_DEBUG_COMENT;
     if( LinkFlags & LF_OLD_DBI_FLAG ) {
-        ODBIP1Source( major, minor, (char *)buff, endbuff - buff );
+        ODBIP1Source( major, minor, (const char *)buff, endbuff - buff );
     }
 }
 

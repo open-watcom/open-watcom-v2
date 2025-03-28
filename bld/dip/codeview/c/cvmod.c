@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,6 +31,7 @@
 
 
 #include "cvinfo.h"
+#include "felang.h"
 
 
 struct find_mod {
@@ -126,7 +127,7 @@ cs_compile *GetCompInfo( imp_image_handle *iih, imp_mod_handle imh )
     }
 }
 
-char *DIPIMPENTRY( ModSrcLang )( imp_image_handle *iih, imp_mod_handle imh )
+const char *DIPIMPENTRY( ModSrcLang )( imp_image_handle *iih, imp_mod_handle imh )
 {
     cs_compile  *comp_info;
 
@@ -134,14 +135,14 @@ char *DIPIMPENTRY( ModSrcLang )( imp_image_handle *iih, imp_mod_handle imh )
     if( comp_info != NULL ) {
         switch( comp_info->language ) {
         case LANG_C:
-            return( "c" );
+            return( FE_LANG_C );
         case LANG_CPP:
-            return( "cpp" );
+            return( FE_LANG_CPP );
         case LANG_FORTRAN:
-            return( "fortran" );
+            return( FE_LANG_FORTRAN );
         }
     }
-    return( "c" );
+    return( FE_LANG_C );
 }
 
 dip_status DIPIMPENTRY( ModInfo )( imp_image_handle *iih, imp_mod_handle imh, handle_kind hk )

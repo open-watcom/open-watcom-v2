@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -65,6 +65,7 @@
 #include "specfuns.h"
 #include "autodept.h"
 #include "dwarfid.h"
+#include "felang.h"
 #include "cgfront.h"
 #include "feprotos.h"
 #ifdef DEVBUILD
@@ -1243,7 +1244,7 @@ void *FEAuxInfo(                // REQUEST AUXILLIARY INFORMATION
     case FEINF_SOURCE_LANGUAGE:
         DbgNotSym();
         DbgNotRetn();
-        retn = "CPP";
+        retn = FE_LANG_CPP;
         break;
 #if _INTEL_CPU
     case FEINF_P5_CHIP_BUG_SYM:

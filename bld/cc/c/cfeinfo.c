@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -45,6 +45,7 @@
 #include "cfeinfo.h"
 #include "caux.h"
 #include "dwarfid.h"
+#include "felang.h"
 
 
 #define TRUNC_SYMBOL_HASH_LEN        4
@@ -1093,7 +1094,7 @@ CGPOINTER FEAuxInfo( CGPOINTER req_handle, aux_class request )
 
     switch( request ) {
     case FEINF_SOURCE_LANGUAGE:
-        return( (CGPOINTER)"C" );
+        return( (CGPOINTER)FE_LANG_C );
 #if _INTEL_CPU
     case FEINF_STACK_SIZE_8087:
         return( (CGPOINTER)(pointer_uint)Stack87 );

@@ -50,6 +50,7 @@
 #include "namelist.h"
 #include "dbsupp.h"
 #include "cvtypes.h"
+#include "felang.h"
 #include "feprotos.h"
 #include "cgprotos.h"
 
@@ -77,9 +78,9 @@ static const struct sf_info SInfo[SG_LAST] = {
 };
 
 static const struct cv_lang_map LangNames[] = {
-    {LANG_C,       "C"},
-    {LANG_CPP,     "CPP"},
-    {LANG_FORTRAN, "FORTRAN"},
+    {LANG_C,       FE_LANG_C        },
+    {LANG_CPP,     FE_LANG_CPP      },
+    {LANG_FORTRAN, FE_LANG_FORTRAN  },
 };
 
 static  void    NewBuff( cv_out *out, segment_id segid )
@@ -172,12 +173,12 @@ void    CVInitDbgInfo( void )
 
 static int SetCvLang( void )
 {
-    int     ret;
-    char    *name;
-    int     index;
+    int         ret;
+    const char  *name;
+    int         index;
 
     ret = LANG_C;
-    name =  FEAuxInfo( NULL, FEINF_SOURCE_LANGUAGE );
+    name =  (const char *)FEAuxInfo( NULL, FEINF_SOURCE_LANGUAGE );
     for( index = 0; index < MAX_LANG; ++index ) {
         if( strcmp( name, LangNames[index].name ) == 0 ) {
             ret = LangNames[index].cv_lang;

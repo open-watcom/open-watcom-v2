@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2023-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,6 +32,7 @@
 
 
 #include "skel.h"
+#include "felang.h"
 
 
 /*
@@ -77,15 +78,15 @@ size_t DIPIMPENTRY( ModName )( imp_image_handle *iih,
     return( 0 );
 }
 
-char *DIPIMPENTRY( ModSrcLang )( imp_image_handle *iih, imp_mod_handle imh )
-/***************************************************************************
+const char *DIPIMPENTRY( ModSrcLang )( imp_image_handle *iih, imp_mod_handle imh )
+/*********************************************************************************
  * TODO:
  *
  * Return a pointer to a string naming the source language of the
  * module. Currently allowed names are "c", "cpp", and "fortran".
  */
 {
-    return( "c" );
+    return( FE_LANG_C );
 }
 
 dip_status DIPIMPENTRY( ModInfo )( imp_image_handle *iih,

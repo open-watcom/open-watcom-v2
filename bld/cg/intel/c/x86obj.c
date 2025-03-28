@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -1180,7 +1180,7 @@ void    ObjInit( void )
         } else {
             OutByte( 0, names );
         }
-        OutString( FEAuxInfo( NULL, FEINF_SOURCE_LANGUAGE ), names );
+        OutString( (const char *)FEAuxInfo( NULL, FEINF_SOURCE_LANGUAGE ), names );
         PutObjOMFRec( CMD_COMENT, names );
     }
     for( depend = NULL; (depend = FEAuxInfo( depend, FEINF_NEXT_DEPENDENCY )) != NULL; ) {

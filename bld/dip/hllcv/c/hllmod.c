@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2023-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,6 +31,7 @@
 
 
 #include "hllinfo.h"
+#include "felang.h"
 
 
 /************************************
@@ -166,16 +167,16 @@ hll_ssr_cuinfo *hllGetCompInfo( imp_image_handle *iih, imp_mod_handle imh )
     return( NULL );
 }
 
-char *DIPIMPENTRY( ModSrcLang )( imp_image_handle *iih, imp_mod_handle imh )
-/***************************************************************************
+const char *DIPIMPENTRY( ModSrcLang )( imp_image_handle *iih, imp_mod_handle imh )
+/*********************************************************************************
  * Gets the source language for a module.
  */
 {
     hll_ssr_cuinfo *cuinfo = hllGetCompInfo( iih, imh );
     if( cuinfo != NULL ) {
         switch( cuinfo->language ) {
-        case HLL_LANG_C:        return( "c" );
-        case HLL_LANG_CPP:      return( "cpp" );
+        case HLL_LANG_C:        return( FE_LANG_C );
+        case HLL_LANG_CPP:      return( FE_LANG_CPP );
 #if 1 /* additional */
         case HLL_LANG_PLX86:    return( "plx86" );
         case HLL_LANG_PL1:      return( "pl1" );
@@ -186,7 +187,7 @@ char *DIPIMPENTRY( ModSrcLang )( imp_image_handle *iih, imp_mod_handle imh )
 #endif
         }
     }
-    return( "c" );
+    return( FE_LANG_C );
 }
 
 dip_status DIPIMPENTRY( ModInfo )( imp_image_handle *iih, imp_mod_handle imh, handle_kind hk )

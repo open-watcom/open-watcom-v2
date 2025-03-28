@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -51,7 +51,7 @@ static void FreeInfBlks( info_block *blk )
     }
 }
 
-static void UnloadInfo( imp_image_handle *iih )
+static void ImpUnloadInfo( imp_image_handle *iih )
 {
     section_info        *inf;
     unsigned            i;
@@ -80,7 +80,7 @@ void DIPIMPENTRY( UnloadInfo )( imp_image_handle *iih )
  */
 {
     InfoClear( iih );
-    UnloadInfo( iih );
+    ImpUnloadInfo( iih );
 }
 
 
@@ -336,7 +336,7 @@ dip_status DIPIMPENTRY( LoadInfo )( FILE *fp, imp_image_handle *iih )
     ds = DoPermInfo( iih );
     iih->sym_fp = NULL;
     if( ds != DS_OK )
-        UnloadInfo( iih );
+        ImpUnloadInfo( iih );
     return( ds );
 }
 

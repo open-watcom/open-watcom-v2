@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2016-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2016-2025 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -38,7 +38,7 @@ pick( void,             MapInfo,            ( imp_image_handle *, void * ) )
 pick( void,             UnloadInfo,         ( imp_image_handle * ) )
 pick( walk_result,      WalkModList,        ( imp_image_handle *, DIP_IMP_MOD_WALKER *, void * ) )
 pick( size_t,           ModName,            ( imp_image_handle *, imp_mod_handle, char *buff, size_t buff_size ) )
-pick( char *,           ModSrcLang,         ( imp_image_handle *, imp_mod_handle ) )
+pick( const char *,     ModSrcLang,         ( imp_image_handle *, imp_mod_handle ) )
 pick( dip_status,       ModInfo,            ( imp_image_handle *, imp_mod_handle, handle_kind ) )
 pick( dip_status,       ModDefault,         ( imp_image_handle *, imp_mod_handle, default_kind, dig_type_info * ) )
 pick( search_result,    AddrMod,            ( imp_image_handle *, address, imp_mod_handle * ) )

@@ -37,6 +37,8 @@
 #include "dfld.h"
 #include "dfaddr.h"
 #include "dfaddsym.h"
+#include "felang.h"
+
 
 /*
  * NYI: should be OS && location sensitive
@@ -357,9 +359,9 @@ size_t DIPIMPENTRY( ModName )( imp_image_handle *iih,
     return( len );
 }
 
-char *DIPIMPENTRY( ModSrcLang )( imp_image_handle *iih, imp_mod_handle imh )
+const char *DIPIMPENTRY( ModSrcLang )( imp_image_handle *iih, imp_mod_handle imh )
 {
-    char       *ret = NULL;
+    const char      *ret = NULL;
 
     if( imh == IMH_NOMOD ) {
         DCStatus( DS_FAIL );
@@ -368,16 +370,16 @@ char *DIPIMPENTRY( ModSrcLang )( imp_image_handle *iih, imp_mod_handle imh )
     switch( IMH2MODI( iih, imh )->lang ) {
     case DR_LANG_UNKNOWN:
 //      ret = "unknown";
-        ret = "c";
+        ret = FE_LANG_C;
         break;
     case DR_LANG_CPLUSPLUS:
-        ret = "cpp";
+        ret = FE_LANG_CPP;
         break;
     case DR_LANG_FORTRAN:
-        ret = "fortran";
+        ret = FE_LANG_FORTRAN;
         break;
     case DR_LANG_C:
-        ret = "c";
+        ret = FE_LANG_C;
         break;
     }
     return( ret );
