@@ -1,8 +1,4 @@
 cli_rcsdll_inc_dirs = -I"$(rcsdll_dir)/h"
 !ifndef win386
-!ifdef bootstrap
-cli_rcsdll_libs = $(rcsdll_dir)/$(bin_subdir)/rcsdll.lib
-!else
-cli_rcsdll_libs = $(rcsdll_dir)/$(host)/rcsdll.lib
-!endif
+cli_rcsdll_libs = $(rcsdll_dir)/$(bin_host)/rcsdll.lib
 !endif

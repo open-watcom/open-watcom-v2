@@ -1,6 +1,2 @@
 cli_libzip_inc_dirs = -I"$(libzip_dir)/lib"
-!ifdef bootstrap
-cli_libzip_libs = $(setupgui_dir)/ziplib/$(bin_subdir)/ziplib.lib
-!else ifneq host_cpu i86
-cli_libzip_libs = $(setupgui_dir)/ziplib/$(host)/ziplib.lib
-!endif
+cli_libzip_libs = $(setupgui_dir)/ziplib/$(bin_host)/ziplib.lib

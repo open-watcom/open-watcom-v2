@@ -19,10 +19,6 @@ ui_ui_inc_dirs_internal_unix  = -I"$(ui_dir)/unix/h"
 !include $(ncurses_dir)/client.mif
 ! endif
 cli_ui_inc_dirs = -I"$(ui_dir)/h" $(cli_ncurses_inc_dirs)
-! ifdef bootstrap
-cli_ui_libs = $(ui_dir)/$(cli_ui_os)/$(bin_subdir)/ui.lib $(cli_ncurses_libs)
-! else
-cli_ui_libs = $(ui_dir)/$(cli_ui_os)/$(host)/ui.lib $(cli_ncurses_libs)
-! endif
+cli_ui_libs = $(ui_dir)/$(cli_ui_os)/$(bin_host)/ui.lib $(cli_ncurses_libs)
 cli_ui_inc_dirs_internal = $(ui_ui_inc_dirs_internal_$(cli_ui_os))
 !endif

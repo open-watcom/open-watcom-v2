@@ -1,6 +1,2 @@
 cli_zlib_inc_dirs = -I"$(zlib_dir)"
-!ifdef bootstrap
-cli_zlib_libs = $(setupgui_dir)/zlib/$(bin_subdir)/zlib.lib
-!else ifneq host_cpu i86
-cli_zlib_libs = $(setupgui_dir)/zlib/$(host)/zlib.lib
-!endif
+cli_zlib_libs = $(setupgui_dir)/zlib/$(bin_host)/zlib.lib

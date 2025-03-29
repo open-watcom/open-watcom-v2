@@ -7,6 +7,11 @@
 !endif
 
 host = $(host_os)$(host_cpu)
+!ifdef bootstrap
+bin_host = $(bin_subdir)
+!else
+bin_host = $(host_os)$(host_cpu)
+!endif
 
 use_for_target_bsdx64   = clang_gcc
 use_for_target_haikux64 = clang_gcc
