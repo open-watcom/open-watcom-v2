@@ -14,7 +14,7 @@ programmer.
 
 Most of the methods in class template \code{std::string} are located in
 \filepath{hdr/watcom/string.mh}. This file is also used to generate the C
-library header \filepath{string.h} and the corresponding "new style" C++
+library header \filepath{string.h} and the corresponding ``new style'' C++
 library header \filepath{cstring}. This is accomplished by executing
 \term{wsplice} over the file multiple times using different options. The
 material that goes into the C++ library header \filepath{string} appears in
@@ -71,7 +71,12 @@ Listing~\ref{lst:leakage}.
 
 \begin{figure}[htbp]
 \centering
-\begin{lstlisting}[language=C++,caption={Potential Reference Leakage},label={lst:leakage}]
+\begin{lstlisting}[
+    language=C++,
+    caption={Potential Reference Leakage},
+    label={lst:leakage},
+    numbers=left,
+    frame=single]
 #include <iostream>
 #include <string>
 
@@ -95,12 +100,12 @@ int main()
 
 
 The value semantics of \code{std::string} require that modifying one string
-should not influence the value seen in another logically distinct string. Thus
-all correct implementations of \code{std::string} should produce "Right!" for
-the program above.
+should not influence the value seen in another logically distinct string.
+Thus, all correct implementations of \code{std::string} should produce
+"Right!" for the program above.
 
 To deal with this case properly while using reference counted strings, the
-implementation must "unshare" the representation whenever a method is called
+implementation must ``unshare'' the representation whenever a method is called
 that leaks a reference to that representation. The method \code{operator[]} is
 one example of such a method. In fact, section 21.3, paragraph 5 of the C++
 standard contains explicit language regarding this issue. The standard allows
