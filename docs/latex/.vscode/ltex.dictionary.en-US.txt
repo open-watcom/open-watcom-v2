@@ -12,3 +12,7 @@ Libertinus
 LTeX
 GitLens
 deque
+CharT
+wsplice
+watcom
+nothrow

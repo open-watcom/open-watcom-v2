@@ -38,6 +38,7 @@
 
   % Rule thickness (0pt disables, 0.4pt is default)
   \renewcommand{\headrulewidth}{1.0pt}
+  \renewcommand{\footrulewidth}{1.0pt}
 
   % Ensure first pages of chapters use the same header/footer
   \patchcmd{\chapter}{\thispagestyle{plain}}{\thispagestyle{fancy}}{}{}
@@ -49,11 +50,14 @@
 % Configure code listings
 \lstset{
   language=C,                 % Default to C (can be changed per listing)
-  basicstyle=\ttfamily\footnotesize,
+  basicstyle=\ttfamily\small,
   keywordstyle=\color{blue},
-  commentstyle=\color{gray},
+  commentstyle=\color{gray!70!black},
   stringstyle=\color{red},
   numbers=left,
+  frame=single,
+  tabsize=4,
+  showstringspaces=false,
   numberstyle=\tiny,
   stepnumber=1,
   breaklines=true
@@ -62,6 +66,7 @@
 % Some temporary macros.
 \newcommand{\filepath}[1]{\texttt{\detokenize{#1}}}
 \newcommand{\code}[1]{\texttt{\detokenize{#1}}}
+\newcommand{\term}[1]{\texttt{\detokenize{#1}}}
 \newcommand{\OW}{Open Watcom}
 \newcommand{\bitwidth}[1]{#1\mbox{-}bit}  % e.g. 32-bit, 64-bit, etc.
 \newcommand{\algorithm}[1]{\textsc{#1}}   % Caution: some fonts lack small caps.
@@ -143,8 +148,8 @@
 \input{list}
 \input{rbtree}
 \input{stack}
-%\input{string}
-%\input{type_tra}
-%\input{vector}
+\input{string}
+\input{type_tra}
+\input{vector}
 
 \end{document}
