@@ -6,6 +6,8 @@ proj_name = auisample
 
 auisample_wreslib_cli = gui
 
+additional_clean = *.grh *.dlg
+
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif
