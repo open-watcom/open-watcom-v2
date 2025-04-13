@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2016-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2016-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -165,11 +165,11 @@ bool ResWriteDialogBoxExHeader32( DialogBoxHeader32 *head, DialogBoxExHeader32sh
 {
     bool            error;
 
-    /* Write out the miscellaneous two WORDs 0x0001, 0xFFFF */
+    /* Write out the miscellaneous two WORDs 0x0001, 0xffff */
 
     error = ResWriteUint16( 0x0001, fp );
     if( !error ) {
-        error = ResWriteUint16( 0xFFFF, fp );
+        error = ResWriteUint16( 0xffff, fp );
     }
     if( !error ) {
         error = ResWriteUint32( exhead->HelpId, fp );
@@ -255,9 +255,10 @@ static bool ResWriteDialogControlCommon32( ControlClass *class_id, ResNameOrOrdi
     /* if the ClassID is one of the predefined ones write it out as a byte */
     /* otherwise it is a string */
     if( class_id->Class & 0x80 ) {
-        /*the class number is prefixed by 0xFFFF to distinguish it
-         * from a string */
-        error = ResWriteUint16( (uint_16)-1, fp );
+        /*
+         * the class number is prefixed by 0xffff to distinguish it from a string
+         */
+        error = ResWriteUint16( 0xffff, fp );
         if( !error ) {
             error = ResWriteUint16( class_id->Class, fp );
         }
@@ -371,20 +372,22 @@ ControlClass *ResNumToControlClass( uint_16 classnum )
 {
     ControlClass *  class;
 
-    if( classnum & 0x80 ) {
+    if( (classnum & 0x80) != 0 || classnum == 0) {
         class = WRESALLOC( sizeof( ControlClass ) );
         if( class == NULL ) {
             WRES_ERROR( WRS_MALLOC_FAILED );
-        } else {
+        } else if( (classnum & 0x80) != 0 ) {
             class->Class = (uint_8)classnum;
+        } else {
+            class->ClassName[0] = '\0';
         }
     } else {
         class = WRESALLOC( sizeof( ControlClass ) + 1 );
         if( class == NULL ) {
             WRES_ERROR( WRS_MALLOC_FAILED );
         } else {
-            *(class->ClassName + 0) = (char)classnum;
-            *(class->ClassName + 1) = '\0';
+            class->ClassName[0] = (char)classnum;
+            class->ClassName[1] = '\0';
         }
     }
     return( class );

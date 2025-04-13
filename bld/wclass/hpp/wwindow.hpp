@@ -155,8 +155,7 @@ private:
     WRect                   _autosize;
     gui_mcursor_type        _prevCursor;
     gui_mcursor_type        _currCursor;
-    WOrdinal                _firstDirtyRow;
-    int                     _numDirtyRows;
+    gui_rows_set            _dirtyRowsSet;
     bool                    _keyHandled;
 
 protected:
@@ -169,6 +168,7 @@ protected:
     WWindow *nextChild( WWindow *w );
     WRect getDefSize();
     void enumChildren( void );
+    virtual void updateTextExtents( const char *text, gui_ord *extentx, gui_ord *extenty );
 
 protected:
     bool                    _painting;
@@ -296,7 +296,6 @@ public:
     virtual int WEXPORT getTextExtentY( const char *text ) {
         return( GUIGetExtentY( _handle, text ) );
     }
-    virtual void WEXPORT updateTextExtents( const char *text, gui_ord *extentx, gui_ord *extenty );
     virtual void displayFloatingPopup( WPopupMenu * );
     virtual WOrdinal WEXPORT frameWidth( void ) {
         return( WSystemMetrics::frameWidth() );
@@ -357,8 +356,8 @@ public:
     void WEXPORT drawTextExtent( int, int, const char *, size_t, WPaintAttr, int );
     void WEXPORT drawTextExtent( int, int, const char *, size_t, int );
     void WEXPORT drawHotSpot( int, int, int );
-    WOrdinal WEXPORT firstDirtyRow( void ) { return( _firstDirtyRow ); }
-    int WEXPORT numDirtyRows( void ) { return( _numDirtyRows ); }
+    WOrdinal WEXPORT firstDirtyRow( void ) { return( _dirtyRowsSet.start ); }
+    int WEXPORT numDirtyRows( void ) { return( _dirtyRowsSet.count ); }
 };
 
 #endif

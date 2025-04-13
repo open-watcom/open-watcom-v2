@@ -142,7 +142,12 @@ MTOKEN_T LexPath( STRM_T s )
     /*
      * just so you know what we've got now
      */
-    assert( sisfilec( s ) || siswildc( s ) || sisdirc( s ) || sisdotc( s ) || IS_PATH_SPLIT( s ) || s == '\"' );
+    assert( sisfilec( s )
+        || siswildc( s )
+        || sisdirc( s )
+        || sisdotc( s )
+        || IS_PATH_SPLIT( s )
+        || s == '\"' );
 
     vec = StartVec();
 
@@ -252,16 +257,22 @@ STATIC MTOKEN_T lexFileName( STRM_T s )
     char        file[_MAX_PATH];
     unsigned    pos;
 
-    assert( sisfilec( s ) || siswildc( s ) || sisdirc( s ) || sisdotc( s ) || s == '\"' ||
-       ( (Glob.compat_nmake || Glob.compat_posix) && s == SPECIAL_TMP_DOLLAR ) );
+    assert( sisfilec( s )
+        || siswildc( s )
+        || sisdirc( s )
+        || sisdotc( s )
+        || s == '\"'
+        || ( (Glob.compat_nmake
+        || Glob.compat_posix)
+        && s == SPECIAL_TMP_DOLLAR ) );
 
     if( s == '\"' ) {
         return( lexLongFilePathName( s, TOK_FILENAME ) );
     }
 
     pos = 0;
-    while( pos < _MAX_PATH && (sisfilec( s ) || siswildc( s ) || sisdirc( s ) || sisdotc( s ) ||
-            ( s == SPECIAL_TMP_DOLLAR && (Glob.compat_nmake || Glob.compat_posix) ) ) ) {
+    while( pos < _MAX_PATH && (sisfilec( s ) || siswildc( s ) || sisdirc( s ) || sisdotc( s )
+      || ( s == SPECIAL_TMP_DOLLAR && (Glob.compat_nmake || Glob.compat_posix) ) ) ) {
         file[pos++] = s;
         s = PreGetCHR();
     }
@@ -321,7 +332,8 @@ STATIC bool checkDotName( const char *str )
 
     CurAttr.u.dotname = (DotName)( (const char **)key - DotNames );
 
-    assert( DOT_MIN < CurAttr.u.dotname && CurAttr.u.dotname < DOT_MAX );
+    assert( DOT_MIN < CurAttr.u.dotname
+        && CurAttr.u.dotname < DOT_MAX );
 
     return( true );
 }
@@ -585,7 +597,8 @@ STATIC char *deMacroDoubleQuote( bool start_dquote )
              * and single words separated by spaces
              * to not overflow buffer size
              */
-            assert( s != '\n' || s != STRM_END );
+            assert( s != '\n'
+                || s != STRM_END );
             if( s == '\"' ) {
                 if( !in_dquote ) {
                     /*

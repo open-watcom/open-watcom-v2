@@ -209,10 +209,10 @@ bool WEXPORT WWindow::processMsg( gui_event gui_ev, void *parm )
             bool    ret;
 
             _painting = true;
-            GUI_GET_ROWS( parm, _firstDirtyRow, _numDirtyRows );
+            GUI_GET_ROWS( parm, _dirtyRowsSet );
             ret = paint();
-            _firstDirtyRow = 0;
-            _numDirtyRows = 0;
+            _dirtyRowsSet.start = 0;
+            _dirtyRowsSet.count = 0;
             _painting = false;
             return( ret );
         }
@@ -390,12 +390,11 @@ WEXPORT WWindow::WWindow( WWindow *parent )
     , _popup( NULL )
     , _toolBar( NULL )
     , _currCursor( GUI_ARROW_CURSOR )
-    , _firstDirtyRow( 0 )
-    , _numDirtyRows( 0 )
     , _painting( false )
 /*********************/
 {
-
+    _dirtyRowsSet.start = 0;
+    _dirtyRowsSet.count = 0;
 }
 
 WEXPORT WWindow::WWindow( const char *text, WStyle style, WExStyle exstyle )
@@ -405,11 +404,11 @@ WEXPORT WWindow::WWindow( const char *text, WStyle style, WExStyle exstyle )
     , _popup( NULL )
     , _toolBar( NULL )
     , _currCursor( GUI_ARROW_CURSOR )
-    , _firstDirtyRow( 0 )
-    , _numDirtyRows( 0 )
     , _painting( false )
 /*********************/
 {
+    _dirtyRowsSet.start = 0;
+    _dirtyRowsSet.count = 0;
     WSystemMetrics::defaultRectangle( _autosize );
     makeWindow( text, style, exstyle );
 }
@@ -422,11 +421,11 @@ WEXPORT WWindow::WWindow( WWindow *parent, const char *text, WStyle style, WExSt
     , _popup( NULL )
     , _toolBar( NULL )
     , _currCursor( GUI_ARROW_CURSOR )
-    , _firstDirtyRow( 0 )
-    , _numDirtyRows( 0 )
     , _painting( false )
 /*********************/
 {
+    _dirtyRowsSet.start = 0;
+    _dirtyRowsSet.count = 0;
     WSystemMetrics::defaultRectangle( _autosize );
     makeWindow( text, style, exstyle );
 }
@@ -440,11 +439,11 @@ WEXPORT WWindow::WWindow( WWindow* parent, const WRect& r, const char *text, WSt
     , _toolBar( NULL )
     , _autosize( r )
     , _currCursor( GUI_ARROW_CURSOR )
-    , _firstDirtyRow( 0 )
-    , _numDirtyRows( 0 )
     , _painting( false )
 /*********************/
 {
+    _dirtyRowsSet.start = 0;
+    _dirtyRowsSet.count = 0;
     makeWindow( text, style, exstyle );
 }
 

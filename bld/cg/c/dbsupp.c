@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -55,13 +55,13 @@
 static  dbg_loc         LocCreate( dbg_loc loc, unsigned typ )
 /************************************************************/
 {
-    dbg_loc     new;
+    dbg_loc     new_loc;
 
-    new = CGAlloc( sizeof( location ) );
-    new->next = loc;
-    new->class = typ;
-    new->use = 1;
-    return( new );
+    new_loc = CGAlloc( sizeof( location ) );
+    new_loc->next = loc;
+    new_loc->class = typ;
+    new_loc->use = 1;
+    return( new_loc );
 }
 
 dbg_loc         LocReg( dbg_loc loc, name *reg )

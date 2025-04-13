@@ -81,7 +81,7 @@ ldt1_1: sub     edi,MDTLinear+4
         pop     ds
         ;
 ldt1_2: pop     eax
-        or      ax,3+4          ;RPL=3, TI=1
+        or      al,3+4          ;RPL=3, TI=1
         clc
         jmp     ldt1_9
         ;
@@ -113,35 +113,35 @@ RawRelDescriptor proc near
         ;Check segment registers for value we're releasing and clear
         ;if found.
         ;
-        push    eax
         push    ebx
+        push    eax
         push    ecx
-        and     ebx,0ffffh-7
+        movzx   ebx,bx
+        GetDescOffset ebx               ;lose RPL & TI
         xor     ecx,ecx
         xor     eax,eax
         mov     ax,ds
-        and     eax,not 7
+        GetDescOffset eax               ;lose RPL & TI
         cmp     eax,ebx
         jnz     ldt2_0
         mov     ds,cx
 ldt2_0: mov     ax,es
-        and     eax,not 7
+        GetDescOffset eax               ;lose RPL & TI
         cmp     eax,ebx
         jnz     ldt2_1
         mov     es,cx
 ldt2_1: mov     ax,fs
-        and     eax,not 7
+        GetDescOffset eax               ;lose RPL & TI
         cmp     eax,ebx
         jnz     ldt2_2
         mov     fs,cx
 ldt2_2: mov     ax,gs
-        and     eax,not 7
+        GetDescOffset eax               ;lose RPL & TI
         cmp     eax,ebx
         jnz     ldt2_3
         mov     gs,cx
 ldt2_3:
         pop     ecx
-        pop     ebx
         pop     eax
         ;
         push    eax
@@ -151,14 +151,13 @@ ldt2_3:
         mov     ax,KernalDS             ;make our data addresable.
         mov     ds,ax
         assume ds:_cwRaw
-        mov     ax,KernalZero   ;make LDT addresable.
+        mov     ax,KernalZero           ;make LDT addresable.
         mov     es,ax
-        movzx   esi,bx          ;Get selector to use.
-        shr     esi,3           ;/8 for descriptor number.
+        mov     esi,ebx                 ;Get selector offset to use.
+        shr     esi,3                   ;/8 for descriptor number.
         add     esi,MDTLinear+4
-        mov     BYTE PTR es:[esi],0             ;mark this entry as free.
-        movzx   esi,bx
-        and     esi,not 7
+        mov     BYTE PTR es:[esi],0     ;mark this entry as free.
+        mov     esi,ebx                 ;Get selector offset again.
         add     esi,MDTLinear
         xor     eax,eax
         mov     DWORD PTR es:[esi],eax
@@ -169,6 +168,7 @@ ldt2_3:
         pop     ds
         pop     esi
         pop     eax
+        pop     ebx
         ret
         assume ds:_cwDPMIEMU
 RawRelDescriptor endp
@@ -209,8 +209,7 @@ ldt3_0: cmp     w[esi],0                ;end of the list?
         push    ecx
         mov     bx,[esi]
         call    RawGetSelBase
-        shl     ecx,16
-        mov     cx,dx
+        Reg16hiloTo32 cx, dx, ecx       ;cx:dx -> ecx
         mov     edx,ecx
         pop     ecx
         pop     ebx
@@ -231,9 +230,7 @@ ldt3_New:
         push    eax
         push    ebx
         push    ecx
-        mov     dx,bx
-        shr     ebx,16
-        mov     cx,bx
+        Reg32To16hilo ebx, cx, dx       ;ebx -> cx:dx
         mov     bx,ax
         call    RawSetSelBase
         pop     ecx
@@ -291,13 +288,13 @@ RawSetSelType   proc    near
         push    esi
         push    ds
         push    es
-        mov     ax,KernalDS             ;make our data addresable.
+        mov     ax,KernalDS     ;make our data addresable.
         mov     ds,ax
         assume ds:_cwRaw
         mov     ax,KernalZero   ;make LDT addresable.
         mov     es,ax
         movzx   esi,bx          ;Get the selector.
-        and     si,0fff8h               ;lose RPL & TI.
+        GetDescOffset esi       ;lose RPL & TI.
         add     esi,MDTLinear   ;offset into descriptor table.
         mov     BYTE PTR es:[esi+5],cl
         and     ch,11110000b
@@ -333,18 +330,17 @@ RawSetSelLimit  proc    near
         mov     ax,KernalDS             ;make our data addresable.
         mov     ds,ax
         assume ds:_cwRaw
-        mov     ax,KernalZero   ;make LDT addresable.
+        mov     ax,KernalZero           ;make LDT addresable.
         mov     es,ax
-        movzx   esi,bx          ;Get the selector.
-        and     si,0ffffh-7             ;lose RPL & TI.
-        add     esi,MDTLinear   ;offset into descriptor table.
-        shl     ecx,16
-        mov     cx,dx
+        movzx   esi,bx                  ;Get the selector.
+        GetDescOffset esi               ;lose RPL & TI.
+        add     esi,MDTLinear           ;offset into descriptor table.
+        Reg16hiloTo32 cx, dx, ecx       ;cx:dx -> ecx
         xor     al,al
-        cmp     ecx,100000h     ; see if we need to set g bit
+        cmp     ecx,100000h             ; see if we need to set g bit
         jc      ldt5_2
-        shr     ecx,12          ; div by 4096
-        or      al,80h          ; set g bit
+        shr     ecx,12                  ; div by 4096
+        or      al,80h                  ; set g bit
 ldt5_2: mov     es:[esi],cx             ;store low word of limit.
         shr     ecx,16
         or      cl,al
@@ -380,11 +376,11 @@ RawSetSelBase   proc    near
         mov     ax,KernalDS             ;make our data addressable.
         mov     ds,ax
         assume ds:_cwRaw
-        mov     ax,KernalZero   ;make LDT addressable.
+        mov     ax,KernalZero           ;make LDT addressable.
         mov     es,ax
-        movzx   esi,bx          ;Get the selector.
-        and     si,0ffffh-7             ;lose RPL & TI.
-        add     esi,MDTLinear   ;offset into descriptor table.
+        movzx   esi,bx                  ;Get the selector.
+        GetDescOffset esi               ;lose RPL & TI.
+        add     esi,MDTLinear           ;offset into descriptor table.
         mov     es:[esi+4],cl           ;base mid.
         mov     es:[esi+7],ch           ;base high.
         mov     es:[esi+2],dx           ;base low.
@@ -416,17 +412,17 @@ RawGetSelBase   proc    near
         push    esi
         push    ds
         push    es
-        mov     ax,KernalDS             ;make our data addresable.
+        mov     ax,KernalDS     ;make our data addresable.
         mov     ds,ax
         assume ds:_cwRaw
         mov     ax,KernalZero   ;make LDT addresable.
         mov     es,ax
         movzx   esi,bx          ;Get the selector.
-        and     si,0fff8h               ;lose RPL & TI.
+        GetDescOffset esi       ;lose RPL & TI.
         add     esi,MDTLinear   ;offset into descriptor table.
-        mov     cl,es:[esi+4]           ;base mid.
-        mov     ch,es:[esi+7]           ;base high.
-        mov     dx,es:[esi+2]           ;base low.
+        mov     cl,es:[esi+4]   ;base mid.
+        mov     ch,es:[esi+7]   ;base high.
+        mov     dx,es:[esi+2]   ;base low.
         clc
         pop     es
         pop     ds
@@ -454,13 +450,13 @@ RawBPutDescriptor proc near
         push    edi
         push    ds
         push    es
-        mov     ax,KernalDS             ;make our data addresable.
+        mov     ax,KernalDS     ;make our data addresable.
         mov     ds,ax
         assume ds:_cwRaw
         movzx   esi,bx          ;Get the selector.
-        and     si,0fff8h               ;lose RPL & TI.
+        GetDescOffset esi       ;lose RPL & TI.
         add     esi,MDTLinear   ;offset into descriptor table.
-        test    BYTE PTR RawSystemFlags,1
+        test    BYTE PTR RawSystemFlags,SYSFLAG_16B
         jz      ldt8_Use32
         movzx   edi,di
 ldt8_Use32:
@@ -506,13 +502,13 @@ RawBGetDescriptor proc near
         push    esi
         push    edi
         push    ds
-        mov     ax,KernalDS             ;make our data addresable.
+        mov     ax,KernalDS     ;make our data addresable.
         mov     ds,ax
         assume ds:_cwRaw
         movzx   esi,bx          ;Get the selector.
-        and     si,0fff8h               ;lose RPL & TI.
+        GetDescOffset esi       ;lose RPL & TI.
         add     esi,MDTLinear   ;offset into descriptor table.
-        test    BYTE PTR RawSystemFlags,1
+        test    BYTE PTR RawSystemFlags,SYSFLAG_16B
         jz      ldt9_Use32
         movzx   edi,di
 ldt9_Use32:

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,7 +32,6 @@
 
 
 #include "guiwind.h"
-#include <string.h>
 #if !defined(__OS2_PM__) && !defined(__WINDOWS_386__)
 #include <commdlg.h>
 #endif
@@ -149,7 +148,7 @@ static char *GetFontInfo( LOGFONT *lf )
     char                buff[MAX_STR];
 
     SetFontToString( lf, buff );
-    return( GUIStrDup( buff, NULL ) );
+    return( GUIStrDup( buff ) );
 }
 #endif
 
@@ -265,7 +264,7 @@ bool GUIAPI GUISetSystemFont( gui_window *wnd, bool fixed )
 #endif
 }
 
-void GUIAPI GUIChangeCurrentFont( gui_window *wnd, char *facename, int bold )
+void GUIAPI GUIChangeCurrentFont( gui_window *wnd, const char *facename, int bold )
 {
 #ifdef __OS2_PM__
     /* unused parameters */ (void)wnd; (void)facename; (void)bold;

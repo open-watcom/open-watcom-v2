@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -175,7 +175,8 @@ static void buildNewItem( char *start, int id )
     if( id >= SSB_FIRST_CONTENT && id <= SSB_LAST_CONTENT ) {
         new_item = sz_content[id - SSB_FIRST_CONTENT];
         type = BUTTON_CONTENT;
-    } else if( id >= SSB_FIRST_ALIGNMENT && id <= SSB_LAST_ALIGNMENT ) {
+    } else if( id >= SSB_FIRST_ALIGNMENT
+      && id <= SSB_LAST_ALIGNMENT ) {
         new_item = sz_alignment[id - SSB_FIRST_ALIGNMENT];
         type = BUTTON_ALIGNMENT;
     } else {

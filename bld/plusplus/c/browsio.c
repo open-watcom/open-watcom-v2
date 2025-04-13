@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,11 +33,7 @@
 #include "plusplus.h"
 #include <stdarg.h>
 #include <errno.h>
-#if defined(__UNIX__)
- #include <unistd.h>
-#else
- #include <direct.h>
-#endif
+#include "wio.h"
 #include "preproc.h"
 #include "memmgr.h"
 #include "srcfile.h"
@@ -391,7 +387,7 @@ dw_client DwarfInit( void )
         }
         incsize = inccurr - incbuf;
     }
-    info.language = DWLANG_CPP;
+    info.language = DW_LANG_C_plus_plus;
     info.compiler_options = DW_CM_BROWSER;
     info.producer_name = DWARF_PRODUCER_ID " V1";
     memcpy( info.exception_handler, Environment, sizeof( jmp_buf ) );
@@ -409,7 +405,7 @@ dw_client DwarfInit( void )
     cu.flags           = 1;
     cu.offset_size     = TARGET_NEAR_POINTER;
     cu.segment_size    = 0;
-    cu.model           = DW_MODEL_NONE;
+    cu.model           = DW_MEM_MODEL_none;
     cu.inc_list        = incbuf;
     cu.inc_list_len    = incsize;
     cu.dbg_pch         = NULL;

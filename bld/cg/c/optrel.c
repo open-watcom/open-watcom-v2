@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -106,20 +106,20 @@ static  bool    CanReach( label_handle lbl, ins_entry **add_ptr,
 }
 
 
-static  void    HndlRedirect( label_handle new )
-/*******************************************/
+static  void    HndlRedirect( label_handle new_lbl )
+/**************************************************/
 {
     label_handle    redir;
 
   optbegin
     redir = Handle->redirect;
-    if( redir != NULL && redir != new ) {
+    if( redir != NULL && redir != new_lbl ) {
         _ClrStatus( redir, REDIRECTION );
         TryScrapLabel( redir );
     }
-    Handle->redirect = new;
-    if( new != NULL ) {
-        _SetStatus( new, REDIRECTION );
+    Handle->redirect = new_lbl;
+    if( new_lbl != NULL ) {
+        _SetStatus( new_lbl, REDIRECTION );
     }
   optend
 }

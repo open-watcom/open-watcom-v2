@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,7 +34,7 @@
 #include "guiwind.h"
 #include "guiutil.h"
 #include "guihot.h"
-#include <string.h>
+#include "guix.h"
 
 
 bool GUIXInitHotSpots( int num, gui_resource *hot )
@@ -46,7 +46,7 @@ bool GUIXInitHotSpots( int num, gui_resource *hot )
         if( hot[i].chars != NULL ) {
             bool    ok;
 
-            GUIHotSpots[i].text = GUIStrDup( hot[i].chars, &ok );
+            GUIHotSpots[i].text = GUIStrDupOK( hot[i].chars, &ok );
             if( !ok )
                 return( false );
             GUIHotSpots[i].size.x = strlen( GUIHotSpots[i].text );

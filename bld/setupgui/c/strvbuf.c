@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -42,9 +42,9 @@
 #define MIN_VBUF_INC 32     // minimum increment allocated (power of 2)
 
 #define BUFFER_SIZE(x)      ((x+1+(MIN_VBUF_INC-1))&(-MIN_VBUF_INC))
-#define FREE_BUFFER(x)      {if(x->len>1)GUIMemFree(x->buf);}
 
 #define EXT_SEP             '.'
+#define IS_EXT_SEP(c)       ((c) == EXT_SEP)
 
 // ************************************
 // Vbuf functions that manage size only
@@ -52,7 +52,7 @@
 
 void VbufReqd(                  // ENSURE BUFFER IS OF SUFFICIENT SIZE
     VBUF *vbuf,                 // - VBUF structure
-    size_t reqd )               // - required size
+    vbuflen reqd )              // - required size
 {
     char    *new_buffer;        // - old buffer
 
@@ -60,7 +60,8 @@ void VbufReqd(                  // ENSURE BUFFER IS OF SUFFICIENT SIZE
         reqd = BUFFER_SIZE( reqd );
         new_buffer = GUIMemAlloc( reqd );
         memcpy( new_buffer, vbuf->buf, vbuf->used + 1 ); // +1 include '\0' terminator
-        FREE_BUFFER( vbuf );
+        if( vbuf->len > 1 )
+            GUIMemFree( vbuf->buf );
         vbuf->buf = new_buffer;
         vbuf->len = reqd;
     }
@@ -68,7 +69,7 @@ void VbufReqd(                  // ENSURE BUFFER IS OF SUFFICIENT SIZE
 
 void VbufSetLen(                // SET BUFFER LENGTH
     VBUF *vbuf,                 // - VBUF structure
-    size_t size )               // - new length
+    vbuflen size )              // - new length
 {
     if( vbuf->len > 1 ) {
         vbuf->used = size;
@@ -87,8 +88,11 @@ void VbufInit(                  // INITIALIZE BUFFER STRUCTURE
 void VbufFree(                  // FREE BUFFER
     VBUF *vbuf )                // - VBUF structure
 {
-    FREE_BUFFER( vbuf );
-    VbufInit( vbuf );
+    if( vbuf->len > 1 )
+        GUIMemFree( vbuf->buf );
+    vbuf->buf = VBUF_INIT_BUF;
+    vbuf->len = VBUF_INIT_LEN;
+    vbuf->used = VBUF_INIT_USED;
 }
 
 
@@ -143,7 +147,7 @@ int VbufCompExt(            // COMPARE A VBUFs
 int VbufCompBuffer(         // COMPARE A VBUFs
     const VBUF *vbuf1,      // - VBUF structure
     char const *buffer,     // - buffer
-    size_t size,            // - size of buffer
+    vbuflen size,           // - size of buffer
     bool igncase )          // - bool ignore case
 {
     if( igncase ) {
@@ -173,17 +177,17 @@ void VbufPrepVbuf(              // PREPEND A VBUF TO VBUF
     VBUF *vbuf1,                // - VBUF structure
     const VBUF *vbuf2 )         // - VBUF structure to be prepended
 {
-    VBUF    temp;
+    VBUF    temp_vbuf;
 
     if( vbuf2->used > 0 ) {
-        VbufInit( &temp );
-        VbufReqd( &temp, vbuf1->used + vbuf2->used );
-        memcpy( temp.buf, vbuf2->buf, vbuf2->used );
-        memcpy( temp.buf + vbuf2->used, vbuf1->buf, vbuf1->used );
-        temp.used = vbuf1->used + vbuf2->used;
-        temp.buf[temp.used] = '\0';
+        VbufInit( &temp_vbuf );
+        VbufReqd( &temp_vbuf, vbuf1->used + vbuf2->used );
+        memcpy( temp_vbuf.buf, vbuf2->buf, vbuf2->used );
+        memcpy( temp_vbuf.buf + vbuf2->used, vbuf1->buf, vbuf1->used );
+        temp_vbuf.used = vbuf1->used + vbuf2->used;
+        temp_vbuf.buf[temp_vbuf.used] = '\0';
         VbufFree( vbuf1 );
-        *vbuf1 = temp;
+        *vbuf1 = temp_vbuf;
     }
 }
 
@@ -199,9 +203,9 @@ void VbufSetVbuf(               // SET A VBUF TO VBUF
 void VbufConcVbufPos(           // CONCATENATE A VBUF TO VBUF
     VBUF *vbuf1,                // - VBUF structure
     const VBUF *vbuf2,          // - VBUF structure
-    size_t start_pos )          // - start position in second VBUF
+    vbuflen start_pos )         // - start position in second VBUF
 {
-    size_t  len2;
+    vbuflen     len2;
 
     if( vbuf2->used > start_pos ) {
         len2 = vbuf2->used - start_pos;
@@ -215,28 +219,28 @@ void VbufConcVbufPos(           // CONCATENATE A VBUF TO VBUF
 void VbufPrepVbufPos(           // PREPEND A VBUF TO VBUF
     VBUF *vbuf1,                // - VBUF structure
     const VBUF *vbuf2,          // - VBUF structure to be prepended
-    size_t start_pos )          // - start position in second VBUF
+    vbuflen start_pos )         // - start position in second VBUF
 {
-    VBUF    temp;
-    size_t  len2;
+    VBUF        temp_vbuf;
+    vbuflen     len2;
 
     if( vbuf2->used > start_pos ) {
         len2 = vbuf2->used - start_pos;
-        VbufInit( &temp );
-        VbufReqd( &temp, vbuf1->used + len2 );
-        memcpy( temp.buf, vbuf2->buf + start_pos, len2 );
-        memcpy( temp.buf + len2, vbuf1->buf, vbuf1->used );
-        temp.used = vbuf1->used + len2;
-        temp.buf[temp.used] = '\0';
+        VbufInit( &temp_vbuf );
+        VbufReqd( &temp_vbuf, vbuf1->used + len2 );
+        memcpy( temp_vbuf.buf, vbuf2->buf + start_pos, len2 );
+        memcpy( temp_vbuf.buf + len2, vbuf1->buf, vbuf1->used );
+        temp_vbuf.used = vbuf1->used + len2;
+        temp_vbuf.buf[temp_vbuf.used] = '\0';
         VbufFree( vbuf1 );
-        *vbuf1 = temp;
+        *vbuf1 = temp_vbuf;
     }
 }
 
 void VbufSetVbufPos(            // SET A VBUF TO VBUF
     VBUF *vbuf1,                // - VBUF structure
     const VBUF *vbuf2,          // - VBUF structure
-    size_t start_pos )          // - start position in second VBUF
+    vbuflen start_pos )         // - start position in second VBUF
 {
     VbufSetLen( vbuf1, 0 );
     VbufConcVbufPos(  vbuf1, vbuf2, start_pos );
@@ -246,7 +250,7 @@ void VbufSetVbufPos(            // SET A VBUF TO VBUF
 void VbufConcBuffer(            // CONCATENATE A BUFFER TO VBUF
     VBUF *vbuf,                 // - VBUF structure
     char const *buffer,         // - size of buffer
-    size_t size )               // - buffer
+    vbuflen size )              // - buffer
 {
     if( size > 0 ) {
         VbufReqd( vbuf, vbuf->used + size );
@@ -259,26 +263,26 @@ void VbufConcBuffer(            // CONCATENATE A BUFFER TO VBUF
 void VbufPrepBuffer(            // PREPEND A BUFFER TO VBUF
     VBUF *vbuf,                 // - VBUF structure
     char const *buffer,         // - size of buffer
-    size_t size )               // - buffer
+    vbuflen size )              // - buffer
 {
-    VBUF    temp;
+    VBUF    temp_vbuf;
 
     if( size > 0 ) {
-        VbufInit( &temp );
-        VbufReqd( &temp, size + vbuf->used );
-        memcpy( temp.buf, buffer, size );
-        memcpy( temp.buf + size, vbuf->buf, vbuf->used );
-        temp.used = size + vbuf->used;
-        temp.buf[temp.used] = '\0';
+        VbufInit( &temp_vbuf );
+        VbufReqd( &temp_vbuf, size + vbuf->used );
+        memcpy( temp_vbuf.buf, buffer, size );
+        memcpy( temp_vbuf.buf + size, vbuf->buf, vbuf->used );
+        temp_vbuf.used = size + vbuf->used;
+        temp_vbuf.buf[temp_vbuf.used] = '\0';
         VbufFree( vbuf );
-        *vbuf = temp;
+        *vbuf = temp_vbuf;
     }
 }
 
 void VbufSetBuffer(             // SET A BUFFER TO VBUF
     VBUF *vbuf,                 // - VBUF structure
     char const *buffer,         // - size of buffer
-    size_t size )               // - buffer
+    vbuflen size )              // - buffer
 {
     VbufSetLen( vbuf, 0 );
     VbufConcBuffer( vbuf, buffer, size );
@@ -289,14 +293,14 @@ void VbufConcStr(               // CONCATENATE A STRING TO VBUF
     VBUF *vbuf,                 // - VBUF structure
     char const *string )        // - string to be concatenated
 {
-    VbufConcBuffer( vbuf, string, strlen( string ) );
+    VbufConcBuffer( vbuf, string, (vbuflen)strlen( string ) );
 }
 
 void VbufPrepStr(               // PREPEND A STRING TO VBUF
     VBUF *vbuf,                 // - VBUF structure
     char const *string )        // - string to be prepended
 {
-    VbufPrepBuffer( vbuf, string, strlen( string ) );
+    VbufPrepBuffer( vbuf, string, (vbuflen)strlen( string ) );
 }
 
 void VbufSetStr(                // SET A STRING TO VBUF
@@ -304,7 +308,7 @@ void VbufSetStr(                // SET A STRING TO VBUF
     char const *string )        // - string to be concatenated
 {
     VbufSetLen( vbuf, 0 );
-    VbufConcBuffer( vbuf, string, strlen( string ) );
+    VbufConcBuffer( vbuf, string, (vbuflen)strlen( string ) );
 }
 
 
@@ -339,8 +343,8 @@ void VbufSetChr(                // SET A CHAR TO VBUF
 void VbufSetBufferAt(           // CONCATENATE A BUFFER TO VBUF AT POSITION
     VBUF *vbuf,                 // - VBUF structure
     char const *buffer,         // - size of buffer
-    size_t size,                // - buffer
-    size_t atpos )              // - at position
+    vbuflen size,               // - buffer
+    vbuflen atpos )             // - at position
 {
     if( atpos > vbuf->used )
         atpos = vbuf->used;
@@ -355,15 +359,15 @@ void VbufSetBufferAt(           // CONCATENATE A BUFFER TO VBUF AT POSITION
 void VbufSetStrAt(              // CONCATENATE A STRING TO VBUF AT POSITION
     VBUF *vbuf,                 // - VBUF structure
     char const *string,         // - string to be concatenated
-    size_t atpos )              // - at position
+    vbuflen atpos )             // - at position
 {
-    VbufSetBufferAt( vbuf, string, strlen( string ), atpos );
+    VbufSetBufferAt( vbuf, string, (vbuflen)strlen( string ), atpos );
 }
 
 void VbufSetVbufAt(             // CONCATENATE A VBUF TO VBUF AT POSITION
     VBUF *vbuf1,                // - VBUF structure
     const VBUF *vbuf2,          // - VBUF structure
-    size_t atpos )              // - at position
+    vbuflen atpos )             // - at position
 {
     if( atpos > vbuf1->used )
         atpos = vbuf1->used;
@@ -420,7 +424,7 @@ void VbufSetInteger(            // SET A INTEGER TO VBUF
 void VbufTruncWhite(            // TRUNCATE TRAILING WHITESPACE FROM VBUF
     VBUF *vbuf )                // - VBUF structure
 {
-    size_t  len;
+    vbuflen     len;
 
     len = vbuf->used;
     while( len-- > 0 && isspace( vbuf->buf[len] ) ) {
@@ -432,29 +436,39 @@ void VbufTruncWhite(            // TRUNCATE TRAILING WHITESPACE FROM VBUF
 void VbufAddDirSep(             // TERMINATE A VBUF AS PATH BY DIR_SEP
     VBUF *vbuf )                // - VBUF structure
 {
-    size_t  len;
-    char    lastChr;
+    vbuflen     len;
+    char        lastChr;
+    const char  *p;
 
     len = VbufLen( vbuf );
     if( len == 0 ) {
-        // "" -> ".[/\]"
+        /*
+         * "" -> ".[/\]"
+         */
         VbufConcChr( vbuf, '.' );
         VbufConcChr( vbuf, DIR_SEP );
     } else {
-        lastChr = VbufString( vbuf )[len - 1];
+        p = VbufString( vbuf );
+        lastChr = p[len - 1];
         if( !IS_DIR_SEP( lastChr ) ) {
-            if( lastChr == '.' && len > 1 && IS_DIR_SEP( VbufString( vbuf )[len - 2] ) ) {
-                // "...nnn[/\]." -> "...nnn[/\]"
+            if( lastChr == '.' && len > 1 && IS_DIR_SEP( p[len - 2] ) ) {
+                /*
+                 * "...nnn[/\]." -> "...nnn[/\]"
+                 */
                 VbufSetLen( vbuf, len - 1 );
-#ifndef __UNIX__
+#if !defined( __UNIX__ )
             } else if( lastChr == ':' && len == 2 ) {
-                // "x:" -> "x:.[/\]"
+                /*
+                 * "x:" -> "x:.[/\]"
+                 */
                 VbufConcChr( vbuf, '.' );
                 VbufConcChr( vbuf, DIR_SEP );
 #endif
             } else {
-                // "...nnn" -> "...nnn[/\]"
-                // "." -> ".[/\]"
+                /*
+                 * "...nnn" -> "...nnn[/\]"
+                 * "." -> ".[/\]"
+                 */
                 VbufConcChr( vbuf, DIR_SEP );
             }
         }
@@ -464,8 +478,8 @@ void VbufAddDirSep(             // TERMINATE A VBUF AS PATH BY DIR_SEP
 void VbufRemEndDirSep(          // REMOVE DIR_SEP FROM A VBUF AS PATH
     VBUF *vbuf )                // - VBUF structure
 {
-    size_t  len;
-    char    lastChr;
+    vbuflen     len;
+    char        lastChr;
 
     len = VbufLen( vbuf );
     if( len == 0 ) {
@@ -507,17 +521,19 @@ void VbufMakepath(              // SET A FILE PATH NAME TO VBUF
         if( VbufLen( drive ) > 0 ) {
 #if defined( __UNIX__ )
             VbufConcVbuf( full, drive );
-            /* if node did not end in '/' then put in a provisional one */
-            if( VbufString( full )[VbufLen( full ) - 1] != DIR_SEP ) {
+            /*
+             * if node did not end in '/' then put in a provisional one
+             */
+            if( !IS_DIR_SEP( VbufString( full )[VbufLen( full ) - 1] ) ) {
                 VbufConcChr( full, DIR_SEP );
             }
 #elif defined( __NETWARE__ )
             VbufConcVbuf( full, drive );
-            if( VbufString( full )[VbufLen( full ) - 1] != DRIVE_SEP ) {
+            if( !IS_DIR_SEP( VbufString( full )[VbufLen( full ) - 1] ) ) {
                 VbufConcChr( full, DRIVE_SEP );
             }
 #else
-            if( ( VbufString( drive )[0] == DIR_SEP ) && ( VbufString( drive )[1] == DIR_SEP ) ) {
+            if( TEST_UNC( VbufString( drive ) ) ) {
                 VbufConcVbuf( full, drive );
             } else {
                 VbufConcChr( full, VbufString( drive )[0] );
@@ -528,7 +544,7 @@ void VbufMakepath(              // SET A FILE PATH NAME TO VBUF
     }
     if( dir != NULL ) {
         if( VbufLen( dir ) > 0 ) {
-            if( VbufString( dir )[0] == DIR_SEP && VbufString( full )[VbufLen( full ) - 1] == DIR_SEP ) {
+            if( IS_DIR_SEP( VbufString( dir )[0] ) && IS_DIR_SEP( VbufString( full )[VbufLen( full ) - 1] ) ) {
                 VbufConcVbufPos( full, dir, 1 );
             } else {
                 VbufConcVbuf( full, dir );
@@ -538,7 +554,7 @@ void VbufMakepath(              // SET A FILE PATH NAME TO VBUF
     }
     if( name != NULL ) {
         if( VbufLen( name ) > 0 ) {
-            if( VbufString( name )[0] == DIR_SEP && VbufString( full )[VbufLen( full ) - 1] == DIR_SEP ) {
+            if( IS_DIR_SEP( VbufString( name )[0] ) && IS_DIR_SEP( VbufString( full )[VbufLen( full ) - 1] ) ) {
                 VbufConcVbufPos( full, name, 1 );
             } else {
                 VbufConcVbuf( full, name );
@@ -547,7 +563,7 @@ void VbufMakepath(              // SET A FILE PATH NAME TO VBUF
     }
     if( ext != NULL ) {
         if( VbufLen( ext ) > 0 ) {
-            if( VbufString( ext )[0] != EXT_SEP )
+            if( !IS_EXT_SEP( VbufString( ext )[0] ) )
                 VbufConcChr( full, EXT_SEP );
             VbufConcVbuf( full, ext );
         }
@@ -560,16 +576,17 @@ void VbufSplitpath(             // GET A FILE PATH COMPONENTS FROM VBUF
     VBUF *dir,                  // - VBUF for directory
     VBUF *name,                 // - VBUF for name
     VBUF *ext )                 // - VBUF for extension
-{
-/* split full QNX path name into its components */
-
-/* Under QNX we will map drive to node, dir to dir, and
+/**********************************************************************
+ * split full path name into its components
+ *
+ * Under QNX we will map 'drive' to 'node' and
+ * under Netware, 'drive' maps to 'volume'
+ * rest is maped
+ * dir to dir
  * filename to (filename and extension)
  *          or (filename) if no extension requested.
  */
-
-/* Under Netware, 'drive' maps to 'volume' */
-
+{
     const char *dotp;
     const char *namep;
     const char *startp;
@@ -590,17 +607,21 @@ void VbufSplitpath(             // GET A FILE PATH COMPONENTS FROM VBUF
     }
     path = VbufString( full );
 
-    /* take apart specification like -> //0/hd/user/fred/filename.ext for QNX */
-    /* take apart specification like -> c:\fred\filename.ext for DOS, OS/2 */
+    /*
+     * take apart specification
+     *
+     * for QNX like -> //0/hd/user/fred/filename.ext
+     * for DOS, OS/2 like -> c:\fred\filename.ext
+     */
 
 #if defined(__UNIX__)
 
     /* process node/drive specification */
     startp = path;
-    if( path[0] == DIR_SEP && path[1] == DIR_SEP ) {
+    if( TEST_NODE( path ) ) {
         path += 2;
         while( (ch = *path) != '\0' ) {
-            if( IS_DIR_SEP( ch ) || ch == EXT_SEP ) {
+            if( IS_DIR_SEP( ch ) || IS_EXT_SEP( ch ) ) {
                 break;
             }
             path++;
@@ -627,7 +648,7 @@ void VbufSplitpath(             // GET A FILE PATH COMPONENTS FROM VBUF
 #else
 
     /* processs drive specification */
-    if( path[0] != '\0' && path[1] == DRIVE_SEP ) {
+    if( TEST_DRIVE( path ) ) {
         if( drive != NULL ) {
             VbufSetChr( drive, path[0] );
             VbufConcChr( drive, DRIVE_SEP );
@@ -641,13 +662,17 @@ void VbufSplitpath(             // GET A FILE PATH COMPONENTS FROM VBUF
 
 #endif
 
-    /* process /user/fred/filename.ext for QNX */
-    /* process /fred/filename.ext for DOS, OS/2 */
+    /*
+     * process
+     *
+     * for QNX /user/fred/filename.ext
+     * for DOS, OS/2 /fred/filename.ext
+     */
     dotp = NULL;
     namep = path;
     startp = path;
     while( (ch = *path) != '\0' ) {
-        if( ch == EXT_SEP ) {
+        if( IS_EXT_SEP( ch ) ) {
             dotp = path;
         } else if( IS_DIR_SEP( ch ) ) {
             namep = path + 1;
@@ -658,13 +683,13 @@ void VbufSplitpath(             // GET A FILE PATH COMPONENTS FROM VBUF
     if( dotp == NULL )
         dotp = path;
     if( dir != NULL ) {
-        VbufSetBuffer( dir, startp, namep - startp );
+        VbufSetBuffer( dir, startp, (vbuflen)( namep - startp ) );
     }
     if( name != NULL ) {
-        VbufSetBuffer( name, namep, dotp - namep );
+        VbufSetBuffer( name, namep, (vbuflen)( dotp - namep ) );
     }
     if( ext != NULL ) {
-        VbufSetBuffer( ext, dotp, path - dotp );
+        VbufSetBuffer( ext, dotp, (vbuflen)( path - dotp ) );
     }
 }
 

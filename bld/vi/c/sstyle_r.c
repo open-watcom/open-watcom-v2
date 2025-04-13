@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,7 +38,7 @@
 
 static  ss_flags_c  flags;
 static  int         lenCComment = 0;
-static  char        *firstNonWS;
+static  const char  *firstNonWS;
 
 
 enum getFloatCommands {
@@ -70,17 +71,17 @@ static int issymbol( int c )
     }
 }
 
-void InitRexxLine( char *text )
+void InitRexxLine( const char *text )
 {
     SKIP_SPACES( text );
     firstNonWS = text;
 }
 
-static void getHex( ss_block *ss_new, char *start )
+static void getHex( ss_block *ss_new, const char *start )
 {
-    int     lastc;
-    char    *end;
-    bool    nodigits = true;
+    int         lastc;
+    const char  *end;
+    bool        nodigits = true;
 
     ss_new->type = SE_HEX;
     for( end = start + 2; isxdigit( *end ); end++ ) {
@@ -104,10 +105,10 @@ static void getHex( ss_block *ss_new, char *start )
     ss_new->len = end - start;
 }
 
-static void getFloat( ss_block *ss_new, char *start, int skip, int command )
+static void getFloat( ss_block *ss_new, const char *start, int skip, int command )
 {
-    char    *end = start + skip;
-    char    lastc;
+    const char  *end = start + skip;
+    char        lastc;
 
     ss_new->type = SE_FLOAT;
 
@@ -167,17 +168,19 @@ static void getFloat( ss_block *ss_new, char *start, int skip, int command )
     lastc = tolower( *end );
     if( lastc == 'f' || lastc == 'l' ) {
         end++;
-    } else if( *end != '\0' && !isspace( *end ) && !issymbol( *end ) ) {
+    } else if( *end != '\0'
+      && !isspace( *end )
+      && !issymbol( *end ) ) {
         ss_new->type = SE_INVALIDTEXT;
         end++;
     }
     ss_new->len = end - start;
 }
 
-static void getNumber( ss_block *ss_new, char *start, char top )
+static void getNumber( ss_block *ss_new, const char *start, char top )
 {
-    int     lastc;
-    char    *end = start + 1;
+    int         lastc;
+    const char  *end = start + 1;
 
     while( *end >= '0' && *end <= top ) {
         end++;
@@ -185,7 +188,8 @@ static void getNumber( ss_block *ss_new, char *start, char top )
     if( *end == '.' ) {
         getFloat( ss_new, start, end - start + 1, AFTER_DOT );
         return;
-    } else if( *end == 'e' || *end == 'E' ) {
+    } else if( *end == 'e'
+      || *end == 'E' ) {
         getFloat( ss_new, start, end - start + 1, AFTER_EXP );
         return;
     } else if( isdigit( *end ) ) {
@@ -213,10 +217,10 @@ static void getNumber( ss_block *ss_new, char *start, char top )
     }
 }
 
-static void getText( ss_block *ss_new, char *start )
+static void getText( ss_block *ss_new, const char *start )
 {
-    char    *end = start + 1;
-    char    save_char;
+    const char  *end = start + 1;
+    char        save_char;
 
     while( isalnum( *end ) || *end == '_' || *end == '.' ) {
         end++;
@@ -224,7 +228,10 @@ static void getText( ss_block *ss_new, char *start )
     ss_new->type = SE_IDENTIFIER;
     if( IsKeyword( start, end, false ) ) {
         ss_new->type = SE_KEYWORD;
-    } else if( end[0] == ':' && firstNonWS == start && end[1] != ':' && end[1] != '>' ) {
+    } else if( end[0] == ':'
+      && firstNonWS == start
+      && end[1] != ':'
+      && end[1] != '>' ) {
         // : and > checked as it may be :: (CPP) operator or :> (base op.)
         end++;
         ss_new->type = SE_JUMPLABEL;
@@ -238,10 +245,10 @@ static void getSymbol( ss_block *ss_new )
     ss_new->len = 1;
 }
 
-static void getPreprocessor( ss_block *ss_new, char *start )
+static void getPreprocessor( ss_block *ss_new, const char *start )
 {
-    char    *end = start;
-    bool    withinQuotes = flags.inString;
+    const char  *end = start;
+    bool        withinQuotes = flags.inString;
 
     ss_new->type = SE_PREPROCESSOR;
 
@@ -264,7 +271,8 @@ static void getPreprocessor( ss_block *ss_new, char *start )
         if( end[0] == '"' ) {
             if( !withinQuotes ) {
                 withinQuotes = true;
-            } else if( end[-1] != '\\' || end[-2] == '\\' ) {
+            } else if( end[-1] != '\\'
+              || end[-2] == '\\' ) {
                 withinQuotes = false;
             }
         }
@@ -273,7 +281,8 @@ static void getPreprocessor( ss_block *ss_new, char *start )
                 flags.inCComment = true;
                 lenCComment = 0;
                 break;
-            } else if( end[1] == '/' && !withinQuotes ) {
+            } else if( end[1] == '/'
+              && !withinQuotes ) {
                 flags.inCPPComment = true;
                 flags.inPreprocessor = false;
                 break;
@@ -294,9 +303,9 @@ static void getPreprocessor( ss_block *ss_new, char *start )
     ss_new->len = end - start;
 }
 
-static void getChar( ss_block *ss_new, char *start, int skip )
+static void getChar( ss_block *ss_new, const char *start, int skip )
 {
-    char    *end;
+    const char  *end;
 
     ss_new->type = SE_CHAR;
     for( end = start + skip; *end != '\0'; ++end ) {
@@ -320,9 +329,9 @@ static void getInvalidChar( ss_block *ss_new )
     ss_new->len = 1;
 }
 
-static void getCComment( ss_block *ss_new, char *start, int skip )
+static void getCComment( ss_block *ss_new, const char *start, int skip )
 {
-    char    *end = start + skip;
+    const char  *end = start + skip;
 
     lenCComment += skip;
     for( ;; ) {
@@ -348,9 +357,9 @@ static void getCComment( ss_block *ss_new, char *start, int skip )
     ss_new->len = end - start;
 }
 
-static void getCPPComment( ss_block *ss_new, char *start )
+static void getCPPComment( ss_block *ss_new, const char *start )
 {
-    char    *end = start;
+    const char  *end = start;
 
     SKIP_TOEND( end );
     flags.inCPPComment = true;
@@ -361,10 +370,10 @@ static void getCPPComment( ss_block *ss_new, char *start )
     ss_new->len = end - start;
 }
 
-static void getString( ss_block *ss_new, char *start, int skip )
+static void getString( ss_block *ss_new, const char *start, int skip )
 {
-    char    *nstart = start + skip;
-    char    *end = nstart;
+    const char  *nstart = start + skip;
+    const char  *end = nstart;
 
     ss_new->type = SE_STRING;
 again:
@@ -456,7 +465,8 @@ void InitRexxFlags( linenum line_no )
                     if( text[0] == '"' ) {
                         if( !withinQuotes ) {
                             withinQuotes = true;
-                        } else if( text[-1] != '\\' || text[-2] == '\\' ) {
+                        } else if( text[-1] != '\\'
+                          || text[-2] == '\\' ) {
                             withinQuotes = false;
                         }
                     }
@@ -481,7 +491,8 @@ void InitRexxFlags( linenum line_no )
 
         // if not in a comment (and none above), we may be string or pp
         if( !flags.inCComment ) {
-            if( topChar == '#' && !EditFlags.PPKeywordOnly ) {
+            if( topChar == '#'
+              && !EditFlags.PPKeywordOnly ) {
                 flags.inPreprocessor = true;
             }
             if( withinQuotes ) {
@@ -515,7 +526,8 @@ void InitRexxFlags( linenum line_no )
                         if( text[0] == '"' ) {
                             if( !withinQuotes ) {
                                 withinQuotes = true;
-                            } else if( text[-1] != '\\' || text[-2] == '\\' ) {
+                            } else if( text[-1] != '\\'
+                              || text[-2] == '\\' ) {
                                 withinQuotes = false;
                             }
                         }
@@ -543,7 +555,7 @@ void InitRexxFlags( linenum line_no )
     }
 }
 
-void GetRexxBlock( ss_block *ss_new, char *start, line *line, linenum line_no )
+void GetRexxBlock( ss_block *ss_new, const char *start, line *line, linenum line_no )
 {
     line = line;
     line_no = line_no;
@@ -581,8 +593,8 @@ void GetRexxBlock( ss_block *ss_new, char *start, line *line, linenum line_no )
         return;
     }
 
-    if( *firstNonWS == '#' &&
-        (!EditFlags.PPKeywordOnly || firstNonWS == start) ) {
+    if( *firstNonWS == '#'
+      && (!EditFlags.PPKeywordOnly || firstNonWS == start) ) {
         getPreprocessor( ss_new, start );
         return;
     }

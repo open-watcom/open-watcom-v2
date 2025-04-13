@@ -1336,7 +1336,6 @@ ZwSetInformationEnlistment@16
 ZwSetInformationFile@20
 ZwSetInformationThread@16
 ZwSetInformationTransaction@16
-ZwSetInformationTransactionManager
 ZwSetSecurityObject@12
 ZwSetTimer@28
 ZwSetTimerEx@16

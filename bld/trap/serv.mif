@@ -78,28 +78,25 @@ server_ext_nov       = .nlm
 serv_basename = jvmhlp_g
 !else ifeq srv msj
 serv_basename = msjhlp
-!else ifdef server_suf_$(host_os)_$(target_sys)
-serv_basename = $(xname)$(server_suf_$(host_os)_$(target_sys))
+!else ifdef server_suf_$(host_os)_$(target_os)
+serv_basename = $(xname)$(server_suf_$(host_os)_$(target_os))
 !else
 serv_basename = $(xname)
 !endif
 
 !ifeq srv jvm
-target          = $(serv_basename).dll
+build_target = $(serv_basename).dll
 !else ifeq srv msj
-target          = $(serv_basename).dll
-!else ifdef server_ext_$(host_os)_$(target_sys)
-target          = $(serv_basename)$(server_ext_$(host_os)_$(target_sys))
+build_target = $(serv_basename).dll
+!else ifdef server_ext_$(host_os)_$(target_os)
+build_target = $(serv_basename)$(server_ext_$(host_os)_$(target_os))
 !else ifdef server_ext_$(host_os)
-target          = $(serv_basename)$(server_ext_$(host_os))
+build_target = $(serv_basename)$(server_ext_$(host_os))
 !else
-target          = $(serv_basename).exe
+build_target = $(serv_basename).exe
 !endif
 
-dig_arch = $(target_cpu)
-
-!include $(dig_dir)/digcli.mif
-!include $(dig_dir)/trpcli.mif
+!include $(trap_dir)/client.mif
 
 !ifndef test
 !ifdef builtin_trap

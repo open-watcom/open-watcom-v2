@@ -104,6 +104,7 @@ void InitTrap( const char *parms )
     char                *error;
     trap_version        ver;
     char                buff[TXT_LEN];
+    char                err_msg[TRAP_MSG_MIN_LEN];
 
 #ifdef ENABLE_TRAP_LOGGING
     OpenTrapTraceFile();
@@ -147,15 +148,15 @@ void InitTrap( const char *parms )
     in[0].len = sizeof( acc );
     out[0].ptr = &ret;
     out[0].len = sizeof( ret );
-    buff[0] = NULLCHAR;
-    out[1].ptr = buff;
-    out[1].len = MAX_ERR_MSG_SIZE;
+    err_msg[0] = NULLCHAR;
+    out[1].ptr = err_msg;
+    out[1].len = sizeof( err_msg );
     TrapAccess( 1, in, 2, out );
     MaxPacketLen = ret.max_msg_size;
-    if( buff[0] != NULLCHAR ) {
+    if( err_msg[0] != NULLCHAR ) {
         UnLoadTrap();
         InitTrapError = true;
-        StartupErr( buff );
+        StartupErr( err_msg );
     }
 #if !defined( BUILD_RFX )
     if( !InitTrapError ) {

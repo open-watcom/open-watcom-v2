@@ -308,8 +308,8 @@ IDS_ERROR=\
     //1"%s"\
     //-1
 IDS_NODISKFOROPTION=\
-    //0"This diskette set does not contain the requried option."\
-    //1"このディスケット・セットには、必要なオプションが入っていません。"\
+    //0"This medium or file does not contain the requested option."\
+    //1"このメディアまたはファイルには要求されたオプションが含まれていません。"\
     //-1
 IDS_BADCRC=\
     //0"Internal error unpacking: '%s' - bad CRC."\
@@ -320,16 +320,16 @@ IDS_NOMEMORY=\
     //1"メモリ不足が発生しました @.&\n アプリケーションを終了して、再度、起動してください。"\
     //-1
 IDS_NOSETUPINFOFILE=\
-    //0"The %s file cannot be found.\nPlease verify the distribution diskette."\
-    //1"ファイル %s が見つかりません。\nディスケットを確認してください。"\
+    //0"The %s file cannot be found.\nPlease verify the distribution medium or file."\
+    //1"%s ファイルが見つかりません。\n配布メディアまたはファイルを確認してください。"\
     //-1
 IDS_NODISKSPACE=\
-    //0"Drive %c: contains %ldK of free disk space.\n@ requires a minimum of %ldK.&\n\nThe installation may fail. Do you want to proceed anyway?"\
-    //1"ドライブ %c: には %ldK のフリーなディスクスペースがあります。\n@ は最低 %ldK 必要です。&\n\nインストールは失敗するかもしれませんが、続けますか?"\
+    //0"Drive %s: contains %lld %s of free disk space.\n@ requires a minimum of %lld %s.&\n\nThe installation may fail. Do you want to proceed anyway?"\
+    //1"ドライブ %s: には %lld %s のフリーなディスクスペースがあります。\n@ は最低 %lld %s 必要です。&\n\nインストールは失敗するかもしれませんが、続けますか?"\
     //-1
 IDS_NODISKSPACE_UNC=\
-    //0"'%s' contains %ldK of free disk space.\n@ requires a minimum of %ldK.&\n\nThe installation may fail. Do you want to proceed anyway?"\
-    //1"'%s' には  %ldK のフリーなディスクスペースがあります。\n@ は最低 %ldK 必要です。&\n\nインストールは失敗するかもしれませんが、続けますか?"\
+    //0"'%s' contains %lld %s of free disk space.\n@ requires a minimum of %lld %s.&\n\nThe installation may fail. Do you want to proceed anyway?"\
+    //1"'%s' には  %lld %s のフリーなディスクスペースがあります。\n@ は最低 %lld %s 必要です。&\n\nインストールは失敗するかもしれませんが、続けますか?"\
     //-1
 IDS_UNCPATH_NOTEXIST=\
     //0"Error: Drive '%s' does not exist.\nTry another drive."\
@@ -487,13 +487,9 @@ IDS_SET_VAR_TO=\
     //0"set variable '%s' to"\
     //1"'%s'変数の設定"\
     //-1
-IDS_DISKETTES_NEEDED=\
-    //0"You will need %d diskettes"\
-    //1"%d ディスケットが必要です"\
-    //-1
 IDS_DRIVE_SPEC=\
-    //0"Drive %c: "\
-    //1"ドライブ %c:"\
+    //0"Drive %s: "\
+    //1"ドライブ %s:"\
     //-1
 IDS_DRIVE_SPEC_UNC=\
     //0"Drive '%s' "\
@@ -536,29 +532,17 @@ IDS_REMOVE_DLL=\
     //1"@ は、この削除後には、ファイル %s は使用されないことを決定しています。このファイルを削除しますか?"\
     //-1
 
-IDS_ERASE_OK=\
-    //0"All files on drive '%c' will be erased.\nProceed anyway?"\
-    //1"ドライブ '%c' のすべてのファイルは削除されます。\n続けますか?"\
-    //-1
-IDS_ERASE_ARE_YOU_SURE=\
-    //0"Are you sure you want to erase all files on drive '%c'?"\
-    //1"ドライブ '%c' のすべてのファイルを削除してもよいですか?"\
-    //-1
-IDS_INVALID_DISKETTE_SPEC=\
-    //0"'%s' is not a valid diskette drive name.\n"\
-    //1"'%s' は、正しいディスケット・ドライブ名ではありません。\n"\
-    //-1
 IDS_CANTREPLACE=\
     //0"Cannot replace the file %s.&\nContinue with the install?"\
     //1"ファイル %s を置き換えることができません。&\nインストールを続けますか?"\
     //-1
 IDS_NOSPACE_AFTER_DELETING=\
-    //0"The package will require about %ldK of space in the path '%s', yet even after the current contents of this path are deleted, only %ldK will be free.\nYou need %ld bytes (%ldK) more space.\nDo you wish to proceed and create a package even though this may fail?"\
-    //1"このパッケージは、パス '%s' において約 %ldK のスペースを必要としています。このパスが削除された後の現在の内容は、 %ldK だけフリーになります。\nあと %ld バイト (%ldK) 必要となります。失敗するかもしれないしれませんが、続けてパッケージを作成しますか?"\
+    //0"The package will require about %lld %s of space in the path '%s', yet even after the current contents of this path are deleted, only %lld %s will be free.\nYou need %lld %s more space.\nDo you wish to proceed and create a package even though this may fail?"\
+    //1"このパッケージは、パス '%s' において約 %lld %s のスペースを必要としています。このパスが削除された後の現在の内容は、 %lld %s だけフリーになります。\nあと %lld %s バイト 必要となります。失敗するかもしれないしれませんが、続けてパッケージを作成しますか?"\
     //-1
 IDS_NOTENOUGHSPACE=\
-    //0"The package will require about %ldK of space in the path '%s', yet %ldK is free.\nYou need %ld bytes (%ldK) more space.\nDo you wish to proceed and create a package even though this may fail?"\
-    //1"このパッケージは、パス '%s' において約 %ldK のスペースを必要としています。 \nまだ %ldK フリーです。あと %ld バイト (%ldK) 必要となります。失敗するかもしれないしれませんが、続けてパッケージを作成しますか?"\
+    //0"The package will require about %lld %s of space in the path '%s', yet %lld %s is free.\nYou need %lld %s more space.\nDo you wish to proceed and create a package even though this may fail?"\
+    //1"このパッケージは、パス '%s' において約 %lld %s のスペースを必要としています。 \nまだ %lld %s フリーです。あと %lld %s 必要となります。失敗するかもしれないしれませんが、続けてパッケージを作成しますか?"\
     //-1
 IDS_BAD_PATH=\
     //0"The path: '%s' that you entered is either inaccessible, not valid, or cannot be made.\nCheck the path and run this program again."\
@@ -637,16 +621,16 @@ IDS_ALIAS_EXISTS=\
     //1"エイリアス '%s' はすでに存在してます。&  新しいエイリアスを入力しますか?\n\n入力しない場合は置き換えます。"\
     //-1
 IDS_NODESTINFO=\
-    //0"Disk space information from the destination path: '%s' could not be found.  An estimate is that about %ldK of space is needed.&\n\nDo you wish to continue anyway?"\
-    //1"送信先パスからのディスク・スペース情報 : '%s' はありません。 estimate には約 %ldK のスペースが必要です。&\n\このまま続けますか?"\
+    //0"Disk space information from the destination path: '%s' could not be found.  An estimate is that about %lld %s of space is needed.&\n\nDo you wish to continue anyway?"\
+    //1"送信先パスからのディスク・スペース情報 : '%s' はありません。 estimate には約 %lld %s のスペースが必要です。&\n\このまま続けますか?"\
     //-1
 IDS_NOSRCINFO=\
     //0"Disk space information for the source path: '%s' could not be found.&\n\nDo you wish to continue anyway?"\
     //1"ソースパスからのディスク・スペース情報 : '%s' はありません。&\n\n続けますか?"\
     //-1
 IDS_NOFREESPACEINFO=\
-    //0"The amount of free space on '%s' cannot be determined.  About %ldK free space is needed.&\n\nDo you wish to continue anyway?"\
-    //1"'%s' のフリーなディスクスペースのサイズがわかりません。約 %ldK のフリーなスペースが必要です。&\n\n続けますか?"\
+    //0"The amount of free space on '%s' cannot be determined.  About %lld %s free space is needed.&\n\nDo you wish to continue anyway?"\
+    //1"'%s' のフリーなディスクスペースのサイズがわかりません。約 %lld %s のフリーなスペースが必要です。&\n\n続けますか?"\
     //-1
 IDS_NSCONFIG_1=\
     //0"Netscape Server was found in:"\
@@ -802,6 +786,10 @@ IDS_WRITEERROR=\
     //0"Error writing to destination file"\
     //1"コピー先ファイルへの書き込みエラー"\
     //-1
+IDS_READERROR=\
+    //0"Error reading from source file"\
+    //1"ソースファイルからの読み取りエラー"\
+    //-1
 IDS_NULLSTRING=\
     //0"NULL String"\
     //1"空(NULL)の文字列"\
@@ -871,14 +859,6 @@ IDS_CREATEFILE=\
 IDS_DELETEFILE=\
     //0"Deleting File"\
     //1"ファイルの削除(delete)"\
-    //-1
-IDS_DISK_NOT_WRITEABLE=\
-    //0"Diskette cannot be written!"\
-    //1"ディスケットは書き込めません!"\
-    //-1
-IDS_DISK_NOT_ENOUGH_FREE=\
-    //0"Diskette does not have enough free space!"\
-    //1"ディスケットには十分な空き容量がありません!"\
     //-1
 IDS_CREATESERVICE=\
     //0"Creating Windows NT Service..."\

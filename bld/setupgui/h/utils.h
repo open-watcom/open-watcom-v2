@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,27 +30,28 @@
 ****************************************************************************/
 
 
+typedef enum {
+    COPY_NORMAL     = 0x00,
+    COPY_APPEND     = 0x01,
+    COPY_TEXT_CRLF  = 0x02
+} copy_mode;
+
 extern bool             ModifyEnvironment( bool );
 extern bool             ModifyStartup( bool );
 extern bool             ModifyAssociations( bool );
 extern bool             ModifyUninstall( bool );
-extern bool             SpawnNextScript( );
-extern COPYFILE_ERROR   DoCopyFile( const VBUF *src, const VBUF *dst, bool );
+extern COPYFILE_ERROR   DoCopyFile( const VBUF *src, const VBUF *dst, copy_mode copymode );
 extern bool             CopyAllFiles( void );
 extern gui_message_return MsgBox( gui_window *, const char *, gui_message_type, ... );
-extern bool             CheckDrive( bool );
+extern bool             CheckFsys( bool );
 extern bool             InitInfo( const VBUF *, const VBUF * );
 extern bool             GetDirParams( int, char **, VBUF *, VBUF *, VBUF * );
 extern bool             FreeDirParams( void );
 extern void             CloseDownMessage( bool state );
-extern bool             IsFixedDisk( char drive );
-extern bool             IsDiskette( unsigned drive );
-extern unsigned         GetClusterSize( char drive );
-extern char             GetDriveLetter( char *desc );
+extern unsigned         GetTargetBlockSize( int target );
 extern void             AddInstallName( VBUF *str );
-extern char             *stristr( const char *str, const char *substr, size_t substr_len );
+extern const char       *stristr( const char *str, const char *substr, size_t substr_len );
 extern void             Log( char *start, ... );
-extern bool             CheckUpgrade( void );
 extern void             GetInstallName( VBUF * );
 extern bool             PromptUser( const VBUF *name, const char *dlg, const char *skip, const char *replace, bool *resp_replace );
 extern void             GetWindowsDirectoryVbuf( VBUF *windir );
@@ -61,6 +62,8 @@ extern void             ConcatDirSep( char *dir );
 extern void             RemoveDirSep( char *dir );
 extern void             SetupError( const char * );
 extern void             DoSpawn( when_time when );
-extern void             ResetDriveInfo( void );
-extern void             ResetDiskInfo( void );
+extern void             ResetFsysInfo( void );
+extern void             ResetAllFsysInfo( void );
+extern void             InitFsysInfo( void );
+extern void             FiniFsysInfo( void );
 extern void             DeleteObsoleteFiles( void );

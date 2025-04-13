@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -76,7 +76,7 @@ orl_return OMFENTRY OmfFini( omf_handle oh )
 }
 
 
-orl_return OMFENTRY OmfFileInit( omf_handle oh, FILE *fp, omf_file_handle *pofh )
+orl_return OMFENTRY OmfFileInit( omf_handle oh, orl_io_handle io_hnd, omf_file_handle *pofh )
 {
     omf_file_handle     ofh;
     orl_return          return_val;
@@ -88,7 +88,7 @@ orl_return OMFENTRY OmfFileInit( omf_handle oh, FILE *fp, omf_file_handle *pofh 
         return( ORL_OUT_OF_MEMORY );
 
     memset( ofh, 0, ORL_STRUCT_SIZEOF( omf_file_handle ) );
-    ofh->fp = fp;
+    ofh->io_hnd = io_hnd;
 
     OmfAddFileLinks( oh, ofh );
     return_val = OmfLoadFileStructure( ofh );

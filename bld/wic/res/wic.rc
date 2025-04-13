@@ -5,14 +5,14 @@ STRINGTABLE
 BEGIN
     #define pick(c,e,j) (c + RLE_ENGLISH * MSG_LANG_SPACING), [ e ]
 
-    #include "../res/wic.msg"
+    #include "wic.msg"
     #include "usagee.gh"
 
     #undef pick
 
     #define pick(c,e,j) (c + RLE_JAPANESE * MSG_LANG_SPACING), [ j ]
 
-    #include "../res/wic.msg"
+    #include "wic.msg"
     #include "usagej.gh"
 
     #undef pick

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -270,7 +270,7 @@ bool    ComTail( ins_entry *list, ins_entry *ins )
 bool    ComCode( ins_entry *jmp )
 /*******************************/
 {
-    ins_entry   *new;
+    ins_entry   *new_ins;
     ins_entry   *com;
     obj_length  align;
     bool        common;
@@ -278,28 +278,28 @@ bool    ComCode( ins_entry *jmp )
   optbegin
     common = false;
     com = NULL;
-    new = _Label( jmp )->ins;
-    if( new != NULL ) {
-        align = _ObjLen( new );
+    new_ins = _Label( jmp )->ins;
+    if( new_ins != NULL ) {
+        align = _ObjLen( new_ins );
         for( ;; ) {
             for( ;; ) {
-                new = PrevIns( new );
-                if( new == NULL )
+                new_ins = PrevIns( new_ins );
+                if( new_ins == NULL )
                     break;
-                if( new == jmp )
+                if( new_ins == jmp )
                     break;
-                if( _Class( new ) != OC_LABEL ) {
+                if( _Class( new_ins ) != OC_LABEL ) {
                     break;
                 }
             }
-            if( new == NULL )
+            if( new_ins == NULL )
                 break;
-            if( new == jmp )
+            if( new_ins == jmp )
                 break;
             com = PrevIns( jmp );
             if( com == NULL )
                 break;
-            if( !CommonInstr( new, com ) )
+            if( !CommonInstr( new_ins, com ) )
                 break;
             com = PrevIns( DelInstr( com ) );
             common = true;
@@ -308,10 +308,10 @@ bool    ComCode( ins_entry *jmp )
             }
         }
         if( common ) {
-            if( FindShort( new, NULL ) )
+            if( FindShort( new_ins, NULL ) )
                 align = 0;
-            ChgLblRef( jmp, AddNewLabel( new, align ) );
-            Untangle( NextIns( new ) );
+            ChgLblRef( jmp, AddNewLabel( new_ins, align ) );
+            Untangle( NextIns( new_ins ) );
             Untangle( NextIns( jmp ) );
             Untangle( com );
         }

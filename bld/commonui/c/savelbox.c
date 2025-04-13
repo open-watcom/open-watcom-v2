@@ -34,7 +34,6 @@
 #include <string.h>
 #include <stdio.h>
 #include <ctype.h>
-#include <direct.h>
 #include <stdlib.h>
 #include "wio.h"
 #include "watcom.h"

@@ -40,8 +40,6 @@ extern "C" {
     #include <stdlib.h>
 #ifdef __UNIX__
     #include <sys/types.h>
-#else
-    #include <direct.h>
 #endif
     #include <time.h>
 #if defined( __UNIX__ ) || defined( __WATCOMC__ )

@@ -34,6 +34,7 @@
 #ifndef _GUIWIND_H_
 #define _GUIWIND_H_
 
+#include <string.h>
 #include "gui.h"
 #include "guitypes.h"
 #include "stdui.h"
@@ -54,11 +55,63 @@
 #define MAXOFFSET               3
 #define MINOFFSET               6
 
-#define MINMAX_WIDTH    ( MIN_WIDTH + MINOFFSET )
+#define MINMAX_WIDTH            (MIN_WIDTH + MINOFFSET)
 
 #define MIN_GADGET_SIZE         2
 
 #define WNDATTR( wnd, attr )    (wnd)->attrs[attr]
+
+#define IS_HSCROLL_ON(x)        ((x)->hgadget != NULL)
+#define IS_VSCROLL_ON(x)        ((x)->vgadget != NULL)
+#define GUI_HRANGE_SET(x)       (((x)->flags & HRANGE_SET) != 0)
+#define GUI_VRANGE_SET(x)       (((x)->flags & VRANGE_SET) != 0)
+#define GUI_DO_HSCROLL(x)       (IS_HSCROLL_ON(x) && (((x)->style & GUI_HSCROLL_EVENTS) == 0))
+#define GUI_DO_VSCROLL(x)       (IS_VSCROLL_ON(x) && (((x)->style & GUI_VSCROLL_EVENTS) == 0))
+
+#define GUI_WND_MINIMIZED(x)    ((x)->flags & MINIMIZED)
+#define GUI_WND_MAXIMIZED(x)    ((x)->flags & MAXIMIZED)
+#define GUI_WND_VISIBLE(x)      ((x)->style & GUI_VISIBLE)
+#define GUI_HAS_CLOSER(x)       (((x)->style & GUI_CLOSEABLE) || ((x)->menu != NULL))
+#define GUI_RESIZE_GADGETS_USEABLE(x) ((x)->vs.area.width >= MINMAX_WIDTH)
+#define GUI_IS_DIALOG(x)        (((x)->flags & DIALOG ) != 0)
+
+#define EMPTY_AREA( sarea )     (((sarea).width == 0 ) || ((sarea).height == 0))
+
+#define YMAX UIData->height
+#define XMAX UIData->width
+#define YMIN uimenuheight()
+#define XMIN 0
+
+enum {
+    EV_SYS_MENU_RESTORE     = EV_FIRST_UNUSED,
+    EV_SYS_MENU_MOVE,
+    EV_SYS_MENU_SIZE,
+    EV_SYS_MENU_MINIMIZE,
+    EV_SYS_MENU_MAXIMIZE,
+    EV_SYS_MENU_CLOSE,
+};
+#define EV_SYS_MENU_FIRST   EV_SYS_MENU_RESTORE
+#define EV_SYS_MENU_LAST    EV_SYS_MENU_CLOSE
+
+#define NUM_GUI_EVENTS 100
+
+//                          default ui events
+//  EV_FIRST_UNUSED:        100 (NUM_GUI_EVENTS)
+//  GUI_FIRST_USER_EVENT:   10000 (GUI_LAST_MENU_ID) control IDs
+//  LAST_EVENT:             1
+//  FIRST_GUI_EVENT:        GUI_MDI_MENU_LAST
+//  LAST_GUI_EVENT:
+
+#define GUI_FIRST_USER_EVENT ( EV_FIRST_UNUSED + NUM_GUI_EVENTS )
+
+#define LAST_EVENT      ( GUI_FIRST_USER_EVENT + GUI_LAST_MENU_ID )
+#define FIRST_GUI_EVENT ( LAST_EVENT + 1 )
+#define LAST_GUI_EVENT  ( GUI_FIRST_USER_EVENT + GUI_MDI_MENU_LAST )
+
+#define IS_CTLEVENT(x)  (x >= GUI_FIRST_USER_EVENT)
+
+#define EV2ID(x)        (x - GUI_FIRST_USER_EVENT + 1)
+#define ID2EV(x)        (x + GUI_FIRST_USER_EVENT - 1)
 
 typedef enum {
     NONE                        = 0x0000,
@@ -81,19 +134,6 @@ typedef enum {
     NON_CLIENT_INVALID      = FRAME_INVALID | TITLE_INVALID | \
                               VSCROLL_INVALID | HSCROLL_INVALID
 } gui_flags;
-
-#define GUI_HRANGE_SET( wnd ) ( ( wnd->hgadget != NULL ) && ( ( wnd->flags & HRANGE_SET ) != 0 ) )
-#define GUI_VRANGE_SET( wnd ) ( ( wnd->vgadget != NULL ) && ( ( wnd->flags & VRANGE_SET ) != 0 ) )
-#define GUI_DO_HSCROLL( wnd ) ( ( wnd->hgadget != NULL ) && ( ( wnd->style & GUI_HSCROLL_EVENTS ) == 0 ) )
-#define GUI_DO_VSCROLL( wnd ) ( ( wnd->vgadget != NULL ) && ( ( wnd->style & GUI_VSCROLL_EVENTS ) == 0 ) )
-#define GUI_WND_MINIMIZED( wnd ) ( wnd->flags & MINIMIZED )
-#define GUI_WND_MAXIMIZED( wnd ) ( wnd->flags & MAXIMIZED )
-#define GUI_WND_VISIBLE( wnd )   ( wnd->style & GUI_VISIBLE )
-#define GUI_HAS_CLOSER( wnd ) ( ( wnd->style & GUI_CLOSEABLE ) || ( wnd->menu != NULL ) )
-#define GUI_RESIZE_GADGETS_USEABLE( wnd ) ( wnd->vs.area.width >= MINMAX_WIDTH )
-#define GUI_IS_DIALOG( wnd ) ( ( wnd->flags & DIALOG ) != 0 )
-
-#define EMPTY_AREA( sarea ) ( ( (sarea).width == 0 ) || ( (sarea).height == 0 ) )
 
 typedef struct gui_control gui_control;
 
@@ -141,54 +181,5 @@ struct gui_window {
     char                background;     // character to use to draw background
     char                *icon_name;     // string to draw on icon
 };
-
-#define YMAX UIData->height
-#define XMAX UIData->width
-#define YMIN uimenuheight()
-#define XMIN 0
-
-enum {
-    EV_SCROLL_UP            = EV_FIRST_UNUSED,
-    EV_SCROLL_DOWN,
-    EV_SCROLL_LEFT,
-    EV_SCROLL_RIGHT,
-    EV_PAGE_LEFT,
-    EV_PAGE_RIGHT,
-    EV_DESTROY
-};
-
-enum {
-    EV_SYS_MENU_RESTORE     = EV_FIRST_UNUSED,
-    EV_SYS_MENU_MOVE,
-    EV_SYS_MENU_SIZE,
-    EV_SYS_MENU_MINIMIZE,
-    EV_SYS_MENU_MAXIMIZE,
-    EV_SYS_MENU_CLOSE,
-};
-#define EV_SYS_MENU_FIRST   EV_SYS_MENU_RESTORE
-#define EV_SYS_MENU_LAST    EV_SYS_MENU_CLOSE
-
-#include "guix.h"
-#include "guixmdi.h"
-
-#define NUM_GUI_EVENTS 100
-
-//                          default ui events
-//  EV_FIRST_UNUSED:        100 (NUM_GUI_EVENTS)
-//  GUI_FIRST_USER_EVENT:   10000 (GUI_LAST_MENU_ID) control IDs
-//  LAST_EVENT:             1
-//  FIRST_GUI_EVENT:        GUI_MDI_MENU_LAST
-//  LAST_GUI_EVENT:
-
-#define GUI_FIRST_USER_EVENT ( EV_FIRST_UNUSED + NUM_GUI_EVENTS )
-
-#define LAST_EVENT      ( GUI_FIRST_USER_EVENT + GUI_LAST_MENU_ID )
-#define FIRST_GUI_EVENT ( LAST_EVENT + 1 )
-#define LAST_GUI_EVENT  ( GUI_FIRST_USER_EVENT + GUI_MDI_MENU_LAST )
-
-#define IS_CTLEVENT(x)  (x >= GUI_FIRST_USER_EVENT)
-
-#define EV2ID(x)        (x - GUI_FIRST_USER_EVENT + 1)
-#define ID2EV(x)        (x + GUI_FIRST_USER_EVENT - 1)
 
 #endif // _GUIWIND_H_

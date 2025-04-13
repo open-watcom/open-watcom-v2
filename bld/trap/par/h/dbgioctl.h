@@ -30,12 +30,13 @@
 ****************************************************************************/
 
 
-
-// Device type           -- in the "User Defined" range."
+/*
+ * Device type           -- in the "User Defined" range."
+ */
 #define DBG_TYPE 40000
-
-// The IOCTL function codes from 0x800 to 0xFFF are for customer use.
-
+/*
+ * The IOCTL function codes from 0x800 to 0xFFF are for customer use.
+ */
 #define IOCTL_DBG_READ_PORT_U8 \
     CTL_CODE( DBG_TYPE, 0x800, METHOD_BUFFERED, FILE_READ_ACCESS )
 

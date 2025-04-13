@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -115,20 +115,20 @@ const dw_tagnum *const SearchTypes[] = {
 };
 
 
-long DWRInfoLength( drmem_hdl mod )
+long DR_InfoLength( drmem_hdl mod )
 /****************************************/
 // return length of dbg_info for mod
 {
     drmem_hdl           finish;
 
-    finish = mod + DWRVMReadDWord( mod );
+    finish = mod + DR_VMReadDWord( mod );
     mod += sizeof( compuhdr_prologue );
     return( (long)( finish - mod ) );
 }
 
 
-bool DWRScanCompileUnit( dr_search_context *ctxt,
-                           DWRCUWLK fn,
+bool DR_ScanCompileUnit( dr_search_context *ctxt,
+                           DR_CUWLK fn,
                            const dw_tagnum *tagarray, dr_depth depth, void *data)
 /*********************************************************************************/
 /* note this modifies the start and stack fields of the context passed in */
@@ -145,35 +145,35 @@ bool DWRScanCompileUnit( dr_search_context *ctxt,
     info.context = ctxt;
 
     if( ctxt->stack.free == 0 ) { // start out in an unnamed chain
-        DWRContextPush( &ctxt->stack, mod );
-        DWRContextPushOP( &ctxt->stack, DO_NOTHING );
+        DR_ContextPush( &ctxt->stack, mod );
+        DR_ContextPushOP( &ctxt->stack, DO_NOTHING );
     }
 
     while( mod < ctxt->end ) {
         info.handle = mod;
-        abbrev_idx = DWRVMReadULEB128( &mod );
+        abbrev_idx = DR_VMReadULEB128( &mod );
         if( abbrev_idx == 0 ) {
-            op = DWRContextPopOP( &ctxt->stack );
+            op = DR_ContextPopOP( &ctxt->stack );
             switch( op ) {
             case SET_CLASS:
-                ctxt->classhdl = DWRContextPop( &ctxt->stack );
+                ctxt->classhdl = DR_ContextPop( &ctxt->stack );
                 break;
             case SET_FUNCTION:
-                ctxt->functionhdl = DWRContextPop( &ctxt->stack );
+                ctxt->functionhdl = DR_ContextPop( &ctxt->stack );
                 break;
             case DO_NOTHING:
-                DWRContextPop( &ctxt->stack );
+                DR_ContextPop( &ctxt->stack );
                 break;
             }
             if( ctxt->stack.free < 0 ) {
-                DWREXCEPT( DREXCEP_BAD_DBG_INFO );
+                DR_EXCEPT( DREXCEP_BAD_DBG_INFO );
             }
         } else {
             abbrev = ctxt->compunit->abbrevs[abbrev_idx];
-            info.tag = DWRVMReadULEB128( &abbrev );
-            haschild = DWRVMReadByte( abbrev );
+            info.tag = DR_VMReadULEB128( &abbrev );
+            haschild = DR_VMReadByte( abbrev );
             abbrev++;
-            if( DWRSearchArray( tagarray, info.tag ) ) {
+            if( DR_SearchArray( tagarray, info.tag ) ) {
                 info.context->start = info.handle;
                 if( !fn( abbrev, mod, &info, data ) ) {
                     return( false );    // false == quit
@@ -181,33 +181,33 @@ bool DWRScanCompileUnit( dr_search_context *ctxt,
             }
             skipped = false;
             if( haschild == DW_CHILDREN_yes ) {
-                if( DWRSearchArray( SearchClassTags, info.tag ) ) {
+                if( DR_SearchArray( SearchClassTags, info.tag ) ) {
                     if( !(depth & DR_DEPTH_CLASSES) ) {
-                        DWRSkipChildren( &abbrev, &mod );
+                        DR_SkipChildren( &abbrev, &mod );
                         skipped = true;
                     } else {
-                        DWRContextPush( &ctxt->stack, ctxt->classhdl );
-                        DWRContextPushOP( &ctxt->stack, SET_CLASS );
+                        DR_ContextPush( &ctxt->stack, ctxt->classhdl );
+                        DR_ContextPushOP( &ctxt->stack, SET_CLASS );
                         ctxt->classhdl = info.handle;
                     }
                 } else {
-                    if( DWRSearchArray( SearchFunctionTags, info.tag ) ) {
+                    if( DR_SearchArray( SearchFunctionTags, info.tag ) ) {
                         if( !(depth & DR_DEPTH_FUNCTIONS) ) {
-                            DWRSkipChildren( &abbrev, &mod );
+                            DR_SkipChildren( &abbrev, &mod );
                             skipped = true;
                         } else {
-                            DWRContextPush( &ctxt->stack, ctxt->functionhdl );
-                            DWRContextPushOP( &ctxt->stack, SET_FUNCTION );
+                            DR_ContextPush( &ctxt->stack, ctxt->functionhdl );
+                            DR_ContextPushOP( &ctxt->stack, SET_FUNCTION );
                             ctxt->functionhdl = info.handle;
                         }
                     } else {
-                        DWRContextPush( &ctxt->stack, info.handle );
-                        DWRContextPushOP( &ctxt->stack, DO_NOTHING );
+                        DR_ContextPush( &ctxt->stack, info.handle );
+                        DR_ContextPushOP( &ctxt->stack, DO_NOTHING );
                     }
                 }
             }
             if( !skipped ) {
-                DWRSkipAttribs( abbrev, &mod );
+                DR_SkipAttribs( abbrev, &mod );
             }
         }
     }
@@ -215,22 +215,22 @@ bool DWRScanCompileUnit( dr_search_context *ctxt,
     return( true );
 }
 
-void DWRSkipChildren( drmem_hdl *abbrev, drmem_hdl *mod )
+void DR_SkipChildren( drmem_hdl *abbrev, drmem_hdl *mod )
 /**************************************************************/
 {
     drmem_hdl       handle;
 
-    if( DWRScanForAttrib( abbrev, mod, DW_AT_sibling ) ) {
-        *mod = DWRReadReference( *abbrev, *mod );
+    if( DR_ScanForAttrib( abbrev, mod, DW_AT_sibling ) ) {
+        *mod = DR_ReadReference( *abbrev, *mod );
     } else {    // we have to manually skip everything
-        while( !DWRReadTagEnd( mod, &handle, NULL ) ) { // skip tag
+        while( !DR_ReadTagEnd( mod, &handle, NULL ) ) { // skip tag
             handle++;                                   // skip child flag
-            DWRSkipAttribs( handle, mod );              // skip attribs
+            DR_SkipAttribs( handle, mod );              // skip attribs
         }
     }
 }
 
-void DWRSkipAttribs( drmem_hdl abbrev, drmem_hdl *mod )
+void DR_SkipAttribs( drmem_hdl abbrev, drmem_hdl *mod )
 /************************************************************/
 // skip the attributes.
 {
@@ -238,46 +238,46 @@ void DWRSkipAttribs( drmem_hdl abbrev, drmem_hdl *mod )
     dw_atnum    attrib;
 
     for( ;; ) {
-        attrib = DWRVMReadULEB128( &abbrev );   // read attribute
-        form = DWRVMReadULEB128( &abbrev );     // skip form
+        attrib = DR_VMReadULEB128( &abbrev );   // read attribute
+        form = DR_VMReadULEB128( &abbrev );     // skip form
         if( attrib == 0 )
             break;
-        DWRSkipForm( mod, form );
+        DR_SkipForm( mod, form );
     }
 }
 
-void DWRSkipRest( drmem_hdl abbrev, drmem_hdl *mod )
+void DR_SkipRest( drmem_hdl abbrev, drmem_hdl *mod )
 /*********************************************************/
 // skip the rest of the attributes.  This is designed to come after a
-// DWRScanForAttrib, which leaves abbrev pointing at the form.
+// DR_ScanForAttrib, which leaves abbrev pointing at the form.
 {
     dw_formnum  form;
     dw_atnum    attrib;
 
     attrib = 1;         // arbitrary non-zero
     for( ;; ) {
-        form = DWRVMReadULEB128( &abbrev );
+        form = DR_VMReadULEB128( &abbrev );
         if( attrib == 0 )
             break;
-        DWRSkipForm( mod, form );
-        attrib = DWRVMReadULEB128( &abbrev );
+        DR_SkipForm( mod, form );
+        attrib = DR_VMReadULEB128( &abbrev );
     }
 }
 
-void DWRAllChildren( drmem_hdl mod, DWRCHILDCB fn, void *data )
+void DR_AllChildren( drmem_hdl mod, DR_CHILDCB fn, void *data )
 /*************************************************************/
 {
     drmem_hdl       abbrev;
 
-    while( !DWRReadTagEnd( &mod, &abbrev, NULL ) ) {
+    while( !DR_ReadTagEnd( &mod, &abbrev, NULL ) ) {
         abbrev++;   /* skip child flag */
         if( !fn( abbrev, mod, data ) )
             break;
-        DWRSkipAttribs( abbrev, &mod );
+        DR_SkipAttribs( abbrev, &mod );
     }
 }
 
-bool DWRSearchArray( const dw_tagnum *array, dw_tagnum value )
+bool DR_SearchArray( const dw_tagnum *array, dw_tagnum value )
 /************************************************************/
 {
     while( *array != 0 ) {
@@ -288,38 +288,38 @@ bool DWRSearchArray( const dw_tagnum *array, dw_tagnum value )
     return( false );
 }
 
-unsigned DWRGetAddrSize( drmem_hdl mod )
+unsigned DR_GetAddrSize( drmem_hdl mod )
 /**************************************/
 /* returns the size of the address for the compile unit */
 {
-    return( DWRVMReadByte( mod + 10 ) );
+    return( DR_VMReadByte( mod + 10 ) );
 }
 
 
-void DWRSkipForm( drmem_hdl *addr, dw_formnum form )
+void DR_SkipForm( drmem_hdl *addr, dw_formnum form )
 /**************************************************/
 {
     unsigned_32 value;
 
     switch( form ) {
     case DW_FORM_addr:
-        if( DWRCurrNode->addr_size == 0 ) {
-            *addr += DWRGetAddrSize( DWRFindCompileUnit( *addr ) );
+        if( DR_CurrNode->addr_size == 0 ) {
+            *addr += DR_GetAddrSize( DR_FindCompileUnit( *addr ) );
         } else {
-            *addr += DWRCurrNode->addr_size;
+            *addr += DR_CurrNode->addr_size;
         }
         break;
     case DW_FORM_block1:
-        *addr += DWRVMReadByte( *addr ) + sizeof(unsigned_8);
+        *addr += DR_VMReadByte( *addr ) + sizeof(unsigned_8);
         break;
     case DW_FORM_block2:
-        *addr += DWRVMReadWord( *addr ) + sizeof(unsigned_16);
+        *addr += DR_VMReadWord( *addr ) + sizeof(unsigned_16);
         break;
     case DW_FORM_block4:
-        *addr += DWRVMReadDWord( *addr ) + sizeof(unsigned_32);
+        *addr += DR_VMReadDWord( *addr ) + sizeof(unsigned_32);
         break;
     case DW_FORM_block:
-        value = DWRVMReadULEB128( addr );
+        value = DR_VMReadULEB128( addr );
         *addr += value;
         break;
     case DW_FORM_flag:
@@ -342,41 +342,41 @@ void DWRSkipForm( drmem_hdl *addr, dw_formnum form )
     case DW_FORM_sdata:
     case DW_FORM_udata:
     case DW_FORM_ref_udata:
-        DWRVMSkipLEB128( addr );
+        DR_VMSkipLEB128( addr );
         break;
     case DW_FORM_string:
-        *addr += DWRVMStrLen( *addr ) + 1;
+        *addr += DR_VMStrLen( *addr ) + 1;
         break;
     case DW_FORM_strp:
         *addr += 4;
         break;
     case DW_FORM_indirect:
-        value = DWRVMReadULEB128( addr );
-        DWRSkipForm( addr, value );
+        value = DR_VMReadULEB128( addr );
+        DR_SkipForm( addr, value );
         break;
     default:
-        DWREXCEPT( DREXCEP_BAD_DBG_INFO );
+        DR_EXCEPT( DREXCEP_BAD_DBG_INFO );
     }
 }
 
-dwr_formcl DWRFormClass( dw_formnum form )
-/****************************************/
+dr_formcl DR_FormClass( dw_formnum form )
+/***************************************/
 // class a form
 {
-    dwr_formcl formcl;
+    dr_formcl   formcl;
 
     switch( form ) {
     case DW_FORM_addr:
-        formcl = DWR_FORMCL_address;
+        formcl = DR_FORMCL_address;
         break;
     case DW_FORM_block1:
     case DW_FORM_block2:
     case DW_FORM_block4:
     case DW_FORM_block:
-        formcl = DWR_FORMCL_block;
+        formcl = DR_FORMCL_block;
         break;
     case DW_FORM_flag:
-        formcl = DWR_FORMCL_flag;
+        formcl = DR_FORMCL_flag;
         break;
     case DW_FORM_data1:
     case DW_FORM_data2:
@@ -384,25 +384,25 @@ dwr_formcl DWRFormClass( dw_formnum form )
     case DW_FORM_data8:
     case DW_FORM_sdata:
     case DW_FORM_udata:
-        formcl = DWR_FORMCL_data;
+        formcl = DR_FORMCL_data;
         break;
     case DW_FORM_ref1:
     case DW_FORM_ref2:
     case DW_FORM_ref4:
     case DW_FORM_ref_udata:
-        formcl = DWR_FORMCL_ref;
+        formcl = DR_FORMCL_ref;
         break;
     case DW_FORM_ref_addr:
-        formcl = DWR_FORMCL_ref_addr;
+        formcl = DR_FORMCL_ref_addr;
         break;
     case DW_FORM_string:
-        formcl = DWR_FORMCL_string;
+        formcl = DR_FORMCL_string;
         break;
     case DW_FORM_indirect:
-        formcl = DWR_FORMCL_indirect;
+        formcl = DR_FORMCL_indirect;
         break;
     default:
-        DWREXCEPT( DREXCEP_BAD_DBG_INFO );
+        DR_EXCEPT( DREXCEP_BAD_DBG_INFO );
         formcl = 0;
     }
     return( formcl );
@@ -418,45 +418,45 @@ unsigned_32 ReadConst( dw_formnum form, drmem_hdl info )
     case DW_FORM_data1:
     case DW_FORM_ref1:
     case DW_FORM_flag:
-        retval = DWRVMReadByte( info );
+        retval = DR_VMReadByte( info );
         break;
     case DW_FORM_data2:
     case DW_FORM_ref2:
-        retval = DWRVMReadWord( info );
+        retval = DR_VMReadWord( info );
         break;
     case DW_FORM_ref_addr:      // NYI: non-standard behaviour for DW_FORM_ref
     case DW_FORM_data4:
     case DW_FORM_ref4:
-        retval = DWRVMReadDWord( info );
+        retval = DR_VMReadDWord( info );
         break;
     case DW_FORM_sdata:
-        retval = DWRVMReadSLEB128( &info );
+        retval = DR_VMReadSLEB128( &info );
         break;
     case DW_FORM_udata:
     case DW_FORM_ref_udata:
-        retval = DWRVMReadULEB128( &info );
+        retval = DR_VMReadULEB128( &info );
         break;
     case DW_FORM_indirect:
-        form1 = DWRVMReadULEB128( &info );
+        form1 = DR_VMReadULEB128( &info );
         retval = ReadConst( form1, info );
         break;
     default:
-        DWREXCEPT( DREXCEP_BAD_DBG_INFO );
+        DR_EXCEPT( DREXCEP_BAD_DBG_INFO );
         retval = 0;
     }
     return( retval );
 }
 
-unsigned_32 DWRReadConstant( drmem_hdl abbrev, drmem_hdl info )
+unsigned_32 DR_ReadConstant( drmem_hdl abbrev, drmem_hdl info )
 /********************************************************************/
 {
     dw_formnum  form;
 
-    form = DWRVMReadULEB128( &abbrev );
+    form = DR_VMReadULEB128( &abbrev );
     return( ReadConst( form, info ) );
 }
 
-drmem_hdl DWRReadReference( drmem_hdl abbrev, drmem_hdl info )
+drmem_hdl DR_ReadReference( drmem_hdl abbrev, drmem_hdl info )
 /************************************************************/
 // references are just a constant with the start of the compile unit added on.
 {
@@ -465,61 +465,61 @@ drmem_hdl DWRReadReference( drmem_hdl abbrev, drmem_hdl info )
     unsigned_32     offset;
 
     handle = DRMEM_HDL_NULL;
-    form = DWRVMReadULEB128( &abbrev );
+    form = DR_VMReadULEB128( &abbrev );
     offset = ReadConst( form, info );
     if( offset != 0 ) {     // if not NULL relocate
         if( form != DW_FORM_ref_addr ) {
-            handle = DWRFindCompileUnit( info );
+            handle = DR_FindCompileUnit( info );
         } else {
-            if( DWRCurrNode->wat_producer_ver == VER_V1 ) { // handle Watcom 10.x DWARF
-                handle = DWRFindCompileUnit( info );
+            if( DR_CurrNode->wat_producer_ver == VER_V1 ) { // handle Watcom 10.x DWARF
+                handle = DR_FindCompileUnit( info );
             } else {
-                handle = DWRCurrNode->sections[DR_DEBUG_INFO].base;
+                handle = DR_CurrNode->sections[DR_DEBUG_INFO].base;
             }
         }
     }
     return( handle + offset );
 }
 
-unsigned_32 DWRReadAddr( drmem_hdl abbrev, drmem_hdl info )
+unsigned_32 DR_ReadAddr( drmem_hdl abbrev, drmem_hdl info )
 /*********************************************************/
 // address size dependent on CCU info
 {
     unsigned     addr_size;
     dw_formnum   form;
 
-    form = DWRVMReadULEB128( &abbrev );
+    form = DR_VMReadULEB128( &abbrev );
     if( form != DW_FORM_addr ) {
-        DWREXCEPT( DREXCEP_BAD_DBG_INFO );
+        DR_EXCEPT( DREXCEP_BAD_DBG_INFO );
     }
-    if( DWRCurrNode->addr_size == 0 ) {
-        addr_size = DWRGetAddrSize( DWRFindCompileUnit( info ) );
+    if( DR_CurrNode->addr_size == 0 ) {
+        addr_size = DR_GetAddrSize( DR_FindCompileUnit( info ) );
     } else {
-        addr_size = DWRCurrNode->addr_size;
+        addr_size = DR_CurrNode->addr_size;
     }
-    return( DWRReadInt( info, addr_size ) );
+    return( DR_ReadInt( info, addr_size ) );
 }
 
-char *DWRReadString( drmem_hdl abbrev, drmem_hdl info )
+char *DR_ReadString( drmem_hdl abbrev, drmem_hdl info )
 /*****************************************************/
 {
     dw_formnum  form;
     unsigned_32 offset;
 
-    form = DWRVMReadULEB128( &abbrev );
+    form = DR_VMReadULEB128( &abbrev );
     switch( form ) {
     case DW_FORM_string:
-        return( DWRVMCopyString( &info ) );
+        return( DR_VMCopyString( &info ) );
     case DW_FORM_strp:
         offset = ReadConst( DW_FORM_data4, info );
-        return( DWRCopyDbgSecString( &info, offset ) );
+        return( DR_CopyDbgSecString( &info, offset ) );
     default:
-        DWREXCEPT( DREXCEP_BAD_DBG_INFO );
+        DR_EXCEPT( DREXCEP_BAD_DBG_INFO );
     }
     return( NULL );
 }
 
-unsigned_32 DWRReadInt( drmem_hdl where, unsigned size )
+unsigned_32 DR_ReadInt( drmem_hdl where, unsigned size )
 /******************************************************/
 //Read an int
 {
@@ -527,74 +527,74 @@ unsigned_32 DWRReadInt( drmem_hdl where, unsigned size )
 
     switch( size ) {
     case 1:
-        ret = DWRVMReadByte( where );
+        ret = DR_VMReadByte( where );
         break;
     case 2:
-        ret = DWRVMReadWord( where );
+        ret = DR_VMReadWord( where );
         break;
     case 4:
-        ret = DWRVMReadDWord( where );
+        ret = DR_VMReadDWord( where );
         break;
     default:
-        DWREXCEPT( DREXCEP_BAD_DBG_INFO );
+        DR_EXCEPT( DREXCEP_BAD_DBG_INFO );
         ret = 0;
         break;
     }
     return( ret );
 }
 
-int DWRReadFlag( drmem_hdl abbrev, drmem_hdl info )
+int DR_ReadFlag( drmem_hdl abbrev, drmem_hdl info )
 /*************************************************/
 {
     dw_formnum  form;
 
-    form = DWRVMReadULEB128( &abbrev );
+    form = DR_VMReadULEB128( &abbrev );
     if( form == DW_FORM_data1 || form == DW_FORM_flag ) {
-        return( DWRVMReadByte( info ) );
+        return( DR_VMReadByte( info ) );
     } else {
-        DWREXCEPT( DREXCEP_BAD_DBG_INFO );
+        DR_EXCEPT( DREXCEP_BAD_DBG_INFO );
     }
     return( 0 );
 }
 
-dw_tagnum DWRReadTag( drmem_hdl *entry, drmem_hdl *abbrev )
+dw_tagnum DR_ReadTag( drmem_hdl *entry, drmem_hdl *abbrev )
 /*********************************************************/
 {
     dw_tagnum       tag;
     dr_abbrev_idx   abbrev_idx;
     compunit_info   *cu;
 
-    abbrev_idx = DWRVMReadULEB128( entry );
-    cu = DWRFindCompileInfo( *entry );
+    abbrev_idx = DR_VMReadULEB128( entry );
+    cu = DR_FindCompileInfo( *entry );
     if( abbrev_idx >= cu->numabbrevs ) {
-        DWREXCEPT( DREXCEP_BAD_DBG_INFO );
+        DR_EXCEPT( DREXCEP_BAD_DBG_INFO );
         *abbrev = DRMEM_HDL_NULL;
         tag = 0;
     } else {
         *abbrev = cu->abbrevs[abbrev_idx];
-        tag = DWRVMReadULEB128( abbrev );
+        tag = DR_VMReadULEB128( abbrev );
     }
     return( tag );
 }
 
-dw_tagnum DWRGetTag( drmem_hdl entry )
+dw_tagnum DR_GetTag( drmem_hdl entry )
 /************************************/
 {
     drmem_hdl       tmp_abbrev;
 
-    return( DWRReadTag( &entry, &tmp_abbrev ) );
+    return( DR_ReadTag( &entry, &tmp_abbrev ) );
 }
 
-drmem_hdl DWRSkipTag( drmem_hdl *entry )
+drmem_hdl DR_SkipTag( drmem_hdl *entry )
 /**************************************/
 {
     drmem_hdl       abbrev;
 
-    DWRReadTag( entry, &abbrev );
+    DR_ReadTag( entry, &abbrev );
     return( abbrev );
 }
 
-bool DWRReadTagEnd( drmem_hdl *entry, drmem_hdl *pabbrev, dw_tagnum *ptag )
+bool DR_ReadTagEnd( drmem_hdl *entry, drmem_hdl *pabbrev, dw_tagnum *ptag )
 /***************************************************************************/
 {
     dr_abbrev_idx   abbrev_idx;
@@ -604,14 +604,14 @@ bool DWRReadTagEnd( drmem_hdl *entry, drmem_hdl *pabbrev, dw_tagnum *ptag )
 
     abbrev = DRMEM_HDL_NULL;
     tag = 0;
-    abbrev_idx = DWRVMReadULEB128( entry );
+    abbrev_idx = DR_VMReadULEB128( entry );
     if( abbrev_idx != 0 ) {
-        cu = DWRFindCompileInfo( *entry );
+        cu = DR_FindCompileInfo( *entry );
         if( abbrev_idx >= cu->numabbrevs ) {
-            DWREXCEPT( DREXCEP_BAD_DBG_INFO );
+            DR_EXCEPT( DREXCEP_BAD_DBG_INFO );
         } else {
             abbrev = cu->abbrevs[abbrev_idx];
-            tag = DWRVMReadULEB128( &abbrev );
+            tag = DR_VMReadULEB128( &abbrev );
         }
     }
     *pabbrev = abbrev;
@@ -621,7 +621,7 @@ bool DWRReadTagEnd( drmem_hdl *entry, drmem_hdl *pabbrev, dw_tagnum *ptag )
     return( abbrev_idx == 0 );
 }
 
-char * DWRCopyDbgSecString( drmem_hdl *info, unsigned_32 offset )
+char * DR_CopyDbgSecString( drmem_hdl *info, unsigned_32 offset )
 /***************************************************************/
 {
     drmem_hdl   dbgsec_str;
@@ -629,12 +629,12 @@ char * DWRCopyDbgSecString( drmem_hdl *info, unsigned_32 offset )
 
     /* unused parameters */ (void)info;
 
-    dbgsec_str = DWRCurrNode->sections[DR_DEBUG_STR].base + offset;
-    str = DWRVMCopyString( &dbgsec_str );
+    dbgsec_str = DR_CurrNode->sections[DR_DEBUG_STR].base + offset;
+    str = DR_VMCopyString( &dbgsec_str );
     return( str );
 }
 
-bool DWRScanForAttrib( drmem_hdl *abbrev, drmem_hdl *info, dw_atnum at )
+bool DR_ScanForAttrib( drmem_hdl *abbrev, drmem_hdl *info, dw_atnum at )
 /**********************************************************************/
 /* look for a specific attribute in the list of attributes */
 {
@@ -644,39 +644,39 @@ bool DWRScanForAttrib( drmem_hdl *abbrev, drmem_hdl *info, dw_atnum at )
 
     found = true;
     for( ;; ) {
-        attrib = DWRVMReadULEB128( abbrev );
+        attrib = DR_VMReadULEB128( abbrev );
         if( attrib == at )
             break;
-        form = DWRVMReadULEB128( abbrev );
+        form = DR_VMReadULEB128( abbrev );
         if( attrib == 0 ) {
             found = false;
             break;
         }
-        DWRSkipForm( info, form );
+        DR_SkipForm( info, form );
     }
     return( found );
 }
 
 static const dw_tagnum CompUnitTag[] = { DW_TAG_compile_unit, 0 };
 
-void DWRGetCompileUnitHdr( drmem_hdl mod, DWRCUWLK fn, void *data )
+void DR_GetCompileUnitHdr( drmem_hdl mod, DR_CUWLK fn, void *data )
 /*****************************************************************/
 {
     dr_search_context   ctxt;
     compunit_info       *compunit;
 
-    compunit = DWRFindCompileInfo( mod );
+    compunit = DR_FindCompileInfo( mod );
     ctxt.compunit = compunit;
 
     ctxt.start = compunit->start;
-    ctxt.end = compunit->start + DWRVMReadDWord( compunit->start );
+    ctxt.end = compunit->start + DR_VMReadDWord( compunit->start );
     ctxt.start += sizeof( compuhdr_prologue );
     ctxt.stack.size = 0;
     ctxt.stack.free = 0;
     ctxt.stack.stack = NULL;
 
-    DWRScanCompileUnit( &ctxt, fn, CompUnitTag, 0, data );
-    DWRFreeContextStack( &ctxt.stack );
+    DR_ScanCompileUnit( &ctxt, fn, CompUnitTag, 0, data );
+    DR_FreeContextStack( &ctxt.stack );
 }
 
 drmem_hdl DRENTRY DRGetCompileUnitTag( drmem_hdl comp_unit )
@@ -692,7 +692,7 @@ drmem_hdl DRENTRY DRGetCompileUnitTag( drmem_hdl comp_unit )
 
 #define DEMANGLE_BUF_SIZE 256
 
-char * DWRGetName( drmem_hdl abbrev, drmem_hdl entry )
+char * DR_GetName( drmem_hdl abbrev, drmem_hdl entry )
 /****************************************************/
 {
     char    *name;
@@ -701,12 +701,12 @@ char * DWRGetName( drmem_hdl abbrev, drmem_hdl entry )
     size_t  base_len;
 
     name = NULL;
-    if( DWRScanForAttrib( &abbrev, &entry, DW_AT_name ) ) {
-        name = DWRReadString( abbrev, entry );
+    if( DR_ScanForAttrib( &abbrev, &entry, DW_AT_name ) ) {
+        name = DR_ReadString( abbrev, entry );
         len = strlen( name );
         if( __is_mangled( name, len ) ) {
             base_len = __demangled_basename( name, len, buffer, DEMANGLE_BUF_SIZE );
-            DWRREALLOC( name, base_len + 1 );
+            DR_REALLOC( name, base_len + 1 );
             strncpy( name, buffer, base_len + 1 );
         }
     }
@@ -718,7 +718,7 @@ void DRENTRY DRIterateCompileUnits( void *data, DRITERCUCB callback )
 {
     compunit_info   *compunit;
 
-    compunit = &DWRCurrNode->compunit;
+    compunit = &DR_CurrNode->compunit;
     do {
         if( !callback( data, compunit->start ) ) {
             break;    // false == quit
@@ -727,7 +727,7 @@ void DRENTRY DRIterateCompileUnits( void *data, DRITERCUCB callback )
     } while( compunit != NULL );
 }
 
-bool DWRScanAllCompileUnits( dr_search_context *startingCtxt, DWRCUWLK fn,
+bool DR_ScanAllCompileUnits( dr_search_context *startingCtxt, DR_CUWLK fn,
                         const dw_tagnum *tagarray, dr_depth depth, void *data )
 /*****************************************************************************/
 {
@@ -736,9 +736,9 @@ bool DWRScanAllCompileUnits( dr_search_context *startingCtxt, DWRCUWLK fn,
     int                 i;
 
     if( startingCtxt == NULL ) {
-        ctxt.compunit = &DWRCurrNode->compunit;
+        ctxt.compunit = &DR_CurrNode->compunit;
         ctxt.start = ((compunit_info *)ctxt.compunit)->start;
-        ctxt.end = ctxt.start + DWRVMReadDWord( ctxt.start );
+        ctxt.end = ctxt.start + DR_VMReadDWord( ctxt.start );
         ctxt.start += sizeof( compuhdr_prologue );
         ctxt.classhdl = DRMEM_HDL_NULL;
         ctxt.functionhdl = DRMEM_HDL_NULL;
@@ -749,29 +749,29 @@ bool DWRScanAllCompileUnits( dr_search_context *startingCtxt, DWRCUWLK fn,
         ctxt = *startingCtxt;   /* structure copy */
 
         /* but allocate and copy own stack */
-        ctxt.stack.stack = DWRALLOC( ctxt.stack.size * sizeof( uint_32 ) );
+        ctxt.stack.stack = DR_ALLOC( ctxt.stack.size * sizeof( uint_32 ) );
         for( i = 0; i < ctxt.stack.free; i += 1 ) {
             ctxt.stack.stack[i] = startingCtxt->stack.stack[i];
         }
     }
 
     do {
-        cont = DWRScanCompileUnit( &ctxt, fn, tagarray, depth, data );
+        cont = DR_ScanCompileUnit( &ctxt, fn, tagarray, depth, data );
 
         ctxt.compunit = ((compunit_info *) ctxt.compunit)->next;
         if( ctxt.compunit ) {
             ctxt.start = ((compunit_info *) ctxt.compunit)->start;
-            ctxt.end = ctxt.start + DWRVMReadDWord( ctxt.start );
+            ctxt.end = ctxt.start + DR_VMReadDWord( ctxt.start );
             ctxt.start += sizeof( compuhdr_prologue );
         }
     } while( cont && ctxt.compunit != NULL );
 
-    DWRFreeContextStack( &ctxt.stack );
+    DR_FreeContextStack( &ctxt.stack );
 
     return( cont );     /* false if more symbols, true if at end of info */
 }
 
-bool DWRWalkCompileUnit( drmem_hdl mod, DWRCUWLK fn,
+bool DR_WalkCompileUnit( drmem_hdl mod, DR_CUWLK fn,
                         const dw_tagnum *tagarray, dr_depth depth, void *data )
 /*******************************************************************************/
 {
@@ -779,25 +779,25 @@ bool DWRWalkCompileUnit( drmem_hdl mod, DWRCUWLK fn,
     dr_search_context   ctxt;
     compunit_info       *compunit;
 
-    compunit = DWRFindCompileInfo( mod );
+    compunit = DR_FindCompileInfo( mod );
     ctxt.compunit = compunit;
     ctxt.start = mod;
-    ctxt.end = compunit->start + DWRVMReadDWord( compunit->start );
+    ctxt.end = compunit->start + DR_VMReadDWord( compunit->start );
     ctxt.classhdl = DRMEM_HDL_NULL;
     ctxt.functionhdl = DRMEM_HDL_NULL;
     ctxt.stack.size = 0;
     ctxt.stack.free = 0;
     ctxt.stack.stack = NULL;
 
-    cont = DWRScanCompileUnit( &ctxt, fn, tagarray, depth, data );
+    cont = DR_ScanCompileUnit( &ctxt, fn, tagarray, depth, data );
 
 
-    DWRFreeContextStack( &ctxt.stack );
+    DR_FreeContextStack( &ctxt.stack );
 
     return( cont );     /* false if more symbols, true if at end of info */
 }
 
-bool DWRWalkChildren( drmem_hdl mod, const dw_tagnum *tags, const DRWLKBLK *wlks, void *d )
+bool DR_WalkChildren( drmem_hdl mod, const dw_tagnum *tags, const DRWLKBLK *wlks, void *d )
 /*****************************************************************************************/
 // takes an array of tags and wlks and calls wlk on tag match
 // default func called if the 0 tag at end of array has a non NULL func
@@ -811,27 +811,27 @@ bool DWRWalkChildren( drmem_hdl mod, const dw_tagnum *tags, const DRWLKBLK *wlks
     DRWLKBLK        wlk;
     compunit_info   *cu;
 
-    cu = DWRFindCompileInfo( mod );
-    abbrev_idx = DWRVMReadULEB128( &mod );
+    cu = DR_FindCompileInfo( mod );
+    abbrev_idx = DR_VMReadULEB128( &mod );
     if( abbrev_idx == 0 ) {
-        DWREXCEPT( DREXCEP_DWARF_LIB_FAIL );
+        DR_EXCEPT( DREXCEP_DWARF_LIB_FAIL );
     }
     abbrev = cu->abbrevs[abbrev_idx];
-    tag = DWRVMReadULEB128( &abbrev );
-    haschild = DWRVMReadByte( abbrev );
+    tag = DR_VMReadULEB128( &abbrev );
+    haschild = DR_VMReadByte( abbrev );
 
     abbrev += sizeof( unsigned_8 );         /* skip child byte */
-    DWRSkipAttribs( abbrev, &mod );
+    DR_SkipAttribs( abbrev, &mod );
     if( haschild == DW_CHILDREN_yes ) {
         curr = mod;
         for( ;; ) {
             mod = curr;
-            abbrev_idx = DWRVMReadULEB128( &curr );
+            abbrev_idx = DR_VMReadULEB128( &curr );
             if( abbrev_idx == 0 )
                 break;
             abbrev = cu->abbrevs[abbrev_idx];
-            tag = DWRVMReadULEB128( &abbrev );
-            haschild = DWRVMReadByte( abbrev );
+            tag = DR_VMReadULEB128( &abbrev );
+            haschild = DR_VMReadByte( abbrev );
             abbrev += sizeof( unsigned_8 );
             index = 0;
             while( tags[index] != 0 ) {
@@ -846,16 +846,16 @@ bool DWRWalkChildren( drmem_hdl mod, const dw_tagnum *tags, const DRWLKBLK *wlks
                 }
             }
             if( haschild == DW_CHILDREN_yes ) {
-                DWRSkipChildren( &abbrev, &curr );
+                DR_SkipChildren( &abbrev, &curr );
             } else {
-                DWRSkipAttribs( abbrev, &curr );
+                DR_SkipAttribs( abbrev, &curr );
             }
         }
     }
     return( true );
 }
 
-bool DWRWalkContaining( drmem_hdl mod, drmem_hdl target, DRWLKBLK wlk, void *d )
+bool DR_WalkContaining( drmem_hdl mod, drmem_hdl target, DRWLKBLK wlk, void *d )
 /******************************************************************************/
 // Walk into tags that enclose target
 // The final call shoud be target else a goose chase
@@ -864,11 +864,11 @@ bool DWRWalkContaining( drmem_hdl mod, drmem_hdl target, DRWLKBLK wlk, void *d )
     drmem_hdl       curr;
     dw_children     haschild;
 
-    if( DWRReadTagEnd( &mod, &abbrev, NULL ) )  /* skip tag */
-        DWREXCEPT( DREXCEP_DWARF_LIB_FAIL );
-    haschild = DWRVMReadByte( abbrev );
+    if( DR_ReadTagEnd( &mod, &abbrev, NULL ) )  /* skip tag */
+        DR_EXCEPT( DREXCEP_DWARF_LIB_FAIL );
+    haschild = DR_VMReadByte( abbrev );
     abbrev++;
-    DWRSkipAttribs( abbrev, &mod );
+    DR_SkipAttribs( abbrev, &mod );
     if( haschild == DW_CHILDREN_yes ) {
         curr = mod;
         for( ;; ) {
@@ -878,16 +878,16 @@ bool DWRWalkContaining( drmem_hdl mod, drmem_hdl target, DRWLKBLK wlk, void *d )
             if( curr > target )
                 break;
             mod = curr;
-            if( DWRReadTagEnd( &curr, &abbrev, NULL ) ) /* skip tag */
+            if( DR_ReadTagEnd( &curr, &abbrev, NULL ) ) /* skip tag */
                 break;
-            haschild = DWRVMReadByte( abbrev );
+            haschild = DR_VMReadByte( abbrev );
             abbrev++;
             old_abbrev = abbrev;
             old_curr = curr;
             if( haschild == DW_CHILDREN_yes ) {
-                DWRSkipChildren( &abbrev, &curr );
+                DR_SkipChildren( &abbrev, &curr );
             } else {
-                DWRSkipAttribs( abbrev, &curr );
+                DR_SkipAttribs( abbrev, &curr );
             }
             if( curr > target ) {           // mod < target < curr - encloses
                 if( !wlk( mod, 0, d ) ){
@@ -895,14 +895,14 @@ bool DWRWalkContaining( drmem_hdl mod, drmem_hdl target, DRWLKBLK wlk, void *d )
                 }
                 abbrev = old_abbrev;        // rest cause we are going in
                 curr = old_curr;
-                DWRSkipAttribs( abbrev, &curr );    // skip current tags stuff
+                DR_SkipAttribs( abbrev, &curr );    // skip current tags stuff
             }
         }
     }
     return( true );
 }
 
-bool DWRWalkSiblings( drmem_hdl curr, const dw_tagnum *tags, const DRWLKBLK *wlks, void *d )
+bool DR_WalkSiblings( drmem_hdl curr, const dw_tagnum *tags, const DRWLKBLK *wlks, void *d )
 /******************************************************************************************/
 // takes an array of tags and wlks and calls wlk on tag match
 // default func called if the 0 tag at end of array has a non NULL func
@@ -918,8 +918,8 @@ bool DWRWalkSiblings( drmem_hdl curr, const dw_tagnum *tags, const DRWLKBLK *wlk
 
     cont = true;
     start = curr;
-    while( !DWRReadTagEnd( &curr, &abbrev, &tag ) ) {
-        haschild = DWRVMReadByte( abbrev );
+    while( !DR_ReadTagEnd( &curr, &abbrev, &tag ) ) {
+        haschild = DR_VMReadByte( abbrev );
         abbrev++;
         index = 0;
         while( tags[index] != 0 ) {
@@ -935,16 +935,16 @@ bool DWRWalkSiblings( drmem_hdl curr, const dw_tagnum *tags, const DRWLKBLK *wlk
             }
         }
         if( haschild == DW_CHILDREN_yes ) {
-            DWRSkipChildren( &abbrev, &curr );
+            DR_SkipChildren( &abbrev, &curr );
         } else {
-            DWRSkipAttribs( abbrev, &curr );
+            DR_SkipAttribs( abbrev, &curr );
         }
         start = curr;
     }
     return( cont );
 }
 
-bool DWRWalkScope( drmem_hdl mod, const dw_tagnum *tags, DRWLKBLK wlk, void *d )
+bool DR_WalkScope( drmem_hdl mod, const dw_tagnum *tags, DRWLKBLK wlk, void *d )
 /********************************************************************************/
 // walk a scope starting at mod
 // if a block go into it, if a tag we are interested in call user
@@ -957,12 +957,12 @@ bool DWRWalkScope( drmem_hdl mod, const dw_tagnum *tags, DRWLKBLK wlk, void *d )
 
     if( !wlk( mod, 0, d ) ) // call with parent
         return( false );    // false == quit
-    if( DWRReadTagEnd( &mod, &abbrev, &tag ) ) {
-        DWREXCEPT( DREXCEP_DWARF_LIB_FAIL );
+    if( DR_ReadTagEnd( &mod, &abbrev, &tag ) ) {
+        DR_EXCEPT( DREXCEP_DWARF_LIB_FAIL );
     }
-    haschild = DWRVMReadByte( abbrev );
+    haschild = DR_VMReadByte( abbrev );
     abbrev++;
-    DWRSkipAttribs( abbrev, &mod );
+    DR_SkipAttribs( abbrev, &mod );
     if( haschild == DW_CHILDREN_yes ) {
         int         depth;
 //        int         skip;
@@ -972,12 +972,12 @@ bool DWRWalkScope( drmem_hdl mod, const dw_tagnum *tags, DRWLKBLK wlk, void *d )
         curr = mod;
         for( ;; ) {
             mod = curr;
-            if( DWRReadTagEnd( &curr, &abbrev, &tag ) ) {
+            if( DR_ReadTagEnd( &curr, &abbrev, &tag ) ) {
                 if( --depth == 0 ) {
                     break;
                 }
             } else {
-                haschild = DWRVMReadByte( abbrev );
+                haschild = DR_VMReadByte( abbrev );
                 abbrev++;
                 index = 0;
                 while( tags[index] != 0 ) {
@@ -990,12 +990,12 @@ bool DWRWalkScope( drmem_hdl mod, const dw_tagnum *tags, DRWLKBLK wlk, void *d )
                 }
                 if( tag == DW_TAG_lexical_block ) {
                     ++depth;                    // go into block
-                     DWRSkipAttribs( abbrev, &curr );
+                     DR_SkipAttribs( abbrev, &curr );
                 } else {
                     if( haschild == DW_CHILDREN_yes ) { // skip fuzz
-                        DWRSkipChildren( &abbrev, &curr );
+                        DR_SkipChildren( &abbrev, &curr );
                     } else {
-                        DWRSkipAttribs( abbrev, &curr );
+                        DR_SkipAttribs( abbrev, &curr );
                     }
                 }
             }
@@ -1016,66 +1016,66 @@ static compunit_info *FindCompileInfo( compunit_info *compunit, drmem_hdl addr )
         }
     }
     if( compunit == NULL ) {
-        DWREXCEPT( DREXCEP_DWARF_LIB_FAIL );
+        DR_EXCEPT( DREXCEP_DWARF_LIB_FAIL );
     }
     return( compunit );
 }
 
-compunit_info * DWRFindCompileInfo( drmem_hdl addr )
+compunit_info * DR_FindCompileInfo( drmem_hdl addr )
 /**************************************************/
 /* gets the drmem_hdl of the module that addr is in */
 {
     compunit_info   *compunit;
 
-    compunit = DWRCurrNode->last_ccu;
+    compunit = DR_CurrNode->last_ccu;
     if( addr < compunit->start ) {  // start at begining
-        compunit = &DWRCurrNode->compunit;
+        compunit = &DR_CurrNode->compunit;
     }
     compunit = FindCompileInfo( compunit, addr );
-    DWRCurrNode->last_ccu = compunit;
+    DR_CurrNode->last_ccu = compunit;
     return( compunit );
 }
 
-drmem_hdl DWRFindCompileUnit( drmem_hdl addr )
+drmem_hdl DR_FindCompileUnit( drmem_hdl addr )
 /********************************************/
 {
     compunit_info   *compunit;
 
-    compunit = DWRFindCompileInfo( addr );
+    compunit = DR_FindCompileInfo( addr );
     return( compunit->start );
 }
 
 #define CONTEXT_GUESS 0x10
 
-void DWRContextPush( dr_context_stack *stack, drmem_hdl val )
+void DR_ContextPush( dr_context_stack *stack, drmem_hdl val )
 /***********************************************************/
 {
     if( stack->stack == NULL ) {
-        stack->stack = DWRALLOC( CONTEXT_GUESS * sizeof( uint_32 ) );
+        stack->stack = DR_ALLOC( CONTEXT_GUESS * sizeof( uint_32 ) );
         stack->free = 0;
         stack->size = CONTEXT_GUESS;
     }
     if( stack->free >= stack->size ) {
         stack->size += CONTEXT_GUESS;
-        stack->stack = DWRREALLOC( stack->stack, stack->size * sizeof( drmem_hdl ) );
+        stack->stack = DR_REALLOC( stack->stack, stack->size * sizeof( drmem_hdl ) );
     }
 
     stack->stack[stack->free] = val;
     stack->free += 1;
 }
 
-drmem_hdl DWRContextPop( dr_context_stack *stack )
+drmem_hdl DR_ContextPop( dr_context_stack *stack )
 /************************************************/
 {
     if( stack->free <= 0 ) {
-        DWREXCEPT( DREXCEP_DWARF_LIB_FAIL );
+        DR_EXCEPT( DREXCEP_DWARF_LIB_FAIL );
     }
 
     stack->free -= 1;
     return( stack->stack[stack->free] );
 }
 
-drmem_hdl DWRContext( dr_context_stack *stack, int up )
+drmem_hdl DR_Context( dr_context_stack *stack, int up )
 /*****************************************************/
 {
     int free;
@@ -1088,10 +1088,10 @@ drmem_hdl DWRContext( dr_context_stack *stack, int up )
     return( stack->stack[free] );
 }
 
-void DWRFreeContextStack( dr_context_stack *stack )
+void DR_FreeContextStack( dr_context_stack *stack )
 /*************************************************/
 {
-    DWRFREE( stack->stack );
+    DR_FREE( stack->stack );
     stack->free = 0;
     stack->size = 0;
 }

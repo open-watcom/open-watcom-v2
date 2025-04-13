@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -41,13 +41,13 @@
 #include "dwdie.h"
 
 
-void InitDIE( dw_client cli )
+void DW_InitDIE( dw_client cli )
 {
     cli->die.tree = NULL;
 }
 
 
-void FiniDIE( dw_client cli )
+void DW_FiniDIE( dw_client cli )
 {
     /* unused parameters */ (void)cli;
 
@@ -55,7 +55,7 @@ void FiniDIE( dw_client cli )
 }
 
 
-void StartChildren( dw_client cli )
+void DW_StartChildren( dw_client cli )
 {
     die_tree        *new;
 
@@ -79,23 +79,23 @@ static void doTheSiblingThing( dw_client cli )
         /* relocate previous sibling */
         offset = InfoSectionOffset( cli );
         CLISectionSeekOffset( cli, DW_DEBUG_INFO, sibling );
-        Info32( cli, offset );
+        DW_Info32( cli, offset );
         CLISectionSeekEnd( cli, DW_DEBUG_INFO );
     }
 }
 
 
-void EndChildren( dw_client cli )
+void DW_EndChildren( dw_client cli )
 {
     doTheSiblingThing( cli );
 
     /* move up a level in the tree */
-    cli->die.tree = FreeLink( cli, cli->die.tree );
+    cli->die.tree = DW_FreeLink( cli, cli->die.tree );
     CLISectionWriteZeros( cli, DW_DEBUG_INFO, 1 );
 }
 
 
-void StartDIE( dw_client cli, abbrev_code abbrev )
+void DW_StartDIE( dw_client cli, abbrev_code abbrev )
 {
     int         haskids;
     unsigned    abbrevnum;
@@ -103,15 +103,15 @@ void StartDIE( dw_client cli, abbrev_code abbrev )
     doTheSiblingThing( cli );
 
     if( abbrev & AB_START_REF ) {
-        StartRef( cli );
+        DW_StartRef( cli );
     }
 
     haskids = (abbrev & AB_SIBLING) != 0;       // ab_sibling in "always on"
     abbrev &= ~AB_ALWAYS;                       // class of attributes
 
     /* emit the abbreviation for this DIE */
-    abbrevnum = MarkAbbrevAsUsed( cli, &abbrev );
-    InfoULEB128( cli, abbrevnum );
+    abbrevnum = DW_MarkAbbrevAsUsed( cli, &abbrev );
+    DW_InfoULEB128( cli, abbrevnum );
 
     /* AT_sibling reference */
     if( haskids ) {
@@ -124,12 +124,12 @@ void StartDIE( dw_client cli, abbrev_code abbrev )
 
     /* AT_decl_* */
     if( abbrev & AB_DECL ) {
-        EmitDecl( cli );
+        DW_EmitDecl( cli );
     }
 }
 
 
-void EndDIE( dw_client cli )
+void DW_EndDIE( dw_client cli )
 {
     /* unused parameters */ (void)cli;
 }

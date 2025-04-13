@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,12 +38,14 @@ extern WPI_TEXTMETRIC   GUItm;
 
 extern void         GUIClientToScaleRect( const guix_rect *client, gui_rect *rect );
 
-extern guix_ord     GUIFromTextX( gui_text_ord text_ord, gui_window *wnd );
-extern guix_ord     GUIFromTextY( gui_text_ord text_ord, gui_window *wnd );
-extern gui_text_ord GUIToTextX( guix_ord ord, gui_window *wnd );
-extern gui_text_ord GUIToTextY( guix_ord ord, gui_window *wnd );
+/* for dimension only */
+extern guix_ord     GUITextToScreenH( gui_text_ord text_ord, gui_window *wnd );
+extern guix_ord     GUITextToScreenV( gui_text_ord text_ord, gui_window *wnd );
+/* for dimension only */
+extern gui_text_ord GUITextFromScreenH( guix_ord ord, gui_window *wnd );
+extern gui_text_ord GUITextFromScreenV( guix_ord ord, gui_window *wnd );
 
-extern void         GUIGetUpdateRows( gui_window *, HWND, gui_text_ord *, gui_text_ord * );
+extern void         GUIGetUpdateRows( gui_window *, HWND, gui_rows_set * );
 
 extern void         GUIGetMetrics( gui_window *wnd );
 extern bool         GUIGetTheDC( gui_window *wnd );

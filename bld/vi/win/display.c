@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -158,7 +158,7 @@ bool SetDrawingObjects( HDC hdc, type_style *style )
 
 #ifndef BITBLT_BUFFER_DISPLAY
 
-static void funnyFix( RECT *rect, int x, window_id wid, char *display, size_t len,
+static void funnyFix( RECT *rect, int x, window_id wid, const char *display, size_t len,
                       HDC hdc, int max_width, type_style *style, HBRUSH brush )
 {
     // FunnyItalic so draw at bit at begining and end!
@@ -187,21 +187,21 @@ static void funnyFix( RECT *rect, int x, window_id wid, char *display, size_t le
 }
 
 static void MyTabbedTextOut( HDC hdc,
-                      char **display,       // a reference to a string
+                      const char **display, // a reference to a string
                       size_t len,           // number of chars to display
                       bool funny_italic,    // fix up begin and end ?
                       POINT *p,             // reference to current position
                       type_style *style,    // current style
                       RECT *rect,
                       window_id wid,
-                      char *otmp,
+                      const char *otmp,
                       int y )
 {
     if( EditFlags.RealTabs ) {
-        char    *tstring = *display;
-        char    *string_end = tstring + len;
-        size_t  tlen;
-        RECT    new;
+        const char  *tstring = *display;
+        const char  *string_end = tstring + len;
+        size_t      tlen;
+        RECT        new;
 
         while( tstring < string_end ) {
             tlen = 0;
@@ -253,10 +253,12 @@ static void MyTabbedTextOut( HDC hdc,
 }
 
 int DisplayLineInWindowWithSyntaxStyle( window_id wid, int c_line_no,
-    line *line, linenum line_no, char *text, int start_col, HDC hdc )
+    line *line, linenum line_no, const char *text, int start_col, HDC hdc )
 {
-    char        *display, *old;
-    char        *tmp, *otmp;
+    const char  *display;
+    const char  *tmp;
+    char        *old;
+    char        *otmp;
     dc_line     *c_line;
     RECT        rect;
     int         height;
@@ -285,25 +287,23 @@ int DisplayLineInWindowWithSyntaxStyle( window_id wid, int c_line_no,
     rect.bottom = y + height;
 
     // set up tabs for drawing
+    otmp = NULL;
     if( !EditFlags.RealTabs ) {
         len = strlen( text );
-        otmp = tmp = StaticAlloc();
-        ExpandTabsInABuffer( text, len, tmp, EditVars.MaxLineLen + 1 );
-    } else {
-        // leave the tabs alone ...
-        // let tabbedTextExtent and tabbedTextOut do the rest.
-        otmp = tmp = text;
+        otmp = StaticAlloc();
+        ExpandTabsInABuffer( text, len, otmp, EditVars.MaxLineLen + 1 );
+        text = otmp;
     }
+
+    tmp = text + start_col;
+    display = tmp;
 
     // check out common text
 
     prev_col = start_col;
     if( EditFlags.RealTabs ) {
-        start_col = WinRealCursorPosition( otmp, start_col + 1 ) -1;
+        start_col = WinRealCursorPosition( text, start_col + 1 ) - 1;
     }
-
-    tmp += start_col;
-    display = tmp;
 
     // this section of code makes the ss blocks for this line.
     // it also compares the new blocks to the ones which existed
@@ -319,7 +319,7 @@ int DisplayLineInWindowWithSyntaxStyle( window_id wid, int c_line_no,
         /* do not redraw whatever is in common */
         old = c_line->text;
 
-        SSDifBlock( ss_cache, otmp, start_col, line, line_no, &ssDifIndex );
+        SSDifBlock( ss_cache, text, start_col, line, line_no, &ssDifIndex );
 
         while( *old == *display ) {
             if( *old == 0 || indent == ssDifIndex ) {
@@ -344,7 +344,7 @@ int DisplayLineInWindowWithSyntaxStyle( window_id wid, int c_line_no,
             }
         }
     } else {
-        SSDifBlock( ss_cache, otmp, start_col, line, line_no, &ssDifIndex );
+        SSDifBlock( ss_cache, text, start_col, line, line_no, &ssDifIndex );
         // start at beginning of line
         ss_step = ss_cache;
         x = 0;
@@ -378,7 +378,7 @@ int DisplayLineInWindowWithSyntaxStyle( window_id wid, int c_line_no,
             // MyTabbedTextOut is long and used in 2 places but needs so
             // many arguments maybe it should be inline.
             MyTabbedTextOut( hdc, &display, len, funny_italic,
-                             &p, style, &rect, wid, otmp, y );
+                             &p, style, &rect, wid, text, y );
 
             // save pixel offset where next block is to start
             GetCurrentPositionEx( hdc, &p );
@@ -413,7 +413,7 @@ int DisplayLineInWindowWithSyntaxStyle( window_id wid, int c_line_no,
 
         if( *display != '\0' ) {
             MyTabbedTextOut( hdc, &display, len, funny_italic,
-                             &p, style, &rect, wid, otmp, y );
+                             &p, style, &rect, wid, text, y );
         }
 
         // if the previous line was longer than this one, blot it out.
@@ -439,11 +439,13 @@ int DisplayLineInWindowWithSyntaxStyle( window_id wid, int c_line_no,
 // unfortunately bitblting each line is considerably slower on standard
 // vga, and at best only comparable to direct TextOut on Window accelerators
 int DisplayLineInWindowWithSyntaxStyle( window_id wid, int c_line_no,
-    line *line, linenum line_no, char *text, int start_col,
+    line *line, linenum line_no, const char *text, int start_col,
     HDC hdc_wnd, HDC hdc_mem )
 {
-    char        *display, *old;
-    char        *tmp, *otmp;
+    const char  *display;
+    const char  *tmp;
+    char        *old;
+    char        *otmp;
     dc_line     *c_line;
     RECT        rect;
     int         width, height;
@@ -471,15 +473,17 @@ int DisplayLineInWindowWithSyntaxStyle( window_id wid, int c_line_no,
     rect.top = y;
     rect.bottom = y + height;
 
+    otmp = NULL;
     if( EditFlags.RealTabs ) {
         len = strlen( text );
-        otmp = tmp = StaticAlloc();
-        ExpandTabsInABuffer( text, len, tmp, EditVars.MaxLineLen + 1 );
-    } else {
-        otmp = tmp = text;
+        otmp = StaticAlloc();
+        ExpandTabsInABuffer( text, len, otmp, EditVars.MaxLineLen + 1 );
+        text = otmp;
     }
-    tmp += start_col;
+
+    tmp = text + start_col;
     display = tmp;
+
     x = 0;
     c_line = DCFindLine( c_line_no - 1, wid );
     SSGetLanguageFlags( &(c_line->flags) );
@@ -489,7 +493,7 @@ int DisplayLineInWindowWithSyntaxStyle( window_id wid, int c_line_no,
     if( c_line->valid && c_line->start_col == start_col ) {
         // do not redraw whatever is in common
         old = c_line->text;
-        SSDifBlock( ss_cache, otmp, start_col, line, line_no, &ssDifIndex );
+        SSDifBlock( ss_cache, text, start_col, line, line_no, &ssDifIndex );
         while( *old == *display ) {
             if( *old == 0 || indent == ssDifIndex ) {
                 break;
@@ -513,7 +517,7 @@ int DisplayLineInWindowWithSyntaxStyle( window_id wid, int c_line_no,
             }
         }
     } else {
-        SSDifBlock( ss_cache, otmp, start_col, line, line_no, &ssDifIndex );
+        SSDifBlock( ss_cache, text, start_col, line, line_no, &ssDifIndex );
         // start at beginning of line
         ss_step = ss_cache;
         x = 0;

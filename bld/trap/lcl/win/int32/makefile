@@ -32,7 +32,7 @@ extra_c_flags = -fpc -zu -zw
 #
 # lflags
 #
-lflags_dll_win_i86 += initinstance memory
+lflags_dll_wini86 += initinstance memory
 
 extra_l_flags_dll_win = &
     op heapsize=1k, rwr &

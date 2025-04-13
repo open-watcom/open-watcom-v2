@@ -1,0 +1,2 @@
+cli_libzip_inc_dirs = -I"$(libzip_dir)/lib"
+cli_libzip_libs = $(setupgui_dir)/ziplib/$(bin_host)/ziplib.lib

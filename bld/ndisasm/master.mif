@@ -23,8 +23,8 @@ additional_clean = *.gh *.grh *.grc
 
 dig_arch = all
 
-!include $(dig_dir)/digcli.mif
-!include ../discli.mif
+!include $(dig_dir)/client.mif
+!include ../client.mif
 
 #
 # cflags
@@ -36,9 +36,9 @@ inc_dirs = -I. $(dis_includes) -I"$(disasm_dir)/stand/h" -I"$(disasm_dir)/h" &
 
 extra_cpp_flags = -DINSIDE_WDIS $(dig_arch_cpp_flags)
 
-extra_cpp_flags_memfuncs = $(trmem_cpp_flags)
+extra_cpp_flags_f_memfuncs = $(trmem_cpp_flags)
 
-extra_c_flags_memfuncs = $(trmem_cover_cflags)
+extra_c_flags_f_memfuncs = $(trmem_cover_cflags)
 
 #
 # lflags

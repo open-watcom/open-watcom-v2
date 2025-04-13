@@ -23,6 +23,7 @@ set PROJDIR=<CWD>
     <CCCMD> linux386/wdump.exe  "<OWRELROOT>/binl/wdump"
     <CCCMD> rdos386/wdump.exe   "<OWRELROOT>/rdos/"
 
+    <CCCMD> bsdx64/wdump.exe    "<OWRELROOT>/binb64/wdump"
     <CCCMD> ntx64/wdump.exe     "<OWRELROOT>/binnt64/"
     <CCCMD> linuxx64/wdump.exe  "<OWRELROOT>/binl64/wdump"
     <CCCMD> linuxarm/wdump.exe  "<OWRELROOT>/arml/wdump"

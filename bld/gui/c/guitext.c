@@ -32,7 +32,6 @@
 
 
 #include "guiwind.h"
-#include <string.h>
 
 
 size_t GUIAPI GUIDlgBuffGetText( gui_window *wnd, gui_ctl_id id, char *buff, size_t buff_len )

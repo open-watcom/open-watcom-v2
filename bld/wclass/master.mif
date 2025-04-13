@@ -2,11 +2,6 @@ proj_name = wclass
 
 wclass_autodepends = .AUTODEPEND
 
-target_dos = $(wclass_dir)/dos/cpp
-target_nt  = $(wclass_dir)/win/cpp
-target_os2 = $(wclass_dir)/pm/cpp
-target_win = $(wclass_dir)/win/cpp
-
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif
@@ -15,7 +10,7 @@ target_win = $(wclass_dir)/win/cpp
 #
 # cflags
 #
-.cpp : $(target_$(host_os));$(wclass_dir)/cpp
+.cpp : $(cli_wclass_src_internal)/cpp;$(wclass_dir)/cpp
 
 inc_dirs = $(cli_wclass_inc_dirs)
 
@@ -100,12 +95,12 @@ win_objs = &
     wflashp.obj &
     wtimer.obj
 
-extra_objlib_nt_386     = $(win_objs) $(ndos_objs)
-extra_objlib_nt_axp     = $(win_objs) $(ndos_objs)
-extra_objlib_nt_x64     = $(win_objs) $(ndos_objs)
-extra_objlib_win_i86    = $(win_objs) $(ndos_objs)
-extra_objlib_dos_386    = $(ndos_objs)
-extra_objlib_os2_386    = $(win_objs) $(ndos_objs) wddeobj.obj
+extra_objlib_nt386     = $(win_objs) $(ndos_objs)
+extra_objlib_ntaxp     = $(win_objs) $(ndos_objs)
+extra_objlib_ntx64     = $(win_objs) $(ndos_objs)
+extra_objlib_wini86    = $(win_objs) $(ndos_objs)
+extra_objlib_dos386    = $(ndos_objs)
+extra_objlib_os2386    = $(win_objs) $(ndos_objs) wddeobj.obj
 
-libtarg_objs = $(objs) $(extra_objlib_$(host_os)_$(host_cpu))
+libtarg_objs = $(objs) $(extra_objlib_$(host))
 !include libtarg.mif

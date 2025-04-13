@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,7 +36,7 @@ extern char         *SymFileName;
 extern void         DBIInit( void );
 extern void         DBISectInit( section * );
 extern void         DBIInitModule( mod_entry * );
-extern void         DBIP1Source( byte *, byte * );
+extern void         DBIP1Source( const byte *, const byte * );
 extern section      *DBIGetSect( const char * );
 extern void         DBIColClass( class_entry * );
 extern unsigned_16  DBIColSeg( class_entry * );

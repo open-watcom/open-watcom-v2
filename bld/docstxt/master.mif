@@ -6,13 +6,13 @@ all: $(objs) .SYMBOLIC
     @%null
 
 readme.txt : ../readme.sp
-    *wsplice -kC $[@ $@
+    *wsplice -u -kC $[@ $@
 
 freadme.txt : ../readme.sp
-    *wsplice -kF77 $[@ $@
+    *wsplice -u -kF77 $[@ $@
 
 areadme.txt : ../areadme.sp
-    *wsplice $[@ $@
+    *wsplice -u $[@ $@
 
 clean: .SYMBOLIC .EXPLICIT
     rm -f *.txt

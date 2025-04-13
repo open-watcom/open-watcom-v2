@@ -1,6 +1,6 @@
 .cpp.obj : $(__MAKEFILES__) .AUTODEPEND
     @%make echo_cxx
-    $(cxx) $(ppflags_common) $(ppflags_autodep) $(ppflags_sys) $(plib_cpp_flags) $(br_cpp_flags_$(sw_br_$[&)) $[@ $(plib_cxx_flags) $(plib_c_flags) $(plib_inc_dirs) -nm=$[& $(pchflags) $(c_dbg_flags)
+    $(cxx) $(ppflags_common) $(ppflags_autodep) $(ppflags_sys) $(plib_cpp_flags) $(br_cpp_flags_$(sw_br_f_$[&)) $[@ $(plib_cxx_flags) $(plib_c_flags) $(plib_inc_dirs) -nm=$[& $(pchflags) $(c_dbg_flags)
 
 .asm.obj : $(__MAKEFILES__) .AUTODEPEND
     @%make echo_as
@@ -9,7 +9,7 @@
 !ifdef x_subdir
 .cpp{$(x_subdir)}.obj : $(__MAKEFILES__) .AUTODEPEND
     @%make echo_xcxx
-    $(cxx) $(ppflags_common) $(ppflags_autodep) $(ppflags_sys) $(plib_cpp_flags) $(br_cpp_flags_$(sw_br_$[&)) $[@ $(plibx_cxx_flags) $(plib_c_flags) $(plib_inc_dirs) -nm=$[& $(pchflags_x) $(c_dbg_flags)
+    $(cxx) $(ppflags_common) $(ppflags_autodep) $(ppflags_sys) $(plib_cpp_flags) $(br_cpp_flags_$(sw_br_f_$[&)) $[@ $(plibx_cxx_flags) $(plib_c_flags) $(plib_inc_dirs) -nm=$[& $(pchflags_x) $(c_dbg_flags)
 
 $(x_subdir) : .EXPLICIT
     mkdir $@

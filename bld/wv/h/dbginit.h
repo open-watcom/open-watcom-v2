@@ -43,3 +43,7 @@ extern long             _fork( const char *cmd, size_t len );
 extern void             TellWinHandle( void );
 extern size_t           GetSystemDir( char *, size_t );
 #endif
+#if !defined( __NOUI__ ) && defined( __WINDOWS__ )
+extern void             InitHookFunc( void );
+extern void             FiniHookFunc( void );
+#endif

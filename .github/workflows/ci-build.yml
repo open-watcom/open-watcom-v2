@@ -23,97 +23,143 @@ concurrency:
 
 jobs:
   start-start:
-    if: github.repository == 'open-watcom/open-watcom-v2'
+    if: github.repository == vars.OWREPO
     name: Check if to run
     runs-on: ubuntu-latest
     steps:
     - name: checkout
       uses: actions/checkout@v4
-  bootow-lnx:
+  Windows-pre:
     needs: start-start
-    name: Bootstrap Linux OW
-    runs-on: ubuntu-latest
-    steps:
-    - name: checkout
-      uses: actions/checkout@v4
-    - name: Bootstrap Linux OW
-      uses: "./.github/actions/testboot"
-      with:
-        hostos:     'lnx'
-        gitpath:    'ci/ow'
-        owdebug:    ${{ vars.OWDEBUG }}
-  bootow-nt:
-    needs: start-start
-    name: Bootstrap Windows OW
-    runs-on: windows-latest
-    steps:
-    - name: checkout
-      uses: actions/checkout@v4
-    - name: Bootstrap Windows OW
-      uses: "./.github/actions/testboot"
-      with:
-        hostos:     'nt'
-        gitpath:    'ci\ow'
-        owdebug:    ${{ vars.OWDEBUG }}
-  workflow-lnx:
-    needs: bootow-lnx
-    name: Linux
     strategy:
       matrix:
-        include:
+        pre:
+        - name:  '1.9'
+          id:    '1.9'
+          os:    'nt'
+          image: 'windows-2022'
+        - name: '2.0'
+          id:   '2.0'
+          tag:  '2023-01-01-Build'
+          os:   'nt'
+          image: 'windows-2022'
+    name: Bootstrap Test OW ${{ matrix.pre.name }} Windows
+    runs-on: ${{ matrix.pre.image }}
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4
+    - name: Open Watcom setup
+      uses: open-watcom/setup-watcom@v0
+      with:
+        version: ${{ matrix.pre.id }}
+        tag:     ${{ matrix.pre.tag }}
+    - name: Test
+      uses: "./.github/actions/testboot"
+      with:
+        hostos:     ${{ matrix.pre.os }}
+        owdebug:    ${{ vars.OWDEBUG }}
+  Linux-pre:
+    needs: start-start
+    strategy:
+      matrix:
+        pre:
+        - name:  '1.9'
+          id:    '1.9'
+          os:    'lnx'
+          image: 'ubuntu-latest'
+        - name:  '2.0'
+          id:    '2.0'
+          tag:   '2023-01-01-Build'
+          os:    'lnx'
+          image: 'ubuntu-latest'
+    name: Bootstrap Test OW ${{ matrix.pre.name }} Linux
+    runs-on: ${{ matrix.pre.image }}
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4
+    - name: Open Watcom setup
+      uses: open-watcom/setup-watcom@v0
+      with:
+        version: ${{ matrix.pre.id }}
+        tag:     ${{ matrix.pre.tag }}
+    - name: Test
+      uses: "./.github/actions/testboot"
+      with:
+        hostos:     ${{ matrix.pre.os }}
+        owdebug:    ${{ vars.OWDEBUG }}
+  Linux:
+    needs:
+    - Linux-pre
+    strategy:
+      matrix:
+        bld:
         - owtools: 'GCC'
+          arch:    'x64'
+          image:   'ubuntu-latest'
           tools:   'gcc'
         - owtools: 'CLANG'
+          arch:    'x64'
+          image:   'ubuntu-latest'
           tools:   'clang'
+        - owtools: 'GCC'
+          arch:    'a64'
+          image:   'ubuntu-24.04-arm'
+          tools:   'gcc'
+    name: Linux ${{ matrix.bld.arch }} ${{ matrix.bld.tools }}
     uses: "./.github/workflows/cibldlnx.yml"
     with:
-      arch:         'x64'
-      tools:        ${{ matrix.tools }}
-      owtools:      ${{ matrix.owtools }}
-      image:        'ubuntu-latest'
+      arch:         ${{ matrix.bld.arch }}
+      tools:        ${{ matrix.bld.tools }}
+      owtools:      ${{ matrix.bld.owtools }}
+      image:        ${{ matrix.bld.image }}
       owdebug:      ${{ vars.OWDEBUG }}
-  workflow-nt:
-    needs: bootow-nt
-    name: Windows
+  Windows:
+    needs:
+    - Windows-pre
     strategy:
       matrix:
-        include:
+        bld:
         - owtools: 'VISUALC'
-          tools:   'vs2019'
+          arch:    'x64'
+          image:   'windows-2022'
+          tools:   'vs2022'
+    name: Windows ${{ matrix.bld.arch }} ${{ matrix.bld.tools }}
     uses: "./.github/workflows/cibldnt.yml"
     with:
-      arch:         'x64'
-      tools:        ${{ matrix.tools }}
-      owtools:      ${{ matrix.owtools }}
-      image:        'windows-2019'
+      arch:         ${{ matrix.bld.arch }}
+      tools:        ${{ matrix.bld.tools }}
+      owtools:      ${{ matrix.bld.owtools }}
+      image:        ${{ matrix.bld.image }}
       owdebug:      ${{ vars.OWDEBUG }}
-  workflow-osx:
+  OSX:
     needs: start-start
-    name: OSX
     strategy:
       matrix:
-        include:
+        bld:
         - owtools:  'CLANG'
           arch:     'x64'
-          image:    'macos-latest'
+          image:    'macos-13'
+          tools:    'clang'
           relpath:  'rel bino64'
         - owtools:  'CLANG'
           arch:     'a64'
           image:    'macos-14'
+          tools:    'clang'
           relpath:  'rel armo64'
+    name: OSX ${{ matrix.bld.arch }} ${{ matrix.bld.tools }}
     uses: "./.github/workflows/cibldosx.yml"
     with:
-      arch:         ${{ matrix.arch }}
-      tools:        'clang'
-      relpath:      ${{ matrix.relpath }}
-      owtools:      ${{ matrix.owtools }}
-      image:        ${{ matrix.image }}
+      arch:         ${{ matrix.bld.arch }}
+      tools:        ${{ matrix.bld.tools }}
+      relpath:      ${{ matrix.bld.relpath }}
+      owtools:      ${{ matrix.bld.owtools }}
+      image:        ${{ matrix.bld.image }}
       owdebug:      ${{ vars.OWDEBUG }}
   snapshot-both:
     needs:
-    - workflow-lnx
-    - workflow-nt
-    - workflow-osx
+    - Linux
+    - Windows
+    - OSX
     name: CI Release
     runs-on: ubuntu-latest
     steps:
@@ -122,7 +168,7 @@ jobs:
     - name: Load all release files
       uses: "./.github/actions/relload"
       with:
-        tools_nt:   'vs2019'
+        tools_nt:   'vs2022'
         tools_lnx:  'gcc'
         tools_osx:  'clang'
         owdebug:    ${{ vars.OWDEBUG }}

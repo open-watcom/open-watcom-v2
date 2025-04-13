@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -57,8 +58,8 @@ extern void WriteText( window_id, int, int, type_style *, const char *, int );
 extern void WriteString( window_id, int, int, type_style *, const char *);
 extern HDC  TextGetDC( window_id, type_style *);
 extern void TextReleaseDC( window_id, HDC );
-extern int  MyTextExtent( window_id, type_style *, char *, unsigned );
-extern int  MyStringExtent( window_id, type_style *, char * );
+extern int  MyTextExtent( window_id, type_style *, const char *, unsigned );
+extern int  MyStringExtent( window_id, type_style *, const char * );
 extern void BlankRect( window_id, vi_color, int, int, int, int );
 extern void BlankRectIndirect( window_id, vi_color, RECT * );
 extern void ClientToRowCol( window_id, int, int, int *, int *, int );

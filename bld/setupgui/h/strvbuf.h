@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,21 +36,23 @@
 
 #define VBUF_INIT_STRUCT    { VBUF_INIT_BUF, VBUF_INIT_LEN, VBUF_INIT_USED }
 
+typedef unsigned    vbuflen;
+
 typedef struct vbuf{            // VBUF structure
-    char           *buf;        // - buffer pointer
-    size_t         len;         // - buffer size
-    size_t         used;        // - amount used in buffer
+    char            *buf;       // - buffer pointer
+    vbuflen         len;        // - buffer size
+    vbuflen         used;       // - amount used in buffer
 } VBUF;
 
 // PROTOTYPES:
 
 void VbufReqd(                  // ENSURE BUFFER IS OF SUFFICIENT SIZE
     VBUF *vbuf,                 // - VBUF structure
-    size_t reqd )               // - required size
+    vbuflen reqd )              // - required size
 ;
 void VbufSetLen(                // SET BUFFER LENGTH
     VBUF *vbuf,                 // - VBUF structure
-    size_t size )               // - new length
+    vbuflen size )              // - new length
 ;
 void VbufInit(                  // INITIALIZE BUFFER STRUCTURE
     VBUF *vbuf )                // - VBUF structure
@@ -76,7 +78,7 @@ int VbufCompExt(                // COMPARE A VBUFs
 int VbufCompBuffer(             // COMPARE A VBUFs
     const VBUF *vbuf1,          // - VBUF structure
     char const *buffer,         // - buffer
-    size_t size,                // - size of buffer
+    vbuflen size,               // - size of buffer
     bool igncase )              // - bool ignore case
 ;
 void VbufConcVbuf(              // CONCATENATE A VBUF TO VBUF
@@ -94,32 +96,32 @@ void VbufSetVbuf(               // SET A VBUF
 void VbufConcVbufPos(           // CONCATENATE A VBUF TO VBUF
     VBUF *vbuf1,                // - VBUF structure
     const VBUF *vbuf2,          // - VBUF structure
-    size_t start_pos )          // - start position in second VBUF
+    vbuflen start_pos )         // - start position in second VBUF
 ;
 void VbufPrepVbufPos(           // PREPEND A VBUF TO VBUF
     VBUF *vbuf1,                // - VBUF structure
     const VBUF *vbuf2,          // - VBUF structure to be prepended
-    size_t start_pos )          // - start position in second VBUF
+    vbuflen start_pos )         // - start position in second VBUF
 ;
 void VbufSetVbufPos(            // SET A VBUF TO VBUF
     VBUF *vbuf1,                // - VBUF structure
     const VBUF *vbuf2,          // - VBUF structure
-    size_t start_pos )          // - start position in second VBUF
+    vbuflen start_pos )         // - start position in second VBUF
 ;
 void VbufConcBuffer(            // CONCATENATE A BUFFER TO VBUF
     VBUF *vbuf,                 // - VBUF structure
     char const *buffer,         // - buffer
-    size_t size )               // - size of buffer
+    vbuflen size )              // - size of buffer
 ;
 void VbufPrepBuffer(            // PREPEND A BUFFER TO VBUF
     VBUF *vbuf,                 // - VBUF structure
     char const *buffer,         // - buffer
-    size_t size )               // - size of buffer
+    vbuflen size )              // - size of buffer
 ;
 void VbufSetBuffer(             // SET A BUFFER
     VBUF *vbuf,                 // - VBUF structure
     char const *buffer,         // - buffer
-    size_t size )               // - size of buffer
+    vbuflen size )              // - size of buffer
 ;
 void VbufConcStr(               // CONCATENATE A STRING TO VBUF
     VBUF *vbuf,                 // - VBUF structure
@@ -148,18 +150,18 @@ void VbufSetChr(                // CONCATENATE CHAR TO vbuf->buf
 void VbufSetBufferAt(           // CONCATENATE A BUFFER TO VBUF AT POSITION
     VBUF *vbuf,                 // - VBUF structure
     char const *buffer,         // - size of buffer
-    size_t size,                // - buffer
-    size_t atpos )              // - at position
+    vbuflen size,               // - buffer
+    vbuflen atpos )             // - at position
 ;
 void VbufSetStrAt(              // CONCATENATE A STRING TO VBUF AT POSITION
     VBUF *vbuf,                 // - VBUF structure
     char const *string,         // - string to be concatenated
-    size_t atpos )              // - at position
+    vbuflen atpos )             // - at position
 ;
 void VbufSetVbufAt(             // CONCATENATE A VBUF TO VBUF AT POSITION
     VBUF *vbuf1,                // - VBUF structure
     const VBUF *vbuf2,          // - VBUF structure
-    size_t atpos )              // - at position
+    vbuflen atpos )             // - at position
 ;
 #if 0
 void VbufConcDecimal(           // CONCATENATE A DECIMAL TO VBUF
@@ -245,7 +247,7 @@ void VbufSetPathExt(            // SET A FILE EXTENSION FOR FILE PATH IN VBUF
 #define utime_vbuf(n,s)             utime(VbufString(n), s)
 #define stat_vbuf(n,s)              stat(VbufString(n), s)
 #ifdef __UNIX__
-#define mkdir_vbuf(n,m)             mkdir(VbufString(n), m)
+#define mkdir_vbuf(n)               mkdir(VbufString(n), PMODE_RWX)
 #else
 #define mkdir_vbuf(n)               mkdir(VbufString(n))
 #endif

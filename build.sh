@@ -24,26 +24,32 @@ if [ ! -d $OWOBJDIR ]; then mkdir $OWOBJDIR; fi
 cd $OWOBJDIR
 rm -f ../../../build/$OWOBJDIR/wmake
 if [ "$OWTOOLS" = "WATCOM" ]; then
-    output_redirect wmake -f ../wmake clean || die 'Failed to wmake wmake clean'
-    output_redirect wmake -f ../wmake || die 'Failed to wmake wmake'
+    output_redirect wmake -m -f ../wmake clean
+    output_redirect wmake -m -f ../wmake
 else
+    output_redirect make -f ../posmake clean
     case `uname` in
         FreeBSD)
-            output_redirect make -f ../posmake clean || die "Failed to make wmake clean"
-            output_redirect make -f ../posmake TARGETDEF=-D__BSD__ || die "Failed to make wmake"
+            output_redirect make -f ../posmake TARGETDEF=-D__FREEBSD__
+            ;;
+        DragonFly)
+            output_redirect make -f ../posmake TARGETDEF=-D__DRAGONFLY__
+            ;;
+        NetBSD)
+            output_redirect make -f ../posmake TARGETDEF=-D__NETBSD__
+            ;;
+        OpenBSD)
+            output_redirect make -f ../posmake TARGETDEF=-D__OPENBSD__
             ;;
         Darwin)
-            output_redirect make -f ../posmake clean
             output_redirect make -f ../posmake TARGETDEF=-D__OSX__
             ;;
         Haiku)
-            output_redirect make -f ../posmake clean || die "Failed to make wmake clean"
-            output_redirect make -f ../posmake TARGETDEF=-D__HAIKU__ || die "Failed to make wmake"
+            output_redirect make -f ../posmake TARGETDEF=-D__HAIKU__
             ;;
 #        Linux)
         *)
-            output_redirect make -f ../posmake clean || die "Failed to make wmake clean"
-            output_redirect make -f ../posmake TARGETDEF=-D__LINUX__ || die "Failed to make wmake"
+            output_redirect make -f ../posmake TARGETDEF=-D__LINUX__
             ;;
     esac
 fi
@@ -56,8 +62,8 @@ else
     if [ ! -d $OWOBJDIR ]; then mkdir $OWOBJDIR; fi
     cd $OWOBJDIR
     rm -f ../../../build/$OWOBJDIR/builder
-    output_redirect ../../../build/$OWOBJDIR/wmake -f ../binmake clean
-    output_redirect ../../../build/$OWOBJDIR/wmake -f ../binmake bootstrap=1
+    output_redirect ../../../build/$OWOBJDIR/wmake -f ../preboot clean
+    output_redirect ../../../build/$OWOBJDIR/wmake -f ../preboot
     cd "$OWROOT"
     if [ "$1" != "preboot" ]; then
         cd bld

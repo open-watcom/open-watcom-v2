@@ -32,7 +32,6 @@
 
 #include "guiwind.h"
 #include <stdlib.h>
-#include <string.h>
 #include "wmdisim.h"
 #include "guixutil.h"
 #include "guixhook.h"
@@ -41,6 +40,7 @@
 #include "guiscrol.h"
 #include "guixwind.h"
 #include "guistyle.h"
+#include "guix.h"
 
 
 #define MAX_LENGTH 256
@@ -78,10 +78,10 @@ static void SetStyle( HWND hwnd, bool max )
         style |= WS_VSCROLL+WS_HSCROLL;
         style &= ~( COMMON_STYLES | WS_THICKFRAME | WS_CAPTION );
     } else {
-        if( wnd->scroll_style & GUI_HSCROLL ) {
+        if( IS_HSCROLL_ON( wnd ) ) {
             style |= WS_HSCROLL;
         }
-        if( wnd->scroll_style & GUI_VSCROLL ) {
+        if( IS_VSCROLL_ON( wnd ) ) {
             style |= WS_VSCROLL;
         }
         if( wnd->style & GUI_RESIZEABLE ) {
@@ -106,10 +106,10 @@ static void EndMaxRestore( HWND hwnd )
     guix_coord  scr_size;
 
     wnd = GUIGetWindow( hwnd );
-    if( GUI_HSCROLL_ON( wnd ) ) {
+    if( IS_HSCROLL_ON( wnd ) ) {
         GUISetRangePos( wnd, SB_HORZ );
     }
-    if( GUI_VSCROLL_ON( wnd ) ) {
+    if( IS_VSCROLL_ON( wnd ) ) {
         GUISetRangePos( wnd, SB_VERT );
     }
     DoingMaxRestore = false;

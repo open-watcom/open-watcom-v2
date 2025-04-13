@@ -34,7 +34,7 @@
 #include "guiwind.h"
 #include "guiicon.h"
 #include "uiattrs.h"
-#include <string.h>
+
 
 void GUIDrawIcon( gui_window * wnd )
 {

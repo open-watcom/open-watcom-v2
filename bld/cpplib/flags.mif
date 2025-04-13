@@ -197,5 +197,5 @@ plib_c_inc_dirs_linux   =$(inc_dirs_lang_linux)
 
 plib_inc_dirs = -I"$(lib_misc_dir)/h" -I"../../h" -I"$(plusplus_dir)/h" -I"$(cpplib_dir)/runtime/h" $(plib_c_inc_dirs_$(system)) -I"$(watcom_dir)/h" -I"$(comp_cfg_dir)/h"
 
-pchflags   = -fhwe $(pch_flags) $(pch_flags_$[&)
-pchflags_x = -fhwe $(pch_flags_x) $(pch_flags_x_$[&)
+pchflags   = -fhwe $(pch_flags) $(pch_flags_f_$[&)
+pchflags_x = -fhwe $(pch_flags_x) $(pch_flags_x_f_$[&)

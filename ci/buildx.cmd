@@ -5,9 +5,6 @@
 REM ...
 REM Script to build the Open Watcom bootstrap tools
 REM ...
-if "%OWTOOLS%" == "WATCOM" (
-    set PATH=%WATCOM_PATH%
-)
 if "%OWTOOLS%" == "VISUALC" (
     if "%1" == "vs2017" call "C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\vcvarsall.bat" amd64
     if "%1" == "vs2019" call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" amd64
@@ -52,7 +49,7 @@ if "%OWBUILD_STAGE%" == "boot" (
     if not %RC% == 1 (
         mkdir %OWROOT%\bld\builder\%OWOBJDIR%
         cd %OWROOT%\bld\builder\%OWOBJDIR%
-        %OWROOT%\build\%OWOBJDIR%\wmake -f ..\binmake bootstrap=1
+        %OWROOT%\build\%OWOBJDIR%\wmake -f ..\preboot
         set RC=!ERRORLEVEL!
         if not %RC% == 1 (
             if "%OWDOCTARGET%" == "" (

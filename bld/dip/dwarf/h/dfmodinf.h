@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2023-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,15 +35,15 @@
  * mod info definition
  */
 struct mod_info {
-    seg_list    addr_sym[1];
-    drmem_hdl   mod_handle;
-    drmem_hdl   cu_tag;
-    drmem_hdl   stmts;
-    drmem_hdl   dbg_pch;        /* predefinded symbols */
-    char        *name;
-    dr_model    model;
-    dr_language lang;
-    unsigned    addr_size;
-    bool        is_segment;     /* based off model */
-    bool        has_pubnames;   /* has pubname section */
+    seg_list        addr_sym[1];
+    drmem_hdl       mod_handle;
+    drmem_hdl       cu_tag;
+    drmem_hdl       stmts;
+    drmem_hdl       dbg_pch;        /* predefinded symbols */
+    char            *name;
+    dw_mem_model    model;
+    dr_language     lang;
+    unsigned        addr_size;
+    bool            is_segment;     /* based off model */
+    bool            has_pubnames;   /* has pubname section */
 };

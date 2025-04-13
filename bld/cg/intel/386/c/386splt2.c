@@ -57,7 +57,7 @@
 name    *LowPart( name *tosplit, type_class_def type_class )
 /**********************************************************/
 {
-    name                *new = NULL;
+    name                *new_part = NULL;
     signed_8            s8;
     unsigned_8          u8;
     int_16              s16;
@@ -69,69 +69,69 @@ name    *LowPart( name *tosplit, type_class_def type_class )
         if( tosplit->c.const_type == CONS_ABSOLUTE ) {
             if( type_class == U1 ) {
                 u8 = tosplit->c.lo.u.int_value & 0xff;
-                new = AllocUIntConst( u8 );
+                new_part = AllocUIntConst( u8 );
             } else if( type_class == I1 ) {
                 s8 = tosplit->c.lo.u.int_value & 0xff;
-                new = AllocIntConst( s8 );
+                new_part = AllocIntConst( s8 );
             } else if( type_class == U2 ) {
                 u16 = tosplit->c.lo.u.int_value & 0xffff;
-                new = AllocUIntConst( u16 );
+                new_part = AllocUIntConst( u16 );
             } else if( type_class == I2 ) {
                 s16 = tosplit->c.lo.u.int_value & 0xffff;
-                new = AllocIntConst( s16 );
+                new_part = AllocIntConst( s16 );
             } else if( type_class == I4 ) {
-                new = AllocS32Const( tosplit->c.lo.u.int_value );
+                new_part = AllocS32Const( tosplit->c.lo.u.int_value );
             } else if( type_class == U4 ) {
-                new = AllocU32Const( tosplit->c.lo.u.uint_value );
+                new_part = AllocU32Const( tosplit->c.lo.u.uint_value );
             } else if( type_class == FL ) {
                 _Zoiks( ZOIKS_129 );
             } else { /* FD */
                 floatval = GetFloat( tosplit, FD );
-                new = AllocConst( CFCnvU32F( &cgh, _TargetLongInt( *(uint_32 *)( floatval->value + 0 ) ) ) );
+                new_part = AllocConst( CFCnvU32F( &cgh, _TargetLongInt( *(uint_32 *)( floatval->value + 0 ) ) ) );
             }
         } else if( tosplit->c.const_type == CONS_ADDRESS ) {
-            new = AddrConst( tosplit->c.value, (segment_id)tosplit->c.lo.u.int_value, CONS_OFFSET );
+            new_part = AddrConst( tosplit->c.value, (segment_id)tosplit->c.lo.u.int_value, CONS_OFFSET );
         } else {
             _Zoiks( ZOIKS_044 );
         }
         break;
     case N_REGISTER:
         if( type_class == U1 || type_class == I1 ) {
-            new = AllocRegName( Low16Reg( tosplit->r.reg ) );
+            new_part = AllocRegName( Low16Reg( tosplit->r.reg ) );
         } else if( type_class == U2 || type_class == I2 ) {
-            new = AllocRegName( Low32Reg( tosplit->r.reg ) );
+            new_part = AllocRegName( Low32Reg( tosplit->r.reg ) );
         } else {
-            new = AllocRegName( Low64Reg( tosplit->r.reg ) );
+            new_part = AllocRegName( Low64Reg( tosplit->r.reg ) );
         }
         break;
     case N_TEMP:
-        new = TempOffset( tosplit, 0, type_class );
-        if( new->t.temp_flags & CONST_TEMP ) {
+        new_part = TempOffset( tosplit, 0, type_class );
+        if( new_part->t.temp_flags & CONST_TEMP ) {
             name *cons = tosplit->v.symbol;
             if( tosplit->n.type_class == FD ) {
                 cons = Int64Equivalent( cons );
             }
-            new->v.symbol = LowPart( cons, type_class );
+            new_part->v.symbol = LowPart( cons, type_class );
         }
         break;
     case N_MEMORY:
-        new = AllocMemory( tosplit->v.symbol, tosplit->v.offset,
+        new_part = AllocMemory( tosplit->v.symbol, tosplit->v.offset,
                                 tosplit->m.memory_type, type_class );
-        new->v.usage = tosplit->v.usage;
+        new_part->v.usage = tosplit->v.usage;
         break;
     case N_INDEXED:
-        new = ScaleIndex( tosplit->i.index, tosplit->i.base,
+        new_part = ScaleIndex( tosplit->i.index, tosplit->i.base,
                                 tosplit->i.constant, type_class,
                                 0, tosplit->i.scale, tosplit->i.index_flags );
         break;
     }
-    return( new );
+    return( new_part );
 }
 
 name    *OffsetPart( name *tosplit )
 /**********************************/
 {
-    name        *new;
+    name        *new_part;
 
     switch( tosplit->n.class ) {
     case N_REGISTER:
@@ -146,11 +146,11 @@ name    *OffsetPart( name *tosplit )
             return( tosplit );
         }
     case N_TEMP:
-        new = LowPart( tosplit, U4 );
-        if( new->t.temp_flags & CONST_TEMP ) {
-            new->v.symbol = OffsetPart( tosplit->v.symbol );
+        new_part = LowPart( tosplit, U4 );
+        if( new_part->t.temp_flags & CONST_TEMP ) {
+            new_part->v.symbol = OffsetPart( tosplit->v.symbol );
         }
-        return( new );
+        return( new_part );
     case N_MEMORY:
     case N_INDEXED:
         return( LowPart( tosplit, U4 ) );
@@ -164,7 +164,7 @@ name    *OffsetPart( name *tosplit )
 name    *SegmentPart( name *tosplit )
 /***********************************/
 {
-    name        *new;
+    name        *new_part;
     name        *seg;
 
     switch( tosplit->n.class ) {
@@ -181,25 +181,25 @@ name    *SegmentPart( name *tosplit )
     case N_REGISTER:
         return( AllocRegName( High48Reg( tosplit->r.reg ) ) );
     case N_TEMP:
-        new = TempOffset( tosplit, 4, U2 );
-        if( new->t.temp_flags & CONST_TEMP ) {
+        new_part = TempOffset( tosplit, 4, U2 );
+        if( new_part->t.temp_flags & CONST_TEMP ) {
             seg = SegmentPart( tosplit->v.symbol );
             if( seg->n.class == N_REGISTER )
                 return( seg );
-            new->v.symbol = seg;
+            new_part->v.symbol = seg;
         }
-        return( new );
+        return( new_part );
     case N_MEMORY:
-        new = AllocMemory( tosplit->v.symbol,
+        new_part = AllocMemory( tosplit->v.symbol,
                                 tosplit->v.offset + 4,
                                 tosplit->m.memory_type, U2 );
-        new->v.usage = tosplit->v.usage;
-        return( new );
+        new_part->v.usage = tosplit->v.usage;
+        return( new_part );
     case N_INDEXED:
-        new = ScaleIndex( tosplit->i.index, tosplit->i.base,
+        new_part = ScaleIndex( tosplit->i.index, tosplit->i.base,
                 tosplit->i.constant+ 4, U2, 0,
                 tosplit->i.scale, tosplit->i.index_flags );
-        return( new );
+        return( new_part );
     default:
         _Zoiks( ZOIKS_129 );
         return( NULL );
@@ -210,7 +210,7 @@ name    *SegmentPart( name *tosplit )
 name    *HighPart( name *tosplit, type_class_def type_class )
 /***********************************************************/
 {
-    name                *new = NULL;
+    name                *new_part = NULL;
     signed_8            s8;
     unsigned_8          u8;
     int_16              s16;
@@ -222,64 +222,64 @@ name    *HighPart( name *tosplit, type_class_def type_class )
         if( tosplit->c.const_type == CONS_ABSOLUTE ) {
             if( type_class == U1 ) {
                 u8 = ( tosplit->c.lo.u.int_value >> 8 ) & 0xff;
-                new = AllocUIntConst( u8 );
+                new_part = AllocUIntConst( u8 );
             } else if( type_class == I1 ) {
                 s8 = ( tosplit->c.lo.u.int_value >> 8 ) & 0xff;
-                new = AllocIntConst( s8 );
+                new_part = AllocIntConst( s8 );
             } else if( type_class == U2 ) {
                 u16 = ( tosplit->c.lo.u.int_value >> 16 ) & 0xffff;
-                new = AllocUIntConst( u16 );
+                new_part = AllocUIntConst( u16 );
             } else if( type_class == I2 ) {
                 s16 = ( tosplit->c.lo.u.int_value >> 16 ) & 0xffff;
-                new = AllocIntConst( s16 );
+                new_part = AllocIntConst( s16 );
             } else if( type_class == I4 ) {
-                new = AllocS32Const( tosplit->c.hi.u.int_value );
+                new_part = AllocS32Const( tosplit->c.hi.u.int_value );
             } else if( type_class == U4 ) {
-                new = AllocU32Const( tosplit->c.hi.u.uint_value );
+                new_part = AllocU32Const( tosplit->c.hi.u.uint_value );
             } else if( type_class == FL ) {
                 _Zoiks( ZOIKS_129 );
             } else { /* FD */
                 floatval = GetFloat( tosplit, FD );
-                new = AllocConst( CFCnvU32F( &cgh, _TargetLongInt( *(uint_32 *)( floatval->value + 2 ) ) ) );
+                new_part = AllocConst( CFCnvU32F( &cgh, _TargetLongInt( *(uint_32 *)( floatval->value + 2 ) ) ) );
             }
         } else if( tosplit->c.const_type == CONS_ADDRESS ) {
-            new = AddrConst( tosplit->c.value, (segment_id)tosplit->c.lo.u.int_value, CONS_SEGMENT );
+            new_part = AddrConst( tosplit->c.value, (segment_id)tosplit->c.lo.u.int_value, CONS_SEGMENT );
         } else {
             _Zoiks( ZOIKS_044 );
         }
         break;
     case N_REGISTER:
         if( type_class == U1 || type_class == I1 ) {
-            new = AllocRegName( High16Reg( tosplit->r.reg ) );
+            new_part = AllocRegName( High16Reg( tosplit->r.reg ) );
         } else if( type_class == U2 || type_class == I2 ) {
-            new = AllocRegName( High32Reg( tosplit->r.reg ) );
+            new_part = AllocRegName( High32Reg( tosplit->r.reg ) );
         } else {
-            new = AllocRegName( High64Reg( tosplit->r.reg ) );
+            new_part = AllocRegName( High64Reg( tosplit->r.reg ) );
         }
         break;
     case N_TEMP:
-        new = TempOffset( tosplit, tosplit->n.size / 2, type_class );
-        if( new->t.temp_flags & CONST_TEMP ) {
+        new_part = TempOffset( tosplit, tosplit->n.size / 2, type_class );
+        if( new_part->t.temp_flags & CONST_TEMP ) {
             name *cons = tosplit->v.symbol;
             if( tosplit->n.type_class == FD ) {
                 cons = Int64Equivalent( cons );
             }
-            new->v.symbol = HighPart( cons, type_class );
+            new_part->v.symbol = HighPart( cons, type_class );
         }
         break;
     case N_MEMORY:
-        new = AllocMemory( tosplit->v.symbol,
+        new_part = AllocMemory( tosplit->v.symbol,
                                 tosplit->v.offset + tosplit->n.size / 2,
                                 tosplit->m.memory_type, type_class );
-        new->v.usage = tosplit->v.usage;
+        new_part->v.usage = tosplit->v.usage;
         break;
     case N_INDEXED:
-        new = ScaleIndex( tosplit->i.index, tosplit->i.base,
+        new_part = ScaleIndex( tosplit->i.index, tosplit->i.base,
                 tosplit->i.constant+ tosplit->n.size / 2, type_class,
                 0, tosplit->i.scale, tosplit->i.index_flags );
         break;
     }
-    return( new );
+    return( new_part );
 }
 
 

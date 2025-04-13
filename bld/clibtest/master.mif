@@ -73,15 +73,15 @@ t_rdos      = $(t_runrdos)
 !ifdef srcfile
 
 ext=.exe
-!ifdef t_$(bld_os)$(bld_cpu)
-buil_tests = $+$(t_$(bld_os)$(bld_cpu))$-
+!ifdef t_$(bld)
+buil_tests = $+$(t_$(bld))$-
 !else ifdef t_$(bld_os)
 buil_tests = $+$(t_$(bld_os))$-
 !endif
 
 ext=
-!ifdef t_$(bld_os)$(bld_cpu)
-run_tests = $+$(t_$(bld_os)$(bld_cpu))$-
+!ifdef t_$(bld)
+run_tests = $+$(t_$(bld))$-
 !else ifdef t_$(bld_os)
 run_tests = $+$(r_$(bld_os))$-
 !endif

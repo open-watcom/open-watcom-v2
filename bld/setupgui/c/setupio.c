@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -53,14 +53,17 @@ typedef enum ds_type {
 } ds_type;
 
 typedef struct file_handle_t {
-    ds_type                 type;
+    ds_type             type;
     union {
-        FILE                *fp;
+        FILE            *fp;
 #if defined( USE_ZIP )
-        struct zip_file     *zf;
+        struct zip_file *zf;
 #elif defined( USE_LZMA )
 #endif
     } u;
+    char                *textbuf;
+    char                *textpos;
+    char                *textend;
 } *file_handle;
 
 static ds_type          srcType;
@@ -68,7 +71,8 @@ static ds_type          srcType;
 #if defined( USE_ZIP )
 static struct zip       *srcZip;
 
-/* At the moment the incoming path may have either forward or backward
+/*
+ * At the moment the incoming path may have either forward or backward
  * slashes as path separators. However, ziplib only likes forward slashes,
  * so we must manually flip them.
  */
@@ -77,7 +81,8 @@ static void flipBackSlashes( const VBUF *old_path, VBUF *new_path )
     char        *s;
 
     VbufSetVbuf( new_path, old_path );
-    /* Need to flip slashes - at the moment they may be
+    /*
+     * Need to flip slashes - at the moment they may be
      * forward or backward, and ziplib requires forward
      * slashes only.
      */
@@ -145,7 +150,7 @@ int FileIsArchive( void )
 }
 
 
-int FileStat( const VBUF *path, struct stat *buf )
+int FileStat( const VBUF *path, struct stat *statbuf )
 {
     int                 rc;
 #if defined( USE_ZIP )
@@ -156,16 +161,17 @@ int FileStat( const VBUF *path, struct stat *buf )
         VBUF    alt_path;
 
         VbufInit( &alt_path );
-
-        /* First try a file inside a ZIP archive */
+        /*
+         * First try a file inside a ZIP archive
+         */
         flipBackSlashes( path, &alt_path );
         if( VbufLen( &alt_path ) > 0 ) {
             rc = zip_stat( srcZip, VbufString( &alt_path ), 0, &zs );
             if( rc == 0 ) {
-                memset( buf, 0, sizeof( *buf ) );
-                buf->st_ino   = zs.index;
-                buf->st_size  = zs.size;
-                buf->st_mtime = zs.mtime;
+                memset( statbuf, 0, sizeof( *statbuf ) );
+                statbuf->st_ino   = zs.index;
+                statbuf->st_size  = zs.size;
+                statbuf->st_mtime = zs.mtime;
             }
         }
         VbufFree( &alt_path );
@@ -173,8 +179,10 @@ int FileStat( const VBUF *path, struct stat *buf )
     if( rc != 0 ) {
 #elif defined( USE_LZMA )
 #endif
-        /* If that fails, try local file */
-        rc = stat_vbuf( path, buf );
+        /*
+         * If that fails, try local file
+         */
+        rc = stat_vbuf( path, statbuf );
 #if defined( USE_ZIP )
     }
 #elif defined( USE_LZMA )
@@ -183,58 +191,69 @@ int FileStat( const VBUF *path, struct stat *buf )
 }
 
 
-file_handle FileOpen( const VBUF *path, const char *flags )
+file_handle FileOpen( const VBUF *path, data_mode mode )
 {
-    file_handle     fh;
+    file_handle     afh;
 
-    fh = malloc( sizeof( *fh ) );
-    if( fh == NULL )
+    (void)mode; /* unused parameters */
+
+    afh = malloc( sizeof( *afh ) );
+    if( afh == NULL )
         return( NULL );
 
+    afh->textbuf = NULL;
+    afh->textpos = NULL;
+    afh->textend = NULL;
+    if( mode == DATA_TEXT )
+        afh->textbuf = malloc( TEXTBUF_SIZE );
 #if defined( USE_ZIP )
-    fh->u.zf = NULL;
+    afh->u.zf = NULL;
     if( srcType == DS_ZIP ) {
         VBUF    alt_path;
 
         VbufInit( &alt_path );
-
-        /* First try opening the file inside a ZIP archive */
+        /*
+         * First try opening the file inside a ZIP archive
+         */
         flipBackSlashes( path, &alt_path );
         if( VbufLen( &alt_path ) > 0 ) {
-            fh->u.zf = zip_fopen( srcZip, VbufString( &alt_path ), 0 );
-            fh->type = DS_ZIP;
+            afh->u.zf = zip_fopen( srcZip, VbufString( &alt_path ), 0 );
+            afh->type = DS_ZIP;
         }
         VbufFree( &alt_path );
     }
-    if( fh->u.zf == NULL ) {
+    if( afh->u.zf == NULL ) {
 #elif defined( USE_LZMA )
 #endif
-        /* If that fails, try opening the file directly */
-        fh->u.fp = fopen_vbuf( path, flags );
-        fh->type = DS_FILE;
+        /*
+         * If that fails, try opening the file directly
+         */
+        afh->u.fp = fopen_vbuf( path, "rb" );
+        afh->type = DS_FILE;
 #if defined( USE_ZIP )
     }
 #elif defined( USE_LZMA )
 #endif
-    if( fh->type == DS_FILE && fh->u.fp == NULL ) {
-        free( fh );
-        fh = NULL;
+    if( afh->type == DS_FILE
+      && afh->u.fp == NULL ) {
+        free( afh );
+        afh = NULL;
     }
-    return( fh );
+    return( afh );
 }
 
 
-int FileClose( file_handle fh )
+int FileClose( file_handle afh )
 {
     int             rc;
 
-    switch( fh->type ) {
+    switch( afh->type ) {
     case DS_FILE:
-        rc = fclose( fh->u.fp );
+        rc = fclose( afh->u.fp );
         break;
 #if defined( USE_ZIP )
     case DS_ZIP:
-        rc = zip_fclose( fh->u.zf );
+        rc = zip_fclose( afh->u.zf );
         break;
 #elif defined( USE_LZMA )
 #endif
@@ -242,28 +261,114 @@ int FileClose( file_handle fh )
         rc = -1;
     }
 
-    free( fh );
+    if( afh->textbuf != NULL )
+        free( afh->textbuf );
+    free( afh );
     return( rc );
 }
 
 
-size_t FileRead( file_handle fh, void *buffer, size_t length )
+static size_t file_read( file_handle afh, void *buffer, size_t length )
+/**********************************************************************
+ * binary data mode processing
+ */
 {
     size_t          amt;
 
-    switch( fh->type ) {
+    switch( afh->type ) {
     case DS_FILE:
-        amt = fread( buffer, 1, length, fh->u.fp );
+        amt = fread( buffer, 1, length, afh->u.fp );
+        if( amt == 0
+          && ferror( afh->u.fp ) )
+            amt = (size_t)-1;
         break;
 #if defined( USE_ZIP )
     case DS_ZIP:
-        amt = zip_fread( fh->u.zf, buffer, length );
+        amt = zip_fread( afh->u.zf, buffer, length );
+        if( (int)amt < 0 )
+            amt = (size_t)-1;
         break;
 #elif defined( USE_LZMA )
 #endif
     default:
         amt = 0;
     }
+    return( amt );
+}
 
+static size_t read_line( file_handle afh, char *buffer, size_t length )
+/**********************************************************************
+ * text data mode processing
+ */
+{
+    char            *start;
+    size_t          len;
+    bool            done;
+
+    done = false;
+    do {
+        /*
+         * Read data into text buffer if it's empty
+         */
+        if( afh->textpos == NULL ) {
+            len = file_read( afh, afh->textbuf, TEXTBUF_SIZE );
+            if( (int)len <= 0 ) {
+                return( len );
+            }
+            afh->textpos = afh->textbuf;
+            afh->textend = afh->textbuf + len;
+        }
+        /*
+         * Look for a newline
+         * check for end of source buffer and size of target buffer
+         */
+        start = afh->textpos;
+        while( (afh->textpos[0] != '\n')
+          && (afh->textpos < afh->textend)
+          && ((size_t)( afh->textpos - start ) < length) ) {
+            afh->textpos++;
+        }
+        if( afh->textpos[0] == '\n' ) {
+            /*
+             * Found a newline; increment past it
+             */
+            afh->textpos++;
+            done = true;
+        } else if( afh->textpos == afh->textend ) {
+            /*
+             * We're at the end of the buffer
+             * copy what we have to output buffer
+             */
+            len = afh->textpos - start;
+            memcpy( buffer, start, len );
+            length -= len;
+            buffer += len;
+            /*
+             * Force read of more data into buffer
+             */
+            afh->textpos = NULL;
+        } else {
+            /*
+             * No more space in output buffer
+             */
+            done = true;
+        }
+    } while( !done );
+
+    len = afh->textpos - start;
+    memcpy( buffer, start, len );
+    buffer[len] = '\0';
+    return( len );
+}
+
+size_t FileRead( file_handle afh, void *buffer, size_t length )
+{
+    size_t          amt;
+
+    if( afh->textbuf != NULL ) {
+        amt = read_line( afh, buffer, length );
+    } else {
+        amt = file_read( afh, buffer, length );
+    }
     return( amt );
 }

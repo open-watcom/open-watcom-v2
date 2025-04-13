@@ -1,0 +1,64 @@
+/*
+ *  sys/statvfs.h
+ *
+:include crwat.sp
+ */
+#ifndef _SYS_STATVFS_H_INCLUDED
+#define _SYS_STATVFS_H_INCLUDED
+
+:include readonly.sp
+
+:include owrtlink.sp
+
+:include cpluspro.sp
+
+:include lnxkpack.sp
+
+:include fstypes.sp
+
+struct statvfs {
+    unsigned long       f_bsize;
+    unsigned long       f_frsize;
+    fsblkcnt_t          f_blocks;
+    fsblkcnt_t          f_bfree;
+    fsblkcnt_t          f_bavail;
+    fsfilcnt_t          f_files;
+    fsfilcnt_t          f_ffree;
+    fsfilcnt_t          f_favail;
+    unsigned long       f_fsid;
+    unsigned long       f_flag;
+    unsigned long       f_namemax;
+};
+
+:include ext.sp
+struct statvfs64 {
+    unsigned long       f_bsize;
+    unsigned long       f_frsize;
+    unsigned long long  f_blocks;
+    unsigned long long  f_bfree;
+    unsigned long long  f_bavail;
+    unsigned long long  f_files;
+    unsigned long long  f_ffree;
+    unsigned long long  f_favail;
+    unsigned long       f_fsid;
+    unsigned long       f_flag;
+    unsigned long       f_namemax;
+};
+:include extepi.sp
+
+#define ST_RDONLY   0x0001  /* read-only file system */
+#define ST_NOSUID   0x0002  /* ignore suid and sgid file bits */
+
+_WCRTLINK extern int statvfs( const char *restrict __filename, struct statvfs *restrict __statvfs );
+_WCRTLINK extern int fstatvfs( int __fh, struct statvfs *__statvfs );
+
+:include ext.sp
+_WCRTLINK extern int statvfs64( const char *restrict __filename, struct statvfs64 *restrict __statvfs );
+_WCRTLINK extern int fstatvfs64( int __fh, struct statvfs64 *__statvfs );
+:include extepi.sp
+
+:include poppack.sp
+
+:include cplusepi.sp
+
+#endif /* !_SYS_STATVFS_H_INCLUDED */

@@ -47,6 +47,7 @@
 #include "typemap.h"
 #include "blktrim.h"
 #include "bgcall.h"
+#include "edge.h"
 #include "feprotos.h"
 
 
@@ -57,7 +58,7 @@ block   *MakeBlock( label_handle label, block_num edges )
     block_edge  *edge;
     block_num   i;
 
-    blk = CGAlloc( sizeof( block ) + ( edges - 1 ) * sizeof( block_edge ) );
+    blk = CGAlloc( BLOCK_SIZE( edges ) );
     blk->next_block = NULL;
     blk->prev_block = NULL;
     blk->label = label;
@@ -159,7 +160,7 @@ void    AddIns( instruction *ins )
 void    GenBlock( block_class class, int targets )
 /************************************************/
 {
-    block       *new;
+    block       *new_blk;
     block_edge  *edge;
     instruction *ins;
 
@@ -186,36 +187,36 @@ void    GenBlock( block_class class, int targets )
     BlockList = CurrBlock;
     CurrBlock->next_block = NULL;
     if( targets > 1 ) {
-        new = CGAlloc( sizeof( block ) + ( targets - 1 ) * sizeof( block_edge ) );
-        Copy( CurrBlock, new, sizeof( block ) );
+        new_blk = CGAlloc( BLOCK_SIZE( targets ) );
+        Copy( CurrBlock, new_blk, BLOCK_SIZE( 1 ) );
         if( CurrBlock->ins.head.next == (instruction *)&CurrBlock->ins ) {
-            new->ins.head.next = (instruction *)&new->ins;
-            new->ins.head.prev = (instruction *)&new->ins;
+            new_blk->ins.head.next = (instruction *)&new_blk->ins;
+            new_blk->ins.head.prev = (instruction *)&new_blk->ins;
         } else {
-            new->ins.head.next->head.prev = (instruction *)&new->ins;
-            new->ins.head.prev->head.next = (instruction *)&new->ins;
+            new_blk->ins.head.next->head.prev = (instruction *)&new_blk->ins;
+            new_blk->ins.head.prev->head.next = (instruction *)&new_blk->ins;
         }
-        new->ins.blk = new;
+        new_blk->ins.blk = new_blk;
         /*
          * Move all references to CurrBlock
          */
         if( HeadBlock == CurrBlock ) {
-            HeadBlock = new;
+            HeadBlock = new_blk;
         }
         if( BlockList == CurrBlock ) {
-            BlockList = new;
+            BlockList = new_blk;
         }
-        if( new->prev_block != NULL ) {
-            new->prev_block->next_block = new;
+        if( new_blk->prev_block != NULL ) {
+            new_blk->prev_block->next_block = new_blk;
         }
-        if( new->next_block != NULL ) {
-            new->next_block->prev_block = new;
+        if( new_blk->next_block != NULL ) {
+            new_blk->next_block->prev_block = new_blk;
         }
-        for( edge = new->input_edges; edge != NULL; edge = edge->next_source ) {
-            edge->destination.u.blk = new;
+        for( edge = new_blk->input_edges; edge != NULL; edge = edge->next_source ) {
+            edge->destination.u.blk = new_blk;
         }
         CGFree( CurrBlock );
-        CurrBlock = new;
+        CurrBlock = new_blk;
     }
     if( _IsBlkAttr( CurrBlock, BLK_BIG_LABEL ) )        /* the only one that sticks*/
         class |= BLK_BIG_LABEL;
@@ -229,47 +230,47 @@ void    GenBlock( block_class class, int targets )
 block   *ReGenBlock( block *blk, label_handle lbl )
 /*************************************************/
 {
-    block       *new;
+    block       *new_blk;
     block_edge  *edge;
     block_num   targets;
 
     targets = blk->targets + 1;
-    new = CGAlloc( sizeof( block ) + ( targets - 1 ) * sizeof( block_edge ) );
-    Copy( blk, new, sizeof( block ) + ( targets - 2 ) * sizeof( block_edge ) );
-    new->edge[targets - 1].destination.u.lbl = lbl;
-    new->edge[targets - 1].flags = 0;
-    new->targets = targets;
+    new_blk = CGAlloc( BLOCK_SIZE( targets ) );
+    Copy( blk, new_blk, BLOCK_SIZE( targets - 1 ) );
+    new_blk->edge[targets - 1].destination.u.lbl = lbl;
+    new_blk->edge[targets - 1].flags = 0;
+    new_blk->targets = targets;
     /*
      * Move all references to blk
      */
     if( blk->ins.head.next == (instruction *)&blk->ins ) {
-        new->ins.head.next = (instruction *)&new->ins;
-        new->ins.head.prev = (instruction *)&new->ins;
+        new_blk->ins.head.next = (instruction *)&new_blk->ins;
+        new_blk->ins.head.prev = (instruction *)&new_blk->ins;
     } else {
-        blk->ins.head.next->head.prev = (instruction *)&new->ins;
-        blk->ins.head.prev->head.next = (instruction *)&new->ins;
+        blk->ins.head.next->head.prev = (instruction *)&new_blk->ins;
+        blk->ins.head.prev->head.next = (instruction *)&new_blk->ins;
     }
     while( targets-- > 0 ) {
-        new->edge[targets].source = new;
+        new_blk->edge[targets].source = new_blk;
     }
-    new->ins.blk = new;
+    new_blk->ins.blk = new_blk;
     if( HeadBlock == blk ) {
-        HeadBlock = new;
+        HeadBlock = new_blk;
     }
     if( BlockList == blk ) {
-        BlockList = new;
+        BlockList = new_blk;
     }
-    if( new->prev_block != NULL ) {
-        new->prev_block->next_block = new;
+    if( new_blk->prev_block != NULL ) {
+        new_blk->prev_block->next_block = new_blk;
     }
-    if( new->next_block != NULL ) {
-        new->next_block->prev_block = new;
+    if( new_blk->next_block != NULL ) {
+        new_blk->next_block->prev_block = new_blk;
     }
-    for( edge = new->input_edges; edge != NULL; edge = edge->next_source ) {
-        edge->destination.u.blk = new;
+    for( edge = new_blk->input_edges; edge != NULL; edge = edge->next_source ) {
+        edge->destination.u.blk = new_blk;
     }
     FreeABlock( blk );
-    return( new );
+    return( new_blk );
 }
 
 
@@ -334,10 +335,7 @@ void    FixEdges( void )
                 dest = FindBlockWithLbl( edge->destination.u.lbl );
                 if( dest != NULL ) {
                     edge->flags |= DEST_IS_BLOCK;
-                    edge->destination.u.blk = dest;
-                    edge->next_source = edge->destination.u.blk->input_edges;
-                    edge->destination.u.blk->input_edges = edge;
-                    edge->destination.u.blk->inputs++;
+                    PointEdge( edge, dest );
                 }
             }
         }
@@ -414,7 +412,7 @@ bool        FixReturns( void )
             _MarkBlkVisited( blk );
             if( blk->next_block == NULL )
                 return( false );
-            _MarkBlkAttr( blk, BLK_RETURNED_TO );
+            _MarkBlkAttrSet( blk, BLK_RETURNED_TO );
             LinkReturnsParms[0] = blk->next_block->label;
             LinkReturnsParms[1] = blk->edge[0].destination.u.lbl;
             if( !FROM_SR_VALUE( LinkReturns( NULL ), bool ) ) {
@@ -490,7 +488,7 @@ bool    BlkTooBig( void )
 void    NewProc( level_depth level )
 /**********************************/
 {
-    proc_def        *new;
+    proc_def        *new_proc;
     name_class_def  class;
 
     if( CurrProc != NULL ) {
@@ -514,18 +512,18 @@ void    NewProc( level_depth level )
     HeadBlock = NULL;
     BlockList = NULL;
     ReInitNames();
-    new = CGAlloc( sizeof( proc_def ) );
-    memset( new, 0, sizeof( proc_def ) );
-    new->next_proc = CurrProc;
-    CurrProc = new;
-    new->frame_index = NULL;
-    new->lex_level = level;
-    new->parms.size = 0;
-    new->parms.base = 0;
-    new->locals.size = 0;
-    new->locals.base = AskDisplaySize( level );
-    new->prolog_state = 0;
-    new->parms_list = NULL;
+    new_proc = CGAlloc( sizeof( proc_def ) );
+    memset( new_proc, 0, sizeof( proc_def ) );
+    new_proc->next_proc = CurrProc;
+    CurrProc = new_proc;
+    new_proc->frame_index = NULL;
+    new_proc->lex_level = level;
+    new_proc->parms.size = 0;
+    new_proc->parms.base = 0;
+    new_proc->locals.size = 0;
+    new_proc->locals.base = AskDisplaySize( level );
+    new_proc->prolog_state = 0;
+    new_proc->parms_list = NULL;
     InitTargProc();
 }
 

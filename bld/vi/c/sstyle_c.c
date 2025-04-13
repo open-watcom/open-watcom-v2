@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,7 +39,7 @@
 
 static  ss_flags_c  flags;
 static  long        lenCComment = 0;
-static  char        *firstNonWS;
+static  const char  *firstNonWS;
 
 #define DIRECTIVE_ERROR     "error"
 #define DIRECTIVE_IF        "if"
@@ -77,24 +78,25 @@ static int issymbol( int c )
     }
 }
 
-static bool isdirective( char *text, char *directive )
+static bool isdirective( const char *text, const char *directive )
 {
     int len = strlen( directive );
-    return( strncmp( text, directive, len ) == 0 && !isalnum( *(text + len) ) &&
-            *(text + len) != '_' );
+    return( strncmp( text, directive, len ) == 0
+            && !isalnum( *(text + len) )
+            && *(text + len) != '_' );
 }
 
-void InitCLine( char *text )
+void InitCLine( const char *text )
 {
     SKIP_SPACES( text );
     firstNonWS = text;
 }
 
-static void getHex( ss_block *ss_new, char *start )
+static void getHex( ss_block *ss_new, const char *start )
 {
-    int     lastc;
-    char    *end;
-    bool    nodigits = true;
+    int         lastc;
+    const char  *end;
+    bool        nodigits = true;
 
     ss_new->type = SE_HEX;
     for( end = start + 2; isxdigit( *end ); ++end ) {
@@ -126,10 +128,10 @@ static void getHex( ss_block *ss_new, char *start )
     flags.inDeclspec2 = false;
 }
 
-static void getFloat( ss_block *ss_new, char *start, int skip, int command )
+static void getFloat( ss_block *ss_new, const char *start, int skip, int command )
 {
-    char    *end = start + skip;
-    char    lastc;
+    const char  *end = start + skip;
+    char        lastc;
 
     ss_new->type = SE_FLOAT;
 
@@ -158,7 +160,9 @@ static void getFloat( ss_block *ss_new, char *start, int skip, int command )
             if( *end == 'f' || *end == 'F' || *end == 'l' || *end == 'L' ) {
                 break;
             }
-            if( *end != '\0' && !isspace( *end ) && !issymbol( *end ) ) {
+            if( *end != '\0'
+              && !isspace( *end )
+              && !issymbol( *end ) ) {
                 if( *end != '\0' ) {
                     end++;
                 }
@@ -192,7 +196,9 @@ static void getFloat( ss_block *ss_new, char *start, int skip, int command )
     lastc = tolower( *end );
     if( lastc == 'f' || lastc == 'l' ) {
         end++;
-    } else if( *end != '\0' && !isspace( *end ) && !issymbol( *end ) ) {
+    } else if( *end != '\0'
+      && !isspace( *end )
+      && !issymbol( *end ) ) {
         ss_new->type = SE_INVALIDTEXT;
         end++;
     }
@@ -201,10 +207,10 @@ static void getFloat( ss_block *ss_new, char *start, int skip, int command )
     flags.inDeclspec2 = false;
 }
 
-static void getNumber( ss_block *ss_new, char *start, char top )
+static void getNumber( ss_block *ss_new, const char *start, char top )
 {
-    int     lastc;
-    char    *end = start + 1;
+    int         lastc;
+    const char  *end = start + 1;
 
     while( (*end >= '0') && (*end <= top) ) {
         end++;
@@ -250,12 +256,12 @@ static void getNumber( ss_block *ss_new, char *start, char top )
     flags.inDeclspec2 = false;
 }
 
-static void getText( ss_block *ss_new, char *start )
+static void getText( ss_block *ss_new, const char *start )
 {
-    char    *end = start + 1;
-    bool    isKeyword;
-    bool    isPragma;
-    bool    isDeclspec;
+    const char  *end = start + 1;
+    bool        isKeyword;
+    bool        isPragma;
+    bool        isDeclspec;
 
     while( isalnum( *end ) || ( *end == '_' ) ) {
         end++;
@@ -275,9 +281,13 @@ static void getText( ss_block *ss_new, char *start )
         }
     } else if( isDeclspec ) {
         ss_new->type = SE_KEYWORD;
-    } else if( flags.inIfDir && isdirective( start, KEYWORD_DEFINED ) ) {
+    } else if( flags.inIfDir
+      && isdirective( start, KEYWORD_DEFINED ) ) {
         ss_new->type = SE_PREPROCESSOR;
-    } else if( end[0] == ':' && firstNonWS == start && end[1] != ':' && end[1] != '>' ) {
+    } else if( end[0] == ':'
+      && firstNonWS == start
+      && end[1] != ':'
+      && end[1] != '>' ) {
         // : and > checked as it may be :: (CPP) operator or :> (base op.)
         end++;
         ss_new->type = SE_JUMPLABEL;
@@ -285,7 +295,7 @@ static void getText( ss_block *ss_new, char *start )
     ss_new->len = end - start;
 }
 
-static void getSymbol( ss_block *ss_new, char *start )
+static void getSymbol( ss_block *ss_new, const char *start )
 {
     flags.inDeclspec2 = flags.inDeclspec && *start == '(';
     flags.inDeclspec = false;
@@ -293,15 +303,15 @@ static void getSymbol( ss_block *ss_new, char *start )
     ss_new->len = 1;
 }
 
-static void getPreprocessor( ss_block *ss_new, char *start )
+static void getPreprocessor( ss_block *ss_new, const char *start )
 {
-    char    *end = start;
-    bool    withinQuotes = flags.inString;
+    const char  *end = start;
+    bool        withinQuotes = flags.inString;
 
     ss_new->type = SE_PREPROCESSOR;
 
     if( EditFlags.PPKeywordOnly ) {
-        char *directive;
+        const char *directive;
 
         // just grab the #xxx bit & go
 
@@ -312,7 +322,8 @@ static void getPreprocessor( ss_block *ss_new, char *start )
         // and then the keyword
         directive = end;
         for( ; *end != '\0'; ++end ) {
-            if( isspace( *end ) || issymbol( *end ) ) {
+            if( isspace( *end )
+              || issymbol( *end ) ) {
                 break;
             }
         }
@@ -335,17 +346,20 @@ static void getPreprocessor( ss_block *ss_new, char *start )
         if( end[0] == '"' ) {
             if( !withinQuotes ) {
                 withinQuotes = true;
-            } else if( end[-1] != '\\' || end[-2] == '\\' ) {
+            } else if( end[-1] != '\\'
+              || end[-2] == '\\' ) {
                 withinQuotes = false;
             }
             continue;
         }
         if( end[0] == '/' ) {
-            if( end[1] == '*' && !withinQuotes ) {
+            if( end[1] == '*'
+              && !withinQuotes ) {
                 flags.inCComment = true;
                 lenCComment = 0;
                 break;
-            } else if( end[1] == '/' && !withinQuotes ) {
+            } else if( end[1] == '/'
+              && !withinQuotes ) {
                 flags.inCPPComment = true;
                 flags.inPreprocessor = false;
                 break;
@@ -366,16 +380,17 @@ static void getPreprocessor( ss_block *ss_new, char *start )
     ss_new->len = end - start;
 }
 
-static void getChar( ss_block *ss_new, char *start, int skip )
+static void getChar( ss_block *ss_new, const char *start, int skip )
 {
-    char    *end;
+    const char  *end;
 
     ss_new->type = SE_CHAR;
     for( end = start + skip; *end != '\0'; ++end ) {
         if( *end == '\'' ) {
             break;
         }
-        if( end[0] == '\\' && ( end[1] == '\\' || end[1] == '\'' ) ) {
+        if( end[0] == '\\'
+          && ( end[1] == '\\' || end[1] == '\'' ) ) {
             ++end;
         }
     }
@@ -406,14 +421,16 @@ static void getInvalidChar( ss_block *ss_new )
     flags.inDeclspec2 = false;
 }
 
-static void getCComment( ss_block *ss_new, char *start, int skip )
+static void getCComment( ss_block *ss_new, const char *start, int skip )
 {
-    char    *end;
+    const char  *end;
 
     lenCComment += skip;
     flags.inCComment = true;
     for( end = start + skip; *end != '\0'; ++end ) {
-        if( end[0] == '*' && end[1] == '/' && lenCComment > 1  ) {
+        if( end[0] == '*'
+          && end[1] == '/'
+          && lenCComment > 1  ) {
             end += 2;
             lenCComment += 2;
             flags.inCComment = false;
@@ -425,30 +442,32 @@ static void getCComment( ss_block *ss_new, char *start, int skip )
     ss_new->len = end - start;
 }
 
-static void getCPPComment( ss_block *ss_new, char *start )
+static void getCPPComment( ss_block *ss_new, const char *start )
 {
-    char    *end;
+    const char  *end;
 
     end = start;
     SKIP_TOEND( end );
     flags.inCPPComment = true;
-    if( *start == '\0' || end[-1] != '\\' ) {
+    if( *start == '\0'
+      || end[-1] != '\\' ) {
         flags.inCPPComment = false;
     }
     ss_new->type = SE_COMMENT;
     ss_new->len = end - start;
 }
 
-static void getString( ss_block *ss_new, char *start, int skip )
+static void getString( ss_block *ss_new, const char *start, int skip )
 {
-    char    *end;
+    const char  *end;
 
     ss_new->type = SE_STRING;
     for( end = start + skip; *end != '\0'; ++end ) {
         if( end[0] == '"' ) {
             break;
         }
-        if( end[0] == '\\' && ( end[1] == '\\' || end[1] == '"' ) ) {
+        if( end[0] == '\\'
+          && ( end[1] == '\\' || end[1] == '"' ) ) {
             ++end;
         }
     }
@@ -473,9 +492,9 @@ static void getString( ss_block *ss_new, char *start, int skip )
     flags.inDeclspec2 = false;
 }
 
-static void getErrorDirMsg( ss_block *ss_new, char *start )
+static void getErrorDirMsg( ss_block *ss_new, const char *start )
 {
-    char    *end = start;
+    const char  *end = start;
 
     ss_new->type = SE_IDENTIFIER;
     SKIP_TOEND( end );
@@ -556,7 +575,8 @@ void InitCFlags( linenum line_no )
                     if( text[0] == '"' ) {
                         if( !withinQuotes ) {
                             withinQuotes = true;
-                        } else if( text[-1] != '\\' || text[-2] == '\\' ) {
+                        } else if( text[-1] != '\\'
+                          || text[-2] == '\\' ) {
                             withinQuotes = false;
                         }
                     }
@@ -581,7 +601,8 @@ void InitCFlags( linenum line_no )
 
         // if not in a comment (and none above), we may be string or pp
         if( !flags.inCComment ) {
-            if( topChar == '#' && !EditFlags.PPKeywordOnly ) {
+            if( topChar == '#'
+              && !EditFlags.PPKeywordOnly ) {
                 flags.inPreprocessor = true;
             }
             if( withinQuotes ) {
@@ -603,7 +624,9 @@ void InitCFlags( linenum line_no )
                 while( text != starttext && *text != '/' ) {
                     text--;
                 }
-                if( text[1] == '*' && text[0] == '/' && text[-1] != '/' ) {
+                if( text[1] == '*'
+                  && text[0] == '/'
+                  && text[-1] != '/' ) {
                     if( text == starttext ) {
                         flags.inCComment = true;
                         lenCComment = 100;
@@ -615,10 +638,13 @@ void InitCFlags( linenum line_no )
                         if( text[0] == '"' ) {
                             if( !withinQuotes ) {
                                 withinQuotes = true;
-                            } else if( text[-1] != '\\' || text[-2] == '\\' ) {
+                            } else if( text[-1] != '\\'
+                              || text[-2] == '\\' ) {
                                 withinQuotes = false;
                             }
-                        } else if( text[0] == '/' && text[-1] == '/' && !withinQuotes ) {
+                        } else if( text[0] == '/'
+                          && text[-1] == '/'
+                          && !withinQuotes ) {
                             flags.inCPPComment = true;
                         }
                     } while( text != starttext );
@@ -647,7 +673,7 @@ void InitCFlags( linenum line_no )
     }
 }
 
-void GetCBlock( ss_block *ss_new, char *start, line *line, linenum line_no )
+void GetCBlock( ss_block *ss_new, const char *start, line *line, linenum line_no )
 {
     /* unused parameters */ (void)line; (void)line_no;
 
@@ -692,8 +718,8 @@ void GetCBlock( ss_block *ss_new, char *start, line *line, linenum line_no )
         return;
     }
 
-    if( *firstNonWS == '#' &&
-        (!EditFlags.PPKeywordOnly || firstNonWS == start) ) {
+    if( *firstNonWS == '#'
+      && (!EditFlags.PPKeywordOnly || firstNonWS == start) ) {
         getPreprocessor( ss_new, start );
         return;
     }

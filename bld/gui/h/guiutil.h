@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,8 +35,9 @@
 #define _GUIUTIL_H_
 
 extern char     *GUIStripTrailingBlanks( const char *label, bool *ok );
-extern char     *GUIStrDupLen( const char *text, size_t len, bool *ok );
-extern char     *GUIStrDup( const char *text, bool *ok );
+extern char     *GUIStrDupLenOK( const char *text, size_t len, bool *ok );
+extern char     *GUIStrDupOK( const char *text, bool *ok );
+extern char     *GUIStrDup( const char *text );
 extern void     GUIStoreArgs( char **argv, int argc );
 
 #endif

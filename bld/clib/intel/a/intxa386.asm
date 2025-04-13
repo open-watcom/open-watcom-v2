@@ -66,7 +66,7 @@ SS_GS  equ     10
 ;
 ;<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
 ;<>
-;<>  int __int386x( unsigned char intno, union REGS *inregs, union REGS *outregs, struct SREGS *segregs )
+;<>  int __int386x( unsigned char intno, const union REGS *inregs, union REGS *outregs, struct SREGS *segregs )
 ;<>     parm caller [eax] [edi] [edx] [ebx]
 ;<>
 ;<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>

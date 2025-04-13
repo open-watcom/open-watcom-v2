@@ -401,7 +401,7 @@ A line of dashes indicates where an
 .id mx_entry
 is allowed (but not required) to start.
 The debugger allows
-(via REQ_GET_SUPPLEMENTARY_SERVICE/REQ_PERFORM_SUPPLEMENTARY_SERVICE) optional
+(via REQ_GET_SUPPLEMENTARY_SERVICE and REQ_PERFORM_SUPPLEMENTARY_SERVICE) optional
 components to be implemented only on specific systems.
 .np
 The numeric value of the request which is placed in the
@@ -566,6 +566,29 @@ The
 field contains a string identifying the supplementary service.
 This string is case insensitive.
 .np
+.begnote
+.notehd1 service_name
+.notehd2 Description
+.note "FileInfo"
+.refalso fileinfo
+.note "Environment"
+.refalso envir
+.note "Files"
+.refalso fileio
+.note "Overlays"
+.refalso overlays
+.note "Threads"
+.refalso threads
+.note "RunThread"
+.refalso runthread
+.note "Rfx"
+.refalso rfx
+.note "Capabilities"
+.refalso capab
+.note "Asynch"
+.refalso asynch
+.endnote
+.np
 Return message:
 .millust begin
 trap_error      err;
@@ -597,9 +620,9 @@ Request to perform a supplementary service.
 .np
 Request message:
 .millust begin
-trap_req    req
-unsigned_32 service_id
-------------------------
+trap_req        req
+trap_shandle    id
+---------------------
 unspecified
 .millust end
 .pp
@@ -972,7 +995,9 @@ field tells the number of bytes actually written out.
 If an error has occurred in writing, the length returned will not be equal
 to the number of bytes requested.
 .*
-.section REQ_PROG_GO/REQ_PROG_STEP
+.section REQ_PROG_GO
+.*
+.section REQ_PROG_STEP
 .*
 .np
 Requests to execute the debuggee.
@@ -1437,7 +1462,9 @@ MSG_WARNING indicates that the message is a warning level message while
 MSG_ERROR is an error level message.
 If neither of these bits are on, the message is merely informational.
 .*
-.section REQ_REDIRECT_STDIN/REQ_REDIRECT_STDOUT
+.section REQ_REDIRECT_STDIN
+.*
+.section REQ_REDIRECT_STDOUT
 .*
 .np
 Request to redirect the standard input (REQ_REDIRECT_STDIN) or
@@ -1576,7 +1603,7 @@ The return message content is specific to the MAD in use.
 .endlevel
 .*
 .*
-.section File I/O requests
+.section *refid=fileio File I/O requests
 .*
 .np
 This section describes requests that deal with file input/output on the
@@ -1615,24 +1642,36 @@ trap_req        req
 Return message:
 .millust begin
 char            ext_separator;
-char            path_separator[3];
-char            newline[2];
+char            drv_separator;
+char            path_separator[2];
+char            line_eol[2];
+char            list_separator;
 .millust end
 .pp
 The
 .id ext_separator
 contains the separator for file name extensions.
+.pp
+The
+.id drv_separator
+contains the separator for file name drive.
+.pp
 The possible path separators can be found in array
 .id path_separator
 .period
 The first one is the "preferred" path separator for that operating system.
 This is the path separator that the debugger will use if it needs to construct
 a file name for the remote system.
+.pp
 The new line control characters are stored in array
-.id newline
+.id line_eol
 .period
-If the operating system uses only a single character for newline, put a zero
+If the operating system uses only a single character for new line, put a zero
 in the second element.
+.pp
+The
+.id list_separator
+contains the separator for path list items.
 .*
 .section REQ_FILE_OPEN
 .*
@@ -1974,7 +2013,7 @@ field will return the error code number.
 .endlevel
 .*
 .*
-.section Overlay requests
+.section *refid=overlays Overlay requests
 .*
 .np
 This section describes requests that deal with overlays (supported
@@ -2035,7 +2074,7 @@ field stores the address section number.
 Request to return the size of the overlay state information in bytes of the
 task program.
 This request maps onto the overlay manager's GET_STATE_SIZE request.
-See the Overlay Manager Interface document for more information on the
+See the :HDREF refid='ovlman'. document for more information on the
 contents of the return message.
 .np
 Request message:
@@ -2063,7 +2102,7 @@ of the other requests dealing with overlays will ever be called.
 .np
 Request to get the address and size of an overlay section.
 This request maps onto the overlay manager's GET_SECTION_DATA request.
-See the Overlay Manager Interface document for more information on
+See the :HDREF refid='ovlman'. document for more information on
 the contents of the return message.
 .np
 Request message:
@@ -2097,7 +2136,7 @@ field will be zero.
 .np
 Request to read the overlay table state.
 This request maps onto the overlay manager's GET_OVERLAY_STATE request.
-See the Overlay Manager Interface document for more information on
+See the :HDREF refid='ovlman'. document for more information on
 the contents of the return message.
 The size of the returned data is provided by the REQ_OVL_STATE_SIZE
 trap file request.
@@ -2121,7 +2160,7 @@ field contains the overlay state information requested.
 .np
 Request to write the overlay table state.
 This request maps onto the overlay manager's SET_OVERLAY_STATE request.
-See the Overlay Manager Interface document for more information on
+See the :HDREF refid='ovlman'. document for more information on
 the contents of the return message.
 .np
 Request message:
@@ -2145,7 +2184,7 @@ NONE
 .np
 Request to check if the input overlay address is actually an overlay vector.
 This request maps onto the overlay manager's TRANSLATE_VECTOR_ADDR request.
-See the Overlay Manager Interface document for more information on
+See the :HDREF refid='ovlman'. document for more information on
 the contents of the messages.
 .np
 Request message:
@@ -2180,7 +2219,7 @@ field will be zero.
 Request to check if the address is the overlay manager parallel return
 code.
 This request maps onto the overlay manager's TRANSLATE_RETURN_ADDR request.
-See the Overlay Manager Interface document for more information on
+See the :HDREF refid='ovlman'. document for more information on
 the contents of the messages.
 .np
 Request message:
@@ -2209,7 +2248,7 @@ will be zero.
 .np
 Request to check if the overlay address needs to be remapped.
 This request maps onto the overlay manager's GET_MOVED_SECTION request.
-See the Overlay Manager Interface document for more information on
+See the :HDREF refid='ovlman'. document for more information on
 the contents of the messages.
 .np
 Request message:
@@ -2238,7 +2277,7 @@ The input address will be unchanged if the address has not been remapped.
 .endlevel
 .*
 .*
-.section Thread requests
+.section *refid=threads Thread requests
 .*
 .np
 This section descibes requests that deal with threads.
@@ -2404,7 +2443,7 @@ field.
 .endlevel
 .*
 .*
-.section RFX requests
+.section *refid=rfx Remote File transfer (RFX) requests
 .*
 .np
 This section deals with requests that are only used by the RFX (Remote File
@@ -2864,7 +2903,7 @@ field will be zero, otherwise the system error code will be returned.
 .endlevel
 .*
 .*
-.section Environment requests
+.section *refid=envir Environment requests
 .*
 .np
 This section describes requests that deal with Environment on the
@@ -2929,9 +2968,20 @@ on the remote system.
 .endlevel
 .*
 .*
-.section File Info requests
+.section *refid=fileinfo File Info requests
 .*
 .np
+This section describes requests that deal with file information on the
+target (debuggee) machine.
+These requests are actually performed by the
+core request REQ_PERFORM_SUPPLEMENTARY_SERVICE and appropriate service ID.
+The following descriptions do not show that "prefix" to the
+request messages.
+.np
+The service name to be used in the REQ_GET_SUPPLEMENTARY_SERVICE is
+"FileInfo".
+.np
+.*
 .beglevel
 .*
 .section REQ_FILE_INFO_GET_DATE
@@ -2964,9 +3014,20 @@ trap_error      err
 .endlevel
 .*
 .*
-.section Asynchronous Debugging requests
+.section *refid=asynch Asynchronous Debugging requests
 .*
 .np
+This section describes requests that deal with asynchronous debugging on the
+target (debuggee) machine.
+These requests are actually performed by the
+core request REQ_PERFORM_SUPPLEMENTARY_SERVICE and appropriate service ID.
+The following descriptions do not show that "prefix" to the
+request messages.
+.np
+The service name to be used in the REQ_GET_SUPPLEMENTARY_SERVICE is
+"Asynch".
+.np
+.*
 .beglevel
 .*
 .section REQ_ASYNC_GO
@@ -3055,9 +3116,20 @@ trap_error      err
 .endlevel
 .*
 .*
-.section Non-blocking Thread requests
+.section *refid=runthread Non-blocking Thread requests
 .*
 .np
+This section describes requests that deal with Non-blocking Thread requests on the
+target (debuggee) machine.
+These requests are actually performed by the
+core request REQ_PERFORM_SUPPLEMENTARY_SERVICE and appropriate service ID.
+The following descriptions do not show that "prefix" to the
+request messages.
+.np
+The service name to be used in the REQ_GET_SUPPLEMENTARY_SERVICE is
+"RunThread".
+.np
+.*
 .beglevel
 .*
 .section REQ_RUN_THREAD_INFO
@@ -3174,9 +3246,20 @@ trap_error      err
 .endlevel
 .*
 .*
-.section Capabilities requests
+.section *refid=capab Capabilities requests
 .*
 .np
+This section describes requests that deal with capabilities information on the
+target (debuggee) machine.
+These requests are actually performed by the
+core request REQ_PERFORM_SUPPLEMENTARY_SERVICE and appropriate service ID.
+The following descriptions do not show that "prefix" to the
+request messages.
+.np
+The service name to be used in the REQ_GET_SUPPLEMENTARY_SERVICE is
+"Capabilities".
+.np
+.*
 .beglevel
 .*
 .section REQ_CAPABILITIES_GET_EXACT_BP

@@ -91,7 +91,9 @@ _WCRTLINK _WCNORETURN void exit( int status )
 #elif defined(__DOS__) || defined(__OS2_286__) || defined(__WINDOWS_286__)
     (*__int23_exit)();
 #endif
+#ifndef __RDOSDEV__
     __FiniRtns( FINI_PRIORITY_EXIT, 255 );
+#endif
     _exit( status );
     // never return
 }

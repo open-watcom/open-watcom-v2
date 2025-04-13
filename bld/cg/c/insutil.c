@@ -352,8 +352,8 @@ block *InsBlock( instruction *ins )
     return( _BLOCK( ins ) );
 }
 
-void    ReplIns( instruction *ins, instruction *new )
-/***************************************************/
+void    ReplIns( instruction *ins, instruction *new_ins )
+/*******************************************************/
 {
     block               *blk;
     conflict_info       *info;
@@ -365,34 +365,34 @@ void    ReplIns( instruction *ins, instruction *new )
      * Link the new instruction into the instruction ring
      * (It will be removed by FreeIns() )
      */
-    new->head.next = ins->head.next;
-    new->head.next->head.prev = new;
-    new->head.prev = ins;
-    ins->head.next = new;
-    new->stk_entry = ins->stk_entry;
-    new->stk_exit = ins->stk_exit;
-//    new->s.stk_extra = ins->s.stk_extra;
-    new->sequence = ins->sequence;
+    new_ins->head.next = ins->head.next;
+    new_ins->head.next->head.prev = new_ins;
+    new_ins->head.prev = ins;
+    ins->head.next = new_ins;
+    new_ins->stk_entry = ins->stk_entry;
+    new_ins->stk_exit = ins->stk_exit;
+//    new_ins->s.stk_extra = ins->s.stk_extra;
+    new_ins->sequence = ins->sequence;
 
-    _INS_NOT_BLOCK( new );
+    _INS_NOT_BLOCK( new_ins );
     _INS_NOT_BLOCK( ins );
-    new->head.line_num = ins->head.line_num;
-    new->id = ins->id;
-    new->head.state = INS_NEEDS_WORK;
+    new_ins->head.line_num = ins->head.line_num;
+    new_ins->id = ins->id;
+    new_ins->head.state = INS_NEEDS_WORK;
     blk = NULL;
     if( HaveLiveInfo ) {
         /*
-         * Copy the live analysis information from ins to new
+         * Copy the live analysis information from ins to new_ins
          */
-        new->head.live.regs         = ins->head.live.regs;
-        new->head.live.within_block = ins->head.live.within_block;
-        new->head.live.out_of_block = ins->head.live.out_of_block;
+        new_ins->head.live.regs         = ins->head.live.regs;
+        new_ins->head.live.within_block = ins->head.live.within_block;
+        new_ins->head.live.out_of_block = ins->head.live.out_of_block;
         /*
          * move the first/last pointers of any relevant conflict nodes
          *
          * !!! BUG BUG !!!
          * Moving/changing egde of conflict with CONFLICT_ON_HOLD flag set
-         * to non-conflicting instruction can cause famous bug 352. If new instruction
+         * to non-conflicting instruction can cause famous bug 352. If new_ins instruction
          * should be also replaced, codegen will not notice that it's a part of
          * any conflict and will not update egde. Event worse, if replaced instruction
          * is replaced again, this case will be completely missed by conflict manager.
@@ -402,24 +402,24 @@ void    ReplIns( instruction *ins, instruction *new )
          * It must be fixed in more correct way if somebody ever understand
          * how all this stuff works.
          */
-        MakeConflictInfo( ins, new );
+        MakeConflictInfo( ins, new_ins );
         for( info = ConflictInfo; info->conf != NULL; ++info ) {
             if( info->flags & CB_FOR_INS1 ) {
                 conf = info->conf;
                 if( conf->ins_range.first == ins ) {
-                    conf->ins_range.first = new;
+                    conf->ins_range.first = new_ins;
                 }
                 if( conf->ins_range.last == ins ) {
-                    conf->ins_range.last = new;
+                    conf->ins_range.last = new_ins;
                 }
                 if( info->flags & CB_FOR_INS2 )
                     continue;
-                if( conf->ins_range.first == new ) {
+                if( conf->ins_range.first == new_ins ) {
                     if( blk == NULL )
                         blk = InsBlock( ins );
                     conf->ins_range.first = blk->ins.head.prev;
                 }
-                if( conf->ins_range.last == new ) {
+                if( conf->ins_range.last == new_ins ) {
                     if( blk == NULL )
                         blk = InsBlock( ins );
                     conf->ins_range.last = blk->ins.head.next;

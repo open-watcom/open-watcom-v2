@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -65,6 +65,7 @@
 #include "specfuns.h"
 #include "autodept.h"
 #include "dwarfid.h"
+#include "felang.h"
 #include "cgfront.h"
 #include "feprotos.h"
 #ifdef DEVBUILD
@@ -202,7 +203,9 @@ void FEMessage(                 // MESSAGES FROM CODE-GENERATOR
 const char *FEModuleName(       // RETURN MODULE NAME
     void )
 {
-    return( ModuleName );
+    if( ModuleName != NULL && ModuleName[0] != '\0' )
+        return( ModuleName );
+    return( SrcFName );
 }
 
 
@@ -1004,12 +1007,15 @@ static void addDefaultLibs( void )
                 CgInfoAddCompLib( WCPPLIB_Name );
             }
         }
-        CgInfoAddCompLib( MATHLIB_Name );
+        if( CompFlags.pgm_used_8087
+          || CompFlags.float_used ) {
+            CgInfoAddCompLib( MATHLIB_Name );
 #if _INTEL_CPU
-        if( EmuLib_Name != NULL ) {
-            CgInfoAddCompLib( EmuLib_Name );
-        }
+            if( EmuLib_Name != NULL ) {
+                CgInfoAddCompLib( EmuLib_Name );
+            }
 #endif
+        }
     }
 }
 
@@ -1098,7 +1104,8 @@ static void addDefaultImports( void )
             }
         }
     #endif
-        if( CompFlags.pgm_used_8087 || CompFlags.float_used ) {
+        if( CompFlags.pgm_used_8087
+          || CompFlags.float_used ) {
             if( GET_FPU_EMU( CpuSwitches ) ) {
     #if _CPU == 8086
                 CgInfoAddImport( "__init_87_emulator" );
@@ -1237,7 +1244,7 @@ void *FEAuxInfo(                // REQUEST AUXILLIARY INFORMATION
     case FEINF_SOURCE_LANGUAGE:
         DbgNotSym();
         DbgNotRetn();
-        retn = "CPP";
+        retn = FE_LANG_CPP;
         break;
 #if _INTEL_CPU
     case FEINF_P5_CHIP_BUG_SYM:
@@ -1328,18 +1335,18 @@ void *FEAuxInfo(                // REQUEST AUXILLIARY INFORMATION
         break;
 #endif
     case FEINF_SOURCE_NAME:
+      {
+        SRCFILE src_file
+
         DbgNotSym();
         DbgNotRetn();
-        if( strcmp( SrcFName, ModuleName ) == 0 ) {
-            SRCFILE src_file = SrcFileGetPrimary();
-            if( src_file != NULL ) {
-                retn = SrcFileFullName( src_file );
-            } else {
-                retn = IoSuppFullPath( WholeFName, Buffer, sizeof( Buffer ) );
-            }
+        src_file = SrcFileGetPrimary();
+        if( src_file != NULL ) {
+            retn = SrcFileFullName( src_file );
         } else {
-            retn = ModuleName;
+            retn = IoSuppFullPath( WholeFName, Buffer, sizeof( Buffer ) );
         }
+      }
         break;
     case FEINF_CALL_CLASS:
         DbgNotRetn();

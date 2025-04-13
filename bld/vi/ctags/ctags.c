@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,14 +36,13 @@
 #include <stdarg.h>
 #include <ctype.h>
 #if defined( __UNIX__ )
-    #include <dirent.h>
     #include <sys/stat.h>
-#else
-    #include <direct.h>
+    #include "stat2.h"
 #endif
 #if defined( __UNIX__ ) || defined( __WATCOMC__ )
     #include <fnmatch.h>
 #endif
+#include "wdirent.h"
 #include "pathgrp2.h"
 #include "ctags.h"
 #include "banner.h"
@@ -104,16 +103,6 @@ void MemFree( void *ptr )
     free( ptr );
 }
 
-#if defined( __UNIX__ )
-static int _stat2( const char *path, const char *name, struct stat *st )
-{
-    char        full_name[_MAX_PATH];
-
-    _makepath( full_name, NULL, path, name, NULL );
-    return( stat( full_name, st ) );
-}
-#endif
-
 static bool skipEntry( const char *path, const char *mask, struct dirent *dire )
 {
 #ifdef __UNIX__
@@ -141,7 +130,7 @@ static void displayBanner( void )
     }
     puts(
         banner1t( "CTAGS Utility" ) "\n"
-        banner1v( "1.0" ) "\n"
+        banner1v( _CTAGS_VERSION_ ) "\n"
         banner2 "\n"
         banner2a( 1984 ) "\n"
         banner3 "\n"
@@ -488,7 +477,7 @@ bool IsTokenChar( int ch )
 /*
  * MyStricmp - ignore trailing null, advance buf pointer
  */
-int MyStricmp( char **buf, char *literal )
+int MyStricmp( char **buf, const char *literal )
 {
     int     ret;
     size_t  len;

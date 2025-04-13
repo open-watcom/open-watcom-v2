@@ -37,6 +37,7 @@
 #include <string.h>
 #include <ctype.h>
 #include <stdarg.h>
+#include <limits.h>
 #include "bool.h"
 #include "misc.h"
 #include "getopt.h"
@@ -160,10 +161,10 @@ static int parseList( char *list, node *head )
     char        *p, *op, *arg;
     int          low, high;
 
-    for( op = list; op != NULL; op = p + 1 ) {
+    for( op = list; op != NULL; op = p ) {
         p = strchr( op, ',' );
         if( p != NULL ) {
-            *p = '\0';
+            *p++ = '\0';
         }
 
         arg = strchr( op, '-' );
@@ -175,7 +176,11 @@ static int parseList( char *list, node *head )
         }
 
         low = atoi( op );
-        high = atoi( arg );
+        if( *arg == '\0' ) {
+            high = INT_MAX;
+        } else {
+            high = atoi( arg );
+        }
 
         if( high < low  ||  low == 0 ) {        // There was a range error.
             return( 1 );

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -55,7 +55,7 @@ bool InitFileInfoSupp( void )
     return( false );
 }
 
-long RemoteGetFileDate( const char *name )
+long RemoteFileGetDate( const char *name )
 {
     in_mx_entry         in[2];
     mx_entry            out[1];
@@ -80,7 +80,7 @@ long RemoteGetFileDate( const char *name )
     }
 }
 
-bool RemoteSetFileDate( const char *name, long date )
+bool RemoteFileSetDate( const char *name, long date )
 {
     in_mx_entry                 in[2];
     mx_entry                    out[1];

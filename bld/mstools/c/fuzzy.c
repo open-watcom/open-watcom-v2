@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2024-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,15 +38,18 @@
 #include "wio.h"
 #include "bool.h"
 #include "demangle.h"           /* from lib_misc project */
-#include "dlltool.h"
+#include "idedll.h"
 #include "error.h"
 #include "fuzzy.h"
 #include "hash.h"
 #include "memory.h"
 #include "orl.h"                /* from riscdev project */
+#include "idedrv.h"
 
 #include "clibext.h"
 
+
+#define WLIB_DLL_FILENAME       "wlibd.dll"
 
 #define HASH_TABLE_SIZE         2111
 #define MAX_SYMBOL_LEN          512
@@ -70,13 +74,15 @@ typedef struct _MatchingInfo {
     ListElem *          found;
 } MatchingInfo;
 
+struct orl_io_struct {
+    FILE                *fp;
+};
 
 /*
  * Static data.
  */
 static HashTable        hashtable = NULL;
 static ListElem *       bufflist = NULL;
-static void *           dllhandle = NULL;
 
 
 /*
@@ -177,15 +183,15 @@ static unsigned hash_symbol_name( const void *symbol )
 /*
  * Used by ORL.
  */
-static void *obj_read( FILE *fp, size_t len )
-/*******************************************/
+static void *obj_read( struct orl_io_struct *orlio, size_t len )
+/**************************************************************/
 {
     ListElem *          newelem;
 
     newelem = AllocMem( sizeof( ListElem ) + len - 1 );
     newelem->next = bufflist;
     bufflist = newelem;
-    if( fread( newelem->buff, 1, len, fp ) != len ) {
+    if( fread( newelem->buff, 1, len, orlio->fp ) != len ) {
         FreeMem( newelem );
         return( NULL );
     }
@@ -196,10 +202,10 @@ static void *obj_read( FILE *fp, size_t len )
 /*
  * Used by ORL.
  */
-static int obj_seek( FILE *fp, long pos, int where )
-/**************************************************/
+static int obj_seek( struct orl_io_struct *orlio, long pos, int where )
+/*********************************************************************/
 {
-    return( fseek( fp, pos, where ) );
+    return( fseek( orlio->fp, pos, where ) );
 }
 
 
@@ -248,52 +254,52 @@ static orl_return do_orl_symbol( orl_symbol_handle o_symbol )
 static int handle_obj_file( const char *filename, orl_handle o_hnd )
 /******************************************************************/
 {
-    orl_file_handle     o_fhnd;
-    orl_file_format     o_format;
-    orl_file_type       o_filetype;
-    orl_sec_handle      o_symtab;
-    orl_return          o_rc;
-    FILE                *fp;
+    orl_file_handle         o_fhnd;
+    orl_file_format         o_format;
+    orl_file_type           o_filetype;
+    orl_sec_handle          o_symtab;
+    orl_return              o_rc;
+    struct orl_io_struct    orlio;
 
     /*** Make ORL interested in the file ***/
-    fp = fopen( filename, "rb" );
-    if( fp == NULL ) {
+    orlio.fp = fopen( filename, "rb" );
+    if( orlio.fp == NULL ) {
         return( 0 );
     }
-    o_format = ORLFileIdentify( o_hnd, fp );
+    o_format = ORLFileIdentify( o_hnd, &orlio );
     if( o_format == ORL_UNRECOGNIZED_FORMAT ) {
-        fclose( fp );
+        fclose( orlio.fp );
         return( 0 );
     }
-    o_fhnd = ORLFileInit( o_hnd, fp, o_format );
+    o_fhnd = ORLFileInit( o_hnd, &orlio, o_format );
     if( o_fhnd == NULL ) {
-        fclose( fp );
+        fclose( orlio.fp );
         return( 0 );
     }
     o_filetype = ORLFileGetType( o_fhnd );
     if( o_filetype != ORL_FILE_TYPE_OBJECT ) {
-        fclose( fp );
+        fclose( orlio.fp );
         return( 0 );
     }
 
     /*** Scan the file's symbol table ***/
     o_symtab = ORLFileGetSymbolTable( o_fhnd );
     if( o_symtab == NULL ) {
-        fclose( fp );
+        fclose( orlio.fp );
         return( 0 );
     }
     o_rc = ORLSymbolSecScan( o_symtab, do_orl_symbol );
     if( o_rc != ORL_OKAY ) {
-        fclose( fp );
+        fclose( orlio.fp );
         return( 0 );
     }
     o_rc = ORLFileFini( o_fhnd );
     if( o_rc != ORL_OKAY ) {
-        fclose( fp );
+        fclose( orlio.fp );
         return( 0 );
     }
 
-    fclose( fp );
+    fclose( orlio.fp );
     return( 1 );
 }
 
@@ -355,8 +361,8 @@ static char *find_file( const char *filename, const char *libpaths[] )
 /*
  * Collect all external symbols from a library file.  Returns 0 on error.
  */
-static int handle_lib_file( const char *filename, const char *libpaths[] )
-/************************************************************************/
+static int handle_lib_file( IDEDRV *info, const char *filename, const char *libpaths[] )
+/**************************************************************************************/
 {
     char *              realpath;
     size_t              len;
@@ -374,13 +380,12 @@ static int handle_lib_file( const char *filename, const char *libpaths[] )
     len = strlen( realpath );
     options = AllocMem( leeway + len + 1 );
     sprintf( options, "-tl %s", realpath );
-    rc = RunDllTool( dllhandle, options );
+    rc = IdeDrvExecDLL( info, options );
     FreeMem( options );
-    if( rc ) {
-        return( 1 );
-    } else {
-        return( 0 );
+    if( rc == IDEDRV_ERR_LOAD ) {
+        Warning( "Cannot load WLIB DLL -- fuzzy name matching may not work" );
     }
+    return( rc == IDEDRV_SUCCESS ? 1 : 0 );
 }
 
 
@@ -411,19 +416,36 @@ static int wlib_output( const char *text )
 /*
  * WLIB DLL output callback functions.
  */
-static IDEBool __stdcall print_message_crlf( IDECBHdl hdl, const char *text )
+void IdeMsgFormat               // FORMAT A MESSAGE
+    ( IDECBHdl handle           // - handle for requestor
+    , IDEMsgInfo const * info   // - message information
+    , char * buffer             // - buffer
+    , size_t bsize              // - buffer size
+    , IDEMsgInfoFn displayer )  // - display function
+{
+    /* unused parameters */
+    (void)handle;
+    (void)info;
+    (void)buffer;
+    (void)bsize;
+    (void)displayer;
+}
+
+static IDEBool IDEAPI print_message( IDECBHdl hdl, const char *text )
 {
     /* unused parameters */ (void)hdl;
 
     return( (IDEBool)wlib_output( text ) );
 }
-static IDEBool __stdcall print_with_info2( IDECBHdl hdl, IDEMsgInfo2 *info )
+
+static IDEBool IDEAPI print_message_crlf( IDECBHdl hdl, const char *text )
 {
     /* unused parameters */ (void)hdl;
 
-    return( (IDEBool)wlib_output( info->msg ) );
+    return( (IDEBool)wlib_output( text ) );
 }
-static IDEBool __stdcall print_with_info( IDECBHdl hdl, IDEMsgInfo *info )
+
+static IDEBool IDEAPI print_with_info( IDECBHdl hdl, IDEMsgInfo *info )
 {
     /* unused parameters */ (void)hdl;
 
@@ -443,7 +465,6 @@ void InitFuzzy( const char *objs[], const char *libs[],
     unsigned            count;
     orl_handle          o_hnd;
     int                 rc = 1;
-    DllToolCallbacks    dllcallbacks;
     ORLSetFuncs( orl_cli_funcs, obj_read, obj_seek, AllocMem, FreeMem );
 
     /*** Create a hash table ***/
@@ -475,25 +496,32 @@ void InitFuzzy( const char *objs[], const char *libs[],
 
     /*** Collect all external symbols from the specified library files ***/
     if( libs != NULL ) {
+        IDEDRV          info;
+        IDECallBacks    *cb;
+
+        IdeDrvInit( &info, WLIB_DLL_FILENAME, NULL );
         /*** Load the WLIB DLL ***/
-        dllcallbacks.printmessage = NULL;
-        dllcallbacks.printmessageCRLF = print_message_crlf;
-        dllcallbacks.printwithinfo2 = print_with_info2;
-        dllcallbacks.printwithinfo = print_with_info;
-        dllcallbacks.cookie = NULL;
-        dllhandle = InitDllTool( DLLTOOL_WLIB, &dllcallbacks );
-        if( dllhandle == NULL ) {
-            Warning( "Cannot load WLIB DLL -- fuzzy name matching may not work" );
-        } else {
-            /*** Scan the file(s) ***/
-            for( count = 0; libs[count] != NULL; count++ ) {
-                if( !handle_lib_file( libs[count], libpaths ) ) {
-                    rc = (*callback)( libs[count] );
-                    if( !rc )  break;
+        cb = IdeDrvGetCallbacks();
+        if( cb != NULL ) {
+            cb->PrintMessage = print_message;
+            cb->PrintWithCRLF = print_message_crlf;
+            cb->PrintWithInfo = print_with_info;
+        }
+        /*** Scan the file(s) ***/
+        for( count = 0; libs[count] != NULL; count++ ) {
+            rc = handle_lib_file( &info, libs[count], libpaths );
+            if( rc == IDEDRV_ERR_LOAD ) {
+                Warning( "Cannot load WLIB DLL -- fuzzy name matching may not work" );
+                break;
+            }
+            if( rc != 0 ) {
+                rc = (*callback)( libs[count] );
+                if( rc == 0 ) {
+                    break;
                 }
             }
-            FiniDllTool( dllhandle );
         }
+        IdeDrvUnloadDLL( &info );
     }
 }
 

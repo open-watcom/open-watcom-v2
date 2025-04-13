@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,28 +32,22 @@
 
 
 #include <dos.h>
+#include "bool.h"
 #include "miniproc.h"
 #include "nwtypes.h"
 #include "parlink.h"
 #include "portio.h"
+#include "parfind.h"
 
 
 extern struct ResourceTagStructure      *TimerTag;
 
 static struct TimerDataStructure        TimerData;
-static unsigned long                    NumTicks;
+static unsigned long                    NumTicks = 0;
 
-short PortTest[] =
-{
-        0x3bc, 0x378, 0x278
-};
-
-
-short PortAddress[3] =
-{
-        0,0,0
-};
-
+static unsigned short   PortTest[] = { PORT_ADDRESSES };
+static unsigned short   PortAddress[ACOUNT( PortTest )] = { 0 };
+static int              PortsFound = 0;
 
 static int CheckForPort( int i, unsigned char value )
 {
@@ -68,13 +62,12 @@ static int CheckForPort( int i, unsigned char value )
 
 static void InitPorts( void )
 {
-    int                 i;
-    int                 portnum;
+    int         i;
 
-    portnum = 0;
-    for( i = 0; i < 3; ++i ) {
+    PortsFound = 0;
+    for( i = 0; i < ACOUNT( PortTest ); ++i ) {
         if( CheckForPort( i, 0x55 ) && CheckForPort( i, 0xaa ) ) {
-            PortAddress[portnum++] = PortTest[i];
+            PortAddress[PortsFound++] = PortTest[i];
         }
     }
 }
@@ -122,14 +115,7 @@ void FiniSys( void )
 
 int NumPrinters( void )
 {
-    int         i;
-
-    for( i = 0; i < 3; ++i ) {
-        if( PortAddress[i] == 0 ) {
-            break;
-        }
-    }
-    return( i );
+    return( PortsFound );
 }
 
 
@@ -138,13 +124,14 @@ unsigned PrnAddress( int n )
     return( PortAddress[n] );
 }
 
-void FreePorts( unsigned first, unsigned last )
+void FreePorts( unsigned first, unsigned count )
 {
-    first = first; last = last;
+    /* unused parameters */ (void)first; (void)count;
 }
 
-unsigned AccessPorts( unsigned first, unsigned last )
+bool AccessPorts( unsigned first, unsigned count )
 {
-    first = first; last = last;
-    return( 1 );
+    /* unused parameters */ (void)first; (void)count;
+
+    return( true );
 }

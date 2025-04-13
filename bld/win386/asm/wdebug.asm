@@ -61,29 +61,30 @@ E_8087          dd ?
 E_ID            dd ?
 EMU_struct      ends
 
-MAX_SERVER_NAME equ 16
-MAX_CONVS       equ 64
-CONV_SIZE       equ 5*4+4*2+8+MAX_SERVER_NAME
-Conv_struct     struc
-C_MyID          dd ?
-C_WhoBlocked    dd ?
-C_ServerID      dd ?
-C_Regs          dd ?
-C_TimerHandle   dd ?
-C_Seg           dw ?
-C_Off           dw ?
-C_Bytes         dw ?
-C_ConvCount     dw ?
-C_AckConv       db ?
-C_StartedConv   db ?
-C_GetBlocked    db ?
-C_PutBlocked    db ?
-C_IsPM          db ?
-C_IsServer      db ?
-C_InUse         db ?
-C_PutPending    db ?
-C_ServerName    db MAX_SERVER_NAME dup(?)
-Conv_struct     ends
+MAX_SERVER_NAME     equ 16
+MAX_CONVERSATIONS   equ 64
+CONVERSATION_SIZE   equ 5*4+4*2+8+MAX_SERVER_NAME
+
+Conversation_struct     struc
+C_MyID                  dd ?
+C_WhoBlocked            dd ?
+C_ServerID              dd ?
+C_Regs                  dd ?
+C_TimerHandle           dd ?
+C_Seg                   dw ?
+C_Off                   dw ?
+C_Bytes                 dw ?
+C_ConversationCount     dw ?
+C_AckConversation       db ?
+C_StartedConversation   db ?
+C_GetBlocked            db ?
+C_PutBlocked            db ?
+C_IsPM                  db ?
+C_IsServer              db ?
+C_InUse                 db ?
+C_PutPending            db ?
+C_ServerName            db MAX_SERVER_NAME dup(?)
+Conversation_struct     ends
 
 ;Declare_Virtual_Device WDEBUG, 3, 0, WGod_Control, DEBUG_DEVICE_ID, 0f0000000h
 Declare_Watcom_Debug_Virtual_Device 3, 0, WGod_Control, DEBUG_DEVICE_ID, 00000001h
@@ -102,59 +103,59 @@ VxD_IDATA_ENDS
 ;*
 VxD_DATA_SEG
 CallTable LABEL DWORD
-        dd      OFFSET SVC_GetVersion         ; request 00
-        dd      OFFSET SVC_CopyMemory         ; request 01
-        dd      OFFSET SVC_GetDescriptor      ; request 02
-        dd      OFFSET SVC_GetLimit           ; request 03
-        dd      OFFSET SVC_GetDR              ; request 04
-        dd      OFFSET SVC_SetDR              ; request 05
-        dd      OFFSET SVC_InitSampler        ; request 06
-        dd      OFFSET SVC_QuitSampler        ; request 07
-        dd      OFFSET SVC_StartSampler       ; request 08
-        dd      OFFSET SVC_StopSampler        ; request 09
-        dd      OFFSET SVC_GetCurrTick        ; request 0a
-        dd      OFFSET SVC_SetTimerRate       ; request 0b
-        dd      OFFSET SVC_GetTimerRate       ; request 0c
-        dd      OFFSET SVC_GetCurrCount       ; request 0d
-        dd      OFFSET SVC_GetSample0Tick     ; request 0e
-        dd      OFFSET SVC_RegisterName       ; request 0f
-        dd      OFFSET SVC_AccessName         ; request 10
-        dd      OFFSET SVC_UnregisterName     ; request 11
-        dd      OFFSET SVC_UnaccessName       ; request 12
-        dd      OFFSET SVC_StartConv          ; request 13
-        dd      OFFSET SVC_LookForConv        ; request 14
-        dd      OFFSET SVC_EndConv            ; request 15
-        dd      OFFSET SVC_ConvGet            ; request 16
-        dd      OFFSET SVC_ConvPut            ; request 17
-        dd      OFFSET SVC_IsConvAck          ; request 18
-        dd      OFFSET SVC_MyID               ; request 19
-        dd      OFFSET SVC_SetExecutionFocus  ; request 1a
-        dd      OFFSET SVC_WhatHappened       ; request 1b
-        dd      OFFSET SVC_ConvGetTimeout     ; request 1c
-        dd      OFFSET SVC_ConvPutTimeout     ; request 1d
-        dd      OFFSET SVC_EMUInit            ; request 1e
-        dd      OFFSET SVC_EMUShutdown        ; request 1f
-        dd      OFFSET SVC_EMURegister        ; request 20
-        dd      OFFSET SVC_EMUUnRegister      ; request 21
-        dd      OFFSET SVC_FPUPresent         ; request 22
-        dd      OFFSET SVC_EMUSaveRestore     ; request 23
-        dd      OFFSET SVC_PauseSampler       ; request 24
-        dd      OFFSET SVC_UnPauseSampler     ; request 25
-        dd      OFFSET SVC_EGAWrite           ; request 26
-        dd      OFFSET SVC_VGARead            ; request 27
-        dd      OFFSET SVC_DisableVideo       ; request 28
+        dd      OFFSET SVC_GetVersion               ; request 00
+        dd      OFFSET SVC_CopyMemory               ; request 01
+        dd      OFFSET SVC_GetDescriptor            ; request 02
+        dd      OFFSET SVC_GetLimit                 ; request 03
+        dd      OFFSET SVC_GetDR                    ; request 04
+        dd      OFFSET SVC_SetDR                    ; request 05
+        dd      OFFSET SVC_InitSampler              ; request 06
+        dd      OFFSET SVC_QuitSampler              ; request 07
+        dd      OFFSET SVC_StartSampler             ; request 08
+        dd      OFFSET SVC_StopSampler              ; request 09
+        dd      OFFSET SVC_GetCurrTick              ; request 0a
+        dd      OFFSET SVC_SetTimerRate             ; request 0b
+        dd      OFFSET SVC_GetTimerRate             ; request 0c
+        dd      OFFSET SVC_GetCurrCount             ; request 0d
+        dd      OFFSET SVC_GetSample0Tick           ; request 0e
+        dd      OFFSET SVC_RegisterName             ; request 0f
+        dd      OFFSET SVC_AccessName               ; request 10
+        dd      OFFSET SVC_UnregisterName           ; request 11
+        dd      OFFSET SVC_UnaccessName             ; request 12
+        dd      OFFSET SVC_StartConversation        ; request 13
+        dd      OFFSET SVC_LookForConversation      ; request 14
+        dd      OFFSET SVC_EndConversation          ; request 15
+        dd      OFFSET SVC_ConversationGet          ; request 16
+        dd      OFFSET SVC_ConversationPut          ; request 17
+        dd      OFFSET SVC_IsConversationAck        ; request 18
+        dd      OFFSET SVC_MyID                     ; request 19
+        dd      OFFSET SVC_SetExecutionFocus        ; request 1a
+        dd      OFFSET SVC_WhatHappened             ; request 1b
+        dd      OFFSET SVC_ConversationGetTimeout   ; request 1c
+        dd      OFFSET SVC_ConversationPutTimeout   ; request 1d
+        dd      OFFSET SVC_EMUInit                  ; request 1e
+        dd      OFFSET SVC_EMUShutdown              ; request 1f
+        dd      OFFSET SVC_EMURegister              ; request 20
+        dd      OFFSET SVC_EMUUnRegister            ; request 21
+        dd      OFFSET SVC_FPUPresent               ; request 22
+        dd      OFFSET SVC_EMUSaveRestore           ; request 23
+        dd      OFFSET SVC_PauseSampler             ; request 24
+        dd      OFFSET SVC_UnPauseSampler           ; request 25
+        dd      OFFSET SVC_EGAWrite                 ; request 26
+        dd      OFFSET SVC_VGARead                  ; request 27
+        dd      OFFSET SVC_DisableVideo             ; request 28
         dd      OFFSET SVC_RegisterInterruptCallback ; request 29
         dd      OFFSET SVC_UnRegisterInterruptCallback ; request 2a
-        dd      OFFSET SVC_GetInterruptCallback ; request 2b
-        dd      OFFSET SVC_RestartFromInterrupt; request 2c
-        dd      OFFSET SVC_Is32BitSel         ; request 2d
-        dd      OFFSET SVC_GetVMId            ; request 2e
-        dd      OFFSET SVC_HookIDT            ; request 2f
-        dd      OFFSET SVC_IDTFini            ; request 30
-        dd      OFFSET SVC_IDTInit            ; request 31
-        dd      OFFSET SVC_ConvPutPending     ; request 32
-        dd      OFFSET SVC_UseHotKey          ; request 33
-        dd      OFFSET SVC_RaiseInterruptInVM ; request 34
+        dd      OFFSET SVC_GetInterruptCallback     ; request 2b
+        dd      OFFSET SVC_RestartFromInterrupt     ; request 2c
+        dd      OFFSET SVC_Is32BitSel               ; request 2d
+        dd      OFFSET SVC_GetVMId                  ; request 2e
+        dd      OFFSET SVC_HookIDT                  ; request 2f
+        dd      OFFSET SVC_IDTFini                  ; request 30
+        dd      OFFSET SVC_IDTInit                  ; request 31
+        dd      OFFSET SVC_ConversationPutPending   ; request 32
+        dd      OFFSET SVC_UseHotKey                ; request 33
+        dd      OFFSET SVC_RaiseInterruptInVM       ; request 34
 MaxAPI equ ($-CallTable)/4
 
 PM_Int2FNextCS  dd 0
@@ -202,7 +203,7 @@ IDTAddr         dd 0
 
 
 EMUList         db MAX_EMU_REG*EMU_SIZE dup(0)
-Convs           db MAX_CONVS*CONV_SIZE dup(0)
+Conversations   db MAX_CONVERSATIONS*CONVERSATION_SIZE dup(0)
 
 Idt01           db 8 dup(0)
 Idt03           db 8 dup(0)
@@ -783,7 +784,7 @@ FindServerPtrFromName PROC near
         push    esi
         xor     ecx,ecx
         mov     edi,eax                         ; save string ptr
-        mov     ebx,OFFSET Convs              ; first conv
+        mov     ebx,OFFSET Conversations        ; first conversation
 again9:
         cmp     [ebx.C_InUse],1                 ; active one?
         jne     short skip
@@ -797,8 +798,8 @@ again8:
         je      short ok                        ; yes
 skip:
         inc     ecx                             ; no, try next block
-        add     ebx,CONV_SIZE
-        cmp     ecx,MAX_CONVS
+        add     ebx,CONVERSATION_SIZE
+        cmp     ecx,MAX_CONVERSATIONS
         jne     again9
         xor     eax,eax                         ; no pointer
         jmp     short done11
@@ -830,7 +831,7 @@ FindServerPtrFromName ENDP
 ;***                                  ***
 ;****************************************
 FindAnyPtr PROC near
-        mov     edx,OFFSET Convs
+        mov     edx,OFFSET Conversations
         xor     ecx,ecx
         mov     bl,InUse
         mov     bh,IsServer
@@ -858,9 +859,9 @@ exit16:
         mov     eax,edx                         ; pointer to id
         ret
 notfnd:
-        add     edx,CONV_SIZE                   ; point at data
+        add     edx,CONVERSATION_SIZE           ; point at data
         inc     ecx                             ; next client
-        cmp     ecx,MAX_CONVS                   ; last client?
+        cmp     ecx,MAX_CONVERSATIONS           ; last client?
         jne     again13                         ; nope
         xor     eax,eax                         ; yes, not found
         ret
@@ -899,7 +900,8 @@ FindClientPtr ENDP
 
 ;***********************************************
 ;***                                         ***
-;*** FindEmptySlot - get an empty conv block ***
+;*** FindEmptySlot                           ***
+;***   get an empty conversation block       ***
 ;***                                         ***
 ;*** out: eax - pointer to slot (or 0)       ***
 ;***                                         ***
@@ -918,7 +920,7 @@ zeroit:
         push    edi                             ; preserve edi
         mov     edi,eax
         xor     eax,eax
-        mov     ecx,CONV_SIZE
+        mov     ecx,CONVERSATION_SIZE
         cld
         rep     stosb                           ; zero out data area
         pop     edi
@@ -1524,7 +1526,7 @@ findslot:
         call    FindEmptySlot
         test    eax,eax                         ; found a slot?
         jne     short fnd_slot_name             ; yep
-        mov     [ebp.Client_AX],ERR_NO_MORE_CONVS
+        mov     [ebp.Client_AX],ERR_NO_MORE_CONVERSATIONS
         ret
 
 ;*
@@ -1589,7 +1591,7 @@ findcl:
         call    FindEmptySlot
         test    eax,eax                         ; found?
         jne     short gotid                     ; yes, its a blank spot
-        mov     [ebp.Client_AX],ERR_NO_MORE_CONVS
+        mov     [ebp.Client_AX],ERR_NO_MORE_CONVERSATIONS
         ret
 gotid:
         mov     ebx,eax                         ; client ptr
@@ -1689,46 +1691,48 @@ VxDEndProc SVC_UnaccessName
 
 ;**************************************************
 ;***                                            ***
-;*** SVC_StartConv - start a conv with a server ***
+;*** SVC_StartConversation                      ***
+;***    start a conversation with a server      ***
 ;***                                            ***
 ;*** Client cx:bx  - handle of server           ***
-;*** returns ax - number of convs               ***
+;*** returns ax - number of conversations       ***
 ;***                                            ***
 ;**************************************************
-VxDBeginProc SVC_StartConv
+VxDBeginProc SVC_StartConversation
         call    GetIDFrom_CX_BX
         mov     ServerID,eax                    ; client must have this serv
         mov     eax,VMHandle                    ; client id
         call    FindClientPtr
         test    eax,eax                         ; client found?
         jne     short oksc                      ; yes
-        mov     [ebp.Client_AX],ERR_NO_SUCH_CONV
+        mov     [ebp.Client_AX],ERR_NO_SUCH_CONVERSATION
         ret
 oksc:
-        cmp     [eax.C_StartedConv],1           ; conv started?
+        cmp     [eax.C_StartedConversation],1   ; conversation started?
         jne     short doit                      ; no
-        mov     [ebp.Client_AX],ERR_CONV_NOT_STARTED
+        mov     [ebp.Client_AX],ERR_CONVERSATION_NOT_STARTED
         ret
 doit:
-        mov     [eax.C_StartedConv],1           ; we want a conversation
-        mov     [eax.C_AckConv],0               ; not acked yet
+        mov     [eax.C_StartedConversation],1   ; we want a conversation
+        mov     [eax.C_AckConversation],0       ; not acked yet
         mov     eax,ServerID
         call    FindServerPtr
-        movzx   ebx,[eax.C_ConvCount]           ; get conv count
-        inc     [eax.C_ConvCount]               ; increment it
+        movzx   ebx,[eax.C_ConversationCount]   ; get conversation count
+        inc     [eax.C_ConversationCount]       ; increment it
         mov     [ebp.Client_AX],bx              ; return to user
 
         ret
-VxDEndProc SVC_StartConv
+VxDEndProc SVC_StartConversation
 
 ;***********************************************************
 ;***                                                     ***
-;*** SVC_LookForConv - check for expecting conversations ***
+;*** SVC_LookForConversation                             ***
+;***    check for expecting conversations                ***
 ;***                                                     ***
 ;***  Client ES:BX - pointer to client id                ***
 ;***                                                     ***
 ;***********************************************************
-VxDBeginProc SVC_LookForConv
+VxDBeginProc SVC_LookForConversation
         mov     eax,VMHandle
         call    FindServerPtr
         test    eax,eax
@@ -1738,7 +1742,7 @@ VxDBeginProc SVC_LookForConv
 oklfc:
         mov     ebx,VMHandle                    ; server id
         xor     ecx,ecx
-        mov     edx,OFFSET Convs
+        mov     edx,OFFSET Conversations
 again20:
         cmp     [edx.C_InUse],1                 ; in use?
         jne     short nextlfc                   ; nope, skip
@@ -1746,39 +1750,40 @@ again20:
         je      short nextlfc                   ; yes, skip
         cmp     [edx.C_ServerID],ebx            ; client with this server?
         jne     short nextlfc
-        cmp     [edx.C_StartedConv],1           ; conv started
+        cmp     [edx.C_StartedConversation],1   ; conversation started
         jne     short nextlfc                   ; no
-        cmp     [edx.C_AckConv],1               ; conv acked?
+        cmp     [edx.C_AckConversation],1       ; conversation acked?
         je      short nextlfc                   ; yes
-        mov     [edx.C_AckConv],1               ; ack conv
+        mov     [edx.C_AckConversation],1       ; ack conversation
 
         push    edx
         call    GetFlatAddr_ES_BX
         pop     edx
         mov     ebx,[edx.C_MyID]                ; get client id
         mov     dword ptr [eax],ebx             ; write into server's area
-        mov     [ebp.Client_AX],1               ; got a conv
+        mov     [ebp.Client_AX],1               ; got a conversation
         ret
 
 nextlfc:
         inc     ecx
-        add     edx,CONV_SIZE
-        cmp     ecx,MAX_CONVS
+        add     edx,CONVERSATION_SIZE
+        cmp     ecx,MAX_CONVERSATIONS
         jne     again20
 
         mov     [ebp.Client_AX],0h              ; no clients waiting
         ret
 
-VxDEndProc SVC_LookForConv
+VxDEndProc SVC_LookForConversation
 
 ;******************************************************
 ;***                                                ***
-;*** SVC_EndConv - end a conversation with a server ***
+;*** SVC_EndConversation                            ***
+;***    end a conversation with a server            ***
 ;***                                                ***
 ;*** Client cx:bx  - handle of server               ***
 ;***                                                ***
 ;******************************************************
-VxDBeginProc SVC_EndConv
+VxDBeginProc SVC_EndConversation
         call    GetIDFrom_CX_BX
         call    FindServerPtr
         test    eax,eax
@@ -1793,17 +1798,17 @@ okec:
         call    FindClientPtr
         test    eax,eax                         ; client with this server?
         jne     short okec1                     ; nope
-        mov     [ebp.Client_AX],ERR_CONV_NOT_STARTED
+        mov     [ebp.Client_AX],ERR_CONVERSATION_NOT_STARTED
         ret
 okec1:
-        mov     [eax.C_StartedConv],0
-        mov     [eax.C_AckConv],0
+        mov     [eax.C_StartedConversation],0
+        mov     [eax.C_AckConversation],0
         mov     eax,IDAddr
-        dec     [eax.C_ConvCount]               ; one less conversation
+        dec     [eax.C_ConversationCount]       ; one less conversation
         mov     [ebp.Client_AX],0
         ret
 
-VxDEndProc SVC_EndConv
+VxDEndProc SVC_EndConversation
 
 ;**************************************************
 ;***                                            ***
@@ -1840,12 +1845,12 @@ oktox:
         jne     short specific
 
         ;*
-        ;*** no id specified, so search all convs for someone blocked on
+        ;*** no id specified, so search all conversations for someone blocked on
         ;*** the id of the guy doing the get
         ;*
         mov     eax,IDAddr                      ; our data
         mov     eax,[eax.C_MyID]                ; our id
-        mov     edx,OFFSET Convs
+        mov     edx,OFFSET Conversations
         xor     ecx,ecx
 loopmebaby:
         cmp     [edx.C_InUse],1
@@ -1857,9 +1862,9 @@ loopmebaby:
         mov     eax,[edx.C_MyID]
         jmp     short specific
 nextmebaby:
-        add     edx,CONV_SIZE                   ; point at data
+        add     edx,CONVERSATION_SIZE           ; point at data
         inc     ecx                             ; next client
-        cmp     ecx,MAX_CONVS                   ; last client?
+        cmp     ecx,MAX_CONVERSATIONS           ; last client?
         jne     loopmebaby
         jmp     short fried
 
@@ -1880,7 +1885,7 @@ oktox2:
         ;*
         mov     [eax.C_PutPending],0
         mov     ebx,VMHandle
-        cmp     IsGet,1                         ; are we doing ConvGet
+        cmp     IsGet,1                         ; are we doing ConversationGet
         jne     short put1                      ; no, check for get blocked
         cmp     [eax.C_PutBlocked],1            ; is other guy put blocked?
         jmp     short put2
@@ -1901,7 +1906,7 @@ ss1:
         mov     [ebp.Client_AX],BLOCK           ; let him know he was to block
         ret
 yesblock:
-        cmp     IsGet,1                         ; are we doing ConvGet?
+        cmp     IsGet,1                         ; are we doing ConversationGet?
         jne     short put3                      ; no, then put block
         mov     [edx.C_GetBlocked],1            ; we are get blocked
         jmp     short put4
@@ -1964,7 +1969,7 @@ noblock:
         mov     edi,eax                         ; ours is destination
                                                 ;    (for get operation)
 
-        cmp     IsGet,1                         ; are we doing ConvGet
+        cmp     IsGet,1                         ; are we doing ConversationGet
         je      short put7                      ; yes, esi and edi are right
         xchg    esi,edi                         ; swap for put operation
 put7:
@@ -2000,7 +2005,7 @@ put8:
         mov     ebx,[eax.C_MyID]                ; resume other guy
         VxDcall Resume_VM
         jnc     short gr1                       ; did it work?
-        cmp     IsGet,1                         ; no, are we doing ConvGet
+        cmp     IsGet,1                         ; no, are we doing ConversationGet
         jne     short put5                      ; no, then doing put
         mov     [eax.C_PutBlocked],1            ; restore put blocked status
         jmp     short put6
@@ -2015,7 +2020,8 @@ DoGetPut ENDP
 
 ;*******************************************
 ;***                                     ***
-;*** SVC_ConvGet - get data from someone ***
+;*** SVC_ConversationGet                 ***
+;***    get data from someone            ***
 ;***                                     ***
 ;*** client ES:DX - data to copy         ***
 ;***        CX:BX                        ***
@@ -2023,14 +2029,15 @@ DoGetPut ENDP
 ;***        DI    - block/noblock        ***
 ;***                                     ***
 ;*******************************************
-VxDBeginProc SVC_ConvGet
+VxDBeginProc SVC_ConversationGet
         mov     IsGet,1
         call    DoGetPut
         ret
-VxDEndProc SVC_ConvGet
+VxDEndProc SVC_ConversationGet
 
 ;*******************************************
-;*** SVC_ConvPut - give data to someone  ***
+;*** SVC_ConversationPut                 ***
+;***    give data to someone             ***
 ;***                                     ***
 ;*** client ES:DX - data to copy         ***
 ;***        CX:BX                        ***
@@ -2038,11 +2045,11 @@ VxDEndProc SVC_ConvGet
 ;***        DI    - block/noblock        ***
 ;***                                     ***
 ;*******************************************
-VxDBeginProc SVC_ConvPut
+VxDBeginProc SVC_ConversationPut
         mov     IsGet,0
         call    DoGetPut
         ret
-VxDEndProc SVC_ConvPut
+VxDEndProc SVC_ConversationPut
 
 ;***********************************************
 ;***                                         ***
@@ -2107,32 +2114,33 @@ notimer:
         ret
 DoGetPutTimeOut ENDP
 
-;***********************************************************************
-;***                                                                 ***
-;*** SVC_IsConvAck - check if client has it's conversation acked yet ***
-;***                                                                 ***
-;*** client cx:bx - server id to check for                           ***
-;***                                                                 ***
-;***********************************************************************
-VxDBeginProc SVC_IsConvAck
+;**********************************************************
+;***                                                    ***
+;*** SVC_IsConversationAck                              ***
+;***    check if client has it's conversation acked yet ***
+;***                                                    ***
+;*** client cx:bx - server id to check for              ***
+;***                                                    ***
+;**********************************************************
+VxDBeginProc SVC_IsConversationAck
         call    GetIDFrom_CX_BX
         mov     ServerID,eax                    ; server and client pair
         mov     eax,VMHandle                    ; vm to look for
         call    FindClientPtr
         test    eax,eax
         jne     short ok99
-        mov     [ebp.Client_AX],ERR_NO_SUCH_CONV
+        mov     [ebp.Client_AX],ERR_NO_SUCH_CONVERSATION
         ret
 ok98:
-        cmp     [eax.C_StartedConv],1           ; conv started?
+        cmp     [eax.C_StartedConversation],1   ; conversation started?
         je      short ok99                      ; yes
-        mov     [ebp.Client_AX],ERR_CONV_NOT_STARTED
+        mov     [ebp.Client_AX],ERR_CONVERSATION_NOT_STARTED
         ret
 ok99:
-        movzx   eax,byte ptr [eax.C_AckConv]
+        movzx   eax,byte ptr [eax.C_AckConversation]
         mov     [ebp.Client_AX],ax              ; 0 (no) or 1 (yes)
         ret
-VxDEndProc SVC_IsConvAck
+VxDEndProc SVC_IsConversationAck
 
 ;**********************************
 ;***                            ***
@@ -2177,7 +2185,8 @@ VxDEndProc SVC_WhatHappened
 
 ;**************************************************
 ;***                                            ***
-;*** SVC_ConvGetTimeout - get data from someone ***
+;*** SVC_ConversationGetTimeout                 ***
+;***    get data from someone with timeout      ***
 ;***                                            ***
 ;*** client ES:DX - data to copy                ***
 ;***        CX:BX                               ***
@@ -2185,15 +2194,16 @@ VxDEndProc SVC_WhatHappened
 ;***        DI    - milliseconds to timeout     ***
 ;***                                            ***
 ;**************************************************
-VxDBeginProc SVC_ConvGetTimeout
+VxDBeginProc SVC_ConversationGetTimeout
         mov     IsGet,1
         call    DoGetPutTimeOut
         ret
-VxDEndProc SVC_ConvGetTimeout
+VxDEndProc SVC_ConversationGetTimeout
 
 ;**************************************************
 ;***                                            ***
-;*** SVC_ConvPutTimeout - give data to someone  ***
+;*** SVC_ConversationPutTimeout                 ***
+;***    give data to someone with timeout       ***
 ;***                                            ***
 ;*** client ES:DX - data to copy                ***
 ;***        CX:BX                               ***
@@ -2201,11 +2211,11 @@ VxDEndProc SVC_ConvGetTimeout
 ;***        DI    - milliseconds to timeout     ***
 ;***                                            ***
 ;**************************************************
-VxDBeginProc SVC_ConvPutTimeout
+VxDBeginProc SVC_ConversationPutTimeout
         mov     IsGet,0
         call    DoGetPutTimeOut
         ret
-VxDEndProc SVC_ConvPutTimeout
+VxDEndProc SVC_ConversationPutTimeout
 
 ;*********************************************
 ;***                                       ***
@@ -2857,11 +2867,12 @@ VxDEndProc SVC_IDTInit
 
 ;*************************************************
 ;***                                           ***
-;*** SVC_ConvPutPending - test for pending put ***
+;*** SVC_ConversationPutPending                ***
+;***    test for pending put                   ***
 ;***                                           ***
 ;*************************************************
-VxDBeginProc SVC_ConvPutPending
-        mov     edx,OFFSET Convs
+VxDBeginProc SVC_ConversationPutPending
+        mov     edx,OFFSET Conversations
         xor     ecx,ecx
 loopmetoo:
         cmp     [edx.C_InUse],1
@@ -2869,9 +2880,9 @@ loopmetoo:
         cmp     [edx.C_MyID],ebx
         je      short foundtoo
 nextmetoo:
-        add     edx,CONV_SIZE
+        add     edx,CONVERSATION_SIZE
         inc     ecx
-        cmp     ecx,MAX_CONVS
+        cmp     ecx,MAX_CONVERSATIONS
         jne     short loopmetoo
         mov     [ebp.Client_AX],0
         ret
@@ -2884,7 +2895,7 @@ putp:
         mov     [ebp.Client_AX],1
         ret
 
-VxDEndProc SVC_ConvPutPending
+VxDEndProc SVC_ConversationPutPending
 
 ;*************************************************
 ;***                                           ***

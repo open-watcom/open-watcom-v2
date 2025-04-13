@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,6 +37,14 @@
 #include "clibext.h"
 
 
+#define PRAGMA_DATFILE      "pragma.dat"
+#define DECLSPEC_DATFILE    "declspec.dat"
+
+typedef struct vi_keyword {
+    vi_word         keyword;
+    int             hashValue;
+} vi_keyword;
+
 static lang_info    langInfo[] = {
     #define pick(enum,enumrc,name,namej,fname,desc,filter) { NULL, 0, 0, NULL },
     #include "langdef.h"
@@ -51,18 +59,15 @@ static hash_entry   *declspec_table         = NULL;
 static int          declspec_table_entries  = 0;
 static char         *declspec_read_buf      = NULL;
 
-#define PRAGMA_DATFILE      "pragma.dat"
-#define DECLSPEC_DATFILE    "declspec.dat"
-
 /*
  * hashpjw - taken from red dragon book, pg 436
  */
-static int hashpjw( char *s, int entries )
+static int hashpjw( const char *s, unsigned len, int entries )
 {
     unsigned long   h = 0, g;
 
-    for( ; *s != '\0'; ++s ) {
-        h = (h << 4) + toupper( *s );
+    while( len-- > 0 ) {
+        h = (h << 4) + toupper( *s++ );
         if( (g = h & 0xf0000000) != 0 ) {
             h = h ^ (g >> 24);
             h = h ^ g;
@@ -71,89 +76,82 @@ static int hashpjw( char *s, int entries )
     return( h % entries );
 }
 
-bool IsKeyword( char *start, char *end, bool case_ignore )
+bool IsKeyword( const char *start, const char *end, bool case_ignore )
 {
     hash_entry  *entry;
-    char        save_char;
+    unsigned    len;
     bool        found;
+    int(*cmp_func)(const char *,const char *,size_t);
 
     assert( langInfo[CurrentInfo->fsi.Language].ref_count > 0 );
 
     found = false;
     if( langInfo[CurrentInfo->fsi.Language].keyword_table != NULL ) {
-        save_char = *end;
-        *end = '\0';
+        len = end - start;
         entry = langInfo[CurrentInfo->fsi.Language].keyword_table +
-            hashpjw( start, langInfo[CurrentInfo->fsi.Language].table_entries );
+            hashpjw( start, len, langInfo[CurrentInfo->fsi.Language].table_entries );
         if( entry->real ) {
-            if( case_ignore ) {
-                while( entry != NULL && stricmp( entry->keyword, start ) != 0 ) {
-                    entry = entry->next;
-                    if( entry ) {
-                        assert( !entry->real );
-                    }
-                }
-            } else {
-                while( entry != NULL && strcmp( entry->keyword, start ) != 0 ) {
-                    entry = entry->next;
-                    if( entry ) {
-                        assert( !entry->real );
-                    }
+            cmp_func = ( case_ignore ) ? strnicmp : strncmp;
+            while( entry != NULL
+              && ( entry->keyword.len != len
+              || cmp_func( entry->keyword.str, start, len ) != 0 ) ) {
+                entry = entry->next;
+                if( entry != NULL ) {
+                    assert( !entry->real );
                 }
             }
             found = ( entry != NULL );
         }
-        *end = save_char;
     }
     return( found );
 }
 
-bool IsPragma( char *start, char *end )
+bool IsPragma( const char *start, const char *end )
 {
     hash_entry  *entry;
-    char        save_char;
+    unsigned    len;
     bool        found;
 
     found = false;
     if( pragma_table != NULL ) {
-        save_char = *end;
-        *end = '\0';
-        entry = pragma_table + hashpjw( start, pragma_table_entries );
+        len = end - start;
+        entry = pragma_table + hashpjw( start, len, pragma_table_entries );
         if( entry->real ) {
-            while( entry != NULL && strcmp( entry->keyword, start ) != 0 ) {
+            while( entry != NULL
+              && ( entry->keyword.len != len
+              || strncmp( entry->keyword.str, start, len ) != 0 ) ) {
                 entry = entry->next;
-                if( entry ) {
+                if( entry != NULL ) {
                     assert( !entry->real );
                 }
             }
             found = ( entry != NULL );
         }
-        *end = save_char;
     }
     return( found );
 }
 
-bool IsDeclspec( char *start, char *end )
+bool IsDeclspec( const char *start, const char *end )
 {
     hash_entry  *entry;
-    char        save_char;
+    unsigned    len;
     bool        found;
 
     found = false;
     if( declspec_table != NULL ) {
-        save_char = *end;
-        *end = '\0';
-        entry = declspec_table + hashpjw( start, declspec_table_entries );
+        len = end - start;
+        entry = declspec_table + hashpjw( start, len, declspec_table_entries );
         if( entry->real ) {
-            while( entry != NULL && strcmp( entry->keyword, start ) != 0 ) {
+            while( entry != NULL
+              && ( entry->keyword.len != len
+              || strncmp( entry->keyword.str, start, len ) != 0 ) ) {
                 entry = entry->next;
-                if( entry ) {
+                if( entry != NULL ) {
                     assert( !entry->real );
                 }
             }
             found = ( entry != NULL );
         }
-        *end = save_char;
     }
     return( found );
 }
@@ -173,21 +171,19 @@ static void addTable( hash_entry *table, char *Keyword, int NumKeyword, int entr
     int         i;
     hash_entry  *entry, *empty;
     char        *keyword;
-    typedef struct tagTmpValue {
-        int     hashValue;
-        char    *keyword;
-    } TmpValue;
-    TmpValue    *tmpValue, *tmpIndex;
+    unsigned    len;
+    vi_keyword  *tmpValue, *tmpIndex;
 
-    tmpValue = _MemAllocArray( TmpValue, NumKeyword );
+    tmpValue = _MemAllocArray( vi_keyword, NumKeyword );
     keyword = Keyword;
     tmpIndex = tmpValue;
     for( i = 0; i < NumKeyword; i++ ) {
-        tmpIndex->hashValue = hashpjw( keyword, entries );
-        tmpIndex->keyword = keyword;
+        len = strlen( keyword );
+        tmpIndex->keyword.str = keyword;
+        tmpIndex->keyword.len = len;
+        tmpIndex->hashValue = hashpjw( keyword, len, entries );
         table[tmpIndex->hashValue].real = true;
-        SKIP_TOEND( keyword );
-        keyword++;
+        keyword += len + 1;
         tmpIndex++;
     }
 
@@ -197,7 +193,7 @@ static void addTable( hash_entry *table, char *Keyword, int NumKeyword, int entr
         assert( table[tmpIndex->hashValue].real );
 
         entry = table + tmpIndex->hashValue;
-        if( entry->keyword != NULL ) {
+        if( entry->keyword.str != NULL ) {
             while( entry->next != NULL ) {
                 entry = entry->next;
             }
@@ -238,7 +234,7 @@ void LangInit( lang_t newLanguage )
 {
     vi_rc       rc;
     char        *buff;
-    char        *fname[] = {
+    const char  *fname[] = {
         #define pick(enum,enumrc,name,namej,fname,desc,filter) fname,
         #include "langdef.h"
         #undef pick
@@ -264,8 +260,7 @@ void LangInit( lang_t newLanguage )
         }
         // build new langInfo entry
         langInfo[newLanguage].table_entries = nkeywords;
-        langInfo[newLanguage].keyword_table =
-            createTable( NextBiggestPrime( nkeywords ) );
+        langInfo[newLanguage].keyword_table = createTable( NextBiggestPrime( nkeywords ) );
         addTable( langInfo[newLanguage].keyword_table, buff, nkeywords,
                   langInfo[newLanguage].table_entries );
         langInfo[newLanguage].read_buf = buff;

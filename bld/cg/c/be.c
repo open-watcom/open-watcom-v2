@@ -392,15 +392,15 @@ extern  void    BEFlushSeg( segment_id segid ) {
 extern  void    BEDefSeg( segment_id segid, seg_attr attr, const char *str, uint algn ) {
 //====================================================================================
 
-    segdef      *new;
+    segdef      *new_seg;
 
     Action( "BEDefSeg( %d, %h, %s, %d )%n", segid, attr, str, algn );
-    new = CGAlloc( sizeof( segdef ) );
-    new->next = SegDefs;
-    SegDefs = new;
-    new->id = segid;
-    new->attr = attr;
-    new->str = ACopyOf( str );
+    new_seg = CGAlloc( sizeof( segdef ) );
+    new_seg->next = SegDefs;
+    SegDefs = new_seg;
+    new_seg->id = segid;
+    new_seg->attr = attr;
+    new_seg->str = ACopyOf( str );
     if( attr & EXEC ) {
         CodeSeg = segid;
         CurSeg = segid;
@@ -411,7 +411,7 @@ extern  void    BEDefSeg( segment_id segid, seg_attr attr, const char *str, uint
         }
         CGError( "BEDefSeg called twice (id %d) with no intervening BEFlushSeg%n", segid );
     }
-    Files[segid].name = new->str;
+    Files[segid].name = new_seg->str;
     Files[segid].hdl = 0;
     SegOk[segid] = true;
     Locs[segid] = 0;

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,6 +35,7 @@
 /*
  *  BIOS data area
  */
+#define BDATA_PRINTER_BASE      0x08
 #define BDATA_EQUIP_LIST        0x10
 #define BDATA_CURR_VIDEO_MODE   0x49    /* current video mode (byte) */
 #define BDATA_VIDEO_COLUMNS     0x4a    /* number of columns on screen (word) */

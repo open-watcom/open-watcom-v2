@@ -79,18 +79,18 @@ type_length     TypeClassSize[XX + 1];
 static name *AllocName( name_class_def class, type_class_def type_class, type_length size )
 /*****************************************************************************************/
 {
-    name        *new;
+    name        *new_name;
 
-    new = AllocFrl( &FrlHead[class], Size[class] );
-    new->n.class = class;
-    new->n.next_name = Names[class];
-    Names[class] = new;
-    new->n.type_class = type_class;
-    new->n.size = TypeClassSize[type_class];
-    if( new->n.size == 0 ) {
-        new->n.size = size;
+    new_name = AllocFrl( &FrlHead[class], Size[class] );
+    new_name->n.class = class;
+    new_name->n.next_name = Names[class];
+    Names[class] = new_name;
+    new_name->n.type_class = type_class;
+    new_name->n.size = TypeClassSize[type_class];
+    if( new_name->n.size == 0 ) {
+        new_name->n.size = size;
     }
-    return( new );
+    return( new_name );
 }
 
 static name *findConst64( uint_32 low, uint_32 high, float_handle cf_value )

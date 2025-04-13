@@ -54,6 +54,10 @@
 #define SCRAP_INSTRUCTION       3
 #define INDIRECT_JUMP           4
 
+#define CMPSIM(s,c)     strcmp( s, c )
+#define CMPSIMBEG(sb,c) strncmp( sb, c, strlen( c ) )
+#define CMPSIMEND(se,c) strcmp( se - strlen( c ), c )
+
 #define CMPLIT(s,c)     strcmp( s, c )
 #define CMPLITBEG(sb,c) strncmp( sb, c, sizeof( c ) - 1 )
 #define CMPLITEND(se,c) strcmp( se - ( sizeof( c ) - 1 ), c )

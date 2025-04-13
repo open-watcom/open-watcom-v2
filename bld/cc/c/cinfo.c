@@ -620,6 +620,7 @@ void    SetSegs( void )
     user_seg        *useg;
     textsegment     *tseg;
     char            *name;
+    const char      *module_name;
     align_type      optsize_segalign;
 
     CompFlags.low_on_memory_printed = false;
@@ -644,9 +645,10 @@ void    SetSegs( void )
     if( CompFlags.far_strings ) {
         FarStringSegId = SegmentNum++;
     }
-    name = CMemAlloc( strlen( ModuleName ) + 10 + sizeof( "_DATA" ) );
+    module_name = FEModuleName();
+    name = CMemAlloc( strlen( module_name ) + 10 + sizeof( "_DATA" ) );
     for( segid = FIRST_PRIVATE_SEGMENT; segid < SegmentNum; ++segid ) {
-        sprintf( name, "%s%d_DATA", ModuleName, segid );
+        sprintf( name, "%s%d_DATA", module_name, segid );
         BEDefSeg( segid, INIT | PRIVATE, name, SegAlign( 16 ) );
     }
     CMemFree( name );
@@ -845,7 +847,9 @@ void FEMessage( fe_msg femsg, CGPOINTER parm )
 const char *FEModuleName( void )
 /******************************/
 {
-    return( (const char *)ModuleName );
+    if( ModuleName != NULL && ModuleName[0] != '\0' )
+        return( ModuleName );
+    return( SrcFName );
 }
 
 

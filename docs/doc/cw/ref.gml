@@ -380,9 +380,10 @@ AX= 0ff2bh
 .br
 BX= File handle.
 .note Outputs:
-Carry set if not a CWC'd file, else
+Carry set on error and EAX is error code, else
 .br
 ECX= Expanded data size.
+EAX= Compressed data length.
 .note Errors:
 None.
 .note Notes:
@@ -402,6 +403,7 @@ ES:EDI= Destination memory.
 Carry set on error and EAX is error code, else
 .br
 ECX= Expanded data length.
+EAX= 0
 .note Errors:
 1 - Error during file access.
 .br
@@ -944,7 +946,9 @@ ES:[E]SI= DOS transfer buffer address.
 .br
 ESI+ECX always <64KB
 .br
-EDI= System flags. Bits significant if set.
+EDI= System flags.
+.br
+Bits significant if set:
 .br
 0 - 32 bit code default.
 .br
@@ -1695,7 +1699,7 @@ with a 32-bit selector and a 16-bit value with a 16-bit selector.
 .np
 Required registers that are not specified in this list should be set up
 in the same way as required for normal DOS real mode operation. For INT
-APIs that are not listed and require segemnt pointers, either handle
+APIs that are not listed and require segment pointers, either handle
 them using the CauseWay IntXX function or create your own interrupt
 translation code.
 .np
@@ -1835,7 +1839,7 @@ the vector table appropriate to the mode. Use the real to protected mode
 callback services to provide real mode code with access to protected
 mode code, and allow any interrupt to be re-signaled in protected mode.
 .np
-If you add your own hardware interrupt handlers, suchas the timer tick
+If you add your own hardware interrupt handlers, such as the timer tick
 at vector 08h, any memory that the handler reads or writes, including
 its code, must reside in locked memory. (CauseWay provides a locked
 stack.) This limitation is required because DOS is not re-entrant and

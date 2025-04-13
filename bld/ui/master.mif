@@ -28,7 +28,7 @@ inc_dirs_qnx = -I. -I"../../unix/h"
 extra_cpp_flags_dos = -DCHARMAP
 extra_cpp_flags_nov = -D_NETWARE_CLIB
 
-extra_cpp_flags_uialloc = $(trmem_cpp_flags)
+extra_cpp_flags_f_uialloc = $(trmem_cpp_flags)
 
 !ifeq debug 0
 extra_c_flags = -os
@@ -36,10 +36,10 @@ extra_c_flags = -os
 
 extra_c_flags_nov     = -ot -4s
 extra_c_flags_win     = -zu
-extra_c_flags_qnx_386 = -4r
+extra_c_flags_qnx386 = -4r
 
 # memory tracker routines
-extra_c_flags_uialloc = $(trmem_cover_cflags)
+extra_c_flags_f_uialloc = $(trmem_cover_cflags)
 
 #
 # lflags
@@ -73,7 +73,7 @@ common_objs = &
     uivscrn.obj  uivstr.obj   uivutil.obj  uiwin.obj    &
     uiyield.obj  uipositi.obj
 
-# system type         dos  nlm  nt   os2  qnx  unix  win  rdos
+# system type         dos  nov  nt   os2  qnx  unix  win  rdos
 # builder builds      yes  no   yes  yes  no   yes   yes  yes
 #=============================================================
 !inject cdisp.obj                         qnx
@@ -88,20 +88,20 @@ common_objs = &
 !inject tixsupp.obj                       qnx  unix
 !inject tmouse.obj                        qnx  unix
 !inject trie.obj                          qnx  unix
-!inject uibmous.obj   dos  nlm  nt  os2   qnx  unix  win  rdos
-!inject uichlen.obj   dos  nlm  nt  os2   qnx  unix  win  rdos
+!inject uibmous.obj   dos  nov  nt  os2   qnx  unix  win  rdos
+!inject uichlen.obj   dos  nov  nt  os2   qnx  unix  win  rdos
 !inject uicurshk.obj  dos
 !inject uievent.obj             nt                        rdos
-!inject uimous.obj    dos  nlm      os2   qnx  unix  win
+!inject uimous.obj    dos  nov      os2   qnx  unix  win
 !inject uiintern.obj                      qnx  unix
 !inject uiextrn.obj                       qnx  unix
 !inject uihook.obj    dos                 qnx  unix
-!inject uikeyb.obj    dos  nlm      os2   qnx  unix  win
+!inject uikeyb.obj    dos  nov      os2   qnx  unix  win
 !inject uimapch.obj   dos
 !inject uiproxy.obj                       qnx
 !inject uirefrhk.obj  dos                            win
-!inject uirefrsh.obj  dos  nlm  nt  os2   qnx  unix  win  rdos
-!inject uiscrnam.obj       nlm
+!inject uirefrsh.obj  dos  nov  nt  os2   qnx  unix  win  rdos
+!inject uiscrnam.obj       nov
 !inject uiutil.obj    dos
 !inject uivirt.obj                        qnx  unix
 

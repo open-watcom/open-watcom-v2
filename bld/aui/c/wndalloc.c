@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -43,7 +44,7 @@ void    WndNoMemory( void )
 }
 
 
-void *WndAlloc( size_t size )
+void * WNDAPI WndAlloc( size_t size )
 {
     return( malloc( size ) );
 }
@@ -55,7 +56,7 @@ void *WndRealloc( void *chunk, size_t size )
 }
 
 
-void    WndFree( void *chunk )
+void    WNDAPI WndFree( void *chunk )
 {
     free( chunk );
 }

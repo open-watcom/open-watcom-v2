@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -70,9 +70,10 @@ void ResetObjOMF( void )
     EOObjRec = NULL;
 }
 
-static unsigned long ProcObj( file_list *file, unsigned long loc, void (*procrtn)( byte ) )
-/*****************************************************************************************/
-/* Process an object file. */
+static unsigned long ProcObj( const file_list *file, unsigned long loc, void (*procrtn)( byte ) )
+/************************************************************************************************
+ * Process an object file.
+ */
 {
     omf_record          *rec;
     byte                cmd;
@@ -80,7 +81,7 @@ static unsigned long ProcObj( file_list *file, unsigned long loc, void (*procrtn
 
     RecNum = 0;
     do {
-        ObjFormat &= ~FMT_MS_386;   // assume not a Microsoft 386 .obj file
+        ObjFormat &= ~FMT_MS_386;   /* assume not a Microsoft 386 .obj file */
         rec = CacheRead( file, loc, sizeof( omf_record ) );
         if( rec == NULL ) {
             EarlyEOF();
@@ -96,7 +97,7 @@ static unsigned long ProcObj( file_list *file, unsigned long loc, void (*procrtn
                 EarlyEOF();
                 break;
             }
-            EOObjRec = ObjBuff + len - 1;       // 1 for the checksum.
+            EOObjRec = ObjBuff + len - 1;       /* 1 for the checksum. */
             (*procrtn)( cmd );
             if( ObjBuff > EOObjRec ) {
                 BadObject();
@@ -124,8 +125,8 @@ static void CheckUninit( void *_seg, void *dummy )
     }
 }
 
-bool IsOMF( file_list *list, unsigned long loc )
-/**********************************************/
+bool IsOMF( const file_list *list, unsigned long loc )
+/****************************************************/
 {
     byte        *rec;
 
@@ -133,8 +134,8 @@ bool IsOMF( file_list *list, unsigned long loc )
     return( rec != NULL && ( *rec == CMD_THEADR || *rec == CMD_LHEADR ) );
 }
 
-char *GetOMFName( file_list *list, unsigned long *loc )
-/*****************************************************/
+char *GetOMFName( const file_list *list, unsigned long *loc )
+/***********************************************************/
 {
     omf_record  *rec;
     char        *name;
@@ -149,12 +150,12 @@ char *GetOMFName( file_list *list, unsigned long *loc )
     *loc += len;
     if( name == NULL )
         return( NULL );
-    len = *(unsigned char *)name;        // get actual name length
+    len = *(unsigned char *)name;        /* get actual name length */
     return( ChkToString( name + 1, len ) );
 }
 
-void OMFSkipObj( file_list *list, unsigned long *loc )
-/****************************************************/
+void OMFSkipObj( const file_list *list, unsigned long *loc )
+/**********************************************************/
 {
     *loc = ProcObj( list, *loc, NULL );
 }
@@ -162,7 +163,7 @@ void OMFSkipObj( file_list *list, unsigned long *loc )
 static void ProcTHEADR( void )
 /****************************/
 {
-    char    name[256];
+    char   *name;
     int     sym_len;
 
     if( CurrMod->omfdbg == OMF_DBG_CODEVIEW ) {
@@ -170,8 +171,11 @@ static void ProcTHEADR( void )
         if( sym_len == 0 ) {
             BadObject();
         }
+
+        _ChkAlloc( name, sym_len + 1 );
         memcpy( name, ObjBuff, sym_len );
         name[sym_len] = '\0';
+        CurrMod->name.u.ptr = name;
     }
 }
 
@@ -230,8 +234,9 @@ static void ProcImportKeyword( void )
 
 
 static void DoMSOMF( void )
-/***********************************/
-/* Figure out debug info type and handle it accordingly later. */
+/**************************
+ * Figure out debug info type and handle it accordingly later.
+ */
 {
     if( ObjBuff == EOObjRec ) {
         CurrMod->omfdbg = OMF_DBG_CODEVIEW;    /* Assume MS style */
@@ -239,9 +244,11 @@ static void DoMSOMF( void )
 //        unsigned_8  version;
 
         /* version = * */ ObjBuff++;
-        if( ObjBuff[0] == 'C' && ObjBuff[1] == 'V' ) {
+        if( ObjBuff[0] == 'C'
+          && ObjBuff[1] == 'V' ) {
             CurrMod->omfdbg = OMF_DBG_CODEVIEW;
-        } else if( ObjBuff[0] == 'H' && ObjBuff[1] == 'L' ) {
+        } else if( ObjBuff[0] == 'H'
+          && ObjBuff[1] == 'L' ) {
             CurrMod->omfdbg = OMF_DBG_HLL;
         } else {
             CurrMod->omfdbg = OMF_DBG_UNKNOWN;
@@ -250,8 +257,9 @@ static void DoMSOMF( void )
 }
 
 static void ProcAlias( void )
-/***************************/
-/* process a symbol alias directive */
+/****************************
+ * process a symbol alias directive
+ */
 {
     char        *alias;
     size_t      aliaslen;
@@ -264,7 +272,8 @@ static void ProcAlias( void )
         ObjBuff += aliaslen;
         targetlen = *ObjBuff++;
         sym = SymOp( ST_FIND | ST_NOALIAS, alias, aliaslen );
-        if( sym == NULL || (sym->info & SYM_DEFINED) == 0 ) {
+        if( sym == NULL
+          || (sym->info & SYM_DEFINED) == 0 ) {
             MakeSymAlias( alias, aliaslen, (const char *)ObjBuff, targetlen );
         }
     }
@@ -284,7 +293,7 @@ static void ProcModuleEnd( void )
         return;
     target = *ObjBuff++;
     if( target & 0x40 ) {
-        if( ObjBuff >= EOObjRec )               /* CSet/2 stupidity */
+        if( ObjBuff >= EOObjRec )
             return;
         target = *ObjBuff++;
         frame = (target >> 4) & 0x7;
@@ -298,12 +307,13 @@ static void ProcModuleEnd( void )
         case TARGET_SEG:
             if( StartInfo.type != START_UNDEFED ) {
                 LnkMsg( LOC+MILD_ERR+MSG_MULT_START_ADDRS, "12", StartInfo.mod->f.source->infile->name, StartInfo.mod->name );
-                return;                 // <-------- NOTE: premature return
+                return;                 /* <-------- NOTE: premature return */
             }
             seg = (segnode *)FindNode( SegNodes, targetidx );
             StartInfo.type = START_IS_SDATA;
             StartInfo.targ.sdata= seg->entry;
-            if( (seg->info & SEG_CODE) && (LinkFlags & LF_STRIP_CODE) ) {
+            if( (seg->info & SEG_CODE)
+              && (LinkFlags & LF_STRIP_CODE) ) {
                 RefSeg( (segdata *)seg->entry );
             }
             StartInfo.mod = CurrMod;
@@ -314,7 +324,7 @@ static void ProcModuleEnd( void )
             break;
         case TARGET_ABS:
         case TARGET_GRP:
-            BadObject();        // no one does these, right???
+            BadObject();        /* no one does these, right??? */
             break;
         }
         if( hasdisp ) {
@@ -328,8 +338,9 @@ static void ProcModuleEnd( void )
 }
 
 static void AddNames( void )
-/**************************/
-/* Process NAMES record */
+/***************************
+ * Process NAMES record
+ */
 {
     int                 name_len;
     list_of_names       **entry;
@@ -343,8 +354,9 @@ static void AddNames( void )
 }
 
 static void ProcSegDef( void )
-/****************************/
-/* process a segdef record */
+/*****************************
+ * process a segdef record
+ */
 {
     segdata             *sdata;
     segnode             *snode;
@@ -381,7 +393,8 @@ static void ProcSegDef( void )
         /*
          * in 32 bit object files, ALIGN_LTRELOC is actually ALIGN_4KPAGE
          */
-        if( (ObjFormat & FMT_32BIT_REC) == 0 && (FmtData.type & MK_RAW) == 0 ) {
+        if( (ObjFormat & FMT_32BIT_REC) == 0
+          && (FmtData.type & MK_RAW) == 0 ) {
             sdata->align = OMFAlignTab[ALIGN_PARA];
             /*
              * step over ltldat, max_seg_len, grp_offs fields
@@ -392,14 +405,14 @@ static void ProcSegDef( void )
     }
     if( ObjFormat & FMT_32BIT_REC ) {
         if( acbp & 2 ) {
-            BadObject();            // we can't handle 4 GB segments properly
+            BadObject();            /* we can't handle 4 GB segments properly */
             return;
         }
         _TargU32toHost( MGET_U32_UN( ObjBuff ), sdata->length );
         ObjBuff += sizeof( unsigned_32 );
     } else {
         if( acbp & 2 ) {
-            sdata->length = 65536;  // 64k segment
+            sdata->length = 65536;  /* 64k segment */
         } else {
             _TargU16toHost( MGET_U16_UN( ObjBuff ), sdata->length );
         }
@@ -409,10 +422,10 @@ static void ProcSegDef( void )
     sdata->u.name.u.ptr = name->name;
     clname = FindName( GetIdx() );
     if( ObjFormat & FMT_EASY_OMF ) {
-        SkipIdx();                          // skip overlay name index
+        SkipIdx();                          /* skip overlay name index */
         sdata->bits = BITS_32;
-        if( ObjBuff < EOObjRec ) {          // the optional attribute field present
-            if( (*ObjBuff & 0x4) == 0 ) {   // if USE32 bit not set
+        if( ObjBuff < EOObjRec ) {          /* the optional attribute field present */
+            if( (*ObjBuff & 0x4) == 0 ) {   /* if USE32 bit not set */
                 sdata->bits = BITS_16;
             }
         }
@@ -428,8 +441,9 @@ static void ProcSegDef( void )
 }
 
 static void DefineGroup( void )
-/*****************************/
-/* Define a group. */
+/******************************
+ * Define a group.
+ */
 {
     int                 num_segs;
     byte                *anchor;
@@ -447,7 +461,7 @@ static void DefineGroup( void )
             BadObject();
             return;
         }
-        SkipIdx();/*  skip segment index */
+        SkipIdx();  /* skip segment index */
         ++num_segs;
     }
     newnode = AllocNode( GrpNodes );
@@ -455,7 +469,7 @@ static void DefineGroup( void )
     if( group == NULL ) {
         if( num_segs == 0 ) {
             newnode->entry = NULL;
-            return;                     // NOTE: premature return!
+            return;                     /* NOTE: premature return! */
         }
         group = AllocGroup( grp_name->name, &Groups );
     }
@@ -469,8 +483,9 @@ static void DefineGroup( void )
 }
 
 static void ProcPubdef( bool static_sym )
-/***************************************/
-/* Define symbols. */
+/****************************************
+ * Define symbols.
+ */
 {
     symbol          *sym;
     char            *sym_name;
@@ -518,8 +533,9 @@ static void ProcPubdef( bool static_sym )
 }
 
 static void DoLazyExtdef( bool isweak )
-/*************************************/
-/* handle the lazy and weak extdef comments */
+/**************************************
+ * handle the lazy and weak extdef comments
+ */
 {
     extnode     *ext;
     symbol      *sym;
@@ -536,13 +552,13 @@ static void DoLazyExtdef( bool isweak )
 }
 
 static void *GetVFListStart( void )
-/**********************************/
+/*********************************/
 {
     return( ObjBuff );
 }
 
 static void SetVFListStart( void *start )
-/****************************************/
+/***************************************/
 {
     ObjBuff = start;
 }
@@ -563,8 +579,9 @@ static char *GetVFListName( void )
 }
 
 static void ProcVFTableRecord( bool ispure )
-/******************************************/
-// process the watcom virtual function table information extension
+/*******************************************
+ * process the watcom virtual function table information extension
+ */
 {
     extnode     *ext;
     symbol      *sym;
@@ -584,8 +601,9 @@ static void ProcVFTableRecord( bool ispure )
 }
 
 static void ProcVFReference( void )
-/*********************************/
-/* process a vftable reference record */
+/**********************************
+ * process a vftable reference record
+ */
 {
     extnode             *ext;
     segnode             *seg;
@@ -621,8 +639,9 @@ static void ProcVFReference( void )
 }
 
 static void UseSymbols( bool static_sym, bool iscextdef )
-/*******************************************************/
-/* Define all external references. */
+/********************************************************
+ * Define all external references.
+ */
 {
     list_of_names       *lnptr;
     size_t              sym_len;
@@ -656,8 +675,9 @@ static void UseSymbols( bool static_sym, bool iscextdef )
 }
 
 void SkipIdx( void )
-/*************************/
-/* skip the index */
+/*******************
+ * skip the index
+ */
 {
     if( *ObjBuff++ & IS_2_BYTES ) {
         ObjBuff++;
@@ -665,8 +685,9 @@ void SkipIdx( void )
 }
 
 unsigned_16 GetIdx( void )
-/*******************************/
-/* Get an index. */
+/*************************
+ * Get an index.
+ */
 {
     unsigned_16 index;
 
@@ -678,15 +699,17 @@ unsigned_16 GetIdx( void )
 }
 
 list_of_names *FindName( unsigned_16 index )
-/**************************************************/
-/* Find name of specified index. */
+/*******************************************
+ * Find name of specified index.
+ */
 {
     return( *((list_of_names **)FindNode( NameNodes, index ) ) );
 }
 
 static void ProcLinnum( void )
-/****************************/
-/* do some processing for the linnum record */
+/*****************************
+ * do some processing for the linnum record
+ */
 {
     segnode     *seg;
     bool        is32bit;
@@ -700,8 +723,9 @@ static void ProcLinnum( void )
 }
 
 static byte *ProcIDBlock( virt_mem *dest, byte *buffer, unsigned_32 iterate )
-/***************************************************************************/
-/* Process logically iterated data blocks. */
+/****************************************************************************
+ * Process logically iterated data blocks.
+ */
 {
     size_t          len;
     byte            *anchor;
@@ -709,7 +733,7 @@ static byte *ProcIDBlock( virt_mem *dest, byte *buffer, unsigned_32 iterate )
     unsigned_16     inner;
     unsigned_32     rep;
 
-    if( iterate == 0 ) {  // no iterations, so abort.
+    if( iterate == 0 ) {  /* no iterations, so abort. */
         return( EOObjRec );
     }
     _TargU16toHost( MGET_U16_UN( buffer ), count );
@@ -750,8 +774,9 @@ static byte *ProcIDBlock( virt_mem *dest, byte *buffer, unsigned_32 iterate )
 }
 
 static void DoLIData( virt_mem start, byte *data, size_t size )
-/*************************************************************/
-/* Expand logically iterated data. */
+/**************************************************************
+ * Expand logically iterated data.
+ */
 {
     unsigned_32 rep;
     byte        *end_data;
@@ -769,13 +794,15 @@ static void DoLIData( virt_mem start, byte *data, size_t size )
 }
 
 static void GetObject( segdata *seg, unsigned_32 obj_offset, bool lidata )
-/*************************************************************************/
-/* Load object code. */
+/*************************************************************************
+ * Load object code.
+ */
 {
     size_t      size;
     virt_mem    start;
 
-    if( seg->isdead || seg->isabs ) {   /* ignore dead or abs segments */
+    if( seg->isdead
+      || seg->isabs ) {   /* ignore dead or abs segments */
         ObjFormat |= FMT_IGNORE_FIXUPP; /* and any corresponding fixupps */
         return;
     }
@@ -799,8 +826,9 @@ static void GetObject( segdata *seg, unsigned_32 obj_offset, bool lidata )
 }
 
 static void ProcLxdata( bool islidata )
-/*************************************/
-/* process ledata and lidata records */
+/**************************************
+ * process ledata and lidata records
+ */
 {
     segnode     *seg;
     unsigned_32 obj_offset;
@@ -871,8 +899,9 @@ static void LinkDirective( void )
 }
 
 static void Comment( void )
-/*************************/
-/* Process a comment record. */
+/**************************
+ * Process a comment record.
+ */
 {
     unsigned char       attribute;
     unsigned char       class;
@@ -946,8 +975,9 @@ static void Comment( void )
 }
 
 static void Pass1Cmd( byte cmd )
-/******************************/
-/* Process an object record for pass 1 */
+/*******************************
+ * Process an object record for pass 1
+ */
 {
     bool isstatic;
 
@@ -1087,8 +1117,9 @@ static void Pass1Cmd( byte cmd )
 }
 
 unsigned long OMFPass1( void )
-/***********************************/
-// do pass 1 for OMF object files
+/*****************************
+ * do pass 1 for OMF object files
+ */
 {
     unsigned long retval;
 
@@ -1098,7 +1129,7 @@ unsigned long OMFPass1( void )
     } else {
         LinkState |= LS_HAVE_X86_CODE;
     }
-    CurrMod->omfdbg = OMF_DBG_CODEVIEW; // Assume MS style LINNUM records
+    CurrMod->omfdbg = OMF_DBG_CODEVIEW; /* Assume MS style LINNUM records */
     retval = ProcObj( CurrMod->f.source, CurrMod->location, &Pass1Cmd );
     IterateNodelist( SegNodes, CheckUninit, NULL );
     ResolveComdats();

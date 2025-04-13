@@ -1,17 +1,11 @@
-c_dirs_root = $(vi_dir)/$(host_os)
-!if "$(host_os)" == "linux" || "$(host_os)" == "bsd" || "$(host_os)" == "osx" || "$(host_os)" == "haiku"
-c_dirs_root = $(vi_dir)/unix
-!endif
-
 !ifdef sys_windowed
 ! ifeq host_os nt
-c_dirs_root = $(vi_dir)/nt;$(vi_dir)/win
+c_dirs = $(vi_dir)/c;$(vi_dir)/$(vi_host_os);$(vi_dir)/win;$(vi_dir)/win/ctl;$(watcom_dir)/c
 ! else
-c_dirs_root = $(vi_dir)/win
+c_dirs = $(vi_dir)/c;$(vi_dir)/$(vi_host_os);$(vi_dir)/dos;$(vi_dir)/win/ctl;$(watcom_dir)/c
 ! endif
-c_dirs = $(vi_dir)/c;$(c_dirs_root);$(vi_dir)/dos;$(vi_dir)/win/ctl;$(watcom_dir)/c
 !else
-c_dirs = $(vi_dir)/c;$(c_dirs_root);$(vi_dir)/ui;$(watcom_dir)/c
+c_dirs = $(vi_dir)/c;$(vi_dir)/$(vi_host_os);$(vi_dir)/ui;$(watcom_dir)/c
 !endif
 
 .c : $(c_dirs)
@@ -30,31 +24,32 @@ extra_cpp_flags += -DTRACE
 !endif
 
 !ifeq dos_extender causeway
-extra_cpp_flags_dos_386 = -DCAUSEWAY
+extra_cpp_flags_dos386 = -DCAUSEWAY
 !else ifeq dos_extender pharlap
-extra_cpp_flags_dos_386 = -DPHARLAP
+extra_cpp_flags_dos386 = -DPHARLAP
 !else ifeq dos_extender dos4g
-extra_cpp_flags_dos_386 = -DDOS4G
+extra_cpp_flags_dos386 = -DDOS4G
 !else
-extra_cpp_flags_dos_386 = -DDOS4G
+extra_cpp_flags_dos386 = -DDOS4G
 !endif
 
-extra_cpp_flags_mem      = $(trmem_cpp_flags)
+extra_cpp_flags_f_mem      = $(trmem_cpp_flags)
 
 extra_c_flags = -fh
 !ifdef is286
-extra_c_flags_dos_i86 = -2
+extra_c_flags_dosi86 = -2
 !endif
-extra_c_flags_dos_386 = -zff
-extra_c_flags_os2_i86 = -2
-extra_c_flags_qnx_i86 = -2
-extra_c_flags_win_i86 = -zW -2 -zc
-extra_c_flags_win_386 = -zw
+extra_c_flags_dos386 = -zff
+extra_c_flags_os2i86 = -2
+extra_c_flags_qnxi86 = -2
+extra_c_flags_wini86 = -zW -2 -zc
+extra_c_flags_win386 = -zw
 
-extra_c_flags_mem      = $(trmem_cover_cflags)
+extra_c_flags_f_rxwrap   = -I"$(posix_dir)/h" -I"$(posix_dir)/misc"
+extra_c_flags_f_mem      = $(trmem_cover_cflags)
 !ifdef __WATCOM_TOOLS__
-extra_c_flags_autoenv  = -fh=pch01.pch
-extra_c_flags_getopt   = -fh=pch01.pch
-extra_c_flags_ideactiv = -fh=pch02.pch
-extra_c_flags_mem      += -fh=pch03.pch
+extra_c_flags_f_autoenv  = -fh=pch01.pch
+extra_c_flags_f_getopt   = -fh=pch01.pch
+extra_c_flags_f_ideactiv = -fh=pch02.pch
+extra_c_flags_f_mem      += -fh=pch03.pch
 !endif

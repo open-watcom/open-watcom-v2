@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -231,7 +231,7 @@ size_t RemoteFileToFullName( dig_filetype file_type, const char *name, char *res
     return( strlen( res ) );
 }
 
-sys_handle RemoteOpen( const char *name, obj_attrs oattrs )
+sys_handle RemoteFileOpen( const char *name, obj_attrs oattrs )
 {
     in_mx_entry         in[2];
     mx_entry            out[1];
@@ -282,7 +282,7 @@ sys_handle RemoteOpen( const char *name, obj_attrs oattrs )
     fprintf( logf, "%s\n", name );
 #endif
 
-    if( (lochandle = open( name, O_RDONLY | O_BINARY, 0 )) != LOC_NIL_HANDLE ) {
+    if( (lochandle = open( name, O_RDONLY | O_BINARY )) != LOC_NIL_HANDLE ) {
         if( AddCachedHandle( lochandle, ret.handle ) != 0 )
             close( lochandle );
 #ifdef LOGGING
@@ -332,7 +332,7 @@ static size_t doWrite( sys_handle sh, const void *buff, size_t len )
     return( total );
 }
 
-size_t RemoteWrite( sys_handle sh, const void *buff, size_t len )
+size_t RemoteFileWrite( sys_handle sh, const void *buff, size_t len )
 {
     if( SuppFileId == 0 )
         return( 0 );
@@ -437,7 +437,7 @@ static size_t doRead( sys_handle sh, void *buff, size_t len )
     return( total );
 }
 
-size_t RemoteRead( sys_handle sh, void *buff, size_t len )
+size_t RemoteFileRead( sys_handle sh, void *buff, size_t len )
 {
     loc_handle  lochandle;
 
@@ -453,7 +453,7 @@ size_t RemoteRead( sys_handle sh, void *buff, size_t len )
     return( doRead( sh, buff, len ) );
 }
 
-unsigned long RemoteSeek( sys_handle sh, unsigned long pos, seek_method method )
+unsigned long RemoteFileSeek( sys_handle sh, unsigned long pos, seek_method method )
 {
     file_seek_req       acc;
     file_seek_ret       ret;
@@ -488,7 +488,7 @@ unsigned long RemoteSeek( sys_handle sh, unsigned long pos, seek_method method )
     return( ret.pos );
 }
 
-error_handle RemoteClose( sys_handle sh )
+error_handle RemoteFileClose( sys_handle sh )
 {
     file_close_req      acc;
     file_close_ret      ret;
@@ -514,7 +514,7 @@ error_handle RemoteClose( sys_handle sh )
     return( StashErrCode( ret.err, OP_REMOTE ) );
 }
 
-error_handle RemoteErase( const char *name )
+error_handle RemoteFileErase( const char *name )
 {
     in_mx_entry         in[2];
     mx_entry            out[1];

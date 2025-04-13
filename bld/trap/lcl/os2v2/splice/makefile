@@ -23,7 +23,7 @@ sys_dll  = 1
 
 dig_arch = $(host_cpu)
 
-!include $(dig_dir)/digcli.mif
+!include $(dig_dir)/client.mif
 
 #
 # cflags

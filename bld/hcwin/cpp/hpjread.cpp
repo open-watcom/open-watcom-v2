@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,12 +32,8 @@
 
 #include <stdlib.h>
 #include <ctype.h>
-#ifdef __UNIX__
-#include <dirent.h>
-#include <unistd.h>
-#else
-#include <direct.h>
-#endif
+#include "wdirent.h"
+#include "wio.h"
 #include "hpjread.h"
 #include "hcerrors.h"
 #include "parsing.h"
@@ -509,6 +505,8 @@ size_t HPJReader::handleOptions()
         } else if( strcmp( option, SCopyright ) == 0 ) {
             arg = _scanner.getArg( i );
             if( arg != NULL ) {
+                if( strlen( arg ) > SYS_COPYRIGHT_MAXLEN )
+                    arg[SYS_COPYRIGHT_MAXLEN] = '\0';
                 _sysFile->addRecord( new SystemText( HFSystem::SYS_COPYRIGHT, arg ) );
             }
         } else if( strcmp( option, SCompress ) == 0 ) {

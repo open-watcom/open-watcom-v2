@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -53,9 +53,9 @@
 #define FOREVER                 0x7FFFFFFF
 
 #define _IPX_ASSIGNADDR( a, b ) \
-                                a##Net = b##Net; \
-                                AssignArray( a##Node, b##Node ); \
-                                a##Socket = b##Socket
+    a##Net = b##Net; \
+    AssignArray( a##Node, b##Node ); \
+    a##Socket = b##Socket
 
 //#define InUse( ecb ) ( ( (ecb).status != 0 && (ecb).status != SPX_SUCCESSFUL ) )
 #define InUse( ecb ) ( ( (ecb).status > 0x3000 && (ecb).status <= 0x3fff ) || (ecb).status == 0x1001)

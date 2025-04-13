@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -176,7 +177,7 @@ typedef enum {
 typedef enum {
     TT_PREPROCESSOR,
     TT_OTHER
-} TokenType;
+} token_type;
 
 /* Tokenizer states */
 typedef enum {
@@ -239,7 +240,7 @@ void zapTokenizer(void);
 char* pushTokFile(char *fname);
 int popTokFile(void);
 WicErrors getNextToken(pToken tok);
-TokenType getTokDataType(pTokData tokData);
+token_type getTokDataType(pTokData tokData);
 
 pToken createToken(pTokData data, pTokPos pos);
 pTokPos createTokPos(void);

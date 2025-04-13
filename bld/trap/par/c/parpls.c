@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,7 +35,8 @@
 #include <dosequip.h>
 #include "parlink.h"
 
-int NumPrinters()
+
+int NumPrinters( void )
 {
     equip_list __far *equip;
 
@@ -52,13 +53,14 @@ unsigned PrnAddress( int printer )
     return( *addr );
 }
 
-void FreePorts( unsigned first, unsigned last )
+void FreePorts( unsigned first, unsigned count )
 {
-    first = first; last = last;
+    /* unused parameters */ (void)first; (void)count;
 }
 
-unsigned AccessPorts( unsigned first, unsigned last )
+bool AccessPorts( unsigned first, unsigned count )
 {
-    first = first; last = last;
+    /* unused parameters */ (void)first; (void)count;
+
     return( true );
 }

@@ -3,22 +3,22 @@
 #
 
 !ifdef bootstrap
-cli_owl_libs = $(owl_dir)/$(objs_subdir)/owl.lib
+cli_owl_libs = $(owl_dir)/$(bin_subdir)/owl.lib
 !else ifdef $(proj_name)_rtdll
 #
 # OWL run-time DLL used
 #
-cli_owl_libs = $(owl_dir)/$(objs_subdir).rtd/owl.lib
+cli_owl_libs = $(owl_dir)/$(host).rtd/owl.lib
 !else ifdef $(proj_name)_dll
 #
 # OWL DLL used
 #
-cli_owl_libs = $(owl_dir)/$(objs_subdir).dll/owl.lib
+cli_owl_libs = $(owl_dir)/$(host).dll/owl.lib
 !else
 #
 # OWL library used
 #
-cli_owl_libs = $(owl_dir)/$(objs_subdir)/owl.lib
+cli_owl_libs = $(owl_dir)/$(host)/owl.lib
 !endif
 
 cli_owl_inc_dirs = -I"$(owl_dir)/h"

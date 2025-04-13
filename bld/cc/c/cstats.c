@@ -72,7 +72,7 @@ void PrintStats( void )
             fname = "";
         len += sprintf( &msgbuf[len], "%s: ", fname );
         if( SrcLineCount == 0 ) {
-            nest_fcb = SrcFile;
+            nest_fcb = SrcFiles;
             if( nest_fcb != NULL ) {
                 while( nest_fcb->prev_file != NULL ) {
                     IncLineCount += nest_fcb->src_line_cnt;

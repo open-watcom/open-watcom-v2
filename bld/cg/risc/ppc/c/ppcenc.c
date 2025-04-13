@@ -189,7 +189,7 @@ static const gen_opcode  BranchOpcodes[][2] = {
     { INVERT, LT },     /* OP_CMP_GREATER_EQUAL */
 };
 
-static const byte       Zeros[MAX_ALIGNMENT];
+static const byte       Zeros[MAX_ALIGNMENT] = { 0 };
 
 static ppc_ins  ins_encoding = 0;
 

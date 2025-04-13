@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -504,7 +504,7 @@ int main( int argc, char *argv[] )
             int     pcnt;
             int     i;
 
-            strcpy( wrc_cmd, WRC_STR );
+            strcpy( wrc_cmd, ( quietFlag ) ? WRC_STR " -q" : WRC_STR );
             arglist = myAlloc( sizeof( char * ) * ( argc - wrc_parm + 3 ) );
             pcnt = 1;
             for( i = wrc_parm; i < argc; i++ ) {
@@ -514,7 +514,7 @@ int main( int argc, char *argv[] )
             }
             arglist[pcnt] = NULL;
         } else {
-            sprintf( wrc_cmd, WRC_STR " %s", res_name );
+            sprintf( wrc_cmd, ( quietFlag ) ? WRC_STR " -q %s" : WRC_STR " %s", res_name );
             arglist = myAlloc( sizeof( char * ) * 3 );
             arglist[1] = res_name;
             arglist[2] = NULL;

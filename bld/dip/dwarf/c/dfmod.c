@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2023-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,6 +37,8 @@
 #include "dfld.h"
 #include "dfaddr.h"
 #include "dfaddsym.h"
+#include "felang.h"
+
 
 /*
  * NYI: should be OS && location sensitive
@@ -88,13 +90,13 @@ static bool ModFill( void *_mod, drmem_hdl mod_handle )
  * pick up general info about mod while here for later calls
  */
 {
-    mod_list    *mod = _mod;
-    char        fname[MAX_PATH];
-    char        *name;
-    char        *path;
-    drmem_hdl   cu_tag;
-    dr_model    model;
-    mod_info    *modinfo;
+    mod_list        *mod = _mod;
+    char            fname[MAX_PATH];
+    char            *name;
+    char            *path;
+    drmem_hdl       cu_tag;
+    dw_mem_model    model;
+    mod_info        *modinfo;
 
     modinfo = NextModInfo( mod );
     modinfo->mod_handle = mod_handle;
@@ -136,8 +138,8 @@ static bool ModFill( void *_mod, drmem_hdl mod_handle )
     model = DRGetMemModelAT( cu_tag );
     if( DCCurrArch() == DIG_ARCH_X86 ) {
         switch( model ) {
-        case DR_MODEL_NONE:
-        case DR_MODEL_FLAT:
+        case DW_MEM_MODEL_none:
+        case DW_MEM_MODEL_flat:
             modinfo->is_segment = false;
             break;
         default:
@@ -357,9 +359,9 @@ size_t DIPIMPENTRY( ModName )( imp_image_handle *iih,
     return( len );
 }
 
-char *DIPIMPENTRY( ModSrcLang )( imp_image_handle *iih, imp_mod_handle imh )
+const char *DIPIMPENTRY( ModSrcLang )( imp_image_handle *iih, imp_mod_handle imh )
 {
-    char       *ret = NULL;
+    const char      *ret = NULL;
 
     if( imh == IMH_NOMOD ) {
         DCStatus( DS_FAIL );
@@ -368,16 +370,16 @@ char *DIPIMPENTRY( ModSrcLang )( imp_image_handle *iih, imp_mod_handle imh )
     switch( IMH2MODI( iih, imh )->lang ) {
     case DR_LANG_UNKNOWN:
 //      ret = "unknown";
-        ret = "c";
+        ret = FE_LANG_C;
         break;
     case DR_LANG_CPLUSPLUS:
-        ret = "cpp";
+        ret = FE_LANG_CPP;
         break;
     case DR_LANG_FORTRAN:
-        ret = "fortran";
+        ret = FE_LANG_FORTRAN;
         break;
     case DR_LANG_C:
-        ret = "c";
+        ret = FE_LANG_C;
         break;
     }
     return( ret );
@@ -569,12 +571,12 @@ dip_status DIPIMPENTRY( ModDefault )( imp_image_handle *iih, imp_mod_handle imh,
     case DK_CODE_PTR:
         ti->kind = TK_POINTER;
         switch( modinfo->model ) {
-        case DR_MODEL_NONE:
-        case DR_MODEL_FLAT:
-        case DR_MODEL_SMALL:
+        case DW_MEM_MODEL_none:
+        case DW_MEM_MODEL_flat:
+        case DW_MEM_MODEL_small:
             ti->modifier = TM_NEAR;
             break;
-        case DR_MODEL_MEDIUM:
+        case DW_MEM_MODEL_medium:
             if( dk == DK_CODE_PTR ) {
                 ti->modifier = TM_FAR;
                 ti->size += 2;
@@ -582,7 +584,7 @@ dip_status DIPIMPENTRY( ModDefault )( imp_image_handle *iih, imp_mod_handle imh,
                 ti->modifier = TM_NEAR;
             }
             break;
-        case DR_MODEL_COMPACT:
+        case DW_MEM_MODEL_compact:
             if( dk == DK_CODE_PTR ) {
                 ti->modifier = TM_NEAR;
             } else {
@@ -590,11 +592,11 @@ dip_status DIPIMPENTRY( ModDefault )( imp_image_handle *iih, imp_mod_handle imh,
                 ti->size += 2;
             }
             break;
-        case DR_MODEL_LARGE:
+        case DW_MEM_MODEL_large:
             ti->modifier = TM_FAR;
             ti->size += 2;
             break;
-        case DR_MODEL_HUGE:
+        case DW_MEM_MODEL_huge:
             if( dk == DK_CODE_PTR ) {
                 ti->modifier = TM_FAR;
             } else {

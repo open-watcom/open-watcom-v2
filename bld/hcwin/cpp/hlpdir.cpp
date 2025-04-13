@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -180,7 +180,7 @@ void HFSDirectory::dump()
     _output.write( direct_size );
     direct_size -= FILE_HEADER_SIZE;
     _output.write( direct_size );
-    _output.write( (uint_8)0x04 );    // WinHelp needs a 0x04 at this point.
+    _output.write( (uint_8)HLP_ATTR_DIR );  // WinHelp needs a 0x04 at this point.
     _files.dump( &_output );
 
     // Now dump the each of the files listed in the b-tree.
@@ -192,7 +192,7 @@ void HFSDirectory::dump()
         _output.write( cursize );
         cursize -= FILE_HEADER_SIZE;
         _output.write( cursize );
-        _output.write( (uint_8)0 );     // Again, keeping WinHelp happy.
+        _output.write( (uint_8)HLP_ATTR_FILE ); // Again, keeping WinHelp happy.
         ((HFSnode*)current)->_pointer->dump( &_output );
     }
     HCDoneTick();

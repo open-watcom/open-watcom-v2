@@ -24,10 +24,10 @@ dwarfutil_trmem = 1
 
 inc_dirs = $(cli_dwarfr_inc_dirs) $(cli_dwarfw_inc_dirs) $(cli_orl_inc_dirs) -I"../h"
 
-extra_cpp_flags_trmemcvr = $(trmem_cpp_flags)
-extra_cpp_flags_dwdump   = $(trmem_cpp_flags)
+extra_cpp_flags_f_trmemcvr = $(trmem_cpp_flags)
+extra_cpp_flags_f_dwdump   = $(trmem_cpp_flags)
 
-extra_c_flags_trmemcvr   = $(trmem_cover_cflags)
+extra_c_flags_f_trmemcvr   = $(trmem_cover_cflags)
 
 # explicit rules
 #################

@@ -34,7 +34,7 @@ runs:
     id: artflist
     run: |
       $response = ${{ steps.curlcmd.outputs.gh }} -H "Authorization: Bearer ${{ github.token }}" `
-      "https://api.github.com/repos/${{ github.repository }}/actions/runs/${{ inputs.runid }}/artifacts"
+      "https://api.github.com/repos/${{ github.repository }}/actions/runs/${{ inputs.runid }}/artifacts?per_page=100"
       if( '${{ inputs.owdebug }}' -eq '1' ) { $response }
       $list_id = $response | jq -r .artifacts[].id
       $list_name = $response | jq -r .artifacts[].name

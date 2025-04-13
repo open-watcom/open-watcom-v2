@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -113,11 +113,11 @@ void RemoteDisco( void )
 }
 
 
-const char *RemoteLink( const char __far *parms, char server )
+const char *RemoteLink( const char __far *parms, bool server )
 {
     int         version;
 
-    server = server;
+    /* unused parameters */ (void)server;
 
     version = api_init();
     if( version == 0 ) {

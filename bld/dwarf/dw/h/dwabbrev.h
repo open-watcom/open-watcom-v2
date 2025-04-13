@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,15 +39,11 @@
 #include "dwabenum.gh"
 
 
-typedef uint_32	abbrev_code;
+typedef uint_32 abbrev_code;
 
-#define InitDebugAbbrev         DW_InitDebugAbbrev
-#define FiniDebugAbbrev         DW_FiniDebugAbbrev
-#define MarkAbbrevAsUsed        DW_MarkAbbrevAsUsed
-
-void            InitDebugAbbrev( dw_client );
-void            FiniDebugAbbrev( dw_client );
-unsigned        MarkAbbrevAsUsed( dw_client, abbrev_code * );
-extern void     GenAllAbbrev( dw_client  cli );
+extern void         DW_InitDebugAbbrev( dw_client );
+extern void         DW_FiniDebugAbbrev( dw_client );
+extern unsigned     DW_MarkAbbrevAsUsed( dw_client, abbrev_code * );
+extern void         DW_GenAllAbbrev( dw_client  cli );
 
 #endif

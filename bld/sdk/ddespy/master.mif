@@ -37,7 +37,7 @@ extra_c_flags     = -fh
 #
 extra_l_flags_win = option stack=7k option heapsize=2k lib ddeml.lib, commdlg.lib
 
-#extra_l_flags_nt_axp = lib ctl3d32.lib
+#extra_l_flags_ntaxp = lib ctl3d32.lib
 
 # explicit rules
 #################

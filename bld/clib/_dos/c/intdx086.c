@@ -37,7 +37,7 @@
 #include "seterrno.h"
 
 
-_WCRTLINK int intdosx( union REGS *inregs, union REGS *outregs, struct SREGS *segregs )
+_WCRTLINK int intdosx( const union REGS *inregs, union REGS *outregs, struct SREGS *segregs )
 {
     int reg_ax;
 

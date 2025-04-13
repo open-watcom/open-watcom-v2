@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,7 +32,7 @@
 
 #include <time.h>
 #include <stdarg.h>
-#include "vhandle.h"
+
 
 // Possible timing for Spawn execution
 typedef enum {
@@ -53,8 +53,8 @@ typedef enum {
     AM_AFTER
 } append_mode;
 
-typedef unsigned long long      disk_size;
-typedef long long               disk_ssize;
+typedef unsigned long long      fsys_size;
+typedef long long               fsys_ssize;
 
 // Possible return values from sending the SIM_INITIALIZE message.
 typedef enum {
@@ -119,7 +119,6 @@ typedef struct a_dialog_header {
 
 
 extern void             CheckStateVars( void );
-extern const char       *SimGetTargetDriveLetter( int parm, VBUF *buff );
 extern bool             SimFileAdd( int parm );
 extern bool             SimFileUpToDate( int parm );
 extern bool             SimFileRemove( int parm );
@@ -132,22 +131,26 @@ extern bool             SimSubFileInOldDir( int parm, int subfile );
 extern time_t           SimSubFileDate( int parm, int subfile );
 extern bool             SimSubFileNewer( int parm, int subfile );
 extern bool             SimSubFileExecutable( int parm, int subfile );
+extern bool             SimSubFileTextCRLF( int parm, int subfile );
 extern bool             SimSubFileIsNLM( int parm, int subfile );
 extern bool             SimSubFileIsDLL( int parm, int subfile );
 extern bool             SimSubFileReadOnly( int parm, int subfile );
 extern long             SimSubFileSize( int parm, int subfile );
 extern long             SimInit( const VBUF *inf_name );
-extern void             SimSetTargTempDisk( int parm, char disk );
-extern const char       *SimGetTargTempDisk( int parm );
-extern int              SimGetTargNumFiles( int parm );
+extern int              SimGetTargetNumFiles( int parm );
 extern int              SimNumTargets( void );
-extern disk_ssize       SimTargetSpaceNeeded( int parm );
+extern const char       *SimTargetPath( int parm );
+extern bool             SimTargetMarked( int i );
+extern bool             SimSetTargetMarked( int i, bool b );
+extern fsys_ssize       SimTargetSpaceNeeded( int parm );
+extern int              SimTargetFsys( int i );
+extern int              SimSetTargetFsys( int i, int fsys );
 extern void             SimTargetDir( int i, VBUF *buff );
 extern void             SimTargetDirName( int i, VBUF *buff );
 extern int              SimNumDirs( void );
 extern void             SimDirNoEndSlash( int parm, VBUF *buff );
 extern bool             SimDirUsed( int parm );
-extern int              SimDirTargNum( int parm );
+extern int              SimDirTarget( int parm );
 extern int              SimDirParent( int parm );
 extern void             SimGetDir( int parm, VBUF *buff );
 extern int              SimNumFiles( void );
@@ -199,7 +202,6 @@ extern void             SimGetLabelDir( int parm, VBUF *buff );
 extern void             SimGetLabelLabel( int parm, VBUF *buff );
 extern bool             SimCalcTargetSpaceNeeded( void );
 extern void             CheckDLLCount( const char * );
-extern void             SimCalcAddRemove( void );
 extern void             SimSetNeedGetDiskSizes( void );
 extern void             MsgPut( int resourceid, va_list args );
 extern void             FreeAllStructs( void );
@@ -214,8 +216,6 @@ extern int              SimNumDeletes( void );
 extern const char       *SimDeleteName( int );
 extern bool             SimDeleteIsDialog( int );
 extern bool             SimDeleteIsDir( int );
-extern int              SimNumUpgrades( void );
-extern const char       *SimGetUpgradeName( int );
 extern vhandle          MakeDummyVar( void );
 
 extern bool             GetOptionVarValue( vhandle var_handle );

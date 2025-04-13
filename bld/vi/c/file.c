@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -319,11 +319,11 @@ static size_t getFileInfoString( char *st, bool is_small )
     return( strlen( st ) );
 }
 
-static void make_short_name( char *name, size_t len, char *buffer )
+static void make_short_name( const char *name, size_t len, char *buffer )
 {
-    char    *start;
-    char    *end;
-    size_t  newlen;
+    const char  *start;
+    const char  *end;
+    size_t      newlen;
 
     len -= 2; /* for 2 quotes */
     strcpy( buffer, SingleDQuote );

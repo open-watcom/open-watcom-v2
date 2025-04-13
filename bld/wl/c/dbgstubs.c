@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -56,8 +56,8 @@ void DBIInitModule( mod_entry *obj )
     (void)obj;
 }
 
-void DBIP1Source( byte *buff, byte *endbuff )
-/**************************************************/
+void DBIP1Source( const byte *buff, const byte *endbuff )
+/*******************************************************/
 {
     (void)buff;
     (void)endbuff;

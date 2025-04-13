@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -58,6 +58,7 @@
 #include "dbgsetfn.h"
 #include "dbgsetfg.h"
 #include "dbgmisc.h"
+#include "felang.h"
 
 #include "clibext.h"
 
@@ -268,7 +269,7 @@ static void RecursionConf( void )
 
 bool LangSetInit( void )
 {
-    static char InitialLang[] = { "cpp" };
+    static char InitialLang[] = { FE_LANG_CPP };
 
     LangInit();
     _Alloc( Language, sizeof( InitialLang ) + 1 );

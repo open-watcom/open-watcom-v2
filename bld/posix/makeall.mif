@@ -2,19 +2,28 @@
 #   define macro for OS's which need POSIX utilities
 #
 
-!ifndef __UNIX__
+!ifndef bootstrap
+build_posix=1
+!else ifndef __UNIX__
+build_posix=1
+!endif
+
+!ifdef build_posix
 
 proj_name = posix_all
 
 posix_all_autodepends = .AUTODEPEND
 
-!include ../common.mif
+!include ../memmodel.mif
 
 model_switch_i86=
 model_switch_386=
 
 !include cproj.mif
 !include defrule.mif
+
+!include ../common.mif
+
 defrule_key = stdlib
 subdir_stdlib = $(stdlibdir)
 extra_cpp_stdlib_i86_flags = -m$(model)
@@ -29,6 +38,7 @@ extra_cpp_altlib_i86c_flags = -ms
 extra_cpp_altlib_flags = $(extra_cpp_altlib_$(host_cpu)$(model)_flags)
 !include defrule.mif
 !endif
+!include deftarg.mif
 
 !include ../commands.mif
 
@@ -74,23 +84,26 @@ $(commands) : .SYMBOLIC $(__MAKEFILES__)
 
 curr_dir=$+$(%__CWD__)$-
 
-clean : .SYMBOLIC
-    cd $(subdir_stdlib)
+clean_subdirs: .PROCEDURE .EXPLICIT
+    cd $(stdlibdir)
     @%make killobjs
+    @%make killnonobjs
     cd "$(curr_dir)"
 !ifdef alt_posixlib
-    cd $(subdir_altlib)
+    cd $(altlibdir)
     @%make killobjs
+    @%make killnonobjs
     cd "$(curr_dir)"
 !endif
-    @%make killobjs
 
-killobjs : .PROCEDURE .EXPLICIT
-    rm -f *.obj *.lnk *.exe *.exp *.lib *.lbc *.lst *.err *.pch *.map *.sym
-    rm -f *.tmp *.trk $(additional_clean_sys)
+!ifdef additional_remove_subdirs
+$(additional_remove_subdirs) :
+    mkdir $@
+!endif
 
 !else
 
 clean : .SYMBOLIC
+    @%null
 
 !endif

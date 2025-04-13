@@ -42,6 +42,7 @@ static gui_menu_struct W3PopUp[] = {
 
 static char *Stuff[] =
 {
+#if defined( __WATCOMC__ )
 #if 0
 "With a Pentium compiler writer's guide in one hand, and a simulator",
 "listing in the other, we set out to make WATCOM C/C++ 32 into a Pentium",
@@ -259,6 +260,9 @@ static char *Stuff[] =
 "                parameter = %1",
 "            }",
 "            screenmode = text",
+#endif
+#else
+" test W3 "
 #endif
 };
 

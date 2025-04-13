@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,10 +33,20 @@
 #include "variety.h"
 #include <sys/stat.h>
 #include "linuxsys.h"
+#include "kstat.h"
 
 
 _WCRTLINK int fstat( int __fildes, struct stat * __buf )
 {
+#if 0
+    struct kstat32  ks;
+
+    syscall_res res = sys_call2( SYS_fstat, __fildes, (u_long)&ks );
+    if( !__syscall_iserror( res ) ) {
+        COPY_STAT( __buf, ks );
+    }
+#else
     syscall_res res = sys_call2( SYS_fstat, __fildes, (u_long)__buf );
+#endif
     __syscall_return( int, res );
 }

@@ -79,12 +79,14 @@
     struct _rdos_find_t {
         int handle;
         int entry;
+        int count;
+        int header_size;
+        char *chain;
     };
 
     #define RDOSFINDTYPE        struct _rdos_find_t
 
-    extern time_t   __rdos_filetime_cvt( unsigned long msb,
-                                         unsigned long lsb );
+    extern time_t   __rdos_filetime_cvt( unsigned long long tics );
 
     extern int      __rdos_finddata_get( RDOSFINDTYPE *findbuf,
                                          struct _finddata_t *fileinfo );

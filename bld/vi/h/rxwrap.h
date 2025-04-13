@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -25,14 +25,14 @@
 *
 *  ========================================================================
 *
-* Description:  Wrapper for regexp.c module.
+* Description:  Declaration for wrapper module rxwrap.c to access owregexp.c
 *
 ****************************************************************************/
 
 
 #define CASEIGNORE      EditFlags.CaseIgnore
 #define MAGICFLAG       EditFlags.Magic
-#define MAGICSTR        EditVars.Majick
+#define MAGICSTR        EditVars.Majick.str
 #define REALTABS        EditFlags.RealTabs
 #define ALLOC           MemAlloc
 #define FREE            MemFree
@@ -40,4 +40,4 @@
 
 extern vi_rc            RegExpError;
 
-#include "regexp.h"
+#include "owregexp.h"

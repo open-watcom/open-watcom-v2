@@ -35,3 +35,6 @@ extern ender        __CEndThread;
 extern beginnerex   __CBeginThreadEx;
 extern enderex      __CEndThreadEx;
 #endif
+#if defined( __RDOS__ )
+extern timerbeginner __CBeginTimerThread;
+#endif

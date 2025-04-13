@@ -78,11 +78,6 @@ void RdosGetBitmapInfoBase( void );
 #pragma aux RdosGetBitmapInfoBase = \
     CallGate_get_bitmap_info;
 
-void RdosReadDirBase( void );
-
-#pragma aux RdosReadDirBase = \
-    CallGate_read_dir;
-
 void RdosGetModuleResourceBase( void );
 
 #pragma aux RdosGetModuleResourceBase = \
@@ -176,32 +171,6 @@ void RdosGetBitmapInfo( int handle, int *BitPerPixel, int *width, int *height, i
         mov ebx,buffer
         mov [ebx],edi
     }
-}
-
-int RdosReadDir( int Handle, int EntryNr, int MaxNameSize, char *PathName, long *FileSize, int *Attribute, unsigned long *MsbTime, unsigned long *LsbTime )
-{
-    int val;
-
-    __asm {
-        mov ebx,Handle
-        mov edx,EntryNr
-        mov ecx,MaxNameSize
-        mov edi,PathName
-    }
-    RdosReadDirBase();
-    __asm {
-        mov esi,FileSize
-        mov [esi],ecx
-        movzx ebx,bx
-        mov esi,Attribute
-        mov [esi],ebx
-        mov esi,MsbTime
-        mov [esi],edx
-        mov esi,LsbTime
-        mov [esi],eax
-    }
-    val = RdosCarryToBool();
-    return( val );
 }
 
 int RdosReadResource( int handle, int ID, char *Buf, int Size )

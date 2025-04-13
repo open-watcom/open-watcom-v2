@@ -32,6 +32,7 @@
 
 
 #include "guiwind.h"
+#include "guix.h"
 
 /*
  * GUIDrawText

@@ -1,0 +1,58 @@
+% !TeX root = owstl.tex
+
+\chapter{Introduction}
+
+\section{Overview}
+
+The Open Watcom Standard Template Library (OWSTL) is an implementation of the
+C++ standard library defined in ISO/IEC 14882. This document describes the
+design of OWSTL. Each section describes an element of the library and
+typically includes an overview of the design, design decisions made and the
+reasoning behind them, problems encountered, and explanations of the solutions
+to those problems. It is hoped that a peer review of the code and design
+documentation will be undertaken at some stage and that questions raised or
+resulting changes made will be documented here.
+
+\section{Philosophy}
+
+OWSTL is written entirely from scratch. It does not, for example, build upon
+an old HP/SGI code base or any other previous library. When a new element is
+added to OWSTL the matter should be researched by the author before they
+commence coding. The commercial compiler \OW\ is based on, made a name for
+itself by producing high quality, fast code. The intention is to produce a
+high performance library to complement that. This means choosing and
+experimenting with the best algorithms possible and implementing them with
+care.
+
+OWSTL also attempts to be highly readable to encourage code inspection and
+study.  That will encourage new developers to maintain and improve the library
+and will give the greatest advantage in the long term.
+
+\section{Status}
+
+OWSTL is currently under development. Many elements of the library have not
+yet been implemented. The code is mainly templates and currently resides in
+under the \filepath{hdr} project. In the future, non-template classes or
+functions may be factored out of the template code and be built into the
+static and dynamic libraries. The existing library code is in
+\filepath{bld/plusplus/cpplib}.
+
+For example, it should be possible to separate the rebalancing algorithms from
+the red-black tree code as these just manipulate pointers. They don't really
+need to know the contained type. Reasonably thorough regression tests can be
+found in \filepath{plustest/owstl}. These should be updated in parallel with
+new functionality or fixes made to the library itself. Some Benchmarks can be
+found in \filepath{bench/owstl}.
+
+\section{Implementor's Notes}
+
+When updating OWSTL, do the following:
+\begin{itemize}
+\item Check out latest source.
+\item Run the regression tests. If any are broken, fix them or open an issue.
+\item Update the source.
+\item Update the regression tests.
+\item Update this document.
+\item Update the user documents (e.g., on the Wiki, if applicable).
+\item Create a pull request.
+\end{itemize}

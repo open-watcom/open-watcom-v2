@@ -720,7 +720,7 @@ static void *DesignatedInit( TYPEPTR typ, TYPEPTR ctyp, void *field )
     static bool     new_field = true;
 
     if( !CompFlags.extensions_enabled
-      && CHECK_STD( < , C99 ) ) {
+      && ( CompVars.cstd < STD_C99 ) ) {
         return( field );
     }
 
@@ -1339,7 +1339,7 @@ static void AggregateVarDeclEquals( SYMPTR sym, SYM_HANDLE sym_handle )
     SYM_HANDLE  sym2_handle;
     SYM_ENTRY   sym2;
 
-    sym2_handle = MakeNewSym( &sym2, 'X', sym->sym_type, SC_STATIC );
+    sym2_handle = MakeNewDotSym( &sym2, 'X', sym->sym_type, SC_STATIC );
     sym2.flags |= SYM_INITIALIZED;
     CompFlags.initializing_data = true;
     StaticInit( &sym2, sym2_handle );
@@ -1525,7 +1525,7 @@ static void InitArrayVar( SYMPTR sym, SYM_HANDLE sym_handle, TYPEPTR typ )
          */
         NextToken();
         if( CharArray( typ->object ) ) {
-            sym2_handle = MakeNewSym( &sym2, 'X', typ, SC_STATIC );
+            sym2_handle = MakeNewDotSym( &sym2, 'X', typ, SC_STATIC );
             sym2.flags |= SYM_INITIALIZED;
             if( sym2.u.var.segid == SEG_NULL ) {
                 SetFarHuge( &sym2, false );
@@ -1538,7 +1538,7 @@ static void InitArrayVar( SYMPTR sym, SYM_HANDLE sym_handle, TYPEPTR typ )
             AssignAggregate( VarLeaf( sym, sym_handle ),
                              VarLeaf( &sym2, sym2_handle ), typ );
         } else if( WCharArray( typ->object ) ) {
-            sym2_handle = MakeNewSym( &sym2, 'X', typ, SC_STATIC );
+            sym2_handle = MakeNewDotSym( &sym2, 'X', typ, SC_STATIC );
             sym2.flags |= SYM_INITIALIZED;
             if( sym2.u.var.segid == SEG_NULL ) {
                 SetFarHuge( &sym2, false );

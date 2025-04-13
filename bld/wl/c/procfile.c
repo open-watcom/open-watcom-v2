@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -63,8 +63,8 @@
 #include "loadpe.h"
 
 
-static void BadSkip( file_list *list, unsigned long *loc )
-/********************************************************/
+static void BadSkip( const file_list *list, unsigned long *loc )
+/**************************************************************/
 {
     /* unused parameters */ (void)list; (void)loc;
 
@@ -72,7 +72,7 @@ static void BadSkip( file_list *list, unsigned long *loc )
 }
 
 static struct {
-    void (*SkipObj)( file_list *, unsigned long * );
+    void (*SkipObj)( const file_list *, unsigned long * );
     unsigned long (*Pass1)( void );
 } Process[] = {
     /* SkipObj       Pass1                                                                  */
@@ -463,7 +463,7 @@ static void DoPass1( mod_entry *next, file_list *list )
             } else if( !IS_FMT_OMF( CurrMod->modinfo ) ) {
                 break;          // can only concat omf.
             }
-            if( lastmod || CacheEnd( list, loc ) ) {
+            if( lastmod || CacheIsEnd( list, loc ) ) {
                 break;
             }
         }
@@ -590,8 +590,8 @@ void LoadObjFiles( section *sect )
     }
 }
 
-char *IdentifyObject( file_list *list, unsigned long *loc, unsigned long *size )
-/******************************************************************************/
+char *IdentifyObject( const file_list *list, unsigned long *loc, unsigned long *size )
+/************************************************************************************/
 {
     ar_header       *ar_hdr;
     char            *name;

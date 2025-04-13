@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -39,12 +39,10 @@
 #include <ctype.h>
 #include <errno.h>
 #if defined(__UNIX__)
-    #include <dirent.h>
   #if defined(__QNX__)
     #include <sys/io_msg.h>
   #endif
 #else
-    #include <direct.h>
   #if defined(__OS2__)
     #include <wos2.h>
   #elif defined(__NT__)
@@ -349,15 +347,13 @@ void _makepath( char *path, const char *drive,
         ch = _mbsnextc( fname );
         if( pickup( ch, &first_pc ) != first_pc && *path == first_pc )
             path++;
-
         while( *fname != '\0' ) {
-        //do {
             ch = pickup( _mbsnextc( fname ), &first_pc );
             _mbvtop( ch, path );
             path[_mbclen( path )] = '\0';
             path = _mbsinc( path );
             fname = _mbsinc( fname );
-        } //while( *fname != '\0' );
+        }
     } else {
         if( *path == first_pc ) {
             path++;
@@ -431,10 +427,12 @@ char *_sys_fullpath( char *buff, const char *path, size_t size )
 
     /*** Get the full pathname ***/
     rc = GetFullPathNameA( path, (DWORD)size, buff, &filepart );
-    // If the buffer is too small, the return value is the size of
-    // the buffer, in TCHARs, required to hold the path.
-    // If the function fails, the return value is zero. To get extended error
-    // information, call GetLastError.
+    /*
+     * If the buffer is too small, the return value is the size of
+     * the buffer, in TCHARs, required to hold the path.
+     * If the function fails, the return value is zero. To get extended error
+     * information, call GetLastError.
+     */
     if( (rc == 0) || (rc > (DWORD)size) ) {
         errno = ERANGE;
         return( NULL );
@@ -634,7 +632,7 @@ char *_sys_fullpath( char *buff, const char *path, size_t size )
                 *(q++) = *(p++);
                 continue;
             }
-            ++p;     // at least '.'
+            ++p;     /* at least '.' */
             if( _IS_SLASH( p[0] ) ) {
                 /* ignore "./" in directory specs */
                 if( ! _IS_SLASH( q[-1] ) ) {            /* 14-jan-93 */
@@ -795,9 +793,7 @@ char *strrev( char *str )
 *
 ****************************************************************************/
 
-/* NOTE: This file isn't used for QNX. It's got its own version. */
-
-#ifdef __APPLE__
+#ifdef __OSX__
 
 #include <mach-o/dyld.h>
 
@@ -812,6 +808,8 @@ char *_cmdname( char *name )
 }
 
 #elif defined( __BSD__ )
+
+#if defined( __FREEBSD__ )
 
 #include <sys/sysctl.h>
 
@@ -828,6 +826,135 @@ char *_cmdname( char *name )
     sysctl( mib, 4, name, &cb, NULL, 0 );
     return( name );
 }
+
+#elif defined( __OPENBSD__ )
+
+extern const char *__progname;
+#include <sys/stat.h>
+
+static int _cmdname_sub( char *out, const char *path, const char *name )
+{
+    int         path_len, name_len;
+    char        tmp[PATH_MAX];
+    struct stat sb;
+
+    path_len = ( path == NULL ) ? 0 : ( strlen( path ) + 1 );   /* with '/' */
+    name_len = ( name == NULL ) ? 0 : strlen( name );
+
+    if ( ( path_len + name_len ) >= sizeof( tmp ) ) {
+        abort();
+    }
+    if ( path_len ) {
+        memcpy( tmp, path, path_len - 1 );
+        tmp[path_len - 1] = '/';
+    }
+    if ( name_len ) {
+        memcpy( tmp + path_len, name, name_len );
+    }
+    tmp[path_len + name_len] = '\0';
+
+    if ( tmp[0] == '/' ) {
+        memcpy( out, tmp, path_len + name_len + 1 );
+    } else {
+        realpath( tmp, out );
+    }
+    return( stat( out, &sb ) );
+}
+
+static char *_cmdname_tokenize( char *str, char **next )
+{
+    char    *p;
+
+    if ( *str == '\0' ) {
+        return( NULL );
+    }
+
+    p = strchr( str, ':' );
+    if ( p == NULL ) {
+        *next = str + strlen( str );
+    } else {
+        *p = '\0';
+        *next = p + 1;
+    }
+
+    return( str );
+}
+
+char *_cmdname(char *name)
+{
+    int     save_errno, envpath_len;
+    char    *path, *envpath, *result = NULL;
+    char    *p, *pp;
+
+    save_errno = errno;
+
+    if ( ( _argv != NULL && _argv[0] != NULL )
+      && ( *_argv[0] == '.' || *_argv[0] == '/' )
+      && ( !_cmdname_sub( name, NULL, _argv[0] ) ) ) {
+        result = name;
+        goto fin0;
+    }
+
+    envpath = getenv( "PATH" );
+    if ( envpath == NULL ) {
+        goto fin0;
+    }
+    envpath_len = strlen( envpath ) + 1;
+    path = malloc( envpath_len + 1 );
+    if ( path == NULL ) {
+        goto fin0;
+    }
+    memcpy( path, envpath, envpath_len );
+
+    /* last ":" treat as ":." */
+    if ( path[envpath_len - 2] == ':' ) {
+        path[envpath_len - 1] = '.';
+        path[envpath_len] = '\0';
+    }
+
+    for ( p = _cmdname_tokenize( path, &pp ); p != NULL;
+          p = _cmdname_tokenize( pp, &pp ) ) {
+        if ( !_cmdname_sub( name, ( *p == '\0' ) ? "." : p, __progname ) ) {
+            result = name;
+            goto fin1;
+        }
+    }
+fin1:
+    free( path );
+fin0:
+    errno = save_errno;
+    return( result );
+}
+
+#else
+
+char *_cmdname( char *name )
+{
+    int save_errno;
+    int result;
+
+    save_errno = errno;
+    result = readlink( "/proc/self/exe", name, PATH_MAX );
+    if( result == -1 ) {
+        /* try another way for BSD */
+#if defined( __NETBSD__ )
+        result = readlink( "/proc/curproc/exe", name, PATH_MAX );
+#else
+        result = readlink( "/proc/curproc/file", name, PATH_MAX );
+#endif
+    }
+    errno = save_errno;
+
+    /* fall back to argv[0] if readlink doesn't work */
+    if( result == -1 || result == PATH_MAX )
+        return( strcpy( name, _argv[0] ) );
+
+    /* readlink does not add a NUL so we need to do it ourselves */
+    name[result] = '\0';
+    return( name );
+}
+
+#endif
 
 #elif defined (__HAIKU__)
 
@@ -855,7 +982,7 @@ char *_cmdname( char *name )
     save_errno = errno;
     result = readlink( "/proc/self/exe", name, PATH_MAX );
     if( result == -1 ) {
-        /* try another way for BSD */
+        /* try another way */
         result = readlink( "/proc/curproc/file", name, PATH_MAX );
     }
     errno = save_errno;
@@ -964,7 +1091,7 @@ int (_bgetcmd)( char *buffer, int len )
 
     if( ( buffer != NULL ) && ( len > 0 ) ) {
         p = buffer;
-        --len;          // reserve space for terminating NULL byte
+        --len;          /* reserve space for terminating NULL byte */
     } else {
         p = NULL;
         len = 0;
@@ -1005,7 +1132,7 @@ int (_bgetcmd)( char *buffer, int len )
         }
     }
     if( p != NULL ) {
-        *p = '\0';  // terminate string
+        *p = '\0';  /* terminate string */
     }
 
     return( total );
@@ -1736,17 +1863,17 @@ int closedir( DIR *dirp )
     return( 0 );
 }
 
-char        *optarg;            // pointer to option argument
-int         optind = 1;         // current argv[] index
-int         optopt;             // currently processed chracter
-int         opterr = 1;         // error output control flag
+char        *optarg;            /* pointer to option argument */
+int         optind = 1;         /* current argv[] index */
+int         optopt;             /* currently processed chracter */
+int         opterr = 1;         /* error output control flag */
 
-char        __altoptchar = '/'; // alternate option character
-char        __optchar;          // matched option char ('-' or altoptchar)
+char        __altoptchar = '/'; /* alternate option character */
+char        __optchar;          /* matched option char ('-' or altoptchar) */
 
-static int  opt_offset = 0;     // position in currently parsed argument
+static int  opt_offset = 0;     /* position in currently parsed argument */
 
-// Error messages suggested by Single UNIX Specification
+/* Error messages suggested by Single UNIX Specification */
 #define NO_ARG_MSG      "%s: option requires an argument -- %c\n"
 #define BAD_OPT_MSG     "%s: illegal option -- %c\n"
 
@@ -1783,22 +1910,22 @@ int getopt( int argc, char * const argv[], const char *optstring )
             opt_offset++;
             optopt = curr_arg[opt_offset];
         }
-        if( optopt == '\0' ) {  // option char by itself should be
-            return( -1 );       // left alone
+        if( optopt == '\0' ) {  /* option char by itself should be */
+            return( -1 );       /* left alone */
         }
         if( optopt == '-' && curr_arg[opt_offset + 1] == '\0' ) {
             opt_offset = 0;
             ++optind;
-            return( -1 );   // "--" POSIX end of options delimiter
+            return( -1 );   /* "--" POSIX end of options delimiter */
         }
         ptr = strchr( optstring, optopt );
         if( ptr == NULL ) {
             if( opterr && *optstring != ':' ) {
                 fprintf( stderr, BAD_OPT_MSG, argv[0], optopt );
             }
-            return( '?' );  // unrecognized option
+            return( '?' );  /* unrecognized option */
         }
-        if( *(ptr + 1) == ':' ) {   // check if option requires argument
+        if( *(ptr + 1) == ':' ) {   /* check if option requires argument */
             if( curr_arg[opt_offset + 1] == '\0' ) {
                 if( argv[optind + 1] == NULL ) {
                     if( *optstring == ':' ) {
@@ -1819,14 +1946,14 @@ int getopt( int argc, char * const argv[], const char *optstring )
             ++optind;
         } else {
             opt_offset++;
-            if( curr_arg[opt_offset] == '\0' ) {    // last char in argv element
+            if( curr_arg[opt_offset] == '\0' ) {    /* last char in argv element */
                 opt_offset = 0;
                 ++optind;
             }
         }
-        return( optopt );   // return recognized option char
+        return( optopt );   /* return recognized option char */
     } else {
-        return( -1 );       // no more options
+        return( -1 );       /* no more options */
     }
 }
 

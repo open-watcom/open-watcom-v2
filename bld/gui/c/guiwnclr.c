@@ -31,7 +31,6 @@
 
 
 #include "guiwind.h"
-#include <string.h>
 #include "guiwnclr.h"
 #include "guicolor.h"
 

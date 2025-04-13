@@ -22,7 +22,7 @@
 :include incdir.sp
 :endsegment
 
-typedef unsigned short sa_family_t;
+:include safamilt.sp
 
 struct sockaddr {
     sa_family_t sa_family;

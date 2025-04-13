@@ -21,6 +21,7 @@ set PROJDIR=<CWD>
     <CCCMD> linux386/wtouch.exe  "<OWRELROOT>/binl/wtouch"
     <CCCMD> ntaxp/wtouch.exe     "<OWRELROOT>/axpnt/"
 
+    <CCCMD> bsdx64/wtouch.exe    "<OWRELROOT>/binb64/wtouch"
     <CCCMD> ntx64/wtouch.exe     "<OWRELROOT>/binnt64/"
     <CCCMD> linuxx64/wtouch.exe  "<OWRELROOT>/binl64/wtouch"
     <CCCMD> linuxarm/wtouch.exe  "<OWRELROOT>/arml/wtouch"

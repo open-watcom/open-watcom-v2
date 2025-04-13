@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,7 +37,7 @@
     #include <windows.h>
 #elif defined( __OS2__ )
     #include <os2.h>
-#elif __RDOS__
+#elif defined( __RDOS__ )
     #include <rdos.h>
     #include "find.h"
     #include "liballoc.h"

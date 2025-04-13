@@ -24,4 +24,4 @@ nt_trap_objs = &
 extra_incs += -I"$(trap_dir)/lcl/nt/h" -I"$(lib_misc_dir)/h" -I"$(clib_dir)/h"
 extra_srcs +=;$(trap_dir)/lcl/nt/c
 
-extra_c_flags_accio = -I"$(clib_dir)/h"
+extra_c_flags_f_accio = -I"$(clib_dir)/h"

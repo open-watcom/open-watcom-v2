@@ -91,14 +91,14 @@ static instruction      *PromoteOperand( instruction *ins ) {
 instruction     *rDOSET( instruction *ins )
 /*****************************************/
 {
-    instruction         *new;
+    instruction         *new_ins;
 
     switch( ins->head.opcode ) {
     case OP_SET_NOT_EQUAL:
         // FIXME: This is correct but stupid
         ins->head.opcode = OP_SET_EQUAL;
-        new = MakeBinary( OP_SET_EQUAL, ins->result, AllocS32Const( 0 ), ins->result, ins->type_class );
-        SuffixIns( ins, new );
+        new_ins = MakeBinary( OP_SET_EQUAL, ins->result, AllocS32Const( 0 ), ins->result, ins->type_class );
+        SuffixIns( ins, new_ins );
         break;
     case OP_SET_GREATER:
         ins->head.opcode = OP_SET_LESS_EQUAL;
@@ -135,7 +135,7 @@ instruction      *rSIMPCMP( instruction *ins )
 * arbitrary reg/reg comparisons.
 */
 {
-    instruction         *new;
+    instruction         *new_ins;
     opcode_defs         opcode;
     bool                reverse;
 
@@ -189,9 +189,9 @@ instruction      *rSIMPCMP( instruction *ins )
     if( reverse ) {
         opcode = OP_CMP_EQUAL;
     }
-    new = MakeCondition( opcode, ins->result, AllocS32Const( 0 ), _TrueIndex( ins ), _FalseIndex( ins ), ins->type_class );
-    SuffixIns( ins, new );
-    return( new );
+    new_ins = MakeCondition( opcode, ins->result, AllocS32Const( 0 ), _TrueIndex( ins ), _FalseIndex( ins ), ins->type_class );
+    SuffixIns( ins, new_ins );
+    return( new_ins );
 }
 
 instruction      *rDOTEST( instruction *ins )
@@ -536,42 +536,42 @@ name    *LowPart( name *tosplit, type_class_def type_class )
 * at least 32-bit).
 */
 {
-    name                *new;
+    name                *new_name;
     signed_8            s8;
     unsigned_8          u8;
     int_16              s16;
     uint_16             u16;
     constant_defn       *floatval;
 
-    new = NULL;
+    new_name = NULL;
     switch( tosplit->n.class ) {
     case N_CONSTANT:
         if( tosplit->c.const_type == CONS_ABSOLUTE ) {
             if( type_class == U1 ) {
                 u8 = tosplit->c.lo.u.int_value & 0xff;
-                new = AllocUIntConst( u8 );
+                new_name = AllocUIntConst( u8 );
             } else if( type_class == I1 ) {
                 s8 = tosplit->c.lo.u.int_value & 0xff;
-                new = AllocIntConst( s8 );
+                new_name = AllocIntConst( s8 );
             } else if( type_class == U2 ) {
                 u16 = tosplit->c.lo.u.int_value & 0xffff;
-                new = AllocUIntConst( u16 );
+                new_name = AllocUIntConst( u16 );
             } else if( type_class == I2 ) {
                 s16 = tosplit->c.lo.u.int_value & 0xffff;
-                new = AllocIntConst( s16 );
+                new_name = AllocIntConst( s16 );
             } else if( type_class == I4 ) {
-                new = AllocS32Const( tosplit->c.lo.u.int_value );
+                new_name = AllocS32Const( tosplit->c.lo.u.int_value );
             } else if( type_class == U4 ) {
-                new = AllocU32Const( tosplit->c.lo.u.uint_value );
+                new_name = AllocU32Const( tosplit->c.lo.u.uint_value );
             } else if( type_class == FL ) {
                 _Zoiks( ZOIKS_129 );
             } else { /* FD */
                 floatval = GetFloat( tosplit, FD );
-                new = AllocConst( CFCnvU32F( &cgh, _TargetLongInt( *(uint_32 *)( floatval->value + 0 ) ) ) );
+                new_name = AllocConst( CFCnvU32F( &cgh, _TargetLongInt( *(uint_32 *)( floatval->value + 0 ) ) ) );
             }
 #if 0
         } else if( tosplit->c.const_type == CONS_ADDRESS ) {
-            new = AddrConst( tosplit->c.value, tosplit->c.lo.u.int_value, CONS_OFFSET );
+            new_name = AddrConst( tosplit->c.value, tosplit->c.lo.u.int_value, CONS_OFFSET );
 #endif
         } else {
             _Zoiks( ZOIKS_044 );
@@ -579,35 +579,35 @@ name    *LowPart( name *tosplit, type_class_def type_class )
         break;
     case N_REGISTER:
         if( type_class == U1 || type_class == I1 ) {
-            new = AllocRegName( Low16Reg( tosplit->r.reg ) );
+            new_name = AllocRegName( Low16Reg( tosplit->r.reg ) );
         } else if( type_class == U2 || type_class == I2 ) {
-            new = AllocRegName( Low32Reg( tosplit->r.reg ) );
+            new_name = AllocRegName( Low32Reg( tosplit->r.reg ) );
         } else {
-            new = AllocRegName( Low64Reg( tosplit->r.reg ) );
+            new_name = AllocRegName( Low64Reg( tosplit->r.reg ) );
         }
         break;
     case N_TEMP:
-        new = TempOffset( tosplit, 0, type_class );
-        if( new->t.temp_flags & CONST_TEMP ) {
+        new_name = TempOffset( tosplit, 0, type_class );
+        if( new_name->t.temp_flags & CONST_TEMP ) {
             name *cons = tosplit->v.symbol;
             if( tosplit->n.type_class == FD ) {
                 cons = Int64Equivalent( cons );
             }
-            new->v.symbol = LowPart( cons, type_class );
+            new_name->v.symbol = LowPart( cons, type_class );
         }
         break;
     case N_MEMORY:
-        new = AllocMemory( tosplit->v.symbol, tosplit->v.offset,
+        new_name = AllocMemory( tosplit->v.symbol, tosplit->v.offset,
                             tosplit->m.memory_type, type_class );
-        new->v.usage = tosplit->v.usage;
+        new_name->v.usage = tosplit->v.usage;
         break;
     case N_INDEXED:
-        new = ScaleIndex( tosplit->i.index, tosplit->i.base,
+        new_name = ScaleIndex( tosplit->i.index, tosplit->i.base,
                             tosplit->i.constant, type_class,
                             0, tosplit->i.scale, tosplit->i.index_flags );
         break;
     }
-    return( new );
+    return( new_name );
 }
 
 name    *HighPart( name *tosplit, type_class_def type_class )
@@ -618,42 +618,42 @@ name    *HighPart( name *tosplit, type_class_def type_class )
 * at least 32-bit).
 */
 {
-    name                *new;
+    name                *new_name;
     signed_8            s8;
     unsigned_8          u8;
     int_16              s16;
     uint_16             u16;
     constant_defn       *floatval;
 
-    new = NULL;
+    new_name = NULL;
     switch( tosplit->n.class ) {
     case N_CONSTANT:
         if( tosplit->c.const_type == CONS_ABSOLUTE ) {
             if( type_class == U1 ) {
                 u8 = ( tosplit->c.lo.u.int_value >> 8 ) & 0xff;
-                new = AllocUIntConst( u8 );
+                new_name = AllocUIntConst( u8 );
             } else if( type_class == I1 ) {
                 s8 = ( tosplit->c.lo.u.int_value >> 8 ) & 0xff;
-                new = AllocIntConst( s8 );
+                new_name = AllocIntConst( s8 );
             } else if( type_class == U2 ) {
                 u16 = ( tosplit->c.lo.u.int_value >> 16 ) & 0xffff;
-                new = AllocUIntConst( u16 );
+                new_name = AllocUIntConst( u16 );
             } else if( type_class == I2 ) {
                 s16 = ( tosplit->c.lo.u.int_value >> 16 ) & 0xffff;
-                new = AllocIntConst( s16 );
+                new_name = AllocIntConst( s16 );
             } else if( type_class == I4 ) {
-                new = AllocS32Const( tosplit->c.hi.u.int_value );
+                new_name = AllocS32Const( tosplit->c.hi.u.int_value );
             } else if( type_class == U4 ) {
-                new = AllocU32Const( tosplit->c.hi.u.uint_value );
+                new_name = AllocU32Const( tosplit->c.hi.u.uint_value );
             } else if( type_class == FL ) {
                 _Zoiks( ZOIKS_129 );
             } else { /* FD */
                 floatval = GetFloat( tosplit, FD );
-                new = AllocConst( CFCnvU32F( &cgh, _TargetLongInt( *(uint_32 *)( floatval->value + 2 ) ) ) );
+                new_name = AllocConst( CFCnvU32F( &cgh, _TargetLongInt( *(uint_32 *)( floatval->value + 2 ) ) ) );
             }
 #if 0
         } else if( tosplit->c.const_type == CONS_ADDRESS ) {
-            new = AddrConst( tosplit->c.value, tosplit->c.lo.u.int_value, CONS_SEGMENT );
+            new_name = AddrConst( tosplit->c.value, tosplit->c.lo.u.int_value, CONS_SEGMENT );
 #endif
         } else {
             _Zoiks( ZOIKS_044 );
@@ -661,52 +661,52 @@ name    *HighPart( name *tosplit, type_class_def type_class )
         break;
     case N_REGISTER:
         if( type_class == U1 || type_class == I1 ) {
-            new = AllocRegName( High16Reg( tosplit->r.reg ) );
+            new_name = AllocRegName( High16Reg( tosplit->r.reg ) );
         } else if( type_class == U2 || type_class == I2 ) {
-            new = AllocRegName( High32Reg( tosplit->r.reg ) );
+            new_name = AllocRegName( High32Reg( tosplit->r.reg ) );
         } else {
-            new = AllocRegName( High64Reg( tosplit->r.reg ) );
+            new_name = AllocRegName( High64Reg( tosplit->r.reg ) );
         }
         break;
     case N_TEMP:
-        new = TempOffset( tosplit, tosplit->n.size / 2, type_class );
-        if( new->t.temp_flags & CONST_TEMP ) {
+        new_name = TempOffset( tosplit, tosplit->n.size / 2, type_class );
+        if( new_name->t.temp_flags & CONST_TEMP ) {
             name *cons = tosplit->v.symbol;
             if( tosplit->n.type_class == FD ) {
                 cons = Int64Equivalent( cons );
             }
-            new->v.symbol = HighPart( cons, type_class );
+            new_name->v.symbol = HighPart( cons, type_class );
         }
         break;
     case N_MEMORY:
-        new = AllocMemory( tosplit->v.symbol,
+        new_name = AllocMemory( tosplit->v.symbol,
                                 tosplit->v.offset + tosplit->n.size / 2,
                                 tosplit->m.memory_type, type_class );
-        new->v.usage = tosplit->v.usage;
+        new_name->v.usage = tosplit->v.usage;
         break;
     case N_INDEXED:
-        new = ScaleIndex( tosplit->i.index, tosplit->i.base,
+        new_name = ScaleIndex( tosplit->i.index, tosplit->i.base,
                 tosplit->i.constant+ tosplit->n.size / 2, type_class,
                 0, tosplit->i.scale, tosplit->i.index_flags );
         break;
     }
-    return( new );
+    return( new_name );
 }
 
 name    *OffsetMem( name *mem, type_length offset, type_class_def type_class )
 /****************************************************************************/
 {
-    name                *new_mem;
+    name                *new_m;
 
     if( mem->n.class == N_INDEXED ) {
-        new_mem = ScaleIndex( mem->i.index, mem->i.base,
+        new_m = ScaleIndex( mem->i.index, mem->i.base,
                         mem->i.constant + offset, mem->n.type_class,
                         TypeClassSize[type_class], mem->i.scale, mem->i.index_flags );
     } else {
         assert( mem->n.class == N_TEMP );
-        new_mem = STempOffset( mem, offset, type_class, TypeClassSize[type_class] );
+        new_m = STempOffset( mem, offset, type_class, TypeClassSize[type_class] );
     }
-    return( new_mem );
+    return( new_m );
 }
 
 instruction     *rSHR( instruction *ins )

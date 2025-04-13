@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2016-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2016-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -259,8 +259,9 @@ static ControlClass *ReadControlClass( FILE *fp )
 
     restofstring = NULL;
     stringlen = 0;
-    error = false;
-    if( (class & 0x80) == 0 && class != '\0' ) {
+    if( (class & 0x80) != 0 || class == 0 ) {
+        error = false;
+    } else {
         restofstring = ResReadString( fp, &stringlen );
         stringlen++;    /* for the '\0' */
         error = (restofstring == NULL);
@@ -277,8 +278,12 @@ static ControlClass *ReadControlClass( FILE *fp )
 
     /* copy the class or string into the correct place */
     if( !error ) {
-        newclass->Class = class;
-        if( restofstring != NULL ) {
+        if( (class & 0x80) != 0 ) {
+            newclass->Class = class;
+        } else if( class == 0 ) {
+            newclass->ClassName[0] = '\0';
+        } else {
+            newclass->ClassName[0] = class;
             memcpy( newclass->ClassName + 1, restofstring, stringlen );
         }
     }
@@ -310,10 +315,8 @@ static ControlClass *Read32ControlClass( FILE *fp )
     if( flags == 0xffff ) {
         error = ResReadUint16( &class, fp );
     } else if( flags == 0 ) {
-        class = UNI2ASCII( flags ); /* first 16-bit UNICODE character */
         error = false;
     } else {
-        class = UNI2ASCII( flags ); /* first 16-bit UNICODE character */
         restofstring = ResRead32String( fp, &stringlen );
         stringlen++;                /* for the '\0' */
         error = (restofstring == NULL);
@@ -330,8 +333,12 @@ static ControlClass *Read32ControlClass( FILE *fp )
 
     /* copy the class or string into the correct place */
     if( !error ) {
-        newclass->Class = (uint_8)class;
-        if( restofstring != NULL ) {
+        if( flags == 0xffff ) {
+            newclass->Class = (uint_8)class;
+        } else if( flags == 0 ) {
+            newclass->ClassName[0] = '\0';                  /* NUL character */
+        } else {
+            newclass->ClassName[0] = UNI2ASCII( flags );    /* first 16-bit UNICODE character */
             memcpy( newclass->ClassName + 1, restofstring, stringlen );
         }
     }

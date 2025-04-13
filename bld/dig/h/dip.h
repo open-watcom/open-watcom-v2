@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -94,7 +95,7 @@ const char      *DIPImageName( mod_handle );
  * Module Information
  */
 size_t          DIPModName( mod_handle, char *buff, size_t buff_size );
-char            *DIPModSrcLang( mod_handle );
+const char      *DIPModSrcLang( mod_handle );
 dip_status      DIPModHasInfo( mod_handle, handle_kind );
 search_result   DIPAddrMod( address, mod_handle * );
 address         DIPModAddr( mod_handle );

@@ -20,9 +20,9 @@ wsplice_extra_opts =
 wsplice_extra_opts = -d"depends.dep"
 !endif
 
-wsplice_opts     = $(wsplice_extra_opts) -i"$(hdr_dir)" -i"$(mh_dir)" $[@ $@
-wsplice_opts_r   = $(wsplice_extra_opts) -kRESOURCE -i"$(hdr_dir)" -i"$(mh_dir)" $[@ $@
-wsplice_opts_ws2 = $(wsplice_extra_opts) -kWINSOCK2 -i"$(hdr_dir)" -i"$(mh_dir)" $[@ $@
+wsplice_opts     = -u $(wsplice_extra_opts) -i"$(hdr_dir)" -i"$(mh_dir)" $[@ $@
+wsplice_opts_r   = -u $(wsplice_extra_opts) -kRESOURCE -i"$(hdr_dir)" -i"$(mh_dir)" $[@ $@
+wsplice_opts_ws2 = -u $(wsplice_extra_opts) -kWINSOCK2 -i"$(hdr_dir)" -i"$(mh_dir)" $[@ $@
 
 dirs = h h/ddk h/directx h/GL
 

@@ -465,16 +465,16 @@ static  void    MoveThrough( name *from, name *to, instruction *from_ins,
  */
 {
     bool        dummy;
-    instruction *new;
+    instruction *new_ins;
 
-    new = MakeMove( from, reg, type_class );
-    new->u.gen_table = FindGenEntry( new, &dummy );
-    DupSeg( from_ins, new );
-    PrefixIns( to_ins, new );
-    new = MakeMove( reg, to, type_class );
-    DupSeg( to_ins, new );
-    new->u.gen_table = FindGenEntry( new, &dummy );
-    PrefixIns( to_ins, new );
+    new_ins = MakeMove( from, reg, type_class );
+    new_ins->u.gen_table = FindGenEntry( new_ins, &dummy );
+    DupSeg( from_ins, new_ins );
+    PrefixIns( to_ins, new_ins );
+    new_ins = MakeMove( reg, to, type_class );
+    DupSeg( to_ins, new_ins );
+    new_ins->u.gen_table = FindGenEntry( new_ins, &dummy );
+    PrefixIns( to_ins, new_ins );
 }
 
 static  instruction    *To86Move( instruction *ins, instruction *next )

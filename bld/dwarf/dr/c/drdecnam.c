@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -278,7 +278,7 @@ void DRDecorateLabel( drmem_hdl die, char *buf )
     label = NULL;
     FillLoc( &loc, die );
 
-    compunit = DWRFindCompileInfo( die );
+    compunit = DR_FindCompileInfo( die );
     lang = DRGetLanguageAT( compunit->start + sizeof( compuhdr_prologue ) );
 
     switch( loc.tag ) {
@@ -291,14 +291,14 @@ void DRDecorateLabel( drmem_hdl die, char *buf )
         case DR_LANG_FORTRAN:
             tmp_abbrev = loc.abbrev_current;
             tmp_entry = loc.entry_current;
-            if( DWRScanForAttrib( &tmp_abbrev, &tmp_entry, DW_AT_type ) ) {
+            if( DR_ScanForAttrib( &tmp_abbrev, &tmp_entry, DW_AT_type ) ) {
                 label = LBLFunction;
             } else {
                 label = LBLSubprogram;
             }
             break;
         default:
-            DWREXCEPT( DREXCEP_BAD_DBG_INFO );
+            DR_EXCEPT( DREXCEP_BAD_DBG_INFO );
         }
         break;
     case DW_TAG_typedef:
@@ -330,18 +330,18 @@ void DRDecorateLabel( drmem_hdl die, char *buf )
         case DR_LANG_FORTRAN:
             tmp_abbrev = loc.abbrev_current;
             tmp_entry = loc.entry_current;
-            if( DWRScanForAttrib( &tmp_abbrev, &tmp_entry, DW_AT_const_value ) ) {
+            if( DR_ScanForAttrib( &tmp_abbrev, &tmp_entry, DW_AT_const_value ) ) {
                 label = LBLParameter;
             } else {
                 label = LBLVariable;
             }
             break;
         default:
-            DWREXCEPT( DREXCEP_BAD_DBG_INFO );
+            DR_EXCEPT( DREXCEP_BAD_DBG_INFO );
         }
         break;
     default:
-        DWREXCEPT( DREXCEP_BAD_DBG_INFO );
+        DR_EXCEPT( DREXCEP_BAD_DBG_INFO );
     }
 
     strncpy( buf, label, DRDECLABELLEN );
@@ -391,7 +391,7 @@ static BrokenName_T BuildList( drmem_hdl die, drmem_hdl parent )
     FillLoc( &loc, die );
     loc.parent = parent;
 
-    compunit = DWRFindCompileInfo( die );
+    compunit = DR_FindCompileInfo( die );
     lang = DRGetLanguageAT( compunit->start + sizeof( compuhdr_prologue ) );
 
     switch( lang ) {
@@ -403,7 +403,7 @@ static BrokenName_T BuildList( drmem_hdl die, drmem_hdl parent )
         BuildFortranList( &decstruct, &loc );
         break;
     default:
-        DWREXCEPT( DREXCEP_DWARF_LIB_FAIL );
+        DR_EXCEPT( DREXCEP_DWARF_LIB_FAIL );
     }
 
     return( decstruct );
@@ -454,7 +454,7 @@ static void BuildFortranList( BrokenName_T *decname, Loc_T *loc )
         break;
 
     default:
-        DWREXCEPT( DREXCEP_DWARF_LIB_FAIL );
+        DR_EXCEPT( DREXCEP_DWARF_LIB_FAIL );
     }
 }
 
@@ -509,7 +509,7 @@ static void BuildCList( BrokenName_T *decname, Loc_T *loc )
         DecorateNameSpace( decname, loc );
         break;
     default:
-        DWREXCEPT( DREXCEP_DWARF_LIB_FAIL );
+        DR_EXCEPT( DREXCEP_DWARF_LIB_FAIL );
     }
 }
 
@@ -517,9 +517,9 @@ static void GrabName( drmem_hdl abbrev, drmem_hdl entry, String *name )
 /*********************************************************************/
 // read a name, setting length and reversing
 {
-    name->s = DWRGetName( abbrev, entry );
+    name->s = DR_GetName( abbrev, entry );
     if( name->s == NULL ) {
-        name->s = DWRALLOC( 1 );
+        name->s = DR_ALLOC( 1 );
         *name->s = '\0';
     }
     name->l = strlen( name->s );
@@ -537,9 +537,9 @@ static void DRGetClassName( drmem_hdl entry, String *containing_name )
     name = NULL;
     while( entry != DRMEM_HDL_NULL ) {
         tmp_entry = entry;
-        tag = DWRReadTag( &tmp_entry, &abbrev );
+        tag = DR_ReadTag( &tmp_entry, &abbrev );
         abbrev++;   /* skip child flag */
-        name = DWRGetName( abbrev, tmp_entry );
+        name = DR_GetName( abbrev, tmp_entry );
         if( name != NULL )
             break;
         if( tag != DW_TAG_typedef )
@@ -547,7 +547,7 @@ static void DRGetClassName( drmem_hdl entry, String *containing_name )
         entry = DRGetTypeAT( entry );
     }
     if( name == NULL ) {
-        name = DWRALLOC( 1 );
+        name = DR_ALLOC( 1 );
         *name = '\0';
     }
     strrev( name );
@@ -565,12 +565,12 @@ static drmem_hdl SkipPCH( drmem_hdl entry )
 
     while( entry != DRMEM_HDL_NULL ) {
         tmp_entry = entry;
-        tag = DWRReadTag( &tmp_entry, &abbrev );
+        tag = DR_ReadTag( &tmp_entry, &abbrev );
         if( tag != DW_TAG_typedef )
             break;
         abbrev++;   /* skip child flag */
         for( ;; ) {
-            attrib = DWRVMReadULEB128( &abbrev );
+            attrib = DR_VMReadULEB128( &abbrev );
             if( attrib == DW_AT_name )
                 break;
             if( attrib == 0 ) {
@@ -604,11 +604,11 @@ static BrokenName_T *DecorateVariable( BrokenName_T *decname, Loc_T *loc )
     ListConcat( &( decname->var_bas ), varname );
     EndNode( &( decname->var_bas ), false, DRMEM_HDL_NULL, DR_SYM_NOT_SYM );
 
-    DWRFREE( varname.s );
+    DR_FREE( varname.s );
 
     /* check if external */
-    if( DWRScanForAttrib( &tmp_abbrev, &tmp_entry, DW_AT_external ) ) {
-        if( DWRReadConstant( tmp_abbrev, tmp_entry ) ) {
+    if( DR_ScanForAttrib( &tmp_abbrev, &tmp_entry, DW_AT_external ) ) {
+        if( DR_ReadConstant( tmp_abbrev, tmp_entry ) ) {
             ListConcat( &( decname->dec_plg ), ExternKwd );
         }
     }
@@ -619,10 +619,10 @@ static BrokenName_T *DecorateVariable( BrokenName_T *decname, Loc_T *loc )
     tmp_abbrev = loc->abbrev_current;   /* reset to start of die / abbrev */
     tmp_entry = loc->entry_current;
 
-    if( DWRScanForAttrib( &tmp_abbrev, &tmp_entry, DW_AT_containing_type ) ) {
+    if( DR_ScanForAttrib( &tmp_abbrev, &tmp_entry, DW_AT_containing_type ) ) {
         drmem_hdl containing_die;
 
-        containing_die = DWRReadReference( tmp_abbrev, tmp_entry );
+        containing_die = DR_ReadReference( tmp_abbrev, tmp_entry );
         if( containing_die != DRMEM_HDL_NULL ) {
             String    containing_name;
 
@@ -635,7 +635,7 @@ static BrokenName_T *DecorateVariable( BrokenName_T *decname, Loc_T *loc )
                 ListConcat( &( decname->var_bas ), containing_name );
                 EndNode( &( decname->var_bas ), false, DRMEM_HDL_NULL, DR_SYM_NOT_SYM );
 
-                DWRFREE( containing_name.s );
+                DR_FREE( containing_name.s );
             }
         }
     }
@@ -645,10 +645,10 @@ static BrokenName_T *DecorateVariable( BrokenName_T *decname, Loc_T *loc )
     tmp_abbrev = loc->abbrev_current;
     tmp_entry = loc->entry_current;
 
-    if( DWRScanForAttrib( &tmp_abbrev, &tmp_entry, DW_AT_type ) ) {
+    if( DR_ScanForAttrib( &tmp_abbrev, &tmp_entry, DW_AT_type ) ) {
         drmem_hdl type_die;
 
-        type_die = DWRReadReference( tmp_abbrev, tmp_entry );
+        type_die = DR_ReadReference( tmp_abbrev, tmp_entry );
         type_die = SkipPCH( type_die );
         if( type_die != DRMEM_HDL_NULL ) {
             Loc_T type_loc;
@@ -676,7 +676,7 @@ static BrokenName_T *DecorateMember( BrokenName_T *decname, Loc_T *loc )
     ListConcat( &( decname->var_bas ), MemberKwd );
     tmp_str.s = DRGetName( loc->parent );
     if( tmp_str.s == NULL ) {
-        tmp_str.s = DWRALLOC( 1 );
+        tmp_str.s = DR_ALLOC( 1 );
         *tmp_str.s = '\0';
     }
     tmp_str.s = strrev( tmp_str.s );
@@ -684,7 +684,7 @@ static BrokenName_T *DecorateMember( BrokenName_T *decname, Loc_T *loc )
     EndNode( &( decname->var_bas ), true, loc->parent, DR_SYM_CLASS );
     ListConcat( &( decname->var_bas ), tmp_str );
     EndNode( &( decname->var_bas ), false, DRMEM_HDL_NULL, DR_SYM_NOT_SYM );
-    DWRFREE( tmp_str.s );
+    DR_FREE( tmp_str.s );
 
     return( decname );
 }
@@ -704,7 +704,7 @@ static BrokenName_T *DecorateLabel( BrokenName_T *decname, Loc_T *loc )
     ListConcat( &( decname->var_bas ), lab_name );
     EndNode( &( decname->var_bas ), false, DRMEM_HDL_NULL, DR_SYM_NOT_SYM );
 
-    DWRFREE( lab_name.s );
+    DR_FREE( lab_name.s );
 
     return( decname );
 }
@@ -749,7 +749,7 @@ static void GetContaining( List_T *list, drmem_hdl of )
         String      containing_name;
         dw_tagnum   tag;
 
-        tag = DWRGetTag( curr->handle );
+        tag = DR_GetTag( curr->handle );
         switch( tag ){
         case DW_TAG_class_type:
         case DW_TAG_union_type:
@@ -762,7 +762,7 @@ static void GetContaining( List_T *list, drmem_hdl of )
                 EndNode( list, true, curr->handle, DR_SYM_CLASS );
                 ListConcat( list, containing_name );
                 EndNode( list, false, DRMEM_HDL_NULL, DR_SYM_NOT_SYM );
-                DWRFREE( containing_name.s );
+                DR_FREE( containing_name.s );
             }
             break;
         default:
@@ -791,12 +791,12 @@ static BrokenName_T *DecorateFunction( BrokenName_T *decname, Loc_T *loc )
         ListConcat( &( decname->var_bas ), func_name );
         EndNode( &( decname->var_bas ), false, DRMEM_HDL_NULL, DR_SYM_NOT_SYM );
 
-        DWRFREE( func_name.s );
+        DR_FREE( func_name.s );
     }
 
 
-    if( DWRScanForAttrib( &tmp_abbrev, &tmp_entry, DW_AT_external ) ) {
-        if( DWRReadConstant( tmp_abbrev, tmp_entry ) ) {
+    if( DR_ScanForAttrib( &tmp_abbrev, &tmp_entry, DW_AT_external ) ) {
+        if( DR_ReadConstant( tmp_abbrev, tmp_entry ) ) {
             ListConcat( &( decname->dec_plg ), ExternKwd );
         }
     }
@@ -804,10 +804,10 @@ static BrokenName_T *DecorateFunction( BrokenName_T *decname, Loc_T *loc )
     /* check to see if its a member of a containing entry */
     tmp_abbrev = loc->abbrev_current;   /* reset */
     tmp_entry = loc->entry_current;
-    if( DWRScanForAttrib( &tmp_abbrev, &tmp_entry, DW_AT_containing_type ) ){
+    if( DR_ScanForAttrib( &tmp_abbrev, &tmp_entry, DW_AT_containing_type ) ){
         drmem_hdl containing_entry;
 
-        containing_entry = DWRReadReference( tmp_abbrev, tmp_entry );
+        containing_entry = DR_ReadReference( tmp_abbrev, tmp_entry );
         if( containing_entry != DRMEM_HDL_NULL ) {
             GetContaining( &decname->var_bas, containing_entry );
         }
@@ -815,8 +815,8 @@ static BrokenName_T *DecorateFunction( BrokenName_T *decname, Loc_T *loc )
 
     tmp_abbrev = loc->abbrev_current;
     tmp_entry = loc->entry_current;
-    if( DWRScanForAttrib( &tmp_abbrev, &tmp_entry, DW_AT_type ) ) {
-        drmem_hdl type_entry = DWRReadReference( tmp_abbrev, tmp_entry );
+    if( DR_ScanForAttrib( &tmp_abbrev, &tmp_entry, DW_AT_type ) ) {
+        drmem_hdl type_entry = DR_ReadReference( tmp_abbrev, tmp_entry );
 
         type_entry = SkipPCH( type_entry );
         if( type_entry != DRMEM_HDL_NULL ) {
@@ -854,7 +854,7 @@ static List_T StartFunctionParms( Loc_T *loc )
 
         tmp_entry = loc->entry_current;
         tmp_abbrev = loc->abbrev_current;
-        DWRSkipAttribs( tmp_abbrev, &tmp_entry );
+        DR_SkipAttribs( tmp_abbrev, &tmp_entry );
 
         FillLoc( &parm_loc, tmp_entry );
 
@@ -915,9 +915,9 @@ static List_T DecorateParameter( Loc_T *loc )
              loc->tag != DW_TAG_formal_parameter && loc->abbrev_start != DRMEM_HDL_NULL ) {
 
         if( loc->child == DW_CHILDREN_yes ) {
-            DWRSkipChildren( &tmp_abbrev, &tmp_entry );
+            DR_SkipChildren( &tmp_abbrev, &tmp_entry );
         } else {
-            DWRSkipAttribs( tmp_abbrev, &tmp_entry );
+            DR_SkipAttribs( tmp_abbrev, &tmp_entry );
         }
         FillLoc( loc, tmp_entry );
         tmp_abbrev = loc->abbrev_current;
@@ -938,15 +938,15 @@ static List_T DecorateParameter( Loc_T *loc )
             break;
 
         default:
-            DWREXCEPT( DREXCEP_DWARF_LIB_FAIL );
+            DR_EXCEPT( DREXCEP_DWARF_LIB_FAIL );
         }
 
         tmp_abbrev = loc->abbrev_current;
         tmp_entry = loc->entry_current;
         if( loc->child == DW_CHILDREN_yes ) {
-            DWRSkipChildren( &tmp_abbrev, &tmp_entry );
+            DR_SkipChildren( &tmp_abbrev, &tmp_entry );
         } else {
-            DWRSkipAttribs( tmp_abbrev, &tmp_entry );
+            DR_SkipAttribs( tmp_abbrev, &tmp_entry );
         }
         FillLoc( loc, tmp_entry );
     }
@@ -992,7 +992,7 @@ static BrokenName_T *DecorateType( BrokenName_T *decname, Loc_T *loc, dw_tagnum 
         if( prev_tag == DW_TAG_const_type || prev_tag == DW_TAG_volatile_type ) {
             SwapModifier( decname );
         }
-        DWRFREE( typename.s );
+        DR_FREE( typename.s );
         done = true;
 
         break;
@@ -1058,14 +1058,14 @@ static BrokenName_T *DecorateType( BrokenName_T *decname, Loc_T *loc, dw_tagnum 
         break;
 
     default:
-        DWREXCEPT ( DREXCEP_DWARF_LIB_FAIL );
+        DR_EXCEPT ( DREXCEP_DWARF_LIB_FAIL );
     }
 
     if( !done ) {
         tmp_abbrev = loc->abbrev_current;
         tmp_entry = loc->entry_current;
-        if( DWRScanForAttrib( &tmp_abbrev, &tmp_entry, DW_AT_type ) ) {
-            next_die = DWRReadReference( tmp_abbrev, tmp_entry );
+        if( DR_ScanForAttrib( &tmp_abbrev, &tmp_entry, DW_AT_type ) ) {
+            next_die = DR_ReadReference( tmp_abbrev, tmp_entry );
             next_die = SkipPCH( next_die );
             if( next_die != DRMEM_HDL_NULL ) {
                 if( loc->tag != DW_TAG_WATCOM_address_class_type ) {
@@ -1093,7 +1093,7 @@ static void SwapModifier( BrokenName_T *decname )
     target = DeleteTail( &( decname->type_elg ) );
 
     if( target == NULL ) {
-        DWREXCEPT( DREXCEP_DWARF_LIB_FAIL );
+        DR_EXCEPT( DREXCEP_DWARF_LIB_FAIL );
     }
 
     if( decname->type_plg.head == NULL || decname->type_plg.tail == NULL ) {
@@ -1116,13 +1116,13 @@ static BrokenName_T *AddPtrModifier( BrokenName_T *decname, Loc_T *loc )
 
     tmp_entry = loc->entry_current;
     tmp_abbrev = loc->abbrev_current;
-    if( DWRScanForAttrib( &tmp_abbrev, &tmp_entry, DW_AT_address_class ) ) {
+    if( DR_ScanForAttrib( &tmp_abbrev, &tmp_entry, DW_AT_address_class ) ) {
 
         if( decname->type_ptr.head != NULL ) {
             spaceit = true;
         }
 
-        addr_class = (dw_addr)DWRReadConstant( tmp_abbrev, tmp_entry );
+        addr_class = (dw_addr)DR_ReadConstant( tmp_abbrev, tmp_entry );
         ListConcat( &( decname->type_ptr ), *AddressClasses[addr_class] );
 
         if( spaceit ) {
@@ -1186,7 +1186,7 @@ static void AddTypeString( BrokenName_T *dn, String Kwd, TypeSide_T ts )
         break;
 
     default:
-        DWREXCEPT( DREXCEP_DWARF_LIB_FAIL );
+        DR_EXCEPT( DREXCEP_DWARF_LIB_FAIL );
         list = NULL;
     }
 
@@ -1214,7 +1214,7 @@ static BrokenName_T *DecorateCompoundType( BrokenName_T *decname,
 
     ListConcat( &( decname->type_bas ), Kwd );
 
-    DWRFREE( typename.s );
+    DR_FREE( typename.s );
 
     return( decname );
 }
@@ -1230,7 +1230,7 @@ static bool baseHook( dr_sym_type stype, drmem_hdl base, char *name,
 
     namestr.s = name;
     if( namestr.s == NULL ) {
-        namestr.s = DWRALLOC( 1 );
+        namestr.s = DR_ALLOC( 1 );
         *namestr.s = '\0';
     }
     namestr.l = strlen( namestr.s );
@@ -1246,7 +1246,7 @@ static bool baseHook( dr_sym_type stype, drmem_hdl base, char *name,
     ListConcat( &( data->decname->type_inh ), namestr );
     EndNode( &( data->decname->type_inh ), false, DRMEM_HDL_NULL, DR_SYM_NOT_SYM );
 
-    DWRFREE( namestr.s );
+    DR_FREE( namestr.s );
 
     return( true );
 }
@@ -1278,12 +1278,12 @@ static BrokenName_T *DecoratePtrToMember( BrokenName_T *decname, Loc_T *loc )
     ListConcat( &( decname->var_plg ), PtrKwd );
     ListConcat( &( decname->var_plg ), MemberKwd );
 
-    if( DWRScanForAttrib( &tmp_abbrev, &tmp_entry, DW_AT_containing_type ) ) {
-        containing_entry = DWRReadReference( tmp_abbrev, tmp_entry );
+    if( DR_ScanForAttrib( &tmp_abbrev, &tmp_entry, DW_AT_containing_type ) ) {
+        containing_entry = DR_ReadReference( tmp_abbrev, tmp_entry );
 
         containing_name.s = DRGetName( containing_entry );
         if( containing_name.s == NULL ) {
-            containing_name.s = DWRALLOC( 1 );
+            containing_name.s = DR_ALLOC( 1 );
             *containing_name.s = '\0';
         }
 
@@ -1294,7 +1294,7 @@ static BrokenName_T *DecoratePtrToMember( BrokenName_T *decname, Loc_T *loc )
         ListConcat( &( decname->var_plg ), containing_name );
         EndNode( &( decname->var_plg ), false, DRMEM_HDL_NULL, DR_SYM_NOT_SYM );
 
-        DWRFREE( containing_name.s );
+        DR_FREE( containing_name.s );
     }
     return( decname );
 }
@@ -1306,11 +1306,11 @@ static bool AddArrayIndex( drmem_hdl abbrev, drmem_hdl entry, void *data )
     unsigned_32 upper_bd;
     unsigned_32 *dataptr;
 
-    if( !DWRScanForAttrib( &abbrev, &entry, DW_AT_upper_bound ) )
+    if( !DR_ScanForAttrib( &abbrev, &entry, DW_AT_upper_bound ) )
         return( false );
 
     dataptr  = data;
-    upper_bd = DWRReadConstant( abbrev, entry );
+    upper_bd = DR_ReadConstant( abbrev, entry );
     *dataptr = upper_bd;
     return( true );
 }
@@ -1325,27 +1325,27 @@ static BrokenName_T *DecorateArray( BrokenName_T *decname, Loc_T *loc )
     String      tmpStr;
     unsigned_32 upper_bd;
 
-    tmpStr.s = DWRALLOC( 1 );
+    tmpStr.s = DR_ALLOC( 1 );
     *tmpStr.s = '\0';
     tmpStr.l = 0;
 
     abbrev = loc->abbrev_current;
     entry = loc->entry_current;
-    if( !DWRScanForAttrib( &abbrev, &entry, DW_AT_type ) ) {
-        DWREXCEPT( DREXCEP_BAD_DBG_INFO );
+    if( !DR_ScanForAttrib( &abbrev, &entry, DW_AT_type ) ) {
+        DR_EXCEPT( DREXCEP_BAD_DBG_INFO );
     }
-    type_entry = DWRReadReference( abbrev, entry );
+    type_entry = DR_ReadReference( abbrev, entry );
     type_entry = SkipPCH( type_entry );
     FillLoc( &type_loc, type_entry );
     DecorateType( decname, &type_loc, DW_TAG_WATCOM_padding );
 
     abbrev = loc->abbrev_current;
     entry = loc->entry_current;
-    if( DWRScanForAttrib( &abbrev, &entry, DW_AT_count ) ) {
-        upper_bd = DWRReadConstant( abbrev, entry );
+    if( DR_ScanForAttrib( &abbrev, &entry, DW_AT_count ) ) {
+        upper_bd = DR_ReadConstant( abbrev, entry );
     } else {
-        DWRSkipRest( abbrev, &entry );
-        DWRAllChildren( entry, AddArrayIndex, &upper_bd );
+        DR_SkipRest( abbrev, &entry );
+        DR_AllChildren( entry, AddArrayIndex, &upper_bd );
     }
     if( upper_bd != 0 ) {
         String      bounds;
@@ -1372,7 +1372,7 @@ static BrokenName_T *DecorateArray( BrokenName_T *decname, Loc_T *loc )
 
     ListConcat( &(decname->var_elg), tmpStr );
 
-    DWRFREE( tmpStr.s );
+    DR_FREE( tmpStr.s );
 
     return( decname );
 }
@@ -1398,7 +1398,7 @@ static void FORDecVariable( BrokenName_T *decname, Loc_T *loc )
     ListConcat( &( decname->var_bas ), varname );
     EndNode( &( decname->var_bas ), false, DRMEM_HDL_NULL, DR_SYM_NOT_SYM );
 
-    DWRFREE( varname.s );
+    DR_FREE( varname.s );
 
     /*
      *check to see if this is a member of a containing die
@@ -1406,15 +1406,15 @@ static void FORDecVariable( BrokenName_T *decname, Loc_T *loc )
     tmp_abbrev = loc->abbrev_current;   /* reset to start of die / abbrev */
     tmp_entry = loc->entry_current;
 
-    if( DWRScanForAttrib( &tmp_abbrev, &tmp_entry, DW_AT_containing_type ) ) {
+    if( DR_ScanForAttrib( &tmp_abbrev, &tmp_entry, DW_AT_containing_type ) ) {
         drmem_hdl containing_die;
 
-        containing_die = DWRReadReference( tmp_abbrev, tmp_entry );
+        containing_die = DR_ReadReference( tmp_abbrev, tmp_entry );
         if( containing_die != DRMEM_HDL_NULL ) {
             String    containing_name;
 
             tmp_entry = containing_die;
-            tmp_abbrev = DWRSkipTag( &tmp_entry ) + 1;
+            tmp_abbrev = DR_SkipTag( &tmp_entry ) + 1;
             GrabName( tmp_abbrev, tmp_entry, &containing_name );
             if( containing_name.s != NULL ) {
 
@@ -1424,7 +1424,7 @@ static void FORDecVariable( BrokenName_T *decname, Loc_T *loc )
                 ListConcat( &( decname->var_bas ), containing_name );
                 EndNode( &( decname->var_bas ), false, DRMEM_HDL_NULL, DR_SYM_NOT_SYM );
 
-                DWRFREE( containing_name.s );
+                DR_FREE( containing_name.s );
             }
         }
     }
@@ -1434,8 +1434,8 @@ static void FORDecVariable( BrokenName_T *decname, Loc_T *loc )
     tmp_abbrev = loc->abbrev_current;
     tmp_entry = loc->entry_current;
 
-    if( DWRScanForAttrib( &tmp_abbrev, &tmp_entry, DW_AT_type ) ) {
-        type_die = DWRReadReference( tmp_abbrev, tmp_entry );
+    if( DR_ScanForAttrib( &tmp_abbrev, &tmp_entry, DW_AT_type ) ) {
+        type_die = DR_ReadReference( tmp_abbrev, tmp_entry );
         type_die = SkipPCH( type_die );
         if( type_die != DRMEM_HDL_NULL ) {
             FillLoc( &type_loc, type_die );
@@ -1467,60 +1467,60 @@ static void FORAddConstVal( BrokenName_T *decname, Loc_T *loc, Loc_T *type_loc )
     tmp_abbrev = loc->abbrev_current;
     tmp_entry = loc->entry_current;
 
-    if( DWRScanForAttrib( &tmp_abbrev, &tmp_entry, DW_AT_const_value ) ) {
+    if( DR_ScanForAttrib( &tmp_abbrev, &tmp_entry, DW_AT_const_value ) ) {
         ListConcat( &( decname->type_plg ), FORParamKwd );
 
-        form = DWRVMReadULEB128( &tmp_abbrev );
+        form = DR_VMReadULEB128( &tmp_abbrev );
         if( form == DW_FORM_indirect ) {
-            form = DWRVMReadULEB128( &tmp_entry );
+            form = DR_VMReadULEB128( &tmp_entry );
         }
 
         switch( form ) {
         case DW_FORM_block1:
-            len = DWRVMReadByte( tmp_entry );
+            len = DR_VMReadByte( tmp_entry );
             tmp_entry += sizeof(unsigned_8);
             ReadBlock( &buf, tmp_entry, len );
             break;
         case DW_FORM_block2:
-            len = DWRVMReadWord( tmp_entry );
+            len = DR_VMReadWord( tmp_entry );
             tmp_entry += sizeof(unsigned_16);
             ReadBlock( &buf, tmp_entry, len );
             break;
         case DW_FORM_block4:
-            len = DWRVMReadWord( tmp_entry );
+            len = DR_VMReadWord( tmp_entry );
             tmp_entry += sizeof(unsigned_32);
             ReadBlock( &buf, tmp_entry, len );
             break;
         case DW_FORM_block:
-            len = DWRVMReadULEB128( &tmp_entry );
+            len = DR_VMReadULEB128( &tmp_entry );
             ReadBlock( &buf, tmp_entry, len );
             break;
         default:
-            DWREXCEPT( DREXCEP_BAD_DBG_INFO );
+            DR_EXCEPT( DREXCEP_BAD_DBG_INFO );
             len = 0;
             buf = NULL;
         }
 
         if( type_loc->tag == DW_TAG_string_type ) {
-            charBuf = DWRALLOC( len + 3 );      // 2 * "'" + \0
+            charBuf = DR_ALLOC( len + 3 );      // 2 * "'" + \0
             if( charBuf == NULL ) {
-                DWREXCEPT( DREXCEP_OUT_OF_MMEM );
+                DR_EXCEPT( DREXCEP_OUT_OF_MMEM );
             }
             charBuf[0] = '\'';
             strncat( charBuf + 1, (char *)buf, len );
             strcat( charBuf, "'" );
         } else {
-            charBuf = DWRALLOC( 64 );
+            charBuf = DR_ALLOC( 64 );
             if( charBuf == NULL ) {
-                DWREXCEPT( DREXCEP_OUT_OF_MMEM );
+                DR_EXCEPT( DREXCEP_OUT_OF_MMEM );
             }
 
             tmp_abbrev = type_loc->abbrev_current;
             tmp_entry = type_loc->entry_current;
-            if( DWRScanForAttrib( &tmp_abbrev, &tmp_entry, DW_AT_encoding ) ) {
-                encoding = (dw_ate)DWRReadConstant( tmp_abbrev, tmp_entry );
+            if( DR_ScanForAttrib( &tmp_abbrev, &tmp_entry, DW_AT_encoding ) ) {
+                encoding = (dw_ate)DR_ReadConstant( tmp_abbrev, tmp_entry );
             } else {
-                DWREXCEPT( DREXCEP_BAD_DBG_INFO );
+                DR_EXCEPT( DREXCEP_BAD_DBG_INFO );
                 encoding = 0;
             }
 
@@ -1554,7 +1554,7 @@ static void FORAddConstVal( BrokenName_T *decname, Loc_T *loc, Loc_T *type_loc )
 #endif
                     break;
                 default:
-                    DWREXCEPT( DREXCEP_BAD_DBG_INFO );
+                    DR_EXCEPT( DREXCEP_BAD_DBG_INFO );
                 }
 #ifdef __WATCOMC__
                 strcpy( charBuf, "(" );
@@ -1581,7 +1581,7 @@ static void FORAddConstVal( BrokenName_T *decname, Loc_T *loc, Loc_T *type_loc )
 #endif
                     break;
                 default:
-                    DWREXCEPT( DREXCEP_BAD_DBG_INFO );
+                    DR_EXCEPT( DREXCEP_BAD_DBG_INFO );
                 }
                 break;
             case DW_ATE_signed:
@@ -1608,7 +1608,7 @@ static void FORAddConstVal( BrokenName_T *decname, Loc_T *loc, Loc_T *type_loc )
 #endif
                     break;
                 default:
-                    DWREXCEPT( DREXCEP_BAD_DBG_INFO );
+                    DR_EXCEPT( DREXCEP_BAD_DBG_INFO );
                 }
                 break;
             case DW_ATE_unsigned:
@@ -1635,7 +1635,7 @@ static void FORAddConstVal( BrokenName_T *decname, Loc_T *loc, Loc_T *type_loc )
 #endif
                     break;
                 default:
-                    DWREXCEPT( DREXCEP_BAD_DBG_INFO );
+                    DR_EXCEPT( DREXCEP_BAD_DBG_INFO );
                 }
                 break;
             case DW_ATE_unsigned_char:
@@ -1646,7 +1646,7 @@ static void FORAddConstVal( BrokenName_T *decname, Loc_T *loc, Loc_T *type_loc )
                 charBuf[3] = '\'';
                 break;
             default:
-                DWREXCEPT( DREXCEP_BAD_DBG_INFO );
+                DR_EXCEPT( DREXCEP_BAD_DBG_INFO );
             }
         }
 
@@ -1655,8 +1655,8 @@ static void FORAddConstVal( BrokenName_T *decname, Loc_T *loc, Loc_T *type_loc )
         ListConcat( &(decname->var_elg), value );
         ListConcat( &(decname->var_elg), FOREqualKwd );
 
-        DWRFREE( buf );
-        DWRFREE( charBuf );
+        DR_FREE( buf );
+        DR_FREE( charBuf );
     }
 }
 
@@ -1665,13 +1665,13 @@ static void ReadBlock( unsigned_8 **buf, drmem_hdl entry, size_t len )
 {
     unsigned_8  *mbuf;
 
-    *buf = DWRALLOC( len );
+    *buf = DR_ALLOC( len );
     if( *buf == NULL ) {
-        DWREXCEPT( DREXCEP_OUT_OF_MMEM );
+        DR_EXCEPT( DREXCEP_OUT_OF_MMEM );
     }
 
     mbuf = *buf;
-    DWRVMRead( entry, mbuf, len );
+    DR_VMRead( entry, mbuf, len );
 }
 
 static void FORDecParam( BrokenName_T *decname, Loc_T *loc )
@@ -1691,7 +1691,7 @@ static void FORDecMember( BrokenName_T *decname, Loc_T *loc )
     ListConcat( &( decname->var_bas ), FORMemberKwd );
     tmp_str.s = DRGetName( loc->parent );
     if( tmp_str.s == NULL ) {
-        tmp_str.s = DWRALLOC( 1 );
+        tmp_str.s = DR_ALLOC( 1 );
         *tmp_str.s = '\0';
     }
     tmp_str.s = strrev( tmp_str.s );
@@ -1699,7 +1699,7 @@ static void FORDecMember( BrokenName_T *decname, Loc_T *loc )
     EndNode( &( decname->var_bas ), true, loc->parent, DR_SYM_CLASS );
     ListConcat( &( decname->var_bas ), tmp_str );
     EndNode( &( decname->var_bas ), false, DRMEM_HDL_NULL, DR_SYM_NOT_SYM );
-    DWRFREE( tmp_str.s );
+    DR_FREE( tmp_str.s );
 }
 
 static bool FORAddParam( drmem_hdl entry, int index, void *data )
@@ -1756,7 +1756,7 @@ static void FORDecSubprogram( BrokenName_T *decname, Loc_T *loc )
         ListConcat( &( decname->var_bas ), func_name );
         EndNode( &( decname->var_bas ), false, DRMEM_HDL_NULL, DR_SYM_NOT_SYM );
 
-        DWRFREE( func_name.s );
+        DR_FREE( func_name.s );
 
         return;
     }
@@ -1765,12 +1765,12 @@ static void FORDecSubprogram( BrokenName_T *decname, Loc_T *loc )
     ListConcat( &( decname->var_bas ), func_name );
     EndNode( &( decname->var_bas ), false, DRMEM_HDL_NULL, DR_SYM_NOT_SYM );
 
-    DWRFREE( func_name.s );
+    DR_FREE( func_name.s );
 
     tmp_abbrev = loc->abbrev_current;
     tmp_entry = loc->entry_current;
-    if( DWRScanForAttrib( &tmp_abbrev, &tmp_entry, DW_AT_type ) ) {
-        drmem_hdl type_entry = DWRReadReference( tmp_abbrev, tmp_entry );
+    if( DR_ScanForAttrib( &tmp_abbrev, &tmp_entry, DW_AT_type ) ) {
+        drmem_hdl type_entry = DR_ReadReference( tmp_abbrev, tmp_entry );
 
         type_entry = SkipPCH( type_entry );
         if( type_entry != DRMEM_HDL_NULL ) {
@@ -1782,7 +1782,7 @@ static void FORDecSubprogram( BrokenName_T *decname, Loc_T *loc )
         ListConcat( &decname->var_plg, FORSubprogramKwd );
     }
 
-    DWRWalkChildren( loc->entry_start, WalkTags, WalkFns, &parms );
+    DR_WalkChildren( loc->entry_start, WalkTags, WalkFns, &parms );
 
     if( parms.head != NULL ) {
         ListConcat( &decname->func_plg, FORFuncStartKwd );
@@ -1811,12 +1811,12 @@ static void FORDecEntryPoint( BrokenName_T *decname, Loc_T *loc )
     ListConcat( &( decname->var_bas ), func_name );
     EndNode( &( decname->var_bas ), false, DRMEM_HDL_NULL, DR_SYM_NOT_SYM );
 
-    DWRFREE( func_name.s );
+    DR_FREE( func_name.s );
 
     ListConcat( &decname->var_plg, FOREntryPointKwd );
 
-    DWRSkipRest( tmp_abbrev, &tmp_entry );
-    DWRWalkChildren( loc->entry_start, WalkTags, WalkFns, &parms );
+    DR_SkipRest( tmp_abbrev, &tmp_entry );
+    DR_WalkChildren( loc->entry_start, WalkTags, WalkFns, &parms );
 
     if( parms.head != NULL ) {
         ListConcat( &decname->func_plg, FORFuncStartKwd );
@@ -1843,7 +1843,7 @@ static void FORDecStructure( BrokenName_T *decname, Loc_T *loc )
     ListConcat( &( decname->type_bas ), FORSlashKwd );
     ListConcat( &( decname->type_bas ), FORStructKwd );
 
-    DWRFREE( strucName.s);
+    DR_FREE( strucName.s);
 }
 
 static bool FORAddNameListItem( drmem_hdl entry, int index, void *data )
@@ -1858,11 +1858,11 @@ static bool FORAddNameListItem( drmem_hdl entry, int index, void *data )
 
     /* unused parameters */ (void)index;
 
-    abbrev = DWRSkipTag( &mod ) + 1;
-    if( !DWRScanForAttrib( &abbrev, &mod, DW_AT_namelist_item ) ) {
-        DWREXCEPT( DREXCEP_BAD_DBG_INFO );
+    abbrev = DR_SkipTag( &mod ) + 1;
+    if( !DR_ScanForAttrib( &abbrev, &mod, DW_AT_namelist_item ) ) {
+        DR_EXCEPT( DREXCEP_BAD_DBG_INFO );
     }
-    item = DWRReadReference( abbrev, mod );
+    item = DR_ReadReference( abbrev, mod );
 
     FillLoc( &loc, item );
 
@@ -1877,7 +1877,7 @@ static bool FORAddNameListItem( drmem_hdl entry, int index, void *data )
     ListConcat( &( decname->type_elg ), itemName );
     EndNode( &( decname->type_elg ), false, DRMEM_HDL_NULL, DR_SYM_NOT_SYM );
 
-    DWRFREE( itemName.s );
+    DR_FREE( itemName.s );
 
     return( true );
 }
@@ -1902,9 +1902,9 @@ static void FORDecNameList( BrokenName_T *decname, Loc_T *loc )
     ListConcat( &( decname->type_bas ), FORSlashKwd );
     ListConcat( &( decname->type_bas ), FORNameListKwd );
 
-    DWRFREE( strucName.s);
+    DR_FREE( strucName.s);
 
-    DWRWalkChildren( loc->entry_start, WalkTags, WalkFns, decname );
+    DR_WalkChildren( loc->entry_start, WalkTags, WalkFns, decname );
 }
 
 static void FORDecRecord( BrokenName_T *decname, Loc_T *loc )
@@ -1924,7 +1924,7 @@ static void FORDecRecord( BrokenName_T *decname, Loc_T *loc )
     ListConcat( &( decname->type_bas ), FORSlashKwd );
     ListConcat( &( decname->type_bas ), FORRecordKwd );
 
-    DWRFREE( strucName.s);
+    DR_FREE( strucName.s);
 }
 
 static void FORDecUnion( BrokenName_T *decname, Loc_T *loc )
@@ -1960,18 +1960,18 @@ static bool FORAddArrayIndex( drmem_hdl abbrev, drmem_hdl entry, void *data )
 
     tmp_abbrev = abbrev;
     tmp_entry = entry;
-    if( !DWRScanForAttrib( &tmp_abbrev, &tmp_entry, DW_AT_lower_bound ) ) {
+    if( !DR_ScanForAttrib( &tmp_abbrev, &tmp_entry, DW_AT_lower_bound ) ) {
         lower_bd = 1;   // default for FORTRAN
     } else {
-        lower_bd = (signed_32)DWRReadConstant( tmp_abbrev, tmp_entry );
+        lower_bd = (signed_32)DR_ReadConstant( tmp_abbrev, tmp_entry );
     }
 
     tmp_abbrev = abbrev;
     tmp_entry = entry;
-    if( !DWRScanForAttrib( &tmp_abbrev, &tmp_entry, DW_AT_upper_bound ) ) {
+    if( !DR_ScanForAttrib( &tmp_abbrev, &tmp_entry, DW_AT_upper_bound ) ) {
         return( true ); // not a subrange type
     } else {
-        upper_bd = (signed_32)DWRReadConstant( tmp_abbrev, tmp_entry );
+        upper_bd = (signed_32)DR_ReadConstant( tmp_abbrev, tmp_entry );
     }
 
     /* if empty, add "(" */
@@ -2033,22 +2033,22 @@ static void FORDecArray( BrokenName_T *decname, Loc_T *loc )
     data.bounds = &tmpStr;
     data.inParam = loc->inParam;
 
-    tmpStr.s = DWRALLOC( 1 );
+    tmpStr.s = DR_ALLOC( 1 );
     *tmpStr.s = '\0';
     tmpStr.l = 0;
 
     abbrev = loc->abbrev_current;
     entry = loc->entry_current;
-    if( !DWRScanForAttrib( &abbrev, &entry, DW_AT_type ) ) {
-        DWREXCEPT( DREXCEP_BAD_DBG_INFO );
+    if( !DR_ScanForAttrib( &abbrev, &entry, DW_AT_type ) ) {
+        DR_EXCEPT( DREXCEP_BAD_DBG_INFO );
     }
-    type_entry = DWRReadReference( abbrev, entry );
+    type_entry = DR_ReadReference( abbrev, entry );
     type_entry = SkipPCH( type_entry );
     FillLoc( &type_loc, type_entry );
     FORDecType( decname, &type_loc );
 
-    DWRSkipRest( abbrev, &entry );
-    DWRAllChildren( entry, FORAddArrayIndex, &data );
+    DR_SkipRest( abbrev, &entry );
+    DR_AllChildren( entry, FORAddArrayIndex, &data );
 
     tmpStr.l += FORArrayRightKwd.l;
     ReallocStr( &tmpStr );
@@ -2058,7 +2058,7 @@ static void FORDecArray( BrokenName_T *decname, Loc_T *loc )
 
     ListConcat( &(decname->var_elg), tmpStr );
 
-    DWRFREE( tmpStr.s );
+    DR_FREE( tmpStr.s );
 }
 
 static void FORDecType( BrokenName_T *decname, Loc_T *loc )
@@ -2083,7 +2083,7 @@ static void FORDecType( BrokenName_T *decname, Loc_T *loc )
 
         ListConcat( &( decname->type_bas ), SpaceKwd );
         ListConcat( &( decname->type_bas ), typename );
-        DWRFREE( typename.s );
+        DR_FREE( typename.s );
         done = true;
 
         break;
@@ -2106,14 +2106,14 @@ static void FORDecType( BrokenName_T *decname, Loc_T *loc )
         break;
 
     default:
-        DWREXCEPT ( DREXCEP_DWARF_LIB_FAIL );
+        DR_EXCEPT ( DREXCEP_DWARF_LIB_FAIL );
     }
 
     if( !done ) {
         tmp_abbrev = loc->abbrev_current;
         tmp_entry = loc->entry_current;
-        if( DWRScanForAttrib( &tmp_abbrev, &tmp_entry, DW_AT_type ) ) {
-            next_die = DWRReadReference( tmp_abbrev, tmp_entry );
+        if( DR_ScanForAttrib( &tmp_abbrev, &tmp_entry, DW_AT_type ) ) {
+            next_die = DR_ReadReference( tmp_abbrev, tmp_entry );
 
             next_die = SkipPCH( next_die );
             if( next_die != DRMEM_HDL_NULL ) {
@@ -2136,8 +2136,8 @@ static void FORDecString( BrokenName_T *decname, Loc_T *loc )
     tmp_abbrev = loc->abbrev_current;
     tmp_entry = loc->entry_current;
     len = 0;
-    if( DWRScanForAttrib( &tmp_abbrev, &tmp_entry, DW_AT_byte_size ) ) {
-        len = DWRReadConstant( tmp_abbrev, tmp_entry );
+    if( DR_ScanForAttrib( &tmp_abbrev, &tmp_entry, DW_AT_byte_size ) ) {
+        len = DR_ReadConstant( tmp_abbrev, tmp_entry );
     }
 
     if( len ) {
@@ -2178,7 +2178,7 @@ static void FORDecCommon( BrokenName_T *decname, Loc_T *loc )
     ListConcat( &( decname->type_bas ), FORSlashKwd );
     ListConcat( &( decname->type_bas ), FORCommonKwd );
 
-    DWRFREE( commonName.s);
+    DR_FREE( commonName.s);
 }
 
 /*
@@ -2201,7 +2201,7 @@ static String FormName( BrokenName_T *decname )
 
     for( curr = list.head; curr != NULL; curr = curr->next ) {
         strncat( name.s, curr->buf.s, curr->buf.l );
-        DWRFREE( curr->buf.s );
+        DR_FREE( curr->buf.s );
     }
 
     FreeList( list );
@@ -2255,9 +2255,9 @@ static List_T FormList( BrokenName_T *decname )
     /* goofy code to get a space after a pointer ... */
 
     if( decname->type_ptr.tail != NULL ) {
-        list.tail->next = DWRALLOC( sizeof( *(list.tail->next) ) );
+        list.tail->next = DR_ALLOC( sizeof( *(list.tail->next) ) );
         if( list.tail->next == NULL ) {
-            DWREXCEPT( DREXCEP_OUT_OF_MMEM );
+            DR_EXCEPT( DREXCEP_OUT_OF_MMEM );
         }
 
         list.tail->next->next = NULL;
@@ -2296,14 +2296,14 @@ static void FillLoc( Loc_T *loc, drmem_hdl die )
 
     loc->entry_start = die;
     loc->entry_current = die;
-    abbrev_idx = DWRVMReadULEB128( &loc->entry_current );
+    abbrev_idx = DR_VMReadULEB128( &loc->entry_current );
 
     if( abbrev_idx != 0 ) {
-        cu = DWRFindCompileInfo( loc->entry_current );
+        cu = DR_FindCompileInfo( loc->entry_current );
         loc->abbrev_start = cu->abbrevs[abbrev_idx];
         loc->abbrev_current = loc->abbrev_start;
-        loc->tag = DWRVMReadULEB128( &loc->abbrev_current );
-        loc->child = DWRVMReadByte( loc->abbrev_current );
+        loc->tag = DR_VMReadULEB128( &loc->abbrev_current );
+        loc->child = DR_VMReadByte( loc->abbrev_current );
         loc->abbrev_current++;
         loc->inParam = false;
     } else {
@@ -2350,7 +2350,7 @@ static void FreeList( List_T list )
 
         curr = curr->next;
 
-        DWRFREE( tmp );
+        DR_FREE( tmp );
     }
 }
 
@@ -2364,17 +2364,17 @@ static void ReallocStr( String *str )
 /***********************************/
 {
     if( str->s == NULL ) {
-        str->s = DWRALLOC( str->l + 1 );
+        str->s = DR_ALLOC( str->l + 1 );
         if( str->s == NULL ) {
-            DWREXCEPT( DREXCEP_OUT_OF_MMEM );
+            DR_EXCEPT( DREXCEP_OUT_OF_MMEM );
         }
 
         *str->s = '\0';
     } else {
         if( strlen( str->s ) != str->l ) {
-            str->s = DWRREALLOC( str->s, str->l + 1 );
+            str->s = DR_REALLOC( str->s, str->l + 1 );
             if( str->s == NULL ) {
-                DWREXCEPT( DREXCEP_OUT_OF_MMEM );
+                DR_EXCEPT( DREXCEP_OUT_OF_MMEM );
             }
         }
     }
@@ -2397,9 +2397,9 @@ static void ListConcat( List_T *list, String str )
 
     if( list->head == NULL || list->tail == NULL ) {
 
-        newnode = DWRALLOC( sizeof( *newnode ) );
+        newnode = DR_ALLOC( sizeof( *newnode ) );
         if( newnode == NULL ) {
-            DWREXCEPT( DREXCEP_OUT_OF_MMEM );
+            DR_EXCEPT( DREXCEP_OUT_OF_MMEM );
         }
 
         newnode->next = NULL;
@@ -2421,7 +2421,7 @@ static void ListConcat( List_T *list, String str )
         break;
 
     default:
-        DWREXCEPT( DREXCEP_DWARF_LIB_FAIL );
+        DR_EXCEPT( DREXCEP_DWARF_LIB_FAIL );
         strptr = NULL;
     }
 
@@ -2456,7 +2456,7 @@ static void ListAdd( List_T *list, Node_T node )
         break;
 
     default:
-        DWREXCEPT( DREXCEP_DWARF_LIB_FAIL );
+        DR_EXCEPT( DREXCEP_DWARF_LIB_FAIL );
     }
 }
 
@@ -2482,9 +2482,9 @@ static void EndNode( List_T * list, bool u_def,
         list->tail->entry = entry;
         list->tail->sym_type = st;
     } else {
-        newnode = DWRALLOC( sizeof( *newnode ) );
+        newnode = DR_ALLOC( sizeof( *newnode ) );
         if( newnode == NULL ) {
-            DWREXCEPT( DREXCEP_OUT_OF_MMEM );
+            DR_EXCEPT( DREXCEP_OUT_OF_MMEM );
         }
 
         newnode->next = NULL;

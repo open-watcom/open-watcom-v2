@@ -95,31 +95,31 @@ instruction     *NewIns( opcnt num )
  * fields to sensible defaults.
  */
 {
-    instruction *new;
+    instruction *new_ins;
 
     if( num > MAX_OPS_PER_INS ) {
         _Zoiks( ZOIKS_026 );
     }
-    new = AllocFrl( &InsFrl, INS_SIZE );
-    new->head.state = INS_NEEDS_WORK;
-    new->u2.index_needs = RL_;
-    new->num_operands = num;
-    new->result = NULL;
-    memset( &new->flags, 0, sizeof( new->flags ) );
-    new->ins_flags = 0;
-    new->head.line_num = 0;
-    new->sequence = 0;
-    new->stk_entry = 0;
-    new->stk_exit = 0;
-    new->fp.u.stk_extra = 0;
+    new_ins = AllocFrl( &InsFrl, INS_SIZE );
+    new_ins->head.state = INS_NEEDS_WORK;
+    new_ins->u2.index_needs = RL_;
+    new_ins->num_operands = num;
+    new_ins->result = NULL;
+    memset( &new_ins->flags, 0, sizeof( new_ins->flags ) );
+    new_ins->ins_flags = 0;
+    new_ins->head.line_num = 0;
+    new_ins->sequence = 0;
+    new_ins->stk_entry = 0;
+    new_ins->stk_exit = 0;
+    new_ins->fp.u.stk_extra = 0;
     for( num = MAX_OPS_PER_INS; num-- > 0; ) {
-        new->operands[num] = NULL;
+        new_ins->operands[num] = NULL;
     }
-    new->table = NULL;
-    new->u.gen_table = NULL;
-    new->base_type_class = XX;
-    new->zap = (register_name *)AllocRegName( HW_EMPTY );
-    return( new );
+    new_ins->table = NULL;
+    new_ins->u.gen_table = NULL;
+    new_ins->base_type_class = XX;
+    new_ins->zap = (register_name *)AllocRegName( HW_EMPTY );
+    return( new_ins );
 }
 
 

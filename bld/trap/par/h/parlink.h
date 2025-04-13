@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,8 +32,8 @@
 
 extern int              NumPrinters( void );
 extern unsigned         PrnAddress( int );
-extern unsigned         AccessPorts( unsigned, unsigned );
-extern void             FreePorts( unsigned, unsigned );
+extern bool             AccessPorts( unsigned port, unsigned count );
+extern void             FreePorts( unsigned port, unsigned count );
 extern unsigned long    Ticks( void );
 extern char             *InitSys( void );
 extern void             FiniSys( void );

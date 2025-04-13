@@ -43,6 +43,8 @@ set PROJDIR=<CWD>
     <CCCMD> linux386/owcc.exe    "<OWRELROOT>/binl/owcc"
     <CCCMD> linux386/owcc.sym    "<OWRELROOT>/binl/"
 
+    <CCCMD> bsdx64/specs.owc     "<OWRELROOT>/binb64/"
+    <CCCMD> bsdx64/owcc.exe      "<OWRELROOT>/binb64/owcc"
     <CCCMD> ntx64/specs.owc      "<OWRELROOT>/binnt64/"
     <CCCMD> ntx64/owcc.exe       "<OWRELROOT>/binnt64/"
     <CCCMD> linuxx64/specs.owc   "<OWRELROOT>/binl64/"

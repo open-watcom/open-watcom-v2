@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,53 +36,38 @@
 #define INCL_DOSPROCESS
 #define INCL_DOSMISC
 #include <wos2.h>
-#include "i86.h"
+#include <i86.h>
+#include "bool.h"
 #include "parlink.h"
 #include "portio.h"
+#include "parfind.h"
 
-
-#define NUM_ELTS( a )   (sizeof( a ) / sizeof( a[0] ))
 
 #ifdef _M_I86
 GINFOSEG    __far *GInfoSeg;
 #endif
 
-USHORT      PortTest[] = {
-    0x378, 0x3bc, 0x278
-};
-
-USHORT      PortAddress[NUM_ELTS( PortTest )] = {
-    0, 0, 0
-};
-
-USHORT      PortsFound;
+static unsigned short   PortTest[] = { PORT_ADDRESSES };
+static unsigned short   PortAddress[ACOUNT( PortTest )] = { 0 };
+static int              PortsFound = 0;
 
 int NumPrinters( void )
 {
-    char                num_printers;
-    APIRET              rc;
-
-#ifdef _M_I86
-    rc = DosDevConfig( &num_printers, 0, 0 );
-#else
-    rc = DosDevConfig( &num_printers, DEVINFO_PRINTER );
-#endif
-    if( rc != 0 )
-        return( 0 );
-    if( num_printers > PortsFound )
-        num_printers = PortsFound;
-    return( num_printers );
+    return( PortsFound );
 }
 
-unsigned AccessPorts( unsigned first, unsigned last )
+bool AccessPorts( unsigned first, unsigned count )
 {
-    DosPortAccess( 0, 0, first, last );
-    return( 1 );
+    if( count > 0 )
+        return( DosPortAccess( 0, 0, first, first + count - 1 ) == 0 );
+    return( true );
 }
 
-void FreePorts( unsigned first, unsigned last )
+void FreePorts( unsigned first, unsigned count )
 {
-    DosPortAccess( 0, 1, first, last );
+    if( count > 0 ) {
+        DosPortAccess( 0, 1, first, first + count - 1 );
+    }
 }
 
 static int CheckForPort( int i, unsigned char value )
@@ -113,12 +98,13 @@ char *InitSys( void )
     GInfoSeg = _MK_FP( sel_global, 0 );
 #endif
     PortsFound = 0;
-    for( i = 0; i < NUM_ELTS( PortTest ); ++i ) {
-        AccessPorts( PortTest[i], PortTest[i] );
-        if( CheckForPort( i, 0x55 ) && CheckForPort( i, 0xaa ) ) {
-            PortAddress[PortsFound++] = PortTest[i];
+    for( i = 0; i < ACOUNT( PortTest ); ++i ) {
+        if( AccessPorts( PortTest[i], 1 ) ) {
+            if( CheckForPort( i, 0x55 ) && CheckForPort( i, 0xaa ) ) {
+                PortAddress[PortsFound++] = PortTest[i];
+            }
+            FreePorts( PortTest[i], 1 );
         }
-        FreePorts( PortTest[i], PortTest[i] );
     }
     return( 0 );
 }

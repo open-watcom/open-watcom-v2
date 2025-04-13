@@ -74,7 +74,8 @@ static  void    MarkReachableBlocks( void )
     do {
         change = false;
         for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
-            if( _IsBlkVisited( blk ) || _IsBlkAttr( blk, BLK_BIG_LABEL | BLK_SELECT ) ) {
+            if( _IsBlkVisited( blk )
+              || _IsBlkAttr( blk, BLK_BIG_LABEL | BLK_SELECT ) ) {
                 _MarkBlkVisited( blk );
                 for( i = blk->targets; i-- > 0; ) {
                     son = blk->edge[i].destination.u.blk;
@@ -155,7 +156,8 @@ void    RemoveBlock( block *blk )
      * of the next block in source order, if that block doesn't already
      * have a line number on it.
      */
-    if( blk->next_block != NULL && blk->next_block->gen_id == (blk->gen_id + 1) ) {
+    if( blk->next_block != NULL
+      && blk->next_block->gen_id == (blk->gen_id + 1) ) {
         /*
          * quick check to see if following block is next one in src order
          */
@@ -164,13 +166,15 @@ void    RemoveBlock( block *blk )
         next = NULL;
         for( chk = HeadBlock; chk != NULL; chk = chk->next_block ) {
             if( (chk != blk)
-                && (chk->gen_id > blk->gen_id)
-                && (next == NULL || next->gen_id > chk->gen_id) ) {
+              && (chk->gen_id > blk->gen_id)
+              && (next == NULL
+              || next->gen_id > chk->gen_id) ) {
                 next = chk;
             }
         }
     }
-    if( next != NULL && next->ins.head.line_num == 0 ) {
+    if( next != NULL
+      && next->ins.head.line_num == 0 ) {
         next->ins.head.line_num = last_line;
     }
     if( HeadBlock == blk ) {
@@ -228,10 +232,10 @@ void    MoveHead( block *old, block *new )
         }
     }
     if( _IsBlkAttr( old, BLK_LOOP_HEADER ) )
-        _MarkBlkAttr( new, BLK_LOOP_HEADER );
+        _MarkBlkAttrSet( new, BLK_LOOP_HEADER );
     if( _IsBlkAttr( old, BLK_ITERATIONS_KNOWN ) )
-        _MarkBlkAttr( new, BLK_ITERATIONS_KNOWN );
-    _MarkBlkAttrNot( old, BLK_LOOP_HEADER | BLK_ITERATIONS_KNOWN );
+        _MarkBlkAttrSet( new, BLK_ITERATIONS_KNOWN );
+    _MarkBlkAttrClr( old, BLK_LOOP_HEADER | BLK_ITERATIONS_KNOWN );
     new->iterations = old->iterations;
     new->loop_head = old->loop_head;
     old->loop_head = new;
@@ -257,10 +261,7 @@ static  bool    Retarget( block *blk )
             edge->next_source = blk->input_edges;
             blk->input_edges = edge;
         } else {
-            edge->destination.u.blk = target;
-            edge->next_source = target->input_edges;
-            target->input_edges = edge;
-            target->inputs++;
+            PointEdge( edge, target );
             blk->inputs--;
         }
     }
@@ -289,7 +290,7 @@ static  void    JoinBlocks( block *jump, block *target )
     label = target->label;
     target->label = jump->label;
     if( _IsBlkAttr( jump, BLK_BIG_LABEL ) )
-        _MarkBlkAttr( target, BLK_BIG_LABEL );
+        _MarkBlkAttrSet( target, BLK_BIG_LABEL );
     jump->label = label;
     line_num = target->ins.head.line_num;
     target->ins.head.line_num = jump->ins.head.line_num;
@@ -352,10 +353,11 @@ static  bool    SameTarget( block *blk )
     targ2 = blk->edge[1].destination.u.blk;
     if( targ1 != targ2 )
         return( false );
-    if( _IsBlkAttr( targ1, BLK_UNKNOWN_DESTINATION ) || _IsBlkAttr( targ2, BLK_UNKNOWN_DESTINATION ) )
+    if( _IsBlkAttr( targ1, BLK_UNKNOWN_DESTINATION )
+      || _IsBlkAttr( targ2, BLK_UNKNOWN_DESTINATION ) )
         return( false );
-    _MarkBlkAttrNot( blk, BLK_CONDITIONAL );
-    _MarkBlkAttr( blk, BLK_JUMP );
+    _MarkBlkAttrClr( blk, BLK_CONDITIONAL );
+    _MarkBlkAttrSet( blk, BLK_JUMP );
     RemoveEdge( &blk->edge[1] );
     ins = blk->ins.head.prev;
     while( !_OpIsCondition( ins->head.opcode ) ) {
@@ -384,7 +386,8 @@ static  bool    DoBlockTrim( void )
         MarkReachableBlocks();
         for( blk = HeadBlock->next_block; blk != NULL; blk = next ) {
             next = blk->next_block;
-            if( !_IsBlkVisited( blk ) && !_IsBlkAttr( blk, BLK_UNKNOWN_DESTINATION ) ) {
+            if( !_IsBlkVisited( blk )
+              && !_IsBlkAttr( blk, BLK_UNKNOWN_DESTINATION ) ) {
                 while( blk->input_edges != NULL ) {
                     RemoveInputEdge( blk->input_edges );
                 }
@@ -394,7 +397,8 @@ static  bool    DoBlockTrim( void )
                 change |= SameTarget( blk );
             } else if( _IsBlkAttr( blk, BLK_JUMP ) ) {
                 target = blk->edge[0].destination.u.blk;
-                if( target != blk && !_IsBlkAttr( target, BLK_UNKNOWN_DESTINATION ) ) {
+                if( target != blk
+                  && !_IsBlkAttr( target, BLK_UNKNOWN_DESTINATION ) ) {
                     for( ins = blk->ins.head.next; ins->head.opcode == OP_NOP; ins = ins->head.next ) {
                         if( ins->flags.u.nop_flags & (NOP_DBGINFO | NOP_DBGINFO_START) ) {
                             break;
@@ -404,9 +408,11 @@ static  bool    DoBlockTrim( void )
                         if( !_IsBlkAttr( blk, BLK_BIG_LABEL ) ) {
                             change |= Retarget( blk );
                         }
-                    } else if( target->inputs == 1 && !_IsBlkAttr( target, BLK_BIG_LABEL )
-                          && ( CountIns( blk ) + CountIns( target ) ) <= INS_PER_BLOCK ) {
-                        if( !_IsBlkAttr( blk, BLK_RETURNED_TO | BLK_BIG_LABEL ) && !_IsBlkAttr( target, BLK_CALL_LABEL ) ) {
+                    } else if( target->inputs == 1
+                      && !_IsBlkAttr( target, BLK_BIG_LABEL )
+                      && ( CountIns( blk ) + CountIns( target ) ) <= INS_PER_BLOCK ) {
+                        if( !_IsBlkAttr( blk, BLK_RETURNED_TO | BLK_BIG_LABEL )
+                          && !_IsBlkAttr( target, BLK_CALL_LABEL ) ) {
                             JoinBlocks( blk, target );
                             change = true;
                         }
@@ -439,17 +445,14 @@ void KillCondBlk( block *blk, instruction *ins, byte dest_idx )
 
     RemoveInputEdge( &blk->edge[0] );
     RemoveInputEdge( &blk->edge[1] );
-    _MarkBlkAttrNot( blk, BLK_CONDITIONAL );
-    _MarkBlkAttr( blk, BLK_JUMP );
+    _MarkBlkAttrClr( blk, BLK_CONDITIONAL );
+    _MarkBlkAttrSet( blk, BLK_JUMP );
     blk->targets = 1;
     dest_blk = blk->edge[dest_idx].destination.u.blk;
     edge = &blk->edge[0];
     edge->flags = blk->edge[dest_idx].flags;
     edge->source = blk;
-    edge->destination.u.blk = dest_blk;
-    edge->next_source = dest_blk->input_edges;
-    dest_blk->input_edges = edge;
-    dest_blk->inputs++;
+    PointEdge( edge, dest_blk );
     FreeIns( ins );
 }
 

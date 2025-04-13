@@ -52,7 +52,7 @@
   #if defined( __WATCOMC__ )
     #pragma aux InternalError __aborts
   #endif
-  #if DEBUG_OUT
+  #ifdef DEBUG_OUT
     #define DebugCurrLine() printf( "%s\n", CurrString );
     #define AsmIntErr( x ) DebugCurrLine(); printf( "Internal error = %u\n", x )
   #else

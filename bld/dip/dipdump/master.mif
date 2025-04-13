@@ -1,0 +1,43 @@
+#
+# Open Watcom DIP Dumper makefile.
+#
+
+tree_depth = 4
+
+proj_name = dipdump
+
+!ifndef dipdump_autodepends
+dipdump_autodepends = .AUTODEPEND
+!endif
+
+!include cproj.mif
+!include defrule.mif
+!include deftarg.mif
+
+!include $(dig_dir)/client.mif
+!include $(dip_dir)/client.mif
+
+#
+# cflags
+#
+.c: ../c;$(dig_srcs);$(mad_srcs);$(watcom_dir)/c
+
+inc_dirs = -I"../h" -I"$(dig_dir)/h"
+
+extra_cpp_flags = -DBLDVER=$(bld_ver)
+
+extra_c_flags_f_dipld = -I"$(dig_dir)/c"
+
+# explicit rules
+#################
+
+#
+# EXE
+#
+exetarg_objs = &
+    dipdump.obj &
+    digcli.obj  &
+    dipcli.obj  &
+    pathlist.obj &
+    $(dip_objs) $(dig_objs)
+!include exetarg.mif

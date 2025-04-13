@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -93,6 +93,7 @@ trap_retval TRAP_FILE( get_config )( void )
     ret->file.path_separator[1] = '/';
     ret->file.line_eol[0] = '\r';
     ret->file.line_eol[1] = '\n';
+    ret->file.list_separator = ';';
     return( sizeof( *ret ) );
 }
 
@@ -390,12 +391,12 @@ static trap_elen Redirect( bool input )
     HFILE                   std_hndl;
     HFILE                   *var;
     long                    bigint;
-    redirect_stdout_ret     *ret;
+    redirect_stdio_ret      *ret;
     char                    *file_name;
 
     ret = GetOutPtr( 0 );
     ret->err = 0;
-    file_name = GetInPtr( sizeof( redirect_stdout_req ) );
+    file_name = GetInPtr( sizeof( redirect_stdio_req ) );
     if( input ) {
         std_hndl = 0;
         var = &SaveStdIn;

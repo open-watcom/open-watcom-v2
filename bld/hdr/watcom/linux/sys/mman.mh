@@ -18,10 +18,6 @@
 
 /* From <bits/mman.h> */
 
-#ifdef __LINUX__
-#define __USE_MISC
-#endif
-
 #define PROT_READ       0x1             /* Page can be read.  */
 #define PROT_WRITE      0x2             /* Page can be written.  */
 #define PROT_EXEC       0x4             /* Page can be executed.  */
@@ -34,28 +30,22 @@
 /* Sharing types (must choose one and only one of these).  */
 #define MAP_SHARED      0x01            /* Share changes.  */
 #define MAP_PRIVATE     0x02            /* Changes are private.  */
-#ifdef __USE_MISC
-# define MAP_TYPE       0x0f            /* Mask for type of mapping.  */
-#endif
+#define MAP_TYPE        0x0f            /* Mask for type of mapping.  */
 
 /* Other flags.  */
 #define MAP_FIXED       0x10            /* Interpret addr exactly.  */
-#ifdef __USE_MISC
-# define MAP_FILE       0
-# define MAP_ANONYMOUS  0x20            /* Don't use a file.  */
-# define MAP_ANON       MAP_ANONYMOUS
-#endif
+#define MAP_FILE        0
+#define MAP_ANONYMOUS   0x20            /* Don't use a file.  */
+#define MAP_ANON        MAP_ANONYMOUS
 
-/* These are Linux-specific.  */
-#ifdef __USE_MISC
-# define MAP_GROWSDOWN  0x00100         /* Stack-like segment.  */
-# define MAP_DENYWRITE  0x00800         /* ETXTBSY */
-# define MAP_EXECUTABLE 0x01000         /* Mark it as an executable.  */
-# define MAP_LOCKED     0x02000         /* Lock the mapping.  */
-# define MAP_NORESERVE  0x04000         /* Don't check for reservations.  */
-# define MAP_POPULATE   0x08000         /* Populate (prefault) pagetables.  */
-# define MAP_NONBLOCK   0x10000         /* Do not block on IO.  */
-#endif
+:: These are Linux-specific.  */
+#define MAP_GROWSDOWN   0x00100         /* Stack-like segment.  */
+#define MAP_DENYWRITE   0x00800         /* ETXTBSY */
+#define MAP_EXECUTABLE  0x01000         /* Mark it as an executable.  */
+#define MAP_LOCKED      0x02000         /* Lock the mapping.  */
+#define MAP_NORESERVE   0x04000         /* Don't check for reservations.  */
+#define MAP_POPULATE    0x08000         /* Populate (prefault) pagetables.  */
+#define MAP_NONBLOCK    0x10000         /* Do not block on IO.  */
 
 /* Flags to `msync'.  */
 #define MS_ASYNC        1               /* Sync memory asynchronously.  */

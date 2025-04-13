@@ -35,60 +35,45 @@
 #include "guiscale.h"
 #include "guixutil.h"
 
-static guix_ord GetPos( gui_window *wnd, int bar )
-{
-    if( GUIScrollOn( wnd, bar ) ) {
-        return( GUIGetScrollPos( wnd, bar ) );
-    } else {
-        return( 0 );
-    }
-}
-
 /*
  * GUIGetHScrollCol --
  */
-
 gui_text_ord GUIAPI GUIGetHScrollCol( gui_window *wnd )
 {
-    return( GUIToTextX( GetPos( wnd, SB_HORZ ), wnd ) );
+    if( IS_HSCROLL_ON( wnd ) )
+        return( GUITextFromScreenH( GUIGetScrollPos( wnd, SB_HORZ ), wnd ) );
+    return( 0 );
 }
 
 /*
  * GUIGetVScrollRow --
  */
-
 gui_text_ord GUIAPI GUIGetVScrollRow( gui_window *wnd )
 {
-    return( GUIToTextY( GetPos( wnd, SB_VERT ), wnd ) );
+    if( IS_VSCROLL_ON( wnd ) )
+        return( GUITextFromScreenV( GUIGetScrollPos( wnd, SB_VERT ), wnd ) );
+    return( 0 );
 }
 
-
-static gui_ord GetScroll( gui_window *wnd, int bar )
-{
-    guix_ord    pos;
-
-    pos = GetPos( wnd, bar );
-    if( bar == SB_HORZ ) {
-        return( GUIScaleFromScreenH( pos ) );
-    } else {
-        return( GUIScaleFromScreenV( pos ) );
-    }
-}
 
 /*
  * GUIGetHScroll --
  */
-
 gui_ord GUIAPI GUIGetHScroll( gui_window *wnd )
 {
-    return( GetScroll( wnd, SB_HORZ ) );
+    if( IS_HSCROLL_ON( wnd ) ) {
+        return( GUIScaleFromScreenH( GUIGetScrollPos( wnd, SB_HORZ ) ) );
+    }
+    return( 0 );
 }
 
 /*
  * GUIGetVScroll --
  */
-
 gui_ord GUIAPI GUIGetVScroll( gui_window *wnd )
 {
-    return( GetScroll( wnd, SB_VERT ) );
+    if( IS_VSCROLL_ON( wnd ) ) {
+        return( GUIScaleFromScreenV( GUIGetScrollPos( wnd, SB_VERT ) ) );
+    }
+    return( 0 );
 }

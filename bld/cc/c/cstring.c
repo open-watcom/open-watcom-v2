@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -268,12 +268,6 @@ static TYPEPTR StringLeafType( void )
     return( typ );
 }
 
-
-static str_hash_idx CalcStringHash( STR_HANDLE lit )
-{
-    return( (str_hash_idx)( hashpjw( lit->literal ) % STRING_HASH_SIZE ) );
-}
-
 TREEPTR StringLeaf( string_flags flags )
 {
     STR_HANDLE          new_lit;
@@ -302,7 +296,11 @@ TREEPTR StringLeaf( string_flags flags )
     if( TOGGLE( reuse_duplicate_strings ) ) {
         for( strlit = StringHash[hash]; strlit != NULL; strlit = strlit->next_string ) {
             if( strlit->length == new_lit->length && strlit->flags == flags ) {
-                if( strcmp( strlit->literal, new_lit->literal ) == 0 ) {
+                /*
+                 * it contains wide characters with 0 bytes
+                 * must be memory compare
+                 */
+                if( memcmp( strlit->literal, new_lit->literal, new_lit->length ) == 0 ) {
                     break;
                 }
             }

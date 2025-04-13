@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -226,7 +226,6 @@ static void doInitializeEditor( int argc, char *argv[] )
     srcline         sline;
     int             k;
     char            tmp[_MAX_PATH];
-    char            c[1];
     char            buff[MAX_STR];
     char            file[MAX_STR];
     char            **list;
@@ -235,7 +234,6 @@ static void doInitializeEditor( int argc, char *argv[] )
     char            *startup[MAX_STARTUP];
     char            *startup_parms[MAX_STARTUP];
     vi_rc           rc;
-    vi_rc           rc1;
 
     /*
      * Make sure WATCOM is setup and if it is not, make a best guess.
@@ -310,7 +308,7 @@ static void doInitializeEditor( int argc, char *argv[] )
     /*
      * initial configuration
      */
-    EditVars.Majick = DupString( "()~@" );
+    strcpy( EditVars.Majick.str, "()~@" );
     EditVars.FileEndString = DupString( "[END_OF_FILE]" );
     MatchInit();
     SetGadgetString( NULL );
@@ -319,8 +317,7 @@ static void doInitializeEditor( int argc, char *argv[] )
 
     sline = 0;
     if( cfgFN[0] != '\0' ) {
-        c[0] = '\0';
-        rc = Source( cfgFN, c, &sline );
+        rc = Source( cfgFN, "", &sline );
         if( rc == ERR_FILE_NOT_FOUND ) {
 #ifdef __WIN__
             MessageBox( NO_WINDOW, "Could not locate configuration information; please make sure your EDPATH environment variable is set correctly",
@@ -330,8 +327,9 @@ static void doInitializeEditor( int argc, char *argv[] )
             rc = ERR_NO_ERR;
 #endif
         }
-    } else {
-        rc = ERR_NO_ERR;
+        if( rc > ERR_NO_ERR ) {
+            Error( "%s on line %u of \"%s\"", GetErrorMsg( rc ), sline, cfgFN );
+        }
     }
     if( wantNoReadEntireFile ) {
         EditFlags.ReadEntireFile = false;
@@ -379,21 +377,21 @@ static void doInitializeEditor( int argc, char *argv[] )
      */
     StartWindows();
     InitMouse();
-    rc1 = NewMessageWindow();
-    if( rc1 != ERR_NO_ERR ) {
-        FatalError( rc1 );
+    rc = NewMessageWindow();
+    if( rc != ERR_NO_ERR ) {
+        FatalError( rc );
     }
     DoVersion();
-    rc1 = InitMenu();
-    if( rc1 != ERR_NO_ERR ) {
-        FatalError( rc1 );
+    rc = InitMenu();
+    if( rc != ERR_NO_ERR ) {
+        FatalError( rc );
     }
     EditFlags.SpinningOurWheels = true;
     EditFlags.ClockActive = true;
     EditFlags.DisplayHold = true;
-    rc1 = NewStatusWindow();
-    if( rc1 != ERR_NO_ERR ) {
-        FatalError( rc1 );
+    rc = NewStatusWindow();
+    if( rc != ERR_NO_ERR ) {
+        FatalError( rc );
     }
     EditFlags.DisplayHold = false;
 
@@ -411,14 +409,14 @@ static void doInitializeEditor( int argc, char *argv[] )
             }
         }
 #endif
-        rc1 = LocateTag( cTag, file, buff, sizeof( buff ) );
+        rc = LocateTag( cTag, file, buff, sizeof( buff ) );
         cFN = file;
-        if( rc1 != ERR_NO_ERR ) {
-            if( rc1 == ERR_TAG_NOT_FOUND ) {
-                Error( GetErrorMsg( rc1 ), cTag );
+        if( rc != ERR_NO_ERR ) {
+            if( rc == ERR_TAG_NOT_FOUND ) {
+                Error( GetErrorMsg( rc ), cTag );
                 ExitEditor( 0 );
             }
-            FatalError( rc1 );
+            FatalError( rc );
         }
     }
 
@@ -480,9 +478,9 @@ static void doInitializeEditor( int argc, char *argv[] )
                 if( path[len1 - 1] == '.' )
                     path[len1 - 1] = '\0';
 #endif
-                rc1 = NewFile( path, false );
-                if( rc1 != ERR_NO_ERR ) {
-                    FatalError( rc1 );
+                rc = NewFile( path, false );
+                if( rc != ERR_NO_ERR ) {
+                    FatalError( rc );
                 }
                 cFN = argv[k];
                 if( arg < 1 ) {
@@ -497,9 +495,9 @@ static void doInitializeEditor( int argc, char *argv[] )
         strcat( cmd, cFN );
         ocnt = ExpandFileNames( cFN, &list );
         for( j = 0; j < ocnt; j++ ) {
-            rc1 = NewFile( list[j], false );
-            if( rc1 != ERR_NO_ERR && rc1 != NEW_FILE ) {
-                FatalError( rc1 );
+            rc = NewFile( list[j], false );
+            if( rc != ERR_NO_ERR && rc != NEW_FILE ) {
+                FatalError( rc );
             }
             if( EditFlags.BreakPressed ) {
                 break;
@@ -518,9 +516,9 @@ static void doInitializeEditor( int argc, char *argv[] )
         cFN = argv[k];
     }
     if( EditFlags.StdIOMode ) {
-        rc1 = NewFile( "stdio", false );
-        if( rc1 != ERR_NO_ERR ) {
-            FatalError( rc1 );
+        rc = NewFile( "stdio", false );
+        if( rc != ERR_NO_ERR ) {
+            FatalError( rc );
         }
     }
     EditFlags.WatchForBreak = false;
@@ -532,12 +530,12 @@ static void doInitializeEditor( int argc, char *argv[] )
     if( cTag != NULL && !EditFlags.NoInitialFileLoad ) {
         if( buff[0] != '/' ) {
             i = atoi( buff );
-            rc1 = GoToLineNoRelCurs( i );
+            rc = GoToLineNoRelCurs( i );
         } else {
-            rc1 = FindTag( buff );
+            rc = FindTag( buff );
         }
-        if( rc1 > 0 ) {
-            Error( GetErrorMsg( rc1 ) );
+        if( rc > 0 ) {
+            Error( GetErrorMsg( rc ) );
         }
     }
 
@@ -550,26 +548,25 @@ static void doInitializeEditor( int argc, char *argv[] )
     for( i = 0; i < startcnt; i++ ) {
         GetFromEnv( startup[i], tmp );
         ReplaceString( &cfgFN, tmp );
-        if( cfgFN[0] != '\0' ) {
-            if( startup_parms[i] != NULL ) {
-                parm = startup_parms[i];
-            } else {
-                c[0] = '\0';
-                parm = c;
-            }
-#if defined( __NT__ ) && !defined( __WIN__ )
-            {
-                if( !EditFlags.Quiet ) {
-                    SetConsoleActiveScreenBuffer( OutputHandle );
-                }
-            }
-#endif
-            sline = 0;
-            rc = Source( cfgFN, parm, &sline );
+        if( cfgFN == NULL || *cfgFN == '\0' )
+            continue;
+        if( startup_parms[i] != NULL ) {
+            parm = startup_parms[i];
+        } else {
+            parm = "";
         }
-    }
-    if( rc > ERR_NO_ERR ) {
-        Error( "%s on line %u of \"%s\"", GetErrorMsg( rc ), sline, cfgFN );
+#if defined( __NT__ ) && !defined( __WIN__ )
+        {
+            if( !EditFlags.Quiet ) {
+                SetConsoleActiveScreenBuffer( OutputHandle );
+            }
+        }
+#endif
+        sline = 0;
+        rc = Source( cfgFN, parm, &sline );
+        if( rc > ERR_NO_ERR ) {
+            Error( "%s on line %u of \"%s\"", GetErrorMsg( rc ), sline, cfgFN );
+        }
     }
     if( argc == 1 ) {
         LoadHistory( NULL );

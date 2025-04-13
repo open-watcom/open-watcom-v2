@@ -57,6 +57,7 @@
 #include "guirdlg.h"
 #include "guimdi.h"
 #include "guistat.h"
+#include "guix.h"
 
 
 #if !defined(__NT__)
@@ -111,8 +112,8 @@ WINEXPORT WPI_MRESULT CALLBACK GUIWindowProc( HWND, WPI_MSG msg, WPI_PARAM1 wpar
 void GUIXSetupWnd( gui_window *wnd )
 {
     wnd->flags = NONE_SET;
-    wnd->vrange = -1;
-    wnd->hrange = -1;
+    wnd->vrange = GUI_NO_RANGE;
+    wnd->hrange = GUI_NO_RANGE;
 }
 
 static void GUISetWindowClassName( void )

@@ -142,17 +142,17 @@ static void FuncDefn( SYMPTR sym )
 #define NAMELIT(c) c, sizeof( c )
 
 #define MAIN_NAMES \
-    pick( MAIN_WMAIN,    "wmain" ), \
-    pick( MAIN_MAIN,     "main" ), \
-    pick( MAIN_WWINMAIN, "wWinMain" ), \
-    pick( MAIN_WINMAIN,  "WinMain" ), \
-    pick( MAIN_WLIBMAIN, "wLibMain" ), \
-    pick( MAIN_LIBMAIN,  "LibMain" ), \
-    pick( MAIN_WDLLMAIN, "wDllMain" ), \
-    pick( MAIN_DLLMAIN,  "DllMain" ),
+    pick( MAIN_WMAIN,    "wmain" ) \
+    pick( MAIN_MAIN,     "main" ) \
+    pick( MAIN_WWINMAIN, "wWinMain" ) \
+    pick( MAIN_WINMAIN,  "WinMain" ) \
+    pick( MAIN_WLIBMAIN, "wLibMain" ) \
+    pick( MAIN_LIBMAIN,  "LibMain" ) \
+    pick( MAIN_WDLLMAIN, "wDllMain" ) \
+    pick( MAIN_DLLMAIN,  "DllMain" )
 
 enum main_names {
-    #define pick(e,n) e
+    #define pick(e,n) e,
     MAIN_NAMES
     #undef pick
     MAIN_NUM,
@@ -162,7 +162,7 @@ static struct {
     char const      *name;
     unsigned char   len;
 } MainNames[] = {
-    #define pick(e,n) { NAMELIT( n ) }
+    #define pick(e,n) { NAMELIT( n ) },
     MAIN_NAMES
     #undef pick
 };
@@ -584,7 +584,7 @@ static void CheckParms( void )
                 if( VarParm( CurFunc ) ) {
                     typ = ArrayNode( GetType( TYP_CHAR ) );
                     typ->u.array->dimension = 160;
-                    sym_handle = GetNewSym( &var_parm, 'V', typ, SC_AUTO );
+                    sym_handle = GetNewDotSym( &var_parm, 'V', typ, SC_AUTO );
                     SymReplace( &var_parm, sym_handle );
                     prev_parm->sym.handle = sym_handle;
                 }

@@ -197,8 +197,7 @@ _WCRTLINK void __CloseSemaphore( semaphore_object *obj )
     #elif defined( __QNX__ ) || defined( __LINUX__ )
         __posix_sem_destroy( &obj->semaphore );
     #elif defined( __RDOS__ )
-        RdosDeleteSection( obj->semaphore );
-        obj->semaphore = 0;
+        RdosResetFutex( &obj->semaphore );
     #elif defined( __RDOSDEV__ )
     #else
         DosCloseMutexSem( obj->semaphore );
@@ -241,7 +240,7 @@ _WCRTLINK void __AccessSemaphore( semaphore_object *obj )
     #elif defined( __LINUX__ )
                 __posix_sem_init( &obj->semaphore, 0, 1 );
     #elif defined( __RDOS__ )
-                obj->semaphore = RdosCreateSection( "Watcom.Thread" );
+                RdosInitFutex( &obj->semaphore, "Watcom.Thread" );
     #elif defined( __RDOSDEV__ )
                 RdosInitKernelSection(&obj->semaphore);
     #else
@@ -268,7 +267,7 @@ _WCRTLINK void __AccessSemaphore( semaphore_object *obj )
   #elif defined( __QNX__ ) || defined( __LINUX__ )
         __posix_sem_wait( &obj->semaphore );
   #elif defined( __RDOS__ )
-        RdosEnterSection( obj->semaphore );
+        RdosEnterFutex( &obj->semaphore );
   #elif defined( __RDOSDEV__ )
         RdosEnterKernelSection( &obj->semaphore );
   #else
@@ -306,7 +305,7 @@ _WCRTLINK void __ReleaseSemaphore( semaphore_object *obj )
   #elif defined( __QNX__ ) || defined( __LINUX__ )
             __posix_sem_post( &obj->semaphore );
   #elif defined( __RDOS__ )
-            RdosLeaveSection( obj->semaphore );
+            RdosLeaveFutex( &obj->semaphore );
   #elif defined( __RDOSDEV__ )
             RdosLeaveKernelSection( &obj->semaphore );
   #else
@@ -888,7 +887,7 @@ void __InitMultipleThread( void )
         InitSemaphore.initialized = 1;
         __AddThreadData( __FirstThreadData->thread_id, __FirstThreadData );
   #elif defined( __RDOS__ )
-        InitSemaphore.semaphore = RdosCreateSection( "Watcom.Thread.Init" );
+        RdosInitFutex( &InitSemaphore.semaphore, "Watcom.Thread.Init" );
         InitSemaphore.initialized = 1;
         __AddThreadData( __FirstThreadData->thread_id, __FirstThreadData );
         __tls_set_value( __TlsIndex, __FirstThreadData );

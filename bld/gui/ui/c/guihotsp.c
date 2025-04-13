@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,7 +38,7 @@
 #include "guiutil.h"
 #include "guixutil.h"
 #include "guixdlg.h"
-#include <string.h>
+
 
 /*
  * GUICreateHot -- called by GUIDoAddControl
@@ -57,7 +58,7 @@ bool GUICreateHot( gui_control_info *ctl_info, VFIELD *field )
         return( false );
     }
     field->typ = FLD_HOT;
-    hot_spot->str = GUIStrDup( ctl_info->text, &ok );
+    hot_spot->str = GUIStrDupOK( ctl_info->text, &ok );
     if( !ok ) {
         return( false );
     }
@@ -92,7 +93,7 @@ bool GUISetHotSpotText( a_hot_spot *hot_spot, const char *text )
 
     if( text == NULL )
         text = "";
-    new_str = GUIStrDup( text, &ok );
+    new_str = GUIStrDupOK( text, &ok );
     if( ok ) {
         GUIMemFree( hot_spot->str );
         hot_spot->str = new_str;

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,14 +40,9 @@
     #include <sys/utime.h>
 #endif
 #include <sys/types.h>
-#include <sys/stat.h>
 #ifdef __UNIX__
     #include <sys/wait.h>
-    #include <dirent.h>
 #else
-    #include <direct.h>
-#endif
-#if defined( __WATCOMC__ ) || !defined( __UNIX__ )
     #include <process.h>
 #endif
 #ifdef __RDOS__
@@ -57,6 +52,7 @@
     #include "idedrv.h"
 #endif
 #include "make.h"
+#include "wdirent.h"
 #include "wio.h"
 #include "mtarget.h"
 #include "macros.h"
@@ -240,7 +236,8 @@ char *CmdGetFileName( char *src, char **fname, bool osname )
         } else if( t == '\"' ) {
             dquote = !dquote;
             continue;
-        } else if( !dquote && cisws( t ) ) {
+        } else if( !dquote
+          && cisws( t ) ) {
             break;
         }
         *dst++ = FIX_CHAR_OS( t, osname );
@@ -276,7 +273,8 @@ STATIC char *createTmpFileName( void )
     char    fileName[_MAX_PATH];
 
     tmpPath = GetMacroValue( TEMPENVVAR );
-    if( tmpPath == NULL && !Glob.compat_nmake ) {
+    if( tmpPath == NULL
+      && !Glob.compat_nmake ) {
         tmpPath = getenv( TEMPENVVAR );
         if( tmpPath != NULL ) {
             tmpPath = StrDupSafe( tmpPath );
@@ -586,7 +584,9 @@ STATIC int findInternal( const char *cmd )
 
     /* test if of form x: */
 #ifndef __UNIX__
-    if( cisalpha( cmd[0] ) && cmd[1] == ':' && cmd[2] == NULLCHAR ) {
+    if( cisalpha( cmd[0] )
+      && cmd[1] == ':'
+      && cmd[2] == NULLCHAR ) {
         return( CNUM );
     }
 #endif
@@ -645,7 +645,9 @@ STATIC bool percentMake( char *arg )
         ok = TrySufPath( buf, start, &calltarg, false );
 
         newtarg = false;
-        if( ( ok && calltarg == NULL ) || !ok ) {
+        if( ( ok
+          && calltarg == NULL )
+          || !ok ) {
             /* Either file doesn't exist, or it exists and we don't already
              * have a target for it.  Either way, we create a new target.
              */
@@ -653,7 +655,8 @@ STATIC bool percentMake( char *arg )
             newtarg = true;
         }
         ok = Update( calltarg );
-        if( newtarg && !Glob.noexec ) {
+        if( newtarg
+          && !Glob.noexec ) {
             /* we created a target - don't need it any more */
             KillTarget( calltarg->node.name );
         }
@@ -773,7 +776,8 @@ STATIC bool percentErase( char *arg )
     ok = false;
     /* handle File name */
     p = CmdGetFileName( arg, &fn, false );
-    if( *p != NULLCHAR && !cisws( *p ) ) {
+    if( *p != NULLCHAR
+      && !cisws( *p ) ) {
         PrtMsg( ERR | SYNTAX_ERROR_IN, percentCmds[PER_ERASE] );
         PrtMsg( INF | PRNTSTR, "File" );
         PrtMsg( INF | PRNTSTR, fn );
@@ -811,7 +815,8 @@ STATIC bool percentRename( char *arg )
     p = SkipWS( p );
     /* Get second LFN as well */
     p = CmdGetFileName( p, &fn2, false );
-    if( *p != NULLCHAR && !cisws( *p ) ) {
+    if( *p != NULLCHAR
+      && !cisws( *p ) ) {
         PrtMsg( ERR | SYNTAX_ERROR_IN, percentCmds[PER_RENAME] );
         return( false );
     }
@@ -951,7 +956,8 @@ STATIC bool percentCopy( char *arg )
      * Get second LFN as well
      */
     p = CmdGetFileName( p, &fn2, false );
-    if( *p != NULLCHAR && !cisws( *p ) ) {
+    if( *p != NULLCHAR
+      && !cisws( *p ) ) {
         PrtMsg( ERR | SYNTAX_ERROR_IN, percentCmds[PER_COPY] );
         return( false );
     }
@@ -969,7 +975,8 @@ STATIC bool percentCmd( const char *cmdname, char *arg )
     int                 num;
     bool                ok;
 
-    assert( cmdname != NULL && arg != NULL );
+    assert( cmdname != NULL
+        && arg != NULL );
 
     ptr = cmdname + 1;
     key = bsearch( &ptr, percentCmds, PNUM, sizeof( char * ), KWCompare );
@@ -1055,7 +1062,8 @@ STATIC int intSystem( const char *cmd )
             }
             status = -1;
         } else if( WIFSIGNALED( status ) ) {
-            if( WTERMSIG( status ) > 0 && WTERMSIG( status ) <= 15 ) {
+            if( WTERMSIG( status ) > 0
+              && WTERMSIG( status ) <= 15 ) {
                 PrtMsg( INF | (SIG_ERR_0 + WTERMSIG( status ) ) );
             } else {
                 PrtMsg( INF | SIG_ERR_0, WTERMSIG( status ) );
@@ -1311,7 +1319,10 @@ STATIC bool getForArgs( char *line, const char **pvar, char **pset, const char *
 {
     char    *p;
 
-    assert( line != NULL && pvar != NULL && pset != NULL && pcmd != NULL );
+    assert( line != NULL
+        && pvar != NULL
+        && pset != NULL
+        && pcmd != NULL );
 
     /* remember we can hack up line all we like... */
 
@@ -1321,8 +1332,10 @@ STATIC bool getForArgs( char *line, const char **pvar, char **pset, const char *
     if( p[0] != '%' ) {
         return( handleForSyntaxError() );
     }
-    if( ( p[1] == '%' && !cisalpha( p[2] ) ) ||
-        ( p[1] != '%' && !cisalpha( p[1] ) ) ) {
+    if( ( p[1] == '%'
+      && !cisalpha( p[2] ) )
+      || ( p[1] != '%'
+      && !cisalpha( p[1] ) ) ) {
         return( handleForSyntaxError() );
     }
     *pvar = (const char *)p;
@@ -1376,7 +1389,9 @@ STATIC const char *nextVar( const char *str, const char *var, size_t varlen )
 {
     const char  *p;
 
-    assert( str != NULL && var != NULL && *var == '%' );
+    assert( str != NULL
+      && var != NULL
+      && *var == '%' );
 
     for( p = strchr( str, '%' ); p != NULL; p = strchr( p + 1, '%' ) ) {
         if( strncmp( p, var, varlen ) == 0 ) {
@@ -1396,7 +1411,10 @@ STATIC void doForSubst( const char *var, size_t varlen,
 {
     const char  *p;
 
-    assert( var != NULL && subst != NULL && src != NULL && dest != NULL );
+    assert( var != NULL
+      && subst != NULL
+      && src != NULL
+      && dest != NULL );
 
     while( *src != NULLCHAR ) {
         p = nextVar( src, var, varlen );
@@ -1505,7 +1523,6 @@ STATIC RET_T handleFor( char *line )
 #endif
 
 
-#if defined( __OS2__ ) || defined( __NT__ ) || defined( __UNIX__ ) || defined( __RDOS__ )
 STATIC RET_T handleCD( char *cmd )
 /********************************/
 {
@@ -1528,7 +1545,8 @@ STATIC RET_T handleCD( char *cmd )
     }
 
 #ifndef __UNIX__
-    if( cisalpha( p[0] ) && p[1] == ':' ) {             /* just a drive: arg, print the cd */
+    if( cisalpha( p[0] )
+      && p[1] == ':' ) {             /* just a drive: arg, print the cd */
         if( *SkipWS( p + 2 ) == NULLCHAR ) {
             return( mySystem( cmd, cmd ) );
         }
@@ -1558,7 +1576,8 @@ STATIC RET_T handleChangeDrive( const char *cmd )
 #endif
 
     drive_index = (ctoupper( *cmd ) - 'A' + 1);
-    if( drive_index == 0 || drive_index > 26 ) {
+    if( drive_index == 0
+      || drive_index > 26 ) {
         return( RET_ERROR );
     }
     if( _chdrive( drive_index ) ) {
@@ -1566,7 +1585,6 @@ STATIC RET_T handleChangeDrive( const char *cmd )
     }
     return( RET_SUCCESS );
 }
-#endif
 #endif
 
 
@@ -1612,7 +1630,8 @@ STATIC bool getRMArgs( char *line, rm_flags *flags, char **name )
         }
     }
     *name = p;
-    if( p != NULL && *p != NULLCHAR ) {
+    if( p != NULL
+      && *p != NULLCHAR ) {
         p = FindNextWS( p );
         if( *p != NULLCHAR ) {
             *p++ = NULLCHAR;
@@ -1635,7 +1654,9 @@ STATIC bool remove_item( const char *name, const rm_flags *flags, bool dir )
         inf_msg = "file";
         rc = remove( name );
     }
-    if( rc != 0 && flags->bForce && errno == EACCES ) {
+    if( rc != 0
+      && flags->bForce
+      && errno == EACCES ) {
         rc = chmod( name, PMODE_RW );
         if( rc == 0 ) {
             if( dir ) {
@@ -1645,12 +1666,15 @@ STATIC bool remove_item( const char *name, const rm_flags *flags, bool dir )
             }
         }
     }
-    if( rc != 0 && flags->bForce && errno == ENOENT ) {
+    if( rc != 0
+      && flags->bForce
+      && errno == ENOENT ) {
         rc = 0;
     }
     if( rc != 0 ) {
         PrtMsg( ERR | SYSERR_DELETING_ITEM, name );
-    } else if( flags->bVerbose && errno != ENOENT ) {
+    } else if( flags->bVerbose
+      && errno != ENOENT ) {
         PrtMsg( INF | DELETING_ITEM, inf_msg, name );
     }
 
@@ -1743,7 +1767,8 @@ static bool doRM( const char *fullpath, const rm_flags *flags )
 //                retval = EACCES;
                 rc = false;
             }
-        } else if( !flags->bDirs && ENTRY_RDONLY( fpath, dire ) ) {
+        } else if( !flags->bDirs
+          && ENTRY_RDONLY( fpath, dire ) ) {
 //            Log( false, "%s is read-only, use -f\n", fpath );
 //            retval = EACCES;
             rc = false;
@@ -1872,7 +1897,8 @@ STATIC bool processMkdir( char *path, bool mkparents )
         /*
          * special case for drive letters
          */
-        if( cisalpha( p[0] ) && p[1] == ':' ) {
+        if( cisalpha( p[0] )
+          && p[1] == ':' ) {
             p += 2;
         }
 #endif
@@ -1934,7 +1960,8 @@ STATIC RET_T handleMkdir( char *cmd )
     p = SkipWS( cmd + 6 );
     if( p[0] == '-' ) {
         p++;
-        if( !cisalpha( p[0] ) || ctolower( p[0] ) != 'p' ) {
+        if( !cisalpha( p[0] )
+          || ctolower( p[0] ) != 'p' ) {
             return( handleMkdirSyntaxError() );
         }
         mkparents = true;
@@ -1999,7 +2026,8 @@ STATIC bool hasMetas( const char *cmd )
     for( p = cmd; *p != NULLCHAR; ++p ) {
         if( *p == '\"' ) {
             dquote = !dquote;
-        } else if( !dquote && strchr( SHELL_METAS, *p ) != NULL ) {
+        } else if( !dquote
+          && strchr( SHELL_METAS, *p ) != NULL ) {
             return( true );
         }
     }
@@ -2007,7 +2035,8 @@ STATIC bool hasMetas( const char *cmd )
     const char  *p;
 
     for( p = cmd; *p != NULLCHAR; ++p ) {
-        if( *p == SHELL_ESC && p[1] != NULLCHAR ) {
+        if( *p == SHELL_ESC
+          && p[1] != NULLCHAR ) {
             ++p;
         } else if( strchr( SHELL_METAS, *p ) != NULL ) {
             return( true );
@@ -2135,7 +2164,10 @@ STATIC RET_T shellSpawn( char *cmd, shell_flags flags )
     quotes_size = 0;
     for( arg = cmd; *arg != NULLCHAR; arg++ ) {
         if( !dquote ) {
-            if( cisws( *arg ) || *arg == Glob.swchar || *arg == '+' || *arg == '=' ) {
+            if( cisws( *arg )
+              || *arg == Glob.swchar
+              || *arg == '+'
+              || *arg == '=' ) {
                 break;
             }
         }
@@ -2176,7 +2208,8 @@ STATIC RET_T shellSpawn( char *cmd, shell_flags flags )
             /*
              * if extension specified let the shell handle it
              */
-            if( !FNameEq( ext + 1, "exe" ) && !FNameEq( ext + 1, "com" ) ) {
+            if( !FNameEq( ext + 1, "exe" )
+              && !FNameEq( ext + 1, "com" ) ) {
                 /*
                  * .bat and .cmd need the shell anyway
                  */
@@ -2187,9 +2220,13 @@ STATIC RET_T shellSpawn( char *cmd, shell_flags flags )
 #endif
     comnum = findInternal( cmdname );
     if( (flags & FLAG_SILENT) == 0
-      || (Glob.noexec && (comnum != COM_FOR && comnum != COM_IF || (flags & FLAG_SHELL))
+      || (Glob.noexec
+      && (comnum != COM_FOR
+      && comnum != COM_IF
+      || (flags & FLAG_SHELL))
       && !percent_cmd) ) {
-        if( !Glob.noheader && !Glob.compat_posix ) {
+        if( !Glob.noheader
+          && !Glob.compat_posix ) {
             PrtMsg( INF | NEOL | JUST_A_TAB );
         }
         dumpCommand( cmd );
@@ -2208,13 +2245,17 @@ STATIC RET_T shellSpawn( char *cmd, shell_flags flags )
      * `Path=C:\Program Files (x86)\foo' which will be detected as containing
      * metacharacters. Stupid Microsoft...
      */
-    if( hasMetas( cmd ) && comnum != COM_SET && comnum != COM_FOR && comnum != COM_IF ) {
+    if( hasMetas( cmd )
+      && comnum != COM_SET
+      && comnum != COM_FOR
+      && comnum != COM_IF ) {
         /*
          * pass to shell because of '>','<' or '|'
          */
         flags |= FLAG_SHELL;
     }
-    if( (flags & FLAG_ENV_ARGS) && (flags & FLAG_SHELL) == 0 ) {
+    if( (flags & FLAG_ENV_ARGS)
+      && (flags & FLAG_SHELL) == 0 ) {
         tmp_env = makeTmpEnv( arg );
     }
     /*
@@ -2234,9 +2275,9 @@ STATIC RET_T shellSpawn( char *cmd, shell_flags flags )
         case COM_MKDIR: my_ret = handleMkdir( cmd );        break;
         case COM_RMDIR: my_ret = handleRmdir( cmd );        break;
 #if defined( __OS2__ ) || defined( __NT__ ) || defined( __UNIX__ ) || defined( __RDOS__ )
-        case COM_CD:
-        case COM_CHDIR: my_ret = handleCD( cmd );           break;
+        case COM_CHDIR:
 #endif
+        case COM_CD:    my_ret = handleCD( cmd );           break;
 #if defined( __OS2__ ) || defined( __NT__ ) || defined( __RDOS__ )
         case CNUM:      my_ret = handleChangeDrive( cmd );  break;
 #endif
@@ -2344,7 +2385,8 @@ STATIC bool execLine( char *line )
     /*
      * make a copy of global flags
      */
-    if( Glob.silent && !Glob.silentno )
+    if( Glob.silent
+      && !Glob.silentno )
         flags |= FLAG_SILENT;
     if( Glob.ignore )
         flags |= FLAG_IGNORE;
@@ -2374,7 +2416,8 @@ STATIC bool execLine( char *line )
     /*
      * NMAKE quietly ignores empty commands
      */
-    if( Glob.compat_nmake && *p == NULLCHAR ) {
+    if( Glob.compat_nmake
+      && *p == NULLCHAR ) {
         return( true );
     }
     rc = shellSpawn( p, flags );
@@ -2384,7 +2427,8 @@ STATIC bool execLine( char *line )
         // never return
     }
     CheckForBreak();
-    if( rc != RET_SUCCESS && (flags & FLAG_IGNORE) == 0 ) {
+    if( rc != RET_SUCCESS
+      && (flags & FLAG_IGNORE) == 0 ) {
         return( false );
     }
     return( true );
@@ -2407,7 +2451,8 @@ INT32 ExecCommand( char *line )
     /*
      * NMAKE quietly ignores empty commands here; should we as well?
      */
-    if( Glob.compat_nmake && *p == NULLCHAR ) {
+    if( Glob.compat_nmake
+      && *p == NULLCHAR ) {
         return( RET_SUCCESS );
     }
     /*

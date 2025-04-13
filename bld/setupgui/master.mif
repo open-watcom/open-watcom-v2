@@ -28,6 +28,8 @@ additional_clean = *.i *.rex setup.inf *.grc
 !include $(gui_dir)/client.mif
 !include $(hlpview_dir)/client.mif
 !include $(wpi_dir)/client.mif
+!include $(setupgui_dir)/zlib/client.mif
+!include $(setupgui_dir)/ziplib/client.mif
 
 #
 # cflags
@@ -35,7 +37,7 @@ additional_clean = *.i *.rex setup.inf *.grc
 .c : ../c;$(trmem_dir)
 
 inc_dirs  = -I"../h" $(cli_wpi_inc_dirs) $(cli_gui_inc_dirs) $(cli_gui_inc_dirs_internal) &
-    $(cli_hlpview_inc_dirs) -I"$(libzip_dir)/lib" -I"$(zlib_dir)"
+    $(cli_hlpview_inc_dirs) $(cli_libzip_inc_dirs) $(cli_zlib_inc_dirs)
 
 !ifdef sys_windowed
 extra_cpp_flags     = -DGUI_IS_GUI
@@ -43,15 +45,13 @@ extra_cpp_flags_os2 = -D__OS2_PM__
 !endif
 
 # memory tracker routines
-extra_cpp_flags_setupmem = $(trmem_cpp_flags)
-
-extra_c_flags_i86 = -zc
+extra_cpp_flags_f_setupmem = $(trmem_cpp_flags)
 
 # memory tracker routines
-extra_c_flags_setupmem = $(trmem_cover_cflags)
+extra_c_flags_f_setupmem = $(trmem_cover_cflags)
 
 # custom version of resource finder
-extra_c_flags_loadfind = $(cli_wres_inc_dirs)
+extra_c_flags_f_loadfind = $(cli_wres_inc_dirs)
 
 #
 # lflags
@@ -59,14 +59,8 @@ extra_c_flags_loadfind = $(cli_wres_inc_dirs)
 extra_l_flags_dos = option stack=30K
 extra_l_flags_os2 = option stack=30K
 extra_l_flags_nt = option stack=30K, heap=20K
-extra_l_flags_nt_axp = lib {shell32.lib uuid.lib}
-extra_l_flags_win_386 = option stack=24K
-# Segments must be NONDISCARDABLE so that Windows will not attempt
-# to load a segment after the user has swapped diskettes.
-extra_l_flags_win_i86 = option manyautodata, stack=20K, heap=10K &
-    SEGMENT CLASS 'CODE' MOVEABLE PRELOAD &
-    SEGMENT CLASS 'DATA' MOVEABLE PRELOAD &
-    LIBRARY ddeml.lib
+extra_l_flags_ntaxp = lib {shell32.lib uuid.lib}
+extra_l_flags_win386 = option stack=24K
 
 # explicit rules
 ##################
@@ -100,14 +94,14 @@ mem_objs = &
     setupmem.obj &
     $(trmem_objs)
 
-#                     i_dos i_linux i_nt i_os2 i_win i_osx
+#                     i_dos i_linux i_nt i_os2 i_win i_osx i_bsd
 #===========================================================================
-!inject setupio.obj   i_dos i_linux i_nt i_os2 i_win i_osx
+!inject setupio.obj   i_dos i_linux i_nt i_os2 i_win i_osx i_bsd
 !inject os2util.obj                      i_os2
 !inject winutil.obj                 i_nt i_os2 i_win
 !inject winddeml.obj                i_nt       i_win
 
-objs += $(i_$(host_os)) $(i_$(objs_subdir)) $(mem_objs)
+objs += $(i_$(host_os)) $(mem_objs)
 
 # custom version of resource finder
 !ifdef sys_windowed
@@ -115,11 +109,7 @@ objs += $(i_$(host_os)) $(i_$(objs_subdir)) $(mem_objs)
 objs += loadfind.obj
 !endif
 
-!ifeq host_cpu i86
-libs = $(cli_gui_libs) $(libs_$(host_os)) $(libs_$(objs_subdir))
-!else
-libs = $(cli_gui_libs) $(libs_$(host_os)) $(libs_$(objs_subdir)) ../ziplib/$(objs_subdir)/ziplib.lib ../zlib/$(objs_subdir)/zlib.lib
-!endif
+libs = $(cli_gui_libs) $(cli_libzip_libs) $(cli_zlib_libs)
 
 #
 # EXE's

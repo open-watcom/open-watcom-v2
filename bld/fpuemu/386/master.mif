@@ -20,8 +20,8 @@ extra_cpp_flags_qnx = -DQNX
 extra_c_flags = -fpc
 extra_c_flags_dos = -zl -zls
 extra_c_flags_qnx = -oais -w3
-extra_c_flags_qnxemu87 = -i"$(clib_dir)/startup/h" -I"$(clib_dir)/h" -I"$(lib_misc_dir)/h" -i"$(comp_cfg_dir)/h"
-extra_c_flags_fpeqnx = -I"$(clib_dir)/h"
+extra_c_flags_f_qnxemu87 = -i"$(clib_dir)/startup/h" -I"$(clib_dir)/h" -I"$(lib_misc_dir)/h" -i"$(comp_cfg_dir)/h"
+extra_c_flags_f_fpeqnx = -I"$(clib_dir)/h"
 
 #
 # aflags
@@ -32,9 +32,9 @@ extra_a_flags = -fpc
 extra_a_flags_dos = -ms -D_OS=_PLDT -DSEGMENTED
 extra_a_flags_qnx = -ms -D_OS=_QNX -DSEGMENTED
 extra_a_flags_win = -mf -D_OS=_PLDT -D__WIN387__
-extra_a_flags_386inite = -I"$(comp_cfg_dir)/h"
-extra_a_flags_386stub = -ms -I"$(comp_cfg_dir)/h"
-extra_a_flags_emu387 = -I"../inc" -I"$(fpuemu_dir)/inc" -I"$(mathlib_dir)/h"
+extra_a_flags_f_386inite = -I"$(comp_cfg_dir)/h"
+extra_a_flags_f_386stub = -ms -I"$(comp_cfg_dir)/h"
+extra_a_flags_f_emu387 = -I"../inc" -I"$(fpuemu_dir)/inc" -I"$(mathlib_dir)/h"
 
 # explicit rules
 #################

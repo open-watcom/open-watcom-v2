@@ -39,6 +39,12 @@ runs:
   - uses: "./.github/actions/artfload"
     with:
       hostos:   'lnx'
+      gitpath:  'rel'
+      artifact: "rel lnx a64 ${{ inputs.tools_lnx }}"
+      owdebug:  ${{ inputs.owdebug }}
+  - uses: "./.github/actions/artfload"
+    with:
+      hostos:   'lnx'
       gitpath:  'rel bino64'
       artifact: "rel osx x64 ${{ inputs.tools_osx }}"
       owdebug:  ${{ inputs.owdebug }}

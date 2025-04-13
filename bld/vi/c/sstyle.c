@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -45,7 +45,7 @@
 type_style      SEType[SE_MAXSIZE];
 
 
-static void getEOFText( ss_block *ss_new, char *text )
+static void getEOFText( ss_block *ss_new, const char *text )
 {
     if( *text ) {
         ss_new->type = SE_EOFTEXT;
@@ -57,9 +57,9 @@ static void getEOFText( ss_block *ss_new, char *text )
     }
 }
 
-static void getText( ss_block *ss_new, char *start )
+static void getText( ss_block *ss_new, const char *start )
 {
-    char    *end = start;
+    const char  *end = start;
 
     if( *end == '\0' ) {
         SSGetBeyondText( ss_new );
@@ -70,7 +70,7 @@ static void getText( ss_block *ss_new, char *start )
     ss_new->len = end - start;
 }
 
-static void getNextBlock( ss_block *ss_new, char *text, int text_col,
+static void getNextBlock( ss_block *ss_new, const char *text, int text_col,
                           line *line, linenum line_no )
 {
     /* unused parameters */ (void)line_no;
@@ -313,7 +313,7 @@ void SSGetWhiteSpace( ss_block *ss_new, const char *start )
 
 // NOTE! for this to work ...
 // ss_old must point the the head of a
-void SSDifBlock( ss_block *ss_old, char *text, int start_col,
+void SSDifBlock( ss_block *ss_old, const char *text, int start_col,
                  line *line, linenum line_no, int *dif )
 {
     ss_block    ss_new, *ss_inc;

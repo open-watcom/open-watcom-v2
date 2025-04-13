@@ -29,14 +29,14 @@ wgml_trmem = 1
 
 inc_dirs = -I. -I"../h" $(cli_wres_inc_dirs)
 
-extra_cpp_flags_gmemory = $(trmem_cpp_flags)
+extra_cpp_flags_f_gmemory = $(trmem_cpp_flags)
 
 #  extra_c_flags      += -zpw
 #  extra_c_flags      += -fti
 #  extra_c_flags      += -pcl
-#extra_c_flags_gsyssym = -P
+#extra_c_flags_f_gsyssym = -P
 
-extra_c_flags_gmemory = $(trmem_cover_cflags)
+extra_c_flags_f_gmemory = $(trmem_cover_cflags)
 
 # explicit rules
 #################

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,9 +40,9 @@
 
 void DWENTRY DWDeclFile( dw_client cli, const char *name )
 {
-    cli->decl.file = GetFileNumber( cli, name );
+    cli->decl.file = DW_GetFileNumber( cli, name );
     cli->decl.changed = 1;
-    SetReferenceFile( cli, cli->decl.file );
+    DW_SetReferenceFile( cli, cli->decl.file );
 }
 
 void DWENTRY DWDeclPos( dw_client cli, dw_linenum line, dw_column column )
@@ -51,7 +52,7 @@ void DWENTRY DWDeclPos( dw_client cli, dw_linenum line, dw_column column )
     cli->decl.changed = 1;
 }
 
-abbrev_code CheckDecl( dw_client cli, abbrev_code abbrev )
+abbrev_code DW_CheckDecl( dw_client cli, abbrev_code abbrev )
 {
     if( cli->decl.changed && (abbrev & AB_DECL) )
         return( AB_DECL );
@@ -59,20 +60,20 @@ abbrev_code CheckDecl( dw_client cli, abbrev_code abbrev )
     return( 0 );
 }
 
-void EmitDecl( dw_client cli )
+void DW_EmitDecl( dw_client cli )
 {
     if( cli->decl.changed ) {
         /* AT_decl_file */
-        InfoULEB128( cli, cli->decl.file );
+        DW_InfoULEB128( cli, cli->decl.file );
         /* AT_decl_line */
-        InfoULEB128( cli, cli->decl.line );
+        DW_InfoULEB128( cli, cli->decl.line );
         /* AT_decl_column */
-        InfoULEB128( cli, cli->decl.column );
+        DW_InfoULEB128( cli, cli->decl.column );
         cli->decl.changed = 0;
     }
 }
 
-void InitDecl( dw_client cli )
+void DW_InitDecl( dw_client cli )
 {
     cli->decl.file = 1;
     cli->decl.line = 0;
@@ -80,7 +81,7 @@ void InitDecl( dw_client cli )
     cli->decl.changed = 0;
 }
 
-void FiniDecl( dw_client cli )
+void DW_FiniDecl( dw_client cli )
 {
     /* unused parameters */ (void)cli;
 }

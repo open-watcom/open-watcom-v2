@@ -1,7 +1,6 @@
 !ifndef sys_windowed
 ui_ui_os_linux = unix
 ui_ui_os_bsd   = unix
-ui_ui_os_nov   = nlm
 ui_ui_os_osx   = unix
 ui_ui_os_haiku = unix
 ! ifdef ui_ui_os_$(host_os)
@@ -10,18 +9,16 @@ cli_ui_os = $(ui_ui_os_$(host_os))
 cli_ui_os = $(host_os)
 ! endif
 ui_ui_inc_dirs_internal_dos   = -I"$(ui_dir)/dos/h"
-#ui_ui_inc_dirs_internal_nlm   = -I"$(ui_dir)/nlm/h"
+#ui_ui_inc_dirs_internal_nov   = -I"$(ui_dir)/nov/h"
 ui_ui_inc_dirs_internal_nt    = -I"$(ui_dir)/nt/h"
 #ui_ui_inc_dirs_internal_os2   = -I"$(ui_dir)/os2/h"
 ui_ui_inc_dirs_internal_qnx   = -I"$(ui_dir)/qnx/h" -I"$(ui_dir)/unix/h"
 ui_ui_inc_dirs_internal_win   = -I"$(ui_dir)/win/h"
 ui_ui_inc_dirs_internal_unix  = -I"$(ui_dir)/unix/h"
 ! ifeq cli_ui_os unix
-cli_ui_inc_dirs = -I"$(ui_dir)/h" -I"$(ncurses_dir)/h"
-cli_ui_libs = $(ui_dir)/$(cli_ui_os)/$(objs_subdir)/ui.lib $(ncurses_dir)/$(objs_subdir)/ncurses.lib
-! else
-cli_ui_inc_dirs = -I"$(ui_dir)/h"
-cli_ui_libs = $(ui_dir)/$(cli_ui_os)/$(objs_subdir)/ui.lib
+!include $(ncurses_dir)/client.mif
 ! endif
+cli_ui_inc_dirs = -I"$(ui_dir)/h" $(cli_ncurses_inc_dirs)
+cli_ui_libs = $(ui_dir)/$(cli_ui_os)/$(bin_host)/ui.lib $(cli_ncurses_libs)
 cli_ui_inc_dirs_internal = $(ui_ui_inc_dirs_internal_$(cli_ui_os))
 !endif

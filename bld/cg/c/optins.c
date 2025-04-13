@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -232,19 +232,19 @@ static  ins_entry       *Redirect( ins_entry *l_ins, ins_entry *j_ins )
 // Redirect all refs to l_ins to the target of j_ins
 {
     ins_entry       *ref;
-    label_handle    new;
+    label_handle    new_lbl;
     ins_entry       *next;
     ins_entry       *new_ins;
 
   optbegin
-    new = _Label( j_ins );
-    new_ins = new->ins;
-    if( UniqueLabel( _Label( l_ins ) ) && UniqueLabel( new ) ) {
+    new_lbl = _Label( j_ins );
+    new_ins = new_lbl->ins;
+    if( UniqueLabel( _Label( l_ins ) ) && UniqueLabel( new_lbl ) ) {
         optreturn( NULL );
     }
     for( ref = _Label( l_ins )->refs; ref != NULL; ref = next ) {
         next = _LblRef( ref );
-        ChgLblRef( ref, new );
+        ChgLblRef( ref, new_lbl );
     }
     if( new_ins != NULL && _Class( new_ins ) != OC_DEAD ) {
         Untangle( new_ins );
@@ -259,7 +259,7 @@ static  ins_entry       *Redirect( ins_entry *l_ins, ins_entry *j_ins )
      || _TstStatus( _Label( l_ins ), REDIRECTION ) ) {
          optreturn( NextIns( l_ins ) );
     } else {
-         optreturn(  AliasLabels( l_ins, new->ins ) );
+         optreturn(  AliasLabels( l_ins, new_lbl->ins ) );
     }
 }
 

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -1020,11 +1020,14 @@ trap_retval TRAP_CORE( Prog_go )( void )
 }
 
 
-trap_retval TRAP_CORE( Redirect_stdin )( void  )
+static trap_retval redirect( bool input )
 {
-    redirect_stdin_ret *ret;
+    redirect_stdio_ret *ret;
 
     // TODO: implement if possible
+
+    /* unused parameters */ (void)input;
+
     ret = GetOutPtr( 0 );
     ret->err = 1;
     CONV_LE_32( ret->err );
@@ -1032,15 +1035,15 @@ trap_retval TRAP_CORE( Redirect_stdin )( void  )
 }
 
 
-trap_retval TRAP_CORE( Redirect_stdout )( void  )
+trap_retval TRAP_CORE( Redirect_stdin )( void )
 {
-    redirect_stdout_ret *ret;
+    return( redirect( true ) );
+}
 
-    // TODO: implement if possible
-    ret = GetOutPtr( 0 );
-    ret->err = 1;
-    CONV_LE_32( ret->err );
-    return( sizeof( *ret ) );
+
+trap_retval TRAP_CORE( Redirect_stdout )( void )
+{
+    return( redirect( false ) );
 }
 
 

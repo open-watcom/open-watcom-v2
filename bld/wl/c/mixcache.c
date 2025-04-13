@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -65,8 +65,8 @@ static unsigned NumCacheBlocks( unsigned long len )
     return( numblocks );
 }
 
-bool CacheOpen( file_list *list )
-/**************************************/
+bool CacheOpen( const file_list *list )
+/*************************************/
 {
     infilelist  *infile;
     unsigned    numblocks;
@@ -154,8 +154,8 @@ static bool DumpFileCache( infilelist *infile, bool nuke )
     return( blockfreed );
 }
 
-void CacheClose( file_list *list, unsigned pass )
-/******************************************************/
+void CacheClose( const file_list *list, unsigned pass )
+/*****************************************************/
 {
     infilelist  *infile;
     bool        nukecache;
@@ -187,8 +187,8 @@ void CacheClose( file_list *list, unsigned pass )
     }
 }
 
-void *CachePermRead( file_list *list, unsigned long pos, size_t len )
-/*******************************************************************/
+void *CachePermRead( const file_list *list, unsigned long pos, size_t len )
+/*************************************************************************/
 {
     char        *buf;
     char        *result;
@@ -207,9 +207,10 @@ void *CachePermRead( file_list *list, unsigned long pos, size_t len )
     return( result );
 }
 
-void *CacheRead( file_list *list, unsigned long pos, size_t len )
-/***************************************************************/
-/* read len bytes out of the cache. */
+void *CacheRead( const file_list *list, unsigned long pos, size_t len )
+/**********************************************************************
+ * read len bytes out of the cache.
+ */
 {
     size_t          bufnum;
     size_t          startnum;
@@ -276,12 +277,12 @@ void *CacheRead( file_list *list, unsigned long pos, size_t len )
 }
 
 bool CacheIsPerm( void )
-/*****************************/
+/**********************/
 {
     return( !Multipage );
 }
 
-bool CacheEnd( file_list *list, unsigned long pos )
+bool CacheIsEnd( const file_list *list, unsigned long pos )
 /*********************************************************/
 {
     return( pos >= list->infile->len );
@@ -292,17 +293,18 @@ void CacheFini( void )
 {
 }
 
-void CacheFree( file_list *list, void *mem )
-/*************************************************/
-// used for disposing things allocated by CachePermRead
+void CacheFree( const file_list *list, void *mem )
+/*************************************************
+ * used for disposing things allocated by CachePermRead
+ */
 {
     if( list->infile->status & INSTAT_PAGE_CACHE ) {
         _LnkFree( mem );
     }
 }
 
-void FreeObjCache( file_list *list )
-/*****************************************/
+void FreeObjCache( const file_list *list )
+/****************************************/
 {
     if( list == NULL )
         return;

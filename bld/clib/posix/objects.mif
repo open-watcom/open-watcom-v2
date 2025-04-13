@@ -37,6 +37,7 @@
 !inject ntohs.obj                                                                   l32 lpc lmp rdu
 !inject opendir.obj                                                                 l32 lpc lmp
 !inject _prscfg.obj                                                                 l32 lpc lmp
+!inject ptatfork.obj                                                                l32 lpc lmp
 !inject ptattr.obj                                                                  l32 lpc lmp
 !inject ptbar.obj                                                                   l32 lpc lmp
 !inject ptbattr.obj                                                                 l32 lpc lmp

@@ -42,12 +42,12 @@ extra_c_flags_axp = -ai -aq
 extra_c_flags_i86 = -zu
 
 extra_c_flags_nov = -4s
-extra_c_flags_win = -zw
-extra_c_flags_win_i86 = -zW
+extra_c_flags_win386 = -zw
+extra_c_flags_wini86 = -zW
 
 !ifndef bootstrap
 # memory tracker cover routines
-extra_c_flags_guimem = $(trmem_cover_cflags)
+extra_c_flags_f_guimem = $(trmem_cover_cflags)
 !endif
 
 # explicit rules
@@ -56,7 +56,6 @@ extra_c_flags_guimem = $(trmem_cover_cflags)
 #
 # LIB
 #
-libtarg_prebuild_objs = guimsgs.grh
 common_objs = &
     guicreat.obj   &
     guihint.obj    &
@@ -102,10 +101,3 @@ mem_objs = &
 libtarg_objs = $(common_objs) $(mem_objs) $(sysobjs)
 libtarg_libs = $(cli_wpi_libs)
 !include libtarg.mif
-
-#
-# rc and others
-#
-guimsgs.grh : ../../h/gui.msg
-    @%make echo_awk
-    $(noecho)*awk -v prefix=GUI_LITERAL_ -v base=GUI_LITERAL_BASE -f $(build_dir)/makemsg.awk -v OUTFILE=$^. $[@

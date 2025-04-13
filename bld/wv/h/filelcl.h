@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2015 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2025 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -29,16 +29,16 @@
 ****************************************************************************/
 
 
-extern error_handle     LocalErase( char const * );
 extern void             LocalErrMsg( sys_error, char * );
-extern size_t           LocalRead( sys_handle, void *, size_t );
-extern size_t           LocalWrite( sys_handle, const void *, size_t );
-extern unsigned long    LocalSeek( sys_handle, unsigned long, seek_method );
-extern sys_handle       LocalOpen( char const *, obj_attrs );
-extern error_handle     LocalClose( sys_handle );
-extern sys_handle       LocalHandleSys( file_handle );
-extern long             LocalGetFileDate( const char *name );
-extern bool             LocalSetFileDate( const char *name, long date );
+
+extern error_handle     LocalFileErase( char const * );
+extern size_t           LocalFileRead( sys_handle, void *, size_t );
+extern size_t           LocalFileWrite( sys_handle, const void *, size_t );
+extern unsigned long    LocalFileSeek( sys_handle, unsigned long, seek_method );
+extern sys_handle       LocalFileOpen( char const *, obj_attrs );
+extern error_handle     LocalFileClose( sys_handle );
+extern sys_handle       LocalFileHandleSys( file_handle );
+extern long             LocalFileGetDate( const char *name );
+extern bool             LocalFileSetDate( const char *name, long date );
 
 extern const file_components    LclFile;
-extern const char               LclPathSep;

@@ -37,12 +37,12 @@ ntverrc_exe = $(exetarg_name)
 #
 # cflags
 #
-.c: ../cpp;../merge/c;$(posix_dir)/misc;$(lib_misc_dir)/c;$(trmem_dir)
+.c: ../cpp;../merge/c;$(lib_misc_dir)/c;$(trmem_dir)
 .cpp: ../cpp;../brg/cpp
 .gpp: ../gen
 
 inc_dirs = -I"../h" -I"../brg/h" -I"../gen" $(cli_wclass_inc_dirs) -I"$(docs_host_dir)" &
-    $(cli_dwarfr_inc_dirs) -I"$(posix_dir)/h" -I"$(editdll_dir)"
+    $(cli_dwarfr_inc_dirs) -I"$(editdll_dir)"
 
 extra_cpp_flags = -DNOPERSIST
 !ifeq debug 2
@@ -55,8 +55,8 @@ extra_cpp_flags += -DUSE_VIRTMEM
 extra_cpp_flags += -DNOWGML
 !endif
 
-extra_cpp_flags_rxwrap = -DALLOC=WBRAlloc
-extra_cpp_flags_brmem  = $(trmem_cpp_flags)
+extra_cpp_flags_f_rxwrap = -DALLOC=WBRAlloc
+extra_cpp_flags_f_brmem  = $(trmem_cpp_flags)
 
 extra_cxx_flags = -ew -xs
 !ifdef gen_browser_file
@@ -70,15 +70,17 @@ extra_c_flags_i86 += -zw
 extra_c_flags_i86 += -zW
 !endif
 
-extra_c_flags_rxwrap = -I"$(posix_dir)/h" $(incl_file_opts)brmem.h
-extra_c_flags_demangle = -I"$(lib_misc_dir)/h"
-extra_c_flags_brmem = $(trmem_cover_cflags)
+extra_c_flags_f_rxwrap = -I"$(posix_dir)/h" -I"$(posix_dir)/misc" $(incl_file_opts)brmem.h
+extra_c_flags_f_keysym = -I"$(posix_dir)/h"
+extra_c_flags_f_util = -I"$(posix_dir)/h"
+extra_c_flags_f_demangle = -I"$(lib_misc_dir)/h"
+extra_c_flags_f_brmem = $(trmem_cover_cflags)
 
 #
 # lflags
 #
-lflags_win_i86  = sys windows font mem op stack=16k
-lflags_dos_386  = sys pharlap
+lflags_wini86  = sys windows font mem op stack=16k
+lflags_dos386  = sys pharlap
 
 extra_l_flags   = op eliminate
 !ifndef quick_link
@@ -87,7 +89,7 @@ extra_l_flags   += op show,art,static
 
 extra_l_flags_dos = op stub=$(pharlap)stub386.exe
 extra_l_flags_win = op packdata=48k seg CLASS CODE FIXED, CLASS FAR_DATA FIXED, CLASS DATA FIXED
-extra_l_flags_nt_axp = op undefsok
+extra_l_flags_ntaxp = op undefsok
 extra_l_flags_os2 =
 
 # explicit rules
@@ -149,4 +151,4 @@ $(docs_host_dir)/wbrw.gh : $(docs_host_dir) .ALWAYS
 
 .gpp.obj: .AUTODEPEND
     @%make echo_cxx
-    $(cxx) $(ppflags_common) $(ppflags_autodep) $(ppflags_sys) $(extra_cpp_flags_$[&) $(cflags) $(extra_cxx_flags) $(extra_c_flags_$[&) $(inc_path) $[@
+    $(cxx) $(ppflags_common) $(ppflags_autodep) $(ppflags_sys) $(extra_cpp_flags_f_$[&) $(cflags) $(extra_cxx_flags) $(extra_c_flags_f_$[&) $(inc_path) $[@

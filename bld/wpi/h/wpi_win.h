@@ -714,7 +714,7 @@ extern void _wpi_suspendthread( UINT thread_id, WPI_QMSG *qmsg );
 
     #define _wpi_setfontfacename( font, name ) \
         { \
-            char        *tmp_str; \
+            const char  *tmp_str; \
             tmp_str = (name); \
             if( tmp_str != NULL ) { \
                 strcpy( (font)->lfFaceName, (name) ); \
@@ -756,7 +756,7 @@ extern int _wpi_getmetricpointsize( WPI_PRES pres, WPI_TEXTMETRIC *tm,
     #define _wpi_metricmaxcharwidth( metric ) ( (metric).tmMaxCharWidth )
 
     #define _wpi_enumfonts( pres, facename, proc, data ) \
-        EnumFonts( pres, (LPSTR)facename, proc, (LPSTR)(data) )
+        EnumFonts( pres, facename, proc, (LPSTR)(data) )
 
     #define _wpi_enumchildwindows( hwnd, proc, lp ) \
                 EnumChildWindows( hwnd, proc, lp )

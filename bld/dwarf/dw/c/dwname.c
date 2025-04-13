@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -43,12 +43,12 @@
 
 void DWENTRY DWPubname( dw_client cli, dw_handle hdl, const char *name )
 {
-    HandleReference( cli, hdl, DW_DEBUG_PUBNAMES );
+    DW_HandleReference( cli, hdl, DW_DEBUG_PUBNAMES );
     CLIWriteString( cli, DW_DEBUG_PUBNAMES, name );
 }
 
 
-void InitDebugPubnames( dw_client cli )
+void DW_InitDebugPubnames( dw_client cli )
 {
     /* write the set header */
     CLISectionReserveSize( cli, DW_DEBUG_PUBNAMES );
@@ -58,7 +58,7 @@ void InitDebugPubnames( dw_client cli )
 }
 
 
-void FiniDebugPubnames( dw_client cli )
+void DW_FiniDebugPubnames( dw_client cli )
 {
     /* write the terminator */
     CLISectionWriteZeros( cli, DW_DEBUG_PUBNAMES, sizeof( uint_32 ) );

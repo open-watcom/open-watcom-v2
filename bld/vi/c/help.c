@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -52,13 +52,13 @@
     pick( "SETtings",           "set.hlp" ) \
     pick( "STARTing",           "start.hlp" )
 
-static char HelpCmdTokens[] = {
+static char const HelpCmdTokens[] = {
     #define pick(t,h)   t "\0"
     HELPCMDS()
     #undef pick
 };
 
-char *helpFiles[] = {
+const char * const helpFiles[] = {
     #define pick(t,h)   h,
     HELPCMDS()
     #undef pick
@@ -115,7 +115,7 @@ vi_rc DoHelpOnContext( void )
 
 vi_rc DoHelp( const char *data )
 {
-    char        *hfile;
+    const char  *hfile;
     const char  *tstr;
     int         token;
     vi_rc       rc;

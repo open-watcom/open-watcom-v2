@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -61,40 +62,40 @@ void DRENTRY DRWalkPubName( DRPUBWLK callback, void *data )
 
     name_buf = NULL;
     name_buf_len = 0;
-    pos = DWRCurrNode->sections[DR_DEBUG_PUBNAMES].base;
-    dbg_base = DWRCurrNode->sections[DR_DEBUG_INFO].base;
-    finish = pos + DWRCurrNode->sections[DR_DEBUG_PUBNAMES].size;
+    pos = DR_CurrNode->sections[DR_DEBUG_PUBNAMES].base;
+    dbg_base = DR_CurrNode->sections[DR_DEBUG_INFO].base;
+    finish = pos + DR_CurrNode->sections[DR_DEBUG_PUBNAMES].size;
     while( pos < finish ) {
-        DWRVMRead( pos, &header, sizeof( header ) );
-        if( DWRCurrNode->byte_swap ) {
+        DR_VMRead( pos, &header, sizeof( header ) );
+        if( DR_CurrNode->byte_swap ) {
             SWAP_32( header.len );
             SWAP_16( header.version );
             SWAP_32( header.dbg_pos );
             SWAP_32( header.dbg_length );
         }
         if( header.version != DEBUG_PUBNAMES_VERSION )
-            DWREXCEPT( DREXCEP_BAD_DBG_VERSION );
+            DR_EXCEPT( DREXCEP_BAD_DBG_VERSION );
         unit_end = pos + sizeof( uint_32 ) + header.len;
         pos += sizeof( header );
         pubname.dbg_cu = dbg_base + header.dbg_pos;
         pubname.is_start = true;
         for( ;; ) {
-            dbg_handle = DWRVMReadDWord( pos );
+            dbg_handle = DR_VMReadDWord( pos );
             if( dbg_handle == 0 )
                 break;
             pos += sizeof( uint_32 );
             pubname.dbg_handle = pubname.dbg_cu + dbg_handle;
-            curr_len = DWRVMGetStrBuff( pos, name_buf, name_buf_len );
+            curr_len = DR_VMGetStrBuff( pos, name_buf, name_buf_len );
             pubname.len = curr_len - 1;
             if( curr_len > name_buf_len ) {
                 /* extend name buffer */
                 if( name_buf != NULL )
-                    DWRFREE( name_buf );
+                    DR_FREE( name_buf );
                 name_buf_len = curr_len;
                 if( name_buf_len < 256 )
                     name_buf_len = 256;
-                name_buf = DWRALLOC( name_buf_len );
-                curr_len = DWRVMGetStrBuff( pos, name_buf, name_buf_len );
+                name_buf = DR_ALLOC( name_buf_len );
+                curr_len = DR_VMGetStrBuff( pos, name_buf, name_buf_len );
             }
             pos += curr_len;
             pubname.name = name_buf;
@@ -105,5 +106,5 @@ void DRENTRY DRWalkPubName( DRPUBWLK callback, void *data )
         }
         pos = unit_end;
     }
-    DWRFREE( name_buf );
+    DR_FREE( name_buf );
 }

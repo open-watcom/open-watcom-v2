@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -42,6 +42,7 @@
 #include "dosequip.h"
 #include "serial.h"
 #include "serlink.h"
+#include "nothing.h"
 #include "tinyio.h"
 
 
@@ -169,11 +170,11 @@ void ResetSys( void )
 void SendByte( int value )
 {
     while( (inp( LSR ) & LSR_THRE) == 0 )
-        {}
+        NothingToDo();
     if( Modem ) {
         /* talking over a modem - check the data set ready line */
         while( (inp( MSR ) & MSR_CTS) == 0 ) {
-            {}
+            NothingToDo();
         }
     }
     outp( IOBase, value );
@@ -188,7 +189,7 @@ void StopBlockTrans( void )
     if( Modem ) {
         /* talking over a modem - check the data set ready line */
         while( (inp( MSR ) & MSR_CTS) == 0 ) {
-            {}
+            NothingToDo();
         }
     }
 }
@@ -247,7 +248,7 @@ bool Baud( baud_index index )
 
     /* don't change baud rate while a character is still being sent */
     while( (inp( LSR ) & LSR_TSRE) == 0 )
-        {}
+        NothingToDo();
     lcr_value = inp( LCR );              /* get LCR value */
     _disable();                          /* disable interrupt */
     outp( LCR, lcr_value | LCR_DLAB );   /* set Divisor Latch Access Bit(DLAB)*/
@@ -318,6 +319,6 @@ void ClearLastChar( void )
 {
     /* wait for last character to be sent */
     while( (inp( LSR ) & LSR_TSRE) == 0 ) {
-        {}
+        NothingToDo();
     }
 }

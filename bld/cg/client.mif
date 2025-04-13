@@ -7,17 +7,17 @@
 !include $(cg_dir)/mif/cghost.mif
 
 !ifdef bootstrap
-obj_dir = $(objs_subdir)
+obj_dir = $(bin_subdir)
 !else ifdef dll_cg
-obj_dir = $(objs_subdir).cgd
+obj_dir = $(host).cgd
 !else ifdef $(proj_name)_rtdll
-obj_dir = $(objs_subdir).rtd
+obj_dir = $(host).rtd
 !else ifdef $(proj_name)_dll
-obj_dir = $(objs_subdir).dll
+obj_dir = $(host).dll
 !else ifdef debug_cg
-obj_dir = $(objs_subdir).dbg
+obj_dir = $(host).dbg
 !else
-obj_dir = $(objs_subdir)
+obj_dir = $(host)
 !endif
 
 o_dir_386    = $(cg_dir)/intel/386/$(obj_dir)

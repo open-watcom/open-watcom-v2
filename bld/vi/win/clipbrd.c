@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -127,7 +127,7 @@ static bool openClipboardForWrite( void )
 /*
  * AddLineToClipboard - add data on specified line to the clipboard
  */
-int AddLineToClipboard( char *data, int scol, int ecol )
+int AddLineToClipboard( const char *data, int scol, int ecol )
 {
 #ifdef __WINDOWS_386__
     char __far          *ptr;

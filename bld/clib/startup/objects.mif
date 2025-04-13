@@ -11,7 +11,7 @@
 !inject cinit.obj           d32     nt  nta ntp ntm nvc     nvl         o32             w32             rdu rdk
 !inject cmain086.obj    d16                                         o16             w16
 !inject cmain386.obj        d32     nt  nta ntp ntm                     o32             w32             rdu rdk
-!inject cmainlnx.obj                                                                    l32 lpc lmp
+!inject cmainlnx.obj                                                                        l32 lpc lmp
 !inject cmainqnx.obj                                                        q16 q32
 !inject cmdname.obj     d16 d32     nt  nta ntp ntm nvc     nvl     o16 o32         w16 w32 l32 lpc lmp rdu rdk
 !inject cmnw386.obj                 nt  nta ntp ntm                     o32
@@ -71,11 +71,11 @@
 !inject _getds.obj                                                  o16
 !inject getds.obj                                                           q16 q32         l32
 !inject getdsint.obj                nt                                  o32
-!inject histsplt.obj    d16 d32     nt  nta ntp ntm                     o16 o32         w16 w32             rdu rdk
+!inject histsplt.obj    d16 d32     nt  nta ntp ntm                 o16 o32         w16 w32             rdu rdk
 !inject hookfpe.obj                                                 o16
 !inject imthread.obj                nt  nta ntp ntm nvc ncl nvl nll o16 o32     q32         l32 lpc lmp rdu rdk
-!inject inirmsel.obj        d32
-!inject initrtns.obj    d16 d32     nt  nta ntp ntm nvc ncl nvl nll o16 o32 q16 q32 w16 w32 l32 lpc lmp rdu rdk
+!inject inirmsel.obj        d32                                                         w32
+!inject initrtns.obj    d16 d32     nt  nta ntp ntm nvc ncl nvl nll o16 o32 q16 q32 w16 w32 l32 lpc lmp rdu
 !inject initargv.obj    d16 d32     nt  nta ntp ntm nvc     nvl     o16 o32         w16 w32             rdu rdk
 !inject initerrn.obj                                                            q32
 !inject initwarg.obj                nt  nta ntp ntm                     o32

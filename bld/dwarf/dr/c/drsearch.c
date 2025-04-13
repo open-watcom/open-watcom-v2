@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,7 +33,7 @@
 #include "drpriv.h"
 #include "drutils.h"
 #include "drsearch.h"
-#include <regexp.h>
+#include "owregexp.h"
 
 
 typedef struct {
@@ -59,18 +59,18 @@ static bool CheckEntry( drmem_hdl abbrev, drmem_hdl mod, mod_scan_info *minfo, v
 
     symctxt.name = NULL;
     if( sinfo->name != NULL ) {
-        symctxt.name = DWRGetName( abbrev, mod );
+        symctxt.name = DR_GetName( abbrev, mod );
         if( symctxt.name == NULL )
             return( true );
         if( !RegExec( sinfo->name, symctxt.name, true ) ) {
-            DWRFREE( symctxt.name );
+            DR_FREE( symctxt.name );
             return( true );
         }
     }
 
     symctxt.type = DR_SYM_MACRO;
     for( index = 0; index < DR_SYM_NOT_SYM; index++ ) {
-        if( DWRSearchArray( SearchTags[index], minfo->tag ) ) {
+        if( DR_SearchArray( SearchTags[index], minfo->tag ) ) {
             symctxt.type = index;
             break;
         }
@@ -100,7 +100,7 @@ bool DRENTRY DRSymSearch( dr_search search, dr_depth depth, void *_name,
         info.name = name;
         info.data = data;
         info.searchtype = search;
-        done |= DWRScanAllCompileUnits( NULL, CheckEntry, SearchTypes[search], depth, &info );
+        done |= DR_ScanAllCompileUnits( NULL, CheckEntry, SearchTypes[search], depth, &info );
     }
 
     return( done );
@@ -124,7 +124,7 @@ bool DRENTRY DRResumeSymSearch( dr_search_context *ctxt, dr_search search,
         info.name = name;
         info.data = data;
         info.searchtype = search;
-        done |= DWRScanAllCompileUnits( ctxt, CheckEntry, SearchTypes[search], depth, &info );
+        done |= DR_ScanAllCompileUnits( ctxt, CheckEntry, SearchTypes[search], depth, &info );
     }
 
     return( done );
@@ -146,12 +146,12 @@ dr_search_context *DRDuplicateSearchContext( dr_search_context *cxt )
     int                     i;
     dr_search_context       *newCtxt;
 
-    newCtxt = DWRALLOC( sizeof( dr_search_context ) );
+    newCtxt = DR_ALLOC( sizeof( dr_search_context ) );
     *newCtxt = *cxt; /* structure copy */
 
 
     /* but allocate and copy own stack */
-    newCtxt->stack.stack = DWRALLOC( newCtxt->stack.size * sizeof( uint_32 ) );
+    newCtxt->stack.stack = DR_ALLOC( newCtxt->stack.size * sizeof( uint_32 ) );
 
     for( i = 0; i < cxt->stack.free; i += 1 ) {
         newCtxt->stack.stack[i] = cxt->stack.stack[i];
@@ -163,6 +163,6 @@ dr_search_context *DRDuplicateSearchContext( dr_search_context *cxt )
 void DRFreeSearchContext( dr_search_context *ctxt )
 /*************************************************/
 {
-    DWRFREE( ctxt->stack.stack );
-    DWRFREE( ctxt );
+    DR_FREE( ctxt->stack.stack );
+    DR_FREE( ctxt );
 }

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -48,8 +49,8 @@ extern void __far TrapInt21( void );
 void __far      *OldInt1B;
 char            **NameList;
 int             NameCount;
-int             RealNameStrLen = sizeof( GET_REAL_NAME );
-char            GetRealNamePrefix[sizeof( GET_REAL_NAME ) + _MAX_PATH + 3] = GET_REAL_NAME " ";
+int             RealNameStrLen = sizeof( LIT_GET_REAL_NAME );
+char            GetRealNamePrefix[sizeof( LIT_GET_REAL_NAME ) + _MAX_PATH + 3] = LIT_GET_REAL_NAME " ";
 char            TmpBuff[_MAX_PATH];
 
 
@@ -85,7 +86,6 @@ int main( void )
     char        names[2 * _MAX_PATH + 2];
     char        *ptr;
     char        *nptr;
-    long        rc;
     int         i, len;
 
     cputs( "WATCOM DOS Driver\r\n" );
@@ -103,7 +103,7 @@ int main( void )
             }
         }
 #endif
-        if( VxDLink( LINK_NAME ) == NULL ) {
+        if( VxDLink( DEFAULT_LINK_NAME ) == NULL ) {
             VxDConnect();
             break;
         }
@@ -111,18 +111,18 @@ int main( void )
     }
     cputs( "DOS Driver started\r\n" );
     for( ;; ) {
-        rc = VxDGet( buff, sizeof( buff ) );
-        if( rc < 0 ) {
-            ltoa( rc, buff, 10 );
+        len = VxDGet( buff, sizeof( buff ) );
+        if( len < 0 ) {
+            ltoa( len, buff, 10 );
             cputs( "Error " );
             cputs( buff );
             cputs( "encountered, aborting!\r\n" );
             break;
         }
-        if( stricmp( buff, TERMINATE_CLIENT_STR ) == 0 ) {
+        if( strcmp( buff, LIT_TERMINATE_CLIENT_STR ) == 0 ) {
             break;
         }
-        if( stricmp( buff, NEW_OPEN_LIST ) == 0 ) {
+        if( strcmp( buff, LIT_NEW_OPEN_LIST ) == 0 ) {
             /*
              * free old list of names
              */
@@ -133,14 +133,16 @@ int main( void )
             NameList = NULL;
             NameCount = 0;
             _heapshrink();
-            VxDPut( GOT_OPEN_STR, sizeof( GOT_OPEN_STR ) );
+            VxDPutLIT( LIT_GOT_OPEN_STR );
 
             /*
              * get list of names
              */
             for( ;; ) {
-                rc = VxDGet( buff, sizeof( buff ) );
-                if( stricmp( buff, END_OPEN_LIST ) == 0 ) {
+                len = VxDGet( buff, sizeof( buff ) );
+                if( len < 0 )
+                    break;
+                if( strcmp( buff, LIT_END_OPEN_LIST ) == 0 ) {
                     break;
                 }
                 ptr = buff;
@@ -168,9 +170,9 @@ int main( void )
                     }
                     NameCount++;
                 }
-                VxDPut( GOT_OPEN_STR, sizeof( GOT_OPEN_STR ) );
+                VxDPutLIT( LIT_GOT_OPEN_STR );
             }
-            VxDPut( GOT_OPEN_STR, sizeof( GOT_OPEN_STR ) );
+            VxDPutLIT( LIT_GOT_OPEN_STR );
             continue;
         }
         cputs( "Command: \"" );
@@ -181,7 +183,7 @@ int main( void )
         system( buff );
         endClog();
         installBreakHandler();
-        VxDPut( TERMINATE_COMMAND_STR, sizeof( TERMINATE_COMMAND_STR ) );
+        VxDPutLIT( LIT_TERMINATE_COMMAND_STR );
     }
     removeBreakHandler();
     VxDDisconnect();

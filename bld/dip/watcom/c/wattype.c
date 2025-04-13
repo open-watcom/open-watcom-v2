@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,6 +35,7 @@
 #include "walloca.h"
 #include "watlcl.h"
 #include "watgbl.h"
+#include "felang.h"
 
 #include "clibext.h"
 
@@ -442,7 +443,7 @@ static dip_status DoFindTypeHandle( imp_image_handle *iih, imp_mod_handle imh,
             ds = DS_FAIL;
             break;
         case ARRAY_TYPE:
-            if( stricmp( ImpInterface.ModSrcLang( iih, imh ), "fortran" ) == 0 ) {
+            if( stricmp( ImpInterface.ModSrcLang( iih, imh ), FE_LANG_FORTRAN ) == 0 ) {
                 ith->f.s.col_major = 1;
                 ith->f.s.array_ss = 0;
                 base_ith = *ith;

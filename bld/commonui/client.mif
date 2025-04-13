@@ -1,5 +1,5 @@
 !ifdef sys_windowed
-cli_commonui_inc_dirs = -I"$(commonui_dir)/$(objs_subdir)" -I"$(commonui_dir)/h"
-cli_commonui_libs = $(commonui_dir)/$(objs_subdir)/commonui.lib
-cli_commonui_rc_inc_dirs = -I"$(commonui_dir)/$(objs_subdir)" -I"$(commonui_dir)/res" -I"$(commonui_dir)/h"
+cli_commonui_inc_dirs = -I"$(commonui_dir)/$(host)" -I"$(commonui_dir)/h"
+cli_commonui_libs = $(commonui_dir)/$(host)/commonui.lib
+cli_commonui_rc_inc_dirs = -I"$(commonui_dir)/$(host)" -I"$(commonui_dir)/res" -I"$(commonui_dir)/h"
 !endif

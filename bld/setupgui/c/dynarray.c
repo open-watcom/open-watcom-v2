@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,12 +31,12 @@
 
 
 #include "setup.h"
-#include "dynarray.h"
+
 
 #define INCREMENT       10
 
-void InitArray( void **array, size_t esize, array_info *info )
-/*************************************************************/
+void InitArray( void **array, array_idx esize, array_info *info )
+/***************************************************************/
 {
     if( info->increment == 0 ) {
         info->increment = INCREMENT;
@@ -73,4 +74,3 @@ bool BumpDownArray( array_info *info )
     }
     return( true );
 }
-

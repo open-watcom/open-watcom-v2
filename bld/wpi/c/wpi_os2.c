@@ -1718,8 +1718,8 @@ void _wpi_getoldpen( WPI_PRES pres, HPEN oldobj )
     _wpi_free( old_pen );
 } /* _wpi_getoldpen */
 
-void _wpi_enumfonts( WPI_PRES pres, char *facename, WPI_FONTENUMPROC proc, char *data )
-/**************************************************************************************
+void _wpi_enumfonts( WPI_PRES pres, const char *facename, WPI_FONTENUMPROC proc, char *data )
+/********************************************************************************************
  * This routine closely approximates the enumerate routine for Windows
  */
 {

@@ -6,10 +6,20 @@ BEGIN {
     }
 }
 # get uppercased module name
-/^[ \t]*LIBRARY/ { ModuleName = toupper( $2 ); next }
+/^[ \t]*LIBRARY/ { DefModuleName = toupper( $2 ); next }
 
 # skip uninteresting lines
 /^[ \t]*(EXPORTS|;)/ { next }
+
+{
+    FS=" "
+    ModuleName = DefModuleName
+}
+
+/=/ {
+    FS="[ =]"
+    ModuleName = toupper( $2 )
+}
 
 # NB: Calling conventions essentially do not exist on non-x86 platforms,
 # we simply strip the decoration unless 'cpu' equals 386.

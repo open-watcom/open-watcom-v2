@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -47,31 +47,31 @@ dw_handle DWENTRY DWBeginLexicalBlock(
     dw_handle                   new;
     abbrev_code                 abbrev;
 
-    new = LabelNewHandle( cli );
+    new = DW_LabelNewHandle( cli );
     abbrev = AB_LEXICAL_BLOCK | AB_SIBLING | AB_START_REF;
     if( name ) abbrev |= AB_NAME;
     if( segment ) abbrev |= AB_SEGMENT;
-    StartDIE( cli, abbrev );
+    DW_StartDIE( cli, abbrev );
     /* AT_name */
     if( name ) {
-        InfoString( cli, name );
+        DW_InfoString( cli, name );
     }
     if( segment ) {
-        InfoEmitLocExpr( cli, sizeof( uint_8 ), segment );
+        DW_InfoEmitLocExpr( cli, sizeof( uint_8 ), segment );
     }
     /* AT_low_pc */
-    InfoReloc( cli, DW_W_LOW_PC );
+    DW_InfoReloc( cli, DW_W_LOW_PC );
     /* AT_high_pc */
-    InfoReloc( cli, DW_W_HIGH_PC );
-    EndDIE( cli );
-    StartChildren( cli );
+    DW_InfoReloc( cli, DW_W_HIGH_PC );
+    DW_EndDIE( cli );
+    DW_StartChildren( cli );
     return( new );
 }
 
 void DWENTRY DWEndLexicalBlock( dw_client cli )
 {
-    EndChildren( cli );
-    EndRef( cli );
+    DW_EndChildren( cli );
+    DW_EndRef( cli );
 }
 
 
@@ -85,35 +85,35 @@ dw_handle DWENTRY DWBeginCommonBlock(
     dw_handle                   new;
     abbrev_code                 abbrev;
 
-    new = LabelNewHandle( cli );
+    new = DW_LabelNewHandle( cli );
     abbrev = AB_COMMON_BLOCK | AB_SIBLING | AB_START_REF;
     if( name ) abbrev |= AB_NAME;
     if( segment ) abbrev |= AB_SEGMENT;
     if( flags & DW_FLAG_DECLARATION ) abbrev |= AB_DECLARATION;
-    StartDIE( cli, abbrev );
+    DW_StartDIE( cli, abbrev );
     if( flags & DW_FLAG_DECLARATION ) {
-        Info8( cli, 1 );
+        DW_Info8( cli, 1 );
     }
     /* AT_name */
     if( name ) {
-        InfoString( cli, name );
+        DW_InfoString( cli, name );
     }
     /* AT_segment */
     if( segment ) {
-        InfoEmitLocExpr( cli, sizeof( uint_8 ), segment );
+        DW_InfoEmitLocExpr( cli, sizeof( uint_8 ), segment );
     }
     /* AT_location */
-    InfoEmitLocExpr( cli, sizeof( uint_8 ), loc );
-    EndDIE( cli );
-    StartChildren( cli );
+    DW_InfoEmitLocExpr( cli, sizeof( uint_8 ), loc );
+    DW_EndDIE( cli );
+    DW_StartChildren( cli );
     return( new );
 }
 
 
 void DWENTRY DWEndCommonBlock( dw_client cli )
 {
-    EndChildren( cli );
-    EndRef( cli );
+    DW_EndChildren( cli );
+    DW_EndRef( cli );
 }
 
 dw_handle DWENTRY DWNameListBegin( dw_client cli, const char *name )
@@ -121,13 +121,13 @@ dw_handle DWENTRY DWNameListBegin( dw_client cli, const char *name )
     dw_handle                   new_hdl;
     abbrev_code                 abbrev;
 
-    new_hdl = LabelNewHandle( cli );
+    new_hdl = DW_LabelNewHandle( cli );
     abbrev = AB_NAMELIST | AB_SIBLING | AB_START_REF;
-    StartDIE( cli, abbrev );
+    DW_StartDIE( cli, abbrev );
     /* AT_name */
-    InfoString( cli, name );
-    EndDIE( cli );
-    StartChildren( cli );
+    DW_InfoString( cli, name );
+    DW_EndDIE( cli );
+    DW_StartChildren( cli );
     return( new_hdl );
 }
 
@@ -136,16 +136,16 @@ void DWENTRY DWNameListItem( dw_client cli, dw_handle ref )
     abbrev_code abbrev;
 
     abbrev = AB_NAMELIST_ITEM;
-    StartDIE( cli, abbrev );
+    DW_StartDIE( cli, abbrev );
     /* AT_namelist_item */
-    InfoHandleReference( cli, ref );
-    EndDIE( cli );
+    DW_InfoHandleReference( cli, ref );
+    DW_EndDIE( cli );
 }
 
 void DWENTRY DWEndNameList( dw_client cli )
 {
-    EndChildren( cli );
-    EndRef( cli );
+    DW_EndChildren( cli );
+    DW_EndRef( cli );
 }
 
 dw_handle DWENTRY DWBeginInlineSubroutine(
@@ -157,24 +157,24 @@ dw_handle DWENTRY DWBeginInlineSubroutine(
     dw_handle                   new;
     abbrev_code                 abbrev;
 
-    new = GetHandle( cli );
+    new = DW_GetHandle( cli );
     abbrev = AB_INLINED_SUBROUTINE | AB_SIBLING | AB_START_REF;
     if( segment ) abbrev |= AB_SEGMENT;
     if( ret_addr_loc ) abbrev |= AB_RETURN_ADDR;
-    StartDIE( cli, AB_INLINED_SUBROUTINE );
+    DW_StartDIE( cli, AB_INLINED_SUBROUTINE );
     if( ret_addr_loc ) {
-        InfoEmitLocExpr( cli, sizeof( uint_8 ), ret_addr_loc );
+        DW_InfoEmitLocExpr( cli, sizeof( uint_8 ), ret_addr_loc );
     }
     if( segment ) {
-        InfoEmitLocExpr( cli, sizeof( uint_8 ), segment );
+        DW_InfoEmitLocExpr( cli, sizeof( uint_8 ), segment );
     }
-    InfoHandleReference( cli, subr );
+    DW_InfoHandleReference( cli, subr );
     /* AT_low_pc */
-    InfoReloc( cli, DW_W_LOW_PC );
+    DW_InfoReloc( cli, DW_W_LOW_PC );
     /* AT_high_pc */
-    InfoReloc( cli, DW_W_HIGH_PC );
-    EndDIE( cli );
-    StartChildren( cli );
+    DW_InfoReloc( cli, DW_W_HIGH_PC );
+    DW_EndDIE( cli );
+    DW_StartChildren( cli );
     return( new );
 }
 
@@ -198,7 +198,7 @@ dw_handle DWENTRY DWBeginSubroutine(
     /* unused parameters */ (void)call_type;
 
     _Validate( name != NULL );
-    new = GetHandle( cli );
+    new = DW_GetHandle( cli );
     if( flags & DW_FLAG_DECLARATION ) {
         abbrev = AB_SUBROUTINE_DECL;
         if( vtable_loc )
@@ -219,72 +219,72 @@ dw_handle DWENTRY DWBeginSubroutine(
     if( return_type != 0 ){
         abbrev |= AB_TYPE;
     }
-    StartDIE( cli, abbrev | AB_SIBLING | AB_START_REF );
+    DW_StartDIE( cli, abbrev | AB_SIBLING | AB_START_REF );
     /* AT_public, AT_protected, AT_private */
-    EmitAccessFlags( cli, flags );
+    DW_EmitAccessFlags( cli, flags );
     /* AT_type reference */
     if( abbrev & AB_TYPE ){
-        EmitTypeRef( cli, return_type );
+        DW_EmitTypeRef( cli, return_type );
     }
     /* AT_start_scope */
     if( (abbrev & AB_SUBROUTINE) == AB_SUBROUTINE ){
-        InfoULEB128( cli, start_scope );
+        DW_InfoULEB128( cli, start_scope );
     }
     /* AT_member */
     if( abbrev & AB_MEMBER ) {
-        InfoHandleReference( cli, member_hdl );
+        DW_InfoHandleReference( cli, member_hdl );
     }
     /* AT_segment */
     if( abbrev & AB_SEGMENT ) {
-        InfoEmitLocExpr( cli, sizeof( uint_8 ), segment );
+        DW_InfoEmitLocExpr( cli, sizeof( uint_8 ), segment );
     }
     /* AT_vtable_location */
     if( abbrev & AB_VTABLE_LOC  ) {
-        InfoEmitLocExpr( cli, sizeof( uint_8 ), vtable_loc );
+        DW_InfoEmitLocExpr( cli, sizeof( uint_8 ), vtable_loc );
     }
     /* AT_name */
-    InfoString( cli, name );
+    DW_InfoString( cli, name );
     /* AT_external */
-    Info8( cli, (flags & DW_SUB_STATIC) == 0 );
+    DW_Info8( cli, (flags & DW_SUB_STATIC) == 0 );
     /* AT_inline */
-    Info8( cli, (flags & DW_FLAG_INLINE_MASK) >> DW_FLAG_INLINE_SHIFT );
+    DW_Info8( cli, (flags & DW_FLAG_INLINE_MASK) >> DW_FLAG_INLINE_SHIFT );
     /* AT_calling_convention */
     if( flags & DW_FLAG_MAIN ) {
-        Info8( cli, DW_CC_program );
+        DW_Info8( cli, DW_CC_program );
     } else {
-        Info8( cli, DW_CC_normal );
+        DW_Info8( cli, DW_CC_normal );
     }
     /* AT_prototyped */
-    Info8( cli, (flags & DW_FLAG_PROTOTYPED) != 0 );
+    DW_Info8( cli, (flags & DW_FLAG_PROTOTYPED) != 0 );
     /* AT_virtuality */
-    Info8( cli, (flags & DW_FLAG_VIRTUAL_MASK) >> DW_FLAG_VIRTUAL_SHIFT );
+    DW_Info8( cli, (flags & DW_FLAG_VIRTUAL_MASK) >> DW_FLAG_VIRTUAL_SHIFT );
     /* AT_artificial */
-    Info8( cli, (flags & DW_FLAG_ARTIFICIAL) != 0 );
+    DW_Info8( cli, (flags & DW_FLAG_ARTIFICIAL) != 0 );
     if( flags & DW_FLAG_DECLARATION ) {
         /* AT_declaration */
-        Info8( cli, 1 );
+        DW_Info8( cli, 1 );
     } else {
         /* AT_return_addr */
         if( return_addr_loc != NULL ) {
-            InfoEmitLocExpr( cli, sizeof( uint_8 ),return_addr_loc );
+            DW_InfoEmitLocExpr( cli, sizeof( uint_8 ),return_addr_loc );
         } else {
-            InfoEmitLocExprNull( cli, sizeof( uint_8 ) );
+            DW_InfoEmitLocExprNull( cli, sizeof( uint_8 ) );
         }
         /* AT_low_pc */
-        InfoReloc( cli, DW_W_LOW_PC );
+        DW_InfoReloc( cli, DW_W_LOW_PC );
         /* AT_high_pc */
-        InfoReloc( cli, DW_W_HIGH_PC );
+        DW_InfoReloc( cli, DW_W_HIGH_PC );
     }
     /* AT_address_class */
-    Info8( cli, (flags & DW_PTR_TYPE_MASK) >> DW_PTR_TYPE_SHIFT );
+    DW_Info8( cli, (flags & DW_PTR_TYPE_MASK) >> DW_PTR_TYPE_SHIFT );
     /* AT_frame_base */
     if( frame_base_loc != NULL ){
-        InfoEmitLocExpr( cli, sizeof( uint_8 ),frame_base_loc );
+        DW_InfoEmitLocExpr( cli, sizeof( uint_8 ),frame_base_loc );
     }else{
-        InfoEmitLocExprNull( cli, sizeof( uint_8 ) );
+        DW_InfoEmitLocExprNull( cli, sizeof( uint_8 ) );
     }
-    EndDIE( cli );
-    StartChildren( cli );
+    DW_EndDIE( cli );
+    DW_StartChildren( cli );
     return( new );
 }
 
@@ -301,7 +301,7 @@ dw_handle DWENTRY DWBeginEntryPoint(
     abbrev_code                 abbrev;
 
     _Validate( name != NULL );
-    new = GetHandle( cli );
+    new = DW_GetHandle( cli );
     abbrev = AB_ENTRY_POINT;
     if( segment )
         abbrev |= AB_SEGMENT;
@@ -310,31 +310,31 @@ dw_handle DWENTRY DWBeginEntryPoint(
     if( return_type != 0 ){
         abbrev |= AB_TYPE;
     }
-    StartDIE( cli, abbrev | AB_SIBLING | AB_START_REF );
+    DW_StartDIE( cli, abbrev | AB_SIBLING | AB_START_REF );
     /* AT_public, AT_protected, AT_private */
-    EmitAccessFlags( cli, flags );
+    DW_EmitAccessFlags( cli, flags );
     /* AT_type reference */
     if( abbrev & AB_TYPE ){
-        EmitTypeRef( cli, return_type );
+        DW_EmitTypeRef( cli, return_type );
     }
     /* AT_start_scope */
-    InfoULEB128( cli, start_scope );
+    DW_InfoULEB128( cli, start_scope );
     /* AT_return_addr */
     if( abbrev & AB_RETURN_ADDR ) {
-        InfoEmitLocExpr( cli, sizeof( uint_8 ), return_addr_loc );
+        DW_InfoEmitLocExpr( cli, sizeof( uint_8 ), return_addr_loc );
     }
     /* AT_segment */
     if( abbrev & AB_SEGMENT ) {
-        InfoEmitLocExpr( cli, sizeof( uint_8 ), segment );
+        DW_InfoEmitLocExpr( cli, sizeof( uint_8 ), segment );
     }
     /* AT_low_pc */
-    InfoReloc( cli, DW_W_LOW_PC );
+    DW_InfoReloc( cli, DW_W_LOW_PC );
     /* AT_address_class */
-    Info8( cli, (flags & DW_PTR_TYPE_MASK) >> DW_PTR_TYPE_SHIFT );
+    DW_Info8( cli, (flags & DW_PTR_TYPE_MASK) >> DW_PTR_TYPE_SHIFT );
     /* AT_name */
-    InfoString( cli, name );
-    EndDIE( cli );
-    StartChildren( cli );
+    DW_InfoString( cli, name );
+    DW_EndDIE( cli );
+    DW_StartChildren( cli );
     return( new );
 }
 
@@ -345,21 +345,21 @@ static void MemFuncCommon(
     const char      *name,
     uint            flags )
 {
-    StartDIE( cli, abbrev );
+    DW_StartDIE( cli, abbrev );
     if( flags & DW_FLAG_ARTIFICIAL ){
         /* AT_artificial */
-        Info8( cli, 1 );
+        DW_Info8( cli, 1 );
     }
     /* AT_accessibility =  AT_public, AT_protected, AT_private */
-    EmitAccessFlags( cli, flags );
+    DW_EmitAccessFlags( cli, flags );
     /* AT_type */
-    EmitTypeRef( cli, return_type );
+    DW_EmitTypeRef( cli, return_type );
     /* AT_name */
-    InfoString( cli, name );
+    DW_InfoString( cli, name );
     /* AT_declaration */
-    Info8( cli, (flags & DW_FLAG_DECLARATION) != 0 );
+    DW_Info8( cli, (flags & DW_FLAG_DECLARATION) != 0 );
     /* AT_inline */
-    Info8( cli, (flags & DW_FLAG_INLINE_MASK) >> DW_FLAG_INLINE_SHIFT );
+    DW_Info8( cli, (flags & DW_FLAG_INLINE_MASK) >> DW_FLAG_INLINE_SHIFT );
 }
 
 dw_handle DWENTRY DWBeginMemFuncDecl(
@@ -375,7 +375,7 @@ dw_handle DWENTRY DWBeginMemFuncDecl(
 
     /* unused parameters */ (void)segment; (void)loc;
 
-    new = GetHandle( cli );
+    new = DW_GetHandle( cli );
 //  if( segment != NULL ){
 //      abbrev = AB_MEMFUNCDECLSEG;
 //  }else{
@@ -387,15 +387,15 @@ dw_handle DWENTRY DWBeginMemFuncDecl(
     MemFuncCommon( cli, abbrev, return_type, name, flags );
     /* AT_segment    */
 //  if( segment != NULL ){
-//      InfoEmitLocExpr( cli, sizeof( uint_8 ), segment );
+//      DW_InfoEmitLocExpr( cli, sizeof( uint_8 ), segment );
 //  }
 //  /* AT_loc       */
 //  if( loc != NULL ){
-//      InfoEmitLocExpr( cli, sizeof( uint_8 ), loc );
+//      DW_InfoEmitLocExpr( cli, sizeof( uint_8 ), loc );
 //  }else{
-//      InfoEmitLocExprNull( cli, sizeof( uint_8 ) );
+//      DW_InfoEmitLocExprNull( cli, sizeof( uint_8 ) );
 //  }
-    EndDIE( cli );
+    DW_EndDIE( cli );
     return( new );
 }
 
@@ -409,26 +409,26 @@ dw_handle DWENTRY DWBeginVirtMemFuncDecl(
     dw_handle                   new;
     abbrev_code                 abbrev;
 
-    new = GetHandle( cli );
+    new = DW_GetHandle( cli );
     abbrev = AB_VIRTMEMFUNCDECL;
     _Assert( (flags & DW_FLAG_ARTIFICIAL) == 0 );
     MemFuncCommon( cli, abbrev, return_type, name, flags );
     /* AT_virtuality  */
-    Info8( cli, 1 );
+    DW_Info8( cli, 1 );
     /* AT_vtable_location */
     if( vtable_loc != NULL ) {
-        InfoEmitLocExpr( cli, sizeof( uint_8 ), vtable_loc );
+        DW_InfoEmitLocExpr( cli, sizeof( uint_8 ), vtable_loc );
     } else {
-        InfoEmitLocExprNull( cli, sizeof( uint_8 ) );
+        DW_InfoEmitLocExprNull( cli, sizeof( uint_8 ) );
     }
-    EndDIE( cli );
+    DW_EndDIE( cli );
     return( new );
 }
 
 void DWENTRY DWEndSubroutine( dw_client cli )
 {
-    EndChildren( cli );
-    EndRef( cli );
+    DW_EndChildren( cli );
+    DW_EndRef( cli );
 }
 
 
@@ -447,29 +447,29 @@ dw_handle DWENTRY DWFormalParameter(
     const void *                value;
     size_t                      len;
 
-    new = LabelNewHandle( cli );
+    new = DW_LabelNewHandle( cli );
     _Validate( parm_type != 0 );
     va_start( args, default_value_type );
     abbrev = default_value_type == DW_DEFAULT_NONE ? AB_FORMAL_PARAMETER
         : AB_FORMAL_PARAMETER_WITH_DEFAULT;
-    StartDIE( cli, abbrev );
+    DW_StartDIE( cli, abbrev );
     switch( default_value_type ) {
     case DW_DEFAULT_NONE:
         break;
     case DW_DEFAULT_FUNCTION:
-        InfoULEB128( cli, DW_FORM_addr );
-        InfoReloc( cli, DW_W_DEFAULT_FUNCTION );
+        DW_InfoULEB128( cli, DW_FORM_addr );
+        DW_InfoReloc( cli, DW_W_DEFAULT_FUNCTION );
         break;
     case DW_DEFAULT_STRING:
-        InfoULEB128( cli, DW_FORM_string );
-        InfoString( cli, va_arg( args, const char * ) );
+        DW_InfoULEB128( cli, DW_FORM_string );
+        DW_InfoString( cli, va_arg( args, const char * ) );
         break;
     case DW_DEFAULT_BLOCK:
-        InfoULEB128( cli, DW_FORM_block );
+        DW_InfoULEB128( cli, DW_FORM_block );
         value = va_arg( args, const void * );
         len = va_arg( args, size_t );
-        InfoULEB128( cli, (dw_uconst)len );
-        InfoBytes( cli, value, len );
+        DW_InfoULEB128( cli, (dw_uconst)len );
+        DW_InfoBytes( cli, value, len );
         break;
     default:
         _Abort( ABORT_INVALID_DEFAULT_VALUE );
@@ -480,22 +480,22 @@ dw_handle DWENTRY DWFormalParameter(
     if( name == NULL ) {
         name = "";
     }
-    InfoString( cli, name );
+    DW_InfoString( cli, name );
     /* AT_location */
     if( parm_loc ) {
-        InfoEmitLocExpr( cli, sizeof( uint_8 ), parm_loc );
+        DW_InfoEmitLocExpr( cli, sizeof( uint_8 ), parm_loc );
     }else{
-        InfoEmitLocExprNull( cli, sizeof( uint_8 ) );
+        DW_InfoEmitLocExprNull( cli, sizeof( uint_8 ) );
     }
     /* AT_WATCOM_parm_entry */
     if( entry_loc ) {
-        InfoEmitLocExpr( cli, sizeof( uint_8 ), entry_loc );
+        DW_InfoEmitLocExpr( cli, sizeof( uint_8 ), entry_loc );
     }else{
-        InfoEmitLocExprNull( cli, sizeof( uint_8 ) );
+        DW_InfoEmitLocExprNull( cli, sizeof( uint_8 ) );
     }
     /* AT_type */
-    EmitTypeRef( cli, parm_type );
-    EndDIE( cli );
+    DW_EmitTypeRef( cli, parm_type );
+    DW_EndDIE( cli );
     return( new );
 }
 
@@ -504,9 +504,9 @@ dw_handle DWENTRY DWEllipsis( dw_client cli )
 {
     dw_handle                   new;
 
-    new = LabelNewHandle( cli );
-    StartDIE( cli, AB_ELLIPSIS );
-    EndDIE( cli );
+    new = DW_LabelNewHandle( cli );
+    DW_StartDIE( cli, AB_ELLIPSIS );
+    DW_EndDIE( cli );
     return( new );
 }
 
@@ -520,24 +520,24 @@ dw_handle DWENTRY DWLabel(
     dw_handle                   new;
     abbrev_code                 abbrev;
 
-    new = GetHandle( cli );
+    new = DW_GetHandle( cli );
     abbrev = AB_LABEL;
     if( name ) abbrev |= AB_NAME;
     if( segment ) abbrev |= AB_SEGMENT;
-    StartDIE( cli, abbrev );
+    DW_StartDIE( cli, abbrev );
     /* AT_name */
     if( name ) {
-        InfoString( cli, name );
+        DW_InfoString( cli, name );
     }
     /* AT_start_scope */
-    InfoULEB128( cli, start_scope );
+    DW_InfoULEB128( cli, start_scope );
     /* AT_segment */
     if( segment ) {
-        InfoEmitLocExpr( cli, sizeof( uint_8 ), segment );
+        DW_InfoEmitLocExpr( cli, sizeof( uint_8 ), segment );
     }
     /* AT_low_pc */
-    InfoReloc( cli, DW_W_LABEL );
-    EndDIE( cli );
+    DW_InfoReloc( cli, DW_W_LABEL );
+    DW_EndDIE( cli );
     return( new );
 }
 
@@ -559,7 +559,7 @@ dw_handle DWENTRY DWVariable(
 
     _Validate( type != 0 );
     _Validate( name !=NULL );
-    new = LabelNewHandle( cli );
+    new = DW_LabelNewHandle( cli );
     abbrev = AB_VARIABLE;
     if( member_of )
         abbrev |= AB_MEMBER;
@@ -567,33 +567,33 @@ dw_handle DWENTRY DWVariable(
         abbrev |= AB_SEGMENT;
     if( flags & DW_FLAG_DECLARATION )
         abbrev |= AB_DECLARATION;
-    StartDIE( cli, abbrev );
+    DW_StartDIE( cli, abbrev );
     if( flags & DW_FLAG_DECLARATION ) {
-        Info8( cli, 1 );
+        DW_Info8( cli, 1 );
     }
     /* AT_private, etc. */
-    EmitAccessFlags( cli, flags );
+    DW_EmitAccessFlags( cli, flags );
     /* AT_member */
     if( member_of ) {
-        InfoHandleReference( cli, member_of );
+        DW_InfoHandleReference( cli, member_of );
     }
     /* AT_segment */
     if( segment ) {
-        InfoEmitLocExpr( cli, sizeof( uint_8 ), segment );
+        DW_InfoEmitLocExpr( cli, sizeof( uint_8 ), segment );
     }
-    Info8( cli, (flags & DW_FLAG_GLOBAL) != 0 );
-    Info8( cli, (flags & DW_FLAG_ARTIFICIAL) != 0 );
+    DW_Info8( cli, (flags & DW_FLAG_GLOBAL) != 0 );
+    DW_Info8( cli, (flags & DW_FLAG_ARTIFICIAL) != 0 );
     /* AT_name */
-    InfoString( cli, name );
+    DW_InfoString( cli, name );
     /* AT_location */
     if( loc ) {
-        InfoEmitLocExpr( cli, sizeof( uint_8 ), loc );
+        DW_InfoEmitLocExpr( cli, sizeof( uint_8 ), loc );
     } else {
-        InfoEmitLocExprNull( cli, sizeof( uint_8 ) );
+        DW_InfoEmitLocExprNull( cli, sizeof( uint_8 ) );
     }
     /* AT_type */
-    EmitTypeRef( cli, type );
-    EndDIE( cli );
+    DW_EmitTypeRef( cli, type );
+    DW_EndDIE( cli );
     return( new );
 }
 
@@ -615,33 +615,33 @@ dw_handle DWENTRY DWConstant(
 
     _Validate( type != 0 );
     _Validate( name != NULL );
-    new = LabelNewHandle( cli );
+    new = DW_LabelNewHandle( cli );
     abbrev = AB_CONSTANT;
     if( member_of )
         abbrev |= AB_MEMBER;
-    StartDIE( cli, abbrev );
+    DW_StartDIE( cli, abbrev );
     /* AT_private */
-    EmitAccessFlags( cli, flags );
+    DW_EmitAccessFlags( cli, flags );
     /* AT_member */
     if( member_of ) {
-        InfoHandleReference( cli, member_of );
+        DW_InfoHandleReference( cli, member_of );
     }
     /* AT_external */
-    Info8( cli, (flags & DW_FLAG_GLOBAL) != 0 );
+    DW_Info8( cli, (flags & DW_FLAG_GLOBAL) != 0 );
     /* AT_const_value */
     if( len == 0 ) {    /* assume it's a string */
-        InfoULEB128( cli, DW_FORM_string );
-        InfoString( cli, value );
+        DW_InfoULEB128( cli, DW_FORM_string );
+        DW_InfoString( cli, value );
     } else {
-        InfoULEB128( cli, DW_FORM_block );
-        InfoULEB128( cli, (dw_uconst)len );
-        InfoBytes( cli, value, len );
+        DW_InfoULEB128( cli, DW_FORM_block );
+        DW_InfoULEB128( cli, (dw_uconst)len );
+        DW_InfoBytes( cli, value, len );
     }
     /* AT_name */
-    InfoString( cli, name );
+    DW_InfoString( cli, name );
     /* AT_type */
-    EmitTypeRef( cli, type );
-    EndDIE( cli );
+    DW_EmitTypeRef( cli, type );
+    DW_EndDIE( cli );
     return( new );
 }
 
@@ -650,10 +650,10 @@ dw_handle DWENTRY DWIncludeCommonBlock( dw_client cli, dw_handle common_block )
 {
     dw_handle                   new;
 
-    new = LabelNewHandle( cli );
-    StartDIE( cli, AB_COMMON_INCLUSION );
+    new = DW_LabelNewHandle( cli );
+    DW_StartDIE( cli, AB_COMMON_INCLUSION );
     /* AT_common_inclusion */
-    InfoHandleReference( cli, common_block );
-    EndDIE( cli );
+    DW_InfoHandleReference( cli, common_block );
+    DW_EndDIE( cli );
     return( new );
 }

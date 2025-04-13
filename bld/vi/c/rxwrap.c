@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -25,7 +25,7 @@
 *
 *  ========================================================================
 *
-* Description:  Wrapper for regexp.c module.
+* Description:  Wrapper for owregexp.c module.
 *
 ****************************************************************************/
 
@@ -38,4 +38,4 @@
 
 vi_rc   RegExpError;
 
-#include "../../posix/misc/regexp.c"
+#include "owregexp.c"

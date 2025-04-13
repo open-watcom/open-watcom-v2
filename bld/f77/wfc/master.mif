@@ -48,10 +48,10 @@ extra_cpp_flags =
 extra_cpp_flags += -D_CGDLL
 !endif
 
-extra_cpp_flags_fmemmgr = $(trmem_cpp_flags)
-extra_cpp_flags_trmemcvr = $(trmem_cpp_flags)
+extra_cpp_flags_f_fmemmgr = $(trmem_cpp_flags)
+extra_cpp_flags_f_trmemcvr = $(trmem_cpp_flags)
 
-extra_c_flags_trmemcvr = $(trmem_cover_cflags)
+extra_c_flags_f_trmemcvr = $(trmem_cover_cflags)
 
 #
 # aflags

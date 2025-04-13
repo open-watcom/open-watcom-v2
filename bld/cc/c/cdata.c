@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -62,7 +62,7 @@ void InitGlobalVars( void )
     ConstType               = 0;
     Constant                = 0;
     MainSrcFile             = NULL;     /* primary source file being compiled */
-    SrcFile                 = NULL;
+    SrcFiles                = NULL;
     SrcFName                = NULL;     /* source file name without suffix */
     DefFName                = NULL;     /* .def file name (prototypes) */
     WholeFName              = NULL;     /* whole file name with suffix */

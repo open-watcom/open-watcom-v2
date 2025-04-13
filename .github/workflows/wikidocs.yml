@@ -46,8 +46,11 @@ jobs:
     name: Bootstrap
     runs-on: windows-2019
     steps:
+    - run: git config --global core.eol lf
+    - run: git config --global core.autocrlf input
     - name: checkout
       uses: actions/checkout@v4
+    - run: od -N500 -tx1 projects.txt
     - name: Bootstrap
       uses: "./.github/actions/boot"
       with:
@@ -59,23 +62,27 @@ jobs:
         owdebug:        ${{ vars.OWDEBUG }}
       env:
         OWDOCTARGET:    'bootdocs'
+    - run: git config --local --list
   wiki-build:
     needs: wiki-boot
-    name: Wiki build
+    name: Build
     runs-on: windows-2019
     strategy:
       matrix:
         include:
-        - display:  'HTML'
+        - title:  'HTML'
           doctype:  'wikihtml'
           owtarget: '.and wikihtml .or -- -- docset=wikihtml -i'
-        - display:  'PDF'
+        - title:  'PDF'
           doctype:  'wikipdf'
           owtarget: '.and wikipdf .or -- -- docset=wikipdf -i'
     steps:
+    - run: git config --global core.eol lf
+    - run: git config --global core.autocrlf input
     - name: checkout
       uses: actions/checkout@v4
-    - name: Docs Build
+    - run: od -N500 -tx1 projects.txt
+    - name: Build ${{ matrix.title }}
       uses: "./.github/actions/docbuild"
       with:
         hostos:     'nt'
@@ -88,11 +95,14 @@ jobs:
         owtarget:   ${{ matrix.owtarget }}
         owdebug:    ${{ vars.OWDEBUG }}
         noarchive:  '1'
+    - run: git config --local --list
   wiki-update:
-    name: Wiki Update
+    name: Update Wiki
     needs: wiki-build
     runs-on: windows-2019
     steps:
+    - run: git config --global core.eol lf
+    - run: git config --global core.autocrlf input
     - name: Setup Git User
       shell: cmd
       run: |
@@ -121,6 +131,7 @@ jobs:
         git add -v -f .
         git commit -v -m "GitHub Workflow build"
         git push -v
+    - run: git config --list
   cleanup:
     needs: wiki-update
     name: Call to delete Artifacts

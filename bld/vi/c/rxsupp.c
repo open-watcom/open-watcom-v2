@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,17 +34,14 @@
 #include "vi.h"
 #include "rxsupp.h"
 
-extern char _NEAR META[];
 
 /*
  * IsMagicCharRegular - check if character is magic and regular (no-magic meaning)
  */
 bool IsMagicCharRegular( char ch )
 {
-    if( !EditFlags.Magic && EditVars.Majick != NULL ) {
-        if( strchr( EditVars.Majick, ch ) != NULL ) {
-            return( true );
-        }
+    if( strchr( EditVars.Majick.str, ch ) != NULL ) {
+        return( true );
     }
     return( false );
 
@@ -53,7 +50,7 @@ bool IsMagicCharRegular( char ch )
 /*
  * CurrentRegComp - compile current regular expression
  */
-vi_rc CurrentRegComp( char *str )
+vi_rc CurrentRegComp( const char *str )
 {
     if( CurrentRegularExpression != NULL ) {
         _MemFreeArray( CurrentRegularExpression );
@@ -66,7 +63,7 @@ vi_rc CurrentRegComp( char *str )
 /*
  * GetCurrRegExpColumn
  */
-int GetCurrRegExpColumn( char *data )
+int GetCurrRegExpColumn( const char *data )
 {
     int cl;
 
@@ -102,8 +99,10 @@ void MakeExpressionNonRegular( char *str )
             foo[j++] = '\\';
         } else if( strchr( META, str[i] ) != NULL ) {
             foo[j++] = '\\';
-            if( IsMagicCharRegular( str[i] ) ) {
-                j--;
+            if( !EditFlags.Magic ) {
+                if( IsMagicCharRegular( str[i] ) ) {
+                    j--;
+                }
             }
         }
         foo[j++] = str[i];
@@ -116,29 +115,43 @@ void MakeExpressionNonRegular( char *str )
 
 
 static bool old_CaseIgnore = false;
-static bool old_Magic      = true;
-static char *old_Majick    = NULL;
+static bool old_Magic1     = true;
+static magic_type old_Majick = { "" };
 
-void RegExpAttrSave( int caseignore, char *majick )
+void RegExpAttrSave( int caseignore, const char *majick )
 {
-    old_CaseIgnore  = EditFlags.CaseIgnore;
-    old_Magic       = EditFlags.Magic;
-    old_Majick      = EditVars.Majick;
+    old_CaseIgnore = EditFlags.CaseIgnore;
+    old_Magic1     = EditFlags.Magic;
+    strcpy( old_Majick.str, EditVars.Majick.str );
 
     if( caseignore != -1 ) {
         EditFlags.CaseIgnore = ( caseignore ) ? true : false;
     }
     if( majick == NULL ) {
-        EditFlags.Magic      = true;
+        EditFlags.Magic = true;
     } else {
-        EditFlags.Magic      = false;
-        EditVars.Majick      = majick;
+        EditFlags.Magic = false;
+        strcpy( EditVars.Majick.str, majick );
     }
 }
 
 void RegExpAttrRestore( void )
 {
     EditFlags.CaseIgnore = old_CaseIgnore;
-    EditFlags.Magic      = old_Magic;
-    EditVars.Majick      = old_Majick;
+    EditFlags.Magic      = old_Magic1;
+    strcpy( EditVars.Majick.str, old_Majick.str );
+    *old_Majick.str = '\0';
+}
+
+static bool old_Magic2 = true;
+
+void RegExpMagicSave( void )
+{
+    old_Magic2 = EditFlags.Magic;
+    EditFlags.Magic = true;
+}
+
+void RegExpMagicRestore( void )
+{
+    EditFlags.Magic = old_Magic2;
 }

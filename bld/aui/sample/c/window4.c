@@ -109,7 +109,7 @@ static char UiMapChar[] = { 0xC6, 0xEA, 0xC7, 0xD0,
 
 static bool WNDCALLBACK W4GetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *line )
 {
-    static char buff[20];
+    static char buff[22];
 
     wnd=wnd;
     if( row == -2 ) {
@@ -137,7 +137,7 @@ static bool WNDCALLBACK W4GetLine( a_window wnd, wnd_row row, wnd_piece piece, w
         switch( piece ) {
         case 0:
             line->tabstop = true;
-            itoa( row, buff, 10 );
+            sprintf( buff, "%d", row );
             line->text = buff;
             line->extent = WND_NO_EXTENT;
             return( true );

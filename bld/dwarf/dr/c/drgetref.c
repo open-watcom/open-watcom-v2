@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -60,11 +60,11 @@ static void ScopePush( dr_scope_stack *stack, drmem_hdl entry )
 /*************************************************************/
 {
     if( stack->stack == NULL ) {
-        stack->stack = DWRALLOC( SCOPE_GUESS * sizeof( drmem_hdl ) );
+        stack->stack = DR_ALLOC( SCOPE_GUESS * sizeof( drmem_hdl ) );
     }
     if( stack->free >= stack->size ) {
         stack->size += SCOPE_GUESS;
-        stack->stack = DWRREALLOC( stack->stack, stack->size * sizeof( drmem_hdl ) );
+        stack->stack = DR_REALLOC( stack->stack, stack->size * sizeof( drmem_hdl ) );
     }
 
     stack->stack[stack->free] = entry;
@@ -75,7 +75,7 @@ static drmem_hdl ScopePop( dr_scope_stack *stack )
 /************************************************/
 {
     if( stack->free <= 0 ) {
-        DWREXCEPT( DREXCEP_DWARF_LIB_FAIL );
+        DR_EXCEPT( DREXCEP_DWARF_LIB_FAIL );
     }
 
     stack->free -= 1;
@@ -92,9 +92,9 @@ static drmem_hdl ScopeLastNameable( dr_scope_stack *scope, char **name )
     for( i = scope->free; i > 0; i -= 1 ) {
         tmp_entry = scope->stack[i - 1];
 
-        if( !DWRReadTagEnd( &tmp_entry, &abbrev, NULL ) ) {
+        if( !DR_ReadTagEnd( &tmp_entry, &abbrev, NULL ) ) {
             abbrev++;   /* skip child flag */
-            *name = DWRGetName( abbrev, tmp_entry );
+            *name = DR_GetName( abbrev, tmp_entry );
             if( *name != NULL ) {
                 return( scope->stack[i - 1] );
             }
@@ -132,18 +132,18 @@ static void References( ReferWhich which, drmem_hdl entry, void *data1,
     bool        quit = false;
     bool        inScope = false;
 
-    loc = DWRCurrNode->sections[DR_DEBUG_REF].base;
-    end = loc + DWRCurrNode->sections[DR_DEBUG_REF].size;
-    infoOffset = DWRCurrNode->sections[DR_DEBUG_INFO].base;
+    loc = DR_CurrNode->sections[DR_DEBUG_REF].base;
+    end = loc + DR_CurrNode->sections[DR_DEBUG_REF].size;
+    infoOffset = DR_CurrNode->sections[DR_DEBUG_INFO].base;
 
     loc += sizeof( unsigned_32 );   /* skip size */
     while( loc < end && !quit ) {
-        opcode = DWRVMReadByte( loc );
+        opcode = DR_VMReadByte( loc );
         loc += sizeof( unsigned_8 );
 
         switch( opcode ) {
         case REF_BEGIN_SCOPE:
-            owning_node = DWRVMReadDWord( loc ) + infoOffset;
+            owning_node = DR_VMReadDWord( loc ) + infoOffset;
             loc += sizeof( unsigned_32 );
             ScopePush( &registers.scope, owning_node );
             if( (which & REFERSTO) != 0 && owning_node == entry ) {
@@ -157,24 +157,24 @@ static void References( ReferWhich which, drmem_hdl entry, void *data1,
             break;
 
         case REF_SET_FILE:
-            registers.file = DWRFindFileName( DWRVMReadULEB128( &loc ), infoOffset );
+            registers.file = DR_FindFileName( DR_VMReadULEB128( &loc ), infoOffset );
             break;
 
         case REF_SET_LINE:
-            registers.line = DWRVMReadULEB128( &loc );
+            registers.line = DR_VMReadULEB128( &loc );
             break;
 
         case REF_SET_COLUMN:
-            registers.column = DWRVMReadULEB128( &loc );
+            registers.column = DR_VMReadULEB128( &loc );
             break;
 
         case REF_ADD_LINE:
-            registers.line += DWRVMReadSLEB128( &loc );
+            registers.line += DR_VMReadSLEB128( &loc );
             registers.column = 0;
             break;
 
         case REF_ADD_COLUMN:
-            registers.column += DWRVMReadSLEB128( &loc );
+            registers.column += DR_VMReadSLEB128( &loc );
             break;
 
         case REF_COPY:
@@ -191,7 +191,7 @@ static void References( ReferWhich which, drmem_hdl entry, void *data1,
                 }
                 registers.column += opcode % REF_COLUMN_RANGE;
 
-                registers.dependent = DWRVMReadDWord( loc ) + infoOffset;
+                registers.dependent = DR_VMReadDWord( loc ) + infoOffset;
                 loc += sizeof( unsigned_32 );
             }
 
@@ -210,7 +210,7 @@ static void References( ReferWhich which, drmem_hdl entry, void *data1,
         }
     }
 
-    DWRFREE( registers.scope.stack );
+    DR_FREE( registers.scope.stack );
 }
 
 void DRENTRY DRRefersTo( drmem_hdl entry, void *data, DRSYMREF callback )

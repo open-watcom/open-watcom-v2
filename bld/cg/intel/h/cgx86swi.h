@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -72,10 +72,10 @@ typedef enum {
 
 #define SET_PROC( r, v, m ) \
     { \
-        proc_revision   new; \
-        new = (v); \
+        proc_revision   new_rev; \
+        new_rev = (v); \
         (r) &= ~(m); \
-        (r) |= new; \
+        (r) |= new_rev; \
     }
 #define SET_CPU( r, v ) SET_PROC( r, v, CPU_MASK );
 #define SET_FPU( r, v ) SET_PROC( r, v, FPU_MASK );

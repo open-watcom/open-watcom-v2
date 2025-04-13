@@ -12,7 +12,12 @@ clibtags_autodepends = .AUTODEPEND
 !include defrule.mif
 !include deftarg.mif
 
+!include ../../mif/vihost.mif
+
 .c : ..;../../c;$(posix_dir)/misc
+!ifeq vi_host_os unix
+.c : ../../unix
+!endif
 
 inc_dirs = -I.. -I"../../h" -I"$(posix_dir)/h"
 
@@ -31,5 +36,9 @@ exetarg_objs = &
     taglist.obj &
     argvenv.obj &
     argvstr.obj
+
+!ifeq vi_host_os unix
+exetarg_objs += stat2.obj
+!endif
 
 !include exetarg.mif

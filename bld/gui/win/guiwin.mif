@@ -115,6 +115,6 @@ win_commonui_objs_win = &
 win_commonui_objs_win386 = &
     ctl3d32.obj
 
-sysobjs = $(win_sysobjs) $(win_sysobjs_$(host_os)) $(wpi_sysobjs) $(win_commonui_objs_$(host_os)$(host_cpu)) $(win_commonui_objs_$(host_os)) $(win_commonui_objs)
+sysobjs = $(win_sysobjs) $(win_sysobjs_$(host_os)) $(wpi_sysobjs) $(win_commonui_objs_$(host)) $(win_commonui_objs_$(host_os)) $(win_commonui_objs)
 
 !include $(gui_dir)/master.mif

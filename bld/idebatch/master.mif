@@ -8,6 +8,7 @@ idebatch_autodepend = .AUTODEPEND
 defrule_key = editor
 subdir_editor = eobjs
 extra_cpp_editor_flags = -D__EDITOR__
+additional_remove_subdirs = eobjs
 !include defrule.mif
 !endif
 !include deftarg.mif
@@ -16,9 +17,18 @@ extra_cpp_editor_flags = -D__EDITOR__
 
 .c: ../os2;../c
 
+inc_dirs = -I"../os2" -I"../h"
+
+all: batserv.exe tstos2.exe .SYMBOLIC
+
 exetarg_objs = batserv.obj
 exetarg_opts = op stack=16k
 exetarg_name = batserv
+!include exetarg.mif
+
+exetarg_objs = tst.obj batcli.obj batpipe.obj
+exetarg_opts = op stack=16k
+exetarg_name = tstos2
 !include exetarg.mif
 
 !else ifeq host_os nt
@@ -41,10 +51,10 @@ exetarg_name = tstnt
 
 !else ifeq host_os dos
 
-.c: ../dos;../c;../os2
+.c: ../dos;../c
 .asm: ../dos
 
-inc_dirs = -I"../dos" -I"../h" -I"../os2"
+inc_dirs = -I"../dos" -I"../h"
 
 all: dosserv.exe tstos2.exe .SYMBOLIC
 
@@ -53,7 +63,7 @@ exetarg_opts = op stack=1500
 exetarg_name = dosserv
 !include exetarg.mif
 
-exetarg_objs = tst.obj batcli.obj
+exetarg_objs = tst.obj batcli.obj batpipe.obj
 exetarg_name = tstos2
 !include exetarg.mif
 
@@ -84,12 +94,21 @@ exetarg_name = winint
 
 exetarg_prebuild_objs = $(subdir_editor)
 exetarg_objs = $(subdir_editor)/winint.obj link.obj
-exetarg_res = wininte.res
+exetarg_res = $(subdir_editor)/winint.res
 exetarg_name = wininte
 !include exetarg.mif
 
-winint.res wininte.res : ../win/winint.rc
+winint.res : ../win/winint.rc
     @%make echo_rc
-    $(rc) $(ppflags_common) $(rc_cppflags) $(rc_flags) $(inc_dirs) $[@ -fo=$@
+    $(rc) $(ppflags_common) $(rc_cppflags) $(rc_flags) $(inc_dirs) $(rc_inc_path) $[@ -fo=$@
 
+$(subdir_editor)/winint.res : ../win/winint.rc
+    @%make echo_rc
+    $(rc) $(ppflags_common) $(rc_cppflags) -D__EDITOR__ $(rc_flags) $(inc_dirs) $(rc_inc_path) $[@ -fo=$@
+
+!endif
+
+!ifdef additional_remove_subdirs
+$(additional_remove_subdirs) :
+    mkdir $@
 !endif

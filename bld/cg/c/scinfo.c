@@ -187,17 +187,17 @@ bool    ScoreEqual( score *scoreboard, int index, score_info *info )
 static  void    ScoreInsert(  score *scoreboard,  int i,  score_info  *info )
 /***************************************************************************/
 {
-    score_list  *new;
+    score_list  *new_sc;
     int         j;
 
     if( info->class == SC_N_VOLATILE )
         return;
     if( HW_Ovlap( ScoreList[i]->reg, CurrProc->state.unalterable ) )
         return;
-    new = NewScListEntry();
-    Copy( info, &new->info, sizeof( score_info ) );
-    new->next = *scoreboard[i].list;
-    *scoreboard[i].list = new;
+    new_sc = NewScListEntry();
+    Copy( info, &new_sc->info, sizeof( score_info ) );
+    new_sc->next = *scoreboard[i].list;
+    *scoreboard[i].list = new_sc;
     for( j = ScoreCount; j-- > 0; ) {
         if( ( j != i ) && ScoreEqual( scoreboard, j, info ) ) {
             RegAdd( scoreboard, i, j );

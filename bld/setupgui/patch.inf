@@ -51,8 +51,8 @@ push_button=Cancel
 [ErrorMessage]
 IDS_ERROR=              "%s"
 IDS_NOMEMORY=           "Insufficient memory to run @.\n Close an application and try again."
-IDS_NOSETUPINFOFILE=    "The %s file cannot be found.\nPlease verify the distribution diskette."
-IDS_NODISKSPACE=        "Drive %c: contains %ldK of free disk space.\n@ requires a minimum of %ldK.\n\nThe installation may fail. Do you want to proceed anyway?"
+IDS_NOSETUPINFOFILE=    "The %s file cannot be found.\nPlease verify the distribution media or file."
+IDS_NODISKSPACE=        "Drive %s: contains %lld %s of free disk space.\n@ requires a minimum of %lld %s.\n\nThe installation may fail. Do you want to proceed anyway?"
 IDS_CANTMAKEDIR=        "The %s directory cannot be created.\nEnter another directory or try another drive."
 IDS_QUERYABORT=         "@ has not completed installing the software.\nAre you sure you want to cancel?"
 IDS_SETUPNOGOOD=        "The software has not been successfully installed!\nYou must run @ again before using the software."
@@ -104,6 +104,7 @@ IDS_CANTFINDOUTPUT=     "Cannot find output file (to be patched) %s."
 
 [SetupErrorMessage]
 IDS_WRITEERROR=         "Error writing to destination file"
+IDS_READERROR=          "Error reading from source file"
 IDS_NULLSTRING=         "NULL String"
 IDS_HEAPOK=             "Heap OK"
 IDS_HEAPEND=            "End of Heap"

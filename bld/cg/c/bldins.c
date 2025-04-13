@@ -268,7 +268,7 @@ an      Arithmetic( an name, const type_def *tipe )
 an      BGCompare( cg_op op, an left, an rite, label_handle entry, const type_def *tipe )
 /***************************************************************************************/
 {
-    an                  new;
+    an                  new_an;
     instruction         *ins;
     name                *newleft;
     name                *newrite;
@@ -284,12 +284,12 @@ an      BGCompare( cg_op op, an left, an rite, label_handle entry, const type_de
     GenBlock( BLK_CONDITIONAL, 2 );
     AddTarget( NULL, false );
     AddTarget( NULL, false );
-    new = NewBoolNode();
-    new->u.b.e = entry;
-    new->u.b.t = &CurrBlock->edge[0].destination.u.lbl;
-    new->u.b.f = &CurrBlock->edge[1].destination.u.lbl;
+    new_an = NewBoolNode();
+    new_an->u.b.e = entry;
+    new_an->u.b.t = &CurrBlock->edge[0].destination.u.lbl;
+    new_an->u.b.f = &CurrBlock->edge[1].destination.u.lbl;
     EnLink( AskForNewLabel(), true );
-    return( new );
+    return( new_an );
 }
 
 
@@ -446,7 +446,7 @@ void    BGBigLabel( back_handle bck )
     EnLink( bck->lbl, false );
     HaveCurrBlock = true;
     BigLabel();
-    _MarkBlkAttr( CurrBlock, BLK_BIG_LABEL );
+    _MarkBlkAttrSet( CurrBlock, BLK_BIG_LABEL );
 }
 
 
@@ -475,25 +475,25 @@ uint_32 BGUnrollCount( uint_32 unroll_count )
 an      BGUnary( cg_op op, an left, const type_def *tipe )
 /********************************************************/
 {
-    an          new;
+    an          new_an;
 
-    new = NULL;
+    new_an = NULL;
     switch( op ) {
     case O_POINTS:
-        new = MakePoints( left, tipe );
+        new_an = MakePoints( left, tipe );
         break;
     case O_CONVERT:
         if( tipe == left->tipe || !NeedPtrConvert( left, tipe ) ) {
-            new = left;
+            new_an = left;
         } else {
-            new = CnvRnd( left, tipe, O_CONVERT );
+            new_an = CnvRnd( left, tipe, O_CONVERT );
         }
         break;
     case O_ROUND:
         if( tipe == left->tipe ) {
-            new = left;
+            new_an = left;
         } else {
-            new = CnvRnd( left, tipe, O_ROUND );
+            new_an = CnvRnd( left, tipe, O_ROUND );
         }
         break;
 #if _TARGET_RISC
@@ -513,11 +513,11 @@ an      BGUnary( cg_op op, an left, const type_def *tipe )
     default:
         break;
     }
-    if( new == NULL ) {
-        new = Unary( op, left, tipe );
+    if( new_an == NULL ) {
+        new_an = Unary( op, left, tipe );
     }
-    new->tipe = tipe;
-    return( new );
+    new_an->tipe = tipe;
+    return( new_an );
 }
 
 
@@ -617,29 +617,29 @@ an      BGOpGets( cg_op op, an left, an rite, const type_def *tipe, const type_d
 an      BGConvert( an left, const type_def *tipe )
 /************************************************/
 {
-    an          new;
+    an          new_an;
     type_attr   left_attr;
 
     left_attr = left->tipe->attr;
-    new = BGUnary( O_CONVERT, left, tipe );
+    new_an = BGUnary( O_CONVERT, left, tipe );
     if( left_attr & TYPE_CODE ) {
-        FixCodePtr( new ); /*% kludge for code pointer conversions*/
+        FixCodePtr( new_an ); /*% kludge for code pointer conversions*/
     }
-    return( new );
+    return( new_an );
 }
 
 
 an      BGFlow( cg_op op, an left, an rite )
 /******************************************/
 {
-    an                  new = NULL;
+    an                  new_an = NULL;
     label_handle        *temp;
 
     if( op == O_FLOW_NOT ) {
         temp = left->u.b.t;
         left->u.b.t = left->u.b.f;
         left->u.b.f = temp;
-        new = left;
+        new_an = left;
     } else {
         switch( op ) {
         case O_FLOW_AND:
@@ -650,7 +650,7 @@ an      BGFlow( cg_op op, an left, an rite )
             AddTarget( NULL, false );
             left->u.b.f = &CurrBlock->edge[0].destination.u.lbl;
             left->u.b.t = rite->u.b.t;
-            new = left;
+            new_an = left;
             AddrFree( rite );
             EnLink( AskForNewLabel(), true );
             break;
@@ -662,7 +662,7 @@ an      BGFlow( cg_op op, an left, an rite )
             AddTarget( NULL, false );
             left->u.b.t = &CurrBlock->edge[0].destination.u.lbl;
             left->u.b.f = rite->u.b.f;
-            new = left;
+            new_an = left;
             AddrFree( rite );
             EnLink( AskForNewLabel(), true );
             break;
@@ -670,7 +670,7 @@ an      BGFlow( cg_op op, an left, an rite )
             break;
         }
     }
-    return( new );
+    return( new_an );
 }
 
 

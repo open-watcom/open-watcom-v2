@@ -1,0 +1,10 @@
+vi_host_linux = unix
+vi_host_qnx   = unix
+vi_host_osx   = unix
+vi_host_bsd   = unix
+vi_host_haiku = unix
+!ifdef vi_host_$(host_os)
+vi_host_os = $(vi_host_$(host_os))
+!else
+vi_host_os = $(host_os)
+!endif

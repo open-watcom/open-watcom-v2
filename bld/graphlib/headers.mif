@@ -1,5 +1,12 @@
 .EXTENSIONS : .gsp .sp
 
+wsplice_opts_dos = -kDOS
+wsplice_opts_os2 = -kDOS
+wsplice_opts_qnx = -kQNX
+wsplice_opts_win = -kDOS
+
+wsplice_opts = -u $(wsplice_extra_opts) $(wsplice_opts_$(host_os))
+
 crwat_sp     = $(hdr_dir)/crwat.sp $(crwatpro_gsp) $(hdr_dir)/crwatwat.sp $(hdr_dir)/crwatepi.sp
 graph_deps   = $(hdr_dir)/watcom/graph.mh $(crwat_sp) $(hdr_dir)/readonly.sp $(hdr_dir)/owrtlink.sp $(hdr_dir)/cpluspro.sp $(hdr_dir)/cplusepi.sp $(hdr_dir)/pshpackl.sp $(hdr_dir)/poppack.sp
 pgchart_deps = $(hdr_dir)/watcom/pgchart.mh $(crwat_sp) $(hdr_dir)/readonly.sp $(hdr_dir)/owrtlink.sp $(hdr_dir)/cpluspro.sp $(hdr_dir)/cplusepi.sp $(hdr_dir)/pshpackl.sp $(hdr_dir)/poppack.sp

@@ -16,7 +16,7 @@ additional_clean = ytab.c ytab.h y.out
 inc_dirs = -I. -I"$(re2c_dir)/h"
 
 !ifdef __WATCOM_TOOLS__
-extra_c_flags_ytab = -pil
+extra_c_flags_f_ytab = -pil
 !endif
 
 # explicit rules

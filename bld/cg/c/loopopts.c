@@ -101,7 +101,7 @@ static void     InitIndVars( void )
  * Initialize for induction variable processing
  */
 {
-    IndVarList = NULL;                 /* initialize */
+    IndVarList = NULL;  /* initialize */
 }
 
 static level_depth      MaxDepth( void )
@@ -202,14 +202,11 @@ block    *AddPreBlock( block *postblk )
     /*
      * make preblk go to postblk
      */
-    preblk->targets++;
+    preblk->targets = 1;
     edge = &preblk->edge[0];
-    edge->destination.u.blk = postblk;
     edge->source = preblk;
     edge->flags = SOURCE_IS_PREHEADER | DEST_IS_BLOCK;
-    edge->next_source = postblk->input_edges;
-    postblk->input_edges = edge;
-    postblk->inputs++;
+    PointEdge( edge, postblk );
     postblk->label = AskForNewLabel();
     FixBlockIds();
     return( preblk );
@@ -239,7 +236,8 @@ static bool     IsPreHeader( block *test )
      * check that no other block outside the loop branches into the loop
      */
     for( other = HeadBlock; other != NULL; other = other->next_block ) {
-        if( other != test && !_IsBlkAttr( other, BLK_IN_LOOP ) ) {
+        if( other != test
+          && !_IsBlkAttr( other, BLK_IN_LOOP ) ) {
             for( i = other->targets; i-- > 0; ) {
                 if( _IsBlkAttr( other->edge[i].destination.u.blk, BLK_IN_LOOP ) ) {
                     return( false );
@@ -291,7 +289,8 @@ static void     PreHeader( void )
         PreHead = AddPreBlock( Head );
         for( edge = Head->input_edges; edge != NULL; edge = next ) {
             next = edge->next_source;
-            if( edge->source != PreHead && !_IsBlkAttr( edge->source, BLK_IN_LOOP ) ) {
+            if( edge->source != PreHead
+              && !_IsBlkAttr( edge->source, BLK_IN_LOOP ) ) {
                 MoveEdge( edge, PreHead );
             }
         }
@@ -312,7 +311,7 @@ void     MarkLoop( void )
     Loop = NULL;
     for( other_blk = HeadBlock; other_blk != NULL; other_blk = other_blk->next_block ) {
         if( InLoop( other_blk ) ) {
-            _MarkBlkAttr( other_blk, BLK_IN_LOOP );
+            _MarkBlkAttrSet( other_blk, BLK_IN_LOOP );
             other_blk->u.loop = Loop;
             Loop = other_blk;
         }
@@ -321,7 +320,7 @@ void     MarkLoop( void )
         edge = &other_blk->edge[0];
         for( targets = other_blk->targets; targets > 0; --targets ) {
             if( !_IsBlkAttr( edge->destination.u.blk, BLK_IN_LOOP ) ) {
-                _MarkBlkAttr( other_blk, BLK_LOOP_EXIT );
+                _MarkBlkAttrSet( other_blk, BLK_LOOP_EXIT );
             }
             ++edge;
         }
@@ -338,7 +337,7 @@ void     UnMarkLoop( void )
     block       *blk;
 
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
-        _MarkBlkAttrNot( blk, BLK_IN_LOOP | BLK_LOOP_EXIT );
+        _MarkBlkAttrClr( blk, BLK_IN_LOOP | BLK_LOOP_EXIT );
         blk->u.loop = NULL;
     }
 }
@@ -367,16 +366,13 @@ void     MakeJumpBlock( block *cond_blk, block_edge *exit_edge )
 
     RemoveInputEdge( &cond_blk->edge[0] );
     RemoveInputEdge( &cond_blk->edge[1] );
-    _MarkBlkAttrNot( cond_blk, BLK_CONDITIONAL );
-    _MarkBlkAttr( cond_blk, BLK_JUMP );
+    _MarkBlkAttrClr( cond_blk, BLK_CONDITIONAL );
+    _MarkBlkAttrSet( cond_blk, BLK_JUMP );
     cond_blk->targets = 1;
     edge = &cond_blk->edge[0];
     edge->flags = exit_edge->flags;
     edge->source = cond_blk;
-    edge->destination.u.blk = exit_edge->destination.u.blk;
-    edge->next_source = exit_edge->destination.u.blk->input_edges;
-    exit_edge->destination.u.blk->input_edges = edge;
-    exit_edge->destination.u.blk->inputs++;
+    PointEdge( edge, exit_edge->destination.u.blk );
 }
 
 
@@ -399,15 +395,16 @@ static bool     KillOneTrippers( void )
             if( blk->edge[i].flags & ONE_ITER_EXIT ) {
                 for( ins = blk->ins.head.next; ins->head.opcode != OP_BLOCK; ins = next ) {
                     next = ins->head.next;
-                    if( _OpIsCondition( ins->head.opcode ) && ins->result == NULL ) {
+                    if( _OpIsCondition( ins->head.opcode )
+                      && ins->result == NULL ) {
                         FreeIns( ins );
                     }
                 }
                 if( _IsBlkAttr( blk, BLK_LOOP_HEADER ) ) {
-                    _MarkBlkAttrNot( blk, BLK_LOOP_HEADER );
+                    _MarkBlkAttrClr( blk, BLK_LOOP_HEADER );
                     loop_head = blk;
                 } else {
-                    _MarkBlkAttrNot( blk->loop_head, BLK_LOOP_HEADER );
+                    _MarkBlkAttrClr( blk->loop_head, BLK_LOOP_HEADER );
                     loop_head = blk->loop_head;
                 }
                 for( curr = HeadBlock; curr != NULL; curr = curr->next_block ) {
@@ -549,7 +546,8 @@ void     MarkInvariants( void )
     MemChangedInLoop = false;
     for( blk = Loop; blk != NULL; blk = blk->u.loop ) {
         for( ins = blk->ins.head.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
-            if( _OpIsCall( ins->head.opcode ) && (ins->flags.u.call_flags & CALL_WRITES_NO_MEMORY) == 0 ) {
+            if( _OpIsCall( ins->head.opcode )
+              && (ins->flags.u.call_flags & CALL_WRITES_NO_MEMORY) == 0 ) {
                 MemChangedInLoop = true;
                 have_call = true;
             }
@@ -593,7 +591,8 @@ void     MarkInvariants( void )
      * entry to the loop before we consider hoisting it in FindRegInvar...
      */
 //    ZapRegister( Head->ins.head.next->head.live.regs );
-    if( have_call || free_index ) {
+    if( have_call
+      || free_index ) {
         if( _IsntModel( CGSW_GEN_FORTRAN_ALIASING ) ) {
             for( op = Names[N_TEMP]; op != NULL; op = op->n.next_name ) {
                 if( op->v.usage & USE_ADDRESS ) {
@@ -674,9 +673,11 @@ static value    OpLTZero( name *op, bool fp )
      */
     if( op->c.const_type != CONS_ABSOLUTE )
         return( CMP_FALSE );
-    if( fp && CFTest( op->c.value ) < 0 )
+    if( fp
+      && CFTest( op->c.value ) < 0 )
         return( CMP_TRUE );
-    if( !fp && op->c.lo.u.int_value < 0 )
+    if( !fp
+      && op->c.lo.u.int_value < 0 )
         return( CMP_TRUE );
     return( CMP_FALSE );
 }
@@ -690,9 +691,11 @@ static value    OpEQZero( name *op, bool fp )
      */
     if( op->c.const_type != CONS_ABSOLUTE )
         return( CMP_FALSE );
-    if( fp && CFTest( op->c.value ) == 0 )
+    if( fp
+      && CFTest( op->c.value ) == 0 )
         return( CMP_TRUE );
-    if( !fp && op->c.lo.u.int_value == 0 )
+    if( !fp
+      && op->c.lo.u.int_value == 0 )
         return( CMP_TRUE );
     return( CMP_FALSE );
 }
@@ -792,7 +795,8 @@ bool     Hoistable( instruction *ins, block *blk )
             return( false );
         break;
     }
-    if( dangerous && !will_execute )
+    if( dangerous
+      && !will_execute )
         return( false );
     return( true );
 }
@@ -873,18 +877,18 @@ static invariant    *CopyInvariant( invariant *invar )
  * Return a copy of invariant list "invar"
  */
 {
-    invariant   *new;
+    invariant   *new_inv;
 
     if( invar == NULL ) {
-        new = NULL;
+        new_inv = NULL;
     } else {
-        new = CGAlloc( sizeof( invariant ) );
-        new->name = invar->name;
-        new->times = invar->times;
-        new->id = invar->id;
-        new->next = SafeRecurseCG( (func_sr)CopyInvariant, invar->next );
+        new_inv = CGAlloc( sizeof( invariant ) );
+        new_inv->name = invar->name;
+        new_inv->times = invar->times;
+        new_inv->id = invar->id;
+        new_inv->next = SafeRecurseCG( (func_sr)CopyInvariant, invar->next );
     }
-    return( new );
+    return( new_inv );
 }
 
 
@@ -904,14 +908,14 @@ static invariant    *NewInvariant( name *op, int times )
  * bag a new "invariant"
  */
 {
-    invariant   *new;
+    invariant   *new_inv;
 
-    new = CGAlloc( sizeof( invariant ) );
-    new->name = op;
-    new->times = times;
-    new->next = NULL;
-    new->id = 0;
-    return( new );
+    new_inv = CGAlloc( sizeof( invariant ) );
+    new_inv->name = op;
+    new_inv->times = times;
+    new_inv->next = NULL;
+    new_inv->id = 0;
+    return( new_inv );
 }
 
 
@@ -935,7 +939,8 @@ static bool     SameInvariant( invariant *i1, invariant *i2 )
  */
 {
     for( ;; ) {
-        if( i1 == NULL && i2 == NULL )
+        if( i1 == NULL
+          && i2 == NULL )
             return( true );
         if( i1 == NULL )
             return( false );
@@ -978,13 +983,13 @@ void     CommonInvariant( void )
         for( ins = blk->ins.head.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
             op = ins->operands[0];
             res = ins->result;
-            if( ( ins->head.opcode == OP_MOV ) &&
-                ( op->n.class == N_TEMP ) &&
-                (op->t.temp_flags & ONE_DEFINITION) &&
-                ( res->n.class == N_TEMP ) &&
-                (res->t.temp_flags & ONE_DEFINITION) &&
-                ( (res->t.temp_flags & MULT_DEFINITION) == 0 ) &&
-                !BlockByBlock ) {
+            if( ( ins->head.opcode == OP_MOV )
+              && ( op->n.class == N_TEMP )
+              && (op->t.temp_flags & ONE_DEFINITION)
+              && ( res->n.class == N_TEMP )
+              && (res->t.temp_flags & ONE_DEFINITION)
+              && ( (res->t.temp_flags & MULT_DEFINITION) == 0 )
+              && !BlockByBlock ) {
                 ReplaceAllOccurences( res, op );
                 op->t.temp_flags |= CROSSES_BLOCKS;
             }
@@ -996,25 +1001,25 @@ void     CommonInvariant( void )
 }
 
 
-static bool_maybe   DifferentIV( induction *alias, induction *new )
-/*****************************************************************/
+static bool_maybe   DifferentIV( induction *alias, induction *new_ind )
+/*********************************************************************/
 {
-    if( alias->basic != new->basic )
+    if( alias->basic != new_ind->basic )
         return( MB_TRUE );
-    if( alias->plus2 != new->plus2 )
+    if( alias->plus2 != new_ind->plus2 )
         return( MB_TRUE );
-    if( alias->times != new->times )
+    if( alias->times != new_ind->times )
         return( MB_TRUE );
-    if( alias->ivtimes != new->ivtimes )
+    if( alias->ivtimes != new_ind->ivtimes )
         return( MB_TRUE );
-    if( alias->lasttimes != new->lasttimes )
+    if( alias->lasttimes != new_ind->lasttimes )
         return( MB_TRUE );
-    if( !SameInvariant( alias->invar, new->invar ) )
+    if( !SameInvariant( alias->invar, new_ind->invar ) )
         return( MB_TRUE );
-    if( DifferentClasses( alias->name->n.type_class, new->name->n.type_class ) ) {
+    if( DifferentClasses( alias->name->n.type_class, new_ind->name->n.type_class ) ) {
         return( MB_TRUE );
     }
-    if( alias->plus != new->plus )
+    if( alias->plus != new_ind->plus )
         return( MB_MAYBE );
     return( MB_FALSE );
 }
@@ -1038,53 +1043,53 @@ static induction    *AddIndVar( instruction *ins,
  * used to fill in the fields.
  */
 {
-    induction   *new;
+    induction   *new_ind;
     induction   *alias;
 
-    new = FindIndVar( op );
-    if( new == NULL ) {
-        new = CGAlloc( sizeof( induction ) );
-        new->name = op;
-        new->state = EMPTY;
+    new_ind = FindIndVar( op );
+    if( new_ind == NULL ) {
+        new_ind = CGAlloc( sizeof( induction ) );
+        new_ind->name = op;
+        new_ind->state = EMPTY;
         if( prev == NULL ) {
-            new->basic = new;
-            _SetV( new, IV_BASIC | IV_TOP );
+            new_ind->basic = new_ind;
+            _SetV( new_ind, IV_BASIC | IV_TOP );
         } else {
-            new->basic = prev->basic;
+            new_ind->basic = prev->basic;
             _ClrV( prev, IV_TOP );
-            _SetV( new, IV_TOP );
+            _SetV( new_ind, IV_TOP );
         }
-        new->use_count = 0;
-        new->index_use_count = 0;
-        new->prev = prev;
-        new->times = times;
-        new->ivtimes = ivtimes;
-        new->lasttimes = lasttimes;
-        new->plus = plus;
-        new->plus2 = plus2;
-        new->header = Head;
-        new->invar = CopyInvariant( invar );
-        MulInvariant( new->invar, iv_mult );
-        new->ins = ins;
-        new->type_class = type_class;
-        new->alias = new;
-        new->next = IndVarList;
-        IndVarList = new;
+        new_ind->use_count = 0;
+        new_ind->index_use_count = 0;
+        new_ind->prev = prev;
+        new_ind->times = times;
+        new_ind->ivtimes = ivtimes;
+        new_ind->lasttimes = lasttimes;
+        new_ind->plus = plus;
+        new_ind->plus2 = plus2;
+        new_ind->header = Head;
+        new_ind->invar = CopyInvariant( invar );
+        MulInvariant( new_ind->invar, iv_mult );
+        new_ind->ins = ins;
+        new_ind->type_class = type_class;
+        new_ind->alias = new_ind;
+        new_ind->next = IndVarList;
+        IndVarList = new_ind;
         NumIndVars++;
         for( alias = IndVarList; alias != NULL; alias = alias->next ) {
-            if( alias == new )
+            if( alias == new_ind )
                 continue;
             if( _IsV( alias, IV_ALIAS ) )
                 continue;
-            if( DifferentIV( alias, new ) != MB_FALSE )
+            if( DifferentIV( alias, new_ind ) != MB_FALSE )
                 continue;
-            new->alias = alias->alias;
-            alias->alias = new;
-            _SetV( new, IV_ALIAS );
+            new_ind->alias = alias->alias;
+            alias->alias = new_ind;
+            _SetV( new_ind, IV_ALIAS );
             break;
         }
     }
-    return( new );
+    return( new_ind );
 }
 
 
@@ -1107,7 +1112,8 @@ static induction    *FindOrAddIndVar( name *op, type_class_def type_class )
     var1 = FindIndVar( DeAlias( op ) );
     if( var1 == NULL )
         return( NULL );
-    if( _IsV( var1, IV_DEAD ) || _IsntV( var1, IV_BASIC ) )
+    if( _IsV( var1, IV_DEAD )
+      || _IsntV( var1, IV_BASIC ) )
         return( NULL );
     var2 = AddIndVar( var1->ins, op, var1->prev, var1->invar, var1->ivtimes,
                       var1->lasttimes, var1->times, var1->plus,
@@ -1192,10 +1198,12 @@ bool    Inducable( block *blk, instruction *ins )
 
     if( blk->depth == 0 )
         return( false );
-    if( ins->head.opcode != OP_ADD && ins->head.opcode != OP_SUB ) {
+    if( ins->head.opcode != OP_ADD
+      && ins->head.opcode != OP_SUB ) {
         return( false );
     }
-    if( _IsFloating( ins->type_class ) || _IsI64( ins->type_class ) ) {
+    if( _IsFloating( ins->type_class )
+      || _IsI64( ins->type_class ) ) {
         return( false );
     }
 #ifdef _TARG_IS_SEGMENTED
@@ -1215,7 +1223,8 @@ bool    Inducable( block *blk, instruction *ins )
         return( false );
     if( op != ins->result )
         return( false );
-    if( op->n.class != N_TEMP && op->n.class != N_MEMORY )
+    if( op->n.class != N_TEMP
+      && op->n.class != N_MEMORY )
         return( false );
     return( true );
 }
@@ -1227,7 +1236,8 @@ static void     CheckBasic( instruction *ins, name *op, name *cons )
  * induction variable.  Add an induction variable entry if it is.
  */
 {
-    if( op->n.class == N_TEMP || op->n.class == N_MEMORY ) {
+    if( op->n.class == N_TEMP
+      || op->n.class == N_MEMORY ) {
         if( FindIndVar( op ) == NULL ) {
             if( ins->head.opcode == OP_ADD ) {
                 AddIndVar( ins, op, NULL, NULL, NULL, 0, 1,
@@ -1308,9 +1318,12 @@ static  void    CheckNonBasic( instruction *ins, induction *var,
         return;
     if( _IsV( var, IV_DEAD ) )
         return;
-    if( ins->result->n.class != N_TEMP && ins->result->n.class != N_MEMORY )
+    if( ins->result->n.class != N_TEMP
+      && ins->result->n.class != N_MEMORY )
         return;
-    if( reverse && ( ins->head.opcode == OP_DIV || ins->head.opcode == OP_LSHIFT ) )
+    if( reverse
+      && ( ins->head.opcode == OP_DIV
+      || ins->head.opcode == OP_LSHIFT ) )
         return;
     if( _IsV( var, IV_BASIC ) ) {
         plus = 0;
@@ -1388,7 +1401,8 @@ static  void    CheckInvariant( instruction *ins, induction *var,
         return;
     if( _IsV( var, IV_DEAD ) )
         return;
-    if( ins->result->n.class != N_TEMP && ins->result->n.class != N_MEMORY ) {
+    if( ins->result->n.class != N_TEMP
+      && ins->result->n.class != N_MEMORY ) {
         return;
     }
     iv_mult = 1;
@@ -1489,7 +1503,8 @@ static  void    ChkIVUses( induction *var, name *op )
     iv_usage    usage;
 
     usage = Uses( op, var->name );
-    if( usage == IVU_USED_AS_INDEX || usage == IVU_USED_AS_OPERAND ) {
+    if( usage == IVU_USED_AS_INDEX
+      || usage == IVU_USED_AS_OPERAND ) {
         var->use_count++;
         if( usage == IVU_USED_AS_OPERAND ) {
             _SetV( var, IV_USED );
@@ -1555,8 +1570,8 @@ static  void    MarkSurvivors( void )
 }
 
 
-static  void    AdjOneIndex( name **pop, induction *var, induction *new )
-/***********************************************************************/
+static  void    AdjOneIndex( name **pop, induction *var, induction *new_ind )
+/***************************************************************************/
 {
     name        *op;
 
@@ -1565,15 +1580,15 @@ static  void    AdjOneIndex( name **pop, induction *var, induction *new )
         return;
     if( Uses( op, var->name ) != IVU_USED_AS_INDEX )
         return;
-    *pop = ScaleIndex( new->name, op->i.base,
-                      op->i.constant - ( new->plus - var->plus ),
+    *pop = ScaleIndex( new_ind->name, op->i.base,
+                      op->i.constant - ( new_ind->plus - var->plus ),
                       op->n.type_class, op->n.size,
                       op->i.scale, op->i.index_flags );
 }
 
 
-static  void    AdjustIndex( induction *var, induction *new )
-/***********************************************************/
+static  void    AdjustIndex( induction *var, induction *new_ind )
+/***************************************************************/
 {
     block       *blk;
     instruction *ins;
@@ -1582,10 +1597,10 @@ static  void    AdjustIndex( induction *var, induction *new )
     for( blk = Loop; blk != NULL; blk = blk->u.loop ) {
         for( ins = blk->ins.head.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
             for( i = 0; i < ins->num_operands; ++i ) {
-                AdjOneIndex( &ins->operands[i], var, new );
+                AdjOneIndex( &ins->operands[i], var, new_ind );
             }
             if( ins->result != NULL ) {
-                AdjOneIndex( &ins->result, var, new );
+                AdjOneIndex( &ins->result, var, new_ind );
             }
         }
     }
@@ -1650,8 +1665,10 @@ static  bool    IsAddressMode( induction *var )
         return( false );
     if( _IsntV( var, IV_INDEXED ) )
         return( false );
-    if( var->times != 1 && var->times != 2 &&
-        var->times != 4 && var->times != 8 )
+    if( var->times != 1
+      && var->times != 2
+      && var->times != 4
+      && var->times != 8 )
         return( false );
     if( var->ivtimes != NULL )
         return( false );
@@ -1662,7 +1679,8 @@ static  bool    IsAddressMode( induction *var )
             return( false );
         if( var->invar->next != NULL )
             return( false );
-        if( var->plus != 0 || var->plus2 != 0 ) {
+        if( var->plus != 0
+          || var->plus2 != 0 ) {
             return( false );
         }
     } else {
@@ -1691,7 +1709,8 @@ static  void    ScanNonBasic( instruction *ins )
 
     if( KillIndVars( ins ) )
         return;
-    if( _IsFloating( ins->type_class ) || _IsI64( ins->type_class ) )
+    if( _IsFloating( ins->type_class )
+      || _IsI64( ins->type_class ) )
         return;
     if( ins->head.opcode == OP_MOV ) {
         var = FindIndVar( ins->operands[0] );
@@ -1699,9 +1718,9 @@ static  void    ScanNonBasic( instruction *ins )
         return;
     }
     if( ins->head.opcode != OP_ADD
-         && ins->head.opcode != OP_SUB
-         && ins->head.opcode != OP_MUL
-         && ins->head.opcode != OP_LSHIFT )
+      && ins->head.opcode != OP_SUB
+      && ins->head.opcode != OP_MUL
+      && ins->head.opcode != OP_LSHIFT )
         return;
     if( ins->operands[0]->n.class == N_CONSTANT ) {
         op = ins->operands[0];
@@ -1768,16 +1787,19 @@ static  void    ScanBasic( instruction *ins )
 
     if( KillIndVars( ins ) )
         return;
-    if( ins->head.opcode != OP_ADD && ins->head.opcode != OP_SUB )
+    if( ins->head.opcode != OP_ADD
+      && ins->head.opcode != OP_SUB )
         return;
-    if( _IsFloating( ins->type_class ) || _IsI64( ins->type_class ) )
+    if( _IsFloating( ins->type_class )
+      || _IsI64( ins->type_class ) )
         return;
 #ifdef _TARG_IS_SEGMENTED
     if( ins->type_class == PT )
         return;
 #endif
     op = ins->operands[0];
-    if( op->n.class == N_CONSTANT && op->c.const_type == CONS_ABSOLUTE ) {
+    if( op->n.class == N_CONSTANT
+      && op->c.const_type == CONS_ABSOLUTE ) {
         if( ins->operands[1] == ins->result ) {
             if( ins->head.opcode == OP_ADD ) {
                 CheckBasic( ins, ins->result, op );
@@ -1785,7 +1807,8 @@ static  void    ScanBasic( instruction *ins )
         }
     } else {
         op = ins->operands[1];
-        if( op->n.class == N_CONSTANT && op->c.const_type == CONS_ABSOLUTE ) {
+        if( op->n.class == N_CONSTANT
+          && op->c.const_type == CONS_ABSOLUTE ) {
             if( ins->operands[0] == ins->result ) {
                 CheckBasic( ins, ins->result, op );
             }
@@ -1857,11 +1880,13 @@ static  name    *FindPointerPart( induction *var )
     name        *first;
 
     first = var->basic->name;
-    if( first->n.type_class == CP || first->n.type_class == PT )
+    if( first->n.type_class == CP
+      || first->n.type_class == PT )
         return( first );
     for( invar = var->invar; invar != NULL; invar = invar->next ) {
         first = invar->name;
-        if( first->n.type_class == CP || first->n.type_class == PT ) {
+        if( first->n.type_class == CP
+          || first->n.type_class == PT ) {
             return( first );
         }
     }
@@ -1982,7 +2007,8 @@ static  void    IncAndInit( induction *var, name *iv, type_class_def type_class 
      * initialize the new induction variable in the loop preheader.
      */
     temp = AllocTemp( type_class );
-    if( type_class != CP && type_class != PT ) {
+    if( type_class != CP
+      && type_class != PT ) {
         first = NULL;
     } else {
         first = FindPointerPart( var );
@@ -2006,7 +2032,8 @@ static  void    IncAndInit( induction *var, name *iv, type_class_def type_class 
     }
     for( invar = var->invar; invar != NULL; invar = invar->next ) {
         if( invar->name != first ) {
-            if( invar->times == 1 && ( invar->id > var->lasttimes ) ) {
+            if( invar->times == 1
+              && ( invar->id > var->lasttimes ) ) {
                 ins = MakeBinary( OP_ADD, temp, invar->name, temp, type_class );
                 SuffixPreHeader( ins );
             } else {
@@ -2072,9 +2099,12 @@ static  void    LabelDown( instruction *frum,
     edge = &blk->edge[0];
     for( i = blk->targets; i > 0; --i ) {
         blk = edge->destination.u.blk;
-        if( ( go_around || blk != Head ) && _IsBlkAttr( blk, BLK_IN_LOOP ) ) {
+        if( ( go_around
+          || blk != Head )
+          && _IsBlkAttr( blk, BLK_IN_LOOP ) ) {
             ins = blk->ins.head.next;
-            if( ins->head.opcode == OP_BLOCK || (ins->ins_flags & INS_VISITED) == 0 ) {
+            if( ins->head.opcode == OP_BLOCK
+              || (ins->ins_flags & INS_VISITED) == 0 ) {
                 _MarkBlkVisited( blk );
             }
             ++edge;
@@ -2130,10 +2160,12 @@ static  bool    NoPathThru( instruction *ins1,
  * return true if there is no path from ins1 to ins2 going through ins3
  */
 {
-    if( PathFrom( ins3, ins2, ins1, false ) && PathFrom( ins1, ins3, ins2, false ) ) {
+    if( PathFrom( ins3, ins2, ins1, false )
+      && PathFrom( ins1, ins3, ins2, false ) ) {
         return( false ); /* we found a path from ins1 to ins2 going thru ins3 */
     }
-    if( PathFrom( ins2, ins3, ins1, false ) && PathFrom( ins3, ins1, ins2, false ) ) {
+    if( PathFrom( ins2, ins3, ins1, false )
+      && PathFrom( ins3, ins1, ins2, false ) ) {
         return( false ); /* we found a path from ins2 to ins1 going thru ins3 */
     }
     return( true );
@@ -2225,16 +2257,6 @@ static  bool    InstructionWillExec( instruction *ins )
 }
 
 
-static  void    NewTarget( block_edge *edge, block *blk )
-/*********************************************************/
-{
-    edge->destination.u.blk = blk;
-    edge->next_source = blk->input_edges;
-    blk->input_edges = edge;
-    blk->inputs++;
-}
-
-
 void    MoveDownLoop( block *cond )
 /**********************************
  * Muck about so that "cond" will come out after the blocks which jump
@@ -2260,7 +2282,8 @@ void    MoveDownLoop( block *cond )
     cond_id = cond->gen_id;
     after_id = after->gen_id;
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
-        if( blk->gen_id >= cond_id && blk->gen_id <= after_id ) {
+        if( blk->gen_id >= cond_id
+          && blk->gen_id <= after_id ) {
             blk->gen_id--;
         }
     }
@@ -2283,7 +2306,8 @@ static  void            AdjustOp( instruction *blk_end, name **pop,
     name        *op;
 
     op = *pop;
-    if( op->n.class == N_TEMP && blk_end == NULL ) {
+    if( op->n.class == N_TEMP
+      && blk_end == NULL ) {
         op->t.temp_flags |= CROSSES_BLOCKS;
     }
     if( op->n.class != N_INDEXED )
@@ -2301,26 +2325,26 @@ instruction     *DupIns( instruction *blk_end, instruction *ins,
                                  name *var, int_32 adjust )
 /**************************************************************/
 {
-    instruction *new;
+    instruction *new_ins;
     opcnt       num_operands;
     opcnt       i;
 
-    new = NewIns( ins->num_operands );
+    new_ins = NewIns( ins->num_operands );
     num_operands = ins->num_operands;
-    Copy( ins, new, offsetof( instruction, operands ) + num_operands * sizeof( name * ) );
+    Copy( ins, new_ins, offsetof( instruction, operands ) + num_operands * sizeof( name * ) );
     for( i = 0; i < num_operands; ++i ) {
-        AdjustOp( blk_end, &new->operands[i], var, adjust );
+        AdjustOp( blk_end, &new_ins->operands[i], var, adjust );
     }
-    if( new->result != NULL ) {
-        AdjustOp( blk_end, &new->result, var, adjust );
+    if( new_ins->result != NULL ) {
+        AdjustOp( blk_end, &new_ins->result, var, adjust );
     }
     if( blk_end == NULL ) {
-        SuffixPreHeader( new );
+        SuffixPreHeader( new_ins );
     } else {
-        SuffixIns( blk_end, new );
-        blk_end = new;
+        SuffixIns( blk_end, new_ins );
+        blk_end = new_ins;
     }
-    new->head.line_num = ins->head.line_num;
+    new_ins->head.line_num = ins->head.line_num;
     return( blk_end );
 }
 
@@ -2434,7 +2458,7 @@ static  bool    BlueMoonUnRoll( block *cond_blk, induction *var,
         SuffixIns( blk_end, ins );
         blk_end = DupIns( ins, cond, var->name, 0 );
     } else {
-        _MarkBlkAttrNot( cond_blk, BLK_LOOP_HEADER );
+        _MarkBlkAttrClr( cond_blk, BLK_LOOP_HEADER );
         MakeJumpBlock( cond_blk, exit_edge );
         if( know_bounds ) {
             ins = MakeMove( AllocS32Const( final ), var->name,
@@ -2484,16 +2508,21 @@ static  induction       *FindReplacement( induction *var )
         if( other->basic != var )
             continue;
         oth_type_class = Unsigned[other->name->n.type_class];
-        if( oth_type_class == var_type_class || ( oth_type_class == WD && var_type_class == CP )
+        if( oth_type_class == var_type_class
+          || ( oth_type_class == WD
+          && var_type_class == CP )
 #ifndef _TARG_IS_SEGMENTED
-          || ( oth_type_class == WD && var_type_class == PT ) || ( oth_type_class == PT && var_type_class == WD )
+          || ( oth_type_class == WD
+          && var_type_class == PT )
+          || ( oth_type_class == PT
+          && var_type_class == WD )
 #endif
-        ) {
+          ) {
             log2oth = GetLog2( other->times );
             if( ( replacement == NULL )
-             || ( replacement->invar != NULL && other->invar == NULL )
-             || ( log2oth < log2rep )
-             || ( log2oth == log2rep && other->plus < replacement->plus ) ) {
+              || ( replacement->invar != NULL && other->invar == NULL )
+              || ( log2oth < log2rep )
+              || ( log2oth == log2rep && other->plus < replacement->plus ) ) {
                 replacement = other;
                 log2rep = GetLog2( replacement->times );
             }
@@ -2521,18 +2550,22 @@ bool    AnalyseLoop( induction *var, bool *ponecond,
     first_blk = PreHead->edge[0].destination.u.blk;
     for( blk = Loop; blk != NULL; blk = blk->u.loop ) {
         for( ins = blk->ins.head.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
-            if( var == NULL || ins != var->ins ) {
-                if( !_OpIsCondition( ins->head.opcode ) || ins->result != NULL ) {
+            if( var == NULL
+              || ins != var->ins ) {
+                if( !_OpIsCondition( ins->head.opcode )
+                  || ins->result != NULL ) {
                     if( var != NULL ) {
                         for( i = ins->num_operands; i-- > 0; ) {
                             usage = Uses( ins->operands[i], var->name );
-                            if( usage == IVU_USED_AS_INDEX || usage == IVU_USED_AS_OPERAND ) {
+                            if( usage == IVU_USED_AS_INDEX
+                              || usage == IVU_USED_AS_OPERAND ) {
                                 can_replace = false;
                             }
                         }
                         if( ins->result != NULL ) {
                             usage = Uses( ins->result, var->name );
-                            if( usage == IVU_USED_AS_INDEX || usage == IVU_USED_AS_OPERAND ) {
+                            if( usage == IVU_USED_AS_INDEX
+                              || usage == IVU_USED_AS_OPERAND ) {
                                 can_replace = false;
                             }
                         }
@@ -2561,7 +2594,8 @@ bool    AnalyseLoop( induction *var, bool *ponecond,
                     } else if( var != NULL ) {
                         for( i = ins->num_operands; i-- > 0; ) {
                             usage = Uses( ins->operands[i], var->name );
-                            if( usage == IVU_USED_AS_INDEX || usage == IVU_USED_AS_OPERAND ) {
+                            if( usage == IVU_USED_AS_INDEX
+                              || usage == IVU_USED_AS_OPERAND ) {
                                 can_replace = false;
                             }
                         }
@@ -2694,14 +2728,14 @@ bool    CalcFinalValue( induction *var, block *blk, instruction *ins,
         if( incr <= 0 )
             return( false );
         if( test <= init )
-            return( false );     // wraps or exits immediately BBB - July, 1996
+            return( false );     // wraps or exits immediately
         *final = test + ( incr - remd );
         break;
     case OP_CMP_GREATER_EQUAL:
         if( incr <= 0 )
             return( false );
         if( test <= init )
-            return( false );     // wraps or exits immediately BBB - July, 1996
+            return( false );     // wraps or exits immediately
         if( remd == 0 ) {
             *final = test;
         } else {
@@ -2712,14 +2746,14 @@ bool    CalcFinalValue( induction *var, block *blk, instruction *ins,
         if( incr >= 0 )
             return( false );
         if( test >= init )
-            return( false );     // wraps or exits immediately BBB - July, 1996
+            return( false );     // wraps or exits immediately
         *final = test + ( incr - remd );
         break;
     case OP_CMP_LESS_EQUAL:
         if( incr >= 0 )
             return( false );
         if( test >= init )
-            return( false );     // wraps or exits immediately BBB - July, 1996
+            return( false );     // wraps or exits immediately
         if( remd == 0 ) {
             *final = test;
         } else {
@@ -2729,7 +2763,7 @@ bool    CalcFinalValue( induction *var, block *blk, instruction *ins,
     }
     if( InstructionWillExec( var->ins ) ) {
         Head->iterations = ( *final - *initial ) / incr;
-        _MarkBlkAttr( Head, BLK_ITERATIONS_KNOWN );
+        _MarkBlkAttrSet( Head, BLK_ITERATIONS_KNOWN );
     }
     return( true );
 }
@@ -2838,7 +2872,8 @@ static  bool    ConstOverflowsType( signed_64 *val, type_class_def type_class )
         _Zoiks( ZOIKS_139 );
         return( false );
     }
-    if( type_class == I8 || type_class == U8 )
+    if( type_class == I8
+      || type_class == U8 )
         return( false );
     len = TypeClassSize[type_class] * 8;
     I32ToI64( 1, &one );
@@ -2883,7 +2918,7 @@ static  bool    DoReplacement( instruction *ins, induction *rep,
     non_ind_op = ins->operands[non_ind];
     prev_ins = PreHead->ins.head.prev;
     if( non_ind_op->n.class == N_CONSTANT
-     && non_ind_op->c.const_type == CONS_ABSOLUTE ) {
+      && non_ind_op->c.const_type == CONS_ABSOLUTE ) {
         signed_64       big_cons;
         signed_64       temp;
 
@@ -2976,7 +3011,8 @@ static  bool    ReplUses( induction *var, induction *rep,
     iv_usage    op1use;
     iv_usage    op2use;
 
-    if( ins->head.opcode == OP_CMP_EQUAL && !DangerousTypeChange( var, rep ) ) {
+    if( ins->head.opcode == OP_CMP_EQUAL
+      && !DangerousTypeChange( var, rep ) ) {
         op1use = Uses( ins->operands[0], var->name ); /* UNUSED | USED_AS_OP*/
         op2use = Uses( ins->operands[1], var->name ); /* UNUSED | USED_AS_OP*/
         if( op1use == IVU_USED_AS_OPERAND ) {
@@ -3058,9 +3094,13 @@ static  bool    DoLoopInvariant( bool(*rtn)(void) )
 
     change = false;
     max_depth = MaxDepth();
-    for( depth = 1; depth <= max_depth; ++depth ) { /* do loop invariant code motion from the outside in */
+    /*
+     * do loop invariant code motion from the outside in
+     */
+    for( depth = 1; depth <= max_depth; ++depth ) {
         for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
-            if( _IsBlkAttr( blk, BLK_LOOP_HEADER ) && blk->depth == depth ) {
+            if( _IsBlkAttr( blk, BLK_LOOP_HEADER )
+              && blk->depth == depth ) {
                 LPBlip();
                 Head = blk;
                 MarkLoop();
@@ -3139,7 +3179,7 @@ static  bool    FindInvariants( void )
 /*************************************
  * Find any invariant, hoistable expressions in "Loop", and
  * pre-calculate the expression in the loop pre-header, putting the
- * result into a tempory and replaceing the calculation within the loop
+ * result into a tempory and replacing the calculation within the loop
  * with a reference to that temporary.  Also, if there are any
  * invariant operands whose pre-loop values can be calculated,
  * propagate the constant values into the loop.  The copy propagator in
@@ -3163,8 +3203,9 @@ static  bool    FindInvariants( void )
                 next->head.prev = ins->head.prev;
                 ins->head.prev->head.next = next;
                 op = ins->result;
-                if( ( op->n.class == N_TEMP || op->n.class == N_MEMORY )
-                  && ( _ChkLoopUsage( op, VU_VARIED_ONCE )  )
+                if( ( op->n.class == N_TEMP
+                  || op->n.class == N_MEMORY )
+                  && _ChkLoopUsage( op, VU_VARIED_ONCE )
                   && (op->v.usage & USE_IN_ANOTHER_BLOCK) == 0
                   && !BlockByBlock ) {
                     SuffixPreHeader( ins );
@@ -3230,9 +3271,13 @@ void    LoopEnregister( void )
     level_depth         depth;
     block               *blk;
 
-    for( depth = MaxDepth(); depth >= 1; --depth ) { /* do loop enregistering from the inside out */
+    /*
+     * do loop enregistering from the inside out
+     */
+    for( depth = MaxDepth(); depth >= 1; --depth ) {
         for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
-            if( _IsBlkAttr( blk, BLK_LOOP_HEADER ) && blk->depth == depth ) {
+            if( _IsBlkAttr( blk, BLK_LOOP_HEADER )
+              && blk->depth == depth ) {
                 Head = blk;
                 MarkLoop();
                 ConstToTemp( PreHead, Loop, NextInLoop );
@@ -3263,8 +3308,9 @@ static  void    ElimIndVars( void )
     }
     for( var = IndVarList; var != NULL; var = next ) {
         next = var->next;
-        if( _IsntV( var, IV_NOREPLACE ) &&
-            _IsntV( var, IV_DEAD ) && _IsV( var, IV_BASIC ) ) {
+        if( _IsntV( var, IV_NOREPLACE )
+          && _IsntV( var, IV_DEAD )
+          && _IsV( var, IV_BASIC ) ) {
             replacement = FindReplacement( var );
             if( replacement != NULL ) {
                 Replace( var, replacement );
@@ -3295,7 +3341,7 @@ static  bool    ReduceVar( induction *var )
     induction           *alias;
     name                *new_temp;
     type_class_def      type_class;
-    induction           *new;
+    induction           *new_ind;
     instruction         *ins;
 
     if( _IsntV( var, IV_TOP ) )
@@ -3335,11 +3381,11 @@ static  bool    ReduceVar( induction *var )
 //        ins = MakeMove( new_temp, alias->name, type_class );
 //        SuffixPreHeader( ins );
     }
-    new = AddIndVar( var->basic->ins->head.prev, new_temp,
+    new_ind = AddIndVar( var->basic->ins->head.prev, new_temp,
                      var->basic, var->invar, var->ivtimes,
                      var->lasttimes, var->times,
                      var->plus, var->plus2, 1, ins->type_class );
-    _SetV( new, IV_INTRODUCED );
+    _SetV( new_ind, IV_INTRODUCED );
     return( true );
 }
 
@@ -3429,8 +3475,11 @@ static  bool    TwistLoop( block_list *header_list, bool unroll )
         loop_edge = &cond_blk->edge[1];
         exit_edge = &cond_blk->edge[0];
     }
-    if( unroll && _IsBlkAttr( Head, BLK_ITERATIONS_KNOWN ) && Head->iterations == 1 ) {
-        if( cond_blk != Head || Loop->u.loop == NULL ) {
+    if( unroll
+      && _IsBlkAttr( Head, BLK_ITERATIONS_KNOWN )
+      && Head->iterations == 1 ) {
+        if( cond_blk != Head
+          || Loop->u.loop == NULL ) {
             exit_edge->flags |= ONE_ITER_EXIT;
         }
     }
@@ -3462,7 +3511,8 @@ static  bool    TwistLoop( block_list *header_list, bool unroll )
         do_the_twist = false;
     }
 #if 1
-    if( cond != cond_blk->ins.head.next || cond != cond_blk->ins.head.prev ) {
+    if( cond != cond_blk->ins.head.next
+      || cond != cond_blk->ins.head.prev ) {
         do_the_twist = false;
     }
 #endif
@@ -3470,11 +3520,12 @@ static  bool    TwistLoop( block_list *header_list, bool unroll )
         new_head = NULL;
         if( know_bounds ) {
             RemoveInputEdge( edge );
-            NewTarget( edge, loop_edge->destination.u.blk );
+            PointEdge( edge, loop_edge->destination.u.blk );
             MoveDownLoop( cond_blk );
             new_head = loop_edge->destination.u.blk;
 //            DupNoncondInstrs( cond_blk, cond, PreHead );
-        } else if( OptForSize < 50 && PreHead->gen_id < cond_blk->gen_id ) {
+        } else if( OptForSize < 50
+          && PreHead->gen_id < cond_blk->gen_id ) {
             RemoveInputEdge( edge );
             old_prehead = PreHead;
             PreHead = ReGenBlock( PreHead, NULL );
@@ -3489,20 +3540,23 @@ static  bool    TwistLoop( block_list *header_list, bool unroll )
                 }
             }
 //            DupNoncondInstrs( cond_blk, cond, PreHead );
-            _MarkBlkAttrNot( PreHead, BLK_JUMP );
-            _MarkBlkAttr( PreHead, BLK_CONDITIONAL );
+            _MarkBlkAttrClr( PreHead, BLK_JUMP );
+            _MarkBlkAttrSet( PreHead, BLK_CONDITIONAL );
             dupcond = MakeCondition( cond->head.opcode, cond->operands[0],
                                      cond->operands[1], _TrueIndex( cond ),
                                      _FalseIndex( cond ), cond->type_class );
             SuffixPreHeader( dupcond );
-            NewTarget( &PreHead->edge[0], cond_blk->edge[0].destination.u.blk );
-            NewTarget( &PreHead->edge[1], cond_blk->edge[1].destination.u.blk );
-            PreHead->edge[0].flags = DEST_IS_BLOCK;
-            PreHead->edge[1].flags = DEST_IS_BLOCK;
+            edge = &PreHead->edge[0];
+            edge->flags = DEST_IS_BLOCK;
+            PointEdge( edge, cond_blk->edge[0].destination.u.blk );
+            edge = &PreHead->edge[1];
+            edge->flags = DEST_IS_BLOCK;
+            PointEdge( edge, cond_blk->edge[1].destination.u.blk );
             MoveDownLoop( cond_blk );
             new_head = loop_edge->destination.u.blk;
         }
-        if( new_head != NULL && new_head != Head ) {
+        if( new_head != NULL
+          && new_head != Head ) {
             for( blk = Loop; blk != NULL; blk = blk->u.loop ) {
                 if( blk->loop_head == Head ) {
                     blk->loop_head = new_head;
@@ -3510,12 +3564,13 @@ static  bool    TwistLoop( block_list *header_list, bool unroll )
             }
             new_head->loop_head = Head->loop_head;
             Head->loop_head = new_head;
-            _MarkBlkAttrNot( Head, BLK_LOOP_HEADER );
-            _MarkBlkAttr( new_head, BLK_LOOP_HEADER );
+            _MarkBlkAttrClr( Head, BLK_LOOP_HEADER );
+            _MarkBlkAttrSet( new_head, BLK_LOOP_HEADER );
             Head = new_head;
         }
     }
-    if( do_the_twist || know_bounds ) {
+    if( do_the_twist
+      || know_bounds ) {
         UnMarkLoop();
         MarkLoop();
         MarkWillExecBlocks();
@@ -3558,7 +3613,8 @@ static  bool    DoInduction( block_list *header, bool reduce, bool unroll )
      * do all loops inside this loop separately
      */
     for( curr_block.blk = HeadBlock; curr_block.blk != NULL; curr_block.blk = curr_block.blk->next_block ) {
-        if( _IsBlkAttr( curr_block.blk, BLK_LOOP_HEADER ) && curr_block.blk->loop_head == header->blk ) {
+        if( _IsBlkAttr( curr_block.blk, BLK_LOOP_HEADER )
+          && curr_block.blk->loop_head == header->blk ) {
             curr_block.next = header;
             change |= DoInduction( &curr_block, reduce, unroll );
             while( *owner != NULL ) {   // hook inner indvars onto "list"
@@ -3583,14 +3639,16 @@ static  bool    DoInduction( block_list *header, bool reduce, bool unroll )
         NumIndVars = 0;
         MarkLoop();
         FindBasics();
-        if( !reduce || NumIndVars == 0 ) {
-            if( !BlockByBlock && TwistLoop( header, unroll ) ) {
+        if( !reduce
+          || NumIndVars == 0 ) {
+            if( !BlockByBlock
+              && TwistLoop( header, unroll ) ) {
                 change = true;
             }
         } else {
             LoopProtected = false;
             MarkInvariants();
-            for(;;) {
+            for( ;; ) {
                 old = NumIndVars;
                 FindNonBasics();
                 if( old == NumIndVars ) {
@@ -3600,13 +3658,14 @@ static  bool    DoInduction( block_list *header, bool reduce, bool unroll )
             MergeVars();
             if( ReduceInStrength() ) {
                 change = true;
-                _MarkBlkAttr( PreHead, BLK_IN_LOOP );
+                _MarkBlkAttrSet( PreHead, BLK_IN_LOOP );
                 LoopInsDead();
-                _MarkBlkAttrNot( PreHead, BLK_IN_LOOP );
+                _MarkBlkAttrClr( PreHead, BLK_IN_LOOP );
             }
             FreeBadVars();
             ElimIndVars();
-            if( !BlockByBlock && TwistLoop( header, unroll ) ) {
+            if( !BlockByBlock
+              && TwistLoop( header, unroll ) ) {
                 change = true;
             }
             UnMarkInvariants();

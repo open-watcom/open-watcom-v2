@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -63,6 +63,7 @@
 #define MAX_SEGMENT     0x10000
 
 static seg_leader       *LastCodeSeg;    // last code segment in current module
+static int              segment_ord = 0;
 
 void ResetObjPass1( void )
 /************************/
@@ -74,6 +75,7 @@ void P1Start( void )
 /******************/
 {
     LastCodeSeg = NULL;
+    segment_ord = 0;
 }
 
 static void DoSavedImport( symbol *sym )
@@ -624,6 +626,7 @@ seg_leader *InitLeader( const char *segname )
     seg->grp_next = NULL;
     seg->pieces = NULL;
     seg->class = NULL;
+    seg->ord = segment_ord++;
     seg->size = 0;
     seg->vsize = 0;
     seg->num = 0;

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -41,7 +41,7 @@ extern struct browser   *FOpenSource( const char *name, sm_mod_handle mod, sm_cu
 extern void             FDoneSource( struct browser * );
 extern unsigned long    FSize( struct browser * );
 extern unsigned long    FLastOffset( struct browser * );
-extern int              FileIsRemote( struct browser * );
+extern int              FIsRemote( struct browser * );
 extern char             *FGetName( struct browser * );
 extern int              FCurrLine( struct browser * );
 extern size_t           FReadLine( struct browser *, int, int, char *, size_t );

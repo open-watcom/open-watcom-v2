@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,7 +39,7 @@
 extern elf_handle           ELFENTRY ElfInit( orl_funcs * );
 extern orl_return           ELFENTRY ElfFini( elf_handle );
 
-extern orl_return           ELFENTRY ElfFileInit( elf_handle, FILE *, elf_file_handle * );
+extern orl_return           ELFENTRY ElfFileInit( elf_handle, orl_io_handle, elf_file_handle * );
 extern orl_return           ELFENTRY ElfFileFini( elf_file_handle );
 extern orl_return           ELFENTRY ElfFileScan( elf_file_handle, const char *, orl_sec_return_func );
 extern orl_machine_type     ELFENTRY ElfFileGetMachineType( elf_file_handle );

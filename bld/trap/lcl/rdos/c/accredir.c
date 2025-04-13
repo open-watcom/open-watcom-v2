@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,16 +34,25 @@
 #include <stdlib.h>
 #include "stdrdos.h"
 
+
+static trap_retval redirect( bool input )
+{
+    redirect_stdio_ret *ret;
+
+    /* unused parameters */ (void)input;
+
+    ret = GetOutPtr( 0 );
+    ret->err = 1;
+    return( sizeof( *ret ) );
+}
+
 trap_retval TRAP_CORE( Redirect_stdin )( void )
 {
+//    return( redirect( true ) );
     return( 0 );
 }
 
 trap_retval TRAP_CORE( Redirect_stdout )( void )
 {
-    redirect_stdout_ret *ret;
-
-    ret = GetOutPtr( 0 );
-    ret->err = 1;
-    return( sizeof( *ret ) );
+    return( redirect( false ) );
 }

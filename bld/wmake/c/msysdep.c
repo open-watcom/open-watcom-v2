@@ -45,15 +45,12 @@
 #endif
 #if defined( __DOS__ )
     #include <dos.h>
-    #include "tinyio.h"
-#else
-  #if defined( __OS2__ )
+#elif defined( __OS2__ )
     #define INCL_DOSMODULEMGR
     #define INCL_DOSERRORS
     #define INCL_DOSMISC
     #define INCL_ORDINALS
     #include <os2.h>
-  #endif
 #endif
 #include "pcobj.h"
 
@@ -159,34 +156,6 @@ int OSCorrupted( void )
 bool TouchFile( const char *name )
 /********************************/
 {
-#if defined( __DOS__ )
-    tiny_date_t     dt;
-    tiny_time_t     tm;
-    tiny_ftime_t    p_hms;
-    tiny_fdate_t    p_ymd;
-    tiny_ret_t      ret;
-
-    ret = TinyOpen( name, TIO_WRITE );
-    if( TINY_OK( ret ) ) {
-        dt = TinyGetDate();
-        p_ymd.year  = dt.year + (1900 - 1980);
-        p_ymd.month = dt.month;
-        p_ymd.day   = dt.day_of_month;
-
-        tm = TinyGetTime();
-        p_hms.hours   = tm.hour;
-        p_hms.minutes = tm.minutes;
-        p_hms.twosecs = tm.seconds / 2;
-
-        TinySetFileStamp( TINY_INFO( ret ), p_hms, p_ymd );
-    } else {
-        ret = TinyCreate( name, TIO_NORMAL );
-        if( TINY_ERROR( ret ) ) {
-            return( false );
-        }
-    }
-    TinyClose( TINY_INFO( ret ) );
-#else
     int     fh;
 
     if( utime( name, NULL ) == -1 ) {
@@ -196,7 +165,6 @@ bool TouchFile( const char *name )
         }
         close( fh );
     }
-#endif
     return( true );
 }
 
@@ -271,7 +239,9 @@ void OSLoadDLL( char *cmd_name, char *dll_name, char *ent_name )
 {
     DLL_CMD     *n;
 
-    // we want newer !loaddlls to take precedence
+    /*
+     * we want newer !loaddlls to take precedence
+     */
     n = MallocSafe( sizeof( *n ) );
     n->cmd_name = StrDupSafe( cmd_name );
     n->next = dllCommandList;

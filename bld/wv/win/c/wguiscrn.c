@@ -43,7 +43,6 @@
 #include "trpsys.h"
 #include "dbglkup.h"
 #include "dbginit.h"
-#include "wininit.h"
 #include "guigsysh.h"
 
 

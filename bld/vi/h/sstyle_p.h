@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -29,8 +30,8 @@
 ****************************************************************************/
 
 
-void    GetPerlBlock( ss_block *, char *, line *, linenum );
+void    GetPerlBlock( ss_block *, const char *, line *, linenum );
 void    InitPerlFlags( linenum );
 void    GetPerlFlags( ss_flags_p * );
 void    InitPerlFlagsGivenValues( ss_flags_p * );
-void    InitPerlLine( char * );
+void    InitPerlLine( const char * );

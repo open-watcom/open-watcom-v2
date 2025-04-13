@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -131,7 +131,7 @@ void    BIInit( void ) {
     BrInitialized = true;
     if( !_GenerateBrInfo() )
         return;
-    init_dwl.language = DWLANG_FORTRAN;
+    init_dwl.language = DW_LANG_Fortran77;
     init_dwl.compiler_options = DW_CM_BROWSER | DW_CM_UPPER;
     init_dwl.producer_name = DWARF_PRODUCER_ID " V1";
     init_dwl.abbrev_sym = NULL;
@@ -144,7 +144,7 @@ void    BIInit( void ) {
         cu.flags = true;
         cu.offset_size = ARCHITECTURE;
         cu.segment_size = 0;
-        cu.model = DW_MODEL_NONE;
+        cu.model = DW_MEM_MODEL_none;
         cu.inc_list = NULL;
         cu.inc_list_len = 0;
         cu.dbg_pch = NULL;

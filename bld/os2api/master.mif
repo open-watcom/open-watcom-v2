@@ -29,7 +29,7 @@ wsplice_extra_opts =
 !else
 wsplice_extra_opts = -d"depends.dep"
 !endif
-wsplice_opts = $(wsplice_extra_opts) -kIBMTOOLKIT -i"$(hdr_dir)" $[@ $@
+wsplice_opts = -u $(wsplice_extra_opts) -kIBMTOOLKIT -i"$(hdr_dir)" $[@ $@
 
 #                       dirs286     dirs386
 #-------------------------------------------

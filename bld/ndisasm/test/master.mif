@@ -9,8 +9,8 @@ host_os  = $(bld_os)
 !include defrule.mif
 !include deftarg.mif
 
-!include $(dig_dir)/digcli.mif
-!include ../../discli.mif
+!include $(dig_dir)/client.mif
+!include ../../client.mif
 
 extra_cpp_flags = $(dig_arch_cpp_flags)
 

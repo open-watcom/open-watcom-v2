@@ -77,9 +77,10 @@ os2_helpfiles       - OS/2 help files
 pdf_helpfiles       - PDF help files
 
 
-Types:
-------
+File Types:
+-----------
 
+b   - batch file, convert EOL to crlf
 d   - DLL file
 e   - executable file
 l   - library file

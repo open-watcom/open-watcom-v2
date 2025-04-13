@@ -40,14 +40,14 @@
 enum {
     MSG_WASM_BASE = MSG_SHARE_BASE
     #define pick(c,e,j) + 1
-    #include "../h/wasmc.msg"
+    #include "wasmc.msg"
     #undef pick
 };
 
 enum {
     MSG_USAGE_BASE = MSG_WASM_BASE
     #define pick(c,e,j) + 1
-    #include "../h/wasms.msg"
+    #include "wasms.msg"
     #undef pick
 };
   #elif defined( USE_WRESLIB )
@@ -63,7 +63,7 @@ enum {
 enum {
     MSG_LANG_SPACING = MSG_SHARE_BASE
     #define pick(c,e,j) + 1
-    #include "../h/wasmc.msg"
+    #include "wasmc.msg"
     #undef pick
 };
   #elif defined( USE_WRESLIB )

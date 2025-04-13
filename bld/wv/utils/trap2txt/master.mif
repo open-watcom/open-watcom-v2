@@ -10,7 +10,7 @@ trap2txt_autodepends = .AUTODEPEND
 
 dig_arch = $(host_cpu)
 
-!include $(dig_dir)/digcli.mif
+!include $(dig_dir)/client.mif
 
 inc_dirs = -I"../h" -I"$(dip_dir)/watcom/h" -I"$(dig_dir)/h"
 

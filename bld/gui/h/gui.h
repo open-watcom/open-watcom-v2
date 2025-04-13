@@ -44,6 +44,25 @@
 
 #define GUI_ARRAY_SIZE( x )     (sizeof( x ) / sizeof( *x ))
 
+/*
+ * NOTE:
+ * gui project use 3 types of coordinates
+ *
+ * 1. gui_ord
+ *    it is public API graphical coordinate type (int)
+ *
+ * 2. gui_text_ord
+ *    it is public API text coordinate type (unsigned short)
+ *
+ * 3. guix_ord
+ *    it is internal signed coordinate type which depend on API type
+ *    for GUI it is graphical coordinate type (int)
+ *    for UI it is text coordinate type (short)
+ */
+
+typedef int                 gui_ord;
+typedef unsigned short      gui_text_ord;
+
 typedef enum {
     GUI_NO_EVENT,
     GUI_INIT_WINDOW,
@@ -376,10 +395,6 @@ typedef enum {
 #define GUI_CHECKED         1
 #define GUI_INDETERMINANT   2
 
-typedef int                 gui_ord;
-
-typedef unsigned short      gui_text_ord;
-
 typedef unsigned            gui_ctl_id;
 typedef unsigned            gui_res_id;
 typedef unsigned            gui_hlp_id;
@@ -549,10 +564,10 @@ typedef void            *gui_mcursor_handle;
  *
  */
 
-typedef struct gui_row_num {
+typedef struct gui_rows_set {
     gui_text_ord    start;
-    gui_text_ord    num;
-} gui_row_num;
+    gui_text_ord    count;
+} gui_rows_set;
 
 typedef struct gui_end_session {
     bool        endsession;
@@ -569,33 +584,32 @@ typedef struct gui_timer_event {
     gui_timer_id    id;
 } gui_timer_event;
 
-#define GUI_GET_TIMER( param, i )   ( i = ((gui_timer_event *)param)->id )
+#define GUI_GET_TIMER( __param, __id )      ( __id = ((gui_timer_event *)__param)->id )
 
-#define GUI_GET_BOOL( param, b )    ( b = *(bool *)param )
+#define GUI_GET_BOOL( __param, __bool )     ( __bool = *(bool *)__param )
 
-#define GUI_GET_ENDSESSION( param, b, l )           \
-    {                                               \
-        b = ((gui_end_session *)param)->endsession; \
-        l = ((gui_end_session *)param)->logoff;     \
+#define GUI_GET_ENDSESSION( __param, __endsession, __logoff )       \
+    {                                                               \
+        __endsession = ((gui_end_session *)__param)->endsession;    \
+        __logoff = ((gui_end_session *)__param)->logoff;            \
     }
 
-#define GUI_GET_POINT( param, point ) ( point = *(gui_point *)param )
+#define GUI_GET_POINT( __param, __point ) ( __point = *(gui_point *)__param )
 
-#define GUI_GET_ROWS( param, gui_start, gui_num )   \
-    {                                               \
-        gui_start = ((gui_row_num *)param)->start;  \
-        gui_num =   ((gui_row_num *)param)->num;    \
+#define GUI_GET_ROWS( __param, __rows_set )     \
+    {                                           \
+        __rows_set = *(gui_rows_set *)__param;  \
     }
 
-#define GUI_GETID( param, id ) ( id = *(gui_ctl_id *)param )
+#define GUI_GETID( __param, __id )          ( __id = *(gui_ctl_id *)__param )
 
-#define GUI_GET_SIZE( param, size )         \
-    {                                       \
-        size.x = ((gui_coord *)param)->x;   \
-        size.y = ((gui_coord *)param)->y;   \
+#define GUI_GET_SIZE( __param, __size )         \
+    {                                           \
+        __size.x = ((gui_coord *)__param)->x;   \
+        __size.y = ((gui_coord *)__param)->y;   \
     }
 
-#define GUI_GET_SCROLL( param, scroll ) ( scroll = *(int *)param )
+#define GUI_GET_SCROLL( __param, __scroll ) ( __scroll = *(int *)__param )
 
 /* Initialization Functions */
 
@@ -701,7 +715,7 @@ extern char     * GUIAPI GUIGetFontInfo( gui_window *wnd );
 extern bool     GUIAPI GUISetFontInfo( gui_window *wnd, char *fontinfo );
 extern bool     GUIAPI GUISetSystemFont( gui_window *wnd, bool fixed );
 extern char     * GUIAPI GUIGetFontFromUser( char *fontinfo );
-extern void     GUIAPI GUIChangeCurrentFont( gui_window *wnd, char *facename, int bold );
+extern void     GUIAPI GUIChangeCurrentFont( gui_window *wnd, const char *facename, int bold );
 
 /* Painting functions */
 
@@ -852,10 +866,10 @@ extern void     GUIAPI GUISetHScrollRangeCols( gui_window *wnd, gui_text_ord ran
 extern void     GUIAPI GUISetVScrollRangeRows( gui_window *wnd, gui_text_ord range );
 extern gui_text_ord GUIAPI GUIGetHScrollRangeCols( gui_window *wnd );
 extern gui_text_ord GUIAPI GUIGetVScrollRangeRows( gui_window *wnd );
-extern void     GUIAPI GUIDoHScroll( gui_window *wnd, int cols );
-extern void     GUIAPI GUIDoVScroll( gui_window *wnd, int rows );
-extern void     GUIAPI GUIDoHScrollClip( gui_window *wnd, int cols, int start, int end );
-extern void     GUIAPI GUIDoVScrollClip( gui_window *wnd, int rows, int start, int end );
+extern void     GUIAPI GUIDoHScroll( gui_window *wnd, int cols_diff );
+extern void     GUIAPI GUIDoVScroll( gui_window *wnd, int rows_diff );
+extern void     GUIAPI GUIDoHScrollClip( gui_window *wnd, int cols_diff, int start_col, int end_col );
+extern void     GUIAPI GUIDoVScrollClip( gui_window *wnd, int rows_diff, int start_row, int end_row );
 
 /* deals in percent of range */
 

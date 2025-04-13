@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,7 +36,7 @@ extern int              CheckLibraryType( file_list *, unsigned long *, bool );
 extern mod_entry        *SearchLib( file_list *, const char * );
 extern bool             DiscardDicts( void );
 extern void             BurnLibs( void );
-extern char             *GetARName( const ar_header *, file_list *, unsigned long * );
+extern char             *GetARName( const ar_header *, const file_list *, unsigned long * );
 extern unsigned long    GetARValue( const char *, size_t );
 extern bool             LibFind( const char *, bool );
 extern bool             ModNameCompare( const char *, const char * );

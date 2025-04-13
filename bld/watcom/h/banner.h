@@ -179,6 +179,7 @@
 #define _WIC_VERSION_           BAN_VER_STR
 #define _WGML_VERSION_          BAN_VER_STR
 #define _WIPFC_VERSION_         BAN_VER_STR
+#define _CTAGS_VERSION_         BAN_VER_STR
 
 #define _DEFWIN_VERSION_        "1.0" _BETA_
 

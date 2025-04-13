@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2023-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2023-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,37 +36,38 @@
 #include "clibext.h"
 
 
-#define FP2OF( fid )   ((obj_file *)(fid))
-#define OF2FP( of )    ((FILE *)(of))
+struct orl_io_struct {
+    obj_file            ofile;
+};
 
 static orl_handle       ORLHnd;
 
-static void *ORLObjRead( FILE *fp, size_t len )
-/*********************************************/
+static void *ORLObjRead( struct orl_io_struct *orlio, size_t len )
+/****************************************************************/
 {
     buf_list    *buf;
 
     buf = MemAlloc( len + sizeof( buf_list ) - 1 );
-    if( LibRead( FP2OF( fp )->io, buf->buf, len ) != len ) {
+    if( LibRead( orlio->ofile.io, buf->buf, len ) != len ) {
         MemFree( buf );
         return( NULL );
     }
-    buf->next = FP2OF( fp )->buflist;
-    FP2OF( fp )->buflist = buf;
+    buf->next = orlio->ofile.buflist;
+    orlio->ofile.buflist = buf;
     return( buf->buf );
 }
 
-static int ORLObjSeek( FILE *fp, long pos, int where )
-/****************************************************/
+static int ORLObjSeek( struct orl_io_struct *orlio, long pos, int where )
+/***********************************************************************/
 {
     switch( where ) {
     case SEEK_SET:
-        pos += FP2OF( fp )->offset;
+        pos += orlio->ofile.offset;
         break;
     case SEEK_CUR:
         break;
     }
-    LibSeek( FP2OF( fp )->io, pos, where );
+    LibSeek( orlio->ofile.io, pos, where );
     return( 0 );
 }
 
@@ -104,24 +105,24 @@ void InitORLObj( void )
 static obj_file *DoOpenORLObjFile( libfile io, long offset, const char *name )
 /****************************************************************************/
 {
-    obj_file            *ofile;
-    orl_file_format     format;
+    struct orl_io_struct    *orlio;
+    orl_file_format         format;
 
-    ofile = MemAlloc( sizeof( *ofile ) );
-    ofile->io = io;
-    ofile->buflist = NULL;
-    ofile->offset = offset;
-    format = ORLFileIdentify( ORLHnd, OF2FP( ofile ) );
+    orlio = MemAlloc( sizeof( *orlio ) );
+    orlio->ofile.io = io;
+    orlio->ofile.buflist = NULL;
+    orlio->ofile.offset = offset;
+    format = ORLFileIdentify( ORLHnd, orlio );
     switch( format ) {
     case ORL_COFF:
     case ORL_ELF:
-        ofile->orl = ORLFileInit( ORLHnd, OF2FP( ofile ), format );
+        orlio->ofile.orl = ORLFileInit( ORLHnd, orlio, format );
         if( Options.libtype == WL_LTYPE_MLIB ) {
-            if( (ORLFileGetFlags( ofile->orl ) & VALID_ORL_FLAGS) != VALID_ORL_FLAGS ) {
+            if( (ORLFileGetFlags( orlio->ofile.orl ) & VALID_ORL_FLAGS) != VALID_ORL_FLAGS ) {
                 FatalError( ERR_NOT_LIB, "64-bit or big-endian", ctext_WL_LTYPE_MLIB );
             }
         }
-        if( ofile->orl == NULL ) {
+        if( orlio->ofile.orl == NULL ) {
             FatalError( ERR_CANT_OPEN, name, strerror( errno ) );
         }
         break;
@@ -130,10 +131,10 @@ static obj_file *DoOpenORLObjFile( libfile io, long offset, const char *name )
         /*
          * unrecognized or ORL unused format
          */
-        ofile->orl = NULL;
+        orlio->ofile.orl = NULL;
         break;
     }
-    return( ofile );
+    return( &orlio->ofile );
 }
 
 obj_file *OpenORLObjFile( const char *name )

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2018-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2018-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,7 +32,6 @@
 
 
 #include "guiwind.h"
-#include <string.h>
 #include "guiscale.h"
 #include "guixutil.h"
 #include "guixdraw.h"
@@ -48,6 +47,7 @@
 #include "guigadgt.h"
 #include "guixhook.h"
 #include "guistat.h"
+#include "guix.h"
 
 
 #define VALIDWINDOW( area, check_min )          \
@@ -357,7 +357,7 @@ bool GUIJustSetWindowText( gui_window *wnd, const char *title )
     char        *new_title;
     bool        ok;
 
-    new_title = GUIStrDup( title, &ok );
+    new_title = GUIStrDupOK( title, &ok );
     if( !ok )
         return( false );
     if( wnd->vs.dynamic_title ) {
@@ -492,11 +492,11 @@ void GUIFreeWindowMemory( gui_window *wnd, bool from_parent, bool dialog )
             GUIFreeWindowMemory( curr_child, true, dialog );
         }
     }
-    if( wnd->hgadget != NULL ) {
+    if( IS_HSCROLL_ON( wnd ) ) {
         uifinigadget( wnd->hgadget );
         GUIMemFree( wnd->hgadget );
     }
-    if( wnd->vgadget != NULL ) {
+    if( IS_VSCROLL_ON( wnd ) ) {
         uifinigadget( wnd->vgadget );
         GUIMemFree( wnd->vgadget );
     }

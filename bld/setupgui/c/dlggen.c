@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -100,18 +100,18 @@ static gui_control_class ControlClass( gui_ctl_id id, a_dialog_header *dlg )
 }
 
 
-static void SetDynamic( gui_window *gui, vhandle var_handle, bool *drive_checked )
-/********************************************************************************/
+static void SetDynamic( gui_window *gui, vhandle var_handle, bool *fsys_checked )
+/*******************************************************************************/
 {
     VBUF        buff;
     const char  *p;
 
-    if( !*drive_checked ) {
+    if( !*fsys_checked ) {
         for( p = VarGetStrVal( var_handle ); *p != '\0'; p++ ) {
             if( *p == '%' ) {
                 if( strnicmp( p + 1, "DriveFree", 9 ) == 0 ) {
-                    CheckDrive( false );
-                    *drive_checked = true;
+                    CheckFsys( false );
+                    *fsys_checked = true;
                 }
             }
         }
@@ -132,10 +132,10 @@ static void SetDefaultVals( gui_window *gui, a_dialog_header *dlg )
     int                 i;
     vhandle             var_handle;
     char                *cond;
-    bool                drive_checked;
+    bool                fsys_checked;
     gui_ctl_id          id;
 
-    drive_checked = false;
+    fsys_checked = false;
     for( i = 0; (var_handle = dlg->pVariables[i]) != NO_VAR; ++i ) {
         cond = dlg->pConditions[i];
         if( !dlg->defaults_set && cond != NULL && !VarGetBoolVal( var_handle ) ) {
@@ -148,7 +148,7 @@ static void SetDefaultVals( gui_window *gui, a_dialog_header *dlg )
         id = VH2ID( var_handle );
         switch( ControlClass( id, dlg ) ) {
         case GUI_STATIC:
-            SetDynamic( gui, var_handle, &drive_checked );
+            SetDynamic( gui, var_handle, &fsys_checked );
             break;
         case GUI_RADIO_BUTTON:
         case GUI_CHECK_BOX:
@@ -214,16 +214,16 @@ static void GetVariableVals( gui_window *gui, a_dialog_header *dlg, bool closing
     char                *text;
     int                 i;
     vhandle             var_handle;
-    bool                drive_checked;
+    bool                fsys_checked;
     gui_ctl_id          id;
 
-    drive_checked = false;
+    fsys_checked = false;
     for( i = 0; (var_handle = dlg->pVariables[i]) != NO_VAR; i++ ) {
         id = VH2ID( var_handle );
         switch( ControlClass( id, dlg ) ) {
         case GUI_STATIC:
             if( !closing ) {
-                SetDynamic( gui, var_handle, &drive_checked );
+                SetDynamic( gui, var_handle, &fsys_checked );
             }
             break;
         case GUI_RADIO_BUTTON:
@@ -756,7 +756,7 @@ static void AdjustDialogControls( a_dialog_header *dlg )
             }
             if( j == dlg->num_controls ) {
                 for( curr_button = 1; curr_button <= num_push_buttons; ++curr_button ) {
-                    max_width = strlen( control->text ) + BUTTON_EXTRA;
+                    max_width = (int)strlen( control->text ) + BUTTON_EXTRA;
 #if defined( GUI_IS_GUI )
                     if( max_width < WIN_BW ) {
                         max_width = WIN_BW;
@@ -773,7 +773,7 @@ static void AdjustDialogControls( a_dialog_header *dlg )
                     ++control;
                 }
             } else {
-                max_width = strlen( control->text ) + BUTTON_EXTRA;
+                max_width = (int)strlen( control->text ) + BUTTON_EXTRA;
 #if defined( GUI_IS_GUI )
                 if( max_width < WIN_BW ) {
                     max_width = WIN_BW;
@@ -802,7 +802,7 @@ static void AdjustDialogControls( a_dialog_header *dlg )
                 }
             }
             if( control->text != NULL ) {
-                control->rect.width = width - strlen( control->text ) - BUTTON_EXTRA;
+                control->rect.width = width - (int)strlen( control->text ) - BUTTON_EXTRA;
             } else {
                 control->rect.width = width - C0 - 5;
             }
@@ -866,15 +866,15 @@ dlg_state GenericDialog( gui_window *parent, a_dialog_header *dlg )
 #if defined( __OS2__ ) && defined( GUI_IS_GUI )
     height -= 1;
 #endif
-    if( width < VbufLen( &title ) + WIDTH_BORDER + 2 ) {
-        width = VbufLen( &title ) + WIDTH_BORDER + 2;
+    if( width < (int)VbufLen( &title ) + WIDTH_BORDER + 2 ) {
+        width = (int)VbufLen( &title ) + WIDTH_BORDER + 2;
     }
 
     GUIRefresh();
     GUIDlgOpenModal( parent == NULL ? MainWnd : parent, VbufString( &title ), height, width,
                      dlg->controls, dlg->num_controls,
                      &GenericGUIEventProc, &result );
-    ResetDriveInfo();
+    ResetFsysInfo();
     VbufFree( &title );
     return( result.state );
 }

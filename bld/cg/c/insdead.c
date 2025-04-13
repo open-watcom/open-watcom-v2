@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -102,7 +102,7 @@ static  bool            FreeUselessIns( block *tail, bool just_the_loop,
         } else {
             for( ins = blk->ins.head.prev; ins->head.opcode != OP_BLOCK; ins = prev ) {
                 prev = ins->head.prev;
-                if( ( ins->ins_flags & INS_VISITED ) == 0 ) {
+                if( (ins->ins_flags & INS_VISITED) == 0 ) {
                     change = true;
                     if( in_regalloc ) {
                         DoNothing( ins );
@@ -197,7 +197,7 @@ static  bool    MarkUseful( name *op )
 
     change = false;
     if( op->n.class == N_TEMP ) {
-        if( ( op->t.temp_flags & VISITED ) == 0 ) {
+        if( (op->t.temp_flags & VISITED) == 0 ) {
             change = true;
             alias = op;
             do {

@@ -13,7 +13,7 @@ remote_link = 1
 
 extra_objs = paros2.obj portos2.obj
 
-extra_c_flags_portos2 = -nt=port -nc=IOPL_CODE
+extra_c_flags_f_portos2 = -nt=port -nc=IOPL_CODE
 
 extra_linker = segment 'port' IOPL
 

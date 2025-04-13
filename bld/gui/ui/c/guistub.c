@@ -74,7 +74,7 @@ char * GUIAPI GUIGetFontFromUser( char *fontinfo )
     return( NULL );
 }
 
-void GUIAPI GUIChangeCurrentFont( gui_window *wnd, char *facename, int bold )
+void GUIAPI GUIChangeCurrentFont( gui_window *wnd, const char *facename, int bold )
 {
     /* unused parameters */ (void)wnd; (void)facename; (void)bold;
 }

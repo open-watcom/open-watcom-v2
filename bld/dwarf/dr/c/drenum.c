@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -46,14 +46,14 @@ static bool ReadEnumerator( drmem_hdl abbrev, drmem_hdl mod, void *inf )
     char                *name;
     enum_cb_info        *info;
 
-    name = DWRGetName( abbrev, mod );
+    name = DR_GetName( abbrev, mod );
     if( name == NULL ) {
-        DWREXCEPT( DREXCEP_DWARF_LIB_FAIL );
+        DR_EXCEPT( DREXCEP_DWARF_LIB_FAIL );
     }
-    if( !DWRScanForAttrib( &abbrev, &mod, DW_AT_const_value ) ) {
-        DWREXCEPT( DREXCEP_DWARF_LIB_FAIL );
+    if( !DR_ScanForAttrib( &abbrev, &mod, DW_AT_const_value ) ) {
+        DR_EXCEPT( DREXCEP_DWARF_LIB_FAIL );
     }
-    val = DWRReadConstant( abbrev, mod );
+    val = DR_ReadConstant( abbrev, mod );
     info = (enum_cb_info *)inf;
     return( info->callback( name, val, info->data ) );
 }
@@ -65,16 +65,16 @@ void DRENTRY DRLoadEnum( drmem_hdl entry, void * data, DRENUMCB callback )
     drmem_hdl       abbrev;
     dw_tagnum       tag;
 
-    if( DWRReadTagEnd( &entry, &abbrev, &tag ) ) {
-        DWREXCEPT( DREXCEP_DWARF_LIB_FAIL );
+    if( DR_ReadTagEnd( &entry, &abbrev, &tag ) ) {
+        DR_EXCEPT( DREXCEP_DWARF_LIB_FAIL );
     }
     if( tag != DW_TAG_enumeration_type ) {
-        DWREXCEPT( DREXCEP_DWARF_LIB_FAIL );
+        DR_EXCEPT( DREXCEP_DWARF_LIB_FAIL );
     }
     abbrev++;   /* skip child flag */
-    DWRSkipAttribs( abbrev, &entry );
+    DR_SkipAttribs( abbrev, &entry );
 
     info.callback = callback;
     info.data = data;
-    DWRAllChildren( entry, ReadEnumerator, &info );
+    DR_AllChildren( entry, ReadEnumerator, &info );
 }

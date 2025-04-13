@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2024 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -51,16 +51,72 @@
 #define SYS_CLK_TCK 100
 #endif
 
+
+static int __sysconf_nprocessors_conf( void )
+/********************************************
+ * I did not find a better method to find out the number
+ * of installed CPUs than reading this value from the kernel
+ * by file /sys/devices/system/cpu/present
+ */
+{
+    int ret;
+    FILE *fp;
+    size_t len;
+    char *str;
+    char *start;
+
+    fp = fopen( "/sys/devices/system/cpu/present", "rb" );
+    if( fp == NULL ) {
+        _RWD_errno = EINVAL;
+        return( -1 );
+    }
+    fseek( fp, 0, SEEK_END );
+    len = ftell( fp );
+    fseek( fp, 0, SEEK_SET );
+    str = malloc( len + 1 );
+    fread( str, 1, len, fp );
+    str[len] = '\0';
+    fclose( fp );
+    /*
+     * search maximal number on read line
+     * numbers are separated by single non-digit character
+     */
+    ret = 0;
+    start = str;
+    while( *start != '\0' ) {
+        char *end;
+        int val;
+
+        val = strtol( start, &end, 10 );
+        if( end == start )
+            break;
+        if( ret < val )
+            ret = val;
+        if( *end == '\0' )
+                break;
+        start = end + 1;
+    }
+    free( str );
+    return( ret + 1 );
+}
+
 static int __sysconf_nprocessors( void )
 {
     syscall_res res;
-    unsigned char mask[128];
+    unsigned char mask[128];    /* enough space for 1024 cores */
     int ret;
     int i;
+    int used;
 
     res = sys_call3( SYS_sched_getaffinity, (u_long)0, (u_long)(sizeof(mask)), (u_long)mask );
+    if ( __syscall_iserror( res ) ) {
+        _RWD_errno = __syscall_errno( res );
+        return( -1 );
+    }
+    used = __syscall_val( int, res );
+
     ret = 0;
-    for( i = 0; i < sizeof( mask ); i++ ) {
+    for( i = 0; i < used ; i++ ) {
         while( mask[i] ) {
             mask[i] &= mask[i] - 1;
             ret++;
@@ -172,6 +228,8 @@ _WCRTLINK long sysconf( int name )
         ret = __sysconf_pages( name );
         break;
     case _SC_NPROCESSORS_CONF:
+        ret = __sysconf_nprocessors_conf();
+        break;
     case _SC_NPROCESSORS_ONLN:
         ret = __sysconf_nprocessors();
         break;

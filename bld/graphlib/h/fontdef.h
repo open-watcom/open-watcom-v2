@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,7 +40,7 @@
 #pragma pack(__push, 1);
 typedef struct font_def {
     unsigned short      key[ NUM_CHARS + 1 ];
-    char                data;               // variable size
+    signed char         data[1];            // variable size
 } font_def;
 #pragma pack (__pop);
 

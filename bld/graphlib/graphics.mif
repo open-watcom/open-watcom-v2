@@ -12,7 +12,7 @@ graph_distrib_lib = 1
 
 suppress_zc = 1
 
-supervga_support = -D_SUPERVGA
+supervga_support_graph = -D_SUPERVGA
 
 !ifeq system windows
 default_windowing = 1
@@ -28,8 +28,7 @@ memory_model_386 = s
 memory_model_386 = s
 !endif
 
-suffix_register = r
-suffix_stack = s
+additional_remove_subdirs = v2objs
 
 !include cproj.mif
 !include defrule.mif
@@ -39,6 +38,8 @@ extra_cpp_v2_flags = -DVERSION2
 extra_a_v2_flags = -DVERSION2
 !include defrule.mif
 !include deftarg.mif
+
+!include ../grflags.mif
 
 #
 # cflags
@@ -50,25 +51,8 @@ inc_dirs_dos = -I"$(clib_dir)/mbyte/h"
 inc_dirs_os2 = -I"$(clib_dir)/h" -I"$(clib_dir)/defwin/h" -I"$(lib_misc_dir)/h" $(cli_wpi_inc_dirs)
 inc_dirs_win = -I"$(clib_dir)/h" -I"$(clib_dir)/defwin/h" -I"$(lib_misc_dir)/h" $(cli_wpi_inc_dirs)
 
-extra_cpp_flags = $(supervga_support) -D_FARD=
-
-extra_cpp_flags_i86 = -D_CGRAPH=__loadds
-extra_cpp_flags_386 = -D_CGRAPH=
-!ifeq convention stack
-extra_cpp_flags_386 += -D__STACK
-!endif
-
 extra_cpp_flags_win = $(def_windowing)
 extra_cpp_flags_os2 = $(def_windowing)
-
-extra_c_flags = -os -zl -nm=$[&$(suffix_$(convention)) $(extra_c_flags_$(machine)) -fo=$@
-
-extra_c_flags_i86 = -nt=GRAPH_TEXT
-extra_c_flags_386_ms_dos = -r
-extra_c_flags_386_ms_qnx = -r
-extra_c_flags_386_register = -3r
-extra_c_flags_386_stack = -3s
-extra_c_flags_386 = $(extra_c_flags_386_$(convention)) $(extra_c_flags_386_m$(memory_model_386)_$(host_os))
 
 #
 # aflags
@@ -76,9 +60,9 @@ extra_c_flags_386 = $(extra_c_flags_386_$(convention)) $(extra_c_flags_386_m$(me
 !ifeq host_cpu 386
 .asm: $(graphlib_dir)/386asm
 !endif
-.asm: $(graphlib_dir)/asm
+.asm: $(graphlib_dir)/asm;$(graphlib_dir)/font
 
-extra_a_flags = $(supervga_support) -ms -i"$(graphlib_dir)/inc" $(extra_a_flags_$(machine)) -fo=$@
+extra_a_flags = $(supervga_support_graph) -ms -i"$(graphlib_dir)/inc"
 
 extra_a_flags_i86 = -D_TEXT=GRAPH_TEXT
 extra_a_flags_386_register = -3r
@@ -90,11 +74,13 @@ extra_a_flags_qnx = -D_QNX
 # explicit rules
 #################
 
+!ifeq convention stack
 all: graphi.lib graphi2.lib .SYMBOLIC
+!else
+all: graphi.lib graphi2.lib special.lib special2.lib .SYMBOLIC
+!endif
 
 common_objs = &
-    $(_subdir_)sqrtf.obj &
-    $(_subdir_)std.obj &
     $(_subdir_)activepg.obj &
     $(_subdir_)arc.obj &
     $(_subdir_)bkcolor.obj &
@@ -114,7 +100,6 @@ common_objs = &
     $(_subdir_)getlogc.obj &
     $(_subdir_)getphysc.obj &
     $(_subdir_)getpos.obj &
-    $(_subdir_)global.obj &
     $(_subdir_)grstatus.obj &
     $(_subdir_)grtext.obj &
     $(_subdir_)gtxtext.obj &
@@ -177,10 +162,7 @@ common_objs = &
     $(_subdir_)zrectang.obj
 
 eng_nonwin_objs = &
-    $(_subdir_)8x8font.obj &
-    $(_subdir_)bit.obj &
     $(_subdir_)gstklow.obj &
-    $(_subdir_)hercfont.obj &
     $(_subdir_)l0drwlin.obj &
     $(_subdir_)l0ellips.obj &
     $(_subdir_)l1fill.obj &
@@ -190,13 +172,9 @@ eng_nonwin_objs = &
     $(_subdir_)transpar.obj &
     $(_subdir_)visit.obj
 
-english_objs = &
-    $(_subdir_)cgautils.obj &
+eng_objs = &
     $(_subdir_)cnvcolor.obj &
-    $(_subdir_)egautils.obj &
     $(_subdir_)fast256.obj &
-    $(_subdir_)hgcutils.obj &
-    $(_subdir_)vgautils.obj &
     $(_subdir_)grcga.obj &
     $(_subdir_)grega.obj &
     $(_subdir_)grhgc.obj &
@@ -214,41 +192,76 @@ os2_objs = &
     $(_subdir_)winutil.obj &
     $(_subdir_)seginit.obj
 
-special_objs = &
-    fsmath.obj &
-    dummy.obj
-
-!ifdef supervga_support
-svga_english_objs = &
+!ifdef supervga_support_graph
+eng_svga_objs = &
     $(_subdir_)grsvga.obj &
     $(_subdir_)svgautil.obj &
     $(_subdir_)svgainfo.obj
 !endif
+
+special_common_objs = &
+    $(_subdir_)global.obj &
+    $(_subdir_)sqrtf.obj &
+    $(_subdir_)std.obj &
+    $(_subdir_)fsmath.obj &
+    $(_subdir_)dummy.obj
+
+!ifdef supervga_support_graph
+special_eng_svga_objs = &
+    $(_subdir_)svgautil.obj
+!endif
+
+special_eng_nonwin_objs = &
+    $(_subdir_)bit.obj &
+    $(_subdir_)hercfont.obj &
+    $(_subdir_)font8x8.obj
+
+special_eng_objs = &
+    $(_subdir_)cgautils.obj &
+    $(_subdir_)egautils.obj &
+    $(_subdir_)vgautils.obj &
+    $(_subdir_)hgcutils.obj
 
 !ifeq host_os win
 grlib_template = $(common_objs) $(win_objs)
 !else ifeq host_os os2
 grlib_template = $(common_objs) $(os2_objs)
 !else
-grlib_template = $(common_objs) $(eng_nonwin_objs) $(english_objs) $(svga_english_objs)
+grlib_template = $(common_objs) $(eng_nonwin_objs) $(eng_objs) $(eng_svga_objs)
 !endif
+special_objs = $(special_common_objs) $(special_eng_svga_objs) $(special_eng_nonwin_objs) $(special_eng_objs)
+
+modshared_f_dummy=yes
+modshared_f_font8x8=yes
+modshared_f_global=yes
+modshared_f_hercfont=yes
 
 #
 # LIB
 #
 _subdir_ =
-libtarg_prebuild_objs = graph.gh $(special_objs)
+libtarg_prebuild_objs = graph.gh
 libtarg_objs          = $(grlib_template)
 libtarg_name          = graphi
+!include libtarg.mif
+
+libtarg_prebuild_objs = graph.gh
+libtarg_objs          = $(special_objs)
+libtarg_name          = special
 !include libtarg.mif
 
 #
 # LIB version 2
 #
 _subdir_ = $(subdir_v2)/
-libtarg_prebuild_objs = $(subdir_v2) graph2.gh $(special_objs)
+libtarg_prebuild_objs = $(subdir_v2) graph2.gh
 libtarg_objs          = $(grlib_template)
 libtarg_name          = graphi2
+!include libtarg.mif
+
+libtarg_prebuild_objs = graph.gh
+libtarg_objs          = $(special_objs)
+libtarg_name          = special2
 !include libtarg.mif
 
 #
@@ -260,11 +273,7 @@ wsplice_extra_opts =
 wsplice_extra_opts = -d"depends.dep"
 !endif
 
-wsplice_opts_dos = -kDOS
-wsplice_opts_os2 = -kDOS
-wsplice_opts_qnx = -kQNX -u
-wsplice_opts_win = -kDOS
-
-wsplice_opts = $(wsplice_extra_opts) $(wsplice_opts_$(host_os))
-
 !include $(graphlib_dir)/headers.mif
+
+$(additional_remove_subdirs) :
+    mkdir $@

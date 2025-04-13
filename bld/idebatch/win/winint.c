@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -152,7 +152,6 @@ static void listBoxOut( char *str, ... )
 
 LRESULT CALLBACK EditSubClassProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
-
     switch( msg ) {
     case WM_KEYDOWN:
         if( wparam == VK_RETURN ) {
@@ -218,7 +217,8 @@ static void resizeChildWindows( WORD width, WORD height )
 {
 
     height = height-LISTBOX_Y-5;
-    if( height < LISTBOX_Y ) height = LISTBOX_Y;
+    if( height < LISTBOX_Y )
+        height = LISTBOX_Y;
     width -= 2* LISTBOX_X;
 
     MoveWindow( listBox, LISTBOX_X, LISTBOX_Y, width, height, TRUE );
@@ -297,29 +297,30 @@ LONG WINAPI MainWindowProc( HWND hwnd, UINT msg, UINT wparam, LONG lparam )
 #ifndef __EDITOR__
                 if( !stricmp( buff, ":ol" ) ) {
                     if( hasOL ) {
-                        VxDPut( END_OPEN_LIST, sizeof( END_OPEN_LIST ) + 1 );
+                        VxDPutLIT( LIT_END_OPEN_LIST );
                         hasOL = 0;
                     } else {
-                        VxDPut( NEW_OPEN_LIST, sizeof( NEW_OPEN_LIST ) + 1 );
+                        VxDPutLIT( LIT_NEW_OPEN_LIST );
                         hasOL = 1;
                     }
                     VxDGet( buff, sizeof( buff ) );
                 } else if( hasOL ) {
-                    VxDPut( buff, strlen( buff ) + 1 );
+                    VxDPut( buff, strlen( buff ) );
                     VxDGet( buff, sizeof( buff ) );
                 } else {
 #endif
-                    VxDPut( buff, len + 1 );
+                    VxDPut( buff, len );
                     while( 1 ) {
                         len = VxDGet( buff, sizeof( buff ) );
-                        buff[len] = 0;
-                        if( !strnicmp( buff, GET_REAL_NAME, sizeof( GET_REAL_NAME ) - 1 ) ) {
-                            listBoxOut( "REQUEST: %s\r\n", &buff[ sizeof( GET_REAL_NAME ) ] );
-                            sprintf( buff,"y.c" );
-                            VxDPut( buff, strlen( buff ) + 1 );
+                        if( len < 0 )
+                            break;
+                        if( strncmp( buff, LIT_GET_REAL_NAME, sizeof( LIT_GET_REAL_NAME ) - 1 ) == 0 ) {
+                            listBoxOut( "REQUEST: %s\r\n", &buff[sizeof( LIT_GET_REAL_NAME )] );
+                            sprintf( buff, "y.c" );
+                            VxDPut( buff, strlen( buff ) );
                             continue;
                         }
-                        if( !stricmp( buff,TERMINATE_COMMAND_STR ) ) {
+                        if( strcmp( buff, LIT_TERMINATE_COMMAND_STR ) == 0 ) {
                             break;
                         }
                         listBoxOut( "(%d,%d): %s", len, strlen( buff ), buff );
@@ -354,7 +355,7 @@ LONG WINAPI MainWindowProc( HWND hwnd, UINT msg, UINT wparam, LONG lparam )
         return( DefWindowProc( hwnd, msg, wparam, lparam ) );
 
     case WM_CLOSE:
-        VxDPut( TERMINATE_CLIENT_STR, sizeof( TERMINATE_CLIENT_STR ) + 1 );
+        VxDPutLIT( LIT_TERMINATE_CLIENT_STR );
         while( 1 ) {
             if( VxDUnLink() == 0 ) {
                 break;
@@ -431,17 +432,18 @@ static BOOL anyInstance( void )
         NULL                    /* create parms */
         );
 
-    if( !ourWindow ) return( FALSE );
+    if( !ourWindow )
+        return( FALSE );
 
     ShowWindow( ourWindow, SW_NORMAL );
     UpdateWindow( ourWindow );
-#ifndef __EDITOR__
-    res = VxDLink( LINK_NAME );
-#else
+#ifdef __EDITOR__
     res = VxDLink( EDITOR_LINK_NAME );
+#else
+    res = VxDLink( DEFAULT_LINK_NAME );
 #endif
     if( res != NULL ) {
-        MessageBox( NULL,res,"Link Error", MB_OK | MB_TASKMODAL );
+        MessageBox( NULL, res, "Link Error", MB_OK | MB_TASKMODAL );
         return( FALSE );
     }
     SetTimer( ourWindow, TIMER_ID, 500, 0L );
@@ -461,8 +463,10 @@ int PASCAL WinMain( HINSTANCE this_inst, HINSTANCE prev_inst, LPSTR cmdline,
     cmdshow = cmdshow;
     ourInstance = this_inst;
 
-    if( !firstInstance() ) return( FALSE );
-    if( !anyInstance() ) return( FALSE );
+    if( !firstInstance() )
+        return( FALSE );
+    if( !anyInstance() )
+        return( FALSE );
 
     while( GetMessage( &msg, NULL, 0, 0 ) ) {
         TranslateMessage( &msg );

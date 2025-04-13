@@ -1,9 +1,15 @@
 clean: .SYMBOLIC .EXPLICIT
-    rm -f *.obj $(additional_clean_$(host_os)) $(additional_clean)
-!if defined( additional_clean_dll_subdir ) || defined( additional_clean_subdirs )
-    rm -rf $(additional_clean_dll_subdir) $(additional_clean_subdirs)
+!if defined( additional_remove_dll_subdir ) || defined( additional_remove_subdirs )
+    rm -rf $(additional_remove_dll_subdir) $(additional_remove_subdirs)
 !endif
-    @%make killnonobj
+!ifdef additional_clean_subdirs
+    @%make clean_subdirs
+!endif
+    @%make killobjs
+    @%make killnonobjs
 
-killnonobj: .SYMBOLIC .EXPLICIT
+killobjs: .PROCEDURE .EXPLICIT
+    rm -f *.obj $(additional_clean_$(host_os)) $(additional_clean)
+
+killnonobjs: .PROCEDURE .EXPLICIT
     rm -f *.lnd *.lnk *.exe *.dll *.lib *.lbc *.res *.lst *.err *.pch *.map *.sym *.tmp *.trk $(additional_clean_sys)

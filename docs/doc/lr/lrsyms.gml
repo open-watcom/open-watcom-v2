@@ -51,6 +51,7 @@
 :set symbol="off_t"     value="off_t".
 .*
 .if '&machsys' eq 'QNX' .do begin
+:cmt. target is defined for gml files in cmn
 :set symbol="target"    value="QNX".
 :set symbol="sw"        value="-".
 :set symbol="pc"        value="/".
@@ -68,14 +69,17 @@
 .do end
 .*
 .if '&machsys' eq 'DOS' .do begin
+:cmt. target is defined for gml files in cmn
 :set symbol="target"    value="DOS".
 .do end
 .*
 .if '&machsys' eq 'NEC' .do begin
+:cmt. target is defined for gml files in cmn
 :set symbol="target"    value="NEC".
 .do end
 .*
 .if '&machsys' eq 'TEST' .do begin
+:cmt. target is defined for gml files in cmn
 :set symbol="target"    value="DOS".
 .do end
 .*

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,14 +36,10 @@
 
 #include "dwabbrev.h"
 
-#define EmitAccessFlags         DW_EmitAccessFlags
-#define EmitTypeRef             DW_EmitTypeRef
-#define TypeCode                DW_TypeCode
-#define WriteAddressClass       DW_WriteAddressClass
 
-abbrev_code TypeCode( dw_client, dw_handle );
-void EmitAccessFlags( dw_client, uint );
-void EmitTypeRef( dw_client, dw_handle );
-void WriteAddressClass( dw_client, unsigned );
+extern abbrev_code  DW_TypeCode( dw_client, dw_handle );
+extern void         DW_EmitAccessFlags( dw_client, uint );
+extern void         DW_EmitTypeRef( dw_client, dw_handle );
+extern void         DW_WriteAddressClass( dw_client, unsigned );
 
 #endif

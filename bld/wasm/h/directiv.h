@@ -348,7 +348,6 @@ typedef struct {
     bool                use32;          // If 32-bit segment is used
     bool                mseg;           // mixed segments (16/32-bit)
     asm_sym             *flat_grp;      // FLAT group symbol
-    char                *name;          // name of module
     const FNAME         *srcfile;
 } module_info;                          // Information about the module
 
@@ -477,6 +476,8 @@ extern void             FlushCurrSeg( void );
 extern const FNAME      *AddFlist( char const *filename );
 extern void             OutSelect( bool );
 extern void             WriteObjModule( void );
+extern const char       *GetModuleName( void );
+extern void             ConvertModuleName( char *module_name );
 extern void             AddLinnumDataRef( void );
 
 /*---------------------------------------------------------------------------

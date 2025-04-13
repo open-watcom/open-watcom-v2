@@ -41,11 +41,8 @@ ntverrc_exe = $(exename)
 
 additional_clean = *.int *.gh *.grh *.gc *.grc
 !ifndef bootstrap
-additional_clean_subdirs = $(bin_subdir)
+additional_remove_subdirs = $(bin_subdir)
 !endif
-
-$(bin_subdir) : .EXPLICIT
-    mkdir $@
 
 !include cproj.mif
 !include defrule.mif
@@ -82,28 +79,28 @@ extra_cpp_flags += $(extra_cppflags_$(target_cpu))
 extra_cpp_flags += -DAS_DEBUG_DUMP
 !endif
 
-extra_cpp_flags_cmsg     = -D__msg_file_prefix=$(intname)
+extra_cpp_flags_f_cmsg     = -D__msg_file_prefix=$(intname)
 !ifdef cc_dll
 ! ifeq host_os dos
-extra_cpp_flags_ideentry = -DCAUSEWAY
+extra_cpp_flags_f_ideentry = -DCAUSEWAY
 ! endif
 !else
-extra_cpp_flags_idedrv   = -DSTATIC_LINKAGE
+extra_cpp_flags_f_idedrv   = -DSTATIC_LINKAGE
 !endif
-extra_cpp_flags_maindrv  = -DDLL_NAME=$(dllname)
+extra_cpp_flags_f_maindrv  = -DDLL_NAME=$(dllname)
 
 extra_c_flags_386 = -3r
 
 !ifdef __WATCOM_TOOLS__
 ! ifndef bootstrap
 !  ifeq debug 0
-extra_c_flags_cscan_386 = -5r
-extra_c_flags_cscan    = $(extra_c_flags_cscan_$(host_cpu))
+extra_c_flags_f_cscan_386 = -5r
+extra_c_flags_f_cscan    = $(extra_c_flags_f_cscan_$(host_cpu))
 !  endif
 ! endif
 !endif
-extra_c_flags_intlload = $(incl_file_opts)fesupp.h
-extra_c_flags_cmdlnprs = $(incl_file_opts)fesupp.h
+extra_c_flags_f_intlload = $(incl_file_opts)fesupp.h
+extra_c_flags_f_cmdlnprs = $(incl_file_opts)fesupp.h
 
 #
 # lflags
@@ -112,7 +109,7 @@ extra_c_flags_cmdlnprs = $(incl_file_opts)fesupp.h
 extra_l_flags_qnx = option stack=16k,offset=24k, priv=3
 extra_l_flags_dos = option stack=32k
 
-extra_l_flags_dll     = option implib $(wcc_dllbase_$(host_os)_$(host_cpu))
+extra_l_flags_dll     = option implib $(wcc_dllbase_$(host))
 extra_l_flags_dll_nt  = initinstance terminstance op modname='$(dllname).dll'
 extra_l_flags_dll_os2 = initinstance terminstance op manyautodata op modname='$(dllname)'
 
@@ -230,3 +227,8 @@ optencod_targets += dbg
 cmdlnprs.gh cmdlnprs.gc usage.gh usage01.int $(qnx_usage) : ../../gml/options.gml
     @%make echo_optencod
     $(optencod) -i -n $(optencod_opt_$(host_os)) $(optencod_enc_$(host_os)) $]@ cmdlnprs.gh cmdlnprs.gc usage.gh . $(optencod_targets)
+
+!ifdef additional_remove_subdirs
+$(additional_remove_subdirs) :
+    mkdir $@
+!endif

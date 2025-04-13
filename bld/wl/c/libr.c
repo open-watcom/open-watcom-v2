@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -612,8 +612,9 @@ static bool ARSearchExtLib( file_list *lib, const char *name, unsigned long *off
 }
 
 mod_entry *SearchLib( file_list *lib, const char *name )
-/********************************************************/
-/* Search the specified library file for the specified name & make a module */
+/*******************************************************
+ * Search the specified library file for the specified name & make a module
+ */
 {
     mod_entry           *obj;
     unsigned long       pos;
@@ -642,10 +643,9 @@ mod_entry *SearchLib( file_list *lib, const char *name )
      *  update lib struct since we found desired object file
      */
     obj = NewModEntry();
-    obj->location = pos;
-    obj->f.source = lib;
-    obj->modtime = lib->infile->modtime;
-    obj->modinfo = (lib->flags & DBI_MASK) | (ObjFormat & FMT_OBJ_FMT_MASK);
+    /*
+     * correct module start position for modules in archive library
+     */
     objname = IdentifyObject( lib, &pos, &dummy );
     if( objname != NULL ) {
         obj->name.u.ptr = AddStringStringTable( &PermStrings, objname );
@@ -653,11 +653,15 @@ mod_entry *SearchLib( file_list *lib, const char *name )
     } else {
         obj->name.u.ptr = NULL;
     }
+    obj->location = pos;
+    obj->f.source = lib;
+    obj->modtime = lib->infile->modtime;
+    obj->modinfo = (lib->flags & DBI_MASK) | (ObjFormat & FMT_OBJ_FMT_MASK);
     return( obj );
 }
 
-char *GetARName( const ar_header *header, file_list *list, unsigned long *loc )
-/*****************************************************************************/
+char *GetARName( const ar_header *header, const file_list *list, unsigned long *loc )
+/***********************************************************************************/
 {
     const char      *buf;
     char            *name;

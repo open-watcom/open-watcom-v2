@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,24 +41,14 @@
 #define SYMBOL_TO_EXPORT_TABLE_SIZE             53
 #define SECTION_TO_SEGMENT_TABLE_SIZE           29
 
-#define FP2BL(fp)       ((buffer_list *)(fp))
-#define BL2FP(bl)       ((FILE *)(bl))
-
-typedef FILE            *file_handle;
-
 typedef struct buf_list {
     struct buf_list     *next;
     char                buf[1];
 } buf_list;
 
-typedef struct {
-    file_handle         hdl;
-    buf_list            *buflist;
-} buffer_info;
-
 typedef struct section_entry {
-    orl_sec_handle              shnd;
-    struct section_entry        *next;
+    orl_sec_handle          shnd;
+    struct section_entry    *next;
 } section_entry;
 
 typedef struct section_entry    *section_ptr;
@@ -66,6 +57,11 @@ typedef struct section_list {
     section_ptr         first;
     section_ptr         last;
 } section_list;
+
+struct orl_io_struct {
+    FILE                *fp;
+    buf_list            *buflist;
+};
 
 bool                    UseORL;
 char                    *ModNameORL;
@@ -83,45 +79,45 @@ hash_table              SymbolToExportTable;
 // Translation table from an orl_sec_handle to its correspinding segment.
 hash_table              SectionToSegmentTable;
 
-static buffer_info      fileBuff;
-static orl_sec_handle   symbolTable;
-static section_list     relocSections;
+static struct orl_io_struct orlIO;
+static orl_sec_handle       symbolTable;
+static section_list         relocSections;
 
-static void *buffRead( FILE *fp, size_t len )
-//*******************************************
+static void *buffRead( struct orl_io_struct *orlio, size_t len )
+//**************************************************************
 {
     buf_list    *buf;
 
     buf = AllocMem( len + sizeof( buf_list ) - 1 );
-    if( fread( buf->buf, 1, len, FP2BL( fp )->hdl ) != len ) {
+    if( fread( buf->buf, 1, len, orlio->fp ) != len ) {
         FreeMem( buf );
         return NULL;
     }
-    buf->next = FP2BL( fp )->buflist;
-    FP2BL( fp )->buflist = buf;
+    buf->next = orlio->buflist;
+    orlio->buflist = buf;
     return( buf->buf );
 }
 
-static int buffSeek( FILE *fp, long pos, int where )
-//**************************************************
+static int buffSeek( struct orl_io_struct *orlio, long pos, int where )
+//*********************************************************************
 {
-    return( fseek( FP2BL( fp )->hdl, pos, where ) );
+    return( fseek( orlio->fp, pos, where ) );
 }
 
-static void initBuffer( buffer_info *file, file_handle hdl )
-//**********************************************************
+static void initBuffer( struct orl_io_struct *orlio, FILE *fp )
+//*************************************************************
 {
-    file->hdl = hdl;
-    file->buflist = NULL;
+    orlio->fp = fp;
+    orlio->buflist = NULL;
 }
 
-static void finiBuffer( buffer_info *file )
-//*****************************************
+static void finiBuffer( struct orl_io_struct *orlio )
+//***************************************************
 {
     buf_list    *list;
     buf_list    *next;
 
-    list = file->buflist;
+    list = orlio->buflist;
     while( list != NULL ) {
         next = list->next;
         FreeMem( list );
@@ -168,9 +164,9 @@ bool InitORL( void )
 //******************
 // Try and see if we will use ORL. Returns true if we'll use it.
 {
-    orl_file_flags      o_flags;
-    orl_file_format     o_format;
-    orl_machine_type    o_machine_type;
+    orl_file_flags          o_flags;
+    orl_file_format         o_format;
+    orl_machine_type        o_machine_type;
     ORLSetFuncs( orl_cli_funcs, buffRead, buffSeek, AllocMem, FreeMem );
 
     ORLFileHnd = NULL;
@@ -179,19 +175,19 @@ bool InitORL( void )
         SysError( ERR_OUT_OF_MEM, false );
     }
 
-    initBuffer( &fileBuff, ObjFile );
-    o_format = ORLFileIdentify( ORLHnd, BL2FP( &fileBuff ) );
+    initBuffer( &orlIO, ObjFile );
+    o_format = ORLFileIdentify( ORLHnd, &orlIO );
     if( o_format != ORL_ELF && o_format != ORL_COFF ) {
         ORLFini( ORLHnd );
-        finiBuffer( &fileBuff );
+        finiBuffer( &orlIO );
         ORLHnd = NULL;
         return( false );        // Will use ParseObjectOMF
     }
 
-    ORLFileHnd = ORLFileInit( ORLHnd, BL2FP( &fileBuff ), o_format );
+    ORLFileHnd = ORLFileInit( ORLHnd, &orlIO, o_format );
     if( !ORLFileHnd ) {
         ORLFini( ORLHnd );
-        finiBuffer( &fileBuff );
+        finiBuffer( &orlIO );
         SysError( ERR_OUT_OF_MEM, false );
     }
     o_machine_type = ORLFileGetMachineType( ORLFileHnd );
@@ -219,7 +215,7 @@ void FiniORL( void )
         ORLFini( ORLHnd );
     }
     destroyHashTables();
-    finiBuffer( &fileBuff );
+    finiBuffer( &orlIO );
 }
 
 static bool addRelocSection( orl_sec_handle shnd )

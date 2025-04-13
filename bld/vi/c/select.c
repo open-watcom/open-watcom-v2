@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -143,7 +143,7 @@ vi_rc SelectItem( selectitem *si )
  */
 vi_rc SelectItemAndValue( window_info *wi, char *title, char **list,
                         list_linenum maxlist, vi_rc (*updatertn)( const char *, char *, int * ),
-                        size_t indent, char **vals, int valoff )
+                        size_t indent, const char **vals, int valoff )
 {
 //    list_linenum        j;
     file                *cfile;

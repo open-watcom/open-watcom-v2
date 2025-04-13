@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -81,7 +81,7 @@ const char *GetASetVal( const char *token, char * );
 vi_rc   SettingSelected( const char *item, char *value, int *winflag );
 
 /* clsubs.c */
-int     ReplaceSubString( char *, int, int, int, char *, int );
+int     ReplaceSubString( char *, int, int, int, const char *, int );
 vi_rc   TwoPartSubstitute( const char *, const char *, int, int );
 vi_rc   Substitute( linenum, linenum, const char * );
 linenum SplitUpLine( linenum );
@@ -338,7 +338,7 @@ vi_rc   GotoFile( window_id );
 void    BringUpFile( info *, bool );
 
 /* filelast.c */
-void    UpdateLastFilesList( char *fname );
+void    UpdateLastFilesList( const char *fname );
 char    *GetFileInLastFileList( int num );
 
 /* filenew.c */
@@ -673,7 +673,7 @@ vi_rc   InsertSavebufBefore2( void );
 vi_rc   InsertSavebufAfter2( void );
 vi_rc   InsertGenericSavebuf( int, int );
 void    InitSavebufs( void );
-void    AddLineToSavebuf( char *, int, int );
+void    AddLineToSavebuf( const char *, int, int );
 vi_rc   AddSelRgnToSavebuf( void );
 vi_rc   AddSelRgnToSavebufAndDelete( void );
 void    AddFcbsToSavebuf( fcb_list *, bool );
@@ -686,7 +686,7 @@ void    FiniSavebufs( void );
 
 /* select.c */
 vi_rc   SelectItem( selectitem *si );
-vi_rc   SelectItemAndValue( window_info *, char *, char **, list_linenum, checkres_fn *, size_t, char **, int );
+vi_rc   SelectItemAndValue( window_info *, char *, char **, list_linenum, checkres_fn *, size_t, const char **, int );
 
 /* selrgn.c */
 void    UpdateDrag( window_id, int, int );
@@ -740,19 +740,19 @@ vi_rc   NewStatusWindow( void );
 /* tab_hell.c */
 vi_rc   ExpandWhiteSpace( void );
 vi_rc   CompressWhiteSpace( void );
-bool    ExpandTabsInABufferUpToColumn( size_t, char *, size_t, char *, size_t );
+bool    ExpandTabsInABufferUpToColumn( size_t, const char *, size_t, char *, size_t );
 bool    ExpandTabsInABuffer( const char *, size_t, char *, size_t );
 size_t  InsertTabSpace( size_t, char *, bool * );
-int     GetVirtualCursorPosition( char *, int );
+int     GetVirtualCursorPosition( const char *, int );
 int     VirtualColumnOnCurrentLine( int );
 int     RealColumnOnCurrentLine( int );
-int     RealCursorPositionInString( char *, int );
+int     RealCursorPositionInString( const char *, int );
 int     RealCursorPositionOnLine( linenum, int );
-int     WinRealCursorPosition( char *, int );
-int     WinVirtualCursorPosition( char *, int );
-int     VirtualLineLen( char * );
-bool    AddLeadingTabSpace( size_t *, char *, int );
-bool    ConvertSpacesToTabsUpToColumn( size_t, char *, size_t, char *, size_t );
+int     WinRealCursorPosition( const char *, int );
+int     WinVirtualCursorPosition( const char *, int );
+int     VirtualLineLen( const char * );
+bool    AddLeadingTabSpace( size_t *len, char *data, int amount );
+bool    ConvertSpacesToTabsUpToColumn( size_t, const char *, size_t, char *, size_t );
 bool    CursorPositionOffRight( int vc );
 
 /* tags.c */

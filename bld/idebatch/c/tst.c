@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,8 +40,8 @@
 int main( void )
 {
     char                buff[256];
-    unsigned long       stat;
-    unsigned            len;
+    batch_stat          stat;
+    int                 len;
     const char          *err;
     int                 linked;
 
@@ -71,17 +72,17 @@ int main( void )
             BatchSpawn( buff );
             for( ;; ) {
                 len = BatchCollect( buff, sizeof( buff ), &stat );
-                if( len == -1 ) {
-                    printf( "done: status = %d\n", stat );
+                if( len < 0 ) {
+                    printf( "done: status = %d\n", (int)stat );
                     break;
-                } else if( kbhit() ) {
+                }
+                if( kbhit() ) {
                     if( getch() == 'a' ) {
                         BatchAbort();
                     } else {
                         BatchCancel();
                     }
-                } else if( len != 0 ) {
-                    buff[ len ] = '\0';
+                } else if( len > 0 ) {
                     printf( "%s", buff );
                     fflush( stdout );
                 }

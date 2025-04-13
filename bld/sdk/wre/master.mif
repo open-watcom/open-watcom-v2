@@ -42,20 +42,20 @@ extra_cpp_flags     = -DWREDLL
 
 extra_cpp_flags_nt  = -DNOUSE3D
 
-extra_cpp_flags_trmemcvr = $(trmem_cpp_flags)
+extra_cpp_flags_f_trmemcvr = $(trmem_cpp_flags)
 
 extra_c_flags     = -fh
 
 extra_c_flags_win = -zw-zc
 
 !ifdef __WATCOM_TOOLS__
-extra_c_flags_preproc = -zm -fh=preproc.pch
-extra_c_flags_ppexpr  = -zm -fh=preproc.pch
-extra_c_flags_ppmacro = -zm -fh=preproc.pch
-extra_c_flags_ppenv   = -zm -fh=preproc.pch
+extra_c_flags_f_preproc = -zm -fh=preproc.pch
+extra_c_flags_f_ppexpr  = -zm -fh=preproc.pch
+extra_c_flags_f_ppmacro = -zm -fh=preproc.pch
+extra_c_flags_f_ppenv   = -zm -fh=preproc.pch
 !endif
 
-extra_c_flags_trmemcvr = $(trmem_cover_cflags)
+extra_c_flags_f_trmemcvr = $(trmem_cover_cflags)
 
 #
 # lflags
@@ -83,9 +83,9 @@ exetarg_objs = &
     $(trmem_objs) $(trmemcvr_objs)
 exetarg_libs = &
     $(cli_commonui_libs) $(cli_wr_libs) $(cli_wpi_libs) &
-    $(wresedit_dir)/waccel/$(objs_subdir)/wacc.lib &
-    $(wresedit_dir)/wmenu/$(objs_subdir)/wmenu.lib &
-    $(wresedit_dir)/wstring/$(objs_subdir)/wstring.lib
+    $(wresedit_dir)/waccel/$(host)/wacc.lib &
+    $(wresedit_dir)/wmenu/$(host)/wmenu.lib &
+    $(wresedit_dir)/wstring/$(host)/wstring.lib
 exetarg_res           = $(proj_name).res
 !include exetarg.mif
 

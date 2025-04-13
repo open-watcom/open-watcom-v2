@@ -5,7 +5,6 @@
 # to native line endings on checkout.
 *.asm text
 *.awk text
-*.bat text
 *.c   text
 *.chk text
 *.cmd text
@@ -68,6 +67,8 @@ makefile text
 
 # Declare files that will always have CRLF line endings on checkout.
 
+*.bat text eol=crlf
+
 # Denote all files that are truly binary and should not be modified.
 *.7z  binary
 *.bmp binary
@@ -100,12 +101,7 @@ makefile text
 *.wbr binary
 *.wri binary
 *.zip binary
-
-unicode.437 binary
-unicode.850 binary
-unicode.852 binary
-unicode1.250 binary
-unicode1.252 binary
+unicode*.* binary
 
 /bld/ctest/regress/positive/source/pp15.c binary
 /bld/plustest/regress/positive/source/pp15.c binary

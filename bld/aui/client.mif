@@ -1,25 +1,26 @@
+aui_aui_grh = auimsgs.grh
 !include $(gui_dir)/client.mif
 !ifdef bootstrap
-cli_aui_path = $(aui_dir)/$(objs_subdir)
+cli_aui_libs = $(aui_dir)/$(bin_subdir)/aui.lib $(cli_gui_libs)
 !else ifdef sys_windowed
-cli_aui_path = $(aui_dir)/$(objs_subdir).gui
+cli_aui_libs = $(aui_dir)/$(host).gui/aui.lib $(cli_gui_libs)
 ! ifeq host_os os2
 aui_aui_os2pm = 1
 ! endif
 !else
-cli_aui_path = $(aui_dir)/$(objs_subdir)
+cli_aui_libs = $(aui_dir)/$(host)/aui.lib $(cli_gui_libs)
 !endif
-cli_aui_inc_dirs = -I"$(cli_aui_path)" -I"$(aui_dir)/h" $(cli_gui_inc_dirs)
-cli_aui_libs = $(cli_aui_path)/aui.lib $(cli_gui_libs)
+cli_aui_deps = $(aui_aui_grh)
+cli_aui_inc_dirs = -I"$(aui_dir)/h" $(cli_gui_inc_dirs)
 !ifdef aui_aui_os2pm
 aui_aui_dialogs = &
-    $(cli_aui_path)/dlgrx.dlg &
-    $(cli_aui_path)/dlgsrch.dlg &
-    $(cli_aui_path)/dlgsrcha.dlg &
-    $(cli_aui_path)/japrx.dlg &
-    $(cli_aui_path)/japsrch.dlg &
-    $(cli_aui_path)/japsrcha.dlg
-cli_aui_rc_inc_dirs = -I"$(cli_aui_path)" -I"$(aui_dir)/res" -I"$(aui_dir)/h" $(cli_gui_rc_inc_dirs)
+    dlgrx.dlg &
+    dlgsrch.dlg &
+    dlgsrcha.dlg &
+    japrx.dlg &
+    japsrch.dlg &
+    japsrcha.dlg
+cli_aui_rc_inc_dirs = -I"$(aui_dir)/res" -I"$(aui_dir)/h" $(cli_gui_rc_inc_dirs)
 !else
 aui_aui_dialogs = &
     $(aui_dir)/res/dlgs/dlgrx.dlg &
@@ -28,14 +29,36 @@ aui_aui_dialogs = &
     $(aui_dir)/res/dlgs/japrx.dlg &
     $(aui_dir)/res/dlgs/japsrch.dlg &
     $(aui_dir)/res/dlgs/japsrcha.dlg
-cli_aui_rc_inc_dirs = -I"$(cli_aui_path)" -I"$(aui_dir)/res/dlgs" -I"$(aui_dir)/res" -I"$(aui_dir)/h" $(cli_gui_rc_inc_dirs)
+cli_aui_rc_inc_dirs = -I"$(aui_dir)/res/dlgs" -I"$(aui_dir)/res" -I"$(aui_dir)/h" $(cli_gui_rc_inc_dirs)
 !endif
 cli_aui_rc_deps = &
     $(aui_dir)/res/aui.rc &
     $(aui_dir)/res/aui.msg &
     $(aui_dir)/h/aui.rh &
-    $(cli_aui_path)/aui.grh &
     $(aui_dir)/h/dlgrx.rh &
     $(aui_dir)/h/dlgsrch.rh &
     $(aui_aui_dialogs) &
+    $(aui_aui_grh) &
     $(cli_gui_rc_deps)
+
+!ifdef aui_aui_os2pm
+dlg_opts  = -font=10.Helv
+dlgj_opts =
+
+dlgrx.dlg : $(aui_dir)/res/dlgs/dlgrx.dlg .EXPLICIT
+    parsedlg $(dlg_opts) $[@ $@
+dlgsrch.dlg : $(aui_dir)/res/dlgs/dlgsrch.dlg .EXPLICIT
+    parsedlg $(dlg_opts) $[@ $@
+dlgsrcha.dlg : $(aui_dir)/res/dlgs/dlgsrcha.dlg .EXPLICIT
+    parsedlg $(dlg_opts) $[@ $@
+japrx.dlg : $(aui_dir)/res/dlgs/japrx.dlg .EXPLICIT
+    parsedlg $(dlgj_opts) $[@ $@
+japsrch.dlg : $(aui_dir)/res/dlgs/japsrch.dlg .EXPLICIT
+    parsedlg $(dlgj_opts) $[@ $@
+japsrcha.dlg : $(aui_dir)/res/dlgs/japsrcha.dlg .EXPLICIT
+    parsedlg $(dlgj_opts) $[@ $@
+!endif
+
+$(aui_aui_grh) : $(aui_dir)/res/aui.msg .EXPLICIT
+    @%make echo_awk
+    $(noecho)*awk -v prefix=AUI_LITERAL_ -v base=AUI_LITERAL_BASE -f $(build_dir)/makemsg.awk -v OUTFILE=$^. $[@

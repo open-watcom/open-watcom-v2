@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,15 +40,14 @@
 #include "trperr.h"
 #include "trpimp.h"
 #include "parlink.h"
+#include "parfind.h"
 
 
 static HANDLE   PortHdl = INVALID_HANDLE_VALUE;
 
-#define NUM_ELTS( a )   (sizeof( a ) / sizeof( a[0] ))
-
-static unsigned short PortTest[] = { 0x378, 0x3bc, 0x278 };
-static unsigned short PortAddress[NUM_ELTS( PortTest )];
-static unsigned PortsFound = 0;
+static unsigned short   PortTest[] = { PORT_ADDRESSES };
+static unsigned short   PortAddress[ACOUNT( PortTest )] = { 0 };
+static int              PortsFound = 0;
 
 #if 0
 /* Forward declarations */
@@ -71,18 +70,19 @@ unsigned PrnAddress( int printer )
     return( PortAddress[printer] );
 }
 
-unsigned AccessPorts( unsigned first, unsigned last )
+bool AccessPorts( unsigned first, unsigned count )
 {
-    /* unused parameters */ (void)first; (void)last;
+    /* unused parameters */ (void)first; (void)count;
 
-    // We have direct I/O port access
-    return( 1 );
+    /*
+     * We have direct I/O port access
+     */
+    return( true );
 }
 
-void FreePorts( unsigned first, unsigned last )
+void FreePorts( unsigned first, unsigned count )
 {
-    first = first;
-    last = last;
+    /* unused parameters */ (void)first; (void)count;
 }
 
 static int CheckForPort( int i, unsigned char value )
@@ -114,7 +114,7 @@ char *InitSys( void )
         }
     }
     PortsFound = 0;
-    for( i = 0; i < NUM_ELTS( PortTest ); ++i ) {
+    for( i = 0; i < ACOUNT( PortTest ); ++i ) {
         if( CheckForPort( i, 0x55 ) && CheckForPort( i, 0xaa ) ) {
             PortAddress[PortsFound++] = PortTest[i];
         }
@@ -124,7 +124,7 @@ char *InitSys( void )
 
 void FiniSys( void )
 {
-        if( PortHdl != INVALID_HANDLE_VALUE ) {
+    if( PortHdl != INVALID_HANDLE_VALUE ) {
         CloseHandle( PortHdl );
         PortHdl = INVALID_HANDLE_VALUE;
     }

@@ -24,8 +24,8 @@ extra_cpp_flags =
 !ifdef sys_dll
 extra_cpp_flags += -D__DLL__
 !endif
-extra_cpp_flags_pbmem    = $(trmem_cpp_flags)
-extra_cpp_flags_trmemcvr = $(trmem_cpp_flags)
+extra_cpp_flags_f_pbmem    = $(trmem_cpp_flags)
+extra_cpp_flags_f_trmemcvr = $(trmem_cpp_flags)
 
 extra_c_flags =
 !ifdef sys_dll
@@ -34,7 +34,7 @@ extra_c_flags_win = -zw -zu
 extra_c_flags_win = -zW
 !endif
 
-extra_c_flags_trmemcvr = $(trmem_cover_cflags)
+extra_c_flags_f_trmemcvr = $(trmem_cover_cflags)
 
 #
 # lflags

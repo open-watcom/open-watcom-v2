@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,12 +33,20 @@
 #ifndef SETUPIO_H
 #define SETUPIO_H
 
+
+#define TEXTBUF_SIZE        8192
+
+typedef enum {
+    DATA_BIN,
+    DATA_TEXT
+} data_mode;
+
 typedef struct file_handle_t    *file_handle;
 
 extern int          FileInit( const VBUF *archive );
 extern int          FileFini( void );
-extern int          FileStat( const VBUF *path, struct stat *buf );
-extern file_handle  FileOpen( const VBUF *path, const char *flags );
+extern int          FileStat( const VBUF *path, struct stat *statbuf );
+extern file_handle  FileOpen( const VBUF *path, data_mode mode );
 extern size_t       FileRead( file_handle fh, void *buffer, size_t length );
 extern int          FileClose( file_handle fh );
 extern int          FileIsPlainFS( void );

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -48,8 +48,8 @@ extern "C" {
 #define DRMEM_HDL_VOID  ((drmem_hdl)(pointer_uint)-1)       /* special handle denoting void type */
 #define DRMEM_HDL_NULL  ((drmem_hdl)(pointer_uint)0)
 
-#define DWRSetRtns( __read, __seek, __alloc, __realloc, __free, __except ) \
-    WDRRoutines DWRRtns = { \
+#define DRSetRtns( __read, __seek, __alloc, __realloc, __free, __except ) \
+    DRRoutines DR_Rtns = { \
         __read,       \
         __seek,       \
         __alloc,      \
@@ -178,16 +178,6 @@ typedef enum {
 } dr_language;
 
 typedef enum {
-    DR_MODEL_NONE    = 0,
-    DR_MODEL_FLAT    = 1,
-    DR_MODEL_SMALL   = 2,
-    DR_MODEL_MEDIUM  = 3,
-    DR_MODEL_COMPACT = 4,
-    DR_MODEL_LARGE   = 5,
-    DR_MODEL_HUGE    = 6,
-} dr_model;
-
-typedef enum {
     DR_SRCH_func_var,
     DR_SRCH_func,
     DR_SRCH_class,
@@ -223,7 +213,7 @@ typedef enum {
     DREXCEP_OUT_OF_VM,
     DREXCEP_BAD_DBG_VERSION,
     DREXCEP_BAD_DBG_INFO,
-    DREXCEP_OUT_OF_MMEM,        // DWRMALLOC or DWRREALLOC failed
+    DREXCEP_OUT_OF_MMEM,        // DR_MALLOC or DR_REALLOC failed
     DREXCEP_DWARF_LIB_FAIL      // bug in the dwarf library
 } dr_except;
 
@@ -389,7 +379,7 @@ typedef struct {                                                /* defaults */
     void * (*cli_realloc)( void *, size_t );                    // realloc
     void   (*cli_free)( void * );                               // free
     void   (*cli_except)( dr_except );                          // fatal error handler
-} WDRRoutines;
+} DRRoutines;
 
 typedef bool    (*DRWLKBLK)( drmem_hdl, int index, void * );
 typedef bool    (*DRPUBWLK)( void *, dr_pubname_data * );
@@ -437,7 +427,7 @@ extern void             DRENTRY DRWalkPubName( DRPUBWLK, void * );
 /* drinfo.c */
 extern dr_language      DRENTRY DRGetLanguageAT( drmem_hdl );
 extern char             * DRENTRY DRGetProducer( drmem_hdl );
-extern dr_model         DRENTRY DRGetMemModelAT( drmem_hdl );
+extern dw_mem_model     DRENTRY DRGetMemModelAT( drmem_hdl );
 extern dr_language      DRENTRY DRGetLanguage( void );
 extern char             * DRENTRY DRGetName( drmem_hdl );
 extern size_t           DRENTRY DRGetNameBuff( drmem_hdl entry, char *buff, size_t length );

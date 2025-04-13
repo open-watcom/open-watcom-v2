@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -43,8 +43,6 @@
 #include "clibext.h"
 
 
-extern char _NEAR   META[];
-
 /*
  * GetCurrentTag - get current tag word and hunt for it
  */
@@ -83,7 +81,7 @@ vi_rc TagHunt( const char *str )
             } else {
                 rc = FindTag( buff );
                 if( rc < ERR_NO_ERR ) {
-                    ColorFind( str, 0 );
+                    ColorFind( str, FINDFL_NONE );
                     rc = ERR_TAG_NOT_FOUND;
                 }
             }
@@ -109,7 +107,7 @@ vi_rc FindTag( const char *tag )
     vi_rc               rc;
 
     RegExpAttrSave( -1, &META[3] );
-    rc = ColorFind( tag, 0 );
+    rc = ColorFind( tag, FINDFL_NONE );
     RegExpAttrRestore();
     return( rc );
 

@@ -89,9 +89,10 @@ void initWicResources( char * fname )
     puts( NO_RES_MESSAGE );
     wicExit( -1 );
 #else
+    /* unused parameters */ (void)fname;
+
     hInstance = GetModuleHandle( NULL );
     msgShift = _WResLanguage() * MSG_LANG_SPACING;
-    return( true );
 #endif
 }
 

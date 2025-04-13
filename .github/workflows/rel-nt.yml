@@ -23,8 +23,11 @@ jobs:
     name: Bootstrap
     runs-on: ${{ inputs.image }}
     steps:
+    - run: git config --global core.eol lf
+    - run: git config --global core.autocrlf input
     - name: checkout
       uses: actions/checkout@v4
+    - run: od -N500 -tx1 projects.txt
     - name: Bootstrap
       uses: "./.github/actions/boot"
       with:
@@ -33,14 +36,18 @@ jobs:
         suffix:     "nt ${{ inputs.arch }} ${{ inputs.tools }}"
         owtools:    ${{ inputs.owtools }}
         owdebug:    ${{ inputs.owdebug }}
+    - run: git config --list
   build-nt:
     needs: boot-nt
     name: Build
     runs-on: ${{ inputs.image }}
     timeout-minutes: 120
     steps:
+    - run: git config --global core.eol lf
+    - run: git config --global core.autocrlf input
     - name: checkout
       uses: actions/checkout@v4
+    - run: od -N500 -tx1 projects.txt
     - name: Build
       uses: "./.github/actions/build"
       with:
@@ -49,6 +56,7 @@ jobs:
         suffix:     "nt ${{ inputs.arch }} ${{ inputs.tools }}"
         owtools:    ${{ inputs.owtools }}
         owdebug:    ${{ inputs.owdebug }}
+    - run: git config --list
   docsbuild:
     needs: boot-nt
     name: Documentation
@@ -57,21 +65,24 @@ jobs:
     strategy:
       matrix:
         include:
-        - display: DOS
+        - title: DOS
           doctype: docdos
-        - display: OS/2
+        - title: OS/2
           doctype: docos2
-        - display: NT
+        - title: NT
           doctype: docnt
-        - display: CHM
+        - title: CHM
           doctype: docchm
-        - display: PDF
+        - title: PDF
           doctype: docpdf
-        - display: WIN
+        - title: WIN
           doctype: docwin
     steps:
+    - run: git config --global core.eol lf
+    - run: git config --global core.autocrlf input
     - name: checkout
       uses: actions/checkout@v4
+    - run: od -N500 -tx1 projects.txt
     - name: Documentation
       uses: "./.github/actions/docbuild"
       with:
@@ -82,6 +93,7 @@ jobs:
         suffixo:    "${{ matrix.doctype }} ${{ inputs.tools }}"
         owtools:    ${{ inputs.owtools }}
         owdebug:    ${{ inputs.owdebug }}
+    - run: git config --list
   tests-nt:
     needs: build-nt
     name: Tests

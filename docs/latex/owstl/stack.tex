@@ -1,0 +1,39 @@
+% !TeX root = owstl.tex
+
+\chapter{Stack}
+
+\section{Introduction}
+
+\code{template <class Type, class Container = std::dequeue>}\\
+\code{class std::stack}
+
+This chapter describes the \code{std::stack} adaptor. It is called an adaptor
+because it wraps around a real container (the Container template parameter) to
+store objects. It just provides a different interface to the underlying
+container. The \code{std::stack} adaptor lacks the \code{begin} and \code{end}
+methods, so you can't use iterators or the standard algorithms with it.
+
+\section{Status}
+
+The default container is currently a vector as deque has yet to be written
+
+All members are complete:
+
+\begin{enumerate}
+\item \code{explicit stack( const Container &x = Container( ) )}
+\item \code{empty( ) const}
+\item \code{size( ) const}
+\item \code{top( )} and \code{top( ) const}
+\item \code{push( const value_type & )}
+\item \code{pop( )}
+\item \code{_Sane( )}
+\item Relational operators
+\end{enumerate}
+
+\section{Design Details}
+
+The \code{_Sane} method is used to check if the stack is in a valid state. It
+is an \OW\ extension. The method returns \code{true} if the stack is valid and
+\code{false} otherwise. The method works by calling the \code{_Sane} method of
+the underlying container.
+ 

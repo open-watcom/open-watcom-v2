@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,52 +39,51 @@
 /*
  * SetScrollThumb -- Set the scrolling thumb for the window
  */
-
 static void SetScrollThumb( gui_window * wnd, int percent, int bar )
 {
     guix_ord    old;
     guix_ord    new;
     bool        range_set;
 
-    if( GUIScrollOn( wnd, bar ) ) {
-        old = GUIGetScrollPos( wnd, bar );
-        if( percent < 0 ) {
-            percent = 0;
-        }
-        if( percent > 100 ) {
-            percent = 100;
-        }
-        if( bar == SB_VERT ) {
-            range_set = GUI_VRANGE_SET( wnd );
-        } else {
-            range_set = GUI_HRANGE_SET( wnd );
-        }
-        if( range_set ) {
-            new = GUIMulDiv( int, GUIGetScrollRange( wnd, bar ), percent, 100 );
-        } else {
-            new = percent;
-            GUISetScrollRange( wnd, bar, 0, 100, true );
-        }
-        if( old != new ) {
-            GUISetScrollPos( wnd, bar, new, true );
-        }
+    old = GUIGetScrollPos( wnd, bar );
+    if( percent < 0 ) {
+        percent = 0;
+    }
+    if( percent > 100 ) {
+        percent = 100;
+    }
+    if( bar == SB_VERT ) {
+        range_set = GUI_VRANGE_SET( wnd );
+    } else {
+        range_set = GUI_HRANGE_SET( wnd );
+    }
+    if( range_set ) {
+        new = GUIMulDiv( int, GUIGetScrollRange( wnd, bar ), percent, 100 );
+    } else {
+        new = percent;
+        GUISetScrollRange( wnd, bar, 0, 100, true );
+    }
+    if( old != new ) {
+        GUISetScrollPos( wnd, bar, new, true );
     }
 }
 
 /*
  * GUISetVScrollThumb -- Set the vertical scrolling thumb for the window
  */
-
 void GUIAPI GUISetVScrollThumb( gui_window * wnd, int percent )
 {
-    SetScrollThumb( wnd, percent, SB_VERT );
+    if( IS_VSCROLL_ON( wnd ) ) {
+        SetScrollThumb( wnd, percent, SB_VERT );
+    }
 }
 
 /*
  * GUISetHScrollThumb -- Set the horizontal scrolling thumb for the window
  */
-
 void GUIAPI GUISetHScrollThumb( gui_window * wnd, int percent )
 {
-    SetScrollThumb( wnd, percent, SB_HORZ );
+    if( IS_HSCROLL_ON( wnd ) ) {
+        SetScrollThumb( wnd, percent, SB_HORZ );
+    }
 }

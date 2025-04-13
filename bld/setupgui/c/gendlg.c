@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -107,7 +107,7 @@ a_dialog_header *AddNewDialog( const char *name )
 
     new_dlg = (a_dialog_header *)GUIMemAlloc( sizeof( a_dialog_header ) );
     memset( new_dlg, '\0', sizeof( *new_dlg ) );
-    new_dlg->name = GUIStrDup( name, NULL );
+    new_dlg->name = GUIStrDup( name );
     new_dlg->adjusted = false;
     new_dlg->def_dlg = false;
     new_dlg->defaults_set = false;

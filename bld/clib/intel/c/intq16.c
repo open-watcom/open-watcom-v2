@@ -33,7 +33,7 @@
 #include "variety.h"
 #include <i86.h>
 
-_WCRTLINK int (int86)( int intno, union REGS *inregs, union REGS *outregs )
+_WCRTLINK int (int86)( int intno, const union REGS *inregs, union REGS *outregs )
 {
     struct SREGS    segregs;
 

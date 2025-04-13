@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2018-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2018-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,7 +31,6 @@
 
 
 #include "guiwind.h"
-#include <string.h>
 #ifdef __WATCOMC__
     #include <process.h>
 #endif
@@ -52,6 +51,7 @@
 #include "guiuiev.h"
 #include "guiev.h"
 #include "guixwind.h"
+#include "guix.h"
 
 #include "clibext.h"
 
@@ -235,10 +235,10 @@ bool GUIXCreateWindow( gui_window *wnd, gui_create_info *dlg_info, gui_window *p
         if( dlg_info->style & GUI_INIT_INVISIBLE ) {
             uivhide( &wnd->vs );
         }
-        if( wnd->vgadget != NULL ) {
+        if( IS_VSCROLL_ON( wnd ) ) {
             uiinitgadget( wnd->vgadget );
         }
-        if( wnd->hgadget != NULL ) {
+        if( IS_HSCROLL_ON( wnd ) ) {
             uiinitgadget( wnd->hgadget );
         }
         if( !GUIEVENT( wnd, GUI_INIT_WINDOW, NULL ) ) {

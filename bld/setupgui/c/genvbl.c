@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -42,7 +42,6 @@
 #include "setupinf.h"
 #include "utils.h"
 #include "dlggen.h"
-#include "dynarray.h"
 #include "hash.h"
 #include "genvbl.h"
 
@@ -92,7 +91,7 @@ void InitGlobalVarList( void )
 void VarSetAutoSetCond( vhandle var_handle, const char *cond )
 /************************************************************/
 {
-    GlobalVarList[var_handle].autoset = GUIStrDup( cond, NULL );
+    GlobalVarList[var_handle].autoset = GUIStrDup( cond );
 }
 
 
@@ -236,7 +235,7 @@ static vhandle NewVariable( const char *vbl_name )
     var_handle = GlobalVarArray.num;
     BumpArray( &GlobalVarArray );
     tmp_variable = &GlobalVarList[var_handle];
-    tmp_variable->name = GUIStrDup( vbl_name, NULL );
+    tmp_variable->name = GUIStrDup( vbl_name );
     tmp_variable->has_value = false;
     tmp_variable->autoset = NULL;
     tmp_variable->restriction = 0;
@@ -282,7 +281,7 @@ static vhandle DoSetVariable( vhandle var_handle, const char *strval, const char
         var_handle = NewVariable( vbl_name );
     }
     tmp_variable = &GlobalVarList[var_handle];
-    tmp_variable->strval = GUIStrDup( strval, NULL );
+    tmp_variable->strval = GUIStrDup( strval );
     tmp_variable->has_value = true;
     if( tmp_variable->hook ) {
         tmp_variable->hook( var_handle );
@@ -455,7 +454,7 @@ void SetDefaultGlobalVarList( void )
 void FreeGlobalVarList( bool including_real_globals )
 /***************************************************/
 {
-    int i;
+    array_idx   i;
 
     if( GlobalVarList == NULL )
         return;

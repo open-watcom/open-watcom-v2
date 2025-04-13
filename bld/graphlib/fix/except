@@ -4,8 +4,12 @@ malloc
 malloc_
 memset
 memset_
+dos_get_dbcs_lead_table
+dos_get_dbcs_lead_table_
 _Extender
 __Extender
+_ExtenderRealModeSelector
+__ExtenderRealModeSelector
 _STACKLOW
 __STACKLOW
 __X32VM

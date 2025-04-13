@@ -1,9 +1,9 @@
 :SET symbol="owstlname" value="&company. STL"
 :SET symbol="startyear" value="2005"
 
-.* These all map to mono font at the mo, could be different if wished
-.* should they have start/end tag pairs to move closer to other current
-.* sytems? Currently 'CODE' is intended to be for generic code snippets.
+.* These all map to mono font at the moment, but could be different if we
+.* wished. Should they have start/end tag pairs to move closer to other current
+.* systems? Currently 'CODE' is intended to be for generic code snippets.
 .* The more specialized macros should be used where appropriate.
 
 .gt CLASS add mono
@@ -13,7 +13,7 @@
 .gt TOOL add mono
 
 .* ------------------------------------------------------------------
-.* use the put comand before anything happens so file is created ready for
+.* Use the put command before anything happens so file is created ready for
 .* first pass, otherwise error thrown
 .pu 9 .*
 .gt AUTHOR add @author att

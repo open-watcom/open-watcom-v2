@@ -1013,8 +1013,8 @@ int handle_REQ_GET_MESSAGE_TEXT_REPLY( unsigned char * pkt, unsigned short )
 
 int handle_REQ_REDIRECT_STDIN( unsigned char * pkt, unsigned short )
 {
-    redirect_stdin_req * prq = ( redirect_stdin_req * ) pkt;
-    char * name = ( char * ) &prq[1];
+    redirect_stdio_req * prq = (redirect_stdio_req *)pkt;
+    char * name = (char *)&prq[1];
 
     printf( "Debugger request: REQ_REDIRECT_STDIN\n" );
     printf( "    Name:   %s\n", name );
@@ -1024,7 +1024,7 @@ int handle_REQ_REDIRECT_STDIN( unsigned char * pkt, unsigned short )
 
 int handle_REQ_REDIRECT_STDIN_REPLY( unsigned char * pkt, unsigned short )
 {
-    redirect_stdin_ret * pr = ( redirect_stdin_ret * ) pkt;
+    redirect_stdio_ret * pr = (redirect_stdio_ret *)pkt;
 
     printf( "Trap reply: REQ_REDIRECT_STDIN\n" );
     printf( "    Error:  %d\n", pr->err );
@@ -1034,8 +1034,8 @@ int handle_REQ_REDIRECT_STDIN_REPLY( unsigned char * pkt, unsigned short )
 
 int handle_REQ_REDIRECT_STDOUT( unsigned char * pkt, unsigned short )
 {
-    redirect_stdout_req * prq = ( redirect_stdout_req * ) pkt;
-    char * name = ( char * ) &prq[1];
+    redirect_stdio_req * prq = (redirect_stdio_req *)pkt;
+    char * name = (char *)&prq[1];
 
     printf( "Debugger request: REQ_REDIRECT_STDOUT\n" );
     printf( "    Name:   %s\n", name );
@@ -1045,7 +1045,7 @@ int handle_REQ_REDIRECT_STDOUT( unsigned char * pkt, unsigned short )
 
 int handle_REQ_REDIRECT_STDOUT_REPLY( unsigned char * pkt, unsigned short )
 {
-    redirect_stdout_ret * pr = ( redirect_stdout_ret * ) pkt;
+    redirect_stdio_ret * pr = (redirect_stdio_ret *)pkt;
 
     printf( "Trap reply: REQ_REDIRECT_STDOUT\n" );
     printf( "    Error:  %d\n", pr->err );

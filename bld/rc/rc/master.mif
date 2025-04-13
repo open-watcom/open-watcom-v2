@@ -60,23 +60,23 @@ extra_cpp_flags   = -D_STANDALONE_ $(parser_defines)
 extra_cpp_flags   += -DIDE_PGM
 !endif
 
-extra_cpp_flags_rcmem    = $(trmem_cpp_flags)
+extra_cpp_flags_f_rcmem    = $(trmem_cpp_flags)
 !ifdef trmem_objs
-extra_cpp_flags_rcmem    = -DRC_USE_TRMEM
+extra_cpp_flags_f_rcmem    = -DRC_USE_TRMEM
 !else ifneq debug 0
-extra_cpp_flags_rcalloc0 = -DRCMEM_DEBUG
-extra_cpp_flags_rcalloc1 = -DRCMEM_DEBUG
+extra_cpp_flags_f_rcalloc0 = -DRCMEM_DEBUG
+extra_cpp_flags_f_rcalloc1 = -DRCMEM_DEBUG
 !endif
-extra_cpp_flags_idedrv   = -DSTATIC_LINKAGE
-extra_cpp_flags_maindrv  = -DDLL_NAME=$(dlltarg_name)
+extra_cpp_flags_f_idedrv   = -DSTATIC_LINKAGE
+extra_cpp_flags_f_maindrv  = -DDLL_NAME=$(dlltarg_name)
 
-extra_c_flags_rcmem    = $(trmem_cover_cflags)
-extra_c_flags_cmdlnprs = $(incl_file_opts)fesupp.h
+extra_c_flags_f_rcmem    = $(trmem_cover_cflags)
+extra_c_flags_f_cmdlnprs = $(incl_file_opts)fesupp.h
 
 #
 # lflags
 #
-extra_l_flags_dll     = option implib $(wrc_dllbase_$(host_os)_$(host_cpu))
+extra_l_flags_dll     = option implib $(wrc_dllbase_$(host))
 
 extra_l_flags_dll_nt  = initinstance terminstance op modname='$(dlltarg_name).dll'
 extra_l_flags_dll_os2 = initinstance terminstance op manyautodata op modname='$(dlltarg_name)'

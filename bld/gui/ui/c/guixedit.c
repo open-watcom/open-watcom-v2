@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -41,7 +41,6 @@
 #include "guistr.h"
 #include "guiutil.h"
 #include "guihotsp.h"
-#include <string.h>
 
 
 bool GUISetEditText( an_edit_control *edit_control, char const *text, bool is_GUI_data )
@@ -106,7 +105,7 @@ bool GUIAPI GUISetText( gui_window *wnd, gui_ctl_id id, const char *text )
             char    **fldtext;
             char    *new_str;
 
-            new_str = GUIStrDup( text, &ret );
+            new_str = GUIStrDupOK( text, &ret );
             if( ret ) {
                 fldtext = NULL;
                 switch( field->typ ) {

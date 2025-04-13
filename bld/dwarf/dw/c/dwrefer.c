@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -59,7 +59,7 @@ static void emitDelayed( dw_client cli )
     uint_8                      *end;
 
     /* delayed_refs are stacked up; we want to emit them in FIFO order */
-    for( cur = ReverseChain( cli->references.delayed ); cur != NULL; cur = CarveFreeLink( cli->references.delay_carver, cur ) ) {
+    for( cur = DW_ReverseChain( cli->references.delayed ); cur != NULL; cur = DW_CarveFreeLink( cli->references.delay_carver, cur ) ) {
         buf[0] = REF_BEGIN_SCOPE;
         WriteU32( buf + 1, cur->offset );
         CLIWrite( cli, DW_DEBUG_REF, buf, 1 + sizeof( uint_32 ) );
@@ -74,7 +74,7 @@ static void emitDelayed( dw_client cli )
 }
 
 
-void StartRef( dw_client cli )
+void DW_StartRef( dw_client cli )
 {
     struct delayed_ref          *new;
 
@@ -82,7 +82,7 @@ void StartRef( dw_client cli )
         We just stack up the StartRef until we find that we have to actually
         emit it.
     */
-    new = CarveAlloc( cli, cli->references.delay_carver );
+    new = DW_CarveAlloc( cli, cli->references.delay_carver );
     new->next = cli->references.delayed;
     cli->references.delayed = new;
     new->offset = InfoSectionOffset( cli );
@@ -91,7 +91,7 @@ void StartRef( dw_client cli )
 }
 
 
-void EndRef( dw_client cli )
+void DW_EndRef( dw_client cli )
 {
     struct delayed_ref *        this;
 
@@ -102,7 +102,7 @@ void EndRef( dw_client cli )
     --cli->references.scope;
     this = cli->references.delayed;
     if( this != NULL && this->scope == cli->references.scope ) {
-        cli->references.delayed = CarveFreeLink( cli->references.delay_carver, this );
+        cli->references.delayed = DW_CarveFreeLink( cli->references.delay_carver, this );
     } else {
         CLIWriteU8( cli, DW_DEBUG_REF, REF_END_SCOPE );
     }
@@ -147,22 +147,22 @@ void DWENTRY DWReference( dw_client cli, dw_linenum line, dw_column column, dw_h
         && column_delta < REF_COLUMN_RANGE );
     *end++ = REF_CODE_BASE + line_delta * REF_COLUMN_RANGE + column_delta;
     CLIWrite( cli, DW_DEBUG_REF, buf, end - buf );
-    HandleReference( cli, dependant, DW_DEBUG_REF );
+    DW_HandleReference( cli, dependant, DW_DEBUG_REF );
 }
 
 
-void SetReferenceFile( dw_client cli, uint file )
+void DW_SetReferenceFile( dw_client cli, uint file )
 {
     cli->references.delayed_file = file;
 }
 
 
-void InitReferences( dw_client cli )
+void DW_InitReferences( dw_client cli )
 {
     cli->references.line = 1;
     cli->references.column = 1;
     cli->references.delayed = NULL;
-    cli->references.delay_carver = CarveCreate( cli, sizeof( struct delayed_ref ), 16 );
+    cli->references.delay_carver = DW_CarveCreate( cli, sizeof( struct delayed_ref ), 16 );
     cli->references.scope = 0;
     cli->references.delayed_file = 0;
 
@@ -170,10 +170,10 @@ void InitReferences( dw_client cli )
 }
 
 
-void FiniReferences( dw_client cli )
+void DW_FiniReferences( dw_client cli )
 {
     /* backpatch the section length */
     CLISectionSetSize( cli, DW_DEBUG_REF );
 
-    CarveDestroy( cli, cli->references.delay_carver );
+    DW_CarveDestroy( cli, cli->references.delay_carver );
 }

@@ -3,22 +3,22 @@
 #
 
 !ifdef bootstrap
-cli_dwarfw_libs = $(dwarfw_dir)/$(objs_subdir)/dwarfw.lib
+cli_dwarfw_libs = $(dwarfw_dir)/$(bin_subdir)/dwarfw.lib
 !else ifdef $(proj_name)_rtdll
 #
 # DWARF run-time DLL used
 #
-cli_dwarfw_libs = $(dwarfw_dir)/$(objs_subdir).rtd/dwarfw.lib
+cli_dwarfw_libs = $(dwarfw_dir)/$(host).rtd/dwarfw.lib
 !else ifdef $(proj_name)_dll
 #
 # DWARF DLL used
 #
-cli_dwarfw_libs = $(dwarfw_dir)/$(objs_subdir).dll/dwarfw.lib
+cli_dwarfw_libs = $(dwarfw_dir)/$(host).dll/dwarfw.lib
 !else
 #
 # DWARF library used
 #
-cli_dwarfw_libs = $(dwarfw_dir)/$(objs_subdir)/dwarfw.lib
+cli_dwarfw_libs = $(dwarfw_dir)/$(host)/dwarfw.lib
 !endif
 
 cli_dwarfw_inc_dirs = -I"$(dwarfw_dir)/h"

@@ -50,10 +50,20 @@ class _WPRTLINK __WATCOM_ios;
 
 :include nsstd.sp
   // Position in the stream (absolute value, 0 is first byte):
+
+:segment RDOS
+  typedef long long streampos;
+:elsesegment
   typedef long streampos;
+:endsegment
 
   // Offset from current position in the stream:
+
+:segment RDOS
+  typedef long long streamoff;
+:elsesegment
   typedef long streamoff;
+:endsegment
 
   // Sizes and character counts in streams.
   typedef int streamsize;

@@ -138,15 +138,15 @@ const char *SrcFNoFind( uint fno )
 static void  AddCueBlk( cue_ctl *ctl )
 /************************************/
 {
-    cue_blk *new;
+    cue_blk *new_cb;
 
-    new = CGAlloc( sizeof( *new ) );
-    new->next = NULL;
-    *ctl->lnk = new;
-    ctl->curr = new;
-    ctl->lnk = &new->next;
-    ctl->next = &new->info[0];
-    ctl->end = &new->info[CUES_PER_BLK];
+    new_cb = CGAlloc( sizeof( *new_cb ) );
+    new_cb->next = NULL;
+    *ctl->lnk = new_cb;
+    ctl->curr = new_cb;
+    ctl->lnk = &new_cb->next;
+    ctl->next = &new_cb->info[0];
+    ctl->end = &new_cb->info[CUES_PER_BLK];
 }
 
 

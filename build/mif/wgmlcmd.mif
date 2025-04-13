@@ -42,9 +42,11 @@ dosbox_cfg = $(%OWROOT)\build\dosbox.cfg
 !ifdef %OWWGMLDEBUG
 dosbox_options_nt =
 dosbox_options_osx = -c "config -set cpu core=normal"
+dosbox_options_bsd = -c "config -set cpu cycles=10000000"
 !else
 dosbox_options_nt = -noconsole
 dosbox_options_osx = -c "config -set cpu core=normal"
+dosbox_options_bsd = -c "config -set cpu cycles=10000000"
 !endif
 
 !ifeq bld_os dos
@@ -60,6 +62,16 @@ wgml_ucase = 1
 !endif
 
 #-------------------------------------------------------
+# set SDL setup by environment variables
+#-------------------------------------------------------
+set_sdl : .PROCEDURE .EXPLICIT
+!ifndef %OWWGMLDEBUG
+    $(noecho)set SDL_VIDEODRIVER=dummy
+    $(noecho)set SDL_AUDIODRIVER=disk
+    $(noecho)set SDL_DISKAUDIOFILE=$(nulldevice)
+!endif
+
+#-------------------------------------------------------
 # run wgml utility
 #-------------------------------------------------------
 run_wgml : .PROCEDURE .EXPLICIT
@@ -67,15 +79,11 @@ run_wgml : .PROCEDURE .EXPLICIT
     @echo wgml $@
 !endif
 !ifdef dosbox
+    @%make set_sdl
     @rm -f dosbox.lst
     #-------------------------------------------------------
     # create DOS batch file to run wgml utility
     #-------------------------------------------------------
-! ifndef %OWWGMLDEBUG
-    $(noecho)set SDL_VIDEODRIVER=dummy
-    $(noecho)set SDL_AUDIODRIVER=disk
-    $(noecho)set SDL_DISKAUDIOFILE=NUL
-! endif
     @%create $(dos_wgml_tmp_batch)
     @%append $(dos_wgml_tmp_batch) c:
     @%append $(dos_wgml_tmp_batch) cd $(wgml_subdir)
@@ -104,12 +112,8 @@ run_gendev : .PROCEDURE .EXPLICIT
     @echo gendev $@
 !endif
 !ifdef dosbox
+    @%make set_sdl
     @rm -f dosbox.lst
-! ifndef %OWWGMLDEBUG
-    $(noecho)set SDL_VIDEODRIVER=dummy
-    $(noecho)set SDL_AUDIODRIVER=disk
-    $(noecho)set SDL_DISKAUDIOFILE=NUL
-! endif
     #-------------------------------------------------------
     # create DOS batch file to run gendev utility
     #-------------------------------------------------------

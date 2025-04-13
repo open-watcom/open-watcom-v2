@@ -47,7 +47,7 @@
   #include "exedos.h"
 #endif
 #if !defined( _DEFAULT_WINDOWS )
-  #include "8x8font.h"
+  #include "font8x8.h"
 #endif
 
 
@@ -1221,7 +1221,7 @@ _WCRTLINK void _WCI86FAR _CGRAPH _outgtext( char _WCI86FAR *str )
   #if defined( __OS2__ )
         _CurFnt = LCID_DEFAULT;
   #else
-        _CurFnt = GetStockObject( SYSTEM_FONT);
+        _CurFnt = GetStockObject( SYSTEM_FONT );
   #endif
     }
     dc = _Mem_dc;

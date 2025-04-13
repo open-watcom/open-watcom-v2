@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -43,6 +43,9 @@
 #include "myfile.h" // for class Dumpable, OutFile
 #include "btrees.h" // for the Btree* classes.
 
+
+#define HLP_ATTR_DIR    0x04
+#define HLP_ATTR_FILE   0x00
 
 //
 //  HFSDirectory    --Class to write the directory file,

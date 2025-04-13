@@ -33,8 +33,8 @@ extra_cpp_flags_os2 = -D__OS2_PM__
 
 extra_c_flags = -fh
 extra_c_flags_i86 = -zu -zc
-extra_c_flags_win_i86 = -zW
-extra_c_flags_win_386 = -zw
+extra_c_flags_wini86 = -zW
+extra_c_flags_win386 = -zw
 
 #
 # aflags
@@ -93,7 +93,7 @@ libtarg_prebuild_objs = uistr.grh
 !ifeq name windbg
 libtarg_objs = $(windbg)
 !else
-libtarg_objs = $($(host_os)) $($(objs_subdir))
+libtarg_objs = $($(host_os)) $($(host))
 !ifeq host_cpu i86
 libtarg_objs += $($(host_os)dbg)
 !endif

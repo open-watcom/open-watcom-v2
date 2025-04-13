@@ -332,12 +332,12 @@ static char *Location(dbg_loc loc) {
 static  dbg_loc         LocCreate( dbg_loc loc, unsigned typ ) {
 /**************************************************************/
 
-    dbg_loc     new;
+    dbg_loc     new_loc;
 
-    new = CGAlloc( sizeof( location ) );
-    new->next = loc;
-    new->class = typ;
-    return( new );
+    new_loc = CGAlloc( sizeof( location ) );
+    new_loc->next = loc;
+    new_loc->class = typ;
+    return( new_loc );
 }
 extern  dbg_loc         DBLocInit() {
 /***********************************/

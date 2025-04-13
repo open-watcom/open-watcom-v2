@@ -1,33 +1,30 @@
 !ifdef defrule_key
 defrule_obj_target ={$(subdir_$+$(defrule_key)$-)}.obj
-$(subdir_$+$(defrule_key)$-) : .EXPLICIT
-    mkdir $@
-additional_clean_subdirs += $(subdir_$+$(defrule_key)$-)
 !else
 defrule_obj_target = .obj
 !endif
 .c$(defrule_obj_target): $(__MAKEFILES__) $($(proj_name)_autodepends)
     @%make echo_cc
 !ifdef defrule_key
-    $(cc) $(ppflags_common) $(ppflags_$+$(defrule_key)$-_wreslib) $(ppflags_autodep) $(ppflags_sys) $(cppflags) $(extra_cpp_$+$(defrule_key)$-_flags) $(extra_cpp_flags_$[&) $(cflags) $(c_flags) $(extra_c_flags_$[&) $(inc_path) $[@
+    $(cc) $(ppflags_common) $(ppflags_$+$(defrule_key)$-_wreslib) $(ppflags_autodep) $(ppflags_sys) $(cppflags) $(extra_cpp_$+$(defrule_key)$-_flags) $(extra_cpp_flags_f_$[&) $(cflags) $(c_flags) $(extra_c_flags_f_$[&) $(inc_path) $[@
 !else
-    $(cc) $(ppflags_common) $(ppflags_wreslib) $(ppflags_autodep) $(ppflags_sys) $(cppflags) $(extra_cpp_flags_$[&) $(cflags) $(c_flags) $(extra_c_flags_$[&) $(inc_path) $[@
+    $(cc) $(ppflags_common) $(ppflags_wreslib) $(ppflags_autodep) $(ppflags_sys) $(cppflags) $(extra_cpp_flags_f_$[&) $(cflags) $(c_flags) $(extra_c_flags_f_$[&) $(inc_path) $[@
 !endif
 
 .cpp$(defrule_obj_target): $(__MAKEFILES__) $($(proj_name)_autodepends)
     @%make echo_cxx
 !ifdef defrule_key
-    $(cxx) $(ppflags_common) $(ppflags_$+$(defrule_key)$-_wreslib) $(ppflags_autodep) $(ppflags_sys) $(cppflags) $(extra_cpp_$+$(defrule_key)$-_flags) $(extra_cpp_flags_$[&) $(cflags) $(cxx_flags) $(extra_c_flags_$[&) $(inc_path) $[@
+    $(cxx) $(ppflags_common) $(ppflags_$+$(defrule_key)$-_wreslib) $(ppflags_autodep) $(ppflags_sys) $(cppflags) $(extra_cpp_$+$(defrule_key)$-_flags) $(extra_cpp_flags_f_$[&) $(cflags) $(cxx_flags) $(extra_c_flags_f_$[&) $(inc_path) $[@
 !else
-    $(cxx) $(ppflags_common) $(ppflags_wreslib) $(ppflags_autodep) $(ppflags_sys) $(cppflags) $(extra_cpp_flags_$[&) $(cflags) $(cxx_flags) $(extra_c_flags_$[&) $(inc_path) $[@
+    $(cxx) $(ppflags_common) $(ppflags_wreslib) $(ppflags_autodep) $(ppflags_sys) $(cppflags) $(extra_cpp_flags_f_$[&) $(cflags) $(cxx_flags) $(extra_c_flags_f_$[&) $(inc_path) $[@
 !endif
 
 .asm$(defrule_obj_target): $(__MAKEFILES__) $($(proj_name)_autodepends)
     @%make echo_as
 !ifdef defrule_key
-    $(as) $(ppflags_common) $(ppflags_$+$(defrule_key)$-_wreslib) $(extra_app_$+$(defrule_key)$-_flags) $(aflags) $(extra_a_flags_$[&) $(inc_path) $[@
+    $(as) $(ppflags_common) $(ppflags_$+$(defrule_key)$-_wreslib) $(extra_app_$+$(defrule_key)$-_flags) $(aflags) $(extra_a_flags_f_$[&) $(inc_path) $[@
 !else
-    $(as) $(ppflags_common) $(ppflags_wreslib) $(aflags) $(extra_a_flags_$[&) $(inc_path) $[@
+    $(as) $(ppflags_common) $(ppflags_wreslib) $(aflags) $(extra_a_flags_f_$[&) $(inc_path) $[@
 !endif
 !undef defrule_obj_target
 !undef defrule_key

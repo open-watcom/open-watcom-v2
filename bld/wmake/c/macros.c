@@ -32,8 +32,6 @@
 
 #if defined( __UNIX__ )
     #include <sys/types.h>  /* Implicitly included by <direct.h> */
-#else
-    #include <direct.h>     /* Needed for getcwd() */
 #endif
 #include <stdlib.h>
 #include <ctype.h>
@@ -175,7 +173,8 @@ const char *procPath( const char *fullpath )
                 dirBuf[1] = NULLCHAR;
             } else {
                 p = dirBuf + strlen( dirBuf ) - 1;
-                if( cisdirc( *p ) && *p != ':' ) {
+                if( cisdirc( *p )
+                  && *p != ':' ) {
                     *p = NULLCHAR;
                 }
             }
@@ -201,8 +200,11 @@ STATIC const char *specialValue( MTOKEN_T t )
 {
     char const  *dirBufGot = NULL;
 
-    assert( t == MAC_CUR || t == MAC_FIRST || t == MAC_LAST );
-    assert( FORM_MIN < CurAttr.u.form && CurAttr.u.form < FORM_MAX );
+    assert( t == MAC_CUR
+        || t == MAC_FIRST
+        || t == MAC_LAST );
+    assert( FORM_MIN < CurAttr.u.form
+        && CurAttr.u.form < FORM_MAX );
 
     switch( t ) {
     case MAC_CUR:       dirBufGot = GetCurTarg();  break;
@@ -223,7 +225,8 @@ STATIC void makeMacroName( char *buffer, const char *name )
 {
     assert( IsMacroName( name ) );
 
-    if( Glob.compat_nmake || Glob.compat_posix ) {
+    if( Glob.compat_nmake
+      || Glob.compat_posix ) {
         /*
          * case sensitive name
          */
@@ -246,9 +249,11 @@ STATIC MACRO *findMacro( const char *name )
 {
     case_sensitivity    caseSensitive;
 
-    assert( name != NULL && *name != ENVVAR_C );
+    assert( name != NULL
+        && *name != ENVVAR_C );
 
-    if( Glob.compat_nmake || Glob.compat_posix ) {
+    if( Glob.compat_nmake
+      || Glob.compat_posix ) {
         caseSensitive = CASESENSITIVE;
     } else {
         caseSensitive = NOCASESENSITIVE;
@@ -265,9 +270,11 @@ STATIC MACRO *removeMacro( const char *name )
 {
     case_sensitivity    caseSensitive;
 
-    assert( name != NULL && *name != ENVVAR_C );
+    assert( name != NULL
+        && *name != ENVVAR_C );
 
-    if( Glob.compat_nmake || Glob.compat_posix ) {
+    if( Glob.compat_nmake
+      || Glob.compat_posix ) {
         caseSensitive = CASESENSITIVE;
     } else {
         caseSensitive = NOCASESENSITIVE;
@@ -322,7 +329,9 @@ STATIC char *doStringSubstitute( const char *name, const char *oldString, const 
 
     output = StartVec();
 
-    assert( name != NULL && oldString != NULL && newString != NULL );
+    assert( name != NULL
+        && oldString != NULL
+        && newString != NULL );
 
     old_len = strlen( oldString );
     for( start = p = name; *p != NULLCHAR; p++ ) {
@@ -420,7 +429,8 @@ STATIC const char *GetMacroValueProcess( const char *name )
     /*
      * If not defined as a macro then get it as a Environment variable
      */
-    if( Glob.compat_nmake || Glob.compat_posix ) {
+    if( Glob.compat_nmake
+      || Glob.compat_posix ) {
         /*
          * Check if macro is all caps in NMAKE mode
          */
@@ -547,7 +557,8 @@ STATIC bool addMacro( const char *name, char *value )
     new = findMacro( macro );       /* check if redefinition */
 
     unused_value = false;
-    if( new != NULL && !new->readonly ) {   /* reuse old node */
+    if( new != NULL
+      && !new->readonly ) {   /* reuse old node */
         FreeSafe( (void *)new->value );
         new->value = value;
         new->readonly = Glob.macreadonly;
@@ -674,7 +685,8 @@ char *DeMacroSpecial( const char *InString )
             WriteNVec( outString, old, p - old );
             pos = 0;
             buffer[pos++] = *(p++);
-            if( cismsspecial( *p ) && !cismsmodifier( *(p + 1) ) ) {
+            if( cismsspecial( *p )
+              && !cismsmodifier( *(p + 1) ) ) {
                 buffer[pos++] = *(p++);
             } else {
                 assert( cismsspecial( *p ) );
@@ -741,7 +753,8 @@ STATIC char *ProcessToken( int depth, MTOKEN_T end1, MTOKEN_T end2, MTOKEN_T t )
          * if there are no parentheses then it takes only first char.
          * after the $
          */
-        if( !Glob.compat_nmake && !Glob.compat_posix ) {
+        if( !Glob.compat_nmake
+          && !Glob.compat_posix ) {
             p = deMacroText( depth + 1, end1, MAC_PUNC );
         } else {
             s = PreGetCHR();
@@ -765,7 +778,8 @@ STATIC char *ProcessToken( int depth, MTOKEN_T end1, MTOKEN_T end2, MTOKEN_T t )
         return( CharToStrSafe( TMP_COMMENT ) );     /* write a place holder */
     case MAC_OPEN:
         /* recurse, get macro name */
-        if( !Glob.compat_nmake && !Glob.compat_posix ) {
+        if( !Glob.compat_nmake
+          && !Glob.compat_posix ) {
             p = deMacroText( depth + 1, end1, MAC_CLOSE );
             if( IsMacroName( p ) ) {
                 p2 = WrnGetMacroValue( p );
@@ -793,9 +807,9 @@ STATIC char *ProcessToken( int depth, MTOKEN_T end1, MTOKEN_T end2, MTOKEN_T t )
             for( ;; ) {
                 if( s == ')' ) {
                     break;
-                } else if( s == STRM_MAGIC ||
-                           s == STRM_END   ||
-                           s == '\n' ) {
+                } else if( s == STRM_MAGIC
+                  || s == STRM_END
+                  || s == '\n' ) {
                     UnGetCHR( s );
                     break;
                 }
@@ -868,19 +882,19 @@ STATIC char *deMacroToEnd( int depth, MTOKEN_T end1, MTOKEN_T end2 )
     VECSTR      vec;        /* we build expansion here  */
     char        *p;         /* temp str */
 
-    assert(     end1 == TOK_EOL
-            ||  end1 == MAC_PUNC
-            ||  end1 == TOK_MAGIC
-            ||  end1 == TOK_END
-            ||  end1 == MAC_WS
+    assert( end1 == TOK_EOL
+        || end1 == MAC_PUNC
+        || end1 == TOK_MAGIC
+        || end1 == TOK_END
+        || end1 == MAC_WS
     );
 
-    assert(     end2 == TOK_EOL
-            ||  end2 == MAC_PUNC
-            ||  end2 == TOK_MAGIC
-            ||  end2 == TOK_END
-            ||  end2 == MAC_EXPAND_OFF
-            ||  end2 == MAC_CLOSE
+    assert( end2 == TOK_EOL
+        || end2 == MAC_PUNC
+        || end2 == TOK_MAGIC
+        || end2 == TOK_END
+        || end2 == MAC_EXPAND_OFF
+        || end2 == MAC_CLOSE
     );
 
     vec = StartVec();
@@ -890,18 +904,20 @@ STATIC char *deMacroToEnd( int depth, MTOKEN_T end1, MTOKEN_T end2 )
 
         assert( t != MAC_TEXT );            /* should never recv this tok */
 
-        if( t == MAC_CLOSE && end2 != MAC_CLOSE ) {
+        if( t == MAC_CLOSE
+          && end2 != MAC_CLOSE ) {
             t = MAC_PUNC;
             CurAttr.u.ptr = CharToStrSafe( ')' );
         }
 
-        if(     t == TOK_END               /* always stops at these */
-            ||  t == TOK_MAGIC
-            ||  t == TOK_EOL
-            ||  t == end2
-            ||  t == end1
-            ||  ( t == MAC_WS && ( end2 == MAC_PUNC || end1 == MAC_PUNC ) )
-                ) {
+        if( t == TOK_END               /* always stops at these */
+          || t == TOK_MAGIC
+          || t == TOK_EOL
+          || t == end2
+          || t == end1
+          || ( t == MAC_WS
+          && ( end2 == MAC_PUNC
+          || end1 == MAC_PUNC ) ) ) {
             break;
         }
 
@@ -1043,7 +1059,9 @@ char *ignoreWSDeMacro( bool partDeMacro, bool forceDeMacro )
      */
     p_max = text + MAX_COMMANDLINE - 1;
     for( TrailSpace = p = text; p < p_max; ++p ) {
-        if( s == STRM_END || s == STRM_MAGIC || s == '\n' ) {
+        if( s == STRM_END
+          || s == STRM_MAGIC
+          || s == '\n' ) {
             break;
         }
         if( !sisws( s ) ) {
@@ -1141,7 +1159,8 @@ STATIC char *PartDeMacroProcess( void )
             CurAttr.u.ptr = NULL;
             break;
         case MAC_TEXT:
-            if( wsvec != NULL && !leadingws ) {
+            if( wsvec != NULL
+              && !leadingws ) {
                 CatVec( vec, wsvec );
                 wsvec = NULL;
             }
@@ -1195,7 +1214,8 @@ char *PartDeMacro( bool forceDeMacro )
 {
     char    *temp;
 
-    if( Glob.compat_nmake || Glob.compat_posix ) {
+    if( Glob.compat_nmake
+      || Glob.compat_posix ) {
         IsPartDeMacro = true;
     }
     if( forceDeMacro ) {
@@ -1203,12 +1223,14 @@ char *PartDeMacro( bool forceDeMacro )
         UnGetCHR( EatWhite() );
         temp = DeMacro( TOK_EOL );
         PreGetCHR();    /* eat EOL */
-        if( Glob.compat_nmake || Glob.compat_posix ) {
+        if( Glob.compat_nmake
+          || Glob.compat_posix ) {
             IsPartDeMacro = false;
         }
         return( temp );
     }
-    if( Glob.compat_nmake || Glob.compat_posix ) {
+    if( Glob.compat_nmake
+      || Glob.compat_posix ) {
         IsPartDeMacro = false;
     }
     return( PartDeMacroProcess() );
@@ -1218,7 +1240,8 @@ char *PartDeMacro( bool forceDeMacro )
 STATIC bool NMacroNameEq( const char *name1, const char *name2, size_t len )
 /**************************************************************************/
 {
-    if( Glob.compat_nmake || Glob.compat_posix ) {
+    if( Glob.compat_nmake
+      || Glob.compat_posix ) {
         return( strncmp( name1, name2, len ) == 0 );
     }
     return( strnicmp( name1, name2, len ) == 0 );
@@ -1259,7 +1282,9 @@ STATIC char *deMacroName( const char *text, const char *name )
         case '(':           /* Possible regular substitution */
             p++;
             /* bracket or colon (for string substitution) after matching name? */
-            if( NMacroNameEq( p, name, len ) && (p[len] == ')' || p[len] == ':') ) {
+            if( NMacroNameEq( p, name, len )
+              && (p[len] == ')'
+              || p[len] == ':') ) {
                 lengthToClose = len;
                 while( p[lengthToClose] != ')' ) {
                     ++lengthToClose;
@@ -1278,7 +1303,8 @@ STATIC char *deMacroName( const char *text, const char *name )
             }
             break;
         default:    /* Possible Microsoft name without parenthesis */
-            if( len == 1 && NMacroNameEq( p, name, 1 ) ) {
+            if( len == 1
+              && NMacroNameEq( p, name, 1 ) ) {
                 WriteNVec( outtext, oldptr, p - 1 - oldptr );
                 temp = GetMacroValue( name );
                 if( temp != NULL ) {
@@ -1327,7 +1353,8 @@ void DefMacro( const char *name )
             EnvOldValue = GetEnvExt( name );
         }
     }
-    if( *name == ENVVAR_C || EnvOldValue != NULL ) {
+    if( *name == ENVVAR_C
+      || EnvOldValue != NULL ) {
         UnGetCHR( '\n' );
         InsString( value, false );
         EnvVarValue = DeMacro( TOK_EOL );

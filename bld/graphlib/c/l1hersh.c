@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -194,7 +194,7 @@ static void DrawChar( char ch, short cx, short cy, short bx, short by,
 
     offset = _CurrFont->key[ch - '!'];
     len = _CurrFont->key[ch - '!' + 1] - offset;
-    data_ptr = (signed char _WCI86FAR *)&_CurrFont->data + offset;
+    data_ptr = _CurrFont->data + offset;
 
     join_points = FALSE;
     while( len > 0 ) {

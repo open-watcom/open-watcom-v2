@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -43,22 +43,19 @@
 #else
     #include <sys/utime.h>
 #endif
+#if defined( __OS2__ )
+    #define INCL_DOSNLS
+    #include "os2.h"
+#elif defined( __NT__ )
+    #include <windows.h>
+#elif defined( __UNIX__ )
+#else
+    #include "tinyio.h"
+#endif
+#include "wdirent.h"
 #include "wio.h"
 #include "watcom.h"
 #include "banner.h"
-#if defined( __OS2__ )
-#include <direct.h>
-#define INCL_DOSNLS
-#include "os2.h"
-#elif defined( __NT__ )
-#include <direct.h>
-#include <windows.h>
-#elif defined( __UNIX__ )
-#include <dirent.h>
-#else
-#include <direct.h>
-#include "tinyio.h"
-#endif
 #include "bool.h"
 #include "touch.h"
 #include "wtmsg.h"

@@ -51,6 +51,8 @@ set PROJDIR=<CWD>
     <CCCMD> linux386/wppppc.sym     "<OWRELROOT>/binl/"
     <CCCMD> linux386/wppppc01.int   "<OWRELROOT>/binl/"
 
+    <CCCMD> bsdx64/wppppc.exe       "<OWRELROOT>/binb64/wppppc"
+    <CCCMD> bsdx64/wppppc01.int     "<OWRELROOT>/binb64/"
     <CCCMD> ntx64.dll/wppppc.exe    "<OWRELROOT>/binnt64/"
     <CCCMD> ntx64.dll/wppdppc.dll   "<OWRELROOT>/binnt64/"
     <CCCMD> ntx64.dll/wppppc01.int  "<OWRELROOT>/binnt64/"

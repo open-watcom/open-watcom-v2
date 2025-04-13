@@ -2,7 +2,7 @@
 *
 *                          Open Watcom Project
 *
-* Copyright (c) 2018-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2018-2024 The Open Watcom Contributors. All Rights Reserved.
 *
 *****************************************************************************/
 // (c) 2016 and later: Unicode, Inc. and others.
@@ -220,7 +220,7 @@ public:
             errorCode=U_MEMORY_ALLOCATION_ERROR;
         }
     }
-#if U_HAVE_RVALUE_REFERENCES
+#ifdef U_HAVE_RVALUE_REFERENCES
     /**
      * Move constructor, leaves src with isNull().
      * @param src source smart pointer
@@ -237,7 +237,7 @@ public:
     ~LocalPointer() {
         delete LocalPointerBase<T>::ptr;
     }
-#if U_HAVE_RVALUE_REFERENCES
+#ifdef U_HAVE_RVALUE_REFERENCES
     /**
      * Move assignment operator, leaves src with isNull().
      * The behavior is undefined if *this and src are the same object.
@@ -369,7 +369,7 @@ public:
             errorCode=U_MEMORY_ALLOCATION_ERROR;
         }
     }
-#if U_HAVE_RVALUE_REFERENCES
+#ifdef U_HAVE_RVALUE_REFERENCES
     /**
      * Move constructor, leaves src with isNull().
      * @param src source smart pointer
@@ -386,7 +386,7 @@ public:
     ~LocalArray() {
         delete[] LocalPointerBase<T>::ptr;
     }
-#if U_HAVE_RVALUE_REFERENCES
+#ifdef U_HAVE_RVALUE_REFERENCES
     /**
      * Move assignment operator, leaves src with isNull().
      * The behavior is undefined if *this and src are the same object.
@@ -499,7 +499,7 @@ public:
  * @see LocalPointer
  * @stable ICU 4.4
  */
-#if U_HAVE_RVALUE_REFERENCES
+#ifdef U_HAVE_RVALUE_REFERENCES
 #define U_DEFINE_LOCAL_OPEN_POINTER(LocalPointerClassName, Type, closeFunction) \
     class LocalPointerClassName : public LocalPointerBase<Type> { \
     public: \

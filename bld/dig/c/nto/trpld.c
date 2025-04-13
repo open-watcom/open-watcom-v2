@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -85,13 +85,13 @@ const static trap_callbacks TrapCallbacks = {
 
 #define DEFEXT      ".trp"
 #define MODSIGN     TRAPSIGN
-#include "../ldrrex.c"      /* PharLap REX format loader */
+#include "ldrrex.c"     /* PharLap REX format loader */
 
 #else
 
 #define DEFEXT      ".trp"
 #define MODINIT     "TrapLoad_"
-#include "../ldrpe.c"       /* PE DLL format loader */
+#include "ldrpe.c"      /* PE DLL format loader */
 
 #endif
 
@@ -99,7 +99,7 @@ const static trap_callbacks TrapCallbacks = {
 
 #define DEFEXT      ".so"
 #define MODINIT     "TrapLoad"
-#include "../ldrso.c"       /* Shared library format loader */
+#include "ldrso.c"      /* Shared library format loader */
 
 #endif
 

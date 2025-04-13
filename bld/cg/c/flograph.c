@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -54,7 +54,7 @@ static  void    Irreducable( void )
     block       *blk;
 
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
-        _MarkBlkAttrNot( blk, BLK_ITERATIONS_KNOWN | BLK_LOOP_HEADER );
+        _MarkBlkAttrClr( blk, BLK_ITERATIONS_KNOWN | BLK_LOOP_HEADER );
         blk->loop_head = NULL;
         blk->depth = 1;
     }
@@ -77,29 +77,39 @@ static  void    NoBlocksToSelf( void )
             next = edge->next_source;
             if( edge->source == blk ) {
                 new_blk = NewBlock( AskForNewLabel(), true );
-                /* set up new block to look like it was generated after blk*/
+                /*
+                 * set up new block to look like it was generated after blk
+                 */
                 _SetBlkAttr( new_blk, BLK_JUMP );
                 new_blk->gen_id = blk->gen_id;
                 new_blk->ins.head.line_num = blk->ins.head.line_num;
                 new_blk->next_block = blk->next_block;
                 new_blk->prev_block = blk;
-                new_blk->targets++;
+                new_blk->targets = 1;
                 new_blk->inputs++;
                 new_blk->input_edges = edge;
-                /* link it after blk*/
+                /*
+                 * link it after blk
+                 */
                 blk->next_block = new_blk;
                 if( new_blk->next_block != NULL ) {
                     new_blk->next_block->prev_block = new_blk;
                 }
-                /* retarget edge to point to new block*/
+                /*
+                 * retarget edge to point to new block
+                 */
                 edge->destination.u.blk = new_blk;
                 edge->flags &= ~DEST_LABEL_DIES;
-                /* set new block to jump from new_blk to blk*/
+                /*
+                 * set new block to jump from new_blk to blk
+                 */
                 new_edge = &new_blk->edge[0];
                 new_edge->flags |= DEST_IS_BLOCK;
                 new_edge->destination.u.blk = blk;
                 new_edge->source = new_blk;
-                /* replace edge with new_edge in blk's input edge list*/
+                /*
+                 * replace edge with new_edge in blk's input edge list
+                 */
                 owner = &blk->input_edges;
                 for( ;; ) {
                     curr = *owner;
@@ -109,7 +119,9 @@ static  void    NoBlocksToSelf( void )
                 }
                 *owner = new_edge;
                 new_edge->next_source = curr->next_source;
-                /* edge is now the only input to new_blk*/
+                /*
+                 * edge is now the only input to new_blk
+                 */
                 edge->next_source = NULL;
             }
         }
@@ -118,8 +130,9 @@ static  void    NoBlocksToSelf( void )
 
 
 static  void    ReturnsToBottom( void )
-/*************************************/
-/* moving return blocks to the bottom*/
+/**************************************
+ * moving return blocks to the bottom
+ */
 {
     block       *curr;
     block       *prev;
@@ -260,7 +273,10 @@ static  bool    FindIntervals( void )
     level = 1;
     for( ;; ) {
         prev_num = num;
-        num = 1;                       /* at least one node at new level */
+        /*
+         * at least one node at new level
+         */
+        num = 1;
         NewInterval( HeadBlock, level );
         for( blk = HeadBlock->next_block; blk != NULL; blk = blk->next_block ) {
             curr = IntervalNo( blk, level - 1 );
@@ -270,19 +286,27 @@ static  bool    FindIntervals( void )
                 add = false;
                 for( ;; ) {
                     test = IntervalNo( edge->source, level - 1 );
-                                                /* guess - internal edge */
+                    /*
+                     * guess - internal edge
+                     */
                     if( test != curr ) {
-                                                /* guess - lower level head */
+                        /*
+                         * guess - lower level head
+                         */
                         test = test->parent;
                         if( test == NULL ) {
                             add = true;
                             break;
                         }
-                                                /* guess - no other predecessor */
+                        /*
+                         * guess - no other predecessor
+                         */
                         if( prev_int == NULL ) {
                             prev_int = test;
                         } else {
-                                                /* guess - different predecessor */
+                            /*
+                             * guess - different predecessor
+                             */
                             if( test != prev_int ) {
                                 add = true;
                                 break;
@@ -301,7 +325,10 @@ static  bool    FindIntervals( void )
                         test = test->next_sub_int;
                     }
                     test->next_sub_int = curr;
-                } else {                        /* admit - create a new interval */
+                } else {
+                    /*
+                     * admit - create a new interval
+                     */
                     NewInterval( blk, level );
                     num ++;
                 }
@@ -317,9 +344,10 @@ static  bool    FindIntervals( void )
 
 
 static  void    ReorderBlocks( void )
-/***********************************/
-/*   Reorder blocks according to the interval ordering */
-/*   This allows each interval to be identified as a continuous range of blocks */
+/************************************
+ * Reorder blocks according to the interval ordering
+ * This allows each interval to be identified as a continuous range of blocks
+ */
 {
     interval_def        *curr;
     block               *last_block;
@@ -382,19 +410,19 @@ static  void    NewInterval( block *blk, level_depth level )
 /**********************************************************/
 {
     interval_def        *prev;
-    interval_def        *new;
+    interval_def        *new_interval;
 
     prev = IntervalNo( blk, level - 1 );
-    new = CGAlloc( sizeof( interval_def ) );
-    new->link = Intervals;
-    Intervals = new;
-    new->sub_int = prev;
-    new->next_sub_int = NULL;
-    new->level = level;
-    new->parent = NULL;
-    new->first_block = blk;
-    new->last_block = blk;
-    prev->parent = new;
+    new_interval = CGAlloc( sizeof( interval_def ) );
+    new_interval->link = Intervals;
+    Intervals = new_interval;
+    new_interval->sub_int = prev;
+    new_interval->next_sub_int = NULL;
+    new_interval->level = level;
+    new_interval->parent = NULL;
+    new_interval->first_block = blk;
+    new_interval->last_block = blk;
+    prev->parent = new_interval;
 }
 
 
@@ -411,14 +439,19 @@ static  void    NestingDepth( void )
 
     for( interval = BlockList->u.interval->parent; interval->parent != NULL; interval = interval->parent ) {
         level = interval->level - 1;
-        /* borrow 'next_block' */
-        /* identify all back edges at this level */
+        /*
+         * borrow 'next_block'
+         * identify all back edges at this level
+         */
         for( blk = BlockList; blk != NULL; blk = blk->prev_block ) {
             blk->next_block = NULL;
             for( i = blk->targets; i-- > 0; ) {
                 edge = &blk->edge[i];
                 target = edge->destination.u.blk;
-                if( target->id <= blk->id ) {     /* if back edge */
+                if( target->id <= blk->id ) {
+                    /*
+                     * back edge
+                     */
                     if( edge->join_level == level ) {
                         blk->next_block = target;
                         if( blk->loop_head == NULL ) {
@@ -444,7 +477,7 @@ static  void    NestingDepth( void )
                                 if( blk->loop_head == NULL && blk != target ) {
                                     blk->loop_head = target;
                                 }
-                                _MarkBlkAttr( target, BLK_LOOP_HEADER );
+                                _MarkBlkAttrSet( target, BLK_LOOP_HEADER );
                                 change = true;
                                 break;
                             }
@@ -454,9 +487,9 @@ static  void    NestingDepth( void )
             }
         } while( change );
     }
-
-/*   Restore 'next_block' */
-
+    /*
+     * Restore 'next_block'
+     */
     HeadBlock = NULL;
     for( blk = BlockList; blk != NULL; blk = blk->prev_block ) {
         blk->next_block = HeadBlock;
@@ -538,7 +571,9 @@ void    MakeFlowGraph( void )
                 Irreducable();
             }
        } else {
-            /* irreducable flow graph. repair prev_block links */
+            /*
+             * irreducable flow graph. repair prev_block links
+             */
             Irreducable();
         }
         KillIntervals();

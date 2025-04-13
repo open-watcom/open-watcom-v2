@@ -23,11 +23,11 @@ additional_clean = *.grc
 
 inc_dirs = -I"../h"
 
-extra_cpp_flags_mem = $(trmem_cpp_flags)
+extra_cpp_flags_f_mem = $(trmem_cpp_flags)
 
 extra_cxx_flags = -xs
 
-extra_c_flags_mem   = $(trmem_cover_cflags)
+extra_c_flags_f_mem   = $(trmem_cover_cflags)
 
 # explicit rules
 #################

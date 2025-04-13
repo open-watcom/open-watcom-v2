@@ -5,8 +5,6 @@ tree_depth = 5
 host_os  = nt
 host_cpu = x64
 
-target_cpu = x64
-
 sys_dll = 1
 
 #

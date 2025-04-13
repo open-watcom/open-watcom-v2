@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,14 +40,20 @@ WResDirWindow WResFirstResource( WResDir currdir )
     WResDirWindow   wind;
 
     wind.CurrType = currdir->Head;
-    wind.CurrRes = wind.CurrType->Head;
-    wind.CurrLang = wind.CurrRes->Head;
+    if( wind.CurrType != NULL ) {
+        wind.CurrRes = wind.CurrType->Head;
+        wind.CurrLang = wind.CurrRes->Head;
+    } else {
+        wind.CurrRes = NULL;
+        wind.CurrLang = NULL;
+    }
 
     return( wind );
 }
 
-void WResSetEmptyWindow( WResDirWindow *wind ) {
-/***********************************************/
+void WResSetEmptyWindow( WResDirWindow *wind )
+/********************************************/
+{
     if( wind != NULL ) {
         wind->CurrType = NULL;
         wind->CurrRes = NULL;

@@ -164,7 +164,7 @@ bool    DoScore( block *blk )
          */
         if( _OpIsCondition( ins->head.opcode ) && ins->result == NULL ) {
             if( had_condition ) {
-                _MarkBlkAttr( blk, BLK_MULTIPLE_EXITS );
+                _MarkBlkAttrSet( blk, BLK_MULTIPLE_EXITS );
             }
             had_condition = true;
         }

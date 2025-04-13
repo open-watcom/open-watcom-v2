@@ -76,7 +76,8 @@ static void begin_thread_helper( void *param )
     start_addr = (__thread_fn *)td->start_addr;
     arg = td->argument;
     thread_handle = td->thread_handle;
-    RdosSetSignal( td->signal );
+    if( td->signal )
+        RdosSetSignal( td->signal );
 
     tdata = (thread_data *)RdosAllocateMem( __ThreadDataSize );
 
@@ -144,6 +145,80 @@ int __CBeginThread( thread_fn *start_addr, int prio, const char *thread_name,
     free( td );
 
     return( th );
+}
+
+
+#pragma aux begin_timer_thread_helper "*" \
+    __parm      [__esi] [__edi] \
+    __modify    [__eax __ebx __ecx __edx __esi __edi]
+
+static void begin_timer_thread_helper( void *args, void *param )
+/********************************************************/
+{
+    thread_args         *td = (thread_args *)args;
+    __thread_fn         *start_addr;
+    thread_data         *tdata;
+    int                 thread_handle;
+    REGISTRATION_RECORD rr;
+
+    td->tid = RdosGetThreadHandle();
+    start_addr = (__thread_fn *)td->start_addr;
+    thread_handle = td->thread_handle;
+    if( td->signal )
+        RdosSetSignal( td->signal );
+
+    tdata = (thread_data *)RdosAllocateMem( __ThreadDataSize );
+
+    if( tdata != NULL ) {
+        memset( tdata, 0, __ThreadDataSize );
+        tdata->__data_size = __ThreadDataSize;
+
+        if( !__RdosAddThread( tdata ) ) {
+                // print runtime error message now ?
+            return;
+        }
+    }
+
+    // now get the thread_data ptr the 'standard' way -- this may cause
+    // a new thread_data structure to be allocated on heap:
+    tdata = __THREADDATAPTR;
+    if( tdata == NULL ) {
+        // this is a library runtime error, should we print an error message ?
+        return;
+    }
+
+    __NewExceptionFilter( &rr );
+    __sig_init_rtn(); // fills in a thread-specific copy of signal table
+    (*start_addr)( param );
+    _endthread();
+    return;
+}
+
+void __CBeginTimerThread( thread_fn *start_addr )
+/************************************************************/
+{
+    thread_args td;
+    int         wait_handle;
+
+    if( __TlsIndex == NO_INDEX ) {
+        if( !__RdosThreadInit() )
+            return;
+        __InitMultipleThread();
+    }
+
+    wait_handle = RdosCreateWait();
+
+    td.start_addr = start_addr;
+    td.argument = 0;
+    td.signal = RdosCreateSignal();
+    RdosResetSignal( td.signal );
+    RdosAddWaitForSignal( wait_handle, td.signal, 0 );
+
+    if( __create_timer_thread( begin_timer_thread_helper, &td ) )
+        RdosWaitForever( wait_handle );
+
+    RdosFreeSignal( td.signal );
+    RdosCloseWait( wait_handle );
 }
 
 void __CEndThread( void )

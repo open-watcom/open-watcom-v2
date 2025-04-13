@@ -184,8 +184,8 @@ static  bool    FindFlowOut( block *blk ) {
     new_edge->next_source = NULL;
     join_blk->input_edges = new_edge;
     join_blk->inputs = 1;
-    _MarkBlkAttrNot( blk, BLK_CONDITIONAL );
-    _MarkBlkAttr( blk, BLK_JUMP );
+    _MarkBlkAttrClr( blk, BLK_CONDITIONAL );
+    _MarkBlkAttrSet( blk, BLK_JUMP );
     return( true );
 }
 

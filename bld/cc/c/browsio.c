@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -436,7 +436,7 @@ dw_client DwarfInit( void )
         dw_sections[sect].offset    = 0;
         dw_sections[sect].length    = 0;
     }
-    info.language = DWLANG_C;
+    info.language = DW_LANG_C89;
     info.compiler_options = DW_CM_BROWSER;
     info.producer_name = DWARF_PRODUCER_ID " V1";
     memcpy( JMPBUF_PTR( info.exception_handler ), Environment, sizeof( jmp_buf ) );
@@ -479,7 +479,7 @@ dw_client DwarfInit( void )
     cu.flags           = 1;
     cu.offset_size     = TARGET_NEAR_POINTER;
     cu.segment_size    = 0;
-    cu.model           = DW_MODEL_NONE;
+    cu.model           = DW_MEM_MODEL_none;
     cu.inc_list        = inclist;
     cu.inc_list_len    = incsize;
     cu.dbg_pch         = NULL;

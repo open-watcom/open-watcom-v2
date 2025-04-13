@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -63,6 +63,11 @@
 
 #define CheckEqSymLevel(p)  ((p)->level == (id_level_type)SymLevel)
 #define CheckLtSymLevel(p)  ((p)->level < (id_level_type)SymLevel)
+
+#ifdef DEVBUILD
+    #define __xstr(x)   #x
+    #define __location  " (" __FILE__ "," __xstr(__LINE__) ")"
+#endif
 
 /* Macros to skip all typedefs and arrive at the underlying type */
 #define SKIP_TYPEDEFS( typeptr )                    \
@@ -145,7 +150,7 @@ global DATA_TYPE    ConstType;
 global unsigned     Constant;
 global uint64       Constant64;
 global FCB          *MainSrcFile;       /* primary source file being compiled */
-global FCB          *SrcFile;
+global FCB          *SrcFiles;
 global char         *SrcFName;          /* source file name without suffix */
 global char         *DefFName;          /* .def file name (prototypes) */
 global char         *WholeFName;        /* whole file name with suffix */
@@ -407,7 +412,6 @@ extern void         CloseSrcFile( FCB * );
 extern void         OpenDefFile( void );
 extern FILE         *OpenBrowseFile( void );
 extern void         CloseFiles( void );
-extern void         CClose( FILE *fp );
 extern void         FreeFNames( void );
 extern char         *ErrFileName( void );
 extern char         *DepFileName( void );
@@ -710,7 +714,7 @@ extern bool         InitPPScan( void );
 extern void         FiniPPScan( bool );
 extern id_hash_idx  CalcHashID( const char * );
 extern mac_hash_idx CalcHashMacro( const char * );
-extern unsigned     hashpjw( const char * );
+extern str_hash_idx CalcStringHash( STR_HANDLE lit );
 extern void         SkipAhead( void );
 extern TOKEN        ScanToken( void );
 extern void         ReScanInit( const char * );
@@ -759,7 +763,7 @@ extern SYMPTR       SymGetPtr( SYM_HANDLE );
 extern void         SymReplace( SYMPTR, SYM_HANDLE );
 extern void         EndBlock( void );
 extern SYM_HANDLE   MakeFunction( const char *, TYPEPTR );
-extern SYM_HANDLE   MakeNewSym( SYMPTR, char, TYPEPTR, stg_classes );
+extern SYM_HANDLE   MakeNewDotSym( SYMPTR, char, TYPEPTR, stg_classes );
 extern LABELPTR     LkLabel( const char * );
 extern void         FreeLabels( void );
 extern XREFPTR      NewXref( XREFPTR );

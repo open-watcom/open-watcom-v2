@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -179,7 +179,7 @@ vi_rc SelectFileOpen( const char *dir, char **result_ptr, const char *mask, bool
  */
 static vi_rc displayGenericLines( file *f, list_linenum pagetop, int leftcol,
                                 list_linenum hi_line, type_style *hilight_style, hichar *hi_list,
-                                char **vals, size_t valoff )
+                                const char **vals, size_t valoff )
 {
     int             j;
     size_t          k;
@@ -319,10 +319,12 @@ static bool SelectLineMouseHandler( window_id wid, int win_x, int win_y )
             } else if( win_y == y - 2 ) {
                 mouseScroll = MS_EXPOSEDOWN;
                 return( true );
-            } else if( win_y > 1 && win_y < y / 2 ) {
+            } else if( win_y > 1
+              && win_y < y / 2 ) {
                 mouseScroll = MS_PAGEUP;
                 return( true );
-            } else if( win_y >= y / 2 && win_y < y - 1 ) {
+            } else if( win_y >= y / 2
+              && win_y < y - 1 ) {
                 mouseScroll = MS_PAGEDOWN;
                 return( true );
             }
@@ -538,9 +540,11 @@ vi_rc SelectLineInFile( selflinedata *sfd )
             if( hiflag && ((key >= VI_KEY( ALT_A ) && key <= VI_KEY( ALT_Z )) ||
                            (key >= VI_KEY( a ) && key <= VI_KEY( z )) || (key >= VI_KEY( A ) && key <= VI_KEY( Z )) ||
                            (key >= VI_KEY( 1 ) && key <= VI_KEY( 9 ))) ) {
-                if( key >= VI_KEY( ALT_A ) && key <= VI_KEY( ALT_Z ) ) {
+                if( key >= VI_KEY( ALT_A )
+                  && key <= VI_KEY( ALT_Z ) ) {
                     key2 = key - VI_KEY( ALT_A ) + 'A';
-                } else if( key >= VI_KEY( a ) && key <= VI_KEY( z ) ) {
+                } else if( key >= VI_KEY( a )
+                  && key <= VI_KEY( z ) ) {
                     key2 = key - VI_KEY( a ) + 'A';
                 } else {
                     key2 = key;
@@ -696,7 +700,8 @@ vi_rc SelectLineInFile( selflinedata *sfd )
                         MoveWindowToFront( fs_select_window_id );
                     }
                     if( rc == ERR_NO_ERR ) {
-                        ReplaceString( &(sfd->vals[cln - 1]), tmp );
+                        MemFree( (void *)sfd->vals[cln - 1] );
+                        sfd->vals[cln - 1] = DupString( tmp );
                         redraw = true;
                     }
                     break;

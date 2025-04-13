@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -233,16 +233,20 @@ vi_rc DoLastEvent( void )
 
     if( LastEvent >= MAX_EVENTS ) {
         rc = InvalidKey();
-    } else if( !EditFlags.Modeless && EditFlags.InsertModeActive ) {
+    } else if( !EditFlags.Modeless
+      && EditFlags.InsertModeActive ) {
 //        UnselectRegion();
         if( EditFlags.EscapedInsertChar ) {
             rc = IMChar();
-        } else if( InputKeyMaps[LastEvent].data != NULL && !InputKeyMaps[LastEvent].inuse ) {
+        } else if( InputKeyMaps[LastEvent].data != NULL
+          && !InputKeyMaps[LastEvent].inuse ) {
             rc = StartInputKeyMap( LastEvent );
         } else {
             rc = (EventList[LastEvent].ins)();
         }
-    } else if( !EditFlags.Modeless && KeyMaps[LastEvent].data != NULL && !KeyMaps[LastEvent].inuse ) {
+    } else if( !EditFlags.Modeless
+      && KeyMaps[LastEvent].data != NULL
+      && !KeyMaps[LastEvent].inuse ) {
         rc = DoKeyMap( LastEvent );
     } else {
         event = &EventList[LastEvent];
@@ -309,7 +313,8 @@ void DoneLastEvent( vi_rc rc, bool is_dotmode )
         if( !is_dotmode ) {
             if( EditFlags.DotMode ) {
                 EditFlags.DotMode = false;
-            } else if( EditFlags.Dotable && !EditFlags.MemorizeMode ) {
+            } else if( EditFlags.Dotable
+              && !EditFlags.MemorizeMode ) {
                 SaveDotCmd();
             }
         }

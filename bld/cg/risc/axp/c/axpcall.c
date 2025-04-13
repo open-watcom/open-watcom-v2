@@ -134,7 +134,7 @@ instruction    *PushOneParm( instruction *ins, name *curr, type_class_def type_c
                                         type_length offset, call_state *state )
 /******************************************************************************/
 {
-    instruction *new;
+    instruction *new_ins;
     name        *dst;
     name        *stack_reg;
 
@@ -142,9 +142,9 @@ instruction    *PushOneParm( instruction *ins, name *curr, type_class_def type_c
 
     stack_reg = AllocRegName( StackReg() );
     dst = AllocIndex( stack_reg, NULL, offset, type_class );
-    new = MakeMove( curr, dst, type_class );
-    SuffixIns( ins, new );
-    return( new );
+    new_ins = MakeMove( curr, dst, type_class );
+    SuffixIns( ins, new_ins );
+    return( new_ins );
 }
 
 name    *StReturn( an retval, const type_def *tipe, instruction **pins )

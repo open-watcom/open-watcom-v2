@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,6 +41,7 @@
 #include "bool.h"
 #include "dw.h"
 #include "dwarf.h"
+#include "roundmac.h"
 #include "testcli.h"
 
 extern bool byte_swap;
@@ -48,16 +50,6 @@ typedef struct {
     uint_32     value;
     char        *name;
 } readable_name;
-
-#include "pushpck1.h"
-typedef struct arange_header {
-    uint_32     len;
-    uint_16     version;
-    uint_32     dbg_pos;
-    uint_8      addr_size;
-    uint_8      seg_size;
-} _WCUNALIGNED arange_header;
-#include "poppck.h"
 
 #define table( x )      { x, #x }
 
@@ -603,7 +595,7 @@ static void dumpInfo( const uint_8 *input, uint length ) {
                     p = DecodeULEB128( p, &tmp );
                     printf( "\t%08lx\n", tmp );
                     break;
-                case DW_FORM_ref_addr:  //KLUDGE should really check addr_size
+                case DW_FORM_ref_addr:  //KLUDGE should really check offset_size
                     printf( "\t%08lx\n", getU32( (uint_32 *)p ) );
                     p += sizeof(uint_32);
                     break;
@@ -1073,20 +1065,23 @@ static const uint_8 *dumpSegAddr( const uint_8 *input, uint_8 addrsize, uint_8 s
 static void dumpARanges( const uint_8 *input, uint length )
 {
     const uint_8    *p;
-    const uint_8    *q;
     const uint_8    *cu_ar_end;
     uint_32         cu;
-    uint_32         tmp;
     uint_32         tuple_size;
     uint_32         padding;
-    arange_header   ar_header;
+    uint_32         arange_len;
+    uint_32         arange_debug_offset;
+    uint_16         arange_version;
+    uint_8          arange_offset_size;
+    uint_8          arange_segment_size;
+    int             i;
 
     p = input;
 
     if( (input == NULL) || (length == 0) )
         return;
 
-    if( length < sizeof( ar_header ) ) {
+    if( length < sizeof( arange_prolog ) ) {
         printf( ".debug_aranges section too small!\n" );
         return;
     }
@@ -1097,59 +1092,50 @@ static void dumpARanges( const uint_8 *input, uint length )
         ++cu;
         printf( "Compilation Unit %d\n", cu );
 
-        ar_header.len = getU32( (uint_32 *)p );
+        cu_ar_end = p
+        arange_len = getU32( (uint_32 *)p );
         p += sizeof( uint_32 );
-        ar_header.version = getU16( (uint_16 *)p );
+        arange_version = getU16( (uint_16 *)p );
         p += sizeof( uint_16 );
-        ar_header.dbg_pos = getU32( (uint_32 *)p );
+        arange_debug_offset = getU32( (uint_32 *)p );
         p += sizeof( uint_32 );
-        ar_header.addr_size = *p;
+        arange_offset_size = *p;
         p += sizeof( uint_8 );
-        ar_header.seg_size = *p;
+        arange_segment_size = *p;
         p += sizeof( uint_8 );
 
-        printf( "  length:    %08lx\n", ar_header.len );
-        printf( "  version:   %04x\n", ar_header.version );
-        printf( "  dbg_pos:   %08lx\n", ar_header.dbg_pos );
-        printf( "  addr_size: %02x\n", ar_header.addr_size );
-        printf( "  seg_size:  %02x\n", ar_header.seg_size );
-
-        /* tuples should be aligned on twice the size of a tuple; some Watcom
+        printf( "  length:       %08lx\n", arange_len );
+        printf( "  version:      %04x\n", arange_version );
+        printf( "  debug_offset: %08lx\n", arange_debug_offset );
+        printf( "  offset_size:  %02x\n", arange_offset_size );
+        printf( "  segment_size: %02x\n", arange_segment_size );
+        /*
+         * header should be aligned on the size of a tuple; some Watcom
          * versions didn't do this right!
          */
-        tuple_size = (ar_header.addr_size + ar_header.seg_size) * 2;
-        q = (const uint_8 *)(((uint_32)p + tuple_size - 1) & ~(tuple_size - 1));
-        padding = q - p;
+        tuple_size = arange_segment_size + 2 * arange_offset_size;
+        i = p - cu_ar_end;
+        padding = __ROUND_UP_SIZE( sizeof( arange_prolog ), tuple_size ) - sizeof( arange_prolog );
 
         /* check if padding contains non-zero data */
-        if( padding ) {
-            switch( ar_header.addr_size ) {
-            case 4:
-                tmp = getU32( (uint_32 *)p );
-                break;
-            case 2:
-                tmp = getU16( (uint_16 *)p );
-                break;
-            default:
-                printf( "Unknown address size\n" );
-                return;
-            }
-            /* padding is missing! */
-            if( tmp ) {
+        for( i = 0; i < padding; i++ ) {
+            if( p[i] ) {
+                /* padding by zero bytes is missing! */
                 padding = 0;
-            }
+                break;
+           	}
         }
 
         p += padding;
-        cu_ar_end = p - sizeof( ar_header ) + sizeof( ar_header.len ) + ar_header.len - padding;
+        cu_ar_end += sizeof( uint_32 ) + arange_len;
 
         while( p < cu_ar_end ) {
             /* range address */
             printf( "\t" );
-            p = dumpSegAddr( p, ar_header.addr_size, ar_header.seg_size );
+            p = dumpSegAddr( p, arange_offset_size, arange_segment_size );
             /* range length */
             printf( "\t" );
-            switch( ar_header.addr_size ) {
+            switch( arange_offset_size ) {
             case 4:
                 tmp = getU32( (uint_32 *)p );
                 p += sizeof( uint_32 );
@@ -1162,7 +1148,7 @@ static void dumpARanges( const uint_8 *input, uint length )
                 break;
             default:
                 printf( "Unknown address size\n" );
-                p += ar_header.addr_size;
+                p += arange_offset_size;
                 return;
             }
         }

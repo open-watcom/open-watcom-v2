@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -43,31 +43,35 @@
 
 void    PointEdge( block_edge *edge, block *new_dest )
 /*****************************************************
-    Make edge point to block new_dest
-*/
+ * Make edge point to block new_dest
+ */
 {
-    /* hook edge into new destination's input list*/
+    /*
+     * hook edge into new destination's input list
+     */
     edge->next_source = new_dest->input_edges;
     new_dest->input_edges = edge;
     new_dest->inputs++;
-    /* point edge at new block*/
+    /*
+     * point edge at new block
+     */
     edge->destination.u.blk = new_dest;
-    edge->flags = DEST_IS_BLOCK;
-    edge->source->targets++;
 }
 
 void    RemoveEdge( block_edge *edge )
 /*************************************
-    Remove the given edge from it's block.
-*/
+ * Remove the given edge from it's block.
+ */
 {
     block_edge  *curr;
     block_edge  **owner;
 
-    /* unhook edge from its old destination's input list*/
+    /*
+     * unhook edge from its old destination's input list
+     */
     if( edge->flags & DEST_IS_BLOCK ) {
         owner = &edge->destination.u.blk->input_edges;
-        for(;;) {
+        for( ;; ) {
             curr = *owner;
             if( curr == edge )
                 break;
@@ -81,19 +85,21 @@ void    RemoveEdge( block_edge *edge )
 
 void    MoveEdge( block_edge *edge, block *new_dest )
 /****************************************************
-    Move edge to point to block new_dest
-*/
+ * Move edge to point to block new_dest
+ */
 {
     RemoveEdge( edge );
+    edge->flags = DEST_IS_BLOCK;
+    edge->source->targets++;
     PointEdge( edge, new_dest );
 }
 
 block   *SplitBlock( block *blk, instruction *ins )
 /**************************************************
-    Split a block in two before the given instruction. The first block
-    will simply jump to the second block, which will receive all the
-    edges from the previous block.
-*/
+ * Split a block in two before the given instruction. The first block
+ * will simply jump to the second block, which will receive all the
+ * edges from the previous block.
+ */
 {
     block       *new_blk;
     block_edge  *edge;
@@ -101,19 +107,22 @@ block   *SplitBlock( block *blk, instruction *ins )
     block_num   i;
 
     new_blk = MakeBlock( AskForNewLabel(), blk->targets );
-    Copy( blk, new_blk, sizeof( block ) + ( sizeof( block_edge ) * ( blk->targets - 1 ) ) );
+    Copy( blk, new_blk, BLOCK_SIZE( blk->targets ) );
     new_blk->next_block = blk->next_block;
     new_blk->prev_block = blk;
     blk->next_block = new_blk;
     new_blk->next_block->prev_block = new_blk;
-    _MarkBlkAttrNot( blk, BLK_CONDITIONAL | BLK_RETURN | BLK_SELECT | BLK_LOOP_EXIT | BLK_UNKNOWN_DESTINATION );
-    _MarkBlkAttr( blk, BLK_JUMP );
-    blk->targets = 1;
-    _MarkBlkAttrNot( new_blk, BLK_LOOP_HEADER );
+    _MarkBlkAttrClr( blk, BLK_CONDITIONAL | BLK_RETURN | BLK_SELECT | BLK_LOOP_EXIT | BLK_UNKNOWN_DESTINATION );
+    _MarkBlkAttrSet( blk, BLK_JUMP );
+    _MarkBlkAttrClr( new_blk, BLK_LOOP_HEADER );
     new_blk->inputs = 0;
     new_blk->input_edges = NULL;
     new_blk->id = NO_BLOCK_ID;
-    PointEdge( &blk->edge[0], new_blk );
+    blk->targets = 1;
+    edge = &blk->edge[0];
+    edge->flags = DEST_IS_BLOCK;
+    edge->source->targets++;
+    PointEdge( edge, new_blk );
     edge = &new_blk->edge[0];
     for( i = 0; i < new_blk->targets; ++i ) {
         edge->source = new_blk;

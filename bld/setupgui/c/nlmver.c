@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -187,7 +187,7 @@ static bool CheckNewer( const VBUF *newNLM, const VBUF *oldNLM )
 bool CheckInstallNLM( const VBUF *name, vhandle var_handle )
 {
     VBUF        unpacked_as;
-    VBUF        temp;
+    VBUF        temp_vbuf;
     VBUF        drive;
     VBUF        dir;
     VBUF        fname;
@@ -195,7 +195,7 @@ bool CheckInstallNLM( const VBUF *name, vhandle var_handle )
     bool        cancel;
 
     VbufInit( &unpacked_as );
-    VbufInit( &temp );
+    VbufInit( &temp_vbuf );
     VbufInit( &drive );
     VbufInit( &dir );
     VbufInit( &fname );
@@ -203,18 +203,18 @@ bool CheckInstallNLM( const VBUF *name, vhandle var_handle )
 
     cancel = false;
     VbufSplitpath( name, &drive, &dir, &fname, &ext );
-    VbufConcStr( &temp, "_N_" );
-    VbufMakepath( &unpacked_as, &drive, &dir, &fname, &temp );
+    VbufConcStr( &temp_vbuf, "_N_" );
+    VbufMakepath( &unpacked_as, &drive, &dir, &fname, &temp_vbuf );
     if( CheckNewer( &unpacked_as, name ) ) {
         VbufSetStr( &dir, sysPath );
-        VbufMakepath( &temp, NULL, &dir, &fname, &ext );
-        if( CheckNewer( &unpacked_as, &temp ) ) {
+        VbufMakepath( &temp_vbuf, NULL, &dir, &fname, &ext );
+        if( CheckNewer( &unpacked_as, &temp_vbuf ) ) {
             chmod_vbuf( name, PMODE_RWX );
-            DoCopyFile( &unpacked_as, name, false );
-            VbufSetVbuf( &temp, &fname );
-            VbufConcStr( &temp, "_NLM_installed" );
-            SetBoolVariableByName_vbuf( &temp, true );
-            SetVariableByHandle_vbuf( var_handle, &temp );
+            DoCopyFile( &unpacked_as, name, COPY_NORMAL );
+            VbufSetVbuf( &temp_vbuf, &fname );
+            VbufConcStr( &temp_vbuf, "_NLM_installed" );
+            SetBoolVariableByName_vbuf( &temp_vbuf, true );
+            SetVariableByHandle_vbuf( var_handle, &temp_vbuf );
         }
     }
     remove_vbuf( &unpacked_as );
@@ -223,7 +223,7 @@ bool CheckInstallNLM( const VBUF *name, vhandle var_handle )
     VbufFree( &fname );
     VbufFree( &dir );
     VbufFree( &drive );
-    VbufFree( &temp );
+    VbufFree( &temp_vbuf );
     VbufFree( &unpacked_as );
     return( cancel );
 }

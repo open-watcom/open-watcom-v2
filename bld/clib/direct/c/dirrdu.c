@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -32,7 +32,7 @@
 #include "variety.h"
 #include <stdlib.h>
 #include <string.h>
-#include <direct.h>
+#include <dirent.h>
 #include <rdos.h>
 #include "liballoc.h"
 #include "pathmac.h"
@@ -127,40 +127,43 @@ static int IsMatch( struct dirent *dir, const char *fname )
 
 static int GetSingleFile( struct dirent *dir )
 {
-    for( ;; ) {
-        if( RdosReadDir( dir->d_handle,
-                     dir->d_entry_nr,
-                     NAME_MAX,
-                     dir->d_name,
-                     &dir->d_size,
-                     &dir->d_attr,
-                     &dir->d_msb_time,
-                     &dir->d_lsb_time ) ) {
+    struct RdosDirEntry *entry;
 
-            if( IsMatch( dir, dir->d_name ) ) {
-                return( 1 );
-            } else {
-                dir->d_entry_nr++;
-            }
+    while( dir->d_entry_nr < dir->d_entry_count ) {
+        entry = (struct RdosDirEntry *)dir->d_entry_chain;
+        if( IsMatch( dir, entry->PathName ) ) {
+            dir->d_ino = entry->Inode;
+            dir->d_size = entry->Size;
+            dir->d_create_time = entry->CreateTime;
+            dir->d_modify_time = entry->ModifyTime;
+            dir->d_access_time = entry->AccessTime;
+            dir->d_attr = entry->Attrib;
+            strncpy(dir->d_name, entry->PathName, NAME_MAX);
+            dir->d_name[NAME_MAX] = 0;
+            return( 1 );
         } else {
-            return( 0 );
+            dir->d_entry_nr++;
+            dir->d_entry_chain += dir->d_header_size;
+            dir->d_entry_chain += entry->PathNameSize;
         }
     }
+    return( 0 );
 }
 
 _WCRTLINK DIR *opendir( const char *name )
 {
-    DIR             *parent;
-    int             handle;
-    char            *ptr;
-    int             size;
-    char            tmp[NAME_MAX + 1];
+    DIR                *parent;
+    struct RdosDirInfo dinf;
+    int                handle;
+    char               *ptr;
+    int                size;
+    char               tmp[NAME_MAX + 1];
 
     parent = lib_malloc( sizeof( DIR ) );
     if( parent == NULL )
         return( NULL );
 
-    handle = RdosOpenDir( name );
+    handle = RdosOpenDir( name, &dinf );
 
     if( handle == 0 ) {
         strcpy( tmp, name );
@@ -178,9 +181,9 @@ _WCRTLINK DIR *opendir( const char *name )
             _strupr( ptr );
             strcpy( parent->d_match_mask, ptr );
             *ptr = 0;
-            handle = RdosOpenDir( tmp );
+            handle = RdosOpenDir( tmp, &dinf );
         } else {
-            handle = RdosOpenDir( "." );
+            handle = RdosOpenDir( ".", &dinf );
             strcpy( tmp, name );
             _strupr( tmp );
             strcpy( parent->d_match_mask, tmp );
@@ -195,7 +198,11 @@ _WCRTLINK DIR *opendir( const char *name )
     }
 
     parent->d_handle = handle;
-    parent->d_entry_nr = -1;
+    parent->d_entry_nr = 0;
+    parent->d_entry_count = dinf.Count;
+    parent->d_header_size = dinf.HeaderSize;
+    parent->d_entry_head = (char *)dinf.Entry;
+    parent->d_entry_chain = (char *)dinf.Entry;
     return( parent );
 }
 
@@ -217,7 +224,8 @@ _WCRTLINK struct dirent *readdir( DIR *parent )
 _WCRTLINK void rewinddir( DIR *dirp )
 {
     if( dirp != NULL ) {
-        dirp->d_entry_nr = -1;
+        dirp->d_entry_nr = 0;
+        dirp->d_entry_chain = dirp->d_entry_head;
     }
 }
 

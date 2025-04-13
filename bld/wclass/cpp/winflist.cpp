@@ -60,33 +60,33 @@ WEXPORT WInfiniteList::WInfiniteList( WWindow* prt, const WRect& r, char * t,
     show();
 }
 
-WInfiniteList::~WInfiniteList() {
-/*******************************/
-
+WInfiniteList::~WInfiniteList()
+/*****************************/
+{
     _context.deleteContents();
 }
 
-bool WInfiniteList::gettingFocus( WWindow * ) {
-/*********************************************/
-
+bool WInfiniteList::gettingFocus( WWindow * )
+/*******************************************/
+{
     return( false );
 }
 
 /*
  * count -- return how many items are currently loaded
  */
-int WInfiniteList::count() {
-/***************************/
-
+int WInfiniteList::count()
+/************************/
+{
     return( getLastIndex() + 1 );
 }
 
 /*
  * reset -- kill current contents, then re-load
  */
-void WInfiniteList::reset() {
-/***************************/
-
+void WInfiniteList::reset()
+/*************************/
+{
     _selected = -1;
     _top = 0;
     _full = false;
@@ -100,9 +100,9 @@ void WInfiniteList::reset() {
  * load -- load up an existing context, or load a new one
  *         and add it to the end
  */
-void WInfiniteList::load( int contextIdx ) {
-/***********************************************/
-
+void WInfiniteList::load( int contextIdx )
+/****************************************/
+{
     WObject * prevCtxt;
     WObject * newCtxt;
     WVList *  newList;
@@ -122,7 +122,7 @@ void WInfiniteList::load( int contextIdx ) {
         newCtxt = (_fillClient->*_fill)( newList, prevCtxt, _loadSize );
 
         myContext->reLoad( newList );
-        if( newCtxt ) {
+        if( newCtxt != NULL ) {
             _context.add( new Context( NULL, newCtxt ) );
         }
     } else {
@@ -138,7 +138,7 @@ void WInfiniteList::load( int contextIdx ) {
         newCtxt = (_fillClient->*_fill)( newList, prevCtxt, _loadSize );
 
         myContext->reLoad( newList );
-        if( contextIdx == _context.count() - 1  && newCtxt ) {
+        if( contextIdx == _context.count() - 1  && newCtxt != NULL ) {
             _context.add( new Context( NULL, newCtxt ) );
         }
     }
@@ -153,23 +153,23 @@ void WInfiniteList::load( int contextIdx ) {
     }
 }
 
-void WInfiniteList::unLoadAllBut( int contextIdx ) {
-/*******************************************************/
-
-    #if 0   // has a bug, don't unload till fixed NYI ITB
+void WInfiniteList::unLoadAllBut( int contextIdx )
+/************************************************/
+{
+#if 0   // has a bug, don't unload till fixed NYI ITB
     for( int i = 0; i < _context.count(); i += 1 ) {
         if( i < contextIdx - 1 || i > contextIdx + 1 ) {
             ((Context *)_context[i])->unLoad();
         }
     }
-    #else
+#else
     /* unused parameters */ (void)contextIdx;
-    #endif
+#endif
 }
 
-WObject * WInfiniteList::getObject( int index ) {
-/****************************************************/
-
+WObject * WInfiniteList::getObject( int index )
+/*********************************************/
+{
     int ctxtIdx = index / _loadSize;
     int offset = index % _loadSize;
     Context *   ctxt;
@@ -198,28 +198,28 @@ WObject * WInfiniteList::getObject( int index ) {
     }
 }
 
-int WInfiniteList::getLastIndex() {
-/**************************************/
-
+int WInfiniteList::getLastIndex()
+/*******************************/
+{
     return( (_context.count() - 1) * _loadSize + _extra - 1 );
 }
 
-const char * WInfiniteList::getString( int index ) {
-/*******************************************************/
-
+const char * WInfiniteList::getString( int index )
+/************************************************/
+{
     WObject * obj;
     obj = getObject( index );
 
-    if( obj ) {
+    if( obj != NULL ) {
         return( (_fillClient->*_name)( obj ) );
     } else {
         return( NULL );
     }
 }
 
-bool WInfiniteList::paint() {
-/***************************/
-
+bool WInfiniteList::paint()
+/*************************/
+{
     const char *    str;
     int             maxRows = getRows() + _top;
     int             width;
@@ -248,8 +248,8 @@ bool WInfiniteList::paint() {
     return( true );
 }
 
-bool WInfiniteList::mouseMove( int x, int y, WMouseKeyFlags ) {
-
+bool WInfiniteList::mouseMove( int x, int y, WMouseKeyFlags )
+{
     if( _leftDown ) {
         int         row = getRow( WPoint( x, y ) );
         int         oldSel = _selected;
@@ -279,9 +279,9 @@ bool WInfiniteList::mouseMove( int x, int y, WMouseKeyFlags ) {
     }
 }
 
-bool WInfiniteList::leftBttnDn( int x, int y, WMouseKeyFlags f ) {
-/********************************************************************/
-
+bool WInfiniteList::leftBttnDn( int x, int y, WMouseKeyFlags f )
+/**************************************************************/
+{
     _leftDown = true;
 
     mouseMove( x, y, f );
@@ -289,9 +289,9 @@ bool WInfiniteList::leftBttnDn( int x, int y, WMouseKeyFlags f ) {
     return( true );
 }
 
-bool WInfiniteList::leftBttnUp( int x, int y, WMouseKeyFlags f ) {
-/********************************************************************/
-
+bool WInfiniteList::leftBttnUp( int x, int y, WMouseKeyFlags f )
+/**************************************************************/
+{
     mouseMove( x, y, f );
     _leftDown = false;
     changed();
@@ -299,9 +299,9 @@ bool WInfiniteList::leftBttnUp( int x, int y, WMouseKeyFlags f ) {
     return( true );
 }
 
-bool WInfiniteList::leftBttnDbl( int x, int y, WMouseKeyFlags ) {
-/*******************************************************************/
-
+bool WInfiniteList::leftBttnDbl( int x, int y, WMouseKeyFlags )
+/*************************************************************/
+{
     int      row = getRow( WPoint( x, y ) ) + _top;
 
     if( _selected == row ) {
@@ -313,29 +313,29 @@ bool WInfiniteList::leftBttnDbl( int x, int y, WMouseKeyFlags ) {
     return( true );
 }
 
-void WInfiniteList::onChanged( WObject* obj, cbw changed ) {
-/**********************************************************/
-
+void WInfiniteList::onChanged( WObject* obj, cbw changed )
+/********************************************************/
+{
     _changedClient = obj;
     _changed = changed;
 }
 
-void WInfiniteList::onDblClick( WObject* obj, cbw dblClick ) {
-/************************************************************/
-
+void WInfiniteList::onDblClick( WObject* obj, cbw dblClick )
+/**********************************************************/
+{
     _dblClickClient = obj;
     _dblClick = dblClick;
 }
 
-WObject * WInfiniteList::selected( void ) {
-/*****************************************/
-
+WObject * WInfiniteList::selected( void )
+/***************************************/
+{
     return( getObject( _selected ) );
 }
 
-void WInfiniteList::scrollToSelected() {
-/**************************************/
-
+void WInfiniteList::scrollToSelected()
+/************************************/
+{
     int nRows = getRows();
 
     if( _selected < _top ) {
@@ -346,17 +346,17 @@ void WInfiniteList::scrollToSelected() {
     }
 }
 
-void WInfiniteList::changed() {
-/*****************************/
-
-    if( _changedClient && _changed ) {
+void WInfiniteList::changed()
+/***************************/
+{
+    if( _changedClient != NULL && _changed != NULL ) {
         (_changedClient->*_changed)( this );
     }
 }
 
-bool WInfiniteList::keyDown( WKeyCode key, WKeyState state ) {
-/************************************************************/
-
+bool WInfiniteList::keyDown( WKeyCode key, WKeyState state )
+/**********************************************************/
+{
     int nRows = getRows();
     int oldSel = _selected;
 
@@ -374,7 +374,6 @@ bool WInfiniteList::keyDown( WKeyCode key, WKeyState state ) {
             scrollToSelected();
             changed();
             return( true );
-
         case WKeyPagedown:
             _selected += nRows - 1;
             if( getObject( _selected ) == NULL ) {
@@ -388,7 +387,6 @@ bool WInfiniteList::keyDown( WKeyCode key, WKeyState state ) {
             scrollToSelected();
             changed();
             return( true );
-
         case WKeyUp:
             _selected -= 1;
             if( _selected < 0 )
@@ -402,7 +400,6 @@ bool WInfiniteList::keyDown( WKeyCode key, WKeyState state ) {
                 invalidateRow( _selected - _top );
             }
             return( true );
-
         case WKeyDown:
             _selected += 1;
             if( getObject( _selected ) == NULL ) {
@@ -417,13 +414,11 @@ bool WInfiniteList::keyDown( WKeyCode key, WKeyState state ) {
                 invalidateRow( _selected - _top );
             }
             return( true );
-
         case WKeyEnter:
-            if( _dblClickClient && _dblClick ) {
+            if( _dblClickClient != NULL && _dblClick != NULL ) {
                 (_dblClickClient->*_dblClick)( this );
             }
             return( true );
-
         default:
             return( false );
         }
@@ -432,9 +427,9 @@ bool WInfiniteList::keyDown( WKeyCode key, WKeyState state ) {
     return( false );
 }
 
-void WInfiniteList::performScroll( int pos, bool absolute ) {
-/************************************************************/
-
+void WInfiniteList::performScroll( int pos, bool absolute )
+/*********************************************************/
+{
     int    diff;
     int     nRows = getRows();
 
@@ -462,27 +457,23 @@ void WInfiniteList::performScroll( int pos, bool absolute ) {
     scrollWindow( WScrollBarVertical, diff );
 }
 
-bool WInfiniteList::scrollNotify( WScrollNotification sn, int ) {
-/***************************************************************/
-
+bool WInfiniteList::scrollNotify( WScrollNotification sn, int )
+/*************************************************************/
+{
     switch( sn ) {
-        case WScrollUp:
-            performScroll( -1 );
-            return( true );
-
-        case WScrollPageUp:
-            performScroll( -1 * getRows() + 1 );
-            return( true );
-
-        case WScrollDown:
-            performScroll( 1 );
-            return( true );
-
-        case WScrollPageDown:
-            performScroll( getRows() - 1 );
-            return( true );
+    case WScrollUp:
+        performScroll( -1 );
+        return( true );
+    case WScrollPageUp:
+        performScroll( -1 * getRows() + 1 );
+        return( true );
+    case WScrollDown:
+        performScroll( 1 );
+        return( true );
+    case WScrollPageDown:
+        performScroll( getRows() - 1 );
+        return( true );
     }
-
     return( false );
 }
 
@@ -490,30 +481,30 @@ WInfiniteList::Context::Context(WVList * l, WObject * c )
                             : _items( l )
                             ,_context( c ) {}
 
-WInfiniteList::Context::~Context() {
-/*******************************/
-
-    if( _items ) {
+WInfiniteList::Context::~Context()
+/********************************/
+{
+    if( _items != NULL ) {
         _items->deleteContents();
         delete _items;
     }
     delete _context;
 }
 
-void WInfiniteList::Context::unLoad() {
-/*************************************/
-
-    if( _items ) {
+void WInfiniteList::Context::unLoad()
+/***********************************/
+{
+    if( _items != NULL ) {
         _items->deleteContents();
         delete _items;
         _items = NULL;
     }
 }
 
-int WInfiniteList::Context::count() {
-/***********************************/
-
-    if( _items ) {
+int WInfiniteList::Context::count()
+/*********************************/
+{
+    if( _items != NULL ) {
         return( _items->count() );
     } else {
         return( 0 );

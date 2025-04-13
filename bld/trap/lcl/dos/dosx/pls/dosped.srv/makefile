@@ -6,7 +6,7 @@ host_cpu = 386
 host_os  = dos
 
 target_cpu = x86
-target_sys = tnt
+target_os  = tnt
 
 srv = ped
 which = SERVER

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -44,8 +44,6 @@ static UINT             oldBlinkTime;
 static bool             haveOldBlinkTime;
 static bool             caretDisplayed = false;
 static bool             caretKilled = false;
-
-extern int WinVirtualCursorPosition( char *, int );
 
 /*
  * SetCursorBlinkRate - set the rate of blinking for the caret
@@ -108,7 +106,7 @@ static int getCursorInfo( window_id wid, int row, int col, int *x, int *width )
     dc_line     *dcline;
     int         len;
     int         old_col = 0;
-    char        *str;
+    const char  *str;
     int         funny = 0;
 
     col--;      // we like base 0
@@ -204,8 +202,8 @@ static int getCursorInfo( window_id wid, int row, int col, int *x, int *width )
         bool            no_tab = false;
         int             avg_width = FontAverageWidth( SEType[ss->type].font );
         int             left, extent, end_tab;
-        char            *cur_pos;
-        char            *end_str;
+        const char      *cur_pos;
+        const char      *end_str;
 
         if( ss != ss_start ) {
             left = ss_prev->offset;
@@ -327,7 +325,7 @@ static void setCursorOnScreen( int row, int col )
 /*
  * SetCursorOnLine - set cursor at specified column in single line text string
  */
-void SetCursorOnLine( window_id wid, int col, char *str, type_style *style )
+void SetCursorOnLine( window_id wid, int col, const char *str, type_style *style )
 {
     window      *w;
     int         x, y;

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,14 +34,9 @@
 #ifndef DWMAC_H_INCLUDED
 #define DWMAC_H_INCLUDED
 
-#define InitDebugMacInfo        DW_InitDebugMacInfo
-#define FiniDebugMacInfo        DW_FiniDebugMacInfo
-#define MacInfoStartFile        DW_MacInfoStartFile
-#define MacInfoEndFile          DW_MacInfoEndFile
-
-extern  void    InitDebugMacInfo( dw_client );
-extern  void    FiniDebugMacInfo( dw_client );
-extern  void    MacInfoStartFile( dw_client, uint );
-extern  void    MacInfoEndFile( dw_client );
+extern void     DW_InitDebugMacInfo( dw_client );
+extern void     DW_FiniDebugMacInfo( dw_client );
+extern void     DW_MacInfoStartFile( dw_client, uint );
+extern void     DW_MacInfoEndFile( dw_client );
 
 #endif

@@ -424,7 +424,7 @@ specifying a command of the following form.
 .im wlbimp
 .np
 .exam begin
-&libcmd math ++__sin.trig.sin.1
+&libcmd math ++__sin.trig..sin.1
 .exam end
 .np
 In the above example, an import library entry will be created for symbol

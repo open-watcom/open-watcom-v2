@@ -329,13 +329,13 @@ typedef struct codeseq {
 static unsigned     line;
 static unsigned     errcount = 0;
 
-static FILE         *gfp;
-static FILE         *ofp;
-static FILE         *pfp;
-static FILE         *ufp;
-static FILE         *mfp;
-static FILE         *bfp;
-static FILE         *ofpg;
+static FILE         *gfp = NULL;
+static FILE         *ofp = NULL;
+static FILE         *pfp = NULL;
+static FILE         *ufp = NULL;
+static FILE         *mfp = NULL;
+static FILE         *bfp = NULL;
+static FILE         *ofpg = NULL;
 
 static char         ibuff[BUFF_SIZE];
 static char         tagbuff[BUFF_SIZE];
@@ -3127,7 +3127,8 @@ static void dumpInternational( void )
 
 static void closeFiles( void )
 {
-    fclose( gfp );
+    if( gfp != NULL )
+        fclose( gfp );
     if( mfp != NULL )
         fclose( mfp );
     if( ofp != NULL )

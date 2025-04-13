@@ -12,12 +12,12 @@ fault_debug = 1 # always build debug versions of these
 
 .c : ../src
 
-targets = div0.exe gp.exe invins.exe stack.exe
+build_targets = div0.exe gp.exe invins.exe stack.exe
 !ifeq host_os nt
-targets += msg.exe
+build_targets += msg.exe
 !endif
 
-all: $(targets)  .SYMBOLIC
+all: $(build_targets)  .SYMBOLIC
 
 .obj.exe : $(__MAKEFILES__)
     @%make echo_link

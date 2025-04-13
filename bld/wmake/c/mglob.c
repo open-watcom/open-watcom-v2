@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -52,9 +52,6 @@
 #   include "mtarget.h"
 #   include "mupdate.h"
 #   include "mvecstr.h"
-#if defined( __DOS__ )
-#   include "tinyio.h"
-#endif
 #endif
 #include "banner.h"
 
@@ -175,9 +172,22 @@ const char FAR BuiltIns[] = {
         #error Unknown CPU architecture
     #endif
 
-#elif defined( __BSD__ ) || defined( __FreeBSD__ )
+#elif defined( __BSD__ ) \
+     || defined( __FREEBSD__ ) || defined( __FreeBSD__ ) \
+     || defined( __DRAGONFLY__ ) || defined( __DragonFly__ ) \
+     || defined( __NETBSD__ ) || defined( __NetBSD__ ) \
+     || defined( __OPENBSD__ ) || defined( __OpenBSD__ )
     "__BSD__=\n"
     "__UNIX__=\n"
+    #if defined( __FREEBSD__ ) || defined( __FreeBSD__ )
+        "__FREEBSD__=\n"
+    #elif defined( __DRAGONFLY__ ) || defined( __DragonFly__ )
+        "__DRAGONFLY__=\n"
+    #elif defined( __NETBSD__ ) || defined( __NetBSD__ )
+        "__NETBSD__=\n"
+    #elif defined( __OPENBSD__ ) || defined( __OpenBSD__ )
+        "__OPENBSD__=\n"
+    #endif
     #if defined( _M_X64 ) || defined( __x86_64__ ) || defined( __amd64__ ) || defined( __amd64 )
         "__BSDX64__=\n"
     #elif defined( _M_IX86 ) || defined( __i386 ) || defined( __i386__ )

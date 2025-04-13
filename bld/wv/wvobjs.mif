@@ -88,52 +88,14 @@ eng_objs = &
     $(_subdir_)symcomp.obj &
     $(_subdir_)litwdeng.obj &
     $(_subdir_)dbgcapt.obj &
-    $(_subdir_)autoenv.obj
+    $(_subdir_)autoenv.obj &
+    $(_subdir_)dbgfilio.obj &
+    $(_subdir_)dbginit.obj &
+    $(_subdir_)dbgxcmd.obj &
+    $(_subdir_)dbgxlkup.obj
 
-eng_objs_dos386 = &
-    $(_subdir_)dsxfork.obj &
-    $(_subdir_)dsxinit.obj &
-    $(_subdir_)dsxcmd.obj &
-    $(_subdir_)dsxfilio.obj &
-    $(_subdir_)dsxlkup.obj &
-    $(_subdir_)dsxhdlr.obj
-
-eng_objs_linux = &
-    $(_subdir_)lnxinit.obj &
-    $(_subdir_)linuxcmd.obj &
-    $(_subdir_)linuxio.obj &
-    $(_subdir_)lnxlkup.obj
-
-eng_objs_os2 = &
-    $(_subdir_)os2cmd.obj &
-    $(_subdir_)os2init.obj &
-    $(_subdir_)os2lkup.obj &
-    $(_subdir_)os2filio.obj
-
-eng_objs_qnx386 = &
-    $(_subdir_)qnxinit.obj &
-    $(_subdir_)qnxlkup.obj &
-    $(_subdir_)qnxcmd.obj &
-    $(_subdir_)qnxfilio.obj
-
-eng_objs_rdos386 = &
-    $(_subdir_)rdosinit.obj &
-    $(_subdir_)rdosio.obj &
-    $(_subdir_)rdoscmd.obj &
-    $(_subdir_)rdoslkup.obj
-
-eng_objs_nt = &
-    $(_subdir_)ntinit.obj &
-    $(_subdir_)ntfilio.obj &
-    $(_subdir_)ntfinfo.obj &
-    $(_subdir_)ntcmd.obj &
-    $(_subdir_)ntlkup.obj
-
-eng_objs_wini86 = &
-    $(_subdir_)wininit.obj &
-    $(_subdir_)wincmd.obj &
-    $(_subdir_)winfilio.obj &
-    $(_subdir_)winlkup.obj
+eng_objs_dos386 = $(_subdir_)dsxfork.obj $(_subdir_)dsxhdlr.obj
+eng_objs_nt     = $(_subdir_)ntfinfo.obj
 
 dui_objs = &
     dbgwass.obj &
@@ -210,5 +172,5 @@ dui_objs_nt       = ntscrn.obj helpio.obj ntdbgpb.obj
 dui_objs_win      = winscrn.obj helpio.obj
 !endif
 
-engine_objs = $(eng_objs) $(eng_objs_$(host_os)) $(eng_objs_$(objs_subdir))
-ui_objs = $(dui_objs) $(dui_objs_$(host_os)) $(dui_objs_$(objs_subdir)) #$(objs_$(host_os)_$(host_cpu))
+engine_objs = $(eng_objs) $(eng_objs_$(host_os)) $(eng_objs_$(host))
+ui_objs = $(dui_objs) $(dui_objs_$(host_os)) $(dui_objs_$(host)) #$(objs_$(host))

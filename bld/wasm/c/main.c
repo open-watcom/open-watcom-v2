@@ -66,8 +66,8 @@ struct  option {
     void        (*function)( void );
 };
 
-#define MAX_NESTING 15
-#define BUF_SIZE    512
+#define MAX_NESTING     15
+#define BUF_SIZE        512
 
 sw_data SWData = {
     false, // real mode CPU instructions set
@@ -79,6 +79,8 @@ sw_data SWData = {
 
 static char             *ForceInclude = NULL;
 static const char       *switch_start = NULL;
+static char             *SrcFName = NULL;
+static char             *SrcModuleName = NULL;
 
 global_options Options = {
     false,              // sign_value
@@ -232,12 +234,20 @@ static void add_constant( const char *string, bool underscored )
     }
 }
 
+const char *GetModuleName( void )
+{
+    if( Options.module_name != NULL )
+        return( Options.module_name );
+    return( SrcModuleName );
+}
+
 char *CreateFileName( const char *template, const char *ext, bool forceext )
 /**************************************************************************/
 {
     pgroup2     pg;
     bool        use_defaults;
     static char filename_buff[_MAX_PATH];
+    const char  *fn;
 
     use_defaults = ( template == NULL );
     if( use_defaults )
@@ -250,14 +260,36 @@ char *CreateFileName( const char *template, const char *ext, bool forceext )
         pg.drive = "";
         pg.dir = "";
     }
-    if( pg.fname[0] == '\0' || pg.fname[0] == '*' ) {
-        pg.fname = ModuleName;
+    fn = pg.fname;
+    if( fn[0] == '\0' || fn[0] == '*' && fn[1] == '\0' ) {
+        fn = SrcFName;
     }
     if( !forceext && pg.ext[0] != '\0' && !use_defaults ) {
         ext = pg.ext;
     }
-    _makepath( filename_buff, pg.drive, pg.dir, pg.fname, ext );
+    _makepath( filename_buff, pg.drive, pg.dir, fn, ext );
     return( filename_buff );
+}
+
+void ConvertModuleName( char *module_name )
+{
+    char *p;
+    int  c;
+
+    for( p = module_name; (c = *(unsigned char *)p) != '\0'; ++p ) {
+        if( !IS_VALID_ID_CHAR( c ) ) {
+            /*
+             * it's not a legal character for a symbol name
+             */
+            *p = '_';
+        }
+    }
+    /*
+     * first character can't be a number either
+     */
+    if( isdigit( module_name[0] ) ) {
+        module_name[0] = '_';
+    }
 }
 
 static void srcFileName( char *token )
@@ -283,7 +315,9 @@ static void srcFileName( char *token )
     if( pg.ext[0] == '\0' ) {
         pg.ext = ASM_EXT;
     }
-    ModuleName = AsmStrDup( pg.fname );
+    SrcFName = AsmStrDup( pg.fname );
+    SrcModuleName = AsmStrDup( pg.fname );
+    ConvertModuleName( SrcModuleName );
     _makepath( name, pg.drive, pg.dir, pg.fname, pg.ext );
     AsmFiles.fname[ASM] = AsmStrDup( name );
 }
@@ -1044,6 +1078,7 @@ static void set_options( OPT_STORAGE *data )
     }
     if( data->nm ) {
         SetStringOption( &Options.module_name, &(data->nm_value) );
+        ConvertModuleName( Options.module_name );
     }
     if( data->nd ) {
         SetStringOption( &Options.data_seg, &(data->nd_value) );

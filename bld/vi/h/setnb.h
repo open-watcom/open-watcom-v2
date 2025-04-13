@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -59,7 +59,7 @@ PICK(  "INSERTCURSORType",      "SF", cursor_type,      InsertCursorType,      {
 PICK(  "LANGUAGE",              "SF", ,                 ,                      ,                   LANGUAGE )
 #endif
 PICK(  "LINENUMWINWIdth",       "SF", int,              LineNumWinWidth,       8,                  LINENUMWINWIDTH )
-PICK(  "MAGICSTRing",           "SF", char *,           Majick,                NULL,               MAGICSTRING )
+PICK(  "MAGICSTRing",           "SF", magic_type,       Majick,                {""},               MAGICSTRING )
 #ifndef INITVARS
 PICK(  "MAXCLHistory",          "SF", ,                 ,                      ,                   MAXCLHISTORY )
 #endif

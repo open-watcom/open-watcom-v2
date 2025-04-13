@@ -13,11 +13,11 @@ emui86_qnx_usage = 1
 memory_model_i86 = s
 memory_model_386 = s
 
-fpu_flags_dos_i86 = -fpc
-fpu_flags_os2_i86 = -fpc
-fpu_flags_win_i86 = -fpc
-fpu_flags_qnx_i86 = -fpc
-fpu_flags_qnx_386 = -fpc
+fpu_flags_dosi86 = -fpc
+fpu_flags_os2i86 = -fpc
+fpu_flags_wini86 = -fpc
+fpu_flags_qnxi86 = -fpc
+fpu_flags_qnx386 = -fpc
 
 !include cproj.mif
 !include defrule.mif
@@ -35,9 +35,9 @@ extra_c_flags_os2 = -zl -zls
 extra_c_flags_win = -zl -zls
 extra_c_flags_qnx = -oais
 
-extra_c_flags_hook8087 = -i"../h"
-extra_c_flags_qnxemu87 = -i"$(clib_dir)/startup/h" -I"$(clib_dir)/h" -I"$(lib_misc_dir)/h" -i"$(comp_cfg_dir)/h"
-extra_c_flags_fpeqnx = -I"$(clib_dir)/h"
+extra_c_flags_f_hook8087 = -i"../h"
+extra_c_flags_f_qnxemu87 = -i"$(clib_dir)/startup/h" -I"$(clib_dir)/h" -I"$(lib_misc_dir)/h" -i"$(comp_cfg_dir)/h"
+extra_c_flags_f_fpeqnx = -I"$(clib_dir)/h"
 
 #
 # aflags
@@ -50,12 +50,12 @@ extra_a_flags = -ms
 extra_a_flags_os2 = -d__PROTMODE__
 extra_a_flags_qnx = -d__PROTMODE__ -DQNX$(cpu_size)
 
-extra_a_flags_dosinit  = -fpi
-extra_a_flags_initemu  = -fpi87 -i"$(comp_cfg_dir)/h"
-extra_a_flags_initemu2 = -fpc -i"$(comp_cfg_dir)/h"
-extra_a_flags_initemuw = -fpc -i"$(comp_cfg_dir)/h"
-extra_a_flags_emu8087  = -fpc -i"../inc" -i"$(fpuemu_dir)/inc" -i"$(mathlib_dir)/h"
-extra_a_flags_emustub =
+extra_a_flags_f_dosinit  = -fpi
+extra_a_flags_f_initemu  = -fpi87 -i"$(comp_cfg_dir)/h"
+extra_a_flags_f_initemu2 = -fpc -i"$(comp_cfg_dir)/h"
+extra_a_flags_f_initemuw = -fpc -i"$(comp_cfg_dir)/h"
+extra_a_flags_f_emu8087  = -fpc -i"../inc" -i"$(fpuemu_dir)/inc" -i"$(mathlib_dir)/h"
+extra_a_flags_f_emustub =
 
 # explicit rules
 #################

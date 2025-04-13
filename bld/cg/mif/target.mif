@@ -4,7 +4,7 @@ target_objs = $($(target_cpu)_objs) $($(target_cls)_objs) $(cg_objs)
 
 libs = cg$(target_cpu).lib $(cg_target_host_name).lib $(cli_dwarfw_libs) $(cli_owl_libs) $(cli_cfloat_libs)
 
-target : $(pre_obj_deps) cg$(target_cpu).dll cgdllcli.lib .SYMBOLIC
+all : $(pre_obj_deps) cg$(target_cpu).dll cgdllcli.lib .SYMBOLIC
     @%null
 
 dlltarg_objs = cgdmain.obj
@@ -18,7 +18,7 @@ libtarg_name = cgdllcli
 
 !else
 
-target : $(pre_obj_deps) cg$(target_cpu).lib $(cg_target_host_name).lib .SYMBOLIC
+all : $(pre_obj_deps) cg$(target_cpu).lib $(cg_target_host_name).lib .SYMBOLIC
     @%null
 
 !endif

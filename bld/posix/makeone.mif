@@ -12,11 +12,13 @@ proj_name = posix
 
 posix_autodepends = .AUTODEPEND
 
-!include ../common.mif
+!include ../memmodel.mif
 
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif
+
+!include ../common.mif
 
 !include tools.mif
 
@@ -25,13 +27,13 @@ posix_autodepends = .AUTODEPEND
 #
 .c: ../src/$(name)
 
-inc_dirs = -I"../src/$(name)" -I"../h"
+inc_dirs = -I"../src/$(name)" -I"../h" $(extra_inc_dirs)
 
 #
 # lflags
 #
 extra_l_flags = debug all option quiet,map
-extra_l_flags_os2_i86 = option heapsize=17k, newfiles, stack=8k
+extra_l_flags_os2i86 = option heapsize=17k, newfiles, stack=8k
 
 #
 #       define the main target

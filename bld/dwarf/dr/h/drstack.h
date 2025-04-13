@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -41,7 +42,7 @@
  *
  * The first is dr_stack, a safe, reallocatable stack that can
  * be retained and passed around, but is a bit slow.  It throws
- * a DWREXCEP if you pop an empty stack.
+ * a DR_EXCEP if you pop an empty stack.
  *
  * The second is an interface to the program stack with push and
  * pop operations.  It is faster, but "a scary low-level hack" as
@@ -57,28 +58,28 @@ typedef struct {                            // PROVIDE A RESIZABLE STACK
     uint_32 *   stack;                      // -- reallocatable array
 } dr_stack;
 
-extern void DWRStackCreate(                 // INITIALIZE A STACK
+extern void DR_StackCreate(                 // INITIALIZE A STACK
     dr_stack * stk,                         // -- stack to initialize
     uint start_size );                      // -- initial size guess
 
-extern void DWRStackCopy(                   // COPY A STACK FROM ANOTHER
+extern void DR_StackCopy(                   // COPY A STACK FROM ANOTHER
     dr_stack * dest,                        // -- destination of copy
     const dr_stack * src );                 // -- source of copy
 
-extern void DWRStackFree(                   // DESTRUCT A STACK
+extern void DR_StackFree(                   // DESTRUCT A STACK
     dr_stack * stk );                       // -- stack to trash
 
-extern void DWRStackPush(                   // PUSH ITEM ON THE STACK
+extern void DR_StackPush(                   // PUSH ITEM ON THE STACK
     dr_stack * stk,                         // -- stack to push on
     uint_32 val );                          // -- value to push
 
-extern uint_32 DWRStackPop(                 // POP ITEM OFF THE STACK
+extern uint_32 DR_StackPop(                 // POP ITEM OFF THE STACK
     dr_stack * stk );                       // -- stack to pop off of
 
-extern uint_32 DWRStackTop(                 // RETURN TOP ELEMENT OF STACK
+extern uint_32 DR_StackTop(                 // RETURN TOP ELEMENT OF STACK
     dr_stack * stk );                       // -- stack to use
 
-extern bool DWRStackEmpty(                  // IS A STACK EMPTY?
+extern bool DR_StackEmpty(                  // IS A STACK EMPTY?
     dr_stack * stk );                       // -- stack to check
 
 

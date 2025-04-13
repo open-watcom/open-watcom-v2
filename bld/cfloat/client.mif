@@ -3,22 +3,22 @@
 #
 
 !ifdef bootstrap
-cli_cfloat_libs = $(cfloat_dir)/$(objs_subdir)/cf.lib
+cli_cfloat_libs = $(cfloat_dir)/$(bin_subdir)/cf.lib
 !else ifdef $(proj_name)_rtdll
 #
 # CFLOAT run-time DLL used
 #
-cli_cfloat_libs = $(cfloat_dir)/$(objs_subdir).rtd/cf.lib
+cli_cfloat_libs = $(cfloat_dir)/$(host).rtd/cf.lib
 !else ifdef $(proj_name)_dll
 #
 # CFLOAT DLL used
 #
-cli_cfloat_libs = $(cfloat_dir)/$(objs_subdir).dll/cf.lib
+cli_cfloat_libs = $(cfloat_dir)/$(host).dll/cf.lib
 !else
 #
 # CFLOAT library used
 #
-cli_cfloat_libs = $(cfloat_dir)/$(objs_subdir)/cf.lib
+cli_cfloat_libs = $(cfloat_dir)/$(host)/cf.lib
 !endif
 
 cli_cfloat_inc_dirs = -I"$(cfloat_dir)/h"

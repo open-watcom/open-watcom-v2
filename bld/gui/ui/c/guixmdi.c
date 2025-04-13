@@ -36,6 +36,8 @@
 #include "guixhook.h"
 #include "guimdi.h"
 #include "guisize.h"
+#include "guix.h"
+
 
 typedef struct {
     int         height;

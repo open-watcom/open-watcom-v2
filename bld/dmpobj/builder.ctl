@@ -33,6 +33,7 @@ set PROJDIR=<CWD>
     <CCCMD> linux386/dmpobj.exe  "<OWRELROOT>/binl/dmpobj"
     <CCCMD> ntaxp/dmpobj.exe     "<OWRELROOT>/axpnt/"
 
+    <CCCMD> bsdx64/dmpobj.exe    "<OWRELROOT>/binb64/dmpobj"
     <CCCMD> ntx64/dmpobj.exe     "<OWRELROOT>/binnt64/"
     <CCCMD> linuxx64/dmpobj.exe  "<OWRELROOT>/binl64/dmpobj"
     <CCCMD> linuxarm/dmpobj.exe  "<OWRELROOT>/arml/dmpobj"

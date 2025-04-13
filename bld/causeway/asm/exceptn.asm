@@ -1,6 +1,7 @@
         .386P
 
 _Excep  segment para public 'Exception code' use16
+
         assume cs:_Excep, ds:_Excep, es:nothing
 ExcepStart      label byte
 
@@ -17,16 +18,16 @@ DebugEDX        dd ?
 DebugECX        dd ?
 DebugEBX        dd ?
 DebugEAX        dd ?
-DebugGS dw ?
-DebugFS dw ?
-DebugES dw ?
-DebugDS dw ?
+DebugGS         dw ?
+DebugFS         dw ?
+DebugES         dw ?
+DebugDS         dw ?
 DebugEIP        dd ?
-DebugCS dw ?,?
+DebugCS         dw ?,?
 DebugEFL        dd ?
 DebugESP        dd ?
-DebugSS dw ?,?
-DebugTR dw ?
+DebugSS         dw ?,?
+DebugTR         dw ?
 DebugCR0        dd ?
 DebugCR1        dd ?
 DebugCR2        dd ?
@@ -197,17 +198,18 @@ DumpAsciiFlag   DB      ?
 
 ;-------------------------------------------------------------------------
 ExcepOpen       proc    near
+        ;
         assume es:_cwMain
         mov     ExcepDSeg,es            ;Store cwCode selector.
         mov     ExcepDDSeg,ds
         mov     eax,es:SystemFlags
         mov     ExcepSystemFlags,eax
-        assume es:nothing
         ;
+        assume es:nothing
         mov     bl,0
         mov     ecx,1
-        mov     edi,offset OldExc00
-        mov     esi,offset DPMIExc00Patch
+        mov     edi,offset OldExc0
+        mov     esi,offset DPMIExc0Patch
 exc1_2:
         push    ebx
         push    ecx
@@ -218,7 +220,7 @@ exc1_2:
         pop     esi
         pop     ecx
         pop     ebx
-        add     esi,DPMIExc01Patch-DPMIExc00Patch
+        add     esi,DPMIExc1Patch-DPMIExc0Patch
         add     edi,6
         inc     bl
         dec     ecx
@@ -226,8 +228,8 @@ exc1_2:
         ;
         mov     bl,4
         mov     ecx,6
-        mov     edi,offset OldExc04
-        mov     esi,offset DPMIExc04Patch
+        mov     edi,offset OldExc4
+        mov     esi,offset DPMIExc4Patch
 exc1_3:
         push    ebx
         push    ecx
@@ -238,7 +240,7 @@ exc1_3:
         pop     esi
         pop     ecx
         pop     ebx
-        add     esi,DPMIExc01Patch-DPMIExc00Patch
+        add     esi,DPMIExc1Patch-DPMIExc0Patch
         add     edi,6
         inc     bl
         dec     ecx
@@ -258,7 +260,7 @@ exc1_0:
         pop     esi
         pop     ecx
         pop     ebx
-        add     esi,DPMIExc01Patch-DPMIExc00Patch
+        add     esi,DPMIExc1Patch-DPMIExc0Patch
         add     edi,6
         inc     bl
         dec     ecx
@@ -266,11 +268,12 @@ exc1_0:
         ;
         mov     bl,0
         Sys     GetVect
-        test    BYTE PTR ExcepSystemFlags,1
+        test    BYTE PTR ExcepSystemFlags,SYSFLAG_16B
         jz      exc1_i00Use32
         mov     w[OldInt00h],dx
         mov     w[OldInt00h+2],cx
         jmp     exc1_i00Done3216
+        ;
 exc1_i00Use32:
         mov     d[OldInt00h],edx
         mov     w[OldInt00h+4],cx
@@ -292,12 +295,13 @@ exc1_1:
         pop     edi
         pop     esi
         pop     ebx
-        test    BYTE PTR ExcepSystemFlags,1
+        test    BYTE PTR ExcepSystemFlags,SYSFLAG_16B
         jz      exc1_Use32
         mov     w[edi],dx
         mov     w[edi+2],cx
         mov     w[edi+4],cx
         jmp     exc1_Use0
+        ;
 exc1_Use32:
         mov     d[edi],edx
         mov     w[edi+4],cx
@@ -309,17 +313,17 @@ exc1_Use0:
         ret
 ExcepOpen       endp
 
-
 ;-------------------------------------------------------------------------
 ExcepClose      proc    near
         push    ds
+        ;
         assume ds:nothing
         mov     ds,cs:ExcepDDSeg
-        assume ds:_Excep
         ;
+        assume ds:_Excep
         mov     bl,0
         mov     ecx,1
-        mov     edi,offset OldExc00
+        mov     edi,offset OldExc0
 exc2_2:
         push    ebx
         push    ecx
@@ -335,7 +339,7 @@ exc2_2:
         ;
         mov     bl,4
         mov     ecx,6
-        mov     edi,offset OldExc04
+        mov     edi,offset OldExc4
 exc2_3:
         push    ebx
         push    ecx
@@ -367,28 +371,29 @@ exc2_0:
         ;
         cmp     d[OldInt00h],0
         jz      exc2_i2
-        test    BYTE PTR ExcepSystemFlags,1
+        test    BYTE PTR ExcepSystemFlags,SYSFLAG_16B
         jz      exc2_i00Use32
         mov     dx,w[OldInt00h]
         mov     cx,w[OldInt00h+2]
         jmp     exc2_i00Done3216
+        ;
 exc2_i00Use32:
         mov     edx,d[OldInt00h]
         mov     cx,w[OldInt00h+4]
 exc2_i00Done3216:
         mov     bl,00h
         Sys     SetVect
-        ;
 exc2_i2:
         pop     ds
         clc
         retf
         ;
-exc2_1: test    BYTE PTR ExcepSystemFlags,1
+exc2_1: test    BYTE PTR ExcepSystemFlags,SYSFLAG_16B
         jz      exc2_Use32
         movzx   edx,w[edi]
         mov     cx,w[edi+2]
         jmp     exc2_Use0
+        ;
 exc2_Use32:
         mov     edx,d[edi]
         mov     cx,w[edi+4]
@@ -396,25 +401,13 @@ exc2_Use0:
         mov     ax,0203h
         int     31h
         ret
-        ;
-OldExc00        df 0
-OldExc01        df 0
-OldExc02        df 0
-OldExc03        df 0
-OldExc04        df 0
-OldExc05        df 0
-OldExc06        df 0
-OldExc07        df 0
-OldExc08        df 0
-OldExc09        df 0
-OldExc10        df 0
-OldExc11        df 0
-OldExc12        df 0
-OldExc13        df 0
-OldExc14        df 0
-OldExc15        df 0
 ExcepClose      endp
 
+__num = 0
+        rept 16
+__labeldir OldExc,%__num,,<df 0>
+__num = __num + 1
+        endm
 
 ;-------------------------------------------------------------------------
 ;
@@ -422,8 +415,10 @@ ExcepClose      endp
 ;
 Int00hHandler   proc    near
         push    ds
+        ;
         assume ds:nothing
         mov     ds,cs:ExcepDDSeg
+        ;
         assume ds:_Excep
         mov     DebugEAX,eax
         mov     DebugEBX,ebx
@@ -438,33 +433,32 @@ Int00hHandler   proc    near
         mov     DebugES,es
         mov     DebugFS,fs
         mov     DebugGS,gs
-        ;
-        test    BYTE PTR ExcepSystemFlags,1
+        test    BYTE PTR ExcepSystemFlags,SYSFLAG_16B
         jz      exc3_Use32_0
         add     DebugESP,2+2+2
         movzx   ebx,sp
-        mov     ax,ss:[ebx+2+2]
+        mov     ax,ss:[ebx+IFrame16.i16_flags]
         mov     w[DebugEFL],ax
-        mov     ax,ss:[ebx+2]
+        mov     ax,ss:[ebx+IFrame16.i16_cs]
         mov     DebugCS,ax
-        movzx   eax,WORD PTR ss:[ebx]
+        movzx   eax,WORD PTR ss:[ebx+IFrame16.i16_ip]
         mov     DebugEIP,eax
         jmp     exc3_Use0_0
         ;
 exc3_Use32_0:
         add     DebugESP,4+4+4
-        mov     eax,[esp+4+4]
+        mov     eax,[esp+IFrame.i_eflags]
         mov     DebugEFL,eax
-        mov     eax,[esp+4]
+        mov     eax,[esp+IFrame.i_cs]
         mov     DebugCS,ax
-        mov     eax,[esp]
+        mov     eax,[esp+IFrame.i_eip]
         mov     DebugEIP,eax
         ;
 exc3_Use0_0:
         mov     DebugExceptionIndex,0
         mov     DebugExceptionCode,0
-        ;
         mov     ds,ExcepDSeg
+        ;
         assume ds:_cwMain
         mov     DebugDump,1
         push    ds
@@ -475,219 +469,27 @@ exc3_Use0_0:
         pop     es
         sti
         jmp     f[TerminationHandler]
+        ;
         assume ds:_Excep
 OldInt00h       df 0
 Int00hHandler   endp
 
-
-;-------------------------------------------------------------------------
-DPMIExc00Patch proc     far
+__num = 0
+        rept 16
+__labeldir DPMIExc,%__num,Patch,<proc far>
         push    ds
+        ;
         assume ds:nothing
         mov     ds,cs:ExcepDDSeg
+        ;
         assume ds:_Excep
-        mov     DebugExceptionIndex,0
+        mov     DebugExceptionIndex,__num
         pop     ds
         db 0e9h
         dw offset DPMIExcPatch-($+2)
-DPMIExc00Patch endp
-
-
-;-------------------------------------------------------------------------
-DPMIExc01Patch proc     far
-        push    ds
-        assume ds:nothing
-        mov     ds,cs:ExcepDDSeg
-        assume ds:_Excep
-        mov     DebugExceptionIndex,1
-        pop     ds
-        db 0e9h
-        dw offset DPMIExcPatch-($+2)
-DPMIExc01Patch endp
-
-
-;-------------------------------------------------------------------------
-DPMIExc02Patch proc     far
-        push    ds
-        assume ds:nothing
-        mov     ds,cs:ExcepDDSeg
-        assume ds:_Excep
-        mov     DebugExceptionIndex,2
-        pop     ds
-        db 0e9h
-        dw offset DPMIExcPatch-($+2)
-DPMIExc02Patch endp
-
-
-;-------------------------------------------------------------------------
-DPMIExc03Patch proc     far
-        push    ds
-        assume ds:nothing
-        mov     ds,cs:ExcepDDSeg
-        assume ds:_Excep
-        mov     DebugExceptionIndex,3
-        pop     ds
-        db 0e9h
-        dw offset DPMIExcPatch-($+2)
-DPMIExc03Patch endp
-
-
-;-------------------------------------------------------------------------
-DPMIExc04Patch proc     far
-        push    ds
-        assume ds:nothing
-        mov     ds,cs:ExcepDDSeg
-        assume ds:_Excep
-        mov     DebugExceptionIndex,4
-        pop     ds
-        db 0e9h
-        dw offset DPMIExcPatch-($+2)
-DPMIExc04Patch endp
-
-
-;-------------------------------------------------------------------------
-DPMIExc05Patch proc     far
-        push    ds
-        assume ds:nothing
-        mov     ds,cs:ExcepDDSeg
-        assume ds:_Excep
-        mov     DebugExceptionIndex,5
-        pop     ds
-        db 0e9h
-        dw offset DPMIExcPatch-($+2)
-DPMIExc05Patch endp
-
-
-;-------------------------------------------------------------------------
-DPMIExc06Patch proc     far
-        push    ds
-        assume ds:nothing
-        mov     ds,cs:ExcepDDSeg
-        assume ds:_Excep
-        mov     DebugExceptionIndex,6
-        pop     ds
-        db 0e9h
-        dw offset DPMIExcPatch-($+2)
-DPMIExc06Patch endp
-
-
-;-------------------------------------------------------------------------
-DPMIExc07Patch proc     far
-        push    ds
-        assume ds:nothing
-        mov     ds,cs:ExcepDDSeg
-        assume ds:_Excep
-        mov     DebugExceptionIndex,7
-        pop     ds
-        db 0e9h
-        dw offset DPMIExcPatch-($+2)
-DPMIExc07Patch endp
-
-
-;-------------------------------------------------------------------------
-DPMIExc08Patch proc     far
-        push    ds
-        assume ds:nothing
-        mov     ds,cs:ExcepDDSeg
-        assume ds:_Excep
-        mov     DebugExceptionIndex,8
-        pop     ds
-        db 0e9h
-        dw offset DPMIExcPatch-($+2)
-DPMIExc08Patch endp
-
-
-;-------------------------------------------------------------------------
-DPMIExc09Patch proc     far
-        push    ds
-        assume ds:nothing
-        mov     ds,cs:ExcepDDSeg
-        assume ds:_Excep
-        mov     DebugExceptionIndex,9
-        pop     ds
-        db 0e9h
-        dw offset DPMIExcPatch-($+2)
-DPMIExc09Patch endp
-
-
-;-------------------------------------------------------------------------
-DPMIExc10Patch proc     far
-        push    ds
-        assume ds:nothing
-        mov     ds,cs:ExcepDDSeg
-        assume ds:_Excep
-        mov     DebugExceptionIndex,10
-        pop     ds
-        db 0e9h
-        dw offset DPMIExcPatch-($+2)
-DPMIExc10Patch endp
-
-
-;-------------------------------------------------------------------------
-DPMIExc11Patch proc     far
-        push    ds
-        assume ds:nothing
-        mov     ds,cs:ExcepDDSeg
-        assume ds:_Excep
-        mov     DebugExceptionIndex,11
-        pop     ds
-        db 0e9h
-        dw offset DPMIExcPatch-($+2)
-DPMIExc11Patch endp
-
-
-;-------------------------------------------------------------------------
-DPMIExc12Patch proc     far
-        push    ds
-        assume ds:nothing
-        mov     ds,cs:ExcepDDSeg
-        assume ds:_Excep
-        mov     DebugExceptionIndex,12
-        pop     ds
-        db 0e9h
-        dw offset DPMIExcPatch-($+2)
-DPMIExc12Patch endp
-
-
-;-------------------------------------------------------------------------
-DPMIExc13Patch proc     far
-        push    ds
-        assume ds:nothing
-        mov     ds,cs:ExcepDDSeg
-        assume ds:_Excep
-        mov     DebugExceptionIndex,13
-        pop     ds
-        db 0e9h
-        dw offset DPMIExcPatch-($+2)
-DPMIExc13Patch endp
-
-
-;-------------------------------------------------------------------------
-DPMIExc14Patch proc     far
-        push    ds
-        assume ds:nothing
-        mov     ds,cs:ExcepDDSeg
-        assume ds:_Excep
-        mov     DebugExceptionIndex,14
-        pop     ds
-        db 0e9h
-        dw offset DPMIExcPatch-($+2)
-DPMIExc14Patch endp
-
-
-;-------------------------------------------------------------------------
-DPMIExc15Patch proc     far
-        push    ds
-        assume ds:nothing
-        mov     ds,cs:ExcepDDSeg
-        assume ds:_Excep
-        mov     DebugExceptionIndex,15
-        pop     ds
-        db 0e9h
-        dw offset DPMIExcPatch-($+2)
-DPMIExc15Patch endp
-
-
+__labeldir DPMIExc,%__num,Patch,endp
+__num = __num + 1
+        endm
 
 ;-------------------------------------------------------------------------
 DPMIExcPatch    proc    far
@@ -702,24 +504,29 @@ DPMIExcPatch    proc    far
         push    esi
         push    edi
         push    ebp
+        ;
         assume ds:nothing
         mov     ds,cs:ExcepDDSeg
-        assume ds:_Excep
         ;
+        assume ds:_Excep
         cmp     DebugExceptionIndex,14
         jnz     exc20_Not14Special
         push    ds
         mov     ds,ExcepDSeg
+        ;
         assume ds:_cwMain
         cmp     LinearAddressCheck,0
+        ;
         assume ds:_Excep
         pop     ds
         jz      exc20_Not14Special
         push    ds
         mov     ds,ExcepDSeg
+        ;
         assume ds:_cwMain
         mov     LinearAddressCheck,0
-        test    BYTE PTR cs:ExcepSystemFlags,1
+        test    BYTE PTR cs:ExcepSystemFlags,SYSFLAG_16B
+        ;
         assume ds:_Excep
         pop     ds
         pop     ebp
@@ -734,13 +541,13 @@ DPMIExcPatch    proc    far
         pop     es
         pop     ds
         mov     esi,0
-        jz      exc20_S14_32
-        retf
-exc20_S14_32:
+        jnz      exc20_S14_16
         db 66h
+exc20_S14_16:
         retf
         ;
 exc20_Not14Special:
+        ;
         ;Retrieve register values and get outa here.
         ;
         cmp     InExcep,0
@@ -750,7 +557,7 @@ exc20_Not14Special:
         mov     eax,esi
         add     esi,esi
         add     esi,eax
-        add     esi,offset OldExc00
+        add     esi,offset OldExc0
         mov     eax,[esi]
         mov     d[InExcepJMP],eax
         mov     ax,[esi+4]
@@ -766,20 +573,23 @@ exc20_Not14Special:
         pop     fs
         pop     es
         pop     ds
+        ;
         assume ds:nothing
         jmp     FWORD PTR cs:[InExcepJMP]
-        assume ds:_Excep
         ;
+        assume ds:_Excep
 exc20_ok:
         or      InExcep,-1
         push    ds
         pop     es
+        ;
         assume es:_Excep
         mov     ax,ss
         mov     ds,ax
+        ;
         assume ds:nothing
         mov     esi,esp
-        test    BYTE PTR es:ExcepSystemFlags,1
+        test    BYTE PTR es:ExcepSystemFlags,SYSFLAG_16B
         jz      exc20_SP320
         movzx   esi,si
 exc20_SP320:
@@ -787,19 +597,19 @@ exc20_SP320:
         mov     ecx,(4+4+4+4+4+4+4)+(2+2+2+2)
         cld
         rep     movs b[edi],[esi]    ;copy registers off the stack.
-        ;
-        test    BYTE PTR es:ExcepSystemFlags,1
+        test    BYTE PTR es:ExcepSystemFlags,SYSFLAG_16B
         jz      exc20_Use32Bit17
         movzx   ebp,sp
         movzx   eax,w[ebp+(4+4+4+4+4+4+4)+(2+2+2+2)+(2+2)]
         mov     es:DebugExceptionCode,eax
         add     esi,2+2+2               ;skip return address/flags.
-        movs    w[edi],[esi]
-        add     edi,2
-        movs    w[edi],[esi]
-        add     edi,2
-        movs    w[edi],[esi]
-        add     edi,2
+        xor     eax,eax
+        lodsw
+        stosd
+        lodsw
+        stosd
+        lodsw
+        stosd
         jmp     exc20_Use16Bit17
         ;
 exc20_Use32Bit17:
@@ -807,10 +617,9 @@ exc20_Use32Bit17:
         mov     es:DebugExceptionCode,eax
         add     esi,4+4+4               ;skip return address/flags.
         mov     ecx,4+4+4
-        cld
         rep     movs b[edi],[esi]       ;get real return address.
 exc20_Use16Bit17:
-        test    BYTE PTR es:ExcepSystemFlags,1
+        test    BYTE PTR es:ExcepSystemFlags,SYSFLAG_16B
         jz      exc20_Use32Bit678
         movzx   eax,w[esi]
         mov     es:DebugESP,eax
@@ -826,9 +635,9 @@ exc20_Use32Bit678:
 exc20_Use16Bit678:
         push    es
         pop     ds
+        ;
         assume es:nothing
         assume ds:_Excep
-        ;
         mov     DebugTR,0
         mov     DebugCR0,0
         mov     DebugCR2,0
@@ -855,7 +664,6 @@ exc20_Use16Bit678:
         mov     ax,DebugSS
         mov     edi,offset DebugSSApp
         call    DebugSegmentDPMI
-        ;
         pop     ebp
         pop     edi
         pop     esi
@@ -867,22 +675,22 @@ exc20_Use16Bit678:
         pop     fs
         pop     es
         pop     ds
-        ;
         push    eax
         push    ebp
         push    ds
+        ;
         assume ds:nothing
         mov     ds,cs:ExcepDSeg
+        ;
         assume ds:_cwMain
         mov     DebugDump,1
         mov     ErrorNumber,9
-        ;
         mov     ebp,esp         ;make stack addresable.
         ;
         ;Now modify original CS:EIP,SS:ESP values and return control
         ;to this code via interupt structure to restore stacks.
         ;
-        test    BYTE PTR SystemFlags,1
+        test    BYTE PTR SystemFlags,SYSFLAG_16B
         jz      exc20_Use32_2
         mov     eax,offset exc20_Use0_2
         mov     w[bp+(4+4+2)+(2+2+2)+(0)],ax
@@ -903,8 +711,10 @@ exc20_Use32_2:
         retf
         ;
 exc20_Use0_2:
+        ;
         assume ds:nothing
         mov     ds,cs:ExcepDSeg
+        ;
         assume ds:_cwMain
         mov     ss,StackSegment
         mov     esp,offset _cwStackEnd-256
@@ -915,9 +725,9 @@ exc20_Use0_2:
         pop     fs
         pop     es
         jmp     f[TerminationHandler]
+        ;
         assume ds:_Excep
 DPMIExcPatch    endp
-
 
 ;-------------------------------------------------------------------------
 ;
@@ -930,8 +740,10 @@ DPMIExcPatch    endp
 ;
 DebugSegmentDPMI proc near
         push    ds
+        ;
         assume ds:nothing
         mov     ds,cs:ExcepDSeg
+        ;
         assume ds:_cwMain
         push    fs
         mov     fs,PSPSegment
@@ -957,9 +769,7 @@ DebugSegmentDPMI proc near
         push    dx
         mov     ax,0006h
         int     31h
-        mov     ax,cx
-        shl     eax,16
-        mov     ax,dx
+        Reg16hiloTo32 cx, dx, eax       ;cx:dx -> eax
         pop     dx
         pop     cx
         sub     eax,DWORD PTR fs:[EPSP_Struc.EPSP_MemBase]  ;get offset within application.
@@ -968,6 +778,7 @@ exc21_9:
         pop     fs
         pop     ds
         mov     [edi],ebx                                   ;store generated value.
+        ;
         assume ds:_Excep
         ret
 DebugSegmentDPMI endp
@@ -997,6 +808,7 @@ debuggloop2:
         int     21h
         inc     edx
         jmp     debuggloop2
+        ;
 debuggb:
         mov     edx,OFFSET debuggtext2
         push    cs
@@ -1011,27 +823,27 @@ debuggb:
         pop     ebx
         pop     eax
         jmp     debuggout
-
+        ;
 debuggtext1     DB      'Entering DebugDisplay...',0
 debuggtext2     DB      13,10
-
+        ;
 debuggout:
         push    ecx
         mov     ecx,100000h
 debuggloop:
-;       dec     ecx
-;       jne     debugaloop
+        ;dec     ecx
+        ;jne     debugaloop
         pop     ecx
 ENDIF
-
         push    ds
         mov     ds,cs:ExcepDSeg
+        ;
         assume ds:_cwMain
         cmp     UserTermFlag,0  ; see if user termination routine
         je      dd2                             ; no
-
+        ;
 INFOLISTSIZE    EQU     104
-
+        ;
         xor     ecx,ecx
         mov     esi,OFFSET cs:DebugBuffer
         mov     edi,DWORD PTR UserTermDump
@@ -1044,7 +856,6 @@ INFOLISTSIZE    EQU     104
         jnz     utsi                    ; invalid selector
         mov     es,ax
         mov     cx,INFOLISTSIZE
-
 uttrans16:
         mov     al,cs:[si]
         mov     es:[di],al
@@ -1052,13 +863,12 @@ uttrans16:
         inc     di
         dec     cx
         jne     uttrans16
-
 utsi:
         mov     si,sp
         call    DWORD PTR ds:[UserTermRoutine]
         mov     ds,cs:ExcepDSeg ; restore ds if used
         jmp     dd2
-
+        ;
 ut32:
         mov     ax,WORD PTR UserTermDump+4
         mov     cx,ax
@@ -1066,7 +876,6 @@ ut32:
         jnz     utesi                   ; invalid selector
         mov     es,ax
         mov     cx,INFOLISTSIZE
-
 uttrans32:
         mov     al,cs:[esi]
         mov     es:[edi],al
@@ -1074,23 +883,19 @@ uttrans32:
         inc     edi
         dec     cx
         jne     uttrans32
-
 utesi:
         mov     esi,esp
         call    FWORD PTR ds:[UserTermRoutine]
         mov     ds,cs:ExcepDSeg ; restore ds if used
-
 dd2:
         cmp     DebugDump,0             ;register dump needed?
         jz      exc22_9
         mov     DebugDump,0
-
         cmp     EnableDebugDump,0       ; see if debug dumping enabled
         je      exc22_9
-
         mov     ds,cs:ExcepDDSeg
-        assume ds:_Excep
         ;
+        assume ds:_Excep
         mov     ah,0fh
         int     10h
         cmp     al,3
@@ -1105,35 +910,38 @@ exc22_ModeOk:
         mov     d[exc22_Handle],0
         xor     cx,cx
         mov     ah,3ch
-
-; MED 06/18/96
+        ;
+        ; MED 06/18/96
+        ;
         mov     ds,cs:ExcepDSeg
+        ;
         assume ds:_cwMain
         mov     edx,OFFSET NewCWErrName ; try new error file name
         cmp     ds:[edx],al
         je      oldcwerr                ; no new error file name
         int     21h
         mov     ds,cs:ExcepDDSeg
+        ;
         assume ds:_Excep
         jnc     debhand                 ; successfully created new error file
-
 oldcwerr:
         mov     ds,cs:ExcepDDSeg
+        ;
         assume ds:_Excep
         mov     edx,offset DebugName
         xor     cx,cx
         mov     ah,3ch
         int     21h
         jc      exc22_NoFile
-
 debhand:
         mov     d[exc22_Handle],eax
-
 exc22_NoFile:
+        ;
         ;Display debug info.
         ;
         push    ds
         mov     ds,ExcepDSeg
+        ;
         assume ds:_cwMain
         mov     esi,offset Copyright
         xor     ecx,ecx
@@ -1145,14 +953,15 @@ exc22_LookCEnd:
         inc     ecx
         inc     esi
         jmp     exc22_LookCEnd
+        ;
 exc22_AtCEnd:
         mov     edx,offset Copyright
         mov     ebx,d[exc22_Handle]
         mov     ah,40h
         int     21h
+        ;
         assume ds:_Excep
         pop     ds
-        ;
         mov     ax,DebugExceptionIndex
         mov     cx,2
         mov     edi,offset DebugINum
@@ -1161,7 +970,6 @@ exc22_AtCEnd:
         mov     cx,4
         mov     edi,offset DebugENum
         call    Bin2Hex
-        ;
         mov     ax,DebugTR
         mov     cx,4
         mov     edi,offset DebugTRt
@@ -1178,7 +986,6 @@ exc22_AtCEnd:
         mov     cx,8
         mov     edi,offset DebugCR3t
         call    Bin2Hex
-        ;
         mov     eax,DebugEAX
         mov     cx,8
         mov     edi,offset DebugEAXt
@@ -1219,7 +1026,6 @@ exc22_AtCEnd:
         mov     cx,8
         mov     edi,offset DebugEFLt
         call    Bin2Hex
-        ;
         mov     ax,DebugCS
         mov     cx,4
         mov     edi,offset DebugCSt
@@ -1233,6 +1039,7 @@ exc22_AtCEnd:
         mov     d[edi+4],'xxxx'
         add     edi,8
         jmp     exc22_1
+        ;
 exc22_0:
         call    Bin2Hex
 exc22_1:
@@ -1249,6 +1056,7 @@ exc22_1:
         mov     d[edi+4],'xxxx'
         add     edi,8
         jmp     exc22_3
+        ;
 exc22_2:
         call    Bin2Hex
 exc22_3:
@@ -1265,6 +1073,7 @@ exc22_3:
         mov     d[edi+4],'xxxx'
         add     edi,8
         jmp     exc22_5
+        ;
 exc22_4:
         call    Bin2Hex
 exc22_5:
@@ -1281,6 +1090,7 @@ exc22_5:
         mov     d[edi+4],'xxxx'
         add     edi,8
         jmp     exc22_7
+        ;
 exc22_6:
         call    Bin2Hex
 exc22_7:
@@ -1297,6 +1107,7 @@ exc22_7:
         mov     d[edi+4],'xxxx'
         add     edi,8
         jmp     exc22_11
+        ;
 exc22_10:
         call    Bin2Hex
 exc22_11:
@@ -1313,26 +1124,27 @@ exc22_11:
         mov     d[edi+4],'xxxx'
         add     edi,8
         jmp     exc22_13
+        ;
 exc22_12:
         call    Bin2Hex
 exc22_13:
         mov     edi,offset DebugSysFlags
         push    ds
         mov     ds,ExcepDSeg
+        ;
         assume ds:_cwMain
         movzx   eax,w[SystemFlags]
+        ;
         assume ds:_Excep
         pop     ds
         mov     cx,8
         call    Bin2Hex
-
-
         ;
         ;Now print the results.
         ;
-
         push    ds
         mov     ds,ExcepDSeg
+        ;
         assume ds:_cwMain
         mov     esi,offset Copyright
 exc22_cp0:
@@ -1343,11 +1155,11 @@ exc22_cp0:
         int     21h
         inc     esi
         jmp     exc22_cp0
+        ;
 exc22_cp1:
+        ;
         assume ds:_Excep
         pop     ds
-
-
         mov     edx,offset DebugHeader
         mov     ah,9
         int     21h
@@ -1356,23 +1168,23 @@ exc22_cp1:
         mov     ebx,d[exc22_Handle]
         mov     ah,40h
         int     21h
-
         ;
         ;Print message about writing cw.err
         ;
         mov     edx,offset WritingCWERR
         mov     ah,9
         int     21h
-
+        ;
 CSEIPDEBUGDUMPCOUNT     EQU     256     ; should be multiple of 16
 SSESPDEBUGDUMPCOUNT     EQU     256     ; should be multiple of 16
 SSEBPDEBUGDUMPCOUNT     EQU     256     ; should be multiple of 16
-
+        ;
         push    fs
-
         mov     fs,ds:ExcepDSeg
+        ;
         assume fs:_cwMain
         mov     fs,fs:PSPSegment
+        ;
         assume fs:nothing
         mov     edi,offset DebugHeader
         mov     edx,OFFSET LoadAddrDebugText
@@ -1383,24 +1195,21 @@ SSEBPDEBUGDUMPCOUNT     EQU     256     ; should be multiple of 16
         call    Bin2Hex
         mov     DWORD PTR ds:[edi],0a0d0a0dh
         add     edi,4
-
         mov     edx,offset DebugHeader
         sub     edi,edx
         mov     ecx,edi
         mov     ah,40h
         mov     ebx,d[exc22_Handle]
         int     21h
-
         ;
         ;Do a CS:EIP dump.
         ;
         mov     ecx,CSEIPDEBUGDUMPCOUNT
         mov     fs,DebugCS
         mov     esi,DebugEIP
-        test    BYTE PTR ExcepSystemFlags,1
+        test    BYTE PTR ExcepSystemFlags,SYSFLAG_16B
         jz      exc22_cseip32
         movzx   esi,si
-
 exc22_cseip32:
         xor     eax,eax
         mov     ax,fs
@@ -1408,7 +1217,6 @@ exc22_cseip32:
         cmp     eax,-1
         jz      exc22_flat0
         inc     eax
-
 exc22_flat0:
         mov     ebx,esi
         add     ebx,ecx
@@ -1418,9 +1226,7 @@ exc22_flat0:
         sub     ecx,ebx
         jz      exc22_cseip3
         js      exc22_cseip3
-
 exc22_cseip2:
-        ;
         mov     edi,offset DebugHeader
         mov     edx,OFFSET CSEIPDebugText
         call    DebugTextCopy
@@ -1439,34 +1245,31 @@ exc22_cseip0:
         jnz     exc22_cseip1
         mov     WORD PTR ds:[edi],0a0dh
         add     edi,2
-
         mov     eax,20202020h
         mov     DWORD PTR ds:[edi],eax
         mov     DWORD PTR ds:[edi+4],eax
         add     edi,8
         mov     BYTE PTR ds:[edi],al
         inc     edi
-        ;
 exc22_cseip1:
         dec     ecx
         jnz     exc22_cseip0
         mov     DWORD PTR ds:[edi],0a0d0a0dh
         add     edi,4
-;       mov     b[edi],"$"
-        ;
+        ;mov     b[edi],"$"
         mov     edx,offset DebugHeader
         sub     edi,edx
         mov     ecx,edi
         mov     ah,40h
         mov     ebx,d[exc22_Handle]
         int     21h
-
 exc22_cseip3:
-
-; Do user-defined dump, if appropriate
+        ;
+        ; Do user-defined dump, if appropriate
+        ;
         mov     ds,cs:ExcepDSeg
+        ;
         assume ds:_cwMain       ; allow access to user input variables
-
         movzx   ecx,WORD PTR DebugUserCount
         test    ecx,ecx         ; no user dump defined
         je      userdone
@@ -1476,15 +1279,13 @@ exc22_cseip3:
         mov     fs,ax
         mov     esi,DebugUserOff
         mov     al,DebugAsciiFlag
-
         mov     ds,cs:ExcepDDSeg        ; restore ds for normal variable access
+        ;
         assume ds:_Excep
         mov     DumpAsciiFlag,al
-
-        test    BYTE PTR ExcepSystemFlags,1
+        test    BYTE PTR ExcepSystemFlags,SYSFLAG_16B
         jz      user32
         movzx   esi,si
-
 user32:
         xor     eax,eax
         mov     ax,fs
@@ -1492,7 +1293,6 @@ user32:
         cmp     eax,-1
         jz      userflat0
         inc     eax
-
 userflat0:
         mov     ebx,esi
         add     ebx,ecx
@@ -1502,7 +1302,6 @@ userflat0:
         sub     ecx,ebx
         jz      userdone
         js      userdone
-
 user2:
         mov     edi,offset DebugHeader
         mov     edx,OFFSET UserDebugText
@@ -1517,15 +1316,13 @@ user0:
         cmp     al,' '                  ; ensure that space or greater
         jae     userascii
         mov     al,'.'                  ; show a period for control characters
-
 userascii:
         mov     BYTE PTR ds:[edi],al
         inc     edi
         jmp     usershow
-
+        ;
 userbin:
         call    Bin2Hex
-
 usershow:
         mov     b[edi]," "
         pop     ecx
@@ -1536,32 +1333,29 @@ usershow:
         jnz     user1
         mov     WORD PTR ds:[edi],0a0dh
         add     edi,2
-
         mov     eax,20202020h
         mov     DWORD PTR ds:[edi],eax
         mov     DWORD PTR ds:[edi+4],eax
         add     edi,8
         mov     BYTE PTR ds:[edi],al
         inc     edi
-
 user1:
         dec     ecx
         jnz     user0
         mov     DWORD PTR ds:[edi],0a0d0a0dh
         add     edi,4
-
         mov     edx,offset DebugHeader
         sub     edi,edx
         mov     ecx,edi
         mov     ah,40h
         mov     ebx,d[exc22_Handle]
         int     21h
-
 userdone:
         mov     ds,cs:ExcepDDSeg        ; restore ds for normal variable access
+        ;
         assume ds:_Excep
-
 ssesp:
+        ;
         ;Do a SS:ESP dump.
         ;
         cmp     DebugExceptionIndex,0ch ;stack problem?
@@ -1569,10 +1363,9 @@ ssesp:
         mov     ecx,SSESPDEBUGDUMPCOUNT
         mov     fs,DebugSS
         mov     esi,DebugESP
-        test    BYTE PTR ExcepSystemFlags,1
+        test    BYTE PTR ExcepSystemFlags,SYSFLAG_16B
         jz      exc22_ssesp32
         movzx   esi,si
-
 exc22_ssesp32:
         xor     eax,eax
         mov     ax,fs
@@ -1580,7 +1373,6 @@ exc22_ssesp32:
         cmp     eax,-1
         jz      exc22_flat1
         inc     eax
-
 exc22_flat1:
         mov     ebx,esi
         add     ebx,ecx
@@ -1590,14 +1382,11 @@ exc22_flat1:
         sub     ecx,ebx
         jz      exc22_ssesp3
         js      exc22_ssesp3
-
 exc22_ssesp2:
-        ;
         mov     edi,offset DebugHeader
         mov     edx,OFFSET SSESPDebugText
         call    DebugTextCopy
         xor     edx,edx
-
 exc22_ssesp0:
         push    ecx
         mov     ecx,2
@@ -1612,37 +1401,33 @@ exc22_ssesp0:
         jnz     exc22_ssesp1
         mov     WORD PTR ds:[edi],0a0dh
         add     edi,2
-
         mov     eax,20202020h
         mov     DWORD PTR ds:[edi],eax
         mov     DWORD PTR ds:[edi+4],eax
         add     edi,8
         mov     BYTE PTR ds:[edi],al
         inc     edi
-        ;
 exc22_ssesp1:
         dec     ecx
         jnz     exc22_ssesp0
-
         mov     DWORD PTR ds:[edi],0a0d0a0dh
         add     edi,4
-;       mov     b[edi],"$"
-        ;
+        ;mov     b[edi],"$"
         mov     edx,offset DebugHeader
         sub     edi,edx
         mov     ecx,edi
         mov     ah,40h
         mov     ebx,d[exc22_Handle]
         int     21h
-
 exc22_ssesp3:
         ;
         ;Do a SS:EBP dump.
         ;
         cmp     DebugExceptionIndex,0ch ;stack problem?
         jz      exc22_ssebp3
-
-; do a pre-EBP dump for stack frames
+        ;
+        ; do a pre-EBP dump for stack frames
+        ;
         mov     ecx,SSEBPDEBUGDUMPCOUNT
         mov     fs,DebugSS
         mov     esi,DebugEBP
@@ -1651,14 +1436,11 @@ exc22_ssesp3:
         cmp     esi,ecx                 ; see if stack frame as large as display byte dump
         jae     med2d                   ; yes
         mov     ecx,esi
-
 med2d:
         sub     esi,ecx
-
-        test    BYTE PTR ExcepSystemFlags,1
+        test    BYTE PTR ExcepSystemFlags,SYSFLAG_16B
         jz      medssebp32
         movzx   esi,si
-
 medssebp32:
         xor     eax,eax
         mov     ax,fs
@@ -1666,7 +1448,6 @@ medssebp32:
         cmp     eax,-1
         jz      medflat2
         inc     eax
-
 medflat2:
         mov     ebx,esi
         add     ebx,ecx
@@ -1676,11 +1457,9 @@ medflat2:
         sub     ecx,ebx
         jz      ebpdump
         js      ebpdump
-
 medssebp2:
         ;
         xor     edx,edx
-
         mov     edi,offset DebugHeader
         mov     eax,20202020h
         mov     DWORD PTR ds:[edi],eax
@@ -1688,38 +1467,32 @@ medssebp2:
         add     edi,8
         mov     BYTE PTR ds:[edi],al
         inc     edi
-
         push    ecx
         and     ecx,0fh
         je      med3d
         mov     dl,16                   ; high bytes known zero
         sub     dl,cl                   ; save hex bytes left to display on row
         mov     cl,dl
-
 medloop:
         mov     ds:[edi],ax             ; 3-byte pads until at proper display position
         mov     ds:[edi+2],al
         add     edi,3
         dec     ecx
         jne     medloop
-
 med3d:
         pop     ecx
-
 medssebp0:
         push    ecx
         mov     al,fs:[esi]
         mov     ecx,2
         call    Bin2Hex
         pop     ecx
-
         mov     b[edi]," "
         inc     edi
         inc     esi
         inc     edx
         test    dl,0fh
         jnz     medssebp1
-
         mov     WORD PTR ds:[edi],0a0dh
         add     edi,2
         cmp     ecx,1
@@ -1730,32 +1503,25 @@ medssebp0:
         add     edi,8
         mov     BYTE PTR ds:[edi],al
         inc     edi
-
-        ;
 medssebp1:
         dec     ecx
         jne     medssebp0
-
-;       mov     WORD PTR ds:[edi],0a0dh
-;       add     edi,2
-;       mov     b[edi],"$"
-        ;
+        ;mov     WORD PTR ds:[edi],0a0dh
+        ;add     edi,2
+        ;mov     b[edi],"$"
         mov     edx,offset DebugHeader
         sub     edi,edx
         mov     ecx,edi
         mov     ah,40h
         mov     ebx,d[exc22_Handle]
         int     21h
-        ;
-
 ebpdump:
         mov     ecx,SSEBPDEBUGDUMPCOUNT
         mov     fs,DebugSS
         mov     esi,DebugEBP
-        test    BYTE PTR ExcepSystemFlags,1
+        test    BYTE PTR ExcepSystemFlags,SYSFLAG_16B
         jz      exc22_ssebp32
         movzx   esi,si
-
 exc22_ssebp32:
         xor     eax,eax
         mov     ax,fs
@@ -1763,7 +1529,6 @@ exc22_ssebp32:
         cmp     eax,-1
         jz      exc22_flat2
         inc     eax
-
 exc22_flat2:
         mov     ebx,esi
         add     ebx,ecx
@@ -1773,14 +1538,11 @@ exc22_flat2:
         sub     ecx,ebx
         jz      exc22_ssebp3
         js      exc22_ssebp3
-
 exc22_ssebp2:
-        ;
         mov     edi,offset DebugHeader
         mov     edx,OFFSET SSEBPDebugText
         call    DebugTextCopy
         xor     edx,edx
-
 exc22_ssebp0:
         push    ecx
         mov     ecx,2
@@ -1795,61 +1557,55 @@ exc22_ssebp0:
         jnz     exc22_ssebp1
         mov     WORD PTR ds:[edi],0a0dh
         add     edi,2
-
         mov     eax,20202020h
         mov     DWORD PTR ds:[edi],eax
         mov     DWORD PTR ds:[edi+4],eax
         add     edi,8
         mov     BYTE PTR ds:[edi],al
         inc     edi
-        ;
 exc22_ssebp1:
         dec     ecx
         jnz     exc22_ssebp0
         mov     DWORD PTR ds:[edi],0a0d0a0dh
         add     edi,4
-;       mov     b[edi],"$"
-        ;
+        ;mov     b[edi],"$"
         mov     edx,offset DebugHeader
         sub     edi,edx
         mov     ecx,edi
         mov     ah,40h
         mov     ebx,d[exc22_Handle]
         int     21h
-        ;
-
 exc22_ssebp3:
-
         pop     fs
-
         ;
         ;Do resource output stuff.
         ;
         push    fs
         mov     fs,ExcepDSeg
+        ;
         assume fs:_cwMain
         mov     fs,fs:PSPSegment
+        ;
         assume fs:nothing
         push    es
         pushad
         cmp     DWORD PTR fs:[EPSP_Struc.EPSP_Resource],0
         jz      exc22_r8
-
         mov     edx,offset ResHeader
         mov     ah,40h
         mov     ecx,ResHeaderLen
         mov     ebx,d[exc22_Handle]
         int     21h
-
         mov     edx,offset SelHeader
         mov     ah,40h
         mov     ecx,SelHeaderLen
         mov     ebx,d[exc22_Handle]
         int     21h
-
         mov     es,ExcepDSeg
+        ;
         assume es:_cwMain
         mov     es,es:RealSegment
+        ;
         assume es:nothing
         mov     esi,DWORD PTR fs:[EPSP_Struc.EPSP_Resource]
 exc22_LookLoop:
@@ -1867,8 +1623,6 @@ exc22_r1_0:
         mov     ax,WORD PTR fs:[EPSP_Struc.EPSP_DPMIMem]
         cmp     WORD PTR es:[esi],ax
         jz      exc22_r1
-
-        ;
 exc22_SEL:
         pushad
         mov     edi,offset DebugHeader
@@ -1913,8 +1667,6 @@ exc22_Use32It:
         mov     b[edi],' '
         inc     edi
         inc     TotalSelectors
-
-
         ;
         ;See if there is a memory block that matches this selector.
         ;
@@ -1922,7 +1674,6 @@ exc22_Use32It:
         Sys     GetSelDet32
         mov     ebx,edx
         pushad
-
         mov     esi,DWORD PTR fs:[EPSP_Struc.EPSP_Resource]
 exc22_s2:
         push    esi
@@ -1933,7 +1684,6 @@ exc22_s2:
 exc22_s0:
         cmp     BYTE PTR es:[edi],Res_MEM       ;Anything here?
         jnz     exc22_s1
-
         mov     eax,DWORD PTR fs:[EPSP_Struc.EPSP_INTMem]
         cmp     es:[esi],eax
         jz      exc22_s1
@@ -1945,7 +1695,6 @@ exc22_s0:
         cmp     es:[esi],edx
         popad
         jz      exc22_s1
-
 exc22_nodpmi:
         cmp     ebx,es:[esi]            ;Fits this block?
         jnz     exc22_s1
@@ -1978,6 +1727,7 @@ exc22_mcbs1:
         jnz     exc22_mcbs2
         clc
         jmp     exc22_s3
+        ;
 exc22_mcbs2:
         cmp     BYTE PTR es:[esi+mcbNext],"M"
         jz      exc22_mcbs3
@@ -1985,31 +1735,27 @@ exc22_mcbs2:
         or      esi,esi
         jz      exc22_nomcbsel
         jmp     exc22_mcbs0
+        ;
 exc22_mcbs3:
         movzx   eax,WORD PTR es:[esi+mcbNextSize]
         add     eax,mcbLen
         add     esi,eax
         jmp     exc22_mcbs1
-
+        ;
 exc22_nomcbsel:
         stc
-
 exc22_s3:
         popad
-
         jc      exc22_r4
-        ;
         mov     b[edi],'Y'
         jmp     exc22_r5
         ;
 exc22_r4:
         mov     d[edi],'N'
-        ;
 exc22_r5:
         inc     edi
         mov     b[edi],' '
         inc     edi
-        ;
         mov     eax,es:[esi]
         mov     bx,WORD PTR fs:[EPSP_Struc.EPSP_SegBase]
         cmp     ax,bx
@@ -2030,7 +1776,6 @@ exc22_r5:
 exc22_r2:
         mov     d[edi],'xxxx'
         add     edi,4
-        ;
 exc22_r20:
         mov     b[edi],13
         mov     b[edi+1],10
@@ -2044,7 +1789,6 @@ exc22_r20:
         mov     ebx,d[exc22_Handle]
         int     21h
         popad
-        ;
 exc22_r1:
         add     esi,4
         inc     edi
@@ -2054,7 +1798,6 @@ exc22_r1:
         mov     esi,es:[edi+ResHead_Next]  ;link to next list.
         or      esi,esi
         jnz     exc22_LookLoop
-        ;
         mov     edi,offset TotalSelsNum
         mov     eax,TotalSelectors
         mov     ecx,4
@@ -2072,11 +1815,12 @@ exc22_r1:
         mov     ecx,MemHeaderLen
         mov     ebx,d[exc22_Handle]
         int     21h
-        ;
         mov     esi,DWORD PTR fs:[EPSP_Struc.EPSP_Resource]
         mov     es,ExcepDSeg
+        ;
         assume es:_cwMain
         mov     es,es:RealSegment
+        ;
         assume es:nothing
 exc22_mLookLoop:
         push    esi
@@ -2087,7 +1831,6 @@ exc22_mLookLoop:
 exc22_m0:
         cmp     BYTE PTR es:[edi],Res_MEM
         jnz     exc22_m1
-
         mov     eax,DWORD PTR fs:[EPSP_Struc.EPSP_INTMem]
         cmp     es:[esi],eax
         jz      exc22_m1
@@ -2099,9 +1842,8 @@ exc22_m0:
         cmp     es:[esi],edx
         popad
         jz      exc22_m1
-
-        ;
 exc22_nodpmimem:
+        ;
         ;Check if this is an MCB block.
         ;
         push    edi
@@ -2116,18 +1858,17 @@ exc22_mcbmc0:
         or      edi,edi
         jz      exc22_MEM
         jmp     exc22_mcbmc0
-
         ;
 exc22_mcbmc1:
+        ;
         ;Update Total memory value and skip this block.
         ;
         mov     eax,es:[esi+8]
-        add     eax,4095
-        and     eax,0fffff000h
+        RoundPageUP eax                 ;round up to next page.
         add     TotalLinearMem+4,eax
         pop     edi
         jmp     exc22_m1
-
+        ;
 exc22_MEM:
         pop     edi
         pushad
@@ -2145,8 +1886,7 @@ exc22_MEM:
         mov     eax,es:[esi+8]
         add     TotalLinearMem,eax
         push    eax
-        add     eax,4095
-        and     eax,0fffff000h
+        RoundPageUP eax                 ;round up to next page.
         add     TotalLinearMem+4,eax
         pop     eax
         inc     TotalLinearMem+8
@@ -2154,7 +1894,6 @@ exc22_MEM:
         call    Bin2Hex
         mov     b[edi],' '
         inc     edi
-        ;
         mov     b[edi],13
         mov     b[edi+1],10
         mov     b[edi+2],'$'
@@ -2169,7 +1908,6 @@ exc22_MEM:
         int     21h
         pop     es
         popad
-        ;
 exc22_m1:
         add     esi,4
         inc     edi
@@ -2191,7 +1929,6 @@ exc22_mcb0:
 exc22_mcb1:
         cmp     BYTE PTR es:[esi+mcbFreeUsed],"J"       ;Free block?
         jz      exc22_mcb2
-
         mov     eax,DWORD PTR fs:[EPSP_Struc.EPSP_INTMem]
         sub     eax,mcbLen
         cmp     esi,eax
@@ -2205,7 +1942,6 @@ exc22_mcb1:
         cmp     esi,edx
         popad
         jz      exc22_mcb2
-
 exc22_nodpmimemhere:
         pushad
         mov     edi,offset DebugHeader
@@ -2230,7 +1966,6 @@ exc22_nodpmimemhere:
         inc     edi
         pop     eax
         add     TotalLinearMem,eax
-        ;
         mov     b[edi],13
         mov     b[edi+1],10
         mov     b[edi+2],'$'
@@ -2244,9 +1979,7 @@ exc22_nodpmimemhere:
         mov     ebx,d[exc22_Handle]
         int     21h
         pop     es
-
         popad
-
 exc22_mcb2:
         cmp     BYTE PTR es:[esi+mcbNext],"M"   ;end of the chain?
         jz      exc22_mcb3
@@ -2260,11 +1993,9 @@ exc22_mcb3:
         add     eax,mcbLen
         add     esi,eax
         jmp     exc22_mcb1
-
-
-
         ;
 exc22_nomcbdis:
+        ;
         ;Display totals.
         ;
         mov     edi,offset TotalMemNum1
@@ -2292,7 +2023,6 @@ exc22_nomcbdis:
         mov     ecx,LockHeaderLen
         mov     ebx,d[exc22_Handle]
         int     21h
-        ;
         mov     esi,DWORD PTR fs:[EPSP_Struc.EPSP_Resource]
 exc22_lLookLoop:
         push    esi
@@ -2303,7 +2033,6 @@ exc22_lLookLoop:
 exc22_l0:
         cmp     BYTE PTR es:[edi],Res_LOCK
         jnz     exc22_l1
-        ;
 exc22_LOCK:
         pushad
         mov     edi,offset DebugHeader
@@ -2317,7 +2046,6 @@ exc22_LOCK:
         call    Bin2Hex
         mov     b[edi],' '
         inc     edi
-        ;
         mov     b[edi],13
         mov     b[edi+1],10
         mov     b[edi+2],'$'
@@ -2330,7 +2058,6 @@ exc22_LOCK:
         mov     ebx,d[exc22_Handle]
         int     21h
         popad
-        ;
 exc22_l1:
         add     esi,4
         inc     edi
@@ -2348,7 +2075,6 @@ exc22_l1:
         mov     ecx,DosMemHeaderLen
         mov     ebx,d[exc22_Handle]
         int     21h
-        ;
         mov     esi,DWORD PTR fs:[EPSP_Struc.EPSP_Resource]
 exc22_dmLookLoop:
         push    esi
@@ -2359,7 +2085,6 @@ exc22_dmLookLoop:
 exc22_dm0:
         cmp     BYTE PTR es:[edi],Res_DOSMEM
         jnz     exc22_dm1
-        ;
         pushad
         mov     edi,offset DebugHeader
         mov     eax,es:[esi]
@@ -2385,7 +2110,6 @@ exc22_dm0:
         call    Bin2Hex
         mov     b[edi],' '
         inc     edi
-        ;
         mov     b[edi],13
         mov     b[edi+1],10
         mov     b[edi+2],'$'
@@ -2398,7 +2122,6 @@ exc22_dm0:
         mov     ebx,d[exc22_Handle]
         int     21h
         popad
-        ;
 exc22_dm1:
         add     esi,4
         inc     edi
@@ -2408,7 +2131,6 @@ exc22_dm1:
         mov     esi,es:[edi+ResHead_Next]   ;link to next list.
         or      esi,esi
         jnz     exc22_dmLookLoop
-        ;
         cmp     DWORD PTR fs:[EPSP_Struc.EPSP_INTMem],0
         jz      exc22_r8
         ;
@@ -2419,7 +2141,6 @@ exc22_dm1:
         mov     ecx,PIntHeaderLen
         mov     ebx,d[exc22_Handle]
         int     21h
-        ;
         mov     ecx,256
         mov     esi,DWORD PTR fs:[EPSP_Struc.EPSP_INTMem]
         mov     ebx,0
@@ -2429,7 +2150,6 @@ exc22_pv0:
         push    esi
         cmp     WORD PTR es:[esi+4],-1
         jz      exc22_pv1
-        ;
         mov     edi,offset DebugHeader
         mov     eax,ebx
         mov     cx,2
@@ -2446,7 +2166,6 @@ exc22_pv0:
         call    Bin2Hex
         mov     b[edi],' '
         inc     edi
-        ;
         mov     b[edi],13
         mov     b[edi+1],10
         mov     b[edi+2],'$'
@@ -2458,7 +2177,6 @@ exc22_pv0:
         mov     ah,40h
         mov     ebx,d[exc22_Handle]
         int     21h
-        ;
 exc22_pv1:
         pop     esi
         pop     ecx
@@ -2466,9 +2184,6 @@ exc22_pv1:
         add     esi,6
         inc     ebx
         loop    exc22_pv0
-
-
-
         ;
         ;Now do protected mode exception details.
         ;
@@ -2477,7 +2192,6 @@ exc22_pv1:
         mov     ecx,EIntHeaderLen
         mov     ebx,d[exc22_Handle]
         int     21h
-        ;
         mov     ecx,32
         mov     esi,DWORD PTR fs:[EPSP_Struc.EPSP_INTMem]
         add     esi,256*6
@@ -2488,7 +2202,6 @@ exc22_pe0:
         push    esi
         cmp     WORD PTR es:[esi+4],-1
         jz      exc22_pe1
-        ;
         mov     edi,offset DebugHeader
         mov     eax,ebx
         mov     cx,2
@@ -2505,7 +2218,6 @@ exc22_pe0:
         call    Bin2Hex
         mov     b[edi],' '
         inc     edi
-        ;
         mov     b[edi],13
         mov     b[edi+1],10
         mov     b[edi+2],'$'
@@ -2517,7 +2229,6 @@ exc22_pe0:
         mov     ah,40h
         mov     ebx,d[exc22_Handle]
         int     21h
-        ;
 exc22_pe1:
         pop     esi
         pop     ecx
@@ -2525,9 +2236,6 @@ exc22_pe1:
         add     esi,6
         inc     ebx
         loop    exc22_pe0
-
-
-
         ;
         ;Now do real mode int details.
         ;
@@ -2536,7 +2244,6 @@ exc22_pe1:
         mov     ecx,RIntHeaderLen
         mov     ebx,d[exc22_Handle]
         int     21h
-        ;
         mov     ecx,256
         mov     esi,DWORD PTR fs:[EPSP_Struc.EPSP_INTMem]
         add     esi,(256*6)+(32*6)
@@ -2547,7 +2254,6 @@ exc22_ri0:
         push    esi
         cmp     WORD PTR es:[esi+2],-1
         jz      exc22_ri1
-        ;
         mov     edi,offset DebugHeader
         mov     eax,ebx
         mov     cx,2
@@ -2564,7 +2270,6 @@ exc22_ri0:
         call    Bin2Hex
         mov     b[edi],' '
         inc     edi
-        ;
         mov     b[edi],13
         mov     b[edi+1],10
         mov     b[edi+2],'$'
@@ -2576,7 +2281,6 @@ exc22_ri0:
         mov     ah,40h
         mov     ebx,d[exc22_Handle]
         int     21h
-        ;
 exc22_ri1:
         pop     esi
         pop     ecx
@@ -2592,7 +2296,6 @@ exc22_ri1:
         mov     ecx,CallBackHeaderLen
         mov     ebx,d[exc22_Handle]
         int     21h
-        ;
         mov     esi,DWORD PTR fs:[EPSP_Struc.EPSP_Resource]
 exc22_cbLookLoop:
         push    esi
@@ -2603,7 +2306,6 @@ exc22_cbLookLoop:
 exc22_cb0:
         cmp     BYTE PTR es:[edi],Res_CALLBACK
         jnz     exc22_cb1
-        ;
         pushad
         mov     edi,offset DebugHeader
         mov     eax,es:[esi]
@@ -2625,7 +2327,6 @@ exc22_cb0:
         mov     eax,es:[esi+4]
         mov     cx,8
         call    Bin2Hex
-        ;
         mov     b[edi],13
         mov     b[edi+1],10
         mov     b[edi+2],'$'
@@ -2638,7 +2339,6 @@ exc22_cb0:
         mov     ebx,d[exc22_Handle]
         int     21h
         popad
-        ;
 exc22_cb1:
         add     esi,4
         inc     edi
@@ -2653,9 +2353,11 @@ exc22_cb1:
         ;
         push    ds
         mov     ds,ExcepDSeg
+        ;
         assume ds:_cwMain
         mov     eax,MouseETarget
         mov     ebx,MouseETarget+4
+        ;
         assume ds:_Excep
         pop     ds
         mov     ecx,eax
@@ -2693,18 +2395,13 @@ exc22_cb1:
         mov     ah,40h
         mov     ebx,d[exc22_Handle]
         int     21h
-
 exc22_r8:
         popad
         pop     es
         pop     fs
-
-        ;
         mov     ebx,d[exc22_Handle]
         mov     ah,3eh
         int     21h
-        ;
-
 exc22_9:
         pop     ds
         retf
@@ -2712,7 +2409,6 @@ exc22_9:
 exc22_Handle:
         dd ?
 DebugDisplay    endp
-
 
 ;-------------------------------------------------------------------------
 ;
@@ -2761,7 +2457,6 @@ Bin2Hex endp
 ; upon entry ds:edi -> out buffer, ds:edx -> in buffer
 ;
 DebugTextCopy   PROC    NEAR
-
 dbdloop:
         mov     al,ds:[edx]
         test    al,al
@@ -2770,7 +2465,7 @@ dbdloop:
         inc     edx
         inc     edi
         jmp     dbdloop
-
+        ;
 dbdret:
         ret
 DebugTextCopy   ENDP

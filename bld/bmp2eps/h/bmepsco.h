@@ -25,7 +25,7 @@
 
 #define VERSNUMB "0.9.0"
 
-#if HAVE_CONFIG_H
+#ifdef HAVE_CONFIG_H
 #include <config.h>
 #else
 #ifndef HAVE_ZLIB
@@ -38,7 +38,7 @@
 #define HAVE_JPEGLIB_H          0
 #endif
 #ifndef HAVE_TIFF_H
-#if LZW_PATENT_EXPIRED
+#ifdef LZW_PATENT_EXPIRED
 #define HAVE_TIFF_H             1
 #else
 #define HAVE_TIFF_H             0
@@ -47,7 +47,7 @@
 #ifndef HAVE_PNM_H
 #define HAVE_PNM_H              0
 #endif
-#if _MSC_VER
+#ifdef _MSC_VER
 /* + MSVC */
 #ifndef HAVE_STRICMP
 #define HAVE_STRICMP            0
@@ -91,7 +91,7 @@
 /* - MSVC */
 #else
 /* + !MSVC */
-#if __BORLANDC__
+#ifdef __BORLANDC__
 /* + BC */
 #ifndef HAVE_STRICMP
 #define HAVE_STRICMP            1

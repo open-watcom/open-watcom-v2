@@ -1,0 +1,2 @@
+cli_zlib_inc_dirs = -I"$(zlib_dir)"
+cli_zlib_libs = $(setupgui_dir)/zlib/$(bin_host)/zlib.lib

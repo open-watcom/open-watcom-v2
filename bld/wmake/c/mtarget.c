@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -193,7 +193,8 @@ CLIST *DotCList( DotName dot )
 
     cur = FindTarget( name );
 
-    if( cur == NULL || cur->depend == NULL ) {
+    if( cur == NULL
+      || cur->depend == NULL ) {
         return( NULL );
     }
     return( cur->depend->clist );
@@ -487,10 +488,12 @@ STATIC TARGET *findOrNewTarget( const char *tname, bool mentioned )
     targ = FindTarget( FixName( strcpy( name, tname ) ) );
     if( targ == NULL ) {
         targ = NewTarget( name );
-        if( name[0] == '.' && ( cisextc( name[1] ) || ciswildc( name[1] ) ) ) {
+        if( name[0] == '.'
+          && ( cisextc( name[1] )
+          || ciswildc( name[1] ) ) ) {
             targ->special = true;
-            if( stricmp( name + 1, BEFORE_S ) == 0 ||
-                stricmp( name + 1, AFTER_S )  == 0 ) {
+            if( stricmp( name + 1, BEFORE_S ) == 0
+              || stricmp( name + 1, AFTER_S ) == 0 ) {
                 targ->before_after = true;
             }
             if( stricmp( name + 1, DEFAULT_S ) == 0 ) {
@@ -500,7 +503,7 @@ STATIC TARGET *findOrNewTarget( const char *tname, bool mentioned )
     }
 
     /* mentioned in a makefile */
-    targ->mentioned = targ->mentioned || mentioned;
+    targ->mentioned = ( targ->mentioned || mentioned );
 
     return( targ );
 }
@@ -613,7 +616,8 @@ STATIC bool printTarg( void *node, void *ptr )
     if( targ->special ) {
         return( false );             /* don't print special targets */
     } else {
-        if( !targ->scolon && targ->depend == NULL ) {
+        if( !targ->scolon
+          && targ->depend == NULL ) {
             PrtMsg( INF | NEOL | PTARG_NAME, targ->node.name );
         } else {
             PrtMsg( INF | NEOL | PTARG_IS_TYPE_M, targ->node.name,
@@ -735,7 +739,8 @@ STATIC bool noCmds( void *trg, void *ptr )
 
     /* unused parameters */ (void)ptr;
 
-    if( targ->depend != NULL && targ->depend->clist == NULL ) {
+    if( targ->depend != NULL
+      && targ->depend->clist == NULL ) {
         targ->allow_nocmd = true;
     }
     return( false );

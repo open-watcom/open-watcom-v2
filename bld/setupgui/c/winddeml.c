@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -141,6 +141,7 @@ static bool ddeGroupAddItem1( DWORD ddeinst, HCONV hconv, const VBUF *prog_name,
     VbufInit( &buff );
     VbufConcStr( &buff, "[AddItem(" );
     VbufConcVbuf( &buff, prog_name );
+    VbufConcChr( &buff, ' ' );
     VbufConcVbuf( &buff, prog_args );
     VbufConcChr( &buff, ',' );
     VbufConcVbuf( &buff, prog_desc );
@@ -170,6 +171,7 @@ static bool ddeGroupAddItem2( DWORD ddeinst, HCONV hconv, const VBUF *prog_name,
     VbufConcStr( &buff, "[AddItem(" );
     VbufConcVbuf( &buff, working_dir );
     VbufConcVbuf( &buff, prog_name );
+    VbufConcChr( &buff, ' ' );
     VbufConcVbuf( &buff, prog_args );
     VbufConcChr( &buff, ',' );
     VbufConcVbuf( &buff, prog_desc );
@@ -391,7 +393,6 @@ static bool UseDDE( bool uninstall )
 
 #if defined( __NT__ )
 
-#include <direct.h>
 #include <shlobj.h>
 
 // DDE method does not work reliably under Windows 95. Preferred
@@ -414,12 +415,12 @@ static void munge_fname_add( VBUF *buff, const VBUF *name )
         } else {
             continue;
         }
-        VbufConcBuffer( buff, start, p - start );
+        VbufConcBuffer( buff, start, (vbuflen)( p - start ) );
         VbufConcStr( buff, replacement );
         start = p + 1;
     }
     if( p != start ) {
-        VbufConcBuffer( buff, start, p - start );
+        VbufConcBuffer( buff, start, (vbuflen)( p - start ) );
     }
 }
 
@@ -460,7 +461,7 @@ static void delete_dir( const VBUF *dir )
     DIR                 *dirp;
     struct dirent       *dire;
     VBUF                file;
-    size_t              dir_len;
+    vbuflen             dir_len;
 
     VbufInit( &file );
     // Delete contents of directory

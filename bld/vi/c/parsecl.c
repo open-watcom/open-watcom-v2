@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -199,7 +199,7 @@ vi_rc GetAddress( const char **buffp, linenum *num  )
     char        c;
     char        *tmp, st[2];
     int         len;
-    find_type   fl;
+    find_type   findfl;
     i_mark      pos;
     vi_rc       rc;
     const char  *buff;
@@ -266,11 +266,11 @@ vi_rc GetAddress( const char **buffp, linenum *num  )
             st[1] = '\0';
             buff = GetNextWord( buff, tmp, st );
             if( c == '?' ) {
-                fl = FINDFL_BACKWARDS | FINDFL_NEXTLINE;
+                findfl = FINDFL_BACKWARDS | FINDFL_NEXTLINE;
             } else {
-                fl = FINDFL_FORWARD | FINDFL_NEXTLINE;
+                findfl = FINDFL_FORWARD | FINDFL_NEXTLINE;
             }
-            rc = GetFind( tmp, &pos, &len, fl );
+            rc = GetFind( tmp, &pos, &len, findfl );
             numstack[nument] = pos.line;
             stopnum = true;
             StaticFree( tmp );

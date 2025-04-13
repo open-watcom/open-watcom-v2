@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -62,10 +62,12 @@ static bool ProcFileModRef( FILE *fp )
     char        *module_name;
     bool        ok;
     int         rc;
+    bool        first;
 
     page_len = 0;
     ReadRecInit();
     module_name = NULL;
+    first = true;
     ok = true;
     while( ok ) {
         offset = ftell( fp );
@@ -77,12 +79,15 @@ static bool ProcFileModRef( FILE *fp )
         }
         switch( RecHdr[0] & ~1 ) {
         case CMD_THEADR:
-            if( module_name != NULL )
-                free( module_name );
-            GetName();
-            NameTerm();
-            module_name = malloc( strlen( NamePtr ) + 1 );
-            strcpy( module_name, NamePtr );
+            if( first ) {
+                if( module_name != NULL )
+                    free( module_name );
+                GetName();
+                NameTerm();
+                module_name = malloc( strlen( NamePtr ) + 1 );
+                strcpy( module_name, NamePtr );
+                first = false;
+            }
             break;
         case CMD_MODEND:
             if( page_len != 0 ) {
@@ -92,6 +97,7 @@ static bool ProcFileModRef( FILE *fp )
                     fseek( fp, offset, SEEK_CUR );
                 }
             }
+            first = true;
             break;
         case CMD_PUBDEF:
             if( module_name == NULL )

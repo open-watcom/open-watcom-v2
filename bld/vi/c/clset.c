@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -53,7 +53,7 @@ static bool msgFlag;
 static bool needsRedisplay = false;
 static char msgString[MAX_STR];
 
-static void setMessage( char *msg, bool redisplay )
+static void setMessage( const char *msg, bool redisplay )
 {
     strcpy( msgString, msg );
     needsRedisplay = redisplay;
@@ -146,7 +146,7 @@ static const char *getOneSetVal( int token, bool isbool, char *tmpstr, bool want
             str = EditVars.TagFileName;
             break;
         case SETVAR_T_MAGICSTRING:
-            str = EditVars.Majick;
+            str = EditVars.Majick.str;
             break;
         case SETVAR_T_COMMANDCURSORTYPE:
         case SETVAR_T_OVERSTRIKECURSORTYPE:
@@ -820,9 +820,10 @@ static vi_rc processSetToken( int j, char *new, const char **pvalue, int *winfla
             }
             break;
         case SETVAR_T_MAGICSTRING:
-            ReplaceString( &EditVars.Majick, fn );
+            strncpy( EditVars.Majick.str, fn, MAGICLEN_MAX );
+            EditVars.Majick.str[MAGICLEN_MAX] = '\0';
             if( msgFlag ) {
-                MySprintf( fn, "magicstring set to %s", EditVars.Majick );
+                MySprintf( fn, "magicstring set to %s", EditVars.Majick.str );
             }
             break;
         case SETVAR_T_COMMANDCURSORTYPE:
@@ -1132,7 +1133,7 @@ static size_t getLongestTokenLength( const char *list )
 /*
  * getSetInfo - build string of values
  */
-static list_linenum getSetInfo( char ***vals, char ***list, size_t *longest )
+static list_linenum getSetInfo( const char ***vals, char ***list, size_t *longest )
 {
     list_linenum    i;
     size_t          i1;
@@ -1149,7 +1150,7 @@ static list_linenum getSetInfo( char ***vals, char ***list, size_t *longest )
     tc = tc1 + tc2;
     sdata = _MemAllocPtrArray( set_data, tc );
     *list = _MemAllocPtrArray( char, tc );
-    *vals = _MemAllocPtrArray( char, tc );
+    *vals = (const char **)_MemAllocPtrArray( char, tc );
 
     for( i1 = 0; i1 < tc1; i1++ ) {
         sdata[i1] = MemAlloc( sizeof( set_data ) );
@@ -1196,7 +1197,7 @@ vi_rc Set( const char *name )
     short           tmp;
     list_linenum    tc;
     list_linenum    i;
-    char            **vals = NULL;
+    const char      **vals = NULL;
     char            **list;
     size_t          longest;
 #endif

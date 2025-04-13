@@ -151,26 +151,19 @@ which describes an entry in a directory.
 .*------------------------------
 .if '&machsys' ne 'QNX' .do begin
 .df dos.h
-This header file declares functions that interact with DOS. It includes
-the definitions of the
-.kw FP_OFF
-.ct ,
-.kw FP_SEG
-and
-.kw MK_FP
-macros, and for the following structures and unions:
-.sfbeg
-.sf DOSERROR
-describes the DOS error information.
-.sf REGS
-describes the CPU registers for Intel 8086 family.
-.sf SREGS
-describes the segment registers for the Intel 8086 family.
-.sf REGPACK
-describes the CPU registers and segment registers for Intel 8086 family.
-.sf INTPACK
-describes the input parameter to an "interrupt" function.
-.sfend
+This header file declares functions that interact with DOS and defines
+the following structures:
+.kw _DOSERROR
+, 
+.kw dosdate_t
+,
+.kw dostime_t
+,
+.kw find_t
+,
+.kw _wfind_t
+.
+
 .do end
 .*------------------------------
 .df env.h
@@ -231,7 +224,6 @@ This POSIX header file contains structure definitions and function
 declarations for group operations.
 .do end
 .*------------------------------
-.if '&machsys' eq 'QNX' .do begin
 .df i86.h
 This header file is used with functions that interact with the Intel
 architecture. It defines the structs and unions used to handle the input
@@ -254,7 +246,6 @@ describes the CPU registers and segment registers for Intel 8086 family.
 .sf INTPACK
 describes the input parameter to an "interrupt" function.
 .sfend
-.do end
 .*------------------------------
 .df inttypes.h
 This ISO C99 header file includes <stdint.h> and expands on it by

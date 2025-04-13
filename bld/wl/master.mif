@@ -69,20 +69,20 @@ extra_cpp_flags += -DUSE_VIRTMEM
 extra_cpp_flags += -DIDE_PGM
 !endif
 
-extra_cpp_flags_idedrv      = -DCHAIN_CALLBACK
-extra_cpp_flags_ideentry    = -DCHAIN_CALLBACK
-extra_cpp_flags_maindrv     = -DDLL_NAME=$(dlltarg_name)
-extra_cpp_flags_stidedrv    = -DSTATIC_LINKAGE
-extra_cpp_flags_wlmem       = $(trmem_cpp_flags)
+extra_cpp_flags_f_idedrv      = -DCHAIN_CALLBACK
+extra_cpp_flags_f_ideentry    = -DCHAIN_CALLBACK
+extra_cpp_flags_f_maindrv     = -DDLL_NAME=$(dlltarg_name)
+extra_cpp_flags_f_stidedrv    = -DSTATIC_LINKAGE
+extra_cpp_flags_f_wlmem       = $(trmem_cpp_flags)
 
-extra_c_flags_wlmem         = $(trmem_cover_cflags)
+extra_c_flags_f_wlmem         = $(trmem_cover_cflags)
 
 #
 # lflags
 #
 extra_l_flags_qnx     = op st=24k, off=32k
 
-extra_l_flags_dll     = option implib $(wlink_dllbase_$(host_os)_$(host_cpu))
+extra_l_flags_dll     = option implib $(wlink_dllbase_$(host))
 extra_l_flags_dll_nt  = initinstance terminstance op modname='$(dlltarg_name).dll'
 extra_l_flags_dll_os2 = initinstance terminstance op modname='$(dlltarg_name)'
 

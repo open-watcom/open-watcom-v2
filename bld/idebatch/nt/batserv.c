@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,6 +38,7 @@
 #include <sys/types.h>
 #include <direct.h>
 #include <windows.h>
+#include "batpipe.h"
 
 
 #ifdef DEBUG
@@ -45,21 +47,21 @@
     #define Say( x )
 #endif
 
+static HANDLE       RedirRead;
+static HANDLE       NulHdl;
+static char         CmdProc[COMSPEC_MAXLEN + 1];
+static DWORD        ProcId;
+static HANDLE       ProcHdl;
 
-#include "batpipe.h"
-
-HANDLE          RedirRead;
-HANDLE          NulHdl;
-HANDLE          OverlapHdl;
-
-char            *CmdProc;
-DWORD           ProcId;
-HANDLE          ProcHdl;
-static  HANDLE  MemHdl;
-
-static void RunCmd( char *cmd_name )
+static void exit_link( int rc )
 {
-    char                cmd[MAX_TRANS+80];
+    BatservPipeClose();
+    exit( rc );
+}
+
+static void RunCmd( const char *cmd_name )
+{
+    char                cmd[COMSPEC_MAXLEN + 4 + TRANS_DATA_MAXLEN + 1];
     PROCESS_INFORMATION info;
     HANDLE              dup;
     STARTUPINFO         start;
@@ -96,68 +98,55 @@ static void RunCmd( char *cmd_name )
     ProcHdl = info.hProcess;
 }
 
-static void SendStatus( unsigned long status )
-{
-    struct {
-        unsigned char   cmd;
-        unsigned long   stat;
-    } buff;
-
-    buff.cmd = LNK_STATUS;
-    buff.stat = status;
-    BatservWrite( &buff, sizeof( buff ) );
-}
-
 static void ProcessConnection( void )
 {
-    char                buff[MAX_TRANS];
     DWORD               bytes_read;
-    char                *dir;
     DWORD               rc;
-    DWORD               status;
-    unsigned            max;
+    batch_stat          status;
+    int                 len;
 
     for( ;; ) {
-        bytes_read = BatservRead( buff, sizeof( buff ) );
-        if( bytes_read == 0 )
+        len = BatservReadData();
+        if( len < 0 )
             break;
-        buff[bytes_read] = '\0';
-        switch( buff[0] ) {
+        /*
+         * add additional null terminate character
+         * strings are transferred without null terminate character
+         */
+        bdata.u.s.u.data[len] = '\0';
+        switch( bdata.u.s.cmd ) {
         case LNK_CWD:
-            rc = 0;
-            dir = &buff[1];
-            if( !SetCurrentDirectory( dir ) ) {
-                rc = GetLastError();
+            status = 0;
+            if( !SetCurrentDirectory( bdata.u.s.u.data ) ) {
+                status = GetLastError();
             }
-            SendStatus( rc );
+            BatservWriteData( LNK_STATUS, &status, sizeof( status ) );
             break;
         case LNK_RUN:
-            RunCmd( &buff[1] );
+            RunCmd( bdata.u.s.u.data );
             break;
         case LNK_QUERY:
-            max = *(unsigned long *)&buff[1];
-            if( max > sizeof( buff ) ) max = sizeof( buff );
-            --max;
-            if( PeekNamedPipe( RedirRead, buff, 0, NULL, &bytes_read,
-                        NULL ) && bytes_read != 0 ) {
-                if( bytes_read < max )
-                    max = bytes_read;
-                ReadFile( RedirRead, &buff[1], max, &bytes_read, NULL );
-                buff[0] = LNK_OUTPUT;
-                BatservWrite( buff, bytes_read + 1 );
+            len = bdata.u.s.u.len;
+            if( PeekNamedPipe( RedirRead, bdata.u.buffer, 0, NULL, &bytes_read, NULL )
+              && bytes_read != 0 ) {
+                /*
+                 * limit read length to maximum output length
+                 */
+                if( len > TRANS_DATA_MAXLEN )
+                    len = TRANS_DATA_MAXLEN;
+                ReadFile( RedirRead, bdata.u.buffer, len, &bytes_read, NULL );
+                BatservWriteData( LNK_OUTPUT, bdata.u.buffer, bytes_read );
+            } else if( WaitForSingleObject( ProcHdl, 0 ) == WAIT_TIMEOUT ) {
+                /* let someone else run */
+                Sleep( 1 );
+                BatservWriteCmd( LNK_NOP );
             } else {
-                if( WaitForSingleObject( ProcHdl, 0 ) == WAIT_TIMEOUT ) {
-                    /* let someone else run */
-                    Sleep( 1 );
-                    buff[0] = LNK_NOP;
-                    BatservWrite( buff, 1 );
-                } else {
-                    GetExitCodeProcess( ProcHdl, &status );
-                    CloseHandle( RedirRead );
-                    SendStatus( status );
-                    ProcId = 0;
-                    CloseHandle( ProcHdl );
-                }
+                GetExitCodeProcess( ProcHdl, &rc );
+                CloseHandle( RedirRead );
+                ProcId = 0;
+                CloseHandle( ProcHdl );
+                status = rc;
+                BatservWriteData( LNK_STATUS, &status, sizeof( status ) );
             }
             break;
         case LNK_CANCEL:
@@ -172,12 +161,7 @@ static void ProcessConnection( void )
             return;
         case LNK_SHUTDOWN:
             Say(( "LNK_SHUTDOWN\n" ));
-            CloseHandle( SemReadUp );
-            CloseHandle( SemReadDone );
-            CloseHandle( SemWritten );
-            CloseHandle( MemHdl );
-            UnmapViewOfFile( SharedMem );
-            exit( 0 );
+            exit_link( 0 );
             break;
         }
     }
@@ -187,7 +171,8 @@ static BOOL CALLBACK HideWindows( HWND hwnd, LPARAM lp )
 {
     DWORD       pid;
 
-    lp=lp;
+    /* unused parameters */ (void)lp;
+
     GetWindowThreadProcessId( hwnd, &pid );
     if( pid == GetCurrentProcessId() ) {
         ShowWindow( hwnd, SW_HIDE );
@@ -207,28 +192,27 @@ void main( int argc, char *argv[] )
 {
     SECURITY_ATTRIBUTES attr;
 
-    argc=argc;argv=argv;
-#if 0
     if( argc > 1 && (argv[1][0] == 'q' || argv[1][0] == 'Q') ) {
-        h = CreateFile( PREFIX DEFAULT_NAME, GENERIC_WRITE, 0,
-                NULL, OPEN_EXISTING, 0, NULL );
-        if( h != INVALID_HANDLE_VALUE ) {
-            done = LNK_SHUTDOWN;
-            WriteFile( h, &done, sizeof( done ), &sent, NULL );
-            CloseHandle( h );
+        if( BatservPipeOpen( DEFAULT_LINK_NAME ) ) {
+            Say(( "can not connect to batcher spawn server\n" ));
+        } else {
+            Say(( "LNK_SHUTDOWN\n" ));
+            BatservWriteCmd( LNK_SHUTDOWN );
         }
-        exit( 0 );
+        exit_link( 0 );
     }
-#endif
-    SemReadUp = CreateSemaphore( NULL, 0, 1, READUP_NAME );
-    SemReadDone = CreateSemaphore( NULL, 0, 1, READDONE_NAME );
-    SemWritten = CreateSemaphore( NULL, 0, 1, WRITTEN_NAME );
-    MemHdl = CreateFileMapping( INVALID_HANDLE_VALUE, NULL, PAGE_READWRITE, 0, 1024, SHARED_MEM_NAME  );
-    SharedMem = MapViewOfFile( MemHdl, FILE_MAP_WRITE, 0, 0, 0 );
-    CmdProc = getenv( "ComSpec" );
-    if( CmdProc == NULL ) {
+    BatservPipeCreate( DEFAULT_LINK_NAME );
+    /*
+     * there was used getenv C function, but it looks like some versions of Microsoft
+     * VS C run-time library has bug that getenv (maybe in some situation only) return invalid pointer and
+     * when it is accessed fail and report access violation.
+     * I change it to Windows API GetEnvironmentVariable to fix this problem and don't depend on
+     * getenv from MS C run-time library anymore
+     */
+    GetEnvironmentVariable( "ComSpec", CmdProc, sizeof( CmdProc ) );
+    if( *CmdProc == '\0' ) {
         fprintf( stderr, "Unable to find command processor\n" );
-        exit( 1 );
+        exit_link( 1 );
     }
     SetConsoleCtrlHandler( NULL, FALSE );
     SetConsoleCtrlHandler( Ignore, TRUE );
@@ -239,9 +223,9 @@ void main( int argc, char *argv[] )
     NulHdl = CreateFile( "NUL", GENERIC_READ, FILE_SHARE_READ|FILE_SHARE_WRITE, &attr, OPEN_EXISTING, 0, NULL );
     if( NulHdl == INVALID_HANDLE_VALUE ) {
         fprintf( stderr, "Unable to open NUL device\n" );
-        exit( 1 );
+        exit_link( 1 );
     }
-    EnumWindows( HideWindows , 0 );
+    EnumWindows( HideWindows, 0 );
 
     Say(( "LNK_UP\n" ));
     for( ;; ) {

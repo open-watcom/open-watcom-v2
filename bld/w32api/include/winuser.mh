@@ -19,6 +19,10 @@
 
 :include cpluspro.sp
 
+/* Define default Windows version number. */
+:: this define WINVER only
+:include winverdf.sp
+
 /* Macro to specify user functions */
 #define WINUSERAPI  DECLSPEC_IMPORT
 

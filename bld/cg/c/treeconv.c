@@ -141,7 +141,7 @@ void    TGDemote( tn name, const type_def *tipe )
 tn      FoldCnvRnd( cg_op op, tn name, const type_def *to_tipe )
 /**************************************************************/
 {
-    tn              new;
+    tn              new_tn;
     float_handle    cf;
     float_handle    junk;
 
@@ -152,7 +152,7 @@ tn      FoldCnvRnd( cg_op op, tn name, const type_def *to_tipe )
             cf = CnvCFToType( name->u.name->c.value, name->tipe );
         }
         if( to_tipe->attr & TYPE_FLOAT ) {
-            new = TGConst( cf, to_tipe );
+            new_tn = TGConst( cf, to_tipe );
         } else if( op == O_CONVERT ) {
             junk = cf;
             cf = CFTrunc( &cgh, cf );
@@ -162,7 +162,7 @@ tn      FoldCnvRnd( cg_op op, tn name, const type_def *to_tipe )
                 cf = CnvCFToType( cf, to_tipe );
                 CFFree( &cgh, junk );
             }
-            new = TGConst( cf, to_tipe );
+            new_tn = TGConst( cf, to_tipe );
         } else if( op == O_ROUND ) {
             junk = cf;
             cf = CFRound( &cgh, cf );
@@ -172,15 +172,15 @@ tn      FoldCnvRnd( cg_op op, tn name, const type_def *to_tipe )
                 cf = CnvCFToType( cf, to_tipe );
                 CFFree( &cgh, junk );
             }
-            new = TGConst( cf, to_tipe );
+            new_tn = TGConst( cf, to_tipe );
         } else {
-            new = NULL;
+            new_tn = NULL;
             Zoiks( ZOIKS_078 ); /* Not supposed to get here, ever */
         }
         BurnTree( name );
     } else {
         TGDemote( name, to_tipe );
-        new = NULL;
+        new_tn = NULL;
     }
-    return( new );
+    return( new_tn );
 }

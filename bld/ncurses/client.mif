@@ -1,0 +1,2 @@
+cli_ncurses_inc_dirs = -I"$(ncurses_dir)/h"
+cli_ncurses_libs = $(ncurses_dir)/$(bin_host)/ncurses.lib

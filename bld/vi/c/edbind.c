@@ -79,7 +79,7 @@ static void Banner( void )
 /*
  * Abort - made a boo-boo
  */
-static void Abort( char *str, ... )
+static void Abort( const char *str, ... )
 {
     va_list     args;
 
@@ -94,7 +94,7 @@ static void Abort( char *str, ... )
 /*
  * MyPrintf - do a printf
  */
-static void MyPrintf( char *str, ... )
+static void MyPrintf( const char *str, ... )
 {
     va_list     args;
 
@@ -142,7 +142,7 @@ static int copy_file( FILE *src, FILE *dst, unsigned long tocopy )
 /*
  * AddDataToEXE - tack data to end of an EXE
  */
-static void AddDataToEXE( char *exe, char *outexe, char *data, bind_size data_len, struct stat *fs )
+static void AddDataToEXE( const char *exe, const char *outexe, char *data, bind_size data_len, struct stat *fs )
 {
     FILE            *fp;
     FILE            *newfp;
@@ -273,7 +273,7 @@ static FILE *GetFromEnvAndOpen( const char *inpath )
 #if defined( __WATCOMC__ )
     #pragma aux Usage __aborts
 #endif
-static void Usage( char *msg )
+static void Usage( const char *msg )
 {
     if( msg != NULL ) {
         printf( "%s\n", msg );

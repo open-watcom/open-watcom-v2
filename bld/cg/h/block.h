@@ -34,19 +34,19 @@
 #include "dominati.h"
 
 #define _IsBlkAttr( b, a )      ( ((b)->class & (a)) != 0 )
-#define _MarkBlkAttrNot( b, a ) ( (b)->class &= ~(a) )
-#define _MarkBlkAttr( b, a )    ( (b)->class |=  (a) )
+#define _MarkBlkAttrClr( b, a ) ( (b)->class &= ~(a) )
+#define _MarkBlkAttrSet( b, a ) ( (b)->class |=  (a) )
 #define _SetBlkAttr( b, a )     ( (b)->class  =  (a) )
 
 #define _IsBlkVisited( b )      _IsBlkAttr( b, BLK_BLOCK_VISITED )
-#define _MarkBlkUnVisited( b )  _MarkBlkAttrNot( b, BLK_BLOCK_VISITED )
-#define _MarkBlkVisited( b )    _MarkBlkAttr( b, BLK_BLOCK_VISITED )
+#define _MarkBlkUnVisited( b )  _MarkBlkAttrClr( b, BLK_BLOCK_VISITED )
+#define _MarkBlkVisited( b )    _MarkBlkAttrSet( b, BLK_BLOCK_VISITED )
 
 #define _IsBlkMarked( b )       _IsBlkAttr( b, BLK_BLOCK_MARKED )
-#define _MarkBlkUnMarked( b )   _MarkBlkAttrNot( b, BLK_BLOCK_MARKED )
-#define _MarkBlkMarked( b )     _MarkBlkAttr( b, BLK_BLOCK_MARKED )
+#define _MarkBlkUnMarked( b )   _MarkBlkAttrClr( b, BLK_BLOCK_MARKED )
+#define _MarkBlkMarked( b )     _MarkBlkAttrSet( b, BLK_BLOCK_MARKED )
 
-#define _MarkBlkAllAttrNot( a ) ClearBlocksBitsMask( ~(a) )
+#define _MarkBlkAllAttrClr( a ) ClearBlocksBitsMask( ~(a) )
 #define _MarkBlkAllUnVisited()  ClearBlocksBitsMask( ~BLK_BLOCK_VISITED )
 
 #define BLOCK_SIZE(n)           (sizeof( block ) + (n - 1) * sizeof( block_edge ))

@@ -1,10 +1,10 @@
 libs = $(cli_commonui_libs) $(cli_wpi_libs) $(cli_ui_libs) $(cli_rcsdll_libs)
 
-extra_l_flags_os2_386 = op stack=64k
-extra_l_flags_os2_i86 = op newfiles,stack=2k
+extra_l_flags_os2386 = op stack=64k
+extra_l_flags_os2i86 = op newfiles,stack=2k
 
-extra_l_flags_win_i86 = font mem op nocache,rwr lib windows,commdlg,ddeml,shell op stack=16000,heaps=1k
-extra_l_flags_win_386 = lib win386,clib3r op stack=40k
+extra_l_flags_wini86 = font mem op nocache,rwr lib windows,commdlg,ddeml,shell op stack=16000,heaps=1k
+extra_l_flags_win386 = lib win386,clib3r op stack=40k
 
 !ifdef sys_windowed
 !else
@@ -13,14 +13,14 @@ extra_l_flags_nt = runtime console
 
 extra_l_flags_qnx = op stack=2k,priv=3
 
-extra_l_flags_dos_i86 = op stack=1k
+extra_l_flags_dosi86 = op stack=1k
 
 !ifeq dos_extender causeway
-#extra_l_flags_dos_386 =
+#extra_l_flags_dos386 =
 !else ifeq dos_extender pharlap
-extra_l_flags_dos_386 = runtime maxreal=640k runtime unpriv op offset=4k,stack=10k
+extra_l_flags_dos386 = runtime maxreal=640k runtime unpriv op offset=4k,stack=10k
 !else ifeq dos_extender dos4g
-#extra_l_flags_dos_386 =
+#extra_l_flags_dos386 =
 !else
-#extra_l_flags_dos_386 =
+#extra_l_flags_dos386 =
 !endif

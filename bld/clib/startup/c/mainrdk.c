@@ -93,8 +93,6 @@ void __RdosMain( void )
 {
     int major, minor, release;
 
-    __InitRtns( INIT_PRIORITY_THREAD );
-
 #ifdef CMD_LINE
     _LpPgmName = (char *)RdosGetExeName();
 #else
@@ -117,7 +115,6 @@ void __RdosMain( void )
     _LpCmdLine = "";
 #endif
 
-    __InitRtns( 255 );
     __CMain();
 }
 

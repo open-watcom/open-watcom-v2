@@ -169,6 +169,9 @@ extern pid_t tfork( char *__stk_addr, unsigned __stk_size, int (*__func)(void*),
                 const char *__thread_name,
                 unsigned __stack_size, void *__arglist );
  #pragma intrinsic(_beginthread)
+ _WCRTLINK extern void  _begintimerthread(
+                void (_WCCALLBACK *__start_address)(void *) );
+ #pragma intrinsic(_begintimerthread)
  _WCRTLINK extern void  _endthread( void );
 :elsesegment LINUX | QNX
 #ifdef __386__
@@ -216,13 +219,13 @@ _WCRTLINK extern int        cwait( int *__status, int __process_id, int __action
 _WCRTLINK extern int        _cwait( int *__status, int __process_id, int __action_code );
 
 :endsegment
-:segment LINUX | QNX
+:segment QNX
 #if !(defined(SYSV) || defined(BSD) || defined(XENIX) || defined(_UNIX_H_INCLUDED))
 :endsegment
 _WCRTLINK extern char       *getcmd( char *__buffer );
 _WCRTLINK extern int        _bgetcmd( char *__buffer, int __len );
 _WCRTLINK extern char       *_cmdname( char *__name );
-:segment LINUX | QNX
+:segment QNX
 #endif
 :endsegment
 

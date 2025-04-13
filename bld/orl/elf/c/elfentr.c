@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -63,7 +64,7 @@ orl_return ELFENTRY ElfFini( elf_handle elf_hnd )
     return( ORL_OKAY );
 }
 
-orl_return ELFENTRY ElfFileInit( elf_handle elf_hnd, FILE *fp, elf_file_handle *pefh )
+orl_return ELFENTRY ElfFileInit( elf_handle elf_hnd, orl_io_handle io_hnd, elf_file_handle *pefh )
 {
     elf_file_handle     elf_file_hnd;
     orl_return          return_val;
@@ -73,7 +74,7 @@ orl_return ELFENTRY ElfFileInit( elf_handle elf_hnd, FILE *fp, elf_file_handle *
         return( ORL_OUT_OF_MEMORY );
     }
     elf_file_hnd->sec_handles = NULL;
-    elf_file_hnd->fp = fp;
+    elf_file_hnd->io_hnd = io_hnd;
     elf_file_hnd->sec_name_hash_table = NULL;
     ElfAddFileLinks( elf_hnd, elf_file_hnd );
     return_val = ElfLoadFileStructure( elf_file_hnd );

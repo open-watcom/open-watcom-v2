@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -69,7 +70,9 @@ bool RegSub( regexp *prog, const char *source, char *dest, linenum lineno )
     while( (c = *src++) != '\0' ) {
         if( c == '&' ) {
             no = 0;
-        } else if( c == '\\' && '0' <= *src && *src <= '9' ) {
+        } else if( c == '\\'
+          && '0' <= *src
+          && *src <= '9' ) {
             no = *src++ - '0';
         } else {
             no = -1;
@@ -182,7 +185,8 @@ bool RegSub( regexp *prog, const char *source, char *dest, linenum lineno )
         /*
          * copy in a sub expression
          */
-        } else if( prog->startp[no] != NULL && prog->endp[no] != NULL ) {
+        } else if( prog->startp[no] != NULL
+          && prog->endp[no] != NULL ) {
             len = prog->endp[no] - prog->startp[no];
             if( upper_flag ) {
                 strcpy( tmp, prog->startp[no] );

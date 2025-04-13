@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -43,6 +43,14 @@
 #define CONFIG_DIR "Open Watcom"
 #define INI_FILE   "watcom.ini"
 
+#if defined(__WINDOWS_386__)
+    #define STUPIDINT       short
+#elif defined(__NT__)
+    #define STUPIDINT       LONG
+#else
+    #define STUPIDINT       int
+#endif
+
 static char     *iniFile = NULL;
 static char     *iniPath = NULL;
 static char     *cfgFile = NULL;
@@ -55,13 +63,6 @@ static char     *keyChildrenMaximized = "ChildrenMaximized";
 static time_t   cfgTime;
 
 static bool     saveConfig;
-#if defined(__WINDOWS_386__)
-    #define STUPIDINT       short
-#elif defined(__NT__)
-    #define STUPIDINT       LONG
-#else
-    #define STUPIDINT       int
-#endif
 
 /*
  * getProfileString - get a string from the profile
@@ -224,9 +225,9 @@ static void getConfigFilePaths( void )
 } /* getConfigFilePaths */
 
 /*
- * readConfigFile - get the name of the config file that we are to read
+ * getConfigFile - get the name of the config file that we are to read
  */
-static void readConfigFile( void )
+static void getConfigFile( void )
 {
     char        cname[_MAX_PATH];
     //char      str[MAX_STR]; // not used if not prompting for new cfg files
@@ -236,6 +237,7 @@ static void readConfigFile( void )
     time_t      new_cfgtime = 0;
 
     cfgTime = (time_t)getProfileLong( keyCfgTime );
+    SetConfigFileName( CFG_NAME );
     cfgname = GetConfigFileName();
     GetFromEnv( cfgname, cname );
     if( cname[0] != '\0' ) {
@@ -268,7 +270,7 @@ static void readConfigFile( void )
     }
     saveConfig = ( getProfileLong( keySaveConfig ) != 0 );
 
-} /* readConfigFile */
+} /* getConfigFile */
 
 /*
  * writeConfigFile - write the current config file name
@@ -306,7 +308,7 @@ void ReadProfile( void )
     getConfigFilePaths();   /* get paths to ini files */
     readToolBarSize();
     readInitialPosition();
-    readConfigFile();
+    getConfigFile();
 
 } /* ReadProfile */
 

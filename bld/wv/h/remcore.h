@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -45,7 +45,7 @@ extern void             ClearMachineDataCache( void );
 extern error_handle     DoLoad( const char *args, unsigned long *phandle );
 extern bool             KillProgOvlay( void );
 extern unsigned         MakeProgRun( bool single );
-extern bool             Redirect( bool input, char *hndlname );
+extern bool             RemoteRedirect( bool input, char *hndlname );
 extern void             RemoteMapAddr( addr_ptr *addr, addr_off *lo_bound, addr_off *hi_bound, unsigned long handle );
 extern void             RemoteSetUserScreen( void );
 extern void             RemoteSetDebugScreen( void );

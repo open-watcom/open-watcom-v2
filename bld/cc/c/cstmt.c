@@ -201,6 +201,21 @@ void GenFunctionNode( SYM_HANDLE sym_handle )
 }
 
 
+/*
+ * __declspec(noinline) fix the problem with VS2022 MS compiler global optimization
+ * by inlining, it was searched by empirical testing that it fix our problem
+ * but reason for this behaviour is unknown
+ *
+ * probably bug, incorrectly inlined code
+ * -Ob1 option for this source file solve this issue (always)
+ * experimentaly checked that this function if not inlined then fix the issue
+ * hard to debug, I didn't found method to say debugger to work with
+ * breakpoints in inlined function code
+ * of cause it can be some hidden bug in OW code, but happen with VS2022 only
+ */
+#ifdef _WIN64
+__declspec(noinline)
+#endif
 LABEL_INDEX NextLabel( void )
 {
     return( ++LabelIndex );
@@ -284,7 +299,7 @@ static bool JumpFalse( TREEPTR expr, LABEL_INDEX label )
 
     jump_generated = false;
     if( expr->op.opr == OPR_PUSHINT ) {
-        if( ! expr->op.u2.long_value ) {
+        if( CheckZeroConstant( expr ) ) {
             Jump( label );
             jump_generated = true;
         }
@@ -300,7 +315,7 @@ static bool JumpFalse( TREEPTR expr, LABEL_INDEX label )
 static void JumpTrue( TREEPTR expr, LABEL_INDEX label )
 {
     if( expr->op.opr == OPR_PUSHINT ) {
-        if( expr->op.u2.long_value ) {
+        if( !CheckZeroConstant( expr ) ) {
             Jump( label );
         }
         FreeExprNode( expr );
@@ -446,7 +461,7 @@ static SYM_HANDLE GetLocalVarDecls( void )
     if( symlist != SYM_NULL ) {
         symhandle = CurFunc->u.func.locals;
         /*
-         * symhandle will be non-zero if MakeNewSym was called while
+         * symhandle will be non-zero if MakeNewDotSym was called while
          * parsing the declaration list.
          */
         if( symhandle != SYM_NULL ) {   // if some temporaries were created
@@ -688,11 +703,11 @@ static void ForStmt( void )
 
     NextToken();
     MustRecog( T_LEFT_PAREN );
-    if( CHECK_STD( > , C89 ) ) {
+    if( CompVars.cstd > STD_C89 ) {
         PushBlock();    // 'for' opens new scope
     }
     if( CurToken != T_SEMI_COLON ) {
-        if( CHECK_STD( > , C89 ) ) {
+        if( CompVars.cstd > STD_C89 ) {
             TREEPTR     tree;
 
             tree = LeafNode( OPR_NEWBLOCK );
@@ -882,7 +897,7 @@ static SYM_HANDLE DummyTrySymbol( void )
     SYM_ENTRY   sym;
     SYM_HANDLE  sym_handle;
 
-    sym_handle = MakeNewSym( &sym, 'T', GetType( TYP_VOID ), SC_STATIC );
+    sym_handle = MakeNewDotSym( &sym, 'T', GetType( TYP_VOID ), SC_STATIC );
     SymReplace( &sym, sym_handle );
     return( sym_handle );
 }
@@ -1077,7 +1092,7 @@ static void EndOfStmt( void )
             EndForStmt();
             --LoopDepth;
             DropBreakLabel();
-            if( CHECK_STD( > , C89 ) ) {
+            if( CompVars.cstd > STD_C89 ) {
                 EndBlock();     /* Terminate the scope introduced by 'for' */
                 PopBlock();
             }
@@ -1237,7 +1252,7 @@ void Statement( void )
     if( GrabLabels() == 0 ) {
         GetLocalVarDecls();
     }
-    func_result_handle = MakeNewSym( &sym, 'R', CurFunc->sym_type->object, SC_AUTO );
+    func_result_handle = MakeNewDotSym( &sym, 'R', CurFunc->sym_type->object, SC_AUTO );
     sym.flags |= SYM_FUNC_RETURN_VAR;
     SymReplace( &sym, func_result_handle );
     for( ;; ) {
@@ -1245,7 +1260,7 @@ void Statement( void )
         if( GrabLabels() == 0 && declaration_allowed && IsDeclarator( CurToken ) ) {
             GetLocalVarDecls();
         }
-        if( CHECK_STD( > , C89 ) ) {
+        if( CompVars.cstd > STD_C89 ) {
             declaration_allowed = true;
         }
         skip_to_next_token = false;
@@ -1390,7 +1405,7 @@ void Statement( void )
         case T_DOUBLE:
         case T_SIGNED:
         case T_UNSIGNED:
-            if( CHECK_STD( < , C99 ) ) {
+            if( CompVars.cstd < STD_C99 ) {
                 CErr1( ERR_MISSING_RIGHT_BRACE );
             } else {
                 CErr1( ERR_UNEXPECTED_DECLARATION );
@@ -1425,7 +1440,7 @@ void Statement( void )
         }
     }
     /* C99 has special semantics for return value of main() */
-    if( CHECK_STD( > , C89 ) && strcmp( CurFunc->name, "main" ) == 0 ) {
+    if( ( CompVars.cstd > STD_C89 ) && strcmp( CurFunc->name, "main" ) == 0 ) {
         if( !return_at_outer_level ) {
             FixupC99MainReturn( func_result_handle, &return_info );
             return_at_outer_level = true;

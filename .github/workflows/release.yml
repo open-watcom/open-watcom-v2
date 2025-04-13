@@ -8,7 +8,7 @@ on:
 
 jobs:
   check_run:
-    if: github.repository == 'open-watcom/open-watcom-v2'
+    if: github.repository == vars.OWREPO
     name: Check if to run
     runs-on: ubuntu-latest
     outputs:
@@ -23,99 +23,107 @@ jobs:
         tag:     'Current-build'
         owdebug: ${{ vars.OWDEBUG }}
         owcurlopts: ${{ vars.OWCURLOPTS }}
-  workflow-lnx:
+  Linux:
     needs: check_run
     if: needs.check_run.outputs.runit
-    name: Linux
     strategy:
       matrix:
         include:
         - owtools: 'GCC'
+          arch:    'x64'
+          image:   'ubuntu-22.04'
           tools:   'gcc'
-          image:   'ubuntu-20.04'
+        - owtools: 'GCC'
+          arch:    'a64'
+          image:   'ubuntu-24.04-arm'
+          tools:   'gcc'
+    name: Linux ${{ matrix.arch }} ${{ matrix.tools }}
     uses: "./.github/workflows/rel-lnx.yml"
     with:
-      arch:         'x64'
+      arch:         ${{ matrix.arch }}
       tools:        ${{ matrix.tools }}
       owtools:      ${{ matrix.owtools }}
       image:        ${{ matrix.image }}
       owdebug:      ${{ vars.OWDEBUG }}
-  workflow-nt:
+  Windows:
     needs: check_run
     if: needs.check_run.outputs.runit
-    name: Windows
     strategy:
       matrix:
         include:
         - owtools: 'VISUALC'
-          tools:   'vs2019'
+          arch:    'x64'
           image:   'windows-2019'
+          tools:   'vs2019'
+    name: Windows ${{ matrix.arch }} ${{ matrix.tools }}
     uses: "./.github/workflows/rel-nt.yml"
     with:
-      arch:         'x64'
+      arch:         ${{ matrix.arch }}
       tools:        ${{ matrix.tools }}
       owtools:      ${{ matrix.owtools }}
       image:        ${{ matrix.image }}
       owdebug:      ${{ vars.OWDEBUG }}
-  workflow-osx:
+  OSX:
     needs: check_run
     if: needs.check_run.outputs.runit
-    name: OSX
     strategy:
       matrix:
         include:
         - owtools: 'CLANG'
           arch:    'x64'
-          image:   'macos-latest'
+          image:   'macos-13'
+          tools:   'clang'
           relpath: 'rel bino64'
         - owtools: 'CLANG'
           arch:    'a64'
           image:   'macos-14'
+          tools:   'clang'
           relpath: 'rel armo64'
+    name: OSX ${{ matrix.arch }} ${{ matrix.tools }}
     uses: "./.github/workflows/rel-osx.yml"
     with:
       arch:         ${{ matrix.arch }}
-      tools:        'clang'
+      tools:        ${{ matrix.tools }}
       relpath:      ${{ matrix.relpath }}
       owtools:      ${{ matrix.owtools }}
       image:        ${{ matrix.image }}
       owdebug:      ${{ vars.OWDEBUG }}
-  install:
+  Installers:
     needs:
-    - workflow-lnx
-    - workflow-nt
-    - workflow-osx
-    name: Installers
-    runs-on: ubuntu-latest
+    - Linux
+    - Windows
+    - OSX
     strategy:
       matrix:
         include:
-        - display: DOS
-          insttype: instdos
-        - display: OS/2
-          insttype: instos2
-        - display: Linux(32-bit)
-          insttype: instlnx32
-        - display: Linux(64-bit)
-          insttype: instlnx64
-        - display: Windows(16-bit)
-          insttype: instwin16
-        - display: Windows(32-bit)
-          insttype: instwin32
-        - display: Windows(64-bit)
-          insttype: instwin64
-        - display: OW Snapshot
-          insttype: snapshot
+        - asset: instdos
+          title:   'Build DOS Installer'
+        - asset: instos2
+          title:   'Build OS/2 Installer'
+        - asset: instlnx32
+          title:   'Build Linux(32-bit) Installer'
+        - asset: instlnx64
+          title:   'Build Linux(64-bit) Installer'
+        - asset: instwin16
+          title:   'Build Windows(16-bit) Installer'
+        - asset: instwin32
+          title:   'Build Windows(32-bit) Installer'
+        - asset: instwin64
+          title:   'Build Windows(64-bit) Installer'
+        - asset: snapshot
+          title:   'Create OW full snapshot'
+    name: ${{ matrix.title }}
+    runs-on: ubuntu-latest
     steps:
     - name: checkout
       uses: actions/checkout@v4
-    - name: Installer
+    - name: ${{ matrix.title }}
       uses: "./.github/actions/install"
       with:
-        target:     ${{ matrix.insttype }}
+        target:     ${{ matrix.asset }}
         owdebug:    ${{ vars.OWDEBUG }}
   release:
-    needs: install
+    needs: Installers
     name: "Create GitHub Release"
     runs-on: ubuntu-latest
     outputs:
@@ -132,35 +140,35 @@ jobs:
         owcurlopts: ${{ vars.OWCURLOPTS }}
     - run: echo "drelid=${{ steps.rel_rel.outputs.drelid }};mrelid=${{ steps.rel_rel.outputs.mrelid }}"
       shell: bash
-  assets:
+  Uploads:
     needs: release
-    name: "Upload Installers"
-    runs-on: ubuntu-latest
     strategy:
       matrix:
         include:
-        - display: DOS
-          asset: instdos
-        - display: OS/2
-          asset: instos2
-        - display: Linux(32-bit)
-          asset: instlnx32
-        - display: Linux(64-bit)
-          asset: instlnx64
-        - display: Windows(16-bit)
-          asset: instwin16
-        - display: Windows(32-bit)
-          asset: instwin32
-        - display: Windows(64-bit)
-          asset: instwin64
-        - display: OW Snapshot
-          asset: snapshot
+        - asset: instdos
+          title:   'DOS Installer'
+        - asset: instos2
+          title:   'OS/2 Installer'
+        - asset: instlnx32
+          title:   'Linux(32-bit) Installer'
+        - asset: instlnx64
+          title:   'Linux(64-bit) Installer'
+        - asset: instwin16
+          title:   'Windows(16-bit) Installer'
+        - asset: instwin32
+          title:   'Windows(32-bit) Installer'
+        - asset: instwin64
+          title:   'Windows(64-bit) Installer'
+        - asset: snapshot
+          title:   'OW full snapshot'
+    name: Upload ${{ matrix.title }}
+    runs-on: ubuntu-latest
     steps:
     - name: checkout
       uses: actions/checkout@v4
     - run: echo "drelid=${{ needs.release.outputs.drelid }};mrelid=${{ needs.release.outputs.mrelid }}"
       shell: bash
-    - name: Upload ${{ matrix.display }} Asset
+    - name: ${{ matrix.title }} Asset
       uses: "./.github/actions/ghassets"
       with:
         hostos:     'lnx'
@@ -170,7 +178,7 @@ jobs:
         owdebug:    ${{ vars.OWDEBUG }}
         owcurlopts: ${{ vars.OWCURLOPTS }}
   end-end:
-    needs: assets
+    needs: Uploads
     name: Call to delete Artifacts
     runs-on: ubuntu-latest
     steps:

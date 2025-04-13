@@ -94,19 +94,10 @@ struct _wfind_t {
 #define _HARDERR_ABORT  2       /* Abort the program */
 #define _HARDERR_FAIL   3       /* Fail the system call in progress */
 
-/* File attribute constants for attribute field */
-
-#define _A_NORMAL       0x00    /* Normal file - read/write permitted */
-#define _A_RDONLY       0x01    /* Read-only file */
-#define _A_HIDDEN       0x02    /* Hidden file */
-#define _A_SYSTEM       0x04    /* System file */
-#define _A_VOLID        0x08    /* Volume-ID entry */
-#define _A_SUBDIR       0x10    /* Subdirectory */
-#define _A_ARCH         0x20    /* Archive file */
+:include dirattr.sp
 
 :include dskfreet.sp
 
-:include delay.sp
 _WCRTLINK extern int      _islfn( const char *__path );
 _WCRTLINK extern char     *_lfntosfn( const char *__orgname, char *__shortname );
 _WCRTLINK extern int      bdos( int __dosfn, unsigned int __dx, unsigned int __al);
@@ -152,8 +143,8 @@ _WCRTLINK extern void     _harderr( int (_DOSFAR *__func)(unsigned __deverr, uns
 _WCRTLINK extern void     _hardresume( int __result );
 _WCRTLINK extern void     _hardretn( int __error );
 #ifdef _M_IX86
-_WCRTLINK extern int      intdos( union REGS *, union REGS * );
-_WCRTLINK extern int      intdosx( union REGS *, union REGS *, struct SREGS * );
+_WCRTLINK extern int      intdos( const union REGS *, union REGS * );
+_WCRTLINK extern int      intdosx( const union REGS *, union REGS *, struct SREGS * );
 #endif
 _WCRTLINK extern unsigned sleep( unsigned __seconds );
 

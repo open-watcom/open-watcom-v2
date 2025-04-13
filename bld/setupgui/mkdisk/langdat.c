@@ -34,9 +34,6 @@
 #include <ctype.h>
 #include <stdlib.h>
 #include <errno.h>
-#ifndef __UNIX__
-#include <direct.h>
-#endif
 #include "wio.h"
 #include "watcom.h"
 #include "bldutils.h"

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -177,54 +177,45 @@ void VMsgLog::startConnect()
 #ifdef __WINDOWS__
         _vxdPresent = (bool)VxDPresent();
         if( _vxdPresent ) {
-            const char* res = VxDLink( LINK_NAME );
-            if( !res ) {
+            const char* err = VxDLink( DEFAULT_LINK_NAME );
+            if( err == NULL ) {
                 WSystemService::sysExecBackground( _config->batserv() );
                 _connectionTries = CONNECTION_TRIES;
                 _connecting = true;
                 _connectTimer->start( CONNECTION_INTERVAL );
                 addLine( "Connecting..." );
             } else {
-                WMessageDialog::info( this, "VxD: %s", res );
+                WMessageDialog::info( this, "VxD: %s", err );
             }
         } else {
             WMessageDialog::info( this, "VxD: WDEBUG.386 not present" );
         }
 #endif
     } else {
-#ifdef __WINDOWS__
         const char* err = BatchLink( NULL );
-        if( err ) {
+        if( err != NULL ) {
             _localBatserv = true;
             WSystemService::sysExecBackground( _config->batserv() );
             _connectionTries = CONNECTION_TRIES;
+            addLine( "Connecting..." );
+#ifdef __WINDOWS__
             _connecting = true;
             _connectTimer->start( CONNECTION_INTERVAL );
-            addLine( "Connecting..." );
-        } else {
-            _serverConnected = true;
-        }
 #else
-        const char* err = BatchLink( NULL );
-        if( err ) {
-            _localBatserv = true;
-            WSystemService::sysExecBackground( _config->batserv() );
-            addLine( "Connecting..." );
-            _connectionTries = CONNECTION_TRIES;
             while( err && _connectionTries > 0 ) {
                 WSystemService::sysSleep( CONNECTION_INTERVAL );
                 err = BatchLink( NULL );
                 _connectionTries -= 1;
             }
         }
-        if( err ) {
+        if( err != NULL ) {
             WMessageDialog::info( this, err );
             _parent->deleteMsglog();
             //zombie code at this point!!!!!!!!!!!!!!
+#endif
         } else {
             _serverConnected = true;
         }
-#endif
     }
 }
 
@@ -234,7 +225,7 @@ WEXPORT VMsgLog::~VMsgLog()
 #ifdef __WINDOWS__
         if( _vxdPresent ) {
             if( _serverConnected ) {
-                VxDPut( TERMINATE_CLIENT_STR, sizeof( TERMINATE_CLIENT_STR )+1 );
+                VxDPutLIT( LIT_TERMINATE_CLIENT_STR );
             }
             for( int i = 0; i < 100; i++ ) {
                 if( VxDUnLink() == 0 ) {
@@ -369,7 +360,7 @@ void VMsgLog::connectTimer( WTimer* timer, DWORD )
 #endif
     } else {
         err = BatchLink( NULL );
-        if( !err ) {
+        if( err == NULL ) {
             _serverConnected = true;
         }
     }
@@ -453,8 +444,8 @@ static char buffer[MAX_BUFF+1];
 void VMsgLog::scanLine( const char* buff, int len )
 {
     for( int i = 0; i < len; i++ ) {
-        if( buff[i] == 10 ) {
-        } else if( buff[i] == 13 ) {
+        if( buff[i] == '\n' ) {
+        } else if( buff[i] == '\r' ) {
             addLine( buffer );
             blength = 0;
             buffer[blength] = '\0';
@@ -478,30 +469,29 @@ static char buff[MAX_BUFF+1];
     buffer[blength] = '\0';
     if( !_batserv ) {
 #ifdef __WINDOWS__
-        VxDPut( cmd.gets(), cmd.size() + 1 );
+        VxDPut( cmd.gets(), cmd.size() );
         for( ;; ) {
-            int len = VxDGet( buff, MAX_BUFF );
-            buff[len] = '\0';
-            if( streq( buff, TERMINATE_COMMAND_STR ) ) {
+            int len = VxDGet( buff, sizeof( buff ) );
+            if( len < 0 )
                 break;
-            } else if( len > 0 ) {
+            if( len > 0 ) {
+                if( streq( buff, LIT_TERMINATE_COMMAND_STR ) ) {
+                    break;
+                }
                 scanLine( buff, len );
             }
         }
 #endif
     } else {
-        unsigned        maxlen;
-
-        maxlen = BatchMaxCmdLine();
-        cmd.truncate( maxlen );
+        cmd.truncate( BatchMaxCmdLine() );
         BatchSpawn( cmd );
         for( ;; ) {
             WSystemService::sysYield(); //allow other tasks to run
-            unsigned long stat;
-            int len = BatchCollect( buff, MAX_BUFF, &stat );
-            if( len < 0 ) {
+            batch_stat stat;
+            int len = BatchCollect( buff, sizeof( buff ), &stat );
+            if( len < 0 )
                 break;
-            } else if( len > 0 ) {
+            if( len > 0 ) {
                 scanLine( buff, len );
             }
         }

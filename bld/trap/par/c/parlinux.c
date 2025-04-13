@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,16 +36,16 @@
 #include <time.h>
 #include <conio.h>
 #include <unistd.h>
+#include "bool.h"
 #include "parlink.h"
+#include "parfind.h"
 
 
-#define NUM_ELTS( a )   (sizeof( a ) / sizeof( a[0] ))
+static unsigned short   PortTest[] = { PORT_ADDRESSES };
+static unsigned short   PortAddress[ACOUNT( PortTest )] = { 0 };
+static int              PortsFound = 0;
 
-static unsigned short PortTest[] = { 0x378, 0x3bc, 0x278 };
-static unsigned short PortAddress[NUM_ELTS( PortTest )];
-static unsigned PortsFound = 0;
-
-int NumPrinters()
+int NumPrinters( void )
 {
     return( PortsFound );
 }
@@ -55,14 +55,18 @@ unsigned PrnAddress( int printer )
     return( PortAddress[printer] );
 }
 
-unsigned AccessPorts( unsigned first, unsigned last )
+bool AccessPorts( unsigned first, unsigned count )
 {
-    return ioperm(first,last-first+1,1) == 0;
+    if( count > 0 )
+        return( ioperm( first, count, 1 ) == 0 );
+    return( true );
 }
 
-void FreePorts( unsigned first, unsigned last )
+void FreePorts( unsigned first, unsigned count )
 {
-    ioperm(first,last-first,0);
+    if( count > 0 ) {
+        ioperm( first, count, 0 );
+    }
 }
 
 static int CheckForPort( int i, unsigned char value )
@@ -75,30 +79,29 @@ static int CheckForPort( int i, unsigned char value )
     return( inp( PortTest[i] ) == value );
 }
 
-char *InitSys()
+char *InitSys( void )
 {
     int i;
 
     PortsFound = 0;
-    for( i = 0; i < NUM_ELTS( PortTest ); ++i ) {
-        if (!AccessPorts(PortTest[i], PortTest[i])) {
-            printf("Failed to get I/O permissions. This program must run as root!\n");
-            exit(-1);
-            }
+    for( i = 0; i < ACOUNT( PortTest ); ++i ) {
+        if( !AccessPorts( PortTest[i], 1 ) ) {
+            printf( "Failed to get I/O permissions. This program must run as root!\n" );
+            exit( -1 );
+        }
         if( CheckForPort( i, 0x55 ) && CheckForPort( i, 0xaa ) ) {
             PortAddress[PortsFound++] = PortTest[i];
         }
-        FreePorts(PortTest[i], PortTest[i]);
+        FreePorts( PortTest[i], 1 );
     }
     return( NULL );
 }
 
-void FiniSys()
+void FiniSys( void )
 {
 }
 
-unsigned long Ticks()
+unsigned long Ticks( void )
 {
-    return clock() / (CLOCKS_PER_SEC / 10);
+    return( clock() / ( CLOCKS_PER_SEC / 10 ) );
 }
-

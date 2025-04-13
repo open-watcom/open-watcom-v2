@@ -33,8 +33,8 @@ ntverrc_dll = $(dlltarg_name)
 !include deftarg.mif
 !include dllbase.mif
 
-!include $(dig_dir)/digcli.mif
-!include $(disasm_dir)/discli.mif
+!include $(dig_dir)/client.mif
+!include $(disasm_dir)/client.mif
 
 #
 # cflags
@@ -49,30 +49,30 @@ extra_c_flags_i86 = -zu
 extra_c_flags_win = -zc
 
 !ifdef __WATCOM_TOOLS__
-extra_c_flags_madimp = -zlf -os     # -os ensures byte align for code
+extra_c_flags_f_madimp = -zlf -os     # -os ensures byte align for code
 !endif
 
 #
 # lflags
 #
-lflags_dll_dos_386   = sys rex_dos
-lflags_dll_linux_386 = sys rex_linux
-lflags_dll_qnx_386   = sys rex_qnx
-lflags_dll_win_i86   = sys windows
+lflags_dll_dos386   = sys rex_dos
+lflags_dll_linux386 = sys rex_linux
+lflags_dll_qnx386   = sys rex_qnx
+lflags_dll_wini86   = sys windows
 
-extra_l_flags_dll         = $(mad_dllbase_$(host_os)_$(host_cpu))
-extra_l_flags_dll_nt_axp  = op dosseg
+extra_l_flags_dll        = $(mad_dllbase_$(host))
+extra_l_flags_dll_ntaxp  = op dosseg
 
 #
 # names
 #
-dlltarg_ext_os2_386   = .d32
-dlltarg_ext_qnx_386   = .mad
-dlltarg_ext_linux_386 = .mad
-dlltarg_ext_dos_386   = .mad
+dlltarg_ext_os2386   = .d32
+dlltarg_ext_qnx386   = .mad
+dlltarg_ext_linux386 = .mad
+dlltarg_ext_dos386   = .mad
 
-!ifdef dlltarg_ext_$(host_os)_$(host_cpu)
-dlltarg_ext = $(dlltarg_ext_$(host_os)_$(host_cpu))
+!ifdef dlltarg_ext_$(host)
+dlltarg_ext = $(dlltarg_ext_$(host))
 !endif
 !ifndef __WATCOM_TOOLS__
 !ifdef ext_lib_shared

@@ -80,8 +80,10 @@ instruction      *rSAVEFACE( instruction *ins )
 {
     instruction         *new_ins;
 
-    // we have a EDX:EAX op 1 or DX:AX op 1 here which the constant
-    // folder was not able to catch, because of the weird regs
+    /*
+     * we have a EDX:EAX op 1 or DX:AX op 1 here which the constant
+     * folder was not able to catch, because of the weird regs
+     */
     new_ins = MakeMove( AllocRegName( HW_xAX ), ins->result, ins->type_class );
     ReplIns( ins, new_ins );
     return( new_ins );
@@ -92,8 +94,10 @@ instruction      *rMULSAVEFACE( instruction *ins )
 {
     instruction         *new_ins;
 
-    // we have a r1 mul 1 -> DX:AX here which the constant
-    // folder was not able to catch, because of the weird regs
+    /*
+     * we have a r1 mul 1 -> DX:AX here which the constant
+     * folder was not able to catch, because of the weird regs
+     */
     new_ins = MakeMove( ins->operands[0], AllocRegName( HW_xAX ), ins->type_class );
     ReplIns( ins, new_ins );
     return( new_ins );
@@ -241,7 +245,9 @@ instruction      *rHIGHLOWMOVE( instruction *ins )
 {
     instruction         *new_ins;
 
-/* for moving constants such as 0xabcdabcd*/
+    /*
+     * for moving constants such as 0xabcdabcd
+     */
     new_ins = MakeMove( LowPart( ins->result, U2 ), HighPart( ins->result, U2 ), U2 );
     ins->result = LowPart( ins->result, U2 );
     ChangeType( ins, U2 );
@@ -260,8 +266,8 @@ instruction      *rHIGHLOWMOVE( instruction *ins )
 
 bool UseRepForm( unsigned size )
 /*************************************
-    Do we want to use "rep movs{w|d}", or string out multiple "movs{w|d}"
-*/
+ * Do we want to use "rep movs{w|d}", or string out multiple "movs{w|d}"
+ */
 {
     unsigned    count;
     unsigned    extra = 0;
@@ -270,7 +276,9 @@ bool UseRepForm( unsigned size )
     unsigned    movs_cost;
 
     count = size / WORD_SIZE;
-    /* if move than 10 movs, then always use rep form */
+    /*
+     * if move than 10 movs, then always use rep form
+     */
     if( count > 10 )
         return( true );
     if( OptForSize > 50 ) {
@@ -305,14 +313,16 @@ bool UseRepForm( unsigned size )
         rep_iter    = 17;
         movs_cost   = 18;
     }
-    /* The "+ 4" is to account for the "MOV [E]CX, const" clocks and some
-        slop for larger instructions (cache effects) */
+    /*
+     * The "+ 4" is to account for the "MOV [E]CX, const" clocks and some
+     * slop for larger instructions (cache effects)
+     */
     return( rep_startup + (count * rep_iter) + 4 < movs_cost * count );
 }
 
-static  bool    CanLoadStringOps( instruction *ins ) {
-/****************************************************/
-
+static  bool    CanLoadStringOps( instruction *ins )
+/**************************************************/
+{
     hw_reg_set  needs;
 
     if( UseRepForm( ins->operands[0]->n.size ) ) {
@@ -331,13 +341,14 @@ static  bool    CanLoadStringOps( instruction *ins ) {
     return( !HW_Ovlap( needs, ins->head.live.regs ) );
 }
 
-static name *FakeIndex( name *op, hw_reg_set index ) {
-/****************************************************/
-
+static name *FakeIndex( name *op, hw_reg_set index )
+/**************************************************/
+{
     name                *base;
     i_flags             flags;
 
-    if( op->n.class == N_TEMP || op->n.class == N_MEMORY ) {
+    if( op->n.class == N_TEMP
+      || op->n.class == N_MEMORY ) {
         base = op;
         flags = X_FAKE_BASE;
     } else {
@@ -347,9 +358,9 @@ static name *FakeIndex( name *op, hw_reg_set index ) {
     return( ScaleIndex( AllocRegName( index ), base, 0, op->n.type_class, op->n.size, 0, flags ) );
 }
 
-static  bool    SegmentFloats( name *op ) {
+static  bool    SegmentFloats( name *op )
 /***************************************/
-
+{
     name        *segname;
 
     segname = SegName( op );
@@ -363,10 +374,9 @@ static  bool    SegmentFloats( name *op ) {
 }
 
 static  instruction     *LoadStringOps( instruction *ins,
-                                        name **op1, name **op2 ) {
-/****************************************************************/
-
-
+                                        name **op1, name **op2 )
+/**************************************************************/
+{
     instruction         *load_op1;
     instruction         *load_op2;
     instruction         *load_len;
@@ -378,12 +388,14 @@ static  instruction     *LoadStringOps( instruction *ins,
     bool                ds_needs_save;
     bool                es_needs_save;
 
-    if( ins->head.opcode == OP_MOV && !UseRepForm( (*op1)->n.size ) ) {
+    if( ins->head.opcode == OP_MOV
+      && !UseRepForm( (*op1)->n.size ) ) {
         load_len = NULL;
         HW_CAsgn( new_op1, HW_EMPTY );
     } else {
         if( ( (*op1)->n.size & (WORD_SIZE - 1) ) == 0
-          || ( OptForSize <= 50 && ins->head.opcode == OP_MOV ) ) {
+          || ( OptForSize <= 50
+          && ins->head.opcode == OP_MOV ) ) {
             load_len = MoveConst( (*op1)->n.size / WORD_SIZE, AllocRegName( HW_xCX ), WD );
             PrefixIns( ins, load_len );
         } else {
@@ -392,9 +404,12 @@ static  instruction     *LoadStringOps( instruction *ins,
         }
         new_op1 = HW_xCX;
     }
-    /* careful here. Make sure we load DS last*/
+    /*
+     * careful here. Make sure we load DS last
+     */
     if( ins->num_operands > OpcodeNumOperands( ins ) ) {
-        if( (*op1)->n.class == N_INDEXED || (*op1)->n.class == N_MEMORY ) {
+        if( (*op1)->n.class == N_INDEXED
+          || (*op1)->n.class == N_MEMORY ) {
             load_op1 = MakeUnary( OP_LA, *op2, AllocRegName( HW_ES_xDI ), LP );
             PrefixIns( ins, load_op1 );
             load_op2 = MakeUnary( OP_LA, *op1, AllocRegName( HW_xSI ), WD );
@@ -431,7 +446,10 @@ static  instruction     *LoadStringOps( instruction *ins,
         es_needs_save = SegmentFloats( *op2 );
     }
     if( _IsntTargetModel( CGSW_X86_FLOATING_DS )
-      && ds_needs_save ) { /* restore DS*/
+      && ds_needs_save ) {
+        /*
+         * restore DS
+         */
         ds_reg = AllocRegName( HW_DS );
         pop = MakeUnary( OP_POP, NULL, ds_reg, U2 );
         pop->num_operands = 0;
@@ -439,7 +457,10 @@ static  instruction     *LoadStringOps( instruction *ins,
         PrefixIns( load_op2, MakeUnary( OP_PUSH, ds_reg, NULL, U2 ) );
     }
     if( _IsntTargetModel( CGSW_X86_FLOATING_ES )
-      && es_needs_save ) { /* restore ES */
+      && es_needs_save ) {
+        /*
+         * restore ES
+         */
         es_reg = AllocRegName( HW_ES );
         pop = MakeUnary( OP_POP, NULL, es_reg, U2 );
         pop->num_operands = 0;
@@ -508,8 +529,9 @@ instruction      *rEXT_PUSHC( instruction *ins )
 
 
 instruction      *rMOVELOW( instruction *ins )
-/********************************************/
-/* e.g. convert U2==>U1*/
+/*********************************************
+ * e.g. convert U2==>U1
+ */
 {
     ins->head.opcode = OP_MOV;
     ins->operands[0] = LowPart( ins->operands[0], ins->type_class );
@@ -539,7 +561,8 @@ instruction      *rMOVRESMEM( instruction *ins )
 
     type_class = ins->type_class;
     name_flt = AllocTemp( type_class );
-    if( type_class == FD || type_class == FL ) {
+    if( type_class == FD
+      || type_class == FL ) {
         name_int = name_flt;
     } else {
         name_int = TempOffset( name_flt, 0, U4 );
@@ -563,7 +586,8 @@ instruction      *rMOVOP1MEM( instruction *ins )
 
     type_class = ins->type_class;
     name_flt = AllocTemp( type_class );
-    if( type_class == FD || type_class == FL ) {
+    if( type_class == FD
+      || type_class == FL ) {
         name_int = name_flt;
     } else {
         name_int = TempOffset( name_flt, 0, U4 );
@@ -682,7 +706,9 @@ instruction      *rCHPPT( instruction *ins )
 }
 
 
-/* NB: The following two routines are intended for 386 only */
+/*
+ * NB: The following two routines are intended for 386 only
+ */
 
 instruction      *rMOVPTI8( instruction *ins )
 /********************************************/
@@ -716,17 +742,21 @@ instruction      *rMOVI8PT( instruction *ins )
 void    CheckCC( instruction *ins, instruction *new_ins )
 /*******************************************************/
 {
-    if( ins->head.opcode == OP_EXT_ADD || ins->head.opcode == OP_EXT_SUB ) {
-        new_ins->table = GetMoveNoCCEntry(); /* ensure it doesn't set the condition codes */
+    if( ins->head.opcode == OP_EXT_ADD
+      || ins->head.opcode == OP_EXT_SUB ) {
+        /*
+         * ensure it doesn't set the condition codes
+         */
+        new_ins->table = GetMoveNoCCEntry();
         new_ins->ins_flags |= INS_CC_USED;
     }
 }
 
 
 
-static  instruction     *SplitPush( instruction *ins, type_length size ) {
-/************************************************************************/
-
+static  instruction     *SplitPush( instruction *ins, type_length size )
+/**********************************************************************/
+{
     instruction         *new_ins;
     instruction         *first_ins;
     name                *op;
@@ -803,9 +833,12 @@ instruction     *rDOLONGPUSH( instruction *ins )
         move = MakeMove( ins->operands[0], at_sp, XX );
         ReplIns( ins, move );
         ins = LoadStringOps( move, &move->operands[0], &move->result );
-        /*% mov CX,const will be the first if it's there so try for SUB SP,CX*/
+        /*
+         * % mov CX,const will be the first if it's there so try for SUB SP,CX
+         */
         sub_sp = MakeBinary( OP_SUB, sp, AllocIntConst( _RoundUp( size, WORD_SIZE ) ), sp, WD );
-        if( ins->result != NULL && HW_CEqual( ins->result->r.reg, HW_xCX ) ) {
+        if( ins->result != NULL
+          && HW_CEqual( ins->result->r.reg, HW_xCX ) ) {
             SuffixIns( ins, sub_sp );
         } else {
             PrefixIns( ins, sub_sp );
@@ -818,10 +851,10 @@ instruction     *rDOLONGPUSH( instruction *ins )
 
 
 name    *OpAdjusted( name *op, int bias, type_class_def type_class )
-/*********************************************************************
-    Return a new op of type 'type' which is offset from the old op by the
-    amount specified by 'bias'.
-*/
+/*******************************************************************
+ * Return a new op of type 'type' which is offset from the old op by the
+ * amount specified by 'bias'.
+ */
 {
     name        *new_op = NULL;
 
@@ -849,14 +882,14 @@ name    *OpAdjusted( name *op, int bias, type_class_def type_class )
 instruction     *rFLIPSIGN( instruction *ins )
 /********************************************/
 {
-    instruction         *new;
+    instruction         *new_ins;
     name                *new_op;
 
     new_op = OpAdjusted( ins->operands[0], ins->operands[0]->n.size - 1, U1 );
-    new = MakeBinary( OP_XOR, new_op, AllocIntConst( 0x80 ), new_op, U1 );
-    DupSegRes( ins, new );
-    ReplIns( ins, new );
-    return( new );
+    new_ins = MakeBinary( OP_XOR, new_op, AllocIntConst( 0x80 ), new_op, U1 );
+    DupSegRes( ins, new_ins );
+    ReplIns( ins, new_ins );
+    return( new_ins );
 }
 
 
@@ -865,25 +898,28 @@ instruction     *rTEMP2CONST( instruction *ins )
 {
     opcnt       i;
     name        *op;
-    instruction *new;
+    instruction *new_ins;
 
-    /* 2005-05-14 RomanT
+    /*
      * Never modify const temps operands "in place" - ReplIns() will be
      * unable to move conflict edges and they will point to nowhere.
-     * Instead, new instruction must be created and ReplIns()'ed.
+     * Instead, new_ins instruction must be created and ReplIns()'ed.
      */
-    new = NewIns( ins->num_operands );
-    Copy( ins, new, sizeof( instruction ) );  // without operands
+    new_ins = NewIns( ins->num_operands );
+    /*
+     * copy instruction without operands
+     */
+    Copy( ins, new_ins, sizeof( instruction ) );
     for( i = ins->num_operands; i-- > 0; ) {
         op = ins->operands[i];
         if( _ConstTemp( op ) ) {
-            new->operands[i] = op->v.symbol;
+            new_ins->operands[i] = op->v.symbol;
         } else {
-            new->operands[i] = op;
+            new_ins->operands[i] = op;
         }
     }
-    ReplIns( ins, new );
-    return ( new );
+    ReplIns( ins, new_ins );
+    return ( new_ins );
 }
 
 
@@ -900,9 +936,11 @@ void    CnvOpToInt( instruction * ins, opcnt op )
         }
         break;
 #if _TARGET & _TARG_80386
-    // this is for the I8 stuff - can't tell what to do in
-    // HighPart and LowPart if we don't get rid on constant
-    // here
+    /*
+     * this is for the I8 stuff - can't tell what to do in
+     * HighPart and LowPart if we don't get rid on constant
+     * here
+     */
     case FD:
         name1 = ins->operands[op];
         if( name1->n.class == N_CONSTANT ) {
@@ -922,8 +960,8 @@ instruction     *rCMPCP( instruction *ins )
     assert( ins->type_class == CP );
     assert( ins->operands[1]->n.class == N_CONSTANT );
     assert( ins->operands[1]->c.lo.u.int_value == 0 );
-    if( ins->head.opcode == OP_CMP_EQUAL ||
-        ins->head.opcode == OP_CMP_NOT_EQUAL ) {
+    if( ins->head.opcode == OP_CMP_EQUAL
+      || ins->head.opcode == OP_CMP_NOT_EQUAL ) {
         if( _IsTargetModel( CGSW_X86_NULL_SELECTOR_BAD ) ) {
             ins->operands[0] = HighPart( ins->operands[0], U2 );
             ChangeType( ins, U2 );

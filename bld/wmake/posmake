@@ -79,7 +79,7 @@ wsplice.exe: wsplice.o clibext.o
 	$(CC) -g wsplice.o clibext.o -o $@
 
 usage.gh : ../h/usage.sp wsplice.exe
-	./wsplice.exe -kENGLISH -kUNIX -f 'pick((MSG_USAGE_BASE+%#%+), "%s", "")' ../h/usage.sp $@
+	./wsplice.exe -kENGLISH -u -kUNIX -f 'pick((MSG_USAGE_BASE+%#%+), "%s", "")' ../h/usage.sp $@
 
 cretype.exe : ../c/cretype.c
 	$(CC) -I../../watcom/h -D__UNIX__ -o $@ $?

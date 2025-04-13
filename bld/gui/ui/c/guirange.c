@@ -41,11 +41,9 @@
 
 static void SetScrollRange( p_gadget gadget, gui_text_ord range )
 {
-    if( gadget != NULL ) {
-        if( gadget->total_size != range ) {
-            gadget->total_size = range;
-            GUISetShowGadget( gadget, true, true, gadget->pos );
-        }
+    if( gadget->total_size != range ) {
+        gadget->total_size = range;
+        GUISetShowGadget( gadget, true, true, gadget->pos );
     }
 }
 
@@ -55,7 +53,7 @@ static void SetScrollRange( p_gadget gadget, gui_text_ord range )
 
 void GUIAPI GUISetHScrollRange( gui_window *wnd, gui_ord range )
 {
-    if( wnd != NULL ) {
+    if( IS_HSCROLL_ON( wnd ) ) {
         SetScrollRange( wnd->hgadget, GUIScaleToScreenH( range ) );
         wnd->flags |= HRANGE_SET;
     }
@@ -67,7 +65,7 @@ void GUIAPI GUISetHScrollRange( gui_window *wnd, gui_ord range )
 
 void GUIAPI GUISetVScrollRange( gui_window *wnd, gui_ord range )
 {
-    if( wnd != NULL ) {
+    if( IS_VSCROLL_ON( wnd ) ) {
         SetScrollRange( wnd->vgadget, GUIScaleToScreenV( range ) );
         wnd->flags |= VRANGE_SET;
     }
@@ -79,7 +77,7 @@ void GUIAPI GUISetVScrollRange( gui_window *wnd, gui_ord range )
 
 void GUIAPI GUISetHScrollRangeCols( gui_window *wnd, gui_text_ord range )
 {
-    if( wnd != NULL ) {
+    if( IS_HSCROLL_ON( wnd ) ) {
         SetScrollRange( wnd->hgadget, range );
         wnd->flags |= HRANGE_SET;
     }
@@ -91,8 +89,7 @@ void GUIAPI GUISetHScrollRangeCols( gui_window *wnd, gui_text_ord range )
 
 void GUIAPI GUISetVScrollRangeRows( gui_window *wnd, gui_text_ord range )
 {
-
-    if( wnd != NULL ) {
+    if( IS_VSCROLL_ON( wnd ) ) {
         SetScrollRange( wnd->vgadget, range );
         wnd->flags |= VRANGE_SET;
     }
@@ -104,23 +101,16 @@ void GUIAPI GUISetVScrollRangeRows( gui_window *wnd, gui_text_ord range )
 
 gui_text_ord GUIAPI GUIGetVScrollRangeRows( gui_window *wnd )
 {
-    if( wnd->vgadget != NULL ) {
+    if( IS_VSCROLL_ON( wnd ) )
         return( wnd->vgadget->total_size );
-    } else {
-        return( GUI_TEXT_NO_RANGE );
-    }
+    return( GUI_TEXT_NO_RANGE );
 }
 
 gui_ord GUIAPI GUIGetVScrollRange( gui_window *wnd )
 {
-    gui_text_ord    text_ord;
-
-    text_ord = GUIGetVScrollRangeRows( wnd );
-    if( text_ord != GUI_TEXT_NO_RANGE ) {
-        return( GUIScaleFromScreenV( text_ord ) );
-    } else {
-        return( GUI_NO_RANGE );
-    }
+    if( IS_VSCROLL_ON( wnd ) )
+        return( GUIScaleFromScreenV( wnd->vgadget->total_size ) );
+    return( GUI_NO_RANGE );
 }
 
 /*
@@ -129,21 +119,14 @@ gui_ord GUIAPI GUIGetVScrollRange( gui_window *wnd )
 
 gui_text_ord GUIAPI GUIGetHScrollRangeCols( gui_window *wnd )
 {
-    if( wnd->hgadget != NULL ) {
+    if( IS_HSCROLL_ON( wnd ) )
         return( wnd->hgadget->total_size );
-    } else {
-        return( GUI_TEXT_NO_RANGE );
-    }
+    return( GUI_TEXT_NO_RANGE );
 }
 
 gui_ord GUIAPI GUIGetHScrollRange( gui_window *wnd )
 {
-    gui_text_ord    text_ord;
-
-    text_ord = GUIGetHScrollRangeCols( wnd );
-    if( text_ord != GUI_TEXT_NO_RANGE ) {
-        return( GUIScaleFromScreenH( text_ord ) );
-    } else {
-        return( GUI_NO_RANGE );
-    }
+    if( IS_HSCROLL_ON( wnd ) )
+        return( GUIScaleFromScreenH( wnd->hgadget->total_size ) );
+    return( GUI_NO_RANGE );
 }

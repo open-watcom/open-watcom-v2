@@ -1,0 +1,210 @@
+% !TeX root = owstl.tex
+
+\chapter{Red-Black Tree}
+
+\section{Introduction}
+
+Class template \code{std::_ow::RedBlackTree} is an implementation of a
+red-black tree data structure. It is used as a common base for \code{std::set}
+and \code{std::map}. It can be found in \filepath{hdr/watcom/_rbtree.mh}. The
+intention was to allow easy replacement and experimentation with other
+implementations such as an AVL tree or perhaps some sort of relaxed chromatic
+tree suited to concurrent systems.
+
+\section{Status}
+
+The majority of the required functionality has been written. Regression tests
+have been written in parallel, but little user testing and feedback exists.
+
+The missing members are:
+
+% Can the list style be modified so there isn't a skip, or maybe a half skip,
+% between each item?
+
+\begin{enumerate}
+\item \code{reverse_iterator}
+\item \code{const_reverse_iterator}
+\item \code{template<InputIterator> ctor( InputIterator, InputIterator, ... )}
+\item \code{rend( )} and \code{rend( ) const}
+\item \code{rbegin( )} and \code{rbegin( ) const}
+\item \code{max_size( )}
+\item \code{erase( iterator first, iterator last )}
+\item \code{swap( RedBlackTree & )}
+\item \code{key_comp( )}
+\item \code{value_comp( )}
+\item \code{find( key_type ) const}
+\item \code{count( )}
+\item \code{equal_range( key_type )} and \code{equal_range( key_type ) const}
+\item Non-member operators and specialized swap algorithm
+\end{enumerate}
+
+The completed member are:
+
+\begin{enumerate}
+\item \code{iterator}
+\item \code{const_iterator}
+\item \code{ctor( Compare, Allocator )}
+\item \code{cpyctor}
+\item \code{operator=}
+\item \code{dtor}
+\item \code{begin( )} and \code{begin( ) const}
+\item \code{end( )} and \code{end( ) const}
+\item \code{empty( )}
+\item \code{size( )}
+\item \code{insert( value_type )}
+\item \code{insert( iterator, value_type )} (see N1780)
+\item \code{erase( iterator )}
+\item \code{erase( key_type cont &)}
+\item \code{clear( )}
+\item \code{find( key_type )}
+\item \code{lower_bound( key_type )} and \code{lower_bound( key_type ) const}
+\item \code{upper_bound( key_type )} and \code{upper_bound( key_type ) const}
+\item \code{_Sane( )}
+\item Internal tree balancing functions
+\end{enumerate}
+
+\section{Design Details}
+
+\code{template <class Key, class Compare, class Allocator, class ValueWrapper>}\\
+\code{class RedBlackTree}
+
+The type \code{Key} is used to index the tree; the functor \code{Compare}
+(class with \code{operator( )} defined) provides ordering to the keys; the
+class \code{Allocator} provides the memory allocation; the class
+\code{ValueWrapper} defines the type of the objects stored in the tree and
+provides an \code{operator( )} that knows how to extract the key from that
+type. \code{ValueWrapper} allows the same tree code to apply to sets where the
+key is the only thing stored and maps where the object stored has a key and a
+mapped value.
+
+\subsection{Relationship to \code{map} and \code{set}}
+
+The templates \code{std::set} and \code{std::map} take their base class as a
+template parameter. They select the appropriate value wrapper and inherit all
+the functionality. The base currently defaults to \code{RedBlackTree} which is
+the only implementation available.
+
+\subsection{Description of a Red-Black Tree}
+
+A red-black tree is an ordered binary tree made up of nodes, where each node
+can have up to two children. An ordered binary tree orders the nodes so that a
+left child is less than its parent and a right child is greater. It could be
+the other way around, and this implementation uses a comparison function and
+puts the child on the left if \code{compare( child, parent )} evaluates true.
+If a node has no children it is a leaf, otherwise it is an internal node. Some
+implementations only hold the actual data in the leaves and the internal nodes
+are just placeholders. This implementation has imaginary leaves - null
+pointers. If a node's child pointer is null then that non-existent child is a
+leaf, and we hold all the data in the real, existing nodes. Therefore, there
+is no special leaf node type, just a null pointer if there is no child with
+data.
+
+A red-black tree adds a color to every node, and defines some rules that mean
+the tree stays balanced. A tree is balanced if the difference between the
+largest and smallest depth of a leaf is bounded. The invariants are:
+
+\begin{enumerate}
+\item Every red node has a black parent/
+\item Every route from the root node to a node with 0 or 1 children has the
+same number of black nodes.
+\item Every leaf is black (note this is assumed as leaves don't really exist
+in this implementation).
+\item The root is black.
+\end{enumerate}
+
+
+This data structure has been well covered in the literature, for a more
+detailed information see: (Prof Lyn Turba, Wellesly College, CS231 Algorithms
+Handout 21, 2001) (McGill University, Notes for 308-251B,
+http://www.cs.mcgill.ca/~cs251/, 1997) \todo{Look into setting up a BibTeX
+database for proper references and citations.}
+
+\subsection{Overview of the class}
+
+The tree class defines an internal \code{Node} structure that is made up of
+the object stored in the tree, node pointers for the parent and left and right
+children, and the node color. There is an allocator member object,
+\code{mMem}, that is rebound to allocate \code{Node} objects. There are
+pointers to the root and furthest left and right nodes. These are used to mark
+were to start the search, and create the \code{begin} and \code{end} iterators
+respectively. The \code{iterator} and \code{const_iterator} classes are
+derived from a common member class. There is an \OW\ extension method
+\code{_Sane( )} that checks the integrity of the data structure. Related to
+this is an integer \code{mError} member that is assigned a value if an error
+is detected when \code{_Sane} is run. \todo{This should perhaps be renamed
+\code{_Error} or made private and a \code{_GetError( )} method provided.}
+
+\subsection{Inserting Elements and Rebalancing}
+
+The \code{insert} method calls \code{unbalancedInsert} and
+\code{insBalTransform}. The loop in \code{unBalancedInsert} moves from child
+to child searching for the leaf of the tree where the new item can be
+inserted, similarly as the \code{find} algorithm checks for the item. A final
+check is made at the end of the loop to see if the key already exists. If it
+does, an iterator to the existing key is returned. Otherwise, a new node is
+allocated and constructed. The node is linked into the tree at the place
+found. A try-catch is placed around the construction of the node to deallocate
+the node again if any exceptions are raised. This is needed to stop a memory
+leak that could occur because the memory has been allocated, but the exception
+has stopped the node from being linked into the tree (so it would never get
+destroyed when the tree is destroyed).
+
+At this point, the tree is a valid binary tree but does not necessarily obey
+the red-black balance criteria. The new node is painted red so as not to
+invalidate the black-height rule, but this may introduce a violation of the
+red-red rule. Function \code{insBalTransform} is called with a pointer to the
+newly inserted node to correct this. This is where this implementation of a
+red-black tree varies from the most common implementations. Usually the
+balancing procedure is broken down into a series of rotations where a subtree
+of the tree would appear to be rotated if represented graphically. These
+rotations can be left or right and the procedure moves up to the parent
+subtree and is repeated until the violation is removed.
+
+Instead, \OW\ uses the concept of a transformation. (Alternatives to Two
+Classic Data Structures, Chris Okaski, 2005?) A sub-branch of the tree is
+analyzed to see which case it matches and the elements in that branch are then
+reorganized and recolored in one block of code. Although this isn't wildly
+different, it was hoped that it would allow a faster algorithm to be created
+because larger subtrees and special cases could be matched and manipulated in
+one go, and the code generator may be able to make a better job of optimizing
+the code because a larger block of manipulating instructions would be
+together. Whether this was a good decision will be born out in time.
+
+\todo{Explain why the insert methods are currently inline - compiler bug -
+what exactly was the problem?}
+
+\subsection{Deleting Elements}
+
+Deletion is a bit more complicated than insertion. The main method that gets
+called is \code{erase( iterator )}.
+I did hope it may be possible to rewrite this in a way that is easier to
+understand. There are two main cases:
+
+\begin{itemize}
+\item The node to be removed has both children.
+\item The node has one or more null children (i.e. has 0 or 1 real child, in
+other words 1 or 2 leaves) - I've called this an ``end node.''
+\end{itemize}
+
+If it is an end node (has 0 or 1 real child) then that child can be linked
+into its place or the node can just be deleted. We take note of the deleted
+node's parent, the child, and its color. The other case where it has 2
+children is more complicated. We swap the predecessor (which cannot have a
+right child by definition) of the deleted node into the place of the deleted
+node, and change its color so that part of the tree is still valid. The node
+being removed is now effectively the predecessors old position, so we take
+note of its original child, parent and color.
+
+Now we have created a situation where we are really removing an end node. We
+can look at the color of the node to be removed. If it is red then there is no
+violation of the black height rule by removing it. Also, it cannot have a real
+child, so there is nothing to link in its place. If the removed end node is
+black there are two cases. If it has a child, that child must be red or there
+would have been a black height violation, thus we link the child in the place
+and paint it black to maintain the black height. If there was no child, we
+have created a black height problem - there is a lack of black on this branch.
+The deleted node has left a null leaf node in its place, we usually count
+these as black, but in this case we have to call it double black to resolve
+the black height problem. This isn't valid so we call
+\code{doubleBlackTransform( )} to run through a set of cases to rearrange
+subtrees and remove the need for double black.

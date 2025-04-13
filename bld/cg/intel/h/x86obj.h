@@ -54,7 +54,7 @@ extern void         OutRTImportRel( rt_class rtindex, fix_class class, bool rel 
 extern void         OutRTImport( rt_class rtindex, fix_class class );
 extern void         OutBckExport( const char *name, bool is_export );
 extern void         OutBckImport( const char *name, back_handle bck, fix_class class );
-extern unsigned     SavePendingLine( unsigned new );
+extern unsigned     SavePendingLine( unsigned new_line );
 extern void         OutDBytes( unsigned len, const byte *src );
 extern void         OutIBytes( byte pat, offset len );
 extern void         TellObjVirtFuncRef( void *cookie );

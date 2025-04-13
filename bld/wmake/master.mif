@@ -54,11 +54,11 @@ extra_cpp_flags += -DDLLS_IMPLEMENTED
 extra_cpp_flags += -DCACHE_STATS
 !endif
 
-extra_cpp_flags_memory = $(trmem_cpp_flags)
+extra_cpp_flags_f_memory = $(trmem_cpp_flags)
 
 extra_c_flags_i86 = -zt32
 
-extra_c_flags_memory = $(trmem_cover_cflags)
+extra_c_flags_f_memory = $(trmem_cover_cflags)
 
 #
 # lflags
@@ -70,21 +70,21 @@ extra_l_flags = opt statics sort
 extra_l_flags_os2 = opt stack=96k
 extra_l_flags_qnx = opt stack=20k
 !ifdef LARGE
-extra_l_flags_dos_i86 = opt stack=16k
+extra_l_flags_dosi86 = opt stack=16k
 !else ifdef COMPACT
-extra_l_flags_dos_i86 = opt stack=16k
+extra_l_flags_dosi86 = opt stack=16k
 !else
-extra_l_flags_dos_i86 = opt stack=8k
+extra_l_flags_dosi86 = opt stack=8k
 !endif
 
 !ifeq dos_extender causeway
-extra_l_flags_dos_386 = opt stack=16k
+extra_l_flags_dos386 = opt stack=16k
 !else ifeq dos_extender pharlap
-extra_l_flags_dos_386 = opt stack=8k
+extra_l_flags_dos386 = opt stack=8k
 !else ifeq dos_extender dos4g
-extra_l_flags_dos_386 = opt stack=8k
+extra_l_flags_dos386 = opt stack=8k
 !else
-extra_l_flags_dos_386 = opt stack=8k
+extra_l_flags_dos386 = opt stack=8k
 !endif
 
 # explicit rules
@@ -106,9 +106,14 @@ exetarg_name          = wmk
 #
 # rc and others
 #
-wsplice_opts_linux = -kUNIX
-wsplice_opts_qnx   = -kUNIX
-wsplice_opts_osx   = -kUNIX
+wsplice_opts_dos   = -u0
+wsplice_opts_nt    = -u0
+wsplice_opts_os2   = -u0
+wsplice_opts_rdos  = -u0
+wsplice_opts_bsd   = -u -kUNIX
+wsplice_opts_linux = -u -kUNIX
+wsplice_opts_qnx   = -u -kUNIX
+wsplice_opts_osx   = -u -kUNIX
 
 $(proj_name).res : ../h/wmake.rc ../h/mrcmsg.h usage.gh usagej.gh $(__MAKEFILES__)
     @%make echo_rc

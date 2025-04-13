@@ -599,8 +599,8 @@ static void write_external( void )
     }
 }
 
-static void write_header( char *name )
-/************************************/
+static void write_header( const char *name )
+/******************************************/
 {
     obj_rec     *objr;
     size_t      len;
@@ -1171,14 +1171,17 @@ static void reset_seg_len( void )
     }
 }
 
-static void writepass1stuff( char *name )
-/***************************************/
+static void writepass1stuff( const char *file_name )
+/**************************************************/
 {
     if( CurrProc != NULL ) {
         AsmError( END_OF_PROCEDURE_NOT_FOUND );
         return;
     }
-    write_header( name );
+    write_header( GetModuleName() );
+    if( file_name != NULL ) {
+        write_header( file_name );
+    }
     write_autodep();
     if( Globals.dosseg )
         write_dosseg();
@@ -1238,7 +1241,7 @@ void WriteObjModule( void )
     char                *p;
     unsigned long       prev_total;
     unsigned long       curr_total;
-    char                *mod_name;
+    const char          *src_name;
 
     AsmCodeBuffer = codebuf;
 
@@ -1275,15 +1278,14 @@ void WriteObjModule( void )
         put_private_proc_in_public_table();
     }
 #endif
-    if( Options.debug_info || Options.module_name == NULL ) {
-        mod_name = ModuleInfo.srcfile->fullname;
-    } else {
-        mod_name = Options.module_name;
+    src_name = NULL;
+    if( Options.debug_info ) {
+        src_name = ModuleInfo.srcfile->fullname;
     }
     for( ;; ) {
         if( !write_to_file || Options.error_count > 0 )
             break;
-        writepass1stuff( mod_name );
+        writepass1stuff( src_name );
         ++Parse_Pass;
         rewind( AsmFiles.file[ASM] );
         reset_seg_len();

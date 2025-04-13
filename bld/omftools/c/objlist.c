@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -55,9 +55,11 @@ static bool ProcFile( FILE *fp )
     unsigned_32 offset;
     bool        ok;
     int         rc;
+    bool        first;
 
     page_len = 0;
     ReadRecInit();
+    first = true;
     ok = true;
     while( ok ) {
         offset = ftell( fp );
@@ -69,9 +71,12 @@ static bool ProcFile( FILE *fp )
         }
         switch( RecHdr[0] & ~1 ) {
         case CMD_THEADR:
-            GetName();
-            NameTerm();
-            printf( "%s\n", NamePtr );
+            if( first ) {
+                GetName();
+                NameTerm();
+                printf( "%s\n", NamePtr );
+                first = false;
+            }
             break;
         case CMD_MODEND:
             if( page_len != 0 ) {
@@ -81,6 +86,7 @@ static bool ProcFile( FILE *fp )
                     fseek( fp, offset, SEEK_CUR );
                 }
             }
+            first = true;
             break;
         case LIB_HEADER_REC:
             if( RecHdr[0] & 1 ) {

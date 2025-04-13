@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -788,7 +788,7 @@ size_t DIPModName( mod_handle mh, char *buff, size_t buff_size )
     return( ih->dip->ModName( IH2IIH( ih ), MH2IMH( mh ), buff, buff_size ) );
 }
 
-char *DIPModSrcLang( mod_handle mh )
+const char *DIPModSrcLang( mod_handle mh )
 {
     image_handle        *ih;
 

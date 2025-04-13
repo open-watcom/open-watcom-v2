@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -520,7 +520,8 @@ static cg_type prcCgType(       // PROCESS A NEW CODE-GEN TYPE
     cg_type type )              // - code generation type
 {
     if( ( type == TY_SINGLE )
-      ||( type == TY_DOUBLE ) ) {         //***** LATER UPGRADE FOR LONG DBL
+      || ( type == TY_DOUBLE )
+      || ( type == TY_LONG_DOUBLE ) ) {
         CompFlags.float_used = true;
     }
     return( type );

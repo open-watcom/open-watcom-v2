@@ -32,8 +32,8 @@ extra_c_flags_win = -zw-zu
 #
 extra_l_flags_dll = op implib
 extra_l_flags_dll_win = op rwr export WEP RESIDENT
-extra_l_flags_dll_os2_i86 = initinstance op manyautodata
-extra_l_flags_dll_os2_386 = initinstance terminstance op manyautodata
+extra_l_flags_dll_os2i86 = initinstance op manyautodata
+extra_l_flags_dll_os2386 = initinstance terminstance op manyautodata
 
 # explicit rules
 #################
@@ -52,14 +52,14 @@ objs_ntx64  = mkssi.obj objcycle.obj
 #
 # DLL
 #
-dlltarg_objs = rcsdll.obj inifile.obj $(objs_$(objs_subdir)) $(extra_objs)
+dlltarg_objs = rcsdll.obj inifile.obj $(objs_$(host)) $(extra_objs)
 dlltarg_name = rcsdll
 !include dlltarg.mif
 !else
 #
 # LIB
 #
-libtarg_objs = rcsdll.obj inifile.obj $(objs_$(objs_subdir)) $(extra_objs)
+libtarg_objs = rcsdll.obj inifile.obj $(objs_$(host)) $(extra_objs)
 libtarg_name = rcsdll
 !include libtarg.mif
 !endif

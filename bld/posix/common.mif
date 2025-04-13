@@ -16,23 +16,6 @@
 #               directory posix/src/$(name) must exist, and
 #               contain the source for the command.
 
-!ifndef model
-!ifeq host_cpu i86
-model=c
-!else ifeq host_cpu 386
-!ifeq host_os qnx
-model=s
-!else ifeq host_os dos
-model=s
-!else
-model=f
-!endif
-!endif
-!endif
-
-memory_model_i86=$(model)
-memory_model_386=$(model)
-
 #
 # definitions for POSIX library build
 #
@@ -50,7 +33,7 @@ alt_subdir_dosi86c = ms
 alt_subdir_os2i86c = ms
 
 !ifeq proj_name posix_all
-!ifdef alt_subdir_$(host_os)$(host_cpu)$(model)
+!ifdef alt_subdir_$(host)$(model)
 alt_posixlib = 1
 !endif
 !endif
@@ -70,18 +53,23 @@ posixlib_objs = &
     $(_subdir_)isdotdot.obj &
     $(_subdir_)lineprt.obj &
     $(_subdir_)quit.obj &
-    $(_subdir_)regexp.obj
+    $(_subdir_)owregexp.obj
 
 !ifdef bootstrap
 stdlibdir=$(std_subdir_$(host_cpu))
-!ifdef alt_posixlib
-altlibdir=$(alt_subdir_$(host_os)$(host_cpu)$(model))
-!endif
+! ifdef alt_posixlib
+altlibdir=$(alt_subdir_$(host)$(model))
+additional_remove_subdirs = $(stdlibdir) $(altlibdir)
+! else
+additional_remove_subdirs = $(stdlibdir)
+! endif
 !else
-stdlibdir=../misc/$(objs_subdir)/$(std_subdir_$(host_cpu))
-!ifdef alt_posixlib
-altlibdir=../misc/$(objs_subdir)/$(alt_subdir_$(host_os)$(host_cpu)$(model))
-!endif
+additional_clean_subdirs = 1
+
+stdlibdir=../misc/$(host)/$(std_subdir_$(host_cpu))
+! ifdef alt_posixlib
+altlibdir=../misc/$(host)/$(alt_subdir_$(host)$(model))
+! endif
 !endif
 
 #
@@ -89,6 +77,6 @@ altlibdir=../misc/$(objs_subdir)/$(alt_subdir_$(host_os)$(host_cpu)$(model))
 #
 
 extra_cppflags_ntaxp = -DWIN32 -D_WIN32
-extra_cpp_flags      = -DSTANDALONE_RX $(extra_cppflags_$(host_os)$(host_cpu)) $(extra_cppflags)
+extra_cpp_flags      = -DSTANDALONE_RX $(extra_cppflags_$(host)) $(extra_cppflags)
 
 extra_c_flags_i86 = -zt=10000

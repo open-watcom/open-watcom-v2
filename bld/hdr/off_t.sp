@@ -7,6 +7,8 @@
  typedef long           off_t;  /* Used for file sizes, offsets     */
 :elsesegment QNX
  typedef long           off_t;  /* Used for file sizes, offsets     */
+:elsesegment RDOS
+ typedef long long      off_t;  /* Used for file sizes, offsets     */
 :elsesegment
  typedef long           off_t;  /* file offset value */
 :endsegment

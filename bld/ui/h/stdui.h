@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -259,33 +259,35 @@ typedef enum ui_event {
     EV_JOIN_RIGHT,              // 0x022B
     EV_JOIN_LEFT,               // 0x022C
     EV_SPLIT,                   // 0x022D
-    EV_SCROLL_LINE_UP,          // 0x022E
-    EV_SCROLL_LINE_DOWN,        // 0x022F
+    EV_SCROLL_UP,               // 0x022E
+    EV_SCROLL_DOWN,             // 0x022F
     EV_SCROLL_PAGE_UP,          // 0x0230
     EV_SCROLL_PAGE_DOWN,        // 0x0231
-    EV_SCROLL_LEFT_FIELD,       // 0x0232
-    EV_SCROLL_RIGHT_FIELD,      // 0x0233
-    EV_SCROLL_LEFT_PAGE,        // 0x0234
-    EV_SCROLL_RIGHT_PAGE,       // 0x0235
-    EV_SCROLL_VERTICAL,         // 0x0236
-    EV_SCROLL_HORIZONTAL,       // 0x0237
+    EV_SCROLL_FIELD_LEFT,       // 0x0232
+    EV_SCROLL_FIELD_RIGHT,      // 0x0233
+    EV_SCROLL_LEFT,             // 0x0234
+    EV_SCROLL_RIGHT,            // 0x0235
+    EV_SCROLL_PAGE_LEFT,        // 0x0236
+    EV_SCROLL_PAGE_RIGHT,       // 0x0237
+    EV_SCROLL_VERTICAL,         // 0x0238
+    EV_SCROLL_HORIZONTAL,       // 0x0239
 
-    EV_IDLE,                    // 0x0238
-    EV_BUFFER_CLEAR,            // 0x0239
+    EV_IDLE,                    // 0x023A
+    EV_BUFFER_CLEAR,            // 0x023B
 
-    EV_MOUSE_MOVE,              // 0x023A
-    EV_LIST_BOX_CHANGED,        // 0x023B
-    EV_MENU_ACTIVE,             // 0x023C
-    EV_MENU_INITPOPUP,          // 0x023D
-    EV_LIST_BOX_DCLICK,         // 0x023E
-    EV_LIST_BOX_CLOSED,         // 0x023F
-    EV_BACKGROUND_RESIZE,       // 0x0240
+    EV_MOUSE_MOVE,              // 0x023C
+    EV_LIST_BOX_CHANGED,        // 0x023D
+    EV_MENU_ACTIVE,             // 0x023E
+    EV_MENU_INITPOPUP,          // 0x023F
+    EV_LIST_BOX_DCLICK,         // 0x0240
+    EV_LIST_BOX_CLOSED,         // 0x0241
+    EV_BACKGROUND_RESIZE,       // 0x0242
 
     // NOTE: This event should always be passed up, from all functions.
-    EV_KILL_UI,                 // 0x0241
+    EV_KILL_UI,                 // 0x0243
 
-    EV_CHECK_BOX_CLICK,         // 0x0242
-    EV_REDRAW_SCREEN,           // 0x0243
+    EV_CHECK_BOX_CLICK,         // 0x0244
+    EV_REDRAW_SCREEN,           // 0x0245
 
     EV_STICKY_FUNC               = 0x03F0,
     EV_STICKY_SHIFT,            // 0x03F1
@@ -461,7 +463,7 @@ typedef enum {
 
 typedef unsigned        ORD;
 
-#elif __RDOS__
+#elif defined( __RDOS__ )
 
 /*
     This needs to be fixed so scaling for a mouse also need a larger range!!
@@ -509,7 +511,7 @@ typedef int             CATTR;          /* cursor attributes type */
     #define __FAR       __far
     #define HAVE_FAR
     #define UIDBCS
-#elif defined(__NT__)
+#elif defined( __NT__ )
     typedef struct pixel {
         unsigned short  ch;
         unsigned short  attr;
@@ -517,7 +519,7 @@ typedef int             CATTR;          /* cursor attributes type */
     #define __FAR
     #undef HAVE_FAR
     #define UIDBCS
-#elif defined(__OS2__)
+#elif defined( __OS2__ )
     typedef struct pixel {
         unsigned char   ch;
         ATTR            attr;
@@ -525,7 +527,7 @@ typedef int             CATTR;          /* cursor attributes type */
     #define __FAR
     #undef HAVE_FAR
     #define UIDBCS
-#elif defined(__RDOS__)
+#elif defined( __RDOS__ )
     typedef struct pixel {
         unsigned char   ch;
         ATTR            attr;
@@ -533,7 +535,7 @@ typedef int             CATTR;          /* cursor attributes type */
     #define __FAR
     #undef HAVE_FAR
     #undef UIDBCS
-#elif defined(__UNIX__)
+#elif defined( __UNIX__ )
     typedef struct pixel {
         unsigned char   ch;
         ATTR            attr;

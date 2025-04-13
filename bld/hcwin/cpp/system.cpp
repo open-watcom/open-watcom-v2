@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -155,13 +155,12 @@ HFSystem::HFSystem( HFSDirectory *d_file, HFContext *h_file )
 {
     _compLevel = 0;
     _contentNum = 0;
-    _size = 25; // 12 byte header + default SYS_COPYRIGHT,SYS_CONTENTS
-
+    _size = 12 + 5 + 8; // 12 byte header + default SYS_COPYRIGHT,SYS_CONTENTS
 
     // Create default copyright and contents records.
     _first = new SystemText( SYS_COPYRIGHT, "" );
-    _first->_next = new SystemNum( SYS_CONTENTS, 0 );
-    _last = _first->_next;
+    _last = new SystemNum( SYS_CONTENTS, 0 );
+    _first->_next = _last;
     _last->_next = NULL;
 
     d_file->addFile( this, "|SYSTEM" );
@@ -230,10 +229,9 @@ void HFSystem::addRecord( SystemRec *nextrec )
         delete _first;
         _first = nextrec;
     } else if( nextrec->flag() == SYS_CONTENTS ) {
-        SystemRec   *temp = _first->_next;
-        nextrec->_next = temp->_next;
-        _size -= temp->size();
-        delete temp;
+        nextrec->_next = _first->_next->_next;
+        _size -= _first->_next->size();
+        delete _first->_next;
         _first->_next = nextrec;
     } else {
         _last->_next = nextrec;

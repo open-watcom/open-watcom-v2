@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,16 +40,16 @@ static char wrapMsg[] = "Wrapped past %s of file";
 static bool wrapMsgPrinted = false;
 
 /*
- * FindRegularExpression - do a forward search for a regular expression
+ * FindRegularExpressionForward - do a forward search for a regular expression
  */
-vi_rc FindRegularExpression( char *pat, i_mark *pos1, char **linedata,
-                             linenum termline, find_type flags )
+vi_rc FindRegularExpressionForward( const char *pat, i_mark *pos1, const char **linedata,
+                             linenum termline, find_type findfl )
 {
     vi_rc       rc;
     int         found;
     linenum     ilineno = 0;
     bool        wrapped = false;
-    char        *data;
+    const char  *data;
     line        *cline;
     fcb         *cfcb;
     int         scol;
@@ -63,7 +63,7 @@ vi_rc FindRegularExpression( char *pat, i_mark *pos1, char **linedata,
         ClearWindow( message_window_id );
     }
     sline = pos1->line;
-    if( flags & FINDFL_WRAP ) {
+    if( findfl & FINDFL_WRAP ) {
         ilineno = sline;
     }
     rc = CGimmeLinePtr( sline, &cfcb, &cline );
@@ -93,7 +93,7 @@ vi_rc FindRegularExpression( char *pat, i_mark *pos1, char **linedata,
         if( rc == ERR_NO_ERR ) {
             ++sline;
         } else if( rc == ERR_NO_MORE_LINES ) {
-            if( (flags & FINDFL_WRAP) == 0 ) {
+            if( (findfl & FINDFL_WRAP) == 0 ) {
                 return( ERR_FIND_END_OF_FILE );
             } else {
                 Message1( wrapMsg, "bottom" );
@@ -128,16 +128,16 @@ vi_rc FindRegularExpression( char *pat, i_mark *pos1, char **linedata,
     pos1->line = sline;
     return( ERR_NO_ERR );
 
-} /* FindRegularExpression */
+} /* FindRegularExpressionForward */
 
 /*
  * FindRegularExpressionBackwards - do a reverse search for a regular expression
  */
-vi_rc FindRegularExpressionBackwards( char *pat, i_mark *pos1, char **linedata,
-                                      linenum termline, find_type flags )
+vi_rc FindRegularExpressionBackwards( const char *pat, i_mark *pos1, const char **linedata,
+                                      linenum termline, find_type findfl )
 {
     vi_rc       rc;
-    char        *data;
+    const char  *data;
     bool        wrapped = false;
     bool        found;
     linenum     ilineno = 0;
@@ -159,7 +159,7 @@ vi_rc FindRegularExpressionBackwards( char *pat, i_mark *pos1, char **linedata,
     if( rc != ERR_NO_ERR ) {
         return( rc );
     }
-    if( flags & FINDFL_WRAP ) {
+    if( findfl & FINDFL_WRAP ) {
         ilineno = sline;
     }
     scol = pos1->column;
@@ -209,7 +209,7 @@ vi_rc FindRegularExpressionBackwards( char *pat, i_mark *pos1, char **linedata,
         if( rc == ERR_NO_ERR ) {
             --sline;
         } else if( rc == ERR_NO_MORE_LINES ) {
-            if( (flags & FINDFL_WRAP) == 0 ) {
+            if( (findfl & FINDFL_WRAP) == 0 ) {
                 return( ERR_FIND_TOP_OF_FILE );
             } else {
                 Message1( wrapMsg, "top" );

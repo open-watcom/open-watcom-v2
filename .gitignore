@@ -52,6 +52,7 @@
 *.ilk
 *.int
 *.lbc
+# ignore *.lib files, but include *.lib subdirectories
 *.lib
 !*.lib/
 *.lk1
@@ -81,7 +82,9 @@
 *.rex
 *.rtp
 *.sav
+# ignore *.so files, but include *.so subdirectories
 *.so
+!*.so/
 *.stb
 *.sym
 *.sys
@@ -135,8 +138,8 @@
 /bld/as/*/*/*_in.re
 /bld/as/*/*/*lexyy.c
 #
-/bld/aui/os2386.gui/*.dlg
-/bld/aui/os2i86.gui/*.dlg
+/bld/aui/sample/os2386.gui/*.dlg
+/bld/aui/sample/os2i86.gui/*.dlg
 #
 /bld/awk/*/proctab.c
 !/bld/awk/c/proctab.c
@@ -216,6 +219,8 @@
 /bld/wipfc/test/*/*.inf
 #
 /bld/wmake/regress/cmds/*
+#
+/bld/wprof/os2386.gui/*.dlg
 #
 /bld/wv/dbg/*/*.dbg
 /bld/wv/os2/os2386.gui/*.dlg

@@ -345,7 +345,9 @@ int main( int argc, char **argv )
 {
     vi_rc   rc;
 
-    /* unused parameters */ (void)argc;
+    if ( argc < 3 ) {
+        return( -1 );
+    }
 
     rc = Compile( argv[1], argv[2] );
     return( (rc == ERR_NO_ERR) ? 0 : -1 );

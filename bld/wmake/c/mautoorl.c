@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -49,12 +49,16 @@ typedef struct orl_info {
     DepInfo             *curr;
 }                       orl_info;
 
-static orl_info         orlInfo;
-static orl_sec_handle   orlDependsInfo;
-static orl_handle       orlHandle;
-static char             *orlBuffer;
-static size_t           orlFilePosition;
-static size_t           orlFileSize;
+struct orl_io_struct {
+    orl_info            orlInfo;
+};
+
+static struct orl_io_struct orlIO;
+static orl_sec_handle       orlDependsInfo;
+static orl_handle           orlHandle;
+static char                 *orlBuffer;
+static size_t               orlFilePosition;
+static size_t               orlFileSize;
 
 // note: this should match name in rscobj.c in codegen
 static const char       *dependSectionName = ".depend";
@@ -85,17 +89,17 @@ static void bufferInit( void )
     orlBuffer = NULL;
 }
 
-static void *orlRead( FILE *fp, size_t bytes )
-/********************************************/
+static void *orlRead( struct orl_io_struct *orlio, size_t bytes )
+/***************************************************************/
 {
     size_t  n;
     size_t  old_pos;
 
     if( orlBuffer == NULL ) {
-        orlFileSize = (size_t)fileSize( fp );
+        orlFileSize = (size_t)fileSize( orlio->orlInfo.fp );
         orlBuffer = MallocSafe( orlFileSize );
         // just suck it right in :)
-        n = fread( orlBuffer, 1, orlFileSize, fp );
+        n = fread( orlBuffer, 1, orlFileSize, orlio->orlInfo.fp );
         if( n != orlFileSize ) {
             return( NULL );
         }
@@ -108,10 +112,10 @@ static void *orlRead( FILE *fp, size_t bytes )
     return( NULL );
 }
 
-static int orlSeek( FILE *fp, long offset, int mode )
-/***************************************************/
+static int orlSeek( struct orl_io_struct *orlio, long offset, int mode )
+/**********************************************************************/
 {
-    /* unused parameters */ (void)fp;
+    /* unused parameters */ (void)orlio;
 
     switch( mode ) {
     case SEEK_SET:
@@ -150,14 +154,14 @@ static orl_return findDependInfo( orl_sec_handle section )
 }
 
 
-static UINT8 *orlGetDependsInfo( orl_file_handle orl_handle )
-/***********************************************************/
+static UINT8 *orlGetDependsInfo( struct orl_io_struct *orlio )
+/************************************************************/
 {
     UINT8   *buffer;
 
     orlDependsInfo = NULL;
     buffer = NULL;
-    ORLFileScan( orl_handle, NULL, findDependInfo );
+    ORLFileScan( orlio->orlInfo.orl_handle, NULL, findDependInfo );
     if( orlDependsInfo != NULL ) {
         ORLSecGetContents( orlDependsInfo, &buffer );
     }
@@ -168,26 +172,24 @@ static UINT8 *orlGetDependsInfo( orl_file_handle orl_handle )
 static handle AutoORLFileInit( const char *name )
 /***********************************************/
 {
-    orl_file_format type;
-    orl_file_handle orl_handle;
-    FILE            *fp;
-    UINT8           *buffer;
+    orl_file_format         type;
+    orl_file_handle         orl_handle;
+    UINT8                   *buffer;
 
     bufferInit();
-    fp = fopen( name, "rb" );
-    if( fp != NULL ) {
-        orlInfo.fp = fp;
-        type = ORLFileIdentify( orlHandle, fp );
+    orlIO.orlInfo.fp = fopen( name, "rb" );
+    if( orlIO.orlInfo.fp != NULL ) {
+        type = ORLFileIdentify( orlHandle, &orlIO );
         switch( type ) {
         case ORL_COFF:
         case ORL_ELF:
-            orl_handle = ORLFileInit( orlHandle, fp, type );
+            orl_handle = ORLFileInit( orlHandle, &orlIO, type );
             if( orl_handle != NULL ) {
-                orlInfo.orl_handle = orl_handle;
-                buffer = orlGetDependsInfo( orl_handle );
+                orlIO.orlInfo.orl_handle = orl_handle;
+                buffer = orlGetDependsInfo( &orlIO );
                 if( buffer != NULL ) {
-                    orlInfo.buffer = buffer;
-                    return( &orlInfo );
+                    orlIO.orlInfo.buffer = buffer;
+                    return( &orlIO );
                 }
             }
             break;
@@ -199,7 +201,7 @@ static handle AutoORLFileInit( const char *name )
             FreeSafe( orlBuffer );
             orlBuffer = NULL;
         }
-        fclose( fp );
+        fclose( orlIO.orlInfo.fp );
     }
     return( NULL );
 }
@@ -208,11 +210,10 @@ static handle AutoORLFileInit( const char *name )
 static dep_handle AutoORLFirstDep( handle hdl )
 /*********************************************/
 {
-    orl_info *hndl = hdl;
-
-    hndl->curr = (void *)hndl->buffer;
-    if( hndl->curr->len != 0 ) {
-        return( hdl );
+    (void)hdl;
+    orlIO.orlInfo.curr = (void *)orlIO.orlInfo.buffer;
+    if( orlIO.orlInfo.curr->len != 0 ) {
+        return( &orlIO );
     }
     return( NULL );
 }
@@ -221,35 +222,35 @@ static dep_handle AutoORLFirstDep( handle hdl )
 static void AutoORLTransDep( dep_handle hdl, char **name, time_t *stamp )
 /***********************************************************************/
 {
-    DepInfo *curr = ((orl_info *)hdl)->curr;
-
-    *name = curr->name;
-    *stamp = curr->time;
+    (void)hdl;
+    *name = orlIO.orlInfo.curr->name;
+    *stamp = orlIO.orlInfo.curr->time;
 }
 
 
-static dep_handle AutoORLNextDep( dep_handle hndl )
-/*************************************************/
+static dep_handle AutoORLNextDep( dep_handle hdl )
+/************************************************/
 {
     DepInfo     *p;
-    orl_info    *hdl = hndl;
 
-    p = hdl->curr;
+    (void)hdl;
+    p = orlIO.orlInfo.curr;
     p = (void *)( (char *)p + offsetof( DepInfo, name ) + p->len );
     if( p->len == 0 ) {
-        hdl->curr = NULL;
+        orlIO.orlInfo.curr = NULL;
         return( NULL );
     }
-    hdl->curr = p;
-    return( hdl );
+    orlIO.orlInfo.curr = p;
+    return( &orlIO );
 }
 
 
 static void AutoORLFileFini( handle hdl )
 /***************************************/
 {
-    ORLFileFini( ((orl_info*)hdl)->orl_handle );
-    fclose( ((orl_info*)hdl)->fp );
+    (void)hdl;
+    ORLFileFini( orlIO.orlInfo.orl_handle );
+    fclose( orlIO.orlInfo.fp );
     FreeSafe( orlBuffer );
     orlBuffer = NULL;
 }

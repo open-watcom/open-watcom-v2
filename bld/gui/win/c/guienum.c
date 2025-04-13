@@ -32,7 +32,6 @@
 
 
 #include "guiwind.h"
-#include <string.h>
 #include "guixutil.h"
 #include "guixwind.h"
 

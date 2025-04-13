@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -212,8 +212,8 @@ bool GUICreateGadget( gui_window *wnd, a_gadget_direction dir,
     } else {
         gadget->forward = EV_SCROLL_RIGHT;
         gadget->backward = EV_SCROLL_LEFT;
-        gadget->pageforward = EV_SCROLL_RIGHT_PAGE;
-        gadget->pagebackward = EV_SCROLL_LEFT_PAGE;
+        gadget->pageforward = EV_SCROLL_PAGE_RIGHT;
+        gadget->pagebackward = EV_SCROLL_PAGE_LEFT;
         if( scroll_style & GUI_HDRAG ) {
             gadget->slider = EV_SCROLL_HORIZONTAL;
         } else {

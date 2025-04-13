@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -84,19 +85,19 @@ static int iscomment( int c )
     }
 }
 
-static int islogical( char *string )
+static int islogical( const char *string )
 {
-    if( strnicmp( string, ".ne.", 4 ) == 0 ||
-        strnicmp( string, ".eq.", 4 ) == 0 ||
-        strnicmp( string, ".ge.", 4 ) == 0 ||
-        strnicmp( string, ".le.", 4 ) == 0 ||
-        strnicmp( string, ".lt.", 4 ) == 0 ||
-        strnicmp( string, ".gt.", 4 ) == 0 ||
-        strnicmp( string, ".or.", 4 ) == 0 ) {
+    if( strnicmp( string, ".ne.", 4 ) == 0
+      || strnicmp( string, ".eq.", 4 ) == 0
+      || strnicmp( string, ".ge.", 4 ) == 0
+      || strnicmp( string, ".le.", 4 ) == 0
+      || strnicmp( string, ".lt.", 4 ) == 0
+      || strnicmp( string, ".gt.", 4 ) == 0
+      || strnicmp( string, ".or.", 4 ) == 0 ) {
         return( 4 );
-    } else if( strnicmp( string, ".and.", 5 ) == 0 ||
-                strnicmp( string, ".xor.", 5 ) == 0 ||
-                strnicmp( string, ".not.", 5 ) == 0 ) {
+    } else if( strnicmp( string, ".and.", 5 ) == 0
+      || strnicmp( string, ".xor.", 5 ) == 0
+      || strnicmp( string, ".not.", 5 ) == 0 ) {
         return( 5 );
     } else {
         return( 0 );
@@ -117,15 +118,15 @@ static bool isInitialLine( line *line )
     }
 }
 
-void InitFORTRANLine( char *text, linenum line_no )
+void InitFORTRANLine( const char *text, linenum line_no )
 {
     firstChar = *text;
     thisLine = line_no;
 }
 
-static void getFloat( ss_block *ss_new, char *start, int skip, int command )
+static void getFloat( ss_block *ss_new, const char *start, int skip, int command )
 {
-    char    *end = start + skip;
+    const char  *end = start + skip;
 
     ss_new->type = SE_FLOAT;
 
@@ -173,12 +174,10 @@ static void getFloat( ss_block *ss_new, char *start, int skip, int command )
 }
 
 
-static void getNumber( ss_block *ss_new, char *start )
+static void getNumber( ss_block *ss_new, const char *start )
 {
-    char    *end = start + 1;
-    char    save_char;
-    char    *save_loc;
-    int     nchars;
+    const char  *end = start + 1;
+    int         nchars;
 
     SKIP_DIGITS( end );
     switch( *end ) {
@@ -186,10 +185,7 @@ static void getNumber( ss_block *ss_new, char *start )
     case 'H':
         /* Hollerith constant (string)
         */
-        save_loc = end;
-        save_char = *end;
-        *end = 0;
-        nchars = atoi( start );
+        nchars = strtol( start, NULL, 16 );
         end++;
         while( *end != '\0' && nchars != 0 ) {
             nchars--;
@@ -200,7 +196,6 @@ static void getNumber( ss_block *ss_new, char *start )
         } else {
             ss_new->type = SE_STRING;
         }
-        *save_loc = save_char;
         break;
     case '.':
         getFloat( ss_new, start, end - start + 1, AFTER_DOT );
@@ -215,10 +210,10 @@ static void getNumber( ss_block *ss_new, char *start )
     ss_new->len = end - start;
 }
 
-static void getText( ss_block *ss_new, char *start )
+static void getText( ss_block *ss_new, const char *start )
 {
-    char    *keyword;
-    char    *end = start;
+    const char  *keyword;
+    const char  *end = start;
 
     // eliminate leading spaces
     SKIP_SPACES( end );
@@ -230,7 +225,7 @@ static void getText( ss_block *ss_new, char *start )
 
     // test if string is keyword
     if( IsKeyword( keyword, end, true ) ) {
-        char *end2 = end;
+        const char *end2 = end;
 
         ss_new->type = SE_KEYWORD;
 
@@ -253,16 +248,16 @@ static void getSymbol( ss_block *ss_new, int length )
     ss_new->len = length;
 }
 
-static void getLiteral( ss_block *ss_new, char *start, int skip )
+static void getLiteral( ss_block *ss_new, const char *start, int skip )
 {
-    char    *end;
-    char    lastchar = '\0';
-    bool    empty;
-    bool    multiLine = flags.inString;
-    line    *line;
-    fcb     *fcb;
-    char    *data;
-    vi_rc   rc;
+    const char  *end;
+    char        lastchar = '\0';
+    bool        empty;
+    bool        multiLine = flags.inString;
+    line        *line;
+    fcb         *fcb;
+    const char  *data;
+    vi_rc       rc;
 
     empty = true;
     for( end = start + skip; *end != '\0'; ++end ) {
@@ -326,9 +321,9 @@ static void getLiteral( ss_block *ss_new, char *start, int skip )
     }
 }
 
-static void getComment( ss_block *ss_new, char *start )
+static void getComment( ss_block *ss_new, const char *start )
 {
-    char    *end = start + 1;
+    const char  *end = start + 1;
 
     SKIP_TOEND( end );
     ss_new->type = SE_COMMENT;
@@ -341,9 +336,9 @@ static void getInvalidChar( ss_block *ss_new )
     ss_new->len = 1;
 }
 
-static void getLabelOrWS( ss_block *ss_new, char *start, int text_col )
+static void getLabelOrWS( ss_block *ss_new, const char *start, int text_col )
 {
-    char    *end = start;
+    const char  *end = start;
 
     while( isspace( *end ) && text_col <= 4 ) {
         end++;
@@ -366,7 +361,7 @@ static void getLabelOrWS( ss_block *ss_new, char *start, int text_col )
     }
 }
 
-static void getContinuationOrWS( ss_block *ss_new, char *start )
+static void getContinuationOrWS( ss_block *ss_new, const char *start )
 {
     if( isspace( *start ) ) {
         SSGetWhiteSpace( ss_new, start );
@@ -439,7 +434,7 @@ void InitFORTRANFlags( linenum line_no )
     }
 }
 
-void GetFORTRANBlock( ss_block *ss_new, char *start, int text_col )
+void GetFORTRANBlock( ss_block *ss_new, const char *start, int text_col )
 {
     int length = 0;
 

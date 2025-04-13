@@ -195,6 +195,10 @@ _WCRTLINK extern int pthread_rwlockattr_setpshared( pthread_rwlockattr_t *__attr
 /* Execute-once routine */
 _WCRTLINK extern int pthread_once( pthread_once_t *__once_control, void (_WCCALLBACK *__init_routine)(void) );
 
+/* Obsolescent routines, not implemented */
+_WCRTLINK extern int pthread_atfork(void (_WCCALLBACK *__prepare)(void), void (_WCCALLBACK *__parent)(void),
+                                    void(_WCCALLBACK *__child)(void));
+
 :keep INITIALIZERS
 :include pthread2.sp
 :remove INITIALIZERS

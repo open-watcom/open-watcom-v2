@@ -1,0 +1,81 @@
+% !TeX root = owstl.tex
+
+\chapter{Type Traits}
+
+\section{Introduction}
+
+The header \filepath{type_traits} is based on the metaprogramming section of
+n1836 ``Draft Technical Report on C++ Library Extensions.'' It contains a set
+of templates that allow compile-time testing and modification of types.
+
+\section{Status}
+
+About half of the required functionality has been implemented so far. There
+are currently a few compiler bugs stopping some parts being implemented.
+
+The missing templates are:
+
+\begin{enumerate}
+\item \code{is_member_object_pointer}
+\item \code{is_member_function_pointer}
+\item \code{is_enum}
+\item \code{is_union}
+\item \code{is_class}
+\item \code{is_function}
+\item \code{struct is_object}
+\item \code{is_scalar}
+\item \code{is_compound}
+\item \code{is_member_pointer}
+\item \code{is_pod}
+\item \code{is_empty}
+\item \code{is_polymorphic}
+\item \code{is_abstract}
+\item \code{has_trivial_constructor}
+\item \code{has_trivial_copy}
+\item \code{has_trivial_assign}
+\item \code{has_trivial_destructor}
+\item \code{has_nothrow_constructor}
+\item \code{has_nothrow_copy}
+\item \code{has_nothrow_assign}
+\item \code{has_virtual_destructor}
+\item \code{is_signed}
+\item \code{is_unsigned}
+\item \code{alignment_of}
+\item \code{rank}
+\item \code{extent}
+\item \code{is_same}
+\item \code{is_base_of}
+\item \code{is_convertible}
+\item \code{remove_extent}
+\item \code{remove_all_extents}
+\item \code{add_pointer}
+\item \code{aligned_storage}
+\end{enumerate}
+
+\section{Design Details}
+
+\subsection{Querying Types}
+
+This is implemented by specializing templates for the types that the test
+holds true. The class derives from a helper class that contains a static const
+value. The important cases are when this static const is a bool and is true or
+false. The user can then access \code{is_void<type>::value} to see if the test
+is positive. A set of macros are used to help make the definitions look a bit
+less cluttered. There is a default case which declares the main template and
+is usually false. There are then other macros that define the specializations.
+There are also macros that define 4 specializations for the const volatile
+qualified variations of the type.
+
+\subsection{Modifying Types}
+
+This works similarly. The template is specialized for the type with the
+modifier and the class contains a typedef type that refers to the modified
+type. Macros aren't used for the modifiers as they tend to have subtle
+differences for each template and in many cases there isn't the need for 4
+different CV variations.
+
+\subsection{Use in Main Library}
+
+This header should be a help for writing the constructors and member functions
+of the standard containers that are required to have different behavior for
+iterators and integral types.

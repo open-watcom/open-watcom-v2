@@ -33,13 +33,13 @@
 
 #include <stdlib.h>
 #include <stdio.h>
-#include <string.h>
 #include "guiwind.h"
 #include "guistr.h"
 #include "guihook.h"
 #include "guixmdi.h"
 #include "guimdi.h"
 #include "guixwind.h"
+#include "guix.h"
 
 #include "clibext.h"
 
@@ -159,7 +159,7 @@ static void MakeLabel( int index, char *name, char *label )
 }
 
 
-static void MakeHintText( int index, char *name )
+static void MakeHintText( int index, const char *name )
 {
     size_t  length;
 

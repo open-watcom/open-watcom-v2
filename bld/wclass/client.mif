@@ -1,13 +1,14 @@
 !include $(gui_dir)/client.mif
-wclass_wclass_inc_dirs_dos   = -I"$(wclass_dir)/dos/hpp"
-wclass_wclass_inc_dirs_os2   = -I"$(wclass_dir)/pm/hpp"
-wclass_wclass_inc_dirs_nt    = -I"$(wclass_dir)/win/hpp"
-wclass_wclass_inc_dirs_win   = -I"$(wclass_dir)/win/hpp"
-cli_wclass_inc_dirs = $(wclass_wclass_inc_dirs_$(host_os)) -I"$(wclass_dir)/hpp" $(cli_gui_inc_dirs)
+!ifeq host_os nt
+cli_wclass_src_internal = $(wclass_dir)/win
+!else
+cli_wclass_src_internal = $(wclass_dir)/$(host_os)
+!endif
+cli_wclass_inc_dirs = -I"$(cli_wclass_src_internal)/hpp" -I"$(wclass_dir)/hpp" $(cli_gui_inc_dirs)
 cli_wclass_rc_inc_dirs = -I"$(wclass_dir)/hpp" $(cli_gui_rc_inc_dirs)
 cli_wclass_rc_deps = $(wclass_dir)/hpp/wclass.rc $(wclass_dir)/hpp/wclass.rh $(cli_gui_rc_deps)
-!ifdef bootstrap
-cli_wclass_libs = $(wclass_dir)/$(objs_subdir)/wclass.lib
+!ifeq proj_name ide2make
+cli_wclass_libs = $(wclass_dir)/$(bin_host)/wclass.lib
 !else
-cli_wclass_libs = $(wclass_dir)/$(objs_subdir)/wclass.lib $(cli_gui_libs)
+cli_wclass_libs = $(wclass_dir)/$(bin_host)/wclass.lib $(cli_gui_libs)
 !endif

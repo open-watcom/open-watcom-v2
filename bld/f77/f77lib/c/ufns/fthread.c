@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -46,20 +46,12 @@
 #include "rttraps.h"
 #include "rtspawn.h"
 #include "rt_init.h"
-#include "extfunc.h"
 
 
 #if defined(_M_IX86)
-    #define FTHREAD_CALL(x) ((fthread_func *)(x))
+    #define FTHREAD_CALL(x) ((fthread_fn *)(x))
 #else
     #define FTHREAD_CALL(x) (x)
-#endif
-
-typedef void fthread_fn( void * );
-
-#if defined(_M_IX86)
-    typedef fthread_fn fthread_func;
-    #pragma aux (__outside_CLIB) fthread_func;
 #endif
 
 typedef struct {

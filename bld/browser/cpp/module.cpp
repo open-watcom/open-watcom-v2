@@ -302,7 +302,7 @@ static void dbgExceptHook( dr_except type )
 
 extern "C" {
 
-DWRSetRtns(dbgReadHook,dbgSeekHook,WBRAlloc,WBRRealloc,WBRFree,dbgExceptHook)
+DRSetRtns(dbgReadHook,dbgSeekHook,WBRAlloc,WBRRealloc,WBRFree,dbgExceptHook)
 
 };
 

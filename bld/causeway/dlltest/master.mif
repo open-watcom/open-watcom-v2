@@ -14,8 +14,8 @@ dlltest_autodepends = .AUTODEPEND
 
 inc_dirs = -I"../../inc"
 
-lflags_dos_386     = sys causeway
-lflags_dll_dos_386 = sys causeway dll opt stub=$(causeway_dir)/cw32/dos386/cwdstub.exe
+lflags_dos386     = sys causeway
+lflags_dll_dos386 = sys causeway_dll opt stub=$(causeway_dir)/cw32/dos386/cwdstub.exe
 
 all: dlltst1s.exe dlltst1r.exe
 

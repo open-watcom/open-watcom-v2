@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -47,6 +47,8 @@ TYPEDEF_ORLENTRY_TYPE( orl_sec_handle );
 TYPEDEF_ORLENTRY_TYPE( orl_symbol_handle );
 TYPEDEF_ORLENTRY_TYPE( orl_group_handle );
 
+typedef struct orl_io_struct    *orl_io_handle;
+
 typedef unsigned_32             orl_file_offset;
 typedef unsigned_32             orl_file_size;
 
@@ -90,8 +92,8 @@ ORL_STRUCT( orl_linnum ) {
 #include <poppck.h>
 
 typedef struct orl_funcs {
-    void        *(*cli_read)( FILE *, size_t );
-    int         (*cli_seek)( FILE *, long, int );
+    void        *(*cli_read)( orl_io_handle, size_t );
+    int         (*cli_seek)( orl_io_handle, long, int );
     void        *(*cli_alloc)( size_t );
     void        (*cli_free)( void * );
 } orl_funcs;

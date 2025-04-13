@@ -121,11 +121,11 @@ WINSOCK_API_LINKAGE INT WSAAPI      inet_pton( INT, PCSTR, PVOID );
 #else
     #if (_WIN32_WINNT >= 0x0600)
         #define GetAddrInfoEx   GetAddrInfoExA
-        #define SetAddrInfoEx   SetAddrInfoExW
+        #define SetAddrInfoEx   SetAddrInfoExA
     #endif
     #if (NTDDI_VERSION >= 0x05010200) || (_WIN32_WINNT >= 0x0502)
         #define FreeAddrInfo    FreeAddrInfoA
-        #define GetAddrInfo     GetAddrInfoW
+        #define GetAddrInfo     GetAddrInfoA
         #define GetNameInfo     GetNameInfoA
     #endif
     #if (NTDDI_VERSION >= 0x06000000)

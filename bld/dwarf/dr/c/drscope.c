@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -64,7 +65,7 @@ static dr_scope_entry *AllocScopeEntry( dr_scope_ctl *ctl )
     if( ctl->free == NULL ) {
         dr_scope_block *block;
 
-        block = DWRALLOC( sizeof( dr_scope_block ) );
+        block = DR_ALLOC( sizeof( dr_scope_block ) );
         ScopeBlockInit( block );
         block->next = ctl->next;
         ctl->next = block;
@@ -97,7 +98,7 @@ static void ScopeCtlFini( dr_scope_ctl *ctl )
     while( curr != NULL ) {
         dr_scope_block *next;
         next = curr->next;
-        DWRFREE( curr );
+        DR_FREE( curr );
         curr = next;
     }
 }
@@ -132,12 +133,12 @@ void DRGetScopeList( dr_scope_trail *container, drmem_hdl of )
 {
     compunit_info   *compunit;
 
-    compunit = DWRFindCompileInfo( of );
+    compunit = DR_FindCompileInfo( of );
     ScopeCtlInit( &container->ctl );
     container->target = of;
     container->head = NULL;
     if( compunit != NULL ) {
-        DWRWalkContaining(  compunit->start + sizeof( compuhdr_prologue ), of, AContainer, container );
+        DR_WalkContaining(  compunit->start + sizeof( compuhdr_prologue ), of, AContainer, container );
     }
 }
 

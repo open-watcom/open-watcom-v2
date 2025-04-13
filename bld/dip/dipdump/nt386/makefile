@@ -3,4 +3,4 @@
 host_os  = nt
 host_cpu = 386
 
-!include ../dipdump.mif
+!include ../master.mif

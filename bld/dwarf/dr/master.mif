@@ -33,8 +33,8 @@ extra_c_flags_i86 = -zc -zu
 extra_c_flags_386 = -zc
 extra_c_flags_win = -zW
 
-extra_c_flags_drutils  = -I"$(lib_misc_dir)/h"
-extra_c_flags_drsearch = -I"$(posix_dir)/h"
+extra_c_flags_f_drutils  = -I"$(lib_misc_dir)/h"
+extra_c_flags_f_drsearch = -I"$(posix_dir)/h"
 
 # explicit rules
 #################

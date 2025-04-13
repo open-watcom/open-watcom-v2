@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,13 +38,13 @@
 #include "orlintnl.h"
 #include "omftype.h"
 
-#define _ClientRead( a, b )             ORL_PTR_READ((a)->omf_hnd, (a)->fp, b )
-#define _ClientSeek( a, b, c )          ORL_PTR_SEEK((a)->omf_hnd, (a)->fp, b, c )
+#define _ClientRead( a, b )             ORL_PTR_READ((a)->omf_hnd, (a)->io_hnd, b )
+#define _ClientSeek( a, b, c )          ORL_PTR_SEEK((a)->omf_hnd, (a)->io_hnd, b, c )
 #define _ClientAlloc( a, b )            ORL_PTR_ALLOC((a)->omf_hnd, b )
 #define _ClientFree( a, b )             ORL_PTR_FREE((a)->omf_hnd, b )
 
-#define _ClientSecRead( a, b, c )       ORL_PTR_READ((a)->omf_file_hnd->omf_hnd, (a)->omf_file_hnd->fp, b, c )
-#define _ClientSecSeek( a, b, c )       ORL_PTR_SEEK((a)->omf_file_hnd->omf_hnd, (a)->omf_file_hnd->fp, b, c )
+#define _ClientSecRead( a, b, c )       ORL_PTR_READ((a)->omf_file_hnd->omf_hnd, (a)->omf_file_hnd->io_hnd, b, c )
+#define _ClientSecSeek( a, b, c )       ORL_PTR_SEEK((a)->omf_file_hnd->omf_hnd, (a)->omf_file_hnd->io_hnd, b, c )
 #define _ClientSecAlloc( a, b )         ORL_PTR_ALLOC((a)->omf_file_hnd->omf_hnd, b )
 #define _ClientSecFree( a, b )          ORL_PTR_FREE((a)->omf_file_hnd->omf_hnd, b )
 

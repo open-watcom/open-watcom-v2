@@ -44,11 +44,7 @@
 #else
     #include <sys/utime.h>
 #endif
-#if defined( __UNIX__ )
-#include <dirent.h>
-#else
-#include <direct.h>
-#endif
+#include "wdirent.h"
 #include "bool.h"
 #include "wio.h"
 #include "watcom.h"
@@ -59,6 +55,7 @@
 #include "d2ttime.h"
 #include "pathgrp2.h"
 
+#include "clibint.h"
 #include "clibext.h"
 
 
@@ -461,7 +458,7 @@ static void doTouch( void )
         }
         _splitpath2( item, pg.buffer, &pg.drive, &pg.dir, NULL, NULL );
         number_of_successful_touches = 0;
-#if defined(__LINUX__) || defined(__OSX__)
+#if defined(__LINUX__) || defined(__OSX__) || defined(__BSD__)
         strcpy( full_name, item );
         dire = NULL;
         number_of_successful_touches += doTouchFile( full_name, dire, &stamp );
@@ -548,6 +545,11 @@ static void doTouch( void )
 int main( int argc, char **argv )
 /*******************************/
 {
+#ifndef __WATCOMC__
+    _argc = argc;
+    _argv = argv;
+#endif
+
     if( !MsgInit() )
         return( 1 );
     if( !processOptions( argc, argv ) )

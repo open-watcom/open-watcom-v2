@@ -49,6 +49,7 @@ wres_subdir_nt386      = nt386/$(name_model_386)
 wres_subdir_ntaxp      = ntaxp/$(name_model_axp)
 wres_subdir_ntmps      = ntmps/$(name_model_mps)
 
+wres_subdir_bsdx64     = bsdx64/$(name_model_x64)
 wres_subdir_linuxarm   = linuxarm/$(name_model_arm)
 wres_subdir_linuxa64   = linuxa64/$(name_model_a64)
 wres_subdir_linuxmps   = linuxmps/$(name_model_mps)
@@ -60,9 +61,9 @@ wres_subdir_osxarm     = osxarm/$(name_model_arm)
 wres_subdir_osxa64     = osxa64/$(name_model_a64)
 
 !ifdef bootstrap
-cli_wres_libs = $(wres_dir)/$(objs_subdir)/wres.lib
+cli_wres_libs = $(wres_dir)/$(bin_subdir)/wres.lib
 !else
-cli_wres_libs = $(wres_dir)/$(wres_subdir_$(objs_subdir))/wres.lib
+cli_wres_libs = $(wres_dir)/$(wres_subdir_$(host))/wres.lib
 !endif
 
 cli_wres_inc_dirs = -I"$(wres_dir)/h"

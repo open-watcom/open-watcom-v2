@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -594,9 +594,7 @@ static bool ctl_float_finish( ctl_elt *elt, WPI_INST inst, HWND dlg,
     ___f=___f;
     inst = inst;
 
-    GetDlgItemText( dlg, elt->control, str, 50 );
-    str[49] = '\0';
-
+    GetDlgItemText( dlg, elt->control, str, sizeof( str ) );
     if( 1 == sscanf( str, "%f", &value ) ) {
         elt->set( ptr, elt, &value );
     } else {
@@ -821,8 +819,6 @@ static bool ctl_text_finish( ctl_elt *elt, WPI_INST inst, HWND dlg,
     elt->get( ptr, elt, &str );
 
     GetDlgItemText( dlg, elt->control, str, elt->info.text.text_size );
-
-    str[elt->info.text.text_size - 1] = '\0'; // in case of overflow
 
     return( true );
 }

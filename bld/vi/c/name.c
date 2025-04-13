@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,13 +33,11 @@
 #include "vi.h"
 #include "banner.h"
 
-#if defined( __WIN__ )
-# if defined( __OS2__ )
-const char _NEAR BANNER1[] = banner1t( "Text Editor for OS/2 PM" );
-# else
-const char _NEAR BANNER1[] = banner1t( "Text Editor for Windows" );
-# endif
-#else
+#if !defined( __WIN__ )
 const char _NEAR BANNER1[] = banner1t( "Vi Text Editor" );
+#elif defined( __OS2__ )
+const char _NEAR BANNER1[] = banner1t( "Text Editor for OS/2 PM" );
+#else
+const char _NEAR BANNER1[] = banner1t( "Text Editor for Windows" );
 #endif
 const char _NEAR BANNER2[] = banner1v( _VI_VERSION_ );

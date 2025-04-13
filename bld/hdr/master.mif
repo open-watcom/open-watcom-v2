@@ -8,8 +8,8 @@ additional_clean = $(crwatpro_gsp)
 !include ../hfiles.mif
 
 dos_options   = -kDOS
-linux_options = -kLINUX -u
-qnx_options   = -kQNX -t8 -u
+linux_options = -kLINUX
+qnx_options   = -kQNX -t8
 rdos_options  = -kRDOS
 
 !ifeq debug 0
@@ -18,9 +18,9 @@ wsplice_extra_opts =
 wsplice_extra_opts = -d"depends.dep"
 !endif
 
-wsplice_opts = $(wsplice_extra_opts) -i.. $($(system)_options) ../common.sp $[@ $@
-wsplice_opts_p = $(wsplice_extra_opts) -i.. $($(system)_options) -kCNAME $(options_$^&) ../common.sp $[@ $@
-wsplice_opts_c = $(wsplice_extra_opts) -i.. $($(system)_options) $(options_h_$^&) ../common.sp $[@ $@
+wsplice_opts = -u $(wsplice_extra_opts) -i.. $($(system)_options) ../common.sp $[@ $@
+wsplice_opts_p = -u $(wsplice_extra_opts) -i.. $($(system)_options) -kCNAME $(options_$^&) ../common.sp $[@ $@
+wsplice_opts_c = -u $(wsplice_extra_opts) -i.. $($(system)_options) $(options_h_$^&) ../common.sp $[@ $@
 
 wsplice_opts_i386 = $(wsplice_extra_opts) -i.. -kARCHI386 $($(system)_options) ../common.sp $[@ $@
 wsplice_opts_mips = $(wsplice_extra_opts) -i.. -kARCHMIPS $($(system)_options) ../common.sp $[@ $@

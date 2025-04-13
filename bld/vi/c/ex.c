@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -227,7 +227,8 @@ vi_rc ProcessEx( linenum n1, linenum n2, bool n2f, int tkn, const char *data )
         }
         if( addr > n2 ) {
             addr -= tlines;
-        } else if( addr >= n1 && addr <= n2 ) {
+        } else if( addr >= n1
+          && addr <= n2 ) {
             addr = n1;
         }
         rc = InsertLines( addr, &WorkSavebuf->u.fcbs, UndoStack );

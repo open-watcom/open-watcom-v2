@@ -789,7 +789,7 @@ void InitDebug( struct TDebug *obj, const char *Program, const char *Param, cons
     obj->UserSignal = RdosCreateSignal();
     RdosAddWaitForSignal( obj->UserWait, obj->UserSignal, (int)obj );
 
-    obj->FSection = RdosCreateSection( "Watcom.Debug" );
+    RdosInitFutex(&obj->FFutex, "Watcom.Debug" );
 
     obj->ThreadList = 0;
     obj->ModuleList = 0;
@@ -817,14 +817,14 @@ void FreeDebug( struct TDebug *obj )
 
     RdosCloseWait( obj->UserWait );
     RdosFreeSignal( obj->UserSignal );
-    RdosDeleteSection( obj->FSection );
+    RdosResetFutex( &obj->FFutex );
 }
 
 static void InsertThread( struct TDebug *obj, struct TDebugThread *thread )
 {
     struct TDebugThread *t;
 
-    RdosEnterSection( obj->FSection );
+    RdosEnterFutex( &obj->FFutex );
 
     thread->Next = 0;
 
@@ -840,14 +840,14 @@ static void InsertThread( struct TDebug *obj, struct TDebugThread *thread )
     if( !obj->CurrentThread )
         obj->CurrentThread = thread;
 
-    RdosLeaveSection( obj->FSection );
+    RdosLeaveFutex( &obj->FFutex );
 }
 
 static struct TDebugModule *FindModule( struct TDebug *obj, int Cs )
 {
     struct TDebugModule *m;
 
-    RdosEnterSection( obj->FSection );
+    RdosEnterFutex( &obj->FFutex );
 
     for( m = obj->ModuleList; m != NULL; m = m->Next ) {
         if( m->CodeSel == Cs ) {
@@ -855,7 +855,7 @@ static struct TDebugModule *FindModule( struct TDebug *obj, int Cs )
         }
     }
 
-    RdosLeaveSection( obj->FSection );
+    RdosLeaveFutex( &obj->FFutex );
 
     return m;
 }
@@ -864,7 +864,7 @@ static void InsertModule( struct TDebug *obj, struct TDebugModule *mod )
 {
     struct TDebugModule *m;
 
-    RdosEnterSection( obj->FSection );
+    RdosEnterFutex( &obj->FFutex );
 
     mod->Next = 0;
 
@@ -877,7 +877,7 @@ static void InsertModule( struct TDebug *obj, struct TDebugModule *mod )
     } else {
         obj->ModuleList = mod;
     }
-    RdosLeaveSection( obj->FSection );
+    RdosLeaveFutex( &obj->FFutex );
 }
 
 static void RemoveThread( struct TDebug *obj, int thread )
@@ -885,7 +885,7 @@ static void RemoveThread( struct TDebug *obj, int thread )
     struct TDebugThread *p;
     struct TDebugThread *t;
 
-    RdosEnterSection( obj->FSection );
+    RdosEnterFutex( &obj->FFutex );
 
     p = NULL;
     for( t = obj->ThreadList; t != NULL; t = t->Next ) {
@@ -897,11 +897,11 @@ static void RemoveThread( struct TDebug *obj, int thread )
             }
             if( t == obj->CurrentThread ) {
                 obj->CurrentThread = 0;
-                RdosLeaveSection( obj->FSection );
+                RdosLeaveFutex( &obj->FFutex );
 
                 RdosWaitMilli( 25 );
 
-                RdosEnterSection( obj->FSection );
+                RdosEnterFutex( &obj->FFutex );
             }
             free( t );
             break;
@@ -909,7 +909,7 @@ static void RemoveThread( struct TDebug *obj, int thread )
         p = t;
     }
 
-    RdosLeaveSection( obj->FSection );
+    RdosLeaveFutex( &obj->FFutex );
 }
 
 static void RemoveModule( struct TDebug *obj, int module )
@@ -917,7 +917,7 @@ static void RemoveModule( struct TDebug *obj, int module )
     struct TDebugModule *p;
     struct TDebugModule *m;
 
-    RdosEnterSection( obj->FSection );
+    RdosEnterFutex( &obj->FFutex );
 
     p = NULL;
     for( m = obj->ModuleList; m != NULL; m = m->Next ) {
@@ -933,7 +933,7 @@ static void RemoveModule( struct TDebug *obj, int module )
         p = m;
     }
 
-    RdosLeaveSection( obj->FSection );
+    RdosLeaveFutex( &obj->FFutex );
 }
 
 void WaitForLoad( struct TDebug *obj )
@@ -956,7 +956,7 @@ int HasModuleChange( struct TDebug *obj )
     struct TDebugModule *m;
     int change = false;
 
-    RdosEnterSection( obj->FSection );
+    RdosEnterFutex( &obj->FFutex );
 
     for( m = obj->ModuleList; m != NULL; m = m->Next ) {
         if( m->FNew ) {
@@ -964,7 +964,7 @@ int HasModuleChange( struct TDebug *obj )
         }
     }
 
-    RdosLeaveSection( obj->FSection );
+    RdosLeaveFutex( &obj->FFutex );
 
     return( change );
 }
@@ -1011,7 +1011,7 @@ int ReadMem( struct TDebug *obj, int Sel, long Offset, void *Buf, int Size )
         len = 0;
     }
     if( len && obj->SwBreakList ) {
-        RdosEnterSection( obj->FSection );
+        RdosEnterFutex( &obj->FFutex );
 
         for( b = obj->SwBreakList; b != NULL; b = b->Next ) {
             if( b->Sel == Sel && b->IsActive ) {
@@ -1023,7 +1023,7 @@ int ReadMem( struct TDebug *obj, int Sel, long Offset, void *Buf, int Size )
             }
         }
 
-        RdosLeaveSection( obj->FSection );
+        RdosLeaveFutex( &obj->FFutex );
     }
     return( len );
 }
@@ -1040,7 +1040,7 @@ int WriteMem( struct TDebug *obj, int Sel, long Offset, void *Buf, int Size )
 
     if( Thread ) {
         if( obj->SwBreakList != NULL ) {
-            RdosEnterSection( obj->FSection );
+            RdosEnterFutex( &obj->FFutex );
 
             for( b = obj->SwBreakList; b != NULL; b = b->Next ) {
                 if( b->Sel == Sel && b->IsActive ) {
@@ -1052,7 +1052,7 @@ int WriteMem( struct TDebug *obj, int Sel, long Offset, void *Buf, int Size )
                     }
                 }
             }
-            RdosLeaveSection( obj->FSection );
+            RdosLeaveFutex( &obj->FFutex );
         }
         return( RdosWriteThreadMem( Thread->ThreadID, Sel, Offset, Buf, Size ) );
     }
@@ -1064,7 +1064,7 @@ void SetCurrentThread( struct TDebug *obj, int ThreadID )
 {
     struct TDebugThread *t;
 
-    RdosEnterSection( obj->FSection );
+    RdosEnterFutex( &obj->FFutex );
 
     t = obj->ThreadList;
     while (t && t->ThreadID != ThreadID)
@@ -1073,7 +1073,7 @@ void SetCurrentThread( struct TDebug *obj, int ThreadID )
     if( t )
         obj->CurrentThread = t;
 
-    RdosLeaveSection( obj->FSection );
+    RdosLeaveFutex( &obj->FFutex );
 }
 
 int GetNextThread( struct TDebug *obj, int ThreadID)
@@ -1081,7 +1081,7 @@ int GetNextThread( struct TDebug *obj, int ThreadID)
     int ID;
     struct TDebugThread *t;
 
-    RdosEnterSection( obj->FSection );
+    RdosEnterFutex( &obj->FFutex );
 
     ID = 0xFFFF;
     for( t = obj->ThreadList; t != NULL; t = t->Next ) {
@@ -1090,7 +1090,7 @@ int GetNextThread( struct TDebug *obj, int ThreadID)
         }
     }
 
-    RdosLeaveSection( obj->FSection );
+    RdosLeaveFutex( &obj->FFutex );
 
     if( ID != 0xFFFF ) {
         return ID;
@@ -1105,7 +1105,7 @@ int GetNextModule( struct TDebug *obj, int ModuleHandle )
     struct TDebugModule *m;
     struct TDebugModule *rm = 0;
 
-    RdosEnterSection( obj->FSection );
+    RdosEnterFutex( &obj->FFutex );
 
     for( m = obj->ModuleList; m != NULL; m = m->Next ) {
         if( m->FNew && m->Handle > ModuleHandle && m->Handle < Handle ) {
@@ -1114,7 +1114,7 @@ int GetNextModule( struct TDebug *obj, int ModuleHandle )
         }
     }
 
-    RdosLeaveSection( obj->FSection );
+    RdosLeaveFutex( &obj->FFutex );
 
     if( rm ) {
         rm->FNew = false;
@@ -1135,7 +1135,7 @@ struct TDebugThread *LockThread( struct TDebug *obj, int ThreadID )
 {
     struct TDebugThread *t;
 
-    RdosEnterSection( obj->FSection );
+    RdosEnterFutex( &obj->FFutex );
 
     for( t = obj->ThreadList; t != NULL; t = t->Next ) {
         if( t->ThreadID == ThreadID ) {
@@ -1148,14 +1148,14 @@ struct TDebugThread *LockThread( struct TDebug *obj, int ThreadID )
 
 void UnlockThread( struct TDebug *obj )
 {
-    RdosLeaveSection( obj->FSection );
+    RdosLeaveFutex( &obj->FFutex );
 }
 
 struct TDebugModule *LockModule( struct TDebug *obj, int Handle )
 {
     struct TDebugModule *m;
 
-    RdosEnterSection( obj->FSection );
+    RdosEnterFutex( &obj->FFutex );
 
     for( m = obj->ModuleList; m != NULL; m = m->Next ) {
         if( m->Handle == Handle ) {
@@ -1168,7 +1168,7 @@ struct TDebugModule *LockModule( struct TDebug *obj, int Handle )
 
 void UnlockModule( struct TDebug *obj )
 {
-    RdosLeaveSection( obj->FSection );
+    RdosLeaveFutex( &obj->FFutex );
 }
 
 #if 0
@@ -1177,7 +1177,7 @@ int HasModule( struct TDebug *obj, const char *Name )
     struct TDebugModule *m;
     int found;
 
-    RdosEnterSection( obj->FSection );
+    RdosEnterFutex( &obj->FFutex );
 
     found = false;
     for( m = obj->ModuleList; m != NULL; m = m->Next ) {
@@ -1187,7 +1187,7 @@ int HasModule( struct TDebug *obj, const char *Name )
         }
     }
 
-    RdosLeaveSection( obj->FSection );
+    RdosLeaveFutex( &obj->FFutex );
 
     return found;
 }
@@ -1249,7 +1249,7 @@ static struct TDebugBreak *GetSwBreak( struct TDebug *obj, int Sel, long Offset 
 {
     struct TDebugBreak *b;
 
-    RdosEnterSection( obj->FSection );
+    RdosEnterFutex( &obj->FFutex );
 
     for( b = obj->SwBreakList; b != NULL; b = b->Next ) {
         if( b->Sel == Sel && b->Offset == Offset ) {
@@ -1257,7 +1257,7 @@ static struct TDebugBreak *GetSwBreak( struct TDebug *obj, int Sel, long Offset 
         }
     }
 
-    RdosLeaveSection( obj->FSection );
+    RdosLeaveFutex( &obj->FFutex );
 
     return( b );
 }
@@ -1275,7 +1275,7 @@ void AddBreak( struct TDebug *obj, int Sel, long Offset, int Hw )
         AddGlobalBreak( obj, newbr );
     }
 
-    RdosEnterSection( obj->FSection );
+    RdosEnterFutex( &obj->FFutex );
 
     newbr->Next = 0;
 
@@ -1303,7 +1303,7 @@ void AddBreak( struct TDebug *obj, int Sel, long Offset, int Hw )
         }
     }
 
-    RdosLeaveSection( obj->FSection );
+    RdosLeaveFutex( &obj->FFutex );
 }
 
 void ClearBreak( struct TDebug *obj, int Sel, long Offset )
@@ -1311,7 +1311,7 @@ void ClearBreak( struct TDebug *obj, int Sel, long Offset )
     struct TDebugBreak *b;
     struct TDebugBreak *delbr;
 
-    RdosEnterSection( obj->FSection );
+    RdosEnterFutex( &obj->FFutex );
 
     b = obj->HwBreakList;
 
@@ -1355,7 +1355,7 @@ void ClearBreak( struct TDebug *obj, int Sel, long Offset )
         }
     }
 
-    RdosLeaveSection( obj->FSection );
+    RdosLeaveFutex( &obj->FFutex );
 }
 
 void AddWatch( struct TDebug *obj, int Sel, long Offset, int Size )
@@ -1367,7 +1367,7 @@ void AddWatch( struct TDebug *obj, int Sel, long Offset, int Size )
     neww = (struct TDebugWatch *)malloc( sizeof( struct TDebugWatch ) );
     InitDebugWatch( neww, Sel, Offset, Size );
 
-    RdosEnterSection( obj->FSection );
+    RdosEnterFutex( &obj->FFutex );
 
     neww->Next = 0;
 
@@ -1386,7 +1386,7 @@ void AddWatch( struct TDebug *obj, int Sel, long Offset, int Size )
         obj->WatchList = neww;
     }
 
-    RdosLeaveSection( obj->FSection );
+    RdosLeaveFutex( &obj->FFutex );
 }
 
 void ClearWatch( struct TDebug *obj, int Sel, long Offset, int Size )
@@ -1396,7 +1396,7 @@ void ClearWatch( struct TDebug *obj, int Sel, long Offset, int Size )
 
     /* unused parameters */ (void)Size;
 
-    RdosEnterSection( obj->FSection );
+    RdosEnterFutex( &obj->FFutex );
 
     w = obj->WatchList;
 
@@ -1418,7 +1418,7 @@ void ClearWatch( struct TDebug *obj, int Sel, long Offset, int Size )
         }
     }
 
-    RdosLeaveSection( obj->FSection );
+    RdosLeaveFutex( &obj->FFutex );
 }
 
 static struct TDebugBreak *PrepareToRun( struct TDebug *obj )
@@ -1514,7 +1514,7 @@ static int PickNewThread( struct TDebug *obj )
 {
     struct TDebugThread *Thread;
 
-    RdosEnterSection( obj->FSection );
+    RdosEnterFutex( &obj->FFutex );
 
     for( Thread = obj->ThreadList; Thread != NULL; Thread = Thread->Next ) {
         if( Thread->FDebug ) {
@@ -1524,7 +1524,7 @@ static int PickNewThread( struct TDebug *obj )
         }
     }
 
-    RdosLeaveSection( obj->FSection );
+    RdosLeaveFutex( &obj->FFutex );
 
     if( Thread ) {
         return true;
@@ -1640,7 +1640,7 @@ static void HandleTerminateProcess( struct TDebug *obj, int exitcode )
 
     /* unused parameters */ (void)exitcode;
 
-    RdosEnterSection( obj->FSection );
+    RdosEnterFutex( &obj->FFutex );
 
     while( obj->ThreadList ) {
         t = obj->ThreadList->Next;
@@ -1659,7 +1659,7 @@ static void HandleTerminateProcess( struct TDebug *obj, int exitcode )
     obj->CurrentThread = 0;
     obj->FThreadChanged = true;
 
-    RdosLeaveSection( obj->FSection );
+    RdosLeaveFutex( &obj->FFutex );
 }
 
 static void HandleCreateThread( struct TDebug *obj, struct TCreateThreadEvent *event )
@@ -1680,7 +1680,7 @@ static void HandleException( struct TDebug *obj, struct TExceptionEvent *event, 
 {
     struct TDebugThread *Thread;
 
-    RdosEnterSection( obj->FSection );
+    RdosEnterFutex( &obj->FFutex );
 
     for( Thread = obj->ThreadList; Thread != NULL; Thread = Thread->Next ) {
         if( Thread->ThreadID == thread ) {
@@ -1692,7 +1692,7 @@ static void HandleException( struct TDebug *obj, struct TExceptionEvent *event, 
         }
     }
 
-    RdosLeaveSection( obj->FSection );
+    RdosLeaveFutex( &obj->FFutex );
 }
 
 static void HandleLoadDll( struct TDebug *obj, struct TLoadDllEvent *event )
@@ -1713,7 +1713,7 @@ static void HandleKernelException( struct TDebug *obj, struct TKernelExceptionEv
 {
     struct TDebugThread *Thread;
 
-    RdosEnterSection( obj->FSection );
+    RdosEnterFutex( &obj->FFutex );
 
     Thread = obj->ThreadList;
 
@@ -1723,7 +1723,7 @@ static void HandleKernelException( struct TDebug *obj, struct TKernelExceptionEv
     if( Thread )
         SetKernelException( Thread, event );
 
-    RdosLeaveSection( obj->FSection );
+    RdosLeaveFutex( &obj->FFutex );
 }
 
 static void SignalDebugData( struct TDebug *obj )

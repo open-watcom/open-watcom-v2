@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,18 +36,29 @@
 #include <sys/osinfo.h>
 #include "trperr.h"
 #include "parlink.h"
+#include "realmod.h"
 
-#define INFO_SEG    0x40
-#define PAR_BASE    0x08
+
+#define PRIV_MASK   3
+#define IOPL_SHIFT  12
+
+#define CPL()       (get_cs() & PRIV_MASK)
+#define IOPL()      ((get_flags() >> IOPL_SHIFT) & PRIV_MASK)
+
+extern unsigned short get_cs( void );
+#pragma aux get_cs = "mov ax,cs" __value [__ax]
+
+extern unsigned get_flags( void );
+#pragma aux get_flags = "pushfd" "pop eax" __value [__eax]
 
 static struct _timesel  __far *SysTime;
 
-int NumPrinters()
+int NumPrinters( void )
 {
     unsigned short  __far *par;
     int i;
 
-    par = _MK_FP( INFO_SEG, PAR_BASE );
+    par = _MK_FP( BDATA_SEG, BDATA_PRINTER_BASE );
     for( i = 3; i > 0; --i ) {
         if( par[i - 1] != 0 ) {
             return( i );
@@ -61,36 +72,23 @@ unsigned PrnAddress( int printer )
 {
     unsigned short  __far *par;
 
-    par = _MK_FP( INFO_SEG, PAR_BASE );
+    par = _MK_FP( BDATA_SEG, BDATA_PRINTER_BASE );
     return( par[printer] );
 }
 
-#pragma aux get_cs = "mov ax,cs" __value [__ax]
-#pragma aux get_flags = "pushfd" "pop eax" __value [__eax]
-
-extern unsigned short get_cs( void );
-extern unsigned get_flags( void );
-
-#define PRIV_MASK       3
-#define IOPL_SHIFT      12
-
-#define CPL()   (get_cs() & PRIV_MASK)
-#define IOPL()  ((get_flags() >> IOPL_SHIFT) & PRIV_MASK)
-
-unsigned AccessPorts( unsigned first, unsigned last )
+bool AccessPorts( unsigned first, unsigned count )
 {
-    first = first;
-    last = last;
+    /* unused parameters */ (void)first; (void)count;
+
     return( CPL() <= IOPL() );
 }
 
-void FreePorts( unsigned first, unsigned last )
+void FreePorts( unsigned first, unsigned count )
 {
-    first = first;
-    last = last;
+    /* unused parameters */ (void)first; (void)count;
 }
 
-char *InitSys()
+char *InitSys( void )
 {
     struct _osinfo  osinfo;
 
@@ -102,11 +100,11 @@ char *InitSys()
     return( NULL );
 }
 
-void FiniSys()
+void FiniSys( void )
 {
 }
 
-unsigned long Ticks() {
-
+unsigned long Ticks( void )
+{
     return( SysTime->nsec / 100000000 + SysTime->seconds * 10 );
 }

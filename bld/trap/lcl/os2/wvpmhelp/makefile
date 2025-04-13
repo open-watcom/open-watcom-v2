@@ -29,8 +29,8 @@ inc_dirs = -I. -I"../h" -I"$(trap_dir)/h" -I"$(os2api_dir)/os2286/h" -I"$(os2api
 
 extra_c_flags = -zu -fpc
 
-extra_c_flags_pmhook = -mc -oais
-extra_c_flags_pmhelp = -ml
+extra_c_flags_f_pmhook = -mc -oais
+extra_c_flags_f_pmhelp = -ml
 
 #
 # aflags

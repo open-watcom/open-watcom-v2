@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,7 +36,8 @@
 #include <os2.h>
 #include "nothing.h"
 
-void NothingToDo()
+
+void NothingToDo( void )
 {
     DosSleep( 0 );
 }

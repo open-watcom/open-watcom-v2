@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,11 +31,11 @@
 ****************************************************************************/
 
 
-extern void         DWRFiniFileTable( file_table *, bool );
-extern void         DWRInitFileTable( file_table * );
-extern void         DWRScanFileTable( drmem_hdl, file_info *, file_table * );
-extern char         *DWRIndexFileName( filetab_idx, file_table * );
-extern filetab_idx  DWRIndexFile( dr_fileidx, file_table * );
-extern char         *DWRFindFileName( dr_fileidx, drmem_hdl );
+extern void         DR_FiniFileTable( file_table *, bool );
+extern void         DR_InitFileTable( file_table * );
+extern void         DR_ScanFileTable( drmem_hdl, file_info *, file_table * );
+extern char         *DR_IndexFileName( filetab_idx, file_table * );
+extern filetab_idx  DR_IndexFile( dr_fileidx, file_table * );
+extern char         *DR_FindFileName( dr_fileidx, drmem_hdl );
 
-extern file_info    FileNameTable;
+extern file_info    DR_FileNameTable;

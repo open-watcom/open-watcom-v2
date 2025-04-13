@@ -1,0 +1,21 @@
+dig_os_dos386   = dsx
+!ifdef dig_os_$(host)
+dig_srcs = $(dig_dir)/c/$(dig_os_$(host));$(dig_dir)/c
+!else
+dig_srcs = $(dig_dir)/c/$(host_os);$(dig_dir)/c
+!endif
+
+dig_arch_cpp_flags_i86   =-DDIGX86
+dig_arch_cpp_flags_386   =-DDIGX86
+dig_arch_cpp_flags_x86   =-DDIGX86
+dig_arch_cpp_flags_x64   =-DDIGX64
+dig_arch_cpp_flags_axp   =-DDIGAXP
+dig_arch_cpp_flags_ppc   =-DDIGPPC
+dig_arch_cpp_flags_mps   =-DDIGMIPS
+dig_arch_cpp_flags_jvm   =-DDIGJVM
+dig_arch_cpp_flags_sparc =-DDIGSPARC
+dig_arch_cpp_flags_test  =-DDIGTEST
+dig_arch_cpp_flags_all   =-DDIGALL
+!ifdef dig_arch_cpp_flags_$(dig_arch)
+dig_arch_cpp_flags =$(dig_arch_cpp_flags_$(dig_arch))
+!endif

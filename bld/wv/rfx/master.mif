@@ -10,21 +10,25 @@ rfx_autodepends = .AUTODEPEND
 
 additional_clean = *.gh
 
+!ifndef rfx_os
+rfx_os = $(host_os)
+!endif
+
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif
 
 dig_arch = $(host_cpu)
 
-!include $(dig_dir)/digcli.mif
-!include $(dig_dir)/trpcli.mif
+!include $(dig_dir)/client.mif
+!include $(trap_dir)/client.mif
 
 #
 # cflags
 #
-.c: ..;../../$(host_os)/c;../../c;$(dig_srcs)
+.c: ../../$(rfx_os)/c;..;../../c;$(dig_srcs)
 
-inc_dirs = -I. -I.. -I"$(wv_dir)/h" -I"$(dig_dir)/h" -I"$(dig_dir)/c" -I"$(clib_dir)/h" -I"$(trap_dir)/h"
+inc_dirs = -I. -I"../../$(rfx_os)/h" -I.. -I"../../h" -I"$(dig_dir)/h" -I"$(dig_dir)/c" -I"$(clib_dir)/h" -I"$(trap_dir)/h"
 
 extra_cpp_flags = -DBUILD_RFX
 
@@ -49,10 +53,10 @@ exetarg_objs = &
     doserr.obj     &
     dbgfile.obj    &
     dbgtoggl.obj   &
-    local$(host_os).obj &
+    dbgfilio.obj   &
+    rfxlocal.obj   &
     $(trp_objs)    &
-    $(host_os)filio.obj &
-    $(exetarg_objs_$(host_os))
+    $(exetarg_objs_$(rfx_os))
 !include exetarg.mif
 
 _err.gh : $(trap_dir)/h/trapmsg.h $(trap_dir)/h/trap.msg $(__MAKEFILES__)

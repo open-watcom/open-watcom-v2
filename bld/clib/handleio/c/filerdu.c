@@ -52,6 +52,77 @@
 #include "qwrite.h"
 #include "_rdos.h"
 
+struct HandleMap
+{
+    struct RdosFileMap *map;
+    int handle;
+    int index;
+};
+
+static struct HandleMap *StdioMapArr[ 3 ] = { NULL, NULL, NULL };
+static int              MapCount = 3;
+static struct HandleMap **MapArr = StdioMapArr;
+
+
+static void GrowMapArr( int size )
+{
+    int                 i;
+    int                 count;;
+    struct HandleMap  **maparr;
+
+    count = MapCount + MapCount / 2;
+    if ( count < size )
+        count = size;
+
+    maparr = (struct HandleMap **)lib_calloc( 4, count );
+
+    for( i = 0; i < MapCount; i++ )
+        maparr[ i ] = MapArr[i];
+
+    for( i = MapCount; i < count; i++ )
+        maparr[ i ] = 0;
+
+    if ( MapCount != 3 )
+        lib_free( MapArr );
+
+    MapArr = maparr;
+    MapCount = count;
+}
+
+static void CreateMap( int handle )
+{
+    struct RdosFileMap *map;
+    int                 mhandle;
+    struct HandleMap   *hmap;
+
+    if( handle >= MapCount )
+        GrowMapArr( handle + 1 );
+
+    if( handle >= 0) {
+        map = RdosGetHandleMap( handle, &mhandle );
+        if( map ) {
+            hmap = (struct HandleMap *)lib_calloc( 1, sizeof( struct HandleMap ) );
+            hmap->map = map;
+            hmap->handle = mhandle;
+            hmap->index = -1;
+            MapArr[ handle ] = hmap;
+        }
+    }
+}
+
+static void FreeMap( int handle )
+{
+    struct HandleMap    *map;
+
+    if( handle >= 0 && handle < MapCount ) {
+        map = MapArr[ handle ];
+        if( map ) {
+            MapArr[ handle ] = 0;
+            lib_free( map );
+        }
+    }
+}
+
 _WCRTLINK int unlink( const CHAR_TYPE *filename )
 {
     __ptr_check( filename, 0 );
@@ -79,7 +150,8 @@ signed __SetIOMode( int handle, unsigned value )
 
 _WCRTLINK int creat( const CHAR_TYPE *name, mode_t pmode )
 {
-    unsigned mode;
+    unsigned            mode;
+    int                 handle;
 
     mode = O_CREAT | O_TRUNC;
     if( (pmode & S_IWRITE) && (pmode & S_IREAD) ) {
@@ -92,45 +164,74 @@ _WCRTLINK int creat( const CHAR_TYPE *name, mode_t pmode )
         mode |= O_RDWR;
     }
 
-    return( RdosOpenHandle( name, mode ) );
+    handle = RdosOpenHandle( name, mode );
+    if( handle > 0 )
+        CreateMap( handle );
+
+    return( handle );
 }
 
 _WCRTLINK int open( const CHAR_TYPE *name, int mode, ... )
 {
     int                 permission;
+    int                 handle;
     va_list             args;
 
     va_start( args, mode );
     permission = va_arg( args, int );
     va_end( args );
 
-    return( RdosOpenHandle( name, mode ) );
+    handle = RdosOpenHandle( name, mode );
+    if( handle > 0 )
+        CreateMap( handle );
+
+    return( handle );
 }
 
 
 _WCRTLINK int _sopen( const CHAR_TYPE *name, int mode, int shflag, ... )
 {
+    int                 handle;
     va_list             args;
 
     va_start( args, shflag );
     va_end( args );
 
-    return( RdosOpenHandle( name, mode ) );
+    handle = RdosOpenHandle( name, mode );
+    if( handle > 0 )
+        CreateMap( handle );
+
+    return( handle );
 }
 
 _WCRTLINK int close( int handle )
 {
+    FreeMap( handle );
     return( RdosCloseHandle( handle ) );
 }
 
 _WCRTLINK int dup( int handle )
 {
-    return( RdosDupHandle( handle ) );
+    int                 new_handle;
+
+    new_handle = RdosDupHandle( handle );
+    if( new_handle > 0 )
+        CreateMap( new_handle );
+
+    return( new_handle );
 }
 
 _WCRTLINK int dup2( int handle1, int handle2 )
 {
-    return( RdosDup2Handle( handle1, handle2 ) );
+    int                 handle;
+
+    FreeMap( handle2 );
+    handle = RdosDup2Handle( handle1, handle2 );
+
+    if( handle > 0 )
+        CreateMap( handle );
+
+    return( handle );
 }
 
 _WCRTLINK int _eof( int handle )
@@ -138,12 +239,12 @@ _WCRTLINK int _eof( int handle )
     return( RdosEofHandle( handle ) );
 }
 
-_WCRTLINK long _filelength( int handle )
+_WCRTLINK long long _filelength( int handle )
 {
     return( RdosGetHandleSize( handle ) );
 }
 
-_WCRTLINK int _chsize( int handle, long size )
+_WCRTLINK int _chsize( int handle, long long size )
 {
     return( RdosSetHandleSize( handle, size ) );
 }
@@ -262,22 +363,282 @@ _WCRTLINK off_t _tell( int handle )
     return( RdosGetHandlePos( handle ) );
 }
 
+static int vfs_find( int handle, struct HandleMap *hm, long long Pos )
+{
+    struct RdosFileMap *map = hm->map;
+    int                Step = 0x80;
+    int                Curr = 0;
+    unsigned char      index;
+    long long          Diff;
+
+    for( ;; )
+    {
+        if( map->Update )
+            RdosUpdateHandle( handle );
+
+        index = map->SortedArr[ Curr + Step ];
+        if( index != 0xFF ) {
+            Diff = Pos - map->MapArr[ index ].Pos;
+            if( Diff >= 0 ) {
+                Curr += Step;
+
+                if( Diff < map->MapArr[ index ].Size )
+                    return( Curr );
+            }
+        }
+        if( Step )
+            Step = Step >> 1;
+        else
+            break;
+    }
+    return( -1 );
+}
+
+static int vfs_read_one( int handle, int index, char *buf, long long pos, int size )
+{
+    struct HandleMap        *hm = MapArr[ handle ];
+    struct RdosFileMap      *map = hm->map;
+    int                      i;
+    int                      diff;
+    int                      count = 0;
+    char                    *src;
+    struct RdosFileMapEntry *entry;
+
+    i = map->SortedArr[ index ];
+
+    if( i >= 0 ) {
+        entry = &map->MapArr[ i ];
+        diff = pos - entry->Pos;
+
+        if( ( (long)entry->Base & 0xFFF ) != 0 || ( entry->Size & 0xFFF ) != 0 ) {
+            map->Handle->PosArr[ hm->handle - 1 ] = pos;
+            count = RdosReadHandle( handle, buf, size );
+        } else {
+            if( entry->Base && diff >= 0 ) {
+                count = entry->Size - diff;
+
+                if ( count > 0 ) {
+                    src = entry->Base + diff;
+                    if( count > size )
+                        count = size;
+
+                    memcpy( buf, src, count );
+                }
+                else
+                    count = 0;
+            }
+        }
+    }
+
+    return( count );
+}
+
+static int vfs_read( int handle, void *buffer, unsigned len )
+{
+    struct HandleMap        *hm = MapArr[ handle ];
+    struct RdosFileMap      *map = hm->map;
+    long long                Pos = map->Handle->PosArr[ hm->handle - 1 ];
+    long long                TotalSize = map->Info->CurrSize;
+    int                      Size = len;
+    int                      count;
+    int                      diff;
+    int                      i;
+    int                      ret = 0;
+    char                    *ptr = (char *)buffer;
+
+    if (map->Update)
+        RdosUpdateHandle( handle );
+
+    if( Pos + Size > TotalSize )
+        Size = TotalSize - Pos;
+
+    if( Size < 0 )
+        Size = 0;
+
+    RdosEnterFutex( &map->Handle->Futex );
+
+    if( hm->index < 0)
+        hm->index = vfs_find( handle, hm, Pos );
+
+    while( Size ) {
+        if( hm->index >= 0 ) {
+            count = vfs_read_one(handle, hm->index, ptr, Pos, Size);
+            ptr += count;
+            Size -= count;
+            ret += count;
+            Pos += count;
+        }
+
+        if( Size ) {
+            for( i = 0; i < 10; i++ ) {
+                RdosLeaveFutex(&map->Handle->Futex);
+
+                RdosMapHandle( handle, Pos, Size );
+
+                RdosEnterFutex( &map->Handle->Futex );
+                hm->index = vfs_find( handle, hm, Pos );
+                if( hm->index >= 0 )
+                    break;
+            }
+
+            if( hm->index < 0 )
+                break;
+        }
+    }
+
+    RdosLeaveFutex( &map->Handle->Futex );
+    map->Handle->PosArr[ hm->handle - 1 ] = Pos;
+
+    return( ret );
+}
+
+static int vfs_write_one( int handle, int index, const char *buf, long long pos, int size )
+{
+    struct HandleMap        *hm = MapArr[ handle ];
+    struct RdosFileMap      *map = hm->map;
+    int                      i;
+    int                      diff;
+    int                      count = 0;
+    char                    *dst;
+    struct RdosFileMapEntry *entry;
+    long long                FileSize;
+
+    i = map->SortedArr[ index ];
+
+    if( i >= 0 ) {
+        entry = &map->MapArr[ i ];
+        diff = pos - entry->Pos;
+
+        if( ( (long)entry->Base & 0xFFF ) != 0 || ( entry->Size & 0xFFF ) != 0 ) {
+            map->Handle->PosArr[ hm->handle - 1 ] = pos;
+            count = RdosWriteHandle( handle, buf, size );
+        } else {
+            if( entry->Base && diff >= 0 ) {
+                count = entry->Size - diff;
+
+                if ( count > 0 ) {
+                    dst = entry->Base + diff;
+                    if( count > size )
+                        count = size;
+
+                    memcpy( dst, buf, count );
+
+                    FileSize = pos + count;
+                    if ( FileSize > map->Handle->ReqSize )
+                        map->Handle->ReqSize = FileSize;
+                }
+                else
+                    count = 0;
+            }
+        }
+    }
+
+    return( count );
+}
+
+static int vfs_write( int handle, const void *buffer, unsigned len )
+{
+    struct HandleMap        *hm = MapArr[ handle ];
+    struct RdosFileMap      *map = hm->map;
+    long long                Pos = map->Handle->PosArr[ hm->handle - 1 ];
+    long long                TotalSize = map->Info->CurrSize;
+    int                      Size = len;
+    int                      count;
+    int                      diff;
+    int                      i;
+    int                      ret = 0;
+    const char              *ptr = (const char *)buffer;
+    struct RdosFileInfo     *info = map->Info;
+    long long                Grow;
+
+    if( map->Update )
+        RdosUpdateHandle( handle );
+
+    Grow = Pos + Size - info->DiscSize;
+
+    if( Grow > 0 )
+        RdosGrowHandle( handle, info->DiscSize, Grow );
+
+    RdosEnterFutex( &map->Handle->Futex );
+
+    if( hm->index < 0 || Grow > 0 )
+        hm->index = vfs_find( handle, hm, Pos );
+
+    while( Size ) {
+        if( hm->index >= 0 ) {
+            count = vfs_write_one( handle, hm->index, ptr, Pos, Size );
+            ptr += count;
+            Size -= count;
+            ret += count;
+            Pos += count;
+        }
+
+        if( Size ) {
+            for( i = 0; i < 10; i++ ) {
+                RdosLeaveFutex( &map->Handle->Futex );
+
+                Grow = Pos + Size - info->DiscSize;
+
+                if( Grow > 0 )
+                    RdosGrowHandle( handle, info->DiscSize, Grow );
+                else
+                    RdosMapHandle( handle, Pos, Size );
+
+                RdosEnterFutex( &map->Handle->Futex );
+                hm->index = vfs_find( handle, hm, Pos );
+                if( hm->index >= 0 )
+                    break;
+            }
+
+            if ( hm->index < 0 )
+                break;
+        }
+    }
+
+    RdosLeaveFutex( &map->Handle->Futex );
+    map->Handle->PosArr[ hm->handle - 1 ] = Pos;
+
+    return( ret );
+}
+
 int __qread( int handle, void *buffer, unsigned len )
 {
+    if( handle >= 0 && handle < MapCount )
+        if( MapArr[ handle ] )
+            return( vfs_read( handle, buffer, len ) );
     return( RdosReadHandle( handle, buffer, len ) );
 }
 
 int __qwrite( int handle, const void *buffer, unsigned len )
 {
+    if( handle >= 0 && handle < MapCount )
+        if( MapArr[ handle ] )
+            return( vfs_write( handle, buffer, len ) );
     return( RdosWriteHandle( handle, buffer, len ) );
 }
 
 _WCRTLINK int read( int handle, void *buffer, unsigned len )
 {
+    if( handle >= 0 && handle < MapCount )
+        if( MapArr[ handle ] )
+            return( vfs_read( handle, buffer, len ) );
     return( RdosReadHandle( handle, buffer, len ) );
 }
 
 _WCRTLINK int write( int handle, const void *buffer, unsigned len )
 {
+    if( handle >= 0 && handle < MapCount )
+        if( MapArr[ handle ] )
+            return( vfs_write( handle, buffer, len ) );
     return( RdosWriteHandle( handle, buffer, len ) );
 }
+
+static void init( void )
+{
+    int i;
+
+    for( i = 0; i < 3; i++ )
+        CreateMap( i );
+}
+
+AXI( init, INIT_PRIORITY_RUNTIME )

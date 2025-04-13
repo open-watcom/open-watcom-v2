@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -44,17 +44,6 @@
 #include "dumpio.h"
 #include "memmgt.h"
 
-
-/*  memory tracking levels */
-#define   _NO_TRACKING     0
-#define   _CHUNK_TRACKING  1
-#define   _FULL_TRACKING   2
-
-#ifdef _TRACK
-    #define _MEMORY_TRACKING _FULL_TRACKING
-#else
-    #define _MEMORY_TRACKING _CHUNK_TRACKING
-#endif
 
 static          mem_out_action  MemOut;
 

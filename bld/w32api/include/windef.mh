@@ -21,9 +21,8 @@
 #endif
 
 /* Define default Windows version number. */
-#ifndef WINVER
-    #define WINVER  0x0400
-#endif
+:: this define WINVER only
+:include winverdf.sp
 
 /* Override default compiler behavior for these keywords. */
 #define far

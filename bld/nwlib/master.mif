@@ -57,19 +57,19 @@ extra_cpp_flags = -DINSIDE_WLIB
 extra_cpp_flags += -DIDE_PGM
 !endif
 
-extra_cpp_flags_idedrv   = -DSTATIC_LINKAGE
-extra_cpp_flags_maindrv  = -DDLL_NAME=$(dlltarg_name)
-extra_cpp_flags_memfuncs = $(trmem_cpp_flags)
+extra_cpp_flags_f_idedrv   = -DSTATIC_LINKAGE
+extra_cpp_flags_f_maindrv  = -DDLL_NAME=$(dlltarg_name)
+extra_cpp_flags_f_memfuncs = $(trmem_cpp_flags)
 
-extra_c_flags_memfuncs = $(trmem_cover_cflags)
-extra_c_flags_cmdlnprs = $(incl_file_opts)fesupp.h
+extra_c_flags_f_memfuncs = $(trmem_cover_cflags)
+extra_c_flags_f_cmdlnprs = $(incl_file_opts)fesupp.h
 
 #
 # lflags
 #
 extra_l_flags_qnx = op offset=64k, stack=60k
 
-extra_l_flags_dll     = option implib $(wlib_dllbase_$(host_os)_$(host_cpu))
+extra_l_flags_dll     = option implib $(wlib_dllbase_$(host))
 extra_l_flags_dll_nt  = initinstance terminstance op modname='$(dlltarg_name).dll'
 extra_l_flags_dll_os2 = INITINSTANCE TERMINSTANCE op manyautodata op modname='$(dlltarg_name)'
 
@@ -191,11 +191,11 @@ optencod_targets = $(host_os)
 optencod_targets += dbg
 !endif
 
-usagew.gh $(qnx_usage) : ../optionsw.gml $(__MAKEFILES__)
+usagew.gh $(qnx_usage) : ../gml/optionsw.gml $(__MAKEFILES__)
     @%make echo_optencod
     $(optencod) -rc=MSG_USAGE_WLIB_BASE -x=_W -utf8 $(optencod_opt_$(host_os)) $[@ cmdlprsw.gh cmdlprsw.gc $@ cmdlnprs.gh $(optencod_targets)
 
-usagea.gh : ../optionsa.gml $(__MAKEFILES__)
+usagea.gh : ../gml/optionsa.gml $(__MAKEFILES__)
     @%make echo_optencod
     $(optencod) -p -x=_B -utf8 $[@ cmdlprsb.gh cmdlprsb.gc . . $(optencod_targets)
     $(optencod) -rc=MSG_USAGE_AR_BASE -x=_A -utf8 $[@ cmdlprsa.gh cmdlprsa.gc $@ cmdlnprs.gh targ1 $(optencod_targets)

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -554,18 +554,26 @@ trap_retval TRAP_CORE( Get_message_text )( void )
     return( sizeof( *ret ) + 1 );
 }
 
-trap_retval TRAP_CORE( Redirect_stdin )( void )
+static trap_retval redirect( bool input )
 {
-    redirect_stdin_ret  *ret;
+    redirect_stdio_ret  *ret;
+
+    /* unused parameters */ (void)input;
 
     ret = GetOutPtr( 0 );
+//    ret->err = 1;
     ret->err = 0;
     return( sizeof( *ret ) );
 }
 
+trap_retval TRAP_CORE( Redirect_stdin )( void )
+{
+    return( redirect( true ) );
+}
+
 trap_retval TRAP_CORE( Redirect_stdout )( void )
 {
-    return( TRAP_CORE( Redirect_stdin )() );
+    return( redirect( false ) );
 }
 
 trap_retval TRAP_FILE( file_to_fullpath )( void )

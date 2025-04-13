@@ -33,7 +33,7 @@
 
 #include "guiwind.h"
 #include "guiscale.h"
-#include <string.h>
+
 
 /*
  * GUIGetStringPos

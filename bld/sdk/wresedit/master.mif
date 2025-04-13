@@ -33,10 +33,10 @@ extra_c_flags_win = -zu-zw-zc
 
 # preprocessor objects
 !ifdef __WATCOM_TOOLS__
-extra_c_flags_preproc = -zm
-extra_c_flags_ppexpr  = -zm
-extra_c_flags_ppmacro = -zm
-extra_c_flags_ppenv   = -zm
+extra_c_flags_f_preproc = -zm
+extra_c_flags_f_ppexpr  = -zm
+extra_c_flags_f_ppmacro = -zm
+extra_c_flags_f_ppenv   = -zm
 !endif
 
 #

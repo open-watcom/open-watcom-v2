@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -99,32 +100,17 @@ typedef union handle_extra {
 /* maximum height of a node in the skip list */
 #define MAX_HANDLE_HEIGHT       12
 
-
-#define InitHandles             DW_InitHandles
-#define FiniHandles             DW_FiniHandles
-#define NewHandle               DW_NewHandle
-#define GetCommon               DW_GetCommon
-#define CreateExtra             DW_CreateExtra
-#define DestroyExtra            DW_DestroyExtra
-#define GetExtra                DW_GetExtra
-#define LabelNewHandle          DW_LabelNewHandle
-#define SetHandleLocation       DW_SetHandleLocation
-#define HandleReference         DW_HandleReference
-#define HandleWriteOffset       DW_HandleWriteOffset
-
-
-extern void             InitHandles( dw_client );
-extern void             FiniHandles( dw_client );
-extern dw_handle        NewHandle( dw_client );
-extern handle_common    *GetCommon( dw_client, dw_handle );
-extern handle_extra     *CreateExtra( dw_client, dw_handle );
-extern void             DestroyExtra( dw_client, dw_handle );
-extern handle_extra     *GetExtra( dw_client, dw_handle );
-extern dw_handle        LabelNewHandle( dw_client );
-extern dw_handle        GetHandle( dw_client cli );
-extern void             SetHandleLocation( dw_client, dw_handle );
-extern void             HandleReference( dw_client, dw_handle, dw_sectnum );
-extern void             HandleWriteOffset( dw_client, dw_handle, dw_sectnum );
-
+extern void             DW_InitHandles( dw_client );
+extern void             DW_FiniHandles( dw_client );
+extern dw_handle        DW_NewHandle( dw_client );
+extern handle_common    *DW_GetCommon( dw_client, dw_handle );
+extern handle_extra     *DW_CreateExtra( dw_client, dw_handle );
+extern void             DW_DestroyExtra( dw_client, dw_handle );
+extern handle_extra     *DW_GetExtra( dw_client, dw_handle );
+extern dw_handle        DW_LabelNewHandle( dw_client );
+extern dw_handle        DW_GetHandle( dw_client cli );
+extern void             DW_SetHandleLocation( dw_client, dw_handle );
+extern void             DW_HandleReference( dw_client, dw_handle, dw_sectnum );
+extern void             DW_HandleWriteOffset( dw_client, dw_handle, dw_sectnum );
 
 #endif

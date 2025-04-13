@@ -8,8 +8,6 @@ tree_depth = 5
 host_os  = nt
 host_cpu = axp
 
-target_cpu = axp
-
 srv     = lcl
 which   = TRAP
 

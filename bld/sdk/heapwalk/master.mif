@@ -25,12 +25,12 @@ additional_clean = *.gh *.grh
 
 inc_dirs = -I. -I"../h" $(cli_commonui_inc_dirs) $(dis_includes)
 
-extra_cpp_flags_ldstr = -dSPECIAL_STRING_LOADING
+extra_cpp_flags_f_ldstr = -dSPECIAL_STRING_LOADING
 
 extra_c_flags_i86   = -zu-zW
 
-extra_c_flags_heapwalk = -3
-extra_c_flags_segmem2  = -3
+extra_c_flags_f_heapwalk = -3
+extra_c_flags_f_segmem2  = -3
 
 #
 # lflags

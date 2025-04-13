@@ -1,12 +1,17 @@
-!include $(ui_dir)/client.mif
 !ifdef sys_windowed
 gui_gui_type = win
 !else
 gui_gui_type = ui
+!include $(ui_dir)/client.mif
 !endif
-cli_gui_path = $(gui_dir)/$(gui_gui_type)/$(objs_subdir)
-cli_gui_inc_dirs = -I"$(cli_gui_path)" -I"$(gui_dir)/h" $(cli_ui_inc_dirs)
+gui_gui_grh = guimsgs.grh
+cli_gui_inc_dirs = -I"$(gui_dir)/h" $(cli_ui_inc_dirs)
 cli_gui_inc_dirs_internal = -I"$(gui_dir)/$(gui_gui_type)/h"
-cli_gui_libs = $(cli_gui_path)/gui.lib $(cli_ui_libs)
-cli_gui_rc_inc_dirs = -I"$(cli_gui_path)" -I"$(gui_dir)/h"
-cli_gui_rc_deps = $(gui_dir)/h/gui.rc $(gui_dir)/h/gui.rh $(gui_dir)/h/closebmp.bmp $(cli_gui_path)/guimsgs.grh
+cli_gui_rc_inc_dirs = -I"$(gui_dir)/h"
+cli_gui_deps = $(gui_gui_grh)
+cli_gui_rc_deps = $(gui_dir)/h/gui.rc $(gui_dir)/h/gui.rh $(gui_dir)/h/closebmp.bmp $(gui_gui_grh)
+cli_gui_libs = $(gui_dir)/$(gui_gui_type)/$(bin_host)/gui.lib $(cli_ui_libs)
+
+$(gui_gui_grh) : $(gui_dir)/h/gui.msg .EXPLICIT
+    @%make echo_awk
+    $(noecho)*awk -v prefix=GUI_LITERAL_ -v base=GUI_LITERAL_BASE -f $(build_dir)/makemsg.awk -v OUTFILE=$^. $[@

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,18 +36,11 @@
 
 typedef struct carve_t *carve_t;
 
-#define CarveCreate             DW_CarveCreate
-#define CarveDestroy            DW_CarveDestroy
-#define CarveAlloc              DW_CarveAlloc
-#define CarveFree               DW_CarveFree
-#define CarveFreeLink           DW_CarveFreeLink
-#define CarveFreeChain          DW_CarveFreeChain
-
-carve_t CarveCreate( dw_client, size_t, size_t );
-void CarveDestroy( dw_client, carve_t );
-void *CarveAlloc( dw_client, carve_t );
-void CarveFree( carve_t, void * );
-void *CarveFreeLink( carve_t, void * );
-void CarveFreeChain( carve_t, void * );
+extern carve_t  DW_CarveCreate( dw_client, size_t, size_t );
+extern void     DW_CarveDestroy( dw_client, carve_t );
+extern void     *DW_CarveAlloc( dw_client, carve_t );
+extern void     DW_CarveFree( carve_t, void * );
+extern void     *DW_CarveFreeLink( carve_t, void * );
+extern void     DW_CarveFreeChain( carve_t, void * );
 
 #endif

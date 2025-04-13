@@ -267,8 +267,8 @@ objs_cpp = &
 pch_flags = -fh=pch01.pch
 pch_flags_x = -fh=$(x_subdir)/pch01.pch
 
-pch_flags_iofdefg = -fh=pch02.pch
-pch_flags_x_iofdefg = -fh=$(x_subdir)/pch02.pch
+pch_flags_f_iofdefg = -fh=pch02.pch
+pch_flags_x_f_iofdefg = -fh=$(x_subdir)/pch02.pch
 
 dep_dirs_x = $(x_subdir)
 

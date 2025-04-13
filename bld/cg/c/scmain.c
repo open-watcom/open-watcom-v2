@@ -97,7 +97,7 @@ static  void    CopyList( score *frm, score *to,
 /*****************************************************/
 {
     score_list  *first;
-    score_list  *new;
+    score_list  *new_sc;
     score       *next;
 
     if( to[i].list == NULL ) {
@@ -111,10 +111,10 @@ static  void    CopyList( score *frm, score *to,
     if( *to[i].list == NULL ) {
         next = to[i].next_reg;
         for( first = *frm[i].list; first != NULL; first = first->next ) {
-            new = NewScListEntry();
-            Copy( &first->info, &new->info, sizeof( score_info ) );
-            new->next = *next->list;
-            *next->list = new;
+            new_sc = NewScListEntry();
+            Copy( &first->info, &new_sc->info, sizeof( score_info ) );
+            new_sc->next = *next->list;
+            *next->list = new_sc;
         }
     }
 }

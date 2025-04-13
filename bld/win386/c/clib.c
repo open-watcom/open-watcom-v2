@@ -56,7 +56,7 @@
  * here lie all interrupt functions
  */
 
-int __far __pascal _clib_intdos( union REGS __far *inregs, union REGS __far *outregs )
+int __far __pascal _clib_intdos( const union REGS __far *inregs, union REGS __far *outregs )
 {
     int reg_ax;
 
@@ -66,7 +66,7 @@ int __far __pascal _clib_intdos( union REGS __far *inregs, union REGS __far *out
     return( reg_ax );
 }
 
-int __far __pascal _clib_intdosx( union REGS __far *inregs, union REGS __far *outregs,
+int __far __pascal _clib_intdosx( const union REGS __far *inregs, union REGS __far *outregs,
                               struct SREGS __far *segregs )
 {
     int reg_ax;
@@ -77,7 +77,7 @@ int __far __pascal _clib_intdosx( union REGS __far *inregs, union REGS __far *ou
     return( reg_ax );
 }
 
-static int __int86x( int intno, union REGS __far *inregs, union REGS __far *outregs,
+static int __int86x( int intno, const union REGS __far *inregs, union REGS __far *outregs,
                                                        struct SREGS __far *segregs )
 {
     union REGPACK regs;
@@ -107,7 +107,7 @@ static int __int86x( int intno, union REGS __far *inregs, union REGS __far *outr
     return( regs.x.ax );
 }
 
-int __far __pascal _clib_int86( int intno, union REGS __far *inregs,
+int __far __pascal _clib_int86( int intno, const union REGS __far *inregs,
                             union REGS __far *outregs )
 {
 #ifdef DLL32
@@ -120,7 +120,7 @@ int __far __pascal _clib_int86( int intno, union REGS __far *inregs,
     return( __int86x( intno, inregs, outregs, &segregs ) );
 }
 
-int __far __pascal _clib_int86x( int intno, union REGS __far *inregs,
+int __far __pascal _clib_int86x( int intno, const union REGS __far *inregs,
               union REGS __far *outregs, struct SREGS __far *segregs )
 {
     return( __int86x( intno, inregs, outregs, segregs ) );

@@ -34,7 +34,7 @@
 #include <i86.h>
 
 
-_WCRTLINK int int386( int intno, union REGS *inregs, union REGS *outregs )
+_WCRTLINK int int386( int intno, const union REGS *inregs, union REGS *outregs )
     {
         struct SREGS    segregs;
 

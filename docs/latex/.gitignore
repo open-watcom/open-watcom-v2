@@ -1,0 +1,6 @@
+# Ignore LaTeX build artifacts.
+*.aux
+*.log
+*.out
+*.pdf
+*.toc

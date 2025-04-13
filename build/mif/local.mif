@@ -4,45 +4,47 @@
 #
 ##############################################################################
 
+bld = $(bld_os)$(bld_cpu)
+
 ##################################################
 # check for MS Visual Studio and Intel toolchains
 ##################################################
-!ifeq use_for_build_$(bld_os)$(bld_cpu) msvc_intel
+!ifeq use_for_build_$(bld) msvc_intel
 ! if !( defined( __MSVC_TOOLS__ ) || defined( __INTEL_TOOLS__ ) )
 # skip, configuration mismatch
 skip = 1
-! else ifeq use_for_target_$(host_os)$(host_cpu) msvc_intel
-!  if "$(bld_os)$(bld_cpu)" != "$(host_os)$(host_cpu)"
+! else ifeq use_for_target_$(host) msvc_intel
+!  if "$(bld)" != "$(host)"
 # skip, target mismatch
 skip = 2
 !  endif
-! else ifdef use_for_target_$(host_os)$(host_cpu)
+! else ifdef use_for_target_$(host)
 # skip, current target requires toolchain other then configured
 skip = 3
 ! endif
 ##################################################
 # check for Clang and GCC toolchains
 ##################################################
-!else ifeq use_for_build_$(bld_os)$(bld_cpu) clang_gcc
+!else ifeq use_for_build_$(bld) clang_gcc
 ! if !( defined( __CLANG_TOOLS__ ) || defined( __GCC_TOOLS__ ) )
 # skip, configuration mismatch
 skip = 4
-! else ifeq use_for_target_$(host_os)$(host_cpu) clang_gcc
-!  if "$(bld_os)$(bld_cpu)" != "$(host_os)$(host_cpu)"
+! else ifeq use_for_target_$(host) clang_gcc
+!  if "$(bld)" != "$(host)"
 # skip, target mismatch
 skip = 5
 !  endif
-! else ifdef use_for_target_$(host_os)$(host_cpu)
+! else ifdef use_for_target_$(host)
 # skip, current target requires toolchain other then configured
 skip = 6
 ! endif
 ##################################################
 # check for WATCOM toolchain
 ##################################################
-!else ifdef use_for_build_$(bld_os)$(bld_cpu)
+!else ifdef use_for_build_$(bld)
 # skip, current host requires toolchain other then configured
 skip = 7
-!else ifdef use_for_target_$(host_os)$(host_cpu)
+!else ifdef use_for_target_$(host)
 # skip, current target requires toolchain other then configured
 skip = 8
 !endif
@@ -74,7 +76,7 @@ skip_build: .SYMBOLIC
 ! endif
 !endif
 
-!ifeq use_for_build_$(bld_os)$(bld_cpu) msvc_intel
+!ifeq use_for_build_$(bld) msvc_intel
 ##############################################################################
 ##############################################################################
 #
@@ -83,7 +85,7 @@ skip_build: .SYMBOLIC
 ##############################################################################
 ##############################################################################
 
-additional_clean_sys = *.pdb
+additional_clean_sys = *.pdb *.exp
 
 # librarian settings
 ############################
@@ -101,15 +103,20 @@ common_cppflags_nt  = -D__NT__ -DWIN32_LEAN_AND_MEAN
 
 common_cppflags_x64 =
 
-common_cppflags_nt_x64  = -D__NT_X64__
+common_cppflags_ntx64  = -D__NT_X64__
 
 # common release/debug options
 ! ifdef __INTEL_TOOLS__
 common_flags_rel = -Ox -Zi -fast
 common_flags_dbg = -Zi -fast
-! else
+! else ifdef __MSVC_TOOLS__
+!  if $(__MSVC_TOOLS__) < 1930
 common_flags_rel = -Ox -Zi
 common_flags_dbg = -Zi
+!  else
+common_flags_rel = -Ox -Zi
+common_flags_dbg = -Zi
+!  endif
 ! endif
 ! ifeq debug 0
 common_flags = $(common_flags_rel)
@@ -117,15 +124,42 @@ common_flags = $(common_flags_rel)
 common_flags = $(common_flags_dbg)
 ! endif
 
-# -wd4068 "unknown pragma"
-# -wd4102 "unreferenced label"
-# -wd4127 "conditional expression is constant"
-# -wd4214 "bit field types other than int"
-# -wd4244 "conversion ....., possible loss of data"
-# -wd4306 "type cast: conversion ...... of greater size"
-# -wd4702 "unreachable code"
-#common_cflags_wng = -wd4068 -wd4102 -wd4127 -wd4214 -wd4244 -wd4306 -wd4702
+#
+# C4013	"'function' undefined; assuming extern returning int"
+# C4061	"enumerator 'identifier' in switch of enum 'enumeration' is not explicitly handled by a case label"
+# C4062	"enumerator 'identifier' in switch of enum 'enumeration' is not handled"
+# C4063	"case 'identifier' is not a valid value for switch of enum 'enumeration'"
+# C4068 "unknown pragma"
+# C4102 "unreferenced label"
+# C4127 "conditional expression is constant"
+# C4214 "bit field types other than int"
+# C4244 "conversion ....., possible loss of data"
+# C4306 "type cast: conversion ...... of greater size"
+# C4574	"'Identifier' is defined to be '0': did you mean to use '#if identifier'?"
+# C4702 "unreachable code"
+# C4710	"'function': function not inlined"
+# C4711	"function 'function' selected for automatic inline expansion"
+# C4774	"'string' : format string expected in argument number is not a string literal"
+# C4820	"'bytes' bytes padding added after construct 'member_name'"
+# C5045	"Compiler will insert Spectre mitigation for memory load if /Qspectre switch specified"
+#
+!ifeq proj_name builder
 common_cflags_wng = -W4 -wd4214
+!else
+common_cflags_wng = -Wall &
+    -we4013 &
+    -wd4061 &
+    -wd4062 &
+    -wd4063 &
+    -wd4214 &
+    -wd4306 &
+    -wd4574 &
+    -wd4710 &
+    -wd4711 &
+    -wd4774 &
+    -wd4820 &
+    -wd5045
+!endif
 common_cflags = $(common_cflags_wng)
 
 common_ldflags_rel =
@@ -212,7 +246,7 @@ bld_cxx_flags = -EHsc
 
 bld_incs = $(bld_extra_incs) -I"$(watcom_dir)/h"
 
-bld_cppflags = $(common_cppflags_$(bld_os)) $(common_cppflags_$(bld_cpu)) $(common_cppflags_$(bld_os)_$(bld_cpu))
+bld_cppflags = $(common_cppflags_$(bld_os)) $(common_cppflags_$(bld_cpu)) $(common_cppflags_$(bld))
 
 # options for source compilation only
 bld_cflags   = $(bld_cc_sys) $(common_cflags) $(common_flags) $(bld_incs) #-Fo$@
@@ -226,8 +260,8 @@ bld_clflags  = $(bld_cl_sys) -Fe$@ $(bld_ldflags1)
 bld_cclflags = $(bld_cflags) $(bld_clflags)
 
 # options for linking
-bld_ldflags  =  $(bld_cl_extra_libs_gen) -link -nologo &
-    -MAPINFO:EXPORTS -INCREMENTAL:NO -DEFAULTLIB:user32.lib -DEFAULTLIB:ole32.lib &
+bld_ldflags  =  $(bld_cl_extra_libs_gen) -link -nologo -debug -MAPINFO:EXPORTS &
+    -INCREMENTAL:NO -DEFAULTLIB:user32.lib -DEFAULTLIB:ole32.lib &
     -DEFAULTLIB:advapi32.lib -DEFAULTLIB:shell32.lib -DEFAULTLIB:gdi32.lib -DEFAULTLIB:comdlg32.lib &
     -NODEFAULTLIB:libucrt.lib -DEFAULTLIB:ucrt.lib &
     $(bld_extra_ldflags) $(bld_ldflags_$(proj_type))
@@ -235,7 +269,7 @@ bld_ldflags  =  $(bld_cl_extra_libs_gen) -link -nologo &
 #
 # target definitions for VISUALC and INTEL toolchains
 #
-! ifeq use_for_target_$(host_os)$(host_cpu) msvc_intel
+! ifeq use_for_target_$(host) msvc_intel
 
 # standard settings
 ############################
@@ -254,9 +288,9 @@ ppflags_sys = $(common_ppflags)
 cppflags_nt  = $(common_cppflags_nt)
 
 !  ifdef bootstrap
-cppflags_x64 = $(common_cppflags_x64) $(common_cppflags_$(host_os)_x64)
+cppflags_x64 = $(common_cppflags_x64) $(common_cppflags_$(host_os)x64)
 !  else
-cppflags_x64 = $(common_cppflags_x64) $(common_cppflags_$(host_os)_x64) -D_WIN32_WINNT=_WIN32_WINNT_WIN7
+cppflags_x64 = $(common_cppflags_x64) $(common_cppflags_$(host_os)x64) -D_WIN32_WINNT=_WIN32_WINNT_WIN7
 !  endif
 
 c_flags   =
@@ -269,7 +303,7 @@ cflags_wind = $(cflags_gen)
 # options for linking
 ldflags1 = $(common_ldflags) -Fm
 
-ldflags_gen_all  = -link -nologo &
+ldflags_gen_all  = -link -nologo -debug -MAPINFO:EXPORTS &
     -INCREMENTAL:NO -DEFAULTLIB:user32.lib -DEFAULTLIB:ole32.lib -DEFAULTLIB:advapi32.lib &
     -DEFAULTLIB:shell32.lib -DEFAULTLIB:gdi32.lib -DEFAULTLIB:comdlg32.lib &
     -NODEFAULTLIB:libucrt.lib -DEFAULTLIB:ucrt.lib
@@ -295,7 +329,7 @@ clflags_wind = $(clflags_gen)
 incl_file_opts = -FI
 
 ! endif
-!else ifeq use_for_build_$(bld_os)$(bld_cpu) clang_gcc
+!else ifeq use_for_build_$(bld) clang_gcc
 ##############################################################################
 ##############################################################################
 #
@@ -313,7 +347,17 @@ bld_lib = $(noecho)ar crs $@
 common_ppflags          = -D__UNIX__ -D__FLAT__
 
 common_cppflags_linux   = -D__LINUX__
+!ifdef __FREEBSD__
+common_cppflags_bsd     = -D__BSD__ -D__FREEBSD__
+!else ifdef __DRAGONFLY__
+common_cppflags_bsd     = -D__BSD__ -D__DRAGONFLY__
+!else ifdef __NETBSD__
+common_cppflags_bsd     = -D__BSD__ -D__NETBSD__
+!else ifdef __OPENBSD__
+common_cppflags_bsd     = -D__BSD__ -D__OPENBSD__
+!else
 common_cppflags_bsd     = -D__BSD__
+!endif
 common_cppflags_haiku   = -D__HAIKU__
 common_cppflags_osx     = -D__OSX__
 
@@ -324,26 +368,26 @@ common_cppflags_mps     = -D__MIPS__ -Umips
 common_cppflags_arm     = -D_M_ARM
 common_cppflags_a64     = -D_M_ARM64
 
-common_cppflags_linux_386   = -D__LINUX_386__
-common_cppflags_linux_x64   = -D__LINUX_X64__
-common_cppflags_linux_ppc   =
-common_cppflags_linux_mps   =
-common_cppflags_linux_arm   = -D__LINUX_ARM__
-common_cppflags_linux_a64   = -D__LINUX_ARM64__
+common_cppflags_linux386   = -D__LINUX_386__
+common_cppflags_linuxx64   = -D__LINUX_X64__
+common_cppflags_linuxppc   =
+common_cppflags_linuxmps   =
+common_cppflags_linuxarm   = -D__LINUX_ARM__
+common_cppflags_linuxa64   = -D__LINUX_ARM64__
 
-common_cppflags_bsd_386     = -D__BSD_386__
-common_cppflags_bsd_x64     = -D__BSD_X64__
-common_cppflags_bsd_ppc     =
+common_cppflags_bsd386     = -D__BSD_386__
+common_cppflags_bsdx64     = -D__BSD_X64__
+common_cppflags_bsdppc     =
 
-common_cppflags_haiku_386   = -D__HAIKU_386__
-common_cppflags_haiku_x64   = -D__HAIKU_X64__
-common_cppflags_haiku_ppc   =
+common_cppflags_haiku386   = -D__HAIKU_386__
+common_cppflags_haikux64   = -D__HAIKU_X64__
+common_cppflags_haikuppc   =
 
-common_cppflags_osx_386     = -D__OSX_386__
-common_cppflags_osx_x64     = -D__OSX_X64__
-common_cppflags_osx_ppc     =
-common_cppflags_osx_arm     = -D__OSX_ARM__
-common_cppflags_osx_a64     = -D__OSX_ARM64__
+common_cppflags_osx386     = -D__OSX_386__
+common_cppflags_osxx64     = -D__OSX_X64__
+common_cppflags_osxppc     =
+common_cppflags_osxarm     = -D__OSX_ARM__
+common_cppflags_osxa64     = -D__OSX_ARM64__
 
 # common release/debug options
 common_flags_rel = -O -g1 -gdwarf-2
@@ -493,7 +537,7 @@ bld_cxx_flags = -std=c++98
 
 bld_incs = $(bld_extra_incs) -I"$(watcom_dir)/h"
 
-bld_cppflags = $(common_cppflags_$(bld_os)) $(common_cppflags_$(bld_cpu)) $(common_cppflags_$(bld_os)_$(bld_cpu))
+bld_cppflags = $(common_cppflags_$(bld_os)) $(common_cppflags_$(bld_cpu)) $(common_cppflags_$(bld))
 
 # options for source compilation only
 bld_cflags   = $(bld_cc_sys) $(common_cflags) $(common_flags) $(bld_incs) #-o $@
@@ -535,7 +579,7 @@ bld_ldflags  = $(bld_cl_extra_libs_gen) $(bld_extra_ldflags) $(bld_ldflags_$(pro
 #
 # target definitions for Clang and GCC toolchains
 #
-! ifeq use_for_target_$(host_os)$(host_cpu) clang_gcc
+! ifeq use_for_target_$(host) clang_gcc
 
 # standard settings
 ############################
@@ -566,12 +610,12 @@ cppflags_haiku  = $(common_cppflags_haiku)
 cppflags_osx    = $(common_cppflags_osx)
 cppflags_osi    = $(common_cppflags_$(host_os))
 
-cppflags_386    = $(common_cppflags_386) $(common_cppflags_$(host_os)_386)
-cppflags_ppc    = $(common_cppflags_ppc) $(common_cppflags_$(host_os)_ppc)
-cppflags_mps    = $(common_cppflags_mps) $(common_cppflags_$(host_os)_mps)
-cppflags_x64    = $(common_cppflags_x64) $(common_cppflags_$(host_os)_x64)
-cppflags_arm    = $(common_cppflags_arm) $(common_cppflags_$(host_os)_arm)
-cppflags_a64    = $(common_cppflags_a64) $(common_cppflags_$(host_os)_a64)
+cppflags_386    = $(common_cppflags_386) $(common_cppflags_$(host_os)386)
+cppflags_ppc    = $(common_cppflags_ppc) $(common_cppflags_$(host_os)ppc)
+cppflags_mps    = $(common_cppflags_mps) $(common_cppflags_$(host_os)mps)
+cppflags_x64    = $(common_cppflags_x64) $(common_cppflags_$(host_os)x64)
+cppflags_arm    = $(common_cppflags_arm) $(common_cppflags_$(host_os)arm)
+cppflags_a64    = $(common_cppflags_a64) $(common_cppflags_$(host_os)a64)
 
 c_flags   = -std=gnu99
 cxx_flags = -std=c++98
@@ -661,7 +705,7 @@ blink           = *wlink op q
 bld_ppflags_sys =
 
 bld_cc_sys      = $(cflags_$(bld_os))
-bld_cl_sys      = $(clflags_$(bld_os)_$(bld_cpu))
+bld_cl_sys      = $(clflags_$(bld))
 
 bld_c_flags     =
 bld_cxx_flags   = #-zastd=c++98

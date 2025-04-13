@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -418,8 +418,8 @@ walk_result MyWalkModList( imp_image_handle *iih, DIP_INT_MOD_WALKER *wk, void *
 /*
  * DIPImpModSrcLang
  */
-char *DIPIMPENTRY( ModSrcLang )( imp_image_handle *iih, imp_mod_handle imh )
-/************************************************************************
+const char *DIPIMPENTRY( ModSrcLang )( imp_image_handle *iih, imp_mod_handle imh )
+/*********************************************************************************
  * return pointer to name of source language of the module
  */
 {

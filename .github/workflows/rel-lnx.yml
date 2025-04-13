@@ -25,7 +25,7 @@ jobs:
     steps:
     - name: checkout
       uses: actions/checkout@v4
-    - name: Bootstrap Linux
+    - name: Bootstrap
       uses: "./.github/actions/boot"
       with:
         hostos:     'lnx'
@@ -50,8 +50,9 @@ jobs:
         owtools:    ${{ inputs.owtools }}
         owdebug:    ${{ inputs.owdebug }}
   tests-lnx:
-    needs: build-lnx
     name: Tests
+    if: inputs.arch == 'x64'
+    needs: build-lnx
     runs-on: ${{ inputs.image }}
     steps:
     - name: checkout

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2015 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2025 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -29,16 +29,17 @@
 ****************************************************************************/
 
 
-extern error_handle     RemoteErase( char const * );
 extern void             RemoteErrMsg( sys_error, char * );
-extern size_t           RemoteRead( sys_handle, void *, size_t );
-extern size_t           RemoteWrite( sys_handle, const void *, size_t );
-extern unsigned long    RemoteSeek( sys_handle, unsigned long, seek_method );
-extern sys_handle       RemoteOpen( char const *, obj_attrs );
-extern error_handle     RemoteClose( sys_handle );
 extern size_t           RemoteWriteConsole( const void *, size_t );
 extern size_t           RemoteWriteConsoleNL( void );
-extern long             RemoteGetFileDate( const char *name );
-extern bool             RemoteSetFileDate( const char *name, long date );
+
+extern error_handle     RemoteFileErase( char const * );
+extern size_t           RemoteFileRead( sys_handle, void *, size_t );
+extern size_t           RemoteFileWrite( sys_handle, const void *, size_t );
+extern unsigned long    RemoteFileSeek( sys_handle, unsigned long, seek_method );
+extern sys_handle       RemoteFileOpen( char const *, obj_attrs );
+extern error_handle     RemoteFileClose( sys_handle );
+extern long             RemoteFileGetDate( const char *name );
+extern bool             RemoteFileSetDate( const char *name, long date );
 
 extern file_components  RemFile;

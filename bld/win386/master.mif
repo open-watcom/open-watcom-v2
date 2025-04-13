@@ -2,7 +2,7 @@ proj_name = win386
 
 win386_autodepends = .AUTODEPEND
 
-fpu_flags_win_i86  = -fpc
+fpu_flags_wini86  = -fpc
 
 !include cproj.mif
 !include defrule.mif
@@ -57,37 +57,37 @@ inc_dirs = -I"$(win386_dir)/h" -I"$(lib_misc_dir)/h" -I"$(clib_dir)/_dos/h" -I"$
 # cflags stuff
 ###############
 !ifeq fmt dll
-extra_cpp_flags_wininit  = -DDLL32
-extra_cpp_flags_libmain  = -DDLL32
-extra_cpp_flags_windpmi  = -DDLL32
-extra_cpp_flags_clib     = -DDLL32 -DWIN386
-extra_cpp_flags_windata  = -DDLL32
-extra_cpp_flags_winstubs = -DDLL32
-extra_cpp_flags_bitmap   = -DDLL32
-extra_cpp_flags_toolhelp = -DDLL32
+extra_cpp_flags_f_wininit  = -DDLL32
+extra_cpp_flags_f_libmain  = -DDLL32
+extra_cpp_flags_f_windpmi  = -DDLL32
+extra_cpp_flags_f_clib     = -DDLL32 -DWIN386
+extra_cpp_flags_f_windata  = -DDLL32
+extra_cpp_flags_f_winstubs = -DDLL32
+extra_cpp_flags_f_bitmap   = -DDLL32
+extra_cpp_flags_f_toolhelp = -DDLL32
 !else
-extra_cpp_flags_clib     = -DWIN386
+extra_cpp_flags_f_clib     = -DWIN386
 !endif
 
 extra_c_flags_i86 = -3
 !ifeq fmt dll
-extra_c_flags_wininit  = -zu
-extra_c_flags_libmain  = -zu
-extra_c_flags_windpmi  = -zu
-extra_c_flags_clib     = -zu
-extra_c_flags_windata  = -zu
-extra_c_flags_winstubs = -zu
-extra_c_flags_bitmap   = -zu
-extra_c_flags_toolhelp = -zu
+extra_c_flags_f_wininit  = -zu
+extra_c_flags_f_libmain  = -zu
+extra_c_flags_f_windpmi  = -zu
+extra_c_flags_f_clib     = -zu
+extra_c_flags_f_windata  = -zu
+extra_c_flags_f_winstubs = -zu
+extra_c_flags_f_bitmap   = -zu
+extra_c_flags_f_toolhelp = -zu
 !endif
 
 # aflags stuff
 ###############
-extra_a_flags_wdebug   = -mf
-extra_a_flags_winglue  = -I"$(win386_dir)/conv/win386"
+extra_a_flags_f_wdebug   = -mf
+extra_a_flags_f_winglue  = -I"$(win386_dir)/conv/win386"
 !ifeq fmt dll
-extra_a_flags_wincall  = -DDLL32
-extra_a_flags_dllthunk = -DDLL32
+extra_a_flags_f_wincall  = -DDLL32
+extra_a_flags_f_dllthunk = -DDLL32
 !endif
 
 # linker flags stuff

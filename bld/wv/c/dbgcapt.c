@@ -45,11 +45,26 @@
 #include "dbginsp.h"
 
 
-#define PREFIX_LEN      2
+#define LOCPREFIX_LEN   2
 
-static char             FileName[PREFIX_LEN+8+1+3+1] = { '@', 'r' };
+static char             FileName[LOCPREFIX_LEN+8+1+3+1];
 static unsigned         FileNum = 0;
 static bool             CaptureOk;
+
+static char *CreateUniqueFileName( void )
+{
+    char        *start;
+    char        *p;
+    char        *end;
+
+    end = FileName + sizeof( FileName );
+    start = SetFileLocPrefix( FileName, OP_REMOTE );
+    p = CnvULongHex( TaskId, start, end - start );
+    *p++ = RemFile.ext_separator;
+    end = CnvULongDec( FileNum++, p, end - p );
+    *end = NULLCHAR;
+    return( start );
+}
 
 void CaptureError( void )
 {
@@ -87,20 +102,12 @@ void ProcCapture( void )
     const char  *start;
     size_t      len;
     const char  *old;
-    char        *p;
-    char        *end;
 
     if( !ScanItem( false, &start, &len ) )
         Error( ERR_NONE, LIT_ENG( ERR_WANT_COMMAND_LIST ) );
     ReqEOC();
     cmds = AllocCmdList( start, len );
-    end = FileName + sizeof( FileName );
-    p = FileName + PREFIX_LEN;
-    p = CnvULongHex( TaskId, p, end - p );
-    *p++ = RemFile.ext_separator;
-    p = CnvULongDec( FileNum++, p, end - p );
-    *p = NULLCHAR;
-    old = ReScan( FileName+PREFIX_LEN );
+    old = ReScan( CreateUniqueFileName() );
     StdOutNew();
     ReScan( old );
     cmds->use++;

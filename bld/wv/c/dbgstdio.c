@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -51,7 +51,7 @@ static void StdioRedirect( bool input )
     memcpy( buff, start, len );
     buff[len] = NULLCHAR;
     ReqEOC();
-    if( !Redirect( input, buff ) ) {
+    if( !RemoteRedirect( input, buff ) ) {
         if( len == 0 ) {
             Error( ERR_NONE, input ? LIT_ENG( ERR_CANNOT_RESTORE_STDIN ) :
                                      LIT_ENG( ERR_CANNOT_RESTORE_STDOUT ) );

@@ -146,7 +146,7 @@ extern void     WindowTitle( window_id wid, const char *title );
 extern void     ClearWindow( window_id wid );
 extern void     ShiftWindowUpDown( window_id wid, int lines );
 extern bool     SetDrawingObjects( HDC hdc, type_style *ts );
-extern int      DisplayLineInWindowWithSyntaxStyle( window_id, int, line *, linenum, char *, int, HDC );
+extern int      DisplayLineInWindowWithSyntaxStyle( window_id, int, line *, linenum, const char *, int, HDC );
 
 /* win/stubs.c */
 extern bool     DisplayMouse( bool p1 );
@@ -194,7 +194,7 @@ extern vi_rc    WindowTile( int, int );
 extern vi_rc    WindowCascade( void );
 
 /* win/cursor.c */
-extern void     SetCursorOnLine( window_id wid, int col, char *str, type_style *style );
+extern void     SetCursorOnLine( window_id wid, int col, const char *str, type_style *style );
 extern void     SetGenericWindowCursor( window_id wid, int row, int col );
 extern void     ResetEditWindowCursor( window_id wid );
 extern void     MyShowCaret( window_id wid );
@@ -213,7 +213,7 @@ extern bool     IsGadgetStringChanged( const char *str );
 extern void     UpdateRepeatString( char *str );
 
 /* win/clipbrd.c */
-extern int      AddLineToClipboard( char *data, int scol, int ecol );
+extern int      AddLineToClipboard( const char *data, int scol, int ecol );
 extern int      AddFcbsToClipboard( fcb_list *fcbs );
 extern int      GetClipboardSavebuf( savebuf *clip );
 extern bool     IsClipboardEmpty( void );
@@ -239,7 +239,7 @@ extern bool     IsGadgetStringChanged( const char *str );
 
 /* windisp.c */
 extern vi_rc    DisplayLineInWindowWithColor( window_id, int, const char *, type_style *, int );
-extern vi_rc    DisplayLineInWindowWithSyntaxStyle( window_id, int, line *, linenum, char *, int, unsigned int );
+extern vi_rc    DisplayLineInWindowWithSyntaxStyle( window_id, int, line *, linenum, const char *, int, unsigned int );
 extern void     DisplayCrossLineInWindow( window_id, int );
 extern void     HiliteAColumnRange( linenum, int, int );
 extern void     ColorAColumnRange( int, int, int, type_style * );

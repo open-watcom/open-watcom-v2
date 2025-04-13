@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -49,37 +49,37 @@ static  pointer         *ConfAliasVarsFrl;
 conflict_node   *AddConflictNode( name *opnd )
 /********************************************/
 {
-    conflict_node       *new;
+    conflict_node       *new_cn;
     name                *scan;
     t_flags             flags;
     fe_attr             attr;
 
     if( opnd->n.class == N_TEMP )
         opnd = DeAlias( opnd );
-    new = AllocFrl( &ConfFrl, sizeof( conflict_node ) );
-    new->name           = opnd;
-    new->next_conflict  = ConfList;
-    new->next_for_name  = opnd->v.conflict;
-    _GBitInit( new->id.out_of_block, EMPTY );
-    _LBitInit( new->id.within_block, EMPTY );
-    new->start_block    = NULL;
-    new->ins_range.first= NULL;
-    new->ins_range.last = NULL;
-    new->num_constrained= 0;
-    new->available      = 0;
-    new->possible       = RL_NUMBER_OF_SETS;
-    new->savings        = 0;
-    new->tree           = NULL;
-    new->state          = EMPTY;
-    new->possible_for_alias_list = NULL;
+    new_cn = AllocFrl( &ConfFrl, sizeof( conflict_node ) );
+    new_cn->name           = opnd;
+    new_cn->next_conflict  = ConfList;
+    new_cn->next_for_name  = opnd->v.conflict;
+    _GBitInit( new_cn->id.out_of_block, EMPTY );
+    _LBitInit( new_cn->id.within_block, EMPTY );
+    new_cn->start_block    = NULL;
+    new_cn->ins_range.first= NULL;
+    new_cn->ins_range.last = NULL;
+    new_cn->num_constrained= 0;
+    new_cn->available      = 0;
+    new_cn->possible       = RL_NUMBER_OF_SETS;
+    new_cn->savings        = 0;
+    new_cn->tree           = NULL;
+    new_cn->state          = EMPTY;
+    new_cn->possible_for_alias_list = NULL;
     if( opnd->n.class == N_TEMP ) {
         flags = HAD_CONFLICT;
-        if( new->next_for_name != NULL ) {
+        if( new_cn->next_for_name != NULL ) {
             flags |= CROSSES_BLOCKS;
         }
         scan = opnd;
         for(;;) {
-            scan->v.conflict = new;
+            scan->v.conflict = new_cn;
             scan->t.temp_flags |= flags;
             scan = scan->t.alias;
             if( scan == opnd ) {
@@ -90,13 +90,13 @@ conflict_node   *AddConflictNode( name *opnd )
         if( opnd->m.memory_type == CG_FE ) {
             attr = FEAttr( opnd->v.symbol );
             if( (attr & FE_CONSTANT) || ( ( (attr & (FE_GLOBAL | FE_VISIBLE)) == 0 ) && _IsModel( CGSW_GEN_RELAX_ALIAS ) ) ) {
-                _SetTrue( new, CST_OK_ACROSS_CALLS );
+                _SetTrue( new_cn, CST_OK_ACROSS_CALLS );
             }
         }
-        opnd->v.conflict = new;
+        opnd->v.conflict = new_cn;
     }
-    ConfList = new;
-    return( new );
+    ConfList = new_cn;
+    return( new_cn );
 }
 
 

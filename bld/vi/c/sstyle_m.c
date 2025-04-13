@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,20 +41,20 @@
 
 /*----- LOCALS -----*/
 
-static  ss_flags_m  flags;
-static  char        *firstNonWS;
-static  char        *firstChar;
+static ss_flags_m   flags;
+static const char   *firstNonWS;
+static const char   *firstChar;
 
-void InitMkLine( char *text )
+void InitMkLine( const char *text )
 {
     firstChar = text;
     SKIP_SPACES( text );
     firstNonWS = text;
 }
 
-static void getText( ss_block *ss_new, char *start )
+static void getText( ss_block *ss_new, const char *start )
 {
-    char    *end = start + 1;
+    const char  *end = start + 1;
 
     // gather up symbol
     SKIP_SYMBOL( end );
@@ -77,12 +78,12 @@ static bool isIf( const char *start )
         && ( start[1] == 'f' || start[1] == 'F' ) );
 }
 
-static void getPreproc( ss_block *ss_new, char *start )
+static void getPreprocessor( ss_block *ss_new, const char *start )
 {
-    char    *end = start + 1;
-    char    *keyword;
-    char    *end2;
-    char    *keyword2;
+    const char  *end = start + 1;
+    const char  *keyword;
+    const char  *end2;
+    const char  *keyword2;
 
     // whitespace is allowed after '!'
     SKIP_SPACES( end );
@@ -114,9 +115,9 @@ static void getPreproc( ss_block *ss_new, char *start )
     ss_new->len = end - start;
 }
 
-static void getDirective( ss_block *ss_new, char *start )
+static void getDirective( ss_block *ss_new, const char *start )
 {
-    char    *end = start + 1;
+    const char  *end = start + 1;
 
     // gather up symbol
     SKIP_SYMBOL( end );
@@ -135,9 +136,9 @@ static void getSymbol( ss_block *ss_new )
     ss_new->len = 1;
 }
 
-static void getComment( ss_block *ss_new, char *start )
+static void getComment( ss_block *ss_new, const char *start )
 {
-    char    *end = start + 1;
+    const char  *end = start + 1;
 
     // everything is a comment until the end of line
     SKIP_TOEND( end );
@@ -145,10 +146,10 @@ static void getComment( ss_block *ss_new, char *start )
     ss_new->len = end - start;
 }
 
-static void getMacro( ss_block *ss_new, char *start, int skip )
+static void getMacro( ss_block *ss_new, const char *start, int skip )
 {
-    char    *nstart = start + skip;
-    char    *end = nstart;
+    const char  *nstart = start + skip;
+    const char  *end = nstart;
 
     ss_new->type = SE_STRING;
 
@@ -232,7 +233,7 @@ void InitMkFlags( linenum line_no )
     flags.inMacro = false;
 }
 
-void GetMkBlock( ss_block *ss_new, char *start, int line )
+void GetMkBlock( ss_block *ss_new, const char *start, int line )
 {
     /* unused parameters */ (void)line;
 
@@ -249,7 +250,7 @@ void GetMkBlock( ss_block *ss_new, char *start, int line )
 
     // Preprocessor directives must start at beginning of line
     if( (start[0] == '!') && (firstChar == start) ) {
-        getPreproc( ss_new, start );
+        getPreprocessor( ss_new, start );
         return;
     }
 

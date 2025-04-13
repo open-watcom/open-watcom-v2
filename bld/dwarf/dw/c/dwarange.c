@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -46,7 +46,7 @@ void DWENTRY DWAddress( dw_client cli, uint_32 len )
 }
 
 
-void InitDebugAranges( dw_client cli )
+void DW_InitDebugAranges( dw_client cli )
 {
     uint_8      buf[2];
 
@@ -59,7 +59,7 @@ void InitDebugAranges( dw_client cli )
 }
 
 
-void FiniDebugAranges( dw_client cli )
+void DW_FiniDebugAranges( dw_client cli )
 {
     CLISectionWriteZeros( cli, DW_DEBUG_ARANGES, cli->segment_size + 2 * cli->offset_size );
     /* backpatch the section length */

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -74,13 +75,14 @@ ResNameOrOrdinal *ResReadNameOrOrdinal( FILE *fp )
 
     /* copy the new new Name or Ordinal into the correct place */
     if( !error ) {
-        newptr->ord.fFlag = flags;
         if( flags == 0xff ) {
+            newptr->ord.fFlag = 0xff;
             newptr->ord.wOrdinalID = ord;
+        } else if( flags == 0) {
+            newptr->name[0] = '\0';
         } else {
-            if( restofstr != NULL ) {
-                memcpy( newptr->name + 1, restofstr, stringlen );
-            }
+            newptr->name[0] = flags;
+            memcpy( newptr->name + 1, restofstr, stringlen );
         }
     }
 
@@ -129,16 +131,16 @@ ResNameOrOrdinal *ResRead32NameOrOrdinal( FILE *fp )
 
     /* copy the new Name or Ordinal into the correct place */
     if( !error ) {
-        newptr->ord.fFlag = flags;
         if( flags == 0xffff ) {
+            newptr->ord.fFlag = 0xff;
             newptr->ord.wOrdinalID = ord;
+        } else if( flags == 0 ) {
+            newptr->name[0] = '\0';                 /* NUL character */
         } else {
-            if( restofstr != NULL ) {
-                memcpy( newptr->name + 1, restofstr, stringlen );
-            }
+            newptr->name[0] = UNI2ASCII( flags );
+            memcpy( newptr->name + 1, restofstr, stringlen );
         }
     }
-
 
     if( restofstr != NULL ) {
         WRESFREE( restofstr );

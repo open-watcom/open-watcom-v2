@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -51,13 +51,16 @@ enum scan_class {
 
 extern const unsigned char  TokValue[];
 
-static FCB              rescan_tmp_file;
+static FCB              rescan_fcb;
 #ifdef CHAR_MACRO
 static int              SavedCurrChar;      /* used when get tokens from macro */
 #endif
 static unsigned char    ClassTable[LCHR_MAX];
 
-static unsigned char InitClassTable[] = {
+static struct {
+    unsigned short  chr;
+    unsigned char   cls;
+} InitClassTable[] = {
     '\r',       SCAN_CR,
     '\n',       SCAN_NEWLINE,
     ' ',        SCAN_WHITESPACE,
@@ -93,6 +96,10 @@ static unsigned char InitClassTable[] = {
     '|',        SCAN_DELIM2,        // |, |=, ||
     '_',        SCAN_NAME,
     'L',        SCAN_WIDE,
+    LCHR_EOF,   SCAN_EOF,
+#ifdef CHAR_MACRO
+    LCHR_MACRO, SCAN_MACRO,
+#endif
     '\0',       0
 };
 
@@ -108,19 +115,19 @@ void NewLineStartPos( FCB *srcfile )
 void ReScanInit( const char *ptr )
 /********************************/
 {
-    rescan_tmp_file.src_ptr = (const unsigned char *)ptr;
+    rescan_fcb.src_ptr = (const unsigned char *)ptr;
 }
 
 const char *ReScanPos( void )
 /***************************/
 {
-    return( (const char *)rescan_tmp_file.src_ptr );
+    return( (const char *)rescan_fcb.src_ptr );
 }
 
 static int reScanGetNextChar( void )
 /**********************************/
 {
-    CurrChar = *rescan_tmp_file.src_ptr++;
+    CurrChar = *rescan_fcb.src_ptr++;
     if( CurrChar == '\0' ) {
         CompFlags.rescan_buffer_done = true;
     }
@@ -141,34 +148,22 @@ static void reScanGetNextCharUndo( int c )
 {
     /* unused parameters */ (void)c;
 
-    rescan_tmp_file.src_ptr--;
+    rescan_fcb.src_ptr--;
     CompFlags.rescan_buffer_done = false;
 }
 
-unsigned hashpjw( const char *s )
-/*******************************/
+static unsigned hashpjw( const char *s, size_t len )
+/**************************************************/
 {
     unsigned        h;
-    unsigned char   c;
+    size_t          i;
 
     h = *(const unsigned char *)s++;
-    if( h != 0 ) {
-        c = *s++;
-        if( c != '\0' ) {
-            h = ( h << 4 ) + c;
-            for( ;; ) {
-                h &= 0x0fff;
-                c = *s++;
-                if( c == '\0' )
-                    break;
-                h = ( h << 4 ) + c;
-                h = ( h ^ (h >> 12) ) & 0x0fff;
-                c = *s++;
-                if( c == '\0' )
-                    break;
-                h = ( h << 4 ) + c;
-                h = h ^ (h >> 12);
-            }
+    if( len > 1 ) {
+        h = ( ( h << 4 ) + *(const unsigned char *)s++ ) & 0x0fff;
+        for( i = 2; i < len; i++) {
+            h = ( h << 4 ) + *(const unsigned char *)s++;
+            h = ( h ^ ( h >> 12 ) ) & 0x0fff;
         }
     }
     return( h );
@@ -179,7 +174,9 @@ id_hash_idx CalcHashID( const char *id )
 {
     unsigned    hash;
 
-    hash = hashpjw( id );
+    if( *id == '\0' )
+        return( 0 );
+    hash = hashpjw( id, strlen( id ) );
     return( (id_hash_idx)( hash % ID_HASH_SIZE ) );
 }
 
@@ -188,9 +185,10 @@ mac_hash_idx CalcHashMacro( const char *id )
 {
     unsigned    hash;
 
-    hash = hashpjw( id );
+    if( *id == '\0' )
+        return( 0 );
+    hash = hashpjw( id, strlen( id ) );
 #if ( MACRO_HASH_SIZE > 0x0ff0 ) && ( MACRO_HASH_SIZE < 0x0fff )
-    hash &= 0x0fff;
     if( hash >= MACRO_HASH_SIZE ) {
         hash -= MACRO_HASH_SIZE;
     }
@@ -198,6 +196,14 @@ mac_hash_idx CalcHashMacro( const char *id )
     hash = hash % MACRO_HASH_SIZE;
 #endif
     return( (mac_hash_idx)hash );
+}
+
+str_hash_idx CalcStringHash( STR_HANDLE lit )
+/*******************************************/
+{
+    if( lit->length == 0 )
+        return( 0 );
+    return( (str_hash_idx)( hashpjw( lit->literal, lit->length ) % STRING_HASH_SIZE ) );
 }
 
 TOKEN KwLookup( const char *buf, size_t len )
@@ -210,8 +216,9 @@ TOKEN KwLookup( const char *buf, size_t len )
     /*
      * look up id in keyword table
      */
-    if( CHECK_STD( < , C99 ) ) {
+    if( CompVars.cstd < STD_C99 ) {
         switch( token ) {
+        case T__BOOL:
         case T_INLINE:
             if( CompFlags.extensions_enabled )
                 break;
@@ -219,7 +226,6 @@ TOKEN KwLookup( const char *buf, size_t len )
         case T_RESTRICT:
         case T__COMPLEX:
         case T__IMAGINARY:
-        case T__BOOL:
         case T___OW_IMAGINARY_UNIT:
             return( T_ID );
         }
@@ -242,7 +248,7 @@ static int getIDName( int c )
     while( CharSet[c] & (C_AL | C_DI) ) {
         while( CharSet[c] & (C_AL | C_DI) ) {
             WriteBufferChar( c );
-            c = *SrcFile->src_ptr++;
+            c = *SrcFiles->src_ptr++;
         }
         if( (CharSet[c] & C_EX) == 0 )
             break;
@@ -460,7 +466,8 @@ static TOKEN doScanPPNumber( void )
           || c == '.' ) {
             WriteBufferChar( c );
         } else if( ( prevc == 'e' || prevc == 'E'
-          || CHECK_STD( > , C89 ) && ( prevc == 'p' || prevc == 'P' ) )
+          || ( CompVars.cstd > STD_C89 )
+          && ( prevc == 'p' || prevc == 'P' ) )
           && ( c == '+' || c == '-' ) ) {
             WriteBufferChar( c );
             if( CompFlags.extensions_enabled ) {
@@ -607,6 +614,53 @@ is64:
     return( ret );
 }
 
+
+static cnv_cc Cnv2( void )
+/*************************/
+{
+    const char      *curr;
+    unsigned char   c;
+    size_t          len;
+    unsigned        value;
+    uint64          value64;
+    cnv_cc          ret;
+
+    /*
+     * skip the 0b start of the binary number
+     */
+    curr = Buffer + 2;
+    len = TokenLen - 2;
+    value = 0;
+    while( len-- > 0 ) {
+        c = *curr;
+        if( value & 0x80000000 ) {
+            /*
+             * value needs 64 bit
+             */
+            goto is64;
+        }
+        if( c == '0' || c == '1' ) {
+            value = value + value + ( c - '0' );
+        }
+        ++curr;
+    }
+    Constant = value;
+    return( CNV_32 );
+is64:
+    ret = CNV_64;
+    U32ToU64( value, &value64 );
+    do {
+        c = *curr;
+        if( U64Cnv2( &value64, c - '0' ) ) {
+            ret = CNV_OVR;
+        }
+        ++curr;
+    } while( len-- > 0 );
+    Constant64 = value64;
+    return( ret );
+}
+
+
 static cnv_cc Cnv10( void )
 /*************************/
 {
@@ -659,7 +713,7 @@ static TOKEN doScanNum( void )
     TOKEN       token;
 
     struct {
-        enum { CON_DEC, CON_HEX, CON_OCT, CON_ERR } form;
+        enum { CON_DEC, CON_HEX, CON_OCT, CON_BIN, CON_ERR } form;
         enum { SUFF_NONE,SUFF_U, SUFF_L,SUFF_UL,  SUFF_I, SUFF_UI,
                SUFF_LL,SUFF_ULL } suffix;
     } con;
@@ -678,7 +732,7 @@ static TOKEN doScanNum( void )
                 c = WriteBufferCharNextChar( c );
             }
 
-            if( CHECK_STD( > , C89 ) ) {
+            if( CompVars.cstd > STD_C89 ) {
                 if( c == '.'
                   || c == 'p'
                   || c == 'P' ) {
@@ -694,6 +748,25 @@ static TOKEN doScanNum( void )
                 con.form = CON_ERR;
                 if( diagnose_lex_error() ) {
                     CErr1( ERR_INVALID_HEX_CONSTANT );
+                }
+            }
+        } else if(( c == 'b' || c == 'B' ) &&
+            ( CompFlags.extensions_enabled || ( CompVars.cstd >= STD_C23 ))) {
+            bad_token_type = ERR_INVALID_BINARY_CONSTANT;
+            con.form = CON_BIN;
+            c = WriteBufferCharNextChar( c );
+            while( c == '0' || c == '1' ) {
+                c = WriteBufferCharNextChar( c );
+            }
+
+            if( TokenLen == 2 ) {
+                /*
+                 * just collected a 0b
+                 */
+                BadTokenInfo = ERR_INVALID_BINARY_CONSTANT;
+                con.form = CON_ERR;
+                if( diagnose_lex_error() ) {
+                    CErr1( ERR_INVALID_BINARY_CONSTANT );
                 }
             }
         } else {
@@ -754,6 +827,9 @@ static TOKEN doScanNum( void )
         break;
     case CON_DEC:
         ov = Cnv10();
+        break;
+    case CON_BIN:
+        ov = Cnv2();
         break;
     case CON_ERR:
         ov = CNV_32;
@@ -1176,7 +1252,7 @@ static void doScanComment( void )
             }
             if( c == '\n' ) {
                 CppPrtChar( c );
-                NewLineStartPos( SrcFile );
+                NewLineStartPos( SrcFiles );
             } else if( c != '\r'
               && CompFlags.cpp_keep_comments ) {
                 CppPrtChar( c );
@@ -1194,13 +1270,13 @@ static void doScanComment( void )
         c = '\0';
         for( ; c != LCHR_EOF; ) {
             if( c == '\n' ) {
-                NewLineStartPos( SrcFile );
-                TokenLoc = SrcFileLoc = SrcFile->src_loc;
+                NewLineStartPos( SrcFiles );
+                TokenLoc = SrcFileLoc = SrcFiles->src_loc;
             }
             do {
                 do {
                     prev_char = c;
-                    c = *SrcFile->src_ptr++;
+                    c = *SrcFiles->src_ptr++;
                 } while( (CharSet[c] & C_EX) == 0 );
                 c = GetCharCheck( c );
                 if( c == LCHR_EOF ) {
@@ -1295,8 +1371,6 @@ static TOKEN ScanSlash( void )
     return( token );
 }
 
-#define OUTC(x)     if(ofn != NULL) ofn(x)
-
 static msg_codes doScanHex( int max, escinp_fn ifn, escout_fn ofn )
 /******************************************************************
  * Warning! this function is also used from cstring.c
@@ -1318,7 +1392,8 @@ static msg_codes doScanHex( int max, escinp_fn ifn, escout_fn ofn )
             break;
         if( ( CharSet[c] & (C_HX | C_DI) ) == 0 )
             break;
-        OUTC( c );
+        if( ofn != NULL )
+            ofn( c );
         if( CharSet[c] & C_HX )
             c = (( c | HEX_MASK ) - HEX_BASE ) + 10 + '0';
         if( value & 0xF0000000 )
@@ -1361,7 +1436,8 @@ int ESCChar( int c, escinp_fn ifn, msg_codes *perr_msg, escout_fn ofn )
         n = 0;
         i = 3;
         while( i-- > 0 && c >= '0' && c <= '7' ) {
-            OUTC( c );
+            if( ofn != NULL )
+                ofn( c );
             n = n * 8 + c - '0';
             c = ifn();
         }
@@ -1369,13 +1445,15 @@ int ESCChar( int c, escinp_fn ifn, msg_codes *perr_msg, escout_fn ofn )
         /*
          * get hex escape sequence
          */
-        OUTC( c );
+        if( ofn != NULL )
+            ofn( c );
         err_msg = doScanHex( 127, ifn, ofn );
         if( err_msg != ERR_NONE )
             *perr_msg = err_msg;
         n = Constant;
     } else {
-        OUTC( c );
+        if( ofn != NULL )
+            ofn( c );
         switch( c ) {
         case 'a':
             c = ESCAPE_a;
@@ -1702,7 +1780,7 @@ static TOKEN ScanWhiteSpace( void )
     } else {
         do {
             do {
-                c = *SrcFile->src_ptr++;
+                c = *SrcFiles->src_ptr++;
             } while( CharSet[c] & C_WS );
             if( (CharSet[c] & C_EX) == 0 )
                 break;
@@ -1744,8 +1822,8 @@ void SkipAhead( void )
               && IS_PPCTL_NORMAL() ) {
                 CppPrtChar( '\n' );
             }
-            NewLineStartPos( SrcFile );
-            SrcFileLoc = SrcFile->src_loc;
+            NewLineStartPos( SrcFiles );
+            SrcFileLoc = SrcFiles->src_loc;
             NextChar();
         }
         if( CurrChar != '/' )
@@ -1765,8 +1843,8 @@ void SkipAhead( void )
 static TOKEN ScanNewline( void )
 /******************************/
 {
-    NewLineStartPos( SrcFile );
-    SrcFileLoc = SrcFile->src_loc;
+    NewLineStartPos( SrcFiles );
+    SrcFileLoc = SrcFiles->src_loc;
     if( PPControl & PPCTL_EOL )
         return( T_NULL );
     return( CheckControl() );
@@ -1782,14 +1860,6 @@ static TOKEN ScanCarriageReturn( void )
     }
 }
 
-#if defined(__DOS__) || defined(__OS2__) || defined(__NT__)
-    #define     SYS_EOF_CHAR 0x1A
-#elif defined(__UNIX__) || defined(__RDOS__)
-    #undef      SYS_EOF_CHAR
-#else
-    #error System end of file character not configured.
-#endif
-
 static TOKEN ScanInvalid( void )
 /*******************************
  * TokenLen is alway lower then BUF_SIZE that
@@ -1800,14 +1870,8 @@ static TOKEN ScanInvalid( void )
 
     token = T_BAD_CHAR;
     Buffer[0] = CurrChar;
+    Buffer[1] = '\0';
     TokenLen = 1;
-#ifdef SYS_EOF_CHAR
-    if( CurrChar == SYS_EOF_CHAR ) {
-        CloseSrcFile( SrcFile );
-        token = T_WHITE_SPACE;
-    }
-#endif
-    Buffer[TokenLen] = '\0';
     NextChar();
     return( token );
 }
@@ -1911,9 +1975,9 @@ TOKEN ReScanToken( void )
     saved_nextchar = NextChar;
     saved_ungetchar = UnGetChar;
     saved_getcharcheck = GetCharCheck;
-    oldSrcFile = SrcFile;
+    oldSrcFile = SrcFiles;
 
-    SrcFile = &rescan_tmp_file;
+    SrcFiles = &rescan_fcb;
     NextChar = reScanGetNextChar;
     UnGetChar = reScanGetNextCharUndo;
     GetCharCheck = reScanGetCharCheck;
@@ -1927,9 +1991,9 @@ TOKEN ReScanToken( void )
       && CompFlags.wide_char_string ) {
         token = T_LSTRING;
     }
-    SrcFile->src_ptr--;
+    SrcFiles->src_ptr--;
 
-    SrcFile = oldSrcFile;
+    SrcFiles = oldSrcFile;
     CurrChar = saved_currchar;
     NextChar = saved_nextchar;
     UnGetChar = saved_ungetchar;
@@ -1948,12 +2012,8 @@ void ScanInit( void )
     memset( &ClassTable['A'], SCAN_NAME,    26 );
     memset( &ClassTable['a'], SCAN_NAME,    26 );
     memset( &ClassTable['0'], SCAN_NUM,     10 );
-    ClassTable[LCHR_EOF] = SCAN_EOF;
-#ifdef CHAR_MACRO
-    ClassTable[LCHR_MACRO] = SCAN_MACRO;
-#endif
-    for( i = 0; (c = InitClassTable[i]) != '\0'; i += 2 ) {
-        ClassTable[c] = InitClassTable[i + 1];
+    for( i = 0; (c = InitClassTable[i].chr) != '\0'; i++ ) {
+        ClassTable[c] = InitClassTable[i].cls;
     }
     CurrChar = '\n';
     PPControl = PPCTL_NORMAL;

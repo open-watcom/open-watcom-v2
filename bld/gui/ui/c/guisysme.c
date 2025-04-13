@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2018-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2018-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -114,13 +114,13 @@ bool GUISetSystemMenu( UIMENUITEM *menuitems, gui_create_styles style )
         menuitems[i].flags = SystemMenu[i].flags;
         switch( menuitems[i].event ) {
         case EV_SYS_MENU_MOVE:
-            menuitems[i].name = GUIStrDup( LIT_GUI( Move ), &ok );
+            menuitems[i].name = GUIStrDupOK( LIT_GUI( Move ), &ok );
             if( !ok ) {
                 return( false );
             }
             break;
         case EV_SYS_MENU_SIZE:
-            menuitems[i].name = GUIStrDup( LIT_GUI( Size ), &ok );
+            menuitems[i].name = GUIStrDupOK( LIT_GUI( Size ), &ok );
             if( !ok ) {
                 return( false );
             }
@@ -129,14 +129,14 @@ bool GUISetSystemMenu( UIMENUITEM *menuitems, gui_create_styles style )
             }
             break;
         case EV_SYS_MENU_RESTORE:
-            menuitems[i].name = GUIStrDup( LIT_GUI( Restore ), &ok );
+            menuitems[i].name = GUIStrDupOK( LIT_GUI( Restore ), &ok );
             if( !ok ) {
                 return( false );
             }
             GUIChangeMenu( &menuitems[i], GUI_STYLE_MENU_GRAYED );
             break;
         case EV_SYS_MENU_MINIMIZE:
-            menuitems[i].name = GUIStrDup( LIT_GUI( Minimize ), &ok );
+            menuitems[i].name = GUIStrDupOK( LIT_GUI( Minimize ), &ok );
             if( !ok ) {
                 return( false );
             }
@@ -145,7 +145,7 @@ bool GUISetSystemMenu( UIMENUITEM *menuitems, gui_create_styles style )
             }
             break;
         case EV_SYS_MENU_MAXIMIZE:
-            menuitems[i].name = GUIStrDup( LIT_GUI( Maximize ), &ok );
+            menuitems[i].name = GUIStrDupOK( LIT_GUI( Maximize ), &ok );
             if( !ok ) {
                 return( false );
             }
@@ -154,7 +154,7 @@ bool GUISetSystemMenu( UIMENUITEM *menuitems, gui_create_styles style )
             }
             break;
         case EV_SYS_MENU_CLOSE:
-            menuitems[i].name = GUIStrDup( LIT_GUI( Close ), &ok );
+            menuitems[i].name = GUIStrDupOK( LIT_GUI( Close ), &ok );
             if( !ok ) {
                 return( false );
             }

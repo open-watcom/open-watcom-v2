@@ -8,8 +8,8 @@ track_flags_386 = -D_TRACK -of+
 track_flags_axp = -D_TRACK
 
 !ifdef cg_trmem
-extra_c_flags_memmgt    = $(track_flags_$(host_cpu))
-extra_c_flags_trmem     = $(track_flags_$(host_cpu))
+extra_c_flags_f_memmgt    = $(track_flags_$(host_cpu))
+extra_c_flags_f_trmem     = $(track_flags_$(host_cpu))
 !endif
 
 inc_dirs = -I. $(inc_dirs_targ) -I"$(cg_dir)/h" $(cli_cfloat_inc_dirs) $(cli_dwarfw_inc_dirs) -I"$(comp_cfg_dir)/h"

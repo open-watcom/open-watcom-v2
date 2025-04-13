@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -57,8 +57,7 @@
 
 
 #ifdef DEVBUILD
-    #define __location " (" __FILE__ "," __xstr(__LINE__) ")"
-    #define DbgNever()          (CFatal( "should never execute this" __location ))
+    #define DbgNever()  (FEMessage( FEMSG_FATAL, "should never execute this" __location ))
 #else
     #define DbgNever()
 #endif
@@ -193,7 +192,17 @@ static bool checkSTD( unsigned *value )
                 cstd = STD_C89;
             } else if( CmdRecogChar( '9' ) && CmdRecogChar( '9' ) ) {
                 cstd = STD_C99;
+            } else if( CmdRecogChar( '1' ) && CmdRecogChar( '1' ) ) {
+                cstd = STD_C11;
+            } else if( CmdRecogChar( '1' ) && CmdRecogChar( '7' ) ) {
+                cstd = STD_C17;
+            } else if( CmdRecogChar( '2' ) && CmdRecogChar( '3' ) ) {
+                cstd = STD_C23;
+            } else {
+                BadCmdLineChar();
             }
+        } else {
+            BadCmdLineChar();
         }
     }
     if( cstd != STD_NONE ) {
@@ -454,7 +463,7 @@ static void AnalyseAnyTargetOptions( OPT_STORAGE *data )
     }
     switch( data->cstd ) {
     case OPT_ENUM_cstd_za99:
-        SET_STD( C99 );
+        CompVars.cstd = STD_C99;
         break;
     case OPT_ENUM_cstd_zastd:
         if( data->zastd_value != STD_NONE )
@@ -655,9 +664,6 @@ static void AnalyseAnyTargetOptions( OPT_STORAGE *data )
         GenSwitches |= CGSW_GEN_ECHO_API_CALLS;
     }
 #endif
-    if( data->nm ) {
-        SetStringOption( &ModuleName, &(data->nm_value) );
-    }
     if( data->oa ) {
         GenSwitches |= CGSW_GEN_RELAX_ALIAS;
     }
@@ -787,10 +793,6 @@ static void AnalyseAnyTargetOptions( OPT_STORAGE *data )
     if( data->zls ) {
         CompFlags.emit_targimp_symbols = false;
     }
-    if( data->zm ) {
-        CompFlags.multiple_code_segments = true;
-        CompFlags.zm_switch_used = true;
-    }
     if( data->zp ) {
         PackAmount = data->zp_value;
         GblPackAmount = PackAmount;
@@ -806,14 +808,12 @@ static void AnalyseAnyTargetOptions( OPT_STORAGE *data )
         OPT_STRING *str;
         while( (str = data->tp_value) != NULL ) {
             data->tp_value = str->next;
-            PragmaSetToggle( str->data, 1, false );
+            SetToggleFlag( str->data, 1, false );
             CMemFree( str );
         }
     }
     if( data->zi ) {
         CompFlags.extra_stats_wanted = true;
-        // try to prevent distortions caused by debug stuff
-        TOGGLEDBG( no_mem_cleanup ) = true;
     }
 #endif
     SetCharacterEncoding( data );
@@ -861,15 +861,13 @@ static char *ReadIndirectFile( const char *fname )
               || ch == '\n' ) {
                 *str = ' ';
             }
-#if !defined( __UNIX__ )
             /*
              * if DOS end of file (^Z) -> mark end of str
              */
-            if( ch == 0x1A ) {
+            if( ch == DOS_EOF_CHAR ) {
                 *str = '\0';
                 break;
             }
-#endif
         }
     }
     return( env );

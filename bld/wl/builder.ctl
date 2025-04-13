@@ -74,6 +74,12 @@ set PROJDIR=<CWD>
     <CCCMD> qnx386/wlink.sym                "<OWRELROOT>/qnx/sym/"
     <CCCMD> lnk/qnx/wlink.lnk               "<OWRELROOT>/qnx/etc/"
 
+    <CCCMD> bsdx64/wlink.exe                "<OWRELROOT>/binb64/wlink"
+    <CCCMD> ms2wlink/bsdx64/ms2wlink.exe    "<OWRELROOT>/binb64/ms2wlink"
+#    <CCCMD> fcenable/bsdx64/fcenable.exe    "<OWRELROOT>/binb64/fcenable"
+    <CCCMD> exe2bin/bsdx64/exe2bin.exe      "<OWRELROOT>/binb64/exe2bin"
+    <CCCMD> lnk/bsdx64/wlink.lnk            "<OWRELROOT>/binb64/"
+
     <CCCMD> ntx64.dll/wlink.exe             "<OWRELROOT>/binnt64/"
     <CCCMD> ntx64.dll/wlinkd.dll            "<OWRELROOT>/binnt64/"
     <CCCMD> ms2wlink/ntx64/ms2wlink.exe     "<OWRELROOT>/binnt64/"

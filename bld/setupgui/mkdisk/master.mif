@@ -10,15 +10,14 @@ mkdisk_trmem = 1
 !include defrule.mif
 !include deftarg.mif
 !include trmem.mif
+!include $(setupgui_dir)/zlib/client.mif
+!include $(setupgui_dir)/ziplib/client.mif
 
-ziplib = $(setupgui_dir)/ziplib/$(objs_subdir)/ziplib.lib
-zlib   = $(setupgui_dir)/zlib/$(objs_subdir)/zlib.lib
+#bld_extra_incs = -I"$(setupgui_dir)/h" $(cli_libzip_inc_dirs) $(cli_zlib_inc_dirs) -I"$(builder_dir)/h" -I"$(fe_misc_dir)/h"
 
-#bld_extra_incs = -I"$(setupgui_dir)/h" -I"$(libzip_dir)/lib" -I"$(zlib_dir)" -I"$(builder_dir)/h" -I"$(fe_misc_dir)/h"
+extra_cpp_flags_f_utils = $(trmem_cpp_flags)
 
-extra_cpp_flags_utils = $(trmem_cpp_flags)
-
-extra_c_flags_utils = $(trmem_cover_cflags)
+extra_c_flags_f_utils = $(trmem_cover_cflags)
 
 .c : ..;$(trmem_dir)
 
@@ -36,8 +35,8 @@ mkinf.exe: mkinf.c
 
 mkexezip.exe: mkexezip.c
     @%make echo_bldccl
-    $(bld_ccl) $(ppflags_common) $(ppflags_autodep) $(bld_ppflags_sys) $(bld_cppflags) $[@ $(bld_cclflags) -I"$(libzip_dir)/lib" -I"$(zlib_dir)" -I"$(setupgui_dir)/h" $(ziplib) $(zlib) $(bld_ldflags)
+    $(bld_ccl) $(ppflags_common) $(ppflags_autodep) $(bld_ppflags_sys) $(bld_cppflags) $[@ $(bld_cclflags) $(cli_libzip_inc_dirs) $(cli_zlib_inc_dirs) -I"$(setupgui_dir)/h" $(cli_libzip_libs) $(cli_zlib_libs) $(bld_ldflags)
 
 uzip.exe: uzip.c
     @%make echo_bldccl
-    $(bld_ccl) $(ppflags_common) $(ppflags_autodep) $(bld_ppflags_sys) $(bld_cppflags) $[@ $(bld_cclflags) -I"$(libzip_dir)/lib" $(ziplib) $(zlib) $(bld_ldflags)
+    $(bld_ccl) $(ppflags_common) $(ppflags_autodep) $(bld_ppflags_sys) $(bld_cppflags) $[@ $(bld_cclflags) $(cli_libzip_inc_dirs) $(cli_libzip_libs) $(cli_zlib_libs) $(bld_ldflags)

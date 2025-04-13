@@ -8,7 +8,7 @@ proj_name = wattcp
 wattcp_autodepends = .AUTODEPEND
 !endif
 
-def_fpu_flags_dos_i86 = -fpc
+def_fpu_flags_dosi86 = -fpc
 
 !include cproj.mif
 !include defrule.mif

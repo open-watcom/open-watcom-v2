@@ -1,0 +1,153 @@
+\documentclass[11pt]{report}
+
+% Load essential packages
+\usepackage{fontspec}       % Enables system fonts & Unicode support
+\usepackage{graphicx}       % Allows image inclusion
+\usepackage{listings}       % Code listings
+\usepackage{xcolor}         % For syntax highlighting in listings
+\usepackage{hyperref}       % Clickable links in PDF
+\usepackage{luacode}        % Allows Lua scripting
+\usepackage{marginnote}     % For margin notes (optional; currently not used)
+\usepackage{fancyhdr}       % For custom headers/footers
+\usepackage{etoolbox}       % For patching chapter pages
+\usepackage[                % Set page margins suitable for screen reading
+  left=1in,
+  right=1in,
+  top=1in,
+  bottom=1.25in
+]{geometry}
+
+% Required to make fancyhdr happy with 11pt main font size
+\setlength{\headheight}{14pt}
+
+% Set a modern font (optional, replace as needed)
+\setmainfont{Libertinus Serif}
+
+
+% Define a reusable macro for Open Watcom documentation headers/footers
+\newcommand{\owdocpagestyle}{%
+  \pagestyle{fancy}
+  \fancyhf{} % Clear all headers/footers
+
+  % Header: chapter title on the left, page number on the right
+  \fancyhead[L]{\leftmark}
+  \fancyhead[R]{\thepage}
+
+  % Footer (optional)
+  \fancyfoot[C]{Open Watcom Documentation}
+
+  % Rule thickness (0pt disables, 0.4pt is default)
+  \renewcommand{\headrulewidth}{1.0pt}
+  \renewcommand{\footrulewidth}{1.0pt}
+
+  % Ensure first pages of chapters use the same header/footer
+  \patchcmd{\chapter}{\thispagestyle{plain}}{\thispagestyle{fancy}}{}{}
+}
+
+% Invoke the style.
+\owdocpagestyle
+
+% Configure code listings
+\lstset{
+  language=C,                 % Default to C (can be changed per listing)
+  basicstyle=\ttfamily\small,
+  keywordstyle=\color{blue},
+  commentstyle=\color{gray!70!black},
+  stringstyle=\color{red},
+  tabsize=4,
+  showstringspaces=false,
+  numberstyle=\tiny,
+  stepnumber=1,
+  breaklines=true
+}
+
+% Some temporary macros.
+\newcommand{\filepath}[1]{\texttt{\detokenize{#1}}}
+\newcommand{\code}[1]{\texttt{\detokenize{#1}}}
+\newcommand{\term}[1]{\texttt{\detokenize{#1}}}
+\newcommand{\OW}{Open Watcom}
+\newcommand{\bitwidth}[1]{#1\mbox{-}bit}  % e.g. 32-bit, 64-bit, etc.
+\newcommand{\algorithm}[1]{\textsc{#1}}   % Caution: some fonts lack small caps.
+
+% Define a "note" macro with a bold margin label
+% Use this for general notes or comments that don't fit any of the categories below.
+\newcommand{\note}[1]{%
+  \marginpar{\textbf{Note}}%
+  $\langle\langle\langle$~#1~$\rangle\rangle\rangle$%
+}
+
+% Define a "todo" macro similar to "note", with soft colored margin label
+% Use this for tasks that need to be completed.
+\newcommand{\todo}[1]{%
+  \marginpar{\textcolor{teal!70!black}{\textbf{Todo}}}%
+  $\langle\langle\langle$~#1~$\rangle\rangle\rangle$%
+}
+
+% Define a "fixme" macro similar to "todo", with soft orange margin label
+% Use this for errors in the existing document that need to be corrected.
+\newcommand{\fixme}[1]{%
+  \marginpar{\textcolor{orange!80!black}{\textbf{Fixme}}}%
+  $\langle\langle\langle$~#1~$\rangle\rangle\rangle$%
+}
+
+% Define a "clarify" macro similar to "todo", with soft blue margin label
+% Use this for sections that need clarification or further explanation.
+\newcommand{\clarify}[1]{%
+  \marginpar{\textcolor{blue!60!black}{\textbf{Clarify}}}%
+  $\langle\langle\langle$~#1~$\rangle\rangle\rangle$%
+}
+
+
+% Block paragraphs (alternatively, consider using the paraskip package)
+\setlength{\parindent}{0em}
+\setlength{\parskip}{1.75ex plus0.5ex minus0.5ex}
+
+\begin{document}
+
+\begin{titlepage}
+  \centering
+  \vspace*{2cm}
+
+  % Open Watcom logo
+  \includegraphics[width=0.3\textwidth]{ow-logo.pdf}
+
+  \vspace{1cm}
+
+  % Stylized title text (or just a regular title)
+  \includegraphics[width=0.7\textwidth]{ow-text.pdf}
+
+  \vspace{2cm}
+
+  {\Large\bfseries Open Watcom Standard Template Library (OWSTL)}
+
+  \vspace{1cm}
+
+  \textit{Design Documentation}
+
+  \vfill
+
+  \textbf{Open Watcom Contributors} \\
+  \today
+\end{titlepage}
+
+
+% Use Roman numerals for the table of contents.
+\pagenumbering{roman}
+\tableofcontents
+\clearpage
+
+% Switch to Arabic numerals and reset the page numbering.
+\pagenumbering{arabic}
+\setcounter{page}{1}
+
+\input{intro}
+\input{algorith}
+\input{deque}
+\input{list}
+\input{rbtree}
+\input{stack}
+\input{string}
+\input{type_tra}
+\input{vector}
+
+\end{document}

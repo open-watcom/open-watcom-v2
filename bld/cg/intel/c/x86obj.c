@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -345,20 +345,20 @@ static  void    ReallocArray( array_control *arr, unsigned need )
 /***************************************************************/
 {
     byte        *p;
-    unsigned    new;
+    unsigned    new_len;
 
-    new = arr->alloc;
+    new_len = arr->alloc;
     for( ;; ) {
-        new += arr->inc;
-        if( new >= need ) {
+        new_len += arr->inc;
+        if( new_len >= need ) {
             break;
         }
     }
-    p = CGAlloc( arr->entry * new );
+    p = CGAlloc( arr->entry * new_len );
     Copy( arr->array, p, arr->entry * arr->used );
     CGFree( arr->array );
     arr->array = p;
-    arr->alloc = new;
+    arr->alloc = new_len;
 }
 
 static  byte    SegmentAttr( byte align, seg_attr tipe, bool use_16 )
@@ -845,13 +845,13 @@ static void DoSegDefsAndFree( array_control *dgroup_def, array_control *tgroup_d
 void    DefSegment( segment_id segid, seg_attr attr, const char *str, uint align, bool use_16 )
 /*********************************************************************************************/
 {
-    segdef              *new;
+    segdef              *new_seg;
     segment_id          first_code_segid;
 
-    new = AllocSegDefs( str );
-    new->segid = segid;
-    new->attr = attr;
-    new->align = align;
+    new_seg = AllocSegDefs( str );
+    new_seg->segid = segid;
+    new_seg->attr = attr;
+    new_seg->align = align;
     first_code_segid = BACKSEGS;
     if( attr & EXEC ) {
         if( codeSegId == BACKSEGS ) {
@@ -859,8 +859,8 @@ void    DefSegment( segment_id segid, seg_attr attr, const char *str, uint align
             first_code_segid = segid;
         }
         if( OptForSize == 0 ) {
-            if( new->align < 16 ) {
-                new->align = 16;
+            if( new_seg->align < 16 ) {
+                new_seg->align = 16;
             }
         }
     }
@@ -1139,8 +1139,12 @@ void    ObjInit( void )
     CurrFNo = 0;
     OpenObj();
     names = InitArray( sizeof( byte ), MODEST_HDR, INCREMENT_HDR );
-    OutName( FEAuxInfo( NULL, FEINF_SOURCE_NAME ), names );
+    OutName( FEModuleName(), names );
     PutObjOMFRec( CMD_THEADR, names );
+    if( _IsModel( CGSW_GEN_DBG_NUMBERS ) ) {
+        OutName( FEAuxInfo( NULL, FEINF_SOURCE_NAME ), names );
+        PutObjOMFRec( CMD_THEADR, names );
+    }
 #if _TARGET & _TARG_80386
     if( _IsTargetModel( CGSW_X86_EZ_OMF )
       || _IsTargetModel( CGSW_X86_FLAT_MODEL ) ) {
@@ -1176,7 +1180,7 @@ void    ObjInit( void )
         } else {
             OutByte( 0, names );
         }
-        OutString( FEAuxInfo( NULL, FEINF_SOURCE_LANGUAGE ), names );
+        OutString( (const char *)FEAuxInfo( NULL, FEINF_SOURCE_LANGUAGE ), names );
         PutObjOMFRec( CMD_COMENT, names );
     }
     for( depend = NULL; (depend = FEAuxInfo( depend, FEINF_NEXT_DEPENDENCY )) != NULL; ) {
@@ -3044,8 +3048,8 @@ void    OutLineNum( cg_linenum  line, bool label_line )
 }
 
 
-unsigned        SavePendingLine( unsigned new )
-/**********************************************
+unsigned        SavePendingLine( unsigned new_line )
+/***************************************************
  * We're about to dump some alignment bytes. Save and restore
  * the pending_line_number field so the that line number info
  * offset is after the alignment.
@@ -3054,7 +3058,7 @@ unsigned        SavePendingLine( unsigned new )
     unsigned    old;
 
     old = CurrSeg->obj->pending_line_number;
-    CurrSeg->obj->pending_line_number = new;
+    CurrSeg->obj->pending_line_number = new_line;
     return( old );
 }
 
@@ -3251,13 +3255,13 @@ void    TellObjNewProc( cg_sym_handle proc )
 void     TellObjVirtFuncRef( void *cookie )
 /*****************************************/
 {
-    virt_func_ref_list  *new;
+    virt_func_ref_list  *new_vf;
 
     PUSH_OP( codeSegId );
-        new = CGAlloc( sizeof( virt_func_ref_list ) );
-        new->cookie = cookie;
-        new->next = CurrSeg->virt_func_refs;
-        CurrSeg->virt_func_refs = new;
+        new_vf = CGAlloc( sizeof( virt_func_ref_list ) );
+        new_vf->cookie = cookie;
+        new_vf->next = CurrSeg->virt_func_refs;
+        CurrSeg->virt_func_refs = new_vf;
     POP_OP();
 }
 

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -41,20 +41,20 @@ typedef struct alloc_struct {
 
 static alloc_struct *AllocHead;       /* head of list of allocated chunks */
 
-void DWRVMInit( void )
+void DR_VMInit( void )
 /********************/
 {
     /* no action */
     AllocHead = NULL;
 }
 
-void DWRVMReset( void )
+void DR_VMReset( void )
 /*********************/
 {
     /* nothing to do here */
 }
 
-drmem_hdl DWRVMAlloc( unsigned long len, int sect )
+drmem_hdl DR_VMAlloc( unsigned long len, int sect )
 /*************************************************/
 {
     alloc_struct *nChunk;
@@ -63,22 +63,22 @@ drmem_hdl DWRVMAlloc( unsigned long len, int sect )
         return( 0 );
     }
 
-    nChunk = (alloc_struct *)DWRALLOC( len - 1 + sizeof( alloc_struct ) );
+    nChunk = (alloc_struct *)DR_ALLOC( len - 1 + sizeof( alloc_struct ) );
     if( nChunk == NULL ) {
-        DWREXCEPT( DREXCEP_OUT_OF_MMEM );
+        DR_EXCEPT( DREXCEP_OUT_OF_MMEM );
         return( 0 );
     }
 
     nChunk->next = AllocHead;
     AllocHead = nChunk;
 
-    DWRSEEK( DWRCurrNode->file, sect, 0 );
-    DWRREAD( DWRCurrNode->file, sect, nChunk->data, len );
+    DR_SEEK( DR_CurrNode->file, sect, 0 );
+    DR_READ( DR_CurrNode->file, sect, nChunk->data, len );
 
     return( (drmem_hdl)nChunk->data );
 }
 
-bool DWRVMSectDone( drmem_hdl base, unsigned_32 size )
+bool DR_VMSectDone( drmem_hdl base, unsigned_32 size )
 /****************************************************/
 {
     alloc_struct    *walk;
@@ -92,7 +92,7 @@ bool DWRVMSectDone( drmem_hdl base, unsigned_32 size )
     while( (walk = *lnk) != NULL ) {
         if( (drmem_hdl)walk->data == base ) {
             *lnk = walk->next;
-            DWRFREE( walk );
+            DR_FREE( walk );
             ret = true;
             break;
         }
@@ -102,7 +102,7 @@ bool DWRVMSectDone( drmem_hdl base, unsigned_32 size )
 }
 
 
-void DWRVMDestroy( void )
+void DR_VMDestroy( void )
 /***********************/
 {
     alloc_struct    *walk;
@@ -111,7 +111,7 @@ void DWRVMDestroy( void )
     for( walk = AllocHead; walk != NULL; ) {
         prev = walk;
         walk = walk->next;
-        DWRFREE( prev );
+        DR_FREE( prev );
     }
     AllocHead = NULL;
 }
@@ -130,31 +130,31 @@ static unsigned char readLEB( void **h )
     return( *(*(drmem_hdl *)h)++ );
 }
 
-int_64 DWRVMReadSLEB128( drmem_hdl *vmptr )
+int_64 DR_VMReadSLEB128( drmem_hdl *vmptr )
 /*****************************************/
 {
     return( DecodeSLEB128( (void **)vmptr, readLEB ) );
 }
 
-uint_64 DWRVMReadULEB128( drmem_hdl *vmptr )
+uint_64 DR_VMReadULEB128( drmem_hdl *vmptr )
 /******************************************/
 {
     return( DecodeULEB128( (void **)vmptr, readLEB ) );
 }
 
 #if 0
-static void DWRVMGetString( char *buf, drmem_hdl *hdlp )
+static void DR_VMGetString( char *buf, drmem_hdl *hdlp )
 /******************************************************/
 {
     uint len;
 
-    len = DWRVMStrLen( *hdlp ) + 1;
+    len = DR_VMStrLen( *hdlp ) + 1;
     memcpy( buf, *hdlp, len );
     *hdlp += len;
 }
 #endif
 
-char *DWRVMCopyString( drmem_hdl *info )
+char *DR_VMCopyString( drmem_hdl *info )
 /**************************************/
 {
     size_t      len;
@@ -164,11 +164,11 @@ char *DWRVMCopyString( drmem_hdl *info )
     src = *info;
     len = strlen( src ) + 1;
     *info += len;
-    dst = DWRALLOC( len );
+    dst = DR_ALLOC( len );
     return( memcpy( dst, src, len ) );
 }
 
-size_t DWRVMGetStrBuff( drmem_hdl str, char *buf, size_t max )
+size_t DR_VMGetStrBuff( drmem_hdl str, char *buf, size_t max )
 /************************************************************/
 {
     size_t      len;
@@ -186,23 +186,23 @@ size_t DWRVMGetStrBuff( drmem_hdl str, char *buf, size_t max )
     return( len );
 }
 
-unsigned_16 DWRVMReadWord( drmem_hdl hdl )
+unsigned_16 DR_VMReadWord( drmem_hdl hdl )
 /****************************************/
 {
     unsigned_16     word = *((unsigned_16 _WCUNALIGNED *)(hdl));
 
-    if( DWRCurrNode->byte_swap ) {
+    if( DR_CurrNode->byte_swap ) {
         SWAP_16( word );
     }
     return( word );
 }
 
-unsigned_32 DWRVMReadDWord( drmem_hdl hdl )
+unsigned_32 DR_VMReadDWord( drmem_hdl hdl )
 /*****************************************/
 {
     unsigned_32    dword = *((unsigned_32 _WCUNALIGNED *)(hdl));
 
-    if( DWRCurrNode->byte_swap ) {
+    if( DR_CurrNode->byte_swap ) {
         SWAP_32( dword );
     }
     return( dword );

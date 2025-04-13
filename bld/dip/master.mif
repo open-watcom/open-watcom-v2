@@ -46,32 +46,32 @@ extra_cpp_flags = -DINSIDE_DIP $(extra_cppflags)
 extra_c_flags_i86 = -zc -zu
 
 !ifdef __WATCOM_TOOLS__
-extra_c_flags_dipimp = -zlf -os     # -os ensures byte align for code
+extra_c_flags_f_dipimp = -zlf -os     # -os ensures byte align for code
 !endif
 
 #
 # lflags
 #
-lflags_dll_dos_386     = sys rex_dos
-lflags_dll_linux_386   = sys rex_linux
-lflags_dll_qnx_i86     = sys qnx disable 1023
-lflags_dll_qnx_386     = sys rex_qnx
-lflags_dll_win_i86     = sys windows
+lflags_dll_dos386     = sys rex_dos
+lflags_dll_linux386   = sys rex_linux
+lflags_dll_qnxi86     = sys qnx disable 1023
+lflags_dll_qnx386     = sys rex_qnx
+lflags_dll_wini86     = sys windows
 
-extra_l_flags_dll      = $(dip_dllbase_$(host_os)_$(host_cpu)_$(dip_format))
+extra_l_flags_dll      = $(dip_dllbase_$(host)_$(dip_format))
 
 #
 # names
 #
 
-dlltarg_ext_os2_386     = .d32
-dlltarg_ext_qnx_i86     = .dip
-dlltarg_ext_qnx_386     = .dip
-dlltarg_ext_linux_386   = .dip
-dlltarg_ext_dos_386     = .dip
+dlltarg_ext_os2386     = .d32
+dlltarg_ext_qnxi86     = .dip
+dlltarg_ext_qnx386     = .dip
+dlltarg_ext_linux386   = .dip
+dlltarg_ext_dos386     = .dip
 
-!ifdef dlltarg_ext_$(host_os)_$(host_cpu)
-dlltarg_ext = $(dlltarg_ext_$(host_os)_$(host_cpu))
+!ifdef dlltarg_ext_$(host)
+dlltarg_ext = $(dlltarg_ext_$(host))
 !endif
 !ifndef __WATCOM_TOOLS__
 !ifdef ext_lib_shared

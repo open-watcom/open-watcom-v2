@@ -19,9 +19,9 @@ rescmp_trmem = 1
 
 inc_dirs = -I"../h" $(cli_wres_inc_dirs)
 
-extra_cpp_flags_trmemcvr = $(trmem_cpp_flags)
+extra_cpp_flags_f_trmemcvr = $(trmem_cpp_flags)
 
-extra_c_flags_trmemcvr = $(trmem_cover_cflags)
+extra_c_flags_f_trmemcvr = $(trmem_cover_cflags)
 
 # explicit rules
 #################

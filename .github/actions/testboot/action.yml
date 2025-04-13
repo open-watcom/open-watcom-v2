@@ -6,11 +6,6 @@ inputs:
     required: false
     default: ''
     type: string
-  gitpath:
-    description: 'git subdirectory'
-    required: false
-    default: ''
-    type: string
   owdebug:
     description: 'verbosed/debug output for GH Actions scripts development'
     required: false
@@ -21,27 +16,25 @@ runs:
   steps:
   - if: inputs.hostos == 'lnx'
     name: Test Bootstrap OW
-    run: ci/buildx.sh
+    run: |
+      env | sort
+      ci/buildx.sh
     env:
       OWBUILD_STAGE: 'boot'
       OWTOOLS:       'WATCOM'
       OWROOT:        ${{ github.workspace }}
-      WATCOM:        ${{ github.workspace }}/${{ inputs.gitpath }}
-      INCLUDE:       ${{ github.workspace }}/${{ inputs.gitpath }}/lh
-      WATCOM_PATH:   ${{ github.workspace }}/${{ inputs.gitpath }}/binl
       OWDEBUG:       ${{ inputs.owdebug }}
       OWVERBOSE:     1
     shell: bash
   - if: inputs.hostos == 'nt'
     name: Test Bootstrap OW
-    run: ci/buildx.cmd
+    run: |
+      set
+      ci/buildx.cmd
     env:
       OWBUILD_STAGE: 'boot'
       OWTOOLS:       'WATCOM'
       OWROOT:        ${{ github.workspace }}
-      WATCOM:        ${{ github.workspace }}\${{ inputs.gitpath }}
-      INCLUDE:       ${{ github.workspace }}\${{ inputs.gitpath }}\h;${{ github.workspace }}\${{ inputs.gitpath }}\h\nt
-      WATCOM_PATH:   ${{ github.workspace }}\${{ inputs.gitpath }}\binnt
       OWDEBUG:       ${{ inputs.owdebug }}
       OWVERBOSE:     1
     shell: cmd

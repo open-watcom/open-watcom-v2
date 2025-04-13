@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2023-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -48,20 +48,20 @@ void    InitFrl( pointer **head )
 pointer AllocFrl( pointer **head, size_t size )
 /*********************************************/
 {
-    pointer     new;
+    pointer     new_frl;
 
     if( *head == NULL ) {
-        new = CGAlloc( size );
+        new_frl = CGAlloc( size );
    } else {
-        new = *head;
+        new_frl = *head;
         *head = **head;
         FrlSize -= size;
     }
 #ifdef DEVBUILD
-    memset( new, 0xda, size );
+    memset( new_frl, 0xda, size );
 #endif
-    _AlignmentCheck( new, 8 );
-    return( new );
+    _AlignmentCheck( new_frl, 8 );
+    return( new_frl );
 }
 
 

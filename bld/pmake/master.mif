@@ -17,9 +17,9 @@ pmake_trmem = 1
 
 inc_dirs = -I.. -I"$(builder_dir)/h"
 
-extra_cpp_flags_pmkcmd = $(trmem_cpp_flags)
+extra_cpp_flags_f_pmkcmd = $(trmem_cpp_flags)
 
-extra_c_flags_pmkcmd = $(trmem_cover_cflags)
+extra_c_flags_f_pmkcmd = $(trmem_cover_cflags)
 
 # explicit rules
 #################

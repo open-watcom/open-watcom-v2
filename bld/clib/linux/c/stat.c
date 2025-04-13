@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,6 +33,8 @@
 #include "variety.h"
 #include <sys/stat.h>
 #include "linuxsys.h"
+#include "kstat.h"
+
 
 _WCRTLINK int stat( const char *filename, struct stat * __buf )
 /**************************************************************
@@ -46,24 +48,16 @@ _WCRTLINK int stat( const char *filename, struct stat * __buf )
  * like st_dev and st_rdev are irrelevant to a compiler and should be ignored.
  */
 {
-    struct stat64 s64;
+#if 0
+    struct kstat64  ks;
+#else
+    struct stat64  ks;
+#endif
 
-    syscall_res res = sys_call2( SYS_stat64, (u_long)filename, (u_long)(&s64) );
+    syscall_res res = sys_call2( SYS_stat64, (u_long)filename, (u_long)&ks );
     if( !__syscall_iserror( res ) ) {
-        if( s64.st_size <= 0x7FFFFFFFU /*2GB - 1*/ ) {
-            __buf->st_dev = s64.st_dev;
-            __buf->st_ino = s64.st_ino;
-            __buf->st_mode = s64.st_mode;
-            __buf->st_nlink = s64.st_nlink;
-            __buf->st_uid = s64.st_uid;
-            __buf->st_gid = s64.st_gid;
-            __buf->st_rdev = s64.st_rdev;
-            __buf->st_size = s64.st_size;
-            __buf->st_blksize = s64.st_blksize;
-            __buf->st_blocks = s64.st_blocks;
-            __buf->st_atime = s64.st_atime;
-            __buf->st_mtime = s64.st_mtime;
-            __buf->st_ctime = s64.st_ctime;
+        if( ks.st_size <= 0x7FFFFFFFU /*2GB - 1*/ ) {
+            COPY_STAT( __buf, ks );
         } else {
             res = (syscall_res)(-EOVERFLOW);
         }

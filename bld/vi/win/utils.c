@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -196,7 +196,7 @@ void BlankRect( window_id wid, vi_color color, int x1, int x2, int y1, int y2 )
 /*
  * MyTextExtent - get the text extend of a string in a specified style
  */
-int MyTextExtent( window_id wid, type_style *style, char *text, unsigned length )
+int MyTextExtent( window_id wid, type_style *style, const char *text, unsigned length )
 {
     HDC         hdc;
     int         extent;
@@ -224,7 +224,7 @@ int MyTextExtent( window_id wid, type_style *style, char *text, unsigned length 
 
 } /* MyTextExtent */
 
-int MyStringExtent( window_id wid, type_style *style, char *text )
+int MyStringExtent( window_id wid, type_style *style, const char *text )
 {
     return( MyTextExtent( wid, style, text, strlen( text ) ) );
 }
@@ -243,7 +243,7 @@ void ClientToRowCol( window_id wid, int x, int y, int *row, int *col, int divide
     int         intoExtent, difExtent;
     int         toleftExtent;
     int         avg_width;
-    char        *str;
+    const char  *str;
 
     w = WINDOW_FROM_ID( wid );
     *row = y / FontHeight( WIN_TEXT_FONT( w ) ) + 1;

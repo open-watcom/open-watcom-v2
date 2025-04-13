@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,10 +34,7 @@
 #ifndef DWNAME_H_INCLUDED
 #define DWNAME_H_INCLUDED
 
-#define InitDebugPubnames       DW_InitDebugPubnames
-#define FiniDebugPubnames       DW_FiniDebugPubnames
-
-void InitDebugPubnames( dw_client );
-void FiniDebugPubnames( dw_client );
+extern void     DW_InitDebugPubnames( dw_client );
+extern void     DW_FiniDebugPubnames( dw_client );
 
 #endif

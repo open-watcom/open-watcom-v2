@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -251,6 +251,7 @@ TOKEN GetMacroToken( void )
     bool            keep_token;
     TOKEN           token;
 
+    token = T_NULL;
     for( ; (mtok = TokenList) != NULL; ) {
         if( (token = mtok->token) != T_NULL ) {
             break;
@@ -421,12 +422,18 @@ TOKEN SpecialMacro( MEPTR mentry )
         ConstType = TYP_INT;
         return( T_CONSTANT );
     case MACRO_STDC_VERSION:
-        if( CHECK_STD( < , C99 ) ) {
+        if( CompVars.cstd < STD_C99 ) {
             WriteBufferString( "199409L" );
             Constant = 199409;
         } else {
-            WriteBufferString( "199901L" );
-            Constant = 199901;
+            WriteBufferString( "199901L" ); /* C99 */
+//            WriteBufferString( "201112L" ); /* C11 */
+//            WriteBufferString( "201710L" ); /* C17 */
+//            WriteBufferString( "202311L" ); /* C23 */
+            Constant = 199901;  /* C99 */
+//            Constant = 201112;  /* C11 */
+//            Constant = 201710;  /* C17 */
+//            Constant = 202311;  /* C23 */
         }
         ConstType = TYP_LONG;
         return( T_CONSTANT );

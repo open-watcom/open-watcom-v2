@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -80,17 +81,17 @@ bool    InstrFrlFree( void )
 }
 
 
-label_handle AddNewLabel( ins_entry *new, obj_length align )
-/**********************************************************/
+label_handle AddNewLabel( ins_entry *new_ins, obj_length align )
+/**************************************************************/
 {
     label_handle    lbl;
     any_oc          oc;
 
   optbegin
-    if( NextClass( new ) == OC_LABEL )
-        optreturn( _Label( NextIns( new ) ) );
-    if( new != NULL && _Class( new ) == OC_LABEL )
-        optreturn( _Label( new ) );
+    if( NextClass( new_ins ) == OC_LABEL )
+        optreturn( _Label( NextIns( new_ins ) ) );
+    if( new_ins != NULL && _Class( new_ins ) == OC_LABEL )
+        optreturn( _Label( new_ins ) );
     oc.oc_handle.hdr.class = OC_LABEL;
     oc.oc_handle.hdr.reclen = sizeof( oc_handle );
     oc.oc_handle.hdr.objlen = align;
@@ -100,14 +101,14 @@ label_handle AddNewLabel( ins_entry *new, obj_length align )
 #if _TARGET_RISC
     oc.oc_handle.line = 0;
 #endif
-    AddInstr( NewInstr( &oc ), new );
+    AddInstr( NewInstr( &oc ), new_ins );
     _SetStatus( lbl, DYINGLABEL );
   optreturn( lbl );
 }
 
 
-void    AddNewJump( ins_entry *new, label_handle lbl )
-/****************************************************/
+void    AddNewJump( ins_entry *new_ins, label_handle lbl )
+/********************************************************/
 {
     any_oc     oc;
 
@@ -120,6 +121,6 @@ void    AddNewJump( ins_entry *new, label_handle lbl )
 #if _TARGET_RISC
     oc.oc_handle.line = 0;
 #endif
-    AddInstr( NewInstr( &oc ), new );
+    AddInstr( NewInstr( &oc ), new_ins );
   optend
 }

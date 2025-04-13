@@ -33,7 +33,6 @@
 
 #include "guiwind.h"
 #include <stdlib.h>
-#include <string.h>
 #include "guicolor.h"
 #include "guimenus.h"
 #include "guiscale.h"
@@ -48,6 +47,7 @@
 #include "guipaint.h"
 #include "guizlist.h"
 #include "guirdlg.h"
+#include "guix.h"
 
 
 #define ERROR_STYLE MB_OK | MB_ICONEXCLAMATION
@@ -380,17 +380,6 @@ void GUIFreeWindowMemory( gui_window *wnd, bool from_parent, bool dialog )
     GUIMemFree( wnd );
 }
 
-bool GUIScrollOn( gui_window *wnd, int bar )
-{
-    if( ( bar == SB_VERT ) && GUI_VSCROLL_ON( wnd ) ) {
-        return( true );
-    }
-    if( ( bar == SB_HORZ ) && GUI_HSCROLL_ON( wnd ) ) {
-        return( true );
-    }
-    return( false );
-}
-
 void GUISetRowCol( gui_window *wnd, const guix_coord *scr_size )
 {
     guix_ord    size_x;
@@ -403,8 +392,8 @@ void GUISetRowCol( gui_window *wnd, const guix_coord *scr_size )
         size_x = scr_size->x;
         size_y = scr_size->y;
     }
-    wnd->num_cols = GUIToTextX( size_x, wnd );
-    wnd->num_rows = GUIToTextY( size_y, wnd );
+    wnd->num_cols = GUITextFromScreenH( size_x, wnd );
+    wnd->num_rows = GUITextFromScreenV( size_y, wnd );
 }
 
 /*
@@ -467,13 +456,11 @@ void GUIMakeRelative( gui_window *wnd, WPI_POINT *wpi_point, gui_point *point )
     _wpi_getrectvalues( wpi_rect, &left, &top, &right, &bottom );
     scr_x = wpi_point->x - left;
     scr_y = wpi_point->y - top;
-    if( GUI_DO_HSCROLL( wnd ) || GUI_DO_VSCROLL( wnd ) ) {
-        if( GUI_DO_HSCROLL( wnd ) ) {
-            scr_x += GUIGetScrollPos( wnd, SB_HORZ );
-        }
-        if( GUI_DO_VSCROLL( wnd ) ) {
-            scr_y += GUIGetScrollPos( wnd, SB_VERT );
-        }
+    if( GUI_DO_HSCROLL( wnd ) ) {
+        scr_x += GUIGetScrollPos( wnd, SB_HORZ );
+    }
+    if( GUI_DO_VSCROLL( wnd ) ) {
+        scr_y += GUIGetScrollPos( wnd, SB_VERT );
     }
     point->x = GUIScaleFromScreenH( scr_x );
     point->y = GUIScaleFromScreenV( scr_y );
@@ -525,11 +512,11 @@ static bool ChangeScrollRange( gui_window *wnd, int bar, guix_ord new )
     if( bar == SB_HORZ ) {
         if( wnd->hrange == new )
             return( false );
-        wnd->hpos = new;
+        wnd->hrange = new;
     } else {
         if( wnd->vrange == new )
             return( false );
-        wnd->vpos = new;
+        wnd->vrange = new;
     }
     return( true );
 }

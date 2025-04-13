@@ -45,7 +45,7 @@
 //#define MODINIT     "DIPLOAD"
 #define MODSIGN     DIPSIGN
 
-#include "../ldrrex.c"       /* PharLap REX format loader */
+#include "ldrrex.c"     /* PharLap REX format loader */
 
 void DIPSysUnload( dip_sys_handle *sys_hdl )
 {

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -57,7 +57,7 @@
  * this virtual memory system has been set up in such a way that when
  * running under a 32-bit operating system with effective paging, the
  * vm read routines can be replaced with a simple pointer dereference,
- * and the vm alloc can be replaced with a call to dwralloc
+ * and the vm alloc can be replaced with a call to DR_ALLOC
 */
 
 /* the following structures are for virtual memory allocation */
@@ -129,19 +129,19 @@ static unsigned_16      SwapLeaf = 0;   // next leaf # to be swapped
 static bool             DontSwap = true; // true if we can't swap now.
 static unsigned_16      PageCount;
 
-void DWRVMInit( void )
+void DR_VMInit( void )
 /********************/
 // Allocate space for the branch pointers.
 {
-    PageTab = DWRALLOC( NumBranches * sizeof( page_entry * ) );
+    PageTab = DR_ALLOC( NumBranches * sizeof( page_entry * ) );
     memset( PageTab, 0, NumBranches * sizeof( page_entry * ) );
-    PageTab[1] = DWRALLOC( sizeof( page_entry ) * MAX_LEAFS );
+    PageTab[1] = DR_ALLOC( sizeof( page_entry ) * MAX_LEAFS );
     memset( PageTab[1], 0, sizeof( page_entry ) * MAX_LEAFS );
     DontSwap = false;
     PageCount = 0;
 }
 
-void DWRVMReset( void )
+void DR_VMReset( void )
 /*********************/
 // Reset VM state without having to destroy/init
 // NOTE: This will ensure that allocations start from the lowest VM
@@ -162,12 +162,12 @@ static void GetMoreBranches( void )
     alloc_size = NumBranches * sizeof( page_entry * );
     NumBranches = NumBranches * 2;   // double the # of pointers.
     if( NumBranches > SEG_LIMIT ) {
-        DWREXCEPT( DREXCEP_OUT_OF_VM );
+        DR_EXCEPT( DREXCEP_OUT_OF_VM );
     }
-    branches = DWRALLOC( alloc_size * 2 );
+    branches = DR_ALLOC( alloc_size * 2 );
     memcpy( branches, PageTab, alloc_size );
     memset( (char *)branches + alloc_size, 0, alloc_size ); // null pointers
-    DWRFREE( PageTab );
+    DR_FREE( PageTab );
     PageTab = branches;
 }
 
@@ -186,7 +186,7 @@ static virt_struct GetPage( dr_section sect )
             GetMoreBranches();
         }
         alloc_size = sizeof( page_entry ) * MAX_LEAFS;
-        entry = DWRALLOC( alloc_size );
+        entry = DR_ALLOC( alloc_size );
         PageTab[CurrBranch] = entry;
         memset( entry, 0, alloc_size ); //set all flags false.
         DontSwap = false;
@@ -200,7 +200,7 @@ static virt_struct GetPage( dr_section sect )
     return( vmem );
 }
 
-drmem_hdl DWRVMAlloc( unsigned long size, int sect )
+drmem_hdl DR_VMAlloc( unsigned long size, int sect )
 /**************************************************/
 {
     virt_struct ret;
@@ -216,7 +216,7 @@ drmem_hdl DWRVMAlloc( unsigned long size, int sect )
     return( ret.l );
 }
 
-void DWRVMFree( drmem_hdl hdl )
+void DR_VMFree( drmem_hdl hdl )
 /*****************************/
 {
     hdl = hdl;
@@ -253,7 +253,7 @@ bool DRENTRY DRSwap( void )
             if( entry->refd ) {
                 entry->refd = 0;
             } else if( entry->inmem ) {
-                DWRFREE( entry->mem );
+                DR_FREE( entry->mem );
                 PageCount--;
                 entry->inmem = 0;
                 return( true );
@@ -268,7 +268,7 @@ bool DRENTRY DRSwap( void )
     return( false );
 }
 
-void DWRVMDestroy( void )
+void DR_VMDestroy( void )
 /***********************/
 /* this frees all virtual memory */
 {
@@ -284,14 +284,14 @@ void DWRVMDestroy( void )
         if( entry != NULL ) {
             for( leaf = 0; leaf < MAX_LEAFS; leaf++ ) {
                 if( entry->inmem ) {
-                    DWRFREE( entry->mem );
+                    DR_FREE( entry->mem );
                 }
                 entry++;
             }
-            DWRFREE( PageTab[branch] );
+            DR_FREE( PageTab[branch] );
         }
     }
-    DWRFREE( PageTab );
+    DR_FREE( PageTab );
 }
 
 static void ReadPage( page_entry * node, virt_struct vm )
@@ -304,21 +304,21 @@ static void ReadPage( page_entry * node, virt_struct vm )
     dr_section    sect;
 
     sect = node->sect;
-    size = DWRCurrNode->sections[sect].size;
-    base = DWRCurrNode->sections[sect].base;
+    size = DR_CurrNode->sections[sect].size;
+    base = DR_CurrNode->sections[sect].base;
     offset = (vm.l - base) & ~((unsigned long)OFFSET_MASK);
     size -= offset;
     if( size > MAX_NODE_SIZE ) {
         size = MAX_NODE_SIZE;
     }
-    node->mem = DWRALLOC( size );
+    node->mem = DR_ALLOC( size );
     node->inmem = true;
     ++PageCount;
-    DWRSEEK( DWRCurrNode->file, sect, offset );
-    DWRREAD( DWRCurrNode->file, sect, node->mem, size );
+    DR_SEEK( DR_CurrNode->file, sect, offset );
+    DR_READ( DR_CurrNode->file, sect, node->mem, size );
 }
 
-void DWRVMSwap( drmem_hdl base, unsigned_32 size, bool *ret )
+void DR_VMSwap( drmem_hdl base, unsigned_32 size, bool *ret )
 /***********************************************************/
 // Swap out base for length size
 // If memory was freed set *ret
@@ -335,7 +335,7 @@ void DWRVMSwap( drmem_hdl base, unsigned_32 size, bool *ret )
             entry->refd = 0;
             if( entry->inmem ) {
                 --PageCount;
-                DWRFREE( entry->mem );
+                DR_FREE( entry->mem );
                 entry->inmem = 0;
                 ret_val = true;
             }
@@ -350,16 +350,16 @@ void DWRVMSwap( drmem_hdl base, unsigned_32 size, bool *ret )
     }
 }
 
-bool DWRVMSectDone( drmem_hdl base, unsigned_32 size )
+bool DR_VMSectDone( drmem_hdl base, unsigned_32 size )
 /****************************************************/
 {
     bool ret;
 
-    DWRVMSwap( base, size, &ret );
+    DR_VMSwap( base, size, &ret );
     return( ret );
 }
 
-void DWRVMRead( drmem_hdl hdl, void *info, size_t len )
+void DR_VMRead( drmem_hdl hdl, void *info, size_t len )
 /*****************************************************/
 /* go through the virtual memory nodes, reading data */
 {
@@ -386,7 +386,7 @@ void DWRVMRead( drmem_hdl hdl, void *info, size_t len )
     memcpy( info, node->mem + off, len );
 }
 
-unsigned_8 DWRVMReadByte( drmem_hdl hdl )
+unsigned_8 DR_VMReadByte( drmem_hdl hdl )
 /***************************************/
 {
     page_entry  *node;
@@ -414,7 +414,7 @@ static uint_8 readLEB( void **h )
     return( inbyte );
 }
 
-int_64 DWRVMReadSLEB128( drmem_hdl *vmptr )
+int_64 DR_VMReadSLEB128( drmem_hdl *vmptr )
 /*****************************************/
 {
     id          i;
@@ -427,7 +427,7 @@ int_64 DWRVMReadSLEB128( drmem_hdl *vmptr )
     return( DecodeSLEB128( (void **)&i, readLEB ) );
 }
 
-uint_64 DWRVMReadULEB128( drmem_hdl *vmptr )
+uint_64 DR_VMReadULEB128( drmem_hdl *vmptr )
 /******************************************/
 {
     id          i;
@@ -440,7 +440,7 @@ uint_64 DWRVMReadULEB128( drmem_hdl *vmptr )
     return( DecodeULEB128( (void **)&i, readLEB ) );
 }
 
-void DWRVMSkipLEB128( drmem_hdl *hdl )
+void DR_VMSkipLEB128( drmem_hdl *hdl )
 /************************************/
 // just advance the vm pointer past the leb128 (works on both signed & unsigned)
 {
@@ -464,7 +464,7 @@ void DWRVMSkipLEB128( drmem_hdl *hdl )
     *hdl = vm.l;
 }
 
-unsigned_16 DWRVMReadWord( drmem_hdl hdl )
+unsigned_16 DR_VMReadWord( drmem_hdl hdl )
 /****************************************/
 {
     page_entry  *node;
@@ -484,13 +484,13 @@ unsigned_16 DWRVMReadWord( drmem_hdl hdl )
         ACCESSPAGE( node, vm );
         off |= ((unsigned_16)*node->mem) << 8;
     }
-    if( DWRCurrNode->byte_swap ) {
+    if( DR_CurrNode->byte_swap ) {
         SWAP_16( off );
     }
     return( off );
 }
 
-unsigned_32 DWRVMReadDWord( drmem_hdl hdl )
+unsigned_32 DR_VMReadDWord( drmem_hdl hdl )
 /*****************************************/
 {
     page_entry  *node;
@@ -513,13 +513,13 @@ unsigned_32 DWRVMReadDWord( drmem_hdl hdl )
         ACCESSPAGE( node, vm );
         memcpy( (char *)&result + len, node->mem, sizeof( unsigned_32 ) - len );
     }
-    if( DWRCurrNode->byte_swap ) {
+    if( DR_CurrNode->byte_swap ) {
         SWAP_32( result );
     }
     return( result );
 }
 
-size_t DWRVMStrLen( drmem_hdl hdl )
+size_t DR_VMStrLen( drmem_hdl hdl )
 /*********************************/
 {
     unsigned    off;
@@ -548,7 +548,7 @@ end:
     return( length - 1 );   // remove '\0' terminator's contrib
 }
 
-static void DWRVMGetString( char *buf, drmem_hdl *hdlp )
+static void DR_VMGetString( char *buf, drmem_hdl *hdlp )
 /******************************************************/
 {
     unsigned    off;
@@ -572,19 +572,19 @@ end:
     *hdlp = vm.l;
 }
 
-char *DWRVMCopyString( drmem_hdl *info )
+char *DR_VMCopyString( drmem_hdl *info )
 /**************************************/
 {
     size_t      count;
     char        *str;
 
-    count = DWRVMStrLen( *info );
-    str = DWRALLOC( count + 1 );
-    DWRVMGetString( str, info );
+    count = DR_VMStrLen( *info );
+    str = DR_ALLOC( count + 1 );
+    DR_VMGetString( str, info );
     return( str );
 }
 
-size_t DWRVMGetStrBuff( drmem_hdl drstr, char *buf, size_t max )
+size_t DR_VMGetStrBuff( drmem_hdl drstr, char *buf, size_t max )
 /**************************************************************/
 {
     unsigned    off;

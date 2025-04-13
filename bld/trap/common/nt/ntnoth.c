@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,11 +34,12 @@
 #include <windows.h>
 #include "nothing.h"
 
-void NothingToDo()
+
+void NothingToDo( void )
 {
-        // Doing this is *really* bad for the parallel port driver
-        // under Windows! If we include this, we can't get full
-        // performance from the driver!
-//    Sleep( 1 );
+    /*
+     * Yield
+     */
+    Sleep( 0 );
 }
 

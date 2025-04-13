@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,7 +35,7 @@
 extern "C" {
 #endif
 
-extern unsigned     __pascal VxDGet( void __far *rec, unsigned len );
+extern int          __pascal VxDGet( void __far *rec, unsigned len );
 extern void         __pascal VxDPut( const void __far *rec, unsigned len );
 extern char         __pascal VxDConnect( void );
 extern int          __pascal VxDDisconnect( void );

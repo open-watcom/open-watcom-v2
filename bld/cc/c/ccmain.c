@@ -103,7 +103,7 @@ static void initGlobals( void )
     FNames = NULL;
     RDirNames = NULL;
     IAliasNames = NULL;
-    SrcFile = NULL;
+    SrcFiles = NULL;
     ErrFile = NULL;
     DefFile = NULL;
     CppFile = NULL;
@@ -210,6 +210,7 @@ static char *createFileName( const char *template, const char *ext, bool forceex
 {
     pgroup2     pg;
     bool        use_defaults;
+    const char  *module_name;
 
     use_defaults = ( template == NULL );
     if( use_defaults )
@@ -222,13 +223,14 @@ static char *createFileName( const char *template, const char *ext, bool forceex
         pg.drive = "";
         pg.dir = "";
     }
-    if( pg.fname[0] == '\0' || pg.fname[0] == '*' ) {
-        pg.fname = ModuleName;
-    }
     if( !forceext && pg.ext[0] != '\0' && !use_defaults ) {
         ext = pg.ext;
     }
-    _makepath( FNameBuf, pg.drive, pg.dir, pg.fname, ext );
+    module_name = pg.fname;
+    if( module_name[0] == '\0' || module_name[0] == '*' ) {
+        module_name = FEModuleName();
+    }
+    _makepath( FNameBuf, pg.drive, pg.dir, module_name, ext );
     return( FNameBuf );
 }
 
@@ -350,21 +352,15 @@ static void MakePgmName( void )
         WholeFName = CMemAlloc( sizeof( STDIN_NAME ) );
         strcpy( WholeFName, STDIN_NAME );
         pg.fname = WholeFName;
-        len = sizeof( STDIN_NAME );
     } else {
         _splitpath2( WholeFName, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
         if( pg.ext[0] == '\0' ) { // no extension
             len = strlen( WholeFName );
-            WholeFName = CMemRealloc( WholeFName, len + ( 1 + sizeof( C_EXT ) ) + 1 );
+            WholeFName = CMemRealloc( WholeFName, len + 1 + ( sizeof( C_EXT ) - 1 ) + 1 );
             strcat( WholeFName + len, "." C_EXT );
         }
-        len = strlen( pg.fname ) + 1;
     }
-    SrcFName = CMemAlloc( len );
-    strcpy( SrcFName, pg.fname );
-    if( ModuleName == NULL ) {
-        ModuleName = SrcFName;
-    }
+    SrcFName = CMemStrDup( pg.fname );
 }
 
 static void CantOpenFile( const char *name )
@@ -560,42 +556,32 @@ FILE *OpenBrowseFile( void )
     return( mbr_file );
 }
 
-void CClose( FILE *fp )
-/*********************/
+void CloseSrcFile( FCB *fcb )
 {
-    if( fp == NULL ) {
-        /*
-         * nothing to do
-         */
-    } else if( fp != stdin ) {
-        fclose( fp );
-    }
-}
-
-void CloseSrcFile( FCB *srcfcb )
-{
-    CClose( srcfcb->src_fp );
-    CloseFCB( srcfcb );
+    if( fcb->fp != NULL && fcb->fp != stdin )
+        fclose( fcb->fp );
+    CloseFCB( fcb );
 }
 
 static bool FreeSrcFP( void )
-/********************/
+/***************************/
 {
-    FCB     *src_file;
-    FCB     *next;
+    FCB     *fcb;
+    FCB     *nextfcb;
     bool    ret;
 
     ret = false;
-    for( src_file = SrcFile; src_file != NULL; src_file = next ) {
-        next = src_file->prev_file;
-        if( next == NULL || next->src_fp == NULL ) {
+    for( fcb = SrcFiles; fcb != NULL; fcb = nextfcb ) {
+        nextfcb = fcb->prev_file;
+        if( nextfcb == NULL || nextfcb->fp == NULL ) {
             break;
         }
     }
-    if( src_file != NULL && src_file->src_fp != NULL ) {
-        src_file->rseekpos = ftell( src_file->src_fp );
-        CClose( src_file->src_fp );
-        src_file->src_fp = NULL;
+    if( fcb != NULL && fcb->fp != NULL ) {
+        fcb->rseekpos = ftell( fcb->fp );
+        if( fcb->fp != NULL && fcb->fp != stdin )
+            fclose( fcb->fp );
+        fcb->fp = NULL;
         ret = true;
     }
     return( ret );
@@ -897,7 +883,7 @@ void SrcFileReadOnlyFile( char const *file )
     FNAMEPTR    flist;
 
     if( file == NULL ) {
-        flist = SrcFile->src_flist;
+        flist = SrcFiles->src_flist;
     } else {
         flist= FindFlist( file );
     }
@@ -913,7 +899,7 @@ void SrcFileIncludeAlias( const char *alias_name, const char *real_name, bool is
 
 void SetSrcFNameOnce( void )
 {
-    SrcFile->src_flist->once = true;
+    SrcFiles->src_flist->once = true;
 }
 
 static void ParseInit( void )
@@ -947,7 +933,7 @@ static bool OpenPgmFile( void )
                 CppEmitPoundLine( 1, "stdin", true );
                 CppFirstChar = true;
             }
-            MainSrcFile = SrcFile;
+            MainSrcFile = SrcFiles;
             return( true );
         }
         return( false );
@@ -958,10 +944,10 @@ static bool OpenPgmFile( void )
         return( false );
     }
 #if _CPU == 370
-    SrcFile->column = Column;
-    SrcFile->trunc = Trunc;
+    SrcFiles->column = Column;
+    SrcFiles->trunc = Trunc;
 #endif
-    MainSrcFile = SrcFile;
+    MainSrcFile = SrcFiles;
     return( true );
 }
 
@@ -1160,7 +1146,7 @@ static bool doOpenSrcFile( pgroup2 *fp, pgroup2 *fa, src_file_type typ )
     char        *s;
     char        *p;
     char        try[_MAX_PATH];
-    FCB         *curr;
+    FCB         *fcb;
     char        c;
     pgroup2     fd;
 
@@ -1194,7 +1180,7 @@ static bool doOpenSrcFile( pgroup2 *fp, pgroup2 *fa, src_file_type typ )
                 /*
                  * physical file name must be used, not logical
                  */
-                _splitpath2( SrcFile->src_flist->name, fd.buffer, &fd.drive, &fd.dir, NULL, NULL );
+                _splitpath2( SrcFiles->src_flist->name, fd.buffer, &fd.drive, &fd.dir, NULL, NULL );
                 _makepath( try, fd.drive, fd.dir, NULL, NULL );
                 if( try_open_file( try, fp, fa, typ ) ) {
                     return( true );
@@ -1208,11 +1194,11 @@ static bool doOpenSrcFile( pgroup2 *fp, pgroup2 *fa, src_file_type typ )
                         return( true );
                     }
                 }
-                for( curr = SrcFile; curr!= NULL; curr = curr->prev_file ) {
+                for( fcb = SrcFiles; fcb!= NULL; fcb = fcb->prev_file ) {
                     /*
                      * physical file name must be used, not logical
                      */
-                    _splitpath2( curr->src_flist->name, fd.buffer, &fd.drive, &fd.dir, NULL, NULL );
+                    _splitpath2( fcb->src_flist->name, fd.buffer, &fd.drive, &fd.dir, NULL, NULL );
                     _makepath( try, fd.drive, fd.dir, NULL, NULL );
                     if( try_open_file( try, fp, fa, typ ) ) {
                         return( true );

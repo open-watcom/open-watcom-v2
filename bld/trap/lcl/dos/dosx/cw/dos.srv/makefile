@@ -6,7 +6,7 @@ host_os  = dos
 host_cpu = 386
 
 target_cpu = x86
-target_sys = cw
+target_os  = cw
 
 srv = cw
 which = SERVER

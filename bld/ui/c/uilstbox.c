@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -195,8 +195,8 @@ void uiboxpushlist( void )
         'a',            'z',
         'A',            'Z',
         __rend__,
-        EV_SCROLL_LINE_UP,
-        EV_SCROLL_LINE_DOWN,
+        EV_SCROLL_UP,
+        EV_SCROLL_DOWN,
         EV_SCROLL_PAGE_UP,
         EV_SCROLL_PAGE_DOWN,
         EV_PAGE_UP,
@@ -268,8 +268,8 @@ a_list_info *uibeglistbox( VSCREEN *vs, SAREA *area, a_list *list )
     box->gadget.anchor = box->area.col + box->area.width + 1;
     box->gadget.start = box->area.row + 1;
     box->gadget.end = box->area.row + box->area.height;
-    box->gadget.forward = EV_SCROLL_LINE_DOWN;
-    box->gadget.backward = EV_SCROLL_LINE_UP;
+    box->gadget.forward = EV_SCROLL_DOWN;
+    box->gadget.backward = EV_SCROLL_UP;
     box->gadget.slider = EV_SCROLL_VERTICAL,
     box->gadget.pageforward = EV_SCROLL_PAGE_DOWN;
     box->gadget.pagebackward = EV_SCROLL_PAGE_UP;
@@ -363,8 +363,8 @@ ui_event uilistbox( ui_event ui_ev, a_list *list, bool permanent )
         case EV_MOUSE_PRESS :
             Dclick = false; /* must have gotten dlick without release */
             /* fall through */
-        case EV_SCROLL_LINE_UP :
-        case EV_SCROLL_LINE_DOWN :
+        case EV_SCROLL_UP :
+        case EV_SCROLL_DOWN :
         case EV_SCROLL_PAGE_UP :
         case EV_SCROLL_PAGE_DOWN :
         case EV_PAGE_UP :
@@ -456,7 +456,7 @@ ui_event uilistbox( ui_event ui_ev, a_list *list, bool permanent )
             setstartline( list );
         }
         break;
-    case EV_SCROLL_LINE_UP :
+    case EV_SCROLL_UP :
         if( box->line > 0 ) {
             box->line--;
         }
@@ -475,7 +475,7 @@ ui_event uilistbox( ui_event ui_ev, a_list *list, bool permanent )
             setstartline( list );
         }
         break;
-    case EV_SCROLL_LINE_DOWN :
+    case EV_SCROLL_DOWN :
         if( box->line < maxline ) {
             box->line++;
         }

@@ -32,11 +32,11 @@
 
 
 #include "guiwind.h"
-#include <string.h>
 #include "guixutil.h"
 #include "guicutil.h"
 #include "guiscale.h"
 #include "guicontr.h"
+
 
 /*
  * GUIControlSetRedraw -- set the redraw flag for a given window control

@@ -36,17 +36,17 @@ extra_cpp_flags =-D_STANDALONE_
 extra_cpp_flags += -DDEBUG_OUT
 !endif
 
-extra_cpp_flags_asmalloc = $(trmem_cpp_flags)
+extra_cpp_flags_f_asmalloc = $(trmem_cpp_flags)
 
-extra_c_flags_asmalloc = $(trmem_cover_cflags)
-extra_c_flags_cmdlnprs = $(incl_file_opts)fesupp.h
+extra_c_flags_f_asmalloc = $(trmem_cover_cflags)
+extra_c_flags_f_cmdlnprs = $(incl_file_opts)fesupp.h
 
 #
 # lflags
 #
 extra_l_flags_qnx = option offset=16k, stack=12k
-extra_l_flags_dos_i86 = option stack=6k
-extra_l_flags_dos_386 = option stack=12k
+extra_l_flags_dosi86 = option stack=6k
+extra_l_flags_dos386 = option stack=12k
 extra_l_flags_linux = option stack=12k
 
 # explicit rules
@@ -57,7 +57,7 @@ extra_l_flags_linux = option stack=12k
 #
 exetarg_prebuild_objs = asmops.gh asmopsd.gh usage.gh wasmsmsg.grh wasmcmsg.grh cmdlnprs.gh
 exetarg_objs = &
-    $(extra_objs_$(host_os)_$(host_cpu)) &
+    $(extra_objs_$(host)) &
     main.obj &
     cmdlnprs.obj &
     cmdscan.obj &

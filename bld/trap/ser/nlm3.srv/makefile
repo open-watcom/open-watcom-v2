@@ -6,7 +6,7 @@ host_cpu = 386
 host_os  = nov
 
 target_cpu = x86
-target_sys = nlm3
+target_os  = nlm3
 
 srv = ser
 which = SERVER
