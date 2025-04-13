@@ -333,7 +333,7 @@ void InitModInfo( void )
 {
     memset( &CompVars, 0, sizeof( CompVars ) );
 
-    SET_STD( CXX98 );
+    SET_STD( CXXPRE98 );
     PackAmount = TARGET_PACKING;
     GblPackAmount = PackAmount;
     SrcFileSetTab( DEF_TAB_WIDTH );

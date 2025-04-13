@@ -116,9 +116,7 @@ static void checkErrorLimit( unsigned *p )
 static bool checkSTD( unsigned *value )
 {
     cxxstd_ver  cxxstd;
-    bool        fail;
 
-    fail = true;
     cxxstd = STD_NONE;
     CmdRecogEquals();
     while( !CmdScanSwEnd() ) {
@@ -128,14 +126,40 @@ static bool checkSTD( unsigned *value )
             if( CmdRecogChar( '9' )
               && CmdRecogChar( '8' ) ) {
                 cxxstd = STD_CXX98;
-                fail = false;
-            } else if( CmdRecogChar( '0' )
-              && CmdRecogChar( 'x' ) ) {
-                cxxstd = STD_CXX0X;
-                fail = false;
+            } else if( CmdRecogChar( '0' ) ) {
+                if( CmdRecogChar( '3' ) ) {
+                    cxxstd = STD_CXX03;
+                } else if( CmdRecogChar( 'x' ) ) {
+                    cxxstd = STD_CXX0X;
+                } else {
+                    return( false );
+                }
+            } else if( CmdRecogChar( '1' ) ) {
+                if( CmdRecogChar( '1' ) ) {
+                    cxxstd = STD_CXX11;
+                } else if( CmdRecogChar( '4' ) ) {
+                    cxxstd = STD_CXX14;
+                } else if( CmdRecogChar( '7' ) ) {
+                    cxxstd = STD_CXX17;
+                } else {
+                    return( false );
+                }
+            } else if( CmdRecogChar( '2' ) ) {
+                if( CmdRecogChar( '0' ) ) {
+                    cxxstd = STD_CXX20;
+                } else if( CmdRecogChar( '3' ) ) {
+                    cxxstd = STD_CXX23;
+                } else {
+                    return( false );
+                }
+            } else {
+                return( false );
             }
+        } else {
+            return( false );
         }
     }
+
     if( cxxstd != STD_NONE ) {
         *value = cxxstd;
         return( true );
