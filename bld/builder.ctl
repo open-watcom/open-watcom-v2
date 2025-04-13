@@ -202,11 +202,11 @@ cdsay .
 [ INCLUDE "<OWROOT>/bld/wclass/builder.ctl" ]
 # Other GUI tools
 [ INCLUDE "<OWROOT>/bld/wprof/builder.ctl" ]
-#[ INCLUDE "<OWROOT>/bld/browser/builder.ctl" ]
+[ INCLUDE "<OWROOT>/bld/browser/builder.ctl" ]
 # The IDE tools
 [ INCLUDE "<OWROOT>/bld/editdll/builder.ctl" ]
 [ INCLUDE "<OWROOT>/bld/idebatch/builder.ctl" ]
-#[ INCLUDE "<OWROOT>/bld/ide/builder.ctl" ]
+[ INCLUDE "<OWROOT>/bld/ide/builder.ctl" ]
 # The miscelaneous tools
 [ INCLUDE "<OWROOT>/bld/cmdedit/builder.ctl" ]
 [ INCLUDE "<OWROOT>/bld/cvpack/builder.ctl" ]
@@ -219,7 +219,7 @@ cdsay .
 # Source code samples
 [ INCLUDE "<OWROOT>/bld/src/builder.ctl" ]
 # IDE samples
-#[ INCLUDE "<OWROOT>/bld/idedemo/builder.ctl" ]
+[ INCLUDE "<OWROOT>/bld/idedemo/builder.ctl" ]
 # Build help viewer
 [ INCLUDE "<OWROOT>/bld/hlpview/builder.ctl" ]
 # Build help compilers
