@@ -1021,7 +1021,7 @@ The
 :MONO.append
 :CONT.,
 :MONO.insert
-:CONT:,
+:CONT.,
 :MONO.insertAt
 and
 :MONO.prepend

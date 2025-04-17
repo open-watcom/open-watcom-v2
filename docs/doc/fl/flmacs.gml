@@ -5,7 +5,7 @@
 .*
 .dm statemnt begin
 .   .stmt &*
-.   .im S&*1
+.   .im S&'left(&*1,7)
 .dm statemnt end
 .*
 .dm synote begin
