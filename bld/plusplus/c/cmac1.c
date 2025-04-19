@@ -335,29 +335,48 @@ TOKEN SpecialMacro(             // EXECUTE A SPECIAL MACRO
         return( T_STRING );
     case MACRO_CPLUSPLUS:
         TokenLen = 0;
-        if( CHECK_STD( >= , CXX0X ) ) {
-            /*
-             * it should be modified for C++ standard specific value
-             * as soon as standard support will be more complete
-             *
-             * standard value
-             * older:   1L
-             * C++98:   199711L
-             * C++11:   201103L
-             * C++14:   201402L
-             * C++17:   201703L
-             * C++20:   202002L
-             */
-            WriteBufferString( "1" );
-            U32ToU64( 1, &Constant64 );
-        } else {
-            /*
-             * this is original WATCOM C++ implementation
-             * not fully 1998 C++ standard compliant
-             */
-            WriteBufferString( "1" );
-            U32ToU64( 1, &Constant64 );
+
+        long cxxvalue = 0;
+        switch( CompVars.cxxstd ) {
+            default:
+            case STD_CXXPRE98:
+                cxxvalue = 1;
+                WriteBufferString( "1" );
+                break;
+
+            case STD_CXX98:
+            case STD_CXX03:
+                /* c++98 and c++03 use the same value */
+                cxxvalue = 199711;
+                WriteBufferString( "199711L" );
+                break;
+
+            case STD_CXX11:
+                cxxvalue = 201103;
+                WriteBufferString( "201103L" );
+                break;
+
+            case STD_CXX14:
+                cxxvalue = 201402;
+                WriteBufferString( "201402L" );
+                break;
+
+            case STD_CXX17:
+                cxxvalue = 201703;
+                WriteBufferString( "201703L" );
+                break;
+
+            case STD_CXX20:
+                cxxvalue = 202002;
+                WriteBufferString( "202002L" );
+                break;
+
+            case STD_CXX23:
+                cxxvalue = 202302;
+                WriteBufferString( "202302L" );
+                break;
         }
+        U32ToU64( cxxvalue, &Constant64 );
         ConstType = TYP_SINT;
         return( T_CONSTANT );
     case MACRO_ALT_AND:
