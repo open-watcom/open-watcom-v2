@@ -223,6 +223,9 @@ cdsay .
 # Build help viewer
 [ INCLUDE "<OWROOT>/bld/hlpview/builder.ctl" ]
 # Build help compilers
+[ IFDEF <OWNEWWGML> 1 ]
+[ INCLUDE "<OWROOT>/bld/wgml/builder.ctl" ]
+[ ENDIF ]
 [ INCLUDE "<OWROOT>/bld/hcdos/builder.ctl" ]
 [ INCLUDE "<OWROOT>/bld/hcwin/builder.ctl" ]
 [ INCLUDE "<OWROOT>/bld/wipfc/builder.ctl" ]
@@ -234,9 +237,6 @@ cdsay .
 [ INCLUDE "<OWROOT>/bld/setupgui/builder.ctl" ]
 # Build text documents
 [ INCLUDE "<OWROOT>/bld/docstxt/builder.ctl" ]
-
-# only test build for now
-#[ INCLUDE "<OWROOT>/bld/wgml/builder.ctl" ]
 
 # Build documentation
 [ IFDEF <OWDOCBUILD> 1 ]
