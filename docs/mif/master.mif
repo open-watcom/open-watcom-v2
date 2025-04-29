@@ -226,6 +226,15 @@ $(wikidir):
     mkdir $@
 !endif
 
+#-------------------------------------------------------
+# run new (native) wgml utility
+#-------------------------------------------------------
+run_wgml_new : .PROCEDURE .EXPLICIT
+!ifeq verbose 0
+    @echo wgml $@
+!endif
+    -wgml $^& ( file $(wgml_optfile)
+
 ####################################################
 #
 # make WIN32 help files
@@ -339,7 +348,11 @@ $(wikidir):
     $(noecho)set GMLINC=$(%OWGMLINC:/=\)
     $(noecho)set GMLLIB=.;..\gml\syslib
     %make prepare_wgml_opts
+!ifdef %OWNEWWGML
+    @%make run_wgml_new
+!else
     @%make run_wgml
+!endif
     @if exist $@ $(noecho)%erase $@
     $(noecho)%ren $(wgml_tmpfile) $@
 
@@ -614,13 +627,21 @@ compile_gml_to_xxx : .PROCEDURE
     $(noecho)set GMLINC=$(%OWGMLINC:/=\)
     $(noecho)set GMLLIB=
     @%make prepare_wgml_opts
+!ifdef %OWNEWWGML
+    @%make run_wgml_new
+!else
     @%make run_wgml
+!endif
     @if exist $*.$(wgml1_ext) $(noecho)%erase $*.$(wgml1_ext)
     $(noecho)%ren $(wgml_tmpfile) $*.$(wgml1_ext)
     @%make prepare_whpcvt_opts
     whpcvt -@ $(whpcvt_optfile) $*.$(wgml1_ext)
     @%create $(wgml_sysfile_02)
+!ifdef %OWNEWWGML
+    @%make run_wgml_new
+!else
     @%make run_wgml
+!endif
     @if exist $*.$(wgml2_ext) $(noecho)%erase $*.$(wgml2_ext)
     $(noecho)%ren $(wgml_tmpfile) $*.$(wgml2_ext)
     @if exist $*.mix @%erase $*.mix
