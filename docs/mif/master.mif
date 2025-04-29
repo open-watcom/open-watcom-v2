@@ -510,6 +510,7 @@ wgml_optfile_2_wddoc    = 3
 wgml_optfile_2_lguide   = 3
 wgml_optfile_2_vi       = 3
 wgml_optfile_2_wgmlref  = 3
+wgml_optfile_2_wipfc    = 3
 
 prepare_wgml_opts : .PROCEDURE
 #--------------------------------------
