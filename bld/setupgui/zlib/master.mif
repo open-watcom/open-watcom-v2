@@ -41,7 +41,10 @@ libtarg_objs = &
     compress.obj &
     crc32.obj    &
     deflate.obj  &
-    gzio.obj     &
+    gzclose.obj  &
+    gzlib.obj    &
+    gzread.obj   &
+    gzwrite.obj  &
     infback.obj  &
     inffast.obj  &
     inflate.obj  &
