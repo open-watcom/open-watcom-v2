@@ -33,7 +33,7 @@ arranging the instruction stream so that it is optimal for a
 particular processor (such as the 486 or Pentium).
 .endbull
 .*
-.section *refid=inlinenv In-line Assembly Language Default Environment
+.section *refid=inlienv In-line Assembly Language Default Environment
 .*
 .np
 In next table is description of the default in-line assembler
