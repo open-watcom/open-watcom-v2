@@ -1258,7 +1258,7 @@
 :target. any
 :enumerate. cxxstd
 :internal.
-:usage.  enable some features of the upcoming ISO C++0x standard
+:usage.  enable some features of the ISO C++0x standard
 :jusage.
 
 :option. zastd
