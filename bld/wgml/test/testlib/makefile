@@ -1,4 +1,4 @@
-#pmake: build wgml
+#pmake: nobuild wgml
 
 #
 # Watcom GML/Script Test Device Library Makefile
