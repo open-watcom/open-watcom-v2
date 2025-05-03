@@ -179,7 +179,7 @@ p_buffer * get_p_buffer( FILE *fp )
 
     /* Rewind the file by 81 bytes per P-buffer plus 1. */
 
-    fseek( fp, -1 * ((81 * p_count) + 1), SEEK_CUR );
+    fseek( fp, SEEK_POSBACK( 81 * p_count + 1 ), SEEK_CUR );
     if( ferror( fp ) || feof( fp ) )
         return( out_buffer );
 
@@ -272,3 +272,58 @@ functions_block *parse_functions_block( const char **current, const char *base )
     return( out_block );
 }
 
+unsigned char fread_u8( FILE *fp )
+{
+    unsigned char   u8;
+    fread( &u8, 1, sizeof( u8 ), fp );
+    return( u8 );
+}
+
+unsigned short fread_u16( FILE *fp )
+{
+    uint16_t        u16;
+    fread( &u16, 1, sizeof( u16 ), fp );
+    return( u16 );
+}
+
+unsigned fread_u32( FILE *fp )
+{
+    uint32_t        u32;
+    fread( &u32, 1, sizeof( u32 ), fp );
+    return( u32 );
+}
+
+unsigned fread_buff( void *buff, unsigned len, FILE *fp )
+{
+    return( fread( buff, 1, len, fp ) );
+}
+
+unsigned char get_u8( const char **buff )
+{
+    unsigned char   u8;
+    memcpy( &u8, *buff, sizeof( u8 ) );
+    *buff += sizeof( u8 );
+    return( u8 );
+}
+
+unsigned short get_u16( const char **buff )
+{
+    uint16_t        u16;
+    memcpy( &u16, *buff, sizeof( u16 ) );
+    *buff += sizeof( u16 );
+    return( u16 );
+}
+
+unsigned get_u32( const char **buff )
+{
+    uint32_t        u32;
+    memcpy( &u32, *buff, sizeof( u32 ) );
+    *buff += sizeof( u32 );
+    return( u32 );
+}
+
+void get_buff( void *obuff, unsigned len, const char **buff )
+{
+    memcpy( obuff, *buff, len );
+    *buff += len;
+}

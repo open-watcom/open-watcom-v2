@@ -1561,7 +1561,7 @@ cop_driver * parse_driver( FILE *fp )
 
             /* Process some of the 21 flags. */
 
-            memcpy( &the_flags, current, sizeof( the_flags ) );
+            memcpy( the_flags, current, sizeof( the_flags ) );
             current += sizeof( the_flags );
 
             /* Set do_always to true or false per the Wiki. The device
