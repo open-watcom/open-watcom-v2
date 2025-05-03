@@ -2,7 +2,6 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -61,6 +60,7 @@
 *               This should help in most cases.
 ****************************************************************************/
 
+
 #include <math.h>
 #include <time.h>
 #include "wgml.h"
@@ -69,15 +69,10 @@
 #include "copfon.h"
 #include "cophdr.h"
 #include "devfuncs.h"
-#include "findfile.h"
 #include "outbuff.h"
 
 #include "clibext.h"
 
-
-#define global
-#include "copfiles.h"   // ensures globals are allocated
-#undef  global
 
 /* Static data. */
 
@@ -142,7 +137,7 @@ static uint32_t scale_basis_to_horizontal_base_units( uint32_t in_units, wgml_fo
 static void compute_metrics( wgml_font * in_font )
 {
     uint32_t    glyph_height;
-    uint32_t    height;
+    unsigned    height;
     uint32_t    shift_height;
 
     /* Compute the default character width. */
@@ -239,10 +234,15 @@ static void compute_metrics( wgml_font * in_font )
         if( (height % 7200) > 0 ) shift_height++;
 
         height = (shift_height * 3 ) / 10;
-        sprintf( in_font->shift_height, "%lu", height );
-        in_font->shift_count = strlen( in_font->shift_height );
-        if( in_font->shift_count > 4 ) {
-            in_font->shift_count = 4;
+        {
+            char    numstr[6];
+            int     len;
+
+            if( height > 9999 )
+                height = 9999;
+            len = sprintf( numstr, "%u", height );
+            strncpy( in_font->shift_height, numstr, len );
+            in_font->shift_count = len;
         }
     }
 
@@ -258,7 +258,6 @@ static void compute_metrics( wgml_font * in_font )
  *
  * Globals Used:
  *      try_file_name contains the name of the device file, if found.
- *      try_fp contains the FILE * for the device file, if found.
  *
  * Return:
  *      on success, a cop_device instance containing the data.
@@ -267,25 +266,25 @@ static void compute_metrics( wgml_font * in_font )
 
 static cop_device * get_cop_device( char const * in_name )
 {
-    cop_device      *   out_device  = NULL;
-    cop_file_type       file_type;
-#if defined( __UNIX__ )
-    char                fname[_MAX_PATH];
+    cop_device      *out_device  = NULL;
+    cop_file_type   file_type;
+    FILE            *fp;
 
-    strcpy( fname, in_name );
-    strlwr( fname );
-    in_name = fname;
-#endif
+    /* Bail if no name was supplied. */
+    if( !in_name ) {
+        return( out_device );
+    }
 
     /* Acquire the file, if it exists. */
 
-    if( !search_file_in_dirs( in_name, NULL, NULL, ds_bin_lib ) ) {
+    fp = search_file_in_dirs( in_name, "", "", ds_bin_lib );
+    if( fp == NULL ) {
         return( out_device );
     }
 
     /* Determine if the file encodes a DEVICE block. */
 
-    file_type = parse_header( try_fp );
+    file_type = parse_header( fp );
 
     switch( file_type ) {
     case file_error:
@@ -312,14 +311,14 @@ static cop_device * get_cop_device( char const * in_name )
 
     case se_v4_1_not_dir:
 
-        /* try_fp was a same-endian version 4.1 file, but not a directory file. */
+        /* fp was a same-endian version 4.1 file, but not a directory file. */
 
-        if( !is_dev_file( try_fp ) ) {
+        if( !is_dev_file( fp ) ) {
             xx_simple_err_c( err_dev_lib_data, try_file_name );
             break;
         }
 
-        out_device = parse_device( try_fp );
+        out_device = parse_device( fp );
         if( out_device == NULL ) {
             xx_simple_err_c( err_dev_lib_data, try_file_name );
         }
@@ -332,7 +331,7 @@ static cop_device * get_cop_device( char const * in_name )
         internal_err( __FILE__, __LINE__ );
         break;
     }
-
+    fclose( fp );
     return( out_device );
 }
 
@@ -341,7 +340,10 @@ static cop_device * get_cop_device( char const * in_name )
  * containing the information in that DRIVER block.
  *
  * Parameter:
- *      in_name points to the defined name of the device.
+ *      in_name points to the defined name of the driver.
+ *
+ * Globals Used:
+ *      try_file_name contains the name of the driver file, if found.
  *
  * Returns:
  *      on success, a cop_driver instance containing the data.
@@ -350,25 +352,20 @@ static cop_device * get_cop_device( char const * in_name )
 
 static cop_driver * get_cop_driver( char const * in_name )
 {
-    cop_driver      *   out_driver  = NULL;
-    cop_file_type       file_type;
-#if defined( __UNIX__ )
-    char                fname[_MAX_PATH];
-
-    strcpy( fname, in_name );
-    strlwr( fname );
-    in_name = fname;
-#endif
+    cop_driver      *out_driver  = NULL;
+    cop_file_type   file_type;
+    FILE            *fp;
 
     /* Acquire the file, if it exists. */
 
-    if( !search_file_in_dirs( in_name, NULL, NULL, ds_bin_lib ) ) {
+    fp = search_file_in_dirs( in_name, "", "", ds_bin_lib );
+    if( fp == NULL ) {
         return( out_driver );
     }
 
     /* Determine if the file encodes a DRIVER block. */
 
-    file_type = parse_header( try_fp );
+    file_type = parse_header( fp );
 
     switch( file_type ) {
     case file_error:
@@ -395,14 +392,14 @@ static cop_driver * get_cop_driver( char const * in_name )
 
     case se_v4_1_not_dir:
 
-        /* try_fp was a same-endian version 4.1 file, but not a directory file. */
+        /* fp was a same-endian version 4.1 file, but not a directory file. */
 
-        if( !is_drv_file( try_fp ) ) {
+        if( !is_drv_file( fp ) ) {
             xx_simple_err_c( err_dev_data_file, try_file_name );
             break;
         }
 
-        out_driver = parse_driver( try_fp );
+        out_driver = parse_driver( fp );
         if( out_driver == NULL ) {
             xx_simple_err_c( err_dev_data_file, try_file_name );
         }
@@ -415,6 +412,7 @@ static cop_driver * get_cop_driver( char const * in_name )
         internal_err( __FILE__, __LINE__ );
         break;
     }
+    fclose( fp );
 
     return( out_driver );
 }
@@ -426,6 +424,9 @@ static cop_driver * get_cop_driver( char const * in_name )
  * Parameter:
  *      in_name points to the defined name of the font.
  *
+ * Globals Used:
+ *      try_file_name contains the name of the font file, if found.
+ *
  * Returns:
  *      on success, a cop_font instance containing the data.
  *      on failure, a NULL pointer.
@@ -433,25 +434,20 @@ static cop_driver * get_cop_driver( char const * in_name )
 
 static cop_font * get_cop_font( char const * in_name )
 {
-    cop_font        *   out_font    = NULL;
-    cop_file_type       file_type;
-#if defined( __UNIX__ )
-    char                fname[_MAX_PATH];
-
-    strcpy( fname, in_name );
-    strlwr( fname );
-    in_name = fname;
-#endif
+    cop_font        *out_font    = NULL;
+    cop_file_type   file_type;
+    FILE            *fp;
 
     /* Acquire the file, if it exists. */
 
-    if( !search_file_in_dirs( in_name, NULL, NULL, ds_bin_lib ) ) {
+    fp = search_file_in_dirs( in_name, "", "", ds_bin_lib );
+    if( fp == NULL ) {
         return( out_font );
     }
 
     /* Determine if the file encodes a FONT block. */
 
-    file_type = parse_header( try_fp );
+    file_type = parse_header( fp );
 
     switch( file_type ) {
     case file_error:
@@ -478,14 +474,14 @@ static cop_font * get_cop_font( char const * in_name )
 
     case se_v4_1_not_dir:
 
-        /* try_fp was a same-endian version 4.1 file, but not a directory file. */
+        /* fp was a same-endian version 4.1 file, but not a directory file. */
 
-        if( !is_fon_file( try_fp ) ) {
+        if( !is_fon_file( fp ) ) {
             xx_simple_err_c( err_dev_data_file, try_file_name );
             break;
         }
 
-        out_font = parse_font( try_fp, in_name );
+        out_font = parse_font( fp, in_name );
         if( out_font == NULL ) {
             xx_simple_err_c( err_dev_data_file, try_file_name );
         }
@@ -498,6 +494,7 @@ static cop_font * get_cop_font( char const * in_name )
         internal_err( __FILE__, __LINE__ );
         break;
     }
+    fclose( fp );
 
     return( out_font );
 }
@@ -523,7 +520,7 @@ static cop_font * find_cop_font( char const * in_name )
     cop_font    *   retval  = NULL;
 
     for( current = bin_fonts; current != NULL; current = current->next_font ) {
-        if( !stricmp( in_name, current->defined_name ) ) {
+        if( stricmp( in_name, current->defined_name ) == 0 ) {
             retval = current;
             break;
         }
@@ -558,14 +555,14 @@ static cop_font * find_cop_font( char const * in_name )
 
 static device_font * find_dev_font( char const * in_name )
 {
-    devicefont_block    *current = NULL;
-    device_font         *retval  = NULL;
-    font_number         fnt;
+    devicefont_block    *   current = NULL;
+    device_font         *   retval  = NULL;
+    int                     i;
 
     current = &bin_device->devicefonts;
-    for( fnt = 0; fnt < current->font_count; fnt++ ) {
-        if( !stricmp( in_name, current->fonts[fnt].font_name ) ) {
-            retval = &current->fonts[fnt];
+    for( i = 0; i < current->font_count; i++ ) {
+        if( stricmp( in_name, current->fonts[i].font_name ) == 0 ) {
+            retval = &current->fonts[i];
             break;
         }
     }
@@ -593,14 +590,14 @@ static device_font * find_dev_font( char const * in_name )
 
 static fontstyle_block * find_style( char const * in_name )
 {
-    fontstyle_group     *current = NULL;
-    fontstyle_block     *retval  = NULL;
-    font_number         fnt;
+    fontstyle_group  *   current = NULL;
+    fontstyle_block  *   retval  = NULL;
+    int                 i;
 
     current = &bin_driver->fontstyles;
-    for( fnt = 0; fnt < current->count; fnt++ ) {
-        if( !stricmp( in_name, current->fontstyleblocks[fnt].type ) ) {
-            retval = &current->fontstyleblocks[fnt];
+    for( i = 0; i < current->count; i++ ) {
+        if( stricmp( in_name, current->fontstyleblocks[i].type ) == 0 ) {
+            retval = &current->fontstyleblocks[i];
             break;
         }
     }
@@ -634,7 +631,7 @@ static fontswitch_block * find_switch( char const * in_name )
 
     current = &bin_driver->fontswitches;
     for( i = 0; i < current->count; i++ ) {
-        if( !stricmp( in_name, current->fontswitchblocks[i].type ) ) {
+        if( stricmp( in_name, current->fontswitchblocks[i].type ) == 0 ) {
             retval = &current->fontswitchblocks[i];
             break;
         }
@@ -693,16 +690,22 @@ char cop_in_trans( char in_char, font_number font )
     char            retval;
 
     if( font >= wgml_font_cnt )
-        font = 0;
+        font = FONT0;
+
     retval = ti_table[(unsigned char)in_char];
+    if( retval == in_char ) {
+        block = wgml_fonts[font].bin_font->intrans;
+        if( block != NULL ) {
+            retval = block->table[(unsigned char)in_char];
+        }
+    }
 
-    block = wgml_fonts[font].bin_font->intrans;
-    if( retval == in_char && block != NULL )
-        retval = block->table[(unsigned char)in_char];
-
-    block = bin_device->intrans;
-    if( retval == in_char && block != NULL )
-        retval = block->table[(unsigned char)in_char];
+    if( retval == in_char ) {
+        block = bin_device->intrans;
+        if( block != NULL ) {
+            retval = block->table[(unsigned char)in_char];
+        }
+    }
 
     return( retval );
 }
@@ -719,9 +722,8 @@ void cop_setup( void )
 {
     default_font    *   cur_def_fonts   = NULL;
     device_font     *   cur_dev_font    = NULL;
-    font_number         font_base       = 0;
+    int                 font_base       = 0;
     int                 gen_cnt         = 0;
-    font_number         fnt;
     int                 i;
     int                 j;
     opt_font        *   cur_opt         = NULL;
@@ -733,6 +735,7 @@ void cop_setup( void )
     bin_driver = NULL;
     ProcFlags.has_aa_block = false;
     ProcFlags.ps_device = false;
+    ProcFlags.wh_device = false;
     wgml_font_cnt = 0;
     wgml_fonts = NULL;
 
@@ -741,9 +744,7 @@ void cop_setup( void )
     bin_fonts = NULL;
 
     cur_token = mem_alloc( sizeof( record_buffer ) );
-    cur_token->current = 0;
-    cur_token->length = 10;
-    cur_token->text = mem_alloc( cur_token->length );
+    init_record_buffer( cur_token, 10 );
 
     for( i = 0; i < 0x100; i++) {
         ti_table[i] = i;
@@ -753,7 +754,7 @@ void cop_setup( void )
 
     /* Emit the expected message. */
 
-    g_info_lm( inf_proc_start );
+    g_info_lm( inf_proc_dev );
 
     /* Process the device. */
 
@@ -761,7 +762,6 @@ void cop_setup( void )
 
     if( bin_device == NULL ) {
         xx_simple_err_cc( err_block_not_found, "DEVICE", dev_name );
-        g_suicide();    /* Not safe to continue further. */
     }
 
     /* The value of horizontal_base_units cannot be "0". */
@@ -785,7 +785,6 @@ void cop_setup( void )
 
     if( bin_driver == NULL ) {
         xx_simple_err_cc( err_block_not_found, "DRIVER", bin_device->driver_name );
-        g_suicide();    /* Not safe to continue further. */
     }
 
     /* Attribute x_positive in PAGEADDRESS cannot be "no", since horizontal
@@ -818,8 +817,14 @@ void cop_setup( void )
 
     /* Set ProcFlags.ps_device to "true" if the driver name begins with "ps" or "PS". */
 
-    if( !strnicmp( bin_device->driver_name, "ps", 2 ) ) {
+    if( strnicmp( "ps", bin_device->driver_name, 2 ) == 0 ) {
         ProcFlags.ps_device = true;
+    }
+
+    /* Set ProcFlags.wh_device to "true" if the driver name begins with "whelp" or "WHELP". */
+
+    if( strnicmp( "whelp", bin_device->driver_name, 5 ) == 0 ) {
+        ProcFlags.wh_device = true;
     }
 
     /* Get the highest font number and reduce it by one so it contains the
@@ -859,7 +864,7 @@ void cop_setup( void )
         } else {
             gen_cnt++;
             if( bin_device->underscore.specified_font && (bin_device->underscore.font_name != NULL) ) {
-                if( stricmp( bin_device->box.font_name, bin_device->underscore.font_name ) ) {
+                if( stricmp( bin_device->box.font_name, bin_device->underscore.font_name ) != 0 ) {
                     gen_cnt++;
                 }
             }
@@ -872,115 +877,118 @@ void cop_setup( void )
     /* Initialize wgml_fonts, which is an array */
 
     wgml_fonts = mem_alloc( wgml_font_cnt * sizeof( wgml_font ) );
-    for( fnt = 0; fnt < wgml_font_cnt; fnt++ ) {
-        wgml_fonts[fnt].bin_font = NULL;
-        wgml_fonts[fnt].font_switch = NULL;
-        wgml_fonts[fnt].font_pause = NULL;
-        wgml_fonts[fnt].font_style = NULL;
-        wgml_fonts[fnt].outtrans = NULL;
-        wgml_fonts[fnt].default_width = 0;
-        wgml_fonts[fnt].em_base = 0;
-        wgml_fonts[fnt].font_height = 0;
-        wgml_fonts[fnt].font_space = 0;
-        wgml_fonts[fnt].line_height = 0;
-        wgml_fonts[fnt].line_space = 0;
-        wgml_fonts[fnt].spc_width = 0;
+    for( i = 0; i < wgml_font_cnt; i++ ) {
+        wgml_fonts[i].bin_font = NULL;
+        wgml_fonts[i].font_switch = NULL;
+        wgml_fonts[i].font_pause = NULL;
+        wgml_fonts[i].font_style = NULL;
+        wgml_fonts[i].outtrans = NULL;
+        wgml_fonts[i].default_width = 0;
+        wgml_fonts[i].em_base = 0;
+        wgml_fonts[i].font_height = 0;
+        wgml_fonts[i].font_space = 0;
+        wgml_fonts[i].line_height = 0;
+        wgml_fonts[i].line_space = 0;
+        wgml_fonts[i].spc_width = 0;
         for( j = 0; j < 0x100; j++ ) {
-            wgml_fonts[fnt].width.table[j] = 0;
+            wgml_fonts[i].width_table[j] = 0;
         }
-        wgml_fonts[fnt].font_resident = 'n';
-        wgml_fonts[fnt].shift_count = 0;
+        wgml_fonts[i].font_resident = 'n';
+        wgml_fonts[i].shift_count = 0;
         for( j = 0; j < 4; j++ ) {
-            wgml_fonts[fnt].shift_height[j] = '\0';
+            wgml_fonts[i].shift_height[j] = '\0';
         }
     }
 
-    /* Process the :DEFAULTFONT Blocks. */
+    /* Process the DEFAULTFONT Blocks. */
 
     cur_def_fonts = bin_device->defaultfonts.fonts;
-    for( fnt = 0; fnt < bin_device->defaultfonts.font_count; fnt++ ) {
-        if( (cur_def_fonts[fnt].font_name == NULL) || (strlen( cur_def_fonts[fnt].font_name ) == 0) ) {
+    for( i = 0; i < bin_device->defaultfonts.font_count; i++ ) {
+        if( (cur_def_fonts[i].font_name == NULL)
+                || (strlen( cur_def_fonts[i].font_name ) == 0) ) {
             continue; /* Do not initialize skipped font numbers. */
         } else {
-            wgml_fonts[fnt].bin_font = find_cop_font( cur_def_fonts[fnt].font_name );
+            wgml_fonts[i].bin_font = find_cop_font( cur_def_fonts[i].font_name );
         }
-        if( (cur_def_fonts[fnt].font_style == NULL) || (strlen( cur_def_fonts[fnt].font_style ) == 0) ) {
-            wgml_fonts[fnt].font_style = find_style( "plain" );
+        if( (cur_def_fonts[i].font_style == NULL)
+                || (strlen( cur_def_fonts[i].font_style ) == 0) ) {
+            wgml_fonts[i].font_style = find_style( "plain" );
         } else {
-            wgml_fonts[fnt].font_style = find_style( cur_def_fonts[fnt].font_style );
+            wgml_fonts[i].font_style = find_style( cur_def_fonts[i].font_style );
         }
-        wgml_fonts[fnt].font_height = cur_def_fonts[fnt].font_height;
-        wgml_fonts[fnt].font_space = cur_def_fonts[fnt].font_space;
+        wgml_fonts[i].font_height = cur_def_fonts[i].font_height;
+        wgml_fonts[i].font_space = cur_def_fonts[i].font_space;
 
-        if( cur_def_fonts[fnt].font_name == NULL ) {
+        if( cur_def_fonts[i].font_name == NULL ) {
             cur_dev_font = find_dev_font( cur_def_fonts[0].font_name );
         } else {
-            cur_dev_font = find_dev_font( cur_def_fonts[fnt].font_name );
+            cur_dev_font = find_dev_font( cur_def_fonts[i].font_name );
         }
         if( cur_dev_font->font_switch == NULL ) {
-            wgml_fonts[fnt].font_switch = NULL;
+            wgml_fonts[i].font_switch = NULL;
         } else {
-            wgml_fonts[fnt].font_switch = find_switch( cur_dev_font->font_switch );
+            wgml_fonts[i].font_switch = find_switch( cur_dev_font->font_switch );
         }
-        wgml_fonts[fnt].font_pause = cur_dev_font->font_pause;
+        wgml_fonts[i].font_pause = cur_dev_font->font_pause;
         if( cur_dev_font->resident == 0 ) {
-            wgml_fonts[fnt].font_resident = 'n';
+            wgml_fonts[i].font_resident = 'n';
         } else {
-            wgml_fonts[fnt].font_resident = 'y';
+            wgml_fonts[i].font_resident = 'y';
         }
-        if( wgml_fonts[fnt].bin_font->outtrans == NULL ) {
-            wgml_fonts[fnt].outtrans = bin_device->outtrans;
+        if( wgml_fonts[i].bin_font->outtrans == NULL ) {
+            wgml_fonts[i].outtrans = bin_device->outtrans;
         } else {
-            wgml_fonts[fnt].outtrans = wgml_fonts[fnt].bin_font->outtrans;
+            wgml_fonts[i].outtrans = wgml_fonts[i].bin_font->outtrans;
         }
 
         /* If scale_basis is not "0", then font_height must not be "0". */
 
-        if( (wgml_fonts[fnt].bin_font->scale_basis != 0) &&
-                (wgml_fonts[fnt].font_height == 0)) {
-            xx_simple_err_i( err_font_scaled, fnt );
+        if( (wgml_fonts[i].bin_font->scale_basis != 0) &&
+                (wgml_fonts[i].font_height == 0)) {
+            xx_simple_err_i( err_font_scaled, i );
         }
 
-        compute_metrics( &wgml_fonts[fnt] );
+        compute_metrics( &wgml_fonts[i] );
     }
 
     /* Process the FONT command-line option instances. */
 
     for( cur_opt = opt_fonts; cur_opt != NULL; cur_opt = cur_opt->nxt ) {
-        fnt = cur_opt->font;
-        wgml_fonts[fnt].bin_font = find_cop_font( cur_opt->name );
+        i = cur_opt->font;
+        wgml_fonts[i].bin_font = find_cop_font( cur_opt->name );
         if( cur_opt->style == NULL ) {
-            wgml_fonts[fnt].font_style = find_style( "plain" );
+            wgml_fonts[i].font_style = find_style( "plain" );
         } else {
-            wgml_fonts[fnt].font_style = find_style( cur_opt->style );
+            wgml_fonts[i].font_style = find_style( cur_opt->style );
         }
-        wgml_fonts[fnt].font_height = cur_opt->height;
-        wgml_fonts[fnt].font_space = cur_opt->space;
+        wgml_fonts[i].font_height = cur_opt->height;
+        wgml_fonts[i].font_space = cur_opt->space;
         cur_dev_font = find_dev_font( cur_opt->name );
         if( cur_dev_font->font_switch == NULL ) {
-            wgml_fonts[fnt].font_switch = NULL;
+            wgml_fonts[i].font_switch = NULL;
         } else {
-            wgml_fonts[fnt].font_switch = find_switch( cur_dev_font->font_switch );
+            wgml_fonts[i].font_switch = find_switch( cur_dev_font->font_switch );
         }
-        wgml_fonts[fnt].font_pause = cur_dev_font->font_pause;
+        wgml_fonts[i].font_pause = cur_dev_font->font_pause;
         if( cur_dev_font->resident == 0 ) {
-            wgml_fonts[fnt].font_resident = 'n';
+            wgml_fonts[i].font_resident = 'n';
         } else {
-            wgml_fonts[fnt].font_resident = 'y';
+            wgml_fonts[i].font_resident = 'y';
         }
-        if( wgml_fonts[fnt].bin_font->outtrans == NULL ) {
-            wgml_fonts[fnt].outtrans = bin_device->outtrans;
+        if( wgml_fonts[i].bin_font->outtrans == NULL ) {
+            wgml_fonts[i].outtrans = bin_device->outtrans;
         } else {
-            wgml_fonts[fnt].outtrans = wgml_fonts[fnt].bin_font->outtrans;
+            wgml_fonts[i].outtrans = wgml_fonts[i].bin_font->outtrans;
         }
 
         /* If scale_basis is not "0", then font_height must not be "0". */
 
-        if( (wgml_fonts[fnt].bin_font->scale_basis != 0) && (wgml_fonts[fnt].font_height == 0)) {
-            xx_simple_err_i( err_font_opt_scaled, fnt );
+        if( (wgml_fonts[i].bin_font->scale_basis != 0) &&
+                (wgml_fonts[i].font_height == 0)) {
+            xx_simple_err_i( err_font_opt_scaled, i );
         }
 
-        compute_metrics( &wgml_fonts[fnt] );
+        compute_metrics( &wgml_fonts[i] );
     }
     free_opt_fonts();
 
@@ -995,98 +1003,100 @@ void cop_setup( void )
         break;
     case 1:
         if( bin_device->underscore.font_name != NULL ) {
-            fnt = font_base;
+            i = font_base;
             bin_device->underscore.font = font_base;
-            wgml_fonts[fnt].bin_font = find_cop_font( bin_device->underscore.font_name );
-            wgml_fonts[fnt].font_style = find_style( "plain" );
-            wgml_fonts[fnt].font_height = 0;
-            wgml_fonts[fnt].font_space = 0;
+            wgml_fonts[i].bin_font = find_cop_font( bin_device->underscore.font_name );
+            wgml_fonts[i].font_style = find_style( "plain" );
+            wgml_fonts[i].font_height = 0;
+            wgml_fonts[i].font_space = 0;
             cur_dev_font = find_dev_font( bin_device->underscore.font_name );
             if( cur_dev_font->font_switch == NULL ) {
-                wgml_fonts[fnt].font_switch = NULL;
+                wgml_fonts[i].font_switch = NULL;
             } else {
-                wgml_fonts[fnt].font_switch = find_switch( cur_dev_font->font_switch );
+                wgml_fonts[i].font_switch = find_switch( cur_dev_font->font_switch );
             }
-            wgml_fonts[fnt].font_pause = cur_dev_font->font_pause;
-            wgml_fonts[fnt].default_width = 1;
-            wgml_fonts[fnt].line_height = 1;
-            wgml_fonts[fnt].line_space = 0;
-            wgml_fonts[fnt].font_resident = 'n';
+            wgml_fonts[i].font_pause = cur_dev_font->font_pause;
+            wgml_fonts[i].default_width = 1;
+            wgml_fonts[i].line_height = 1;
+            wgml_fonts[i].line_space = 0;
+            wgml_fonts[i].font_resident = 'n';
 
             /* If scale_basis is not "0", then font_height must not be "0". */
 
-            if( (wgml_fonts[fnt].bin_font->scale_basis != 0) && (wgml_fonts[fnt].font_height == 0)) {
-                xx_simple_err_i( err_font_scaled, fnt );
+            if( (wgml_fonts[i].bin_font->scale_basis != 0) &&
+                    (wgml_fonts[i].font_height == 0)) {
+                xx_simple_err_i( err_font_scaled, i );
             }
 
             break;
         }
         if( bin_device->box.font_name != NULL ) {
-            fnt = font_base;
+            i = font_base;
             bin_device->box.font = font_base;
-            wgml_fonts[fnt].bin_font = find_cop_font( bin_device->box.font_name );
-            wgml_fonts[fnt].font_style = find_style( "plain" );
-            wgml_fonts[fnt].font_height = 0;
-            wgml_fonts[fnt].font_space = 0;
+            wgml_fonts[i].bin_font = find_cop_font( bin_device->box.font_name );
+            wgml_fonts[i].font_style = find_style( "plain" );
+            wgml_fonts[i].font_height = 0;
+            wgml_fonts[i].font_space = 0;
             cur_dev_font = find_dev_font( bin_device->box.font_name );
             if( cur_dev_font->font_switch == NULL ) {
-                wgml_fonts[fnt].font_switch = NULL;
+                wgml_fonts[i].font_switch = NULL;
             } else {
-                wgml_fonts[fnt].font_switch = find_switch( cur_dev_font->font_switch );
+                wgml_fonts[i].font_switch = find_switch( cur_dev_font->font_switch );
             }
-            wgml_fonts[fnt].font_pause = cur_dev_font->font_pause;
-            wgml_fonts[fnt].default_width = 1;
-            wgml_fonts[fnt].line_height = 1;
-            wgml_fonts[fnt].line_space = 0;
-            wgml_fonts[fnt].font_resident = 'n';
+            wgml_fonts[i].font_pause = cur_dev_font->font_pause;
+            wgml_fonts[i].default_width = 1;
+            wgml_fonts[i].line_height = 1;
+            wgml_fonts[i].line_space = 0;
+            wgml_fonts[i].font_resident = 'n';
             break;
         }
         break;
     case 2:
         if( bin_device->underscore.font_name != NULL ) {
-            fnt = font_base;
+            i = font_base;
             bin_device->underscore.font = font_base;
-            wgml_fonts[fnt].bin_font = find_cop_font( bin_device->underscore.font_name );
-            wgml_fonts[fnt].font_style = find_style( "plain" );
-            wgml_fonts[fnt].font_height = 0;
-            wgml_fonts[fnt].font_space = 0;
+            wgml_fonts[i].bin_font = find_cop_font( bin_device->underscore.font_name );
+            wgml_fonts[i].font_style = find_style( "plain" );
+            wgml_fonts[i].font_height = 0;
+            wgml_fonts[i].font_space = 0;
             cur_dev_font = find_dev_font( bin_device->underscore.font_name );
             if( cur_dev_font->font_switch == NULL ) {
-                wgml_fonts[fnt].font_switch = NULL;
+                wgml_fonts[i].font_switch = NULL;
             } else {
-                wgml_fonts[fnt].font_switch = find_switch( cur_dev_font->font_switch );
+                wgml_fonts[i].font_switch = find_switch( cur_dev_font->font_switch );
             }
-            wgml_fonts[fnt].font_pause = cur_dev_font->font_pause;
-            wgml_fonts[fnt].default_width = 1;
-            wgml_fonts[fnt].line_height = 1;
-            wgml_fonts[fnt].line_space = 0;
-            wgml_fonts[fnt].font_resident = 'n';
+            wgml_fonts[i].font_pause = cur_dev_font->font_pause;
+            wgml_fonts[i].default_width = 1;
+            wgml_fonts[i].line_height = 1;
+            wgml_fonts[i].line_space = 0;
+            wgml_fonts[i].font_resident = 'n';
 
             /* If scale_basis is not "0", then font_height must not be "0". */
 
-            if( (wgml_fonts[fnt].bin_font->scale_basis != 0) && (wgml_fonts[fnt].font_height == 0)) {
-                xx_simple_err_i( err_font_scaled, fnt );
+            if( (wgml_fonts[i].bin_font->scale_basis != 0) &&
+                    (wgml_fonts[i].font_height == 0)) {
+                xx_simple_err_i( err_font_scaled, i );
             }
         }
         if( bin_device->box.font_name != NULL ) {
             font_base++;
-            fnt = font_base;
+            i = font_base;
             bin_device->box.font = font_base;
-            wgml_fonts[fnt].bin_font = find_cop_font( bin_device->box.font_name );
-            wgml_fonts[fnt].font_style = find_style( "plain" );
-            wgml_fonts[fnt].font_height = 0;
-            wgml_fonts[fnt].font_space = 0;
+            wgml_fonts[i].bin_font = find_cop_font( bin_device->box.font_name );
+            wgml_fonts[i].font_style = find_style( "plain" );
+            wgml_fonts[i].font_height = 0;
+            wgml_fonts[i].font_space = 0;
             cur_dev_font = find_dev_font( bin_device->box.font_name );
             if( cur_dev_font->font_switch == NULL ) {
-                wgml_fonts[fnt].font_switch = NULL;
+                wgml_fonts[i].font_switch = NULL;
             } else {
-                wgml_fonts[fnt].font_switch = find_switch( cur_dev_font->font_switch );
+                wgml_fonts[i].font_switch = find_switch( cur_dev_font->font_switch );
             }
-            wgml_fonts[fnt].font_pause = cur_dev_font->font_pause;
-            wgml_fonts[fnt].default_width = 1;
-            wgml_fonts[fnt].line_height = 1;
-            wgml_fonts[fnt].line_space = 0;
-            wgml_fonts[fnt].font_resident = 'n';
+            wgml_fonts[i].font_pause = cur_dev_font->font_pause;
+            wgml_fonts[i].default_width = 1;
+            wgml_fonts[i].line_height = 1;
+            wgml_fonts[i].line_space = 0;
+            wgml_fonts[i].font_resident = 'n';
         }
         break;
     default:
@@ -1095,35 +1105,35 @@ void cop_setup( void )
 
     /* Ensure that font 0 was initialized */
 
-    if( wgml_fonts[0].bin_font == NULL ) {
+    if( wgml_fonts[FONT0].bin_font == NULL ) {
         internal_err( __FILE__, __LINE__ );
     }
 
     /* Fill in any skipped entries with the values used for wgml_font 0 */
 
-    def_font.bin_font = wgml_fonts[0].bin_font;
-    def_font.font_switch = wgml_fonts[0].font_switch;
-    def_font.font_pause = wgml_fonts[0].font_pause;
-    def_font.font_style = wgml_fonts[0].font_style;
-    def_font.font_height = wgml_fonts[0].font_height;
-    def_font.font_space = wgml_fonts[0].font_space;
-    def_font.default_width = wgml_fonts[0].default_width;
-    def_font.line_height = wgml_fonts[0].line_height;
-    def_font.line_space = wgml_fonts[0].line_space;
-    def_font.font_resident = wgml_fonts[0].font_resident;
+    def_font.bin_font = wgml_fonts[FONT0].bin_font;
+    def_font.font_switch = wgml_fonts[FONT0].font_switch;
+    def_font.font_pause = wgml_fonts[FONT0].font_pause;
+    def_font.font_style = wgml_fonts[FONT0].font_style;
+    def_font.font_height = wgml_fonts[FONT0].font_height;
+    def_font.font_space = wgml_fonts[FONT0].font_space;
+    def_font.default_width = wgml_fonts[FONT0].default_width;
+    def_font.line_height = wgml_fonts[FONT0].line_height;
+    def_font.line_space = wgml_fonts[FONT0].line_space;
+    def_font.font_resident = wgml_fonts[FONT0].font_resident;
 
-    for( fnt = 0; fnt < wgml_font_cnt; fnt++ ) {
-        if( wgml_fonts[fnt].bin_font == NULL ) {
-            wgml_fonts[fnt].bin_font = def_font.bin_font;
-            wgml_fonts[fnt].font_switch = def_font.font_switch;
-            wgml_fonts[fnt].font_pause = def_font.font_pause;
-            wgml_fonts[fnt].font_style = def_font.font_style;
-            wgml_fonts[fnt].font_height = def_font.font_height;
-            wgml_fonts[fnt].font_space = def_font.font_space;
-            wgml_fonts[fnt].default_width = def_font.default_width;
-            wgml_fonts[fnt].line_height = def_font.line_height;
-            wgml_fonts[fnt].line_space = def_font.line_space;
-            wgml_fonts[fnt].font_resident = def_font.font_resident;
+    for( i = 0; i < wgml_font_cnt; i++ ) {
+        if( wgml_fonts[i].bin_font == NULL ) {
+            wgml_fonts[i].bin_font = def_font.bin_font;
+            wgml_fonts[i].font_switch = def_font.font_switch;
+            wgml_fonts[i].font_pause = def_font.font_pause;
+            wgml_fonts[i].font_style = def_font.font_style;
+            wgml_fonts[i].font_height = def_font.font_height;
+            wgml_fonts[i].font_space = def_font.font_space;
+            wgml_fonts[i].default_width = def_font.default_width;
+            wgml_fonts[i].line_height = def_font.line_height;
+            wgml_fonts[i].line_space = def_font.line_space;
+            wgml_fonts[i].font_resident = def_font.font_resident;
         }
     }
 
@@ -1135,7 +1145,7 @@ void cop_setup( void )
 
     /* Initialize items dependent on the device library. */
 
-    /* Initialize the width.table entries. This is done here because it is
+    /* Initialize the width_table entries. This is done here because it is
      * not clear whether or not a more efficient method is needed. Note that
      * all wgml_font instances will have a valid table, and that different
      * wgml_font instances may have identical tables. However, since the
@@ -1143,29 +1153,29 @@ void cop_setup( void )
      * cop_font may still differ. Also set the base values for the "Em" and
      * "Device Unit" ("DV") Horizontal Space Units, and record the width of
      * the space character for quick reference. It is not clear if this is
-     * actually necessary, but it is a bit faster than using the width.table
+     * actually necessary, but it is a bit faster than using the width_table
      * directly.
      */
 
-    for( fnt = 0; fnt < wgml_font_cnt; fnt++ ) {
-        if( wgml_fonts[fnt].bin_font->width == NULL ) {
+    for( i = 0; i < wgml_font_cnt; i++ ) {
+        if( wgml_fonts[i].bin_font->width == NULL ) {
             for( j = 0; j < 0x100; j++ ) {
-                wgml_fonts[fnt].width.table[j] = wgml_fonts[fnt].default_width;
+                wgml_fonts[i].width_table[j] = wgml_fonts[i].default_width;
             }
         } else {
-            if( wgml_fonts[fnt].bin_font->scale_basis == 0 ) {
+            if( wgml_fonts[i].bin_font->scale_basis == 0 ) {
                 for( j = 0; j < 0x100; j++ ) {
-                    wgml_fonts[fnt].width.table[j] = wgml_fonts[fnt].bin_font->width->table[j];
+                    wgml_fonts[i].width_table[j] = wgml_fonts[i].bin_font->width->table[j];
                 }
             } else {
                 for( j = 0; j < 0x100; j++ ) {
-                    wgml_fonts[fnt].width.table[j] =
-                        scale_basis_to_horizontal_base_units( wgml_fonts[fnt].bin_font->width->table[j], &wgml_fonts[fnt] );
+                    wgml_fonts[i].width_table[j] =
+                        scale_basis_to_horizontal_base_units( wgml_fonts[i].bin_font->width->table[j], &wgml_fonts[i] );
                 }
             }
         }
-        wgml_fonts[fnt].em_base = wgml_fonts[fnt].width.table['M'];
-        wgml_fonts[fnt].spc_width = wgml_fonts[fnt].width.table[' '];
+        wgml_fonts[i].em_base = wgml_fonts[i].width_table['M'];
+        wgml_fonts[i].spc_width = wgml_fonts[i].width_table[' '];
     }
 
     /* Initialize the column width used with BX. */
@@ -1178,7 +1188,7 @@ void cop_setup( void )
 
     /* Initialize the default tabs and related extern variables. */
 
-    tab_col = bin_device->horizontal_base_units / 10;
+    tab_col = bin_device->horizontal_base_units / CPI10;    // wgml 4.0 uses 10 cpi here regardless of what the user wants
     first_tab = (6 * tab_col) - 1;
     inter_tab = 5 * tab_col;
 
@@ -1296,13 +1306,13 @@ uint32_t cop_text_width( const char *text, size_t count, font_number font )
     uint32_t        width;
 
     if( font >= wgml_font_cnt )
-        font = 0;
+        font = FONT0;
 
     /* Compute the width. */
 
     width = 0;
     for( i = 0; i < count; i++ ) {
-        width += wgml_fonts[font].width.table[(unsigned char)text[i]];
+        width += wgml_fonts[font].width_table[(unsigned char)text[i]];
     }
 
     return( width );
@@ -1334,54 +1344,40 @@ void cop_ti_table( const char *p )
     no_data = true;
 
     pa = p;
-    while( *p && *p != ' ' ) {          // end of word
-        p++;
-    }
+    SkipNonSpaces( p );         // end of word
     len = p - pa;
 
     if( len > 0 ) {
         if( len > 2 ) { // check for ".ti set"
             if( len == 3 ) {
-                if( !strnicmp( pa, "SET", len ) ) {
-                    while( *p && *p == ' ' ) {  // set char start
-                        p++;
-                    }
+                if( strnicmp( "SET", pa, len ) == 0 ) {
+                    SkipSpaces( p );        // set char start
                     pa = p;
-                    while( *p && *p != ' ' ) {  // set char start
-                        p++;
-                    }
+                    SkipNonSpaces( p );     // set char start
                     len = p - pa;
-                    if( len == 0 ) {    // no set char: set to ' '
+                    if( len == 0 ) {        // no set char: set to ' '
                         ProcFlags.in_trans = false;
                         in_esc = ' ';
-                    } else if( len > 1 ) { // hex digits are not allowed here
-                        xx_line_err_len( err_char_only, pa, len );
-                        return;
+                    } else if( len > 1 ) {  // hex digits are not allowed here
+                        xx_line_err_ci( err_char_only, pa, len );
                     } else {
                         ProcFlags.in_trans = true;
                         in_esc = *pa;
                     }
 
-                    while( *p && *p == ' ' ) {  // text or '\0'
-                        p++;
-                    }
+                    SkipSpaces( p );        // text or '\0'
                     pa = p;
-                    while( *p && *p != ' ' ) {  // set char start
-                        p++;
-                    }
+                    SkipNonSpaces( p );     // set char start
                     len = p - pa;
-                    if( len > 0 ) {     // additional text not allowed
-                        xx_line_err_len( err_char_only, pa, len );
-                        return;
+                    if( len > 0 ) {         // additional text not allowed
+                        xx_line_err_ci( err_char_only, pa, len );
                     }
                     return;     // done if was ".ti set"
                 } else {
-                    xx_opt_err_len( cwcurr, pa, len );
-                    return;
+                    xx_line_err_cci( err_xx_opt, cwcurr, pa, len );
                 }
             } else {
-                xx_opt_err_len( cwcurr, pa, len );
-                return;
+                xx_line_err_cci( err_xx_opt, cwcurr, pa, len );
             }
         }
 
@@ -1391,17 +1387,14 @@ void cop_ti_table( const char *p )
             first_found = true;
             no_data = false;
         }
-        while( *p ) {
-            while( *p && *p == ' ' ) {  // next char start
-                p++;
-            }
+        while( *p != '\0' ) {
+            SkipSpaces( p );            // next char start
             pa = p;
-            while( *p && *p != ' ' ) {  // next char start
-                p++;
-            }
+            SkipNonSpaces( p );         // next char start
             len = p - pa;
 
-            if( len == 0 ) break;   // exit loop if no next char
+            if( len == 0 )
+                break;                  // exit loop if no next char
 
             token_char = parse_char( pa, len );
             no_data = false;
@@ -1596,7 +1589,7 @@ void fb_output_textline( text_line * out_line )
     line_passes = 0;
     for( current = out_line->first; current != NULL; current = current->next ) {
         if( current->font >= wgml_font_cnt )
-            current->font = 0;
+            current->font = FONT0;
         if( wgml_fonts[current->font].font_style->line_passes > line_passes ) {
             line_passes = wgml_fonts[current->font].font_style->line_passes;
         }
@@ -1663,3 +1656,19 @@ void fb_vline( vline_element * in_vline )
     return;
 }
 
+void init_record_buffer( record_buffer *recb, unsigned size )
+{
+    recb->current = 0;
+    recb->length = size;
+    recb->text = mem_alloc( recb->length + 1 );
+}
+
+void resize_record_buffer( record_buffer *recb, unsigned size )
+{
+    if( size > recb->length ) {
+        while( recb->length < size )
+            recb->length *= 2;
+        recb->text = mem_realloc( recb->text, recb->length + 1 );
+    }
+    recb->current = size;
+}

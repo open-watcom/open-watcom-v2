@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2004-2022 The Open Watcom Contributors. All Rights Reserved.
+*  Copyright (c) 2004-2009 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -28,37 +28,38 @@
 *
 ****************************************************************************/
 
+
 #include "wgml.h"
-
-#include "clibext.h"
-
 
 typedef struct {
     locflags    location;
     char        tagname[TAG_NAME_LENGTH + 1];
 } loc_to_name;
 
-#define L2N_ENTRIES 2
+#define L2N_ENTRIES 3
 static loc_to_name  l2n_names[L2N_ENTRIES] = { { address_tag, "EADDRESS" },
-                                                { titlep_tag, "ETITLEP" } };
+                                               { figcap_tag, "FIGDESC or EFIG" },
+                                               { titlep_tag, "ETITLEP" } };
 
 /***************************************************************************/
 /*  display offending text line and mark the offending token               */
 /***************************************************************************/
 
-static void show_line_error_len( const char *pa, size_t len )
+static void show_line_error_len( const char * pa, size_t len )
 {
     char    *buf = NULL;
     size_t  cnt;
 
     msg_indent = 0;
     cnt = pa - buff2 + len;
-    buf = mem_alloc( cnt + 1 );
-    memcpy( buf, buff2, cnt );
-    buf[cnt] = '\0';
+    buf = mem_tokdup( buff2, cnt );
     out_msg( "%s\n", buf );
     // number of characters before the offending input + "*" at start of offending input
-    cnt = pa - buff2 - 1;
+    if( pa > buff2 ) {
+        cnt = pa - buff2;
+    } else {
+        cnt = 0;
+    }
     memset( buf, ' ', cnt );
     buf[cnt] = '*';         // puts "*" after last memset position; no, really
     buf[cnt + 1] = '\0';
@@ -67,8 +68,7 @@ static void show_line_error_len( const char *pa, size_t len )
     out_msg( "\n" );
 }
 
-
-static void show_line_error( const char *pa )
+static void show_line_error( const char * pa )
 {
     show_line_error_len( pa, strlen( pa ) );
 }
@@ -77,19 +77,19 @@ static void show_line_error( const char *pa )
 /*  display lineno of file/macro and include stack                         */
 /***************************************************************************/
 
-void    file_mac_info( void )
+void file_mac_info( void )
 {
-    char        linestr[MAX_L_AS_STR];
-    char        linemac[MAX_L_AS_STR];
+    char        linestr[NUM2STR_LENGTH];
+    char        linemac[NUM2STR_LENGTH];
 
     if( input_cbs != NULL ) {
         if( input_cbs->fmflags & II_tag_mac ) {
-            sprintf( linestr, "%lu", (unsigned long)input_cbs->s.m->lineno );
-            sprintf( linemac, "%lu", (unsigned long)input_cbs->s.m->mac->lineno );
+            sprintf( linestr, "%d", input_cbs->s.m->lineno );
+            sprintf( linemac, "%d", input_cbs->s.m->mac->lineno );
             g_info( err_inf_mac_def, linestr, input_cbs->s.m->mac->name,
                     linemac, input_cbs->s.m->mac->mac_file_name);
         } else {
-            sprintf( linestr, "%lu", (unsigned long)input_cbs->s.f->lineno );
+            sprintf( linestr, "%d", input_cbs->s.f->lineno );
             g_info( inf_file_line, linestr, input_cbs->s.f->filename );
         }
     }
@@ -97,45 +97,44 @@ void    file_mac_info( void )
     return;
 }
 
-
 /***************************************************************************/
 /*  display lineno of file/macro for open nested tags :sl :ol, ...         */
 /*                             and hilighting tags :HPx, :SF, ...          */
 /*   used if the corresponding end tag is missing                          */
 /***************************************************************************/
 
-void    file_mac_info_nest( void )
+void file_mac_info_nest( void )
 {
-    char            linestr[MAX_L_AS_STR];
-    char            linemac[MAX_L_AS_STR];
+    char            linestr[NUM2STR_LENGTH];
+    char            linemac[NUM2STR_LENGTH];
     nest_stack  *   nw;
 
     if( input_cbs != NULL ) {
         if( input_cbs->fmflags & II_tag_mac ) {
-            sprintf( linestr, "%lu", (unsigned long)input_cbs->s.m->lineno );
-            sprintf( linemac, "%lu", (unsigned long)input_cbs->s.m->mac->lineno );
+            sprintf( linestr, "%d", input_cbs->s.m->lineno );
+            sprintf( linemac, "%d", input_cbs->s.m->mac->lineno );
             g_info( err_inf_mac_def, linestr, input_cbs->s.m->mac->name,
                     linemac, input_cbs->s.m->mac->mac_file_name);
         } else {
-            sprintf( linestr, "%lu", (unsigned long)input_cbs->s.f->lineno );
+            sprintf( linestr, "%d", input_cbs->s.f->lineno );
             g_info( inf_file_line, linestr, input_cbs->s.f->filename );
         }
 
-        g_info( err_tag_starting, gml_tagname( nest_cb->gtag ) );
+        g_info( err_tag_starting, str_tags[nest_cb->c_tag] );
 
         nw = nest_cb->p_stack;
         while( nw != NULL ) {
             switch( nw->nest_flag & II_input ) {
             case    II_file:
-                sprintf( linestr, "%lu", (unsigned long)nw->lineno );
+                sprintf( linestr, "%d", nw->lineno );
                 g_info( inf_file_line, linestr, nw->s.filename );
                 break;
             case    II_tag :
                 g_info( err_inf_tag, nw->s.mt.tag_m->name );
                 // fallthrough
             case    II_macro :
-                sprintf( linestr, "%lu", (unsigned long)nw->lineno );
-                sprintf( linemac, "%lu", (unsigned long)nw->s.mt.m->lineno );
+                sprintf( linestr, "%d", nw->lineno );
+                sprintf( linemac, "%d", nw->s.mt.m->lineno );
                 g_info( err_inf_mac_def, linestr, nw->s.mt.m->name,
                         linemac, nw->s.mt.m->mac_file_name);
                 break;
@@ -150,7 +149,6 @@ void    file_mac_info_nest( void )
     return;
 }
 
-
 void internal_err( const char * file, int line )
 {
     err_count++;
@@ -158,7 +156,16 @@ void internal_err( const char * file, int line )
     return;
 }
 
-void    att_val_err( const char * attname )
+void list_level_err( const char * xl_tag, uint8_t xl_level )
+{
+    err_count++;
+    g_err( err_level_skipped, xl_tag );
+    g_info( info_level_skipped, xl_level );
+    file_mac_info();
+    return;
+}
+
+void att_val_err( const char *attname )
 {
 //****ERROR**** SC--045: Value 'xxx' for the 'yyy' attribute is not defined
     err_count++;
@@ -167,8 +174,7 @@ void    att_val_err( const char * attname )
     return;
 }
 
-
-void    auto_att_err( void )
+void auto_att_err( void )
 {
 //****ERROR**** SC--041: Cannot specify the automatic attribute 'xxx'
     err_count++;
@@ -177,8 +183,37 @@ void    auto_att_err( void )
     return;
 }
 
+void ban_reg_err( msg_ids num, banner_lay_tag * in_ban1, banner_lay_tag * in_ban2,
+                  region_lay_tag * in_reg1, region_lay_tag * in_reg2 )
+// various vertical and horizontal spacing errors of banners and regions
+{
+    if( in_ban1 != NULL ) {
+        g_err( inf_ban_id, doc_sections[in_ban1->docsect].name, bf_places[in_ban1->place].name );
+        if( in_ban2 != NULL ) {
+            g_info( inf_ban_id, doc_sections[in_ban2->docsect].name, bf_places[in_ban2->place].name );
+        }
+    } else if( in_ban2 != NULL ) {
+        g_err( inf_ban_id, doc_sections[in_ban2->docsect].name, bf_places[in_ban2->place].name );
+    } else {
+        internal_err( __FILE__, __LINE__ );
+    }
 
-void    cw_err( void )
+    if( in_reg1 != NULL ) {
+        g_info( inf_reg_id, in_reg1->hoffset.su_txt, in_reg1->voffset.su_txt,
+                in_reg1->indent.su_txt );
+    }
+
+    if( in_reg2 != NULL ) {
+        g_info( inf_reg_id, in_reg2->hoffset.su_txt, in_reg2->voffset.su_txt,
+                in_reg2->indent.su_txt );
+    }
+
+    g_info( num );
+    file_mac_info();
+    return;
+}
+
+void cw_err( void )
 {
 // SC--006: Unrecognized control word
     err_count++;
@@ -187,8 +222,7 @@ void    cw_err( void )
     return;
 }
 
-
-void    dc_opt_warn( const char *pa )
+void dc_opt_warn( const char * pa )
 {
     wng_count++;
     g_warn( err_dc_opt, pa );
@@ -197,8 +231,7 @@ void    dc_opt_warn( const char *pa )
     return;
 }
 
-
-void    dc_opt_warn_len( const char *pa, size_t len )
+void dc_opt_warn_len( const char * pa, size_t len )
 {
     wng_count++;
     g_warn( err_dc_opt, pa );
@@ -207,17 +240,16 @@ void    dc_opt_warn_len( const char *pa, size_t len )
     return;
 }
 
-
-void    parm_miss_err( const char *pa )
+void parm_miss_err( const char * cw, const char * pa )
 {
     err_count++;
-    g_err( err_parm_missing, pa );
+    g_err( err_parm_missing, cw );
     file_mac_info();
+    show_line_error( pa );
     return;
 }
 
-
-void    parm_extra_err( const char *cw, const char *pa )
+void parm_extra_err( const char * cw, const char * pa )
 {
     err_count++;
     g_err( err_extra_ignored, cw, pa );
@@ -225,34 +257,31 @@ void    parm_extra_err( const char *cw, const char *pa )
     return;
 }
 
-
-void    numb_err( void )
+void numb_err( void )
 {
-    char    linestr[MAX_L_AS_STR];
+    char    linestr[NUM2STR_LENGTH];
 
     err_count++;
     if( input_cbs->fmflags & II_tag_mac ) {
-        sprintf( linestr, "%lu", (unsigned long)input_cbs->s.m->lineno );
+        sprintf( linestr, "%d", input_cbs->s.m->lineno );
         g_err( ERR_PU_NUM, linestr, "macro", input_cbs->s.m->mac->name );
     } else {
-        sprintf( linestr, "%lu", (unsigned long)input_cbs->s.f->lineno );
+        sprintf( linestr, "%d", input_cbs->s.f->lineno );
         g_err( ERR_PU_NUM, linestr, "file", input_cbs->s.f->filename );
     }
     show_include_stack();
     return;
 }
 
-
-void    nottag_err( void )
+void nottag_err( void )
 {
     err_count++;
-    g_err( err_user_tag, tagname );
+    g_err( err_user_tag, g_tagname );
     file_mac_info();
     return;
 }
 
-
-void    tag_name_missing_err( void )
+void tag_name_missing_err( void )
 {
     err_count++;
     g_err( err_missing_name, "" );
@@ -260,8 +289,7 @@ void    tag_name_missing_err( void )
     return;
 }
 
-
-void    tag_text_err( const char *tagname )
+void tag_text_err( const char *tagname )
 {
 //****ERROR**** SC--038: Tag text may not be specified for the 'xxx' tag
     err_count++;
@@ -270,8 +298,7 @@ void    tag_text_err( const char *tagname )
     return;
 }
 
-
-void    tag_text_req_err( const char *tagname )
+void tag_text_req_err( const char *tagname )
 {
 //****ERROR**** SC--039: Tag text must be specified with the 'xxx' tag
     err_count++;
@@ -280,8 +307,7 @@ void    tag_text_req_err( const char *tagname )
     return;
 }
 
-
-void    val_parse_err( const char *pa, bool tag )
+void val_parse_err( const char * pa, bool tag )
 {
     err_count++;
     if( tag ) {
@@ -294,7 +320,7 @@ void    val_parse_err( const char *pa, bool tag )
     return;
 }
 
-void    xx_tag_err( const msg_ids errid, char const * cw )
+void xx_tag_err( const msg_ids errid, char const * cw )
 {
     err_count++;
     g_err( errid, cw );
@@ -302,7 +328,16 @@ void    xx_tag_err( const msg_ids errid, char const * cw )
     return;
 }
 
-void    xx_nest_err( const msg_ids errid )
+void xx_val_line_err( const msg_ids errid, char const * cw, const char * pa )
+{
+    err_count++;
+    g_err( errid, cw );
+    file_mac_info();
+    show_line_error( pa );
+    return;
+}
+
+void xx_nest_err( const msg_ids errid )
 {
     err_count++;
     g_err( errid );
@@ -310,8 +345,15 @@ void    xx_nest_err( const msg_ids errid )
     return;
 }
 
+void xx_nest_err_cc( const msg_ids errid, const char * arg1, const char * arg2 )
+{
+    err_count++;
+    g_err( errid, arg1, arg2 );
+    file_mac_info_nest();
+    return;
+}
 
-void    xx_opt_err( const char *cw, const char *pa )
+void xx_opt_err( const char * cw, const char * pa )
 {
     err_count++;
     g_err( err_xx_opt, cw, pa );
@@ -320,8 +362,7 @@ void    xx_opt_err( const char *cw, const char *pa )
     return;
 }
 
-
-void    xx_opt_err_len( const char *cw, const char *pa, size_t len )
+void xx_opt_err_len( const char * cw, const char * pa, size_t len )
 {
     err_count++;
     g_err( err_xx_opt, cw, pa );
@@ -330,8 +371,7 @@ void    xx_opt_err_len( const char *cw, const char *pa, size_t len )
     return;
 }
 
-
-void    xx_line_err( const msg_ids errid, const char *pa )
+void xx_line_err( const msg_ids errid, const char * pa )
 {
     err_count++;
     g_err( errid );
@@ -340,7 +380,7 @@ void    xx_line_err( const msg_ids errid, const char *pa )
     return;
 }
 
-void    xx_line_err_len( const msg_ids errid, const char *pa, size_t len )
+void xx_line_err_len( const msg_ids errid, const char * pa, size_t len )
 {
     err_count++;
     g_err( errid );
@@ -349,42 +389,35 @@ void    xx_line_err_len( const msg_ids errid, const char *pa, size_t len )
     return;
 }
 
-void    xx_simple_err( const msg_ids errid )
+void xx_simple_err( const msg_ids errid )
 {
     err_count++;
     g_err( errid );
     return;
 }
 
-void    xx_simple_err_c( const msg_ids errid, const char * arg )
+void xx_simple_err_c( const msg_ids errid, const char * arg )
 {
     err_count++;
     g_err( errid, arg );
     return;
 }
 
-void    xx_simple_err_i( const msg_ids errid, int arg )
+void xx_simple_err_i( const msg_ids errid, int arg )
 {
     err_count++;
     g_err( errid, arg );
     return;
 }
 
-void    xx_simple_err_ul( const msg_ids errid, unsigned long arg )
-{
-    err_count++;
-    g_err( errid, arg );
-    return;
-}
-
-void    xx_simple_err_cc( const msg_ids errid, const char * arg1, const char * arg2 )
+void xx_simple_err_cc( const msg_ids errid, const char * arg1, const char * arg2 )
 {
     err_count++;
     g_err( errid, arg1, arg2 );
     return;
 }
 
-void    xx_err( const msg_ids errid )
+void xx_err( const msg_ids errid )
 {
     err_count++;
     g_err( errid );
@@ -392,7 +425,15 @@ void    xx_err( const msg_ids errid )
     return;
 }
 
-void    xx_warn( const msg_ids errid )
+void xx_err_cc( const msg_ids errid, const char * arg1, const char * arg2 )
+{
+    err_count++;
+    g_err( errid, arg1, arg2 );
+    file_mac_info();
+    return;
+}
+
+void xx_warn( const msg_ids errid )
 {
     wng_count++;
     g_warn( errid );
@@ -400,10 +441,87 @@ void    xx_warn( const msg_ids errid )
     return;
 }
 
+void xx_warn_att( const msg_ids errid, const char * arg )
+{
+    wng_count++;
+    g_warn( errid, arg );
+    file_mac_info();
+    return;
+}
+
+void xx_warn_cc( const msg_ids errid, const char * arg1, const char * arg2 )
+{
+    wng_count++;
+    g_warn( errid, arg1, arg2 );
+    file_mac_info();
+    return;
+}
+
+void xx_line_warn( const msg_ids errid, const char * pa )
+{
+    wng_count++;
+    g_warn( errid );
+    file_mac_info();
+    show_line_error( pa );
+    return;
+}
+
+void xx_val_line_warn( const msg_ids errid, const char * cw, const char * pa )
+{
+    wng_count++;
+    g_warn( errid, cw );
+    file_mac_info();
+    show_line_error( pa );
+    return;
+}
+
+void xx_simple_warn( const msg_ids errid )
+{
+    wng_count++;
+    g_warn( errid );
+    return;
+}
+
+/***************************************************************************/
+/*  messages for duplicate, forward, or undefined figure, footnote, or     */
+/*  heading ids                                                            */
+/***************************************************************************/
+
+void dup_id_err( const char * id, const char * context )
+{
+    g_err( wng_id_xxx, id );
+    g_info( inf_id_duplicate, context );
+    file_mac_info();
+    err_count++;
+}
+
+void fwd_id_warn( const char * id, const char * context )
+{
+    g_warn( wng_id_xxx, id );
+    g_info( inf_id_forward, context );
+    wng_count++;
+}
+
+void undef_id_warn( const char * id, const char * context )
+{
+    g_warn( wng_id_xxx, id );
+    g_info( inf_id_unknown, context );
+    wng_count++;
+}
+
+void undef_id_warn_info( const char * id, const char * context )
+{
+    g_warn( wng_id_xxx, id );
+    g_info( inf_id_unknown, context );
+    file_mac_info();
+    wng_count++;
+}
+
 /***************************************************************************/
 /*  error msgs for missing or duplicate :XXX :eXXX tags                    */
 /***************************************************************************/
-static  void    g_err_tag_common( const char *tag, bool nest )
+
+static void g_err_tag_common( const char * tag, bool nest )
 {
     char    tagn[TAG_NAME_LENGTH + 1];
 
@@ -418,22 +536,24 @@ static  void    g_err_tag_common( const char *tag, bool nest )
     return;
 }
 
-void    g_err_tag( const char *tag )
+void g_err_tag( const char * tag )
 {
-    g_err_tag_common( tag, false );     // 'normal' stack display
+    g_err_tag_common( tag, 0 );         // 'normal' stack display
     return;
 }
 
-void    g_err_tag_nest( gml_tag gtag )
+void g_err_tag_nest( const char * tag )
 {
-    g_err_tag_common( gml_tagname( tag2etag( gtag ) ), true );      // nested tag stack display
+    g_err_tag_common( tag, 1 );         // nested tag stack display
     return;
 }
 
-void    g_err_tag_rsloc( locflags inloc, const char *pa )
+/* Various special-purpose functions */
+
+void g_err_tag_rsloc( locflags inloc, const char * pa )
 {
-    const char  *tag_name    = NULL;
-    int         i;
+    const char  *   tag_name    = NULL;
+    int             i;
 
     for( i = 0; i < L2N_ENTRIES; i++ ) {
         if( l2n_names[i].location == inloc ) {
@@ -441,42 +561,29 @@ void    g_err_tag_rsloc( locflags inloc, const char *pa )
             break;
         }
     }
-    if( tag_name == NULL ) {        // should never happen, make internal error?
+    if( tag_name == NULL ) {
         tag_name = "unknown";
     }
-    g_err_tag_common( tag_name, true );
+    g_err_tag_common( tag_name, 1 );
     show_line_error( pa );
 
     return;
 }
 
-static void g_err_tag_no( e_tags gtag )
+void g_err_tag_no( const char * tag )
 {
-    char    tagn[TAG_NAME_LENGTH + 1];
+    char    tagn[TAG_NAME_LENGTH + 1 + 1];
 
-    sprintf( tagn, "%c%s", GML_char, gml_tagname( gtag ) );
+    sprintf( tagn, "%c%s", GML_char, tag );
     g_err( err_tag_not_expected, tagn );
     file_mac_info_nest();
     err_count++;
     return;
 }
 
-bool g_err_tag_t_nest( e_tags egtag )
+void g_err_tag_prec( const char * tag )
 {
-    if( nest_cb->gtag != egtag ) {             // unexpected exxx tag
-        if( nest_cb->gtag == t_NONE ) {
-            g_err_tag_no( egtag );              // no exxx expected
-        } else {
-            g_err_tag_nest( nest_cb->gtag );   // exxx expected
-        }
-        return( true );
-    }
-    return( false );
-}
-
-void    g_err_tag_prec( const char *tag )
-{
-    char    tagn[TAG_NAME_LENGTH + 1];
+    char    tagn[TAG_NAME_LENGTH + 1 + 1];
 
     sprintf( tagn, "%c%s", GML_char, tag );
     g_err( err_tag_preceding, tagn );
@@ -485,161 +592,49 @@ void    g_err_tag_prec( const char *tag )
     return;
 }
 
-gml_tag etag2tag( gml_tag egtag )
-{
-    gml_tag gtag;
-
-    switch( egtag ) {
-    case GML_TAG_EADDRESS:
-        gtag = GML_TAG_ADDRESS;
+void g_keep_nest( const char * cw_tag ) {
+    switch( cur_group_type ) {
+    case gt_fb :
+        g_err( err_cw_tag_x_in_y, cw_tag, "a floating block" );
+        g_info( inf_nested_blocks1 );
+        g_info( inf_nested_blocks2 );
+        file_mac_info();
+        err_count++;
         break;
-    case GML_TAG_EDL:
-        gtag = GML_TAG_DL;
+    case gt_fig :
+        g_err( err_cw_tag_x_in_y, cw_tag, "a figure" );
+        g_info( inf_nested_blocks1 );
+        g_info( inf_nested_blocks2 );
+        file_mac_info();
+        err_count++;
         break;
-    case GML_TAG_EGL:
-        gtag = GML_TAG_GL;
+    case gt_fk :
+        g_err( err_cw_tag_x_in_y, cw_tag, "a floating keep" );
+        g_info( inf_nested_blocks1 );
+        g_info( inf_nested_blocks2 );
+        file_mac_info();
+        err_count++;
         break;
-    case GML_TAG_EOL:
-        gtag = GML_TAG_OL;
+    case gt_fn :
+        g_err( err_cw_tag_x_in_y, cw_tag, "a footnote" );
+        g_info( inf_nested_blocks1 );
+        g_info( inf_nested_blocks2 );
+        file_mac_info();
+        err_count++;
         break;
-    case GML_TAG_ESL:
-        gtag = GML_TAG_SL;
-        break;
-    case GML_TAG_EUL:
-        gtag = GML_TAG_UL;
-        break;
-    case GML_TAG_ESF:
-        gtag = GML_TAG_SF;
-        break;
-    case GML_TAG_EHP0:
-        gtag = GML_TAG_HP0;
-        break;
-    case GML_TAG_EHP1:
-        gtag = GML_TAG_HP1;
-        break;
-    case GML_TAG_EHP2:
-        gtag = GML_TAG_HP2;
-        break;
-    case GML_TAG_EHP3:
-        gtag = GML_TAG_HP3;
-        break;
-#if 0
-    case GML_TAG_ECIT:
-        gtag = GML_TAG_CIT;
-        break;
-    case GML_TAG_EFIG:
-        gtag = GML_TAG_FIG;
-        break;
-    case GML_TAG_EFN:
-        gtag = GML_TAG_FN;
-        break;
-    case GML_TAG_EGDOC:
-        gtag = GML_TAG_GDOC;
-        break;
-    case GML_TAG_ELQ:
-        gtag = GML_TAG_LQ;
-        break;
-    case GML_TAG_EXMP:
-        gtag = GML_TAG_XMP;
-        break;
-#endif
-    default:
-        gtag = GML_TAG_NONE;
-        break;
+    case gt_xmp :
+        g_err( err_cw_tag_x_in_y, cw_tag, "an example" );
+        g_info( inf_nested_blocks1 );
+        g_info( inf_nested_blocks2 );
+        file_mac_info();
+        err_count++;
     }
-    return( gtag );
 }
 
-gml_tag tag2etag( gml_tag gtag )
+void g_wng_hlevel( hdsrc hd_found, hdsrc hd_expected )
 {
-    gml_tag egtag;
-
-    switch( gtag ) {
-    case GML_TAG_ADDRESS:
-        egtag = GML_TAG_EADDRESS;
-        break;
-    case GML_TAG_DL:
-        egtag = GML_TAG_EDL;
-        break;
-    case GML_TAG_GL:
-        egtag = GML_TAG_EGL;
-        break;
-    case GML_TAG_OL:
-        egtag = GML_TAG_EOL;
-        break;
-    case GML_TAG_SL:
-        egtag = GML_TAG_ESL;
-        break;
-    case GML_TAG_UL:
-        egtag = GML_TAG_EUL;
-        break;
-    case GML_TAG_SF:
-        egtag = GML_TAG_ESF;
-        break;
-    case GML_TAG_HP0:
-        egtag = GML_TAG_EHP0;
-        break;
-    case GML_TAG_HP1:
-        egtag = GML_TAG_EHP1;
-        break;
-    case GML_TAG_HP2:
-        egtag = GML_TAG_EHP2;
-        break;
-    case GML_TAG_HP3:
-        egtag = GML_TAG_EHP3;
-        break;
-    case GML_TAG_XMP:
-        egtag = GML_TAG_EXMP;
-        break;
-#if 0
-    case GML_TAG_CIT:
-        egtag = GML_TAG_ECIT;
-        break;
-    case GML_TAG_FIG:
-        egtag = GML_TAG_EFIG;
-        break;
-    case GML_TAG_FN:
-        egtag = GML_TAG_EFN;
-        break;
-    case GML_TAG_GDOC:
-        egtag = GML_TAG_EGDOC;
-        break;
-    case GML_TAG_LQ:
-        egtag = GML_TAG_ELQ;
-        break;
-#endif
-    default:
-        egtag = GML_TAG_NONE;
-        break;
-    }
-    return( egtag );
-}
-
-bool g_err_gml_etag( gml_tag egtag )
-{
-    if( nest_cb->gtag == etag2tag( egtag ) )
-        return( false );
-    // unexpected exxx tag
-    if( nest_cb->gtag == GML_TAG_NONE ) {
-        // no exxx expected, no tag active
-        g_err_tag_no( egtag );
-    } else {
-        // exxx expected
-        g_err_tag_nest( nest_cb->gtag );
-    }
-    return( true );
-}
-
-
-void    g_err_tag_x_in_y( const char *tag1, const char *tag2 )
-{
-    char    tagn1[TAG_NAME_LENGTH + 1];
-    char    tagn2[TAG_NAME_LENGTH + 1];
-
-    sprintf( tagn1, "%c%s", GML_char, tag1 );
-    sprintf( tagn2, "%c%s", GML_char, tag2 );
-    g_err( err_tag_x_in_y, tagn1, tagn2 );
-    file_mac_info();
-    err_count++;
-    return;
+        g_warn( wng_heading_level );
+        g_info( inf_heading_level, hd_nums[hd_found].tag, hd_nums[hd_expected].tag );
+        file_mac_info();
+        wng_count++;
 }

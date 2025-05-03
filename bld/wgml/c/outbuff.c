@@ -2,7 +2,6 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ======================================================================
@@ -25,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  Implements the functions used with to the output buffer (and
-*               so with the output file or device).
+* Description:  Implements the functions declared in outbuff.h:
 *                   ob_flush()
 *                   ob_insert_block()
 *                   ob_insert_byte()
@@ -34,10 +32,11 @@
 *                   ob_insert_ps_text_start()
 *                   ob_setup()
 *                   ob_teardown()
-*               and these functions declared in wgml.h:
+*               and the functions declared in wgml.h:
 *                   cop_tr_table()
 *                   ob_binclude()
 *                   ob_graphic()
+*                   ob_oc()
 *               as well as these local variables:
 *                   binc_buff
 *                   buffout
@@ -57,21 +56,17 @@
 *               not apparent. This should help in most cases.
 ****************************************************************************/
 
+
 #include <ctype.h>
 #include <errno.h>
-#include <stdio.h>
-#include <stdint.h>
-#include <stdlib.h>
-#include <string.h>
-
 #include "wgml.h"
-#include "copfunc.h"
 #include "devfuncs.h"
-#include "findfile.h"
 #include "outbuff.h"
-#include "pathgrp2.h"
 
+#ifndef __WATCOMC__
 #include "clibext.h"
+#endif
+
 
 /* Local variable declaration. */
 
@@ -123,7 +118,7 @@ static void ob_insert_ps_text( const char *in_block, size_t count, font_number f
     translation         *cur_trans   = NULL;
     unsigned char       trbyte_out;
     unsigned char       trbyte_in;
-    size_t              i;
+    uint32_t            i;
 
     /* If the buffer is full, flush it. */
 
@@ -133,7 +128,7 @@ static void ob_insert_ps_text( const char *in_block, size_t count, font_number f
     /* Adjust font if appropriate and initialize cur_trans. */
 
     if( font >= wgml_font_cnt )
-        font = 0;
+        font = FONT0;
     if( wgml_fonts[font].outtrans != NULL )
         cur_table = wgml_fonts[font].outtrans->table;
     for( i = 0; i < count; i++ ) {
@@ -305,6 +300,10 @@ static void ob_insert_ps_cmd( const char *in_block, size_t count )
         }
     }
 
+    /* Special for " rmoveto" from pre_text_output() for "sup" */
+
+    text_count = strlen( &in_block[current] );
+
     /* Insert any remaining text. */
 
     if( text_count > 0 ) {
@@ -348,14 +347,14 @@ static void ob_insert_ps_cmd_ot( const char *in_block, size_t count, font_number
     translation         *cur_trans   = NULL;
     unsigned char       trbyte_out;
     unsigned char       trbyte_in;
-    size_t              i;
-    size_t              j;
-    size_t              k;
+    uint32_t            i;
+    uint32_t            j;
+    uint32_t            k;
 
     /* Adjust font if necessary and initialize cur_table and text_count. */
 
     if( font >= wgml_font_cnt )
-        font = 0;
+        font = FONT0;
     if( wgml_fonts[font].outtrans != NULL )
         cur_table = wgml_fonts[font].outtrans->table;
     text_count = count;
@@ -628,12 +627,12 @@ static void ob_insert_def_ot( const char *in_block, size_t count, font_number fo
     translation         *cur_trans   = NULL;
     unsigned char       trbyte_out;
     unsigned char       trbyte_in;
-    size_t              i;
+    uint32_t            i;
 
     /* Adjust font if necessary and initialize cur_table and text_count. */
 
     if( font >= wgml_font_cnt )
-        font = 0;
+        font = FONT0;
     if( wgml_fonts[font].outtrans != NULL )
         cur_table = wgml_fonts[font].outtrans->table;
     text_count = count;
@@ -726,51 +725,65 @@ static void ob_insert_def_ot( const char *in_block, size_t count, font_number fo
 
 static void set_out_file( void )
 {
-    pgroup2     cmd;
-    pgroup2     dev;
-    pgroup2     doc;
-
+    char        cmd_outfile[_MAX_PATH2];
+    char    *   cmd_drive;
+    char    *   cmd_dir;
+    char    *   cmd_ext;
+    char    *   cmd_fname;
+    char        dev_outfile[_MAX_PATH2];
+    char    *   dev_drive;
+    char    *   dev_dir;
+    char    *   dev_ext;
+    char    *   dev_fname;
+    char        doc_spec[_MAX_PATH2];
+    char    *   doc_drive;
+    char    *   doc_dir;
+    char    *   doc_ext;
+    char    *   doc_fname;
     char        temp_outfile[_MAX_PATH];
 
     /* Split the possible source names into their component parts. */
 
     if( master_fname == NULL ) {
-        doc.buffer[0] = '\0';
-        doc.drive = &doc.buffer[0];
-        doc.buffer[1] = '\0';
-        doc.dir = &doc.buffer[1];
-        doc.buffer[2] = '\0';
-        doc.fname = &doc.buffer[2];
-        doc.buffer[3] = '\0';
-        doc.ext = &doc.buffer[3];
+        doc_spec[0] = '\0';
+        doc_drive = &doc_spec[0];
+        doc_spec[1] = '\0';
+        doc_dir = &doc_spec[1];
+        doc_spec[2] = '\0';
+        doc_fname = &doc_spec[2];
+        doc_spec[3] = '\0';
+        doc_ext = &doc_spec[3];
     } else {
-        _splitpath2( master_fname, doc.buffer, &doc.drive, &doc.dir, &doc.fname, &doc.ext );
+        _splitpath2( master_fname, doc_spec, &doc_drive, &doc_dir, &doc_fname,
+                     &doc_ext );
     }
 
     if( out_file == NULL ) {
-        cmd.buffer[0] = '\0';
-        cmd.drive = &cmd.buffer[0];
-        cmd.buffer[1] = '\0';
-        cmd.dir = &cmd.buffer[1];
-        cmd.buffer[2] = '\0';
-        cmd.fname = &cmd.buffer[2];
-        cmd.buffer[3] = '\0';
-        cmd.ext = &cmd.buffer[3];
+        cmd_outfile[0] = '\0';
+        cmd_drive = &cmd_outfile[0];
+        cmd_outfile[1] = '\0';
+        cmd_dir = &cmd_outfile[1];
+        cmd_outfile[2] = '\0';
+        cmd_fname = &cmd_outfile[2];
+        cmd_outfile[3] = '\0';
+        cmd_ext = &cmd_outfile[3];
     } else {
-        _splitpath2( out_file, cmd.buffer, &cmd.drive, &cmd.dir, &cmd.fname, &cmd.ext );
+        _splitpath2( out_file, cmd_outfile, &cmd_drive, &cmd_dir, &cmd_fname,
+                     &cmd_ext );
     }
 
     if( bin_device->output_name == NULL ) {
-        dev.buffer[0] = '\0';
-        dev.drive = &dev.buffer[0];
-        dev.buffer[1] = '\0';
-        dev.dir = &dev.buffer[1];
-        dev.buffer[2] = '\0';
-        dev.fname = &dev.buffer[2];
-        dev.buffer[3] = '\0';
-        dev.ext = &dev.buffer[3];
+        dev_outfile[0] = '\0';
+        dev_drive = &dev_outfile[0];
+        dev_outfile[1] = '\0';
+        dev_dir = &dev_outfile[1];
+        dev_outfile[2] = '\0';
+        dev_fname = &dev_outfile[2];
+        dev_outfile[3] = '\0';
+        dev_ext = &dev_outfile[3];
     } else {
-        _splitpath2( bin_device->output_name, dev.buffer, &dev.drive, &dev.dir, &dev.fname, &dev.ext );
+        _splitpath2( bin_device->output_name, dev_outfile, &dev_drive, &dev_dir,
+                     &dev_fname, &dev_ext );
     }
 
     /* Ensure it is possible to tell if a file name was constructed. */
@@ -778,52 +791,55 @@ static void set_out_file( void )
     temp_outfile[0] = '\0';
 
     /* Construct the file name, if necessary. If the command-line option OUTput
-     * was used and both a filename and and extension were given, then cmd.fname
+     * was used and both a filename and and extension were given, then cmd_fname
      * will be used as-is and temp_outfile will not be touched.
      */
 
-    if( cmd.fname[0] != '\0' ) {
-        if( cmd.fname[0] != '*' ) {
-            if( cmd.ext[0] != '\0' ) {
+    if( *cmd_fname != '\0' ) {
+        if( *cmd_fname != '*' ) {
+            if( *cmd_ext != '\0' ) {
 
-                /* If both name and extension were given on the command line, use
-                 * out_file as-is.
-                 */
+            /* If both name and extension were given on the command line, use
+             * out_file as-is.
+             */
 
             } else {
 
-                /* If the name was given on the command line, use out_file with the
-                 * extension given in the :DEVICE block.
-                 */
+            /* If the name was given on the command line, use out_file with the
+             * extension given in the :DEVICE block.
+             */
 
-                _makepath( temp_outfile, cmd.drive, cmd.dir, cmd.fname, bin_device->output_extension );
+                _makepath( temp_outfile, cmd_drive, cmd_dir, cmd_fname,
+                           bin_device->output_extension );
             }
         } else {
-            if( cmd.ext[0] != '\0' ) {
+            if( *cmd_ext != '\0' ) {
 
-                /* If the name was not given but an extension was given on the command
-                 * line, use the document specification name with the extension given.
-                 */
+            /* If the name was not given but an extension was given on the command
+             * line, use the document specification name with the extension given.
+             */
 
-                _makepath( temp_outfile, cmd.drive, cmd.dir, doc.fname, cmd.ext );
+                _makepath( temp_outfile, cmd_drive, cmd_dir, doc_fname, cmd_ext );
             } else {
 
-                /* If neither a specific name nor an extension was given on the
-                 * command line, use use the document specification name with the
-                 * extension given in the :DEVICE block.
-                 */
+            /* If neither a specific name nor an extension was given on the
+             * command line, use use the document specification name with the
+             * extension given in the :DEVICE block.
+             */
 
-                _makepath( temp_outfile, cmd.drive, cmd.dir, doc.fname, bin_device->output_extension );
+                _makepath( temp_outfile, cmd_drive, cmd_dir, doc_fname,
+                           bin_device->output_extension );
             }
         }
     } else {
-        if( (cmd.drive[0] != '\0') || (cmd.dir[0] != '\0') ) {
+        if( (*cmd_drive != '\0') || (*cmd_dir != '\0') ) {
 
             /* Command line OPTION was used with something like "c:" or "..\" but
              * with no filename or extension.
              */
 
-            _makepath( temp_outfile, cmd.drive, cmd.dir, doc.fname, bin_device->output_extension );
+                _makepath( temp_outfile, cmd_drive, cmd_dir, doc_fname,
+                           bin_device->output_extension );
         } else {
 
             /* The situation here is that command-line option OUTPUT was not
@@ -832,20 +848,22 @@ static void set_out_file( void )
              * at all.
              */
 
-            if( (dev.fname[0] != '*') && (dev.fname[0] != '\0') ) {
+            if( (*dev_fname != '*') && (*dev_fname != '\0') ) {
 
                 /* If the :DEVICE block specified a file name then use the file
                  * name and any extension provided.
                  */
 
-                _makepath( temp_outfile, NULL, NULL, bin_device->output_name, bin_device->output_extension );
+                _makepath( temp_outfile, "", "", bin_device->output_name,
+                           bin_device->output_extension );
             } else {
 
                 /* If the :DEVICE block did not specify a file name then use the
                  * document specification name with any extension provided.
                  */
 
-                _makepath( temp_outfile, dev.drive, dev.dir, doc.fname, bin_device->output_extension );
+                _makepath( temp_outfile, dev_drive, dev_dir, doc_fname,
+                           bin_device->output_extension );
             }
         }
     }
@@ -855,7 +873,8 @@ static void set_out_file( void )
     if( temp_outfile[0] != '\0' ) {
         if( out_file != NULL )
             mem_free( out_file );
-        out_file = mem_dupstr( temp_outfile );
+        out_file = mem_alloc( strlen( temp_outfile ) + 1 );
+        strcpy( out_file, temp_outfile );
     }
 
     return;
@@ -880,11 +899,12 @@ static void set_out_file_attr( void )
     if( out_file_attr == NULL ) {
         if( bin_driver->rec_spec != NULL ) {
             len = strlen( bin_driver->rec_spec );
-            if( ( bin_driver->rec_spec[0] != '(' ) || ( bin_driver->rec_spec[len - 1] != ')' ) ) {
+            if( (bin_driver->rec_spec[0] != '(') ||
+                (bin_driver->rec_spec[len - 1] != ')')) {
 
                 /* Use default if rec_spec is badly-formed. */
 
-                out_file_attr = mem_dupstr( "t:132" );
+                out_file_attr = mem_strdup( "t:132" );
 
             } else {
 
@@ -893,15 +913,13 @@ static void set_out_file_attr( void )
                  */
 
                 len -= 1;
-                out_file_attr = mem_alloc( len );
-                memcpy( out_file_attr, &bin_driver->rec_spec[1], len - 1 );
-                out_file_attr[len - 1] = '\0';
+                out_file_attr = mem_tokdup( &bin_driver->rec_spec[1], len - 1 );
             }
         } else {
 
-            /* Use default if rec_spec is missing. */
+            /* Use default if bin_driver->rec_spec is missing. */
 
-            out_file_attr = mem_dupstr( "t:132" );
+            out_file_attr = mem_strdup( "t:132" );
         }
     }
 
@@ -933,20 +951,15 @@ void cop_tr_table( const char *p )
 
     // if there is no data, then the table will be reset
     first_found = false;
-    first_char = 0;
     no_data = true;
 
-    while( *p ) {
-        while( *p && *p == ' ' ) {  // next char start
-            p++;
-        }
+    while( *p != '\0' ) {
+        SkipSpaces( p );        // next char start
         pa = p;
-        while( *p && *p != ' ' ) {  // next char start
-            p++;
-        }
+        SkipNonSpaces( p );     // next char start
         len = p - pa;
-
-        if( len == 0 ) break;   // exit loop if no next char
+        if( len == 0 )
+            break;              // exit loop if no next char
 
         token_char = parse_char( pa, len );
         no_data = false;
@@ -975,100 +988,96 @@ void cop_tr_table( const char *p )
 
 /* Function ob_binclude().
  * This function implements the action of BINCLUDE.
+ * NOTE: BINCLUDE produces a doc_element only if the file has been found.
  */
 
 void ob_binclude( binclude_element * in_el )
 {
-    size_t      count;
-    char        *in_name;
-#if defined( __UNIX__ )
-    char        fname[_MAX_PATH];
-#endif
+    char        fontstr[] = "@fs0 ";
+    size_t      ps_size;
+    uint32_t    count;
 
-    in_name = in_el->file;
-#if defined( __UNIX__ )
-    strcpy( fname, in_name );
-    strlwr( fname );
-    in_name = fname;
-#endif
-    if( search_file_in_dirs( in_name, NULL, NULL, ds_doc_spec ) ) {
-        fb_binclude_support( in_el );
-        if( fwrite( buffout.text, 1, buffout.current, out_file_fp ) < buffout.current ) {
+    fb_binclude_support( in_el );
+    if( fwrite( buffout.text, sizeof( uint8_t ), buffout.current, out_file_fp )
+            < buffout.current ) {
+        xx_simple_err_c( err_write_out_file, out_file );
+    }
+    buffout.current = 0;
+
+    if( in_el->has_rec_type ) {
+        count = fread( buffout.text, sizeof( uint8_t ), buffout.length, in_el->fp );
+        while( count == buffout.length ) {
+            buffout.current = count;
+            if( fwrite( buffout.text, sizeof( uint8_t ), buffout.current, out_file_fp )
+                    < buffout.current ) {
+                xx_simple_err_c( err_write_out_file, out_file );
+                count = 0;
+                break;
+            }
+            count = fread( buffout.text, sizeof( uint8_t ), buffout.length, in_el->fp );
+        }
+        buffout.current = count;
+        if( fwrite( buffout.text, sizeof( uint8_t ), buffout.current, out_file_fp )
+                < buffout.current ) {
             xx_simple_err_c( err_write_out_file, out_file );
         }
-        buffout.current = 0;
-
-        if( in_el->has_rec_type ) {
-            count = fread_buff( buffout.text, buffout.length, try_fp );
-            while( count == buffout.length ) {
-                buffout.current = count;
-                if( fwrite( buffout.text, 1, buffout.current, out_file_fp ) < buffout.current ) {
-                    xx_simple_err_c( err_write_out_file, out_file );
-                    count = 0;
-                    break;
-                }
-                count = fread_buff( buffout.text, buffout.length, try_fp );
-            }
-            buffout.current = count;
-            if( fwrite( buffout.text, 1, buffout.current, out_file_fp ) < buffout.current ) {
-                xx_simple_err_c( err_write_out_file, out_file );
-            }
-            if( ferror( try_fp ) ) {
-                xx_simple_err_cc( err_in_file, "BINCLUDE", try_file_name );
-            }
-            buffout.current = 0;
-        } else {
-            count = fread_buff( binc_buff.text, binc_buff.length, try_fp );
-            while( count == binc_buff.length ) {
-                binc_buff.current = count;
-                ob_flush();
-                if( fwrite( binc_buff.text, 1, binc_buff.current, out_file_fp ) < binc_buff.current ) {
-                    xx_simple_err_c( err_write_out_file, out_file );
-                    count = 0;
-                    break;
-                }
-                count = fread_buff( binc_buff.text, binc_buff.length, try_fp );
-            }
-            binc_buff.current = count;
-            if( fwrite( binc_buff.text, 1, binc_buff.current, out_file_fp ) < binc_buff.current ) {
-                xx_simple_err_c( err_write_out_file, out_file );
-            }
-            if( in_el->depth > 0 ) {
-                ob_flush();
-            }
-            if( ferror( try_fp ) ) {
-                xx_simple_err_cc( err_in_file, "BINCLUDE", try_file_name );
-            }
+        if( ferror( in_el->fp ) ) {
+            xx_simple_err_cc( err_in_file, "BINCLUDE", in_el->file );
         }
+        buffout.current = 0;
     } else {
-        xx_tag_err( err_file_not_found, in_name );
+        count = fread( binc_buff.text, sizeof( uint8_t ), binc_buff.length, in_el->fp );
+        while( count == binc_buff.length ) {
+            binc_buff.current = count;
+            if( fwrite( binc_buff.text, sizeof( uint8_t ), binc_buff.current, out_file_fp )
+                    < binc_buff.current ) {
+                xx_simple_err_c( err_write_out_file, out_file );
+                count = 0;
+                break;
+            }
+            ob_flush();
+            count = fread( binc_buff.text, sizeof( uint8_t ), binc_buff.length, in_el->fp );
+        }
+        binc_buff.current = count;
+        if( fwrite( binc_buff.text, sizeof( uint8_t ), binc_buff.current, out_file_fp )
+                < binc_buff.current ) {
+            xx_simple_err_c( err_write_out_file, out_file );
+        }
+        if( ferror( in_el->fp ) ) {
+            xx_simple_err_cc( err_in_file, "BINCLUDE", in_el->file );
+        }
     }
 
-    return;
+    if( in_el->force_FONT0 ) {          // force fs0 under some conditions; not PS? tbd
+        ob_flush();
+        ps_size = strlen( fontstr );
+        strcpy( buffout.text, fontstr );
+        buffout.current = ps_size;
+    }
+//    fclose( in_el->fp );
+//    in_el->fp = NULL;
+//    mem_free( in_el->file );
 }
 
 
-/* Function ob_direct_out().
- * This function bypasses the output buffer for direct output.
+/* Function ob_oc().
+ * This function implements the action of control word OC.
  */
 
-void ob_direct_out( const char *text )       // used from .oc
+void ob_oc( const char *text )
 {
-    if( fwrite( text, 1, strlen( text ), out_file_fp ) < strlen( text ) ) {
-        xx_simple_err_c( err_write_out_file, out_file );
-        return;
+    if( ProcFlags.has_aa_block ) {
+        set_oc_pos();
     }
-#ifdef __UNIX__
-    if( fprintf( out_file_fp, "\n" ) < strlen( "\n" ) ) {
-        xx_simple_err_c( err_write_out_file, out_file );
-        return;
+    ob_flush();
+    ob_insert_block( text, strlen( text ), false, false, g_curr_font );
+    if( ProcFlags.has_aa_block ) {
+        if( (text[strlen( text ) - 1]) != ' ' ) {
+            ob_insert_byte( ' ' );
+        }
+        set_oc_pos();
     }
-#else
-    if( fprintf( out_file_fp, "\r\n" ) < strlen( "\r\n" ) ) {
-        xx_simple_err_c( err_write_out_file, out_file );
-        return;
-    }
-#endif
+    ob_flush();
     return;
 }
 
@@ -1085,8 +1094,11 @@ void ob_direct_out( const char *text )       // used from .oc
 
 void ob_flush( void )
 {
+    if( !out_file_fp )
+        return;     /* Bail in case of fatal errors further up. */
 
-    if( fwrite( buffout.text, 1, buffout.current, out_file_fp ) < buffout.current ) {
+    if( fwrite( buffout.text, sizeof( uint8_t ), buffout.current, out_file_fp )
+            < buffout.current ) {
         xx_simple_err_c( err_write_out_file, out_file );
         return;
     }
@@ -1107,83 +1119,84 @@ void ob_flush( void )
 
 /* Function ob_graphic().
  * This function implements the action of GRAPHIC for the PS device.
+ * NOTE: GRAPHIC produces a doc_element only if the file has been found.
  */
 
 void ob_graphic( graphic_element * in_el )
 {
     char        begindoc[] = "%%BeginDocument: ";
     char        enddoc[] = "%%EndDocument";
+    char        fontstr[] = "@fs0 ";
     char        graphobj[] = "/graphobj save def /showpage { } def";
     char        restore[] = "graphobj restore";
     size_t      ps_size;
-    size_t      count;
-    char        *in_name;
-#if defined( __UNIX__ )
-    char        fname[_MAX_PATH];
-#endif
+    uint32_t    count;
 
-    in_name = in_el->file;
-#if defined( __UNIX__ )
-    strcpy( fname, in_name );
-    strlwr( fname );
-    in_name = fname;
-#endif
-    if( search_file_in_dirs( in_name, NULL, NULL, ds_doc_spec ) ) {
-        fb_graphic_support( in_el );
-        ob_flush();
+    fb_graphic_support( in_el );
+    ob_flush();
 
-        ps_size = strlen( graphobj );
-        strcpy( buffout.text, graphobj );
-        buffout.current = ps_size;
-        ob_flush();
+    ps_size = strlen( graphobj );
+    strcpy( buffout.text, graphobj );
+    buffout.current = ps_size;
+    ob_flush();
 
-        memset( buffout.text, '\0', buffout.length );
-        ps_size = sprintf( buffout.text, "%d %d %d %d %d %d %d graphhead",
-                  in_el->cur_left, in_el->y_address, in_el->width, in_el->depth,
-                  in_el->xoff, -1 * (in_el->depth + in_el->yoff), in_el->scale );
-        buffout.current = strlen( buffout.text );
-        ob_flush();
+    memset( buffout.text, buffout.length, '\0' );
+    ps_size = sprintf( buffout.text, "%d %d %d %d %d %d %d graphhead",
+                         in_el->cur_left, in_el->y_address, in_el->width, in_el->depth,
+                         in_el->xoff, -1 * (in_el->depth + in_el->yoff), in_el->scale );
+    buffout.current = strlen( buffout.text );
+    ob_flush();
 
-        ps_size = strlen( begindoc );
-        strcpy( buffout.text, begindoc );
-        buffout.current = ps_size;
-        strcpy( buffout.text + ps_size, in_name );
-        buffout.current = strlen( buffout.text );
-        ob_flush();
+    ps_size = strlen( begindoc );
+    strcpy( buffout.text, begindoc );
+    buffout.current = ps_size;
+    strcpy( buffout.text + ps_size, in_el->short_name );
+    buffout.current = strlen( buffout.text );
+    ob_flush();
 
-        count = fread_buff( buffout.text, buffout.length, try_fp );
-        while( count == buffout.length ) {
-            buffout.current = count;
-            if( fwrite( buffout.text, 1, buffout.current, out_file_fp ) < buffout.current ) {
-                xx_simple_err_c( err_write_out_file, out_file );
-                return;
-            }
-            count = fread_buff( buffout.text, buffout.length, try_fp );
-        }
+    count = fread( buffout.text, sizeof( uint8_t ), buffout.length, in_el->fp );
+    while( count == buffout.length ) {
         buffout.current = count;
-        if( fwrite( buffout.text, 1, buffout.current, out_file_fp ) < buffout.current ) {
+        if( fwrite( buffout.text, sizeof( uint8_t ), buffout.current, out_file_fp )
+                < buffout.current ) {
             xx_simple_err_c( err_write_out_file, out_file );
             return;
         }
-        buffout.current = 0;
-
-        ps_size = strlen( enddoc );
-        strcpy( buffout.text, enddoc );
-        buffout.current = ps_size;
-        ob_flush();
-
-        ps_size = strlen( restore );
-        strcpy( buffout.text, restore );
-        buffout.current = ps_size;
-        ob_flush();
-        if( ferror( try_fp ) ) {
-            xx_simple_err_cc( err_in_file, "GRAPHIC", try_file_name );
-        }
-    } else {
-        xx_tag_err( err_file_not_found, in_name );
+        count = fread( buffout.text, sizeof( uint8_t ), buffout.length, in_el->fp );
     }
+    buffout.current = count;
+    if( fwrite( buffout.text, sizeof( uint8_t ), buffout.current, out_file_fp )
+            < buffout.current ) {
+        xx_simple_err_c( err_write_out_file, out_file );
+        return;
+    }
+    buffout.current = 0;
 
-    return;
+    ps_size = strlen( enddoc );
+    strcpy( buffout.text, enddoc );
+    buffout.current = ps_size;
+    ob_flush();
+
+    ps_size = strlen( restore );
+    strcpy( buffout.text, restore );
+    buffout.current = ps_size;
+    ob_flush();
+
+    /* Only if font in use after the GRAPHIC was not font 0 */
+
+    if( in_el->next_font > FONT0 ) {
+        ob_flush();
+        ps_size = strlen( fontstr );
+        strcpy( buffout.text, fontstr );
+        buffout.current = ps_size;
+        if( ferror( in_el->fp ) ) {
+            xx_simple_err_cc( err_in_file, "GRAPHIC", in_el->file );
+        }
+    }
+//    fclose( in_el->fp );
+//    in_el->fp = NULL;
+//    mem_free( in_el->file );
+//    mem_free( in_el->short_name );
 }
 
 /* Function ob_insert_block().
@@ -1198,7 +1211,8 @@ void ob_graphic( graphic_element * in_el )
  *      out_text is true is the bytes are to appear in the document itself.
  */
 
-void ob_insert_block( const char *in_block, size_t count, bool out_trans, bool out_text, font_number font )
+void ob_insert_block( const char *in_block, size_t count, bool out_trans,
+                      bool out_text, font_number font )
 {
     /* Select and invoke the proper static function. */
 
@@ -1308,8 +1322,9 @@ void ob_insert_ps_text_start( void )
 
 void ob_setup( void )
 {
-    size_t  i;
-    size_t  count;
+    int             i;
+    size_t          count;
+    unsigned long   num;
 
     /* Finalize out_file and out_file_attr. */
 
@@ -1319,7 +1334,7 @@ void ob_setup( void )
     /* The record type must be "t"; it must have only one character and be */
     /* followed by ":".                                                    */
 
-    if( (tolower( out_file_attr[0] ) != 't') || (out_file_attr[1] != ':') ) {
+    if( ( my_tolower( out_file_attr[0] ) != 't' ) || ( out_file_attr[1] != ':' ) ) {
         xx_simple_err_c( err_rec_att_not_sup, out_file_attr );
     }
 
@@ -1328,28 +1343,26 @@ void ob_setup( void )
     count = 0;
 
     for( i = 2; i < strlen( out_file_attr ); i++ ) {
-        if( !isdigit( out_file_attr[i] ) ) {
+        if( !my_isdigit( out_file_attr[i] ) ) {
             xx_simple_err_c( err_rec_att_bad_fmt, out_file_attr );
         }
         count++;
     }
 
+    num = strtoul( &out_file_attr[2], NULL, 0 );
+#if !defined( __WATCOMC__ ) && defined( __UNIX__ )
+    if( errno == ERANGE || num > UINT_MAX ) {
+#else
+    if( errno == ERANGE ) {
+#endif
+        xx_simple_err_i( err_out_rec_size2, UINT_MAX );
+    }
+
     /* Initialize the local variables. */
 
-    binc_buff.current = 0;
-    binc_buff.length = 80;
-    binc_buff.text = mem_alloc( binc_buff.length );
-
-    buffout.current = 0;
-    buffout.length = strtoul( &out_file_attr[2], NULL, 0 );
-    if( errno == ERANGE ) {
-        xx_simple_err_ul( err_out_rec_size2, ULONG_MAX );
-    }
-    buffout.text = mem_alloc( buffout.length );
-
-    translated.current = 0;
-    translated.length = 80;
-    translated.text = mem_alloc( translated.length );
+    init_record_buffer( &binc_buff, 80 );
+    init_record_buffer( &buffout, num );
+    init_record_buffer( &translated, 80 );
 
     /* Create (truncate) the output file. */
 

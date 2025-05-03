@@ -76,16 +76,12 @@
 ****************************************************************************/
 
 #ifndef COPFILE_H_INCLUDED
-#define COPFILE_H_INCLUDED
 
-typedef uint8_t     font_number;
-//typedef long        font_number;
-typedef int8_t      spacing_line;
-//typedef long        spacing_line;
-typedef uint32_t    spacing_bu;
-//typedef long        spacing_bu;
+#include <stddef.h>
+#include <stdint.h>
+#include <stdio.h>
 
-#define SPACING_BU_MAX  _UI32_MAX
+typedef uint8_t font_number;
 
 /* struct declarations. */
 
@@ -106,8 +102,8 @@ typedef struct {
 /* To hold the data extracted from an OuttransData struct. */
 
 typedef struct {
-    uint8_t *       data;
     uint8_t         count;
+    uint8_t *       data;
 } translation;
 
 /* To hold the data extracted from an OuttransBlock struct.
@@ -122,8 +118,8 @@ typedef struct {
 /* To hold the data extracted from a CodeBlock struct. */
 
 typedef struct {
-    char                *text;
     uint16_t            count;
+    const char *        text;
 } code_text;
 
 /* These structs are unique to the top-level struct cop_device. */
@@ -133,7 +129,7 @@ typedef struct {
  * These structs have two font fields: font_name and font.
  *
  * For the UnderscoreBlock only, if specified_font is false, then both font_name
- * and font number are to be ignored and whatever font is in use when the
+ * and font are to be ignored and whatever font is in use when the
  * underscore character is needed is to be used.
  *
  * If font_name is NULL, then font_name is to be ignored and font
@@ -146,7 +142,11 @@ typedef struct {
  * font number "0" should be used. There is always a font numbered "0".
  */
 
-typedef struct box_chars {
+/* To hold the data from the BoxBlock struct. */
+
+typedef struct {
+    char *              font_name;
+    font_number         font;
     char                horizontal_line;
     char                vertical_line;
     char                top_left;
@@ -158,21 +158,13 @@ typedef struct box_chars {
     char                left_join;
     char                right_join;
     char                inside_join;
-} box_chars;
-
-/* To hold the data from the BoxBlock struct. */
-
-typedef struct {
-    char                *font_name;
-    font_number         font;
-    box_chars           chars;
 } box_block;
 
 /* To hold the data from the UnderscoreBlock struct. */
 
 typedef struct {
-    char                *font_name;
     bool                specified_font;
+    char *              font_name;
     font_number         font;
     char                underscore_char;
 } underscore_block;
@@ -189,8 +181,8 @@ typedef struct {
 /* To hold the data from the DefaultfontBlock struct. */
 
 typedef struct {
-    default_font *      fonts;
     uint16_t            font_count;
+    default_font *      fonts;
 } defaultfont_block;
 
 /* To hold the data from the PauseBlock struct. */
@@ -207,15 +199,15 @@ typedef struct {
 typedef struct {
     char *              font_name;
     char *              font_switch;
-    code_text *         font_pause;
     uint8_t             resident;
+    code_text *         font_pause;
 } device_font;
 
 /* To hold the data from the DevicefontBlock struct. */
 
 typedef struct {
-    device_font *       fonts;
     uint16_t            font_count;
+    device_font *       fonts;
 } devicefont_block;
 
 /* These structs are unique to the top-level struct cop_driver. */
@@ -233,17 +225,17 @@ typedef struct {
  */
 
 typedef struct {
-    char                *text;
-    uint16_t            count;
     bool                is_fontvalue;
+    uint16_t            count;
+    const char *        text;
 } init_text;
 
 /* To hold the data from the InitBlock struct. */
 /* The field names do not all correspond to those in the Wiki. */
 
 typedef struct {
-    init_text *         codeblock;
     uint16_t            count;
+    init_text *         codeblock;
 } init_block;
 
 /* To hold the data from the InitFuncs struct.
@@ -278,16 +270,16 @@ typedef struct {
  */
 
 typedef struct {
-    char                *text;
     uint16_t            advance;
     uint16_t            count;
+    const char *        text;
 } newline_block;
 
 /* To hold the data extracted from a NewlineFuncs struct. */
 
 typedef struct {
-    newline_block *     newlineblocks;
     uint16_t            count;
+    newline_block *     newlineblocks;
 } newline_funcs;
 
 /* To hold the data from the FontswitchBlock struct.
@@ -301,8 +293,6 @@ typedef struct {
 
 typedef struct {
     char *              type;
-    code_text *         startvalue;
-    code_text *         endvalue;
     bool                do_always;
     bool                default_width_flag;
     bool                font_height_flag;
@@ -312,13 +302,15 @@ typedef struct {
     bool                font_space_flag;
     bool                line_height_flag;
     bool                line_space_flag;
+    code_text *         startvalue;
+    code_text *         endvalue;
 } fontswitch_block;
 
 /* To hold the data extracted from a FontswitchFuncs struct. */
 
 typedef struct {
-    fontswitch_block *  fontswitchblocks;
     uint16_t            count;
+    fontswitch_block *  fontswitchblocks;
 } fontswitch_funcs;
 
 /* To hold some of the data extracted from a FontstyleFuncs struct.
@@ -343,11 +335,11 @@ typedef struct {
  */
 
 typedef struct {
+    uint16_t            line_passes;
     char *              type;
     code_text *         startvalue;
     code_text *         endvalue;
     line_proc *         lineprocs;
-    uint16_t            line_passes;
 } fontstyle_block;
 
 /* To hold the data extracted from a FontstyleGroup struct.
@@ -356,8 +348,8 @@ typedef struct {
  */
 
 typedef struct {
-    fontstyle_block *   fontstyleblocks;
     uint16_t            count;
+    fontstyle_block *   fontstyleblocks;
 } fontstyle_group;
 
 /* To hold the data extracted from an HlineBlock, a VlineBlock, or a DboxBlock
@@ -367,9 +359,9 @@ typedef struct {
  */
 
 typedef struct {
-    char                *text;
     uint32_t            thickness;
     uint16_t            count;
+    const char *        text;
 } line_block;
 
 /* This struct is unique to the top-level struct cop_font. */
@@ -408,7 +400,7 @@ typedef struct {
     char            *   output_name;
     char            *   output_extension;
     uint32_t            page_width;
-    spacing_bu          page_depth;
+    uint32_t            page_depth;
     uint32_t            horizontal_base_units;
     uint32_t            vertical_base_units;
     /* PagegeometryBlock */
@@ -452,7 +444,6 @@ typedef struct {
     /* PageAddressBlock */
     uint8_t             x_positive;
     uint8_t             y_positive;
-    int                 :0;
     /* InitFuncs */
     init_funcs          inits;
     /* FinishFuncs */
@@ -530,8 +521,8 @@ typedef struct cop_font {
  */
 
 typedef struct {
-    size_t              current;
-    size_t              length;
+    unsigned            current;
+    unsigned            length;
     char                *text;
 } record_buffer;
 
@@ -550,13 +541,16 @@ typedef struct {
     uint32_t                line_height;
     uint32_t                line_space;
     uint32_t                spc_width;
-    width_block             width;
+    uint32_t                width_table[0x100];
     char                    font_resident;
     unsigned char           shift_count;
     char                    shift_height[4];
 } wgml_font;
 
 #endif  /* COPFILE_H_INCLUDED */
+
+#if !defined( COPFILE_H_INCLUDED ) || defined( global )
+#define COPFILE_H_INCLUDED
 
 /* Variable declarations. */
 
@@ -572,3 +566,6 @@ global wgml_font    *wgml_fonts;     // the available fonts
 /* Reset so can be reused with other headers. */
 
 #undef global
+
+#endif  /* COPFILE_H_INCLUDED */
+

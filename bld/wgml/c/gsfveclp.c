@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2004-2013 The Open Watcom Contributors. All Rights Reserved.
+*  Copyright (c) 2004-2009 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -32,7 +32,9 @@
 *
 ****************************************************************************/
 
+
 #include "wgml.h"
+
 
 static  bool    vec_pos;           // true if &'vecpos, false if &'veclastpos
 
@@ -92,32 +94,34 @@ static  condcode    scr_veclp( parm parms[MAX_FUN_PARMS], size_t parmcount,
     char            *   phayend;
     int                 rc;
     int                 index;
-    size_t              hay_len;
-    size_t              needle_len;
+    int                 hay_len;
+    int                 needle_len;
     char                c;
+
     sub_index           var_ind;
     symvar              symvar_entry;
     symsub          *   symsubval;
     symvar          *   psymvar;
     bool                suppress_msg;
 
-    /* unused parameters */ (void)ressize;
+
+    (void)ressize;
 
     if( parmcount != 2 ) {
         return( neg );
     }
 
-    pneedle = parms[0].start;
-    pneedlend = parms[0].stop;
+    pneedle = parms[0].a;
+    pneedlend = parms[0].e;
 
     unquote_if_quoted( &pneedle, &pneedlend );
-    needle_len = pneedlend - pneedle;   // needle length
+    needle_len = pneedlend - pneedle + 1;   // needle length
 
-    phay = parms[1].start;
-    phayend = parms[1].stop;
+    phay = parms[1].a;
+    phayend = parms[1].e;
 
     unquote_if_quoted( &phay, &phayend );
-    hay_len = phayend - phay;           // haystack length
+    hay_len = phayend - phay + 1;       // haystack length
 
     rc = 0;
     scan_err = false;
@@ -126,43 +130,44 @@ static  condcode    scr_veclp( parm parms[MAX_FUN_PARMS], size_t parmcount,
     if( (hay_len > 0) ||                // not null string
         (needle_len > 0) ) {            // needle not null
 
+
         suppress_msg = ProcFlags.suppress_msg;
         ProcFlags.suppress_msg = true;
         scan_err = false;
-        c = *phayend;
-        *phayend = '\0';
+        c = *(phayend + 1);
+        *(phayend + 1) = '\0';
 
-        scan_sym( phay, &symvar_entry, &var_ind );
+        scan_sym( phay, &symvar_entry, &var_ind, NULL, false );
 
-        *phayend = c;
+        *(phayend + 1) = c;
         ProcFlags.suppress_msg = suppress_msg;;
 
         if( !scan_err ) {
 
             if( symvar_entry.flags & local_var ) {  // lookup var in dict
-                rc = find_symvar_l( &input_cbs->local_dict, symvar_entry.name,
+                rc = find_symvar_lcl( input_cbs->local_dict, symvar_entry.name,
                                     var_ind, &symsubval );
             } else {
-                rc = find_symvar( &global_dict, symvar_entry.name, var_ind,
+                rc = find_symvar( global_dict, symvar_entry.name, var_ind,
                                   &symsubval );
             }
             if( rc > 0 ) {              // variable found
                 psymvar = symsubval->base;
                 if( psymvar->flags & subscripted ) {
-//                    c = *pneedlend;
-//                    *pneedlend = '\0';   // make nul delimited
+                    c = *(pneedlend + 1);
+                    *(pneedlend + 1) = '\0';   // make nul delimited
                     for( symsubval = psymvar->subscripts;
                          symsubval != NULL;
                          symsubval = symsubval->next ) {
 
-                        if( strlen( symsubval->value ) == needle_len && !memcmp( symsubval->value, pneedle, needle_len ) ) {
+                        if( strcmp( symsubval->value, pneedle ) == 0 ) {
                            index = symsubval->subscript;
                            if( vec_pos ) {
                                break;// finished for vec_pos, go for veclastpos
                            }
                         }
                     }
-//                    *pneedlend = c;
+                    *(pneedlend + 1) = c;
                 }
             }
         }

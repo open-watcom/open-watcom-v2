@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2004-2022 The Open Watcom Contributors. All Rights Reserved.
+*  Copyright (c) 2004-2009 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -28,9 +28,9 @@
 *                    2. parm not implemented
 ****************************************************************************/
 
+
 #include "wgml.h"
 
-#include "clibext.h"
 
 /***************************************************************************/
 /*  script string function &'c2d()                                         */
@@ -61,7 +61,7 @@ condcode    scr_c2d( parm parms[MAX_FUN_PARMS], size_t parmcount, char * * resul
     char            *   pend;
     condcode            cc;
     uint32_t            n;
-    char                linestr[MAX_L_AS_STR];
+    char                linestr[NUM2STR_LENGTH];
     char            *   p;
 
     if( (parmcount < 1) || (parmcount > 2) ) {// accept 2. parm, but ignore it
@@ -69,21 +69,21 @@ condcode    scr_c2d( parm parms[MAX_FUN_PARMS], size_t parmcount, char * * resul
         return( cc );
     }
 
-    pval = parms[0].start;
-    pend = parms[0].stop;
+    pval = parms[0].a;
+    pend = parms[0].e;
 
     unquote_if_quoted( &pval, &pend );
 
 
     n = 0;
-    while( pval < pend ) {
+    while( pval <= pend ) {
         n *= 256;                      // ignore overflow, let it wrap around
         n += (unsigned char)*pval;
         pval++;
     }
-    sprintf( linestr, "%lu", (unsigned long)n );
+    sprintf( linestr, "%d", n );
     p = linestr;
-    while( *p && ressize > 0) {
+    while( *p != '\0' && ressize > 0) {
         **result = *p++;
         *result += 1;
         ressize--;

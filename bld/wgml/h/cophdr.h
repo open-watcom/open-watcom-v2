@@ -56,7 +56,7 @@ typedef enum {
 extern "C" {    /* Use "C" linkage when in C++ mode. */
 #endif
 
-extern cop_file_type    parse_header( FILE * in_file );
+extern cop_file_type    parse_header( FILE *fp );
 
 #ifdef  __cplusplus
 }   /* End of "C" linkage for C++. */

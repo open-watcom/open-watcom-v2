@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2004-2013 The Open Watcom Contributors. All Rights Reserved.
+*  Copyright (c) 2004-2011 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -26,57 +26,41 @@
 *
 * Description:  Implements reference dictionary and helper functions
 *                   for :Hx, :HDREF, :FIG, :FN, :FIGREF, :FNREF tags
-*
-*                   :FIG, :FN, :FIGREF, :FNREF tags not yet implemented TBD
 ****************************************************************************/
+
 
 #include "wgml.h"
 
 
 /***************************************************************************/
 /*  get_refid_value        parse reference id                              */
+/*                                                                         */
+/*  Note: parameter refid should be a pointer to char[ID_LEN]              */
 /***************************************************************************/
 
-char * get_refid_value( char * p )
+char * get_refid_value( char * p, char * refid )
 {
-    char  * pa;
-    char  * pe;
-    int     len;
-    char    c;
+    int k;
 
     p = get_att_value( p );
 
-    if( val_start == NULL || val_len == 0 ) {   // no valid id
+    if( val_start == NULL ) {       // no valid id
         return( p );
     }
-    pa = val_start;
-    while( is_id_char( *pa ) ) {
-        pa++;
+    if( val_len < ID_LEN ) {
+        for( k = 0; k < val_len; k++ ) {
+            refid[k] = my_tolower( *(val_start + k) );
+        }
+        refid[val_len] = '\0';
+    } else {
+        for( k = 0; k < ID_LEN; k++ ) {
+            refid[k] = my_tolower( *(val_start + k) );
+        }
+        refid[ID_LEN - 1] = '\0';
     }
-
-    len = pa - val_start;
-    pe = val_start + len;
-    if( len > 7 ) {                     // wgml 4 warning level
-        c = *pe;
-        *pe = '\0';
-        g_warn( wng_id_xxx, val_start );
-        *pe = c;
-        g_info( inf_id_len );
-        file_mac_info();
-        wng_count++;
+    if( val_len > 7 ) {                     // wgml 4 warning level
+        xx_warn_c_info( wng_id_xxx, refid, inf_id_len );
     }
-
-    /***************************************************************/
-    /*  restrict the length to ID_LEN (15) in the hope that no     */
-    /*  truncation occurs                                          */
-    /*  wgml4 warns about ids of more than 7 chars, but processes  */
-    /*  much longer ids                                  TBD       */
-    /***************************************************************/
-
-    val_len = len;       // restrict length
-    if( val_len > ID_LEN )
-        val_len = ID_LEN;
-    *(val_start + val_len) = '\0';
     return( p );
 }
 
@@ -122,9 +106,6 @@ static void    free_ref_entry( ref_entry * * dict, ref_entry * me )
     ref_entry   *   wkn;
 
     if( me != NULL ) {
-        if( (me->flags < rf_ix) && (me->u.info.text_cap != NULL) ) {
-            mem_free( me->u.info.text_cap );
-        }
         if( *dict == me ) {             // delete first entry
             *dict = me->next;
         } else {
@@ -163,51 +144,15 @@ void    free_ref_dict( ref_entry * * dict )
     return;
 }
 
-/***************************************************************************/
-/*  copy lowercase id to ref entry                                         */
-/*  if id length shorter than max pad with '\0'                            */
-/***************************************************************************/
-void fill_id( ref_entry * re, char * id, size_t len )
-{
-    int     k;
-
-    if( len > ID_LEN )
-        len = ID_LEN;
-    for( k = 0; k < len; k++ ) {
-        (re->id)[k] = tolower( *(id + k) );
-    }
-    if( len < ID_LEN ) {
-        for( ; k < ID_LEN; k++ ) {
-            (re->id)[k] = '\0';
-        }
-    } else {
-        (re->id)[ID_LEN] = '\0';
-    }
-}
-
 
 /***************************************************************************/
 /* init ref entry with some values    assumes :hx :fig variant             */
 /***************************************************************************/
-void init_ref_entry( ref_entry * re, char * id, size_t len )
+
+void init_ref_entry( ref_entry *re, char *id )
 {
-
     re->next = NULL;
-    re->u.info.text_cap = NULL;
-
-    fill_id( re, id, len );
-
-    if( input_cbs->fmflags & II_tag_mac ) {
-        re->lineno = input_cbs->s.m->lineno;
-    } else {
-        re->lineno = input_cbs->s.f->lineno;
-    }
-    re->u.info.number = 0;
-    if( ProcFlags.page_started ) {
-        re->u.info.pageno = page;
-    } else {
-        re->u.info.pageno = page + 1;
-    }
+    strcpy( re->id, id );
 }
 
 
@@ -223,10 +168,12 @@ ref_entry   * find_refid( ref_entry * dict, const char * name )
     ref_entry   *   curr;
 
     wk = NULL;
-    for( curr = dict; curr != NULL; curr = curr->next ) {
-        if( !strcmp( curr->id, name ) ) {
-            wk = curr;
-            break;
+    if( strlen( name ) > 0 ) {          // don't match case with no id
+        for( curr = dict; curr != NULL; curr = curr->next ) {
+            if( strcmp( curr->id, name ) == 0 ) {
+                wk = curr;
+                break;
+            }
         }
     }
     return( wk );
@@ -241,36 +188,35 @@ ref_entry   * find_refid( ref_entry * dict, const char * name )
 
 void    print_ref_dict( ref_entry * dict, const char * type )
 {
-    ref_entry           *wk;
-    int                 cnt;
-    size_t              len;
-    static const char   fill[17] = "                ";
-    bool                withnumber;
-    char                *text;
-
+    ref_entry           *   wk;
+    int                     cnt;
+    int                     len;
+    static  const   char    fill[17] = "                ";
+    bool                    withnumber;
+    char                *   text;
     cnt = 0;
     if( dict != NULL ) {
         out_msg( "\nList of %s entries:\n\n", type );
-        if( strcmp( "INDEX", type ) ) {
-            withnumber = strcmp( "HDREF", type );   // true for :FIG and :FN
+        if( strcmp( "INDEX", type ) != 0 ) {
+            withnumber = ( strcmp( "HDREF", type ) != 0 );   // true for :FIG and :FN
             for( wk = dict; wk != NULL; wk = wk->next ) {
                 len = strlen( wk->id );
                 if( withnumber ) {
-                    out_msg( "%4ld ID='%s'%spage %-3ld text='%s'\n", wk->u.info.number,
-                             wk->id, &fill[len], wk->u.info.pageno, wk->u.info.text_cap );
+                    out_msg( "%4ld ID='%s'%spage %-3ld text='%s'\n", wk->u.ffh.entry->number,
+                             wk->id, &fill[len], wk->u.ffh.entry->pageno, wk->u.ffh.entry->text );
                 } else {
                     out_msg( "ID='%s'%spage %-3ld text='%s'\n", wk->id,
-                            &fill[len], wk->u.info.pageno, wk->u.info.text_cap );
+                            &fill[len], wk->u.ffh.entry->pageno, wk->u.ffh.entry->text );
                 }
                 cnt++;
             }
         } else {                        // "INDEX"
             for( wk = dict; wk != NULL; wk = wk->next ) {
                 len = strlen( wk->id );
-                if( wk->u.refb.hblk->prt_term != NULL ) {
-                    text = wk->u.refb.hblk->prt_term;
+                if( wk->u.ix.hblk->prt_term != NULL ) {
+                    text = wk->u.ix.hblk->prt_term;
                 } else {
-                    text = wk->u.refb.hblk->ix_term;
+                    text = wk->u.ix.hblk->ix_term;
                 }
                 out_msg( "ID='%s'%s'%s'\n", wk->id,
                          &fill[len], text );

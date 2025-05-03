@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2004-2013 The Open Watcom Contributors. All Rights Reserved.
+*  Copyright (c) 2004-2009 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -28,9 +28,11 @@
 *
 ****************************************************************************/
 
+
 #include "wgml.h"
 
 #include "clibext.h"
+
 
 /***************************************************************************/
 /*   :TOCPGNUM attributes                                                  */
@@ -43,68 +45,72 @@ const   lay_att     tocpgnum_att[3] =
 /*  lay_tocpgnum                                                           */
 /***************************************************************************/
 
-void    lay_tocpgnum( lay_tag ltag )
+void    lay_tocpgnum( const gmltag * entry )
 {
     char            *   p;
     condcode            cc;
+    int                 cvterr;
     int                 k;
     lay_att             curr;
-    att_args            l_args;
-    int                 cvterr;
 
-    /* unused parameters */ (void)ltag;
+    (void)entry;
 
     p = scan_start;
     cvterr = false;
 
-    if( !GlobFlags.firstpass ) {
-        scan_start = scan_stop;
+    if( !GlobalFlags.firstpass ) {
+        scan_start = scan_stop + 1;
         eat_lay_sub_tag();
         return;                         // process during first pass only
     }
+    memset( &AttrFlags, 0, sizeof( AttrFlags ) );   // clear all attribute flags
     if( ProcFlags.lay_xxx != el_tocpgnum ) {
         ProcFlags.lay_xxx = el_tocpgnum;
     }
-    cc = get_lay_sub_and_value( &l_args );  // get att with value
+    cc = get_attr_and_value();            // get att with value
     while( cc == pos ) {
         cvterr = -1;
         for( k = 0, curr = tocpgnum_att[k]; curr > 0; k++, curr = tocpgnum_att[k] ) {
 
-            if( !strnicmp( att_names[curr], l_args.start[0], l_args.len[0] ) ) {
-                p = l_args.start[1];
+            if( !strnicmp( att_names[curr], g_att_val.att_name, g_att_val.att_len ) ) {
+                p = g_att_val.val_name;
 
                 switch( curr ) {
                 case   e_size:
+                    if( AttrFlags.size ) {
+                        xx_line_err_ci( err_att_dup, g_att_val.att_name,
+                            g_att_val.val_name - g_att_val.att_name + g_att_val.val_len);
+                    }
                     cvterr = i_space_unit( p, curr,
                                            &layout_work.tocpgnum.size );
+                    AttrFlags.size = true;
                     break;
                 case   e_font:
+                    if( AttrFlags.font ) {
+                        xx_line_err_ci( err_att_dup, g_att_val.att_name,
+                            g_att_val.val_name - g_att_val.att_name + g_att_val.val_len);
+                    }
                     cvterr = i_font_number( p, curr, &layout_work.tocpgnum.font );
                     if( layout_work.tocpgnum.font >= wgml_font_cnt ) {
                         layout_work.tocpgnum.font = 0;
                     }
+                    AttrFlags.font = true;
                     break;
                 default:
-                    out_msg( "WGML logic error.\n");
-                    cvterr = true;
-                    break;
+                    internal_err( __FILE__, __LINE__ );
                 }
                 if( cvterr ) {          // there was an error
-                    err_count++;
-                    g_err( err_att_val_inv );
-                    file_mac_info();
+                    xx_err( err_att_val_inv );
                 }
                 break;                  // break out of for loop
             }
         }
         if( cvterr < 0 ) {
-            err_count++;
-            g_err( err_att_name_inv );
-            file_mac_info();
+            xx_err( err_att_name_inv );
         }
-        cc = get_lay_sub_and_value( &l_args );  // get att with value
+        cc = get_attr_and_value();            // get att with value
     }
-    scan_start = scan_stop;
+    scan_start = scan_stop + 1;
     return;
 }
 

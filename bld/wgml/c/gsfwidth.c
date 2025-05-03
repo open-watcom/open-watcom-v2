@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2004-2013 The Open Watcom Contributors. All Rights Reserved.
+*  Copyright (c) 2004-2009 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -28,7 +28,9 @@
 *
 ****************************************************************************/
 
+
 #include "wgml.h"
+
 
 /***************************************************************************/
 /*  script string function &'width(                                        */
@@ -60,38 +62,38 @@ condcode    scr_width( parm parms[MAX_FUN_PARMS], size_t parmcount, char * * res
     char            *   pend;
     char            *   pa;
     char            *   pe;
-    size_t              len;
+    int                 len;
     char                type;
     uint32_t            width;
 
-    /* unused parameters */ (void)ressize;
+    (void)ressize;
 
     if( (parmcount < 1) || (parmcount > 2) ) {
         return( neg );
     }
 
-    pval = parms[0].start;
-    pend = parms[0].stop;
+    pval = parms[0].a;
+    pend = parms[0].e;
 
     unquote_if_quoted( &pval, &pend );
 
-    if( pend == pval ) {                // null string width 0
+    len = pend - pval + 1;
+
+    if( len <= 0 ) {                    // null string width 0
         **result = '0';
         *result += 1;
         **result = '\0';
         return( pos );
     }
 
-    len = pend - pval;
-
     if( parmcount > 1 ) {               // evalute type
-        if( parms[1].stop > parms[1].start ) {// type
-            pa = parms[1].start;
-            pe = parms[1].stop;
+        if( parms[1].e >= parms[1].a ) {// type
+            pa  = parms[1].a;
+            pe  = parms[1].e;
 
             unquote_if_quoted( &pa, &pe );
 
-            type = tolower( *pa );
+            type = my_tolower( *pa );
             switch( type ) {
             case   'c':                 // CPI
                 width = cop_text_width( pval, len, g_curr_font );
@@ -104,12 +106,7 @@ condcode    scr_width( parm parms[MAX_FUN_PARMS], size_t parmcount, char * * res
                 width = len;
                 break;
             default:
-                g_err( err_func_parm, "2 (type)" );
-                g_info_inp_pos();
-                err_count++;
-                show_include_stack();
-                return( neg );
-                break;
+                xx_source_err_c( err_func_parm, "2 (type)" );
             }
         }
     } else {                            // default type c processing

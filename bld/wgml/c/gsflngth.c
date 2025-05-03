@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2004-2013 The Open Watcom Contributors. All Rights Reserved.
+*  Copyright (c) 2004-2009 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -28,7 +28,9 @@
 *
 ****************************************************************************/
 
+
 #include "wgml.h"
+
 
 /***************************************************************************/
 /*  script string function &'length(                                       */
@@ -48,24 +50,24 @@
 /*                                                                         */
 /***************************************************************************/
 
-condcode    scr_length( parm parms[MAX_FUN_PARMS], size_t parmcount, char **result, int32_t ressize )
+condcode    scr_length( parm parms[MAX_FUN_PARMS], size_t parmcount, char * * result, int32_t ressize )
 {
     char            *   pval;
     char            *   pend;
     int                 len;
 
-    /* unused parameters */ (void)ressize;
+    (void)ressize;
 
     if( parmcount != 1 ) {
         return( neg );
     }
 
-    pval = parms[0].start;
-    pend = parms[0].stop;
+    pval = parms[0].a;
+    pend = parms[0].e;
 
     unquote_if_quoted( &pval, &pend );
 
-    len = pend - pval;
+    len = pend - pval + 1;
 
     *result += sprintf( *result, "%d", len );
 

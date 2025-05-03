@@ -34,7 +34,6 @@
 #include <stdint.h>
 #include <string.h>
 
-#include "copfunc.h"
 #include "cophdr.h"
 
 /* Function parse_header().
@@ -43,7 +42,7 @@
  * it does, advance the stream to the first byte following the header.
  *
  * Parameter:
- *      in_file points the input stream.
+ *      fp points the input stream.
  *
  * Returns:
  *      dir_v4_1_se if the file is a same-endian version 4.1 directory file.
@@ -54,16 +53,16 @@
  *      file_error if an error occurred while reading the file.
  */
 
-cop_file_type parse_header( FILE * in_file )
+cop_file_type parse_header( FILE *fp )
 {
-    unsigned char   count;
-    char            text_version[0x0b];
-    uint16_t        version;
+    char        count;
+    char        text_version[0x0b];
+    uint16_t    version;
 
     /* Get the count and ensure it is 0x02. */
 
-    count = fread_u8( in_file );
-    if( ferror( in_file ) || feof( in_file ) ) {
+    count = fgetc( fp );
+    if( ferror( fp ) || feof( fp ) ) {
         return( file_error );
     }
 
@@ -71,15 +70,17 @@ cop_file_type parse_header( FILE * in_file )
         return( not_bin_dev );
     }
 
+    /* Get the version. */
+
+    fread( &version, 2, 1, fp );
+    if( ferror( fp ) || feof( fp ) ) {
+        return( file_error );
+    }
+
     /* Check for a same_endian version 4.1 header.
     *  Note: checking 0x0c00 would, presumably, identify a different-endian
     *  version 4.1 header, if that ever becomes necessary.
     */
-
-    fread_buff( &version, sizeof( version ), in_file );
-    if( ferror( in_file ) || feof( in_file ) ) {
-        return( file_error );
-    }
 
     if( version != 0x000c ) {
         return( not_se_v4_1 );
@@ -87,8 +88,8 @@ cop_file_type parse_header( FILE * in_file )
 
     /* Get the text_version_length and ensure it is 0x0b. */
 
-    count = fread_u8( in_file );
-    if( ferror( in_file ) || feof( in_file ) ) {
+    count = fgetc( fp );
+    if( ferror( fp ) || feof( fp ) ) {
         return( file_error );
     }
 
@@ -98,22 +99,23 @@ cop_file_type parse_header( FILE * in_file )
 
     /* Verify the text_version. */
 
-    fread_buff( text_version, 0x0b, in_file );
-    if( ferror( in_file ) || feof( in_file ) ) {
+    fread( &text_version, 0x0b, 1, fp );
+    if( ferror( fp ) || feof( fp ) ) {
         return( file_error );
     }
 
-    if( memcmp( text_version, "V4.1 PC/DOS", 0x0b ) ) {
+    text_version[0x0b] = '\0';
+    if( strcmp( "V4.1 PC/DOS", text_version ) != 0 ) {
         return( not_bin_dev );
     }
 
     /* Get the type. */
 
-    count = fread_u8( in_file );
+    count = fgetc( fp );
 
     /* If there is no more data, this is not a valid .COP file. */
 
-    if( ferror( in_file ) || feof( in_file ) ) {
+    if( ferror( fp ) || feof( fp ) ) {
         return( file_error );
     }
 

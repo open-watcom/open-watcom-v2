@@ -15,6 +15,18 @@ pick( INF_USE_SRC,     "srcfile has to come first.",
 pick( INF_USE_OP,      "Newoptions:",
                        "Newoptions:" )
 
+pick( INF_USE_OPI,     "-i <path>",
+                       "-i <path>" )
+
+pick( INF_USE_OPI1,    "\tOverride GMLINC path.",
+                       "\tOverride GMLINC path." )
+
+pick( INF_USE_OPL,     "-l <path>",
+                       "-l <path>" )
+
+pick( INF_USE_OPL1,    "\tOverride GMLLIB path.",
+                       "\tOverride GMLLIB path." )
+
 pick( INF_USE_OPQ,     "-q\tQuiet, don't show product info.",
                        "-q\tQuiet, don't show product info." )
 
@@ -164,5 +176,16 @@ pick( INF_USE_END,     " ", " " )
 
 /* usage msgs start with INF_USE_START and continue thru INF_USE_END */
 
-pick( INF_PROC_START,   "Processing device information\n",
-                        "Processing device information\n")
+pick( INF_FMT_END,     "Formatting complete",
+                       "Formatting complete")
+
+pick( INF_FMT_START,   "Formatting document",
+                       "Formatting document")
+
+pick( INF_PROC_DEV,    "Processing device information",
+                       "Processing device information")
+
+pick( INF_PROC_LAY,    "Processing layout",
+                       "Processing layout")
+
+

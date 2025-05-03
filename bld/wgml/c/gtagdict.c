@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2004-2013 The Open Watcom Contributors. All Rights Reserved.
+*  Copyright (c) 2004-2009 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -28,6 +28,7 @@
 *
 ****************************************************************************/
 
+
 #include "wgml.h"
 
 #include "clibext.h"
@@ -49,18 +50,15 @@ void    init_tag_dict( gtentry * * dict )
 /*              if tag already defined error                               */
 /***************************************************************************/
 
-gtentry *   add_tag( gtentry * * dict, const char * name, const char * mac, const int flags )
+gtentry *   add_tag( gtentry * * dict, const char * name, const char * mac,
+                     const int flags )
 {
     gtentry     *   ge;
     gtentry     *   wk;
 
-    wk = find_tag( dict, name );
+    wk = find_user_tag( dict, name );
     if( wk != NULL ) {
-        err_count++;
-        g_err( err_tag_exist, name );
-        g_info_inp_pos();
-        show_include_stack();
-        return( NULL );
+        xx_source_err_c( err_tag_exist, name );
     }
 
     ge = mem_alloc( sizeof( gtentry ) );
@@ -88,7 +86,7 @@ gtentry *   change_tag( gtentry * * dict, const char * name, const char * mac )
     gtentry     *   ge = NULL;
 
     if( *dict != NULL ) {
-        ge = find_tag( dict, name );
+        ge = find_user_tag( dict, name );
         if( ge != NULL ) {
            strcpy( ge->macname, mac );
         }
@@ -179,12 +177,12 @@ void    free_tag_dict( gtentry * * dict )
 /*  returns ptr to tag or NULL if not found                                */
 /***************************************************************************/
 
-gtentry     *   find_tag( gtentry * * dict, const char * name )
+gtentry     *find_user_tag( gtentry * * dict, const char * name )
 {
-    gtentry     *   wk;
+    gtentry     *wk;
 
     for( wk = *dict; wk != NULL; wk = wk->next ) {
-        if( !stricmp( wk->name, name ) ) {
+        if( stricmp( wk->name, name ) == 0 ) {
             break;
         }
     }
@@ -231,18 +229,18 @@ static  void    print_val_entry( gavalentry *wk )
 
     if( flags & val_range ) {
         if( flags & val_def ) {
-            sprintf( opt, "default=%ld %ld min=%ld max=%ld",
+            sprintf( opt, "default=%d %d min=%d max=%d",
                      wk->a.range[2], wk->a.range[3],
                      wk->a.range[0], wk->a.range[1] );
         } else {
-            sprintf( opt, "min=%ld max=%ld", wk->a.range[0],
+            sprintf( opt, "min=%d max=%d", wk->a.range[0],
                      wk->a.range[1] );
         }
         out_msg( "val:        %-10.10s %s\n", " ", opt );
 
     } else if( flags & val_length ) {
 
-        sprintf( opt, "length=%ld\n", wk->a.range[0] );
+        sprintf( opt, "length=%d\n", wk->a.range[0] );
         out_msg( "val:        %-10.10s %s\n", " ", opt );
 
     } else if( flags & val_any ) {
@@ -366,7 +364,7 @@ void    print_tag_entry( gtentry * wk )
         find++;
         flags >>= 1;
     }
-    out_msg( "tag:  %-16.16s tagcount=%d macro=%s %s\n", wk->name,
+    out_msg( "tag:  %-16.16s tagcount=%u macro=%s %s\n", wk->name,
              wk->usecount, wk->macname, opt );
     for( gawk = wk->attribs; gawk != NULL; gawk = gawk->next ) {
         print_att_entry( gawk );

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2004-2013 The Open Watcom Contributors. All Rights Reserved.
+*  Copyright (c) 2004-2007 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -28,23 +28,24 @@
 *                                          i.e. non production formatting
 ****************************************************************************/
 
+
 #include <stdarg.h>
 #include "wgml.h"
 
 #include "clibext.h"
 
+
 typedef struct taglist {
     struct  taglist *   nxt;
-    long                count;
+    int                 count;
     char                tagname[16];
 } taglist;
 
-static  taglist *   r_lay_tags = NULL;      // list of found gml layout tags
-static  taglist *   r_gml_tags = NULL;      // list of found gml tags
-static  taglist *   r_scrkws = NULL;        // list of found scr keywords
-static  taglist *   single_funcs = NULL;    // list of found scr single letter fun
-static  taglist *   multi_funcs = NULL;     // list of found scr multi letter fun
-
+static  taglist *   lay_tags = NULL;    // list of found gml layout tags
+static  taglist *   sys_tags = NULL;    // list of found gml tags
+static  taglist *   scrkws = NULL;      // list of found scr keywords
+static  taglist *   single_funcs = NULL;// list of found scr single letter fun
+static  taglist *   multi_funcs = NULL; // list of found scr multi letter fun
 
 
 void printf_research( char * msg, ... )
@@ -57,9 +58,9 @@ void printf_research( char * msg, ... )
 }
 
 
-static  void    print_total( int32_t cnt, int32_t tags )
+static  void    print_total( int cnt, int icnt )
 {
-    printf_research( "%6ld  --- Total calls for %ld items\n", cnt, tags );
+    printf_research( "%6d  --- Total calls for %d items\n", cnt, icnt );
 }
 
 
@@ -73,26 +74,28 @@ void add_GML_tag_research( char * tag )
     taglist *   new;
 
     if( ProcFlags.layout ) {
-        wk = r_lay_tags;
+        wk = lay_tags;
     } else {
-        wk = r_gml_tags;
+        wk = sys_tags;
     }
-    for( ; wk != NULL; wk = wk->nxt ) {
+
+    while( wk ) {
         if( !stricmp( tag, wk->tagname ) ) {
             wk->count++;
             return;
         }
-        if( wk->nxt == NULL ) {
+        if( !wk->nxt ) {
             break;
         }
+        wk = wk->nxt;
     }
     new = mem_alloc( sizeof( taglist ) );
     if( wk == NULL ) {
         wk = new;
         if( ProcFlags.layout ) {
-            r_lay_tags = new;
+            lay_tags = new;
         } else {
-            r_gml_tags = new;
+            sys_tags = new;
         }
     } else {
         wk->nxt = new;
@@ -109,25 +112,29 @@ void add_GML_tag_research( char * tag )
 
 void    print_GML_tags_research( void )
 {
-    taglist *   wk;
-    int32_t     cnt = 0;
-    int32_t     cnt1 = 0;
+    taglist *   wk = lay_tags;
+    int         cnt = 0;
+    int         cnt1 = 0;
 
-    if( r_lay_tags != NULL ) {
+    if( wk != NULL ) {
         printf_research( "\nGML layout tag list sorted by first occurrence\n\n" );
-        for( wk = r_lay_tags; wk != NULL; wk = wk->nxt ) {
+        while( wk ) {
             printf_research("%6ld  :%s\n", wk->count, wk->tagname );
             cnt += wk->count;
             cnt1++;
+            wk = wk->nxt;
+
         }
     }
     cnt = 0;
     cnt1 = 0;
+    wk = sys_tags;
     printf_research( "\nGML tag / macro list sorted by first occurrence\n\n" );
-    for( wk = r_gml_tags; wk != NULL; wk = wk->nxt ) {
-        printf_research("%6ld  :%s\n", wk->count, wk->tagname );
+    while( wk ) {
+        printf_research( "%6ld  :%s\n", wk->count, wk->tagname );
         cnt += wk->count;
         cnt1++;
+        wk = wk->nxt;
     }
     print_total( cnt, cnt1 );
 }
@@ -138,17 +145,23 @@ void    print_GML_tags_research( void )
 
 void    free_GML_tags_research( void )
 {
-    taglist     *wk;
+    taglist *   wk = sys_tags;
+    taglist *   wk1;
 
-    while( (wk = r_gml_tags) != NULL ) {
-        r_gml_tags = wk->nxt;
-        mem_free( wk) ;
+    while( wk ) {
+        wk1 = wk;
+        wk = wk->nxt;
+        mem_free( wk1) ;
     }
+    sys_tags = NULL;
 
-    while( (wk = r_lay_tags) != NULL ) {
-        r_lay_tags = wk->nxt;
-        mem_free( wk );
+    wk = lay_tags;
+    while( wk ) {
+        wk1 = wk;
+        wk = wk->nxt;
+        mem_free( wk1) ;
     }
+    lay_tags = NULL;
 }
 
 /***************************************************************************/
@@ -157,10 +170,10 @@ void    free_GML_tags_research( void )
 
 void    add_SCR_tag_research( char * tag )
 {
-    taglist     *wk;
-    taglist     *new;
+    taglist *   wk = scrkws;
+    taglist *   new;
 
-    for( wk = r_scrkws; wk != NULL; wk = wk->nxt ) {
+    while( wk ) {
         if( !stricmp( tag, wk->tagname ) ) {
             wk->count++;
             return;
@@ -168,10 +181,11 @@ void    add_SCR_tag_research( char * tag )
         if( wk->nxt == NULL) {
             break;
         }
+        wk = wk->nxt;
     }
     new = mem_alloc( sizeof( taglist ) );
     if( wk == NULL ) {
-        r_scrkws = new;
+        scrkws = new;
     } else {
         wk->nxt = new;
     }
@@ -187,13 +201,13 @@ void    add_SCR_tag_research( char * tag )
 
 void    print_SCR_tags_research( void )
 {
-    taglist     *wk;
-    int32_t     cnt = 0;
-    int32_t     cnt1 = 0;
+    taglist *   wk = scrkws;
+    int         cnt = 0;
+    int         cnt1 = 0;
 
     printf_research(
         "\nScript controlword / macro list sorted by first occurrence\n\n" );
-    for( wk = r_scrkws; wk != NULL; wk = wk->nxt ) {
+    for( wk = scrkws; wk != NULL; wk = wk->nxt ) {
         printf_research("%6ld  .%s\n", wk->count, wk->tagname );
         cnt += wk->count;
         cnt1++;
@@ -207,12 +221,15 @@ void    print_SCR_tags_research( void )
 
 void    free_SCR_tags_research( void )
 {
-    taglist *   wk;
+    taglist *   wk = scrkws;
+    taglist *   wk1;
 
-    while( (wk = r_scrkws) != NULL ) {
-        r_scrkws = wk->nxt;
-        mem_free( wk );
+    while( wk ) {
+        wk1 = wk;
+        wk = wk->nxt;
+        mem_free( wk1) ;
     }
+    scrkws = NULL;
 }
 
 
@@ -222,10 +239,10 @@ void    free_SCR_tags_research( void )
 
 void    add_multi_func_research( char * fun )
 {
-    taglist *   wk;
+    taglist *   wk = multi_funcs;
     taglist *   new;
 
-    for( wk = multi_funcs; wk != NULL; wk = wk->nxt ) {
+    while( wk ) {
         if( !stricmp( fun, wk->tagname ) ) {
             wk->count++;
             return;
@@ -233,6 +250,7 @@ void    add_multi_func_research( char * fun )
         if( wk->nxt == NULL) {
             break;
         }
+        wk = wk->nxt;
     }
     new = mem_alloc( sizeof( taglist ) );
     if( wk == NULL ) {
@@ -252,9 +270,9 @@ void    add_multi_func_research( char * fun )
 
 void    print_multi_funcs_research( void )
 {
-    taglist *   wk;
-    int32_t     cnt = 0;
-    int32_t     cnt1 = 0;
+    taglist *   wk = multi_funcs;
+    int         cnt = 0;
+    int         cnt1 = 0;
 
     printf_research(
         "\nScript multi letter functions list sorted by first occurrence\n\n" );
@@ -272,14 +290,16 @@ void    print_multi_funcs_research( void )
 
 void    free_multi_funcs_research( void )
 {
-    taglist *   wk;
+    taglist *   wk = multi_funcs;
+    taglist *   wk1;
 
-    while( (wk = multi_funcs) != NULL ) {
-        multi_funcs = wk->nxt;
-        mem_free( wk) ;
+    while( wk ) {
+        wk1 = wk;
+        wk = wk->nxt;
+        mem_free( wk1) ;
     }
+    multi_funcs = NULL;
 }
-
 
 
 /***************************************************************************/
@@ -288,10 +308,10 @@ void    free_multi_funcs_research( void )
 
 void    add_single_func_research( char * fun )
 {
-    taglist *   wk;
+    taglist *   wk = single_funcs;
     taglist *   new;
 
-    for( wk = single_funcs; wk != NULL; wk = wk->nxt ) {
+    while( wk ) {
         if( *fun == *(wk->tagname) ) {
             wk->count++;
             return;
@@ -299,6 +319,7 @@ void    add_single_func_research( char * fun )
         if( wk->nxt == NULL) {
             break;
         }
+        wk = wk->nxt;
     }
     new = mem_alloc( sizeof( taglist ) );
     if( wk == NULL ) {
@@ -319,8 +340,8 @@ void    add_single_func_research( char * fun )
 void    print_single_funcs_research( void )
 {
     taglist *   wk = single_funcs;
-    int32_t     cnt = 0;
-    int32_t     cnt1 = 0;
+    int         cnt = 0;
+    int         cnt1 = 0;
 
     printf_research(
         "\nScript single letter functions list sorted by first occurrence\n\n" );
@@ -338,12 +359,15 @@ void    print_single_funcs_research( void )
 
 void    free_single_funcs_research( void )
 {
-    taglist *   wk;
+    taglist *   wk = single_funcs;
+    taglist *   wk1;
 
-    while( (wk = single_funcs) != NULL ) {
-        single_funcs = wk->nxt;
-        mem_free( wk ) ;
+    while( wk ) {
+        wk1 = wk;
+        wk = wk->nxt;
+        mem_free( wk1) ;
     }
+    single_funcs = NULL;
 }
 
 

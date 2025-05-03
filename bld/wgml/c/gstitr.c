@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2004-2013 The Open Watcom Contributors. All Rights Reserved.
+*  Copyright (c) 2004-2009 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -29,6 +29,7 @@
 *
 *  comments are from script-tso.txt
 ****************************************************************************/
+
 
 #include "wgml.h"
 
@@ -146,14 +147,12 @@ void    scr_ti( void )
     char        *   p;
 
     p = scan_start;
-    while( *p && *p == ' ' ) {          // next word start
-        p++;
-    }
+    SkipSpaces( p );                    // next word start
 
     cop_ti_table( p );
     add_to_sysdir( "$tiset", in_esc );  // put in dictionary
 
-    scan_restart = scan_stop;
+    scan_restart = scan_stop + 1;
     return;
 }
 
@@ -163,12 +162,11 @@ void    scr_tr( void )
     char        *   p;
 
     p = scan_start;
-    while( *p && *p == ' ' ) {          // next word start
-        p++;
-    }
+
+    SkipSpaces( p );                    // next word start
     cop_tr_table( p );
 
-    scan_restart = scan_stop;
+    scan_restart = scan_stop + 1;
     return;
 }
 

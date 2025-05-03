@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2004-2013 The Open Watcom Contributors. All Rights Reserved.
+*  Copyright (c) 2004-2009 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -28,9 +28,11 @@
 *
 ****************************************************************************/
 
+
 #include "wgml.h"
 
 #include "clibext.h"
+
 
 /***************************************************************************/
 /*   :TOC    attributes                                                      */
@@ -81,84 +83,105 @@ const   lay_att     toc_att[7] =
 /***********************************************************************************/
 
 
-
 /***************************************************************************/
 /*  lay_toc                                                                */
 /***************************************************************************/
 
-void    lay_toc( lay_tag ltag )
+void    lay_toc( const gmltag * entry )
 {
     char            *   p;
     condcode            cc;
+    int                 cvterr;
     int                 k;
     lay_att             curr;
-    att_args            l_args;
-    int                 cvterr;
 
-    /* unused parameters */ (void)ltag;
+    (void)entry;
 
     p = scan_start;
 
-    if( !GlobFlags.firstpass ) {
-        scan_start = scan_stop;
+    if( !GlobalFlags.firstpass ) {
+        scan_start = scan_stop + 1;
         eat_lay_sub_tag();
         return;                         // process during first pass only
     }
+    memset( &AttrFlags, 0, sizeof( AttrFlags ) );   // clear all attribute flags
     if( ProcFlags.lay_xxx != el_toc ) {
         ProcFlags.lay_xxx = el_toc;
     }
-
-
-    cc = get_lay_sub_and_value( &l_args );  // get att with value
+    cc = get_attr_and_value();            // get att with value
     while( cc == pos ) {
         cvterr = -1;
         for( k = 0, curr = toc_att[k]; curr > 0; k++, curr = toc_att[k] ) {
 
-            if( !strnicmp( att_names[curr], l_args.start[0], l_args.len[0] ) ) {
-                p = l_args.start[1];
+            if( !strnicmp( att_names[curr], g_att_val.att_name, g_att_val.att_len ) ) {
+                p = g_att_val.val_name;
 
                 switch( curr ) {
                 case   e_left_adjust:
+                    if( AttrFlags.left_adjust ) {
+                        xx_line_err_ci( err_att_dup, g_att_val.att_name,
+                            g_att_val.val_name - g_att_val.att_name + g_att_val.val_len);
+                    }
                     cvterr = i_space_unit( p, curr,
                                            &layout_work.toc.left_adjust );
+                    AttrFlags.left_adjust = true;
                     break;
                 case   e_right_adjust:
+                    if( AttrFlags.right_adjust ) {
+                        xx_line_err_ci( err_att_dup, g_att_val.att_name,
+                            g_att_val.val_name - g_att_val.att_name + g_att_val.val_len);
+                    }
                     cvterr = i_space_unit( p, curr,
                                            &layout_work.toc.right_adjust );
+                    AttrFlags.right_adjust = true;
                     break;
                 case   e_spacing:
-                    cvterr = i_int8( p, curr, &layout_work.toc.spacing );
+                    if( AttrFlags.spacing ) {
+                        xx_line_err_ci( err_att_dup, g_att_val.att_name,
+                            g_att_val.val_name - g_att_val.att_name + g_att_val.val_len);
+                    }
+                    cvterr = i_spacing( p, curr, &layout_work.toc.spacing );
+                    AttrFlags.spacing = true;
                     break;
                 case   e_columns:
+                    if( AttrFlags.columns ) {
+                        xx_line_err_ci( err_att_dup, g_att_val.att_name,
+                            g_att_val.val_name - g_att_val.att_name + g_att_val.val_len);
+                    }
                     cvterr = i_int8( p, curr, &layout_work.toc.columns );
+                    AttrFlags.columns = true;
                     break;
                 case   e_toc_levels:
+                    if( AttrFlags.toc_levels ) {
+                        xx_line_err_ci( err_att_dup, g_att_val.att_name,
+                            g_att_val.val_name - g_att_val.att_name + g_att_val.val_len);
+                    }
                     cvterr = i_int8( p, curr, &layout_work.toc.toc_levels );
+                    AttrFlags.toc_levels = true;
                     break;
                 case   e_fill_string:
+                    if( AttrFlags.fill_string ) {
+                        xx_line_err_ci( err_att_dup, g_att_val.att_name,
+                            g_att_val.val_name - g_att_val.att_name + g_att_val.val_len);
+                    }
                     cvterr = i_xx_string( p, curr, layout_work.toc.fill_string );
+                    AttrFlags.fill_string = true;
                     break;
                 default:
-                    out_msg( "WGML logic error.\n");
-                    cvterr = true;
-                    break;
+                    internal_err( __FILE__, __LINE__ );
                 }
                 if( cvterr ) {          // there was an error
-                    err_count++;
-                    g_err( err_att_val_inv );
-                    file_mac_info();
+                    xx_err( err_att_val_inv );
                 }
                 break;                  // break out of for loop
             }
         }
         if( cvterr < 0 ) {
-            err_count++;
-            g_err( err_att_name_inv );
-            file_mac_info();
+            xx_err( err_att_name_inv );
         }
-        cc = get_lay_sub_and_value( &l_args );  // get att with value
+        cc = get_attr_and_value();            // get att with value
     }
-    scan_start = scan_stop;
+    scan_start = scan_stop + 1;
     return;
 }
 

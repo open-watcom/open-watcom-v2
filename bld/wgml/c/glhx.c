@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2004-2013 The Open Watcom Contributors. All Rights Reserved.
+*  Copyright (c) 2004-2009 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -28,19 +28,21 @@
 *
 ****************************************************************************/
 
+
 #include "wgml.h"
 
 #include "clibext.h"
 
+
 /***************************************************************************/
 /*   :Hx    attributes                                                     */
 /***************************************************************************/
+
 const   lay_att     hx_att[18] =
     { e_group, e_indent, e_pre_top_skip, e_pre_skip, e_post_skip,
       e_spacing, e_font, e_number_font, e_number_form, e_page_position,
       e_number_style, e_page_eject, e_line_break, e_display_heading,
       e_number_reset, e_case, e_align, e_dummy_zero };
-
 
 
 /***********************************************************************************/
@@ -186,147 +188,231 @@ const   lay_att     hx_att[18] =
 /*  lay_hx                                                                 */
 /***************************************************************************/
 
-void    lay_hx( lay_tag ltag )
+void    lay_hx( const gmltag * entry )
 {
     char        *   p;
     condcode        cc;
-    int             k;
-    lay_att         curr;
-    att_args        l_args;
     int             cvterr;
     int             hx_l;
-    int             hx;
+    int             k;
+    int8_t          l_group     =   0;
+    lay_att         curr;
 
     p = scan_start;
 
-    if( !GlobFlags.firstpass ) {
-        scan_start = scan_stop;
+    if( !GlobalFlags.firstpass ) {
+        scan_start = scan_stop + 1;
         eat_lay_sub_tag();
         return;                         // process during first pass only
     }
-    switch( ltag ) {
-    case LAY_TAG_H0:
+    switch( entry->tagname[1] ) {
+    case   '0':
         hx_l = el_h0;
         break;
-    case LAY_TAG_H1:
+    case   '1':
         hx_l = el_h1;
         break;
-    case LAY_TAG_H2:
+    case   '2':
         hx_l = el_h2;
         break;
-    case LAY_TAG_H3:
+    case   '3':
         hx_l = el_h3;
         break;
-    case LAY_TAG_H4:
+    case   '4':
         hx_l = el_h4;
         break;
-    case LAY_TAG_H5:
+    case   '5':
         hx_l = el_h5;
         break;
-    case LAY_TAG_H6:
+    case   '6':
         hx_l = el_h6;
         break;
     default:
         hx_l = el_h6;
-        out_msg( "WGML logic error.\n");
-        err_count++;
         break;
     }
+    memset( &AttrFlags, 0, sizeof( AttrFlags ) );   // clear all attribute flags
     if( ProcFlags.lay_xxx != hx_l ) {
         ProcFlags.lay_xxx = hx_l;
     }
-    hx = hx_l - el_h0;
-    ProcFlags.hx_level = hx;
 
-    cc = get_lay_sub_and_value( &l_args );  // get one with value
+    hx_l = entry->tagname[1] - '0';     // construct Hx level
+    if( hx_l > 6 ) {
+        hx_l = 6;
+        internal_err( __FILE__, __LINE__ );
+    }
+    ProcFlags.hx_level = hx_l;
+
+    cc = get_attr_and_value();            // get att with value
     while( cc == pos ) {
         cvterr = -1;
         for( k = 0, curr = hx_att[k]; curr > 0; k++, curr = hx_att[k] ) {
 
-            if( !strnicmp( att_names[curr], l_args.start[0], l_args.len[0] ) ) {
-                p = l_args.start[1];
+            if( !strnicmp( att_names[curr], g_att_val.att_name, g_att_val.att_len ) ) {
+                p = g_att_val.val_name;
 
                 switch( curr ) {
                 case   e_group:
-                    cvterr = i_int8( p, curr, &layout_work.hx[hx].group );
+                    if( AttrFlags.group ) {
+                        xx_line_err_ci( err_att_dup, g_att_val.att_name,
+                            g_att_val.val_name - g_att_val.att_name + g_att_val.val_len);
+                    }
+                    cvterr = i_int8( p, curr, &l_group );
+                    AttrFlags.group = true;
                     break;
                 case   e_indent:
+                    if( AttrFlags.indent ) {
+                        xx_line_err_ci( err_att_dup, g_att_val.att_name,
+                            g_att_val.val_name - g_att_val.att_name + g_att_val.val_len);
+                    }
                     cvterr = i_space_unit( p, curr,
-                                           &layout_work.hx[hx].indent );
+                                           &layout_work.hx.hx_head[hx_l].indent );
+                    AttrFlags.indent = true;
                     break;
                 case   e_pre_top_skip:
-                    cvterr = i_space_unit( p, curr, &layout_work.hx[hx].pre_top_skip );
+                    if( AttrFlags.pre_top_skip ) {
+                        xx_line_err_ci( err_att_dup, g_att_val.att_name,
+                            g_att_val.val_name - g_att_val.att_name + g_att_val.val_len);
+                    }
+                    cvterr = i_space_unit( p, curr, &layout_work.hx.hx_sect[hx_l].pre_top_skip );
+                    AttrFlags.pre_top_skip = true;
                     break;
                 case   e_pre_skip:
-                    cvterr = i_space_unit( p, curr, &layout_work.hx[hx].pre_skip );
+                    if( AttrFlags.pre_skip ) {
+                        xx_line_err_ci( err_att_dup, g_att_val.att_name,
+                            g_att_val.val_name - g_att_val.att_name + g_att_val.val_len);
+                    }
+                    cvterr = i_space_unit( p, curr, &layout_work.hx.hx_head[hx_l].pre_skip );
+                    AttrFlags.pre_skip = true;
                     break;
                 case   e_post_skip:
-                    cvterr = i_space_unit( p, curr, &layout_work.hx[hx].post_skip );
+                    if( AttrFlags.post_skip ) {
+                        xx_line_err_ci( err_att_dup, g_att_val.att_name,
+                            g_att_val.val_name - g_att_val.att_name + g_att_val.val_len);
+                    }
+                    cvterr = i_space_unit( p, curr, &layout_work.hx.hx_sect[hx_l].post_skip );
+                    AttrFlags.post_skip = true;
                     break;
                 case   e_spacing:
-                    cvterr = i_int8( p, curr, &layout_work.hx[hx].spacing );
+                    if( AttrFlags.spacing ) {
+                        xx_line_err_ci( err_att_dup, g_att_val.att_name,
+                            g_att_val.val_name - g_att_val.att_name + g_att_val.val_len);
+                    }
+                    cvterr = i_spacing( p, curr, &layout_work.hx.hx_sect[hx_l].spacing );
+                    AttrFlags.spacing = true;
                     break;
                 case   e_font:
-                    cvterr = i_font_number( p, curr, &layout_work.hx[hx].font );
-                    if( layout_work.hx[hx].font >= wgml_font_cnt ) {
-                        layout_work.hx[hx].font = 0;
+                    if( AttrFlags.font ) {
+                        xx_line_err_ci( err_att_dup, g_att_val.att_name,
+                            g_att_val.val_name - g_att_val.att_name + g_att_val.val_len);
                     }
+                    cvterr = i_font_number( p, curr, &layout_work.hx.hx_sect[hx_l].text_font );
+                    if( layout_work.hx.hx_sect[hx_l].text_font >= wgml_font_cnt ) {
+                        layout_work.hx.hx_sect[hx_l].text_font = 0;
+                    }
+                    AttrFlags.font = true;
                     break;
                 case   e_number_font:
-                    cvterr = i_font_number( p, curr, &layout_work.hx[hx].number_font );
-                    if( layout_work.hx[hx].number_font >= wgml_font_cnt ) {
-                        layout_work.hx[hx].number_font = 0;
+                    if( AttrFlags.number_font ) {
+                        xx_line_err_ci( err_att_dup, g_att_val.att_name,
+                            g_att_val.val_name - g_att_val.att_name + g_att_val.val_len);
                     }
+                    cvterr = i_font_number( p, curr, &layout_work.hx.hx_head[hx_l].number_font );
+                    if( layout_work.hx.hx_head[hx_l].number_font >= wgml_font_cnt ) {
+                        layout_work.hx.hx_head[hx_l].number_font = 0;
+                    }
+                    AttrFlags.number_font = true;
                     break;
                 case   e_number_form:
-                    cvterr = i_number_form( p, curr, &layout_work.hx[hx].number_form );
+                    if( AttrFlags.number_form ) {
+                        xx_line_err_ci( err_att_dup, g_att_val.att_name,
+                            g_att_val.val_name - g_att_val.att_name + g_att_val.val_len);
+                    }
+                    cvterr = i_number_form( p, curr, &layout_work.hx.hx_head[hx_l].number_form );
+                    AttrFlags.number_form = true;
                     break;
                 case   e_page_position:
-                    cvterr = i_page_position( p, curr, &layout_work.hx[hx].page_position );
+                    if( AttrFlags.page_position ) {
+                        xx_line_err_ci( err_att_dup, g_att_val.att_name,
+                            g_att_val.val_name - g_att_val.att_name + g_att_val.val_len);
+                    }
+                    cvterr = i_page_position( p, curr, &layout_work.hx.hx_head[hx_l].line_position );
+                    AttrFlags.page_position = true;
                     break;
                 case   e_number_style:
-                    cvterr = i_number_style( p, curr, &layout_work.hx[hx].number_style );
+                    if( AttrFlags.number_style ) {
+                        xx_line_err_ci( err_att_dup, g_att_val.att_name,
+                            g_att_val.val_name - g_att_val.att_name + g_att_val.val_len);
+                    }
+                    cvterr = i_number_style( p, curr, &layout_work.hx.hx_head[hx_l].number_style );
+                    AttrFlags.number_style = true;
                     break;
                 case   e_page_eject:
-                    cvterr = i_page_eject( p, curr, &layout_work.hx[hx].page_eject );
+                    if( AttrFlags.page_eject ) {
+                        xx_line_err_ci( err_att_dup, g_att_val.att_name,
+                            g_att_val.val_name - g_att_val.att_name + g_att_val.val_len);
+                    }
+                    cvterr = i_page_eject( p, curr, &layout_work.hx.hx_head[hx_l].page_eject );
+                    AttrFlags.page_eject = true;
                     break;
                 case   e_line_break:
-                    cvterr = i_yes_no( p, curr, &layout_work.hx[hx].line_break );
-                    break;
+                    if( AttrFlags.line_break ) {
+                        xx_line_err_ci( err_att_dup, g_att_val.att_name,
+                            g_att_val.val_name - g_att_val.att_name + g_att_val.val_len);
+                    }
+                    cvterr = i_yes_no( p, curr, &layout_work.hx.hx_head[hx_l].line_break );
+                    AttrFlags.line_break = true;
                     break;
                 case   e_display_heading:
-                    cvterr = i_yes_no( p, curr, &layout_work.hx[hx].display_heading );
+                    if( AttrFlags.display_heading ) {
+                        xx_line_err_ci( err_att_dup, g_att_val.att_name,
+                            g_att_val.val_name - g_att_val.att_name + g_att_val.val_len);
+                    }
+                    cvterr = i_yes_no( p, curr, &layout_work.hx.hx_head[hx_l].display_heading );
+                    AttrFlags.display_heading = true;
                     break;
                 case   e_number_reset:
-                    cvterr = i_yes_no( p, curr, &layout_work.hx[hx].number_reset );
+                    if( AttrFlags.number_reset ) {
+                        xx_line_err_ci( err_att_dup, g_att_val.att_name,
+                            g_att_val.val_name - g_att_val.att_name + g_att_val.val_len);
+                    }
+                    cvterr = i_yes_no( p, curr, &layout_work.hx.hx_head[hx_l].number_reset );
+                    AttrFlags.number_reset = true;
                     break;
                 case   e_case:
-                    cvterr = i_case( p, curr, &layout_work.hx[hx].cases );
+                    if( AttrFlags.case_a ) {
+                        xx_line_err_ci( err_att_dup, g_att_val.att_name,
+                            g_att_val.val_name - g_att_val.att_name + g_att_val.val_len);
+                    }
+                    cvterr = i_case( p, curr, &layout_work.hx.hx_head[hx_l].hd_case );
+                    AttrFlags.case_a = true;
                     break;
                 case   e_align:
-                    cvterr = i_space_unit( p, curr, &layout_work.hx[hx].align );
+                    if( AttrFlags.align ) {
+                        xx_line_err_ci( err_att_dup, g_att_val.att_name,
+                            g_att_val.val_name - g_att_val.att_name + g_att_val.val_len);
+                    }
+                    cvterr = i_space_unit( p, curr, &layout_work.hx.hx_head[hx_l].align );
+                    AttrFlags.align = true;
                     break;
                 default:
-                    out_msg( "WGML logic error.\n");
-                    cvterr = true;
-                    break;
+                    internal_err( __FILE__, __LINE__ );
                 }
                 if( cvterr ) {          // there was an error
-                    err_count++;
-                    g_err( err_att_val_inv );
-                    file_mac_info();
+                    xx_err( err_att_val_inv );
                 }
                 break;                  // break out of for loop
             }
         }
         if( cvterr < 0 ) {
-            err_count++;
-            g_err( err_att_name_inv );
-            file_mac_info();
+            xx_err( err_att_name_inv );
         }
-        cc = get_lay_sub_and_value( &l_args );  // get one with value
+        cc = get_attr_and_value();            // get att with value
     }
-    scan_start = scan_stop;
+    if( l_group > 0 ) {         // only group 0 is supported
+        xx_warn_c( wng_unsupp_lay_att, "group" );
+    }
+    scan_start = scan_stop + 1;
     return;
 }
 

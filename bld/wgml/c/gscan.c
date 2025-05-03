@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2004-2022 The Open Watcom Contributors. All Rights Reserved.
+*  Copyright (c) 2004-2010 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -28,90 +28,124 @@
 *
 ****************************************************************************/
 
+
 #include "wgml.h"
 
 #include "clibext.h"
+
 
 /***************************************************************************/
 /*    GML tags                                                             */
 /***************************************************************************/
 
-static const   gmltag  gml_tags[] = {
-    #define pick( name, length, routine, gmlflags, locflags ) { #name, length, routine, gmlflags, locflags },
+static const gmltag     gml_tags[] = {
+    #define pickg( name, length, routine, gmlflags, locflags, classflags ) { #name, length, routine, gmlflags, locflags, classflags },
     #include "gtags.h"
-    #undef pick
+    #undef pickg
+    { "   ", 0, NULL, 0, 0 }            // end
 };
 
+#define GML_TAGMAX  (sizeof( gml_tags ) / sizeof( gml_tags[0] ) - 1)
 
 /***************************************************************************/
 /*    GML layout tags                                                      */
 /***************************************************************************/
 
-static const   laytag  lay_tags[] = {
-    #define pick( name, length, routine ) { #name, length, routine },
+static const gmltag     lay_tags[] = {
+    #define pick( name, length, routine, gmlflags, locflags ) { #name, length, routine, gmlflags, locflags },
     #include "gtagslay.h"
     #undef pick
+    { "   ", 0, NULL, 0, 0 }            // end
+
 };
+
+#define LAY_TAGMAX  (sizeof( lay_tags ) / sizeof( lay_tags[0] ) - 1)
 
 
 /***************************************************************************/
-/*    SCR control words                                                    */
+/*    SCRIPT control words                                                 */
 /***************************************************************************/
-typedef enum {
-    #define pick( name, routine, flags) SCR_TAG_##name,
-    #include "gscrcws.h"
-    #undef pick
-    SCR_TAG_LABEL
-} scr_tag;
 
-#define SCR_TAGMIN  SCR_TAG_AD
-#define SCR_TAGMAX  (SCR_TAG_LABEL + 1)
-
-static  const   scrtag  scr_tags[] = {
-    #define pick( name, routine, flags) { #name, routine, flags },
+static const scrtag     scr_kwds[] = {
+    #define picks( name, routine, flags) { #name, routine, flags },
+    #define picklab( name, routine, flags) { #name, routine, flags },
     #include "gscrcws.h"
-    #undef pick
-    { "..", scr_label, 0 },
+    #undef picklab
+    #undef picks
+    { "  ", NULL, 0   }                 // end
 };
 
+#define SCR_KWDMAX  (sizeof( scr_kwds ) / sizeof( scr_kwds[0] ) - 1)
 
-static lay_tag      lay_ind = LAY_TAG_NONE; // index into lay_tab for attribute processing
+#define SCR_CW_LK_SIZE  (26 * 26)
 
-const char *gml_tagname( gml_tag gtag )
+static uint8_t  scr_lkup_tbl[26 * 26];
+static uint8_t  scr_cw_label;
+static uint8_t  scr_cw_hx;
+static bool     scr_lkup_setup = false;
+
+/***************************************************************************/
+/*  Build a lookup table for SCRIPT control words. Since most of them have */
+/*  a name consisting of two alphabetic characters, we can build a simple  */
+/*  direct-lookup table that isn't obscenely large, and handle the few     */
+/*  remaining control words as exceptions.                                 */
+/***************************************************************************/
+
+static void build_scr_cw_lookup( void )
 {
-    return( gml_tags[gtag].tagname );
-}
+    int             i;
+    int             hash;
+    const scrtag    *cw;
 
-const char *lay_tagname( lay_tag ltag )
-{
-    return( lay_tags[ltag].tagname );
-}
+    // pre-fill lookup table with invalid values
+    memset( scr_lkup_tbl, 0, sizeof( scr_lkup_tbl ) );
 
-void  lay_cmt( lay_tag ltag )
-{
-    switch( ltag ) {
-    case LAY_TAG_CMT:
-        gml_cmt( GML_TAG_CMT );
-        break;
-    default:
-        scan_start = scan_stop;
-        break;
+    // build a lookup table holding keyword table indices; note that
+    // the indices are offset by one so that zero turns into an invalid
+    // index (-1) during lookup.
+    for( i = 0; i <= SCR_KWDMAX; ++i ) {
+        cw = &scr_kwds[i];
+        if( islower( cw->tagname[0] ) && islower( cw->tagname[1] ) ) {
+            hash = (cw->tagname[0] - 'a') * 26 + (cw->tagname[1] - 'a');
+            scr_lkup_tbl[hash] = i + 1;
+        } else if( cw->tagname[0] == 'h' && cw->tagname[1] == '0' ) {
+            hash = ('h' - 'a') * 26 + ('z' - 'a');  // fake it as .HZ
+            scr_lkup_tbl[hash] = i + 1;
+            scr_cw_hx = i;
+        } else if( cw->tagname[0] == '.' && cw->tagname[1] == '.' ) {
+            scr_cw_label = i;   // the ... label
+        } else {
+            // .H1 to .H9 -- ignored here
+        }
     }
+    scr_lkup_setup = true;
 }
 
-void  lay_include( lay_tag ltag )
+
+static int find_scr_cw( const char *str )
 {
-    switch( ltag ) {
-    case LAY_TAG_INCLUDE:
-        gml_include( GML_TAG_INCLUDE );
-        break;
-    case LAY_TAG_IMBED:
-        gml_include( GML_TAG_IMBED );
-        break;
-    default:
-        scan_start = scan_stop;
-        break;
+    int     hash;
+    int     index = -1;
+
+    if( !scr_lkup_setup )
+        build_scr_cw_lookup();
+
+    if( islower( str[0] ) && islower( str[1] ) ) {
+        hash  = (str[0] - 'a') * 26 + (str[1] - 'a');
+        index = scr_lkup_tbl[hash] - 1;
+    } else if( str[0] == '.' && str[1] == '.' ) {
+        index = scr_cw_label;
+    } else if( str[0] == 'h' && isdigit( str[1] ) ) {
+        index = scr_cw_hx + str[1] - '0';
     }
+
+    return( index );
+}
+
+
+void set_overload( gtentry * in_gt )
+{
+    in_gt->overload = ( find_sys_tag( in_gt->name, strlen( in_gt->name ) ) != NULL );
 }
 
 /***************************************************************************/
@@ -120,211 +154,235 @@ void  lay_include( lay_tag ltag )
 
 static void scan_gml( void )
 {
-    inputcb     *   cb;
-    char        *   p;
-    int             i;
-    int             taglen;
+    inputcb         *cb;
+    char            *p;
+    int             toklen;
+    int             k;
+    char            csave;
     bool            processed;
-    gtentry     *   ge;             // GML user tag entry
-    mac_entry   *   me;             // script macro for processing GML tag
-    char            linestr[MAX_L_AS_STR];
-    char            tag_name[TAG_NAME_LENGTH + 1];
+    gtentry         *ge;                // GML user tag entry
+    mac_entry       *me;                // script macro for processing GML tag
+    char            tok_upper[BUF_SIZE];
+    const gmltag    *tag;
 
     cb = input_cbs;
 
     p = scan_start + 1;
     tok_start = scan_start;
-    while( is_id_char( *p ) && p < scan_stop ) { // search end of TAG
+    while( (*p != ' ') && (*p != '.') && (*p != '\0') ) {   // search end of TAG
         p++;
     }
-    scan_start = p;                      // store argument start address
-    taglen = p - tok_start - 1;
-    if( taglen > TAG_NAME_LENGTH ) {
-        char    *linestr1;
+    toklen = p - tok_start - 1;
 
-        linestr1 = malloc( taglen + 1 );
-        memcpy( linestr1, tok_start + 1, taglen );
-        linestr1[taglen] = '\0';
-        err_count++;
-        // SC--009 The tagname is too long
-        if( cb->fmflags & II_tag_mac ) {
-            sprintf( linestr, "%lu", (unsigned long)cb->s.m->lineno );
-            g_err( err_tag_name, linestr1, linestr, "macro", cb->s.m->mac->name );
-        } else {
-            sprintf( linestr, "%lu", (unsigned long)cb->s.f->lineno );
-            g_err( err_tag_name, linestr1, linestr, "file", cb->s.f->filename );
-        }
-        if( inc_level > 0 ) {
-            show_include_stack();
-        }
-        free( linestr1 );
-        scan_start = tok_start;         // process as text
+    /* If the token is longer than the maximum allowed tag name length,
+     * it cannot be a valid tag name. Get out now so we don't have to watch
+     * for token name buffer overflows.
+     */
+    if( toklen > TAG_NAME_LENGTH ) {
         return;
     }
 
-    for( i = 0; i < taglen; ++i ) {
-        tag_name[i] = toupper( tok_start[i + 1] );
-    }
-    tag_name[i] = '\0';
+    scan_start = p;                      // store argument start address
+    csave = *p;
+    *p = '\0';
 
-    if( GlobFlags.firstpass && cb->fmflags & II_research ) {
+    if( GlobalFlags.firstpass && (cb->fmflags & II_research) ) {
 
-        if( taglen != 3 || memcmp( tag_name, "CMT", 3 ) ) {     // quiet for :cmt.
+        if( stricmp( "cmt", tok_start + 1 ) != 0 ) {   // quiet for :cmt.
 
             if( cb->fmflags & II_tag_mac ) {
                 printf_research( "L%d    %c%s tag found in macro %s(%d)\n\n",
-                                 inc_level, GML_char, tag_name,
+                                 inc_level, GML_char, tok_start + 1,
                                  cb->s.m->mac->name, cb->s.m->lineno );
             } else {
                 printf_research( "L%d    %c%s tag found in file %s(%d)\n\n",
-                                 inc_level, GML_char, tag_name,
+                                 inc_level, GML_char, tok_start + 1,
                                  cb->s.f->filename, cb->s.f->lineno );
             }
         }
-        add_GML_tag_research( tag_name );
+        add_GML_tag_research( tok_start + 1 );
     }
 
     if( ProcFlags.layout ) {
         ge = NULL;                      // no user tags within :LAYOUT
     } else {
-        ge = find_tag( &tag_dict, tag_name );
+        ge = find_user_tag( &tag_dict, tok_start + 1 );
     }
     processed = false;
     me = NULL;
     if( ge != NULL ) {                  // GML user defined Tag found
-        if( ge->tagflags & tag_off ) {  // inactive, treat as text
-            scan_start = tok_start;
+        if( ProcFlags.need_text ) {
+            xx_err( err_text_not_tag_cw );
+        }
+        *p = csave;
+        if( ge->tagflags & tag_off ) {  // inactive, treat as comment
+            scan_start = scan_stop + 1;
             return;
         }
         me = find_macro( macro_dict, ge->macname );
         if( me == NULL ) {
-            err_count++;
-            // SC--037: The macro 'xxxxxx' for the gml tag 'yyyyy'
-            //          is not defined
-            if( cb->fmflags & II_tag_mac ) {
-                sprintf( linestr, "%lu", (unsigned long)cb->s.m->lineno );
-                g_err( err_tag_macro, ge->macname, ge->name,
-                         linestr, "macro", cb->s.m->mac->name );
-            } else {
-                sprintf( linestr, "%lu", (unsigned long)cb->s.f->lineno );
-                g_err( err_tag_macro, ge->macname, ge->name,
-                         linestr, "file", cb->s.f->filename );
-            }
-            if( inc_level > 0 ) {
-                show_include_stack();
-            }
-            scan_start = tok_start;         // process as text
-            return;
+            g_err_tag_mac( ge );
         } else {
 
-        /*******************************************************************/
-        /*  The following is to prevent an endless loop                    */
-        /*  Example from ow documentation:                                 */
-        /*  .gt ZH1 add zh1                                                */
-        /*  .gt H1 add zh1                                                 */
-        /*  .dm zh1 begin                                                  */
-        /*  ...                                                            */
-        /*  :H1      <---- overridden gml tag                              */
-        /*  ...                                                            */
-        /*  .dm zh1 end                                                    */
-        /*                                                                 */
-        /*  we call the predefined :H1  instead                            */
-        /*******************************************************************/
+            /*******************************************************************/
+            /*  When a user-defined tag which overloads a predefined tag (ie,  */
+            /*  the tag names are the same) is used inside a macro, the        */
+            /*  predefined tag is used instead by WGML 4.0.                    */
+            /*                                                                 */
+            /*  Note that this allows a user-defined tag, or the macros it     */
+            /*  invokes, to use that tag without any danger of recursion.      */
+            /*  It is far more general than simply preventing recursive        */
+            /*  user-defined tag definitions.                                  */
+            /*******************************************************************/
 
-            if( (cb->fmflags & II_tag) && (cb->s.m->mac == me) ) {
+            if( (cb->fmflags & II_tag_mac) && ge->overload ) {
                 me = NULL;
             }
+
         }
     }
     if( me != NULL ) {                  // usertag and coresponding macro ok
         processed = process_tag( ge, me );
     } else {
+        *p ='\0';
+        for( k = 0; k <= toklen; k++ ) {
+            tok_upper[k] = my_toupper( *(tok_start + 1 + k) );
+        }
+        tok_upper[k] = '\0';
+
         if( ProcFlags.layout ) {        // different tags within :LAYOUT
-            lay_tag     ltag;
-            for( ltag = LAY_TAGMIN; ltag < LAY_TAGMAX; ++ltag ) {
-                if( taglen == lay_tags[ltag].taglen && !memcmp( lay_tags[ltag].tagname, tag_name, taglen ) ) {
-                    lay_ind = LAY_TAG_NONE;   // process tag not attribute
+            tag = find_lay_tag( tok_upper, toklen );
+            if( tag != NULL ) {
+                *p = csave;
+                lay_ind = -1;   // process tag not attribute
 
-                    lay_tags[ltag].layproc( ltag );
-
-                    processed = true;
-                    lay_ind = ltag;           // now process attributes if any
-                    if( *scan_start == '.' ) {
-                        scan_start++;
-                    }
-                    break;
+                if( rs_loc == 0 ) {
+                    // no restrictions: do them all
+                    tag->gmlproc( tag );
+                } else if( tag->taglocs & rs_loc ) {
+                    // tag allowed in this restricted location
+                    tag->gmlproc( tag );
+                } else if( (tag->tagflags & tag_is_general) != 0 ) {
+                    // tag allowed everywhere
+                    tag->gmlproc( tag );
+                } else if( rs_loc == banner_tag ) {
+                    xx_err_c( err_tag_expected, "eBANNER" );
+                } else {    // rs_loc == banreg_tag
+                    xx_err_c( err_tag_expected, "eBANREGION" );
                 }
-            }
-            if( !processed ) {          // check for gml only tag in :LAYOUT
-                gml_tag     gtag;
-                for( gtag = GML_TAGMIN; gtag < GML_TAGMAX; ++gtag ) {
-                    if( taglen == gml_tags[gtag].taglen && !memcmp( gml_tags[gtag].tagname, tag_name, taglen ) ) {
-                        g_err( err_gml_in_lay, gml_tags[gtag].tagname );
-                        err_count++;
-                        file_mac_info();
-                        processed = true;
-                        scan_start = scan_stop;
-                        break;
-                    }
-                }
+                processed = true;
+                lay_ind = k;    // now process attributes if any
+                SkipDot( scan_start );
+            } else if( find_sys_tag( tok_upper, toklen ) != NULL ) {
+                xx_err_c( err_gml_in_lay, tok_upper );
             }
         } else {                        // not within :LAYOUT
-            gml_tag     gtag;
-            for( gtag = GML_TAGMIN; gtag < GML_TAGMAX; ++gtag ) {
-                if( taglen == gml_tags[gtag].taglen && !memcmp( gml_tags[gtag].tagname, tag_name, taglen ) ) {
-                    if( GlobFlags.firstpass && gtag == GML_TAG_LAYOUT && ProcFlags.fb_document_done  ) {
-                        g_err( err_lay_too_late );
-                        err_count++;
-                        file_mac_info();
-                        processed = true;
-                        scan_start = scan_stop;
-                        break;
-                    }
+            tag = find_sys_tag( tok_upper, toklen );
+            if( tag != NULL ) {
+                if( GlobalFlags.firstpass
+                  && strcmp( "LAYOUT", tok_upper ) == 0
+                  && ProcFlags.fb_document_done ) {
+                    xx_err( err_lay_too_late );
+                }
+                *p = csave;
 
-                    if( (rs_loc == 0) && !ProcFlags.need_li_lp ) {
-                        // no restrictions: do them all
-                        gml_tags[gtag].gmlproc( gtag );
-                    } else if( ProcFlags.need_li_lp &&
-                            ((gml_tags[gtag].taglocs & li_lp_tag) != 0) ) {
-                        // tag is LP or LI
-                        gml_tags[gtag].gmlproc( gtag );
-                    } else if( (gml_tags[gtag].taglocs & rs_loc) != 0 ) {
-                        // tag allowed in this restricted location
-                        gml_tags[gtag].gmlproc( gtag );
-                    } else if( (gml_tags[gtag].tagflags & tag_is_general) != 0 ) {
-                        // tag allowed everywhere
-                        gml_tags[gtag].gmlproc( gtag );
+                if( script_style.style != SCT_none ) {
+                    scr_style_end();        // cancel BD, BI, US
+                }
+
+                ProcFlags.need_tag = false;
+
+                /*******************************************************************/
+                /*  When text occurs after certain blocks, it is processed as if   */
+                /*  it were preceded by tag PC. This is cancelled when a tag comes */
+                /*  before the text, but not if the tag starts or ends an inline   */
+                /*  phrase or is an index tag (I1, I2, I3, IH1, IH2, IH3) or is    */
+                /*  tag SET.                                                       */
+                /*******************************************************************/
+
+                if( (tag->tagclass & (ip_start_tag | ip_end_tag | index_tag)) == 0
+                  && strcmp( "SET", tag->tagname ) != 0 ) {
+                    ProcFlags.force_pc = false;
+                }
+
+                /*******************************************************************/
+                /*  The Procflags must be cleared to prevent the error from being  */
+                /*  reported for every tag until the proper end tag is found.      */
+                /*  If the number of errors reported is limited at some point,     */
+                /*  then those lines can be removed.                               */
+                /*  The index tags (I1, I2, I3, IH1, IH2, IH3) are exceptions      */
+                /*******************************************************************/
+
+                if( ProcFlags.need_ddhd ) {
+                    if( tag->tagclass & index_tag ) {
+                        // tag is index tag
+                        tag->gmlproc( tag );
+                    } else if( tag->tagclass & def_tag ) {
+                        // tag is DD, DDHD or GD
+                        tag->gmlproc( tag );
+                        ProcFlags.need_ddhd = false;
                     } else {
-                        start_doc_sect();   // if not already done
-                        if( ProcFlags.need_li_lp ) {
-                            xx_nest_err( err_no_li_lp );
-                        } else {            // rs_loc > 0
-                            g_err_tag_rsloc( rs_loc, tok_start );
-                        }
+                        xx_err_c( err_tag_expected, "DDHD");
                     }
-                    processed = true;
-                    if( *scan_start == '.' ) {
-                        scan_start++;
+                } else if( ProcFlags.need_dd ) {
+                    if( tag->tagclass & index_tag ) {
+                        // tag is index tag
+                        tag->gmlproc( tag );
+                    } else if( tag->tagclass & def_tag ) {                                    // tag is DD, DDHD or GD
+                        tag->gmlproc( tag );
+                        ProcFlags.need_dd = false;
+                    } else {
+                        xx_err_c( err_tag_expected, "DD");
                     }
-                    break;
+                } else if( ProcFlags.need_gd ) {
+                    if( (tag->tagclass & index_tag) == 0 ) {
+                        // tag is index tag
+                        tag->gmlproc( tag );
+                    } else if( tag->tagclass & def_tag ) {                                    // tag is DD, DDHD or GD
+                        // tag is DD, DDHD or GD
+                        tag->gmlproc( tag );
+                        ProcFlags.need_gd = false;
+                    } else {
+                        xx_err_c( err_tag_expected, "GD");
+                    }
+                } else if( !nest_cb->in_list ) {
+                    if( (tag->tagclass & list_tag) == 0 ) {
+                        // tag is not a list tag
+                        tag->gmlproc( tag );
+                    } else {
+                        xx_line_err_c( err_no_list, tok_start );
+                    }
+                } else if( ProcFlags.need_li_lp ) {
+                    if( tag->tagclass & li_lp_tag ) {
+                        // tag is LP or LI
+                        tag->gmlproc( tag );
+                    } else {
+                        xx_nest_err( err_no_li_lp );
+                    }
+                } else if( ProcFlags.need_text ) {
+                    xx_err( err_text_not_tag_cw );
+                } else if( rs_loc == 0 ) {
+                    // no restrictions: do them all
+                    tag->gmlproc( tag );
+                } else if( tag->taglocs & rs_loc ) {
+                    // tag allowed in this restricted location
+                    tag->gmlproc( tag );
+                } else if( tag->tagflags & tag_is_general ) {
+                    // tag allowed everywhere
+                    tag->gmlproc( tag );
+                } else {
+                    start_doc_sect();   // if not already done
+                    g_err_tag_rsloc( rs_loc, tok_start );
                 }
-            }
-            if( !processed ) {         // check for layout tag in normal text
-                lay_tag     ltag;
-                for( ltag = LAY_TAGMIN; ltag < LAY_TAGMAX; ++ltag ) {
-                    if( taglen == lay_tags[ltag].taglen ) {
-                        if( !memcmp( lay_tags[ltag].tagname, tag_name, taglen ) ) {
-                            g_err( err_lay_in_gml, lay_tags[ltag].tagname );
-                            err_count++;
-                            file_mac_info();
-                            processed = true;
-                            scan_start = scan_stop;
-                            break;
-                        }
-                    }
-                }
+                processed = true;
+                SkipDot( scan_start );
+            } else if( find_lay_tag( tok_upper, toklen ) != NULL ) {
+                xx_err_c( err_lay_in_gml, tok_upper );
             }
         }
+    }
+    if( *p == '\0' ) {
+        *p = csave;
     }
     if( !processed ) {                  // treat as text
         scan_start = tok_start;
@@ -380,46 +438,67 @@ static void     scan_script( void )
     char        *   p;
     char        *   pt;
     int             toklen;
-    bool            cwfound;
+    int             k;
+
+    if( ProcFlags.need_text ) {
+        xx_err( err_text_not_tag_cw );
+    }
 
     cb = input_cbs;
     p = scan_start + 1;
+    if( !ProcFlags.literal && (*p == '\0') ) {  // catch line with only "." in it
+        if( ProcFlags.concat ) {
+            *scan_start = ' ';                  // make line blank
+        } else {
+            scan_start = scan_stop + 1;         // treat as comment
+        }
+        return;
+    }
+
     scan_restart = scan_start;
 
-    if( (*p == '*') || !strnicmp( p, "CM ", 3 ) ) {
-        scan_start = scan_stop;         // .CM  +++ ignore comment up to EOL
-        return;                         // .*   +++ ignore comment up to EOL
+    if( *p == '*' ) {                       // early check for .*
+        scan_start = scan_stop + 1;         // .* ignore comment up to EOL
+        return;
     }
 
     if( *p == SCR_char && *(p+1) == SCR_char ) {
-        pt = token_buf;
-        *pt++ = SCR_char;               // special for ...label
-        *pt++ = SCR_char;
-        *pt   = '\0';
-        me = NULL;
-        scan_start = p + 2;
-        toklen = 2;
+            pt = token_buf;
+            *pt++ = SCR_char;               // special for ...label
+            *pt++ = SCR_char;
+            *pt   = '\0';
+            me = NULL;
+            scan_start++;
+            toklen = 2;
     } else {
-        if( *p == '\'' ) {                  // .'
+        if( *p == SCR_char ) {          // ..
             p++;
-            ProcFlags.CW_sep_ignore = 1;
+            ProcFlags.macro_ignore = true;
+            me = NULL;
         } else {
-            if( CW_sep_char == '\0') {
-                ProcFlags.CW_sep_ignore = 1;// No separator char no split
-            } else{
-                ProcFlags.CW_sep_ignore = 0;
+            ProcFlags.macro_ignore = false;
+        }
+        if( *p == '\'' ) {                  // .' (or ..')
+            p++;
+            if( !ProcFlags.CW_force_sep ) {     // only change if not indented or all indents were .'
+                ProcFlags.CW_sep_ignore = true;
             }
-            if( *p == SCR_char ) {          // ..
-                p++;
-                ProcFlags.macro_ignore = 1;
-                me = NULL;
-            } else {
-                ProcFlags.macro_ignore = 0;
+        } else {                            // no ': set per CW_sep_char
+            if( CW_sep_char == '\0') {
+                ProcFlags.CW_sep_ignore = true;// no separator char no split
+            } else{
+                ProcFlags.CW_sep_ignore = false;
             }
         }
+
+        if( *p == '*' ) {                       // check for comment again; the following are
+            scan_start = scan_stop + 1;         // all valid: .'* ..* ..'*
+            return;
+        }
+
         if( ProcFlags.literal ) {       // no macro or split line if literal
-            ProcFlags.CW_sep_ignore = 1;
-            ProcFlags.macro_ignore = 1;
+            ProcFlags.CW_sep_ignore = true;
+            ProcFlags.macro_ignore = true;
         }
         if( !ProcFlags.CW_sep_ignore ) { // scan line for CW_sep_char
             char    *   pchar;
@@ -428,7 +507,7 @@ static void     scan_script( void )
 
             if( pchar != NULL ) {
                 if( *(pchar + 1) != '\0' ) {    // only split if more follows
-                    split_input( buff2, pchar + 1, false );// ignore CW_sep_char
+                    split_input( buff2, pchar + 1, II_none );   // split after CW_sep_char
                 }
                 *pchar= '\0';               // delete CW_sep_char
                 buff2_lg = strlen( buff2 ); // new length of first part
@@ -438,24 +517,20 @@ static void     scan_script( void )
         scan_start = p;
 
         pt = token_buf;
-        while( *p && is_macro_char( *p ) ) {  // end of controlword
-           *pt++ = toupper( *p++ );         // copy uppercase to TokenBuf
+        toklen = 0;
+        while( !is_space_tab_char( *p ) && (*p != '\0') ) {
+           *pt++ = my_tolower( *p++ );      // copy lowercase to TokenBuf
+           toklen++;
         }
         *pt = '\0';
 
-        toklen = pt - token_buf;
-
-        if( *p && (*p != ' ') || toklen == 0 ) {// no valid script controlword / macro
-//          if( !ProcFlags.literal ) {   // TBD
-//             cw_err();
-//          }
-            scan_start = scan_restart;  // treat as text
+        if( !ProcFlags.CW_sep_ignore &&
+                ((*token_buf == '\0') || (*token_buf == ' ') || (toklen == 0)) ) {
+            // no valid script controlword / macro, treat as text
+            scan_start = scan_restart;
             return;
         }
 
-        if( toklen >= MAC_NAME_LENGTH ) {
-            *(token_buf + MAC_NAME_LENGTH) = '\0';
-        }
         if( !ProcFlags.macro_ignore ) {
             me = find_macro( macro_dict, token_buf );
         } else {
@@ -464,7 +539,7 @@ static void     scan_script( void )
     }
 
     if( me != NULL ) {                  // macro found
-        if( GlobFlags.firstpass && cb->fmflags & II_research ) {
+        if( GlobalFlags.firstpass && (cb->fmflags & II_research) ) {
             if( cb->fmflags & II_tag_mac ) {
                 printf_research( "L%d    %c%s macro found in macro %s(%d)\n\n",
                                  inc_level, SCR_char, token_buf,
@@ -478,11 +553,16 @@ static void     scan_script( void )
         }
         add_macro_cb_entry( me, NULL );
         inc_inc_level();
-        add_macro_parms( p );
-        scan_restart = scan_stop;
-    } else {                            // try script controlword
-        cwfound = false;
-        if( cb->fmflags & II_research && GlobFlags.firstpass ) {
+        if( *p == '\0' ) {
+            add_macro_parms( p );
+        } else {
+            add_macro_parms( p + 1 );
+        }
+        scan_restart = scan_stop + 1;
+    } else if( !ProcFlags.literal ) {   // try script controlword if not in LI
+        scan_start += SCR_KW_LENGTH;
+        p = scan_start;
+        if( (cb->fmflags & II_research) && GlobalFlags.firstpass ) {
             if( cb->fmflags & II_tag_mac ) {
                 printf_research( "L%d    %c%s CW found in macro %s(%d)\n\n",
                                  inc_level, SCR_char, token_buf,
@@ -495,50 +575,43 @@ static void     scan_script( void )
             add_SCR_tag_research( token_buf );
         }
 
-        if( toklen == SCR_KW_LENGTH ) {
-            scr_tag stag;
-            for( stag = SCR_TAGMIN; stag < SCR_TAGMAX; ++stag ) {
-                if( !memcmp( scr_tags[stag].tagname, token_buf, SCR_KW_LENGTH ) ) {
-#if 0
-                    if( !ProcFlags.fb_document_done &&
-                          scr_tags[stag].cwflags & cw_o_t ) {
-
-                        /***************************************************/
-                        /*  if this is the first cw  which produces output */
-                        /* set page geometry and margins from layout       */
-                        /***************************************************/
-                        do_layout_end_processing();
-                    }
-#endif
-                    if( !ProcFlags.layout && (scr_tags[stag].cwflags & cw_o_t) ) {
-
-                        /********************************************************/
-                        /* this is the first control word which produces output */
-                        /* start the document, the layout is done               */
-                        /* start_doc_sect() calls do_layout_end_processing()    */
-                        /********************************************************/
-
-                        start_doc_sect();
-                    }
-                    if( ProcFlags.literal  ) {  // .LI active
-                        if( stag == SCR_TAG_LI ) { // .LI
-                            scan_start = p;     // found, process
-                            scr_tags[stag].tagproc();
-                        }
-                    } else {
-                        scan_start = p; // script controlword found, process
-                        if( scr_tags[stag].cwflags & cw_break ) {
-                            scr_process_break();// output incomplete line, if any
-                        }
-                        scr_tags[stag].tagproc();
-                    }
-                    cwfound = true;
-                    break;
-                }
-            }
+        if( !token_buf[0] ) {   // lone . or .' -- ignored
+            scan_start = scan_stop + 1;
+            return;
         }
-        if( !cwfound ) {
-            cw_err();                   // unrecognized control word
+
+        k = find_scr_cw( token_buf );               // non-negative if valid
+        if( k >= 0 ) {
+            if( !ProcFlags.layout
+              && !ProcFlags.fb_document_done
+              && (scr_kwds[k].cwflags & cw_o_t) ) {
+
+                /********************************************************/
+                /* this is the first control word which produces output */
+                /* start the document, the layout is done               */
+                /* start_doc_sect() calls do_layout_end_processing()    */
+                /********************************************************/
+
+                start_doc_sect();
+            }
+            ProcFlags.CW_noblank = false;           // blank after CW is default
+            if( ProcFlags.literal  ) {              // .li active
+                if( strcmp( "li", token_buf ) == 0 ) {  // .li
+                    ProcFlags.CW_noblank = (*p != ' ');
+                    scan_start = p; // found, process
+                    scr_kwds[k].tagproc();
+                }
+            } else {
+                scan_start = p; // script controlword found, process
+                if( scr_kwds[k].cwflags & cw_break ) {
+                    ProcFlags.force_pc = false;
+                    scr_process_break();// output incomplete line, if any
+                }
+                ProcFlags.CW_noblank = (*p != ' ');
+                scr_kwds[k].tagproc();
+            }
+        } else {
+            xx_err_c( err_cw_unrecognized, token_buf );
         }
     }
     scan_start = scan_restart;
@@ -558,12 +631,11 @@ static void     scan_script( void )
 condcode    test_process( ifcb * cb )
 {
     condcode    cc;
-    char        linestr[MAX_L_AS_STR];
 
 #ifdef DEBTESTPROC
     int     start_level = cb->if_level;
 
-    if( input_cbs->fmflags & II_research && GlobFlags.firstpass
+    if( (input_cbs->fmflags & II_research) && GlobalFlags.firstpass
         && cb->if_level ) {
         show_ifcb( "Anf teif", cb );
     }
@@ -598,7 +670,7 @@ condcode    test_process( ifcb * cb )
         }
 
 #ifdef DEBTESTPROC
-        if( input_cbs->fmflags & II_research && GlobFlags.firstpass
+        if( (input_cbs->fmflags & II_research) && GlobalFlags.firstpass
             && (start_level || cb->if_level) ) {
             char * txt = (cc == pos ? "EX1 pos" : "EX1 no" );
 
@@ -613,7 +685,7 @@ condcode    test_process( ifcb * cb )
         if( cb->if_flags[cb->if_level].ifcwdo ) {   // if  .do
             cc = pos;
 #ifdef DEBTESTPROC
-        if( input_cbs->fmflags & II_research && GlobFlags.firstpass
+        if( (input_cbs->fmflags & II_research) && GlobalFlags.firstpass
                 && (start_level || cb->if_level) ) {
                 char * txt = (cc == pos ? "Edo pos" : "Edo no" );
 
@@ -675,20 +747,10 @@ condcode    test_process( ifcb * cb )
         }
     }
     if( cc == no ) {                    // cc not set program logic error
-        if( input_cbs->fmflags & II_tag_mac ) {
-            sprintf( linestr, "%lu", (unsigned long)input_cbs->s.m->lineno );
-            g_err( err_if_intern, linestr, "macro", input_cbs->s.m->mac->name );
-        } else {
-            sprintf( linestr, "%lu", (unsigned long)input_cbs->s.f->lineno );
-            g_err( err_if_intern, linestr, "file", input_cbs->s.f->filename );
-        }
-        if( inc_level > 1 ) {
-            show_include_stack();
-        }
-        err_count++;
+        g_err_if_int();
     }
 #ifdef DEBTESTPROC
-    if( input_cbs->fmflags & II_research && GlobFlags.firstpass
+    if( (input_cbs->fmflags & II_research) && GlobalFlags.firstpass
         && (start_level || cb->if_level) ) {
         char * txt = (cc == pos ? "EX3 pos" : "EX3 no" );
 
@@ -710,27 +772,43 @@ condcode    test_process( ifcb * cb )
 
 void set_if_then_do( ifcb * cb )
 {
-    char        cw_0;
-    char        cw_1;
-    char        c;
+    char            cw[9];
+    char        *   p;
+    char        *   pb;
+    uint32_t        len;
 
-    if( *buff2 == SCR_char ) {          // only test script control words
-        if( (*(buff2 + 1) == SCR_char)  ||  // ..CW
-            (*(buff2 + 1) == '\'') ) {  // .'CW
-            cw_0 = tolower( *(buff2 + 2) );// copy possible controlword
-            cw_1 = tolower( *(buff2 + 3) );
-            c = *(buff2 + 4);
-        } else {                        // .CW
-            cw_0 = tolower( *(buff2 + 1) );// copy possible controlword
-            cw_1 = tolower( *(buff2 + 2) );
-            c = *(buff2 + 3);
+    len = 0;
+    p = cw;
+    pb = buff2;
+    if( *pb == SCR_char ) {              // only test script control words
+        pb++;
+        if( (*pb == SCR_char)  || (*pb == '\'') ) {
+            pb++;                       // over ".." or ".'"
         }
-        if( c == '\0' || c == ' ' ) {
-            if( cw_0 == 'i' && cw_1 == 'f' ) {
+        while( len < MAC_NAME_LENGTH ) {
+            if( is_space_tab_char( *pb ) || (*pb == '\0') ) { // largest possible macro/cw
+                break;
+            }
+           *p++ = my_tolower( *pb++ );      // copy lowercase to TokenBuf
+           len++;
+        }
+        *p = '\0';
+        if( !strncmp( cw, "if", SCR_KW_LENGTH ) ) {
+            if( len > SCR_KW_LENGTH ) {
+                cb->if_flags[cb->if_level].ifcwif = (find_macro( macro_dict, cw ) == NULL);
+            } else {
                 cb->if_flags[cb->if_level].ifcwif = true;
-            } else if( cw_0 == 'd' && cw_1 == 'o' ) {
+            }
+        } else if( !strncmp( cw, "do", SCR_KW_LENGTH ) ) {
+            if( len > SCR_KW_LENGTH ) {
+                cb->if_flags[cb->if_level].ifcwdo = (find_macro( macro_dict, cw ) == NULL);
+            } else {
                 cb->if_flags[cb->if_level].ifcwdo = true;
-            } else if( cw_0 == 't' && cw_1 == 'h' || cw_0 == 'e' && cw_1 == 'l' ) {
+            }
+        } else if( !strncmp( cw, "th", SCR_KW_LENGTH ) || !strncmp( cw, "el", SCR_KW_LENGTH ) ) {
+            if( len > SCR_KW_LENGTH ) {
+                cb->if_flags[cb->if_level].ifcwte = (find_macro( macro_dict, cw ) == NULL);
+            } else {
                 cb->if_flags[cb->if_level].ifcwte = true;
             }
         }
@@ -749,16 +827,13 @@ void    scan_line( void )
     ifcb        *   cb;
 
     cb         = input_cbs->if_cb;
+    scan_start = buff2;
+    scan_stop  = buff2 + buff2_lg;
 
     if( !ProcFlags.literal ) {
         set_if_then_do( cb );
         cc = test_process( cb );
     } else {
-        if( !ProcFlags.ct ) {           // special for .ct .li construct
-            if( (t_line != NULL) && (t_line->first != NULL) ) {
-                scr_process_break();
-            }
-        }
         cc = pos;
     }
     if( cc == pos ) {                   // process record
@@ -773,24 +848,42 @@ void    scan_line( void )
         /*******************************************************************/
         /*  here we arrive if no script keyword / GML tag recognized       */
         /*  or for unprocessed text in the input record                    */
-        /*  or for attributes of LAYOUT tags                               */
         /*******************************************************************/
 
-        if( (*scan_start != '\0') && (scan_start < scan_stop) ) {
-            if( input_cbs->fmflags & II_research && GlobFlags.firstpass ) {
+        if( (*scan_start != '\0') && (scan_start <= scan_stop) ) {
+            if( (input_cbs->fmflags & II_research) && GlobalFlags.firstpass ) {
                 g_info_lm( inf_text_line, scan_start );
             }
-            if( ProcFlags.layout ) {    // LAYOUT active: process attributes
-                if( lay_ind != LAY_TAG_NONE ) {
-                    lay_tags[lay_ind].layproc( lay_ind );
-                }
+            if( ProcFlags.layout ) {    // LAYOUT active: should not happen
+                internal_err( __FILE__, __LINE__ );
             } else {
                 // processs (remaining) text
                 if( rs_loc > 0 ) {
                     start_doc_sect();   // if not already done
-                    g_err_tag_rsloc( rs_loc, scan_start );
+                    // catch blank lines: not an error
+                    while( scan_start < scan_stop ) {
+                        if( (*scan_start != ' ') && (*scan_start != '\0') ) {
+                            break;
+                        }
+                        scan_start++;
+                    }
+                    if( scan_start < scan_stop ) {
+                        g_err_tag_rsloc( rs_loc, scan_start );
+                    }
                 } else {
-                    process_text( scan_start, g_curr_font );
+
+                    /* This test skips blank lines at the top of xmp blocks inside macros */
+
+                    if( !(ProcFlags.skip_blank_line && (*scan_start == ' ') &&
+                            ((scan_stop - scan_start) == 1) &&
+                            (input_cbs->fmflags & II_file)) ) {
+                        if( ProcFlags.force_pc ) {
+                            do_force_pc( scan_start );
+                        } else {
+                            process_text( scan_start, g_curr_font );
+                        }
+                    }
+                    ProcFlags.skip_blank_line = false;
                 }
             }
         }
@@ -800,8 +893,9 @@ void    scan_line( void )
         /* ensure the line is output                                       */
         /*******************************************************************/
 
-        if( !ProcFlags.layout && (input_cbs->fmflags & II_eol) ) {
-            if( !ProcFlags.concat || ProcFlags.xmp_active ) {
+        if( !ProcFlags.layout && (input_cbs->hidden_head == NULL) ) {
+            if( !ProcFlags.concat &&
+                ((input_cbs->fmflags & II_file) || (input_cbs->fmflags & II_macro)) ) {
 
                 /*******************************************************************/
                 /* This fixes a problem found when BX was implemented: when PA is  */
@@ -810,23 +904,22 @@ void    scan_line( void )
                 /* remains to be determined                                        */
                 /*******************************************************************/
 
-                if( ProcFlags.in_bx_box ) {
-                    g_cur_h_start = g_page_left_org + g_indent;
+                if( ProcFlags.in_bx_box && !ProcFlags.keep_left_margin) {
+                    t_page.cur_width = g_indent;
                 }
-                scr_process_break();
+                if( !ProcFlags.cont_char && !ProcFlags.para_has_text ) {
+                    scr_process_break();
+                }
             }
         }
-    } else if( input_cbs->fmflags & II_research && GlobFlags.firstpass ) {
+    } else if( (input_cbs->fmflags & II_research) && GlobalFlags.firstpass ) {
         g_info_lm( inf_skip_line );     // show skipped line
     }
     if( ProcFlags.literal ) {
-        if( li_cnt < LONG_MAX ) {   // we decrement, do not wait for .li OFF
+        if( li_cnt < INT_MAX ) {   // we decrement, do not wait for .li OFF
             if( li_cnt-- <= 0 ) {
                 ProcFlags.literal = false;
             }
-        }
-        if( input_cbs->fmflags & II_eol ) {
-            scr_process_break();        // ensure the line is output
         }
     }
 }
@@ -836,17 +929,16 @@ void    scan_line( void )
 /*  search gml tag entry for given token                                   */
 /*  This is for system (predefined) tags only                              */
 /*  return ptr to entry if found, else NULL                                */
-/*                                                                         */
 /***************************************************************************/
 
-gmltag  const   *   find_sys_tag( char * token, size_t toklen )
+const gmltag *find_sys_tag( char *token, size_t toklen )
 {
-    gml_tag gtag;
+    int k;
 
-    for( gtag = GML_TAGMIN; gtag < GML_TAGMAX; ++gtag ) {
-        if( toklen == gml_tags[gtag].taglen ) {
-            if( !stricmp( gml_tags[gtag].tagname, token ) ) {
-                return( &gml_tags[gtag] );
+    for( k = 0; k < GML_TAGMAX; ++k ) {
+        if( toklen == gml_tags[k].taglen ) {
+            if( stricmp( gml_tags[k].tagname, token ) == 0 ) {
+                return( &gml_tags[k] );
             }
         }
     }
@@ -858,19 +950,114 @@ gmltag  const   *   find_sys_tag( char * token, size_t toklen )
 /*  search gml layout tag entry for given token                            */
 /*  This is for layout tags only                                           */
 /*  return ptr to entry if found, else NULL                                */
-/*                                                                         */
 /***************************************************************************/
 
-laytag  const   *find_lay_tag( char * token, size_t toklen )
+const gmltag *find_lay_tag( char *token, size_t toklen )
 {
-    lay_tag ltag;
+    int k;
 
-    for( ltag = LAY_TAGMIN; ltag < LAY_TAGMAX; ++ltag ) {
-        if( toklen == lay_tags[ltag].taglen ) {
-            if( !stricmp( lay_tags[ltag].tagname, token ) ) {
-                return( &lay_tags[ltag] );
+    for( k = 0; k < LAY_TAGMAX; ++k ) {
+        if( toklen == lay_tags[k].taglen ) {
+            if( stricmp( lay_tags[k].tagname, token ) == 0 ) {
+                return( &lay_tags[k] );
             }
         }
     }
     return( NULL );                     // not found
 }
+
+
+/***************************************************************************/
+/*  find gml tag entry by e_tag value and determine if is an ip_start_tag  */
+/*  ip_start_tags are CIT, HPx, Q, SF                                      */
+/*  return true if offset is for an ip_start_tag, false otherwise          */
+/*  NOTE: for some reason, an offset specified as, say "t_CIT" is actually */
+/*        the offset for the gmltag object for tag eCIT, hence the         */
+/*        adjustment                                                       */
+/***************************************************************************/
+
+bool is_ip_tag( e_tags tag )
+{
+    if( (tag < t_NONE) || (tag >= t_MAX) ) {  // catch invalid offset values
+        internal_err( __FILE__, __LINE__ );
+    } else if( tag != t_NONE ) {                 // t_NONE is valid, but is not an ip_start_tag
+        return( gml_tags[tag - 1].tagclass & ip_start_tag );
+    }
+    return( false );                                // not found
+}
+
+/***************************************************************************/
+/*  returns a pointer to the start of the <text line> for the tag or of    */
+/*  the next logical input record to be reprocessed                        */
+/*  the line is not a <text line> if it starts with a tag (whether normal, */
+/*  layout, or user-defined) or if it beginswith the current SCR_char      */
+/*  (which can be any number of things: control word, macro, attribute,    */
+/*  function, none of the above)                                           */
+/*  ProcFlags.reprocess_line is set to true if this is not a <text_line>   */
+/***************************************************************************/
+
+char * get_text_line( char * p )
+{
+    bool            use_current = false;
+    char            *tok_start = NULL;
+    char            tok_txt[TAG_NAME_LENGTH + 1];
+    gtentry         *ge;                                        // GML user tag entry
+    size_t          toklen;
+
+    if( !ProcFlags.reprocess_line  ) {  // still on last line of tag
+        SkipSpaces( p );                // skip initial spaces
+        SkipDot( p );                   // possible tag end
+        if( *p == '\0' ) {              // get new line
+            while( *p == '\0' ) {
+                if( !(input_cbs->fmflags & II_eof) ) {
+                    if( get_line( true ) ) {    // next line for text
+                        process_line();
+                        scan_start = buff2;
+                        scan_stop  = buff2 + buff2_lg;
+                        p = scan_start;
+                        continue;
+                    }
+                } else {
+                    break;              // eof found
+                }
+            }
+        } else {                        // use text following tag on same line
+            use_current = true;
+        }
+    } else {
+        ProcFlags.reprocess_line = false;
+    }
+    if( !use_current ) {                // not on same line as tag
+        SkipSpaces( p );                // skip initial spaces
+        if( *p != '\0' ) {              // text exists
+            classify_record( *p );      // sets ProcFlags used below if appropriate
+            if( ProcFlags.scr_cw) {
+                xx_err( err_text_not_tag_cw );  // control word, macro, or whatever
+            } else if( ProcFlags.gml_tag ) {
+                p++;
+                tok_start = p;
+                while( is_id_char( *p ) && p <= scan_stop ) {   // find end of TAG
+                    p++;
+                }
+                toklen = p - tok_start;
+                if( toklen <= TAG_NAME_LENGTH ) {    // possible tag
+                    strncpy( &tok_txt, tok_start, toklen );
+                    tok_txt[toklen] = '\0';
+                    if( ProcFlags.layout ) {
+                        ge = NULL;                  // no user tags within :LAYOUT
+                    } else {
+                        ge = find_user_tag( &tag_dict, tok_txt );
+                    }
+                    if( ge != NULL
+                      || find_lay_tag( tok_txt, toklen ) != NULL
+                      || find_sys_tag( tok_txt, toklen ) != NULL ) {
+                        xx_err( err_text_not_tag_cw );  // control word, macro, or whatever
+                    }
+                }
+            }
+        }
+    }
+
+    return( p );
+}
+

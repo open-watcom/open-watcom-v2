@@ -53,8 +53,8 @@
  */
 
 typedef struct {
-    char        *buffer;
-    uint16_t    count;
+    uint16_t        count;
+    const char *    buffer;
 } p_buffer;
 
 /* To hold the data extracted from the CodeBlock struct. This is the CodeBlock
@@ -63,18 +63,18 @@ typedef struct {
  */
 
 typedef struct {
-    const char  *text;
+    uint8_t     designator;
     uint16_t    line_pass;
     uint16_t    count;
     uint16_t    cumulative_index;
-    uint8_t     designator;
+    const char  *text;
 } code_block;
 
 /* To hold the data extracted from the Variant A FunctionsBlock struct. */
 
 typedef struct {
-    code_block *    code_blocks;
     uint16_t        count;
+    code_block *    code_blocks;
 } functions_block;
 
 /* Function declarations. */
@@ -86,15 +86,6 @@ extern "C" {    /* Use "C" linkage when in C++ mode. */
 extern code_block       *get_code_blocks( const char **position, uint16_t count, const char *base );
 extern p_buffer         *get_p_buffer( FILE *file );
 extern functions_block  *parse_functions_block( const char **position, const char *base );
-
-extern unsigned char    fread_u8( FILE *in_file );
-extern unsigned short   fread_u16( FILE *in_file );
-extern unsigned long    fread_u32( FILE *in_file );
-extern size_t           fread_buff( void *buff, size_t len, FILE *in_file );
-extern unsigned char    get_u8( const char **buff );
-extern unsigned short   get_u16( const char **buff );
-extern unsigned long    get_u32( const char **buff );
-extern void             get_buff( void *obuff, size_t len, const char **buff );
 
 #ifdef  __cplusplus
 }   /* End of "C" linkage for C++. */

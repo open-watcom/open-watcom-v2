@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2004-2013 The Open Watcom Contributors. All Rights Reserved.
+*  Copyright (c) 2004-2009 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -29,9 +29,11 @@
 *  comments are from script-tso.txt
 ****************************************************************************/
 
+
 #include "wgml.h"
 
 #include "clibext.h"
+
 
 /***************************************************************************/
 /* LITERAL causes  following input  records to be  treated as  text lines  */
@@ -84,13 +86,9 @@ void    scr_li( void )
     cwcurr[3] = '\0';
 
     p = scan_start;
-    while( *p && *p == ' ' ) {          // next word start
-        p++;
-    }
+    SkipSpaces( p );                    // next word start
     pa = p;
-    while( *p && *p != ' ' ) {          // end of word
-        p++;
-    }
+    SkipNonSpaces( p );                 // end of word
     len = p - pa;
     if( len == 0 ) {                    // omitted means 1 = next line
         if( !ProcFlags.literal ) {
@@ -100,16 +98,16 @@ void    scr_li( void )
         }
     } else {
         gn.argstart = pa;
-        gn.argstop = scan_stop;
+        gn.argstop  = scan_stop;
         gn.ignore_blanks = 0;
 
-        cc = getnum( &gn );            // try to get numeric value
+        cc = getnum ( &gn );            // try to get numeric value
         if( cc == notnum ) {
             switch( len ) {
             case 2 :
                 if( !strnicmp( "ON", pa, 2 ) ) {
                     if( !ProcFlags.literal ) {
-                        li_cnt = LONG_MAX;
+                        li_cnt = INT_MAX;
                         ProcFlags.literal = true;
                         scan_restart = pa + 2;
                     }
@@ -117,7 +115,7 @@ void    scr_li( void )
                     if( !ProcFlags.literal ) {
                         li_cnt = 1;
                         ProcFlags.literal = true;
-                        split_input( scan_start, pa, false );
+                        split_input( scan_start, pa, input_cbs->fmflags );  // split and process next
                         scan_restart = pa;
                     }
                 }
@@ -130,7 +128,7 @@ void    scr_li( void )
                     if( !ProcFlags.literal ) {
                         li_cnt = 1;
                         ProcFlags.literal = true;
-                        split_input( scan_start, pa, false );
+                        split_input( scan_start, pa, input_cbs->fmflags );  // split and process next
                         scan_restart = pa;
                     }
                 }
@@ -139,7 +137,7 @@ void    scr_li( void )
                 if( !ProcFlags.literal ) {
                     li_cnt = 1;
                     ProcFlags.literal = true;
-                    split_input( scan_start, pa, false );
+                    split_input( scan_start, pa, input_cbs->fmflags );  // split and process next
                     scan_restart = pa;
                 }
                 break;

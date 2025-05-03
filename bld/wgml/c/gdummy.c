@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2004-2013 The Open Watcom Contributors. All Rights Reserved.
+*  Copyright (c) 2004-2009 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -29,8 +29,10 @@
 *                    gml_dummy()
 *                    lay_dummy()
 *                    scr_dummy()
+*   NOTE:   output modified to list only the item name, not the context
 *
 ****************************************************************************/
+
 
 #include "wgml.h"
 
@@ -47,11 +49,9 @@ void    scr_dummy( void )
     cwcurr[2] = *(token_buf + 1);
     cwcurr[3] = '\0';
 
-    scan_restart = scan_stop;
+    scan_restart = scan_stop + 1;
 
-    g_warn( wng_unsupp_cw, cwcurr );
-    wng_count++;
-    file_mac_info();
+    xx_warn_c( wng_unsupp_cw, cwcurr );
 }
 
 
@@ -59,29 +59,27 @@ void    scr_dummy( void )
 /*  gml_dummy        processing                                            */
 /***************************************************************************/
 
-void    gml_dummy( gml_tag gtag )
+void    gml_dummy( const gmltag * entry )
 {
 
-    scan_start = scan_stop;
+    scan_start = scan_stop + 1;
 
-    g_warn( wng_unsupp_tag, gml_tagname( gtag ) );
-    wng_count++;
-    file_mac_info();
+    xx_warn_c( wng_unsupp_tag, entry->tagname );
 }
 
 /***************************************************************************/
 /*  lay_dummy        processing                                            */
 /***************************************************************************/
 
-void    lay_dummy( lay_tag ltag )
+void    lay_dummy( const gmltag * entry )
 {
 
-    scan_start = scan_stop;
+    scan_start = scan_stop + 1;
 
-    if( GlobFlags.firstpass ) {       // layout msg only in pass 1
-        g_warn( wng_unsupp_lay, lay_tagname( ltag ) );
-        wng_count++;
-        show_include_stack();
+    if( GlobalFlags.firstpass ) {       // layout msg only in pass 1
+        xx_warn_c( wng_unsupp_lay, entry->tagname );
     }
     eat_lay_sub_tag();                  // ignore any attribute / value
 }
+
+

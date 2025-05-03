@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2004-2013 The Open Watcom Contributors. All Rights Reserved.
+*  Copyright (c) 2004-2009 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -28,7 +28,9 @@
 *
 ****************************************************************************/
 
+
 #include "wgml.h"
+
 
 /***************************************************************************/
 /*  script string function &'left(                                         */
@@ -62,28 +64,25 @@ condcode    scr_left( parm parms[MAX_FUN_PARMS], size_t parmcount, char * * resu
         return( cc );
     }
 
-    pval = parms[0].start;
-    pend = parms[0].stop;
+    pval = parms[0].a;
+    pend = parms[0].e;
 
     unquote_if_quoted( &pval, &pend );
 
-    if( pend == pval ) {                // null string nothing to do
+    len = pend - pval + 1;              // default length
+
+    if( len <= 0 ) {                    // null string nothing to do
         **result = '\0';
         return( pos );
     }
 
-    len = pend - pval;                  // default length
-
-    if( parms[1].stop > parms[1].start ) {// length specified
-        gn.argstart = parms[1].start;
-        gn.argstop  = parms[1].stop;
+    if( parms[1].e >= parms[1].a ) {// length specified
+        gn.argstart = parms[1].a;
+        gn.argstop  = parms[1].e;
         cc = getnum( &gn );
         if( cc != pos ) {
             if( !ProcFlags.suppress_msg ) {
-                g_err( err_func_parm, "2 (length)" );
-                g_info_inp_pos();
-                err_count++;
-                show_include_stack();
+                xx_source_err_c( err_func_parm, "2 (length)" );
             }
             return( cc );
         }
@@ -91,7 +90,7 @@ condcode    scr_left( parm parms[MAX_FUN_PARMS], size_t parmcount, char * * resu
     }
 
     for( k = 0; k < len; k++ ) {        // copy from start
-        if( (pval >= pend) || (ressize <= 0) ) {
+        if( (pval > pend) || (ressize <= 0) ) {
             break;
         }
         **result = *pval++;
@@ -112,3 +111,4 @@ condcode    scr_left( parm parms[MAX_FUN_PARMS], size_t parmcount, char * * resu
 
     return( pos );
 }
+

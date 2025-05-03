@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2004-2013 The Open Watcom Contributors. All Rights Reserved.
+*  Copyright (c) 2004-2009 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -24,62 +24,51 @@
 *
 *  ========================================================================
 *
-* Description: utility functions for arguments:
-*         garginit             --- initialize operand scan in buff2 (SCR)
-*         garginitdot          --- initialize operand scan in buff2 (GML)
-*         getarg               --- scan (quoted) blank delimited argument
-*         getqst               --- scan quoted string
-*         is_xxx_char          --- test for allowed char
-*         is_quote_char        --- test for several quote chars
-*         parse_char           --- parse any "char" which can also be in hex
-*         unquote_if_quoted    --- adjust ptrs for quoted string
+* Description: utility functions for arguments
 *
 ****************************************************************************/
 
+
 #include "wgml.h"
-
-#include "clibext.h"
-
 
 /***************************************************************************/
 /* validate and return the character parameter, or raise an error          */
 /***************************************************************************/
 
-char parse_char( const char *pa, size_t len )
+char parse_char( const char *p, size_t len )
 {
-    const char  *p;
     char        c;
 
     c = '\0';
-    p = pa + len;
-    if( len == 2 ) {             // 2 hex characters
-        if( isxdigit( *pa ) && isxdigit( *(pa + 1) ) ) {
-            for( ; len > 0; len-- ) {
-                c *= 16;
-                if( isdigit( *pa ) ) {
-                    c += *pa - '0';
-                } else {
-                    c += toupper( *pa ) - 'A' + 10;
-                }
-                pa++;
+    if( len == 1 ) {
+        c = p[0];
+    } else if( len == 2 ) {         // 2 hex characters
+        if( my_isxdigit( p[0] ) && my_isxdigit( p[1] ) ) {
+            if( my_isdigit( p[0] ) ) {
+                c = p[0] - '0';
+            } else {
+                c = my_toupper( p[0] ) - 'A' + 10;
+            }
+            if( my_isdigit( p[1] ) ) {
+                c = c * 16 + p[1] - '0';
+            } else {
+                c = c * 16 + my_toupper( p[1] ) - 'A' + 10;
             }
         } else {
-            xx_line_err_len( err_cw_not_char, pa, len );
-            return( c );
+            xx_line_err_ci( err_cw_not_char, p, len );
         }
     } else {
-        if( len != 1 ) {
-            xx_line_err_len( err_cw_not_char, pa, len );
-            return( c );
-        }
-        c = *pa;
+        xx_line_err_ci( err_cw_not_char, p, len );
     }
 
     return( c );
 }
 
+/***************************************************************************/
+/* return true if the character parameter is a string delimiter            */
+/***************************************************************************/
 
-bool    is_quote_char( char c )
+bool is_quote_char( char c )
 {
     if( c == s_q || c == d_q || c == slash || c == excl  || c == cent ||
         ((c == l_q) && (c != CW_sep_char)) ||
@@ -90,47 +79,16 @@ bool    is_quote_char( char c )
     }
 }
 
-void    garginit( void )
-{
-    char    *   p;
-
-    p = buff2;                          // adress of input buffer
-    scan_stop = buff2 + buff2_lg;   // store scan stop address
-    while( *p != ' ' && p < scan_stop ) {// search end of script control word
-        p++;
-    }
-    scan_start = p;                     // store control word end address
-
-    tok_start = NULL;                   // clear token start address
-}
-
-
-
-
-void    garginitdot( void )
-{
-    char    *   p;
-
-    p = buff2;                          // adress of input buffer
-    scan_stop = buff2 + buff2_lg;   // store scan stop address
-    while( *p != ' ' && *p != '.' && p < scan_stop ) {// search end of gml tag
-        p++;
-    }
-    scan_start = p;                     // store tag end or space address
-
-    tok_start = NULL;                   // clear token start address
-}
-
-
 /***************************************************************************/
 /*  scan blank delimited argument perhaps quoted                           */
 /*                                                                         */
-/* extension: if unquoted and equalsign, then quoted parm allowed          */
+/*  extension: if unquoted and equalsign, then quoted parm allowed         */
 /*            *var="value "                                                */
 /*                                                                         */
+/*  single-char arguments are special-cased                                */
 /***************************************************************************/
 
-condcode    getarg( void )
+condcode getarg( void )
 {
     condcode    cc;
     char    *   p;
@@ -139,16 +97,22 @@ condcode    getarg( void )
     bool        quoted;
     bool        valquoted;
 
-
-    if( scan_start >= scan_stop ) {     // already at end
+    if( scan_stop <= scan_start ) {     // already at end
         cc = omit;                      // arg omitted
     } else {
         p = scan_start;
-        while( *p && *p == ' ' && p < scan_stop ) {// skip leading blanks
+        while( *p == ' ' && p <= scan_stop ) {// skip leading blanks
             p++;
         }
-        if( p >= scan_stop ) {
+        if( p > scan_stop ) {
             return( omit );             // nothing found
+        }
+
+        if( p == scan_stop) {           // one character token found
+            arg_flen = 1;
+            tok_start = p;
+            scan_start = p + 1;         // address of start for next call
+            return( pos );              // arg found
         }
 
         quote = '\0';
@@ -167,10 +131,14 @@ condcode    getarg( void )
         }
         for( ;; p++ ) {
 
-            if( p >= scan_stop || *p == '\0' ) {
+            if( p > scan_stop || *p == '\0' ) {
                 if( quoted ) {
                     quote = '\0';
                     quoted = false;
+                    p = tok_start;              // find end of space-delimited token
+                    while( (p < scan_stop) && (*p != ' ') ) {
+                        p++;
+                    }
                 }
                 break;
             }
@@ -180,16 +148,13 @@ condcode    getarg( void )
             if( *p == quote ) {
                 break;
             }
-            if( quote == '\0' && (*p == '=') && is_quote_char( *(p+1) ) ) {
+            if( quote == '\0' && (p[0] == '=') && is_quote_char( p[1] ) ) {
                 valquoted = true;
-                valquote = *(p+1);
+                valquote = p[1];
                 p += 2;
-                for( ; p < scan_stop; p++ ) {
+                for( ; *p != '\0' && p <= scan_stop; p++ ) {
                     if( *p == valquote ) {
                         p++;
-                        break;
-                    }
-                    if( *p == '\0' ) {
                         break;
                     }
                 }
@@ -202,7 +167,7 @@ condcode    getarg( void )
         } else {
             scan_start = p;             // address of start for next call
         }
-        arg_flen = p - tok_start;       // length of arg
+        arg_flen = p - tok_start;       // length of multichar arg
         if( arg_flen > 0 ) {
             if( quoted ) {
                 cc = quotes;            // quoted arg found
@@ -220,13 +185,12 @@ condcode    getarg( void )
     return( cc );
 }
 
-
-
 /***************************************************************************/
-/*  scan       quoted string argument       special for if terms           */
+/*  scan quoted string argument                                            */
+/*  special for if terms                                                   */
 /***************************************************************************/
 
-condcode    getqst( void )
+condcode getqst( void )
 {
     condcode    cc;
     char    *   p;
@@ -234,15 +198,15 @@ condcode    getqst( void )
     char        quote;
     bool        quoted;
 
-    if( scan_start >= scan_stop  ) {     // already at end
+    if( scan_stop <= scan_start ) {     // already at end
         cc = omit;                      // arg omitted
     } else {
         p = scan_start;
-        while( *p && *p == ' ' && p < scan_stop ) {// skip leading blanks
+        while( *p == ' ' && p <= scan_stop ) {// skip leading blanks
             p++;
         }
 
-        if( p >= scan_stop ) {
+        if( p > scan_stop ) {
             return( omit );             // nothing found
         }
 
@@ -258,17 +222,13 @@ condcode    getqst( void )
             quote = '\0';
             quoted = false;
         }
-        for( ; p < scan_stop; p++ ) {  // look for end of string
-
-            if( *p == '\0' ) {          // null char is end
-                break;
-            }
+        for( ; *p != '\0' && p <= scan_stop; p++ ) {  // look for end of string
             if( quoted ) {
                 if( *p == quote ) {
-                    if( *(p+1) == '\0' || *(p+1) == ' ' ) {
-                        break;      // quote followed by blank or null is end
+                    if( p[1] == '\0' || p[1] == ' ' ) {
+                        break;          // quote followed by blank or null is end
                     }
-                    if( *(p+1) == quote ) {
+                    if( p[1] == quote ) {
                         continue;       // 2 quote chars not end of string
                     }
                 }
@@ -303,52 +263,54 @@ condcode    getqst( void )
     return( cc );
 }
 
-
 /*
- * Test character as valid for an LAYOUT attribute name
+ * Test character as valid for a predefined attribute name
  */
-bool    is_lay_att_char( char c )
+
+bool is_att_char( char c )
 {
     bool    test;
 
-    test = ( isalpha( c ) != 0 );
+    test = my_isalpha( c );
     if( !test ) {
         test = ( c == '_' );
     }
     return( test );
 }
 
-
 /*
  * Test character as valid for a function name
  */
-bool    is_function_char( char c )
+
+bool is_function_char( char c )
 {
     bool    test;
 
-    test = isalnum( c );
+    test = my_isalnum( c );
     return( test );
 }
 
 /*
  * Test character as valid for an identifier name
  */
-bool    is_id_char( char c )
+
+bool is_id_char( char c )
 {
     bool    test;
 
-    test = isalnum( c );
+    test = my_isalnum( c );
     return( test );
 }
 
 /*
  * Test character as valid for a macro name
  */
-bool    is_macro_char( char c )
+
+bool is_macro_char( char c )
 {
     bool    test;
 
-    test = isalnum( c );
+    test = my_isalnum( c );
     if( !test ) {
         test = ( c == '@' ) || ( c == '#' ) || ( c == '$' ) || ( c == '_' );
     }
@@ -358,11 +320,12 @@ bool    is_macro_char( char c )
 /*
  * Test character as valid for a symbol name
  */
-bool    is_symbol_char( char c )
+
+bool is_symbol_char( char c )
 {
     bool    test;
 
-    test = isalnum( c );
+    test = my_isalnum( c );
     if( !test ) {
         test = ( c == '@' ) || ( c == '#' ) || ( c == '$' ) || ( c == '_' );
     }
@@ -372,7 +335,8 @@ bool    is_symbol_char( char c )
 /*
  * Test character for a full stop character
  */
-bool    is_stop_char( char c )
+
+bool is_stop_char( char c )
 {
     bool    test;
 
@@ -380,27 +344,27 @@ bool    is_stop_char( char c )
     return( test );
 }
 
-
 /*
  * Test character for a space or tab character
  */
-bool    is_space_tab_char( char c )
-{
 
+bool is_space_tab_char( char c )
+{
     return( ( c == ' ' ) || ( c == '\t' ) );
 }
-
 
 /*
  * If first and last character are the same and one of the quote chars
  * the start and end pointers are adjusted
+ * but only if a and z are not equal (that is, only if the value has more
+ * than one character
  */
-void    unquote_if_quoted( char **start, char **stop )
-{
 
-    if( *start != *stop && is_quote_char( **start ) && **start == *(*stop - 1) ) {
-        *start += 1;
-        *stop -= 1;
+void unquote_if_quoted( char **a, char **z )
+{
+    if( (*a != *z) && (**a == **z) && is_quote_char( **a ) ) {
+        *a += 1;
+        *z -= 1;
     }
 }
 

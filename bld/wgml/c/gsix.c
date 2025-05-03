@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2004-2013 The Open Watcom Contributors. All Rights Reserved.
+*  Copyright (c) 2004-2012 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -25,27 +25,35 @@
 *  ========================================================================
 *
 * Description: implement .ix (index)  script control word
-*                        only used options are implemented
-*                        i.e.   index structure 1 only
+*                        only used options are implemented:
+*                               s1
+*                               s1 . ref
+*                               s1 s2
+*                               s1 s2 . ref
 *                               s1 s2 s3
-*                               . dump   (experimental)
-*         extension found during testing:
-*                               s1 s2 s3 xxx
-*           xxx is treated like gml :I3 pg="XXX"  attribute
+*                               s1 s2 s3 . ref
+*                               s1 s2 s3 ref
+*                               *       (primary reference designator)
 *
-*         not implemented are   s1 s2 . ref
-*                               . purge
+*         not implemented are   <1|n>   (structure number)
+*                               . purge (no preceding items except structure number)
+*                               . dump  (no preceding items except structure number)
+*         these items are identified and appropriate messages issued,
+*         but otherwise have no effect
 *
-*  comments are from script-tso.txt
+*  Note: the "." is the control word indicator, normally "." but changeable
+*        similarly, the "*" can be changed using control word DC
 ****************************************************************************/
+
 
 #include "wgml.h"
 
 #include "clibext.h"
 
+
 /**************************************************************************/
 /*                                                                        */
-/*  !not all options are supported / implemented                          */
+/*  not all options are supported / implemented                           */
 /*                                                                        */
 /*                                                                        */
 /* INDEX builds  an index structure  with up  to three levels  of headers */
@@ -144,165 +152,241 @@
 /*  .ix control word processing                                            */
 /***************************************************************************/
 
-void    scr_ix( void )
+void scr_ix( void )
 {
-    condcode        cc;                 // resultcode from getarg()
-    static char     cwcurr[4] = {" ix"};// control word string for errmsg
-    int             lvl;              // max index level in control word data
+    bool            do_major;           // true if reference is a major reference
+    bool            do_nothing;         // true if index string/ref is duplicate
+    char        *   ix[3] = { NULL, NULL, NULL };   // index string start pointers
+    char        *   p;
+    char            pix_char;           // major reference prefix char ($pix)
+    char        *   ref = NULL;         // ref string start pointer
+    condcode        cc;                 // result code
+    entry_list  *   entry;
+    getnum_block    gn;
+    int             lvl;                // max index level in control word data
     int             k;
-    int             comp_len;// compare length for searching existing entries
-    int             comp_res;           // compare result
-    char        *   ix[3];              // index string(s) to add
-    uint32_t        ixlen[3];           // corresponding lengths
-    ix_h_blk    * * ixhwork;            // anchor point for insert
+    ix_h_blk    *   ixbase[3] = { NULL, NULL, NULL };   // current list base
+    ix_h_blk    *   ixhwork;            // insertion point/found match item
     ix_h_blk    *   ixhwk;              // index block
-    ix_h_blk    *   ixhcurr[3];         // active index heading block per lvl
-    ix_e_blk    *   ixewk;              // index entry block
-    bool            do_nothing;         // true if index string duplicate
-    uint32_t        wkpage;
+    symsub      *   dictval;
+    uint32_t        ixlen[3] = {0, 0, 0};   // index string lengths
+    uint32_t        reflen = 0;         // ref string length
+    uint32_t        wkpage;             // predicted page number
 
+    static char     cwcurr[4] = {" ix"};// control word string for errmsg
 
-    scan_restart = scan_stop;
+    if( input_cbs->fmflags & II_tag_mac ) {   // ensure next line is valid
+        input_cbs->s.m->ix_seen = true;     // records use of control word, even if indexing is off
+    }
 
-    if( !(GlobFlags.index && GlobFlags.lastpass) ) {
+    if( !GlobalFlags.index ) {
+        ProcFlags.index_tag_cw_seen = true;
+        scan_restart = scan_stop + 1;
         return;                         // no need to process .ix
-    }                                   // no index wanted or not lastpass
+    }
+
+    start_doc_sect();                   // if not already done
+    scan_restart = scan_stop + 1;
+
     cwcurr[0] = SCR_char;
     lvl = 0;                            // index level
 
-//  if( ProcFlags.page_started ) {
-//      wkpage = page;
-//  } else {
-        wkpage = page + 1;              // not quite clear TBD
-//  }
+    find_symvar( sys_dict, "$pix", no_subscript, &dictval);
+    pix_char = *(dictval->value);
+    wkpage = g_page + 1;                  // predicted number of current page
 
-    garginit();                         // over control word
+    p = scan_start;
 
-    while( lvl < 3 ) {                  // try to get 3 lvls of index
+    /* Check for no operands, a structure number, or a DUMP/PURGE line */
 
-        cc = getarg();
+    tok_start = NULL;                   // clear token start address
+    cc = getarg();                      // get next operand
+    if( cc == omit || cc == quotes0 ) { // no operands
 
-        if( cc == omit || cc == quotes0 ) { // no (more) arguments
-            if( lvl == 0 ) {
-                parm_miss_err( cwcurr );
-                return;
-            } else {
-                break;
+        /* Position adjusted to avoid buffer overflow */
+
+        xx_line_err_cc( err_parm_missing, cwcurr, scan_start - 1 );
+        return;
+    }
+
+    /****************************************************************/
+    /* If the operand is quoted, it is an index entry even if       */
+    /* numeric, DUMP or PURGE                                       */
+    /* DUMP and PURGE are identified and ignored only if preceded   */
+    /* by '.' (the control word indicator)                          */
+    /****************************************************************/
+
+    if( cc != quotes ) {
+
+        /* Unquoted numeric string here must be a structure number */
+
+        gn.argstart = tok_start;
+        gn.argstop = scan_stop;
+        gn.ignore_blanks = 0;
+        cc = getnum( &gn );
+
+        if( (cc == pos) || (cc == neg) ) {
+
+            p = tok_start;
+            for( k = 0; k < arg_flen; k++ ) {
+                if( (*p == ' ') || !my_isdigit( *p ) ) {
+                    break;
+                }
+                p++;
+            }
+            if( *p == ' ' ) {   // if space found first, then numeric is structure number
+
+                /* Structures are ignored, issue warning */
+
+                xx_warn_c( wng_unsupp_cw_opt, "structure" );
+
+                if( (gn.result < 1) || (gn.result > 9) ) { // out of range
+                    xx_line_err_c( err_struct_range, tok_start );
+                }
+                cc = getarg();                  // get next operand
+                if( cc == omit || cc == quotes0 ) { // no operands
+                    xx_line_err_cc( err_parm_missing, cwcurr, tok_start );
+                }
             }
         } else {
-            if( *tok_start == '.' && arg_flen == 1  ) {
-                if( lvl > 0 ) {
-                    xx_opt_err( cwcurr, tok_start );
-                    break;             // .ix s1 s2 . ref format not supprted
-                }
-                cc = getarg();
-                if( cc == pos || cc == quotes ) {   // .ix . dump ???
-                    if( arg_flen == 4 ) {
-                        if( !strnicmp( tok_start, "DUMP", 4 ) ) {
 
-                            ixdump( index_dict );
+            /* Check for '.' (the control word indicator) */
 
-                            break;
-                        }
-                    }
-                    xx_opt_err( cwcurr, tok_start );// unknown option
+            if( *tok_start == SCR_char && arg_flen == 1  ) {
+
+                cc = getarg();                  // get next operand
+
+                /* Only DUMP/PURGE allowed in this position */
+
+                if( cc == omit || cc == quotes0 ) { // no operands
+                    xx_line_err_cc( err_parm_missing, cwcurr, tok_start );
+                } else if( (arg_flen == 4) && stricmp( "DUMP", tok_start ) == 0 ) {
+                    xx_warn_c( wng_unsupp_cw_opt, "DUMP" );
+                } else if( (arg_flen == 5) && stricmp( "PURGE", tok_start ) == 0 ) {
+                    xx_warn_c( wng_unsupp_cw_opt, "PURGE" );
                 } else {
-                    parm_miss_err( cwcurr );
-                    return;
+                    xx_line_err_c( err_bad_dp_value, tok_start );
                 }
-                break;                  // no index entry text
+                cc = getarg();                  // get next operand
             }
-            ix[lvl] = tok_start;
-            *(tok_start + arg_flen) = 0;
-            ixlen[lvl] = arg_flen;
-            lvl++;
         }
     }
-    cc = getarg();
-/***************************************************************************/
-/*  The docu says .ix "I1" "I2" "I3" "extra" is invalid, but WGML4 accepts */
-/*  it without error and processes it like the :I3 pg="extra" attribute    */
-/***************************************************************************/
-//  if( cc != omit ) {
-//      parm_extra_err( cwcurr, tok_start - (cc == quotes) );
-//      return;
-//  }
 
-    if( lvl > 0 ) {                     // we have at least one index string
+    /****************************************************************/
+    /* Parse the arguments to extract the index elements, of which  */
+    /* four can be accomodated: three index terms plus one refernce */
+    /* Note: there is something subtle going on here betwen the     */
+    /*       value of lvl, as used in the code below, and the       */
+    /*       trapping of a reference after less than three index    */
+    /*       terms                                                  */
+    /****************************************************************/
 
-        ixhwork = &index_dict;
+    for( lvl = 0; lvl < 3; lvl++ ) {
+
+        if( cc == omit || cc == quotes0 ) { // no (more) arguments
+            break;
+        }
+
+        /* Process a reference preceded by SCR_char */
+
+        if( *tok_start == SCR_char && arg_flen == 1  ) {    // identify reference
+            cc = getarg();                                  // get next operand
+            if( (cc == pos) || (cc == quotes) ) {           // identify reference
+                ref = tok_start;
+                reflen = arg_flen;
+                cc = getarg();                  // get next operand
+            }
+            break;
+        }
+        ix[lvl] = tok_start;
+        ixlen[lvl] = arg_flen;
+        cc = getarg();                  // get next operand
+    }
+
+    if( lvl == 3 ) {                                        // check for reference
+        if( *tok_start == SCR_char && arg_flen == 1  ) {    // skip reference indicator
+            cc = getarg();                                  // get next operand
+        }
+
+        if( (cc == pos) || (cc == quotes) ) {   // reference found
+            ref = tok_start;
+            reflen = arg_flen;
+            cc = getarg();                      // get next operand
+        }
+    }
+
+    if( (cc == pos) || (cc == quotes) ) {       // extra data on line
+        xx_line_err_c( err_extra_data, tok_start );
+    }
+
+    ProcFlags.post_ix = true;           // records use of control word only if indexing is on
+
+    if( !GlobalFlags.lastpass ) {
+        return;
+    }
+
+    /* Now fill the index structures -- but only on the last pass */
+
+    if( lvl > 0 ) {                             // we have at least one index string
+
+        /* Create an ix_h_blk in ixhcurr[] for each non-null entry in ix[] */
+
+        ixhwork = index_dict;
+        ixbase[0] = index_dict;             // preserve starting point
         for( k = 0; k < lvl; ++k ) {
+            if( ix[k] == NULL ) {           // we are done
+                break;
+            }
             do_nothing = false;
-            while( *ixhwork != NULL ) { // find alfabetic point to insert
-                comp_len = ixlen[k];
-                if( comp_len > (*ixhwork)->ix_term_len )
-                    comp_len = (*ixhwork)->ix_term_len;
-                ++comp_len;
-                comp_res = strnicmp( ix[k], (*ixhwork)->ix_term, comp_len );
-                if( comp_res > 0 ) {    // new is later in alfabet
-                    ixhwork = &((*ixhwork)->next);
-                    continue;
-                }
-                if( comp_res == 0 ) {   // equal
-                    if( ixlen[k] == (*ixhwork)->ix_term_len ) {
-                        do_nothing = true;
-                        break;          // entry already there
-                    }
-                    if( ixlen[k] > (*ixhwork)->ix_term_len ) {
-                        ixhwork = &((*ixhwork)->next);
-                        continue;       // new is longer
-                    }
-                }
-                break;                  // insert point reached
-            }
-            if( !do_nothing ) {
-                // insert point reached
-                ixhwk = mem_alloc( sizeof( ix_h_blk ) );
-                ixhwk->next  = *ixhwork;
-                ixhwk->ix_lvl= k + 1;
-                ixhwk->lower = NULL;
-                ixhwk->entry = NULL;
-                ixhwk->prt_term = NULL;
-                ixhwk->prt_term_len = 0;
-                ixhwk->ix_term_len   = ixlen[k];
-                ixhwk->ix_term = mem_alloc( ixlen[k] + 1 );
-                strcpy( ixhwk->ix_term, ix[k] );
-                *ixhwork = ixhwk;
-            } else {            // string already in dictionary at this level
-                ixhwk = *ixhwork;
-            }
-            ixhcurr[lvl] = ixhwk;
-            if( k < lvl ) {
-                ixhwork = &(ixhwk->lower); // next lower level
+            ixhwk = find_create_ix_h_entry( ixhwork, ixbase[k], NULL, 0, ix[k],
+                                            ixlen[k], k );
+            if( k + 1 < lvl ) {
+                ixbase[k + 1] = ixhwk;              // preserve attach point for lower level
+                ixhwork = ixhwk->lower;             // next lower level
             }
         }
 
-        // now add the pageno to index entry
-        if( ixhwk->entry == NULL ) {    // first pageno for entry
+        /* Add the ix_e_blk, with reference/page number information */
 
-/***************************************************************************/
-/*  The docu says .ix "I1" "I2" "I3" "extra" is invalid, but WGML4 accepts */
-/*  it without error and processes it like the :I3 pg="extra" attribute    */
-/*  try to process the extra parm                                          */
-/***************************************************************************/
-            if( cc != omit ) {
-                *(tok_start + arg_flen) = 0;
-                fill_ix_e_blk( &(ixhwk->entry), ixhwk, pgstring, tok_start, arg_flen );
+        do_major = false;
+        if( (ref != NULL) && (ref[0] == pix_char) ) {      // identify major reference
+            do_major = true;
+            reflen--;
+            if( reflen == 0 ) {         // major numeric reference
+                ref = NULL;
+            } else {                    // major string reference: drop the first char
+                ref++;
+            }
+        }
+
+        if( ixhwk->entry == NULL ) {    // first ref/pageno for entry
+            init_entry_list( ixhwk);
+            if( ref != NULL ) {
+                if( do_major ) {
+                    find_create_ix_e_entry( ixhwk, ref, reflen, NULL, pgmajorstring );
+                } else {
+                    find_create_ix_e_entry( ixhwk, ref, reflen, NULL, pgstring );
+                }
             } else {
-                fill_ix_e_blk( &(ixhwk->entry), ixhwk, pgpageno, NULL, 0 );
+                if( do_major ) {
+                    find_create_ix_e_entry( ixhwk, NULL, 0, NULL, pgmajor );
+                } else {
+                    find_create_ix_e_entry( ixhwk, NULL, 0, NULL, pgpageno );
+                }
             }
         } else {
-            ixewk = ixhwk->entry;
-            while( ixewk->next != NULL ) {  // find last entry
-                ixewk = ixewk->next;
-            }
-            if( (ixewk->entry_typ >= pgstring) || (ixewk->u.page_no != wkpage) ) {
-                // if last entry doesn't point to current page create entry
-                if( cc != omit ) {
-                    *(tok_start + arg_flen) = 0;
-                    fill_ix_e_blk( &(ixewk->next), ixhwk, pgstring, tok_start, arg_flen );
+            entry = ixhwk->entry;
+            if( ref != NULL ) {
+                if( do_major ) {
+                    find_create_ix_e_entry( ixhwk, ref, reflen, NULL, pgmajorstring );
                 } else {
-                    fill_ix_e_blk( &(ixewk->next), ixhwk, pgpageno, NULL, 0 );
+                    find_create_ix_e_entry( ixhwk, ref, reflen, NULL, pgstring );
+                }
+            } else {
+                if( do_major ) {
+                    find_create_ix_e_entry( ixhwk, NULL, 0, NULL, pgmajor );
+                } else {
+                    find_create_ix_e_entry( ixhwk, NULL, 0, NULL, pgpageno );
                 }
             }
         }

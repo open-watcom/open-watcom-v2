@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2004-2013 The Open Watcom Contributors. All Rights Reserved.
+*  Copyright (c) 2004-2009 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -27,11 +27,13 @@
 * Description:  WGML implement multi letter function &'c2x( )
 ****************************************************************************/
 
+
 #include "wgml.h"
+
 
 static unsigned char hex( unsigned char c )
 {
-    static const unsigned char htab[16] = "0123456789ABCDEF";
+    static const unsigned char htab[] = "0123456789ABCDEF";
 
     if( c < 16 ) {
         return( htab[c] );
@@ -65,12 +67,12 @@ condcode    scr_c2x( parm parms[MAX_FUN_PARMS], size_t parmcount, char * * resul
         return( neg );
     }
 
-    pval = parms[0].start;
-    pend = parms[0].stop;
+    pval = parms[0].a;
+    pend = parms[0].e;
 
     unquote_if_quoted( &pval, &pend );
 
-    while( (pval < pend) && (ressize > 1) ) {
+    while( (pval <= pend) && (ressize > 1) ) {
         **result = hex( (unsigned)*pval >> 4 );
         *result += 1;
         **result = hex( (unsigned)*pval & 0x0f );

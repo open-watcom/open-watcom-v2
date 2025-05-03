@@ -3,17 +3,20 @@
 # =======================================
 #
 # wgml depends on
-#                 bld\trmem            memory tracker
+#   bld\trmem            memory tracker
 #
 
 proj_name = wgml
-name = wgml
 
 !ifndef wgml_autodepends
 wgml_autodepends = .AUTODEPEND
 !endif
 
 wgml_trmem = 1
+
+wgml_wreslib_cli = text
+
+additional_clean = *.grh *.gh
 
 !include cproj.mif
 !include defrule.mif
@@ -54,14 +57,25 @@ exetarg_res           = $(proj_name).res
 #
 msgfiles = ../h/wgmlerr.msg ../h/wgml.msg
 
-$(proj_name).res : ../h/wgml.rc wgmlmsgs.gh ../h/wgmlmsg.h $(msgfiles) $(__MAKEFILES__)
+$(proj_name).res : ../h/wgml.rc wgmlmsgs.gh $(__MAKEFILES__)
     @%make echo_rc
-    $(rcu8j) $(ppflags_common) $(rc_cppflags) $(rc_flags) $(rc_inc_path) $[@ -fo=$@
+    $(rcu8j) $(ppflags_common) $(ppflags_wreslib) $(rc_cppflags) $(rc_flags) $(rc_inc_path) $[@ -fo=$@
 
 wgmlmsgs.gh : $(msgfiles) $(__MAKEFILES__)
     @%make echo_awk
-    $(noecho)*awk -v base=000 -f ../makemdef.awk -v OUTFILE=$^. $(msgfiles)
+#    $(noecho)*awk -v base=MSG_RC_BASE -f $(build_dir)/makemsg.awk -v OUTFILE=$^. $(msgfiles)
+    $(noecho)*awk -v base=000 -f ../makemdef.awk $(msgfiles) > $^.
 
 wgmlmsge.gh : $(msgfiles) $(__MAKEFILES__)
     @%make echo_awk
-    $(noecho)*awk -v base=000 -f ../msgtoenm.awk -v OUTFILE=$^. $(msgfiles)
+#    $(noecho)*awk -v base=MSG_RC_BASE -f $(build_dir)/makemsg.awk -v OUTFILE=$^. $(msgfiles)
+    $(noecho)*awk -v base=000 -f ../msgtoenm.awk $(msgfiles) > $^.
+
+optencod_targets = $(host_os)
+!ifeq debug 2
+optencod_targets += dbg
+!endif
+
+usage.gh $(qnx_usage) : ../h/options.gml $(__MAKEFILES__)
+    @%make echo_optencod
+    $(optencod) -rc=MSG_USAGE_BASE -utf8 $(optencod_opt_$(host_os)) $[@ . . $@ . $(optencod_targets)

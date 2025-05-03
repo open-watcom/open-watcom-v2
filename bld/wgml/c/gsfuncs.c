@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2004-2013 The Open Watcom Contributors. All Rights Reserved.
+*  Copyright (c) 2004-2009 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -37,28 +37,27 @@
 *
 ****************************************************************************/
 
+
 #include "wgml.h"
+
+#include "clibext.h"
+
 
 /***************************************************************************/
 /*    SCR multi letter functions                                           */
 /***************************************************************************/
-typedef enum {
-    #define pick( name, length, parms, optparms, routine ) SCR_FUNC_##name,
-    #include "gsfuncs.h"
-    #undef pick
-    SCR_FUNCMAX
-} scr_function;
 
-static  const   scrfunc scr_functions[] = {
-    #define pick( name, length, parms, optparms, routine ) { #name, length, parms, optparms, routine },
+static const scrfunc    scr_functions[] = {
+    #define pick( name, length, parms, optparms, routine )  { #name, length, parms, optparms, routine },
     #include "gsfuncs.h"
     #undef pick
+    { " ", 0, 0, 0, NULL }              // end
 };
 
-static const char   ampchar = '&';
+#define SCR_FUNC_MAX (sizeof( scr_functions ) / sizeof( scr_functions[0] ) - 1)
+
 static bool         multiletter_function;   // parm contains function
 static bool         var_in_parm;            // parm contains variable
-
 
 
 /****************************************************/
@@ -83,17 +82,15 @@ static  char    * alloc_resbuf( inp_line ** in_wk )
 /*  find end of parm for multi letter functions
  *     end of parm is either , or )
  *     but only if outside of string and not in deeper paren level
- *      string delimiters are several chars
+ *     string delimiters are several chars
  *
  */
 
 static  char    * find_end_of_parm( char * pchar, char * pend )
 {
-#define max_paren 50                    // should be enough
-    char    quotechar[max_paren];
-    bool    instring[max_paren];
+    char    quotechar[MAX_PAREN];
+    bool    instring[MAX_PAREN];
     int     paren_level;
-    int     delta_paren;
     char    c;
     char    cm1;
     char    cm2;
@@ -101,79 +98,87 @@ static  char    * find_end_of_parm( char * pchar, char * pend )
     bool    test_for_quote;             // only at first char after ( or ,
 
     paren_level = 0;
-    delta_paren = 0;
     quotechar[paren_level] ='\0';
     instring[paren_level] = false;
     instring[1] = false;
     finished = false;
     test_for_quote = true;
-    cm1 = '\0';
-    cm2 = '\0';
     c = '\0';
-    for(  ; *pchar != '\0' ; pchar++ ) {
+    cm1 = '\0';
+    for( ; *pchar != '\0' ; ) {
         cm2 = cm1;
         cm1 = c;
         c = *pchar;
         if( cm1 == ampchar ) {
             if( c == '\'' ) {
-                multiletter_function = true;// parm contains a function
-                delta_paren = 1;
-                instring[paren_level + 1] = false;
+                multiletter_function = true;    // parm contains a function
             } else {
-                var_in_parm = true;     // parm contains variable
+                var_in_parm = true;             // parm contains variable
             }
         }
-        if( instring[paren_level] ) {
-            if( c == quotechar[paren_level] ) {
-                instring[paren_level] = false;
-            }
+        if( multiletter_function ) {
+            multiletter_function = false;       // multiletter_function is static, reset
+            pchar++;                            // over "'"
+            pchar = find_end_of_parm( pchar, pend );
+            continue;
         } else {
-            if( test_for_quote && is_quote_char( c ) ) {
-                if( (cm1 == ampchar) || // &' sequence
-                    ((cm2 == ampchar) && isalpha( cm1 )) ) {// &X' sequence
-                            /* no instring change */
-                } else {
-                    instring[paren_level] = true;
-                    quotechar[paren_level] = c;
+            if( instring[paren_level] ) {
+                if( c == quotechar[paren_level] ) {
+                    instring[paren_level] = false;
                 }
-                test_for_quote = false;
             } else {
-                switch( c ) {
-                case    '(' :
-                    paren_level += 1 + delta_paren;
-                    delta_paren = 0;
-                    test_for_quote = true;
-                    if( paren_level < max_paren ) {
-                        instring[paren_level] = false;
+                if( test_for_quote && is_quote_char( c ) ) {
+                    if( (cm1 == ampchar) || // &' sequence
+                        ((cm2 == ampchar) && my_isalpha( cm1 )) ) {// &X' sequence
+                                /* no instring change */
                     } else {
-                        paren_level--;
-                        finished = true;// error msg ??? TBD
+                        instring[paren_level] = true;
+                        quotechar[paren_level] = c;
                     }
-                    break;
-                case    ')' :
-                    if( paren_level <= 1 ) {
-                        finished = true;
-                    }
-                    paren_level--;
-                    break;
-                case    ',' :
-                    if( paren_level == 0 ) {
-                        finished = true;
-                    }
-                    test_for_quote = true;
-                    break;
-                default:
                     test_for_quote = false;
-                    break;
+                } else {
+                    switch( c ) {
+                    case    '(' :
+                        paren_level += 1;
+                        test_for_quote = true;
+                        if( paren_level < MAX_PAREN ) {
+                            instring[paren_level] = false;
+                        } else {
+                            paren_level--;
+                            finished = true;// error msg ??? TBD
+                        }
+                        break;
+                    case    ')' :
+                        paren_level--;
+                        if( paren_level <= 0 ) {
+                            finished = true;
+                            if( pchar < pend ) {
+                                pchar++;    // step over final ')'
+                            }
+                            if( *pchar == '.' ) {
+                                pchar++;    // step over '.' terminating subscripted symbol
+                            }
+                        }
+                        break;
+                    case    ',' :
+                        if( paren_level == 0 ) {
+                            finished = true;
+                        }
+                        test_for_quote = true;
+                        break;
+                    default:
+                        test_for_quote = false;
+                        break;
+                    }
                 }
             }
         }
         if( finished || (pchar >= pend)) {
             break;
         }
+        pchar++;
     }
     return( pchar );
-#undef max_paren
 }
 
 
@@ -185,28 +190,8 @@ static  char    * find_end_of_parm( char * pchar, char * pend )
 static  char    * find_start_of_parm( char * pchar )
 {
     ++pchar;                            // over ( or ,
-    if( *pchar == ' ' ) {
-        while( *pchar == ' ' ) {        // over unquoted blanks
-            ++pchar;
-        }
-    }
+    SkipSpaces( pchar );                // over unquoted blanks
     return( pchar );
-}
-
-
-/***************************************************************************/
-/*  err_info  give some info about error                                   */
-/***************************************************************************/
-
-static  void    err_info( char * * result )
-{
-    g_info_inp_pos();
-    err_count++;
-    show_include_stack();
-
-    **result = '&';                 // result is & to preserve the input
-    *result += 1;
-    **result = '\0';
 }
 
 
@@ -216,30 +201,56 @@ static  void    err_info( char * * result )
 /*                   call corresponding function                           */
 /***************************************************************************/
 
-char  * scr_multi_funcs( char * in, char * end, char ** result, int32_t valsize )
+char * scr_multi_funcs( char * in, char * pstart, char ** result, int32_t valsize )
 {
-    char            *   pchar;
-    int                 rc;
-    size_t              fnlen;
-    scr_function        funcind;
+    bool                found;
+    char                fn[FUN_NAME_LENGTH + 1];
+    char            *   p;              // points into input buffer
+    char            *   pchar;          // points into input buffer
+    char            *   pend;           // points into resbuf
+    char            *   pret;           // end of function in input buffer
+    char            *   ps;             // points into resbuf
+    char            *   resbuf;         // buffer into which parm.a and parm.e point
+    condcode            cc;
+    inp_line        *   in_wk;          // stack of resbufs, one for each parameter
+    int                 funcind;
     int                 k;
     int                 m;
-    char                fn[FUN_NAME_LENGTH + 1];
-    parm                parms[MAX_FUN_PARMS];
     int                 parmcount;
-    condcode            cc;
-    char            *   ps;
-    char            *   resbuf;
-    inp_line        *   in_wk;
+    int                 p_level;
+    int                 rc;
+    parm                parms[MAX_FUN_PARMS];
+    size_t              fnlen;
 
+    /* pstart points to the outer open parenthesis ('(') */
+
+    ProcFlags.unresolved = false;
     in_wk = NULL;                       // no result buffer yet
     rc = 0;
-    fnlen = 0;
     pchar = in + 2;                     // over &' to function name
 
+    // find true end of function
+    p = pstart;
+    p_level = 0;
+    while( *p != '\0' ) {               // to end of buffer
+        if( *p == '(' ) {
+            p_level++;
+        } else if( *p == ')' ) {
+            p_level--;
+            if( p_level == 0 ) {
+                pend = p;               // pend points to outermost ')'
+                break;
+            }
+        }
+        p++;
+    }
+
+    pret = p;                           // save for return (points to final ')')
+
     // collect function name
-    while( *pchar && pchar <= end && is_function_char( *pchar ) ) {
-        fn[fnlen] = toupper( *pchar++ );
+    fnlen = 0;
+    for( ; pchar < pstart; pchar++  ) {
+        fn[fnlen] = *pchar;
         if( fnlen < FUN_NAME_LENGTH ) {
             fnlen++;
         } else {
@@ -248,26 +259,32 @@ char  * scr_multi_funcs( char * in, char * end, char ** result, int32_t valsize 
     }
     fn[fnlen] = '\0';
 
-    if( *pchar != '(' ) {         // open paren does not follow function name
-        g_err( err_func_parm_miss );
-        err_info( result );
-        return( in + 1 );               // avoid endless loop
-    }
-
     // test for valid functionname
-    for( funcind = 0; funcind < SCR_FUNCMAX; ++funcind ) {
-        if( fnlen == scr_functions[funcind].length && !memcmp( fn, scr_functions[funcind].fname, fnlen ) ) {
-            if( input_cbs->fmflags & II_research && GlobFlags.firstpass ) {
-                out_msg( " Function %s found\n", scr_functions[funcind].fname );
+    found = false;
+    for( k = 0; k < SCR_FUNC_MAX; k++ ) {
+        if( fnlen == scr_functions[k].length
+            && !stricmp( fn, scr_functions[k].fname ) ) {
+
+            found = true;
+            if( (input_cbs->fmflags & II_research) && GlobalFlags.firstpass ) {
+                out_msg( " Function %s found\n", scr_functions[k].fname );
                 add_multi_func_research( fn );
             }
             break;
         }
     }
-    if( funcind == SCR_FUNCMAX ) {
-        g_err( err_func_name, fn );
-        err_info( result );
-        return( in + 1 );               // avoid endless loop
+
+    if( !found ) {
+        /* this is not an error in wgml 4.0 */
+        ProcFlags.unresolved = true;
+        return( pstart );
+    }
+    funcind = k;
+
+    /* Missing ')' is only a problem if the function was found */
+
+    if( p_level > 0 ) {      // at least one missing ')'
+        xx_line_err_c( err_func_parm_end, p - 1 );
     }
 
     // collect the mandatory parm(s)
@@ -276,103 +293,89 @@ char  * scr_multi_funcs( char * in, char * end, char ** result, int32_t valsize 
 
         multiletter_function = false;
         var_in_parm = false;
-        parms[k].incomplete = false;
 
-        parms[k].start = find_start_of_parm( pchar );
-        pchar = find_end_of_parm( parms[k].start, end );
+        parms[k].a = find_start_of_parm( pchar );
+        pchar = find_end_of_parm( parms[k].a, pend );
 
         if( multiletter_function || var_in_parm ) {
-            parms[k].incomplete = true;
-        }
-        if( parms[k].incomplete ) {
-
-            resbuf = alloc_resbuf( &in_wk );
-            strcpy( resbuf, parms[k].start);// copy parm
-
-            ps = resbuf + (pchar - parms[k].start);
-            *ps = '\0';
-            parms[k].stop = ps;
-            parms[k].start = resbuf;
-            if( input_cbs->fmflags & II_research && GlobFlags.firstpass ) {
-                out_msg( " Function %s parm %s found\n", scr_functions[funcind].fname, resbuf );
-            }
-
-            resolve_symvar_functions( resbuf );
-
-            parms[k].stop = resbuf + strlen( resbuf );
-            if( input_cbs->fmflags & II_research && GlobFlags.firstpass ) {
-                out_msg( " Function      parm %s return\n", resbuf );
-            }
+            parms[k].redo = true;
         } else {
-            parms[k].stop = pchar;
+            parms[k].redo = false;
         }
-        parms[k + 1].start = pchar + 1;
+        parms[k].e = pchar - 1;
+        parms[k + 1].a = pchar + 1;
 
-        if( (*pchar == ')') || (pchar >= end) ) {
+        if( pchar >= pend ) {
             break;                      // end of parms
         }
     }
     m = k + (k < scr_functions[funcind].parm_cnt);// mandatory parm count
 
     if( m < scr_functions[funcind].parm_cnt ) {
-        g_err( err_func_parm_miss );
-        err_info( result );
-        return( in + 1 );               // avoid endless loop
+        xx_line_err_c( err_func_parm_miss, p - 1 );
     }
 
     // collect the optional parm(s)
-    if( (*pchar == ')') || (pchar >= end) ) {   // no optional parms
+    if( pchar >= pend ) {               // no optional parms
         k = 0;
     } else {
         for( k = 0; k < scr_functions[funcind].opt_parm_cnt; k++ ) {
             multiletter_function = false;
             var_in_parm = false;
-            parms[m + k].incomplete = false;
-            parms[m + k].start = find_start_of_parm( pchar );
-            pchar = find_end_of_parm( parms[m + k].start, end );
+            parms[m + k].a = find_start_of_parm( pchar );
+            pchar = find_end_of_parm( parms[m + k].a, pend );
 
             if( multiletter_function || var_in_parm ) {
-                parms[m + k].incomplete = true;
-            }
-            if( parms[m + k].incomplete ) {
-
-                resbuf = alloc_resbuf( &in_wk );
-                strcpy( resbuf, parms[m + k].start);// copy parm
-
-                ps = resbuf + (pchar - parms[m + k].start);
-                *ps = '\0';
-
-                parms[m + k].stop = ps;
-                parms[m + k].start = resbuf;
-                if( input_cbs->fmflags & II_research && GlobFlags.firstpass ) {
-                    out_msg( " Function %s parm %s found\n",
-                             scr_functions[funcind].fname, resbuf );
-                }
-
-                resolve_symvar_functions( resbuf );
-
-                parms[m + k].stop = resbuf + strlen( resbuf );
-                if( input_cbs->fmflags & II_research && GlobFlags.firstpass ) {
-                    out_msg( " Function      parm %s return\n", resbuf );
-                }
+                parms[m + k].redo = true;
             } else {
-                parms[m + k].stop = pchar;
+                parms[m + k].redo = false;
             }
-            parms[m + k + 1].start = pchar + 1;
+            parms[m + k].e = pchar - 1;
+            parms[m + k + 1].a = pchar + 1;
 
-            if( (*pchar == ')') || (pchar >= end) ) {
+            if( pchar >= pend ) {
                 break;                  // end of parms
             }
         }
         k += (k < scr_functions[funcind].opt_parm_cnt);
     }
     parmcount = m + k;                  // total parmcount
-    parms[parmcount].start = NULL;      // end of parms indicator
+    parms[parmcount].a = NULL;          // end of parms indicator
 
-    if( *pchar != ')' ) {
-        g_err( err_func_parm_end );
-        err_info( result );
-        return( in + 1 );               // avoid endless loop
+    /* Now resolve those parm that need it */
+
+    for( k = 0; k < parmcount; k++ ) {
+        while( parms[k].redo ) {
+            resbuf = alloc_resbuf( &in_wk );
+            strcpy( resbuf, parms[k].a );// copy parm
+
+            ps = resbuf + (parms[k].e - parms[k].a) + 1;
+            *ps = '\0';
+
+            parms[k].e = ps - 1;
+            parms[k].a = resbuf;
+            if( (input_cbs->fmflags & II_research) && GlobalFlags.firstpass ) {
+                out_msg( " Function %s parm %s found\n", scr_functions[funcind].fname, resbuf );
+            }
+
+            if( !resolve_symvar_functions( resbuf, false ) ) break; // no change, we're done
+
+            pend = parms[k].a + strlen( parms[k].a );
+            multiletter_function = false;
+            var_in_parm = false;
+            pend = find_end_of_parm( parms[k].a, pend );
+
+            if( multiletter_function || var_in_parm ) {
+                parms[k].redo = true;
+            } else {
+                parms[k].redo = false;
+            }
+
+            parms[k].e = resbuf + strlen( parms[k].a ) - 1;
+            if( (input_cbs->fmflags & II_research) && GlobalFlags.firstpass ) {
+                out_msg( " Function      parm %s return\n", resbuf );
+            }
+        }
     }
 
     ProcFlags.suppress_msg = multiletter_function;
@@ -390,11 +393,11 @@ char  * scr_multi_funcs( char * in, char * end, char ** result, int32_t valsize 
 
         ProcFlags.unresolved = true;
 
-        return( in + 1 );
+        return( pstart );
     }
 
     ProcFlags.substituted = true;
-    return( pchar + 1 );                // all OK new scan position
+    return( pret + 1 );                 // all OK new scan position
 }
 
 

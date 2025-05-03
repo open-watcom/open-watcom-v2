@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2004-2013 The Open Watcom Contributors. All Rights Reserved.
+*  Copyright (c) 2004-2009 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -28,7 +28,9 @@
 *
 ****************************************************************************/
 
+
 #include "wgml.h"
+
 
 /***************************************************************************/
 /*  script string function &'min(                                          */
@@ -55,27 +57,32 @@ condcode    scr_min( parm parms[MAX_FUN_PARMS], size_t parmcount, char * * resul
     char            *   pend;
     condcode            cc;
     int                 k;
+    int                 len;
     getnum_block        gn;
-    long                minimum;
+    int                 minimum;
 
-    /* unused parameters */ (void)ressize;
+    (void)ressize;
 
     if( (parmcount < 2) || (parmcount > 6) ) {
         cc = neg;
         return( cc );
     }
 
-    minimum = LONG_MAX;
+    minimum = INT_MAX;
 
     gn.ignore_blanks = false;
 
     for( k = 0; k < parmcount; k++ ) {
-        pval = parms[k].start;
-        pend = parms[k].stop;
+
+
+        pval = parms[k].a;
+        pend = parms[k].e;
 
         unquote_if_quoted( &pval, &pend );
 
-        if( pend == pval ) {            // null string nothing to do
+        len = pend - pval + 1;          // length
+
+        if( len <= 0 ) {                // null string nothing to do
             continue;                   // skip empty value
         }
         gn.argstart = pval;
@@ -83,10 +90,7 @@ condcode    scr_min( parm parms[MAX_FUN_PARMS], size_t parmcount, char * * resul
         cc = getnum( &gn );
         if( !(cc == pos  || cc == neg) ) {
             if( !ProcFlags.suppress_msg ) {
-                g_err( err_func_parm, "" );
-                g_info_inp_pos();
-                err_count++;
-                show_include_stack();
+                xx_source_err_c( err_func_parm, "" );
             }
             return( cc );
         }
@@ -95,7 +99,7 @@ condcode    scr_min( parm parms[MAX_FUN_PARMS], size_t parmcount, char * * resul
         }
     }
 
-    *result += sprintf( *result, "%ld", minimum );
+    *result += sprintf( *result, "%d", minimum );
 
     return( pos );
 }

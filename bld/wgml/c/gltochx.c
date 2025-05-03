@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2004-2013 The Open Watcom Contributors. All Rights Reserved.
+*  Copyright (c) 2004-2009 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -28,9 +28,11 @@
 *
 ****************************************************************************/
 
+
 #include "wgml.h"
 
 #include "clibext.h"
+
 
 /***************************************************************************/
 /*   :TOCHx    attributes                                                     */
@@ -110,121 +112,157 @@ const   lay_att     tochx_att[9] =
 /*  lay_tochx                                                              */
 /***************************************************************************/
 
-void    lay_tochx( lay_tag ltag )
+void    lay_tochx( const gmltag * entry )
 {
     char        *   p;
     condcode        cc;
-    int             k;
-    lay_att         curr;
-    att_args        l_args;
     int             cvterr;
+    int             k;
     int             hx_l;
-    int             hx;
+    lay_att         curr;
 
     p = scan_start;
 
-    if( !GlobFlags.firstpass ) {
-        scan_start = scan_stop;
+    if( !GlobalFlags.firstpass ) {
+        scan_start = scan_stop + 1;
         eat_lay_sub_tag();
         return;                         // process during first pass only
     }
-    switch( ltag ) {
-    case LAY_TAG_TOCH0:
+    switch( entry->tagname[4] ) {
+    case   '0':
         hx_l = el_toch0;
         break;
-    case LAY_TAG_TOCH1:
+    case   '1':
         hx_l = el_toch1;
         break;
-    case LAY_TAG_TOCH2:
+    case   '2':
         hx_l = el_toch2;
         break;
-    case LAY_TAG_TOCH3:
+    case   '3':
         hx_l = el_toch3;
         break;
-    case LAY_TAG_TOCH4:
+    case   '4':
         hx_l = el_toch4;
         break;
-    case LAY_TAG_TOCH5:
+    case   '5':
         hx_l = el_toch5;
         break;
-    case LAY_TAG_TOCH6:
+    case   '6':
         hx_l = el_toch6;
         break;
     default:
         hx_l = el_toch6;
-        out_msg( "WGML logic error in glhx.c\n" );
-        err_count++;
         break;
     }
+    memset( &AttrFlags, 0, sizeof( AttrFlags ) );   // clear all attribute flags
     if( ProcFlags.lay_xxx != hx_l ) {
         ProcFlags.lay_xxx = hx_l;
     }
 
-    hx = hx_l - el_toch0;     // construct TOCHx level
+    hx_l = entry->tagname[4] - '0';     // construct TOCHx level
+    if( hx_l > 6 ) {
+        hx_l = 6;
+        out_msg( "WGML logic error in glhx.c\n" );
+        err_count++;
+    }
 
-    cc = get_lay_sub_and_value( &l_args );  // get one with value
+    cc = get_attr_and_value();            // get att with value
     while( cc == pos ) {
         cvterr = -1;
         for( k = 0, curr = tochx_att[k]; curr > 0; k++, curr = tochx_att[k] ) {
 
-            if( !strnicmp( att_names[curr], l_args.start[0], l_args.len[0] ) ) {
-                p = l_args.start[1];
+            if( !strnicmp( att_names[curr], g_att_val.att_name, g_att_val.att_len ) ) {
+                p = g_att_val.val_name;
 
                 switch( curr ) {
                 case   e_group:
-                    cvterr = i_int8( p, curr, &layout_work.tochx[hx].group );
+                    if( AttrFlags.group ) {
+                        xx_line_err_ci( err_att_dup, g_att_val.att_name,
+                            g_att_val.val_name - g_att_val.att_name + g_att_val.val_len);
+                    }
+                    cvterr = i_int8( p, curr, &layout_work.tochx[hx_l].group );
+                    AttrFlags.group = true;
                     break;
                 case   e_indent:
+                    if( AttrFlags.indent ) {
+                        xx_line_err_ci( err_att_dup, g_att_val.att_name,
+                            g_att_val.val_name - g_att_val.att_name + g_att_val.val_len);
+                    }
                     cvterr = i_space_unit( p, curr,
-                                           &layout_work.tochx[hx].indent );
+                                           &layout_work.tochx[hx_l].indent );
+                    AttrFlags.indent = true;
                     break;
                 case   e_skip:
+                    if( AttrFlags.skip ) {
+                        xx_line_err_ci( err_att_dup, g_att_val.att_name,
+                            g_att_val.val_name - g_att_val.att_name + g_att_val.val_len);
+                    }
                     cvterr = i_space_unit( p, curr,
-                                           &layout_work.tochx[hx].skip );
+                                           &layout_work.tochx[hx_l].skip );
+                    AttrFlags.skip = true;
                     break;
                 case   e_pre_skip:
+                    if( AttrFlags.pre_skip ) {
+                        xx_line_err_ci( err_att_dup, g_att_val.att_name,
+                            g_att_val.val_name - g_att_val.att_name + g_att_val.val_len);
+                    }
                     cvterr = i_space_unit( p, curr,
-                                           &layout_work.tochx[hx].pre_skip );
+                                           &layout_work.tochx[hx_l].pre_skip );
+                    AttrFlags.pre_skip = true;
                     break;
                 case   e_post_skip:
+                    if( AttrFlags.post_skip ) {
+                        xx_line_err_ci( err_att_dup, g_att_val.att_name,
+                            g_att_val.val_name - g_att_val.att_name + g_att_val.val_len);
+                    }
                     cvterr = i_space_unit( p, curr,
-                                           &layout_work.tochx[hx].post_skip );
+                                           &layout_work.tochx[hx_l].post_skip );
+                    AttrFlags.post_skip = true;
                     break;
                 case   e_font:
-                    cvterr = i_font_number( p, curr, &layout_work.tochx[hx].font );
-                    if( layout_work.tochx[hx].font >= wgml_font_cnt ) {
-                        layout_work.tochx[hx].font = 0;
+                    if( AttrFlags.font ) {
+                        xx_line_err_ci( err_att_dup, g_att_val.att_name,
+                            g_att_val.val_name - g_att_val.att_name + g_att_val.val_len);
                     }
+                    cvterr = i_font_number( p, curr, &layout_work.tochx[hx_l].font );
+                    if( layout_work.tochx[hx_l].font >= wgml_font_cnt ) {
+                        layout_work.tochx[hx_l].font = 0;
+                    }
+                    AttrFlags.font = true;
                     break;
                 case   e_align:
+                    if( AttrFlags.align ) {
+                        xx_line_err_ci( err_att_dup, g_att_val.att_name,
+                            g_att_val.val_name - g_att_val.att_name + g_att_val.val_len);
+                    }
                     cvterr = i_space_unit( p, curr,
-                                           &layout_work.tochx[hx].align );
+                                           &layout_work.tochx[hx_l].align );
+                    AttrFlags.align = true;
                     break;
                 case   e_display_in_toc:
+                    if( AttrFlags.display_in_toc ) {
+                        xx_line_err_ci( err_att_dup, g_att_val.att_name,
+                            g_att_val.val_name - g_att_val.att_name + g_att_val.val_len);
+                    }
                     cvterr = i_yes_no( p, curr,
-                                     &layout_work.tochx[hx].display_in_toc );
+                                     &layout_work.tochx[hx_l].display_in_toc );
+                    AttrFlags.display_in_toc = true;
                     break;
                 default:
-                    out_msg( "WGML logic error.\n");
-                    cvterr = true;
-                    break;
+                    internal_err( __FILE__, __LINE__ );
                 }
                 if( cvterr ) {          // there was an error
-                    err_count++;
-                    g_err( err_att_val_inv );
-                    file_mac_info();
+                    xx_err( err_att_val_inv );
                 }
                 break;                  // break out of for loop
             }
         }
         if( cvterr < 0 ) {
-            err_count++;
-            g_err( err_att_name_inv );
-            file_mac_info();
+            xx_err( err_att_name_inv );
         }
-        cc = get_lay_sub_and_value( &l_args );  // get one with value
+        cc = get_attr_and_value();            // get att with value
     }
-    scan_start = scan_stop;
+    scan_start = scan_stop + 1;
     return;
 }
 

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2004-2013 The Open Watcom Contributors. All Rights Reserved.
+*  Copyright (c) 2004-2009 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -28,7 +28,9 @@
 *
 ****************************************************************************/
 
+
 #include "wgml.h"
+
 
 /***************************************************************************/
 /*  script string function &'strip(                                        */
@@ -57,6 +59,7 @@ condcode    scr_strip( parm parms[MAX_FUN_PARMS], size_t parmcount, char * * res
     char            *   pend;
     char            *   pa;
     char            *   pe;
+    int                 len;
     char                stripchar;
     char                type;
 
@@ -64,12 +67,14 @@ condcode    scr_strip( parm parms[MAX_FUN_PARMS], size_t parmcount, char * * res
         return( neg );
     }
 
-    pval = parms[0].start;
-    pend = parms[0].stop;
+    pval = parms[0].a;
+    pend = parms[0].e;
 
     unquote_if_quoted( &pval, &pend );
 
-    if( pend == pval ) {                // null string nothing to do
+    len = pend - pval + 1;              // default length
+
+    if( len <= 0 ) {                    // null string nothing to do
         **result = '\0';
         return( pos );
     }
@@ -78,12 +83,12 @@ condcode    scr_strip( parm parms[MAX_FUN_PARMS], size_t parmcount, char * * res
     type      = 'b';                    // default strip both ends
 
     if( parmcount > 1 ) {               // evalute type
-        if( parms[1].stop > parms[1].start ) {// type
-            pa  = parms[1].start;
-            pe  = parms[1].stop;
+        if( parms[1].e >= parms[1].a ) {// type
+            pa  = parms[1].a;
+            pe  = parms[1].e;
 
             unquote_if_quoted( &pa, &pe );
-            type = tolower( *pa );
+            type = my_tolower( *pa );
 
             switch( type ) {
             case   'b':
@@ -93,10 +98,7 @@ condcode    scr_strip( parm parms[MAX_FUN_PARMS], size_t parmcount, char * * res
                 break;
             default:
                 if( !ProcFlags.suppress_msg ) {
-                    g_err( err_func_parm, "2 (type)" );
-                    g_info_inp_pos();
-                    err_count++;
-                    show_include_stack();
+                    xx_source_err_c( err_func_parm, "2 (type)" );
                 }
                 return( neg );
                 break;
@@ -105,9 +107,9 @@ condcode    scr_strip( parm parms[MAX_FUN_PARMS], size_t parmcount, char * * res
     }
 
     if( parmcount > 2 ) {               // stripchar
-        if( parms[2].stop > parms[2].start ) {
-            pa  = parms[2].start;
-            pe  = parms[2].stop;
+        if( parms[2].e >= parms[2].a ) {
+            pa  = parms[2].a;
+            pe  = parms[2].e;
 
             unquote_if_quoted( &pa, &pe );
             stripchar = *pa;
@@ -115,14 +117,14 @@ condcode    scr_strip( parm parms[MAX_FUN_PARMS], size_t parmcount, char * * res
     }
 
     if( type != 't' ) {                 // strip leading requested
-        for( ; pval < pend; pval++ ) {
+        for( ; pval <= pend; pval++ ) {
             if( *pval != stripchar ) {
                 break;
             }
         }
     }
 
-    for( ; pval < pend; pval++ ) {
+    for( ; pval <= pend; pval++ ) {
         if( ressize <= 0 ) {
             break;
         }

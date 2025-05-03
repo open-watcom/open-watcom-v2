@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2004-2013 The Open Watcom Contributors. All Rights Reserved.
+*  Copyright (c) 2004-2009 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -29,6 +29,7 @@
 *  comments are from script-tso.txt
 ****************************************************************************/
 
+
 #include "wgml.h"
 
 
@@ -45,6 +46,10 @@
 /* blank line is displayed.   The text  of the line displayed is modified */
 /* by the .TR (Translate) characters currently in effect.                 */
 /*                                                                        */
+/* NOTES: in wgml 4.0, input translation (.TI) is not used with .TY       */
+/*        in wgml 4.0, output translation (.TR) is not used with .TY      */
+/*        in wgml 4.0, initial blank spaces are not output                */
+/*                                                                        */
 /* EXAMPLES                                                               */
 /* (1) The .TY  control is useful  immediately preceding a  .TE (Terminal */
 /*     Input) or .RV (Read Variable)  control word,  as a prompt for what */
@@ -59,16 +64,12 @@
 
 void    scr_ty( void )
 {
-    char    *   p = scan_start + 1;
+    char    *   p;
 
-    while( *p == ' ' ) {                // wgml 4.0 ignores leading blanks
-        p++;                            // let's do the same
-    }
-    if( *p == '\0' ) {
-        p--;
-    }
-    out_msg( "%s\n", p );        // no output translation, add if needed TBD
-    scan_restart = scan_stop;
+    p = scan_start;
+    SkipSpaces( p );
+    out_msg( "%s\n", p );
+    scan_restart = scan_stop + 1;
     return;
 }
 

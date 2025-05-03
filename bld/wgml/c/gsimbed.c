@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2004-2013 The Open Watcom Contributors. All Rights Reserved.
+*  Copyright (c) 2004-2009 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -28,13 +28,14 @@
 *
 ****************************************************************************/
 
+
 #include "wgml.h"
 
 
 /***************************************************************************/
 /*  .im   processing  IMBED                                                */
 /*         .im filename                                                    */
-/*         .im n         -> sysusr0n.gml                                   */
+/*         .im n         -> SYSUSR0n.GML                                   */
 /*                                                                         */
 /*  For reference the description from script tso is included, but is only */
 /*  partly relevant for the PC.                                            */
@@ -159,20 +160,17 @@ void    scr_im( void )
     getnum_block    gn;
 
     p = scan_start;
-    while( *p == ' ' ) {
-        p++;
-    }
-
+    SkipSpaces( p );
     gn.argstart = p;
-    gn.argstop = scan_stop;
+    gn.argstop  = scan_stop;
     gn.ignore_blanks = 0;
 
     cc = getnum( &gn );
 
-    if( (cc == pos) && (gn.result < 10) ) { // include sysusr0n.gml
+    if( (cc == pos) && (gn.result < 10) ) { // include SYSUSR0x.GML
 
         close_pu_file( gn.result );     // if still open
-        get_pu_file_name( token_buf, buf_size, gn.result );
+        strcpy( token_buf, get_workfile_name( gn.result ) );
 
     } else {
         p = gn.argstart;
@@ -184,14 +182,19 @@ void    scr_im( void )
             quote = ' ';                // error??
         }
         fnstart = p;
-        while( *p && *p != quote ) {
+        while( *p != '\0' && *p != quote ) {
             ++p;
         }
         *p = '\0';
         strcpy( token_buf, fnstart );
     }
 
-    scan_restart = scan_stop;
+    if( p != scan_stop ) {
+        new_file_parms = p + 1;
+    } else {
+        new_file_parms = NULL;
+    }
+    scan_restart = scan_stop + 1;
     ProcFlags.newLevelFile = 1;
     line_from = LINEFROM_DEFAULT;
     line_to   = LINETO_DEFAULT;

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2004-2013 The Open Watcom Contributors. All Rights Reserved.
+*  Copyright (c) 2004-2009 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -28,9 +28,11 @@
 *                   all those with only font attribute
 ****************************************************************************/
 
+
 #include "wgml.h"
 
 #include "clibext.h"
+
 
 /***************************************************************************/
 /*                     several  attributes  with only font as value        */
@@ -38,108 +40,95 @@
 /* :DT :GT :DTHD :CIT :GD :DDHD :IXPGNUM :IXMAJOR                          */
 /*                                                                         */
 /***************************************************************************/
+
 const   lay_att     xx_att[2] =
     { e_font, e_dummy_zero };
 
 
-
-void    lay_xx( lay_tag ltag )
+void    lay_xx( const gmltag * entry )
 {
-    char            *p;
+    char        *   p;
     condcode        cc;
+    font_number *   fontptr;
+    int             cvterr;
     int             k;
     lay_att         curr;
-    att_args        l_args;
-    int             cvterr;
     lay_sub         x_tag;
-    font_number     *fontptr;
 
     p = scan_start;
     cvterr = false;
 
-    if( !GlobFlags.firstpass ) {
-        scan_start = scan_stop;
+    if( !GlobalFlags.firstpass ) {
+        scan_start = scan_stop + 1;
         eat_lay_sub_tag();
         return;                         // process during first pass only
     }
-    switch( ltag ) {
-    case LAY_TAG_CIT:
+    if( strcmp( "CIT", entry->tagname ) == 0 ) {
         x_tag = el_cit;
         fontptr = &layout_work.cit.font;
-        break;
-    case LAY_TAG_DTHD:
+    } else if( strcmp( "DTHD", entry->tagname ) == 0 ) {
         x_tag = el_dthd;
         fontptr = &layout_work.dthd.font;
-        break;
-    case LAY_TAG_DT:
+    } else if( strcmp( "DT", entry->tagname ) == 0 ) {
         x_tag = el_dt;
         fontptr = &layout_work.dt.font;
-        break;
-    case LAY_TAG_GT:
+    } else if( strcmp( "GT", entry->tagname ) == 0 ) {
         x_tag = el_gt;
         fontptr = &layout_work.gt.font;
-        break;
-    case LAY_TAG_GD:
+    } else if( strcmp( "GD", entry->tagname ) == 0 ) {
         x_tag = el_gd;
         fontptr = &layout_work.gd.font;
-        break;
-    case LAY_TAG_DDHD:
+    } else if( strcmp( "DDHD", entry->tagname ) == 0 ) {
         x_tag = el_ddhd;
         fontptr = &layout_work.ddhd.font;
-        break;
-    case LAY_TAG_IXPGNUM:
+    } else if( strcmp( "IXPGNUM", entry->tagname ) == 0 ) {
         x_tag = el_ixpgnum;
         fontptr = &layout_work.ixpgnum.font;
-        break;
-    case LAY_TAG_IXMAJOR:
+    } else if( strcmp( "IXMAJOR", entry->tagname ) == 0 ) {
         x_tag = el_ixmajor;
         fontptr = &layout_work.ixmajor.font;
-        break;
-    default:
-         out_msg( "WGML logic error glxxfont.c.\n");
-         file_mac_info();
-         err_count++;
-        break;
+    } else {
+        internal_err( __FILE__, __LINE__ );
     }
+    memset( &AttrFlags, 0, sizeof( AttrFlags ) );   // clear all attribute flags
     if( ProcFlags.lay_xxx != x_tag ) {
         ProcFlags.lay_xxx = x_tag;
     }
-    cc = get_lay_sub_and_value( &l_args );  // get att with value
+    cc = get_attr_and_value();            // get att with value
     while( cc == pos ) {
         cvterr = -1;
         for( k = 0, curr = xx_att[k]; curr > 0; k++, curr = xx_att[k] ) {
 
-            if( !strnicmp( att_names[curr], l_args.start[0], l_args.len[0] ) ) {
-                p = l_args.start[1];
+            if( !strnicmp( att_names[curr], g_att_val.att_name, g_att_val.att_len ) ) {
+                p = g_att_val.val_name;
 
                 switch( curr ) {
                 case   e_font:
+                    if( AttrFlags.font ) {
+                        xx_line_err_ci( err_att_dup, g_att_val.att_name,
+                            g_att_val.val_name - g_att_val.att_name + g_att_val.val_len);
+                    }
                     cvterr = i_font_number( p, curr, fontptr );
                     if( *fontptr >= wgml_font_cnt ) {
                         *fontptr = 0;
                     }
+                    AttrFlags.font = true;
                     break;
                 default:
-                    out_msg( "WGML logic error.\n" );
-                    cvterr = true;
-                    break;
+                    internal_err( __FILE__, __LINE__ );
                 }
                 if( cvterr ) {          // there was an error
-                    err_count++;
-                    g_err( err_att_val_inv );
-                    file_mac_info();
+                    xx_err( err_att_val_inv );
                 }
                 break;                  // break out of for loop
             }
         }
         if( cvterr < 0 ) {
-            err_count++;
-            g_err( err_att_name_inv );
-            file_mac_info();
+            xx_err( err_att_name_inv );
         }
-        cc = get_lay_sub_and_value( &l_args );  // get att with value
+        cc = get_attr_and_value();            // get att with value
     }
-    scan_start = scan_stop;
+    scan_start = scan_stop + 1;
     return;
 }
 

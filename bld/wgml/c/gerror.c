@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2004-2022 The Open Watcom Contributors. All Rights Reserved.
+*  Copyright (c) 2004-2008 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -28,11 +28,9 @@
 *
 ****************************************************************************/
 
-#include <stdarg.h>
+
 #include "wgml.h"
-
-#include "clibext.h"
-
+#include <stdarg.h>
 
 #define MAX_ERR_LEN     1020
 
@@ -40,11 +38,10 @@ static  char    err_buf[MAX_ERR_LEN + 2];   // +2 for \n and \0
 static  char    str_buf[MAX_ERR_LEN + 2];
 
 
-
 void g_suicide( void )
 {
     out_msg( "\n\nWGML suicide\n\n" );
-    if( GlobFlags.research ) {        // TBD
+    if( GlobalFlags.research ) {        // TBD
 
         print_macro_dict( macro_dict, true );
 
@@ -60,8 +57,7 @@ void g_suicide( void )
         print_sym_dict( sys_dict );
     }
     out_msg( "\n\nWGML suicide\n\n" );
-//    flushall();                         // TBD
-//    fcloseall();                        // TBD
+    fflush( NULL );
     if( environment ) {
         longjmp( *environment, 1 );
     }
@@ -94,6 +90,11 @@ static void g_msg_var( msg_ids errornum, int sev, va_list arglist )
     char            *   start;
     char            *   end;
 
+    if( errornum == ERR_DUMMY ) {
+        /* dont print anything */
+        return;
+    }
+
     switch( sev ) {
 #if 0
     case SEV_INFO:
@@ -118,27 +119,23 @@ static void g_msg_var( msg_ids errornum, int sev, va_list arglist )
         break;
     }
 
-    switch( errornum ) {
-    case ERR_STR_NOT_FOUND:
+    if( errornum == ERR_STR_NOT_FOUND ) {
         /* this message means the error strings cannot be obtained from
          * the exe so its text is hard coded */
-        sprintf( err_buf, "%s %d: %nResource strings not found", prefix,
-                    errornum, &len );
-        break;
-    case ERR_DUMMY:
-        /* dont print anything */
-        return;
-    default:
+        strcpy( err_buf, "Resource strings not found" );
+    } else {
         get_msg( errornum, err_buf, sizeof( err_buf ) );
-        vsprintf( str_buf, err_buf, arglist );
-        if( *prefix == '\0' ) {
-            // no prefix and errornumber
-            sprintf( err_buf, "%n%s", &len, str_buf );
-        } else {
-            sprintf( err_buf, "%s %d: %n%s", prefix, errornum, &len, str_buf );
-        }
-        break;
     }
+    vsprintf( str_buf, err_buf, arglist );
+    len = 0;
+    err_buf[0] = '\0';
+    if( *prefix != '\0' ) {
+        len = sprintf( err_buf, "%s %d: ", prefix, errornum );
+        if( len < 0 ) {
+            len = 0;
+        }
+    }
+    strcat( err_buf + len, str_buf );
 
     if( !supp_line ) {    // save points to the ":" or is NULL
         save = strchr( err_buf, ':' );
@@ -153,7 +150,8 @@ static void g_msg_var( msg_ids errornum, int sev, va_list arglist )
     } else {
         while( strlen( start ) > MAX_LINE_LEN - msg_indent ) {
             end = start + MAX_LINE_LEN - msg_indent;
-            while( !isspace( *end ) && end > start ) end--;
+            while( !my_isspace( *end ) && end > start )
+                end--;
             if( end != start )  {
                 *end = '\0';
             } else {
@@ -166,7 +164,8 @@ static void g_msg_var( msg_ids errornum, int sev, va_list arglist )
         out_msg( "%*s%s\n", msg_indent, "", start );
         if( save != NULL ) {    // set msg_indent for follow-on line
             save++;             // step over the ":"
-            while( isspace( *save ) ) save++;   // step over any spaces
+            while( my_isspace( *save ) )    // step over any spaces
+                save++;
             msg_indent = save - err_buf;
         }
     }
@@ -226,19 +225,31 @@ void g_info_lm( const msg_ids num, ... )
 }
 
 /***************************************************************************/
-/*  informational about line position in macro/file                        */
+/*  these functions do output that is controlled by GlobalFlags.research   */
 /***************************************************************************/
 
-void g_info_inp_pos( void )
+void g_info_research( const msg_ids num, ... )
 {
-    char        linestr[MAX_L_AS_STR];
+    va_list args;
 
-    if( input_cbs->fmflags & II_tag_mac ) {
-        sprintf( linestr, "%lu", (unsigned long)input_cbs->s.m->lineno );
-        g_info( inf_mac_line, linestr, input_cbs->s.m->mac->name );
-    } else {
-        sprintf( linestr, "%lu", (unsigned long)input_cbs->s.f->lineno );
-        g_info( inf_file_line, linestr, input_cbs->s.f->filename );
+    if( GlobalFlags.research ) {
+        va_start( args, num );
+        msg_indent = 0;
+        g_msg_var( num, SEV_INFO, args );
+        va_end( args );
     }
+    return;
 }
 
+
+void out_msg_research( const char *msg, ... )
+{
+    va_list args;
+
+    if( GlobalFlags.research ) {
+        va_start( args, msg );
+        vprintf( msg, args );
+        va_end( args );
+    }
+    return;
+}

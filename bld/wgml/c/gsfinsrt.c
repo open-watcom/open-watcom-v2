@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2004-2013 The Open Watcom Contributors. All Rights Reserved.
+*  Copyright (c) 2004-2009 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -28,7 +28,9 @@
 *
 ****************************************************************************/
 
+
 #include "wgml.h"
+
 
 /***************************************************************************/
 /*  script string function &'insert(                                       */
@@ -61,6 +63,7 @@ condcode    scr_insert( parm parms[MAX_FUN_PARMS], size_t parmcount, char * * re
     condcode            cc;
     int                 k;
     int                 n;
+    int                 len;
     getnum_block        gn;
     char            *   ptarget;
     char            *   ptargetend;
@@ -70,17 +73,21 @@ condcode    scr_insert( parm parms[MAX_FUN_PARMS], size_t parmcount, char * * re
         return( cc );
     }
 
-    pval = parms[0].start;              // string to insert
-    pend = parms[0].stop;
+    pval = parms[0].a;                // string to insert
+    pend = parms[0].e;
 
     unquote_if_quoted( &pval, &pend );
 
-    ptarget    = parms[1].start;        // string to be modified
-    ptargetend = parms[1].stop;
+    len = pend - pval + 1;              // length to insert
+
+
+    ptarget    = parms[1].a;          // string to be modified
+    ptargetend = parms[1].e;
 
     unquote_if_quoted( &ptarget, &ptargetend );
 
-    if( pend == pval ) {                // null string insert nothing to do
+
+    if( len <= 0 ) {                    // null string insert nothing to do
         **result = '\0';
         return( pos );
     }
@@ -89,16 +96,13 @@ condcode    scr_insert( parm parms[MAX_FUN_PARMS], size_t parmcount, char * * re
     gn.ignore_blanks = false;
 
     if( parmcount > 2 ) {               // evalute startpos
-        if( parms[2].stop > parms[2].start ) {
-            gn.argstart = parms[2].start;
-            gn.argstop  = parms[2].stop;
+        if( parms[2].e >= parms[2].a ) {
+            gn.argstart = parms[2].a;
+            gn.argstop  = parms[2].e;
             cc = getnum( &gn );
             if( cc != pos ) {
                 if( !ProcFlags.suppress_msg ) {
-                    g_err( err_func_parm, "3 (startpos)" );
-                    g_info_inp_pos();
-                    err_count++;
-                    show_include_stack();
+                    xx_source_err_c( err_func_parm, "3 (startpos)" );
                 }
                 return( cc );
             }
@@ -107,7 +111,7 @@ condcode    scr_insert( parm parms[MAX_FUN_PARMS], size_t parmcount, char * * re
     }
 
     k = 0;
-    while( (k < n) && (ptarget < ptargetend) && (ressize > 0) ) { // copy up to startpos
+    while( (k < n) && (ptarget <= ptargetend) && (ressize > 0) ) { // copy up to startpos
         **result = *ptarget++;
         *result += 1;
         k++;
@@ -119,13 +123,13 @@ condcode    scr_insert( parm parms[MAX_FUN_PARMS], size_t parmcount, char * * re
         ressize--;
     }
 
-    while( (pval < pend) && (ressize > 0) ) { // insert new string
+    while( (pval <= pend) && (ressize > 0) ) { // insert new string
         **result = *pval++;
         *result += 1;
         ressize--;
     }
 
-    while( (ptarget < ptargetend) && (ressize > 0) ) { // copy rest (if any)
+    while( (ptarget <= ptargetend) && (ressize > 0) ) { // copy rest (if any)
         **result = *ptarget++;
         *result += 1;
         ressize--;

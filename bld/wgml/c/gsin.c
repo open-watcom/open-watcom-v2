@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2004-2013 The Open Watcom Contributors. All Rights Reserved.
+*  Copyright (c) 2004-2009 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -29,7 +29,9 @@
 *  comments are from script-tso.txt
 ****************************************************************************/
 
+
 #include "wgml.h"
+
 
 /***************************************************************************/
 /*  round indent to get whole characters                                   */
@@ -38,7 +40,7 @@
 
 static  int32_t round_indent( su * work )
 {
-    return( conv_hor_unit( work ) * CPI / g_resh * g_resh / CPI );
+    return( conv_hor_unit( work, g_curr_font ) * CPI / g_resh * g_resh / CPI );
 }
 
 /***************************************************************************/
@@ -80,7 +82,6 @@ static  int32_t round_indent( su * work )
 /* ! .of .il .un are not used in OW documentation                          */
 /* ! a right indent value of the form "0-i" is not used / implemented      */
 /*                                                                         */
-/*                                                                         */
 /***************************************************************************/
 
 void    scr_in( void )
@@ -94,19 +95,17 @@ void    scr_in( void )
     int32_t         newindent;
     int32_t         newindentr;
 
+    static  int32_t oldindent;
+
     cwcurr[0] = SCR_char;
     cwcurr[1] = 'i';
     cwcurr[2] = 'n';
     cwcurr[3] = '\0';
 
     p = scan_start;
-    while( *p && *p == ' ' ) {          // next word start
-        p++;
-    }
+    SkipSpaces( p );                    // next word start
     pa = p;
-    while( *p && *p != ' ' ) {          // end of word
-        p++;
-    }
+    SkipNonSpaces( p );                 // end of word
     len = p - pa;
     if( len == 0 ) {                    // omitted means reset to default
         newindent = 0;
@@ -121,31 +120,21 @@ void    scr_in( void )
             p = pa;
             scanerr = cw_val_to_su( &p, &indentwork );
             if( scanerr ) {
-                g_err( err_miss_inv_opt_value, cwcurr, pa );
-                err_count++;
-                show_include_stack();
+                xx_line_err_c( err_spc_not_valid, pa );
             } else {
                 newindent = round_indent( &indentwork );
-                if( indentwork.su_relative ) {
-                    newindent += g_indent;
-                }
-                if( newindent < 0 ) {
-                    newindent = 0;      // minimum value
-                }
             }
         }
-        while( *p == ' ' ) {
-            p++;
-        }
-        if( *p == '*' ) {               // keep old indentr value
+        SkipSpaces( p );
+        if( *p == '\0' ) {              // zero right indent
+            newindentr = 0;
+        } else if( *p == '*' ) {        // keep old indentr value
             p++;
         } else {
             pa = p;
             scanerr = cw_val_to_su( &p, &indentwork );
             if( scanerr ) {
-                g_err( err_miss_inv_opt_value, cwcurr, pa );
-                err_count++;
-                show_include_stack();
+                xx_line_err_cc( err_miss_inv_opt_value, cwcurr, pa );
             } else {
 
             /***************************************************************/
@@ -153,7 +142,7 @@ void    scr_in( void )
             /***************************************************************/
 
                 if( indentwork.su_whole + indentwork.su_dec != 0) {
-                    newindentr = g_indentr + round_indent( &indentwork );
+                    newindentr += round_indent( &indentwork );
                 } else {
                     newindentr = 0;
                 }
@@ -163,9 +152,28 @@ void    scr_in( void )
     g_indent = newindent;
     g_indentr = newindentr;
 
-    g_page_right = g_page_right_org + g_indentr;
-    ProcFlags.keep_left_margin = false;
-    set_h_start();                      // apply new values
+    /* Reset margin(s) to reflect the current IN offsets */
+
+    if( indentwork.su_relative ) {
+        if( ProcFlags.in_reduced ) {
+            t_page.cur_left = oldindent;
+        }
+        t_page.cur_left += g_indent;
+    } else {
+        t_page.cur_left = g_indent;
+    }
+    t_page.max_width = t_page.last_pane->col_width + g_indentr;
+
+    /* Reduce t_page.cur_left to 0 if g_indent made it negative */
+
+    ProcFlags.in_reduced = false;       // flag, if on, is active until next IN
+    if( ((int32_t) t_page.page_left + t_page.cur_left) < 0 ) {
+        oldindent = t_page.cur_left;
+        t_page.cur_left = 0;
+        ProcFlags.in_reduced = true;        // set flag to record virtual reduction of in value
+    }
+    t_page.cur_width = t_page.cur_left;
+
     scan_restart = p;
     return;
 }

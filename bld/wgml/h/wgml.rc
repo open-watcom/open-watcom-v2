@@ -1,19 +1,21 @@
-#include "wgmlmsg.rh"
-#include "wreslang.rh"
+#define         MSG_BASE        0
+
+#include "wgmlmsgs.gh"
+#include "wreslang.h"
 
 STRINGTABLE
 BEGIN
-    #define pick(c,e,j) (c + RLE_ENGLISH * MSG_LANG_SPACING), [ e ]
 
+    #define pick( code, e_string, j_string )  \
+            (code+RLE_ENGLISH*MSG_LANG_SPACING), e_string
     #include "wgmlerr.msg"
     #include "wgml.msg"
-
     #undef pick
 
-    #define pick(c,e,j) (c + RLE_JAPANESE * MSG_LANG_SPACING), [ j ]
-
+    #define pick( code, e_string, j_string )  \
+            (code+RLE_JAPANESE*MSG_LANG_SPACING), j_string
     #include "wgmlerr.msg"
     #include "wgml.msg"
-
     #undef pick
+
 END

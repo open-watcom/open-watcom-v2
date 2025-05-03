@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2004-2013 The Open Watcom Contributors. All Rights Reserved.
+*  Copyright (c) 2004-2009 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -29,17 +29,19 @@
 *               comments taken from script-tso.txt
 ****************************************************************************/
 
+
 #include "wgml.h"
 
 #include "clibext.h"
+
 
 /***************************************************************************/
 /*  for evaluation term in .if control word                                */
 /***************************************************************************/
 
 typedef struct termcb {
-    long        term_number;            // value only if numeric
-    char    *   term_string;            // value as string
+    int         term_number;            // value only if numeric
+    char        *term_string;           // value as string
     size_t      term_length;            // length of string
     bool        numeric;                // term  is numeric
 } termcb;
@@ -69,21 +71,22 @@ typedef enum logop {
 
 void    show_ifcb( char * txt, ifcb * cb ) {
     if( cb->if_level ) {
-        out_msg( "%-8s %dL%d %c%c %s %s %s cw(l,i,te,d) %d,%d,%d,%d kp %d\n",
-             txt,
-             inc_level,
-             cb->if_level,
-             cb->if_flags[cb->if_level].iftrue?'t':' ',
-             cb->if_flags[cb->if_level].iffalse?'f':' ',
+        out_msg( "%-8s %dL%d %c%c %s %s %s %s %s %s %s %s kp %d\n",
+            txt,
+            inc_level,
+            cb->if_level,
+            cb->if_flags[cb->if_level].iftrue?'t':' ',
+            cb->if_flags[cb->if_level].iffalse?'f':' ',
 
-             cb->if_flags[cb->if_level].ifthen?"th":"  ",
-             cb->if_flags[cb->if_level].ifelse?"el":"  ",
-             cb->if_flags[cb->if_level].ifdo?"do":"  ",
-             cb->if_flags[cb->if_level].iflast,
-             cb->if_flags[cb->if_level].ifcwif,
-             cb->if_flags[cb->if_level].ifcwte,
-             cb->if_flags[cb->if_level].ifcwdo,
-             ProcFlags.keep_ifstate
+            cb->if_flags[cb->if_level].ifthen?"th":"  ",
+            cb->if_flags[cb->if_level].ifelse?"el":"  ",
+            cb->if_flags[cb->if_level].ifdo?"do":"  ",
+            cb->if_flags[cb->if_level].iflast?"last":"    ",
+            cb->if_flags[cb->if_level].ifcwif?"cwif":"    ",
+            cb->if_flags[cb->if_level].ifcwte?"cwte":"    ",
+            cb->if_flags[cb->if_level].ifcwdo?"cwdo":"    ",
+            cb->if_flags[cb->if_level].ifindo?"indo":"    ",
+            ProcFlags.keep_ifstate
           );
     }
 }
@@ -133,9 +136,10 @@ static condcode gargrelop( relop * r )
             break;
         }
     } else {
-        char    c2 = tolower( *(tok_start + 1) );// second char of relation operator
+        char    c2;
 
-        switch( tolower( *tok_start ) ) {   // relop is 2 chars
+        c2 = my_tolower( *(tok_start + 1) );    // second char of relation operator
+        switch( my_tolower( *tok_start ) ) {    // relop is 2 chars
         case '^'  :
             if( c2 == '=' ) {
                 *r = NE;
@@ -217,10 +221,10 @@ static condcode gargterm( termcb * t )
     condcode        cc;
 
     gn.argstart = scan_start;
-    gn.argstop = scan_stop;
+    gn.argstop  = scan_stop;
     gn.ignore_blanks = 0;
 
-    cc = getnum( &gn );                // try to get numeric value
+    cc = getnum ( &gn );                // try to get numeric value
     if( cc == notnum ) {
         t->numeric = false;
         t->term_number = 0;
@@ -235,17 +239,18 @@ static condcode gargterm( termcb * t )
             }
         }
         // prepare string   quoted or unquoted
-        t->term_string  = mem_alloc( arg_flen + 1 );
-        strncpy( t->term_string, tok_start, arg_flen );
-        t->term_string[arg_flen] = '\0';
-        t->term_length  = arg_flen;
+        t->term_string = mem_tokdup( tok_start, arg_flen );
+        t->term_length = arg_flen;
     } else {
-        scan_start = gn.argstart;
+        if( gn.argstart > gn.argstop ) {
+            scan_start = gn.argstop;        // enforce end of logical record
+        } else {
+            scan_start = gn.argstart;
+        }
         t->numeric = true;
         t->term_number = gn.result;
-        t->term_string  = mem_alloc( sizeof( gn.resultstr ) );
-        strcpy( t->term_string, gn.resultstr );
-        t->term_length  = gn.length;
+        t->term_string = mem_tokdup( gn.resultstr, gn.length );
+        t->term_length = gn.length;
     }
     return( cc );
 }
@@ -258,8 +263,8 @@ static condcode gargterm( termcb * t )
 static bool ifcompare( termcb * t1, relop r, termcb * t2 )
 {
     bool        result;
-    long        term1;
-    long        term2;
+    int         term1;
+    int         term2;
 
     term1 = t1->term_number;            // assume integers
     term2 = t2->term_number;
@@ -290,9 +295,9 @@ static bool ifcompare( termcb * t1, relop r, termcb * t2 )
                 term1 = term2;              // make compare equal true
             } else {
                 if( t1->term_length < t2->term_length ) {
-                    term1 = LONG_MIN;       // shorter is smaller
+                    term1 = INT_MIN;       // shorter is smaller
                 } else {
-                    term2 = LONG_MIN;
+                    term2 = INT_MIN;
                 }
             }
         }
@@ -391,23 +396,30 @@ static bool ifcompare( termcb * t1, relop r, termcb * t2 )
 
 void    scr_if( void )
 {
-    ifcb            *   cb;             // if stack ptr
-
-    condcode        cct1;
-    condcode        cct2;
-    condcode        ccrelop;
-    termcb          t1;                 // first argument
-    termcb          t2;                 // second argument
-    relop           relation;           // the relation between t1 and t2
-    logop           logical;            // if more than 1 condition
     bool            ifcond;             // current condition
     bool            totalcondition;     // resultant condition
     bool            firstcondition;     // first comparison .if
+    char        *   p;
+    condcode        cct1;
+    condcode        cct2;
+    condcode        ccrelop;
+    ifcb        *   cb;                 // if stack ptr
+    logop           logical;            // if more than 1 condition
+    relop           relation;           // the relation between t1 and t2
+    termcb          t1;                 // first argument
+    termcb          t2;                 // second argument
 
     scan_err = false;
 
     firstcondition = true;              // first 2 terms to compare
-    garginit();                         // find end of control word
+    p = scan_start;
+    tok_start = NULL;
+
+    process_late_subst(scan_start);
+
+    if( *(p + strlen(p) - 1) == CONT_char ) {  // remove trailing continue character
+        *(p + strlen(p) - 1) = '\0';
+    }
 
     cb = input_cbs->if_cb;              // get .if control block
     cb->if_flags[cb->if_level].ifcwif = false;  // reset cwif switch
@@ -419,20 +431,10 @@ void    scr_if( void )
         cct2    = gargterm( &t2 );      // get term 2
 
         if( (cct1 == no) || (cct2 == no) ) {
-            scan_err = true;
-            err_count++;
-            g_err( err_if_term );
-            g_info_inp_pos();
-            show_include_stack();
-            return;
+            xx_source_err( err_if_term );
         }
         if( ccrelop != pos ) {
-            scan_err = true;
-            err_count++;
-            g_err( err_if_relop );
-            g_info_inp_pos();
-            show_include_stack();
-            return;
+            xx_source_err( err_if_relop );
         }
 
         // terms and operator ok now compare
@@ -450,12 +452,7 @@ void    scr_if( void )
                 cb->if_flags[cb->if_level].iftrue = false;  // cond not yet true
                 cb->if_flags[cb->if_level].iffalse = false; // cond not yet false
             } else {
-                scan_err = true;
-                g_err( err_if_nesting );
-                g_info_inp_pos();
-                show_include_stack();
-                err_count++;
-                return;
+                xx_source_err( err_if_nesting );
             }
             totalcondition = ifcond;
         } else {
@@ -475,9 +472,7 @@ void    scr_if( void )
             cb->if_flags[cb->if_level].iftrue = false;
         }
 
-        while( *scan_start == ' ' ) {
-            scan_start++;
-        }
+        SkipSpaces( scan_start );
 
 /*
  * test logical condition if not line end
@@ -499,11 +494,11 @@ void    scr_if( void )
                     continue;           // do next conditions
                 }
             } else {
-                if( !strnicmp( scan_start, "and ", 4 ) ) {
+                if( !strnicmp( "and ", scan_start, 4 ) ) {
                     logical = AND;
                     scan_start += 4;
                     continue;           // do next conditions
-                } else if( !strnicmp( scan_start, "or ", 3 ) ) {
+                } else if( !strnicmp( "or ", scan_start, 3 ) ) {
                         logical = OR;
                         scan_start += 3;
                         continue;       // do next conditions
@@ -531,7 +526,7 @@ void    scr_if( void )
             }
         }
     }
-    if( input_cbs->fmflags & II_research && GlobFlags.firstpass ) {
+    if( (input_cbs->fmflags & II_research) && GlobalFlags.firstpass ) {
           show_ifcb( "if", cb );
 #if 0
           out_msg( "\t.if is %s Level %d\n"
@@ -544,14 +539,14 @@ void    scr_if( void )
     }
 
     if( *scan_start ) {                 // rest of line is not empty
-        split_input(  buff2, scan_start, false );   // split and process next
+        split_input( buff2, scan_start, input_cbs->fmflags );   // split and process next
+        if( cb->if_flags[cb->if_level].iffalse ) {  // condition failed
+            ProcFlags.pre_fsp = false;       // cancel fsp
+        }
     }
-    scan_restart = scan_stop;
+    scan_restart = scan_stop + 1;
     return;
 }
-
-
-
 
 
 /****************************************************************************/
@@ -601,34 +596,23 @@ void    scr_th( void )
         || cb->if_flags[cb->if_level].ifelse
         || cb->if_flags[cb->if_level].ifdo ) {
 
-        scan_err = true;
-        g_err( err_if_then );
-        g_info_inp_pos();
-        show_ifcb( "then", cb );
-        show_include_stack();
-        err_count++;
-        return;
+        xx_source_err( err_if_then );
     }
     cb->if_flags[cb->if_level].iflast = false;
     cb->if_flags[cb->if_level].ifthen = true;
     ProcFlags.keep_ifstate = true;
-    if( input_cbs->fmflags & II_research && GlobFlags.firstpass ) {
+    if( (input_cbs->fmflags & II_research) && GlobalFlags.firstpass ) {
         show_ifcb( "then", cb );
     }
 
-    garginit();                         // find end of control word
+    SkipSpaces( scan_start );
 
-    while( *scan_start == ' ' ) {
-        scan_start++;
+    if( *scan_start ) {                 // rest of line is not empty
+        split_input( buff2, scan_start, input_cbs->fmflags );   // split and process next
     }
-
-    if( *scan_start ) {                 // rest of line is not empty split
-        split_input( buff2, scan_start, false );// and process next
-    }
-    scan_restart = scan_stop;
+    scan_restart = scan_stop + 1;
     return;
 }
-
 
 
 /***************************************************************************/
@@ -670,33 +654,22 @@ void    scr_el( void )
         || cb->if_flags[cb->if_level].ifelse
         || cb->if_flags[cb->if_level].ifdo ) {
 
-        scan_err = true;
-        g_err( err_if_else );
-        g_info_inp_pos();
-        show_ifcb( "else", cb );
-        show_include_stack();
-        err_count++;
-        return;
+        xx_source_err( err_if_else );
     }
     cb->if_flags[cb->if_level].ifelse = true;
     ProcFlags.keep_ifstate = true;
-    if( input_cbs->fmflags & II_research && GlobFlags.firstpass ) {
+    if( (input_cbs->fmflags & II_research) && GlobalFlags.firstpass ) {
         show_ifcb( "else", cb );
     }
-    garginit();                         // find end of control word
 
-    while( *scan_start == ' ' ) {
-        scan_start++;
-    }
+    SkipSpaces( scan_start );
 
-    if( *scan_start ) {                 // rest of line is not empty split
-        split_input( buff2, scan_start, false );// and process next
+    if( *scan_start ) {                 // rest of line is not empty
+        split_input( buff2, scan_start, input_cbs->fmflags );   // split and process next
     }
-    scan_restart = scan_stop;
+    scan_restart = scan_stop + 1;
     return;
 }
-
-
 
 
 /***************************************************************************/
@@ -723,33 +696,26 @@ void    scr_do( void )
     condcode    cc;
 
     scan_err = false;
-    garginit();                         // find end of control word
     cc = getarg();
 
     cb->if_flags[cb->if_level].ifcwdo = false;
-    if( cc == omit || !strnicmp( tok_start, "begin", 5 )) {
-
+    if( cc == omit || strnicmp( "begin", tok_start, 5 ) == 0 ) {
         if( !(cb->if_flags[cb->if_level].ifthen
-              || cb->if_flags[cb->if_level].ifelse)
+            || cb->if_flags[cb->if_level].ifelse)
             || cb->if_flags[cb->if_level].ifdo ) {
 
-            scan_err = true;
-            g_err( err_if_do );
-            g_info_inp_pos();
-            show_ifcb( "dobegin", cb );
-            show_include_stack();
-            err_count++;
-            return;
+            xx_source_err( err_if_do );
         }
         cb->if_flags[cb->if_level].ifdo = true;
-        if( input_cbs->fmflags & II_research && GlobFlags.firstpass ) {
+        cb->if_flags[cb->if_level].ifindo = true;
+        if( (input_cbs->fmflags & II_research) && GlobalFlags.firstpass ) {
             show_ifcb( "dobegin", cb );
         }
-        scan_restart = scan_stop;
+        scan_restart = scan_stop + 1;
         return;
     } else {
-        if( !strnicmp( tok_start, "end", 3 )) {
-            if( input_cbs->fmflags & II_research && GlobFlags.firstpass ) {
+        if( strnicmp( "end", tok_start, 3 ) == 0 ) {
+            if( (input_cbs->fmflags & II_research) && GlobalFlags.firstpass ) {
                 show_ifcb( "doend", cb );
             }
             do {                            // loop for last active .do begin
@@ -757,30 +723,27 @@ void    scr_do( void )
                 if( cb->if_flags[cb->if_level].ifdo ) {
 
                     cb->if_flags[cb->if_level].ifdo = false;
-                    if( input_cbs->fmflags & II_research &&
-                        GlobFlags.firstpass ) {
+                    if( (input_cbs->fmflags & II_research) &&
+                        GlobalFlags.firstpass ) {
                         show_ifcb( "doend", cb );
                     }
-                    scan_restart = scan_stop;
+                    scan_restart = scan_stop + 1;
                     return;
                 }
-                if( cb->if_flags[cb->if_level].ifthen
-                    || cb->if_flags[cb->if_level].ifelse
+
+                if( (!cb->if_flags[cb->if_level].ifindo
+                    && (cb->if_flags[cb->if_level].ifthen
+                    || cb->if_flags[cb->if_level].ifelse))
                     || !(cb->if_flags[cb->if_level].iftrue
-                         || cb->if_flags[cb->if_level].iffalse) ) {
+                    || cb->if_flags[cb->if_level].iffalse) ) {
 
-                    scan_err = true;
-                    g_err( err_if_do_end );
-                    g_info_inp_pos();
-                    show_ifcb( "doend", cb );
-                    show_include_stack();
-                    err_count++;
-                    return;
+                    xx_source_err( err_if_do_end );
                 }
 
+                cb->if_flags[cb->if_level].ifindo = false;
             } while( cb->if_level-- > 0 );
 #if 0
-            if( input_cbs->fmflags & II_research && GlobFlags.firstpass ) {
+            if( (input_cbs->fmflags & II_research) && GlobalFlags.firstpass ) {
                 out_msg( "\t.do end Level %d\n"
                          "\t.ifcb iftrue %d, iffalse %d\n",
                          cb->if_level,
@@ -789,18 +752,13 @@ void    scr_do( void )
             }
 #endif
         } else {
-            scan_err = true;
-            g_err( err_if_do_fun );
-            g_info_inp_pos();
-            show_include_stack();
-            err_count++;
-            return;
+            xx_source_err( err_if_do_fun );
         }
     }
-    if( input_cbs->fmflags & II_research && GlobFlags.firstpass ) {
+    if( (input_cbs->fmflags & II_research) && GlobalFlags.firstpass ) {
         show_ifcb( "do xx", cb );
     }
-    scan_restart = scan_stop;
+    scan_restart = scan_stop + 1;
     return;
 }
 

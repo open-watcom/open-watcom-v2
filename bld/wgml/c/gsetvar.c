@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2004-2013 The Open Watcom Contributors. All Rights Reserved.
+*  Copyright (c) 2004-2009 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -28,29 +28,36 @@
 *
 ****************************************************************************/
 
+
 #include "wgml.h"
 
 
+/*****************************************************************************/
+/* construct symbol name and optionally subscript from input                 */
+/* Note: p must point to a symbol name, as no trailing "=<value" is required */
+/*****************************************************************************/
 
-/* construct symbol name and optionally subscript from input
- *
- *
- */
-
-char    *scan_sym( char * p, symvar * sym, sub_index * subscript )
+char * scan_sym( char * p, symvar * sym, sub_index * subscript, char * * result, bool splittable )
 {
-    size_t      k;
-    char    *   sym_start;
-    char        quote;
+    char        *   pend;
+    int             p_level;
+    char        *   psave;
+    char            quote;
+    char        *   sym_start;
+    int             rc;
+    size_t          k;
+    sub_index       var_ind;
+    symsub      *   symsubval;
 
+    (void)result;
+
+    psave = p;
     scan_err = false;
     sym->next = NULL;
     sym->flags = 0;
     *subscript = no_subscript;          // not subscripted
 
-    while( *p && *p == ' ' ) {          // skip over spaces
-        p++;
-    }
+    SkipSpaces( p );                    // skip over spaces
     if( *p == d_q || *p == s_q || *p == l_q ) {
         quote = *p++;
     } else {
@@ -64,7 +71,17 @@ char    *scan_sym( char * p, symvar * sym, sub_index * subscript )
     sym->name[0] = '\0';
 
     k = 0;
-    while( *p && is_symbol_char( *p ) ) {
+    while( is_symbol_char( *p ) ) {
+
+        /* Special WGML 4.0 compatibility: When scanning symbol names,
+         * the scanning stops after 10 characters (not including the '&').
+         * It is thus possible to reference symbols with maximum-length
+         * names without properly separating them, such as
+         *   &longsymname
+         * and &longsymnam will be resolved if it exists.
+         */
+        if( splittable && (k == SYM_NAME_LENGTH) )
+            break;
 
         if( k < SYM_NAME_LENGTH ) {
             if( (k == 3) && (sym->name[0] != '$') ) {
@@ -76,7 +93,7 @@ char    *scan_sym( char * p, symvar * sym, sub_index * subscript )
                     k = 1;
                 }
             }
-            sym->name[k++] = tolower( *p );
+            sym->name[k++] = my_tolower( *p );
             sym->name[k] = '\0';
         } else {
             if( !scan_err ) {
@@ -84,12 +101,7 @@ char    *scan_sym( char * p, symvar * sym, sub_index * subscript )
                 if( !ProcFlags.suppress_msg ) {
                     // SC--074 For the symbol '%s'
                     //     The length of a symbol cannot exceed ten characters
-
-                    g_err( err_sym_long, sym_start );
-                    g_info( inf_sym_10 );
-                    g_info_inp_pos();
-                    show_include_stack();
-                    err_count++;
+                    symbol_name_length_err( sym_start );
                 }
             }
         }
@@ -97,79 +109,128 @@ char    *scan_sym( char * p, symvar * sym, sub_index * subscript )
     }
 
     if( p == sym_start ) {              // special for &*
-        if( *p != '&' ) {               // not &*&xx construct
+        if( *p != ampchar ) {           // not &*&xx construct
 
-            if( (sym->flags & local_var) && (input_cbs->fmflags & II_tag_mac) ) {
+            if( (sym->flags & local_var)
+                && (input_cbs->fmflags & II_tag_mac) ) {
+
+                strcpy( sym->name, MAC_STAR_NAME );
+            } else if( (sym->flags & local_var) && (input_cbs->fmflags & II_file) ) {
                 strcpy( sym->name, MAC_STAR_NAME );
             } else {
                 scan_err = true;
-                if( !ProcFlags.suppress_msg ) {
-                    g_err( err_missing_name, sym_start );
-                    err_count++;
-                    show_include_stack();
-                }
             }
         }
     }
-    if( quote && quote == *p ) {        // over terminating quote
+    if( quote != '\0' && quote == *p ) {        // over terminating quote
         p++;
     }
+    pend = p;                                   // char after symbol name if not subscripted
+
     if( !scan_err && (*p == '(') ) {    // subscripted ?
-        char    *   psave = p;
-        sub_index   var_ind;
-        symsub  *   symsubval;
-        int         rc;
-
-        p++;
-        if( *p == ')' ) {               // () is auto increment
+        // find true end of subscript
+        psave = p;
+        p_level = 0;
+        while( *p != '\0' ) {               // to end of buffer
+            if( *p == '(' ) {
+                p_level++;
+            } else if( *p == ')' ) {
+                p_level--;
+                if( p_level == 0 ) {
+                    break;
+                }
+            }
             p++;
-            var_ind = 0;
-            if( sym->flags & local_var )  {
-                rc = find_symvar( &input_cbs->local_dict, sym->name,
-                              var_ind, &symsubval );
-            } else {
-                rc = find_symvar( &global_dict, sym->name, var_ind,
-                                  &symsubval );
-            }
-            if( rc > 0 ) {              // variable exists use last_auto_inc
-                *subscript = symsubval->base->last_auto_inc + 1;
-            } else {
-                *subscript = 1;         // start with index 1
-            }
-            sym->flags |= auto_inc + subscripted;
+        }
+        pend = p + 1;                       // character after outermost ')'
+
+        if( p_level > 0 ) {                 // at least one missing ')'
+            /* Note: missing ')' is not an error in wgml 4.0 */
+            scan_err = true;
         } else {
-            getnum_block    gn;
-            condcode        cc;
-
-            gn.argstart = p;
-            while( *p && (*p != ')') ) {
+            p = psave + 1;
+            if( *p == ')' ) {               // () is auto increment
                 p++;
-            }
-            gn.argstop = p;
-            gn.ignore_blanks = 0;
-
-            cc = getnum( &gn );     // try numeric expression evaluation
-
-            if( cc == pos || cc == neg ) {
-                *subscript = gn.result;
-                if( *p == ')' ) {
-                    p++;
+                var_ind = 0;
+                if( sym->flags & local_var )  {
+                    rc = find_symvar( input_cbs->local_dict, sym->name, var_ind, &symsubval );
+                } else {
+                    rc = find_symvar( global_dict, sym->name, var_ind, &symsubval );
                 }
-                if( *p == '.' ) {
+                if( rc > 0 ) {              // variable exists use last_auto_inc
+                    *subscript = symsubval->base->last_auto_inc + 1;
+                } else {
+                    *subscript = 1;         // start with index 1
+                }
+                sym->flags |= auto_inc + subscripted;
+            } else if( *p == '*' ) {        // * concatenates all elements
+                p++;
+                if( *p == '+' ) {
+                    *subscript = pos_subscript; // positive indices only
                     p++;
+                } else if( *p == '-' ) {
+                    *subscript = neg_subscript; // negative indices only
+                    p++;
+                } else {
+                    *subscript = all_subscript; // all indices
+                }
+                if( *p != ')' ) {
+                    scan_err = true;
                 }
             } else {
-                if( !scan_err && !ProcFlags.suppress_msg ) {
-                    g_err( err_sub_invalid, psave );
-                    err_count++;
-                    show_include_stack();
-                }
-                scan_err = true;
-            }
+                char            *       pa;
+                char            *   *   ppval;
+                char                    valbuf[BUF_SIZE];
+                condcode                cc;
+                getnum_block            gn;
+                size_t                  len;
 
-            if( scan_err ) {
-               p = psave;
+                len = pend - p - 1;
+                if( len > buf_size - 1 )
+                    len = buf_size - 1;
+                strncpy( valbuf, p, len );
+                valbuf[len] = '\0';
+                pa = valbuf;
+                ppval = &pa;
+
+                ProcFlags.unresolved = false;
+                finalize_subscript( ppval, splittable );
+                if( ProcFlags.unresolved ) {
+                    scan_err = true;
+                } else {
+                    gn.argstart      = valbuf;
+                    gn.argstop       = valbuf;
+                    while( *gn.argstop != '\0' && (*gn.argstop != ')') ) {
+                        gn.argstop++;
+                    }
+
+                    *gn.argstop      = '\0';    // make nul terminated string
+                    gn.argstop--;
+                    gn.ignore_blanks = 0;
+
+                    cc = getnum( &gn );     // try numeric expression evaluation
+
+                    if( cc == pos || cc == neg ) {
+                        *subscript = gn.result;
+                        if( *p == ')' ) {
+                            p++;
+                        }
+                        SkipDot( p );
+                        sym->flags |= subscripted;
+                    } else {
+                        if( !scan_err && !ProcFlags.suppress_msg ) {
+                            xx_line_err_c( err_sub_invalid, p );
+                        }
+                        scan_err = true;
+                    }
+
+                }
             }
+        }
+        if( scan_err ) {
+            p = psave;
+        } else {
+            p = pend;
         }
     }
     return( p );
@@ -181,16 +242,29 @@ char    *scan_sym( char * p, symvar * sym, sub_index * subscript )
 /*                          = <character string>                           */
 /*         .SE       symbol = <numeric expression>                         */
 /*                          <OFF>                                          */
-/*   symbol may be subscripted (3) or () for auto increment 1 - n          */
+/*  symbol may be subscripted (3) or () for auto increment 1 - n           */
 /*                                                                         */
-/*         .se x1     'string            case 1                            */
-/*         .se x2  =  'string            case 2 a                          */
-/*         .se x2  =  'string'           case 2 b                          */
-/*         .se x2  =  "string"           case 2 b                          */
-/*         .se x2     off                case 3                            */
-/*         .se n1  =  1234               case 2                            */
-/*         .se n2  =  (1+(2+5)/6)        case 4                            */
-/*         .se n2  =  -1+(2+5)/6)        case 4                            */
+/*  This summarizes SR, since SE extends SR and SR is not implemented      */
+/*         .se x1     off                                                  */
+/*         .se x2a    'string (Note 1)                                     */
+/*         .se x2b    'string (Note 1)                                     */
+/*         .se x3a =  string                                               */
+/*         .se x3b =  'string (Note 2)                                     */
+/*         .se x4c =  'string'(Note 2)                                     */
+/*         .se n1  =  1234                                                 */
+/*         .se n2a =  (1+(2+5)/6)                                          */
+/*         .se n2b =  -1+(2+5)/6)                                          */
+/*  Note 1: these apply only to ', the first of which must be present      */
+/*          at least one space must precede the initial '                  */
+/*  Note 2: these apply to all delimiters: ', ", /, |, !, ^, 0x9b and,     */
+/*          apparently, 0xdd and 0x60                                      */
+/*          the final delimiter must be followed by a space or '\0'        */
+/*          this means that 'abc'def' is a seven-character delimited value */
+/*          provided it is at the end of the line or followed by a space   */
+/*                                                                         */
+/*  Except for local symbol *, spaces are removed from the end of the line */
+/*  before further processing (so that spaces inside delimiters are not    */
+/*  afftected, but any following the closing delimiter are)                */
 /*                                                                         */
 /***************************************************************************/
 
@@ -198,60 +272,67 @@ void    scr_se( void )
 {
     char        *   p;
     char        *   valstart;
-    symvar          sym;
-    sub_index       subscript;
     int             rc;
-    symvar      * * working_dict;
+    sub_index       subscript;
     symsub      *   symsubval;
+    symvar          sym;
+    symdict_hdl     working_dict;
+    size_t          len;
 
-    subscript = no_subscript;           // not subscripted
+    subscript = no_subscript;                       // not subscripted
     scan_err = false;
-    p = scan_sym( scan_start, &sym, &subscript );
+    p = scan_sym( scan_start, &sym, &subscript, NULL, false );
+
+    if( strcmp( MAC_STAR_NAME, sym.name ) != 0 ) {  // remove trailing blanks from all symbols except *
+        valstart = p;
+        for( len = strlen( p ); len-- > 0; ) {
+            if( p[len] != ' ' ) {
+                break;
+            }
+            p[len] = '\0';
+        }
+        p = valstart;
+    }
 
     if( sym.flags & local_var ) {
-        working_dict = &input_cbs->local_dict;
+        working_dict = input_cbs->local_dict;
     } else {
-        working_dict = &global_dict;
+        working_dict = global_dict;
     }
 
     if( ProcFlags.blanks_allowed ) {
-        while( *p && *p == ' ' ) {      // skip over spaces
-            p++;
-        }
+        SkipSpaces( p );                        // skip over spaces
     }
     if( *p == '\0' ) {
         if( !ProcFlags.suppress_msg ) {
-            g_warn( err_missing_value, sym.name );
-            show_include_stack();
-            wng_count++;
+            xx_line_err_c( err_eq_expected, p);
         }
         scan_err = true;
     }
     if( !scan_err ) {
-        if( (*p == '=') || (*p == '\'') ) {
-            if( *p == '=' ) {
-                p++;                    // over =
-            }
+        if( *p == ')' ) {
+            p++;
+        }
+        valstart = p;
+        if( *p == '=' ) {                       // all other cases have no equal sign (see above)
+            p++;
             if( ProcFlags.blanks_allowed ) {
-                while( *p && *p == ' ' ) {  // skip over spaces
-                    p++;
-                }
+                SkipSpaces( p );                // skip over spaces to value
             }
             valstart = p;
-            if( is_quote_char( *valstart ) ) {  // quotes ?
+            if( is_quote_char( *valstart ) ) {      // quotes ?
                 p++;
-                while( *p && (*valstart != *p) ) { // look for quote end
+                while( *p != '\0' ) {   // remove final character, if it matches the start character              if( (*valstart == *p) && (!*(p+1) || (*(p+1) == ' ')) ) {
+                    if( (*valstart == *p) && !*(p+1) ) {
+                        break;
+                    }
                     ++p;
                 }
-                if( *p == *valstart ) { // delete quotes case 2 b
+                if( (valstart < p) && (*p == *valstart) ) { // delete quotes if more than one character
                     valstart++;
                     *p = '\0';
-                } else {
-                    if( *valstart == '\'' ) {   // case 1 and 2a
-                        valstart++;
-                    }
                 }
-            } else {                    // case 2 and 4
+            } else {                                // numeric or undelimited string
                 getnum_block    gn;
                 condcode        cc;
 
@@ -259,36 +340,40 @@ void    scr_se( void )
                 gn.argstop       = scan_stop;
                 gn.ignore_blanks = 1;
 
-                cc = getnum( &gn );     // try numeric expression evaluation
+                cc = getnum( &gn );             // try numeric expression evaluation
                 if( cc != notnum ) {
                     valstart = gn.resultstr;
-                }                       // if notnum treat as character value
+                }                               // if notnum treat as character value
             }
-
-            rc = add_symvar( working_dict, sym.name, valstart, subscript,
-                             sym.flags );
-
-        } else {                        // OFF value = delete variable ?
-            if( *(p + 3)            == '\0' &&  // case 3
-                tolower( *p )       == 'o' &&
-                tolower( *(p + 1) ) == 'f' &&
-                tolower( *(p + 2) ) == 'f' ) {
-
-                p += 3;
-                rc = find_symvar( working_dict, sym.name, subscript,
-                                  &symsubval );
-                if( rc == 2 ) {
-                    symsubval->base->flags |= deleted;
+            rc = add_symvar( working_dict, sym.name, valstart, subscript, sym.flags );
+        } else if( *p == '\'' ) {               // \' may introduce valid value
+            if( *(p - 1) == ' ' ) {             // but must be preceded by a space
+                p++;
+                while( *p != '\0' && (*valstart != *p) ) {  // look for final \'
+                    p++;
                 }
-            } else {
+                valstart++;                                 // delete initial \'
+                if( (valstart < p) && (*p == '\'') ) {      // delete \' at end
+                    *p = '\0';
+                }
+                rc = add_symvar( working_dict, sym.name, valstart, subscript, sym.flags );
+            } else {                                        // matches wgml 4.0
                 if( !ProcFlags.suppress_msg ) {
-                    wng_count++;
-                    g_err( wng_miss_inv_value, sym.name, p );
-                    g_info_inp_pos();
-                    show_include_stack();
+                    xx_line_err_c( err_eq_expected, p);
                 }
                 scan_err = true;
             }
+        } else if( !strncmp( p, "off", 3 ) ) {       // OFF
+            p += 3;
+            rc = find_symvar( working_dict, sym.name, subscript, &symsubval );
+            if( rc == 2 ) {
+                symsubval->base->flags |= deleted;
+            }
+        } else {
+            if( !ProcFlags.suppress_msg ) {
+                xx_warn_cc( wng_miss_inv_value, sym.name, p );
+            }
+            scan_err = true;
         }
     }
     scan_restart = scan_stop;

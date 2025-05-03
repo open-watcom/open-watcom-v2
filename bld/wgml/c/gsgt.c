@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2004-2013 The Open Watcom Contributors. All Rights Reserved.
+*  Copyright (c) 2004-2009 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -31,9 +31,11 @@
 *  comments are from script-tso.txt
 ****************************************************************************/
 
+
 #include "wgml.h"
 
 #include "clibext.h"
+
 
 /***************************************************************************/
 /*  reset last used  tag and att entries                                   */
@@ -41,10 +43,10 @@
 
 void    init_tag_att( void )
 {
-    tag_entry = NULL;
-    att_entry = NULL;
-    tagname[0] = '*';
-    attname[0] = '*';
+    g_tag_entry = NULL;
+    g_att_entry = NULL;
+    g_tagname[0] = '*';
+    g_attname[0] = '*';
 }
 
 
@@ -265,7 +267,7 @@ static  condcode    scan_tag_options( gtflags * tag_flags )
             break;
         }
         p = tok_start;
-        switch( tolower( *p ) ) {
+        switch( my_tolower( *p ) ) {
         case   'a' :
             if( (arg_flen > 2) && (arg_flen < 12)
                 && !strnicmp( "ATTributes", p, arg_flen ) ) {
@@ -351,7 +353,6 @@ void    scr_gt( void )
     char        *   p;
     char        *   pn;
     char            savetag;
-    int             k;
     int             len;
     char            macname[MAC_NAME_LENGTH + 1];
     condcode        cc;
@@ -366,18 +367,16 @@ void    scr_gt( void )
         f_print
     } function;
 
-    garginit();                         // find end of CW
-
     /***********************************************************************/
     /*  isolate tagname   or use previous if tagname *                     */
     /***********************************************************************/
 
+    tok_start = NULL;
     cc = getarg();                      // Tagname
 
     if( cc == omit ) {
         // no operands
-        tag_name_missing_err();
-        return;
+        xx_err_c( err_missing_name, "" );
     }
 
     p = tok_start;
@@ -388,33 +387,24 @@ void    scr_gt( void )
             return;
         }
         savetag = '*';         // remember for possible global delete / print
-        if( GlobFlags.firstpass && input_cbs->fmflags & II_research ) {
-            if( tag_entry != NULL ) {
-                out_msg("  using tagname %s %s\n", tagname, tag_entry->name );
+        if( GlobalFlags.firstpass && (input_cbs->fmflags & II_research) ) {
+            if( g_tag_entry != NULL ) {
+                out_msg("  using tagname %s %s\n", g_tagname, g_tag_entry->name );
             }
         }
     } else {
-        savetag = ' ';               // no global function for delete / print
+        savetag = ' ';                      // no global function for delete / print
 
-        init_tag_att();            // forget previous values for quick access
-        attname[0] = '*';
+        init_tag_att();                     // forget previous values for quick access
+        g_attname[0] = '*';
 
-        pn      = tagname;
-        len     = 0;
-
-        while( *p && is_macro_char( *p ) ) {
-            if( len < TAG_NAME_LENGTH ) {
-                *pn++ = toupper( *p++ );// copy lowercase tagname
-                *pn   = '\0';
-            } else {
-                break;
-            }
+        len = 0;
+        pn = g_tagname;
+        while( is_macro_char( *p ) && len < TAG_NAME_LENGTH ) {
+            *pn++ = my_tolower( *p++ ); // copy lowercase tagname
             len++;
         }
-        for( k = len; k < TAG_NAME_LENGTH; k++ ) {
-            tagname[k] = '\0';
-        }
-        tagname[TAG_NAME_LENGTH] = '\0';
+        *pn = '\0';
 
         if( len < arg_flen ) {
             xx_err( err_tag_name_inv );
@@ -436,7 +426,7 @@ void    scr_gt( void )
 
     p = tok_start;
     function = 0;
-    switch( tolower( *p ) ) {
+    switch( my_tolower( *p ) ) {
     case   'a':
         if( !strnicmp( "ADD ", p, 4 ) ) {
 
@@ -497,22 +487,13 @@ void    scr_gt( void )
         }
         p = tok_start;
 
-        pn      = macname;
-        len     = 0;
-
-        while( *p && is_macro_char( *p ) ) {
-            if( len < MAC_NAME_LENGTH ) {
-                *pn++ = toupper( *p++ );    // copy lowercase macroname
-                *pn   = '\0';
-            } else {
-                break;
-            }
+        len = 0;
+        pn = macname;
+        while( is_macro_char( *p ) && len < MAC_NAME_LENGTH ) {
+            *pn++ = my_tolower( *p++ );     // copy lowercase macroname
             len++;
         }
-        for( k = len; k < MAC_NAME_LENGTH; k++ ) {
-            macname[k] = '\0';
-        }
-        macname[MAC_NAME_LENGTH] = '\0';
+        *pn = '\0';
 
         tag_flags = 0;
 
@@ -521,10 +502,14 @@ void    scr_gt( void )
             if( cc != omit ) {          // not all processed error
                xx_err( err_tag_opt_inv );
             }
-            tag_entry = add_tag( &tag_dict, tagname, macname, tag_flags );  // add to dictionary
+            g_tag_entry = add_tag( &tag_dict, g_tagname, macname, tag_flags );  // add to dictionary
             // if tag_entry is now NULL, error (+ msg) was output in add_tag
+
+            if( g_tag_entry != NULL ) {
+                set_overload( g_tag_entry );
+            }
         } else {                        // is function change
-            tag_entry = change_tag( &tag_dict, tagname, macname );
+            g_tag_entry = change_tag( &tag_dict, g_tagname, macname );
         }
     } else {
 
@@ -541,31 +526,31 @@ void    scr_gt( void )
             if( savetag == '*' ) {
                 print_tag_dict( tag_dict );
             } else {
-                print_tag_entry( find_tag( &tag_dict, tagname ) );
+                print_tag_entry( find_user_tag( &tag_dict, g_tagname ) );
             }
             break;
         case f_delete :
             if( savetag == '*' ) {
                 free_tag_dict( &tag_dict );
             } else {
-                free_tag( &tag_dict, find_tag( &tag_dict, tagname ) );
+                free_tag( &tag_dict, find_user_tag( &tag_dict, g_tagname ) );
             }
             break;
         case f_off :
-            if( savetag == '*' && tag_entry != NULL ) {// off for last defined
-                tag_entry->tagflags |= tag_off;
+            if( savetag == '*' && g_tag_entry != NULL ) {// off for last defined
+                g_tag_entry->tagflags |= tag_off;
             } else {
-                wk = find_tag( &tag_dict, tagname );
+                wk = find_user_tag( &tag_dict, g_tagname );
                 if( wk != NULL ) {
                     wk->tagflags |= tag_off;
                 }
             }
             break;
         case f_on :
-            if( savetag == '*' && tag_entry != NULL ) {// on for last defined
-                tag_entry->tagflags |= tag_off;
+            if( savetag == '*' && g_tag_entry != NULL ) {// on for last defined
+                g_tag_entry->tagflags |= tag_off;
             } else {
-                wk = find_tag( &tag_dict, tagname );
+                wk = find_user_tag( &tag_dict, g_tagname );
                 if( wk != NULL ) {
                     wk->tagflags &= ~tag_off;
                 }
@@ -575,6 +560,6 @@ void    scr_gt( void )
             break;
         }
     }
-    scan_restart = scan_stop;
+    scan_restart = scan_stop +1;
     return;
 }

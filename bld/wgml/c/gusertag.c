@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2004-2013 The Open Watcom Contributors. All Rights Reserved.
+*  Copyright (c) 2004-2009 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -29,19 +29,17 @@
 *
 ****************************************************************************/
 
+
 #include "wgml.h"
 
 #include "clibext.h"
 
-static  symvar  *   loc_dict;           // for preparing local vars
-
 
 /***************************************************************************/
 /*  clear and set the relevant attribute parametercheck flags              */
-/*                                                                         */
 /***************************************************************************/
 
-static  gaflags set_att_proc_flags( gaflags attflags )
+static gaflags set_att_proc_flags( gaflags attflags )
 {
     gaflags fl = attflags & ~att_proc_all;
 
@@ -57,7 +55,7 @@ static  gaflags set_att_proc_flags( gaflags attflags )
 /***************************************************************************/
 /*  add attribute default values to dict                                   */
 /***************************************************************************/
-static  void    add_defaults_to_dict( gtentry * ge, symvar * * dict )
+static void add_defaults_to_dict( gtentry * ge, symdict_hdl dict )
 {
     gaentry     *   ga;
     gavalentry  *   gaval;
@@ -82,7 +80,7 @@ static  void    add_defaults_to_dict( gtentry * ge, symvar * * dict )
                         }
                     }
                     if( gaval->valflags & val_range ) { // range default
-                        sprintf( token_buf, "%ld", gaval->a.range[2] );
+                        sprintf( token_buf, "%d", gaval->a.range[2] );
                         valp = token_buf;
                     }
                     if( valp != NULL ) {
@@ -101,13 +99,14 @@ static  void    add_defaults_to_dict( gtentry * ge, symvar * * dict )
 /*  check the attribute value against restrictions                         */
 /***************************************************************************/
 
-static bool check_att_value( gaentry * ga )
+static bool check_att_value( gaentry * ga, gtentry * ge, symdict_hdl loc_dict )
 {
     gavalentry  *   gaval;
     char        *   valp;
-    long            attval;
     bool            msg_done;
     int             rc;
+
+    (void)ge;
 
     scan_err = true;
     msg_done = false;
@@ -126,12 +125,14 @@ static bool check_att_value( gaentry * ga )
             }
         }
         if( valp != NULL ) {
-            if( !strcmp( token_buf, valp ) ) {
+            if( strcmp( token_buf, valp ) == 0 ) {
                 scan_err = false;       // value is allowed
                 break;
             }
         } else {
             if( gaval->valflags & val_range ) {
+                long    attval;
+
                 attval = strtol( token_buf, NULL, 10 );
                 if( attval < gaval->a.range[0] ||
                     attval > gaval->a.range[1]  ) {
@@ -153,11 +154,11 @@ static bool check_att_value( gaentry * ga )
         }
     }
     if( !scan_err ) {
-        rc = add_symvar( &loc_dict, ga->name, token_buf,
+        rc = add_symvar( loc_dict, ga->name, token_buf,
                          no_subscript, local_var );
     } else {
         if( !msg_done ) {
-            att_val_err( ga->name );
+            xx_err_cc( err_att_val, token_buf, ga->name );
         }
     }
     return( scan_err );
@@ -169,41 +170,70 @@ static bool check_att_value( gaentry * ga )
 /*  scan the line, prepare arguments and call processing macro             */
 /***************************************************************************/
 
-bool        process_tag( gtentry * ge, mac_entry * me )
+bool process_tag( gtentry * ge, mac_entry * me )
 {
     bool            processed;
-    gaentry     *   ga;
-    gavalentry  *   gaval;
+    char            longwork[NUM2STR_LENGTH];
     char        *   p;
     char        *   p2;
-    int             rc;
+    char        *   pa;
     char            quote;
-    char            longwork[20];
-    bool            tag_end_found = false;
+    gaentry     *   ga;
+    gavalentry  *   gaval;
+    inp_line    *   pline;
+    int             rc;
+    size_t          len;
+    symdict_hdl     loc_dict;   // for preparing local vars
 
-    processed = true;
+    processed = true;           // return value, always true
     init_dict( &loc_dict );
 
-    add_defaults_to_dict( ge, &loc_dict );
+    add_defaults_to_dict( ge, loc_dict );
 
     /***********************************************************************/
-    /*  scan input for attributes and / or tagtext                         */
+    /*  scan input for attributes and / or tag-text                        */
     /***********************************************************************/
 
     p = tok_start + ge->namelen + 1;    // over tagname
 
-    if( ge->attribs != NULL ) {     // only process attributes if they exist
-        while( *p == ' ' ) {        // not yet end of tag, process attributes
+    if( ge->tagflags & tag_textline ) {
 
-            while( *p == ' ' ) {        // over WS to attribute
+        /***********************************************************************/
+        /*  TEXTLine treats everything after the tag as tag-text               */
+        /***********************************************************************/
+
+        if( input_cbs->hidden_head != NULL ) {
+            pline = input_cbs->hidden_head;
+            input_cbs->hidden_head = input_cbs->hidden_head->next;
+            len = strlen( pline->value );
+            p2 = p;
+            while( *p != '\0' ) {
                 p++;
             }
+            if( *(p - 1) == CONT_char ) {    // remove continue character if present
+                p--;
+                *p = '\0';
+            }
+            strcpy( p, pline->value );
+            mem_free( pline );
+            p = p2;
+        }
+    } else if( ge->attribs != NULL && (ge->tagflags & tag_attr) ) {
+
+        /***********************************************************************/
+        /*  only process attributes if ATTribute was used and at least one     */
+        /*  attribute was actually defined                                     */
+        /***********************************************************************/
+
+        while( *p == ' ' ) {        // not yet end of tag, process attributes
+
+            SkipSpaces( p );        // over WS to attribute
             if( *p == '.' ) {
-                tag_end_found = true;
                 break;
             }
             p2 = token_buf;
-            while( is_id_char( *p ) ) {
+            pa = p;
+            while( is_macro_char( *p ) ) {
                 *p2++ = *p++;
             }
             *p2 = '\0';
@@ -212,18 +242,31 @@ bool        process_tag( gtentry * ge, mac_entry * me )
                     if( !stricmp( ga->name, token_buf ) ) {
                         ga->attflags |= att_proc_seen; // attribute specified
                         if( ga->attflags & att_auto ) {
-                            auto_att_err();
-                            break;
+                            xx_line_err_cc( err_auto_att, token_buf, pa );
+                        }
+
+                        if( is_space_tab_char( *p ) ) { // no whitespace allowed before '='
+                            xx_line_err_cc( err_no_att_val, token_buf, p );
+                        }
+
+                        /* no line end allowed before '=' except with TEXTLine */
+                        if( (*p == '\0') && !(ge->tagflags & tag_textline) ) {
+                            xx_line_err_cc( err_no_att_val, token_buf, p );
                         }
 
                         if( *p == '=' ) {   // value follows
-                            ga->attflags |= att_proc_val;
 
-                            p++;        // over =
+                            p++;            // over =
+
+                            if( is_space_tab_char( *p ) ) { // no whitespace allowed after '='
+                                xx_line_err_cc( err_no_att_val, token_buf, p );
+                            }
+
+                            ga->attflags |= att_proc_val;
                             p2 = token_buf;
                             if( is_quote_char( *p ) ) {
                                 quote = *p++;
-                                while( *p && *p != quote ) {// quoted value
+                                while( *p != '\0' && *p != quote ) {// quoted value
                                     *p2++ = *p++;
                                 }
                                 if( *p == quote ) {
@@ -231,7 +274,7 @@ bool        process_tag( gtentry * ge, mac_entry * me )
                                 }
                             } else {
                                 quote = '\0';
-                                while( *p && (*p != ' ') && (*p != '.') ) {
+                                while( *p != '\0' && (*p != ' ') && (*p != '.') ) {
                                     *p2++ = *p++;
                                 }
                             }
@@ -243,7 +286,7 @@ bool        process_tag( gtentry * ge, mac_entry * me )
                                 strupr( token_buf );
                             }
 
-                            scan_err = check_att_value( ga );
+                            scan_err = check_att_value( ga, ge, loc_dict );
 
                         } else {// special for range set default2 if no value
                             if( ga->attflags & att_range ) {
@@ -254,8 +297,9 @@ bool        process_tag( gtentry * ge, mac_entry * me )
                                      }
                                 }
                                 if( gaval != NULL ) {
-                                     sprintf( token_buf, "%ld", gaval->a.range[3] );
-                                     rc = add_symvar( &loc_dict, ga->name,
+                                     sprintf( token_buf, "%d",
+                                              gaval->a.range[3] );
+                                     rc = add_symvar( loc_dict, ga->name,
                                                       token_buf, no_subscript,
                                                       local_var );
                                 }
@@ -264,50 +308,34 @@ bool        process_tag( gtentry * ge, mac_entry * me )
                         break;
                     }
                 }
-                if( ga == NULL ) {      // attribute Not found
-                    processed = false;
-                    wng_count++;
-                    //***WARNING*** SC--040: 'abd' is not a valid attribute name
-                    g_warn( wng_att_name, token_buf );
-                    g_info_inp_pos();
-                    show_include_stack();
+                if( ga == NULL ) {      // supposed attribute not found
+                    p = pa;
+                    xx_line_warn_cc( wng_att_name, token_buf, pa );
+                }
+            } else {
+                if( *p != '\0' ) {
+                    xx_line_warn_cc( wng_att_name, p, pa );
                 }
             }
+
             /***************************************************************/
             /*  check for tag end .                                        */
             /***************************************************************/
             if( *p == ' ' ) {
                 continue;               // not yet at buffer / tag end
             }
-#if 0
+
             /***************************************************************/
-            /*  continue scanning for attriutes on next line if not tag end*/
-            /*  This does not work for constructs such as                  */
-            /*                                                             */
-            /*  :hdref refid=diffs                                         */
-            /*  .bd to determine if you need to recompile your application.*/
-            /*  from docs\doc\gs\intro.gml line 37 f                       */
+            /*  unlike predefined tags, user-defined tags never try to     */
+            /*  find additional parameters on the next line                */
             /***************************************************************/
 
-            if( *p != '.' ) { //
-                if( get_line( true ) ) {
-                    p = buff2;
-                } else {
-                    *p = '\0';
-                }
-            } else {
-                tag_end_found = true;
-            }
-#else
-            if( (*p == '.') || (*p == '\0') ) {
-                tag_end_found = true;
-            }
-#endif
         }
 
         /*******************************************************************/
         /*  check for missing reqrd attributes                             */
         /*******************************************************************/
+
         *token_buf = '\0';
         for( ga = ge->attribs; ga != NULL; ga = ga->next ) {// for all attrs
             if( ga->attflags & att_req ) {
@@ -323,131 +351,113 @@ bool        process_tag( gtentry * ge, mac_entry * me )
             }
         }
         if( *token_buf != '\0' ) {      // some req attr missing
-        // the errmsg in wgml 4.0 is wrong, it shows the macroname, not tag.
-// ****ERROR**** SC--047: For the tag '@willi', the required attribute(s)
-//                       'muss2'
-//                       'muss'
-//                       have not been specified
+            att_req_err( ge->name, token_buf );
+        }
+    } else if( ge->tagflags & tag_attr ) {
+        p2 = p;                                 // save value
+        SkipSpaces( p );
+        if( (*p != '.') && (*p != '\0') ) {
+            xx_line_warn_cc( wng_att_name, p, p );
+        }
+        p = p2;                                 // restore value
+    }
 
-            processed = false;
-            err_count++;
-            g_err( err_att_req, ge->name, token_buf );
-            g_info_inp_pos();
-            show_include_stack();
+    /********************************************************************/
+    /*  at this point, the end of the tag has been reached              */
+    /*    if it ends in '\0', then there is no tag-text                 */
+    /*    if it ends in '.', then the dot must be skipped               */
+    /*    if it ends in ' ', then the tag-text follows                  */
+    /*  the ultimate goal here is to set local variable * correctly     */
+    /********************************************************************/
+
+    p2 = p;                         // p2 saves the start value for p
+    SkipSpaces( p );                // skip spaces before the '.', if one is present
+    if( (*p2 != '.') && (p2 != p) && (*p == '.') ) {
+        p2 = p;                     // reset p2 to '.' ending tag
+    }
+    SkipDot( p );                   // skip the '.', if present
+    SkipSpaces( p );                // if '.' was present, skip to first non-space character
+    if( *p == '\0' ) {              // no tag-text found
+
+        /* If TEXTReqrd was used in defining the user-tag, this is an error */
+
+        if( ge->tagflags & tag_textreq ) {  // text must be present
+            xx_line_err_cc( err_att_text_req, ge->name, p2 );
         }
 
-        if( *p == '.' ) {               // does text follow tag end
-            if( strlen( p + 1 ) > 0 ) {
-                if( ge->tagflags & tag_texterr ) { // no text allowed
-                    tag_text_err( ge->name );
-                    processed = false;
-                }
-            } else {
-                if( ge->tagflags & tag_textreq ) {  // reqrd text missing
-                    tag_text_req_err( ge->name );
-                    processed = false;
-                }
-            }
-            strcpy( token_buf, p + 1 );
-            rc = add_symvar( &loc_dict, "_", token_buf, no_subscript, local_var );
-            p += strlen( token_buf );
-        }
+        /* Otherwise, the value of * will be an empty string */
 
-        scan_start = p + 1;             // all processed
-        /*******************************************************************/
-        /*  add standard symbols to dict                                   */
-        /*******************************************************************/
+    } else {                        // tag-text found
 
-        rc = add_symvar( &loc_dict, "_tag", ge->name, no_subscript, local_var );
-        ge->usecount++;
-        sprintf( longwork, "%lu", ge->usecount );
-        rc = add_symvar( &loc_dict, "_n", longwork, no_subscript, local_var );
+        /* If TEXTError was used in defining the user-tag, this is an error */
 
-
-        add_macro_cb_entry( me, ge );   // prepare GML macro as input
-        input_cbs->local_dict = loc_dict;
-        inc_inc_level();                // start new include level
-        if( ge->tagflags & tag_cont ) {   // +++++++++++++++++++ TBD trial
-//            post_space = 0;
-            if( !(input_cbs->fmflags & II_sol) ) {
-                ProcFlags.utc = true;
-            }
-        }
-
-        if( input_cbs->fmflags & II_research && GlobFlags.firstpass ) {
-            print_sym_dict( input_cbs->local_dict );
-        }
-    } else {                            // user-defined tag has no attributes
         if( ge->tagflags & tag_texterr ) {  // no text allowed
-            // '.' or CW_sep_char immediately after the tag does not count as text
-            if( (*p == '.') || (*p == CW_sep_char ) ) {
-                p++;
-            }
-            while( *p == ' ' ) {        // spaces don't count as text
-                p++;
-            }
-            if( *p ) {                  // text found
-                tag_text_err( ge->name );
-                processed = false;
-                return( processed );
-            }
+            xx_line_err_cc( err_att_text, ge->name, p );
         }
-        if( ge->tagflags & tag_textreq ) {  // text is required
-            // per wgml 4.0 behavior
-            if( *p == CW_sep_char ) {
-                processed = false;
-                return( processed );
-            }
-            // '.' immediately after the tag does not count as text
-            if( *p == '.' ) {
-                p++;
-            }
-            while( *p == ' ' ) {        // spaces don't count as text
-                p++;
-            }
-            if( !*p ) {                 // no text found
-                tag_text_req_err( ge->name );
-                processed = false;
-                return( processed );
-            }
-        }
-        // per wgml 4.0 behavior
-        if( *p == CW_sep_char ) {
-            processed = false;
-            return( processed );
-        }
-        // '.' immediately after the tag is not passed to the macro
-        if( *p == '.' ) {
-            p++;
-        }
-        strcpy( token_buf, p );
-        rc = add_symvar( &loc_dict, "_", token_buf, no_subscript, local_var );
-        p += strlen( token_buf );
 
-        scan_start = p + 1;             // all processed
-        /*******************************************************************/
-        /*  add standard symbols to dict                                   */
-        /*******************************************************************/
+        /* Otherwise, things get a bit complicated */
 
-        rc = add_symvar( &loc_dict, "_tag", ge->name, no_subscript, local_var );
-        ge->usecount++;
-        sprintf( longwork, "%lu", ge->usecount );
-        rc = add_symvar( &loc_dict, "_n", longwork, no_subscript, local_var );
-
-
-        add_macro_cb_entry( me, ge );   // prepare GML macro as input
-        input_cbs->local_dict = loc_dict;
-        inc_inc_level();                // start new include level
-        if( ge->tagflags & tag_cont ) { // +++++++++++++++++++ TBD trial
-//            post_space = 0;
-            if( !(input_cbs->fmflags & II_sol) ) {
-                ProcFlags.utc = true;
+        p = p2;                                     // reset
+        if( *p2 == '.' ) {
+            SkipDot( p );
+        } else {
+            if( (ge->tagflags & tag_attr) && !(ge->tagflags & tag_textline) ) {
+                SkipSpaces( p );
             }
         }
 
-        if( input_cbs->fmflags & II_research && GlobFlags.firstpass ) {
-            print_sym_dict( input_cbs->local_dict );
+        // remove trailing spaces
+        len = strlen( p );
+        if( !ProcFlags.null_value && (len != 0) && (input_cbs->hidden_head == NULL) ) {
+            while( *(p + len - 1) == ' ' ) {        // remove trailing spaces
+                len--;
+                if( len == 0 ) {                    // empty operand
+                    break;
+                }
+            }
+            *(p + len) = '\0';                      // end after last non-space character
         }
+
+        // remove trailing continue character if tag has NOCONTinue option
+        if( (ge->tagflags & tag_nocont) ) {
+            len = strlen( p );
+            if( *(p + len - 1) == CONT_char ) {
+                len--;
+            }
+            *(p + len) = '\0';
+        }
+    }
+    strcpy( token_buf, p );
+    rc = add_symvar( loc_dict, "_", token_buf, no_subscript, local_var );
+    p += strlen( token_buf );
+
+    scan_start = p + 1;             // all processed
+    if( *scan_start == ' ' ){
+        SkipSpaces( scan_start );   // do not treat spaces removed from end as text
+    }
+
+    /*******************************************************************/
+    /*  add standard symbols to dict                                   */
+    /*******************************************************************/
+
+    rc = add_symvar( loc_dict, "_tag", ge->name, no_subscript, local_var );
+    ge->usecount++;
+    sprintf( longwork, "%u", ge->usecount );
+    rc = add_symvar( loc_dict, "_n", longwork, no_subscript, local_var );
+
+    add_macro_cb_entry( me, ge );   // prepare GML macro as input
+    free_dict( &input_cbs->local_dict );    // not super efficient
+    input_cbs->local_dict = loc_dict;
+    input_cbs->fm_hh = input_cbs->prev->fm_hh;
+    input_cbs->hh_tag = input_cbs->prev->hh_tag;
+    inc_inc_level();                // start new include level
+
+    if( ge->tagflags & tag_cont ) {
+        ProcFlags.utc = true;
+    }
+
+    if( (input_cbs->fmflags & II_research) && GlobalFlags.firstpass ) {
+        print_sym_dict( input_cbs->local_dict );
     }
 
     return( processed );

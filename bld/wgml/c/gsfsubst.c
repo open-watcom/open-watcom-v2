@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2004-2013 The Open Watcom Contributors. All Rights Reserved.
+*  Copyright (c) 2004-2009 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -28,7 +28,9 @@
 *
 ****************************************************************************/
 
+
 #include "wgml.h"
+
 
 /***************************************************************************/
 /*  script string function &'substr(                                       */
@@ -66,6 +68,7 @@ condcode    scr_substr( parm parms[MAX_FUN_PARMS], size_t parmcount, char * * re
     condcode            cc;
     int                 k;
     int                 n;
+    int                 stringlen;
     int                 len;
     getnum_block        gn;
     char                padchar;
@@ -74,26 +77,26 @@ condcode    scr_substr( parm parms[MAX_FUN_PARMS], size_t parmcount, char * * re
         return( neg );
     }
 
-    pval = parms[0].start;
-    pend = parms[0].stop;
+    pval = parms[0].a;
+    pend = parms[0].e;
 
     unquote_if_quoted( &pval, &pend );
 
-    gn.ignore_blanks = false;
+    stringlen = pend - pval + 1;        // length of string
+    padchar = ' ';                      // default padchar
+    len = 0;
 
     n = 0;                              // default start pos
+    gn.ignore_blanks = false;
 
     if( parmcount > 1 ) {               // evalute start pos
-        if( parms[1].stop > parms[1].start ) {// start pos specified
-            gn.argstart = parms[1].start;
-            gn.argstop  = parms[1].stop;
+        if( parms[1].e >= parms[1].a ) {// start pos specified
+            gn.argstart = parms[1].a;
+            gn.argstop  = parms[1].e;
             cc = getnum( &gn );
             if( (cc != pos) || (gn.result == 0) ) {
                 if( !ProcFlags.suppress_msg ) {
-                    g_err( err_func_parm, "2 (startpos)" );
-                    g_info_inp_pos();
-                    err_count++;
-                    show_include_stack();
+                    xx_source_err_c( err_func_parm, "2 (startpos)" );
                 }
                 return( cc );
             }
@@ -101,19 +104,14 @@ condcode    scr_substr( parm parms[MAX_FUN_PARMS], size_t parmcount, char * * re
         }
     }
 
-    len = 0;                            // default length
-
     if( parmcount > 2 ) {               // evalute length
-        if( parms[2].stop > parms[2].start ) {// length specified
-            gn.argstart = parms[2].start;
-            gn.argstop  = parms[2].stop;
+        if( parms[2].e >= parms[2].a ) {// length specified
+            gn.argstart = parms[2].a;
+            gn.argstop  = parms[2].e;
             cc = getnum( &gn );
             if( (cc != pos) || (gn.result == 0) ) {
                 if( !ProcFlags.suppress_msg ) {
-                    g_err( err_func_parm, "3 (length)" );
-                    g_info_inp_pos();
-                    err_count++;
-                    show_include_stack();
+                    xx_source_err_c( err_func_parm, "3 (length)" );
                 }
                 return( cc );
             }
@@ -121,12 +119,10 @@ condcode    scr_substr( parm parms[MAX_FUN_PARMS], size_t parmcount, char * * re
         }
     }
 
-    padchar = ' ';                      // default padchar
-
     if( parmcount > 3 ) {               // isolate padchar
-        if( parms[3].stop > parms[3].start ) {
-            char *pa = parms[3].start;
-            char *pe = parms[3].stop;
+        if( parms[3].e >= parms[3].a ) {
+            char *  pa = parms[3].a;
+            char *  pe = parms[3].e;
 
             unquote_if_quoted( &pa, &pe );
             padchar = *pa;
@@ -135,13 +131,13 @@ condcode    scr_substr( parm parms[MAX_FUN_PARMS], size_t parmcount, char * * re
 
     pval += n;                          // position to startpos
     if( len == 0 ) {                    // no length specified
-        len = pend - pval;              // take rest of string
+        len = pend - pval + 1;          // take rest of string
         if( len < 0 ) {                 // if there is one
             len = 0;
         }
     }
     for( k = 0; k < len; k++ ) {
-        if( (pval >= pend) || (ressize <= 0) ) {
+        if( (pval > pend) || (ressize <= 0) ) {
             break;
         }
         **result = *pval++;

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2004-2022 The Open Watcom Contributors. All Rights Reserved.
+*  Copyright (c) 2004-2009 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -27,8 +27,9 @@
 * Description:  macro utility functions
 *
 *             add_macro_cb_entry  -- add macro as input source
-*             add_macro_parms     -- add macro call parms to local dictionary
+*             add_macro_parms     -- add macro call/file include parms to local dictionary
 *             free_lines          -- free macro source lines
+*             verify_sym          -- identify name=value pairs
 *
 *             scr_dm              -- .dm control word define macro
 *             scr_me              -- .me control word macro end
@@ -36,9 +37,56 @@
 *
 ****************************************************************************/
 
+
 #include "wgml.h"
 
 #include "clibext.h"
+
+
+/*****************************************************************************/
+/* verify that p points to a <symbol>=<value> pair                           */
+/* spaces are allowed before or after the "="                                */
+/* Note: called from add_macro_parms() for tokens that are not delimited     */
+/*****************************************************************************/
+
+static char *verify_sym( char * p )
+{
+    bool        local;
+    bool        star_found;
+    char    *   pa;
+
+    local = false;
+    pa = p;                             // save initial value
+    scan_err = true;
+    star_found = false;
+
+    if( *p == '*' ) {    // starts with "*"
+        star_found = true;
+        if( is_symbol_char(*(p + 1)) ) {            // local var
+            local = true;
+        }
+    }
+
+    SkipSpaces( p );                    // skip over spaces
+
+    while( (*p != '=') && (*p != '\0') ) {
+        p++;
+    }
+
+    pa = NULL;
+    if( *p == '=' ) {                   // "=" found
+        if( !star_found || local ) {    // exclude constructs like "*=.()", which are text
+            p++;
+            SkipSpaces( p );                // skip over spaces
+            if( *p != '\0' ) {              // something follows "="
+                scan_err = false;
+                pa = p;
+            }
+        }
+    }
+
+    return( pa );
+}
 
 
 /***************************************************************************/
@@ -59,16 +107,21 @@ void    add_macro_cb_entry( mac_entry * me, gtentry * ge )
     nip->if_cb       = mem_alloc( sizeof( ifcb ) );
     memset( nip->if_cb, '\0', sizeof( ifcb ) );
     nip->pe_cb.count = -1;
-    nip->pe_cb.line = NULL;
+    nip->pe_cb.line  = NULL;
 
     init_dict( &nip->local_dict );
 
     nip->s.m        = new;
+    nip->fm_hh      = input_cbs->fm_hh;
+    nip->fm_symbol  = input_cbs->fm_symbol;
+    nip->hh_tag     = input_cbs->hh_tag;
+    nip->sym_space  = input_cbs->sym_space;
 
     new->lineno     = 0;
     new->macline    = me->macline;
     new->mac        = me;
     new->tag        = ge;
+    new->ix_seen    = false;
 
     if( ge == NULL ) {
         new->flags      = FF_macro;
@@ -78,8 +131,6 @@ void    add_macro_cb_entry( mac_entry * me, gtentry * ge )
         nip->fmflags    = II_tag;
     }
     nip->fmflags |= input_cbs->fmflags & II_research;   // copy research mode
-    nip->fmflags |= input_cbs->fmflags & II_sol;        // copy start-of-line
-    nip->fmflags |= input_cbs->fmflags & II_eol;        // copy end-of-line
 
     nip->prev = input_cbs;
     input_cbs = nip;
@@ -87,98 +138,204 @@ void    add_macro_cb_entry( mac_entry * me, gtentry * ge )
 }
 
 
-/*
- * add macro parms from input line as local symbolic variables
- * for non quoted parms try to assign symbolic variables
- * i.e. .mac     a b c *xyz="1.8" d "1 + 2"
- *          01234
- *        only 1 space after mac is ignored
- *    will give  &*=    a b c *xyz="1.8" d "1 + 2"
- *              &*0=5
- *              &*1=a
- *              &*2=b
- *              &*3=c
- *              &*4=d
- *              &*5=1 + 2
- *        and &*xyz=1.8
- *
- *  the variable for &* is named _  This can be changed if this leads to
- *  conflicts  -> change define MAC_STAR_NAME in gtype.h
- *
- */
+static const char *is_quoted_string( const char *p )
+{
+    char        quote;
+    const char  *pa;
+
+    /* Delimiter must be at the beginning and end of the string. */
+    if( is_quote_char( *p ) ) {
+        quote = *p;
+        pa = p;
+        pa++;                   // skip over delimiter
+        while( *pa != '\0' ) {
+            if( (pa[0] == quote) && ((pa[1] == ' ') || (pa[1] == '\0')) ) {
+                break;          // matching delimiter found
+            }
+            pa++;
+        }
+        if( *pa == quote ) {    // matching delimiter found
+            return( pa );
+        }
+    }
+    return( NULL );
+}
+
+
+/***************************************************************************/
+/* add macro parameters from input line as local automatic symbols         */
+/* also used with IN/AP to do the same for tokens following the file name  */
+/* for non delimited parameters try to assign local set symbols            */
+/* i.e. .mac     a b c *xyz="1.8" d "1 + 2"                                */
+/*          01234 -- only 1 space after mac is ignored                     */
+/*    will give  &*=    a b c *xyz="1.8" d "1 + 2"                         */
+/*              &*0=5                                                      */
+/*              &*1=a                                                      */
+/*              &*2=b                                                      */
+/*              &*3=c                                                      */
+/*              &*4=d                                                      */
+/*              &*5=1 + 2                                                  */
+/*        and &*xyz=1.8                                                    */
+/*  the variable for &* is named _  This can be changed if this leads to   */
+/*  conflicts  -> change define MAC_STAR_NAME in gtype.h                   */
+/*  note: .mac    "a b c" produces                                         */
+/*               &*=   "a b c"                                             */
+/*              &*1="a b c"                                                */
+/*  that is, it shares characteristics of both spaces and delimiters       */
+/*  some notes on delimiters are needed, at least as applied to local      */
+/*  automatic symbols; local set symbols are documented to use the same    */
+/*  rules as symbols defined with control word SE (TBD)                    */
+/*  .mac "a b c" produces:                                                 */
+/*               &*="a b c"                                                */
+/*              &*0=1                                                      */
+/*              &*1=a b c                                                  */
+/*  as might be expected but what may not be as expected is that           */
+/*  .mac ""a b c"" produces:                                               */
+/*               &*=""a b c""                                              */
+/*              &*0=1                                                      */
+/*              &*1="a b c"                                                */
+/*  and, indeed, the final delimiter is only recognized if it is followed  */
+/*  by a space or the terminating '\0'; otherwise, it is included:         */
+/*  .mac ""a b"c"" produces:                                               */
+/*               &*=""a b"c""                                              */
+/*              &*0=1                                                      */
+/*              &*1="a b"c"                                                */
+/*  while, if a space precedes "c", then "c" becomes the value of *2       */
+/*  Trailing spaces are removed, unless                                    */
+/*    the entire operand consists of space characters                      */
+/*    the line ends in a symbol that evaluates to an empty string          */
+/*      Note: * will have no value and *1 will not exist                   */
+/*    the space occurred before a separator character that split the line  */
+/*  Note: the parsing rules are a bit different from those used in         */
+/*        getarg(), so that function is not used                           */
+/***************************************************************************/
 
 void    add_macro_parms( char * p )
 {
-    int             len;
-    condcode        cc;
+    char        c;
+    char    *   pa;
+    char        quote;                  // delimiter character at start of parameter, if any
+    char        starbuf[NUM2STR_LENGTH];
+    condcode    cc;
+    int         star0;
+    size_t      len;
+    size_t      o_len;
 
-    /************************************************/
-    /*.macro   parameters                           */
-    /*      012                                     */
-    /*      p points here 2 spaces are kept         */
-    /************************************************/
-    p++;
-    len = strlen( p );
-    if( len > 0 ) {
-        char    starbuf[12];
-        int     star0;
-                                        // the macro parameter line
-                                        // the name _ has to change (perhaps)
-        add_symvar( &input_cbs->local_dict, MAC_STAR_NAME, p, no_subscript,
-                    local_var );
+    pa = p;                             // save start position
+    SkipSpaces( p );                    // find first nonspace character, if any
+    if( *p == '\0' ) {                  // only spaces follow the macro
+
+        /* local variable * must be added even though it has no value */
+
+        add_symvar( input_cbs->local_dict, MAC_STAR_NAME, p, no_subscript, local_var );
+    } else {                            // process text following the macro
+
+        /* remove trailing spaces if appropriate */
+
+        p = pa;                         // restore start position
+        o_len = strlen( p );
+        len = o_len;
+        if ( ProcFlags.pre_fsp ) {      // space characters from symbol/attribute/function evaluation
+            if( ProcFlags.concat && (len > 2) && (*(p + len - 1) == ' ') ) {
+                while( *(p + len - 2) == ' ' ) {        // remove trailing spaces
+                    len--;
+                    if( len == 0 ) {                    // empty operand
+                        break;
+                    }
+                }
+                *(p + len) = '\0';                      // end after last non-space character
+            }
+        } else {                        // explicit space characters
+            if( !ProcFlags.null_value && (input_cbs->prev->hidden_head == NULL) && (len != 0) ) {
+                while( *(p + len - 1) == ' ' ) {        // remove trailing spaces
+                    len--;
+                    if( len == 0 ) {                    // empty operand
+                        break;
+                    }
+                }
+                *(p + len) = '\0';                      // end after last non-space character
+            }
+        }
+
+        /* the name used for * is a macro because it may have to be changed -- TBD */
+
+        add_symvar( input_cbs->local_dict, MAC_STAR_NAME, p, no_subscript, local_var );
         star0 = 0;
-        garginit();
-        cc = getarg();
-        while( cc > omit ) {            // as long as there are parms
-            char        c;
-            char    *   scan_save;
+        tok_start = p;                  // save start of parameter
+        SkipSpaces( p );                // find first nonspace character
+        while( *p != '\0' ) {           // as long as there are parms
+            if( is_quoted_string( p ) ) {   // argument is quoted
+                star0++;
+                sprintf( starbuf, "%d", star0 );
+                quote = *p;
+                pa = p;
+                pa++;
+                while( *pa != '\0' ) {
+                    if( (pa[0] == quote) && ((pa[1] == ' ') || (pa[1] == '\0')) ) {
+                        break;          // matching delimiter found
+                    }
+                    pa++;
+                }
+                if( *pa == quote ) {    // matching delimiter found
+                    p++;                // exclude initial delimiter
+                }
+                c = *pa;                // prepare value end
+                *pa = '\0';             // terminate string
+                add_symvar( input_cbs->local_dict, starbuf, p, no_subscript, local_var );
+                *pa = c;                // restore original char at string end
+                if( *pa == quote ) {    // pa was decremented above
+                    pa++;               // point to character after parameter
+                }
+                p = pa;
+            } else {                    // look if it is a symbolic variable definition
+                char    *ps;
 
-            if( cc == pos ) {           // argument not quoted
-                           /* look if it is a symbolic variable definition */
-                scan_save  = scan_start;
-                c          = *scan_save; // prepare value end
-                *scan_save = '\0';      // terminate string
-                scan_start = tok_start; // rescan for variable
+                pa = p;
+                pa++;
+                SkipNonSpaces( pa );
+                c = *pa;                // prepare value end
+                *pa = '\0';             // terminate string
+                scan_start = p;         // rescan for variable
                 ProcFlags.suppress_msg = true;  // no errmsg please
                 ProcFlags.blanks_allowed = 0;   // no blanks please
 
-                scr_se();               // try to set variable and value
+                ps = verify_sym( scan_start );
+                if( ps ) {              // have name=value pair?
+                    *pa = c;            // have to put old char back
+                    ps = (char *)is_quoted_string( ps );    // have name='string'?
+                    if( ps ) {
+                        pa = ps + 1;    // point past delimiter
+                        c = *pa;
+                        *pa = '\0';     // terminate after delimiter
+                    } else {
+                        *pa = '\0';     // terminate as before
+                    }
+                    scr_se();           // try to set variable and value
+                }
 
                 ProcFlags.suppress_msg = false; // reenable err msg
                 ProcFlags.blanks_allowed = 1;   // blanks again
-                *scan_save = c;        // restore original char at string end
-                scan_start = scan_save; // restore scan address
+                *pa = c;                // restore original char at string end
+                scan_start = p;         // restore scan address
                 if( scan_err ) {        // not variable=value format
                     cc = omit;
                     star0++;
                     sprintf( starbuf, "%d", star0 );
-                    p = tok_start + arg_flen;
-                    c = *p;                 // prepare value end
-                    *p = '\0';              // terminate string
-                    add_symvar( &input_cbs->local_dict, starbuf, tok_start,
+                    c = *pa;            // prepare value end
+                    *pa = '\0';         // terminate string
+                    add_symvar( input_cbs->local_dict, starbuf, p,
                                 no_subscript, local_var );
-                    *p = c;                // restore original char at string end
+                    *pa = c;            // restore original char at string end
                 }
-
+                p = pa;
             }
-            if( cc == quotes ) {        // add argument as local symbolic var
-                star0++;
-                sprintf( starbuf, "%d", star0 );
-                p = tok_start + arg_flen;
-                c = *p;                 // prepare value end
-                *p = '\0';              // terminate string
-                add_symvar( &input_cbs->local_dict, starbuf, tok_start,
-                            no_subscript, local_var );
-                *p = c;                // restore original char at string end
-            }
-            cc = getarg();              // look for next parm
+            SkipSpaces( p );            // over spaces
         }
                                         // the positional parameter count
-        add_symvar( &input_cbs->local_dict, "0", starbuf,
-                    no_subscript, local_var );
+        add_symvar( input_cbs->local_dict, "0", starbuf, no_subscript, local_var );
     }
 
-    if( input_cbs->fmflags & II_research && GlobFlags.firstpass ) {
+    if( (input_cbs->fmflags & II_research) && GlobalFlags.firstpass ) {
         print_sym_dict( input_cbs->local_dict );
     }
 }
@@ -258,8 +415,10 @@ void    free_lines( inp_line * line )
 
 void    scr_dm( void )
 {
+    char            cw[9];
     char        *   nmstart;
     char        *   p;
+    char        *   pa;
     char        *   pn;
     char            save;
     int             len;
@@ -273,50 +432,36 @@ void    scr_dm( void )
     line_number     lineno_start;
     condcode        cc;
     inputcb     *   cb;
-    char            linestr[MAX_L_AS_STR];
+    char            linestr[NUM2STR_LENGTH];
 
     cb = input_cbs;
-
-    garginit();
 
     cc = getarg();
 
     if( cc == omit ) {
-        err_count++;
-        g_err( err_missing_name );
-        sprintf( linestr, "%lu", cb->s.f->lineno );
-        g_info( inf_file_line, linestr, cb->s.f->filename );
-        show_include_stack();
-        return;
+        xx_source_err( err_missing_name );
     }
-
-    p   = tok_start;
-    pn  = macname;
-    len = 0;
 
     /*  truncate name if too long WITHOUT error msg
      *  this is wgml 4.0 behaviour
      *
      */
-    while( *p && is_macro_char( *p ) ) {
-        if( len < MAC_NAME_LENGTH ) {
-            *pn++ = toupper( *p++ );    // copy lowercase macroname
-            *pn   = '\0';
-        } else {
+    len = 0;
+    p   = tok_start;
+    pn  = macname;
+    while( len < MAC_NAME_LENGTH ) {
+        if( is_space_tab_char( *p ) || (*p == '\0') ) { // largest possible macro name
             break;
         }
+        *pn++ = my_tolower( *p++ );     // copy lowercase macroname
         len++;
     }
-    macname[MAC_NAME_LENGTH] = '\0';
+    *pn = '\0';
 
     cc = getarg();
     if( cc == omit ) {                  // nothing found
-        err_count++;
         // SC--048 A control word parameter is missing
-        g_err( err_mac_def_fun, macname );
-        sprintf( linestr, "%lu", cb->s.f->lineno );
-        g_info( inf_file_line, linestr, cb->s.f->filename );
-        return;
+        xx_source_err_c( err_mac_def_fun, macname );
     }
 
     p    = scan_start;
@@ -326,8 +471,8 @@ void    scr_dm( void )
     *p   = '\0';
     macro_line_count = 0;
 
-    compend   = !stricmp( tok_start, "end" );
-    compbegin = !stricmp( tok_start, "begin" );
+    compend   = stricmp( "end", tok_start ) == 0;
+    compbegin = stricmp( "begin", tok_start ) == 0;
     if( !(compbegin | compend) ) { // only .dm macname /line1/line2/ possible
         char    sepchar;
 
@@ -335,11 +480,7 @@ void    scr_dm( void )
             tok_start--;    // for single line .dm /yy/xxy/.. back to sepchar
         }
         if( ProcFlags.in_macro_define ) {
-            err_count++;
-            g_err( err_mac_def_nest, tok_start );
-            sprintf( linestr, "%lu", cb->s.f->lineno );
-            g_info( inf_file_line, linestr, cb->s.f->filename );
-            return;
+            xx_source_err_c( err_mac_def_nest, tok_start );
         }
         ProcFlags.in_macro_define = 1;
 
@@ -349,8 +490,8 @@ void    scr_dm( void )
         p = tok_start;
         sepchar = *p++;
         nmstart = p;
-        while( *p ) {
-            while( *p && *p != sepchar ) {  // look for seperator
+        while( *p != '\0' ) {
+            while( *p != '\0' && *p != sepchar ) {  // look for separator
                 ++p;
             }
             len = p - nmstart;
@@ -372,19 +513,12 @@ void    scr_dm( void )
     }                                   // BEGIN or END not found
 
     if( compend && !(ProcFlags.in_macro_define) ) {
-        err_count++;
         // SC--003: A macro is not being defined
-        g_err( err_mac_def_end, macname );
-        sprintf( linestr, "%lu", cb->s.f->lineno );
-        g_info( inf_file_line, linestr, cb->s.f->filename );
-        return;
+        xx_source_err_c( err_mac_def_end, macname );
     }
     if( compbegin && (ProcFlags.in_macro_define) ) {
-        err_count++;
         // SC--002 The control word parameter '%s' is invalid
-        g_err( err_mac_def_nest, macname );
-        sprintf( linestr, "%lu", cb->s.f->lineno );
-        g_info( inf_file_line, linestr, cb->s.f->filename );
+        xx_source_err_c( err_mac_def_nest, macname );
     }
     *p  = save;
     if( compbegin ) {                   // start new macro define
@@ -399,60 +533,61 @@ void    scr_dm( void )
             if( cb->s.f->flags & (FF_eof | FF_err) ) {
                 break;                  // out of read loop
             }
+
+            len = 0;
             p = buff2;
-            if( *p == SCR_char ) {      // possible macro end
-                int second = (*(p + 1) == SCR_char);// for ..dm case
+            pa = cw;
+            if( *p == SCR_char ) {              // only test script control words
+                p++;
 
-                if( tolower( *(p + 1 + second) ) == 'd' &&
-                    tolower( *(p + 2 + second) ) == 'm' &&
-                    (*(p + 3 + second) == ' ' || *(p + 3 + second) == '\0') ) {
+                /****************************************************************/
+                /* although ".." is used with DM in the OW Docs, '.'" is not    */
+                /* constructs like "..'" ".'." have yet to be explored          */
+                /****************************************************************/
 
-                    garginit();
-
-                    cc = getarg();
-                    if( cc == omit ) {  // only .dm  means macro end
-                        compend = 1;
-                        break;          // out of read loop
+                if( (*p == SCR_char)  || (*p == '\'') ) {
+                    p++;                        // over ".." or ".'"
+                }
+                while( len < MAC_NAME_LENGTH ) {
+                    if( is_space_tab_char( *p ) || (*p == '\0') ) { // largest possible macro/cw
+                        break;
                     }
-                    p = scan_start;
-                    save = *p;
-                    *p = '\0';
-                    if( strnicmp( macname, tok_start, MAC_NAME_LENGTH ) ) {
-                        // macroname from begin different from end
-                        err_count++;
-                        // SC--005 Macro '%s' is not being defined
-                        g_err( err_mac_def_not, tok_start );
-                        sprintf( linestr, "%lu", cb->s.f->lineno );
-                        g_info( inf_file_line, linestr, cb->s.f->filename );
+                   *pa++ = my_tolower( *p++ );  // copy lowercase to TokenBuf
+                   len++;
+                }
+                *pa = '\0';
+                if( !strncmp( cw, "dm", SCR_KW_LENGTH ) ) {
+                    if( (len == SCR_KW_LENGTH) || ((len > SCR_KW_LENGTH) &&
+                                (find_macro( macro_dict, cw ) == NULL)) ) { // .dm control word
+                        cc = getarg();
+                        if( cc == omit ) {  // only .dm  means macro end
+                            compend = 1;
+                            break;          // out of read loop
+                        }
+                        p = scan_start;
+                        save = *p;
+                        *p = '\0';
+                        if( strnicmp( macname, tok_start, MAC_NAME_LENGTH ) ) {
+                            // macroname from begin different from end
+                            // SC--005 Macro '%s' is not being defined
+                            xx_source_err_c( err_mac_def_not, tok_start );
+                        }
                         *p = save;
-                        free_lines( head );
-                        return;
+                        cc = getarg();
+                        if( cc == omit ) {
+                            // SC--048 A control word parameter is missing
+                            xx_source_err( err_mac_def_miss );
+                        }
+                        p = scan_start;
+                        save = *p;
+                        *p = '\0';
+                        if( stricmp( "end", tok_start ) != 0 ) {
+                            // SC--002 The control word parameter '%s' is invalid
+                            xx_source_err_c( err_mac_def_inv, tok_start );
+                        }
+                        compend = 1;
+                        break;              // out of read loop
                     }
-                    *p = save;
-                    cc = getarg();
-                    if( cc == omit ) {
-                        err_count++;
-                        // SC--048 A control word parameter is missing
-                        g_err( err_mac_def_miss );
-                        sprintf( linestr, "%lu", cb->s.f->lineno );
-                        g_info( inf_file_line, linestr, cb->s.f->filename );
-                        free_lines( head );
-                        return;
-                    }
-                    p = scan_start;
-                    save = *p;
-                    *p = '\0';
-                    if( stricmp( tok_start, "end") ) {
-                        err_count++;
-                        // SC--002 The control word parameter '%s' is invalid
-                        g_err( err_mac_def_inv, tok_start );
-                        sprintf( linestr, "%lu", cb->s.f->lineno );
-                        g_info( inf_file_line, linestr, cb->s.f->filename );
-                        free_lines( head );
-                        return;
-                    }
-                    compend = 1;
-                    break;              // out of read loop
                 }
             }
             work = mem_alloc( sizeof( inp_line ) + cb->s.f->usedlen );
@@ -466,16 +601,11 @@ void    scr_dm( void )
                 head = work;
             }
             macro_line_count++;
-        }                               // end read loop
+        }                                   // end read loop
         if( cb->s.f->flags & (FF_eof | FF_err) ) {
-            err_count++;
             // error SC--004 End of file reached
             // macro '%s' is still being defined
-            g_err( err_mac_def_eof, macname );
-            sprintf( linestr, "%lu", cb->s.f->lineno );
-            g_info( inf_file_line, linestr, cb->s.f->filename );
-            free_lines( head );
-            return;
+            xx_source_err_c( err_mac_def_eof, macname );
         }
     }                                   // end compbegin
 
@@ -484,7 +614,7 @@ void    scr_dm( void )
 
         me = find_macro( macro_dict, macname );
         if( me != NULL ) {              // delete macro with same name
-            free_macro_entry( &macro_dict, me );
+            free_macro_entry( macro_dict, me );
         }
 
         ProcFlags.in_macro_define = 0;
@@ -497,21 +627,16 @@ void    scr_dm( void )
         me->lineno = lineno_start;
         me->mac_file_name = cb->s.f->filename;
 
-        add_macro_entry( &macro_dict, me );
+        add_macro_entry( macro_dict, me );
 
-        if( cb->fmflags & II_research && GlobFlags.firstpass ) {
+        if( (cb->fmflags & II_research) && GlobalFlags.firstpass ) {
             sprintf( linestr, "%d", macro_line_count );
             g_info( inf_mac_defined, macname, linestr );
         }
     } else {
-        ProcFlags.in_macro_define = 0;
-        err_count++;
-        g_err( err_mac_def_logic, macname );
-        free_lines( head );
-        show_include_stack();
-        return;
+        xx_source_err_c( err_mac_def_logic, macname );
     }
-    scan_restart = scan_stop;
+    scan_restart = scan_stop + 1;
     return;
 }
 
@@ -554,13 +679,11 @@ void    scr_me( void )
 
     if( input_cbs->prev != NULL ) {     // if not master document file
 
-        garginit();
-
         cc = getarg();
         if( cc != omit ) {              // line operand present
 
-            free_lines( input_cbs->hidden_head );   // clear stacked input
-            split_input( buff2, tok_start, true );  // stack line operand
+            free_lines( input_cbs->hidden_head );       // clear stacked input
+            split_input( buff2, tok_start, input_cbs->fmflags );    // stack line operand
 
             // now move stacked line to previous input stack
 
@@ -576,15 +699,8 @@ void    scr_me( void )
 
     input_cbs->if_cb->if_level = 0;     // terminate
     ProcFlags.keep_ifstate = false;     // ... all .if controls
-    scan_restart = scan_stop;
+    scan_restart = scan_stop + 1;
     return;
-}
-
-
-static void macro_missing( void )
-{
-    g_err( err_mac_name_inv );
-    g_info_inp_pos();
 }
 
 
@@ -650,36 +766,29 @@ void    scr_em( void )
 
     cb = input_cbs;
 
-    garginit();
-
     cc = getarg();
 
     if( cc == omit ) {
-        err_count++;
-        macro_missing();
-        show_include_stack();
-        return;
+        xx_source_err( err_mac_name_inv );
     }
 
     if( *tok_start == SCR_char ) {      // possible macro name
         p   = tok_start + 1;            // over .
-        pn  = macname;
-        len = 0;
 
         /*  truncate name if too long WITHOUT error msg
          *  this is wgml 4.0 behaviour
          *
          */
-        while( *p && is_macro_char( *p ) ) {
-            if( len < MAC_NAME_LENGTH ) {
-                *pn++ = *p++;           // copy macroname
-                *pn   = '\0';
-            } else {
+        len = 0;
+        pn  = macname;
+        while( len < MAC_NAME_LENGTH ) {
+            if( is_space_tab_char( *p ) || (*p == '\0') ) {     // largest possible macro/cw
                 break;
             }
+            *pn++ = *p++;           // copy macroname
             len++;
         }
-        macname[MAC_NAME_LENGTH] = '\0';
+        *pn = '\0';
 
         me = find_macro( macro_dict, macname );
     } else {
@@ -687,14 +796,11 @@ void    scr_em( void )
     }
 
     if( me == NULL ) {                  // macro not specified or not defined
-        err_count++;
-        macro_missing();
-        show_include_stack();
-        return;
+        xx_source_err( err_mac_name_inv );
     } else {
-        split_input( buff2, tok_start, true ); // stack line operand in input
+        split_input( buff2, tok_start, input_cbs->fmflags );    // stack line operand
     }
-    scan_restart = scan_stop;
+    scan_restart = scan_stop + 1;
     return;
 }
 

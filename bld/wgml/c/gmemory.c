@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2004-2020 The Open Watcom Contributors. All Rights Reserved.
+*  Copyright (c) 2004-2007 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -31,7 +31,6 @@
 
 
 #include "wgml.h"
-#include "wresmem.h"
 
 
 #ifdef TRMEM
@@ -46,15 +45,18 @@
     /*  Memory tracker output function                                     */
     /***********************************************************************/
 
-    static void printline( void *fhandle, const char *buff, size_t len )
+    static void prt( void * fhandle, const char * buff, size_t len )
     {
-        /* unused parameters */ (void)fhandle; (void)len;
+        size_t i;
 
-        fprintf( stdout, "%s\n", buff );    // use stdout for now (easier redirection)
+        fhandle = fhandle;
+        for( i = 0; i < len; ++i ) {
+    //      fputc( *buff++, stderr );
+            fputc( *buff++, stdout );   // use stdout for now (easier redirection)
+        }
     }
 
 #endif
-
 
 
 /***************************************************************************/
@@ -64,7 +66,7 @@
 void mem_init( void )
 {
 #ifdef TRMEM
-    handle = _trmem_open( malloc, free, realloc, NULL, NULL, printline,
+    handle = _trmem_open( &malloc, &free, &realloc, NULL, NULL, &prt,
                           _TRMEM_ALLOC_SIZE_0 | _TRMEM_REALLOC_SIZE_0 |
                           _TRMEM_REALLOC_NULL | _TRMEM_FREE_NULL |
                           _TRMEM_OUT_OF_MEMORY | _TRMEM_CLOSE_CHECK_FREE );
@@ -72,7 +74,7 @@ void mem_init( void )
 }
 
 /***************************************************************************/
-/*  display current memory usage                                           */
+/*  display current memory usage                                      */
 /***************************************************************************/
 
 void mem_prt_curr_usage( void )
@@ -83,7 +85,7 @@ void mem_prt_curr_usage( void )
 }
 
 /***************************************************************************/
-/*  display peak memory usage                                              */
+/*  display peak memory usage                                      */
 /***************************************************************************/
 
 unsigned long mem_get_peak_usage( void )
@@ -104,20 +106,6 @@ void mem_banner( void )
 {
 #ifdef  TRMEM
     out_msg( "Compiled with TRMEM memory tracker (trmem)" CRLF );
-#endif
-}
-
-
-/***************************************************************************/
-/*  memorytracker validate allocated storage                               */
-/***************************************************************************/
-
-int mem_validate( void )
-{
-#ifdef TRMEM
-    return( _trmem_validate_all( handle ) );
-#else
-    return( 1 );   // always succeed if trmem not in use
 #endif
 }
 
@@ -148,44 +136,9 @@ void *mem_alloc( size_t size )
     p = malloc( size );
 #endif
     if( p == NULL ) {
-        g_err( err_nomem_avail );
-        err_count++;
-        g_suicide();
+        xx_simple_err( err_nomem_avail );
     }
     return( p );
-}
-
-/***************************************************************************/
-/*  Allocate string duplication                                            */
-/***************************************************************************/
-
-void *mem_dupstr( const char *str )
-{
-    void    *p;
-    size_t  size;
-
-    size = strlen( str ) + 1;
-#ifdef TRMEM
-    p = _trmem_alloc( size, _trmem_guess_who(), handle );
-#else
-    p = malloc( size );
-#endif
-    if( p == NULL ) {
-        g_err( err_nomem_avail );
-        err_count++;
-        g_suicide();
-    }
-    strcpy( p, str );
-    return( p );
-}
-
-void *wres_alloc( size_t size )
-{
-#ifdef TRMEM
-    return( _trmem_alloc( size, _trmem_guess_who(), handle ) );
-#else
-    return( malloc( size ) );
-#endif
 }
 
 /***************************************************************************/
@@ -202,13 +155,55 @@ void *mem_realloc( void * oldp, size_t size )
     p = realloc( oldp, size );
 #endif
     if( p == NULL ) {
-        g_err( err_nomem_avail );
-        err_count++;
-        g_suicide();
+        xx_simple_err( err_nomem_avail );
     }
     return( p );
 }
 
+
+/***************************************************************************/
+/*  duplicate string                                                  */
+/***************************************************************************/
+
+char *mem_strdup( const char *str )
+{
+    size_t  size;
+    char    *p;
+
+    if( str == NULL )
+        str = "";
+    size = strlen( str );
+#ifdef TRMEM
+    p = _trmem_alloc( size + 1, _trmem_guess_who(), handle );
+#else
+    p = malloc( size + 1 );
+#endif
+    if( p == NULL ) {
+        xx_simple_err( err_nomem_avail );
+    }
+    return( strcpy( p, str ) );
+}
+
+/***************************************************************************/
+/*  duplicate token                                                        */
+/***************************************************************************/
+
+char *mem_tokdup( const char *str, int size )
+{
+    char    *p;
+
+#ifdef TRMEM
+    p = _trmem_alloc( size + 1, _trmem_guess_who(), handle );
+#else
+    p = malloc( size + 1 );
+#endif
+    if( p == NULL ) {
+        xx_simple_err( err_nomem_avail );
+    }
+    strncpy( p, str, size );
+    p[size] = '\0';
+    return( p );
+}
 
 /***************************************************************************/
 /*  Free storage                                                           */
@@ -224,11 +219,29 @@ void mem_free( void * p )
     p = NULL;
 }
 
-void wres_free( void *ptr )
+/* These functions were added for use in debugging */
+
+/***************************************************************************/
+/*  memorytracker validate allocated storage                               */
+/***************************************************************************/
+
+int mem_validate( void )
 {
 #ifdef TRMEM
-    _trmem_free( ptr, _trmem_guess_who(), handle );
-#else
-    free( ptr );
+    return(_trmem_validate_all( handle ));
+#endif
+    return 1;   // always succeed if trmem not in use
+}
+
+
+/***************************************************************************/
+/*   memorytracker print list                                              */
+/***************************************************************************/
+
+void mem_prt_list( void )
+{
+#ifdef TRMEM
+    _trmem_prt_list( handle );
 #endif
 }
+

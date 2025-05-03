@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2004-2013 The Open Watcom Contributors. All Rights Reserved.
+*  Copyright (c) 2004-2009 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -31,7 +31,9 @@
 *               and &'lastpos()
 ****************************************************************************/
 
+
 #include "wgml.h"
+
 
 /***************************************************************************/
 /*                                                                         */
@@ -88,7 +90,7 @@
 /*                                                                         */
 /***************************************************************************/
 
-condcode    scr_index( parm parms[MAX_FUN_PARMS], size_t parmcount, char **result, int32_t ressize )
+condcode    scr_index( parm parms[MAX_FUN_PARMS], size_t parmcount, char * * result, int32_t ressize )
 {
     char            *   pneedle;
     char            *   pneedlend;
@@ -97,45 +99,42 @@ condcode    scr_index( parm parms[MAX_FUN_PARMS], size_t parmcount, char **resul
     condcode            cc;
     int                 index;
     int                 n;
-    size_t              hay_len;
-    size_t              needle_len;
+    int                 hay_len;
+    int                 needle_len;
     getnum_block        gn;
     char            *   ph;
     char            *   pn;
 
-    /* unused parameters */ (void)ressize;
+    (void)ressize;
 
     if( (parmcount < 2) || (parmcount > 3) ) {
         cc = neg;
         return( cc );
     }
 
-    phay = parms[0].start;
-    phayend = parms[0].stop;
+    phay = parms[0].a;
+    phayend = parms[0].e;
 
     unquote_if_quoted( &phay, &phayend );
-    hay_len = phayend - phay;           // haystack length
+    hay_len = phayend - phay + 1;       // haystack length
 
-    pneedle = parms[1].start;
-    pneedlend = parms[1].stop;
+    pneedle = parms[1].a;
+    pneedlend = parms[1].e;
 
     unquote_if_quoted( &pneedle, &pneedlend );
-    needle_len = pneedlend - pneedle;   // needle length
+    needle_len = pneedlend - pneedle + 1;   // needle length
 
     n   = 0;                            // default start pos
     gn.ignore_blanks = false;
 
     if( parmcount > 2 ) {               // evalute start pos
-        if( parms[2].stop > parms[2].start ) {// start pos specified
-            gn.argstart = parms[2].start;
-            gn.argstop  = parms[2].stop;
+        if( parms[2].e >= parms[2].a ) {// start pos specified
+            gn.argstart = parms[2].a;
+            gn.argstop  = parms[2].e;
             cc = getnum( &gn );
             if( (cc != pos) || (gn.result == 0) ) {
                 if( !ProcFlags.suppress_msg ) {
-                    g_err( err_func_parm, "3 (startpos)" );
-                    g_info_inp_pos();
-                    err_count++;
-                    show_include_stack();
+                    xx_source_err_c( err_func_parm, "3 (startpos)" );
                 }
                 return( cc );
             }
@@ -143,8 +142,8 @@ condcode    scr_index( parm parms[MAX_FUN_PARMS], size_t parmcount, char **resul
         }
     }
 
-    if( (hay_len == 0) ||               // null string nothing to do
-        (needle_len == 0) ||            // needle null nothing to do
+    if( (hay_len <= 0) ||               // null string nothing to do
+        (needle_len <= 0) ||            // needle null nothing to do
         (needle_len > hay_len) ||       // needle longer haystack
         (n + needle_len > hay_len) ) {  // startpos + needlelen > haystack
                                         // ... match impossible
@@ -159,13 +158,13 @@ condcode    scr_index( parm parms[MAX_FUN_PARMS], size_t parmcount, char **resul
     pn = pneedle;
     index = 0;
 
-    for( ph = phay + n; ph <= phayend - needle_len; ph++ ) {
-        for( pn = pneedle; pn < pneedlend; ++pn ) {
-            if( *ph != *pn )
-                break;
-            ++ph;
+    for( ph = phay + n; ph <= phayend - needle_len + 1; ph++ ) {
+        pn = pneedle;
+        while( (*ph == *pn) && (pn <= pneedlend)) {
+            ph++;
+            pn++;
         }
-        if( pn >= pneedlend ) {
+        if( pn > pneedlend ) {
             index = ph - phay - needle_len + 1; // found, set index
             break;
         }
@@ -189,13 +188,13 @@ condcode    scr_pos( parm parms[MAX_FUN_PARMS], size_t parmcount, char * * resul
         return( neg );
     }
 
-    pwk = parms[0].start;
-    parms[0].start = parms[1].start;
-    parms[1].start = pwk;
+    pwk = parms[0].a;
+    parms[0].a = parms[1].a;
+    parms[1].a = pwk;
 
-    pwk = parms[0].stop;
-    parms[0].stop = parms[1].stop;
-    parms[1].stop = pwk;
+    pwk = parms[0].e;
+    parms[0].e = parms[1].e;
+    parms[1].e = pwk;
 
     return( scr_index( parms, parmcount, result, ressize ) );
 }
@@ -213,45 +212,42 @@ condcode    scr_lpos( parm parms[MAX_FUN_PARMS], size_t parmcount, char * * resu
     condcode            cc;
     int                 index;
     int                 n;
-    size_t              hay_len;
-    size_t              needle_len;
+    int                 hay_len;
+    int                 needle_len;
     getnum_block        gn;
     char            *   ph;
     char            *   pn;
 
-    /* unused parameters */ (void)ressize;
+    (void)ressize;
 
     if( (parmcount < 2) || (parmcount > 3) ) {
         cc = neg;
         return( cc );
     }
 
-    pneedle = parms[0].start;
-    pneedlend = parms[0].stop;
+    pneedle = parms[0].a;
+    pneedlend = parms[0].e;
 
     unquote_if_quoted( &pneedle, &pneedlend );
-    needle_len = pneedlend - pneedle;   // needle length
+    needle_len = pneedlend - pneedle + 1;   // needle length
 
-    phay = parms[1].start;
-    phayend = parms[1].stop;
+    phay = parms[1].a;
+    phayend = parms[1].e;
 
     unquote_if_quoted( &phay, &phayend );
-    hay_len = phayend - phay;           // haystack length
+    hay_len = phayend - phay + 1;       // haystack length
 
     n   = 0;                            // default start pos
     gn.ignore_blanks = false;
 
     if( parmcount > 2 ) {               // evalute start pos
-        if( parms[2].stop > parms[2].start ) {// start pos specified
-            gn.argstart = parms[2].start;
-            gn.argstop  = parms[2].stop;
+        if( parms[2].e >= parms[2].a ) {// start pos specified
+            gn.argstart = parms[2].a;
+            gn.argstop  = parms[2].e;
             cc = getnum( &gn );
             if( (cc != pos) || (gn.result == 0) ) {
                 if( !ProcFlags.suppress_msg ) {
-                    g_err( err_func_parm, "3 (startpos)" );
-                    g_info_inp_pos();
-                    err_count++;
-                    show_include_stack();
+                    xx_source_err_c( err_func_parm, "3 (startpos)" );
                 }
                 return( cc );
             }
@@ -259,8 +255,8 @@ condcode    scr_lpos( parm parms[MAX_FUN_PARMS], size_t parmcount, char * * resu
         }
     }
 
-    if( (hay_len == 0) ||               // null string nothing to do
-        (needle_len == 0) ||            // needle null nothing to do
+    if( (hay_len <= 0) ||               // null string nothing to do
+        (needle_len <= 0) ||            // needle null nothing to do
         (needle_len > hay_len) ||       // needle longer haystack
         (n + needle_len > hay_len) ) {  // startpos + needlelen > haystack
                                         // ... match impossible
@@ -275,14 +271,14 @@ condcode    scr_lpos( parm parms[MAX_FUN_PARMS], size_t parmcount, char * * resu
     pn = pneedle;
     index = 0;
 
-    for( ph = phayend; ph > phay + n ; --ph ) {
-        for( pn = pneedlend; pn > pneedle; --pn ) {
-            if( *(ph - 1) != *(pn - 1) )
-                break;
-            --ph;
+    for( ph = phayend; ph >= phay + n ; ph-- ) {
+        pn = pneedlend;
+        while( (*ph == *pn) && (pn >= pneedle)) {
+            ph--;
+            pn--;
         }
-        if( pn <= pneedle ) {
-            index = ph - phay + 1;          // found, set index
+        if( pn < pneedle ) {
+            index = ph - phay + 2;          // found, set index
             break;
         }
     }
@@ -291,3 +287,4 @@ condcode    scr_lpos( parm parms[MAX_FUN_PARMS], size_t parmcount, char * * resu
 
     return( pos );
 }
+

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2004-2013 The Open Watcom Contributors. All Rights Reserved.
+*  Copyright (c) 2004-2009 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -28,9 +28,11 @@
 *
 ****************************************************************************/
 
+
 #include "wgml.h"
 
 #include "clibext.h"
+
 
 /***************************************************************************/
 /*   :LP    attributes                                                     */
@@ -65,7 +67,7 @@ const   lay_att     lp_att[7] =
 /*by the current line spacing (see "Vertical Space Unit" on page 77 for          */
 /*more information). The resulting amount of space is skipped before             */
 /*the list part. The pre-skip will be merged with the previous                   */
-/*document entity's post-skip value. If a pre-skip occurs at the                */
+/*document entityٿs post-skip value. If a pre-skip occurs at the                */
 /*beginning of an output page, the pre-skip value has no effect.                 */
 /*                                                                               */
 /*post_skip This attribute accepts vertical space units. A zero value means that */
@@ -73,7 +75,7 @@ const   lay_att     lp_att[7] =
 /*by the current line spacing (see "Vertical Space Unit" on page 77 for          */
 /*more information). The resulting amount of space is skipped after              */
 /*the list part. The post-skip will be merged with the next document             */
-/*entity's pre-skip value. If a post-skip occurs at the end of an output        */
+/*entityٿs pre-skip value. If a post-skip occurs at the end of an output        */
 /*page, any remaining part of the skip is not carried over to the next           */
 /*output page.                                                                   */
 /*                                                                               */
@@ -89,79 +91,103 @@ const   lay_att     lp_att[7] =
 /*  lay_lp                                                                 */
 /***************************************************************************/
 
-void    lay_lp( lay_tag ltag )
+void    lay_lp( const gmltag * entry )
 {
     char        *   p;
     condcode        cc;
+    int             cvterr;
     int             k;
     lay_att         curr;
-    att_args        l_args;
-    int             cvterr;
 
-    /* unused parameters */ (void)ltag;
+    (void)entry;
 
     p = scan_start;
     cvterr = false;
 
-    if( !GlobFlags.firstpass ) {
-        scan_start = scan_stop;
+    if( !GlobalFlags.firstpass ) {
+        scan_start = scan_stop + 1;
         eat_lay_sub_tag();
         return;                         // process during first pass only
     }
+    memset( &AttrFlags, 0, sizeof( AttrFlags ) );   // clear all attribute flags
     if( ProcFlags.lay_xxx != el_lp ) {
         ProcFlags.lay_xxx = el_lp;
     }
-    cc = get_lay_sub_and_value( &l_args );              // get att with value
+    cc = get_attr_and_value();            // get att with value
     while( cc == pos ) {
         cvterr = -1;
         for( k = 0, curr = lp_att[k]; curr > 0; k++, curr = lp_att[k] ) {
 
-            if( !strnicmp( att_names[curr], l_args.start[0], l_args.len[0] ) ) {
-                p = l_args.start[1];
+            if( !strnicmp( att_names[curr], g_att_val.att_name, g_att_val.att_len ) ) {
+                p = g_att_val.val_name;
 
                 switch( curr ) {
                 case   e_left_indent:
+                    if( AttrFlags.left_indent ) {
+                        xx_line_err_ci( err_att_dup, g_att_val.att_name,
+                            g_att_val.val_name - g_att_val.att_name + g_att_val.val_len);
+                    }
                     cvterr = i_space_unit( p, curr,
                                            &layout_work.lp.left_indent );
+                    AttrFlags.left_indent = true;
                     break;
                 case   e_right_indent:
+                    if( AttrFlags.right_indent ) {
+                        xx_line_err_ci( err_att_dup, g_att_val.att_name,
+                            g_att_val.val_name - g_att_val.att_name + g_att_val.val_len);
+                    }
                     cvterr = i_space_unit( p, curr,
                                            &layout_work.lp.right_indent );
+                    AttrFlags.right_indent = true;
                     break;
                 case   e_line_indent:
+                    if( AttrFlags.line_indent ) {
+                        xx_line_err_ci( err_att_dup, g_att_val.att_name,
+                            g_att_val.val_name - g_att_val.att_name + g_att_val.val_len);
+                    }
                     cvterr = i_space_unit( p, curr,
                                            &layout_work.lp.line_indent );
+                    AttrFlags.line_indent = true;
                     break;
                 case   e_pre_skip:
+                    if( AttrFlags.pre_skip ) {
+                        xx_line_err_ci( err_att_dup, g_att_val.att_name,
+                            g_att_val.val_name - g_att_val.att_name + g_att_val.val_len);
+                    }
                     cvterr = i_space_unit( p, curr, &layout_work.lp.pre_skip );
+                    AttrFlags.pre_skip = true;
                     break;
                 case   e_post_skip:
+                    if( AttrFlags.post_skip ) {
+                        xx_line_err_ci( err_att_dup, g_att_val.att_name,
+                            g_att_val.val_name - g_att_val.att_name + g_att_val.val_len);
+                    }
                     cvterr = i_space_unit( p, curr, &layout_work.lp.post_skip );
+                    AttrFlags.post_skip = true;
                     break;
                 case   e_spacing:
-                    cvterr = i_int8( p, curr, &layout_work.lp.spacing );
+                    if( AttrFlags.spacing ) {
+                        xx_line_err_ci( err_att_dup, g_att_val.att_name,
+                            g_att_val.val_name - g_att_val.att_name + g_att_val.val_len);
+                    }
+                    cvterr = i_spacing( p, curr, &layout_work.lp.spacing );
+                    AttrFlags.spacing = true;
                     break;
                 default:
-                    out_msg( "WGML logic error.\n");
-                    cvterr = true;
-                    break;
+                    internal_err( __FILE__, __LINE__ );
                 }
                 if( cvterr ) {          // there was an error
-                    err_count++;
-                    g_err( err_att_val_inv );
-                    file_mac_info();
+                    xx_err( err_att_val_inv );
                 }
                 break;                  // break out of for loop
             }
         }
         if( cvterr < 0 ) {
-            err_count++;
-            g_err( err_att_name_inv );
-            file_mac_info();
+            xx_err( err_att_name_inv );
         }
-        cc = get_lay_sub_and_value( &l_args );  // get att with value
+        cc = get_attr_and_value();            // get att with value
     }
-    scan_start = scan_stop;
+    scan_start = scan_stop + 1;
     return;
 }
 

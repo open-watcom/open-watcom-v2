@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2004-2022 The Open Watcom Contributors. All Rights Reserved.
+*  Copyright (c) 2004-2009 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -24,111 +24,101 @@
 *
 *  ========================================================================
 *
-* Description:  Implements predefined system variables SYSxxx and others
-*               most are readonly and some are calculated when accessed
-*                     incomplete                               TBD
+* Description:  Implements predefined system variables SYSxxx and more.
+*               Most are read-only and some are calculated on access.
+*
 ****************************************************************************/
+
 
 #include "wgml.h"
 
-#include "clibext.h"
 
 #define sys(x)  sys##x                  // construct symvar varname
 #define sysf(x) sys##x##fun             // construct access function name
 #define sys0(x) sys##x##0               // construct subscript 0 name
 #define syss(x) sys##x##str             // construct name for string value
 
-#define pica( var, next, flag )    pick( var, next, flag )
-#define picc( var, next, flag )    pick( var, next, flag )
-#define picl( var, next, flag )    pick( var, next, flag )
-#define pics( var, next, flag )    pick( var, next, flag )
 
 /***************************************************************************/
 /*  declare dictionary entries for system variables                        */
 /***************************************************************************/
 
-#define pick( var, next, flag ) static symvar sys( var );
+#define picka( var, flag )      pickk( var, flag )
+#define pickc( var, flag )      pickk( var, flag )
+#define pickl( var, flag )      pickk( var, flag )
+#define pickk( var, flag ) static symvar sys( var );
 #include "gsyssym.h"
-#undef pick
+#undef pickk
+#undef pickl
+#undef pickc
+#undef picka
 
-#define pick( var, next, flag ) static symsub sys0( var );
+#define picka( var, flag )      pickk( var, flag )
+#define pickc( var, flag )      pickk( var, flag )
+#define pickl( var, flag )      pickk( var, flag )
+#define pickk( var, flag ) static symsub sys0( var );
 #include "gsyssym.h"
-#undef pick
-#undef pica
-#undef picc
-#undef picl
-#undef pics
+#undef pickk
+#undef pickl
+#undef pickc
+#undef picka
 
 /***************************************************************************/
 /*  declare the access functions for system variables                      */
 /***************************************************************************/
 
-#define pica( var, next, flag )
-#define pics( var, next, flag )
-#define picc( var, next, flag ) picl( var, next, flag )
-#define pick( var, next, flag ) picl( var, next, flag )
-#define picl( var, next, flag ) static void sysf( var )( symvar * entry );
+#define picka( var, flag )
+#define pickc( var, flag )      pickl( var, flag )
+#define pickk( var, flag )      pickl( var, flag )
+#define pickl( var, flag ) static void sysf( var )( symvar * entry );
 #include "gsyssym.h"
-#undef pick
-#undef pica
-#undef picc
-#undef picl
-#undef pics
+#undef pickl
+#undef pickk
+#undef pickc
+#undef picka
 
 /***************************************************************************/
 /*  define char strings to hold the values of some system variables        */
 /***************************************************************************/
 
-#define pica( var, next, flag )
-#define pick( var, next, flag )
-#define picc( var, next, flag ) static char syss( var )[2];             // for single char values as string
-#define picl( var, next, flag ) static char syss( var )[MAX_L_AS_STR];  // for long as string and sysbxchar
-#define pics( var, next, flag ) static char syss( var )[60];            // for special string $docnum arbitrary length
+#define picka( var, flag )
+#define pickk( var, flag )
+#define pickc( var, flag ) static char syss( var )[2];              // for single char values as string
+#define pickl( var, flag ) static char syss( var )[NUM2STR_LENGTH]; // for number as string and sysbxchar
 #include "gsyssym.h"
-#undef pick
-#undef pica
-#undef picc
-#undef picl
-#undef pics
+#undef pickl
+#undef pickc
+#undef pickk
+#undef picka
 
 /***************************************************************************/
 /*  define the dictionary for the system variables                         */
 /*  The dictionary is built at compile time                                */
-/*  pica:       no access function, no separate string value               */
-/*  picc:          access function,    separate string value 2 chars       */
-/*  picl:          access function,    separate string value 12 chars      */
-/*  pics:       no access function,    separate string value 60 chars      */
-/*  pick:          access function, no separate string value               */
+/*  picka:      no access function, no separate string value               */
+/*  pickc:         access function,    separate string value 2 chars       */
+/*  pickl:         access function,    separate string value 12 chars      */
+/*  pickk:         access function, no separate string value               */
 /*                                  or 2 predefined values  ON OFF         */
 /***************************************************************************/
 
-#define picc( var, next, flag )     picl( var, next, flag )
-#define picl( var, next, flag )     \
-static symvar sys( var ) = {        \
-    &sys( next ), "$" #var, 0L, 0L, NULL, &sys0( var ), sysf( var ), flag };\
-static symsub sys0( var ) = { NULL, &sys( var ), no_subscript, syss( var ) };
-
-#define pica( var, next, flag )     \
-static symvar sys( var ) = {        \
-    &sys( next ), "$" #var, 0L, 0L, NULL, &sys0( var ), NULL, flag };\
-static symsub sys0( var ) = { NULL, &sys( var ), no_subscript, NULL };
-
-#define pics( var, next, flag )     \
-static symvar sys( var ) = {        \
-    &sys( next ), "$" #var, 0L, 0L, NULL, &sys0( var ), NULL, flag };\
-static symsub sys0( var ) = { NULL, &sys( var ), no_subscript, syss( var ) };
-
-#define pick( var, next, flag )     \
-static symvar sys( var ) = {        \
-    &sys( next ), "$" #var, 0L, 0L, NULL, &sys0( var ), sysf( var ), flag };\
-static symsub sys0( var ) = { NULL, &sys( var ), no_subscript, NULL };
-
+#define pickc( var, flag )      pickl( var, flag )
+#define pickl( var, flag )              \
+        static symvar sys( var ) = {    \
+            NULL, "$" #var, 0L, 0L, NULL, &sys0( var ), sysf( var ), flag }; \
+        static symsub sys0( var ) = { NULL, &sys( var ), no_subscript, syss( var ) };
+#define picka( var, flag )              \
+        static symvar sys( var ) = {    \
+            NULL, "$" #var, 0L, 0L, NULL, &sys0( var ), NULL, flag }; \
+        static symsub sys0( var ) = { NULL, &sys( var ), no_subscript, NULL };
+#define pickk( var, flag )              \
+        static symvar sys( var ) = {    \
+            NULL, "$" #var, 0L, 0L, NULL, &sys0( var ), sysf( var ), flag }; \
+        static symsub sys0( var ) = { NULL, &sys( var ), no_subscript, NULL };
 #include "gsyssym.h"
-#undef pick
-#undef pica
-#undef picc
-#undef picl
-#undef pics
+#undef pickk
+#undef picka
+#undef pickl
+#undef pickc
 
 
 /***************************************************************************/
@@ -159,7 +149,7 @@ void    add_to_sysdir( char * name, char char_val )
 {
     symsub  *   dictval;
 
-    find_symvar( &sys_dict, name, no_subscript, &dictval);
+    find_symvar( sys_dict, name, no_subscript, &dictval);
     *(dictval->value) = char_val;
 }
 
@@ -168,13 +158,11 @@ void    add_to_sysdir( char * name, char char_val )
 /*  the msg is only output for the first reference of every variable       */
 /***************************************************************************/
 
-static void var_wng( char * varname, symvar *e )
+static void var_wng( char * varname, symvar * e )
 {
     if( !ProcFlags.no_var_impl_err ) {  // for full dict print no err msg
         e->varfunc = NULL;              // deactivate after first warning
-        wng_count++;
-        g_warn( err_var_not_impl, varname );
-        file_mac_info();
+        xx_warn_c( err_var_not_impl, varname );
     }
     return;
 }
@@ -184,113 +172,113 @@ static void var_wng( char * varname, symvar *e )
 /*  only those with comments are 'real'                                    */
 /***************************************************************************/
 
-static void sysadfun( symvar *e )
+static void sysadfun( symvar * e )
 {
     var_wng( e->name, e );
     return;
-};
+}
 
-static void sysadevenfun( symvar *e )
+static void sysadevenfun( symvar * e )
 {
     var_wng( e->name, e );
     return;
-};
+}
 
-static void sysadoddfun( symvar *e )
+static void sysadoddfun( symvar * e )
 {
     var_wng( e->name, e );
     return;
-};
+}
 
-static void sysapagefun( symvar *e )   // absolute page
+static void sysapagefun( symvar * e )   // absolute page
 {
-    /* unused parameters */ (void)e;
+    (void)e;
 
-    sprintf( sysapagestr, "%lu", apage );
+    sprintf( sysapagestr, "%d", g_apage + 1 );   // to match wgml 4.0
     return;
-};
+}
 
-static void sysbefun( symvar *e )
+static void sysbefun( symvar * e )
 {
     var_wng( e->name, e );
     return;
-};
+}
 
-static void sysbfontsfun( symvar *e )
+static void sysbfontsfun( symvar * e )
 {
     var_wng( e->name, e );
     return;
-};
+}
 
-static void sysbmfun( symvar *e )
+static void sysbmfun( symvar * e )
 {
-    /* unused parameters */ (void)e;
+    (void)e;
 
-    sprintf( sysbmstr, "%ld", bm );
+    sprintf( sysbmstr, "%d", g_bm );
     return;
-};
+}
 
-static void sysbofun( symvar *e )
+static void sysbofun( symvar * e )
 {
     var_wng( e->name, e );
     return;
-};
+}
 
-static void sysbxfun( symvar *e )
+static void sysbxfun( symvar * e )
 {
     var_wng( e->name, e );
     return;
-};
+}
 
-static void sysbxcharfun( symvar *e )  // box char always UNDefined TBD
+static void sysbxcharfun( symvar * e )  // box char always UNDefined TBD
 {
     var_wng( e->name, e );
     return;
-};
+}
 
-static void sysccfun( symvar *e )
+static void sysccfun( symvar * e )
 {
     var_wng( e->name, e );
     return;
-};
+}
 
-static void syscccfun( symvar *e )
+static void syscccfun( symvar * e )
 {
     var_wng( e->name, e );
     return;
-};
+}
 
-static void syscdfun( symvar *e )      // column count
+static void syscdfun( symvar * e )      // column count
 {
-    /* unused parameters */ (void)e;
+    (void)e;
 
-    sprintf( syscdstr, "%lu", g_cd );
+    sprintf( syscdstr, "%d", g_cd );
     return;
-};
+}
 
-static void syscdcountfun( symvar *e )
+static void syscdcountfun( symvar * e )
 {
     var_wng( e->name, e );
     return;
-};
+}
 
-static void syscharsfun( symvar *e )
+static void syscharsfun( symvar * e )
 {
     var_wng( e->name, e );
     return;
-};
+}
 
-static void sysclfun( symvar *e )      // column length
+static void sysclfun( symvar * e )      // column length
 {
-    /* unused parameters */ (void)e;
+    (void)e;
 
-    sprintf( sysclstr, "%lu", g_cl );
+    sprintf( sysclstr, "%d", g_cl );
     return;
-};
+}
 
-static void syscofun( symvar *e )      // .co status
+static void syscofun( symvar * e )      // .co status
 {
-    /* unused parameters */ (void)e;
+    (void)e;
 
     if( ProcFlags.concat ) {
         sysco0.value = str[ju_on];
@@ -298,93 +286,93 @@ static void syscofun( symvar *e )      // .co status
         sysco0.value = str[ju_off];
     }
     return;
-};
+}
 
-static void syscontfun( symvar *e )
+static void syscontfun( symvar * e )
+{
+    e->sub_0->value = syscontstr;
+    return;
+}
+
+static void syscpfun( symvar * e )
 {
     var_wng( e->name, e );
     return;
-};
+}
 
-static void syscpfun( symvar *e )
+static void syscpagesfun( symvar * e )
 {
     var_wng( e->name, e );
     return;
-};
+}
 
-static void syscpagesfun( symvar *e )
+static void syscpcfun( symvar * e )
 {
     var_wng( e->name, e );
     return;
-};
+}
 
-static void syscpcfun( symvar *e )
+static void syscpifun( symvar * e )     // cpi chars per inch
 {
-    var_wng( e->name, e );
-    return;
-};
-
-static void syscpifun( symvar *e )     // cpi chars per inch
-{
-    /* unused parameters */ (void)e;
+    (void)e;
 
     sprintf( syscpistr, "%d", CPI );
     return;
-};
+}
 
-static void sysdfontsfun( symvar *e )
+static void sysdfontsfun( symvar * e )
 {
     var_wng( e->name, e );
     return;
-};
+}
 
-static void sysdhsetfun( symvar *e )
+static void sysdhsetfun( symvar * e )
 {
     var_wng( e->name, e );
     return;
-};
+}
 
-static void sysdpagefun( symvar *e )
+static void sysdpagefun( symvar * e )
 {
     var_wng( e->name, e );
     return;
-};
+}
 
-static void sysduplexfun( symvar *e )
+static void sysduplexfun( symvar * e )
 {
     var_wng( e->name, e );
     return;
-};
+}
 
-static void sysenvfun( symvar *e )     // never seen another value TBD
+static void sysenvfun( symvar * e )     // never seen another value TBD
 {
-    /* unused parameters */ (void)e;
+    (void)e;
 
     sysenv0.value = "BODY";
     return;
-};
+}
 
-static void sysfbfun( symvar *e )
+static void sysfbfun( symvar * e )
 {
     var_wng( e->name, e );
     return;
-};
+}
 
-static void sysfbcfun( symvar *e )
+static void sysfbcfun( symvar * e )
 {
     var_wng( e->name, e );
     return;
-};
+}
 
-static void sysfbffun( symvar *e )
+static void sysfbffun( symvar * e )
 {
     var_wng( e->name, e );
     return;
-};
+}
 
-static void sysfilefun( symvar *e )    // name of current input file/macro
+static void sysfilefun( symvar * e )    // name of current input file/macro
 {
-    /* unused parameters */ (void)e;
+    (void)e;
 
     if( input_cbs == NULL ) {
         sysfile0.value = NULL;
@@ -396,47 +384,47 @@ static void sysfilefun( symvar *e )    // name of current input file/macro
         }
     }
     return;
-};
+}
 
-static void sysfkfun( symvar *e )
+static void sysfkfun( symvar * e )
 {
     var_wng( e->name, e );
     return;
-};
+}
 
-static void sysfkcfun( symvar *e )
+static void sysfkcfun( symvar * e )
 {
     var_wng( e->name, e );
     return;
-};
+}
 
-static void sysflnestfun( symvar *e )  // include level file/macro
+static void sysflnestfun( symvar * e )  // include level file/macro
 {
-    /* unused parameters */ (void)e;
+    (void)e;
 
-    sprintf( sysflneststr, "%u", inc_level );
+    sprintf( sysflneststr, "%d", inc_level );
     return;
-};
+}
 
-static void sysfmfun( symvar *e )
+static void sysfmfun( symvar * e )
 {
-    /* unused parameters */ (void)e;
+    (void)e;
 
-    sprintf( sysfmstr, "%ld", fm );
+    sprintf( sysfmstr, "%d", g_fm );
     return;
-};
+}
 
-static void sysfnfun( symvar *e )
+static void sysfnfun( symvar * e )
 {
     var_wng( e->name, e );
     return;
-};
+}
 
-static void sysfnamfun( symvar *e )  // name of current input file not macro
+static void sysfnamfun( symvar * e )  // name of current input file not macro
 {
     inputcb * wk;
 
-    /* unused parameters */ (void)e;
+    (void)e;
 
     if( input_cbs == NULL ) {
         sysfnam0.value = NULL;
@@ -452,15 +440,15 @@ static void sysfnamfun( symvar *e )  // name of current input file not macro
         }
     }
     return;
-};
+}
 
-static void sysfncfun( symvar *e )
+static void sysfncfun( symvar * e )
 {
     var_wng( e->name, e );
     return;
-};
+}
 
-static void sysfnumfun( symvar *e )// lineno of current input file not macro
+static void sysfnumfun( symvar * e )// lineno of current input file not macro
 {
     inputcb     *wk;
     line_number l = 0;
@@ -474,125 +462,141 @@ static void sysfnumfun( symvar *e )// lineno of current input file not macro
             l = wk->s.f->lineno;
         }
     }
-    sprintf( e->sub_0->value, "%lu", l );
+    sprintf( e->sub_0->value, "%d", l );
     return;
-};
+}
 
-static void sysfontsfun( symvar *e )
+static void sysfontsfun( symvar * e )
 {
     var_wng( e->name, e );
     return;
-};
+}
 
-static void sysfsfun( symvar *e )
+static void sysfsfun( symvar * e )
 {
     var_wng( e->name, e );
     return;
-};
+}
 
-static void sysgutterfun( symvar *e )  // gutter
+static void sysgutterfun( symvar * e )  // gutter
 {
-    /* unused parameters */ (void)e;
+    (void)e;
 
-    sprintf( sysgutterstr, "%lu", g_gutter );
+    sprintf( sysgutterstr, "%d", g_gutter );
     return;
-};
+}
 
-static void syshifun( symvar *e )
+static void syshifun( symvar * e )
 {
     var_wng( e->name, e );
     return;
-};
+}
 
-static void syshmfun( symvar *e )
+static void syshmfun( symvar * e )
 {
-    /* unused parameters */ (void)e;
+    (void)e;
 
-    sprintf( syshmstr, "%ld", hm );
+    sprintf( syshmstr, "%d", g_hm );
     return;
-};
+}
 
-static void syshnfun( symvar *e )
+static void syshnfun( symvar * e )
 {
     var_wng( e->name, e );
     return;
-};
+}
 
-static void syshncfun( symvar *e )
+static void syshncfun( symvar * e )
 {
     var_wng( e->name, e );
     return;
-};
+}
 
-static void syshsfun( symvar *e )
+static void syshsfun( symvar * e )
 {
     var_wng( e->name, e );
     return;
-};
+}
 
-static void syshyfun( symvar *e )
+static void syshyfun( symvar * e )
+{
+    (void)e;
+
+    syshy0.value = str[ju_off];     // will need adjustment if hyphenation is implemented
+    return;
+}
+
+static void syshycfun( symvar * e )
 {
     var_wng( e->name, e );
     return;
-};
+}
 
-static void syshycfun( symvar *e )
+static void syshyphfun( symvar * e )
 {
     var_wng( e->name, e );
     return;
-};
+}
 
-static void syshyphfun( symvar *e )
+static void sysinfun( symvar * e )      // .in indent value
+{
+    int     t_indent;                   // needed to make correction below
+
+    (void)e;
+
+    t_indent = (t_page.cur_left * CPI) / g_resh;
+    if( ((t_page.cur_left * CPI) - (t_indent * g_resh)) > (g_resh / 2) ) {  // rounding check
+        t_indent++;
+    }
+    sprintf( sysinstr, "%d", t_indent );
+}
+
+static void sysinrfun( symvar * e )     // .in indentr indent right value
+{
+    int     t_indent;                   // needed to make correction below
+
+    (void)e;
+
+    t_indent = (t_page.max_width * CPI) / g_resh;
+    if( ((t_page.max_width * CPI) - (t_indent * g_resh)) > (g_resh / 2) ) {  // rounding check
+        t_indent++;
+    }
+    sprintf( sysinrstr, "%d", t_indent );
+}
+
+static void sysirfun( symvar * e )
 {
     var_wng( e->name, e );
     return;
-};
+}
 
-static void sysinfun( symvar *e )      // .in indent value
+static void sysixjfun( symvar * e )
 {
-    /* unused parameters */ (void)e;
+    (void)e;
 
-    sprintf( sysinstr, "%ld", g_indent * CPI / g_resh ); // in chars
+    sysixj0.value = sysixjstr;
     return;
-};
+}
 
-static void sysinrfun( symvar *e )     // .in indentr indent right value
+static void sysixreffun( symvar * e )   // $ixref
 {
-    /* unused parameters */ (void)e;
+    (void)e;
 
-    sprintf( sysinrstr, "%ld", g_ll + g_indentr * CPI / g_resh );
+    sysixref0.value = sysixrefstr;
     return;
-};
+}
 
-static void sysirfun( symvar *e )
+static void sysjufun( symvar * e )      // .ju status
 {
-    var_wng( e->name, e );
-    return;
-};
-
-static void sysixjfun( symvar *e )
-{
-    var_wng( e->name, e );
-    return;
-};
-
-static void sysixreffun( symvar *e )
-{
-    var_wng( e->name, e );
-    return;
-};
-
-static void sysjufun( symvar *e )      // .ju status
-{
-    /* unused parameters */ (void)e;
+    (void)e;
 
     sysju0.value = str[ProcFlags.justify];
     return;
-};
+}
 
-static void syslayoutfun( symvar *e ) // LAYOUT cmdline option or :LAYOUT tag seen
+static void syslayoutfun( symvar * e ) // LAYOUT cmdline option or :LAYOUT tag seen
 {
-    /* unused parameters */ (void)e;
+    (void)e;
 
     if( ProcFlags.lay_specified ) {
         syslayout0.value = str[ju_on];
@@ -600,47 +604,55 @@ static void syslayoutfun( symvar *e ) // LAYOUT cmdline option or :LAYOUT tag se
         syslayout0.value = str[ju_off];
     }
     return;
-};
+}
 
-static void syslcfun( symvar *e )      // remaining linecount on page
+static void syslcfun( symvar * e )      // remaining lines in column
 {
-    /* unused parameters */ (void)e;
+    uint32_t    column_lines;
+    uint32_t    net_depth;
 
-    sprintf( syslcstr, "%ld", lc );
+    (void)e;
+
+    net_depth = t_page.max_depth - t_page.cur_depth;
+    if (t_line != NULL && (t_line->line_height <= net_depth) ) {
+        net_depth -= t_line->line_height;
+    }
+    column_lines = (net_depth * LPI) / g_resv;
+    sprintf( syslcstr, "%d", column_lines );
     return;
-};
+}
 
-static void syslifun( symvar *e )      // SCRIPT control word start char
+static void syslifun( symvar * e )      // SCRIPT control word start char
 {
-    /* unused parameters */ (void)e;
+    (void)e;
 
     *syslistr = SCR_char;
     return;
-};
+}
 
-static void syslinbfun( symvar *e )
+static void syslinbfun( symvar * e )
 {
     var_wng( e->name, e );
     return;
-};
+}
 
-static void syslinefun( symvar *e )    // current lineno on page
+static void syslinefun( symvar * e )    // current lineno on page
 {
-    /* unused parameters */ (void)e;
+    (void)e;
 
-    sprintf( syslinestr, "%lu", line );
+    sprintf( syslinestr, "%d", g_line );
     return;
-};
+}
 
-static void sysllfun( symvar *e )
+static void sysllfun( symvar * e )
 {
-    /* unused parameters */ (void)e;
+    (void)e;
 
-    sprintf( sysllstr, "%lu", g_ll );
+    sprintf( sysllstr, "%d", g_ll );
     return;
-};
+}
 
-static void syslnumfun( symvar *e )  // lineno of current input file / macro
+static void syslnumfun( symvar * e )  // lineno of current input file / macro
 {
     line_number l;
 
@@ -653,280 +665,286 @@ static void syslnumfun( symvar *e )  // lineno of current input file / macro
             l = input_cbs->s.m->lineno;
         }
     }
-    sprintf( e->sub_0->value, "%lu", l );
+    sprintf( e->sub_0->value, "%d", l );
     return;
-};
+}
 
-static void syslsfun( symvar *e )
+static void syslsfun( symvar * e )
 {
     var_wng( e->name, e );
     return;
-};
+}
 
-static void syslstfun( symvar *e )
+static void syslstfun( symvar * e )
 {
     var_wng( e->name, e );
     return;
-};
+}
 
-static void sysmcfun( symvar *e )
+static void sysmcfun( symvar * e )
 {
     var_wng( e->name, e );
     return;
-};
+}
 
-static void sysmcsfun( symvar *e )
+static void sysmcsfun( symvar * e )
 {
     var_wng( e->name, e );
     return;
-};
+}
 
-static void sysnodeidfun( symvar *e )
+static void sysnodeidfun( symvar * e )
 {
     var_wng( e->name, e );
     return;
-};
+}
 
-static void sysoffun( symvar *e )
+static void sysoffun( symvar * e )
 {
     var_wng( e->name, e );
     return;
-};
+}
 
-static void sysofflinefun( symvar *e )
+static void sysofflinefun( symvar * e )
 {
     var_wng( e->name, e );
     return;
-};
+}
 
-static void sysonlinefun( symvar *e )
+static void sysonlinefun( symvar * e )
 {
     var_wng( e->name, e );
     return;
-};
+}
 
-static void sysoocfun( symvar *e )
+static void sysoocfun( symvar * e )
 {
     var_wng( e->name, e );
     return;
-};
+}
 
-static void sysoutfun( symvar *e )
+static void sysoutfun( symvar * e )
 {
     var_wng( e->name, e );
     return;
-};
+}
 
-static void syspagefun( symvar *e )    // pageno in body
+static void syspagefun( symvar * e )    // pageno in body
 {
-    /* unused parameters */ (void)e;
+    (void)e;
 
-    sprintf( syspagestr, "%lu", page );
+    sprintf( syspagestr, "%d", g_page );
     return;
-};
+}
 
-static void syspagedfun( symvar *e )   // page depth
+static void syspagedfun( symvar * e )   // page depth
 {
-    /* unused parameters */ (void)e;
+    (void)e;
 
-    sprintf( syspagedstr, "%lu", g_page_depth );
+    sprintf( syspagedstr, "%d", g_page_depth );
     return;
-};
+}
 
-static void syspagelmfun( symvar *e )  // page left margin
+static void syspagelmfun( symvar * e )  // page left margin
 {
-    /* unused parameters */ (void)e;
+    (void)e;
 
-    sprintf( syspagelmstr, "%ld", lm );
+    sprintf( syspagelmstr, "%d", g_lm );
     return;
-};
+}
 
-static void syspagermfun( symvar *e )  // page right margin
+static void syspagermfun( symvar * e )  // page right margin
 {
-    /* unused parameters */ (void)e;
+    (void)e;
 
-    sprintf( syspagermstr, "%ld", rm );
+    sprintf( syspagermstr, "%d", g_rm );
     return;
-};
+}
 
-static void syspgnumafun( symvar *e )  // pagenumber
+static void syspgnumafun( symvar * e )  // pagenumber
 {
-    /* unused parameters */ (void)e;
+    (void)e;
 
-    sprintf( syspgnumastr, "%lu", page );
+    sprintf( syspgnumastr, "%d", g_page );
     return;
-};
+}
 
-static void syspgnumadfun( symvar *e ) // pagenumber.
+static void syspgnumadfun( symvar * e ) // pagenumber.
 {
-    /* unused parameters */ (void)e;
+    (void)e;
 
-    sprintf( syspgnumadstr, "%lu.", page );
+    sprintf( syspgnumadstr, "%d.", g_page );
     return;
-};
+}
 
-static void syspgnumcfun( symvar *e )  // roman page no UPPER
+static void syspgnumcfun( symvar * e )  // roman page no UPPER
 {
-    /* unused parameters */ (void)e;
+    (void)e;
 
-    int_to_roman( page, syspgnumcstr, sizeof( syspgnumcstr ) );
+    int_to_roman( g_page, syspgnumcstr, sizeof( syspgnumcstr ) );
     strupr( syspgnumcstr );
     return;
-};
+}
 
-static void syspgnumcdfun( symvar *e ) // roman page no UPPER.
+static void syspgnumcdfun( symvar * e ) // roman page no UPPER.
 {
-    /* unused parameters */ (void)e;
+    (void)e;
 
-    int_to_roman( page, syspgnumcdstr, sizeof( syspgnumcdstr ) );
+    int_to_roman( g_page, syspgnumcdstr, sizeof( syspgnumcdstr ) );
     strupr( syspgnumcdstr );
     strcat( syspgnumcdstr, "." );
     return;
-};
+}
 
-static void syspgnumrfun( symvar *e ) // roman page no
+static void syspgnumrfun( symvar * e ) // roman page no
 {
-    /* unused parameters */ (void)e;
+    (void)e;
 
-    int_to_roman( page, syspgnumrstr, sizeof( syspgnumrstr ) );
+    int_to_roman( g_page, syspgnumrstr, sizeof( syspgnumrstr ) );
     return;
-};
+}
 
-static void syspgnumrdfun( symvar *e ) // roman page no.
+static void syspgnumrdfun( symvar * e ) // roman page no.
 {
-    /* unused parameters */ (void)e;
+    (void)e;
 
-    int_to_roman( page, syspgnumrdstr, sizeof( syspgnumrdstr ) );
+    int_to_roman( g_page, syspgnumrdstr, sizeof( syspgnumrdstr ) );
     strcat( syspgnumrdstr, "." );
     return;
-};
+}
 
-static void syspifun( symvar *e )
+static void syspifun( symvar * e )
 {
     var_wng( e->name, e );
     return;
-};
+}
 
-static void syspixfun( symvar *e )
+static void syspixfun( symvar * e )
+{
+    (void)e;
+
+    e->sub_0->value = syspixstr;
+    return;
+}
+
+static void sysplfun( symvar * e )
+{
+    uint32_t    column_lines;
+
+    (void)e;
+
+    column_lines = (t_page.max_depth * LPI) / g_resv;
+    sprintf( sysplstr, "%d", column_lines );
+    return;
+}
+
+static void sysplsfun( symvar * e )
 {
     var_wng( e->name, e );
     return;
-};
+}
 
-static void sysplfun( symvar *e )
+static void syspnfun( symvar * e )      // page no
+{
+    (void)e;
+
+    sprintf( syspnstr, "%d", g_page );
+    return;
+}
+
+static void sysppagefun( symvar * e )   // page no
+{
+    (void)e;
+
+    sprintf( sysppagestr, "%d", g_page );
+    return;
+}
+
+static void sysprsfun( symvar * e )
 {
     var_wng( e->name, e );
     return;
-};
+}
 
-static void sysplsfun( symvar *e )
+static void sysprtfun( symvar * e )
 {
     var_wng( e->name, e );
     return;
-};
+}
 
-static void syspnfun( symvar *e )      // page no
-{
-    /* unused parameters */ (void)e;
-
-    sprintf( syspnstr, "%lu", page );
-    return;
-};
-
-static void sysppagefun( symvar *e )   // page no
-{
-    /* unused parameters */ (void)e;
-
-    sprintf( sysppagestr, "%lu", page );
-    return;
-};
-
-static void sysprsfun( symvar *e )
+static void syspsfun( symvar * e )
 {
     var_wng( e->name, e );
     return;
-};
+}
 
-static void sysprtfun( symvar *e )
+static void syspwfun( symvar * e )
 {
     var_wng( e->name, e );
     return;
-};
+}
 
-static void syspsfun( symvar *e )
+static void sysquietfun( symvar * e )
 {
     var_wng( e->name, e );
     return;
-};
+}
 
-static void syspwfun( symvar *e )
+static void sysrbfun( symvar * e )      // required blank
 {
-    var_wng( e->name, e );
+    (void)e;
+
+    e->sub_0->value = sysrbstr;
     return;
-};
+}
 
-static void sysquietfun( symvar *e )
-{
-    var_wng( e->name, e );
-    return;
-};
-
-static void sysrbfun( symvar *e )      // required blank
-{                                       // can't get any functionality TBD
-    /* unused parameters */ (void)e;
-
-    *sysrbstr = sysrb0.value[0];
-//    var_wng( e->name, e );
-    return;
-};
-
-static void sysrecnofun( symvar *e )   // recno current input file / macro
+static void sysrecnofun( symvar * e )   // recno current input file / macro
 {                                       // make it the same as &syslnum
     syslnumfun( e );                    // TBD
     return;
-};
+}
 
-static void sysreshfun( symvar *e )    // horiz base units
+static void sysreshfun( symvar * e )    // horiz base units
 {
-    /* unused parameters */ (void)e;
+    (void)e;
 
-    sprintf( sysreshstr, "%ld", g_resh );
+    sprintf( sysreshstr, "%d", g_resh );
     return;
-};
+}
 
-static void sysresvfun( symvar *e )    // vert base units
+static void sysresvfun( symvar * e )    // vert base units
 {
-    /* unused parameters */ (void)e;
+    (void)e;
 
-    sprintf( sysresvstr, "%ld", g_resv );
+    sprintf( sysresvstr, "%d", g_resv );
     return;
-};
+}
 
-static void sysretfun( symvar *e )
-{
-    var_wng( e->name, e );
-    return;
-};
-
-static void sysrmnestfun( symvar *e )
+static void sysretfun( symvar * e )
 {
     var_wng( e->name, e );
     return;
-};
+}
 
-static void sysscfun( symvar *e )
+static void sysrmnestfun( symvar * e )
 {
     var_wng( e->name, e );
     return;
-};
+}
 
-static void sysscreenfun( symvar *e )
+static void sysscfun( symvar * e )
 {
     var_wng( e->name, e );
     return;
-};
+}
 
-static void sysseqnofun( symvar *e )    // seqno current input record
+static void sysscreenfun( symvar * e )
+{
+    var_wng( e->name, e );
+    return;
+}
+
+static void sysseqnofun( symvar * e )   // seqno current input record
 {                                       // take &syslnum
     line_number l;                      // TBD
 
@@ -939,87 +957,87 @@ static void sysseqnofun( symvar *e )    // seqno current input record
             l = input_cbs->s.m->lineno;
         }
     }
-    sprintf( e->sub_0->value, "%.8lu", (unsigned long)l );
+    sprintf( e->sub_0->value, "%.8u", l );
     return;
-};
+}
 
-static void sysskcondfun( symvar *e )
+static void sysskcondfun( symvar * e )
 {
     var_wng( e->name, e );
     return;
-};
+}
 
-static void sysslfun( symvar *e )
+static void sysslfun( symvar * e )
 {
     var_wng( e->name, e );
     return;
-};
+}
 
-static void sysspcondfun( symvar *e )
+static void sysspcondfun( symvar * e )
 {
     var_wng( e->name, e );
     return;
-};
+}
 
-static void syssufun( symvar *e )
+static void syssufun( symvar * e )
 {
     var_wng( e->name, e );
     return;
-};
+}
 
-static void syssysfun( symvar *e )
+static void syssysfun( symvar * e )
 {
     var_wng( e->name, e );
     return;
-};
+}
 
-static void systabfun( symvar *e )     // current user-defined tab character
+static void systabfun( symvar * e )     // current user-defined tab character
 {
-    /* unused parameters */ (void)e;
+    (void)e;
 
     *systabstr = tab_char;
     return;
-};
+}
 
-static void systbfun( symvar *e )     // current user-defined tab character
+static void systbfun( symvar * e )     // current user-defined tab character
 {
-    /* unused parameters */ (void)e;
+    (void)e;
 
     *systbstr = tab_char;
     return;
-};
+}
 
-static void systermtfun( symvar *e )
+static void systermtfun( symvar * e )
 {
     var_wng( e->name, e );
     return;
-};
+}
 
-static void systmfun( symvar *e )
+static void systmfun( symvar * e )
 {
-    /* unused parameters */ (void)e;
+    (void)e;
 
-    sprintf( systmstr, "%ld", tm );
+    sprintf( systmstr, "%d", g_tm );
     return;
-};
+}
 
-static void sysuseridfun( symvar *e )
-{
-    var_wng( e->name, e );
-    return;
-};
-
-static void syswdfun( symvar *e )
+static void sysuseridfun( symvar * e )
 {
     var_wng( e->name, e );
     return;
-};
+}
 
-static void sysxtextfun( symvar *e )
+static void syswdfun( symvar * e )
 {
     var_wng( e->name, e );
     return;
-};
+}
+
+static void sysxtextfun( symvar * e )
+{
+    var_wng( e->name, e );
+    return;
+}
 
 /***************************************************************************/
 /*        dummy routines to avoid another picx macro                       */
@@ -1027,57 +1045,57 @@ static void sysxtextfun( symvar *e )
 /***************************************************************************/
 
 
-static void sysampfun( symvar *e )     // dummy routine not needed
+static void sysampfun( symvar * e )     // dummy routine not needed
 {
     e->varfunc = NULL;
     return;
-};
+}
 
-static void sysbcfun( symvar *e )      // dummy routine not needed
+static void sysbcfun( symvar * e )      // dummy routine not needed
 {
     e->varfunc = NULL;
     return;
-};
+}
 
-static void sysbsfun( symvar *e )      // dummy routine not needed
+static void sysbsfun( symvar * e )      // dummy routine not needed
 {
     e->varfunc = NULL;
     return;
-};
+}
 
-static void syscwfun( symvar *e )      // dummy routine not needed
+static void syscwfun( symvar * e )      // dummy routine not needed
 {
     e->varfunc = NULL;
     return;
-};
+}
 
-static void sysgmlfun( symvar *e )     // dummy routine not needed
+static void sysgmlfun( symvar * e )     // dummy routine not needed
 {
     e->varfunc = NULL;
     return;
-};
+}
 
-static void syspassnofun( symvar *e )  // dummy routine not needed
+static void syspassnofun( symvar * e )  // dummy routine not needed
 {
     e->varfunc = NULL;
     return;
-};
+}
 
-static void syspassoffun( symvar *e )  // dummy routine not needed
+static void syspassoffun( symvar * e )  // dummy routine not needed
 {
     e->varfunc = NULL;
     return;
-};
+}
 
-static void systisetfun( symvar *e )   // dummy routine not needed
+static void systisetfun( symvar * e )   // dummy routine not needed
 {
     e->varfunc = NULL;
     return;
-};
+}
 
 
 /***************************************************************************/
-/*  init_date_time  init several date / time system variables              */
+/*  init_date_time  init several date / time global variables              */
 /***************************************************************************/
 
 static  void    init_date_time( void )
@@ -1088,20 +1106,19 @@ static  void    init_date_time( void )
 
     now = time( NULL );
     tmbuf = localtime( &now );
-
     strftime( dateval, sizeof( dateval ), "%B %d, %Y", tmbuf );
 
     p = strstr( dateval, " 0" );        // search for leading zero
     if( p != NULL ) {                   // 'September 02, 2009'
         p++;
         *p = ' ';
-        while( *p ) {                   // becomes
+        while( *p != '\0' ) {           // becomes
             *p = *(p + 1);              // 'September 2, 2009'
             p++;
         }
     }
     sysdate0.value = dateval;
-    add_symvar( &global_dict, "date", dateval, no_subscript, 0 );
+    add_symvar( global_dict, "date", dateval, no_subscript, 0 );
 
     strftime( dayofmval, sizeof( dayofmval ), "%e", tmbuf );
     sysdayofm0.value = dayofmval;
@@ -1136,23 +1153,25 @@ static  void    init_date_time( void )
     systime0.value = timeval;
     syssecond0.value = &timeval[6];
 
-    add_symvar( &global_dict, "time", timeval, no_subscript, 0 );
+    add_symvar( global_dict, "time", timeval, no_subscript, 0 );
 
 }
 
 /***************************************************************************/
-/*  init_predefined_symbols                                                */
+/*  init_predefined_symbols     global symbols, not system                 */
 /***************************************************************************/
 
 static  void    init_predefined_symbols( void )
 {
-    char    wkstring[MAX_L_AS_STR];
+    char    wkstring[NUM2STR_LENGTH];
 
-    add_symvar( &global_dict, "amp", "&", no_subscript, predefined );
+    add_symvar( global_dict, "amp", "&", no_subscript,
+                is_AMP+predefined );
 
     wkstring[1] = '\0';
     wkstring[0] = GML_CHAR_DEFAULT;
-    add_symvar( &global_dict, "gml", wkstring, no_subscript, predefined );
+    add_symvar( global_dict, "gml", wkstring, no_subscript,
+                predefined );
 
 }
 
@@ -1170,9 +1189,7 @@ void    init_sysparm( char * cmdline, char * banner )
         sysparm0.value = cmdline;       // empty cmdline
     } else {
         p++;
-        while( *p == ' ' ) {            // over leading blanks
-            p++;
-        }
+        SkipSpaces( p );                // over leading blanks
         sysparm0.value = p;
 
         p += strlen( p ) - 1;
@@ -1195,14 +1212,22 @@ void    init_sysparm( char * cmdline, char * banner )
 /*                 change very often                                       */
 /***************************************************************************/
 
-void    init_sys_dict( symvar **dict )
+void    init_sys_dict( symdict_hdl *pdict )
 {
+    init_dict( pdict );
 
-    *dict           = &sysad;           // fill the dictionary ptr
-    sysyear.next    = NULL;             // end of chain
+#define picka( var, flag )    pickl( var, flag )
+#define pickc( var, flag )    pickl( var, flag )
+#define pickk( var, flag )    pickl( var, flag )
+#define pickl( var, flag )    link_sym( *pdict, &sys( var ) );
+#include "gsyssym.h"
+#undef pickl
+#undef pickk
+#undef pickc
+#undef picka
 
-    init_date_time();
-    init_predefined_symbols();
+    init_date_time();                   // set up predefned global
+    init_predefined_symbols();          // variables
 
 
     /***********************************************************************/
@@ -1215,7 +1240,6 @@ void    init_sys_dict( symvar **dict )
 
     *sysampstr = '&';
     *(sysampstr + 1) = 0;
-//  *sysauthor =
     *sysbcstr  = 'Y';
     *(sysbcstr + 1)  = 0;
 //  *sysbestr  =
@@ -1243,7 +1267,6 @@ void    init_sys_dict( symvar **dict )
     *(syscwstr + 1) = 0;
 //  *sysdfontsstr =
 //  *sysdhsetstr =
-    *sysdocnumstr = 0;
 //  *sysdpagestr =
     sysduplex0.value = str[ju_off];
     *sysfbstr = 'N';
@@ -1268,7 +1291,7 @@ void    init_sys_dict( symvar **dict )
 //  *syshsstr =
     syshy0.value = str[ju_off];
 //  *syshycstr =
-    *syshyphstr = 'N';                // hyphenation OFF not implemented  TBD
+    *syshyphstr = 'N';                // hyphenation OFF is default; hyphenation ON not implemented
     *(syshyphstr + 1) = 0;
 //  *sysinstr =
 //  *sysinrstr =
@@ -1314,7 +1337,7 @@ void    init_sys_dict( symvar **dict )
     *(syspsstr + 1) = 0;
 //  *syspwstr =
     sysquiet0.value = str[ju_off];
-    *sysrbstr    = ' ';
+    *sysrbstr       = ' ';
     *(sysrbstr + 1) = 0;
 //  *sysrecnostr =
 //  *sysretstr  =
@@ -1327,7 +1350,6 @@ void    init_sys_dict( symvar **dict )
 //  *sysskcondstr =
 //  *sysslstr =
 //  *sysspcondstr =
-//  *sysstitlestr =
     syssu0.value = str[ju_on];
     syssys0.value = "DOS";
     *systabstr       = *systbstr       = 0x09;
