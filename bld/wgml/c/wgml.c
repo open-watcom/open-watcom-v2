@@ -38,6 +38,7 @@
 
 #include "wgml.h"
 #include "banner.h"
+#include "jmpbuf.h"
 
 #include "clibint.h"
 #include "clibext.h"
@@ -770,7 +771,7 @@ int main( int argc, char * argv[] )
 
 //   #undef TRMEM                         // activate to disable TRMEM
 
-    environment = &env;
+    environment = JMPBUF_PTR( env );
     if( setjmp( env ) ) {               // if fatal error has occurred
         my_exit( 16 );
     }
