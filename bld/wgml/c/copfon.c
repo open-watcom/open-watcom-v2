@@ -112,7 +112,7 @@ bool is_fon_file( FILE *fp )
 
     /* Get the descriminator. */
 
-    fread( &descriminator, 3, 1, fp );
+    fread( descriminator, 3, 1, fp );
     if( ferror( fp ) || feof( fp ) ) {
         return( false );
     }
@@ -484,7 +484,7 @@ cop_font * parse_font( FILE *fp, char const * in_name )
 
             /* Get the data into the local buffer. */
 
-            fread( &uint8_array, sizeof( uint8_array ), 1, fp );
+            fread( uint8_array, sizeof( uint8_array ), 1, fp );
             if( ferror( fp ) || feof( fp ) ) {
                 mem_free( out_font );
                 out_font = NULL;
@@ -566,7 +566,7 @@ cop_font * parse_font( FILE *fp, char const * in_name )
 
             /* Get the outtrans array into the local array. */
 
-            fread( &uint16_array, sizeof( uint16_array ), 1, fp );
+            fread( uint16_array, sizeof( uint16_array ), 1, fp );
             if( ferror( fp ) || feof( fp ) ) {
                 mem_free( out_font );
                 out_font = NULL;
@@ -731,7 +731,7 @@ cop_font * parse_font( FILE *fp, char const * in_name )
              * an array of uint32_t entries.
              */
 
-            fread( &uint8_array, sizeof( uint8_array ), 1, fp );
+            fread( uint8_array, sizeof( uint8_array ), 1, fp );
             if( ferror( fp ) || feof( fp ) ) {
                 mem_free( out_font );
                 out_font = NULL;

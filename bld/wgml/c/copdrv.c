@@ -983,7 +983,7 @@ bool is_drv_file( FILE *fp )
 
     /* Get the descriminator. */
 
-    fread( &descriminator, 3, 1, fp );
+    fread( descriminator, 3, 1, fp );
     if( ferror( fp ) || feof( fp ) ) {
         return( false );
     }

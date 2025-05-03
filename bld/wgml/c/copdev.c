@@ -173,7 +173,7 @@ bool is_dev_file( FILE *fp )
 
     /* Get the descriminator. */
 
-    fread( &descriminator, 3, 1, fp );
+    fread( descriminator, 3, 1, fp );
     if( ferror( fp ) || feof( fp ) ) {
         return( false );
     }
@@ -813,7 +813,7 @@ cop_device * parse_device( FILE *fp )
 
             /* Get the data into the local buffer. */
 
-            fread( &uint8_array, sizeof( uint8_array ), 1, fp );
+            fread( uint8_array, sizeof( uint8_array ), 1, fp );
             if( ferror( fp ) || feof( fp ) ) {
                 mem_free( out_device );
                 out_device = NULL;
@@ -898,7 +898,7 @@ cop_device * parse_device( FILE *fp )
 
             /* Get the outtrans array into the local array. */
 
-            fread( &uint16_array, sizeof( uint16_array ), 1, fp );
+            fread( uint16_array, sizeof( uint16_array ), 1, fp );
             if( ferror( fp ) || feof( fp ) ) {
                 mem_free( out_device );
                 out_device = NULL;
