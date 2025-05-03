@@ -56,15 +56,15 @@
 .sr *fx=&'strip(&*1,'L','_')
 .sr iswidefn=1
 .* far function
-.if '&*fx(1:1)' eq 'w' and '&*fx(1:6)' ne 'wrapon' and '&*fx(1:5)' ne 'write' .me
-.if '&*fx(1:2)' eq 'wc' or '&*fx(1:4)' eq 'wmem' .me
-.if '&*fx(1:3)' eq 'tow' .me
-.if '&*fx(1:3)' eq 'isw' .me
-.if '&*fx(1:4)' eq 'wasc' .me
+.if '&'left(&*fx,1)' eq 'w' and '&'left(&*fx,6)' ne 'wrapon' and '&'left(&*fx,5)' ne 'write' .me
+.if '&'left(&*fx,2)' eq 'wc' or '&'left(&*fx,4)' eq 'wmem' .me
+.if '&'left(&*fx,3)' eq 'tow' .me
+.if '&'left(&*fx,3)' eq 'isw' .me
+.if '&'left(&*fx,4)' eq 'wasc' .me
 .if &'pos('wprintf',&*fx) ne 0 .me
 .if &'pos('wscanf',&*fx) ne 0 .me
-.if '&*fx(1:3)' ne 'fmb' and '&*fx(1:2)' ne 'mb' and '&'right(&*fx,2)' eq 'wc' .me
-.if '&*fx(1:3)' ne 'fmb' and '&*fx(1:2)' ne 'mb' and '&'right(&*fx,2)' eq 'ws' .me
+.if '&'left(&*fx,3)' ne 'fmb' and '&'left(&*fx,2)' ne 'mb' and '&'right(&*fx,2)' eq 'wc' .me
+.if '&'left(&*fx,3)' ne 'fmb' and '&'left(&*fx,2)' ne 'mb' and '&'right(&*fx,2)' eq 'ws' .me
 .if '&'right(&*fx,4)' eq 'itow' or '&'right(&*fx,4)' eq 'ltow' .me
 .if '&'right(&*fx,5)' eq 'wchar' .me
 .sr iswidefn=0
@@ -79,7 +79,7 @@
 .do end
 .chkwfunc &*1
 .if &iswidefn. ne 0 .do begin
-.   .if '&*1(1:1).' ne '_' .sr *clatr=1
+.   .if '&'left(&*1,1).' ne '_' .sr *clatr=1
 .do end
 .se __clx=&__clx.+1
 .se __clnam(&__clx.)=&*1
@@ -140,7 +140,7 @@ $$
 .addsyinfo &*1
 .* try to classify type of function
 .if &'pos('i64',&*1) ne 0 .do begin
-.   .if '&*1(1:2).' eq '_w' .do begin
+.   .if '&'left(&*1,2).' eq '_w' .do begin
 .   .   .sr wfunc64=&*1
 .   .do end
 .   .el .do begin
@@ -162,10 +162,10 @@ $$
 .el .if '&*1' eq '_f&funcn' .do begin
 .   .sr ffunc=&*1
 .do end
-.el .if '&*1(1:3).' eq '_mb' .do begin
+.el .if '&'left(&*1,3).' eq '_mb' .do begin
 .   .sr mfunc=&*1
 .do end
-.el .if '&*1(1:4).' eq '_fmb' .do begin
+.el .if '&'left(&*1,4).' eq '_fmb' .do begin
 .   .sr fmfunc=&*1
 .do end
 .if &groupfun. eq 0 .do begin
@@ -486,7 +486,7 @@ Prototype in
 .   .   .pe &__clx.-1;.sr *i=&*i.+1;.if &'length(&__cltxt(&*i.).) ne 0 or &__clatr(&*i.). ge 2 .sr *extr=1
 .   .   .if &'compare(&__class.,'ISO') eq 0 or &'compare(&__class.,'POSIX') eq 0 .do begin
 .   .   .   .sr *i=1
-.   .   .   .pe &__clx.-1;.sr *i=&*i.+1;.if '&__clnam(&*i.,1:1).' eq '_' .sr *extr=1
+.   .   .   .pe &__clx.-1;.sr *i=&*i.+1;.if '&'left(&__clnam(&*i.),1).' eq '_' .sr *extr=1
 .   .   .do end
 .   .do end
 .   .if &*extr eq 0 .do begin

@@ -566,7 +566,7 @@ prepare_wgml_opts : .PROCEDURE
 #
 # output format
 #
-    @%append $(wgml_optfile) ( output (text:100)$(wgml_tmpfile)
+    @%append $(wgml_optfile) ( output (t:100)$(wgml_tmpfile)
 #
 # common setting
 #
@@ -583,7 +583,7 @@ prepare_wgml_opts : .PROCEDURE
     @%append $(wgml_optfile) ( file whelp.opt
     @%append $(wgml_optfile) ( passes 2
     @%append $(wgml_optfile) ( setsymbol dohelp 1
-    @%append $(wgml_optfile) ( output (text:2200)$(wgml_tmpfile)
+    @%append $(wgml_optfile) ( output (t:2200)$(wgml_tmpfile)
     @%append $(wgml_optfile) ( setsymbol book $^&
 !endif
 #
