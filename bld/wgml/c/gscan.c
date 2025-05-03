@@ -1041,7 +1041,7 @@ char * get_text_line( char * p )
                 }
                 toklen = p - tok_start;
                 if( toklen <= TAG_NAME_LENGTH ) {    // possible tag
-                    strncpy( &tok_txt, tok_start, toklen );
+                    strncpy( tok_txt, tok_start, toklen );
                     tok_txt[toklen] = '\0';
                     if( ProcFlags.layout ) {
                         ge = NULL;                  // no user tags within :LAYOUT
