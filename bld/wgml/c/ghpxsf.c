@@ -38,7 +38,7 @@
 /*  :HPx :SF common processing                                             */
 /***************************************************************************/
 
-static void gml_hp_sf_common( gml_tag gtag, int level )
+static void gml_hp_sf_common( gml_tag gtag, font_number font )
 {
     char    *   p;
 
@@ -54,11 +54,11 @@ static void gml_hp_sf_common( gml_tag gtag, int level )
 
     init_nest_cb( true );
 
-    if( level >= wgml_font_cnt ) {      // invalid font use default
-        level = 0;
+    if( font >= wgml_font_cnt ) {      // invalid font use default
+        font = FONT0;
     }
-    nest_cb->font = level;
-    g_curr_font = level;
+    nest_cb->font = font;
+    g_curr_font = font;
 
     nest_cb->gtag = gtag;
 
@@ -94,22 +94,22 @@ static void gml_hp_sf_common( gml_tag gtag, int level )
 
 void    gml_hp0( gml_tag gtag )
 {
-    gml_hp_sf_common( gtag, 0 );
+    gml_hp_sf_common( gtag, FONT0 );
 }
 
 void    gml_hp1( gml_tag gtag )
 {
-    gml_hp_sf_common( gtag, 1 );
+    gml_hp_sf_common( gtag, FONT1 );
 }
 
 void    gml_hp2( gml_tag gtag )
 {
-    gml_hp_sf_common( gtag, 2 );
+    gml_hp_sf_common( gtag, FONT2 );
 }
 
 void    gml_hp3( gml_tag gtag )
 {
-    gml_hp_sf_common( gtag, 3 );
+    gml_hp_sf_common( gtag, FONT3 );
 }
 
 
@@ -222,12 +222,12 @@ void    gml_sf( gml_tag gtag )
     while( *p == ' ' ) {
         p++;
     }
-    if( !strnicmp( "font=", p, 5 ) ) {
+    if( strnicmp( "font=", p, 5 ) == 0 ) {
         p += 5;
         font = strtol( p, &pe, 10 );
         scan_start = pe;
         if( (font < 0) || (font >= wgml_font_cnt) ) {// invalid font use default
-            font = 0;
+            font = FONT0;
         }
         gml_hp_sf_common( gtag, font );
     } else {

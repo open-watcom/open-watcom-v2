@@ -96,6 +96,9 @@
 
 #define CPI10               10          // 10 as a CPI value
 #define FONT0               0           // 0 as a font number
+#define FONT1               1           // 1 as a font number
+#define FONT2               2           // 2 as a font number
+#define FONT3               3           // 3 as a font number
 #define LPI6                6           // 6 as an LPI value
 
 /* string start / end characters Possible incomplete list*/

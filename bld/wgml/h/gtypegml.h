@@ -33,8 +33,6 @@
 #define GTYPEGML_H_INCLUDED
 
 
-#define ulong           unsigned long
-
 //================= Some global defines ========================
 #define MAX_NESTING     32              // max nesting of option files
 #define MAX_PASSES      10              // max no of document passes
@@ -345,7 +343,7 @@ typedef struct gavalentry {
     struct gavalentry   *   next;
     union a {
        size_t   length;           // possible max length of (character) value
-       long     range[4]; // min, max, default omitted, default without value
+       int      range[4]; // min, max, default omitted, default without value
        char     value[VAL_LENGTH + 1];  // string value if short enough
        char *   valptr;                 // ... else allocated
     } a;
@@ -415,7 +413,7 @@ typedef enum {
 typedef struct gtentry {
     struct gtentry  *   next;
     gaentry         *   attribs;        // list of attributes
-    ulong               usecount;
+    unsigned            usecount;
     size_t              namelen;        // actual length of name
     char                name[TAG_NAME_LENGTH + 1];
     char                macname[MAC_NAME_LENGTH + 2];   // macro to call
@@ -479,12 +477,12 @@ typedef enum {
 
 typedef struct getnum_block {
     int         ignore_blanks;          // 1 if blanks are ignored
-    char    *   argstart;
-    char    *   argstop;
-    char    *   errstart;
-    char    *   first;
-    long        length;
-    long        result;                 // result as long
+    char        *argstart;
+    char        *argstop;
+    char        *errstart;
+    char        *first;
+    int         length;
+    int         result;                 // result as int
     char        resultstr[12];          // result in char format
     getnumrc    error;
     char        num_sign;              // remember absolute or relative value
