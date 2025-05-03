@@ -38,6 +38,10 @@
 
 #include <stdio.h>
 
+
+#define VERSION40_TEXT  "V4.0 PC/DOS"
+#define VERSION41_TEXT  "V4.1 PC/DOS"
+
 /* Enum definition. */
 
 /* This enum is used for the return value of function parse_header(). */

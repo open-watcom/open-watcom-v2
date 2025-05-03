@@ -55,8 +55,8 @@
 
 cop_file_type parse_header( FILE *fp )
 {
-    char        count;
-    char        text_version[0x0b];
+    int         count;
+    char        text_version[sizeof( VERSION41_TEXT )];
     uint16_t    version;
 
     /* Get the count and ensure it is 0x02. */
@@ -99,13 +99,13 @@ cop_file_type parse_header( FILE *fp )
 
     /* Verify the text_version. */
 
-    fread( &text_version, 0x0b, 1, fp );
+    fread( &text_version, count, 1, fp );
     if( ferror( fp ) || feof( fp ) ) {
         return( file_error );
     }
 
-    text_version[0x0b] = '\0';
-    if( strcmp( "V4.1 PC/DOS", text_version ) != 0 ) {
+    text_version[count] = '\0';
+    if( strcmp( VERSION41_TEXT, text_version ) != 0 ) {
         return( not_bin_dev );
     }
 

@@ -85,7 +85,7 @@ typedef enum {
 
 static entry_found get_compact_entry( FILE *fp, directory_entry * entry )
 {
-    uint8_t count;
+    int     count;
 
     /* Get the defined_name_length. */
 
@@ -113,7 +113,7 @@ static entry_found get_compact_entry( FILE *fp, directory_entry * entry )
 
     /* Ensure the member_name_length is not zero or too long for the buffer. */
 
-    if( (count == 0) || ((uint16_t)count > _MAX_PATH - 1) ) {
+    if( (count == 0) || (count > _MAX_PATH - 1) ) {
         return( not_valid_entry );
     }
 
@@ -149,7 +149,7 @@ static entry_found get_compact_entry( FILE *fp, directory_entry * entry )
 
 static entry_found get_extended_entry( FILE *fp, directory_entry * entry )
 {
-    uint8_t count;
+    int     count;
 
     /* Get the defined_name_length. */
 
@@ -182,7 +182,7 @@ static entry_found get_extended_entry( FILE *fp, directory_entry * entry )
 
     /* Ensure the member_name_length is not zero or too long for the buffer. */
 
-    if( (count == 0) || ((uint16_t)count > _MAX_PATH - 1) ) {
+    if( (count == 0) || (count > _MAX_PATH - 1) ) {
         return( not_valid_entry );
     }
 

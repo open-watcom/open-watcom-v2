@@ -151,7 +151,7 @@ p_buffer * get_p_buffer( FILE *fp )
     uint8_t     i;
     p_buffer    *out_buffer  = NULL;
     uint8_t     p_count;
-    char        test_char;
+    int         test_char;
 
     /* Determine the number of contiguous P-buffers in the file. */
 

@@ -80,7 +80,6 @@
 *                   uline
 *                   uscore_char
 *                   uscore_chars
-*                   wgml_header
 *                   x_address
 *                   x_size
 *                   y_address
@@ -176,6 +175,7 @@
 #include "wgml.h"
 #include "devfuncs.h"
 #include "outbuff.h"
+#include "cophdr.h"
 
 #include "clibext.h"
 
@@ -242,7 +242,6 @@ static uint32_t         line_pass_number        = 0;
 
 static char             *date_val               = NULL;
 static char             *time_val               = NULL;
-static char             wgml_header[]           = "V4.0 PC/DOS";
 static font_number      df_font                 = 0;
 static uint32_t         tab_width               = 0;
 static uint32_t         thickness               = 0;
@@ -1068,7 +1067,7 @@ static void *df_time( void )
 
 static void *df_wgml_header( void )
 {
-    return( (void *)mem_strdup( wgml_header ) );
+    return( (void *)mem_strdup( VERSION40_TEXT ) );
 }
 
 /* Function df_x_address().
