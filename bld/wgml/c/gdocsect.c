@@ -42,19 +42,19 @@ static  bool            ref_done;                   // true if a reference has b
 static  char            frame_line_1[CHAR_FRAME_LEN + 1]; // box top line/rule line/'character string' line
 static  char            frame_line_2[CHAR_FRAME_LEN + 1]; // box blank/middle line
 static  char            frame_line_3[CHAR_FRAME_LEN + 1]; // box bottom line
-static  int32_t         save_indent     = 0;        // used with TITLEP/eTITLEP
-static  int32_t         save_indentr    = 0;        // used with TITLEP/eTITLEP
+static  int32_t         save_indent;                // used with TITLEP/eTITLEP
+static  int32_t         save_indentr;               // used with TITLEP/eTITLEP
 static  ju_enum         justify_save;               // for ProcFlags.justify
-static  line_number     titlep_lineno   = 0;        // TITLEP tag line number
-static  size_t          cur_count       = 0;        // current number of characters copied
+static  line_number     titlep_lineno;              // TITLEP tag line number
+static  size_t          cur_count;                  // current number of characters copied
 static  size_t          frame_line_len  = CHAR_FRAME_LEN;   // length of frame lines
-static  size_t          str_count       = 0;        // IXHEAD 'character string' strlen()
+static  size_t          str_count;                  // IXHEAD 'character string' strlen()
 static  symsub      *   ixjval;                     // &sysixj value
 static  symsub      *   ixrefval;                   // &sysixref value
-static  uint32_t        cur_width       = 0;        // current IXHEAD line width
-static  uint32_t        wrap[3]         = { 0, 0, 0};// I1/I2/I3 wrap_indent values
-static  uint32_t        ixh_indent      = 0;        // IXHEAD indent
-static  uint32_t        str_width       = 0;        // IXHEAD 'character string' width
+static  uint32_t        cur_width;                  // current IXHEAD line width
+static  uint32_t        wrap[3];                    // I1/I2/I3 wrap_indent values
+static  uint32_t        ixh_indent;                 // IXHEAD indent
+static  uint32_t        str_width;                  // IXHEAD 'character string' width
 
 /***************************************************************************/
 /*  error routine for wrong sequence of doc section tags                   */
@@ -63,7 +63,7 @@ static  uint32_t        str_width       = 0;        // IXHEAD 'character string'
 static void g_err_doc_sect( doc_section  ds )
 {
     static const char   * const sect_text[] = {     // same sequence as doc_section enum
-    	#define pick(text,gml,ban)  text,
+        #define pick(text,gml,ban)  text,
         #include "docsect.h"
         #undef pick
     };
@@ -86,7 +86,7 @@ void set_section_banners( doc_section ds )
     /***********************************************************************/
 
     static const ban_docsect sect_2_bansect[] = {
-    	#define pick(text,gml,ban)  ban,
+        #define pick(text,gml,ban)  ban,
         #include "docsect.h"
         #undef pick
     };

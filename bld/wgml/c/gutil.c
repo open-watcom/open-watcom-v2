@@ -929,7 +929,7 @@ char *format_num( unsigned n, char *r, size_t rsize, num_style ns )
         if( rp == NULL ) {
             return( NULL );             // field overflow
         }
-        my_strupr( p );
+        strupr( p );
         pos1 = strlen( rp );
         p += pos1;
         break;
@@ -1553,20 +1553,4 @@ void free_fwd_refs( fwd_ref * fwd_refs )
         mem_free( curr );
     }
     return;
-}
-
-void    my_strlwr( char *str )
-{
-    while( *str != '\0' ) {
-        *str = my_tolower( *str );
-        str++;
-    }
-}
-
-void    my_strupr( char *str )
-{
-    while( *str != '\0' ) {
-        *str = my_toupper( *str );
-        str++;
-    }
 }

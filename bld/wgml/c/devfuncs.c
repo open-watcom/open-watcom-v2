@@ -224,41 +224,41 @@ typedef void *(*df_function)(void);
 
 /* These are set by device functions and for use in outputting text. */
 
-static bool             textpass                = false;
-static bool             uline                   = false;
+static bool             textpass;
+static bool             uline;
 
 /* These are used to control some aspects of device function operation. */
 
 static bool             at_start                = true;
-static bool             fs_marker               = false;
-static bool             htab_done               = false;
-static bool             page_start              = false;
-static bool             shift_done              = false;
-static page_state       current_state           = { 0, 0, 0, tx_norm };
-static page_state       desired_state           = { 0, 0, 0, tx_norm };
-static uint32_t         line_pass_number        = 0;
+static bool             fs_marker;
+static bool             htab_done;
+static bool             page_start;
+static bool             shift_done;
+static page_state       current_state;
+static page_state       desired_state;
+static uint32_t         line_pass_number;
 
 /* These are used to hold values returned by device functions. */
 
-static char             *date_val               = NULL;
-static char             *time_val               = NULL;
-static font_number      df_font                 = 0;
-static uint32_t         tab_width               = 0;
-static uint32_t         thickness               = 0;
-static uint32_t         x_address               = 0;
-static uint32_t         x_size                  = 0;
-static uint32_t         y_address               = 0;
-static uint32_t         y_size                  = 0;
+static char             *date_val;
+static char             *time_val;
+static font_number      df_font;
+static uint32_t         tab_width;
+static uint32_t         thickness;
+static uint32_t         x_address;
+static uint32_t         x_size;
+static uint32_t         y_address;
+static uint32_t         y_size;
 
 /* These are used by the interpreter. */
-static bool             has_htab                = false;
-static bool             text_out_open           = false;
-static font_number      active_font             = 0;
+static bool             has_htab;
+static bool             text_out_open;
+static font_number      active_font;
 static df_data          current_df_data;
 static df_function      device_function_table[MAX_FUNC_INDEX + 1];
 static df_function      driver_function_table[MAX_FUNC_INDEX + 1];
-static df_function      *current_function_table = NULL;
-static const char       *current_function       = NULL;
+static df_function      *current_function_table;
+static const char       *current_function;
 
 /* These are used in outputting spaces and underscore characters. */
 
@@ -2028,11 +2028,10 @@ static void *df_lower( void )
 
     current_df_data.current = current_df_data.base + my_parameters.first;
     first = process_parameter();
-    my_strlwr( first );
 
     /* Convert and return the parameter. */
 
-    return( (void *)first );
+    return( (void *)strlwr( first ) );
 }
 
 /* Function df_remainder().

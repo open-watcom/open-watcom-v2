@@ -283,7 +283,7 @@ bool process_tag( gtentry * ge, mac_entry * me )
                                 continue;
                             }
                             if( ga->attflags & att_upper ) {// uppercase option
-                                my_strupr( token_buf );
+                                strupr( token_buf );
                             }
 
                             scan_err = check_att_value( ga, ge, loc_dict );

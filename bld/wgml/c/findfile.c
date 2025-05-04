@@ -60,7 +60,7 @@
 typedef char    *directory_list;
 
 
-char    try_file_name[_MAX_PATH] = { 0 };
+char    try_file_name[_MAX_PATH];
 
 /* Local struct. */
 
@@ -153,14 +153,14 @@ static FILE *try_open( char *prefix, char *filename )
         if( fp != NULL ) {
             break;
         }
-        my_strlwr( buff );              // for the sake of linux try again with lower case filename
+        strlwr( buff );                 // for the sake of linux try again with lower case filename
         fp = fopen( buff, "rb" );
         if( fp != NULL ) {
             break;
         }
 #else       // DOS, OS/2, Windows
         if( fp != NULL ) {
-            my_strlwr( buff );          // to match wgml 4.0
+            strlwr( buff );             // to match wgml 4.0
             break;
         }
 #endif
@@ -448,7 +448,7 @@ FILE *search_file_in_dirs( const char *filename, const char *defext, const char 
                     pg.ext = COP_EXT;
                 }
 #ifdef __UNIX__
-                my_strlwr( member_name );
+                strlwr( member_name );
 #endif
                 _makepath( primary_file, NULL, NULL, member_name, pg.ext );
                 mem_free( member_name );

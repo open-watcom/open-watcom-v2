@@ -102,7 +102,7 @@ void add_GML_tag_research( char * tag )
     }
     new->nxt = NULL;
     strcpy( new->tagname, tag );
-    my_strupr( new->tagname );
+    strupr( new->tagname );
     new->count = 1;
 }
 
@@ -191,7 +191,7 @@ void    add_SCR_tag_research( char * tag )
     }
     new->nxt = NULL;
     strcpy( new->tagname, tag );
-    my_strlwr( new->tagname );
+    strlwr( new->tagname );
     new->count = 1;
 }
 
@@ -260,7 +260,7 @@ void    add_multi_func_research( char * fun )
     }
     new->nxt = NULL;
     strcpy( new->tagname, fun );
-    my_strlwr( new->tagname );
+    strlwr( new->tagname );
     new->count = 1;
 }
 

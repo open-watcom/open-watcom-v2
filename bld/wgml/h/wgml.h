@@ -455,8 +455,6 @@ extern  bool        lay_init_su( const char * p, su * in_su );
 extern  size_t      len_to_trail_space( const char *p , size_t len );
 extern  char        *skip_to_quote( char * p, char quote );
 extern  bool        value_to_su( su * spaceunit, bool pos );
-extern void         my_strupr( char *str );
-extern void         my_strlwr( char *str );
 
 
 /* messages.c                           */

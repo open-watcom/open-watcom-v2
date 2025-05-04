@@ -32,6 +32,8 @@
 
 #include "wgml.h"
 
+#include "clibext.h"
+
 
 #define sys(x)  sys##x                  // construct symvar varname
 #define sysf(x) sys##x##fun             // construct access function name
@@ -1198,7 +1200,7 @@ void    init_sysparm( char *cmdline, char *banner )
             *++p = 0;                   // terminate string
         }
     }
-    my_strupr( sysparm0.value );           // uppercase as wgml4 does
+    strupr( sysparm0.value );           // uppercase as wgml4 does
 
     syspdev0.value = dev_name;
     sysversion0.value = banner;
