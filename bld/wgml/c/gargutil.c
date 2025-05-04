@@ -110,7 +110,7 @@ condcode getarg( void )
 
         if( p == scan_stop) {           // one character token found
             arg_flen = 1;
-            tok_start = p;
+            g_tok_start = p;
             scan_start = p + 1;         // address of start for next call
             return( pos );              // arg found
         }
@@ -119,7 +119,7 @@ condcode getarg( void )
         valquote = '\0';
         quoted = false;
         valquoted = false;
-        tok_start = p;
+        g_tok_start = p;
 
         if( is_quote_char( *p ) ) {     // arg starts with quote
             quote = *p;
@@ -135,7 +135,7 @@ condcode getarg( void )
                 if( quoted ) {
                     quote = '\0';
                     quoted = false;
-                    p = tok_start;              // find end of space-delimited token
+                    p = g_tok_start;              // find end of space-delimited token
                     while( (p < scan_stop) && (*p != ' ') ) {
                         p++;
                     }
@@ -162,12 +162,12 @@ condcode getarg( void )
             }
         }
         if( quoted ) {
-            tok_start++;
+            g_tok_start++;
             scan_start = p + 1;         // address of start for next call
         } else {
             scan_start = p;             // address of start for next call
         }
-        arg_flen = p - tok_start;       // length of multichar arg
+        arg_flen = p - g_tok_start;     // length of multichar arg
         if( arg_flen > 0 ) {
             if( quoted ) {
                 cc = quotes;            // quoted arg found
@@ -212,7 +212,7 @@ condcode getqst( void )
 
         quote = '\0';
         quoted = false;
-        tok_start = p;
+        g_tok_start = p;
         c = *p;
         if( is_quote_char( c ) ) {
             quote = c;      // single or double quotes, vertical bar and cent
@@ -239,12 +239,12 @@ condcode getqst( void )
             }
         }
         if( quoted ) {
-            tok_start++;
+            g_tok_start++;
             scan_start = p + 1;         // start address for next call
-            arg_flen = p - tok_start;   // length of arg
+            arg_flen = p - g_tok_start; // length of arg
         } else {
             scan_start = p;             // address of start for next call
-            arg_flen = p - tok_start;   // length of arg
+            arg_flen = p - g_tok_start; // length of arg
         }
         if( arg_flen > 0 ) {
             if( quoted ) {

@@ -261,7 +261,7 @@ void    add_macro_parms( char * p )
 
         add_symvar( input_cbs->local_dict, MAC_STAR_NAME, p, no_subscript, local_var );
         star0 = 0;
-        tok_start = p;                  // save start of parameter
+        g_tok_start = p;                  // save start of parameter
         SkipSpaces( p );                // find first nonspace character
         while( *p != '\0' ) {           // as long as there are parms
             if( is_quoted_string( p ) ) {   // argument is quoted
@@ -447,7 +447,7 @@ void    scr_dm( void )
      *
      */
     len = 0;
-    p   = tok_start;
+    p   = g_tok_start;
     pn  = macname;
     while( len < MAC_NAME_LENGTH ) {
         if( is_space_tab_char( *p ) || (*p == '\0') ) { // largest possible macro name
@@ -471,23 +471,23 @@ void    scr_dm( void )
     *p   = '\0';
     macro_line_count = 0;
 
-    compend   = stricmp( "end", tok_start ) == 0;
-    compbegin = stricmp( "begin", tok_start ) == 0;
+    compend   = stricmp( "end", g_tok_start ) == 0;
+    compbegin = stricmp( "begin", g_tok_start ) == 0;
     if( !(compbegin | compend) ) { // only .dm macname /line1/line2/ possible
         char    sepchar;
 
         if( cc == quotes ) {
-            tok_start--;    // for single line .dm /yy/xxy/.. back to sepchar
+            g_tok_start--;    // for single line .dm /yy/xxy/.. back to sepchar
         }
         if( ProcFlags.in_macro_define ) {
-            xx_source_err_c( err_mac_def_nest, tok_start );
+            xx_source_err_c( err_mac_def_nest, g_tok_start );
         }
         ProcFlags.in_macro_define = 1;
 
         *p   = save;
         lineno_start = cb->s.f->lineno;
 
-        p = tok_start;
+        p = g_tok_start;
         sepchar = *p++;
         nmstart = p;
         while( *p != '\0' ) {
@@ -567,10 +567,10 @@ void    scr_dm( void )
                         p = scan_start;
                         save = *p;
                         *p = '\0';
-                        if( strnicmp( macname, tok_start, MAC_NAME_LENGTH ) ) {
+                        if( strnicmp( macname, g_tok_start, MAC_NAME_LENGTH ) ) {
                             // macroname from begin different from end
                             // SC--005 Macro '%s' is not being defined
-                            xx_source_err_c( err_mac_def_not, tok_start );
+                            xx_source_err_c( err_mac_def_not, g_tok_start );
                         }
                         *p = save;
                         cc = getarg();
@@ -581,9 +581,9 @@ void    scr_dm( void )
                         p = scan_start;
                         save = *p;
                         *p = '\0';
-                        if( stricmp( "end", tok_start ) != 0 ) {
+                        if( stricmp( "end", g_tok_start ) != 0 ) {
                             // SC--002 The control word parameter '%s' is invalid
-                            xx_source_err_c( err_mac_def_inv, tok_start );
+                            xx_source_err_c( err_mac_def_inv, g_tok_start );
                         }
                         compend = 1;
                         break;              // out of read loop
@@ -683,7 +683,7 @@ void    scr_me( void )
         if( cc != omit ) {              // line operand present
 
             free_lines( input_cbs->hidden_head );       // clear stacked input
-            split_input( buff2, tok_start, input_cbs->fmflags );    // stack line operand
+            split_input( buff2, g_tok_start, input_cbs->fmflags );    // stack line operand
 
             // now move stacked line to previous input stack
 
@@ -772,8 +772,8 @@ void    scr_em( void )
         xx_source_err( err_mac_name_inv );
     }
 
-    if( *tok_start == SCR_char ) {      // possible macro name
-        p   = tok_start + 1;            // over .
+    if( *g_tok_start == SCR_char ) {      // possible macro name
+        p   = g_tok_start + 1;            // over .
 
         /*  truncate name if too long WITHOUT error msg
          *  this is wgml 4.0 behaviour
@@ -798,7 +798,7 @@ void    scr_em( void )
     if( me == NULL ) {                  // macro not specified or not defined
         xx_source_err( err_mac_name_inv );
     } else {
-        split_input( buff2, tok_start, input_cbs->fmflags );    // stack line operand
+        split_input( buff2, g_tok_start, input_cbs->fmflags );    // stack line operand
     }
     scan_restart = scan_stop + 1;
     return;

@@ -618,7 +618,7 @@ static  void    proc_input( char * filename )
             /***************************************************************/
 
             if( (nest_cb != NULL) && (nest_cb->c_tag != t_NONE) ) {
-                g_err_tag_nest( str_tags[nest_cb->c_tag + 1] );// eXXX expected
+                g_err_tag_nest( nest_cb->c_tag + 1 );// eXXX expected
             }
         }
         del_input_cb_entry();           // one level finished
@@ -782,7 +782,7 @@ int main( int argc, char * argv[] )
 
     init_global_vars();
 
-    token_buf = mem_alloc( buf_size );
+    token_buf = mem_alloc( BUF_SIZE + 1 );
 
     // out_msg( "define enum %d %d\n", INF_CMDLINE, inf_cmdline );
 

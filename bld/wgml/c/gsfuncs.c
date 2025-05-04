@@ -68,10 +68,10 @@ static  char    * alloc_resbuf( inp_line ** in_wk )
     inp_line  * wk;
 
     if( *in_wk == NULL ) {
-        *in_wk =  mem_alloc( sizeof( inp_line ) + buf_size );
+        *in_wk =  mem_alloc( sizeof( inp_line ) + BUF_SIZE );
         (*in_wk)->next = NULL;
     } else {
-        wk = mem_alloc( sizeof( inp_line ) + buf_size );
+        wk = mem_alloc( sizeof( inp_line ) + BUF_SIZE );
         wk->next = *in_wk;
         *in_wk = wk;
     }
@@ -201,7 +201,7 @@ static  char    * find_start_of_parm( char * pchar )
 /*                   call corresponding function                           */
 /***************************************************************************/
 
-char * scr_multi_funcs( char * in, char * pstart, char ** result, int32_t valsize )
+char *scr_multi_funcs( char *in, char *pstart, char **result, unsigned ressize )
 {
     bool                found;
     char                fn[FUN_NAME_LENGTH + 1];
@@ -213,14 +213,14 @@ char * scr_multi_funcs( char * in, char * pstart, char ** result, int32_t valsiz
     char            *   resbuf;         // buffer into which parm.a and parm.e point
     condcode            cc;
     inp_line        *   in_wk;          // stack of resbufs, one for each parameter
-    int                 funcind;
-    int                 k;
-    int                 m;
-    int                 parmcount;
+    unsigned            funcind;
+    unsigned            k;
+    unsigned            m;
+    unsigned            parmcount;
     int                 p_level;
     int                 rc;
     parm                parms[MAX_FUN_PARMS];
-    size_t              fnlen;
+    unsigned            fnlen;
 
     /* pstart points to the outer open parenthesis ('(') */
 
@@ -263,8 +263,7 @@ char * scr_multi_funcs( char * in, char * pstart, char ** result, int32_t valsiz
     found = false;
     for( k = 0; k < SCR_FUNC_MAX; k++ ) {
         if( fnlen == scr_functions[k].length
-            && !stricmp( fn, scr_functions[k].fname ) ) {
-
+          && stricmp( fn, scr_functions[k].fname ) == 0 ) {
             found = true;
             if( (input_cbs->fmflags & II_research) && GlobalFlags.firstpass ) {
                 out_msg( " Function %s found\n", scr_functions[k].fname );
@@ -380,7 +379,7 @@ char * scr_multi_funcs( char * in, char * pstart, char ** result, int32_t valsiz
 
     ProcFlags.suppress_msg = multiletter_function;
 
-    cc = scr_functions[funcind].fun( parms, parmcount, result, valsize );
+    cc = scr_functions[funcind].fun( parms, parmcount, result, ressize );
 
     ProcFlags.suppress_msg = false;
 

@@ -94,7 +94,7 @@ void gml_eaddress( const gmltag * entry )
     (void)entry;
 
     if( cur_group_type != gt_address ) {   // no preceding :ADDRESS tag
-        g_err_tag_prec( "ADDRESS" );
+        g_err_tag_prec( t_ADDRESS );
     }
     g_curr_font = font_save;
     rs_loc = titlep_tag;
@@ -173,7 +173,7 @@ void gml_aline( const gmltag * entry )
         xx_nest_err_cc( err_tag_wrong_sect, entry->tagname, ":TITLEP section" );
     }
     if( cur_group_type != gt_address ) {    // no preceding :ADDRESS tag
-        g_err_tag_prec( "ADDRESS" );
+        g_err_tag_prec( t_ADDRESS );
     }
     p = scan_start;
     SkipDot( p );                           // over '.'

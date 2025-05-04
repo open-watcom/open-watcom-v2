@@ -256,42 +256,6 @@ void ff_teardown( void )
     }
 }
 
-static char *search_member_name( const char *dir, const char *filename )
-{
-#define DIRECTORY_FILE      "WGMLST.COP"
-#ifdef __UNIX__
-#define DIRECTORY_FILE_ALT  "wgmlst.cop"
-#endif
-
-    FILE    *fp;
-    char    *member_name;
-    char    buff[_MAX_PATH + sizeof( DIRECTORY_FILE )];
-
-    strcpy( buff, dir );
-    strcat( buff, DIRECTORY_FILE );
-    if( strlen( buff ) > _MAX_PATH - 1 )
-        return( NULL );
-    fp = fopen( buff, "rb" );
-#ifdef __UNIX__
-    if( fp == NULL ) {
-        strcpy( buff, dir );
-        strcat( buff, DIRECTORY_FILE_ALT );
-        fp = fopen( buff, "rb" );
-    }
-#endif
-    if( fp == NULL ) {
-        return( NULL );
-    }
-    member_name = get_member_name( fp, buff, filename );
-    fclose( fp );
-    return( member_name );
-
-#ifdef __UNIX__
-#undef DIRECTORY_FILE_ALT
-#endif
-#undef DIRECTORY_FILE
-}
-
 /* Function search_file_in_dirs().
  * Searches for filename in curdir and the directories given in the
  * environment variables, as appropriate to the value of sequence.

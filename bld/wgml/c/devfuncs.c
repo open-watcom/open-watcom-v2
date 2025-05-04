@@ -263,8 +263,8 @@ static const char       *current_function       = NULL;
 /* These are used in outputting spaces and underscore characters. */
 
 static char             uscore_char;
-static record_buffer    space_chars     = { 0, 0, NULL };
-static record_buffer    uscore_chars    = { 0, 0, NULL };
+static record_buffer    space_chars;
+static record_buffer    uscore_chars;
 
 /* Local function definitions. */
 
@@ -386,12 +386,12 @@ static void fb_newline( void )
 
 static void output_spaces( size_t count )
 {
-    size_t  i;
+    unsigned    i;
 
-    if( space_chars.length < count ) {
+    if( space_chars.size < count ) {
         space_chars.text = mem_realloc( space_chars.text, count );
-        space_chars.length = count;
-        for( i = 0; i < space_chars.length; i++ ) {
+        space_chars.size = count;
+        for( i = 0; i < space_chars.size; i++ ) {
             space_chars.text[i] = ' ';
         }
     }
@@ -427,7 +427,7 @@ static void output_uscores( text_chars *in_chars )
      * with the underscore character, the current font is used.
      */
 
-    uscore_width = wgml_fonts[in_chars->font].width_table[(unsigned char)uscore_char];
+    uscore_width = wgml_fonts[in_chars->font].width.table[(unsigned char)uscore_char];
 
     /* The number of underscore characters is determined by the amount of
      * space from the current position to the text start point plus the
@@ -438,10 +438,10 @@ static void output_uscores( text_chars *in_chars )
     count += in_chars->width;
     count /= uscore_width;
 
-    if( uscore_chars.length < count ) {
+    if( uscore_chars.size < count ) {
         uscore_chars.text = mem_realloc( uscore_chars.text, count );
-        uscore_chars.length = count;
-        for( i = 0; i < uscore_chars.length; i++ ) {
+        uscore_chars.size = count;
+        for( i = 0; i < uscore_chars.size; i++ ) {
             uscore_chars.text[i] = uscore_char;
         }
     }
@@ -3540,7 +3540,7 @@ void df_populate_driver_table( void )
 
 void df_setup( void )
 {
-    int         i;
+    unsigned    i;
     symsub      *sym_val;
 
     /* When called, each of symbols "date" and "time" contains either of
@@ -3563,18 +3563,16 @@ void df_setup( void )
     /* Initialize space_chars to hold 80 space characters. */
 
     init_record_buffer( &space_chars, 80 );
-    for( i = 0; i < space_chars.length; i++ )
+    for( i = 0; i < space_chars.size; i++ )
         space_chars.text[i] = ' ';
 
     /* Initialize uscore_chars to hold 80 :UNDERSCORE characters. */
 
     uscore_char = bin_device->underscore.underscore_char;
     init_record_buffer( &uscore_chars, 80 );
-    for( i = 0; i < uscore_chars.length; i++ ) {
+    for( i = 0; i < uscore_chars.size; i++ ) {
         uscore_chars.text[i] = uscore_char;
     }
-
-    return;
 }
 
 /* Function df_teardown().
@@ -3596,14 +3594,14 @@ void df_teardown( void )
     if( space_chars.text != NULL ) {
         mem_free( space_chars.text);
         space_chars.current = 0;
-        space_chars.length = 0;
+        space_chars.size = 0;
         space_chars.text = NULL;
     }
 
     if( uscore_chars.text != NULL ) {
         mem_free( uscore_chars.text);
         uscore_chars.current = 0;
-        uscore_chars.length = 0;
+        uscore_chars.size = 0;
         uscore_chars.text = NULL;
     }
 

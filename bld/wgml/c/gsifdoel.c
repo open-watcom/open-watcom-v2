@@ -114,14 +114,14 @@ static condcode gargrelop( relop * r )
     if( cc != pos ) {
         return( cc );                   // scan error
     }
-    if(  ! ((*(tok_start + 1) == ' ')
-        || (*(tok_start + 2) == ' ')) ) { // operator is max 2 chars long
+    if(  ! ((*(g_tok_start + 1) == ' ')
+        || (*(g_tok_start + 2) == ' ')) ) { // operator is max 2 chars long
 
         return( no );                   // scan error
     }
 
-    if( *(tok_start + 1) == ' ' ) {     // relop is single char
-        switch( *tok_start ) {
+    if( *(g_tok_start + 1) == ' ' ) {     // relop is single char
+        switch( *g_tok_start ) {
         case '='  :
             *r = EQ;
             break;
@@ -138,8 +138,8 @@ static condcode gargrelop( relop * r )
     } else {
         char    c2;
 
-        c2 = my_tolower( *(tok_start + 1) );    // second char of relation operator
-        switch( my_tolower( *tok_start ) ) {    // relop is 2 chars
+        c2 = my_tolower( *(g_tok_start + 1) );    // second char of relation operator
+        switch( my_tolower( *g_tok_start ) ) {    // relop is 2 chars
         case '^'  :
             if( c2 == '=' ) {
                 *r = NE;
@@ -231,7 +231,7 @@ static condcode gargterm( termcb * t )
 
         cc = getqst();                  // try quoted string
         if( cc == no ) {                // not quoted
-            scan_start = tok_start;     // reset start for next try
+            scan_start = g_tok_start;   // reset start for next try
 
             cc = getarg();              // try unquoted string
             if( cc == notnum ) {
@@ -239,7 +239,7 @@ static condcode gargterm( termcb * t )
             }
         }
         // prepare string   quoted or unquoted
-        t->term_string = mem_tokdup( tok_start, arg_flen );
+        t->term_string = mem_tokdup( g_tok_start, arg_flen );
         t->term_length = arg_flen;
     } else {
         if( gn.argstart > gn.argstop ) {
@@ -413,7 +413,7 @@ void    scr_if( void )
 
     firstcondition = true;              // first 2 terms to compare
     p = scan_start;
-    tok_start = NULL;
+    g_tok_start = NULL;
 
     process_late_subst(scan_start);
 
@@ -699,7 +699,7 @@ void    scr_do( void )
     cc = getarg();
 
     cb->if_flags[cb->if_level].ifcwdo = false;
-    if( cc == omit || strnicmp( "begin", tok_start, 5 ) == 0 ) {
+    if( cc == omit || strnicmp( "begin", g_tok_start, 5 ) == 0 ) {
         if( !(cb->if_flags[cb->if_level].ifthen
             || cb->if_flags[cb->if_level].ifelse)
             || cb->if_flags[cb->if_level].ifdo ) {
@@ -714,7 +714,7 @@ void    scr_do( void )
         scan_restart = scan_stop + 1;
         return;
     } else {
-        if( strnicmp( "end", tok_start, 3 ) == 0 ) {
+        if( strnicmp( "end", g_tok_start, 3 ) == 0 ) {
             if( (input_cbs->fmflags & II_research) && GlobalFlags.firstpass ) {
                 show_ifcb( "doend", cb );
             }

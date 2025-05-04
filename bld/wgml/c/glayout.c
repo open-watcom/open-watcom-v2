@@ -92,7 +92,7 @@ void    gml_layout( const gmltag * entry )
         ProcFlags.layout = true;
         return;
     } else {
-        xx_err_cc( err_extra_ignored, tok_start, p );
+        xx_err_cc( err_extra_ignored, g_tok_start, p );
     }
     return;
 }
@@ -123,7 +123,7 @@ void    lay_elayout( const gmltag * entry )
 
         return;
     } else {
-        xx_err_cc( err_extra_ignored, tok_start, p );
+        xx_err_cc( err_extra_ignored, g_tok_start, p );
     }
     return;
 }

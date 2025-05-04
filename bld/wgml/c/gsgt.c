@@ -266,7 +266,7 @@ static  condcode    scan_tag_options( gtflags * tag_flags )
         if( cc == omit ) {              // nothing more
             break;
         }
-        p = tok_start;
+        p = g_tok_start;
         switch( my_tolower( *p ) ) {
         case   'a' :
             if( (arg_flen > 2) && (arg_flen < 12)
@@ -371,7 +371,7 @@ void    scr_gt( void )
     /*  isolate tagname   or use previous if tagname *                     */
     /***********************************************************************/
 
-    tok_start = NULL;
+    g_tok_start = NULL;
     cc = getarg();                      // Tagname
 
     if( cc == omit ) {
@@ -379,7 +379,7 @@ void    scr_gt( void )
         xx_err_c( err_missing_name, "" );
     }
 
-    p = tok_start;
+    p = g_tok_start;
 
     if( *p == '*' ) {                   // single * as tagname
         if( arg_flen > 1 ) {
@@ -424,7 +424,7 @@ void    scr_gt( void )
         return;
     }
 
-    p = tok_start;
+    p = g_tok_start;
     function = 0;
     switch( my_tolower( *p ) ) {
     case   'a':
@@ -485,7 +485,7 @@ void    scr_gt( void )
             xx_err( err_tag_mac_name );
             return;
         }
-        p = tok_start;
+        p = g_tok_start;
 
         len = 0;
         pn = macname;

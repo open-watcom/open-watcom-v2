@@ -257,9 +257,9 @@ static  void    init_banregion_wk( region_lay_tag * reg )
     reg->script_region[0].string = NULL;
     reg->script_region[1].string = NULL;
     reg->script_region[2].string = NULL;
-    reg->final_content[0].len = 0;
-    reg->final_content[1].len = 0;
-    reg->final_content[2].len = 0;
+    reg->final_content[0].size = 0;
+    reg->final_content[1].size = 0;
+    reg->final_content[2].size = 0;
     reg->final_content[0].hoffset = 0;
     reg->final_content[1].hoffset = 0;
     reg->final_content[2].hoffset = 0;
@@ -316,7 +316,7 @@ void    lay_banregion( const gmltag * entry )
         for( k = 0; k < att_count; k++ ) {
             curr = banregion_att[k];
 
-            if( !strnicmp( att_names[curr], g_att_val.att_name, g_att_val.att_len ) ) {
+            if( !strnicmp( lay_att_names[curr], g_att_val.att_name, g_att_val.att_len ) ) {
                 p = g_att_val.val_name;
 
                 if( count[k] ) {

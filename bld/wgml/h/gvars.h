@@ -56,7 +56,7 @@ global  char        *   new_file_parms; // command tail for IM/AP
 global  char        *   scan_char_ptr;  // used by character scanning routines
 global  char        *   scan_restart;   // used by character scanning routines
 global  bool            scan_err;       // used by character scanning routines
-global  char        *   tok_start;      // start of scanned token
+global  char        *   g_tok_start;    // start of scanned token
 global  size_t          arg_flen;       // arg length
 global  tag_att_val     g_att_val;      // current attribute/value info
 global  char        *   att_start;      // (potential) attribute start
@@ -140,7 +140,6 @@ global  proc_flags      ProcFlags;      // processing flags
 
 global  attr_flags      AttrFlags;      // attribute flags
 
-global  size_t          buf_size;       // default buffer size
 global  char        *   token_buf;
 
 global char         *   workbuf;        // work for input buffer
@@ -304,26 +303,6 @@ global  uint32_t    msg_indent;         // indent for message output (to screen,
 global script_style_info    script_style;   // BD/US etc scope control
 
 /***************************************************************************/
-/*  tagnames as strings for msg display                                    */
-/***************************************************************************/
-global char str_tags[t_MAX + 1][10]
-#if defined(tag_strings)
-  = {
-    { "NONE" },
-    #define pickg( name, length, routine, gmlflags, locflags, classflags )  { #name },
-    #include "gtags.h"
-    #undef pickg
-//    #define picklab( name, routine, flags )  extern void routine( void );
-//    #define picks( name, routine, flags )  extern void routine( void );
-//    #include "gscrcws.h" TBD
-//    #undef picks
-//    #undef picklab
-    { "MAX" }
-}
-#endif
-;
-
-/***************************************************************************/
 /* The tab lists.                                                          */
 /***************************************************************************/
 
@@ -356,7 +335,7 @@ extern  const   ban_places    bf_places[max_place];
 /*  longest attribute name is extract_threshold  (=17)                     */
 /*                            ....+....1....+..                            */
 /***************************************************************************/
-extern  const   char    att_names[e_dummy_max + 1][18];
+extern const char           * const lay_att_names[];
 
 /***************************************************************************/
 /*   declarations for the sequence of LAYOUT attribute values              */

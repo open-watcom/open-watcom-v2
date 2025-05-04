@@ -75,8 +75,8 @@ static void gml_xl_lp_common( e_tags t )
     char        *   p;
 
     if( t != t_LP ) {
-        if( is_ip_tag( nest_cb->c_tag ) ) {                 // inline phrase not closed
-            g_err_tag_nest( str_tags[nest_cb->c_tag + 1] ); // end tag expected
+        if( is_ip_tag( nest_cb->c_tag ) ) {         // inline phrase not closed
+            g_err_tag_nest( nest_cb->c_tag + 1 );   // end tag expected
         }
     }
 
@@ -770,9 +770,9 @@ void    gml_edl( const gmltag * entry )
 
     if( nest_cb->c_tag != t_DL ) {      // unexpected exxx tag
         if( nest_cb->c_tag == t_NONE ) {
-            g_err_tag_no( str_tags[t_DL + 1] );// no exxx expected, no tag active
+            g_err_tag_no( t_DL + 1 );   // no exxx expected, no tag active
         } else {
-            g_err_tag_nest( str_tags[nest_cb->c_tag + 1] ); // exxx expected
+            g_err_tag_nest( nest_cb->c_tag + 1 ); // exxx expected
         }
     } else {
         set_skip_vars( NULL, NULL, &nest_cb->u.dl_layout->post_skip, 1, g_curr_font );
@@ -797,9 +797,9 @@ void    gml_egl( const gmltag * entry )
 
     if( nest_cb->c_tag != t_GL ) {      // unexpected exxx tag
         if( nest_cb->c_tag == t_NONE ) {
-            g_err_tag_no( str_tags[t_GL + 1] );// no exxx expected, no tag active
+            g_err_tag_no( t_GL + 1 );// no exxx expected, no tag active
         } else {
-            g_err_tag_nest( str_tags[nest_cb->c_tag + 1] ); // exxx expected
+            g_err_tag_nest( nest_cb->c_tag + 1 ); // exxx expected
         }
     } else {
         set_skip_vars( NULL, NULL, &nest_cb->u.gl_layout->post_skip, 1, g_curr_font );
@@ -825,9 +825,9 @@ void    gml_eol( const gmltag * entry )
 
     if( nest_cb->c_tag != t_OL ) {      // unexpected exxx tag
         if( nest_cb->c_tag == t_NONE ) {
-            g_err_tag_no( str_tags[t_OL + 1] );// no exxx expected, no tag active
+            g_err_tag_no( t_OL + 1 );// no exxx expected, no tag active
         } else {
-            g_err_tag_nest( str_tags[nest_cb->c_tag + 1] ); // exxx expected
+            g_err_tag_nest( nest_cb->c_tag + 1 ); // exxx expected
         }
     } else {
         set_skip_vars( NULL, NULL, &nest_cb->u.ol_layout->post_skip, 1, g_curr_font );
@@ -853,9 +853,9 @@ void    gml_esl( const gmltag * entry )
 
     if( nest_cb->c_tag != t_SL ) {      // unexpected exxx tag
         if( nest_cb->c_tag == t_NONE ) {
-            g_err_tag_no( str_tags[t_SL + 1] );// no exxx expected, no tag active
+            g_err_tag_no( t_SL + 1 );// no exxx expected, no tag active
         } else {
-            g_err_tag_nest( str_tags[nest_cb->c_tag + 1] ); // exxx expected
+            g_err_tag_nest( nest_cb->c_tag + 1 ); // exxx expected
         }
     } else {
         set_skip_vars( NULL, NULL, &nest_cb->u.sl_layout->post_skip, 1, g_curr_font );
@@ -881,9 +881,9 @@ void    gml_eul( const gmltag * entry )
 
     if( nest_cb->c_tag != t_UL ) {      // unexpected exxx tag
         if( nest_cb->c_tag == t_NONE ) {
-            g_err_tag_no( str_tags[t_UL + 1] );// no exxx expected, no tag active
+            g_err_tag_no( t_UL + 1 );// no exxx expected, no tag active
         } else {
-            g_err_tag_nest( str_tags[nest_cb->c_tag + 1] ); // exxx expected
+            g_err_tag_nest( nest_cb->c_tag + 1 ); // exxx expected
         }
     } else {
         set_skip_vars( NULL, NULL, &nest_cb->u.ul_layout->post_skip, 1, g_curr_font );
@@ -1125,7 +1125,7 @@ void    gml_li( const gmltag * entry )
         break;
     case t_DL :
     case t_GL :
-        g_err_tag_nest( str_tags[nest_cb->c_tag + 1] ); // end tag expected
+        g_err_tag_nest( nest_cb->c_tag + 1 ); // end tag expected
         break;
     default:
         break;

@@ -56,7 +56,7 @@
 /*                                                                         */
 /***************************************************************************/
 
-condcode    scr_insert( parm parms[MAX_FUN_PARMS], size_t parmcount, char * * result, int32_t ressize )
+condcode    scr_insert( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **result, unsigned ressize )
 {
     char            *   pval;
     char            *   pend;
@@ -117,7 +117,7 @@ condcode    scr_insert( parm parms[MAX_FUN_PARMS], size_t parmcount, char * * re
         k++;
         ressize--;
     }
-    if( n > k ) {         // startpos > target length, insert one extra blank
+    if( n > k && (ressize > 0) ) {         // startpos > target length, insert one extra blank
         **result = ' ';
         *result += 1;
         ressize--;

@@ -467,7 +467,7 @@ bool get_line( bool display_line )
                 }
                 while( 1 ) {                    // break when next line obtained or file ends
                     fgetpos( cb->fp, &cb->pos );// remember position for label
-                    p = fgets( buff2, buf_size, cb->fp );
+                    p = fgets( buff2, BUF_SIZE + 1, cb->fp );
                     if( p != NULL ) {
                         if( cb->lineno >= cb->linemax ) {
                             input_cbs->fmflags |= II_eof;

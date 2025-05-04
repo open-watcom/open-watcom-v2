@@ -53,7 +53,7 @@
 /*                                                                         */
 /***************************************************************************/
 
-condcode    scr_translate( parm parms[MAX_FUN_PARMS], size_t parmcount, char * * result, int32_t ressize )
+condcode    scr_translate( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **result, unsigned ressize )
 {
     char            *   pval;
     char            *   pend;
@@ -119,7 +119,7 @@ condcode    scr_translate( parm parms[MAX_FUN_PARMS], size_t parmcount, char * *
             ressize--;
         }
     } else {                   // translate as specified in tablei and tableo
-        for( ; pval <= pend; pval++ ) {
+        for( ; pval <= pend && ressize > 0; pval++ ) {
             c = *pval;
             ifound = false;
             if( ptabia == NULL ) {
@@ -144,9 +144,6 @@ condcode    scr_translate( parm parms[MAX_FUN_PARMS], size_t parmcount, char * *
             }
             *result += 1;
             ressize--;
-            if( ressize <= 0 ) {
-                break;
-            }
         }
     }
 

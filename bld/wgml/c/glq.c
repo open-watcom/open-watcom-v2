@@ -50,8 +50,8 @@ void gml_lq( const gmltag * entry )
     start_doc_sect();                   // if not already done
     scr_process_break();
 
-    if( is_ip_tag( nest_cb->c_tag ) ) {                 // inline phrase not closed
-        g_err_tag_nest( str_tags[nest_cb->c_tag + 1] ); // end tag expected
+    if( is_ip_tag( nest_cb->c_tag ) ) {         // inline phrase not closed
+        g_err_tag_nest( nest_cb->c_tag + 1 );   // end tag expected
     }
 
     init_nest_cb();
@@ -107,11 +107,11 @@ void gml_elq( const gmltag * entry )
 
     scr_process_break();
 
-    if( nest_cb->c_tag != t_LQ ) {                          // unexpected exxx tag
+    if( nest_cb->c_tag != t_LQ ) {                  // unexpected exxx tag
         if( nest_cb->c_tag == t_NONE ) {
-            g_err_tag_no( str_tags[t_LQ + 1] );             // no exxx expected, no tag active
+            g_err_tag_no( t_LQ + 1 );               // no exxx expected, no tag active
         } else {
-            g_err_tag_nest( str_tags[nest_cb->c_tag + 1] ); // exxx expected
+            g_err_tag_nest( nest_cb->c_tag + 1 );   // exxx expected
         }
     }
 

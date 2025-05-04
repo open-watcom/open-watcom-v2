@@ -199,7 +199,7 @@ void scr_ix( void )
 
     /* Check for no operands, a structure number, or a DUMP/PURGE line */
 
-    tok_start = NULL;                   // clear token start address
+    g_tok_start = NULL;                   // clear token start address
     cc = getarg();                      // get next operand
     if( cc == omit || cc == quotes0 ) { // no operands
 
@@ -220,14 +220,14 @@ void scr_ix( void )
 
         /* Unquoted numeric string here must be a structure number */
 
-        gn.argstart = tok_start;
+        gn.argstart = g_tok_start;
         gn.argstop = scan_stop;
         gn.ignore_blanks = 0;
         cc = getnum( &gn );
 
         if( (cc == pos) || (cc == neg) ) {
 
-            p = tok_start;
+            p = g_tok_start;
             for( k = 0; k < arg_flen; k++ ) {
                 if( (*p == ' ') || !my_isdigit( *p ) ) {
                     break;
@@ -241,31 +241,31 @@ void scr_ix( void )
                 xx_warn_c( wng_unsupp_cw_opt, "structure" );
 
                 if( (gn.result < 1) || (gn.result > 9) ) { // out of range
-                    xx_line_err_c( err_struct_range, tok_start );
+                    xx_line_err_c( err_struct_range, g_tok_start );
                 }
                 cc = getarg();                  // get next operand
                 if( cc == omit || cc == quotes0 ) { // no operands
-                    xx_line_err_cc( err_parm_missing, cwcurr, tok_start );
+                    xx_line_err_cc( err_parm_missing, cwcurr, g_tok_start );
                 }
             }
         } else {
 
             /* Check for '.' (the control word indicator) */
 
-            if( *tok_start == SCR_char && arg_flen == 1  ) {
+            if( *g_tok_start == SCR_char && arg_flen == 1  ) {
 
                 cc = getarg();                  // get next operand
 
                 /* Only DUMP/PURGE allowed in this position */
 
                 if( cc == omit || cc == quotes0 ) { // no operands
-                    xx_line_err_cc( err_parm_missing, cwcurr, tok_start );
-                } else if( (arg_flen == 4) && stricmp( "DUMP", tok_start ) == 0 ) {
+                    xx_line_err_cc( err_parm_missing, cwcurr, g_tok_start );
+                } else if( (arg_flen == 4) && stricmp( "DUMP", g_tok_start ) == 0 ) {
                     xx_warn_c( wng_unsupp_cw_opt, "DUMP" );
-                } else if( (arg_flen == 5) && stricmp( "PURGE", tok_start ) == 0 ) {
+                } else if( (arg_flen == 5) && stricmp( "PURGE", g_tok_start ) == 0 ) {
                     xx_warn_c( wng_unsupp_cw_opt, "PURGE" );
                 } else {
-                    xx_line_err_c( err_bad_dp_value, tok_start );
+                    xx_line_err_c( err_bad_dp_value, g_tok_start );
                 }
                 cc = getarg();                  // get next operand
             }
@@ -289,34 +289,34 @@ void scr_ix( void )
 
         /* Process a reference preceded by SCR_char */
 
-        if( *tok_start == SCR_char && arg_flen == 1  ) {    // identify reference
+        if( *g_tok_start == SCR_char && arg_flen == 1  ) {    // identify reference
             cc = getarg();                                  // get next operand
             if( (cc == pos) || (cc == quotes) ) {           // identify reference
-                ref = tok_start;
+                ref = g_tok_start;
                 reflen = arg_flen;
                 cc = getarg();                  // get next operand
             }
             break;
         }
-        ix[lvl] = tok_start;
+        ix[lvl] = g_tok_start;
         ixlen[lvl] = arg_flen;
         cc = getarg();                  // get next operand
     }
 
     if( lvl == 3 ) {                                        // check for reference
-        if( *tok_start == SCR_char && arg_flen == 1  ) {    // skip reference indicator
+        if( *g_tok_start == SCR_char && arg_flen == 1  ) {    // skip reference indicator
             cc = getarg();                                  // get next operand
         }
 
         if( (cc == pos) || (cc == quotes) ) {   // reference found
-            ref = tok_start;
+            ref = g_tok_start;
             reflen = arg_flen;
             cc = getarg();                      // get next operand
         }
     }
 
     if( (cc == pos) || (cc == quotes) ) {       // extra data on line
-        xx_line_err_c( err_extra_data, tok_start );
+        xx_line_err_c( err_extra_data, g_tok_start );
     }
 
     ProcFlags.post_ix = true;           // records use of control word only if indexing is on

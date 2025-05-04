@@ -35,7 +35,7 @@
  *
  ***************************************************************************/
 
-condcode    scr_compare( parm parms[MAX_FUN_PARMS], size_t parmcount, char **result, int32_t ressize )
+condcode    scr_compare( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **result, unsigned ressize )
 {
     char            *string1s;
     char            *string1e;

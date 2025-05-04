@@ -234,9 +234,9 @@ static void gml_e_inlne_common( const gmltag * entry, e_tags t )
 
     if( nest_cb->c_tag != t ) {         // unexpected exxx tag
         if( nest_cb->c_tag == t_NONE ) {
-            g_err_tag_no( str_tags[t + 1] );// no exxx expected
+            g_err_tag_no( t + 1 );      // no exxx expected
         } else {
-            g_err_tag_nest( str_tags[nest_cb->c_tag + 1] ); // exxx expected
+            g_err_tag_nest( nest_cb->c_tag + 1 ); // exxx expected
         }
     } else {
 

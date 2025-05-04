@@ -96,8 +96,8 @@ extern  void    gml_set( const gmltag * entry )
                     break;
                 }
                 value_found = true;
-                if( val_len > buf_size - 1 )
-                    val_len = buf_size - 1;
+                if( val_len > BUF_SIZE - 1 )
+                    val_len = BUF_SIZE - 1;
                 strncpy( token_buf, val_start, val_len );
                 token_buf[val_len] = '\0';
             } else if( strnicmp( "delete", token_buf, 6 ) == 0 ) {

@@ -70,9 +70,9 @@
 
 /* Local variable declaration. */
 
-static record_buffer    binc_buff   = { 0, 0, NULL };
-static record_buffer    buffout     = { 0, 0, NULL };
-static record_buffer    translated  = { 0, 0, NULL };
+static record_buffer    binc_buff;
+static record_buffer    buffout;
+static record_buffer    translated;
 static FILE             *out_file_fp;
 static unsigned char    tr_table[0x100]; // .TR-controlled translation table
 
@@ -122,7 +122,7 @@ static void ob_insert_ps_text( const char *in_block, size_t count, font_number f
 
     /* If the buffer is full, flush it. */
 
-    if( buffout.current == buffout.length )
+    if( buffout.current == buffout.size )
         ob_flush();
 
     /* Adjust font if appropriate and initialize cur_trans. */
@@ -133,7 +133,7 @@ static void ob_insert_ps_text( const char *in_block, size_t count, font_number f
         cur_table = wgml_fonts[font].outtrans->table;
     for( i = 0; i < count; i++ ) {
 
-        difference = buffout.length - buffout.current;
+        difference = buffout.size - buffout.current;
         if ( difference > 1 ) {
 
             /* buffout has room for at least one character. */
@@ -174,7 +174,7 @@ static void ob_insert_ps_text( const char *in_block, size_t count, font_number f
 
                             /* If it is too large to fit at all, report overflow. */
 
-                            if( cur_trans->count > buffout.length ) {
+                            if( cur_trans->count > buffout.size ) {
                                 xx_simple_err_c( err_out_rec_size, dev_name );
                             }
 
@@ -182,7 +182,7 @@ static void ob_insert_ps_text( const char *in_block, size_t count, font_number f
                              * and flush the buffer.
                              */
 
-                            if( (buffout.current + cur_trans->count + 1) > buffout.length ) {
+                            if( (buffout.current + cur_trans->count + 1) > buffout.size ) {
                                 buffout.text[buffout.current] = '\\';
                                 buffout.current++;
                                 ob_flush();
@@ -247,17 +247,17 @@ static void ob_insert_ps_cmd( const char *in_block, size_t count )
 
     /* If the buffer is full, flush it. */
 
-    if( buffout.current == buffout.length ) {
+    if( buffout.current == buffout.size ) {
         ob_flush();
     }
 
     /* Copy each token in turn. */
 
-    while( (buffout.current + text_count) > buffout.length ) {
+    while( (buffout.current + text_count) > buffout.size ) {
 
         /* If the entire text_block will now fit, exit the loop. */
 
-        if( text_count <= buffout.length - buffout.current ) {
+        if( text_count <= buffout.size - buffout.current ) {
             break;
         }
 
@@ -282,7 +282,7 @@ static void ob_insert_ps_cmd( const char *in_block, size_t count )
         }
         spc_end = current;
 
-        if( ( buffout.current + spc_end - spc_start ) <= buffout.length ) {
+        if( ( buffout.current + spc_end - spc_start ) <= buffout.size ) {
 
             /* Copy up the token and any initial space characters. */
 
@@ -313,7 +313,7 @@ static void ob_insert_ps_cmd( const char *in_block, size_t count )
 
     /* If the buffer is full, flush it. */
 
-    if( buffout.current == buffout.length )
+    if( buffout.current == buffout.size )
         ob_flush();
 
     return;
@@ -362,7 +362,7 @@ static void ob_insert_ps_cmd_ot( const char *in_block, size_t count, font_number
 
         /* If the buffer is full, flush it. */
 
-        if( buffout.current == buffout.length )
+        if( buffout.current == buffout.size )
             ob_flush();
 
         /* First process any initial space. */
@@ -407,13 +407,13 @@ static void ob_insert_ps_cmd_ot( const char *in_block, size_t count, font_number
 
                             /* If it is too large to fit at all, report overflow. */
 
-                            if( cur_trans->count > buffout.length ) {
+                            if( cur_trans->count > buffout.size ) {
                                 xx_simple_err_c( err_out_rec_size, dev_name );
                             }
 
                             /* If it won't fit, flush the buffer. */
 
-                            if( (buffout.current + cur_trans->count) > buffout.length ) {
+                            if( (buffout.current + cur_trans->count) > buffout.size ) {
                                 ob_flush();
                             }
 
@@ -450,9 +450,9 @@ static void ob_insert_ps_cmd_ot( const char *in_block, size_t count, font_number
 
             /* At least one character will be added to translated. */
 
-            if( k >= translated.length ) {
-                translated.length *= 2;
-                translated.text = mem_realloc( translated.text, translated.length );
+            if( k >= translated.size ) {
+                translated.size *= 2;
+                translated.text = mem_realloc( translated.text, translated.size );
             }
 
             /* Add the non-space character to translated. */
@@ -493,13 +493,13 @@ static void ob_insert_ps_cmd_ot( const char *in_block, size_t count, font_number
 
                             /* If it is too large to fit at all, report overflow. */
 
-                            if( cur_trans->count > buffout.length ) {
+                            if( cur_trans->count > buffout.size ) {
                                 xx_simple_err_c( err_out_rec_size, dev_name );
                             }
 
-                            if( (k + cur_trans->count) >= translated.length ) {
-                                translated.length *= 2;
-                                translated.text = mem_realloc( translated.text, translated.length );
+                            if( (k + cur_trans->count) >= translated.size ) {
+                                translated.size *= 2;
+                                translated.text = mem_realloc( translated.text, translated.size );
                             }
 
                             memcpy( &translated.text[k], cur_trans->data, cur_trans->count );
@@ -531,7 +531,7 @@ static void ob_insert_ps_cmd_ot( const char *in_block, size_t count, font_number
          * will be skipped, but not otherwise since it will be processed.
          */
 
-        if( test_length >= buffout.length ) {
+        if( test_length >= buffout.size ) {
             ob_flush();
             text_count--;
         } else {
@@ -566,16 +566,16 @@ static void ob_insert_def( const char *in_block, size_t count )
 
     /* If the buffer is full, flush it. */
 
-    if( buffout.current == buffout.length )
+    if( buffout.current == buffout.size )
         ob_flush();
 
     /* Start at the beginning of text_block. */
 
     current = 0;
     text_count = count;
-    while( (buffout.current + text_count) > buffout.length ) {
+    while( (buffout.current + text_count) > buffout.size ) {
 
-        difference = buffout.length - buffout.current;
+        difference = buffout.size - buffout.current;
 
         /* If the entire text_block will now fit, exit the loop. */
 
@@ -598,7 +598,7 @@ static void ob_insert_def( const char *in_block, size_t count )
 
     /* If the buffer is full, flush it. */
 
-    if( buffout.current == buffout.length )
+    if( buffout.current == buffout.size )
         ob_flush();
 
     return;
@@ -641,7 +641,7 @@ static void ob_insert_def_ot( const char *in_block, size_t count, font_number fo
 
         /* If the buffer is full, flush it. */
 
-        if( buffout.current == buffout.length )
+        if( buffout.current == buffout.size )
             ob_flush();
 
         /* Now check for an output translation. */
@@ -682,13 +682,13 @@ static void ob_insert_def_ot( const char *in_block, size_t count, font_number fo
 
                         /* If it is too large to fit at all, report overflow. */
 
-                        if( cur_trans->count > buffout.length ) {
+                        if( cur_trans->count > buffout.size ) {
                             xx_simple_err_c( err_out_rec_size, dev_name );
                         }
 
                         /* If it won't fit in the current buffer, flush the buffer. */
 
-                        if( (buffout.current + cur_trans->count) > buffout.length ) {
+                        if( (buffout.current + cur_trans->count) > buffout.size ) {
                             ob_flush();
                         }
 
@@ -711,7 +711,7 @@ static void ob_insert_def_ot( const char *in_block, size_t count, font_number fo
 
     /* If the buffer is full, flush it. */
 
-    if( buffout.current == buffout.length )
+    if( buffout.current == buffout.size )
         ob_flush();
 
     return;
@@ -1005,8 +1005,8 @@ void ob_binclude( binclude_element * in_el )
     buffout.current = 0;
 
     if( in_el->has_rec_type ) {
-        count = fread( buffout.text, sizeof( uint8_t ), buffout.length, in_el->fp );
-        while( count == buffout.length ) {
+        count = fread( buffout.text, sizeof( uint8_t ), buffout.size, in_el->fp );
+        while( count == buffout.size ) {
             buffout.current = count;
             if( fwrite( buffout.text, sizeof( uint8_t ), buffout.current, out_file_fp )
                     < buffout.current ) {
@@ -1014,7 +1014,7 @@ void ob_binclude( binclude_element * in_el )
                 count = 0;
                 break;
             }
-            count = fread( buffout.text, sizeof( uint8_t ), buffout.length, in_el->fp );
+            count = fread( buffout.text, sizeof( uint8_t ), buffout.size, in_el->fp );
         }
         buffout.current = count;
         if( fwrite( buffout.text, sizeof( uint8_t ), buffout.current, out_file_fp )
@@ -1026,8 +1026,8 @@ void ob_binclude( binclude_element * in_el )
         }
         buffout.current = 0;
     } else {
-        count = fread( binc_buff.text, sizeof( uint8_t ), binc_buff.length, in_el->fp );
-        while( count == binc_buff.length ) {
+        count = fread( binc_buff.text, sizeof( uint8_t ), binc_buff.size, in_el->fp );
+        while( count == binc_buff.size ) {
             binc_buff.current = count;
             if( fwrite( binc_buff.text, sizeof( uint8_t ), binc_buff.current, out_file_fp )
                     < binc_buff.current ) {
@@ -1036,7 +1036,7 @@ void ob_binclude( binclude_element * in_el )
                 break;
             }
             ob_flush();
-            count = fread( binc_buff.text, sizeof( uint8_t ), binc_buff.length, in_el->fp );
+            count = fread( binc_buff.text, sizeof( uint8_t ), binc_buff.size, in_el->fp );
         }
         binc_buff.current = count;
         if( fwrite( binc_buff.text, sizeof( uint8_t ), binc_buff.current, out_file_fp )
@@ -1140,7 +1140,7 @@ void ob_graphic( graphic_element * in_el )
     buffout.current = ps_size;
     ob_flush();
 
-    memset( buffout.text, buffout.length, '\0' );
+    memset( buffout.text, buffout.size, '\0' );
     ps_size = sprintf( buffout.text, "%d %d %d %d %d %d %d graphhead",
                          in_el->cur_left, in_el->y_address, in_el->width, in_el->depth,
                          in_el->xoff, -1 * (in_el->depth + in_el->yoff), in_el->scale );
@@ -1154,15 +1154,15 @@ void ob_graphic( graphic_element * in_el )
     buffout.current = strlen( buffout.text );
     ob_flush();
 
-    count = fread( buffout.text, sizeof( uint8_t ), buffout.length, in_el->fp );
-    while( count == buffout.length ) {
+    count = fread( buffout.text, sizeof( uint8_t ), buffout.size, in_el->fp );
+    while( count == buffout.size ) {
         buffout.current = count;
         if( fwrite( buffout.text, sizeof( uint8_t ), buffout.current, out_file_fp )
                 < buffout.current ) {
             xx_simple_err_c( err_write_out_file, out_file );
             return;
         }
-        count = fread( buffout.text, sizeof( uint8_t ), buffout.length, in_el->fp );
+        count = fread( buffout.text, sizeof( uint8_t ), buffout.size, in_el->fp );
     }
     buffout.current = count;
     if( fwrite( buffout.text, sizeof( uint8_t ), buffout.current, out_file_fp )
@@ -1247,7 +1247,7 @@ void ob_insert_byte( unsigned char in_char )
 {
     /* Flush the buffer if it is full. */
 
-    if( buffout.current == buffout.length )
+    if( buffout.current == buffout.size )
         ob_flush();
 
     /* Insert the character and increment the current position pointer. */
@@ -1304,7 +1304,7 @@ void ob_insert_ps_text_start( void )
 {
     /* Flush the buffer if it is full or has only one character position left. */
 
-    if( buffout.current >= (buffout.length - 1) )
+    if( buffout.current >= (buffout.size - 1) )
         ob_flush();
 
     /* Insert '(' and increment the current position pointer. */

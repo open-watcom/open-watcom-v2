@@ -44,6 +44,22 @@ typedef struct {
     char        tagname[TAG_NAME_LENGTH + 1];
 } loc_to_name;
 
+/***************************************************************************/
+/*  tagnames as strings for msg display                                    */
+/***************************************************************************/
+static const char * const str_tags[] = {
+    "NONE",
+    #define pickg( name, length, routine, gmlflags, locflags, classflags )  #name,
+    #include "gtags.h"
+    #undef pickg
+//    #define picklab( name, routine, flags )  extern void routine( void );
+//    #define picks( name, routine, flags )  extern void routine( void );
+//    #include "gscrcws.h" TBD
+//    #undef picks
+//    #undef picklab
+    "MAX"
+};
+
 static loc_to_name  l2n_names[L2N_ENTRIES] = { { address_tag, "EADDRESS" },
                                                { figcap_tag, "FIGDESC or EFIG" },
                                                { titlep_tag, "ETITLEP" } };
@@ -537,12 +553,9 @@ void dup_id_err( const char * id, const char * context )
 /*  error msgs for missing or duplicate :XXX :eXXX tags                    */
 /***************************************************************************/
 
-static void g_err_tag_common( const char * tag, bool nest )
+static void g_err_tag_common( e_tags etag, bool nest )
 {
-    char    tagn[TAG_NAME_LENGTH + 1];
-
-    sprintf( tagn, "%s", tag );
-    g_err( err_tag_expected, tagn );
+    g_err( err_tag_expected, str_tags[etag] );
     if( nest ) {
         file_mac_info_nest();
     } else {
@@ -552,15 +565,15 @@ static void g_err_tag_common( const char * tag, bool nest )
     return;
 }
 
-void g_err_tag( const char * tag )
+void g_err_tag( e_tags etag )
 {
-    g_err_tag_common( tag, 0 );         // 'normal' stack display
+    g_err_tag_common( etag, false );         // 'normal' stack display
     err_exit();
 }
 
-void g_err_tag_nest( const char * tag )
+void g_err_tag_nest( e_tags etag )
 {
-    g_err_tag_common( tag, 1 );         // nested tag stack display
+    g_err_tag_common( etag, true );         // nested tag stack display
     err_exit();
 }
 
@@ -604,22 +617,22 @@ void g_err_tag_mac( gtentry * ge )
     err_exit();
 }
 
-void g_err_tag_no( const char * tag )
+void g_err_tag_no( e_tags etag )
 {
     char    tagn[TAG_NAME_LENGTH + 1 + 1];
 
-    sprintf( tagn, "%c%s", GML_char, tag );
+    sprintf( tagn, "%c%s", GML_char, str_tags[etag] );
     g_err( err_tag_not_expected, tagn );
     file_mac_info_nest();
     err_count++;
     err_exit();
 }
 
-void g_err_tag_prec( const char * tag )
+void g_err_tag_prec( e_tags etag )
 {
     char    tagn[TAG_NAME_LENGTH + 1 + 1];
 
-    sprintf( tagn, "%c%s", GML_char, tag );
+    sprintf( tagn, "%c%s", GML_char, str_tags[etag] );
     g_err( err_tag_preceding, tagn );
     file_mac_info();
     err_count++;
@@ -628,19 +641,20 @@ void g_err_tag_prec( const char * tag )
 
 void g_err_tag_rsloc( locflags inloc, const char * pa )
 {
-    const char  *   tag_name    = NULL;
-    int             i;
+    const char  *tag_name;
+    int         i;
 
+    tag_name = "unknown";
     for( i = 0; i < L2N_ENTRIES; i++ ) {
         if( l2n_names[i].location == inloc ) {
             tag_name = l2n_names[i].tagname;
             break;
         }
     }
-    if( tag_name == NULL ) {
-        tag_name = "unknown";
-    }
-    g_err_tag_common( tag_name, 1 );
+    g_err( err_tag_expected, tag_name );
+    file_mac_info_nest();
+    err_count++;
+
     show_line_error( pa );
 
     err_exit();

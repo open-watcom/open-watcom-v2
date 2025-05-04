@@ -378,7 +378,7 @@ void    free_single_funcs_research( void )
 void    test_out_t_line( text_line  * a_line )
 {
     text_chars  *   tw;
-    char            buf[BUF_SIZE];
+    char            buf[BUF_SIZE + 1];
 
     if( a_line == NULL || a_line->first == NULL) {
         return;
@@ -389,7 +389,7 @@ void    test_out_t_line( text_line  * a_line )
 
     for( tw = a_line->first; tw != NULL; tw = tw->next ) {
 
-        snprintf( buf, buf_size,
+        snprintf( buf, BUF_SIZE,
                   "fnt:%d x:%d-%d w:%d cnt:%d type:%x txt:'%.*s'\n",
                   tw->font, tw->x_address, tw->x_address + tw->width,
                   tw->width, tw->count, tw->type, tw->count, tw->text );

@@ -118,7 +118,7 @@ void    lay_lp( const gmltag * entry )
         cvterr = -1;
         for( k = 0, curr = lp_att[k]; curr > 0; k++, curr = lp_att[k] ) {
 
-            if( !strnicmp( att_names[curr], g_att_val.att_name, g_att_val.att_len ) ) {
+            if( !strnicmp( lay_att_names[curr], g_att_val.att_name, g_att_val.att_len ) ) {
                 p = g_att_val.val_name;
 
                 switch( curr ) {

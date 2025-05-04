@@ -194,7 +194,7 @@ void    scr_label( void )
                 char    *   pt;
                 int         len;
 
-                p   = tok_start;
+                p   = g_tok_start;
                 pt  = token_buf;
                 len = 0;
                 while( len < arg_flen ) {   // copy to buffer
@@ -318,7 +318,7 @@ void    scr_go( void )
         xx_source_err_c( err_missing_name, "" );
     }
 
-    gn.argstart      = tok_start;
+    gn.argstart      = g_tok_start;
     gn.argstop       = scan_stop;
     gn.ignore_blanks = 0;
 
@@ -349,11 +349,11 @@ void    scr_go( void )
 
         gotargetno = 0;                 // no target lineno known
         if( arg_flen >  MAC_NAME_LENGTH ) {
-            xx_source_err_c( err_sym_long, tok_start );
+            xx_source_err_c( err_sym_long, g_tok_start );
         }
 
         for( k = 0; k < MAC_NAME_LENGTH; k++ ) {// copy to work
-            gotarget[k] = *tok_start++;
+            gotarget[k] = *g_tok_start++;
         }
         gotarget[k] = '\0';
 

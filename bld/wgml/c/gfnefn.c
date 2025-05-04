@@ -203,7 +203,7 @@ void gml_efn( const gmltag * entry )
     rs_loc = 0;
 
     if( cur_group_type != gt_fn ) {         // no preceding :FN tag
-        g_err_tag_prec( "FN" );
+        g_err_tag_prec( t_FN );
         scan_start = scan_stop + 1;
         return;
     }

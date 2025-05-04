@@ -162,17 +162,17 @@ static void scan_gml( void )
     bool            processed;
     gtentry         *ge;                // GML user tag entry
     mac_entry       *me;                // script macro for processing GML tag
-    char            tok_upper[BUF_SIZE];
+    char            tok_upper[BUF_SIZE + 1];
     const gmltag    *tag;
 
     cb = input_cbs;
 
     p = scan_start + 1;
-    tok_start = scan_start;
+    g_tok_start = scan_start;
     while( (*p != ' ') && (*p != '.') && (*p != '\0') ) {   // search end of TAG
         p++;
     }
-    toklen = p - tok_start - 1;
+    toklen = p - g_tok_start - 1;
 
     /* If the token is longer than the maximum allowed tag name length,
      * it cannot be a valid tag name. Get out now so we don't have to watch
@@ -188,25 +188,25 @@ static void scan_gml( void )
 
     if( GlobalFlags.firstpass && (cb->fmflags & II_research) ) {
 
-        if( stricmp( "cmt", tok_start + 1 ) != 0 ) {   // quiet for :cmt.
+        if( stricmp( "cmt", g_tok_start + 1 ) != 0 ) {   // quiet for :cmt.
 
             if( cb->fmflags & II_tag_mac ) {
                 printf_research( "L%d    %c%s tag found in macro %s(%d)\n\n",
-                                 inc_level, GML_char, tok_start + 1,
+                                 inc_level, GML_char, g_tok_start + 1,
                                  cb->s.m->mac->name, cb->s.m->lineno );
             } else {
                 printf_research( "L%d    %c%s tag found in file %s(%d)\n\n",
-                                 inc_level, GML_char, tok_start + 1,
+                                 inc_level, GML_char, g_tok_start + 1,
                                  cb->s.f->filename, cb->s.f->lineno );
             }
         }
-        add_GML_tag_research( tok_start + 1 );
+        add_GML_tag_research( g_tok_start + 1 );
     }
 
     if( ProcFlags.layout ) {
         ge = NULL;                      // no user tags within :LAYOUT
     } else {
-        ge = find_user_tag( &tag_dict, tok_start + 1 );
+        ge = find_user_tag( &tag_dict, g_tok_start + 1 );
     }
     processed = false;
     me = NULL;
@@ -246,7 +246,7 @@ static void scan_gml( void )
     } else {
         *p ='\0';
         for( k = 0; k <= toklen; k++ ) {
-            tok_upper[k] = my_toupper( *(tok_start + 1 + k) );
+            tok_upper[k] = my_toupper( *(g_tok_start + 1 + k) );
         }
         tok_upper[k] = '\0';
 
@@ -350,7 +350,7 @@ static void scan_gml( void )
                         // tag is not a list tag
                         tag->gmlproc( tag );
                     } else {
-                        xx_line_err_c( err_no_list, tok_start );
+                        xx_line_err_c( err_no_list, g_tok_start );
                     }
                 } else if( ProcFlags.need_li_lp ) {
                     if( tag->tagclass & li_lp_tag ) {
@@ -372,7 +372,7 @@ static void scan_gml( void )
                     tag->gmlproc( tag );
                 } else {
                     start_doc_sect();   // if not already done
-                    g_err_tag_rsloc( rs_loc, tok_start );
+                    g_err_tag_rsloc( rs_loc, g_tok_start );
                 }
                 processed = true;
                 SkipDot( scan_start );
@@ -385,7 +385,7 @@ static void scan_gml( void )
         *p = csave;
     }
     if( !processed ) {                  // treat as text
-        scan_start = tok_start;
+        scan_start = g_tok_start;
     }
 }
 

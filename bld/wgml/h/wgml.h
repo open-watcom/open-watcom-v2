@@ -329,15 +329,15 @@ extern  void                fb_blocks_out( void );
 
 
 /* gsfuncs.c                            */
-extern  char    *   scr_multi_funcs( char * in, char * pstart, char * * ppval, int32_t valsize );
+extern  char    *scr_multi_funcs( char *in, char *pstart, char **result, unsigned ressize );
 
 
 /* gsfunelu.c                           */
-extern  char    *   scr_single_funcs( char * in, char * end, char * * result );
+extern  char    *scr_single_funcs( char *in, char *end, char **result );
 
 
 /* gsgoto.c                             */
-extern  void    print_labels( labelcb * lb, char * name );
+extern  void    print_labels( labelcb *lb, char *name );
 extern  bool    gotarget_reached( void );
 
 
@@ -474,11 +474,11 @@ extern  void    symbol_name_length_err( const char * symname );
 extern  void    val_parse_err( const char * pa, bool tag );
 extern  void    dup_id_err( const char * id, const char * context );
 extern  void    g_err_if_int( void );
-extern  void    g_err_tag( const char * tagname );
+extern  void    g_err_tag( e_tags etag );
 extern  void    g_err_tag_mac( gtentry * ge );
-extern  void    g_err_tag_nest( const char * tagname );
-extern  void    g_err_tag_no( const char * tagname );
-extern  void    g_err_tag_prec( const char * tagname );
+extern  void    g_err_tag_nest( e_tags etag );
+extern  void    g_err_tag_no( e_tags etag );
+extern  void    g_err_tag_prec( e_tags etag );
 extern  void    g_err_tag_rsloc( locflags inloc, const char * pa );
 extern  void    g_wng_hlevel( hdsrc hd_found, hdsrc hd_expected );
 extern  void    keep_nest_err( const char * arg1, const char * arg2 );
@@ -584,7 +584,7 @@ extern  void    show_include_stack( void );
  */
 
 #define pick( name, length, mand_parms, opt_parms, routine ) \
-    extern condcode routine( parm parms[MAX_FUN_PARMS], size_t parm_count, char * * ppval, int32_t valsize );
+    extern condcode routine( parm parms[MAX_FUN_PARMS], unsigned parm_count, char **result, unsigned ressize );
 #include "gsfuncs.h"
 #undef pick
 

@@ -178,23 +178,20 @@ char * scan_sym( char * p, symvar * sym, sub_index * subscript, char * * result,
                     scan_err = true;
                 }
             } else {
-                char            *       pa;
-                char            *   *   ppval;
-                char                    valbuf[BUF_SIZE];
-                condcode                cc;
-                getnum_block            gn;
-                size_t                  len;
+                char            *pa;
+                char            valbuf[BUF_SIZE + 1];
+                condcode        cc;
+                getnum_block    gn;
+                size_t          len;
 
                 len = pend - p - 1;
-                if( len > buf_size - 1 )
-                    len = buf_size - 1;
+                if( len > BUF_SIZE - 1 )
+                    len = BUF_SIZE - 1;
                 strncpy( valbuf, p, len );
                 valbuf[len] = '\0';
                 pa = valbuf;
-                ppval = &pa;
-
                 ProcFlags.unresolved = false;
-                finalize_subscript( ppval, splittable );
+                finalize_subscript( &pa, splittable );
                 if( ProcFlags.unresolved ) {
                     scan_err = true;
                 } else {

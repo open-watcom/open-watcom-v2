@@ -76,9 +76,9 @@
 
 /* Static data. */
 
-static cop_font        *   bin_fonts;       // binary fonts being used (linked list)
-static record_buffer   *   cur_token;       // Current token.
-static unsigned char       ti_table[0x100]; // .TI-controlled translation table
+static cop_font         *bin_fonts;         // binary fonts being used (linked list)
+static record_buffer    *cur_token;         // Current token.
+static unsigned char    ti_table[0x100];    // .TI-controlled translation table
 
 /* Static function definitions. */
 
@@ -254,7 +254,7 @@ static void compute_metrics( wgml_font * in_font )
  * containing the information in that DEVICE block.
  *
  * Parameter:
- *      in_name points to the defined name of the device.
+ *      dev_name points to the defined name of the device.
  *
  * Globals Used:
  *      try_file_name contains the name of the device file, if found.
@@ -264,20 +264,20 @@ static void compute_metrics( wgml_font * in_font )
  *      on failure, a NULL pointer.
  */
 
-static cop_device * get_cop_device( char const * in_name )
+static cop_device *get_cop_device( char const *dev_name )
 {
     cop_device      *out_device  = NULL;
     cop_file_type   file_type;
     FILE            *fp;
 
     /* Bail if no name was supplied. */
-    if( !in_name ) {
+    if( dev_name == NULL || *dev_name == '\0' ) {
         return( out_device );
     }
 
     /* Acquire the file, if it exists. */
 
-    fp = search_file_in_dirs( in_name, "", "", ds_bin_lib );
+    fp = search_file_in_dirs( dev_name, "", "", ds_bin_lib );
     if( fp == NULL ) {
         return( out_device );
     }
@@ -313,11 +313,6 @@ static cop_device * get_cop_device( char const * in_name )
 
         /* fp was a same-endian version 4.1 file, but not a directory file. */
 
-        if( !is_dev_file( fp ) ) {
-            xx_simple_err_c( err_dev_lib_data, try_file_name );
-            break;
-        }
-
         out_device = parse_device( fp );
         if( out_device == NULL ) {
             xx_simple_err_c( err_dev_lib_data, try_file_name );
@@ -331,7 +326,9 @@ static cop_device * get_cop_device( char const * in_name )
         internal_err( __FILE__, __LINE__ );
         break;
     }
+
     fclose( fp );
+
     return( out_device );
 }
 
@@ -340,7 +337,7 @@ static cop_device * get_cop_device( char const * in_name )
  * containing the information in that DRIVER block.
  *
  * Parameter:
- *      in_name points to the defined name of the driver.
+ *      drv_name points to the defined name of the driver.
  *
  * Globals Used:
  *      try_file_name contains the name of the driver file, if found.
@@ -350,7 +347,7 @@ static cop_device * get_cop_device( char const * in_name )
  *      on failure, a NULL pointer.
  */
 
-static cop_driver * get_cop_driver( char const * in_name )
+static cop_driver *get_cop_driver( char const *drv_name )
 {
     cop_driver      *out_driver  = NULL;
     cop_file_type   file_type;
@@ -358,7 +355,7 @@ static cop_driver * get_cop_driver( char const * in_name )
 
     /* Acquire the file, if it exists. */
 
-    fp = search_file_in_dirs( in_name, "", "", ds_bin_lib );
+    fp = search_file_in_dirs( drv_name, "", "", ds_bin_lib );
     if( fp == NULL ) {
         return( out_driver );
     }
@@ -394,11 +391,6 @@ static cop_driver * get_cop_driver( char const * in_name )
 
         /* fp was a same-endian version 4.1 file, but not a directory file. */
 
-        if( !is_drv_file( fp ) ) {
-            xx_simple_err_c( err_dev_data_file, try_file_name );
-            break;
-        }
-
         out_driver = parse_driver( fp );
         if( out_driver == NULL ) {
             xx_simple_err_c( err_dev_data_file, try_file_name );
@@ -412,6 +404,7 @@ static cop_driver * get_cop_driver( char const * in_name )
         internal_err( __FILE__, __LINE__ );
         break;
     }
+
     fclose( fp );
 
     return( out_driver );
@@ -422,7 +415,7 @@ static cop_driver * get_cop_driver( char const * in_name )
  * containing the information in that FONT block.
  *
  * Parameter:
- *      in_name points to the defined name of the font.
+ *      fon_name points to the defined name of the font.
  *
  * Globals Used:
  *      try_file_name contains the name of the font file, if found.
@@ -432,7 +425,7 @@ static cop_driver * get_cop_driver( char const * in_name )
  *      on failure, a NULL pointer.
  */
 
-static cop_font * get_cop_font( char const * in_name )
+static cop_font *get_cop_font( char const *fon_name )
 {
     cop_font        *out_font    = NULL;
     cop_file_type   file_type;
@@ -440,7 +433,7 @@ static cop_font * get_cop_font( char const * in_name )
 
     /* Acquire the file, if it exists. */
 
-    fp = search_file_in_dirs( in_name, "", "", ds_bin_lib );
+    fp = search_file_in_dirs( fon_name, "", "", ds_bin_lib );
     if( fp == NULL ) {
         return( out_font );
     }
@@ -476,12 +469,7 @@ static cop_font * get_cop_font( char const * in_name )
 
         /* fp was a same-endian version 4.1 file, but not a directory file. */
 
-        if( !is_fon_file( fp ) ) {
-            xx_simple_err_c( err_dev_data_file, try_file_name );
-            break;
-        }
-
-        out_font = parse_font( fp, in_name );
+        out_font = parse_font( fp, fon_name );
         if( out_font == NULL ) {
             xx_simple_err_c( err_dev_data_file, try_file_name );
         }
@@ -494,6 +482,7 @@ static cop_font * get_cop_font( char const * in_name )
         internal_err( __FILE__, __LINE__ );
         break;
     }
+
     fclose( fp );
 
     return( out_font );
@@ -504,7 +493,7 @@ static cop_font * get_cop_font( char const * in_name )
  * to the bin_fonts list if necessary.
  *
  * Parameter:
- *      in_name is the defined name of the desired binary FONT block.
+ *      fon_name is the defined name of the desired binary FONT block.
  *
  * Returns:
  *      a pointer to the cop_font instance on success.
@@ -514,22 +503,22 @@ static cop_font * get_cop_font( char const * in_name )
  *      the comparison is not case-sensitive for compatability with wgml 4.0.
  */
 
-static cop_font * find_cop_font( char const * in_name )
+static cop_font * find_cop_font( char const *fon_name )
 {
     cop_font    *   current = NULL;
     cop_font    *   retval  = NULL;
 
     for( current = bin_fonts; current != NULL; current = current->next_font ) {
-        if( stricmp( in_name, current->defined_name ) == 0 ) {
+        if( stricmp( fon_name, current->defined_name ) == 0 ) {
             retval = current;
             break;
         }
     }
 
     if( retval == NULL ) {
-        retval = get_cop_font( in_name );
+        retval = get_cop_font( fon_name );
         if( retval == NULL ) {
-            xx_simple_err_c( err_dev_not_found, in_name );
+            xx_simple_err_c( err_dev_not_found, fon_name );
         } else {
             retval->next_font = bin_fonts;
             bin_fonts = retval;
@@ -543,7 +532,7 @@ static cop_font * find_cop_font( char const * in_name )
  * Finds the device_font instance for the requested font.
  *
  * Parameter:
- *      in_name is the defined name of the desired binary DEVICEFONT block.
+ *      font_name is the defined name of the desired binary DEVICEFONT block.
  *
  * Returns:
  *      a pointer to the device_font instance on success.
@@ -553,7 +542,7 @@ static cop_font * find_cop_font( char const * in_name )
  *      the comparison is not case-sensitive for compatability with wgml 4.0.
  */
 
-static device_font * find_dev_font( char const * in_name )
+static device_font * find_dev_font( char const *font_name )
 {
     devicefont_block    *   current = NULL;
     device_font         *   retval  = NULL;
@@ -561,14 +550,14 @@ static device_font * find_dev_font( char const * in_name )
 
     current = &bin_device->devicefonts;
     for( i = 0; i < current->font_count; i++ ) {
-        if( stricmp( in_name, current->fonts[i].font_name ) == 0 ) {
+        if( stricmp( font_name, current->fonts[i].font_name ) == 0 ) {
             retval = &current->fonts[i];
             break;
         }
     }
 
     if( retval == NULL ) {
-        xx_simple_err_cc( err_block_not_found, "DEVICEFONT", in_name );
+        xx_simple_err_cc( err_block_not_found, "DEVICEFONT", font_name );
     }
 
     return( retval );
@@ -578,7 +567,7 @@ static device_font * find_dev_font( char const * in_name )
  * Finds the fonstyle_block instance for the requested font style.
  *
  * Parameter:
- *      in_name is the defined name of the desired binary FONTSTYLE block.
+ *      name is the defined name of the desired binary FONTSTYLE block.
  *
  * Returns:
  *      a pointer to the fonstyle_block instance on success.
@@ -588,7 +577,7 @@ static device_font * find_dev_font( char const * in_name )
  *      the comparison is case-insensitive for compatability with wgml 4.0.
  */
 
-static fontstyle_block * find_style( char const * in_name )
+static fontstyle_block * find_style( char const *name )
 {
     fontstyle_group  *   current = NULL;
     fontstyle_block  *   retval  = NULL;
@@ -596,14 +585,14 @@ static fontstyle_block * find_style( char const * in_name )
 
     current = &bin_driver->fontstyles;
     for( i = 0; i < current->count; i++ ) {
-        if( stricmp( in_name, current->fontstyleblocks[i].type ) == 0 ) {
+        if( stricmp( name, current->fontstyleblocks[i].type ) == 0 ) {
             retval = &current->fontstyleblocks[i];
             break;
         }
     }
 
     if( retval == NULL ) {
-        xx_simple_err_cc( err_block_not_found, "FONTSTYLE", in_name );
+        xx_simple_err_cc( err_block_not_found, "FONTSTYLE", name );
     }
 
     return( retval );
@@ -613,7 +602,7 @@ static fontstyle_block * find_style( char const * in_name )
  * Finds the fontswitch_block instance for the requested font switch.
  *
  * Parameter:
- *      in_name is the defined name of the desired binary FONTSWITCH block.
+ *      name is the defined name of the desired binary FONTSWITCH block.
  *
  * Returns:
  *      a pointer to the fontswitch_block instance on success.
@@ -623,7 +612,7 @@ static fontstyle_block * find_style( char const * in_name )
  *      the comparison is case-insensitive for compatability with wgml 4.0.
  */
 
-static fontswitch_block * find_switch( char const * in_name )
+static fontswitch_block * find_switch( char const *name )
 {
     fontswitch_funcs    *   current = NULL;
     fontswitch_block    *   retval  = NULL;
@@ -631,14 +620,14 @@ static fontswitch_block * find_switch( char const * in_name )
 
     current = &bin_driver->fontswitches;
     for( i = 0; i < current->count; i++ ) {
-        if( stricmp( in_name, current->fontswitchblocks[i].type ) == 0 ) {
+        if( stricmp( name, current->fontswitchblocks[i].type ) == 0 ) {
             retval = &current->fontswitchblocks[i];
             break;
         }
     }
 
     if( retval == NULL ) {
-        xx_simple_err_cc( err_block_not_found, "FONTSWITCH", in_name );
+        xx_simple_err_cc( err_block_not_found, "FONTSWITCH", name );
     }
 
     return( retval );
@@ -891,7 +880,7 @@ void cop_setup( void )
         wgml_fonts[i].line_space = 0;
         wgml_fonts[i].spc_width = 0;
         for( j = 0; j < 0x100; j++ ) {
-            wgml_fonts[i].width_table[j] = 0;
+            wgml_fonts[i].width.table[j] = 0;
         }
         wgml_fonts[i].font_resident = 'n';
         wgml_fonts[i].shift_count = 0;
@@ -1145,7 +1134,7 @@ void cop_setup( void )
 
     /* Initialize items dependent on the device library. */
 
-    /* Initialize the width_table entries. This is done here because it is
+    /* Initialize the width table entries. This is done here because it is
      * not clear whether or not a more efficient method is needed. Note that
      * all wgml_font instances will have a valid table, and that different
      * wgml_font instances may have identical tables. However, since the
@@ -1153,29 +1142,29 @@ void cop_setup( void )
      * cop_font may still differ. Also set the base values for the "Em" and
      * "Device Unit" ("DV") Horizontal Space Units, and record the width of
      * the space character for quick reference. It is not clear if this is
-     * actually necessary, but it is a bit faster than using the width_table
+     * actually necessary, but it is a bit faster than using the width table
      * directly.
      */
 
     for( i = 0; i < wgml_font_cnt; i++ ) {
         if( wgml_fonts[i].bin_font->width == NULL ) {
             for( j = 0; j < 0x100; j++ ) {
-                wgml_fonts[i].width_table[j] = wgml_fonts[i].default_width;
+                wgml_fonts[i].width.table[j] = wgml_fonts[i].default_width;
             }
         } else {
             if( wgml_fonts[i].bin_font->scale_basis == 0 ) {
                 for( j = 0; j < 0x100; j++ ) {
-                    wgml_fonts[i].width_table[j] = wgml_fonts[i].bin_font->width->table[j];
+                    wgml_fonts[i].width.table[j] = wgml_fonts[i].bin_font->width->table[j];
                 }
             } else {
                 for( j = 0; j < 0x100; j++ ) {
-                    wgml_fonts[i].width_table[j] =
+                    wgml_fonts[i].width.table[j] =
                         scale_basis_to_horizontal_base_units( wgml_fonts[i].bin_font->width->table[j], &wgml_fonts[i] );
                 }
             }
         }
-        wgml_fonts[i].em_base = wgml_fonts[i].width_table['M'];
-        wgml_fonts[i].spc_width = wgml_fonts[i].width_table[' '];
+        wgml_fonts[i].em_base = wgml_fonts[i].width.table['M'];
+        wgml_fonts[i].spc_width = wgml_fonts[i].width.table[' '];
     }
 
     /* Initialize the column width used with BX. */
@@ -1312,7 +1301,7 @@ uint32_t cop_text_width( const char *text, size_t count, font_number font )
 
     width = 0;
     for( i = 0; i < count; i++ ) {
-        width += wgml_fonts[font].width_table[(unsigned char)text[i]];
+        width += wgml_fonts[font].width.table[(unsigned char)text[i]];
     }
 
     return( width );
@@ -1659,16 +1648,16 @@ void fb_vline( vline_element * in_vline )
 void init_record_buffer( record_buffer *recb, unsigned size )
 {
     recb->current = 0;
-    recb->length = size;
-    recb->text = mem_alloc( recb->length + 1 );
+    recb->size = size;
+    recb->text = mem_alloc( size + 1 );
 }
 
 void resize_record_buffer( record_buffer *recb, unsigned size )
 {
-    if( size > recb->length ) {
-        while( recb->length < size )
-            recb->length *= 2;
-        recb->text = mem_realloc( recb->text, recb->length + 1 );
+    if( size > recb->size ) {
+        while( recb->size < size )
+            recb->size *= 2;
+        recb->text = mem_realloc( recb->text, recb->size + 1 );
     }
     recb->current = size;
 }

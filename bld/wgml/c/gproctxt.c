@@ -332,7 +332,7 @@ static void do_fc_comp( void )
     uint32_t    end_point;
     uint32_t    tot_shift;
 
-    fill_width = wgml_fonts[g_curr_font].width_table[c_stop->fill_char];
+    fill_width = wgml_fonts[g_curr_font].width.table[c_stop->fill_char];
     fill_count = t_page.cur_width / fill_width;
 
     fill_start = gap_start / fill_width;
@@ -1829,7 +1829,7 @@ void process_text( char * text, font_number font )
     uint32_t                t_count_1       = 0;
     uint32_t                t_count_2       = 0;
     // when hyph can be set, it will need to be used here & below
-    uint32_t                hy_width        = wgml_fonts[FONT0].width_table['-'];
+    uint32_t                hy_width        = wgml_fonts[FONT0].width.table['-'];
 
     static      bool            comma_fnd       = false;    // set true when prior n_chars ended with a comma
     static      bool            keep_together   = true;     // set false when mult-part word is not to be treated as one word

@@ -566,7 +566,7 @@ void    lay_dl( const gmltag * entry )
     while( cc == pos ) {
         for( k = 0, curr = dl_att[k]; curr > 0; k++, curr = dl_att[k] ) {
 
-            if( !strnicmp( att_names[curr], g_att_val.att_name, g_att_val.att_len ) ) {
+            if( !strnicmp( lay_att_names[curr], g_att_val.att_name, g_att_val.att_len ) ) {
                 p = g_att_val.val_name;
 
                 switch( curr ) {
@@ -758,7 +758,7 @@ void    lay_gl( const gmltag * entry )
     while( cc == pos ) {
         for( k = 0, curr = gl_att[k]; curr > 0; k++, curr = gl_att[k] ) {
 
-            if( !strnicmp( att_names[curr], g_att_val.att_name, g_att_val.att_len ) ) {
+            if( !strnicmp( lay_att_names[curr], g_att_val.att_name, g_att_val.att_len ) ) {
                 p = g_att_val.val_name;
 
                 switch( curr ) {
@@ -952,7 +952,7 @@ void    lay_ol( const gmltag * entry )
     while( cc == pos ) {
         for( k = 0, curr = ol_att[k]; curr > 0; k++, curr = ol_att[k] ) {
 
-            if( !strnicmp( att_names[curr], g_att_val.att_name, g_att_val.att_len ) ) {
+            if( !strnicmp( lay_att_names[curr], g_att_val.att_name, g_att_val.att_len ) ) {
                 p = g_att_val.val_name;
 
                 switch( curr ) {
@@ -1171,7 +1171,7 @@ void    lay_sl( const gmltag * entry )
     while( cc == pos ) {
         for( k = 0, curr = sl_att[k]; curr > 0; k++, curr = sl_att[k] ) {
 
-            if( !strnicmp( att_names[curr], g_att_val.att_name, g_att_val.att_len ) ) {
+            if( !strnicmp( lay_att_names[curr], g_att_val.att_name, g_att_val.att_len ) ) {
                 p = g_att_val.val_name;
 
                 switch( curr ) {
@@ -1357,7 +1357,7 @@ void    lay_ul( const gmltag * entry )
     while( cc == pos ) {
         for( k = 0, curr = ul_att[k]; curr > 0; k++, curr = ul_att[k] ) {
 
-            if( !strnicmp( att_names[curr], g_att_val.att_name, g_att_val.att_len ) ) {
+            if( !strnicmp( lay_att_names[curr], g_att_val.att_name, g_att_val.att_len ) ) {
                 p = g_att_val.val_name;
 
                 switch( curr ) {

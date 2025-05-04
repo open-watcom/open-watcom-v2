@@ -244,9 +244,8 @@ void init_global_vars( void )
     research_from         = 0;
     research_to           = 0;
 
-    buf_size            = BUF_SIZE;
-    buff2               = mem_alloc( buf_size );
-    workbuf             = mem_alloc( buf_size );
+    buff2               = mem_alloc( BUF_SIZE + 1 );
+    workbuf             = mem_alloc( BUF_SIZE + 1 );
 
     post_space          = 0;
 

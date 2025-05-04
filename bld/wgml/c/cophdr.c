@@ -35,6 +35,7 @@
 #include <string.h>
 
 #include "cophdr.h"
+#include "copfunc.h"
 
 /* Function parse_header().
  * Determine if the current position of the input stream points to the
@@ -72,7 +73,7 @@ cop_file_type parse_header( FILE *fp )
 
     /* Get the version. */
 
-    fread( &version, 2, 1, fp );
+    version = fread_u16( fp );
     if( ferror( fp ) || feof( fp ) ) {
         return( file_error );
     }
@@ -99,7 +100,7 @@ cop_file_type parse_header( FILE *fp )
 
     /* Verify the text_version. */
 
-    fread( &text_version, count, 1, fp );
+    fread_buff( text_version, count, fp );
     if( ferror( fp ) || feof( fp ) ) {
         return( file_error );
     }
@@ -132,5 +133,3 @@ cop_file_type parse_header( FILE *fp )
 
     return( not_bin_dev );
 }
-
-

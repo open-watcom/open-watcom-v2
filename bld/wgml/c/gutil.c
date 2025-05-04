@@ -969,7 +969,7 @@ char * get_att_start( char * p )
 {
     char    * pa;
 
-    static  char      buf[BUF_SIZE];
+    static  char      buf[BUF_SIZE + 1];
 
     ProcFlags.tag_end_found = false;
     for(;;) {                           // loop until potential attribute/rescan line found
@@ -1101,7 +1101,7 @@ char * get_attribute( char * p )
     char    *   pa;
     int         i;
 
-    static  char      buf[BUF_SIZE];
+    static  char      buf[BUF_SIZE + 1];
 
     ProcFlags.tag_end_found = false;
     for(;;) {                           // loop until potential attribute/rescan line found

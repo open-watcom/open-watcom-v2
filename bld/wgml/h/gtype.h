@@ -246,11 +246,11 @@ typedef enum {
 /***************************************************************************/
 
 typedef struct sym_list_entry {
-    struct sym_list_entry   *   prev;                   // next entry
-    char                        value[BUF_SIZE];        // value of attribute, function, or symbol
-    char                    *   start;                  // position of "&" in original buffer
-    char                    *   end;                    // position of byte after item in original buffer
-    slflags                     type;
+    struct sym_list_entry   *prev;                  // next entry
+    char                    value[BUF_SIZE + 1];    // value of attribute, function, or symbol
+    char                    *start;                 // position of "&" in original buffer
+    char                    *end;                   // position of byte after item in original buffer
+    slflags                 type;
 } sym_list_entry;
 
 
@@ -285,7 +285,7 @@ typedef enum {
 
 /***************************************************************************/
 /*  List of (defined macro / input) lines                                  */
-/*    also used for in_buf_pool in this case fixed length buf_size         */
+/*    also used for in_buf_pool in this case fixed length BUF_SIZE         */
 /***************************************************************************/
 
 typedef struct inp_line {
@@ -337,7 +337,7 @@ typedef struct filecb {
     line_number     lineno;             // current line number
     line_number     linemin;            // first line number to process
     line_number     linemax;            // last line number to process
-    size_t          usedlen;            // used data of filebuf
+    unsigned        usedlen;            // used data of filebuf
     fpos_t          pos;                // position for reopen
     labelcb     *   label_cb;           // controlling label definitions
     char        *   filename;           // full filename
@@ -492,7 +492,7 @@ typedef enum {
 
 typedef struct gmltag {
    char             tagname[TAG_NAME_LENGTH + 1];
-   size_t           taglen;
+   unsigned         taglen;
    void             (*gmlproc)( const struct gmltag * entry );
    gmlflags         tagflags;
    locflags         taglocs;
@@ -523,7 +523,7 @@ typedef enum gavalflags {
 typedef struct gavalentry {
     struct gavalentry   *   next;
     union a {
-       size_t   length;                 // possible max length of (character) value
+       unsigned length;                 // possible max length of (character) value
        int      range[4];               // min, max, default omitted, default without value
        char     value[VAL_LENGTH + 1];  // string value if short enough
        char *   valptr;                 // ... else allocated
@@ -591,7 +591,7 @@ typedef struct gtentry {
     struct gtentry  *   next;
     gaentry         *   attribs;        // list of attributes
     unsigned            usecount;
-    size_t              namelen;        // actual length of name
+    unsigned            namelen;        // actual length of name
     char                name[TAG_NAME_LENGTH + 1];
     char                macname[MAC_NAME_LENGTH + 2];   // macro to call
     gtflags             tagflags;
@@ -625,12 +625,12 @@ typedef struct parm {
 } parm;
 
 typedef struct scrfunc {
-    const   char    fname[FUN_NAME_LENGTH + 1];   // function name
-    const   size_t  length;             // actual length of fname
-    const   size_t  parm_cnt;           // mandatory parms
-    const   size_t  opt_parm_cnt;       // optional parms
-    condcode        (*fun)( parm parms[MAX_FUN_PARMS], size_t parm_count,
-                            char * * ppval, int32_t valsize );
+    const char      fname[FUN_NAME_LENGTH + 1];   // function name
+    const unsigned  length;             // actual length of fname
+    const unsigned  parm_cnt;           // mandatory parms
+    const unsigned  opt_parm_cnt;       // optional parms
+    condcode        (*fun)( parm parms[MAX_FUN_PARMS], unsigned parm_count,
+                            char **result, unsigned ressize );
 } scrfunc;
 
 /***************************************************************************/

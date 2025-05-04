@@ -30,7 +30,6 @@
 
 
 #include "wgml.h"
-#include "roundmac.h"
 
 
 static  banner_lay_tag  *   ban_top[max_ban][2];
@@ -43,14 +42,18 @@ static void resize_and_copy_strblk( final_reg_content *strblk, char *buf, int fo
     unsigned size;
 
     size = strlen( buf );
-    if( strblk->len < size ) {
-        size = __ROUND_UP_SIZE_TO( size, STRBLK_SIZE ) * STRBLK_SIZE;
+    if( strblk->size < size ) {
+        /*
+         * round size up to multiple STRBLK_SIZE
+         * add one byte for termination, but not count it in size
+         */
+        size = ( ( size + STRBLK_SIZE - 1 ) / STRBLK_SIZE ) * STRBLK_SIZE;
         if( strblk->string == NULL ) {
             strblk->string = mem_alloc( size + 1 );
         } else {
             strblk->string = mem_realloc( strblk->string, size + 1 );
         }
-        strblk->len = size;
+        strblk->size = size;
     }
     strcpy( strblk->string, buf );
     if( font != -1 ) {
@@ -64,7 +67,7 @@ static void free_strblk( final_reg_content *strblk )
         mem_free( strblk->string );
         strblk->string = NULL;
     }
-    strblk->len = 0;
+    strblk->size = 0;
 }
 
 
@@ -261,7 +264,7 @@ void set_pgnum_style( void )
 
 static void content_reg( region_lay_tag * region )
 {
-    char            buf[BUF_SIZE];
+    char            buf[BUF_SIZE + 1];
     symsub      *   symsubval;
     int             k;
     int             rc;
@@ -749,9 +752,9 @@ static void out_ban_common( banner_lay_tag * ban, bool top )
                     }
                     cur_width = 0;
                     for( cur_p = cur_region->final_content[k].string; *cur_p != '\0'; cur_p++ ) {
-                        if( (cur_width + wgml_fonts[cur_region->font].width_table[(unsigned char) *cur_p]) <
+                        if( (cur_width + wgml_fonts[cur_region->font].width.table[*(unsigned char *)cur_p]) <
                                 cur_region->reg_width ) {
-                            cur_width += wgml_fonts[cur_region->font].width_table[(unsigned char) *cur_p];
+                            cur_width += wgml_fonts[cur_region->font].width.table[*(unsigned char *)cur_p];
                         } else {
                             while( *cur_p != ' ' ) {
                                 cur_p--;
@@ -817,7 +820,7 @@ static void out_ban_common( banner_lay_tag * ban, bool top )
                 if( (cur_region->contents.content_type == rule_content)
                   && (bin_driver->hline.text == NULL) ) {    // character device: initialize text
                     resize_record_buffer( &line_buff, cur_region->reg_width );
-                    memset( line_buff.text, bin_device->box.horizontal_line, line_buff.current );
+                    memset( line_buff.text, bin_device->box.chars.horizontal_line, line_buff.current );
                     line_buff.text[line_buff.current] = '\0';
                     resize_and_copy_strblk( &cur_region->final_content[0], line_buff.text, -1 );
                 }
@@ -880,9 +883,9 @@ static void out_ban_common( banner_lay_tag * ban, bool top )
                             for( cur_p = cur_region->final_content[1].string; *cur_p != '\0';
                                     cur_p++ ) {
                                 if( (cur_width +
-                                        wgml_fonts[cur_region->font].width_table[(unsigned char) *cur_p]) <
+                                        wgml_fonts[cur_region->font].width.table[*(unsigned char *)cur_p]) <
                                         cur_region->final_content[2].hoffset - cur_region->final_content[1].hoffset ) {
-                                    cur_width += wgml_fonts[cur_region->font].width_table[(unsigned char) *cur_p];
+                                    cur_width += wgml_fonts[cur_region->font].width.table[*(unsigned char *)cur_p];
                                 } else {
                                     *cur_p = '\0';     // This is where multiline support goes!!!
                                     break;
@@ -898,9 +901,9 @@ static void out_ban_common( banner_lay_tag * ban, bool top )
                             for( cur_p = cur_region->final_content[0].string; *cur_p != '\0';
                                     cur_p++ ) {
                                 if( (cur_width +
-                                        wgml_fonts[cur_region->font].width_table[(unsigned char) *cur_p]) <
+                                        wgml_fonts[cur_region->font].width.table[*(unsigned char *)cur_p]) <
                                         cur_region->final_content[1].hoffset - cur_region->final_content[0].hoffset ) {
-                                    cur_width += wgml_fonts[cur_region->font].width_table[(unsigned char) *cur_p];
+                                    cur_width += wgml_fonts[cur_region->font].width.table[*(unsigned char *)cur_p];
                                 } else {
                                     *cur_p = '\0';     // This is where multiline support goes!!!
                                     break;

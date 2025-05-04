@@ -741,13 +741,13 @@ typedef struct content {
 
 typedef struct script_ban_reg {         // for script format region
     size_t          len;                // split into sub-fields
-    char        *   string;
+    char            *string;
 } script_ban_reg;
 
 typedef struct final_reg_content {      // final fully-preprocessed content
-    size_t          len;                // suitable for final trim and output
+    unsigned        size;               // suitable for final trim and output
     uint32_t        hoffset;
-    char        *   string;
+    char            *string;
 } final_reg_content;
 
 /***************************************************************************/

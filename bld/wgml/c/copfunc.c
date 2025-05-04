@@ -207,7 +207,7 @@ p_buffer * get_p_buffer( FILE *fp )
             return( out_buffer );
         }
 
-        fread( current, 80, 1, fp );
+        fread_buff( current, 80, fp );
         if( ferror( fp ) || feof( fp ) ) {
             mem_free( out_buffer );
             out_buffer = NULL;

@@ -25,7 +25,6 @@
 *  ========================================================================
 *
 * Description:  Declares functions used to manipulate .COP driver files:
-*                   is_drv_file()
 *                   parse_driver()
 *
 ****************************************************************************/
@@ -39,8 +38,7 @@
 extern "C" {    /* Use "C" linkage when in C++ mode. */
 #endif
 
-extern bool            is_drv_file( FILE *fp );
-extern cop_driver  *   parse_driver( FILE *fp );
+extern cop_driver  *parse_driver( FILE *fp );
 
 #ifdef  __cplusplus
 }   /* End of "C" linkage for C++. */

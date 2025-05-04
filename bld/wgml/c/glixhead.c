@@ -127,7 +127,7 @@ void    lay_ixhead( const gmltag * entry )
                 curr = e_frame;         // use correct externalname
             }
 
-            if( !strnicmp( att_names[curr], g_att_val.att_name, g_att_val.att_len ) ) {
+            if( !strnicmp( lay_att_names[curr], g_att_val.att_name, g_att_val.att_len ) ) {
                 p = g_att_val.val_name;
 
                 switch( curr ) {

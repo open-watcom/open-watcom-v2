@@ -249,7 +249,7 @@ static void gen_box_head( char * letter )
         g_subs_skip += wgml_fonts[layout_work.ixhead.font].line_height;
         full_line = frame_line_len;
         full_line +=
-            wgml_fonts[layout_work.ixhead.font].width_table[(unsigned char) letter[0]];
+            wgml_fonts[layout_work.ixhead.font].width.table[*(unsigned char *)letter];
         t_page.cur_width += frame_line_len / 2;
         process_text( letter, layout_work.ixhead.font );    // middle line
         scr_process_break();
@@ -291,7 +291,7 @@ static void gen_rule_head( char * letter )
     } else {                                            // page-oriented device
         full_line = frame_line_len;
         full_line +=
-                wgml_fonts[layout_work.ixhead.font].width_table[(unsigned char) letter[0]];
+                wgml_fonts[layout_work.ixhead.font].width.table[*(unsigned char *)letter];
         if( layout_work.ixhead.frame.type == rule_frame ) {
 
         /*******************************************************************/
@@ -333,7 +333,7 @@ static void gen_rule_head( char * letter )
             }
             if( cur_width < full_line ) {                  // text not full yet
                 for( i = 0; i < strlen( layout_work.ixhead.frame.string ); i++ ) {
-                    cur_width += wgml_fonts[layout_work.ixhead.font].width_table[(unsigned char)layout_work.ixhead.frame.string[i]];
+                    cur_width += wgml_fonts[layout_work.ixhead.font].width.table[(unsigned char)layout_work.ixhead.frame.string[i]];
                     if( cur_width >= full_line ) {  // check what width would be if character were copied
                         break;
                     }
@@ -699,28 +699,28 @@ static void gen_index( void )
     if( layout_work.ixhead.frame.type != none ) {
         if( layout_work.ixhead.frame.type == box_frame ) {  // frame is box
             if( bin_driver->dbox.text == NULL ) {           // character device
-                memset( &frame_line_1[1], bin_device->box.horizontal_line,
+                memset( &frame_line_1[1], bin_device->box.chars.horizontal_line,
                         frame_line_len - 2 );
-                frame_line_1[0] = bin_device->box.top_left;
-                frame_line_1[frame_line_len - 1 ] = bin_device->box.top_right;
-                frame_line_2[0] = bin_device->box.vertical_line;
+                frame_line_1[0] = bin_device->box.chars.top_left;
+                frame_line_1[frame_line_len - 1 ] = bin_device->box.chars.top_right;
+                frame_line_2[0] = bin_device->box.chars.vertical_line;
                 memset( &frame_line_2[1], ' ', frame_line_len - 2 );
-                frame_line_2[frame_line_len - 1 ] = bin_device->box.vertical_line;
-                memset( &frame_line_3[1], bin_device->box.horizontal_line,
+                frame_line_2[frame_line_len - 1 ] = bin_device->box.chars.vertical_line;
+                memset( &frame_line_3[1], bin_device->box.chars.horizontal_line,
                         frame_line_len - 2 );
-                frame_line_3[0] = bin_device->box.bottom_left;
-                frame_line_3[frame_line_len - 1 ] = bin_device->box.bottom_right;
+                frame_line_3[0] = bin_device->box.chars.bottom_left;
+                frame_line_3[frame_line_len - 1 ] = bin_device->box.chars.bottom_right;
             }
         } else if( layout_work.ixhead.frame.type == rule_frame  ) { // rule frame
             if( bin_driver->hline.text == NULL ) {          // character device
-                memset( frame_line_1, bin_device->box.horizontal_line,
+                memset( frame_line_1, bin_device->box.chars.horizontal_line,
                         frame_line_len );
             }
         } else if( layout_work.ixhead.frame.type == char_frame ) {   // frame is 'character string'
             str_count = strlen( layout_work.ixhead.frame.string );
             str_width = 0;
             for( i = 0; i < strlen( layout_work.ixhead.frame.string ); i++ ) {
-                str_width += wgml_fonts[layout_work.ixhead.font].width_table[(unsigned char)layout_work.ixhead.frame.string[i]];
+                str_width += wgml_fonts[layout_work.ixhead.font].width.table[(unsigned char)layout_work.ixhead.frame.string[i]];
             }
             if( bin_driver->hline.text == NULL ) {          // character device
                 frame_line_1[0] = '\0';
@@ -803,9 +803,9 @@ static void gen_index( void )
             }
 
             if( layout_work.ixhead.header ) {
-                spc_count = wgml_fonts[layout_work.ixhead.font].width_table[(unsigned char) *letter] /
+                spc_count = wgml_fonts[layout_work.ixhead.font].width.table[*(unsigned char *)letter] /
                             wgml_fonts[layout_work.ixhead.font].spc_width;  // integer ratio
-                if( (wgml_fonts[layout_work.ixhead.font].width_table[(unsigned char) *letter] %
+                if( (wgml_fonts[layout_work.ixhead.font].width.table[*(unsigned char *)letter] %
                             wgml_fonts[layout_work.ixhead.font].spc_width) > 0 ) {
                     spc_count++;                            // increment unless exact ratio
                 }
@@ -1466,10 +1466,10 @@ extern void gml_abstract( const gmltag * entry )
     (void)entry;
 
     if( ProcFlags.doc_sect_nxt == doc_sect_egdoc ) {
-        xx_line_err_c( err_eof_expected, tok_start );
+        xx_line_err_c( err_eof_expected, g_tok_start );
     }
     if( !ProcFlags.frontm_seen ) {
-        xx_line_err_c( err_doc_sec_expected_1, tok_start );
+        xx_line_err_c( err_doc_sec_expected_1, g_tok_start );
     }
     if( g_blank_text_lines > 0 ) {
         set_skip_vars( NULL, NULL, NULL, 1, 0 );    // set g_blank_units_lines
@@ -1587,7 +1587,7 @@ extern void gml_index( const gmltag * entry )
     (void)entry;
 
     if( ProcFlags.doc_sect_nxt == doc_sect_egdoc ) {
-        xx_line_err_c( err_eof_expected, tok_start );
+        xx_line_err_c( err_eof_expected, g_tok_start );
     }
 
     if( ProcFlags.doc_sect_nxt == doc_sect_index ) {// duplicate :INDEX tag
@@ -1597,7 +1597,7 @@ extern void gml_index( const gmltag * entry )
 
     if( !((ProcFlags.doc_sect == doc_sect_backm) ||
           (ProcFlags.doc_sect_nxt == doc_sect_backm)) ) {
-        xx_line_err_c( err_doc_sec_expected_1, tok_start );
+        xx_line_err_c( err_doc_sec_expected_1, g_tok_start );
     }
     if( !GlobalFlags.index ) {          // index option not active
         return;
@@ -1622,10 +1622,10 @@ extern void gml_preface( const gmltag * entry )
     (void)entry;
 
     if( ProcFlags.doc_sect_nxt == doc_sect_egdoc ) {
-        xx_line_err_c( err_eof_expected, tok_start );
+        xx_line_err_c( err_eof_expected, g_tok_start );
     }
     if( !ProcFlags.frontm_seen ) {
-        xx_line_err_c( err_doc_sec_expected_1, tok_start );
+        xx_line_err_c( err_doc_sec_expected_1, g_tok_start );
     }
     if( g_blank_text_lines > 0 ) {
         set_skip_vars( NULL, NULL, NULL, 1, 0 );    // set g_blank_units_lines
@@ -1645,10 +1645,10 @@ extern void gml_titlep( const gmltag * entry )
     (void)entry;
 
     if( ProcFlags.doc_sect_nxt == doc_sect_egdoc ) {
-        xx_line_err_c( err_eof_expected, tok_start );
+        xx_line_err_c( err_eof_expected, g_tok_start );
     }
     if( !ProcFlags.frontm_seen ) {
-        xx_line_err_c( err_doc_sec_expected_1, tok_start );
+        xx_line_err_c( err_doc_sec_expected_1, g_tok_start );
     }
     scr_process_break();
     gml_doc_xxx( doc_sect_titlep );

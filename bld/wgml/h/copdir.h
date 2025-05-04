@@ -49,7 +49,7 @@
 extern "C" {    /* Use "C" linkage when in C++ mode. */
 #endif
 
-extern char         *get_member_name( FILE *fp, const char *fname, const char *in_name );
+extern char         *search_member_name( const char *dir, const char *file_name );
 
 #ifdef  __cplusplus
 }   /* End of "C" linkage for C++. */

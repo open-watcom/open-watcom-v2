@@ -52,17 +52,17 @@ static  uint32_t        left_inset;             // offset from frame to contents
 static  uint32_t        right_inset;            // offset from frame to contents
 static  uint32_t        width           = 0;    // FIG attribute used by eFIG
 
-/***************************************************************************/
-/* Add text_char instances containing one bin_device->box.vertical_line    */
-/* character to the left and right of the parameter                        */
-/* This is only used with character devices                                */
-/***************************************************************************/
+/******************************************************************************/
+/* Add text_char instances containing one bin_device->box.chars.vertical_line */
+/* character to the left and right of the parameter                           */
+/* This is only used with character devices                                   */
+/******************************************************************************/
 
 static void add_risers( text_line * in_line )
 {
     text_chars  *   riser;
 
-    riser = alloc_text_chars( &bin_device->box.vertical_line, 1, bin_device->box.font );
+    riser = alloc_text_chars( &bin_device->box.chars.vertical_line, 1, bin_device->box.font );
     riser->width = 1;
     riser->x_address = t_page.cur_left;
     if( in_line->first != NULL ) {
@@ -71,7 +71,7 @@ static void add_risers( text_line * in_line )
     }
     in_line->first = riser;
 
-    riser = alloc_text_chars( &bin_device->box.vertical_line, 1, bin_device->box.font );
+    riser = alloc_text_chars( &bin_device->box.chars.vertical_line, 1, bin_device->box.font );
     riser->x_address = t_page.max_width - 1;
     riser->width = 1;
     if( in_line->last == NULL ) {
@@ -134,15 +134,15 @@ static void draw_box( doc_el_group * in_group )
 
     if( bin_driver->dbox.text == NULL ) {           // DBOX not available
         resize_record_buffer( &line_buff, width );
-        memset( line_buff.text, bin_device->box.horizontal_line, line_buff.current );
+        memset( line_buff.text, bin_device->box.chars.horizontal_line, line_buff.current );
         line_buff.text[line_buff.current] = '\0';
 
         /* Finalize and insert the top box line */
 
         sav_doc_el = in_group->first;           // save original first element
 
-        line_buff.text[0] = bin_device->box.top_left;
-        line_buff.text[line_buff.current - 1] = bin_device->box.top_right;
+        line_buff.text[0] = bin_device->box.chars.top_left;
+        line_buff.text[line_buff.current - 1] = bin_device->box.chars.top_right;
         cur_doc_el = get_box_line_el();
         cur_doc_el->subs_skip = in_group->first->subs_skip;
         in_group->first->subs_skip = 0;
@@ -217,8 +217,8 @@ static void draw_box( doc_el_group * in_group )
 
         /* Finalize and insert the bottom box line */
 
-        line_buff.text[0] = bin_device->box.bottom_left;
-        line_buff.text[line_buff.current - 1] = bin_device->box.bottom_right;
+        line_buff.text[0] = bin_device->box.chars.bottom_left;
+        line_buff.text[line_buff.current - 1] = bin_device->box.chars.bottom_right;
         cur_doc_el = get_box_line_el();
         in_group->last->next = cur_doc_el;
         in_group->last = in_group->last->next;
@@ -286,7 +286,7 @@ static void insert_frame_line( void )
     if( bin_driver->hline.text == NULL ) {              // character device
         resize_record_buffer( &line_buff, width );
         if( frame.type == rule_frame ) {
-            memset( line_buff.text, bin_device->box.horizontal_line, line_buff.current );
+            memset( line_buff.text, bin_device->box.chars.horizontal_line, line_buff.current );
             line_buff.text[line_buff.current] = '\0';
         } else {                    // char_frame Note: wgml 4.0 uses font 0 regardless of the default font for the section
             line_buff.text[0] = '\0';
@@ -326,7 +326,7 @@ static void insert_frame_line( void )
             str_count = strlen( frame.string );
             str_width = 0;
             for( i = 0; i < strlen( frame.string ); i++ ) {
-                str_width += wgml_fonts[FONT0].width_table[(unsigned char)frame.string[i]];
+                str_width += wgml_fonts[FONT0].width.table[(unsigned char)frame.string[i]];
             }
             cur_limit = width / str_width;
             cur_count = 0;
@@ -344,7 +344,7 @@ static void insert_frame_line( void )
             }
             if( cur_width < width ) {       // text not full yet
                 for( i = 0; i < strlen( frame.string ); i++ ) {
-                    cur_width += wgml_fonts[FONT0].width_table[(unsigned char)frame.string[i]];
+                    cur_width += wgml_fonts[FONT0].width.table[(unsigned char)frame.string[i]];
                     if( cur_width >= width ) {  // check what width would be if character were copied
                         break;
                     }
@@ -406,7 +406,7 @@ void gml_fig( const gmltag * entry )
     scan_err = false;
 
     if( is_ip_tag( nest_cb->c_tag ) ) {                 // inline phrase not closed
-        g_err_tag_nest( str_tags[nest_cb->c_tag + 1] ); // end tag expected
+        g_err_tag_nest( nest_cb->c_tag + 1 ); // end tag expected
     }
     g_keep_nest( "Figure" );            // catch nesting errors
 
@@ -735,7 +735,7 @@ void gml_efig( const gmltag * entry )
     SkipDot( p );                       // possible tag end
 
     if( cur_group_type != gt_fig ) {    // no preceding :FIG tag
-        g_err_tag_prec( "FIG" );
+        g_err_tag_prec( t_FIG );
     }
 
     t_page.cur_left = nest_cb->left_indent; // reset various values in case needed for frame

@@ -56,10 +56,8 @@ text_chars * alloc_text_chars( const char * text, size_t cnt, font_number font )
     text_chars   *   curr;
     text_chars   *   prev;
 
-    curr = text_pool;
-    while( (curr != NULL) && (curr->length <= cnt) ) {
+    for( curr = text_pool; (curr != NULL) && (curr->length <= cnt); curr = curr->next ) {
         prev = curr;
-        curr = curr->next;
     }
     if( curr != NULL ) {                // we found one large enough
         if( curr == text_pool ) {       // first is large enough
@@ -645,7 +643,8 @@ void add_sym_list_entry_to_pool( sym_list_entry * a_sl )
     }
 
     curr = a_sl;
-    while( curr->prev != NULL) curr = curr->prev;
+    while( curr->prev != NULL)
+        curr = curr->prev;
     curr->prev = sym_list_pool;
     sym_list_pool = a_sl;
 }

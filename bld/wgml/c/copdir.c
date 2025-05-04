@@ -36,6 +36,7 @@
 #include "wgml.h"
 #include "copdir.h"
 #include "cophdr.h"
+#include "copfunc.h"
 
 #include "clibext.h"
 
@@ -101,15 +102,19 @@ static entry_found get_compact_entry( FILE *fp, directory_entry * entry )
     /* Get the defined_name. An empty value is allowed; see the Wiki. */
 
     if( count > 0 ) {
-        fread( entry->defined_name, count, 1, fp );
-        if( ferror( fp ) || feof( fp ) ) return( not_valid_entry );
+        fread_buff( entry->defined_name, count, fp );
+        if( ferror( fp ) || feof( fp ) ) {
+            return( not_valid_entry );
+        }
     }
     entry->defined_name[count] = '\0';
 
     /* Get the member_name_length. */
 
     count = fgetc( fp );
-    if( ferror( fp ) || feof( fp ) ) return( not_valid_entry );
+    if( ferror( fp ) || feof( fp ) ) {
+        return( not_valid_entry );
+    }
 
     /* Ensure the member_name_length is not zero or too long for the buffer. */
 
@@ -119,8 +124,9 @@ static entry_found get_compact_entry( FILE *fp, directory_entry * entry )
 
     /* Get the member_name. */
 
-    fread( entry->member_name, count, 1, fp );
-    if( ferror( fp ) || feof( fp ) ) return( not_valid_entry );
+    fread_buff( entry->member_name, count, fp );
+    if( ferror( fp ) || feof( fp ) )
+        return( not_valid_entry );
     entry->member_name[count] = '\0';
 
     return( valid_entry );
@@ -165,20 +171,24 @@ static entry_found get_extended_entry( FILE *fp, directory_entry * entry )
     /* Get the defined_name. An empty value is allowed; see the Wiki. */
 
     if( count > 0 ) {
-        fread( entry->defined_name, count, 1, fp );
-        if( ferror( fp ) || feof( fp ) ) return( not_valid_entry );
+        fread_buff( entry->defined_name, count, fp );
+        if( ferror( fp ) || feof( fp ) ) {
+            return( not_valid_entry );
+        }
     }
     entry->defined_name[count] = '\0';
 
     /* Skip the marker. */
 
     fseek( fp, sizeof( uint16_t ), SEEK_CUR );
-    if( ferror( fp ) || feof( fp ) ) return( not_valid_entry );
+    if( ferror( fp ) || feof( fp ) )
+        return( not_valid_entry );
 
     /* Get the the member_name_length. */
 
     count = fgetc( fp );
-    if( ferror( fp ) || feof( fp ) ) return( not_valid_entry );
+    if( ferror( fp ) || feof( fp ) )
+        return( not_valid_entry );
 
     /* Ensure the member_name_length is not zero or too long for the buffer. */
 
@@ -188,14 +198,16 @@ static entry_found get_extended_entry( FILE *fp, directory_entry * entry )
 
     /* Get the member_name. */
 
-    fread( entry->member_name, count, 1, fp );
-    if( ferror( fp ) || feof( fp ) ) return( not_valid_entry );
+    fread_buff( entry->member_name, count, fp );
+    if( ferror( fp ) || feof( fp ) )
+        return( not_valid_entry );
     entry->member_name[count] = '\0';
 
     /* Skip the preview. */
 
     fseek( fp, sizeof( uint16_t ), SEEK_CUR );
-    if( ferror( fp ) || feof( fp ) ) return( valid_entry );
+    if( ferror( fp ) || feof( fp ) )
+        return( valid_entry );
 
     return( valid_entry );
 }
@@ -206,8 +218,8 @@ static entry_found get_extended_entry( FILE *fp, directory_entry * entry )
  *
  * Parameter:
  *      fp contains the FILE * for the directory file.
- *      fname contains the name of the directory file.
- *      in_name points to the defined name to match.
+ *      dir_file_name contains the name of the directory file.
+ *      defined_name points to the defined name to match.
  *
  * Returns:
  *      on success, the corresponding member name.
@@ -217,14 +229,14 @@ static entry_found get_extended_entry( FILE *fp, directory_entry * entry )
  *      the comparison is not case-sensitive for compatability with wgml 4.0.
  */
 
-char *get_member_name( FILE *fp, const char *fname, const char *in_name )
+static char *get_member_name( FILE *fp, const char *dir_file_name, const char *defined_name )
 {
     cop_file_type   file_type;
     directory_entry current_entry;
     entry_found     entry_status;
     uint16_t        entry_type;
 
-    /* See if in_name is found in directory file. */
+    /* See if defined_name is found in directory file. */
 
     file_type = parse_header( fp );
     switch( file_type ) {
@@ -232,7 +244,7 @@ char *get_member_name( FILE *fp, const char *fname, const char *in_name )
 
         /* File error, including premature eof. */
 
-        xx_simple_err_c( err_dev_lib_file, fname );
+        xx_simple_err_c( err_dev_lib_file, dir_file_name );
         break;
 
     case not_se_v4_1:
@@ -247,7 +259,7 @@ char *get_member_name( FILE *fp, const char *fname, const char *in_name )
 
         /* Wrong type of file: something is wrong with the device library. */
 
-        xx_simple_err_c( err_dev_lib_data, fname );
+        xx_simple_err_c( err_dev_lib_data, dir_file_name );
         break;
 
     case dir_v4_1_se:
@@ -268,7 +280,7 @@ char *get_member_name( FILE *fp, const char *fname, const char *in_name )
              * ExtendedDirEntry.
              */
 
-            fread( &entry_type, sizeof( entry_type ), 1, fp );
+            entry_type = fread_u16( fp );
 
             /* Exit the loop when the final entry has been processed. */
 
@@ -295,7 +307,7 @@ char *get_member_name( FILE *fp, const char *fname, const char *in_name )
                      * metatype has already been read.
                      */
 
-                    fread( &entry_type, sizeof( entry_type ), 1, fp );
+                    entry_type = fread_u16( fp );
 
                     /* Exit the loop when the final entry has been processed. */
 
@@ -332,7 +344,7 @@ char *get_member_name( FILE *fp, const char *fname, const char *in_name )
 
                             /* Return the member name, if found. */
 
-                            if( stricmp( in_name, current_entry.defined_name ) == 0 ) {
+                            if( stricmp( defined_name, current_entry.defined_name ) == 0 ) {
                                 return( mem_strdup( current_entry.member_name ) );
                             }
 
@@ -375,7 +387,7 @@ char *get_member_name( FILE *fp, const char *fname, const char *in_name )
 
                     /* Return the member name, if found. */
 
-                    if( stricmp( in_name, current_entry.defined_name ) == 0 ) {
+                    if( stricmp( defined_name, current_entry.defined_name ) == 0 ) {
                         return( mem_strdup( current_entry.member_name ) );
                     }
 
@@ -417,3 +429,38 @@ char *get_member_name( FILE *fp, const char *fname, const char *in_name )
 }
 
 
+char *search_member_name( const char *dir, const char *file_name )
+{
+#define DIRECTORY_FILE      "WGMLST.COP"
+#ifdef __UNIX__
+#define DIRECTORY_FILE_ALT  "wgmlst.cop"
+#endif
+
+    FILE    *fp;
+    char    *member_name;
+    char    dir_file_name[_MAX_PATH + sizeof( DIRECTORY_FILE )];
+
+    strcpy( dir_file_name, dir );
+    strcat( dir_file_name, DIRECTORY_FILE );
+    if( strlen( dir_file_name ) > _MAX_PATH - 1 )
+        return( NULL );
+    fp = fopen( dir_file_name, "rb" );
+#ifdef __UNIX__
+    if( fp == NULL ) {
+        strcpy( dir_file_name, dir );
+        strcat( dir_file_name, DIRECTORY_FILE_ALT );
+        fp = fopen( dir_file_name, "rb" );
+    }
+#endif
+    if( fp == NULL ) {
+        return( NULL );
+    }
+    member_name = get_member_name( fp, dir_file_name, file_name );
+    fclose( fp );
+    return( member_name );
+
+#ifdef __UNIX__
+#undef DIRECTORY_FILE_ALT
+#endif
+#undef DIRECTORY_FILE
+}

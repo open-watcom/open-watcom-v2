@@ -95,9 +95,9 @@ void    banner_defaults( void )
     reg->script_region[0].string = NULL;
     reg->script_region[1].string = NULL;
     reg->script_region[2].string = NULL;
-    reg->final_content[0].len = 0;
-    reg->final_content[1].len = 0;
-    reg->final_content[2].len = 0;
+    reg->final_content[0].size = 0;
+    reg->final_content[1].size = 0;
+    reg->final_content[2].size = 0;
     reg->final_content[0].hoffset = 0;
     reg->final_content[1].hoffset = 0;
     reg->final_content[2].hoffset = 0;

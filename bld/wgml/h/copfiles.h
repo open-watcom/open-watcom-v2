@@ -142,11 +142,7 @@ typedef struct {
  * font number "0" should be used. There is always a font numbered "0".
  */
 
-/* To hold the data from the BoxBlock struct. */
-
-typedef struct {
-    char *              font_name;
-    font_number         font;
+typedef struct box_chars {
     char                horizontal_line;
     char                vertical_line;
     char                top_left;
@@ -158,15 +154,23 @@ typedef struct {
     char                left_join;
     char                right_join;
     char                inside_join;
+} box_chars;
+
+/* To hold the data from the BoxBlock struct. */
+
+typedef struct {
+    char                *font_name;
+    font_number         font;
+    box_chars           chars;
 } box_block;
 
 /* To hold the data from the UnderscoreBlock struct. */
 
 typedef struct {
-    bool                specified_font;
-    char *              font_name;
+    char                *font_name;
     font_number         font;
     char                underscore_char;
+    bool                specified_font;
 } underscore_block;
 
 /* To hold the data from the DefaultFont struct. */
@@ -521,30 +525,30 @@ typedef struct cop_font {
  */
 
 typedef struct {
-    unsigned            current;
-    unsigned            length;
     char                *text;
+    unsigned            current;
+    unsigned            size;
 } record_buffer;
 
 /* This struct implements the wgml_font struct in the Wiki. */
 
 typedef struct {
-    cop_font            *   bin_font;
-    fontswitch_block    *   font_switch;
-    code_text           *   font_pause;
-    fontstyle_block     *   font_style;
-    outtrans_block      *   outtrans;
-    uint32_t                default_width;
-    uint32_t                em_base;
-    uint32_t                font_height;
-    uint32_t                font_space;
-    uint32_t                line_height;
-    uint32_t                line_space;
-    uint32_t                spc_width;
-    uint32_t                width_table[0x100];
-    char                    font_resident;
-    unsigned char           shift_count;
-    char                    shift_height[4];
+    cop_font            *bin_font;
+    fontswitch_block    *font_switch;
+    code_text           *font_pause;
+    fontstyle_block     *font_style;
+    outtrans_block      *outtrans;
+    uint32_t            default_width;
+    uint32_t            em_base;
+    uint32_t            font_height;
+    uint32_t            font_space;
+    uint32_t            line_height;
+    uint32_t            line_space;
+    uint32_t            spc_width;
+    width_block         width;
+    char                font_resident;
+    unsigned char       shift_count;
+    char                shift_height[4];
 } wgml_font;
 
 #endif  /* COPFILE_H_INCLUDED */

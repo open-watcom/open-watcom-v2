@@ -235,7 +235,7 @@ static char *scr_single_func_u( char * in, char * end, char * * result )
 /*  some logic has to be in sync with scr_width() in gsfwidth.c            */
 /***************************************************************************/
 
-static char *scr_single_func_w( char * in, char * end, char * * result )
+static char *scr_single_func_w( char *in, char *end, char **result )
 {
     char            *   pchar;
     sub_index           var_ind;
@@ -263,10 +263,10 @@ static char *scr_single_func_w( char * in, char * end, char * * result )
         /* for undefined variable calc length of name, & and perhaps *     */
         /*******************************************************************/
             width = cop_text_width( symvar_entry.name, strlen( symvar_entry.name ), g_curr_font )
-                    + wgml_fonts[g_curr_font].width_table['&'];
+                    + wgml_fonts[g_curr_font].width.table['&'];
 
             if( symvar_entry.flags & local_var ) {  // add width of *
-                width += wgml_fonts[g_curr_font].width_table['*'];
+                width += wgml_fonts[g_curr_font].width.table['*'];
             }
         }
     } else {                            // string
@@ -388,7 +388,7 @@ static char *scr_single_func_unsupport( char * in, char * * result )
 /*                                                                     */
 /***********************************************************************/
 
-char *scr_single_funcs( char * in, char * end, char * * result )
+char *scr_single_funcs( char *in, char *end, char **result )
 {
     char            *   pw;
 
