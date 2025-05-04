@@ -1661,3 +1661,21 @@ void resize_record_buffer( record_buffer *recb, unsigned size )
     }
     recb->current = size;
 }
+
+void init_record_buffer_fill( record_buffer *recb, unsigned size, unsigned char byte )
+{
+    recb->current = 0;
+    recb->size = size;
+    recb->text = mem_alloc( size + 1 );
+    memset( recb->text, byte, size );
+    recb->text[size] = '\0';
+}
+
+void resize_record_buffer_fill( record_buffer *recb, unsigned size, unsigned char byte )
+{
+    if( size > recb->size ) {
+        recb->text = mem_realloc( recb->text, size + 1 );
+        memset( recb->text, byte, size );
+        recb->text[size] = '\0';
+    }
+}

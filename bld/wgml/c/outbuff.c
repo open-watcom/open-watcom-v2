@@ -68,6 +68,12 @@
 #endif
 
 
+#ifdef __UNIX__
+#define TEXT_EOL    "\n"
+#else
+#define TEXT_EOL    "\r\n"
+#endif
+
 /* Local variable declaration. */
 
 static record_buffer    binc_buff;
@@ -132,7 +138,6 @@ static void ob_insert_ps_text( const char *in_block, size_t count, font_number f
     if( wgml_fonts[font].outtrans != NULL )
         cur_table = wgml_fonts[font].outtrans->table;
     for( i = 0; i < count; i++ ) {
-
         difference = buffout.size - buffout.current;
         if ( difference > 1 ) {
 
@@ -450,10 +455,7 @@ static void ob_insert_ps_cmd_ot( const char *in_block, size_t count, font_number
 
             /* At least one character will be added to translated. */
 
-            if( k >= translated.size ) {
-                translated.size *= 2;
-                translated.text = mem_realloc( translated.text, translated.size );
-            }
+            resize_record_buffer( &translated, k );
 
             /* Add the non-space character to translated. */
 
@@ -497,11 +499,7 @@ static void ob_insert_ps_cmd_ot( const char *in_block, size_t count, font_number
                                 xx_simple_err_c( err_out_rec_size, dev_name );
                             }
 
-                            if( (k + cur_trans->count) >= translated.size ) {
-                                translated.size *= 2;
-                                translated.text = mem_realloc( translated.text, translated.size );
-                            }
-
+                            resize_record_buffer( &translated, k + cur_trans->count );
                             memcpy( &translated.text[k], cur_trans->data, cur_trans->count );
                             k += cur_trans->count;
                         }
@@ -986,6 +984,17 @@ void cop_tr_table( const char *p )
     return;
 }
 
+static void emit_FONT0( void )
+{
+#define TO_FONT0    "@fs0 "
+
+    ob_flush();
+    strcpy( buffout.text, TO_FONT0 );
+    buffout.current = sizeof( TO_FONT0 ) - 1;
+
+#undef TO_FONT0
+}
+
 /* Function ob_binclude().
  * This function implements the action of BINCLUDE.
  * NOTE: BINCLUDE produces a doc_element only if the file has been found.
@@ -993,13 +1002,10 @@ void cop_tr_table( const char *p )
 
 void ob_binclude( binclude_element * in_el )
 {
-    char        fontstr[] = "@fs0 ";
-    size_t      ps_size;
     uint32_t    count;
 
     fb_binclude_support( in_el );
-    if( fwrite( buffout.text, sizeof( uint8_t ), buffout.current, out_file_fp )
-            < buffout.current ) {
+    if( fwrite( buffout.text, sizeof( uint8_t ), buffout.current, out_file_fp ) < buffout.current ) {
         xx_simple_err_c( err_write_out_file, out_file );
     }
     buffout.current = 0;
@@ -1008,8 +1014,7 @@ void ob_binclude( binclude_element * in_el )
         count = fread( buffout.text, sizeof( uint8_t ), buffout.size, in_el->fp );
         while( count == buffout.size ) {
             buffout.current = count;
-            if( fwrite( buffout.text, sizeof( uint8_t ), buffout.current, out_file_fp )
-                    < buffout.current ) {
+            if( fwrite( buffout.text, sizeof( uint8_t ), buffout.current, out_file_fp ) < buffout.current ) {
                 xx_simple_err_c( err_write_out_file, out_file );
                 count = 0;
                 break;
@@ -1017,8 +1022,7 @@ void ob_binclude( binclude_element * in_el )
             count = fread( buffout.text, sizeof( uint8_t ), buffout.size, in_el->fp );
         }
         buffout.current = count;
-        if( fwrite( buffout.text, sizeof( uint8_t ), buffout.current, out_file_fp )
-                < buffout.current ) {
+        if( fwrite( buffout.text, sizeof( uint8_t ), buffout.current, out_file_fp ) < buffout.current ) {
             xx_simple_err_c( err_write_out_file, out_file );
         }
         if( ferror( in_el->fp ) ) {
@@ -1029,8 +1033,7 @@ void ob_binclude( binclude_element * in_el )
         count = fread( binc_buff.text, sizeof( uint8_t ), binc_buff.size, in_el->fp );
         while( count == binc_buff.size ) {
             binc_buff.current = count;
-            if( fwrite( binc_buff.text, sizeof( uint8_t ), binc_buff.current, out_file_fp )
-                    < binc_buff.current ) {
+            if( fwrite( binc_buff.text, sizeof( uint8_t ), binc_buff.current, out_file_fp ) < binc_buff.current ) {
                 xx_simple_err_c( err_write_out_file, out_file );
                 count = 0;
                 break;
@@ -1039,8 +1042,7 @@ void ob_binclude( binclude_element * in_el )
             count = fread( binc_buff.text, sizeof( uint8_t ), binc_buff.size, in_el->fp );
         }
         binc_buff.current = count;
-        if( fwrite( binc_buff.text, sizeof( uint8_t ), binc_buff.current, out_file_fp )
-                < binc_buff.current ) {
+        if( fwrite( binc_buff.text, sizeof( uint8_t ), binc_buff.current, out_file_fp ) < binc_buff.current ) {
             xx_simple_err_c( err_write_out_file, out_file );
         }
         if( ferror( in_el->fp ) ) {
@@ -1049,10 +1051,7 @@ void ob_binclude( binclude_element * in_el )
     }
 
     if( in_el->force_FONT0 ) {          // force fs0 under some conditions; not PS? tbd
-        ob_flush();
-        ps_size = strlen( fontstr );
-        strcpy( buffout.text, fontstr );
-        buffout.current = ps_size;
+        emit_FONT0();
     }
 //    fclose( in_el->fp );
 //    in_el->fp = NULL;
@@ -1087,9 +1086,8 @@ void ob_oc( const char *text )
  *
  * Notes:
  *      The output file is, and must be, opened in binary mode. This requires
- *          the explicit emission of "\r\n" for non-Linux versions. For Linux,
- *          "\n" is emitted, but, since I am not able to test the Linux version,
- *          it is not possible to tell is this is correct.
+ *          the explicit emission of end-of-line. For *NIX platforms "\n" is emitted,
+ *          for others "\r\n" is emitted.
  */
 
 void ob_flush( void )
@@ -1097,24 +1095,17 @@ void ob_flush( void )
     if( !out_file_fp )
         return;     /* Bail in case of fatal errors further up. */
 
-    if( fwrite( buffout.text, sizeof( uint8_t ), buffout.current, out_file_fp )
-            < buffout.current ) {
+    if( fwrite( buffout.text, sizeof( uint8_t ), buffout.current, out_file_fp ) < buffout.current ) {
         xx_simple_err_c( err_write_out_file, out_file );
         return;
     }
     buffout.current = 0;
-#ifdef __UNIX__
-    if( fprintf( out_file_fp, "\n" ) < strlen( "\n" ) ) {
+    /*
+     * emit correct end-of-line bytes
+     */
+    if( fprintf( out_file_fp, TEXT_EOL ) != sizeof( TEXT_EOL ) - 1 ) {
         xx_simple_err_c( err_write_out_file, out_file );
-        return;
     }
-#else
-    if( fprintf( out_file_fp, "\r\n" ) < strlen( "\r\n" ) ) {
-        xx_simple_err_c( err_write_out_file, out_file );
-        return;
-    }
-#endif
-    return;
 }
 
 /* Function ob_graphic().
@@ -1126,7 +1117,6 @@ void ob_graphic( graphic_element * in_el )
 {
     char        begindoc[] = "%%BeginDocument: ";
     char        enddoc[] = "%%EndDocument";
-    char        fontstr[] = "@fs0 ";
     char        graphobj[] = "/graphobj save def /showpage { } def";
     char        restore[] = "graphobj restore";
     size_t      ps_size;
@@ -1185,10 +1175,7 @@ void ob_graphic( graphic_element * in_el )
     /* Only if font in use after the GRAPHIC was not font 0 */
 
     if( in_el->next_font > FONT0 ) {
-        ob_flush();
-        ps_size = strlen( fontstr );
-        strcpy( buffout.text, fontstr );
-        buffout.current = ps_size;
+        emit_FONT0();
         if( ferror( in_el->fp ) ) {
             xx_simple_err_cc( err_in_file, "GRAPHIC", in_el->file );
         }

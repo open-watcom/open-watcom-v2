@@ -324,7 +324,7 @@ static void gen_rule_head( char * letter )
             cur_limit = full_line / str_width;
             cur_count = 0;
             cur_width = 0;
-            resize_record_buffer( &line_buff, cur_limit * str_count );  // length in characters
+            resize_record_buffer( &line_buff, cur_limit *str_count );  // length in characters
             line_buff.text[0] = '\0';
             for( i = 0; i < cur_limit; i++ ) {              // fill text with copies of full string
                 strcat( line_buff.text, layout_work.ixhead.frame.string );

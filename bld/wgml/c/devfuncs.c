@@ -386,20 +386,11 @@ static void fb_newline( void )
 
 static void output_spaces( size_t count )
 {
-    unsigned    i;
-
-    if( space_chars.size < count ) {
-        space_chars.text = mem_realloc( space_chars.text, count );
-        space_chars.size = count;
-        for( i = 0; i < space_chars.size; i++ ) {
-            space_chars.text[i] = ' ';
-        }
-    }
-
     if( !text_out_open && ProcFlags.ps_device ) {
         ob_insert_ps_text_start();
         text_out_open = true;
     }
+    resize_record_buffer_fill( &space_chars, count, ' ' );
     ob_insert_block( space_chars.text, count, true, true, active_font );
     current_state.x_address = desired_state.x_address;
 }
@@ -413,7 +404,6 @@ static void output_spaces( size_t count )
 
 static void output_uscores( text_chars *in_chars )
 {
-    int         i;
     uint32_t    count;
     uint32_t    uscore_width;
 
@@ -438,14 +428,7 @@ static void output_uscores( text_chars *in_chars )
     count += in_chars->width;
     count /= uscore_width;
 
-    if( uscore_chars.size < count ) {
-        uscore_chars.text = mem_realloc( uscore_chars.text, count );
-        uscore_chars.size = count;
-        for( i = 0; i < uscore_chars.size; i++ ) {
-            uscore_chars.text[i] = uscore_char;
-        }
-    }
-
+    resize_record_buffer_fill( &uscore_chars, count, uscore_char );
     ob_insert_block( uscore_chars.text, count, true, true, active_font );
     current_state.x_address = desired_state.x_address;
 
@@ -472,7 +455,7 @@ static void post_text_output( void )
 
             /* Emit the appropriate post-subscript/superscript sequence. */
 
-            if( !current_state.type ) {
+            if( current_state.type == tx_norm ) {
                 /* Since shift_done was true, norm is not allowed. */
             } else if( current_state.type & tx_sub ) {
                 ps_size = strlen( shift_scale );
@@ -1581,7 +1564,7 @@ static void *df_binary( void )
     /* Now invoke the parameter's handler. */
 
     current_df_data.current = current_df_data.base + my_parameters.first;
-    ob_insert_byte( (uintptr_t)process_parameter() );
+    ob_insert_byte( (unsigned char)(uintptr_t)process_parameter() );
 
     return( NULL );
 }
@@ -3540,7 +3523,6 @@ void df_populate_driver_table( void )
 
 void df_setup( void )
 {
-    unsigned    i;
     symsub      *sym_val;
 
     /* When called, each of symbols "date" and "time" contains either of
@@ -3562,17 +3544,12 @@ void df_setup( void )
 
     /* Initialize space_chars to hold 80 space characters. */
 
-    init_record_buffer( &space_chars, 80 );
-    for( i = 0; i < space_chars.size; i++ )
-        space_chars.text[i] = ' ';
+    init_record_buffer_fill( &space_chars, 80, ' ' );
 
     /* Initialize uscore_chars to hold 80 :UNDERSCORE characters. */
 
     uscore_char = bin_device->underscore.underscore_char;
-    init_record_buffer( &uscore_chars, 80 );
-    for( i = 0; i < uscore_chars.size; i++ ) {
-        uscore_chars.text[i] = uscore_char;
-    }
+    init_record_buffer_fill( &uscore_chars, 80, uscore_char );
 }
 
 /* Function df_teardown().
