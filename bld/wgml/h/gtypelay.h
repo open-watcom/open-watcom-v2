@@ -66,6 +66,11 @@ typedef enum bf_place {
 /***************************************************************************/
 
 typedef enum ban_docsect {
+    #define pick(ban,gml,text,len)   ban,
+    #include "bdocsect.h"
+    #undef pick
+    max_ban                             // has to be last defined value
+/*
     no_ban          = 0,
     abstract_ban,
     appendix_ban,
@@ -86,6 +91,7 @@ typedef enum ban_docsect {
     letlast_ban,
     letter_ban,
     max_ban                             // has to be last defined value
+*/
 } ban_docsect;
 
 /***************************************************************************/

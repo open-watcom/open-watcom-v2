@@ -723,22 +723,9 @@ typedef enum {
 /***************************************************************************/
 
 typedef enum doc_section {
-    doc_sect_none,                      // nothing so far
-    doc_sect_gdoc,                      // gdoc
-    doc_sect_frontm,                    // front matter
-    doc_sect_titlep,                    // title page
-    doc_sect_etitlep,                   // end title page
-    doc_sect_abstract,                  // abstract
-    doc_sect_preface,                   // preface
-    doc_sect_toc,                       // table of contents
-    doc_sect_figlist,                   // figure list
-    doc_sect_body,                      // body
-    doc_sect_appendix,                  // appendix
-    doc_sect_backm,                     // back matter
-    doc_sect_index,                     // index
-    doc_sect_toce,                      // table of contents (at end of file)
-    doc_sect_figliste,                  // figure list (at end of file)
-    doc_sect_egdoc                      // egdoc  has to be last
+    #define pick(text,gml,ban)  gml,
+    #include "docsect.h"
+    #undef pick
 } doc_section;
 
 /***************************************************************************/

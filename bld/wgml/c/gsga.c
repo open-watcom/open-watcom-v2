@@ -406,7 +406,7 @@ static  condcode    scan_att_optionsB( gavalflags * val_flags, condcode cca,
                     strncpy( stringval, g_tok_start, arg_flen );
                     stringval[arg_flen] = '\0';
                     if( *att_flags & att_upper ) {
-                        strupr( stringval );
+                        my_strupr( stringval );
                     }
                  } else {
 #if 1
@@ -418,7 +418,7 @@ static  condcode    scan_att_optionsB( gavalflags * val_flags, condcode cca,
                     valptr = mem_tokdup( g_tok_start, arg_flen );
                     valptr[arg_flen] = '\0';
                     if( *att_flags & att_upper ) {
-                        strupr( valptr );
+                        my_strupr( valptr );
                     }
 #endif
                  }

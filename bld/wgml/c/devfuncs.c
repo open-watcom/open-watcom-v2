@@ -2028,10 +2028,11 @@ static void *df_lower( void )
 
     current_df_data.current = current_df_data.base + my_parameters.first;
     first = process_parameter();
+    my_strlwr( first );
 
     /* Convert and return the parameter. */
 
-    return( (void *)strlwr( first ) );
+    return( (void *)first );
 }
 
 /* Function df_remainder().

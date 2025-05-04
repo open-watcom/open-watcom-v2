@@ -777,21 +777,19 @@ static void syspgnumadfun( symvar * e ) // pagenumber.
     return;
 }
 
-static void syspgnumcfun( symvar * e )  // roman page no UPPER
+static void syspgnumcfun( symvar * e )  // roman page no (UPPER)
 {
     (void)e;
 
-    int_to_roman( g_page, syspgnumcstr, sizeof( syspgnumcstr ) );
-    strupr( syspgnumcstr );
+    int_to_roman( g_page, syspgnumcstr, sizeof( syspgnumcstr ), true );
     return;
 }
 
-static void syspgnumcdfun( symvar * e ) // roman page no UPPER.
+static void syspgnumcdfun( symvar * e ) // roman page no (UPPER).
 {
     (void)e;
 
-    int_to_roman( g_page, syspgnumcdstr, sizeof( syspgnumcdstr ) );
-    strupr( syspgnumcdstr );
+    int_to_roman( g_page, syspgnumcdstr, sizeof( syspgnumcdstr ), true );
     strcat( syspgnumcdstr, "." );
     return;
 }
@@ -800,7 +798,7 @@ static void syspgnumrfun( symvar * e ) // roman page no
 {
     (void)e;
 
-    int_to_roman( g_page, syspgnumrstr, sizeof( syspgnumrstr ) );
+    int_to_roman( g_page, syspgnumrstr, sizeof( syspgnumrstr ), false );
     return;
 }
 
@@ -808,7 +806,7 @@ static void syspgnumrdfun( symvar * e ) // roman page no.
 {
     (void)e;
 
-    int_to_roman( g_page, syspgnumrdstr, sizeof( syspgnumrdstr ) );
+    int_to_roman( g_page, syspgnumrdstr, sizeof( syspgnumrdstr ), false );
     strcat( syspgnumrdstr, "." );
     return;
 }
@@ -1180,7 +1178,7 @@ static  void    init_predefined_symbols( void )
 /*                   processing                                            */
 /***************************************************************************/
 
-void    init_sysparm( char * cmdline, char * banner )
+void    init_sysparm( char *cmdline, char *banner )
 {
     char    *   p;
 
@@ -1200,7 +1198,7 @@ void    init_sysparm( char * cmdline, char * banner )
             *++p = 0;                   // terminate string
         }
     }
-    strupr( sysparm0.value );           // uppercase as wgml4 does
+    my_strupr( sysparm0.value );           // uppercase as wgml4 does
 
     syspdev0.value = dev_name;
     sysversion0.value = banner;

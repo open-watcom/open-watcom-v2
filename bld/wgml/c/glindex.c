@@ -165,8 +165,7 @@ void    lay_index( const gmltag * entry )
     if( ProcFlags.lay_xxx != el_index ) {
         ProcFlags.lay_xxx = el_index;
     }
-    cc = get_attr_and_value();            // get att with value
-    while( cc == pos ) {
+    while( (cc = get_attr_and_value()) == pos ) {   // get att with value
         cvterr = -1;
         for( k = 0, curr = index_att[k]; curr > 0; k++, curr = index_att[k] ) {
 
@@ -298,7 +297,6 @@ void    lay_index( const gmltag * entry )
         if( cvterr < 0 ) {
             xx_err( err_att_name_inv );
         }
-        cc = get_attr_and_value();            // get att with value
     }
     scan_start = scan_stop + 1;
     return;

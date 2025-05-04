@@ -93,6 +93,10 @@ static  const   content_names   content_text[max_content] =  {
 /***************************************************************************/
 
 const   ban_sections    doc_sections[max_ban] = {
+        #define pick(ban,gml,text,len)   { text, len, ban },
+        #include "bdocsect.h"
+        #undef pick
+/*
     { "???",      3, no_ban        },
     { "abstract", 8, abstract_ban  },
     { "appendix", 8, appendix_ban  },
@@ -112,6 +116,7 @@ const   ban_sections    doc_sections[max_ban] = {
     { "letfirst", 8, letfirst_ban  },
     { "letlast",  7, letlast_ban   },
     { "letter",   6, letter_ban    },
+*/
 };
 
 

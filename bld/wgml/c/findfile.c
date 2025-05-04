@@ -153,14 +153,14 @@ static FILE *try_open( char *prefix, char *filename )
         if( fp != NULL ) {
             break;
         }
-        strlwr( buff );                 // for the sake of linux try again with lower case filename
+        my_strlwr( buff );              // for the sake of linux try again with lower case filename
         fp = fopen( buff, "rb" );
         if( fp != NULL ) {
             break;
         }
 #else       // DOS, OS/2, Windows
         if( fp != NULL ) {
-            strlwr( buff );             // to match wgml 4.0
+            my_strlwr( buff );          // to match wgml 4.0
             break;
         }
 #endif
@@ -448,7 +448,7 @@ FILE *search_file_in_dirs( const char *filename, const char *defext, const char 
                     pg.ext = COP_EXT;
                 }
 #ifdef __UNIX__
-                strlwr( member_name );
+                my_strlwr( member_name );
 #endif
                 _makepath( primary_file, NULL, NULL, member_name, pg.ext );
                 mem_free( member_name );

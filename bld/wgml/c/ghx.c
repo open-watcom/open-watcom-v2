@@ -727,9 +727,9 @@ static void gml_hx_common( const gmltag * entry, hdsrc hn_lvl )
             /* Implement the case attribute */
 
             if( layout_work.hx.hx_head[hds_lvl].hd_case == case_lower ) {
-                strlwr( p );
+                my_strlwr( p );
             } else if( layout_work.hx.hx_head[hds_lvl].hd_case == case_upper ) {
-                strupr( p );
+                my_strupr( p );
             }
         }
         if( ProcFlags.overprint && ProcFlags.cc_cp_done

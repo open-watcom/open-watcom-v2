@@ -62,27 +62,15 @@ static  uint32_t        str_width       = 0;        // IXHEAD 'character string'
 
 static void g_err_doc_sect( doc_section  ds )
 {
-    static  char const  sect[14][9] =
-        {                               // same sequence as doc_section enum
-            "NONE",
-            "GDOC",
-            "FRONTM",
-            "TITLEP",
-            "eTITLEP",
-            "ABSTRACT",
-            "PREFACE",
-            "TOC",
-            "FIGLIST",
-            "BODY",
-            "APPENDIX",
-            "BACKM",
-            "INDEX",
-            "eGDOC"
-        };
+    static const char   * const sect_text[] = {     // same sequence as doc_section enum
+    	#define pick(text,gml,ban)  text,
+        #include "docsect.h"
+        #undef pick
+    };
 
     err_count++;
     scan_err = true;
-    xx_err_c( err_doc_sect, sect[ds] );
+    xx_err_c( err_doc_sect, sect_text[ds] );
 }
 
 /***************************************************************************/
@@ -97,22 +85,10 @@ void set_section_banners( doc_section ds )
     /*  transform doc_section enum into ban_doc_sect enum                  */
     /***********************************************************************/
 
-    static const ban_docsect sect_2_bansect[doc_sect_egdoc + 1] = {
-
-        no_ban,                         // doc_sect_none,
-        no_ban,                         // doc_sect_gdoc,
-        no_ban,                         // doc_sect_frontm,
-        no_ban,                         // doc_sect_titlep,
-        no_ban,                         // doc_sect_etitlep,
-        abstract_ban,                   // doc_sect_abstract,
-        preface_ban,                    // doc_sect_preface,
-        toc_ban,                        // doc_sect_toc,
-        figlist_ban,                    // doc_sect_figlist,
-        body_ban,                       // doc_sect_body,
-        appendix_ban,                   // doc_sect_appendix,
-        backm_ban,                      // doc_sect_backm,
-        index_ban,                      // doc_sect_index,
-        no_ban                          // doc_sect_egdoc
+    static const ban_docsect sect_2_bansect[] = {
+    	#define pick(text,gml,ban)  ban,
+        #include "docsect.h"
+        #undef pick
     };
 
 /* not yet coded banner place values               TBD

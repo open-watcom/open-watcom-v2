@@ -124,6 +124,10 @@ void set_banners( void )
         ban_docsect     ban_tag;
         e_tags          tag;
     }  ban_2_tag[max_ban] =  {
+        #define pick(ban,gml,text,len)   { ban, gml },
+        #include "bdocsect.h"
+        #undef pick
+/*
         { no_ban,       t_NONE     },   // dummy
         { abstract_ban, t_ABSTRACT },
         { appendix_ban, t_APPENDIX },
@@ -143,6 +147,7 @@ void set_banners( void )
         { letfirst_ban, t_NONE     },   // dummy
         { letlast_ban,  t_NONE     },   // dummy
         { letter_ban,   t_NONE     },   // dummy
+*/
     };
 
     for( k = 0; k < max_ban; k++ ) {    // init banner list

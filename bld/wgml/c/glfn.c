@@ -166,8 +166,7 @@ void    lay_fn( const gmltag * entry )
     if( ProcFlags.lay_xxx != el_fn ) {
         ProcFlags.lay_xxx = el_fn;
     }
-    cc = get_attr_and_value();            // get att with value
-    while( cc == pos ) {
+    while( (cc = get_attr_and_value()) == pos ) {   // get att with value
         cvterr = true;
         for( k = 0, curr = fn_att[k]; curr > 0; k++, curr = fn_att[k] ) {
 
@@ -264,7 +263,6 @@ void    lay_fn( const gmltag * entry )
                 break;                  // break out of for loop
             }
         }
-        cc = get_attr_and_value();            // get att with value
     }
     scan_start = scan_stop + 1;
     return;

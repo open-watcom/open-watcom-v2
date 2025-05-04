@@ -960,10 +960,10 @@ void process_line( void )
     /*  this can probably be improved                                          */
     /***************************************************************************/
     if( ProcFlags.scr_cw
-      && (((toupper(*(buff2 + 1)) == 'I')
-      && (toupper(*(buff2 + 2)) == 'F'))
-      || ((toupper(*(buff2 + 1)) == 'E')
-      && (toupper(*(buff2 + 2)) == 'L'))) ) {
+      && (((my_toupper(*(buff2 + 1)) == 'I')
+      && (my_toupper(*(buff2 + 2)) == 'F'))
+      || ((my_toupper(*(buff2 + 1)) == 'E')
+      && (my_toupper(*(buff2 + 2)) == 'L'))) ) {
         ProcFlags.if_cond = true;
     } else {
         ProcFlags.if_cond = false;

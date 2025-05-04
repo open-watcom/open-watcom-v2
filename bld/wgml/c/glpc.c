@@ -174,10 +174,8 @@ void    lay_p( const gmltag * entry )
     if( ProcFlags.lay_xxx != el_p ) {
         ProcFlags.lay_xxx = el_p;
     }
-    cc = get_attr_and_value();            // get att with value
-    while( cc == pos ) {
+    while( (cc = get_attr_and_value()) == pos ) {   // get att with value
         cvterr = process_arg( &layout_work.p );
-        cc = get_attr_and_value();            // get att with value
     }
     scan_start = scan_stop + 1;
     return;
@@ -204,10 +202,8 @@ void    lay_pc( const gmltag * entry )
     if( ProcFlags.lay_xxx != el_pc ) {
         ProcFlags.lay_xxx = el_pc;
     }
-    cc = get_attr_and_value();            // get att with value
-    while( cc == pos ) {
+    while( (cc = get_attr_and_value()) == pos ) {   // get att with value
         cvterr = process_arg( &layout_work.pc );
-        cc = get_attr_and_value();            // get att with value
     }
     scan_start = scan_stop + 1;
     return;

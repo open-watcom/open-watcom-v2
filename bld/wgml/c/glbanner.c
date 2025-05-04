@@ -229,8 +229,7 @@ void    lay_banner( const gmltag * entry )
         ProcFlags.banner = true;
         init_banner_wk( &wk );
     }
-    cc = get_attr_and_value();            // get att with value
-    while( cc == pos ) {
+    while( (cc = get_attr_and_value()) == pos ) {   // get att with value
         for( k = 0; k < att_count; k++ ) {
             curr = banner_att[k];
 
@@ -310,7 +309,6 @@ void    lay_banner( const gmltag * entry )
                 break;                  // break out of for loop
             }
         }
-        cc = get_attr_and_value();            // get att with value
     }
 
     /*******************************************************/

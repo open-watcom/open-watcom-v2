@@ -243,8 +243,7 @@ void    lay_hx( const gmltag * entry )
     }
     ProcFlags.hx_level = hx_l;
 
-    cc = get_attr_and_value();            // get att with value
-    while( cc == pos ) {
+    while( (cc = get_attr_and_value()) == pos ) {   // get att with value
         cvterr = -1;
         for( k = 0, curr = hx_att[k]; curr > 0; k++, curr = hx_att[k] ) {
 
@@ -407,7 +406,6 @@ void    lay_hx( const gmltag * entry )
         if( cvterr < 0 ) {
             xx_err( err_att_name_inv );
         }
-        cc = get_attr_and_value();            // get att with value
     }
     if( l_group > 0 ) {         // only group 0 is supported
         xx_warn_c( wng_unsupp_lay_att, "group" );

@@ -450,11 +450,13 @@ extern  font_number get_font_number( char * p, size_t len );
 extern  char        *get_tag_value( char * p );
 extern  ffh_entry   *init_ffh_entry( ffh_entry * ffh_list );
 extern  fwd_ref     *init_fwd_ref( fwd_ref * fr_dict, const char * fr_id );
-extern  char        *int_to_roman( unsigned n, char * r, size_t rsize );
+extern  char        *int_to_roman( unsigned n, char * r, size_t rsize, bool ucase );
 extern  bool        lay_init_su( const char * p, su * in_su );
 extern  size_t      len_to_trail_space( const char *p , size_t len );
 extern  char        *skip_to_quote( char * p, char quote );
 extern  bool        value_to_su( su * spaceunit, bool pos );
+extern void         my_strupr( char *str );
+extern void         my_strlwr( char *str );
 
 
 /* messages.c                           */

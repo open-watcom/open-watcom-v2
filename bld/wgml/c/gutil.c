@@ -917,7 +917,7 @@ char *format_num( unsigned n, char *r, size_t rsize, num_style ns )
         p += pos1;
         break;
     case r_style :                      // lower case roman
-        rp = int_to_roman( n, p, rsize - pos );
+        rp = int_to_roman( n, p, rsize - pos, false );
         if( rp == NULL ) {
             return( NULL );             // field overflow
         }
@@ -925,11 +925,11 @@ char *format_num( unsigned n, char *r, size_t rsize, num_style ns )
         p += pos1;
         break;
     case c_style :                      // UPPER case roman
-        rp = int_to_roman( n, p, rsize - pos );
+        rp = int_to_roman( n, p, rsize - pos, true );
         if( rp == NULL ) {
             return( NULL );             // field overflow
         }
-        strupr( p );
+        my_strupr( p );
         pos1 = strlen( rp );
         p += pos1;
         break;
@@ -1335,7 +1335,7 @@ char * get_tag_value( char * p )
 /*  convert integer to roman digits                                        */
 /***************************************************************************/
 
-char *int_to_roman( unsigned n, char *r, size_t rsize )
+char *int_to_roman( unsigned n, char *r, size_t rsize, bool ucase )
 {
     static const struct {
         unsigned    val;
@@ -1353,9 +1353,10 @@ char *int_to_roman( unsigned n, char *r, size_t rsize )
                     {    1,   1, 'i', 'i' }
                 };
 
-    size_t digit;
-    size_t pos;
-    char    * p = r;
+    size_t  digit;
+    size_t  pos;
+    char    *p = r;
+    char    c;
 
     *p = '\0';
     if( (n < 1) || (n > 3999) ) {       // invalid out of range
@@ -1366,18 +1367,21 @@ char *int_to_roman( unsigned n, char *r, size_t rsize )
     pos = 0;
     do {
         while( n >= i_2_r[digit].val ) {
-            *p++ = i_2_r[digit].ch;
+            c = i_2_r[digit].ch;
+            *p++ = c;
             if( ++pos >= rsize ) {
                 return( NULL );         // result field overflow
             }
             n -= i_2_r[digit].val;
         }
         if( n >= i_2_r[digit].val49 ) {
-            *p++ = i_2_r[digit].ch49;
+            c = i_2_r[digit].ch49;
+            *p++ = ( ucase ) ? my_toupper( c ) : c;
             if( ++pos >= rsize ) {
                 return( NULL );         // result field overflow
             }
-            *p++ = i_2_r[digit].ch;
+            c = i_2_r[digit].ch;
+            *p++ = ( ucase ) ? my_toupper( c ) : c;
             if( ++pos >= rsize ) {
                 return( NULL );         // result field overflow
             }
@@ -1549,4 +1553,20 @@ void free_fwd_refs( fwd_ref * fwd_refs )
         mem_free( curr );
     }
     return;
+}
+
+void    my_strlwr( char *str )
+{
+    while( *str != '\0' ) {
+        *str = my_tolower( *str );
+        str++;
+    }
+}
+
+void    my_strupr( char *str )
+{
+    while( *str != '\0' ) {
+        *str = my_toupper( *str );
+        str++;
+    }
 }
