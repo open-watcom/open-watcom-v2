@@ -57,9 +57,9 @@ condcode    scr_length( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **re
 
     (void)ressize;
 
-    if( parmcount != 1 ) {
+    if( parmcount < 1
+      || parmcount > 1 )
         return( neg );
-    }
 
     string.s = parms[0].a;
     string.e = parms[0].e;

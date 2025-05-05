@@ -72,9 +72,9 @@ condcode    scr_substr( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **re
     getnum_block    gn;
     char            padchar;
 
-    if( (parmcount < 2) || (parmcount > 4) ) {
+    if( parmcount < 2
+      || parmcount > 4 )
         return( neg );
-    }
 
     string.s = parms[0].a;
     string.e = parms[0].e;

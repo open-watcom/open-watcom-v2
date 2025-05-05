@@ -83,9 +83,9 @@ static condcode scr_lowup( parm parms[MAX_FUN_PARMS], unsigned parmcount,
     int             len;
     getnum_block    gn;
 
-    if( (parmcount < 1) || (parmcount > 3) ) {
+    if( parmcount < 1
+      || parmcount > 3 )
         return( neg );
-    }
 
     string.s = parms[0].a;
     string.e = parms[0].e;

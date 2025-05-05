@@ -67,9 +67,9 @@ condcode    scr_index( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **res
 
     (void)ressize;
 
-    if( (parmcount < 2) || (parmcount > 3) ) {
+    if( parmcount < 2
+      || parmcount > 3 )
         return( neg );
-    }
 
     haystack.s = parms[0].a;
     haystack.e = parms[0].e;
@@ -159,9 +159,10 @@ condcode    scr_pos( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **resul
 {
     char            *   pwk;
 
-    if( parmcount < 2 ) {
+    if( parmcount < 2
+      || parmcount > 2 )
         return( neg );
-    }
+
     /*
      * scr_pos : swap parm1 and parm2, then call scr_index
      */
@@ -210,9 +211,9 @@ condcode    scr_lpos( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **resu
 
     (void)ressize;
 
-    if( (parmcount < 2) || (parmcount > 3) ) {
+    if( parmcount < 2
+      || parmcount > 3 )
         return( neg );
-    }
 
     needle.s = parms[0].a;
     needle.e = parms[0].e;

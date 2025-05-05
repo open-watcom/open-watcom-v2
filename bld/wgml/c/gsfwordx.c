@@ -34,8 +34,6 @@
 #include "wgml.h"
 
 
-static  bool    is_word;          // true if word call, false if subword call
-
 /***************************************************************************/
 /*  script string function &'subword(                                      */
 /*                         &'word(                                         */
@@ -70,7 +68,7 @@ static  bool    is_word;          // true if word call, false if subword call
 /***************************************************************************/
 
 static  condcode    scr_xx_word( parm parms[MAX_FUN_PARMS], unsigned parmcount,
-                                 char **result, unsigned ressize )
+                                 char **result, unsigned ressize, bool is_word )
 {
     tok_type        string;
     char            *ptok;
@@ -79,10 +77,6 @@ static  condcode    scr_xx_word( parm parms[MAX_FUN_PARMS], unsigned parmcount,
     int             n;
     int             len;
     getnum_block    gn;
-
-    if( (parmcount < 2) || (parmcount > 3) ) {
-        return( neg );
-    }
 
     string.s = parms[0].a;
     string.e = parms[0].e;
@@ -190,8 +184,11 @@ static  condcode    scr_xx_word( parm parms[MAX_FUN_PARMS], unsigned parmcount,
 
 condcode    scr_word( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **result, unsigned ressize )
 {
-    is_word = true;
-    return( scr_xx_word( parms, parmcount, result, ressize ) );
+    if( parmcount < 2
+      || parmcount > 2 )
+        return( neg );
+
+    return( scr_xx_word( parms, parmcount, result, ressize, true ) );
 }
 
 
@@ -202,8 +199,11 @@ condcode    scr_word( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **resu
 
 condcode    scr_subword( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **result, unsigned ressize )
 {
-    is_word = false;
-    return( scr_xx_word( parms, parmcount, result, ressize ) );
+    if( parmcount < 2
+      || parmcount > 3 )
+        return( neg );
+
+    return( scr_xx_word( parms, parmcount, result, ressize, false ) );
 }
 
 
@@ -224,9 +224,9 @@ condcode    scr_words( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **res
 
     (void)ressize;
 
-    if( parmcount != 1 ) {
+    if( parmcount < 1
+      || parmcount > 1 )
         return( neg );
-    }
 
     string.s = parms[0].a;
     string.e = parms[0].e;
@@ -358,9 +358,9 @@ condcode    scr_wordpos( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **r
 
     (void)ressize;
 
-    if( (parmcount < 2) || (parmcount > 3) ) {
+    if( parmcount < 2
+      || parmcount > 3 )
         return( neg );
-    }
 
     phrase.s = parms[0].a;
     phrase.e = parms[0].e;
@@ -441,9 +441,9 @@ condcode    scr_find( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **resu
 
     (void)ressize;
 
-    if( parmcount != 2 ) {
+    if( parmcount < 2
+      || parmcount > 2 )
         return( neg );
-    }
 
     string.s = parms[0].a;
     string.e = parms[0].e;

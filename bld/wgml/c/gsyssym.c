@@ -1202,7 +1202,7 @@ void    init_sysparm( char *cmdline, char *banner )
     }
     strupr( sysparm0.value );           // uppercase as wgml4 does
 
-    syspdev0.value = dev_name;
+    syspdev0.value = g_dev_name;
     sysversion0.value = banner;
 }
 

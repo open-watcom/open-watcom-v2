@@ -180,7 +180,7 @@ static void ob_insert_ps_text( const char *in_block, size_t count, font_number f
                             /* If it is too large to fit at all, report overflow. */
 
                             if( cur_trans->count > buffout.size ) {
-                                xx_simple_err_c( err_out_rec_size, dev_name );
+                                xx_simple_err_c( err_out_rec_size, g_dev_name );
                             }
 
                             /* If it won't fit in the current buffer, finalize
@@ -413,7 +413,7 @@ static void ob_insert_ps_cmd_ot( const char *in_block, size_t count, font_number
                             /* If it is too large to fit at all, report overflow. */
 
                             if( cur_trans->count > buffout.size ) {
-                                xx_simple_err_c( err_out_rec_size, dev_name );
+                                xx_simple_err_c( err_out_rec_size, g_dev_name );
                             }
 
                             /* If it won't fit, flush the buffer. */
@@ -496,7 +496,7 @@ static void ob_insert_ps_cmd_ot( const char *in_block, size_t count, font_number
                             /* If it is too large to fit at all, report overflow. */
 
                             if( cur_trans->count > buffout.size ) {
-                                xx_simple_err_c( err_out_rec_size, dev_name );
+                                xx_simple_err_c( err_out_rec_size, g_dev_name );
                             }
 
                             resize_record_buffer( &translated, k + cur_trans->count );
@@ -681,7 +681,7 @@ static void ob_insert_def_ot( const char *in_block, size_t count, font_number fo
                         /* If it is too large to fit at all, report overflow. */
 
                         if( cur_trans->count > buffout.size ) {
-                            xx_simple_err_c( err_out_rec_size, dev_name );
+                            xx_simple_err_c( err_out_rec_size, g_dev_name );
                         }
 
                         /* If it won't fit in the current buffer, flush the buffer. */

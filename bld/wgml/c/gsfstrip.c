@@ -61,9 +61,9 @@ condcode    scr_strip( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **res
     char            stripchar;
     char            typechar;
 
-    if( (parmcount < 1) || (parmcount > 3) ) {
+    if( parmcount < 1
+      || parmcount > 3 )
         return( neg );
-    }
 
     string.s = parms[0].a;
     string.e = parms[0].e;
@@ -99,7 +99,6 @@ condcode    scr_strip( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **res
                     xx_source_err_c( err_func_parm, "2 (type)" );
                 }
                 return( neg );
-                break;
             }
         }
     }

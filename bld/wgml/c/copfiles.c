@@ -747,10 +747,10 @@ void cop_setup( void )
 
     /* Process the device. */
 
-    bin_device = get_cop_device( dev_name );
+    bin_device = get_cop_device( g_dev_name );
 
     if( bin_device == NULL ) {
-        xx_simple_err_cc( err_block_not_found, "DEVICE", dev_name );
+        xx_simple_err_cc( err_block_not_found, "DEVICE", g_dev_name );
     }
 
     /* The value of horizontal_base_units cannot be "0". */

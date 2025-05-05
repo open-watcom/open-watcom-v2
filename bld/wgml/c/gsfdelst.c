@@ -57,9 +57,9 @@ condcode    scr_delstr( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **re
     int             len;
     getnum_block    gn;
 
-    if( (parmcount < 2) || (parmcount > 3) ) {
+    if( parmcount < 2
+      || parmcount > 3 )
         return( neg );
-    }
 
     string.s = parms[0].a;
     string.e = parms[0].e;

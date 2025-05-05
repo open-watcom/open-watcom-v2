@@ -49,9 +49,8 @@ condcode    scr_compare( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **r
     (void)ressize;
 
     if( parmcount < 2
-      || parmcount > 3 ) {
+      || parmcount > 3 )
         return( neg );
-    }
 
     string1.s = parms[0].a;
     string1.e = parms[0].e;

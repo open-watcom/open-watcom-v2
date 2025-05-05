@@ -62,9 +62,9 @@ condcode    scr_c2x( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **resul
 {
     tok_type        string;
 
-    if( parmcount != 1 ) {              // only 1 parm valid
+    if( parmcount < 1
+      || parmcount > 1 )
         return( neg );
-    }
 
     string.s = parms[0].a;
     string.e = parms[0].e;

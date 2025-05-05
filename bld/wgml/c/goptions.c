@@ -461,11 +461,11 @@ static void set_device( option * opt )
         p = tokennext->token;
 
         g_info_research( inf_recognized_xxx, "device name", p );
-        if( dev_name ) {
-            mem_free( dev_name );
+        if( g_dev_name != NULL ) {
+            mem_free( g_dev_name );
         }
-        dev_name = mem_alloc( len + 1 );
-        pw = dev_name;
+        g_dev_name = mem_alloc( len + 1 );
+        pw = g_dev_name;
         while( len > 0 ) {
              len--;
              *pw++ = *p++;

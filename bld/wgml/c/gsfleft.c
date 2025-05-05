@@ -58,9 +58,9 @@ condcode    scr_left( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **resu
     int             len;
     getnum_block    gn;
 
-    if( parmcount != 2 ) {
+    if( parmcount < 2
+      || parmcount > 3 )
         return( neg );
-    }
 
     string.s = parms[0].a;
     string.e = parms[0].e;

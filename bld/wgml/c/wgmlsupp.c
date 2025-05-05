@@ -203,8 +203,8 @@ void free_some_mem( void )
     if( master_fname_attr != NULL ) {
         mem_free( master_fname_attr );
     }
-    if( dev_name != NULL ) {
-        mem_free( dev_name );
+    if( g_dev_name != NULL ) {
+        mem_free( g_dev_name );
     }
     if( lay_files != NULL ) {
         laystack * lwk;

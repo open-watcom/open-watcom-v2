@@ -63,9 +63,9 @@ condcode    scr_d2c( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **resul
 
     (void)ressize;
 
-    if( parmcount != 1 ) {
+    if( parmcount < 1
+      || parmcount > 1 )
         return( neg );
-    }
 
     number.s = parms[0].a;
     number.e = parms[0].e;

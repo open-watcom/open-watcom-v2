@@ -65,9 +65,9 @@ condcode    scr_width( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **res
 
     (void)ressize;
 
-    if( (parmcount < 1) || (parmcount > 2) ) {
+    if( parmcount < 1
+      || parmcount > 2 )
         return( neg );
-    }
 
     width = 0;
 

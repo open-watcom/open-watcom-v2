@@ -36,8 +36,6 @@
 #include "wgml.h"
 
 
-static  bool    vec_pos;           // true if &'vecpos, false if &'veclastpos
-
 /***************************************************************************/
 /*  script string functions &'vecpos(                                      */
 /*                          &'lastvecpos(                                  */
@@ -86,7 +84,7 @@ static  bool    vec_pos;           // true if &'vecpos, false if &'veclastpos
 /***************************************************************************/
 
 static  condcode    scr_veclp( parm parms[MAX_FUN_PARMS], unsigned parmcount,
-                               char **result, unsigned ressize )
+                               char **result, unsigned ressize, bool vec_pos )
 {
     tok_type        needle;
     tok_type        haystack;
@@ -105,9 +103,9 @@ static  condcode    scr_veclp( parm parms[MAX_FUN_PARMS], unsigned parmcount,
 
     (void)ressize;
 
-    if( parmcount != 2 ) {
+    if( parmcount < 2
+      || parmcount > 4 )
         return( neg );
-    }
 
     needle.s = parms[0].a;
     needle.e = parms[0].e;
@@ -183,8 +181,7 @@ static  condcode    scr_veclp( parm parms[MAX_FUN_PARMS], unsigned parmcount,
 
 condcode    scr_vecpos( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **result, unsigned ressize )
 {
-    vec_pos = true;
-    return( scr_veclp( parms, parmcount, result, ressize ) );
+    return( scr_veclp( parms, parmcount, result, ressize, true ) );
 }
 
 
@@ -195,6 +192,5 @@ condcode    scr_vecpos( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **re
 
 condcode    scr_veclastpos( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **result, unsigned ressize )
 {
-    vec_pos = false;
-    return( scr_veclp( parms, parmcount, result, ressize ) );
+    return( scr_veclp( parms, parmcount, result, ressize, false ) );
 }

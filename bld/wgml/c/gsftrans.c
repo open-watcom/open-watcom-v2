@@ -66,9 +66,9 @@ condcode    scr_translate( parm parms[MAX_FUN_PARMS], unsigned parmcount, char *
     int             offset;
     bool            padchar_set;
 
-    if( (parmcount < 1) || (parmcount > 4) ) {
+    if( parmcount < 1
+      || parmcount > 4 )
         return( neg );
-    }
 
     string.s = parms[0].a;
     string.e = parms[0].e;
