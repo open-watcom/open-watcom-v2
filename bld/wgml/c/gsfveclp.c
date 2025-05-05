@@ -88,21 +88,19 @@ static  bool    vec_pos;           // true if &'vecpos, false if &'veclastpos
 static  condcode    scr_veclp( parm parms[MAX_FUN_PARMS], unsigned parmcount,
                                char **result, unsigned ressize )
 {
-    char            *   pneedle;
-    char            *   pneedlend;
-    char            *   phay;
-    char            *   phayend;
-    int                 rc;
-    int                 index;
-    int                 hay_len;
-    int                 needle_len;
-    char                c;
+    tok_type        needle;
+    tok_type        haystack;
+    int             rc;
+    int             index;
+    int             haystack_len;
+    int             needle_len;
+    char            c;
 
-    sub_index           var_ind;
-    symvar              symvar_entry;
-    symsub          *   symsubval;
-    symvar          *   psymvar;
-    bool                suppress_msg;
+    sub_index       var_ind;
+    symvar          symvar_entry;
+    symsub          *symsubval;
+    symvar          *psymvar;
+    bool            suppress_msg;
 
 
     (void)ressize;
@@ -111,35 +109,34 @@ static  condcode    scr_veclp( parm parms[MAX_FUN_PARMS], unsigned parmcount,
         return( neg );
     }
 
-    pneedle = parms[0].a;
-    pneedlend = parms[0].e;
+    needle.s = parms[0].a;
+    needle.e = parms[0].e;
 
-    unquote_arg( &pneedle, &pneedlend );
-    needle_len = pneedlend - pneedle + 1;   // needle length
+    unquote_arg( &needle );
+    needle_len = needle.e - needle.s + 1;   // needle length
 
-    phay = parms[1].a;
-    phayend = parms[1].e;
+    haystack.s = parms[1].a;
+    haystack.e = parms[1].e;
 
-    unquote_arg( &phay, &phayend );
-    hay_len = phayend - phay + 1;       // haystack length
+    unquote_arg( &haystack );
+    haystack_len = haystack.e - haystack.s + 1;       // haystack length
 
     rc = 0;
     g_scan_err = false;
     index = 0;
 
-    if( (hay_len > 0) ||                // not null string
+    if( (haystack_len > 0) ||           // not null string
         (needle_len > 0) ) {            // needle not null
-
 
         suppress_msg = ProcFlags.suppress_msg;
         ProcFlags.suppress_msg = true;
         g_scan_err = false;
-        c = *(phayend + 1);
-        *(phayend + 1) = '\0';
+        c = *(haystack.e + 1);
+        *(haystack.e + 1) = '\0';
 
-        scan_sym( phay, &symvar_entry, &var_ind, NULL, false );
+        scan_sym( haystack.s, &symvar_entry, &var_ind, NULL, false );
 
-        *(phayend + 1) = c;
+        *(haystack.e + 1) = c;
         ProcFlags.suppress_msg = suppress_msg;;
 
         if( !g_scan_err ) {
@@ -154,20 +151,20 @@ static  condcode    scr_veclp( parm parms[MAX_FUN_PARMS], unsigned parmcount,
             if( rc > 0 ) {              // variable found
                 psymvar = symsubval->base;
                 if( psymvar->flags & subscripted ) {
-                    c = *(pneedlend + 1);
-                    *(pneedlend + 1) = '\0';   // make nul delimited
+                    c = *(needle.e + 1);
+                    *(needle.e + 1) = '\0';   // make nul delimited
                     for( symsubval = psymvar->subscripts;
                          symsubval != NULL;
                          symsubval = symsubval->next ) {
 
-                        if( strcmp( symsubval->value, pneedle ) == 0 ) {
+                        if( strcmp( symsubval->value, needle.s ) == 0 ) {
                            index = symsubval->subscript;
                            if( vec_pos ) {
                                break;// finished for vec_pos, go for veclastpos
                            }
                         }
                     }
-                    *(pneedlend + 1) = c;
+                    *(needle.e + 1) = c;
                 }
             }
         }

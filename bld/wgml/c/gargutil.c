@@ -360,11 +360,12 @@ bool is_space_tab_char( char c )
  * than one character
  */
 
-void unquote_arg( char **a, char **z )
+int unquote_arg( tok_type *arg )
 {
-    if( (*a != *z) && (**a == **z) && is_quote_char( **a ) ) {
-        *a += 1;
-        *z -= 1;
+    if( (arg->s != arg->e) && (*arg->s == *arg->e) && is_quote_char( *arg->s ) ) {
+        arg->s += 1;
+        arg->e -= 1;
     }
+    return( arg->e + 1 - arg->s );
 }
 

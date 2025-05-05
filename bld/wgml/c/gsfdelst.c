@@ -50,25 +50,24 @@
 
 condcode    scr_delstr( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **result, unsigned ressize )
 {
-    char            *   pval;
-    char            *   pend;
-    condcode            cc;
-    int                 k;
-    int                 n;
-    int                 len;
-    getnum_block        gn;
+    tok_type        string;
+    condcode        cc;
+    int             k;
+    int             n;
+    int             len;
+    getnum_block    gn;
 
     if( (parmcount < 2) || (parmcount > 3) ) {
         cc = neg;
         return( cc );
     }
 
-    pval = parms[0].a;
-    pend = parms[0].e;
+    string.s = parms[0].a;
+    string.e = parms[0].e;
 
-    unquote_arg( &pval, &pend );
+    unquote_arg( &string );
 
-    len = pend - pval + 1;              // default length
+    len = string.e - string.s + 1;              // default length
 
     if( len <= 0 ) {                    // null string nothing to do
         **result = '\0';
@@ -107,21 +106,21 @@ condcode    scr_delstr( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **re
     }
 
     k = 0;
-    while( (k < n) && (pval <= pend) && (ressize > 0) ) {// copy unchanged before startpos
-        **result = *pval++;
+    while( (k < n) && (string.s <= string.e) && (ressize > 0) ) {// copy unchanged before startpos
+        **result = *string.s++;
         *result += 1;
         k++;
         ressize--;
     }
 
     k = 0;
-    while( (k < len) && (pval <= pend) ) {  // delete
-        pval++;
+    while( (k < len) && (string.s <= string.e) ) {  // delete
+        string.s++;
         k++;
     }
 
-    while( (pval <= pend) && (ressize > 0) ) {// copy unchanged
-        **result = *pval++;
+    while( (string.s <= string.e) && (ressize > 0) ) {// copy unchanged
+        **result = *string.s++;
         *result += 1;
         ressize--;
     }

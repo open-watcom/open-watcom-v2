@@ -51,26 +51,25 @@
 
 condcode    scr_right( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **result, unsigned ressize )
 {
-    char            *   pval;
-    char            *   pend;
-    condcode            cc;
-    int                 k;
-    int                 n;
-    int                 len;
-    getnum_block        gn;
-    char                padchar;
+    tok_type        string;
+    condcode        cc;
+    int             k;
+    int             n;
+    int             len;
+    getnum_block    gn;
+    char            padchar;
 
     if( (parmcount < 2) || (parmcount > 3) ) {
         cc = neg;
         return( cc );
     }
 
-    pval = parms[0].a;
-    pend = parms[0].e;
+    string.s = parms[0].a;
+    string.e = parms[0].e;
 
-    unquote_arg( &pval, &pend );
+    unquote_arg( &string );
 
-    len = pend - pval + 1;              // total length
+    len = string.e - string.s + 1;              // total length
 
     gn.ignore_blanks = false;
 
@@ -102,16 +101,16 @@ condcode    scr_right( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **res
                 *result += 1;
                 ressize--;
             }
-            for( ; pval <= pend && ressize > 0; pval++ ) {
-                **result = *pval;
+            for( ; string.s <= string.e && ressize > 0; string.s++ ) {
+                **result = *string.s;
                 *result += 1;
                 ressize--;
             }
         } else {                        // no padding
 
-            pval += len - n;
-            for( ; pval <= pend && ressize > 0; pval++ ) {
-                **result = *pval;
+            string.s += len - n;
+            for( ; string.s <= string.e && ressize > 0; string.s++ ) {
+                **result = *string.s;
                 *result += 1;
                 ressize--;
             }

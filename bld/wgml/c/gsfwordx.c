@@ -72,25 +72,24 @@ static  bool    is_word;          // true if word call, false if subword call
 static  condcode    scr_xx_word( parm parms[MAX_FUN_PARMS], unsigned parmcount,
                                  char **result, unsigned ressize )
 {
-    char            *   pval;
-    char            *   pend;
-    char            *   ptok;
-    condcode            cc;
-    int                 k;
-    int                 n;
-    int                 len;
-    getnum_block        gn;
+    tok_type        string;
+    char            *ptok;
+    condcode        cc;
+    int             k;
+    int             n;
+    int             len;
+    getnum_block    gn;
 
     if( (parmcount < 2) || (parmcount > 3) ) {
         return( neg );
     }
 
-    pval = parms[0].a;
-    pend = parms[0].e;
+    string.s = parms[0].a;
+    string.e = parms[0].e;
 
-    unquote_arg( &pval, &pend );
+    unquote_arg( &string );
 
-    len = pend - pval + 1;              // default length
+    len = string.e - string.s + 1;              // default length
 
     if( len <= 0 ) {                    // null string nothing to do
         **result = '\0';
@@ -132,8 +131,8 @@ static  condcode    scr_xx_word( parm parms[MAX_FUN_PARMS], unsigned parmcount,
         }
     }
 
-    scan_start = pval;
-    scan_stop  = pend;
+    scan_start = string.s;
+    scan_stop  = string.e;
     k = 0;
     cc = pos;
     while( (k < n) && (cc != omit) ) {  // find start word
@@ -145,12 +144,12 @@ static  condcode    scr_xx_word( parm parms[MAX_FUN_PARMS], unsigned parmcount,
         return( pos );
     }
 
-    pval = g_tok_start;                 // start word
+    string.s = g_tok_start;                 // start word
 
     if( len == 0 ) {                    // default word count = to end of string
-        ptok = pend;
-        for( ; pval <= ptok && ressize > 0; pval++ ) { // copy rest of words
-            **result = *pval;
+        ptok = string.e;
+        for( ; string.s <= ptok && ressize > 0; string.s++ ) { // copy rest of words
+            **result = *string.s;
             *result += 1;
             ressize--;
         }
@@ -160,18 +159,18 @@ static  condcode    scr_xx_word( parm parms[MAX_FUN_PARMS], unsigned parmcount,
             ptok = g_tok_start;
             cc = getarg();
             if( cc == omit ) {
-                ptok = pend;
+                ptok = string.e;
                 break;
             }
         }
-        for( ; pval <= ptok && ressize > 0; pval++ ) { // copy rest of words
-            **result = *pval;
+        for( ; string.s <= ptok && ressize > 0; string.s++ ) { // copy rest of words
+            **result = *string.s;
             *result += 1;
             ressize--;
         }
-        if( pval < g_tok_start && ( *pval != ' ' ) ) {  // copy last word
-            for( ; pval < g_tok_start && *pval != ' ' && ressize > 0; pval++ ) {
-                **result = *pval;
+        if( string.s < g_tok_start && ( *string.s != ' ' ) ) {  // copy last word
+            for( ; string.s < g_tok_start && *string.s != ' ' && ressize > 0; string.s++ ) {
+                **result = *string.s;
                 *result += 1;
                 ressize--;
             }
@@ -219,10 +218,9 @@ condcode    scr_subword( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **r
 
 condcode    scr_words( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **result, unsigned ressize )
 {
-    char            *   pval;
-    char            *   pend;
-    int                 wc;
-    int                 len;
+    tok_type        string;
+    int             wc;
+    int             len;
 
     (void)ressize;
 
@@ -230,12 +228,12 @@ condcode    scr_words( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **res
         return( neg );
     }
 
-    pval = parms[0].a;
-    pend = parms[0].e;
+    string.s = parms[0].a;
+    string.e = parms[0].e;
 
-    unquote_arg( &pval, &pend );
+    unquote_arg( &string );
 
-    len = pend - pval + 1;
+    len = string.e - string.s + 1;
 
     if( len <= 0 ) {                    // null string nothing to do
         **result = '0';
@@ -245,20 +243,20 @@ condcode    scr_words( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **res
     }
 
     wc = 0;
-    for( ; pval <= pend; pval++ ) {     // for all chars in string
+    for( ; string.s <= string.e; string.s++ ) {     // for all chars in string
 
-        for( ; pval <= pend; pval++ ) { // skip leading blanks
-            if( *pval != ' ' ) {
+        for( ; string.s <= string.e; string.s++ ) { // skip leading blanks
+            if( *string.s != ' ' ) {
                 break;
             }
         }
-        if( pval > pend ) {             // at end
+        if( string.s > string.e ) {             // at end
             break;
         }
         wc++;                           // start of word found
 
-        for( ; pval <= pend; pval++ ) {
-            if( *pval == ' ' ) {        // end of word found
+        for( ; string.s <= string.e; string.s++ ) {
+            if( *string.s == ' ' ) {        // end of word found
                 break;
             }
         }
@@ -269,7 +267,7 @@ condcode    scr_words( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **res
     return( pos );
 }
 
-static int find_words_phrase_in_string( char *phrases, char *phrasee, char *strings, char *stringe )
+static int find_words_phrase_in_string( tok_type *phrase, tok_type *string )
 {
     char            *pp;
     int             index;
@@ -279,30 +277,30 @@ static int find_words_phrase_in_string( char *phrases, char *phrasee, char *stri
     inword = true;
     found = false;
     index = 0;
-    pp = phrases;
-    for( ; strings <= stringe; strings++ ) {
+    pp = phrase->s;
+    for( ; string->s <= string->e; string->s++ ) {
         if( !inword ) {
             index++;
             inword = true;
         }
-        if( *strings == *pp ) {
+        if( *string->s == *pp ) {
 
             /* at end of phrase, but must also be at end of token */
 
-            if( (pp == phrasee) && ((*(strings + 1) == ' ') || (*(strings + 1) == '\0')) ) {
+            if( (pp == phrase->e) && ((*(string->s + 1) == ' ') || (*(string->s + 1) == '\0')) ) {
                 found = true;
                 break;
             } else {
-                if( *strings == ' ' ) {
+                if( *string->s == ' ' ) {
                     inword = false;     // word end
-                    for( ; strings <= stringe; strings++ ) {  // find next word
-                        if( *strings != ' ' ) {
+                    for( ; string->s <= string->e; string->s++ ) {  // find next word
+                        if( *string->s != ' ' ) {
                             break;
                         }
                     }
-                    strings--;            // outer for loop will increment again
+                    string->s--;            // outer for loop will increment again
 
-                    for( ; pp <= phrasee; pp++ ) {
+                    for( ; pp <= phrase->e; pp++ ) {
                         if( *pp != ' ' ) {
                             break;
                         }
@@ -312,19 +310,19 @@ static int find_words_phrase_in_string( char *phrases, char *phrasee, char *stri
                 }
             }
         } else {                        // not equal
-            pp = phrases;                // start new compare
-            for( ; strings <= stringe; strings++ ) {  // with next word
-                if( *strings == ' ' ) {    // word end found
+            pp = phrase->s;                // start new compare
+            for( ; string->s <= string->e; string->s++ ) {  // with next word
+                if( *string->s == ' ' ) {    // word end found
                     break;
                 }
             }
             inword = false;
-            for( ; strings <= stringe; strings++ ) {  // find next word
-                if( *strings != ' ' ) {
+            for( ; string->s <= string->e; string->s++ ) {  // find next word
+                if( *string->s != ' ' ) {
                     break;
                 }
             }
-            strings--;                    // outer for loop will increment again
+            string->s--;                    // outer for loop will increment again
         }
     }
     if( found ) {
@@ -349,16 +347,14 @@ static int find_words_phrase_in_string( char *phrases, char *phrasee, char *stri
 
 condcode    scr_wordpos( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **result, unsigned ressize )
 {
-    char                *phrases;
-    char                *phrasee;
-    char                *strings;
-    char                *stringe;
+    tok_type        phrase;
+    tok_type        string;
 
-    int                 index;
-    condcode            cc;
-    int                 k;
-    int                 n;
-    getnum_block        gn;
+    int             index;
+    condcode        cc;
+    int             k;
+    int             n;
+    getnum_block    gn;
 
     (void)ressize;
 
@@ -366,16 +362,16 @@ condcode    scr_wordpos( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **r
         return( neg );
     }
 
-    phrases = parms[0].a;
-    phrasee = parms[0].e;
-    unquote_arg( &phrases, &phrasee );
+    phrase.s = parms[0].a;
+    phrase.e = parms[0].e;
+    unquote_arg( &phrase );
 
-    strings = parms[1].a;
-    stringe = parms[1].e;
-    unquote_arg( &strings, &stringe );
+    string.s = parms[1].a;
+    string.e = parms[1].e;
+    unquote_arg( &string );
 
-    if( (phrasee - phrases + 1 <= 0)        // null phrase nothing to do
-      || (stringe - strings + 1 <= 0) ) {   // null string nothing to do
+    if( (phrase.e - phrase.s + 1 <= 0)        // null phrase nothing to do
+      || (string.e - string.s + 1 <= 0) ) {   // null string nothing to do
         **result = '0';
         *result += 1;
         **result = '\0';
@@ -399,11 +395,11 @@ condcode    scr_wordpos( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **r
             n = gn.result - 1;
         }
     }
-    scan_start = strings;
-    scan_stop  = stringe;
+    scan_start = string.s;
+    scan_stop  = string.e;
     k = 0;
     cc = pos;
-    g_tok_start = strings;
+    g_tok_start = string.s;
     while( ( k <= n ) && ( cc != omit ) ) { // find start word
         cc = getarg();
         k++;
@@ -415,7 +411,7 @@ condcode    scr_wordpos( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **r
         return( pos );
     }
 
-    index = find_words_phrase_in_string( phrases, phrasee, g_tok_start, stringe );
+    index = find_words_phrase_in_string( phrase.s, phrase.e, g_tok_start, string.e );
     if( index > 0 )
         index += n + 1;
     *result += sprintf( *result, "%d", index );
@@ -439,12 +435,10 @@ condcode    scr_wordpos( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **r
 
 condcode    scr_find( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **result, unsigned ressize )
 {
+    tok_type        phrase;
+    tok_type        string;
     condcode        cc;
     int             index;
-    char            *phrases;
-    char            *phrasee;
-    char            *strings;
-    char            *stringe;
 
     (void)ressize;
 
@@ -453,22 +447,22 @@ condcode    scr_find( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **resu
         return( cc );
     }
 
-    strings = parms[0].a;
-    stringe = parms[0].e;
-    unquote_arg( &strings, &stringe );
+    string.s = parms[0].a;
+    string.e = parms[0].e;
+    unquote_arg( &string );
 
-    phrases = parms[1].a;
-    phrasee = parms[1].e;
-    unquote_arg( &phrases, &phrasee );
+    phrase.s = parms[1].a;
+    phrase.e = parms[1].e;
+    unquote_arg( &phrase );
 
-    if( (phrasee - phrases + 1 <= 0)        // null phrase nothing to do
-      || (stringe - strings + 1 <= 0) ) {   // null string nothing to do
+    if( (phrase.e - phrase.s + 1 <= 0)        // null phrase nothing to do
+      || (string.e - string.s + 1 <= 0) ) {   // null string nothing to do
         **result = '0';
         *result += 1;
         **result = '\0';
         return( pos );
     }
-    index = find_words_phrase_in_string( phrases, phrasee, strings, stringe );
+    index = find_words_phrase_in_string( &phrase, &string );
     *result += sprintf( *result, "%d", index );
     return( pos );
 }

@@ -55,12 +55,11 @@
 
 condcode    scr_d2c( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **result, unsigned ressize )
 {
-    char            *   pval;
-    char            *   pend;
-    condcode            cc;
-    int                 n;
-    int                 len;
-    getnum_block        gn;
+    tok_type        number;
+    condcode        cc;
+    int             n;
+    int             len;
+    getnum_block    gn;
 
     (void)ressize;
 
@@ -69,22 +68,21 @@ condcode    scr_d2c( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **resul
         return( cc );
     }
 
-    pval = parms[0].a;
-    pend = parms[0].e;
+    number.s = parms[0].a;
+    number.e = parms[0].e;
 
-    unquote_arg( &pval, &pend );
+    unquote_arg( &number );
 
-    len = pend - pval + 1;              // default length
+    len = number.e - number.s + 1;              // default length
 
     if( len <= 0 ) {                    // null string nothing to do
         **result = '\0';
         return( pos );
     }
 
-    n   = 0;
+    n = 0;
     if( parms[1].e >= parms[1].a ) {
-        gn.arg.s = pval;
-        gn.arg.e = pend;
+        gn.arg = number;
         gn.ignore_blanks = false;
         cc = getnum( &gn );
         if( (cc != pos) ) {

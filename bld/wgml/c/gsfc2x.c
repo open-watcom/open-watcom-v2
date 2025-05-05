@@ -60,26 +60,25 @@ static unsigned char hex( unsigned char c )
 
 condcode    scr_c2x( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **result, unsigned ressize )
 {
-    char            *   pval;
-    char            *   pend;
+    tok_type        string;
 
     if( parmcount != 1 ) {              // only 1 parm valid
         return( neg );
     }
 
-    pval = parms[0].a;
-    pend = parms[0].e;
+    string.s = parms[0].a;
+    string.e = parms[0].e;
 
-    unquote_arg( &pval, &pend );
+    unquote_arg( &string );
 
-    while( (pval <= pend) && (ressize > 1) ) {
-        **result = hex( (unsigned)*pval >> 4 );
+    while( (string.s <= string.e) && (ressize > 1) ) {
+        **result = hex( (unsigned)*string.s >> 4 );
         *result += 1;
-        **result = hex( (unsigned)*pval & 0x0f );
+        **result = hex( (unsigned)*string.s & 0x0f );
         *result += 1;
         **result = 0;
         ressize -= 2;
-        pval++;
+        string.s++;
     }
     return( pos );
 }

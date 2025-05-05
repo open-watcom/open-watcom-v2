@@ -54,18 +54,16 @@
 
 condcode    scr_index( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **result, unsigned ressize )
 {
-    char            *   pneedle;
-    char            *   pneedlend;
-    char            *   phay;
-    char            *   phayend;
-    condcode            cc;
-    int                 index;
-    int                 n;
-    int                 hay_len;
-    int                 needle_len;
-    getnum_block        gn;
-    char            *   ph;
-    char            *   pn;
+    tok_type        needle;
+    tok_type        haystack;
+    condcode        cc;
+    int             index;
+    int             n;
+    int             haystack_len;
+    int             needle_len;
+    getnum_block    gn;
+    char            *ph;
+    char            *pn;
 
     (void)ressize;
 
@@ -74,17 +72,17 @@ condcode    scr_index( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **res
         return( cc );
     }
 
-    phay = parms[0].a;
-    phayend = parms[0].e;
+    haystack.s = parms[0].a;
+    haystack.e = parms[0].e;
 
-    unquote_arg( &phay, &phayend );
-    hay_len = phayend - phay + 1;       // haystack length
+    unquote_arg( &haystack );
+    haystack_len = haystack.e - haystack.s + 1;       // haystack length
 
-    pneedle = parms[1].a;
-    pneedlend = parms[1].e;
+    needle.s = parms[1].a;
+    needle.e = parms[1].e;
 
-    unquote_arg( &pneedle, &pneedlend );
-    needle_len = pneedlend - pneedle + 1;   // needle length
+    unquote_arg( &needle );
+    needle_len = needle.e - needle.s + 1;   // needle length
 
     n   = 0;                            // default start pos
     gn.ignore_blanks = false;
@@ -104,10 +102,10 @@ condcode    scr_index( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **res
         }
     }
 
-    if( (hay_len <= 0) ||               // null string nothing to do
+    if( (haystack_len <= 0) ||               // null string nothing to do
         (needle_len <= 0) ||            // needle null nothing to do
-        (needle_len > hay_len) ||       // needle longer haystack
-        (n + needle_len > hay_len) ) {  // startpos + needlelen > haystack
+        (needle_len > haystack_len) ||       // needle longer haystack
+        (n + needle_len > haystack_len) ) {  // startpos + needlelen > haystack
                                         // ... match impossible
 
         **result = '0';                 // return index zero
@@ -116,18 +114,18 @@ condcode    scr_index( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **res
         return( pos );
     }
 
-    ph = phay + n;                      // startpos in haystack
-    pn = pneedle;
+    ph = haystack.s + n;                      // startpos in haystack
+    pn = needle.s;
     index = 0;
 
-    for( ph = phay + n; ph <= phayend - needle_len + 1; ph++ ) {
-        pn = pneedle;
-        while( (*ph == *pn) && (pn <= pneedlend)) {
+    for( ph = haystack.s + n; ph <= haystack.e - needle_len + 1; ph++ ) {
+        pn = needle.s;
+        while( (*ph == *pn) && (pn <= needle.e)) {
             ph++;
             pn++;
         }
-        if( pn > pneedlend ) {
-            index = ph - phay - needle_len + 1; // found, set index
+        if( pn > needle.e ) {
+            index = ph - haystack.s - needle_len + 1; // found, set index
             break;
         }
     }
@@ -200,18 +198,16 @@ condcode    scr_pos( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **resul
 
 condcode    scr_lpos( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **result, unsigned ressize )
 {
-    char            *   pneedle;
-    char            *   pneedlend;
-    char            *   phay;
-    char            *   phayend;
-    condcode            cc;
-    int                 index;
-    int                 n;
-    int                 hay_len;
-    int                 needle_len;
-    getnum_block        gn;
-    char            *   ph;
-    char            *   pn;
+    tok_type        needle;
+    tok_type        haystack;
+    condcode        cc;
+    int             index;
+    int             n;
+    int             haystack_len;
+    int             needle_len;
+    getnum_block    gn;
+    char            *ph;
+    char            *pn;
 
     (void)ressize;
 
@@ -220,17 +216,17 @@ condcode    scr_lpos( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **resu
         return( cc );
     }
 
-    pneedle = parms[0].a;
-    pneedlend = parms[0].e;
+    needle.s = parms[0].a;
+    needle.e = parms[0].e;
 
-    unquote_arg( &pneedle, &pneedlend );
-    needle_len = pneedlend - pneedle + 1;   // needle length
+    unquote_arg( &needle );
+    needle_len = needle.e - needle.s + 1;   // needle length
 
-    phay = parms[1].a;
-    phayend = parms[1].e;
+    haystack.s = parms[1].a;
+    haystack.e = parms[1].e;
 
-    unquote_arg( &phay, &phayend );
-    hay_len = phayend - phay + 1;       // haystack length
+    unquote_arg( &haystack );
+    haystack_len = haystack.e - haystack.s + 1;       // haystack length
 
     n   = 0;                            // default start pos
     gn.ignore_blanks = false;
@@ -250,10 +246,10 @@ condcode    scr_lpos( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **resu
         }
     }
 
-    if( (hay_len <= 0) ||               // null string nothing to do
+    if( (haystack_len <= 0) ||               // null string nothing to do
         (needle_len <= 0) ||            // needle null nothing to do
-        (needle_len > hay_len) ||       // needle longer haystack
-        (n + needle_len > hay_len) ) {  // startpos + needlelen > haystack
+        (needle_len > haystack_len) ||       // needle longer haystack
+        (n + needle_len > haystack_len) ) {  // startpos + needlelen > haystack
                                         // ... match impossible
 
         **result = '0';                 // return index zero
@@ -262,18 +258,18 @@ condcode    scr_lpos( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **resu
         return( pos );
     }
 
-    ph = phay + n;                      // startpos in haystack
-    pn = pneedle;
+    ph = haystack.s + n;                      // startpos in haystack
+    pn = needle.s;
     index = 0;
 
-    for( ph = phayend; ph >= phay + n ; ph-- ) {
-        pn = pneedlend;
-        while( (*ph == *pn) && (pn >= pneedle)) {
+    for( ph = haystack.e; ph >= haystack.s + n ; ph-- ) {
+        pn = needle.e;
+        while( (*ph == *pn) && (pn >= needle.s)) {
             ph--;
             pn--;
         }
-        if( pn < pneedle ) {
-            index = ph - phay + 2;          // found, set index
+        if( pn < needle.s ) {
+            index = ph - haystack.s + 2;          // found, set index
             break;
         }
     }

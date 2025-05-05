@@ -55,24 +55,22 @@
 
 condcode    scr_strip( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **result, unsigned ressize )
 {
-    char            *   pval;
-    char            *   pend;
-    char            *   pa;
-    char            *   pe;
-    int                 len;
-    char                stripchar;
-    char                type;
+    tok_type        string;
+    tok_type        type;
+    int             len;
+    char            stripchar;
+    char            typechar;
 
     if( (parmcount < 1) || (parmcount > 3) ) {
         return( neg );
     }
 
-    pval = parms[0].a;
-    pend = parms[0].e;
+    string.s = parms[0].a;
+    string.e = parms[0].e;
 
-    unquote_arg( &pval, &pend );
+    unquote_arg( &string );
 
-    len = pend - pval + 1;              // default length
+    len = string.e - string.s + 1;              // default length
 
     if( len <= 0 ) {                    // null string nothing to do
         **result = '\0';
@@ -80,20 +78,20 @@ condcode    scr_strip( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **res
     }
 
     stripchar = ' ';                    // default char to delete
-    type      = 'b';                    // default strip both ends
+    typechar  = 'B';                    // default strip both ends
 
     if( parmcount > 1 ) {               // evalute type
         if( parms[1].e >= parms[1].a ) {// type
-            pa  = parms[1].a;
-            pe  = parms[1].e;
+            type.s = parms[1].a;
+            type.e = parms[1].e;
 
-            unquote_arg( &pa, &pe );
-            type = my_tolower( *pa );
+            unquote_arg( &type );
+            typechar = my_toupper( *type.s );
 
-            switch( type ) {
-            case   'b':
-            case   'l':
-            case   't':
+            switch( typechar ) {
+            case   'B':
+            case   'L':
+            case   'T':
                 // type value is valid do nothing
                 break;
             default:
@@ -108,29 +106,29 @@ condcode    scr_strip( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **res
 
     if( parmcount > 2 ) {               // stripchar
         if( parms[2].e >= parms[2].a ) {
-            pa  = parms[2].a;
-            pe  = parms[2].e;
+            type.s = parms[2].a;
+            type.e = parms[2].e;
 
-            unquote_arg( &pa, &pe );
-            stripchar = *pa;
+            unquote_arg( &type );
+            stripchar = *type.s;
         }
     }
 
-    if( type != 't' ) {                 // strip leading requested
-        for( ; pval <= pend; pval++ ) {
-            if( *pval != stripchar ) {
+    if( typechar != 'T' ) {                 // strip leading requested
+        for( ; string.s <= string.e; string.s++ ) {
+            if( *string.s != stripchar ) {
                 break;
             }
         }
     }
 
-    for( ; pval <= pend && ressize > 0; pval++ ) {
-        **result = *pval;
+    for( ; string.s <= string.e && ressize > 0; string.s++ ) {
+        **result = *string.s;
         *result += 1;
         ressize--;
     }
 
-    if( type != 'l' ) {                 // strip trailing requested
+    if( typechar != 'L' ) {                 // strip trailing requested
         while( *(*result - 1) == stripchar ) {
             *result -= 1;
         }

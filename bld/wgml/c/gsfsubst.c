@@ -63,26 +63,25 @@
 
 condcode    scr_substr( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **result, unsigned ressize )
 {
-    char            *   pval;
-    char            *   pend;
-    condcode            cc;
-    int                 k;
-    int                 n;
-    int                 stringlen;
-    int                 len;
-    getnum_block        gn;
-    char                padchar;
+    tok_type        string;
+    condcode        cc;
+    int             k;
+    int             n;
+    int             stringlen;
+    int             len;
+    getnum_block    gn;
+    char            padchar;
 
     if( (parmcount < 2) || (parmcount > 4) ) {
         return( neg );
     }
 
-    pval = parms[0].a;
-    pend = parms[0].e;
+    string.s = parms[0].a;
+    string.e = parms[0].e;
 
-    unquote_arg( &pval, &pend );
+    unquote_arg( &string );
 
-    stringlen = pend - pval + 1;        // length of string
+    stringlen = string.e - string.s + 1;        // length of string
     padchar = ' ';                      // default padchar
     len = 0;
 
@@ -121,23 +120,23 @@ condcode    scr_substr( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **re
 
     if( parmcount > 3 ) {               // isolate padchar
         if( parms[3].e >= parms[3].a ) {
-            char *  pa = parms[3].a;
-            char *  pe = parms[3].e;
-
-            unquote_arg( &pa, &pe );
-            padchar = *pa;
+            tok_type pad;
+            pad.s = parms[3].a;
+            pad.e = parms[3].e;
+            unquote_arg( &pad );
+            padchar = *pad.s;
         }
     }
 
-    pval += n;                          // position to startpos
+    string.s += n;                          // position to startpos
     if( len == 0 ) {                    // no length specified
-        len = pend - pval + 1;          // take rest of string
+        len = string.e - string.s + 1;          // take rest of string
         if( len < 0 ) {                 // if there is one
             len = 0;
         }
     }
-    for( k = 0; k < len && pval <= pend && ressize > 0; k++ ) {
-        **result = *pval++;
+    for( k = 0; k < len && string.s <= string.e && ressize > 0; k++ ) {
+        **result = *string.s++;
         *result += 1;
         ressize--;
     }

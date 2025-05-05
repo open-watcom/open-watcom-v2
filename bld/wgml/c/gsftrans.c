@@ -55,82 +55,80 @@
 
 condcode    scr_translate( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **result, unsigned ressize )
 {
-    char            *   pval;
-    char            *   pend;
-    char            *   ptaboa;
-    char            *   ptaboe;
-    char            *   ptabia;
-    char            *   ptabie;
-    char                padchar;
-    char                c;
-    char            *   iptr;
-    char            *   optr;
-    bool                ifound;
-    int                 offset;
-    bool                padchar_set;
+    tok_type        string;
+    tok_type        tableo;
+    tok_type        tablei;
+    char            padchar;
+    char            c;
+    char            *iptr;
+    char            *optr;
+    bool            ifound;
+    int             offset;
+    bool            padchar_set;
 
     if( (parmcount < 1) || (parmcount > 4) ) {
         return( neg );
     }
 
-    pval = parms[0].a;
-    pend = parms[0].e;
-    unquote_arg( &pval, &pend );
+    string.s = parms[0].a;
+    string.e = parms[0].e;
+    unquote_arg( &string );
 
-    if( pend - pval + 1 <= 0 ) {        // null string nothing to do
+    if( string.e - string.s + 1 <= 0 ) {        // null string nothing to do
         **result = '\0';
         return( pos );
     }
 
-    ptaboa = parms[1].a;
-    ptaboe = parms[1].e;
-    if( (parmcount > 1) && (ptaboe >= ptaboa) ) {   // tableo is not empty
-        unquote_arg( &ptaboa, &ptaboe );
+    tableo.s = parms[1].a;
+    tableo.e = parms[1].e;
+    if( (parmcount > 1) && (tableo.e >= tableo.s) ) {   // tableo is not empty
+        unquote_arg( &tableo );
     } else {
-        ptaboa = NULL;
-        ptaboe = NULL;
+        tableo.s = NULL;
+        tableo.e = NULL;
     }
 
-    ptabia = parms[2].a;
-    ptabie = parms[2].e;
-    if( (parmcount > 2) && (ptabie >= ptabia) ) {   // tablei is not empty
-        unquote_arg( &ptabia, &ptabie );
+    tablei.s = parms[2].a;
+    tablei.e = parms[2].e;
+    if( (parmcount > 2) && (tablei.e >= tablei.s) ) {   // tablei is not empty
+        unquote_arg( &tablei );
     } else {
-        ptabia = NULL;
-        ptabie = NULL;
+        tablei.s = NULL;
+        tablei.e = NULL;
     }
 
     if( parmcount > 3 ) {               // padchar specified
-        char    * pa = parms[3].a;
-        char    * pe = parms[3].e;
+        tok_type    pad;
 
-        unquote_arg( &pa, &pe );
-        padchar = *pa;
+        pad.s = parms[3].a;
+        pad.e = parms[3].e;
+        unquote_arg( &pad );
+        padchar = *pad.s;
         padchar_set = true;
     } else {
         padchar = ' ';                  // padchar default is blank
         padchar_set = false;
     }
 
-    if( (ptabia == NULL) && (ptaboa == NULL) && !padchar_set ) {
-        while( (pval <= pend) && (ressize > 0) ) {  // translate to upper
-            **result = my_toupper( *pval++ );
+    if( (tablei.s == NULL) && (tableo.s == NULL) && !padchar_set ) {
+        while( (string.s <= string.e) && (ressize > 0) ) {  // translate to upper
+            **result = my_toupper( *string.s++ );
             *result += 1;
             ressize--;
         }
     } else {                   // translate as specified in tablei and tableo
-        for( ; pval <= pend && ressize > 0; pval++ ) {
-            c = *pval;
+        for( ; string.s <= string.e && ressize > 0; string.s++ ) {
+            c = *string.s;
             ifound = false;
-            if( ptabia == NULL ) {
+            if( tablei.s == NULL ) {
                 c = padchar;
             } else {
-                for( iptr = ptabia; iptr <= ptabie; iptr++ ) {
+                for( iptr = tablei.s; iptr <= tablei.e; iptr++ ) {
                     if( c == *iptr ) {
                         ifound = true;  // char found in input table
-                        offset = iptr - ptabia;
-                        optr = ptaboa + offset;
-                        if( optr <= ptaboe ) {
+                        offset = iptr - tablei.s;
+                        optr = tableo.s + offset;
+                        if( optr <= tableo.e ) {
                             **result = *optr;  // take char from output table
                         } else {
                             **result = padchar;// output table too short use padchar

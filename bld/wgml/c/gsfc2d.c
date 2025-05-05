@@ -57,28 +57,27 @@
 
 condcode    scr_c2d( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **result, unsigned ressize )
 {
-    char            *   pval;
-    char            *   pend;
-    condcode            cc;
-    uint32_t            n;
-    char                linestr[NUM2STR_LENGTH];
-    char            *   p;
+    tok_type        string;
+    condcode        cc;
+    uint32_t        n;
+    char            linestr[NUM2STR_LENGTH];
+    char            *p;
 
     if( (parmcount < 1) || (parmcount > 2) ) {// accept 2. parm, but ignore it
         cc = neg;
         return( cc );
     }
 
-    pval = parms[0].a;
-    pend = parms[0].e;
+    string.s = parms[0].a;
+    string.e = parms[0].e;
 
-    unquote_arg( &pval, &pend );
+    unquote_arg( &string );
 
     n = 0;
-    while( pval <= pend ) {
+    while( string.s <= string.e ) {
         n *= 256;                      // ignore overflow, let it wrap around
-        n += (unsigned char)*pval;
-        pval++;
+        n += (unsigned char)*string.s;
+        string.s++;
     }
     sprintf( linestr, "%d", n );
     p = linestr;

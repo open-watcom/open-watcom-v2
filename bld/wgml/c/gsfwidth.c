@@ -58,13 +58,10 @@
 
 condcode    scr_width( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **result, unsigned ressize )
 {
-    char            *   pval;
-    char            *   pend;
-    char            *   pa;
-    char            *   pe;
-    int                 len;
-    char                type;
-    uint32_t            width;
+    tok_type        string;
+    int             len;
+    char            typechar;
+    uint32_t        width;
 
     (void)ressize;
 
@@ -72,51 +69,46 @@ condcode    scr_width( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **res
         return( neg );
     }
 
-    pval = parms[0].a;
-    pend = parms[0].e;
+    width = 0;
 
-    unquote_arg( &pval, &pend );
+    string.s = parms[0].a;
+    string.e = parms[0].e;
 
-    len = pend - pval + 1;
+    unquote_arg( &string );
 
-    if( len <= 0 ) {                    // null string width 0
-        **result = '0';
-        *result += 1;
-        **result = '\0';
-        return( pos );
-    }
+    len = string.e - string.s + 1;
 
-    if( parmcount > 1 ) {               // evalute type
-        if( parms[1].e >= parms[1].a ) {// type
-            pa  = parms[1].a;
-            pe  = parms[1].e;
+    if( len > 0 ) {                    // null string width 0
+        typechar = 'C';
+        if( parmcount > 1 ) {               // evalute type
+            tok_type    type;
 
-            unquote_arg( &pa, &pe );
+            if( parms[1].e >= parms[1].a ) {// type
+                type.s  = parms[1].a;
+                type.e  = parms[1].e;
 
-            type = my_tolower( *pa );
-            switch( type ) {
-            case   'c':                 // CPI
-                width = cop_text_width( pval, len, g_curr_font );
-                width = (width * CPI + g_resh / 2) / g_resh;
-                break;
-            case   'u':                 // Device Units
-                width = cop_text_width( pval, len, g_curr_font );
-                break;
-            case   'n':                 // character count
-                width = len;
-                break;
-            default:
-                xx_source_err_c( err_func_parm, "2 (type)" );
+                unquote_arg( &type );
+
+                typechar = my_toupper( *type.s );
             }
         }
-    } else {                            // default type c processing
-        width = cop_text_width( pval, len, g_curr_font );
-        width = (width * CPI + g_resh / 2) / g_resh;
+        switch( typechar ) {
+        case 'C':                 // CPI
+            width = cop_text_width( string.s, len, g_curr_font );
+            width = (width * CPI + g_resh / 2) / g_resh;
+            break;
+        case 'U':                 // Device Units
+            width = cop_text_width( string.s, len, g_curr_font );
+            break;
+        case 'N':                 // character count
+            width = len;
+            break;
+        default:
+            xx_source_err_c( err_func_parm, "2 (type)" );
+        }
     }
 
-    sprintf( *result, "%d", width );
-
-    *result  += strlen( *result );
+    *result += sprintf( *result, "%d", width );
     **result = '\0';
 
     return( pos );

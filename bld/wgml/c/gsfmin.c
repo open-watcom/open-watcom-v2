@@ -53,13 +53,12 @@
 
 condcode    scr_min( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **result, unsigned ressize )
 {
-    char            *   pval;
-    char            *   pend;
-    condcode            cc;
-    int                 k;
-    int                 len;
-    getnum_block        gn;
-    int                 minimum;
+    tok_type        number;
+    condcode        cc;
+    int             k;
+    int             len;
+    getnum_block    gn;
+    int             minimum;
 
     (void)ressize;
 
@@ -74,19 +73,18 @@ condcode    scr_min( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **resul
 
     for( k = 0; k < parmcount; k++ ) {
 
+        number.s = parms[k].a;
+        number.e = parms[k].e;
 
-        pval = parms[k].a;
-        pend = parms[k].e;
+        unquote_arg( &number );
 
-        unquote_arg( &pval, &pend );
-
-        len = pend - pval + 1;          // length
+        len = number.e - number.s + 1;          // length
 
         if( len <= 0 ) {                // null string nothing to do
             continue;                   // skip empty value
         }
-        gn.arg.s = pval;
-        gn.arg.e = pend;
+        gn.arg.s = number.s;
+        gn.arg.e = number.e;
         cc = getnum( &gn );
         if( !(cc == pos  || cc == neg) ) {
             if( !ProcFlags.suppress_msg ) {

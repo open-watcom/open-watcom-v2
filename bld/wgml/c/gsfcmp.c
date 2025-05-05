@@ -37,10 +37,8 @@
 
 condcode    scr_compare( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **result, unsigned ressize )
 {
-    char            *string1s;
-    char            *string1e;
-    char            *string2s;
-    char            *string2e;
+    tok_type        string1;
+    tok_type        string2;
     condcode        cc;
     int             i;
     int             index;
@@ -57,15 +55,15 @@ condcode    scr_compare( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **r
         return( cc );
     }
 
-    string1s = parms[0].a;
-    string1e = parms[0].e;
-    unquote_arg( &string1s, &string1e );
-    len1 = string1e + 1 - string1s;   // string1 length
+    string1.s = parms[0].a;
+    string1.e = parms[0].e;
+    unquote_arg( &string1 );
+    len1 = string1.e + 1 - string1.s;   // string1 length
 
-    string2s = parms[1].a;
-    string2e = parms[1].e;
-    unquote_arg( &string2s, &string2e );
-    len2 = string2e + 1 - string2s;   // string2 length
+    string2.s = parms[1].a;
+    string2.e = parms[1].e;
+    unquote_arg( &string2 );
+    len2 = string2.e + 1 - string2.s;   // string2 length
 
     len = len1;
     if( len < len2 )
@@ -75,13 +73,12 @@ condcode    scr_compare( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **r
     if( len > 0 ) {
         padchar = ' ';  /* default padding character ' ' */
         if( parmcount > 2 ) {
-            char *parmxs;
-            char *parmxe;
-            parmxs = parms[2].a;
-            parmxe = parms[2].e;
-            unquote_arg( &parmxs, &parmxe );
-            if( parmxs <= parmxe ) {
-                padchar = *parmxs;
+            tok_type parmx;
+            parmx.s = parms[2].a;
+            parmx.e = parms[2].e;
+            unquote_arg( &parmx );
+            if( parmx.s <= parmx.e ) {
+                padchar = *parmx.s;
             }
         }
         for( i = 0; i < len; i++ ) {
@@ -89,12 +86,12 @@ condcode    scr_compare( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **r
             char    c2;
 
             if( i < len1 ) {
-                c1 = string1s[i];
+                c1 = string1.s[i];
             } else {
                 c1 = padchar;
             }
             if( i < len2 ) {
-                c2 = string2s[i];
+                c2 = string2.s[i];
             } else {
                 c2 = padchar;
             }

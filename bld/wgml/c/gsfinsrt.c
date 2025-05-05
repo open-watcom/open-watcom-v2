@@ -58,33 +58,31 @@
 
 condcode    scr_insert( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **result, unsigned ressize )
 {
-    char            *   pval;
-    char            *   pend;
-    condcode            cc;
-    int                 k;
-    int                 n;
-    int                 len;
-    getnum_block        gn;
-    char            *   ptarget;
-    char            *   ptargetend;
+    tok_type        new;
+    tok_type        target;
+    condcode        cc;
+    int             k;
+    int             n;
+    int             len;
+    getnum_block    gn;
 
     if( (parmcount < 2) || (parmcount > 3) ) {
         cc = neg;
         return( cc );
     }
 
-    pval = parms[0].a;                // string to insert
-    pend = parms[0].e;
+    new.s = parms[0].a;                // string to insert
+    new.e = parms[0].e;
 
-    unquote_arg( &pval, &pend );
+    unquote_arg( &new );
 
-    len = pend - pval + 1;              // length to insert
+    len = new.e - new.s + 1;              // length to insert
 
 
-    ptarget    = parms[1].a;          // string to be modified
-    ptargetend = parms[1].e;
+    target.s = parms[1].a;          // string to be modified
+    target.e = parms[1].e;
 
-    unquote_arg( &ptarget, &ptargetend );
+    unquote_arg( &target );
 
 
     if( len <= 0 ) {                    // null string insert nothing to do
@@ -111,8 +109,8 @@ condcode    scr_insert( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **re
     }
 
     k = 0;
-    while( (k < n) && (ptarget <= ptargetend) && (ressize > 0) ) { // copy up to startpos
-        **result = *ptarget++;
+    while( (k < n) && (target.s <= target.e) && (ressize > 0) ) { // copy up to startpos
+        **result = *target.s++;
         *result += 1;
         k++;
         ressize--;
@@ -123,14 +121,14 @@ condcode    scr_insert( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **re
         ressize--;
     }
 
-    while( (pval <= pend) && (ressize > 0) ) { // insert new string
-        **result = *pval++;
+    while( (new.s <= new.e) && (ressize > 0) ) { // insert new string
+        **result = *new.s++;
         *result += 1;
         ressize--;
     }
 
-    while( (ptarget <= ptargetend) && (ressize > 0) ) { // copy rest (if any)
-        **result = *ptarget++;
+    while( (target.s <= target.e) && (ressize > 0) ) { // copy rest (if any)
+        **result = *target.s++;
         *result += 1;
         ressize--;
     }

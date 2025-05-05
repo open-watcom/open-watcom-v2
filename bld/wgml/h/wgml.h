@@ -100,7 +100,7 @@ extern  bool        is_space_tab_char( char c );
 extern  bool        is_stop_char( char c );
 extern  bool        is_symbol_char( char c );
 extern  char        parse_char( const char *pa, size_t len );
-extern  void        unquote_arg( char **a, char **z );
+extern  int         unquote_arg( tok_type *arg );
 
 /* gbanner.c                            */
 extern  void        out_ban_bot( void );
