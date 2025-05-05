@@ -39,34 +39,6 @@
 /*                         &'word(                                         */
 /***************************************************************************/
 
-/***************************************************************************/
-/*                                                                         */
-/* &'subword(string,n<,length>):  The Subword function  returns the words  */
-/*    of 'string' starting at word number 'n'.   The value of 'n' must be  */
-/*    positive.  If 'length' is omitted, it will default to the remainder  */
-/*    of the string.  The result will include all blanks between selected  */
-/*    words and all leading and trailing blanks are not included.          */
-/*      &'subword('The quick brown  fox',2,2) ==> "quick brown"            */
-/*      &'subword('The quick brown  fox',3) ==> "brown  fox"               */
-/*      &'subword('The quick brown  fox',5) ==> ""                         */
-/*      &'subword('The quick brown  fox',0) ==> error, number too small    */
-/*      &'subword('The quick brown  fox') ==> error, missing number        */
-/*      &'subword('',1) ==> ""                                             */
-/*                                                                         */
-/***************************************************************************/
-
-/***************************************************************************/
-/* &'word(string,n):  The  Word function returns  only the 'n'th  word in  */
-/*    'string'.   The value of 'n' must be positive.   If there are fewer  */
-/*    than 'n' blank delimited words in the 'string' then the null string  */
-/*    is returned.                                                         */
-/*      &'word('The quick brown fox',3) ==> "brown"                        */
-/*      &'word('The quick brown fox',5) ==> ""                             */
-/*      &'word('The quick brown fox',0) ==> error, too small               */
-/*      &'word('The quick brown fox') ==> error, missing number            */
-/*      &'word('',1) ==> ""                                                */
-/***************************************************************************/
-
 static  condcode    scr_xx_word( parm parms[MAX_FUN_PARMS], unsigned parmcount,
                                  char **result, unsigned ressize, bool is_word )
 {
@@ -177,10 +149,17 @@ static  condcode    scr_xx_word( parm parms[MAX_FUN_PARMS], unsigned parmcount,
 }
 
 
-/*
- * &'word( )
- *
- */
+/***************************************************************************/
+/* &'word(string,n):  The  Word function returns  only the 'n'th  word in  */
+/*    'string'.   The value of 'n' must be positive.   If there are fewer  */
+/*    than 'n' blank delimited words in the 'string' then the null string  */
+/*    is returned.                                                         */
+/*      &'word('The quick brown fox',3) ==> "brown"                        */
+/*      &'word('The quick brown fox',5) ==> ""                             */
+/*      &'word('The quick brown fox',0) ==> error, too small               */
+/*      &'word('The quick brown fox') ==> error, missing number            */
+/*      &'word('',1) ==> ""                                                */
+/***************************************************************************/
 
 condcode    scr_word( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **result, unsigned ressize )
 {
@@ -192,10 +171,21 @@ condcode    scr_word( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **resu
 }
 
 
-/*
- * &'subword( )
- *
- */
+/***************************************************************************/
+/*                                                                         */
+/* &'subword(string,n<,length>):  The Subword function  returns the words  */
+/*    of 'string' starting at word number 'n'.   The value of 'n' must be  */
+/*    positive.  If 'length' is omitted, it will default to the remainder  */
+/*    of the string.  The result will include all blanks between selected  */
+/*    words and all leading and trailing blanks are not included.          */
+/*      &'subword('The quick brown  fox',2,2) ==> "quick brown"            */
+/*      &'subword('The quick brown  fox',3) ==> "brown  fox"               */
+/*      &'subword('The quick brown  fox',5) ==> ""                         */
+/*      &'subword('The quick brown  fox',0) ==> error, number too small    */
+/*      &'subword('The quick brown  fox') ==> error, missing number        */
+/*      &'subword('',1) ==> ""                                             */
+/*                                                                         */
+/***************************************************************************/
 
 condcode    scr_subword( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **result, unsigned ressize )
 {
