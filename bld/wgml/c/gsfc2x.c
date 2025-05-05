@@ -61,6 +61,7 @@ static unsigned char hex( unsigned char c )
 condcode    scr_c2x( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **result, unsigned ressize )
 {
     tok_type        string;
+    unsigned char   c;
 
     if( parmcount < 1
       || parmcount > 1 )
@@ -69,14 +70,17 @@ condcode    scr_c2x( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **resul
     string = parms[0].arg;
     unquote_arg( &string );
 
-    while( (string.s <= string.e) && (ressize > 1) ) {
-        **result = hex( (unsigned)*string.s >> 4 );
+    while( ( string.s <= string.e ) && ( ressize > 0 ) ) {
+        c = *string.s++;
+        **result = hex( c >> 4 );
         *result += 1;
-        **result = hex( (unsigned)*string.s & 0x0f );
-        *result += 1;
-        **result = 0;
-        ressize -= 2;
-        string.s++;
+        ressize--;
+        if( ressize > 0 ) {
+            **result = hex( c & 0x0f );
+            *result += 1;
+            ressize--;
+        }
     }
+    **result = '\0';
     return( pos );
 }

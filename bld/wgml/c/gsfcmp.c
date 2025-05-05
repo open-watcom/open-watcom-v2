@@ -41,9 +41,9 @@ condcode    scr_compare( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **r
     tok_type        string2;
     int             i;
     int             index;
-    size_t          len1;
-    size_t          len2;
-    size_t          len;
+    int             string1_len;
+    int             string2_len;
+    int             len;
     char            padchar;
 
     (void)ressize;
@@ -53,38 +53,33 @@ condcode    scr_compare( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **r
         return( neg );
 
     string1 = parms[0].arg;
-    unquote_arg( &string1 );
-    len1 = string1.e + 1 - string1.s;   // string1 length
-
     string2 = parms[1].arg;
-    unquote_arg( &string2 );
-    len2 = string2.e + 1 - string2.s;   // string2 length
 
-    len = len1;
-    if( len < len2 )
-        len = len2;
+    string1_len = unquote_arg( &string1 );
+    string2_len = unquote_arg( &string2 );
+    len = string1_len;
+    if( len < string2_len )
+        len = string2_len;
 
     index = 0;
     if( len > 0 ) {
         padchar = ' ';  /* default padding character ' ' */
         if( parmcount > 2 ) {
-            tok_type parmx;
-            parmx = parms[2].arg;
-            unquote_arg( &parmx );
-            if( parmx.s <= parmx.e ) {
-                padchar = *parmx.s;
+            tok_type pad = parms[2].arg;
+            if( unquote_arg( &pad ) > 0 ) {
+                padchar = *pad.s;
             }
         }
         for( i = 0; i < len; i++ ) {
             char    c1;
             char    c2;
 
-            if( i < len1 ) {
+            if( i < string1_len ) {
                 c1 = string1.s[i];
             } else {
                 c1 = padchar;
             }
-            if( i < len2 ) {
+            if( i < string2_len ) {
                 c2 = string2.s[i];
             } else {
                 c2 = padchar;
