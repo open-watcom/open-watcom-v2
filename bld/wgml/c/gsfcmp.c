@@ -39,7 +39,6 @@ condcode    scr_compare( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **r
 {
     tok_type        string1;
     tok_type        string2;
-    condcode        cc;
     int             i;
     int             index;
     size_t          len1;
@@ -51,8 +50,7 @@ condcode    scr_compare( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **r
 
     if( parmcount < 2
       || parmcount > 3 ) {
-        cc = neg;
-        return( cc );
+        return( neg );
     }
 
     string1.s = parms[0].a;

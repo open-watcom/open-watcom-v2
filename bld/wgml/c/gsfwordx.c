@@ -437,14 +437,12 @@ condcode    scr_find( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **resu
 {
     tok_type        phrase;
     tok_type        string;
-    condcode        cc;
     int             index;
 
     (void)ressize;
 
     if( parmcount != 2 ) {
-        cc = neg;
-        return( cc );
+        return( neg );
     }
 
     string.s = parms[0].a;

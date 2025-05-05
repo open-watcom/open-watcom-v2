@@ -67,8 +67,7 @@ condcode    scr_insert( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **re
     getnum_block    gn;
 
     if( (parmcount < 2) || (parmcount > 3) ) {
-        cc = neg;
-        return( cc );
+        return( neg );
     }
 
     new.s = parms[0].a;                // string to insert

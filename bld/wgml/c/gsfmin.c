@@ -63,8 +63,7 @@ condcode    scr_min( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **resul
     (void)ressize;
 
     if( (parmcount < 2) || (parmcount > 6) ) {
-        cc = neg;
-        return( cc );
+        return( neg );
     }
 
     minimum = INT_MAX;

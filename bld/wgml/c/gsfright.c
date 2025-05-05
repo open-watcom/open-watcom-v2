@@ -60,8 +60,7 @@ condcode    scr_right( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **res
     char            padchar;
 
     if( (parmcount < 2) || (parmcount > 3) ) {
-        cc = neg;
-        return( cc );
+        return( neg );
     }
 
     string.s = parms[0].a;

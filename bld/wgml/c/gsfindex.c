@@ -68,8 +68,7 @@ condcode    scr_index( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **res
     (void)ressize;
 
     if( (parmcount < 2) || (parmcount > 3) ) {
-        cc = neg;
-        return( cc );
+        return( neg );
     }
 
     haystack.s = parms[0].a;
@@ -212,8 +211,7 @@ condcode    scr_lpos( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **resu
     (void)ressize;
 
     if( (parmcount < 2) || (parmcount > 3) ) {
-        cc = neg;
-        return( cc );
+        return( neg );
     }
 
     needle.s = parms[0].a;
