@@ -63,7 +63,7 @@ extern  void    gml_set( const gmltag * entry )
     (void)entry;
 
     subscript = no_subscript;           // not subscripted
-    scan_err = false;
+    g_scan_err = false;
 
     p = scan_start;
     if( *p == '.' ) {
@@ -85,7 +85,7 @@ extern  void    gml_set( const gmltag * entry )
                     break;
                 }
                 scan_sym( val_start, &sym, &subscript, NULL, false );
-                if( scan_err ) {
+                if( g_scan_err ) {
                     break;
                 }
                 symbol_found = true;

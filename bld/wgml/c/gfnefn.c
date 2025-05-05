@@ -64,7 +64,7 @@ void gml_fn( const gmltag * entry )
 
     start_doc_sect();
     scr_process_break();
-    scan_err = false;
+    g_scan_err = false;
 
     g_keep_nest( "Footnote" );          // catch nesting errors
 
@@ -231,7 +231,7 @@ void gml_efn( const gmltag * entry )
 
     t_page.cur_width = t_page.cur_left;
 
-    scan_err = false;
+    g_scan_err = false;
     p = scan_start;
     SkipDot( p );                       // possible tag end
     if( *p != '\0' ) {

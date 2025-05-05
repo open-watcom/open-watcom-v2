@@ -73,7 +73,7 @@ void gml_xmp( const gmltag * entry )
 
     start_doc_sect();
     scr_process_break();
-    scan_err = false;
+    g_scan_err = false;
 
     g_keep_nest( "Example" );           // catch nesting errors
 
@@ -262,7 +262,7 @@ void gml_exmp( const gmltag * entry )
 
     ProcFlags.skips_valid = false;      // activate post_skip for next element
     t_page.cur_width = t_page.cur_left;
-    scan_err = false;
+    g_scan_err = false;
     p = scan_start;
     SkipDot( p );                       // over '.'
     if( *p != '\0' ) {

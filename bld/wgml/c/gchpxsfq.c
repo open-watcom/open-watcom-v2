@@ -112,7 +112,7 @@ static void gml_inline_common( const gmltag * entry, font_number font, e_tags t 
         quote_lvl++;
     }
 
-    scan_err = false;
+    g_scan_err = false;
     p = scan_start;
     SkipDot( p );                       // over '.'
     if( *p != '\0' ) {
@@ -220,7 +220,7 @@ static void gml_e_inlne_common( const gmltag * entry, e_tags t )
             }
         }
 
-        scan_err = false;
+        g_scan_err = false;
         p = scan_start;
         SkipDot( p );                           // over '.'
         input_cbs->fmflags &= ~II_sol;

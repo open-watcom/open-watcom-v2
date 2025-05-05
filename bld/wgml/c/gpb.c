@@ -53,7 +53,7 @@ extern  void    gml_pb( const gmltag * entry )
 
     (void)entry;
 
-    scan_err = false;
+    g_scan_err = false;
     p = scan_start;
 
     start_doc_sect();                   // if not already done

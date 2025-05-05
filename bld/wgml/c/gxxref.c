@@ -48,7 +48,7 @@ static char * get_ref_attributes( void )
     char        *   p;
     char        *   pa;
 
-    scan_err = false;
+    g_scan_err = false;
     p = scan_start;
 
     if( *p == '.' ) {

@@ -403,7 +403,7 @@ void gml_fig( const gmltag * entry )
 
     start_doc_sect();
     scr_process_break();
-    scan_err = false;
+    g_scan_err = false;
 
     if( is_ip_tag( nest_cb->c_tag ) ) {                 // inline phrase not closed
         g_err_tag_nest( nest_cb->c_tag + 1 ); // end tag expected
@@ -1057,7 +1057,7 @@ void gml_efig( const gmltag * entry )
 
     t_page.cur_width = t_page.cur_left;
 
-    scan_err = false;
+    g_scan_err = false;
     if( *p != '\0' ) {
         if( !input_cbs->hidden_head->ip_start && (*(p + 1) == '\0') && (*p == CONT_char) ) { // text is continuation character only
             if( &layout_work.fig.post_skip != NULL ) {
@@ -1108,7 +1108,7 @@ void gml_figcap( const gmltag * entry )
     scr_process_break();
     rs_loc = figcap_tag;
 
-    scan_err = false;
+    g_scan_err = false;
     p = scan_start;
 
     g_curr_font = layout_work.figcap.string_font;
@@ -1196,7 +1196,7 @@ void gml_figdesc( const gmltag * entry )
     start_doc_sect();
     rs_loc = 0;
 
-    scan_err = false;
+    g_scan_err = false;
     p = scan_start;
 
     if( figcap_done ) {                         // FIGCAP was present

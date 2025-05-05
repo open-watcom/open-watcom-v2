@@ -70,12 +70,12 @@ void process_late_subst( char * buf )
             tokenstart = p;
             p++;                                // over '&'
             symstart = p;                       // remember start of symbol name
-            scan_err = false;
+            g_scan_err = false;
             ProcFlags.suppress_msg = true;
             p = scan_sym( symstart, &symvar_entry, &var_ind, NULL, false );
             ProcFlags.suppress_msg = false;
             tokenend = p;
-            if( !scan_err ) {                   // potentially qualifying symbol
+            if( !g_scan_err ) {                   // potentially qualifying symbol
                 if( symvar_entry.flags & local_var ) {  // lookup var in dict
                     rc = find_symvar_lcl( input_cbs->local_dict, symvar_entry.name,
                                         var_ind, &symsubval );
@@ -690,12 +690,12 @@ static sym_list_entry *parse_l2r( char *buf, bool splittable )
                 curr->start = p;
                 p++;                                // over '&'
                 symstart = p;                       // remember start of symbol name
-                scan_err = false;
+                g_scan_err = false;
                 ProcFlags.suppress_msg = true;
                 pa = valbuf;
                 p = scan_sym( symstart, &symvar_entry, &var_ind, &pa, splittable );
                 curr->end = p;
-                if( scan_err ) {                        // problem with subscript
+                if( g_scan_err ) {                        // problem with subscript
                     if( ProcFlags.unresolved ) {
                         curr->type = sl_text;
                         if( *curr->end == '\0' ) {

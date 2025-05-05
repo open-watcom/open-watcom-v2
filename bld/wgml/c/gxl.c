@@ -101,7 +101,7 @@ static void gml_xl_lp_common( e_tags t )
 
     nest_cb->c_tag = t;
 
-    scan_err = false;
+    g_scan_err = false;
     p = scan_start;
     SkipSpaces( p );                        // skip spaces
     SkipDot( p );                           // skip tag end
@@ -702,7 +702,7 @@ static void     gml_exl_common( const gmltag * entry )
     g_curr_font = nest_cb->font;
 
     t_page.cur_width = t_page.cur_left;
-    scan_err = false;
+    g_scan_err = false;
     p = scan_start;
     SkipDot( p );                       // over '.'
     SkipSpaces( p );                    // over WS to <text line>
@@ -916,7 +916,7 @@ static  void    gml_li_ol( const gmltag * entry )
 
     scr_process_break();
 
-    scan_err = false;
+    g_scan_err = false;
     p = scan_start;
 
     nest_cb->li_number++;
@@ -990,7 +990,7 @@ static  void    gml_li_sl( const gmltag * entry )
 
     scr_process_break();
 
-    scan_err = false;
+    g_scan_err = false;
     p = scan_start;
 
     if( ProcFlags.need_li_lp ) {        // first :li for this list
@@ -1040,7 +1040,7 @@ static  void    gml_li_ul( const gmltag * entry )
 
     scr_process_break();
 
-    scan_err = false;
+    g_scan_err = false;
     p = scan_start;
 
     if( nest_cb->u.ul_layout->bullet_translate ) {
@@ -1147,7 +1147,7 @@ void    gml_lp( const gmltag * entry )
 
     (void)entry;
 
-    scan_err = false;
+    g_scan_err = false;
     p = scan_start;
 
     if( nest_cb->c_tag == t_LP ) {          // restore margins saved by prior LP

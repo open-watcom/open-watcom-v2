@@ -69,7 +69,7 @@ static void g_err_doc_sect( doc_section  ds )
     };
 
     err_count++;
-    scan_err = true;
+    g_scan_err = true;
     xx_err_c( err_doc_sect, sect_text[ds] );
 }
 
@@ -1759,7 +1759,7 @@ extern void gml_gdoc( const gmltag *entry )
 
     (void)entry;
 
-    scan_err = false;
+    g_scan_err = false;
     p = scan_start;
     if( *p != '\0' )
         p++;

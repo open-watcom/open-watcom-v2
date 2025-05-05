@@ -124,7 +124,7 @@ static  condcode    scr_veclp( parm parms[MAX_FUN_PARMS], unsigned parmcount,
     hay_len = phayend - phay + 1;       // haystack length
 
     rc = 0;
-    scan_err = false;
+    g_scan_err = false;
     index = 0;
 
     if( (hay_len > 0) ||                // not null string
@@ -133,7 +133,7 @@ static  condcode    scr_veclp( parm parms[MAX_FUN_PARMS], unsigned parmcount,
 
         suppress_msg = ProcFlags.suppress_msg;
         ProcFlags.suppress_msg = true;
-        scan_err = false;
+        g_scan_err = false;
         c = *(phayend + 1);
         *(phayend + 1) = '\0';
 
@@ -142,7 +142,7 @@ static  condcode    scr_veclp( parm parms[MAX_FUN_PARMS], unsigned parmcount,
         *(phayend + 1) = c;
         ProcFlags.suppress_msg = suppress_msg;;
 
-        if( !scan_err ) {
+        if( !g_scan_err ) {
 
             if( symvar_entry.flags & local_var ) {  // lookup var in dict
                 rc = find_symvar_lcl( input_cbs->local_dict, symvar_entry.name,

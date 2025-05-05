@@ -52,7 +52,7 @@ char * scan_sym( char * p, symvar * sym, sub_index * subscript, char * * result,
     (void)result;
 
     psave = p;
-    scan_err = false;
+    g_scan_err = false;
     sym->next = NULL;
     sym->flags = 0;
     *subscript = no_subscript;          // not subscripted
@@ -96,8 +96,8 @@ char * scan_sym( char * p, symvar * sym, sub_index * subscript, char * * result,
             sym->name[k++] = my_tolower( *p );
             sym->name[k] = '\0';
         } else {
-            if( !scan_err ) {
-                scan_err = true;
+            if( !g_scan_err ) {
+                g_scan_err = true;
                 if( !ProcFlags.suppress_msg ) {
                     // SC--074 For the symbol '%s'
                     //     The length of a symbol cannot exceed ten characters
@@ -118,7 +118,7 @@ char * scan_sym( char * p, symvar * sym, sub_index * subscript, char * * result,
             } else if( (sym->flags & local_var) && (input_cbs->fmflags & II_file) ) {
                 strcpy( sym->name, MAC_STAR_NAME );
             } else {
-                scan_err = true;
+                g_scan_err = true;
             }
         }
     }
@@ -127,7 +127,7 @@ char * scan_sym( char * p, symvar * sym, sub_index * subscript, char * * result,
     }
     pend = p;                                   // char after symbol name if not subscripted
 
-    if( !scan_err && (*p == '(') ) {    // subscripted ?
+    if( !g_scan_err && (*p == '(') ) {    // subscripted ?
         // find true end of subscript
         psave = p;
         p_level = 0;
@@ -146,7 +146,7 @@ char * scan_sym( char * p, symvar * sym, sub_index * subscript, char * * result,
 
         if( p_level > 0 ) {                 // at least one missing ')'
             /* Note: missing ')' is not an error in wgml 4.0 */
-            scan_err = true;
+            g_scan_err = true;
         } else {
             p = psave + 1;
             if( *p == ')' ) {               // () is auto increment
@@ -175,7 +175,7 @@ char * scan_sym( char * p, symvar * sym, sub_index * subscript, char * * result,
                     *subscript = all_subscript; // all indices
                 }
                 if( *p != ')' ) {
-                    scan_err = true;
+                    g_scan_err = true;
                 }
             } else {
                 char            *pa;
@@ -193,7 +193,7 @@ char * scan_sym( char * p, symvar * sym, sub_index * subscript, char * * result,
                 ProcFlags.unresolved = false;
                 finalize_subscript( &pa, splittable );
                 if( ProcFlags.unresolved ) {
-                    scan_err = true;
+                    g_scan_err = true;
                 } else {
                     gn.argstart      = valbuf;
                     gn.argstop       = valbuf;
@@ -215,16 +215,16 @@ char * scan_sym( char * p, symvar * sym, sub_index * subscript, char * * result,
                         SkipDot( p );
                         sym->flags |= subscripted;
                     } else {
-                        if( !scan_err && !ProcFlags.suppress_msg ) {
+                        if( !g_scan_err && !ProcFlags.suppress_msg ) {
                             xx_line_err_c( err_sub_invalid, p );
                         }
-                        scan_err = true;
+                        g_scan_err = true;
                     }
 
                 }
             }
         }
-        if( scan_err ) {
+        if( g_scan_err ) {
             p = psave;
         } else {
             p = pend;
@@ -277,7 +277,7 @@ void    scr_se( void )
     size_t          len;
 
     subscript = no_subscript;                       // not subscripted
-    scan_err = false;
+    g_scan_err = false;
     p = scan_sym( scan_start, &sym, &subscript, NULL, false );
 
     if( strcmp( MAC_STAR_NAME, sym.name ) != 0 ) {  // remove trailing blanks from all symbols except *
@@ -304,9 +304,9 @@ void    scr_se( void )
         if( !ProcFlags.suppress_msg ) {
             xx_line_err_c( err_eq_expected, p);
         }
-        scan_err = true;
+        g_scan_err = true;
     }
-    if( !scan_err ) {
+    if( !g_scan_err ) {
         if( *p == ')' ) {
             p++;
         }
@@ -358,7 +358,7 @@ void    scr_se( void )
                 if( !ProcFlags.suppress_msg ) {
                     xx_line_err_c( err_eq_expected, p);
                 }
-                scan_err = true;
+                g_scan_err = true;
             }
         } else if( !strncmp( p, "off", 3 ) ) {       // OFF
             p += 3;
@@ -370,7 +370,7 @@ void    scr_se( void )
             if( !ProcFlags.suppress_msg ) {
                 xx_warn_cc( wng_miss_inv_value, sym.name, p );
             }
-            scan_err = true;
+            g_scan_err = true;
         }
     }
     scan_restart = scan_stop;

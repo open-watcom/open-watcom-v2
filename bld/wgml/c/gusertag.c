@@ -108,11 +108,11 @@ static bool check_att_value( gaentry * ga, gtentry * ge, symdict_hdl loc_dict )
 
     (void)ge;
 
-    scan_err = true;
+    g_scan_err = true;
     msg_done = false;
     for( gaval = ga->vals; gaval != NULL; gaval = gaval->next ) {
         if( gaval->valflags & val_any ) {
-            scan_err = false;           // any value is allowed
+            g_scan_err = false;           // any value is allowed
             break;
         }
 
@@ -126,7 +126,7 @@ static bool check_att_value( gaentry * ga, gtentry * ge, symdict_hdl loc_dict )
         }
         if( valp != NULL ) {
             if( strcmp( token_buf, valp ) == 0 ) {
-                scan_err = false;       // value is allowed
+                g_scan_err = false;       // value is allowed
                 break;
             }
         } else {
@@ -146,14 +146,14 @@ static bool check_att_value( gaentry * ga, gtentry * ge, symdict_hdl loc_dict )
                         xx_err( err_att_len_inv );  // value too long
                         msg_done = true;
                     } else {
-                        scan_err = false;
+                        g_scan_err = false;
                     }
                     break;
                 }
             }
         }
     }
-    if( !scan_err ) {
+    if( !g_scan_err ) {
         rc = add_symvar( loc_dict, ga->name, token_buf,
                          no_subscript, local_var );
     } else {
@@ -161,7 +161,7 @@ static bool check_att_value( gaentry * ga, gtentry * ge, symdict_hdl loc_dict )
             xx_err_cc( err_att_val, token_buf, ga->name );
         }
     }
-    return( scan_err );
+    return( g_scan_err );
 }
 
 
@@ -286,7 +286,7 @@ bool process_tag( gtentry * ge, mac_entry * me )
                                 strupr( token_buf );
                             }
 
-                            scan_err = check_att_value( ga, ge, loc_dict );
+                            g_scan_err = check_att_value( ga, ge, loc_dict );
 
                         } else {// special for range set default2 if no value
                             if( ga->attflags & att_range ) {

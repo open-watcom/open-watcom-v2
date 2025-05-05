@@ -126,7 +126,7 @@ void gml_elq( const gmltag * entry )
     g_curr_font = nest_cb->font;
 
     t_page.cur_width = t_page.cur_left;
-    scan_err = false;
+    g_scan_err = false;
     p = scan_start;
     SkipDot( p );                       // over '.'
     if( *p != '\0' ) {

@@ -62,7 +62,7 @@ static void gml_hp_sf_common( gml_tag gtag, font_number font )
 
     nest_cb->gtag = gtag;
 
-    scan_err = false;
+    g_scan_err = false;
     p = scan_start;
     if( *p == '.' ) p++;                // over '.'
     if( *p ) {
@@ -133,7 +133,7 @@ static  void    gml_ehp_esf_common( gml_tag egtag )
             post_space = wgml_fonts[g_curr_font].spc_width;
         }
 
-        scan_err = false;
+        g_scan_err = false;
         p = scan_start;
         if( *p == '.' ) p++;            // over '.'
         if( *p ) {

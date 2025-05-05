@@ -133,7 +133,7 @@ static void gml_inline_common( const gmltag * entry, font_number font, e_tags t 
         }
     }
 
-    scan_err = false;
+    g_scan_err = false;
     p = scan_start;
     SkipDot( p );                       // over '.'
 
@@ -319,7 +319,7 @@ static void gml_e_inlne_common( const gmltag * entry, e_tags t )
             process_text( token_buf, g_curr_font );
         }
 
-        scan_err = false;
+        g_scan_err = false;
         p = scan_start;
         SkipDot( p );                           // over '.'
         if( *p != '\0' ) {

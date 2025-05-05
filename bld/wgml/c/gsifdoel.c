@@ -409,7 +409,7 @@ void    scr_if( void )
     termcb          t1;                 // first argument
     termcb          t2;                 // second argument
 
-    scan_err = false;
+    g_scan_err = false;
 
     firstcondition = true;              // first 2 terms to compare
     p = scan_start;
@@ -585,7 +585,7 @@ void    scr_th( void )
 {
     ifcb    *   cb = input_cbs->if_cb;
 
-    scan_err = false;
+    g_scan_err = false;
     cb->if_flags[cb->if_level].ifcwte = false;
     if( !cb->if_flags[cb->if_level].iflast
 
@@ -643,7 +643,7 @@ void    scr_el( void )
 {
     ifcb    *   cb = input_cbs->if_cb;
 
-    scan_err = false;
+    g_scan_err = false;
     cb->if_flags[cb->if_level].iflast = false;
     cb->if_flags[cb->if_level].ifcwte = false;
 
@@ -695,7 +695,7 @@ void    scr_do( void )
     ifcb    *   cb = input_cbs->if_cb;
     condcode    cc;
 
-    scan_err = false;
+    g_scan_err = false;
     cc = getarg();
 
     cb->if_flags[cb->if_level].ifcwdo = false;

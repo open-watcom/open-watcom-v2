@@ -57,7 +57,7 @@ static char *verify_sym( char * p )
 
     local = false;
     pa = p;                             // save initial value
-    scan_err = true;
+    g_scan_err = true;
     star_found = false;
 
     if( *p == '*' ) {    // starts with "*"
@@ -79,7 +79,7 @@ static char *verify_sym( char * p )
             p++;
             SkipSpaces( p );                // skip over spaces
             if( *p != '\0' ) {              // something follows "="
-                scan_err = false;
+                g_scan_err = false;
                 pa = p;
             }
         }
@@ -317,7 +317,7 @@ void    add_macro_parms( char * p )
                 ProcFlags.blanks_allowed = 1;   // blanks again
                 *pa = c;                // restore original char at string end
                 scan_start = p;         // restore scan address
-                if( scan_err ) {        // not variable=value format
+                if( g_scan_err ) {      // not variable=value format
                     cc = omit;
                     star0++;
                     sprintf( starbuf, "%d", star0 );

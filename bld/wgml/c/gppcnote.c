@@ -75,7 +75,7 @@ static void proc_p_pc( p_lay_tag * p_pc, e_tags t )
 
     p_pc_setup( p_pc );
 
-    scan_err = false;
+    g_scan_err = false;
     p = scan_start;
 
     SkipDot( p );                       // over '.'
@@ -131,7 +131,7 @@ extern void gml_note( const gmltag * entry )
 
     (void)entry;
 
-    scan_err = false;
+    g_scan_err = false;
     p = scan_start;
 
     start_doc_sect();                   // if not already done
