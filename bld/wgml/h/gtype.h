@@ -629,8 +629,7 @@ typedef enum condcode {            // return code for some scanning functions
 /***************************************************************************/
 
 typedef struct parm {
-    char    *       a;                  // start of parm ptr
-    char    *       e;                  // end of parm ptr
+    tok_type        arg;                // argument start and end of parm ptr
     bool            redo;               // parm starts with "&"
 } parm;
 

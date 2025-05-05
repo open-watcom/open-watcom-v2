@@ -87,12 +87,8 @@ static condcode scr_lowup( parm parms[MAX_FUN_PARMS], unsigned parmcount,
       || parmcount > 3 )
         return( neg );
 
-    string.s = parms[0].a;
-    string.e = parms[0].e;
-
-    unquote_arg( &string );
-
-    len = string.e - string.s + 1;              // default length
+    string = parms[0].arg;
+    len = unquote_arg( &string );
 
     if( len <= 0 ) {                    // null string nothing to do
         **result = '\0';
@@ -103,9 +99,8 @@ static condcode scr_lowup( parm parms[MAX_FUN_PARMS], unsigned parmcount,
     gn.ignore_blanks = false;
 
     if( parmcount > 1 ) {               // evalute start pos
-        if( parms[1].e >= parms[1].a ) {// start pos specified
-            gn.arg.s = parms[1].a;
-            gn.arg.e = parms[1].e;
+        if( parms[1].arg.s <= parms[1].arg.e ) {// start pos specified
+            gn.arg = parms[1].arg;
             cc = getnum( &gn );
             if( (cc != pos) || (gn.result > len) ) {
                 if( !ProcFlags.suppress_msg ) {
@@ -118,9 +113,8 @@ static condcode scr_lowup( parm parms[MAX_FUN_PARMS], unsigned parmcount,
     }
 
     if( parmcount > 2 ) {               // evalute length for upper
-        if( parms[2].e >= parms[2].a ) {// length specified
-            gn.arg.s = parms[2].a;
-            gn.arg.e = parms[2].e;
+        if( parms[2].arg.s <= parms[2].arg.e ) {// length specified
+            gn.arg = parms[2].arg;
             cc = getnum( &gn );
             if( (cc != pos) || (gn.result == 0) ) {
                 if( !ProcFlags.suppress_msg ) {

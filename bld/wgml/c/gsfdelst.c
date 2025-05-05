@@ -61,12 +61,8 @@ condcode    scr_delstr( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **re
       || parmcount > 3 )
         return( neg );
 
-    string.s = parms[0].a;
-    string.e = parms[0].e;
-
-    unquote_arg( &string );
-
-    len = string.e - string.s + 1;              // default length
+    string = parms[0].arg;
+    len = unquote_arg( &string );
 
     if( len <= 0 ) {                    // null string nothing to do
         **result = '\0';
@@ -76,9 +72,8 @@ condcode    scr_delstr( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **re
     n   = 0;                            // default start pos
     gn.ignore_blanks = false;
 
-    if( parms[1].e >= parms[1].a ) {// start pos
-        gn.arg.s = parms[1].a;
-        gn.arg.e = parms[1].e;
+    if( parms[1].arg.s <= parms[1].arg.e ) {// start pos
+        gn.arg = parms[1].arg;
         cc = getnum( &gn );
         if( (cc != pos) || (gn.result == 0) ) {
             if( !ProcFlags.suppress_msg ) {
@@ -90,9 +85,8 @@ condcode    scr_delstr( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **re
     }
 
     if( parmcount > 2 ) {               // evalute length
-        if( parms[2].e >= parms[2].a ) {// length specified
-            gn.arg.s = parms[2].a;
-            gn.arg.e = parms[2].e;
+        if( parms[2].arg.s <= parms[2].arg.e ) {// length specified
+            gn.arg = parms[2].arg;
             cc = getnum( &gn );
             if( (cc != pos) || (gn.result == 0) ) {
                 if( !ProcFlags.suppress_msg ) {

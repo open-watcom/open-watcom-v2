@@ -71,24 +71,15 @@ condcode    scr_width( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **res
 
     width = 0;
 
-    string.s = parms[0].a;
-    string.e = parms[0].e;
-
-    unquote_arg( &string );
-
-    len = string.e - string.s + 1;
+    string = parms[0].arg;
+    len = unquote_arg( &string );
 
     if( len > 0 ) {                    // null string width 0
         typechar = 'C';
         if( parmcount > 1 ) {               // evalute type
-            tok_type    type;
-
-            if( parms[1].e >= parms[1].a ) {// type
-                type.s  = parms[1].a;
-                type.e  = parms[1].e;
-
+            if( parms[1].arg.s <= parms[1].arg.e ) {// type
+                tok_type type = parms[1].arg;
                 unquote_arg( &type );
-
                 typechar = my_toupper( *type.s );
             }
         }

@@ -67,20 +67,15 @@ condcode    scr_d2c( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **resul
       || parmcount > 1 )
         return( neg );
 
-    number.s = parms[0].a;
-    number.e = parms[0].e;
-
-    unquote_arg( &number );
-
-    len = number.e - number.s + 1;              // default length
-
+    number = parms[0].arg;
+    len = unquote_arg( &number );
     if( len <= 0 ) {                    // null string nothing to do
         **result = '\0';
         return( pos );
     }
 
     n = 0;
-    if( parms[1].e >= parms[1].a ) {
+    if( parms[1].arg.s <= parms[1].arg.e ) {
         gn.arg = number;
         gn.ignore_blanks = false;
         cc = getnum( &gn );

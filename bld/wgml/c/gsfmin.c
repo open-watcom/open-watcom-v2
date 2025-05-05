@@ -71,19 +71,12 @@ condcode    scr_min( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **resul
     gn.ignore_blanks = false;
 
     for( k = 0; k < parmcount; k++ ) {
-
-        number.s = parms[k].a;
-        number.e = parms[k].e;
-
-        unquote_arg( &number );
-
-        len = number.e - number.s + 1;          // length
-
+        number = parms[k].arg;
+        len = unquote_arg( &number );
         if( len <= 0 ) {                // null string nothing to do
             continue;                   // skip empty value
         }
-        gn.arg.s = number.s;
-        gn.arg.e = number.e;
+        gn.arg = number;
         cc = getnum( &gn );
         if( !(cc == pos  || cc == neg) ) {
             if( !ProcFlags.suppress_msg ) {

@@ -63,17 +63,11 @@ condcode    scr_right( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **res
       || parmcount > 3 )
         return( neg );
 
-    string.s = parms[0].a;
-    string.e = parms[0].e;
+    string = parms[0].arg;
+    len = unquote_arg( &string );
 
-    unquote_arg( &string );
-
-    len = string.e - string.s + 1;              // total length
-
+    gn.arg = parms[1].arg;
     gn.ignore_blanks = false;
-
-    gn.arg.s = parms[1].a;
-    gn.arg.e = parms[1].e;
     cc = getnum( &gn );
     if( cc != pos ) {
         if( !ProcFlags.suppress_msg ) {
@@ -87,12 +81,10 @@ condcode    scr_right( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **res
         if( n > len ) {                 // padding needed
             padchar = ' ';              // default padchar
             if( parmcount > 2 ) {       // pad character specified
-                if( parms[2].e >= parms[2].a ) {
-                    char * pa = parms[2].a;
-                    char * pe = parms[2].e;
-
-                    unquote_arg( &pa, &pe);
-                    padchar = *pa;
+                if( parms[2].arg.s <= parms[2].arg.e ) {
+                    tok_type pad = parms[2].arg;
+                    unquote_arg( &pad );
+                    padchar = *pad.s;
                 }
             }
             for( k = n - len; k > 0 && ressize > 0; k-- ) {

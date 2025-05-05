@@ -56,7 +56,6 @@
 condcode    scr_strip( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **result, unsigned ressize )
 {
     tok_type        string;
-    tok_type        type;
     int             len;
     char            stripchar;
     char            typechar;
@@ -65,12 +64,8 @@ condcode    scr_strip( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **res
       || parmcount > 3 )
         return( neg );
 
-    string.s = parms[0].a;
-    string.e = parms[0].e;
-
-    unquote_arg( &string );
-
-    len = string.e - string.s + 1;              // default length
+    string = parms[0].arg;
+    len = unquote_arg( &string );
 
     if( len <= 0 ) {                    // null string nothing to do
         **result = '\0';
@@ -81,13 +76,10 @@ condcode    scr_strip( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **res
     typechar  = 'B';                    // default strip both ends
 
     if( parmcount > 1 ) {               // evalute type
-        if( parms[1].e >= parms[1].a ) {// type
-            type.s = parms[1].a;
-            type.e = parms[1].e;
-
+        if( parms[1].arg.s <= parms[1].arg.e ) {// type
+            tok_type type = parms[1].arg;
             unquote_arg( &type );
             typechar = my_toupper( *type.s );
-
             switch( typechar ) {
             case   'B':
             case   'L':
@@ -104,10 +96,8 @@ condcode    scr_strip( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **res
     }
 
     if( parmcount > 2 ) {               // stripchar
-        if( parms[2].e >= parms[2].a ) {
-            type.s = parms[2].a;
-            type.e = parms[2].e;
-
+        if( parms[2].arg.s <= parms[2].arg.e ) {
+            tok_type type = parms[2].arg;
             unquote_arg( &type );
             stripchar = *type.s;
         }

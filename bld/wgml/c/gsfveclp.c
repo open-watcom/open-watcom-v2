@@ -107,17 +107,11 @@ static  condcode    scr_veclp( parm parms[MAX_FUN_PARMS], unsigned parmcount,
       || parmcount > 4 )
         return( neg );
 
-    needle.s = parms[0].a;
-    needle.e = parms[0].e;
+    needle = parms[0].arg;
+    needle_len = unquote_arg( &needle );
 
-    unquote_arg( &needle );
-    needle_len = needle.e - needle.s + 1;   // needle length
-
-    haystack.s = parms[1].a;
-    haystack.e = parms[1].e;
-
-    unquote_arg( &haystack );
-    haystack_len = haystack.e - haystack.s + 1;       // haystack length
+    haystack = parms[1].arg;
+    haystack_len = unquote_arg( &haystack );
 
     rc = 0;
     g_scan_err = false;

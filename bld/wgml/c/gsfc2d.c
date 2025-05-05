@@ -66,9 +66,7 @@ condcode    scr_c2d( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **resul
       || parmcount > 2 )
         return( neg );
 
-    string.s = parms[0].a;
-    string.e = parms[0].e;
-
+    string = parms[0].arg;
     unquote_arg( &string );
 
     n = 0;

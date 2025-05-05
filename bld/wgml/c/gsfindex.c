@@ -71,25 +71,18 @@ condcode    scr_index( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **res
       || parmcount > 3 )
         return( neg );
 
-    haystack.s = parms[0].a;
-    haystack.e = parms[0].e;
+    haystack = parms[0].arg;
+    haystack_len = unquote_arg( &haystack );
 
-    unquote_arg( &haystack );
-    haystack_len = haystack.e - haystack.s + 1;       // haystack length
+    needle = parms[1].arg;
+    needle_len = unquote_arg( &needle );
 
-    needle.s = parms[1].a;
-    needle.e = parms[1].e;
-
-    unquote_arg( &needle );
-    needle_len = needle.e - needle.s + 1;   // needle length
-
-    n   = 0;                            // default start pos
+    n = 0;                              // default start pos
     gn.ignore_blanks = false;
 
     if( parmcount > 2 ) {               // evalute start pos
-        if( parms[2].e >= parms[2].a ) {// start pos specified
-            gn.arg.s = parms[2].a;
-            gn.arg.e = parms[2].e;
+        if( parms[2].arg.s <= parms[2].arg.e ) {// start pos specified
+            gn.arg = parms[2].arg;
             cc = getnum( &gn );
             if( (cc != pos) || (gn.result == 0) ) {
                 if( !ProcFlags.suppress_msg ) {
@@ -157,7 +150,7 @@ condcode    scr_index( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **res
 
 condcode    scr_pos( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **result, unsigned ressize )
 {
-    char            *   pwk;
+    tok_type    pwk;
 
     if( parmcount < 2
       || parmcount > 2 )
@@ -166,13 +159,9 @@ condcode    scr_pos( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **resul
     /*
      * scr_pos : swap parm1 and parm2, then call scr_index
      */
-    pwk = parms[0].a;
-    parms[0].a = parms[1].a;
-    parms[1].a = pwk;
-
-    pwk = parms[0].e;
-    parms[0].e = parms[1].e;
-    parms[1].e = pwk;
+    pwk = parms[0].arg;
+    parms[0].arg = parms[1].arg;
+    parms[1].arg = pwk;
 
     return( scr_index( parms, parmcount, result, ressize ) );
 }
@@ -215,25 +204,18 @@ condcode    scr_lpos( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **resu
       || parmcount > 3 )
         return( neg );
 
-    needle.s = parms[0].a;
-    needle.e = parms[0].e;
+    needle = parms[0].arg;
+    needle_len = unquote_arg( &needle );
 
-    unquote_arg( &needle );
-    needle_len = needle.e - needle.s + 1;   // needle length
+    haystack = parms[1].arg;
+    haystack_len = unquote_arg( &haystack );
 
-    haystack.s = parms[1].a;
-    haystack.e = parms[1].e;
-
-    unquote_arg( &haystack );
-    haystack_len = haystack.e - haystack.s + 1;       // haystack length
-
-    n   = 0;                            // default start pos
+    n = 0;                            // default start pos
     gn.ignore_blanks = false;
 
     if( parmcount > 2 ) {               // evalute start pos
-        if( parms[2].e >= parms[2].a ) {// start pos specified
-            gn.arg.s = parms[2].a;
-            gn.arg.e = parms[2].e;
+        if( parms[2].arg.s <= parms[2].arg.e ) {// start pos specified
+            gn.arg = parms[2].arg;
             cc = getnum( &gn );
             if( (cc != pos) || (gn.result == 0) ) {
                 if( !ProcFlags.suppress_msg ) {

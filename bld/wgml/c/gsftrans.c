@@ -70,8 +70,7 @@ condcode    scr_translate( parm parms[MAX_FUN_PARMS], unsigned parmcount, char *
       || parmcount > 4 )
         return( neg );
 
-    string.s = parms[0].a;
-    string.e = parms[0].e;
+    string = parms[0].arg;
     unquote_arg( &string );
 
     if( string.e - string.s + 1 <= 0 ) {        // null string nothing to do
@@ -79,8 +78,7 @@ condcode    scr_translate( parm parms[MAX_FUN_PARMS], unsigned parmcount, char *
         return( pos );
     }
 
-    tableo.s = parms[1].a;
-    tableo.e = parms[1].e;
+    tableo = parms[1].arg;
     if( (parmcount > 1) && (tableo.e >= tableo.s) ) {   // tableo is not empty
         unquote_arg( &tableo );
     } else {
@@ -88,8 +86,7 @@ condcode    scr_translate( parm parms[MAX_FUN_PARMS], unsigned parmcount, char *
         tableo.e = NULL;
     }
 
-    tablei.s = parms[2].a;
-    tablei.e = parms[2].e;
+    tablei = parms[2].arg;
     if( (parmcount > 2) && (tablei.e >= tablei.s) ) {   // tablei is not empty
         unquote_arg( &tablei );
     } else {
@@ -98,10 +95,7 @@ condcode    scr_translate( parm parms[MAX_FUN_PARMS], unsigned parmcount, char *
     }
 
     if( parmcount > 3 ) {               // padchar specified
-        tok_type    pad;
-
-        pad.s = parms[3].a;
-        pad.e = parms[3].e;
+        tok_type pad = parms[3].arg;
         unquote_arg( &pad );
         padchar = *pad.s;
         padchar_set = true;

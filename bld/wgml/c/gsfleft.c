@@ -62,21 +62,16 @@ condcode    scr_left( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **resu
       || parmcount > 3 )
         return( neg );
 
-    string.s = parms[0].a;
-    string.e = parms[0].e;
-
-    unquote_arg( &string );
-
-    len = string.e - string.s + 1;              // default length
+    string = parms[0].arg;
+    len = unquote_arg( &string );
 
     if( len <= 0 ) {                    // null string nothing to do
         **result = '\0';
         return( pos );
     }
 
-    if( parms[1].e >= parms[1].a ) {// length specified
-        gn.arg.s = parms[1].a;
-        gn.arg.e = parms[1].e;
+    if( parms[1].arg.s <= parms[1].arg.e ) {// length specified
+        gn.arg = parms[1].arg;
         cc = getnum( &gn );
         if( cc != pos ) {
             if( !ProcFlags.suppress_msg ) {
