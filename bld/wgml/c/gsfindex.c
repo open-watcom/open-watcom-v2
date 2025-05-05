@@ -51,44 +51,6 @@
 /*      &'index('ababab','ab',6) ==> 0                                     */
 /*                                                                         */
 /***************************************************************************/
-/***************************************************************************/
-/*                                                                         */
-/* &'pos(needle,haystack<,start>):   The  Position function  returns  the  */
-/*    character position  of the first  occurrence of 'needle'  in 'hays-  */
-/*    tack'.   The  search for a  match starts  at the first  position of  */
-/*    'haystack' but  may be  overridden by  adding a  'start' column  in  */
-/*    'haystack'.    If the  'needle' string  is  not found,   a zero  is  */
-/*    returned.                                                            */
-/*      &'pos('c','abcde') ==> 3                                           */
-/*      &'pos(x,abcde) ==> 0                                               */
-/*      &'pos(abcde,abcde) ==> 1                                           */
-/*      &'pos(a,aaaaa) ==> 1                                               */
-/*      &'pos('a','aaaaa') ==> 1                                           */
-/*      &'pos(a,aaaaa,3) ==> 3                                             */
-/*      &'pos(12345678,abc) ==> 0                                          */
-/*      &'pos(a) ==> error, too few operands                               */
-/*      &'pos(a,abcd,junk) ==> error, 'start' not numeric                  */
-/*      &'pos(a,abcd,3,'.') ==> error, too many operands                   */
-/*                                                                         */
-/***************************************************************************/
-/***************************************************************************/
-/*                                                                         */
-/* &'lastpos(needle,haystack<,start>):    The  Last   Position   function  */
-/*    returns the starting  character of the last  occurrence of 'needle'  */
-/*    in 'haystack'.  The first position to search from in 'haystack' may  */
-/*    be specified  with 'start' and  this defaults  to the start  of the  */
-/*    'haystack' string.  If no match for 'needle' can be found in 'hays-  */
-/*    tack' then zero is returned.                                         */
-/*      &'lastpos('c','abcde') ==> 3                                       */
-/*      &'lastpos(x,abcde) ==> 0                                           */
-/*      &'lastpos(abcde,abcde) ==> 1                                       */
-/*      &'lastpos(a,aaaaa) ==> 5                                           */
-/*      &'lastpos('a','aaaaa') ==> 5                                       */
-/*      &'lastpos(a,aaaaa,3) ==> 5                                         */
-/*      &'lastpos(a,aaaaa,10) ==> 0                                        */
-/*      &'lastpos(a) ==> error, too few operands                           */
-/*                                                                         */
-/***************************************************************************/
 
 condcode    scr_index( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **result, unsigned ressize )
 {
@@ -175,10 +137,26 @@ condcode    scr_index( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **res
     return( pos );
 }
 
-/*
- * scr_pos : swap parm1 and parm2, then call scr_index
- *
- */
+/***************************************************************************/
+/*                                                                         */
+/* &'pos(needle,haystack<,start>):   The  Position function  returns  the  */
+/*    character position  of the first  occurrence of 'needle'  in 'hays-  */
+/*    tack'.   The  search for a  match starts  at the first  position of  */
+/*    'haystack' but  may be  overridden by  adding a  'start' column  in  */
+/*    'haystack'.    If the  'needle' string  is  not found,   a zero  is  */
+/*    returned.                                                            */
+/*      &'pos('c','abcde') ==> 3                                           */
+/*      &'pos(x,abcde) ==> 0                                               */
+/*      &'pos(abcde,abcde) ==> 1                                           */
+/*      &'pos(a,aaaaa) ==> 1                                               */
+/*      &'pos('a','aaaaa') ==> 1                                           */
+/*      &'pos(a,aaaaa,3) ==> 3                                             */
+/*      &'pos(12345678,abc) ==> 0                                          */
+/*      &'pos(a) ==> error, too few operands                               */
+/*      &'pos(a,abcd,junk) ==> error, 'start' not numeric                  */
+/*      &'pos(a,abcd,3,'.') ==> error, too many operands                   */
+/*                                                                         */
+/***************************************************************************/
 
 condcode    scr_pos( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **result, unsigned ressize )
 {
@@ -187,7 +165,9 @@ condcode    scr_pos( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **resul
     if( parmcount < 2 ) {
         return( neg );
     }
-
+    /*
+     * scr_pos : swap parm1 and parm2, then call scr_index
+     */
     pwk = parms[0].a;
     parms[0].a = parms[1].a;
     parms[1].a = pwk;
@@ -200,7 +180,22 @@ condcode    scr_pos( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **resul
 }
 
 /***************************************************************************/
-/*  lastpos                                                                */
+/*                                                                         */
+/* &'lastpos(needle,haystack<,start>):    The  Last   Position   function  */
+/*    returns the starting  character of the last  occurrence of 'needle'  */
+/*    in 'haystack'.  The first position to search from in 'haystack' may  */
+/*    be specified  with 'start' and  this defaults  to the start  of the  */
+/*    'haystack' string.  If no match for 'needle' can be found in 'hays-  */
+/*    tack' then zero is returned.                                         */
+/*      &'lastpos('c','abcde') ==> 3                                       */
+/*      &'lastpos(x,abcde) ==> 0                                           */
+/*      &'lastpos(abcde,abcde) ==> 1                                       */
+/*      &'lastpos(a,aaaaa) ==> 5                                           */
+/*      &'lastpos('a','aaaaa') ==> 5                                       */
+/*      &'lastpos(a,aaaaa,3) ==> 5                                         */
+/*      &'lastpos(a,aaaaa,10) ==> 0                                        */
+/*      &'lastpos(a) ==> error, too few operands                           */
+/*                                                                         */
 /***************************************************************************/
 
 condcode    scr_lpos( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **result, unsigned ressize )
