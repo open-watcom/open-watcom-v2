@@ -91,8 +91,8 @@ condcode    scr_index( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **res
 
     if( parmcount > 2 ) {               // evalute start pos
         if( parms[2].e >= parms[2].a ) {// start pos specified
-            gn.argstart = parms[2].a;
-            gn.argstop  = parms[2].e;
+            gn.arg.s = parms[2].a;
+            gn.arg.e = parms[2].e;
             cc = getnum( &gn );
             if( (cc != pos) || (gn.result == 0) ) {
                 if( !ProcFlags.suppress_msg ) {
@@ -237,8 +237,8 @@ condcode    scr_lpos( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **resu
 
     if( parmcount > 2 ) {               // evalute start pos
         if( parms[2].e >= parms[2].a ) {// start pos specified
-            gn.argstart = parms[2].a;
-            gn.argstop  = parms[2].e;
+            gn.arg.s = parms[2].a;
+            gn.arg.e = parms[2].e;
             cc = getnum( &gn );
             if( (cc != pos) || (gn.result == 0) ) {
                 if( !ProcFlags.suppress_msg ) {

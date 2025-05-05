@@ -159,14 +159,12 @@ void    scr_label( void )
         xx_source_err_c( err_missing_name, "" );
     } else {
 
-        gn.argstart      = scan_start;
-        gn.argstop       = scan_stop;
-        gn.ignore_blanks = 0;
-
+        gn.arg.s = scan_start;
+        gn.arg.e = scan_stop;
+        gn.ignore_blanks = false;
         cc = getnum( &gn );             // try numeric expression evaluation
         if( cc == pos ) {               // numeric linenumber
-
-            scan_start = gn.argstart;   // start for next token
+            scan_start = gn.arg.s;      // start for next token
 
             // check if lineno from label matches actual lineno
 
@@ -318,10 +316,9 @@ void    scr_go( void )
         xx_source_err_c( err_missing_name, "" );
     }
 
-    gn.argstart      = g_tok_start;
-    gn.argstop       = scan_stop;
-    gn.ignore_blanks = 0;
-
+    gn.arg.s = g_tok_start;
+    gn.arg.e = scan_stop;
+    gn.ignore_blanks = false;
     cc = getnum( &gn );             // try numeric expression evaluation
     if( cc == pos  || cc  == neg) {     // numeric linenumber
         gotarget[0] = '\0';             // no target label name

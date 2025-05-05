@@ -82,11 +82,10 @@ condcode    scr_d2c( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **resul
     }
 
     n   = 0;
-    gn.ignore_blanks = false;
-
     if( parms[1].e >= parms[1].a ) {
-        gn.argstart = pval;
-        gn.argstop  = pend;
+        gn.arg.s = pval;
+        gn.arg.e = pend;
+        gn.ignore_blanks = false;
         cc = getnum( &gn );
         if( (cc != pos) ) {
             if( !ProcFlags.suppress_msg ) {

@@ -261,10 +261,9 @@ void    scr_cp( void )
     }
     len = p - pa;
     if( len > 0 ) {                     // no action if no parm
-        gn.argstart = pa;
-        gn.argstop = scan_stop;
-        gn.ignore_blanks = 0;
-
+        gn.arg.s = pa;
+        gn.arg.e = scan_stop;
+        gn.ignore_blanks = false;
         cc = getnum( &gn );            // try to get numeric value
         if( cc == notnum ) {
             xx_opt_err( cwcurr, pa );
@@ -276,7 +275,7 @@ void    scr_cp( void )
                     reset_t_page();
                 }
             }
-            scan_restart = gn.argstart;
+            scan_restart = gn.arg.s;
         }
     } else {
        scan_restart = scan_stop;

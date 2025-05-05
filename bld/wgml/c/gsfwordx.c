@@ -101,8 +101,8 @@ static  condcode    scr_xx_word( parm parms[MAX_FUN_PARMS], unsigned parmcount,
     gn.ignore_blanks = false;
 
     if( parms[1].e >= parms[1].a ) {// start pos specified
-        gn.argstart = parms[1].a;
-        gn.argstop  = parms[1].e;
+        gn.arg.s = parms[1].a;
+        gn.arg.e = parms[1].e;
         cc = getnum( &gn );
         if( (cc != pos) || (gn.result > len) ) {
             if( !ProcFlags.suppress_msg ) {
@@ -118,8 +118,8 @@ static  condcode    scr_xx_word( parm parms[MAX_FUN_PARMS], unsigned parmcount,
     } else {
         if( parmcount > 2 ) {           // evalute word count
             if( parms[2].e >= parms[2].a ) {
-                gn.argstart = parms[2].a;
-                gn.argstop  = parms[2].e;
+                gn.arg.s = parms[2].a;
+                gn.arg.e = parms[2].e;
                 cc = getnum( &gn );
                 if( (cc != pos) || (gn.result == 0) ) {
                     if( !ProcFlags.suppress_msg ) {
@@ -387,8 +387,8 @@ condcode    scr_wordpos( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **r
     if( parmcount > 2 ) {               // evalute start word
         if( parms[2].a <= parms[2].e ) {
             gn.ignore_blanks = false;
-            gn.argstart = parms[2].a;
-            gn.argstop  = parms[2].e;
+            gn.arg.s = parms[2].a;
+            gn.arg.e = parms[2].e;
             cc = getnum( &gn );
             if( (cc != pos) || (gn.result == 0) ) {
                 if( !ProcFlags.suppress_msg ) {

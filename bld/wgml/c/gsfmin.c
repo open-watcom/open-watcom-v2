@@ -85,8 +85,8 @@ condcode    scr_min( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **resul
         if( len <= 0 ) {                // null string nothing to do
             continue;                   // skip empty value
         }
-        gn.argstart = pval;
-        gn.argstop  = pend;
+        gn.arg.s = pval;
+        gn.arg.e = pend;
         cc = getnum( &gn );
         if( !(cc == pos  || cc == neg) ) {
             if( !ProcFlags.suppress_msg ) {

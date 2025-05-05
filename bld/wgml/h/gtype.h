@@ -660,8 +660,7 @@ typedef enum {
 
 typedef struct getnum_block {
     int         ignore_blanks;          // 1 if blanks are ignored
-    char        *argstart;
-    char        *argstop;
+    tok_type    arg;
     char        *errstart;
     char        *first;
     int         length;

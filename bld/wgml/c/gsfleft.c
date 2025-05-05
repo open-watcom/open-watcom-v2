@@ -77,8 +77,8 @@ condcode    scr_left( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **resu
     }
 
     if( parms[1].e >= parms[1].a ) {// length specified
-        gn.argstart = parms[1].a;
-        gn.argstop  = parms[1].e;
+        gn.arg.s = parms[1].a;
+        gn.arg.e = parms[1].e;
         cc = getnum( &gn );
         if( cc != pos ) {
             if( !ProcFlags.suppress_msg ) {

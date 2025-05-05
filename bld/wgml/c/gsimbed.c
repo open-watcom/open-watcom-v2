@@ -161,20 +161,15 @@ void    scr_im( void )
 
     p = scan_start;
     SkipSpaces( p );
-    gn.argstart = p;
-    gn.argstop  = scan_stop;
-    gn.ignore_blanks = 0;
-
+    gn.arg.s = p;
+    gn.arg.e = scan_stop;
+    gn.ignore_blanks = false;
     cc = getnum( &gn );
-
     if( (cc == pos) && (gn.result < 10) ) { // include SYSUSR0x.GML
-
         close_pu_file( gn.result );     // if still open
         strcpy( token_buf, get_workfile_name( gn.result ) );
-
     } else {
-        p = gn.argstart;
-
+        p = gn.arg.s;
         if( *p == '"' || *p == '\'' ) {
             quote = *p;
             ++p;

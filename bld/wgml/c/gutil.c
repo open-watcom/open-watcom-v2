@@ -329,10 +329,10 @@ static bool su_expression( su * in_su )
     getnum_block        gn;
 
     gn.ignore_blanks = false;
-    gn.argstart = p;
+    gn.arg.s = p;
     while( *p != '\0' )
         p++;
-    gn.argstop = p - 1;
+    gn.arg.e = p - 1;
     cc = getnum( &gn );
 
     if( cc == notnum ) {

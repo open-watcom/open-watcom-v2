@@ -155,9 +155,9 @@ void    scr_pu( void )
         fno = 1;                        // "1" is default
     } else {
 
-        gn.argstart = pa;
-        gn.argstop = p;
-        gn.ignore_blanks = 0;
+        gn.arg.s = pa;
+        gn.arg.e = p;
+        gn.ignore_blanks = false;
         cc = getnum( &gn );
 
         if( cc != notnum ) {            // number found

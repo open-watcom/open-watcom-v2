@@ -325,8 +325,8 @@ static  int evaluate( char **line, int *val )
 
                 num = strtol( str, &endptr, 10 );
                 if( (errno == ERANGE)
-                  || (num <= INT_MIN) 
-                  || (num >= INT_MAX) 
+                  || (num <= INT_MIN)
+                  || (num >= INT_MAX)
                   || (str == endptr) ) {
                     return( not_ok );
                 }
@@ -401,38 +401,36 @@ static  int evaluate( char **line, int *val )
 
 condcode getnum( getnum_block *gn )
 {
-    char    *   a;                      // arg start  (X2)
-    char    *   z;                      // arg stop   (R1)
+    tok_type    arg;
     char        c;
     int         rc;
 
-    a = gn->argstart;
-    z = gn->argstop;
+    arg = gn->arg;
 
-    while( a < z && *a == ' ' ) {
-        a++;                            // skip leading blanks
+    while( arg.s < arg.e && *arg.s == ' ' ) {
+        arg.s++;                        // skip leading blanks
     }
-    gn->errstart = a;
-    gn->first    = a;
-    if( a > z ) {
+    gn->errstart = arg.s;
+    gn->first    = arg.s;
+    if( arg.s > arg.e ) {
         gn->cc = omit;
         return( omit );                 // nothing there
     }
-    c = *a;
+    c = *arg.s;
     if( c == '+' || c == '-' ) {
         gn->num_sign = c;               // unary sign
     } else {
         gn->num_sign = ' ';             // no unary sign
     }
     ignore_blanks = gn->ignore_blanks;
-    c = *(z + 1);
-    *(z + 1) = '\0';                // make null terminated string
-    rc = evaluate( &a, &gn->result );
-    *(z + 1) = c;
+    c = *(arg.e + 1);
+    *(arg.e + 1) = '\0';                // make null terminated string
+    rc = evaluate( &arg.s, &gn->result );
+    *(arg.e + 1) = c;
     if( rc != 0 ) {
         gn->cc = notnum;
     } else {
-        gn->argstart = a + 1;       // start for next scan
+        gn->arg.s = arg.s + 1;          // start for next scan
         gn->length = sprintf( gn->resultstr, "%d", gn->result );
         if( gn->result >= 0 ) {
             gn->cc = pos;
@@ -442,4 +440,3 @@ condcode getnum( getnum_block *gn )
     }
     return( gn->cc );
 }
-

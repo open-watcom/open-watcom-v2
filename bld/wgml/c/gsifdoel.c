@@ -220,10 +220,9 @@ static condcode gargterm( termcb * t )
     getnum_block    gn;
     condcode        cc;
 
-    gn.argstart = scan_start;
-    gn.argstop  = scan_stop;
-    gn.ignore_blanks = 0;
-
+    gn.arg.s = scan_start;
+    gn.arg.e = scan_stop;
+    gn.ignore_blanks = false;
     cc = getnum( &gn );                 // try to get numeric value
     if( cc == notnum ) {
         t->numeric = false;
@@ -242,10 +241,10 @@ static condcode gargterm( termcb * t )
         t->term_string = mem_tokdup( g_tok_start, arg_flen );
         t->term_length = arg_flen;
     } else {
-        if( gn.argstart > gn.argstop ) {
-            scan_start = gn.argstop;        // enforce end of logical record
+        if( gn.arg.s > gn.arg.e ) {
+            scan_start = gn.arg.e;        // enforce end of logical record
         } else {
-            scan_start = gn.argstart;
+            scan_start = gn.arg.s;
         }
         t->numeric = true;
         t->term_number = gn.result;

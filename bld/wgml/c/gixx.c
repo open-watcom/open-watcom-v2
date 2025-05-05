@@ -258,9 +258,9 @@ static void gml_ixxx_common( const gmltag * entry, int hx_lvl )
             } else if( strnicmp( "ix", p, 2 ) == 0 ) {
                 p += 2;
                 p = get_att_value( p );
-                gn.argstart = val_start;
-                gn.argstop = val_start + val_len;
-                gn.ignore_blanks = 0;
+                gn.arg.s = val_start;
+                gn.arg.e = val_start + val_len;
+                gn.ignore_blanks = false;
                 cc = getnum( &gn );
 
                 if( (cc == pos) || (cc == neg) ) {

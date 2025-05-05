@@ -97,10 +97,9 @@ void    scr_li( void )
             scan_restart = pa;
         }
     } else {
-        gn.argstart = pa;
-        gn.argstop  = scan_stop;
-        gn.ignore_blanks = 0;
-
+        gn.arg.s = pa;
+        gn.arg.e = scan_stop;
+        gn.ignore_blanks = false;
         cc = getnum( &gn );             // try to get numeric value
         if( cc == notnum ) {
             switch( len ) {
@@ -147,7 +146,7 @@ void    scr_li( void )
                 if( gn.result > 0 ) {
                     li_cnt = gn.result;
                     ProcFlags.literal = true;
-                    scan_restart = gn.argstart;
+                    scan_restart = gn.arg.s;
                 }
             } else {
                 scan_restart = pa;         // .li already active, treat as text

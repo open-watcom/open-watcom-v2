@@ -147,10 +147,9 @@ void    scr_pe( void )
     if( len == 0 ) {                    // omitted means ON
         init_pe_line( INT_MAX );
     } else {
-        gn.argstart = pa;
-        gn.argstop  = scan_stop;
-        gn.ignore_blanks = 0;
-
+        gn.arg.s = pa;
+        gn.arg.e = scan_stop;
+        gn.ignore_blanks = false;
         cc = getnum( &gn );             // try to get numeric value
         if( cc == notnum ) {
             switch( len ) {
@@ -179,7 +178,7 @@ void    scr_pe( void )
                 xx_line_err_cc( err_xx_opt, cwcurr, pa );
             }
         } else {
-            scan_start = gn.argstart;
+            scan_start = gn.arg.s;
             if( gn.result < 0 ) {
                 xx_line_err_c( err_val_neg, pa );
             } else {
