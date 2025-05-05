@@ -130,6 +130,16 @@ typedef unsigned    line_number;
 typedef uint8_t     text_space;
 typedef uint32_t    units_space;
 
+typedef struct tok_type {
+    char        *s;
+    char        *e;
+} tok_type;
+
+typedef struct str_type {
+    char        *s;
+    unsigned    l;
+} str_type;
+
 /***************************************************************************/
 /*  Space units Horiz + Vert              to be redesigned      TBD        */
 /***************************************************************************/
