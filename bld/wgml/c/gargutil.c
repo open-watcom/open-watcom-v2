@@ -360,7 +360,7 @@ bool is_space_tab_char( char c )
  * than one character
  */
 
-void unquote_if_quoted( char **a, char **z )
+void unquote_arg( char **a, char **z )
 {
     if( (*a != *z) && (**a == **z) && is_quote_char( **a ) ) {
         *a += 1;

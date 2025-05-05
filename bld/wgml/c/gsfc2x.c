@@ -70,7 +70,7 @@ condcode    scr_c2x( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **resul
     pval = parms[0].a;
     pend = parms[0].e;
 
-    unquote_if_quoted( &pval, &pend );
+    unquote_arg( &pval, &pend );
 
     while( (pval <= pend) && (ressize > 1) ) {
         **result = hex( (unsigned)*pval >> 4 );

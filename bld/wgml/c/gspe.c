@@ -151,7 +151,7 @@ void    scr_pe( void )
         gn.argstop  = scan_stop;
         gn.ignore_blanks = 0;
 
-        cc = getnum ( &gn );            // try to get numeric value
+        cc = getnum( &gn );             // try to get numeric value
         if( cc == notnum ) {
             switch( len ) {
             case 2 :

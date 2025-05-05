@@ -88,7 +88,7 @@ static  condcode    scr_xx_word( parm parms[MAX_FUN_PARMS], unsigned parmcount,
     pval = parms[0].a;
     pend = parms[0].e;
 
-    unquote_if_quoted( &pval, &pend );
+    unquote_arg( &pval, &pend );
 
     len = pend - pval + 1;              // default length
 
@@ -233,7 +233,7 @@ condcode    scr_words( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **res
     pval = parms[0].a;
     pend = parms[0].e;
 
-    unquote_if_quoted( &pval, &pend );
+    unquote_arg( &pval, &pend );
 
     len = pend - pval + 1;
 
@@ -368,11 +368,11 @@ condcode    scr_wordpos( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **r
 
     phrases = parms[0].a;
     phrasee = parms[0].e;
-    unquote_if_quoted( &phrases, &phrasee );
+    unquote_arg( &phrases, &phrasee );
 
     strings = parms[1].a;
     stringe = parms[1].e;
-    unquote_if_quoted( &strings, &stringe );
+    unquote_arg( &strings, &stringe );
 
     if( (phrasee - phrases + 1 <= 0)        // null phrase nothing to do
       || (stringe - strings + 1 <= 0) ) {   // null string nothing to do
@@ -455,11 +455,11 @@ condcode    scr_find( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **resu
 
     strings = parms[0].a;
     stringe = parms[0].e;
-    unquote_if_quoted( &strings, &stringe );
+    unquote_arg( &strings, &stringe );
 
     phrases = parms[1].a;
     phrasee = parms[1].e;
-    unquote_if_quoted( &phrases, &phrasee );
+    unquote_arg( &phrases, &phrasee );
 
     if( (phrasee - phrases + 1 <= 0)        // null phrase nothing to do
       || (stringe - strings + 1 <= 0) ) {   // null string nothing to do

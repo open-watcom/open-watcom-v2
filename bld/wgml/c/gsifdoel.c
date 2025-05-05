@@ -224,7 +224,7 @@ static condcode gargterm( termcb * t )
     gn.argstop  = scan_stop;
     gn.ignore_blanks = 0;
 
-    cc = getnum ( &gn );                // try to get numeric value
+    cc = getnum( &gn );                 // try to get numeric value
     if( cc == notnum ) {
         t->numeric = false;
         t->term_number = 0;

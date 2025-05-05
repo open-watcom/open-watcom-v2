@@ -75,7 +75,7 @@ condcode    scr_width( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **res
     pval = parms[0].a;
     pend = parms[0].e;
 
-    unquote_if_quoted( &pval, &pend );
+    unquote_arg( &pval, &pend );
 
     len = pend - pval + 1;
 
@@ -91,7 +91,7 @@ condcode    scr_width( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **res
             pa  = parms[1].a;
             pe  = parms[1].e;
 
-            unquote_if_quoted( &pa, &pe );
+            unquote_arg( &pa, &pe );
 
             type = my_tolower( *pa );
             switch( type ) {

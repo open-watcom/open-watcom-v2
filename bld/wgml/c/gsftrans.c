@@ -75,7 +75,7 @@ condcode    scr_translate( parm parms[MAX_FUN_PARMS], unsigned parmcount, char *
 
     pval = parms[0].a;
     pend = parms[0].e;
-    unquote_if_quoted( &pval, &pend );
+    unquote_arg( &pval, &pend );
 
     if( pend - pval + 1 <= 0 ) {        // null string nothing to do
         **result = '\0';
@@ -85,7 +85,7 @@ condcode    scr_translate( parm parms[MAX_FUN_PARMS], unsigned parmcount, char *
     ptaboa = parms[1].a;
     ptaboe = parms[1].e;
     if( (parmcount > 1) && (ptaboe >= ptaboa) ) {   // tableo is not empty
-        unquote_if_quoted( &ptaboa, &ptaboe );
+        unquote_arg( &ptaboa, &ptaboe );
     } else {
         ptaboa = NULL;
         ptaboe = NULL;
@@ -94,7 +94,7 @@ condcode    scr_translate( parm parms[MAX_FUN_PARMS], unsigned parmcount, char *
     ptabia = parms[2].a;
     ptabie = parms[2].e;
     if( (parmcount > 2) && (ptabie >= ptabia) ) {   // tablei is not empty
-        unquote_if_quoted( &ptabia, &ptabie );
+        unquote_arg( &ptabia, &ptabie );
     } else {
         ptabia = NULL;
         ptabie = NULL;
@@ -104,7 +104,7 @@ condcode    scr_translate( parm parms[MAX_FUN_PARMS], unsigned parmcount, char *
         char    * pa = parms[3].a;
         char    * pe = parms[3].e;
 
-        unquote_if_quoted( &pa, &pe );
+        unquote_arg( &pa, &pe );
         padchar = *pa;
         padchar_set = true;
     } else {

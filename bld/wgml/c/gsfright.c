@@ -68,7 +68,7 @@ condcode    scr_right( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **res
     pval = parms[0].a;
     pend = parms[0].e;
 
-    unquote_if_quoted( &pval, &pend );
+    unquote_arg( &pval, &pend );
 
     len = pend - pval + 1;              // total length
 
@@ -93,7 +93,7 @@ condcode    scr_right( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **res
                     char * pa = parms[2].a;
                     char * pe = parms[2].e;
 
-                    unquote_if_quoted( &pa, &pe);
+                    unquote_arg( &pa, &pe);
                     padchar = *pa;
                 }
             }

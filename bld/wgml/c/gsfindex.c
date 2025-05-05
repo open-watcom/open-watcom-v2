@@ -77,13 +77,13 @@ condcode    scr_index( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **res
     phay = parms[0].a;
     phayend = parms[0].e;
 
-    unquote_if_quoted( &phay, &phayend );
+    unquote_arg( &phay, &phayend );
     hay_len = phayend - phay + 1;       // haystack length
 
     pneedle = parms[1].a;
     pneedlend = parms[1].e;
 
-    unquote_if_quoted( &pneedle, &pneedlend );
+    unquote_arg( &pneedle, &pneedlend );
     needle_len = pneedlend - pneedle + 1;   // needle length
 
     n   = 0;                            // default start pos
@@ -223,13 +223,13 @@ condcode    scr_lpos( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **resu
     pneedle = parms[0].a;
     pneedlend = parms[0].e;
 
-    unquote_if_quoted( &pneedle, &pneedlend );
+    unquote_arg( &pneedle, &pneedlend );
     needle_len = pneedlend - pneedle + 1;   // needle length
 
     phay = parms[1].a;
     phayend = parms[1].e;
 
-    unquote_if_quoted( &phay, &phayend );
+    unquote_arg( &phay, &phayend );
     hay_len = phayend - phay + 1;       // haystack length
 
     n   = 0;                            // default start pos

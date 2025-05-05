@@ -66,7 +66,7 @@ condcode    scr_delstr( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **re
     pval = parms[0].a;
     pend = parms[0].e;
 
-    unquote_if_quoted( &pval, &pend );
+    unquote_arg( &pval, &pend );
 
     len = pend - pval + 1;              // default length
 

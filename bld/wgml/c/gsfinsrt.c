@@ -76,7 +76,7 @@ condcode    scr_insert( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **re
     pval = parms[0].a;                // string to insert
     pend = parms[0].e;
 
-    unquote_if_quoted( &pval, &pend );
+    unquote_arg( &pval, &pend );
 
     len = pend - pval + 1;              // length to insert
 
@@ -84,7 +84,7 @@ condcode    scr_insert( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **re
     ptarget    = parms[1].a;          // string to be modified
     ptargetend = parms[1].e;
 
-    unquote_if_quoted( &ptarget, &ptargetend );
+    unquote_arg( &ptarget, &ptargetend );
 
 
     if( len <= 0 ) {                    // null string insert nothing to do

@@ -78,7 +78,7 @@ condcode    scr_min( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **resul
         pval = parms[k].a;
         pend = parms[k].e;
 
-        unquote_if_quoted( &pval, &pend );
+        unquote_arg( &pval, &pend );
 
         len = pend - pval + 1;          // length
 
