@@ -35,6 +35,99 @@
 #include "wgml.h"
 
 
+static condcode    get_pos( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **result, unsigned ressize, bool last, bool index )
+{
+    tok_type        needle;
+    tok_type        haystack;
+    int             start;
+    condcode        cc;
+    int             result_index;
+    int             haystack_len;
+    int             needle_len;
+    getnum_block    gn;
+    char            *ph;
+    char            *pn;
+
+    (void)ressize;
+
+    if( parmcount < 2
+      || parmcount > 3 )
+        return( neg );
+
+    result_index = 0;
+
+    if( index ) {
+        haystack = parms[0].arg;
+        needle = parms[1].arg;
+    } else {
+        needle = parms[0].arg;
+        haystack = parms[1].arg;
+    }
+
+    needle_len = unquote_arg( &needle );
+    haystack_len = unquote_arg( &haystack );
+    if( haystack_len > 0
+      && needle_len > 0
+      && haystack_len >= needle_len ) {
+        start = 0;      /* default start pos */
+        if( parmcount > 2 ) {
+            /*
+             * evalute start pos (optional)
+             */
+            if( parms[2].arg.s <= parms[2].arg.e ) {
+                gn.arg = parms[2].arg;
+                gn.ignore_blanks = false;
+                cc = getnum( &gn );
+                if( (cc != pos) || (gn.result == 0) ) {
+                    if( !ProcFlags.suppress_msg ) {
+                        xx_source_err_c( err_func_parm, "3 (startpos)" );
+                    }
+                    return( cc );
+                }
+                start = gn.result - 1;
+            }
+        }
+
+        if( haystack_len >= start + needle_len ) {
+            if( last ) {
+                /*
+                 * search last
+                 */
+                for( ph = haystack.e; ph >= haystack.s + start; ph-- ) {
+                    pn = needle.e;
+                    while( (*ph == *pn) && (pn >= needle.s)) {
+                        ph--;
+                        pn--;
+                    }
+                    if( pn < needle.s ) {
+                        result_index = ph - haystack.s + 2;    // found, set index
+                        break;
+                    }
+                }
+            } else {
+                /*
+                 * search first
+                 */
+                for( ph = haystack.s + start; ph <= haystack.e - needle_len + 1; ph++ ) {
+                    pn = needle.s;
+                    while( (*ph == *pn) && (pn <= needle.e)) {
+                        ph++;
+                        pn++;
+                    }
+                    if( pn > needle.e ) {
+                        result_index = ph - haystack.s - needle_len + 1; // found, set index
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
+    *result += sprintf( *result, "%d", result_index );
+
+    return( pos );
+}
+
 /***************************************************************************/
 /*                                                                         */
 /* &'index(haystack,needle<,start>):   The  Index  function  returns  the  */
@@ -54,77 +147,7 @@
 
 condcode    scr_index( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **result, unsigned ressize )
 {
-    tok_type        needle;
-    tok_type        haystack;
-    condcode        cc;
-    int             index;
-    int             n;
-    int             haystack_len;
-    int             needle_len;
-    getnum_block    gn;
-    char            *ph;
-    char            *pn;
-
-    (void)ressize;
-
-    if( parmcount < 2
-      || parmcount > 3 )
-        return( neg );
-
-    haystack = parms[0].arg;
-    haystack_len = unquote_arg( &haystack );
-
-    needle = parms[1].arg;
-    needle_len = unquote_arg( &needle );
-
-    n = 0;                              // default start pos
-    gn.ignore_blanks = false;
-
-    if( parmcount > 2 ) {               // evalute start pos
-        if( parms[2].arg.s <= parms[2].arg.e ) {// start pos specified
-            gn.arg = parms[2].arg;
-            cc = getnum( &gn );
-            if( (cc != pos) || (gn.result == 0) ) {
-                if( !ProcFlags.suppress_msg ) {
-                    xx_source_err_c( err_func_parm, "3 (startpos)" );
-                }
-                return( cc );
-            }
-            n = gn.result - 1;
-        }
-    }
-
-    if( (haystack_len <= 0) ||               // null string nothing to do
-        (needle_len <= 0) ||            // needle null nothing to do
-        (needle_len > haystack_len) ||       // needle longer haystack
-        (n + needle_len > haystack_len) ) {  // startpos + needlelen > haystack
-                                        // ... match impossible
-
-        **result = '0';                 // return index zero
-        *result += 1;
-        **result = '\0';
-        return( pos );
-    }
-
-    ph = haystack.s + n;                      // startpos in haystack
-    pn = needle.s;
-    index = 0;
-
-    for( ph = haystack.s + n; ph <= haystack.e - needle_len + 1; ph++ ) {
-        pn = needle.s;
-        while( (*ph == *pn) && (pn <= needle.e)) {
-            ph++;
-            pn++;
-        }
-        if( pn > needle.e ) {
-            index = ph - haystack.s - needle_len + 1; // found, set index
-            break;
-        }
-    }
-
-    *result += sprintf( *result, "%d", index );
-
-    return( pos );
+    return( get_pos( parms, parmcount, result, ressize, false, true ) );
 }
 
 /***************************************************************************/
@@ -150,20 +173,7 @@ condcode    scr_index( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **res
 
 condcode    scr_pos( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **result, unsigned ressize )
 {
-    tok_type    pwk;
-
-    if( parmcount < 2
-      || parmcount > 2 )
-        return( neg );
-
-    /*
-     * scr_pos : swap parm1 and parm2, then call scr_index
-     */
-    pwk = parms[0].arg;
-    parms[0].arg = parms[1].arg;
-    parms[1].arg = pwk;
-
-    return( scr_index( parms, parmcount, result, ressize ) );
+    return( get_pos( parms, parmcount, result, ressize, false, false ) );
 }
 
 /***************************************************************************/
@@ -187,76 +197,5 @@ condcode    scr_pos( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **resul
 
 condcode    scr_lpos( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **result, unsigned ressize )
 {
-    tok_type        needle;
-    tok_type        haystack;
-    condcode        cc;
-    int             index;
-    int             n;
-    int             haystack_len;
-    int             needle_len;
-    getnum_block    gn;
-    char            *ph;
-    char            *pn;
-
-    (void)ressize;
-
-    if( parmcount < 2
-      || parmcount > 3 )
-        return( neg );
-
-    needle = parms[0].arg;
-    needle_len = unquote_arg( &needle );
-
-    haystack = parms[1].arg;
-    haystack_len = unquote_arg( &haystack );
-
-    n = 0;                            // default start pos
-    gn.ignore_blanks = false;
-
-    if( parmcount > 2 ) {               // evalute start pos
-        if( parms[2].arg.s <= parms[2].arg.e ) {// start pos specified
-            gn.arg = parms[2].arg;
-            cc = getnum( &gn );
-            if( (cc != pos) || (gn.result == 0) ) {
-                if( !ProcFlags.suppress_msg ) {
-                    xx_source_err_c( err_func_parm, "3 (startpos)" );
-                }
-                return( cc );
-            }
-            n = gn.result - 1;
-        }
-    }
-
-    if( (haystack_len <= 0) ||               // null string nothing to do
-        (needle_len <= 0) ||            // needle null nothing to do
-        (needle_len > haystack_len) ||       // needle longer haystack
-        (n + needle_len > haystack_len) ) {  // startpos + needlelen > haystack
-                                        // ... match impossible
-
-        **result = '0';                 // return index zero
-        *result += 1;
-        **result = '\0';
-        return( pos );
-    }
-
-    ph = haystack.s + n;                      // startpos in haystack
-    pn = needle.s;
-    index = 0;
-
-    for( ph = haystack.e; ph >= haystack.s + n ; ph-- ) {
-        pn = needle.e;
-        while( (*ph == *pn) && (pn >= needle.s)) {
-            ph--;
-            pn--;
-        }
-        if( pn < needle.s ) {
-            index = ph - haystack.s + 2;          // found, set index
-            break;
-        }
-    }
-
-    *result += sprintf( *result, "%d", index );
-
-    return( pos );
+    return( get_pos( parms, parmcount, result, ressize, true, false ) );
 }
-

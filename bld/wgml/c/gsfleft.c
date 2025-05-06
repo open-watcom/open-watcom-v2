@@ -53,9 +53,10 @@
 condcode    scr_left( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **result, unsigned ressize )
 {
     tok_type        string;
+    int             length;
+    char            padchar;
     condcode        cc;
     int             k;
-    int             len;
     getnum_block    gn;
 
     if( parmcount < 2
@@ -63,35 +64,47 @@ condcode    scr_left( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **resu
         return( neg );
 
     string = parms[0].arg;
-    len = unquote_arg( &string );
+    unquote_arg( &string );
 
-    if( len <= 0 ) {                    // null string nothing to do
-        **result = '\0';
-        return( pos );
-    }
-
-    if( parms[1].arg.s <= parms[1].arg.e ) {// length specified
-        gn.arg = parms[1].arg;
-        cc = getnum( &gn );
-        if( cc != pos ) {
-            if( !ProcFlags.suppress_msg ) {
-                xx_source_err_c( err_func_parm, "2 (length)" );
-            }
-            return( cc );
+    gn.arg = parms[1].arg;
+    gn.ignore_blanks = false;
+    cc = getnum( &gn );
+    if( cc != pos ) {
+        if( !ProcFlags.suppress_msg ) {
+            xx_source_err_c( err_func_parm, "2 (length)" );
         }
-        len = gn.result;
+        return( cc );
     }
+    length = gn.result;
 
-    for( k = 0; k < len && string.s <= string.e && ressize > 0; k++ ) {        // copy from start
-        **result = *string.s++;
-        *result += 1;
-        ressize--;
-    }
+    if( length > 0 ) {
+        padchar = ' ';          // default padchar
+        if( parmcount > 2 ) {   // evaluate padchar
+            tok_type pad = parms[2].arg;
+            if( unquote_arg( &pad ) > 0 ) {
+                padchar = *pad.s;
+            }
+        }
 
-    for( ; k < len && ressize > 0; k++ ) {             // pad to length
-        **result = ' ';
-        *result += 1;
-        ressize--;
+        k = 0;
+        /*
+         * copy from string start
+         */
+        while( k < length && string.s <= string.e && ressize > 0 ) {
+            **result = *string.s++;
+            *result += 1;
+            k++;
+            ressize--;
+        }
+        /*
+         * pad to length (if necessary)
+         */
+        while( k < length && ressize > 0 ) {
+            **result = padchar;
+            *result += 1;
+            k++;
+            ressize--;
+        }
     }
 
     **result = '\0';

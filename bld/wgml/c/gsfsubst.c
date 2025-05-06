@@ -64,43 +64,39 @@
 condcode    scr_substr( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **result, unsigned ressize )
 {
     tok_type        string;
+    int             n;
+    int             length;
+    char            padchar;
     condcode        cc;
     int             k;
-    int             n;
-    int             stringlen;
-    int             len;
+    int             string_len;
     getnum_block    gn;
-    char            padchar;
 
     if( parmcount < 2
       || parmcount > 4 )
         return( neg );
 
     string = parms[0].arg;
-    stringlen = unquote_arg( &string );
+    string_len = unquote_arg( &string );
 
-    padchar = ' ';                      // default padchar
-    len = 0;
-
-    n = 0;                              // default start pos
     gn.ignore_blanks = false;
 
-    if( parmcount > 1 ) {               // evalute start pos
-        if( parms[1].arg.s <= parms[1].arg.e ) {// start pos specified
-            gn.arg = parms[1].arg;
-            cc = getnum( &gn );
-            if( (cc != pos) || (gn.result == 0) ) {
-                if( !ProcFlags.suppress_msg ) {
-                    xx_source_err_c( err_func_parm, "2 (startpos)" );
-                }
-                return( cc );
-            }
-            n = gn.result - 1;
+    gn.arg = parms[1].arg;
+    cc = getnum( &gn );
+    if( (cc != pos) || (gn.result == 0) ) {
+        if( !ProcFlags.suppress_msg ) {
+            xx_source_err_c( err_func_parm, "2 (startpos)" );
         }
+        return( cc );
+    }
+    n = gn.result - 1;
+    if( n > string_len ) {
+        n = string_len;
     }
 
-    if( parmcount > 2 ) {               // evalute length
-        if( parms[2].arg.s <= parms[2].arg.e ) {// length specified
+    length = string_len - n;    // default take rest of string
+    if( parmcount > 2 ) {       // evalute length
+        if( parms[2].arg.s <= parms[2].arg.e ) {
             gn.arg = parms[2].arg;
             cc = getnum( &gn );
             if( (cc != pos) || (gn.result == 0) ) {
@@ -109,34 +105,39 @@ condcode    scr_substr( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **re
                 }
                 return( cc );
             }
-            len = gn.result;
+            length = gn.result;
         }
     }
 
-    if( parmcount > 3 ) {               // isolate padchar
-        if( parms[3].arg.s <= parms[3].arg.e ) {
+    if( length > 0 ) {
+        padchar = ' ';          // default padchar
+        if( parmcount > 3 ) {   // isolate padchar
             tok_type pad = parms[3].arg;
-            unquote_arg( &pad );
-            padchar = *pad.s;
+            if( unquote_arg( &pad ) > 0 ) {
+                padchar = *pad.s;
+            }
         }
-    }
 
-    string.s += n;                          // position to startpos
-    if( len == 0 ) {                    // no length specified
-        len = string.e - string.s + 1;          // take rest of string
-        if( len < 0 ) {                 // if there is one
-            len = 0;
+        k = 0;
+        /*
+         * copy from start position
+         */
+        string.s += n;          // position to startpos or to string end
+        while( k < length && string.s <= string.e && ressize > 0 ) {
+            **result = *string.s++;
+            *result += 1;
+            k++;
+            ressize--;
         }
-    }
-    for( k = 0; k < len && string.s <= string.e && ressize > 0; k++ ) {
-        **result = *string.s++;
-        *result += 1;
-        ressize--;
-    }
-    for( ; k < len && ressize > 0; k++ ) {
-        **result = padchar;
-        *result += 1;
-        ressize--;
+        /*
+         * pad to length (if necessary)
+         */
+        while( k < length && ressize > 0 ) {
+            **result = padchar;
+            *result += 1;
+            k++;
+            ressize--;
+        }
     }
 
     **result = '\0';

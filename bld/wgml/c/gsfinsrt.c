@@ -51,42 +51,36 @@
 /*      "&'insert('123','abc',5,,'-')" ==> "abc--123"                      */
 /*      "&'insert('123','abc',,,'-')" ==> "123abc"                         */
 /*                                                                         */
-/* ! optional parms LENGTH and PAD are NOT implemented                     */
-/*                                                                         */
-/*                                                                         */
 /***************************************************************************/
 
 condcode    scr_insert( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **result, unsigned ressize )
 {
     tok_type        new;
     tok_type        target;
+    int             n;
+    int             length;
+    char            padchar;
     condcode        cc;
     int             k;
-    int             n;
-    int             len;
+    int             new_len;
+    int             target_len;
     getnum_block    gn;
 
     if( parmcount < 2
       || parmcount > 3 )
         return( neg );
 
-    new = parms[0].arg;                 // string to insert
-    len = unquote_arg( &new );
+    new = parms[0].arg;
+    new_len = unquote_arg( &new );
 
-    target = parms[1].arg;              // string to be modified
-    unquote_arg( &target );
+    target = parms[1].arg;
+    target_len = unquote_arg( &target );
 
-    if( len <= 0 ) {                    // null string insert nothing to do
-        **result = '\0';
-        return( pos );
-    }
-
-    n = 0;                              // default start pos
-    gn.ignore_blanks = false;
-
-    if( parmcount > 2 ) {               // evalute startpos
+    n = 0;                  // default start pos
+    if( parmcount > 2 ) {   // evalute startpos
         if( parms[2].arg.s <= parms[2].arg.e ) {
             gn.arg = parms[2].arg;
+            gn.ignore_blanks = false;
             cc = getnum( &gn );
             if( cc != pos ) {
                 if( !ProcFlags.suppress_msg ) {
@@ -98,26 +92,71 @@ condcode    scr_insert( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **re
         }
     }
 
+    length = new_length;    // default length
+    if( parmcount > 3 ) {   // evalute length
+        if( parms[3].arg.s <= parms[3].arg.e ) {
+            gn.arg = parms[3].arg;
+            gn.ignore_blanks = false;
+            cc = getnum( &gn );
+            if( cc != pos ) {
+                if( !ProcFlags.suppress_msg ) {
+                    xx_source_err_c( err_func_parm, "4 (length)" );
+                }
+                return( cc );
+            }
+            length = gn.result;
+        }
+    }
+
+    padchar = ' ';          // default pad character
+    if( parmcount > 4 ) {   // evalute length
+        tok_type pad = parms[3].arg;
+        if( unquote_arg( &pad ) > 0 ) {
+            padchar = *pad.s;
+        }
+    }
+
     k = 0;
-    while( (k < n) && (target.s <= target.e) && (ressize > 0) ) { // copy up to startpos
+    /*
+     * copy target up to startpos
+     */
+    while( (k < n) && (target.s <= target.e) && (ressize > 0) ) {
         **result = *target.s++;
         *result += 1;
         k++;
         ressize--;
     }
-    if( n > k && (ressize > 0) ) {         // startpos > target length, insert one extra blank
-        **result = ' ';
+    /*
+     * pad up to startpos (if needed)
+     */
+    while( (k < n) && (ressize > 0) ) {
+        **result = padchar;
         *result += 1;
+        k++;
         ressize--;
     }
-
-    while( (new.s <= new.e) && (ressize > 0) ) { // insert new string
+    /*
+     * insert new string up to length
+     */
+    while( (k < n + length) && (new.s <= new.e) && (ressize > 0) ) {
         **result = *new.s++;
         *result += 1;
+        k++;
         ressize--;
     }
-
-    while( (target.s <= target.e) && (ressize > 0) ) { // copy rest (if any)
+    /*
+     * pad up to length (if needed)
+     */
+    while( (k < n + length) && (ressize > 0) ) {
+        **result = padchar;
+        *result += 1;
+        k++;
+        ressize--;
+    }
+    /*
+     * copy rest of target (if any)
+     */
+    while( (target.s <= target.e) && (ressize > 0) ) {
         **result = *target.s++;
         *result += 1;
         ressize--;

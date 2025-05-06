@@ -56,7 +56,6 @@ condcode    scr_min( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **resul
     tok_type        number;
     condcode        cc;
     int             k;
-    int             len;
     getnum_block    gn;
     int             minimum;
 
@@ -66,25 +65,23 @@ condcode    scr_min( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **resul
       || parmcount > 6 )
         return( neg );
 
-    minimum = INT_MAX;
-
     gn.ignore_blanks = false;
 
+    minimum = INT_MAX;
     for( k = 0; k < parmcount; k++ ) {
         number = parms[k].arg;
-        len = unquote_arg( &number );
-        if( len <= 0 ) {                // null string nothing to do
-            continue;                   // skip empty value
+        if( unquote_arg( &number ) <= 0 ) { // null string nothing to do
+            continue;                       // skip empty value
         }
         gn.arg = number;
         cc = getnum( &gn );
-        if( !(cc == pos  || cc == neg) ) {
+        if( !(cc == pos || cc == neg) ) {
             if( !ProcFlags.suppress_msg ) {
                 xx_source_err_c( err_func_parm, "" );
             }
             return( cc );
         }
-        if( gn.result < minimum ) {
+        if( minimum > gn.result ) {
             minimum = gn.result;        // new minimum
         }
     }

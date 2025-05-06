@@ -52,19 +52,19 @@
 condcode    scr_right( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **result, unsigned ressize )
 {
     tok_type        string;
+    int             length;
+    char            padchar;
     condcode        cc;
     int             k;
-    int             n;
-    int             len;
+    int             string_len;
     getnum_block    gn;
-    char            padchar;
 
     if( parmcount < 2
       || parmcount > 3 )
         return( neg );
 
     string = parms[0].arg;
-    len = unquote_arg( &string );
+    string_len = unquote_arg( &string );
 
     gn.arg = parms[1].arg;
     gn.ignore_blanks = false;
@@ -75,38 +75,32 @@ condcode    scr_right( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **res
         }
         return( cc );
     }
-    n = gn.result;
+    length = gn.result;
 
-    if( n > 0 ) {                       // result not nullstring
-        if( n > len ) {                 // padding needed
-            padchar = ' ';              // default padchar
-            if( parmcount > 2 ) {       // pad character specified
-                if( parms[2].arg.s <= parms[2].arg.e ) {
-                    tok_type pad = parms[2].arg;
-                    unquote_arg( &pad );
-                    padchar = *pad.s;
-                }
-            }
-            for( k = n - len; k > 0 && ressize > 0; k-- ) {
-                **result = padchar;
-                *result += 1;
-                ressize--;
-            }
-            for( ; string.s <= string.e && ressize > 0; string.s++ ) {
-                **result = *string.s;
-                *result += 1;
-                ressize--;
-            }
-        } else {                        // no padding
-
-            string.s += len - n;
-            for( ; string.s <= string.e && ressize > 0; string.s++ ) {
-                **result = *string.s;
-                *result += 1;
-                ressize--;
-            }
+    padchar = ' ';              // default padchar
+    if( parmcount > 2 ) {       // pad character specified
+        tok_type pad = parms[2].arg;
+        if( unquote_arg( &pad ) > 0 ) {
+            padchar = *pad.s;
         }
     }
+
+    k = string_len;
+    while( k < length && ressize > 0 ) {
+        **result = padchar;
+        *result += 1;
+        k++;
+        ressize--;
+    }
+    if( length < string_len ) {
+        string.s += string_len - length;
+    }
+    while( string.s <= string.e && ressize > 0 ) {
+        **result = *string.s++;
+        *result += 1;
+        ressize--;
+    }
+
     **result = '\0';
 
     return( pos );
