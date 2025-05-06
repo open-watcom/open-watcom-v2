@@ -544,7 +544,7 @@ bool att_val_to_su( su * in_su, bool pos )
     ps = s->su_txt;
     *ps = '\0';
 
-    if( val_len > MAX_SU_CHAR - 1 ) {     // won't fit
+    if( val_len > MAX_SU_LENGTH ) {     // won't fit
         xx_line_err_c( err_inv_att_val, val_start );
     }
     strncpy( ps, val_start, val_len );
@@ -611,7 +611,7 @@ bool cw_val_to_su( char * * scanp, su * in_su )
     SkipNonSpaces( p );
     len = p - pa;
     *scanp = p;                 // report back value of p
-    if( len > MAX_SU_CHAR - 1 ) {
+    if( len > MAX_SU_LENGTH ) {
         xx_line_err_c( err_inv_cw_op_val, val_start );
     }
     strncpy( ps, pa, len );
@@ -671,7 +671,7 @@ bool lay_init_su( const char * p, su * in_su )
     SkipNonSpaces( p );
     len = p - pa;
 
-    if( len > MAX_SU_CHAR - 1 ) { // won't fit
+    if( len > MAX_SU_LENGTH ) { // won't fit
         xx_line_err_c( err_inv_att_val, val_start );
     }
     strncpy( ps, pa, len );
@@ -729,7 +729,7 @@ bool value_to_su( su * in_su, bool pos )
     ps = s->su_txt;
     *ps = '\0';
 
-    if( g_att_val.val_len > MAX_SU_CHAR - 1 ) {     // won't fit
+    if( g_att_val.val_len > MAX_SU_LENGTH ) {     // won't fit
         xx_line_err_c( err_inv_att_val, g_att_val.val_name );
     }
     strncpy( ps, g_att_val.val_name, g_att_val.val_len );

@@ -50,7 +50,12 @@
 #define MAX_PAREN           50          // max parenthesis nesting in &'functions
 
 #define TAG_NAME_LENGTH     15          // :tag name length
-#define ATT_NAME_LENGTH     9           // :tag attr name length
+#define TAG_ATT_NAME_LENGTH 10          // gml tag attribute name max. length
+#define LAY_ATT_NAME_LENGTH 17          // layout attribute name max. length
+
+#define MAX_SU_LENGTH       11          // length of space units in char format
+#define SPECVAL_LENGTH      MAX_SU_LENGTH
+
 #define VAL_LENGTH          10          // max length for attribute value
                                         // longer strings will be allocated
 #define NUM2STR_LENGTH      12          // int to string conversion buffer length sNNNNNNNNNN+'\0'
@@ -163,10 +168,8 @@ typedef enum space_units {
     SU_lay_extend            // additions before SU_lay_left please
 } space_units;
 
-#define MAX_SU_CHAR     12            // length of space units in char format
-
 typedef struct {
-    char        su_txt[MAX_SU_CHAR];    // space unit as entered in chars
+    char        su_txt[MAX_SU_LENGTH + 1];    // space unit as entered in chars
     int32_t     su_whole;               // integer part
     int32_t     su_dec;                 // decimal part (if any)
     int32_t     su_inch;                // value in inch with 4 decimals
@@ -569,9 +572,9 @@ typedef enum {
 /***************************************************************************/
 
 typedef struct gaentry {
-    struct gaentry  *   next;
-    gavalentry      *   vals;
-    char                name[ATT_NAME_LENGTH + 1];
+    struct gaentry      *next;
+    gavalentry          *vals;
+    char                name[TAG_ATT_NAME_LENGTH + 1];
     gaflags             attflags;
 } gaentry;
 
@@ -598,12 +601,12 @@ typedef enum {
 /***************************************************************************/
 
 typedef struct gtentry {
-    struct gtentry  *   next;
-    gaentry         *   attribs;        // list of attributes
+    struct gtentry      *next;
+    gaentry             *attribs;        // list of attributes
     unsigned            usecount;
     unsigned            namelen;        // actual length of name
     char                name[TAG_NAME_LENGTH + 1];
-    char                macname[MAC_NAME_LENGTH + 2];   // macro to call
+    char                macname[MAC_NAME_LENGTH + 1];   // macro to call
     gtflags             tagflags;
     bool                overload;       // user tag has same name as predefined tag
 } gtentry;

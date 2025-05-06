@@ -149,7 +149,7 @@ global size_t           buff2_lg;       // input buffer used length
 // the following to manage .gt * and .ga * * syntax
 global char         g_tagname[TAG_NAME_LENGTH + 1];// last defined GML tag name
 global gtentry      *g_tag_entry;       // ... entry in tag_dict
-global char         g_attname[ATT_NAME_LENGTH + 1];// last defined GML attribute
+global char         g_attname[TAG_ATT_NAME_LENGTH + 1];// last defined GML attribute
 global gaentry      *g_att_entry;       // ... entry in tag_dict
 
 global int          li_cnt;             // remaining count for .li processing
