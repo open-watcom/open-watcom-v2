@@ -103,5 +103,5 @@ void gml_author( const gmltag * entry )
 
     line_position = old_line_pos;
     g_curr_font = font_save;
-    scan_start = scan_stop + 1;
+    scan_start = scan_stop;
 }

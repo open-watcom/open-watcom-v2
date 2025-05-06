@@ -66,6 +66,6 @@
 
 void scr_nl( void )
 {
-    scan_restart = scan_stop + 1;
+    scan_restart = scan_stop;
     return;
 }

@@ -95,7 +95,7 @@ static char * get_ref_attributes( void )
     }
     if( !refid_found ) {            // detect missing required attribute
         xx_err( err_att_missing );
-        scan_start = scan_stop + 1;
+        scan_start = scan_stop;
     }
     return( p );
 }
@@ -195,7 +195,7 @@ void gml_figref( const gmltag * entry )
         }
     }
 
-    scan_start = scan_stop + 1;
+    scan_start = scan_stop;
 
     return;
 }
@@ -331,7 +331,7 @@ void gml_hdref( const gmltag * entry )
         }
     }
 
-    scan_start = scan_stop + 1;
+    scan_start = scan_stop;
 
     return;
 }
@@ -390,7 +390,7 @@ void gml_fnref( const gmltag * entry )
         }
     }
 
-    scan_start = scan_stop + 1;
+    scan_start = scan_stop;
     return;
 }
 

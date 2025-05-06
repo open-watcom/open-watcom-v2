@@ -90,7 +90,7 @@ static  condcode    get_vector_pos( parm parms[MAX_FUN_PARMS], unsigned parmcoun
     tok_type        haystack;
 #if 0
     int             start;
-    char			casechar;
+    char                        casechar;
 #endif
     int             rc;
     int             index;
@@ -124,7 +124,7 @@ static  condcode    get_vector_pos( parm parms[MAX_FUN_PARMS], unsigned parmcoun
 #if 0
         start = 0;
         if( parmcount > 2 ) {
-            if( parms[2].arg.s <= parms[2].arg.e ) {
+            if( parms[2].arg.s < parms[2].arg.e ) {
                 gn.arg = parms[2].arg;
                 gn.ignore_blanks = false;
                 cc = getnum( &gn );
@@ -148,10 +148,10 @@ static  condcode    get_vector_pos( parm parms[MAX_FUN_PARMS], unsigned parmcoun
         g_scan_err = false;
         suppress_msg = ProcFlags.suppress_msg;
         ProcFlags.suppress_msg = true;
-        c = *(haystack.e + 1);
-        *(haystack.e + 1) = '\0';
+        c = *haystack.e;
+        *haystack.e = '\0';
         scan_sym( haystack.s, &symvar_entry, &var_ind, NULL, false );
-        *(haystack.e + 1) = c;
+        *haystack.e = c;
         ProcFlags.suppress_msg = suppress_msg;;
         if( !g_scan_err ) {
             if( symvar_entry.flags & local_var ) {  // lookup var in dict
@@ -162,8 +162,8 @@ static  condcode    get_vector_pos( parm parms[MAX_FUN_PARMS], unsigned parmcoun
             if( rc > 0 ) {              // variable found
                 psymvar = symsubval->base;
                 if( psymvar->flags & subscripted ) {
-                    c = *(needle.e + 1);
-                    *(needle.e + 1) = '\0';   // make nul delimited
+                    c = *needle.e;
+                    *needle.e = '\0';   // make nul delimited
                     for( symsubval = psymvar->subscripts; symsubval != NULL; symsubval = symsubval->next ) {
                         if( strcmp( symsubval->value, needle.s ) == 0 ) {
                            index = symsubval->subscript;
@@ -176,7 +176,7 @@ static  condcode    get_vector_pos( parm parms[MAX_FUN_PARMS], unsigned parmcoun
                            }
                         }
                     }
-                    *(needle.e + 1) = c;
+                    *needle.e = c;
                 }
             }
         }

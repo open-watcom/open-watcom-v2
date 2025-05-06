@@ -69,7 +69,7 @@ condcode    scr_delstr( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **re
         gn.ignore_blanks = false;
 
         n = 0;                                  // default start pos
-        if( parms[1].arg.s <= parms[1].arg.e ) {// start pos
+        if( parms[1].arg.s < parms[1].arg.e ) {// start pos
             gn.arg = parms[1].arg;
             cc = getnum( &gn );
             if( (cc != pos) || (gn.result == 0) ) {
@@ -83,7 +83,7 @@ condcode    scr_delstr( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **re
 
         length = string_len;
         if( parmcount > 2 ) {                       // evalute length
-            if( parms[2].arg.s <= parms[2].arg.e ) {// length specified
+            if( parms[2].arg.s < parms[2].arg.e ) {// length specified
                 gn.arg = parms[2].arg;
                 cc = getnum( &gn );
                 if( (cc != pos) || (gn.result == 0) ) {
@@ -99,7 +99,7 @@ condcode    scr_delstr( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **re
          * copy unchanged string before startpos
          */
         k = 0;
-        while( (k < n) && (string.s <= string.e) && (ressize > 0) ) {
+        while( (k < n) && (string.s < string.e) && (ressize > 0) ) {
             **result = *string.s++;
             *result += 1;
             k++;
@@ -108,14 +108,14 @@ condcode    scr_delstr( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **re
         /*
          * skip (don't copy) deleted characters
          */
-        while( (length > 0) && (string.s <= string.e) ) {
+        while( (length > 0) && (string.s < string.e) ) {
             string.s++;
             length--;
         }
         /*
          * copy rest of string (if any)
          */
-        while( (string.s <= string.e) && (ressize > 0) ) {
+        while( (string.s < string.e) && (ressize > 0) ) {
             **result = *string.s++;
             *result += 1;
             ressize--;

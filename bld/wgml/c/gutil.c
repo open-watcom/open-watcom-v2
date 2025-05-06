@@ -331,7 +331,7 @@ static bool su_expression( su * in_su )
     gn.arg.s = p;
     while( *p != '\0' )
         p++;
-    gn.arg.e = p - 1;
+    gn.arg.e = p;
     gn.ignore_blanks = false;
     cc = getnum( &gn );
 
@@ -993,7 +993,7 @@ char * get_att_start( char * p )
 
                     strcpy( buf, buff2 );
                     scan_start = buff2;
-                    scan_stop  = buff2 + buff2_lg;
+                    scan_stop = buff2 + buff2_lg;
                     if( (*scan_start == SCR_char) ||    // cw found: end-of-tag
                         (*scan_start == GML_char) ) {   // tag found: end-of-tag
                         ProcFlags.reprocess_line = true;
@@ -1125,7 +1125,7 @@ char * get_attribute( char * p )
 
                     strcpy( buf, buff2 );
                     scan_start = buff2;
-                    scan_stop  = buff2 + buff2_lg;
+                    scan_stop = buff2 + buff2_lg;
                     if( (*scan_start == SCR_char) ||    // cw found: end-of-tag
                         (*scan_start == GML_char) ) {   // tag found: end-of-tag
                         ProcFlags.reprocess_line = true;

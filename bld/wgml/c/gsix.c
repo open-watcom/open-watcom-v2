@@ -181,12 +181,12 @@ void scr_ix( void )
 
     if( !GlobalFlags.index ) {
         ProcFlags.index_tag_cw_seen = true;
-        scan_restart = scan_stop + 1;
+        scan_restart = scan_stop;
         return;                         // no need to process .ix
     }
 
     start_doc_sect();                   // if not already done
-    scan_restart = scan_stop + 1;
+    scan_restart = scan_stop;
 
     cwcurr[0] = SCR_char;
     lvl = 0;                            // index level

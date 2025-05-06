@@ -93,7 +93,7 @@ static void proc_p_pc( p_lay_tag * p_pc, e_tags t )
         g_post_skip = 0;
     }
 
-    scan_start = scan_stop + 1;
+    scan_start = scan_stop;
     return;
 }
 
@@ -183,7 +183,7 @@ extern void gml_note( const gmltag * entry )
     }
 
     g_curr_font = font_save;
-    scan_start = scan_stop + 1;
+    scan_start = scan_stop;
     return;
 }
 

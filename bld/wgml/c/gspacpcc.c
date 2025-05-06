@@ -176,7 +176,7 @@ void scr_pa( void )
         do_output( true );
         break;
     }
-    scan_restart = scan_stop +1;
+    scan_restart = scan_stop;
     return;
 }
 

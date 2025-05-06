@@ -188,7 +188,7 @@ condcode    get_attr_and_value( void )
 
                     process_line();
                     scan_start = buff2;
-                    scan_stop  = buff2 + buff2_lg;
+                    scan_stop = buff2 + buff2_lg;
                     if( (*scan_start == SCR_char) ||    // cw found: end-of-tag
                         (*scan_start == GML_char) ) {   // tag found: end-of-tag
                         ProcFlags.reprocess_line = true;

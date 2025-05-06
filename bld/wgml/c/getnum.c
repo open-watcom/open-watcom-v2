@@ -307,7 +307,7 @@ static  int evaluate( char **line, int *val )
             }
 
             op = get_op( str );
-            if( *(str +1) == NULC ) {
+            if( *(str + 1) == NULC ) {
                 if( NULL != op ) {
                     push_op( op->operc );
                     ptr++;
@@ -315,8 +315,8 @@ static  int evaluate( char **line, int *val )
                 }
 
                 if( (*str == '-' ) || (*str == '+' ) ) {
-                    push_op(*str);
-                    ++ptr;
+                    push_op( *str );
+                    ptr++;
                     break;
                 }
             }
@@ -355,7 +355,7 @@ static  int evaluate( char **line, int *val )
                     /* function returns                                     */
                     /********************************************************/
 
-                    if( *line ) {                   // should be '\0' here
+                    if( *line != '\0' ) {           // should be '\0' here
                         return( not_ok );
                     } else {
                         return( pop_val( val ) );   // no operations left return result
@@ -412,7 +412,7 @@ condcode getnum( getnum_block *gn )
     }
     gn->errstart = arg.s;
     gn->first    = arg.s;
-    if( arg.s > arg.e ) {
+    if( arg.s >= arg.e ) {
         gn->cc = omit;
         return( omit );                 // nothing there
     }
@@ -423,14 +423,14 @@ condcode getnum( getnum_block *gn )
         gn->num_sign = ' ';             // no unary sign
     }
     ignore_blanks = gn->ignore_blanks;
-    c = *(arg.e + 1);
-    *(arg.e + 1) = '\0';                // make null terminated string
+    c = *arg.e;
+    *arg.e = '\0';                      // make null terminated string
     rc = evaluate( &arg.s, &gn->result );
-    *(arg.e + 1) = c;
+    *arg.e = c;
     if( rc != 0 ) {
         gn->cc = notnum;
     } else {
-        gn->arg.s = arg.s + 1;          // start for next scan
+        gn->arg.s = arg.s;              // start for next scan
         gn->length = sprintf( gn->resultstr, "%d", gn->result );
         if( gn->result >= 0 ) {
             gn->cc = pos;

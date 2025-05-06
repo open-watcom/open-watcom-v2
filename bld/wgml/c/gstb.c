@@ -130,7 +130,6 @@ void    scr_tb( void )
     bool            relative;
     char        *   p;
     char        *   pa;
-    char        *   pb;
     char            quote;
     condcode        cc;
     getnum_block    gn;
@@ -194,7 +193,6 @@ void    scr_tb( void )
                     }
                 }
                 user_tabs.tabs[i].fill_char = *p;
-                pb = p;                 // save position if not fill char
                 p++;                    // should be end delimiter
                 if( *p == '\0' ) {      // 'c "c or /c only
                     xx_line_err_c( err_right_delim, pa );
@@ -237,11 +235,10 @@ void    scr_tb( void )
             while( (p != pa) && !my_isdigit( *p ) ) { // back up over alignment
                 p--;
             }
-            pb = p + 1;
+            p++;
             gn.arg.e = p;
             gn.ignore_blanks = false;
             cc = getnum( &gn );
-            p = pb;                             // alignment start
             if( gn.num_sign == ' ' ) {
                 relative = false;
             } else {
@@ -323,6 +320,6 @@ void    scr_tb( void )
         }
     }
 
-    scan_restart = scan_stop + 1;
+    scan_restart = scan_stop;
     return;
 }

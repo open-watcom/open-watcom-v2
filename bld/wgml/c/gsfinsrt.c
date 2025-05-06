@@ -78,7 +78,7 @@ condcode    scr_insert( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **re
 
     n = 0;                  // default start pos
     if( parmcount > 2 ) {   // evalute startpos
-        if( parms[2].arg.s <= parms[2].arg.e ) {
+        if( parms[2].arg.s < parms[2].arg.e ) {
             gn.arg = parms[2].arg;
             gn.ignore_blanks = false;
             cc = getnum( &gn );
@@ -94,7 +94,7 @@ condcode    scr_insert( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **re
 
     length = new_len;       // default length
     if( parmcount > 3 ) {   // evalute length
-        if( parms[3].arg.s <= parms[3].arg.e ) {
+        if( parms[3].arg.s < parms[3].arg.e ) {
             gn.arg = parms[3].arg;
             gn.ignore_blanks = false;
             cc = getnum( &gn );
@@ -120,7 +120,7 @@ condcode    scr_insert( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **re
     /*
      * copy target up to startpos
      */
-    while( (k < n) && (target.s <= target.e) && (ressize > 0) ) {
+    while( (k < n) && (target.s < target.e) && (ressize > 0) ) {
         **result = *target.s++;
         *result += 1;
         k++;
@@ -138,7 +138,7 @@ condcode    scr_insert( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **re
     /*
      * insert new string up to length
      */
-    while( (k < n + length) && (new.s <= new.e) && (ressize > 0) ) {
+    while( (k < n + length) && (new.s < new.e) && (ressize > 0) ) {
         **result = *new.s++;
         *result += 1;
         k++;
@@ -156,7 +156,7 @@ condcode    scr_insert( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **re
     /*
      * copy rest of target (if any)
      */
-    while( (target.s <= target.e) && (ressize > 0) ) {
+    while( (target.s < target.e) && (ressize > 0) ) {
         **result = *target.s++;
         *result += 1;
         ressize--;

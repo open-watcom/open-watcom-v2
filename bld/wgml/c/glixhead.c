@@ -111,7 +111,7 @@ void    lay_ixhead( const gmltag * entry )
     cvterr = false;
 
     if( !GlobalFlags.firstpass ) {
-        scan_start = scan_stop + 1;
+        scan_start = scan_stop;
         eat_lay_sub_tag();
         return;                         // process during first pass only
     }
@@ -199,7 +199,7 @@ void    lay_ixhead( const gmltag * entry )
             xx_err( err_att_name_inv );
         }
     }
-    scan_start = scan_stop + 1;
+    scan_start = scan_stop;
     return;
 }
 

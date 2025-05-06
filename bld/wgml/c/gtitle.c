@@ -129,5 +129,5 @@ void    gml_title( const gmltag * entry )
 
     g_curr_font = font_save;
     line_position = old_line_pos;
-    scan_start = scan_stop + 1;
+    scan_start = scan_stop;
 }

@@ -69,7 +69,7 @@ void    scr_ty( void )
     p = scan_start;
     SkipSpaces( p );
     out_msg( "%s\n", p );
-    scan_restart = scan_stop + 1;
+    scan_restart = scan_stop;
     return;
 }
 

@@ -90,7 +90,7 @@ condcode    scr_left( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **resu
         /*
          * copy from string start
          */
-        while( k < length && string.s <= string.e && ressize > 0 ) {
+        while( k < length && string.s < string.e && ressize > 0 ) {
             **result = *string.s++;
             *result += 1;
             k++;

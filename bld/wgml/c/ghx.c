@@ -738,7 +738,7 @@ static void gml_hx_common( const gmltag * entry, hdsrc hn_lvl )
             ProcFlags.overprint = false;        // cancel overprint
         }
         gen_heading( p, id, hn_lvl, hds_lvl );
-        scan_start = scan_stop + 1;
+        scan_start = scan_stop;
     } else {
         gen_heading( "", id, hn_lvl, hds_lvl );
     }

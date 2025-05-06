@@ -96,7 +96,7 @@ condcode    scr_substr( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **re
 
     length = string_len - n;    // default take rest of string
     if( parmcount > 2 ) {       // evalute length
-        if( parms[2].arg.s <= parms[2].arg.e ) {
+        if( parms[2].arg.s < parms[2].arg.e ) {
             gn.arg = parms[2].arg;
             cc = getnum( &gn );
             if( (cc != pos) || (gn.result == 0) ) {
@@ -123,7 +123,7 @@ condcode    scr_substr( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **re
          * copy from start position
          */
         string.s += n;          // position to startpos or to string end
-        while( k < length && string.s <= string.e && ressize > 0 ) {
+        while( k < length && string.s < string.e && ressize > 0 ) {
             **result = *string.s++;
             *result += 1;
             k++;

@@ -216,7 +216,7 @@ static void scan_gml( void )
         }
         *p = csave;
         if( ge->tagflags & tag_off ) {  // inactive, treat as comment
-            scan_start = scan_stop + 1;
+            scan_start = scan_stop;
             return;
         }
         me = find_macro( macro_dict, ge->macname );
@@ -450,7 +450,7 @@ static void     scan_script( void )
         if( ProcFlags.concat ) {
             *scan_start = ' ';                  // make line blank
         } else {
-            scan_start = scan_stop + 1;         // treat as comment
+            scan_start = scan_stop;             // treat as comment
         }
         return;
     }
@@ -458,7 +458,7 @@ static void     scan_script( void )
     scan_restart = scan_start;
 
     if( *p == '*' ) {                       // early check for .*
-        scan_start = scan_stop + 1;         // .* ignore comment up to EOL
+        scan_start = scan_stop;             // .* ignore comment up to EOL
         return;
     }
 
@@ -492,7 +492,7 @@ static void     scan_script( void )
         }
 
         if( *p == '*' ) {                       // check for comment again; the following are
-            scan_start = scan_stop + 1;         // all valid: .'* ..* ..'*
+            scan_start = scan_stop;             // all valid: .'* ..* ..'*
             return;
         }
 
@@ -558,7 +558,7 @@ static void     scan_script( void )
         } else {
             add_macro_parms( p + 1 );
         }
-        scan_restart = scan_stop + 1;
+        scan_restart = scan_stop;
     } else if( !ProcFlags.literal ) {   // try script controlword if not in LI
         scan_start += SCR_KW_LENGTH;
         p = scan_start;
@@ -576,7 +576,7 @@ static void     scan_script( void )
         }
 
         if( !token_buf[0] ) {   // lone . or .' -- ignored
-            scan_start = scan_stop + 1;
+            scan_start = scan_stop;
             return;
         }
 
@@ -850,7 +850,7 @@ void    scan_line( void )
         /*  or for unprocessed text in the input record                    */
         /*******************************************************************/
 
-        if( (*scan_start != '\0') && (scan_start <= scan_stop) ) {
+        if( (*scan_start != '\0') && (scan_start < scan_stop) ) {
             if( (input_cbs->fmflags & II_research) && GlobalFlags.firstpass ) {
                 g_info_lm( inf_text_line, scan_start );
             }
@@ -1036,7 +1036,7 @@ char * get_text_line( char * p )
             } else if( ProcFlags.gml_tag ) {
                 p++;
                 tok_start = p;
-                while( is_id_char( *p ) && p <= scan_stop ) {   // find end of TAG
+                while( is_id_char( *p ) && p < scan_stop ) {   // find end of TAG
                     p++;
                 }
                 toklen = p - tok_start;

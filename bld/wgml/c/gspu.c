@@ -171,7 +171,7 @@ void    scr_pu( void )
             fno = 1;                    // workfile not given, "1" is default
         }
     }
-    scan_restart = scan_stop + 1;       // do here because returns below all need it
+    scan_restart = scan_stop;           // do here because returns below all need it
 
     if( *pa == '\0' ) {                 // no text follows
         close_pu_file( fno );

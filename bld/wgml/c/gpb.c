@@ -76,7 +76,7 @@ extern  void    gml_pb( const gmltag * entry )
         process_text( p, g_curr_font );
     }
 
-    scan_start = scan_stop + 1;
+    scan_start = scan_stop;
     return;
 }
 

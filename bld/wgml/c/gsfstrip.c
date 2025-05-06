@@ -92,11 +92,11 @@ condcode    scr_strip( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **res
                 stripchar = *strip.s;
             }
         }
-    	/*
-    	 * strip leading requested
-    	 */
+        /*
+         * strip leading requested
+         */
         if( typechar != 'T' ) {
-            for( ; string.s <= string.e; string.s++ ) {
+            for( ; string.s < string.e; string.s++ ) {
                 if( *string.s != stripchar ) {
                     break;
                 }
@@ -105,7 +105,7 @@ condcode    scr_strip( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **res
         /*
          * copy string body
          */
-        for( ; string.s <= string.e && ressize > 0; string.s++ ) {
+        for( ; string.s < string.e && ressize > 0; string.s++ ) {
             **result = *string.s;
             *result += 1;
             ressize--;

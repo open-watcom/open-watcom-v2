@@ -95,7 +95,7 @@ static condcode scr_lowup( parm parms[MAX_FUN_PARMS], unsigned parmcount,
         gn.ignore_blanks = false;
         n = 0;                                      // default start pos
         if( parmcount > 1 ) {                       // evalute start pos
-            if( parms[1].arg.s <= parms[1].arg.e ) {// start pos specified
+            if( parms[1].arg.s < parms[1].arg.e ) {// start pos specified
                 gn.arg = parms[1].arg;
                 cc = getnum( &gn );
                 if( (cc != pos) || (gn.result > string_len) ) {
@@ -110,7 +110,7 @@ static condcode scr_lowup( parm parms[MAX_FUN_PARMS], unsigned parmcount,
 
         length = string_len;                        // default length
         if( parmcount > 2 ) {                       // evalute length
-            if( parms[2].arg.s <= parms[2].arg.e ) {// length specified
+            if( parms[2].arg.s < parms[2].arg.e ) {// length specified
                 gn.arg = parms[2].arg;
                 cc = getnum( &gn );
                 if( (cc != pos) || (gn.result == 0) ) {
@@ -125,7 +125,7 @@ static condcode scr_lowup( parm parms[MAX_FUN_PARMS], unsigned parmcount,
         /*
          * copy unchanged string to start position
          */
-        for( k = 0; k < n && string.s <= string.e && ressize > 0; k++ ) {          // copy unchanged before startpos
+        for( k = 0; k < n && string.s < string.e && ressize > 0; k++ ) {          // copy unchanged before startpos
             **result = *string.s++;
             *result += 1;
             ressize--;
@@ -133,7 +133,7 @@ static condcode scr_lowup( parm parms[MAX_FUN_PARMS], unsigned parmcount,
         /*
          * change length of characters to lower/upper case
          */
-        for( k = 0; k < length && string.s <= string.e && ressize > 0; k++ ) {        // translate
+        for( k = 0; k < length && string.s < string.e && ressize > 0; k++ ) {        // translate
             if( upper ) {
                **result = my_toupper( *string.s++ );
             } else {
@@ -145,7 +145,7 @@ static condcode scr_lowup( parm parms[MAX_FUN_PARMS], unsigned parmcount,
         /*
          * copy rest of string (if any)
          */
-        for( ; string.s <= string.e && ressize > 0; string.s++ ) {
+        for( ; string.s < string.e && ressize > 0; string.s++ ) {
             **result = *string.s;
             *result += 1;
             ressize--;

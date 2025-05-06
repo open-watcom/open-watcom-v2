@@ -251,7 +251,7 @@ void    scr_label( void )
                 split_input( buff2, scan_start, input_cbs->fmflags );   // split and process next
             }
         }
-        scan_restart = scan_stop + 1;
+        scan_restart = scan_stop;
         return;
     }
 }
@@ -375,7 +375,7 @@ void    scr_go( void )
     input_cbs->hidden_head = NULL;
     input_cbs->hidden_tail = NULL;
     ProcFlags.goto_active = true;       // special goto processing
-    scan_restart = scan_stop + 1;
+    scan_restart = scan_stop;
 
 }
 

@@ -284,7 +284,7 @@ void gml_dl( const gmltag * entry )
     g_text_spacing = nest_cb->u.dl_layout->spacing;
 
     ProcFlags.null_value = false;
-    scan_start = scan_stop + 1;
+    scan_start = scan_stop;
     return;
 }
 

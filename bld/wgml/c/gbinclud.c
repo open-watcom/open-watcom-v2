@@ -188,7 +188,7 @@ void    gml_binclude( const gmltag * entry )
         xx_err_c( err_file_not_found, file );
     }
 
-    scan_start = scan_stop + 1;         // skip following text
+    scan_start = scan_stop;         // skip following text
     return;
 }
 

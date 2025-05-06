@@ -70,7 +70,7 @@ condcode    scr_c2d( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **resul
     unquote_arg( &string );
 
     n = 0;
-    while( string.s <= string.e ) {
+    while( string.s < string.e ) {
         n *= 256;                      // ignore overflow, let it wrap around
         n += (unsigned char)*string.s;
         string.s++;

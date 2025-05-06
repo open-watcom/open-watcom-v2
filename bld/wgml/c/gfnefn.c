@@ -181,7 +181,7 @@ void gml_fn( const gmltag * entry )
             process_text( p, g_curr_font);  // if text follows
         }
     }
-    scan_start = scan_stop + 1;
+    scan_start = scan_stop;
     return;
 }
 
@@ -204,7 +204,7 @@ void gml_efn( const gmltag * entry )
 
     if( cur_group_type != gt_fn ) {         // no preceding :FN tag
         g_err_tag_prec( t_FN );
-        scan_start = scan_stop + 1;
+        scan_start = scan_stop;
         return;
     }
 
@@ -240,7 +240,7 @@ void gml_efn( const gmltag * entry )
     if( pass > 1 ) {                    // not on first pass
         fn_entry = fn_entry->next;      // get to next FN
     }
-    scan_start = scan_stop + 1;
+    scan_start = scan_stop;
     return;
 }
 

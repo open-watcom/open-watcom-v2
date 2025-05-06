@@ -257,7 +257,7 @@ void    gml_graphic( const gmltag * entry )
         }
     }
 
-    scan_start = scan_stop + 1;
+    scan_start = scan_stop;
     return;
 }
 

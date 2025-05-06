@@ -106,5 +106,5 @@ void    gml_date( const gmltag * entry )
     line_position = old_line_pos;
     g_curr_font = font_save;
     ProcFlags.date_tag_seen = true;
-    scan_start = scan_stop + 1;
+    scan_start = scan_stop;
 }

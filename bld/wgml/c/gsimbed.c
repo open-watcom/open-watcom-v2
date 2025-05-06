@@ -184,12 +184,12 @@ void    scr_im( void )
         strcpy( token_buf, fnstart );
     }
 
-    if( p != scan_stop ) {
+    if( p < scan_stop ) {
         new_file_parms = p + 1;
     } else {
         new_file_parms = NULL;
     }
-    scan_restart = scan_stop + 1;
+    scan_restart = scan_stop;
     ProcFlags.newLevelFile = 1;
     line_from = LINEFROM_DEFAULT;
     line_to   = LINETO_DEFAULT;

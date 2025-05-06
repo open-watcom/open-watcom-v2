@@ -152,7 +152,7 @@ void    scr_ti( void )
     cop_ti_table( p );
     add_to_sysdir( "$tiset", in_esc );  // put in dictionary
 
-    scan_restart = scan_stop + 1;
+    scan_restart = scan_stop;
     return;
 }
 
@@ -166,7 +166,7 @@ void    scr_tr( void )
     SkipSpaces( p );                    // next word start
     cop_tr_table( p );
 
-    scan_restart = scan_stop + 1;
+    scan_restart = scan_stop;
     return;
 }
 

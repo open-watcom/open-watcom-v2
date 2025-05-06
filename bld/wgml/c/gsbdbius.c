@@ -251,7 +251,7 @@ static void scr_style_common( style_cw_type type, style_cw_info * cw_info )
         g_curr_font = script_style.font;
     }
 
-    scan_restart = scan_stop + 1;
+    scan_restart = scan_stop;
     return;
 
 }

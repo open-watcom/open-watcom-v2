@@ -70,7 +70,7 @@ condcode    scr_c2x( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **resul
     string = parms[0].arg;
     unquote_arg( &string );
 
-    while( ( string.s <= string.e ) && ( ressize > 0 ) ) {
+    while( ( string.s < string.e ) && ( ressize > 0 ) ) {
         c = *string.s++;
         **result = hex( c >> 4 );
         *result += 1;

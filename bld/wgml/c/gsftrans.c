@@ -97,18 +97,18 @@ condcode    scr_translate( parm parms[MAX_FUN_PARMS], unsigned parmcount, char *
         }
 
         if( (tablei.s == NULL) && (tableo.s == NULL) && padchar == '\0' ) {
-            while( (string.s <= string.e) && (ressize > 0) ) {  // translate to upper
+            while( (string.s < string.e) && (ressize > 0) ) {  // translate to upper
                 **result = my_toupper( *string.s++ );
                 *result += 1;
                 ressize--;
             }
         } else {                   // translate as specified in tablei and tableo
-            while( string.s <= string.e && ressize > 0 ) {
+            while( string.s < string.e && ressize > 0 ) {
                 c = *string.s++;
                 if( tablei.s == NULL ) {
                     c = padchar;
                 } else {
-                    for( iptr = tablei.s; iptr <= tablei.e; iptr++ ) {
+                    for( iptr = tablei.s; iptr < tablei.e; iptr++ ) {
                         if( c == *iptr ) {
                             offset = iptr - tablei.s;
                             if( offset < tableo_len ) {

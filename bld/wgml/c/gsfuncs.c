@@ -301,7 +301,7 @@ char *scr_multi_funcs( char *in, char *pstart, char **result, unsigned ressize )
         } else {
             parms[k].redo = false;
         }
-        parms[k].arg.e = pchar - 1;
+        parms[k].arg.e = pchar;
         parms[k + 1].arg.s = pchar + 1;
 
         if( pchar >= pend ) {
@@ -329,7 +329,7 @@ char *scr_multi_funcs( char *in, char *pstart, char **result, unsigned ressize )
             } else {
                 parms[m + k].redo = false;
             }
-            parms[m + k].arg.e = pchar - 1;
+            parms[m + k].arg.e = pchar;
             parms[m + k + 1].arg.s = pchar + 1;
 
             if( pchar >= pend ) {
@@ -348,10 +348,10 @@ char *scr_multi_funcs( char *in, char *pstart, char **result, unsigned ressize )
             resbuf = alloc_resbuf( &in_wk );
             strcpy( resbuf, parms[k].arg.s );// copy parm
 
-            ps = resbuf + (parms[k].arg.e - parms[k].arg.s) + 1;
+            ps = resbuf + (parms[k].arg.e - parms[k].arg.s);
             *ps = '\0';
 
-            parms[k].arg.e = ps - 1;
+            parms[k].arg.e = ps;
             parms[k].arg.s = resbuf;
             if( (input_cbs->fmflags & II_research) && GlobalFlags.firstpass ) {
                 out_msg( " Function %s parm %s found\n", scr_functions[funcind].fname, resbuf );
@@ -370,7 +370,7 @@ char *scr_multi_funcs( char *in, char *pstart, char **result, unsigned ressize )
                 parms[k].redo = false;
             }
 
-            parms[k].arg.e = resbuf + strlen( parms[k].arg.s ) - 1;
+            parms[k].arg.e = resbuf + strlen( parms[k].arg.s );
             if( (input_cbs->fmflags & II_research) && GlobalFlags.firstpass ) {
                 out_msg( " Function      parm %s return\n", resbuf );
             }

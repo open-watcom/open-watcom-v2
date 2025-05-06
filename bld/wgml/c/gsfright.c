@@ -101,7 +101,7 @@ condcode    scr_right( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **res
         if( length < string_len ) {
             string.s += string_len - length;
         }
-        while( string.s <= string.e && ressize > 0 ) {
+        while( string.s < string.e && ressize > 0 ) {
             **result = *string.s++;
             *result += 1;
             ressize--;

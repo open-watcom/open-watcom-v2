@@ -201,7 +201,6 @@ char * scan_sym( char * p, symvar * sym, sub_index * subscript, char * * result,
                         gn.arg.e++;
                     }
                     *gn.arg.e = '\0';       // make nul terminated string
-                    gn.arg.e--;
                     gn.ignore_blanks = false;
                     cc = getnum( &gn );     // try numeric expression evaluation
 
@@ -318,9 +317,9 @@ void    scr_se( void )
             if( is_quote_char( *valstart ) ) {      // quotes ?
                 p++;
                 while( *p != '\0' ) {
-                	// TODO! ????
-                	// remove final character, if it matches the start character
-                	// look for quote end (must match and be at eol or followed by a space)
+                        // TODO! ????
+                        // remove final character, if it matches the start character
+                        // look for quote end (must match and be at eol or followed by a space)
 //                if( (*valstart == *p) && (!*(p+1) || (*(p+1) == ' ')) ) {
                     if( (*valstart == p[0]) && p[1] == '\0' ) {
                         break;

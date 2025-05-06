@@ -241,7 +241,7 @@ static condcode gargterm( termcb * t )
         t->term_string = mem_tokdup( g_tok_start, arg_flen );
         t->term_length = arg_flen;
     } else {
-        if( gn.arg.s > gn.arg.e ) {
+        if( gn.arg.s >= gn.arg.e ) {
             scan_start = gn.arg.e;        // enforce end of logical record
         } else {
             scan_start = gn.arg.s;
@@ -543,7 +543,7 @@ void    scr_if( void )
             ProcFlags.pre_fsp = false;       // cancel fsp
         }
     }
-    scan_restart = scan_stop + 1;
+    scan_restart = scan_stop;
     return;
 }
 
@@ -609,7 +609,7 @@ void    scr_th( void )
     if( *scan_start ) {                 // rest of line is not empty
         split_input( buff2, scan_start, input_cbs->fmflags );   // split and process next
     }
-    scan_restart = scan_stop + 1;
+    scan_restart = scan_stop;
     return;
 }
 
@@ -666,7 +666,7 @@ void    scr_el( void )
     if( *scan_start ) {                 // rest of line is not empty
         split_input( buff2, scan_start, input_cbs->fmflags );   // split and process next
     }
-    scan_restart = scan_stop + 1;
+    scan_restart = scan_stop;
     return;
 }
 
@@ -710,7 +710,7 @@ void    scr_do( void )
         if( (input_cbs->fmflags & II_research) && GlobalFlags.firstpass ) {
             show_ifcb( "dobegin", cb );
         }
-        scan_restart = scan_stop + 1;
+        scan_restart = scan_stop;
         return;
     } else {
         if( strnicmp( "end", g_tok_start, 3 ) == 0 ) {
@@ -726,7 +726,7 @@ void    scr_do( void )
                         GlobalFlags.firstpass ) {
                         show_ifcb( "doend", cb );
                     }
-                    scan_restart = scan_stop + 1;
+                    scan_restart = scan_stop;
                     return;
                 }
 
@@ -757,7 +757,7 @@ void    scr_do( void )
     if( (input_cbs->fmflags & II_research) && GlobalFlags.firstpass ) {
         show_ifcb( "do xx", cb );
     }
-    scan_restart = scan_stop + 1;
+    scan_restart = scan_stop;
     return;
 }
 

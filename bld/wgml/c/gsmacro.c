@@ -636,7 +636,7 @@ void    scr_dm( void )
     } else {
         xx_source_err_c( err_mac_def_logic, macname );
     }
-    scan_restart = scan_stop + 1;
+    scan_restart = scan_stop;
     return;
 }
 
@@ -699,7 +699,7 @@ void    scr_me( void )
 
     input_cbs->if_cb->if_level = 0;     // terminate
     ProcFlags.keep_ifstate = false;     // ... all .if controls
-    scan_restart = scan_stop + 1;
+    scan_restart = scan_stop;
     return;
 }
 
@@ -800,7 +800,7 @@ void    scr_em( void )
     } else {
         split_input( buff2, g_tok_start, input_cbs->fmflags );    // stack line operand
     }
-    scan_restart = scan_stop + 1;
+    scan_restart = scan_stop;
     return;
 }
 

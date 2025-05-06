@@ -2538,7 +2538,7 @@ void scr_bx( void )
             cur_op = bx_set;
         }
     } else if( (len == 4) && strnicmp( "char", pa , len ) == 0 ) {
-        scan_restart = scan_stop + 1;
+        scan_restart = scan_stop;
         return;
     }
 
@@ -2549,7 +2549,7 @@ void scr_bx( void )
     SkipSpaces( p );
 
     if( !ProcFlags.in_bx_box && *p == '\0' ) {  // if not in a box, box columns must be given
-        scan_restart = scan_stop + 1;
+        scan_restart = scan_stop;
         return;
     }
 
@@ -2847,7 +2847,7 @@ void scr_bx( void )
 
     set_h_start();                          // pick up any indents
 
-    scan_restart = scan_stop + 1;
+    scan_restart = scan_stop;
 
     return;
 }

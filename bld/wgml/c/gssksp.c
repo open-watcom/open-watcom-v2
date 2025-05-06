@@ -191,7 +191,7 @@ void    scr_sk( void )
         ProcFlags.sk_2nd = true;
     }
 
-    scan_restart = scan_stop + 1;
+    scan_restart = scan_stop;
     return;
 }
 
@@ -220,7 +220,7 @@ void    scr_sp( void )
         g_space = vspace;
     }
 
-    scan_restart = scan_stop + 1;
+    scan_restart = scan_stop;
     return;
 }
 

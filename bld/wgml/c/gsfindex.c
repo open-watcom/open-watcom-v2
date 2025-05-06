@@ -74,7 +74,7 @@ static condcode    get_pos( parm parms[MAX_FUN_PARMS], unsigned parmcount, char 
             /*
              * evalute start pos (optional)
              */
-            if( parms[2].arg.s <= parms[2].arg.e ) {
+            if( parms[2].arg.s < parms[2].arg.e ) {
                 gn.arg = parms[2].arg;
                 gn.ignore_blanks = false;
                 cc = getnum( &gn );
@@ -93,8 +93,8 @@ static condcode    get_pos( parm parms[MAX_FUN_PARMS], unsigned parmcount, char 
                 /*
                  * search last
                  */
-                for( ph = haystack.e; ph >= haystack.s + start; ph-- ) {
-                    pn = needle.e;
+                for( ph = haystack.e - 1; ph >= haystack.s + start; ph-- ) {
+                    pn = needle.e - 1;
                     while( (*ph == *pn) && (pn >= needle.s)) {
                         ph--;
                         pn--;
@@ -108,13 +108,13 @@ static condcode    get_pos( parm parms[MAX_FUN_PARMS], unsigned parmcount, char 
                 /*
                  * search first
                  */
-                for( ph = haystack.s + start; ph <= haystack.e - needle_len + 1; ph++ ) {
+                for( ph = haystack.s + start; ph < haystack.e - (needle_len - 1); ph++ ) {
                     pn = needle.s;
-                    while( (*ph == *pn) && (pn <= needle.e)) {
+                    while( (*ph == *pn) && (pn < needle.e)) {
                         ph++;
                         pn++;
                     }
-                    if( pn > needle.e ) {
+                    if( pn >= needle.e ) {
                         result_index = ph - haystack.s - needle_len + 1; // found, set index
                         break;
                     }
