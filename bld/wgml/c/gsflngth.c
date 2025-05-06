@@ -53,7 +53,7 @@
 condcode    scr_length( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **result, unsigned ressize )
 {
     tok_type        string;
-    int             len;
+    int             string_len;
 
     (void)ressize;
 
@@ -62,10 +62,9 @@ condcode    scr_length( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **re
         return( neg );
 
     string = parms[0].arg;
-    len = unquote_arg( &string );
+    string_len = unquote_arg( &string );
 
-    *result += sprintf( *result, "%d", len );
+    *result += sprintf( *result, "%d", string_len );
 
     return( pos );
 }
-

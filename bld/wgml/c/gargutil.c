@@ -362,10 +362,9 @@ bool is_space_tab_char( char c )
 
 int unquote_arg( tok_type *arg )
 {
-    if( (arg->s != arg->e) && (*arg->s == *arg->e) && is_quote_char( *arg->s ) ) {
+    if( (arg->s != arg->e) && (arg->s[0] == arg->e[0]) && is_quote_char( arg->s[0] ) ) {
         arg->s += 1;
         arg->e -= 1;
     }
     return( arg->e + 1 - arg->s );
 }
-

@@ -61,81 +61,69 @@ condcode    scr_translate( parm parms[MAX_FUN_PARMS], unsigned parmcount, char *
     char            padchar;
     char            c;
     char            *iptr;
-    char            *optr;
-    bool            ifound;
+    int             tableo_len;
     int             offset;
-    bool            padchar_set;
 
     if( parmcount < 1
       || parmcount > 4 )
         return( neg );
 
     string = parms[0].arg;
-    unquote_arg( &string );
-
-    if( string.e - string.s + 1 <= 0 ) {        // null string nothing to do
-        **result = '\0';
-        return( pos );
-    }
-
-    tableo = parms[1].arg;
-    if( (parmcount > 1) && (tableo.e >= tableo.s) ) {   // tableo is not empty
-        unquote_arg( &tableo );
-    } else {
+    if( unquote_arg( &string ) > 0 ) {
         tableo.s = NULL;
         tableo.e = NULL;
-    }
-
-    tablei = parms[2].arg;
-    if( (parmcount > 2) && (tablei.e >= tablei.s) ) {   // tablei is not empty
-        unquote_arg( &tablei );
-    } else {
+        tableo_len = 0;
+        if( parmcount > 1 ) {
+            tok_type table = parms[1].arg;
+            tableo_len = unquote_arg( &table );
+            if( tableo_len > 0 ) {    // tableo is not empty
+                tableo = table;
+            }
+        }
         tablei.s = NULL;
         tablei.e = NULL;
-    }
-
-    if( parmcount > 3 ) {               // padchar specified
-        tok_type pad = parms[3].arg;
-        unquote_arg( &pad );
-        padchar = *pad.s;
-        padchar_set = true;
-    } else {
-        padchar = ' ';                  // padchar default is blank
-        padchar_set = false;
-    }
-
-    if( (tablei.s == NULL) && (tableo.s == NULL) && !padchar_set ) {
-        while( (string.s <= string.e) && (ressize > 0) ) {  // translate to upper
-            **result = my_toupper( *string.s++ );
-            *result += 1;
-            ressize--;
+        if( parmcount > 2 ) {
+            tok_type table = parms[2].arg;
+            if( unquote_arg( &table ) > 0 ) {   // tableo is not empty
+                tablei = table;
+            }
         }
-    } else {                   // translate as specified in tablei and tableo
-        for( ; string.s <= string.e && ressize > 0; string.s++ ) {
-            c = *string.s;
-            ifound = false;
-            if( tablei.s == NULL ) {
-                c = padchar;
-            } else {
-                for( iptr = tablei.s; iptr <= tablei.e; iptr++ ) {
-                    if( c == *iptr ) {
-                        ifound = true;  // char found in input table
-                        offset = iptr - tablei.s;
-                        optr = tableo.s + offset;
-                        if( optr <= tableo.e ) {
-                            **result = *optr;  // take char from output table
-                        } else {
-                            **result = padchar;// output table too short use padchar
+        padchar = ' ';                          // padchar default is blank
+        if( parmcount > 3 ) {
+            tok_type pad = parms[3].arg;
+            if( unquote_arg( &pad ) > 0 ) {     // padchar specified
+                padchar = *pad.s;
+            }
+        }
+
+        if( (tablei.s == NULL) && (tableo.s == NULL) && padchar == '\0' ) {
+            while( (string.s <= string.e) && (ressize > 0) ) {  // translate to upper
+                **result = my_toupper( *string.s++ );
+                *result += 1;
+                ressize--;
+            }
+        } else {                   // translate as specified in tablei and tableo
+            while( string.s <= string.e && ressize > 0 ) {
+                c = *string.s++;
+                if( tablei.s == NULL ) {
+                    c = padchar;
+                } else {
+                    for( iptr = tablei.s; iptr <= tablei.e; iptr++ ) {
+                        if( c == *iptr ) {
+                            offset = iptr - tablei.s;
+                            if( offset < tableo_len ) {
+                                c = *(tableo.s + offset);  // take char from output table
+                            } else {
+                                c = padchar;    // output table too short use padchar
+                            }
+                            break;
                         }
-                        break;
                     }
                 }
+                **result = c;
+                *result += 1;
+                ressize--;
             }
-            if( !ifound ) {
-                **result = c;           // not found, leave unchanged
-            }
-            *result += 1;
-            ressize--;
         }
     }
 

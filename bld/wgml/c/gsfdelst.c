@@ -51,10 +51,11 @@
 condcode    scr_delstr( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **result, unsigned ressize )
 {
     tok_type        string;
+    int             n;
+    int             length;
     condcode        cc;
     int             k;
-    int             n;
-    int             len;
+    int             string_len;
     getnum_block    gn;
 
     if( parmcount < 2
@@ -62,60 +63,63 @@ condcode    scr_delstr( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **re
         return( neg );
 
     string = parms[0].arg;
-    len = unquote_arg( &string );
+    string_len = unquote_arg( &string );
 
-    if( len <= 0 ) {                    // null string nothing to do
-        **result = '\0';
-        return( pos );
-    }
+    if( string_len > 0 ) {
+        gn.ignore_blanks = false;
 
-    n   = 0;                            // default start pos
-    gn.ignore_blanks = false;
-
-    if( parms[1].arg.s <= parms[1].arg.e ) {// start pos
-        gn.arg = parms[1].arg;
-        cc = getnum( &gn );
-        if( (cc != pos) || (gn.result == 0) ) {
-            if( !ProcFlags.suppress_msg ) {
-                xx_source_err_c( err_func_parm, "2 (startpos)" );
-            }
-            return( cc );
-        }
-        n = gn.result - 1;
-    }
-
-    if( parmcount > 2 ) {               // evalute length
-        if( parms[2].arg.s <= parms[2].arg.e ) {// length specified
-            gn.arg = parms[2].arg;
+        n = 0;                                  // default start pos
+        if( parms[1].arg.s <= parms[1].arg.e ) {// start pos
+            gn.arg = parms[1].arg;
             cc = getnum( &gn );
             if( (cc != pos) || (gn.result == 0) ) {
                 if( !ProcFlags.suppress_msg ) {
-                    xx_source_err_c( err_func_parm, "3 (length)" );
+                    xx_source_err_c( err_func_parm, "2 (startpos)" );
                 }
                 return( cc );
             }
-            len = gn.result;
+            n = gn.result - 1;
         }
-    }
 
-    k = 0;
-    while( (k < n) && (string.s <= string.e) && (ressize > 0) ) {// copy unchanged before startpos
-        **result = *string.s++;
-        *result += 1;
-        k++;
-        ressize--;
-    }
-
-    k = 0;
-    while( (k < len) && (string.s <= string.e) ) {  // delete
-        string.s++;
-        k++;
-    }
-
-    while( (string.s <= string.e) && (ressize > 0) ) {// copy unchanged
-        **result = *string.s++;
-        *result += 1;
-        ressize--;
+        length = string_len;
+        if( parmcount > 2 ) {                       // evalute length
+            if( parms[2].arg.s <= parms[2].arg.e ) {// length specified
+                gn.arg = parms[2].arg;
+                cc = getnum( &gn );
+                if( (cc != pos) || (gn.result == 0) ) {
+                    if( !ProcFlags.suppress_msg ) {
+                        xx_source_err_c( err_func_parm, "3 (length)" );
+                    }
+                    return( cc );
+                }
+                length = gn.result;
+            }
+        }
+        /*
+         * copy unchanged string before startpos
+         */
+        k = 0;
+        while( (k < n) && (string.s <= string.e) && (ressize > 0) ) {
+            **result = *string.s++;
+            *result += 1;
+            k++;
+            ressize--;
+        }
+        /*
+         * skip (don't copy) deleted characters
+         */
+        while( (length > 0) && (string.s <= string.e) ) {
+            string.s++;
+            length--;
+        }
+        /*
+         * copy rest of string (if any)
+         */
+        while( (string.s <= string.e) && (ressize > 0) ) {
+            **result = *string.s++;
+            *result += 1;
+            ressize--;
+        }
     }
 
     **result = '\0';

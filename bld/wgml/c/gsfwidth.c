@@ -59,7 +59,7 @@
 condcode    scr_width( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **result, unsigned ressize )
 {
     tok_type        string;
-    int             len;
+    int             string_len;
     char            typechar;
     uint32_t        width;
 
@@ -69,38 +69,36 @@ condcode    scr_width( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **res
       || parmcount > 2 )
         return( neg );
 
-    width = 0;
+    width = 0;                              // null string width 0
 
     string = parms[0].arg;
-    len = unquote_arg( &string );
+    string_len = unquote_arg( &string );
 
-    if( len > 0 ) {                    // null string width 0
-        typechar = 'C';
-        if( parmcount > 1 ) {               // evalute type
-            if( parms[1].arg.s <= parms[1].arg.e ) {// type
-                tok_type type = parms[1].arg;
-                unquote_arg( &type );
+    if( string_len > 0 ) {
+        typechar = 'C';                     // default type is 'c' (CPI)
+        if( parmcount > 1 ) {               // evalute typechar
+            tok_type type  = parms[1].arg;
+            if( unquote_arg( &type ) > 0 ) {
                 typechar = my_toupper( *type.s );
             }
         }
         switch( typechar ) {
-        case 'C':                 // CPI
-            width = cop_text_width( string.s, len, g_curr_font );
+        case   'C':                 // CPI
+            width = cop_text_width( string.s, string_len, g_curr_font );
             width = (width * CPI + g_resh / 2) / g_resh;
             break;
-        case 'U':                 // Device Units
-            width = cop_text_width( string.s, len, g_curr_font );
+        case   'U':                 // Device Units
+            width = cop_text_width( string.s, string_len, g_curr_font );
             break;
-        case 'N':                 // character count
-            width = len;
+        case   'N':                 // character count
+            width = string_len;
             break;
         default:
             xx_source_err_c( err_func_parm, "2 (type)" );
         }
     }
 
-    *result += sprintf( *result, "%d", width );
-    **result = '\0';
+    *result  += sprintf( *result, "%d", width );
 
     return( pos );
 }

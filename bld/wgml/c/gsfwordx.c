@@ -70,10 +70,10 @@ static  condcode    scr_xx_word( parm parms[MAX_FUN_PARMS], unsigned parmcount,
         }
 
         if( is_word ) {
-            length = 1;                         // only one word
+            length = 1;                 // only one word
         } else {
-            length = 0;
-            if( parmcount > 2 ) {               // evalute word count
+            length = 0;                 // default all words
+            if( parmcount > 2 ) {       // evalute word count
                 if( parms[2].arg.s <= parms[2].arg.e ) {
                     gn.arg = parms[2].arg;
                     cc = getnum( &gn );
@@ -273,10 +273,10 @@ static int find_words_phrase_in_string( tok_type *phrase, tok_type *string, int 
                     pp++;
                 }
             }
-        } else {                        // not equal
-            pp = phrase->s;                // start new compare
+        } else {                            // not equal
+            pp = phrase->s;                 // start new compare
             for( ; string->s <= string->e; string->s++ ) {  // with next word
-                if( *string->s == ' ' ) {    // word end found
+                if( *string->s == ' ' ) {   // word end found
                     break;
                 }
             }
@@ -292,7 +292,7 @@ static int find_words_phrase_in_string( tok_type *phrase, tok_type *string, int 
     if( !found )
         return( 0 );
 
-    return( index + 1);
+    return( index + 1 );    // current word in string
 }
 
 /***************************************************************************/
@@ -311,14 +311,14 @@ static int find_words_phrase_in_string( tok_type *phrase, tok_type *string, int 
 
 condcode    scr_wordpos( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **result, unsigned ressize )
 {
-    tok_type        phrase;
-    tok_type        string;
+    tok_type            phrase;
+    tok_type            string;
+    int                 start;
 
-    int             index;
-    condcode        cc;
-    int             k;
-    int             n;
-    getnum_block    gn;
+    int                 index;
+    condcode            cc;
+    int                 k;
+    getnum_block        gn;
 
     (void)ressize;
 
@@ -333,7 +333,7 @@ condcode    scr_wordpos( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **r
 
     if( unquote_arg( &phrase ) > 0      // null phrase or string, nothing to do
       && unquote_arg( &string ) > 0 ) {
-        n = 0;                          // default start word index
+        start = 0;                      // default start word index
         if( parmcount > 2 ) {           // evaluate start word
             if( parms[2].arg.s <= parms[2].arg.e ) {
                 gn.arg = parms[2].arg;
@@ -345,7 +345,7 @@ condcode    scr_wordpos( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **r
                     }
                     return( cc );
                 }
-                n = gn.result - 1;
+                start = gn.result - 1;
             }
         }
         scan_start = string.s;
@@ -353,13 +353,13 @@ condcode    scr_wordpos( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **r
         k = 0;
         cc = pos;
         g_tok_start = string.s;
-        while( ( k <= n ) && ( cc != omit ) ) { // find start word
+        while( ( k <= start ) && ( cc != omit ) ) { // find start word (by index)
             cc = getarg();
             k++;
         }
         if( cc != omit ) {                  // start word exists
             string.s = g_tok_start;         // set start position
-            index = find_words_phrase_in_string( &phrase, &string, n );
+            index = find_words_phrase_in_string( &phrase, &string, start );
         }
     }
 

@@ -77,28 +77,35 @@ condcode    scr_right( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **res
     }
     length = gn.result;
 
-    padchar = ' ';              // default padchar
-    if( parmcount > 2 ) {       // pad character specified
-        tok_type pad = parms[2].arg;
-        if( unquote_arg( &pad ) > 0 ) {
-            padchar = *pad.s;
+    if( length > 0 ) {
+        padchar = ' ';              // default padchar
+        if( parmcount > 2 ) {       // pad character specified
+            tok_type pad = parms[2].arg;
+            if( unquote_arg( &pad ) > 0 ) {
+                padchar = *pad.s;
+            }
         }
-    }
-
-    k = string_len;
-    while( k < length && ressize > 0 ) {
-        **result = padchar;
-        *result += 1;
-        k++;
-        ressize--;
-    }
-    if( length < string_len ) {
-        string.s += string_len - length;
-    }
-    while( string.s <= string.e && ressize > 0 ) {
-        **result = *string.s++;
-        *result += 1;
-        ressize--;
+        /*
+         * output pad characters (if necessary)
+         */
+        k = string_len;
+        while( k < length && ressize > 0 ) {
+            **result = padchar;
+            *result += 1;
+            k++;
+            ressize--;
+        }
+        /*
+         * output string from start position
+         */
+        if( length < string_len ) {
+            string.s += string_len - length;
+        }
+        while( string.s <= string.e && ressize > 0 ) {
+            **result = *string.s++;
+            *result += 1;
+            ressize--;
+        }
     }
 
     **result = '\0';

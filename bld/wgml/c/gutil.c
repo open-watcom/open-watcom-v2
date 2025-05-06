@@ -328,11 +328,11 @@ static bool su_expression( su * in_su )
     condcode            cc;
     getnum_block        gn;
 
-    gn.ignore_blanks = false;
     gn.arg.s = p;
     while( *p != '\0' )
         p++;
     gn.arg.e = p - 1;
+    gn.ignore_blanks = false;
     cc = getnum( &gn );
 
     if( cc == notnum ) {

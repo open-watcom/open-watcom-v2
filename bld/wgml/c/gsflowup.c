@@ -77,10 +77,11 @@ static condcode scr_lowup( parm parms[MAX_FUN_PARMS], unsigned parmcount,
                            char **result, unsigned ressize, bool upper )
 {
     tok_type        string;
+    int             n;
+    int             length;
     condcode        cc;
     int             k;
-    int             n;
-    int             len;
+    int             string_len;
     getnum_block    gn;
 
     if( parmcount < 1
@@ -88,64 +89,67 @@ static condcode scr_lowup( parm parms[MAX_FUN_PARMS], unsigned parmcount,
         return( neg );
 
     string = parms[0].arg;
-    len = unquote_arg( &string );
+    string_len = unquote_arg( &string );
 
-    if( len <= 0 ) {                    // null string nothing to do
-        **result = '\0';
-        return( pos );
-    }
-
-    n   = 0;                            // default start pos
-    gn.ignore_blanks = false;
-
-    if( parmcount > 1 ) {               // evalute start pos
-        if( parms[1].arg.s <= parms[1].arg.e ) {// start pos specified
-            gn.arg = parms[1].arg;
-            cc = getnum( &gn );
-            if( (cc != pos) || (gn.result > len) ) {
-                if( !ProcFlags.suppress_msg ) {
-                    xx_source_err_c( err_func_parm, "2 (startpos)" );
+    if( string_len > 0 ) {                          // null string nothing to do
+        gn.ignore_blanks = false;
+        n = 0;                                      // default start pos
+        if( parmcount > 1 ) {                       // evalute start pos
+            if( parms[1].arg.s <= parms[1].arg.e ) {// start pos specified
+                gn.arg = parms[1].arg;
+                cc = getnum( &gn );
+                if( (cc != pos) || (gn.result > string_len) ) {
+                    if( !ProcFlags.suppress_msg ) {
+                        xx_source_err_c( err_func_parm, "2 (startpos)" );
+                    }
+                    return( cc );
                 }
-                return( cc );
+                n = gn.result - 1;
             }
-            n = gn.result - 1;
         }
-    }
 
-    if( parmcount > 2 ) {               // evalute length for upper
-        if( parms[2].arg.s <= parms[2].arg.e ) {// length specified
-            gn.arg = parms[2].arg;
-            cc = getnum( &gn );
-            if( (cc != pos) || (gn.result == 0) ) {
-                if( !ProcFlags.suppress_msg ) {
-                    xx_source_err_c( err_func_parm, "3 (length)" );
+        length = string_len;                        // default length
+        if( parmcount > 2 ) {                       // evalute length
+            if( parms[2].arg.s <= parms[2].arg.e ) {// length specified
+                gn.arg = parms[2].arg;
+                cc = getnum( &gn );
+                if( (cc != pos) || (gn.result == 0) ) {
+                    if( !ProcFlags.suppress_msg ) {
+                        xx_source_err_c( err_func_parm, "3 (length)" );
+                    }
+                    return( cc );
                 }
-                return( cc );
+                length = gn.result;
             }
-            len = gn.result;
         }
-    }
-
-    for( k = 0; k < n && string.s <= string.e && ressize > 0; k++ ) {          // copy unchanged before startpos
-        **result = *string.s++;
-        *result += 1;
-        ressize--;
-    }
-
-    for( k = 0; k < len && string.s <= string.e && ressize > 0; k++ ) {        // translate
-        if( upper ) {
-           **result = my_toupper( *string.s++ );
-        } else {
-           **result = my_tolower( *string.s++ );
+        /*
+         * copy unchanged string to start position
+         */
+        for( k = 0; k < n && string.s <= string.e && ressize > 0; k++ ) {          // copy unchanged before startpos
+            **result = *string.s++;
+            *result += 1;
+            ressize--;
         }
-        *result += 1;
-        ressize--;
-    }
-
-    for( ; string.s <= string.e && ressize > 0; string.s++ ) {     // copy unchanged
-        **result = *string.s;
-        *result += 1;
-        ressize--;
+        /*
+         * change length of characters to lower/upper case
+         */
+        for( k = 0; k < length && string.s <= string.e && ressize > 0; k++ ) {        // translate
+            if( upper ) {
+               **result = my_toupper( *string.s++ );
+            } else {
+               **result = my_tolower( *string.s++ );
+            }
+            *result += 1;
+            ressize--;
+        }
+        /*
+         * copy rest of string (if any)
+         */
+        for( ; string.s <= string.e && ressize > 0; string.s++ ) {
+            **result = *string.s;
+            *result += 1;
+            ressize--;
+        }
     }
 
     **result = '\0';
@@ -163,4 +167,3 @@ condcode    scr_upper( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **res
 {
     return( scr_lowup( parms, parmcount, result, ressize, true ) );
 }
-

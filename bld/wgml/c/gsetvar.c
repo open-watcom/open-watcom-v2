@@ -317,8 +317,12 @@ void    scr_se( void )
             valstart = p;
             if( is_quote_char( *valstart ) ) {      // quotes ?
                 p++;
-                while( *p != '\0' ) {   // remove final character, if it matches the start character              if( (*valstart == *p) && (!*(p+1) || (*(p+1) == ' ')) ) {
-                    if( (*valstart == *p) && !*(p+1) ) {
+                while( *p != '\0' ) {
+                	// TODO! ????
+                	// remove final character, if it matches the start character
+                	// look for quote end (must match and be at eol or followed by a space)
+//                if( (*valstart == *p) && (!*(p+1) || (*(p+1) == ' ')) ) {
+                    if( (*valstart == p[0]) && p[1] == '\0' ) {
                         break;
                     }
                     ++p;

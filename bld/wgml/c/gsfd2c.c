@@ -45,10 +45,8 @@
 /*      "&'d2c(129,1)" ==> "a"                                             */
 /*      "&'d2c(129,2)" ==> " a"                                            */
 /*      "&'d2c(-127,1)" ==> "a"                                            */
-/*      "&'d2c(-127,2)" ==> "ÿa"                                           */
+/*      "&'d2c(-127,2)" ==> " a"                                           */
 /*      "&'d2c(12,0)" ==> ""                                               */
-/*                                                                         */
-/*  ! The optional second parm is NOT implemented                          */
 /*                                                                         */
 /***************************************************************************/
 
@@ -56,40 +54,56 @@
 condcode    scr_d2c( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **result, unsigned ressize )
 {
     tok_type        number;
-    condcode        cc;
     int             n;
-    int             len;
+    condcode        cc;
+    int             number_val;
     getnum_block    gn;
 
     (void)ressize;
 
     if( parmcount < 1
-      || parmcount > 1 )
+      || parmcount > 2 )
         return( neg );
 
-    number = parms[0].arg;
-    len = unquote_arg( &number );
-    if( len <= 0 ) {                    // null string nothing to do
-        **result = '\0';
-        return( pos );
-    }
+    number_val = 0;
 
-    n = 0;
-    if( parms[1].arg.s <= parms[1].arg.e ) {
+    number = parms[0].arg;
+    if( unquote_arg( &number ) > 0 ) {
         gn.arg = number;
         gn.ignore_blanks = false;
         cc = getnum( &gn );
-        if( (cc != pos) ) {
+        if( cc != pos ) {
             if( !ProcFlags.suppress_msg ) {
                 xx_source_err_c( err_func_parm, "1 (number)" );
             }
             return( cc );
         }
-        n = gn.result;
+        number_val = gn.result;
+        n = 1;
+        if( parmcount > 1 ) {                       // evalute length
+            gn.arg = parms[1].arg;
+            cc = getnum( &gn );
+            if( cc != pos ) {
+                if( !ProcFlags.suppress_msg ) {
+                    xx_source_err_c( err_func_parm, "2 (n)" );
+                }
+                return( cc );
+            }
+            n = gn.result;
+        }
+        while( n > 1 && ressize > 0 ) {
+            **result = ' ';
+            *result += 1;
+            n--;
+            ressize--;
+        }
+        if( n > 0 && ressize > 0 ) {
+            **result = number_val;
+            *result += 1;
+            ressize--;
+        }
     }
 
-    **result = gn.result;
-    *result += 1;
     **result = '\0';
 
     return( pos );

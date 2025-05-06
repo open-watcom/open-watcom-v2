@@ -67,7 +67,7 @@ condcode    scr_insert( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **re
     getnum_block    gn;
 
     if( parmcount < 2
-      || parmcount > 3 )
+      || parmcount > 5 )
         return( neg );
 
     new = parms[0].arg;
@@ -92,7 +92,7 @@ condcode    scr_insert( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **re
         }
     }
 
-    length = new_length;    // default length
+    length = new_len;       // default length
     if( parmcount > 3 ) {   // evalute length
         if( parms[3].arg.s <= parms[3].arg.e ) {
             gn.arg = parms[3].arg;
@@ -166,4 +166,3 @@ condcode    scr_insert( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **re
 
     return( pos );
 }
-

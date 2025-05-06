@@ -210,7 +210,7 @@ char *scr_multi_funcs( char *in, char *pstart, char **result, unsigned ressize )
     char            *   pend;           // points into resbuf
     char            *   pret;           // end of function in input buffer
     char            *   ps;             // points into resbuf
-    char            *   resbuf;         // buffer into which parm.a and parm.e point
+    char            *   resbuf;         // buffer into which parm.arg.s and parm.arg.e point
     condcode            cc;
     inp_line        *   in_wk;          // stack of resbufs, one for each parameter
     unsigned            funcind;

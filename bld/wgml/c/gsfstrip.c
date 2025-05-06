@@ -56,7 +56,6 @@
 condcode    scr_strip( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **result, unsigned ressize )
 {
     tok_type        string;
-    int             len;
     char            stripchar;
     char            typechar;
 
@@ -65,21 +64,13 @@ condcode    scr_strip( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **res
         return( neg );
 
     string = parms[0].arg;
-    len = unquote_arg( &string );
-
-    if( len <= 0 ) {                    // null string nothing to do
-        **result = '\0';
-        return( pos );
-    }
-
-    stripchar = ' ';                    // default char to delete
-    typechar  = 'B';                    // default strip both ends
-
-    if( parmcount > 1 ) {               // evalute type
-        if( parms[1].arg.s <= parms[1].arg.e ) {// type
-            tok_type type = parms[1].arg;
-            unquote_arg( &type );
-            typechar = my_toupper( *type.s );
+    if( unquote_arg( &string ) > 0 ) {    // null string nothing to do
+        typechar  = 'B';                        // default strip both ends
+        if( parmcount > 1 ) {
+            tok_type type = parms[1].arg;       // evalute type
+            if( unquote_arg( &type ) > 0 ) {
+                typechar = my_toupper( *type.s );
+            }
             switch( typechar ) {
             case   'B':
             case   'L':
@@ -93,33 +84,39 @@ condcode    scr_strip( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **res
                 return( neg );
             }
         }
-    }
 
-    if( parmcount > 2 ) {               // stripchar
-        if( parms[2].arg.s <= parms[2].arg.e ) {
-            tok_type type = parms[2].arg;
-            unquote_arg( &type );
-            stripchar = *type.s;
-        }
-    }
-
-    if( typechar != 'T' ) {                 // strip leading requested
-        for( ; string.s <= string.e; string.s++ ) {
-            if( *string.s != stripchar ) {
-                break;
+        stripchar = ' ';                    // default char to delete
+        if( parmcount > 2 ) {               // stripchar
+            tok_type strip = parms[2].arg;
+            if( unquote_arg( &strip ) > 0 ) {
+                stripchar = *strip.s;
             }
         }
-    }
-
-    for( ; string.s <= string.e && ressize > 0; string.s++ ) {
-        **result = *string.s;
-        *result += 1;
-        ressize--;
-    }
-
-    if( typechar != 'L' ) {                 // strip trailing requested
-        while( *(*result - 1) == stripchar ) {
-            *result -= 1;
+    	/*
+    	 * strip leading requested
+    	 */
+        if( typechar != 'T' ) {
+            for( ; string.s <= string.e; string.s++ ) {
+                if( *string.s != stripchar ) {
+                    break;
+                }
+            }
+        }
+        /*
+         * copy string body
+         */
+        for( ; string.s <= string.e && ressize > 0; string.s++ ) {
+            **result = *string.s;
+            *result += 1;
+            ressize--;
+        }
+        /*
+         * strip trailing requested
+         */
+        if( typechar != 'L' ) {
+            while( *(*result - 1) == stripchar ) {
+                *result -= 1;
+            }
         }
     }
 
