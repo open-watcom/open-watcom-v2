@@ -517,7 +517,7 @@ bool get_line( bool display_line )
 
     buff2_lg = strlen( buff2 );
     *(buff2 + buff2_lg) = '\0';
-    *(buff2 + buff2_lg + 1) = '\0';
+//    *(buff2 + buff2_lg + 1) = '\0';
     if( input_cbs->fmflags & II_file ) {
         input_cbs->s.f->usedlen = buff2_lg;
         if( GlobalFlags.research ) {    // research mode

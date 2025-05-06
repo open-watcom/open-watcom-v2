@@ -89,7 +89,7 @@ static  condcode    scr_xx_word( parm parms[MAX_FUN_PARMS], unsigned parmcount,
         }
 
         scan_start = string.s;
-        scan_stop  = string.e;
+        scan_stop = string.e;
         k = 0;
         cc = pos;
         while( (k < n) && (cc != omit) ) {  // find start word
@@ -349,7 +349,7 @@ condcode    scr_wordpos( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **r
             }
         }
         scan_start = string.s;
-        scan_stop  = string.e;
+        scan_stop = string.e;
         k = 0;
         cc = pos;
         g_tok_start = string.s;

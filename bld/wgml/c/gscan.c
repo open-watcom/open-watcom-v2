@@ -828,7 +828,7 @@ void    scan_line( void )
 
     cb         = input_cbs->if_cb;
     scan_start = buff2;
-    scan_stop  = buff2 + buff2_lg;
+    scan_stop = buff2 + buff2_lg;
 
     if( !ProcFlags.literal ) {
         set_if_then_do( cb );
@@ -1013,7 +1013,7 @@ char * get_text_line( char * p )
                     if( get_line( true ) ) {    // next line for text
                         process_line();
                         scan_start = buff2;
-                        scan_stop  = buff2 + buff2_lg;
+                        scan_stop = buff2 + buff2_lg;
                         p = scan_start;
                         continue;
                     }
