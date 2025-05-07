@@ -428,6 +428,8 @@ bool    i_content( char * p, lay_attr_i lay_attr, content * tm )
     int         k;
     size_t      len;
 
+    (void)lay_attr;
+
     cvterr = false;
     tm->content_type = no_content;
     for( k = no_content; k < max_content; ++k ) {
@@ -540,6 +542,8 @@ bool    i_docsect( char * p, lay_attr_i lay_attr, ban_docsect * tm )
     bool        cvterr;
     int         k;
 
+    (void)lay_attr;
+
     cvterr = false;
     *tm = no_ban;
     for( k = no_ban; k < max_ban; ++k ) {
@@ -608,6 +612,8 @@ bool    i_int32( char * p, lay_attr_i lay_attr, int32_t * tm )
 {
     long    wk;
 
+    (void)lay_attr;
+
     wk = strtol( p, NULL, 10 );
     *tm = wk;
     return( false );
@@ -623,6 +629,8 @@ void    o_int32( FILE *fp, lay_attr_o lay_attr, const int32_t * tm )
 bool    i_int8( char * p, lay_attr_i lay_attr, int8_t * tm )
 {
     long    wk;
+
+    (void)lay_attr;
 
     wk = strtol( p, NULL, 10 );
     if( abs( wk ) > 255 ) {
@@ -648,6 +656,8 @@ bool    i_font_number( char *p, lay_attr_i lay_attr, font_number *tm )
 {
     char    *   pb;
     size_t      len;
+
+    (void)lay_attr;
 
     pb = p;
     len = 0;
@@ -711,6 +721,8 @@ bool    i_number_style( char * p, lay_attr_i lay_attr, num_style * tm )
     bool        cvterr;
     num_style   wk = 0;
     char        c;
+
+    (void)lay_attr;
 
     cvterr = false;
     c = my_tolower( *p );
@@ -910,6 +922,8 @@ bool    i_place( char * p, lay_attr_i lay_attr, bf_place * tm )
     bool        cvterr;
     int         k;
 
+    (void)lay_attr;
+
     cvterr = false;
     *tm = no_place;
     for( k = no_place; k < max_place; ++k ) {
@@ -1032,6 +1046,8 @@ bool    i_spacing( char *p, lay_attr_i lay_attr, text_space *tm )
 {
     long wk;
 
+    (void)lay_attr;
+
     wk = strtol( p, NULL, 10 );
     if( wk < 0 || wk > 255 ) {
         xx_line_err_c( err_ui_8, p );
@@ -1056,6 +1072,8 @@ bool    i_threshold( char * p, lay_attr_i lay_attr, uint16_t * tm )
 {
     char    *   pa;
     long        wk;
+
+    (void)lay_attr;
 
     wk = strtol( p, NULL, 10 );
 
