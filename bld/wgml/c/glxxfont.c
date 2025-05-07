@@ -99,13 +99,12 @@ void    lay_xx( const gmltag * entry )
         cvterr = -1;
         for( k = 0, curr = xx_att[k]; curr > 0; k++, curr = xx_att[k] ) {
             if( strcmp( lay_att_names[curr], lay_attr.attname ) == 0 ) {
-                p = g_att_val.val_name;
-
+                p = lay_attr.val.name;
                 switch( curr ) {
                 case e_font:
                     if( AttrFlags.font ) {
-                        xx_line_err_ci( err_att_dup, g_att_val.att_name,
-                            g_att_val.val_name - g_att_val.att_name + g_att_val.val_len);
+                        xx_line_err_ci( err_att_dup, lay_attr.att_name,
+                            lay_attr.val.name - lay_attr.att_name + lay_attr.val.len);
                     }
                     cvterr = i_font_number( p, &lay_attr, fontptr );
                     if( *fontptr >= wgml_font_cnt ) {

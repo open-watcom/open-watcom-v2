@@ -1831,14 +1831,6 @@ typedef struct attr_flags {
 /*  structure for parsed tag attribute names and values                    */
 /***************************************************************************/
 
-typedef struct tag_att_val {
-    char        *   att_name;
-    uint32_t        att_len;
-    char        *   val_name;
-    uint32_t        val_len;
-    bool            val_quoted;
-} tag_att_val;
-
 typedef struct att_val_type {
     char            *name;
     int             len;
@@ -1846,9 +1838,14 @@ typedef struct att_val_type {
     char            specval[SPECVAL_LENGTH + 1];
 } att_val_type;
 
+typedef struct tag_att_val {
+    char            *att_name;
+    att_val_type    val;
+    char            attname[TAG_ATT_NAME_LENGTH + 1];
+} tag_att_val;
+
 typedef struct lay_att_val {
     char            *att_name;
-    int             att_len;
     att_val_type    val;
     char            attname[LAY_ATT_NAME_LENGTH + 1];
 } lay_att_val;

@@ -111,13 +111,12 @@ void    lay_figlist( const gmltag * entry )
         cvterr = -1;
         for( k = 0, curr = figlist_att[k]; curr > 0; k++, curr = figlist_att[k] ) {
             if( strcmp( lay_att_names[curr], lay_attr.attname ) == 0 ) {
-                p = g_att_val.val_name;
-
+                p = lay_attr.val.name;
                 switch( curr ) {
                 case e_left_adjust:
                     if( AttrFlags.left_adjust ) {
-                        xx_line_err_ci( err_att_dup, g_att_val.att_name,
-                            g_att_val.val_name - g_att_val.att_name + g_att_val.val_len);
+                        xx_line_err_ci( err_att_dup, lay_attr.att_name,
+                            lay_attr.val.name - lay_attr.att_name + lay_attr.val.len);
                     }
                     cvterr = i_space_unit( p, &lay_attr,
                                            &layout_work.figlist.left_adjust );
@@ -125,8 +124,8 @@ void    lay_figlist( const gmltag * entry )
                     break;
                 case e_right_adjust:
                     if( AttrFlags.right_adjust ) {
-                        xx_line_err_ci( err_att_dup, g_att_val.att_name,
-                            g_att_val.val_name - g_att_val.att_name + g_att_val.val_len);
+                        xx_line_err_ci( err_att_dup, lay_attr.att_name,
+                            lay_attr.val.name - lay_attr.att_name + lay_attr.val.len);
                     }
                     cvterr = i_space_unit( p, &lay_attr,
                                            &layout_work.figlist.right_adjust );
@@ -134,8 +133,8 @@ void    lay_figlist( const gmltag * entry )
                     break;
                 case e_skip:
                     if( AttrFlags.skip ) {
-                        xx_line_err_ci( err_att_dup, g_att_val.att_name,
-                            g_att_val.val_name - g_att_val.att_name + g_att_val.val_len);
+                        xx_line_err_ci( err_att_dup, lay_attr.att_name,
+                            lay_attr.val.name - lay_attr.att_name + lay_attr.val.len);
                     }
                     cvterr = i_space_unit( p, &lay_attr,
                                            &layout_work.figlist.skip );
@@ -143,24 +142,24 @@ void    lay_figlist( const gmltag * entry )
                     break;
                 case e_spacing:
                     if( AttrFlags.spacing ) {
-                        xx_line_err_ci( err_att_dup, g_att_val.att_name,
-                            g_att_val.val_name - g_att_val.att_name + g_att_val.val_len);
+                        xx_line_err_ci( err_att_dup, lay_attr.att_name,
+                            lay_attr.val.name - lay_attr.att_name + lay_attr.val.len);
                     }
                     cvterr = i_spacing( p, &lay_attr, &layout_work.figlist.spacing );
                     AttrFlags.spacing = true;
                     break;
                 case e_columns:
                     if( AttrFlags.columns ) {
-                        xx_line_err_ci( err_att_dup, g_att_val.att_name,
-                            g_att_val.val_name - g_att_val.att_name + g_att_val.val_len);
+                        xx_line_err_ci( err_att_dup, lay_attr.att_name,
+                            lay_attr.val.name - lay_attr.att_name + lay_attr.val.len);
                     }
                     cvterr = i_int8( p, &lay_attr, &layout_work.figlist.columns );
                     AttrFlags.columns = true;
                     break;
                 case e_fill_string:
                     if( AttrFlags.fill_string ) {
-                        xx_line_err_ci( err_att_dup, g_att_val.att_name,
-                            g_att_val.val_name - g_att_val.att_name + g_att_val.val_len);
+                        xx_line_err_ci( err_att_dup, lay_attr.att_name,
+                            lay_attr.val.name - lay_attr.att_name + lay_attr.val.len);
                     }
                     cvterr = i_xx_string( p, &lay_attr, layout_work.figlist.fill_string );
                     AttrFlags.fill_string = true;

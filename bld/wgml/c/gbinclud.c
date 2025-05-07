@@ -51,8 +51,7 @@ void    gml_binclude( const gmltag * entry )
     su              depth_su;
     uint32_t        depth;
     FILE            *fp;
-    char            attname[TAG_ATT_NAME_LENGTH + 1];
-    att_val_type    attr_val;
+    tag_att_val     tag_attr;
 
     memset( &AttrFlags, 0, sizeof( AttrFlags ) );   // clear all attribute flags
     if( (ProcFlags.doc_sect < doc_sect_gdoc) ) {
@@ -71,24 +70,24 @@ void    gml_binclude( const gmltag * entry )
         /* already at tag end */
     } else {
         for( ;; ) {
-            p = get_att_name( p, &pa, attname );
+            p = get_att_name( p, &pa, &tag_attr );
             if( ProcFlags.reprocess_line ) {
                 break;
             }
-            if( strcmp( "file", attname ) == 0 ) {
-                p = get_att_value( p, &attr_val );
+            if( strcmp( "file", tag_attr.attname ) == 0 ) {
+                p = get_att_value( p, &tag_attr.val );
                 if( AttrFlags.file ) {
-                    xx_line_err_ci( err_att_dup, g_att_val.att_name,
-                        g_att_val.val_name - g_att_val.att_name + g_att_val.val_len);
+                    xx_line_err_ci( err_att_dup, tag_attr.att_name,
+                        tag_attr.val.name - tag_attr.att_name + tag_attr.val.len);
                 }
                 AttrFlags.file = true;
-                if( attr_val.name == NULL ) {
+                if( tag_attr.val.name == NULL ) {
                     break;
                 }
-                if( g_att_val.val_len > _MAX_PATH - 1 )
-                    g_att_val.val_len = _MAX_PATH - 1;
-                strncpy( file, g_att_val.val_name, g_att_val.val_len );
-                file[g_att_val.val_len] = '\0';
+                if( tag_attr.val.len > _MAX_PATH - 1 )
+                    tag_attr.val.len = _MAX_PATH - 1;
+                strncpy( file, tag_attr.val.name, tag_attr.val.len );
+                file[tag_attr.val.len] = '\0';
                 split_attr_file( file, rt_buff, MAX_FILE_ATTR );
                 if( (rt_buff[0] != '\0') ) {
                     has_rec_type = true;
@@ -99,42 +98,42 @@ void    gml_binclude( const gmltag * entry )
                 if( ProcFlags.tag_end_found ) {
                     break;
                 }
-            } else if( strcmp( "depth", attname ) == 0 ) {
-                p = get_att_value( p, &attr_val );
+            } else if( strcmp( "depth", tag_attr.attname ) == 0 ) {
+                p = get_att_value( p, &tag_attr.val );
                 if( AttrFlags.depth ) {
-                    xx_line_err_ci( err_att_dup, g_att_val.att_name,
-                        g_att_val.val_name - g_att_val.att_name + g_att_val.val_len);
+                    xx_line_err_ci( err_att_dup, tag_attr.att_name,
+                        tag_attr.val.name - tag_attr.att_name + tag_attr.val.len);
                 }
                 AttrFlags.depth = true;
-                if( attr_val.name == NULL ) {
+                if( tag_attr.val.name == NULL ) {
                     break;
                 }
-                if( att_val_to_su( &depth_su, true, &attr_val, false ) ) {
+                if( att_val_to_su( &depth_su, true, &tag_attr.val, false ) ) {
                     break;
                 }
                 depth = conv_vert_unit( &depth_su, g_text_spacing, g_curr_font );
                 if( depth > t_page.max_depth ) {
-                    xx_line_err_c( err_inv_depth_binclude, g_att_val.val_name );
+                    xx_line_err_c( err_inv_depth_binclude, tag_attr.val.name );
                 }
                 if( ProcFlags.tag_end_found ) {
                     break;
                 }
-            } else if( strcmp( "reposition", attname ) == 0 ) {
-                p = get_att_value( p, &attr_val );
+            } else if( strcmp( "reposition", tag_attr.attname ) == 0 ) {
+                p = get_att_value( p, &tag_attr.val );
                 if( AttrFlags.reposition ) {
-                    xx_line_err_ci( err_att_dup, g_att_val.att_name,
-                        g_att_val.val_name - g_att_val.att_name + g_att_val.val_len);
+                    xx_line_err_ci( err_att_dup, tag_attr.att_name,
+                        tag_attr.val.name - tag_attr.att_name + tag_attr.val.len);
                 }
                 AttrFlags.reposition = true;
-                if( attr_val.name == NULL ) {
+                if( tag_attr.val.name == NULL ) {
                     break;
                 }
-                if( strcmp( "start", attr_val.specval ) == 0 ) {
+                if( strcmp( "start", tag_attr.val.specval ) == 0 ) {
                     reposition = true;  // moving following text down by depth
-                } else if( strcmp( "end", attr_val.specval ) == 0 ) {
+                } else if( strcmp( "end", tag_attr.val.specval ) == 0 ) {
                     reposition = false; // device at proper position after insertion
                 } else {
-                    xx_line_err_c( err_inv_att_val, g_att_val.val_name );
+                    xx_line_err_c( err_inv_att_val, tag_attr.val.name );
                 }
                 if( ProcFlags.tag_end_found ) {
                     break;

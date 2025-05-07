@@ -205,8 +205,8 @@ condcode    lay_attr_and_value( lay_att_val *lay_attr )
         process_line();
         scandata.s = buff2;
         scandata.e = buff2 + buff2_lg;
-        if( (*scandata.s == SCR_char) ||    // cw found: end-of-tag
-            (*scandata.s == GML_char) ) {   // tag found: end-of-tag
+        if( (*scandata.s == SCR_char)       // cw found: end-of-tag
+          || (*scandata.s == GML_char) ) {  // tag found: end-of-tag
             ProcFlags.reprocess_line = true;
             scandata.s = p;
             return( rc );
@@ -214,12 +214,11 @@ condcode    lay_attr_and_value( lay_att_val *lay_attr )
         p = scandata.s;                 // new line is part of current tag
         SkipSpacesTabs( p );            // over WS to start of alleged attribute
     }
-    lay_attr->att_len = p - lay_attr->att_name;
     if( *p == '.' ) {                   // end of tag
         ProcFlags.tag_end_found = true;
         return( omit );
     }
-    if( lay_attr->att_len < 4 ) {       // attribute name length
+    if( p - lay_attr->att_name < 4 ) {       // attribute name length
         xx_line_err_c( err_att_name_inv, pa );
     }
     SkipSpacesTabs( p );                // over WS to =

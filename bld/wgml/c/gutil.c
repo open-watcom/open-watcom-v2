@@ -487,7 +487,7 @@ static bool su_layout_special( su *in_su )
 }
 
 /***************************************************************************/
-/*  initializes in_su->su_txt using g_att_val.val_name/g_att_val.val_len   */
+/*  initializes in_su->su_txt using attr_val->name/attr_val->len   */
 /*  converts in_su->su_txt using su_layout_special() or internal_to_su()   */
 /*  for use with tag attribute values, not control word operands           */
 /*                                                                         */
@@ -884,7 +884,7 @@ static char *get_tag_attname( const char *p, char *attname )
     return( (char *)p );
 }
 
-char *get_att_name( char *p, char **orig, char *attname )
+char *get_att_name( char *p, char **orig, tag_att_val *tag_attr )
 {
     static char     buf[BUF_SIZE + 1];
 
@@ -928,7 +928,9 @@ char *get_att_name( char *p, char **orig, char *attname )
             break;      // potential next attribute found
         }
     }
-    return( get_tag_attname( p, attname ) );
+    tag_attr->att_name = p;
+    p = get_tag_attname( p, tag_attr->attname );
+    return( p );
 }
 
 /***************************************************************************/

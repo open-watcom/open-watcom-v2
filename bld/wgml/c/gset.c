@@ -59,8 +59,7 @@ extern  void    gml_set( const gmltag * entry )
     symvar          sym;
     sub_index       subscript;
     symdict_hdl     working_dict;
-    char            attname[TAG_ATT_NAME_LENGTH + 1];
-    att_val_type    attr_val;
+    tag_att_val     tag_attr;
 
     (void)entry;
 
@@ -72,33 +71,33 @@ extern  void    gml_set( const gmltag * entry )
         /* already at tag end */
     } else {
         for( ;;) {
-            p = get_att_name( p, &pa, attname );
+            p = get_att_name( p, &pa, &tag_attr );
             if( ProcFlags.reprocess_line ) {
                 break;
             }
-            if( strcmp( "symbol", attname ) == 0 ) {
+            if( strcmp( "symbol", tag_attr.attname ) == 0 ) {
 
                 /* both get_att_value() and scan_sym() must be used */
 
-                p = get_att_value( p, &attr_val );
-                if( attr_val.name == NULL ) {
+                p = get_att_value( p, &tag_attr.val );
+                if( tag_attr.val.name == NULL ) {
                     break;
                 }
-                scan_sym( attr_val.name, &sym, &subscript, NULL, false );
+                scan_sym( tag_attr.val.name, &sym, &subscript, NULL, false );
                 if( g_scan_err ) {
                     break;
                 }
                 symbol_found = true;
-            } else if( strcmp( "value", attname ) == 0 ) {
-                p = get_att_value( p, &attr_val );
-                if( attr_val.name == NULL ) {
+            } else if( strcmp( "value", tag_attr.attname ) == 0 ) {
+                p = get_att_value( p, &tag_attr.val );
+                if( tag_attr.val.name == NULL ) {
                     break;
                 }
                 value_found = true;
-                if( attr_val.len > BUF_SIZE - 1 )
-                    attr_val.len = BUF_SIZE - 1;
-                strncpy( token_buf, attr_val.name, attr_val.len );
-                token_buf[attr_val.len] = '\0';
+                if( tag_attr.val.len > BUF_SIZE - 1 )
+                    tag_attr.val.len = BUF_SIZE - 1;
+                strncpy( token_buf, tag_attr.val.name, tag_attr.val.len );
+                token_buf[tag_attr.val.len] = '\0';
             } else if( strnicmp( "delete", token_buf, 6 ) == 0 ) {
                 sym.flags |= deleted;
             } else {    // no match = end-of-tag in wgml 4.0

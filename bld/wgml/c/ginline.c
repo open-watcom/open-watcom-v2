@@ -417,20 +417,19 @@ void gml_sf( const gmltag * entry )
     char            *p;
     char            *pa;
     font_number     font;
-    char            attname[TAG_ATT_NAME_LENGTH + 1];
-    att_val_type    attr_val;
+    tag_att_val     tag_attr;
 
     p = scandata.s;
     SkipSpaces( p );
     if( *p == '.' ) {
         /* already at tag end */
     } else {
-        p = get_att_name( p, &pa, attname );
+        p = get_att_name( p, &pa, &tag_attr );
         if( !ProcFlags.reprocess_line ) {
-            if( strcmp( "font", attname ) == 0 ) {
-                p = get_att_value( p, &attr_val );
-                if( attr_val.name != NULL ) {
-                    font = get_font_number( attr_val.name, attr_val.len );
+            if( strcmp( "font", tag_attr.attname ) == 0 ) {
+                p = get_att_value( p, &tag_attr.val );
+                if( tag_attr.val.name != NULL ) {
+                    font = get_font_number( tag_attr.val.name, tag_attr.val.len );
                     font_seen = true;
                     scandata.s = p;
                     gml_inline_common( entry, font, t_SF );

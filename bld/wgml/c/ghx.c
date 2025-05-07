@@ -560,8 +560,7 @@ static void gml_hx_common( const gmltag * entry, hdsrc hn_lvl )
     hdsrc           hds_lvl;
     text_space      sav_spacing;
     size_t          len;
-    char            attname[TAG_ATT_NAME_LENGTH + 1];
-    att_val_type    attr_val;
+    tag_att_val     tag_attr;
 
     static char     hxstr[4]    = ":HX";
 
@@ -651,22 +650,22 @@ static void gml_hx_common( const gmltag * entry, hdsrc hn_lvl )
         /* already at tag end */
     } else {
         for( ;; ) {
-            p = get_att_name( p, &pa, attname );
+            p = get_att_name( p, &pa, &tag_attr );
             if( ProcFlags.reprocess_line ) {
                 break;
             }
-            if( strcmp( "id", attname ) == 0 ) {
-                p = get_refid_value( p, &attr_val, hdrefid );
-                if( attr_val.name == NULL ) {
+            if( strcmp( "id", tag_attr.attname ) == 0 ) {
+                p = get_refid_value( p, &tag_attr.val, hdrefid );
+                if( tag_attr.val.name == NULL ) {
                     break;
                 }
                 id_seen = true;             // valid id attribute found
                 if( ProcFlags.tag_end_found ) {
                     break;
                 }
-            } else if( strcmp( "stitle", attname ) == 0 ) {
-                p = get_att_value( p, &attr_val );
-                if( attr_val.name == NULL ) {
+            } else if( strcmp( "stitle", tag_attr.attname ) == 0 ) {
+                p = get_att_value( p, &tag_attr.val );
+                if( tag_attr.val.name == NULL ) {
                     break;
                 }
                 xx_warn_c( wng_unsupp_att, "stitle" );

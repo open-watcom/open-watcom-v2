@@ -234,8 +234,7 @@ void    lay_banner( const gmltag * entry )
         for( k = 0; k < att_count; k++ ) {
             curr = banner_att[k];
             if( strcmp( lay_att_names[curr], lay_attr.attname ) == 0 ) {
-                p = g_att_val.val_name;
-
+                p = lay_attr.val.name;
                 if( count[k] ) {
                     if( sum_count == att_count ) {  // all attributes found
                         xx_err( err_lay_text );     // per wgml 4.0: treat as text
@@ -248,56 +247,56 @@ void    lay_banner( const gmltag * entry )
                     switch( curr ) {
                     case e_left_adjust:
                         if( AttrFlags.left_adjust ) {
-                            xx_line_err_ci( err_att_dup, g_att_val.att_name,
-                                g_att_val.val_name - g_att_val.att_name + g_att_val.val_len);
+                            xx_line_err_ci( err_att_dup, lay_attr.att_name,
+                                lay_attr.val.name - lay_attr.att_name + lay_attr.val.len);
                         }
                         i_space_unit( p, &lay_attr, &wk.left_adjust );
                         AttrFlags.left_adjust = true;
                         break;
                     case e_right_adjust:
                         if( AttrFlags.right_adjust ) {
-                            xx_line_err_ci( err_att_dup, g_att_val.att_name,
-                                g_att_val.val_name - g_att_val.att_name + g_att_val.val_len);
+                            xx_line_err_ci( err_att_dup, lay_attr.att_name,
+                                lay_attr.val.name - lay_attr.att_name + lay_attr.val.len);
                         }
                         i_space_unit( p, &lay_attr, &wk.right_adjust );
                         AttrFlags.right_adjust = true;
                         break;
                     case e_depth:
                         if( AttrFlags.depth ) {
-                            xx_line_err_ci( err_att_dup, g_att_val.att_name,
-                                g_att_val.val_name - g_att_val.att_name + g_att_val.val_len);
+                            xx_line_err_ci( err_att_dup, lay_attr.att_name,
+                                lay_attr.val.name - lay_attr.att_name + lay_attr.val.len);
                         }
                         i_space_unit( p, &lay_attr, &wk.depth );
                         AttrFlags.depth = true;
                         break;
                     case e_place:
                         if( AttrFlags.place ) {
-                            xx_line_err_ci( err_att_dup, g_att_val.att_name,
-                                g_att_val.val_name - g_att_val.att_name + g_att_val.val_len);
+                            xx_line_err_ci( err_att_dup, lay_attr.att_name,
+                                lay_attr.val.name - lay_attr.att_name + lay_attr.val.len);
                         }
                         i_place( p, &lay_attr, &wk.place );
                         AttrFlags.place = true;
                         break;
                     case e_docsect:
                         if( AttrFlags.docsect ) {
-                            xx_line_err_ci( err_att_dup, g_att_val.att_name,
-                                g_att_val.val_name - g_att_val.att_name + g_att_val.val_len);
+                            xx_line_err_ci( err_att_dup, lay_attr.att_name,
+                                lay_attr.val.name - lay_attr.att_name + lay_attr.val.len);
                         }
                         i_docsect( p, &lay_attr, &wk.docsect );
                         AttrFlags.docsect = true;
                         break;
                     case e_refplace:  // not stored in banner struct
                         if( AttrFlags.refplace ) {
-                            xx_line_err_ci( err_att_dup, g_att_val.att_name,
-                                g_att_val.val_name - g_att_val.att_name + g_att_val.val_len);
+                            xx_line_err_ci( err_att_dup, lay_attr.att_name,
+                                lay_attr.val.name - lay_attr.att_name + lay_attr.val.len);
                         }
                         i_place( p, &lay_attr, &refplace );
                         AttrFlags.refplace = true;
                         break;
                     case e_refdoc:    // not stored in banner struct
                         if( AttrFlags.refdoc ) {
-                            xx_line_err_ci( err_att_dup, g_att_val.att_name,
-                                g_att_val.val_name - g_att_val.att_name + g_att_val.val_len);
+                            xx_line_err_ci( err_att_dup, lay_attr.att_name,
+                                lay_attr.val.name - lay_attr.att_name + lay_attr.val.len);
                         }
                         i_docsect( p, &lay_attr, &refdoc );
                         AttrFlags.refdoc = true;

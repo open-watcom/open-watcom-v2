@@ -398,8 +398,7 @@ void gml_fig( const gmltag * entry )
     ref_entry       *cur_ref     = NULL;
     su              cur_su;
     uint32_t        max_width;
-    char            attname[TAG_ATT_NAME_LENGTH + 1];
-    att_val_type    attr_val;
+    tag_att_val     tag_attr;
 
     (void)entry;
 
@@ -431,41 +430,41 @@ void gml_fig( const gmltag * entry )
         /* already at tag end */
     } else {
         for( ;; ) {
-            p = get_att_name( p, &pa, attname );
+            p = get_att_name( p, &pa, &tag_attr );
             if( ProcFlags.reprocess_line ) {
                 break;
             }
-            if( strcmp( "depth", attname ) == 0 ) {
-                p = get_att_value( p, &attr_val );
-                if( attr_val.name == NULL ) {
+            if( strcmp( "depth", tag_attr.attname ) == 0 ) {
+                p = get_att_value( p, &tag_attr.val );
+                if( tag_attr.val.name == NULL ) {
                     break;
                 }
-                if( att_val_to_su( &cur_su, true, &attr_val, false ) ) {
+                if( att_val_to_su( &cur_su, true, &tag_attr.val, false ) ) {
                     break;
                 }
                 depth = conv_vert_unit( &cur_su, g_text_spacing, g_curr_font );
                 if( ProcFlags.tag_end_found ) {
                     break;
                 }
-            } else if( strcmp( "frame", attname ) == 0 ) {
-                p = get_att_value( p, &attr_val );
-                if( attr_val.name == NULL ) {
+            } else if( strcmp( "frame", tag_attr.attname ) == 0 ) {
+                p = get_att_value( p, &tag_attr.val );
+                if( tag_attr.val.name == NULL ) {
                     break;
                 }
-                if( strcmp( "none", attr_val.specval ) == 0 ) {
+                if( strcmp( "none", tag_attr.val.specval ) == 0 ) {
                     frame.type = none;
-                } else if( strcmp( "box", attr_val.specval ) == 0 ) {
+                } else if( strcmp( "box", tag_attr.val.specval ) == 0 ) {
                     frame.type = box_frame;
-                } else if( strcmp( "rule", attr_val.specval ) == 0 ) {
+                } else if( strcmp( "rule", tag_attr.val.specval ) == 0 ) {
                     frame.type = rule_frame;
                 } else {
                     frame.type = char_frame;
                 }
                 if( frame.type == char_frame ) {
-                    if( attr_val.len > STRBLK_SIZE )
-                        attr_val.len = STRBLK_SIZE;
-                    strncpy( frame.string, attr_val.name, attr_val.len );
-                    frame.string[attr_val.len] = '\0';
+                    if( tag_attr.val.len > STRBLK_SIZE )
+                        tag_attr.val.len = STRBLK_SIZE;
+                    strncpy( frame.string, tag_attr.val.name, tag_attr.val.len );
+                    frame.string[tag_attr.val.len] = '\0';
                     if( frame.string[0] == '\0' ) {
                         frame.type = none;      // treat null string as "none"
                     }
@@ -475,50 +474,50 @@ void gml_fig( const gmltag * entry )
                 if( ProcFlags.tag_end_found ) {
                     break;
                 }
-            } else if( strcmp( "id", attname ) == 0 ) {
-                p = get_refid_value( p, &attr_val, figrefid );
-                if( attr_val.name == NULL ) {
+            } else if( strcmp( "id", tag_attr.attname ) == 0 ) {
+                p = get_refid_value( p, &tag_attr.val, figrefid );
+                if( tag_attr.val.name == NULL ) {
                     break;
                 }
                 id_seen = true;             // valid id attribute found
                 if( ProcFlags.tag_end_found ) {
                     break;
                 }
-            } else if( strcmp( "place", attname ) == 0 ) {
-                p = get_att_value( p, &attr_val );
-                if( attr_val.name == NULL ) {
+            } else if( strcmp( "place", tag_attr.attname ) == 0 ) {
+                p = get_att_value( p, &tag_attr.val );
+                if( tag_attr.val.name == NULL ) {
                     break;
                 }
-                if( strcmp( "bottom", attr_val.specval ) == 0 ) {
+                if( strcmp( "bottom", tag_attr.val.specval ) == 0 ) {
                     place = bottom_place;
-                } else if( strcmp( "inline", attr_val.specval ) == 0 ) {
+                } else if( strcmp( "inline", tag_attr.val.specval ) == 0 ) {
                     place = inline_place;
-                } else if( strcmp( "top", attr_val.specval ) == 0 ) {
+                } else if( strcmp( "top", tag_attr.val.specval ) == 0 ) {
                     place = top_place;
                 } else {
-                    xx_line_err_c( err_inv_att_val, attr_val.name );
+                    xx_line_err_c( err_inv_att_val, tag_attr.val.name );
                 }
                 if( ProcFlags.tag_end_found ) {
                     break;
                 }
-            } else if( strcmp( "width", attname ) == 0 ) {
-                p = get_att_value( p, &attr_val );
-                if( attr_val.name == NULL ) {
+            } else if( strcmp( "width", tag_attr.attname ) == 0 ) {
+                p = get_att_value( p, &tag_attr.val );
+                if( tag_attr.val.name == NULL ) {
                     break;
                 }
-                if( strcmp( "page", attr_val.specval ) == 0 ) {
+                if( strcmp( "page", tag_attr.val.specval ) == 0 ) {
                     // this will be used to set t_page_width and width below
                     page_width = true;
-                } else if( strcmp( "column", attr_val.specval ) == 0 ) {
+                } else if( strcmp( "column", tag_attr.val.specval ) == 0 ) {
                     // default value is the correct value to use
                 } else {    // value actually specifies the width
-                    pa = attr_val.name;
-                    if( att_val_to_su( &cur_su, true, &attr_val, false ) ) {
+                    pa = tag_attr.val.name;
+                    if( att_val_to_su( &cur_su, true, &tag_attr.val, false ) ) {
                         break;
                     }
                     width = conv_hor_unit( &cur_su, g_curr_font );
                     if( width == 0 ) {
-                        xx_line_err_c( err_inv_width_fig_1, attr_val.name );
+                        xx_line_err_c( err_inv_width_fig_1, tag_attr.val.name );
                     }
                     width_seen = true;
                 }
@@ -616,7 +615,7 @@ void gml_fig( const gmltag * entry )
 
     if( width_seen ) {                  // width entered will be used
         if( width > max_width ) {
-            xx_line_err_c( err_inv_width_fig_3, attr_val.name );
+            xx_line_err_c( err_inv_width_fig_3, tag_attr.val.name );
         }
     } else {
         width = max_width;              // t_page.last_pane->col_width will be used
@@ -650,17 +649,17 @@ void gml_fig( const gmltag * entry )
 
     if( width > t_page.last_pane->col_width ) {
         if( (t_page.last_pane->col_count > 1) && (place != top_place) ) {
-            xx_line_err_c( err_inv_width_fig_2, attr_val.name );
+            xx_line_err_c( err_inv_width_fig_2, tag_attr.val.name );
         } else if( t_page.last_pane->col_count == 1 ) {
-            xx_line_err_c( err_inv_width_fig_3, attr_val.name );
+            xx_line_err_c( err_inv_width_fig_3, tag_attr.val.name );
         }
     }
 
     if( (t_page.cur_left >= t_page.max_width) || (t_page.cur_left >= g_page_right_org) ) {
         if( frame.type == none ) {
-            xx_line_err_c( err_inv_margins_1, attr_val.name );
+            xx_line_err_c( err_inv_margins_1, tag_attr.val.name );
         } else {
-            xx_line_err_c( err_inv_margins_2, attr_val.name );
+            xx_line_err_c( err_inv_margins_2, tag_attr.val.name );
         }
     }
 
@@ -673,9 +672,9 @@ void gml_fig( const gmltag * entry )
 
     if( t_page.max_width < right_inset ) {
         if( frame.type == none ) {
-            xx_line_err_c( err_inv_margins_1, attr_val.name );
+            xx_line_err_c( err_inv_margins_1, tag_attr.val.name );
         } else {
-            xx_line_err_c( err_inv_margins_2, attr_val.name );
+            xx_line_err_c( err_inv_margins_2, tag_attr.val.name );
         }
     } else {
         t_page.max_width -= right_inset;

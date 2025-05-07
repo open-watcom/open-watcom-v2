@@ -446,7 +446,7 @@ extern char         *format_num( unsigned n, char *r, size_t rsize, num_style ns
 extern void         free_ffh_list( ffh_entry *ffh_list );
 extern void         free_fwd_refs( fwd_ref *fwd_refs );
 extern void         g_keep_nest( const char *cw_tag );
-extern char         *get_att_name( char *p, char **orig, char *attname );
+extern char         *get_att_name( char *p, char **orig, tag_att_val *tag_attr );
 extern void         get_att_specval( att_val_type *attr_val );
 extern char         *get_att_value( char *p, att_val_type *attr_val );
 extern char         *get_attribute( char *p );

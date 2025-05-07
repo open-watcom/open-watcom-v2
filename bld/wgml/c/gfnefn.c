@@ -59,8 +59,7 @@ void gml_fn( const gmltag * entry )
     char            *p;
     char            *pa;
     ref_entry       *cur_ref;
-    char            attname[TAG_ATT_NAME_LENGTH + 1];
-    att_val_type    attr_val;
+    tag_att_val     tag_attr;
 
     (void)entry;
 
@@ -78,13 +77,13 @@ void gml_fn( const gmltag * entry )
         /* already at tag end */
     } else {
         for( ;; ) {
-            p = get_att_name( p, &pa, attname );
+            p = get_att_name( p, &pa, &tag_attr );
             if( ProcFlags.reprocess_line ) {
                 break;
             }
-            if( strcmp( "id", attname ) == 0 ) {
-                p = get_refid_value( p, &attr_val, fnrefid );
-                if( attr_val.name == NULL ) {
+            if( strcmp( "id", tag_attr.attname ) == 0 ) {
+                p = get_refid_value( p, &tag_attr.val, fnrefid );
+                if( tag_attr.val.name == NULL ) {
                     break;
                 }
                 id_seen = true;             // valid id attribute found
