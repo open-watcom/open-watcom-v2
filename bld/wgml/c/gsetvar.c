@@ -275,7 +275,7 @@ void    scr_se( void )
 
     subscript = no_subscript;                       // not subscripted
     g_scan_err = false;
-    p = scan_sym( scan_start, &sym, &subscript, NULL, false );
+    p = scan_sym( scandata.s, &sym, &subscript, NULL, false );
 
     if( strcmp( MAC_STAR_NAME, sym.name ) != 0 ) {  // remove trailing blanks from all symbols except *
         valstart = p;
@@ -335,7 +335,7 @@ void    scr_se( void )
                 condcode        cc;
 
                 gn.arg.s = valstart;
-                gn.arg.e = scan_stop;
+                gn.arg.e = scandata.e;
                 gn.ignore_blanks = true;
                 cc = getnum( &gn );             // try numeric expression evaluation
                 if( cc != notnum ) {
@@ -373,7 +373,7 @@ void    scr_se( void )
             g_scan_err = true;
         }
     }
-    scan_restart = scan_stop;
+    scan_restart = scandata.e;
     return;
 }
 

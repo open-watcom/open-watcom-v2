@@ -51,6 +51,8 @@ void    gml_binclude( const gmltag * entry )
     su              depth_su;
     uint32_t        depth;
     FILE            *fp;
+    char            attname[TAG_ATT_NAME_LENGTH + 1];
+    att_val_type    attr_val;
 
     memset( &AttrFlags, 0, sizeof( AttrFlags ) );   // clear all attribute flags
     if( (ProcFlags.doc_sect < doc_sect_gdoc) ) {
@@ -64,25 +66,23 @@ void    gml_binclude( const gmltag * entry )
 
     file[0] = '\0';
     rt_buff[0] = '\0';
-    p = scan_start;
+    p = scandata.s;
     if( *p == '.' ) {
         /* already at tag end */
     } else {
         for( ;; ) {
-            pa = get_attribute( p );
-            p = g_att_val.att_name;
+            p = get_att_name( p, &pa, attname );
             if( ProcFlags.reprocess_line ) {
                 break;
             }
-            if( strnicmp( "file", p, 4 ) == 0 ) {
-                p += 4;
-                p = get_value( p );
+            if( strcmp( "file", attname ) == 0 ) {
+                p = get_att_value( p, &attr_val );
                 if( AttrFlags.file ) {
                     xx_line_err_ci( err_att_dup, g_att_val.att_name,
                         g_att_val.val_name - g_att_val.att_name + g_att_val.val_len);
                 }
                 AttrFlags.file = true;
-                if( g_att_val.val_name == NULL ) {
+                if( attr_val.name == NULL ) {
                     break;
                 }
                 if( g_att_val.val_len > _MAX_PATH - 1 )
@@ -99,18 +99,17 @@ void    gml_binclude( const gmltag * entry )
                 if( ProcFlags.tag_end_found ) {
                     break;
                 }
-            } else if( strnicmp( "depth", p, 5 ) == 0 ) {
-                p += 5;
-                p = get_value( p );
+            } else if( strcmp( "depth", attname ) == 0 ) {
+                p = get_att_value( p, &attr_val );
                 if( AttrFlags.depth ) {
                     xx_line_err_ci( err_att_dup, g_att_val.att_name,
                         g_att_val.val_name - g_att_val.att_name + g_att_val.val_len);
                 }
                 AttrFlags.depth = true;
-                if( g_att_val.val_name == NULL ) {
+                if( attr_val.name == NULL ) {
                     break;
                 }
-                if( value_to_su( &depth_su, true ) ) {
+                if( att_val_to_su( &depth_su, true, &attr_val, false ) ) {
                     break;
                 }
                 depth = conv_vert_unit( &depth_su, g_text_spacing, g_curr_font );
@@ -120,20 +119,19 @@ void    gml_binclude( const gmltag * entry )
                 if( ProcFlags.tag_end_found ) {
                     break;
                 }
-            } else if( strnicmp( "reposition", p, 10 ) == 0 ) {
-                p += 10;
-                p = get_value( p );
+            } else if( strcmp( "reposition", attname ) == 0 ) {
+                p = get_att_value( p, &attr_val );
                 if( AttrFlags.reposition ) {
                     xx_line_err_ci( err_att_dup, g_att_val.att_name,
                         g_att_val.val_name - g_att_val.att_name + g_att_val.val_len);
                 }
                 AttrFlags.reposition = true;
-                if( g_att_val.val_name == NULL ) {
+                if( attr_val.name == NULL ) {
                     break;
                 }
-                if( strnicmp( "start", g_att_val.val_name, 5 ) == 0 ) {
+                if( strcmp( "start", attr_val.specval ) == 0 ) {
                     reposition = true;  // moving following text down by depth
-                } else if( strnicmp( "end", g_att_val.val_name, 3 ) == 0 ) {
+                } else if( strcmp( "end", attr_val.specval ) == 0 ) {
                     reposition = false; // device at proper position after insertion
                 } else {
                     xx_line_err_c( err_inv_att_val, g_att_val.val_name );
@@ -188,7 +186,7 @@ void    gml_binclude( const gmltag * entry )
         xx_err_c( err_file_not_found, file );
     }
 
-    scan_start = scan_stop;         // skip following text
+    scandata.s = scandata.e;         // skip following text
     return;
 }
 

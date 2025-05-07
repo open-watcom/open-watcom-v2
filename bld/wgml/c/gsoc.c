@@ -68,7 +68,7 @@ void    scr_oc( void )
     char        *   p;
 
     if( GlobalFlags.lastpass ) {
-        p = scan_start;                 // next char after .oc
+        p = scandata.s;                 // next char after .oc
         if( *p != '\0' ) {              // line operand specified
             SkipSpaces( p );
             if( *p != '\0' ) {
@@ -80,7 +80,7 @@ void    scr_oc( void )
             }
         }
     }
-    scan_restart = scan_stop;
+    scan_restart = scandata.e;
     return;
 }
 

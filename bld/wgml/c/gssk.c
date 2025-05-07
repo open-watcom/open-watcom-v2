@@ -123,7 +123,7 @@ void    scr_sk( void )
     sign = 1;                           // default sign
     spacing_ln = g_spacing_ln;
 
-    p = scan_start;
+    p = scandata.s;
     if( *p ) {
         p++;                            // over space
         if( *p == '-' ) {
@@ -175,7 +175,7 @@ void    scr_sk( void )
     scr_process_break();
     g_skip = skip;
 
-    scan_restart = scan_stop;
+    scan_restart = scandata.e;
     return;
 }
 

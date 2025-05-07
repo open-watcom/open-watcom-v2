@@ -163,7 +163,7 @@ static void hx_header( char * h_num, char * h_text, hdsrc hn_lvl, hdsrc hds_lvl 
 /* document sections which have headings                                      */
 /******************************************************************************/
 
-void gen_heading( char * h_text, char * id, hdsrc hn_lvl, hdsrc hds_lvl )
+void gen_heading( char *h_text, const char *hdrefid, hdsrc hn_lvl, hdsrc hds_lvl )
 {
     bool            page_width  = false;
     char        *   headp;
@@ -291,21 +291,17 @@ void gen_heading( char * h_text, char * id, hdsrc hn_lvl, hdsrc hds_lvl )
         }
 
         /***********************************************************************/
-        /* id is ambiguous, which may be confusing                             */
+        /* hdrefid is ambiguous, which may be confusing                        */
         /* for Hn, it is a local variable, and starts with '\0' when empty     */
         /* for document sections, it is NULL, as it has no meaning for them    */
         /***********************************************************************/
 
-        if( (id != NULL) && *id ) {             // add this entry to fig_ref_dict
-            cur_ref = find_refid( hd_ref_dict, id );
+        if( (hdrefid != NULL) && *hdrefid != '\0' ) {             // add this entry to fig_ref_dict
+            cur_ref = find_refid( hd_ref_dict, hdrefid );
             if( cur_ref == NULL ) {             // new entry
-                cur_ref = (ref_entry *)mem_alloc( sizeof( ref_entry ) );
-                init_ref_entry( cur_ref, id );
-                cur_ref->flags = rf_ffh;
-                cur_ref->u.ffh.entry = hd_entry;
-                add_ref_entry( &hd_ref_dict, cur_ref );
+                cur_ref = add_new_refid( &hd_ref_dict, hdrefid, hd_entry );
             } else {                // duplicate id
-                dup_id_err( cur_ref->id, "heading" );
+                dup_refid_err( cur_ref->refid, "heading" );
             }
         }
     }
@@ -558,12 +554,14 @@ void gen_heading( char * h_text, char * id, hdsrc hn_lvl, hdsrc hds_lvl )
 static void gml_hx_common( const gmltag * entry, hdsrc hn_lvl )
 {
     bool            id_seen     = false;
-    char            id[ID_LEN];
-    char        *   p;
-    char        *   pa;
+    char            hdrefid[REFID_LEN + 1];
+    char            *p;
+    char            *pa;
     hdsrc           hds_lvl;
     text_space      sav_spacing;
     size_t          len;
+    char            attname[TAG_ATT_NAME_LENGTH + 1];
+    att_val_type    attr_val;
 
     static char     hxstr[4]    = ":HX";
 
@@ -583,9 +581,9 @@ static void gml_hx_common( const gmltag * entry, hdsrc hn_lvl )
         ProcFlags.dd_starting = false;
     }
 
-    id[0] = '\0';                           // null string if no id found
+    *hdrefid = '\0';                        // null string if no id found
     switch( hn_lvl ) {
-    case   hds_h0:
+    case hds_h0:
         if( !((ProcFlags.doc_sect == doc_sect_body) ||
             (ProcFlags.doc_sect_nxt == doc_sect_body)) ) {
 
@@ -594,7 +592,7 @@ static void gml_hx_common( const gmltag * entry, hdsrc hn_lvl )
             hd_level = hn_lvl;              // H0 always valid in BODY
         }
         break;
-    case  hds_h1:
+    case hds_h1:
         if( !((ProcFlags.doc_sect >= doc_sect_body) ||
             (ProcFlags.doc_sect_nxt >= doc_sect_body)) ) {
 
@@ -611,11 +609,11 @@ static void gml_hx_common( const gmltag * entry, hdsrc hn_lvl )
             }
         }
         break;
-    case  hds_h2:
-    case  hds_h3:
-    case  hds_h4:
-    case  hds_h5:
-    case  hds_h6:
+    case hds_h2:
+    case hds_h3:
+    case hds_h4:
+    case hds_h5:
+    case hds_h6:
         if( hd_level < hn_lvl - 1 ) {
             g_wng_hlevel( hn_lvl, hd_level + 1 );
             /* Update numbers for the skipped headings. */
@@ -647,31 +645,28 @@ static void gml_hx_common( const gmltag * entry, hdsrc hn_lvl )
 
     hd_nums[hn_lvl].headn++;
 
-    p = scan_start;
+    p = scandata.s;
     SkipSpaces( p );
     if( *p == '.' ) {
         /* already at tag end */
     } else {
         for( ;; ) {
-            pa = get_att_start( p );
-            p = att_start;
+            p = get_att_name( p, &pa, attname );
             if( ProcFlags.reprocess_line ) {
                 break;
             }
-            if( strnicmp( "id", p, 2 ) == 0 ) {
-                p += 2;
-                p = get_refid_value( p, id );
-                if( val_start == NULL ) {
+            if( strcmp( "id", attname ) == 0 ) {
+                p = get_refid_value( p, &attr_val, hdrefid );
+                if( attr_val.name == NULL ) {
                     break;
                 }
                 id_seen = true;             // valid id attribute found
                 if( ProcFlags.tag_end_found ) {
                     break;
                 }
-            } else if( strnicmp( "stitle", p, 6 ) == 0 ) {
-                p += 6;
-                p = get_att_value( p );
-                if( val_start == NULL ) {
+            } else if( strcmp( "stitle", attname ) == 0 ) {
+                p = get_att_value( p, &attr_val );
+                if( attr_val.name == NULL ) {
                     break;
                 }
                 xx_warn_c( wng_unsupp_att, "stitle" );
@@ -737,10 +732,10 @@ static void gml_hx_common( const gmltag * entry, hdsrc hn_lvl )
                 && layout_work.hx.hx_head[hds_lvl].line_break ) {
             ProcFlags.overprint = false;        // cancel overprint
         }
-        gen_heading( p, id, hn_lvl, hds_lvl );
-        scan_start = scan_stop;
+        gen_heading( p, hdrefid, hn_lvl, hds_lvl );
+        scandata.s = scandata.e;
     } else {
-        gen_heading( "", id, hn_lvl, hds_lvl );
+        gen_heading( "", hdrefid, hn_lvl, hds_lvl );
     }
 
     g_text_spacing = sav_spacing;
@@ -855,8 +850,8 @@ void out_head_page( ffh_entry * in_entry, ref_entry * in_ref, uint32_t in_pageno
         if( in_pageno != in_entry->pageno ) {   // page number changed
             in_entry->pageno = currno;
             if( GlobalFlags.lastpass ) {
-                if( (in_ref != NULL) && (in_ref->id != NULL) && in_ref->id[0] ) {
-                    hd_fwd_refs = init_fwd_ref( hd_fwd_refs, in_ref->id );
+                if( (in_ref != NULL) && (in_ref->refid != NULL) && in_ref->refid[0] ) {
+                    hd_fwd_refs = init_fwd_ref( hd_fwd_refs, in_ref->refid );
                 }
                 ProcFlags.new_pagenr = true;
             }

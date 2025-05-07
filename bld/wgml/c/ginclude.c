@@ -66,39 +66,39 @@
 
 extern  void    gml_include( const gmltag * entry )
 {
-    char    *   p;
-    char    *   pa;
+    char            *p;
+    char            *pa;
+    char            attname[TAG_ATT_NAME_LENGTH + 1];
+    att_val_type    attr_val;
 
     (void)entry;
 
     *token_buf = '\0';
-    p = scan_start;
+    p = scandata.s;
     p++;
     SkipSpaces( p );
     if( *p == '.' ) {
         /* already at tag end */
     } else {
-        pa = get_att_start( p );
-        p = att_start;
+        p = get_att_name( p, &pa, attname );
         if( !ProcFlags.reprocess_line ) {
-            if( strnicmp( "file", p, 4 ) == 0 ) {
-                p += 4;
-                p = get_att_value( p );
+            if( strcmp( "file", attname ) == 0 ) {
+                p = get_att_value( p, &attr_val );
             } else {
                 p = pa;                 // reset for possible file name
-                p = get_tag_value( p );
+                p = get_tag_value( p, &attr_val );
             }
-            if( val_start != NULL ) {
-                if( val_len > _MAX_PATH - 1 )
-                    val_len = _MAX_PATH - 1;
-                strncpy( token_buf, val_start, val_len );
-                token_buf[val_len] = '\0';
+            if( attr_val.name != NULL ) {
+                if( attr_val.len > _MAX_PATH - 1 )
+                    attr_val.len = _MAX_PATH - 1;
+                strncpy( token_buf, attr_val.name, attr_val.len );
+                token_buf[attr_val.len] = '\0';
                 ProcFlags.newLevelFile = 1;     // start new include level
-                scan_start = scan_stop;         // .. and ignore remaining line
+                scandata.s = scandata.e;         // .. and ignore remaining line
             }
         } else {                                // wgml 4.0 appears to mark "" as the filename
             ProcFlags.newLevelFile = 1;         // start new include level
-            scan_start = scan_stop;             // .. and ignore remaining line
+            scandata.s = scandata.e;             // .. and ignore remaining line
         }
     }
 

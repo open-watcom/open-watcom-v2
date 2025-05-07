@@ -79,19 +79,20 @@ const   lay_att     page_att[5] =
 
 void    lay_page( const gmltag * entry )
 {
-    char        *   p;
-    condcode        cc;
-    int             cvterr;
-    int             k;
-    lay_att         curr;
+    char                *p;
+    condcode            cc;
+    int                 cvterr;
+    int                 k;
+    lay_att             curr;
+    lay_att_val         lay_attr;
 
     (void)entry;
 
-    p = scan_start;
+    p = scandata.s;
     cvterr = false;
 
     if( !GlobalFlags.firstpass ) {
-        scan_start = scan_stop;
+        scandata.s = scandata.e;
         eat_lay_sub_tag();
         return;                         // process during first pass only
     }
@@ -99,47 +100,46 @@ void    lay_page( const gmltag * entry )
     if( ProcFlags.lay_xxx != el_page ) {
         ProcFlags.lay_xxx = el_page;
     }
-    while( (cc = get_attr_and_value()) == pos ) {   // get att with value
+    while( (cc = lay_attr_and_value( &lay_attr )) == pos ) {   // get att with value
         cvterr = -1;
         for( k = 0, curr = page_att[k]; curr > 0; k++, curr = page_att[k] ) {
-
-            if( !strnicmp( lay_att_names[curr], g_att_val.att_name, g_att_val.att_len ) ) {
+            if( strcmp( lay_att_names[curr], lay_attr.attname ) == 0 ) {
                 p = g_att_val.val_name;
 
                 switch( curr ) {
-                case   e_top_margin:
+                case e_top_margin:
                     if( AttrFlags.top_margin ) {
                         xx_line_err_ci( err_att_dup, g_att_val.att_name,
                             g_att_val.val_name - g_att_val.att_name + g_att_val.val_len);
                     }
-                    cvterr = i_space_unit( p, curr,
+                    cvterr = i_space_unit( p, &lay_attr,
                                            &layout_work.page.top_margin );
                     AttrFlags.top_margin = true;
                     break;
-                case   e_left_margin:
+                case e_left_margin:
                     if( AttrFlags.left_margin ) {
                         xx_line_err_ci( err_att_dup, g_att_val.att_name,
                             g_att_val.val_name - g_att_val.att_name + g_att_val.val_len);
                     }
-                    cvterr = i_space_unit( p, curr,
+                    cvterr = i_space_unit( p, &lay_attr,
                                            &layout_work.page.left_margin );
                     AttrFlags.left_margin = true;
                     break;
-                case   e_right_margin:
+                case e_right_margin:
                     if( AttrFlags.right_margin ) {
                         xx_line_err_ci( err_att_dup, g_att_val.att_name,
                             g_att_val.val_name - g_att_val.att_name + g_att_val.val_len);
                     }
-                    cvterr = i_space_unit( p, curr,
+                    cvterr = i_space_unit( p, &lay_attr,
                                            &layout_work.page.right_margin );
                     AttrFlags.right_margin = true;
                     break;
-                case   e_depth:
+                case e_depth:
                     if( AttrFlags.depth ) {
                         xx_line_err_ci( err_att_dup, g_att_val.att_name,
                             g_att_val.val_name - g_att_val.att_name + g_att_val.val_len);
                     }
-                    cvterr = i_space_unit( p, curr, &layout_work.page.depth );
+                    cvterr = i_space_unit( p, &lay_attr, &layout_work.page.depth );
                     AttrFlags.depth = true;
                     break;
                 default:
@@ -155,6 +155,6 @@ void    lay_page( const gmltag * entry )
             xx_err( err_att_name_inv );
         }
     }
-    scan_start = scan_stop;
+    scandata.s = scandata.e;
     return;
 }

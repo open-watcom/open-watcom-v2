@@ -101,19 +101,20 @@ const   lay_att     default_att[8] =
 
 void    lay_default( const gmltag * entry )
 {
-    char        *   p;
-    condcode        cc;
-    int             cvterr;
-    int             k;
-    lay_att         curr;
+    char                *p;
+    condcode            cc;
+    int                 cvterr;
+    int                 k;
+    lay_att             curr;
+    lay_att_val         lay_attr;
 
     (void)entry;
 
-    p = scan_start;
+    p = scandata.s;
     cvterr = false;
 
     if( !GlobalFlags.firstpass ) {
-        scan_start = scan_stop;
+        scandata.s = scandata.e;
         eat_lay_sub_tag();
         return;                         // process during first pass only
     }
@@ -121,75 +122,74 @@ void    lay_default( const gmltag * entry )
     if( ProcFlags.lay_xxx != el_default ) {
         ProcFlags.lay_xxx = el_default;
     }
-    while( (cc = get_attr_and_value()) == pos ) {   // get att with value
+    while( (cc = lay_attr_and_value( &lay_attr )) == pos ) {   // get att with value
         cvterr = -1;
         for( k = 0, curr = default_att[k]; curr > 0; k++, curr = default_att[k] ) {
-
-            if( !strnicmp( lay_att_names[curr], g_att_val.att_name, g_att_val.att_len ) ) {
+            if( strcmp( lay_att_names[curr], lay_attr.attname ) == 0 ) {
                 p = g_att_val.val_name;
 
                 switch( curr ) {
-                case   e_spacing:
+                case e_spacing:
                     if( AttrFlags.spacing ) {
                         xx_line_err_ci( err_att_dup, g_att_val.att_name,
                             g_att_val.val_name - g_att_val.att_name + g_att_val.val_len);
                     }
-                    cvterr = i_spacing( p, curr, &layout_work.defaults.spacing );
+                    cvterr = i_spacing( p, &lay_attr, &layout_work.defaults.spacing );
                     AttrFlags.spacing = true;
                     break;
-                case   e_columns:
+                case e_columns:
                     if( AttrFlags.columns ) {
                         xx_line_err_ci( err_att_dup, g_att_val.att_name,
                             g_att_val.val_name - g_att_val.att_name + g_att_val.val_len);
                     }
-                    cvterr = i_int8( p, curr, &layout_work.defaults.columns );
+                    cvterr = i_int8( p, &lay_attr, &layout_work.defaults.columns );
                     AttrFlags.columns = true;
                     break;
-                case   e_font:
+                case e_font:
                     if( AttrFlags.font ) {
                         xx_line_err_ci( err_att_dup, g_att_val.att_name,
                             g_att_val.val_name - g_att_val.att_name + g_att_val.val_len);
                     }
-                    cvterr = i_font_number( p, curr, &layout_work.defaults.font );
+                    cvterr = i_font_number( p, &lay_attr, &layout_work.defaults.font );
                     if( layout_work.defaults.font >= wgml_font_cnt ) {
                         layout_work.defaults.font = 0;
                     }
                     AttrFlags.font = true;
                     break;
-                case   e_justify:
+                case e_justify:
                     if( AttrFlags.justify ) {
                         xx_line_err_ci( err_att_dup, g_att_val.att_name,
                             g_att_val.val_name - g_att_val.att_name + g_att_val.val_len);
                     }
-                    cvterr = i_yes_no( p, curr, &layout_work.defaults.justify );
+                    cvterr = i_yes_no( p, &lay_attr, &layout_work.defaults.justify );
                     AttrFlags.justify = true;
                     break;
-                case   e_input_esc:
+                case e_input_esc:
                     if( AttrFlags.input_esc ) {
                         xx_line_err_ci( err_att_dup, g_att_val.att_name,
                             g_att_val.val_name - g_att_val.att_name + g_att_val.val_len);
                     }
-                    cvterr = i_char( p, curr, &layout_work.defaults.input_esc );
+                    cvterr = i_char( p, &lay_attr, &layout_work.defaults.input_esc );
                     in_esc = layout_work.defaults.input_esc;
                     if( in_esc != ' ' ) {
                         ProcFlags.in_trans = true;
                     }
                     AttrFlags.input_esc = true;
                     break;
-                case   e_gutter:
+                case e_gutter:
                     if( AttrFlags.gutter ) {
                         xx_line_err_ci( err_att_dup, g_att_val.att_name,
                             g_att_val.val_name - g_att_val.att_name + g_att_val.val_len);
                     }
-                    cvterr = i_space_unit( p, curr, &layout_work.defaults.gutter );
+                    cvterr = i_space_unit( p, &lay_attr, &layout_work.defaults.gutter );
                     AttrFlags.gutter = true;
                     break;
-                case   e_binding:
+                case e_binding:
                     if( AttrFlags.binding ) {
                         xx_line_err_ci( err_att_dup, g_att_val.att_name,
                             g_att_val.val_name - g_att_val.att_name + g_att_val.val_len);
                     }
-                    cvterr = i_space_unit( p, curr, &layout_work.defaults.binding );
+                    cvterr = i_space_unit( p, &lay_attr, &layout_work.defaults.binding );
                     AttrFlags.binding = true;
                     break;
                 default:
@@ -205,6 +205,6 @@ void    lay_default( const gmltag * entry )
             xx_err( err_att_name_inv );
         }
     }
-    scan_start = scan_stop;
+    scandata.s = scandata.e;
     return;
 }

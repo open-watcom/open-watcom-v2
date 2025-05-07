@@ -63,7 +63,7 @@ static void gml_hp_sf_common( gml_tag gtag, font_number font )
     nest_cb->gtag = gtag;
 
     g_scan_err = false;
-    p = scan_start;
+    p = scandata.s;
     if( *p == '.' ) p++;                // over '.'
     if( *p ) {
         process_text( p, g_curr_font );
@@ -71,7 +71,7 @@ static void gml_hp_sf_common( gml_tag gtag, font_number font )
     if( !ProcFlags.concat && (input_cbs->fmflags & II_eol) ) {
         scr_process_break();            // ensure line is output
     }
-    scan_start = scan_stop;
+    scandata.s = scandata.e;
     return;
 }
 
@@ -134,7 +134,7 @@ static  void    gml_ehp_esf_common( gml_tag egtag )
         }
 
         g_scan_err = false;
-        p = scan_start;
+        p = scandata.s;
         if( *p == '.' ) p++;            // over '.'
         if( *p ) {
             process_text( p, g_curr_font );
@@ -143,7 +143,7 @@ static  void    gml_ehp_esf_common( gml_tag egtag )
             scr_process_break();        // ensure line is output
         }
     }
-    scan_start = scan_stop;
+    scandata.s = scandata.e;
 }
 
 
@@ -217,7 +217,7 @@ void    gml_sf( gml_tag gtag )
     char    *   pe;
     long        font;
 
-    p = scan_start;
+    p = scandata.s;
     p++;
     while( *p == ' ' ) {
         p++;
@@ -225,7 +225,7 @@ void    gml_sf( gml_tag gtag )
     if( strnicmp( "font=", p, 5 ) == 0 ) {
         p += 5;
         font = strtol( p, &pe, 10 );
-        scan_start = pe;
+        scandata.s = pe;
         if( (font < 0) || (font >= wgml_font_cnt) ) {// invalid font use default
             font = FONT0;
         }
@@ -236,6 +236,6 @@ void    gml_sf( gml_tag gtag )
         g_err( err_att_missing );
         file_mac_info();
     }
-    scan_start = scan_stop;
+    scandata.s = scandata.e;
     return;
 }

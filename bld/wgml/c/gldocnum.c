@@ -53,14 +53,15 @@ void    lay_docnum( const gmltag * entry )
     int                 cvterr;
     int                 k;
     lay_att             curr;
+    lay_att_val         lay_attr;
 
     (void)entry;
 
-    p = scan_start;
+    p = scandata.s;
     cvterr = false;
 
     if( !GlobalFlags.firstpass ) {
-        scan_start = scan_stop;
+        scandata.s = scandata.e;
         eat_lay_sub_tag();
         return;                         // process during first pass only
     }
@@ -68,67 +69,66 @@ void    lay_docnum( const gmltag * entry )
     if( ProcFlags.lay_xxx != el_docnum ) {
         ProcFlags.lay_xxx = el_docnum;
     }
-    while( (cc = get_attr_and_value()) == pos ) {   // get att with value
+    while( (cc = lay_attr_and_value( &lay_attr )) == pos ) {   // get att with value
         cvterr = -1;
         for( k = 0, curr = docnum_att[k]; curr > 0; k++, curr = docnum_att[k] ) {
-
-            if( !strnicmp( lay_att_names[curr], g_att_val.att_name, g_att_val.att_len ) ) {
+            if( strcmp( lay_att_names[curr], lay_attr.attname ) == 0 ) {
                 p = g_att_val.val_name;
 
                 switch( curr ) {
-                case   e_left_adjust:
+                case e_left_adjust:
                     if( AttrFlags.left_adjust ) {
                         xx_line_err_ci( err_att_dup, g_att_val.att_name,
                             g_att_val.val_name - g_att_val.att_name + g_att_val.val_len);
                     }
-                    cvterr = i_space_unit( p, curr,
+                    cvterr = i_space_unit( p, &lay_attr,
                                            &layout_work.docnum.left_adjust );
                     AttrFlags.left_adjust = true;
                     break;
-                case   e_right_adjust:
+                case e_right_adjust:
                     if( AttrFlags.right_adjust ) {
                         xx_line_err_ci( err_att_dup, g_att_val.att_name,
                             g_att_val.val_name - g_att_val.att_name + g_att_val.val_len);
                     }
-                    cvterr = i_space_unit( p, curr,
+                    cvterr = i_space_unit( p, &lay_attr,
                                            &layout_work.docnum.right_adjust );
                     AttrFlags.right_adjust = true;
                     break;
-                case   e_page_position:
+                case e_page_position:
                     if( AttrFlags.page_position ) {
                         xx_line_err_ci( err_att_dup, g_att_val.att_name,
                             g_att_val.val_name - g_att_val.att_name + g_att_val.val_len);
                     }
-                    cvterr = i_page_position( p, curr,
+                    cvterr = i_page_position( p, &lay_attr,
                                           &layout_work.docnum.page_position );
                     AttrFlags.page_position = true;
                     break;
-                case   e_font:
+                case e_font:
                     if( AttrFlags.font ) {
                         xx_line_err_ci( err_att_dup, g_att_val.att_name,
                             g_att_val.val_name - g_att_val.att_name + g_att_val.val_len);
                     }
-                    cvterr = i_font_number( p, curr, &layout_work.docnum.font );
+                    cvterr = i_font_number( p, &lay_attr, &layout_work.docnum.font );
                     if( layout_work.docnum.font >= wgml_font_cnt ) {
                         layout_work.docnum.font = 0;
                     }
                     AttrFlags.font = true;
                     break;
-                case   e_pre_skip:
+                case e_pre_skip:
                     if( AttrFlags.pre_skip ) {
                         xx_line_err_ci( err_att_dup, g_att_val.att_name,
                             g_att_val.val_name - g_att_val.att_name + g_att_val.val_len);
                     }
-                    cvterr = i_space_unit( p, curr,
+                    cvterr = i_space_unit( p, &lay_attr,
                                            &layout_work.docnum.pre_skip );
                     AttrFlags.pre_skip = true;
                     break;
-                case   e_docnum_string:
+                case e_docnum_string:
                     if( AttrFlags.docnum_string ) {
                         xx_line_err_ci( err_att_dup, g_att_val.att_name,
                             g_att_val.val_name - g_att_val.att_name + g_att_val.val_len);
                     }
-                    cvterr = i_xx_string( p, curr, layout_work.docnum.string );
+                    cvterr = i_xx_string( p, &lay_attr, layout_work.docnum.string );
                     AttrFlags.docnum_string = true;
                     break;
                 default:
@@ -144,7 +144,7 @@ void    lay_docnum( const gmltag * entry )
             xx_err( err_att_name_inv );
         }
     }
-    scan_start = scan_stop;
+    scandata.s = scandata.e;
     return;
 }
 

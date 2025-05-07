@@ -431,9 +431,9 @@ bool process_tag( gtentry * ge, mac_entry * me )
     rc = add_symvar( loc_dict, "_", token_buf, no_subscript, local_var );
     p += strlen( token_buf );
 
-    scan_start = p + 1;             // all processed
-    if( *scan_start == ' ' ){
-        SkipSpaces( scan_start );   // do not treat spaces removed from end as text
+    scandata.s = p + 1;             // all processed
+    if( *scandata.s == ' ' ){
+        SkipSpaces( scandata.s );   // do not treat spaces removed from end as text
     }
 
     /*******************************************************************/

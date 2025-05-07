@@ -376,14 +376,14 @@ void file_mac_info_nest( void )
         nw = nest_cb->p_stack;
         while( nw != NULL ) {
             switch( nw->nest_flag & II_input ) {
-            case    II_file:
+            case II_file:
                 sprintf( linestr, "%d", nw->lineno );
                 g_info( inf_file_line, linestr, nw->s.filename );
                 break;
-            case    II_tag :
+            case II_tag :
                 g_info( err_inf_tag, nw->s.mt.tag_m->name );
                 // fallthrough
-            case    II_macro :
+            case II_macro :
                 sprintf( linestr, "%d", nw->lineno );
                 sprintf( linemac, "%d", nw->s.mt.m->lineno );
                 g_info( err_inf_mac_def, linestr, nw->s.mt.m->name,
@@ -540,9 +540,9 @@ void val_parse_err( const char * pa, bool tag ) // for internal_to_su()
 /*  message for duplicate figure, footnote, or heading ids                 */
 /***************************************************************************/
 
-void dup_id_err( const char * id, const char * context )
+void dup_refid_err( const char *refid, const char * context )
 {
-    g_err( wng_id_xxx, id );
+    g_err( wng_id_xxx, refid );
     g_info( inf_id_duplicate, context );
     file_mac_info();
     err_count++;

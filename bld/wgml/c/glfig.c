@@ -113,19 +113,20 @@ const   lay_att     fig_att[9] =
 
 void    lay_fig( const gmltag * entry )
 {
-    char        *   p;
-    condcode        cc;
-    int             cvterr;
-    int             k;
-    lay_att         curr;
+    char                *p;
+    condcode            cc;
+    int                 cvterr;
+    int                 k;
+    lay_att             curr;
+    lay_att_val         lay_attr;
 
     (void)entry;
 
-    p = scan_start;
+    p = scandata.s;
     cvterr = false;
 
     if( !GlobalFlags.firstpass ) {
-        scan_start = scan_stop;
+        scandata.s = scandata.e;
         eat_lay_sub_tag();
         return;                         // process during first pass only
     }
@@ -133,82 +134,81 @@ void    lay_fig( const gmltag * entry )
     if( ProcFlags.lay_xxx != el_fig ) {
         ProcFlags.lay_xxx = el_fig;
     }
-    while( (cc = get_attr_and_value()) == pos ) {   // get att with value
+    while( (cc = lay_attr_and_value( &lay_attr )) == pos ) {   // get att with value
         cvterr = -1;
         for( k = 0, curr = fig_att[k]; curr > 0; k++, curr = fig_att[k] ) {
-
-            if( !strnicmp( lay_att_names[curr], g_att_val.att_name, g_att_val.att_len ) ) {
+            if( strcmp( lay_att_names[curr], lay_attr.attname ) == 0 ) {
                 p = g_att_val.val_name;
 
                 switch( curr ) {
-                case   e_left_adjust:
+                case e_left_adjust:
                     if( AttrFlags.left_adjust ) {
                         xx_line_err_ci( err_att_dup, g_att_val.att_name,
                             g_att_val.val_name - g_att_val.att_name + g_att_val.val_len);
                     }
-                    cvterr = i_space_unit( p, curr,
+                    cvterr = i_space_unit( p, &lay_attr,
                                            &layout_work.fig.left_adjust );
                     AttrFlags.left_adjust = true;
                     break;
-                case   e_right_adjust:
+                case e_right_adjust:
                     if( AttrFlags.right_adjust ) {
                         xx_line_err_ci( err_att_dup, g_att_val.att_name,
                             g_att_val.val_name - g_att_val.att_name + g_att_val.val_len);
                     }
-                    cvterr = i_space_unit( p, curr,
+                    cvterr = i_space_unit( p, &lay_attr,
                                            &layout_work.fig.right_adjust );
                     AttrFlags.right_adjust = true;
                     break;
-                case   e_pre_skip:
+                case e_pre_skip:
                     if( AttrFlags.pre_skip ) {
                         xx_line_err_ci( err_att_dup, g_att_val.att_name,
                             g_att_val.val_name - g_att_val.att_name + g_att_val.val_len);
                     }
-                    cvterr = i_space_unit( p, curr, &layout_work.fig.pre_skip );
+                    cvterr = i_space_unit( p, &lay_attr, &layout_work.fig.pre_skip );
                     AttrFlags.pre_skip = true;
                     break;
-                case   e_post_skip:
+                case e_post_skip:
                     if( AttrFlags.post_skip ) {
                         xx_line_err_ci( err_att_dup, g_att_val.att_name,
                             g_att_val.val_name - g_att_val.att_name + g_att_val.val_len);
                     }
-                    cvterr = i_space_unit( p, curr, &layout_work.fig.post_skip );
+                    cvterr = i_space_unit( p, &lay_attr, &layout_work.fig.post_skip );
                     AttrFlags.post_skip = true;
                     break;
-                case   e_spacing:
+                case e_spacing:
                     if( AttrFlags.spacing ) {
                         xx_line_err_ci( err_att_dup, g_att_val.att_name,
                             g_att_val.val_name - g_att_val.att_name + g_att_val.val_len);
                     }
-                    cvterr = i_spacing( p, curr, &layout_work.fig.spacing );
+                    cvterr = i_spacing( p, &lay_attr, &layout_work.fig.spacing );
                     AttrFlags.spacing = true;
                     break;
-                case   e_font:
+                case e_font:
                     if( AttrFlags.font ) {
                         xx_line_err_ci( err_att_dup, g_att_val.att_name,
                             g_att_val.val_name - g_att_val.att_name + g_att_val.val_len);
                     }
-                    cvterr = i_font_number( p, curr, &layout_work.fig.font );
+                    cvterr = i_font_number( p, &lay_attr, &layout_work.fig.font );
                     if( layout_work.fig.font >= wgml_font_cnt ) {
                         layout_work.fig.font = 0;
                     }
                     AttrFlags.font = true;
                     break;
-                case   e_default_place:
+                case e_default_place:
                     if( AttrFlags.default_place ) {
                         xx_line_err_ci( err_att_dup, g_att_val.att_name,
                             g_att_val.val_name - g_att_val.att_name + g_att_val.val_len);
                     }
-                    cvterr = i_place( p, curr,
+                    cvterr = i_place( p, &lay_attr,
                                       &layout_work.fig.default_place );
                     AttrFlags.default_place = true;
                     break;
-                case   e_default_frame:
+                case e_default_frame:
                     if( AttrFlags.default_frame ) {
                         xx_line_err_ci( err_att_dup, g_att_val.att_name,
                             g_att_val.val_name - g_att_val.att_name + g_att_val.val_len);
                     }
-                    cvterr = i_default_frame( p, curr,
+                    cvterr = i_default_frame( p, &lay_attr,
                                               &layout_work.fig.default_frame );
                     AttrFlags.default_frame = true;
                     break;
@@ -225,7 +225,7 @@ void    lay_fig( const gmltag * entry )
             xx_err( err_att_name_inv );
         }
     }
-    scan_start = scan_stop;
+    scandata.s = scandata.e;
     return;
 }
 

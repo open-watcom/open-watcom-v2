@@ -324,16 +324,18 @@ static void set_altext( option * opt )
 
 static void set_bind( option * opt )
 {
-    bool        scanerr;
-    su          bindwork;
+    bool            scanerr;
+    su              bindwork;
+    att_val_type    attr_val;
 
     if( tokennext == NULL || tokennext->bol || tokennext->token[0] == '('
                                             || is_option() ) {
         xx_simple_err_cc( err_miss_inv_opt_value, opt->option, "" );
     } else {
-        val_start = tokennext->token;
-        val_len = tokennext->toklen;
-        scanerr = att_val_to_su( &bindwork, true ); // must be positive TBD
+        attr_val.quoted = ' ';
+        attr_val.name = tokennext->token;
+        attr_val.len = tokennext->toklen;
+        scanerr = att_val_to_su( &bindwork, true, &attr_val, false ); // must be positive TBD
         if( scanerr ) {
             xx_simple_err_cc( err_miss_inv_opt_value, opt->option, tokennext->token );
         } else {
@@ -349,9 +351,9 @@ static void set_bind( option * opt )
 
                 memcpy( &bind_even, &bind_odd, sizeof( bind_even ) );  // use bind_odd
             } else {
-                val_start = tokennext->token;
-                val_len = tokennext->toklen;
-                scanerr = att_val_to_su( &bindwork, true ); // must be positive TBD
+                attr_val.name = tokennext->token;
+                attr_val.len = tokennext->toklen;
+                scanerr = att_val_to_su( &bindwork, true, &attr_val, false ); // must be positive TBD
                 if( scanerr ) {
                     xx_simple_err_cc( err_miss_inv_opt_value, opt->option, tokennext->token );
                 } else {

@@ -64,10 +64,12 @@ static  ju_enum     justify_save;           // for ProcFlags.justify
 
 void gml_xmp( const gmltag * entry )
 {
-    char        *   p;
-    char        *   pa;
+    char            *p;
+    char            *pa;
     su              cur_su;
     uint32_t        depth;
+    char            attname[TAG_ATT_NAME_LENGTH + 1];
+    att_val_type    attr_val;
 
     (void)entry;
 
@@ -84,24 +86,22 @@ void gml_xmp( const gmltag * entry )
     font_save = g_curr_font;
     g_curr_font = layout_work.xmp.font;
     depth = 0;                          // default value: depth will be depth of box contents
-    p = scan_start;
+    p = scandata.s;
     if( *p == '.' ) {
         /* already at tag end */
     } else {
         for( ;; ) {
-            pa = get_att_start( p );
-            p = att_start;
+            p = get_att_name( p, &pa, attname );
             if( ProcFlags.reprocess_line ) {
                 break;
             }
 
-            if( !strnicmp( "depth", p, 5 ) ) {
-                p += 5;
-                p = get_att_value( p );
-                if( val_start == NULL ) {
+            if( strcmp( "depth", attname ) == 0 ) {
+                p = get_att_value( p, &attr_val );
+                if( attr_val.name == NULL ) {
                     break;
                 }
-                if( att_val_to_su( &cur_su, true ) ) {
+                if( att_val_to_su( &cur_su, true, &attr_val, false ) ) {
                     break;
                 }
                 depth = conv_vert_unit( &cur_su, g_text_spacing, g_curr_font );
@@ -172,7 +172,7 @@ void gml_xmp( const gmltag * entry )
         ProcFlags.skip_blank_line = true;
     }
 
-    scan_start = scan_stop;
+    scandata.s = scandata.e;
     return;
 }
 
@@ -263,7 +263,7 @@ void gml_exmp( const gmltag * entry )
     ProcFlags.skips_valid = false;      // activate post_skip for next element
     t_page.cur_width = t_page.cur_left;
     g_scan_err = false;
-    p = scan_start;
+    p = scandata.s;
     SkipDot( p );                       // over '.'
     if( *p != '\0' ) {
         if( (input_cbs->hidden_head != NULL) && !input_cbs->hidden_head->ip_start
@@ -282,7 +282,7 @@ void gml_exmp( const gmltag * entry )
         ProcFlags.force_pc = true;
     }
 
-    scan_start = scan_stop;
+    scandata.s = scandata.e;
     return;
 }
 

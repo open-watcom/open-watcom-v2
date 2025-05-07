@@ -985,8 +985,8 @@ void process_line( void )
         g_info_lm( inf_subst_line, buff2 ); // show line with substitution(s)
     }
 
-    scan_start = buff2;
-    scan_stop = buff2 + buff2_lg;
+    scandata.s = buff2;
+    scandata.e = buff2 + buff2_lg;
     return;
 }
 

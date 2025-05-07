@@ -72,9 +72,9 @@ condcode    scr_strip( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **res
                 typechar = my_toupper( *type.s );
             }
             switch( typechar ) {
-            case   'B':
-            case   'L':
-            case   'T':
+            case 'B':
+            case 'L':
+            case 'T':
                 // type value is valid do nothing
                 break;
             default:

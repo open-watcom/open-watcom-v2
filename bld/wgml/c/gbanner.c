@@ -161,26 +161,26 @@ void set_banners( void )
             for( k = 0; k < max_ban; k++ ) {
                 if( ban->docsect == ban_2_tag[k].ban_tag ) {// tag found
                     switch( ban->place ) {
-                    case   top_place :
+                    case top_place :
                         ban_top[k][0] = ban;
                         ban_top[k][1] = ban;
                         break;
-                    case   bottom_place :
+                    case bottom_place :
                         ban_bot[k][0] = ban;
                         ban_bot[k][1] = ban;
                         break;
 
-                    case   topodd_place :
+                    case topodd_place :
                         ban_top[k][1] = ban;
                         break;
-                    case   topeven_place :
+                    case topeven_place :
                         ban_top[k][0] = ban;
                         break;
 
-                    case   botodd_place :
+                    case botodd_place :
                         ban_bot[k][1] = ban;
                         break;
-                    case   boteven_place :
+                    case boteven_place :
                         ban_bot[k][0] = ban;
                         break;
                     default:
@@ -288,7 +288,7 @@ static void content_reg( region_lay_tag * region )
         }
     } else {    // not script format only normal string or keyword
         switch( region->contents.content_type ) {
-        case   string_content:
+        case string_content:
             strcpy( buf, region->contents.string );
             process_late_subst( buf );
             while( resolve_symvar_functions( buf, false ) ) {   // until all resolutions done

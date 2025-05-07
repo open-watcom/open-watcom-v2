@@ -265,17 +265,17 @@ void    scr_br( void )
 {
     char        *   p;
 
-    p = scan_start;
+    p = scandata.s;
 
     if( *p != '\0' ) {
         SkipSpaces( p );
         if( *p != '\0' ) {
-            split_input( scan_start, p, input_cbs->fmflags );   // line operand
+            split_input( scandata.s, p, input_cbs->fmflags );   // line operand
         }
     }
     scr_process_break();                // break processing
 
-    scan_restart = scan_stop;
+    scan_restart = scandata.e;
     return;
 }
 

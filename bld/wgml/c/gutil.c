@@ -463,62 +463,31 @@ char * skip_to_quote( char * p, char quote )
 /*  returns true if an extended attribute value was found                  */
 /*          false otherwise (not necessarily an error)                     */
 /***************************************************************************/
-static bool su_layout_special( su * in_su )
+static bool su_layout_special( su *in_su )
 {
-    bool        retval = true;
-    char    *   ps;
-    su      *   s;
-    int         wh;
-    int         wd;
-    char        quote;
-
-    s = in_su;
-    ps = s->su_txt;
-    wh = 0;
-    wd = 0;
-    quote = '\0';
-
-    /********************************************************************/
-    /* val_start will be NULL when called from lay_val_to_su().         */
-    /* val_start will not be NULL when called from att_val_to_su().     */
-    /* when not NULL, *(val_start - 1) should be a whitespace or "="    */
-    /********************************************************************/
-
-    if( (val_start != NULL) && ((*(val_start - 1) == '\'') || (*(val_start - 1) == '"' ) ||
-        (*ps == '+') || (*ps == '-' )) ) {   // values must not be quoted or signed
-        retval = false;
-    } else if( !strnicmp( "left", ps, 4 ) ) {
-        s->su_u = SU_lay_left;
-        strcpy( ps, "left" );
-    } else if( !strnicmp( "right", ps, 5 ) ) {
-        s->su_u = SU_lay_right;
-        strcpy( ps, "right" );
-    } else if( !strnicmp( "center", ps, 6 ) ) {
-        s->su_u = SU_lay_centre;
-        strcpy( ps, "center" );
-    } else if( !strnicmp( "centre", ps, 6 ) ) {
-        s->su_u = SU_lay_centre;
-        strcpy( ps, "centre" );
-    } else if( !strnicmp( "extend", ps, 6 ) ) {
-        s->su_u = SU_lay_extend;
-        strcpy( ps, "extend" );
+    if( strcmp( "left", in_su->su_txt ) == 0 ) {
+        in_su->su_u = SU_lay_left;
+    } else if( strcmp( "right", in_su->su_txt ) == 0 ) {
+        in_su->su_u = SU_lay_right;
+    } else if( strcmp( "center", in_su->su_txt ) == 0 ) {
+        in_su->su_u = SU_lay_centre;
+    } else if( strcmp( "centre", in_su->su_txt ) == 0 ) {
+        in_su->su_u = SU_lay_centre;
+    } else if( strcmp( "extend", in_su->su_txt ) == 0 ) {
+        in_su->su_u = SU_lay_extend;
     } else {
-        retval = false;
+        return( false );
     }
-
-    if( retval ) {
-        s->su_whole = 0;
-        s->su_dec   = 0;
-        s->su_inch  = 0;
-        s->su_mm    = 0;
-        s->su_relative = false;
-    }
-
-    return( retval );
+    in_su->su_whole    = 0;
+    in_su->su_dec      = 0;
+    in_su->su_inch     = 0;
+    in_su->su_mm       = 0;
+    in_su->su_relative = false;
+    return( true );
 }
 
 /***************************************************************************/
-/*  initializes in_su->su_txt using val_start/val_len                      */
+/*  initializes in_su->su_txt using g_att_val.val_name/g_att_val.val_len   */
 /*  converts in_su->su_txt using su_layout_special() or internal_to_su()   */
 /*  for use with tag attribute values, not control word operands           */
 /*                                                                         */
@@ -533,49 +502,43 @@ static bool su_layout_special( su * in_su )
 /*                    true on error (conversion error occurred)            */
 /***************************************************************************/
 
-bool att_val_to_su( su * in_su, bool pos )
+bool att_val_to_su( su *in_su, bool pos, att_val_type *attr_val, bool specval )
 {
-    bool        cvterr  = true;
-    char    *   ps      = NULL; // destination for value text
+    char        *ps;        // destination for value text
     char        sign;
-    su      *   s;
 
-    s = in_su;
-    ps = s->su_txt;
+    ps = in_su->su_txt;
     *ps = '\0';
 
-    if( val_len > MAX_SU_LENGTH ) {     // won't fit
-        xx_line_err_c( err_inv_att_val, val_start );
+    if( attr_val->len > MAX_SU_LENGTH ) {     // won't fit
+        xx_line_err_c( err_inv_att_val, attr_val->name );
     }
-    strncpy( ps, val_start, val_len );
-    ps[val_len] = '\0';
+    strcpy( ps, attr_val->specval );
 
-    s->su_u = SU_undefined;
+    in_su->su_u = SU_undefined;
     if( *ps == '+' ) {                      // not allowed with tags
-        xx_line_err_c( err_inv_att_val, val_start );
+        xx_line_err_c( err_inv_att_val, attr_val->name );
     } else if( *ps == '-' ) {               // not relative, just negative
         if( pos ) {                         // value must be positive
-            xx_line_err_c( err_inv_att_val, val_start );
+            xx_line_err_c( err_inv_att_val, attr_val->name );
         }
         sign = *ps;
-        if( *(ps + 1) == '+' || *(ps + 1) == '-' ) {  // only one sign is allowed
-            xx_line_err_c( err_inv_att_val, val_start );
+        if( *(ps + 1) == '+'
+          || *(ps + 1) == '-' ) {  // only one sign is allowed
+            xx_line_err_c( err_inv_att_val, attr_val->name );
         }
     } else {
         sign = '+';
     }
     if( *ps == '\0' ) {                     // value end reached, not valid
-        xx_line_err_c( err_inv_att_val, val_start );
+        xx_line_err_c( err_inv_att_val, attr_val->name );
     }
-    s->su_relative = false;             // no relative positioning with tags
+    in_su->su_relative = false;             // no relative positioning with tags
 
-    if( su_layout_special( in_su ) ) {
-        cvterr = false;
-    } else {
-        cvterr = internal_to_su( in_su, true, val_start );
-    }
+    if( specval && su_layout_special( in_su ) )
+        return( false );
 
-    return( cvterr );
+    return( internal_to_su( in_su, true, attr_val->name ) );
 }
 
 /***************************************************************************/
@@ -592,47 +555,48 @@ bool att_val_to_su( su * in_su, bool pos )
 /*                    true on error (conversion error occurred)            */
 /***************************************************************************/
 
-bool cw_val_to_su( char * * scanp, su * in_su )
+bool cw_val_to_su( const char **scanp, su *in_su )
 {
-    bool        cvterr  = true;
-    char    *   p       = NULL; // source of value text
-    char    *   pa      = NULL; // start of value text
-    char    *   ps      = NULL; // destination for value text
+    const char  *p;     // source of value text
+    const char  *pa;    // start of value text
+    const char  *pb;    // start of value text
+    char        *ps;    // destination for value text
     char        sign;
     size_t      len;
-    su      *   s;
+    int         i;
 
-    s = in_su;
+    ps = in_su->su_txt;
+    *ps = '\0';
+
     p = *scanp;
     pa = p;
-    ps = s->su_txt;
-    *ps = '\0';
     SkipSpaces( p );            // just in case
+    pb = p;
     SkipNonSpaces( p );
-    len = p - pa;
+    len = p - pb;
     *scanp = p;                 // report back value of p
     if( len > MAX_SU_LENGTH ) {
-        xx_line_err_c( err_inv_cw_op_val, val_start );
+        xx_line_err_c( err_inv_cw_op_val, pa );
     }
-    strncpy( ps, pa, len );
-    ps[len] = '\0';
+    for( i = 0; i < len; i++ ) {
+        ps[i] = my_tolower( pb[i] );
+    }
+    ps[i] = '\0';
 
-    s->su_u = SU_undefined;
-    if( *ps == '+' || *ps == '-' ) {
+    in_su->su_u = SU_undefined;
+    if( *ps == '+'
+      || *ps == '-' ) {
         sign = *ps;
-        s->su_relative = true;  // value is added / subtracted from old value
+        in_su->su_relative = true;  // value is added / subtracted from old value
     } else {
         sign = '+';
-        s->su_relative = false;         // value replaces old value
+        in_su->su_relative = false;         // value replaces old value
     }
 
-    if( su_expression( in_su ) ) {
-        cvterr = false;
-    } else {
-        cvterr = internal_to_su( in_su, false, pa );
-    }
+    if( su_expression( in_su ) )
+        return( false );
 
-    return( cvterr );
+    return( internal_to_su( in_su, false, pa ) );
 }
 
 /***************************************************************************/
@@ -653,114 +617,53 @@ bool cw_val_to_su( char * * scanp, su * in_su )
 /*                    true on error (conversion error occurred)            */
 /***************************************************************************/
 
-bool lay_init_su( const char * p, su * in_su )
+bool lay_init_su( const char *p, su *in_su )
 {
-    bool            cvterr  = true;
-    const char  *   pa      = NULL; // start of value text
-    char        *   ps      = NULL; // destination for value text
+    const char      *pa;    // start of value text
+    const char      *pb;
+    char            *ps;    // destination for value text
     char            sign;
-    size_t          len;
-    su          *   s;
+    int             len;
+    int             i;
 
-    s = in_su;
+    ps = in_su->su_txt;
+    *ps = '\0';
+
     pa = p;
-    ps = s->su_txt;
-    *ps = '\0';
-
     SkipSpaces( p );                // just in case
+    pb = p;
     SkipNonSpaces( p );
-    len = p - pa;
+    len = p - pb;
 
-    if( len > MAX_SU_LENGTH ) { // won't fit
-        xx_line_err_c( err_inv_att_val, val_start );
+    if( len > MAX_SU_LENGTH ) {     // won't fit
+        xx_line_err_c( err_inv_att_val, pa );
     }
-    strncpy( ps, pa, len );
-    ps[len] = '\0';
+    for( i = 0; i < len; i++ ) {
+        ps[i] = my_tolower( pb[i] );
+    }
+    ps[i] = '\0';
 
-    s->su_u = SU_undefined;
-    if( *ps == '+' ) {                      // not allowed with tags
-        xx_line_err_c( err_inv_att_val, ps );
-    } else if( *ps == '-' ) {               // not relative, just negative
+    in_su->su_u = SU_undefined;
+    if( *ps == '+' ) {              // not allowed with tags
+        xx_line_err_c( err_inv_att_val, pa );
+    } else if( *ps == '-' ) {       // not relative, just negative
         sign = *ps;
-        if( *(ps + 1) == '+' || *(ps + 1) == '-' ) {  // only one sign is allowed
-            xx_line_err_c( err_inv_att_val, ps );
+        if( *(ps + 1) == '+'
+          || *(ps + 1) == '-' ) {   // only one sign is allowed
+            xx_line_err_c( err_inv_att_val, pa );
         }
     } else {
         sign = '+';
     }
-    if( *ps == '\0' ) {                     // value end reached, not valid
-        xx_line_err_c( err_inv_att_val, ps );
+    if( *ps == '\0' ) {             // value end reached, not valid
+        xx_line_err_c( err_inv_att_val, pa );
     }
-    s->su_relative = false;                 // no relative positioning with tags
+    in_su->su_relative = false;     // no relative positioning with tags
 
-    if( su_layout_special( in_su ) ) {
-        cvterr = false;
-    } else {
-        cvterr = internal_to_su( in_su, true, pa );
-    }
+    if( su_layout_special( in_su ) )
+        return( false );
 
-    return( cvterr );
-}
-
-/***************************************************************************/
-/*  initializes in_su->su_txt using g_att_val.val_name/g_att_val.val_len   */
-/*  converts in_su->su_txt using su_layout_special() or internal_to_su()   */
-/*  for use with tag attribute values, not control word operands           */
-/*                                                                         */
-/*  Note: in wgml 4.0, attribute values have these traits:                 */
-/*      they can be delimited                                              */
-/*      they can contain whitespace if delimited                           */
-/*      they can never be expressions, even if they do not include a unit  */
-/*      BANREGION indent, hoffset and width attributes can take special    */
-/*          values ("left", "right", "center", "centre", and "extend")     */
-/*                                                                         */
-/*    returns cvterr: false on success (no conversion error)               */
-/*                    true on error (conversion error occurred)            */
-/***************************************************************************/
-
-bool value_to_su( su * in_su, bool pos )
-{
-    bool        cvterr  = true;
-    char    *   ps      = NULL; // destination for value text
-    char        sign;
-    su      *   s;
-
-    s = in_su;
-    ps = s->su_txt;
-    *ps = '\0';
-
-    if( g_att_val.val_len > MAX_SU_LENGTH ) {     // won't fit
-        xx_line_err_c( err_inv_att_val, g_att_val.val_name );
-    }
-    strncpy( ps, g_att_val.val_name, g_att_val.val_len );
-    ps[g_att_val.val_len] = '\0';
-
-    s->su_u = SU_undefined;
-    if( *ps == '+' ) {                      // not allowed with tags
-        xx_line_err_c( err_inv_att_val, g_att_val.val_name );
-    } else if( *ps == '-' ) {               // not relative, just negative
-        if( pos ) {                         // value must be positive
-            xx_line_err_c( err_inv_att_val, g_att_val.val_name );
-        }
-        sign = *ps;
-        if( *(ps + 1) == '+' || *(ps + 1) == '-' ) {  // only one sign is allowed
-            xx_line_err_c( err_inv_att_val, g_att_val.val_name );
-        }
-    } else {
-        sign = '+';
-    }
-    if( *ps == '\0' ) {                     // value end reached, not valid
-        xx_line_err_c( err_inv_att_val, g_att_val.val_name );
-    }
-    s->su_relative = false;             // no relative positioning with tags
-
-    if( su_layout_special( in_su ) ) {
-        cvterr = false;
-    } else {
-        cvterr = internal_to_su( in_su, true, g_att_val.val_name );
-    }
-
-    return( cvterr );
+    return( internal_to_su( in_su, true, pa ) );
 }
 
 /***************************************************************************/
@@ -965,24 +868,38 @@ char *format_num( unsigned n, char *r, size_t rsize, num_style ns )
 /*       unless, of course, it is                                          */
 /***************************************************************************/
 
-char * get_att_start( char * p )
-{
-    char    * pa;
 
-    static  char      buf[BUF_SIZE + 1];
+static char *get_tag_attname( const char *p, char *attname )
+{
+    int     i;
+
+    i = 0;
+    while( is_tag_att_char( *p ) ) {
+        if( i < TAG_ATT_NAME_LENGTH ) {
+            attname[i++] = my_tolower( *p );
+        }
+        p++;
+    }
+    attname[i] = '\0';
+    return( (char *)p );
+}
+
+char *get_att_name( char *p, char **orig, char *attname )
+{
+    static char     buf[BUF_SIZE + 1];
 
     ProcFlags.tag_end_found = false;
     for(;;) {                           // loop until potential attribute/rescan line found
-        pa = p;                         // save initial location
+        *orig = p;                      // save initial location
         SkipSpaces( p );                // over WS to attribute
-        if( *p == '.' ) {   // end-of-tag
+        if( *p == '.' ) {               // end-of-tag
             p++;
-            pa = p;         // return next char after end-of-tag
+            *orig = p;                  // return next char after end-of-tag
             ProcFlags.tag_end_found = true;
             break;
         }
         if( *p == '\0' ) {              // end of line: get new line
-            if( !(input_cbs->fmflags & II_eof) ) {
+            if( (input_cbs->fmflags & II_eof) == 0 ) {
                 if( get_line( true ) ) {// next line for missing attribute
 
                     /*******************************************************/
@@ -992,15 +909,15 @@ char * get_att_start( char * p )
                     /*******************************************************/
 
                     strcpy( buf, buff2 );
-                    scan_start = buff2;
-                    scan_stop = buff2 + buff2_lg;
-                    if( (*scan_start == SCR_char) ||    // cw found: end-of-tag
-                        (*scan_start == GML_char) ) {   // tag found: end-of-tag
+                    scandata.s = buff2;
+                    scandata.e  = buff2 + buff2_lg;
+                    if( (*scandata.s == SCR_char)       // cw found: end-of-tag
+                      || (*scandata.s == GML_char) ) {  // tag found: end-of-tag
                         ProcFlags.reprocess_line = true;
                         break;
                     } else {
                         process_line();
-                        p = scan_start; // new line is part of current tag
+                        p = scandata.s; // new line is part of current tag
                         continue;
                     }
                 }
@@ -1011,8 +928,7 @@ char * get_att_start( char * p )
             break;      // potential next attribute found
         }
     }
-    att_start = p;      // only valid if !ProcFlags.reprocess_line && !ProcFlags.tag_end_found
-    return( pa );       // return initial location for current att_start
+    return( get_tag_attname( p, attname ) );
 }
 
 /***************************************************************************/
@@ -1020,13 +936,21 @@ char * get_att_start( char * p )
 /*     [<white space>]=[<white space>]<value>                              */
 /***************************************************************************/
 
-char * get_att_value( char * p )
+void get_att_specval( att_val_type *attr_val )
 {
-    char        quote;
+    int     i;
 
-    quote_char = '\0';
-    val_start = NULL;
-    val_len = 0;
+    for( i = 0; i < SPECVAL_LENGTH && is_su_char( attr_val->name[i] ); i++) {
+        attr_val->specval[i] = my_tolower( attr_val->name[i] );
+    }
+    attr_val->specval[i] = '\0';
+}
+
+char *get_att_value( char *p, att_val_type *attr_val )
+{
+    attr_val->name = NULL;
+    attr_val->len = 0;
+    attr_val->quoted = ' ';
     SkipSpaces( p );                    // over WS to '='
     if( *p == '=' ) {
         p++;
@@ -1037,181 +961,45 @@ char * get_att_value( char * p )
         }
         xx_line_err_c( err_eq_missing, p );
     }
-    if( (*p == '\0') || (*p == '.') ) { // value is missing
-        if( *p == '.' ) {
-            ProcFlags.tag_end_found = true;
-        }
+    if( (*p == '\0')
+      || (*p == '.') ) { // value is missing
         xx_line_err_c( err_att_val_missing, p );
     }
-    if( *p == '"' || *p == '\'' || *p == '`' ) {
-        quote = *p;
-        quote_char = *p;
+    if( *p == '"'
+      || *p == '\''
+      || *p == '`' ) {
+        attr_val->quoted = *p;
         ++p;
-        val_start = p;
+        attr_val->name = p;
         while( *p != '\0' ) {
-            if( *p == quote ) {
-                if( *(p + 1) != quote ) {
+            if( *p == attr_val->quoted ) {
+                if( *(p + 1) != attr_val->quoted ) {
                     break;
                 }
                 { // this should almost never be used
-                    char    *   q;
-                    char    *   r;
+                    char        *q;
+                    char        *r;
                     q = p;
-                    r = p + 1;
-                    while( *r != '\0' ) {
-                        *q = *r;
-                        q++;
-                        r++;
+                    for( r = p + 1; *r != '\0'; r++ ) {
+                        *q++ = *r;
                     }
                 }
             }
             ++p;
         }
-        val_len = p - val_start;    // up to (not including) final quote
-        if( *p != quote ) {         // terminating quote not found
-            xx_line_err_c( err_att_val_open, val_start - 1 );
+        attr_val->len = p - attr_val->name;    // up to (not including) final quote
+        if( *p != attr_val->quoted ) {         // terminating quote not found
+            xx_line_err_c( err_att_val_open, attr_val->name - 1 );
         }
         ++p;                        // over final quote
     } else {
-        val_start = p;
+        attr_val->name = p;
         while( *p != '\0' && *p != ' ' && *p != '.' ) {
             ++p;
         }
-        val_len = p - val_start;
+        attr_val->len = p - attr_val->name;
     }
-    if( *p == '.' ) {
-        ProcFlags.tag_end_found = true;
-    }
-    return( p );
-}
-
-/***************************************************************************/
-/* get the start and length of the next potential attribute                */
-/* returns the start of the part of the line on which that potential       */
-/*   attribute was found, thus preserving any preceding spaces in case it  */
-/*   turns out that it is not an attribute at all but rather text          */
-/* NOTE: ProcFlags.tag_end_found is cleared here rather than in            */
-/*       get_att_value() to accomodate attributes "compact" and "break"    */
-/*       which have no "value" but which must not return tag_end_found     */
-/*       unless, of course, it is                                          */
-/***************************************************************************/
-
-char * get_attribute( char * p )
-{
-    char    *   pa;
-    int         i;
-
-    static  char      buf[BUF_SIZE + 1];
-
-    ProcFlags.tag_end_found = false;
-    for(;;) {                           // loop until potential attribute/rescan line found
-        pa = p;                         // save initial location
-        SkipSpaces( p );                // over WS to attribute
-        if( *p == '.' ) {   // end-of-tag
-            p++;
-            pa = p;         // return next char after end-of-tag
-            ProcFlags.tag_end_found = true;
-            break;
-        }
-        if( *p == '\0' ) {              // end of line: get new line
-            if( !(input_cbs->fmflags & II_eof) ) {
-                if( get_line( true ) ) {// next line for missing attribute
-
-                    /*******************************************************/
-                    /* buff2 must be restored if it is to be reprocessed   */
-                    /* so that any symbol substitutions will reflect any   */
-                    /* changes made by the tag calling it                  */
-                    /*******************************************************/
-
-                    strcpy( buf, buff2 );
-                    scan_start = buff2;
-                    scan_stop = buff2 + buff2_lg;
-                    if( (*scan_start == SCR_char) ||    // cw found: end-of-tag
-                        (*scan_start == GML_char) ) {   // tag found: end-of-tag
-                        ProcFlags.reprocess_line = true;
-                        break;
-                    } else {
-                        process_line();
-                        p = scan_start; // new line is part of current tag
-                        continue;
-                    }
-                }
-            } else {
-                break;  // eof() found: return for further processing
-            }
-        } else {
-            break;      // potential next attribute found
-        }
-    }
-    g_att_val.att_name = p; // only valid if !ProcFlags.reprocess_line && !ProcFlags.tag_end_found
-    g_att_val.att_len = 0;
-    for( i = 0; is_att_char( *(p + i) ); i++ ) {
-        g_att_val.att_len++;
-    }
-    return( pa );           // return initial location for current att_start
-}
-
-/***************************************************************************/
-/* get the attribute value and report tag-end ('.') if found               */
-/*     [<white space>]=[<white space>]<value>                              */
-/***************************************************************************/
-
-char * get_value( char * p )
-{
-    char        quote;
-
-    quote_char = '\0';
-    g_att_val.val_name = NULL;
-    g_att_val.val_len = 0;
-    SkipSpaces( p );                    // over WS to '='
-    if( *p == '=' ) {
-        p++;
-        SkipSpaces( p );                // over WS to value
-    } else {
-        if( *p == '.' ) {
-            ProcFlags.tag_end_found = true;
-        }
-        xx_line_err_c( err_eq_missing, p );
-    }
-    if( (*p == '\0') || (*p == '.') ) { // value is missing
-        xx_line_err_c( err_att_val_missing, p );
-    }
-    if( *p == '"' || *p == '\'' || *p == '`' ) {
-        quote = *p;
-        quote_char = *p;
-        ++p;
-        g_att_val.val_name = p;
-        while( *p != '\0' ) {
-            if( *p == quote ) {
-                if( *(p + 1) != quote ) {
-                    break;
-                }
-                { // this should almost never be used
-                    char    *   q;
-                    char    *   r;
-                    q = p;
-                    r = p + 1;
-                    while( *r != '\0' ) {
-                        *q = *r;
-                        q++;
-                        r++;
-                    }
-                }
-            }
-            ++p;
-        }
-        g_att_val.val_len = p - g_att_val.val_name; // up to (not including) final quote
-        if( *p != quote ) {         // terminating quote not found
-            xx_line_err_c( err_att_val_open, g_att_val.val_name - 1 );
-        }
-        ++p;                        // over final quote
-    } else {
-        g_att_val.val_name = p;
-        while( *p != '\0' && *p != ' ' && *p != '.' ) {
-            ++p;
-        }
-        g_att_val.val_len = p - g_att_val.val_name;
-    }
+    get_att_specval( attr_val );
     if( *p == '.' ) {
         ProcFlags.tag_end_found = true;
     }
@@ -1244,7 +1032,7 @@ void g_keep_nest( const char * cw_tag ) {
 /* parse and return a font number value                                    */
 /***************************************************************************/
 
-font_number get_font_number( char * value, size_t len )
+font_number get_font_number( char *value, size_t len )
 {
     char            *p;
     char            *pb;
@@ -1258,7 +1046,7 @@ font_number get_font_number( char * value, size_t len )
     }
 
     if( p != pb ) {                             // badly-formed token
-        xx_line_err_c( err_num_too_large, val_start );
+        xx_line_err_c( err_num_too_large, value );
     }
 
     wk = strtoul( value, NULL, 10 );
@@ -1274,56 +1062,53 @@ font_number get_font_number( char * value, size_t len )
 /*     used by INCLUDE to capture file names without the "file" attribute  */
 /***************************************************************************/
 
-char * get_tag_value( char * p )
+char *get_tag_value( char *p, att_val_type *attr_val )
 {
-    char        quote;
-
     ProcFlags.tag_end_found = false;
-    quote_char = '\0';
-    val_start = NULL;
-    val_len = 0;
+    attr_val->quoted = ' ';
+    attr_val->name = NULL;
+    attr_val->len = 0;
     SkipSpaces( p );                    // over WS to '='
-    if( (*p == '\0') || (*p == '.') ) { // value is missing
+    if( (*p == '\0')
+      || (*p == '.') ) { // value is missing
         if( *p == '.' ) {
             ProcFlags.tag_end_found = true;
         }
-        xx_line_err_c( err_att_val_missing, p );
+        xx_line_err_c( ERR_ATT_VAL_MISSING, p );
     }
-    if( *p == '"' || *p == '\'' || *p == '`' ) {
-        quote = *p;
-        quote_char = *p;
+    if( *p == '"'
+      || *p == '\''
+      || *p == '`' ) {
+        attr_val->quoted = *p;
         ++p;
-        val_start = p;
+        attr_val->name = p;
         while( *p != '\0' ) {
-            if( *p == quote ) {
-                if( *(p + 1) != quote ) {
+            if( *p == attr_val->quoted ) {
+                if( *(p + 1) != attr_val->quoted ) {
                     break;
                 }
                 { // this should almost never be used
-                    char    *   q;
-                    char    *   r;
+                    char        *q;
+                    char        *r;
                     q = p;
-                    r = p + 1;
-                    while( *r != '\0' ) {
-                        *q = *r;
-                        q++;
-                        r++;
+                    for( r = p + 1; *r != '\0'; r++ ) {
+                        *q++ = *r;
                     }
                 }
             }
             ++p;
         }
-        val_len = p - val_start;    // up to (not including) final quote
-        if( *p != quote ) {         // terminating quote not found
-            xx_line_err_c( err_att_val_open, val_start - 1 );
+        attr_val->len = p - attr_val->name;    // up to (not including) final quote
+        if( *p != attr_val->quoted ) {         // terminating quote not found
+            xx_line_err_c( ERR_ATT_VAL_OPEN, attr_val->name - 1 );
         }
         ++p;                        // over final quote
     } else {
-        val_start = p;
+        attr_val->name = p;
         while( *p != '\0' && *p != ' ' && *p != '.' ) {
             ++p;
         }
-        val_len = p - val_start;
+        attr_val->len = p - attr_val->name;
     }
     if( *p == '.' ) {
         ProcFlags.tag_end_found = true;
@@ -1478,35 +1263,35 @@ ffh_entry * init_ffh_entry( ffh_entry * ffh_list )
 /*  initalize a fwd_ref instance and insert it (if new) in alpha order     */
 /***************************************************************************/
 
-fwd_ref * init_fwd_ref( fwd_ref * fr_dict, const char * fr_id )
+fwd_ref * init_fwd_ref( fwd_ref *dict, const char *refid )
 {
     fwd_ref *   curr;
     fwd_ref *   local;
     fwd_ref *   prev;
 
-    if( fr_dict == NULL ) {
+    if( dict == NULL ) {
         curr = (fwd_ref *)mem_alloc( sizeof( fwd_ref ) );
         curr->next = NULL;
-        strcpy( curr->id, fr_id );
-        fr_dict = curr;         // first entry
+        strcpy( curr->refid, refid );
+        dict = curr;         // first entry
     } else {
-        local = fr_dict;
+        local = dict;
         prev = NULL;
-        while( (local != NULL) && (strcmp( local->id, fr_id ) < 0) ) {
+        while( (local != NULL) && (strcmp( local->refid, refid ) < 0) ) {
             prev = local;
             local = local->next;
         }
         if( local == NULL ) {       // curr goes at end of list
             curr = (fwd_ref *)mem_alloc( sizeof( fwd_ref ) );
             curr->next = NULL;
-            strcpy( curr->id, fr_id );
+            strcpy( curr->refid, refid );
             prev->next = curr;
-        } else if( strcmp( local->id, fr_id ) > 0 ) {   // note: duplicate id ignored
+        } else if( strcmp( local->refid, refid ) > 0 ) {   // note: duplicate id ignored
             curr = (fwd_ref *)mem_alloc( sizeof( fwd_ref ) );
             curr->next = NULL;
-            strcpy( curr->id, fr_id );
+            strcpy( curr->refid, refid );
             if( prev == NULL ) {    // curr goes at start of list
-                fr_dict = curr;
+                dict = curr;
             } else {
                 prev->next = curr;  // curr goes between two existing entries
             }
@@ -1514,7 +1299,7 @@ fwd_ref * init_fwd_ref( fwd_ref * fr_dict, const char * fr_id )
         }
     }
 
-    return( fr_dict );
+    return( dict );
 }
 
 /***************************************************************************/

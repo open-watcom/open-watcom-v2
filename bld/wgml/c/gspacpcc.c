@@ -134,7 +134,7 @@ void scr_pa( void )
     /* page.                                                  */
     /**********************************************************/
 
-    p = scan_start;
+    p = scandata.s;
     SkipSpaces( p );                    // next word start
     pa = p;
     SkipNonSpaces( p );                 // end of word
@@ -176,7 +176,7 @@ void scr_pa( void )
         do_output( true );
         break;
     }
-    scan_restart = scan_stop;
+    scan_restart = scandata.e;
     return;
 }
 
@@ -264,8 +264,8 @@ static void scr_cc_cp_common( bool do_pa )
 {
     bool            scanerr;
     char            cwcurr[4];
-    char        *   pa;
-    char        *   p;
+    const char      *pa;
+    const char      *p;
     int             len;
     su              cpwork;
     int32_t         test_space;
@@ -281,7 +281,7 @@ static void scr_cc_cp_common( bool do_pa )
 
     start_doc_sect();
     ProcFlags.cc_cp_done = true;
-    p = scan_start;
+    p = scandata.s;
     SkipSpaces( p );                    // next word start
     pa = p;
     SkipNonSpaces( p );                 // end of word
@@ -306,7 +306,7 @@ static void scr_cc_cp_common( bool do_pa )
             }
         }
     }
-    scan_restart = p;
+    scan_restart = (char *)p;
     return;
 }
 

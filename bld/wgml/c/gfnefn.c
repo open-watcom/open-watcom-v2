@@ -37,7 +37,7 @@
 
 
 static  bool            concat_save;            // for ProcFlags.concat
-static  char            id[ID_LEN];             // FIG attribute used by eFIG
+static  char            fnrefid[REFID_LEN + 1]; // FIG attribute used by eFIG
 static  group_type      sav_group_type;         // save prior group type
 static  ju_enum         justify_save;           // for ProcFlags.justify
 
@@ -56,9 +56,11 @@ void gml_fn( const gmltag * entry )
 {
     bool            id_seen = false;
     char            buffer[NUM2STR_LENGTH];
-    char        *   p;
-    char        *   pa;
-    ref_entry   *   cur_ref;
+    char            *p;
+    char            *pa;
+    ref_entry       *cur_ref;
+    char            attname[TAG_ATT_NAME_LENGTH + 1];
+    att_val_type    attr_val;
 
     (void)entry;
 
@@ -68,7 +70,7 @@ void gml_fn( const gmltag * entry )
 
     g_keep_nest( "Footnote" );          // catch nesting errors
 
-    p = scan_start;
+    p = scandata.s;
     SkipDot( p );                       // possible tag end
 
     fn_count++;                         // get current FN number
@@ -76,15 +78,13 @@ void gml_fn( const gmltag * entry )
         /* already at tag end */
     } else {
         for( ;; ) {
-            pa = get_att_start( p );
-            p = att_start;
+            p = get_att_name( p, &pa, attname );
             if( ProcFlags.reprocess_line ) {
                 break;
             }
-            if( strnicmp( "id", p, 2 ) == 0 ) {
-                p += 2;
-                p = get_refid_value( p, id );
-                if( val_start == NULL ) {
+            if( strcmp( "id", attname ) == 0 ) {
+                p = get_refid_value( p, &attr_val, fnrefid );
+                if( attr_val.name == NULL ) {
                     break;
                 }
                 id_seen = true;             // valid id attribute found
@@ -141,23 +141,19 @@ void gml_fn( const gmltag * entry )
             fn_list = fn_entry;
         }
         if( id_seen ) {                 // add this entry to fn_ref_dict
-            cur_ref = find_refid( fn_ref_dict, id );
+            cur_ref = find_refid( fn_ref_dict, fnrefid );
             if( cur_ref == NULL ) {     // new entry
-                cur_ref = mem_alloc( sizeof( ref_entry ) );
-                init_ref_entry( cur_ref, id );
-                cur_ref->flags = rf_ffh;
-                cur_ref->u.ffh.entry = fn_entry;
-                add_ref_entry( &fn_ref_dict, cur_ref );
+                cur_ref = add_new_refid( &fn_ref_dict, fnrefid, fn_entry );
             } else {
-                dup_id_err( cur_ref->id, "footnote" );
+                dup_refid_err( cur_ref->refid, "footnote" );
             }
         }
     } else {
         if( (g_page + 1) != fn_entry->pageno ) {  // page number changed
             fn_entry->pageno = g_page + 1;
             if( GlobalFlags.lastpass ) {        // last pass only
-                if( strlen( id ) > 0 ) {        // FN id exists
-                    fn_fwd_refs = init_fwd_ref( fn_fwd_refs, id );
+                if( *fnrefid != '\0' ) {        // FN id exists
+                    fn_fwd_refs = init_fwd_ref( fn_fwd_refs, fnrefid );
                 }
             }
         }
@@ -181,7 +177,7 @@ void gml_fn( const gmltag * entry )
             process_text( p, g_curr_font);  // if text follows
         }
     }
-    scan_start = scan_stop;
+    scandata.s = scandata.e;
     return;
 }
 
@@ -204,7 +200,7 @@ void gml_efn( const gmltag * entry )
 
     if( cur_group_type != gt_fn ) {         // no preceding :FN tag
         g_err_tag_prec( t_FN );
-        scan_start = scan_stop;
+        scandata.s = scandata.e;
         return;
     }
 
@@ -232,7 +228,7 @@ void gml_efn( const gmltag * entry )
     t_page.cur_width = t_page.cur_left;
 
     g_scan_err = false;
-    p = scan_start;
+    p = scandata.s;
     SkipDot( p );                       // possible tag end
     if( *p != '\0' ) {
         process_text( p, g_curr_font);  // if text follows
@@ -240,7 +236,7 @@ void gml_efn( const gmltag * entry )
     if( pass > 1 ) {                    // not on first pass
         fn_entry = fn_entry->next;      // get to next FN
     }
-    scan_start = scan_stop;
+    scandata.s = scandata.e;
     return;
 }
 

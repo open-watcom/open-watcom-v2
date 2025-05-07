@@ -83,14 +83,14 @@ condcode    scr_width( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **res
             }
         }
         switch( typechar ) {
-        case   'C':                 // CPI
+        case 'C':                 // CPI
             width = cop_text_width( string.s, string_len, g_curr_font );
             width = (width * CPI + g_resh / 2) / g_resh;
             break;
-        case   'U':                 // Device Units
+        case 'U':                 // Device Units
             width = cop_text_width( string.s, string_len, g_curr_font );
             break;
-        case   'N':                 // character count
+        case 'N':                 // character count
             width = string_len;
             break;
         default:

@@ -167,8 +167,8 @@ static void scan_gml( void )
 
     cb = input_cbs;
 
-    p = scan_start + 1;
-    g_tok_start = scan_start;
+    p = scandata.s + 1;
+    g_tok_start = scandata.s;
     while( (*p != ' ') && (*p != '.') && (*p != '\0') ) {   // search end of TAG
         p++;
     }
@@ -182,7 +182,7 @@ static void scan_gml( void )
         return;
     }
 
-    scan_start = p;                      // store argument start address
+    scandata.s = p;                      // store argument start address
     csave = *p;
     *p = '\0';
 
@@ -216,7 +216,7 @@ static void scan_gml( void )
         }
         *p = csave;
         if( ge->tagflags & tag_off ) {  // inactive, treat as comment
-            scan_start = scan_stop;
+            scandata.s = scandata.e;
             return;
         }
         me = find_macro( macro_dict, ge->macname );
@@ -272,7 +272,7 @@ static void scan_gml( void )
                 }
                 processed = true;
                 lay_ind = k;    // now process attributes if any
-                SkipDot( scan_start );
+                SkipDot( scandata.s );
             } else if( find_sys_tag( tok_upper, toklen ) != NULL ) {
                 xx_err_c( err_gml_in_lay, tok_upper );
             }
@@ -375,7 +375,7 @@ static void scan_gml( void )
                     g_err_tag_rsloc( rs_loc, g_tok_start );
                 }
                 processed = true;
-                SkipDot( scan_start );
+                SkipDot( scandata.s );
             } else if( find_lay_tag( tok_upper, toklen ) != NULL ) {
                 xx_err_c( err_lay_in_gml, tok_upper );
             }
@@ -385,7 +385,7 @@ static void scan_gml( void )
         *p = csave;
     }
     if( !processed ) {                  // treat as text
-        scan_start = g_tok_start;
+        scandata.s = g_tok_start;
     }
 }
 
@@ -428,7 +428,7 @@ static char *   search_separator( char * str, char sep )
 
 /*
  * Scan line with script control word
- *      uses scan_start ptr, but assumes this is in buff2
+ *      uses scandata.s ptr, but assumes this is in buff2
  */
 
 static void     scan_script( void )
@@ -445,20 +445,20 @@ static void     scan_script( void )
     }
 
     cb = input_cbs;
-    p = scan_start + 1;
+    p = scandata.s + 1;
     if( !ProcFlags.literal && (*p == '\0') ) {  // catch line with only "." in it
         if( ProcFlags.concat ) {
-            *scan_start = ' ';                  // make line blank
+            *scandata.s = ' ';                  // make line blank
         } else {
-            scan_start = scan_stop;             // treat as comment
+            scandata.s = scandata.e;             // treat as comment
         }
         return;
     }
 
-    scan_restart = scan_start;
+    scan_restart = scandata.s;
 
     if( *p == '*' ) {                       // early check for .*
-        scan_start = scan_stop;             // .* ignore comment up to EOL
+        scandata.s = scandata.e;             // .* ignore comment up to EOL
         return;
     }
 
@@ -468,7 +468,7 @@ static void     scan_script( void )
             *pt++ = SCR_char;
             *pt   = '\0';
             me = NULL;
-            scan_start++;
+            scandata.s++;
             toklen = 2;
     } else {
         if( *p == SCR_char ) {          // ..
@@ -492,7 +492,7 @@ static void     scan_script( void )
         }
 
         if( *p == '*' ) {                       // check for comment again; the following are
-            scan_start = scan_stop;             // all valid: .'* ..* ..'*
+            scandata.s = scandata.e;             // all valid: .'* ..* ..'*
             return;
         }
 
@@ -514,7 +514,7 @@ static void     scan_script( void )
             }
         }
 
-        scan_start = p;
+        scandata.s = p;
 
         pt = token_buf;
         toklen = 0;
@@ -527,7 +527,7 @@ static void     scan_script( void )
         if( !ProcFlags.CW_sep_ignore &&
                 ((*token_buf == '\0') || (*token_buf == ' ') || (toklen == 0)) ) {
             // no valid script controlword / macro, treat as text
-            scan_start = scan_restart;
+            scandata.s = scan_restart;
             return;
         }
 
@@ -558,10 +558,10 @@ static void     scan_script( void )
         } else {
             add_macro_parms( p + 1 );
         }
-        scan_restart = scan_stop;
+        scan_restart = scandata.e;
     } else if( !ProcFlags.literal ) {   // try script controlword if not in LI
-        scan_start += SCR_KW_LENGTH;
-        p = scan_start;
+        scandata.s += SCR_KW_LENGTH;
+        p = scandata.s;
         if( (cb->fmflags & II_research) && GlobalFlags.firstpass ) {
             if( cb->fmflags & II_tag_mac ) {
                 printf_research( "L%d    %c%s CW found in macro %s(%d)\n\n",
@@ -576,7 +576,7 @@ static void     scan_script( void )
         }
 
         if( !token_buf[0] ) {   // lone . or .' -- ignored
-            scan_start = scan_stop;
+            scandata.s = scandata.e;
             return;
         }
 
@@ -598,11 +598,11 @@ static void     scan_script( void )
             if( ProcFlags.literal  ) {              // .li active
                 if( strcmp( "li", token_buf ) == 0 ) {  // .li
                     ProcFlags.CW_noblank = (*p != ' ');
-                    scan_start = p; // found, process
+                    scandata.s = p; // found, process
                     scr_kwds[k].tagproc();
                 }
             } else {
-                scan_start = p; // script controlword found, process
+                scandata.s = p; // script controlword found, process
                 if( scr_kwds[k].cwflags & cw_break ) {
                     ProcFlags.force_pc = false;
                     scr_process_break();// output incomplete line, if any
@@ -614,7 +614,7 @@ static void     scan_script( void )
             xx_err_c( err_cw_unrecognized, token_buf );
         }
     }
-    scan_start = scan_restart;
+    scandata.s = scan_restart;
 }
 
 
@@ -827,8 +827,8 @@ void    scan_line( void )
     ifcb        *   cb;
 
     cb         = input_cbs->if_cb;
-    scan_start = buff2;
-    scan_stop = buff2 + buff2_lg;
+    scandata.s = buff2;
+    scandata.e = buff2 + buff2_lg;
 
     if( !ProcFlags.literal ) {
         set_if_then_do( cb );
@@ -850,9 +850,9 @@ void    scan_line( void )
         /*  or for unprocessed text in the input record                    */
         /*******************************************************************/
 
-        if( (*scan_start != '\0') && (scan_start < scan_stop) ) {
+        if( (*scandata.s != '\0') && (scandata.s < scandata.e) ) {
             if( (input_cbs->fmflags & II_research) && GlobalFlags.firstpass ) {
-                g_info_lm( inf_text_line, scan_start );
+                g_info_lm( inf_text_line, scandata.s );
             }
             if( ProcFlags.layout ) {    // LAYOUT active: should not happen
                 internal_err( __FILE__, __LINE__ );
@@ -861,26 +861,26 @@ void    scan_line( void )
                 if( rs_loc > 0 ) {
                     start_doc_sect();   // if not already done
                     // catch blank lines: not an error
-                    while( scan_start < scan_stop ) {
-                        if( (*scan_start != ' ') && (*scan_start != '\0') ) {
+                    while( scandata.s < scandata.e ) {
+                        if( (*scandata.s != ' ') && (*scandata.s != '\0') ) {
                             break;
                         }
-                        scan_start++;
+                        scandata.s++;
                     }
-                    if( scan_start < scan_stop ) {
-                        g_err_tag_rsloc( rs_loc, scan_start );
+                    if( scandata.s < scandata.e ) {
+                        g_err_tag_rsloc( rs_loc, scandata.s );
                     }
                 } else {
 
                     /* This test skips blank lines at the top of xmp blocks inside macros */
 
-                    if( !(ProcFlags.skip_blank_line && (*scan_start == ' ') &&
-                            ((scan_stop - scan_start) == 1) &&
+                    if( !(ProcFlags.skip_blank_line && (*scandata.s == ' ') &&
+                            ((scandata.e - scandata.s) == 1) &&
                             (input_cbs->fmflags & II_file)) ) {
                         if( ProcFlags.force_pc ) {
-                            do_force_pc( scan_start );
+                            do_force_pc( scandata.s );
                         } else {
-                            process_text( scan_start, g_curr_font );
+                            process_text( scandata.s, g_curr_font );
                         }
                     }
                     ProcFlags.skip_blank_line = false;
@@ -1012,9 +1012,9 @@ char * get_text_line( char * p )
                 if( !(input_cbs->fmflags & II_eof) ) {
                     if( get_line( true ) ) {    // next line for text
                         process_line();
-                        scan_start = buff2;
-                        scan_stop = buff2 + buff2_lg;
-                        p = scan_start;
+                        scandata.s = buff2;
+                        scandata.e = buff2 + buff2_lg;
+                        p = scandata.s;
                         continue;
                     }
                 } else {
@@ -1036,7 +1036,7 @@ char * get_text_line( char * p )
             } else if( ProcFlags.gml_tag ) {
                 p++;
                 tok_start = p;
-                while( is_id_char( *p ) && p < scan_stop ) {   // find end of TAG
+                while( is_id_char( *p ) && p < scandata.e ) {   // find end of TAG
                     p++;
                 }
                 toklen = p - tok_start;

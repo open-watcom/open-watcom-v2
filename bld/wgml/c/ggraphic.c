@@ -44,11 +44,11 @@ void    gml_graphic( const gmltag * entry )
     bool            file_found              = false;
     char            file[_MAX_PATH];
     char            rt_buff[MAX_FILE_ATTR];
-    char        *   p;
-    char        *   pa;
-    char        *   pb;
-    doc_element *   cur_el;
-    inputcb     *   cb                      = input_cbs;
+    char            *p;
+    char            *pa;
+    char            *pb;
+    doc_element     *cur_el;
+    inputcb         *cb                     = input_cbs;
     su              cur_su;
     uint32_t        depth;
     uint32_t        scale                   = 100;
@@ -56,6 +56,8 @@ void    gml_graphic( const gmltag * entry )
     int32_t         xoff                    = 0;
     int32_t         yoff                    = 0;
     FILE            *fp;
+    char            attname[TAG_ATT_NAME_LENGTH + 1];
+    att_val_type    attr_val;
 
     if( (ProcFlags.doc_sect < doc_sect_gdoc) ) {
         if( (ProcFlags.doc_sect_nxt < doc_sect_gdoc) ) {
@@ -70,27 +72,25 @@ void    gml_graphic( const gmltag * entry )
     rt_buff[0] = '\0';
     width = t_page.max_width - t_page.cur_left;
 
-    p = scan_start;
+    p = scandata.s;
     if( *p == '.' ) {
         /* already at tag end */
     } else {
         for( ;; ) {
-            pa = get_att_start( p );
-            p = att_start;
+            p = get_att_name( p, &pa, attname );
             if( ProcFlags.reprocess_line ) {
                 break;
             }
-            if( strnicmp( "file", p, 4 ) == 0 ) {
-                p += 4;
-                p = get_att_value( p );
-                if( val_start == NULL ) {
+            if( strcmp( "file", attname ) == 0 ) {
+                p = get_att_value( p, &attr_val );
+                if( attr_val.name == NULL ) {
                     break;
                 }
                 file_found = true;
-                if( val_len > _MAX_PATH - 1 )
-                    val_len = _MAX_PATH - 1;
-                strncpy( file, val_start, val_len );
-                file[val_len] = '\0';
+                if( attr_val.len > _MAX_PATH - 1 )
+                    attr_val.len = _MAX_PATH - 1;
+                strncpy( file, attr_val.name, attr_val.len );
+                file[attr_val.len] = '\0';
                 split_attr_file( file, rt_buff, sizeof( rt_buff ) );
                 if( (rt_buff[0] != '\0') ) {
                     xx_warn( wng_rec_type_graphic );
@@ -98,101 +98,96 @@ void    gml_graphic( const gmltag * entry )
                 if( ProcFlags.tag_end_found ) {
                     break;
                 }
-            } else if( strnicmp( "depth", p, 5 ) == 0 ) {
-                p += 5;
-                p = get_att_value( p );
-                if( val_start == NULL ) {
+            } else if( strcmp( "depth", attname ) == 0 ) {
+                p = get_att_value( p, &attr_val );
+                if( attr_val.name == NULL ) {
                     break;
                 }
                 depth_found = true;
-                if( att_val_to_su( &cur_su, true ) ) {
+                if( att_val_to_su( &cur_su, true, &attr_val, false ) ) {
                     break;
                 }
                 depth = conv_vert_unit( &cur_su, g_text_spacing, g_curr_font );
                 if( depth == 0 ) {
-                    xx_line_err_c( err_inv_depth_graphic_1, val_start );
+                    xx_line_err_c( err_inv_depth_graphic_1, attr_val.name );
                 }
                 if( depth > t_page.max_depth ) {
-                    xx_line_err_c( err_inv_depth_graphic_2, val_start );
+                    xx_line_err_c( err_inv_depth_graphic_2, attr_val.name );
                 }
                 if( ProcFlags.tag_end_found ) {
                     break;
                 }
-            } else if( strnicmp( "width", p, 5 ) == 0 ) {
-                p += 5;
-                p = get_att_value( p );
-                if( val_start == NULL ) {
+            } else if( strcmp( "width", attname ) == 0 ) {
+                p = get_att_value( p, &attr_val );
+                if( attr_val.name == NULL ) {
                     break;
                 }
 
                 /* GRAPHIC uses the current column width even if "page" is specified */
 
-                if( strnicmp( "page", val_start, 4 ) == 0 ) {
+                if( strcmp( "page", attr_val.specval ) == 0 ) {
                     // default value is the correct value to use
-                } else if( strnicmp( "column", val_start, 6 ) == 0 ) {
+                } else if( strcmp( "column", attr_val.specval ) == 0 ) {
                     // default value is the correct value to use
                 } else {    // value actually specifies the width
-                    if( att_val_to_su( &cur_su, true ) ) {
+                    if( att_val_to_su( &cur_su, true, &attr_val, false ) ) {
                         break;
                     }
                     width = conv_hor_unit( &cur_su, g_curr_font );
                     if( width == 0 ) {
-                        xx_line_err_c( err_inv_width_graphic_1, val_start );
+                        xx_line_err_c( err_inv_width_graphic_1, attr_val.name );
                     }
                     if( width > t_page.last_pane->col_width ) {
-                        xx_line_err_c( err_inv_width_graphic_2, val_start );
+                        xx_line_err_c( err_inv_width_graphic_2, attr_val.name );
                     }
                 }
                 if( ProcFlags.tag_end_found ) {
                     break;
                 }
-            } else if( strnicmp( "scale", p, 5 ) == 0 ) {
-                p += 5;
-                p = get_att_value( p );
-                if( val_start == NULL ) {
+            } else if( strcmp( "scale", attname ) == 0 ) {
+                p = get_att_value( p, &attr_val );
+                if( attr_val.name == NULL ) {
                     break;
                 }
-                pb = val_start;
+                pb = attr_val.name;
                 if( (*pb == '+') || (*pb == '-') ) {    // signs not allowed
-                    xx_line_err_c( err_num_too_large, val_start );
+                    xx_line_err_c( err_num_too_large, attr_val.name );
                 }
                 scale = 0;
                 while( my_isdigit( *pb ) ) {            // convert to number
                     scale = (10 * scale) + (*pb - '0');
                     pb++;
-                    if( (pb - val_start) > val_len ) {  // value end reached
+                    if( (pb - attr_val.name) > attr_val.len ) {  // value end reached
                         break;
                     }
                 }
                 if( scale > 0x7fffffff ) {              // wgml 4.0 limit
-                    xx_line_err_c( err_num_too_large, val_start );
+                    xx_line_err_c( err_num_too_large, attr_val.name );
                 }
-                if( (pb - val_start) < val_len ) {      // value continues on
-                    xx_line_err_c( err_num_too_large, val_start );
+                if( (pb - attr_val.name) < attr_val.len ) {      // value continues on
+                    xx_line_err_c( err_num_too_large, attr_val.name );
                 }
                 if( ProcFlags.tag_end_found ) {
                     break;
                 }
-            } else if( strnicmp( "xoff", p, 4 ) == 0 ) {
-                p += 4;
-                p = get_att_value( p );
-                if( val_start == NULL ) {
+            } else if( strcmp( "xoff", attname ) == 0 ) {
+                p = get_att_value( p, &attr_val );
+                if( attr_val.name == NULL ) {
                     break;
                 }
-                if( att_val_to_su( &cur_su, false ) ) {
+                if( att_val_to_su( &cur_su, false, &attr_val, false ) ) {
                     break;
                 }
                 xoff = conv_hor_unit( &cur_su, g_curr_font );
                 if( ProcFlags.tag_end_found ) {
                     break;
                 }
-            } else if( strnicmp( "yoff", p, 4 ) == 0 ) {
-                p += 4;
-                p = get_att_value( p );
-                if( val_start == NULL ) {
+            } else if( strcmp( "yoff", attname ) == 0 ) {
+                p = get_att_value( p, &attr_val );
+                if( attr_val.name == NULL ) {
                     break;
                 }
-                if( att_val_to_su( &cur_su, false ) ) {
+                if( att_val_to_su( &cur_su, false, &attr_val, false ) ) {
                     break;
                 }
                 yoff = conv_vert_unit( &cur_su, g_text_spacing, g_curr_font );
@@ -257,7 +252,7 @@ void    gml_graphic( const gmltag * entry )
         }
     }
 
-    scan_start = scan_stop;
+    scandata.s = scandata.e;
     return;
 }
 

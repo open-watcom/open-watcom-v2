@@ -146,9 +146,9 @@ static void scr_style_common( style_cw_type type, style_cw_info * cw_info )
         script_style.font = layout_work.defaults.font;
     }
 
-    p = scan_start;     // for use later
-    pb = scan_start;    // for use if outputting text
-    cc = getarg();      // sets tok_start, scan_start and scan_end
+    p = scandata.s;     // for use later
+    pb = scandata.s;    // for use if outputting text
+    cc = getarg();      // sets tok_start, scandata.s and scan_end
 
     if( cc == omit ) {                  // same as BD 1
         script_style.style |= type;
@@ -156,7 +156,7 @@ static void scr_style_common( style_cw_type type, style_cw_info * cw_info )
             cw_info->count = 1;
             cw_info->scope = SCS_count;
         }
-        pa = scan_start;                // nothing following
+        pa = scandata.s;                // nothing following
     } else {                            // "pos", "quotes", "quote0"
         SkipSpaces( p );                // first token start
         pa = p;
@@ -194,7 +194,7 @@ static void scr_style_common( style_cw_type type, style_cw_info * cw_info )
                 pa = p;
             } else {                            // no following text
                 gn.arg.s = g_tok_start;
-                gn.arg.e = scan_stop;
+                gn.arg.e = scandata.e;
                 gn.ignore_blanks = false;
                 cc = getnum( &gn );             // try numeric expression evaluation
                 if( (cc == notnum) || (cc == neg) ) {
@@ -251,7 +251,7 @@ static void scr_style_common( style_cw_type type, style_cw_info * cw_info )
         g_curr_font = script_style.font;
     }
 
-    scan_restart = scan_stop;
+    scan_restart = scandata.e;
     return;
 
 }

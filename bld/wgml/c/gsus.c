@@ -150,11 +150,11 @@
 
 void    scr_us( void )
 {
-    char    *   p = scan_start + 1;
+    char    *   p = scandata.s + 1;
 
     if( *p != '\0' ) {
         process_text( p, 1 );           // hilite the remaining text
     }
-    scan_restart = scan_stop;
+    scan_restart = scandata.e;
     return;
 }

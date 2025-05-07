@@ -109,7 +109,7 @@ static void puncadj( text_line * line, int32_t * delta0, int32_t rem,
             tn = tw->next;
             ch = tw->text[tw->count - 1];
             switch( loop_cnt ) {
-            case   3:                   // test full stop
+            case 3:                   // test full stop
                 if( ch == '.' || ch == '!' || ch == '?' || ch == ':' ) {
                     spacew = space;
                     if( remw > 0 ) {
@@ -124,7 +124,7 @@ static void puncadj( text_line * line, int32_t * delta0, int32_t rem,
                     changed = true;
                 }
                 break;
-            case   2:                   // test half stop
+            case 2:                   // test half stop
                 if( ch == ':' || ch == ';' ) {
 #if 0
                     delta -= space;
@@ -147,7 +147,7 @@ static void puncadj( text_line * line, int32_t * delta0, int32_t rem,
                     changed = true;
                 }
                 break;
-            case   1:
+            case 1:
                 if( ch == ',' || ch == ')' ) {
 #if 0
                     delta -= space;
@@ -1265,15 +1265,15 @@ void do_justify( uint32_t lm, uint32_t rm, text_line * line )
 
     switch( just ) {                  // what type of justification is wanted
 /*************************************
-    case  ju_half :                   Treated as left ??? TBD
+    case ju_half :                   Treated as left ??? TBD
         delta /= 2;
         if( delta < 1 && rem < 1 ) {
             break;
         }
         // falltrough
 ************************************** */
-    case  ju_half :
-    case  ju_on :
+    case ju_half :
+    case ju_on :
 //      if( tc->x_address < lm ) {
 //          break;                      // left of left margin no justify
 //      }
@@ -1331,7 +1331,7 @@ void do_justify( uint32_t lm, uint32_t rm, text_line * line )
             tw = tw->next;
         }
         break;
-    case  ju_left :
+    case ju_left :
         delta = tc->x_address - lm;     // shift to the left
         if( delta < 1 ) {
             break;                      // already left
@@ -1342,7 +1342,7 @@ void do_justify( uint32_t lm, uint32_t rm, text_line * line )
             tw = tw->next;
         } while( tw != NULL );
         break;
-    case  ju_right :
+    case ju_right :
         delta = rm - hor_end;           // shift right
         if( delta < 1 ) {
             break;                      // already at right margin
@@ -1353,7 +1353,7 @@ void do_justify( uint32_t lm, uint32_t rm, text_line * line )
            tw = tw->next;
         } while( tw != NULL );
         break;
-    case  ju_centre :
+    case ju_centre :
         delta = (rm - hor_end) / 2;
         if( delta < 1 ) {
             break;                      // too wide no centre possible

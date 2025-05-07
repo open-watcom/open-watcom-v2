@@ -97,21 +97,20 @@ condcode getarg( void )
     bool        quoted;
     bool        valquoted;
 
-    if( scan_start >= scan_stop ) {     // already at end
-        cc = omit;                      // arg omitted
-    } else {
-        p = scan_start;
-        while( *p == ' ' && p < scan_stop ) {// skip leading blanks
+    cc = omit;                      	// arg omitted
+    if( scandata.s < scandata.e ) {     	// already at end
+        p = scandata.s;
+        while( *p == ' ' && p < scandata.e ) {// skip leading blanks
             p++;
         }
-        if( p >= scan_stop ) {
+        if( p == scandata.e ) {
             return( omit );             // nothing found
         }
 
-        if( p == scan_stop - 1 ) {      // one character token found
+        if( p == scandata.e - 1 ) {      // one character token found
             arg_flen = 1;
             g_tok_start = p;
-            scan_start = p + 1;         // address of start for next call
+            scandata.s = p + 1;         // address of start for next call
             return( pos );              // arg found
         }
 
@@ -131,12 +130,12 @@ condcode getarg( void )
         }
         for( ;; p++ ) {
 
-            if( p >= scan_stop || *p == '\0' ) {
+            if( p == scandata.e || *p == '\0' ) {
                 if( quoted ) {
                     quote = '\0';
                     quoted = false;
                     p = g_tok_start;              // find end of space-delimited token
-                    while( (p < scan_stop) && (*p != ' ') ) {
+                    while( (p < scandata.e) && (*p != ' ') ) {
                         p++;
                     }
                 }
@@ -152,7 +151,7 @@ condcode getarg( void )
                 valquoted = true;
                 valquote = p[1];
                 p += 2;
-                for( ; *p != '\0' && p < scan_stop; p++ ) {
+                for( ; *p != '\0' && p < scandata.e; p++ ) {
                     if( *p == valquote ) {
                         p++;
                         break;
@@ -163,9 +162,9 @@ condcode getarg( void )
         }
         if( quoted ) {
             g_tok_start++;
-            scan_start = p + 1;         // address of start for next call
+            scandata.s = p + 1;         // address of start for next call
         } else {
-            scan_start = p;             // address of start for next call
+            scandata.s = p;             // address of start for next call
         }
         arg_flen = p - g_tok_start;     // length of multichar arg
         if( arg_flen > 0 ) {
@@ -198,15 +197,14 @@ condcode getqst( void )
     char        quote;
     bool        quoted;
 
-    if( scan_start >= scan_stop ) {     // already at end
-        cc = omit;                      // arg omitted
-    } else {
-        p = scan_start;
-        while( *p == ' ' && p < scan_stop ) {// skip leading blanks
+    cc = omit;                      	// arg omitted
+    if( scandata.s < scandata.e ) {     	// already at end
+        p = scandata.s;
+        while( *p == ' ' && p < scandata.e ) {// skip leading blanks
             p++;
         }
 
-        if( p >= scan_stop ) {
+        if( p == scandata.e ) {
             return( omit );             // nothing found
         }
 
@@ -222,7 +220,7 @@ condcode getqst( void )
             quote = '\0';
             quoted = false;
         }
-        for( ; *p != '\0' && p < scan_stop; p++ ) {  // look for end of string
+        for( ; *p != '\0' && p < scandata.e; p++ ) {  // look for end of string
             if( quoted ) {
                 if( *p == quote ) {
                     if( p[1] == '\0' || p[1] == ' ' ) {
@@ -240,10 +238,10 @@ condcode getqst( void )
         }
         if( quoted ) {
             g_tok_start++;
-            scan_start = p + 1;         // start address for next call
+            scandata.s = p + 1;         // start address for next call
             arg_flen = p - g_tok_start; // length of arg
         } else {
-            scan_start = p;             // address of start for next call
+            scandata.s = p;             // address of start for next call
             arg_flen = p - g_tok_start; // length of arg
         }
         if( arg_flen > 0 ) {
@@ -264,10 +262,37 @@ condcode getqst( void )
 }
 
 /*
- * Test character as valid for a predefined attribute name
+ * Test character as valid for a GML Tag name
  */
 
-bool is_att_char( char c )
+bool is_tag_char( char c )
+{
+    bool    test;
+
+    test = my_isalnum( c );
+    return( test );
+}
+
+/*
+ * Test character as valid for a GML predefined attribute name
+ */
+
+bool is_tag_att_char( char c )
+{
+    bool    test;
+
+    test = my_isalnum( c );
+    if( !test ) {
+        test = ( c == '_' );
+    }
+    return( test );
+}
+
+/*
+ * Test character as valid for a Layout predefined attribute name
+ */
+
+bool is_lay_att_char( char c )
 {
     bool    test;
 
@@ -299,6 +324,21 @@ bool is_id_char( char c )
     bool    test;
 
     test = my_isalnum( c );
+    return( test );
+}
+
+/*
+ * Test character as valid for an space unit value
+ */
+
+bool is_su_char( char c )
+{
+    bool    test;
+
+    test = my_isalnum( c );
+    if( !test ) {
+        test = ( c == '.' );
+    }
     return( test );
 }
 

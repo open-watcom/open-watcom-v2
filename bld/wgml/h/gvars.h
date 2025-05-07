@@ -37,6 +37,9 @@
 #include "gtype.h"
 #include "gtypelay.h"
 
+typedef lay_att_val     *lay_attr_i;
+typedef lay_att         lay_attr_o;
+
 #endif  /* GVARS_H_INCLUDED */
 
 #if !defined( GVARS_H_INCLUDED ) || defined( global )
@@ -50,8 +53,7 @@ global struct tm            doc_tm;         // document time/date
 
 global  jmp_buf     *   environment;    // var for GSuicide()
 
-global  char        *   scan_start;
-global  char        *   scan_stop;
+global tok_type         scandata;
 global  char        *   new_file_parms; // command tail for IM/AP
 global  char        *   scan_char_ptr;  // used by character scanning routines
 global  char        *   scan_restart;   // used by character scanning routines
@@ -60,8 +62,6 @@ global  char        *   g_tok_start;    // start of scanned token
 global  size_t          arg_flen;       // arg length
 global  tag_att_val     g_att_val;      // current attribute/value info
 global  char        *   att_start;      // (potential) attribute start
-global  size_t          val_len;        // attribute value length
-global  char        *   val_start;      // attribute value start
 global  char            quote_char;     // value is quoted by this char or \0
 global  locflags        rs_loc;         // restricted location
 

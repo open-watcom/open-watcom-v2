@@ -115,25 +115,25 @@ void set_section_banners( doc_section ds )
         for( ban = layout_work.banner; ban != NULL; ban = ban->next ) {
             if( ban->docsect == sect_2_bansect[ds] ) {  // if our doc section
                 switch( ban->place ) {
-                case   top_place :
+                case top_place :
                     sect_ban_top[0] = ban;
                     sect_ban_top[1] = ban;
                     break;
-                case   bottom_place :
+                case bottom_place :
                     sect_ban_bot[0] = ban;
                     sect_ban_bot[1] = ban;
                     break;
-                case   topodd_place :
+                case topodd_place :
                     sect_ban_top[1] = ban;
                     break;
-                case   topeven_place :
+                case topeven_place :
                     sect_ban_top[0] = ban;
                     break;
 
-                case   botodd_place :
+                case botodd_place :
                     sect_ban_bot[1] = ban;
                     break;
-                case   boteven_place :
+                case boteven_place :
                     sect_ban_bot[0] = ban;
                     break;
                 default:
@@ -1198,7 +1198,7 @@ void start_doc_sect( void )
 
     clear_banners = false;
     switch( ds ) {
-    case   doc_sect_titlep :
+    case doc_sect_titlep :
         page_c = layout_work.titlep.columns;
         page_e = ej_yes;
         page_r = false;                 // no page number reset
@@ -1210,7 +1210,7 @@ void start_doc_sect( void )
         nest_cb->c_tag = t_TITLEP;
         nest_cb->p_stack->lineno = titlep_lineno; // correct line number
         break;
-    case   doc_sect_abstract :
+    case doc_sect_abstract :
         hd_level = hds_h1;                      // H0 and H1 treated as already present
         page_c = layout_work.abstract.columns;
         page_e = layout_work.abstract.page_eject;
@@ -1223,7 +1223,7 @@ void start_doc_sect( void )
         }
         lvl_reset = false;
         break;
-    case   doc_sect_preface :
+    case doc_sect_preface :
         hd_level = hds_h1;                      // H0 and H1 treated as already present
         page_c = layout_work.preface.columns;
         page_e = layout_work.preface.page_eject;
@@ -1236,7 +1236,7 @@ void start_doc_sect( void )
         }
         lvl_reset = false;
         break;
-    case   doc_sect_body :
+    case doc_sect_body :
         hd_level = -1;                          // force H0 to be used
         page_c = layout_work.body.columns;
         page_e = layout_work.body.page_eject;
@@ -1249,7 +1249,7 @@ void start_doc_sect( void )
         }
         lvl_reset = true;
         break;
-    case   doc_sect_appendix :
+    case doc_sect_appendix :
         hd_level = hds_h0;                      // H0 treated as already present
         page_c = layout_work.appendix.columns;
         page_e = layout_work.appendix.section_eject;
@@ -1261,7 +1261,7 @@ void start_doc_sect( void )
         }
         lvl_reset = true;
         break;
-    case   doc_sect_backm :
+    case doc_sect_backm :
         hd_level = hds_h0;                      // H0 treated as already present
         page_c = layout_work.backm.columns;
         page_e = layout_work.backm.page_eject;
@@ -1274,7 +1274,7 @@ void start_doc_sect( void )
         }
         lvl_reset = true;
         break;
-    case   doc_sect_index :
+    case doc_sect_index :
         clear_banners = true;
         page_c = layout_work.index.columns;
         page_e = layout_work.index.page_eject;
@@ -1287,9 +1287,9 @@ void start_doc_sect( void )
         }
         lvl_reset = false;
         break;
-    case   doc_sect_gdoc :
-    case   doc_sect_etitlep :
-    case   doc_sect_frontm :
+    case doc_sect_gdoc :
+    case doc_sect_etitlep :
+    case doc_sect_frontm :
         page_c = layout_work.defaults.columns;
         page_e = ej_no;                         // no page eject
         page_r = false;                         // no page number reset
@@ -1297,7 +1297,7 @@ void start_doc_sect( void )
         header = false;                         // no section header
         lvl_reset = false;
         break;
-    case   doc_sect_egdoc :
+    case doc_sect_egdoc :
         page_c = 1;                             // as per wgml 4.0
         page_e = ej_odd;                        // as per wgml 4.0
         page_r = false;                         // no page number reset
@@ -1415,7 +1415,7 @@ static void gml_doc_xxx( doc_section ds )
     ProcFlags.doc_sect_nxt = ds;        // remember new section
     ProcFlags.start_section = false;    // do real section start later
 
-    scan_start = scan_stop;
+    scandata.s = scandata.e;
     return;
 }
 
@@ -1567,7 +1567,7 @@ extern void gml_index( const gmltag * entry )
     }
 
     if( ProcFlags.doc_sect_nxt == doc_sect_index ) {// duplicate :INDEX tag
-        scan_start = scan_stop;         // ignore this call
+        scandata.s = scandata.e;         // ignore this call
         return;                         // wgml4 OS/2 crashes with page fault
     }
 
@@ -1700,26 +1700,26 @@ extern void gml_egdoc( const gmltag * entry )
             }
             // output figure forward/undefined references
             for( curr = fig_fwd_refs; curr != NULL; curr = curr->next ) {
-                if( find_refid( fig_ref_dict, curr->id ) != NULL ) {
-                    xx_simple_warn_info_cc( wng_id_xxx, curr->id, inf_id_forward, "figure" );
+                if( find_refid( fig_ref_dict, curr->refid ) != NULL ) {
+                    xx_simple_warn_info_cc( wng_id_xxx, curr->refid, inf_id_forward, "figure" );
                 } else {
-                    xx_simple_warn_info_cc( wng_id_xxx, curr->id, inf_id_unknown, "Figure" );
+                    xx_simple_warn_info_cc( wng_id_xxx, curr->refid, inf_id_unknown, "Figure" );
                 }
             }
             // output header forward/undefined references
             for( curr = hd_fwd_refs; curr != NULL; curr = curr->next ) {
-                if( find_refid( hd_ref_dict, curr->id ) != NULL ) {
-                    xx_simple_warn_info_cc( wng_id_xxx, curr->id, inf_id_forward, "heading" );
+                if( find_refid( hd_ref_dict, curr->refid ) != NULL ) {
+                    xx_simple_warn_info_cc( wng_id_xxx, curr->refid, inf_id_forward, "heading" );
                 } else {
-                    xx_simple_warn_info_cc( wng_id_xxx, curr->id, inf_id_unknown, "Heading" );
+                    xx_simple_warn_info_cc( wng_id_xxx, curr->refid, inf_id_unknown, "Heading" );
                 }
             }
             // output footnote forward/undefined references
             for( curr = fn_fwd_refs; curr != NULL; curr = curr->next ) {
-                if( find_refid( fn_ref_dict, curr->id ) != NULL ) {
-                    xx_simple_warn_info_cc( wng_id_xxx, curr->id, inf_id_forward, "footnote" );
+                if( find_refid( fn_ref_dict, curr->refid ) != NULL ) {
+                    xx_simple_warn_info_cc( wng_id_xxx, curr->refid, inf_id_forward, "footnote" );
                 } else {
-                    xx_simple_warn_info_cc( wng_id_xxx, curr->id, inf_id_unknown, "Footnote" );
+                    xx_simple_warn_info_cc( wng_id_xxx, curr->refid, inf_id_unknown, "Footnote" );
                 }
             }
             if( figlist_toc ) {
@@ -1728,11 +1728,11 @@ extern void gml_egdoc( const gmltag * entry )
         } else {                                    // last pass of at least 2
             // output figure undefined/page change references
             for( curr = fig_fwd_refs; curr != NULL; curr = curr->next ) {
-                xx_simple_warn_info_cc( wng_id_xxx, curr->id, inf_id_forward, "figure" );
+                xx_simple_warn_info_cc( wng_id_xxx, curr->refid, inf_id_forward, "figure" );
             }
             // output header undefined/page change references
             for( curr = hd_fwd_refs; curr != NULL; curr = curr->next ) {
-                xx_simple_warn_info_cc( wng_id_xxx, curr->id, inf_id_forward, "heading" );
+                xx_simple_warn_info_cc( wng_id_xxx, curr->refid, inf_id_forward, "heading" );
             }
             if( ProcFlags.new_pagenr ) {
                 xx_simple_warn( wng_pass_many );    // at least one more pass needed
@@ -1760,7 +1760,7 @@ extern void gml_gdoc( const gmltag *entry )
     (void)entry;
 
     g_scan_err = false;
-    p = scan_start;
+    p = scandata.s;
     if( *p != '\0' )
         p++;
 

@@ -295,11 +295,11 @@ void    add_macro_parms( char * p )
                 SkipNonSpaces( pa );
                 c = *pa;                // prepare value end
                 *pa = '\0';             // terminate string
-                scan_start = p;         // rescan for variable
+                scandata.s = p;         // rescan for variable
                 ProcFlags.suppress_msg = true;  // no errmsg please
                 ProcFlags.blanks_allowed = 0;   // no blanks please
 
-                ps = verify_sym( scan_start );
+                ps = verify_sym( scandata.s );
                 if( ps ) {              // have name=value pair?
                     *pa = c;            // have to put old char back
                     ps = (char *)is_quoted_string( ps );    // have name='string'?
@@ -316,7 +316,7 @@ void    add_macro_parms( char * p )
                 ProcFlags.suppress_msg = false; // reenable err msg
                 ProcFlags.blanks_allowed = 1;   // blanks again
                 *pa = c;                // restore original char at string end
-                scan_start = p;         // restore scan address
+                scandata.s = p;         // restore scan address
                 if( g_scan_err ) {      // not variable=value format
                     cc = omit;
                     star0++;
@@ -464,7 +464,7 @@ void    scr_dm( void )
         xx_source_err_c( err_mac_def_fun, macname );
     }
 
-    p    = scan_start;
+    p    = scandata.s;
     head = NULL;
     last = NULL;
     save = *p;             // save char so we can make null terminated string
@@ -564,7 +564,7 @@ void    scr_dm( void )
                             compend = 1;
                             break;          // out of read loop
                         }
-                        p = scan_start;
+                        p = scandata.s;
                         save = *p;
                         *p = '\0';
                         if( strnicmp( macname, g_tok_start, MAC_NAME_LENGTH ) ) {
@@ -578,7 +578,7 @@ void    scr_dm( void )
                             // SC--048 A control word parameter is missing
                             xx_source_err( err_mac_def_miss );
                         }
-                        p = scan_start;
+                        p = scandata.s;
                         save = *p;
                         *p = '\0';
                         if( stricmp( "end", g_tok_start ) != 0 ) {
@@ -636,7 +636,7 @@ void    scr_dm( void )
     } else {
         xx_source_err_c( err_mac_def_logic, macname );
     }
-    scan_restart = scan_stop;
+    scan_restart = scandata.e;
     return;
 }
 
@@ -699,7 +699,7 @@ void    scr_me( void )
 
     input_cbs->if_cb->if_level = 0;     // terminate
     ProcFlags.keep_ifstate = false;     // ... all .if controls
-    scan_restart = scan_stop;
+    scan_restart = scandata.e;
     return;
 }
 
@@ -800,7 +800,7 @@ void    scr_em( void )
     } else {
         split_input( buff2, g_tok_start, input_cbs->fmflags );    // stack line operand
     }
-    scan_restart = scan_stop;
+    scan_restart = scandata.e;
     return;
 }
 

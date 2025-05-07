@@ -48,7 +48,7 @@ void gml_author( const gmltag * entry )
           (ProcFlags.doc_sect_nxt == doc_sect_titlep)) ) {
         xx_nest_err_cc( err_tag_wrong_sect, entry->tagname, ":TITLEP section" );
     }
-    p = scan_start;
+    p = scandata.s;
     SkipDot( p );                       // over . to docnum
     SkipSpaces( p );                    // over WS to <text line>
 
@@ -86,7 +86,7 @@ void gml_author( const gmltag * entry )
     t_page.cur_left += left_indent;
     t_page.cur_width = t_page.cur_left;
     if( t_page.max_width < right_indent ) {
-        xx_line_err_c( err_page_width_too_small, val_start );
+        xx_line_err_c( err_page_width_too_small, scandata.s );
     } else {
         t_page.max_width -= right_indent;
     }
@@ -103,5 +103,5 @@ void gml_author( const gmltag * entry )
 
     line_position = old_line_pos;
     g_curr_font = font_save;
-    scan_start = scan_stop;
+    scandata.s = scandata.e;
 }

@@ -85,7 +85,7 @@ void    scr_li( void )
     cwcurr[2] = 'i';
     cwcurr[3] = '\0';
 
-    p = scan_start;
+    p = scandata.s;
     SkipSpaces( p );                    // next word start
     pa = p;
     SkipNonSpaces( p );                 // end of word
@@ -98,7 +98,7 @@ void    scr_li( void )
         }
     } else {
         gn.arg.s = pa;
-        gn.arg.e = scan_stop;
+        gn.arg.e = scandata.e;
         gn.ignore_blanks = false;
         cc = getnum( &gn );             // try to get numeric value
         if( cc == notnum ) {
@@ -114,7 +114,7 @@ void    scr_li( void )
                     if( !ProcFlags.literal ) {
                         li_cnt = 1;
                         ProcFlags.literal = true;
-                        split_input( scan_start, pa, input_cbs->fmflags );  // split and process next
+                        split_input( scandata.s, pa, input_cbs->fmflags );  // split and process next
                         scan_restart = pa;
                     }
                 }
@@ -127,7 +127,7 @@ void    scr_li( void )
                     if( !ProcFlags.literal ) {
                         li_cnt = 1;
                         ProcFlags.literal = true;
-                        split_input( scan_start, pa, input_cbs->fmflags );  // split and process next
+                        split_input( scandata.s, pa, input_cbs->fmflags );  // split and process next
                         scan_restart = pa;
                     }
                 }
@@ -136,7 +136,7 @@ void    scr_li( void )
                 if( !ProcFlags.literal ) {
                     li_cnt = 1;
                     ProcFlags.literal = true;
-                    split_input( scan_start, pa, input_cbs->fmflags );  // split and process next
+                    split_input( scandata.s, pa, input_cbs->fmflags );  // split and process next
                     scan_restart = pa;
                 }
                 break;

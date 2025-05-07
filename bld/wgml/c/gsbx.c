@@ -2480,12 +2480,12 @@ void eoc_bx_box( void ) {
 void scr_bx( void )
 {
     bool                first_col;
-    box_col_set     *   box_temp;
-    box_col_set     *   cur_temp;
-    box_col_set     *   prev_temp;
-    box_col_stack   *   stack_temp;
-    char            *   p;
-    char            *   pa;
+    box_col_set         *box_temp;
+    box_col_set         *cur_temp;
+    box_col_set         *prev_temp;
+    box_col_stack       *stack_temp;
+    const char          *p;
+    const char          *pa;
     uint32_t            box_col;
     uint32_t            cur_col;
     uint32_t            i;
@@ -2516,7 +2516,7 @@ void scr_bx( void )
         cur_doc_el_group = NULL;                // top line of outer box
     }
 
-    p = scan_start;
+    p = scandata.s;
     SkipSpaces( p );
     pa = p;
     SkipNonSpaces( p );
@@ -2538,7 +2538,7 @@ void scr_bx( void )
             cur_op = bx_set;
         }
     } else if( (len == 4) && strnicmp( "char", pa , len ) == 0 ) {
-        scan_restart = scan_stop;
+        scan_restart = scandata.e;
         return;
     }
 
@@ -2549,7 +2549,7 @@ void scr_bx( void )
     SkipSpaces( p );
 
     if( !ProcFlags.in_bx_box && *p == '\0' ) {  // if not in a box, box columns must be given
-        scan_restart = scan_stop;
+        scan_restart = scandata.e;
         return;
     }
 
@@ -2847,7 +2847,7 @@ void scr_bx( void )
 
     set_h_start();                          // pick up any indents
 
-    scan_restart = scan_stop;
+    scan_restart = scandata.e;
 
     return;
 }

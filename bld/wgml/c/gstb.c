@@ -136,7 +136,7 @@ void    scr_tb( void )
     int             i;
     int             len;
 
-    p = scan_start;
+    p = scandata.s;
     SkipNonSpaces( p );                     // over tb
     SkipSpaces( p );                        // first token
     pa = p;
@@ -320,6 +320,6 @@ void    scr_tb( void )
         }
     }
 
-    scan_restart = scan_stop;
+    scan_restart = scandata.e;
     return;
 }

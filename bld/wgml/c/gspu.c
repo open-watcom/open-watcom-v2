@@ -145,7 +145,7 @@ void    scr_pu( void )
     int             fno;
     FILE            *fp;
 
-    p = scan_start;
+    p = scandata.s;
     SkipSpaces( p );                    // next word start
     pa = p;
     SkipNonSpaces( p );                 // end of word
@@ -171,7 +171,7 @@ void    scr_pu( void )
             fno = 1;                    // workfile not given, "1" is default
         }
     }
-    scan_restart = scan_stop;           // do here because returns below all need it
+    scan_restart = scandata.e;           // do here because returns below all need it
 
     if( *pa == '\0' ) {                 // no text follows
         close_pu_file( fno );

@@ -89,18 +89,21 @@ extern void         set_oc_pos( void );
 
 
 /* gargutil.c                           */
-extern  condcode    getarg( void );
-extern  condcode    getqst( void );
-extern  bool        is_quote_char( char c );
-extern  bool        is_function_char( char c );
-extern  bool        is_att_char( char c );
-extern  bool        is_id_char( char c );
-extern  bool        is_macro_char( char c );
-extern  bool        is_space_tab_char( char c );
-extern  bool        is_stop_char( char c );
-extern  bool        is_symbol_char( char c );
-extern  char        parse_char( const char *pa, size_t len );
-extern  int         unquote_arg( tok_type *arg );
+extern condcode     getarg( void );
+extern condcode     getqst( void );
+extern bool         is_quote_char( char c );
+extern bool         is_function_char( char c );
+extern bool         is_tag_char( char c );
+extern bool         is_tag_att_char( char c );
+extern bool         is_lay_att_char( char c );
+extern bool         is_id_char( char c );
+extern bool         is_su_char( char c );
+extern bool         is_macro_char( char c );
+extern bool         is_space_tab_char( char c );
+extern bool         is_stop_char( char c );
+extern bool         is_symbol_char( char c );
+extern char         parse_char( const char *pa, size_t len );
+extern int          unquote_arg( tok_type *arg );
 
 /* gbanner.c                            */
 extern  void        out_ban_bot( void );
@@ -148,8 +151,8 @@ extern  condcode    getnum( getnum_block * gn );
 
 
 /* ghx.c                                */
-extern  void        gen_heading( char * h_text, char * id, hdsrc hn_lvl, hdsrc hds_lvl );
-extern  void        out_head_page( ffh_entry * in_entry, ref_entry * in_ref, uint32_t in_pageno );
+extern  void        gen_heading( char *h_text, const char *refid, hdsrc hn_lvl, hdsrc hds_lvl );
+extern  void        out_head_page( ffh_entry *in_entry, ref_entry *in_ref, uint32_t in_pageno );
 
 
 /* gindexut.c                           */
@@ -163,49 +166,49 @@ extern  void        init_entry_list( ix_h_blk * term );
 /* glayutil.c                           */
 extern  void        eat_lay_sub_tag( void );
 extern  void        free_layout( void );
-extern  condcode    get_attr_and_value( void );
-extern  bool        i_case( char * p, lay_att curr, case_t * tm );
-extern  void        o_case( FILE *fp, lay_att curr, const case_t * tm );
-extern  bool        i_char( char * p, lay_att curr, char * tm );
-extern  void        o_char( FILE *fp, lay_att curr, const char * tm );
-extern  bool        i_content( char * p, lay_att curr, content * tm );
-extern  void        o_content( FILE *fp, lay_att curr, const content * tm );
-extern  bool        i_default_frame( char * p, lay_att curr, def_frame * tm );
-extern  void        o_default_frame( FILE *fp, lay_att curr, const def_frame * tm );
-extern  bool        i_docsect( char * p, lay_att curr, ban_docsect * tm );
-extern  void        o_docsect( FILE *fp, lay_att curr, const ban_docsect * tm );
-extern  bool        i_frame( char * p, lay_att curr, bool * tm );
-extern  void        o_frame( FILE *fp, lay_att curr, const bool * tm );
-extern  bool        i_int32( char * p, lay_att curr, int32_t * tm );
-extern  void        o_int32( FILE *fp, lay_att curr, const int32_t * tm );
-extern  bool        i_int8( char * p, lay_att curr, int8_t * tm );
-extern  void        o_int8( FILE *fp, lay_att curr, const int8_t * tm );
-extern  bool        i_spacing( char *p, lay_att curr, text_space *tm );
-extern  void        o_spacing( FILE *fp, lay_att curr, const text_space *tm );
-extern  bool        i_font_number( char *p, lay_att curr, font_number *tm );
-extern  void        o_font_number( FILE *fp, lay_att curr, const font_number *tm );
-extern  bool        i_number_form( char * p, lay_att curr, num_form * tm );
-extern  void        o_number_form( FILE *fp, lay_att curr, const num_form * tm );
-extern  bool        i_number_style( char * p, lay_att curr, num_style * tm );
-extern  void        o_number_style( FILE *fp, lay_att curr, const num_style * tm );
-extern  bool        i_page_eject( char * p, lay_att curr, page_ej * tm );
-extern  void        o_page_eject( FILE *fp, lay_att curr, const page_ej * tm );
-extern  bool        i_page_position( char * p, lay_att curr, page_pos * tm );
-extern  void        o_page_position( FILE *fp, lay_att curr, const page_pos * tm );
-extern  bool        i_place( char * p, lay_att curr, bf_place * tm );
-extern  void        o_place( FILE *fp, lay_att curr, const bf_place * tm );
-extern  bool        i_pouring( char * p, lay_att curr, reg_pour * tm );
-extern  void        o_pouring( FILE *fp, lay_att curr, const reg_pour * tm );
-extern  bool        i_space_unit( char * p, lay_att curr, su * tm );
-extern  void        o_space_unit( FILE *fp, lay_att curr, const su * tm );
-extern  bool        i_threshold( char * p, lay_att curr, uint16_t * tm );
-extern  void        o_threshold( FILE *fp, lay_att curr, const uint16_t * tm );
-extern  bool        i_xx_string( char * p, lay_att curr, xx_str * tm );
-extern  void        o_xx_string( FILE *fp, lay_att curr, const xx_str * tm );
-extern  bool        i_date_form( char * p, lay_att curr, xx_str * tm );
-extern  void        o_date_form( FILE *fp, lay_att curr, const xx_str * tm );
-extern  bool        i_yes_no( char * p, lay_att curr, bool * tm );
-extern  void        o_yes_no( FILE *fp, lay_att curr, const bool * tm );
+extern  condcode    lay_attr_and_value( lay_att_val *lay_attr );
+extern  bool        i_case( char * p, lay_attr_i lay_attr, case_t * tm );
+extern  void        o_case( FILE *fp, lay_attr_o lay_attr, const case_t * tm );
+extern  bool        i_char( char * p, lay_attr_i lay_attr, char * tm );
+extern  void        o_char( FILE *fp, lay_attr_o lay_attr, const char * tm );
+extern  bool        i_content( char * p, lay_attr_i lay_attr, content * tm );
+extern  void        o_content( FILE *fp, lay_attr_o lay_attr, const content * tm );
+extern  bool        i_default_frame( char * p, lay_attr_i lay_attr, def_frame * tm );
+extern  void        o_default_frame( FILE *fp, lay_attr_o lay_attr, const def_frame * tm );
+extern  bool        i_docsect( char * p, lay_attr_i lay_attr, ban_docsect * tm );
+extern  void        o_docsect( FILE *fp, lay_attr_o lay_attr, const ban_docsect * tm );
+extern  bool        i_frame( char * p, lay_attr_i lay_attr, bool * tm );
+extern  void        o_frame( FILE *fp, lay_attr_o lay_attr, const bool * tm );
+extern  bool        i_int32( char * p, lay_attr_i lay_attr, int32_t * tm );
+extern  void        o_int32( FILE *fp, lay_attr_o lay_attr, const int32_t * tm );
+extern  bool        i_int8( char * p, lay_attr_i lay_attr, int8_t * tm );
+extern  void        o_int8( FILE *fp, lay_attr_o lay_attr, const int8_t * tm );
+extern  bool        i_spacing( char *p, lay_attr_i lay_attr, text_space *tm );
+extern  void        o_spacing( FILE *fp, lay_attr_o lay_attr, const text_space *tm );
+extern  bool        i_font_number( char *p, lay_attr_i lay_attr, font_number *tm );
+extern  void        o_font_number( FILE *fp, lay_attr_o lay_attr, const font_number *tm );
+extern  bool        i_number_form( char * p, lay_attr_i lay_attr, num_form * tm );
+extern  void        o_number_form( FILE *fp, lay_attr_o lay_attr, const num_form * tm );
+extern  bool        i_number_style( char * p, lay_attr_i lay_attr, num_style * tm );
+extern  void        o_number_style( FILE *fp, lay_attr_o lay_attr, const num_style * tm );
+extern  bool        i_page_eject( char * p, lay_attr_i lay_attr, page_ej * tm );
+extern  void        o_page_eject( FILE *fp, lay_attr_o lay_attr, const page_ej * tm );
+extern  bool        i_page_position( char * p, lay_attr_i lay_attr, page_pos * tm );
+extern  void        o_page_position( FILE *fp, lay_attr_o lay_attr, const page_pos * tm );
+extern  bool        i_place( char * p, lay_attr_i lay_attr, bf_place * tm );
+extern  void        o_place( FILE *fp, lay_attr_o lay_attr, const bf_place * tm );
+extern  bool        i_pouring( char * p, lay_attr_i lay_attr, reg_pour * tm );
+extern  void        o_pouring( FILE *fp, lay_attr_o lay_attr, const reg_pour * tm );
+extern  bool        i_space_unit( char * p, lay_attr_i lay_attr, su * tm );
+extern  void        o_space_unit( FILE *fp, lay_attr_o lay_attr, const su * tm );
+extern  bool        i_threshold( char * p, lay_attr_i lay_attr, uint16_t * tm );
+extern  void        o_threshold( FILE *fp, lay_attr_o lay_attr, const uint16_t * tm );
+extern  bool        i_xx_string( char * p, lay_attr_i lay_attr, xx_str * tm );
+extern  void        o_xx_string( FILE *fp, lay_attr_o lay_attr, const xx_str * tm );
+extern  bool        i_date_form( char * p, lay_attr_i lay_attr, xx_str * tm );
+extern  void        o_date_form( FILE *fp, lay_attr_o lay_attr, const xx_str * tm );
+extern  bool        i_yes_no( char * p, lay_attr_i lay_attr, bool * tm );
+extern  void        o_yes_no( FILE *fp, lay_attr_o lay_attr, const bool * tm );
 
 
 /* glbandef.c                           */
@@ -276,13 +279,14 @@ extern  void        set_h_start( void );
 
 
 /* grefdict.c                           */
-extern  void        add_ref_entry( ref_entry * * dict, ref_entry * me );
-extern  void        init_ref_dict( ref_entry * * dict );
-extern  void        free_ref_dict( ref_entry * * dict );
-extern  void        print_ref_dict( ref_entry * dict, const char * type );
-extern  ref_entry   *find_refid( ref_entry * dict, char const * id );
-extern  void        init_ref_entry( ref_entry * re, char * id );
-extern  char        *get_refid_value( char * p, char * refid );
+extern void         add_ref_entry( ref_dict *dict, ref_entry *me );
+extern void         init_ref_dict( ref_dict *dict );
+extern void         free_ref_dict( ref_dict *dict );
+extern void         print_ref_dict( ref_dict dict, const char *type );
+extern ref_entry    *find_refid( ref_dict dict, char const *refid );
+extern void         init_ref_entry( ref_entry *re, const char *refid, ffh_entry *ffh );
+extern char         *get_refid_value( char *p, att_val_type *attr_val, char *refid );
+extern ref_entry    *add_new_refid( ref_dict *dict, const char *refid, ffh_entry *ffh );
 
 /* gresrch.c                            */
 extern  void        add_GML_tag_research( char * tag );
@@ -432,29 +436,29 @@ extern  bool        process_tag( gtentry * ge, mac_entry * me );
 
 
 /* gutil.c                              */
-extern  void        add_dt_space( void );
-extern  bool        att_val_to_su( su * spaceunit, bool pos );
-extern  int32_t     conv_hor_unit( su * spaceunit, font_number font );
-extern  int32_t     conv_vert_unit( su * spaceunit, text_space text_spacing, font_number font );
-extern  bool        cw_val_to_su( char * * scaninput, su * spaceunit );
-extern  num_style   find_pgnum_style( void );
-extern  char        *format_num( unsigned n, char * r, size_t rsize, num_style ns );
-extern  void        free_ffh_list( ffh_entry * ffh_list );
-extern  void        free_fwd_refs( fwd_ref * fwd_refs );
-extern  void        g_keep_nest( const char * cw_tag );
-extern  char        *get_att_start( char * p );
-extern  char        *get_att_value( char * p );
-extern  char        *get_attribute( char * p );
-extern  char        *get_value( char * p );
-extern  font_number get_font_number( char * p, size_t len );
-extern  char        *get_tag_value( char * p );
-extern  ffh_entry   *init_ffh_entry( ffh_entry * ffh_list );
-extern  fwd_ref     *init_fwd_ref( fwd_ref * fr_dict, const char * fr_id );
-extern  char        *int_to_roman( unsigned n, char * r, size_t rsize, bool ucase );
-extern  bool        lay_init_su( const char * p, su * in_su );
-extern  size_t      len_to_trail_space( const char *p , size_t len );
-extern  char        *skip_to_quote( char * p, char quote );
-extern  bool        value_to_su( su * spaceunit, bool pos );
+extern void         add_dt_space( void );
+extern bool         att_val_to_su( su *spaceunit, bool pos, att_val_type *attr_val, bool specval );
+extern int32_t      conv_hor_unit( su *spaceunit, font_number font );
+extern int32_t      conv_vert_unit( su *spaceunit, text_space text_spacing, font_number font );
+extern bool         cw_val_to_su( const char **scaninput, su *spaceunit );
+extern num_style    find_pgnum_style( void );
+extern char         *format_num( unsigned n, char *r, size_t rsize, num_style ns );
+extern void         free_ffh_list( ffh_entry *ffh_list );
+extern void         free_fwd_refs( fwd_ref *fwd_refs );
+extern void         g_keep_nest( const char *cw_tag );
+extern char         *get_att_name( char *p, char **orig, char *attname );
+extern void         get_att_specval( att_val_type *attr_val );
+extern char         *get_att_value( char *p, att_val_type *attr_val );
+extern char         *get_attribute( char *p );
+extern char         *get_value( char *p );
+extern font_number  get_font_number( char *p, size_t len );
+extern char         *get_tag_value( char *p, att_val_type *attr_val );
+extern ffh_entry    *init_ffh_entry( ffh_entry *ffh_list );
+extern fwd_ref      *init_fwd_ref( fwd_ref *dict, const char *refid );
+extern char         *int_to_roman( unsigned n, char *r, size_t rsize, bool ucase );
+extern bool         lay_init_su( const char *p, su *in_su );
+extern size_t       len_to_trail_space( const char *p , size_t len );
+extern char         *skip_to_quote( char *p, char quote );
 
 
 /* messages.c                           */
@@ -473,7 +477,7 @@ extern  void    main_file_err( const char * filename );
 extern  void    numb_err( void );
 extern  void    symbol_name_length_err( const char * symname );
 extern  void    val_parse_err( const char * pa, bool tag );
-extern  void    dup_id_err( const char * id, const char * context );
+extern  void    dup_refid_err( const char *refid, const char * context );
 extern  void    g_err_if_int( void );
 extern  void    g_err_tag( e_tags etag );
 extern  void    g_err_tag_mac( gtentry * ge );
@@ -561,12 +565,12 @@ extern  void    show_include_stack( void );
  */
 
 /*          for input scanning              */
-#define pick( name, funci, funco, restype )     extern  bool    funci( char * buf, lay_att attr, restype * result );
+#define pick( name, funci, funco, restype )     extern  bool    funci( char * buf, lay_attr_i lay_attr, restype * result );
 #include "glayutil.h"
 #undef pick
 
 /*          for output via :convert tag     */
-#define pick( name, funci, funco, restype )     extern  void    funco( FILE *fp, lay_att attr, const restype * in );
+#define pick( name, funci, funco, restype )     extern  void    funco( FILE *fp, lay_attr_o lay_attr, const restype * in );
 #include "glayutil.h"
 #undef pick
 

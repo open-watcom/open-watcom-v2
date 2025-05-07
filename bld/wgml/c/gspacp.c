@@ -102,7 +102,7 @@ void    scr_pa( void )
     cwcurr[2] = 'a';
     cwcurr[3] = '\0';
 
-    p = scan_start;
+    p = scandata.s;
     while( *p && *p == ' ' ) {          // next word start
         p++;
     }
@@ -151,7 +151,7 @@ void    scr_pa( void )
         xx_opt_err( cwcurr, pa );
         break;
     }
-    scan_restart = scan_stop;
+    scan_restart = scandata.e;
     return;
 }
 
@@ -251,7 +251,7 @@ void    scr_cp( void )
     cwcurr[2] = 'p';
     cwcurr[3] = '\0';
 
-    p = scan_start;
+    p = scandata.s;
     while( *p && *p == ' ' ) {          // next word start
         p++;
     }
@@ -262,12 +262,12 @@ void    scr_cp( void )
     len = p - pa;
     if( len > 0 ) {                     // no action if no parm
         gn.arg.s = pa;
-        gn.arg.e = scan_stop;
+        gn.arg.e = scandata.e;
         gn.ignore_blanks = false;
         cc = getnum( &gn );            // try to get numeric value
         if( cc == notnum ) {
             xx_opt_err( cwcurr, pa );
-            scan_restart = scan_stop;
+            scan_restart = scandata.e;
         } else {
             if( gn.result > 0 ) {       // ignore values < 1
                 if( ((gn.result * wgml_fonts[g_curr_font].line_height) + t_page.cur_depth) > t_page.max_depth ) {
@@ -278,7 +278,7 @@ void    scr_cp( void )
             scan_restart = gn.arg.s;
         }
     } else {
-       scan_restart = scan_stop;
+       scan_restart = scandata.e;
     }
     return;
 }

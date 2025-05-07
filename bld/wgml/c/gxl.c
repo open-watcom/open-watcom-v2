@@ -102,7 +102,7 @@ static void gml_xl_lp_common( e_tags t )
     nest_cb->c_tag = t;
 
     g_scan_err = false;
-    p = scan_start;
+    p = scandata.s;
     SkipSpaces( p );                        // skip spaces
     SkipDot( p );                           // skip tag end
     if( t != t_LP ) {                       // text only allowed for :LP
@@ -163,15 +163,17 @@ static void gml_xl_lp_common( e_tags t )
 
 void gml_dl( const gmltag * entry )
 {
-    bool                compact     =   false;
-    bool                dl_break;
-    char            *   p;
-    char            *   pa;
-    dl_lay_level    *   dl_layout;
-    font_number         headhi;
-    font_number         termhi;
-    su                  cur_su;
-    uint32_t            tsize;
+    bool            compact     =   false;
+    bool            dl_break;
+    char            *p;
+    char            *pa;
+    dl_lay_level    *dl_layout;
+    font_number     headhi;
+    font_number     termhi;
+    su              cur_su;
+    uint32_t        tsize;
+    char            attname[TAG_ATT_NAME_LENGTH + 1];
+    att_val_type    attr_val;
 
     (void)entry;
 
@@ -199,57 +201,51 @@ void gml_dl( const gmltag * entry )
     termhi = layout_work.dt.font;
     tsize = conv_hor_unit( &dl_layout->align, g_curr_font );
 
-    p = scan_start;
+    p = scandata.s;
     SkipSpaces( p );                    // over spaces
     if( *p == '.' ) {
         /* already at tag end */
     } else {
         for( ;; ) {
-            pa = get_att_start( p );
-            p = att_start;
+            p = get_att_name( p, &pa, attname );
             if( ProcFlags.reprocess_line ) {
                 break;
             }
 
-            if( !strnicmp( "compact", p, 7 ) ) {
+            if( strcmp( "compact", attname ) == 0 ) {
                 compact = true;
-                p += 7;
                 if( ProcFlags.tag_end_found ) {
                     break;
                 }
-            } else if( !strnicmp( "break", p, 5 ) ) {
-                p += 5;
+            } else if( strcmp( "break", attname ) == 0 ) {
                 dl_break = true;
                 if( ProcFlags.tag_end_found ) {
                     break;
                 }
-            } else if( !strnicmp( "headhi", p, 6 ) ) {
-                p += 6;
-                p = get_att_value( p );
-                if( val_start == NULL ) {
+            } else if( strcmp( "headhi", attname ) == 0 ) {
+                p = get_att_value( p, &attr_val );
+                if( attr_val.name == NULL ) {
                     break;
                 }
-                headhi = get_font_number( val_start, val_len );
+                headhi = get_font_number( attr_val.name, attr_val.len );
                 if( ProcFlags.tag_end_found ) {
                     break;
                 }
-            } else if( !strnicmp( "termhi", p, 6 ) ) {
-                p += 6;
-                p = get_att_value( p );
-                if( val_start == NULL ) {
+            } else if( strcmp( "termhi", attname ) == 0 ) {
+                p = get_att_value( p, &attr_val );
+                if( attr_val.name == NULL ) {
                     break;
                 }
-                termhi = get_font_number( val_start, val_len );
+                termhi = get_font_number( attr_val.name, attr_val.len );
                 if( ProcFlags.tag_end_found ) {
                     break;
                 }
-            } else if( !strnicmp( "tsize", p, 5 ) ) {
-                p += 5;
-                p = get_att_value( p );
-                if( val_start == NULL ) {
+            } else if( strcmp( "tsize", attname ) == 0 ) {
+                p = get_att_value( p, &attr_val );
+                if( attr_val.name == NULL ) {
                     break;
                 }
-                if( att_val_to_su( &cur_su, true ) ) {
+                if( att_val_to_su( &cur_su, true, &attr_val, false ) ) {
                     break;
                 }
                 tsize = conv_hor_unit( &cur_su, g_curr_font );
@@ -262,7 +258,7 @@ void gml_dl( const gmltag * entry )
             }
         }
     }
-    scan_start = p;
+    scandata.s = p;
 
     gml_xl_lp_common( t_DL );
 
@@ -284,7 +280,7 @@ void gml_dl( const gmltag * entry )
     g_text_spacing = nest_cb->u.dl_layout->spacing;
 
     ProcFlags.null_value = false;
-    scan_start = scan_stop;
+    scandata.s = scandata.e;
     return;
 }
 
@@ -311,9 +307,11 @@ void gml_dl( const gmltag * entry )
 void gml_gl( const gmltag * entry )
 {
     bool            compact =   false;
-    char        *   p;
-    char        *   pa;
+    char            *p;
+    char            *pa;
     font_number     termhi  =   0;
+    char            attname[TAG_ATT_NAME_LENGTH + 1];
+    att_val_type    attr_val;
 
     (void)entry;
 
@@ -323,28 +321,25 @@ void gml_gl( const gmltag * entry )
 
     termhi = layout_work.gt.font;
 
-    p = scan_start;
+    p = scandata.s;
     SkipSpaces( p );                        // over spaces
     if( *p == '.' ) {
         /* already at tag end */
     } else {
         for( ;; ) {
-            pa = get_att_start( p );
-            p = att_start;
+            p = get_att_name( p, &pa, attname );
             if( ProcFlags.reprocess_line ) {
                 break;
             }
 
-            if( !strnicmp( "compact", p, 7 ) ) {
-                p += 7;
+            if( strcmp( "compact", attname ) == 0 ) {
                 compact = true;
-            } else if( !strnicmp( "termhi", p, 6 ) ) {
-                p += 6;
-                p = get_att_value( p );
-                if( val_start == NULL ) {
+            } else if( strcmp( "termhi", attname ) == 0 ) {
+                p = get_att_value( p, &attr_val );
+                if( attr_val.name == NULL ) {
                     break;
                 }
-                termhi = get_font_number( val_start, val_len );
+                termhi = get_font_number( attr_val.name, attr_val.len );
                 if( ProcFlags.tag_end_found ) {
                     break;
                 }
@@ -354,7 +349,7 @@ void gml_gl( const gmltag * entry )
             }
         }
     }
-    scan_start = p;
+    scandata.s = p;
 
     gml_xl_lp_common( t_GL );
 
@@ -387,7 +382,7 @@ void gml_gl( const gmltag * entry )
 
     g_text_spacing = nest_cb->u.gl_layout->spacing;
 
-    scan_start = scan_stop + 1;
+    scandata.s = scandata.e + 1;
     return;
 }
 
@@ -409,9 +404,10 @@ void gml_gl( const gmltag * entry )
 
 void gml_ol( const gmltag * entry )
 {
-    bool        compact =   false;
-    char    *   p;
-    char    *   pa;
+    bool            compact =   false;
+    char            *p;
+    char            *pa;
+    char            attname[TAG_ATT_NAME_LENGTH + 1];
 
     (void)entry;
 
@@ -419,20 +415,18 @@ void gml_ol( const gmltag * entry )
         start_doc_sect();
     }
 
-    p = scan_start;
+    p = scandata.s;
     SkipSpaces( p );                        // over spaces
     if( *p == '.' ) {
         /* already at tag end */
     } else {
         for( ;; ) {
-            pa = get_att_start( p );
-            p = att_start;
+            p = get_att_name( p, &pa, attname );
             if( ProcFlags.reprocess_line ) {
                 break;
             }
 
-            if( !strnicmp( "compact", p, 7 ) ) {
-                p += 7;
+            if( strcmp( "compact", attname ) == 0 ) {
                 compact = true;
             } else {
                 p = pa; // restore any spaces before non-attribute value
@@ -440,7 +434,7 @@ void gml_ol( const gmltag * entry )
             }
         }
     }
-    scan_start = p;
+    scandata.s = p;
 
     if( ProcFlags.need_li_lp ) {
         xx_nest_err( err_no_li_lp );
@@ -476,7 +470,7 @@ void gml_ol( const gmltag * entry )
 
     g_text_spacing = nest_cb->u.ol_layout->spacing;
 
-    scan_start = scan_stop + 1;
+    scandata.s = scandata.e + 1;
     return;
 }
 
@@ -497,9 +491,10 @@ void gml_ol( const gmltag * entry )
 
 void gml_sl( const gmltag * entry )
 {
-    bool        compact =   false;
-    char    *   p;
-    char    *   pa;
+    bool            compact =   false;
+    char            *p;
+    char            *pa;
+    char            attname[TAG_ATT_NAME_LENGTH + 1];
 
     (void)entry;
 
@@ -507,20 +502,18 @@ void gml_sl( const gmltag * entry )
         start_doc_sect();
     }
 
-    p = scan_start;
+    p = scandata.s;
     SkipSpaces( p );                        // over spaces
     if( *p == '.' ) {
         /* already at tag end */
     } else {
         for( ;; ) {
-            pa = get_att_start( p );
-            p = att_start;
+            p = get_att_name( p, &pa, attname );
             if( ProcFlags.reprocess_line ) {
                 break;
             }
 
-            if( !strnicmp( "compact", p, 7 ) ) {
-                p += 7;
+            if( strcmp( "compact", attname ) == 0 ) {
                 compact = true;
             } else {
                 p = pa; // restore any spaces before non-attribute value
@@ -528,7 +521,7 @@ void gml_sl( const gmltag * entry )
             }
         }
     }
-    scan_start = p;
+    scandata.s = p;
 
     if( ProcFlags.need_li_lp ) {
         xx_nest_err( err_no_li_lp );
@@ -563,7 +556,7 @@ void gml_sl( const gmltag * entry )
 
     g_text_spacing = nest_cb->u.sl_layout->spacing;
 
-    scan_start = scan_stop + 1;
+    scandata.s = scandata.e + 1;
     return;
 }
 
@@ -584,9 +577,10 @@ void gml_sl( const gmltag * entry )
 
 void gml_ul( const gmltag * entry )
 {
-    bool        compact =   false;
-    char    *   p;
-    char    *   pa;
+    bool            compact =   false;
+    char            *p;
+    char            *pa;
+    char            attname[TAG_ATT_NAME_LENGTH + 1];
 
     (void)entry;
 
@@ -594,20 +588,18 @@ void gml_ul( const gmltag * entry )
         start_doc_sect();
     }
 
-    p = scan_start;
+    p = scandata.s;
     SkipSpaces( p );                        // over spaces
     if( *p == '.' ) {
         /* already at tag end */
     } else {
         for( ;; ) {
-            pa = get_att_start( p );
-            p = att_start;
+            p = get_att_name( p, &pa, attname );
             if( ProcFlags.reprocess_line ) {
                 break;
             }
 
-            if( !strnicmp( "compact", p, 7 ) ) {
-                p += 7;
+            if( strcmp( "compact", attname ) == 0 ) {
                 compact = true;
             } else {
                 p = pa; // restore any spaces before non-attribute value
@@ -615,7 +607,7 @@ void gml_ul( const gmltag * entry )
             }
         }
     }
-    scan_start = p;
+    scandata.s = p;
 
     if( ProcFlags.need_li_lp ) {
         xx_nest_err( err_no_li_lp );
@@ -651,7 +643,7 @@ void gml_ul( const gmltag * entry )
 
     g_text_spacing = nest_cb->u.ul_layout->spacing;
 
-    scan_start = scan_stop + 1;
+    scandata.s = scandata.e + 1;
     return;
 }
 
@@ -703,7 +695,7 @@ static void     gml_exl_common( const gmltag * entry )
 
     t_page.cur_width = t_page.cur_left;
     g_scan_err = false;
-    p = scan_start;
+    p = scandata.s;
     SkipDot( p );                       // over '.'
     SkipSpaces( p );                    // over WS to <text line>
     if( *p != '\0' ) {
@@ -723,7 +715,7 @@ static void     gml_exl_common( const gmltag * entry )
 
     ProcFlags.need_li_lp = false;       // :LI or :LP no longer needed
     dl_gl_starting = false;
-    scan_start = scan_stop + 1;
+    scandata.s = scandata.e + 1;
 }
 
 
@@ -917,7 +909,7 @@ static  void    gml_li_ol( const gmltag * entry )
     scr_process_break();
 
     g_scan_err = false;
-    p = scan_start;
+    p = scandata.s;
 
     nest_cb->li_number++;
     pn = format_num( nest_cb->li_number, charnumber, NUM2STR_LENGTH,
@@ -969,7 +961,7 @@ static  void    gml_li_ol( const gmltag * entry )
         process_text( p, g_curr_font ); // if text follows
     }
 
-    scan_start = scan_stop + 1;
+    scandata.s = scandata.e + 1;
     return;
 }
 
@@ -991,7 +983,7 @@ static  void    gml_li_sl( const gmltag * entry )
     scr_process_break();
 
     g_scan_err = false;
-    p = scan_start;
+    p = scandata.s;
 
     if( ProcFlags.need_li_lp ) {        // first :li for this list
         set_skip_vars( &nest_cb->u.sl_layout->pre_skip, NULL, NULL, g_text_spacing, g_curr_font );
@@ -1018,7 +1010,7 @@ static  void    gml_li_sl( const gmltag * entry )
         process_text( p, g_curr_font ); // if text follows
     }
 
-    scan_start = scan_stop + 1;
+    scandata.s = scandata.e + 1;
     return;
 }
 
@@ -1041,7 +1033,7 @@ static  void    gml_li_ul( const gmltag * entry )
     scr_process_break();
 
     g_scan_err = false;
-    p = scan_start;
+    p = scandata.s;
 
     if( nest_cb->u.ul_layout->bullet_translate ) {
         bullet[0] = cop_in_trans( nest_cb->u.ul_layout->bullet, nest_cb->u.ul_layout->bullet_font );
@@ -1087,7 +1079,7 @@ static  void    gml_li_ul( const gmltag * entry )
 
     t_page.cur_left = nest_cb->lm + nest_cb->left_indent + nest_cb->align;
 
-    scan_start = scan_stop + 1;
+    scandata.s = scandata.e + 1;
     return;
 }
 
@@ -1148,7 +1140,7 @@ void    gml_lp( const gmltag * entry )
     (void)entry;
 
     g_scan_err = false;
-    p = scan_start;
+    p = scandata.s;
 
     if( nest_cb->c_tag == t_LP ) {          // restore margins saved by prior LP
         t_page.cur_left = nest_cb->lm;
@@ -1209,7 +1201,7 @@ void    gml_lp( const gmltag * entry )
         process_text( p, g_curr_font ); // if text follows
     }
 
-    scan_start = scan_stop + 1;
+    scandata.s = scandata.e + 1;
     return;
 }
 
@@ -1239,7 +1231,7 @@ void gml_dthd( const gmltag * entry )
     }
     scr_process_break();
 
-    p = scan_start;
+    p = scandata.s;
 
     if( nest_cb->c_tag == t_LP ) {      // terminate :LP if active
         end_lp();
@@ -1274,7 +1266,7 @@ void gml_dthd( const gmltag * entry )
         } else {
             ProcFlags.need_text = true;
         }
-        scan_start = scan_stop + 1;
+        scandata.s = scandata.e + 1;
     }
 
     ProcFlags.need_ddhd = true;
@@ -1314,7 +1306,7 @@ void gml_ddhd( const gmltag * entry )
         xx_nest_err_cc( err_tag_preceding_2, "DTHD", "DDHD" );
     }
 
-    p = scan_start;
+    p = scandata.s;
 
     t_page.cur_left = nest_cb->lm + nest_cb->left_indent + nest_cb->tsize;   // left start
     t_page.max_width = nest_cb->rm + nest_cb->right_indent;
@@ -1340,7 +1332,7 @@ void gml_ddhd( const gmltag * entry )
         ProcFlags.need_text = true;
     }
 
-    scan_start = scan_stop + 1;
+    scandata.s = scandata.e + 1;
     return;
 }
 
@@ -1369,7 +1361,7 @@ void gml_dt( const gmltag * entry )
     }
     scr_process_break();
 
-    p = scan_start;
+    p = scandata.s;
 
     if( nest_cb->c_tag == t_LP ) {      // terminate :LP if active
         end_lp();
@@ -1422,7 +1414,7 @@ void gml_dt( const gmltag * entry )
         } else {
             ProcFlags.need_text = true;
         }
-        scan_start = scan_stop + 1;
+        scandata.s = scandata.e + 1;
     }
 
     ProcFlags.need_dd = true;
@@ -1463,7 +1455,7 @@ void gml_dd( const gmltag * entry )
     }
 
     ProcFlags.dd_starting = false;
-    p = scan_start;
+    p = scandata.s;
     g_curr_font = layout_work.dd.font;
     t_page.cur_left = nest_cb->lm + nest_cb->left_indent + nest_cb->tsize;   // left start
 
@@ -1501,7 +1493,7 @@ void gml_dd( const gmltag * entry )
         }
     }
 
-    scan_start = scan_stop + 1;
+    scandata.s = scandata.e + 1;
     return;
 }
 
@@ -1530,7 +1522,7 @@ void gml_gt( const gmltag * entry )
     }
     scr_process_break();
 
-    p = scan_start;
+    p = scandata.s;
 
     if( nest_cb->c_tag == t_LP ) {      // terminate :LP if active
         end_lp();
@@ -1566,7 +1558,7 @@ void gml_gt( const gmltag * entry )
         } else {
             ProcFlags.need_text = true;
         }
-        scan_start = scan_stop + 1;
+        scandata.s = scandata.e + 1;
     }
 
     ProcFlags.need_gd = true;
@@ -1607,7 +1599,7 @@ void gml_gd( const gmltag * entry )
         xx_nest_err_cc( err_tag_preceding_2, "GT", "GD" );
     }
 
-    p = scan_start;
+    p = scandata.s;
 
     ProcFlags.ct = true;
     post_space = 0;
@@ -1637,7 +1629,7 @@ void gml_gd( const gmltag * entry )
         process_text( p, g_curr_font ); // if text follows
     }
 
-    scan_start = scan_stop + 1;
+    scandata.s = scandata.e + 1;
     return;
 }
 

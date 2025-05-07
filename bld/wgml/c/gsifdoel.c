@@ -220,8 +220,7 @@ static condcode gargterm( termcb * t )
     getnum_block    gn;
     condcode        cc;
 
-    gn.arg.s = scan_start;
-    gn.arg.e = scan_stop;
+    gn.arg = scandata;
     gn.ignore_blanks = false;
     cc = getnum( &gn );                 // try to get numeric value
     if( cc == notnum ) {
@@ -230,7 +229,7 @@ static condcode gargterm( termcb * t )
 
         cc = getqst();                  // try quoted string
         if( cc == no ) {                // not quoted
-            scan_start = g_tok_start;   // reset start for next try
+            scandata.s = g_tok_start;   // reset start for next try
 
             cc = getarg();              // try unquoted string
             if( cc == notnum ) {
@@ -242,9 +241,9 @@ static condcode gargterm( termcb * t )
         t->term_length = arg_flen;
     } else {
         if( gn.arg.s >= gn.arg.e ) {
-            scan_start = gn.arg.e;        // enforce end of logical record
+            scandata.s = gn.arg.e;        // enforce end of logical record
         } else {
-            scan_start = gn.arg.s;
+            scandata.s = gn.arg.s;
         }
         t->numeric = true;
         t->term_number = gn.result;
@@ -303,22 +302,22 @@ static bool ifcompare( termcb * t1, relop r, termcb * t2 )
     }
 
     switch( r ) {                       // now set compare result
-    case  EQ :
+    case EQ :
         result = (term1 == term2);
         break;
-    case  NE :
+    case NE :
         result = (term1 != term2);
         break;
-    case  LT :
+    case LT :
         result = (term1 <  term2);
         break;
-    case  GT :
+    case GT :
         result = (term1 >  term2);
         break;
-    case  LE :
+    case LE :
         result = (term1 <= term2);
         break;
-    case  GE :
+    case GE :
         result = (term1 >= term2);
         break;
 
@@ -411,10 +410,10 @@ void    scr_if( void )
     g_scan_err = false;
 
     firstcondition = true;              // first 2 terms to compare
-    p = scan_start;
+    p = scandata.s;
     g_tok_start = NULL;
 
-    process_late_subst(scan_start);
+    process_late_subst(scandata.s);
 
     if( *(p + strlen(p) - 1) == CONT_char ) {  // remove trailing continue character
         *(p + strlen(p) - 1) = '\0';
@@ -471,35 +470,35 @@ void    scr_if( void )
             cb->if_flags[cb->if_level].iftrue = false;
         }
 
-        SkipSpaces( scan_start );
+        SkipSpaces( scandata.s );
 
 /*
  * test logical condition if not line end
  *         .if a = b or c GT d
  *                   ^^
  */
-        if( *scan_start ) {
-            if( *scan_start == SCR_char ) {
+        if( *scandata.s != '\0' ) {
+            if( *scandata.s == SCR_char ) {
                 break;                  // .xx can't be logical operator
             }
-            if( *(scan_start + 1) == ' ' ) {// single char + blank
-                if( *scan_start  == '&' ) {
+            if( *(scandata.s + 1) == ' ' ) {// single char + blank
+                if( *scandata.s  == '&' ) {
                     logical = AND;
-                    scan_start += 2;
+                    scandata.s += 2;
                     continue;           // do next conditions
-                } else if( *scan_start == '|' ) {
+                } else if( *scandata.s == '|' ) {
                     logical = OR;
-                    scan_start += 2;
+                    scandata.s += 2;
                     continue;           // do next conditions
                 }
             } else {
-                if( !strnicmp( "and ", scan_start, 4 ) ) {
+                if( !strnicmp( "and ", scandata.s, 4 ) ) {
                     logical = AND;
-                    scan_start += 4;
+                    scandata.s += 4;
                     continue;           // do next conditions
-                } else if( !strnicmp( "or ", scan_start, 3 ) ) {
+                } else if( !strnicmp( "or ", scandata.s, 3 ) ) {
                         logical = OR;
-                        scan_start += 3;
+                        scandata.s += 3;
                         continue;       // do next conditions
                 }
             }
@@ -537,13 +536,13 @@ void    scr_if( void )
 #endif
     }
 
-    if( *scan_start ) {                 // rest of line is not empty
-        split_input( buff2, scan_start, input_cbs->fmflags );   // split and process next
+    if( *scandata.s != '\0' ) {             // rest of line is not empty
+        split_input( buff2, scandata.s, input_cbs->fmflags );   // split and process next
         if( cb->if_flags[cb->if_level].iffalse ) {  // condition failed
-            ProcFlags.pre_fsp = false;       // cancel fsp
+            ProcFlags.pre_fsp = false;      // cancel fsp
         }
     }
-    scan_restart = scan_stop;
+    scan_restart = scandata.e;
     return;
 }
 
@@ -604,12 +603,12 @@ void    scr_th( void )
         show_ifcb( "then", cb );
     }
 
-    SkipSpaces( scan_start );
+    SkipSpaces( scandata.s );
 
-    if( *scan_start ) {                 // rest of line is not empty
-        split_input( buff2, scan_start, input_cbs->fmflags );   // split and process next
+    if( *scandata.s != '\0' ) {                 // rest of line is not empty
+        split_input( buff2, scandata.s, input_cbs->fmflags );   // split and process next
     }
-    scan_restart = scan_stop;
+    scan_restart = scandata.e;
     return;
 }
 
@@ -661,12 +660,12 @@ void    scr_el( void )
         show_ifcb( "else", cb );
     }
 
-    SkipSpaces( scan_start );
+    SkipSpaces( scandata.s );
 
-    if( *scan_start ) {                 // rest of line is not empty
-        split_input( buff2, scan_start, input_cbs->fmflags );   // split and process next
+    if( *scandata.s != '\0' ) {                 // rest of line is not empty
+        split_input( buff2, scandata.s, input_cbs->fmflags );   // split and process next
     }
-    scan_restart = scan_stop;
+    scan_restart = scandata.e;
     return;
 }
 
@@ -710,7 +709,7 @@ void    scr_do( void )
         if( (input_cbs->fmflags & II_research) && GlobalFlags.firstpass ) {
             show_ifcb( "dobegin", cb );
         }
-        scan_restart = scan_stop;
+        scan_restart = scandata.e;
         return;
     } else {
         if( strnicmp( "end", g_tok_start, 3 ) == 0 ) {
@@ -726,7 +725,7 @@ void    scr_do( void )
                         GlobalFlags.firstpass ) {
                         show_ifcb( "doend", cb );
                     }
-                    scan_restart = scan_stop;
+                    scan_restart = scandata.e;
                     return;
                 }
 
@@ -757,7 +756,7 @@ void    scr_do( void )
     if( (input_cbs->fmflags & II_research) && GlobalFlags.firstpass ) {
         show_ifcb( "do xx", cb );
     }
-    scan_restart = scan_stop;
+    scan_restart = scandata.e;
     return;
 }
 

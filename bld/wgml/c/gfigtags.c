@@ -42,7 +42,7 @@ static  bool            figcap_done;            // FIGCAP done for current FIG
 static  bool            page_width;             // FIG flag used by eFIG
 static  bool            splitting;              // FIG is being split
 static  bool            t_page_width    = false;// FIG will actually go into page_width section
-static  char            id[ID_LEN];             // FIG attribute used by eFIG
+static  char            figrefid[REFID_LEN + 1];// FIG attribute used by eFIG
 static  def_frame       frame;                  // FIG attribute used by eFIG
 static  group_type      sav_group_type;         // save prior group type
 static  ju_enum         justify_save;           // for ProcFlags.justify
@@ -393,11 +393,13 @@ void gml_fig( const gmltag * entry )
 {
     bool            id_seen     = false;
     bool            width_seen  = false;
-    char        *   p;
-    char        *   pa;
-    ref_entry   *   cur_ref     = NULL;
+    char            *p;
+    char            *pa;
+    ref_entry       *cur_ref     = NULL;
     su              cur_su;
     uint32_t        max_width;
+    char            attname[TAG_ATT_NAME_LENGTH + 1];
+    att_val_type    attr_val;
 
     (void)entry;
 
@@ -411,9 +413,9 @@ void gml_fig( const gmltag * entry )
     g_keep_nest( "Figure" );            // catch nesting errors
 
     figcap_done = false;                // reset for this FIG
-    id[0] = '\0';
+    *figrefid = '\0';
     page_width = false;
-    p = scan_start;
+    p = scandata.s;
     depth = 0;                          // default value; depth is space reserved for some other item
     frame.type = layout_work.fig.default_frame.type;
     if( frame.type == char_frame ) {
@@ -429,44 +431,41 @@ void gml_fig( const gmltag * entry )
         /* already at tag end */
     } else {
         for( ;; ) {
-            pa = get_att_start( p );
-            p = att_start;
+            p = get_att_name( p, &pa, attname );
             if( ProcFlags.reprocess_line ) {
                 break;
             }
-            if( strnicmp( "depth", p, 5 ) == 0 ) {
-                p += 5;
-                p = get_att_value( p );
-                if( val_start == NULL ) {
+            if( strcmp( "depth", attname ) == 0 ) {
+                p = get_att_value( p, &attr_val );
+                if( attr_val.name == NULL ) {
                     break;
                 }
-                if( att_val_to_su( &cur_su, true ) ) {
+                if( att_val_to_su( &cur_su, true, &attr_val, false ) ) {
                     break;
                 }
                 depth = conv_vert_unit( &cur_su, g_text_spacing, g_curr_font );
                 if( ProcFlags.tag_end_found ) {
                     break;
                 }
-            } else if( strnicmp( "frame", p, 5 ) == 0 ) {
-                p += 5;
-                p = get_att_value( p );
-                if( val_start == NULL ) {
+            } else if( strcmp( "frame", attname ) == 0 ) {
+                p = get_att_value( p, &attr_val );
+                if( attr_val.name == NULL ) {
                     break;
                 }
-                if( strnicmp( "none", val_start, 4 ) == 0 ) {
+                if( strcmp( "none", attr_val.specval ) == 0 ) {
                     frame.type = none;
-                } else if( strnicmp( "box", val_start, 3 ) == 0 ) {
+                } else if( strcmp( "box", attr_val.specval ) == 0 ) {
                     frame.type = box_frame;
-                } else if( strnicmp( "rule", val_start, 4 ) == 0 ) {
+                } else if( strcmp( "rule", attr_val.specval ) == 0 ) {
                     frame.type = rule_frame;
                 } else {
                     frame.type = char_frame;
                 }
                 if( frame.type == char_frame ) {
-                    if( val_len > STRBLK_SIZE )
-                        val_len = STRBLK_SIZE;
-                    strncpy( frame.string, val_start, val_len );
-                    frame.string[val_len] = '\0';
+                    if( attr_val.len > STRBLK_SIZE )
+                        attr_val.len = STRBLK_SIZE;
+                    strncpy( frame.string, attr_val.name, attr_val.len );
+                    frame.string[attr_val.len] = '\0';
                     if( frame.string[0] == '\0' ) {
                         frame.type = none;      // treat null string as "none"
                     }
@@ -476,53 +475,50 @@ void gml_fig( const gmltag * entry )
                 if( ProcFlags.tag_end_found ) {
                     break;
                 }
-            } else if( strnicmp( "id", p, 2 ) == 0 ) {
-                p += 2;
-                p = get_refid_value( p, id );
-                if( val_start == NULL ) {
+            } else if( strcmp( "id", attname ) == 0 ) {
+                p = get_refid_value( p, &attr_val, figrefid );
+                if( attr_val.name == NULL ) {
                     break;
                 }
                 id_seen = true;             // valid id attribute found
                 if( ProcFlags.tag_end_found ) {
                     break;
                 }
-            } else if( strnicmp( "place", p, 5 ) == 0 ) {
-                p += 5;
-                p = get_att_value( p );
-                if( val_start == NULL ) {
+            } else if( strcmp( "place", attname ) == 0 ) {
+                p = get_att_value( p, &attr_val );
+                if( attr_val.name == NULL ) {
                     break;
                 }
-                if( strnicmp( "bottom", val_start, 5 ) == 0 ) {
+                if( strcmp( "bottom", attr_val.specval ) == 0 ) {
                     place = bottom_place;
-                } else if( strnicmp( "inline", val_start, 6 ) == 0 ) {
+                } else if( strcmp( "inline", attr_val.specval ) == 0 ) {
                     place = inline_place;
-                } else if( strnicmp( "top", val_start, 3 ) == 0 ) {
+                } else if( strcmp( "top", attr_val.specval ) == 0 ) {
                     place = top_place;
                 } else {
-                    xx_line_err_c( err_inv_att_val, val_start );
+                    xx_line_err_c( err_inv_att_val, attr_val.name );
                 }
                 if( ProcFlags.tag_end_found ) {
                     break;
                 }
-            } else if( strnicmp( "width", p, 5 ) == 0 ) {
-                p += 5;
-                p = get_att_value( p );
-                if( val_start == NULL ) {
+            } else if( strcmp( "width", attname ) == 0 ) {
+                p = get_att_value( p, &attr_val );
+                if( attr_val.name == NULL ) {
                     break;
                 }
-                if( strnicmp( "page", val_start, 4 ) == 0 ) {
+                if( strcmp( "page", attr_val.specval ) == 0 ) {
                     // this will be used to set t_page_width and width below
                     page_width = true;
-                } else if( strnicmp( "column", val_start, 6 ) == 0 ) {
+                } else if( strcmp( "column", attr_val.specval ) == 0 ) {
                     // default value is the correct value to use
                 } else {    // value actually specifies the width
-                    pa = val_start;
-                    if( att_val_to_su( &cur_su, true ) ) {
+                    pa = attr_val.name;
+                    if( att_val_to_su( &cur_su, true, &attr_val, false ) ) {
                         break;
                     }
                     width = conv_hor_unit( &cur_su, g_curr_font );
                     if( width == 0 ) {
-                        xx_line_err_c( err_inv_width_fig_1, val_start );
+                        xx_line_err_c( err_inv_width_fig_1, attr_val.name );
                     }
                     width_seen = true;
                 }
@@ -580,15 +576,11 @@ void gml_fig( const gmltag * entry )
             fig_list = fig_entry;
         }
         if( id_seen ) {                 // add this entry to fig_ref_dict
-            cur_ref = find_refid( fig_ref_dict, id );
+            cur_ref = find_refid( fig_ref_dict, figrefid );
             if( cur_ref == NULL ) {             // new entry
-                cur_ref = (ref_entry *)mem_alloc( sizeof( ref_entry ) ) ;
-                init_ref_entry( cur_ref, id );
-                cur_ref->flags = rf_ffh;
-                cur_ref->u.ffh.entry = fig_entry;
-                add_ref_entry( &fig_ref_dict, cur_ref );
+                cur_ref = add_new_refid( &fig_ref_dict, figrefid, fig_entry );
             } else {                // duplicate id
-                dup_id_err( cur_ref->id, "figure" );
+                dup_refid_err( cur_ref->refid, "figure" );
             }
         }
     }
@@ -624,7 +616,7 @@ void gml_fig( const gmltag * entry )
 
     if( width_seen ) {                  // width entered will be used
         if( width > max_width ) {
-            xx_line_err_c( err_inv_width_fig_3, val_start );
+            xx_line_err_c( err_inv_width_fig_3, attr_val.name );
         }
     } else {
         width = max_width;              // t_page.last_pane->col_width will be used
@@ -658,17 +650,17 @@ void gml_fig( const gmltag * entry )
 
     if( width > t_page.last_pane->col_width ) {
         if( (t_page.last_pane->col_count > 1) && (place != top_place) ) {
-            xx_line_err_c( err_inv_width_fig_2, val_start );
+            xx_line_err_c( err_inv_width_fig_2, attr_val.name );
         } else if( t_page.last_pane->col_count == 1 ) {
-            xx_line_err_c( err_inv_width_fig_3, val_start );
+            xx_line_err_c( err_inv_width_fig_3, attr_val.name );
         }
     }
 
     if( (t_page.cur_left >= t_page.max_width) || (t_page.cur_left >= g_page_right_org) ) {
         if( frame.type == none ) {
-            xx_line_err_c( err_inv_margins_1, val_start );
+            xx_line_err_c( err_inv_margins_1, attr_val.name );
         } else {
-            xx_line_err_c( err_inv_margins_2, val_start );
+            xx_line_err_c( err_inv_margins_2, attr_val.name );
         }
     }
 
@@ -681,9 +673,9 @@ void gml_fig( const gmltag * entry )
 
     if( t_page.max_width < right_inset ) {
         if( frame.type == none ) {
-            xx_line_err_c( err_inv_margins_1, val_start );
+            xx_line_err_c( err_inv_margins_1, attr_val.name );
         } else {
-            xx_line_err_c( err_inv_margins_2, val_start );
+            xx_line_err_c( err_inv_margins_2, attr_val.name );
         }
     } else {
         t_page.max_width -= right_inset;
@@ -698,7 +690,7 @@ void gml_fig( const gmltag * entry )
             process_text( p, g_curr_font);  // if text follows
         }
     }
-    scan_start = scan_stop;
+    scandata.s = scandata.e;
     return;
 }
 
@@ -731,7 +723,7 @@ void gml_efig( const gmltag * entry )
 
     /* Done here because needed for the minimum post_skip */
 
-    p = scan_start;
+    p = scandata.s;
     SkipDot( p );                       // possible tag end
 
     if( cur_group_type != gt_fig ) {    // no preceding :FIG tag
@@ -780,7 +772,7 @@ void gml_efig( const gmltag * entry )
 
     ProcFlags.skips_valid = false;      // activate post_skip for next element
 
-    if( (strlen( id ) > 0) && !figcap_done ) {  // FIG id requires FIGCAP
+    if( (*figrefid != '\0') && !figcap_done ) {  // FIG id requires FIGCAP
         xx_err( err_fig_id_cap );
     }
 
@@ -1033,8 +1025,8 @@ void gml_efig( const gmltag * entry )
             if( page_pred != fig_entry->pageno ) {  // page number changed
                 fig_entry->pageno = page_pred;
                 if( GlobalFlags.lastpass ) {        // last pass only
-                    if( strlen( id ) > 0 ) {     // FIG id exists
-                        fig_fwd_refs = init_fwd_ref( fig_fwd_refs, id );
+                    if( *figrefid != '\0' ) {     // FIG id exists
+                        fig_fwd_refs = init_fwd_ref( fig_fwd_refs, figrefid );
                     }
                     ProcFlags.new_pagenr = true;
                 }
@@ -1078,7 +1070,7 @@ void gml_efig( const gmltag * entry )
         fig_entry = fig_entry->next;    // get to next FIG
     }
     g_text_spacing = spacing_save;
-    scan_start = scan_stop;
+    scandata.s = scandata.e;
     return;
 }
 
@@ -1109,7 +1101,7 @@ void gml_figcap( const gmltag * entry )
     rs_loc = figcap_tag;
 
     g_scan_err = false;
-    p = scan_start;
+    p = scandata.s;
 
     g_curr_font = layout_work.figcap.string_font;
     set_skip_vars( NULL, &layout_work.figcap.pre_lines, NULL, g_text_spacing, g_curr_font );
@@ -1173,7 +1165,7 @@ void gml_figcap( const gmltag * entry )
     fig_entry->flags |= ffh_figcap;         // mark as FIGCAP present, with or without text
     figcap_done = true;
 
-    scan_start = scan_stop;
+    scandata.s = scandata.e;
     return;
 }
 
@@ -1197,7 +1189,7 @@ void gml_figdesc( const gmltag * entry )
     rs_loc = 0;
 
     g_scan_err = false;
-    p = scan_start;
+    p = scandata.s;
 
     if( figcap_done ) {                         // FIGCAP was present
         post_space = 0;
@@ -1226,7 +1218,7 @@ void gml_figdesc( const gmltag * entry )
             scr_process_break();
         }
     }
-    scan_start = scan_stop;
+    scandata.s = scandata.e;
     return;
 }
 

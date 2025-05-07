@@ -47,8 +47,8 @@ static void sksp_common( void )
     bool            a_seen          = false;    // records use of operand A (or ABS)
     bool            c_seen          = false;    // records use of operand C (or COND)
     bool            scanerr         = false;
-    char        *   p;
-    char        *   pa;
+    const char      *p;
+    const char      *pa;
     size_t          len;
     su              spskwork;
     text_space      text_spacing;
@@ -56,7 +56,7 @@ static void sksp_common( void )
     spskwork.su_u = SU_undefined;
     text_spacing = g_text_spacing;          // set spacing to default
 
-    p = scan_start;
+    p = scandata.s;
     if( *p != '\0' ) {
         SkipSpaces( p );
         pa = p;
@@ -191,7 +191,7 @@ void    scr_sk( void )
         ProcFlags.sk_2nd = true;
     }
 
-    scan_restart = scan_stop;
+    scan_restart = scandata.e;
     return;
 }
 
@@ -220,7 +220,7 @@ void    scr_sp( void )
         g_space = vspace;
     }
 
-    scan_restart = scan_stop;
+    scan_restart = scandata.e;
     return;
 }
 

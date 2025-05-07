@@ -580,14 +580,14 @@ void show_include_stack( void )
     out_msg( "\n" );
     while( ip != NULL ) {
         switch( ip->fmflags & II_input ) {
-        case    II_file:
+        case II_file:
             sprintf( linestr, "%d", ip->s.f->lineno );
             g_info( err_inf_line_file, linestr, ip->s.f->filename );
             break;
-        case    II_tag :
+        case II_tag :
             g_info( err_inf_tag, ip->s.m->tag->name );
             // fallthrough
-        case    II_macro :
+        case II_macro :
             sprintf( linestr, "%d", ip->s.m->lineno );
             sprintf( linemac, "%d", ip->s.m->mac->lineno );
             g_info( err_inf_mac_def, linestr, ip->s.m->mac->name,

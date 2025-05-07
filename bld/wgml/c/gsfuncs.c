@@ -138,7 +138,7 @@ static  char    * find_end_of_parm( char * pchar, char * pend )
                     test_for_quote = false;
                 } else {
                     switch( c ) {
-                    case    '(' :
+                    case '(' :
                         paren_level += 1;
                         test_for_quote = true;
                         if( paren_level < MAX_PAREN ) {
@@ -148,7 +148,7 @@ static  char    * find_end_of_parm( char * pchar, char * pend )
                             finished = true;// error msg ??? TBD
                         }
                         break;
-                    case    ')' :
+                    case ')' :
                         paren_level--;
                         if( paren_level <= 0 ) {
                             finished = true;
@@ -160,7 +160,7 @@ static  char    * find_end_of_parm( char * pchar, char * pend )
                             }
                         }
                         break;
-                    case    ',' :
+                    case ',' :
                         if( paren_level == 0 ) {
                             finished = true;
                         }

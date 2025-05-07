@@ -216,7 +216,7 @@ static  condcode    scan_att_optionsA( gaflags * att_flags )
         }
         p = g_tok_start;
         switch( my_tolower( *p ) ) {
-        case   'u' :
+        case 'u' :
             if( (arg_flen > 1) && (arg_flen < 11)
                 && !strnicmp( "UPpercase", p, arg_flen ) ) {
 
@@ -225,7 +225,7 @@ static  condcode    scan_att_optionsA( gaflags * att_flags )
                 cc = neg;               // perhaps option B
             }
             break;
-        case   'r' :
+        case 'r' :
             if( (arg_flen > 2) && (arg_flen < 9)
                 && !strnicmp( "REQuired", p, arg_flen ) ) {
 
@@ -234,7 +234,7 @@ static  condcode    scan_att_optionsA( gaflags * att_flags )
                 cc = neg;               // perhaps option B
             }
             break;
-        case   'o' :
+        case 'o' :
             if( !strnicmp( "OFF", p, arg_flen ) ) {
 
                 *att_flags |= att_off;
@@ -280,7 +280,7 @@ static  condcode    scan_att_optionsB( gavalflags * val_flags, condcode cca,
     cc = pos;
 
     switch( my_tolower( *g_tok_start ) ) {
-    case   'a' :
+    case 'a' :
         if( !strnicmp( "ANY", g_tok_start, arg_flen ) ) {
 
             *val_flags |= val_any;
@@ -315,15 +315,14 @@ static  condcode    scan_att_optionsB( gavalflags * val_flags, condcode cca,
             }
         }
         break;
-    case   'r' :
+    case 'r' :
         if( (arg_flen > 2) && (arg_flen < 6)
             && !strnicmp( "RANge", g_tok_start, arg_flen ) ) {
 
             *val_flags |= val_range;
             *att_flags |= att_range;
 
-            gn.arg.s = scan_start;
-            gn.arg.e = scan_stop;
+            gn.arg = scandata;
             gn.ignore_blanks = false;
             ranges[2] = INT_MIN;
             ranges[3] = INT_MIN;
@@ -340,7 +339,7 @@ static  condcode    scan_att_optionsB( gavalflags * val_flags, condcode cca,
                 }
                 ranges[k] = gn.result;
             }
-            scan_start = gn.arg.s;
+            scandata.s = gn.arg.s;
             if( (k < 2) || (ranges[0] > ranges[1]) ) {// need 2 or more values
                 xx_err( err_att_range_inv );// ... second <= first
                 cc = neg;
@@ -374,13 +373,12 @@ static  condcode    scan_att_optionsB( gavalflags * val_flags, condcode cca,
             }
         }
         break;
-    case   'l' :
+    case 'l' :
         if( (arg_flen > 2) && (arg_flen < 7)
             && !strnicmp( "LENgth", g_tok_start, arg_flen ) ) {
 
             *val_flags |= val_length;
-            gn.arg.s = scan_start;
-            gn.arg.e = scan_stop;
+            gn.arg = scandata;
             gn.ignore_blanks = false;
             cc = getnum( &gn );
             if( cc == notnum || cc == omit ) {
@@ -388,14 +386,14 @@ static  condcode    scan_att_optionsB( gavalflags * val_flags, condcode cca,
                 cc = neg;
                 return( cc );
             } else {
-                scan_start = gn.arg.s;
+                scandata.s = gn.arg.s;
                 ranges[0] = gn.result;
             }
         } else {
             cc = neg;
         }
         break;
-    case   'v' :
+    case 'v' :
         if( (arg_flen > 2) && (arg_flen < 6)
             && !strnicmp( "VALue", g_tok_start, arg_flen ) ) {
 
@@ -489,7 +487,7 @@ void    scr_ga( void )
         xx_err_c( err_missing_name, "" );
     }
     if( g_tag_entry == NULL ) {         // error during previous .gt
-        scan_restart = scan_stop;       // ignore .ga
+        scan_restart = scandata.e;       // ignore .ga
         return;
     }
 
@@ -660,6 +658,6 @@ void    scr_ga( void )
     } else if( val_flags & val_valptr ) {
         gaval->a.valptr = valptr;
     }
-    scan_restart = scan_stop;
+    scan_restart = scandata.e;
     return;
 }

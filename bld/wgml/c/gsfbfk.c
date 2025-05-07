@@ -246,13 +246,14 @@ static doc_el_group * do_split( void )
 /* get the parameters for FB and FK                                       */
 /**************************************************************************/
 
-static char * get_params( const char * scw_name ) {
-    char            *   p;
-    char            *   pa;
+static char *get_params( const char *scw_name )
+{
+    const char          *p;
+    const char          *pa;
     size_t              len;
     su                  fbk_su;
 
-    p = scan_start;
+    p = scandata.s;
     SkipSpaces( p );
 
     if( *p != '\0' ) {          // at least one potential operand
@@ -289,7 +290,7 @@ static char * get_params( const char * scw_name ) {
             }
         }
     }
-    return( p );
+    return( (char *)p );
 }
 
 /**************************************************************************/
@@ -396,7 +397,7 @@ void scr_fb( void )
         break;
     }
 
-    scan_restart = scan_stop;
+    scan_restart = scandata.e;
     return;
 }
 
@@ -501,7 +502,7 @@ void scr_fk( void )
         break;
     }
 
-    scan_restart = scan_stop;
+    scan_restart = scandata.e;
     return;
 }
 

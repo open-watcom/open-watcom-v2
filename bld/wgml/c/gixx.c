@@ -54,13 +54,12 @@ static void gml_ixxx_common( const gmltag * entry, int hx_lvl )
     bool            seeidseen   = false;    // used in processing IHx
     bool            seeseen     = false;    // needed to catch empty string values
     char            hxstring[TAG_NAME_LENGTH + 1 + 1];
-    char            id[ID_LEN];             // holds attribute id value
-    char            refid[ID_LEN];          // holds attribute refid value
-    char            seeid[ID_LEN];          // holds attribute seeid value
+    char            ixrefid[REFID_LEN + 1]; // holds attribute ixrefid value
+    char            refrefid[REFID_LEN + 1];// holds attribute refrefid value
+    char            seerefid[REFID_LEN + 1];// holds attribute seerefid value
     char            lvlc;
     char        *   p;
     char        *   pa;
-    char        *   pb;
     char        *   pgtext      = NULL;     // val_start for pg = <string> value
     char        *   printtxt    = NULL;     // val_start for print = <string> value
     char        *   seetext     = NULL;     // val_start for see = <string> value
@@ -78,6 +77,8 @@ static void gml_ixxx_common( const gmltag * entry, int hx_lvl )
     size_t          printtxtlen     = 0;    // val_len for print = <string> value
     size_t          seetextlen      = 0;    // val_len for see = <string> value
     size_t          txtlen;                 // val_len for entry value
+    char            attname[TAG_ATT_NAME_LENGTH + 1];
+    att_val_type    attr_val;
 
     if( input_cbs->fmflags & II_tag_mac ) {   // ensure next line is valid
         input_cbs->s.m->ix_seen = true;     // records use of tag, even if indexing is off
@@ -85,7 +86,7 @@ static void gml_ixxx_common( const gmltag * entry, int hx_lvl )
 
     if( !GlobalFlags.index ) {          // index option not active
         ProcFlags.index_tag_cw_seen = true;
-        scan_start = scan_stop;         // ignore tag
+        scandata.s = scandata.e;         // ignore tag
         return;
     }
 
@@ -97,7 +98,7 @@ static void gml_ixxx_common( const gmltag * entry, int hx_lvl )
 
     pgvalue = pgnone;
 
-    p = scan_start;
+    p = scandata.s;
     ProcFlags.tag_end_found = false;
 
     /***********************************************************************/
@@ -123,17 +124,14 @@ static void gml_ixxx_common( const gmltag * entry, int hx_lvl )
         /* already at tag end */
     } else {
         for( ;; ) {
-            pa = get_att_start( p );
-            p = att_start;
-            pb = p;
+            p = get_att_name( p, &pa, attname );
             if( ProcFlags.reprocess_line ) {
                 break;
             }
 
-            if( strnicmp( "id", p, 2 ) == 0 ) {
-                p += 2;
-                p = get_refid_value( p, id );
-                if( val_start == NULL ) {
+            if( strcmp( "id", attname ) == 0 ) {
+                p = get_refid_value( p, &attr_val, ixrefid );
+                if( attr_val.name == NULL ) {
                     break;
                 }
                 if( hx_lvl > 0 ) {      // :Ix :IHx
@@ -145,49 +143,46 @@ static void gml_ixxx_common( const gmltag * entry, int hx_lvl )
                 if( ProcFlags.tag_end_found ) {
                     break;
                 }
-            } else if( strnicmp( "refid", p, 5 ) == 0 ) {
-                p += 5;
-                p = get_refid_value( p, refid );
-                if( val_start == NULL ) {
+            } else if( strcmp( "refid", attname ) == 0 ) {
+                p = get_refid_value( p, &attr_val, refrefid );
+                if( attr_val.name == NULL ) {
                     break;
                 }
                 if( (hx_lvl == 0) || ((hx_lvl > 1) && (hxstring[2] == lvlc)) ) {
                     refidseen = true;   // refid attribute found
-                    refwk = find_refid( ix_ref_dict, refid );
+                    refwk = find_refid( ix_ref_dict, refrefid );
                     if( refwk == NULL ) {   // refid not in dict
                         if( GlobalFlags.lastpass ) {// this is an error
-                            xx_line_err_cc( err_id_undefined, refid, val_start );
+                            xx_line_err_cc( err_id_undefined, refrefid, attr_val.name );
                         }
                     }
                 } else {                // not allowed for :I1 and :IHx
-                    xx_line_err_cc( err_ref_not_allowed, hxstring, val_start );
+                    xx_line_err_cc( err_ref_not_allowed, hxstring, attr_val.name );
                 }
                 if( ProcFlags.tag_end_found ) {
                     break;
                 }
-            } else if( strnicmp( "pg", p, 2 ) == 0 ) {
-                p += 2;
-                p = get_att_value( p );
-
-                scan_start = p;
-                if( val_start == NULL ) {
+            } else if( strcmp( "pg", attname ) == 0 ) {
+                p = get_att_value( p, &attr_val );
+                scandata.s = p;
+                if( attr_val.name == NULL ) {
                     break;
                 }
                 if( (hx_lvl == 0) || (hxstring[2] == lvlc) ) {
                     pgseen = true;
                     if( quote_char == '\0' ) {  // value not quoted
-                        if( strnicmp( "start", val_start, 5 ) == 0 ) {
+                        if( strcmp( "start", attr_val.specval ) == 0 ) {
                             pgvalue = pgstart;
-                        } else if( strnicmp( "end", val_start, 3 ) == 0 ) {
+                        } else if( strcmp( "end", attr_val.specval ) == 0 ) {
                             pgvalue = pgend;
-                        } else if( strnicmp( "major", val_start, 5 ) == 0 ) {
+                        } else if( strcmp( "major", attr_val.specval ) == 0 ) {
                             pgvalue = pgmajor;
                         }
                     }
                     if( pgvalue == pgnone ) {                // arbitrary string value
                         pgvalue = pgstring;
-                        pgtext = mem_tokdup( val_start, val_len );  // use text instead of pageno
-                        pgtextlen = val_len;
+                        pgtext = mem_tokdup( attr_val.name, attr_val.len );  // use text instead of pageno
+                        pgtextlen = attr_val.len;
                     }
                 } else {                        // end-of-tag for IHx
                     p = pa;                     // restore spaces before text
@@ -196,18 +191,16 @@ static void gml_ixxx_common( const gmltag * entry, int hx_lvl )
                 if( ProcFlags.tag_end_found ) {
                     break;
                 }
-            } else if( strnicmp( "print", p, 5 ) == 0 ) {
-                p += 5;
-                p = get_att_value( p );
-
-                scan_start = p;
-                if( val_start == NULL ) {
+            } else if( strcmp( "print", attname ) == 0 ) {
+                p = get_att_value( p, &attr_val );
+                scandata.s = p;
+                if( attr_val.name == NULL ) {
                     break;
                 }
                 if( hxstring[3] == lvlc ) {     // IHx only
                     printseen = true;
-                    printtxt = mem_tokdup( val_start, val_len );
-                    printtxtlen = val_len;
+                    printtxt = mem_tokdup( attr_val.name, attr_val.len );
+                    printtxtlen = attr_val.len;
                 } else {                        // end-of-tag for Ix, IREF
                     p = pa;                     // restore spaces before text
                     break;
@@ -215,18 +208,17 @@ static void gml_ixxx_common( const gmltag * entry, int hx_lvl )
                 if( ProcFlags.tag_end_found ) {
                     break;
                 }
-            } else if( strnicmp( "seeid", p, 5 ) == 0 ) {
-                p += 5;
-                p = get_refid_value( p, seeid );
-                if( val_start == NULL ) {
+            } else if( strcmp( "seeid", attname ) == 0 ) {
+                p = get_refid_value( p, &attr_val, seerefid );
+                if( attr_val.name == NULL ) {
                     break;
                 }
                 if( (hx_lvl == 0) || (hxstring[3] == lvlc) ) {  // IREF IHx
                     seeidseen = true;
-                    seeidwk = find_refid( ix_ref_dict, seeid );
+                    seeidwk = find_refid( ix_ref_dict, seerefid );
                     if( seeidwk == NULL ) {             // not in dict, this is an error
                         if( GlobalFlags.lastpass ) {    // during lastpass
-                            xx_line_err_cc( err_id_undefined, seeid, val_start );
+                            xx_line_err_cc( err_id_undefined, seerefid, attr_val.name );
                         }
                     }
                 } else {                        // end-of-tag for Ix
@@ -236,18 +228,16 @@ static void gml_ixxx_common( const gmltag * entry, int hx_lvl )
                 if( ProcFlags.tag_end_found ) {
                     break;
                 }
-            } else if( strnicmp( "see", p, 3 ) == 0 ) {
-                p += 3;
-                p = get_att_value( p );
-
-                scan_start = p;
-                if( val_start == NULL ) {
+            } else if( strcmp( "see", attname ) == 0 ) {
+                p = get_att_value( p, &attr_val );
+                scandata.s = p;
+                if( attr_val.name == NULL ) {
                     break;
                 }
                 if( hx_lvl == 0 || (hxstring[3] == lvlc) ) {// :IREF :IHx
                     seeseen = true;
-                    seetext = mem_tokdup( val_start, val_len );
-                    seetextlen = val_len;
+                    seetext = mem_tokdup( attr_val.name, attr_val.len );
+                    seetextlen = attr_val.len;
                 } else {                        // end-of-tag for Ix
                     p = pa;                     // restore spaces before text
                     break;
@@ -255,11 +245,10 @@ static void gml_ixxx_common( const gmltag * entry, int hx_lvl )
                 if( ProcFlags.tag_end_found ) {
                     break;
                 }
-            } else if( strnicmp( "ix", p, 2 ) == 0 ) {
-                p += 2;
-                p = get_att_value( p );
-                gn.arg.s = val_start;
-                gn.arg.e = val_start + val_len;
+            } else if( strcmp( "ix", attname ) == 0 ) {
+                p = get_att_value( p, &attr_val );
+                gn.arg.s = attr_val.name;
+                gn.arg.e = attr_val.name + attr_val.len;
                 gn.ignore_blanks = false;
                 cc = getnum( &gn );
 
@@ -270,7 +259,7 @@ static void gml_ixxx_common( const gmltag * entry, int hx_lvl )
                     xx_warn_c( wng_unsupp_att, "ix" );
 
                     if( (gn.result < 1) || (gn.result > 9) ) { // out of range
-                        xx_line_err_c( err_struct_range, val_start );
+                        xx_line_err_c( err_struct_range, attr_val.name );
                     }
                 }
                 if( ProcFlags.tag_end_found ) {
@@ -464,22 +453,17 @@ static void gml_ixxx_common( const gmltag * entry, int hx_lvl )
 
     if( idseen ) {                 // ID specified create reference entry
         if( GlobalFlags.firstpass || GlobalFlags.lastpass ) {
-            refwork = find_refid( ix_ref_dict, id );
+            refwork = find_refid( ix_ref_dict, ixrefid );
             if( GlobalFlags.firstpass ) {           // first pass: build dict
                 if( refwork == NULL ) {             // new entry
-                    refwork = (ref_entry *)mem_alloc( sizeof( ref_entry ) ) ;
-                    init_ref_entry( refwork, id );
-                    refwork->flags = rf_ix;
-                    refwork->u.ix.hblk = NULL;
-                    refwork->u.ix.base = NULL;
-                    add_ref_entry( &ix_ref_dict, refwork );
+                    refwork = add_new_refid( &ix_ref_dict, ixrefid, NULL );
                 } else {                            // duplicate id
-                    dup_id_err( refwork->id, "figure" );
+                    dup_refid_err( refwork->refid, "figure" );
                 }
             }
             if( GlobalFlags.lastpass ){         // last pass: add data
                 if( refwork == NULL ) {         // shouldn't happen
-                    xx_err_c( err_id_undefined, id );
+                    xx_err_c( err_id_undefined, ixrefid );
                 } else {
                     refwork->u.ix.hblk = ixhwk;
                     refwork->u.ix.base = ixhtag[hx_lvl - 1];
@@ -500,7 +484,7 @@ static void gml_ixxx_common( const gmltag * entry, int hx_lvl )
     ProcFlags.null_value = false;
     ProcFlags.post_ix = true;           // records use of index tag only if indexing is on
 
-    scan_start = scan_stop;
+    scandata.s = scandata.e;
     return;
 }
 

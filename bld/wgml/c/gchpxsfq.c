@@ -113,7 +113,7 @@ static void gml_inline_common( const gmltag * entry, font_number font, e_tags t 
     }
 
     g_scan_err = false;
-    p = scan_start;
+    p = scandata.s;
     SkipDot( p );                       // over '.'
     if( *p != '\0' ) {
         process_text( p, g_curr_font );
@@ -127,7 +127,7 @@ static void gml_inline_common( const gmltag * entry, font_number font, e_tags t 
             && ((input_cbs->fmflags & II_file) || (input_cbs->fmflags & II_macro)) ) {
         scr_process_break();            // ensure line is output
     }
-    scan_start = scan_stop;
+    scandata.s = scandata.e;
     return;
 }
 
@@ -221,7 +221,7 @@ static void gml_e_inlne_common( const gmltag * entry, e_tags t )
         }
 
         g_scan_err = false;
-        p = scan_start;
+        p = scandata.s;
         SkipDot( p );                           // over '.'
         input_cbs->fmflags &= ~II_sol;
         if( *p != '\0' ) {
@@ -232,7 +232,7 @@ static void gml_e_inlne_common( const gmltag * entry, e_tags t )
             scr_process_break();        // ensure line is output
         }
     }
-    scan_start = scan_stop;
+    scandata.s = scandata.e;
 }
 
 
@@ -308,35 +308,35 @@ void gml_esf( const gmltag * entry )
 void gml_sf( const gmltag * entry )
 {
     bool            font_seen   =   false;
-    char        *   p;
-    char        *   pa;
+    char            *p;
+    char            *pa;
     font_number     font;
+    char            attname[TAG_ATT_NAME_LENGTH + 1];
+    att_val_type    attr_val;
 
-    p = scan_start;
+    p = scandata.s;
     SkipSpaces( p );
     if( *p == '.' ) {
         /* already at tag end */
     } else {
-        pa = get_att_start( p );
-        p = att_start;
+        p = get_att_name( p, &pa, attname );
         if( !ProcFlags.reprocess_line ) {
-            if( strnicmp( "font", p, 4 ) == 0 ) {
-                p += 4;
-                p = get_att_value( p );
-                if( val_start != NULL ) {
-                    font = get_font_number( val_start, val_len );
+            if( strcmp( "font", attname ) == 0 ) {
+                p = get_att_value( p, &attr_val );
+                if( attr_val.name != NULL ) {
+                    font = get_font_number( attr_val.name, attr_val.len );
                     font_seen = true;
-                    scan_start = p;
+                    scandata.s = p;
                     gml_inline_common( entry, font, t_SF );
                 }
             }
         }
     }
     if( !font_seen ) {          // font is a required attribute
-        xx_line_err( err_att_missing, val_start );
+        xx_line_err( err_att_missing, scandata.s );
     }
 
-    scan_start = scan_stop;
+    scandata.s = scandata.e;
     return;
 }
 

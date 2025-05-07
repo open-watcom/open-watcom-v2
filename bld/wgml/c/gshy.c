@@ -198,7 +198,7 @@
 
 void scr_hy( void )
 {
-    scan_restart = scan_stop;
+    scan_restart = scandata.e;
     return;
 }
 

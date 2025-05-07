@@ -60,7 +60,7 @@
                                         // longer strings will be allocated
 #define NUM2STR_LENGTH      12          // int to string conversion buffer length sNNNNNNNNNN+'\0'
 
-#define ID_LEN              15          // length of refids wgml 4 gives a warning
+#define REFID_LEN           15          // length of refids wgml 4 gives a warning
                                         // for lengths > 7 but processes it
                                         // we try with truncating at 15
 
@@ -1527,7 +1527,7 @@ typedef enum {
 
 typedef struct ref_entry {
     struct ref_entry    *   next;
-    char                    id[ID_LEN+1];   // reference id
+    char                    refid[REFID_LEN + 1];   // reference id
     refflags                flags;
     union {
         struct {
@@ -1540,6 +1540,8 @@ typedef struct ref_entry {
     } u;
 } ref_entry;
 
+typedef ref_entry       *ref_dict;
+
 /***************************************************************************/
 /*  forward reference / undefined id / page change                         */
 /*   used for :FIG, :FN, :Hx, :FIGREF, :FNREF, :HDREF                      */
@@ -1547,7 +1549,7 @@ typedef struct ref_entry {
 
 typedef struct fwd_ref {
     struct fwd_ref  *   next;
-    char                id[ID_LEN+1];   // reference id
+    char                refid[REFID_LEN + 1];   // reference id
 } fwd_ref;
 
 /********************************************************************************/
@@ -1836,5 +1838,19 @@ typedef struct tag_att_val {
     uint32_t        val_len;
     bool            val_quoted;
 } tag_att_val;
+
+typedef struct att_val_type {
+    char            *name;
+    int             len;
+    char            quoted;
+    char            specval[SPECVAL_LENGTH + 1];
+} att_val_type;
+
+typedef struct lay_att_val {
+    char            *att_name;
+    int             att_len;
+    att_val_type    val;
+    char            attname[LAY_ATT_NAME_LENGTH + 1];
+} lay_att_val;
 
 #endif                                  // GTYPE_H_INCLUDED

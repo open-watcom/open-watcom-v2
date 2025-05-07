@@ -55,7 +55,7 @@ void    gml_date( const gmltag * entry )
         xx_line_err_c( err_2nd_date, buff2 );
     }
 
-    p = scan_start;
+    p = scandata.s;
     SkipDot( p );                       // over . to docnum
     SkipSpaces( p );                    // over WS to attribute
 
@@ -88,7 +88,7 @@ void    gml_date( const gmltag * entry )
     t_page.cur_left += left_indent;
     t_page.cur_width = t_page.cur_left;
     if( t_page.max_width < right_indent ) {
-        xx_line_err_c( err_page_width_too_small, val_start );
+        xx_line_err_c( err_page_width_too_small, scandata.s );
     } else {
         t_page.max_width -= right_indent;
     }
@@ -106,5 +106,5 @@ void    gml_date( const gmltag * entry )
     line_position = old_line_pos;
     g_curr_font = font_save;
     ProcFlags.date_tag_seen = true;
-    scan_start = scan_stop;
+    scandata.s = scandata.e;
 }

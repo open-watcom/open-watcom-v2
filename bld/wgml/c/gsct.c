@@ -75,7 +75,7 @@ void    scr_ct( void )
 {
     char        *   p;
 
-    p = scan_start;                     // next char after .ct
+    p = scandata.s;                     // next char after .ct
     if( is_space_tab_char( *p ) && (*p != '\0') && is_space_tab_char( *(p + 1) ) ) {
         ProcFlags.fsp = true;           // keep post_space
         if( post_space == 0 ) {         // ensure it has a non-zero value
@@ -105,7 +105,7 @@ void    scr_ct( void )
             ProcFlags.ct = true;
             if( (*p == SCR_char) ||     // script control word follows
                 (*p == GML_char) ) {    // GML tag follows
-                split_input( scan_start, p, input_cbs->fmflags );   // fixes problem with macro
+                split_input( scandata.s, p, input_cbs->fmflags );   // fixes problem with macro
                 input_cbs->hidden_head->fm_symbol = input_cbs->fm_symbol;
                 input_cbs->hidden_head->sym_space = input_cbs->sym_space;
                 input_cbs->hidden_head->hh_tag = input_cbs->hh_tag;
@@ -114,7 +114,7 @@ void    scr_ct( void )
             }
         }
     }
-    scan_restart = scan_stop;
+    scan_restart = scandata.e;
     return;
 }
 

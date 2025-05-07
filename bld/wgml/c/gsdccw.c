@@ -285,7 +285,7 @@ void    scr_cw( void )
     char        *   p;
     int             len;
 
-    p = scan_start;
+    p = scandata.s;
     SkipSpaces( p );                    // next word start
     pa = p;
     SkipNonSpaces( p );                 // end of word
@@ -319,7 +319,7 @@ void    scr_dc( void )
     int         o_len;  // option length
     int         v_len;  // value length
 
-    p = scan_start;
+    p = scandata.s;
     SkipSpaces( p );                    // next word start = option
     o_p = p;
     SkipNonSpaces( p );                 // end of word

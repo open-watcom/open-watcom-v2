@@ -38,6 +38,6 @@
 void    scr_cm( void )
 {
     // simply do nothing
-    scan_restart = scan_stop;
+    scan_restart = scandata.e;
 }
 
