@@ -187,7 +187,7 @@ condcode    lay_attr_and_value( lay_att_val *lay_attr )
     pa = p;
     rc = no;
 
-    SkipSpacesTabs( p );                    // over WS to start of name
+    SkipSpacesTabs( p );                // over WS to start of name
 
     memset( lay_attr, 0, sizeof( *lay_attr ) );
     lay_attr->val.quoted = ' ';
@@ -199,7 +199,7 @@ condcode    lay_attr_and_value( lay_att_val *lay_attr )
         if( input_cbs->fmflags & II_eof ) {
             break;
         }
-        if( !get_line( true ) ) {    // next line for missing attribute
+        if( !get_line( true ) ) {       // next line for missing attribute
             break;
         }
         process_line();
@@ -218,56 +218,14 @@ condcode    lay_attr_and_value( lay_att_val *lay_attr )
         ProcFlags.tag_end_found = true;
         return( omit );
     }
-    if( p - lay_attr->att_name < 4 ) {       // attribute name length
+    if( p - lay_attr->att_name < 4 ) {
         xx_line_err_c( err_att_name_inv, pa );
     }
-    SkipSpacesTabs( p );                // over WS to =
-    if( *p == '=' ) {
-        p++;
-        SkipSpacesTabs( p );            // over WS to attribute value
-        if( *p == '.' ) {               // final "." is end of tag
-            xx_line_err_c( err_att_val_missing, p );
-        }
-    } else {                            // equals sign is required
-        xx_line_err_c( err_eq_missing, p );
-    }
 
-    lay_attr->val.name = p;             // delimiters must be included for error checking
-    pa = p;
-    if( is_quote_char( *p ) ) {
-        lay_attr->val.quoted = *p++;
-        while( *p != '\0' && *p != lay_attr->val.quoted ) {
-            p++;
-        }
-        if( *p != '\0' ) {
-            p++;                        // over terminating quote
-        }
-    } else {
-        while( *p != '\0' && *p != ' ' && *p != '.' ) {
-            p++;
-        }
-    }
-    lay_attr->val.len = p - lay_attr->val.name;
-
-    if( *p == '.' ) {                   // final "." is end of tag
-        ProcFlags.tag_end_found = true;
-        p++;                            // remove final "." from value
-    }
-    /*
-     * blank quoted value is valid, length check include quotes
-     */
-    if( lay_attr->val.len > 0 ) {       // attribute value length
+    p = get_lay_value( p, &lay_attr->val );
+    if( lay_attr->val.len > 0 ) {
         rc = pos;
-    } else {
-        xx_line_err_c( err_att_val_missing, pa );
     }
-
-    if( lay_attr->val.quoted != ' ' ) { // delimiters must be omitted for these externs
-        lay_attr->val.name++;
-        lay_attr->val.len -= 2;
-    }
-    get_att_specval( &lay_attr->val );
-
     scandata.s = p;
     return( rc );
 }
@@ -398,11 +356,7 @@ void    o_case( FILE *fp, lay_attr_o lay_attr, const case_t * tm )
 /***************************************************************************/
 bool    i_char( char * p, lay_attr_i lay_attr, char * tm )
 {
-    (void)lay_attr;
-
-    if( is_quote_char( *p ) && (*p == *(p + 2)) ) {
-        *tm = *(p + 1);                 // 2nd char if quoted
-    } else if( is_quote_char( *p ) && (*p == *(p + 1)) ) {
+    if( lay_attr->val.quoted && *p == '\0' ) {
         *tm = ' ';                      // space if '' or ""
     } else {
         *tm = *p;                       // else 1st char
@@ -721,11 +675,9 @@ bool    i_number_style( char * p, lay_attr_i lay_attr, num_style * tm )
     num_style   wk = 0;
     char        c;
 
-    (void)lay_attr;
-
     cvterr = false;
-    c = my_tolower( *p );
-    switch( c ) {                       // first letter
+    c = *lay_attr->val.specval;     // lower cased already
+    switch( c ) {                   // first letter
     case 'a':
         wk |= a_style;
         break;
@@ -926,7 +878,7 @@ bool    i_place( char * p, lay_attr_i lay_attr, bf_place * tm )
     cvterr = false;
     *tm = no_place;
     for( k = no_place; k < max_place; ++k ) {
-        if( strnicmp( bf_places[k].name, p, bf_places[k].len ) == 0 ) {
+        if( strcmp( bf_places[k].name, lay_attr->val.specval ) == 0 ) {
             *tm = bf_places[k].type;
             break;
         }

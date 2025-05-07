@@ -37,8 +37,8 @@ pick( ERR_INF_LINE_FILE,        "\tIncluded from line %s of file '%s'",
 pick( ERR_INF_TAG,              "\tCalled from GML tag '%s' in",
                                 "\tCalled from GML tag '%s' in" )
 
-pick( ERR_INF_MAC_DEF,          "\tLine %s of macro '%s' defined at line %s of file '%s'",
-                                "\tLine %s of macro '%s' defined at line %s of file '%s'" )
+pick( ERR_INF_MAC_DEF,          "\tLine %s(at line %s) of macro '%s' defined at line %s of file '%s'",
+                                "\tLine %s(at line %s) of macro '%s' defined at line %s of file '%s'" )
 
 pick( ERR_INC_UNKNOWN,          "\tERR Included from unknown ( master document? )",
                                 "\tERR Included from unknown ( master document? )" )

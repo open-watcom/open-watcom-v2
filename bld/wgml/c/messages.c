@@ -332,12 +332,14 @@ void file_mac_info( void )
 {
     char        linestr[NUM2STR_LENGTH];
     char        linemac[NUM2STR_LENGTH];
+    char        linefile[NUM2STR_LENGTH];
 
     if( input_cbs != NULL ) {
         if( input_cbs->fmflags & II_tag_mac ) {
             sprintf( linestr, "%d", input_cbs->s.m->lineno );
+            sprintf( linefile, "%d", input_cbs->s.m->lineno + input_cbs->s.m->mac->lineno );
             sprintf( linemac, "%d", input_cbs->s.m->mac->lineno );
-            g_info( err_inf_mac_def, linestr, input_cbs->s.m->mac->name,
+            g_info( err_inf_mac_def, linestr, linefile, input_cbs->s.m->mac->name,
                     linemac, input_cbs->s.m->mac->mac_file_name);
         } else {
             sprintf( linestr, "%d", input_cbs->s.f->lineno );
@@ -358,13 +360,15 @@ void file_mac_info_nest( void )
 {
     char            linestr[NUM2STR_LENGTH];
     char            linemac[NUM2STR_LENGTH];
-    nest_stack  *   nw;
+    char            linefile[NUM2STR_LENGTH];
+    nest_stack      *nw;
 
     if( input_cbs != NULL ) {
         if( input_cbs->fmflags & II_tag_mac ) {
             sprintf( linestr, "%d", input_cbs->s.m->lineno );
+            sprintf( linefile, "%d", input_cbs->s.m->lineno + input_cbs->s.m->mac->lineno );
             sprintf( linemac, "%d", input_cbs->s.m->mac->lineno );
-            g_info( err_inf_mac_def, linestr, input_cbs->s.m->mac->name,
+            g_info( err_inf_mac_def, linestr, linefile, input_cbs->s.m->mac->name,
                     linemac, input_cbs->s.m->mac->mac_file_name);
         } else {
             sprintf( linestr, "%d", input_cbs->s.f->lineno );
@@ -385,8 +389,9 @@ void file_mac_info_nest( void )
                 // fallthrough
             case II_macro :
                 sprintf( linestr, "%d", nw->lineno );
+                sprintf( linefile, "%d", nw->lineno + nw->s.mt.m->lineno );
                 sprintf( linemac, "%d", nw->s.mt.m->lineno );
-                g_info( err_inf_mac_def, linestr, nw->s.mt.m->name,
+                g_info( err_inf_mac_def, linestr, linefile, nw->s.mt.m->name,
                         linemac, nw->s.mt.m->mac_file_name);
                 break;
             default:

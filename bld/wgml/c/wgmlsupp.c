@@ -559,14 +559,16 @@ void show_include_stack( void )
     inputcb *   ip;
     char        linestr[NUM2STR_LENGTH];
     char        linemac[NUM2STR_LENGTH];
+    char        linefile[NUM2STR_LENGTH];
 
 
     if( input_cbs != NULL ) {
 #if 0
         if( input_cbs->fmflags & II_tag_mac ) {
             sprintf( linestr, "%d", input_cbs->s.m->lineno );
+            sprintf( linefile, "%d", input_cbs->s.m->lineno + input_cbs->s.m->mac->lineno );
             sprintf( linemac, "%d", input_cbs->s.m->mac->lineno );
-            g_info( err_inf_mac_def, linestr, input_cbs->s.m->mac->name,
+            g_info( err_inf_mac_def, linestr, linefile, input_cbs->s.m->mac->name,
                     linemac, input_cbs->s.m->mac->mac_file_name);
         } else {
             sprintf( linestr, "%d", input_cbs->s.f->lineno );
@@ -589,8 +591,9 @@ void show_include_stack( void )
             // fallthrough
         case II_macro :
             sprintf( linestr, "%d", ip->s.m->lineno );
+            sprintf( linefile, "%d", ip->s.m->lineno + ip->s.m->mac->lineno );
             sprintf( linemac, "%d", ip->s.m->mac->lineno );
-            g_info( err_inf_mac_def, linestr, ip->s.m->mac->name,
+            g_info( err_inf_mac_def, linestr, linefile, ip->s.m->mac->name,
                     linemac, ip->s.m->mac->mac_file_name);
             break;
         default:

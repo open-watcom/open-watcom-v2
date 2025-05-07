@@ -34,6 +34,9 @@
 #include "wgml.h"
 
 
+#define SKIP_SPACES(x)  while((x)->s < (x)->e){if(*(x)->s != ' ') break; (x)->s++;}
+#define SKIP_WORD(x)    while((x)->s < (x)->e){if(*(x)->s == ' ') break; (x)->s++;}
+
 /***************************************************************************/
 /*  script string function &'subword(                                      */
 /*                         &'word(                                         */
@@ -209,22 +212,13 @@ condcode    scr_words( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **res
     string = parms[0].arg;
     unquote_arg( &string );
 
-    for( ; string.s < string.e; string.s++ ) {     // for all chars in string
-        for( ; string.s < string.e; string.s++ ) { // skip leading blanks
-            if( *string.s != ' ' ) {
-                break;
-            }
-        }
-        if( string.s >= string.e ) {             // at end
+    while( string.s < string.e ) {              // for all chars in string
+        SKIP_SPACES( string );  				// find next word
+        if( string.s >= string.e ) {            // at end
             break;
         }
         wc++;                                   // start of word found
-
-        for( ; string.s < string.e; string.s++ ) {
-            if( *string.s == ' ' ) {            // end of word found
-                break;
-            }
-        }
+        SKIP_WORD( string );                    // end of word found
     }
 
     *result += sprintf( *result, "%d", wc );
@@ -234,64 +228,51 @@ condcode    scr_words( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **res
 
 static int find_words_phrase_in_string( tok_type *phrase, tok_type *string, int index )
 {
-    char            *pp;
+    char            *start;
     bool            inword;
     bool            found;
 
     inword = true;
     found = false;
-    pp = phrase->s;
-    for( ; string->s < string->e; string->s++ ) {
+    start = phrase->s;
+    while( string->s < string->e ) {
         if( !inword ) {
             index++;
             inword = true;
         }
-        if( *string->s == *pp ) {
+        if( phrase->s >= phrase->e ) {
+            if( *string->s == ' ' || *string->s == '\0' )
+                return( index + 1 );    // current word in string
 
-            /* at end of phrase, but must also be at end of token */
-
-            if( (pp == phrase->e) && ((*(string->s + 1) == ' ') || (*(string->s + 1) == '\0')) ) {
-                found = true;
-                break;
-            } else {
-                if( *string->s == ' ' ) {
-                    inword = false;     // word end
-                    for( ; string->s < string->e; string->s++ ) {  // find next word
-                        if( *string->s != ' ' ) {
-                            break;
-                        }
-                    }
-                    string->s--;            // outer for loop will increment again
-
-                    for( ; pp < phrase->e; pp++ ) {
-                        if( *pp != ' ' ) {
-                            break;
-                        }
-                    }
-                } else {
-                    pp++;
-                }
-            }
-        } else {                            // not equal
-            pp = phrase->s;                 // start new compare
-            for( ; string->s < string->e; string->s++ ) {  // with next word
-                if( *string->s == ' ' ) {   // word end found
-                    break;
-                }
-            }
+            return( 0 );
+        }
+        if( *string->s != *phrase->s ) {
+            phrase->s = start;          // start new compare
+            SKIP_WORD( string );        // skip word
+            SKIP_SPACES( string );      // find next word
             inword = false;
-            for( ; string->s < string->e; string->s++ ) {  // find next word
-                if( *string->s != ' ' ) {
-                    break;
-                }
-            }
-            string->s--;                    // outer for loop will increment again
+        } else if( *string->s != ' ' ) {
+            string->s++;
+            phrase->s++;
+        } else {
+            inword = false;             // word end
+            SKIP_SPACES( string );      // find next word
+            SKIP_SPACES( phrase );      // find next word
         }
     }
-    if( !found )
+    /*
+     * end of string, check end of phrase
+     */
+    SKIP_SPACES( phrase );
+    /*
+     * check end of phrase
+     * if it is true then found
+     * otherwise not found
+     */
+    if( phrase->s < phrase->e )         // not end of phrase
         return( 0 );
 
-    return( index + 1 );    // current word in string
+    return( index + 1 );                // current word in string
 }
 
 /***************************************************************************/

@@ -43,7 +43,6 @@ char    *get_refid_value( char *p, att_val_type *attr_val, char *refid )
     size_t  k;
 
     p = get_att_value( p, attr_val );
-
     if( attr_val->name == NULL ) {       // no valid id
         return( p );
     }
@@ -54,7 +53,7 @@ char    *get_refid_value( char *p, att_val_type *attr_val, char *refid )
     }
     refid[attr_val->len] = '\0';
     if( attr_val->len > 7 ) {                 // wgml 4 warning level
-        xx_warn_c_info( WNG_ID_XXX, refid, inf_id_len );
+        xx_warn_c_info( wng_id_xxx, refid, inf_id_len );
     }
     return( p );
 }

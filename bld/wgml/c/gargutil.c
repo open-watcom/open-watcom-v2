@@ -80,6 +80,21 @@ bool is_quote_char( char c )
 }
 
 /***************************************************************************/
+/* return true if the character parameter is a string delimiter            */
+/***************************************************************************/
+
+bool is_base_quote_char( char c )
+{
+    if( c == '"'
+      || c == '\''
+      || c == '`' ) {
+        return( true );
+    } else {
+        return( false );
+    }
+}
+
+/***************************************************************************/
 /*  scan blank delimited argument perhaps quoted                           */
 /*                                                                         */
 /*  extension: if unquoted and equalsign, then quoted parm allowed         */
@@ -97,8 +112,8 @@ condcode getarg( void )
     bool        quoted;
     bool        valquoted;
 
-    cc = omit;                      	// arg omitted
-    if( scandata.s < scandata.e ) {     	// already at end
+    cc = omit;                          // arg omitted
+    if( scandata.s < scandata.e ) {     // already at end
         p = scandata.s;
         while( *p == ' ' && p < scandata.e ) {// skip leading blanks
             p++;
@@ -107,7 +122,7 @@ condcode getarg( void )
             return( omit );             // nothing found
         }
 
-        if( p == scandata.e - 1 ) {      // one character token found
+        if( p == scandata.e - 1 ) {     // one character token found
             arg_flen = 1;
             g_tok_start = p;
             scandata.s = p + 1;         // address of start for next call
@@ -134,7 +149,7 @@ condcode getarg( void )
                 if( quoted ) {
                     quote = '\0';
                     quoted = false;
-                    p = g_tok_start;              // find end of space-delimited token
+                    p = g_tok_start;    // find end of space-delimited token
                     while( (p < scandata.e) && (*p != ' ') ) {
                         p++;
                     }
@@ -197,8 +212,8 @@ condcode getqst( void )
     char        quote;
     bool        quoted;
 
-    cc = omit;                      	// arg omitted
-    if( scandata.s < scandata.e ) {     	// already at end
+    cc = omit;                          // arg omitted
+    if( scandata.s < scandata.e ) {     // already at end
         p = scandata.s;
         while( *p == ' ' && p < scandata.e ) {// skip leading blanks
             p++;
@@ -213,7 +228,7 @@ condcode getqst( void )
         g_tok_start = p;
         c = *p;
         if( is_quote_char( c ) ) {
-            quote = c;      // single or double quotes, vertical bar and cent
+            quote = c;                  // single or double quotes, vertical bar and cent
             p++;
             quoted = true;
         } else {
