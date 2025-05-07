@@ -213,12 +213,12 @@ condcode    scr_words( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **res
     unquote_arg( &string );
 
     while( string.s < string.e ) {              // for all chars in string
-        SKIP_SPACES( string );  				// find next word
+        SKIP_SPACES( &string );                                  // find next word
         if( string.s >= string.e ) {            // at end
             break;
         }
         wc++;                                   // start of word found
-        SKIP_WORD( string );                    // end of word found
+        SKIP_WORD( &string );                    // end of word found
     }
 
     *result += sprintf( *result, "%d", wc );
