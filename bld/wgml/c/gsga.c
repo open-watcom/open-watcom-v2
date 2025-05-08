@@ -463,11 +463,9 @@ static  condcode    scan_att_optionsB( gavalflags * val_flags, condcode cca,
 void    scr_ga( void )
 {
     char        *   p;
-    char        *   pn;
     char            savetag;
     char            saveatt;
     int             k;
-    int             len;
     condcode        cc;
     gaflags         att_flags;
     gavalflags      val_flags;

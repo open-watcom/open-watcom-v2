@@ -757,12 +757,12 @@ int32_t conv_vert_unit( su *s, text_space text_spacing, font_number font )
 /*  returns ptr to string or NULL if error                                 */
 /***************************************************************************/
 
-char *format_num( unsigned n, char *r, size_t rsize, num_style ns )
+char *format_num( unsigned n, char *r, unsigned rsize, num_style ns )
 {
-    size_t      pos;
-    size_t      pos1;
-    char    *   p;
-    char    *   rp;
+    unsigned    pos;
+    unsigned    pos1;
+    char        *p;
+    char        *rp;
     char        temp[NUM2STR_LENGTH + 3]; // +3 for () and decimal point
     char        a1;
     char        a2;
@@ -1079,7 +1079,7 @@ font_number get_font_number( char *value, size_t len )
 /*  convert integer to roman digits                                        */
 /***************************************************************************/
 
-char *int_to_roman( unsigned n, char *r, size_t rsize, bool ucase )
+char *int_to_roman( unsigned n, char *r, unsigned rsize, bool ucase )
 {
     static const struct {
         unsigned    val;
@@ -1097,10 +1097,10 @@ char *int_to_roman( unsigned n, char *r, size_t rsize, bool ucase )
                     {    1,   1, 'i', 'i' }
                 };
 
-    size_t  digit;
-    size_t  pos;
-    char    *p = r;
-    char    c;
+    unsigned    digit;
+    unsigned    pos;
+    char        *p = r;
+    char        c;
 
     *p = '\0';
     if( (n < 1) || (n > 3999) ) {       // invalid out of range

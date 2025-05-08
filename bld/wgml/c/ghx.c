@@ -53,8 +53,8 @@
 
 static void update_headnumx( hdsrc hn_lvl, hdsrc hds_lvl )
 {
-    size_t          pos;
-    char          * pn;
+    unsigned        pos;
+    char            *pn;
 
     static char hnumx[7] = "$hnumX";
 

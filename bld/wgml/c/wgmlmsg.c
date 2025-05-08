@@ -69,7 +69,7 @@ bool init_msgs( void )
 /*  get a msg text string                                                  */
 /***************************************************************************/
 
-bool get_msg( msg_ids resid, char *buff, size_t buff_len )
+bool get_msg( msg_ids resid, char *buff, unsigned buff_len )
 {
 #ifdef USE_WRESLIB
     if( Instance.status == 0

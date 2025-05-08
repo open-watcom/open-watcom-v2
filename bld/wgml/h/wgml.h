@@ -445,7 +445,7 @@ extern int32_t      conv_hor_unit( su *spaceunit, font_number font );
 extern int32_t      conv_vert_unit( su *spaceunit, text_space text_spacing, font_number font );
 extern bool         cw_val_to_su( const char **scaninput, su *spaceunit );
 extern num_style    find_pgnum_style( void );
-extern char         *format_num( unsigned n, char *r, size_t rsize, num_style ns );
+extern char         *format_num( unsigned n, char *r, unsigned rsize, num_style ns );
 extern void         free_ffh_list( ffh_entry *ffh_list );
 extern void         free_fwd_refs( fwd_ref *fwd_refs );
 extern void         g_keep_nest( const char *cw_tag );
@@ -457,7 +457,7 @@ extern char         *get_lay_value( char *p, att_val_type *attr_val );
 extern font_number  get_font_number( char *p, size_t len );
 extern ffh_entry    *init_ffh_entry( ffh_entry *ffh_list );
 extern fwd_ref      *init_fwd_ref( fwd_ref *dict, const char *refid );
-extern char         *int_to_roman( unsigned n, char *r, size_t rsize, bool ucase );
+extern char         *int_to_roman( unsigned n, char *r, unsigned rsize, bool ucase );
 extern bool         lay_init_su( const char *p, su *in_su );
 extern size_t       len_to_trail_space( const char *p , size_t len );
 extern char         *skip_to_quote( char *p, char quote );
@@ -526,7 +526,7 @@ extern void     ob_oc( const char *p );
 /* wgmlmsg.c                            */
 extern  bool    init_msgs( void );
 extern  void    fini_msgs( void );
-extern  bool    get_msg( msg_ids resourceid, char *buffer, size_t buflen );
+extern  bool    get_msg( msg_ids resourceid, char *buffer, unsigned buflen );
 //extern  void Msg_Do_Put_Args( char rc_buff[], MSG_ARG_LIST *arg_info, char *types, ... );
 //extern  void Msg_Put_Args( char message[], MSG_ARG_LIST *arg_info, char *types, va_list *args );
 
