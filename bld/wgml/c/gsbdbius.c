@@ -148,7 +148,7 @@ static void scr_style_common( style_cw_type type, style_cw_info * cw_info )
 
     p = scandata.s;     // for use later
     pb = scandata.s;    // for use if outputting text
-    cc = getarg();      // sets tok_start, scandata.s and scan_end
+    cc = getarg();      // uses g_tok_start, scandata.s and scandata.e
 
     if( cc == omit ) {                  // same as BD 1
         script_style.style |= type;

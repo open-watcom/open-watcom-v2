@@ -53,14 +53,14 @@ void    init_tag_att( void )
 /***************************************************************************/
 /* GML TAG defines a GML tag.                                              */
 /*                                                                         */
-/*      ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿       */
+/*      ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¿       */
 /*      |       |                                                  |       */
 /*      |  .GT  |    tagname ADD macro <tagopts>                   |       */
 /*      |       |    tagname CHAnge macro                          |       */
 /*      |       |    tagname OFF|ON                                |       */
 /*      |       |    tagname|* DELete|PRint                        |       */
 /*      |       |                                                  |       */
-/*      ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ       */
+/*      ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½       */
 /*                                                                         */
 /* The first  form of this  control word defines the  name of a  GML tag,  */
 /* identifies the macro that is to be invoked when the tag is encountered  */
@@ -389,7 +389,7 @@ void    scr_gt( void )
         savetag = '*';         // remember for possible global delete / print
         if( GlobalFlags.firstpass && (input_cbs->fmflags & II_research) ) {
             if( g_tag_entry != NULL ) {
-                out_msg("  using tagname %s %s\n", g_tagname, g_tag_entry->name );
+                out_msg("  using tagname %s %s\n", g_tagname, g_tag_entry->tagname );
             }
         }
     } else {
@@ -398,15 +398,9 @@ void    scr_gt( void )
         init_tag_att();                     // forget previous values for quick access
         g_attname[0] = '*';
 
-        len = 0;
-        pn = g_tagname;
-        while( is_macro_char( *p ) && len < TAG_NAME_LENGTH ) {
-            *pn++ = my_tolower( *p++ ); // copy lowercase tagname
-            len++;
-        }
-        *pn = '\0';
+        p = get_tagname( p, g_tagname );
 
-        if( len < arg_flen ) {
+        if( arg_flen > strlen( g_tagname ) ) {
             xx_err( err_tag_name_inv );
             return;
         }

@@ -414,7 +414,6 @@ bool is_space_tab_char( char c )
  * but only if a and z are not equal (that is, only if the value has more
  * than one character
  */
-
 int unquote_arg( tok_type *arg )
 {
     if( (arg->s != arg->e) && (arg->s[0] == arg->e[-1]) && is_quote_char( arg->s[0] ) ) {
@@ -422,4 +421,22 @@ int unquote_arg( tok_type *arg )
         arg->e -= 1;
     }
     return( arg->e - arg->s );
+}
+
+/*
+ * get uppercased GML tag name for internal processing
+ */
+char *get_tagname( const char *p, char *tagname )
+{
+    int     i;
+
+    i = 0;
+    while( is_tag_char( *p ) ) {
+        if( i < TAG_NAME_LENGTH ) {
+            tagname[i++] = my_toupper( *p );
+        }
+        p++;
+    }
+    tagname[i] = '\0';
+    return( (char *)p );
 }

@@ -188,11 +188,11 @@ static void split_at_GML_tag( void )
     char            *p;
     char            *p2;
     char            *pchar;
-    char            c;
     const gmltag    *gle = NULL;             // GML layout tag entry
     const gmltag    *gse = NULL;             // GML system tag entry
     gtentry         *gue = NULL;             // GML user tag entry
     size_t          toklen;
+    char            tagname[TAG_NAME_LENGTH + 1];
 
     if( *buff2 == GML_char ) {
         if( !strnicmp( "CMT", (buff2 + 1), 3 )
@@ -211,41 +211,33 @@ static void split_at_GML_tag( void )
         while( *(pchar + 1) == GML_char ) {
             pchar++;                    // handle repeated GML_chars
         }
-        for( p2 = pchar + 1; is_id_char( *p2 ) && (p2 < (buff2 + BUF_SIZE)); p2++ )
-            /* empty loop */ ;
-
-        if( (p2 > pchar + 1)
+        p2 = get_tagname( pchar + 1, tagname );
+        toklen = p2 - pchar - 1;
+        if( (toklen > 0)
+          && (toklen <= TAG_NAME_LENGTH)
           && ((*p2 == '.')
           || is_space_tab_char( *p2 )
           || (*p2 == '\0')
           || (*p2 == GML_char) ) ) {    // 'good' tag end
-            c = *p2;
             if( ProcFlags.layout
-              && (c == '\t') ) {
-                c = ' ';                // replace tab with space in layout
+              && (*p2 == '\t') ) {
+                *p2 = ' ';                // replace tab with space in layout
             }
-            *p2 = '\0';                 // null terminate string
-            toklen = p2 - pchar - 1;
 
             input_cbs->hh_tag = false;  // clear before testing
             /***************************************************************/
             /* Verify valid user or system tag                             */
             /***************************************************************/
-            gue = NULL;
-            gse = NULL;
-            gle = NULL;
-            if( ( (gue = find_user_tag( &tag_dict, pchar + 1 )) != NULL )
-              || ( (gse = find_sys_tag( pchar + 1, toklen )) != NULL )
-              || ( (gle = find_lay_tag( pchar + 1, toklen )) != NULL ) ) {
-
-                *p2 = c;
+            if( ( (gue = find_user_tag( &tag_dict, tagname )) != NULL )
+              || ( (gse = find_sys_tag( tagname, toklen )) != NULL )
+              || ( (gle = find_lay_tag( tagname, toklen )) != NULL ) ) {
 
                 if( !input_cbs->fm_hh ) {
                     // remove spaces before tags at sol in restricted sections
                     // in or just before LAYOUT tag
                     if( (rs_loc > 0)
                       || ProcFlags.layout
-                      || strncmp( "LAYOUT", pchar + 1, 6 ) == 0 ) {
+                      || strcmp( "LAYOUT", tagname ) == 0 ) {
                         p = buff2;
                         SkipSpacesTabs( p );
                         if( p == pchar ) {  // only leading blanks
@@ -281,8 +273,6 @@ static void split_at_GML_tag( void )
                     }
                 }
                 break;                  // we did a split stop now
-            } else {
-                *p2 = c;
             }
         }
     }

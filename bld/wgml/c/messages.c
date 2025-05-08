@@ -385,7 +385,7 @@ void file_mac_info_nest( void )
                 g_info( inf_file_line, linestr, nw->s.filename );
                 break;
             case II_tag :
-                g_info( err_inf_tag, nw->s.mt.tag_m->name );
+                g_info( err_inf_tag, nw->s.mt.tag_m->tagname );
                 // fallthrough
             case II_macro :
                 sprintf( linestr, "%d", nw->lineno );
@@ -610,10 +610,10 @@ void g_err_tag_mac( gtentry * ge )
 
     if( input_cbs->fmflags & II_tag_mac ) {
         sprintf( linestr, "%d", input_cbs->s.m->lineno );
-        g_err( err_tag_macro, ge->macname, ge->name, linestr, "macro", input_cbs->s.m->mac->name );
+        g_err( err_tag_macro, ge->macname, ge->tagname, linestr, "macro", input_cbs->s.m->mac->name );
     } else {
         sprintf( linestr, "%d", input_cbs->s.f->lineno );
-        g_err( err_tag_macro, ge->macname, ge->name, linestr, "file", input_cbs->s.f->filename );
+        g_err( err_tag_macro, ge->macname, ge->tagname, linestr, "file", input_cbs->s.f->filename );
     }
     if( inc_level > 0 ) {
         show_include_stack();

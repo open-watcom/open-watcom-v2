@@ -194,7 +194,7 @@ bool process_tag( gtentry * ge, mac_entry * me )
     /*  scan input for attributes and / or tag-text                        */
     /***********************************************************************/
 
-    p = g_tok_start + ge->namelen + 1;    // over tagname
+    p = g_tok_start + ge->taglen + 1;    // over tagname
 
     if( ge->tagflags & tag_textline ) {
 
@@ -351,7 +351,7 @@ bool process_tag( gtentry * ge, mac_entry * me )
             }
         }
         if( *token_buf != '\0' ) {      // some req attr missing
-            att_req_err( ge->name, token_buf );
+            att_req_err( ge->tagname, token_buf );
         }
     } else if( ge->tagflags & tag_attr ) {
         p2 = p;                                 // save value
@@ -382,7 +382,7 @@ bool process_tag( gtentry * ge, mac_entry * me )
         /* If TEXTReqrd was used in defining the user-tag, this is an error */
 
         if( ge->tagflags & tag_textreq ) {  // text must be present
-            xx_line_err_cc( err_att_text_req, ge->name, p2 );
+            xx_line_err_cc( err_att_text_req, ge->tagname, p2 );
         }
 
         /* Otherwise, the value of * will be an empty string */
@@ -392,7 +392,7 @@ bool process_tag( gtentry * ge, mac_entry * me )
         /* If TEXTError was used in defining the user-tag, this is an error */
 
         if( ge->tagflags & tag_texterr ) {  // no text allowed
-            xx_line_err_cc( err_att_text, ge->name, p );
+            xx_line_err_cc( err_att_text, ge->tagname, p );
         }
 
         /* Otherwise, things get a bit complicated */
@@ -440,7 +440,7 @@ bool process_tag( gtentry * ge, mac_entry * me )
     /*  add standard symbols to dict                                   */
     /*******************************************************************/
 
-    rc = add_symvar( loc_dict, "_tag", ge->name, no_subscript, local_var );
+    rc = add_symvar( loc_dict, "_tag", ge->tagname, no_subscript, local_var );
     ge->usecount++;
     sprintf( longwork, "%u", ge->usecount );
     rc = add_symvar( loc_dict, "_n", longwork, no_subscript, local_var );

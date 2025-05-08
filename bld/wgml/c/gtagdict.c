@@ -50,15 +50,14 @@ void    init_tag_dict( gtentry * * dict )
 /*              if tag already defined error                               */
 /***************************************************************************/
 
-gtentry *   add_tag( gtentry * * dict, const char * name, const char * mac,
-                     const int flags )
+gtentry *add_tag( gtentry **dict, const char *tagname, const char *macname, int flags )
 {
     gtentry     *   ge;
     gtentry     *   wk;
 
-    wk = find_user_tag( dict, name );
+    wk = find_user_tag( dict, tagname );
     if( wk != NULL ) {
-        xx_source_err_c( err_tag_exist, name );
+        xx_source_err_c( err_tag_exist, tagname );
     }
 
     ge = mem_alloc( sizeof( gtentry ) );
@@ -66,9 +65,9 @@ gtentry *   add_tag( gtentry * * dict, const char * name, const char * mac,
     ge->next = *dict;
     *dict = ge;
 
-    memcpy( ge->name, name, sizeof( ge->name ) );
-    ge->namelen = strlen( ge->name );
-    strcpy( ge->macname, mac );
+    strcpy( ge->tagname, tagname );
+    ge->taglen = strlen( ge->tagname );
+    strcpy( ge->macname, macname );
     ge->tagflags = flags;
     ge->attribs = NULL;
     ge->usecount = 0;
@@ -81,14 +80,14 @@ gtentry *   add_tag( gtentry * * dict, const char * name, const char * mac,
 /*  change_tag     change macro to execute in tag entry                    */
 /***************************************************************************/
 
-gtentry *   change_tag( gtentry * * dict, const char * name, const char * mac )
+gtentry *change_tag( gtentry **dict, const char *tagname, const char *macname )
 {
-    gtentry     *   ge = NULL;
+    gtentry     *ge = NULL;
 
     if( *dict != NULL ) {
-        ge = find_user_tag( dict, name );
+        ge = find_user_tag( dict, tagname );
         if( ge != NULL ) {
-           strcpy( ge->macname, mac );
+           strcpy( ge->macname, macname );
         }
     }
     return( ge );
@@ -177,12 +176,12 @@ void    free_tag_dict( gtentry * * dict )
 /*  returns ptr to tag or NULL if not found                                */
 /***************************************************************************/
 
-gtentry     *find_user_tag( gtentry * * dict, const char * name )
+gtentry     *find_user_tag( gtentry **dict, const char *tagname )
 {
     gtentry     *wk;
 
     for( wk = *dict; wk != NULL; wk = wk->next ) {
-        if( stricmp( wk->name, name ) == 0 ) {
+        if( stricmp( wk->tagname, tagname ) == 0 ) {
             break;
         }
     }
@@ -364,7 +363,7 @@ void    print_tag_entry( gtentry * wk )
         find++;
         flags >>= 1;
     }
-    out_msg( "tag:  %-16.16s tagcount=%u macro=%s %s\n", wk->name,
+    out_msg( "tag:  %-16.16s tagcount=%u macro=%s %s\n", wk->tagname,
              wk->usecount, wk->macname, opt );
     for( gawk = wk->attribs; gawk != NULL; gawk = gawk->next ) {
         print_att_entry( gawk );

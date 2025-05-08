@@ -587,7 +587,7 @@ void show_include_stack( void )
             g_info( err_inf_line_file, linestr, ip->s.f->filename );
             break;
         case II_tag :
-            g_info( err_inf_tag, ip->s.m->tag->name );
+            g_info( err_inf_tag, ip->s.m->tag->tagname );
             // fallthrough
         case II_macro :
             sprintf( linestr, "%d", ip->s.m->lineno );

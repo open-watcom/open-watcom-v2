@@ -602,10 +602,10 @@ typedef enum {
 
 typedef struct gtentry {
     struct gtentry      *next;
-    gaentry             *attribs;        // list of attributes
+    gaentry             *attribs;       // list of attributes
     unsigned            usecount;
-    unsigned            namelen;        // actual length of name
-    char                name[TAG_NAME_LENGTH + 1];
+    unsigned            taglen;         // actual length of name
+    char                tagname[TAG_NAME_LENGTH + 1];
     char                macname[MAC_NAME_LENGTH + 1];   // macro to call
     gtflags             tagflags;
     bool                overload;       // user tag has same name as predefined tag
