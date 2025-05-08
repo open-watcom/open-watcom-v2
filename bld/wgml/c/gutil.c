@@ -869,7 +869,7 @@ char *format_num( unsigned n, char *r, size_t rsize, num_style ns )
 /***************************************************************************/
 
 
-static char *get_tag_attname( const char *p, char *attname )
+char *get_tag_attname( const char *p, char *attname )
 {
     int     i;
 

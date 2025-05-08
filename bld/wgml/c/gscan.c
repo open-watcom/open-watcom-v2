@@ -105,14 +105,14 @@ static void build_scr_cw_lookup( void )
     // index (-1) during lookup.
     for( i = 0; i <= SCR_KWDMAX; ++i ) {
         cw = &scr_kwds[i];
-        if( islower( cw->tagname[0] ) && islower( cw->tagname[1] ) ) {
-            hash = (cw->tagname[0] - 'a') * 26 + (cw->tagname[1] - 'a');
+        if( islower( cw->cwdname[0] ) && islower( cw->cwdname[1] ) ) {
+            hash = (cw->cwdname[0] - 'a') * 26 + (cw->cwdname[1] - 'a');
             scr_lkup_tbl[hash] = i + 1;
-        } else if( cw->tagname[0] == 'h' && cw->tagname[1] == '0' ) {
+        } else if( cw->cwdname[0] == 'h' && cw->cwdname[1] == '0' ) {
             hash = ('h' - 'a') * 26 + ('z' - 'a');  // fake it as .HZ
             scr_lkup_tbl[hash] = i + 1;
             scr_cw_hx = i;
-        } else if( cw->tagname[0] == '.' && cw->tagname[1] == '.' ) {
+        } else if( cw->cwdname[0] == '.' && cw->cwdname[1] == '.' ) {
             scr_cw_label = i;   // the ... label
         } else {
             // .H1 to .H9 -- ignored here
@@ -122,7 +122,7 @@ static void build_scr_cw_lookup( void )
 }
 
 
-static int find_scr_cw( const char *str )
+static int find_scr_cw( const char *cwdname )
 {
     int     hash;
     int     index = -1;
@@ -130,13 +130,13 @@ static int find_scr_cw( const char *str )
     if( !scr_lkup_setup )
         build_scr_cw_lookup();
 
-    if( islower( str[0] ) && islower( str[1] ) ) {
-        hash  = (str[0] - 'a') * 26 + (str[1] - 'a');
+    if( islower( cwdname[0] ) && islower( cwdname[1] ) ) {
+        hash  = (cwdname[0] - 'a') * 26 + (cwdname[1] - 'a');
         index = scr_lkup_tbl[hash] - 1;
-    } else if( str[0] == '.' && str[1] == '.' ) {
+    } else if( cwdname[0] == '.' && cwdname[1] == '.' ) {
         index = scr_cw_label;
-    } else if( str[0] == 'h' && isdigit( str[1] ) ) {
-        index = scr_cw_hx + str[1] - '0';
+    } else if( cwdname[0] == 'h' && isdigit( cwdname[1] ) ) {
+        index = scr_cw_hx + cwdname[1] - '0';
     }
 
     return( index );
@@ -157,7 +157,6 @@ static void scan_gml( void )
     inputcb         *cb;
     char            *p;
     int             toklen;
-    int             k;
     bool            processed;
     gtentry         *ge;                // GML user tag entry
     mac_entry       *me;                // script macro for processing GML tag
@@ -563,7 +562,7 @@ static void     scan_script( void )
         if( k >= 0 ) {
             if( !ProcFlags.layout
               && !ProcFlags.fb_document_done
-              && (scr_kwds[k].cwflags & cw_o_t) ) {
+              && (scr_kwds[k].cwdflags & cw_o_t) ) {
 
                 /********************************************************/
                 /* this is the first control word which produces output */
@@ -578,16 +577,16 @@ static void     scan_script( void )
                 if( strcmp( "li", token_buf ) == 0 ) {  // .li
                     ProcFlags.CW_noblank = (*p != ' ');
                     scandata.s = p; // found, process
-                    scr_kwds[k].tagproc();
+                    scr_kwds[k].cwdproc();
                 }
             } else {
                 scandata.s = p; // script controlword found, process
-                if( scr_kwds[k].cwflags & cw_break ) {
+                if( scr_kwds[k].cwdflags & cw_break ) {
                     ProcFlags.force_pc = false;
                     scr_process_break();// output incomplete line, if any
                 }
                 ProcFlags.CW_noblank = (*p != ' ');
-                scr_kwds[k].tagproc();
+                scr_kwds[k].cwdproc();
             }
         } else {
             xx_err_c( err_cw_unrecognized, token_buf );

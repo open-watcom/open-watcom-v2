@@ -106,6 +106,7 @@ extern bool         is_symbol_char( char c );
 extern char         parse_char( const char *pa, size_t len );
 extern int          unquote_arg( tok_type *arg );
 extern char         *get_tagname( const char *p, char *tagname );
+extern char         *get_tag_attname( const char *p, char *attname );
 
 /* gbanner.c                            */
 extern  void        out_ban_bot( void );

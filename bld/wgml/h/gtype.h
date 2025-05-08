@@ -451,9 +451,9 @@ typedef enum {
 } scrflags;
 
 typedef struct scrtag {
-    char            tagname[SCR_KW_LENGTH + 2];
-    void            (*tagproc)( void );
-    scrflags        cwflags;
+    char            cwdname[SCR_KW_LENGTH + 2];
+    void            (*cwdproc)( void );
+    scrflags        cwdflags;
 } scrtag;
 
 /***************************************************************************/
@@ -574,7 +574,7 @@ typedef enum {
 typedef struct gaentry {
     struct gaentry      *next;
     gavalentry          *vals;
-    char                name[TAG_ATT_NAME_LENGTH + 1];
+    char                attname[TAG_ATT_NAME_LENGTH + 1];
     gaflags             attflags;
 } gaentry;
 

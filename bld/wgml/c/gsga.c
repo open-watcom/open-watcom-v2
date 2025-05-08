@@ -512,15 +512,8 @@ void    scr_ga( void )
 
         init_tag_att();                     // forget previous values for quick access
 
-        len = 0;
-        pn = g_tagname;
-        while( is_macro_char( *p ) && len < TAG_NAME_LENGTH ) {
-            *pn++ = my_tolower( *p++ );     // copy lowercase tagname
-            len++;
-        }
-        *pn = '\0';
-
-        if( len < arg_flen ) {
+        p = get_tagname( p, g_tagname );
+        if( arg_flen > strlen( g_tagname ) ) {
             xx_err( err_tag_name_inv );     // name contains invalid or too many chars
             return;
         }
@@ -558,15 +551,8 @@ void    scr_ga( void )
         saveatt = ' ';                      // no quick access
         g_att_entry = NULL;
 
-        len = 0;
-        pn = g_attname;
-        while( is_macro_char( *p ) && len < TAG_ATT_NAME_LENGTH ) {
-            *pn++ = my_tolower( *p++ ); // copy lowercase tagname
-            len++;
-        }
-        *pn = '\0';
-
-        if( len < arg_flen ) {
+        p = get_tag_attname( p, g_attname );
+        if( arg_flen > strlen( g_attname ) ) {
             xx_err( err_att_name_inv );// attname with invalid or too many chars
             cc = neg;
             return;
@@ -581,10 +567,8 @@ void    scr_ga( void )
     if( cc != omit ) {
         if( saveatt != '*' ) {          // no quickaccess for attribute
             gawk = NULL;
-            for( gawk = g_tag_entry->attribs; gawk != NULL;
-                 gawk = gawk->next ) {
-
-                if( !stricmp( g_attname, gawk->name ) ) {
+            for( gawk = g_tag_entry->attribs; gawk != NULL; gawk = gawk->next ) {
+                if( strcmp( g_attname, gawk->attname ) == 0 ) {
                     att_flags = gawk->attflags; // get possible uppercase option
                     break;
                 }
@@ -608,10 +592,8 @@ void    scr_ga( void )
     /*  scanning complete     add/modify attribute in dictionary           */
     /***********************************************************************/
     if( saveatt != '*' ) {              // no quickaccess for attribute
-        for( g_att_entry = g_tag_entry->attribs; g_att_entry != NULL;
-             g_att_entry = g_att_entry->next ) {
-
-            if( !stricmp( g_attname, g_att_entry->name ) ) {
+        for( g_att_entry = g_tag_entry->attribs; g_att_entry != NULL; g_att_entry = g_att_entry->next ) {
+            if( strcmp( g_attname, g_att_entry->attname ) == 0 ) {
                 break;
             }
         }
@@ -624,7 +606,7 @@ void    scr_ga( void )
 
         g_att_entry->vals = NULL;
         g_att_entry->attflags = att_flags;
-        strcpy( g_att_entry->name, g_attname );
+        strcpy( g_att_entry->attname, g_attname );
     } else {
         g_att_entry->attflags = att_flags;// update flags
     }

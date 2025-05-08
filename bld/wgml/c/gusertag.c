@@ -84,7 +84,7 @@ static void add_defaults_to_dict( gtentry * ge, symdict_hdl dict )
                         valp = token_buf;
                     }
                     if( valp != NULL ) {
-                        rc = add_symvar( dict, ga->name, valp,
+                        rc = add_symvar( dict, ga->attname, valp,
                                          no_subscript, local_var );
                     }
                 }
@@ -154,11 +154,11 @@ static bool check_att_value( gaentry * ga, gtentry * ge, symdict_hdl loc_dict )
         }
     }
     if( !g_scan_err ) {
-        rc = add_symvar( loc_dict, ga->name, token_buf,
+        rc = add_symvar( loc_dict, ga->attname, token_buf,
                          no_subscript, local_var );
     } else {
         if( !msg_done ) {
-            xx_err_cc( err_att_val, token_buf, ga->name );
+            xx_err_cc( err_att_val, token_buf, ga->attname );
         }
     }
     return( g_scan_err );
@@ -239,7 +239,7 @@ bool process_tag( gtentry * ge, mac_entry * me )
             *p2 = '\0';
             if( p2 != token_buf ) {     // ignore nullstring
                 for( ga = ge->attribs; ga != NULL; ga = ga->next ) {// all attrs
-                    if( !stricmp( ga->name, token_buf ) ) {
+                    if( !stricmp( ga->attname, token_buf ) ) {
                         ga->attflags |= att_proc_seen; // attribute specified
                         if( ga->attflags & att_auto ) {
                             xx_line_err_cc( err_auto_att, token_buf, pa );
@@ -299,7 +299,7 @@ bool process_tag( gtentry * ge, mac_entry * me )
                                 if( gaval != NULL ) {
                                      sprintf( token_buf, "%d",
                                               gaval->a.range[3] );
-                                     rc = add_symvar( loc_dict, ga->name,
+                                     rc = add_symvar( loc_dict, ga->attname,
                                                       token_buf, no_subscript,
                                                       local_var );
                                 }
@@ -345,7 +345,7 @@ bool process_tag( gtentry * ge, mac_entry * me )
                     } else {
                         strcpy( token_buf, "'" );
                     }
-                    strcat( token_buf, ga->name );
+                    strcat( token_buf, ga->attname );
                     strcat( token_buf, "' " );
                 }
             }

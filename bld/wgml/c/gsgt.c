@@ -399,7 +399,6 @@ void    scr_gt( void )
         g_attname[0] = '*';
 
         p = get_tagname( p, g_tagname );
-
         if( arg_flen > strlen( g_tagname ) ) {
             xx_err( err_tag_name_inv );
             return;

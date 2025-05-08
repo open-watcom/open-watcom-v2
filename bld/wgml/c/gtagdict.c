@@ -319,7 +319,7 @@ static  void    print_att_entry( gaentry *wk )
         find++;
         flags >>= 1;
     }
-    out_msg( "att:     %-13.13s %s\n", wk->name, opt );
+    out_msg( "att:     %-13.13s %s\n", wk->attname, opt );
     for( gaval = wk->vals; gaval != NULL; gaval = gaval->next ) {
         print_val_entry( gaval );
     }
