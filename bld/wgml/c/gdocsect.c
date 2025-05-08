@@ -672,7 +672,7 @@ static void gen_index( void )
 
     /* Set up for device/frame selected by the LAYOUT tag IXHEAD*/
 
-    if( layout_work.ixhead.frame.type != none ) {
+    if( layout_work.ixhead.frame.type != none_frame ) {
         if( layout_work.ixhead.frame.type == box_frame ) {  // frame is box
             if( bin_driver->dbox.text == NULL ) {           // character device
                 memset( &frame_line_1[1], bin_device->box.chars.horizontal_line,
@@ -790,7 +790,7 @@ static void gen_index( void )
                 t_page.cur_width += ixh_indent;
 
                 switch( layout_work.ixhead.frame.type ) {
-                case none :
+                case none_frame :
                     process_text( letter, layout_work.ixhead.font );
                     break;
                 case box_frame :

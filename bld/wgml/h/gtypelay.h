@@ -121,7 +121,7 @@ typedef struct  ban_places {
 #define STRBLK_SIZE     120             // max string length in layout TBD
                                         // no value found in documentation
 typedef enum def_frame_type {
-    none,
+    none_frame,
     box_frame,
     rule_frame,
     char_frame
