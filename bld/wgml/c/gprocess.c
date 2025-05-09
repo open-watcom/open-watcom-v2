@@ -194,18 +194,11 @@ static void split_at_GML_tag( void )
     size_t          toklen;
     char            tagname[TAG_NAME_LENGTH + 1];
 
-    if( *buff2 == GML_char ) {
-        if( !strnicmp( "CMT", (buff2 + 1), 3 )
-          && ((*(buff2 + 4) == '.')
-          || (*(buff2 + 4) == ' ')) ) {
-            return;                     // no split for :cmt. line
-        }
-    }
-
     /***********************************************************************/
     /*  Look for GML tag start char(s) until a known tag is found          */
     /*  then split the line                                                */
     /***********************************************************************/
+
     pchar = buff2;
     while( (pchar = strchr( pchar + 1, GML_char )) != NULL ) {
         while( *(pchar + 1) == GML_char ) {
@@ -218,12 +211,16 @@ static void split_at_GML_tag( void )
           && ((*p2 == '.')
           || is_space_tab_char( *p2 )
           || (*p2 == '\0')
-          || (*p2 == GML_char) ) ) {    // 'good' tag end
+          || (*p2 == GML_char) ) ) {    // 'good' tag end ????? should be ' ' or '\t' or '.' or '\0'
+            if( strcmp( "CMT", tagname ) == 0 ) {
+                /* is  comment */
+                *pchar = '\0';
+                return;
+            }
             if( ProcFlags.layout
               && (*p2 == '\t') ) {
-                *p2 = ' ';                // replace tab with space in layout
+                *p2 = ' ';              // replace tab with space in layout
             }
-
             input_cbs->hh_tag = false;  // clear before testing
             /***************************************************************/
             /* Verify valid user or system tag                             */
@@ -286,14 +283,25 @@ static void split_at_GML_tag( void )
 
 static bool split_input_buffer( void )
 {
-    int                 k;
+    int             k;
+    char            tagname[TAG_NAME_LENGTH + 1];
+    bool            comment;
 
     /***********************************************************************/
     /*  look for GML tag start character and split line at GML tag         */
     /*  special processing for some script control lines                   */
     /***********************************************************************/
 
-    split_at_GML_tag();
+    comment = false;
+    if( *buff2 == GML_char ) {
+        get_tagname( buff2 + 1, tagname );
+        if( strcmp( "CMT", tagname ) == 0 ) {
+            comment = true;
+        }
+    }
+    if( !comment ) {
+        split_at_GML_tag();
+    }
 
     if( !ProcFlags.literal ) {
 
@@ -301,8 +309,7 @@ static bool split_input_buffer( void )
         /* for :cmt. minimal processing                                    */
         /*******************************************************************/
 
-        if( (*buff2 == GML_char)
-          && strnicmp( "cmt.", buff2 + 1, 4 ) == 0 ) {
+        if( comment ) {
             return( false );
         }
 
