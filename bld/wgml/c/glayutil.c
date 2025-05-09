@@ -342,6 +342,7 @@ void    o_content( FILE *fp, lay_attr_o lay_attr, const reg_content *tm )
     if( tm->content_type < no_content || tm->content_type >= max_content) {
         p = "???";
     } else if( tm->content_type == string_content ) { // user string with quotes
+        p = tm->string;
         fprintf( fp, "        %s = '", lay_att_names[lay_attr] );
         while( (c = *p++) != '\0' ) {
             if( c == '&' ) {
@@ -352,7 +353,7 @@ void    o_content( FILE *fp, lay_attr_o lay_attr, const reg_content *tm )
         }
         fputc( '\'', fp );
         fputc( '\n', fp );
-        p = tm->string;
+        return;
     } else {
         p = tm->string;
     }
@@ -902,7 +903,6 @@ void    o_spacing( FILE *fp, lay_attr_o lay_attr, const text_space *tm )
 bool    i_threshold( char *p, lay_attr_i lay_attr, uint16_t *tm )
 {
     bool        rc;
-    long        wk;
 
     rc = i_uint16( p, lay_attr, tm );
     if( *tm == 0 ) {
