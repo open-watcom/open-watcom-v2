@@ -142,7 +142,7 @@ static void free_sym_chain( symvar * wk )
     symsub  *   wsn;
 
     while( wk != NULL ) {
-        if( !(wk->flags & no_free) ) {
+        if( (wk->flags & no_free) == 0 ) {
             ws = wk->subscripts;
             while( ws != NULL ) {
                 mem_free( ws->value );
@@ -364,7 +364,9 @@ int find_symvar_lcl( symdict_hdl dict, char * name, sub_index sub, symsub **syms
                 if( rc ) {
                     break;              // found variable
                 }
-            if( incbs->fmflags & II_file ) break;   // stop at first file
+                if( incbs->fmflags & II_file ) {
+                    break;   // stop at first file
+                }
             }
         }
     }

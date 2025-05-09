@@ -250,7 +250,7 @@ bool process_tag( gtentry * ge, mac_entry * me )
                         }
 
                         /* no line end allowed before '=' except with TEXTLine */
-                        if( (*p == '\0') && !(ge->tagflags & tag_textline) ) {
+                        if( (*p == '\0') && (ge->tagflags & tag_textline) == 0 ) {
                             xx_line_err_cc( err_no_att_val, token_buf, p );
                         }
 
@@ -339,7 +339,7 @@ bool process_tag( gtentry * ge, mac_entry * me )
         *token_buf = '\0';
         for( ga = ge->attribs; ga != NULL; ga = ga->next ) {// for all attrs
             if( ga->attflags & att_req ) {
-                if( !(ga->attflags & att_proc_seen) ) {
+                if( (ga->attflags & att_proc_seen) == 0 ) {
                     if( *token_buf != '\0' ) {
                         strcat( token_buf, " '" );
                     } else {
@@ -401,7 +401,7 @@ bool process_tag( gtentry * ge, mac_entry * me )
         if( *p2 == '.' ) {
             SkipDot( p );
         } else {
-            if( (ge->tagflags & tag_attr) && !(ge->tagflags & tag_textline) ) {
+            if( (ge->tagflags & tag_attr) && (ge->tagflags & tag_textline) == 0 ) {
                 SkipSpaces( p );
             }
         }

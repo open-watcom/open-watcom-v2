@@ -494,7 +494,7 @@ static  void    proc_input( char * filename )
         /*  process an input file / macro                                  */
         /*******************************************************************/
 
-        while( !(input_cbs->fmflags & II_eof) ) {
+        while( (input_cbs->fmflags & II_eof) == 0 ) {
 
             ic = input_cbs->if_cb;      // .if .th .el controlblock
 

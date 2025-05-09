@@ -698,11 +698,11 @@ static void     gml_exl_common( const gmltag * entry )
     SkipSpaces( p );                    // over WS to <text line>
     if( *p != '\0' ) {
         if( !input_cbs->hidden_head->ip_start && (*(p + 1) == '\0') && (*p == CONT_char) ) { // text is continuation character only
-            if( &l_post_skip != NULL ) {
+//            if( &l_post_skip != NULL ) {
                 g_post_skip = conv_vert_unit( &l_post_skip , g_text_spacing, l_font );
-            } else {
-                g_post_skip = 0;
-            }
+//            } else {
+//                g_post_skip = 0;
+//            }
         } else {
             do_force_pc( p );
         }
@@ -1457,7 +1457,7 @@ void gml_dd( const gmltag * entry )
     g_curr_font = layout_work.dd.font;
     t_page.cur_left = nest_cb->lm + nest_cb->left_indent + nest_cb->tsize;   // left start
 
-    if( !dt_space_set && input_cbs->fmflags & II_macro ) {
+    if( !dt_space_set && (input_cbs->fmflags & II_macro) ) {
         ProcFlags.dd_macro = true;
     }
     dt_space_set = false;

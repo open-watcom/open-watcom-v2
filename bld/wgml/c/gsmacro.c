@@ -526,7 +526,7 @@ void    scr_dm( void )
         ProcFlags.in_macro_define = 1;
         lineno_start = cb->s.f->lineno;
 
-        while( !(cb->s.f->flags & FF_eof) ) {  // process all macro lines
+        while( (cb->s.f->flags & FF_eof) == 0 ) {  // process all macro lines
 
             get_line( true );
 

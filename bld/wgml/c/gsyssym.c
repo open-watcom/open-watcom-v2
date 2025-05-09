@@ -432,7 +432,7 @@ static void sysfnamfun( symvar * e )  // name of current input file not macro
         sysfnam0.value = NULL;
     } else {
         wk = input_cbs;
-        while( (wk != NULL) && !(wk->fmflags & II_file) ) {
+        while( (wk != NULL) && (wk->fmflags & II_file) == 0 ) {
             wk = wk->prev;
         }
         if( wk == NULL ) {
@@ -457,7 +457,7 @@ static void sysfnumfun( symvar * e )// lineno of current input file not macro
 
     if( input_cbs != NULL ) {
         wk = input_cbs;
-        while( (wk != NULL) && !(wk->fmflags & II_file) ) {
+        while( (wk != NULL) && (wk->fmflags & II_file) == 0 ) {
             wk = wk->prev;
         }
         if( wk != NULL ) {

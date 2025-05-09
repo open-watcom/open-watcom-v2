@@ -510,7 +510,7 @@ static void wgml_tabs( void )
     } else if( tabbing ) {          // text belongs to current tab stop
         if( tab_chars.last != NULL ) {
             if( (tab_chars.first != NULL) && ((c_stop->alignment != al_left) ||
-                !(input_cbs->fmflags & II_tag_mac)) ) {
+                (input_cbs->fmflags & II_tag_mac) == 0) ) {
                 // remove all markers/fill chars
                 if( tab_chars.first->prev !=NULL) {
                     tab_chars.first->prev->next = tab_chars.last->next;
@@ -768,7 +768,7 @@ static void wgml_tabs( void )
 
             // Not for text from macros, even if font number changes
 
-            if( (c_font != s_chars->font) && !(input_cbs->fmflags & II_macro) ) {
+            if( (c_font != s_chars->font) && (input_cbs->fmflags & II_macro) == 0 ) {
                 c_chars = do_c_chars( c_chars, in_chars, NULL, 0,
                                 t_page.cur_width, 0, c_font, c_type );
                 if( tab_chars.first == NULL) {

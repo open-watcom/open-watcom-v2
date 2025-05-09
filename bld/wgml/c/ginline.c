@@ -95,7 +95,7 @@ static void gml_inline_common( const gmltag * entry, font_number font, e_tags t 
             scr_process_break();
         } else {
             ProcFlags.xmp_ut_sf = true;
-            if( !(input_cbs->s.m->tag->tagflags & tag_cont) ) {
+            if( (input_cbs->s.m->tag->tagflags & tag_cont) == 0 ) {
                 scr_process_break();        // tag not defined with CONT
             }
         }
@@ -176,7 +176,7 @@ static void gml_inline_common( const gmltag * entry, font_number font, e_tags t 
     }
 
     if( !ProcFlags.concat && !ProcFlags.cont_char
-            && ((input_cbs->fmflags & II_file) || (input_cbs->fmflags & II_macro)) ) {
+            && (input_cbs->fmflags & (II_file | II_macro)) ) {
         scr_process_break();            // ensure line is output
     }
     scandata.s = scandata.e;
@@ -334,7 +334,7 @@ static void gml_e_inlne_common( const gmltag * entry, e_tags t )
             }
         }
         if( !ProcFlags.concat && !ProcFlags.cont_char
-                && ((input_cbs->fmflags & II_file) || (input_cbs->fmflags & II_macro)) ) {
+                && (input_cbs->fmflags & (II_file | II_macro)) ) {
             scr_process_break();        // ensure line is output
         }
     }

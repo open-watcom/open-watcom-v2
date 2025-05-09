@@ -357,8 +357,7 @@ static void get_macro_line( void )
 
     if( cb->macline == NULL ) {         // no more macrolines
         if( !ProcFlags.concat && !ProcFlags.cont_char && (input_cbs->hidden_head == NULL) &&
-                ((input_cbs->prev->fmflags & II_file) ||
-                 (input_cbs->prev->fmflags & II_macro)) ) {
+                (input_cbs->prev->fmflags & (II_file | II_macro)) ) {
             scr_process_break();
         }
         input_cbs->fmflags |= II_eof;
@@ -429,7 +428,7 @@ bool get_line( bool display_line )
 
     if( ProcFlags.reprocess_line ) {    // there was an unget
         ProcFlags.reprocess_line = false;   // only used for :LAYOUT
-        return( !(input_cbs->fmflags & II_eof) );
+        return( (input_cbs->fmflags & II_eof) == 0 );
     }
     if( input_cbs->hidden_head != NULL ) {  // line was previously split,
         strcpy( buff2, input_cbs->hidden_head->value ); // take next part
@@ -460,7 +459,7 @@ bool get_line( bool display_line )
             } else {
                 ProcFlags.utc = false;  // to catch end of user-defined tag
                 cb = input_cbs->s.f;    // input from file
-                if( !(cb->flags & FF_open) ) {
+                if( (cb->flags & FF_open) == 0 ) {
                     g_info( err_inf_reopen );
                     show_include_stack();
                     reopen_inc_fp( cb );
@@ -540,13 +539,13 @@ bool get_line( bool display_line )
         }
     }
 
-    if( !(input_cbs->fmflags & II_eof) ) {
+    if( (input_cbs->fmflags & II_eof) == 0 ) {
         if( display_line && GlobalFlags.firstpass
             && (input_cbs->fmflags & II_research) ) {
             printf( "%s\n", buff2 );
         }
     }
-    return( !(input_cbs->fmflags & II_eof) );
+    return( (input_cbs->fmflags & II_eof) == 0 );
 }
 
 
