@@ -34,6 +34,7 @@
 
 
 #include "wgml.h"
+#include <errno.h>
 
 #include "clibext.h"
 

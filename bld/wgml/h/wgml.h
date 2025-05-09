@@ -170,63 +170,32 @@ extern  void        init_entry_list( ix_h_blk * term );
 extern  void        eat_lay_sub_tag( void );
 extern  void        free_layout( void );
 extern  condcode    lay_attr_and_value( lay_att_val *lay_attr );
-extern  bool        i_case( char *p, lay_attr_i lay_attr, case_t *tm );
-extern  void        o_case( FILE *fp, lay_attr_o lay_attr, const case_t *tm );
-extern  bool        i_char( char *p, lay_attr_i lay_attr, char *tm );
-extern  void        o_char( FILE *fp, lay_attr_o lay_attr, const char *tm );
-extern  bool        i_content( char *p, lay_attr_i lay_attr, content *tm );
-extern  void        o_content( FILE *fp, lay_attr_o lay_attr, const content *tm );
-extern  bool        i_default_frame( char *p, lay_attr_i lay_attr, def_frame *tm );
-extern  void        o_default_frame( FILE *fp, lay_attr_o lay_attr, const def_frame *tm );
-extern  bool        i_docsect( char *p, lay_attr_i lay_attr, ban_docsect *tm );
-extern  void        o_docsect( FILE *fp, lay_attr_o lay_attr, const ban_docsect *tm );
-extern  bool        i_frame( char *p, lay_attr_i lay_attr, bool *tm );
-extern  void        o_frame( FILE *fp, lay_attr_o lay_attr, const bool *tm );
-extern  bool        i_int32( char *p, lay_attr_i lay_attr, int32_t *tm );
-extern  void        o_int32( FILE *fp, lay_attr_o lay_attr, const int32_t *tm );
-extern  bool        i_int8( char *p, lay_attr_i lay_attr, int8_t *tm );
-extern  void        o_int8( FILE *fp, lay_attr_o lay_attr, const int8_t *tm );
-extern  bool        i_uint8( char *p, lay_attr_i lay_attr, uint8_t *tm );
-extern  void        o_uint8( FILE *fp, lay_attr_o lay_attr, const uint8_t *tm );
-extern  bool        i_spacing( char *p, lay_attr_i lay_attr, text_space *tm );
-extern  void        o_spacing( FILE *fp, lay_attr_o lay_attr, const text_space *tm );
-extern  bool        i_font_number( char *p, lay_attr_i lay_attr, font_number *tm );
-extern  void        o_font_number( FILE *fp, lay_attr_o lay_attr, const font_number *tm );
-extern  bool        i_number_form( char *p, lay_attr_i lay_attr, num_form *tm );
-extern  void        o_number_form( FILE *fp, lay_attr_o lay_attr, const num_form *tm );
-extern  bool        i_number_style( char *p, lay_attr_i lay_attr, num_style *tm );
-extern  void        o_number_style( FILE *fp, lay_attr_o lay_attr, const num_style *tm );
-extern  bool        i_page_eject( char *p, lay_attr_i lay_attr, page_ej *tm );
-extern  void        o_page_eject( FILE *fp, lay_attr_o lay_attr, const page_ej *tm );
-extern  bool        i_page_position( char *p, lay_attr_i lay_attr, page_pos *tm );
-extern  void        o_page_position( FILE *fp, lay_attr_o lay_attr, const page_pos *tm );
-extern  bool        i_place( char *p, lay_attr_i lay_attr, bf_place *tm );
-extern  void        o_place( FILE *fp, lay_attr_o lay_attr, const bf_place *tm );
-extern  bool        i_pouring( char *p, lay_attr_i lay_attr, reg_pour *tm );
-extern  void        o_pouring( FILE *fp, lay_attr_o lay_attr, const reg_pour *tm );
-extern  bool        i_space_unit( char *p, lay_attr_i lay_attr, su *tm );
-extern  void        o_space_unit( FILE *fp, lay_attr_o lay_attr, const su *tm );
-extern  bool        i_threshold( char *p, lay_attr_i lay_attr, uint16_t *tm );
-extern  void        o_threshold( FILE *fp, lay_attr_o lay_attr, const uint16_t *tm );
-extern  bool        i_xx_string( char *p, lay_attr_i lay_attr, xx_str *tm );
-extern  void        o_xx_string( FILE *fp, lay_attr_o lay_attr, const xx_str *tm );
-extern  bool        i_date_form( char *p, lay_attr_i lay_attr, xx_str *tm );
-extern  void        o_date_form( FILE *fp, lay_attr_o lay_attr, const xx_str *tm );
-extern  bool        i_yes_no( char *p, lay_attr_i lay_attr, bool *tm );
-extern  void        o_yes_no( FILE *fp, lay_attr_o lay_attr, const bool *tm );
-
+/*
+ * prototypes for the layout tag attribute processing routines
+ *
+ *          for input scanning
+ */
+#define pick( name, funci, funco, restype ) extern bool funci( char *p, lay_attr_i lay_attr, restype *tm );
+#include "glayutil.h"
+#undef pick
+/*
+ *          for output via :convert tag
+ */
+#define pick( name, funci, funco, restype ) extern void funco( FILE *fp, lay_attr_o lay_attr, const restype *tm );
+#include "glayutil.h"
+#undef pick
 
 /* glbandef.c                           */
 extern void         banner_defaults( void );
 
 
 /* gmacdict.c                           */
-extern  void        add_macro_entry( mac_dict * dict, mac_entry * me );
-extern  void        init_macro_dict( mac_dict * * dict );
-extern  void        free_macro_dict( mac_dict * * dict );
-extern  void        free_macro_entry( mac_dict * dict, mac_entry * me );
-extern  void        print_macro_dict( mac_dict * dict, bool with_mac_lines );
-extern  mac_entry * find_macro( mac_dict * dict, char const * name );
+extern  void        add_macro_entry( mac_dict dict, mac_entry * me );
+extern  void        init_macro_dict( mac_dict *pdict );
+extern  void        free_macro_dict( mac_dict *pdict );
+extern  void        free_macro_entry( mac_dict dict, mac_entry * me );
+extern  void        print_macro_dict( mac_dict dict, bool with_mac_lines );
+extern  mac_entry * find_macro( mac_dict dict, char const * name );
 
 
 /* gmemory.c                            */
@@ -562,20 +531,6 @@ extern  void    show_include_stack( void );
 
 #define pick( name, length, routine, gmlflags, locflags )  extern void routine( const gmltag * entry );
 #include "gtagslay.h"
-#undef pick
-
-/*
- * prototypes for the layout tag attribute processing routines
- */
-
-/*          for input scanning              */
-#define pick( name, funci, funco, restype )     extern  bool    funci( char * buf, lay_attr_i lay_attr, restype * result );
-#include "glayutil.h"
-#undef pick
-
-/*          for output via :convert tag     */
-#define pick( name, funci, funco, restype )     extern  void    funco( FILE *fp, lay_attr_o lay_attr, const restype * in );
-#include "glayutil.h"
 #undef pick
 
 /*

@@ -128,7 +128,6 @@ static void draw_box( doc_el_group * in_group )
 {
     doc_element *   cur_doc_el;
     doc_element *   sav_doc_el;
-    int             i;
     unsigned        k;
     text_line   *   cur_line;
     text_line   *   sav_line;

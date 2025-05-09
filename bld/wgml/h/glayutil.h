@@ -111,7 +111,7 @@
   pick( spacing,           i_spacing,       o_spacing,       text_space      )
   pick( stop_eject,        i_yes_no,        o_yes_no,        bool            )
   pick( string_font,       i_font_number,   o_font_number,   font_number     )
-  pick( threshold,         i_int8,          o_int8,          int8_t          )
+  pick( threshold,         i_threshold,     o_threshold,     uint16_t        )
   pick( toc_levels,        i_int8,          o_int8,          int8_t          )
   pick( top_margin,        i_space_unit,    o_space_unit,    su              )
   pick( voffset,           i_space_unit,    o_space_unit,    su              )
