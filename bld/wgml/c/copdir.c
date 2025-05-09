@@ -431,9 +431,9 @@ static char *get_member_name( FILE *fp, const char *dir_file_name, const char *d
 
 char *search_member_name( const char *dir, const char *file_name )
 {
-#define DIRECTORY_FILE      "WGMLST.COP"
+#define DIRECTORY_FILE      "wgmlst.cop"
 #ifdef __UNIX__
-#define DIRECTORY_FILE_ALT  "wgmlst.cop"
+#define DIRECTORY_FILE_ALT  "WGMLST.COP"
 #endif
 
     FILE    *fp;

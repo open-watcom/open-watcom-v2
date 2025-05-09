@@ -445,25 +445,29 @@ FILE *search_file_in_dirs( const char *filename, const char *defext, const char 
                         mem_free( member_name );
                         return( NULL );
                     }
-                    pg.ext = COP_EXT;
+                    pg.ext = "COP";
                 }
-#ifdef __UNIX__
-                strlwr( member_name );
-#endif
                 _makepath( primary_file, NULL, NULL, member_name, pg.ext );
+                strlwr( primary_file );
+                fp = try_open( dir_name, primary_file );
+#ifdef __UNIX__
+                if( fp == NULL ) {
+                    strupr( primary_file );
+                    fp = try_open( dir_name, primary_file );
+                }
+#endif
                 mem_free( member_name );
-            }
 
+            	/* Not finding the file is only a problem for ds_bin_lib. */
+
+                if( fp == NULL ) {
+                    xx_simple_err_cc( ERR_MEM_DIR, dir_name, primary_file );
+                }
+                return( fp );
+            }
             fp = try_open( dir_name, primary_file );
             if( fp != NULL ) {
                 return( fp );
-            }
-
-            /* Not finding the file is only a problem for ds_bin_lib. */
-
-            if( sequence == ds_bin_lib ) {
-                xx_simple_err_cc( ERR_MEM_DIR, dir_name, primary_file );
-                return( NULL );
             }
 
             if( *alternate_file != '\0' ) {
