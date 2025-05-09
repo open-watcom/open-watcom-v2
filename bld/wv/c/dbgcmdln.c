@@ -46,7 +46,7 @@
 #include "dbglkup.h"
 #include "dbgerr.h"
 #include "dbglit.h"
-#include "wv.rh"
+#include "wvbase.rh"
 #include "dbgname.h"
 
 

@@ -35,6 +35,8 @@
 #include <string.h>
 #include "rxwrap.h"
 #include "wndregx.h"
+#include "auistr.rh"
+
 
 bool    WndDoingSearch = false;
 

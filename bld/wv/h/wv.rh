@@ -31,17 +31,8 @@
 ****************************************************************************/
 
 
-#include "aui.rh"
-
-
-/*
- *      GUI_LITERAL_BASE    1       +67
- *      AUI_LITERAL_BASE    200     +7
- */
-#define MSG_USAGE_BASE      300     // +27
-#define DBG_ENG_BASE        500     // +272
-#define DBG_DUI_BASE        900     // +111
-#define DBG_MENU_BASE       1100    // +394
+#include "auistr.rh"
+#include "wvbase.rh"
 
 #if defined( GUI_IS_GUI ) || defined( RESX_GUI )
 #define BITMAP_SPLASH       1001

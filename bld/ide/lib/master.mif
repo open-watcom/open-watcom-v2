@@ -20,9 +20,7 @@ idelib_autodepends = .AUTODEPEND
 
 inc_dirs = -I. $(cli_idelib_inc_dirs) -I"$(lib_misc_dir)/h"
 
-!ifdef __WATCOM_TOOLS__
 extra_c_flags_i86 = -zc -zm
-!endif
 
 # explicit rules
 #################

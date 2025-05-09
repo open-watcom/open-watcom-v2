@@ -35,6 +35,7 @@
 #include "guidlg.h"
 #include "wndregx.h"
 #include <string.h>
+#include "auidlg.rh"
 
 
 #define METACHARACTERS  "^$\\.[(|?+*~@"

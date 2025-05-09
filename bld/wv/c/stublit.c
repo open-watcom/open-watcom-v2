@@ -41,7 +41,8 @@
 #include "dbgdefn.h"
 #include "dbgmem.h"
 #include "wreslang.h"
-#include "wv.rh"
+#include "wvbase.rh"
+//#include "wv.rh"
 #include "dbglit.h"
 #if defined( USE_WRESLIB )
     #include "wressetr.h"

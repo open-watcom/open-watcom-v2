@@ -139,11 +139,12 @@ typedef struct {
 } dw_funcs;
 
 typedef struct {
-    dw_lang       language;
+    dw_langnum    language;
     uint_8        compiler_options;
     const char    *producer_name;
     jmp_buf       exception_handler;
     dw_funcs      funcs;
+    dw_sym_handle abbrev_sym;
 } dw_init_info;
 .millust end
 .begnote
@@ -154,11 +155,11 @@ Language used.
 .begnote $setptnt 24
 .notehd1 Constant
 .notehd2 Language
-.note DWLANG_C
+.note DW_LANG_C89
 ISO/ANSI C
-.note DWLANG_CPP
+.note DW_LANG_C_plus_plus
 C++
-.note DWLANG_FORTRAN
+.note DW_LANG_Fortran77
 FORTRAN77
 .endnote
 .note compile_options
@@ -1743,9 +1744,20 @@ Functions called by the client and the DWARF library.
 .np
 Client:
 .millust begin
-    cli_id = DWInit( DW_LANG_C89, DW_CM_DEBUGGER, "test.c",
-		     "c:\mydir", 0x123, 1, CLILoc, CLIType,
-		     CLIName, CLIWrite, CLIAlloc, CLIFree );
+    dw_init_info info;
+
+    info.language = DW_LANG_C89;
+    info.compiler_options = DW_CM_DEBUGGER;
+    info.producer_name = "test.c";
+    info.exception_handler = 
+    info.dw_funcs.cli_reloc = CLIReloc;
+    info.dw_funcs.cli_write = CLIWrite;
+    info.dw_funcs.cli_seek = CLISeek;
+    info.dw_funcs.cli_tell = CLITell;
+    info.dw_funcs.cli_alloc = CLIAlloc;
+    info.dw_funcs.cli_free = CLIFree;
+    info.abbrev_sym = NULL;
+    cli_id = DWInit( &info );
 .millust end
 DWARF Library:
 .millust begin

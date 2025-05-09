@@ -443,8 +443,7 @@ void    scr_if( void )
             firstcondition = false;
             if( cb->if_level < MAX_IF_LEVEL ) {
                 cb->if_level++;
-                memset( &cb->if_flags[cb->if_level], '\0',
-                        sizeof( cb->if_flags[cb->if_level] ) );
+                memset( &cb->if_flags[cb->if_level], '\0', sizeof( cb->if_flags[cb->if_level] ) );
                 cb->if_flags[cb->if_level].iflast = true;
                 cb->if_flags[cb->if_level].ifcwte = false;  // no .th .el yet
                 cb->if_flags[cb->if_level].iftrue = false;  // cond not yet true

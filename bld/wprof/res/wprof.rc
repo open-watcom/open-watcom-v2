@@ -13,6 +13,8 @@
 #endif
 #include "wprof.rh"
 
+#include "auistr.rh"
+#include "auidlg.rh"
 #include "aui.rc"
 
 #ifdef RESX_GUI

@@ -42,6 +42,7 @@
 #define MIN_VBUF_INC 32     // minimum increment allocated (power of 2)
 
 #define BUFFER_SIZE(x)      ((x+1+(MIN_VBUF_INC-1))&(-MIN_VBUF_INC))
+#define FREE_BUFFER(x)      {if(x->len>1)GUIMemFree(x->buf);}
 
 #define EXT_SEP             '.'
 #define IS_EXT_SEP(c)       ((c) == EXT_SEP)
@@ -60,8 +61,7 @@ void VbufReqd(                  // ENSURE BUFFER IS OF SUFFICIENT SIZE
         reqd = BUFFER_SIZE( reqd );
         new_buffer = GUIMemAlloc( reqd );
         memcpy( new_buffer, vbuf->buf, vbuf->used + 1 ); // +1 include '\0' terminator
-        if( vbuf->len > 1 )
-            GUIMemFree( vbuf->buf );
+        FREE_BUFFER( vbuf );
         vbuf->buf = new_buffer;
         vbuf->len = reqd;
     }
@@ -88,11 +88,8 @@ void VbufInit(                  // INITIALIZE BUFFER STRUCTURE
 void VbufFree(                  // FREE BUFFER
     VBUF *vbuf )                // - VBUF structure
 {
-    if( vbuf->len > 1 )
-        GUIMemFree( vbuf->buf );
-    vbuf->buf = VBUF_INIT_BUF;
-    vbuf->len = VBUF_INIT_LEN;
-    vbuf->used = VBUF_INIT_USED;
+    FREE_BUFFER( vbuf );
+    VbufInit( vbuf );
 }
 
 

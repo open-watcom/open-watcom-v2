@@ -27,10 +27,7 @@ wv_os2pm = 1
 !endif
 !endif
 
-additional_clean = *.gh *.grc
-!ifdef wv_os2pm
-additional_clean += *.dlg
-!endif
+additional_clean = *.gh *.grh *.grc *.dlg
 
 !include cproj.mif
 !include defrule.mif
@@ -128,7 +125,7 @@ exetarg_objs          = $(wv_drv_objs)
 exetarg_libs          = wd.lib
 exetarg_name          = $(wv_engine_noui)
 !else
-exetarg_prebuild_objs = liteng.gh litdui.gh litmenu.gh usage.gh usagej.gh
+exetarg_prebuild_objs = liteng.gh litdui.gh litmenu.gh usage.gh usagej.gh aui.grh
 exetarg_objs          = $(engine_objs) fingmsg.obj $(ui_objs)
 exetarg_libs          = $(cli_aui_libs)
 ! ifdef sys_windowed
@@ -387,6 +384,7 @@ rcfiles = liteng.gh litdui.gh litmenu.gh usage.gh usagej.gh &
     ../../h/dlgwind.rh &
     ../../h/dlgstk.rh &
     ../../h/dlgasync.rh &
+    $(cli_aui_dialogs) &
     $(wv_dialogs)
 !endif
 

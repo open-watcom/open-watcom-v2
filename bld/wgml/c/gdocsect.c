@@ -656,22 +656,19 @@ static void gen_index( void )
     if( layout_work.ixhead.frame.type != none_frame ) {
         if( layout_work.ixhead.frame.type == box_frame ) {  // frame is box
             if( bin_driver->dbox.text == NULL ) {           // character device
-                memset( &frame_line_1[1], bin_device->box.chars.horizontal_line,
-                        frame_line_len - 2 );
+                memset( &frame_line_1[1], bin_device->box.chars.horizontal_line, frame_line_len - 2 );
                 frame_line_1[0] = bin_device->box.chars.top_left;
                 frame_line_1[frame_line_len - 1 ] = bin_device->box.chars.top_right;
                 frame_line_2[0] = bin_device->box.chars.vertical_line;
                 memset( &frame_line_2[1], ' ', frame_line_len - 2 );
                 frame_line_2[frame_line_len - 1 ] = bin_device->box.chars.vertical_line;
-                memset( &frame_line_3[1], bin_device->box.chars.horizontal_line,
-                        frame_line_len - 2 );
+                memset( &frame_line_3[1], bin_device->box.chars.horizontal_line, frame_line_len - 2 );
                 frame_line_3[0] = bin_device->box.chars.bottom_left;
                 frame_line_3[frame_line_len - 1 ] = bin_device->box.chars.bottom_right;
             }
         } else if( layout_work.ixhead.frame.type == rule_frame  ) { // rule frame
             if( bin_driver->hline.text == NULL ) {          // character device
-                memset( frame_line_1, bin_device->box.chars.horizontal_line,
-                        frame_line_len );
+                memset( frame_line_1, bin_device->box.chars.horizontal_line, frame_line_len );
             }
         } else if( layout_work.ixhead.frame.type == char_frame ) {   // frame is 'character string'
             str_count = strlen( layout_work.ixhead.frame.string );

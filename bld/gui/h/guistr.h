@@ -35,7 +35,7 @@
 
 #ifdef DEFINE_RC_STRINGS
 
-#include "gui.rh"
+#include "guibase.rh"
 
 #define LIT_GUI( sym )  (_LIT_GUI_##sym)
 
