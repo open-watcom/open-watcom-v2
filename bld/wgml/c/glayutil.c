@@ -608,7 +608,7 @@ bool    i_uint8( char * p, lay_attr_i lay_attr, uint8_t * tm )
     (void)lay_attr;
 
     wk = strtoul( p, NULL, 10 );
-    if( errno = ERANGE || wk > 255 ) {
+    if( errno == ERANGE || wk > 255 ) {
         xx_line_err_c( err_ui_8, p );
     }
     *tm = wk;
