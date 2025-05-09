@@ -1289,10 +1289,10 @@ void cop_teardown( void )
  *          bin_font contains a width table must be considered.
  */
 
-uint32_t cop_text_width( const char *text, size_t count, font_number font )
+unsigned cop_text_width( const char *text, unsigned count, font_number font )
 {
-    size_t          i;
-    uint32_t        width;
+    unsigned        i;
+    unsigned        width;
 
     if( font >= wgml_font_cnt )
         font = FONT0;
@@ -1319,7 +1319,7 @@ void cop_ti_table( const char *p )
     int             i;
     char            token_char;
     char            first_char;
-    uint32_t        len;
+    unsigned        len;
     char            cwcurr[4];
 
     first_char = '\0';

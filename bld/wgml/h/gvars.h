@@ -58,7 +58,7 @@ global  char        *   new_file_parms; // command tail for IM/AP
 global  char        *   scan_restart;   // used by character scanning routines
 global  bool            g_scan_err;     // used by character scanning routines
 global  char        *   g_tok_start;    // start of scanned token
-global  size_t          arg_flen;       // arg length
+global unsigned         arg_flen;       // arg length
 global  locflags        rs_loc;         // restricted location
 
 global  int             switch_char;    // DOS switch character
@@ -85,7 +85,7 @@ global  line_number     line_to;        // ending lineno to process
 #define LINETO_DEFAULT      (0x1000000) // 16 MiB lines should be enough
 
 global  char            gotarget[MAC_NAME_LENGTH +1];   // .go to target name
-global  int32_t         gotargetno;     // .go to line no
+global  line_number     gotargetno;     // .go to line no
 
 global  int             err_count;      // Overall Errorcount
 global  int             wng_count;      // Overall warning count
@@ -112,19 +112,19 @@ global  uint32_t        g_page;         // current document pageno &$page
 global  line_number     g_line;         // current output lineno   &$line
 global  int32_t         lcmax;          // remaining lines on page initial
 
-global  int32_t         g_hm;           // heading margin          &$hm
-global  int32_t         g_tm;           // top margin              &$tm
+global int              g_hm;           // heading margin          &$hm
+global int              g_tm;           // top margin              &$tm
 
-global  int32_t         g_bm;           // bottom margin           &$bm
-global  int32_t         g_fm;           // footing margin          &$fm
+global int              g_bm;           // bottom margin           &$bm
+global int              g_fm;           // footing margin          &$fm
 
-global  int32_t         g_lm;           // left margin             &$pagelm
-global  int32_t         g_rm;           // right margin            &$pagerm
+global int              g_lm;           // left margin             &$pagelm
+global int              g_rm;           // right margin            &$pagerm
 
 global symdict_hdl      global_dict;    // global symbol dictionary
 global symdict_hdl      sys_dict;       // global system symbol dictionary
-global  mac_dict    *   macro_dict;     // macro dictionary
-global  gtentry     *   tag_dict;       // user tag dictionary
+global mac_dict         *macro_dict;    // macro dictionary
+global gtentry          *tag_dict;      // user tag dictionary
 
 global  char            research_file_name[48]; // filename for research
 global  line_number     research_from;  // line no start for research output

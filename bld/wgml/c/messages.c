@@ -293,10 +293,10 @@ static void err_exit( void ) {
 /*  display offending text line and mark the offending token               */
 /***************************************************************************/
 
-static void show_line_error_len( const char * pa, size_t len )
+static void show_line_error_len( const char * pa, unsigned len )
 {
-    char    *buf = NULL;
-    size_t  cnt;
+    char        *buf = NULL;
+    unsigned    cnt;
 
     msg_indent = 0;
     if( len == 0 ) {
@@ -721,7 +721,7 @@ void xx_line_err_c( const msg_ids errid, const char * pa )
     err_exit();
 }
 
-void xx_line_err_ci( const msg_ids errid, const char * pa, size_t len )
+void xx_line_err_ci( const msg_ids errid, const char * pa, unsigned len )
 {
     err_count++;
     g_err( errid );
@@ -739,7 +739,7 @@ void xx_line_err_cc( const msg_ids errid, char const * cw, const char * pa )
     err_exit();
 }
 
-void xx_line_err_cci( const msg_ids errid, char const * cw, char const * pa, size_t len )
+void xx_line_err_cci( const msg_ids errid, char const * cw, char const * pa, unsigned len )
 {
     err_count++;
     g_err( errid, cw, pa );

@@ -756,6 +756,8 @@ typedef struct final_reg_content {      // final fully-preprocessed content
     char            *string;
 } final_reg_content;
 
+typedef uint8_t         refnum_type;
+
 /***************************************************************************/
 /*  :BANREGION      Layout tag data                                        */
 /***************************************************************************/
@@ -774,7 +776,7 @@ typedef struct region_lay_tag {
     su                  voffset;            // vertical space unit
     su                  depth;              // vertical space unit
     font_number         font;               // non negative integer
-    int8_t              refnum;             // positive integer
+    refnum_type         refnum;             // positive integer
     page_pos            region_position;    // special enum
     reg_pour            pouring;            // special enum
     script_ban_reg      script_region[3];   // speed up processing if script_format
@@ -812,7 +814,7 @@ typedef struct banner_lay_tag {
     uint32_t        ban_left_adjust;        // value of 'left_adjust' in base units
     uint32_t        ban_right_adjust;       // value of 'right_adjust' in base units
     uint32_t        ban_depth;              // value of 'depth' in base units
-    uint32_t        next_refnum;            // next expected refnum value
+    refnum_type     next_refnum;            // next expected refnum value
     su              left_adjust;            // horizontal space unit
     su              right_adjust;           // horizontal space unit
     su              depth;                  // vertical space unit

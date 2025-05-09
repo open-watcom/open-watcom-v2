@@ -1309,8 +1309,8 @@ void ob_insert_ps_text_start( void )
 
 void ob_setup( void )
 {
-    int             i;
-    size_t          count;
+    unsigned        i;
+    unsigned        count;
     unsigned long   num;
 
     /* Finalize out_file and out_file_attr. */

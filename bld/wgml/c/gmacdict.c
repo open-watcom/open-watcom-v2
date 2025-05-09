@@ -38,12 +38,12 @@
 
 #define MAC_HASH_SIZE       241
 
-typedef struct mac_dcp {
+typedef struct macdict {
     mac_entry           *htbl[MAC_HASH_SIZE];   // hash table
     int                 lookups;                // lookup counter
     int                 macros;                 // macro counter
     int                 compares;               // strcmp counter
-} mac_dcp;
+} macdict;
 
 
 /* For macro name hashing, we must limit the number of characters
@@ -95,17 +95,17 @@ static int mac_hash( const char *name )
 /*  init_macro_dict   initialize dictionary pointer                        */
 /***************************************************************************/
 
-void    init_macro_dict( mac_dict * * dict_parm )
+void    init_macro_dict( mac_dict *pdict )
 {
-    mac_dcp *   dict;
+    mac_dict    dict;
 
-    dict = mem_alloc( sizeof( mac_dcp ) );
+    dict = mem_alloc( sizeof( *dict ) );
     memset( dict->htbl, 0, sizeof( dict->htbl ) );
     dict->lookups  = 0;
     dict->macros   = 0;
     dict->compares = 0;
 
-    *dict_parm     = dict;
+    *pdict = dict;
 
     return;
 }
@@ -115,11 +115,10 @@ void    init_macro_dict( mac_dict * * dict_parm )
 /*  add_macro_entry   add macro entry to dictionary                        */
 /***************************************************************************/
 
-void    add_macro_entry( mac_dict * dict_parm, mac_entry * me )
+void    add_macro_entry( mac_dict dict, mac_entry * me )
 {
     mac_entry   *   wk;
     int             hash;
-    mac_dcp     *   dict = dict_parm;
 
     hash = mac_hash( me->name );
     wk = dict->htbl[hash];          // find the hash chain
@@ -171,7 +170,7 @@ static  void    free_macro_entry_short( mac_entry * me )
 /***************************************************************************/
 /*  free_macro_entry  delete single macroentry with chain update           */
 /***************************************************************************/
-void    free_macro_entry( mac_dict * dict_parm, mac_entry * me )
+void    free_macro_entry( mac_dict dict, mac_entry * me )
 {
     inp_line    *   ml;
     inp_line    *   mln;
@@ -179,7 +178,6 @@ void    free_macro_entry( mac_dict * dict_parm, mac_entry * me )
     mac_entry   *   wkn;
     labelcb     *   cb;
     int             hash;
-    mac_dcp     *   dict = dict_parm;
 
     if( me != NULL ) {
         cb = me->label_cb;
@@ -222,12 +220,12 @@ void    free_macro_entry( mac_dict * dict_parm, mac_entry * me )
 /*  free_macro_dict   free all macro dictionary entries                    */
 /***************************************************************************/
 
-void    free_macro_dict( mac_dict * * dict_parm )
+void    free_macro_dict( mac_dict *pdict )
 {
     int             i;
-    mac_entry   *   wk;
-    mac_entry   *   wkn;
-    mac_dcp     *   dict = *dict_parm;
+    mac_entry       *wk;
+    mac_entry       *wkn;
+    mac_dict        dict = *pdict;
 
     for ( i = 0; i < MAC_HASH_SIZE; ++i ) {
         wk = dict->htbl[i];
@@ -242,7 +240,7 @@ void    free_macro_dict( mac_dict * * dict_parm )
     printf( "macro compares  : %d\n", dict->compares );
 #endif
     mem_free( dict );
-    *dict_parm = NULL;          // dictionary is empty
+    *pdict = NULL;          // dictionary is empty
     return;
 }
 
@@ -252,12 +250,11 @@ void    free_macro_dict( mac_dict * * dict_parm )
 /*  returns ptr to macro or NULL if not found                              */
 /***************************************************************************/
 
-mac_entry   * find_macro( mac_dict * dict_parm, const char * name )
+mac_entry   * find_macro( mac_dict dict, const char * name )
 {
     int             hash;
     mac_entry   *   wk;
     mac_entry   *   curr;
-    mac_dcp     *   dict = dict_parm;
 
     wk   = NULL;
     hash = mac_hash( name );
@@ -280,7 +277,7 @@ mac_entry   * find_macro( mac_dict * dict_parm, const char * name )
 /*  print_macro_dict  output all of the macro dictionary                   */
 /***************************************************************************/
 
-void    print_macro_dict( mac_dict * dict_parm, bool with_mac_lines )
+void    print_macro_dict( mac_dict dict, bool with_mac_lines )
 {
     mac_entry           *   wk;
     int                     cnt;
@@ -288,7 +285,6 @@ void    print_macro_dict( mac_dict * dict_parm, bool with_mac_lines )
     inp_line            *   ml;
     int                     lc;
     int                     i;
-    mac_dcp             *   dict = dict_parm;
     static  const   char    fill[10] = "         ";
 
     cnt = 0;

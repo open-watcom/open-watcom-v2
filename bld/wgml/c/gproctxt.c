@@ -1378,7 +1378,7 @@ void do_justify( uint32_t lm, uint32_t rm, text_line * line )
 /*        avoids complicating process_text() further                       */
 /***************************************************************************/
 
-void insert_hard_spaces( const char * spaces, size_t len, font_number font )
+void insert_hard_spaces( const char * spaces, unsigned len, font_number font )
 {
     text_chars  *   sav_chars;
 
@@ -1413,11 +1413,11 @@ void insert_hard_spaces( const char * spaces, size_t len, font_number font )
 /*      delete the escape char                                             */
 /***************************************************************************/
 
-size_t intrans( char *data, size_t len, font_number font )
+unsigned intrans( char *data, unsigned len, font_number font )
 {
-    char    *ps;    // source ptr
-    char    *pt;    // target ptr
-    size_t  k;
+    char        *ps;    // source ptr
+    char        *pt;    // target ptr
+    unsigned    k;
 
     if( ProcFlags.in_trans ) {                          // input translation active
         ps = data;
@@ -1720,16 +1720,16 @@ void process_line_full( text_line * a_line, bool justify )
 /*  create a text_chars instance and fill it with a 'word'                 */
 /***************************************************************************/
 
-text_chars * process_word( const char *pword, size_t count, font_number font, bool hard_spaces )
+text_chars * process_word( const char *pword, unsigned count, font_number font, bool hard_spaces )
 {
 
-    char        *   p;
-    char        *   pa;
+    char            *p;
+    char            *pa;
     int             i;
     int             j;
-    text_chars  *   n_chars;
-    uint32_t        kbtabs;
-    uint32_t        tab_pos;
+    text_chars      *n_chars;
+    unsigned        kbtabs;
+    unsigned        tab_pos;
 
     /***************************************************************************/
     /* at present, keyboard tabs will only be found if concatenation is off    */

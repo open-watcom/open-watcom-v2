@@ -381,10 +381,8 @@ void    lay_banregion( const gmltag * entry )
                             xx_line_err_ci( err_att_dup, lay_attr.att_name,
                                 lay_attr.val.name - lay_attr.att_name + lay_attr.val.len);
                         }
-                        i_int8( p, &lay_attr, &wk.refnum );
-                        if( wk.refnum < 0 ) {           // refnum cannot be negative
-                            xx_line_err_c( err_num_too_large, p );
-                        } else if( wk.refnum == 0 ) {   // refnum must be greater than zero
+                        i_uint8( p, &lay_attr, &wk.refnum );
+                        if( wk.refnum == 0 ) {   // refnum must be greater than zero
                             xx_line_err_c( err_num_zero, p );
                         }
                         AttrFlags.refnum = true;

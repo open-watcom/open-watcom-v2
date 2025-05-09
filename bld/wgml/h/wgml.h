@@ -65,7 +65,7 @@ extern "C" {    /* Use "C" linkage when in C++ mode */
 extern char         cop_in_trans( char in_char, font_number font );
 extern void         cop_setup( void );
 extern void         cop_teardown( void );
-extern uint32_t     cop_text_width( const char *text, size_t count, font_number font );
+extern uint32_t     cop_text_width( const char *text, unsigned count, font_number font );
 extern void         cop_ti_table( const char *p );
 extern void         fb_dbox( dbox_element *in_dbox );
 extern void         fb_document( void );
@@ -103,7 +103,7 @@ extern bool         is_macro_char( char c );
 extern bool         is_space_tab_char( char c );
 extern bool         is_stop_char( char c );
 extern bool         is_symbol_char( char c );
-extern char         parse_char( const char *pa, size_t len );
+extern char         parse_char( const char *pa, unsigned len );
 extern int          unquote_arg( tok_type *arg );
 extern char         *get_tagname( const char *p, char *tagname );
 extern char         *get_tag_attname( const char *p, char *attname );
@@ -160,8 +160,8 @@ extern  void        out_head_page( ffh_entry *in_entry, ref_entry *in_ref, uint3
 
 /* gindexut.c                           */
 extern  void        eol_index_page( eol_ix * eol_index, uint32_t page_nr );
-extern  void        find_create_ix_e_entry( ix_h_blk * ixhwork, char * ref, size_t len, ix_h_blk * seeidwork, ereftyp type );
-extern  ix_h_blk    *find_create_ix_h_entry( ix_h_blk * ixhwork, ix_h_blk * ixhbase, char * printtxt, size_t printtxtlen, char * txt, size_t txtlen, uint32_t lvl );
+extern  void        find_create_ix_e_entry( ix_h_blk *ixhwork, char *ref, unsigned len, ix_h_blk * seeidwork, ereftyp type );
+extern  ix_h_blk    *find_create_ix_h_entry( ix_h_blk *ixhwork, ix_h_blk *ixhbase, char *printtxt, unsigned printtxtlen, char *txt, unsigned txtlen, int lvl );
 extern  void        free_index_dict( ix_h_blk ** dict );
 extern  void        init_entry_list( ix_h_blk * term );
 
@@ -170,48 +170,50 @@ extern  void        init_entry_list( ix_h_blk * term );
 extern  void        eat_lay_sub_tag( void );
 extern  void        free_layout( void );
 extern  condcode    lay_attr_and_value( lay_att_val *lay_attr );
-extern  bool        i_case( char * p, lay_attr_i lay_attr, case_t * tm );
-extern  void        o_case( FILE *fp, lay_attr_o lay_attr, const case_t * tm );
-extern  bool        i_char( char * p, lay_attr_i lay_attr, char * tm );
-extern  void        o_char( FILE *fp, lay_attr_o lay_attr, const char * tm );
-extern  bool        i_content( char * p, lay_attr_i lay_attr, content * tm );
-extern  void        o_content( FILE *fp, lay_attr_o lay_attr, const content * tm );
-extern  bool        i_default_frame( char * p, lay_attr_i lay_attr, def_frame * tm );
-extern  void        o_default_frame( FILE *fp, lay_attr_o lay_attr, const def_frame * tm );
-extern  bool        i_docsect( char * p, lay_attr_i lay_attr, ban_docsect * tm );
-extern  void        o_docsect( FILE *fp, lay_attr_o lay_attr, const ban_docsect * tm );
-extern  bool        i_frame( char * p, lay_attr_i lay_attr, bool * tm );
-extern  void        o_frame( FILE *fp, lay_attr_o lay_attr, const bool * tm );
-extern  bool        i_int32( char * p, lay_attr_i lay_attr, int32_t * tm );
-extern  void        o_int32( FILE *fp, lay_attr_o lay_attr, const int32_t * tm );
-extern  bool        i_int8( char * p, lay_attr_i lay_attr, int8_t * tm );
-extern  void        o_int8( FILE *fp, lay_attr_o lay_attr, const int8_t * tm );
+extern  bool        i_case( char *p, lay_attr_i lay_attr, case_t *tm );
+extern  void        o_case( FILE *fp, lay_attr_o lay_attr, const case_t *tm );
+extern  bool        i_char( char *p, lay_attr_i lay_attr, char *tm );
+extern  void        o_char( FILE *fp, lay_attr_o lay_attr, const char *tm );
+extern  bool        i_content( char *p, lay_attr_i lay_attr, content *tm );
+extern  void        o_content( FILE *fp, lay_attr_o lay_attr, const content *tm );
+extern  bool        i_default_frame( char *p, lay_attr_i lay_attr, def_frame *tm );
+extern  void        o_default_frame( FILE *fp, lay_attr_o lay_attr, const def_frame *tm );
+extern  bool        i_docsect( char *p, lay_attr_i lay_attr, ban_docsect *tm );
+extern  void        o_docsect( FILE *fp, lay_attr_o lay_attr, const ban_docsect *tm );
+extern  bool        i_frame( char *p, lay_attr_i lay_attr, bool *tm );
+extern  void        o_frame( FILE *fp, lay_attr_o lay_attr, const bool *tm );
+extern  bool        i_int32( char *p, lay_attr_i lay_attr, int32_t *tm );
+extern  void        o_int32( FILE *fp, lay_attr_o lay_attr, const int32_t *tm );
+extern  bool        i_int8( char *p, lay_attr_i lay_attr, int8_t *tm );
+extern  void        o_int8( FILE *fp, lay_attr_o lay_attr, const int8_t *tm );
+extern  bool        i_uint8( char *p, lay_attr_i lay_attr, uint8_t *tm );
+extern  void        o_uint8( FILE *fp, lay_attr_o lay_attr, const uint8_t *tm );
 extern  bool        i_spacing( char *p, lay_attr_i lay_attr, text_space *tm );
 extern  void        o_spacing( FILE *fp, lay_attr_o lay_attr, const text_space *tm );
 extern  bool        i_font_number( char *p, lay_attr_i lay_attr, font_number *tm );
 extern  void        o_font_number( FILE *fp, lay_attr_o lay_attr, const font_number *tm );
-extern  bool        i_number_form( char * p, lay_attr_i lay_attr, num_form * tm );
-extern  void        o_number_form( FILE *fp, lay_attr_o lay_attr, const num_form * tm );
-extern  bool        i_number_style( char * p, lay_attr_i lay_attr, num_style * tm );
-extern  void        o_number_style( FILE *fp, lay_attr_o lay_attr, const num_style * tm );
-extern  bool        i_page_eject( char * p, lay_attr_i lay_attr, page_ej * tm );
-extern  void        o_page_eject( FILE *fp, lay_attr_o lay_attr, const page_ej * tm );
-extern  bool        i_page_position( char * p, lay_attr_i lay_attr, page_pos * tm );
-extern  void        o_page_position( FILE *fp, lay_attr_o lay_attr, const page_pos * tm );
-extern  bool        i_place( char * p, lay_attr_i lay_attr, bf_place * tm );
-extern  void        o_place( FILE *fp, lay_attr_o lay_attr, const bf_place * tm );
-extern  bool        i_pouring( char * p, lay_attr_i lay_attr, reg_pour * tm );
-extern  void        o_pouring( FILE *fp, lay_attr_o lay_attr, const reg_pour * tm );
-extern  bool        i_space_unit( char * p, lay_attr_i lay_attr, su * tm );
-extern  void        o_space_unit( FILE *fp, lay_attr_o lay_attr, const su * tm );
-extern  bool        i_threshold( char * p, lay_attr_i lay_attr, uint16_t * tm );
-extern  void        o_threshold( FILE *fp, lay_attr_o lay_attr, const uint16_t * tm );
-extern  bool        i_xx_string( char * p, lay_attr_i lay_attr, xx_str * tm );
-extern  void        o_xx_string( FILE *fp, lay_attr_o lay_attr, const xx_str * tm );
-extern  bool        i_date_form( char * p, lay_attr_i lay_attr, xx_str * tm );
-extern  void        o_date_form( FILE *fp, lay_attr_o lay_attr, const xx_str * tm );
-extern  bool        i_yes_no( char * p, lay_attr_i lay_attr, bool * tm );
-extern  void        o_yes_no( FILE *fp, lay_attr_o lay_attr, const bool * tm );
+extern  bool        i_number_form( char *p, lay_attr_i lay_attr, num_form *tm );
+extern  void        o_number_form( FILE *fp, lay_attr_o lay_attr, const num_form *tm );
+extern  bool        i_number_style( char *p, lay_attr_i lay_attr, num_style *tm );
+extern  void        o_number_style( FILE *fp, lay_attr_o lay_attr, const num_style *tm );
+extern  bool        i_page_eject( char *p, lay_attr_i lay_attr, page_ej *tm );
+extern  void        o_page_eject( FILE *fp, lay_attr_o lay_attr, const page_ej *tm );
+extern  bool        i_page_position( char *p, lay_attr_i lay_attr, page_pos *tm );
+extern  void        o_page_position( FILE *fp, lay_attr_o lay_attr, const page_pos *tm );
+extern  bool        i_place( char *p, lay_attr_i lay_attr, bf_place *tm );
+extern  void        o_place( FILE *fp, lay_attr_o lay_attr, const bf_place *tm );
+extern  bool        i_pouring( char *p, lay_attr_i lay_attr, reg_pour *tm );
+extern  void        o_pouring( FILE *fp, lay_attr_o lay_attr, const reg_pour *tm );
+extern  bool        i_space_unit( char *p, lay_attr_i lay_attr, su *tm );
+extern  void        o_space_unit( FILE *fp, lay_attr_o lay_attr, const su *tm );
+extern  bool        i_threshold( char *p, lay_attr_i lay_attr, uint16_t *tm );
+extern  void        o_threshold( FILE *fp, lay_attr_o lay_attr, const uint16_t *tm );
+extern  bool        i_xx_string( char *p, lay_attr_i lay_attr, xx_str *tm );
+extern  void        o_xx_string( FILE *fp, lay_attr_o lay_attr, const xx_str *tm );
+extern  bool        i_date_form( char *p, lay_attr_i lay_attr, xx_str *tm );
+extern  void        o_date_form( FILE *fp, lay_attr_o lay_attr, const xx_str *tm );
+extern  bool        i_yes_no( char *p, lay_attr_i lay_attr, bool *tm );
+extern  void        o_yes_no( FILE *fp, lay_attr_o lay_attr, const bool *tm );
 
 
 /* glbandef.c                           */
@@ -248,7 +250,7 @@ extern nest_stack   *copy_to_nest_stack( void );
 
 /* goptions.c                           */
 extern  int         proc_options( char * cmdline );
-extern  void        split_attr_file( char * filename, char * attr, size_t attrlen );
+extern  void        split_attr_file( char * filename, char * attr, unsigned attrlen );
 
 
 /* gpagegeo.c                           */
@@ -273,11 +275,11 @@ extern  void        split_input( char * buf, char * split_pos, i_flags fmflags )
 
 /* gproctxt.c                           */
 extern  void        do_justify( uint32_t left_m, uint32_t right_m, text_line *line );
-extern  void        insert_hard_spaces( const char * spaces, size_t len, font_number font );
-extern  size_t      intrans( char *text, size_t count, font_number font );
+extern  void        insert_hard_spaces( const char * spaces, unsigned len, font_number font );
+extern  unsigned    intrans( char *text, unsigned count, font_number font );
 extern  void        process_line_full( text_line *a_line, bool justify );
 extern  void        process_text( char *text, font_number font );
-extern  text_chars  *process_word( const char *text, size_t count, font_number font, bool hard_spaces );
+extern  text_chars  *process_word( const char *text, unsigned count, font_number font, bool hard_spaces );
 extern  void        set_h_start( void );
 
 
@@ -322,8 +324,8 @@ extern  void        eoc_bx_box( void );
 
 
 /* gscan.c                              */
-extern const gmltag *find_lay_tag( char * token, size_t toklen );
-extern const gmltag *find_sys_tag( char * token, size_t toklen );
+extern const gmltag *find_lay_tag( char * token, unsigned toklen );
+extern const gmltag *find_sys_tag( char * token, unsigned toklen );
 extern char         *get_text_line( char * p );
 extern bool         is_ip_tag( e_tags offset );
 extern void         set_overload( gtentry * in_gt );
@@ -408,7 +410,7 @@ extern  gtentry     *find_user_tag( gtentry * * dict, char const * name );
 /* gtxtpool.c                           */
 extern  void                add_single_text_chars_to_pool( text_chars * a_chars );
 extern  void                add_text_chars_to_pool( text_line * a_line );
-extern  text_chars      *   alloc_text_chars( const char *text, size_t cnt, font_number font );
+extern  text_chars      *   alloc_text_chars( const char *text, unsigned cnt, font_number font );
 extern  void                add_text_line_to_pool( text_line * a_line );
 extern  text_line       *   alloc_text_line( void );
 extern  void                add_box_col_set_to_pool( box_col_set * a_set );
@@ -454,12 +456,12 @@ extern void         get_att_specval( att_val_type *attr_val );
 extern char         *get_att_value( char *p, att_val_type *attr_val );
 extern char         *get_tag_value( char *p, att_val_type *attr_val );
 extern char         *get_lay_value( char *p, att_val_type *attr_val );
-extern font_number  get_font_number( char *p, size_t len );
+extern font_number  get_font_number( char *p, unsigned len );
 extern ffh_entry    *init_ffh_entry( ffh_entry *ffh_list );
 extern fwd_ref      *init_fwd_ref( fwd_ref *dict, const char *refid );
 extern char         *int_to_roman( unsigned n, char *r, unsigned rsize, bool ucase );
 extern bool         lay_init_su( const char *p, su *in_su );
-extern size_t       len_to_trail_space( const char *p , size_t len );
+extern unsigned     len_to_trail_space( const char *p , unsigned len );
 extern char         *skip_to_quote( char *p, char quote );
 
 
@@ -493,9 +495,9 @@ extern  void    xx_err( const msg_ids errid );
 extern  void    xx_err_c( const msg_ids errid, char const * arg );
 extern  void    xx_err_cc( const msg_ids errid, const char * arg1, const char * arg2 );
 extern  void    xx_line_err_c( const msg_ids errid, const char * pa );
-extern  void    xx_line_err_ci( const msg_ids errid, const char * pa, size_t len );
+extern  void    xx_line_err_ci( const msg_ids errid, const char * pa, unsigned len );
 extern  void    xx_line_err_cc( const msg_ids errid, char const * cw, const char * pa );
-extern  void    xx_line_err_cci( const msg_ids errid, char const * cw, char const * pa, size_t len );
+extern  void    xx_line_err_cci( const msg_ids errid, char const * cw, char const * pa, unsigned len );
 extern  void    xx_nest_err( const msg_ids errid );
 extern  void    xx_nest_err_cc( const msg_ids errid, const char * arg1, const char * arg2 );
 extern  void    xx_simple_err( const msg_ids errid );
@@ -535,7 +537,7 @@ extern  bool    get_msg( msg_ids resourceid, char *buffer, unsigned buflen );
 extern  bool    free_resources( int in_errno );
 extern  void    free_some_mem( void );
 extern  void    g_banner( void );
-// extern  char  * get_filename_full_path( char * buff, char const * name, size_t max );
+// extern  char  * get_filename_full_path( char * buff, char const * name, unsigned max );
 extern  bool    get_line( bool researchoutput );
 extern  void    inc_inc_level( void );
 

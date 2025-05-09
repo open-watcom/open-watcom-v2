@@ -434,7 +434,7 @@ void add_dt_space( void )
 /* return 1 for all blank string                                           */
 /***************************************************************************/
 
-size_t len_to_trail_space( const char *p , size_t len )
+unsigned len_to_trail_space( const char *p , unsigned len )
 {
     while( (len > 0) && (p[--len] == ' ') )
         /* empty */;
@@ -562,8 +562,8 @@ bool cw_val_to_su( const char **scanp, su *in_su )
     const char  *pb;    // start of value text
     char        *ps;    // destination for value text
     char        sign;
-    size_t      len;
-    int         i;
+    unsigned    len;
+    unsigned    i;
 
     ps = in_su->su_txt;
     *ps = '\0';
@@ -1051,7 +1051,7 @@ void g_keep_nest( const char * cw_tag ) {
 /* parse and return a font number value                                    */
 /***************************************************************************/
 
-font_number get_font_number( char *value, size_t len )
+font_number get_font_number( char *value, unsigned len )
 {
     char            *p;
     char            *pb;

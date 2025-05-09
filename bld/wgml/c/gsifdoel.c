@@ -42,7 +42,7 @@
 typedef struct termcb {
     int         term_number;            // value only if numeric
     char        *term_string;           // value as string
-    size_t      term_length;            // length of string
+    unsigned    term_length;            // length of string
     bool        numeric;                // term  is numeric
 } termcb;
 
@@ -268,9 +268,9 @@ static bool ifcompare( termcb * t1, relop r, termcb * t2 )
     term2 = t2->term_number;
 
     if( !t1->numeric || !t2->numeric ) { // string compare
-        char    *   p1 = t1->term_string;
-        char    *   p2 = t2->term_string;
-        size_t      length;
+        char        *p1 = t1->term_string;
+        char        *p2 = t2->term_string;
+        unsigned    length;
 
         length = t1->term_length;
         if( length > t2->term_length )

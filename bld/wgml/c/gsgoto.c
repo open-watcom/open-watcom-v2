@@ -167,11 +167,11 @@ void    scr_label( void )
             // check if lineno from label matches actual lineno
 
             if( input_cbs->fmflags & II_tag_mac ) {
-                if( gn.result != input_cbs->s.m->lineno ) {
+                if( (unsigned)gn.result != input_cbs->s.m->lineno ) {
                     xx_source_err_c( err_label_line, gn.resultstr );
                 }
             } else {
-                if( gn.result != input_cbs->s.f->lineno ) {
+                if( (unsigned)gn.result != input_cbs->s.f->lineno ) {
                     xx_source_err_c( err_label_line, gn.resultstr );
                 }
             }
@@ -186,9 +186,9 @@ void    scr_label( void )
         } else {                        // no numeric label
             cc = getarg();
             if( cc == pos ) {           // label name specefied
-                char    *   p;
-                char    *   pt;
-                int         len;
+                char        *p;
+                char        *pt;
+                unsigned    len;
 
                 p   = g_tok_start;
                 pt  = token_buf;

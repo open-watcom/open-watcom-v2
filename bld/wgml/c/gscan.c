@@ -156,7 +156,7 @@ static void scan_gml( void )
 {
     inputcb         *cb;
     char            *p;
-    int             toklen;
+    unsigned        toklen;
     bool            processed;
     gtentry         *ge;                // GML user tag entry
     mac_entry       *me;                // script macro for processing GML tag
@@ -415,7 +415,7 @@ static void     scan_script( void )
     mac_entry   *   me;
     char        *   p;
     char        *   pt;
-    int             toklen;
+    unsigned        toklen;
     int             k;
 
     if( ProcFlags.need_text ) {
@@ -751,9 +751,9 @@ condcode    test_process( ifcb * cb )
 void set_if_then_do( ifcb * cb )
 {
     char            cw[9];
-    char        *   p;
-    char        *   pb;
-    uint32_t        len;
+    char            *p;
+    char            *pb;
+    unsigned        len;
 
     len = 0;
     p = cw;
@@ -909,7 +909,7 @@ void    scan_line( void )
 /*  return ptr to entry if found, else NULL                                */
 /***************************************************************************/
 
-const gmltag *find_sys_tag( char *token, size_t toklen )
+const gmltag *find_sys_tag( char *token, unsigned toklen )
 {
     int k;
 
@@ -930,7 +930,7 @@ const gmltag *find_sys_tag( char *token, size_t toklen )
 /*  return ptr to entry if found, else NULL                                */
 /***************************************************************************/
 
-const gmltag *find_lay_tag( char *token, size_t toklen )
+const gmltag *find_lay_tag( char *token, unsigned toklen )
 {
     int k;
 
@@ -980,7 +980,7 @@ char * get_text_line( char * p )
     char            *tok_start = NULL;
     char            tok_txt[TAG_NAME_LENGTH + 1];
     gtentry         *ge;                                        // GML user tag entry
-    size_t          toklen;
+    unsigned        toklen;
 
     if( !ProcFlags.reprocess_line  ) {  // still on last line of tag
         SkipSpaces( p );                // skip initial spaces

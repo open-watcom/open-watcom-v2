@@ -55,7 +55,7 @@ condcode    scr_min( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **resul
 {
     tok_type        number;
     condcode        cc;
-    int             k;
+    unsigned        k;
     getnum_block    gn;
     int             minimum;
 

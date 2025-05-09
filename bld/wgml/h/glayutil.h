@@ -96,7 +96,7 @@
   pick( post_skip,         i_space_unit,    o_space_unit,    su              )
   pick( pouring,           i_pouring,       o_pouring,       reg_pour        )
   pick( refdoc,            i_docsect,       o_docsect,       ban_docsect     )
-  pick( refnum,            i_int8,          o_int8,          int8_t          )
+  pick( refnum,            i_uint8,         o_uint8,         uint8_t         )
   pick( refplace,          i_place,         o_place,         bf_place        )
   pick( region_position,   i_page_position, o_page_position, page_pos        )
   pick( right_adjust,      i_space_unit,    o_space_unit,    su              )

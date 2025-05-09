@@ -601,6 +601,28 @@ void    o_int8( FILE *fp, lay_attr_o lay_attr, const int8_t * tm )
     return;
 }
 
+bool    i_uint8( char * p, lay_attr_i lay_attr, uint8_t * tm )
+{
+    unsigned long   wk;
+
+    (void)lay_attr;
+
+    wk = strtoul( p, NULL, 10 );
+    if( errno = ERANGE || wk > 255 ) {
+        xx_line_err_c( err_ui_8, p );
+    }
+    *tm = wk;
+    return( false );
+}
+
+void    o_uint8( FILE *fp, lay_attr_o lay_attr, const uint8_t * tm )
+{
+    unsigned    wk = *tm;
+
+    fprintf( fp, "        %s = %u\n", lay_att_names[lay_attr], wk );
+    return;
+}
+
 
 /***************************************************************************/
 /*  font number                                                            */

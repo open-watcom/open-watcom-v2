@@ -73,10 +73,10 @@ static void gml_ixxx_common( const gmltag * entry, int hx_lvl )
     ref_entry   *   refwork;                // new ref_entry to be inserted
     ref_entry   *   refwk;                  // ref_entry found for value of refid
     ref_entry   *   seeidwk;                // ref_entry found for value of seeid
-    size_t          pgtextlen       = 0;    // val_len for pg = <string> value
-    size_t          printtxtlen     = 0;    // val_len for print = <string> value
-    size_t          seetextlen      = 0;    // val_len for see = <string> value
-    size_t          txtlen;                 // val_len for entry value
+    unsigned        pgtextlen       = 0;    // val_len for pg = <string> value
+    unsigned        printtxtlen     = 0;    // val_len for print = <string> value
+    unsigned        seetextlen      = 0;    // val_len for see = <string> value
+    unsigned        txtlen;                 // val_len for entry value
     tag_att_val     tag_attr;
 
     if( input_cbs->fmflags & II_tag_mac ) {   // ensure next line is valid

@@ -987,9 +987,9 @@ static void  do_char_device( void )
     char        *   p;
     doc_element *   box_el;             // holds the box line itself, for char devices
     doc_element *   cur_el;
-    int             i;                  // overall index
+    unsigned        i;                  // overall index
     uint32_t        i_b;                // box_line index
-    size_t          len;
+    unsigned        len;
     text_chars  *   cur_chars   = NULL; // current text_chars in cur_text
     text_chars  *   new_chars   = NULL; // text_chars used to prepend markers if needed
     uint32_t        cur_col;            // current column (not hbus)

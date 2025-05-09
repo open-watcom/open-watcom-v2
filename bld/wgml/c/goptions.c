@@ -1337,11 +1337,11 @@ static option GML_new_Options[] =
 /*  split (t:200)Filename    into t:200 and Filename                       */
 /***************************************************************************/
 
-void split_attr_file( char * filename , char * attr, size_t attrlen )
+void split_attr_file( char * filename , char * attr, unsigned attrlen )
 {
-    char    *   fn;
-    char    *   p;
-    size_t      k;
+    char        *fn;
+    char        *p;
+    unsigned    k;
 
     fn = filename;
     p = attr;

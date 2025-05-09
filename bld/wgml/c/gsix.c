@@ -164,13 +164,14 @@ void scr_ix( void )
     entry_list  *   entry;
     getnum_block    gn;
     int             lvl;                // max index level in control word data
-    int             k;
+    int             i;
+    unsigned        k;
     ix_h_blk    *   ixbase[3] = { NULL, NULL, NULL };   // current list base
     ix_h_blk    *   ixhwork;            // insertion point/found match item
     ix_h_blk    *   ixhwk;              // index block
     symsub      *   dictval;
-    uint32_t        ixlen[3] = {0, 0, 0};   // index string lengths
-    uint32_t        reflen = 0;         // ref string length
+    unsigned        ixlen[3] = {0, 0, 0};   // index string lengths
+    unsigned        reflen = 0;         // ref string length
     uint32_t        wkpage;             // predicted page number
 
     static char     cwcurr[4] = {" ix"};// control word string for errmsg
@@ -333,15 +334,15 @@ void scr_ix( void )
 
         ixhwork = index_dict;
         ixbase[0] = index_dict;             // preserve starting point
-        for( k = 0; k < lvl; ++k ) {
-            if( ix[k] == NULL ) {           // we are done
+        for( i = 0; i < lvl; i++ ) {
+            if( ix[i] == NULL ) {           // we are done
                 break;
             }
             do_nothing = false;
-            ixhwk = find_create_ix_h_entry( ixhwork, ixbase[k], NULL, 0, ix[k],
-                                            ixlen[k], k );
-            if( k + 1 < lvl ) {
-                ixbase[k + 1] = ixhwk;              // preserve attach point for lower level
+            ixhwk = find_create_ix_h_entry( ixhwork, ixbase[i], NULL, 0, ix[i],
+                                            ixlen[i], i );
+            if( i + 1 < lvl ) {
+                ixbase[i + 1] = ixhwk;              // preserve attach point for lower level
                 ixhwork = ixhwk->lower;             // next lower level
             }
         }

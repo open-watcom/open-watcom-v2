@@ -406,7 +406,7 @@ static  void    put_lay_region( FILE *fp, region_lay_tag * reg )
             o_font_number( fp, curr, &reg->font );
             break;
         case e_refnum:
-            o_int8( fp, curr, &reg->refnum );
+            o_uint8( fp, curr, &reg->refnum );
             break;
         case e_region_position:
             o_page_position( fp, curr, &reg->region_position );

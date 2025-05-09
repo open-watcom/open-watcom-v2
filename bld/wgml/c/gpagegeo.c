@@ -49,7 +49,7 @@ void    init_page_geometry( void )
     uint32_t    page_depth_org;
     uint32_t    net_top_margin;
     uint32_t    net_y_start;
-    uint32_t    rm_test;
+    int         rm_test;
     uint32_t    top_margin;
     uint32_t    y_start_correction;
 
@@ -82,7 +82,7 @@ void    init_page_geometry( void )
     if( (bin_device->horizontal_base_units % 4) > 0 ) {
         rm_test++;                          // round up if any remainder
     }
-    if( g_rm < rm_test ) {                    // wgml 4.0 limits value
+    if( g_rm < rm_test ) {                  // wgml 4.0 limits value
         xx_err( err_right_margin_2_small ); // candidate Severe Error
     }
 

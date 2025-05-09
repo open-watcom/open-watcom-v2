@@ -35,7 +35,7 @@
 /* validate and return the character parameter, or raise an error          */
 /***************************************************************************/
 
-char parse_char( const char *p, size_t len )
+char parse_char( const char *p, unsigned len )
 {
     char        c;
 

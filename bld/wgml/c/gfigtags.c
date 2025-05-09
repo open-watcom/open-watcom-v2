@@ -129,6 +129,7 @@ static void draw_box( doc_el_group * in_group )
     doc_element *   cur_doc_el;
     doc_element *   sav_doc_el;
     int             i;
+    unsigned        k;
     text_line   *   cur_line;
     text_line   *   sav_line;
 
@@ -181,7 +182,7 @@ static void draw_box( doc_el_group * in_group )
                     cur_line = cur_doc_el->element.text.first;
                     cur_line->line_height = wgml_fonts[bin_device->box.font].line_height;
                     add_risers( cur_line );
-                    for( i = 1; i < cur_doc_el->blank_lines; i++ ) {
+                    for( k = 1; k < cur_doc_el->blank_lines; k++ ) {
                         cur_line->next = alloc_text_line();
                         cur_line->next->line_height = wgml_fonts[bin_device->box.font].line_height;
                         add_risers( cur_line->next );
@@ -191,7 +192,7 @@ static void draw_box( doc_el_group * in_group )
                 } else {
                     if( cur_doc_el->subs_skip > 0 ) {
                         sav_line = cur_doc_el->element.text.first;
-                        for( i = 0; i < cur_doc_el->subs_skip; i++ ) {
+                        for( k = 0; k < cur_doc_el->subs_skip; k++ ) {
                             cur_line = alloc_text_line();
                             cur_line->line_height = wgml_fonts[bin_device->box.font].line_height;
                             add_risers( cur_line );

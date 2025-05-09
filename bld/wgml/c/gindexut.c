@@ -73,10 +73,10 @@ static bool find_num_ref( ix_e_blk * * base, uint32_t page_nr )
 /*  find an index item string reference in index_dict                      */
 /***************************************************************************/
 
-static bool find_string_ref( char * ref, uint32_t len, ix_e_blk * * base )
+static bool find_string_ref( char * ref, unsigned len, ix_e_blk * * base )
 {
     bool            retval  = false;
-    int             comp_len;           // compare length for searching existing entries
+    unsigned        comp_len;           // compare length for searching existing entries
     int             comp_res;           // compare result
     ix_e_blk    *   cur_ieh;
     ix_e_blk    *   old_ieh = NULL;     // will hold entry to insert after
@@ -122,10 +122,10 @@ static bool find_string_ref( char * ref, uint32_t len, ix_e_blk * * base )
 /*  find an index item in index_dict                                       */
 /***************************************************************************/
 
-static bool find_index_item( char * item, uint32_t len, ix_h_blk ** entry )
+static bool find_index_item( char * item, unsigned len, ix_h_blk ** entry )
 {
     bool            retval  = false;
-    int             comp_len;           // compare length for searching existing entries
+    unsigned        comp_len;           // compare length for searching existing entries
     int             comp_res;           // compare result
     ix_h_blk    *   cur_ixh;
     ix_h_blk    *   old_ixh = NULL;     // will hold entry to insert after
@@ -172,8 +172,8 @@ static bool find_index_item( char * item, uint32_t len, ix_h_blk ** entry )
 /*  find or create/insert new index reference entry                        */
 /***************************************************************************/
 
-void find_create_ix_e_entry( ix_h_blk * ixhwork, char * ref, size_t len,
-                             ix_h_blk * seeidwork, ereftyp type )
+void find_create_ix_e_entry( ix_h_blk *ixhwork, char *ref, unsigned len,
+                             ix_h_blk *seeidwork, ereftyp type )
 {
     bool                found       = true;
     eol_ix      *       cur_eol;
@@ -392,9 +392,9 @@ void eol_index_page( eol_ix * eol_index, uint32_t page_nr )
 /*  returns created block                                                  */
 /***************************************************************************/
 
-ix_h_blk * find_create_ix_h_entry( ix_h_blk * ixhwork, ix_h_blk * ixhbase,
-                                   char * printtxt, size_t printtxtlen,
-                                   char * txt, size_t txtlen, uint32_t lvl )
+ix_h_blk * find_create_ix_h_entry( ix_h_blk *ixhwork, ix_h_blk *ixhbase,
+                                   char *printtxt, unsigned printtxtlen,
+                                   char *txt, unsigned txtlen, int lvl )
 {
     ix_h_blk    *   ixhwk;
 

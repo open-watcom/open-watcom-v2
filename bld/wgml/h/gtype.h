@@ -326,7 +326,7 @@ typedef struct labelcb {
 /*  Macro  dictionary                                                      */
 /***************************************************************************/
 
-typedef void    mac_dict;
+typedef struct macdict      *mac_dict;
 
 /***************************************************************************/
 /*  macro definition entry  for macro dictionary                           */
@@ -1400,14 +1400,14 @@ typedef struct ix_e_blk {                   // index entry for pagenos / text
     union {
         struct {
             char        *   page_text;      // reference is text (IX ref, pg string, see/seeid string)
-            size_t          page_text_len;  // reference text length
+            unsigned        page_text_len;  // reference text length
         } pageref;
         struct {
             uint32_t        page_no;        // pageno is number
             num_style       style;          // page number style defined by banner, if any
         } pagenum;
     } u;
-            ereftyp          entry_typ;     // selects page_no or page_text (IX, In), or no reference (IHn)
+            ereftyp         entry_typ;     // selects page_no or page_text (IX, In), or no reference (IHn)
 } ix_e_blk;
 
 /* These are used in the order given, and each is kept in sorted order */
@@ -1424,10 +1424,10 @@ typedef struct ix_h_blk {                   // index header with index term text
     struct  ix_h_blk    *   next;           // next ix header block same level
     struct  ix_h_blk    *   lower;          // first ix hdr block next lower level
             entry_list  *   entry;          // set of pointers to ix entry block
-            uint32_t        ix_lvl;         // index level 1 - 3
-            size_t          ix_term_len;    // index term length
+            int             ix_lvl;         // index level 1 - 3
+            unsigned        ix_term_len;    // index term length
             char        *   ix_term;        // index term
-            size_t          prt_term_len;   // display text length
+            unsigned        prt_term_len;   // display text length
             char        *   prt_term;       // display text (NULL -> use index term)
 } ix_h_blk;
 
@@ -1833,7 +1833,7 @@ typedef struct attr_flags {
 
 typedef struct att_val_type {
     char            *name;
-    int             len;
+    unsigned        len;
     char            quoted;
     char            specval[SPECVAL_LENGTH + 1];
 } att_val_type;
