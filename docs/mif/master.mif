@@ -45,10 +45,13 @@ wikidir    = ..\wiki
 wikidir    = ..\wiki
 !endif
 
+!ifdef %OWNEWWGML
+!else
 !ifeq wgml_target ps
 cop_files = mono01.cop ps.cop psdrv.cop
 !else
 cop_files = mono01.cop whelp.cop whelpdrv.cop
+!endif
 !endif
 
 #
@@ -233,7 +236,11 @@ run_wgml_new : .PROCEDURE .EXPLICIT
 !ifeq verbose 0
     @echo wgml $@
 !endif
+!ifdef __UNIX__
+    -wgml $^& "(" file $(wgml_optfile)
+!else
     -wgml $^& ( file $(wgml_optfile)
+!endif
 
 ####################################################
 #
@@ -345,12 +352,15 @@ run_wgml_new : .PROCEDURE .EXPLICIT
 {$(root_books)}.gml.ps :
     @echo BOOK : $^&
     $(noecho)set OWGMLINC=.;$(root_books);$(tmpdir);$(ps_incs);$($^&_book_incs);$(whelp_incs);$(gml_incs)
-    $(noecho)set GMLINC=$(%OWGMLINC:/=\)
-    $(noecho)set GMLLIB=.;..\gml\syslib
+    $(noecho)set OWGMLLIB=../gml/owhelp
     %make prepare_wgml_opts
 !ifdef %OWNEWWGML
+    $(noecho)set GMLINC=$(%OWGMLINC)
+    $(noecho)set GMLLIB=$(%OWGMLLIB)
     @%make run_wgml_new
 !else
+    $(noecho)set GMLINC=$(%OWGMLINC:/=\)
+    $(noecho)set GMLLIB=$(%OWGMLLIB:/=\)
     @%make run_wgml
 !endif
     @if exist $@ $(noecho)%erase $@
@@ -624,12 +634,15 @@ compile_gml_to_xxx : .PROCEDURE
     @if not exist $*.tbl @%create $*.tbl
     @if not exist $*.kw @%create $*.kw
     $(noecho)set OWGMLINC=.;$(root_books);$(hlp_incs);$($^&_book_incs);$(whelp_incs);$(gml_incs);
-    $(noecho)set GMLINC=$(%OWGMLINC:/=\)
-    $(noecho)set GMLLIB=
+    $(noecho)set OWGMLLIB=../gml/owhelp
     @%make prepare_wgml_opts
 !ifdef %OWNEWWGML
+    $(noecho)set GMLINC=$(%OWGMLINC)
+    $(noecho)set GMLLIB=$(%OWGMLLIB)
     @%make run_wgml_new
 !else
+    $(noecho)set GMLINC=$(%OWGMLINC:/=\)
+    $(noecho)set GMLLIB=$(%OWGMLLIB:/=\)
     @%make run_wgml
 !endif
     @if exist $*.$(wgml1_ext) $(noecho)%erase $*.$(wgml1_ext)
