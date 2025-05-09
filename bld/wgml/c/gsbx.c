@@ -2490,7 +2490,7 @@ void scr_bx( void )
     uint32_t            cur_col;
     uint32_t            i;
     uint32_t            prev_col;
-    size_t              len;
+    unsigned            len;
     su                  boxcolwork;
     int32_t             boxcol_cur;
     int32_t             boxcol_prev;

@@ -46,11 +46,11 @@ static  int32_t         save_indent;                // used with TITLEP/eTITLEP
 static  int32_t         save_indentr;               // used with TITLEP/eTITLEP
 static  ju_enum         justify_save;               // for ProcFlags.justify
 static  line_number     titlep_lineno;              // TITLEP tag line number
-static  size_t          cur_count;                  // current number of characters copied
-static  size_t          frame_line_len  = CHAR_FRAME_LEN;   // length of frame lines
-static  size_t          str_count;                  // IXHEAD 'character string' strlen()
-static  symsub      *   ixjval;                     // &sysixj value
-static  symsub      *   ixrefval;                   // &sysixref value
+static  unsigned        cur_count;                  // current number of characters copied
+static  unsigned        frame_line_len  = CHAR_FRAME_LEN;   // length of frame lines
+static  unsigned        str_count;                  // IXHEAD 'character string' strlen()
+static  symsub          *ixjval;                    // &sysixj value
+static  symsub          *ixrefval;                  // &sysixref value
 static  uint32_t        cur_width;                  // current IXHEAD line width
 static  uint32_t        wrap[3];                    // I1/I2/I3 wrap_indent values
 static  uint32_t        ixh_indent;                 // IXHEAD indent
@@ -956,7 +956,7 @@ static void gen_toc( void )
     ffh_entry   *   curr;
     int             i;
     int             j;
-    uint32_t        cur_level;
+    int             cur_level;
     uint32_t        indent[7];
     uint32_t        size;
 

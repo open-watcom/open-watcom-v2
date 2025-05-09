@@ -384,7 +384,7 @@ static void fb_newline( void )
  *          as an exact multiple of the width of a space character.
  */
 
-static void output_spaces( size_t count )
+static void output_spaces( unsigned count )
 {
     if( !text_out_open && ProcFlags.ps_device ) {
         ob_insert_ps_text_start();
@@ -445,10 +445,10 @@ static void output_uscores( text_chars *in_chars )
 
 static void post_text_output( void )
 {
-    char    shift_neg[]     = " neg";
-    char    shift_rmoveto[] = " 0 exch rmoveto ";
-    char    shift_scale[]   = " 1 .7 div dup scale";
-    size_t  ps_size;
+    char        shift_neg[]     = " neg";
+    char        shift_rmoveto[] = " 0 exch rmoveto ";
+    char        shift_scale[]   = " 1 .7 div dup scale";
+    unsigned    ps_size;
 
     if( ProcFlags.ps_device ) {
         if( shift_done ) {
@@ -496,10 +496,10 @@ static void post_text_output( void )
 
 static void pre_text_output( void )
 {
-    char    shift_neg[]     = " neg";
-    char    shift_rmoveto[] = " rmoveto";
-    char    shift_scale[]   = " .7 .7 scale ";
-    size_t  ps_size;
+    char        shift_neg[]     = " neg";
+    char        shift_rmoveto[] = " rmoveto";
+    char        shift_scale[]   = " .7 .7 scale ";
+    unsigned    ps_size;
 
     if( ProcFlags.ps_device ) {
 
@@ -624,8 +624,8 @@ static void *df_clearpc( void )
 
 static void *df_dotab( void )
 {
-    static  int         instance = 0;
-            size_t      spaces;
+    static int      instance = 0;
+    unsigned        spaces;
 
     /* Recursion is an error. */
 
@@ -2665,7 +2665,7 @@ static void fb_htab( void )
 
 static void fb_initial_horizontal_positioning( void )
 {
-    size_t      spaces;
+    unsigned        spaces;
 
     x_address = desired_state.x_address;
     if( ProcFlags.has_aa_block ) {
@@ -2713,7 +2713,7 @@ static void fb_initial_horizontal_positioning( void )
 
 static void fb_internal_horizontal_positioning( text_chars * in_chars )
 {
-    size_t      spaces;
+    unsigned        spaces;
 
     /* Spaces cannot be emitted and tabs cannot be done "backwards". */
 

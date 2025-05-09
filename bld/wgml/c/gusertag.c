@@ -182,7 +182,7 @@ bool process_tag( gtentry * ge, mac_entry * me )
     gavalentry  *   gaval;
     inp_line    *   pline;
     int             rc;
-    size_t          len;
+    unsigned        len;
     symdict_hdl     loc_dict;   // for preparing local vars
 
     processed = true;           // return value, always true

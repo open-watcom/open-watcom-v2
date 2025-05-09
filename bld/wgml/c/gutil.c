@@ -361,10 +361,10 @@ static bool su_expression( su * in_su )
 static void add_spaces_t_element( char * spaces )
 {
     font_number     font;
-    size_t          spc_cnt;
+    unsigned        spc_cnt;
     text_chars  *   sav_chars;
     text_line   *   line;
-    uint32_t        start;
+    unsigned        start;
 
     spc_cnt = strlen( spaces );
     if( spc_cnt > 0 ) {                                 // must have something to add

@@ -310,7 +310,7 @@ bool    i_content( char * p, lay_attr_i lay_attr, reg_content *tm )
     bool            cvterr;
     char            *pa;
     content_enum    k;
-    size_t          len;
+    unsigned        len;
 
     cvterr = false;
     tm->content_type = no_content;
@@ -491,7 +491,7 @@ void    o_frame( FILE *fp, lay_attr_o lay_attr, const bool *tm )
 bool    i_font_number( char *p, lay_attr_i lay_attr, font_number *tm )
 {
     char    *   pb;
-    size_t      len;
+    unsigned    len;
 
     (void)lay_attr;
 

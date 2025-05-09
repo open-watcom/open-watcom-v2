@@ -37,17 +37,17 @@
 
 
 typedef struct option {
-    char        *   option;             // the option
-    short           optionLen;          // length of option
-    short           minLength;          // minimum abbreviation
-    int             value;              // sometimes value to set option to
-    void            (*function)( struct option *optentry );
-    int             parmcount;          // expected number of parms
+    char        *option;            // the option
+    unsigned    optionLen;          // length of option
+    unsigned    minLength;          // minimum abbreviation
+    int         value;              // sometimes value to set option to
+    void        (*function)( struct option *optentry );
+    unsigned    parmcount;          // expected number of parms
 } option;
 
 typedef struct cmd_tok {
     struct cmd_tok  *   nxt;
-    size_t              toklen;
+    unsigned            toklen;
     bool                bol;
     char                token[1];       // variable length
 } cmd_tok;
@@ -95,7 +95,7 @@ static int split_tokens( char *str )
     char            quote;
     char        *   tokstart;
     int             cnt;
-    size_t          toklen;
+    unsigned        toklen;
 
     linestart = true;                   // assume start of line
     cnt = 0;                            // found tokens
@@ -196,8 +196,8 @@ static char * read_indirect_file( FILE *fp )
     char        *buf;
     char        ch;
     char        *str;
-    size_t      len;
-    size_t      blk_len;
+    unsigned    len;
+    unsigned    blk_len;
 
     buf = mem_alloc( 1024 );
     len = 0;
@@ -294,7 +294,7 @@ static void set_altext( option * opt )
 {
     char    *   pw;
     char    *   p;
-    int         len;
+    unsigned    len;
 
     if( tokennext == NULL || tokennext->bol || is_option() ) {
         bad_cmd_line( err_missing_opt_value, opt->option, ' ' );
@@ -454,7 +454,7 @@ static void set_device( option * opt )
 
     char    *   p;
     char    *   pw;
-    int         len;
+    unsigned    len;
 
     if( tokennext == NULL || tokennext->bol || is_option() ) {
         bad_cmd_line( err_missing_device_name, opt->option, ' ' );
@@ -489,8 +489,8 @@ static bool font_points( cmd_tok * in_tok, char buff[5] )
     bool        good;
     bool        has_pt;
     char    *   p;
-    int         i;
-    int         len;
+    unsigned    i;
+    unsigned    len;
     int         post_pt;
     int         pre_pt;
 
@@ -560,8 +560,8 @@ static void set_font( option * opt )
     char        *   pw;
     cmd_tok     *   opts[3];
     int             fn;
-    int             i;
-    int             len;
+    unsigned        i;
+    unsigned        len;
     int             old_errs;
     int             opts_cnt;
     opt_font    *   new_font;
@@ -847,10 +847,9 @@ static void set_font( option * opt )
 
 static void set_layout( option * opt )
 {
-    char    attrwork[MAX_FILE_ATTR];
-    int     len;
-
-    struct  laystack    * laywk;
+    char            attrwork[MAX_FILE_ATTR];
+    unsigned        len;
+    struct laystack *laywk;
 
     if( tokennext == NULL || tokennext->bol || is_option() ) {
         xx_simple_err_cc( err_miss_inv_opt_value, opt->option, "" );
@@ -1051,7 +1050,7 @@ static void set_OPTFile( option * opt )
 {
     char        attrwork[MAX_FILE_ATTR];
     char        *str;
-    int         len;
+    unsigned    len;
     FILE        *fp;
 
     if( tokennext == NULL || tokennext->bol || is_option()
@@ -1121,7 +1120,7 @@ static void set_OPTFile( option * opt )
 static void set_incpath( option * opt )
 {
     char        str[_MAX_PATH];
-    int         len;
+    unsigned    len;
 
     if( tokennext == NULL || tokennext->bol || is_option()
             || tokennext->token[0] == '(' ) {
@@ -1152,7 +1151,7 @@ static void set_incpath( option * opt )
 static void set_libpath( option * opt )
 {
     char        str[256];
-    int         len;
+    unsigned    len;
 
     if( tokennext == NULL || tokennext->bol || is_option()
             || tokennext->token[0] == '(' ) {
@@ -1193,7 +1192,7 @@ static void set_quiet( option * opt )
 static void set_research( option * opt )
 {
     char        str[256];
-    int         len;
+    unsigned    len;
 
     GlobalFlags.research = opt->value;
 
@@ -1469,7 +1468,7 @@ static cmd_tok * process_option_old( option * op_table, cmd_tok * tok )
     char    *   p;
     char    *   pa;
     int         i;
-    int         len;
+    unsigned    len;
 
     p = tok->token;
     option_start = p;
@@ -1596,7 +1595,7 @@ static cmd_tok * process_option_old( option * op_table, cmd_tok * tok )
 static bool is_option( void )
 {
     int         i;
-    int         len;
+    unsigned    len;
     char    *   opt;
     char        c;
     char    *   p;

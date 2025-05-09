@@ -661,16 +661,16 @@ typedef enum {
 } getnumrc;
 
 typedef struct getnum_block {
-    int         ignore_blanks;          // 1 if blanks are ignored
     tok_type    arg;
     char        *errstart;
     char        *first;
-    int         length;
+    unsigned    length;
     int         result;                 // result as long
     char        resultstr[NUM2STR_LENGTH];  // result in char format (32-bit number)
     getnumrc    error;
-    char        num_sign;               // remember absolute or relative value
     condcode    cc;
+    char        num_sign;               // remember absolute or relative value
+    bool        ignore_blanks;          // 1 if blanks are ignored
 } getnum_block;
 
 /***************************************************************************/

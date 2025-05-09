@@ -49,7 +49,7 @@ static void sksp_common( void )
     bool            scanerr         = false;
     const char      *p;
     const char      *pa;
-    size_t          len;
+    unsigned        len;
     su              spskwork;
     text_space      text_spacing;
 

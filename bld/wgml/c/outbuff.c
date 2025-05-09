@@ -117,9 +117,9 @@ static unsigned char    tr_table[0x100]; // .TR-controlled translation table
  *          output translations have four characters.
  */
 
-static void ob_insert_ps_text( const char *in_block, size_t count, font_number font )
+static void ob_insert_ps_text( const char *in_block, unsigned count, font_number font )
 {
-    size_t              difference;
+    unsigned            difference;
     translation         **cur_table  = NULL;
     translation         *cur_trans   = NULL;
     unsigned char       trbyte_out;
@@ -241,14 +241,14 @@ static void ob_insert_ps_text( const char *in_block, size_t count, font_number f
  *          appear in any output record.
  */
 
-static void ob_insert_ps_cmd( const char *in_block, size_t count )
+static void ob_insert_ps_cmd( const char *in_block, unsigned count )
 {
-    size_t      current     = 0;
-    size_t      spc_end     = 0;
-    size_t      tkn_end     = 0;
-    size_t      spc_start   = 0;
-    size_t      tkn_start   = 0;
-    size_t      text_count  = count;
+    unsigned    current     = 0;
+    unsigned    spc_end     = 0;
+    unsigned    tkn_end     = 0;
+    unsigned    spc_start   = 0;
+    unsigned    tkn_start   = 0;
+    unsigned    text_count  = count;
 
     /* If the buffer is full, flush it. */
 
@@ -344,10 +344,10 @@ static void ob_insert_ps_cmd( const char *in_block, size_t count )
  *          appear in any output record.
  */
 
-static void ob_insert_ps_cmd_ot( const char *in_block, size_t count, font_number font )
+static void ob_insert_ps_cmd_ot( const char *in_block, unsigned count, font_number font )
 {
-    size_t              test_length;
-    size_t              text_count;
+    unsigned            test_length;
+    unsigned            text_count;
     translation         **cur_table  = NULL;
     translation         *cur_trans   = NULL;
     unsigned char       trbyte_out;
@@ -556,11 +556,11 @@ static void ob_insert_ps_cmd_ot( const char *in_block, size_t count, font_number
  *      count contains the number of bytes in the block.
  */
 
-static void ob_insert_def( const char *in_block, size_t count )
+static void ob_insert_def( const char *in_block, unsigned count )
 {
-    size_t      current;
-    size_t      difference;
-    size_t      text_count;
+    unsigned    current;
+    unsigned    difference;
+    unsigned    text_count;
 
     /* If the buffer is full, flush it. */
 
@@ -618,9 +618,9 @@ static void ob_insert_def( const char *in_block, size_t count )
  *          allowed number of characters in it.
  */
 
-static void ob_insert_def_ot( const char *in_block, size_t count, font_number font )
+static void ob_insert_def_ot( const char *in_block, unsigned count, font_number font )
 {
-    size_t              text_count;
+    unsigned            text_count;
     translation         **cur_table  = NULL;
     translation         *cur_trans   = NULL;
     unsigned char       trbyte_out;
@@ -886,7 +886,7 @@ static void set_out_file( void )
 
 static void set_out_file_attr( void )
 {
-    size_t      len;
+    unsigned    len;
 
     /* Construct the output file record type if necessary. If the command-line
      * option OUTput was used and a record type was given, then out_file_attr
@@ -1119,7 +1119,7 @@ void ob_graphic( graphic_element * in_el )
     char        enddoc[] = "%%EndDocument";
     char        graphobj[] = "/graphobj save def /showpage { } def";
     char        restore[] = "graphobj restore";
-    size_t      ps_size;
+    unsigned    ps_size;
     uint32_t    count;
 
     fb_graphic_support( in_el );
@@ -1198,7 +1198,7 @@ void ob_graphic( graphic_element * in_el )
  *      out_text is true is the bytes are to appear in the document itself.
  */
 
-void ob_insert_block( const char *in_block, size_t count, bool out_trans,
+void ob_insert_block( const char *in_block, unsigned count, bool out_trans,
                       bool out_text, font_number font )
 {
     /* Select and invoke the proper static function. */
@@ -1259,9 +1259,9 @@ void ob_insert_byte( unsigned char in_char )
 
 void ob_insert_ps_text_end( bool htab_done, font_number font )
 {
-    char    shwd_suffix[]   = " shwd ";
-    char    sd_suffix[]     = " sd ";
-    size_t  ps_size;
+    char        shwd_suffix[]   = " shwd ";
+    char        sd_suffix[]     = " sd ";
+    unsigned    ps_size;
 
     ob_insert_block( ")", 1, false, false, font );
 

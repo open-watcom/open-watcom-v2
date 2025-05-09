@@ -385,7 +385,7 @@ void    scr_go( void )
 void        print_labels( labelcb * lcb, char * name )
 {
     char                fill[LABEL_NAME_LENGTH + 1];
-    size_t              len;
+    unsigned            len;
     labelcb         *   lb;
 
     lb = lcb;

@@ -116,7 +116,7 @@ void process_late_subst( char * buf )
 void split_input( char * buf, char * split_pos, i_flags fmflags )
 {
     inp_line    *   wk;
-    size_t          len;
+    unsigned        len;
 
     (void)buf;
 
@@ -152,7 +152,7 @@ void split_input( char * buf, char * split_pos, i_flags fmflags )
 static void split_input_var( char * buf, char * split_pos, char * part2, i_flags fmflags )
 {
     inp_line    *   wk;
-    size_t          len;
+    unsigned        len;
 
     (void)buf;
 
@@ -191,7 +191,7 @@ static void split_at_GML_tag( void )
     const gmltag    *gle = NULL;             // GML layout tag entry
     const gmltag    *gse = NULL;             // GML system tag entry
     gtentry         *gue = NULL;             // GML user tag entry
-    size_t          toklen;
+    unsigned        toklen;
     char            tagname[TAG_NAME_LENGTH + 1];
 
     /***********************************************************************/
@@ -418,7 +418,7 @@ static bool parse_r2l( sym_list_entry *stack, char *buf, bool subscript )
 {
     char            *p;
     char            tail[BUF_SIZE + 1];
-    size_t          cw_lg;
+    unsigned        cw_lg;
     sym_list_entry  *curr;
 
     ProcFlags.co_on_indent = false;

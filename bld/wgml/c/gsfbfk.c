@@ -250,7 +250,7 @@ static char *get_params( const char *scw_name )
 {
     const char          *p;
     const char          *pa;
-    size_t              len;
+    unsigned            len;
     su                  fbk_su;
 
     p = scandata.s;

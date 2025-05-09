@@ -69,12 +69,12 @@
  *          store the return value.
  */
 
-static cop_driver * resize_cop_driver( cop_driver * in_driver, size_t in_size )
+static cop_driver * resize_cop_driver( cop_driver * in_driver, unsigned in_size )
 {
     cop_driver *    local_driver = NULL;
-    size_t          increment = INC_SIZE;
-    size_t          new_size;
-    size_t          scale;
+    unsigned        increment = INC_SIZE;
+    unsigned        new_size;
+    unsigned        scale;
 
     /* Compute how much larger to make the cop_driver struct. */
 
@@ -131,7 +131,7 @@ static cop_driver *parse_finish_block( cop_driver *in_driver, const char **curre
     uint8_t         designator;
     uint8_t *       text_ptr        = NULL;
     uint16_t        count;
-    size_t          size;
+    unsigned        size;
 
     /* Get the designator. */
 
@@ -292,7 +292,7 @@ static cop_driver *parse_font_style( FILE *fp, cop_driver *in_driver,
     uint16_t        count16;
     uint16_t        line_pass;
 
-    size_t          size;
+    unsigned        size;
 
     /* Get the number of line passes, which can be 0. */
 
@@ -793,7 +793,7 @@ static cop_driver *parse_init_block( cop_driver *in_driver, const char **current
     uint8_t *       text_ptr        = NULL;
     uint16_t        count;
 
-    size_t          size;
+    unsigned        size;
 
     /* Get the designator. */
 
@@ -1009,7 +1009,7 @@ cop_driver * parse_driver( FILE *fp )
     int                 factor;
     newline_block *     newline_block_ptr       = NULL;
     p_buffer *          p_buffer_set            = NULL;
-    size_t              span;
+    unsigned            span;
     const char          *current                = NULL;
     uint8_t *           text_ptr                = NULL;
     uint8_t             the_flags[21];
@@ -1024,7 +1024,7 @@ cop_driver * parse_driver( FILE *fp )
     int                 i;
     int                 j;
 
-    size_t              size;
+    unsigned            size;
 
     char                discriminator[3];
 

@@ -276,8 +276,8 @@ static void insert_frame_line( void )
 {
     doc_element *   h_line_el;
     int             i;
-    size_t          cur_count;
-    size_t          str_count;
+    unsigned        cur_count;
+    unsigned        str_count;
     uint32_t        cur_limit;  // number of whole copies of frame.string that will fit into line.buff
     uint32_t        cur_width;
     uint32_t        str_width;
@@ -1089,8 +1089,8 @@ void gml_figcap( const gmltag * entry )
     char            buffer[NUM2STR_LENGTH];
     char        *   prefix;
     char        *   p;
-    size_t          count;
-    size_t          current;
+    unsigned        count;
+    unsigned        current;
     text_chars  *   marker;
 
     (void)entry;

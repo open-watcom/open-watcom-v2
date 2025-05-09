@@ -42,7 +42,7 @@ void    gml_docnum( const gmltag * entry )
     char        *   p;
     font_number     font_save;
     page_pos        old_line_pos;
-    size_t          buff_len;
+    unsigned        buff_len;
     uint32_t        left_indent;
     uint32_t        right_indent;
 

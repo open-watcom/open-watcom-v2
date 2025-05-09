@@ -106,12 +106,12 @@ static index_status find_cumulative_index( functions_block * in_block, uint16_t 
  *          store the return value.
  */
 
-static cop_device * resize_cop_device( cop_device * in_device, size_t in_size )
+static cop_device * resize_cop_device( cop_device * in_device, unsigned in_size )
 {
     cop_device *    local_device = NULL;
-    size_t          increment = INC_SIZE;
-    size_t          new_size;
-    size_t          scale;
+    unsigned        increment = INC_SIZE;
+    unsigned        new_size;
+    unsigned        scale;
 
     /* Compute how much larger to make the cop_device struct. */
 
@@ -228,7 +228,7 @@ cop_device * parse_device( FILE *fp )
 
     uint8_t             count8;
 
-    size_t              size;
+    unsigned            size;
 
     char                discriminator[3];
 

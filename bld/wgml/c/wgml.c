@@ -72,7 +72,7 @@ static void usage( void )
 }
 
 #if 0                                   // not used for the moment
-char *get_filename_full_path( char *buff, char const * name, size_t max )
+char *get_filename_full_path( char *buff, char const * name, unsigned max )
 {
     char    *   p;
 

@@ -710,7 +710,7 @@ typedef struct reg_content {
 } reg_content;
 
 typedef struct script_ban_reg {         // for script format region
-    size_t          len;                // split into sub-fields
+    unsigned        len;                // split into sub-fields
     char            *string;
 } script_ban_reg;
 

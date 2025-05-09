@@ -171,10 +171,10 @@ void gen_heading( char *h_text, const char *hdrefid, hdsrc hn_lvl, hdsrc hds_lvl
     doc_element *   cur_el;
     group_type      sav_group_type;         // save prior group type
     int             k;
-    size_t          current;
-    size_t          headlen;
-    size_t          prefixlen;
-    size_t          txtlen;
+    unsigned        current;
+    unsigned        headlen;
+    unsigned        prefixlen;
+    unsigned        txtlen;
     page_pos        old_line_pos;
     ref_entry   *   cur_ref         = NULL;
     uint32_t        bot_depth;
@@ -559,7 +559,7 @@ static void gml_hx_common( const gmltag * entry, hdsrc hn_lvl )
     char            *pa;
     hdsrc           hds_lvl;
     text_space      sav_spacing;
-    size_t          len;
+    unsigned        len;
     tag_att_val     tag_attr;
 
     static char     hxstr[4]    = ":HX";

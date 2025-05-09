@@ -126,7 +126,7 @@ void mem_fini( void )
 /*  Allocate some storage                                                  */
 /***************************************************************************/
 
-void *mem_alloc( size_t size )
+void *mem_alloc( unsigned size )
 {
     void    *p;
 
@@ -145,7 +145,7 @@ void *mem_alloc( size_t size )
 /*  Re-allocate some storage                                               */
 /***************************************************************************/
 
-void *mem_realloc( void * oldp, size_t size )
+void *mem_realloc( void * oldp, unsigned size )
 {
     void    *   p;
 
@@ -167,12 +167,12 @@ void *mem_realloc( void * oldp, size_t size )
 
 char *mem_strdup( const char *str )
 {
-    size_t  size;
-    char    *p;
+    unsigned    size;
+    char        *p;
 
     if( str == NULL )
         str = "";
-    size = strlen( str );
+    size = (unsigned)strlen( str );
 #ifdef TRMEM
     p = _trmem_alloc( size + 1, _trmem_guess_who(), handle );
 #else
@@ -188,7 +188,7 @@ char *mem_strdup( const char *str )
 /*  duplicate token                                                        */
 /***************************************************************************/
 
-char *mem_tokdup( const char *str, int size )
+char *mem_tokdup( const char *str, unsigned size )
 {
     char    *p;
 

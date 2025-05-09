@@ -218,8 +218,8 @@ void    add_macro_parms( char * p )
     char        starbuf[NUM2STR_LENGTH];
     condcode    cc;
     int         star0;
-    size_t      len;
-    size_t      o_len;
+    unsigned    len;
+    unsigned    o_len;
 
     pa = p;                             // save start position
     SkipSpaces( p );                    // find first nonspace character, if any

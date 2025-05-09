@@ -126,7 +126,7 @@ static FILE *try_open( char *prefix, char *filename )
 {
     FILE        *fp;
     char        buff[_MAX_PATH];
-    size_t      filename_length;
+    unsigned    filename_length;
 
     /* Prevent buffer overflow. */
 
@@ -290,7 +290,7 @@ FILE *search_file_in_dirs( const char *filename, const char *defext, const char 
     char            *member_name = NULL;
     directory_list  path_list;
     directory_list  searchdirs[5];
-    size_t          member_length;
+    unsigned        member_length;
     pgroup2         pg;
     directory_list  *pd;
     char            c;

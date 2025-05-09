@@ -66,12 +66,12 @@
  *          store the return value.
  */
 
-static cop_font * resize_cop_font( cop_font * in_font, size_t in_size )
+static cop_font * resize_cop_font( cop_font * in_font, unsigned in_size )
 {
     cop_font *  local_font  = NULL;
-    size_t      increment   = INC_SIZE;
-    size_t      new_size;
-    size_t      scale;
+    unsigned    increment   = INC_SIZE;
+    unsigned    new_size;
+    unsigned    scale;
 
     /* Compute how much larger to make the cop_font struct. */
 
@@ -151,7 +151,7 @@ cop_font *parse_font( FILE *fp, char const *fon_name )
     uint8_t             width_flag;
     uint32_t *          width_ptr;
 
-    size_t              size;
+    unsigned            size;
 
     /* Used for count and other values. */
 

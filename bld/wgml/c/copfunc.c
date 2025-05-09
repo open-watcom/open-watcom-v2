@@ -63,8 +63,8 @@
 code_block *get_code_blocks( const char **current, uint16_t count, const char *base )
 {
     code_block *    out_block   = NULL;
-    size_t          difference;
-    size_t          position;
+    unsigned        difference;
+    unsigned        position;
     uint8_t         i;
 
     /* Allocate out_block. */

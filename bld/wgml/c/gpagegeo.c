@@ -986,8 +986,8 @@ static void finish_banners( void )
 
 void    do_layout_end_processing( void )
 {
-    size_t          spc_cnt;
-    size_t          txt_cnt;
+    unsigned        spc_cnt;
+    unsigned        txt_cnt;
 
     /***********************************************************************/
     /*  Since the LAYOUT blocks are only processed on the first pass, most */

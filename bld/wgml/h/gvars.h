@@ -140,7 +140,7 @@ global  char        *   token_buf;
 
 global char         *   workbuf;        // work for input buffer
 global char         *   buff2;          // input buffer
-global size_t           buff2_lg;       // input buffer used length
+global unsigned         buff2_lg;       // input buffer used length
 
 // the following to manage .gt * and .ga * * syntax
 global char         g_tagname[TAG_NAME_LENGTH + 1];// last defined GML tag name

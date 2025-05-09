@@ -45,7 +45,7 @@ char * scan_sym( char * p, symvar * sym, sub_index * subscript, char * * result,
     char            quote;
     char        *   sym_start;
     int             rc;
-    size_t          k;
+    unsigned        k;
     sub_index       var_ind;
     symsub      *   symsubval;
 
@@ -182,7 +182,7 @@ char * scan_sym( char * p, symvar * sym, sub_index * subscript, char * * result,
                 char            valbuf[BUF_SIZE + 1];
                 condcode        cc;
                 getnum_block    gn;
-                size_t          len;
+                unsigned        len;
 
                 len = pend - p - 1;
                 if( len > BUF_SIZE - 1 )
@@ -271,7 +271,7 @@ void    scr_se( void )
     symsub      *   symsubval;
     symvar          sym;
     symdict_hdl     working_dict;
-    size_t          len;
+    unsigned        len;
 
     subscript = no_subscript;                       // not subscripted
     g_scan_err = false;

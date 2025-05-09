@@ -191,10 +191,10 @@ static void puncadj( text_line * line, int32_t * delta0, int32_t rem,
 /*  return the width of text up to the first tab stop                      */
 /***************************************************************************/
 
-static uint32_t text_chars_width( const char *text, size_t count, font_number font )
+static uint32_t text_chars_width( const char *text, unsigned count, font_number font )
 {
     int         i;
-    size_t      cur_count   = 0;
+    unsigned    cur_count   = 0;
     uint32_t    retval      = 0;
 
     for( i = 0; i < count; i++ ) {
@@ -223,7 +223,7 @@ static void next_tab( void )
     tab_stop            l_tab;
     tab_stop    *       c_tab       = NULL;
     uint32_t            r_count;
-    uint32_t            r_length;
+    unsigned            r_length;
     uint32_t            r_width;
 
     if( t_page.cur_left > t_page.cur_width ) {
@@ -298,7 +298,7 @@ static void next_tab( void )
 /***************************************************************************/
 
 static text_chars * do_c_chars( text_chars *c_chars, text_chars *in_chars,
-                                 const char *in_text, size_t count,
+                                 const char *in_text, unsigned count,
                                  uint32_t in_x_address, uint32_t width,
                                  font_number font, text_type type )
 {
@@ -385,7 +385,7 @@ static void wgml_tabs( void )
     int                         i;
     int32_t                     t_align     = 0;        // current align value, or 0 if none found
     int32_t                     offset      = 0;        // offset for position adjustment
-    size_t                      t_count     = 0;        // text count
+    unsigned                    t_count     = 0;        // text count
     tag_cb                  *   t_cb        = NULL;
     text_chars              *   c_chars     = NULL;     // current text_chars
     text_chars              *   c_multi;                // used to traverse parts of multipart word
@@ -1091,7 +1091,7 @@ static void redo_tabs( text_line * a_line )
 static uint32_t split_text( text_chars *in_chars, uint32_t limit )
 {
     uint32_t    retval;
-    size_t      t_count;
+    unsigned    t_count;
     uint32_t    p_width;
     uint32_t    t_limit;
     uint32_t    t_width;
@@ -1819,7 +1819,7 @@ void process_text( char * text, font_number font )
     char                *   p;
     char                *   pword;
     font_number             temp_font       = 0;
-    size_t                  count;
+    unsigned                count;
     text_chars          *   fm_chars;                   // start text_chars for inserting fmflags
     text_chars          *   h_chars;                    // hyphen text_chars
     text_chars          *   n_chars;                    // new text_chars

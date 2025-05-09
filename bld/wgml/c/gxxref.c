@@ -117,15 +117,15 @@ void gml_figref( const gmltag * entry )
     char        *   p;
     char        *   ref_text;
     ref_entry   *   cur_re;
-    size_t          bu_len;
-    size_t          len;
+    unsigned        bu_len;
+    unsigned        len;
 
-    static  char    def_page[]  = " on page XXX";
-    static  char    def_ref[]   = "Figure XX";
-    static  char    on_page[]  = " on page ";
-    static  size_t  dp_len;
-    static  size_t  dr_len;
-    static  size_t  op_len;
+    static char     def_page[]  = " on page XXX";
+    static char     def_ref[]   = "Figure XX";
+    static char     on_page[]  = " on page ";
+    static unsigned dp_len;
+    static unsigned dr_len;
+    static unsigned op_len;
 
     (void)entry;
 
@@ -221,16 +221,16 @@ void gml_hdref( const gmltag * entry )
     char        *   p;
     char        *   ref_text;
     ref_entry   *   cur_re;
-    size_t          bu_len;
-    size_t          len;
+    unsigned        bu_len;
+    unsigned        len;
     uint32_t        t_depth;
 
-    static  char    def_page[]  = " on page XXX";
-    static  char    def_ref[]   = "\"Undefined Heading\"";
-    static  char    on_page[]   = " on page ";
-    static  size_t  dp_len;
-    static  size_t  dr_len;
-    static  size_t  op_len;
+    static char     def_page[]  = " on page XXX";
+    static char     def_ref[]   = "\"Undefined Heading\"";
+    static char     on_page[]   = " on page ";
+    static unsigned dp_len;
+    static unsigned dr_len;
+    static unsigned op_len;
 
     (void)entry;
 
