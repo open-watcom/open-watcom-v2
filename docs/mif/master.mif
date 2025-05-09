@@ -354,7 +354,7 @@ run_wgml_new : .PROCEDURE .EXPLICIT
     $(noecho)set OWGMLINC=.;$(root_books);$(tmpdir);$(ps_incs);$($^&_book_incs);$(whelp_incs);$(gml_incs)
     $(noecho)set OWGMLLIB=../gml/owhelp
     %make prepare_wgml_opts
-!ifdef %OWNEWWGML
+!ifdef __UNIX__
     $(noecho)set GMLINC=$(%OWGMLINC)
     $(noecho)set GMLLIB=$(%OWGMLLIB)
     @%make run_wgml_new
@@ -636,7 +636,7 @@ compile_gml_to_xxx : .PROCEDURE
     $(noecho)set OWGMLINC=.;$(root_books);$(hlp_incs);$($^&_book_incs);$(whelp_incs);$(gml_incs);
     $(noecho)set OWGMLLIB=../gml/owhelp
     @%make prepare_wgml_opts
-!ifdef %OWNEWWGML
+!ifdef __UNIX__
     $(noecho)set GMLINC=$(%OWGMLINC)
     $(noecho)set GMLLIB=$(%OWGMLLIB)
     @%make run_wgml_new
