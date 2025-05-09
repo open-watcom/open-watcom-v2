@@ -234,12 +234,12 @@ block   *ReGenBlock( block *blk, label_handle lbl )
     block_edge  *edge;
     block_num   targets;
 
-    targets = blk->targets + 1;
-    new_blk = CGAlloc( BLOCK_SIZE( targets ) );
-    Copy( blk, new_blk, BLOCK_SIZE( targets - 1 ) );
-    new_blk->edge[targets - 1].destination.u.lbl = lbl;
-    new_blk->edge[targets - 1].flags = 0;
-    new_blk->targets = targets;
+    targets = blk->targets;
+    new_blk = CGAlloc( BLOCK_SIZE( targets + 1 ) );
+    Copy( blk, new_blk, BLOCK_SIZE( targets ) );
+    new_blk->edge[targets].destination.u.lbl = lbl;
+    new_blk->edge[targets].flags = 0;
+    new_blk->targets = ++targets;
     /*
      * Move all references to blk
      */

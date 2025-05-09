@@ -55,13 +55,12 @@
 #include <string.h>
 #ifdef __QNX__
 #include <unistd.h>
-#include <dirent.h>
 #include <limits.h>
 #include "pathgrp2.h"
 #else
 #include <dos.h>
-#include <direct.h>
 #endif
+#include "wdirent.h"
 #include "bool.h"
 #include "getopt.h"
 #include "argvenv.h"

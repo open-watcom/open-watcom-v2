@@ -36,7 +36,7 @@
 #include "clibext.h"
 
 
-static  bf_place        place;                  // FIG attribute used by eFIG
+static  ban_place       place;                  // FIG attribute used by eFIG
 static  bool            concat_save;            // for ProcFlags.concat
 static  bool            figcap_done;            // FIGCAP done for current FIG
 static  bool            page_width;             // FIG flag used by eFIG

@@ -878,4 +878,5 @@ pick( ERR_XX_STRING,            "The string given is too long",
 pick( ERR_UI_8,                 "The value entered must be in the range [0, 255]",
                                 "The value entered must be in the range [0, 255]" )
 
-
+pick( ERR_UI_16,                "The value entered must be in the range [0, 65535]",
+                                "The value entered must be in the range [0, 65535]" )

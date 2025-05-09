@@ -484,6 +484,23 @@ static cmp_type DoCompatibleType( TYPEPTR typ1, TYPEPTR typ2, int ptr_indir_leve
 
 #define SUBNOT( a, b, on )  ( ( (a&on)|(b&on) )^(a&on) )
 
+static target_size pointer_type_size( TYPEPTR typ )
+{
+    if( typ->u.p.decl_flags & (FLAG_FAR | FLAG_HUGE | FLAG_BASED) ) {
+        return( TARGET_FAR_POINTER );
+    } else if( typ->u.p.decl_flags & FLAG_NEAR ) {
+        return( TARGET_POINTER );
+    } else {
+        typ = typ->object;
+        SKIP_TYPEDEFS( typ );
+        if( typ->decl_type == TYP_FUNCTION ) {
+            return( CodePtrSize );
+        } else {
+            return( DataPtrSize );
+        }
+    }
+}
+
 static cmp_type CompatibleType( TYPEPTR typ1, TYPEPTR typ2, bool assignment, bool null_ptr  )
 {
     cmp_type         ret_val;
@@ -514,30 +531,31 @@ static cmp_type CompatibleType( TYPEPTR typ1, TYPEPTR typ2, bool assignment, boo
          * Special dispensation: assigning null pointer constant is allowed even
          * when the pointer size doesn't match. Required for MS compatibility.
          */
-        if( assignment
-          && !null_ptr ) {
+        if( !assignment || !null_ptr ) {
             type_modifiers  subnot;
 
-            subnot = SUBNOT( typ1_flags, typ2_flags, MASK_QUALIFIERS );
-            if( subnot ) {  // allow void * =  unaligned *
-                if( subnot & (MASK_QUALIFIERS & ~FLAG_UNALIGNED) ) {
-                    ret_pq = PQ;
-                } else if( subnot & FLAG_UNALIGNED ) {
-                    align_type align1;
-
-                    align1 = GetTypeAlignment( typ1->object );
-                    if( align1 > 1 ) {
+            if( assignment ) {
+                subnot = SUBNOT( typ1_flags, typ2_flags, MASK_QUALIFIERS );
+                if( subnot ) {  // allow void * =  unaligned *
+                    if( subnot & (MASK_QUALIFIERS & ~FLAG_UNALIGNED) ) {
                         ret_pq = PQ;
+                    } else if( subnot & FLAG_UNALIGNED ) {
+                        align_type align1;
+
+                        align1 = GetTypeAlignment( typ1->object );
+                        if( align1 > 1 ) {
+                            ret_pq = PQ;
+                        }
                     }
                 }
             }
             if( (typ1_flags & MASK_ALL_MEM_MODELS) != (typ2_flags & MASK_ALL_MEM_MODELS) ) {
                 target_size size1, size2;
 
-                size1 = TypeSize( typ1 );
-                size2 = TypeSize( typ2 );
+                size1 = pointer_type_size( typ1 );
+                size2 = pointer_type_size( typ2 );
                 if( size1 < size2 ) {
-                   ret_pq = PT;
+                    ret_pq = PT;
                 } else if( size1 > size2 ) {
                     ret_pq = PX;
                 }
@@ -987,7 +1005,7 @@ void CheckTernary( TYPEPTR typ1, TYPEPTR typ2 )
         break;
     case PT:
     case PX:
-        CWarn1( ERR_POINTER_TRUNCATION );
+//        CWarn1( ERR_POINTER_TRUNCATION );
         break;
     case PQ:
         if( !CompFlags.no_check_qualifiers ) {

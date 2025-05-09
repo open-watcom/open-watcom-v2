@@ -2161,13 +2161,13 @@ TYPEPTR TernType( TREEPTR true_part, TREEPTR false_part )
         if( !CheckZeroConstant( false_part ) ) {
             CWarn1( ERR_NONPORTABLE_PTR_CONV );
         }
-        return( MergedType( typ1, typ2 ) ); /* merge near/far/const etc. */
+        return( typ1 );
     }
     if( dtype2 == TYP_POINTER && true_part->op.opr == OPR_PUSHINT ) {
         if( !CheckZeroConstant( true_part ) ) {
             CWarn1( ERR_NONPORTABLE_PTR_CONV );
         }
-        return( MergedType( typ2, typ1 ) ); /* merge near/far/const etc. */
+        return( typ2 );
     }
     /*
      * (arithmetic type) : (arithmetic type)    -> (promoted arithmetic type)

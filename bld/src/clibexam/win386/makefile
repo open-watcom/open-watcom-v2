@@ -1,14 +1,10 @@
-compiler = wcc386
-cflags = -bt=windows -bw
+compiler  = *wcc386
+cflags    = -bt=windows -I"$(%WATCOM)/h" -bw
 linkflags = sys win386 debug all
-cdebug = -d2
+cdebug    = -d2
+exe       = .exe
 
 !include ../master.mif
 
-all: $(FN_ALL) $(FN_MACRO) $(FN_FILE) $(FN_STRING) $(FN_ALLN) &
+all: $(FN_ALL) $(FN_MACRO) $(FN_FILE) $(FN_STRING) &
         $(FN_BIOS) $(FN_DOSCALL) $(FN_DOSWIN) $(FN_DEFWIN) $(FN_32BIT)
-
-{..\}.c.exe:
-    $(compiler) $(cflags) $(cdebug) $<
-    wlink $(linkflags) name $* file $*.obj
-    wbind $* -q -n

@@ -101,7 +101,7 @@ static  void    init_pe_line( int pe_count )
     } else {
         if( get_line( true ) ) {
             input_cbs->pe_cb.count = pe_count;
-            input_cbs->pe_cb.ll    =  strlen( buff2 ) + 1;
+            input_cbs->pe_cb.ll    = strlen( buff2 ) + 1;
             input_cbs->pe_cb.line  = mem_alloc( input_cbs->pe_cb.ll );
             strcpy( input_cbs->pe_cb.line, buff2 );
         }
@@ -127,9 +127,9 @@ void    reset_pe_cb( void )
 
 void    scr_pe( void )
 {
-    char        *   pa;
-    char        *   p;
-    int             len;
+    char            *pa;
+    char            *p;
+    unsigned        len;
     getnum_block    gn;
     condcode        cc;
     char            cwcurr[4];

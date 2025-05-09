@@ -441,12 +441,12 @@ void ban_reg_err( msg_ids num, banner_lay_tag * in_ban1, banner_lay_tag * in_ban
 // for finish_banners()
 {
     if( in_ban1 != NULL ) {
-        g_err( inf_ban_id, doc_sections[in_ban1->docsect].name, bf_places[in_ban1->place].name );
+        g_err( inf_ban_id, doc_sections[in_ban1->docsect].name, ban_places[in_ban1->place] );
         if( in_ban2 != NULL ) {
-            g_info( inf_ban_id, doc_sections[in_ban2->docsect].name, bf_places[in_ban2->place].name );
+            g_info( inf_ban_id, doc_sections[in_ban2->docsect].name, ban_places[in_ban2->place] );
         }
     } else if( in_ban2 != NULL ) {
-        g_err( inf_ban_id, doc_sections[in_ban2->docsect].name, bf_places[in_ban2->place].name );
+        g_err( inf_ban_id, doc_sections[in_ban2->docsect].name, ban_places[in_ban2->place] );
     } else {
         internal_err( __FILE__, __LINE__ );
     }

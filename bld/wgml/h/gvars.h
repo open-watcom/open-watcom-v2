@@ -322,7 +322,7 @@ extern  const   ban_sections    doc_sections[max_ban];
 /*  place names for fig and banner definition                              */
 /***************************************************************************/
 
-extern  const   ban_places    bf_places[max_place];
+extern const char           * const ban_places[];
 
 /***************************************************************************/
 /* Layout attribute names as character strings                             */

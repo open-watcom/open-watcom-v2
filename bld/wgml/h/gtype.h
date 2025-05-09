@@ -414,9 +414,9 @@ typedef struct ifcb {
 /***************************************************************************/
 
 typedef struct pecb {                   // for .pe control
-    char *  line;                       // line to perform n times
-    int     ll;                         // length of line
-    int     count;                      // value of .pe n  active if > 0
+    char        *line;                  // line to perform n times
+    unsigned    ll;                     // length of line
+    int         count;                  // value of .pe n  active if > 0 (must be signed)
 } pecb;
 
 /***************************************************************************/
@@ -1318,45 +1318,9 @@ typedef struct {
 /***************************************************************************/
 
 typedef enum content_enum {
-    no_content          =  0,
-    author_content,
-    bothead_content,
-    date_content,
-    docnum_content,
-    head0_content,
-    head1_content,
-    head2_content,
-    head3_content,
-    head4_content,
-    head5_content,
-    head6_content,
-    headnum0_content,
-    headnum1_content,
-    headnum2_content,
-    headnum3_content,
-    headnum4_content,
-    headnum5_content,
-    headnum6_content,
-    headtext0_content,
-    headtext1_content,
-    headtext2_content,
-    headtext3_content,
-    headtext4_content,
-    headtext5_content,
-    headtext6_content,
-    pgnuma_content,
-    pgnumad_content,
-    pgnumr_content,
-    pgnumrd_content,
-    pgnumc_content,
-    pgnumcd_content,
-    rule_content,
-    sec_content,
-    stitle_content,
-    title_content,
-    string_content,
-    time_content,
-    tophead_content,
+    #define pick(text,en)   en,
+    #include "_content.h"
+    #undef pick
     max_content                         // keep as last entry
 } content_enum;
 

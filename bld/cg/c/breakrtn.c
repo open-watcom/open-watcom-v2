@@ -233,9 +233,9 @@ bool    CreateBreak( void )
     blk->gen_id = 0;
     blk->id = 0;
     HeadBlock->label = AskForNewLabel();
-    blk->targets = 1;
     _SetBlkAttr( blk, BLK_BIG_LABEL | BLK_JUMP );
     _MarkBlkAttrClr( HeadBlock, BLK_BIG_LABEL );
+    blk->targets = 1;
     edge = &blk->edge[0];
     edge->flags = DEST_IS_BLOCK;
     edge->source = blk;

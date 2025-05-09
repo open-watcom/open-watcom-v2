@@ -49,7 +49,7 @@ static  int             att_count = sizeof( banner_att ) - 1;   // omit e_dummy_
 static  bool            count[sizeof( banner_att ) - 1];
 static  int             sum_count;
 static  banner_lay_tag  wk;          // for temp storage of banner attributes
-static  bf_place        refplace;
+static  ban_place       refplace;
 static  ban_docsect     refdoc;
 
 static  banner_lay_tag  *   prev_ban;
@@ -203,8 +203,8 @@ static  void    init_banner_wk( banner_lay_tag * ban )
 void    lay_banner( const gmltag * entry )
 {
     banner_lay_tag  *   banwk;
-    bf_place            match_place;
-    bf_place            new_place;
+    ban_place           match_place;
+    ban_place           new_place;
     char            *   p;
     condcode            cc;
     int                 k;

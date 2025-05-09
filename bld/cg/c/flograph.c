@@ -85,7 +85,6 @@ static  void    NoBlocksToSelf( void )
                 new_blk->ins.head.line_num = blk->ins.head.line_num;
                 new_blk->next_block = blk->next_block;
                 new_blk->prev_block = blk;
-                new_blk->targets = 1;
                 new_blk->inputs++;
                 new_blk->input_edges = edge;
                 /*
@@ -103,6 +102,7 @@ static  void    NoBlocksToSelf( void )
                 /*
                  * set new block to jump from new_blk to blk
                  */
+                new_blk->targets = 1;
                 new_edge = &new_blk->edge[0];
                 new_edge->flags |= DEST_IS_BLOCK;
                 new_edge->destination.u.blk = blk;

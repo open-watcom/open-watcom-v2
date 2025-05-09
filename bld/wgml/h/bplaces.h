@@ -2,8 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -25,68 +24,16 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  WGML banner place atrributes related data declaration.
 *
 ****************************************************************************/
 
 
-#include "vi.h"
-#include <time.h>
-
-/*
- * GetTimeString - get string for current time/date
- */
-void GetTimeString( char *st )
-{
-    time_t      tod;
-    char        *s;
-    int         i, j, start;
-    char        am_pm;
-
-    tod = time( NULL );
-    s = ctime( &tod );
-    j = 0;
-    for( i = 11; i <= 15; i++ ) {
-        st[j++] = s[i];
-    }
-    st[j] = '\0';
-
-} /* GetTimeString */
-
-/*
- * GetDateString - get string for current time/date
- */
-void GetDateTimeString( char *st )
-{
-    time_t      tod;
-    char        *s;
-    int         i, j;
-
-    tod = time( NULL );
-    s = ctime( &tod );
-    j = 0;
-    for( i = 0; i < 11; i++ ) {
-        st[j++] = s[i];
-    }
-    for( i = 20; i < 24; i++ ) {
-        st[j++] = s[i];
-    }
-    for( i = 10; i <= 18; i++ ) {
-        st[j++] = s[i];
-    }
-    st[j] = '\0';
-
-} /* GetDateTimeString */
-
-/*
- * GetDateString - get string for current date
- */
-void GetDateString( char *st )
-{
-    time_t      tod;
-
-    tod = time( NULL );
-    strftime( st, 20, "%A, %b %d", localtime( &tod ) );
-
-} /* GetDateString */
+pick( "???",      no_place      )
+pick( "inline",   inline_place  )
+pick( "bottom",   bottom_place  )
+pick( "botodd",   botodd_place  )
+pick( "boteven",  boteven_place )
+pick( "topodd",   topodd_place  )
+pick( "topeven",  topeven_place )
+pick( "top",      top_place     )   /* must follow or topodd/topeven are never found */

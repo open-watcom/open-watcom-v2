@@ -190,12 +190,12 @@ extern void         banner_defaults( void );
 
 
 /* gmacdict.c                           */
-extern  void        add_macro_entry( mac_dict dict, mac_entry * me );
+extern  void        add_macro_entry( mac_dict dict, mac_entry *me );
 extern  void        init_macro_dict( mac_dict *pdict );
 extern  void        free_macro_dict( mac_dict *pdict );
-extern  void        free_macro_entry( mac_dict dict, mac_entry * me );
+extern  void        free_macro_entry( mac_dict dict, mac_entry *me );
 extern  void        print_macro_dict( mac_dict dict, bool with_mac_lines );
-extern  mac_entry * find_macro( mac_dict dict, char const * name );
+extern  mac_entry * find_macro( mac_dict dict, char const *name );
 
 
 /* gmemory.c                            */

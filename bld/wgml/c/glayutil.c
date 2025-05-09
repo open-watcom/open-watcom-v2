@@ -39,85 +39,20 @@
 #include "clibext.h"
 
 
-typedef struct  content_names {
-    char                name[12];
-    size_t              len;
-    content_enum        type;
-} content_names;
-
-static  const   content_names   content_text[max_content] =  {
-    { "none",      4, no_content        },
-    { "author",    6, author_content    },
-    { "bothead",   7, bothead_content   },
-    { "date",      4, date_content      },
-    { "docnum",    6, docnum_content    },
-    { "head0",     5, head0_content     },
-    { "head1",     5, head1_content     },
-    { "head2",     5, head2_content     },
-    { "head3",     5, head3_content     },
-    { "head4",     5, head4_content     },
-    { "head5",     5, head5_content     },
-    { "head6",     5, head6_content     },
-    { "headnum0",  8, headnum0_content  },
-    { "headnum1",  8, headnum1_content  },
-    { "headnum2",  8, headnum2_content  },
-    { "headnum3",  8, headnum3_content  },
-    { "headnum4",  8, headnum4_content  },
-    { "headnum5",  8, headnum5_content  },
-    { "headnum6",  8, headnum6_content  },
-    { "headtext0", 9, headtext0_content },
-    { "headtext1", 9, headtext1_content },
-    { "headtext2", 9, headtext2_content },
-    { "headtext3", 9, headtext3_content },
-    { "headtext4", 9, headtext4_content },
-    { "headtext5", 9, headtext5_content },
-    { "headtext6", 9, headtext6_content },
-    /* The "d" forms must be first or they will never be found */
-    { "pgnumad",   7, pgnumad_content   },
-    { "pgnuma",    6, pgnuma_content    },
-    { "pgnumrd",   7, pgnumrd_content   },
-    { "pgnumr",    6, pgnumr_content    },
-    { "pgnumcd",   7, pgnumcd_content   },
-    { "pgnumc",    6, pgnumc_content    },
-    { "rule",      4, rule_content      },
-    { "sec",       3, sec_content       },
-    { "stitle",    6, stitle_content    },
-    { "title",     5, title_content     },
-    { "time",      4, time_content      },
-    { "tophead",   7, tophead_content   },
-    /* Must be last: will match any following entries */
-    { "",          0, string_content    },  // special
+static const char   * const reg_contents[] =  {
+    #define pick(text,en)   text,
+    #include "_content.h"
+    #undef pick
 };
 
 /***************************************************************************/
 /*  document sections for banner definition                                */
 /***************************************************************************/
 
-const   ban_sections    doc_sections[max_ban] = {
-        #define pick(ban,gml,text,len)   { text, len, ban },
-        #include "bdocsect.h"
-        #undef pick
-/*
-    { "???",      3, no_ban        },
-    { "abstract", 8, abstract_ban  },
-    { "appendix", 8, appendix_ban  },
-    { "backm",    5, backm_ban     },
-    { "body",     4, body_ban      },
-    { "figlist",  7, figlist_ban   },
-    { "index",    5, index_ban     },
-    { "preface",  7, preface_ban   },
-    { "toc",      3, toc_ban       },
-    { "head0",    5, head0_ban     },
-    { "head1",    5, head1_ban     },
-    { "head2",    5, head2_ban     },
-    { "head3",    5, head3_ban     },
-    { "head4",    5, head4_ban     },
-    { "head5",    5, head5_ban     },
-    { "head6",    5, head6_ban     },
-    { "letfirst", 8, letfirst_ban  },
-    { "letlast",  7, letlast_ban   },
-    { "letter",   6, letter_ban    },
-*/
+const ban_sections  doc_sections[] = {
+    #define pick(ban,gml,text,len)   { text, ban },
+    #include "bdocsect.h"
+    #undef pick
 };
 
 
@@ -125,15 +60,10 @@ const   ban_sections    doc_sections[max_ban] = {
 /*  place names for fig and banner definition                              */
 /***************************************************************************/
 
-const   ban_places    bf_places[max_place] = {
-    { "???",      3, no_place      },
-    { "inline",   6, inline_place  },
-    { "bottom",   6, bottom_place  },
-    { "botodd",   6, botodd_place  },
-    { "boteven",  7, boteven_place },
-    { "topodd",   6, topodd_place  },
-    { "topeven",  7, topeven_place },
-    { "top",      3, top_place     },   // must follow or topodd/topeven are never found
+const char  * const ban_places[] = {
+    #define pick(text,en)   text,
+    #include "bplaces.h"
+    #undef pick
 };
 
 
@@ -316,7 +246,7 @@ void    free_layout( void )
 /***************************************************************************/
 /*  case                                                                   */
 /***************************************************************************/
-bool    i_case( char * p, lay_attr_i lay_attr, case_t * tm )
+bool    i_case( char * p, lay_attr_i lay_attr, case_t *tm )
 {
     bool        cvterr;
 
@@ -333,7 +263,7 @@ bool    i_case( char * p, lay_attr_i lay_attr, case_t * tm )
     return( cvterr );
 }
 
-void    o_case( FILE *fp, lay_attr_o lay_attr, const case_t * tm )
+void    o_case( FILE *fp, lay_attr_o lay_attr, const case_t *tm )
 {
     char    * p;
 
@@ -355,7 +285,7 @@ void    o_case( FILE *fp, lay_attr_o lay_attr, const case_t * tm )
 /*  single character                                                       */
 /*  UL bullet entered as '' is treated as ' ' by wgml 4.0, so all may be   */
 /***************************************************************************/
-bool    i_char( char * p, lay_attr_i lay_attr, char * tm )
+bool    i_char( char * p, lay_attr_i lay_attr, char *tm )
 {
     if( lay_attr->val.quoted && *p == '\0' ) {
         *tm = ' ';                      // space if '' or ""
@@ -365,7 +295,7 @@ bool    i_char( char * p, lay_attr_i lay_attr, char * tm )
     return( false );
 }
 
-void    o_char( FILE *fp, lay_attr_o lay_attr, const char * tm )
+void    o_char( FILE *fp, lay_attr_o lay_attr, const char *tm )
 {
     fprintf( fp, "        %s = '%c'\n", lay_att_names[lay_attr], *tm );
     return;
@@ -375,58 +305,56 @@ void    o_char( FILE *fp, lay_attr_o lay_attr, const char * tm )
 /***************************************************************************/
 /*  contents for banregion    only unquoted                                */
 /***************************************************************************/
-bool    i_content( char * p, lay_attr_i lay_attr, content * tm )
+bool    i_content( char * p, lay_attr_i lay_attr, reg_content *tm )
 {
-    bool        cvterr;
-    char    *   pa;
-    int         k;
-    size_t      len;
-
-    (void)lay_attr;
+    bool            cvterr;
+    char            *pa;
+    content_enum    k;
+    size_t          len;
 
     cvterr = false;
     tm->content_type = no_content;
     for( k = no_content; k < max_content; ++k ) {
-        if( strnicmp( content_text[k].name, p, content_text[k].len ) == 0 ) {
-            tm->content_type = content_text[k].type;
-            strcpy( tm->string, content_text[k].name );
+        if( strcmp( reg_contents[k], lay_attr->val.specval ) == 0 ) {
+            tm->content_type = k;
+            if( k == string_content ) {  // unquoted single word
+                pa = p;
+                SkipNonSpaces( pa );
+                len = pa - p;
+                if( len > STRBLK_SIZE )
+                    len = STRBLK_SIZE;                     // truncate to allowed length
+                strncpy( tm->string, p, len );
+                tm->string[len] = '\0';
+            } else {
+                strcpy( tm->string, reg_contents[k] );
+            }
             break;
         }
-    }
-    if( tm->content_type == string_content ) {  // unquoted single word
-        pa = p;
-        SkipNonSpaces( pa );
-        len = pa - p;
-        if( len > STRBLK_SIZE )
-            len = STRBLK_SIZE;                     // truncate to allowed length
-        strncpy( tm->string, p, len );
-        tm->string[len] = '\0';
     }
     return( cvterr );
 }
 
-void    o_content( FILE *fp, lay_attr_o lay_attr, const content * tm )
+void    o_content( FILE *fp, lay_attr_o lay_attr, const reg_content *tm )
 {
-    const   char    * p;
-    char              c;
+    const char  *p;
+    char        c;
 
-    if( tm->content_type >= no_content && tm->content_type < max_content) {
-        p = tm->string;
-        if( tm->content_type == string_content ) { // user string with quotes
-            fprintf( fp, "        %s = '", lay_att_names[lay_attr] );
-            while( (c = *p++) != '\0' ) {
-                if( c == '&' ) {
-                    fprintf( fp, "&$amp." );
-                } else {
-                    fputc( c, fp );
-                }
-            }
-            fputc( '\'', fp );
-            fputc( '\n', fp );
-            return;
-        }
-    } else {
+    if( tm->content_type < no_content || tm->content_type >= max_content) {
         p = "???";
+    } else if( tm->content_type == string_content ) { // user string with quotes
+        fprintf( fp, "        %s = '", lay_att_names[lay_attr] );
+        while( (c = *p++) != '\0' ) {
+            if( c == '&' ) {
+                fprintf( fp, "&$amp." );
+            } else {
+                fputc( c, fp );
+            }
+        }
+        fputc( '\'', fp );
+        fputc( '\n', fp );
+        p = tm->string;
+    } else {
+        p = tm->string;
     }
     fprintf( fp, "        %s = %s\n", lay_att_names[lay_attr], p );
     return;
@@ -436,7 +364,7 @@ void    o_content( FILE *fp, lay_attr_o lay_attr, const content * tm )
 /***************************************************************************/
 /*  default frame                                                          */
 /***************************************************************************/
-bool    i_default_frame( char * p, lay_attr_i lay_attr, def_frame * tm )
+bool    i_default_frame( char * p, lay_attr_i lay_attr, def_frame *tm )
 {
     bool        cvterr;
 
@@ -464,7 +392,7 @@ bool    i_default_frame( char * p, lay_attr_i lay_attr, def_frame * tm )
 
 }
 
-void    o_default_frame( FILE *fp, lay_attr_o lay_attr, const def_frame * tm )
+void    o_default_frame( FILE *fp, lay_attr_o lay_attr, const def_frame *tm )
 {
 
     switch( tm->type ) {
@@ -491,17 +419,15 @@ void    o_default_frame( FILE *fp, lay_attr_o lay_attr, const def_frame * tm )
 /***************************************************************************/
 /*  docsect  refdoc                                                        */
 /***************************************************************************/
-bool    i_docsect( char * p, lay_attr_i lay_attr, ban_docsect * tm )
+bool    i_docsect( char * p, lay_attr_i lay_attr, ban_docsect *tm )
 {
     bool        cvterr;
     int         k;
 
-    (void)lay_attr;
-
     cvterr = false;
     *tm = no_ban;
     for( k = no_ban; k < max_ban; ++k ) {
-        if( strnicmp( doc_sections[k].name, p, doc_sections[k].len ) == 0 ) {
+        if( strcmp( doc_sections[k].name, lay_attr->val.specval ) == 0 ) {
             *tm = doc_sections[k].type;
             break;
         }
@@ -512,7 +438,7 @@ bool    i_docsect( char * p, lay_attr_i lay_attr, ban_docsect * tm )
     return( cvterr );
 }
 
-void    o_docsect( FILE *fp, lay_attr_o lay_attr, const ban_docsect * tm )
+void    o_docsect( FILE *fp, lay_attr_o lay_attr, const ban_docsect *tm )
 {
     const   char    * p;
 
@@ -529,7 +455,7 @@ void    o_docsect( FILE *fp, lay_attr_o lay_attr, const ban_docsect * tm )
 /***************************************************************************/
 /*  frame  rule or none                                                    */
 /***************************************************************************/
-bool    i_frame( char * p, lay_attr_i lay_attr, bool * tm )
+bool    i_frame( char * p, lay_attr_i lay_attr, bool *tm )
 {
     bool        cvterr;
 
@@ -545,7 +471,7 @@ bool    i_frame( char * p, lay_attr_i lay_attr, bool * tm )
 
 }
 
-void    o_frame( FILE *fp, lay_attr_o lay_attr, const bool * tm )
+void    o_frame( FILE *fp, lay_attr_o lay_attr, const bool *tm )
 {
     char    * p;
 
@@ -555,72 +481,6 @@ void    o_frame( FILE *fp, lay_attr_o lay_attr, const bool * tm )
         p = "none";
     }
     fprintf( fp, "        %s = %s\n", lay_att_names[lay_attr], p );
-    return;
-}
-
-
-/***************************************************************************/
-/*  integer routines                                                       */
-/***************************************************************************/
-bool    i_int32( char * p, lay_attr_i lay_attr, int32_t * tm )
-{
-    long    wk;
-
-    (void)lay_attr;
-
-    wk = strtol( p, NULL, 10 );
-    *tm = wk;
-    return( false );
-}
-
-void    o_int32( FILE *fp, lay_attr_o lay_attr, const int32_t * tm )
-{
-
-    fprintf( fp, "        %s = %d\n", lay_att_names[lay_attr], *tm );
-    return;
-}
-
-bool    i_int8( char * p, lay_attr_i lay_attr, int8_t * tm )
-{
-    long    wk;
-
-    (void)lay_attr;
-
-    wk = strtol( p, NULL, 10 );
-    if( abs( wk ) > 255 ) {
-        xx_line_err_c( err_i_8, p );
-    }
-    *tm = wk;
-    return( false );
-}
-
-void    o_int8( FILE *fp, lay_attr_o lay_attr, const int8_t * tm )
-{
-    int     wk = *tm;
-
-    fprintf( fp, "        %s = %d\n", lay_att_names[lay_attr], wk );
-    return;
-}
-
-bool    i_uint8( char * p, lay_attr_i lay_attr, uint8_t * tm )
-{
-    unsigned long   wk;
-
-    (void)lay_attr;
-
-    wk = strtoul( p, NULL, 10 );
-    if( errno == ERANGE || wk > 255 ) {
-        xx_line_err_c( err_ui_8, p );
-    }
-    *tm = wk;
-    return( false );
-}
-
-void    o_uint8( FILE *fp, lay_attr_o lay_attr, const uint8_t * tm )
-{
-    unsigned    wk = *tm;
-
-    fprintf( fp, "        %s = %u\n", lay_att_names[lay_attr], wk );
     return;
 }
 
@@ -654,7 +514,7 @@ void    o_font_number( FILE *fp, lay_attr_o lay_attr, const font_number *tm )
 /***************************************************************************/
 /*  number form                                                            */
 /***************************************************************************/
-bool    i_number_form( char * p, lay_attr_i lay_attr, num_form * tm )
+bool    i_number_form( char * p, lay_attr_i lay_attr, num_form *tm )
 {
     bool        cvterr;
 
@@ -671,7 +531,7 @@ bool    i_number_form( char * p, lay_attr_i lay_attr, num_form * tm )
     return( cvterr );
 }
 
-void    o_number_form( FILE *fp, lay_attr_o lay_attr, const num_form * tm )
+void    o_number_form( FILE *fp, lay_attr_o lay_attr, const num_form *tm )
 {
     char    * p;
 
@@ -692,7 +552,7 @@ void    o_number_form( FILE *fp, lay_attr_o lay_attr, const num_form * tm )
 /***************************************************************************/
 /*  number style                                                           */
 /***************************************************************************/
-bool    i_number_style( char * p, lay_attr_i lay_attr, num_style * tm )
+bool    i_number_style( char * p, lay_attr_i lay_attr, num_style *tm )
 {
     bool        cvterr;
     num_style   wk = 0;
@@ -760,7 +620,7 @@ bool    i_number_style( char * p, lay_attr_i lay_attr, num_style * tm )
     return( cvterr );
 }
 
-void    o_number_style( FILE *fp, lay_attr_o lay_attr, const num_style * tm )
+void    o_number_style( FILE *fp, lay_attr_o lay_attr, const num_style *tm )
 {
     char        str[4];
     char    *    p;
@@ -810,7 +670,7 @@ void    o_number_style( FILE *fp, lay_attr_o lay_attr, const num_style * tm )
 /***************************************************************************/
 /*  page eject                                                             */
 /***************************************************************************/
-bool    i_page_eject( char * p, lay_attr_i lay_attr, page_ej * tm )
+bool    i_page_eject( char * p, lay_attr_i lay_attr, page_ej *tm )
 {
     bool        cvterr;
 
@@ -829,7 +689,7 @@ bool    i_page_eject( char * p, lay_attr_i lay_attr, page_ej * tm )
     return( cvterr );
 }
 
-void    o_page_eject( FILE *fp, lay_attr_o lay_attr, const page_ej * tm )
+void    o_page_eject( FILE *fp, lay_attr_o lay_attr, const page_ej *tm )
 {
     const   char    *   p;
 
@@ -852,7 +712,7 @@ void    o_page_eject( FILE *fp, lay_attr_o lay_attr, const page_ej * tm )
 /***************************************************************************/
 /*  page position                                                          */
 /***************************************************************************/
-bool    i_page_position( char * p, lay_attr_i lay_attr, page_pos * tm )
+bool    i_page_position( char * p, lay_attr_i lay_attr, page_pos *tm )
 {
     bool        cvterr;
 
@@ -870,7 +730,7 @@ bool    i_page_position( char * p, lay_attr_i lay_attr, page_pos * tm )
     return( cvterr );
 }
 
-void    o_page_position( FILE *fp, lay_attr_o lay_attr, const page_pos * tm )
+void    o_page_position( FILE *fp, lay_attr_o lay_attr, const page_pos *tm )
 {
     char    * p;
 
@@ -891,18 +751,16 @@ void    o_page_position( FILE *fp, lay_attr_o lay_attr, const page_pos * tm )
 /***************************************************************************/
 /*  place                                                                  */
 /***************************************************************************/
-bool    i_place( char * p, lay_attr_i lay_attr, bf_place * tm )
+bool    i_place( char * p, lay_attr_i lay_attr, ban_place *tm )
 {
     bool        cvterr;
-    int         k;
-
-    (void)lay_attr;
+    ban_place   k;
 
     cvterr = false;
     *tm = no_place;
     for( k = no_place; k < max_place; ++k ) {
-        if( strcmp( bf_places[k].name, lay_attr->val.specval ) == 0 ) {
-            *tm = bf_places[k].type;
+        if( strcmp( ban_places[k], lay_attr->val.specval ) == 0 ) {
+            *tm = k;
             break;
         }
     }
@@ -912,16 +770,15 @@ bool    i_place( char * p, lay_attr_i lay_attr, bf_place * tm )
     return( cvterr );
 }
 
-void    o_place( FILE *fp, lay_attr_o lay_attr, const bf_place * tm )
+void    o_place( FILE *fp, lay_attr_o lay_attr, const ban_place *tm )
 {
-    const   char    *   p;
-            int         k;
+    const char  *p;
+    ban_place   k = *tm;
 
-    p = "???";          // desperation value
-    for( k = no_place; k < max_place; ++k ) {
-        if( bf_places[k].type == *tm ) {
-            p = bf_places[k].name;
-        }
+    if( k < no_place || k >= max_place ) {
+        p = "???";          // desperation value
+    } else {
+        p = ban_places[k];
     }
     fprintf( fp, "        %s = %s\n", lay_att_names[lay_attr], p );
     return;
@@ -931,7 +788,7 @@ void    o_place( FILE *fp, lay_attr_o lay_attr, const bf_place * tm )
 /***************************************************************************/
 /*  pouring                                                                */
 /***************************************************************************/
-bool    i_pouring( char * p, lay_attr_i lay_attr, reg_pour * tm )
+bool    i_pouring( char * p, lay_attr_i lay_attr, reg_pour *tm )
 {
     bool        cvterr;
 
@@ -960,7 +817,7 @@ bool    i_pouring( char * p, lay_attr_i lay_attr, reg_pour * tm )
     return( cvterr );
 }
 
-void    o_pouring( FILE *fp, lay_attr_o lay_attr, const reg_pour * tm )
+void    o_pouring( FILE *fp, lay_attr_o lay_attr, const reg_pour *tm )
 {
     char    * p;
 
@@ -993,14 +850,14 @@ void    o_pouring( FILE *fp, lay_attr_o lay_attr, const reg_pour * tm )
 /***************************************************************************/
 /*  space unit                                                             */
 /***************************************************************************/
-bool    i_space_unit( char * p, lay_attr_i lay_attr, su * tm )
+bool    i_space_unit( char * p, lay_attr_i lay_attr, su *tm )
 {
     (void)p;
 
     return( att_val_to_su( tm, true, &lay_attr->val, true ) );    // no negative values allowed TBD
 }
 
-void    o_space_unit( FILE *fp, lay_attr_o lay_attr, const su * tm )
+void    o_space_unit( FILE *fp, lay_attr_o lay_attr, const su *tm )
 {
 
     if( tm->su_u == SU_chars_lines || tm->su_u == SU_undefined ||
@@ -1018,7 +875,7 @@ void    o_space_unit( FILE *fp, lay_attr_o lay_attr, const su * tm )
 /***************************************************************************/
 bool    i_spacing( char *p, lay_attr_i lay_attr, text_space *tm )
 {
-    long wk;
+    long        wk;
 
     (void)lay_attr;
 
@@ -1042,35 +899,21 @@ void    o_spacing( FILE *fp, lay_attr_o lay_attr, const text_space *tm )
 /***************************************************************************/
 /*  threshold                                                              */
 /***************************************************************************/
-bool    i_threshold( char * p, lay_attr_i lay_attr, uint16_t * tm )
+bool    i_threshold( char *p, lay_attr_i lay_attr, uint16_t *tm )
 {
-    char    *   pa;
+    bool        rc;
     long        wk;
 
-    (void)lay_attr;
-
-    wk = strtol( p, NULL, 10 );
-
-    for( pa = p; isdigit( *pa ); pa++ );
-    if( *pa ) {
-        xx_line_err_c( err_num_too_large, p );
-    }
-    if( wk == 0 ) {
+    rc = i_uint16( p, lay_attr, tm );
+    if( *tm == 0 ) {
         xx_line_err_c( err_num_zero, p );
     }
-    if( wk > 0x7fff ) {
-        xx_line_err_c( err_num_s16_neg, p );
-    }
-    *tm = wk;
-    return( false );
+    return( rc );
 }
 
-void    o_threshold( FILE *fp, lay_attr_o lay_attr, const uint16_t * tm )
+void    o_threshold( FILE *fp, lay_attr_o lay_attr, const uint16_t *tm )
 {
-    unsigned wk = *tm;
-
-    fprintf( fp, "        %s = %d\n", lay_att_names[lay_attr], wk );
-    return;
+    o_uint16( fp, lay_attr, tm );
 }
 
 
@@ -1079,7 +922,7 @@ void    o_threshold( FILE *fp, lay_attr_o lay_attr, const uint16_t * tm )
 /*                                                                         */
 /*                                                                         */
 /***************************************************************************/
-bool    i_xx_string( char * p, lay_attr_i lay_attr, xx_str * tm )
+bool    i_xx_string( char * p, lay_attr_i lay_attr, xx_str *tm )
 {
     bool        cvterr;
 
@@ -1093,7 +936,7 @@ bool    i_xx_string( char * p, lay_attr_i lay_attr, xx_str * tm )
     return( cvterr );
 }
 
-void    o_xx_string( FILE *fp, lay_attr_o lay_attr, const xx_str * tm )
+void    o_xx_string( FILE *fp, lay_attr_o lay_attr, const xx_str *tm )
 {
 
     fprintf( fp, "        %s = \"%s\"\n", lay_att_names[lay_attr], tm );
@@ -1103,12 +946,12 @@ void    o_xx_string( FILE *fp, lay_attr_o lay_attr, const xx_str * tm )
 /***************************************************************************/
 /*  date_form      stored as string perhaps better other type    TBD       */
 /***************************************************************************/
-bool    i_date_form( char * p, lay_attr_i lay_attr, xx_str * tm )
+bool    i_date_form( char * p, lay_attr_i lay_attr, xx_str *tm )
 {
     return( i_xx_string( p, lay_attr, tm ) );
 }
 
-void    o_date_form( FILE *fp, lay_attr_o lay_attr, const xx_str * tm )
+void    o_date_form( FILE *fp, lay_attr_o lay_attr, const xx_str *tm )
 {
     o_xx_string( fp, lay_attr, tm );
 }
@@ -1116,7 +959,7 @@ void    o_date_form( FILE *fp, lay_attr_o lay_attr, const xx_str * tm )
 /***************************************************************************/
 /*  yes or No  as bool result                                              */
 /***************************************************************************/
-bool    i_yes_no( char * p, lay_attr_i lay_attr, bool * tm )
+bool    i_yes_no( char * p, lay_attr_i lay_attr, bool *tm )
 {
     bool        cvterr;
 
@@ -1131,7 +974,7 @@ bool    i_yes_no( char * p, lay_attr_i lay_attr, bool * tm )
     return( cvterr );
 }
 
-void    o_yes_no( FILE *fp, lay_attr_o lay_attr, const bool * tm )
+void    o_yes_no( FILE *fp, lay_attr_o lay_attr, const bool *tm )
 {
     char    const   *   p;
 
@@ -1144,3 +987,97 @@ void    o_yes_no( FILE *fp, lay_attr_o lay_attr, const bool * tm )
     return;
 }
 
+
+/***************************************************************************/
+/*  integer routines                                                       */
+/***************************************************************************/
+bool    i_int32( char * p, lay_attr_i lay_attr, int32_t *tm )
+{
+    long    wk;
+
+    (void)lay_attr;
+
+    wk = strtol( p, NULL, 10 );
+    *tm = wk;
+    return( false );
+}
+
+void    o_int32( FILE *fp, lay_attr_o lay_attr, const int32_t *tm )
+{
+
+    fprintf( fp, "        %s = %d\n", lay_att_names[lay_attr], *tm );
+    return;
+}
+
+bool    i_uint16( char * p, lay_attr_i lay_attr, uint16_t *tm )
+{
+    char    *   pa;
+    long        wk;
+
+    (void)lay_attr;
+
+    wk = strtol( p, NULL, 10 );
+
+    for( pa = p; isdigit( *pa ); pa++ )
+        ;
+    if( *pa != '\0' ) {
+        xx_line_err_c( err_num_too_large, p );
+    }
+    if( errno == ERANGE || wk < 0 || wk > USHRT_MAX ) {
+        xx_line_err_c( err_ui_16, p );
+    }
+    *tm = wk;
+    return( false );
+}
+
+void    o_uint16( FILE *fp, lay_attr_o lay_attr, const uint16_t *tm )
+{
+    unsigned wk = *tm;
+
+    fprintf( fp, "        %s = %u\n", lay_att_names[lay_attr], wk );
+    return;
+}
+
+bool    i_int8( char *p, lay_attr_i lay_attr, int8_t *tm )
+{
+    long    wk;
+
+    (void)lay_attr;
+
+    wk = strtol( p, NULL, 10 );
+    if( errno == ERANGE || abs( wk ) > 255 ) {
+        xx_line_err_c( err_i_8, p );
+    }
+    *tm = wk;
+    return( false );
+}
+
+void    o_int8( FILE *fp, lay_attr_o lay_attr, const int8_t *tm )
+{
+    int     wk = *tm;
+
+    fprintf( fp, "        %s = %d\n", lay_att_names[lay_attr], wk );
+    return;
+}
+
+bool    i_uint8( char *p, lay_attr_i lay_attr, uint8_t *tm )
+{
+    long   wk;
+
+    (void)lay_attr;
+
+    wk = strtol( p, NULL, 10 );
+    if( errno == ERANGE || wk < 0 || wk > 255 ) {
+        xx_line_err_c( err_ui_8, p );
+    }
+    *tm = wk;
+    return( false );
+}
+
+void    o_uint8( FILE *fp, lay_attr_o lay_attr, const uint8_t *tm )
+{
+    unsigned    wk = *tm;
+
+    fprintf( fp, "        %s = %u\n", lay_att_names[lay_attr], wk );
+    return;
+}

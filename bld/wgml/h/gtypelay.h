@@ -48,17 +48,12 @@ typedef enum lay_att {
 /*  definitions for place for :BANNER and :FIG tag                         */
 /***************************************************************************/
 
-typedef enum bf_place {
-    no_place        = 0,
-    inline_place,                       // only :FIG
-    top_place,
-    bottom_place,
-    topodd_place,                       // topodd and following only :BANNER
-    topeven_place,
-    botodd_place,
-    boteven_place,
+typedef enum ban_place {
+    #define pick(text,en)   en,
+    #include "bplaces.h"
+    #undef pick
     max_place
-} bf_place;
+} ban_place;
 
 /***************************************************************************/
 /*  definitions for docsect for :BANNER tag                                */
@@ -69,29 +64,7 @@ typedef enum ban_docsect {
     #define pick(ban,gml,text,len)   ban,
     #include "bdocsect.h"
     #undef pick
-    max_ban                             // has to be last defined value
-/*
-    no_ban          = 0,
-    abstract_ban,
-    appendix_ban,
-    backm_ban,
-    body_ban,
-    figlist_ban,
-    index_ban,
-    preface_ban,
-    toc_ban,
-    head0_ban,
-    head1_ban,
-    head2_ban,
-    head3_ban,
-    head4_ban,
-    head5_ban,
-    head6_ban,
-    letfirst_ban,
-    letlast_ban,
-    letter_ban,
-    max_ban                             // has to be last defined value
-*/
+    max_ban
 } ban_docsect;
 
 /***************************************************************************/
@@ -99,20 +72,9 @@ typedef enum ban_docsect {
 /***************************************************************************/
 
 typedef struct  ban_sections {
-    char            name[12];
-    size_t          len;
+    const char      *name;
     ban_docsect     type;
 } ban_sections;
-
-/***************************************************************************/
-/*  place names for banner definition                                      */
-/***************************************************************************/
-
-typedef struct  ban_places {
-    char            name[12];
-    size_t          len;
-    bf_place        type;
-} ban_places;
 
 /***************************************************************************/
 /*  definitions for frame   :FIG tag and others                            */
@@ -172,6 +134,7 @@ typedef struct address_lay_tag {
     font_number     font;               // non negative integer
 } address_lay_tag;
 
+
 /***************************************************************************/
 /*  :ALINE    Layout tag data                                               */
 /***************************************************************************/
@@ -218,6 +181,7 @@ typedef struct default_lay_tag {
     bool            justify;            // yes / no  -> bool
     char            input_esc;          // none or quoted char
 } default_lay_tag;
+
 
 /***************************************************************************/
 /*  :WIDOW   layout tag data                                               */
@@ -277,7 +241,7 @@ typedef struct fig_lay_tag {
     su              post_skip;          // vertical space unit
     text_space      spacing;            // positive integer
     font_number     font;               // non-negative integer
-    bf_place        default_place;      // special enum
+    ban_place       default_place;      // special enum
     def_frame       default_frame;      // special
 } fig_lay_tag;
 
@@ -740,10 +704,10 @@ typedef enum reg_pour {
     head6_pour
 } reg_pour;
 
-typedef struct content {
+typedef struct reg_content {
     content_enum    content_type;
     xx_str          string[STRBLK_SIZE + 1];
-} content;
+} reg_content;
 
 typedef struct script_ban_reg {         // for script format region
     size_t          len;                // split into sub-fields
@@ -780,8 +744,8 @@ typedef struct region_lay_tag {
     page_pos            region_position;    // special enum
     reg_pour            pouring;            // special enum
     script_ban_reg      script_region[3];   // speed up processing if script_format
-                                        // will be constructed from contents
-    content             contents;           // what is in the region
+                                            // will be constructed from contents
+    reg_content         contents;           // what is in the region
     final_reg_content   final_content[3];   // fully resolved content from contents or script_region
     bool                script_format;      // yes no -> bool
 } region_lay_tag;
@@ -818,10 +782,10 @@ typedef struct banner_lay_tag {
     su              left_adjust;            // horizontal space unit
     su              right_adjust;           // horizontal space unit
     su              depth;                  // vertical space unit
-    bf_place        place;                  // special enum
+    ban_place       place;                  // special enum
     ban_docsect     docsect;                // special enum
     content_enum    style;                  // page number style defined by banner, if any
-//  bf_place        refplace;               // special enum no need to store
+//  ban_place       refplace;               // special enum no need to store
 //  ban_docsect     refdoc;                 // special enum no need to store
 } banner_lay_tag;
 

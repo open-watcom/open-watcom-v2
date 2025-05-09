@@ -56,21 +56,24 @@ static  uint32_t        wrap[3];                    // I1/I2/I3 wrap_indent valu
 static  uint32_t        ixh_indent;                 // IXHEAD indent
 static  uint32_t        str_width;                  // IXHEAD 'character string' width
 
+static struct {
+    char            *text;
+    ban_docsect     ban;
+} sect_info[] = {
+    #define pick(text,gml,ban)  { text, ban },
+    #include "docsect.h"
+    #undef pick
+};
+
 /***************************************************************************/
 /*  error routine for wrong sequence of doc section tags                   */
 /***************************************************************************/
 
 static void g_err_doc_sect( doc_section  ds )
 {
-    static const char   * const sect_text[] = {     // same sequence as doc_section enum
-        #define pick(text,gml,ban)  text,
-        #include "docsect.h"
-        #undef pick
-    };
-
     err_count++;
     g_scan_err = true;
-    xx_err_c( err_doc_sect, sect_text[ds] );
+    xx_err_c( err_doc_sect, sect_info[ds].text );
 }
 
 /***************************************************************************/
@@ -85,35 +88,13 @@ void set_section_banners( doc_section ds )
     /*  transform doc_section enum into ban_doc_sect enum                  */
     /***********************************************************************/
 
-    static const ban_docsect sect_2_bansect[] = {
-        #define pick(text,gml,ban)  ban,
-        #include "docsect.h"
-        #undef pick
-    };
-
-/* not yet coded banner place values               TBD
-               not all are document section related
-    head0_ban,
-    head1_ban,
-    head2_ban,
-    head3_ban,
-    head4_ban,
-    head5_ban,
-    head6_ban,
-    letfirst_ban,
-    letlast_ban,
-    letter_ban,
-    max_ban
-} ban_docsect;
-****************/
-
     sect_ban_top[0] = sect_ban_top[1] = NULL;
     sect_ban_bot[0] = sect_ban_bot[1] = NULL;
 
-    if( no_ban != sect_2_bansect[ds]  ) {
+    if( no_ban != sect_info[ds].ban ) {
 
         for( ban = layout_work.banner; ban != NULL; ban = ban->next ) {
-            if( ban->docsect == sect_2_bansect[ds] ) {  // if our doc section
+            if( ban->docsect == sect_info[ds].ban ) {  // if our doc section
                 switch( ban->place ) {
                 case top_place :
                     sect_ban_top[0] = ban;
