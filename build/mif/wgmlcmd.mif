@@ -29,9 +29,6 @@ dos_wgml_tmp_batch=wgmlb.bat
 !ifeq proj_name docslib
 gendev_subdir = \gml\owhelp
 gendev_mountdir = ../..
-!else ifeq proj_name docs
-gendev_subdir = \$(dotarget)
-gendev_mountdir = ..
 !else
 gendev_subdir = \testlib
 gendev_mountdir = ..
@@ -57,11 +54,7 @@ dosbox_options_bsd = -c "config -set cpu cycles=10000000"
 !ifeq bld_os dos
 !else ifeq bld_os os2
 !else ifdef dosbox
-# DOSBOX use upper cased file name
-wgml_ucase = 1
 !else ifeq bld_os nt
-# NT DOSX use upper cased file name
-wgml_ucase = 1
 !else
 !error !!! Missing DOSBOX configuration or unsupported building platform !!!
 !endif
