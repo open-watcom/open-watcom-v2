@@ -94,17 +94,17 @@ run_wgml : .PROCEDURE .EXPLICIT
     @%append $(dos_wgml_tmp_batch) $(noecho)set GMLLIB=$(%OWGMLLIB:/=\)
     @%append $(dos_wgml_tmp_batch) \docs\gml\dos\wgml.exe $(wgml_cmdl_params) >>dosbox.lst
     @%append $(dos_wgml_tmp_batch) ren TMP.PTF TMP.XXX
-    @%append $(dos_wgml_tmp_batch) ren SYSUSR01.GML SYSUSR01.XXX
-    @%append $(dos_wgml_tmp_batch) ren SYSUSR02.GML SYSUSR02.XXX
-    @%append $(dos_wgml_tmp_batch) ren SYSUSR03.GML SYSUSR03.XXX
+    @%append $(dos_wgml_tmp_batch) if exist SYSUSR01.GML ren SYSUSR01.GML SYSUSR01.XXX
+    @%append $(dos_wgml_tmp_batch) if exist SYSUSR02.GML ren SYSUSR02.GML SYSUSR02.XXX
+    @%append $(dos_wgml_tmp_batch) if exist SYSUSR03.GML ren SYSUSR03.GML SYSUSR03.XXX
 ! ifndef %OWWGMLDEBUG
     @%append $(dos_wgml_tmp_batch) exit
 ! endif
     -$(noecho)$(dosbox) -conf "$(dosbox_cfg)" $(dosbox_options_$(bld_os)) -c "mount c \"$(%OWROOT)\"" -c "c:$(wgml_subdir)\$(dos_wgml_tmp_batch)"
     @%ren TMP.XXX tmp.ptf
-    @%ren SYSUSR01.XXX sysusr01.gml
-    @%ren SYSUSR02.XXX sysusr02.gml
-    @%ren SYSUSR03.XXX sysusr03.gml
+    @if exist SYSUSR01.XXX %ren SYSUSR01.XXX sysusr01.gml
+    @if exist SYSUSR02.XXX %ren SYSUSR02.XXX sysusr02.gml
+    @if exist SYSUSR03.XXX %ren SYSUSR03.XXX sysusr03.gml
     @%ren DOSBOX.LST dosbox.lst
     @cat dosbox.lst
 !else ifeq bld_os dos

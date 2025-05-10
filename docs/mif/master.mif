@@ -8,15 +8,6 @@ to_os_path=\=/
 to_os_path=/=\
 !endif
 
-# change file name to lower case on NT and OS2
-!ifdef __UNIX__
-lowercase = %null
-!else ifdef __DOS__
-lowercase = %null
-!else
-lowercase = %ren
-!endif
-
 #
 # wgml targets
 #
@@ -224,6 +215,27 @@ run_wgml_new : .PROCEDURE .EXPLICIT
     -wgml $^& ( file $(wgml_optfile)
 !endif
 
+#-------------------------------------------------------
+# run Windows help compiler
+#-------------------------------------------------------
+run_hc_nt : .PROCEDURE .EXPLICIT
+!ifeq bld_os linux
+    @%create $(wine_hc_batch)
+    @%append $(wine_hc_batch) $(hc_nt) -xn $*.hpj
+    # this lowercase help file name in wine
+    @%append $(wine_hc_batch) ren $@ xxxxxxxx.tmp
+    @%append $(wine_hc_batch) ren xxxxxxxx.tmp $@
+    wine cmd /c $(wine_hc_batch)
+!else ifeq bld_os nt
+    $(hc_nt) -xn $*.hpj
+    %ren $@ $@    # change file name to lower case
+!else ifeq bld_os os2
+    $(hc_nt) -xn $*.hpj
+    %ren $@ $@    # change file name to lower case
+!else
+    $(hc_nt) -xn $*.hpj
+!endif
+
 ####################################################
 #
 # make WIN32 help files
@@ -235,17 +247,7 @@ run_wgml_new : .PROCEDURE .EXPLICIT
 
 .rtf.hlp :
     @%make compile_hpj_nt
-!ifeq bld_os linux
-    @%create $(wine_hc_batch)
-    @%append $(wine_hc_batch) $(hc_nt) -xn $*.hpj
-    # this lowercase help file name in wine
-    @%append $(wine_hc_batch) ren $@ xxxxxxxx.tmp
-    @%append $(wine_hc_batch) ren xxxxxxxx.tmp $@
-    wine cmd /c $(wine_hc_batch)
-!else
-    $(hc_nt) -xn $*.hpj
-    $(lowercase) $@ $@    # change file name to lower case
-!endif
+    @%make run_hc_nt
 
 {$(root_books)}.gml.rtf &
 {$(root_books)}.gml.gh :
@@ -300,13 +302,11 @@ run_wgml_new : .PROCEDURE .EXPLICIT
     $(noecho)set IPFCARTWORK=$($^&_book_incs)
     $(noecho)set WIPFC=$(%OWROOT)/bld/wipfc/helper
     $(ipfc) -q -inf $[@
-    $(lowercase) $@ $@	     # change file name to lower case
 
 .ipf.hlp :
     $(noecho)set IPFCARTWORK=$($^&_book_incs)
     $(noecho)set WIPFC=$(%OWROOT)/bld/wipfc/helper
     $(ipfc) -q $[@
-    $(lowercase) $@ $@	     # change file name to lower case
 
 {$(root_books)}.gml.ipf &
 {$(root_books)}.gml.gh :
