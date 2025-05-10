@@ -1,13 +1,40 @@
-..\dos\gendev ..\syslib\mono01.fon
-..\dos\gendev ..\syslib\pstr.fon
-..\dos\gendev ..\syslib\whelp.pcd
-..\dos\gendev ..\syslib\whelpdrv.pcd
-..\dos\gendev ..\syslib\ps.pcd
-..\dos\gendev ..\syslib\psdrv.pcd
-ren WGMLST.COP wgmlst.cop
-ren MONO01.COP mono01.cop
-ren WHELP.COP whelp.cop
-ren WHELPDRV.COP whelpdrv.cop
-ren PS.COP ps.cop
-ren PSDRV.COP psdrv.cop
-ren PSTR.COP pstr.cop
+..\dos\gendev ..\syslib\mono01.fon >err.log
+..\dos\gendev ..\syslib\whelp.pcd >>err.log
+..\dos\gendev ..\syslib\whelpdrv.pcd >>err.log
+..\dos\gendev ..\syslib\ps.pcd >>err.log
+..\dos\gendev ..\syslib\psdrv.pcd >>err.log
+..\dos\gendev ..\syslib\pstr.fon >>err.log
+..\dos\gendev ..\syslib\pstri.fon >>err.log
+..\dos\gendev ..\syslib\pstrb.fon >>err.log
+..\dos\gendev ..\syslib\pstrbi.fon >>err.log
+..\dos\gendev ..\syslib\pshv.fon >>err.log
+..\dos\gendev ..\syslib\pshvb.fon >>err.log
+..\dos\gendev ..\syslib\pshvo.fon >>err.log
+..\dos\gendev ..\syslib\pshvbo.fon >>err.log
+..\dos\gendev ..\syslib\psco.fon >>err.log
+..\dos\gendev ..\syslib\pscb.fon >>err.log
+..\dos\gendev ..\syslib\pscob.fon >>err.log
+..\dos\gendev ..\syslib\pscobo.fon >>err.log
+..\dos\gendev ..\syslib\pspr.fon >>err.log
+..\dos\gendev ..\syslib\pspi.fon >>err.log
+..\dos\gendev ..\syslib\pspb.fon >>err.log
+..\dos\gendev ..\syslib\pspbi.fon >>err.log
+..\dos\gendev ..\syslib\psnr.fon >>err.log
+..\dos\gendev ..\syslib\psni.fon >>err.log
+..\dos\gendev ..\syslib\psnb.fon >>err.log
+..\dos\gendev ..\syslib\psnbi.fon >>err.log
+..\dos\gendev ..\syslib\pshn.fon >>err.log
+..\dos\gendev ..\syslib\pshno.fon >>err.log
+..\dos\gendev ..\syslib\pshnb.fon >>err.log
+..\dos\gendev ..\syslib\pshnbo.fon >>err.log
+..\dos\gendev ..\syslib\psad.fon >>err.log
+..\dos\gendev ..\syslib\psado.fon >>err.log
+..\dos\gendev ..\syslib\psab.fon >>err.log
+..\dos\gendev ..\syslib\psabo.fon >>err.log
+..\dos\gendev ..\syslib\pssym.fon >>err.log
+..\dos\gendev ..\syslib\pszap.fon >>err.log
+..\dos\gendev ..\syslib\psbl.fon >>err.log
+..\dos\gendev ..\syslib\psbd.fon >>err.log
+..\dos\gendev ..\syslib\psbdi.fon >>err.log
+..\dos\gendev ..\syslib\psbli.fon >>err.log
+..\dos\gendev ..\syslib\psshade.fon >>err.log

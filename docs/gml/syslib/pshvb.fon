@@ -1,0 +1,124 @@
+:CMT.
+:CMT. This font is for the Helvetica-Bold font.
+:CMT. This font is scaled with a 72000 dpi basis.
+:CMT. Bounding box: -173 -241 1003 936
+:CMT.
+
+:CMT. Definition file                 Font name
+:CMT. -------------------------------------------------
+:CMT. PSHVB                           helvetica-bold
+:CMT.eoc
+
+:FONT
+  defined_name     = 'helvetica-bold'
+  member_name      = 'PSHVB'
+  font_out_name1   = 'Helvetica-Bold'
+  line_height      = 1000
+  line_space       = 177
+  scale_basis      = 72000
+  scale_min        = 1000
+  scale_max        = 72000
+  char_width       = 278
+
+
+:WIDTH.
+$20 278
+! 333
+" 474
+# 556
+$ 556
+% 889
+& 722
+' 278
+( 333
+) 333
+* 389
++ 584
+, 278
+- 333
+. 278
+/ 278
+0 556
+1 556
+2 556
+3 556
+4 556
+5 556
+6 556
+7 556
+8 556
+9 556
+: 333
+; 333
+< 584
+= 584
+> 584
+? 611
+@ 975
+A 722
+B 722
+C 722
+D 722
+E 667
+F 611
+G 778
+H 722
+I 278
+J 556
+K 722
+L 611
+M 833
+N 722
+O 778
+P 667
+Q 778
+R 722
+S 667
+T 611
+U 722
+V 667
+W 944
+X 667
+Y 667
+Z 611
+$5D 333
+\ 278
+$5B 333
+$5E 584
+_ 556
+` 278
+a 556
+b 611
+c 556
+d 611
+e 556
+f 333
+g 611
+h 611
+i 278
+j 278
+k 556
+l 278
+m 889
+n 611
+o 611
+p 611
+q 611
+r 389
+s 556
+t 333
+u 611
+v 556
+w 778
+x 556
+y 556
+z 500
+{ 389
+| 280
+} 389
+$7E 584
+$AF 350
+$BF 1000
+:eWIDTH.
+
+:eFONT.

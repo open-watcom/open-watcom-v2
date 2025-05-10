@@ -1,0 +1,124 @@
+:CMT.
+:CMT. This font is for the Palatino-Bold font.
+:CMT. This font is scaled with a 72000 dpi basis.
+:CMT. Bounding box: -156 -267 1000 967
+:CMT.
+
+:CMT. Definition file                 Font name
+:CMT. -------------------------------------------------
+:CMT. PSPB                            palatino-bold
+:CMT.eoc
+
+:FONT
+  defined_name     = 'palatino-bold'
+  member_name      = 'PSPB'
+  font_out_name1   = 'Palatino-Bold'
+  line_height      = 1000
+  line_space       = 234
+  scale_basis      = 72000
+  scale_min        = 1000
+  scale_max        = 72000
+  char_width       = 250
+
+
+:WIDTH.
+$20 250
+! 278
+" 402
+# 606
+$ 500
+% 889
+& 833
+' 278
+( 333
+) 333
+* 444
++ 606
+, 250
+- 333
+. 250
+/ 296
+0 500
+1 500
+2 500
+3 500
+4 500
+5 500
+6 500
+7 500
+8 500
+9 500
+: 250
+; 250
+< 606
+= 606
+> 606
+? 444
+@ 747
+A 778
+B 667
+C 722
+D 833
+E 611
+F 556
+G 833
+H 833
+I 389
+J 389
+K 778
+L 611
+M 1000
+N 833
+O 833
+P 611
+Q 833
+R 722
+S 611
+T 667
+U 778
+V 778
+W 1000
+X 667
+Y 667
+Z 667
+$5D 333
+\ 606
+$5B 333
+$5E 606
+_ 500
+` 278
+a 500
+b 611
+c 444
+d 611
+e 500
+f 389
+g 556
+h 611
+i 333
+j 333
+k 611
+l 333
+m 889
+n 611
+o 556
+p 611
+q 611
+r 389
+s 444
+t 333
+u 611
+v 556
+w 833
+x 500
+y 556
+z 500
+{ 310
+| 606
+} 310
+$7E 606
+$AF 606
+$BF 1000
+:eWIDTH.
+
+:eFONT.

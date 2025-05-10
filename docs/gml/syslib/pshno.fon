@@ -1,0 +1,124 @@
+:CMT.
+:CMT. This font is for the Helvetica-Narrow-Oblique font.
+:CMT. This font is scaled with a 72000 dpi basis.
+:CMT. Bounding box: -143 -234 821 941
+:CMT.
+
+:CMT. Definition file                 Font name
+:CMT. -------------------------------------------------
+:CMT. PSHNO                           helvetica-narrow-oblique
+:CMT.eoc
+
+:FONT
+  defined_name     = 'helvetica-narrow-oblique'
+  member_name      = 'PSHNO'
+  font_out_name1   = 'Helvetica-Narrow-Oblique'
+  line_height      = 1000
+  line_space       = 175
+  scale_basis      = 72000
+  scale_min        = 1000
+  scale_max        = 72000
+  char_width       = 228
+
+
+:WIDTH.
+$20 228
+! 228
+" 292
+# 456
+$ 456
+% 729
+& 547
+' 183
+( 274
+) 274
+* 319
++ 479
+, 228
+- 274
+. 228
+/ 228
+0 456
+1 456
+2 456
+3 456
+4 456
+5 456
+6 456
+7 456
+8 456
+9 456
+: 228
+; 228
+< 479
+= 479
+> 479
+? 456
+@ 833
+A 547
+B 547
+C 593
+D 593
+E 547
+F 502
+G 638
+H 593
+I 228
+J 410
+K 547
+L 456
+M 684
+N 593
+O 638
+P 547
+Q 638
+R 593
+S 547
+T 502
+U 593
+V 547
+W 775
+X 547
+Y 547
+Z 502
+$5D 228
+\ 228
+$5B 228
+$5E 385
+_ 456
+` 183
+a 456
+b 456
+c 410
+d 456
+e 456
+f 228
+g 456
+h 456
+i 183
+j 183
+k 410
+l 183
+m 684
+n 456
+o 456
+p 456
+q 456
+r 274
+s 410
+t 228
+u 456
+v 410
+w 593
+x 410
+y 410
+z 410
+{ 274
+| 214
+} 274
+$7E 479
+$AF 287
+$BF 820
+:eWIDTH.
+
+:eFONT.

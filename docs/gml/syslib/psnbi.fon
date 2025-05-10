@@ -1,0 +1,124 @@
+:CMT.
+:CMT. This font is for the NewCenturySchlbk-BoldItalic font.
+:CMT. This font is scaled with a 72000 dpi basis.
+:CMT. Bounding box: -170 -220 1151 990
+:CMT.
+
+:CMT. Definition file                 Font name
+:CMT. -------------------------------------------------
+:CMT. PSNBI                           newcenturyschlbk-bolditalic
+:CMT.eoc
+
+:FONT
+  defined_name     = 'newcenturyschlbk-bolditalic'
+  member_name      = 'PSNBI'
+  font_out_name1   = 'NewCenturySchlbk-BoldItalic'
+  line_height      = 1000
+  line_space       = 210
+  scale_basis      = 72000
+  scale_min        = 1000
+  scale_max        = 72000
+  char_width       = 287
+
+
+:WIDTH.
+$20 287
+! 333
+" 400
+# 606
+$ 574
+% 889
+& 889
+' 259
+( 407
+) 407
+* 500
++ 606
+, 287
+- 333
+. 287
+/ 278
+0 574
+1 574
+2 574
+3 574
+4 574
+5 574
+6 574
+7 574
+8 574
+9 574
+: 287
+; 287
+< 606
+= 606
+> 606
+? 481
+@ 747
+A 741
+B 759
+C 759
+D 833
+E 741
+F 704
+G 815
+H 870
+I 444
+J 667
+K 778
+L 704
+M 944
+N 852
+O 833
+P 741
+Q 833
+R 796
+S 685
+T 722
+U 833
+V 741
+W 944
+X 741
+Y 704
+Z 704
+$5D 407
+\ 606
+$5B 407
+$5E 606
+_ 500
+` 259
+a 667
+b 611
+c 537
+d 667
+e 519
+f 389
+g 611
+h 685
+i 389
+j 370
+k 648
+l 389
+m 944
+n 685
+o 574
+p 648
+q 630
+r 519
+s 481
+t 407
+u 685
+v 556
+w 833
+x 574
+y 519
+z 519
+{ 407
+| 606
+} 407
+$7E 606
+$AF 606
+$BF 1000
+:eWIDTH.
+
+:eFONT.

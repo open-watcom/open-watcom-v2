@@ -1,0 +1,124 @@
+:CMT.
+:CMT. This font is for the AvantGarde-DemiOblique font.
+:CMT. This font is scaled with a 72000 dpi basis.
+:CMT. Bounding box: -121 -251 1248 1025
+:CMT.
+
+:CMT. Definition file                 Font name
+:CMT. -------------------------------------------------
+:CMT. PSADO                           avantgarde-demioblique
+:CMT.eoc
+
+:FONT
+  defined_name     = 'avantgarde-demioblique'
+  member_name      = 'PSADO'
+  font_out_name1   = 'AvantGarde-DemiOblique'
+  line_height      = 1000
+  line_space       = 276
+  scale_basis      = 72000
+  scale_min        = 1000
+  scale_max        = 72000
+  char_width       = 280
+
+
+:WIDTH.
+$20 280
+! 280
+" 360
+# 600
+$ 560
+% 860
+& 680
+' 280
+( 380
+) 380
+* 440
++ 600
+, 280
+- 420
+. 280
+/ 460
+0 560
+1 560
+2 560
+3 560
+4 560
+5 560
+6 560
+7 560
+8 560
+9 560
+: 280
+; 280
+< 600
+= 600
+> 600
+? 560
+@ 740
+A 740
+B 580
+C 780
+D 700
+E 520
+F 480
+G 840
+H 680
+I 280
+J 480
+K 620
+L 440
+M 900
+N 740
+O 840
+P 560
+Q 840
+R 580
+S 520
+T 420
+U 640
+V 700
+W 900
+X 680
+Y 620
+Z 500
+$5D 320
+\ 640
+$5B 320
+$5E 600
+_ 500
+` 280
+a 660
+b 660
+c 640
+d 660
+e 640
+f 280
+g 660
+h 600
+i 240
+j 260
+k 580
+l 240
+m 940
+n 600
+o 640
+p 660
+q 660
+r 320
+s 440
+t 300
+u 600
+v 560
+w 800
+x 560
+y 580
+z 460
+{ 340
+| 600
+} 340
+$7E 600
+$AF 600
+$BF 1000
+:eWIDTH.
+
+:eFONT.

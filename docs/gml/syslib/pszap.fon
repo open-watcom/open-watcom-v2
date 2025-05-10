@@ -1,0 +1,121 @@
+:CMT.
+:CMT. This font is for the ZapfDingbats font.
+:CMT. This font is scaled with a 72000 dpi basis.
+:CMT. Bounding box: -1 -143 981 820
+:CMT.
+
+:CMT. Definition file                 Font name
+:CMT. -------------------------------------------------
+:CMT. PSZAP                           zapfdingbats
+:CMT.eoc
+
+:FONT
+  defined_name     = 'zapfdingbats'
+  member_name      = 'PSZAP'
+  font_out_name1   = 'ZapfDingbats'
+  line_height      = 1000
+  line_space       = 0
+  scale_basis      = 72000
+  scale_min        = 1000
+  scale_max        = 72000
+  char_width       = 278
+
+:WIDTH.
+$20 278
+! 974
+" 961
+# 974
+$ 980
+% 719
+& 789
+' 790
+( 791
+) 690
+* 960
++ 939
+, 549
+- 855
+. 911
+/ 933
+0 911
+1 945
+2 974
+3 755
+4 846
+5 762
+6 761
+7 571
+8 677
+9 763
+: 760
+; 759
+< 754
+= 494
+> 552
+? 537
+@ 577
+A 692
+B 786
+C 788
+D 788
+E 790
+F 793
+G 794
+H 816
+I 823
+J 789
+K 841
+L 823
+M 833
+N 816
+O 831
+P 923
+Q 744
+R 723
+S 749
+T 790
+U 792
+V 695
+W 776
+X 768
+Y 792
+Z 759
+$5D 707
+\ 708
+$5B 682
+$5E 701
+_ 826
+` 815
+a 789
+b 789
+c 707
+d 687
+e 696
+f 689
+g 786
+h 787
+i 713
+j 791
+k 785
+l 791
+m 873
+n 761
+o 762
+p 762
+q 759
+r 759
+s 892
+t 892
+u 788
+v 784
+w 438
+x 138
+y 277
+z 415
+{ 392
+| 392
+} 668
+$7E 668
+:eWIDTH.
+
+:eFONT.
