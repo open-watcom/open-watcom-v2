@@ -27,7 +27,6 @@ autoset=mm=true
 autoset=mc=true
 autoset=ml=true
 autoset=mh=false
-autoset=needcrlf=IsDOS IsWin16 IsWin95 | |
 autoset=doshost=IsDOS
 autoset=dostarg=IsDOS
 autoset=os2host=IsOS2

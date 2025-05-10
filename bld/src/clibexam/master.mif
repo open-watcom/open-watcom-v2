@@ -1,604 +1,644 @@
-#    MASTER.MIF include file for CLIBEXAM -- macros for all files in directory.
-#FN_16BIT   16-bit functions (DOS/16, Win16, OS/2 1.x, QNX/16)
-#FN_16BIT 	NOTE: intdos and intdosx don't work under QNX/16.
-#FN_32BIT   32-bit functions (DOS/32 Win386, Win32, OS/2-32, QNX/32)
-#FN_ALL	    Available on ALL platforms (does not include Netware and Pharlap/16).
-#FN_NETW    Available on Netware
-#FN_ALLN 	NOTE: mbstowcs, getosfha, oshandle not available under QNX.
-#FN_BIOS    BIOS commands (DOS, Win, Win386)
-#FN_DEFWIN  Default Windowing
-#FN_DOS	    DOS16 and DOS32
-#FN_DOSCALL DOSCALL commands (DOS, Win, Win386, Win32, OS/2, Pharlap-16)
-#FN_DOSWIN  DOS16, Win, Win386, Pharlap-16
-#FN_DP	    DOS, Pharlap-16
-#FN_DQN32   DOS/32, QNX/32, Netware
-#FN_FILE    File functions (all platforms and NetWare)
-#FN_MACRO   Macros (available everywhere!)
-#FN_MATH    Math functions (available everywhere)
-#FN_MMX	    MMX required
-#FN_OS2WIN32 Win32, OS2-16, OS2-32
-#FN_SPAWN   Available on ALL platforms except 16-bit Windows
-#FN_STRING  String Functions (all + NetWare)
-#FN_THREAD  Thread functions - Win32, QNX, OS/2, Netware
-#FN_WIN16   Win16 only
-#FN_WQO	    Win32, QNX, OS/2
-
-!inject _atouni$(exe)  FN_ALL FN_NETW
-!inject _bfreese$(exe) FN_16BIT
-!inject _bgetcmd$(exe) FN_ALL FN_NETW
-!inject _bheapse$(exe) FN_16BIT
-!inject _bprintf$(exe) FN_ALL
-!inject _bthread$(exe) FN_THREAD
-!inject _clear87$(exe) FN_MATH
-!inject _cmdname$(exe) FN_ALL FN_NETW
-#!inject _control$(exe) FN_MATH
-!inject _disable$(exe) FN_MATH
-!inject _dwdelcl$(exe) FN_DEFWIN
-!inject _dwshutd$(exe) FN_DEFWIN
-!inject _dwstabo$(exe) FN_DEFWIN
-!inject _dwstapt$(exe) FN_DEFWIN
-!inject _dwstcnt$(exe) FN_DEFWIN
-!inject _dwyield$(exe) FN_DEFWIN
-!inject _enable$(exe)  FN_MATH
-!inject _ethread$(exe) FN_THREAD
-!inject _exit$(exe)    FN_ALL FN_NETW
-#!inject _expand$(exe)  FN_ALL
-!inject _freect$(exe)  FN_ALL
-!inject _fsopen$(exe)  FN_ALL FN_NETW
-!inject _fullpat$(exe) FN_ALL FN_NETW
-!inject _grow_ha$(exe) FN_ALL FN_NETW
-!inject _harderr$(exe) FN_DOS
-!inject _hdopen$(exe)  FN_DOSCALL FN_NETW
-!inject _heapena$(exe) FN_ALL
-!inject _heapgrw$(exe) FN_ALL
-!inject _heapchk$(exe) FN_ALL
-!inject _heapmin$(exe) FN_ALL
-!inject _heapset$(exe) FN_ALL
-!inject _heapshr$(exe) FN_ALL
-!inject _heapwal$(exe) FN_ALL
-!inject _lrotl$(exe)   FN_ALL FN_NETW
-!inject _lrotr$(exe)   FN_ALL FN_NETW
-!inject _makepat$(exe) FN_ALL FN_NETW
-!inject _memavl$(exe)  FN_ALL
-!inject _memmax$(exe)  FN_ALL
-!inject _msize$(exe)   FN_ALL FN_NETW
-!inject _pclose$(exe)  FN_OS2WIN32
-!inject _pipe$(exe)    FN_OS2WIN32
-!inject _popen$(exe)   FN_OS2WIN32
-!inject _rotl$(exe)    FN_ALL FN_NETW
-!inject _rotr$(exe)    FN_ALL FN_NETW
-!inject _searche$(exe) FN_ALL
-!inject _setmath$(exe) FN_MATH
-!inject _splitp2$(exe) FN_ALL
-!inject _splitpa$(exe) FN_ALL FN_NETW
-!inject _status8$(exe) FN_MATH
-!inject _vbprint$(exe) FN_ALL FN_NETW
-!inject abort$(exe)    FN_ALL FN_NETW
-!inject abrt_hnd$(exe) FN_ALL FN_NETW
-!inject abs$(exe)      FN_MATH
-!inject access$(exe)   FN_ALL FN_NETW
-!inject acos$(exe)     FN_MATH
-!inject acosh$(exe)    FN_MATH
-!inject alloca$(exe)   FN_MACRO
-!inject allocmem$(exe) FN_DP FN_WQO
-!inject asctim_s$(exe) FN_ALL FN_NETW
-!inject asctime$(exe)  FN_ALL FN_NETW
-!inject asin$(exe)     FN_MATH
-!inject asinh$(exe)    FN_MATH
-!inject assert$(exe)   FN_MACRO
-!inject atan$(exe)     FN_MATH
-!inject atan2$(exe)    FN_MATH
-!inject atanh$(exe)    FN_MATH
-!inject atexit$(exe)   FN_ALL FN_NETW
-!inject atof$(exe)     FN_MATH
-!inject atoi$(exe)     FN_MATH
-!inject atol$(exe)     FN_MATH
-!inject atoll$(exe)    FN_MATH
-!inject b_disk$(exe)   FN_BIOS
-!inject b_equip$(exe)  FN_BIOS
-!inject b_keybrd$(exe) FN_BIOS
-!inject b_memsiz$(exe) FN_BIOS
-!inject b_print$(exe)  FN_BIOS
-!inject b_serial$(exe) FN_BIOS
-!inject b_time$(exe)   FN_BIOS
-!inject basename$(exe) FN_ALL FN_NETW
-!inject bcmp$(exe)     FN_ALL FN_NETW
-!inject bcopy$(exe)    FN_ALL FN_NETW
-!inject bdos$(exe)     FN_DOS FN_DOSWIN
-!inject bessel$(exe)   FN_MATH
-!inject breakoff$(exe) FN_BIOS
-!inject bsearch$(exe)  FN_ALL FN_NETW
-!inject bsrch_s$(exe)  FN_ALL FN_NETW
-!inject btowc$(exe)    FN_DOSCALL
-!inject bzero$(exe)    FN_ALL FN_NETW
-!inject cabs$(exe)     FN_MATH
-!inject calloc$(exe)   FN_ALL FN_NETW
-!inject ceil$(exe)     FN_MATH
-!inject cgets$(exe)    FN_ALL FN_NETW
-!inject clearenv$(exe) FN_ALL FN_NETW
-!inject clearerr$(exe) FN_ALL FN_NETW
-!inject clock$(exe)    FN_ALL FN_NETW
-!inject close$(exe)    FN_ALL FN_NETW
-!inject closedir$(exe) FN_ALL FN_NETW
-!inject control8$(exe) FN_ALL FN_NETW
-!inject controlf$(exe) FN_ALL FN_NETW
-!inject cos$(exe)      FN_MATH
-!inject cosh$(exe)     FN_MATH
-!inject cprintf$(exe)  FN_ALL FN_NETW
-!inject cputs$(exe)    FN_ALL FN_NETW
-!inject creat$(exe)    FN_ALL FN_NETW
-!inject creatnew$(exe) FN_DOSCALL
-!inject cscanf$(exe)   FN_ALL FN_NETW
-!inject ctime$(exe)    FN_ALL FN_NETW
-!inject ctime_s$(exe)  FN_ALL FN_NETW
-!inject cwait$(exe)    FN_OS2WIN32
-!inject d_close$(exe)  FN_DOSCALL
-!inject d_creat$(exe)  FN_DOSCALL
-!inject d_open$(exe)   FN_DOSCALL
-!inject d_read$(exe)   FN_DOSCALL
-!inject d_write$(exe)  FN_DOSCALL
-!inject delay$(exe)    FN_BIOS
-!inject dgetdriv$(exe) FN_DOSCALL
-!inject dgetdskf$(exe) FN_DOSCALL
-!inject difftime$(exe) FN_MATH
-!inject dirname$(exe)  FN_ALL FN_NETW
-!inject div$(exe)      FN_MATH
-!inject doscommi$(exe) FN_DOSCALL
-!inject dosexter$(exe) FN_DOSWIN
-!inject dosfind$(exe)  FN_DOSCALL
-!inject dup$(exe)      FN_FILE
-!inject dup2$(exe)     FN_FILE
-!inject ecvt$(exe)     FN_MATH
-!inject eof$(exe)      FN_FILE
-#!inject exec$(exe)     FN_BAD
-!inject exit$(exe)     FN_ALL FN_NETW
-!inject exp$(exe)      FN_MATH
-!inject fabs$(exe)     FN_MATH
-!inject fclose$(exe)   FN_FILE
-!inject fcloseal$(exe) FN_FILE
-!inject fcvt$(exe)     FN_MATH
-!inject fdopen$(exe)   FN_FILE
-!inject feof$(exe)     FN_FILE
-!inject ferror$(exe)   FN_FILE
-!inject fflush$(exe)   FN_FILE
-!inject ffs$(exe)      FN_ALL FN_NETW
-!inject fgetc$(exe)    FN_FILE
-!inject fgetchar$(exe) FN_FILE
-!inject fgetpos$(exe)  FN_FILE
-!inject fgets$(exe)    FN_FILE
-!inject fileleng$(exe) FN_FILE
-!inject fileno$(exe)   FN_FILE
-!inject findclos$(exe) FN_DOSCALL
-!inject findfirs$(exe) FN_DOSCALL
-!inject findnext$(exe) FN_DOSCALL
-!inject floor$(exe)    FN_MATH
-!inject flushall$(exe) FN_FILE
-!inject fmod$(exe)     FN_MATH
-!inject fnmatch$(exe)  FN_ALL FN_NETW
-!inject fopen$(exe)    FN_FILE
-!inject fopen_s$(exe)  FN_FILE
-!inject fp_off$(exe)   FN_DP
-!inject fp_seg$(exe)   FN_DP
-!inject fpclassf$(exe) FN_MACRO
-!inject fprintf$(exe)  FN_FILE
-!inject fputc$(exe)    FN_FILE
-!inject fputchar$(exe) FN_FILE
-!inject fputs$(exe)    FN_FILE
-!inject fread$(exe)    FN_FILE
-!inject free$(exe)     FN_FILE
-!inject freemem$(exe)  FN_DP FN_WQO
-!inject freop_s$(exe)  FN_FILE
-!inject freopen$(exe)  FN_FILE
-!inject frexp$(exe)    FN_MATH
-!inject fscanf$(exe)   FN_FILE
-!inject fscanf_s$(exe) FN_FILE
-!inject fseek$(exe)    FN_FILE
-!inject fsetpos$(exe)  FN_FILE
-!inject fstat$(exe)    FN_FILE
-!inject fsync$(exe)    FN_ALL FN_NETW
-!inject ftell$(exe)    FN_FILE
-!inject ftime$(exe)    FN_ALL
-!inject fwide$(exe)    FN_FILE
-!inject fwrite$(exe)   FN_FILE
-!inject gcvt$(exe)     FN_MATH
-!inject getc$(exe)     FN_FILE
-!inject getcmd$(exe)   FN_ALL FN_NETW
-!inject getcwd$(exe)   FN_FILE
-!inject getdate$(exe)  FN_DOSCALL
-!inject getdcwd$(exe)  FN_DOSCALL
-!inject getdiskf$(exe) FN_DOSCALL
-!inject getdrive$(exe) FN_DOSCALL
-!inject getenv$(exe)   FN_ALL FN_NETW
-!inject getenv_s$(exe) FN_ALL FN_NETW
-!inject getfattr$(exe) FN_DOSCALL
-!inject getftime$(exe) FN_DOSCALL
-!inject getch$(exe)    FN_FILE
-!inject getchar$(exe)  FN_FILE
-!inject getche$(exe)   FN_FILE
-!inject getmbcp$(exe)  FN_DOSCALL
-!inject getopt$(exe)   FN_ALL
-!inject getosfha$(exe) FN_DOSCALL FN_NETW
-!inject getpid$(exe)   FN_ALL
-!inject gets$(exe)     FN_FILE
-!inject gettime$(exe)  FN_DOSCALL
-!inject getvect$(exe)  FN_DP FN_WIN16
-!inject getw$(exe)     FN_ALL FN_NETW
-!inject gmtime$(exe)   FN_ALL FN_NETW
-!inject gmtime_s$(exe) FN_ALL FN_NETW
-!inject halloc$(exe)   FN_16BIT
-!inject hfree$(exe)    FN_16BIT
-!inject hypot$(exe)    FN_MATH
-!inject chainint$(exe) FN_DOS FN_WIN16
-!inject chdir$(exe)    FN_ALL FN_NETW
-!inject chdrive$(exe)  FN_DOSCALL
-!inject chmod$(exe)    FN_ALL FN_NETW
-!inject chsize$(exe)   FN_ALL FN_NETW
-!inject ign_hnd$(exe)  FN_ALL FN_NETW
-!inject imaxabs$(exe)  FN_MATH
-!inject imaxdiv$(exe)  FN_MATH
-!inject inp$(exe)      FN_ALL FN_NETW
-!inject inpd$(exe)     FN_32BIT
-!inject inpw$(exe)     FN_ALL FN_NETW
-!inject int386$(exe)   FN_DQN32
-!inject int386x$(exe)  FN_DQN32
-!inject int86$(exe)    FN_DOSWIN
-!inject int86x$(exe)   FN_DOSWIN
-!inject intdos$(exe)   FN_DOSWIN
-!inject intdosx$(exe)  FN_DOSWIN
-!inject intr$(exe)     FN_BIOS FN_DP FN_DQN32
-!inject isalnum$(exe)  FN_ALL FN_NETW
-!inject isalpha$(exe)  FN_ALL FN_NETW
-!inject isascii$(exe)  FN_ALL FN_NETW
-!inject isatty$(exe)   FN_ALL FN_NETW
-!inject isblank$(exe)  FN_ALL FN_NETW
-!inject iscntrl$(exe)  FN_ALL FN_NETW
-!inject isdigit$(exe)  FN_ALL FN_NETW
-!inject isfinite$(exe) FN_MACRO
-!inject isgraph$(exe)  FN_ALL FN_NETW
-!inject isinf$(exe)    FN_MACRO
-!inject islower$(exe)  FN_ALL FN_NETW
-!inject ismbbaln$(exe) FN_DOSCALL
-!inject ismbbalp$(exe) FN_DOSCALL
-!inject ismbbgra$(exe) FN_DOSCALL
-!inject ismbbkal$(exe) FN_DOSCALL
-!inject ismbbkan$(exe) FN_DOSCALL
-!inject ismbbkap$(exe) FN_DOSCALL
-!inject ismbbkpr$(exe) FN_DOSCALL
-!inject ismbbkpu$(exe) FN_DOSCALL
-!inject ismbblea$(exe) FN_DOSCALL
-!inject ismbbpri$(exe) FN_DOSCALL
-!inject ismbbpun$(exe) FN_DOSCALL
-!inject ismbbtra$(exe) FN_DOSCALL
-!inject ismbcaln$(exe) FN_DOSCALL
-!inject ismbcalp$(exe) FN_DOSCALL
-!inject ismbccnt$(exe) FN_DOSCALL
-!inject ismbcdig$(exe) FN_DOSCALL
-!inject ismbcgra$(exe) FN_DOSCALL
-!inject ismbckat$(exe) FN_DOSCALL
-!inject ismbcl0$(exe)  FN_DOSCALL
-!inject ismbcl1$(exe)  FN_DOSCALL
-!inject ismbcl2$(exe)  FN_DOSCALL
-!inject ismbcleg$(exe) FN_DOSCALL
-!inject ismbclow$(exe) FN_DOSCALL
-!inject ismbcpri$(exe) FN_DOSCALL
-!inject ismbcpun$(exe) FN_DOSCALL
-!inject ismbcspa$(exe) FN_DOSCALL
-!inject ismbcsym$(exe) FN_DOSCALL
-!inject ismbcupp$(exe) FN_DOSCALL
-!inject ismbcxdi$(exe) FN_DOSCALL
-!inject ismbchir$(exe) FN_DOSCALL
-!inject isnan$(exe)    FN_MACRO
-!inject isnormal$(exe) FN_MACRO
-!inject isprint$(exe)  FN_ALL FN_NETW
-!inject ispunct$(exe)  FN_ALL FN_NETW
-!inject isspace$(exe)  FN_ALL FN_NETW
-!inject isupper$(exe)  FN_ALL FN_NETW
-!inject iswctype$(exe) FN_ALL
-!inject isxdigit$(exe) FN_ALL FN_NETW
-!inject itoa$(exe)     FN_MATH
-!inject kbhit$(exe)    FN_ALL FN_NETW
-!inject keep$(exe)     FN_DOS
-!inject labs$(exe)     FN_MATH
-!inject lcltim_s$(exe) FN_ALL FN_NETW
-!inject ldexp$(exe)    FN_MATH
-!inject ldiv$(exe)     FN_MATH
-!inject lfind$(exe)    FN_ALL FN_NETW
-!inject llabs$(exe)    FN_MATH
-!inject lldiv$(exe)    FN_MATH
-!inject lltoa$(exe)    FN_MATH
-!inject localeco$(exe) FN_ALL FN_NETW
-!inject localtim$(exe) FN_ALL FN_NETW
-!inject lock$(exe)     FN_DOSCALL FN_NETW
-!inject locking$(exe)  FN_ALL
-!inject log$(exe)      FN_MATH
-!inject log10$(exe)    FN_MATH
-!inject log2$(exe)     FN_MATH
-!inject longjmp$(exe)  FN_ALL FN_NETW
-!inject lsearch$(exe)  FN_ALL FN_NETW
-!inject ltoa$(exe)     FN_MATH
-!inject main$(exe)     FN_ALL FN_NETW
-!inject malloc$(exe)   FN_ALL FN_NETW
-!inject matherr$(exe)  FN_MATH
-!inject max$(exe)      FN_MATH
-!inject mbbtombc$(exe) FN_DOSCALL
-!inject mbbtype$(exe)  FN_DOSCALL
-!inject mbccmp$(exe)   FN_DOSCALL
-!inject mbccpy$(exe)   FN_DOSCALL
-!inject mbcicmp$(exe)  FN_DOSCALL
-!inject mbcjisto$(exe) FN_ALL
-!inject mbcjmsto$(exe) FN_ALL
-!inject mbctohir$(exe) FN_ALL
-!inject mbctokat$(exe) FN_ALL
-!inject mbctolow$(exe) FN_DOSCALL
-!inject mbctombb$(exe) FN_DOSCALL
-!inject mbctoupp$(exe) FN_DOSCALL
-!inject mbgetcod$(exe) FN_DOSCALL
-!inject mblen$(exe)    FN_ALL FN_NETW FN_DOSCALL
-!inject mbputcha$(exe) FN_DOSCALL
-!inject mbrlen$(exe)   FN_DOSCALL
-!inject mbrtowc$(exe)  FN_DOSCALL
-!inject mbsbtype$(exe) FN_DOSCALL
-!inject mbsinit$(exe)  FN_DOSCALL
-!inject mbsnbcat$(exe) FN_DOSCALL
-!inject mbsnbcmp$(exe) FN_DOSCALL
-!inject mbsnbcnt$(exe) FN_DOSCALL FN_MACRO
-!inject mbsnbcpy$(exe) FN_DOSCALL
-!inject mbsnbicm$(exe) FN_DOSCALL
-!inject mbsnbset$(exe) FN_DOSCALL
-!inject mbsnccnt$(exe) FN_DOSCALL
-!inject mbsnextc$(exe) FN_DOSCALL
-!inject mbsrtowc$(exe) FN_DOSCALL
-!inject mbstowcs$(exe) FN_ALL FN_NETW
-!inject mbterm$(exe)   FN_DOSCALL
-!inject mbtowc$(exe)   FN_ALL FN_NETW
-!inject mbvtop$(exe)   FN_DOSCALL
-!inject memccpy$(exe)  FN_ALL FN_NETW
-!inject memcmp$(exe)   FN_ALL FN_NETW
-!inject memcpy$(exe)   FN_ALL FN_NETW
-!inject memcpy_s$(exe) FN_ALL FN_NETW
-!inject memchr$(exe)   FN_ALL FN_NETW
-!inject memicmp$(exe)  FN_ALL FN_NETW
-!inject memmov_s$(exe) FN_ALL FN_NETW
-!inject memmove$(exe)  FN_ALL FN_NETW
-!inject mempty$(exe)   FN_MMX
-!inject memset$(exe)   FN_ALL FN_NETW
-!inject mfromint$(exe) FN_MMX
-!inject min$(exe)      FN_MATH
-!inject mk_fp$(exe)    FN_MACRO
-!inject mkdir$(exe)    FN_FILE
-!inject mkstemp$(exe)  FN_FILE
-!inject mktemp$(exe)   FN_FILE
-!inject mktime$(exe)   FN_ALL FN_NETW
-!inject modf$(exe)     FN_MATH
-!inject movedata$(exe) FN_ALL FN_NETW
-!inject mpaddb$(exe)   FN_MMX
-!inject mpaddd$(exe)   FN_MMX
-!inject mpaddsb$(exe)  FN_MMX
-!inject mpaddsw$(exe)  FN_MMX
-!inject mpaddusb$(exe) FN_MMX
-!inject mpaddusw$(exe) FN_MMX
-!inject mpaddw$(exe)   FN_MMX
-!inject mpand$(exe)    FN_MMX
-!inject mpandn$(exe)   FN_MMX
-!inject mpckssdw$(exe) FN_MMX
-!inject mpcksswb$(exe) FN_MMX
-!inject mpckuswb$(exe) FN_MMX
-!inject mpcmpeqb$(exe) FN_MMX
-!inject mpcmpeqd$(exe) FN_MMX
-!inject mpcmpeqw$(exe) FN_MMX
-!inject mpcmpgtb$(exe) FN_MMX
-!inject mpcmpgtd$(exe) FN_MMX
-!inject mpcmpgtw$(exe) FN_MMX
-!inject mpmaddwd$(exe) FN_MMX
-!inject mpmulhw$(exe)  FN_MMX
-!inject mpmullw$(exe)  FN_MMX
-!inject mpor$(exe)     FN_MMX
-!inject mpslld$(exe)   FN_MMX
-!inject mpslldi$(exe)  FN_MMX
-!inject mpsllq$(exe)   FN_MMX
-!inject mpsllqi$(exe)  FN_MMX
-!inject mpsllw$(exe)   FN_MMX
-!inject mpsllwi$(exe)  FN_MMX
-!inject mpsrad$(exe)   FN_MMX
-!inject mpsradi$(exe)  FN_MMX
-!inject mpsraw$(exe)   FN_MMX
-!inject mpsrawi$(exe)  FN_MMX
-!inject mpsrld$(exe)   FN_MMX
-!inject mpsrldi$(exe)  FN_MMX
-!inject mpsrlq$(exe)   FN_MMX
-!inject mpsrlqi$(exe)  FN_MMX
-!inject mpsrlw$(exe)   FN_MMX
-!inject mpsrlwi$(exe)  FN_MMX
-!inject mpsubb$(exe)   FN_MMX
-!inject mpsubd$(exe)   FN_MMX
-!inject mpsubsb$(exe)  FN_MMX
-!inject mpsubsw$(exe)  FN_MMX
-!inject mpsubusb$(exe) FN_MMX
-!inject mpsubusw$(exe) FN_MMX
-!inject mpsubw$(exe)   FN_MMX
-!inject mpxor$(exe)    FN_MMX
-!inject mtoint$(exe)   FN_MMX
-!inject mupckhbw$(exe) FN_MMX
-!inject mupckhdq$(exe) FN_MMX
-!inject mupckhwd$(exe) FN_MMX
-!inject mupcklbw$(exe) FN_MMX
-!inject mupckldq$(exe) FN_MMX
-!inject mupcklwd$(exe) FN_MMX
-!inject nosound$(exe)  FN_BIOS
-!inject offsetof$(exe) FN_MACRO
-!inject onexit$(exe)   FN_ALL FN_NETW
-!inject open$(exe)     FN_FILE
-!inject opendir$(exe)  FN_FILE
-!inject openosfh$(exe) FN_DOSCALL FN_NETW
-!inject oshandle$(exe) FN_DOSCALL FN_NETW
-!inject outp$(exe)     FN_ALL FN_NETW
-!inject outpd$(exe)    FN_32BIT
-!inject outpw$(exe)    FN_ALL FN_NETW
-!inject perror$(exe)   FN_ALL FN_NETW
-!inject pow$(exe)      FN_MATH
-!inject printf$(exe)   FN_FILE
-!inject putc$(exe)     FN_FILE
-!inject putenv$(exe)   FN_ALL
-!inject putch$(exe)    FN_FILE
-!inject putchar$(exe)  FN_FILE
-!inject puts$(exe)     FN_FILE
-!inject putw$(exe)     FN_ALL FN_NETW
-!inject qsort$(exe)    FN_ALL FN_NETW
-!inject qsort_s$(exe)  FN_ALL FN_NETW
-!inject raise$(exe)    FN_MATH
-!inject rand$(exe)     FN_MATH
-!inject read$(exe)     FN_FILE
-!inject readdir$(exe)  FN_FILE
-!inject realloc$(exe)  FN_ALL FN_NETW
-!inject remove$(exe)   FN_FILE
-!inject rename$(exe)   FN_FILE
-!inject rewind$(exe)   FN_FILE
-!inject rewinddi$(exe) FN_ALL FN_DOSCALL
-!inject rmdir$(exe)    FN_FILE
-!inject sbrk$(exe)     FN_ALL
-!inject scanf$(exe)    FN_FILE
-!inject scanf_s$(exe)  FN_FILE
-!inject segread$(exe)  FN_ALL FN_NETW
-!inject set_chnd$(exe) FN_ALL FN_NETW
-!inject setblock$(exe) FN_DP
-!inject setbuf$(exe)   FN_ALL FN_NETW
-!inject setdate$(exe)  FN_DOSCALL
-!inject setdrive$(exe) FN_DOSCALL
-!inject setenv$(exe)   FN_ALL
-!inject setfattr$(exe) FN_DOSCALL
-!inject setftime$(exe) FN_DOSCALL
-!inject setjmp$(exe)   FN_MACRO
-!inject setlocal$(exe) FN_ALL FN_NETW
-!inject setmbcp$(exe)  FN_DOSCALL
-!inject setmode$(exe)  FN_ALL FN_NETW
-!inject settime$(exe)  FN_DOSCALL
-!inject setvbuf$(exe)  FN_ALL FN_NETW
-!inject setvect$(exe)  FN_DP FN_WIN16
-!inject signal$(exe)   FN_ALL FN_NETW
-!inject signbit$(exe)  FN_MACRO
-!inject sin$(exe)      FN_MATH
-!inject sinh$(exe)     FN_MATH
-!inject sisinit$(exe)  FN_DOSCALL
-!inject sleep$(exe)    FN_ALL FN_NETW
-!inject snprintf$(exe) FN_ALL FN_NETW
-!inject sopen$(exe)    FN_FILE
-!inject sound$(exe)    FN_BIOS
-!inject spawn$(exe)    FN_SPAWN
-!inject sprintf$(exe)  FN_FILE
-!inject sqrt$(exe)     FN_MATH
-!inject srand$(exe)    FN_MATH
-!inject sscanf$(exe)   FN_FILE
-!inject sscanf_s$(exe) FN_FILE
-!inject stackava$(exe) FN_ALL FN_NETW
-!inject stat$(exe)     FN_FILE
-!inject stncat_s$(exe) FN_STRING
-!inject stncpy_s$(exe) FN_STRING
-!inject strcase$(exe)  FN_STRING
-!inject strcat$(exe)   FN_STRING
-!inject strcat_s$(exe) FN_STRING
-!inject strcmp$(exe)   FN_STRING
-!inject strcmpi$(exe)  FN_STRING
-!inject strcoll$(exe)  FN_STRING
-!inject strcpy$(exe)   FN_STRING
-!inject strcpy_s$(exe) FN_STRING
-!inject strcspn$(exe)  FN_STRING
-!inject strdate$(exe)  FN_ALL
-!inject strdec$(exe)   FN_DOSCALL FN_MACRO
-!inject strdup$(exe)   FN_STRING
-!inject streln_s$(exe) FN_STRING
-!inject strerr_s$(exe) FN_STRING
-!inject strerror$(exe) FN_STRING
-!inject strftime$(exe) FN_STRING
-!inject strchr$(exe)   FN_STRING
-!inject stricmp$(exe)  FN_STRING
-!inject stricoll$(exe) FN_ALL FN_NETW FN_DOSCALL
-!inject strinc$(exe)   FN_DOSCALL FN_MACRO
-!inject strlcat$(exe)  FN_STRING
-!inject strlcpy$(exe)  FN_STRING
-!inject strlen$(exe)   FN_STRING
-!inject strlwr$(exe)   FN_STRING
-!inject strncase$(exe) FN_STRING
-!inject strncat$(exe)  FN_STRING
-!inject strncmp$(exe)  FN_STRING
-!inject strncpy$(exe)  FN_STRING
-!inject strnicmp$(exe) FN_STRING
-!inject strnln_s$(exe) FN_STRING
-!inject strnset$(exe)  FN_STRING
-!inject strpbrk$(exe)  FN_STRING
-!inject strrev$(exe)   FN_STRING
-!inject strrchr$(exe)  FN_STRING
-!inject strset$(exe)   FN_STRING
-!inject strspn$(exe)   FN_STRING
-!inject strspnp$(exe)  FN_ALL FN_NETW FN_DOSCALL
-!inject strstr$(exe)   FN_STRING
-!inject strtime$(exe)  FN_ALL
-!inject strtod$(exe)   FN_STRING
-!inject strtoimx$(exe) FN_STRING
-!inject strtok$(exe)   FN_STRING
-!inject strtok_s$(exe) FN_STRING
-!inject strtol$(exe)   FN_STRING
-!inject strtoll$(exe)  FN_STRING
-!inject strtoul$(exe)  FN_STRING
-!inject strtoull$(exe) FN_STRING
-!inject strtoumx$(exe) FN_STRING
-!inject strupr$(exe)   FN_STRING
-!inject strxfrm$(exe)  FN_STRING
-!inject swab$(exe)     FN_ALL FN_NETW
-!inject system$(exe)   FN_ALL FN_NETW
-!inject tan$(exe)      FN_MATH
-!inject tanh$(exe)     FN_MATH
-!inject tell$(exe)     FN_FILE
-!inject tempnam$(exe)  FN_DOSCALL
-!inject time$(exe)     FN_ALL FN_NETW
-!inject tmpfile$(exe)  FN_FILE
-!inject tmpfl_s$(exe)  FN_FILE
-!inject tmpnam$(exe)   FN_FILE
-!inject tmpnm_s$(exe)  FN_FILE
-!inject tolower$(exe)  FN_ALL FN_NETW
-!inject toupper$(exe)  FN_ALL FN_NETW
-!inject towctrns$(exe) FN_ALL
-!inject tzset$(exe)    FN_ALL FN_NETW
-!inject ulltoa$(exe)   FN_MATH
-!inject ultoa$(exe)    FN_MATH
-!inject umask$(exe)    FN_FILE
-!inject ungetc$(exe)   FN_FILE
-!inject ungetch$(exe)  FN_FILE
-!inject unlink$(exe)   FN_FILE
-!inject unlock$(exe)   FN_FILE
-!inject utime$(exe)    FN_ALL FN_NETW
-!inject utoa$(exe)     FN_ALL FN_NETW
-!inject va_arg$(exe)   FN_MACRO
-!inject va_end$(exe)   FN_MACRO
-!inject va_start$(exe) FN_MACRO
-!inject vcprintf$(exe) FN_FILE
-!inject vcscanf$(exe)  FN_FILE
-!inject vfprintf$(exe) FN_FILE
-!inject vfscanf$(exe)  FN_FILE
-!inject vfscnf_s$(exe) FN_FILE
-!inject vprintf$(exe)  FN_FILE
-!inject vscanf$(exe)   FN_FILE
-!inject vscanf_s$(exe) FN_FILE
-!inject vsnprint$(exe) FN_ALL FN_NETW
-!inject vsprintf$(exe) FN_ALL
-#!inject vsscanf$(exe) FN_FILE
-!inject vsscnf_s$(exe) FN_FILE
-!inject wait$(exe)     FN_WQO
-!inject wcrtom_s$(exe) FN_DOSCALL
-!inject wcrtomb$(exe)  FN_DOSCALL
-!inject wcsrto_s$(exe) FN_DOSCALL
-!inject wcsrtomb$(exe) FN_DOSCALL
-!inject wcstom_s$(exe) FN_ALL FN_NETW
-!inject wcstombs$(exe) FN_ALL FN_NETW
-!inject wctob$(exe)    FN_DOSCALL
-!inject wctomb$(exe)   FN_ALL FN_NETW
-!inject wctomb_s$(exe) FN_ALL FN_NETW
-!inject wctrans$(exe)  FN_ALL
-!inject wctype$(exe)   FN_ALL
-!inject write$(exe)    FN_FILE
-
-{..}.c$(exe):
-    $(compiler) $(cflags) $(cdebug) -fo=$*.obj $<
-    *wlink $(linkflags) name $@ file $*.obj
-
-clean: .SYMBOLIC .EXPLICIT
-    rm *.obj *.err *.exe *.nlm
+# MASTER.MIF include file for CLIBEXAM -- macros for all files in directory.
+ 
+# Non-working samples
+#FN_BAD =.exec.exe
+ 
+# Win32, QNX, OS/2
+FN_WQO = wait.exe &
+allocmem.exe &
+freemem.exe
+ 
+ 
+# DOS, Pharlap-16
+FN_DP = setblock.exe &
+intr.exe &
+setvect.exe &
+getvect.exe &
+allocmem.exe &
+freemem.exe &
+fp_off.exe &
+fp_seg.exe
+ 
+# Win16 only
+FN_WIN16 = setvect.exe &
+getvect.exe &
+chainint.exe
+ 
+# Default Windowing
+FN_DEFWIN = _dwdelcl.exe &
+_dwshutd.exe &
+_dwstabo.exe &
+_dwstapt.exe &
+_dwstcnt.exe &
+_dwyield.exe
+ 
+# BIOS commands (DOS, Win, Win386)
+FN_BIOS = b_disk.exe &
+b_equip.exe &
+b_keybrd.exe &
+b_memsiz.exe &
+b_print.exe &
+b_serial.exe &
+b_time.exe &
+breakoff.exe &
+intr.exe &
+nosound.exe &
+delay.exe &
+sound.exe
+ 
+# DOSCALL commands (DOS, Win, Win386, Win32, OS/2, Pharlap-16)
+FN_DOSCALL = creatnew.exe &
+btowc.exe &
+d_close.exe &
+d_creat.exe &
+d_open.exe &
+d_read.exe &
+d_write.exe &
+findfirs.exe &
+setdate.exe &
+setdrive.exe &
+setfattr.exe &
+setftime.exe &
+settime.exe &
+dosfind.exe &
+findclos.exe &
+findnext.exe &
+getdcwd.exe &
+getmbcp.exe &
+ismbbaln.exe &
+ismbbalp.exe &
+ismbbgra.exe &
+ismbbkal.exe &
+ismbbkan.exe &
+ismbbkap.exe &
+ismbbkpr.exe &
+ismbbkpu.exe &
+ismbblea.exe &
+ismbbpri.exe &
+ismbbpun.exe &
+ismbbtra.exe &
+ismbcaln.exe &
+ismbcalp.exe &
+ismbccnt.exe &
+ismbcdig.exe &
+ismbcgra.exe &
+ismbchir.exe &
+ismbckat.exe &
+ismbcl0.exe &
+ismbcl1.exe &
+ismbcl2.exe &
+ismbcleg.exe &
+ismbclow.exe &
+ismbcpri.exe &
+ismbcpun.exe &
+ismbcspa.exe &
+ismbcsym.exe &
+ismbcupp.exe &
+ismbcxdi.exe &
+mbbtombc.exe &
+mbbtype.exe &
+mbccmp.exe &
+mbccpy.exe &
+mbcicmp.exe &
+mbctolow.exe &
+mbctombb.exe &
+mbctoupp.exe &
+mbgetcod.exe &
+mblen.exe &
+mbputcha.exe &
+mbrlen.exe &
+mbrtowc.exe &
+mbsbtype.exe &
+mbsinit.exe &
+mbsnbcat.exe &
+mbsnbcmp.exe &
+mbsnbcnt.exe &
+mbsnbcpy.exe &
+mbsnbicm.exe &
+mbsnbset.exe &
+mbsnccnt.exe &
+mbsnextc.exe &
+mbsrtowc.exe &
+mbterm.exe &
+mbvtop.exe &
+rewinddi.exe &
+setmbcp.exe &
+sisinit.exe &
+strdec.exe &
+stricoll.exe &
+strinc.exe &
+strspnp.exe &
+tempnam.exe &
+wcrtomb.exe &
+wcrtom_s.exe &
+wcsrtomb.exe &
+wcsrto_s.exe &
+wctob.exe &
+dgetdriv.exe &
+dgetdskf.exe &
+doscommi.exe
+ 
+ 
+# 16-bit functions (DOS/16, Win16, OS/2 1.x, QNX/16)
+# NOTE: intdos and intdosx don't work under QNX/16.
+FN_16BIT = halloc.exe &
+hfree.exe &
+_bfreese.exe &
+_bheapse.exe
+ 
+# 32-bit functions (DOS/32 Win386, Win32, OS/2-32, QNX/32)
+FN_32BIT = outpd.exe &
+inpd.exe
+ 
+# DOS16, Win, Win386, Pharlap-16
+FN_DOSWIN = bdos.exe &
+dosexter.exe &
+int86.exe &
+int86x.exe &
+intdos.exe &
+intdosx.exe
+ 
+# DOS16 and DOS32
+FN_DOS = _harderr.exe &
+chainint.exe &
+bdos.exe &
+keep.exe &
+ 
+# Thread functions - Win32, QNX, OS/2, Netware
+FN_THREAD = _ethread.exe &
+_bthread.exe
+ 
+# DOS/32, QNX/32, Netware
+FN_DQN32 = int386.exe &
+int386x.exe &
+intr.exe
+ 
+# MMX required
+FN_MMX = mempty.exe &
+mfromint.exe &
+mpaddb.exe &
+mpaddd.exe &
+mpaddsb.exe &
+mpaddsw.exe &
+mpaddusb.exe &
+mpaddusw.exe &
+mpaddw.exe &
+mpand.exe &
+mpandn.exe &
+mpckssdw.exe &
+mpcksswb.exe &
+mpckuswb.exe &
+mpcmpeqb.exe &
+mpcmpeqd.exe &
+mpcmpeqw.exe &
+mpcmpgtb.exe &
+mpcmpgtd.exe &
+mpcmpgtw.exe &
+mpmaddwd.exe &
+mpmulhw.exe &
+mpmullw.exe &
+mpor.exe &
+mpslld.exe &
+mpslldi.exe &
+mpsllq.exe &
+mpsllqi.exe &
+mpsllw.exe &
+mpsllwi.exe &
+mpsrad.exe &
+mpsradi.exe &
+mpsraw.exe &
+mpsrawi.exe &
+mpsrld.exe &
+mpsrldi.exe &
+mpsrlq.exe &
+mpsrlqi.exe &
+mpsrlw.exe &
+mpsrlwi.exe &
+mpsubb.exe &
+mpsubd.exe &
+mpsubsb.exe &
+mpsubsw.exe &
+mpsubusb.exe &
+mpsubusw.exe &
+mpsubw.exe &
+mpxor.exe &
+mtoint.exe &
+mupckhbw.exe &
+mupckhdq.exe &
+mupckhwd.exe &
+mupcklbw.exe &
+mupckldq.exe &
+mupcklwd.exe
+ 
+#Win32, OS2-16, OS2-32
+FN_OS2WIN32 = cwait.exe &
+_pclose.exe &
+_pipe.exe &
+_popen.exe
+ 
+#_expand.exe & removed from FN_ALL *******
+ 
+#Available on ALL platforms (does not include Netware and Pharlap/16).
+FN_ALL = _bprintf.exe &
+_freect.exe &
+_heapchk.exe &
+_heapgrw.exe &
+_heapmin.exe &
+_heapset.exe &
+_heapshr.exe &
+_heapwal.exe &
+_memavl.exe &
+_memmax.exe &
+_searche.exe &
+_splitp2.exe &
+chdrive.exe &
+ftime.exe &
+getdiskf.exe &
+getdrive.exe &
+getfattr.exe &
+getftime.exe &
+getdate.exe &
+getopt.exe &
+getpid.exe &
+gettime.exe &
+locking.exe &
+putenv.exe &
+sbrk.exe &
+setenv.exe &
+_heapena.exe &
+iswctype.exe &
+mbcjisto.exe &
+mbcjmsto.exe &
+mbctohir.exe &
+mbctokat.exe &
+rewinddi.exe &
+snprintf.exe &
+strdate.exe &
+stricoll.exe &
+strspnp.exe &
+strtime.exe &
+towctrns.exe &
+vsnprint.exe &
+vsprintf.exe &
+wctype.exe &
+wctrans.exe
+ 
+# Macros (available everywhere!)
+FN_MACRO = alloca.exe &
+assert.exe &
+fpclassf.exe &
+isfinite.exe &
+isinf.exe &
+isnan.exe &
+isnormal.exe &
+mk_fp.exe &
+offsetof.exe &
+setjmp.exe &
+va_arg.exe &
+va_end.exe &
+va_start.exe &
+mbsnbcnt.exe &
+mbsnbcnt.exe &
+signbit.exe &
+strdec.exe &
+strdec.exe &
+strinc.exe &
+strinc.exe
+ 
+# Math functions (available everywhere)
+FN_MATH = _clear87.exe &
+_disable.exe &
+_enable.exe &
+_setmath.exe &
+_status8.exe &
+abs.exe &
+acos.exe &
+acosh.exe &
+asin.exe &
+asinh.exe &
+atan.exe &
+atan2.exe &
+atanh.exe &
+atof.exe &
+atoi.exe &
+atol.exe &
+atoll.exe &
+cabs.exe &
+bessel.exe &
+ceil.exe &
+cos.exe &
+cosh.exe &
+difftime.exe &
+div.exe &
+ecvt.exe &
+exp.exe &
+fabs.exe &
+fcvt.exe &
+floor.exe &
+fmod.exe &
+frexp.exe &
+gcvt.exe &
+hypot.exe &
+itoa.exe &
+imaxabs.exe &
+imaxdiv.exe &
+labs.exe &
+ldexp.exe &
+ldiv.exe &
+llabs.exe &
+lldiv.exe &
+lltoa.exe &
+log.exe &
+log10.exe &
+log2.exe &
+ltoa.exe &
+matherr.exe &
+max.exe &
+min.exe &
+modf.exe &
+pow.exe &
+raise.exe &
+rand.exe &
+sin.exe &
+sinh.exe &
+sqrt.exe &
+srand.exe &
+tan.exe &
+tanh.exe &
+ulltoa.exe &
+ultoa.exe
+ 
+#File functions (all platforms & NetWare)
+FN_FILE = dup.exe &
+dup2.exe &
+eof.exe &
+fclose.exe &
+fcloseal.exe &
+fdopen.exe &
+feof.exe &
+ferror.exe &
+fflush.exe &
+fgetc.exe &
+fgetchar.exe &
+fgetpos.exe &
+fgets.exe &
+fileleng.exe &
+fileno.exe &
+flushall.exe &
+fopen.exe &
+fopen_s.exe &
+fprintf.exe &
+fputc.exe &
+fputchar.exe &
+fputs.exe &
+fread.exe &
+free.exe &
+freopen.exe &
+freop_s.exe &
+fscanf.exe &
+fscanf_s.exe &
+fseek.exe &
+fsetpos.exe &
+fstat.exe &
+ftell.exe &
+fwide.exe &
+fwrite.exe &
+getc.exe &
+getch.exe &
+getchar.exe &
+getche.exe &
+getcwd.exe &
+gets.exe &
+open.exe &
+opendir.exe &
+mkdir.exe &
+mkstemp.exe &
+mktemp.exe &
+printf.exe &
+putc.exe &
+putch.exe &
+putchar.exe &
+puts.exe &
+read.exe &
+readdir.exe &
+remove.exe &
+rename.exe &
+rewind.exe &
+rmdir.exe &
+scanf.exe &
+scanf_s.exe &
+sopen.exe &
+sprintf.exe &
+sscanf.exe &
+sscanf_s.exe &
+stat.exe &
+tell.exe &
+tmpfile.exe &
+tmpfl_s.exe &
+tmpnam.exe &
+tmpnm_s.exe &
+umask.exe &
+ungetc.exe &
+ungetch.exe &
+unlink.exe &
+unlock.exe &
+vcprintf.exe &
+vcscanf.exe &
+vfprintf.exe &
+vfscanf.exe &
+vfscnf_s.exe &
+vprintf.exe &
+vscanf.exe &
+vscanf_s.exe &
+vsscnf_s.exe &
+write.exe
+ 
+# String Functions (all + NetWare)
+FN_STRING = &
+strcase.exe &
+strcat.exe &
+strcat_s.exe &
+stncat_s.exe &
+strchr.exe &
+strcmp.exe &
+strcmpi.exe &
+strcoll.exe &
+strcpy.exe &
+strcpy_s.exe &
+stncpy_s.exe &
+strcspn.exe &
+strdup.exe &
+strerror.exe &
+strerr_s.exe &
+streln_s.exe &
+strftime.exe &
+stricmp.exe &
+strlcat.exe &
+strlcpy.exe &
+strlen.exe &
+strnln_s.exe &
+strlwr.exe &
+strncase.exe &
+strncat.exe &
+strncmp.exe &
+strncpy.exe &
+strnicmp.exe &
+strnset.exe &
+strpbrk.exe &
+strrchr.exe &
+strrev.exe &
+strset.exe &
+strspn.exe &
+strstr.exe &
+strtoimx.exe &
+strtoumx.exe &
+strtod.exe &
+strtok.exe &
+strtok_s.exe &
+strtol.exe &
+strtoll.exe &
+strtoul.exe &
+strtoull.exe &
+strupr.exe &
+strxfrm.exe
+ 
+# Available on ALL platforms and Netware
+# NOTE: mbstowcs, getosfha, oshandle not available under QNX.
+FN_ALLN = _fsopen.exe &
+_exit.exe &
+_fullpat.exe &
+_grow_ha.exe &
+_lrotl.exe &
+_lrotr.exe &
+_rotl.exe &
+_rotr.exe &
+_makepat.exe &
+_msize.exe &
+_splitpa.exe &
+_vbprint.exe &
+abort.exe &
+abrt_hnd.exe &
+access.exe &
+asctime.exe &
+asctim_s.exe &
+atexit.exe &
+basename.exe &
+bsearch.exe &
+bsrch_s.exe &
+calloc.exe &
+cgets.exe &
+chdir.exe &
+chmod.exe &
+chsize.exe &
+clearenv.exe &
+clearerr.exe &
+clock.exe &
+close.exe &
+closedir.exe &
+cprintf.exe &
+cputs.exe &
+creat.exe &
+cscanf.exe &
+ctime.exe &
+ctime_s.exe &
+dirname.exe &
+exit.exe &
+ffs.exe &
+fnmatch.exe &
+getcmd.exe &
+getenv.exe &
+getenv_s.exe &
+getosfha.exe &
+gmtime.exe &
+gmtime_s.exe &
+ign_hnd.exe &
+isalnum.exe &
+isalpha.exe &
+isascii.exe &
+isatty.exe &
+isblank.exe &
+iscntrl.exe &
+isdigit.exe &
+isgraph.exe &
+islower.exe &
+isprint.exe &
+ispunct.exe &
+isspace.exe &
+isupper.exe &
+isxdigit.exe &
+inp.exe &
+inpw.exe &
+kbhit.exe &
+lfind.exe &
+localeco.exe &
+localtim.exe &
+lcltim_s.exe &
+lock.exe &
+longjmp.exe &
+lsearch.exe &
+memccpy.exe &
+memchr.exe &
+memcmp.exe &
+memcpy.exe &
+memcpy_s.exe &
+memicmp.exe &
+memmove.exe &
+memmov_s.exe &
+memset.exe &
+main.exe &
+malloc.exe &
+mblen.exe &
+mbstowcs.exe &
+mbtowc.exe &
+mktime.exe &
+movedata.exe &
+onexit.exe &
+oshandle.exe &
+outp.exe &
+outpw.exe &
+perror.exe &
+qsort.exe &
+qsort_s.exe &
+realloc.exe &
+segread.exe &
+set_chnd.exe &
+setbuf.exe &
+setlocal.exe &
+setmode.exe &
+setvbuf.exe &
+signal.exe &
+sleep.exe &
+stackava.exe &
+swab.exe &
+system.exe &
+time.exe &
+tolower.exe &
+toupper.exe &
+tzset.exe &
+utime.exe &
+utoa.exe &
+wcstombs.exe &
+wcstom_s.exe &
+wctomb.exe &
+wctomb_s.exe &
+_atouni.exe &
+_bgetcmd.exe &
+_cmdname.exe &
+_hdopen.exe &
+bcmp.exe &
+bcopy.exe &
+bzero.exe &
+control8.exe &
+controlf.exe &
+fsync.exe &
+getw.exe &
+mblen.exe &
+openosfh.exe &
+putw.exe &
+snprintf.exe &
+stricoll.exe &
+strspnp.exe &
+vsnprint.exe
+ 
+# Available on ALL platforms except 16-bit Windows
+FN_SPAWN = spawn.exe

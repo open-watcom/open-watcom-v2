@@ -327,17 +327,6 @@ TREEPTR LongLeaf( target_long value )
     return( leaf );
 }
 
-TREEPTR Long64Leaf( unsigned_64 *val64 )
-{
-    TREEPTR     leaf;
-
-    leaf = LeafNode( OPR_PUSHINT );
-    leaf->op.u1.const_type = TYP_LONG64;
-    leaf->op.u2.long64_value = *val64;
-    leaf->u.expr_type = GetType( TYP_LONG64 );
-    return( leaf );
-}
-
 static TREEPTR EnumLeaf( ENUMPTR ep )
 {
     DATA_TYPE   decl_type;

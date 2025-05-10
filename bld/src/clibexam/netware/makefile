@@ -1,10 +1,13 @@
-compiler  = *wcc386
-cflags    = -bt=netware -I"$(%WATCOM)/h"
+compiler = wcc386
+cflags = -bt=netware
 linkflags = sys netware debug all
-cdebug    = -d2
-exe       = .nlm
+cdebug = -d2
 
-!include ../master.mif
+!include netware.mif
 
-all: $(FN_MACRO) $(FN_FILE) $(FN_STRING) $(FN_NETW) $(FN_THREAD) $(FN_DQN32) &
+all: $(FN_MACRO) $(FN_FILE) $(FN_STRING) $(FN_ALLN) $(FN_THREAD) $(FN_DQN32) &
         $(FN_32BIT)
+
+{..\}.c.nlm:
+    $(compiler) $(cflags) $(cdebug) $<
+    wlink $(linkflags) name $* file $*.obj

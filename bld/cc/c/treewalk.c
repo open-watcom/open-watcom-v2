@@ -48,12 +48,10 @@ int WalkExprTree( TREEPTR p,
     parent = NULL;
     for( ;; ) {
         for( ;; ) {
-            if( p->left == 0 && p->right == 0 )
-                break;
+            if( p->left == 0 && p->right == 0 ) break;
             ++NodeTimeStamp;
             (*prefix_operator)( p );
-            if( p->left == 0 )
-                break;
+            if( p->left == 0 ) break;
             temp = p;
             p = p->left;
             temp->left = parent;
@@ -102,7 +100,7 @@ move_up_to_parent:
     }
 }
 
-void NoOp( TREEPTR tree )
+void NoOp( TREEPTR node )
 {
-    /* unused parameters */ (void)tree;
+    /* unused parameters */ (void)node;
 }

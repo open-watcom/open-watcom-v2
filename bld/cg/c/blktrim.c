@@ -447,8 +447,8 @@ void KillCondBlk( block *blk, instruction *ins, byte dest_idx )
     RemoveInputEdge( &blk->edge[1] );
     _MarkBlkAttrClr( blk, BLK_CONDITIONAL );
     _MarkBlkAttrSet( blk, BLK_JUMP );
-    dest_blk = blk->edge[dest_idx].destination.u.blk;
     blk->targets = 1;
+    dest_blk = blk->edge[dest_idx].destination.u.blk;
     edge = &blk->edge[0];
     edge->flags = blk->edge[dest_idx].flags;
     edge->source = blk;

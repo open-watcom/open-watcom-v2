@@ -522,7 +522,6 @@ extern TREEPTR      SingleExpr( void );
 extern TREEPTR      IntLeaf( target_int );
 extern TREEPTR      RValue( TREEPTR );
 extern TREEPTR      LongLeaf( target_long );
-extern TREEPTR      Long64Leaf( unsigned_64 *val64 );
 extern TREEPTR      UIntLeaf( target_uint );
 extern TREEPTR      VarLeaf( SYMPTR, SYM_HANDLE );
 extern TREEPTR      BasedPtrNode( TYPEPTR, TREEPTR );

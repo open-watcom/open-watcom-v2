@@ -1310,13 +1310,9 @@ static void ListContentsWlib( void )
         Options.list_file = MemDupStr( MakeListName() );
     }
     if( Options.list_file[0] != '\0' ) {
-        if( Options.list_file[0] == '.' && Options.list_file[1] == '\0' ) {
-            fp = stdout;
-        } else {
-            fp = fopen( Options.list_file, "w" );
-            if( fp == NULL ) {
-                FatalError( ERR_CANT_OPEN, Options.list_file, strerror( errno ) );
-            }
+        fp = fopen( Options.list_file, "w" );
+        if( fp == NULL ) {
+            FatalError( ERR_CANT_OPEN, Options.list_file, strerror( errno ) );
         }
     } else {
         fp = NULL;
@@ -1356,11 +1352,7 @@ static void ListContentsWlib( void )
     }
 
     if( fp != NULL ) {
-        if( fp == stdout ) {
-            fflush( fp );
-        } else {
-            fclose( fp );
-        }
+        fclose( fp );
     }
 }
 
