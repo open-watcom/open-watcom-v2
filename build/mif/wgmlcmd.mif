@@ -87,8 +87,8 @@ run_wgml : .PROCEDURE .EXPLICIT
     @%create $(dos_wgml_tmp_batch)
     @%append $(dos_wgml_tmp_batch) c:
     @%append $(dos_wgml_tmp_batch) cd $(wgml_subdir)
-    @%append $(dos_wgml_tmp_batch) $(noecho)set GMLINC=$(%GMLINC:/=\)
-    @%append $(dos_wgml_tmp_batch) $(noecho)set GMLLIB=$(%GMLLIB:/=\)
+    @%append $(dos_wgml_tmp_batch) $(noecho)set GMLINC=$(%OWGMLINC:/=\)
+    @%append $(dos_wgml_tmp_batch) $(noecho)set GMLLIB=$(%OWGMLLIB:/=\)
     @%append $(dos_wgml_tmp_batch) \docs\gml\dos\wgml.exe $(wgml_cmdl_params) >>dosbox.lst
 ! ifndef %OWWGMLDEBUG
     @%append $(dos_wgml_tmp_batch) exit
@@ -121,8 +121,8 @@ run_gendev : .PROCEDURE .EXPLICIT
     @%append $(dos_gendev_tmp_batch) mount d ../../docs
     @%append $(dos_gendev_tmp_batch) c:
     @%append $(dos_gendev_tmp_batch) cd $(gendev_subdir)
-    @%append $(dos_gendev_tmp_batch) $(noecho)set GMLINC=$(%GMLINC:/=\)
-    @%append $(dos_gendev_tmp_batch) $(noecho)set GMLLIB=$(%GMLLIB:/=\)
+    @%append $(dos_gendev_tmp_batch) $(noecho)set GMLINC=$(%OWGMLINC:/=\)
+    @%append $(dos_gendev_tmp_batch) $(noecho)set GMLLIB=$(%OWGMLLIB:/=\)
     @%append $(dos_gendev_tmp_batch) d:\gml\dos\gendev.exe $(gendev_cmdl_params:/=\) >>dosbox.lst
 ! ifndef %OWWGMLDEBUG
     @%append $(dos_gendev_tmp_batch) exit

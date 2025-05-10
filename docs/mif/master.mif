@@ -237,8 +237,12 @@ run_wgml_new : .PROCEDURE .EXPLICIT
     @echo wgml $@
 !endif
 !ifdef __UNIX__
+    $(noecho)set GMLINC=$(%OWGMLINC)
+    $(noecho)set GMLLIB=$(%OWGMLLIB)
     -wgml $^& "(" file $(wgml_optfile)
 !else
+    $(noecho)set GMLINC=$(%OWGMLINC:/=\)
+    $(noecho)set GMLLIB=$(%OWGMLLIB:/=\)
     -wgml $^& ( file $(wgml_optfile)
 !endif
 
@@ -354,13 +358,9 @@ run_wgml_new : .PROCEDURE .EXPLICIT
     $(noecho)set OWGMLINC=.;$(root_books);$(tmpdir);$(ps_incs);$($^&_book_incs);$(whelp_incs);$(gml_incs)
     $(noecho)set OWGMLLIB=../gml/owhelp
     %make prepare_wgml_opts
-!ifdef __UNIX__
-    $(noecho)set GMLINC=$(%OWGMLINC)
-    $(noecho)set GMLLIB=$(%OWGMLLIB)
+!ifdef %OWNEWWGML
     @%make run_wgml_new
 !else
-    $(noecho)set GMLINC=$(%OWGMLINC:/=\)
-    $(noecho)set GMLLIB=$(%OWGMLLIB:/=\)
     @%make run_wgml
 !endif
     @if exist $@ $(noecho)%erase $@
@@ -636,13 +636,9 @@ compile_gml_to_xxx : .PROCEDURE
     $(noecho)set OWGMLINC=.;$(root_books);$(hlp_incs);$($^&_book_incs);$(whelp_incs);$(gml_incs);
     $(noecho)set OWGMLLIB=../gml/owhelp
     @%make prepare_wgml_opts
-!ifdef __UNIX__
-    $(noecho)set GMLINC=$(%OWGMLINC)
-    $(noecho)set GMLLIB=$(%OWGMLLIB)
+!ifdef %OWNEWWGML
     @%make run_wgml_new
 !else
-    $(noecho)set GMLINC=$(%OWGMLINC:/=\)
-    $(noecho)set GMLLIB=$(%OWGMLLIB:/=\)
     @%make run_wgml
 !endif
     @if exist $*.$(wgml1_ext) $(noecho)%erase $*.$(wgml1_ext)
