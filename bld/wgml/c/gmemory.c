@@ -35,26 +35,20 @@
 
 #ifdef TRMEM
 
-    #include "trmem.h"
+#include "trmem.h"
 
-    #define CRLF            "\n"
+static  _trmem_hdl  memHandle;       // memory tracker anchor block
 
-    static  _trmem_hdl  handle;             // memory tracker anchor block
+/***********************************************************************/
+/*  Memory tracker output function                                     */
+/***********************************************************************/
 
-    /***********************************************************************/
-    /*  Memory tracker output function                                     */
-    /***********************************************************************/
+static void prt( void * file, const char * buf, size_t len )
+{
+    /* unused parameters */ (void)file; (void)len;
 
-    static void prt( void * fhandle, const char * buff, size_t len )
-    {
-        size_t i;
-
-        fhandle = fhandle;
-        for( i = 0; i < len; ++i ) {
-    //      fputc( *buff++, stderr );
-            fputc( *buff++, stdout );   // use stdout for now (easier redirection)
-        }
-    }
+    fprintf( stderr, "***%s\n", buf );
+}
 
 #endif
 
@@ -66,10 +60,7 @@
 void mem_init( void )
 {
 #ifdef TRMEM
-    handle = _trmem_open( &malloc, &free, &realloc, NULL, NULL, &prt,
-                          _TRMEM_ALLOC_SIZE_0 | _TRMEM_REALLOC_SIZE_0 |
-                          _TRMEM_REALLOC_NULL | _TRMEM_FREE_NULL |
-                          _TRMEM_OUT_OF_MEMORY | _TRMEM_CLOSE_CHECK_FREE );
+    memHandle = _trmem_open( &malloc, &free, &realloc, NULL, NULL, &prt, _TRMEM_ALL );
 #endif
 }
 
@@ -80,7 +71,7 @@ void mem_init( void )
 void mem_prt_curr_usage( void )
 {
 #ifdef  TRMEM
-    _trmem_prt_usage( handle );
+    _trmem_prt_usage( memHandle );
 #endif
 }
 
@@ -91,7 +82,7 @@ void mem_prt_curr_usage( void )
 unsigned long mem_get_peak_usage( void )
 {
 #ifdef  TRMEM
-    return( _trmem_get_peak_usage( handle ) );
+    return( _trmem_get_peak_usage( memHandle ) );
 #else
     return( 0 );
 #endif
@@ -105,7 +96,7 @@ unsigned long mem_get_peak_usage( void )
 void mem_banner( void )
 {
 #ifdef  TRMEM
-    out_msg( "Compiled with TRMEM memory tracker (trmem)" CRLF );
+    out_msg( "Compiled with TRMEM memory tracker (trmem)\n" );
 #endif
 }
 
@@ -117,8 +108,9 @@ void mem_banner( void )
 void mem_fini( void )
 {
 #ifdef TRMEM
-    _trmem_prt_list( handle );
-    _trmem_close( handle );
+    _trmem_prt_usage( memHandle );
+    _trmem_prt_list_ex( memHandle, 100 );
+    _trmem_close( memHandle );
 #endif
 }
 
@@ -131,7 +123,7 @@ void *mem_alloc( unsigned size )
     void    *p;
 
 #ifdef TRMEM
-    p = _trmem_alloc( size, _trmem_guess_who(), handle );
+    p = _trmem_alloc( size, _trmem_guess_who(), memHandle );
 #else
     p = malloc( size );
 #endif
@@ -150,7 +142,7 @@ void *mem_realloc( void * oldp, unsigned size )
     void    *   p;
 
 #ifdef TRMEM
-    p = _trmem_realloc( oldp, size, _trmem_guess_who(), handle );
+    p = _trmem_realloc( oldp, size, _trmem_guess_who(), memHandle );
 #else
     p = realloc( oldp, size );
 #endif
@@ -174,7 +166,7 @@ char *mem_strdup( const char *str )
         str = "";
     size = (unsigned)strlen( str );
 #ifdef TRMEM
-    p = _trmem_alloc( size + 1, _trmem_guess_who(), handle );
+    p = _trmem_alloc( size + 1, _trmem_guess_who(), memHandle );
 #else
     p = malloc( size + 1 );
 #endif
@@ -193,7 +185,7 @@ char *mem_tokdup( const char *str, unsigned size )
     char    *p;
 
 #ifdef TRMEM
-    p = _trmem_alloc( size + 1, _trmem_guess_who(), handle );
+    p = _trmem_alloc( size + 1, _trmem_guess_who(), memHandle );
 #else
     p = malloc( size + 1 );
 #endif
@@ -212,7 +204,7 @@ char *mem_tokdup( const char *str, unsigned size )
 void mem_free( void * p )
 {
 #ifdef TRMEM
-    _trmem_free( p, _trmem_guess_who(), handle );
+    _trmem_free( p, _trmem_guess_who(), memHandle );
 #else
     free( p );
 #endif
@@ -228,7 +220,7 @@ void mem_free( void * p )
 int mem_validate( void )
 {
 #ifdef TRMEM
-    return(_trmem_validate_all( handle ));
+    return(_trmem_validate_all( memHandle ));
 #endif
     return 1;   // always succeed if trmem not in use
 }
@@ -241,7 +233,7 @@ int mem_validate( void )
 void mem_prt_list( void )
 {
 #ifdef TRMEM
-    _trmem_prt_list( handle );
+    _trmem_prt_list( memHandle );
 #endif
 }
 
