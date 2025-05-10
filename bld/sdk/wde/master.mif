@@ -91,7 +91,7 @@ exetarg_objs = &
     windlg.obj windlg32.obj &
     $(cli_cpp_objs) ppenv.obj &
     $(objs_$(host_os))
-exetarg_libs          = $(fmedit_dir)/$(bin_host)/fmedit.lib &
+exetarg_libs          = $(fmedit_dir)/$(host)/fmedit.lib &
     $(cli_wr_libs) $(cli_wpi_libs) $(cli_commonui_libs)
 exetarg_res           = $(proj_name).res
 !include exetarg.mif

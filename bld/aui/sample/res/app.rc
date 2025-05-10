@@ -9,8 +9,7 @@
 #else
     #include "wresdefn.h"
 #endif
-#include "auistr.rh"
-#include "auidlg.rh"
+#include "aui.rh"
 #include "sample.rh"
 
 #include "aui.rc"

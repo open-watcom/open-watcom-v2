@@ -83,9 +83,9 @@ exetarg_objs = &
     $(trmem_objs) $(trmemcvr_objs)
 exetarg_libs = &
     $(cli_commonui_libs) $(cli_wr_libs) $(cli_wpi_libs) &
-    $(wresedit_dir)/waccel/$(bin_host)/wacc.lib &
-    $(wresedit_dir)/wmenu/$(bin_host)/wmenu.lib &
-    $(wresedit_dir)/wstring/$(bin_host)/wstring.lib
+    $(wresedit_dir)/waccel/$(host)/wacc.lib &
+    $(wresedit_dir)/wmenu/$(host)/wmenu.lib &
+    $(wresedit_dir)/wstring/$(host)/wstring.lib
 exetarg_res           = $(proj_name).res
 !include exetarg.mif
 

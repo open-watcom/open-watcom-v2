@@ -21,7 +21,6 @@
 #endif
 
 #if !defined( RESX_ENG )
-    #include "auidlg.rh"
     #include "aui.rc"
     #include "dialogs.rc"
  #if defined( RESX_GUI )

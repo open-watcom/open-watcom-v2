@@ -40,7 +40,7 @@ exetarg_name = app
 #
 # rc and others
 #
-rc_inc_dirs = -I. -I"../res" -I"../h" $(cli_aui_rc_inc_dirs)
+rc_inc_dirs = -I"../res" -I"../h" $(cli_aui_rc_inc_dirs)
 
 rcfiles_os2 = ../res/dlgoptn2.dlg ../res/dui2.ico ../res/word2.ico
 rcfiles_win = ../res/dlgoptn.dlg ../res/japoptn.dlg ../res/dui.ico ../res/words.ico

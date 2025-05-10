@@ -31,8 +31,7 @@
 ****************************************************************************/
 
 
-#include "wvbase.rh"
-//#include "wv.rh"
+#include "wv.rh"
 #include "liteng.h"
 #include "dbglit.h"
 

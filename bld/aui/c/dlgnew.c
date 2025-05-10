@@ -35,7 +35,6 @@
 #include "guidlg.h"
 #include "dlgbutn.h"
 #include <string.h>
-#include "auistr.rh"
 
 
 #define R0 0

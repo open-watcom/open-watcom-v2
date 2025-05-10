@@ -34,7 +34,6 @@
 #include "_aui.h"
 #include <ctype.h>
 #include "wspawn.h"
-#include "auistr.rh"
 
 
 typedef struct {

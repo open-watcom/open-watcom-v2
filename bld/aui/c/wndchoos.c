@@ -34,7 +34,6 @@
 #include <string.h>
 #include <ctype.h>
 #include "walloca.h"
-#include "auistr.rh"
 
 #include "clibext.h"
 

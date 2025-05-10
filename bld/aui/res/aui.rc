@@ -1,6 +1,5 @@
 /* UTF-8 encoding, ¥ */
 
-#include "gui.rh"
 #include "gui.rc"
 
 #include "auimsgs.grh"
