@@ -383,20 +383,18 @@ static bool test_macro_xxxx( char const * beginend )
 
 static  bool    test_comment( void )
 {
+    char    tagname[TAG_NAME_LENGTH + 1];
+
     if( buff2[0] == SCR_char ) {        // test for .*
         // todo: This logic is imperfect, does not detect ..* .'* and similar
         if( buff2[1] == '*' ) {
            return( true );
         }
-    } else {                            // test for :cmt
-        if( (*buff2 == GML_char) &&
-            (my_tolower( *(buff2 + 1) ) == 'c') &&
-            (my_tolower( *(buff2 + 2) ) == 'm') &&
-            (my_tolower( *(buff2 + 3) ) == 't')
-        ) {
-            if( (*(buff2 + 4) == ' ') ||
-                (*(buff2 + 4) == '.')  ) {
-
+    } else if( *buff2 == GML_char ) {
+        get_tagname( buff2 + 1, tagname );
+        if( strcmp( "CMT", tagname ) == 0 ) {
+            if( (*(buff2 + 4) == ' ')
+              || (*(buff2 + 4) == '.') ) {
                 if( ProcFlags.literal ) {   // special
                     if( li_cnt < INT_MAX ) {// we decrement, do not wait for .li OFF
                         if( li_cnt-- <= 0 ) {
@@ -602,7 +600,7 @@ static  void    proc_input( char * filename )
             scan_line();
 
             if( ProcFlags.newLevelFile ) {
-                break;            // imbed and friends found, start new level
+                break;                  // imbed and friends found, start new level
             }
         }
         if( ProcFlags.newLevelFile ) {  // include / imbed new file
@@ -626,7 +624,7 @@ static  void    proc_input( char * filename )
         if( inc_level == 0 ) {          // EOF for master document file
             break;
         }
-        if( cur_lay_file != NULL ) {   // any more  LAYfiles
+        if( cur_lay_file != NULL ) {    // any more  LAYfiles
             tmp_lay_file = cur_lay_file;
             strcpy( token_buf, tmp_lay_file->layfn );
             cur_lay_file = tmp_lay_file->next;
@@ -735,7 +733,7 @@ static  void    init_pass( void )
         GlobalFlags.lastpass = 1;
     }
 
-    line_from   = 1;                  // processing line range Masterdocument
+    line_from   = 1;                    // processing line range Masterdocument
     line_to     = UINT_MAX - 1;
 
     g_apage             = 0;            // absolute pageno 1 - n
@@ -769,7 +767,7 @@ int main( int argc, char * argv[] )
     (void)argv;
 #endif
 
-//   #undef TRMEM                         // activate to disable TRMEM
+//   #undef TRMEM                       // activate to disable TRMEM
 
     environment = JMPBUF_PTR( env );
     if( setjmp( env ) ) {               // if fatal error has occurred
@@ -931,5 +929,5 @@ int main( int argc, char * argv[] )
     mem_fini();                         // TRMEM final report
 
     my_exit( err_count ? 8 : wng_count ? 4 : 0 );
-    return( 0 );                    // never reached, but makes compiler happy
+    return( 0 );                        // never reached, but makes compiler happy
 }

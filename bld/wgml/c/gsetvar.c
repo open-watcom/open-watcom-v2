@@ -72,7 +72,6 @@ char * scan_sym( char * p, symvar * sym, sub_index * subscript, char * * result,
 
     k = 0;
     while( is_symbol_char( *p ) ) {
-
         /* Special WGML 4.0 compatibility: When scanning symbol names,
          * the scanning stops after 10 characters (not including the '&').
          * It is thus possible to reference symbols with maximum-length
@@ -110,12 +109,11 @@ char * scan_sym( char * p, symvar * sym, sub_index * subscript, char * * result,
 
     if( p == sym_start ) {              // special for &*
         if( *p != ampchar ) {           // not &*&xx construct
-
             if( (sym->flags & local_var)
-                && (input_cbs->fmflags & II_tag_mac) ) {
-
+              && (input_cbs->fmflags & II_tag_mac) ) {
                 strcpy( sym->name, MAC_STAR_NAME );
-            } else if( (sym->flags & local_var) && (input_cbs->fmflags & II_file) ) {
+            } else if( (sym->flags & local_var)
+              && (input_cbs->fmflags & II_file) ) {
                 strcpy( sym->name, MAC_STAR_NAME );
             } else {
                 g_scan_err = true;
@@ -200,7 +198,6 @@ char * scan_sym( char * p, symvar * sym, sub_index * subscript, char * * result,
                     while( *gn.arg.e != '\0' && (*gn.arg.e != ')') ) {
                         gn.arg.e++;
                     }
-                    *gn.arg.e = '\0';       // make nul terminated string
                     gn.ignore_blanks = false;
                     cc = getnum( &gn );     // try numeric expression evaluation
 
@@ -217,7 +214,6 @@ char * scan_sym( char * p, symvar * sym, sub_index * subscript, char * * result,
                         }
                         g_scan_err = true;
                     }
-
                 }
             }
         }

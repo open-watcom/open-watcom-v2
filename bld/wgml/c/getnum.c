@@ -230,69 +230,68 @@ static  operator *get_op( const char *str )
  *  Get an expression
  */
 
-static char *get_exp( const char *str )
+static char *get_exp( const char *start, const char *end )
 {
-    const char *ptr  = str;
+    const char *p = start;
     char *tptr = tokbuf;
     struct operator *op;
 
-    while( *ptr != '\0' ) {
-        if( *ptr == ' ' ) {
+    while( p < end ) {
+        if( *p == ' ' ) {
             if( ignore_blanks ) {
-                ptr++;
+                p++;
                 continue;
             } else {
                 break;
             }
         }
-        op = get_op( ptr );
+        op = get_op( p );
         if (NULL != op ) {
-            if( ('-' == ptr[0]) || ('+' == ptr[0]) ) {
-                if( ('-' == ptr[1]) || ('+' == ptr[1]) ) {
+            if( ('-' == p[0]) || ('+' == p[0]) ) {
+                if( ( p + 1 < end ) && ( ('-' == p[1]) || ('+' == p[1]) ) ) {
                     return( NULL );
                 }
-                if( str != ptr )
+                if( start != p )
                     break;
-                if( !my_isdigit( ptr[1] ) && '.' != ptr[1] ) {
+                if( ( p + 1 == end ) || !my_isdigit( p[1] ) && '.' != p[1] ) {
                     push_val( 0 );
-                    *tptr++ = *ptr++;
+                    *tptr++ = *p++;
                     break;
                 }
-            } else if( str == ptr ) {
-                *tptr++ = *ptr++;
+            } else if( start == p ) {
+                *tptr++ = *p++;
                 break;
             } else {
                 break;
             }
         }
-
-        *tptr++ = *ptr++;
+        *tptr++ = *p++;
     }
     *tptr = NULC;
 
     return tokbuf;
 }
 
-static  int evaluate( char **line, int *val )
+static  int evaluate( tok_type *arg, int *val )
 {
-    int         arg;
-    char    *   ptr;
+    char    *   p;
     char    *   str;
     char    *   endptr;
     int         ercode;
     operator *  op;
     int         expr_oper;              // looking for term or operator
+    long        num;
 
     expr_oper = 0;
     coper     = 0;
     cvalue    = 0;
     nparens   = 0;
-    ptr       = *line;
+    p         = arg->s;
 
-    while( *ptr != '\0' ) {
-        if( *ptr == ' ' ) {
+    while( p < arg->e ) {
+        if( *p == ' ' ) {
             if( ignore_blanks ) {
-                ptr++;
+                p++;
                 continue;
             } else {
                 break;
@@ -300,8 +299,7 @@ static  int evaluate( char **line, int *val )
         }
         switch( expr_oper ) {
         case 0:                         // look for term
-            str = get_exp( ptr );
-
+            str = get_exp( p, arg->e );
             if( str == NULL ) {         // nothing is error
                 return( not_ok );
             }
@@ -310,40 +308,33 @@ static  int evaluate( char **line, int *val )
             if( *(str + 1) == NULC ) {
                 if( NULL != op ) {
                     push_op( op->operc );
-                    ptr++;
+                    p++;
                     break;
                 }
 
                 if( (*str == '-' ) || (*str == '+' ) ) {
                     push_op( *str );
-                    ptr++;
+                    p++;
                     break;
                 }
             }
-            {
-                long    num;
-
-                num = strtol( str, &endptr, 10 );
-                if( (errno == ERANGE)
-                  || (num <= INT_MIN)
-                  || (num >= INT_MAX)
-                  || (str == endptr) ) {
-                    return( not_ok );
-                }
-                arg = num;
+            num = strtol( str, &endptr, 10 );
+            if( (errno == ERANGE)
+              || (num <= INT_MIN)
+              || (num >= INT_MAX)
+              || (str == endptr) ) {
+                return( not_ok );
             }
-            push_val( arg );
-
-            ptr += endptr - str;        // to the next unprocessed char
-
+            push_val( num );
+            p += endptr - str;          // to the next unprocessed char
             expr_oper = 1;              // look for operator next
             break;
 
         case 1:                         // look for operator
-            op = get_op( ptr );
+            op = get_op( p );
             if( NULL == op ) {
                 if( !coper ) {
-                    *line = ptr;                    // next scan position
+                    arg->s = p;                    // next scan position
 
                     /********************************************************/
                     /* This little bit of confusion is brought to you by    */
@@ -355,7 +346,7 @@ static  int evaluate( char **line, int *val )
                     /* function returns                                     */
                     /********************************************************/
 
-                    if( *line != '\0' ) {           // should be '\0' here
+                    if( arg->s < arg->e ) {           // should be '\0' here
                         return( not_ok );
                     } else {
                         return( pop_val( val ) );   // no operations left return result
@@ -364,7 +355,7 @@ static  int evaluate( char **line, int *val )
                     return( not_ok );
                 }
             }
-            if( ')' == *ptr ) {
+            if( ')' == *p ) {
                 ercode = do_paren();
                 if( ok > ercode ) {
                     return( ercode );
@@ -376,7 +367,7 @@ static  int evaluate( char **line, int *val )
                 push_op( op->operc );
                 expr_oper = 0;      // look for term next
             }
-            ptr++;
+            p++;
             break;
         }
     }
@@ -387,7 +378,7 @@ static  int evaluate( char **line, int *val )
              return ercode;
     }
     if( !coper ) {
-        *line = ptr;                    // next scan position
+        arg->s = p;                   // next scan position
         return( pop_val( val ) );       // no operations left return result
     } else {
         return( not_ok );
@@ -423,10 +414,7 @@ condcode getnum( getnum_block *gn )
         gn->num_sign = ' ';             // no unary sign
     }
     ignore_blanks = gn->ignore_blanks;
-    c = *arg.e;
-    *arg.e = '\0';                      // make null terminated string
-    rc = evaluate( &arg.s, &gn->result );
-    *arg.e = c;
+    rc = evaluate( &arg, &gn->result );
     if( rc != 0 ) {
         gn->cc = notnum;
     } else {

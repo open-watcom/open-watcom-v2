@@ -79,9 +79,8 @@ condcode    scr_substr( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **re
     string = parms[0].arg;
     string_len = unquote_arg( &string );
 
-    gn.ignore_blanks = false;
-
     gn.arg = parms[1].arg;
+    gn.ignore_blanks = false;
     cc = getnum( &gn );
     if( (cc != pos) || (gn.result == 0) ) {
         if( !ProcFlags.suppress_msg ) {

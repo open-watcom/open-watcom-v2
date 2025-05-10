@@ -317,7 +317,7 @@ static  condcode    scan_att_optionsB( gavalflags * val_flags, condcode cca,
         break;
     case 'r' :
         if( (arg_flen > 2) && (arg_flen < 6)
-            && !strnicmp( "RANge", g_tok_start, arg_flen ) ) {
+          && strnicmp( "RANge", g_tok_start, arg_flen ) == 0 ) {
 
             *val_flags |= val_range;
             *att_flags |= att_range;
@@ -327,9 +327,8 @@ static  condcode    scan_att_optionsB( gavalflags * val_flags, condcode cca,
             ranges[2] = INT_MIN;
             ranges[3] = INT_MIN;
             for( k = 0; k < 4; k++ ) {  // scan max 4 numbers
-
                 cc = getnum( &gn );
-                if(  cc == omit ) {
+                if( cc == omit ) {
                     break;
                 }
                 if( cc == notnum ) {
@@ -375,7 +374,7 @@ static  condcode    scan_att_optionsB( gavalflags * val_flags, condcode cca,
         break;
     case 'l' :
         if( (arg_flen > 2) && (arg_flen < 7)
-            && !strnicmp( "LENgth", g_tok_start, arg_flen ) ) {
+          && strnicmp( "LENgth", g_tok_start, arg_flen ) == 0 ) {
 
             *val_flags |= val_length;
             gn.arg = scandata;
@@ -395,7 +394,7 @@ static  condcode    scan_att_optionsB( gavalflags * val_flags, condcode cca,
         break;
     case 'v' :
         if( (arg_flen > 2) && (arg_flen < 6)
-            && !strnicmp( "VALue", g_tok_start, arg_flen ) ) {
+          && strnicmp( "VALue", g_tok_start, arg_flen ) == 0 ) {
 
             cc = getarg();
             if( (cc == pos) || (cc == quotes) || (cc == quotes0) ) {
