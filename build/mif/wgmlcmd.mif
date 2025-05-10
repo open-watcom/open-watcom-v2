@@ -26,10 +26,15 @@ wgml_tmp_batchfile = wgml.tmp
 dos_gendev_tmp_batch=gendevb.bat
 dos_wgml_tmp_batch=wgmlb.bat
 
-!ifeq proj_name docs
+!ifeq proj_name docslib
+gendev_subdir = \gml\owhelp
+gendev_mountdir = ../..
+!else ifeq proj_name docs
 gendev_subdir = \$(dotarget)
+gendev_mountdir = ..
 !else
 gendev_subdir = \testlib
+gendev_mountdir = ..
 !endif
 wgml_subdir = \docs\$(dotarget)
 
@@ -81,6 +86,11 @@ run_wgml : .PROCEDURE .EXPLICIT
 !ifdef dosbox
     @%make set_sdl
     @rm -f dosbox.lst
+    @rm -f DOSBOX.LST
+    @rm -f TMP.XXX
+    @rm -f SYSUSR01.XXX
+    @rm -f SYSUSR02.XXX
+    @rm -f SYSUSR03.XXX
     #-------------------------------------------------------
     # create DOS batch file to run wgml utility
     #-------------------------------------------------------
@@ -90,10 +100,18 @@ run_wgml : .PROCEDURE .EXPLICIT
     @%append $(dos_wgml_tmp_batch) $(noecho)set GMLINC=$(%OWGMLINC:/=\)
     @%append $(dos_wgml_tmp_batch) $(noecho)set GMLLIB=$(%OWGMLLIB:/=\)
     @%append $(dos_wgml_tmp_batch) \docs\gml\dos\wgml.exe $(wgml_cmdl_params) >>dosbox.lst
+    @%append $(dos_wgml_tmp_batch) ren TMP.PTF TMP.XXX
+    @%append $(dos_wgml_tmp_batch) ren SYSUSR01.GML SYSUSR01.XXX
+    @%append $(dos_wgml_tmp_batch) ren SYSUSR02.GML SYSUSR02.XXX
+    @%append $(dos_wgml_tmp_batch) ren SYSUSR03.GML SYSUSR03.XXX
 ! ifndef %OWWGMLDEBUG
     @%append $(dos_wgml_tmp_batch) exit
 ! endif
     -$(noecho)$(dosbox) -conf "$(dosbox_cfg)" $(dosbox_options_$(bld_os)) -c "mount c \"$(%OWROOT)\"" -c "c:$(wgml_subdir)\$(dos_wgml_tmp_batch)"
+    @%ren TMP.XXX tmp.ptf
+    @%ren SYSUSR01.XXX sysusr01.gml
+    @%ren SYSUSR02.XXX sysusr02.gml
+    @%ren SYSUSR03.XXX sysusr03.gml
     @%ren DOSBOX.LST dosbox.lst
     @cat dosbox.lst
 !else ifeq bld_os dos
@@ -114,20 +132,22 @@ run_gendev : .PROCEDURE .EXPLICIT
 !ifdef dosbox
     @%make set_sdl
     @rm -f dosbox.lst
+    @rm -f DOSBOX.LST
+    @rm -f GENDEV.XXX
     #-------------------------------------------------------
     # create DOS batch file to run gendev utility
     #-------------------------------------------------------
     @%create $(dos_gendev_tmp_batch)
-    @%append $(dos_gendev_tmp_batch) mount d ../../docs
+    @%append $(dos_gendev_tmp_batch) mount d $(%OWROOT)/docs
     @%append $(dos_gendev_tmp_batch) c:
     @%append $(dos_gendev_tmp_batch) cd $(gendev_subdir)
-    @%append $(dos_gendev_tmp_batch) $(noecho)set GMLINC=$(%OWGMLINC:/=\)
-    @%append $(dos_gendev_tmp_batch) $(noecho)set GMLLIB=$(%OWGMLLIB:/=\)
     @%append $(dos_gendev_tmp_batch) d:\gml\dos\gendev.exe $(gendev_cmdl_params:/=\) >>dosbox.lst
+    @%append $(dos_gendev_tmp_batch) ren $@ GENDEV.XXX
 ! ifndef %OWWGMLDEBUG
     @%append $(dos_gendev_tmp_batch) exit
 ! endif
-    $(noecho)$(dosbox) -conf "$(dosbox_cfg)" $(dosbox_options_$(bld_os)) -c "mount c .." -c "c:$(gendev_subdir)\$(dos_gendev_tmp_batch)"
+    $(noecho)$(dosbox) -conf "$(dosbox_cfg)" $(dosbox_options_$(bld_os)) -c "mount c $(gendev_mountdir)" -c "c:$(gendev_subdir)\$(dos_gendev_tmp_batch)"
+    @%ren GENDEV.XXX $@
     @%ren DOSBOX.LST dosbox.lst
     @cat dosbox.lst
 !else ifeq bld_os dos
