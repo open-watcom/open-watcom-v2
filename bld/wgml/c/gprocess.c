@@ -225,7 +225,7 @@ static void split_at_GML_tag( void )
             /***************************************************************/
             /* Verify valid user or system tag                             */
             /***************************************************************/
-            if( ( (gue = find_user_tag( &tag_dict, tagname )) != NULL )
+            if( ( (gue = find_user_tag( &tags_dict, tagname )) != NULL )
               || ( (gse = find_sys_tag( tagname, toklen )) != NULL )
               || ( (gle = find_lay_tag( tagname, toklen )) != NULL ) ) {
 

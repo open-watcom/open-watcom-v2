@@ -270,8 +270,8 @@ static void err_exit( void ) {
 
         print_macro_dict( macro_dict, true );
 
-        if( tag_dict != NULL ) {
-            print_tag_dict( tag_dict );
+        if( tags_dict != NULL ) {
+            print_tag_dict( tags_dict );
         }
         print_single_funcs_research();
         print_multi_funcs_research();

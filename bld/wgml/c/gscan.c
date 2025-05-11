@@ -199,7 +199,7 @@ static void scan_gml( void )
     if( ProcFlags.layout ) {
         ge = NULL;                      // no user tags within :LAYOUT
     } else {
-        ge = find_user_tag( &tag_dict, tagname );
+        ge = find_user_tag( &tags_dict, tagname );
     }
     processed = false;
     me = NULL;
@@ -1024,7 +1024,7 @@ char * get_text_line( char * p )
                     if( ProcFlags.layout ) {
                         ge = NULL;                  // no user tags within :LAYOUT
                     } else {
-                        ge = find_user_tag( &tag_dict, tok_txt );
+                        ge = find_user_tag( &tags_dict, tok_txt );
                     }
                     if( ge != NULL
                       || find_lay_tag( tok_txt, toklen ) != NULL

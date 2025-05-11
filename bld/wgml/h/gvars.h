@@ -124,7 +124,7 @@ global int              g_rm;           // right margin            &$pagerm
 global symdict_hdl      global_dict;    // global symbol dictionary
 global symdict_hdl      sys_dict;       // global system symbol dictionary
 global mac_dict         macro_dict;     // macro dictionary
-global gtentry          *tag_dict;      // user tag dictionary
+global tag_dict         tags_dict;      // user tag dictionary
 
 global  char            research_file_name[48]; // filename for research
 global  line_number     research_from;  // line no start for research output

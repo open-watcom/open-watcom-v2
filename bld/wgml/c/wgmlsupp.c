@@ -263,8 +263,8 @@ void free_some_mem( void )
     if( ix_ref_dict != NULL ) {
         free_ref_dict( &ix_ref_dict );
     }
-    if( tag_dict != NULL ) {
-        free_tag_dict( &tag_dict );
+    if( tags_dict != NULL ) {
+        free_tag_dict( &tags_dict );
     }
     if( index_dict != NULL ) {
         free_index_dict( &index_dict );

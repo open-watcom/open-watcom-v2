@@ -722,7 +722,7 @@ static  void    init_pass( void )
 
 //      free_dict( &global_dict );      // free dictionaries
 //      free_macro_dict( &macro_dict );
-        free_tag_dict( &tag_dict );
+        free_tag_dict( &tags_dict );
         init_nest_cb();
     } else {
         GlobalFlags.firstpass = 1;
@@ -893,8 +893,8 @@ int main( int argc, char * argv[] )
         print_ref_dict( fn_ref_dict, "FNREF" );
         print_ref_dict( ix_ref_dict, "INDEX" );
 
-        if( tag_dict != NULL ) {
-            print_tag_dict( tag_dict );
+        if( tags_dict != NULL ) {
+            print_tag_dict( tags_dict );
         }
         print_single_funcs_research();
         free_single_funcs_research();

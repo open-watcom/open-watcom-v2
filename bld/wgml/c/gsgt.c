@@ -495,14 +495,14 @@ void    scr_gt( void )
             if( cc != omit ) {          // not all processed error
                xx_err( err_tag_opt_inv );
             }
-            g_tag_entry = add_tag( &tag_dict, g_tagname, macname, tag_flags );  // add to dictionary
+            g_tag_entry = add_tag( &tags_dict, g_tagname, macname, tag_flags );  // add to dictionary
             // if tag_entry is now NULL, error (+ msg) was output in add_tag
 
             if( g_tag_entry != NULL ) {
                 set_overload( g_tag_entry );
             }
         } else {                        // is function change
-            g_tag_entry = change_tag( &tag_dict, g_tagname, macname );
+            g_tag_entry = change_tag( &tags_dict, g_tagname, macname );
         }
     } else {
 
@@ -517,23 +517,23 @@ void    scr_gt( void )
         switch( function ) {
         case f_print :
             if( savetag == '*' ) {
-                print_tag_dict( tag_dict );
+                print_tag_dict( tags_dict );
             } else {
-                print_tag_entry( find_user_tag( &tag_dict, g_tagname ) );
+                print_tag_entry( find_user_tag( &tags_dict, g_tagname ) );
             }
             break;
         case f_delete :
             if( savetag == '*' ) {
-                free_tag_dict( &tag_dict );
+                free_tag_dict( &tags_dict );
             } else {
-                free_tag( &tag_dict, find_user_tag( &tag_dict, g_tagname ) );
+                free_tag( &tags_dict, find_user_tag( &tags_dict, g_tagname ) );
             }
             break;
         case f_off :
             if( savetag == '*' && g_tag_entry != NULL ) {// off for last defined
                 g_tag_entry->tagflags |= tag_off;
             } else {
-                wk = find_user_tag( &tag_dict, g_tagname );
+                wk = find_user_tag( &tags_dict, g_tagname );
                 if( wk != NULL ) {
                     wk->tagflags |= tag_off;
                 }
@@ -543,7 +543,7 @@ void    scr_gt( void )
             if( savetag == '*' && g_tag_entry != NULL ) {// on for last defined
                 g_tag_entry->tagflags |= tag_off;
             } else {
-                wk = find_user_tag( &tag_dict, g_tagname );
+                wk = find_user_tag( &tags_dict, g_tagname );
                 if( wk != NULL ) {
                     wk->tagflags &= ~tag_off;
                 }

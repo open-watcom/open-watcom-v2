@@ -367,14 +367,14 @@ extern  void    link_sym( symdict_hdl dict, symvar * sym );
 
 
 /* gtagdict.c                           */
-extern  gtentry *   add_tag( gtentry * * dict, char const * name, char const * macro, const int flags );
-extern  gtentry *   change_tag( gtentry * * dict, char const * name, char const * macro );
-extern  void        init_tag_dict( gtentry * * dict );
-extern  void        free_tag_dict( gtentry * * dict );
-extern  gtentry *   free_tag( gtentry * * dict, gtentry * ge );
-extern  void        print_tag_dict( gtentry * dict );
-extern  void        print_tag_entry( gtentry * entry );
-extern  gtentry     *find_user_tag( gtentry * * dict, char const * name );
+extern  gtentry     *add_tag( tag_dict *pdict, char const *tagname, char const *macname, int flags );
+extern  gtentry     *change_tag( tag_dict *pdict, char const *tagname, char const *macname );
+extern  void        init_tag_dict( tag_dict *pdict );
+extern  void        free_tag_dict( tag_dict *pdict );
+extern  tag_dict    free_tag( tag_dict *pdict, gtentry *ge );
+extern  void        print_tag_dict( tag_dict dict );
+extern  void        print_tag_entry( gtentry *ge );
+extern  gtentry     *find_user_tag( tag_dict *pdict, char const *tagname );
 
 /* gtxtpool.c                           */
 extern  void                add_single_text_chars_to_pool( text_chars * a_chars );

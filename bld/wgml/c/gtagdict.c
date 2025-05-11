@@ -38,9 +38,9 @@
 /*  init_tag_dict   initialize dictionary pointer                          */
 /***************************************************************************/
 
-void    init_tag_dict( gtentry * * dict )
+void    init_tag_dict( tag_dict *pdict )
 {
-    *dict = NULL;
+    *pdict = NULL;
     return;
 }
 
@@ -50,21 +50,20 @@ void    init_tag_dict( gtentry * * dict )
 /*              if tag already defined error                               */
 /***************************************************************************/
 
-gtentry *add_tag( gtentry **dict, const char *tagname, const char *macname, int flags )
+gtentry *add_tag( tag_dict *pdict, const char *tagname, const char *macname, int flags )
 {
-    gtentry     *   ge;
-    gtentry     *   wk;
+    tag_dict    dict;
+    gtentry     *ge;
 
-    wk = find_user_tag( dict, tagname );
-    if( wk != NULL ) {
+    ge = find_user_tag( pdict, tagname );
+    if( ge != NULL ) {
         xx_source_err_c( err_tag_exist, tagname );
     }
+    dict = mem_alloc( sizeof( *dict ) );
+    dict->next = *pdict;
+    *pdict = dict;
 
-    ge = mem_alloc( sizeof( gtentry ) );
-
-    ge->next = *dict;
-    *dict = ge;
-
+    ge = DICT2GE( dict );
     strcpy( ge->tagname, tagname );
     ge->taglen = strlen( ge->tagname );
     strcpy( ge->macname, macname );
@@ -80,12 +79,12 @@ gtentry *add_tag( gtentry **dict, const char *tagname, const char *macname, int 
 /*  change_tag     change macro to execute in tag entry                    */
 /***************************************************************************/
 
-gtentry *change_tag( gtentry **dict, const char *tagname, const char *macname )
+gtentry *change_tag( tag_dict *pdict, const char *tagname, const char *macname )
 {
     gtentry     *ge = NULL;
 
-    if( *dict != NULL ) {
-        ge = find_user_tag( dict, tagname );
+    if( *pdict != NULL ) {
+        ge = find_user_tag( pdict, tagname );
         if( ge != NULL ) {
            strcpy( ge->macname, macname );
         }
@@ -97,7 +96,7 @@ gtentry *change_tag( gtentry **dict, const char *tagname, const char *macname )
 /***************************************************************************/
 /*  free_att  delete single attribute                                      */
 /***************************************************************************/
-static  void    free_att( gaentry * ga )
+static  void    free_att( gaentry *ga )
 {
     gavalentry  *   vw;
     gavalentry  *   vwn;
@@ -120,35 +119,38 @@ static  void    free_att( gaentry * ga )
 /*            returns previuos entry or null if first deleted              */
 /***************************************************************************/
 
-gtentry     *   free_tag( gtentry * * dict, gtentry * ge )
+tag_dict    free_tag( tag_dict *pdict, gtentry *ge )
 {
-    gtentry     *   wk;
-    gaentry     *   gaw;
-    gaentry     *   gawn;
+    tag_dict    prev_dict;
+    tag_dict    dict;
+    gaentry     *attrib;
 
-
-    if( ge == NULL ) {                  // nothing to delete
-        return( NULL );
-    }
-    if( *dict == ge ) {                 // delete first entry
-        *dict = ge->next;
-        wk = NULL;                      // previous is null
+    /*
+     * it is always call for existing dictionary entry
+     * - call for delete all dictionary entries
+     * - call for just find dictionary entry
+     * not need check for entry existence
+     */
+    dict = *pdict;
+    if( DICT2GE( dict ) == ge ) {              // delete first entry
+        *pdict = dict->next;
+        prev_dict = NULL;               // previous is null
     } else {
-        for( wk = *dict; wk != NULL; wk = wk->next ) {
-            if( wk->next == ge ) {
-                wk->next = ge->next;    // chain update
+        dict = NULL;
+        for( prev_dict = *pdict; prev_dict != NULL; prev_dict = prev_dict->next ) {
+            if( DICT2GE( prev_dict->next ) == ge ) {
+                dict = prev_dict->next;
+                prev_dict->next = prev_dict->next->next;  // chain update
                 break;
             }
         }
     }
-    gaw = ge->attribs;
-    while( gaw != NULL ) {              // delete all attributes
-        gawn = gaw->next;
-        free_att( gaw );
-        gaw = gawn;
+    while( (attrib = DICT2GE( dict )->attribs) != NULL ) {      // delete all attributes
+        DICT2GE( dict )->attribs = attrib->next;
+        free_att( attrib );
     }
-    mem_free( ge );                     // now the entry itself
-    return( wk );                       // return previous entry or NULL
+    mem_free( dict );                   // now the entry itself
+    return( prev_dict );                // return previous entry or NULL
 }
 
 
@@ -156,18 +158,17 @@ gtentry     *   free_tag( gtentry * * dict, gtentry * ge )
 /*  free_tag_dict   free all user tag dictionary entries                   */
 /***************************************************************************/
 
-void    free_tag_dict( gtentry * * dict )
+void    free_tag_dict( tag_dict *pdict )
 {
-    gtentry     *   gtw;
-    gtentry     *   gtwn;
+    tag_dict    dict;
+    tag_dict    next;
 
-    gtw = *dict;
-    while( gtw != NULL ) {
-        gtwn = gtw->next;;
-        free_tag( dict, gtw );
-        gtw = gtwn;
+    dict = *pdict;
+    while( dict != NULL ) {
+        next = dict->next;
+        free_tag( pdict, DICT2GE( dict ) );
+        dict = next;
     }
-    return;
 }
 
 
@@ -176,16 +177,16 @@ void    free_tag_dict( gtentry * * dict )
 /*  returns ptr to tag or NULL if not found                                */
 /***************************************************************************/
 
-gtentry     *find_user_tag( gtentry **dict, const char *tagname )
+gtentry     *find_user_tag( tag_dict *pdict, const char *tagname )
 {
-    gtentry     *wk;
+    tag_dict    dict;
 
-    for( wk = *dict; wk != NULL; wk = wk->next ) {
-        if( stricmp( wk->tagname, tagname ) == 0 ) {
-            break;
+    for( dict = *pdict; dict != NULL; dict = dict->next ) {
+        if( strcmp( DICT2GE( dict )->tagname, tagname ) == 0 ) {
+            return( DICT2GE( dict ) );
         }
     }
-    return( wk );
+    return( NULL );
 }
 
 
@@ -377,15 +378,14 @@ void    print_tag_entry( gtentry * wk )
 /*  print_tag_dict  output all of the user tag dictionary                  */
 /***************************************************************************/
 
-void    print_tag_dict( gtentry * dict )
+void    print_tag_dict( tag_dict dict )
 {
-    gtentry         *   wk;
-    int                 cnt;
+    int         cnt;
 
     cnt = 0;
     out_msg( "\nList of defined User GML tags:\n" );
-    for( wk = dict; wk != NULL; wk = wk->next ) {
-        print_tag_entry( wk );
+    for( ; dict != NULL; dict = dict->next ) {
+        print_tag_entry( DICT2GE( dict ) );
         cnt++;
     }
     out_msg( "\nTotal GML tags defined: %d\n", cnt );

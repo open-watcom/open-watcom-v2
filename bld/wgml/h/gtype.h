@@ -611,6 +611,19 @@ typedef struct gtentry {
     bool                overload;       // user tag has same name as predefined tag
 } gtentry;
 
+#if 0
+typedef struct tagdict {
+    struct tagdict  *next;
+    gtentry         ge;
+} *tag_dict;
+
+#define DICT2GE(x)  (&((x)->ge))
+#else
+typedef struct gtentry  *tag_dict;
+
+#define DICT2GE(x)  ((x))
+#endif
+
 /***************************************************************************/
 /*  condcode  returncode for several conditions during parameterchecking   */
 /*            loosely adapted from wgml 88.1 IBM S/360 ASM code            */

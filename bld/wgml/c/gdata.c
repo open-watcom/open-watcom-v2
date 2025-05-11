@@ -212,7 +212,7 @@ void init_global_vars( void )
     init_dict( &global_dict );
     init_macro_dict( &macro_dict );
     init_sys_dict( &sys_dict );
-    init_tag_dict( &tag_dict );
+    init_tag_dict( &tags_dict );
 
     init_ref_dict( &fig_ref_dict );
     init_ref_dict( &fn_ref_dict );
