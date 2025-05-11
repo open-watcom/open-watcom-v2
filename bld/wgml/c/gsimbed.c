@@ -46,13 +46,13 @@
 /* IMBED suspends  processing of the  current input file,   processes the  */
 /* specified input file, and resumes processing of the suspended file.     */
 /*                                                                         */
-/*      旼컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴커       */
+/*      +-------+--------------------------------------------------+       */
 /*      |       |                                                  |       */
 /*      |       |    Filename                < . <n1 <n2>>>        |       */
 /*      |  .IM  |                     <args>                       |       */
 /*      |       |    Filename(member)        < . <label>>          |       */
 /*      |       |                                                  |       */
-/*      읕컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴켸       */
+/*      +-------+--------------------------------------------------+       */
 /*                                                                         */
 /* This control word does not cause a break.   The operands are identical  */
 /* to those  for the APPEND  control word;   see the .AP  description for  */
@@ -75,13 +75,13 @@
 /* APPEND  terminates processing  of the  current input  file and  starts  */
 /* processing of the specified input file.                                 */
 /*                                                                         */
-/*      旼컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴커       */
+/*      +-------+--------------------------------------------------+       */
 /*      |       |                                                  |       */
 /*      |       |    Filename                < . <n1 <n2>>>        |       */
 /*      |  .AP  |                     <args>                       |       */
 /*      |       |    Filename(member)        < . <label>>          |       */
 /*      |       |                                                  |       */
-/*      읕컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴켸       */
+/*      +-------+--------------------------------------------------+       */
 /*                                                                         */
 /*                                                                         */
 /* Filename<(member)>:  If no operands other than the filename are speci-  */

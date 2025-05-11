@@ -39,11 +39,11 @@
 /* LITERAL causes  following input  records to be  treated as  text lines  */
 /* even if they begin with the control word indicator.                     */
 /*                                                                         */
-/*      旼컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴커       */
+/*      +-------+--------------------------------------------------+       */
 /*      |       |                                                  |       */
 /*      |  .LI  |    <1|n|ON|OFF|line>                             |       */
 /*      |       |                                                  |       */
-/*      읕컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴켸       */
+/*      +-------+--------------------------------------------------+       */
 /*                                                                         */
 /* This control word does not cause a break.                               */
 /*                                                                         */

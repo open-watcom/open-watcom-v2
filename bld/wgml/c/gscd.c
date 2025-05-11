@@ -37,13 +37,13 @@
 /* area is to be formatted, and optionally the starting position of each  */
 /* relative to the beginning of the output line.                          */
 /*                                                                        */
-/*       旼컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴커     */
+/*       +-------+--------------------------------------------------+     */
 /*       |       |                                                  |     */
 /*       |       | SET <n <gmin <gmax>>>                            |     */
 /*       |  .CD  |                                                  |     */
 /*       |       | <n <h1 <h2 ... h9>>>                             |     */
 /*       |       |                                                  |     */
-/*       읕컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴켸     */
+/*       +-------+--------------------------------------------------+     */
 /*                                                                        */
 /* SET <n <gmin <gmax>>>: SCRIPT calculates the Column Length (.CL)       */
 /*    value and the starting position of each column relative to the Page */

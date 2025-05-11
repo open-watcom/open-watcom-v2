@@ -40,11 +40,11 @@
 /* DEFINE CHARACTER defines  characters of special meaning  when found in  */
 /* input and produced as output.                                           */
 /*                                                                         */
-/*      旼컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴커       */
+/*      +-------+--------------------------------------------------+       */
 /*      |       |                                                  |       */
 /*      |  .DC  |    option <char ...|OFF>                         |       */
 /*      |       |                                                  |       */
-/*      읕컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴켸       */
+/*      +-------+--------------------------------------------------+       */
 /*                                                                         */
 /* ! only CW, GML and (STOP) are used in OW documentation                  */
 /* ! LI and TB were implemented for use in testing                         */
@@ -225,11 +225,11 @@
 /* nize as  a "logical line  end" so that  multiple control words  may be  */
 /* entered on one physical input line.                                     */
 /*                                                                         */
-/*      旼컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴커       */
+/*      +-------+--------------------------------------------------+       */
 /*      |       |                                                  |       */
 /*      |  .CW  |    <;|character>                                 |       */
 /*      |       |                                                  |       */
-/*      읕컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴켸       */
+/*      +-------+--------------------------------------------------+       */
 /*                                                                         */
 /* This control word does not cause a break.  All subsequent control-word  */
 /* input lines  are examined for the  control word separator.    If found  */

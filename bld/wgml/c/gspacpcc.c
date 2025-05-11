@@ -67,13 +67,13 @@ static void do_output( bool do_pa )
 /**************************************************************************/
 /* PAGE EJECT positions output to the top of the next physical page.      */
 /*                                                                        */
-/*      旼컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴커      */
+/*      +-------+--------------------------------------------------+      */
 /*      |       |                                                  |      */
 /*      |       |    <n|+n|-n <m|+m|-m>>                           |      */
 /*      |  .PA  |    <NOSTART>                                     |      */
 /*      |       |    <ODD|EVEN>                                    |      */
 /*      |       |                                                  |      */
-/*      읕컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴켸      */
+/*      +-------+--------------------------------------------------+      */
 /*                                                                        */
 /* This control word causes a break.  When it is encountered, the rest of */
 /* the current page is skipped, any saved footnote lines are printed, the */
@@ -186,13 +186,13 @@ void scr_pa( void )
 /* if insufficient  lines remain in the  current column (or page,   if in  */
 /* single-column mode).                                                    */
 /*                                                                         */
-/*      旼컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴커       */
+/*      +-------+--------------------------------------------------+       */
 /*      |       |                                                  |       */
 /*      |       |    <v>                                           |       */
 /*      |  .CP  |                                                  |       */
 /*      |       |    <BEGIN|INLINE|END <0|w>>                      |       */
 /*      |       |                                                  |       */
-/*      읕컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴켸       */
+/*      +-------+--------------------------------------------------+       */
 /*                                                                         */
 /* The operands of .CP are identical to those of .CC; see the description  */
 /* of .CC for details.   The only  difference is that .CP always operates  */
@@ -210,13 +210,13 @@ void scr_pa( void )
 /* insufficient  lines remain  in the  current  column (or  page,  if  in  */
 /* single-column mode).                                                    */
 /*                                                                         */
-/*      旼컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴커       */
+/*      +-------+--------------------------------------------------+       */
 /*      |       |                                                  |       */
 /*      |       |    <v>                                           |       */
 /*      |  .CC  |                                                  |       */
 /*      |       |    <BEGIN|INLINE|END <0|w>>                      |       */
 /*      |       |                                                  |       */
-/*      읕컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴켸       */
+/*      +-------+--------------------------------------------------+       */
 /*                                                                         */
 /* If no operand is specified,  this control  word will cause a break and  */
 /* then,  if the output is not already positioned at the top of a column,  */

@@ -1092,7 +1092,7 @@ void ob_oc( const char *text )
 
 void ob_flush( void )
 {
-    if( !out_file_fp )
+    if( out_file_fp == NULL )
         return;     /* Bail in case of fatal errors further up. */
 
     if( fwrite( buffout.text, sizeof( uint8_t ), buffout.current, out_file_fp ) < buffout.current ) {
@@ -1354,7 +1354,6 @@ void ob_setup( void )
     /* Create (truncate) the output file. */
 
     out_file_fp = fopen( out_file, "wb" );
-
     if( out_file_fp == NULL ) {
         xx_simple_err_c( err_open_out_file, out_file );
     }

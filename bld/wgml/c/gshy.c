@@ -37,7 +37,7 @@
 /* the level of automatic hyphenation required and to manipulate the        */
 /* Hyphenation Exception Dictionary.                                        */
 /*                                                                          */
-/*       旼컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴커       */
+/*       +-------+--------------------------------------------------+       */
 /*       |       |                                                  |       */
 /*       |       | <ON|USER|OFF|SUP>                                |       */
 /*       |       | <LADDER <3|n|+n|-n>>                             |       */
@@ -51,7 +51,7 @@
 /*       |       | <DUMP|PURGE>                                     |       */
 /*       |       | <TEST word>                                      |       */
 /*       |       |                                                  |       */
-/*       읕컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴켸       */
+/*       +-------+--------------------------------------------------+       */
 /*                                                                          */
 /* The Levels of Hyphenation                                                */
 /*                                                                          */

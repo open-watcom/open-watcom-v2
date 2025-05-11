@@ -100,11 +100,11 @@ static FILE     *open_pu_file( int n )
 /* PUT WORKFILE writes a line of  information (control or text)  into the  */
 /* specified file.                                                         */
 /*                                                                         */
-/*      旼컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴커       */
+/*      +-------+--------------------------------------------------+       */
 /*      |       |                                                  |       */
 /*      |  .PU  |    <1|n> <line>                                  |       */
 /*      |       |                                                  |       */
-/*      읕컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴켸       */
+/*      +-------+--------------------------------------------------+       */
 /*                                                                         */
 /* This control word does not cause a break.  The first operand specifies  */
 /* which workfile is to be used (from 1 to 9);  if not specified,  "1" is  */

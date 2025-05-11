@@ -53,14 +53,14 @@ void    init_tag_att( void )
 /***************************************************************************/
 /* GML TAG defines a GML tag.                                              */
 /*                                                                         */
-/*      ����������������������������������������������������������Ŀ       */
+/*      +-------+--------------------------------------------------+       */
 /*      |       |                                                  |       */
 /*      |  .GT  |    tagname ADD macro <tagopts>                   |       */
 /*      |       |    tagname CHAnge macro                          |       */
 /*      |       |    tagname OFF|ON                                |       */
 /*      |       |    tagname|* DELete|PRint                        |       */
 /*      |       |                                                  |       */
-/*      ������������������������������������������������������������       */
+/*      +-------+--------------------------------------------------+       */
 /*                                                                         */
 /* The first  form of this  control word defines the  name of a  GML tag,  */
 /* identifies the macro that is to be invoked when the tag is encountered  */

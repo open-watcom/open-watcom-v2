@@ -46,11 +46,11 @@
 /* any) or the next physical input line (if none) the specified number of */
 /* times.                                                                 */
 /*                                                                        */
-/*      旼컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴커      */
+/*      +-------+--------------------------------------------------+      */
 /*      |       |                                                  |      */
 /*      |  .PE  |    <1|n|ON|OFF|DELETE>                           |      */
 /*      |       |                                                  |      */
-/*      읕컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴켸      */
+/*      +-------+--------------------------------------------------+      */
 /*                                                                        */
 /* This control  word does not  cause a  break,  although the  line being */
 /* performed may.    Perform provides a  primitive facility  for one-line */

@@ -38,13 +38,13 @@
 /* TRANSLATE ON INPUT allows the user  to specify an escape character and */
 /* a translate table to be used on input lines.                           */
 /*                                                                        */
-/*      旼컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴커      */
+/*      +-------+--------------------------------------------------+      */
 /*      |       |                                                  |      */
 /*      |       |    <SET <char>>                                  |      */
 /*      |  .TI  |    <s <s|t>>                                     |      */
 /*      |       |    <<s1 t1> <s2 t2> ...>                         |      */
 /*      |       |                                                  |      */
-/*      읕컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴켸      */
+/*      +-------+--------------------------------------------------+      */
 /*                                                                        */
 /* This control word does not cause a break.                              */
 /*                                                                        */
@@ -85,12 +85,12 @@
 /* TRANSLATE allows the user to specify a  translate table to be used for */
 /* output.                                                                */
 /*                                                                        */
-/*      旼컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴커      */
+/*      +-------+--------------------------------------------------+      */
 /*      |       |                                                  |      */
 /*      |  .TR  |    <<s1 t1> <s2 t2> ...>                         |      */
 /*      |       |    <s <s|t>>                                     |      */
 /*      |       |                                                  |      */
-/*      읕컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴켸      */
+/*      +-------+--------------------------------------------------+      */
 /*                                                                        */
 /* This control word does not cause a break.  Unless the TRANSLATE option */
 /* was specified when SCRIPT was invoked, no output translation will take */

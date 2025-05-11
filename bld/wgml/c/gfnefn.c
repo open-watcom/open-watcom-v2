@@ -42,7 +42,7 @@ static  group_type      sav_group_type;         // save prior group type
 static  ju_enum         justify_save;           // for ProcFlags.justify
 
 /***************************************************************************/
-/*      :FN  [id=’id-name’].                                               */
+/*      :FN  [id='id-name'].                                               */
 /*           <paragraph elements>                                          */
 /*           <basic document elements>                                     */
 /* The footnote tag causes a note to be placed at the bottom of the page.  */

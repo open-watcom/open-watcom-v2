@@ -59,13 +59,13 @@
 /* INDEX builds  an index structure  with up  to three levels  of headers */
 /* with references, or prints the index structure.                        */
 /*                                                                        */
-/*      旼컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴커      */
+/*      +-------+--------------------------------------------------+      */
 /*      |       |                                                  |      */
 /*      |       |    <1|n> 's1' <'s2' <'s3'>> <<.> <ref>>          |      */
 /*      |  .IX  |                                                  |      */
 /*      |       |    <1|n> . <DUMP|PURGE>                          |      */
 /*      |       |                                                  |      */
-/*      읕컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴켸      */
+/*      +-------+--------------------------------------------------+      */
 /*                                                                        */
 /* This control word does not cause a break.                              */
 /*                                                                        */

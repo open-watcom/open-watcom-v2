@@ -229,11 +229,11 @@ static void attach_eol( void )
 /* printed without  justification (if on),  and  a new output line  to be */
 /* begun.                                                                 */
 /*                                                                        */
-/*      旼컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴커      */
+/*      +-------+--------------------------------------------------+      */
 /*      |       |                                                  |      */
 /*      |  .BR  |    <line>                                        |      */
 /*      |       |                                                  |      */
-/*      읕컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴켸      */
+/*      +-------+--------------------------------------------------+      */
 /*                                                                        */
 /* The optional  "line" operand starts one  blank after the  control word */
 /* and may be text or another control word.                               */

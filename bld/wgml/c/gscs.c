@@ -37,13 +37,13 @@
 /* and/or control words that will only be included during SCRIPT          */
 /* processing under the specified condition.                              */
 /*                                                                        */
-/*       旼컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴커     */
+/*       +-------+--------------------------------------------------+     */
 /*       |       |                                                  |     */
 /*       |       | <n> <ON|OFF>                                     |     */
 /*       |  .CS  |                                                  |     */
 /*       |       | <n> <INCLUDE|IGNORE>                             |     */
 /*       |       |                                                  |     */
-/*       읕컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴켸     */
+/*       +-------+--------------------------------------------------+     */
 /*                                                                        */
 /* <ON|OFF>: ON defines the start of a conditional section that will      */
 /*    never be processed by SCRIPT, and OFF defines the end of that       */

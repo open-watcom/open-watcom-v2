@@ -40,13 +40,13 @@
 /* TAB defines tab-stop positions for subsequent output lines, or a user-  */
 /* specified character to be recognized as a TAB (hex code 05) in addition */
 /* to the TAB key on the terminal.                                         */
-/*       旼컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴커      */
+/*       +-----+----------------------------------------------------+      */
 /*       |     |                                                    |      */
 /*       |     | <n1 n2 n3 ...>                                     |      */
 /*       | .TB | <<'string'|char/>n<L|R|C|'char'> ...>              |      */
 /*       |     | <SET <char>>                                       |      */
 /*       |     |                                                    |      */
-/*       읕컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴켸      */
+/*       +-----+----------------------------------------------------+      */
 /*                                                                         */
 /* This control word causes a break.                                       */
 /*                                                                         */

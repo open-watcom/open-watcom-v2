@@ -39,11 +39,11 @@
 /* to be placed onto the output line immediately following the last char- */
 /* acter already on the output line, with no intervening blank.           */
 /*                                                                        */
-/*      旼컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴커      */
+/*      +-------+--------------------------------------------------+      */
 /*      |       |                                                  |      */
 /*      |  .CT  |    <line>                                        |      */
 /*      |       |                                                  |      */
-/*      읕컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴켸      */
+/*      +-------+--------------------------------------------------+      */
 /*                                                                        */
 /* When concatenation is in effect,  each new input text record is joined */
 /* to previous  text with an intervening  blank.   Text that occurs  in a */

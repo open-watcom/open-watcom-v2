@@ -365,13 +365,13 @@ void    free_lines( inp_line * line )
 /* ".name" as  a user-defined control word  or as an Execute  Macro (.EM)  */
 /* operand.                                                                */
 /*                                                                         */
-/*      旼컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴커       */
+/*      +-------+--------------------------------------------------+       */
 /*      |       |                                                  |       */
 /*      |       |    name /line1/.../linen</>                      |       */
 /*      |  .DM  |    name <BEGIN|END>                              |       */
 /*      |       |    name DELETE                                   |       */
 /*      |       |                                                  |       */
-/*      읕컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴켸       */
+/*      +-------+--------------------------------------------------+       */
 /*                                                                         */
 /* Such user macros may be used for common sequences of control words and  */
 /* text.   Keyword and positional parameters (&*, &*0, &*1, etc.)  may be  */
@@ -646,11 +646,11 @@ void    scr_dm( void )
 /* currently being processed  and resumption of the  higher-level file or  */
 /* macro (if any) or termination of processing (if none).                  */
 /*                                                                         */
-/*     +----------------------------------------------------------+        */
+/*     +-------+--------------------------------------------------+        */
 /*     |       |                                                  |        */
 /*     |  .ME  |    <line>                                        |        */
 /*     |       |                                                  |        */
-/*     +----------------------------------------------------------+        */
+/*     +-------+--------------------------------------------------+        */
 /*                                                                         */
 /* This control word does  not cause a break.   If an  operand "line" has  */
 /* been specified,  it will be processed  as an input line immediately on  */
@@ -712,15 +712,15 @@ void    scr_me( void )
 /* treats the operand line as a  macro,  even if Macro Substitution (.MS)  */
 /* is OFF.                                                                 */
 /*                                                                         */
-/*      旼컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴커       */
+/*      +-------+--------------------------------------------------+       */
 /*      |       |                                                  |       */
 /*      |  .EM  |    <YES|NO|OFFNO>  !not implemented              |       */
 /*      |       |                                                  |       */
-/*      |컴컴컴�|컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴|       */
+/*      +-------+--------------------------------------------------+       */
 /*      |       |                                                  |       */
 /*      |  .EM  |    .macro <args>                                 |       */
 /*      |       |                                                  |       */
-/*      읕컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴켸       */
+/*      +-------+--------------------------------------------------+       */
 /*                                                                         */
 /* Neither form of this control word causes a break.                       */
 /*                                                                         */

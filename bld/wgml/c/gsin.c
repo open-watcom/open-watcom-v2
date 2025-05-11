@@ -47,11 +47,11 @@ static  int32_t round_indent( su * work )
 /* INDENT causes  text to  be indented  with respect  to the  left and/or  */
 /* right ends of the output line.                                          */
 /*                                                                         */
-/*      旼컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴커       */
+/*      +-------+--------------------------------------------------+       */
 /*      |       |                                                  |       */
 /*      |  .IN  |    <0|h|+h|-h|*> <0|i|+i|-i|*>                   |       */
 /*      |       |                                                  |       */
-/*      읕컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴켸       */
+/*      +-------+--------------------------------------------------+       */
 /*                                                                         */
 /* These indents remain in effect for all subsequent output lines,         */
 /*   Including new paragraphs, new footnotes, and new pages.   It remains  */

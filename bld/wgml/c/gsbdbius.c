@@ -39,11 +39,11 @@
 /**************************************************************************/
 /* BOLD boldfaces the specified number of input text lines.               */
 /*                                                                        */
-/*      旼컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴커      */
+/*      +-------+--------------------------------------------------+      */
 /*      |       |                                                  |      */
 /*      |  .BD  |    <1|n|ON|OFF|line>                             |      */
 /*      |       |                                                  |      */
-/*      읕컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴켸      */
+/*      +-------+--------------------------------------------------+      */
 /*                                                                        */
 /*                                                                        */
 /* n:   The next "n" input text lines are to be made Bold by overstriking */
@@ -85,11 +85,11 @@
 /* BOLD ITALIC overstrikes an input line with itself and underscores it   */
 /* for a boldface italic effect.                                          */
 /*                                                                        */
-/*      旼컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴커      */
+/*      +-------+--------------------------------------------------+      */
 /*      |       |                                                  |      */
 /*      |  .BI  |    <1|n|ON|OFF|line>                             |      */
 /*      |       |                                                  |      */
-/*      읕컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴켸      */
+/*      +-------+--------------------------------------------------+      */
 /*                                                                        */
 /* This control word does not cause a break. The operands are identical   */
 /* to those for the .BD control word.                                     */
@@ -105,11 +105,11 @@
 /**************************************************************************/
 /* UNDERSCORE underscores text in the specified number of input lines.    */
 /*                                                                        */
-/*      旼컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴커      */
+/*      +-------+--------------------------------------------------+      */
 /*      |       |                                                  |      */
 /*      |  .US  |    <1|n|ON|OFF|line>                             |      */
 /*      |       |                                                  |      */
-/*      읕컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴켸      */
+/*      +-------+--------------------------------------------------+      */
 /*                                                                        */
 /* This control  word does not  cause a  break.   The operands  and other */
 /* considerations are identical to those for the other control words that */

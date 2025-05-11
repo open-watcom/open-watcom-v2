@@ -116,11 +116,11 @@ static  condcode    test_duplicate( char *name, line_number lineno )
 /**************************************************************************/
 /* ... (SET LABEL) defines an input line that has a "label".              */
 /*                                                                        */
-/*      旼컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴커      */
+/*      +-------+--------------------------------------------------+      */
 /*      |       |                                                  |      */
 /*      |  ...  |    <label|n>  <line>                             |      */
 /*      |       |                                                  |      */
-/*      읕컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴켸      */
+/*      +-------+--------------------------------------------------+      */
 /*                                                                        */
 /* A blank is not required between the ... and the label.                 */
 /*                                                                        */
@@ -259,11 +259,11 @@ void    scr_label( void )
 /* GOTO transfers processing  to the specified input line  in the current  */
 /* file or macro.                                                          */
 /*                                                                         */
-/*      旼컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴커       */
+/*      +-------+--------------------------------------------------+       */
 /*      |       |                                                  |       */
 /*      |  .GO  |    <label|n|+n|-n>                               |       */
 /*      |       |                                                  |       */
-/*      읕컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴켸       */
+/*      +-------+--------------------------------------------------+       */
 /*                                                                         */
 /*                                                                         */
 /* <label>:   The specified  label  will be  converted  to uppercase  and  */

@@ -99,7 +99,7 @@ static char * get_ref_attributes( void )
 }
 
 /***************************************************************************/
-/*      :FIGREF refid=’id-name’                                            */
+/*      :FIGREF refid='id-name'                                            */
 /*              [page=yes                                                  */
 /*                    no].                                                 */
 /* This tag causes a figure reference to be generated. The text "Figure"   */
@@ -335,7 +335,7 @@ void gml_hdref( const gmltag * entry )
 }
 
 /***************************************************************************/
-/*      :FNREF refid=’id-name’                                             */
+/*      :FNREF refid='id-name'                                             */
 /* This tag causes a footnote reference to be generated. The number of the */
 /* referenced footnote will be generated at the point where the :fnref tag */
 /* is specified. The footnote reference tag is a paragraph element, and is */

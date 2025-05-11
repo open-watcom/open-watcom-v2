@@ -36,11 +36,11 @@
 /* NULL LINE is generated internally by SCRIPT each time a null input     */
 /* line is encountered.                                                   */
 /*                                                                        */
-/*      旼컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴커      */
+/*      +-------+--------------------------------------------------+      */
 /*      |       |                                                  |      */
 /*      |  .NL  |                                                  |      */
 /*      |       |                                                  |      */
-/*      읕컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴켸      */
+/*      +-------+--------------------------------------------------+      */
 /*                                                                        */
 /* This control word does not cause a break. Any operands specified will  */
 /* be ignored. Any pending input continuation will be cleared if the      */

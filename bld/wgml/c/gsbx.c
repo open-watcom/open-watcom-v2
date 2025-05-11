@@ -53,14 +53,14 @@
 /* BOX generates the horizontal lines and initiates the vertical lines of */
 /* a box.                                                                 */
 /*                                                                        */
-/* 旼컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴커           */
+/* +-----+----------------------------------------------------+           */
 /* |     |                                                    |           */
 /* |     | <h1 </> ... hn>                                    |           */
 /* | .BX | <NEW|ON|OFF|SET> <h1 </> ... hn>                   |           */
 /* |     | <CANCEL>                                           |           */
 /* |     | <CHAR name>                                        |           */
 /* |     |                                                    |           */
-/* 읕컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴켸           */
+/* +-----+----------------------------------------------------+           */
 /*                                                                        */
 /* SCRIPT generates a box by constructing line segments through character */
 /* positions or "cells".                                                  */

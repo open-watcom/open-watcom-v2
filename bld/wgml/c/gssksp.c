@@ -124,11 +124,11 @@ static void sksp_common( void )
 /**************************************************************************/
 /* SKIP generates the specified number of blank lines.                    */
 /*                                                                        */
-/*      旼컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴커      */
+/*      +-------+--------------------------------------------------+      */
 /*      |       |                                                  |      */
 /*      |  .SK  |    <1|v>  <A>  <C>                               |      */
 /*      |       |                                                  |      */
-/*      읕컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴켸      */
+/*      +-------+--------------------------------------------------+      */
 /*                                                                        */
 /* This control word causes a break.   SKIPs  that occur at the top of an */
 /* output column or page will not be printed;  this includes SKIPs at the */
@@ -199,11 +199,11 @@ void    scr_sk( void )
 /***************************************************************************/
 /* SPACE generates the specified number of blank output lines.             */
 /*                                                                         */
-/*      旼컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴커       */
+/*      +-------+--------------------------------------------------+       */
 /*      |       |                                                  |       */
 /*      |  .SP  | <1|v> <A> <C>                                    |       */
 /*      |       |                                                  |       */
-/*      읕컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴켸       */
+/*      +-------+--------------------------------------------------+       */
 /*                                                                         */
 /* This control word causes a break. The operands and the results are      */
 /* identical to those for the SKIP (.SK) control word with the exception   */

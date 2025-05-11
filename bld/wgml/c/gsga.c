@@ -41,11 +41,11 @@
 /* control word are needed to define the  list of values that this attri-  */
 /* bute accepts.                                                           */
 /*                                                                         */
-/*      旼컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴커       */
+/*      +-------+--------------------------------------------------+       */
 /*      |       |                                                  |       */
 /*      |  .GA  |    tagname|*  attname|*  <opA>  <opV>            |       */
 /*      |       |                                                  |       */
-/*      읕컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴켸       */
+/*      +-------+--------------------------------------------------+       */
 /*                                                                         */
 /* This control word defines an attribute of  a GML tagname that has been  */
 /* previously  defined by  the GML  Tag  (GT)  control  word.   (See  the  */

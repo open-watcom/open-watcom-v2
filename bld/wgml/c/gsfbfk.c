@@ -297,13 +297,13 @@ static char *get_params( const char *scw_name )
 /* FLOATING BLOCK allows the user to create an "in-storage" block of text */
 /* that will not be printed until the user chooses to print it.           */
 /*                                                                        */
-/*      旼컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴커      */
+/*      +-------+--------------------------------------------------+      */
 /*      |       |                                                  |      */
 /*      |       | <BEGIN|END <0|w>>                                |      */
 /*      |  .FB  |                                                  |      */
 /*      |       | <DUMP <n>>                                       |      */
 /*      |       |                                                  |      */
-/*      읕컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴켸      */
+/*      +-------+--------------------------------------------------+      */
 /*                                                                        */
 /* <BEGIN|END <0|w>>: When the ".FB BEGIN" control word is encountered,   */
 /*    the values of all relevant print control variables are saved and    */
@@ -407,13 +407,13 @@ void scr_fb( void )
 /* print together, either immediately or at the top of the next column    */
 /* (or page, if in single-column mode).                                   */
 /*                                                                        */
-/*      旼컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴커      */
+/*      +-------+--------------------------------------------------+      */
 /*      |       |                                                  |      */
 /*      |       | <BEGIN|END <0|w>>                                |      */
 /*      |  .FK  |                                                  |      */
 /*      |       | <DUMP <n>>                                       |      */
 /*      |       |                                                  |      */
-/*      읕컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴켸      */
+/*      +-------+--------------------------------------------------+      */
 /*                                                                        */
 /* <BEGIN|END <0|w>>: These operands are equivalent to those for the .CC  */
 /*    control word, with the exception that if the block will not fit in  */

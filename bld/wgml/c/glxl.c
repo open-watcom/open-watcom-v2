@@ -117,7 +117,7 @@ const   lay_att     ul_att[13] =
 /*by the current line spacing (see "Vertical Space Unit" on page 77 for         */
 /*more information). The resulting amount of space is skipped before            */
 /*the definition list. The pre-skip will be merged with the previous            */
-/*document entityٿs post-skip value. If a pre-skip occurs at the               */
+/*document entity's post-skip value. If a pre-skip occurs at the               */
 /*beginning of an output page, the pre-skip value has no effect.                */
 /*                                                                              */
 /*skip This attribute accepts vertical space units. A zero value means that     */

@@ -473,13 +473,13 @@ static void process_fo_ju( bool both , char *cwcurr )
 /****************************************************************************/
 /* FORMAT combines the effect of Concatenate and Justify.                   */
 /*                                                                          */
-/*      旼컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴커        */
+/*      +-------+--------------------------------------------------+        */
 /*      |       |                                                  |        */
 /*      |       |    <ON|OFF                                       |        */
 /*      |  .FO  |     Left|Right|Centre|                           |        */
 /*      |       |     INSIDE|OUTSIDE|HALF>                         |        */
 /*      |       |                                                  |        */
-/*      읕컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴켸        */
+/*      +-------+--------------------------------------------------+        */
 /*                                                                          */
 /* This control word creates a break.  The "OFF" operand is equivalent to   */
 /* the control words Concatenate OFF and Justify OFF.  An omitted operand   */
@@ -493,11 +493,11 @@ static void process_fo_ju( bool both , char *cwcurr )
 /* concatenating input lines and truncating  at the nearest word boundary  */
 /* to fit on the output line.                                              */
 /*                                                                         */
-/*      旼컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴커       */
+/*      +-------+--------------------------------------------------+       */
 /*      |       |                                                  |       */
 /*      |  .CO  |    <ON|OFF>                                      |       */
 /*      |       |                                                  |       */
-/*      읕컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴켸       */
+/*      +-------+--------------------------------------------------+       */
 /*                                                                         */
 /*                                                                         */
 /* ON:  Output lines will be created by adding words from the input lines  */
@@ -524,13 +524,13 @@ static void process_fo_ju( bool both , char *cwcurr )
 /* JUSTIFY causes output lines to be padded with inter-word blanks to the   */
 /* right margin.                                                            */
 /*                                                                          */
-/*      旼컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴커        */
+/*      +-------+--------------------------------------------------+        */
 /*      |       |                                                  |        */
 /*      |       |    <ON|HALF|OFF|                                 |        */
 /*      |  .JU  |     Left|Right|Centre|                           |        */
 /*      |       |     INSIDE|OUTSIDE>                              |        */
 /*      |       |                                                  |        */
-/*      읕컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴켸        */
+/*      +-------+--------------------------------------------------+        */
 /*                                                                          */
 /*                                                                          */
 /* OFF:  suppresses the  justification process.   If Concatenate  is OFF,   */
