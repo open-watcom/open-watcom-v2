@@ -276,7 +276,22 @@ static void gml_ixxx_common( const gmltag * entry, int hx_lvl )
     if( hx_lvl > 0 ) {          // not for IREF, take existing text, if any, as-is
         while( *p == '\0' ) {   // we need a text line for :Ix :IHx
             get_line( true );
-            p = buff2;
+            /*******************************************************/
+            /* buff2 must be restored if it is to be reprocessed   */
+            /* so that any symbol substitutions will reflect any   */
+            /* changes made by the tag calling it                  */
+            /*******************************************************/
+            scan_start = buff2;
+            scan_stop  = buff2 + buff2_lg;
+            if( (*scan_start == SCR_char)           // cw found: error
+              || (*scan_start == GML_char)          // tag found: error
+              || (input_cbs->fmflags & II_eof) ) {  // EOF found: error
+                xx_err( err_text_not_tag_cw );
+            } else {
+                process_line();
+                p = scan_start; // new line is part of current tag
+                continue;
+            }
         }
         SkipSpaces( p );        // step over spaces
     }
@@ -288,9 +303,12 @@ static void gml_ixxx_common( const gmltag * entry, int hx_lvl )
     txt = p;
     txtlen = strlen( txt );
     if( txt[txtlen - 1] == CONT_char ) {
+        txt[txtlen - 1] = '\0';
         txtlen--;
     }
-    intrans( txt, strlen( txt ) + 1, g_curr_font );
+    if( txt[txtlen - 1] != in_esc ) {
+        intrans( txt, strlen( txt ) + 1, g_curr_font );
+    }
     for( ; txtlen > 0; txtlen-- ) { // back off trailing spaces
         if( txt[txtlen - 1] != ' ' ) {
             break;

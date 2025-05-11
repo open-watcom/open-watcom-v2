@@ -236,9 +236,9 @@ void init_global_vars( void )
     pgnum_style[4]      = h_style;
 
     g_tagname[0]        = '*';          // last defined GML tag name none
-    g_tag_entry         = NULL;         // ... entry in tag_dict
+    g_tag_entry         = NULL;         // ... entry in tags_dict
     g_attname[0]        = '*';          // last defined GML attribute none
-    g_att_entry         = NULL;         // ... entry in tag_dict
+    g_att_entry         = NULL;         // ... entry in tags_dict
 
     research_file_name[0] = '\0';
     research_from         = 0;

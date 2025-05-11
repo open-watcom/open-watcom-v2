@@ -70,7 +70,6 @@ gtentry *add_tag( tag_dict *pdict, const char *tagname, const char *macname, int
     ge->tagflags = flags;
     ge->attribs = NULL;
     ge->usecount = 0;
-
     return( ge );
 }
 
@@ -98,8 +97,8 @@ gtentry *change_tag( tag_dict *pdict, const char *tagname, const char *macname )
 /***************************************************************************/
 static  void    free_att( gaentry *ga )
 {
-    gavalentry  *   vw;
-    gavalentry  *   vwn;
+    gavalentry  *vw;
+    gavalentry  *vwn;
 
     vw = ga->vals;
     while( vw != NULL ) {

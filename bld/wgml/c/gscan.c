@@ -909,13 +909,13 @@ void    scan_line( void )
 /*  return ptr to entry if found, else NULL                                */
 /***************************************************************************/
 
-const gmltag *find_sys_tag( char *token, unsigned toklen )
+const gmltag *find_sys_tag( const char *tagname, unsigned taglen )
 {
     int k;
 
     for( k = 0; k < GML_TAGMAX; ++k ) {
-        if( toklen == gml_tags[k].taglen ) {
-            if( stricmp( gml_tags[k].tagname, token ) == 0 ) {
+        if( taglen == gml_tags[k].taglen ) {
+            if( strcmp( gml_tags[k].tagname, tagname ) == 0 ) {
                 return( &gml_tags[k] );
             }
         }
@@ -930,13 +930,13 @@ const gmltag *find_sys_tag( char *token, unsigned toklen )
 /*  return ptr to entry if found, else NULL                                */
 /***************************************************************************/
 
-const gmltag *find_lay_tag( char *token, unsigned toklen )
+const gmltag *find_lay_tag( const char *tagname, unsigned taglen )
 {
     int k;
 
     for( k = 0; k < LAY_TAGMAX; ++k ) {
-        if( toklen == lay_tags[k].taglen ) {
-            if( stricmp( lay_tags[k].tagname, token ) == 0 ) {
+        if( taglen == lay_tags[k].taglen ) {
+            if( strcmp( lay_tags[k].tagname, tagname ) == 0 ) {
                 return( &lay_tags[k] );
             }
         }

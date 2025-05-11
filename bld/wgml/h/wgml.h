@@ -293,9 +293,9 @@ extern  void        eoc_bx_box( void );
 
 
 /* gscan.c                              */
-extern const gmltag *find_lay_tag( char * token, unsigned toklen );
-extern const gmltag *find_sys_tag( char * token, unsigned toklen );
-extern char         *get_text_line( char * p );
+extern const gmltag *find_lay_tag( const char *tagname, unsigned taglen );
+extern const gmltag *find_sys_tag( const char *tagname, unsigned taglen );
+extern char         *get_text_line( char *p );
 extern bool         is_ip_tag( e_tags offset );
 extern void         set_overload( gtentry * in_gt );
 extern void         scan_line( void );
