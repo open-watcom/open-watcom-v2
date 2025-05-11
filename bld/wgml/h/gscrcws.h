@@ -89,8 +89,8 @@
   picks( hm, scr_dummy, cw_break+cw_o_t    )// heading margin
   picks( hn, scr_dummy, 0                  )// head note
   picks( hs, scr_dummy, cw_break+cw_o_t    )// heading space
-  picks( hw, scr_hy,    0                  )// hyphenate word
-  picks( hy, scr_dummy, 0                  )// hyphenate
+  picks( hw, scr_dummy, 0                  )// hyphenate word
+  picks( hy, scr_hy,    0                  )// hyphenate
   picks( ie, scr_dummy, 0                  )// index entry
   picks( if, scr_if,    0                  )// if
   picks( il, scr_dummy, cw_break+cw_o_t    )// indent line
