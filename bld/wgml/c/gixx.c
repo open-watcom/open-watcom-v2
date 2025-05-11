@@ -281,15 +281,15 @@ static void gml_ixxx_common( const gmltag * entry, int hx_lvl )
             /* so that any symbol substitutions will reflect any   */
             /* changes made by the tag calling it                  */
             /*******************************************************/
-            scan_start = buff2;
-            scan_stop  = buff2 + buff2_lg;
-            if( (*scan_start == SCR_char)           // cw found: error
-              || (*scan_start == GML_char)          // tag found: error
+            scandata.s = buff2;
+            scandata.e = buff2 + buff2_lg;
+            if( (*scandata.s == SCR_char)           // cw found: error
+              || (*scandata.s == GML_char)          // tag found: error
               || (input_cbs->fmflags & II_eof) ) {  // EOF found: error
                 xx_err( err_text_not_tag_cw );
             } else {
                 process_line();
-                p = scan_start; // new line is part of current tag
+                p = scandata.s; // new line is part of current tag
                 continue;
             }
         }
