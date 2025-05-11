@@ -119,7 +119,7 @@ typedef struct {
 
 typedef struct {
     uint16_t            count;
-    const char *        text;
+    char                *text;
 } code_text;
 
 /* These structs are unique to the top-level struct cop_device. */
@@ -231,7 +231,7 @@ typedef struct {
 typedef struct {
     bool                is_fontvalue;
     uint16_t            count;
-    const char *        text;
+    char                *text;
 } init_text;
 
 /* To hold the data from the InitBlock struct. */
@@ -276,7 +276,7 @@ typedef struct {
 typedef struct {
     uint16_t            advance;
     uint16_t            count;
-    const char *        text;
+    char                *text;
 } newline_block;
 
 /* To hold the data extracted from a NewlineFuncs struct. */
@@ -365,7 +365,7 @@ typedef struct {
 typedef struct {
     uint32_t            thickness;
     uint16_t            count;
-    const char *        text;
+    char                *text;
 } line_block;
 
 /* This struct is unique to the top-level struct cop_font. */
@@ -427,12 +427,13 @@ typedef struct {
     devicefont_block    devicefonts;
 } cop_device;
 
-#define OUT_DEV_MAP_OFF(x)      (void *)((char *)out_device + (unsigned)x)
-#define OUT_DEV_CUR_PTR()       (void *)((char *)out_device + (unsigned)out_device->next_offset)
-#define OUT_DEV_CUR_OFF()       (void *)(out_device->next_offset)
-#define OUT_DEV_ADD_OFF(x)      out_device->next_offset += x
-#define OUT_DEV_REMAP_MBR(x)    out_device->x = (void *)((char *)out_device + (unsigned)out_device->x)
-#define OUT_DEV_EXPAND_CHK(x)   (out_device->allocated_size < (out_device->next_offset + x))
+#define OUT_DEV_MAP_OFF(x)      (void *)((char *)out_device + (unsigned)(uintptr_t)(x))
+#define OUT_DEV_SET_OFF(x,s) \
+    (void *)((char *)out_device + out_device->next_offset); \
+    x = (void *)(uintptr_t)out_device->next_offset; \
+    out_device->next_offset += s
+#define OUT_DEV_REMAP_MBR(x)    out_device->x = OUT_DEV_MAP_OFF(out_device->x)
+#define OUT_DEV_EXPAND_CHK(s)   (out_device->allocated_size < (out_device->next_offset + s))
 
 /* This struct embodies the binary form of the :DRIVER block.
  *
@@ -471,19 +472,21 @@ typedef struct {
     line_block          dbox;
 } cop_driver;
 
-#define OUT_DRV_MAP_OFF(x)      (void *)((char *)out_driver + (unsigned)x)
-#define OUT_DRV_CUR_PTR()       (void *)((char *)out_driver + (unsigned)out_driver->next_offset)
-#define OUT_DRV_CUR_OFF()       ((void *)out_driver->next_offset)
-#define OUT_DRV_ADD_OFF(x)      out_driver->next_offset += x
-#define OUT_DRV_REMAP_MBR(x)    out_driver->x = (void *)((char *)out_driver + (unsigned)out_driver->x)
-#define OUT_DRV_EXPAND_CHK(x)   (out_driver->allocated_size < (out_driver->next_offset + x))
+#define OUT_DRV_MAP_OFF(x)      (void *)((char *)out_driver + (unsigned)(uintptr_t)(x))
+#define OUT_DRV_SET_OFF(x,s) \
+    (void *)((char *)out_driver + out_driver->next_offset); \
+    x = (void *)(uintptr_t)out_driver->next_offset; \
+    out_driver->next_offset += s
+#define OUT_DRV_REMAP_MBR(x)    out_driver->x = OUT_DRV_MAP_OFF(out_driver->x)
+#define OUT_DRV_EXPAND_CHK(s)   (out_driver->allocated_size < (out_driver->next_offset + s))
 
-#define IN_DRV_MAP_OFF(x)       (void *)((char *)in_driver + (unsigned)x)
-#define IN_DRV_CUR_PTR()        (void *)((char *)in_driver + (unsigned)in_driver->next_offset)
-#define IN_DRV_CUR_OFF()        ((void *)in_driver->next_offset)
-#define IN_DRV_ADD_OFF(x)       in_driver->next_offset += x
-#define IN_DRV_REMAP_MBR(x)     in_driver->x = (void *)((char *)in_driver + (unsigned)in_driver->x)
-#define IN_DRV_EXPAND_CHK(x)    (in_driver->allocated_size < (in_driver->next_offset + x))
+#define IN_DRV_MAP_OFF(x)       (void *)((char *)in_driver + (unsigned)(uintptr_t)(x))
+#define IN_DRV_SET_OFF(x,s) \
+    (void *)((char *)in_driver + in_driver->next_offset); \
+    x = (void *)(uintptr_t)in_driver->next_offset; \
+    in_driver->next_offset += s
+#define IN_DRV_REMAP_MBR(x)     in_driver->x = IN_DRV_MAP_OFF(in_driver->x)
+#define IN_DRV_EXPAND_CHK(s)    (in_driver->allocated_size < (in_driver->next_offset + s))
 #define IN_DRV_GET_OFF(x)       ((char *)x - (char *)in_driver)
 
 /* This struct embodies the binary form of the :FONT block.
@@ -511,12 +514,13 @@ typedef struct cop_font {
     width_block     *   width;
 } cop_font;
 
-#define OUT_FONT_MAP_OFF(x)     (void *)((char *)out_font + (unsigned)x)
-#define OUT_FONT_CUR_PTR()      (void *)((char *)out_font + (unsigned)out_font->next_offset)
-#define OUT_FONT_CUR_OFF()      (void *)(out_font->next_offset)
-#define OUT_FONT_ADD_OFF(x)     out_font->next_offset += x
-#define OUT_FONT_REMAP_MBR(x)   out_font->x = (void *)((char *)out_font + (unsigned)out_font->x)
-#define OUT_FONT_EXPAND_CHK(x)  (out_font->allocated_size < (out_font->next_offset + x))
+#define OUT_FONT_MAP_OFF(x)     (void *)((char *)out_font + (unsigned)(uintptr_t)(void *)(x))
+#define OUT_FONT_SET_OFF(x,s) \
+    (void *)((char *)out_font + out_font->next_offset); \
+    x = (void *)(uintptr_t)out_font->next_offset; \
+    out_font->next_offset += s
+#define OUT_FONT_REMAP_MBR(x)   out_font->x = OUT_FONT_MAP_OFF(out_font->x)
+#define OUT_FONT_EXPAND_CHK(s)  (out_font->allocated_size < (out_font->next_offset + s))
 
 /* This struct was originally developed for use with the output buffer. It's
  * use has since expanded. current records the current write position, length

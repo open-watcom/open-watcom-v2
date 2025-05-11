@@ -274,9 +274,8 @@ cop_device * parse_device( FILE *fp )
         if( OUT_DEV_EXPAND_CHK( length + 1 ) ) {
             out_device = resize_cop_device( out_device, length + 1 );
         }
-        out_device->driver_name = OUT_DEV_CUR_OFF();
+        string_ptr = OUT_DEV_SET_OFF( out_device->driver_name, length + 1 );
 
-        string_ptr = OUT_DEV_CUR_PTR();
         fread_buff( string_ptr, length, fp );
         if( ferror( fp ) || feof( fp ) ) {
             mem_free( out_device );
@@ -284,7 +283,6 @@ cop_device * parse_device( FILE *fp )
             return( out_device );
         }
         string_ptr[length] = '\0';
-        OUT_DEV_ADD_OFF( length + 1 );
     } else {
         out_device->driver_name = NULL;
     }
@@ -302,9 +300,8 @@ cop_device * parse_device( FILE *fp )
         if( OUT_DEV_EXPAND_CHK( length + 1 ) ) {
             out_device = resize_cop_device( out_device, length + 1 );
         }
-        out_device->output_name = OUT_DEV_CUR_OFF();
+        string_ptr = OUT_DEV_SET_OFF( out_device->output_name, length + 1 );
 
-        string_ptr = OUT_DEV_CUR_PTR();
         fread_buff( string_ptr, length, fp );
         if( ferror( fp ) || feof( fp ) ) {
             mem_free( out_device );
@@ -312,7 +309,6 @@ cop_device * parse_device( FILE *fp )
             return( out_device );
         }
         string_ptr[length] = '\0';
-        OUT_DEV_ADD_OFF( length + 1 );
     } else {
         out_device->output_name = NULL;
     }
@@ -330,9 +326,8 @@ cop_device * parse_device( FILE *fp )
         if( OUT_DEV_EXPAND_CHK( length + 1 ) ) {
             out_device = resize_cop_device( out_device, length + 1 );
         }
-        out_device->output_extension = OUT_DEV_CUR_OFF();
+        string_ptr = OUT_DEV_SET_OFF( out_device->output_extension, length + 1 );
 
-        string_ptr = OUT_DEV_CUR_PTR();
         fread_buff( string_ptr, length, fp );
         if( ferror( fp ) || feof( fp ) ) {
             mem_free( out_device );
@@ -340,7 +335,6 @@ cop_device * parse_device( FILE *fp )
             return( out_device );
         }
         string_ptr[length] = '\0';
-        OUT_DEV_ADD_OFF( length + 1 );
     } else {
         out_device->output_extension = NULL;
     }
@@ -494,9 +488,8 @@ cop_device * parse_device( FILE *fp )
             if( OUT_DEV_EXPAND_CHK( length + 1 ) ) {
                 out_device = resize_cop_device( out_device, length + 1 );
             }
-            out_device->box.font_name = OUT_DEV_CUR_OFF();
+            string_ptr = OUT_DEV_SET_OFF( out_device->box.font_name, length + 1 );
 
-            string_ptr = OUT_DEV_CUR_PTR();
             fread_buff( string_ptr, length, fp );
             if( ferror( fp ) || feof( fp ) ) {
                 mem_free( out_device );
@@ -504,7 +497,6 @@ cop_device * parse_device( FILE *fp )
                 return( out_device );
             }
             string_ptr[length] = '\0';
-            OUT_DEV_ADD_OFF( length + 1 );
         } else {
             mem_free( out_device );
             out_device = NULL;
@@ -604,9 +596,8 @@ cop_device * parse_device( FILE *fp )
             if( OUT_DEV_EXPAND_CHK( length + 1 ) ) {
                 out_device = resize_cop_device( out_device, length + 1 );
             }
-            out_device->underscore.font_name = OUT_DEV_CUR_OFF();
+            string_ptr = OUT_DEV_SET_OFF( out_device->underscore.font_name, length + 1 );
 
-            string_ptr = OUT_DEV_CUR_PTR();
             fread_buff( string_ptr, length, fp );
             if( ferror( fp ) || feof( fp ) ) {
                 mem_free( out_device );
@@ -614,7 +605,6 @@ cop_device * parse_device( FILE *fp )
                 return( out_device );
             }
             string_ptr[length] = '\0';
-            OUT_DEV_ADD_OFF( length + 1 );
 
             /* Ensure that the font_name is used. */
 
@@ -751,16 +741,14 @@ cop_device * parse_device( FILE *fp )
         if( OUT_DEV_EXPAND_CHK( sizeof( out_device->intrans->table ) ) ) {
             out_device = resize_cop_device( out_device, sizeof( out_device->intrans->table ) );
         }
-        out_device->intrans = OUT_DEV_CUR_OFF();
+        byte_ptr = OUT_DEV_SET_OFF( out_device->intrans, sizeof( out_device->intrans->table ) );
 
-        byte_ptr = OUT_DEV_CUR_PTR();
         fread_buff( byte_ptr, 0x100, fp );
         if( ferror( fp ) || feof( fp ) ) {
             mem_free( out_device );
             out_device = NULL;
             return( out_device );
         }
-        OUT_DEV_ADD_OFF( sizeof( out_device->intrans->table ) );
     }
 
     /* Get the OuttransBlock, if present. */
@@ -814,10 +802,7 @@ cop_device * parse_device( FILE *fp )
             if( OUT_DEV_EXPAND_CHK( sizeof( out_device->outtrans->table ) ) ) {
                 out_device = resize_cop_device( out_device, sizeof( out_device->outtrans->table ) );
             }
-            out_device->outtrans = OUT_DEV_CUR_OFF();
-
-            outtrans_ptr = OUT_DEV_CUR_PTR();
-            OUT_DEV_ADD_OFF( sizeof( out_device->outtrans->table ) );
+            outtrans_ptr = OUT_DEV_SET_OFF( out_device->outtrans, sizeof( out_device->outtrans->table ) );
 
             /* Build the actual table, which requires actual pointers in
              * place of the offsets recorded in *out_device:
@@ -841,31 +826,20 @@ cop_device * parse_device( FILE *fp )
 
                     /* Reserve space for the translation. */
 
-                    if( OUT_DEV_EXPAND_CHK( sizeof( translation ) ) ) {
-                        out_device = resize_cop_device( out_device, sizeof( translation ) );
-                        outtrans_ptr = OUT_DEV_MAP_OFF( out_device->outtrans );
-                    }
-                    outtrans_ptr->table[i] = OUT_DEV_CUR_OFF();
-
-                    /* Get the translation for the current character. */
-
-                    translation_ptr = OUT_DEV_CUR_PTR();
-                    OUT_DEV_ADD_OFF( sizeof( translation ) );
-
                     /* The translation always contains exactly one character. */
 
                     size = 1;
 
-                    if( OUT_DEV_EXPAND_CHK( size ) ) {
-                        out_device = resize_cop_device( out_device, size );
+                    if( OUT_DEV_EXPAND_CHK( sizeof( translation ) + size ) ) {
+                        out_device = resize_cop_device( out_device, sizeof( translation ) + size );
                         outtrans_ptr = OUT_DEV_MAP_OFF( out_device->outtrans );
-                        translation_ptr = OUT_DEV_MAP_OFF( outtrans_ptr->table[i] );
                     }
-                    translation_ptr->count = size;
-                    translation_ptr->data = OUT_DEV_CUR_OFF();
+                    translation_ptr = OUT_DEV_SET_OFF( outtrans_ptr->table[i], sizeof( translation ) );
 
-                    byte_ptr = OUT_DEV_CUR_PTR();
-                    OUT_DEV_ADD_OFF( size );
+                    translation_ptr->count = size;
+                    byte_ptr = OUT_DEV_SET_OFF( translation_ptr->data, size );
+
+                    /* Get the translation for the current character. */
 
                     /* The translation character is the value in the input
                      * array.
@@ -916,10 +890,7 @@ cop_device * parse_device( FILE *fp )
             if( OUT_DEV_EXPAND_CHK( sizeof( out_device->outtrans->table ) ) ) {
                 out_device = resize_cop_device( out_device, sizeof( out_device->outtrans->table ) );
             }
-            out_device->outtrans = OUT_DEV_CUR_OFF();
-
-            outtrans_ptr = OUT_DEV_CUR_PTR();
-            OUT_DEV_ADD_OFF( sizeof( out_device->outtrans->table ) );
+            outtrans_ptr = OUT_DEV_SET_OFF( out_device->outtrans, sizeof( out_device->outtrans->table ) );
 
             /* Convert the data in uint16_array to our format, which requires
              * actual pointers in place of the offsets recorded in *out_device:
@@ -941,46 +912,36 @@ cop_device * parse_device( FILE *fp )
                     outtrans_ptr->table[i] = NULL;
                 } else {
 
-                    /* Reserve space for the translation. */
-
-                    if( OUT_DEV_EXPAND_CHK( sizeof( translation ) ) ) {
-                        out_device = resize_cop_device( out_device, sizeof( translation ) );
-                        outtrans_ptr = OUT_DEV_MAP_OFF( out_device->outtrans );
-                    }
-                    outtrans_ptr->table[i] = OUT_DEV_CUR_OFF();
-
-                    /* Get the translation for the current character */
-
-                    translation_ptr = OUT_DEV_CUR_PTR();
-                    OUT_DEV_ADD_OFF( sizeof( translation ) );
-
-                    /* If the first byte at uint16_array[i] is 00, then the
-                     * second byte is the one-byte translation. Otherwise, the
-                     * second byte is an offset. For little-endian computers,
-                     * at least!
-                     */
-
                     /* Set the count correctly. */
 
                     if( (uint16_array[i] & 0xff00) == 0x00 ) {
+                        translation_start = NULL;
                         size = 1;
                     } else {
                         translation_start = outtrans_data + (uint16_array[i] & 0x00ff);
                         size = *translation_start;
                     }
 
+                    /* Reserve space for the translation. */
+
+                    if( OUT_DEV_EXPAND_CHK( sizeof( translation ) + size ) ) {
+                        out_device = resize_cop_device( out_device, sizeof( translation ) + size );
+                        outtrans_ptr = OUT_DEV_MAP_OFF( out_device->outtrans );
+                    }
+                    translation_ptr = OUT_DEV_SET_OFF( outtrans_ptr->table[i], sizeof( translation ) );
+
                     /* Allocate space and perform other common operations. */
 
-                    if( OUT_DEV_EXPAND_CHK( size ) ) {
-                        out_device = resize_cop_device( out_device, size );
-                        outtrans_ptr = OUT_DEV_MAP_OFF( out_device->outtrans );
-                        translation_ptr = OUT_DEV_MAP_OFF( outtrans_ptr->table[i] );
-                    }
                     translation_ptr->count = size;
-                    translation_ptr->data = OUT_DEV_CUR_OFF();
+                    byte_ptr = OUT_DEV_SET_OFF( translation_ptr->data, size );
 
-                    byte_ptr = OUT_DEV_CUR_PTR();
-                    OUT_DEV_ADD_OFF( size );
+                    /* Get the translation for the current character */
+
+                    /* If the first byte at uint16_array[i] is 00, then the
+                     * second byte is the one-byte translation. Otherwise, the
+                     * second byte is an offset. For little-endian computers,
+                     * at least!
+                     */
 
                     /* Put the data into the buffer. */
 
@@ -1035,10 +996,7 @@ cop_device * parse_device( FILE *fp )
     if( OUT_DEV_EXPAND_CHK( size ) ) {
         out_device = resize_cop_device( out_device, size );
     }
-    out_device->defaultfonts.fonts = OUT_DEV_CUR_OFF();
-
-    defaultfont_ptr = OUT_DEV_CUR_PTR();
-    OUT_DEV_ADD_OFF( size );
+    defaultfont_ptr = OUT_DEV_SET_OFF( out_device->defaultfonts.fonts, size );
 
     /* Get the DefaultFonts. */
 
@@ -1058,9 +1016,8 @@ cop_device * parse_device( FILE *fp )
                 out_device = resize_cop_device( out_device, length + 1 );
                 defaultfont_ptr = OUT_DEV_MAP_OFF( out_device->defaultfonts.fonts );
             }
-            defaultfont_ptr[i].font_style = OUT_DEV_CUR_OFF();
+            string_ptr = OUT_DEV_SET_OFF( defaultfont_ptr[i].font_style, length + 1 );
 
-            string_ptr = OUT_DEV_CUR_PTR();
             fread_buff( string_ptr, length, fp );
             if( ferror( fp ) || feof( fp ) ) {
                 mem_free( out_device );
@@ -1068,7 +1025,6 @@ cop_device * parse_device( FILE *fp )
                 return( out_device );
             }
             string_ptr[length] = '\0';
-            OUT_DEV_ADD_OFF( length + 1 );
         } else {
             defaultfont_ptr[i].font_style = NULL;
         }
@@ -1120,9 +1076,8 @@ cop_device * parse_device( FILE *fp )
                 out_device = resize_cop_device( out_device, length + 1 );
                 defaultfont_ptr = OUT_DEV_MAP_OFF( out_device->defaultfonts.fonts );
             }
-            defaultfont_ptr[i].font_name = OUT_DEV_CUR_OFF();
+            string_ptr = OUT_DEV_SET_OFF( defaultfont_ptr[i].font_name, length + 1 );
 
-            string_ptr = OUT_DEV_CUR_PTR();
             fread_buff( string_ptr, length, fp );
             if( ferror( fp ) || feof( fp ) ) {
                 mem_free( out_device );
@@ -1130,7 +1085,6 @@ cop_device * parse_device( FILE *fp )
                 return( out_device );
             }
             string_ptr[length] = '\0';
-            OUT_DEV_ADD_OFF( length + 1 );
         } else {
             defaultfont_ptr[i].font_name = NULL;
         }
@@ -1233,28 +1187,19 @@ cop_device * parse_device( FILE *fp )
 
         /* Allocate space for the code_text instance. */
 
-        if( OUT_DEV_EXPAND_CHK( sizeof( code_text ) ) ) {
-            out_device = resize_cop_device( out_device, sizeof( code_text ) );
-        }
-        out_device->pauses.start_pause = OUT_DEV_CUR_OFF();
+        size = cop_functions->code_blocks[j].count;
 
-        pause_ptr = OUT_DEV_CUR_PTR();
-        OUT_DEV_ADD_OFF( sizeof( code_text ) );
+        if( OUT_DEV_EXPAND_CHK( sizeof( code_text ) + size ) ) {
+            out_device = resize_cop_device( out_device, sizeof( code_text ) + size );
+        }
+        pause_ptr = OUT_DEV_SET_OFF( out_device->pauses.start_pause, sizeof( code_text ) );
+
+        pause_ptr->count = size;
+        byte_ptr = OUT_DEV_SET_OFF( pause_ptr->text, size );
 
         /* Initialize the code_text instance. */
 
-        size = cop_functions->code_blocks[j].count;
-
-        if( OUT_DEV_EXPAND_CHK( size ) ) {
-            out_device = resize_cop_device( out_device, size );
-            pause_ptr = OUT_DEV_MAP_OFF( out_device->pauses.start_pause );
-        }
-        pause_ptr->count = size;
-        pause_ptr->text = OUT_DEV_CUR_OFF();
-
-        byte_ptr = OUT_DEV_CUR_PTR();
         memcpy( byte_ptr, cop_functions->code_blocks[j].text, size );
-        OUT_DEV_ADD_OFF( size );
     }
 
     /* Get the document_pause. */
@@ -1332,28 +1277,19 @@ cop_device * parse_device( FILE *fp )
 
         /* Allocate space for the code_text instance. */
 
-        if( OUT_DEV_EXPAND_CHK( sizeof( code_text ) ) ) {
-            out_device = resize_cop_device( out_device, sizeof( code_text ) );
-        }
-        out_device->pauses.document_pause = OUT_DEV_CUR_OFF();
+        size = cop_functions->code_blocks[j].count;
 
-        pause_ptr = OUT_DEV_CUR_PTR();
-        OUT_DEV_ADD_OFF( sizeof( code_text ) );
+        if( OUT_DEV_EXPAND_CHK( sizeof( code_text ) + size ) ) {
+            out_device = resize_cop_device( out_device, sizeof( code_text ) + size );
+        }
+        pause_ptr = OUT_DEV_SET_OFF( out_device->pauses.document_pause, sizeof( code_text ) );
+
+        pause_ptr->count = size;
+        byte_ptr = OUT_DEV_SET_OFF( pause_ptr->text, size );
 
         /* Initialize the code_text instance. */
 
-        size = cop_functions->code_blocks[j].count;
-
-        if( OUT_DEV_EXPAND_CHK( size ) ) {
-            out_device = resize_cop_device( out_device, size );
-            pause_ptr = OUT_DEV_MAP_OFF( out_device->pauses.document_pause );
-        }
-        pause_ptr->count = size;
-        pause_ptr->text = OUT_DEV_CUR_OFF();
-
-        byte_ptr = OUT_DEV_CUR_PTR();
         memcpy( byte_ptr, cop_functions->code_blocks[j].text, size );
-        OUT_DEV_ADD_OFF( size );
     }
 
     /* Get the docpage_pause. */
@@ -1431,28 +1367,19 @@ cop_device * parse_device( FILE *fp )
 
         /* Allocate space for the code_text instance. */
 
-        if( OUT_DEV_EXPAND_CHK( sizeof( code_text ) ) ) {
-            out_device = resize_cop_device( out_device, sizeof( code_text ) );
-        }
-        out_device->pauses.docpage_pause = OUT_DEV_CUR_OFF();
+        size = cop_functions->code_blocks[j].count;
 
-        pause_ptr = OUT_DEV_CUR_PTR();
-        OUT_DEV_ADD_OFF( sizeof( code_text ) );
+        if( OUT_DEV_EXPAND_CHK( sizeof( code_text ) + size ) ) {
+            out_device = resize_cop_device( out_device, sizeof( code_text ) + size );
+        }
+        pause_ptr = OUT_DEV_SET_OFF( out_device->pauses.docpage_pause, sizeof( code_text ) );
+
+        pause_ptr->count = size;
+        byte_ptr = OUT_DEV_SET_OFF( pause_ptr->text, size );
 
         /* Initialize the code_text instance. */
 
-        size = cop_functions->code_blocks[j].count;
-
-        if( OUT_DEV_EXPAND_CHK( size ) ) {
-            out_device = resize_cop_device( out_device, size );
-            pause_ptr = OUT_DEV_MAP_OFF( out_device->pauses.docpage_pause );
-        }
-        pause_ptr->count = size;
-        pause_ptr->text = OUT_DEV_CUR_OFF();
-
-        byte_ptr = OUT_DEV_CUR_PTR();
         memcpy( byte_ptr, cop_functions->code_blocks[j].text, size );
-        OUT_DEV_ADD_OFF( size );
     }
 
     /* Get the devpage_pause. */
@@ -1530,28 +1457,19 @@ cop_device * parse_device( FILE *fp )
 
         /* Allocate space for the code_text instance. */
 
-        if( OUT_DEV_EXPAND_CHK( sizeof( code_text ) ) ) {
-            out_device = resize_cop_device( out_device, sizeof( code_text ) );
-        }
-        out_device->pauses.devpage_pause = OUT_DEV_CUR_OFF();
+        size = cop_functions->code_blocks[j].count;
 
-        pause_ptr = OUT_DEV_CUR_PTR();
-        OUT_DEV_ADD_OFF( sizeof( code_text ) );
+        if( OUT_DEV_EXPAND_CHK( sizeof( code_text ) + size ) ) {
+            out_device = resize_cop_device( out_device, sizeof( code_text ) + size );
+        }
+        pause_ptr = OUT_DEV_SET_OFF( out_device->pauses.devpage_pause, sizeof( code_text ) );
+
+        pause_ptr->count = size;
+        byte_ptr = OUT_DEV_SET_OFF( pause_ptr->text, size );
 
         /* Initialize the code_text instance. */
 
-        size = cop_functions->code_blocks[j].count;
-
-        if( OUT_DEV_EXPAND_CHK( size ) ) {
-            out_device = resize_cop_device( out_device, size );
-            pause_ptr = OUT_DEV_MAP_OFF( out_device->pauses.devpage_pause );
-        }
-        pause_ptr->count = size;
-        pause_ptr->text = OUT_DEV_CUR_OFF();
-
-        byte_ptr = OUT_DEV_CUR_PTR();
         memcpy( byte_ptr, cop_functions->code_blocks[j].text, size );
-        OUT_DEV_ADD_OFF( size );
     }
 
     /* Get the DevicefontBlock. */
@@ -1610,10 +1528,7 @@ cop_device * parse_device( FILE *fp )
     if( OUT_DEV_EXPAND_CHK( size ) ) {
         out_device = resize_cop_device( out_device, size );
     }
-    out_device->devicefonts.fonts = OUT_DEV_CUR_OFF();
-
-    devicefont_ptr = OUT_DEV_CUR_PTR();
-    OUT_DEV_ADD_OFF( size );
+    devicefont_ptr = OUT_DEV_SET_OFF( out_device->devicefonts.fonts, size );
 
     for( i = 0; i < out_device->devicefonts.font_count; i++ ) {
 
@@ -1639,9 +1554,8 @@ cop_device * parse_device( FILE *fp )
                 out_device = resize_cop_device( out_device, length + 1 );
                 devicefont_ptr = OUT_DEV_MAP_OFF( out_device->devicefonts.fonts );
             }
-            devicefont_ptr[i].font_name = OUT_DEV_CUR_OFF();
+            string_ptr = OUT_DEV_SET_OFF( devicefont_ptr[i].font_name, length + 1 );
 
-            string_ptr = OUT_DEV_CUR_PTR();
             fread_buff( string_ptr, length, fp );
             if( ferror( fp ) || feof( fp ) ) {
                 raw_functions = NULL;
@@ -1656,7 +1570,6 @@ cop_device * parse_device( FILE *fp )
                 return( out_device );
             }
             string_ptr[length] = '\0';
-            OUT_DEV_ADD_OFF( length + 1 );
         } else {
             raw_functions = NULL;
             if( cop_functions->code_blocks != NULL ) {
@@ -1692,9 +1605,8 @@ cop_device * parse_device( FILE *fp )
                 out_device = resize_cop_device( out_device, length + 1 );
                 devicefont_ptr = OUT_DEV_MAP_OFF( out_device->devicefonts.fonts );
             }
-            devicefont_ptr[i].font_switch = OUT_DEV_CUR_OFF();
+            string_ptr = OUT_DEV_SET_OFF( devicefont_ptr[i].font_switch, length + 1 );
 
-            string_ptr = OUT_DEV_CUR_PTR();
             fread_buff( string_ptr, length, fp );
             if( ferror( fp ) || feof( fp ) ) {
                 mem_free( raw_functions );
@@ -1710,7 +1622,6 @@ cop_device * parse_device( FILE *fp )
                 return( out_device );
             }
             string_ptr[length] = '\0';
-            OUT_DEV_ADD_OFF( length + 1 );
         } else {
             devicefont_ptr[i].font_switch = NULL;
         }
@@ -1838,31 +1749,21 @@ cop_device * parse_device( FILE *fp )
 
             /* Allocate space for the code_text instance. */
 
-            if( OUT_DEV_EXPAND_CHK( sizeof( code_text ) ) ) {
-                out_device = resize_cop_device( out_device, sizeof( code_text ) );
+            size = cop_functions->code_blocks[j].count;
+
+            if( OUT_DEV_EXPAND_CHK( sizeof( code_text ) + size ) ) {
+                out_device = resize_cop_device( out_device, sizeof( code_text ) + size );
                 devicefont_ptr = OUT_DEV_MAP_OFF( out_device->devicefonts.fonts );
                 pause_ptr = OUT_DEV_MAP_OFF( devicefont_ptr[i].font_pause );
             }
-            devicefont_ptr[i].font_pause = OUT_DEV_CUR_OFF();
+            pause_ptr = OUT_DEV_SET_OFF( devicefont_ptr[i].font_pause, sizeof( code_text ) );
 
-            pause_ptr = OUT_DEV_CUR_PTR();
-            OUT_DEV_ADD_OFF( sizeof( code_text ) );
+            pause_ptr->count = size;
+            byte_ptr = OUT_DEV_SET_OFF( pause_ptr->text, size );
 
             /* Initialize the code_text instance. */
 
-            size = cop_functions->code_blocks[j].count;
-
-            if( OUT_DEV_EXPAND_CHK( size ) ) {
-                out_device = resize_cop_device( out_device, size );
-                devicefont_ptr = OUT_DEV_MAP_OFF( out_device->devicefonts.fonts );
-                pause_ptr = OUT_DEV_MAP_OFF( devicefont_ptr[i].font_pause );
-            }
-            pause_ptr->count = size;
-            pause_ptr->text = OUT_DEV_CUR_OFF();
-
-            byte_ptr = OUT_DEV_CUR_PTR();
             memcpy( byte_ptr, cop_functions->code_blocks[j].text, size );
-            OUT_DEV_ADD_OFF( size );
         }
     }
 
