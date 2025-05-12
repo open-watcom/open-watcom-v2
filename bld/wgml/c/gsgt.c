@@ -519,14 +519,20 @@ void    scr_gt( void )
             if( savetag == '*' ) {
                 print_tag_dict( tags_dict );
             } else {
-                print_tag_entry( find_user_tag( &tags_dict, g_tagname ) );
+                wk = find_user_tag( &tags_dict, g_tagname );
+                if( wk != NULL ) {
+                    print_tag_entry( wk );
+                }
             }
             break;
         case f_delete :
             if( savetag == '*' ) {
                 free_tag_dict( &tags_dict );
             } else {
-                free_tag( &tags_dict, find_user_tag( &tags_dict, g_tagname ) );
+                wk = find_user_tag( &tags_dict, g_tagname );
+                if( wk != NULL ) {
+                    free_tag( &tags_dict, wk );
+                }
             }
             break;
         case f_off :

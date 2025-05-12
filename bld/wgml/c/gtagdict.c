@@ -330,29 +330,25 @@ static  void    print_att_entry( gaentry *wk )
 /*  print_tag_entry   print single GML tag                                 */
 /***************************************************************************/
 
-void    print_tag_entry( gtentry * wk )
+void    print_tag_entry( gtentry *wk )
 {
     gaentry         *   gawk;
     unsigned            flags;
     int                 find;
     char                opt[256];
-    static const char   t_txt[10] [12] =
-                    {
-                        { "attributes " },
-                        { "continue "   },
-                        { "nocontinue " },
-                        { "csoff "      },
-                        { "tagnext "    },
-                        { "textdef "    },
-                        { "texterror "  },
-                        { "textline "   },
-                        { "textreqd "   },
-                        { "off "        }
-                    };
+    static const char   * const t_txt[] = {
+        "attributes ",
+        "continue ",
+        "nocontinue ",
+        "csoff ",
+        "tagnext ",
+        "textdef ",
+        "texterror ",
+        "textline ",
+        "textreqd ",
+        "off "
+    };
 
-    if( wk == NULL ) {
-        return;                         // nothing to print
-    }
     opt[0] = '\0';
     flags = wk->tagflags;
     find = 0;
