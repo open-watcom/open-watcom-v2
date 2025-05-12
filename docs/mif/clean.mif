@@ -35,6 +35,10 @@ clean : .procedure
  @if exist *.gml rm -f *.gml
 
  @if exist *.ch? rm -f *.ch?
+ 
+ @if exist dosbox.lst rm -f dosbox.lst
+ @if exist stdout.txt rm -f stdout.txt
+ @if exist stderr.txt rm -f stderr.txt
 
 !ifdef dirs
  @rm -rf $(dirs)
