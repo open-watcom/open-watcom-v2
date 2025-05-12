@@ -68,7 +68,8 @@ extern  void    gml_include( const gmltag * entry )
 {
     char            *p;
     char            *pa;
-    tag_att_val     tag_attr;
+    att_name_type   attr_name;
+    att_val_type    attr_val;
 
     (void)entry;
 
@@ -79,19 +80,19 @@ extern  void    gml_include( const gmltag * entry )
     if( *p == '.' ) {
         /* already at tag end */
     } else {
-        p = get_att_name( p, &pa, &tag_attr );
+        p = get_att_name( p, &pa, &attr_name );
         if( !ProcFlags.reprocess_line ) {
-            if( strcmp( "file", tag_attr.attname ) == 0 ) {
-                p = get_att_value( p, &tag_attr.val );
+            if( strcmp( "file", attr_name.attname.t ) == 0 ) {
+                p = get_att_value( p, &attr_val );
             } else {
                 p = pa;                 // reset for possible file name
-                p = get_tag_value( p, &tag_attr.val );
+                p = get_tag_value( p, &attr_val );
             }
-            if( tag_attr.val.name != NULL ) {
-                if( tag_attr.val.len > _MAX_PATH - 1 )
-                    tag_attr.val.len = _MAX_PATH - 1;
-                strncpy( token_buf, tag_attr.val.name, tag_attr.val.len );
-                token_buf[tag_attr.val.len] = '\0';
+            if( attr_val.name != NULL ) {
+                if( attr_val.len > _MAX_PATH - 1 )
+                    attr_val.len = _MAX_PATH - 1;
+                strncpy( token_buf, attr_val.name, attr_val.len );
+                token_buf[attr_val.len] = '\0';
                 ProcFlags.newLevelFile = 1;     // start new include level
                 scandata.s = scandata.e;         // .. and ignore remaining line
             }

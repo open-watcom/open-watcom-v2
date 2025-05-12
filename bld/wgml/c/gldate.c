@@ -113,7 +113,8 @@ void    lay_date( const gmltag * entry )
     int                 cvterr;
     int                 k;
     lay_att             curr;
-    lay_att_val         lay_attr;
+    att_name_type       attr_name;
+    att_val_type        attr_val;
 
     (void)entry;
 
@@ -129,53 +130,53 @@ void    lay_date( const gmltag * entry )
     if( ProcFlags.lay_xxx != el_date ) {
         ProcFlags.lay_xxx = el_date;
     }
-    while( (cc = lay_attr_and_value( &lay_attr )) == pos ) {   // get att with value
+    while( (cc = lay_attr_and_value( &attr_name, &attr_val )) == pos ) {   // get att with value
         cvterr = -1;
         for( k = 0, curr = date_att[k]; curr > 0; k++, curr = date_att[k] ) {
-            if( strcmp( lay_att_names[curr], lay_attr.attname ) == 0 ) {
-                p = lay_attr.val.name;
+            if( strcmp( lay_att_names[curr], attr_name.attname.l ) == 0 ) {
+                p = attr_val.name;
                 switch( curr ) {
                 case e_date_form:
                     if( AttrFlags.date_form ) {
-                        xx_line_err_ci( err_att_dup, lay_attr.att_name,
-                            lay_attr.val.name - lay_attr.att_name + lay_attr.val.len);
+                        xx_line_err_ci( err_att_dup, attr_name.att_name,
+                            attr_val.name - attr_name.att_name + attr_val.len);
                     }
-                    cvterr = i_date_form( p, &lay_attr, layout_work.date.date_form );
+                    cvterr = i_date_form( p, &attr_val, layout_work.date.date_form );
                     AttrFlags.date_form = true;
                     break;
                 case e_left_adjust:
                     if( AttrFlags.left_adjust ) {
-                        xx_line_err_ci( err_att_dup, lay_attr.att_name,
-                            lay_attr.val.name - lay_attr.att_name + lay_attr.val.len);
+                        xx_line_err_ci( err_att_dup, attr_name.att_name,
+                            attr_val.name - attr_name.att_name + attr_val.len);
                     }
-                    cvterr = i_space_unit( p, &lay_attr,
+                    cvterr = i_space_unit( p, &attr_val,
                                            &layout_work.date.left_adjust );
                     AttrFlags.left_adjust = true;
                     break;
                 case e_right_adjust:
                     if( AttrFlags.right_adjust ) {
-                        xx_line_err_ci( err_att_dup, lay_attr.att_name,
-                            lay_attr.val.name - lay_attr.att_name + lay_attr.val.len);
+                        xx_line_err_ci( err_att_dup, attr_name.att_name,
+                            attr_val.name - attr_name.att_name + attr_val.len);
                     }
-                    cvterr = i_space_unit( p, &lay_attr,
+                    cvterr = i_space_unit( p, &attr_val,
                                            &layout_work.date.right_adjust );
                     AttrFlags.right_adjust = true;
                     break;
                 case e_page_position:
                     if( AttrFlags.page_position ) {
-                        xx_line_err_ci( err_att_dup, lay_attr.att_name,
-                            lay_attr.val.name - lay_attr.att_name + lay_attr.val.len);
+                        xx_line_err_ci( err_att_dup, attr_name.att_name,
+                            attr_val.name - attr_name.att_name + attr_val.len);
                     }
-                    cvterr = i_page_position( p, &lay_attr,
+                    cvterr = i_page_position( p, &attr_val,
                                           &layout_work.date.page_position );
                     AttrFlags.page_position = true;
                     break;
                 case e_font:
                     if( AttrFlags.font ) {
-                        xx_line_err_ci( err_att_dup, lay_attr.att_name,
-                            lay_attr.val.name - lay_attr.att_name + lay_attr.val.len);
+                        xx_line_err_ci( err_att_dup, attr_name.att_name,
+                            attr_val.name - attr_name.att_name + attr_val.len);
                     }
-                    cvterr = i_font_number( p, &lay_attr, &layout_work.date.font );
+                    cvterr = i_font_number( p, &attr_val, &layout_work.date.font );
                     if( layout_work.date.font >= wgml_font_cnt ) {
                         layout_work.date.font = 0;
                     }
@@ -183,10 +184,10 @@ void    lay_date( const gmltag * entry )
                     break;
                 case e_pre_skip:
                     if( AttrFlags.pre_skip ) {
-                        xx_line_err_ci( err_att_dup, lay_attr.att_name,
-                            lay_attr.val.name - lay_attr.att_name + lay_attr.val.len);
+                        xx_line_err_ci( err_att_dup, attr_name.att_name,
+                            attr_val.name - attr_name.att_name + attr_val.len);
                     }
-                    cvterr = i_space_unit( p, &lay_attr,
+                    cvterr = i_space_unit( p, &attr_val,
                                            &layout_work.date.pre_skip );
                     AttrFlags.pre_skip = true;
                     break;

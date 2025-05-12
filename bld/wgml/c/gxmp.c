@@ -68,7 +68,8 @@ void gml_xmp( const gmltag * entry )
     char            *pa;
     su              cur_su;
     uint32_t        depth;
-    tag_att_val     tag_attr;
+    att_name_type   attr_name;
+    att_val_type    attr_val;
 
     (void)entry;
 
@@ -90,17 +91,17 @@ void gml_xmp( const gmltag * entry )
         /* already at tag end */
     } else {
         for( ;; ) {
-            p = get_att_name( p, &pa, &tag_attr );
+            p = get_att_name( p, &pa, &attr_name );
             if( ProcFlags.reprocess_line ) {
                 break;
             }
 
-            if( strcmp( "depth", tag_attr.attname ) == 0 ) {
-                p = get_att_value( p, &tag_attr.val );
-                if( tag_attr.val.name == NULL ) {
+            if( strcmp( "depth", attr_name.attname.t ) == 0 ) {
+                p = get_att_value( p, &attr_val );
+                if( attr_val.name == NULL ) {
                     break;
                 }
-                if( att_val_to_su( &cur_su, true, &tag_attr.val, false ) ) {
+                if( att_val_to_su( &cur_su, true, &attr_val, false ) ) {
                     break;
                 }
                 depth = conv_vert_unit( &cur_su, g_text_spacing, g_curr_font );

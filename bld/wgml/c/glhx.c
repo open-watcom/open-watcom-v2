@@ -197,7 +197,8 @@ void    lay_hx( const gmltag * entry )
     int                 k;
     int8_t              l_group     =   0;
     lay_att             curr;
-    lay_att_val         lay_attr;
+    att_name_type       attr_name;
+    att_val_type        attr_val;
 
     p = scandata.s;
 
@@ -244,67 +245,67 @@ void    lay_hx( const gmltag * entry )
     }
     ProcFlags.hx_level = hx_l;
 
-    while( (cc = lay_attr_and_value( &lay_attr )) == pos ) {   // get att with value
+    while( (cc = lay_attr_and_value( &attr_name, &attr_val )) == pos ) {   // get att with value
         cvterr = -1;
         for( k = 0, curr = hx_att[k]; curr > 0; k++, curr = hx_att[k] ) {
-            if( strcmp( lay_att_names[curr], lay_attr.attname ) == 0 ) {
-                p = lay_attr.val.name;
+            if( strcmp( lay_att_names[curr], attr_name.attname.l ) == 0 ) {
+                p = attr_val.name;
                 switch( curr ) {
                 case e_group:
                     if( AttrFlags.group ) {
-                        xx_line_err_ci( err_att_dup, lay_attr.att_name,
-                            lay_attr.val.name - lay_attr.att_name + lay_attr.val.len);
+                        xx_line_err_ci( err_att_dup, attr_name.att_name,
+                            attr_val.name - attr_name.att_name + attr_val.len);
                     }
-                    cvterr = i_int8( p, &lay_attr, &l_group );
+                    cvterr = i_int8( p, &attr_val, &l_group );
                     AttrFlags.group = true;
                     break;
                 case e_indent:
                     if( AttrFlags.indent ) {
-                        xx_line_err_ci( err_att_dup, lay_attr.att_name,
-                            lay_attr.val.name - lay_attr.att_name + lay_attr.val.len);
+                        xx_line_err_ci( err_att_dup, attr_name.att_name,
+                            attr_val.name - attr_name.att_name + attr_val.len);
                     }
-                    cvterr = i_space_unit( p, &lay_attr,
+                    cvterr = i_space_unit( p, &attr_val,
                                            &layout_work.hx.hx_head[hx_l].indent );
                     AttrFlags.indent = true;
                     break;
                 case e_pre_top_skip:
                     if( AttrFlags.pre_top_skip ) {
-                        xx_line_err_ci( err_att_dup, lay_attr.att_name,
-                            lay_attr.val.name - lay_attr.att_name + lay_attr.val.len);
+                        xx_line_err_ci( err_att_dup, attr_name.att_name,
+                            attr_val.name - attr_name.att_name + attr_val.len);
                     }
-                    cvterr = i_space_unit( p, &lay_attr, &layout_work.hx.hx_sect[hx_l].pre_top_skip );
+                    cvterr = i_space_unit( p, &attr_val, &layout_work.hx.hx_sect[hx_l].pre_top_skip );
                     AttrFlags.pre_top_skip = true;
                     break;
                 case e_pre_skip:
                     if( AttrFlags.pre_skip ) {
-                        xx_line_err_ci( err_att_dup, lay_attr.att_name,
-                            lay_attr.val.name - lay_attr.att_name + lay_attr.val.len);
+                        xx_line_err_ci( err_att_dup, attr_name.att_name,
+                            attr_val.name - attr_name.att_name + attr_val.len);
                     }
-                    cvterr = i_space_unit( p, &lay_attr, &layout_work.hx.hx_head[hx_l].pre_skip );
+                    cvterr = i_space_unit( p, &attr_val, &layout_work.hx.hx_head[hx_l].pre_skip );
                     AttrFlags.pre_skip = true;
                     break;
                 case e_post_skip:
                     if( AttrFlags.post_skip ) {
-                        xx_line_err_ci( err_att_dup, lay_attr.att_name,
-                            lay_attr.val.name - lay_attr.att_name + lay_attr.val.len);
+                        xx_line_err_ci( err_att_dup, attr_name.att_name,
+                            attr_val.name - attr_name.att_name + attr_val.len);
                     }
-                    cvterr = i_space_unit( p, &lay_attr, &layout_work.hx.hx_sect[hx_l].post_skip );
+                    cvterr = i_space_unit( p, &attr_val, &layout_work.hx.hx_sect[hx_l].post_skip );
                     AttrFlags.post_skip = true;
                     break;
                 case e_spacing:
                     if( AttrFlags.spacing ) {
-                        xx_line_err_ci( err_att_dup, lay_attr.att_name,
-                            lay_attr.val.name - lay_attr.att_name + lay_attr.val.len);
+                        xx_line_err_ci( err_att_dup, attr_name.att_name,
+                            attr_val.name - attr_name.att_name + attr_val.len);
                     }
-                    cvterr = i_spacing( p, &lay_attr, &layout_work.hx.hx_sect[hx_l].spacing );
+                    cvterr = i_spacing( p, &attr_val, &layout_work.hx.hx_sect[hx_l].spacing );
                     AttrFlags.spacing = true;
                     break;
                 case e_font:
                     if( AttrFlags.font ) {
-                        xx_line_err_ci( err_att_dup, lay_attr.att_name,
-                            lay_attr.val.name - lay_attr.att_name + lay_attr.val.len);
+                        xx_line_err_ci( err_att_dup, attr_name.att_name,
+                            attr_val.name - attr_name.att_name + attr_val.len);
                     }
-                    cvterr = i_font_number( p, &lay_attr, &layout_work.hx.hx_sect[hx_l].text_font );
+                    cvterr = i_font_number( p, &attr_val, &layout_work.hx.hx_sect[hx_l].text_font );
                     if( layout_work.hx.hx_sect[hx_l].text_font >= wgml_font_cnt ) {
                         layout_work.hx.hx_sect[hx_l].text_font = 0;
                     }
@@ -312,10 +313,10 @@ void    lay_hx( const gmltag * entry )
                     break;
                 case e_number_font:
                     if( AttrFlags.number_font ) {
-                        xx_line_err_ci( err_att_dup, lay_attr.att_name,
-                            lay_attr.val.name - lay_attr.att_name + lay_attr.val.len);
+                        xx_line_err_ci( err_att_dup, attr_name.att_name,
+                            attr_val.name - attr_name.att_name + attr_val.len);
                     }
-                    cvterr = i_font_number( p, &lay_attr, &layout_work.hx.hx_head[hx_l].number_font );
+                    cvterr = i_font_number( p, &attr_val, &layout_work.hx.hx_head[hx_l].number_font );
                     if( layout_work.hx.hx_head[hx_l].number_font >= wgml_font_cnt ) {
                         layout_work.hx.hx_head[hx_l].number_font = 0;
                     }
@@ -323,74 +324,74 @@ void    lay_hx( const gmltag * entry )
                     break;
                 case e_number_form:
                     if( AttrFlags.number_form ) {
-                        xx_line_err_ci( err_att_dup, lay_attr.att_name,
-                            lay_attr.val.name - lay_attr.att_name + lay_attr.val.len);
+                        xx_line_err_ci( err_att_dup, attr_name.att_name,
+                            attr_val.name - attr_name.att_name + attr_val.len);
                     }
-                    cvterr = i_number_form( p, &lay_attr, &layout_work.hx.hx_head[hx_l].number_form );
+                    cvterr = i_number_form( p, &attr_val, &layout_work.hx.hx_head[hx_l].number_form );
                     AttrFlags.number_form = true;
                     break;
                 case e_page_position:
                     if( AttrFlags.page_position ) {
-                        xx_line_err_ci( err_att_dup, lay_attr.att_name,
-                            lay_attr.val.name - lay_attr.att_name + lay_attr.val.len);
+                        xx_line_err_ci( err_att_dup, attr_name.att_name,
+                            attr_val.name - attr_name.att_name + attr_val.len);
                     }
-                    cvterr = i_page_position( p, &lay_attr, &layout_work.hx.hx_head[hx_l].line_position );
+                    cvterr = i_page_position( p, &attr_val, &layout_work.hx.hx_head[hx_l].line_position );
                     AttrFlags.page_position = true;
                     break;
                 case e_number_style:
                     if( AttrFlags.number_style ) {
-                        xx_line_err_ci( err_att_dup, lay_attr.att_name,
-                            lay_attr.val.name - lay_attr.att_name + lay_attr.val.len);
+                        xx_line_err_ci( err_att_dup, attr_name.att_name,
+                            attr_val.name - attr_name.att_name + attr_val.len);
                     }
-                    cvterr = i_number_style( p, &lay_attr, &layout_work.hx.hx_head[hx_l].number_style );
+                    cvterr = i_number_style( p, &attr_val, &layout_work.hx.hx_head[hx_l].number_style );
                     AttrFlags.number_style = true;
                     break;
                 case e_page_eject:
                     if( AttrFlags.page_eject ) {
-                        xx_line_err_ci( err_att_dup, lay_attr.att_name,
-                            lay_attr.val.name - lay_attr.att_name + lay_attr.val.len);
+                        xx_line_err_ci( err_att_dup, attr_name.att_name,
+                            attr_val.name - attr_name.att_name + attr_val.len);
                     }
-                    cvterr = i_page_eject( p, &lay_attr, &layout_work.hx.hx_head[hx_l].page_eject );
+                    cvterr = i_page_eject( p, &attr_val, &layout_work.hx.hx_head[hx_l].page_eject );
                     AttrFlags.page_eject = true;
                     break;
                 case e_line_break:
                     if( AttrFlags.line_break ) {
-                        xx_line_err_ci( err_att_dup, lay_attr.att_name,
-                            lay_attr.val.name - lay_attr.att_name + lay_attr.val.len);
+                        xx_line_err_ci( err_att_dup, attr_name.att_name,
+                            attr_val.name - attr_name.att_name + attr_val.len);
                     }
-                    cvterr = i_yes_no( p, &lay_attr, &layout_work.hx.hx_head[hx_l].line_break );
+                    cvterr = i_yes_no( p, &attr_val, &layout_work.hx.hx_head[hx_l].line_break );
                     AttrFlags.line_break = true;
                     break;
                 case e_display_heading:
                     if( AttrFlags.display_heading ) {
-                        xx_line_err_ci( err_att_dup, lay_attr.att_name,
-                            lay_attr.val.name - lay_attr.att_name + lay_attr.val.len);
+                        xx_line_err_ci( err_att_dup, attr_name.att_name,
+                            attr_val.name - attr_name.att_name + attr_val.len);
                     }
-                    cvterr = i_yes_no( p, &lay_attr, &layout_work.hx.hx_head[hx_l].display_heading );
+                    cvterr = i_yes_no( p, &attr_val, &layout_work.hx.hx_head[hx_l].display_heading );
                     AttrFlags.display_heading = true;
                     break;
                 case e_number_reset:
                     if( AttrFlags.number_reset ) {
-                        xx_line_err_ci( err_att_dup, lay_attr.att_name,
-                            lay_attr.val.name - lay_attr.att_name + lay_attr.val.len);
+                        xx_line_err_ci( err_att_dup, attr_name.att_name,
+                            attr_val.name - attr_name.att_name + attr_val.len);
                     }
-                    cvterr = i_yes_no( p, &lay_attr, &layout_work.hx.hx_head[hx_l].number_reset );
+                    cvterr = i_yes_no( p, &attr_val, &layout_work.hx.hx_head[hx_l].number_reset );
                     AttrFlags.number_reset = true;
                     break;
                 case e_case:
                     if( AttrFlags.case_a ) {
-                        xx_line_err_ci( err_att_dup, lay_attr.att_name,
-                            lay_attr.val.name - lay_attr.att_name + lay_attr.val.len);
+                        xx_line_err_ci( err_att_dup, attr_name.att_name,
+                            attr_val.name - attr_name.att_name + attr_val.len);
                     }
-                    cvterr = i_case( p, &lay_attr, &layout_work.hx.hx_head[hx_l].hd_case );
+                    cvterr = i_case( p, &attr_val, &layout_work.hx.hx_head[hx_l].hd_case );
                     AttrFlags.case_a = true;
                     break;
                 case e_align:
                     if( AttrFlags.align ) {
-                        xx_line_err_ci( err_att_dup, lay_attr.att_name,
-                            lay_attr.val.name - lay_attr.att_name + lay_attr.val.len);
+                        xx_line_err_ci( err_att_dup, attr_name.att_name,
+                            attr_val.name - attr_name.att_name + attr_val.len);
                     }
-                    cvterr = i_space_unit( p, &lay_attr, &layout_work.hx.hx_head[hx_l].align );
+                    cvterr = i_space_unit( p, &attr_val, &layout_work.hx.hx_head[hx_l].align );
                     AttrFlags.align = true;
                     break;
                 default:

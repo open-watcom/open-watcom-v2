@@ -89,7 +89,8 @@ void    lay_heading( const gmltag * entry )
     int                 cvterr;
     int                 k;
     lay_att             curr;
-    lay_att_val         lay_attr;
+    att_name_type       attr_name;
+    att_val_type        attr_val;
 
     (void)entry;
 
@@ -105,52 +106,52 @@ void    lay_heading( const gmltag * entry )
         ProcFlags.lay_xxx = el_heading;
     }
 
-    while( (cc = lay_attr_and_value( &lay_attr )) == pos ) {   // get att with value
+    while( (cc = lay_attr_and_value( &attr_name, &attr_val )) == pos ) {   // get att with value
         cvterr = -1;
         for( k = 0, curr = heading_att[k]; curr > 0; k++, curr = heading_att[k] ) {
-            if( strcmp( lay_att_names[curr], lay_attr.attname ) == 0 ) {
-                p = lay_attr.val.name;
+            if( strcmp( lay_att_names[curr], attr_name.attname.l ) == 0 ) {
+                p = attr_val.name;
                 switch( curr ) {
                 case e_delim:
                     if( AttrFlags.delim ) {
-                        xx_line_err_ci( err_att_dup, lay_attr.att_name,
-                            lay_attr.val.name - lay_attr.att_name + lay_attr.val.len);
+                        xx_line_err_ci( err_att_dup, attr_name.att_name,
+                            attr_val.name - attr_name.att_name + attr_val.len);
                     }
-                    cvterr = i_char( p, &lay_attr, &layout_work.heading.delim );
+                    cvterr = i_char( p, &attr_val, &layout_work.heading.delim );
                     AttrFlags.delim = true;
                     break;
                 case e_stop_eject:
                     if( AttrFlags.stop_eject ) {
-                        xx_line_err_ci( err_att_dup, lay_attr.att_name,
-                            lay_attr.val.name - lay_attr.att_name + lay_attr.val.len);
+                        xx_line_err_ci( err_att_dup, attr_name.att_name,
+                            attr_val.name - attr_name.att_name + attr_val.len);
                     }
-                    cvterr = i_yes_no( p, &lay_attr,
+                    cvterr = i_yes_no( p, &attr_val,
                                            &layout_work.heading.stop_eject );
                     AttrFlags.stop_eject = true;
                     break;
                 case e_para_indent:
                     if( AttrFlags.para_indent ) {
-                        xx_line_err_ci( err_att_dup, lay_attr.att_name,
-                            lay_attr.val.name - lay_attr.att_name + lay_attr.val.len);
+                        xx_line_err_ci( err_att_dup, attr_name.att_name,
+                            attr_val.name - attr_name.att_name + attr_val.len);
                     }
-                    cvterr = i_yes_no( p, &lay_attr,
+                    cvterr = i_yes_no( p, &attr_val,
                                            &layout_work.heading.para_indent );
                     AttrFlags.para_indent = true;
                     break;
                 case e_threshold:
                     if( AttrFlags.threshold ) {
-                        xx_line_err_ci( err_att_dup, lay_attr.att_name,
-                            lay_attr.val.name - lay_attr.att_name + lay_attr.val.len);
+                        xx_line_err_ci( err_att_dup, attr_name.att_name,
+                            attr_val.name - attr_name.att_name + attr_val.len);
                     }
-                    cvterr = i_threshold( p, &lay_attr, &layout_work.heading.threshold );
+                    cvterr = i_threshold( p, &attr_val, &layout_work.heading.threshold );
                     AttrFlags.threshold = true;
                     break;
                 case e_max_group:
                     if( AttrFlags.max_group ) {
-                        xx_line_err_ci( err_att_dup, lay_attr.att_name,
-                            lay_attr.val.name - lay_attr.att_name + lay_attr.val.len);
+                        xx_line_err_ci( err_att_dup, attr_name.att_name,
+                            attr_val.name - attr_name.att_name + attr_val.len);
                     }
-                    cvterr = i_int8( p, &lay_attr, &layout_work.heading.max_group );
+                    cvterr = i_int8( p, &attr_val, &layout_work.heading.max_group );
                     AttrFlags.max_group = true;
                     break;
                 default:

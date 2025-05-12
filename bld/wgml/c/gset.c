@@ -59,7 +59,8 @@ extern  void    gml_set( const gmltag * entry )
     symvar          sym;
     sub_index       subscript;
     symdict_hdl     working_dict;
-    tag_att_val     tag_attr;
+    att_name_type   attr_name;
+    att_val_type    attr_val;
 
     (void)entry;
 
@@ -71,19 +72,19 @@ extern  void    gml_set( const gmltag * entry )
         /* already at tag end */
     } else {
         for( ;;) {
-            p = get_att_name( p, &pa, &tag_attr );
+            p = get_att_name( p, &pa, &attr_name );
             if( ProcFlags.reprocess_line ) {
                 break;
             }
-            if( strcmp( "symbol", tag_attr.attname ) == 0 ) {
+            if( strcmp( "symbol", attr_name.attname.t ) == 0 ) {
 
                 /* both get_att_value() and scan_sym() must be used */
 
-                p = get_att_value( p, &tag_attr.val );
-                if( tag_attr.val.name == NULL ) {
+                p = get_att_value( p, &attr_val );
+                if( attr_val.name == NULL ) {
                     break;
                 }
-                scan_sym( tag_attr.val.name, &sym, &subscript, NULL, false );
+                scan_sym( attr_val.name, &sym, &subscript, NULL, false );
                 if( g_scan_err ) {
                     break;
                 }
@@ -91,16 +92,16 @@ extern  void    gml_set( const gmltag * entry )
                 if( ProcFlags.tag_end_found ) {
                     break;
                 }
-            } else if( strcmp( "value", tag_attr.attname ) == 0 ) {
-                p = get_att_value( p, &tag_attr.val );
-                if( tag_attr.val.name == NULL ) {
+            } else if( strcmp( "value", attr_name.attname.t ) == 0 ) {
+                p = get_att_value( p, &attr_val );
+                if( attr_val.name == NULL ) {
                     break;
                 }
                 value_found = true;
-                if( tag_attr.val.len > BUF_SIZE - 1 )
-                    tag_attr.val.len = BUF_SIZE - 1;
-                strncpy( token_buf, tag_attr.val.name, tag_attr.val.len );
-                token_buf[tag_attr.val.len] = '\0';
+                if( attr_val.len > BUF_SIZE - 1 )
+                    attr_val.len = BUF_SIZE - 1;
+                strncpy( token_buf, attr_val.name, attr_val.len );
+                token_buf[attr_val.len] = '\0';
                 if( ProcFlags.tag_end_found ) {
                     break;
                 }

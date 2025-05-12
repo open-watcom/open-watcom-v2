@@ -124,7 +124,8 @@ void    lay_ix( const gmltag * entry )
     int                 ix_l;
     int                 k;
     lay_att             curr;
-    lay_att_val         lay_attr;
+    att_name_type       attr_name;
+    att_val_type        attr_val;
 
     p = scandata.s;
 
@@ -154,45 +155,45 @@ void    lay_ix( const gmltag * entry )
         ix_l = 2;
     }
 
-    while( (cc = lay_attr_and_value( &lay_attr )) == pos ) {   // get att with value
+    while( (cc = lay_attr_and_value( &attr_name, &attr_val )) == pos ) {   // get att with value
         cvterr = -1;
         for( k = 0, curr = ix_att[k]; curr > 0; k++, curr = ix_att[k] ) {
-            if( strcmp( lay_att_names[curr], lay_attr.attname ) == 0 ) {
-                p = lay_attr.val.name;
+            if( strcmp( lay_att_names[curr], attr_name.attname.l ) == 0 ) {
+                p = attr_val.name;
                 switch( curr ) {
                 case e_pre_skip:
                     if( AttrFlags.pre_skip ) {
-                        xx_line_err_ci( err_att_dup, lay_attr.att_name,
-                            lay_attr.val.name - lay_attr.att_name + lay_attr.val.len);
+                        xx_line_err_ci( err_att_dup, attr_name.att_name,
+                            attr_val.name - attr_name.att_name + attr_val.len);
                     }
-                    cvterr = i_space_unit( p, &lay_attr,
+                    cvterr = i_space_unit( p, &attr_val,
                                            &layout_work.ix[ix_l].pre_skip );
                     AttrFlags.pre_skip = true;
                     break;
                 case e_post_skip:
                     if( AttrFlags.post_skip ) {
-                        xx_line_err_ci( err_att_dup, lay_attr.att_name,
-                            lay_attr.val.name - lay_attr.att_name + lay_attr.val.len);
+                        xx_line_err_ci( err_att_dup, attr_name.att_name,
+                            attr_val.name - attr_name.att_name + attr_val.len);
                     }
-                    cvterr = i_space_unit( p, &lay_attr,
+                    cvterr = i_space_unit( p, &attr_val,
                                            &layout_work.ix[ix_l].post_skip );
                     AttrFlags.post_skip = true;
                     break;
                 case e_skip:
                     if( AttrFlags.skip ) {
-                        xx_line_err_ci( err_att_dup, lay_attr.att_name,
-                            lay_attr.val.name - lay_attr.att_name + lay_attr.val.len);
+                        xx_line_err_ci( err_att_dup, attr_name.att_name,
+                            attr_val.name - attr_name.att_name + attr_val.len);
                     }
-                    cvterr = i_space_unit( p, &lay_attr,
+                    cvterr = i_space_unit( p, &attr_val,
                                            &layout_work.ix[ix_l].skip );
                     AttrFlags.skip = true;
                     break;
                 case e_font:
                     if( AttrFlags.font ) {
-                        xx_line_err_ci( err_att_dup, lay_attr.att_name,
-                            lay_attr.val.name - lay_attr.att_name + lay_attr.val.len);
+                        xx_line_err_ci( err_att_dup, attr_name.att_name,
+                            attr_val.name - attr_name.att_name + attr_val.len);
                     }
-                    cvterr = i_font_number( p, &lay_attr, &layout_work.ix[ix_l].font );
+                    cvterr = i_font_number( p, &attr_val, &layout_work.ix[ix_l].font );
                     if( layout_work.ix[ix_l].font >= wgml_font_cnt ) {
                         layout_work.ix[ix_l].font = 0;
                     }
@@ -200,38 +201,38 @@ void    lay_ix( const gmltag * entry )
                     break;
                 case e_indent:
                     if( AttrFlags.indent ) {
-                        xx_line_err_ci( err_att_dup, lay_attr.att_name,
-                            lay_attr.val.name - lay_attr.att_name + lay_attr.val.len);
+                        xx_line_err_ci( err_att_dup, attr_name.att_name,
+                            attr_val.name - attr_name.att_name + attr_val.len);
                     }
-                    cvterr = i_space_unit( p, &lay_attr,
+                    cvterr = i_space_unit( p, &attr_val,
                                            &layout_work.ix[ix_l].indent );
                     AttrFlags.indent = true;
                     break;
                 case e_wrap_indent:
                     if( AttrFlags.wrap_indent ) {
-                        xx_line_err_ci( err_att_dup, lay_attr.att_name,
-                            lay_attr.val.name - lay_attr.att_name + lay_attr.val.len);
+                        xx_line_err_ci( err_att_dup, attr_name.att_name,
+                            attr_val.name - attr_name.att_name + attr_val.len);
                     }
-                    cvterr = i_space_unit( p, &lay_attr,
+                    cvterr = i_space_unit( p, &attr_val,
                                            &layout_work.ix[ix_l].wrap_indent );
                     AttrFlags.wrap_indent = true;
                     break;
                 case e_index_delim:
                     if( AttrFlags.index_delim ) {
-                        xx_line_err_ci( err_att_dup, lay_attr.att_name,
-                            lay_attr.val.name - lay_attr.att_name + lay_attr.val.len);
+                        xx_line_err_ci( err_att_dup, attr_name.att_name,
+                            attr_val.name - attr_name.att_name + attr_val.len);
                     }
-                    cvterr = i_xx_string( p, &lay_attr,
+                    cvterr = i_xx_string( p, &attr_val,
                                           layout_work.ix[ix_l].index_delim );
                     AttrFlags.index_delim = true;
                     break;
                 case e_string_font:
                     if( AttrFlags.string_font ) {
-                        xx_line_err_ci( err_att_dup, lay_attr.att_name,
-                            lay_attr.val.name - lay_attr.att_name + lay_attr.val.len);
+                        xx_line_err_ci( err_att_dup, attr_name.att_name,
+                            attr_val.name - attr_name.att_name + attr_val.len);
                     }
                     if( ix_l < 2 ) {
-                        cvterr = i_font_number( p, &lay_attr,
+                        cvterr = i_font_number( p, &attr_val,
                                          &layout_work.ix[ix_l].string_font );
                         if( layout_work.ix[ix_l].string_font >= wgml_font_cnt ) {
                             layout_work.ix[ix_l].string_font = 0;

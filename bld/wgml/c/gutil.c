@@ -884,7 +884,7 @@ char *get_tag_attname( const char *p, char *attname )
     return( (char *)p );
 }
 
-char *get_att_name( char *p, char **orig, tag_att_val *tag_attr )
+char *get_att_name( char *p, char **orig, att_name_type *attr_name )
 {
     static char     buf[BUF_SIZE + 1];
 
@@ -927,8 +927,8 @@ char *get_att_name( char *p, char **orig, tag_att_val *tag_attr )
             break;      // potential next attribute found
         }
     }
-    tag_attr->att_name = p;
-    p = get_tag_attname( p, tag_attr->attname );
+    attr_name->att_name = p;
+    p = get_tag_attname( p, attr_name->attname.t );
     return( p );
 }
 

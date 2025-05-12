@@ -37,7 +37,7 @@
 #include "gtype.h"
 #include "gtypelay.h"
 
-typedef lay_att_val     *lay_attr_i;
+typedef att_val_type    *lay_attr_i;
 typedef lay_att         lay_attr_o;
 
 #endif  /* GVARS_H_INCLUDED */

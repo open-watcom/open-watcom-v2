@@ -169,7 +169,7 @@ extern  void        init_entry_list( ix_h_blk * term );
 /* glayutil.c                           */
 extern  void        eat_lay_sub_tag( void );
 extern  void        free_layout( void );
-extern  condcode    lay_attr_and_value( lay_att_val *lay_attr );
+extern  condcode    lay_attr_and_value( att_name_type *attr_name, att_val_type *attr_val );
 /*
  * prototypes for the layout tag attribute processing routines
  *
@@ -420,7 +420,7 @@ extern char         *format_num( unsigned n, char *r, unsigned rsize, num_style 
 extern void         free_ffh_list( ffh_entry *ffh_list );
 extern void         free_fwd_refs( fwd_ref *fwd_refs );
 extern void         g_keep_nest( const char *cw_tag );
-extern char         *get_att_name( char *p, char **orig, tag_att_val *tag_attr );
+extern char         *get_att_name( char *p, char **orig, att_name_type *tag_attr );
 extern void         get_att_specval( att_val_type *attr_val );
 extern char         *get_att_value( char *p, att_val_type *attr_val );
 extern char         *get_tag_value( char *p, att_val_type *attr_val );

@@ -1815,16 +1815,12 @@ typedef struct att_val_type {
     char            specval[SPECVAL_LENGTH + 1];
 } att_val_type;
 
-typedef struct tag_att_val {
+typedef struct att_name_type {
     char            *att_name;
-    att_val_type    val;
-    char            attname[TAG_ATT_NAME_LENGTH + 1];
-} tag_att_val;
+    union {
+    	char        t[TAG_ATT_NAME_LENGTH + 1];
+		char        l[LAY_ATT_NAME_LENGTH + 1];
+    } attname;
+} att_name_type;
 
-typedef struct lay_att_val {
-    char            *att_name;
-    att_val_type    val;
-    char            attname[LAY_ATT_NAME_LENGTH + 1];
-} lay_att_val;
-
-#endif                                  // GTYPE_H_INCLUDED
+#endif  /* GTYPE_H_INCLUDED */

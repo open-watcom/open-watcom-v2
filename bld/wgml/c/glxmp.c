@@ -107,7 +107,8 @@ void    lay_xmp( const gmltag * entry )
     int                 cvterr;
     int                 k;
     lay_att             curr;
-    lay_att_val         lay_attr;
+    att_name_type       attr_name;
+    att_val_type        attr_val;
 
     (void)entry;
 
@@ -122,60 +123,60 @@ void    lay_xmp( const gmltag * entry )
     if( ProcFlags.lay_xxx != el_xmp ) {
         ProcFlags.lay_xxx = el_xmp;
     }
-    while( (cc = lay_attr_and_value( &lay_attr )) == pos ) {   // get att with value
+    while( (cc = lay_attr_and_value( &attr_name, &attr_val )) == pos ) {   // get att with value
         cvterr = -1;
         for( k = 0, curr = xmp_att[k]; curr > 0; k++, curr = xmp_att[k] ) {
-            if( strcmp( lay_att_names[curr], lay_attr.attname ) == 0 ) {
-                p = lay_attr.val.name;
+            if( strcmp( lay_att_names[curr], attr_name.attname.l ) == 0 ) {
+                p = attr_val.name;
                 switch( curr ) {
                 case e_left_indent:
                     if( AttrFlags.left_indent ) {
-                        xx_line_err_ci( err_att_dup, lay_attr.att_name,
-                            lay_attr.val.name - lay_attr.att_name + lay_attr.val.len);
+                        xx_line_err_ci( err_att_dup, attr_name.att_name,
+                            attr_val.name - attr_name.att_name + attr_val.len);
                     }
-                    cvterr = i_space_unit( p, &lay_attr,
+                    cvterr = i_space_unit( p, &attr_val,
                                            &layout_work.xmp.left_indent );
                     AttrFlags.left_indent = true;
                     break;
                 case e_right_indent:
                     if( AttrFlags.right_indent ) {
-                        xx_line_err_ci( err_att_dup, lay_attr.att_name,
-                            lay_attr.val.name - lay_attr.att_name + lay_attr.val.len);
+                        xx_line_err_ci( err_att_dup, attr_name.att_name,
+                            attr_val.name - attr_name.att_name + attr_val.len);
                     }
-                    cvterr = i_space_unit( p, &lay_attr,
+                    cvterr = i_space_unit( p, &attr_val,
                                            &layout_work.xmp.right_indent );
                     AttrFlags.right_indent = true;
                     break;
                 case e_pre_skip:
                     if( AttrFlags.pre_skip ) {
-                        xx_line_err_ci( err_att_dup, lay_attr.att_name,
-                            lay_attr.val.name - lay_attr.att_name + lay_attr.val.len);
+                        xx_line_err_ci( err_att_dup, attr_name.att_name,
+                            attr_val.name - attr_name.att_name + attr_val.len);
                     }
-                    cvterr = i_space_unit( p, &lay_attr, &layout_work.xmp.pre_skip );
+                    cvterr = i_space_unit( p, &attr_val, &layout_work.xmp.pre_skip );
                     AttrFlags.pre_skip = true;
                     break;
                 case e_post_skip:
                     if( AttrFlags.post_skip ) {
-                        xx_line_err_ci( err_att_dup, lay_attr.att_name,
-                            lay_attr.val.name - lay_attr.att_name + lay_attr.val.len);
+                        xx_line_err_ci( err_att_dup, attr_name.att_name,
+                            attr_val.name - attr_name.att_name + attr_val.len);
                     }
-                    cvterr = i_space_unit( p, &lay_attr, &layout_work.xmp.post_skip );
+                    cvterr = i_space_unit( p, &attr_val, &layout_work.xmp.post_skip );
                     AttrFlags.post_skip = true;
                     break;
                 case e_spacing:
                     if( AttrFlags.spacing ) {
-                        xx_line_err_ci( err_att_dup, lay_attr.att_name,
-                            lay_attr.val.name - lay_attr.att_name + lay_attr.val.len);
+                        xx_line_err_ci( err_att_dup, attr_name.att_name,
+                            attr_val.name - attr_name.att_name + attr_val.len);
                     }
-                    cvterr = i_spacing( p, &lay_attr, &layout_work.xmp.spacing );
+                    cvterr = i_spacing( p, &attr_val, &layout_work.xmp.spacing );
                     AttrFlags.spacing = true;
                     break;
                 case e_font:
                     if( AttrFlags.font ) {
-                        xx_line_err_ci( err_att_dup, lay_attr.att_name,
-                            lay_attr.val.name - lay_attr.att_name + lay_attr.val.len);
+                        xx_line_err_ci( err_att_dup, attr_name.att_name,
+                            attr_val.name - attr_name.att_name + attr_val.len);
                     }
-                    cvterr = i_font_number( p, &lay_attr, &layout_work.xmp.font );
+                    cvterr = i_font_number( p, &attr_val, &layout_work.xmp.font );
                     if( layout_work.xmp.font >= wgml_font_cnt ) {
                         layout_work.xmp.font = 0;
                     }

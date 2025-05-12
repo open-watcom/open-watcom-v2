@@ -47,7 +47,8 @@ static char * get_ref_attributes( void )
 {
     char            *p;
     char            *pa;
-    tag_att_val     tag_attr;
+    att_name_type   attr_name;
+    att_val_type    attr_val;
 
     g_scan_err = false;
     p = scandata.s;
@@ -56,29 +57,29 @@ static char * get_ref_attributes( void )
         /* already at tag end */
     } else {
         for( ;; ) {
-            p = get_att_name( p, &pa, &tag_attr );
+            p = get_att_name( p, &pa, &attr_name );
             if( ProcFlags.reprocess_line ) {
                 break;
             }
-            if( strcmp( "page", tag_attr.attname ) == 0 ) {
+            if( strcmp( "page", attr_name.attname.t ) == 0 ) {
                 page_found = true;
-                p = get_att_value( p, &tag_attr.val );
-                if( tag_attr.val.name == NULL ) {
+                p = get_att_value( p, &attr_val );
+                if( attr_val.name == NULL ) {
                     break;
                 }
-                if( strcmp( "yes", tag_attr.val.specval ) == 0 ) {
+                if( strcmp( "yes", attr_val.specval ) == 0 ) {
                     ref_page = true;
-                } else if( strcmp( "no", tag_attr.val.specval ) == 0 ) {
+                } else if( strcmp( "no", attr_val.specval ) == 0 ) {
                     ref_page = false;
                 } else {
-                    xx_line_err_c( err_inv_att_val, tag_attr.val.name );
+                    xx_line_err_c( err_inv_att_val, attr_val.name );
                 }
                 if( ProcFlags.tag_end_found ) {
                     break;
                 }
-            } else if( strcmp( "refid", tag_attr.attname ) == 0 ) {
-                p = get_refid_value( p, &tag_attr.val, refid );
-                if( tag_attr.val.name == NULL ) {
+            } else if( strcmp( "refid", attr_name.attname.t ) == 0 ) {
+                p = get_refid_value( p, &attr_val, refid );
+                if( attr_val.name == NULL ) {
                     break;
                 }
                 refid_found = true;

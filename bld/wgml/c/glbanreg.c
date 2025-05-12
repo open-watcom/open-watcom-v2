@@ -285,7 +285,8 @@ void    lay_banregion( const gmltag * entry )
     int                 k;
     lay_att             curr;
     region_lay_tag  *   reg;
-    lay_att_val         lay_attr;
+    att_name_type       attr_name;
+    att_val_type        attr_val;
 
     (void)entry;
 
@@ -312,11 +313,11 @@ void    lay_banregion( const gmltag * entry )
         init_banregion_wk( &wk );
     }
 
-    while( (cc = lay_attr_and_value( &lay_attr )) == pos ) {   // get att with value
+    while( (cc = lay_attr_and_value( &attr_name, &attr_val )) == pos ) {   // get att with value
         for( k = 0; k < att_count; k++ ) {
             curr = banregion_att[k];
-            if( strcmp( lay_att_names[curr], lay_attr.attname ) == 0 ) {
-                p = lay_attr.val.name;
+            if( strcmp( lay_att_names[curr], attr_name.attname.l ) == 0 ) {
+                p = attr_val.name;
                 if( count[k] ) {
                     if( sum_count == att_count ) {  // all attributes found
                         xx_err( err_lay_text );     // per wgml 4.0: treat as text
@@ -329,59 +330,59 @@ void    lay_banregion( const gmltag * entry )
                     switch( curr ) {
                     case e_indent:
                         if( AttrFlags.indent ) {
-                            xx_line_err_ci( err_att_dup, lay_attr.att_name,
-                                lay_attr.val.name - lay_attr.att_name + lay_attr.val.len);
+                            xx_line_err_ci( err_att_dup, attr_name.att_name,
+                                attr_val.name - attr_name.att_name + attr_val.len);
                         }
-                        i_space_unit( p, &lay_attr, &wk.indent );
+                        i_space_unit( p, &attr_val, &wk.indent );
                         AttrFlags.indent = true;
                         break;
                     case e_hoffset:
                         if( AttrFlags.hoffset ) {
-                            xx_line_err_ci( err_att_dup, lay_attr.att_name,
-                                lay_attr.val.name - lay_attr.att_name + lay_attr.val.len);
+                            xx_line_err_ci( err_att_dup, attr_name.att_name,
+                                attr_val.name - attr_name.att_name + attr_val.len);
                         }
-                        i_space_unit( p, &lay_attr, &wk.hoffset );
+                        i_space_unit( p, &attr_val, &wk.hoffset );
                         AttrFlags.hoffset = true;
                         break;
                     case e_width:
                         if( AttrFlags.width ) {
-                            xx_line_err_ci( err_att_dup, lay_attr.att_name,
-                                lay_attr.val.name - lay_attr.att_name + lay_attr.val.len);
+                            xx_line_err_ci( err_att_dup, attr_name.att_name,
+                                attr_val.name - attr_name.att_name + attr_val.len);
                         }
-                        i_space_unit( p, &lay_attr, &wk.width );
+                        i_space_unit( p, &attr_val, &wk.width );
                         AttrFlags.width = true;
                         break;
                     case e_voffset:
                         if( AttrFlags.voffset ) {
-                            xx_line_err_ci( err_att_dup, lay_attr.att_name,
-                                lay_attr.val.name - lay_attr.att_name + lay_attr.val.len);
+                            xx_line_err_ci( err_att_dup, attr_name.att_name,
+                                attr_val.name - attr_name.att_name + attr_val.len);
                         }
-                        i_space_unit( p, &lay_attr, &wk.voffset );
+                        i_space_unit( p, &attr_val, &wk.voffset );
                         AttrFlags.voffset = true;
                         break;
                     case e_depth:
                         if( AttrFlags.depth ) {
-                            xx_line_err_ci( err_att_dup, lay_attr.att_name,
-                                lay_attr.val.name - lay_attr.att_name + lay_attr.val.len);
+                            xx_line_err_ci( err_att_dup, attr_name.att_name,
+                                attr_val.name - attr_name.att_name + attr_val.len);
                         }
-                        i_space_unit( p, &lay_attr, &wk.depth );
+                        i_space_unit( p, &attr_val, &wk.depth );
                         AttrFlags.depth = true;
                         break;
                     case e_font:
                         if( AttrFlags.font ) {
-                            xx_line_err_ci( err_att_dup, lay_attr.att_name,
-                                lay_attr.val.name - lay_attr.att_name + lay_attr.val.len);
+                            xx_line_err_ci( err_att_dup, attr_name.att_name,
+                                attr_val.name - attr_name.att_name + attr_val.len);
                         }
-                        i_font_number( p, &lay_attr, &wk.font );
+                        i_font_number( p, &attr_val, &wk.font );
                         if( wk.font >= wgml_font_cnt ) wk.font = 0;
                         AttrFlags.font = true;
                         break;
                     case e_refnum:
                         if( AttrFlags.refnum ) {
-                            xx_line_err_ci( err_att_dup, lay_attr.att_name,
-                                lay_attr.val.name - lay_attr.att_name + lay_attr.val.len);
+                            xx_line_err_ci( err_att_dup, attr_name.att_name,
+                                attr_val.name - attr_name.att_name + attr_val.len);
                         }
-                        i_uint8( p, &lay_attr, &wk.refnum );
+                        i_uint8( p, &attr_val, &wk.refnum );
                         if( wk.refnum == 0 ) {   // refnum must be greater than zero
                             xx_line_err_c( err_num_zero, p );
                         }
@@ -389,38 +390,38 @@ void    lay_banregion( const gmltag * entry )
                         break;
                     case e_region_position:
                         if( AttrFlags.region_position ) {
-                            xx_line_err_ci( err_att_dup, lay_attr.att_name,
-                                lay_attr.val.name - lay_attr.att_name + lay_attr.val.len);
+                            xx_line_err_ci( err_att_dup, attr_name.att_name,
+                                attr_val.name - attr_name.att_name + attr_val.len);
                         }
-                        i_page_position( p, &lay_attr, &wk.region_position );
+                        i_page_position( p, &attr_val, &wk.region_position );
                         AttrFlags.region_position = true;
                         break;
                     case e_pouring:
                         if( AttrFlags.pouring ) {
-                            xx_line_err_ci( err_att_dup, lay_attr.att_name,
-                                lay_attr.val.name - lay_attr.att_name + lay_attr.val.len);
+                            xx_line_err_ci( err_att_dup, attr_name.att_name,
+                                attr_val.name - attr_name.att_name + attr_val.len);
                         }
-                        i_pouring( p, &lay_attr, &wk.pouring );
+                        i_pouring( p, &attr_val, &wk.pouring );
                         AttrFlags.pouring = true;
                         break;
                     case e_script_format:
                         if( AttrFlags.script_format ) {
-                            xx_line_err_ci( err_att_dup, lay_attr.att_name,
-                                lay_attr.val.name - lay_attr.att_name + lay_attr.val.len);
+                            xx_line_err_ci( err_att_dup, attr_name.att_name,
+                                attr_val.name - attr_name.att_name + attr_val.len);
                         }
-                        i_yes_no( p, &lay_attr, &wk.script_format );
+                        i_yes_no( p, &attr_val, &wk.script_format );
                         AttrFlags.script_format = true;
                         break;
                     case e_contents:
                         if( AttrFlags.contents ) {
-                            xx_line_err_ci( err_att_dup, lay_attr.att_name,
-                                lay_attr.val.name - lay_attr.att_name + lay_attr.val.len);
+                            xx_line_err_ci( err_att_dup, attr_name.att_name,
+                                attr_val.name - attr_name.att_name + attr_val.len);
                         }
-                        if( lay_attr.val.quoted ) {
+                        if( attr_val.quoted ) {
                             wk.contents.content_type = string_content;
-                            i_xx_string( p, &lay_attr, wk.contents.string );
+                            i_xx_string( p, &attr_val, wk.contents.string );
                         } else {
-                            i_content( p, &lay_attr, &wk.contents );
+                            i_content( p, &attr_val, &wk.contents );
                         }
                         AttrFlags.contents = true;
                         break;
