@@ -175,6 +175,9 @@ void    lay_p( const gmltag * entry )
     }
     while( (cc = lay_attr_and_value( &lay_attr )) == pos ) {   // get att with value
         cvterr = process_arg( &layout_work.p, &lay_attr );
+        if( ProcFlags.tag_end_found ) {
+            break;
+        }
     }
     scandata.s = scandata.e;
     return;
@@ -204,8 +207,10 @@ void    lay_pc( const gmltag * entry )
     }
     while( (cc = lay_attr_and_value( &lay_attr )) == pos ) {   // get att with value
         cvterr = process_arg( &layout_work.pc, &lay_attr );
+        if( ProcFlags.tag_end_found ) {
+            break;
+        }
     }
     scandata.s = scandata.e;
     return;
 }
-

@@ -88,6 +88,9 @@ extern  void    gml_set( const gmltag * entry )
                     break;
                 }
                 symbol_found = true;
+                if( ProcFlags.tag_end_found ) {
+                    break;
+                }
             } else if( strcmp( "value", tag_attr.attname ) == 0 ) {
                 p = get_att_value( p, &tag_attr.val );
                 if( tag_attr.val.name == NULL ) {
@@ -98,8 +101,14 @@ extern  void    gml_set( const gmltag * entry )
                     tag_attr.val.len = BUF_SIZE - 1;
                 strncpy( token_buf, tag_attr.val.name, tag_attr.val.len );
                 token_buf[tag_attr.val.len] = '\0';
+                if( ProcFlags.tag_end_found ) {
+                    break;
+                }
             } else if( strnicmp( "delete", token_buf, 6 ) == 0 ) {
                 sym.flags |= deleted;
+                if( ProcFlags.tag_end_found ) {
+                    break;
+                }
             } else {    // no match = end-of-tag in wgml 4.0
                 ProcFlags.tag_end_found = true;
                 p = pa; // restore spaces before text

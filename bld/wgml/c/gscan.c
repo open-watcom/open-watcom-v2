@@ -239,6 +239,7 @@ static void scan_gml( void )
         if( ProcFlags.layout ) {        // different tags within :LAYOUT
             tag = find_lay_tag( tagname, toklen );
             if( tag != NULL ) {
+                ProcFlags.tag_end_found = false;
                 if( rs_loc == 0 ) {
                     // no restrictions: do them all
                     tag->gmlproc( tag );
@@ -294,6 +295,7 @@ static void scan_gml( void )
                 /*  The index tags (I1, I2, I3, IH1, IH2, IH3) are exceptions      */
                 /*******************************************************************/
 
+                ProcFlags.tag_end_found = false;
                 if( ProcFlags.need_ddhd ) {
                     if( tag->tagclass & index_tag ) {
                         // tag is index tag

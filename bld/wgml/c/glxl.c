@@ -646,6 +646,9 @@ void    lay_dl( const gmltag * entry )
                 break;                  // break out of for loop
             }
         }
+        if( ProcFlags.tag_end_found ) {
+            break;
+        }
     }
 
     /* Now integrate the DL LAYOUT into the linked list */
@@ -834,6 +837,9 @@ void    lay_gl( const gmltag * entry )
                 }
                 break;                  // break out of for loop
             }
+        }
+        if( ProcFlags.tag_end_found ) {
+            break;
         }
     }
 
@@ -1048,6 +1054,9 @@ void    lay_ol( const gmltag * entry )
                 break;                  // break out of for loop
             }
         }
+        if( ProcFlags.tag_end_found ) {
+            break;
+        }
     }
 
     /* Now integrate the OL LAYOUT into the linked list */
@@ -1236,6 +1245,9 @@ void    lay_sl( const gmltag * entry )
                 }
                 break;                  // break out of for loop
             }
+        }
+        if( ProcFlags.tag_end_found ) {
+            break;
         }
     }
 
@@ -1454,6 +1466,9 @@ void    lay_ul( const gmltag * entry )
                 }
                 break;                  // break out of for loop
             }
+        }
+        if( ProcFlags.tag_end_found ) {
+            break;
         }
     }
 

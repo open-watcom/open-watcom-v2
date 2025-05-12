@@ -98,7 +98,6 @@ static void gml_ixxx_common( const gmltag * entry, int hx_lvl )
     pgvalue = pgnone;
 
     p = scandata.s;
-    ProcFlags.tag_end_found = false;
 
     /***********************************************************************/
     /*  Scan attributes for Ix IHx IREF                                    */

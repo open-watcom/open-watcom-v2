@@ -405,6 +405,9 @@ void    lay_hx( const gmltag * entry )
         if( cvterr < 0 ) {
             xx_err( err_att_name_inv );
         }
+        if( ProcFlags.tag_end_found ) {
+            break;
+        }
     }
     if( l_group > 0 ) {         // only group 0 is supported
         xx_warn_c( wng_unsupp_lay_att, "group" );

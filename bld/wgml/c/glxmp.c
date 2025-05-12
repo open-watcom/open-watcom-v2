@@ -193,6 +193,9 @@ void    lay_xmp( const gmltag * entry )
         if( cvterr < 0 ) {
             xx_err( err_att_name_inv );
         }
+        if( ProcFlags.tag_end_found ) {
+            break;
+        }
     }
     if( layout_work.xmp.spacing < 1 ) { // enforce minimum value
         xx_err( err_num_zero );

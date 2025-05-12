@@ -888,7 +888,6 @@ char *get_att_name( char *p, char **orig, tag_att_val *tag_attr )
 {
     static char     buf[BUF_SIZE + 1];
 
-    ProcFlags.tag_end_found = false;
     for(;;) {                           // loop until potential attribute/rescan line found
         *orig = p;                      // save initial location
         SkipSpaces( p );                // over WS to attribute

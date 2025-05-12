@@ -124,6 +124,9 @@ void    lay_xx( const gmltag * entry )
         if( cvterr < 0 ) {
             xx_err( err_att_name_inv );
         }
+        if( ProcFlags.tag_end_found ) {
+            break;
+        }
     }
     scandata.s = scandata.e;
     return;
