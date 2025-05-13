@@ -283,8 +283,8 @@ static void gml_ixxx_common( const gmltag * entry, int hx_lvl )
             /*******************************************************/
             scandata.s = buff2;
             scandata.e = buff2 + buff2_lg;
-            if( (*scandata.s == SCR_char)           // cw found: error
-              || (*scandata.s == GML_char)          // tag found: error
+            if( check_tagname( scandata.s, hxstring ) != NULL // tag found: error
+              || (*scandata.s == SCR_char)          // cw found: error
               || (input_cbs->fmflags & II_eof) ) {  // EOF found: error
                 xx_err( err_text_not_tag_cw );
             } else {

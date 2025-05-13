@@ -373,12 +373,12 @@ typedef struct mac_parms {
 /***************************************************************************/
 
 typedef struct  macrocb {
-    line_number         lineno;         // current macro line number
-    inp_line        *   macline;        // list of macro lines
-    mac_entry       *   mac;            // macro definition entry
-    struct gtentry  *   tag;            // tag entry if macro called via tag
-    fflags              flags;
-    bool                ix_seen;        // set when index tag/cw seen (even if indexing is off)
+    line_number     lineno;             // current macro line number
+    inp_line        *macline;           // list of macro lines
+    mac_entry       *mac;               // macro definition entry
+    struct gtentry  *tag;               // tag entry if macro called via tag
+    fflags          flags;
+    bool            ix_seen;            // set when index tag/cw seen (even if indexing is off)
 } macrocb;
 
 /***************************************************************************/
@@ -1818,8 +1818,8 @@ typedef struct att_val_type {
 typedef struct att_name_type {
     char            *att_name;
     union {
-    	char        t[TAG_ATT_NAME_LENGTH + 1];
-		char        l[LAY_ATT_NAME_LENGTH + 1];
+        char        t[TAG_ATT_NAME_LENGTH + 1];
+        char        l[LAY_ATT_NAME_LENGTH + 1];
     } attname;
 } att_name_type;
 

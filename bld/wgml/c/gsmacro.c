@@ -94,7 +94,7 @@ static char *verify_sym( char * p )
 /*  if second parm is not null, macro is called via GML tag processing     */
 /***************************************************************************/
 
-void    add_macro_cb_entry( mac_entry * me, gtentry * ge )
+void    add_macro_cb_entry( mac_entry *me, gtentry *ge )
 {
     macrocb *   new;
     inputcb *   nip;

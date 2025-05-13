@@ -390,20 +390,16 @@ static  bool    test_comment( void )
         if( buff2[1] == '*' ) {
            return( true );
         }
-    } else if( *buff2 == GML_char ) {
-        get_tagname( buff2 + 1, tagname );
+    } else if( check_tagname( buff2, tagname ) != NULL ) {
         if( strcmp( "CMT", tagname ) == 0 ) {
-            if( (*(buff2 + 4) == ' ')
-              || (*(buff2 + 4) == '.') ) {
-                if( ProcFlags.literal ) {   // special
-                    if( li_cnt < INT_MAX ) {// we decrement, do not wait for .li OFF
-                        if( li_cnt-- <= 0 ) {
-                            ProcFlags.literal = false;
-                        }
+            if( ProcFlags.literal ) {   // special
+                if( li_cnt < INT_MAX ) {// we decrement, do not wait for .li OFF
+                    if( li_cnt-- <= 0 ) {
+                        ProcFlags.literal = false;
                     }
                 }
-                return( true );
             }
+            return( true );
         }
     }
     return( false );

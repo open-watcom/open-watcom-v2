@@ -170,7 +170,7 @@ static bool check_att_value( gaentry * ga, gtentry * ge, symdict_hdl loc_dict )
 /*  scan the line, prepare arguments and call processing macro             */
 /***************************************************************************/
 
-bool process_tag( gtentry * ge, mac_entry * me )
+bool process_tag( gtentry *ge, mac_entry * me )
 {
     bool            processed;
     char            longwork[NUM2STR_LENGTH];

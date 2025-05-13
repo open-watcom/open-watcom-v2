@@ -143,9 +143,9 @@ static int find_scr_cw( const char *cwdname )
 }
 
 
-void set_overload( gtentry * in_gt )
+void set_overload( gtentry *in_gt )
 {
-    in_gt->overload = ( find_sys_tag( in_gt->tagname, in_gt->taglen ) != NULL );
+    in_gt->overload = ( find_sys_tag( in_gt->tagname ) != NULL );
 }
 
 /***************************************************************************/
@@ -166,14 +166,8 @@ static void scan_gml( void )
     cb = input_cbs;
 
     g_tok_start = scandata.s;
-    p = get_tagname( scandata.s + 1, tagname );
-    toklen = p - g_tok_start - 1;
-
-    /* If the token is longer than the maximum allowed tag name length,
-     * it cannot be a valid tag name. Get out now so we don't have to watch
-     * for token name buffer overflows.
-     */
-    if( toklen > TAG_NAME_LENGTH ) {
+    p = check_tagname( scandata.s, tagname );
+    if( p == NULL ) {
         return;
     }
 
@@ -236,8 +230,13 @@ static void scan_gml( void )
     if( me != NULL ) {                  // usertag and coresponding macro ok
         processed = process_tag( ge, me );
     } else {
+        /*
+         * If the token is longer than the maximum allowed tag name length,
+         * it is valid tag name but we use internaly shortened name.
+         */
+        toklen = strlen( tagname );
         if( ProcFlags.layout ) {        // different tags within :LAYOUT
-            tag = find_lay_tag( tagname, toklen );
+            tag = find_lay_tag( tagname );
             if( tag != NULL ) {
                 ProcFlags.tag_end_found = false;
                 if( rs_loc == 0 ) {
@@ -256,11 +255,11 @@ static void scan_gml( void )
                 }
                 processed = true;
                 SkipDot( scandata.s );
-            } else if( find_sys_tag( tagname, toklen ) != NULL ) {
+            } else if( find_sys_tag( tagname ) != NULL ) {
                 xx_err_c( err_gml_in_lay, tagname );
             }
         } else {                        // not within :LAYOUT
-            tag = find_sys_tag( tagname, toklen );
+            tag = find_sys_tag( tagname );
             if( tag != NULL ) {
                 if( GlobalFlags.firstpass
                   && strcmp( "LAYOUT", tagname ) == 0
@@ -359,7 +358,7 @@ static void scan_gml( void )
                 }
                 processed = true;
                 SkipDot( scandata.s );
-            } else if( find_lay_tag( tagname, toklen ) != NULL ) {
+            } else if( find_lay_tag( tagname ) != NULL ) {
                 xx_err_c( err_lay_in_gml, tagname );
             }
         }
@@ -911,10 +910,12 @@ void    scan_line( void )
 /*  return ptr to entry if found, else NULL                                */
 /***************************************************************************/
 
-const gmltag *find_sys_tag( const char *tagname, unsigned taglen )
+const gmltag *find_sys_tag( const char *tagname )
 {
-    int k;
+    int                 k;
+    unsigned    taglen;
 
+    taglen = strlen( tagname );
     for( k = 0; k < GML_TAGMAX; ++k ) {
         if( taglen == gml_tags[k].taglen ) {
             if( strcmp( gml_tags[k].tagname, tagname ) == 0 ) {
@@ -932,10 +933,12 @@ const gmltag *find_sys_tag( const char *tagname, unsigned taglen )
 /*  return ptr to entry if found, else NULL                                */
 /***************************************************************************/
 
-const gmltag *find_lay_tag( const char *tagname, unsigned taglen )
+const gmltag *find_lay_tag( const char *tagname )
 {
-    int k;
+    int                 k;
+    unsigned    taglen;
 
+    taglen = strlen( tagname );
     for( k = 0; k < LAY_TAGMAX; ++k ) {
         if( taglen == lay_tags[k].taglen ) {
             if( strcmp( lay_tags[k].tagname, tagname ) == 0 ) {
@@ -979,10 +982,9 @@ bool is_ip_tag( e_tags tag )
 char * get_text_line( char * p )
 {
     bool            use_current = false;
-    char            *tok_start = NULL;
-    char            tok_txt[TAG_NAME_LENGTH + 1];
-    gtentry         *ge;                                        // GML user tag entry
-    unsigned        toklen;
+    char            tagname[TAG_NAME_LENGTH + 1];
+    char            *p1;
+    const gtentry   *ge;                                        // GML user tag entry
 
     if( !ProcFlags.reprocess_line  ) {  // still on last line of tag
         SkipSpaces( p );                // skip initial spaces
@@ -1010,27 +1012,20 @@ char * get_text_line( char * p )
     if( !use_current ) {                // not on same line as tag
         SkipSpaces( p );                // skip initial spaces
         if( *p != '\0' ) {              // text exists
-            classify_record( *p );      // sets ProcFlags used below if appropriate
+            classify_record( p );       // sets ProcFlags used below if appropriate
             if( ProcFlags.scr_cw) {
                 xx_err( err_text_not_tag_cw );  // control word, macro, or whatever
             } else if( ProcFlags.gml_tag ) {
-                p++;
-                tok_start = p;
-                while( is_id_char( *p ) && p < scandata.e ) {   // find end of TAG
-                    p++;
-                }
-                toklen = p - tok_start;
-                if( toklen <= TAG_NAME_LENGTH ) {    // possible tag
-                    strncpy( tok_txt, tok_start, toklen );
-                    tok_txt[toklen] = '\0';
+                p1 = check_tagname( p, tagname );
+                if ( p1 != NULL && ( p1 - p - 1 ) <= TAG_NAME_LENGTH ) { // valid tag
                     if( ProcFlags.layout ) {
                         ge = NULL;                  // no user tags within :LAYOUT
                     } else {
-                        ge = find_user_tag( &tags_dict, tok_txt );
+                        ge = find_user_tag( &tags_dict, tagname );
                     }
                     if( ge != NULL
-                      || find_lay_tag( tok_txt, toklen ) != NULL
-                      || find_sys_tag( tok_txt, toklen ) != NULL ) {
+                      || find_lay_tag( tagname ) != NULL
+                      || find_sys_tag( tagname ) != NULL ) {
                         xx_err( err_text_not_tag_cw );  // control word, macro, or whatever
                     }
                 }

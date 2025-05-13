@@ -179,10 +179,14 @@ void    free_tag_dict( tag_dict *pdict )
 gtentry     *find_user_tag( tag_dict *pdict, const char *tagname )
 {
     tag_dict    dict;
+    unsigned    taglen;
 
+    taglen = strlen( tagname );
     for( dict = *pdict; dict != NULL; dict = dict->next ) {
-        if( strcmp( DICT2GE( dict )->tagname, tagname ) == 0 ) {
-            return( DICT2GE( dict ) );
+        if( DICT2GE( dict )->taglen == taglen ) {
+            if( strcmp( DICT2GE( dict )->tagname, tagname ) == 0 ) {
+                return( DICT2GE( dict ) );
+            }
         }
     }
     return( NULL );
@@ -330,7 +334,7 @@ static  void    print_att_entry( gaentry *wk )
 /*  print_tag_entry   print single GML tag                                 */
 /***************************************************************************/
 
-void    print_tag_entry( gtentry *wk )
+void    print_tag_entry( const gtentry *wk )
 {
     gaentry         *   gawk;
     unsigned            flags;

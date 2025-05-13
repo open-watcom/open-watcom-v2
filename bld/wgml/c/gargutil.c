@@ -440,3 +440,24 @@ char *get_tagname( const char *p, char *tagname )
     tagname[i] = '\0';
     return( (char *)p );
 }
+
+char *check_tagname( const char *p, char *tagname )
+{
+    char    *p1;
+    char    c;
+
+    if( *p == GML_char ) {
+        p++;
+        p1 = get_tagname( p, tagname );
+        c = *p1;
+        if( *tagname != '\0'
+          && ( c == ' '
+          || c == '.'
+          || c == '\0'
+          || c == GML_char
+          || ProcFlags.layout && c == '\t' ) ) {
+            return( p1 );
+        }
+    }
+    return( NULL );
+}

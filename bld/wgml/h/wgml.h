@@ -106,6 +106,7 @@ extern bool         is_symbol_char( char c );
 extern char         parse_char( const char *pa, unsigned len );
 extern int          unquote_arg( tok_type *arg );
 extern char         *get_tagname( const char *p, char *tagname );
+extern char         *check_tagname( const char *p, char *tagname );
 extern char         *get_tag_attname( const char *p, char *attname );
 
 /* gbanner.c                            */
@@ -234,7 +235,7 @@ extern  void        do_force_pc( char * p );
 
 
 /* gprocess.c                           */
-extern  void        classify_record( char firstchar );
+extern  void        classify_record( const char *p );
 extern  void        finalize_subscript( char * * result, bool splittable );
 extern  void        process_late_subst( char * buf );
 extern  void        process_line( void );
@@ -293,11 +294,11 @@ extern  void        eoc_bx_box( void );
 
 
 /* gscan.c                              */
-extern const gmltag *find_lay_tag( const char *tagname, unsigned taglen );
-extern const gmltag *find_sys_tag( const char *tagname, unsigned taglen );
+extern const gmltag *find_lay_tag( const char *tagname );
+extern const gmltag *find_sys_tag( const char *tagname );
 extern char         *get_text_line( char *p );
 extern bool         is_ip_tag( e_tags offset );
-extern void         set_overload( gtentry * in_gt );
+extern void         set_overload( gtentry *in_gt );
 extern void         scan_line( void );
 extern void         set_if_then_do( ifcb * cb );
 extern condcode     test_process( ifcb * cb );
@@ -333,9 +334,9 @@ extern char         *scan_sym( char * p, symvar * sym, sub_index * subscript, ch
 
 
 /* gsmacro.c                            */
-extern  void    add_macro_cb_entry( mac_entry * me, gtentry * ge );
-extern  void    add_macro_parms( char * p );
-extern  void    free_lines( inp_line * line );
+extern void         add_macro_cb_entry( mac_entry *me, gtentry *ge );
+extern void         add_macro_parms( char *p );
+extern void         free_lines( inp_line *line );
 
 
 /* gspe.c                               */
@@ -367,14 +368,14 @@ extern  void    link_sym( symdict_hdl dict, symvar * sym );
 
 
 /* gtagdict.c                           */
-extern  gtentry     *add_tag( tag_dict *pdict, char const *tagname, char const *macname, int flags );
-extern  gtentry     *change_tag( tag_dict *pdict, char const *tagname, char const *macname );
-extern  void        init_tag_dict( tag_dict *pdict );
-extern  void        free_tag_dict( tag_dict *pdict );
-extern  tag_dict    free_tag( tag_dict *pdict, gtentry *ge );
-extern  void        print_tag_dict( tag_dict dict );
-extern  void        print_tag_entry( gtentry *ge );
-extern  gtentry     *find_user_tag( tag_dict *pdict, char const *tagname );
+extern gtentry          *add_tag( tag_dict *pdict, char const *tagname, char const *macname, int flags );
+extern gtentry          *change_tag( tag_dict *pdict, char const *tagname, char const *macname );
+extern void             init_tag_dict( tag_dict *pdict );
+extern void             free_tag_dict( tag_dict *pdict );
+extern tag_dict         free_tag( tag_dict *pdict, gtentry *ge );
+extern void             print_tag_dict( tag_dict dict );
+extern void             print_tag_entry( const gtentry *ge );
+extern gtentry          *find_user_tag( tag_dict *pdict, char const *tagname );
 
 /* gtxtpool.c                           */
 extern  void                add_single_text_chars_to_pool( text_chars * a_chars );
@@ -406,7 +407,7 @@ extern  void        titlep_output( void );
 
 
 /* gusertag.c                           */
-extern  bool        process_tag( gtentry * ge, mac_entry * me );
+extern bool         process_tag( gtentry *ge, mac_entry *me );
 
 
 /* gutil.c                              */
@@ -453,7 +454,7 @@ extern  void    val_parse_err( const char * pa, bool tag );
 extern  void    dup_refid_err( const char *refid, const char * context );
 extern  void    g_err_if_int( void );
 extern  void    g_err_tag( e_tags etag );
-extern  void    g_err_tag_mac( gtentry * ge );
+extern  void    g_err_tag_mac( const gtentry *ge );
 extern  void    g_err_tag_nest( e_tags etag );
 extern  void    g_err_tag_no( e_tags etag );
 extern  void    g_err_tag_prec( e_tags etag );

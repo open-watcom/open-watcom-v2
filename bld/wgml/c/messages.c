@@ -604,7 +604,7 @@ void g_err_if_int( void )
 
 /* SC--037: The macro 'xxxxxx' for the gml tag 'yyyyy' is not defined */
 
-void g_err_tag_mac( gtentry * ge )
+void g_err_tag_mac( const gtentry *ge )
 {
     char    linestr[NUM2STR_LENGTH];
 

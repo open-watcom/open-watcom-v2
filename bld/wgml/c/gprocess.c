@@ -190,8 +190,7 @@ static void split_at_GML_tag( void )
     char            *pchar;
     const gmltag    *gle = NULL;             // GML layout tag entry
     const gmltag    *gse = NULL;             // GML system tag entry
-    gtentry         *gue = NULL;             // GML user tag entry
-    unsigned        toklen;
+    const gtentry   *gue = NULL;             // GML user tag entry
     char            tagname[TAG_NAME_LENGTH + 1];
 
     /***********************************************************************/
@@ -204,14 +203,8 @@ static void split_at_GML_tag( void )
         while( *(pchar + 1) == GML_char ) {
             pchar++;                    // handle repeated GML_chars
         }
-        p2 = get_tagname( pchar + 1, tagname );
-        toklen = p2 - pchar - 1;
-        if( (toklen > 0)
-          && (toklen <= TAG_NAME_LENGTH)
-          && ((*p2 == '.')
-          || is_space_tab_char( *p2 )
-          || (*p2 == '\0')
-          || (*p2 == GML_char) ) ) {    // 'good' tag end ????? should be ' ' or '\t' or '.' or '\0'
+        p2 = check_tagname( pchar, tagname );
+        if( p2 != NULL ) {
             if( strcmp( "CMT", tagname ) == 0 ) {
                 /* is  comment */
                 *pchar = '\0';
@@ -226,8 +219,8 @@ static void split_at_GML_tag( void )
             /* Verify valid user or system tag                             */
             /***************************************************************/
             if( ( (gue = find_user_tag( &tags_dict, tagname )) != NULL )
-              || ( (gse = find_sys_tag( tagname, toklen )) != NULL )
-              || ( (gle = find_lay_tag( tagname, toklen )) != NULL ) ) {
+              || ( (gse = find_sys_tag( tagname )) != NULL )
+              || ( (gle = find_lay_tag( tagname )) != NULL ) ) {
 
                 if( !input_cbs->fm_hh ) {
                     // remove spaces before tags at sol in restricted sections
@@ -293,8 +286,7 @@ static bool split_input_buffer( void )
     /***********************************************************************/
 
     comment = false;
-    if( *buff2 == GML_char ) {
-        get_tagname( buff2 + 1, tagname );
+    if( check_tagname( buff2, tagname ) != NULL ) {
         if( strcmp( "CMT", tagname ) == 0 ) {
             comment = true;
         }
@@ -855,15 +847,17 @@ void finalize_subscript( char **result, bool splittable )
 /*  gml tag start                                                          */
 /***************************************************************************/
 
-void classify_record( char c )
+void classify_record( const char *p )
 {
-    if( c == GML_char ) {               // classify input
+    char    tagname[TAG_NAME_LENGTH + 1];
+
+    if( check_tagname( p, tagname ) != NULL ) {   // classify input
         ProcFlags.gml_tag = true;
         ProcFlags.scr_cw = false;
         ProcFlags.CW_force_sep = false;
     } else {
         ProcFlags.gml_tag = false;
-        if( c == SCR_char ) {
+        if( *p == SCR_char ) {
             ProcFlags.scr_cw = true;
         } else {
             ProcFlags.scr_cw = false;
@@ -877,12 +871,12 @@ void classify_record( char c )
 /*  control word, but not a new GML tag.                                   */
 /***************************************************************************/
 
-static void reclassify_record( char c )
+static void reclassify_record( const char *p )
 {
     // if record was a GML tag, it will stay a GML tag, unless it's now
     // a SCRIPT control word (if that's even possible). But a record that
     // wasn't already a GML tag will *not* become one after substitution.
-    if( c == SCR_char ) {
+    if( *p == SCR_char ) {
         ProcFlags.scr_cw  = true;
         ProcFlags.gml_tag = false;
     } else {
@@ -902,6 +896,7 @@ static bool remove_leading_space( void )
     char    * p;
     char    * p2;
     bool    removed = false;
+    char    tagname[TAG_NAME_LENGTH + 1];
 
     if( ProcFlags.literal
       || !ProcFlags.concat ) {  // .li active or .co OFF
@@ -910,7 +905,7 @@ static bool remove_leading_space( void )
     p = buff2;
     SkipSpacesTabs( p );
     if( (p != buff2)
-      && (*p == GML_char)
+      && (check_tagname( p, tagname ) != NULL )
       && (cur_group_type != gt_xmp) ) {
         p2 = buff2;
         do {
@@ -939,7 +934,7 @@ void process_line( void )
 
     anything_substituted = remove_leading_space();// for "   :TAG   " constructs
 
-    classify_record( *buff2 );      // classify script CW, GML tag or nothing
+    classify_record( buff2 );      // classify script CW, GML tag or nothing
 
     if( !split_input_buffer() ) {
         return;                         // .* .dm :cmt found
@@ -972,7 +967,7 @@ void process_line( void )
         anything_substituted |= resolve_symvar_functions( buff2, true );
     }
 
-    reclassify_record( *buff2 );    // reclassify SCRIPT/text after symbol substitution etc
+    reclassify_record( buff2 );    // reclassify SCRIPT/text after symbol substitution etc
 
     buff2_lg = strlen( buff2 );
 
