@@ -113,7 +113,6 @@ condcode    lay_attr_and_value( att_name_type *attr_name, att_val_type *attr_val
     char            *p;
     char            *pa;
     condcode        rc;
-    char            tagname[TAG_NAME_LENGTH + 1];
 
     p = scandata.s;
     pa = p;
@@ -137,7 +136,7 @@ condcode    lay_attr_and_value( att_name_type *attr_name, att_val_type *attr_val
         process_line();
         scandata.s = buff2;
         scandata.e = buff2 + buff2_lg;
-        if( check_tagname( scandata.s, tagname ) != NULL // tag found: end-of-tag
+        if( check_tagname( scandata.s, NULL ) != NULL // tag found: end-of-tag
           || *scandata.s == SCR_char ) {    // cw found: end-of-tag
             ProcFlags.reprocess_line = true;
             p = scandata.s;

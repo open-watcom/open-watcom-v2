@@ -849,9 +849,7 @@ void finalize_subscript( char **result, bool splittable )
 
 void classify_record( const char *p )
 {
-    char    tagname[TAG_NAME_LENGTH + 1];
-
-    if( check_tagname( p, tagname ) != NULL ) {   // classify input
+    if( check_tagname( p, NULL ) != NULL ) {   // classify input
         ProcFlags.gml_tag = true;
         ProcFlags.scr_cw = false;
         ProcFlags.CW_force_sep = false;
@@ -896,7 +894,6 @@ static bool remove_leading_space( void )
     char    * p;
     char    * p2;
     bool    removed = false;
-    char    tagname[TAG_NAME_LENGTH + 1];
 
     if( ProcFlags.literal
       || !ProcFlags.concat ) {  // .li active or .co OFF
@@ -905,7 +902,7 @@ static bool remove_leading_space( void )
     p = buff2;
     SkipSpacesTabs( p );
     if( (p != buff2)
-      && (check_tagname( p, tagname ) != NULL )
+      && (check_tagname( p, NULL ) != NULL )
       && (cur_group_type != gt_xmp) ) {
         p2 = buff2;
         do {

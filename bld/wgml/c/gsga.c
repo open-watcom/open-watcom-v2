@@ -413,7 +413,6 @@ static  condcode    scan_att_optionsB( gavalflags * val_flags, condcode cca,
 #else
                     *val_flags |= val_valptr;
                     valptr = mem_tokdup( g_tok_start, arg_flen );
-                    valptr[arg_flen] = '\0';
                     if( *att_flags & att_upper ) {
                         strupr( valptr );
                     }

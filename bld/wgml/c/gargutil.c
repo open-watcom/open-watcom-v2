@@ -429,7 +429,10 @@ int unquote_arg( tok_type *arg )
 char *get_tagname( const char *p, char *tagname )
 {
     int     i;
+    char    tagbuf[TAG_NAME_LENGTH + 1];
 
+    if( tagname == NULL )
+        tagname = tagbuf;
     i = 0;
     while( is_tag_char( *p ) ) {
         if( i < TAG_NAME_LENGTH ) {
@@ -450,7 +453,7 @@ char *check_tagname( const char *p, char *tagname )
         p++;
         p1 = get_tagname( p, tagname );
         c = *p1;
-        if( *tagname != '\0'
+        if( p1 != p
           && ( c == ' '
           || c == '.'
           || c == '\0'
