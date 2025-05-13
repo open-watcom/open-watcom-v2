@@ -110,39 +110,39 @@ extern char         *check_tagname( const char *p, char *tagname );
 extern char         *get_tag_attname( const char *p, char *attname );
 
 /* gbanner.c                            */
-extern  void        out_ban_bot( void );
-extern  void        out_ban_top( void );
-extern  void        set_banners( void );
-extern  void        set_headx_banners( int hx_lvl );
-extern  void        set_pgnum_style( void );
+extern void         out_ban_bot( void );
+extern void         out_ban_top( void );
+extern void         set_banners( void );
+extern void         set_headx_banners( int hx_lvl );
+extern void         set_pgnum_style( void );
 
 
 /* gdata.c                              */
-extern  void        init_global_vars( void );
-extern  void        init_pass_data( void );
+extern void         init_global_vars( void );
+extern void         init_pass_data( void );
 
 
 /* gdeflay.c                            */
-extern  void        init_def_lay( void );
+extern void         init_def_lay( void );
 
 
 /* gdocpage.c                           */
-extern  void        do_page_out( void );
-extern  void        full_col_out( void );
-extern  void        insert_col_bot( doc_el_group * a_group );
-extern  void        insert_col_fn( doc_el_group * a_group );
-extern  void        insert_col_main( doc_element * a_element );
-extern  void        insert_col_width( doc_el_group * a_group );
-extern  void        insert_page_width( doc_el_group * a_group );
-extern  void        last_col_out( void );
-extern  void        last_page_out( void );
-extern  void        next_column( void );
-extern  void        reset_bot_ban( void );
-extern  void        reset_t_page( void );
-extern  void        reset_top_ban( void );
-extern  void        set_skip_vars( su * pre_skip, su * pre_top_skip, su * post_skip, text_space text_spacing, font_number font );
-extern  bool        split_element( doc_element * a_element, uint32_t req_depth );
-extern  void        text_col_out( void );
+extern void         do_page_out( void );
+extern void         full_col_out( void );
+extern void         insert_col_bot( doc_el_group *a_group );
+extern void         insert_col_fn( doc_el_group *a_group );
+extern void         insert_col_main( doc_element *a_element );
+extern void         insert_col_width( doc_el_group *a_group );
+extern void         insert_page_width( doc_el_group *a_group );
+extern void         last_col_out( void );
+extern void         last_page_out( void );
+extern void         next_column( void );
+extern void         reset_bot_ban( void );
+extern void         reset_t_page( void );
+extern void         reset_top_ban( void );
+extern void         set_skip_vars( su *pre_skip, su *pre_top_skip, su *post_skip, text_space text_spacing, font_number font );
+extern bool         split_element( doc_element *a_element, uint32_t req_depth );
+extern void         text_col_out( void );
 
 
 /* gdocsect.c                           */
@@ -151,26 +151,26 @@ extern void         start_doc_sect( void );
 
 
 /* getnum.c                             */
-extern  condcode    getnum( getnum_block * gn );
+extern  condcode    getnum( getnum_block *gn );
 
 
 /* ghx.c                                */
-extern  void        gen_heading( char *h_text, const char *refid, hdsrc hn_lvl, hdsrc hds_lvl );
-extern  void        out_head_page( ffh_entry *in_entry, ref_entry *in_ref, uint32_t in_pageno );
+extern void         gen_heading( char *h_text, const char *refid, hdsrc hn_lvl, hdsrc hds_lvl );
+extern void         out_head_page( ffh_entry *in_entry, ref_entry *in_ref, uint32_t in_pageno );
 
 
 /* gindexut.c                           */
-extern  void        eol_index_page( eol_ix * eol_index, uint32_t page_nr );
-extern  void        find_create_ix_e_entry( ix_h_blk *ixhwork, char *ref, unsigned len, ix_h_blk * seeidwork, ereftyp type );
+extern void         eol_index_page( eol_ix *eol_index, uint32_t page_nr );
+extern void         find_create_ix_e_entry( ix_h_blk *ixhwork, char *ref, unsigned len, ix_h_blk *seeidwork, ereftyp type );
 extern  ix_h_blk    *find_create_ix_h_entry( ix_h_blk *ixhwork, ix_h_blk *ixhbase, char *printtxt, unsigned printtxtlen, char *txt, unsigned txtlen, int lvl );
-extern  void        free_index_dict( ix_h_blk ** dict );
-extern  void        init_entry_list( ix_h_blk * term );
+extern void         free_index_dict( ix_h_blk **dict );
+extern void         init_entry_list( ix_h_blk *term );
 
 
 /* glayutil.c                           */
-extern  void        eat_lay_sub_tag( void );
-extern  void        free_layout( void );
-extern  condcode    lay_attr_and_value( att_name_type *attr_name, att_val_type *attr_val );
+extern void         eat_lay_sub_tag( void );
+extern void         free_layout( void );
+extern condcode     lay_attr_and_value( att_name_type *attr_name, att_val_type *attr_val );
 /*
  * prototypes for the layout tag attribute processing routines
  *
@@ -191,12 +191,12 @@ extern void         banner_defaults( void );
 
 
 /* gmacdict.c                           */
-extern  void        add_macro_entry( mac_dict dict, mac_entry *me );
-extern  void        init_macro_dict( mac_dict *pdict );
-extern  void        free_macro_dict( mac_dict *pdict );
-extern  void        free_macro_entry( mac_dict dict, mac_entry *me );
-extern  void        print_macro_dict( mac_dict dict, bool with_mac_lines );
-extern  mac_entry * find_macro( mac_dict dict, char const *name );
+extern void         add_macro_entry( mac_dict dict, mac_entry *me );
+extern void         init_macro_dict( mac_dict *pdict );
+extern void         free_macro_dict( mac_dict *pdict );
+extern void         free_macro_entry( mac_dict dict, mac_entry *me );
+extern void         print_macro_dict( mac_dict dict, bool with_mac_lines );
+extern mac_entry    *find_macro( mac_dict dict, char const *name );
 
 
 /* gmemory.c                            */
@@ -204,12 +204,12 @@ extern void         *mem_alloc( unsigned size );
 extern char         *mem_strdup( const char *str );
 extern char         *mem_tokdup( const char *str, unsigned size );
 extern void         mem_banner( void );
-extern void         mem_free( void * p );
+extern void         mem_free( void *p );
 extern void         mem_init( void );
 extern void         mem_fini( void );
 extern unsigned long mem_get_peak_usage( void );
 extern void         mem_prt_curr_usage( void );
-extern void         *mem_realloc( void * p, unsigned size );
+extern void         *mem_realloc( void *p, unsigned size );
 extern int          mem_validate( void );
 extern void         mem_prt_list( void );
 
@@ -219,38 +219,38 @@ extern nest_stack   *copy_to_nest_stack( void );
 
 
 /* goptions.c                           */
-extern  int         proc_options( char * cmdline );
-extern  void        split_attr_file( char * filename, char * attr, unsigned attrlen );
+extern int          proc_options( char *cmdline );
+extern void         split_attr_file( char *filename, char *attr, unsigned attrlen );
 
 
 /* gpagegeo.c                           */
-extern  void        do_layout_end_processing( void );
-extern  void        init_def_margins( void );
-extern  void        init_page_geometry( void );
-extern  void        set_page_position( doc_section ds );
+extern void         do_layout_end_processing( void );
+extern void         init_def_margins( void );
+extern void         init_page_geometry( void );
+extern void         set_page_position( doc_section ds );
 
 
 /* gppcnote.c                           */
-extern  void        do_force_pc( char * p );
+extern void         do_force_pc( char *p );
 
 
 /* gprocess.c                           */
-extern  void        classify_record( const char *p );
-extern  void        finalize_subscript( char * * result, bool splittable );
-extern  void        process_late_subst( char * buf );
-extern  void        process_line( void );
-extern  bool        resolve_symvar_functions( char * buf, bool splittable );
-extern  void        split_input( char * buf, char * split_pos, i_flags fmflags );
+extern void         classify_record( const char *p );
+extern void         finalize_subscript( char **result, bool splittable );
+extern void         process_late_subst( char *buf );
+extern void         process_line( void );
+extern bool         resolve_symvar_functions( char *buf, bool splittable );
+extern void         split_input( char *buf, char *split_pos, i_flags fmflags );
 
 
 /* gproctxt.c                           */
-extern  void        do_justify( uint32_t left_m, uint32_t right_m, text_line *line );
-extern  void        insert_hard_spaces( const char * spaces, unsigned len, font_number font );
-extern  unsigned    intrans( char *text, unsigned count, font_number font );
-extern  void        process_line_full( text_line *a_line, bool justify );
-extern  void        process_text( char *text, font_number font );
-extern  text_chars  *process_word( const char *text, unsigned count, font_number font, bool hard_spaces );
-extern  void        set_h_start( void );
+extern void         do_justify( uint32_t left_m, uint32_t right_m, text_line *line );
+extern void         insert_hard_spaces( const char *spaces, unsigned len, font_number font );
+extern unsigned     intrans( char *text, unsigned count, font_number font );
+extern void         process_line_full( text_line *a_line, bool justify );
+extern void         process_text( char *text, font_number font );
+extern text_chars   *process_word( const char *text, unsigned count, font_number font, bool hard_spaces );
+extern void         set_h_start( void );
 
 
 /* grefdict.c                           */
@@ -264,33 +264,33 @@ extern char         *get_refid_value( char *p, att_val_type *attr_val, char *ref
 extern ref_entry    *add_new_refid( ref_dict *dict, const char *refid, ffh_entry *ffh );
 
 /* gresrch.c                            */
-extern  void        add_GML_tag_research( char * tag );
-extern  void        free_GML_tags_research( void );
-extern  void        print_GML_tags_research( void );
-extern  void        add_SCR_tag_research( char * tag );
-extern  void        free_SCR_tags_research( void );
-extern  void        print_SCR_tags_research( void );
-extern  void        add_single_func_research( char * in );
-extern  void        free_single_funcs_research( void );
-extern  void        print_single_funcs_research( void );
-extern  void        add_multi_func_research( char * in );
-extern  void        free_multi_funcs_research( void );
-extern  void        print_multi_funcs_research( void );
-extern  void        printf_research( char * msg, ... );
-extern  void        test_out_t_line( text_line  * a_line );
+extern void         add_GML_tag_research( char *tag );
+extern void         free_GML_tags_research( void );
+extern void         print_GML_tags_research( void );
+extern void         add_SCR_tag_research( char *tag );
+extern void         free_SCR_tags_research( void );
+extern void         print_SCR_tags_research( void );
+extern void         add_single_func_research( char *in );
+extern void         free_single_funcs_research( void );
+extern void         print_single_funcs_research( void );
+extern void         add_multi_func_research( char *in );
+extern void         free_multi_funcs_research( void );
+extern void         print_multi_funcs_research( void );
+extern void         printf_research( char *msg, ... );
+extern void         test_out_t_line( text_line  *a_line );
 
 
 /* gsbdbius.c                           */
-extern  void        scr_style_end( void );
-extern  font_number scr_style_font( font_number in_font );
+extern void         scr_style_end( void );
+extern font_number  scr_style_font( font_number in_font );
 
 
 /* gsbr.c                               */
-extern  void        scr_process_break( void );
+extern void         scr_process_break( void );
 
 
 /* gsbx.c                               */
-extern  void        eoc_bx_box( void );
+extern void         eoc_bx_box( void );
 
 
 /* gscan.c                              */
@@ -300,37 +300,37 @@ extern char         *get_text_line( char *p );
 extern bool         is_ip_tag( e_tags offset );
 extern void         set_overload( gtentry *in_gt );
 extern void         scan_line( void );
-extern void         set_if_then_do( ifcb * cb );
-extern condcode     test_process( ifcb * cb );
+extern void         set_if_then_do( ifcb *cb );
+extern condcode     test_process( ifcb *cb );
 
 
 /* gsfbfk.c                             */
-extern  void        fb_blocks_out( void );
+extern void         fb_blocks_out( void );
 
 
 /* gsfuncs.c                            */
-extern  char        *scr_multi_funcs( char *in, char *pstart, char **result, unsigned ressize );
+extern char         *scr_multi_funcs( char *in, char *pstart, char **result, unsigned ressize );
 
 
 /* gsfunelu.c                           */
-extern  char        *scr_single_funcs( char *in, char *end, char **result );
+extern char         *scr_single_funcs( char *in, char *end, char **result );
 
 
 /* gsgoto.c                             */
-extern  void        print_labels( labelcb *lb, char *name );
-extern  bool        gotarget_reached( void );
+extern void         print_labels( labelcb *lb, char *name );
+extern bool         gotarget_reached( void );
 
 
 /* gsgt.c                               */
-extern  void        init_tag_att( void );
+extern void         init_tag_att( void );
 
 
 /* gsifdoel.c                           */
-extern  void        show_ifcb( char * txt, ifcb * cb );
+extern void         show_ifcb( char *txt, ifcb *cb );
 
 
 /* gsetvar.c                            */
-extern char         *scan_sym( char * p, symvar * sym, sub_index * subscript, char * * result, bool splittable );
+extern char         *scan_sym( char *p, symvar *sym, sub_index *subscript, char **result, bool splittable );
 
 
 /* gsmacro.c                            */
@@ -340,70 +340,70 @@ extern void         free_lines( inp_line *line );
 
 
 /* gspe.c                               */
-extern  void    reset_pe_cb( void );
+extern void         reset_pe_cb( void );
 
 
 /* gspu.c                               */
-extern char     *get_workfile_name( int numb );
-extern void     close_pu_file( int numb );
-extern void     close_all_pu_files( void );
+extern char         *get_workfile_name( int numb );
+extern void         close_pu_file( int numb );
+extern void         close_all_pu_files( void );
 
 
 /* gsymvar.c                            */
-extern void     init_dict( symdict_hdl *pdict );
-extern void     free_dict( symdict_hdl *pdict );
-extern int      find_symvar( symdict_hdl dict, char * name, sub_index subscript, symsub **symsubval );
-extern int      find_symvar_lcl( symdict_hdl dict, char *name, sub_index subscript, symsub **symsubval );
-extern int      add_symvar( symdict_hdl dict, char * name, char * val, sub_index subscript, symbol_flags f );
-extern int      add_symvar_addr( symdict_hdl dict, char * name, char * val, sub_index subscript, symbol_flags f, symsub **symsubval );
-extern void     print_sym_dict( symdict_hdl dict );
-extern void     reset_auto_inc_dict( symdict_hdl dict );
+extern void         init_dict( symdict_hdl *pdict );
+extern void         free_dict( symdict_hdl *pdict );
+extern int          find_symvar( symdict_hdl dict, char *name, sub_index subscript, symsub **symsubval );
+extern int          find_symvar_lcl( symdict_hdl dict, char *name, sub_index subscript, symsub **symsubval );
+extern int          add_symvar( symdict_hdl dict, char *name, char *val, sub_index subscript, symbol_flags f );
+extern int          add_symvar_addr( symdict_hdl dict, char *name, char *val, sub_index subscript, symbol_flags f, symsub **symsubval );
+extern void         print_sym_dict( symdict_hdl dict );
+extern void         reset_auto_inc_dict( symdict_hdl dict );
 
 
 /* gsyssym.c                            */
-extern  void    add_to_sysdir( char * var_name, char char_val );
-extern  void    init_sys_dict( symdict_hdl *pdict );
-extern  void    init_sysparm( char * cmdline, char * banner );
-extern  void    link_sym( symdict_hdl dict, symvar * sym );
+extern void         add_to_sysdir( char *var_name, char char_val );
+extern void         init_sys_dict( symdict_hdl *pdict );
+extern void         init_sysparm( char *cmdline, char *banner );
+extern void         link_sym( symdict_hdl dict, symvar *sym );
 
 
 /* gtagdict.c                           */
-extern gtentry          *add_tag( tag_dict *pdict, char const *tagname, char const *macname, int flags );
-extern gtentry          *change_tag( tag_dict *pdict, char const *tagname, char const *macname );
-extern void             init_tag_dict( tag_dict *pdict );
-extern void             free_tag_dict( tag_dict *pdict );
-extern tag_dict         free_tag( tag_dict *pdict, gtentry *ge );
-extern void             print_tag_dict( tag_dict dict );
-extern void             print_tag_entry( const gtentry *ge );
-extern gtentry          *find_user_tag( tag_dict *pdict, char const *tagname );
+extern gtentry      *add_tag( tag_dict *pdict, char const *tagname, char const *macname, int flags );
+extern gtentry      *change_tag( tag_dict *pdict, char const *tagname, char const *macname );
+extern void         init_tag_dict( tag_dict *pdict );
+extern void         free_tag_dict( tag_dict *pdict );
+extern tag_dict     free_tag( tag_dict *pdict, gtentry *ge );
+extern void         print_tag_dict( tag_dict dict );
+extern void         print_tag_entry( const gtentry *ge );
+extern gtentry      *find_user_tag( tag_dict *pdict, char const *tagname );
 
 /* gtxtpool.c                           */
-extern  void                add_single_text_chars_to_pool( text_chars * a_chars );
-extern  void                add_text_chars_to_pool( text_line * a_line );
-extern  text_chars      *   alloc_text_chars( const char *text, unsigned cnt, font_number font );
-extern  void                add_text_line_to_pool( text_line * a_line );
-extern  text_line       *   alloc_text_line( void );
-extern  void                add_box_col_set_to_pool( box_col_set * a_set );
-extern  box_col_set     *   alloc_box_col_set( void );
-extern  void                add_box_col_stack_to_pool( box_col_stack * a_stack );
-extern  box_col_stack   *   alloc_box_col_stack( void );
-extern  void                add_doc_el_to_pool( doc_element * a_element );
-extern  doc_element     *   alloc_doc_el( element_type type );
-extern  void                add_doc_el_group_to_pool( doc_el_group * a_group );
-extern  doc_el_group    *   alloc_doc_el_group( group_type type );
-extern  void                add_eol_ix_to_pool( eol_ix * an_eol_ix );
-extern  eol_ix          *   alloc_eol_ix( ix_h_blk * in_ixh, ereftyp in_type );
-extern  void                add_sym_list_entry_to_pool( sym_list_entry * cb );
-extern  sym_list_entry  *   alloc_sym_list_entry( void );
-extern  void                add_tag_cb_to_pool( tag_cb * cb );
-extern  tag_cb          *   alloc_tag_cb( void );
-extern  void                clear_doc_element( doc_element * a_element );
-extern  void                free_pool_storage( void );
-extern  doc_element     *   init_doc_el( element_type type, uint32_t depth );
+extern void         add_single_text_chars_to_pool( text_chars *a_chars );
+extern void         add_text_chars_to_pool( text_line *a_line );
+extern text_chars   *alloc_text_chars( const char *text, unsigned cnt, font_number font );
+extern void         add_text_line_to_pool( text_line *a_line );
+extern text_line    *alloc_text_line( void );
+extern void         add_box_col_set_to_pool( box_col_set *a_set );
+extern box_col_set  *alloc_box_col_set( void );
+extern void         add_box_col_stack_to_pool( box_col_stack *a_stack );
+extern box_col_stack *alloc_box_col_stack( void );
+extern void         add_doc_el_to_pool( doc_element *a_element );
+extern doc_element  *alloc_doc_el( element_type type );
+extern void         add_doc_el_group_to_pool( doc_el_group *a_group );
+extern doc_el_group *alloc_doc_el_group( group_type type );
+extern void         add_eol_ix_to_pool( eol_ix *an_eol_ix );
+extern eol_ix       *alloc_eol_ix( ix_h_blk *in_ixh, ereftyp in_type );
+extern void         add_sym_list_entry_to_pool( sym_list_entry *cb );
+extern sym_list_entry *alloc_sym_list_entry( void );
+extern void         add_tag_cb_to_pool( tag_cb *cb );
+extern tag_cb       *alloc_tag_cb( void );
+extern void         clear_doc_element( doc_element *a_element );
+extern void         free_pool_storage( void );
+extern doc_element  *init_doc_el( element_type type, uint32_t depth );
 
 
 /* gtitlepo.c                           */
-extern  void        titlep_output( void );
+extern void         titlep_output( void );
 
 
 /* gusertag.c                           */
@@ -436,108 +436,104 @@ extern char         *skip_to_quote( char *p, char quote );
 
 
 /* messages.c                           */
-extern  void    out_msg( const char * fmt, ... );
-extern  void    out_msg_research( const char *msg, ... );
-extern  void    g_info( const msg_ids err, ... );
-extern  void    g_info_lm( const msg_ids err, ... );
-extern  void    g_info_research( const msg_ids num, ... );
-extern  void    file_mac_info( void );
-extern  void    file_mac_info_nest( void );
-extern  void    att_req_err( const char * tagname, const char * attname );
-extern  void    ban_reg_err( msg_ids num, banner_lay_tag * in_ban1, banner_lay_tag * in_ban2, region_lay_tag * in_reg1, region_lay_tag * in_reg2 );
-extern  void    internal_err( const char * file, int line );
-extern  void    list_level_err( const char * xl_tag, uint8_t xl_level );
-extern  void    main_file_err( const char * filename );
-extern  void    numb_err( void );
-extern  void    symbol_name_length_err( const char * symname );
-extern  void    val_parse_err( const char * pa, bool tag );
-extern  void    dup_refid_err( const char *refid, const char * context );
-extern  void    g_err_if_int( void );
-extern  void    g_err_tag( e_tags etag );
-extern  void    g_err_tag_mac( const gtentry *ge );
-extern  void    g_err_tag_nest( e_tags etag );
-extern  void    g_err_tag_no( e_tags etag );
-extern  void    g_err_tag_prec( e_tags etag );
-extern  void    g_err_tag_rsloc( locflags inloc, const char * pa );
-extern  void    g_wng_hlevel( hdsrc hd_found, hdsrc hd_expected );
-extern  void    keep_nest_err( const char * arg1, const char * arg2 );
-extern  void    xx_err( const msg_ids errid );
-extern  void    xx_err_c( const msg_ids errid, char const * arg );
-extern  void    xx_err_cc( const msg_ids errid, const char * arg1, const char * arg2 );
-extern  void    xx_line_err_c( const msg_ids errid, const char * pa );
-extern  void    xx_line_err_ci( const msg_ids errid, const char * pa, unsigned len );
-extern  void    xx_line_err_cc( const msg_ids errid, char const * cw, const char * pa );
-extern  void    xx_line_err_cci( const msg_ids errid, char const * cw, char const * pa, unsigned len );
-extern  void    xx_nest_err( const msg_ids errid );
-extern  void    xx_nest_err_cc( const msg_ids errid, const char * arg1, const char * arg2 );
-extern  void    xx_simple_err( const msg_ids errid );
-extern  void    xx_simple_err_c( const msg_ids errid, const char * arg );
-extern  void    xx_simple_err_i( const msg_ids errid, int arg );
-extern  void    xx_simple_err_cc( const msg_ids errid, const char * arg1, const char * arg2 );
-extern  void    xx_source_err( const msg_ids errid );
-extern  void    xx_source_err_c( const msg_ids errid, const char * arg );
-extern  void    xx_warn( const msg_ids errid );
-extern  void    xx_warn_c( const msg_ids errid, const char * arg );
-extern  void    xx_warn_c_info( const msg_ids errid, const char * arg, const msg_ids warnid );
-extern  void    xx_warn_c_info_c( const msg_ids errid, const char * arg1, const msg_ids warnid, const char * arg2 );
-extern  void    xx_warn_cc( const msg_ids errid, const char * arg1, const char * arg2 );
-extern  void    xx_warn_info_cc( const msg_ids errid, const msg_ids warnid, const char * arg1, const char * arg2 );
-extern  void    xx_line_warn_c( const msg_ids errid, const char * pa );
-extern  void    xx_line_warn_cc( const msg_ids errid, const char * cw, const char * pa );
-extern  void    xx_simple_warn( const msg_ids errid );
-extern  void    xx_simple_warn_info_cc( const msg_ids errid, const char * arg1, const msg_ids warnid, const char * arg2 );
+extern void         out_msg( const char *fmt, ... );
+extern void         out_msg_research( const char *msg, ... );
+extern void         g_info( const msg_ids err, ... );
+extern void         g_info_lm( const msg_ids err, ... );
+extern void         g_info_research( const msg_ids num, ... );
+extern void         file_mac_info( void );
+extern void         file_mac_info_nest( void );
+extern void         att_req_err( const char *tagname, const char *attname );
+extern void         ban_reg_err( msg_ids num, banner_lay_tag *in_ban1, banner_lay_tag *in_ban2, region_lay_tag *in_reg1, region_lay_tag *in_reg2 );
+extern void         internal_err( const char *file, int line );
+extern void         list_level_err( const char *xl_tag, uint8_t xl_level );
+extern void         main_file_err( const char *filename );
+extern void         numb_err( void );
+extern void         symbol_name_length_err( const char *symname );
+extern void         val_parse_err( const char *pa, bool tag );
+extern void         dup_refid_err( const char *refid, const char *context );
+extern void         g_err_if_int( void );
+extern void         g_err_tag( e_tags etag );
+extern void         g_err_tag_mac( const gtentry *ge );
+extern void         g_err_tag_nest( e_tags etag );
+extern void         g_err_tag_no( e_tags etag );
+extern void         g_err_tag_prec( e_tags etag );
+extern void         g_err_tag_rsloc( locflags inloc, const char *pa );
+extern void         g_wng_hlevel( hdsrc hd_found, hdsrc hd_expected );
+extern void         keep_nest_err( const char *arg1, const char *arg2 );
+extern void         xx_err( const msg_ids errid );
+extern void         xx_err_c( const msg_ids errid, char const *arg );
+extern void         xx_err_cc( const msg_ids errid, const char *arg1, const char *arg2 );
+extern void         xx_line_err_c( const msg_ids errid, const char *pa );
+extern void         xx_line_err_ci( const msg_ids errid, const char *pa, unsigned len );
+extern void         xx_line_err_cc( const msg_ids errid, char const *cw, const char *pa );
+extern void         xx_line_err_cci( const msg_ids errid, char const *cw, char const *pa, unsigned len );
+extern void         xx_nest_err( const msg_ids errid );
+extern void         xx_nest_err_cc( const msg_ids errid, const char *arg1, const char *arg2 );
+extern void         xx_simple_err( const msg_ids errid );
+extern void         xx_simple_err_c( const msg_ids errid, const char *arg );
+extern void         xx_simple_err_i( const msg_ids errid, int arg );
+extern void         xx_simple_err_cc( const msg_ids errid, const char *arg1, const char *arg2 );
+extern void         xx_source_err( const msg_ids errid );
+extern void         xx_source_err_c( const msg_ids errid, const char *arg );
+extern void         xx_warn( const msg_ids errid );
+extern void         xx_warn_c( const msg_ids errid, const char *arg );
+extern void         xx_warn_c_info( const msg_ids errid, const char *arg, const msg_ids warnid );
+extern void         xx_warn_c_info_c( const msg_ids errid, const char *arg1, const msg_ids warnid, const char *arg2 );
+extern void         xx_warn_cc( const msg_ids errid, const char *arg1, const char *arg2 );
+extern void         xx_warn_info_cc( const msg_ids errid, const msg_ids warnid, const char *arg1, const char *arg2 );
+extern void         xx_line_warn_c( const msg_ids errid, const char *pa );
+extern void         xx_line_warn_cc( const msg_ids errid, const char *cw, const char *pa );
+extern void         xx_simple_warn( const msg_ids errid );
+extern void         xx_simple_warn_info_cc( const msg_ids errid, const char *arg1, const msg_ids warnid, const char *arg2 );
 
 
 /* outbuff.c                            */
-extern void     cop_tr_table( const char *p );
-extern void     ob_binclude( binclude_element * in_el );
-extern void     ob_graphic( graphic_element * in_el );
-extern void     ob_oc( const char *p );
+extern void         cop_tr_table( const char *p );
+extern void         ob_binclude( binclude_element *in_el );
+extern void         ob_graphic( graphic_element *in_el );
+extern void         ob_oc( const char *p );
 
 
 /* wgmlmsg.c                            */
-extern  bool    init_msgs( void );
-extern  void    fini_msgs( void );
-extern  bool    get_msg( msg_ids resourceid, char *buffer, unsigned buflen );
-//extern  void Msg_Do_Put_Args( char rc_buff[], MSG_ARG_LIST *arg_info, char *types, ... );
-//extern  void Msg_Put_Args( char message[], MSG_ARG_LIST *arg_info, char *types, va_list *args );
+extern bool         init_msgs( void );
+extern void         fini_msgs( void );
+extern bool         get_msg( msg_ids resourceid, char *buffer, unsigned buflen );
+//extern void         Msg_Do_Put_Args( char rc_buff[], MSG_ARG_LIST *arg_info, char *types, ... );
+//extern void         Msg_Put_Args( char message[], MSG_ARG_LIST *arg_info, char *types, va_list *args );
 
 
 /* wgmlsupp.c                           */
-extern  bool    free_resources( int in_errno );
-extern  void    free_some_mem( void );
-extern  void    g_banner( void );
-// extern  char  * get_filename_full_path( char * buff, char const * name, unsigned max );
-extern  bool    get_line( bool researchoutput );
-extern  void    inc_inc_level( void );
+extern bool         free_resources( int in_errno );
+extern void         free_some_mem( void );
+extern void         g_banner( void );
+//extern char         *get_filename_full_path( char *buff, char const *name, unsigned max );
+extern bool         get_line( bool researchoutput );
+extern void         inc_inc_level( void );
 
 #if defined( __WATCOMC__ )
-#pragma aux     my_exit __aborts;
+#pragma aux         my_exit __aborts;
 #endif
-extern  void    my_exit( int );
-extern  void    show_include_stack( void );
-
+extern void         my_exit( int );
+extern void         show_include_stack( void );
 
 /*
  * prototypes for the gml tag processing routines
  */
-
-#define pickg( name, length, routine, gmlflags, locflags, classflags )  extern void routine( const gmltag * entry );
+#define pickg( name, length, routine, gmlflags, locflags, classflags )  extern void routine( const gmltag *entry );
 #include "gtags.h"
 #undef pickg
 
 /*
  * prototypes for the layout tag processing routines
  */
-
-#define pick( name, length, routine, gmlflags, locflags )  extern void routine( const gmltag * entry );
+#define pick( name, length, routine, gmlflags, locflags )  extern void routine( const gmltag *entry );
 #include "gtagslay.h"
 #undef pick
 
 /*
  * prototypes for the script control word processing routines
  */
-
 #define picklab( name, routine, flags )  extern void routine( void );
 #define picks( name, routine, flags )  extern void routine( void );
 #include "gscrcws.h"
@@ -547,7 +543,6 @@ extern  void    show_include_stack( void );
 /*
  * prototypes for the script string function routines , ie. &'substr( ,..
  */
-
 #define pick( name, length, mand_parms, opt_parms, routine ) \
     extern condcode routine( parm parms[MAX_FUN_PARMS], unsigned parm_count, char **result, unsigned ressize );
 #include "gsfuncs.h"

@@ -212,10 +212,10 @@ typedef enum {
 /***************************************************************************/
 
 typedef struct symsub {
-    struct symsub   *   next;           // next subscript entry
-    struct symvar   *   base;           // the base symvar
-    sub_index           subscript;      // the subscript
-    char            *   value;          // the value ptr
+    struct symsub   *next;              // next subscript entry
+    struct symvar   *base;              // the base symvar
+    sub_index       subscript;          // the subscript
+    char            *value;             // the value ptr
 } symsub;
 
 /***************************************************************************/
@@ -223,14 +223,14 @@ typedef struct symsub {
 /***************************************************************************/
 
 typedef struct symvar {
-    struct symvar   *   next;           // next base entry
-    char                name[SYM_NAME_LENGTH + 1];
-    int                 last_auto_inc;  // last autoincremented subscript value
-    int                 subscript_used; // count of used subscripts
-    symsub          *   subscripts;     // subscript entries
-    symsub          *   sub_0;          // special subscript 0 entry
-    void                (*varfunc)( struct symvar * e );// access function
-    symbol_flags        flags;
+    struct symvar   *next;              // next base entry
+    char            name[SYM_NAME_LENGTH + 1];
+    int             last_auto_inc;      // last autoincremented subscript value
+    int             subscript_used;     // count of used subscripts
+    symsub          *subscripts;        // subscript entries
+    symsub          *sub_0;             // special subscript 0 entry
+    void            (*varfunc)( struct symvar * e );// access function
+    symbol_flags    flags;
 } symvar;
 
 
@@ -302,13 +302,13 @@ typedef enum {
 /***************************************************************************/
 
 typedef struct inp_line {
-    struct inp_line *   next;           // next line
-    i_flags             fmflags;        // II_none only
-    bool                fm_symbol;      // hidden_head is from a symbol substition
-    bool                hh_tag;         // hidden_head is from a tag
-    bool                ip_start;       // hidden_head is from an input phrase start tag
-    bool                sym_space;      // symbol substitution was preceeded by a space
-    char                value[1];       // line content variable length
+    struct inp_line *next;              // next line
+    i_flags         fmflags;            // II_none only
+    bool            fm_symbol;          // hidden_head is from a symbol substition
+    bool            hh_tag;             // hidden_head is from a tag
+    bool            ip_start;           // hidden_head is from an input phrase start tag
+    bool            sym_space;          // symbol substitution was preceeded by a space
+    char            value[1];           // line content variable length
 } inp_line;
 
 /***************************************************************************/
@@ -316,29 +316,29 @@ typedef struct inp_line {
 /***************************************************************************/
 
 typedef struct labelcb {
-    struct labelcb  *   prev;
-    fpos_t              pos;            // file position for label if file
-    line_number         lineno;         // lineno of label
-    char                label_name[LABEL_NAME_LENGTH + 1];
+    struct labelcb  *prev;
+    fpos_t          pos;                // file position for label if file
+    line_number     lineno;             // lineno of label
+    char            label_name[LABEL_NAME_LENGTH + 1];
 } labelcb;
 
 /***************************************************************************/
 /*  Macro  dictionary                                                      */
 /***************************************************************************/
 
-typedef struct macdict      *mac_dict;
+typedef struct macdict  *mac_dict;
 
 /***************************************************************************/
 /*  macro definition entry  for macro dictionary                           */
 /***************************************************************************/
 
 typedef struct mac_entry {
-    struct mac_entry    *   next;
-    inp_line            *   macline;    // macro definition lines
-    line_number             lineno;     // lineno start of macro definition
-    labelcb             *   label_cb;   // controlling label definitions
-    char                *   mac_file_name;  // file name macro definition
-    char                    name[MAC_NAME_LENGTH + 1];  // macro name
+    struct mac_entry *next;
+    inp_line        *macline;           // macro definition lines
+    line_number     lineno;             // lineno start of macro definition
+    labelcb         *label_cb;          // controlling label definitions
+    char            *mac_file_name;     // file name macro definition
+    char            name[MAC_NAME_LENGTH + 1]; // macro name
 } mac_entry;
 
 /***************************************************************************/
@@ -346,14 +346,14 @@ typedef struct mac_entry {
 /***************************************************************************/
 
 typedef struct filecb {
-    FILE        *   fp;                 // FILE ptr
+    FILE            *fp;                // FILE ptr
     line_number     lineno;             // current line number
     line_number     linemin;            // first line number to process
     line_number     linemax;            // last line number to process
     unsigned        usedlen;            // used data of filebuf
     fpos_t          pos;                // position for reopen
-    labelcb     *   label_cb;           // controlling label definitions
-    char        *   filename;           // full filename
+    labelcb         *label_cb;          // controlling label definitions
+    char            *filename;          // full filename
     fflags          flags;
     char            fileattr[MAX_FILE_ATTR + 1];// T:xxxx
 } filecb;
@@ -363,9 +363,9 @@ typedef struct filecb {
 /***************************************************************************/
 
 typedef struct mac_parms {
-    char        *   star;               // &*  complete parmline
+    char            *star;              // &*  complete parmline
     int             star0;              // &*0 parmcount
-    inp_line    *   starx;              // &*1 - &*x parms
+    inp_line        *starx;             // &*1 - &*x parms
 } mac_parms;
 
 /***************************************************************************/
@@ -387,19 +387,19 @@ typedef struct  macrocb {
 
 typedef struct ifflags {
 
-    unsigned    iflast  : 1;            // .if was last line
-    unsigned    iftrue  : 1;            // last .if was true
-    unsigned    iffalse : 1;            // last .if was false
+    unsigned        iflast  : 1;        // .if was last line
+    unsigned        iftrue  : 1;        // last .if was true
+    unsigned        iffalse : 1;        // last .if was false
 
-    unsigned    ifthen  : 1;            // processing object of then
-    unsigned    ifelse  : 1;            // processing object of else
-    unsigned    ifdo    : 1;            // processing object of do group
+    unsigned        ifthen  : 1;        // processing object of then
+    unsigned        ifelse  : 1;        // processing object of else
+    unsigned        ifdo    : 1;        // processing object of do group
 
-    unsigned    ifcwte  : 1;            // .th or .el control word
-    unsigned    ifcwdo  : 1;            // .do control word
-    unsigned    ifcwif  : 1;            // .if control word
+    unsigned        ifcwte  : 1;        // .th or .el control word
+    unsigned        ifcwdo  : 1;        // .do control word
+    unsigned        ifcwif  : 1;        // .if control word
 
-    unsigned    ifindo  : 1;            // .do begin done (not cleared by do end)
+    unsigned        ifindo  : 1;        // .do begin done (not cleared by do end)
 
 
 } ifflags;
@@ -414,9 +414,9 @@ typedef struct ifcb {
 /***************************************************************************/
 
 typedef struct pecb {                   // for .pe control
-    char        *line;                  // line to perform n times
-    unsigned    ll;                     // length of line
-    int         count;                  // value of .pe n  active if > 0 (must be signed)
+    char            *line;              // line to perform n times
+    unsigned        ll;                 // length of line
+    int             count;              // value of .pe n  active if > 0 (must be signed)
 } pecb;
 
 /***************************************************************************/
@@ -424,21 +424,21 @@ typedef struct pecb {                   // for .pe control
 /***************************************************************************/
 
 typedef struct  inputcb {
-    struct inputcb  *   prev;
-    inp_line        *   hidden_head;    // manage lines split at ; or :
-    inp_line        *   hidden_tail;    // manage lines split at ; or :
-    symdict_hdl         local_dict;     // local symbol dictionary
-    ifcb            *   if_cb;          // for controlling .if .th .el
-    pecb                pe_cb;          // for controlling .pe perform
+    struct inputcb  *prev;
+    inp_line        *hidden_head;       // manage lines split at ; or :
+    inp_line        *hidden_tail;       // manage lines split at ; or :
+    symdict_hdl     local_dict;         // local symbol dictionary
+    ifcb            *if_cb;             // for controlling .if .th .el
+    pecb            pe_cb;              // for controlling .pe perform
     union  {
-        filecb      *   f;              // used if input is from file
-        macrocb     *   m;              // used if input is from macro/tag
+        filecb      *f;                 // used if input is from file
+        macrocb     *m;                 // used if input is from macro/tag
     } s;
-    i_flags             fmflags;
-    bool                fm_hh;          // logical input record is from a hidden_head
-    bool                fm_symbol;      // logical input record is from a symbol substition
-    bool                hh_tag;         // hidden_head is indeed from a tag
-    bool                sym_space;      // symbol substitution was preceeded by a space
+    i_flags         fmflags;
+    bool            fm_hh;              // logical input record is from a hidden_head
+    bool            fm_symbol;          // logical input record is from a symbol substition
+    bool            hh_tag;             // hidden_head is indeed from a tag
+    bool            sym_space;          // symbol substitution was preceeded by a space
 } inputcb;
 
 /***************************************************************************/
@@ -506,7 +506,7 @@ typedef enum {
 typedef struct gmltag {
    char             tagname[TAG_NAME_LENGTH + 1];
    unsigned         taglen;
-   void             (*gmlproc)( const struct gmltag * entry );
+   void             (*gmlproc)( const struct gmltag *entry );
    gmlflags         tagflags;
    locflags         taglocs;
    classflags       tagclass;
@@ -534,14 +534,14 @@ typedef enum gavalflags {
 /***************************************************************************/
 
 typedef struct gavalentry {
-    struct gavalentry   *   next;
+    struct gavalentry *next;
     union a {
-       unsigned length;                 // possible max length of (character) value
-       int      range[4];               // min, max, default omitted, default without value
-       char     value[VAL_LENGTH + 1];  // string value if short enough
-       char *   valptr;                 // ... else allocated
+       unsigned     length;             // possible max length of (character) value
+       int          range[4];           // min, max, default omitted, default without value
+       char         value[VAL_LENGTH + 1]; // string value if short enough
+       char *       valptr;             // ... else allocated
     } a;
-    gavalflags              valflags;
+    gavalflags      valflags;
 } gavalentry;
 
 /***************************************************************************/
@@ -572,10 +572,10 @@ typedef enum {
 /***************************************************************************/
 
 typedef struct gaentry {
-    struct gaentry      *next;
-    gavalentry          *vals;
-    char                attname[TAG_ATT_NAME_LENGTH + 1];
-    gaflags             attflags;
+    struct gaentry  *next;
+    gavalentry      *vals;
+    char            attname[TAG_ATT_NAME_LENGTH + 1];
+    gaflags         attflags;
 } gaentry;
 
 /***************************************************************************/
@@ -601,14 +601,14 @@ typedef enum {
 /***************************************************************************/
 
 typedef struct gtentry {
-    struct gtentry      *next;
-    gaentry             *attribs;       // list of attributes
-    unsigned            usecount;
-    unsigned            taglen;         // actual length of name
-    char                tagname[TAG_NAME_LENGTH + 1];
-    char                macname[MAC_NAME_LENGTH + 1];   // macro to call
-    gtflags             tagflags;
-    bool                overload;       // user tag has same name as predefined tag
+    struct gtentry  *next;
+    gaentry         *attribs;           // list of attributes
+    unsigned        usecount;
+    unsigned        taglen;             // actual length of name
+    char            tagname[TAG_NAME_LENGTH + 1];
+    char            macname[MAC_NAME_LENGTH + 1]; // macro to call
+    gtflags         tagflags;
+    bool            overload;           // user tag has same name as predefined tag
 } gtentry;
 
 #if 0
@@ -691,12 +691,12 @@ typedef struct getnum_block {
 /***************************************************************************/
 
 typedef struct opt_font {
-    struct opt_font *   nxt;
-    char *              name;
-    char *              style;
-    uint32_t            space;
-    uint32_t            height;
-    font_number         font;
+    struct opt_font *nxt;
+    char            *name;
+    char            *style;
+    uint32_t        space;
+    uint32_t        height;
+    font_number     font;
 } opt_font;
 
 /***************************************************************************/
@@ -896,17 +896,16 @@ typedef enum e_tags {
 /***************************************************************************/
 
 typedef struct nest_stack {
-    struct  nest_stack  * prev;
-
-    line_number         lineno;         // lineno of :xl, :HPx :SF call
+    struct nest_stack *prev;
+    line_number     lineno;             // lineno of :xl, :HPx :SF call
     union {
-        char        *   filename;       // file name of :xl, :HPx :SF call
+        char        *filename;          // file name of :xl, :HPx :SF call
         struct mt {
-            gtentry     *   tag_m;      // for usertag / macro
-            mac_entry   *   m;          // macro entry of :xl, :HPx :SF call
+            gtentry *tag_m;             // for usertag / macro
+            mac_entry *m;               // macro entry of :xl, :HPx :SF call
         } mt;
     } s;
-    i_flags             nest_flag;      // for selecting the union
+    i_flags         nest_flag;          // for selecting the union
 } nest_stack;
 
 /***************************************************************************/
@@ -927,32 +926,32 @@ struct sl_lay_level;    // avoids include circularity with gtypelay.h
 struct ul_lay_level;    // avoids include circularity with gtypelay.h
 
 typedef struct tag_cb {
-    struct  tag_cb      *   prev;           // open tag chain
-    nest_stack          *   p_stack;        // calling chain for this tag
+    struct tag_cb   *prev;           // open tag chain
+    nest_stack      *p_stack;        // calling chain for this tag
     union {     // these will be for the specific level in effect
-        struct  dl_lay_level    *   dl_layout;  // current DL LAYOUT record
-        struct  gl_lay_level    *   gl_layout;  // current GL LAYOUT record
-        struct  ol_lay_level    *   ol_layout;  // current OL LAYOUT record
-        struct  sl_lay_level    *   sl_layout;  // current SL LAYOUT record
-        struct  ul_lay_level    *   ul_layout;  // current UL LAYOUT record
+        struct dl_lay_level *dl_layout;  // current DL LAYOUT record
+        struct gl_lay_level *gl_layout;  // current GL LAYOUT record
+        struct ol_lay_level *ol_layout;  // current OL LAYOUT record
+        struct sl_lay_level *sl_layout;  // current SL LAYOUT record
+        struct ul_lay_level *ul_layout;  // current UL LAYOUT record
     } u;
-    uint32_t                li_number;      // current list item no
-    uint32_t                lm;             // left margin on entry
-    uint32_t                rm;             // max width on entry
-    int32_t                 align;          // current attribute value
-    int32_t                 left_indent;    // current attribute value
-    int32_t                 right_indent;   // current attribute value
-    uint32_t                post_skip;      // current attribute value
-    uint32_t                tsize;          // current attribute value
-    uint32_t                xl_pre_skip;    // parent list pre_skip value (used by LP)
-    text_space              spacing;        // spacing on entry
-    uint8_t                 headhi;         // current attribute value
-    uint8_t                 termhi;         // current attribute value
-    font_number             font;           // font on entry
-    bool                    compact  : 1;   // current attribute value
-    bool                    dl_break : 1;   // current attribute value
-    bool                    in_list  : 1;   // true if inside a list, including current tag
-    e_tags                  c_tag;          // enum of tag
+    uint32_t        li_number;          // current list item no
+    uint32_t        lm;                 // left margin on entry
+    uint32_t        rm;                 // max width on entry
+    int32_t         align;              // current attribute value
+    int32_t         left_indent;        // current attribute value
+    int32_t         right_indent;       // current attribute value
+    uint32_t        post_skip;          // current attribute value
+    uint32_t        tsize;              // current attribute value
+    uint32_t        xl_pre_skip;        // parent list pre_skip value (used by LP)
+    text_space      spacing;            // spacing on entry
+    uint8_t         headhi;             // current attribute value
+    uint8_t         termhi;             // current attribute value
+    font_number     font;               // font on entry
+    bool            compact  : 1;       // current attribute value
+    bool            dl_break : 1;       // current attribute value
+    bool            in_list  : 1;       // true if inside a list, including current tag
+    e_tags          c_tag;              // enum of tag
 } tag_cb;
 
 /***************************************************************************/
@@ -960,8 +959,8 @@ typedef struct tag_cb {
 /***************************************************************************/
 
 typedef struct fnstack {
-    struct  fnstack * prev;
-    char    fn[1];                      // var length file name
+    struct fnstack  *prev;
+    char            fn[1];              // var length file name
 } fnstack;
 
 /***************************************************************************/
@@ -969,8 +968,8 @@ typedef struct fnstack {
 /***************************************************************************/
 
 typedef struct laystack {
-    struct  laystack * next;
-    char    layfn[1];                   // var length file name
+    struct laystack *next;
+    char            layfn[1];           // var length file name
 } laystack;
 
 /***************************************************************************/
@@ -997,17 +996,17 @@ typedef struct {
 } box_col_spec;
 
 typedef struct box_col_set {
-    struct  box_col_set     *   next;
-            uint32_t            current;
-            uint32_t            length;
-            box_col_spec    *   cols;
+    struct box_col_set *next;
+    uint32_t        current;
+    uint32_t        length;
+    box_col_spec    *cols;
 } box_col_set;
 
 typedef struct box_col_stack {
-    struct  box_col_stack   *   next;
-            box_col_set     *   first;
-            bool                had_cols;
-            bool                inner_box;
+    struct box_col_stack *next;
+    box_col_set     *first;
+    bool            had_cols;
+    bool            inner_box;
 } box_col_stack;
 
 /***************************************************************************/
@@ -1021,15 +1020,15 @@ typedef enum {
 } alignment;
 
 typedef struct {
-    uint32_t            column;
-    alignment           alignment;
-    uint8_t             fill_char;
+    uint32_t        column;
+    alignment       alignment;
+    uint8_t         fill_char;
 } tab_stop;
 
 typedef struct {
-    uint16_t            current;
-    uint16_t            length;
-    tab_stop       *    tabs;
+    uint16_t        current;
+    uint16_t        length;
+    tab_stop        *tabs;
 } tab_list;
 
 /***************************************************************************/
@@ -1070,36 +1069,36 @@ typedef enum {
     fs_to2          // allow one half-marker to do the work of two fs_to half-markers
 } fontswitch_type;
 
-typedef struct text_chars {                 // tabbing-related fields have comments
-    struct  text_chars  *   next;
-    struct  text_chars  *   prev;
-            uint32_t        x_address;
-            uint32_t        width;
-            uint32_t        ts_width;       // tab space width (expected to be needed with al_center and al_right)
-            uint16_t        count;
-            uint16_t        length;
-            alignment       tab_align;      // tab alignment
-            bool            pre_gap;        // true if original text had preceding space
-            bool            post_ix;        // record state of ProcFlags.post_ix
-            font_number     font;
-            font_number     phrase_font;    // actual SF font, even if too large
-            fontswitch_type f_switch;       // font switch type (bx-related)
-            i_flags         fmflags;        // flags from inputcb
-            tab_type        tab_pos;        // if not tt_none, text_chars was positioned by a tab character
-            text_type       type;
-            char            text[1];
+typedef struct text_chars {             // tabbing-related fields have comments
+    struct text_chars *next;
+    struct text_chars *prev;
+    uint32_t        x_address;
+    uint32_t        width;
+    uint32_t        ts_width;           // tab space width (expected to be needed with al_center and al_right)
+    uint16_t        count;
+    uint16_t        length;
+    alignment       tab_align;          // tab alignment
+    bool            pre_gap;            // true if original text had preceding space
+    bool            post_ix;            // record state of ProcFlags.post_ix
+    font_number     font;
+    font_number     phrase_font;        // actual SF font, even if too large
+    fontswitch_type f_switch;           // font switch type (bx-related)
+    i_flags         fmflags;            // flags from inputcb
+    tab_type        tab_pos;            // if not tt_none, text_chars was positioned by a tab character
+    text_type       type;
+    char            text[1];
 } text_chars;
 
 struct eol_ix;              // forward declaration
 
 typedef struct text_line {
-    struct  text_line   *   next;
-            uint32_t        line_height;
-            units_space     units_spacing;
-            uint32_t        y_address;
-    struct  eol_ix      *   eol_index;
-            text_chars  *   first;
-            text_chars  *   last;
+    struct text_line *next;
+    uint32_t        line_height;
+    units_space     units_spacing;
+    uint32_t        y_address;
+    struct eol_ix   *eol_index;
+    text_chars      *first;
+    text_chars      *last;
 } text_line;
 
 typedef enum {
@@ -1115,96 +1114,96 @@ typedef enum {
 // struct doc_element;    // forward declaration (uncomment if ever needed)
 
 typedef struct {
-            uint32_t        cur_left;
-            uint32_t        depth;
-            uint32_t        y_address;
-            bool            at_top;
-            bool            force_FONT0;
-            bool            has_rec_type;
-    struct  eol_ix          *eol_index;
-            FILE            *fp;
-            char            *file;
+    uint32_t        cur_left;
+    uint32_t        depth;
+    uint32_t        y_address;
+    bool            at_top;
+    bool            force_FONT0;
+    bool            has_rec_type;
+    struct eol_ix   *eol_index;
+    FILE            *fp;
+    char            *file;
 } binclude_element;
 
 typedef struct {
-            uint32_t        h_start;
-            uint32_t        v_start;
-            uint32_t        h_len;
-            uint32_t        v_len;
-    struct  eol_ix      *   eol_index;
+    uint32_t        h_start;
+    uint32_t        v_start;
+    uint32_t        h_len;
+    uint32_t        v_len;
+    struct eol_ix   *eol_index;
 } dbox_element;
 
 typedef struct {
-            uint32_t        cur_left;
-            uint32_t        depth;
-            uint32_t        scale;
-            uint32_t        width;
-            uint32_t        y_address;
-            int32_t         xoff;
-            int32_t         yoff;
-            bool            at_top;
-    struct  eol_ix          *eol_index;
-            FILE            *fp;
-            font_number     next_font;
-            char            *short_name;
-            char            *file;
+    uint32_t        cur_left;
+    uint32_t        depth;
+    uint32_t        scale;
+    uint32_t        width;
+    uint32_t        y_address;
+    int32_t         xoff;
+    int32_t         yoff;
+    bool            at_top;
+    struct eol_ix   *eol_index;
+    FILE            *fp;
+    font_number     next_font;
+    char            *short_name;
+    char            *file;
 } graphic_element;
 
 typedef struct {
-            uint32_t        h_start;
-            uint32_t        v_start;
-            uint32_t        h_len;
-            uint32_t        o_subs_skip;
-            uint32_t        o_top_skip;
-    struct  eol_ix      *   eol_index;
-            bool            ban_adjust; // hline is first line in an outer box at effective top of page
+    uint32_t        h_start;
+    uint32_t        v_start;
+    uint32_t        h_len;
+    uint32_t        o_subs_skip;
+    uint32_t        o_top_skip;
+    struct eol_ix   *eol_index;
+    bool            ban_adjust; // hline is first line in an outer box at effective top of page
 } hline_element;
 
 typedef struct {
-    struct  doc_element *   prev;       // only used with headings
-    struct  ffh_entry   *   entry;      // only used with headings
-    struct  ref_entry   *   ref;        // only used with headings
-            text_line   *   first;
-            bool            bx_h_done;  // bx has added ascenders to the line
-            bool            force_op;   // forces overprint at top of page
-            bool            overprint;  // placement avoids padding warning
-            bool            vspace_next;// next element is a vspace_element (XMP/eXMP blocks only)
+    struct doc_element *prev;           // only used with headings
+    struct ffh_entry *entry;            // only used with headings
+    struct ref_entry *ref;              // only used with headings
+    text_line       *first;
+    bool            bx_h_done;          // bx has added ascenders to the line
+    bool            force_op;           // forces overprint at top of page
+    bool            overprint;          // placement avoids padding warning
+    bool            vspace_next;        // next element is a vspace_element (XMP/eXMP blocks only)
 } text_element;
 
 typedef struct {
-            uint32_t        h_start;
-            uint32_t        v_start;
-            uint32_t        v_len;
-    struct  eol_ix      *   eol_index;
-            bool            twice;
+    uint32_t        h_start;
+    uint32_t        v_start;
+    uint32_t        v_len;
+    struct eol_ix   *eol_index;
+    bool            twice;
 } vline_element;
 
 typedef struct {
-    font_number             font;
-    struct  eol_ix      *   eol_index;
+    font_number     font;
+    struct eol_ix   *eol_index;
 } vspace_element;
 
 typedef struct doc_element {
-    struct  doc_element     *   next;
-            uint32_t            blank_lines;
-            uint32_t            depth;
-            uint32_t            subs_skip;
-            uint32_t            top_skip;
-            uint32_t            h_pos;      // used by multicolumn support only
-            uint32_t            v_pos;      // used by multicolumn support only
+    struct doc_element *next;
+    uint32_t        blank_lines;
+    uint32_t        depth;
+    uint32_t        subs_skip;
+    uint32_t        top_skip;
+    uint32_t        h_pos;              // used by multicolumn support only
+    uint32_t        v_pos;              // used by multicolumn support only
     union {
-            binclude_element    binc;
-            dbox_element        dbox;
-            graphic_element     graph;
-            hline_element       hline;
-            text_element        text;
-            vline_element       vline;
-            vspace_element      vspace;
+        binclude_element binc;
+        dbox_element    dbox;
+        graphic_element graph;
+        hline_element   hline;
+        text_element    text;
+        vline_element   vline;
+        vspace_element  vspace;
     } element;
-            element_type        type;       // placement avoids padding warning
-            bool                do_split;   // split the group with this element starting the new group
-            bool                in_xmp;     // true is element was inside an XMP/eXMP block
-            bool                op_co_on;   // true if concatenation was on when element was processed
+    element_type    type;               // placement avoids padding warning
+    bool            do_split;           // split the group with this element starting the new group
+    bool            in_xmp;             // true is element was inside an XMP/eXMP block
+    bool            op_co_on;           // true if concatenation was on when element was processed
 } doc_element;
 
 /********************************************************************/
@@ -1242,38 +1241,38 @@ typedef enum {
 } group_type;
 
 typedef struct doc_el_group {
-    struct  doc_el_group    *   next;
-            uint32_t            depth;
-            uint32_t            post_skip;  // figure or heading at top of column
-            doc_element     *   first;
-            doc_element     *   last;
-            group_type          owner;      // tag or control word using this instance
-            font_number         block_font; // used by CO OFF/CO ON blocks
+    struct doc_el_group *   next;
+    uint32_t        depth;
+    uint32_t        post_skip;          // figure or heading at top of column
+    doc_element     *first;
+    doc_element     *last;
+    group_type      owner;              // tag or control word using this instance
+    font_number     block_font;         // used by CO OFF/CO ON blocks
 } doc_el_group;
 
 typedef struct {
-            uint32_t        main_top;       // top of page for main
-            uint32_t        fig_top;        // top of page for bot_fig
-            uint32_t        fn_top;         // top of page for footnote
-            uint32_t        col_left;       // column left margin
-            doc_element *   col_width;
-            doc_element *   main;
-            doc_element *   bot_fig;
-            doc_element *   footnote;
+    uint32_t        main_top;           // top of page for main
+    uint32_t        fig_top;            // top of page for bot_fig
+    uint32_t        fn_top;             // top of page for footnote
+    uint32_t        col_left;           // column left margin
+    doc_element     *col_width;
+    doc_element     *main;
+    doc_element     *bot_fig;
+    doc_element     *footnote;
 } doc_column;
 
 typedef struct doc_pane {
-    struct  doc_pane        *   next;
-            uint32_t            page_width_top; // top of page for page_width
-            uint32_t            col_width_top;  // top of page for col_width
-            uint32_t            col_count;      // number of columns
-            uint32_t            col_width;      // width of each column
-            uint32_t            cur_col;        // column currently in use
-            doc_element     *   page_width;
-            doc_column          cols[MAX_COL];
+    struct doc_pane *next;
+    uint32_t        page_width_top;     // top of page for page_width
+    uint32_t        col_width_top;      // top of page for col_width
+    uint32_t        col_count;          // number of columns
+    uint32_t        col_width;          // width of each column
+    uint32_t        cur_col;            // column currently in use
+    doc_element     *page_width;
+    doc_column      cols[MAX_COL];
 } doc_pane;
 
-struct banner_lay_tag;  // avoids include circularity with gtypelay.h
+struct              banner_lay_tag;     // avoids include circularity with gtypelay.h
 
 /***************************************************************************/
 /*  This will be changing, possibly quite a bit, as multicolumn support    */
@@ -1286,44 +1285,44 @@ struct banner_lay_tag;  // avoids include circularity with gtypelay.h
 /***************************************************************************/
 
 typedef struct {
-            uint32_t            page_top;       // top of page for top banner
-            uint32_t            panes_top;      // top of page for first pane
-            uint32_t            bot_ban_top;    // top of page for bottom banner
-            uint32_t            max_depth;
-            uint32_t            cur_depth;
-            uint32_t            page_left;      // page left margin
-            uint32_t            page_width;     // page right margin
-            uint32_t            max_width;      // maximum width (page or column)
-            int32_t             cur_left;       // net adjustment to left margin (can be negative)
-            int32_t             cur_width;      // current width
-            doc_pane        *   last_pane;
-            doc_column      *   cur_col;        // quick access to t_page.last_pane->cols[t_page.last_pane->cur_col]
-            doc_element     *   last_col_main;
-            doc_element     *   last_col_fn;
-    struct  banner_lay_tag  *   top_banner;
-    struct  banner_lay_tag  *   bottom_banner;
-            symsub          *   topheadsub;     // ptr to $TOPHEAD symvar entry
-            symsub          *   botheadsub;     // ptr to $BOTHEAD symvar entry
-            doc_element     *   top_ban;
-            doc_pane        *   panes;
-            doc_element     *   bot_ban;
-    struct  eol_ix          *   eol_index;
+    uint32_t        page_top;           // top of page for top banner
+    uint32_t        panes_top;          // top of page for first pane
+    uint32_t        bot_ban_top;        // top of page for bottom banner
+    uint32_t        max_depth;
+    uint32_t        cur_depth;
+    uint32_t        page_left;          // page left margin
+    uint32_t        page_width;         // page right margin
+    uint32_t        max_width;          // maximum width (page or column)
+    int32_t         cur_left;           // net adjustment to left margin (can be negative)
+    int32_t         cur_width;          // current width
+    doc_pane        *last_pane;
+    doc_column      *cur_col;           // quick access to t_page.last_pane->cols[t_page.last_pane->cur_col]
+    doc_element     *last_col_main;
+    doc_element     *last_col_fn;
+    struct banner_lay_tag *top_banner;
+    struct banner_lay_tag *bottom_banner;
+    symsub          *topheadsub;        // ptr to $TOPHEAD symvar entry
+    symsub          *botheadsub;        // ptr to $BOTHEAD symvar entry
+    doc_element     *top_ban;
+    doc_pane        *panes;
+    doc_element     *bot_ban;
+    struct eol_ix   *eol_index;
 } doc_page;
 
 typedef struct {
-            doc_el_group    *   last_fk_queue;
-            doc_el_group    *   last_page_width;
-            doc_el_group    *   last_col_width;
-            doc_element     *   last_col_main;
-            doc_el_group    *   last_col_bot;
-            doc_el_group    *   last_col_fn;
-            doc_el_group    *   fk_queue;       // pending FK blocks
-            doc_el_group    *   page_width;     // page_width
-            doc_el_group    *   col_width;      // cols->col_width
-            doc_element     *   col_main;       // cols->main
-            doc_el_group    *   col_bot;        // cols->bot
-            doc_el_group    *   col_fn;         // cols->fn
-            uint32_t            prev_pg_depth;
+    doc_el_group    *last_fk_queue;
+    doc_el_group    *last_page_width;
+    doc_el_group    *last_col_width;
+    doc_element     *last_col_main;
+    doc_el_group    *last_col_bot;
+    doc_el_group    *last_col_fn;
+    doc_el_group    *fk_queue;          // pending FK blocks
+    doc_el_group    *page_width;        // page_width
+    doc_el_group    *col_width;         // cols->col_width
+    doc_element     *col_main;          // cols->main
+    doc_el_group    *col_bot;           // cols->bot
+    doc_el_group    *col_fn;            // cols->fn
+    uint32_t        prev_pg_depth;
 } doc_next_page;
 
 /***************************************************************************/
@@ -1371,47 +1370,47 @@ typedef enum {          // definition order is important
     pgsee,              // see string or seeid item (IHn, IREF)
 } ereftyp;
 
-typedef struct ix_e_blk {                   // index entry for pagenos / text
-    struct  ix_e_blk    *   next;           // next entry
-            char        *   prt_text;       // used with seeid when ref has prt_text
+typedef struct ix_e_blk {               // index entry for pagenos / text
+    struct ix_e_blk *next;              // next entry
+    char            *prt_text;          // used with seeid when ref has prt_text
     union {
         struct {
-            char        *   page_text;      // reference is text (IX ref, pg string, see/seeid string)
-            unsigned        page_text_len;  // reference text length
+            char        *page_text;     // reference is text (IX ref, pg string, see/seeid string)
+            unsigned    page_text_len;  // reference text length
         } pageref;
         struct {
-            uint32_t        page_no;        // pageno is number
-            num_style       style;          // page number style defined by banner, if any
+            uint32_t    page_no;        // pageno is number
+            num_style   style;          // page number style defined by banner, if any
         } pagenum;
     } u;
-            ereftyp         entry_typ;     // selects page_no or page_text (IX, In), or no reference (IHn)
+    ereftyp         entry_typ;     // selects page_no or page_text (IX, In), or no reference (IHn)
 } ix_e_blk;
 
 /* These are used in the order given, and each is kept in sorted order */
 
 typedef struct {
-    ix_e_blk    *   major_pgnum;    // first major page number ix entry block
-    ix_e_blk    *   major_string;   // first major string ix entry block
-    ix_e_blk    *   normal_pgnum;   // first normal page number ix entry block
-    ix_e_blk    *   normal_string;  // first normal string ix entry block
-    ix_e_blk    *   see_string;     // first see/seeid string ix entry block
+    ix_e_blk        *major_pgnum;   // first major page number ix entry block
+    ix_e_blk        *major_string;  // first major string ix entry block
+    ix_e_blk        *normal_pgnum;  // first normal page number ix entry block
+    ix_e_blk        *normal_string; // first normal string ix entry block
+    ix_e_blk        *see_string;    // first see/seeid string ix entry block
 } entry_list;
 
 typedef struct ix_h_blk {                   // index header with index term text
-    struct  ix_h_blk    *   next;           // next ix header block same level
-    struct  ix_h_blk    *   lower;          // first ix hdr block next lower level
-            entry_list  *   entry;          // set of pointers to ix entry block
-            int             ix_lvl;         // index level 1 - 3
-            unsigned        ix_term_len;    // index term length
-            char        *   ix_term;        // index term
-            unsigned        prt_term_len;   // display text length
-            char        *   prt_term;       // display text (NULL -> use index term)
+    struct ix_h_blk *next;          // next ix header block same level
+    struct ix_h_blk *lower;         // first ix hdr block next lower level
+    entry_list      *entry;         // set of pointers to ix entry block
+    int             ix_lvl;         // index level 1 - 3
+    unsigned        ix_term_len;    // index term length
+    char            *ix_term;       // index term
+    unsigned        prt_term_len;   // display text length
+    char            *prt_term;      // display text (NULL -> use index term)
 } ix_h_blk;
 
 typedef struct eol_ix {                     // type for eol_index list
-    struct  eol_ix      *   next;
-    struct  ix_h_blk    *   ixh;            // the index header block to reference
-            ereftyp         type;           // type of entry (pgmajor, pgnum, pgbegin, pgend)
+    struct eol_ix   *next;
+    struct ix_h_blk *ixh;           // the index header block to reference
+    ereftyp         type;           // type of entry (pgmajor, pgnum, pgbegin, pgend)
 } eol_ix;
 
 /***************************************************************************/
@@ -1448,9 +1447,9 @@ typedef enum {
 typedef struct {
     int32_t         headn;              // current heading number (numeric)
     char            hnumstr[64];        // current heading number (text)
-    symsub      *   headsub;            // ptr to $HEADx symvar entry
-    symsub      *   hnumsub;            // ptr to $HNUMx symvar entry
-    symsub      *   htextsub;           // ptr to $HTEXTx symvar entry
+    symsub          *headsub;           // ptr to $HEADx symvar entry
+    symsub          *hnumsub;           // ptr to $HNUMx symvar entry
+    symsub          *htextsub;          // ptr to $HTEXTx symvar entry
     char            tag[3];             // "H0" ... "H6", used for Hx tags only
 } hd_num_data;
 
@@ -1476,14 +1475,14 @@ typedef enum {
 } ffhflags;
 
 typedef struct ffh_entry {
-    struct ffh_entry     *  next;
-    uint32_t                pageno; // output page
-    uint32_t                number; // figure/footnote number or heading level
-    char                *   prefix; // figcap/heading generated text
-    char                *   text;   // figcap/heading text line
-    num_style               style;  // figcap/heading number format (based on section)
-    ffhflags                flags;
-    bool                    abs_pre;// first heading in ABSTRACT or PREFACE
+    struct ffh_entry *next;
+    uint32_t        pageno;             // output page
+    uint32_t        number;             // figure/footnote number or heading level
+    char            *prefix;            // figcap/heading generated text
+    char            *text;              // figcap/heading text line
+    num_style       style;              // figcap/heading number format (based on section)
+    ffhflags        flags;
+    bool            abs_pre;            // first heading in ABSTRACT or PREFACE
 } ffh_entry;
 
 /***************************************************************************/
@@ -1503,21 +1502,21 @@ typedef enum {
 } refflags;
 
 typedef struct ref_entry {
-    struct ref_entry    *   next;
-    char                    refid[REFID_LEN + 1];   // reference id
-    refflags                flags;
+    struct ref_entry *next;
+    char            refid[REFID_LEN + 1]; // reference id
+    refflags        flags;
     union {
         struct {
-            ffh_entry   *   entry;          // detail for FIG, FN, or Hx entry
+            ffh_entry *entry;           // detail for FIG, FN, or Hx entry
         } ffh;
         struct {
-            ix_h_blk    *   hblk;           // detail for IX, In, IHn, or IREF entry
-            ix_h_blk    *   base;           // attachment point for hblk, if any
+            ix_h_blk *hblk;             // detail for IX, In, IHn, or IREF entry
+            ix_h_blk *base;             // attachment point for hblk, if any
         } ix;
     } u;
 } ref_entry;
 
-typedef ref_entry       *ref_dict;
+typedef ref_entry   *ref_dict;
 
 /***************************************************************************/
 /*  forward reference / undefined id / page change                         */
@@ -1525,8 +1524,8 @@ typedef ref_entry       *ref_dict;
 /***************************************************************************/
 
 typedef struct fwd_ref {
-    struct fwd_ref  *   next;
-    char                refid[REFID_LEN + 1];   // reference id
+    struct fwd_ref  *next;
+    char            refid[REFID_LEN + 1]; // reference id
 } fwd_ref;
 
 /********************************************************************************/
@@ -1719,89 +1718,89 @@ typedef struct proc_flags {
 /***************************************************************************/
 
 typedef struct attr_flags {
-    unsigned    align               : 1;
-    unsigned    abstract_string     : 1;
-    unsigned    appendix_string     : 1;
-    unsigned    binding             : 1;
-    unsigned    backm_string        : 1;
-    unsigned    body_string         : 1;
-    unsigned    bullet              : 1;
-    unsigned    bullet_translate    : 1;
-    unsigned    bullet_font         : 1;
-    unsigned    case_a              : 1;    // using just "case" causes compiler problems
-    unsigned    columns             : 1;
-    unsigned    contents            : 1;
-    unsigned    date_form           : 1;
-    unsigned    default_frame       : 1;
-    unsigned    default_place       : 1;
-    unsigned    delim               : 1;
-    unsigned    depth               : 1;
-    unsigned    display_heading     : 1;
-    unsigned    display_in_toc      : 1;
-    unsigned    docnum_string       : 1;
-    unsigned    docsect             : 1;
-    unsigned    figcap_string       : 1;
-    unsigned    file                : 1;
-    unsigned    fill_string         : 1;
-    unsigned    font                : 1;
-    unsigned    frame               : 1;
-    unsigned    group               : 1;
-    unsigned    gutter              : 1;
-    unsigned    hoffset             : 1;
-    unsigned    header              : 1;
-    unsigned    indent              : 1;
-    unsigned    index_delim         : 1;
-    unsigned    index_string        : 1;
-    unsigned    input_esc           : 1;
-    unsigned    ixhead_frame        : 1;
-    unsigned    justify             : 1;
-    unsigned    left_adjust         : 1;
-    unsigned    left_indent         : 1;
-    unsigned    left_margin         : 1;
-    unsigned    level               : 1;
-    unsigned    line_break          : 1;
-    unsigned    line_indent         : 1;
-    unsigned    line_left           : 1;
-    unsigned    max_group           : 1;
-    unsigned    note_string         : 1;
-    unsigned    number_font         : 1;
-    unsigned    number_form         : 1;
-    unsigned    number_reset        : 1;
-    unsigned    number_style        : 1;
-    unsigned    page_eject          : 1;
-    unsigned    page_position       : 1;
-    unsigned    page_reset          : 1;
-    unsigned    para_indent         : 1;
-    unsigned    place               : 1;
-    unsigned    post_skip           : 1;
-    unsigned    pouring             : 1;
-    unsigned    pre_lines           : 1;
-    unsigned    pre_skip            : 1;
-    unsigned    pre_top_skip        : 1;
-    unsigned    preface_string      : 1;
-    unsigned    refdoc              : 1;
-    unsigned    refnum              : 1;
-    unsigned    refplace            : 1;
-    unsigned    region_position     : 1;
-    unsigned    reposition          : 1;
-    unsigned    right_adjust        : 1;
-    unsigned    right_indent        : 1;
-    unsigned    right_margin        : 1;
-    unsigned    script_format       : 1;
-    unsigned    section_eject       : 1;
-    unsigned    see_string          : 1;
-    unsigned    see_also_string     : 1;
-    unsigned    size                : 1;
-    unsigned    skip                : 1;
-    unsigned    spacing             : 1;
-    unsigned    stop_eject          : 1;
-    unsigned    string_font         : 1;
-    unsigned    threshold           : 1;
-    unsigned    toc_levels          : 1;
-    unsigned    top_margin          : 1;
-    unsigned    voffset             : 1;
-    unsigned    width               : 1;
-    unsigned    wrap_indent         : 1;
+    unsigned        align           : 1;
+    unsigned        abstract_string : 1;
+    unsigned        appendix_string : 1;
+    unsigned        binding         : 1;
+    unsigned        backm_string    : 1;
+    unsigned        body_string     : 1;
+    unsigned        bullet          : 1;
+    unsigned        bullet_translate : 1;
+    unsigned        bullet_font     : 1;
+    unsigned        case_a          : 1;    // using just "case" causes compiler problems
+    unsigned        columns         : 1;
+    unsigned        contents        : 1;
+    unsigned        date_form       : 1;
+    unsigned        default_frame   : 1;
+    unsigned        default_place   : 1;
+    unsigned        delim           : 1;
+    unsigned        depth           : 1;
+    unsigned        display_heading : 1;
+    unsigned        display_in_toc  : 1;
+    unsigned        docnum_string   : 1;
+    unsigned        docsect         : 1;
+    unsigned        figcap_string   : 1;
+    unsigned        file            : 1;
+    unsigned        fill_string     : 1;
+    unsigned        font            : 1;
+    unsigned        frame           : 1;
+    unsigned        group           : 1;
+    unsigned        gutter          : 1;
+    unsigned        hoffset         : 1;
+    unsigned        header          : 1;
+    unsigned        indent          : 1;
+    unsigned        index_delim     : 1;
+    unsigned        index_string    : 1;
+    unsigned        input_esc       : 1;
+    unsigned        ixhead_frame    : 1;
+    unsigned        justify         : 1;
+    unsigned        left_adjust     : 1;
+    unsigned        left_indent     : 1;
+    unsigned        left_margin     : 1;
+    unsigned        level           : 1;
+    unsigned        line_break      : 1;
+    unsigned        line_indent     : 1;
+    unsigned        line_left       : 1;
+    unsigned        max_group       : 1;
+    unsigned        note_string     : 1;
+    unsigned        number_font     : 1;
+    unsigned        number_form     : 1;
+    unsigned        number_reset    : 1;
+    unsigned        number_style    : 1;
+    unsigned        page_eject      : 1;
+    unsigned        page_position   : 1;
+    unsigned        page_reset      : 1;
+    unsigned        para_indent     : 1;
+    unsigned        place           : 1;
+    unsigned        post_skip       : 1;
+    unsigned        pouring         : 1;
+    unsigned        pre_lines       : 1;
+    unsigned        pre_skip        : 1;
+    unsigned        pre_top_skip    : 1;
+    unsigned        preface_string  : 1;
+    unsigned        refdoc          : 1;
+    unsigned        refnum          : 1;
+    unsigned        refplace        : 1;
+    unsigned        region_position : 1;
+    unsigned        reposition      : 1;
+    unsigned        right_adjust    : 1;
+    unsigned        right_indent    : 1;
+    unsigned        right_margin    : 1;
+    unsigned        script_format   : 1;
+    unsigned        section_eject   : 1;
+    unsigned        see_string      : 1;
+    unsigned        see_also_string : 1;
+    unsigned        size            : 1;
+    unsigned        skip            : 1;
+    unsigned        spacing         : 1;
+    unsigned        stop_eject      : 1;
+    unsigned        string_font     : 1;
+    unsigned        threshold       : 1;
+    unsigned        toc_levels      : 1;
+    unsigned        top_margin      : 1;
+    unsigned        voffset         : 1;
+    unsigned        width           : 1;
+    unsigned        wrap_indent     : 1;
 } attr_flags;                           // attribute flags
 
 /***************************************************************************/
