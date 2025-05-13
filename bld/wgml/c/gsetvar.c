@@ -79,8 +79,8 @@ char * scan_sym( char * p, symvar * sym, sub_index * subscript, char * * result,
          *   &longsymname
          * and &longsymnam will be resolved if it exists.
          */
-        if( splittable && (k == SYM_NAME_LENGTH) )
-            break;
+//        if( splittable && (k == SYM_NAME_LENGTH) )
+//            break;
 
         if( k < SYM_NAME_LENGTH ) {
             if( (k == 3) && (sym->name[0] != '$') ) {
@@ -92,8 +92,8 @@ char * scan_sym( char * p, symvar * sym, sub_index * subscript, char * * result,
                     k = 1;
                 }
             }
-            sym->name[k++] = my_tolower( *p );
-            sym->name[k] = '\0';
+            sym->name[k] = my_tolower( *p );
+            k++;
         } else {
             if( !g_scan_err ) {
                 g_scan_err = true;
@@ -106,6 +106,7 @@ char * scan_sym( char * p, symvar * sym, sub_index * subscript, char * * result,
         }
         p++;
     }
+    sym->name[k] = '\0';
 
     if( p == sym_start ) {              // special for &*
         if( *p != ampchar ) {           // not &*&xx construct

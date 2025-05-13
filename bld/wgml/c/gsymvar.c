@@ -543,7 +543,7 @@ static bool add_symvar_sub( symvar * var, char * val, sub_index sub, symsub * * 
 /*  link_sym    add existing symbol to dictionary                          */
 /***************************************************************************/
 
-void link_sym( symdict_hdl dict, symvar * sym )
+void link_sym( symdict_hdl dict, symvar *sym )
 {
     if( dict->local ) {
         sym->next   = dict->first;
@@ -565,24 +565,14 @@ void link_sym( symdict_hdl dict, symvar * sym )
 /*  add_symsym  add symbol base entry and prepare subscript 0 entry        */
 /***************************************************************************/
 
-static void add_symsym( symdict_hdl dict, char * name, symbol_flags f, symvar * * n )
+static symvar *add_symsym( symdict_hdl dict, const char *name, symbol_flags f )
 {
-    symvar  *   new;
-    symsub  *   newsub;
-    int         k;
+    symvar      *new;
+    symsub      *newsub;
 
     new = mem_alloc( sizeof( symvar ) );
-
-    for( k = 0; k < SYM_NAME_LENGTH; k++ ) {
-       new->name[k] = name[k];
-       if( !name[k] ) {
-          break;
-       }
-    }
-    for( ; k <= SYM_NAME_LENGTH; k++ ) {
-       new->name[k] = '\0';
-    }
     new->next = NULL;
+    strcpy( new->name, name );
     new->last_auto_inc  = 0;
     new->subscript_used = 0;
     new->subscripts = NULL;
@@ -593,15 +583,13 @@ static void add_symsym( symdict_hdl dict, char * name, symbol_flags f, symvar * 
     newsub->next      = NULL;
     newsub->base      = new;
     newsub->subscript = 0;
-    newsub->value     = mem_alloc( 12 + 1 );// for min subscript as string
-                                            // -1000000
-    *(newsub->value)  = '0';
-    *(newsub->value + 1) = '\0';
+    newsub->value     = mem_alloc( NUM2STR_LENGTH );
+    newsub->value[0]  = '0';
+    newsub->value[1]  = '\0';
 
-    *n = new;
     link_sym( dict, new );
 
-    return;
+    return( new );
 }
 
 
@@ -610,8 +598,8 @@ static void add_symsym( symdict_hdl dict, char * name, symbol_flags f, symvar * 
 /*  with    returning ptr to symsub entry                                  */
 /***************************************************************************/
 
-int add_symvar_addr( symdict_hdl dict, char * name, char * val,
-                     sub_index subscript, symbol_flags f, symsub * * sub )
+int add_symvar_addr( symdict_hdl dict, char *name, char *val,
+                     sub_index subscript, symbol_flags f, symsub **sub )
 {
     symvar  *   new = NULL;
     symsub  *   newsub = NULL;
@@ -624,7 +612,7 @@ int add_symvar_addr( symdict_hdl dict, char * name, char * val,
     } else {
         rc = find_symvar_del( dict, name, subscript, &newsub, &new );
         switch ( rc ) {
-        case -1 :                       // deleted symbol found
+        case -1: // deleted symbol found
             new->flags &= ~deleted;     // reset deleted switch
             ok = add_symvar_sub( new, val, subscript, sub );
             if( !ok ) {
@@ -637,8 +625,8 @@ int add_symvar_addr( symdict_hdl dict, char * name, char * val,
                 }
             }
             break;
-        case 0 :                        // nothing found
-            add_symsym( dict, name, f, &new );
+        case 0: // nothing found
+            new = add_symsym( dict, name, f );
             ok = add_symvar_sub( new, val, subscript, sub );
             if( !ok ) {
                 rc = 3;
@@ -650,7 +638,7 @@ int add_symvar_addr( symdict_hdl dict, char * name, char * val,
                 }
             }
             break;
-        case 1 :                        // symbol found, but not subscript
+        case 1: // symbol found, but not subscript
             newsub->base->flags &= ~deleted;// reset deleted switch
             newsub->base->flags |= f;   // use flags given
             ok = add_symvar_sub( newsub->base, val, subscript, sub );
@@ -664,7 +652,7 @@ int add_symvar_addr( symdict_hdl dict, char * name, char * val,
                 }
             }
             break;
-        case 2 :              // symbol + subscript found, or not subscripted
+        case 2: // symbol + subscript found, or not subscripted
             newsub->base->flags &= ~deleted;// reset deleted switch
             newsub->base->flags |= f;   // use flags given
             if( (newsub->base->flags & ro) || strcmp( newsub->value, val ) == 0 ) {

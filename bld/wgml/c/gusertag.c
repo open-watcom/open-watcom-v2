@@ -184,6 +184,7 @@ bool process_tag( gtentry *ge, mac_entry * me )
     int             rc;
     unsigned        len;
     symdict_hdl     loc_dict;   // for preparing local vars
+    char            attname[TAG_ATT_NAME_LENGTH + 1];
 
     processed = true;           // return value, always true
     init_dict( &loc_dict );
@@ -231,27 +232,23 @@ bool process_tag( gtentry *ge, mac_entry * me )
             if( *p == '.' ) {
                 break;
             }
-            p2 = token_buf;
             pa = p;
-            while( is_macro_char( *p ) ) {
-                *p2++ = *p++;
-            }
-            *p2 = '\0';
-            if( p2 != token_buf ) {     // ignore nullstring
+            p = get_tag_attname( p, attname );
+            if( *attname != '\0' ) {     // ignore nullstring
                 for( ga = ge->attribs; ga != NULL; ga = ga->next ) {// all attrs
-                    if( !stricmp( ga->attname, token_buf ) ) {
+                    if( strcmp( ga->attname, attname ) == 0 ) {
                         ga->attflags |= att_proc_seen; // attribute specified
                         if( ga->attflags & att_auto ) {
-                            xx_line_err_cc( err_auto_att, token_buf, pa );
+                            xx_line_err_cc( err_auto_att, attname, pa );
                         }
 
                         if( is_space_tab_char( *p ) ) { // no whitespace allowed before '='
-                            xx_line_err_cc( err_no_att_val, token_buf, p );
+                            xx_line_err_cc( err_no_att_val, attname, p );
                         }
 
                         /* no line end allowed before '=' except with TEXTLine */
                         if( (*p == '\0') && (ge->tagflags & tag_textline) == 0 ) {
-                            xx_line_err_cc( err_no_att_val, token_buf, p );
+                            xx_line_err_cc( err_no_att_val, attname, p );
                         }
 
                         if( *p == '=' ) {   // value follows
@@ -259,7 +256,7 @@ bool process_tag( gtentry *ge, mac_entry * me )
                             p++;            // over =
 
                             if( is_space_tab_char( *p ) ) { // no whitespace allowed after '='
-                                xx_line_err_cc( err_no_att_val, token_buf, p );
+                                xx_line_err_cc( err_no_att_val, attname, p );
                             }
 
                             ga->attflags |= att_proc_val;
@@ -310,7 +307,7 @@ bool process_tag( gtentry *ge, mac_entry * me )
                 }
                 if( ga == NULL ) {      // supposed attribute not found
                     p = pa;
-                    xx_line_warn_cc( wng_att_name, token_buf, pa );
+                    xx_line_warn_cc( wng_att_name, attname, pa );
                 }
             } else {
                 if( *p != '\0' ) {

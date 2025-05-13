@@ -98,15 +98,14 @@ extern  void    gml_set( const gmltag * entry )
                     break;
                 }
                 value_found = true;
-                if( attr_val.len > BUF_SIZE - 1 )
-                    attr_val.len = BUF_SIZE - 1;
-                strncpy( token_buf, attr_val.name, attr_val.len );
-                token_buf[attr_val.len] = '\0';
-                if( ProcFlags.tag_end_found ) {
-                    break;
+                if( strcmp( "delete", attr_val.specval ) == 0 && attr_val.quoted == ' ' ) {
+                    sym.flags |= deleted;
+                } else {
+                    if( attr_val.len > BUF_SIZE - 1 )
+                        attr_val.len = BUF_SIZE - 1;
+                    strncpy( token_buf, attr_val.name, attr_val.len );
+                    token_buf[attr_val.len] = '\0';
                 }
-            } else if( strnicmp( "delete", token_buf, 6 ) == 0 ) {
-                sym.flags |= deleted;
                 if( ProcFlags.tag_end_found ) {
                     break;
                 }

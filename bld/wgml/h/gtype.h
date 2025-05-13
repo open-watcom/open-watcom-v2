@@ -224,7 +224,7 @@ typedef struct symsub {
 
 typedef struct symvar {
     struct symvar   *   next;           // next base entry
-    char                name[SYM_NAME_LENGTH + 2];
+    char                name[SYM_NAME_LENGTH + 1];
     int                 last_auto_inc;  // last autoincremented subscript value
     int                 subscript_used; // count of used subscripts
     symsub          *   subscripts;     // subscript entries
