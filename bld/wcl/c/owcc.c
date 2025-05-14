@@ -1514,12 +1514,28 @@ static  int  CompLink( void )
                 rc = tool_exec( TYPE_DIS, ofname, dis_args );
             }
             if( Exe_Name == NULL ) {
+                /* overwrite the default program name only on unix targets */
+                if( Flags.link_for_sys ) {
+                    /* check, if the target system is a unix system */
+                    if( strncmp( SystemName, "linux", 5 ) == 0 ) {
+                        Flags.keep_exename = 1;
+                    } else {
+                        Flags.keep_exename = 0;
+                    }
+                } else {
+                    /* called without "-bsystem" argument. use the host to decide */
 #ifdef __UNIX__
-                Exe_Name = MemStrDup( OUTPUTFILE );
-                Flags.keep_exename = 1;
+                    Flags.keep_exename = 1;
 #else
-                Exe_Name = MemStrDup( RemoveExt( Word ) );
+                    Flags.keep_exename = 0;
 #endif
+                }
+                if( Flags.keep_exename ) {
+                    /* use the well known default program name on unix targets */
+                    Exe_Name = MemStrDup( OUTPUTFILE );
+                } else {
+                    Exe_Name = MemStrDup( RemoveExt( Word ) );
+                }
             }
             file = GetName( NULL, NULL );   /* get next filename */
         }
