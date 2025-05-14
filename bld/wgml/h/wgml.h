@@ -109,6 +109,7 @@ extern int          unquote_arg( tok_type *arg );
 extern char         *get_tagname( const char *p, char *tagname );
 extern char         *check_tagname( const char *p, char *tagname );
 extern char         *get_tag_attname( const char *p, char *attname );
+extern char         *get_macro_name( const char *p, char *macname );
 
 /* gbanner.c                            */
 extern void         out_ban_bot( void );

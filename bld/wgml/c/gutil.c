@@ -1297,3 +1297,19 @@ void free_fwd_refs( fwd_ref * fwd_refs )
     }
     return;
 }
+
+
+char *get_macro_name( const char *p, char *macname )
+{
+    int     i;
+
+    i = 0;
+    while( is_macro_char( *p ) ) {
+        if( i < MAC_NAME_LENGTH ) {
+            macname[i++] = my_tolower( *p );
+        }
+        p++;
+    }
+    macname[i] = '\0';
+    return( (char *)p );
+}

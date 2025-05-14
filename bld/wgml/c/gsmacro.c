@@ -419,13 +419,10 @@ void    scr_dm( void )
     char        *   nmstart;
     char        *   p;
     char        *   pa;
-    char        *   pn;
-    char            save;
     int             len;
     int             macro_line_count;
-    int             compbegin;
-    int             compend;
-    char            macname[MAC_NAME_LENGTH + 1];
+    bool            compbegin;
+    bool            compend;
     inp_line    *   head;
     inp_line    *   last;
     inp_line    *   work;
@@ -433,6 +430,8 @@ void    scr_dm( void )
     condcode        cc;
     inputcb     *   cb;
     char            linestr[NUM2STR_LENGTH];
+    char            macname1[MAC_NAME_LENGTH + 1];
+    char            macname2[MAC_NAME_LENGTH + 1];
 
     cb = input_cbs;
 
@@ -446,34 +445,23 @@ void    scr_dm( void )
      *  this is wgml 4.0 behaviour
      *
      */
-    len = 0;
-    p   = g_tok_start;
-    pn  = macname;
-    while( len < MAC_NAME_LENGTH ) {
-        if( is_space_tab_char( *p ) || (*p == '\0') ) { // largest possible macro name
-            break;
-        }
-        *pn++ = my_tolower( *p++ );     // copy lowercase macroname
-        len++;
-    }
-    *pn = '\0';
+    get_macro_name( g_tok_start, macname1 );
 
     cc = getarg();
     if( cc == omit ) {                  // nothing found
         // SC--048 A control word parameter is missing
-        xx_source_err_c( err_mac_def_fun, macname );
+        xx_source_err_c( err_mac_def_fun, macname1 );
     }
 
-    p    = scandata.s;
+    get_macro_name( g_tok_start, macname2 );
+
     head = NULL;
     last = NULL;
-    save = *p;             // save char so we can make null terminated string
-    *p   = '\0';
     macro_line_count = 0;
 
-    compend   = stricmp( "end", g_tok_start ) == 0;
-    compbegin = stricmp( "begin", g_tok_start ) == 0;
-    if( !(compbegin | compend) ) { // only .dm macname /line1/line2/ possible
+    compend   = ( strcmp( "end", macname2 ) == 0 );
+    compbegin = ( strcmp( "begin", macname2 ) == 0 );
+    if( !compbegin && !compend ) { // only .dm macname /line1/line2/ possible
         char    sepchar;
 
         if( cc == quotes ) {
@@ -484,7 +472,6 @@ void    scr_dm( void )
         }
         ProcFlags.in_macro_define = 1;
 
-        *p   = save;
         lineno_start = cb->s.f->lineno;
 
         p = g_tok_start;
@@ -509,20 +496,19 @@ void    scr_dm( void )
             nmstart = ++p;
             macro_line_count++;
         }
-        compend = 1;                    // so the end processing will happen
+        compend = true;                    // so the end processing will happen
     }                                   // BEGIN or END not found
 
     if( compend && !(ProcFlags.in_macro_define) ) {
         // SC--003: A macro is not being defined
-        xx_source_err_c( err_mac_def_end, macname );
+        xx_source_err_c( err_mac_def_end, macname1 );
     }
     if( compbegin && (ProcFlags.in_macro_define) ) {
         // SC--002 The control word parameter '%s' is invalid
-        xx_source_err_c( err_mac_def_nest, macname );
+        xx_source_err_c( err_mac_def_nest, macname1 );
     }
-    *p  = save;
-    if( compbegin ) {                   // start new macro define
 
+    if( compbegin ) {                   // start new macro define
         ProcFlags.in_macro_define = 1;
         lineno_start = cb->s.f->lineno;
 
@@ -548,44 +534,32 @@ void    scr_dm( void )
                 if( (*p == SCR_char)  || (*p == '\'') ) {
                     p++;                        // over ".." or ".'"
                 }
-                while( len < MAC_NAME_LENGTH ) {
-                    if( is_space_tab_char( *p ) || (*p == '\0') ) { // largest possible macro/cw
-                        break;
-                    }
-                   *pa++ = my_tolower( *p++ );  // copy lowercase to TokenBuf
-                   len++;
-                }
-                *pa = '\0';
-                if( !strncmp( cw, "dm", SCR_KW_LENGTH ) ) {
-                    if( (len == SCR_KW_LENGTH) || ((len > SCR_KW_LENGTH) &&
-                                (find_macro( macro_dict, cw ) == NULL)) ) { // .dm control word
+                p = get_macro_name( p, macname2 );
+                if( macname2[0] == 'd' && macname2[1] == 'm' ) {
+                    if( (macname2[2] == '\0')
+                      || (find_macro( macro_dict, macname2 ) == NULL) ) { // .dm control word
                         cc = getarg();
                         if( cc == omit ) {  // only .dm  means macro end
-                            compend = 1;
+                            compend = true;
                             break;          // out of read loop
                         }
-                        p = scandata.s;
-                        save = *p;
-                        *p = '\0';
-                        if( strnicmp( macname, g_tok_start, MAC_NAME_LENGTH ) ) {
+                        get_macro_name( g_tok_start, macname2 );
+                        if( strcmp( macname1, macname2 ) != 0 ) {
                             // macroname from begin different from end
                             // SC--005 Macro '%s' is not being defined
-                            xx_source_err_c( err_mac_def_not, g_tok_start );
+                            xx_source_err_c( err_mac_def_not, macname2 );
                         }
-                        *p = save;
                         cc = getarg();
                         if( cc == omit ) {
                             // SC--048 A control word parameter is missing
                             xx_source_err( err_mac_def_miss );
                         }
-                        p = scandata.s;
-                        save = *p;
-                        *p = '\0';
-                        if( stricmp( "end", g_tok_start ) != 0 ) {
+                        get_macro_name( g_tok_start, macname2 );
+                        if( strcmp( "end", macname2 ) != 0 ) {
                             // SC--002 The control word parameter '%s' is invalid
-                            xx_source_err_c( err_mac_def_inv, g_tok_start );
+                            xx_source_err_c( err_mac_def_inv, macname2 );
                         }
-                        compend = 1;
+                        compend = true;
                         break;              // out of read loop
                     }
                 }
@@ -605,14 +579,14 @@ void    scr_dm( void )
         if( cb->s.f->flags & (FF_eof | FF_err) ) {
             // error SC--004 End of file reached
             // macro '%s' is still being defined
-            xx_source_err_c( err_mac_def_eof, macname );
+            xx_source_err_c( err_mac_def_eof, macname1 );
         }
     }                                   // end compbegin
 
     if( compend ) {                     // macro END definition processing
         mac_entry   *   me;
 
-        me = find_macro( macro_dict, macname );
+        me = find_macro( macro_dict, macname1 );
         if( me != NULL ) {              // delete macro with same name
             free_macro_entry( macro_dict, me );
         }
@@ -622,7 +596,7 @@ void    scr_dm( void )
         me  = mem_alloc( sizeof( mac_entry ) );
         me->next = NULL;
         me->label_cb = NULL;
-        strcpy( me->name, macname );
+        strcpy( me->name, macname1 );
         me->macline = head;
         me->lineno = lineno_start;
         me->mac_file_name = cb->s.f->filename;
@@ -631,10 +605,10 @@ void    scr_dm( void )
 
         if( (cb->fmflags & II_research) && GlobalFlags.firstpass ) {
             sprintf( linestr, "%d", macro_line_count );
-            g_info( inf_mac_defined, macname, linestr );
+            g_info( inf_mac_defined, macname1, linestr );
         }
     } else {
-        xx_source_err_c( err_mac_def_logic, macname );
+        xx_source_err_c( err_mac_def_logic, macname1 );
     }
     scan_restart = scandata.e;
     return;
@@ -756,13 +730,10 @@ void    scr_me( void )
 
 void    scr_em( void )
 {
-    char        *   p;
-    char        *   pn;
     char            macname[MAC_NAME_LENGTH + 1];
     condcode        cc;
     inputcb     *   cb;
     mac_entry   *   me;
-    int             len;
 
     cb = input_cbs;
 
@@ -773,22 +744,11 @@ void    scr_em( void )
     }
 
     if( *g_tok_start == SCR_char ) {      // possible macro name
-        p   = g_tok_start + 1;            // over .
-
         /*  truncate name if too long WITHOUT error msg
          *  this is wgml 4.0 behaviour
          *
          */
-        len = 0;
-        pn  = macname;
-        while( len < MAC_NAME_LENGTH ) {
-            if( is_space_tab_char( *p ) || (*p == '\0') ) {     // largest possible macro/cw
-                break;
-            }
-            *pn++ = *p++;           // copy macroname
-            len++;
-        }
-        *pn = '\0';
+        get_macro_name( g_tok_start + 1, macname ); // over .
 
         me = find_macro( macro_dict, macname );
     } else {

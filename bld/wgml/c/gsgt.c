@@ -350,13 +350,11 @@ static  condcode    scan_tag_options( gtflags * tag_flags )
 
 void    scr_gt( void )
 {
-    char        *   p;
-    char        *   pn;
+    char            *p;
     char            savetag;
-    int             len;
     char            macname[MAC_NAME_LENGTH + 1];
     condcode        cc;
-    gtentry     *   wk;
+    gtentry         *wk;
     gtflags         tag_flags;
     enum {
         f_add       = 1,
@@ -478,15 +476,7 @@ void    scr_gt( void )
             xx_err( err_tag_mac_name );
             return;
         }
-        p = g_tok_start;
-
-        len = 0;
-        pn = macname;
-        while( is_macro_char( *p ) && len < MAC_NAME_LENGTH ) {
-            *pn++ = my_tolower( *p++ );     // copy lowercase macroname
-            len++;
-        }
-        *pn = '\0';
+        get_macro_name( g_tok_start, macname );
 
         tag_flags = 0;
 

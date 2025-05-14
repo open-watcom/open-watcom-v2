@@ -751,44 +751,34 @@ condcode    test_process( ifcb * cb )
 
 void set_if_then_do( ifcb * cb )
 {
-    char            cw[9];
     char            *p;
-    char            *pb;
-    unsigned        len;
+    char            macname[MAC_NAME_LENGTH + 1];
 
-    len = 0;
-    p = cw;
-    pb = buff2;
-    if( *pb == SCR_char ) {              // only test script control words
-        pb++;
-        if( (*pb == SCR_char)  || (*pb == '\'') ) {
-            pb++;                       // over ".." or ".'"
+    p = buff2;
+    if( *p == SCR_char ) {              // only test script control words
+        p++;
+        if( (*p == SCR_char)  || (*p == '\'') ) {
+            p++;                       // over ".." or ".'"
         }
-        while( len < MAC_NAME_LENGTH ) {
-            if( is_space_tab_char( *pb ) || (*pb == '\0') ) { // largest possible macro/cw
-                break;
-            }
-           *p++ = my_tolower( *pb++ );      // copy lowercase to TokenBuf
-           len++;
-        }
-        *p = '\0';
-        if( !strncmp( cw, "if", SCR_KW_LENGTH ) ) {
-            if( len > SCR_KW_LENGTH ) {
-                cb->if_flags[cb->if_level].ifcwif = (find_macro( macro_dict, cw ) == NULL);
-            } else {
+        p = get_macro_name( p, macname );
+        if( macname[0] == 'i' && macname[1] == 'f' ) {
+            if( macname[2] == '\0' ) {
                 cb->if_flags[cb->if_level].ifcwif = true;
-            }
-        } else if( !strncmp( cw, "do", SCR_KW_LENGTH ) ) {
-            if( len > SCR_KW_LENGTH ) {
-                cb->if_flags[cb->if_level].ifcwdo = (find_macro( macro_dict, cw ) == NULL);
             } else {
+                cb->if_flags[cb->if_level].ifcwif = (find_macro( macro_dict, macname ) == NULL);
+            }
+        } else if( macname[0] == 'd' && macname[1] == 'o' ) {
+            if( macname[2] == '\0' ) {
                 cb->if_flags[cb->if_level].ifcwdo = true;
-            }
-        } else if( !strncmp( cw, "th", SCR_KW_LENGTH ) || !strncmp( cw, "el", SCR_KW_LENGTH ) ) {
-            if( len > SCR_KW_LENGTH ) {
-                cb->if_flags[cb->if_level].ifcwte = (find_macro( macro_dict, cw ) == NULL);
             } else {
+                cb->if_flags[cb->if_level].ifcwdo = (find_macro( macro_dict, macname ) == NULL);
+            }
+        } else if( macname[0] == 't' && macname[1] == 'h'
+          || macname[0] == 'e' && macname[1] == 'l' ) {
+            if( macname[2] == '\0' ) {
                 cb->if_flags[cb->if_level].ifcwte = true;
+            } else {
+                cb->if_flags[cb->if_level].ifcwte = (find_macro( macro_dict, macname ) == NULL);
             }
         }
     }

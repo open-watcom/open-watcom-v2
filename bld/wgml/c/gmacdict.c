@@ -250,26 +250,20 @@ void    free_macro_dict( mac_dict *pdict )
 /*  returns ptr to macro or NULL if not found                              */
 /***************************************************************************/
 
-mac_entry   * find_macro( mac_dict dict, const char * name )
+mac_entry   *find_macro( mac_dict dict, const char *macname )
 {
     int             hash;
-    mac_entry   *   wk;
-    mac_entry   *   curr;
-
-    wk   = NULL;
-    hash = mac_hash( name );
-    curr = dict->htbl[hash];        // find the hash chain
+    mac_entry       *curr;
 
     dict->lookups++;
-    while( curr ) {
+    hash = mac_hash( macname );
+    for( curr = dict->htbl[hash]; curr != NULL; curr = curr->next ) {       // find the hash chain
         dict->compares++;
-        if( !strncmp( curr->name, name, MAC_NAME_LENGTH ) ) {
-            wk = curr;
+        if( strcmp( curr->name, macname ) == 0 ) {
             break;
         }
-        curr = curr->next;
     }
-    return( wk );
+    return( curr );
 }
 
 
