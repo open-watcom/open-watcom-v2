@@ -39,7 +39,7 @@ static char *get_labelname( const char *p, char *labelname )
     int     i;
 
     i = 0;
-    while( is_tag_att_char( *p ) ) {
+    while( is_label_char( *p ) ) {
         if( i < LABEL_NAME_LENGTH ) {
             labelname[i++] = my_toupper( *p );
         }
@@ -79,7 +79,6 @@ bool        gotarget_reached( void )
 {
     bool            reached;
     char            *p;
-    int             k;
     char            labelname[LABEL_NAME_LENGTH + 1];
 
     reached = false;
@@ -201,8 +200,6 @@ void    scr_label( void )
             cc = getarg();
             if( cc == pos ) {           // label name specefied
                 char        *p;
-                char        *pt;
-                unsigned    len;
 
                 p = get_labelname( g_tok_start, labelname );
                 if( p - g_tok_start >  LABEL_NAME_LENGTH ) {
@@ -310,8 +307,7 @@ void    scr_go( void )
 {
     condcode        cc;
     getnum_block    gn;
-    labelcb     *   golb;
-    int             k;
+    labelcb         *golb;
     char            labelname[LABEL_NAME_LENGTH + 1];
 
     input_cbs->if_cb->if_level = 0;     // .go terminates
@@ -376,9 +372,8 @@ void    scr_go( void )
     free_lines( input_cbs->hidden_head );   // delete split line
     input_cbs->hidden_head = NULL;
     input_cbs->hidden_tail = NULL;
-    ProcFlags.goto_active = true;       // special goto processing
+    ProcFlags.goto_active = true;           // special goto processing
     scan_restart = scandata.e;
-
 }
 
 
