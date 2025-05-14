@@ -98,6 +98,7 @@ extern bool         is_tag_char( char c );
 extern bool         is_tag_att_char( char c );
 extern bool         is_lay_att_char( char c );
 extern bool         is_id_char( char c );
+extern bool         is_label_char( char c );
 extern bool         is_su_char( char c );
 extern bool         is_macro_char( char c );
 extern bool         is_space_tab_char( char c );

@@ -319,7 +319,7 @@ typedef struct labelcb {
     struct labelcb  *prev;
     fpos_t          pos;                // file position for label if file
     line_number     lineno;             // lineno of label
-    char            label_name[LABEL_NAME_LENGTH + 1];
+    char            labelname[LABEL_NAME_LENGTH + 1];
 } labelcb;
 
 /***************************************************************************/

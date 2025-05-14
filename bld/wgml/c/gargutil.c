@@ -343,6 +343,17 @@ bool is_id_char( char c )
 }
 
 /*
+ * Test character as valid for an label name
+ */
+bool is_label_char( char c )
+{
+    bool    test;
+
+    test = my_isalnum( c );
+    return( test );
+}
+
+/*
  * Test character as valid for an space unit value
  */
 

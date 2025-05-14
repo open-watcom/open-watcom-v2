@@ -34,11 +34,26 @@
 #include "wgml.h"
 
 
+static char *get_labelname( const char *p, char *labelname )
+{
+    int     i;
+
+    i = 0;
+    while( is_tag_att_char( *p ) ) {
+        if( i < LABEL_NAME_LENGTH ) {
+            labelname[i++] = my_toupper( *p );
+        }
+        p++;
+    }
+    labelname[i] = '\0';
+    return( (char *)p );
+}
+
 /***************************************************************************/
 /*  search for  label name in current input label control block            */
 /***************************************************************************/
 
-static  labelcb *   find_label( char    *   name )
+static labelcb  *find_label( const char *labelname )
 {
     labelcb *   lb;
 
@@ -48,7 +63,7 @@ static  labelcb *   find_label( char    *   name )
         lb = input_cbs->s.f->label_cb;
     }
     for( ; lb != NULL; lb = lb->prev ) {
-        if( strncmp( name, lb->label_name, LABEL_NAME_LENGTH ) == 0 ) {
+        if( strcmp( labelname, lb->labelname ) == 0 ) {
             return( lb );
         }
     }
@@ -62,28 +77,26 @@ static  labelcb *   find_label( char    *   name )
 
 bool        gotarget_reached( void )
 {
-    bool        reached;
-    char    *   p;
-    int         k;
+    bool            reached;
+    char            *p;
+    int             k;
+    char            labelname[LABEL_NAME_LENGTH + 1];
 
     reached = false;
-    if( gotargetno > 0 ) {              // lineno search
+    if( gotargetno > 0 ) {  // lineno search
         if( input_cbs->fmflags & II_tag_mac ) {
-            reached = input_cbs->s.m->lineno == gotargetno;
+            reached = ( input_cbs->s.m->lineno == gotargetno );
         } else {
-            reached = input_cbs->s.f->lineno == gotargetno;
+            reached = ( input_cbs->s.f->lineno == gotargetno );
         }
-    } else {                            // label name search
-        if( (*buff2 == *(buff2 + 1)) && (*buff2 == *(buff2 + 2)) ) {// "..."
-            p = buff2 + 3;
+    } else {                // label search
+        p = buff2;
+        if( p[0] == '.' && p[1] == '.' && p[2] == '.' ) {// "..."
+            p += 3;
             SkipSpaces( p );
             if( *p != '\0' ) {
-                k = 0;
-                while( gotarget[k] && *p == gotarget[k] ) {
-                    k++;
-                    p++;
-                }
-                if( gotarget[k] == '\0' && ((*p == ' ') || (*p == '\0')) ) {
+                p = get_labelname( p, labelname );
+                if( strcmp( gotarget, labelname ) == 0 && ((*p == ' ') || (*p == '\0')) ) {
                     reached = true;
                 }
             }
@@ -153,6 +166,7 @@ void    scr_label( void )
     getnum_block    gn;
     labelcb     *   lb;
     char            linestr[NUM2STR_LENGTH];
+    char            labelname[LABEL_NAME_LENGTH + 1];
 
     SkipSpaces( scandata.s );       // may be ...LABEL or ...<blanks>LABEL, skip over blanks
     if( *scandata.s == '\0'  ) {    // no label?
@@ -190,42 +204,35 @@ void    scr_label( void )
                 char        *pt;
                 unsigned    len;
 
-                p   = g_tok_start;
-                pt  = token_buf;
-                len = 0;
-                while( len < arg_flen ) {   // copy to buffer
-                    *pt++ = *p++;
-                    len++;
-                }
-                *pt = '\0';
-                if( len >  MAC_NAME_LENGTH ) {
-                    xx_source_err_c( err_sym_long, token_buf );
+                p = get_labelname( g_tok_start, labelname );
+                if( p - g_tok_start >  LABEL_NAME_LENGTH ) {
+                    xx_source_err_c( err_sym_long, labelname );
                 }
 
                 if( input_cbs->fmflags & II_tag_mac ) {
 
-                    cc = test_duplicate( token_buf, input_cbs->s.m->lineno );
+                    cc = test_duplicate( labelname, input_cbs->s.m->lineno );
                     if( cc == pos ) {   // ok name and lineno match
                         // nothing to do
                     } else {
                         if( cc == neg ) {   // name with different lineno
-                            xx_source_err_c( err_label_dup, token_buf );
+                            xx_source_err_c( err_label_dup, labelname );
                         } else {        // new label
                             lb              = mem_alloc( sizeof( labelcb ) );
                             memset( lb, 0, sizeof( labelcb ) );
                             lb->prev        = input_cbs->s.m->mac->label_cb;
                             input_cbs->s.m->mac->label_cb = lb;
                             lb->lineno      = input_cbs->s.m->lineno;
-                            strcpy( lb->label_name, token_buf );
+                            strcpy( lb->labelname, labelname );
                         }
                     }
                 } else {
-                    cc = test_duplicate( token_buf, input_cbs->s.f->lineno );
+                    cc = test_duplicate( labelname, input_cbs->s.f->lineno );
                     if( cc == pos ) {   // ok name and lineno match
                         // nothing to do
                     } else {
                         if( cc == neg ) {   // name with different lineno
-                            xx_source_err_c( err_label_dup, token_buf );
+                            xx_source_err_c( err_label_dup, labelname );
                         } else {        // new label
 
                             lb              = mem_alloc( sizeof( labelcb ) );
@@ -233,7 +240,7 @@ void    scr_label( void )
                             input_cbs->s.f->label_cb = lb;
                             lb->pos         = input_cbs->s.f->pos;
                             lb->lineno      = input_cbs->s.f->lineno;
-                            strcpy( lb->label_name, token_buf );
+                            strcpy( lb->labelname, labelname );
                         }
                     }
                 }
@@ -305,6 +312,7 @@ void    scr_go( void )
     getnum_block    gn;
     labelcb     *   golb;
     int             k;
+    char            labelname[LABEL_NAME_LENGTH + 1];
 
     input_cbs->if_cb->if_level = 0;     // .go terminates
     ProcFlags.keep_ifstate = false;     // ... all .if controls
@@ -341,21 +349,15 @@ void    scr_go( void )
             }
         }
     } else {                            // no numeric target label
-
         gotargetno = 0;                 // no target lineno known
-        if( arg_flen >  MAC_NAME_LENGTH ) {
+        if( arg_flen >  LABEL_NAME_LENGTH ) {
             xx_source_err_c( err_sym_long, g_tok_start );
         }
-
-        for( k = 0; k < MAC_NAME_LENGTH; k++ ) {// copy to work
-            gotarget[k] = *g_tok_start++;
-        }
-        gotarget[k] = '\0';
-
-        golb = find_label( gotarget );
+        get_labelname( g_tok_start, labelname );
+        golb = find_label( labelname );
         if( golb != NULL ) {            // label already known
+            *gotarget = '\0';
             gotargetno = golb->lineno;
-
             if( input_cbs->fmflags & II_tag_mac ) {
                 if( golb->lineno <= input_cbs->s.m->lineno ) {
                     input_cbs->s.m->lineno = 0; // restart from beginning
@@ -367,6 +369,8 @@ void    scr_go( void )
                     input_cbs->s.f->lineno = golb->lineno - 1;// position file
                 }
             }
+        } else {
+            strcpy( gotarget, labelname );
         }
     }
     free_lines( input_cbs->hidden_head );   // delete split line
@@ -382,21 +386,19 @@ void    scr_go( void )
 /*  print list of defined labels for macro or file                         */
 /***************************************************************************/
 
-void        print_labels( labelcb * lcb, char * name )
+void        print_labels( labelcb * lcb, char *name )
 {
-    char                fill[LABEL_NAME_LENGTH + 1];
-    unsigned            len;
-    labelcb         *   lb;
+    char            fill[LABEL_NAME_LENGTH + 1];
+    unsigned        len;
 
-    lb = lcb;
-    if( lb != NULL ) {
+    if( lcb != NULL ) {
+        memset( fill, ' ', LABEL_NAME_LENGTH );
+        fill[LABEL_NAME_LENGTH] = '\0';
         out_msg( "\nList of defined labels for %s:\n\n", name );
-        while( lb != NULL ) {
-            len = LABEL_NAME_LENGTH - strlen( lb->label_name );
-            memset( fill, ' ', len );
-            fill[len] = '\0';
-            out_msg( "Label='%s'%s at line %d\n", lb->label_name, fill, lb->lineno );
-            lb = lb->prev;
+        while( lcb != NULL ) {
+            len = LABEL_NAME_LENGTH - strlen( lcb->labelname );
+            out_msg( "Label='%s'%s at line %d\n", lcb->labelname, fill + len, lcb->lineno );
+            lcb = lcb->prev;
         }
     }
 }

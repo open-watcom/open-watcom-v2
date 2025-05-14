@@ -84,7 +84,7 @@ global  line_number     line_to;        // ending lineno to process
 #define LINEFROM_DEFAULT    1
 #define LINETO_DEFAULT      (0x1000000) // 16 MiB lines should be enough
 
-global  char            gotarget[MAC_NAME_LENGTH +1];   // .go to target name
+global  char            gotarget[LABEL_NAME_LENGTH + 1]; // .go to target name
 global  line_number     gotargetno;     // .go to line no
 
 global  int             err_count;      // Overall Errorcount
