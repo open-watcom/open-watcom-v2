@@ -126,6 +126,7 @@ common_flags = $(common_flags_dbg)
 
 #
 # C4013	"'function' undefined; assuming extern returning int"
+# C4028 "formal parameter ?? different from declaration"
 # C4061	"enumerator 'identifier' in switch of enum 'enumeration' is not explicitly handled by a case label"
 # C4062	"enumerator 'identifier' in switch of enum 'enumeration' is not handled"
 # C4063	"case 'identifier' is not a valid value for switch of enum 'enumeration'"
@@ -149,6 +150,7 @@ common_cflags_wng = -W4 -wd4214
 !else
 common_cflags_wng = -Wall &
     -we4013 &
+    -we4028 &
     -wd4061 &
     -wd4062 &
     -wd4063 &
