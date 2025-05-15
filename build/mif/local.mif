@@ -134,6 +134,7 @@ common_flags = $(common_flags_dbg)
 # C4090 "different 'const' qualifiers"
 # C4102 "unreferenced label"
 # C4127 "conditional expression is constant"
+# C4133 "'function': incompatible types - from '??' to '??' "
 # C4214 "bit field types other than int"
 # C4244 "conversion ....., possible loss of data"
 # C4306 "type cast: conversion ...... of greater size"
@@ -155,6 +156,7 @@ common_cflags_wng = -Wall &
     -wd4062 &
     -wd4063 &
     -we4090 &
+    -we4133 &
     -wd4214 &
     -wd4306 &
     -wd4574 &
