@@ -57,10 +57,11 @@ static gaflags set_att_proc_flags( gaflags attflags )
 /***************************************************************************/
 static void add_defaults_to_dict( gtentry * ge, symdict_hdl dict )
 {
-    gaentry     *   ga;
-    gavalentry  *   gaval;
-    char        *   valp;
+    gaentry         *ga;
+    gavalentry      *gaval;
+    char            *valp;
     int             rc;
+    tok_type        val;
 
     for( ga = ge->attribs; ga != NULL; ga = ga->next ) {// for all attributes
 
@@ -84,8 +85,9 @@ static void add_defaults_to_dict( gtentry * ge, symdict_hdl dict )
                         valp = token_buf;
                     }
                     if( valp != NULL ) {
-                        rc = add_symvar( dict, ga->attname, valp,
-                                         no_subscript, local_var );
+                        val.s = valp;
+                        val.e = val.s + strlen( val.s );
+                        rc = add_symvar( dict, ga->attname, &val, no_subscript, local_var );
                     }
                 }
             }
@@ -105,6 +107,7 @@ static bool check_att_value( gaentry * ga, gtentry * ge, symdict_hdl loc_dict )
     char        *   valp;
     bool            msg_done;
     int             rc;
+    tok_type        val;
 
     (void)ge;
 
@@ -154,8 +157,9 @@ static bool check_att_value( gaentry * ga, gtentry * ge, symdict_hdl loc_dict )
         }
     }
     if( !g_scan_err ) {
-        rc = add_symvar( loc_dict, ga->attname, token_buf,
-                         no_subscript, local_var );
+        val.s = token_buf;
+        val.e = val.s + strlen( val.s );
+        rc = add_symvar( loc_dict, ga->attname, &val, no_subscript, local_var );
     } else {
         if( !msg_done ) {
             xx_err_cc( err_att_val, token_buf, ga->attname );
@@ -185,6 +189,7 @@ bool process_tag( gtentry *ge, mac_entry * me )
     unsigned        len;
     symdict_hdl     loc_dict;   // for preparing local vars
     char            attname[TAG_ATT_NAME_LENGTH + 1];
+    tok_type        val;
 
     processed = true;           // return value, always true
     init_dict( &loc_dict );
@@ -296,9 +301,10 @@ bool process_tag( gtentry *ge, mac_entry * me )
                                 if( gaval != NULL ) {
                                      sprintf( token_buf, "%d",
                                               gaval->a.range[3] );
-                                     rc = add_symvar( loc_dict, ga->attname,
-                                                      token_buf, no_subscript,
-                                                      local_var );
+                                    val.s = token_buf;
+                                    val.e = val.s + strlen( val.s );
+                                    rc = add_symvar( loc_dict, ga->attname,
+                                                &val, no_subscript, local_var );
                                 }
                             }
                         }
@@ -425,7 +431,9 @@ bool process_tag( gtentry *ge, mac_entry * me )
         }
     }
     strcpy( token_buf, p );
-    rc = add_symvar( loc_dict, "_", token_buf, no_subscript, local_var );
+    val.s = token_buf;
+    val.e = val.s + strlen( val.s );
+    rc = add_symvar( loc_dict, "_", &val, no_subscript, local_var );
     p += strlen( token_buf );
 
     scandata.s = p + 1;             // all processed
@@ -437,10 +445,13 @@ bool process_tag( gtentry *ge, mac_entry * me )
     /*  add standard symbols to dict                                   */
     /*******************************************************************/
 
-    rc = add_symvar( loc_dict, "_tag", ge->tagname, no_subscript, local_var );
+    val.s = ge->tagname;
+    val.e = val.s + strlen( val.s );
+    rc = add_symvar( loc_dict, "_tag", &val, no_subscript, local_var );
     ge->usecount++;
-    sprintf( longwork, "%u", ge->usecount );
-    rc = add_symvar( loc_dict, "_n", longwork, no_subscript, local_var );
+    val.s = longwork;
+    val.e = val.s + sprintf( longwork, "%u", ge->usecount );
+    rc = add_symvar( loc_dict, "_n", &val, no_subscript, local_var );
 
     add_macro_cb_entry( me, ge );   // prepare GML macro as input
     free_dict( &input_cbs->local_dict );    // not super efficient

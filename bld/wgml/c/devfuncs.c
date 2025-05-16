@@ -1500,6 +1500,7 @@ static void *df_setsymbol( void )
     char            *first;
     char            *second;
     parameters      my_parameters;
+    tok_type        val;
 
     /* Ensure that this is either a ShortHeader or a LongHeader. */
 
@@ -1526,7 +1527,9 @@ static void *df_setsymbol( void )
 
     /* Insert the symbol into the global symbol table. */
 
-    add_symvar( global_dict, first, second, no_subscript, 0 );
+    val.s = second;
+    val.e = val.s + strlen( val.s );
+    add_symvar( global_dict, first, &val, no_subscript, 0 );
 
     /* Free the memory allocated to the parameters. */
 

@@ -43,6 +43,7 @@ void gml_author( const gmltag * entry )
     page_pos        old_line_pos;
     uint32_t        left_indent;
     uint32_t        right_indent;
+    tok_type        val;
 
     if( !((ProcFlags.doc_sect == doc_sect_titlep) ||
           (ProcFlags.doc_sect_nxt == doc_sect_titlep)) ) {
@@ -56,7 +57,9 @@ void gml_author( const gmltag * entry )
 
     if( GlobalFlags.firstpass && !ProcFlags.author_tag_seen ) {
         if( *p != '\0' ) {
-            add_symvar( global_dict, "$author", p, no_subscript, 0 );
+            val.s = p;
+            val.e = val.s + strlen( val.s );
+            add_symvar( global_dict, "$author", &val, no_subscript, 0 );
         }
         ProcFlags.author_tag_seen = true;
     }

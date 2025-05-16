@@ -156,7 +156,6 @@ static void scan_gml( void )
 {
     inputcb         *cb;
     char            *p;
-    unsigned        toklen;
     bool            processed;
     gtentry         *ge;                // GML user tag entry
     mac_entry       *me;                // script macro for processing GML tag
@@ -234,7 +233,6 @@ static void scan_gml( void )
          * If the token is longer than the maximum allowed tag name length,
          * it is valid tag name but we use internaly shortened name.
          */
-        toklen = strlen( tagname );
         if( ProcFlags.layout ) {        // different tags within :LAYOUT
             tag = find_lay_tag( tagname );
             if( tag != NULL ) {
@@ -416,8 +414,8 @@ static void     scan_script( void )
     mac_entry   *   me;
     char        *   p;
     char        *   pt;
-    unsigned        toklen;
     int             k;
+    char            macname[MAC_NAME_LENGTH + 1];
 
     if( ProcFlags.need_text ) {
         xx_err( err_text_not_tag_cw );
@@ -441,14 +439,13 @@ static void     scan_script( void )
         return;
     }
 
-    if( *p == SCR_char && *(p+1) == SCR_char ) {
-            pt = token_buf;
-            *pt++ = SCR_char;               // special for ...label
-            *pt++ = SCR_char;
-            *pt   = '\0';
-            me = NULL;
-            scandata.s++;
-            toklen = 2;
+    if( p[0] == SCR_char && p[1] == SCR_char ) {
+        pt = macname;
+        *pt++ = SCR_char;               // special for ...label
+        *pt++ = SCR_char;
+        *pt   = '\0';
+        me = NULL;
+        scandata.s++;
     } else {
         if( *p == SCR_char ) {          // ..
             p++;
@@ -495,23 +492,16 @@ static void     scan_script( void )
 
         scandata.s = p;
 
-        pt = token_buf;
-        toklen = 0;
-        while( !is_space_tab_char( *p ) && (*p != '\0') ) {
-           *pt++ = my_tolower( *p++ );      // copy lowercase to TokenBuf
-           toklen++;
-        }
-        *pt = '\0';
+        p = get_macro_name( p, macname );
 
-        if( !ProcFlags.CW_sep_ignore &&
-                ((*token_buf == '\0') || (*token_buf == ' ') || (toklen == 0)) ) {
+        if( !ProcFlags.CW_sep_ignore && (*macname == '\0') ) {
             // no valid script controlword / macro, treat as text
             scandata.s = scan_restart;
             return;
         }
 
         if( !ProcFlags.macro_ignore ) {
-            me = find_macro( macro_dict, token_buf );
+            me = find_macro( macro_dict, macname );
         } else {
             me = NULL;
         }
@@ -521,14 +511,14 @@ static void     scan_script( void )
         if( GlobalFlags.firstpass && (cb->fmflags & II_research) ) {
             if( cb->fmflags & II_tag_mac ) {
                 printf_research( "L%d    %c%s macro found in macro %s(%d)\n\n",
-                                 inc_level, SCR_char, token_buf,
+                                 inc_level, SCR_char, macname,
                                  cb->s.m->mac->name, cb->s.m->lineno );
             } else {
                 printf_research( "L%d    %c%s macro found in file %s(%d)\n\n",
-                                 inc_level, SCR_char, token_buf,
+                                 inc_level, SCR_char, macname,
                                  cb->s.f->filename, cb->s.f->lineno );
             }
-            add_SCR_tag_research( token_buf );
+            add_SCR_tag_research( macname );
         }
         add_macro_cb_entry( me, NULL );
         inc_inc_level();
@@ -544,22 +534,22 @@ static void     scan_script( void )
         if( (cb->fmflags & II_research) && GlobalFlags.firstpass ) {
             if( cb->fmflags & II_tag_mac ) {
                 printf_research( "L%d    %c%s CW found in macro %s(%d)\n\n",
-                                 inc_level, SCR_char, token_buf,
+                                 inc_level, SCR_char, macname,
                                  cb->s.m->mac->name, cb->s.m->lineno );
             } else {
                 printf_research( "L%d    %c%s CW found in file %s(%d)\n\n",
-                                 inc_level, SCR_char, token_buf,
+                                 inc_level, SCR_char, macname,
                                  cb->s.f->filename, cb->s.f->lineno );
             }
-            add_SCR_tag_research( token_buf );
+            add_SCR_tag_research( macname );
         }
 
-        if( !token_buf[0] ) {   // lone . or .' -- ignored
+        if( *macname == '\0' ) {   // lone . or .' -- ignored
             scandata.s = scandata.e;
             return;
         }
 
-        k = find_scr_cw( token_buf );               // non-negative if valid
+        k = find_scr_cw( macname );               // non-negative if valid
         if( k >= 0 ) {
             if( !ProcFlags.layout
               && !ProcFlags.fb_document_done
@@ -575,7 +565,7 @@ static void     scan_script( void )
             }
             ProcFlags.CW_noblank = false;           // blank after CW is default
             if( ProcFlags.literal  ) {              // .li active
-                if( strcmp( "li", token_buf ) == 0 ) {  // .li
+                if( strcmp( "li", macname ) == 0 ) {  // .li
                     ProcFlags.CW_noblank = (*p != ' ');
                     scandata.s = p; // found, process
                     scr_kwds[k].cwdproc();
@@ -590,7 +580,7 @@ static void     scan_script( void )
                 scr_kwds[k].cwdproc();
             }
         } else {
-            xx_err_c( err_cw_unrecognized, token_buf );
+            xx_err_c( err_cw_unrecognized, macname );
         }
     }
     scandata.s = scan_restart;

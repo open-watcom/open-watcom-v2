@@ -61,6 +61,7 @@ extern  void    gml_set( const gmltag * entry )
     symdict_hdl     working_dict;
     att_name_type   attr_name;
     att_val_type    attr_val;
+    tok_type        val;
 
     (void)entry;
 
@@ -123,7 +124,9 @@ extern  void    gml_set( const gmltag * entry )
         } else {
             working_dict = global_dict;
         }
-        rc = add_symvar( working_dict, sym.name, token_buf, subscript, sym.flags );
+        val.s = token_buf;
+        val.e = val.s + strlen( val.s );
+        rc = add_symvar( working_dict, sym.name, &val, subscript, sym.flags );
     } else {
         xx_err( err_att_missing );
     }

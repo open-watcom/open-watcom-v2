@@ -311,13 +311,14 @@ void    scr_cw( void )
 
 void    scr_dc( void )
 {
-    char        c;      // character provided (or 0x00)
-    char    *   o_p;    // option start point
-    char    *   p;
-    char    *   v_p;    // value start point
-    char        string[2] = { 0, 0 };
-    int         o_len;  // option length
-    int         v_len;  // value length
+    char            c;                  // character provided (or 0x00)
+    char            *o_p;               // option start point
+    char            *p;
+    char            *v_p;               // value start point
+    char            string[2] = { 0, 0 };
+    int             o_len;              // option length
+    int             v_len;              // value length
+    tok_type        val;
 
     p = scandata.s;
     SkipSpaces( p );                    // next word start = option
@@ -423,7 +424,9 @@ void    scr_dc( void )
             scan_restart = v_p + v_len;
             GML_char = c;
             string[0] = c;
-            add_symvar( global_dict, "gml", string, no_subscript, predefined );
+            val.s = string;
+            val.e = val.s + 1;
+            add_symvar( global_dict, "gml", &val, no_subscript, predefined );
             add_to_sysdir( "$gml", GML_char );
         } else if( strnicmp( "IXB", o_p, 3 ) == 0 ) {
             xx_line_warn_cc( wng_dc_opt, o_p, o_p );

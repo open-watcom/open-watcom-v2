@@ -261,14 +261,15 @@ char * scan_sym( char * p, symvar * sym, sub_index * subscript, char * * result,
 
 void    scr_se( void )
 {
-    char        *   p;
-    char        *   valstart;
+    char            *p;
+    char            *valstart;
     int             rc;
     sub_index       subscript;
-    symsub      *   symsubval;
+    symsub          *symsubval;
     symvar          sym;
     symdict_hdl     working_dict;
     unsigned        len;
+    tok_type        val;
 
     subscript = no_subscript;                       // not subscripted
     g_scan_err = false;
@@ -304,27 +305,27 @@ void    scr_se( void )
         if( *p == ')' ) {
             p++;
         }
-        valstart = p;
+        val.s = p;
         if( *p == '=' ) {                       // all other cases have no equal sign (see above)
             p++;
             if( ProcFlags.blanks_allowed ) {
                 SkipSpaces( p );                // skip over spaces to value
             }
-            valstart = p;
-            if( is_quote_char( *valstart ) ) {      // quotes ?
+            val.s = p;
+            if( is_quote_char( *val.s ) ) {      // quotes ?
                 p++;
                 while( *p != '\0' ) {
                         // TODO! ????
                         // remove final character, if it matches the start character
                         // look for quote end (must match and be at eol or followed by a space)
 //                if( (*valstart == *p) && (!*(p+1) || (*(p+1) == ' ')) ) {
-                    if( (*valstart == p[0]) && p[1] == '\0' ) {
+                    if( (*val.s == p[0]) && p[1] == '\0' ) {
                         break;
                     }
                     ++p;
                 }
-                if( (valstart < p) && (*p == *valstart) ) { // delete quotes if more than one character
-                    valstart++;
+                if( (val.s < p) && (*p == *val.s) ) { // delete quotes if more than one character
+                    val.s++;
                     *p = '\0';
                 }
             } else {                                // numeric or undelimited string
@@ -336,21 +337,23 @@ void    scr_se( void )
                 gn.ignore_blanks = true;
                 cc = getnum( &gn );             // try numeric expression evaluation
                 if( cc != notnum ) {
-                    valstart = gn.resultstr;
+                    val.s = gn.resultstr;
                 }                               // if notnum treat as character value
             }
-            rc = add_symvar( working_dict, sym.name, valstart, subscript, sym.flags );
+            val.e = val.s + strlen( val.s );
+            rc = add_symvar( working_dict, sym.name, &val, subscript, sym.flags );
         } else if( *p == '\'' ) {               // \' may introduce valid value
             if( *(p - 1) == ' ' ) {             // but must be preceded by a space
                 p++;
-                while( *p != '\0' && (*valstart != *p) ) {  // look for final \'
+                while( *p != '\0' && (*val.s != *p) ) {  // look for final \'
                     p++;
                 }
-                valstart++;                                 // delete initial \'
-                if( (valstart < p) && (*p == '\'') ) {      // delete \' at end
+                val.s++;                                 // delete initial \'
+                if( (val.s < p) && (*p == '\'') ) {      // delete \' at end
                     *p = '\0';
                 }
-                rc = add_symvar( working_dict, sym.name, valstart, subscript, sym.flags );
+                val.e = val.s + strlen( val.s );
+                rc = add_symvar( working_dict, sym.name, &val, subscript, sym.flags );
             } else {                                        // matches wgml 4.0
                 if( !ProcFlags.suppress_msg ) {
                     xx_line_err_c( err_eq_expected, p);

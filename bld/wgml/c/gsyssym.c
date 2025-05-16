@@ -1100,9 +1100,10 @@ static void systisetfun( symvar * e )   // dummy routine not needed
 
 static  void    init_date_time( void )
 {
-    time_t      now;
-    struct tm   *tmbuf;
-    char        *p;
+    time_t          now;
+    struct tm       *tmbuf;
+    char            *p;
+    tok_type        val;
 
     now = time( NULL );
     tmbuf = localtime( &now );
@@ -1118,7 +1119,9 @@ static  void    init_date_time( void )
         }
     }
     sysdate0.value = dateval;
-    add_symvar( global_dict, "date", dateval, no_subscript, 0 );
+    val.s = dateval;
+    val.e = val.s + strlen( val.s );
+    add_symvar( global_dict, "date", &val, no_subscript, 0 );
 
     strftime( dayofmval, sizeof( dayofmval ), "%e", tmbuf );
     sysdayofm0.value = dayofmval;
@@ -1153,7 +1156,9 @@ static  void    init_date_time( void )
     systime0.value = timeval;
     syssecond0.value = &timeval[6];
 
-    add_symvar( global_dict, "time", timeval, no_subscript, 0 );
+    val.s = timeval;
+    val.e = val.s + strlen( val.s );
+    add_symvar( global_dict, "time", &val, no_subscript, 0 );
 
 }
 
@@ -1163,15 +1168,18 @@ static  void    init_date_time( void )
 
 static  void    init_predefined_symbols( void )
 {
-    char    wkstring[NUM2STR_LENGTH];
+    char        wkstring[NUM2STR_LENGTH];
+    tok_type    val;
 
-    add_symvar( global_dict, "amp", "&", no_subscript,
-                is_AMP+predefined );
+    val.s = "&";
+    val.e = val.s + strlen( val.s );
+    add_symvar( global_dict, "amp", &val, no_subscript, is_AMP+predefined );
 
     wkstring[1] = '\0';
     wkstring[0] = GML_CHAR_DEFAULT;
-    add_symvar( global_dict, "gml", wkstring, no_subscript,
-                predefined );
+    val.s = wkstring;
+    val.e = val.s + strlen( val.s );
+    add_symvar( global_dict, "gml", &val, no_subscript, predefined );
 
 }
 

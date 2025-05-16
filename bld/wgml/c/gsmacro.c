@@ -49,43 +49,35 @@
 /* Note: called from add_macro_parms() for tokens that are not delimited     */
 /*****************************************************************************/
 
-static char *verify_sym( char * p )
+static char *verify_sym( const char *p, const char *e )
 {
     bool        local;
     bool        star_found;
-    char    *   pa;
 
     local = false;
-    pa = p;                             // save initial value
     g_scan_err = true;
     star_found = false;
 
     if( *p == '*' ) {    // starts with "*"
         star_found = true;
-        if( is_symbol_char(*(p + 1)) ) {            // local var
+        if( p + 1 < e && is_symbol_char(*(p + 1)) ) {            // local var
             local = true;
         }
     }
-
-    SkipSpaces( p );                    // skip over spaces
-
-    while( (*p != '=') && (*p != '\0') ) {
+    while( (*p != '=') && p < e ) {
         p++;
     }
 
-    pa = NULL;
     if( *p == '=' ) {                   // "=" found
         if( !star_found || local ) {    // exclude constructs like "*=.()", which are text
             p++;
-            SkipSpaces( p );                // skip over spaces
-            if( *p != '\0' ) {              // something follows "="
+            if( p < e ) {               // something follows "="
                 g_scan_err = false;
-                pa = p;
+                return( (char *)p );
             }
         }
     }
-
-    return( pa );
+    return( NULL );
 }
 
 
@@ -138,24 +130,21 @@ void    add_macro_cb_entry( mac_entry *me, gtentry *ge )
 }
 
 
-static const char *is_quoted_string( const char *p )
+static char *is_quoted_string( const char *p )
 {
     char        quote;
-    const char  *pa;
 
     /* Delimiter must be at the beginning and end of the string. */
     if( is_quote_char( *p ) ) {
-        quote = *p;
-        pa = p;
-        pa++;                   // skip over delimiter
-        while( *pa != '\0' ) {
-            if( (pa[0] == quote) && ((pa[1] == ' ') || (pa[1] == '\0')) ) {
+        quote = *p++;           // skip over delimiter
+        while( *p != '\0' ) {
+            if( (p[0] == quote) && ((p[1] == ' ') || (p[1] == '\0')) ) {
                 break;          // matching delimiter found
             }
-            pa++;
+            p++;
         }
-        if( *pa == quote ) {    // matching delimiter found
-            return( pa );
+        if( *p == quote ) {    // matching delimiter found
+            return( (char *)p );
         }
     }
     return( NULL );
@@ -212,14 +201,13 @@ static const char *is_quoted_string( const char *p )
 
 void    add_macro_parms( char * p )
 {
-    char        c;
-    char    *   pa;
-    char        quote;                  // delimiter character at start of parameter, if any
+    char        *pa;
     char        starbuf[NUM2STR_LENGTH];
     condcode    cc;
     int         star0;
     unsigned    len;
     unsigned    o_len;
+    tok_type    val;
 
     pa = p;                             // save start position
     SkipSpaces( p );                    // find first nonspace character, if any
@@ -227,7 +215,8 @@ void    add_macro_parms( char * p )
 
         /* local variable * must be added even though it has no value */
 
-        add_symvar( input_cbs->local_dict, MAC_STAR_NAME, p, no_subscript, local_var );
+        val.e = val.s = p;
+        add_symvar( input_cbs->local_dict, MAC_STAR_NAME, &val, no_subscript, local_var );
     } else {                            // process text following the macro
 
         /* remove trailing spaces if appropriate */
@@ -259,80 +248,63 @@ void    add_macro_parms( char * p )
 
         /* the name used for * is a macro because it may have to be changed -- TBD */
 
-        add_symvar( input_cbs->local_dict, MAC_STAR_NAME, p, no_subscript, local_var );
+        val.s = p;
+        val.e = val.s + strlen( val.s );
+        add_symvar( input_cbs->local_dict, MAC_STAR_NAME, &val, no_subscript, local_var );
         star0 = 0;
         g_tok_start = p;                  // save start of parameter
         SkipSpaces( p );                // find first nonspace character
         while( *p != '\0' ) {           // as long as there are parms
-            if( is_quoted_string( p ) ) {   // argument is quoted
+            pa = is_quoted_string( p );
+            if( pa != NULL ) {   // argument is quoted
                 star0++;
                 sprintf( starbuf, "%d", star0 );
-                quote = *p;
-                pa = p;
-                pa++;
-                while( *pa != '\0' ) {
-                    if( (pa[0] == quote) && ((pa[1] == ' ') || (pa[1] == '\0')) ) {
-                        break;          // matching delimiter found
-                    }
-                    pa++;
-                }
-                if( *pa == quote ) {    // matching delimiter found
-                    p++;                // exclude initial delimiter
-                }
-                c = *pa;                // prepare value end
-                *pa = '\0';             // terminate string
-                add_symvar( input_cbs->local_dict, starbuf, p, no_subscript, local_var );
-                *pa = c;                // restore original char at string end
-                if( *pa == quote ) {    // pa was decremented above
-                    pa++;               // point to character after parameter
-                }
-                p = pa;
+                val.s = p + 1;
+                val.e = pa;
+                add_symvar( input_cbs->local_dict, starbuf, &val, no_subscript, local_var );
+                p = pa + 1;
             } else {                    // look if it is a symbolic variable definition
                 char    *ps;
 
                 pa = p;
                 pa++;
-                SkipNonSpaces( pa );
-                c = *pa;                // prepare value end
-                *pa = '\0';             // terminate string
+                SkipNonSpaces( pa );    // get end of string
                 scandata.s = p;         // rescan for variable
                 ProcFlags.suppress_msg = true;  // no errmsg please
                 ProcFlags.blanks_allowed = 0;   // no blanks please
-
-                ps = verify_sym( scandata.s );
-                if( ps ) {              // have name=value pair?
-                    *pa = c;            // have to put old char back
-                    ps = (char *)is_quoted_string( ps );    // have name='string'?
-                    if( ps ) {
-                        pa = ps + 1;    // point past delimiter
-                        c = *pa;
-                        *pa = '\0';     // terminate after delimiter
+                ps = verify_sym( scandata.s, pa );
+                if( ps != NULL ) {              // have name=value pair?
+                    char *p1 = scandata.e;
+                    ps = is_quoted_string( ps );// have name='string'?
+                    if( ps != NULL ) {
+                        scandata.e = ps + 1;    // point past delimiter
                     } else {
-                        *pa = '\0';     // terminate as before
+                        scandata.e = pa;// terminate as before
                     }
                     scr_se();           // try to set variable and value
+                    scandata.e = p1;
                 }
 
                 ProcFlags.suppress_msg = false; // reenable err msg
                 ProcFlags.blanks_allowed = 1;   // blanks again
-                *pa = c;                // restore original char at string end
                 scandata.s = p;         // restore scan address
                 if( g_scan_err ) {      // not variable=value format
                     cc = omit;
                     star0++;
                     sprintf( starbuf, "%d", star0 );
-                    c = *pa;            // prepare value end
-                    *pa = '\0';         // terminate string
-                    add_symvar( input_cbs->local_dict, starbuf, p,
+                    val.s = p;
+                    val.e = pa;
+                    add_symvar( input_cbs->local_dict, starbuf, &val,
                                 no_subscript, local_var );
-                    *pa = c;            // restore original char at string end
                 }
                 p = pa;
             }
             SkipSpaces( p );            // over spaces
         }
                                         // the positional parameter count
-        add_symvar( input_cbs->local_dict, "0", starbuf, no_subscript, local_var );
+        val.s = starbuf;
+        val.e = val.s + strlen( val.s );
+        add_symvar( input_cbs->local_dict, "0", &val, no_subscript, local_var );
     }
 
     if( (input_cbs->fmflags & II_research) && GlobalFlags.firstpass ) {

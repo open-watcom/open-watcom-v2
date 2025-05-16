@@ -38,13 +38,14 @@
 
 void    gml_docnum( const gmltag * entry )
 {
-    char        *   buff            = NULL;
-    char        *   p;
+    char            *buff            = NULL;
+    char            *p;
     font_number     font_save;
     page_pos        old_line_pos;
     unsigned        buff_len;
     uint32_t        left_indent;
     uint32_t        right_indent;
+    tok_type        val;
 
 
     if( !((ProcFlags.doc_sect == doc_sect_titlep) ||
@@ -71,7 +72,9 @@ void    gml_docnum( const gmltag * entry )
     }
 
     if( GlobalFlags.firstpass && *p != '\0' ) {
-        add_symvar( global_dict, "$docnum", p, no_subscript, 0 );
+        val.s = p;
+        val.e = val.s + strlen( val.s );
+        add_symvar( global_dict, "$docnum", &val, no_subscript, 0 );
     }
     ProcFlags.docnum_tag_seen = true;
 

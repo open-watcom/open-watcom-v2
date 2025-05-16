@@ -1596,6 +1596,8 @@ extern void gml_preface( const gmltag * entry )
 
 extern void gml_titlep( const gmltag * entry )
 {
+    tok_type        val_null;
+
     (void)entry;
 
     if( ProcFlags.doc_sect_nxt == doc_sect_egdoc ) {
@@ -1607,8 +1609,9 @@ extern void gml_titlep( const gmltag * entry )
     scr_process_break();
     gml_doc_xxx( doc_sect_titlep );
 
-    add_symvar( global_dict, "$stitle", "", no_subscript, 0 );  // set null string
-    add_symvar( global_dict, "$title", "", no_subscript, 0 );   // set null string
+    val_null.e = val_null.s = "";
+    add_symvar( global_dict, "$stitle", &val_null, no_subscript, 0 );  // set null string
+    add_symvar( global_dict, "$title", &val_null, no_subscript, 0 );   // set null string
 
     rs_loc = titlep_tag;
     if( input_cbs->fmflags & II_file ) {    // save line number
@@ -1733,7 +1736,8 @@ extern void gml_egdoc( const gmltag * entry )
 
 extern void gml_gdoc( const gmltag *entry )
 {
-    char        *p;
+    char            *p;
+    tok_type        val;
 
     (void)entry;
 
@@ -1747,7 +1751,6 @@ extern void gml_gdoc( const gmltag *entry )
       && ( strnicmp( "sec ", p, 4 ) == 0    // look for "sec " or "sec="
       || strnicmp( "sec=", p, 4 ) == 0 ) ) {
         char    quote;
-        char    *valstart;
 
         p += 3;
         SkipSpaces( p );
@@ -1762,15 +1765,15 @@ extern void gml_gdoc( const gmltag *entry )
         } else {
             quote = ' ';
         }
-        valstart = p;
+        val.s = p;
         while( *p != '\0' && *p != quote ) {
             ++p;
         }
-        *p = '\0';
-
-        add_symvar( global_dict, "$sec", valstart, no_subscript, 0 );
+        val.e = p;
+        add_symvar( global_dict, "$sec", &val, no_subscript, 0 );
     } else {
-        add_symvar( global_dict, "$sec", "", no_subscript, 0 ); // set null string
+        val.e = val.s = "";
+        add_symvar( global_dict, "$sec", &val, no_subscript, 0 ); // set null string
     }
 
     gml_doc_xxx( doc_sect_gdoc );

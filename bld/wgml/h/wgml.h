@@ -354,10 +354,10 @@ extern void         close_all_pu_files( void );
 /* gsymvar.c                            */
 extern void         init_dict( symdict_hdl *pdict );
 extern void         free_dict( symdict_hdl *pdict );
-extern int          find_symvar( symdict_hdl dict, char *name, sub_index subscript, symsub **symsubval );
-extern int          find_symvar_lcl( symdict_hdl dict, char *name, sub_index subscript, symsub **symsubval );
-extern int          add_symvar( symdict_hdl dict, char *name, char *val, sub_index subscript, symbol_flags f );
-extern int          add_symvar_addr( symdict_hdl dict, char *name, char *val, sub_index subscript, symbol_flags f, symsub **symsubval );
+extern int          find_symvar( symdict_hdl dict, const char *name, sub_index subscript, symsub **symsubval );
+extern int          find_symvar_lcl( symdict_hdl dict, const char *name, sub_index subscript, symsub **symsubval );
+extern int          add_symvar( symdict_hdl dict, const char *name, tok_type *val, sub_index subscript, symbol_flags f );
+extern int          add_symvar_addr( symdict_hdl dict, const char *name, tok_type *val, sub_index subscript, symbol_flags f, symsub **symsubval );
 extern void         print_sym_dict( symdict_hdl dict );
 extern void         reset_auto_inc_dict( symdict_hdl dict );
 
