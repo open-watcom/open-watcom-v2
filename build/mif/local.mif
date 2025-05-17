@@ -124,9 +124,11 @@ common_flags = $(common_flags_rel)
 common_flags = $(common_flags_dbg)
 ! endif
 
-#
-# C4013	"'function' undefined; assuming extern returning int"
+# C4013	"'???' undefined; assuming extern returning int"
+# C4020 "'???': too many actual parameters#"
+# C4024 "'???': different types for formal and actual parameter 3"
 # C4028 "formal parameter ?? different from declaration"
+# C4047 "'???': 'type1' differs in levels of indirection from 'type2'"
 # C4061	"enumerator 'identifier' in switch of enum 'enumeration' is not explicitly handled by a case label"
 # C4062	"enumerator 'identifier' in switch of enum 'enumeration' is not handled"
 # C4063	"case 'identifier' is not a valid value for switch of enum 'enumeration'"
@@ -151,7 +153,10 @@ common_cflags_wng = -W4 -wd4214
 !else
 common_cflags_wng = -Wall &
     -we4013 &
+    -we4020 &
+    -we4024 &
     -we4028 &
+    -we4047 &
     -wd4061 &
     -wd4062 &
     -wd4063 &
