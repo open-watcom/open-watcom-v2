@@ -48,7 +48,7 @@
 /***************************************************************************/
 
 typedef struct scrfunc {
-    char            funcname[FUN_NAME_LENGTH + 1]; // function name
+    char            funcname[FUNC_NAME_LENGTH + 1]; // function name
     unsigned        funclen;            // actual length of funcname
     unsigned        parm_cnt;           // mandatory parms
     unsigned        opt_parm_cnt;       // optional parms

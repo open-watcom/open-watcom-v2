@@ -425,22 +425,9 @@ static bool parse_r2l( sym_list_entry *stack, char *buf, bool subscript )
             }
             break;
         case sl_attrib:
-            set_space_flags( curr, buf );
-            ProcFlags.substituted = true;
-            strcpy( tail, curr->end );      // copy tail
-            p = curr->start;
-            strcpy( p, curr->value );       // copy value
-            if( tail[0] == '.' ) {
-                strcat( buf, tail + 1);     // append tail to buf, skipping initial "."
-            } else {
-                strcat( buf, tail );        // append tail to buf
-            }
-            break;
         case sl_funct:
             set_space_flags( curr, buf );
             ProcFlags.substituted = true;
-            p = curr->start;
-
             strcpy( tail, curr->end );      // copy tail
             p = curr->start;
             strcpy( p, curr->value );       // copy value
@@ -606,8 +593,8 @@ static char *get_func_name( const char *p, char *funcname )
     int     i;
 
     i = 0;
-    while( is_macro_char( *p ) ) {
-        if( i < FUN_NAME_LENGTH ) {
+    while( is_function_char( *p ) ) {
+        if( i < FUNC_NAME_LENGTH ) {
             funcname[i++] = my_tolower( *p );
         }
         p++;
@@ -628,7 +615,7 @@ static sym_list_entry *parse_l2r( char *buf, bool splittable )
     symvar          symvar_entry;
     sym_list_entry  *curr    = NULL;        // current top-of-stack
     sym_list_entry  *temp    = NULL;        // used to create new top-of-stack
-    char            funcname[FUN_NAME_LENGTH + 1];
+    char            funcname[FUNC_NAME_LENGTH + 1];
 
     p = buf;
     while( (p = scan_sym_or_sep( p, splittable )) != NULL ) {         // & found
@@ -639,12 +626,11 @@ static sym_list_entry *parse_l2r( char *buf, bool splittable )
             temp->prev = curr;      // push stack down
             curr = temp;
         }
+        curr->start = p;
         if( *(p + 1) == ' ' ) {  // not a symbol substition, attribute, or function
-            curr->start = p;
             curr->end = p + 2;
             curr->type = sl_text;               // text
         } else if( my_isalpha( p[1] ) && (p[2] == '\'') ) {   // attribute or text
-            curr->start = p;
             if( (p[3] > ' ') ) {
                 funcname[0] = p[1];
                 funcname[1] = '\0';
@@ -667,7 +653,6 @@ static sym_list_entry *parse_l2r( char *buf, bool splittable )
                 curr->end = curr->start + 3;
             }
         } else if( *(p + 1) == '\'' ) {         // function or text
-            curr->start = p;
             p = get_func_name( p + 2, funcname );// over "&'" and get function name
             if( *p == '(' ) {                   // &'xyz( is start of multi char function
                 curr->end = curr->start;
@@ -687,12 +672,10 @@ static sym_list_entry *parse_l2r( char *buf, bool splittable )
             }
         } else {                                // symbol
             if( (*(p+1) == '*') && (*(p+2) == ampchar) ) {  // special for &*&<var>
-                curr->start = p;
                 curr->end = p + 2;
                 curr->type = sl_text;
                 p = p + 2;
             } else {
-                curr->start = p;
                 p++;                                // over '&'
                 symstart = p;                       // remember start of symbol name
                 g_scan_err = false;
@@ -715,7 +698,7 @@ static sym_list_entry *parse_l2r( char *buf, bool splittable )
                           && (valbuf[0] == CW_sep_char)
                           && (valbuf[1] != CW_sep_char) ) {
                             strcpy( curr->value, valbuf );  // repurpose curr
-                            curr->start = p + 1;                        // & of symbol causing split
+                            curr->start = p + 1;            // & of symbol causing split
                             curr->type = sl_split;
                             break;              // line split terminates processing
                         } else {
