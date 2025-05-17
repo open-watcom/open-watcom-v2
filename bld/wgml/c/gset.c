@@ -85,6 +85,8 @@ extern  void    gml_set( const gmltag * entry )
                 if( attr_val.name == NULL ) {
                     break;
                 }
+                if( attr_val.quoted != ' ' )
+                    attr_val.name--;
                 scan_sym( attr_val.name, &sym, &subscript, NULL, false );
                 if( g_scan_err ) {
                     break;

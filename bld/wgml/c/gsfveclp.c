@@ -148,10 +148,8 @@ static  condcode    get_vector_pos( parm parms[MAX_FUN_PARMS], unsigned parmcoun
         g_scan_err = false;
         suppress_msg = ProcFlags.suppress_msg;
         ProcFlags.suppress_msg = true;
-        c = *haystack.e;
-        *haystack.e = '\0';
+        haystack.s = parms[1].arg.s;    // skip to leading quote if exist
         scan_sym( haystack.s, &symvar_entry, &var_ind, NULL, false );
-        *haystack.e = c;
         ProcFlags.suppress_msg = suppress_msg;;
         if( !g_scan_err ) {
             if( symvar_entry.flags & local_var ) {  // lookup var in dict

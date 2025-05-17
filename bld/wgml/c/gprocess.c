@@ -601,6 +601,21 @@ static char *scan_sym_or_sep( char *buf, bool splittable )
 /*    return only when the end of buf is reached                           */
 /***************************************************************************/
 
+static char *get_func_name( const char *p, char *funcname )
+{
+    int     i;
+
+    i = 0;
+    while( is_macro_char( *p ) ) {
+        if( i < FUN_NAME_LENGTH ) {
+            funcname[i++] = my_tolower( *p );
+        }
+        p++;
+    }
+    funcname[i] = '\0';
+    return( (char *)p );
+}
+
 static sym_list_entry *parse_l2r( char *buf, bool splittable )
 {
     char            *p;
@@ -613,6 +628,7 @@ static sym_list_entry *parse_l2r( char *buf, bool splittable )
     symvar          symvar_entry;
     sym_list_entry  *curr    = NULL;        // current top-of-stack
     sym_list_entry  *temp    = NULL;        // used to create new top-of-stack
+    char            funcname[FUN_NAME_LENGTH + 1];
 
     p = buf;
     while( (p = scan_sym_or_sep( p, splittable )) != NULL ) {         // & found
@@ -630,14 +646,16 @@ static sym_list_entry *parse_l2r( char *buf, bool splittable )
         } else if( my_isalpha( p[1] ) && (p[2] == '\'') ) {   // attribute or text
             curr->start = p;
             if( (p[3] > ' ') ) {
+                funcname[0] = p[1];
+                funcname[1] = '\0';
                 curr->end = curr->start;
                 while( !is_space_tab_char( *curr->end ) && (*curr->end != '\0') && (*curr->end != '.') )
                     curr->end++;
                 if( GlobalFlags.firstpass && (input_cbs->fmflags & II_research) ) {
-                    add_single_func_research( curr->start + 1 );
+                    add_single_func_research( funcname );
                 }
                 pa = valbuf;
-                curr->end = scr_single_funcs( curr->start, curr->end, &pa );
+                curr->end = scr_single_funcs( funcname, curr->start + 3, curr->end, &pa );
                 if( ProcFlags.unresolved ) {
                     curr->type = sl_text;
                 } else {
@@ -650,15 +668,13 @@ static sym_list_entry *parse_l2r( char *buf, bool splittable )
             }
         } else if( *(p + 1) == '\'' ) {         // function or text
             curr->start = p;
-            p += 2;                             // over "&'"
-            while( is_function_char( *p ) )     // find end of function name
-                p++;
+            p = get_func_name( p + 2, funcname );// over "&'" and get function name
             if( *p == '(' ) {                   // &'xyz( is start of multi char function
                 curr->end = curr->start;
                 while( !is_space_tab_char( *curr->end ) && (*curr->end != '\0') && (*curr->end != '.') )
                     curr->end++;
                 pa = valbuf;
-                curr->end = scr_multi_funcs( curr->start, p, &pa, BUF_SIZE );
+                curr->end = scr_multi_funcs( funcname, p, &pa, BUF_SIZE );
                 if( ProcFlags.unresolved ) {
                     curr->type = sl_text;
                 } else {

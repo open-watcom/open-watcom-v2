@@ -272,10 +272,10 @@ extern void         print_GML_tags_research( void );
 extern void         add_SCR_tag_research( char *tag );
 extern void         free_SCR_tags_research( void );
 extern void         print_SCR_tags_research( void );
-extern void         add_single_func_research( char *in );
+extern void         add_single_func_research( const char *funcname );
 extern void         free_single_funcs_research( void );
 extern void         print_single_funcs_research( void );
-extern void         add_multi_func_research( char *in );
+extern void         add_multi_func_research( const char *funcname );
 extern void         free_multi_funcs_research( void );
 extern void         print_multi_funcs_research( void );
 extern void         printf_research( char *msg, ... );
@@ -311,11 +311,11 @@ extern void         fb_blocks_out( void );
 
 
 /* gsfuncs.c                            */
-extern char         *scr_multi_funcs( char *in, char *pstart, char **result, unsigned ressize );
+extern char         *scr_multi_funcs( const char *funcname, char *args, char **result, unsigned ressize );
 
 
 /* gsfunelu.c                           */
-extern char         *scr_single_funcs( char *in, char *end, char **result );
+extern char         *scr_single_funcs( const char *funcname, char *args, char *end, char **result );
 
 
 /* gsgoto.c                             */

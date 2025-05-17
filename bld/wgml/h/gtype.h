@@ -136,13 +136,13 @@ typedef uint8_t     text_space;
 typedef uint32_t    units_space;
 
 typedef struct tok_type {
-    char        *s;
-    char        *e;
+    char            *s;
+    char            *e;
 } tok_type;
 
 typedef struct str_type {
-    char        *s;
-    unsigned    l;
+    char            *s;
+    unsigned        l;
 } str_type;
 
 /***************************************************************************/
@@ -648,15 +648,6 @@ typedef struct parm {
     tok_type        arg;                // argument start and end of parm ptr
     bool            redo;               // parm starts with "&"
 } parm;
-
-typedef struct scrfunc {
-    const char      fname[FUN_NAME_LENGTH + 1];   // function name
-    const unsigned  length;             // actual length of fname
-    const unsigned  parm_cnt;           // mandatory parms
-    const unsigned  opt_parm_cnt;       // optional parms
-    condcode        (*fun)( parm parms[MAX_FUN_PARMS], unsigned parm_count,
-                            char **result, unsigned ressize );
-} scrfunc;
 
 /***************************************************************************/
 /*  definitions for getnum routine  to be reworked  TBD                    */

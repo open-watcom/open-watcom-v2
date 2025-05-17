@@ -105,12 +105,12 @@ bool is_base_quote_char( char c )
 
 condcode getarg( void )
 {
-    condcode    cc;
-    char    *   p;
-    char        quote;
-    char        valquote;
-    bool        quoted;
-    bool        valquoted;
+    condcode        cc;
+    char            *p;
+    char            quote;
+    char            valquote;
+    bool            quoted;
+    bool            valquoted;
 
     cc = omit;                          // arg omitted
     if( scandata.s < scandata.e ) {     // already at end
@@ -206,11 +206,11 @@ condcode getarg( void )
 
 condcode getqst( void )
 {
-    condcode    cc;
-    char    *   p;
-    char        c;
-    char        quote;
-    bool        quoted;
+    condcode        cc;
+    char            *p;
+    char            c;
+    char            quote;
+    bool            quoted;
 
     cc = omit;                          // arg omitted
     if( scandata.s < scandata.e ) {     // already at end

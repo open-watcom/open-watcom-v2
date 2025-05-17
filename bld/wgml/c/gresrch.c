@@ -237,7 +237,7 @@ void    free_SCR_tags_research( void )
 /*  add and/or count multi letter functions                                */
 /***************************************************************************/
 
-void    add_multi_func_research( char * fun )
+void    add_multi_func_research( const char *fun )
 {
     taglist *   wk = multi_funcs;
     taglist *   new;
@@ -306,7 +306,7 @@ void    free_multi_funcs_research( void )
 /*  add and/or count SCR function                                          */
 /***************************************************************************/
 
-void    add_single_func_research( char * fun )
+void    add_single_func_research( const char *fun )
 {
     taglist *   wk = single_funcs;
     taglist *   new;

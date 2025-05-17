@@ -47,6 +47,15 @@
 /*    SCR multi letter functions                                           */
 /***************************************************************************/
 
+typedef struct scrfunc {
+    char            funcname[FUN_NAME_LENGTH + 1]; // function name
+    unsigned        funclen;            // actual length of funcname
+    unsigned        parm_cnt;           // mandatory parms
+    unsigned        opt_parm_cnt;       // optional parms
+    condcode        (*fun)( parm parms[MAX_FUN_PARMS], unsigned parm_count,
+                            char **result, unsigned ressize );
+} scrfunc;
+
 static const scrfunc    scr_functions[] = {
     #define pick( name, length, parms, optparms, routine )  { #name, length, parms, optparms, routine },
     #include "gsfuncs.h"
@@ -86,7 +95,7 @@ static  char    * alloc_resbuf( inp_line ** in_wk )
  *
  */
 
-static  char    * find_end_of_parm( char * pchar, char * pend )
+static char *find_end_of_parm( const char *pchar, const char *pend )
 {
     char    quotechar[MAX_PAREN];
     bool    instring[MAX_PAREN];
@@ -178,7 +187,7 @@ static  char    * find_end_of_parm( char * pchar, char * pend )
         }
         pchar++;
     }
-    return( pchar );
+    return( (char *)pchar );
 }
 
 
@@ -187,13 +196,34 @@ static  char    * find_end_of_parm( char * pchar, char * pend )
 /*     leading blanks are skipped                                          */
 /***************************************************************************/
 
-static  char    * find_start_of_parm( char * pchar )
+static char *find_start_of_parm( const char *pchar )
 {
     ++pchar;                            // over ( or ,
     SkipSpaces( pchar );                // over unquoted blanks
-    return( pchar );
+    return( (char *)pchar );
 }
 
+static const scrfunc *find_funcinfo( const char *funcname )
+{
+    int             funclen;
+    const scrfunc   *funcinfo;
+    int             k;
+
+    funclen = strlen( funcname );
+    funcinfo = scr_functions;
+    for( k = 0; k < SCR_FUNC_MAX; k++ ) {
+        if( funclen == funcinfo->funclen
+          && strcmp( funcname, funcinfo->funcname ) == 0 ) {
+            if( (input_cbs->fmflags & II_research) && GlobalFlags.firstpass ) {
+                out_msg( " Function %s found\n", funcname );
+                add_multi_func_research( funcname );
+            }
+            return( funcinfo );
+        }
+        funcinfo++;
+    }
+    return( NULL );
+}
 
 /***************************************************************************/
 /*  scr_multi_funcs  isolate function name, lookup name in table           */
@@ -201,36 +231,32 @@ static  char    * find_start_of_parm( char * pchar )
 /*                   call corresponding function                           */
 /***************************************************************************/
 
-char *scr_multi_funcs( char *in, char *pstart, char **result, unsigned ressize )
+char *scr_multi_funcs( const char *funcname, char *args, char **result, unsigned ressize )
 {
-    bool                found;
-    char                fn[FUN_NAME_LENGTH + 1];
-    char            *   p;              // points into input buffer
-    char            *   pchar;          // points into input buffer
-    char            *   pend;           // points into resbuf
-    char            *   pret;           // end of function in input buffer
-    char            *   ps;             // points into resbuf
-    char            *   resbuf;         // buffer into which parm.arg.s and parm.arg.e point
-    condcode            cc;
-    inp_line        *   in_wk;          // stack of resbufs, one for each parameter
-    unsigned            funcind;
-    unsigned            k;
-    unsigned            m;
-    unsigned            parmcount;
-    int                 p_level;
-    int                 rc;
-    parm                parms[MAX_FUN_PARMS];
-    unsigned            fnlen;
+    char            *p;                 // points into input buffer
+    char            *pchar;             // points into input buffer
+    char            *pend;              // points into resbuf
+    char            *pret;              // end of function in input buffer
+    char            *ps;                // points into resbuf
+    char            *resbuf;            // buffer into which parm.arg.s and parm.arg.e point
+    condcode        cc;
+    inp_line        *in_wk;             // stack of resbufs, one for each parameter
+    const scrfunc   *funcinfo;
+    unsigned        k;
+    unsigned        m;
+    unsigned        parmcount;
+    int             p_level;
+    int             rc;
+    parm            parms[MAX_FUN_PARMS];
 
-    /* pstart points to the outer open parenthesis ('(') */
+    /* args points to the outer open parenthesis ('(') */
 
     ProcFlags.unresolved = false;
     in_wk = NULL;                       // no result buffer yet
     rc = 0;
-    pchar = in + 2;                     // over &' to function name
 
     // find true end of function
-    p = pstart;
+    p = args;
     p_level = 0;
     while( *p != '\0' ) {               // to end of buffer
         if( *p == '(' ) {
@@ -247,38 +273,15 @@ char *scr_multi_funcs( char *in, char *pstart, char **result, unsigned ressize )
 
     pret = p;                           // save for return (points to final ')')
 
-    // collect function name
-    fnlen = 0;
-    for( ; pchar < pstart; pchar++  ) {
-        fn[fnlen] = *pchar;
-        if( fnlen < FUN_NAME_LENGTH ) {
-            fnlen++;
-        } else {
-            break;
-        }
-    }
-    fn[fnlen] = '\0';
-
     // test for valid functionname
-    found = false;
-    for( k = 0; k < SCR_FUNC_MAX; k++ ) {
-        if( fnlen == scr_functions[k].length
-          && stricmp( fn, scr_functions[k].fname ) == 0 ) {
-            found = true;
-            if( (input_cbs->fmflags & II_research) && GlobalFlags.firstpass ) {
-                out_msg( " Function %s found\n", scr_functions[k].fname );
-                add_multi_func_research( fn );
-            }
-            break;
-        }
-    }
 
-    if( !found ) {
+    funcinfo = find_funcinfo( funcname );
+
+    if( funcinfo == NULL ) {
         /* this is not an error in wgml 4.0 */
         ProcFlags.unresolved = true;
-        return( pstart );
+        return( (char *)args );
     }
-    funcind = k;
 
     /* Missing ')' is only a problem if the function was found */
 
@@ -288,7 +291,9 @@ char *scr_multi_funcs( char *in, char *pstart, char **result, unsigned ressize )
 
     // collect the mandatory parm(s)
 
-    for( k = 0; k < scr_functions[funcind].parm_cnt; k++ ) {
+    pchar = args;
+
+    for( k = 0; k < funcinfo->parm_cnt; k++ ) {
 
         multiletter_function = false;
         var_in_parm = false;
@@ -308,9 +313,9 @@ char *scr_multi_funcs( char *in, char *pstart, char **result, unsigned ressize )
             break;                      // end of parms
         }
     }
-    m = k + (k < scr_functions[funcind].parm_cnt);// mandatory parm count
+    m = k + (k < funcinfo->parm_cnt);// mandatory parm count
 
-    if( m < scr_functions[funcind].parm_cnt ) {
+    if( m < funcinfo->parm_cnt ) {
         xx_line_err_c( err_func_parm_miss, p - 1 );
     }
 
@@ -318,7 +323,7 @@ char *scr_multi_funcs( char *in, char *pstart, char **result, unsigned ressize )
     if( pchar >= pend ) {               // no optional parms
         k = 0;
     } else {
-        for( k = 0; k < scr_functions[funcind].opt_parm_cnt; k++ ) {
+        for( k = 0; k < funcinfo->opt_parm_cnt; k++ ) {
             multiletter_function = false;
             var_in_parm = false;
             parms[m + k].arg.s = find_start_of_parm( pchar );
@@ -336,7 +341,7 @@ char *scr_multi_funcs( char *in, char *pstart, char **result, unsigned ressize )
                 break;                  // end of parms
             }
         }
-        k += (k < scr_functions[funcind].opt_parm_cnt);
+        k += (k < funcinfo->opt_parm_cnt);
     }
     parmcount = m + k;                  // total parmcount
     parms[parmcount].arg.s = NULL;          // end of parms indicator
@@ -354,7 +359,7 @@ char *scr_multi_funcs( char *in, char *pstart, char **result, unsigned ressize )
             parms[k].arg.e = ps;
             parms[k].arg.s = resbuf;
             if( (input_cbs->fmflags & II_research) && GlobalFlags.firstpass ) {
-                out_msg( " Function %s parm %s found\n", scr_functions[funcind].fname, resbuf );
+                out_msg( " Function %s parm %s found\n", funcname, resbuf );
             }
 
             if( !resolve_symvar_functions( resbuf, false ) ) break; // no change, we're done
@@ -379,7 +384,7 @@ char *scr_multi_funcs( char *in, char *pstart, char **result, unsigned ressize )
 
     ProcFlags.suppress_msg = multiletter_function;
 
-    cc = scr_functions[funcind].fun( parms, parmcount, result, ressize );
+    cc = funcinfo->fun( parms, parmcount, result, ressize );
 
     ProcFlags.suppress_msg = false;
 
@@ -392,11 +397,11 @@ char *scr_multi_funcs( char *in, char *pstart, char **result, unsigned ressize )
 
         ProcFlags.unresolved = true;
 
-        return( pstart );
+        return( (char *)args );
     }
 
     ProcFlags.substituted = true;
-    return( pret + 1 );                 // all OK new scan position
+    return( (char *)pret + 1 );                 // all OK new scan position
 }
 
 
