@@ -45,8 +45,8 @@ void    scr_dummy( void )
     char            cwcurr[4];          // control word string for msg
 
     cwcurr[0] = SCR_char;
-    cwcurr[1] = *(token_buf);
-    cwcurr[2] = *(token_buf + 1);
+    cwcurr[1] = token_buf[0];
+    cwcurr[2] = token_buf[1];
     cwcurr[3] = '\0';
 
     scan_restart = scandata.e;

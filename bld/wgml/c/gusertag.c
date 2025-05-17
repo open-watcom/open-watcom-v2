@@ -299,12 +299,9 @@ bool process_tag( gtentry *ge, mac_entry * me )
                                      }
                                 }
                                 if( gaval != NULL ) {
-                                     sprintf( token_buf, "%d",
-                                              gaval->a.range[3] );
                                     val.s = token_buf;
-                                    val.e = val.s + strlen( val.s );
-                                    rc = add_symvar( loc_dict, ga->attname,
-                                                &val, no_subscript, local_var );
+                                    val.e = val.s + sprintf( token_buf, "%d", gaval->a.range[3] );
+                                    rc = add_symvar( loc_dict, ga->attname, &val, no_subscript, local_var );
                                 }
                             }
                         }

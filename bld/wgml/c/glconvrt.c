@@ -2103,7 +2103,7 @@ void    lay_convert( const gmltag * entry )
     *token_buf = '\0';
     if( !strnicmp( "file=", p, 5 ) ) {  // file attribute?
         char    quote;
-        char    *fnstart;
+        char    *filename_start;
 
         p += 5;
         if( *p == '"' || *p == '\'' ) {
@@ -2112,12 +2112,12 @@ void    lay_convert( const gmltag * entry )
         } else {
             quote = '.';                // error?? filename without quotes
         }
-        fnstart = p;
+        filename_start = p;
         while( *p != '\0' && *p != quote ) {
             ++p;
         }
         *p = '\0';
-        strcpy( token_buf, fnstart );
+        strcpy( token_buf, filename_start );
     } else {                            // try undocumented format
         if( *p != '\0' && *p == '.' ) {
             strcpy( token_buf, p + 1 );

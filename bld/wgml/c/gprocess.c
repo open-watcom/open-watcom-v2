@@ -37,6 +37,24 @@
 
 static  bool        sym_space;          // compiler workaround
 
+static char *get_func_name( const char *p, char *funcname )
+{
+    int     i;
+    char        buf[FUNC_NAME_LENGTH + 1];
+
+    if( funcname == NULL )
+        funcname = buf;
+    i = 0;
+    while( is_function_char( *p ) ) {
+        if( i < FUNC_NAME_LENGTH ) {
+            funcname[i++] = my_tolower( *p );
+        }
+        p++;
+    }
+    funcname[i] = '\0';
+    return( (char *)p );
+}
+
 /***************************************************************************/
 /*  perform symbol substitution on certain special symbols:                */
 /*    AMP (identified by the is_AMP tag)                                   */
@@ -47,25 +65,22 @@ void process_late_subst( char * buf )
     char            *p;
     char            *symstart;
     char            tail[BUF_SIZE + 1];
-    char            *tokenend;       // save end of current token
     char            *tokenstart;     // save position of current '&'
     int             rc;
     sub_index       var_ind;        // subscript value (if symbol is subscripted)
     symsub          *symsubval;      // value of symbol
     symvar          symvar_entry;
 
-    p = strchr( buf, ampchar ); // look for & in buffer
-    while( p != NULL ) {        // & found
-        if( *(p + 1) == ' ' ) { // not a symbol substition, attribute, or function
-            tokenend = p + 1;
+    p = buf; // look for & in buffer
+    while( (p = strchr( p, ampchar )) != NULL ) {        // & found
+        if( p[1] == ' ' ) { // not a symbol substition, attribute, or function
+            p++;
         } else if( my_isalpha( p[1] )
           && p[2] == '\''
           && p[3] > ' ' ) {     // attribute
-            tokenend = p + 3;
-        } else if( *(p + 1) == '\'' ) {         // function or text
-            p += 2;
-            while( is_function_char(*p) ) p++;  // find end of function name
-            tokenend = p;
+            p += 3;
+        } else if( p[1] == '\'' ) {         // function or text
+            p = get_func_name( p + 2, NULL );   // find end of function name
         } else {                                // symbol
             tokenstart = p;
             p++;                                // over '&'
@@ -74,13 +89,12 @@ void process_late_subst( char * buf )
             ProcFlags.suppress_msg = true;
             p = scan_sym( symstart, &symvar_entry, &var_ind, NULL, false );
             ProcFlags.suppress_msg = false;
-            tokenend = p;
             if( !g_scan_err ) {                   // potentially qualifying symbol
                 rc = find_symvar_sym( &symvar_entry, var_ind, &symsubval );
                 if( rc == 2 ) {             // variable found + resolved
                     if( symsubval->base->flags & is_AMP ) {
                         /* replace symbol with value */
-                        strcpy( tail, tokenend );       // copy tail
+                        strcpy( tail, p );       // copy tail
                         p = tokenstart;
                         strcpy( p, symsubval->value );  // copy value
                         if( tail[0] == '.' ) {
@@ -88,13 +102,10 @@ void process_late_subst( char * buf )
                         } else {
                             strcat( buf, tail );        // append tail to buf
                         }
-                        tokenend = tokenstart + 1;                  // restart from replaced symbol.
                     }
                 }
             }
         }
-        p = tokenend;                   // skip argument
-        p = strchr( p, ampchar );       // look for next & in buffer
     }
     return;
 }
@@ -107,9 +118,9 @@ void process_late_subst( char * buf )
  *
  */
 
-void split_input( char * buf, char * split_pos, i_flags fmflags )
+void split_input( char *buf, char *split_pos, i_flags fmflags )
 {
-    inp_line    *   wk;
+    inp_line        *wk;
     unsigned        len;
 
     (void)buf;
@@ -143,9 +154,9 @@ void split_input( char * buf, char * split_pos, i_flags fmflags )
  *  used if a substituted variable starts with CW_sep_char
  */
 
-static void split_input_var( char * buf, char * split_pos, char * part2, i_flags fmflags )
+static void split_input_var( char *buf, char *split_pos, char *part2, i_flags fmflags )
 {
-    inp_line    *   wk;
+    inp_line        *wk;
     unsigned        len;
 
     (void)buf;
@@ -154,7 +165,7 @@ static void split_input_var( char * buf, char * split_pos, char * part2, i_flags
     if( len > 0 ) {
         wk = mem_alloc( len + sizeof( inp_line ) );
         wk->next = input_cbs->hidden_head;
-        wk->fmflags  = fmflags;
+        wk->fmflags = fmflags;
         wk->fm_symbol = false;
         wk->sym_space = sym_space;
         wk->hh_tag = input_cbs->hh_tag;
@@ -194,7 +205,7 @@ static void split_at_GML_tag( void )
 
     pchar = buff2;
     while( (pchar = strchr( pchar + 1, GML_char )) != NULL ) {
-        while( *(pchar + 1) == GML_char ) {
+        while( pchar[1] == GML_char ) {
             pchar++;                    // handle repeated GML_chars
         }
         p2 = check_tagname( pchar, tagname );
@@ -227,7 +238,7 @@ static void split_at_GML_tag( void )
                         if( p == pchar ) {  // only leading blanks
                             memmove( buff2, pchar, BUF_SIZE - (p - buff2) + 1 );
                             buff2_lg = strlen( buff2 ); // new length
-                            pchar = strchr( buff2 + 1, GML_char );  // try next GMLchar
+                            pchar = buff2;
                             continue;       // dummy split done try again
                         }
                     }
@@ -244,8 +255,8 @@ static void split_at_GML_tag( void )
                 if( (gse != NULL)
                   || ((gue != NULL)
                   && (gue->tagflags & tag_cont)) ) {
-                    *pchar = CONT_char;
-                    *(pchar + 1) = '\0';
+                    pchar[0] = CONT_char;
+                    pchar[1] = '\0';
                 }
                 if( ((gse != NULL)
                   && (gse->tagclass & ip_start_tag)) ) {
@@ -270,7 +281,7 @@ static void split_at_GML_tag( void )
 
 static bool split_input_buffer( void )
 {
-    int             k;
+    char            *p;
     char            tagname[TAG_NAME_LENGTH + 1];
     bool            comment;
 
@@ -302,15 +313,12 @@ static bool split_input_buffer( void )
         /*******************************************************************/
         /*  .xx SCRIPT control line                                        */
         /*******************************************************************/
-
-        if( (*buff2 == SCR_char) ) {
-
-            if( buff2[1] == '*'
-              || (buff2[1] == '\''
-              && buff2[2] == '*') ) {
+        p = buff2;
+        if( (*p++ == SCR_char) ) {
+            if( p[0] == '*'
+              || p[0] == '\'' && p[1] == '*' ) {
                 return( false );  // for .* comment minimal processing
             }
-
             /***************************************************************/
             /* if macro define (.dm xxx ... ) supress variable substitution*/
             /* for the sake of single line macro definition                */
@@ -318,12 +326,9 @@ static bool split_input_buffer( void )
             /*  and                                                        */
             /* ..dm xxx / &*1 / &*2 / &*0 / &* /                           */
             /***************************************************************/
-            if( *(buff2 + 1) == SCR_char ) {
-                k = 2;
-            } else {
-                k = 1;
-            }
-            if( strnicmp( "dm ", buff2 + k, 3 ) == 0 ) {
+            if( *p == SCR_char )
+                p++;
+            if( strnicmp( "dm ", p, 3 ) == 0 ) {
                 return( false );
             }
 
@@ -335,7 +340,7 @@ static bool split_input_buffer( void )
             /***************************************************************/
 
             if( (!ProcFlags.CW_force_sep
-              && (*(buff2 + k) == '\''))
+              && (*p == '\''))
               || (CW_sep_char == '\0') ) {
                 ProcFlags.CW_sep_ignore = true;
             } else {
@@ -363,7 +368,7 @@ static bool split_input_buffer( void )
 
 static void set_space_flags( sym_list_entry * c_entry, char * buf )
 {
-    char    *   p;
+    char            *p;
 
     if( *c_entry->value != '\0' ) {     // result must have a value
         p = c_entry->value;
@@ -582,21 +587,6 @@ static char *scan_sym_or_sep( char *buf, bool splittable )
 /*    return only when the end of buf is reached                           */
 /***************************************************************************/
 
-static char *get_func_name( const char *p, char *funcname )
-{
-    int     i;
-
-    i = 0;
-    while( is_function_char( *p ) ) {
-        if( i < FUNC_NAME_LENGTH ) {
-            funcname[i++] = my_tolower( *p );
-        }
-        p++;
-    }
-    funcname[i] = '\0';
-    return( (char *)p );
-}
-
 static sym_list_entry *parse_l2r( char *buf, bool splittable )
 {
     char            *p;
@@ -621,7 +611,7 @@ static sym_list_entry *parse_l2r( char *buf, bool splittable )
             curr = temp;
         }
         curr->start = p;
-        if( *(p + 1) == ' ' ) {  // not a symbol substition, attribute, or function
+        if( p[1] == ' ' ) {  // not a symbol substition, attribute, or function
             curr->end = p + 2;
             curr->type = sl_text;               // text
         } else if( my_isalpha( p[1] ) && (p[2] == '\'') ) {   // attribute or text
@@ -646,7 +636,7 @@ static sym_list_entry *parse_l2r( char *buf, bool splittable )
                 curr->type = sl_text;
                 curr->end = curr->start + 3;
             }
-        } else if( *(p + 1) == '\'' ) {         // function or text
+        } else if( p[1] == '\'' ) {         // function or text
             p = get_func_name( p + 2, funcname );// over "&'" and get function name
             if( *p == '(' ) {                   // &'xyz( is start of multi char function
                 curr->end = curr->start;
@@ -665,7 +655,7 @@ static sym_list_entry *parse_l2r( char *buf, bool splittable )
                 curr->type = sl_text;           // text
             }
         } else {                                // symbol
-            if( (*(p+1) == '*') && (*(p+2) == ampchar) ) {  // special for &*&<var>
+            if( (p[1] == '*') && (p[2] == ampchar) ) {  // special for &*&<var>
                 curr->end = p + 2;
                 curr->type = sl_text;
                 p = p + 2;

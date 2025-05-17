@@ -153,8 +153,8 @@
 
 void    scr_im( void )
 {
-    char        *   fnstart;
-    char        *   p;
+    char            *filename_start;
+    char            *p;
     char            quote;
     condcode        cc;
     getnum_block    gn;
@@ -176,12 +176,12 @@ void    scr_im( void )
         } else {
             quote = ' ';                // error??
         }
-        fnstart = p;
+        filename_start = p;
         while( *p != '\0' && *p != quote ) {
             ++p;
         }
         *p = '\0';
-        strcpy( token_buf, fnstart );
+        strcpy( token_buf, filename_start );
     }
 
     if( p < scandata.e ) {
