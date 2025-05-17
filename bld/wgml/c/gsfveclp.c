@@ -116,8 +116,13 @@ static  condcode    get_vector_pos( parm parms[MAX_FUN_PARMS], unsigned parmcoun
     needle = parms[0].arg;
     needle_len = unquote_arg( &needle );
 
+    /*
+     * haystack should be a symbol
+     * scan_sym need include quotes for correct symbol parsing
+     * don't use unquote_arg for haystack
+     */
     haystack = parms[1].arg;
-    haystack_len = unquote_arg( &haystack );
+    haystack_len = parms[1].arg.e - parms[1].arg.s;
 
     if( (haystack_len > 0)              // not null string
       || (needle_len > 0) ) {           // needle not null
@@ -148,7 +153,6 @@ static  condcode    get_vector_pos( parm parms[MAX_FUN_PARMS], unsigned parmcoun
         g_scan_err = false;
         suppress_msg = ProcFlags.suppress_msg;
         ProcFlags.suppress_msg = true;
-        haystack.s = parms[1].arg.s;    // skip to leading quote if exist
         scan_sym( haystack.s, &symvar_entry, &var_ind, NULL, false );
         ProcFlags.suppress_msg = suppress_msg;;
         if( !g_scan_err ) {
