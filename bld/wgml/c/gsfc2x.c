@@ -72,12 +72,10 @@ condcode    scr_c2x( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **resul
 
     while( ( string.s < string.e ) && ( ressize > 0 ) ) {
         c = *string.s++;
-        **result = hex( c >> 4 );
-        *result += 1;
+        *(*result)++ = hex( c >> 4 );
         ressize--;
         if( ressize > 0 ) {
-            **result = hex( c & 0x0f );
-            *result += 1;
+            *(*result)++ = hex( c & 0x0f );
             ressize--;
         }
     }

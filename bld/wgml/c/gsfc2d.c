@@ -78,8 +78,7 @@ condcode    scr_c2d( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **resul
     sprintf( linestr, "%d", n );
     p = linestr;
     while( *p != '\0' && ressize > 0 ) {
-        **result = *p++;
-        *result += 1;
+        *(*result)++ = *p++;
         ressize--;
     }
     return( pos );

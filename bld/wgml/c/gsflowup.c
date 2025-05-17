@@ -126,8 +126,7 @@ static condcode scr_lowup( parm parms[MAX_FUN_PARMS], unsigned parmcount,
          * copy unchanged string to start position
          */
         for( k = 0; k < n && string.s < string.e && ressize > 0; k++ ) {          // copy unchanged before startpos
-            **result = *string.s++;
-            *result += 1;
+            *(*result)++ = *string.s++;
             ressize--;
         }
         /*
@@ -135,19 +134,17 @@ static condcode scr_lowup( parm parms[MAX_FUN_PARMS], unsigned parmcount,
          */
         for( k = 0; k < length && string.s < string.e && ressize > 0; k++ ) {        // translate
             if( upper ) {
-               **result = my_toupper( *string.s++ );
+               *(*result)++ = my_toupper( *string.s++ );
             } else {
-               **result = my_tolower( *string.s++ );
+               *(*result)++ = my_tolower( *string.s++ );
             }
-            *result += 1;
             ressize--;
         }
         /*
          * copy rest of string (if any)
          */
         for( ; string.s < string.e && ressize > 0; string.s++ ) {
-            **result = *string.s;
-            *result += 1;
+            *(*result)++ = *string.s;
             ressize--;
         }
     }

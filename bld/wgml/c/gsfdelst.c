@@ -100,8 +100,7 @@ condcode    scr_delstr( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **re
          */
         k = 0;
         while( (k < n) && (string.s < string.e) && (ressize > 0) ) {
-            **result = *string.s++;
-            *result += 1;
+            *(*result)++ = *string.s++;
             k++;
             ressize--;
         }
@@ -116,8 +115,7 @@ condcode    scr_delstr( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **re
          * copy rest of string (if any)
          */
         while( (string.s < string.e) && (ressize > 0) ) {
-            **result = *string.s++;
-            *result += 1;
+            *(*result)++ = *string.s++;
             ressize--;
         }
     }

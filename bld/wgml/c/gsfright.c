@@ -90,8 +90,7 @@ condcode    scr_right( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **res
          */
         k = string_len;
         while( k < length && ressize > 0 ) {
-            **result = padchar;
-            *result += 1;
+            *(*result)++ = padchar;
             k++;
             ressize--;
         }
@@ -102,8 +101,7 @@ condcode    scr_right( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **res
             string.s += string_len - length;
         }
         while( string.s < string.e && ressize > 0 ) {
-            **result = *string.s++;
-            *result += 1;
+            *(*result)++ = *string.s++;
             ressize--;
         }
     }

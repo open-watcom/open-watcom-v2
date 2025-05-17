@@ -106,8 +106,7 @@ condcode    scr_strip( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **res
          * copy string body
          */
         for( ; string.s < string.e && ressize > 0; string.s++ ) {
-            **result = *string.s;
-            *result += 1;
+            *(*result)++ = *string.s;
             ressize--;
         }
         /*

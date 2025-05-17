@@ -123,8 +123,7 @@ condcode    scr_substr( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **re
          */
         string.s += n;          // position to startpos or to string end
         while( k < length && string.s < string.e && ressize > 0 ) {
-            **result = *string.s++;
-            *result += 1;
+            *(*result)++ = *string.s++;
             k++;
             ressize--;
         }
@@ -132,8 +131,7 @@ condcode    scr_substr( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **re
          * pad to length (if necessary)
          */
         while( k < length && ressize > 0 ) {
-            **result = padchar;
-            *result += 1;
+            *(*result)++ = padchar;
             k++;
             ressize--;
         }

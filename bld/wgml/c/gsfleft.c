@@ -91,8 +91,7 @@ condcode    scr_left( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **resu
          * copy from string start
          */
         while( k < length && string.s < string.e && ressize > 0 ) {
-            **result = *string.s++;
-            *result += 1;
+            *(*result)++ = *string.s++;
             k++;
             ressize--;
         }
@@ -100,8 +99,7 @@ condcode    scr_left( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **resu
          * pad to length (if necessary)
          */
         while( k < length && ressize > 0 ) {
-            **result = padchar;
-            *result += 1;
+            *(*result)++ = padchar;
             k++;
             ressize--;
         }

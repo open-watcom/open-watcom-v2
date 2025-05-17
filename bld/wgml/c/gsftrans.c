@@ -98,8 +98,7 @@ condcode    scr_translate( parm parms[MAX_FUN_PARMS], unsigned parmcount, char *
 
         if( (tablei.s == NULL) && (tableo.s == NULL) && padchar == '\0' ) {
             while( (string.s < string.e) && (ressize > 0) ) {  // translate to upper
-                **result = my_toupper( *string.s++ );
-                *result += 1;
+                *(*result)++ = my_toupper( *string.s++ );
                 ressize--;
             }
         } else {                   // translate as specified in tablei and tableo
@@ -120,8 +119,7 @@ condcode    scr_translate( parm parms[MAX_FUN_PARMS], unsigned parmcount, char *
                         }
                     }
                 }
-                **result = c;
-                *result += 1;
+                *(*result)++ = c;
                 ressize--;
             }
         }

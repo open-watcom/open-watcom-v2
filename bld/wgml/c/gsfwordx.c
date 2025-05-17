@@ -103,8 +103,7 @@ static  condcode    scr_xx_word( parm parms[MAX_FUN_PARMS], unsigned parmcount,
             if( length == 0 ) {             // default word count = to end of string
                 ptok = string.e;
                 for( ; string.s < ptok && ressize > 0; string.s++ ) { // copy rest of words
-                    **result = *string.s;
-                    *result += 1;
+                    *(*result)++ = *string.s;
                     ressize--;
                 }
             } else {
@@ -118,14 +117,12 @@ static  condcode    scr_xx_word( parm parms[MAX_FUN_PARMS], unsigned parmcount,
                     }
                 }
                 for( ; string.s < ptok && ressize > 0; string.s++ ) { // copy rest of words
-                    **result = *string.s;
-                    *result += 1;
+                    *(*result)++ = *string.s;
                     ressize--;
                 }
                 if( string.s < g_tok_start && ( *string.s != ' ' ) ) {  // copy last word
                     for( ; string.s < g_tok_start && *string.s != ' ' && ressize > 0; string.s++ ) {
-                        **result = *string.s;
-                        *result += 1;
+                        *(*result)++ = *string.s;
                         ressize--;
                     }
                 }

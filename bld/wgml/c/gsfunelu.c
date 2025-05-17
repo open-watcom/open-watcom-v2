@@ -39,13 +39,13 @@
 /*              returns   0 or 1 in result                                 */
 /***************************************************************************/
 
-static char *scr_single_func_e( char *args, char * end, char * * result )
+static char *scr_single_func_e( char *args, char *end, char **result )
 {
-    char            *   pchar;
-    sub_index           var_ind;
-    symvar              symvar_entry;
-    symsub          *   symsubval;
-    int                 rc;
+    char            *pchar;
+    sub_index       var_ind;
+    symvar          symvar_entry;
+    symsub          *symsubval;
+    int             rc;
 
     (void)end;
 
@@ -64,11 +64,10 @@ static char *scr_single_func_e( char *args, char * end, char * * result )
     }
 
     if( rc == 2 ) {
-        **result = '1';             // exists
+        *(*result)++ = '1';             // exists
     } else {
-        **result = '0';             // does not exist
+        *(*result)++ = '0';             // does not exist
     }
-    *result  += 1;
     **result = '\0';
 
     SkipDot( pchar );               // skip optional terminating dot
@@ -81,14 +80,14 @@ static char *scr_single_func_e( char *args, char * end, char * * result )
 /*              returns   length of value or length of name in result      */
 /***************************************************************************/
 
-static char *scr_single_func_l( char *args, char * end, char * * result )
+static char *scr_single_func_l( char *args, char *end, char **result )
 {
-    char            *   pchar;
-    sub_index           var_ind;
-    symvar              symvar_entry;
-    symsub          *   symsubval;
-    int                 rc;
-    int                 len;
+    char            *pchar;
+    sub_index       var_ind;
+    symvar          symvar_entry;
+    symsub          *symsubval;
+    int             rc;
+    int             len;
 
     if( *args == '&' ) {            // symbol name
         pchar = scan_sym( args + 1, &symvar_entry, &var_ind, NULL, false );
@@ -106,16 +105,13 @@ static char *scr_single_func_l( char *args, char * end, char * * result )
             len = strlen( symvar_entry.name );
         }
     } else {                            // string
-        pchar = args;
         len = 0;
-        while( !((*pchar == ' ') || (*pchar == '.') || (pchar == end)) ) {
+        for( pchar = args; *pchar != ' ' && *pchar != '.' && pchar != end; pchar++ ) {
             len++;
-            pchar++;
         }
     }
-    sprintf( *result, "%d", len );
-    *result  += strlen( *result );
-    **result = '\0';
+
+    *result += sprintf( *result, "%d", len );
 
     SkipDot( pchar );               // skip optional terminating dot
     return( pchar );
@@ -128,20 +124,21 @@ static char *scr_single_func_l( char *args, char * end, char * * result )
 /*                       subscript or superscript is coded in parm fun     */
 /***************************************************************************/
 
-static char *scr_single_func_sS( char *args, char * end, char * * result, char fun )
+static char *scr_single_func_sS( char *args, char *end, char **result, bool super )
 {
-    char            *   pchar;
-    sub_index           var_ind;
-    symvar              symvar_entry;
-    symsub          *   symsubval;
-    int                 rc;
-    char            *   pval;
+    char            *pchar;
+    sub_index       var_ind;
+    symvar          symvar_entry;
+    symsub          *symsubval;
+    int             rc;
+    char            *pval;
 
-
-    **result = function_escape;         // insert function code in buffer
-    *result += 1;
-    **result = fun;
-    *result += 1;
+    *(*result)++ = function_escape;         // insert function code in buffer
+    if( super ) {
+        *(*result)++ = function_superscript;// function superscript start
+    } else {
+        *(*result)++ = function_subscript;  // function subscript start
+    }
 
     if( *args == '&' ) {            // symbol name
         pchar = scan_sym( args + 1, &symvar_entry, &var_ind, NULL, false );
@@ -156,23 +153,22 @@ static char *scr_single_func_sS( char *args, char * end, char * * result, char f
         if( rc == 2 ) {
             pval = symsubval->value;    // variable  found
         } else {
-            pval =  symvar_entry.name;  // not found use variable name
+            pval = symvar_entry.name;   // not found use variable name
         }
-        while( *pval ) {
-            **result = *pval++;
-            *result += 1;
+        for( ; *pval != '\0'; pval++ ) {
+            *(*result)++ = *pval;
         }
     } else {                            // string
-        pchar = args;
-        while( !((*pchar == ' ') || (*pchar == '.') || (pchar == end)) ) {
-            **result = *pchar++;
-            *result += 1;
+        for( pchar = args; *pchar != ' ' && *pchar != '.' && pchar != end; pchar++ ) {
+            *(*result)++ = *pchar;
         }
     }
-    **result = function_escape;         // insert function code in buffer
-    *result += 1;
-    **result = fun | 0x01;              // function end
-    *result += 1;
+    *(*result)++ = function_escape;         // insert function code in buffer
+    if( super ) {
+        *(*result)++ = function_sup_end;    // function superscript end
+    } else {
+        *(*result)++ = function_sub_end;    // function subscript end
+    }
     **result = '\0';
 
     SkipDot( pchar );                   // skip optional terminating dot
@@ -185,40 +181,34 @@ static char *scr_single_func_sS( char *args, char * end, char * * result, char f
 /*                                                                         */
 /***************************************************************************/
 
-static char *scr_single_func_u( char *args, char * end, char * * result )
+static char *scr_single_func_u( char *args, char *end, char **result )
 {
-    char            *   pchar;
-    sub_index           var_ind;
-    symvar              symvar_entry;
-    symsub          *   symsubval;
-    int                 rc;
-    char            *   pval;
-    bool                sym_valid = false;
+    char            *pchar;
+    sub_index       var_ind;
+    symvar          symvar_entry;
+    symsub          *symsubval;
+    int             rc;
+    char            *pval;
+    bool            sym_valid;
 
+    sym_valid = false;
     if( *args == '&' ) {            // symbol name
         pchar = scan_sym( args + 1, &symvar_entry, &var_ind, NULL, false );
-
         if( symvar_entry.flags & local_var ) {  // lookup var in dict
-            rc = find_symvar_lcl( input_cbs->local_dict, symvar_entry.name,
-                                var_ind, &symsubval );
+            rc = find_symvar_lcl( input_cbs->local_dict, symvar_entry.name, var_ind, &symsubval );
         } else {
-            rc = find_symvar( global_dict, symvar_entry.name, var_ind,
-                              &symsubval );
+            rc = find_symvar( global_dict, symvar_entry.name, var_ind, &symsubval );
         }
         if( rc == 2 ) {
-            pval = symsubval->value;    // variable found
-            sym_valid = true;
-            while( *pval ) {
-                **result = my_toupper( *pval++ );
-                *result += 1;
+            sym_valid = true;           // variable found
+            for( pval = symsubval->value; *pval != '\0'; pval++ ) {
+                *(*result)++ = my_toupper( *pval );
             }
         }
     }
     if( !sym_valid ) {                  // string or invalid symbol
-        pchar = args;
-        while( !((*pchar == ' ') || (*pchar == '.') || (pchar == end)) ) {
-            **result = my_toupper( *pchar++ );
-            *result += 1;
+        for( pchar = args; *pchar != ' ' && *pchar != '.' && pchar != end; pchar++ ) {
+            *(*result)++ = my_toupper( *pchar );
         }
     }
     **result = '\0';
@@ -237,13 +227,13 @@ static char *scr_single_func_u( char *args, char * end, char * * result )
 
 static char *scr_single_func_w( char *args, char *end, char **result )
 {
-    char            *   pchar;
-    sub_index           var_ind;
-    symvar              symvar_entry;
-    symsub          *   symsubval;
-    int                 rc;
-    int                 len;
-    uint32_t            width;
+    char            *pchar;
+    sub_index       var_ind;
+    symvar          symvar_entry;
+    symsub          *symsubval;
+    int             rc;
+    int             len;
+    uint32_t        width;
 
     if( *args == '&' ) {            // symbol name
         pchar = scan_sym( args + 1, &symvar_entry, &var_ind, NULL, false );
@@ -259,9 +249,9 @@ static char *scr_single_func_w( char *args, char *end, char **result )
             width = cop_text_width( symsubval->value, strlen( symsubval->value ), g_curr_font );
         } else {
 
-        /*******************************************************************/
-        /* for undefined variable calc length of name, & and perhaps *     */
-        /*******************************************************************/
+            /*******************************************************************/
+            /* for undefined variable calc length of name, & and perhaps *     */
+            /*******************************************************************/
             width = cop_text_width( symvar_entry.name, strlen( symvar_entry.name ), g_curr_font )
                     + wgml_fonts[g_curr_font].width.table['&'];
 
@@ -270,19 +260,16 @@ static char *scr_single_func_w( char *args, char *end, char **result )
             }
         }
     } else {                            // string
-        pchar = args;
         len = 0;
-        while( !((*pchar == ' ') || (*pchar == '.') || (pchar == end)) ) {
+        for( pchar = args; *pchar != ' ' && *pchar != '.' && pchar != end; pchar++ ) {
             len++;
-            pchar++;
         }
         width = cop_text_width( args, len, g_curr_font );
     }
     len = width;
     width = (width * CPI + g_resh / 2) / g_resh;
-    sprintf( *result, "%d", width );
-    *result  += strlen( *result );
-    **result = '\0';
+
+    *result  += sprintf( *result, "%d", width );
 
     SkipDot( pchar );               // skip optional terminating dot
     return( pchar );
@@ -298,28 +285,26 @@ static char *scr_single_func_w( char *args, char *end, char **result )
 /*        invalid operands result in the entire operand being displayed    */
 /***************************************************************************/
 
-static char *scr_single_func_x( char *args, char * end, char * * result )
+static char *scr_single_func_x( char *args, char *end, char **result )
 {
-    bool        accept;
-    char        c;
-    char    *   pchar;
+    bool            accept;
+    char            c;
+    char            *pchar;
 
     accept = true;
-    pchar = args;
-    if( *pchar != '&' ) {               // symbols/symbol values are not converted
-        if( (end - pchar ) % 2 ) {      // odd number of characters?
+    if( *args != '&' ) {               // symbols/symbol values are not converted
+        if( ( end - args ) % 2 ) {      // odd number of characters?
             accept = false;
         } else {
-            for( ; pchar < end; pchar++ ) { // check for non-hex-digit in input
+            for( pchar = args; pchar < end; pchar++ ) { // check for non-hex-digit in input
                 if( !my_isxdigit( *pchar ) ) {
                     accept = false;
                     break;
                 }
             }
-            pchar = args;             // reset to start of input
         }
         if( accept ) {                  // input is acceptable
-            for( ; pchar < end; pchar++ ) { // convert input from hex
+            for( pchar = args; pchar < end; pchar++ ) { // convert input from hex
 
                 c = 0;
                 if( my_isdigit( *pchar ) ) {
@@ -335,18 +320,19 @@ static char *scr_single_func_x( char *args, char * end, char * * result )
                     c += my_toupper( *pchar ) - 'A' + 10;
                 }
 
-                **result = c;
-                (*result)++;
+                *(*result)++ = c;
             }
             **result = '\0';                    // final digit already skipped
             SkipDot( pchar );                   // skip optional terminating dot
         } else {
-            for( ; pchar < end; pchar++ )
+            for( pchar = args; pchar < end; pchar++ )
                 *(*result)++ = *pchar;          // copy unrecognized input
             SkipDot( pchar );                   // don't copy terminating dot
             *(*result)++ = *pchar;              // copy possible whitespace
             **result = '\0';
         }
+    } else {
+        pchar = args;
     }
 
     return( pchar );
@@ -390,7 +376,7 @@ static char *scr_single_func_unsupport( const char *funcname, char *args, char *
 
 char *scr_single_funcs( const char *funcname, char *args, char *end, char **result )
 {
-    char            *   pw;
+    char            *pw;
 
     ProcFlags.unresolved = false;
     switch( *funcname ) {
@@ -428,5 +414,3 @@ char *scr_single_funcs( const char *funcname, char *args, char *end, char **resu
     ProcFlags.substituted = true;
     return( pw );
 }
-
-

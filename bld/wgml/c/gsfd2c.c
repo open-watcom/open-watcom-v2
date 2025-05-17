@@ -92,14 +92,12 @@ condcode    scr_d2c( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **resul
             n = gn.result;
         }
         while( n > 1 && ressize > 0 ) {
-            **result = ' ';
-            *result += 1;
+            *(*result)++ = ' ';
             n--;
             ressize--;
         }
         if( n > 0 && ressize > 0 ) {
-            **result = number_val;
-            *result += 1;
+            *(*result)++ = number_val;
             ressize--;
         }
     }

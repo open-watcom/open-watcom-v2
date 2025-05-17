@@ -90,6 +90,8 @@ condcode    scr_compare( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **r
             }
         }
     }
+
     *result += sprintf( *result, "%d", index );
+
     return( pos );
 }
