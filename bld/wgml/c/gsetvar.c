@@ -263,7 +263,6 @@ void    scr_se( void )
     sub_index       subscript;
     symsub          *symsubval;
     symvar          sym;
-    symdict_hdl     working_dict;
     unsigned        len;
     tok_type        val;
 
@@ -280,12 +279,6 @@ void    scr_se( void )
             p[len] = '\0';
         }
         p = valstart;
-    }
-
-    if( sym.flags & local_var ) {
-        working_dict = input_cbs->local_dict;
-    } else {
-        working_dict = global_dict;
     }
 
     if( ProcFlags.blanks_allowed ) {
@@ -337,7 +330,7 @@ void    scr_se( void )
                 }                               // if notnum treat as character value
             }
             val.e = val.s + strlen( val.s );
-            rc = add_symvar( working_dict, sym.name, &val, subscript, sym.flags );
+            rc = add_symvar_sym( &sym, &val, subscript, sym.flags );
         } else if( *p == '\'' ) {               // \' may introduce valid value
             if( *(p - 1) == ' ' ) {             // but must be preceded by a space
                 p++;
@@ -349,7 +342,7 @@ void    scr_se( void )
                     *p = '\0';
                 }
                 val.e = val.s + strlen( val.s );
-                rc = add_symvar( working_dict, sym.name, &val, subscript, sym.flags );
+                rc = add_symvar_sym( &sym, &val, subscript, sym.flags );
             } else {                                        // matches wgml 4.0
                 if( !ProcFlags.suppress_msg ) {
                     xx_line_err_c( err_eq_expected, p);
@@ -358,7 +351,7 @@ void    scr_se( void )
             }
         } else if( !strncmp( p, "off", 3 ) ) {       // OFF
             p += 3;
-            rc = find_symvar( working_dict, sym.name, subscript, &symsubval );
+            rc = find_symvar_sym( &sym, subscript, &symsubval );
             if( rc == 2 ) {
                 symsubval->base->flags |= deleted;
             }

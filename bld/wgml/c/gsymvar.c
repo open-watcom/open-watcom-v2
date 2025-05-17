@@ -694,14 +694,27 @@ int add_symvar_addr( symdict_hdl dict, const char *name, tok_type *val,
 
 int add_symvar( symdict_hdl dict, const char *name, tok_type *val, sub_index subscript, symbol_flags f )
 {
-    symsub  *   newsub;
+    symsub          *newsub;
 
     return( add_symvar_addr( dict, name, val, subscript, f, &newsub ) );
 }
 
+int add_symvar_sym( symvar *sym, tok_type *val, sub_index subscript, symbol_flags f )
+{
+    symsub          *newsub;
+    symdict_hdl     dict;
+
+    if( sym->flags & local_var ) {
+        dict = input_cbs->local_dict;
+    } else {
+        dict = global_dict;
+    }
+    return( add_symvar_addr( dict, sym->name, val, subscript, f, &newsub ) );
+}
+
 static void reset_auto_inc_chain( symvar * wk )
 {
-    symsub  *   ws;
+    symsub          *ws;
 
     while( wk != NULL ) {
 

@@ -58,7 +58,6 @@ extern  void    gml_set( const gmltag * entry )
     int             rc;
     symvar          sym;
     sub_index       subscript;
-    symdict_hdl     working_dict;
     att_name_type   attr_name;
     att_val_type    attr_val;
     tok_type        val;
@@ -121,14 +120,9 @@ extern  void    gml_set( const gmltag * entry )
     }
 
     if( symbol_found && value_found ) {   // both attributes
-        if( sym.flags & local_var ) {
-            working_dict = input_cbs->local_dict;
-        } else {
-            working_dict = global_dict;
-        }
         val.s = token_buf;
         val.e = val.s + strlen( val.s );
-        rc = add_symvar( working_dict, sym.name, &val, subscript, sym.flags );
+        rc = add_symvar_sym( &sym, &val, subscript, sym.flags );
     } else {
         xx_err( err_att_missing );
     }
