@@ -97,13 +97,11 @@ static  condcode    get_vector_pos( parm parms[MAX_FUN_PARMS], unsigned parmcoun
     int             haystack_len;
     int             needle_len;
     char            c;
-
     sub_index       var_ind;
     symvar          symvar_entry;
     symsub          *symsubval;
     symvar          *psymvar;
     bool            suppress_msg;
-
 
     (void)ressize;
 
@@ -156,11 +154,7 @@ static  condcode    get_vector_pos( parm parms[MAX_FUN_PARMS], unsigned parmcoun
         scan_sym( haystack.s, &symvar_entry, &var_ind, NULL, false );
         ProcFlags.suppress_msg = suppress_msg;;
         if( !g_scan_err ) {
-            if( symvar_entry.flags & local_var ) {  // lookup var in dict
-                rc = find_symvar_lcl( input_cbs->local_dict, symvar_entry.name, var_ind, &symsubval );
-            } else {
-                rc = find_symvar( global_dict, symvar_entry.name, var_ind, &symsubval );
-            }
+            rc = find_symvar_sym( &symvar_entry, var_ind, &symsubval );
             if( rc > 0 ) {              // variable found
                 psymvar = symsubval->base;
                 if( psymvar->flags & subscripted ) {

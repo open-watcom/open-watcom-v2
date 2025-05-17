@@ -39,15 +39,15 @@
 
 char * scan_sym( char * p, symvar * sym, sub_index * subscript, char * * result, bool splittable )
 {
-    char        *   pend;
+    char            *pend;
     int             p_level;
-    char        *   psave;
+    char            *psave;
     char            quote;
-    char        *   sym_start;
+    char            *sym_start;
     int             rc;
     unsigned        k;
     sub_index       var_ind;
-    symsub      *   symsubval;
+    symsub          *symsubval;
 
     (void)result;
 
@@ -121,12 +121,12 @@ char * scan_sym( char * p, symvar * sym, sub_index * subscript, char * * result,
             }
         }
     }
-    if( quote != '\0' && quote == *p ) {        // over terminating quote
+    if( quote != '\0' && quote == *p ) {    // over terminating quote
         p++;
     }
-    pend = p;                                   // char after symbol name if not subscripted
+    pend = p;                               // char after symbol name if not subscripted
 
-    if( !g_scan_err && (*p == '(') ) {    // subscripted ?
+    if( !g_scan_err && (*p == '(') ) {      // subscripted ?
         // find true end of subscript
         psave = p;
         p_level = 0;
@@ -151,11 +151,7 @@ char * scan_sym( char * p, symvar * sym, sub_index * subscript, char * * result,
             if( *p == ')' ) {               // () is auto increment
                 p++;
                 var_ind = 0;
-                if( sym->flags & local_var )  {
-                    rc = find_symvar( input_cbs->local_dict, sym->name, var_ind, &symsubval );
-                } else {
-                    rc = find_symvar( global_dict, sym->name, var_ind, &symsubval );
-                }
+                rc = find_symvar_sym( sym, var_ind, &symsubval );
                 if( rc > 0 ) {              // variable exists use last_auto_inc
                     *subscript = symsubval->base->last_auto_inc + 1;
                 } else {

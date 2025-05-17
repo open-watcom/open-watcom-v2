@@ -44,15 +44,15 @@ static  bool        sym_space;          // compiler workaround
 /***************************************************************************/
 void process_late_subst( char * buf )
 {
-    char    *   p;
-    char    *   symstart;
-    char        tail[BUF_SIZE + 1];
-    char    *   tokenend;       // save end of current token
-    char    *   tokenstart;     // save position of current '&'
-    int         rc;
-    sub_index   var_ind;        // subscript value (if symbol is subscripted)
-    symsub  *   symsubval;      // value of symbol
-    symvar      symvar_entry;
+    char            *p;
+    char            *symstart;
+    char            tail[BUF_SIZE + 1];
+    char            *tokenend;       // save end of current token
+    char            *tokenstart;     // save position of current '&'
+    int             rc;
+    sub_index       var_ind;        // subscript value (if symbol is subscripted)
+    symsub          *symsubval;      // value of symbol
+    symvar          symvar_entry;
 
     p = strchr( buf, ampchar ); // look for & in buffer
     while( p != NULL ) {        // & found
@@ -76,13 +76,7 @@ void process_late_subst( char * buf )
             ProcFlags.suppress_msg = false;
             tokenend = p;
             if( !g_scan_err ) {                   // potentially qualifying symbol
-                if( symvar_entry.flags & local_var ) {  // lookup var in dict
-                    rc = find_symvar_lcl( input_cbs->local_dict, symvar_entry.name,
-                                        var_ind, &symsubval );
-                } else {
-                    rc = find_symvar( global_dict, symvar_entry.name, var_ind,
-                                      &symsubval );
-                }
+                rc = find_symvar_sym( &symvar_entry, var_ind, &symsubval );
                 if( rc == 2 ) {             // variable found + resolved
                     if( symsubval->base->flags & is_AMP ) {
                         /* replace symbol with value */
@@ -708,12 +702,7 @@ static sym_list_entry *parse_l2r( char *buf, bool splittable )
                         }
                     }
                 } else {
-                    if( symvar_entry.flags & local_var ) {  // lookup var in dict
-                        rc = find_symvar_lcl( input_cbs->local_dict, symvar_entry.name, var_ind,
-                                            &symsubval );
-                    } else {
-                        rc = find_symvar( global_dict, symvar_entry.name, var_ind, &symsubval );
-                    }
+                    rc = find_symvar_sym( &symvar_entry, var_ind, &symsubval );
                     // subscript expansion needs special handling
                     if( (var_ind == all_subscript) ||(var_ind == neg_subscript) || (var_ind == pos_subscript) ) {
                         sub_index   lo_bound = min_subscript;

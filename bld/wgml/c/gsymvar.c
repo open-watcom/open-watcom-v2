@@ -330,25 +330,31 @@ int find_symvar( symdict_hdl dict, const char *name, sub_index sub, symsub **sym
 }
 
 /***************************************************************************/
-/*  find_symvar_lcl     find local symbolic variable                       */
+/*  find_symvar_sym                                                        */
+/*          find symbolic variable (local or global)                       */
 /*          if the dictionary is the local dict then                       */
 /*          search up thru the local dictionaries up to the first file     */
 /*          unless the symbol looks like an auto symbol (all numeric)      */
 /***************************************************************************/
 
-int find_symvar_lcl( symdict_hdl dict, const char *name, sub_index sub, symsub **symsubval )
+int find_symvar_sym( symvar *sym, sub_index sub, symsub **symsubval )
 {
     const char      *p;
     inputcb         *incbs;
     int             rc;
-    symdict_hdl     wk;
+    symdict_hdl     dict;
 
-    rc = find_symvar( dict, name, sub, symsubval );
-    if( rc || (strlen( name ) == 1) && (*name == *MAC_STAR_NAME) ) {
+    if( sym->flags & local_var ) {  // lookup var in dict
+        dict = input_cbs->local_dict;
+    } else {
+        dict = global_dict;
+    }
+    rc = find_symvar( dict, sym->name, sub, symsubval );
+    if( rc || ( sym->name[0] == *MAC_STAR_NAME && sym->name[1] == '\0' ) ) {
         return( rc );                   // found variable in specified dict or is *
     }
 
-    p = name;                           // see if symbol name consists entirely of digits
+    p = sym->name;                           // see if symbol name consists entirely of digits
     while( my_isdigit( *p ) ) {
         p++;
     }
@@ -359,8 +365,7 @@ int find_symvar_lcl( symdict_hdl dict, const char *name, sub_index sub, symsub *
 
         for( incbs = input_cbs->prev; incbs != NULL; incbs = incbs->prev ) {
             if( incbs->local_dict != NULL ) {
-                wk = incbs->local_dict;
-                rc = find_symvar( wk, name, sub, symsubval );
+                rc = find_symvar( incbs->local_dict, sym->name, sub, symsubval );
                 if( rc ) {
                     break;              // found variable
                 }

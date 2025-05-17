@@ -51,13 +51,7 @@ static char *scr_single_func_e( char *args, char *end, char **result )
 
     if( *args == '&' ) {            // a string operand is never a symbol
         pchar = scan_sym( args + 1, &symvar_entry, &var_ind, NULL, false );
-        if( symvar_entry.flags & local_var ) {  // lookup var in dict
-            rc = find_symvar_lcl( input_cbs->local_dict, symvar_entry.name,
-                                var_ind, &symsubval );
-        } else {
-            rc = find_symvar( global_dict, symvar_entry.name, var_ind,
-                              &symsubval );
-        }
+        rc = find_symvar_sym( &symvar_entry, var_ind, &symsubval );
     } else {
         pchar = scan_sym( args, &symvar_entry, &var_ind, NULL, false );
         rc = 0;
@@ -91,14 +85,7 @@ static char *scr_single_func_l( char *args, char *end, char **result )
 
     if( *args == '&' ) {            // symbol name
         pchar = scan_sym( args + 1, &symvar_entry, &var_ind, NULL, false );
-
-        if( symvar_entry.flags & local_var ) {  // lookup var in dict
-            rc = find_symvar_lcl( input_cbs->local_dict, symvar_entry.name,
-                                var_ind, &symsubval );
-        } else {
-            rc = find_symvar( global_dict, symvar_entry.name, var_ind,
-                              &symsubval );
-        }
+        rc = find_symvar_sym( &symvar_entry, var_ind, &symsubval );
         if( rc == 2 ) {
             len = strlen( symsubval->value );
         } else {
@@ -142,14 +129,7 @@ static char *scr_single_func_sS( char *args, char *end, char **result, bool supe
 
     if( *args == '&' ) {            // symbol name
         pchar = scan_sym( args + 1, &symvar_entry, &var_ind, NULL, false );
-
-        if( symvar_entry.flags & local_var ) {  // lookup var in dict
-            rc = find_symvar_lcl( input_cbs->local_dict, symvar_entry.name,
-                                var_ind, &symsubval );
-        } else {
-            rc = find_symvar( global_dict, symvar_entry.name, var_ind,
-                              &symsubval );
-        }
+        rc = find_symvar_sym( &symvar_entry, var_ind, &symsubval );
         if( rc == 2 ) {
             pval = symsubval->value;    // variable  found
         } else {
@@ -194,11 +174,7 @@ static char *scr_single_func_u( char *args, char *end, char **result )
     sym_valid = false;
     if( *args == '&' ) {            // symbol name
         pchar = scan_sym( args + 1, &symvar_entry, &var_ind, NULL, false );
-        if( symvar_entry.flags & local_var ) {  // lookup var in dict
-            rc = find_symvar_lcl( input_cbs->local_dict, symvar_entry.name, var_ind, &symsubval );
-        } else {
-            rc = find_symvar( global_dict, symvar_entry.name, var_ind, &symsubval );
-        }
+        rc = find_symvar_sym( &symvar_entry, var_ind, &symsubval );
         if( rc == 2 ) {
             sym_valid = true;           // variable found
             for( pval = symsubval->value; *pval != '\0'; pval++ ) {
@@ -237,14 +213,7 @@ static char *scr_single_func_w( char *args, char *end, char **result )
 
     if( *args == '&' ) {            // symbol name
         pchar = scan_sym( args + 1, &symvar_entry, &var_ind, NULL, false );
-
-        if( symvar_entry.flags & local_var ) {  // lookup var in dict
-            rc = find_symvar_lcl( input_cbs->local_dict, symvar_entry.name,
-                                var_ind, &symsubval );
-        } else {
-            rc = find_symvar( global_dict, symvar_entry.name, var_ind,
-                              &symsubval );
-        }
+        rc = find_symvar_sym( &symvar_entry, var_ind, &symsubval );
         if( rc == 2 ) {
             width = cop_text_width( symsubval->value, strlen( symsubval->value ), g_curr_font );
         } else {
