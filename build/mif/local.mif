@@ -134,6 +134,7 @@ common_flags = $(common_flags_dbg)
 # C4063	"case 'identifier' is not a valid value for switch of enum 'enumeration'"
 # C4068 "unknown pragma"
 # C4090 "different 'const' qualifiers"
+# C4101 "'???': unreferenced local variable"
 # C4102 "unreferenced label"
 # C4127 "conditional expression is constant"
 # C4133 "'function': incompatible types - from '??' to '??' "
@@ -161,6 +162,7 @@ common_cflags_wng = -Wall &
     -wd4062 &
     -wd4063 &
     -we4090 &
+    -we4101 &
     -we4133 &
     -wd4214 &
     -wd4306 &
