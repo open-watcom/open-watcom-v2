@@ -229,7 +229,7 @@ typedef struct symvar {
     int             subscript_used;     // count of used subscripts
     symsub          *subscripts;        // subscript entries
     symsub          *sub_0;             // special subscript 0 entry
-    void            (*varfunc)( struct symvar * e );// access function
+    void            (*varfunc)( struct symvar *e );// access function
     symbol_flags    flags;
 } symvar;
 
@@ -540,7 +540,7 @@ typedef struct gavalentry {
        unsigned     length;             // possible max length of (character) value
        int          range[4];           // min, max, default omitted, default without value
        char         value[VAL_LENGTH + 1]; // string value if short enough
-       char *       valptr;             // ... else allocated
+       char         *valptr;             // ... else allocated
     } a;
     gavalflags      valflags;
 } gavalentry;
@@ -1231,7 +1231,7 @@ typedef enum {
 } group_type;
 
 typedef struct doc_el_group {
-    struct doc_el_group *   next;
+    struct doc_el_group *next;
     uint32_t        depth;
     uint32_t        post_skip;          // figure or heading at top of column
     doc_element     *first;
