@@ -358,10 +358,10 @@ char *scr_single_funcs( const char *funcname, char *args, char *end, char **resu
         pw = scr_single_func_l( args, end, result );
         break;
     case 's':                       // subscript
-        pw = scr_single_func_sS( args, end, result, function_subscript );
+        pw = scr_single_func_sS( args, end, result, false );
         break;
     case 'S':                       // superscript
-        pw = scr_single_func_sS( args, end, result, function_superscript );
+        pw = scr_single_func_sS( args, end, result, true );
         break;
     case 'u':                       // upper function
     case 'U':
