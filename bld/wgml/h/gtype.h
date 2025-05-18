@@ -446,7 +446,8 @@ typedef struct  inputcb {
 /***************************************************************************/
 
 typedef enum {
-    cw_break    = 1,           // control word causes break, ie. flush output
+    cw_none,
+    cw_break,                           // control word causes break, ie. flush output
     cw_o_t                              // control word produces output text
 } scrflags;
 

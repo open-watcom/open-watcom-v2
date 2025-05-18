@@ -408,10 +408,10 @@ static char *   search_separator( char * str, char sep )
 
 static void     scan_script( void )
 {
-    inputcb     *   cb;
-    mac_entry   *   me;
-    char        *   p;
-    char        *   pt;
+    inputcb         *cb;
+    mac_entry       *me;
+    char            *p;
+    char            *pt;
     const scrtag    *cwinfo;
     char            macname[MAC_NAME_LENGTH + 1];
 
@@ -452,12 +452,12 @@ static void     scan_script( void )
         } else {
             ProcFlags.macro_ignore = false;
         }
-        if( *p == '\'' ) {                  // .' (or ..')
+        if( *p == '\'' ) {              // .' (or ..')
             p++;
             if( !ProcFlags.CW_force_sep ) {     // only change if not indented or all indents were .'
                 ProcFlags.CW_sep_ignore = true;
             }
-        } else {                            // no ': set per CW_sep_char
+        } else {                        // no ': set per CW_sep_char
             if( CW_sep_char == '\0') {
                 ProcFlags.CW_sep_ignore = true;// no separator char no split
             } else{
@@ -465,8 +465,8 @@ static void     scan_script( void )
             }
         }
 
-        if( *p == '*' ) {                       // check for comment again; the following are
-            scandata.s = scandata.e;             // all valid: .'* ..* ..'*
+        if( *p == '*' ) {               // check for comment again; the following are
+            scandata.s = scandata.e;    // all valid: .'* ..* ..'*
             return;
         }
 
@@ -480,10 +480,10 @@ static void     scan_script( void )
             pchar = search_separator( buff2, CW_sep_char );
 
             if( pchar != NULL ) {
-                if( *(pchar + 1) != '\0' ) {    // only split if more follows
-                    split_input( buff2, pchar + 1, II_none );   // split after CW_sep_char
+                if( *(pchar + 1) != '\0' ) { // only split if more follows
+                    split_input( buff2, pchar + 1, II_none ); // split after CW_sep_char
                 }
-                *pchar= '\0';               // delete CW_sep_char
+                *pchar= '\0';           // delete CW_sep_char
                 buff2_lg = strlen( buff2 ); // new length of first part
             }
         }
@@ -542,12 +542,12 @@ static void     scan_script( void )
             add_SCR_tag_research( macname );
         }
 
-        if( *macname == '\0' ) {   // lone . or .' -- ignored
+        if( *macname == '\0' ) {        // lone . or .' -- ignored
             scandata.s = scandata.e;
             return;
         }
 
-        cwinfo = find_scr_cw( macname );               // non-negative if valid
+        cwinfo = find_scr_cw( macname ); // non-negative if valid
         if( cwinfo != NULL ) {
             if( !ProcFlags.layout
               && !ProcFlags.fb_document_done
@@ -561,15 +561,15 @@ static void     scan_script( void )
 
                 start_doc_sect();
             }
-            ProcFlags.CW_noblank = false;           // blank after CW is default
-            if( ProcFlags.literal  ) {              // .li active
+            ProcFlags.CW_noblank = false; // blank after CW is default
+            if( ProcFlags.literal  ) {  // .li active
                 if( strcmp( "li", macname ) == 0 ) {  // .li
                     ProcFlags.CW_noblank = (*p != ' ');
-                    scandata.s = p; // found, process
+                    scandata.s = p;     // found, process
                     cwinfo->cwdproc();
                 }
             } else {
-                scandata.s = p; // script controlword found, process
+                scandata.s = p;         // script controlword found, process
                 if( cwinfo->cwdflags & cw_break ) {
                     ProcFlags.force_pc = false;
                     scr_process_break();// output incomplete line, if any
@@ -593,7 +593,7 @@ static void     scan_script( void )
 /*  file cbt284.011                                                        */
 /***************************************************************************/
 
-#define DEBTESTPROC             // to reduce test output don't define this
+#define DEBTESTPROC                     // to reduce test output don't define this
 
 condcode    test_process( ifcb * cb )
 {
@@ -796,10 +796,8 @@ void    scan_line( void )
     if( cc == pos ) {                   // process record
         if( ProcFlags.scr_cw ) {
             scan_script();              // script control line
-
         } else if( ProcFlags.gml_tag ) {
             scan_gml();                 // GML tags
-
         }
 
         /*******************************************************************/
