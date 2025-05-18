@@ -871,14 +871,12 @@ typedef enum functs {
 
 typedef enum e_tags {
     t_NONE,
-    #define pickg( name, length, routine, gmlflags, locflags, classname )  t_##name,
+    #define pick( name, length, routine, gmlflags, locflags, classname )  t_##name,
     #include "gtags.h"
-    #undef pickg
-//    #define picklab( name, routine, flags )  t_label,
-//    #define picks( name, routine, flags )  t_##name,
+    #undef pick
+//    #define pick( name, routine, flags )  t_##name,
 //    #include "gscrcws.h" TBD
-//    #undef picks
-//    #undef picklab
+//    #undef pick
     t_MAX                               // the last one for range check
 } e_tags;
 

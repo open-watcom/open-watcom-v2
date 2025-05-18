@@ -34,137 +34,137 @@
 //     word  name
 // lower case
 
-  picks( ad, scr_dummy, cw_break           )// adjust
-  picks( ap, scr_ap,    0                  )// append
-  picks( bc, scr_dummy, cw_o_t             )// balance columns
-  picks( bd, scr_bd,    cw_o_t             )// bold
-  picks( bf, scr_dummy, cw_o_t             )// begin font
-  picks( bi, scr_bi,    cw_o_t             )// bold italic
-  picks( bl, scr_dummy, cw_break+cw_o_t    )// blank line
-  picks( bm, scr_dummy, cw_break+cw_o_t    )// bottom margin
-  picks( br, scr_br,    cw_break+cw_o_t    )// break
-  picks( bs, scr_dummy, cw_o_t             )// backspace
-  picks( bt, scr_dummy, 0                  )// bottom title
-  picks( bx, scr_bx,    cw_break+cw_o_t    )// box
-  picks( cb, scr_dummy, cw_break+cw_o_t    )// column begin
-  picks( cc, scr_cc,    cw_break+cw_o_t    )// conditional column
-  picks( cd, scr_cd,    cw_break+cw_o_t    )// column definition
-  picks( ce, scr_dummy, cw_break+cw_o_t    )// center
-  picks( ch, scr_dummy, 0                  )// change
-  picks( cl, scr_dummy, cw_break+cw_o_t    )// column length
-  picks( cm, scr_cm,    0                  )// comment
-  picks( co, scr_co,    cw_break+cw_o_t    )// concatenate
-  picks( cp, scr_cp,    cw_break+cw_o_t    )// conditional page
-  picks( cs, scr_cs,    cw_o_t             )// conditional section
-  picks( ct, scr_ct,    cw_o_t             )// continued text
-  picks( cw, scr_cw,    0                  )// control word separator
-  picks( dc, scr_dc,    0                  )// define character
-  picks( df, scr_dummy, 0                  )// define font
-  picks( dh, scr_dummy, cw_o_t             )// define heading
-  picks( dm, scr_dm,    0                  )// define macro
-  picks( do, scr_do,    0                  )// do
-  picks( ds, scr_dummy, cw_break+cw_o_t    )// double spacing
-  picks( du, scr_dummy, 0                  )// dictionary update
-  picks( ec, scr_dummy, 0                  )// execute control
-  picks( ef, scr_dummy, 0                  )// end of file
-  picks( el, scr_el,    0                  )// else
-  picks( em, scr_em,    0                  )// execute macro
-  picks( eq, scr_dummy, cw_o_t             )// equation
-  picks( er, scr_dummy, 0                  )// error
-  picks( fb, scr_fb,    cw_o_t             )// floating block
-//picks( fi, scr_dummy, 0                  )// old
-  picks( fk, scr_fk,    cw_o_t             )// floating keep
-  picks( fm, scr_dummy, cw_break+cw_o_t    )// footing margin
-  picks( fn, scr_dummy, cw_o_t             )// footnote
-  picks( fo, scr_fo,    cw_break+cw_o_t    )// format
-  picks( fs, scr_dummy, cw_break+cw_o_t    )// footing space
-  picks( ga, scr_ga,    0                  )// GML attribute
-  picks( go, scr_go,    0                  )// go to
-  picks( gt, scr_gt,    0                  )// GML tag
-  picks( h1, scr_dummy, cw_break+cw_o_t    )// Heading level 1
-  picks( h2, scr_dummy, cw_break+cw_o_t    )// heading level 2
-  picks( h3, scr_dummy, cw_break+cw_o_t    )// heading level 3
-  picks( hi, scr_dummy, cw_break+cw_o_t    )// hanging indent
-  picks( hl, scr_dummy, cw_break+cw_o_t    )// heading level
-  picks( hm, scr_dummy, cw_break+cw_o_t    )// heading margin
-  picks( hn, scr_dummy, 0                  )// head note
-  picks( hs, scr_dummy, cw_break+cw_o_t    )// heading space
-  picks( hw, scr_dummy, 0                  )// hyphenate word
-  picks( hy, scr_hy,    0                  )// hyphenate
-  picks( ie, scr_dummy, 0                  )// index entry
-  picks( if, scr_if,    0                  )// if
-  picks( il, scr_dummy, cw_break+cw_o_t    )// indent line
-  picks( im, scr_im,    0                  )// imbed
-  picks( in, scr_in,    cw_break+cw_o_t    )// indent
-  picks( ir, scr_dummy, cw_break+cw_o_t    )// indent right
-  picks( it, scr_dummy, cw_break+cw_o_t    )// input trace
-  picks( ix, scr_ix,    0                  )// index
-  picks( ju, scr_ju,    cw_break+cw_o_t    )// justify
-  picks( la, scr_dummy, cw_break+cw_o_t    )// left adjust
-  picks( lb, scr_dummy, cw_break+cw_o_t    )// leading blank
-  picks( le, scr_dummy, cw_o_t             )// leading space
-  picks( li, scr_li,    cw_o_t             )// literal
-  picks( ll, scr_dummy, cw_break+cw_o_t    )// line length
-  picks( ln, scr_dummy, cw_break+cw_o_t    )// line immediate
-  picks( ls, scr_dummy, cw_break+cw_o_t    )// line spacing
-  picks( lt, scr_dummy, cw_break+cw_o_t    )// leading tab
-  picks( mc, scr_dummy, cw_break+cw_o_t    )// multiple column
-  picks( me, scr_me,    0                  )// macro exit
-  picks( ms, scr_dummy, 0                  )// macro substitution
-  picks( nl, scr_nl,    0                  )// null line
-  picks( oc, scr_oc,    0                  )// output comment
-  picks( of, scr_dummy, cw_break+cw_o_t    )// offset
-  picks( oj, scr_dummy, cw_break+cw_o_t    )// out justify
-  picks( oo, scr_dummy, cw_o_t             )// output overlay
-  picks( ov, scr_dummy, cw_o_t             )// ovrlay
-  picks( pa, scr_pa,    cw_break+cw_o_t    )// page eject
-  picks( pe, scr_pe,    0                  )// perform
-  picks( pf, scr_dummy, 0                  )// previous font
-  picks( ph, scr_dummy, 0                  )// photo font
-  picks( pl, scr_dummy, cw_break+cw_o_t    )// page length
-  picks( pm, scr_dummy, 0                  )// page margin
-  picks( pn, scr_dummy, 0                  )// page number
-  picks( pp, scr_pp,    cw_break+cw_o_t    )// paragraph
-  picks( ps, scr_dummy, 0                  )// page naumber symbol
-  picks( pt, scr_dummy, 0                  )// put table of contents
-  picks( pu, scr_pu,    0                  )// put workfile
-  picks( pw, scr_dummy, 0                  )// page width
-  picks( ra, scr_dummy, 0                  )// old CW use .ri
-  picks( rc, scr_dummy, 0                  )// revision code
-  picks( rd, scr_dummy, 0                  )// read terminal
-  picks( re, scr_dummy, 0                  )// restore environment
-  picks( ri, scr_dummy, cw_break+cw_o_t    )// right adjust
-  picks( rm, scr_dummy, cw_o_t             )// remote
-  picks( rt, scr_dummy, cw_break           )// running title
-  picks( rv, scr_dummy, 0                  )// read variable
-  picks( sa, scr_dummy, 0                  )// save environment
-  picks( sc, scr_dummy, cw_break+cw_o_t    )// single column
-  picks( se, scr_se,    0                  )// set symbol
-  picks( sk, scr_sk,    cw_break           )// skip (generate blank line(s)
-  picks( sl, scr_dummy, cw_break+cw_o_t    )// set leading
-  picks( sp, scr_sp,    cw_break+cw_o_t    )// space
-  picks( sr, scr_se,    0                  )// treat as .se as substitute is always on
-  picks( ss, scr_dummy, cw_break+cw_o_t    )// single space
-  picks( su, scr_dummy, 0                  )// substitute symbol
-  picks( sv, scr_dummy, 0                  )// spelling verification
-  picks( sx, scr_dummy, cw_break+cw_o_t    )// split text
-  picks( sy, scr_dummy, 0                  )// system command
-  picks( tb, scr_tb,    cw_break+cw_o_t    )// define tab stops
-  picks( tc, scr_dummy, cw_break           )// table of contents
-  picks( te, scr_dummy, 0                  )// terminal input
-  picks( th, scr_th,    0                  )// then
-  picks( ti, scr_ti,    0                  )// translate on input
-  picks( tm, scr_dummy, cw_break+cw_o_t    )// top margin
-  picks( tp, scr_dummy, cw_break+cw_o_t    )// tab position
-  picks( tr, scr_tr,    0                  )// translate table for output
-  picks( tt, scr_dummy, 0                  )// top title
-  picks( tu, scr_dummy, cw_o_t             )// translate uppercase
-  picks( ty, scr_ty,    0                  )// type
-  picks( uc, scr_dummy, cw_o_t             )// underscore and capitalize
-  picks( ud, scr_dummy, cw_o_t             )// underscore definition
-  picks( ul, scr_us,    cw_o_t             )// underline (same as us)
-  picks( un, scr_dummy, cw_break+cw_o_t    )// undent
-  picks( up, scr_dummy, cw_o_t             )// uppercase
-  picks( us, scr_us,    cw_o_t             )// underscore
-  picks( wd, scr_dummy, 0                  )// widow
-  picklab( .., scr_label, 0                )
+  pick( ad, scr_dummy, cw_break           )// adjust
+  pick( ap, scr_ap,    0                  )// append
+  pick( bc, scr_dummy, cw_o_t             )// balance columns
+  pick( bd, scr_bd,    cw_o_t             )// bold
+  pick( bf, scr_dummy, cw_o_t             )// begin font
+  pick( bi, scr_bi,    cw_o_t             )// bold italic
+  pick( bl, scr_dummy, cw_break+cw_o_t    )// blank line
+  pick( bm, scr_dummy, cw_break+cw_o_t    )// bottom margin
+  pick( br, scr_br,    cw_break+cw_o_t    )// break
+  pick( bs, scr_dummy, cw_o_t             )// backspace
+  pick( bt, scr_dummy, 0                  )// bottom title
+  pick( bx, scr_bx,    cw_break+cw_o_t    )// box
+  pick( cb, scr_dummy, cw_break+cw_o_t    )// column begin
+  pick( cc, scr_cc,    cw_break+cw_o_t    )// conditional column
+  pick( cd, scr_cd,    cw_break+cw_o_t    )// column definition
+  pick( ce, scr_dummy, cw_break+cw_o_t    )// center
+  pick( ch, scr_dummy, 0                  )// change
+  pick( cl, scr_dummy, cw_break+cw_o_t    )// column length
+  pick( cm, scr_cm,    0                  )// comment
+  pick( co, scr_co,    cw_break+cw_o_t    )// concatenate
+  pick( cp, scr_cp,    cw_break+cw_o_t    )// conditional page
+  pick( cs, scr_cs,    cw_o_t             )// conditional section
+  pick( ct, scr_ct,    cw_o_t             )// continued text
+  pick( cw, scr_cw,    0                  )// control word separator
+  pick( dc, scr_dc,    0                  )// define character
+  pick( df, scr_dummy, 0                  )// define font
+  pick( dh, scr_dummy, cw_o_t             )// define heading
+  pick( dm, scr_dm,    0                  )// define macro
+  pick( do, scr_do,    0                  )// do
+  pick( ds, scr_dummy, cw_break+cw_o_t    )// double spacing
+  pick( du, scr_dummy, 0                  )// dictionary update
+  pick( ec, scr_dummy, 0                  )// execute control
+  pick( ef, scr_dummy, 0                  )// end of file
+  pick( el, scr_el,    0                  )// else
+  pick( em, scr_em,    0                  )// execute macro
+  pick( eq, scr_dummy, cw_o_t             )// equation
+  pick( er, scr_dummy, 0                  )// error
+  pick( fb, scr_fb,    cw_o_t             )// floating block
+//pick( fi, scr_dummy, 0                  )// old
+  pick( fk, scr_fk,    cw_o_t             )// floating keep
+  pick( fm, scr_dummy, cw_break+cw_o_t    )// footing margin
+  pick( fn, scr_dummy, cw_o_t             )// footnote
+  pick( fo, scr_fo,    cw_break+cw_o_t    )// format
+  pick( fs, scr_dummy, cw_break+cw_o_t    )// footing space
+  pick( ga, scr_ga,    0                  )// GML attribute
+  pick( go, scr_go,    0                  )// go to
+  pick( gt, scr_gt,    0                  )// GML tag
+  pick( h1, scr_dummy, cw_break+cw_o_t    )// Heading level 1
+  pick( h2, scr_dummy, cw_break+cw_o_t    )// heading level 2
+  pick( h3, scr_dummy, cw_break+cw_o_t    )// heading level 3
+  pick( hi, scr_dummy, cw_break+cw_o_t    )// hanging indent
+  pick( hl, scr_dummy, cw_break+cw_o_t    )// heading level
+  pick( hm, scr_dummy, cw_break+cw_o_t    )// heading margin
+  pick( hn, scr_dummy, 0                  )// head note
+  pick( hs, scr_dummy, cw_break+cw_o_t    )// heading space
+  pick( hw, scr_dummy, 0                  )// hyphenate word
+  pick( hy, scr_hy,    0                  )// hyphenate
+  pick( ie, scr_dummy, 0                  )// index entry
+  pick( if, scr_if,    0                  )// if
+  pick( il, scr_dummy, cw_break+cw_o_t    )// indent line
+  pick( im, scr_im,    0                  )// imbed
+  pick( in, scr_in,    cw_break+cw_o_t    )// indent
+  pick( ir, scr_dummy, cw_break+cw_o_t    )// indent right
+  pick( it, scr_dummy, cw_break+cw_o_t    )// input trace
+  pick( ix, scr_ix,    0                  )// index
+  pick( ju, scr_ju,    cw_break+cw_o_t    )// justify
+  pick( la, scr_dummy, cw_break+cw_o_t    )// left adjust
+  pick( lb, scr_dummy, cw_break+cw_o_t    )// leading blank
+  pick( le, scr_dummy, cw_o_t             )// leading space
+  pick( li, scr_li,    cw_o_t             )// literal
+  pick( ll, scr_dummy, cw_break+cw_o_t    )// line length
+  pick( ln, scr_dummy, cw_break+cw_o_t    )// line immediate
+  pick( ls, scr_dummy, cw_break+cw_o_t    )// line spacing
+  pick( lt, scr_dummy, cw_break+cw_o_t    )// leading tab
+  pick( mc, scr_dummy, cw_break+cw_o_t    )// multiple column
+  pick( me, scr_me,    0                  )// macro exit
+  pick( ms, scr_dummy, 0                  )// macro substitution
+  pick( nl, scr_nl,    0                  )// null line
+  pick( oc, scr_oc,    0                  )// output comment
+  pick( of, scr_dummy, cw_break+cw_o_t    )// offset
+  pick( oj, scr_dummy, cw_break+cw_o_t    )// out justify
+  pick( oo, scr_dummy, cw_o_t             )// output overlay
+  pick( ov, scr_dummy, cw_o_t             )// ovrlay
+  pick( pa, scr_pa,    cw_break+cw_o_t    )// page eject
+  pick( pe, scr_pe,    0                  )// perform
+  pick( pf, scr_dummy, 0                  )// previous font
+  pick( ph, scr_dummy, 0                  )// photo font
+  pick( pl, scr_dummy, cw_break+cw_o_t    )// page length
+  pick( pm, scr_dummy, 0                  )// page margin
+  pick( pn, scr_dummy, 0                  )// page number
+  pick( pp, scr_pp,    cw_break+cw_o_t    )// paragraph
+  pick( ps, scr_dummy, 0                  )// page naumber symbol
+  pick( pt, scr_dummy, 0                  )// put table of contents
+  pick( pu, scr_pu,    0                  )// put workfile
+  pick( pw, scr_dummy, 0                  )// page width
+  pick( ra, scr_dummy, 0                  )// old CW use .ri
+  pick( rc, scr_dummy, 0                  )// revision code
+  pick( rd, scr_dummy, 0                  )// read terminal
+  pick( re, scr_dummy, 0                  )// restore environment
+  pick( ri, scr_dummy, cw_break+cw_o_t    )// right adjust
+  pick( rm, scr_dummy, cw_o_t             )// remote
+  pick( rt, scr_dummy, cw_break           )// running title
+  pick( rv, scr_dummy, 0                  )// read variable
+  pick( sa, scr_dummy, 0                  )// save environment
+  pick( sc, scr_dummy, cw_break+cw_o_t    )// single column
+  pick( se, scr_se,    0                  )// set symbol
+  pick( sk, scr_sk,    cw_break           )// skip (generate blank line(s)
+  pick( sl, scr_dummy, cw_break+cw_o_t    )// set leading
+  pick( sp, scr_sp,    cw_break+cw_o_t    )// space
+  pick( sr, scr_se,    0                  )// treat as .se as substitute is always on
+  pick( ss, scr_dummy, cw_break+cw_o_t    )// single space
+  pick( su, scr_dummy, 0                  )// substitute symbol
+  pick( sv, scr_dummy, 0                  )// spelling verification
+  pick( sx, scr_dummy, cw_break+cw_o_t    )// split text
+  pick( sy, scr_dummy, 0                  )// system command
+  pick( tb, scr_tb,    cw_break+cw_o_t    )// define tab stops
+  pick( tc, scr_dummy, cw_break           )// table of contents
+  pick( te, scr_dummy, 0                  )// terminal input
+  pick( th, scr_th,    0                  )// then
+  pick( ti, scr_ti,    0                  )// translate on input
+  pick( tm, scr_dummy, cw_break+cw_o_t    )// top margin
+  pick( tp, scr_dummy, cw_break+cw_o_t    )// tab position
+  pick( tr, scr_tr,    0                  )// translate table for output
+  pick( tt, scr_dummy, 0                  )// top title
+  pick( tu, scr_dummy, cw_o_t             )// translate uppercase
+  pick( ty, scr_ty,    0                  )// type
+  pick( uc, scr_dummy, cw_o_t             )// underscore and capitalize
+  pick( ud, scr_dummy, cw_o_t             )// underscore definition
+  pick( ul, scr_us,    cw_o_t             )// underline (same as us)
+  pick( un, scr_dummy, cw_break+cw_o_t    )// undent
+  pick( up, scr_dummy, cw_o_t             )// uppercase
+  pick( us, scr_us,    cw_o_t             )// underscore
+  pick( wd, scr_dummy, 0                  )// widow
+  pick( .., scr_label, 0                  )// ... label

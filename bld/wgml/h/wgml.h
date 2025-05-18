@@ -523,9 +523,9 @@ extern void         show_include_stack( void );
 /*
  * prototypes for the gml tag processing routines
  */
-#define pickg( name, length, routine, gmlflags, locflags, classflags )  extern void routine( const gmltag *entry );
+#define pick( name, length, routine, gmlflags, locflags, classflags )  extern void routine( const gmltag *entry );
 #include "gtags.h"
-#undef pickg
+#undef pick
 
 /*
  * prototypes for the layout tag processing routines
@@ -537,11 +537,9 @@ extern void         show_include_stack( void );
 /*
  * prototypes for the script control word processing routines
  */
-#define picklab( name, routine, flags )  extern void routine( void );
-#define picks( name, routine, flags )  extern void routine( void );
+#define pick( name, routine, flags )  extern void routine( void );
 #include "gscrcws.h"
-#undef picks
-#undef picklab
+#undef pick
 
 /*
  * prototypes for the script string function routines , ie. &'substr( ,..

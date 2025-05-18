@@ -39,9 +39,9 @@
 /***************************************************************************/
 
 static const gmltag     gml_tags[] = {
-    #define pickg( name, length, routine, gmlflags, locflags, classflags ) { #name, length, routine, gmlflags, locflags, classflags },
+    #define pick( name, length, routine, gmlflags, locflags, classflags ) { #name, length, routine, gmlflags, locflags, classflags },
     #include "gtags.h"
-    #undef pickg
+    #undef pick
 };
 
 #define GML_TAGMAX  (sizeof( gml_tags ) / sizeof( gml_tags[0] ) - 1)
@@ -64,11 +64,9 @@ static const gmltag     lay_tags[] = {
 /***************************************************************************/
 
 static const scrtag     scr_kwds[] = {
-    #define picks( name, routine, flags) { #name, routine, flags },
-    #define picklab( name, routine, flags) { #name, routine, flags },
+    #define pick( name, routine, flags) { #name, routine, flags },
     #include "gscrcws.h"
-    #undef picklab
-    #undef picks
+    #undef pick
 };
 
 #define SCR_KWDMAX  (sizeof( scr_kwds ) / sizeof( scr_kwds[0] ) - 1)

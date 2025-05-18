@@ -49,14 +49,12 @@ typedef struct {
 /***************************************************************************/
 static const char * const str_tags[] = {
     "NONE",
-    #define pickg( name, length, routine, gmlflags, locflags, classflags )  #name,
+    #define pick( name, length, routine, gmlflags, locflags, classflags )  #name,
     #include "gtags.h"
-    #undef pickg
-//    #define picklab( name, routine, flags )  extern void routine( void );
-//    #define picks( name, routine, flags )  extern void routine( void );
+    #undef pick
+//    #define pick( name, routine, flags )  extern void routine( void );
 //    #include "gscrcws.h" TBD
-//    #undef picks
-//    #undef picklab
+//    #undef pick
     "MAX"
 };
 
