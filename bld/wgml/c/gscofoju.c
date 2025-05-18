@@ -353,9 +353,9 @@ static void do_co_on( void )
 
 static void process_fo_ju( bool both , char *cwcurr )
 {
-    char            *   pa;
-    char            *   p;
-    int                 len;
+    char            *pa;
+    char            *p;
+    unsigned        len;
 
     p = scandata.s;
     SkipSpaces( p );                    // next word start
@@ -575,10 +575,10 @@ static void process_fo_ju( bool both , char *cwcurr )
 
 void    scr_co( void )
 {
-    char                cwcurr[4 ];
-    char            *   pa;
-    char            *   p;
-    int                 len;
+    char            cwcurr[4 ];
+    char            *pa;
+    char            *p;
+    unsigned        len;
 
     cwcurr[0] = SCR_char;
     cwcurr[1] = 'c';

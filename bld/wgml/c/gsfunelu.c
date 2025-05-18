@@ -81,7 +81,7 @@ static char *scr_single_func_l( char *args, char *end, char **result )
     symvar          symvar_entry;
     symsub          *symsubval;
     int             rc;
-    int             len;
+    unsigned        len;
 
     if( *args == '&' ) {            // symbol name
         pchar = scan_sym( args + 1, &symvar_entry, &var_ind, NULL, false );
@@ -208,7 +208,7 @@ static char *scr_single_func_w( char *args, char *end, char **result )
     symvar          symvar_entry;
     symsub          *symsubval;
     int             rc;
-    int             len;
+    unsigned        len;
     uint32_t        width;
 
     if( *args == '&' ) {            // symbol name

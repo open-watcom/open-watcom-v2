@@ -281,9 +281,9 @@
 
 void    scr_cw( void )
 {
-    char        *   pa;
-    char        *   p;
-    int             len;
+    char            *pa;
+    char            *p;
+    unsigned        len;
 
     p = scandata.s;
     SkipSpaces( p );                    // next word start
@@ -316,8 +316,8 @@ void    scr_dc( void )
     char            *p;
     char            *v_p;               // value start point
     char            string[2] = { 0, 0 };
-    int             o_len;              // option length
-    int             v_len;              // value length
+    unsigned        o_len;              // option length
+    unsigned        v_len;              // value length
     tok_type        val;
 
     p = scandata.s;

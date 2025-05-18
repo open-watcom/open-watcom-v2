@@ -939,7 +939,7 @@ void cop_tr_table( const char *p )
     int             i;
     unsigned char   token_char;
     unsigned char   first_char;
-    uint32_t        len;
+    unsigned        len;
 
     char            cwcurr[4];
     cwcurr[0] = SCR_char;

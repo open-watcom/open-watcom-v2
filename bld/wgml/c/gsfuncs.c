@@ -60,7 +60,6 @@ static const scrfunc    scr_functions[] = {
     #define pick( name, length, parms, optparms, routine )  { #name, length, parms, optparms, routine },
     #include "gsfuncs.h"
     #undef pick
-    { " ", 0, 0, 0, NULL }              // end
 };
 
 #define SCR_FUNC_MAX (sizeof( scr_functions ) / sizeof( scr_functions[0] ) - 1)
@@ -205,7 +204,7 @@ static char *find_start_of_parm( const char *pchar )
 
 static const scrfunc *find_funcinfo( const char *funcname )
 {
-    int             funclen;
+    unsigned        funclen;
     const scrfunc   *funcinfo;
     int             k;
 

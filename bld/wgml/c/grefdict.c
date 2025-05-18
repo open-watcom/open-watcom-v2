@@ -191,7 +191,7 @@ void    print_ref_dict( ref_dict dict, const char * type )
 {
     ref_dict            wk;
     int                 cnt;
-    int                 len;
+    unsigned            len;
     static const char   fill[17] = "                ";
     bool                withnumber;
     char                *text;

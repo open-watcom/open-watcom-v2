@@ -894,13 +894,13 @@ void cop_setup( void )
     cur_def_fonts = bin_device->defaultfonts.fonts;
     for( i = 0; i < bin_device->defaultfonts.font_count; i++ ) {
         if( (cur_def_fonts[i].font_name == NULL)
-                || (strlen( cur_def_fonts[i].font_name ) == 0) ) {
+                || (cur_def_fonts[i].font_name[0] == '\0') ) {
             continue; /* Do not initialize skipped font numbers. */
         } else {
             wgml_fonts[i].bin_font = find_cop_font( cur_def_fonts[i].font_name );
         }
         if( (cur_def_fonts[i].font_style == NULL)
-                || (strlen( cur_def_fonts[i].font_style ) == 0) ) {
+                || (cur_def_fonts[i].font_style[0] == '\0') ) {
             wgml_fonts[i].font_style = find_style( "plain" );
         } else {
             wgml_fonts[i].font_style = find_style( cur_def_fonts[i].font_style );

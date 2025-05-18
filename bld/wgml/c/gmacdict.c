@@ -273,19 +273,18 @@ mac_entry   *find_macro( mac_dict dict, const char *macname )
 
 void    print_macro_dict( mac_dict dict, bool with_mac_lines )
 {
-    mac_entry           *   wk;
-    int                     cnt;
-    int                     len;
-    inp_line            *   ml;
-    int                     lc;
-    int                     i;
-    static  const   char    fill[10] = "         ";
+    mac_entry           *wk;
+    int                 cnt;
+    unsigned            len;
+    inp_line            *ml;
+    int                 lc;
+    int                 i;
+    static const char   fill[10] = "         ";
 
     cnt = 0;
     out_msg( "\nList of defined macros:\n\n" );
     for( i = 0; i < MAC_HASH_SIZE; ++i ) {
         for( wk = dict->htbl[i]; wk != NULL; wk = wk->next ) {
-
             len =  strlen( wk->name );
             out_msg( "Macro='%s'%sdefined line %d file '%s'\n", wk->name,
                     &fill[len], wk->lineno, wk->mac_file_name );

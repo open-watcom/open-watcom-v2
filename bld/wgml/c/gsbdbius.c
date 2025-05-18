@@ -133,14 +133,14 @@
 /*       by treating BI as a quick way to set or clear both BD and US     */
 /**************************************************************************/
 
-static void scr_style_common( style_cw_type type, style_cw_info * cw_info )
+static void scr_style_common( style_cw_type type, style_cw_info *cw_info )
 {
-    char            *   p;
-    char            *   pa;
-    char            *   pb;
-    condcode            cc;
-    getnum_block        gn;
-    int                 len;
+    char            *p;
+    char            *pa;
+    char            *pb;
+    condcode        cc;
+    getnum_block    gn;
+    unsigned        len;
 
     if( script_style.style == SCT_none ) {  // save current font if no script style
         script_style.font = layout_work.defaults.font;
