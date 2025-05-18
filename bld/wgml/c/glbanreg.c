@@ -417,7 +417,7 @@ void    lay_banregion( const gmltag * entry )
                             xx_line_err_ci( err_att_dup, attr_name.att_name,
                                 attr_val.name - attr_name.att_name + attr_val.len);
                         }
-                        if( attr_val.quoted ) {
+                        if( attr_val.quoted != ' ' ) {
                             wk.contents.content_type = string_content;
                             i_xx_string( p, &attr_val, wk.contents.string );
                         } else {

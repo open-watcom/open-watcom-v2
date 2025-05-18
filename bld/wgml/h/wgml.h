@@ -178,7 +178,7 @@ extern condcode     lay_attr_and_value( att_name_type *attr_name, att_val_type *
  *
  *          for input scanning
  */
-#define pick( name, funci, funco, restype ) extern bool funci( char *p, lay_attr_i lay_attr, restype *tm );
+#define pick( name, funci, funco, restype ) extern bool funci( const char *p, lay_attr_i lay_attr, restype *tm );
 #include "glayutil.h"
 #undef pick
 /*
@@ -429,7 +429,7 @@ extern void         get_att_specval( att_val_type *attr_val );
 extern char         *get_att_value( char *p, att_val_type *attr_val );
 extern char         *get_tag_value( char *p, att_val_type *attr_val );
 extern char         *get_lay_value( char *p, att_val_type *attr_val );
-extern font_number  get_font_number( char *p, unsigned len );
+extern font_number  get_font_number( const char *p, unsigned len );
 extern ffh_entry    *init_ffh_entry( ffh_entry *ffh_list );
 extern fwd_ref      *init_fwd_ref( fwd_ref *dict, const char *refid );
 extern char         *int_to_roman( unsigned n, char *r, unsigned rsize, bool ucase );

@@ -1050,10 +1050,10 @@ void g_keep_nest( const char * cw_tag ) {
 /* parse and return a font number value                                    */
 /***************************************************************************/
 
-font_number get_font_number( char *value, unsigned len )
+font_number get_font_number( const char *value, unsigned len )
 {
-    char            *p;
-    char            *pb;
+    const char      *p;
+    const char      *pb;
     unsigned long   wk;
 
     p = value;

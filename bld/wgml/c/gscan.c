@@ -42,7 +42,6 @@ static const gmltag     gml_tags[] = {
     #define pickg( name, length, routine, gmlflags, locflags, classflags ) { #name, length, routine, gmlflags, locflags, classflags },
     #include "gtags.h"
     #undef pickg
-    { "   ", 0, NULL, 0, 0 }            // end
 };
 
 #define GML_TAGMAX  (sizeof( gml_tags ) / sizeof( gml_tags[0] ) - 1)
@@ -52,11 +51,9 @@ static const gmltag     gml_tags[] = {
 /***************************************************************************/
 
 static const gmltag     lay_tags[] = {
-    #define pick( name, length, routine, gmlflags, locflags ) { #name, length, routine, gmlflags, locflags },
+    #define pick( name, length, routine, gmlflags, locflags ) { #name, length, routine, gmlflags, locflags, no_class },
     #include "gtagslay.h"
     #undef pick
-    { "   ", 0, NULL, 0, 0 }            // end
-
 };
 
 #define LAY_TAGMAX  (sizeof( lay_tags ) / sizeof( lay_tags[0] ) - 1)
@@ -72,16 +69,12 @@ static const scrtag     scr_kwds[] = {
     #include "gscrcws.h"
     #undef picklab
     #undef picks
-    { "  ", NULL, 0   }                 // end
 };
 
 #define SCR_KWDMAX  (sizeof( scr_kwds ) / sizeof( scr_kwds[0] ) - 1)
 
-#define SCR_CW_LK_SIZE  (26 * 26)
-
-static uint8_t  scr_lkup_tbl[26 * 26];
-static uint8_t  scr_cw_label;
-static uint8_t  scr_cw_hx;
+static uint8_t  scr_lkup_tbl[26 * 36];
+static uint8_t  scr_lkup_label;
 static bool     scr_lkup_setup = false;
 
 /***************************************************************************/
@@ -91,57 +84,64 @@ static bool     scr_lkup_setup = false;
 /*  remaining control words as exceptions.                                 */
 /***************************************************************************/
 
+static int get_bin_index( unsigned char c )
+{
+    if( c >= '0' && c <= '9' )
+        return( c - '0' );
+    if( c >= 'a' && c <= 'z' )
+        return( c - 'a' + 10 );
+    return( 0 );
+}
+
+static int get_index( const char *p )
+{
+    return( get_bin_index( p[0] ) + 26 * get_bin_index( p[1] ) );
+}
+
+static uint8_t *get_name_map_index( const char *p )
+{
+    if( p[0] == '.' && p[1] == '.' ) {
+        return( &scr_lkup_label );
+    } else {
+        return( scr_lkup_tbl + get_index( p ) );
+    }
+}
+
+#define INVALID_INDEX   255
+
 static void build_scr_cw_lookup( void )
 {
     int             i;
-    int             hash;
-    const scrtag    *cw;
 
     // pre-fill lookup table with invalid values
-    memset( scr_lkup_tbl, 0, sizeof( scr_lkup_tbl ) );
+    memset( scr_lkup_tbl, INVALID_INDEX, sizeof( scr_lkup_tbl ) );
+    scr_lkup_label = INVALID_INDEX;
 
     // build a lookup table holding keyword table indices; note that
     // the indices are offset by one so that zero turns into an invalid
     // index (-1) during lookup.
     for( i = 0; i <= SCR_KWDMAX; ++i ) {
-        cw = &scr_kwds[i];
-        if( islower( cw->cwdname[0] ) && islower( cw->cwdname[1] ) ) {
-            hash = (cw->cwdname[0] - 'a') * 26 + (cw->cwdname[1] - 'a');
-            scr_lkup_tbl[hash] = i + 1;
-        } else if( cw->cwdname[0] == 'h' && cw->cwdname[1] == '0' ) {
-            hash = ('h' - 'a') * 26 + ('z' - 'a');  // fake it as .HZ
-            scr_lkup_tbl[hash] = i + 1;
-            scr_cw_hx = i;
-        } else if( cw->cwdname[0] == '.' && cw->cwdname[1] == '.' ) {
-            scr_cw_label = i;   // the ... label
-        } else {
-            // .H1 to .H9 -- ignored here
-        }
+        *get_name_map_index( scr_kwds[i].cwdname ) = i;
     }
     scr_lkup_setup = true;
 }
 
 
-static int find_scr_cw( const char *cwdname )
+static const scrtag *find_scr_cw( const char *cwdname )
 {
-    int     hash;
-    int     index = -1;
+    int             index;
 
     if( !scr_lkup_setup )
         build_scr_cw_lookup();
 
-    if( islower( cwdname[0] ) && islower( cwdname[1] ) ) {
-        hash  = (cwdname[0] - 'a') * 26 + (cwdname[1] - 'a');
-        index = scr_lkup_tbl[hash] - 1;
-    } else if( cwdname[0] == '.' && cwdname[1] == '.' ) {
-        index = scr_cw_label;
-    } else if( cwdname[0] == 'h' && isdigit( cwdname[1] ) ) {
-        index = scr_cw_hx + cwdname[1] - '0';
-    }
+    index = *get_name_map_index( cwdname );
+    if( index == INVALID_INDEX )
+        return( NULL );
 
-    return( index );
+    return( scr_kwds + index );
 }
 
+#undef INVALID_INDEX
 
 void set_overload( gtentry *in_gt )
 {
@@ -414,7 +414,7 @@ static void     scan_script( void )
     mac_entry   *   me;
     char        *   p;
     char        *   pt;
-    int             k;
+    const scrtag    *cwinfo;
     char            macname[MAC_NAME_LENGTH + 1];
 
     if( ProcFlags.need_text ) {
@@ -549,11 +549,11 @@ static void     scan_script( void )
             return;
         }
 
-        k = find_scr_cw( macname );               // non-negative if valid
-        if( k >= 0 ) {
+        cwinfo = find_scr_cw( macname );               // non-negative if valid
+        if( cwinfo != NULL ) {
             if( !ProcFlags.layout
               && !ProcFlags.fb_document_done
-              && (scr_kwds[k].cwdflags & cw_o_t) ) {
+              && (cwinfo->cwdflags & cw_o_t) ) {
 
                 /********************************************************/
                 /* this is the first control word which produces output */
@@ -568,16 +568,16 @@ static void     scan_script( void )
                 if( strcmp( "li", macname ) == 0 ) {  // .li
                     ProcFlags.CW_noblank = (*p != ' ');
                     scandata.s = p; // found, process
-                    scr_kwds[k].cwdproc();
+                    cwinfo->cwdproc();
                 }
             } else {
                 scandata.s = p; // script controlword found, process
-                if( scr_kwds[k].cwdflags & cw_break ) {
+                if( cwinfo->cwdflags & cw_break ) {
                     ProcFlags.force_pc = false;
                     scr_process_break();// output incomplete line, if any
                 }
                 ProcFlags.CW_noblank = (*p != ' ');
-                scr_kwds[k].cwdproc();
+                cwinfo->cwdproc();
             }
         } else {
             xx_err_c( err_cw_unrecognized, macname );

@@ -246,7 +246,7 @@ void    free_layout( void )
 /***************************************************************************/
 /*  case                                                                   */
 /***************************************************************************/
-bool    i_case( char * p, lay_attr_i lay_attr, case_t *tm )
+bool    i_case( const char *p, lay_attr_i lay_attr, case_t *tm )
 {
     bool        cvterr;
 
@@ -285,9 +285,9 @@ void    o_case( FILE *fp, lay_attr_o lay_attr, const case_t *tm )
 /*  single character                                                       */
 /*  UL bullet entered as '' is treated as ' ' by wgml 4.0, so all may be   */
 /***************************************************************************/
-bool    i_char( char * p, lay_attr_i lay_attr, char *tm )
+bool    i_char( const char *p, lay_attr_i lay_attr, char *tm )
 {
-    if( lay_attr->quoted && *p == '\0' ) {
+    if( lay_attr->quoted != ' ' && *p == '\0' ) {
         *tm = ' ';                      // space if '' or ""
     } else {
         *tm = *p;                       // else 1st char
@@ -305,10 +305,10 @@ void    o_char( FILE *fp, lay_attr_o lay_attr, const char *tm )
 /***************************************************************************/
 /*  contents for banregion    only unquoted                                */
 /***************************************************************************/
-bool    i_content( char * p, lay_attr_i lay_attr, reg_content *tm )
+bool    i_content( const char *p, lay_attr_i lay_attr, reg_content *tm )
 {
     bool            cvterr;
-    char            *pa;
+    const char      *pa;
     content_enum    k;
     unsigned        len;
 
@@ -365,7 +365,7 @@ void    o_content( FILE *fp, lay_attr_o lay_attr, const reg_content *tm )
 /***************************************************************************/
 /*  default frame                                                          */
 /***************************************************************************/
-bool    i_default_frame( char * p, lay_attr_i lay_attr, def_frame *tm )
+bool    i_default_frame( const char *p, lay_attr_i lay_attr, def_frame *tm )
 {
     bool        cvterr;
 
@@ -420,7 +420,7 @@ void    o_default_frame( FILE *fp, lay_attr_o lay_attr, const def_frame *tm )
 /***************************************************************************/
 /*  docsect  refdoc                                                        */
 /***************************************************************************/
-bool    i_docsect( char * p, lay_attr_i lay_attr, ban_docsect *tm )
+bool    i_docsect( const char *p, lay_attr_i lay_attr, ban_docsect *tm )
 {
     bool        cvterr;
     int         k;
@@ -456,7 +456,7 @@ void    o_docsect( FILE *fp, lay_attr_o lay_attr, const ban_docsect *tm )
 /***************************************************************************/
 /*  frame  rule or none                                                    */
 /***************************************************************************/
-bool    i_frame( char * p, lay_attr_i lay_attr, bool *tm )
+bool    i_frame( const char *p, lay_attr_i lay_attr, bool *tm )
 {
     bool        cvterr;
 
@@ -489,10 +489,10 @@ void    o_frame( FILE *fp, lay_attr_o lay_attr, const bool *tm )
 /***************************************************************************/
 /*  font number                                                            */
 /***************************************************************************/
-bool    i_font_number( char *p, lay_attr_i lay_attr, font_number *tm )
+bool    i_font_number( const char *p, lay_attr_i lay_attr, font_number *tm )
 {
-    char    *   pb;
-    unsigned    len;
+    const char      *pb;
+    unsigned        len;
 
     (void)lay_attr;
 
@@ -515,7 +515,7 @@ void    o_font_number( FILE *fp, lay_attr_o lay_attr, const font_number *tm )
 /***************************************************************************/
 /*  number form                                                            */
 /***************************************************************************/
-bool    i_number_form( char * p, lay_attr_i lay_attr, num_form *tm )
+bool    i_number_form( const char *p, lay_attr_i lay_attr, num_form *tm )
 {
     bool        cvterr;
 
@@ -553,7 +553,7 @@ void    o_number_form( FILE *fp, lay_attr_o lay_attr, const num_form *tm )
 /***************************************************************************/
 /*  number style                                                           */
 /***************************************************************************/
-bool    i_number_style( char * p, lay_attr_i lay_attr, num_style *tm )
+bool    i_number_style( const char *p, lay_attr_i lay_attr, num_style *tm )
 {
     bool        cvterr;
     num_style   wk = 0;
@@ -671,7 +671,7 @@ void    o_number_style( FILE *fp, lay_attr_o lay_attr, const num_style *tm )
 /***************************************************************************/
 /*  page eject                                                             */
 /***************************************************************************/
-bool    i_page_eject( char * p, lay_attr_i lay_attr, page_ej *tm )
+bool    i_page_eject( const char *p, lay_attr_i lay_attr, page_ej *tm )
 {
     bool        cvterr;
 
@@ -713,7 +713,7 @@ void    o_page_eject( FILE *fp, lay_attr_o lay_attr, const page_ej *tm )
 /***************************************************************************/
 /*  page position                                                          */
 /***************************************************************************/
-bool    i_page_position( char * p, lay_attr_i lay_attr, page_pos *tm )
+bool    i_page_position( const char *p, lay_attr_i lay_attr, page_pos *tm )
 {
     bool        cvterr;
 
@@ -752,7 +752,7 @@ void    o_page_position( FILE *fp, lay_attr_o lay_attr, const page_pos *tm )
 /***************************************************************************/
 /*  place                                                                  */
 /***************************************************************************/
-bool    i_place( char * p, lay_attr_i lay_attr, ban_place *tm )
+bool    i_place( const char *p, lay_attr_i lay_attr, ban_place *tm )
 {
     bool        cvterr;
     ban_place   k;
@@ -789,7 +789,7 @@ void    o_place( FILE *fp, lay_attr_o lay_attr, const ban_place *tm )
 /***************************************************************************/
 /*  pouring                                                                */
 /***************************************************************************/
-bool    i_pouring( char * p, lay_attr_i lay_attr, reg_pour *tm )
+bool    i_pouring( const char *p, lay_attr_i lay_attr, reg_pour *tm )
 {
     bool        cvterr;
 
@@ -851,7 +851,7 @@ void    o_pouring( FILE *fp, lay_attr_o lay_attr, const reg_pour *tm )
 /***************************************************************************/
 /*  space unit                                                             */
 /***************************************************************************/
-bool    i_space_unit( char * p, lay_attr_i lay_attr, su *tm )
+bool    i_space_unit( const char *p, lay_attr_i lay_attr, su *tm )
 {
     (void)p;
 
@@ -874,7 +874,7 @@ void    o_space_unit( FILE *fp, lay_attr_o lay_attr, const su *tm )
 /***************************************************************************/
 /*  spacing                                                                */
 /***************************************************************************/
-bool    i_spacing( char *p, lay_attr_i lay_attr, text_space *tm )
+bool    i_spacing( const char *p, lay_attr_i lay_attr, text_space *tm )
 {
     long        wk;
 
@@ -900,7 +900,7 @@ void    o_spacing( FILE *fp, lay_attr_o lay_attr, const text_space *tm )
 /***************************************************************************/
 /*  threshold                                                              */
 /***************************************************************************/
-bool    i_threshold( char *p, lay_attr_i lay_attr, uint16_t *tm )
+bool    i_threshold( const char *p, lay_attr_i lay_attr, uint16_t *tm )
 {
     bool        rc;
 
@@ -922,7 +922,7 @@ void    o_threshold( FILE *fp, lay_attr_o lay_attr, const uint16_t *tm )
 /*                                                                         */
 /*                                                                         */
 /***************************************************************************/
-bool    i_xx_string( char * p, lay_attr_i lay_attr, xx_str *tm )
+bool    i_xx_string( const char *p, lay_attr_i lay_attr, xx_str *tm )
 {
     bool        cvterr;
 
@@ -946,7 +946,7 @@ void    o_xx_string( FILE *fp, lay_attr_o lay_attr, const xx_str *tm )
 /***************************************************************************/
 /*  date_form      stored as string perhaps better other type    TBD       */
 /***************************************************************************/
-bool    i_date_form( char * p, lay_attr_i lay_attr, xx_str *tm )
+bool    i_date_form( const char *p, lay_attr_i lay_attr, xx_str *tm )
 {
     return( i_xx_string( p, lay_attr, tm ) );
 }
@@ -959,7 +959,7 @@ void    o_date_form( FILE *fp, lay_attr_o lay_attr, const xx_str *tm )
 /***************************************************************************/
 /*  yes or No  as bool result                                              */
 /***************************************************************************/
-bool    i_yes_no( char * p, lay_attr_i lay_attr, bool *tm )
+bool    i_yes_no( const char *p, lay_attr_i lay_attr, bool *tm )
 {
     bool        cvterr;
 
@@ -991,7 +991,7 @@ void    o_yes_no( FILE *fp, lay_attr_o lay_attr, const bool *tm )
 /***************************************************************************/
 /*  integer routines                                                       */
 /***************************************************************************/
-bool    i_int32( char * p, lay_attr_i lay_attr, int32_t *tm )
+bool    i_int32( const char *p, lay_attr_i lay_attr, int32_t *tm )
 {
     long    wk;
 
@@ -1009,10 +1009,10 @@ void    o_int32( FILE *fp, lay_attr_o lay_attr, const int32_t *tm )
     return;
 }
 
-bool    i_uint16( char * p, lay_attr_i lay_attr, uint16_t *tm )
+bool    i_uint16( const char *p, lay_attr_i lay_attr, uint16_t *tm )
 {
-    char    *   pa;
-    long        wk;
+    const char      *pa;
+    long            wk;
 
     (void)lay_attr;
 
@@ -1038,7 +1038,7 @@ void    o_uint16( FILE *fp, lay_attr_o lay_attr, const uint16_t *tm )
     return;
 }
 
-bool    i_int8( char *p, lay_attr_i lay_attr, int8_t *tm )
+bool    i_int8( const char *p, lay_attr_i lay_attr, int8_t *tm )
 {
     long    wk;
 
@@ -1060,7 +1060,7 @@ void    o_int8( FILE *fp, lay_attr_o lay_attr, const int8_t *tm )
     return;
 }
 
-bool    i_uint8( char *p, lay_attr_i lay_attr, uint8_t *tm )
+bool    i_uint8( const char *p, lay_attr_i lay_attr, uint8_t *tm )
 {
     long   wk;
 
