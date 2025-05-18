@@ -109,8 +109,6 @@ condcode getarg( void )
     char            *p;
     char            quote;
     char            valquote;
-    bool            quoted;
-    bool            valquoted;
 
     cc = omit;                          // arg omitted
     if( scandata.s < scandata.e ) {     // already at end
@@ -129,26 +127,18 @@ condcode getarg( void )
             return( pos );              // arg found
         }
 
-        quote = '\0';
-        valquote = '\0';
-        quoted = false;
-        valquoted = false;
+        valquote = ' ';
         g_tok_start = p;
 
         if( is_quote_char( *p ) ) {     // arg starts with quote
-            quote = *p;
-            p++;
-            quoted = true;
+            quote = *p++;
         } else {
-            quote = '\0';
-            quoted = false;
+            quote = ' ';
         }
         for( ;; p++ ) {
-
             if( p == scandata.e || *p == '\0' ) {
-                if( quoted ) {
-                    quote = '\0';
-                    quoted = false;
+                if( quote != ' ' ) {
+                    quote = ' ';
                     p = g_tok_start;    // find end of space-delimited token
                     while( (p < scandata.e) && (*p != ' ') ) {
                         p++;
@@ -156,14 +146,10 @@ condcode getarg( void )
                 }
                 break;
             }
-            if( *p == ' ' && quote == '\0' ) {  // unquoted, blank is end
-                break;
-            }
             if( *p == quote ) {
                 break;
             }
-            if( quote == '\0' && (p[0] == '=') && is_quote_char( p[1] ) ) {
-                valquoted = true;
+            if( quote == ' ' && (p[0] == '=') && is_quote_char( p[1] ) ) {
                 valquote = p[1];
                 p += 2;
                 for( ; *p != '\0' && p < scandata.e; p++ ) {
@@ -175,7 +161,7 @@ condcode getarg( void )
                 break;
             }
         }
-        if( quoted ) {
+        if( quote != ' ' ) {
             g_tok_start++;
             scandata.s = p + 1;         // address of start for next call
         } else {
@@ -183,13 +169,13 @@ condcode getarg( void )
         }
         arg_flen = p - g_tok_start;     // length of multichar arg
         if( arg_flen > 0 ) {
-            if( quoted ) {
+            if( quote != ' ' ) {
                 cc = quotes;            // quoted arg found
             } else {
                 cc = pos;               // arg found
             }
         } else {
-            if( quoted ) {
+            if( quote != ' ' ) {
                 cc = quotes0;           // Nullstring
             } else {
                 cc = omit;              // length zero
@@ -208,9 +194,7 @@ condcode getqst( void )
 {
     condcode        cc;
     char            *p;
-    char            c;
     char            quote;
-    bool            quoted;
 
     cc = omit;                          // arg omitted
     if( scandata.s < scandata.e ) {     // already at end
@@ -223,35 +207,26 @@ condcode getqst( void )
             return( omit );             // nothing found
         }
 
-        quote = '\0';
-        quoted = false;
+        quote = ' ';
         g_tok_start = p;
-        c = *p;
-        if( is_quote_char( c ) ) {
-            quote = c;                  // single or double quotes, vertical bar and cent
-            p++;
-            quoted = true;
+        if( is_quote_char( *p ) ) {
+            quote = *p++;               // single or double quotes, vertical bar and cent
         } else {
-            quote = '\0';
-            quoted = false;
+            quote = ' ';
         }
         for( ; *p != '\0' && p < scandata.e; p++ ) {  // look for end of string
-            if( quoted ) {
-                if( *p == quote ) {
-                    if( p[1] == '\0' || p[1] == ' ' ) {
-                        break;          // quote followed by blank or null is end
-                    }
-                    if( p[1] == quote ) {
-                        continue;       // 2 quote chars not end of string
-                    }
+            if( *p == quote ) {
+                if( quote == ' ' )
+                    break;
+                if( p[1] == '\0' || p[1] == ' ' ) {
+                    break;              // quote followed by blank or null is end
                 }
-            } else {                    // unquoted
-                if( *p == ' ' ) {
-                    break;              // blank is end
+                if( p[1] == quote ) {
+                    continue;           // 2 quote chars not end of string
                 }
             }
         }
-        if( quoted ) {
+        if( quote != ' ' ) {
             g_tok_start++;
             scandata.s = p + 1;         // start address for next call
             arg_flen = p - g_tok_start; // length of arg
@@ -260,7 +235,7 @@ condcode getqst( void )
             arg_flen = p - g_tok_start; // length of arg
         }
         if( arg_flen > 0 ) {
-            if( quoted ) {
+            if( quote != ' ' ) {
                 if( *p != quote ) {
                     cc = no;            // only start quote found
                 } else {

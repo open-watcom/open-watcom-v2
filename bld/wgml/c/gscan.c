@@ -371,7 +371,7 @@ static void scan_gml( void )
  *      quotes are single or double quotes only
  */
 
-static char *   search_separator( char * str, char sep )
+static char *search_separator( const char *str, char sep )
 {
     bool        instring = false;
     char        quote = '\0';
@@ -394,7 +394,7 @@ static char *   search_separator( char * str, char sep )
         str++;
     }
     if( *str == sep ) {
-        return( str );
+        return( (char *)str );
     } else {
         return( NULL );
     }
@@ -637,11 +637,10 @@ condcode    test_process( ifcb * cb )
         }
 
 #ifdef DEBTESTPROC
-        if( (input_cbs->fmflags & II_research) && GlobalFlags.firstpass
-            && (start_level || cb->if_level) ) {
-            char * txt = (cc == pos ? "EX1 pos" : "EX1 no" );
-
-            show_ifcb( txt, cb );
+        if( (input_cbs->fmflags & II_research)
+          && GlobalFlags.firstpass
+          && (start_level || cb->if_level) ) {
+            show_ifcb( (cc == pos) ? "EX1 pos" : "EX1 no", cb );
         }
 #endif
         return( cc );
@@ -652,11 +651,10 @@ condcode    test_process( ifcb * cb )
         if( cb->if_flags[cb->if_level].ifcwdo ) {   // if  .do
             cc = pos;
 #ifdef DEBTESTPROC
-        if( (input_cbs->fmflags & II_research) && GlobalFlags.firstpass
-                && (start_level || cb->if_level) ) {
-                char * txt = (cc == pos ? "Edo pos" : "Edo no" );
-
-                show_ifcb( txt, cb );
+        if( (input_cbs->fmflags & II_research)
+          && GlobalFlags.firstpass
+          && (start_level || cb->if_level) ) {
+                show_ifcb( (cc == pos) ? "Edo pos" : "Edo no", cb );
             }
 #endif
             return( cc );
@@ -717,11 +715,10 @@ condcode    test_process( ifcb * cb )
         g_err_if_int();
     }
 #ifdef DEBTESTPROC
-    if( (input_cbs->fmflags & II_research) && GlobalFlags.firstpass
-        && (start_level || cb->if_level) ) {
-        char * txt = (cc == pos ? "EX3 pos" : "EX3 no" );
-
-        show_ifcb( txt, cb );
+    if( (input_cbs->fmflags & II_research)
+      && GlobalFlags.firstpass
+      && (start_level || cb->if_level) ) {
+        show_ifcb( (cc == pos) ? "EX3 pos" : "EX3 no", cb );
     }
 #endif
     return( cc );
@@ -940,7 +937,7 @@ bool is_ip_tag( e_tags tag )
     if( (tag < t_NONE) || (tag >= t_MAX) ) {  // catch invalid offset values
         internal_err( __FILE__, __LINE__ );
     } else if( tag != t_NONE ) {                 // t_NONE is valid, but is not an ip_start_tag
-        return( gml_tags[tag - 1].tagclass & ip_start_tag );
+        return( (gml_tags[tag - 1].tagclass & ip_start_tag) != 0 );
     }
     return( false );                                // not found
 }
@@ -955,7 +952,7 @@ bool is_ip_tag( e_tags tag )
 /*  ProcFlags.reprocess_line is set to true if this is not a <text_line>   */
 /***************************************************************************/
 
-char * get_text_line( char * p )
+char *get_text_line( char *p )
 {
     bool            use_current = false;
     char            tagname[TAG_NAME_LENGTH + 1];
@@ -970,8 +967,6 @@ char * get_text_line( char * p )
                 if( (input_cbs->fmflags & II_eof) == 0 ) {
                     if( get_line( true ) ) {    // next line for text
                         process_line();
-                        scandata.s = buff2;
-                        scandata.e = buff2 + buff2_lg;
                         p = scandata.s;
                         continue;
                     }
@@ -995,7 +990,7 @@ char * get_text_line( char * p )
                 p1 = check_tagname( p, tagname );
                 if ( p1 != NULL && ( p1 - p - 1 ) <= TAG_NAME_LENGTH ) { // valid tag
                     if( ProcFlags.layout ) {
-                        ge = NULL;                  // no user tags within :LAYOUT
+                        ge = NULL;      // no user tags within :LAYOUT
                     } else {
                         ge = find_user_tag( &tags_dict, tagname );
                     }
@@ -1008,7 +1003,5 @@ char * get_text_line( char * p )
             }
         }
     }
-
     return( p );
 }
-
