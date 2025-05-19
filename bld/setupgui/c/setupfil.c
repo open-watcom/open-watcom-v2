@@ -245,7 +245,7 @@ static bool output_line( VBUF *vbuf, var_type vt, const VBUF *name, const VBUF *
     if( VbufLen( value ) > 0 ) {
         switch( vt ) {
         case VAR_SETENV_ASSIGN:
-            VbufConcChr( vbuf, CMD_PREFIX );
+            VbufConcStr( vbuf, CMD_PREFIX );
             VbufConcStr( vbuf, SETENV );
             VbufConcVbuf( vbuf, name );
             VbufConcChr( vbuf, '=' );
@@ -258,7 +258,7 @@ static bool output_line( VBUF *vbuf, var_type vt, const VBUF *name, const VBUF *
             VbufConcVbuf( vbuf, value );
             break;
         case VAR_CMD:
-            VbufConcChr( vbuf, CMD_PREFIX );
+            VbufConcStr( vbuf, CMD_PREFIX );
             VbufConcVbuf( vbuf, name );
             VbufConcChr( vbuf, ' ' );
             VbufConcVbuf( vbuf, value );
@@ -308,7 +308,7 @@ static var_type parse_line( char *line, VBUF *name, VBUF *value, var_type vt_set
     VbufRewind( name );
     SKIP_SPACES( line );
     if( strnicmp( line, CMD_PREFIX, sizeof( CMD_PREFIX ) - 1 ) == 0 )
-    	line += sizeof( CMD_PREFIX ) - 1;
+        line += sizeof( CMD_PREFIX ) - 1;
     if( IS_SETENVCMD( line ) ) {
         line += SETENV_LEN;
         SKIP_SPACES( line );
