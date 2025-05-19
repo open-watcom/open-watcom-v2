@@ -50,14 +50,16 @@
 
 
 #if defined( __UNIX__ )
+    #define CMD_PREFIX      ""
     #define SETENV          "export "
-    #define SETENV_LEN      7
+    #define SETENV_LEN      (sizeof(SETENV)-1)
     #define NAME_PREFIX     "$"
     #define NAME_SUFFIX     ""
     #define IS_SETENVCMD(s) (strncmp(s, SETENV, SETENV_LEN) == 0)
 #else
+    #define CMD_PREFIX      "@"
     #define SETENV          "SET "
-    #define SETENV_LEN      4
+    #define SETENV_LEN      (sizeof(SETENV)-1)
     #define NAME_PREFIX     "%"
     #define NAME_SUFFIX     "%"
     #define IS_SETENVCMD(s) (strnicmp(s, SETENV, SETENV_LEN) == 0)
@@ -243,6 +245,7 @@ static bool output_line( VBUF *vbuf, var_type vt, const VBUF *name, const VBUF *
     if( VbufLen( value ) > 0 ) {
         switch( vt ) {
         case VAR_SETENV_ASSIGN:
+            VbufConcChr( vbuf, CMD_PREFIX );
             VbufConcStr( vbuf, SETENV );
             VbufConcVbuf( vbuf, name );
             VbufConcChr( vbuf, '=' );
@@ -255,6 +258,7 @@ static bool output_line( VBUF *vbuf, var_type vt, const VBUF *name, const VBUF *
             VbufConcVbuf( vbuf, value );
             break;
         case VAR_CMD:
+            VbufConcChr( vbuf, CMD_PREFIX );
             VbufConcVbuf( vbuf, name );
             VbufConcChr( vbuf, ' ' );
             VbufConcVbuf( vbuf, value );
@@ -303,6 +307,8 @@ static var_type parse_line( char *line, VBUF *name, VBUF *value, var_type vt_set
      */
     VbufRewind( name );
     SKIP_SPACES( line );
+    if( strnicmp( line, CMD_PREFIX, sizeof( CMD_PREFIX ) - 1 ) == 0 )
+    	line += sizeof( CMD_PREFIX ) - 1;
     if( IS_SETENVCMD( line ) ) {
         line += SETENV_LEN;
         SKIP_SPACES( line );
@@ -2015,10 +2021,8 @@ bool GenerateBatchFile( bool uninstall )
         if( fp != NULL ) {
 #ifdef __UNIX__
             fprintf( fp, "#!/bin/sh\n" );
-#else
-            fprintf( fp, "@echo off\n" );
 #endif
-            fprintf( fp, "echo %s\n", GetVariableStrVal( "BatchFileCaption" ) );
+            fprintf( fp, CMD_PREFIX "echo %s\n", GetVariableStrVal( "BatchFileCaption" ) );
 #if defined( __DOS__ ) || defined( __WINDOWS__ )
             isOS2DosBox = GetVariableBoolVal( "IsOS2DosBox" );
             SetBoolVariableByName( "IsOS2DosBox", false );
