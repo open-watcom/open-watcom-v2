@@ -267,7 +267,6 @@ static void scan_gml( void )
                 if( script_style.style != SCT_none ) {
                     scr_style_end();        // cancel BD, BI, US
                 }
-
                 ProcFlags.need_tag = false;
 
                 /*******************************************************************/

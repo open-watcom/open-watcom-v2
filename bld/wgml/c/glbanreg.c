@@ -563,7 +563,6 @@ void    lay_banregion( const gmltag * entry )
 void    lay_ebanregion( const gmltag * entry )
 {
     rs_loc = banner_tag;
-
     if( ProcFlags.lay_xxx == el_banregion ) {   // :banregion was last tag
         ProcFlags.lay_xxx = el_ebanregion;
     } else {
