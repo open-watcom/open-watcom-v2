@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -52,6 +52,7 @@
 #include "wresdefn.h"
 #include "pathgrp2.h"
 #include "wclbhelp.h"
+#include "jmpbuf.h"
 
 #include "clibext.h"
 
@@ -103,7 +104,7 @@ static jmp_buf Env;
 void PPENTRY PP_OutOfMemory( void )
 /*********************************/
 {
-    if( WdePopEnv( Env ) ) {
+    if( WdePopEnv( JMPBUF_PTR( Env ) ) ) {
         longjmp( Env, 1 );
     } else {
         WdeWriteTrail( "Wde PreProc: Fatal error!" );
@@ -545,7 +546,7 @@ char *WdeLoadSymbols( WRHashTable **table, char *file_name, bool prompt_name )
             ok = false;
             PP_FileFini();
         } else {
-            ok = pop_env = WdePushEnv( SymEnv );
+            ok = pop_env = WdePushEnv( JMPBUF_PTR( SymEnv ) );
         }
     }
 
@@ -581,7 +582,7 @@ char *WdeLoadSymbols( WRHashTable **table, char *file_name, bool prompt_name )
     }
 
     if( pop_env ) {
-        WdePopEnv( SymEnv );
+        WdePopEnv( JMPBUF_PTR( SymEnv ) );
     }
 
     if( !ok ) {
