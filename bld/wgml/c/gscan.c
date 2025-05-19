@@ -44,7 +44,7 @@ static const gmltag     gml_tags[] = {
     #undef pick
 };
 
-#define GML_TAGMAX  (sizeof( gml_tags ) / sizeof( gml_tags[0] ) - 1)
+#define GML_TAGMAX  (sizeof( gml_tags ) / sizeof( gml_tags[0] ))
 
 /***************************************************************************/
 /*    GML layout tags                                                      */
@@ -56,7 +56,7 @@ static const gmltag     lay_tags[] = {
     #undef pick
 };
 
-#define LAY_TAGMAX  (sizeof( lay_tags ) / sizeof( lay_tags[0] ) - 1)
+#define LAY_TAGMAX  (sizeof( lay_tags ) / sizeof( lay_tags[0] ))
 
 
 /***************************************************************************/
@@ -69,7 +69,7 @@ static const scrtag     scr_kwds[] = {
     #undef pick
 };
 
-#define SCR_KWDMAX  (sizeof( scr_kwds ) / sizeof( scr_kwds[0] ) - 1)
+#define SCR_KWDMAX  (sizeof( scr_kwds ) / sizeof( scr_kwds[0] ))
 
 static uint8_t  scr_lkup_tbl[26 * 36];
 static uint8_t  scr_lkup_label;
@@ -118,7 +118,7 @@ static void build_scr_cw_lookup( void )
     // build a lookup table holding keyword table indices; note that
     // the indices are offset by one so that zero turns into an invalid
     // index (-1) during lookup.
-    for( i = 0; i <= SCR_KWDMAX; ++i ) {
+    for( i = 0; i < SCR_KWDMAX; ++i ) {
         *get_name_map_index( scr_kwds[i].cwdname ) = i;
     }
     scr_lkup_setup = true;
@@ -425,7 +425,7 @@ static void     scan_script( void )
         if( ProcFlags.concat ) {
             *scandata.s = ' ';                  // make line blank
         } else {
-            scandata.s = scandata.e;             // treat as comment
+            scandata.s = scandata.e;            // treat as comment
         }
         return;
     }
@@ -885,16 +885,19 @@ void    scan_line( void )
 
 const gmltag *find_sys_tag( const char *tagname )
 {
-    int                 k;
-    unsigned    taglen;
+    int             k;
+    unsigned        taglen;
+    const gmltag    *tag;
 
     taglen = strlen( tagname );
+    tag = gml_tags;
     for( k = 0; k < GML_TAGMAX; ++k ) {
-        if( taglen == gml_tags[k].taglen ) {
-            if( strcmp( gml_tags[k].tagname, tagname ) == 0 ) {
-                return( &gml_tags[k] );
+        if( taglen == tag->taglen ) {
+            if( strcmp( tag->tagname, tagname ) == 0 ) {
+                return( tag );
             }
         }
+        tag++;
     }
     return( NULL );                     // not found
 }
@@ -908,16 +911,19 @@ const gmltag *find_sys_tag( const char *tagname )
 
 const gmltag *find_lay_tag( const char *tagname )
 {
-    int                 k;
-    unsigned    taglen;
+    int             k;
+    unsigned        taglen;
+    const gmltag    *tag;
 
     taglen = strlen( tagname );
+    tag = lay_tags;
     for( k = 0; k < LAY_TAGMAX; ++k ) {
-        if( taglen == lay_tags[k].taglen ) {
-            if( strcmp( lay_tags[k].tagname, tagname ) == 0 ) {
-                return( &lay_tags[k] );
+        if( taglen == tag->taglen ) {
+            if( strcmp( tag->tagname, tagname ) == 0 ) {
+                return( tag );
             }
         }
+        tag++;
     }
     return( NULL );                     // not found
 }
