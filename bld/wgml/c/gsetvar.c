@@ -301,13 +301,17 @@ void    scr_se( void )
                 SkipSpaces( p );                // skip over spaces to value
             }
             val.s = p;
+            val.e = scandata.e;
             if( is_quote_char( *val.s ) ) {      // quotes ?
                 p++;
                 while( *p != '\0' ) {
-                        // TODO! ????
-                        // remove final character, if it matches the start character
-                        // look for quote end (must match and be at eol or followed by a space)
-//                if( (*valstart == *p) && (!*(p+1) || (*(p+1) == ' ')) ) {
+                    /*
+                     * TODO! ????
+                     * remove final character, if it matches the start character
+                     * look for quote end (must match and be at eol or followed by a space)
+                     *
+                     *  if( (*valstart == *p) && (!*(p+1) || (*(p+1) == ' ')) ) {
+                     */
                     if( (*val.s == p[0]) && p[1] == '\0' ) {
                         break;
                     }
@@ -321,15 +325,13 @@ void    scr_se( void )
                 getnum_block    gn;
                 condcode        cc;
 
-                gn.arg.s = valstart;
-                gn.arg.e = scandata.e;
+                gn.arg = val;
                 gn.ignore_blanks = true;
                 cc = getnum( &gn );             // try numeric expression evaluation
                 if( cc != notnum ) {
                     val.s = gn.resultstr;
                 }                               // if notnum treat as character value
             }
-            val.e = val.s + strlen( val.s );
             rc = add_symvar_sym( &sym, &val, subscript, sym.flags );
         } else if( *p == '\'' ) {               // \' may introduce valid value
             if( *(p - 1) == ' ' ) {             // but must be preceded by a space
