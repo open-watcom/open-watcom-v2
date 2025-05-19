@@ -231,38 +231,39 @@ static void scan_gml( void )
          * If the token is longer than the maximum allowed tag name length,
          * it is valid tag name but we use internaly shortened name.
          */
-        if( ProcFlags.layout ) {        // different tags within :LAYOUT
+        if( ProcFlags.layout || strcmp( "LAYOUT", tagname ) == 0 ) {        // different tags within :LAYOUT
             tag = find_lay_tag( tagname );
             if( tag != NULL ) {
                 ProcFlags.tag_end_found = false;
-                if( rs_loc == 0 ) {
-                    // no restrictions: do them all
-                    tag->gmlproc( tag );
-                } else if( tag->taglocs & rs_loc ) {
-                    // tag allowed in this restricted location
-                    tag->gmlproc( tag );
-                } else if( (tag->tagflags & tag_is_general) != 0 ) {
-                    // tag allowed everywhere
-                    tag->gmlproc( tag );
-                } else if( rs_loc == banner_tag ) {
-                    xx_err_c( err_tag_expected, "eBANNER" );
-                } else {    // rs_loc == banreg_tag
-                    xx_err_c( err_tag_expected, "eBANREGION" );
+                if( GlobalFlags.firstpass
+                  || strcmp( "LAYOUT", tagname ) == 0
+                  || strcmp( "ELAYOUT", tagname ) == 0 ) {
+                    if( rs_loc == 0 ) {
+                        // no restrictions: do them all
+                        tag->gmlproc( tag );
+                    } else if( tag->taglocs & rs_loc ) {
+                        // tag allowed in this restricted location
+                        tag->gmlproc( tag );
+                    } else if( (tag->tagflags & tag_is_general) != 0 ) {
+                        // tag allowed everywhere
+                        tag->gmlproc( tag );
+                    } else if( rs_loc == banner_tag ) {
+                        xx_err_c( err_tag_expected, "eBANNER" );
+                    } else {    // rs_loc == banreg_tag
+                        xx_err_c( err_tag_expected, "eBANREGION" );
+                    }
+                    SkipDot( scandata.s );
+                } else {
+                    scandata.s = scandata.e;
+                    eat_lay_sub_tag();
                 }
                 processed = true;
-                SkipDot( scandata.s );
             } else if( find_sys_tag( tagname ) != NULL ) {
                 xx_err_c( err_gml_in_lay, tagname );
             }
         } else {                        // not within :LAYOUT
             tag = find_sys_tag( tagname );
             if( tag != NULL ) {
-                if( GlobalFlags.firstpass
-                  && strcmp( "LAYOUT", tagname ) == 0
-                  && ProcFlags.fb_document_done ) {
-                    xx_err( err_lay_too_late );
-                }
-
                 if( script_style.style != SCT_none ) {
                     scr_style_end();        // cancel BD, BI, US
                 }

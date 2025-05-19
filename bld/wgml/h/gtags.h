@@ -122,7 +122,6 @@
   pick( INCLUDE,  7,      gml_include,    tag_is_general, restricted_tag, no_class )
   pick( INDEX,    5,      gml_index,      tag_out_txt, restricted_tag, no_class )
   pick( IREF,     4,      gml_iref,       tag_out_txt, restricted_tag, no_class )
-  pick( LAYOUT,   6,      gml_layout,     tag_no_flag, restricted_tag, no_class )
   pick( LI,       2,      gml_li,         tag_out_txt, restricted_tag, li_lp_tag | list_tag )
   pick( LIREF,    5,      gml_dummy,      tag_out_txt, restricted_tag, no_class )
   pick( LP,       2,      gml_lp,         tag_out_txt, restricted_tag, li_lp_tag | list_tag )

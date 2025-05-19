@@ -54,12 +54,12 @@
 /***************************************************************************/
 
 /***************************************************************************/
-/*  gml_layout                                                             */
+/*  lay_layout                                                             */
 /***************************************************************************/
 
-void    gml_layout( const gmltag * entry )
+void    lay_layout( const gmltag * entry )
 {
-    char        *   p;
+    char            *p;
 
     p = scandata.s;
     scandata.s = scandata.e;
@@ -80,6 +80,10 @@ void    gml_layout( const gmltag * entry )
         return;
     }
 
+    if( ProcFlags.fb_document_done ) {
+        xx_err( err_lay_too_late );
+    }
+
     if( !ProcFlags.lay_specified ) {
         ProcFlags.lay_specified = true;
         g_info_lm( inf_proc_lay );
@@ -90,11 +94,9 @@ void    gml_layout( const gmltag * entry )
             xx_err_c( err_nested_tag, entry->tagname );
         }
         ProcFlags.layout = true;
-        return;
     } else {
         xx_err_cc( err_extra_ignored, g_tok_start, p );
     }
-    return;
 }
 
 
@@ -104,7 +106,7 @@ void    gml_layout( const gmltag * entry )
 
 void    lay_elayout( const gmltag * entry )
 {
-    char        *   p;
+    char            *p;
 
     p = scandata.s;
     scandata.s = scandata.e;
@@ -120,11 +122,8 @@ void    lay_elayout( const gmltag * entry )
         }
         ProcFlags.layout = false;
         ProcFlags.lay_xxx = el_zero;
-
-        return;
     } else {
         xx_err_cc( err_extra_ignored, g_tok_start, p );
     }
-    return;
 }
 

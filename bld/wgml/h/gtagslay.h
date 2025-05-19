@@ -93,6 +93,7 @@
   pick( IXHEAD,       6,      lay_ixhead,     tag_no_flag,      restricted_tag )
   pick( IXMAJOR,      7,      lay_xx,         tag_no_flag,      restricted_tag )
   pick( IXPGNUM,      7,      lay_xx,         tag_no_flag,      restricted_tag )
+  pick( LAYOUT,       6,      lay_layout,     tag_no_flag,      restricted_tag )
   pick( LETDATE,      7,      lay_dummy,      tag_no_flag,      restricted_tag )    // letter not supported
   pick( LP,           2,      lay_lp,         tag_no_flag,      restricted_tag )
   pick( LQ,           2,      lay_lq,         tag_no_flag,      restricted_tag )
