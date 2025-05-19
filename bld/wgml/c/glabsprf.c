@@ -143,11 +143,6 @@ void    lay_abspref( const gmltag * entry )
     p = scandata.s;
     cvterr = false;
 
-    if( !GlobalFlags.firstpass ) {
-        scandata.s = scandata.e;
-        eat_lay_sub_tag();
-        return;                         // process during first pass only
-    }
     if( strcmp( "ABSTRACT", entry->tagname ) == 0 ) {
         x_tag = el_abstract;
         ap  = &layout_work.abstract;

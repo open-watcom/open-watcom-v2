@@ -293,12 +293,6 @@ void    lay_banregion( const gmltag * entry )
     p = scandata.s;
     rs_loc = banreg_tag;
 
-    if( !GlobalFlags.firstpass ) {
-        scandata.s = scandata.e;
-        eat_lay_sub_tag();
-        return;                         // process during first pass only
-    }
-
     memset( &AttrFlags, 0, sizeof( AttrFlags ) );   // clear all attribute flags
     if( del_ban != NULL ) {             // BANREGION cancels deleteable status
         curr_ban = del_ban;
@@ -569,11 +563,7 @@ void    lay_banregion( const gmltag * entry )
 void    lay_ebanregion( const gmltag * entry )
 {
     rs_loc = banner_tag;
-    if( !GlobalFlags.firstpass ) {
-        scandata.s = scandata.e;
-        eat_lay_sub_tag();
-        return;                         // process during first pass only
-    }
+
     if( ProcFlags.lay_xxx == el_banregion ) {   // :banregion was last tag
         ProcFlags.lay_xxx = el_ebanregion;
     } else {

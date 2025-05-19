@@ -538,11 +538,6 @@ void    lay_dl( const gmltag * entry )
 
     p = scandata.s;
 
-    if( !GlobalFlags.firstpass ) {
-        scandata.s = scandata.e;
-        eat_lay_sub_tag();
-        return;                         // process during first pass only
-    }
     memset( &AttrFlags, 0, sizeof( AttrFlags ) );   // clear all attribute flags
     if( ProcFlags.lay_xxx != el_dl ) {
         ProcFlags.lay_xxx = el_dl;
@@ -731,11 +726,6 @@ void    lay_gl( const gmltag * entry )
 
     p = scandata.s;
 
-    if( !GlobalFlags.firstpass ) {
-        scandata.s = scandata.e;
-        eat_lay_sub_tag();
-        return;                         // process during first pass only
-    }
     memset( &AttrFlags, 0, sizeof( AttrFlags ) );   // clear all attribute flags
     if( ProcFlags.lay_xxx != el_gl ) {
         ProcFlags.lay_xxx = el_gl;
@@ -924,11 +914,6 @@ void    lay_ol( const gmltag * entry )
 
     p = scandata.s;
 
-    if( !GlobalFlags.firstpass ) {
-        scandata.s = scandata.e;
-        eat_lay_sub_tag();
-        return;                         // process during first pass only
-    }
     memset( &AttrFlags, 0, sizeof( AttrFlags ) );   // clear all attribute flags
     if( ProcFlags.lay_xxx != el_ol ) {
         ProcFlags.lay_xxx = el_ol;
@@ -1147,11 +1132,6 @@ void    lay_sl( const gmltag * entry )
 
     p = scandata.s;
 
-    if( !GlobalFlags.firstpass ) {
-        scandata.s = scandata.e;
-        eat_lay_sub_tag();
-        return;                         // process during first pass only
-    }
     memset( &AttrFlags, 0, sizeof( AttrFlags ) );   // clear all attribute flags
     if( ProcFlags.lay_xxx != el_sl ) {
         ProcFlags.lay_xxx = el_sl;
@@ -1330,11 +1310,6 @@ void    lay_ul( const gmltag * entry )
 
     p = scandata.s;
 
-    if( !GlobalFlags.firstpass ) {
-        scandata.s = scandata.e;
-        eat_lay_sub_tag();
-        return;                         // process during first pass only
-    }
     memset( &AttrFlags, 0, sizeof( AttrFlags ) );   // clear all attribute flags
     if( ProcFlags.lay_xxx != el_ul ) {
         ProcFlags.lay_xxx = el_ul;

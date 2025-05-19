@@ -220,11 +220,6 @@ void    lay_banner( const gmltag * entry )
     p = scandata.s;
     rs_loc = banner_tag;
 
-    if( !GlobalFlags.firstpass ) {
-        scandata.s = scandata.e;
-        eat_lay_sub_tag();
-        return;                         // process during first pass only
-    }
     memset( &AttrFlags, 0, sizeof( AttrFlags ) );   // clear all attribute flags
     if( ProcFlags.lay_xxx != el_banner ) {
         ProcFlags.lay_xxx = el_banner;
@@ -523,11 +518,6 @@ void    lay_ebanner( const gmltag * entry )
     ProcFlags.lay_xxx = el_zero;        // banner no longer active
     rs_loc = 0;
 
-    if( !GlobalFlags.firstpass ) {
-        scandata.s = scandata.e;
-        eat_lay_sub_tag();
-        return;                         // process during first pass only
-    }
     if( ProcFlags.banner ) {            // are we inside banner
         ProcFlags.banner = false;
 

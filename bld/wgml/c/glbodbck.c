@@ -130,11 +130,6 @@ void    lay_backbod( const gmltag * entry )
     p = scandata.s;
     cvterr = false;
 
-    if( !GlobalFlags.firstpass ) {
-        scandata.s = scandata.e;
-        eat_lay_sub_tag();
-        return;                         // process during first pass only
-    }
     if( strcmp( "BACKM", entry->tagname ) == 0 ) {
         x_tag = el_backm;
         bb  = &layout_work.backm;

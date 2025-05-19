@@ -165,11 +165,6 @@ void    lay_p( const gmltag * entry )
 
     (void)entry;
 
-    if( !GlobalFlags.firstpass ) {
-        scandata.s = scandata.e;
-        eat_lay_sub_tag();
-        return;                         // process during first pass only
-    }
     memset( &AttrFlags, 0, sizeof( AttrFlags ) );   // clear all attribute flags
     if( ProcFlags.lay_xxx != el_p ) {
         ProcFlags.lay_xxx = el_p;
@@ -198,11 +193,6 @@ void    lay_pc( const gmltag * entry )
 
     (void)entry;
 
-    if( !GlobalFlags.firstpass ) {
-        scandata.s = scandata.e;
-        eat_lay_sub_tag();
-        return;                         // process during first pass only
-    }
     memset( &AttrFlags, 0, sizeof( AttrFlags ) );   // clear all attribute flags
     if( ProcFlags.lay_xxx != el_pc ) {
         ProcFlags.lay_xxx = el_pc;

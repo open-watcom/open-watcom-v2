@@ -60,11 +60,6 @@ void    lay_xx( const gmltag * entry )
     p = scandata.s;
     cvterr = false;
 
-    if( !GlobalFlags.firstpass ) {
-        scandata.s = scandata.e;
-        eat_lay_sub_tag();
-        return;                         // process during first pass only
-    }
     if( strcmp( "CIT", entry->tagname ) == 0 ) {
         x_tag = el_cit;
         fontptr = &layout_work.cit.font;

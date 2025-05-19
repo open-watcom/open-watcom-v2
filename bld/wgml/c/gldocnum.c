@@ -61,11 +61,6 @@ void    lay_docnum( const gmltag * entry )
     p = scandata.s;
     cvterr = false;
 
-    if( !GlobalFlags.firstpass ) {
-        scandata.s = scandata.e;
-        eat_lay_sub_tag();
-        return;                         // process during first pass only
-    }
     memset( &AttrFlags, 0, sizeof( AttrFlags ) );   // clear all attribute flags
     if( ProcFlags.lay_xxx != el_docnum ) {
         ProcFlags.lay_xxx = el_docnum;

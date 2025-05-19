@@ -125,11 +125,6 @@ void    lay_tochx( const gmltag * entry )
 
     p = scandata.s;
 
-    if( !GlobalFlags.firstpass ) {
-        scandata.s = scandata.e;
-        eat_lay_sub_tag();
-        return;                         // process during first pass only
-    }
     switch( entry->tagname[4] ) {
     case '0':
         hx_l = el_toch0;
