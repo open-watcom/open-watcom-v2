@@ -76,9 +76,7 @@ void    lay_dummy( const gmltag * entry )
 
     scandata.s = scandata.e;
 
-    if( GlobalFlags.firstpass ) {       // layout msg only in pass 1
-        xx_warn_c( wng_unsupp_lay, entry->tagname );
-    }
+    xx_warn_c( wng_unsupp_lay, entry->tagname );
     eat_lay_sub_tag();                  // ignore any attribute / value
 }
 
