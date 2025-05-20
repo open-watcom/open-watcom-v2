@@ -66,17 +66,7 @@ void    lay_layout( const gmltag * entry )
 
     if( !GlobalFlags.firstpass ) {
         ProcFlags.layout = true;
-
-        /*******************************************************************/
-        /*  read and ignore all lines up to :eLAYOUT                       */
-        /*******************************************************************/
-
-        while( !ProcFlags.reprocess_line  ) {
-            eat_lay_sub_tag();
-            if( strnicmp( ":elayout", buff2, 8 ) ) {
-                ProcFlags.reprocess_line = false;   // not :elayout, go on
-            }
-        }
+        eat_lay_sub_tag();
         return;
     }
 
@@ -113,6 +103,7 @@ void    lay_elayout( const gmltag * entry )
 
     if( !GlobalFlags.firstpass ) {
         ProcFlags.layout = false;
+        eat_lay_sub_tag();
         return;                         // process during first pass only
     }
 
@@ -126,4 +117,3 @@ void    lay_elayout( const gmltag * entry )
         xx_err_cc( err_extra_ignored, g_tok_start, p );
     }
 }
-
