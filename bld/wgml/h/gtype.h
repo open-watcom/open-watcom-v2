@@ -261,8 +261,7 @@ typedef enum {
 typedef struct sym_list_entry {
     struct sym_list_entry   *prev;                  // next entry
     char                    value[BUF_SIZE + 1];    // value of attribute, function, or symbol
-    char                    *start;                 // position of "&" in original buffer
-    char                    *end;                   // position of byte after item in original buffer
+    tok_type                orig;                   // position of "&" and after item in original buffer
     slflags                 type;
 } sym_list_entry;
 
@@ -1696,7 +1695,7 @@ typedef struct proc_flags {
     unsigned        banner              : 1;// within layout banner definition
     unsigned        banregion           : 1;// within layout banregion definition
     unsigned        hx_level            : 3;// 0 - 6  active Hx :layout sub tag
-    lay_sub         lay_xxx             : 8;// active :layout sub tag
+    lay_sub         lay_xxx;                // active :layout sub tag
 
     ju_enum         justify             : 8;// .ju on half off ...
 
