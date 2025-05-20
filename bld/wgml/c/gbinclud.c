@@ -72,9 +72,10 @@ void    gml_binclude( const gmltag * entry )
     } else {
         for( ;; ) {
             p = get_att_name( p, &pa, &attr_name );
-            if( ProcFlags.reprocess_line ) {
+            if( ProcFlags.reprocess_line )
                 break;
-            }
+            if( ProcFlags.tag_end_found )
+                break;
             if( strcmp( "file", attr_name.attname.t ) == 0 ) {
                 p = get_att_value( p, &attr_val );
                 if( AttrFlags.file ) {

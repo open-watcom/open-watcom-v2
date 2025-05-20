@@ -208,10 +208,10 @@ void gml_dl( const gmltag * entry )
     } else {
         for( ;; ) {
             p = get_att_name( p, &pa, &attr_name );
-            if( ProcFlags.reprocess_line ) {
+            if( ProcFlags.reprocess_line )
                 break;
-            }
-
+            if( ProcFlags.tag_end_found )
+                break;
             if( strcmp( "compact", attr_name.attname.t ) == 0 ) {
                 compact = true;
                 if( ProcFlags.tag_end_found ) {
@@ -328,10 +328,10 @@ void gml_gl( const gmltag * entry )
     } else {
         for( ;; ) {
             p = get_att_name( p, &pa, &attr_name );
-            if( ProcFlags.reprocess_line ) {
+            if( ProcFlags.reprocess_line )
                 break;
-            }
-
+            if( ProcFlags.tag_end_found )
+                break;
             if( strcmp( "compact", attr_name.attname.t ) == 0 ) {
                 compact = true;
             } else if( strcmp( "termhi", attr_name.attname.t ) == 0 ) {
@@ -422,10 +422,10 @@ void gml_ol( const gmltag * entry )
     } else {
         for( ;; ) {
             p = get_att_name( p, &pa, &attr_name );
-            if( ProcFlags.reprocess_line ) {
+            if( ProcFlags.reprocess_line )
                 break;
-            }
-
+            if( ProcFlags.tag_end_found )
+                break;
             if( strcmp( "compact", attr_name.attname.t ) == 0 ) {
                 compact = true;
             } else {
@@ -509,10 +509,10 @@ void gml_sl( const gmltag * entry )
     } else {
         for( ;; ) {
             p = get_att_name( p, &pa, &attr_name );
-            if( ProcFlags.reprocess_line ) {
+            if( ProcFlags.reprocess_line )
                 break;
-            }
-
+            if( ProcFlags.tag_end_found )
+                break;
             if( strcmp( "compact", attr_name.attname.t ) == 0 ) {
                 compact = true;
             } else {
@@ -595,10 +595,10 @@ void gml_ul( const gmltag * entry )
     } else {
         for( ;; ) {
             p = get_att_name( p, &pa, &attr_name );
-            if( ProcFlags.reprocess_line ) {
+            if( ProcFlags.reprocess_line )
                 break;
-            }
-
+            if( ProcFlags.tag_end_found )
+                break;
             if( strcmp( "compact", attr_name.attname.t ) == 0 ) {
                 compact = true;
             } else {

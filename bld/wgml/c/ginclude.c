@@ -81,7 +81,7 @@ extern  void    gml_include( const gmltag * entry )
         /* already at tag end */
     } else {
         p = get_att_name( p, &pa, &attr_name );
-        if( !ProcFlags.reprocess_line ) {
+        if( !ProcFlags.reprocess_line && !ProcFlags.tag_end_found ) {
             if( strcmp( "file", attr_name.attname.t ) == 0 ) {
                 p = get_att_value( p, &attr_val );
             } else {

@@ -652,9 +652,10 @@ static void gml_hx_common( const gmltag * entry, hdsrc hn_lvl )
     } else {
         for( ;; ) {
             p = get_att_name( p, &pa, &attr_name );
-            if( ProcFlags.reprocess_line ) {
+            if( ProcFlags.reprocess_line )
                 break;
-            }
+            if( ProcFlags.tag_end_found )
+                break;
             if( strcmp( "id", attr_name.attname.t ) == 0 ) {
                 p = get_refid_value( p, &attr_val, hdrefid );
                 if( attr_val.name == NULL ) {
