@@ -207,21 +207,15 @@ void gml_dl( const gmltag * entry )
         /* already at tag end */
     } else {
         for( ;; ) {
-            p = get_att_name( p, &pa, &attr_name );
+            p = get_tag_att_name( p, &pa, &attr_name );
             if( ProcFlags.reprocess_line )
                 break;
             if( ProcFlags.tag_end_found )
                 break;
             if( strcmp( "compact", attr_name.attname.t ) == 0 ) {
                 compact = true;
-                if( ProcFlags.tag_end_found ) {
-                    break;
-                }
             } else if( strcmp( "break", attr_name.attname.t ) == 0 ) {
                 dl_break = true;
-                if( ProcFlags.tag_end_found ) {
-                    break;
-                }
             } else if( strcmp( "headhi", attr_name.attname.t ) == 0 ) {
                 p = get_att_value( p, &attr_val );
                 if( attr_val.name == NULL ) {
@@ -327,7 +321,7 @@ void gml_gl( const gmltag * entry )
         /* already at tag end */
     } else {
         for( ;; ) {
-            p = get_att_name( p, &pa, &attr_name );
+            p = get_tag_att_name( p, &pa, &attr_name );
             if( ProcFlags.reprocess_line )
                 break;
             if( ProcFlags.tag_end_found )
@@ -421,7 +415,7 @@ void gml_ol( const gmltag * entry )
         /* already at tag end */
     } else {
         for( ;; ) {
-            p = get_att_name( p, &pa, &attr_name );
+            p = get_tag_att_name( p, &pa, &attr_name );
             if( ProcFlags.reprocess_line )
                 break;
             if( ProcFlags.tag_end_found )
@@ -508,7 +502,7 @@ void gml_sl( const gmltag * entry )
         /* already at tag end */
     } else {
         for( ;; ) {
-            p = get_att_name( p, &pa, &attr_name );
+            p = get_tag_att_name( p, &pa, &attr_name );
             if( ProcFlags.reprocess_line )
                 break;
             if( ProcFlags.tag_end_found )
@@ -594,7 +588,7 @@ void gml_ul( const gmltag * entry )
         /* already at tag end */
     } else {
         for( ;; ) {
-            p = get_att_name( p, &pa, &attr_name );
+            p = get_tag_att_name( p, &pa, &attr_name );
             if( ProcFlags.reprocess_line )
                 break;
             if( ProcFlags.tag_end_found )

@@ -92,19 +92,18 @@ void    eat_lay_sub_tag( void )
 /*  rc = omit if nothing found                                             */
 /***************************************************************************/
 
-static char *get_lay_attname( const char *p, att_name_type *attr_name )
+static char *get_lay_attname( const char *p, char *attname )
 {
     int     i;
 
-    attr_name->att_name = (char *)p;
     i = 0;
     while( is_lay_att_char( *p ) ) {
         if( i < LAY_ATT_NAME_LENGTH ) {
-            attr_name->attname.l[i++] = my_tolower( *p );
+            attname[i++] = my_tolower( *p );
         }
         p++;
     }
-    attr_name->attname.l[i] = '\0';
+    attname[i] = '\0';
     return( (char *)p );
 }
 
@@ -112,53 +111,27 @@ condcode    lay_attr_and_value( att_name_type *attr_name, att_val_type *attr_val
 {
     char            *p;
     char            *pa;
-    condcode        rc;
-
-    p = scandata.s;
-    pa = p;
-    rc = no;
-
-    SkipSpacesTabs( p );                // over WS to start of name
 
     memset( attr_val, 0, sizeof( *attr_val ) );
     attr_val->quoted = ' ';
 
-    /*
-     * loop until attribute/value pair or rescan line found
-     */
-    while( *(p = get_lay_attname( p, attr_name )) == '\0' ) {
-        if( input_cbs->fmflags & II_eof ) {
-            break;
-        }
-        if( !get_line( true ) ) {       // next line for missing attribute
-            break;
-        }
-        process_line();
-        if( check_tagname( scandata.s, NULL ) != NULL // tag found: end-of-tag
-          || *scandata.s == SCR_char ) {    // cw found: end-of-tag
-            ProcFlags.reprocess_line = true;
-            p = scandata.s;
-            return( rc );
-        }
-        p = scandata.s;                 // new line is part of current tag
-        SkipSpacesTabs( p );            // over WS to start of alleged attribute
+    p = get_att_name_start( scandata.s, &pa, true );
+    if( ProcFlags.reprocess_line ) {
+        return( no );
     }
-    if( *p == '.' ) {                   // end of tag
-        ProcFlags.tag_end_found = true;
+    if( ProcFlags.tag_end_found ) {
         return( omit );
     }
-    if( p - attr_name->att_name < 4 ) {
+    attr_name->att_name = (char *)p;
+    p = get_lay_attname( p, attr_name->attname.l );
+    if( p - attr_name->att_name < 4 || p - attr_name->att_name > LAY_ATT_NAME_LENGTH ) {
         xx_line_err_c( err_att_name_inv, pa );
     }
 
     p = get_lay_value( p, attr_val );
-    if( attr_val->len > 0 ) {
-        rc = pos;
-    }
     scandata.s = p;
-    return( rc );
+    return( ( attr_val->len > 0 ) ? pos : no );
 }
-
 
 /***************************************************************************/
 /* free_layout  free list levels, banners and banregions                   */
@@ -900,13 +873,13 @@ void    o_spacing( FILE *fp, lay_attr_o lay_attr, const text_space *tm )
 /***************************************************************************/
 bool    i_threshold( const char *p, lay_attr_i lay_attr, uint16_t *tm )
 {
-    bool        rc;
+    bool        cvterr;
 
-    rc = i_uint16( p, lay_attr, tm );
+    cvterr = i_uint16( p, lay_attr, tm );
     if( *tm == 0 ) {
         xx_line_err_c( err_num_zero, p );
     }
-    return( rc );
+    return( cvterr );
 }
 
 void    o_threshold( FILE *fp, lay_attr_o lay_attr, const uint16_t *tm )

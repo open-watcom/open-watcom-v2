@@ -424,7 +424,8 @@ extern char         *format_num( unsigned n, char *r, unsigned rsize, num_style 
 extern void         free_ffh_list( ffh_entry *ffh_list );
 extern void         free_fwd_refs( fwd_ref *fwd_refs );
 extern void         g_keep_nest( const char *cw_tag );
-extern char         *get_att_name( char *p, char **orig, att_name_type *tag_attr );
+extern char         *get_att_name_start( char *p, char **orig, bool layout );
+extern char         *get_tag_att_name( char *p, char **orig, att_name_type *tag_attr );
 extern void         get_att_specval( att_val_type *attr_val );
 extern char         *get_att_value( char *p, att_val_type *attr_val );
 extern char         *get_tag_value( char *p, att_val_type *attr_val );

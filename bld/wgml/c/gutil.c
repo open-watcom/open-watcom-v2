@@ -35,6 +35,8 @@
 #include "clibext.h"
 
 
+#define CHECK_WS(c,t)   (((c) == ' ') || (t) && ((c) == '\t'))
+
 /***************************************************************************/
 /*  parses in_su->su_txt to complete initialization of in_su               */
 /*  Notes:                                                                 */
@@ -862,12 +864,7 @@ char *format_num( unsigned n, char *r, unsigned rsize, num_style ns )
 /* returns the start of the part of the line on which that potential       */
 /*   attribute was found, thus preserving any preceding spaces in case it  */
 /*   turns out that it is not an attribute at all but rather text          */
-/* NOTE: ProcFlags.tag_end_found is cleared here rather than in            */
-/*       get_att_value() to accomodate attributes "compact" and "break"    */
-/*       which have no "value" but which must not return tag_end_found     */
-/*       unless, of course, it is                                          */
 /***************************************************************************/
-
 
 char *get_tag_attname( const char *p, char *attname )
 {
@@ -884,51 +881,51 @@ char *get_tag_attname( const char *p, char *attname )
     return( (char *)p );
 }
 
-char *get_att_name( char *p, char **orig, att_name_type *attr_name )
+static char *get_name_start( char *p, char **orig, bool layout )
 {
-    static char     buf[BUF_SIZE + 1];
+    *orig = p;                      // save initial location
+    while( CHECK_WS( *p, layout ) ) // over WS to attribute
+        p++;
+    return( p );
+}
 
-    for(;;) {                           // loop until potential attribute/rescan line found
-        *orig = p;                      // save initial location
-        SkipSpaces( p );                // over WS to attribute
-        if( *p == '.' ) {               // end-of-tag
-            p++;
-            *orig = p;                  // return next char after end-of-tag
-            ProcFlags.tag_end_found = true;
-            break;
+char *get_att_name_start( char *p, char **orig, bool layout )
+{
+    while( *(p = get_name_start( p, orig, layout )) == '\0' ) {
+        if( input_cbs->fmflags & II_eof ) {
+            return( p );
         }
-        if( *p == '\0' ) {              // end of line: get new line
-            if( (input_cbs->fmflags & II_eof) == 0 ) {
-                if( get_line( true ) ) {// next line for missing attribute
-
-                    /*******************************************************/
-                    /* buff2 must be restored if it is to be reprocessed   */
-                    /* so that any symbol substitutions will reflect any   */
-                    /* changes made by the tag calling it                  */
-                    /*******************************************************/
-
-                    strcpy( buf, buff2 );
-                    scandata.s = buff2;
-                    scandata.e  = buff2 + buff2_lg;
-                    if( (*scandata.s == SCR_char)       // cw found: end-of-tag
-                      || (*scandata.s == GML_char) ) {  // tag found: end-of-tag
-                        ProcFlags.reprocess_line = true;
-                        break;
-                    } else {
-                        process_line();
-                        p = scandata.s; // new line is part of current tag
-                        continue;
-                    }
-                }
-            } else {
-                break;  // eof() found: return for further processing
-            }
-        } else {
-            break;      // potential next attribute found
+        if( !get_line( true ) ) {       // next line for missing attribute
+            return( p );
         }
+        process_line();
+        if( (*scandata.s == SCR_char)      // cw found: end-of-tag
+          || (*scandata.s == GML_char) ) { // tag found: end-of-tag
+            ProcFlags.reprocess_line = true;
+            return( p );
+        }
+        p = scandata.s;                 // new line is part of current tag
     }
+    if( *p == '.' ) {                   // end of tag
+        ProcFlags.tag_end_found = true;
+        p++;
+        *orig = p;
+    }
+    return( p );
+}
+
+char *get_tag_att_name( char *p, char **orig, att_name_type *attr_name )
+{
+    p = get_att_name_start( p, orig, false );
+    if( ProcFlags.reprocess_line )
+        return( p );
+    if( ProcFlags.tag_end_found )
+        return( p );
     attr_name->att_name = p;
     p = get_tag_attname( p, attr_name->attname.t );
+    if( p - attr_name->att_name < 4 || p - attr_name->att_name > TAG_ATT_NAME_LENGTH ) {
+        xx_line_err_c( err_att_name_inv, *orig );
+    }
     return( p );
 }
 
@@ -946,8 +943,6 @@ void get_att_specval( att_val_type *attr_val )
     }
     attr_val->specval[i] = '\0';
 }
-
-#define CHECK_WS(c,t)   (((c) == ' ') || (t) && ((c) == '\t'))
 
 static char *get_value( char *p, att_val_type *attr_val, bool equ, bool layout )
 {

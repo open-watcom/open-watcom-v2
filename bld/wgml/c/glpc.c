@@ -101,54 +101,61 @@ const   lay_att     p_att[4] =
 /*over to the next output page.                                                 */
 /********************************************************************************/
 
-static  int     process_arg( p_lay_tag *p_or_pc, att_name_type *attr_name, att_val_type *attr_val )
+static void process_arg( p_lay_tag *p_or_pc )
 {
-    char        *   p;
-    int             cvterr = -1;
+    char            *p;
+    int             cvterr;
     int             k;
     lay_att         curr;
+    condcode        cc;
+    att_name_type   attr_name;
+    att_val_type    attr_val;
 
-    for( k = 0, curr = p_att[k]; curr > 0; k++, curr = p_att[k] ) {
-        if( strcmp( lay_att_names[curr], attr_name->attname.l ) == 0 ) {
-            p = attr_val->name;
-            switch( curr ) {
-            case e_line_indent:
-                if( AttrFlags.line_indent ) {
-                    xx_line_err_ci( err_att_dup, attr_name->att_name,
-                        attr_val->name - attr_name->att_name + attr_val->len);
+    memset( &AttrFlags, 0, sizeof( AttrFlags ) );   // clear all attribute flags
+
+    while( (cc = lay_attr_and_value( &attr_name, &attr_val )) == pos ) {   // get att with value
+        cvterr = -1;
+        for( k = 0, curr = p_att[k]; curr > 0; k++, curr = p_att[k] ) {
+            if( strcmp( lay_att_names[curr], attr_name.attname.l ) == 0 ) {
+                p = attr_val.name;
+                switch( curr ) {
+                case e_line_indent:
+                    if( AttrFlags.line_indent ) {
+                        xx_line_err_ci( err_att_dup, attr_name.att_name,
+                            attr_val.name - attr_name.att_name + attr_val.len);
+                    }
+                    cvterr = i_space_unit( p, &attr_val, &p_or_pc->line_indent );
+                    AttrFlags.line_indent = true;
+                    break;
+                case e_pre_skip:
+                    if( AttrFlags.pre_skip ) {
+                        xx_line_err_ci( err_att_dup, attr_name.att_name,
+                            attr_val.name - attr_name.att_name + attr_val.len);
+                    }
+                    cvterr = i_space_unit( p, &attr_val, &p_or_pc->pre_skip );
+                    AttrFlags.pre_skip = true;
+                    break;
+                case e_post_skip:
+                    if( AttrFlags.post_skip ) {
+                        xx_line_err_ci( err_att_dup, attr_name.att_name,
+                            attr_val.name - attr_name.att_name + attr_val.len);
+                    }
+                    cvterr = i_space_unit( p, &attr_val, &p_or_pc->post_skip );
+                    AttrFlags.post_skip = true;
+                    break;
+                default:
+                    internal_err( __FILE__, __LINE__ );
                 }
-                cvterr = i_space_unit( p, attr_val, &p_or_pc->line_indent );
-                AttrFlags.line_indent = true;
-                break;
-            case e_pre_skip:
-                if( AttrFlags.pre_skip ) {
-                    xx_line_err_ci( err_att_dup, attr_name->att_name,
-                        attr_val->name - attr_name->att_name + attr_val->len);
+                if( cvterr ) {              // there was an error
+                    xx_err( err_att_val_inv );
                 }
-                cvterr = i_space_unit( p, attr_val, &p_or_pc->pre_skip );
-                AttrFlags.pre_skip = true;
-                break;
-            case e_post_skip:
-                if( AttrFlags.post_skip ) {
-                    xx_line_err_ci( err_att_dup, attr_name->att_name,
-                        attr_val->name - attr_name->att_name + attr_val->len);
-                }
-                cvterr = i_space_unit( p, attr_val, &p_or_pc->post_skip );
-                AttrFlags.post_skip = true;
-                break;
-            default:
-                internal_err( __FILE__, __LINE__ );
+                break;                      // break out of for loop
             }
-            if( cvterr ) {              // there was an error
-                xx_err( err_att_val_inv );
-            }
-            break;                      // break out of for loop
+        }
+        if( cvterr < 0 ) {
+            xx_err( err_att_name_inv );
         }
     }
-    if( cvterr < 0 ) {
-        xx_err( err_att_name_inv );
-    }
-    return( cvterr );
 }
 
 
@@ -158,25 +165,13 @@ static  int     process_arg( p_lay_tag *p_or_pc, att_name_type *attr_name, att_v
 
 void    lay_p( const gmltag * entry )
 {
-    condcode            cc;
-    int                 cvterr;
-    att_name_type       attr_name;
-    att_val_type        attr_val;
-
     (void)entry;
 
-    memset( &AttrFlags, 0, sizeof( AttrFlags ) );   // clear all attribute flags
     if( ProcFlags.lay_xxx != el_p ) {
         ProcFlags.lay_xxx = el_p;
     }
-    while( (cc = lay_attr_and_value( &attr_name, &attr_val )) == pos ) {   // get att with value
-        cvterr = process_arg( &layout_work.p, &attr_name, &attr_val );
-        if( ProcFlags.tag_end_found ) {
-            break;
-        }
-    }
+    process_arg( &layout_work.p );
     scandata.s = scandata.e;
-    return;
 }
 
 
@@ -186,23 +181,11 @@ void    lay_p( const gmltag * entry )
 
 void    lay_pc( const gmltag * entry )
 {
-    bool                cvterr;
-    condcode            cc;
-    att_name_type       attr_name;
-    att_val_type        attr_val;
-
     (void)entry;
 
-    memset( &AttrFlags, 0, sizeof( AttrFlags ) );   // clear all attribute flags
     if( ProcFlags.lay_xxx != el_pc ) {
         ProcFlags.lay_xxx = el_pc;
     }
-    while( (cc = lay_attr_and_value( &attr_name, &attr_val )) == pos ) {   // get att with value
-        cvterr = process_arg( &layout_work.pc, &attr_name, &attr_val );
-        if( ProcFlags.tag_end_found ) {
-            break;
-        }
-    }
+    process_arg( &layout_work.pc );
     scandata.s = scandata.e;
-    return;
 }

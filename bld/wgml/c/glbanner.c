@@ -304,9 +304,6 @@ void    lay_banner( const gmltag * entry )
                 break;                  // break out of for loop
             }
         }
-        if( ProcFlags.tag_end_found ) {
-            break;
-        }
     }
 
     /*******************************************************/

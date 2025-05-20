@@ -71,7 +71,7 @@ void    gml_binclude( const gmltag * entry )
         /* already at tag end */
     } else {
         for( ;; ) {
-            p = get_att_name( p, &pa, &attr_name );
+            p = get_tag_att_name( p, &pa, &attr_name );
             if( ProcFlags.reprocess_line )
                 break;
             if( ProcFlags.tag_end_found )
