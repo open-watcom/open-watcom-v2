@@ -283,9 +283,6 @@ static void err_exit( void )
     }
     out_msg( "\nWGML has ended prematurely\n" );
     fflush( NULL );                     // TBD
-    if( environment != NULL ) {
-        longjmp( *environment, 1 );
-    }
     my_exit( 16 );
 }
 

@@ -107,15 +107,15 @@
 #define pickl( var, flag )              \
         static symvar sys( var ) = {    \
             NULL, "$" #var, 0L, 0L, NULL, &sys0( var ), sysf( var ), flag }; \
-        static symsub sys0( var ) = { NULL, &sys( var ), no_subscript, syss( var ) };
+        static symsub sys0( var ) = { NULL, &sys( var ), SI_no_subscript, syss( var ) };
 #define picka( var, flag )              \
         static symvar sys( var ) = {    \
             NULL, "$" #var, 0L, 0L, NULL, &sys0( var ), NULL, flag }; \
-        static symsub sys0( var ) = { NULL, &sys( var ), no_subscript, NULL };
+        static symsub sys0( var ) = { NULL, &sys( var ), SI_no_subscript, NULL };
 #define pickk( var, flag )              \
         static symvar sys( var ) = {    \
             NULL, "$" #var, 0L, 0L, NULL, &sys0( var ), sysf( var ), flag }; \
-        static symsub sys0( var ) = { NULL, &sys( var ), no_subscript, NULL };
+        static symsub sys0( var ) = { NULL, &sys( var ), SI_no_subscript, NULL };
 #include "gsyssym.h"
 #undef pickk
 #undef picka
@@ -151,7 +151,7 @@ void    add_to_sysdir( char * name, char char_val )
 {
     symsub  *   dictval;
 
-    find_symvar( sys_dict, name, no_subscript, &dictval);
+    find_symvar( sys_dict, name, SI_no_subscript, &dictval);
     *(dictval->value) = char_val;
 }
 
@@ -1103,7 +1103,6 @@ static  void    init_date_time( void )
     time_t          now;
     struct tm       *tmbuf;
     char            *p;
-    str_type        val;
 
     now = time( NULL );
     tmbuf = localtime( &now );
@@ -1119,9 +1118,7 @@ static  void    init_date_time( void )
         }
     }
     sysdate0.value = dateval;
-    val.s = dateval;
-    val.l = strlen( val.s );
-    add_symvar( global_dict, "date", &val, no_subscript, 0 );
+    add_symvar( global_dict, "date", dateval, strlen( dateval ), SI_no_subscript, SF_none );
 
     strftime( dayofmval, sizeof( dayofmval ), "%e", tmbuf );
     sysdayofm0.value = dayofmval;
@@ -1156,9 +1153,7 @@ static  void    init_date_time( void )
     systime0.value = timeval;
     syssecond0.value = &timeval[6];
 
-    val.s = timeval;
-    val.l = strlen( val.s );
-    add_symvar( global_dict, "time", &val, no_subscript, 0 );
+    add_symvar( global_dict, "time", timeval, strlen( timeval ), SI_no_subscript, SF_none );
 
 }
 
@@ -1168,19 +1163,12 @@ static  void    init_date_time( void )
 
 static  void    init_predefined_symbols( void )
 {
-    char        wkstring[NUM2STR_LENGTH];
-    str_type    val;
+    char        wkstring[2];
 
-    val.s = "&";
-    val.l = 1;
-    add_symvar( global_dict, "amp", &val, no_subscript, SF_is_AMP+SF_predefined );
-
-    wkstring[1] = '\0';
+    add_symvar( global_dict, "amp", "&", 1, SI_no_subscript, SF_is_AMP+SF_predefined );
     wkstring[0] = GML_CHAR_DEFAULT;
-    val.s = wkstring;
-    val.l = 1;
-    add_symvar( global_dict, "gml", &val, no_subscript, SF_predefined );
-
+    wkstring[1] = '\0';
+    add_symvar( global_dict, "gml", wkstring, 1, SI_no_subscript, SF_predefined );
 }
 
 /***************************************************************************/

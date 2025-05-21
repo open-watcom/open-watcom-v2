@@ -1230,7 +1230,7 @@ void do_justify( uint32_t lm, uint32_t rm, text_line * line )
     }
 
     if( (input_cbs->fmflags & II_research) && GlobalFlags.lastpass ) {
-        find_symvar( sys_dict, "$ju", no_subscript, &symjusub);// .ju as string
+        find_symvar( sys_dict, "$ju", SI_no_subscript, &symjusub);// .ju as string
 #if 0
         out_msg( "\n ju_%s lm:%d %d rm:%d sum_w:%d hor_end:%d"
                  " delta:%d rem:%d delta0:%d cnt:%d\n", symjusub->value,

@@ -712,8 +712,8 @@ static void gen_index( void )
 
     ixh_indent = indent[0] + conv_hor_unit( &layout_work.ixhead.indent, layout_work.ixhead.font );
     ixh1 = index_dict;
-    find_symvar( sys_dict, "$ixj", no_subscript, &ixjval );
-    find_symvar( sys_dict, "$ixref", no_subscript, &ixrefval );
+    find_symvar( sys_dict, "$ixj", SI_no_subscript, &ixjval );
+    find_symvar( sys_dict, "$ixref", SI_no_subscript, &ixrefval );
 
     t_page.cur_left += conv_hor_unit( &layout_work.index.left_adjust, layout_work.ixhead.font );
     t_page.cur_width = t_page.cur_left;
@@ -1597,8 +1597,6 @@ extern void gml_preface( const gmltag * entry )
 
 extern void gml_titlep( const gmltag * entry )
 {
-    str_type        val_null;
-
     (void)entry;
 
     if( ProcFlags.doc_sect_nxt == doc_sect_egdoc ) {
@@ -1610,10 +1608,8 @@ extern void gml_titlep( const gmltag * entry )
     scr_process_break();
     gml_doc_xxx( doc_sect_titlep );
 
-    val_null.s = "";
-    val_null.l = 0;
-    add_symvar( global_dict, "$stitle", &val_null, no_subscript, 0 );  // set null string
-    add_symvar( global_dict, "$title", &val_null, no_subscript, 0 );   // set null string
+    add_symvar( global_dict, "$stitle", "", 0, SI_no_subscript, SF_none );  // set null string
+    add_symvar( global_dict, "$title", "", 0, SI_no_subscript, SF_none );   // set null string
 
     rs_loc = titlep_tag;
     if( input_cbs->fmflags & II_file ) {    // save line number
@@ -1739,7 +1735,7 @@ extern void gml_egdoc( const gmltag * entry )
 extern void gml_gdoc( const gmltag *entry )
 {
     char            *p;
-    str_type        val;
+    char            *pa;
 
     (void)entry;
 
@@ -1767,16 +1763,13 @@ extern void gml_gdoc( const gmltag *entry )
         } else {
             quote = ' ';
         }
-        val.s = p;
+        pa = p;
         while( *p != '\0' && *p != quote ) {
             ++p;
         }
-        val.l = p - val.s;
-        add_symvar( global_dict, "$sec", &val, no_subscript, 0 );
+        add_symvar( global_dict, "$sec", pa, p - pa, SI_no_subscript, SF_none );
     } else {
-        val.s = "";
-        val.l = 0;
-        add_symvar( global_dict, "$sec", &val, no_subscript, 0 ); // set null string
+        add_symvar( global_dict, "$sec", "", 0, SI_no_subscript, SF_none ); // set null string
     }
 
     gml_doc_xxx( doc_sect_gdoc );

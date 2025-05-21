@@ -37,7 +37,7 @@
 /* Note: p must point to a symbol name, as no trailing "=<value" is required */
 /*****************************************************************************/
 
-char * scan_sym( char * p, symvar * sym, sub_index * subscript, char * * result, bool splittable )
+char * scan_sym( char * p, symvar * sym, sub_index *subscript, char * * result, bool splittable )
 {
     char            *pend;
     int             p_level;
@@ -55,7 +55,7 @@ char * scan_sym( char * p, symvar * sym, sub_index * subscript, char * * result,
     g_scan_err = false;
     sym->next = NULL;
     sym->flags = 0;
-    *subscript = no_subscript;          // not subscripted
+    *subscript = SI_no_subscript;          // not subscripted
 
     SkipSpaces( p );                    // skip over spaces
     if( *p == d_q || *p == s_q || *p == l_q ) {
@@ -161,13 +161,13 @@ char * scan_sym( char * p, symvar * sym, sub_index * subscript, char * * result,
             } else if( *p == '*' ) {        // * concatenates all elements
                 p++;
                 if( *p == '+' ) {
-                    *subscript = pos_subscript; // positive indices only
+                    *subscript = SI_pos_subscript; // positive indices only
                     p++;
                 } else if( *p == '-' ) {
-                    *subscript = neg_subscript; // negative indices only
+                    *subscript = SI_neg_subscript; // negative indices only
                     p++;
                 } else {
-                    *subscript = all_subscript; // all indices
+                    *subscript = SI_all_subscript; // all indices
                 }
                 if( *p != ')' ) {
                     g_scan_err = true;
@@ -264,27 +264,25 @@ void    scr_se( void )
     symsub          *symsubval;
     symvar          sym;
     unsigned        len;
-    str_type        val;
+    char            *val;
 
-    subscript = no_subscript;                       // not subscripted
+    subscript = SI_no_subscript;                       // not subscripted
     g_scan_err = false;
     p = scan_sym( scandata.s, &sym, &subscript, NULL, false );
 
     if( strcmp( MAC_STAR_NAME, sym.name ) != 0 ) {  // remove trailing blanks from all symbols except *
         valstart = p;
-        for( len = strlen( p ); len-- > 0; ) {
-            if( p[len] != ' ' ) {
-                break;
-            }
-            p[len] = '\0';
-        }
+        p = scandata.e;
+        while( p-- > valstart && *p == ' ' )
+            {;}
+        scandata.e = p + 1;
         p = valstart;
     }
 
     if( ProcFlags.blanks_allowed ) {
         SkipSpaces( p );                        // skip over spaces
     }
-    if( *p == '\0' ) {
+    if( p >= scandata.e ) {
         if( !ProcFlags.suppress_msg ) {
             xx_line_err_exit_c( err_eq_expected, p);
         }
@@ -294,17 +292,17 @@ void    scr_se( void )
         if( *p == ')' ) {
             p++;
         }
-        val.s = p;
+        val = p;
         if( *p == '=' ) {                       // all other cases have no equal sign (see above)
             p++;
             if( ProcFlags.blanks_allowed ) {
                 SkipSpaces( p );                // skip over spaces to value
             }
-            val.s = p;
-            val.l = scandata.e - p;
-            if( is_quote_char( *val.s ) ) {      // quotes ?
+            val = p;
+            len = scandata.e - p;
+            if( is_quote_char( *val ) ) {      // quotes ?
                 p++;
-                while( *p != '\0' ) {
+                while( p < scandata.e ) {
                     /*
                      * TODO! ????
                      * remove final character, if it matches the start character
@@ -312,16 +310,15 @@ void    scr_se( void )
                      *
                      *  if( (*valstart == *p) && (!*(p+1) || (*(p+1) == ' ')) ) {
                      */
-                    if( (*val.s == p[0]) && p[1] == '\0' ) {
+                    if( (*val == p[0]) && p + 1 >= scandata.e ) {
                         break;
                     }
                     ++p;
                 }
-                if( (val.s < p) && (*p == *val.s) ) { // delete quotes if more than one character
-                    val.s++;
-                    *p = '\0';
+                if( (val < p) && (*p == *val) ) { // delete quotes if more than one character
+                    val++;
                 }
-                val.l = p - val.s;
+                len = p - val;
             } else {                                // numeric or undelimited string
                 getnum_block    gn;
                 condcode        cc;
@@ -331,23 +328,19 @@ void    scr_se( void )
                 gn.ignore_blanks = true;
                 cc = getnum( &gn );             // try numeric expression evaluation
                 if( cc != notnum ) {
-                    val.s = gn.resultstr;
-                    val.l = scandata.e - val.s;
+                    val = gn.resultstr;
+                    len = scandata.e - val;
                 }                               // if notnum treat as character value
             }
-            rc = add_symvar_sym( &sym, &val, subscript, sym.flags );
+            rc = add_symvar_sym( &sym, val, len, subscript, sym.flags );
         } else if( *p == '\'' ) {               // \' may introduce valid value
             if( *(p - 1) == ' ' ) {             // but must be preceded by a space
                 p++;
-                while( *p != '\0' && (*val.s != *p) ) {  // look for final \'
+                while( p < scandata.e && (*val != *p) ) {  // look for final \'
                     p++;
                 }
-                val.s++;                                 // delete initial \'
-                if( (val.s < p) && (*p == '\'') ) {      // delete \' at end
-                    *p = '\0';
-                }
-                val.l = strlen( val.s );
-                rc = add_symvar_sym( &sym, &val, subscript, sym.flags );
+                val++;                                 // delete initial \'
+                rc = add_symvar_sym( &sym, val, p - val, subscript, sym.flags );
             } else {                                        // matches wgml 4.0
                 if( !ProcFlags.suppress_msg ) {
                     xx_line_err_exit_c( err_eq_expected, p);

@@ -2017,7 +2017,7 @@ static  void    put_layout( char * name, layout_data * lay )
 
     fprintf( fp, ":LAYOUT\n" );
 //  if( GlobalFlags.research ) {
-        find_symvar( global_dict, "$version", no_subscript, &sversion );
+        find_symvar( global_dict, "$version", SI_no_subscript, &sversion );
         fprintf( fp, ":cmt. Created with %s\n", sversion->value );
 //  }
 

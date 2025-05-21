@@ -280,10 +280,6 @@ void init_pass_data( void )
     bool        ps_save     = ProcFlags.ps_device;
     bool        wh_save     = ProcFlags.wh_device;
     int         i;
-    str_type    val_null;
-
-    val_null.s = "";
-    val_null.l = 0;
 
     memset( &ProcFlags, 0, sizeof( ProcFlags ) );
     ProcFlags.blanks_allowed = 1;       // blanks during scanning
@@ -321,54 +317,54 @@ void init_pass_data( void )
 
         /* First pass: create the heading symbols & set them to an empty string */
 
-        add_symvar_addr( global_dict, "$tophead", &val_null, no_subscript, 0,
+        add_symvar_addr( global_dict, "$tophead", "", 0, SI_no_subscript, SF_none,
                                                         &t_page.topheadsub );
-        add_symvar_addr( global_dict, "$bothead", &val_null, no_subscript, 0,
+        add_symvar_addr( global_dict, "$bothead", "", 0, SI_no_subscript, SF_none,
                                                         &t_page.botheadsub );
 
-        add_symvar_addr( global_dict, "$head0", &val_null, no_subscript, 0,
+        add_symvar_addr( global_dict, "$head0", "", 0, SI_no_subscript, SF_none,
                                                         &hd_nums[hds_h0].headsub );
-        add_symvar_addr( global_dict, "$head1", &val_null, no_subscript, 0,
+        add_symvar_addr( global_dict, "$head1", "", 0, SI_no_subscript, SF_none,
                                                         &hd_nums[hds_h1].headsub );
-        add_symvar_addr( global_dict, "$head2", &val_null, no_subscript, 0,
+        add_symvar_addr( global_dict, "$head2", "", 0, SI_no_subscript, SF_none,
                                                         &hd_nums[hds_h2].headsub );
-        add_symvar_addr( global_dict, "$head3", &val_null, no_subscript, 0,
+        add_symvar_addr( global_dict, "$head3", "", 0, SI_no_subscript, SF_none,
                                                         &hd_nums[hds_h3].headsub );
-        add_symvar_addr( global_dict, "$head4", &val_null, no_subscript, 0,
+        add_symvar_addr( global_dict, "$head4", "", 0, SI_no_subscript, SF_none,
                                                         &hd_nums[hds_h4].headsub );
-        add_symvar_addr( global_dict, "$head5", &val_null, no_subscript, 0,
+        add_symvar_addr( global_dict, "$head5", "", 0, SI_no_subscript, SF_none,
                                                         &hd_nums[hds_h5].headsub );
-        add_symvar_addr( global_dict, "$head6", &val_null, no_subscript, 0,
+        add_symvar_addr( global_dict, "$head6", "", 0, SI_no_subscript, SF_none,
                                                         &hd_nums[hds_h6].headsub );
 
-        add_symvar_addr( global_dict, "$hnum0", &val_null, no_subscript, 0,
+        add_symvar_addr( global_dict, "$hnum0", "", 0, SI_no_subscript, SF_none,
                                                         &hd_nums[hds_h0].hnumsub );
-        add_symvar_addr( global_dict, "$hnum1", &val_null, no_subscript, 0,
+        add_symvar_addr( global_dict, "$hnum1", "", 0, SI_no_subscript, SF_none,
                                                         &hd_nums[hds_h1].hnumsub );
-        add_symvar_addr( global_dict, "$hnum2", &val_null, no_subscript, 0,
+        add_symvar_addr( global_dict, "$hnum2", "", 0, SI_no_subscript, SF_none,
                                                         &hd_nums[hds_h2].hnumsub );
-        add_symvar_addr( global_dict, "$hnum3", &val_null, no_subscript, 0,
+        add_symvar_addr( global_dict, "$hnum3", "", 0, SI_no_subscript, SF_none,
                                                         &hd_nums[hds_h3].hnumsub );
-        add_symvar_addr( global_dict, "$hnum4", &val_null, no_subscript, 0,
+        add_symvar_addr( global_dict, "$hnum4", "", 0, SI_no_subscript, SF_none,
                                                         &hd_nums[hds_h4].hnumsub );
-        add_symvar_addr( global_dict, "$hnum5", &val_null, no_subscript, 0,
+        add_symvar_addr( global_dict, "$hnum5", "", 0, SI_no_subscript, SF_none,
                                                         &hd_nums[hds_h5].hnumsub );
-        add_symvar_addr( global_dict, "$hnum6", &val_null, no_subscript, 0,
+        add_symvar_addr( global_dict, "$hnum6", "", 0, SI_no_subscript, SF_none,
                                                         &hd_nums[hds_h6].hnumsub );
 
-        add_symvar_addr( global_dict, "$htext0", &val_null, no_subscript, 0,
+        add_symvar_addr( global_dict, "$htext0", "", 0, SI_no_subscript, SF_none,
                                                         &hd_nums[hds_h0].htextsub );
-        add_symvar_addr( global_dict, "$htext1", &val_null, no_subscript, 0,
+        add_symvar_addr( global_dict, "$htext1", "", 0, SI_no_subscript, SF_none,
                                                         &hd_nums[hds_h1].htextsub );
-        add_symvar_addr( global_dict, "$htext2", &val_null, no_subscript, 0,
+        add_symvar_addr( global_dict, "$htext2", "", 0, SI_no_subscript, SF_none,
                                                         &hd_nums[hds_h2].htextsub );
-        add_symvar_addr( global_dict, "$htext3", &val_null, no_subscript, 0,
+        add_symvar_addr( global_dict, "$htext3", "", 0, SI_no_subscript, SF_none,
                                                         &hd_nums[hds_h3].htextsub );
-        add_symvar_addr( global_dict, "$htext4", &val_null, no_subscript, 0,
+        add_symvar_addr( global_dict, "$htext4", "", 0, SI_no_subscript, SF_none,
                                                         &hd_nums[hds_h4].htextsub );
-        add_symvar_addr( global_dict, "$htext5", &val_null, no_subscript, 0,
+        add_symvar_addr( global_dict, "$htext5", "", 0, SI_no_subscript, SF_none,
                                                         &hd_nums[hds_h5].htextsub );
-        add_symvar_addr( global_dict, "$htext6", &val_null, no_subscript, 0,
+        add_symvar_addr( global_dict, "$htext6", "", 0, SI_no_subscript, SF_none,
                                                         &hd_nums[hds_h6].htextsub );
 
         /* These never change, so can be done on the first pass only */

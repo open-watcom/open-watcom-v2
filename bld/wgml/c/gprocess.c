@@ -694,16 +694,16 @@ static sym_list_entry *parse_l2r( char *buf, bool splittable )
                 } else {
                     rc = find_symvar_sym( &symvar_entry, var_ind, &symsubval );
                     // subscript expansion needs special handling
-                    if( (var_ind == all_subscript) ||(var_ind == neg_subscript) || (var_ind == pos_subscript) ) {
-                        sub_index   lo_bound = min_subscript;
-                        sub_index   hi_bound = max_subscript;
+                    if( (var_ind == SI_all_subscript) ||(var_ind == SI_neg_subscript) || (var_ind == SI_pos_subscript) ) {
+                        sub_index   lo_bound = SI_min_subscript;
+                        sub_index   hi_bound = SI_max_subscript;
 
                         // adjust default bounds which go from min to max
                         switch( var_ind ) {
-                        case neg_subscript:
+                        case SI_neg_subscript:
                             hi_bound = 0;
                             break;
-                        case pos_subscript:
+                        case SI_pos_subscript:
                             lo_bound = 0;
                             break;
                         default:
@@ -725,16 +725,16 @@ static sym_list_entry *parse_l2r( char *buf, bool splittable )
                             curr->type = sl_symbol;
                             strcpy( curr->value, symsubval->value );  // save value in current stack entry
                         }
-                    } else if( (rc == 1) && ((var_ind == all_subscript) ||(var_ind == neg_subscript) || (var_ind == pos_subscript)) ) {
-                        sub_index   lo_bound = min_subscript;
-                        sub_index   hi_bound = max_subscript;
+                    } else if( (rc == 1) && ((var_ind == SI_all_subscript) ||(var_ind == SI_neg_subscript) || (var_ind == SI_pos_subscript)) ) {
+                        sub_index   lo_bound = SI_min_subscript;
+                        sub_index   hi_bound = SI_max_subscript;
 
                         // adjust default bounds which go from min to max
                         switch( var_ind ) {
-                        case neg_subscript:
+                        case SI_neg_subscript:
                             hi_bound = 0;
                             break;
-                        case pos_subscript:
+                        case SI_pos_subscript:
                             lo_bound = 0;
                             break;
                         default:

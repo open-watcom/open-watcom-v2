@@ -1338,7 +1338,7 @@ void ob_setup( void )
 
     num = strtoul( &out_file_attr[2], NULL, 0 );
 #if !defined( __WATCOMC__ ) && defined( __UNIX__ )
-    if( errno == ERANGE || num > UINT_MAX ) {
+    if( errno == ERANGE || num > UINT_MAX - 1 ) {
 #else
     if( errno == ERANGE ) {
 #endif

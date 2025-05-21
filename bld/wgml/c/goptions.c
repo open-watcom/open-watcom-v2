@@ -379,7 +379,6 @@ static void set_cpinch( option * opt )
 {
     char            *p;
     char            wkstring[NUM2STR_LENGTH];
-    str_type        val;
 
     if( tokennext == NULL || tokennext->bol ||
         tokennext->token[0] == '(' || is_option() ) {
@@ -393,9 +392,7 @@ static void set_cpinch( option * opt )
         } else {
             CPI = opt_value;
         }
-        val.s = wkstring;
-        val.l = sprintf( val.s, "%d", CPI );
-        add_symvar( global_dict, "$cpi", &val, no_subscript, 0 );
+        add_symvar( global_dict, "$cpi", wkstring, sprintf( wkstring, "%d", CPI ), SI_no_subscript, SF_none );
         tokennext = tokennext->nxt;
     }
 }
@@ -408,7 +405,7 @@ static void set_cpinch( option * opt )
 
 static void set_lpinch( option * opt )
 {
-    char    *   p;
+    char            *p;
 
     if( tokennext == NULL || tokennext->bol ||
         tokennext->token[0] == '(' || is_option() ) {
@@ -423,8 +420,7 @@ static void set_lpinch( option * opt )
             LPI = opt_value;
         }
         /*    LPI (in contrast to CPI) is not stored as global symbol
-         *  sprintf( wkstring, "%d", LPI );
-         *  add_symvar( global_dict, "$lpi", wkstring, no_subscript, 0 );
+         *  add_symvar( global_dict, "$lpi", wkstring, sprintf( wkstring, "%d", LPI ), SI_no_subscript, SF_none );
          */
         tokennext = tokennext->nxt;
     }
@@ -961,7 +957,6 @@ static void set_symbol( option *opt )
 {
     char            *name;
     int32_t         rc;
-    str_type        val;
 
     if( tokennext == NULL
       || tokennext->bol
@@ -979,9 +974,7 @@ static void set_symbol( option *opt )
           || is_option() ) {
             xx_simple_err_exit_c( err_missing_value, opt->option );
         } else {
-            val.s = tokennext->token;
-            val.l = tokennext->toklen;
-            rc = add_symvar( global_dict, name, &val, no_subscript, 0 );
+            rc = add_symvar( global_dict, name, tokennext->token, tokennext->toklen, SI_no_subscript, SF_none );
             tokennext = tokennext->nxt;
         }
 
@@ -1183,17 +1176,12 @@ static void set_libpath( option * opt )
 
 static void set_quiet( option * opt )
 {
-    str_type    val;
-
     GlobalFlags.quiet = opt->value;
     if( opt->value ) {
-        val.s = "ON";
-        val.l = 2;
+        add_symvar( global_dict, "$quiet", "ON", 2, SI_no_subscript, SF_predefined );
     } else {
-        val.s = "OFF";
-        val.l = 3;
+        add_symvar( global_dict, "$quiet", "OFF", 3, SI_no_subscript, SF_predefined );
     }
-    add_symvar( global_dict, "$quiet", &val, no_subscript, SF_predefined );
 }
 
 
@@ -1210,8 +1198,10 @@ static void set_research( option * opt )
 
     GlobalFlags.research = opt->value;
 
-    if( tokennext == NULL || tokennext->bol || is_option()
-            || tokennext->token[0] == '(' ) {
+    if( tokennext == NULL
+      || tokennext->bol
+      || is_option()
+      || tokennext->token[0] == '(' ) {
         str[0] = '\0';
     } else {
         len = tokennext->toklen;

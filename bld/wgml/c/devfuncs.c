@@ -1503,7 +1503,6 @@ static void *df_setsymbol( void )
     char            *first;
     char            *second;
     parameters      my_parameters;
-    str_type        val;
 
     /* Ensure that this is either a ShortHeader or a LongHeader. */
 
@@ -1530,9 +1529,7 @@ static void *df_setsymbol( void )
 
     /* Insert the symbol into the global symbol table. */
 
-    val.s = second;
-    val.l = strlen( val.s );
-    add_symvar( global_dict, first, &val, no_subscript, 0 );
+    add_symvar( global_dict, first, second, strlen( second ), SI_no_subscript, SF_none );
 
     /* Free the memory allocated to the parameters. */
 
@@ -1948,7 +1945,7 @@ static void *df_getnumsymbol( void )
 
     /* Now get the symbol's value. */
 
-    find_symvar( global_dict, name, no_subscript, &sym_val );
+    find_symvar( global_dict, name, SI_no_subscript, &sym_val );
     if( sym_val != NULL )
         ret_val = atol( sym_val->value );
 
@@ -1981,7 +1978,7 @@ static void *df_getstrsymbol( void )
 
     /* Now get the symbol's value. */
 
-    find_symvar( global_dict, name, no_subscript, &sym_val );
+    find_symvar( global_dict, name, SI_no_subscript, &sym_val );
     ret_val = mem_strdup( ( sym_val == NULL ) ? NULL : sym_val->value );
 
     /* Free the memory allocated to the parameter. */
@@ -3538,10 +3535,10 @@ void df_setup( void )
      * but have not been affected by anything in the document specification.
      */
 
-    find_symvar( global_dict, "date", no_subscript, &sym_val );
+    find_symvar( global_dict, "date", SI_no_subscript, &sym_val );
     date_val = mem_strdup( ( sym_val == NULL ) ? NULL : sym_val->value );
 
-    find_symvar( global_dict, "time", no_subscript, &sym_val );
+    find_symvar( global_dict, "time", SI_no_subscript, &sym_val );
     time_val = mem_strdup( ( sym_val == NULL ) ? NULL : sym_val->value );
 
     /* Set has_htab to true if the device defined the :HTAB block. */

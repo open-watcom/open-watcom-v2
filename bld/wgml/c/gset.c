@@ -60,13 +60,12 @@ extern  void    gml_set( const gmltag * entry )
     sub_index       subscript;
     att_name_type   attr_name;
     att_val_type    attr_val;
-    str_type        val;
 
     (void)entry;
 
     symbol_found = false;
     value_found = false;
-    subscript = no_subscript;           // not subscripted
+    subscript = SI_no_subscript;           // not subscripted
     g_scan_err = false;
 
     p = scandata.s;
@@ -123,9 +122,7 @@ extern  void    gml_set( const gmltag * entry )
 
     if( symbol_found && value_found ) {   // both attributes
         if( (sym.flags & SF_deleted) == 0 ) {
-            val.s = token_buf;
-            val.l = strlen( val.s );
-            rc = add_symvar_sym( &sym, &val, subscript, sym.flags );
+            rc = add_symvar_sym( &sym, token_buf, strlen( token_buf ), subscript, sym.flags );
         }
     } else {
         xx_err_exit( err_att_missing );

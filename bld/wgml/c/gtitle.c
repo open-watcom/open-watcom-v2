@@ -48,7 +48,6 @@ void    gml_title( const gmltag * entry )
     uint32_t        right_indent;
     att_name_type   attr_name;
     att_val_type    attr_val;
-    str_type        val;
 
     if( !((ProcFlags.doc_sect == doc_sect_titlep) ||
           (ProcFlags.doc_sect_nxt == doc_sect_titlep)) ) {
@@ -72,7 +71,7 @@ void    gml_title( const gmltag * entry )
                     break;
                 }
                 if( GlobalFlags.firstpass && !ProcFlags.stitle_seen ) {  // first stitle goes into dictionary
-                    add_symvar( global_dict, "$stitle", &attr_val.tok, no_subscript, 0 );
+                    add_symvar( global_dict, "$stitle", attr_val.tok.s, attr_val.tok.l, SI_no_subscript, SF_none );
                     ProcFlags.stitle_seen = true;
                 }
                 if( ProcFlags.tag_end_found ) {
@@ -90,9 +89,7 @@ void    gml_title( const gmltag * entry )
     SkipSpaces( p );                    // over WS to title
 
     if( GlobalFlags.firstpass && !ProcFlags.title_text_seen && *p != '\0' ) {   // first title goes into dictionary
-        val.s = p;
-        val.l = strlen( val.s );
-        add_symvar( global_dict, "$title", &val, no_subscript, 0 );
+        add_symvar( global_dict, "$title", p, strlen( p ), SI_no_subscript, SF_none );
         ProcFlags.title_text_seen = true;
     }
 

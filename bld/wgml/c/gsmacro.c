@@ -207,7 +207,6 @@ void    add_macro_parms( char * p )
     int         star0;
     unsigned    len;
     unsigned    o_len;
-    str_type    val;
 
     pa = p;                             // save start position
     SkipSpaces( p );                    // find first nonspace character, if any
@@ -215,9 +214,7 @@ void    add_macro_parms( char * p )
 
         /* local variable * must be added even though it has no value */
 
-        val.s = "";
-        val.l = 0;
-        add_symvar( input_cbs->local_dict, MAC_STAR_NAME, &val, no_subscript, SF_local_var );
+        add_symvar( input_cbs->local_dict, MAC_STAR_NAME, "", 0, SI_no_subscript, SF_local_var );
     } else {                            // process text following the macro
 
         /* remove trailing spaces if appropriate */
@@ -248,22 +245,18 @@ void    add_macro_parms( char * p )
         }
 
         /* the name used for * is a macro because it may have to be changed -- TBD */
-
-        val.s = p;
-        val.l = strlen( val.s );
-        add_symvar( input_cbs->local_dict, MAC_STAR_NAME, &val, no_subscript, SF_local_var );
+        add_symvar( input_cbs->local_dict, MAC_STAR_NAME, p, strlen( p ), SI_no_subscript, SF_local_var );
         star0 = 0;
-        g_tok_start = p;                  // save start of parameter
+        g_tok_start = p;                // save start of parameter
         SkipSpaces( p );                // find first nonspace character
         while( *p != '\0' ) {           // as long as there are parms
             pa = is_quoted_string( p );
-            if( pa != NULL ) {   // argument is quoted
+            if( pa != NULL ) {          // argument is quoted
+                p++;                    // skip quote character
                 star0++;
                 sprintf( starbuf, "%d", star0 );
-                val.s = p + 1;
-                val.l = pa - val.s;
-                add_symvar( input_cbs->local_dict, starbuf, &val, no_subscript, SF_local_var );
-                p = pa + 1;
+                add_symvar( input_cbs->local_dict, starbuf, p, pa - p, SI_no_subscript, SF_local_var );
+                p = pa + 1;             // skip after end quote character
             } else {                    // look if it is a symbolic variable definition
                 char    *ps;
 
@@ -288,24 +281,19 @@ void    add_macro_parms( char * p )
 
                 ProcFlags.suppress_msg = false; // reenable err msg
                 ProcFlags.blanks_allowed = 1;   // blanks again
-                scandata.s = p;         // restore scan address
                 if( g_scan_err ) {      // not variable=value format
+                    scandata.s = p;     // restore scan addresses
                     cc = omit;
                     star0++;
                     sprintf( starbuf, "%d", star0 );
-                    val.s = p;
-                    val.l = pa - val.s;
-                    add_symvar( input_cbs->local_dict, starbuf, &val,
-                                no_subscript, SF_local_var );
+                    add_symvar( input_cbs->local_dict, starbuf, p, pa - p, SI_no_subscript, SF_local_var );
                 }
                 p = pa;
             }
             SkipSpaces( p );            // over spaces
         }
                                         // the positional parameter count
-        val.s = starbuf;
-        val.l = strlen( val.s );
-        add_symvar( input_cbs->local_dict, "0", &val, no_subscript, SF_local_var );
+        add_symvar( input_cbs->local_dict, "0", starbuf, strlen( starbuf ), SI_no_subscript, SF_local_var );
     }
 
     if( (input_cbs->fmflags & II_research) && GlobalFlags.firstpass ) {

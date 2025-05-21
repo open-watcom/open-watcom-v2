@@ -318,7 +318,6 @@ void    scr_dc( void )
     char            char2string[2];
     unsigned        o_len;              // option length
     unsigned        v_len;              // value length
-    str_type        val;
 
     p = scandata.s;
     SkipSpaces( p );                    // next word start = option
@@ -426,9 +425,7 @@ void    scr_dc( void )
             GML_char = c;
             char2string[0] = c;
             char2string[1] = '\0';
-            val.s = char2string;
-            val.l = 1;
-            add_symvar( global_dict, "gml", &val, no_subscript, SF_predefined );
+            add_symvar( global_dict, "gml", char2string, 1, SI_no_subscript, SF_predefined );
             add_to_sysdir( "$gml", GML_char );
         } else if( strnicmp( "IXB", o_p, 3 ) == 0 ) {
             xx_line_warn_cc( wng_dc_opt, o_p, o_p );

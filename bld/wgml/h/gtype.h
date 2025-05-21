@@ -186,16 +186,18 @@ typedef struct {
 /***************************************************************************/
 
 typedef enum {
-    min_subscript = -1000000,           // smallest valid subscript
-    max_subscript =  1000000,           // largest  valid subscript
+    SI_none          = 0,
+    SI_min_subscript = -1000000,           // smallest valid subscript
+    SI_max_subscript =  1000000,           // largest  valid subscript
     // the rest must be outside of range min_subscript,max_subscript
-    no_subscript  = 0x11223344,         // value if not subscripted
-    neg_subscript = 0x22334454,         // negative subscripts (*-)
-    all_subscript = 0x22334455,         // all subscripts (*)
-    pos_subscript = 0x22334456          // positive subscripts (*+)
+    SI_no_subscript  = 0x11223344,         // value if not subscripted
+    SI_neg_subscript = 0x22334454,         // negative subscripts (*-)
+    SI_all_subscript = 0x22334455,         // all subscripts (*)
+    SI_pos_subscript = 0x22334456          // positive subscripts (*+)
 } sub_index;
 
 typedef enum {
+    SF_none        = 0,
     SF_local_var   = 0x0001,
     SF_subscripted = 0x0002,
     SF_auto_inc    = 0x0004,

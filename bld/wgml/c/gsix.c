@@ -192,7 +192,7 @@ void scr_ix( void )
     cwcurr[0] = SCR_char;
     lvl = 0;                            // index level
 
-    find_symvar( sys_dict, "$pix", no_subscript, &dictval);
+    find_symvar( sys_dict, "$pix", SI_no_subscript, &dictval);
     pix_char = *(dictval->value);
     wkpage = g_page + 1;                  // predicted number of current page
 
