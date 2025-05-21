@@ -164,7 +164,7 @@ static int split_tokens( char *str )
 /*  Format error in cmdline                                                */
 /***************************************************************************/
 
-NO_RETURN( static char * bad_cmd_line( msg_ids msg, char *str, char n ) )
+NO_RETURN( void bad_cmd_line( msg_ids msg, char *str, char n ) )
 {
     char    *   p;
     char    *   pbuff;
