@@ -1510,20 +1510,7 @@ static cmd_tok * process_option_old( option * op_table, cmd_tok * tok )
         /* if a capital letter appears in the option, then input must match exactly */
         /* otherwise all input characters are changed to lower case before matching */
         opt_value = op_table[i].value;
-        for( pa = p + len, opt += op_table[i].optionLen; ; opt++ ) {
-            if( *opt == '\0' || *opt == '*' ) {
-                if( *opt == '\0' ) {
-                    if( opt_delim_start ) {
-                        if( *pa != '\0' && !option_delimiter( *pa ) ) { // make sure end of option
-                            break;
-                        }
-                    }
-                }
-                opt_scan_ptr = pa;
-                g_info_research( inf_recognized_xxx, "1", option_start );
-                op_table[i].function( &op_table[i] );
-                return( tokennext );
-            }
+        for( pa = p + len, opt += op_table[i].optionLen; *opt != '\0' && *opt != '*'; opt++ ) {
             if( *opt == '#' ) {         // collect a number
                 SkipSpaces( pa );       // skip blanks
                 if( my_isdigit( *pa ) ) {
@@ -1592,10 +1579,24 @@ static cmd_tok * process_option_old( option * op_table, cmd_tok * tok )
                 opt_scan_ptr = pa;
             }
         }
+        if( *opt == '*' ) {
+            break;
+        }
+        if( *opt == '\0' ) {
+            if( !opt_delim_start || *pa == '\0' || option_delimiter( *pa ) ) {
+                break;
+            }
+        }
         g_info_research( inf_recognized_xxx, "5", option_start );
     }
-    bad_cmd_line( err_invalid_option, option_start, '(' );
-//    return( tokennext );        // to satisfy the compiler
+    if( opt == NULL ) {
+        bad_cmd_line( err_invalid_option, option_start, '(' );
+//        return( tokennext );        // to satisfy the compiler
+    }
+    opt_scan_ptr = pa;
+    g_info_research( inf_recognized_xxx, "1", option_start );
+    op_table[i].function( &op_table[i] );
+    return( tokennext );
 }
 
 
