@@ -44,6 +44,11 @@
 #include "clibext.h"
 
 
+#if defined( __WATCOMC__ ) && defined( _M_IX86 )
+unsigned char   _8087 = 0;
+unsigned char   _real87 = 0;
+#endif
+
 /***************************************************************************/
 /*  Usage info and end program                                             */
 /***************************************************************************/

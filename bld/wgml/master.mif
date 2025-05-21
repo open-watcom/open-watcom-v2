@@ -12,6 +12,8 @@ proj_name = wgml
 wgml_autodepends = .AUTODEPEND
 !endif
 
+wgml_nofpu = 1
+
 wgml_trmem = 1
 
 wgml_wreslib_cli = text
