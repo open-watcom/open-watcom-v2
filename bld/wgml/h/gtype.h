@@ -658,17 +658,6 @@ typedef struct parm {
 /*  definitions for getnum routine  to be reworked  TBD                    */
 /***************************************************************************/
 
-typedef enum {
-    selfdef     = 4,
-    aritherr    = 8,
-    ilorder     = 12,
-    illchar     = 16,
-    mnyerr      = 20,
-    operr       = 24,
-    parerr      = 28,
-    enderr      = 32
-} getnumrc;
-
 typedef struct getnum_block {
     tok_type    arg;
     char        *errstart;
@@ -676,7 +665,6 @@ typedef struct getnum_block {
     unsigned    length;
     int         result;                 // result as long
     char        resultstr[NUM2STR_LENGTH];  // result in char format (32-bit number)
-    getnumrc    error;
     condcode    cc;
     char        num_sign;               // remember absolute or relative value
     bool        ignore_blanks;          // 1 if blanks are ignored
