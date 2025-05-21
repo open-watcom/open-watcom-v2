@@ -164,7 +164,7 @@ static int split_tokens( char *str )
 /*  Format error in cmdline                                                */
 /***************************************************************************/
 
-NO_RETURN( static void bad_cmd_line( msg_ids msg, const char *str, char n ) )
+NO_RETURN( static void bad_cmd_line_err_exit( msg_ids msg, const char *str, char n ) )
 {
     char    *   p;
     char    *   pbuff;
@@ -297,7 +297,7 @@ static void set_altext( option * opt )
     unsigned    len;
 
     if( tokennext == NULL || tokennext->bol || is_option() ) {
-        bad_cmd_line( err_missing_opt_value, opt->option, ' ' );
+        bad_cmd_line_err_exit( err_missing_opt_value, opt->option, ' ' );
     } else {
         len = tokennext->toklen;
         p = tokennext->token;
@@ -459,7 +459,7 @@ static void set_device( option * opt )
     unsigned    len;
 
     if( tokennext == NULL || tokennext->bol || is_option() ) {
-        bad_cmd_line( err_missing_device_name, opt->option, ' ' );
+        bad_cmd_line_err_exit( err_missing_device_name, opt->option, ' ' );
     } else {
         len = tokennext->toklen;
         p = tokennext->token;
@@ -584,7 +584,7 @@ static void set_font( option * opt )
     opts[2] = NULL;
 
     if( tokennext == NULL || tokennext->bol || is_option() ) {
-        bad_cmd_line( err_missing_font_number, opt->option, ' ' );
+        bad_cmd_line_err_exit( err_missing_font_number, opt->option, ' ' );
     } else {
         len = tokennext->toklen;
         p = tokennext->token;
@@ -598,11 +598,11 @@ static void set_font( option * opt )
         }
 
         if( !good ) {
-            bad_cmd_line( err_invalid_font_number, p, ' ' );
+            bad_cmd_line_err_exit( err_invalid_font_number, p, ' ' );
         } else {
             fn = atoi( p );
             if( fn > UINT8_MAX ) {
-                bad_cmd_line( err_invalid_font_number, p, ' ' );
+                bad_cmd_line_err_exit( err_invalid_font_number, p, ' ' );
             } else {
                 g_info_research( inf_recognized_xxx, "font number", p );
                 new_font->font = (font_number)fn;
@@ -612,7 +612,7 @@ static void set_font( option * opt )
     }
 
     if( tokennext == NULL || tokennext->bol || is_option() ) {
-        bad_cmd_line( err_missing_font_name, opt->option, ' ' );
+        bad_cmd_line_err_exit( err_missing_font_name, opt->option, ' ' );
     } else {
         len = tokennext->toklen;
         p = tokennext->token;
@@ -657,7 +657,7 @@ static void set_font( option * opt )
         if( font_points( opts[0], pts ) ) {
             fn = atoi( pts );
             if( fn > MAX_CENTIPOINTS ) {
-                bad_cmd_line( err_invalid_font_space, p, ' ' );
+                bad_cmd_line_err_exit( err_invalid_font_space, p, ' ' );
             } else {
                 g_info_research( inf_recognized_xxx, "font space", pts );
                 new_font->space = (uint32_t) fn;
@@ -685,11 +685,11 @@ static void set_font( option * opt )
             len = opts[1]->toklen;
             p = opts[1]->token;
             if( !font_points( opts[1], pts ) ) {
-                bad_cmd_line( err_invalid_font_height, p, ' ' );
+                bad_cmd_line_err_exit( err_invalid_font_height, p, ' ' );
             } else {
                 fn = atoi( pts );
                 if( fn > MAX_CENTIPOINTS ) {
-                    bad_cmd_line( err_invalid_font_height, p, ' ' );
+                    bad_cmd_line_err_exit( err_invalid_font_height, p, ' ' );
                 } else {
                     g_info_research( inf_recognized_xxx, "font height", pts );
                     new_font->height = (uint32_t) fn;
@@ -699,7 +699,7 @@ static void set_font( option * opt )
             if( font_points( opts[0], pts ) ) {
                 fn = atoi( pts );
                 if( fn > MAX_CENTIPOINTS ) {
-                    bad_cmd_line( err_invalid_font_space, p, ' ' );
+                    bad_cmd_line_err_exit( err_invalid_font_space, p, ' ' );
                 } else {
                     g_info_research( inf_recognized_xxx, "font space", pts );
                     new_font->space = (uint32_t) fn;
@@ -710,11 +710,11 @@ static void set_font( option * opt )
                 len = opts[1]->toklen;
                 p = opts[1]->token;
                 if( !font_points( opts[1], pts ) ) {
-                    bad_cmd_line( err_invalid_font_height, p, ' ' );
+                    bad_cmd_line_err_exit( err_invalid_font_height, p, ' ' );
                 } else {
                     fn = atoi( pts );
                     if( fn > MAX_CENTIPOINTS ) {
-                        bad_cmd_line( err_invalid_font_height, p, ' ' );
+                        bad_cmd_line_err_exit( err_invalid_font_height, p, ' ' );
                     } else {
                         g_info_research( inf_recognized_xxx, "font height", pts );
                         new_font->height = (uint32_t) fn;
@@ -737,7 +737,7 @@ static void set_font( option * opt )
                 if( font_points( opts[1], pts ) ) {
                     fn = atoi( pts );
                     if( fn > MAX_CENTIPOINTS ) {
-                        bad_cmd_line( err_invalid_font_space, p, ' ' );
+                        bad_cmd_line_err_exit( err_invalid_font_space, p, ' ' );
                     } else {
                         g_info_research( inf_recognized_xxx, "font space", pts );
                         new_font->space = (uint32_t) fn;
@@ -765,11 +765,11 @@ static void set_font( option * opt )
             len = opts[2]->toklen;
             p = opts[2]->token;
             if( !font_points( opts[2], pts ) ) {
-                bad_cmd_line( err_invalid_font_height, p, ' ' );
+                bad_cmd_line_err_exit( err_invalid_font_height, p, ' ' );
             } else {
                 fn = atoi( pts );
                 if( fn > MAX_CENTIPOINTS ) {
-                    bad_cmd_line( err_invalid_font_height, p, ' ' );
+                    bad_cmd_line_err_exit( err_invalid_font_height, p, ' ' );
                 } else {
                     g_info_research( inf_recognized_xxx, "font height", pts );
                     new_font->height = (uint32_t) fn;
@@ -781,11 +781,11 @@ static void set_font( option * opt )
             len = opts[1]->toklen;
             p = opts[1]->token;
             if( !font_points( opts[1], pts ) ) {
-                bad_cmd_line( err_invalid_font_space, p, ' ' );
+                bad_cmd_line_err_exit( err_invalid_font_space, p, ' ' );
             } else {
                 fn = atoi( pts );
                 if( fn > MAX_CENTIPOINTS ) {
-                    bad_cmd_line( err_invalid_font_space, p, ' ' );
+                    bad_cmd_line_err_exit( err_invalid_font_space, p, ' ' );
                 } else {
                     g_info_research( inf_recognized_xxx, "font space", pts );
                     new_font->space = (uint32_t) fn;
@@ -797,11 +797,11 @@ static void set_font( option * opt )
             len = opts[2]->toklen;
             p = opts[2]->token;
             if( !font_points( opts[2], pts ) ) {
-                bad_cmd_line( err_invalid_font_height, p, ' ' );
+                bad_cmd_line_err_exit( err_invalid_font_height, p, ' ' );
             } else {
                 fn = atoi( pts );
                 if( fn > MAX_CENTIPOINTS ) {
-                    bad_cmd_line( err_invalid_font_height, p, ' ' );
+                    bad_cmd_line_err_exit( err_invalid_font_height, p, ' ' );
                 } else {
                     g_info_research( inf_recognized_xxx, "font height", pts );
                     new_font->height = (uint32_t) fn;
@@ -1455,7 +1455,7 @@ static cmd_tok * process_option( option * op_table, cmd_tok * tok )
         }
     }
     if( opt == NULL ) {
-        bad_cmd_line( err_invalid_option, option_start, ' ' );
+        bad_cmd_line_err_exit( err_invalid_option, option_start, ' ' );
 //    return( tokennext );        // to satisfy the compiler
     }
     opt_scan_ptr = pa;
@@ -1590,7 +1590,7 @@ static cmd_tok * process_option_old( option * op_table, cmd_tok * tok )
         g_info_research( inf_recognized_xxx, "5", option_start );
     }
     if( opt == NULL ) {
-        bad_cmd_line( err_invalid_option, option_start, '(' );
+        bad_cmd_line_err_exit( err_invalid_option, option_start, '(' );
 //        return( tokennext );        // to satisfy the compiler
     }
     opt_scan_ptr = pa;
@@ -1679,7 +1679,7 @@ static cmd_tok * process_master_filename( cmd_tok * tok )
     strip_quotes( p );
     if( master_fname != NULL ) {         // more than one master file ?
         g_banner();
-        bad_cmd_line( err_doc_duplicate, tok->token, ' ' );
+        bad_cmd_line_err_exit( err_doc_duplicate, tok->token, ' ' );
     } else {
         split_attr_file( p , attrwork, sizeof( attrwork ) );
         if( attrwork[0] != '\0' ) {

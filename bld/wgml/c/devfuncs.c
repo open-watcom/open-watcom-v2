@@ -87,7 +87,7 @@
 *               and a large number of local functions:
 *                   char_literal()
 *                   df_add()
-*                   df_bad_code()
+*                   df_bad_code_err_exit()
 *                   df_binary()
 *                   df_cancel()
 *                   df_clearpc()
@@ -577,13 +577,13 @@ static void *df_do_nothing_num( void )
     return( (void *)0 );
 }
 
-/* Function df_bad_code().
+/* Function df_bad_code_err_exit().
  * Reports byte codes not known to exist but nonetheless found. It never
  * returns to the caller. It should never actually run. Since it is used
  * in the function tables, it must conform to the function typedef.
  */
 
-NO_RETURN( static void *df_bad_code( void ) )
+NO_RETURN( static void df_bad_code_err_exit( void ) )
 {
     internal_err_exit( __FILE__, __LINE__ );
 //    return( NULL );
@@ -1164,7 +1164,9 @@ static void *process_parameter( void )
     if( current_df_data.df_code > MAX_FUNC_INDEX ) {
         internal_err_exit( __FILE__, __LINE__ );
     }
-
+    if( current_function_table[current_df_data.df_code] == NULL ) {
+        df_bad_code_err_exit();
+    }
     return( current_function_table[current_df_data.df_code]() );
 }
 
@@ -2104,13 +2106,13 @@ static void *df_subtract( void )
 static df_function device_function_table[MAX_FUNC_INDEX + 1] = {
     &char_literal,          // 0x00 (character parameter in parameter block)
     &df_recordbreak_device, // 0x01 %recordbreak()
-    &df_bad_code,           // 0x02 (none)
-    &df_bad_code,           // 0x03 (none)
-    &df_bad_code,           // 0x04 (none)
-    &df_bad_code,           // 0x05 (none)
+    NULL,                   // 0x02 (none)
+    NULL,                   // 0x03 (none)
+    NULL,                   // 0x04 (none)
+    NULL,                   // 0x05 (none)
     &df_do_nothing_num,     // 0x06 %enterfont()
-    &df_bad_code,           // 0x07 (none)
-    &df_bad_code,           // 0x08 (none)
+    NULL,                   // 0x07 (none)
+    NULL,                   // 0x08 (none)
     &df_do_nothing_num,     // 0x09 %binary() and %binary1()
     &df_do_nothing_num,     // 0x0A %binary2()
     &df_do_nothing_num,     // 0x0B %binary4()
@@ -2173,13 +2175,13 @@ static df_function device_function_table[MAX_FUNC_INDEX + 1] = {
 static df_function driver_function_table[MAX_FUNC_INDEX + 1] = {
     &char_literal,          // 0x00 (character parameter in parameter block)
     &df_recordbreak_driver, // 0x01 %recordbreak()
-    &df_bad_code,           // 0x02 (none)
-    &df_bad_code,           // 0x03 (none)
-    &df_bad_code,           // 0x04 (none)
-    &df_bad_code,           // 0x05 (none)
+    NULL,                   // 0x02 (none)
+    NULL,                   // 0x03 (none)
+    NULL,                   // 0x04 (none)
+    NULL,                   // 0x05 (none)
     &df_enterfont,          // 0x06 %enterfont()
-    &df_bad_code,           // 0x07 (none)
-    &df_bad_code,           // 0x08 (none)
+    NULL,                   // 0x07 (none)
+    NULL,                   // 0x08 (none)
     &df_binary,             // 0x09 %binary() and %binary1()
     &df_do_nothing_num,     // 0x0A %binary2()
     &df_do_nothing_num,     // 0x0B %binary4()
@@ -2334,9 +2336,10 @@ static void interpret_functions( const char *in_function )
         if( current_df_data.df_code > MAX_FUNC_INDEX ) {
             internal_err_exit( __FILE__, __LINE__ );
         }
-
+        if( current_function_table[current_df_data.df_code] == NULL ) {
+            df_bad_code_err_exit();
+        }
         current_function_table[current_df_data.df_code]();
-
     }
 
     /* Restore interpreter state. */
