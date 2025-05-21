@@ -45,7 +45,7 @@ void    gml_date( const gmltag * entry )
     symsub          *dateval;
     uint32_t        left_indent;
     uint32_t        right_indent;
-    tok_type        val;
+    str_type        val;
 
     if( !((ProcFlags.doc_sect == doc_sect_titlep) ||
           (ProcFlags.doc_sect_nxt == doc_sect_titlep)) ) {
@@ -63,7 +63,7 @@ void    gml_date( const gmltag * entry )
     if( *p != '\0' ) {                  // date specified
         if( GlobalFlags.firstpass  ) {
             val.s = p;
-            val.e = val.s + strlen( val.s );
+            val.l = strlen( val.s );
             add_symvar( global_dict, "date", &val, no_subscript, 0 );
         }
     } else {

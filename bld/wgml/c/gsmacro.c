@@ -207,7 +207,7 @@ void    add_macro_parms( char * p )
     int         star0;
     unsigned    len;
     unsigned    o_len;
-    tok_type    val;
+    str_type    val;
 
     pa = p;                             // save start position
     SkipSpaces( p );                    // find first nonspace character, if any
@@ -215,7 +215,8 @@ void    add_macro_parms( char * p )
 
         /* local variable * must be added even though it has no value */
 
-        val.e = val.s = p;
+        val.s = "";
+        val.l = 0;
         add_symvar( input_cbs->local_dict, MAC_STAR_NAME, &val, no_subscript, SF_local_var );
     } else {                            // process text following the macro
 
@@ -249,7 +250,7 @@ void    add_macro_parms( char * p )
         /* the name used for * is a macro because it may have to be changed -- TBD */
 
         val.s = p;
-        val.e = val.s + strlen( val.s );
+        val.l = strlen( val.s );
         add_symvar( input_cbs->local_dict, MAC_STAR_NAME, &val, no_subscript, SF_local_var );
         star0 = 0;
         g_tok_start = p;                  // save start of parameter
@@ -260,7 +261,7 @@ void    add_macro_parms( char * p )
                 star0++;
                 sprintf( starbuf, "%d", star0 );
                 val.s = p + 1;
-                val.e = pa;
+                val.l = pa - val.s;
                 add_symvar( input_cbs->local_dict, starbuf, &val, no_subscript, SF_local_var );
                 p = pa + 1;
             } else {                    // look if it is a symbolic variable definition
@@ -293,7 +294,7 @@ void    add_macro_parms( char * p )
                     star0++;
                     sprintf( starbuf, "%d", star0 );
                     val.s = p;
-                    val.e = pa;
+                    val.l = pa - val.s;
                     add_symvar( input_cbs->local_dict, starbuf, &val,
                                 no_subscript, SF_local_var );
                 }
@@ -303,7 +304,7 @@ void    add_macro_parms( char * p )
         }
                                         // the positional parameter count
         val.s = starbuf;
-        val.e = val.s + strlen( val.s );
+        val.l = strlen( val.s );
         add_symvar( input_cbs->local_dict, "0", &val, no_subscript, SF_local_var );
     }
 

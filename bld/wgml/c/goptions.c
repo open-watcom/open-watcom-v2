@@ -378,7 +378,7 @@ static void set_cpinch( option * opt )
 {
     char            *p;
     char            wkstring[NUM2STR_LENGTH];
-    tok_type        val;
+    str_type        val;
 
     if( tokennext == NULL || tokennext->bol ||
         tokennext->token[0] == '(' || is_option() ) {
@@ -393,7 +393,7 @@ static void set_cpinch( option * opt )
             CPI = opt_value;
         }
         val.s = wkstring;
-        val.e = val.s + sprintf( val.s, "%d", CPI );
+        val.l = sprintf( val.s, "%d", CPI );
         add_symvar( global_dict, "$cpi", &val, no_subscript, 0 );
         tokennext = tokennext->nxt;
     }
@@ -960,7 +960,7 @@ static void set_symbol( option *opt )
 {
     char            *name;
     int32_t         rc;
-    tok_type        val;
+    str_type        val;
 
     if( tokennext == NULL
       || tokennext->bol
@@ -979,7 +979,7 @@ static void set_symbol( option *opt )
             xx_simple_err_exit_c( err_missing_value, opt->option );
         } else {
             val.s = tokennext->token;
-            val.e = val.s + strlen( val.s );
+            val.l = tokennext->toklen;
             rc = add_symvar( global_dict, name, &val, no_subscript, 0 );
             tokennext = tokennext->nxt;
         }
@@ -1182,15 +1182,16 @@ static void set_libpath( option * opt )
 
 static void set_quiet( option * opt )
 {
-    tok_type    val;
+    str_type    val;
 
     GlobalFlags.quiet = opt->value;
     if( opt->value ) {
         val.s = "ON";
+        val.l = 2;
     } else {
         val.s = "OFF";
+        val.l = 3;
     }
-    val.e = val.s + strlen( val.s );
     add_symvar( global_dict, "$quiet", &val, no_subscript, SF_predefined );
 }
 

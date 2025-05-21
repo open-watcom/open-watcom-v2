@@ -1596,7 +1596,7 @@ extern void gml_preface( const gmltag * entry )
 
 extern void gml_titlep( const gmltag * entry )
 {
-    tok_type        val_null;
+    str_type        val_null;
 
     (void)entry;
 
@@ -1609,7 +1609,8 @@ extern void gml_titlep( const gmltag * entry )
     scr_process_break();
     gml_doc_xxx( doc_sect_titlep );
 
-    val_null.e = val_null.s = "";
+    val_null.s = "";
+    val_null.l = 0;
     add_symvar( global_dict, "$stitle", &val_null, no_subscript, 0 );  // set null string
     add_symvar( global_dict, "$title", &val_null, no_subscript, 0 );   // set null string
 
@@ -1737,7 +1738,7 @@ extern void gml_egdoc( const gmltag * entry )
 extern void gml_gdoc( const gmltag *entry )
 {
     char            *p;
-    tok_type        val;
+    str_type        val;
 
     (void)entry;
 
@@ -1769,10 +1770,11 @@ extern void gml_gdoc( const gmltag *entry )
         while( *p != '\0' && *p != quote ) {
             ++p;
         }
-        val.e = p;
+        val.l = p - val.s;
         add_symvar( global_dict, "$sec", &val, no_subscript, 0 );
     } else {
-        val.e = val.s = "";
+        val.s = "";
+        val.l = 0;
         add_symvar( global_dict, "$sec", &val, no_subscript, 0 ); // set null string
     }
 

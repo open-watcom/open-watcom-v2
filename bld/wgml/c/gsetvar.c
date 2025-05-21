@@ -264,7 +264,7 @@ void    scr_se( void )
     symsub          *symsubval;
     symvar          sym;
     unsigned        len;
-    tok_type        val;
+    str_type        val;
 
     subscript = no_subscript;                       // not subscripted
     g_scan_err = false;
@@ -301,7 +301,7 @@ void    scr_se( void )
                 SkipSpaces( p );                // skip over spaces to value
             }
             val.s = p;
-            val.e = scandata.e;
+            val.l = scandata.e - p;
             if( is_quote_char( *val.s ) ) {      // quotes ?
                 p++;
                 while( *p != '\0' ) {
@@ -321,15 +321,18 @@ void    scr_se( void )
                     val.s++;
                     *p = '\0';
                 }
+                val.l = p - val.s;
             } else {                                // numeric or undelimited string
                 getnum_block    gn;
                 condcode        cc;
 
-                gn.arg = val;
+                gn.arg.s = p;
+                gn.arg.e = scandata.e;
                 gn.ignore_blanks = true;
                 cc = getnum( &gn );             // try numeric expression evaluation
                 if( cc != notnum ) {
                     val.s = gn.resultstr;
+                    val.l = scandata.e - val.s;
                 }                               // if notnum treat as character value
             }
             rc = add_symvar_sym( &sym, &val, subscript, sym.flags );
@@ -343,7 +346,7 @@ void    scr_se( void )
                 if( (val.s < p) && (*p == '\'') ) {      // delete \' at end
                     *p = '\0';
                 }
-                val.e = val.s + strlen( val.s );
+                val.l = strlen( val.s );
                 rc = add_symvar_sym( &sym, &val, subscript, sym.flags );
             } else {                                        // matches wgml 4.0
                 if( !ProcFlags.suppress_msg ) {

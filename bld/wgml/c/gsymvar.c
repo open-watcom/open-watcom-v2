@@ -474,7 +474,7 @@ static bool check_subscript( sub_index sub )
 /*           the subscripts are added in ascending order                   */
 /***************************************************************************/
 
-static bool add_symvar_sub( symvar *var, tok_type *val, sub_index sub, symsub **nsub )
+static bool add_symvar_sub( symvar *var, str_type *val, sub_index sub, symsub **nsub )
 {
     symsub  *   newsub;
     symsub  *   ws;
@@ -511,9 +511,9 @@ static bool add_symvar_sub( symvar *var, tok_type *val, sub_index sub, symsub **
         newsub->next      = NULL;
         newsub->base      = var;
         newsub->subscript = sub;
-        newsub->value     = mem_alloc( val->e - val->s + 1 );
-        strncpy( newsub->value, val->s, val->e - val->s );
-        newsub->value[val->e - val->s] = '\0';
+        newsub->value     = mem_alloc( val->l + 1 );
+        strncpy( newsub->value, val->s, val->l );
+        newsub->value[val->l] = '\0';
 
 /*
  * insert subscript in ascending sort order
@@ -536,11 +536,11 @@ static bool add_symvar_sub( symvar *var, tok_type *val, sub_index sub, symsub **
         }
     } else {                            // unsubscripted variable
         newsub = var->sub_0;
-        if( strlen( newsub->value ) < val->e - val->s ) { // need more room
-            newsub->value = mem_realloc( newsub->value, val->e - val->s + 1 );
+        if( strlen( newsub->value ) < val->l ) { // need more room
+            newsub->value = mem_realloc( newsub->value, val->l + 1 );
         }
-        strncpy( newsub->value, val->s, val->e - val->s );
-        newsub->value[val->e - val->s] = '\0';
+        strncpy( newsub->value, val->s, val->l );
+        newsub->value[val->l] = '\0';
     }
     *nsub = newsub;
     return( true );
@@ -605,7 +605,7 @@ static symvar *add_symsym( symdict_hdl dict, const char *name, symbol_flags f )
 /*  with    returning ptr to symsub entry                                  */
 /***************************************************************************/
 
-int add_symvar_addr( symdict_hdl dict, const char *name, tok_type *val,
+int add_symvar_addr( symdict_hdl dict, const char *name, str_type *val,
                      sub_index subscript, symbol_flags f, symsub **sub )
 {
     symvar  *   new = NULL;
@@ -663,14 +663,14 @@ int add_symvar_addr( symdict_hdl dict, const char *name, tok_type *val,
             newsub->base->flags &= ~SF_deleted;// reset deleted switch
             newsub->base->flags |= f;   // use flags given
             if( (newsub->base->flags & SF_ro)
-              || strncmp( newsub->value, val->s, val->e - val->s ) == 0 ) {
+              || strncmp( newsub->value, val->s, val->l ) == 0 ) {
                 ;             // do nothing var is readonly or value is unchanged
             } else {
-                if( strlen( newsub->value ) < val->e - val->s ) { // need more room
-                    newsub->value = mem_realloc( newsub->value, val->e - val->s + 1 );
+                if( strlen( newsub->value ) < val->l ) { // need more room
+                    newsub->value = mem_realloc( newsub->value, val->l + 1 );
                 }
-                strncpy( newsub->value, val->s, val->e - val->s );
-                newsub->value[val->e - val->s] = '\0';
+                strncpy( newsub->value, val->s, val->l );
+                newsub->value[val->l] = '\0';
             }
             *sub = newsub;
             if( GlobalFlags.firstpass && (input_cbs->fmflags & II_research) ) {
@@ -692,14 +692,14 @@ int add_symvar_addr( symdict_hdl dict, const char *name, tok_type *val,
 /*  without returning ptr to symsub entry                                  */
 /***************************************************************************/
 
-int add_symvar( symdict_hdl dict, const char *name, tok_type *val, sub_index subscript, symbol_flags f )
+int add_symvar( symdict_hdl dict, const char *name, str_type *val, sub_index subscript, symbol_flags f )
 {
     symsub          *newsub;
 
     return( add_symvar_addr( dict, name, val, subscript, f, &newsub ) );
 }
 
-int add_symvar_sym( symvar *sym, tok_type *val, sub_index subscript, symbol_flags f )
+int add_symvar_sym( symvar *sym, str_type *val, sub_index subscript, symbol_flags f )
 {
     symsub          *newsub;
     symdict_hdl     dict;

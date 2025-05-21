@@ -1103,7 +1103,7 @@ static  void    init_date_time( void )
     time_t          now;
     struct tm       *tmbuf;
     char            *p;
-    tok_type        val;
+    str_type        val;
 
     now = time( NULL );
     tmbuf = localtime( &now );
@@ -1120,7 +1120,7 @@ static  void    init_date_time( void )
     }
     sysdate0.value = dateval;
     val.s = dateval;
-    val.e = val.s + strlen( val.s );
+    val.l = strlen( val.s );
     add_symvar( global_dict, "date", &val, no_subscript, 0 );
 
     strftime( dayofmval, sizeof( dayofmval ), "%e", tmbuf );
@@ -1157,7 +1157,7 @@ static  void    init_date_time( void )
     syssecond0.value = &timeval[6];
 
     val.s = timeval;
-    val.e = val.s + strlen( val.s );
+    val.l = strlen( val.s );
     add_symvar( global_dict, "time", &val, no_subscript, 0 );
 
 }
@@ -1169,16 +1169,16 @@ static  void    init_date_time( void )
 static  void    init_predefined_symbols( void )
 {
     char        wkstring[NUM2STR_LENGTH];
-    tok_type    val;
+    str_type    val;
 
     val.s = "&";
-    val.e = val.s + strlen( val.s );
+    val.l = 1;
     add_symvar( global_dict, "amp", &val, no_subscript, SF_is_AMP+SF_predefined );
 
     wkstring[1] = '\0';
     wkstring[0] = GML_CHAR_DEFAULT;
     val.s = wkstring;
-    val.e = val.s + strlen( val.s );
+    val.l = 1;
     add_symvar( global_dict, "gml", &val, no_subscript, SF_predefined );
 
 }

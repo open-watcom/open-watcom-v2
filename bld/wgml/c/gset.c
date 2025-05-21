@@ -60,7 +60,7 @@ extern  void    gml_set( const gmltag * entry )
     sub_index       subscript;
     att_name_type   attr_name;
     att_val_type    attr_val;
-    tok_type        val;
+    str_type        val;
 
     (void)entry;
 
@@ -124,7 +124,7 @@ extern  void    gml_set( const gmltag * entry )
     if( symbol_found && value_found ) {   // both attributes
         if( (sym.flags & SF_deleted) == 0 ) {
             val.s = token_buf;
-            val.e = val.s + strlen( val.s );
+            val.l = strlen( val.s );
             rc = add_symvar_sym( &sym, &val, subscript, sym.flags );
         }
     } else {

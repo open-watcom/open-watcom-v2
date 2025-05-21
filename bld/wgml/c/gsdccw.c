@@ -315,10 +315,10 @@ void    scr_dc( void )
     char            *o_p;               // option start point
     char            *p;
     char            *v_p;               // value start point
-    char            string[2] = { 0, 0 };
+    char            char2string[2];
     unsigned        o_len;              // option length
     unsigned        v_len;              // value length
-    tok_type        val;
+    str_type        val;
 
     p = scandata.s;
     SkipSpaces( p );                    // next word start = option
@@ -392,7 +392,8 @@ void    scr_dc( void )
             }
             scan_restart = v_p + v_len;
             tab_char = c;
-            string[0] = c;
+//            char2string[0] = c;
+//            char2string[1] = '\0';
             add_to_sysdir( "$tb", tab_char );
             add_to_sysdir( "$tab", tab_char );
         } else if( strnicmp( "TI", o_p, 2 ) == 0 ) {
@@ -423,9 +424,10 @@ void    scr_dc( void )
             }
             scan_restart = v_p + v_len;
             GML_char = c;
-            string[0] = c;
-            val.s = string;
-            val.e = val.s + 1;
+            char2string[0] = c;
+            char2string[1] = '\0';
+            val.s = char2string;
+            val.l = 1;
             add_symvar( global_dict, "gml", &val, no_subscript, SF_predefined );
             add_to_sysdir( "$gml", GML_char );
         } else if( strnicmp( "IXB", o_p, 3 ) == 0 ) {

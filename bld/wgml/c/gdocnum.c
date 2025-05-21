@@ -45,7 +45,7 @@ void    gml_docnum( const gmltag * entry )
     unsigned        buff_len;
     uint32_t        left_indent;
     uint32_t        right_indent;
-    tok_type        val;
+    str_type        val;
 
 
     if( !((ProcFlags.doc_sect == doc_sect_titlep) ||
@@ -73,7 +73,7 @@ void    gml_docnum( const gmltag * entry )
 
     if( GlobalFlags.firstpass && *p != '\0' ) {
         val.s = p;
-        val.e = val.s + strlen( val.s );
+        val.l = strlen( val.s );
         add_symvar( global_dict, "$docnum", &val, no_subscript, 0 );
     }
     ProcFlags.docnum_tag_seen = true;

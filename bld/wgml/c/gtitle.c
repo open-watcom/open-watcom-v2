@@ -48,7 +48,7 @@ void    gml_title( const gmltag * entry )
     uint32_t        right_indent;
     att_name_type   attr_name;
     att_val_type    attr_val;
-    tok_type        val;
+    str_type        val;
 
     if( !((ProcFlags.doc_sect == doc_sect_titlep) ||
           (ProcFlags.doc_sect_nxt == doc_sect_titlep)) ) {
@@ -72,9 +72,7 @@ void    gml_title( const gmltag * entry )
                     break;
                 }
                 if( GlobalFlags.firstpass && !ProcFlags.stitle_seen ) {  // first stitle goes into dictionary
-                    val.s = attr_val.tok.s;
-                    val.e = val.s + attr_val.tok.l;
-                    add_symvar( global_dict, "$stitle", &val, no_subscript, 0 );
+                    add_symvar( global_dict, "$stitle", &attr_val.tok, no_subscript, 0 );
                     ProcFlags.stitle_seen = true;
                 }
                 if( ProcFlags.tag_end_found ) {
@@ -93,7 +91,7 @@ void    gml_title( const gmltag * entry )
 
     if( GlobalFlags.firstpass && !ProcFlags.title_text_seen && *p != '\0' ) {   // first title goes into dictionary
         val.s = p;
-        val.e = val.s + strlen( val.s );
+        val.l = strlen( val.s );
         add_symvar( global_dict, "$title", &val, no_subscript, 0 );
         ProcFlags.title_text_seen = true;
     }

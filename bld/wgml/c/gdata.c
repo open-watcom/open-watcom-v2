@@ -280,9 +280,10 @@ void init_pass_data( void )
     bool        ps_save     = ProcFlags.ps_device;
     bool        wh_save     = ProcFlags.wh_device;
     int         i;
-    tok_type    val_null;
+    str_type    val_null;
 
-    val_null.e = val_null.s = "";
+    val_null.s = "";
+    val_null.l = 0;
 
     memset( &ProcFlags, 0, sizeof( ProcFlags ) );
     ProcFlags.blanks_allowed = 1;       // blanks during scanning
