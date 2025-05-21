@@ -164,7 +164,7 @@ static int split_tokens( char *str )
 /*  Format error in cmdline                                                */
 /***************************************************************************/
 
-NO_RETURN( void bad_cmd_line( msg_ids msg, char *str, char n ) )
+NO_RETURN( static void bad_cmd_line( msg_ids msg, const char *str, char n ) )
 {
     char    *   p;
     char    *   pbuff;
@@ -1438,19 +1438,7 @@ static cmd_tok * process_option( option * op_table, cmd_tok * tok )
     for( i = 0; (opt = op_table[i].option) != NULL; i++ ) {
         if( first_c == *opt ) {               // match for first char
             opt_value = op_table[i].value;
-            for( opt++, pa = p + 1; ; opt++, pa++ ) {
-                if( *opt == '\0' ) {
-                    if( opt_delim_start ) {
-                        // make sure end of option
-                        if( *pa != '\0' && !option_delimiter( *pa ) ) {
-                            break;
-                        }
-                    }
-                    opt_scan_ptr = pa;
-                    g_info_research( inf_recognized_xxx, "n1", option_start );
-                    op_table[i].function( &op_table[i]);
-                    return( tokennext );
-                }
+            for( opt++, pa = p + 1; *opt != '\0'; opt++, pa++ ) {
                 if( *opt != (char)my_tolower( *pa ) ) {
                     if( *opt < 'A' || *opt > 'Z' )
                         break;
@@ -1459,10 +1447,21 @@ static cmd_tok * process_option( option * op_table, cmd_tok * tok )
                     }
                 }
             }
+            if( *opt == '\0' ) {
+                if( !opt_delim_start || *pa == '\0' || option_delimiter( *pa ) ) {
+                    break;
+                }
+            }
         }
     }
-    bad_cmd_line( err_invalid_option, option_start, ' ' );
+    if( opt == NULL ) {
+        bad_cmd_line( err_invalid_option, option_start, ' ' );
 //    return( tokennext );        // to satisfy the compiler
+    }
+    opt_scan_ptr = pa;
+    g_info_research( inf_recognized_xxx, "n1", option_start );
+    op_table[i].function( &op_table[i]);
+    return( tokennext );
 }
 
 
