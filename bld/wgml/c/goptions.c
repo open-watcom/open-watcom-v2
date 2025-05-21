@@ -1462,7 +1462,7 @@ static cmd_tok * process_option( option * op_table, cmd_tok * tok )
         }
     }
     bad_cmd_line( err_invalid_option, option_start, ' ' );
-    return( tokennext );        // to satisfy the compiler
+//    return( tokennext );        // to satisfy the compiler
 }
 
 
@@ -1596,7 +1596,7 @@ static cmd_tok * process_option_old( option * op_table, cmd_tok * tok )
         g_info_research( inf_recognized_xxx, "5", option_start );
     }
     bad_cmd_line( err_invalid_option, option_start, '(' );
-    return( tokennext );        // to satisfy the compiler
+//    return( tokennext );        // to satisfy the compiler
 }
 
 
