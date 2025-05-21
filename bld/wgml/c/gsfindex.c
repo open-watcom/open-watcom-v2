@@ -52,7 +52,7 @@ static condcode    get_pos( parm parms[MAX_FUN_PARMS], unsigned parmcount, char 
 
     if( parmcount < 2
       || parmcount > 3 )
-        return( neg );
+        return( CC_neg );
 
     result_index = 0;
 
@@ -78,7 +78,7 @@ static condcode    get_pos( parm parms[MAX_FUN_PARMS], unsigned parmcount, char 
                 gn.arg = parms[2].arg;
                 gn.ignore_blanks = false;
                 cc = getnum( &gn );
-                if( (cc != pos) || (gn.result == 0) ) {
+                if( (cc != CC_pos) || (gn.result == 0) ) {
                     if( !ProcFlags.suppress_msg ) {
                         xx_source_err_exit_c( err_func_parm, "3 (startpos)" );
                     }
@@ -125,7 +125,7 @@ static condcode    get_pos( parm parms[MAX_FUN_PARMS], unsigned parmcount, char 
 
     *result += sprintf( *result, "%d", result_index );
 
-    return( pos );
+    return( CC_pos );
 }
 
 /***************************************************************************/

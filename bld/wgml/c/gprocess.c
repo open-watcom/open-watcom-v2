@@ -254,7 +254,7 @@ static void split_at_GML_tag( void )
                 /* inserting CONT_chars for layout tags causes errors */
                 if( (gse != NULL)
                   || ((gue != NULL)
-                  && (gue->tagflags & tag_cont)) ) {
+                  && (gue->tagflags & GTFLG_cont)) ) {
                     pchar[0] = CONT_char;
                     pchar[1] = '\0';
                 }

@@ -258,12 +258,11 @@ void    init_tag_att( void )
 static  condcode    scan_tag_options( gtflags * tag_flags )
 {
     char        *   p;
-    condcode        cc = pos;
+    condcode        cc = CC_pos;
 
-    while( cc == pos ) {
-
+    while( cc == CC_pos ) {
         cc = getarg();
-        if( cc == omit ) {              // nothing more
+        if( cc == CC_omit ) {              // nothing more
             break;
         }
         p = g_tok_start;
@@ -272,24 +271,24 @@ static  condcode    scan_tag_options( gtflags * tag_flags )
             if( (arg_flen > 2) && (arg_flen < 12)
                 && !strnicmp( "ATTributes", p, arg_flen ) ) {
 
-                *tag_flags |= tag_attr;
+                *tag_flags |= GTFLG_attr;
             } else {
-                cc = neg;               // invalid option
+                cc = CC_neg;               // invalid option
             }
             break;
         case 'c' :
             if( (arg_flen == 5)
                 && !strnicmp( "CSOFF", p, 5 ) ) {
 
-                *tag_flags |= tag_csoff;
+                *tag_flags |= GTFLG_csoff;
             } else {
                 if( (arg_flen > 3) && (arg_flen < 9)
                     && !strnicmp( "CONTinue", p, arg_flen ) ) {
 
-                    *tag_flags |= tag_cont;
+                    *tag_flags |= GTFLG_cont;
 
                 } else {
-                    cc = neg;           // invalid option
+                    cc = CC_neg;           // invalid option
                 }
             }
             break;
@@ -297,46 +296,42 @@ static  condcode    scan_tag_options( gtflags * tag_flags )
             if( (arg_flen > 5) && (arg_flen < 11)
                 && !strnicmp( "NOCONTinue", p, arg_flen ) ) {
 
-                *tag_flags |= tag_nocont;
+                *tag_flags |= GTFLG_nocont;
             } else {
-                cc = neg;               // invalid option
+                cc = CC_neg;               // invalid option
             }
             break;
         case 't' :
             if( (arg_flen > 3) && (arg_flen < 8)
                 && !strnicmp( "TAGNext", p, arg_flen ) ) {
 
-                *tag_flags |= tag_next;
+                *tag_flags |= GTFLG_next;
             } else {
                 if( (arg_flen > 4 && (arg_flen < 10) ) ) {
                     if( !strnicmp( "TEXTError", p, arg_flen ) ) {
-
-                        *tag_flags |= tag_texterr;
+                        *tag_flags |= GTFLG_texterr;
                     } else {
                         if( !strnicmp( "TEXTReqd", p, arg_flen ) ) {
-
-                            *tag_flags |= tag_textreq;
+                            *tag_flags |= GTFLG_textreq;
                         } else {
                             if( !strnicmp( "TEXTLine", p, arg_flen ) ) {
-
-                                *tag_flags |= tag_textline;
+                                *tag_flags |= GTFLG_textline;
                             } else {
                                 if( !strnicmp( "TEXTDef", p, arg_flen ) ) {
-
-                                    *tag_flags |= tag_textdef;
+                                    *tag_flags |= GTFLG_textdef;
                                 } else {
-                                    cc = neg;   // invalid option
+                                    cc = CC_neg;   // invalid option
                                 }
                             }
                         }
                     }
                 } else {
-                    cc = neg;           // invalid option
+                    cc = CC_neg;           // invalid option
                 }
             }
             break;
         default:
-            cc = neg;                   // invalid option
+            cc = CC_neg;                   // invalid option
             break;
         }
     }
@@ -372,7 +367,7 @@ void    scr_gt( void )
     g_tok_start = NULL;
     cc = getarg();                      // Tagname
 
-    if( cc == omit ) {
+    if( cc == CC_omit ) {
         // no operands
         xx_err_exit_c( err_missing_name, "" );
     }
@@ -410,7 +405,7 @@ void    scr_gt( void )
 
     cc = getarg();
 
-    if( cc == omit ) {
+    if( cc == CC_omit ) {
         xx_err_exit( err_tag_func_inv );
 //        return;
     }
@@ -472,7 +467,7 @@ void    scr_gt( void )
     /***********************************************************************/
 
     if( function == f_add || function == f_change ) {   // need macroname
-        if( cc == omit ) {
+        if( cc == CC_omit ) {
             xx_err_exit( err_tag_mac_name );
 //            return;
         }
@@ -482,7 +477,7 @@ void    scr_gt( void )
 
         if( function == f_add ) {       // collect tag options
             cc = scan_tag_options( &tag_flags );
-            if( cc != omit ) {          // not all processed error
+            if( cc != CC_omit ) {          // not all processed error
                xx_err_exit( err_tag_opt_inv );
             }
             g_tag_entry = add_tag( &tags_dict, g_tagname, macname, tag_flags );  // add to dictionary
@@ -500,7 +495,7 @@ void    scr_gt( void )
     /*  after delete, off, on, print nothing allowed                       */
     /***********************************************************************/
 
-        if( cc != omit ) {
+        if( cc != CC_omit ) {
             xx_err_exit( err_tag_toomany );  // nothing more allowed
         }
 
@@ -527,21 +522,21 @@ void    scr_gt( void )
             break;
         case f_off :
             if( savetag == '*' && g_tag_entry != NULL ) {// off for last defined
-                g_tag_entry->tagflags |= tag_off;
+                g_tag_entry->tagflags |= GTFLG_off;
             } else {
                 wk = find_user_tag( &tags_dict, g_tagname );
                 if( wk != NULL ) {
-                    wk->tagflags |= tag_off;
+                    wk->tagflags |= GTFLG_off;
                 }
             }
             break;
         case f_on :
             if( savetag == '*' && g_tag_entry != NULL ) {// on for last defined
-                g_tag_entry->tagflags |= tag_off;
+                g_tag_entry->tagflags |= GTFLG_off;
             } else {
                 wk = find_user_tag( &tags_dict, g_tagname );
                 if( wk != NULL ) {
-                    wk->tagflags &= ~tag_off;
+                    wk->tagflags &= ~ GTFLG_off;
                 }
             }
             break;

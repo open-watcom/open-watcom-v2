@@ -198,7 +198,7 @@ char * scan_sym( char * p, symvar * sym, sub_index *subscript, char * * result, 
                     gn.ignore_blanks = false;
                     cc = getnum( &gn );     // try numeric expression evaluation
 
-                    if( cc == pos || cc == neg ) {
+                    if( cc == CC_pos || cc == CC_neg ) {
                         *subscript = gn.result;
                         if( *p == ')' ) {
                             p++;
@@ -327,7 +327,7 @@ void    scr_se( void )
                 gn.arg.e = scandata.e;
                 gn.ignore_blanks = true;
                 cc = getnum( &gn );             // try numeric expression evaluation
-                if( cc != notnum ) {
+                if( cc != CC_notnum ) {
                     val = gn.resultstr;
                     len = scandata.e - val;
                 }                               // if notnum treat as character value

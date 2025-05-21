@@ -283,7 +283,7 @@ void    add_macro_parms( char * p )
                 ProcFlags.blanks_allowed = 1;   // blanks again
                 if( g_scan_err ) {      // not variable=value format
                     scandata.s = p;     // restore scan addresses
-                    cc = omit;
+                    cc = CC_omit;
                     star0++;
                     sprintf( starbuf, "%d", star0 );
                     add_symvar( input_cbs->local_dict, starbuf, p, pa - p, SI_no_subscript, SF_local_var );
@@ -398,7 +398,7 @@ void    scr_dm( void )
 
     cc = getarg();
 
-    if( cc == omit ) {
+    if( cc == CC_omit ) {
         xx_source_err_exit( err_missing_name );
     }
 
@@ -409,7 +409,7 @@ void    scr_dm( void )
     get_macro_name( g_tok_start, macname1 );
 
     cc = getarg();
-    if( cc == omit ) {                  // nothing found
+    if( cc == CC_omit ) {                  // nothing found
         // SC--048 A control word parameter is missing
         xx_source_err_exit_c( err_mac_def_fun, macname1 );
     }
@@ -425,7 +425,7 @@ void    scr_dm( void )
     if( !compbegin && !compend ) { // only .dm macname /line1/line2/ possible
         char    sepchar;
 
-        if( cc == quotes ) {
+        if( cc == CC_quotes ) {
             g_tok_start--;    // for single line .dm /yy/xxy/.. back to sepchar
         }
         if( ProcFlags.in_macro_define ) {
@@ -500,7 +500,7 @@ void    scr_dm( void )
                     if( (macname2[2] == '\0')
                       || (find_macro( macro_dict, macname2 ) == NULL) ) { // .dm control word
                         cc = getarg();
-                        if( cc == omit ) {  // only .dm  means macro end
+                        if( cc == CC_omit ) {  // only .dm  means macro end
                             compend = true;
                             break;          // out of read loop
                         }
@@ -511,7 +511,7 @@ void    scr_dm( void )
                             xx_source_err_exit_c( err_mac_def_not, macname2 );
                         }
                         cc = getarg();
-                        if( cc == omit ) {
+                        if( cc == CC_omit ) {
                             // SC--048 A control word parameter is missing
                             xx_source_err_exit( err_mac_def_miss );
                         }
@@ -615,7 +615,7 @@ void    scr_me( void )
     if( input_cbs->prev != NULL ) {     // if not master document file
 
         cc = getarg();
-        if( cc != omit ) {              // line operand present
+        if( cc != CC_omit ) {              // line operand present
 
             free_lines( input_cbs->hidden_head );       // clear stacked input
             split_input( buff2, g_tok_start, input_cbs->fmflags );    // stack line operand
@@ -700,7 +700,7 @@ void    scr_em( void )
 
     cc = getarg();
 
-    if( cc == omit ) {
+    if( cc == CC_omit ) {
         xx_source_err_exit( err_mac_name_inv );
     }
 

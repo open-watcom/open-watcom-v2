@@ -107,7 +107,7 @@ static  condcode    get_vector_pos( parm parms[MAX_FUN_PARMS], unsigned parmcoun
 
     if( parmcount < 2
       || parmcount > 4 )
-        return( neg );
+        return( CC_neg );
 
     index = 0;
 
@@ -131,7 +131,7 @@ static  condcode    get_vector_pos( parm parms[MAX_FUN_PARMS], unsigned parmcoun
                 gn.arg = parms[2].arg;
                 gn.ignore_blanks = false;
                 cc = getnum( &gn );
-                if( (cc != pos) ) {
+                if( (cc != CC_pos) ) {
                     if( !ProcFlags.suppress_msg ) {
                         xx_source_err_exit_c( err_func_parm, "3 (startpos)" );
                     }
@@ -180,7 +180,7 @@ static  condcode    get_vector_pos( parm parms[MAX_FUN_PARMS], unsigned parmcoun
 
     *result += sprintf( *result, "%d", index );
 
-    return( pos );
+    return( CC_pos );
 }
 
 

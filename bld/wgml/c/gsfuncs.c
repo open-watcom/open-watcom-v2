@@ -389,7 +389,7 @@ char *scr_multi_funcs( const char *funcname, char *args, char **result, unsigned
 
     free_lines( in_wk );
 
-    if( cc != pos ) {                   // error in function
+    if( cc != CC_pos ) {                   // error in function
         *(*result)++ = '&';             // result is & to preserve the input
         **result = '\0';
 

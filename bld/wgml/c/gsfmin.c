@@ -63,7 +63,7 @@ condcode    scr_min( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **resul
 
     if( parmcount < 2
       || parmcount > 6 )
-        return( neg );
+        return( CC_neg );
 
     gn.ignore_blanks = false;
 
@@ -75,7 +75,7 @@ condcode    scr_min( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **resul
         }
         gn.arg = number;
         cc = getnum( &gn );
-        if( !(cc == pos || cc == neg) ) {
+        if( !(cc == CC_pos || cc == CC_neg) ) {
             if( !ProcFlags.suppress_msg ) {
                 xx_source_err_exit_c( err_func_parm, "" );
             }
@@ -88,5 +88,5 @@ condcode    scr_min( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **resul
 
     *result += sprintf( *result, "%d", minimum );
 
-    return( pos );
+    return( CC_pos );
 }

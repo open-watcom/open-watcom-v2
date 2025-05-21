@@ -59,12 +59,12 @@ condcode    scr_length( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **re
 
     if( parmcount < 1
       || parmcount > 1 )
-        return( neg );
+        return( CC_neg );
 
     string = parms[0].arg;
     string_len = unquote_arg( &string );
 
     *result += sprintf( *result, "%d", string_len );
 
-    return( pos );
+    return( CC_pos );
 }

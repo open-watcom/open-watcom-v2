@@ -61,7 +61,7 @@ condcode    scr_strip( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **res
 
     if( parmcount < 1
       || parmcount > 3 )
-        return( neg );
+        return( CC_neg );
 
     string = parms[0].arg;
     if( unquote_arg( &string ) > 0 ) {    // null string nothing to do
@@ -81,7 +81,7 @@ condcode    scr_strip( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **res
                 if( !ProcFlags.suppress_msg ) {
                     xx_source_err_exit_c( err_func_parm, "2 (type)" );
                 }
-                return( neg );
+                return( CC_neg );
             }
         }
 
@@ -121,5 +121,5 @@ condcode    scr_strip( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **res
 
     **result = '\0';
 
-    return( pos );
+    return( CC_pos );
 }

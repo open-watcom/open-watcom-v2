@@ -226,7 +226,7 @@ void    lay_banner( const gmltag * entry )
         ProcFlags.banner = true;
         init_banner_wk( &wk );
     }
-    while( (cc = lay_attr_and_value( &attr_name, &attr_val )) == pos ) {   // get att with value
+    while( (cc = lay_attr_and_value( &attr_name, &attr_val )) == CC_pos ) {   // get att with value
         for( k = 0; k < att_count; k++ ) {
             curr = banner_att[k];
             if( strcmp( lay_att_names[curr], attr_name.attname.l ) == 0 ) {

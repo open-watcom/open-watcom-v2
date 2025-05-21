@@ -314,7 +314,7 @@ static  void    print_att_entry( gaentry *wk )
         return;                         // nothing to print
     }
     opt[0] = '\0';
-    flags = wk->attflags & ~att_proc_all;   // clear processing flags
+    flags = wk->attflags & ~GAFLG_proc_all;   // clear processing flags
     find = 0;
     while( flags > 0 ) {
         if( flags & 1 ) {

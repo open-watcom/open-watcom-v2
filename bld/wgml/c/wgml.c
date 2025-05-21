@@ -584,7 +584,7 @@ static  void    proc_input( char * filename )
 
                 set_if_then_do( &ic_work );
                 cc = test_process( &ic_work );
-                if( cc != pos ) {
+                if( cc != CC_pos ) {
                     if( test_macro_xxxx( "begin" ) ) {
                         ProcFlags.in_macro_define = true;
                     }

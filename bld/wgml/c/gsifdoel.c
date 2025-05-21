@@ -111,13 +111,13 @@ static condcode gargrelop( relop * r )
     condcode        cc;
 
     cc = getarg();                      // try unquoted string
-    if( cc != pos ) {
+    if( cc != CC_pos ) {
         return( cc );                   // scan error
     }
     if(  ! ((*(g_tok_start + 1) == ' ')
         || (*(g_tok_start + 2) == ' ')) ) { // operator is max 2 chars long
 
-        return( no );                   // scan error
+        return( CC_no );                   // scan error
     }
 
     if( *(g_tok_start + 1) == ' ' ) {     // relop is single char
@@ -132,7 +132,7 @@ static condcode gargrelop( relop * r )
             *r = GT;
             break;
         default:
-            return( no );               // scan error
+            return( CC_no );               // scan error
             break;
         }
     } else {
@@ -144,7 +144,7 @@ static condcode gargrelop( relop * r )
             if( c2 == '=' ) {
                 *r = NE;
             } else {
-                return( no );
+                return( CC_no );
             }
             break;
         case '<' :
@@ -153,28 +153,28 @@ static condcode gargrelop( relop * r )
             } else if( c2 == '>' ) {
                 *r = NE;
             } else {
-                return( no );
+                return( CC_no );
             }
             break;
         case '>' :
             if( c2 == '=' ) {
                 *r = GE;
             } else {
-                return( no );
+                return( CC_no );
             }
             break;
         case 'e' :
             if( c2 == 'q' ) {
                 *r = EQ;
             } else {
-                return( no );
+                return( CC_no );
             }
             break;
         case 'n' :
             if( c2 == 'e' ) {
                 *r = NE;
             } else {
-                return( no );
+                return( CC_no );
             }
             break;
         case 'l' :
@@ -184,7 +184,7 @@ static condcode gargrelop( relop * r )
                 if( c2 == 't' ) {
                     *r = LT;
                 } else {
-                    return( no );
+                    return( CC_no );
                 }
             }
             break;
@@ -195,13 +195,13 @@ static condcode gargrelop( relop * r )
                 if( c2 == 't' ) {
                     *r = GT;
                 } else {
-                    return( no );
+                    return( CC_no );
                 }
             }
             break;
 
         default:
-            return( no );
+            return( CC_no );
             break;
         }
     }
@@ -223,16 +223,16 @@ static condcode gargterm( termcb * t )
     gn.arg = scandata;
     gn.ignore_blanks = false;
     cc = getnum( &gn );                 // try to get numeric value
-    if( cc == notnum ) {
+    if( cc == CC_notnum ) {
         t->numeric = false;
         t->term_number = 0;
 
         cc = getqst();                  // try quoted string
-        if( cc == no ) {                // not quoted
+        if( cc == CC_no ) {                // not quoted
             scandata.s = g_tok_start;   // reset start for next try
 
             cc = getarg();              // try unquoted string
-            if( cc == notnum ) {
+            if( cc == CC_notnum ) {
                 return( cc );           // scan error
             }
         }
@@ -428,10 +428,10 @@ void    scr_if( void )
         ccrelop = gargrelop( &relation );   // get relation operator
         cct2    = gargterm( &t2 );      // get term 2
 
-        if( (cct1 == no) || (cct2 == no) ) {
+        if( (cct1 == CC_no) || (cct2 == CC_no) ) {
             xx_source_err_exit( err_if_term );
         }
-        if( ccrelop != pos ) {
+        if( ccrelop != CC_pos ) {
             xx_source_err_exit( err_if_relop );
         }
 
@@ -696,7 +696,7 @@ void    scr_do( void )
     cc = getarg();
 
     cb->if_flags[cb->if_level].ifcwdo = false;
-    if( cc == omit || strnicmp( "begin", g_tok_start, 5 ) == 0 ) {
+    if( cc == CC_omit || strnicmp( "begin", g_tok_start, 5 ) == 0 ) {
         if( !(cb->if_flags[cb->if_level].ifthen
             || cb->if_flags[cb->if_level].ifelse)
             || cb->if_flags[cb->if_level].ifdo ) {

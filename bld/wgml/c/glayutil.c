@@ -87,9 +87,9 @@ void    eat_lay_sub_tag( void )
 /*  parse lines like right_margin = '7i'                                   */
 /*              or   right_margin='7i'                                     */
 /*          and store result in g_att_val                                  */
-/*  rc = pos if all ok                                                     */
-/*  rc = no  in case of error                                              */
-/*  rc = omit if nothing found                                             */
+/*  rc = CC_pos if all ok                                                     */
+/*  rc = CC_no  in case of error                                              */
+/*  rc = CC_omit if nothing found                                             */
 /***************************************************************************/
 
 static char *get_lay_attname( const char *p, char *attname )
@@ -117,10 +117,10 @@ condcode    lay_attr_and_value( att_name_type *attr_name, att_val_type *attr_val
 
     p = get_att_name_start( scandata.s, &pa, true );
     if( ProcFlags.reprocess_line ) {
-        return( no );
+        return( CC_no );
     }
     if( ProcFlags.tag_end_found ) {
-        return( omit );
+        return( CC_omit );
     }
     attr_name->tok.s = (char *)p;
     p = get_lay_attname( p, attr_name->attname.l );
@@ -130,7 +130,7 @@ condcode    lay_attr_and_value( att_name_type *attr_name, att_val_type *attr_val
 
     p = get_lay_value( p, attr_val );
     scandata.s = p;
-    return( ( attr_val->tok.l > 0 ) ? pos : no );
+    return( ( attr_val->tok.l > 0 ) ? CC_pos : CC_no );
 }
 
 /***************************************************************************/

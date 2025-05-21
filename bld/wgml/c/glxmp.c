@@ -118,7 +118,7 @@ void    lay_xmp( const gmltag * entry )
     if( ProcFlags.lay_xxx != el_xmp ) {
         ProcFlags.lay_xxx = el_xmp;
     }
-    while( (cc = lay_attr_and_value( &attr_name, &attr_val )) == pos ) {   // get att with value
+    while( (cc = lay_attr_and_value( &attr_name, &attr_val )) == CC_pos ) {   // get att with value
         cvterr = -1;
         for( k = 0, curr = xmp_att[k]; curr > 0; k++, curr = xmp_att[k] ) {
             if( strcmp( lay_att_names[curr], attr_name.attname.l ) == 0 ) {

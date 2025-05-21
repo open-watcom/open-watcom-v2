@@ -113,7 +113,7 @@ static void process_arg( p_lay_tag *p_or_pc )
 
     memset( &AttrFlags, 0, sizeof( AttrFlags ) );   // clear all attribute flags
 
-    while( (cc = lay_attr_and_value( &attr_name, &attr_val )) == pos ) {   // get att with value
+    while( (cc = lay_attr_and_value( &attr_name, &attr_val )) == CC_pos ) {   // get att with value
         cvterr = -1;
         for( k = 0, curr = p_att[k]; curr > 0; k++, curr = p_att[k] ) {
             if( strcmp( lay_att_names[curr], attr_name.attname.l ) == 0 ) {

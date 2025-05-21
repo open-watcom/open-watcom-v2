@@ -101,7 +101,7 @@ void    scr_li( void )
         gn.arg.e = scandata.e;
         gn.ignore_blanks = false;
         cc = getnum( &gn );             // try to get numeric value
-        if( cc == notnum ) {
+        if( cc == CC_notnum ) {
             switch( len ) {
             case 2 :
                 if( !strnicmp( "ON", pa, 2 ) ) {

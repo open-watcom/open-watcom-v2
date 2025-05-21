@@ -160,8 +160,8 @@ void    scr_pu( void )
         gn.ignore_blanks = false;
         cc = getnum( &gn );
 
-        if( cc != notnum ) {            // number found
-            if( (len > 1) || (cc !=pos)  || (*pa < '1') || (*pa > '9') ) {
+        if( cc != CC_notnum ) {            // number found
+            if( (len > 1) || (cc != CC_pos)  || (*pa < '1') || (*pa > '9') ) {
                 numb_err_exit();
             }
             fno = *pa - '0';            // workfile specified

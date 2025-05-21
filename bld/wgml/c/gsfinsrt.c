@@ -68,7 +68,7 @@ condcode    scr_insert( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **re
 
     if( parmcount < 2
       || parmcount > 5 )
-        return( neg );
+        return( CC_neg );
 
     new = parms[0].arg;
     new_len = unquote_arg( &new );
@@ -82,7 +82,7 @@ condcode    scr_insert( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **re
             gn.arg = parms[2].arg;
             gn.ignore_blanks = false;
             cc = getnum( &gn );
-            if( cc != pos ) {
+            if( cc != CC_pos ) {
                 if( !ProcFlags.suppress_msg ) {
                     xx_source_err_exit_c( err_func_parm, "3 (startpos)" );
                 }
@@ -98,7 +98,7 @@ condcode    scr_insert( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **re
             gn.arg = parms[3].arg;
             gn.ignore_blanks = false;
             cc = getnum( &gn );
-            if( cc != pos ) {
+            if( cc != CC_pos ) {
                 if( !ProcFlags.suppress_msg ) {
                     xx_source_err_exit_c( err_func_parm, "4 (length)" );
                 }
@@ -159,5 +159,5 @@ condcode    scr_insert( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **re
 
     **result = '\0';
 
-    return( pos );
+    return( CC_pos );
 }

@@ -150,7 +150,7 @@ static void scr_style_common( style_cw_type type, style_cw_info *cw_info )
     pb = scandata.s;    // for use if outputting text
     cc = getarg();      // uses g_tok_start, scandata.s and scandata.e
 
-    if( cc == omit ) {                  // same as BD 1
+    if( cc == CC_omit ) {                  // same as BD 1
         script_style.style |= type;
         if( type != SCT_bi ) {
             cw_info->count = 1;
@@ -197,7 +197,7 @@ static void scr_style_common( style_cw_type type, style_cw_info *cw_info )
                 gn.arg.e = scandata.e;
                 gn.ignore_blanks = false;
                 cc = getnum( &gn );             // try numeric expression evaluation
-                if( (cc == notnum) || (cc == neg) ) {
+                if( (cc == CC_notnum) || (cc == CC_neg) ) {
                     if( ProcFlags.concat ) {
                         p = pa;                 // output as text
                     } else {

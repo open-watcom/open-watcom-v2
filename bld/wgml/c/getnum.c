@@ -404,8 +404,8 @@ condcode getnum( getnum_block *gn )
     gn->errstart = arg.s;
     gn->first    = arg.s;
     if( arg.s >= arg.e ) {
-        gn->cc = omit;
-        return( omit );                 // nothing there
+        gn->cc = CC_omit;
+        return( CC_omit );                 // nothing there
     }
     c = *arg.s;
     if( c == '+' || c == '-' ) {
@@ -416,14 +416,14 @@ condcode getnum( getnum_block *gn )
     ignore_blanks = gn->ignore_blanks;
     rc = evaluate( &arg, &gn->result );
     if( rc != 0 ) {
-        gn->cc = notnum;
+        gn->cc = CC_notnum;
     } else {
         gn->arg.s = arg.s;              // start for next scan
         gn->length = sprintf( gn->resultstr, "%d", gn->result );
         if( gn->result >= 0 ) {
-            gn->cc = pos;
+            gn->cc = CC_pos;
         } else {
-            gn->cc = neg;
+            gn->cc = CC_neg;
         }
     }
     return( gn->cc );

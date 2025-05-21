@@ -466,15 +466,15 @@ typedef struct scrtag {
 /***************************************************************************/
 
 typedef enum {
-    tag_no_flag     = 0,                // none of the below
-    tag_only        = 1,                // tag without any attribute
-    tag_basic       = 2,                // basic elements possible on tag line.
-    tag_text        = 4,                // text line possible
-    etag_req        = 8,                // eTAG required
-    etag_opt        = 16,               // eTAG optional
-    tag_is_general  = 32,               // general tag
-    tag_layout      = 64,               // tag valid in layout
-    tag_out_txt     = 128,              // tag produces output text
+    TFLG_none        = 0,                // none of the below
+    TFLG_only        = 1,                // tag without any attribute
+    TFLG_basic       = 2,                // basic elements possible on tag line.
+    TFLG_text        = 4,                // text line possible
+    TFLG_etag_req    = 8,                // eTAG required
+    TFLG_etag_opt    = 16,               // eTAG optional
+    TFLG_is_general  = 32,               // general tag
+    TFLG_layout      = 64,               // tag valid in layout
+    TFLG_out_txt     = 128,              // tag produces output text
 } gmlflags;
 
 /************************************************************************/
@@ -556,20 +556,20 @@ typedef struct gavalentry {
 /***************************************************************************/
 
 typedef enum {
-    att_def         = 0x0001,           // attribute has default value
-    att_range       = 0x0002,           // attribute has range
-    att_auto        = 0x0004,           // attribute is automatic
-    att_any         = 0x0008,           // attribute any value allowed
-    att_req         = 0x0010,           // attribute required
-    att_upper       = 0x0020,           // translate to upper
-    att_off         = 0x0040,           // attribute is inactive
+    GAFLG_def         = 0x0001,           // attribute has default value
+    GAFLG_range       = 0x0002,           // attribute has range
+    GAFLG_auto        = 0x0004,           // attribute is automatic
+    GAFLG_any         = 0x0008,           // attribute any value allowed
+    GAFLG_req         = 0x0010,           // attribute required
+    GAFLG_upper       = 0x0020,           // translate to upper
+    GAFLG_off         = 0x0040,           // attribute is inactive
 
-    att_proc_all    = 0x0f00,           // mask for processing flags
+    GAFLG_proc_all    = 0x0f00,           // mask for processing flags
 
-    att_proc_req    = 0x0100,           // req attr not yet seen
-    att_proc_auto   = 0x0200,           // auto attr cannot be specified
-    att_proc_seen   = 0x0400,           // attr specified
-    att_proc_val    = 0x0800            // ... with value specified
+    GAFLG_proc_req    = 0x0100,           // req attr not yet seen
+    GAFLG_proc_auto   = 0x0200,           // auto attr cannot be specified
+    GAFLG_proc_seen   = 0x0400,           // attr specified
+    GAFLG_proc_val    = 0x0800            // ... with value specified
 } gaflags;
 
 /***************************************************************************/
@@ -589,16 +589,16 @@ typedef struct gaentry {
 /***************************************************************************/
 
 typedef enum {
-    tag_attr     = 1,                   // tag has attributes
-    tag_cont     = 2,                   // CONTinue specified
-    tag_nocont   = 4,                   // NOCONTinue specified
-    tag_csoff    = 8,                   // CSOFF specified
-    tag_next     = 16,                  // TAGnext specified
-    tag_textdef  = 32,                  // TEXTDef specified
-    tag_texterr  = 64,                  // TEXTError specified
-    tag_textline = 128,                 // TEXTLine specified
-    tag_textreq  = 256,                 // TEXTRequired specified
-    tag_off      = 512                  // tag OFF specified
+    GTFLG_attr     = 1,                   // tag has attributes
+    GTFLG_cont     = 2,                   // CONTinue specified
+    GTFLG_nocont   = 4,                   // NOCONTinue specified
+    GTFLG_csoff    = 8,                   // CSOFF specified
+    GTFLG_next     = 16,                  // TAGnext specified
+    GTFLG_textdef  = 32,                  // TEXTDef specified
+    GTFLG_texterr  = 64,                  // TEXTError specified
+    GTFLG_textline = 128,                 // TEXTLine specified
+    GTFLG_textreq  = 256,                 // TEXTRequired specified
+    GTFLG_off      = 512                  // tag OFF specified
 } gtflags;
 
 /***************************************************************************/
@@ -634,15 +634,15 @@ typedef struct gtentry  *tag_dict;
 /*            loosely adapted from wgml 88.1 IBM S/360 ASM code            */
 /***************************************************************************/
 
-typedef enum condcode {            // return code for some scanning functions
-    zero            = 0,
-    omit            = 1,                // argument omitted
-    pos             = 2,                // argument affirmative
-    neg             = 4,                // argument negative
-    quotes          = 8,                // argument within quotes
-    quotes0         = 16,               // only quotes
-    no              = 32,               // argument undefined
-    notnum          = 32                // value not numeric / overflow
+typedef enum condcode {                 // return code for some scanning functions
+    CC_zero         = 0,
+    CC_omit         = 1,                // argument omitted
+    CC_pos          = 2,                // argument affirmative
+    CC_neg          = 4,                // argument negative
+    CC_quotes       = 8,                // argument within quotes
+    CC_quotes0      = 16,               // only quotes
+    CC_no           = 32,               // argument undefined
+    CC_notnum       = 32                // value not numeric / overflow
 }  condcode;
 
 /***************************************************************************/

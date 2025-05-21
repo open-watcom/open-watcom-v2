@@ -337,7 +337,7 @@ static bool su_expression( su * in_su )
     gn.ignore_blanks = false;
     cc = getnum( &gn );
 
-    if( cc == notnum ) {
+    if( cc == CC_notnum ) {
         retval = false;
     } else {
         in_su->su_u = SU_chars_lines;

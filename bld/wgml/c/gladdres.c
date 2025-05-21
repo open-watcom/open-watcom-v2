@@ -126,7 +126,7 @@ void    lay_address( const gmltag * entry )
     if( ProcFlags.lay_xxx != el_address ) {
         ProcFlags.lay_xxx = el_address;
     }
-    while( (cc = lay_attr_and_value( &attr_name, &attr_val )) == pos ) {   // get att with value
+    while( (cc = lay_attr_and_value( &attr_name, &attr_val )) == CC_pos ) {   // get att with value
         cvterr = -1;
         for( k = 0, curr = address_att[k]; curr > 0; k++, curr = address_att[k] ) {
             if( strcmp( lay_att_names[curr], attr_name.attname.l ) == 0 ) {
@@ -220,7 +220,7 @@ void    lay_aline( const gmltag * entry )
     if( ProcFlags.lay_xxx != el_aline ) {
         ProcFlags.lay_xxx = el_aline;
     }
-    while( (cc = lay_attr_and_value( &attr_name, &attr_val )) == pos ) {   // get att with value
+    while( (cc = lay_attr_and_value( &attr_name, &attr_val )) == CC_pos ) {   // get att with value
         cvterr = true;
         for( k = 0, curr = aline_att[k]; curr > 0; k++, curr = aline_att[k] ) {
             if( strcmp( lay_att_names[curr], attr_name.attname.l ) == 0 ) {

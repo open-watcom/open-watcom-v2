@@ -248,7 +248,7 @@ void    scr_tb( void )
                     xx_line_err_exit_c( err_inv_tab_stop, pa );
                 }
             }
-            if( cc == notnum ) {
+            if( cc == CC_notnum ) {
                 xx_line_err_exit_c( err_inv_text_before_tab, pa );
             } else {
                 if( gn.result <= 0 ) {

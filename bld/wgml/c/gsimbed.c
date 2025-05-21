@@ -165,7 +165,7 @@ void    scr_im( void )
     gn.arg.e = scandata.e;
     gn.ignore_blanks = false;
     cc = getnum( &gn );
-    if( (cc == pos) && (gn.result < 10) ) { // include SYSUSR0x.GML
+    if( (cc == CC_pos) && (gn.result < 10) ) { // include SYSUSR0x.GML
         close_pu_file( gn.result );     // if still open
         strcpy( token_buf, get_workfile_name( gn.result ) );
     } else {

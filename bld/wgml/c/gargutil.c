@@ -110,21 +110,21 @@ condcode getarg( void )
     char            quote;
     char            valquote;
 
-    cc = omit;                          // arg omitted
+    cc = CC_omit;                          // arg omitted
     if( scandata.s < scandata.e ) {     // already at end
         p = scandata.s;
         while( *p == ' ' && p < scandata.e ) {// skip leading blanks
             p++;
         }
         if( p == scandata.e ) {
-            return( omit );             // nothing found
+            return( CC_omit );             // nothing found
         }
 
         if( p == scandata.e - 1 ) {     // one character token found
             arg_flen = 1;
             g_tok_start = p;
             scandata.s = p + 1;         // address of start for next call
-            return( pos );              // arg found
+            return( CC_pos );              // arg found
         }
 
         valquote = ' ';
@@ -170,15 +170,15 @@ condcode getarg( void )
         arg_flen = p - g_tok_start;     // length of multichar arg
         if( arg_flen > 0 ) {
             if( quote != ' ' ) {
-                cc = quotes;            // quoted arg found
+                cc = CC_quotes;            // quoted arg found
             } else {
-                cc = pos;               // arg found
+                cc = CC_pos;               // arg found
             }
         } else {
             if( quote != ' ' ) {
-                cc = quotes0;           // Nullstring
+                cc = CC_quotes0;           // Nullstring
             } else {
-                cc = omit;              // length zero
+                cc = CC_omit;              // length zero
             }
         }
     }
@@ -196,7 +196,7 @@ condcode getqst( void )
     char            *p;
     char            quote;
 
-    cc = omit;                          // arg omitted
+    cc = CC_omit;                          // arg omitted
     if( scandata.s < scandata.e ) {     // already at end
         p = scandata.s;
         while( *p == ' ' && p < scandata.e ) {// skip leading blanks
@@ -204,7 +204,7 @@ condcode getqst( void )
         }
 
         if( p == scandata.e ) {
-            return( omit );             // nothing found
+            return( CC_omit );             // nothing found
         }
 
         quote = ' ';
@@ -237,15 +237,15 @@ condcode getqst( void )
         if( arg_flen > 0 ) {
             if( quote != ' ' ) {
                 if( *p != quote ) {
-                    cc = no;            // only start quote found
+                    cc = CC_no;            // only start quote found
                 } else {
-                    cc = quotes;        // quoted arg found
+                    cc = CC_quotes;        // quoted arg found
                 }
             } else {
-                cc = no;                // not quoted
+                cc = CC_no;                // not quoted
             }
         } else {
-            cc = omit;                  // length zero
+            cc = CC_omit;                  // length zero
         }
     }
     return( cc );

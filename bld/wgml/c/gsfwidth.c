@@ -67,7 +67,7 @@ condcode    scr_width( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **res
 
     if( parmcount < 1
       || parmcount > 2 )
-        return( neg );
+        return( CC_neg );
 
     width = 0;                              // null string width 0
 
@@ -100,5 +100,5 @@ condcode    scr_width( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **res
 
     *result  += sprintf( *result, "%d", width );
 
-    return( pos );
+    return( CC_pos );
 }

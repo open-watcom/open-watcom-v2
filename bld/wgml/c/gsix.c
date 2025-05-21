@@ -202,7 +202,7 @@ void scr_ix( void )
 
     g_tok_start = NULL;                   // clear token start address
     cc = getarg();                      // get next operand
-    if( cc == omit || cc == quotes0 ) { // no operands
+    if( cc == CC_omit || cc == CC_quotes0 ) { // no operands
 
         /* Position adjusted to avoid buffer overflow */
 
@@ -217,7 +217,7 @@ void scr_ix( void )
     /* by '.' (the control word indicator)                          */
     /****************************************************************/
 
-    if( cc != quotes ) {
+    if( cc != CC_quotes ) {
 
         /* Unquoted numeric string here must be a structure number */
 
@@ -226,7 +226,7 @@ void scr_ix( void )
         gn.ignore_blanks = false;
         cc = getnum( &gn );
 
-        if( (cc == pos) || (cc == neg) ) {
+        if( (cc == CC_pos) || (cc == CC_neg) ) {
 
             p = g_tok_start;
             for( k = 0; k < arg_flen; k++ ) {
@@ -245,7 +245,7 @@ void scr_ix( void )
                     xx_line_err_exit_c( err_struct_range, g_tok_start );
                 }
                 cc = getarg();                  // get next operand
-                if( cc == omit || cc == quotes0 ) { // no operands
+                if( cc == CC_omit || cc == CC_quotes0 ) { // no operands
                     xx_line_err_exit_cc( err_parm_missing, cwcurr, g_tok_start );
                 }
             }
@@ -259,7 +259,7 @@ void scr_ix( void )
 
                 /* Only DUMP/PURGE allowed in this position */
 
-                if( cc == omit || cc == quotes0 ) { // no operands
+                if( cc == CC_omit || cc == CC_quotes0 ) { // no operands
                     xx_line_err_exit_cc( err_parm_missing, cwcurr, g_tok_start );
                 } else if( (arg_flen == 4) && stricmp( "DUMP", g_tok_start ) == 0 ) {
                     xx_warn_c( wng_unsupp_cw_opt, "DUMP" );
@@ -284,7 +284,7 @@ void scr_ix( void )
 
     for( lvl = 0; lvl < 3; lvl++ ) {
 
-        if( cc == omit || cc == quotes0 ) { // no (more) arguments
+        if( cc == CC_omit || cc == CC_quotes0 ) { // no (more) arguments
             break;
         }
 
@@ -292,7 +292,7 @@ void scr_ix( void )
 
         if( *g_tok_start == SCR_char && arg_flen == 1  ) {    // identify reference
             cc = getarg();                                  // get next operand
-            if( (cc == pos) || (cc == quotes) ) {           // identify reference
+            if( (cc == CC_pos) || (cc == CC_quotes) ) {           // identify reference
                 ref = g_tok_start;
                 reflen = arg_flen;
                 cc = getarg();                  // get next operand
@@ -309,14 +309,14 @@ void scr_ix( void )
             cc = getarg();                                  // get next operand
         }
 
-        if( (cc == pos) || (cc == quotes) ) {   // reference found
+        if( (cc == CC_pos) || (cc == CC_quotes) ) {   // reference found
             ref = g_tok_start;
             reflen = arg_flen;
             cc = getarg();                      // get next operand
         }
     }
 
-    if( (cc == pos) || (cc == quotes) ) {       // extra data on line
+    if( (cc == CC_pos) || (cc == CC_quotes) ) {       // extra data on line
         xx_line_err_exit_c( err_extra_data, g_tok_start );
     }
 

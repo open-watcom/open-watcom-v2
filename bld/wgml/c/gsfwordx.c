@@ -63,7 +63,7 @@ static  condcode    scr_xx_word( parm parms[MAX_FUN_PARMS], unsigned parmcount,
         if( parms[1].arg.s < parms[1].arg.e ) {// start pos specified
             gn.arg = parms[1].arg;
             cc = getnum( &gn );
-            if( cc != pos ) {
+            if( cc != CC_pos ) {
                 if( !ProcFlags.suppress_msg ) {
                     xx_source_err_exit_c( err_func_parm, "2 (startword)" );
                 }
@@ -80,7 +80,7 @@ static  condcode    scr_xx_word( parm parms[MAX_FUN_PARMS], unsigned parmcount,
                 if( parms[2].arg.s < parms[2].arg.e ) {
                     gn.arg = parms[2].arg;
                     cc = getnum( &gn );
-                    if( (cc != pos) || (gn.result == 0) ) {
+                    if( (cc != CC_pos) || (gn.result == 0) ) {
                         if( !ProcFlags.suppress_msg ) {
                             xx_source_err_exit_c( err_func_parm, "3 (length)" );
                         }
@@ -93,12 +93,12 @@ static  condcode    scr_xx_word( parm parms[MAX_FUN_PARMS], unsigned parmcount,
 
         scandata = string;
         k = 0;
-        cc = pos;
-        while( (k < n) && (cc != omit) ) {  // find start word
+        cc = CC_pos;
+        while( (k < n) && (cc != CC_omit) ) {  // find start word
             cc = getarg();
             k++;
         }
-        if( cc != omit ) {                  // start word does not exist
+        if( cc != CC_omit ) {                  // start word does not exist
             string.s = g_tok_start;         // start word
             if( length == 0 ) {             // default word count = to end of string
                 ptok = string.e;
@@ -111,7 +111,7 @@ static  condcode    scr_xx_word( parm parms[MAX_FUN_PARMS], unsigned parmcount,
                 for( k = 0; k < length; k++ ) {
                     ptok = g_tok_start;
                     cc = getarg();
-                    if( cc == omit ) {
+                    if( cc == CC_omit ) {
                         ptok = string.e;
                         break;
                     }
@@ -132,7 +132,7 @@ static  condcode    scr_xx_word( parm parms[MAX_FUN_PARMS], unsigned parmcount,
 
     **result = '\0';
 
-    return( pos );
+    return( CC_pos );
 }
 
 
@@ -152,7 +152,7 @@ condcode    scr_word( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **resu
 {
     if( parmcount < 2
       || parmcount > 2 )
-        return( neg );
+        return( CC_neg );
 
     return( scr_xx_word( parms, parmcount, result, ressize, true ) );
 }
@@ -178,7 +178,7 @@ condcode    scr_subword( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **r
 {
     if( parmcount < 2
       || parmcount > 3 )
-        return( neg );
+        return( CC_neg );
 
     return( scr_xx_word( parms, parmcount, result, ressize, false ) );
 }
@@ -202,7 +202,7 @@ condcode    scr_words( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **res
 
     if( parmcount < 1
       || parmcount > 1 )
-        return( neg );
+        return( CC_neg );
 
     wc = 0;
 
@@ -220,7 +220,7 @@ condcode    scr_words( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **res
 
     *result += sprintf( *result, "%d", wc );
 
-    return( pos );
+    return( CC_pos );
 }
 
 static int find_words_phrase_in_string( tok_type *phrase, tok_type *string, int index )
@@ -301,7 +301,7 @@ condcode    scr_wordpos( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **r
 
     if( parmcount < 2
       || parmcount > 3 )
-        return( neg );
+        return( CC_neg );
 
     index = 0;
 
@@ -316,7 +316,7 @@ condcode    scr_wordpos( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **r
                 gn.arg = parms[2].arg;
                 gn.ignore_blanks = false;
                 cc = getnum( &gn );
-                if( (cc != pos) || (gn.result == 0) ) {
+                if( (cc != CC_pos) || (gn.result == 0) ) {
                     if( !ProcFlags.suppress_msg ) {
                         xx_source_err_exit_c( err_func_parm, "3 (startword)" );
                     }
@@ -327,13 +327,13 @@ condcode    scr_wordpos( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **r
         }
         scandata = string;
         k = 0;
-        cc = pos;
+        cc = CC_pos;
         g_tok_start = string.s;
-        while( ( k <= start ) && ( cc != omit ) ) { // find start word (by index)
+        while( ( k <= start ) && ( cc != CC_omit ) ) { // find start word (by index)
             cc = getarg();
             k++;
         }
-        if( cc != omit ) {                  // start word exists
+        if( cc != CC_omit ) {                  // start word exists
             string.s = g_tok_start;         // set start position
             index = find_words_phrase_in_string( &phrase, &string, start );
         }
@@ -341,7 +341,7 @@ condcode    scr_wordpos( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **r
 
     *result += sprintf( *result, "%d", index );
 
-    return( pos );
+    return( CC_pos );
 }
 
 /***************************************************************************
@@ -368,7 +368,7 @@ condcode    scr_find( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **resu
 
     if( parmcount < 2
       || parmcount > 2 )
-        return( neg );
+        return( CC_neg );
 
     index = 0;
 
@@ -382,5 +382,5 @@ condcode    scr_find( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **resu
 
     *result += sprintf( *result, "%d", index );
 
-    return( pos );
+    return( CC_pos );
 }

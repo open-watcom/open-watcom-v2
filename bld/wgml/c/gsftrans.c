@@ -66,7 +66,7 @@ condcode    scr_translate( parm parms[MAX_FUN_PARMS], unsigned parmcount, char *
 
     if( parmcount < 1
       || parmcount > 4 )
-        return( neg );
+        return( CC_neg );
 
     string = parms[0].arg;
     if( unquote_arg( &string ) > 0 ) {
@@ -127,5 +127,5 @@ condcode    scr_translate( parm parms[MAX_FUN_PARMS], unsigned parmcount, char *
 
     **result = '\0';
 
-    return( pos );
+    return( CC_pos );
 }

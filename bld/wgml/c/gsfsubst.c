@@ -74,7 +74,7 @@ condcode    scr_substr( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **re
 
     if( parmcount < 2
       || parmcount > 4 )
-        return( neg );
+        return( CC_neg );
 
     string = parms[0].arg;
     string_len = unquote_arg( &string );
@@ -82,7 +82,7 @@ condcode    scr_substr( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **re
     gn.arg = parms[1].arg;
     gn.ignore_blanks = false;
     cc = getnum( &gn );
-    if( (cc != pos) || (gn.result == 0) ) {
+    if( (cc != CC_pos) || (gn.result == 0) ) {
         if( !ProcFlags.suppress_msg ) {
             xx_source_err_exit_c( err_func_parm, "2 (startpos)" );
         }
@@ -98,7 +98,7 @@ condcode    scr_substr( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **re
         if( parms[2].arg.s < parms[2].arg.e ) {
             gn.arg = parms[2].arg;
             cc = getnum( &gn );
-            if( (cc != pos) || (gn.result == 0) ) {
+            if( (cc != CC_pos) || (gn.result == 0) ) {
                 if( !ProcFlags.suppress_msg ) {
                     xx_source_err_exit_c( err_func_parm, "3 (length)" );
                 }
@@ -139,5 +139,5 @@ condcode    scr_substr( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **re
 
     **result = '\0';
 
-    return( pos );
+    return( CC_pos );
 }

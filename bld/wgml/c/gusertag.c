@@ -41,13 +41,13 @@
 
 static gaflags set_att_proc_flags( gaflags attflags )
 {
-    gaflags fl = attflags & ~att_proc_all;
+    gaflags fl = attflags & ~GAFLG_proc_all;
 
-    if( fl & att_auto ) {
-        fl |= att_proc_auto;
+    if( fl & GAFLG_auto ) {
+        fl |= GAFLG_proc_auto;
     }
-    if( fl & att_req ) {
-        fl |= att_proc_req;
+    if( fl & GAFLG_req ) {
+        fl |= GAFLG_proc_req;
     }
     return( fl );
 }
@@ -65,10 +65,10 @@ static void add_defaults_to_dict( gtentry * ge, symdict_hdl dict )
     for( ga = ge->attribs; ga != NULL; ga = ga->next ) {// for all attributes
 
         ga->attflags = set_att_proc_flags( ga->attflags );
-        if( ga->attflags & att_off ) {  // attribute inactive
+        if( ga->attflags & GAFLG_off ) {  // attribute inactive
             continue;
         }
-        if( ga->attflags & (att_def | att_auto) ) {  // with default
+        if( ga->attflags & (GAFLG_def | GAFLG_auto) ) {  // with default
             for( gaval = ga->vals; gaval != NULL; gaval = gaval->next ) {
                 if( gaval->valflags & (val_def | val_auto) ) {// value is default
                     valp = NULL;
@@ -195,7 +195,7 @@ bool process_tag( gtentry *ge, mac_entry * me )
 
     p = g_tok_start + ge->taglen + 1;    // over tagname
 
-    if( ge->tagflags & tag_textline ) {
+    if( ge->tagflags & GTFLG_textline ) {
 
         /***********************************************************************/
         /*  TEXTLine treats everything after the tag as tag-text               */
@@ -217,7 +217,7 @@ bool process_tag( gtentry *ge, mac_entry * me )
             mem_free( pline );
             p = p2;
         }
-    } else if( ge->attribs != NULL && (ge->tagflags & tag_attr) ) {
+    } else if( ge->attribs != NULL && (ge->tagflags & GTFLG_attr) ) {
 
         /***********************************************************************/
         /*  only process attributes if ATTribute was used and at least one     */
@@ -235,8 +235,8 @@ bool process_tag( gtentry *ge, mac_entry * me )
             if( *attname != '\0' ) {     // ignore nullstring
                 for( ga = ge->attribs; ga != NULL; ga = ga->next ) {// all attrs
                     if( strcmp( ga->attname, attname ) == 0 ) {
-                        ga->attflags |= att_proc_seen; // attribute specified
-                        if( ga->attflags & att_auto ) {
+                        ga->attflags |= GAFLG_proc_seen; // attribute specified
+                        if( ga->attflags & GAFLG_auto ) {
                             xx_line_err_exit_cc( err_auto_att, attname, pa );
                         }
 
@@ -245,7 +245,7 @@ bool process_tag( gtentry *ge, mac_entry * me )
                         }
 
                         /* no line end allowed before '=' except with TEXTLine */
-                        if( (*p == '\0') && (ge->tagflags & tag_textline) == 0 ) {
+                        if( (*p == '\0') && (ge->tagflags & GTFLG_textline) == 0 ) {
                             xx_line_err_exit_cc( err_no_att_val, attname, p );
                         }
 
@@ -257,7 +257,7 @@ bool process_tag( gtentry *ge, mac_entry * me )
                                 xx_line_err_exit_cc( err_no_att_val, attname, p );
                             }
 
-                            ga->attflags |= att_proc_val;
+                            ga->attflags |= GAFLG_proc_val;
                             p2 = token_buf;
                             if( is_quote_char( *p ) ) {
                                 quote = *p++;
@@ -274,17 +274,17 @@ bool process_tag( gtentry *ge, mac_entry * me )
                                 }
                             }
                             *p2 = '\0';
-                            if( ga->attflags & att_off ) {// attribute inactive
+                            if( ga->attflags & GAFLG_off ) {// attribute inactive
                                 continue;
                             }
-                            if( ga->attflags & att_upper ) {// uppercase option
+                            if( ga->attflags & GAFLG_upper ) {// uppercase option
                                 strupr( token_buf );
                             }
 
                             g_scan_err = check_att_value( ga, ge, loc_dict );
 
                         } else {// special for range set default2 if no value
-                            if( ga->attflags & att_range ) {
+                            if( ga->attflags & GAFLG_range ) {
                                 for( gaval = ga->vals; gaval != NULL;
                                      gaval = gaval->next ) {
                                      if( gaval->valflags & val_range ) {
@@ -329,8 +329,8 @@ bool process_tag( gtentry *ge, mac_entry * me )
 
         *token_buf = '\0';
         for( ga = ge->attribs; ga != NULL; ga = ga->next ) {// for all attrs
-            if( ga->attflags & att_req ) {
-                if( (ga->attflags & att_proc_seen) == 0 ) {
+            if( ga->attflags & GAFLG_req ) {
+                if( (ga->attflags & GAFLG_proc_seen) == 0 ) {
                     if( *token_buf != '\0' ) {
                         strcat( token_buf, " '" );
                     } else {
@@ -344,7 +344,7 @@ bool process_tag( gtentry *ge, mac_entry * me )
         if( *token_buf != '\0' ) {      // some req attr missing
             att_req_err_exit( ge->tagname, token_buf );
         }
-    } else if( ge->tagflags & tag_attr ) {
+    } else if( ge->tagflags & GTFLG_attr ) {
         p2 = p;                                 // save value
         SkipSpaces( p );
         if( (*p != '.') && (*p != '\0') ) {
@@ -372,7 +372,7 @@ bool process_tag( gtentry *ge, mac_entry * me )
 
         /* If TEXTReqrd was used in defining the user-tag, this is an error */
 
-        if( ge->tagflags & tag_textreq ) {  // text must be present
+        if( ge->tagflags & GTFLG_textreq ) {  // text must be present
             xx_line_err_exit_cc( err_att_text_req, ge->tagname, p2 );
         }
 
@@ -382,7 +382,7 @@ bool process_tag( gtentry *ge, mac_entry * me )
 
         /* If TEXTError was used in defining the user-tag, this is an error */
 
-        if( ge->tagflags & tag_texterr ) {  // no text allowed
+        if( ge->tagflags & GTFLG_texterr ) {  // no text allowed
             xx_line_err_exit_cc( err_att_text, ge->tagname, p );
         }
 
@@ -392,7 +392,7 @@ bool process_tag( gtentry *ge, mac_entry * me )
         if( *p2 == '.' ) {
             SkipDot( p );
         } else {
-            if( (ge->tagflags & tag_attr) && (ge->tagflags & tag_textline) == 0 ) {
+            if( (ge->tagflags & GTFLG_attr) && (ge->tagflags & GTFLG_textline) == 0 ) {
                 SkipSpaces( p );
             }
         }
@@ -410,7 +410,7 @@ bool process_tag( gtentry *ge, mac_entry * me )
         }
 
         // remove trailing continue character if tag has NOCONTinue option
-        if( (ge->tagflags & tag_nocont) ) {
+        if( (ge->tagflags & GTFLG_nocont) ) {
             len = strlen( p );
             if( *(p + len - 1) == CONT_char ) {
                 len--;
@@ -442,7 +442,7 @@ bool process_tag( gtentry *ge, mac_entry * me )
     input_cbs->hh_tag = input_cbs->prev->hh_tag;
     inc_inc_level();                // start new include level
 
-    if( ge->tagflags & tag_cont ) {
+    if( ge->tagflags & GTFLG_cont ) {
         ProcFlags.utc = true;
     }
 

@@ -95,7 +95,7 @@ static void gml_inline_common( const gmltag * entry, font_number font, e_tags t 
             scr_process_break();
         } else {
             ProcFlags.xmp_ut_sf = true;
-            if( (input_cbs->s.m->tag->tagflags & tag_cont) == 0 ) {
+            if( (input_cbs->s.m->tag->tagflags & GTFLG_cont) == 0 ) {
                 scr_process_break();        // tag not defined with CONT
             }
         }

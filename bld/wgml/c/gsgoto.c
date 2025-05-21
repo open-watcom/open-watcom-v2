@@ -115,12 +115,12 @@ static  condcode    test_duplicate( char *name, line_number lineno )
 
     lb = find_label( name );
     if( lb == NULL ) {
-        return( omit );                 // really new label
+        return( CC_omit );                 // really new label
     }
     if( lb->lineno == lineno ) {
-        return( pos );                  // name and lineno match
+        return( CC_pos );                  // name and lineno match
     } else {
-        return( neg);                   // name matches, different lineno
+        return( CC_neg );                   // name matches, different lineno
     }
 }
 
@@ -174,7 +174,7 @@ void    scr_label( void )
         gn.arg = scandata;
         gn.ignore_blanks = false;
         cc = getnum( &gn );             // try numeric expression evaluation
-        if( cc == pos ) {               // numeric linenumber
+        if( cc == CC_pos ) {               // numeric linenumber
             scandata.s = gn.arg.s;      // start for next token
 
             // check if lineno from label matches actual lineno
@@ -198,8 +198,8 @@ void    scr_label( void )
 
         } else {                        // no numeric label
             cc = getarg();
-            if( cc == pos ) {           // label name specefied
-                char        *p;
+            if( cc == CC_pos ) {           // label name specefied
+                char    *p;
 
                 p = get_labelname( g_tok_start, labelname );
                 if( p - g_tok_start >  LABEL_NAME_LENGTH ) {
@@ -209,10 +209,10 @@ void    scr_label( void )
                 if( input_cbs->fmflags & II_tag_mac ) {
 
                     cc = test_duplicate( labelname, input_cbs->s.m->lineno );
-                    if( cc == pos ) {   // ok name and lineno match
+                    if( cc == CC_pos ) {   // ok name and lineno match
                         // nothing to do
                     } else {
-                        if( cc == neg ) {   // name with different lineno
+                        if( cc == CC_neg ) {   // name with different lineno
                             xx_source_err_exit_c( err_label_dup, labelname );
                         } else {        // new label
                             lb              = mem_alloc( sizeof( labelcb ) );
@@ -225,10 +225,10 @@ void    scr_label( void )
                     }
                 } else {
                     cc = test_duplicate( labelname, input_cbs->s.f->lineno );
-                    if( cc == pos ) {   // ok name and lineno match
+                    if( cc == CC_pos ) {   // ok name and lineno match
                         // nothing to do
                     } else {
-                        if( cc == neg ) {   // name with different lineno
+                        if( cc == CC_neg ) {   // name with different lineno
                             xx_source_err_exit_c( err_label_dup, labelname );
                         } else {        // new label
 
@@ -314,7 +314,7 @@ void    scr_go( void )
     ProcFlags.keep_ifstate = false;     // ... all .if controls
 
     cc = getarg();
-    if( cc != pos ) {
+    if( cc != CC_pos ) {
         xx_source_err_exit_c( err_missing_name, "" );
     }
 
@@ -322,7 +322,7 @@ void    scr_go( void )
     gn.arg.e = scandata.e;
     gn.ignore_blanks = false;
     cc = getnum( &gn );             // try numeric expression evaluation
-    if( cc == pos  || cc  == neg) {     // numeric linenumber
+    if( cc == CC_pos  || cc == CC_neg) {     // numeric linenumber
         gotarget[0] = '\0';             // no target label name
         if( gn.num_sign == ' '  ) {     // absolute number
             gotargetno = gn.result;

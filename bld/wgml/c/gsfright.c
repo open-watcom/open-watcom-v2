@@ -61,7 +61,7 @@ condcode    scr_right( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **res
 
     if( parmcount < 2
       || parmcount > 3 )
-        return( neg );
+        return( CC_neg );
 
     string = parms[0].arg;
     string_len = unquote_arg( &string );
@@ -69,7 +69,7 @@ condcode    scr_right( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **res
     gn.arg = parms[1].arg;
     gn.ignore_blanks = false;
     cc = getnum( &gn );
-    if( cc != pos ) {
+    if( cc != CC_pos ) {
         if( !ProcFlags.suppress_msg ) {
             xx_source_err_exit_c( err_func_parm, "2 (length)" );
         }
@@ -108,5 +108,5 @@ condcode    scr_right( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **res
 
     **result = '\0';
 
-    return( pos );
+    return( CC_pos );
 }

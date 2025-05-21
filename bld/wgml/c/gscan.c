@@ -198,7 +198,7 @@ static void scan_gml( void )
         if( ProcFlags.need_text ) {
             xx_err_exit( err_text_not_tag_cw );
         }
-        if( ge->tagflags & tag_off ) {  // inactive, treat as comment
+        if( ge->tagflags & GTFLG_off ) {  // inactive, treat as comment
             scandata.s = scandata.e;
             return;
         }
@@ -244,7 +244,7 @@ static void scan_gml( void )
                     } else if( tag->taglocs & rs_loc ) {
                         // tag allowed in this restricted location
                         tag->gmlproc( tag );
-                    } else if( (tag->tagflags & tag_is_general) != 0 ) {
+                    } else if( (tag->tagflags & TFLG_is_general) != 0 ) {
                         // tag allowed everywhere
                         tag->gmlproc( tag );
                     } else if( rs_loc == TLOC_banner ) {
@@ -345,7 +345,7 @@ static void scan_gml( void )
                 } else if( tag->taglocs & rs_loc ) {
                     // tag allowed in this restricted location
                     tag->gmlproc( tag );
-                } else if( tag->tagflags & tag_is_general ) {
+                } else if( tag->tagflags & TFLG_is_general ) {
                     // tag allowed everywhere
                     tag->gmlproc( tag );
                 } else {
@@ -608,7 +608,7 @@ condcode    test_process( ifcb * cb )
     }
 #endif
 
-    cc = no;
+    cc = CC_no;
 //mainif
     if( cb->if_flags[cb->if_level].iflast   // 1. rec after .if
         && !cb->if_flags[cb->if_level].ifcwte) {// not .th or .el
@@ -623,7 +623,7 @@ condcode    test_process( ifcb * cb )
         if( cb->if_flags[cb->if_level].ifthen
             || cb->if_flags[cb->if_level].ifelse ) {// object of .th or .el
 
-            cc = pos;
+            cc = CC_pos;
         } else {
 
 //mnif03a
@@ -633,14 +633,14 @@ condcode    test_process( ifcb * cb )
                     break;
                 }
             }
-            cc = pos;                   // .do or all popped
+            cc = CC_pos;                   // .do or all popped
         }
 
 #ifdef DEBTESTPROC
         if( (input_cbs->fmflags & II_research)
           && GlobalFlags.firstpass
           && (start_level || cb->if_level) ) {
-            show_ifcb( (cc == pos) ? "EX1 pos" : "EX1 no", cb );
+            show_ifcb( (cc == CC_pos) ? "EX1 pos" : "EX1 no", cb );
         }
 #endif
         return( cc );
@@ -649,12 +649,12 @@ condcode    test_process( ifcb * cb )
 
 //mnif01 cont.
         if( cb->if_flags[cb->if_level].ifcwdo ) {   // if  .do
-            cc = pos;
+            cc = CC_pos;
 #ifdef DEBTESTPROC
         if( (input_cbs->fmflags & II_research)
           && GlobalFlags.firstpass
           && (start_level || cb->if_level) ) {
-                show_ifcb( (cc == pos) ? "Edo pos" : "Edo no", cb );
+                show_ifcb( (cc == CC_pos) ? "Edo pos" : "Edo no", cb );
             }
 #endif
             return( cc );
@@ -667,20 +667,20 @@ condcode    test_process( ifcb * cb )
 //mnif06
                 if( cb->if_flags[cb->if_level].iftrue ) {// omit if true for .el
 //mnif08
-                    cc = neg;
+                    cc = CC_neg;
                 } else {
-                    cc = pos;
+                    cc = CC_pos;
                 }
             } else {
                 if( cb->if_flags[cb->if_level].iffalse ) {// omit false for .th
-                    cc = neg;
+                    cc = CC_neg;
                 } else {
-                    cc = pos;
+                    cc = CC_pos;
                 }
             }
         } else {
             if( cb->if_flags[cb->if_level].ifcwte ) {
-                cc = pos;
+                cc = CC_pos;
             } else {
 //mnif02
                 while( cb->if_level > 0 ) {
@@ -691,34 +691,34 @@ condcode    test_process( ifcb * cb )
 //mnif06
                             if( cb->if_flags[cb->if_level].iftrue ) {
 //mnif08
-                                cc = neg;   // omit if true for .el
+                                cc = CC_neg;   // omit if true for .el
                             } else {
-                                cc = pos;
+                                cc = CC_pos;
                             }
                         } else {
                             if( cb->if_flags[cb->if_level].iffalse ) {
-                                cc = neg;   // omit false for .th
+                                cc = CC_neg;   // omit false for .th
                             } else {
-                                cc = pos;
+                                cc = CC_pos;
                             }
                         }
                         break;
                     }
                 }
-                if( cc == no ) {        // not set then process record
-                    cc = pos;
+                if( cc == CC_no ) {        // not set then process record
+                    cc = CC_pos;
                 }
             }
         }
     }
-    if( cc == no ) {                    // cc not set program logic error
+    if( cc == CC_no ) {                    // cc not set program logic error
         g_if_int_err_exit();
     }
 #ifdef DEBTESTPROC
     if( (input_cbs->fmflags & II_research)
       && GlobalFlags.firstpass
       && (start_level || cb->if_level) ) {
-        show_ifcb( (cc == pos) ? "EX3 pos" : "EX3 no", cb );
+        show_ifcb( (cc == CC_pos) ? "EX3 pos" : "EX3 no", cb );
     }
 #endif
     return( cc );
@@ -788,9 +788,9 @@ void    scan_line( void )
         set_if_then_do( cb );
         cc = test_process( cb );
     } else {
-        cc = pos;
+        cc = CC_pos;
     }
-    if( cc == pos ) {                   // process record
+    if( cc == CC_pos ) {                   // process record
         if( ProcFlags.scr_cw ) {
             scan_script();              // script control line
         } else if( ProcFlags.gml_tag ) {

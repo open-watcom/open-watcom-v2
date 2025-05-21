@@ -50,7 +50,7 @@ condcode    scr_compare( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **r
 
     if( parmcount < 2
       || parmcount > 3 )
-        return( neg );
+        return( CC_neg );
 
     string1 = parms[0].arg;
     string2 = parms[1].arg;
@@ -93,5 +93,5 @@ condcode    scr_compare( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **r
 
     *result += sprintf( *result, "%d", index );
 
-    return( pos );
+    return( CC_pos );
 }

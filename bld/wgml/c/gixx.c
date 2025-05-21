@@ -251,7 +251,7 @@ static void gml_ixxx_common( const gmltag * entry, int hx_lvl )
                 gn.ignore_blanks = false;
                 cc = getnum( &gn );
 
-                if( (cc == pos) || (cc == neg) ) {
+                if( (cc == CC_pos) || (cc == CC_neg) ) {
 
                     /* Groups are ignored, issue warning */
 

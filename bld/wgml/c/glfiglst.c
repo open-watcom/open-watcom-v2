@@ -103,7 +103,7 @@ void    lay_figlist( const gmltag * entry )
     if( ProcFlags.lay_xxx != el_figlist ) {
         ProcFlags.lay_xxx = el_figlist;
     }
-    while( (cc = lay_attr_and_value( &attr_name, &attr_val )) == pos ) {   // get att with value
+    while( (cc = lay_attr_and_value( &attr_name, &attr_val )) == CC_pos ) {   // get att with value
         cvterr = -1;
         for( k = 0, curr = figlist_att[k]; curr > 0; k++, curr = figlist_att[k] ) {
             if( strcmp( lay_att_names[curr], attr_name.attname.l ) == 0 ) {

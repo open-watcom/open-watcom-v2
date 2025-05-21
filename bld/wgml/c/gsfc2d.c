@@ -64,7 +64,7 @@ condcode    scr_c2d( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **resul
 
     if( parmcount < 1
       || parmcount > 2 )
-        return( neg );
+        return( CC_neg );
 
     string = parms[0].arg;
     unquote_arg( &string );
@@ -81,5 +81,5 @@ condcode    scr_c2d( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **resul
         *(*result)++ = *p++;
         ressize--;
     }
-    return( pos );
+    return( CC_pos );
 }
