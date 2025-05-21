@@ -236,7 +236,7 @@ void    lay_hx( const gmltag * entry )
     hx_l = entry->tagname[1] - '0';     // construct Hx level
     if( hx_l > 6 ) {
         hx_l = 6;
-        internal_err( __FILE__, __LINE__ );
+        internal_err_exit( __FILE__, __LINE__ );
     }
     ProcFlags.hx_level = hx_l;
 
@@ -244,20 +244,20 @@ void    lay_hx( const gmltag * entry )
         cvterr = -1;
         for( k = 0, curr = hx_att[k]; curr > 0; k++, curr = hx_att[k] ) {
             if( strcmp( lay_att_names[curr], attr_name.attname.l ) == 0 ) {
-                p = attr_val.name;
+                p = attr_val.tok.s;
                 switch( curr ) {
                 case e_group:
                     if( AttrFlags.group ) {
-                        xx_line_err_ci( err_att_dup, attr_name.att_name,
-                            attr_val.name - attr_name.att_name + attr_val.len);
+                        xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
+                            attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                     }
                     cvterr = i_int8( p, &attr_val, &l_group );
                     AttrFlags.group = true;
                     break;
                 case e_indent:
                     if( AttrFlags.indent ) {
-                        xx_line_err_ci( err_att_dup, attr_name.att_name,
-                            attr_val.name - attr_name.att_name + attr_val.len);
+                        xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
+                            attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                     }
                     cvterr = i_space_unit( p, &attr_val,
                                            &layout_work.hx.hx_head[hx_l].indent );
@@ -265,40 +265,40 @@ void    lay_hx( const gmltag * entry )
                     break;
                 case e_pre_top_skip:
                     if( AttrFlags.pre_top_skip ) {
-                        xx_line_err_ci( err_att_dup, attr_name.att_name,
-                            attr_val.name - attr_name.att_name + attr_val.len);
+                        xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
+                            attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                     }
                     cvterr = i_space_unit( p, &attr_val, &layout_work.hx.hx_sect[hx_l].pre_top_skip );
                     AttrFlags.pre_top_skip = true;
                     break;
                 case e_pre_skip:
                     if( AttrFlags.pre_skip ) {
-                        xx_line_err_ci( err_att_dup, attr_name.att_name,
-                            attr_val.name - attr_name.att_name + attr_val.len);
+                        xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
+                            attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                     }
                     cvterr = i_space_unit( p, &attr_val, &layout_work.hx.hx_head[hx_l].pre_skip );
                     AttrFlags.pre_skip = true;
                     break;
                 case e_post_skip:
                     if( AttrFlags.post_skip ) {
-                        xx_line_err_ci( err_att_dup, attr_name.att_name,
-                            attr_val.name - attr_name.att_name + attr_val.len);
+                        xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
+                            attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                     }
                     cvterr = i_space_unit( p, &attr_val, &layout_work.hx.hx_sect[hx_l].post_skip );
                     AttrFlags.post_skip = true;
                     break;
                 case e_spacing:
                     if( AttrFlags.spacing ) {
-                        xx_line_err_ci( err_att_dup, attr_name.att_name,
-                            attr_val.name - attr_name.att_name + attr_val.len);
+                        xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
+                            attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                     }
                     cvterr = i_spacing( p, &attr_val, &layout_work.hx.hx_sect[hx_l].spacing );
                     AttrFlags.spacing = true;
                     break;
                 case e_font:
                     if( AttrFlags.font ) {
-                        xx_line_err_ci( err_att_dup, attr_name.att_name,
-                            attr_val.name - attr_name.att_name + attr_val.len);
+                        xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
+                            attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                     }
                     cvterr = i_font_number( p, &attr_val, &layout_work.hx.hx_sect[hx_l].text_font );
                     if( layout_work.hx.hx_sect[hx_l].text_font >= wgml_font_cnt ) {
@@ -308,8 +308,8 @@ void    lay_hx( const gmltag * entry )
                     break;
                 case e_number_font:
                     if( AttrFlags.number_font ) {
-                        xx_line_err_ci( err_att_dup, attr_name.att_name,
-                            attr_val.name - attr_name.att_name + attr_val.len);
+                        xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
+                            attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                     }
                     cvterr = i_font_number( p, &attr_val, &layout_work.hx.hx_head[hx_l].number_font );
                     if( layout_work.hx.hx_head[hx_l].number_font >= wgml_font_cnt ) {
@@ -319,87 +319,87 @@ void    lay_hx( const gmltag * entry )
                     break;
                 case e_number_form:
                     if( AttrFlags.number_form ) {
-                        xx_line_err_ci( err_att_dup, attr_name.att_name,
-                            attr_val.name - attr_name.att_name + attr_val.len);
+                        xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
+                            attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                     }
                     cvterr = i_number_form( p, &attr_val, &layout_work.hx.hx_head[hx_l].number_form );
                     AttrFlags.number_form = true;
                     break;
                 case e_page_position:
                     if( AttrFlags.page_position ) {
-                        xx_line_err_ci( err_att_dup, attr_name.att_name,
-                            attr_val.name - attr_name.att_name + attr_val.len);
+                        xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
+                            attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                     }
                     cvterr = i_page_position( p, &attr_val, &layout_work.hx.hx_head[hx_l].line_position );
                     AttrFlags.page_position = true;
                     break;
                 case e_number_style:
                     if( AttrFlags.number_style ) {
-                        xx_line_err_ci( err_att_dup, attr_name.att_name,
-                            attr_val.name - attr_name.att_name + attr_val.len);
+                        xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
+                            attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                     }
                     cvterr = i_number_style( p, &attr_val, &layout_work.hx.hx_head[hx_l].number_style );
                     AttrFlags.number_style = true;
                     break;
                 case e_page_eject:
                     if( AttrFlags.page_eject ) {
-                        xx_line_err_ci( err_att_dup, attr_name.att_name,
-                            attr_val.name - attr_name.att_name + attr_val.len);
+                        xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
+                            attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                     }
                     cvterr = i_page_eject( p, &attr_val, &layout_work.hx.hx_head[hx_l].page_eject );
                     AttrFlags.page_eject = true;
                     break;
                 case e_line_break:
                     if( AttrFlags.line_break ) {
-                        xx_line_err_ci( err_att_dup, attr_name.att_name,
-                            attr_val.name - attr_name.att_name + attr_val.len);
+                        xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
+                            attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                     }
                     cvterr = i_yes_no( p, &attr_val, &layout_work.hx.hx_head[hx_l].line_break );
                     AttrFlags.line_break = true;
                     break;
                 case e_display_heading:
                     if( AttrFlags.display_heading ) {
-                        xx_line_err_ci( err_att_dup, attr_name.att_name,
-                            attr_val.name - attr_name.att_name + attr_val.len);
+                        xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
+                            attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                     }
                     cvterr = i_yes_no( p, &attr_val, &layout_work.hx.hx_head[hx_l].display_heading );
                     AttrFlags.display_heading = true;
                     break;
                 case e_number_reset:
                     if( AttrFlags.number_reset ) {
-                        xx_line_err_ci( err_att_dup, attr_name.att_name,
-                            attr_val.name - attr_name.att_name + attr_val.len);
+                        xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
+                            attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                     }
                     cvterr = i_yes_no( p, &attr_val, &layout_work.hx.hx_head[hx_l].number_reset );
                     AttrFlags.number_reset = true;
                     break;
                 case e_case:
                     if( AttrFlags.case_a ) {
-                        xx_line_err_ci( err_att_dup, attr_name.att_name,
-                            attr_val.name - attr_name.att_name + attr_val.len);
+                        xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
+                            attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                     }
                     cvterr = i_case( p, &attr_val, &layout_work.hx.hx_head[hx_l].hd_case );
                     AttrFlags.case_a = true;
                     break;
                 case e_align:
                     if( AttrFlags.align ) {
-                        xx_line_err_ci( err_att_dup, attr_name.att_name,
-                            attr_val.name - attr_name.att_name + attr_val.len);
+                        xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
+                            attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                     }
                     cvterr = i_space_unit( p, &attr_val, &layout_work.hx.hx_head[hx_l].align );
                     AttrFlags.align = true;
                     break;
                 default:
-                    internal_err( __FILE__, __LINE__ );
+                    internal_err_exit( __FILE__, __LINE__ );
                 }
                 if( cvterr ) {          // there was an error
-                    xx_err( err_att_val_inv );
+                    xx_err_exit( err_att_val_inv );
                 }
                 break;                  // break out of for loop
             }
         }
         if( cvterr < 0 ) {
-            xx_err( err_att_name_inv );
+            xx_err_exit( err_att_name_inv );
         }
     }
     if( l_group > 0 ) {         // only group 0 is supported

@@ -74,7 +74,7 @@ condcode    scr_d2c( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **resul
         cc = getnum( &gn );
         if( cc != pos ) {
             if( !ProcFlags.suppress_msg ) {
-                xx_source_err_c( err_func_parm, "1 (number)" );
+                xx_source_err_exit_c( err_func_parm, "1 (number)" );
             }
             return( cc );
         }
@@ -85,7 +85,7 @@ condcode    scr_d2c( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **resul
             cc = getnum( &gn );
             if( cc != pos ) {
                 if( !ProcFlags.suppress_msg ) {
-                    xx_source_err_c( err_func_parm, "2 (n)" );
+                    xx_source_err_exit_c( err_func_parm, "2 (n)" );
                 }
                 return( cc );
             }

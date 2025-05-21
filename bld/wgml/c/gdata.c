@@ -60,8 +60,8 @@ void init_global_vars( void )
 
     master_fname        = NULL;         // Master input file name
     master_fname_attr   = NULL;         // Master input file name attributes
-    line_from           = 1;            // default first line to process
-    line_to             = UINT_MAX - 1; // default last line to process
+    line_from           = FIRST_LINE;   // default first line to process
+    line_to             = LAST_LINE;    // default last line to process
     g_dev_name          = NULL;         // device defined_name
     opt_fonts           = NULL;         // option FONT parameters (linked list)
 

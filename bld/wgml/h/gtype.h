@@ -84,6 +84,9 @@
 
 #define TEXT_CHARS_DEF      16          // default text_chars text length if allocated or reallocated
 
+#define FIRST_LINE          1
+#define LAST_LINE           (UINT_MAX - 1)
+
 /* default filename extensions */
 #define DEF_EXT             "def"
 #define ERR_EXT             "err"
@@ -193,18 +196,18 @@ typedef enum {
 } sub_index;
 
 typedef enum {
-    local_var   = 0x0001,
-    subscripted = 0x0002,
-    auto_inc    = 0x0004,
-    predefined  = 0x0008,               // predefined at startup
-    ro          = 0x0010,               // value not changable
-    no_free     = 0x0020,               // symbol is defined at compile time
-//    type_long   = 0x0040,
-//    type_str    = 0x0080,
-//    type_char   = 0x0100,
-    access_fun  = 0x0200,               // get value via function call
-    is_AMP      = 0x0400,               // identify predefined symbol AMP
-    deleted     = 0x1000
+    SF_local_var   = 0x0001,
+    SF_subscripted = 0x0002,
+    SF_auto_inc    = 0x0004,
+    SF_predefined  = 0x0008,               // predefined at startup
+    SF_ro          = 0x0010,               // value not changable
+    SF_no_free     = 0x0020,               // symbol is defined at compile time
+//    SF_type_long   = 0x0040,
+//    SF_type_str    = 0x0080,
+//    SF_type_char   = 0x0100,
+    SF_access_fun  = 0x0200,               // get value via function call
+    SF_is_AMP      = 0x0400,               // identify predefined symbol AMP
+    SF_deleted     = 0x1000
 } symbol_flags;
 
 /***************************************************************************/
@@ -1797,14 +1800,13 @@ typedef struct attr_flags {
 /***************************************************************************/
 
 typedef struct att_val_type {
-    char            *name;
-    unsigned        len;
+    str_type        tok;
     char            quoted;
     char            specval[SPECVAL_LENGTH + 1];
 } att_val_type;
 
 typedef struct att_name_type {
-    char            *att_name;
+    str_type        tok;
     union {
         char        t[TAG_ATT_NAME_LENGTH + 1];
         char        l[LAY_ATT_NAME_LENGTH + 1];

@@ -134,12 +134,12 @@ void    lay_fig( const gmltag * entry )
         cvterr = -1;
         for( k = 0, curr = fig_att[k]; curr > 0; k++, curr = fig_att[k] ) {
             if( strcmp( lay_att_names[curr], attr_name.attname.l ) == 0 ) {
-                p = attr_val.name;
+                p = attr_val.tok.s;
                 switch( curr ) {
                 case e_left_adjust:
                     if( AttrFlags.left_adjust ) {
-                        xx_line_err_ci( err_att_dup, attr_name.att_name,
-                            attr_val.name - attr_name.att_name + attr_val.len);
+                        xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
+                            attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                     }
                     cvterr = i_space_unit( p, &attr_val,
                                            &layout_work.fig.left_adjust );
@@ -147,8 +147,8 @@ void    lay_fig( const gmltag * entry )
                     break;
                 case e_right_adjust:
                     if( AttrFlags.right_adjust ) {
-                        xx_line_err_ci( err_att_dup, attr_name.att_name,
-                            attr_val.name - attr_name.att_name + attr_val.len);
+                        xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
+                            attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                     }
                     cvterr = i_space_unit( p, &attr_val,
                                            &layout_work.fig.right_adjust );
@@ -156,32 +156,32 @@ void    lay_fig( const gmltag * entry )
                     break;
                 case e_pre_skip:
                     if( AttrFlags.pre_skip ) {
-                        xx_line_err_ci( err_att_dup, attr_name.att_name,
-                            attr_val.name - attr_name.att_name + attr_val.len);
+                        xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
+                            attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                     }
                     cvterr = i_space_unit( p, &attr_val, &layout_work.fig.pre_skip );
                     AttrFlags.pre_skip = true;
                     break;
                 case e_post_skip:
                     if( AttrFlags.post_skip ) {
-                        xx_line_err_ci( err_att_dup, attr_name.att_name,
-                            attr_val.name - attr_name.att_name + attr_val.len);
+                        xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
+                            attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                     }
                     cvterr = i_space_unit( p, &attr_val, &layout_work.fig.post_skip );
                     AttrFlags.post_skip = true;
                     break;
                 case e_spacing:
                     if( AttrFlags.spacing ) {
-                        xx_line_err_ci( err_att_dup, attr_name.att_name,
-                            attr_val.name - attr_name.att_name + attr_val.len);
+                        xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
+                            attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                     }
                     cvterr = i_spacing( p, &attr_val, &layout_work.fig.spacing );
                     AttrFlags.spacing = true;
                     break;
                 case e_font:
                     if( AttrFlags.font ) {
-                        xx_line_err_ci( err_att_dup, attr_name.att_name,
-                            attr_val.name - attr_name.att_name + attr_val.len);
+                        xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
+                            attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                     }
                     cvterr = i_font_number( p, &attr_val, &layout_work.fig.font );
                     if( layout_work.fig.font >= wgml_font_cnt ) {
@@ -191,8 +191,8 @@ void    lay_fig( const gmltag * entry )
                     break;
                 case e_default_place:
                     if( AttrFlags.default_place ) {
-                        xx_line_err_ci( err_att_dup, attr_name.att_name,
-                            attr_val.name - attr_name.att_name + attr_val.len);
+                        xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
+                            attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                     }
                     cvterr = i_place( p, &attr_val,
                                       &layout_work.fig.default_place );
@@ -200,24 +200,24 @@ void    lay_fig( const gmltag * entry )
                     break;
                 case e_default_frame:
                     if( AttrFlags.default_frame ) {
-                        xx_line_err_ci( err_att_dup, attr_name.att_name,
-                            attr_val.name - attr_name.att_name + attr_val.len);
+                        xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
+                            attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                     }
                     cvterr = i_default_frame( p, &attr_val,
                                               &layout_work.fig.default_frame );
                     AttrFlags.default_frame = true;
                     break;
                 default:
-                    internal_err( __FILE__, __LINE__ );
+                    internal_err_exit( __FILE__, __LINE__ );
                 }
                 if( cvterr ) {          // there was an error
-                    xx_err( err_att_val_inv );
+                    xx_err_exit( err_att_val_inv );
                 }
                 break;                  // break out of for loop
             }
         }
         if( cvterr < 0 ) {
-            xx_err( err_att_name_inv );
+            xx_err_exit( err_att_name_inv );
         }
     }
     scandata.s = scandata.e;

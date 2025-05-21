@@ -263,7 +263,8 @@ void out_msg_research( const char *msg, ... )
 /*  if that is ever desired                                                */
 /***************************************************************************/
 
-static void err_exit( void ) {
+NO_RETURN( static void err_exit( void ) )
+{
     if( GlobalFlags.research ) {        // TBD
 
         print_macro_dict( macro_dict, true );
@@ -281,7 +282,7 @@ static void err_exit( void ) {
     }
     out_msg( "\nWGML has ended prematurely\n" );
     fflush( NULL );                     // TBD
-    if( environment ) {
+    if( environment != NULL ) {
         longjmp( *environment, 1 );
     }
     my_exit( 16 );
@@ -405,7 +406,7 @@ void file_mac_info_nest( void )
 
 /* specialized error functions */
 
-void att_req_err( const char *tagname, const char *attname )  // for process_tag()
+void att_req_err_exit( const char *tagname, const char *attname )  // for process_tag()
 {
     char        one_name[12];   // attname length max plus 2 "'" plus string terminator
     uint8_t     len;
@@ -433,7 +434,7 @@ void att_req_err( const char *tagname, const char *attname )  // for process_tag
     err_exit();
 }
 
-void ban_reg_err( msg_ids num, banner_lay_tag * in_ban1, banner_lay_tag * in_ban2,
+void ban_reg_err_exit( msg_ids num, banner_lay_tag * in_ban1, banner_lay_tag * in_ban2,
                   region_lay_tag * in_reg1, region_lay_tag * in_reg2 )
 // various vertical and horizontal spacing errors of banners and regions
 // for finish_banners()
@@ -446,7 +447,7 @@ void ban_reg_err( msg_ids num, banner_lay_tag * in_ban1, banner_lay_tag * in_ban
     } else if( in_ban2 != NULL ) {
         g_err( inf_ban_id, doc_sections[in_ban2->docsect].name, ban_places[in_ban2->place] );
     } else {
-        internal_err( __FILE__, __LINE__ );
+        internal_err_exit( __FILE__, __LINE__ );
     }
 
     if( in_reg1 != NULL ) {
@@ -464,14 +465,14 @@ void ban_reg_err( msg_ids num, banner_lay_tag * in_ban1, banner_lay_tag * in_ban
     err_exit();
 }
 
-void internal_err( const char * file, int line )    // utility function
+void internal_err_exit( const char * file, int line )    // utility function
 {
     err_count++;
     g_err( err_intern, file, line );
     err_exit();
 }
 
-void list_level_err( const char * xl_tag, uint8_t xl_level )    // for finish_lists()
+void list_level_err_exit( const char * xl_tag, uint8_t xl_level )    // for finish_lists()
 {
     err_count++;
     g_err( err_level_skipped, xl_tag );
@@ -480,7 +481,7 @@ void list_level_err( const char * xl_tag, uint8_t xl_level )    // for finish_li
     err_exit();
 }
 
-void main_file_err( const char * filename )
+void main_file_err_exit( const char * filename )
 {
     g_err( err_input_file_not_found, filename );
     err_count++;
@@ -492,7 +493,7 @@ void main_file_err( const char * filename )
     err_exit();
 }
 
-void numb_err( void )                                           // for scr_pu()
+void numb_err_exit( void )                                           // for scr_pu()
 {
     char    linestr[NUM2STR_LENGTH];
 
@@ -508,7 +509,7 @@ void numb_err( void )                                           // for scr_pu()
     err_exit();
 }
 
-void symbol_name_length_err( const char * symname )
+void symbol_name_length_err_exit( const char * symname )
 {
     char    linestr[NUM2STR_LENGTH];
 
@@ -525,7 +526,8 @@ void symbol_name_length_err( const char * symname )
     file_mac_info();
     err_exit();
 }
-void val_parse_err( const char * pa, bool tag ) // for internal_to_su()
+
+void val_parse_err_exit( const char * pa, bool tag ) // for internal_to_su()
 {
     err_count++;
     if( tag ) {
@@ -543,7 +545,7 @@ void val_parse_err( const char * pa, bool tag ) // for internal_to_su()
 /*  message for duplicate figure, footnote, or heading ids                 */
 /***************************************************************************/
 
-void dup_refid_err( const char *refid, const char * context )
+void dup_refid_err_exit( const char *refid, const char * context )
 {
     g_err( wng_id_xxx, refid );
     g_info( inf_id_duplicate, context );
@@ -556,7 +558,7 @@ void dup_refid_err( const char *refid, const char * context )
 /*  error msgs for missing or duplicate :XXX :eXXX tags                    */
 /***************************************************************************/
 
-static void g_err_tag_common( e_tags etag, bool nest )
+static void g_tag_common_err( e_tags etag, bool nest )
 {
     g_err( err_tag_expected, str_tags[etag] );
     if( nest ) {
@@ -568,21 +570,21 @@ static void g_err_tag_common( e_tags etag, bool nest )
     return;
 }
 
-void g_err_tag( e_tags etag )
+void g_tag_err_exit( e_tags etag )
 {
-    g_err_tag_common( etag, false );         // 'normal' stack display
+    g_tag_common_err( etag, false );         // 'normal' stack display
     err_exit();
 }
 
-void g_err_tag_nest( e_tags etag )
+void g_tag_nest_err_exit( e_tags etag )
 {
-    g_err_tag_common( etag, true );         // nested tag stack display
+    g_tag_common_err( etag, true );         // nested tag stack display
     err_exit();
 }
 
 /* Various special-purpose functions */
 
-void g_err_if_int( void )
+void g_if_int_err_exit( void )
 {
     char    linestr[NUM2STR_LENGTH];
 
@@ -602,7 +604,7 @@ void g_err_if_int( void )
 
 /* SC--037: The macro 'xxxxxx' for the gml tag 'yyyyy' is not defined */
 
-void g_err_tag_mac( const gtentry *ge )
+void g_tag_mac_err_exit( const gtentry *ge )
 {
     char    linestr[NUM2STR_LENGTH];
 
@@ -620,7 +622,7 @@ void g_err_tag_mac( const gtentry *ge )
     err_exit();
 }
 
-void g_err_tag_no( e_tags etag )
+void g_tag_no_err_exit( e_tags etag )
 {
     char    tagn[TAG_NAME_LENGTH + 1 + 1];
 
@@ -631,7 +633,7 @@ void g_err_tag_no( e_tags etag )
     err_exit();
 }
 
-void g_err_tag_prec( e_tags etag )
+void g_tag_prec_err_exit( e_tags etag )
 {
     char    tagn[TAG_NAME_LENGTH + 1 + 1];
 
@@ -642,7 +644,7 @@ void g_err_tag_prec( e_tags etag )
     err_exit();
 }
 
-void g_err_tag_rsloc( locflags inloc, const char * pa )
+void g_tag_rsloc_err_exit( locflags inloc, const char * pa )
 {
     const char  *tag_name;
     int         i;
@@ -674,7 +676,7 @@ void g_wng_hlevel( hdsrc hd_found, hdsrc hd_expected )
     return;
 }
 
-void keep_nest_err( const char * arg1, const char * arg2 )
+void keep_nest_err_exit( const char * arg1, const char * arg2 )
 {
     err_count++;
     g_err( err_cw_tag_x_in_y, arg1, arg2 );
@@ -686,7 +688,7 @@ void keep_nest_err( const char * arg1, const char * arg2 )
 
 /* These are generic helper functions */
 
-void xx_err( const msg_ids errid )
+void xx_err_exit( const msg_ids errid )
 {
     err_count++;
     g_err( errid );
@@ -694,7 +696,7 @@ void xx_err( const msg_ids errid )
     err_exit();
 }
 
-void xx_err_c( const msg_ids errid, char const * arg )
+void xx_err_exit_c( const msg_ids errid, char const * arg )
 {
     err_count++;
     g_err( errid, arg );
@@ -702,7 +704,7 @@ void xx_err_c( const msg_ids errid, char const * arg )
     err_exit();
 }
 
-void xx_err_cc( const msg_ids errid, const char * arg1, const char * arg2 )
+void xx_err_exit_cc( const msg_ids errid, const char * arg1, const char * arg2 )
 {
     err_count++;
     g_err( errid, arg1, arg2 );
@@ -710,7 +712,7 @@ void xx_err_cc( const msg_ids errid, const char * arg1, const char * arg2 )
     err_exit();
 }
 
-void xx_line_err_c( const msg_ids errid, const char * pa )
+void xx_line_err_exit_c( const msg_ids errid, const char * pa )
 {
     err_count++;
     g_err( errid );
@@ -719,7 +721,7 @@ void xx_line_err_c( const msg_ids errid, const char * pa )
     err_exit();
 }
 
-void xx_line_err_ci( const msg_ids errid, const char * pa, unsigned len )
+void xx_line_err_exit_ci( const msg_ids errid, const char * pa, unsigned len )
 {
     err_count++;
     g_err( errid );
@@ -728,7 +730,7 @@ void xx_line_err_ci( const msg_ids errid, const char * pa, unsigned len )
     err_exit();
 }
 
-void xx_line_err_cc( const msg_ids errid, char const * cw, const char * pa )
+void xx_line_err_exit_cc( const msg_ids errid, char const * cw, const char * pa )
 {
     err_count++;
     g_err( errid, cw );
@@ -737,7 +739,7 @@ void xx_line_err_cc( const msg_ids errid, char const * cw, const char * pa )
     err_exit();
 }
 
-void xx_line_err_cci( const msg_ids errid, char const * cw, char const * pa, unsigned len )
+void xx_line_err_exit_cci( const msg_ids errid, char const * cw, char const * pa, unsigned len )
 {
     err_count++;
     g_err( errid, cw, pa );
@@ -746,7 +748,7 @@ void xx_line_err_cci( const msg_ids errid, char const * cw, char const * pa, uns
     err_exit();
 }
 
-void xx_nest_err( const msg_ids errid )
+void xx_nest_err_exit( const msg_ids errid )
 {
     err_count++;
     g_err( errid );
@@ -754,7 +756,7 @@ void xx_nest_err( const msg_ids errid )
     err_exit();
 }
 
-void xx_nest_err_cc( const msg_ids errid, const char * arg1, const char * arg2 )
+void xx_nest_err_exit_cc( const msg_ids errid, const char * arg1, const char * arg2 )
 {
     err_count++;
     g_err( errid, arg1, arg2 );
@@ -762,35 +764,35 @@ void xx_nest_err_cc( const msg_ids errid, const char * arg1, const char * arg2 )
     err_exit();
 }
 
-void xx_simple_err( const msg_ids errid )
+void xx_simple_err_exit( const msg_ids errid )
 {
     err_count++;
     g_err( errid );
     err_exit();
 }
 
-void xx_simple_err_c( const msg_ids errid, const char * arg )
+void xx_simple_err_exit_c( const msg_ids errid, const char * arg )
 {
     err_count++;
     g_err( errid, arg );
     err_exit();
 }
 
-void xx_simple_err_i( const msg_ids errid, int arg )
+void xx_simple_err_exit_i( const msg_ids errid, int arg )
 {
     err_count++;
     g_err( errid, arg );
     err_exit();
 }
 
-void xx_simple_err_cc( const msg_ids errid, const char * arg1, const char * arg2 )
+void xx_simple_err_exit_cc( const msg_ids errid, const char * arg1, const char * arg2 )
 {
     err_count++;
     g_err( errid, arg1, arg2 );
     err_exit();
 }
 
-void xx_source_err( const msg_ids errid )
+void xx_source_err_exit( const msg_ids errid )
 {
     char    linestr[NUM2STR_LENGTH];
 
@@ -807,7 +809,7 @@ void xx_source_err( const msg_ids errid )
     err_exit();
 }
 
-void xx_source_err_c( const msg_ids errid, const char * arg )
+void xx_source_err_exit_c( const msg_ids errid, const char * arg )
 {
     char    linestr[NUM2STR_LENGTH];
 

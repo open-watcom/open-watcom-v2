@@ -162,7 +162,7 @@ void    scr_pu( void )
 
         if( cc != notnum ) {            // number found
             if( (len > 1) || (cc !=pos)  || (*pa < '1') || (*pa > '9') ) {
-                numb_err();
+                numb_err_exit();
             }
             fno = *pa - '0';            // workfile specified
             pa++;

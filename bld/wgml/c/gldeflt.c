@@ -122,28 +122,28 @@ void    lay_default( const gmltag * entry )
         cvterr = -1;
         for( k = 0, curr = default_att[k]; curr > 0; k++, curr = default_att[k] ) {
             if( strcmp( lay_att_names[curr], attr_name.attname.l ) == 0 ) {
-                p = attr_val.name;
+                p = attr_val.tok.s;
                 switch( curr ) {
                 case e_spacing:
                     if( AttrFlags.spacing ) {
-                        xx_line_err_ci( err_att_dup, attr_name.att_name,
-                            attr_val.name - attr_name.att_name + attr_val.len);
+                        xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
+                            attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                     }
                     cvterr = i_spacing( p, &attr_val, &layout_work.defaults.spacing );
                     AttrFlags.spacing = true;
                     break;
                 case e_columns:
                     if( AttrFlags.columns ) {
-                        xx_line_err_ci( err_att_dup, attr_name.att_name,
-                            attr_val.name - attr_name.att_name + attr_val.len);
+                        xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
+                            attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                     }
                     cvterr = i_int8( p, &attr_val, &layout_work.defaults.columns );
                     AttrFlags.columns = true;
                     break;
                 case e_font:
                     if( AttrFlags.font ) {
-                        xx_line_err_ci( err_att_dup, attr_name.att_name,
-                            attr_val.name - attr_name.att_name + attr_val.len);
+                        xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
+                            attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                     }
                     cvterr = i_font_number( p, &attr_val, &layout_work.defaults.font );
                     if( layout_work.defaults.font >= wgml_font_cnt ) {
@@ -153,16 +153,16 @@ void    lay_default( const gmltag * entry )
                     break;
                 case e_justify:
                     if( AttrFlags.justify ) {
-                        xx_line_err_ci( err_att_dup, attr_name.att_name,
-                            attr_val.name - attr_name.att_name + attr_val.len);
+                        xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
+                            attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                     }
                     cvterr = i_yes_no( p, &attr_val, &layout_work.defaults.justify );
                     AttrFlags.justify = true;
                     break;
                 case e_input_esc:
                     if( AttrFlags.input_esc ) {
-                        xx_line_err_ci( err_att_dup, attr_name.att_name,
-                            attr_val.name - attr_name.att_name + attr_val.len);
+                        xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
+                            attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                     }
                     cvterr = i_char( p, &attr_val, &layout_work.defaults.input_esc );
                     in_esc = layout_work.defaults.input_esc;
@@ -173,31 +173,31 @@ void    lay_default( const gmltag * entry )
                     break;
                 case e_gutter:
                     if( AttrFlags.gutter ) {
-                        xx_line_err_ci( err_att_dup, attr_name.att_name,
-                            attr_val.name - attr_name.att_name + attr_val.len);
+                        xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
+                            attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                     }
                     cvterr = i_space_unit( p, &attr_val, &layout_work.defaults.gutter );
                     AttrFlags.gutter = true;
                     break;
                 case e_binding:
                     if( AttrFlags.binding ) {
-                        xx_line_err_ci( err_att_dup, attr_name.att_name,
-                            attr_val.name - attr_name.att_name + attr_val.len);
+                        xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
+                            attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                     }
                     cvterr = i_space_unit( p, &attr_val, &layout_work.defaults.binding );
                     AttrFlags.binding = true;
                     break;
                 default:
-                    internal_err( __FILE__, __LINE__ );
+                    internal_err_exit( __FILE__, __LINE__ );
                 }
                 if( cvterr ) {          // there was an error
-                    xx_err( err_att_val_inv );
+                    xx_err_exit( err_att_val_inv );
                 }
                 break;                  // break out of for loop
             }
         }
         if( cvterr < 0 ) {
-            xx_err( err_att_name_inv );
+            xx_err_exit( err_att_name_inv );
         }
     }
     scandata.s = scandata.e;

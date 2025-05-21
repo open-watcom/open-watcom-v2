@@ -123,12 +123,12 @@ void    lay_ixhead( const gmltag * entry )
                 curr = e_frame;         // use correct externalname
             }
             if( strcmp( lay_att_names[curr], attr_name.attname.l ) == 0 ) {
-                p = attr_val.name;
+                p = attr_val.tok.s;
                 switch( curr ) {
                 case e_pre_skip:
                     if( AttrFlags.pre_skip ) {
-                        xx_line_err_ci( err_att_dup, attr_name.att_name,
-                            attr_val.name - attr_name.att_name + attr_val.len);
+                        xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
+                            attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                     }
                     cvterr = i_space_unit( p, &attr_val,
                                            &layout_work.ixhead.pre_skip );
@@ -136,8 +136,8 @@ void    lay_ixhead( const gmltag * entry )
                     break;
                 case e_post_skip:
                     if( AttrFlags.post_skip ) {
-                        xx_line_err_ci( err_att_dup, attr_name.att_name,
-                            attr_val.name - attr_name.att_name + attr_val.len);
+                        xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
+                            attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                     }
                     cvterr = i_space_unit( p, &attr_val,
                                            &layout_work.ixhead.post_skip );
@@ -145,8 +145,8 @@ void    lay_ixhead( const gmltag * entry )
                     break;
                 case e_font:
                     if( AttrFlags.font ) {
-                        xx_line_err_ci( err_att_dup, attr_name.att_name,
-                            attr_val.name - attr_name.att_name + attr_val.len);
+                        xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
+                            attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                     }
                     cvterr = i_font_number( p, &attr_val, &layout_work.ixhead.font );
                     if( layout_work.ixhead.font >= wgml_font_cnt ) {
@@ -156,8 +156,8 @@ void    lay_ixhead( const gmltag * entry )
                     break;
                 case e_indent:
                     if( AttrFlags.indent ) {
-                        xx_line_err_ci( err_att_dup, attr_name.att_name,
-                            attr_val.name - attr_name.att_name + attr_val.len);
+                        xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
+                            attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                     }
                     cvterr = i_space_unit( p, &attr_val,
                                            &layout_work.ixhead.indent );
@@ -165,8 +165,8 @@ void    lay_ixhead( const gmltag * entry )
                     break;
                 case e_frame:
                     if( AttrFlags.frame ) {
-                        xx_line_err_ci( err_att_dup, attr_name.att_name,
-                            attr_val.name - attr_name.att_name + attr_val.len);
+                        xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
+                            attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                     }
                     cvterr = i_default_frame( p, &attr_val,
                                            &layout_work.ixhead.frame );
@@ -174,24 +174,24 @@ void    lay_ixhead( const gmltag * entry )
                     break;
                 case e_header:
                     if( AttrFlags.header ) {
-                        xx_line_err_ci( err_att_dup, attr_name.att_name,
-                            attr_val.name - attr_name.att_name + attr_val.len);
+                        xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
+                            attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                     }
                     cvterr = i_yes_no( p, &attr_val,
                                            &layout_work.ixhead.header );
                     AttrFlags.header = true;
                     break;
                 default:
-                    internal_err( __FILE__, __LINE__ );
+                    internal_err_exit( __FILE__, __LINE__ );
                 }
                 if( cvterr ) {          // there was an error
-                    xx_err( err_att_val_inv );
+                    xx_err_exit( err_att_val_inv );
                 }
                 break;                  // break out of for loop
             }
         }
         if( cvterr < 0 ) {
-            xx_err( err_att_name_inv );
+            xx_err_exit( err_att_name_inv );
         }
     }
     scandata.s = scandata.e;

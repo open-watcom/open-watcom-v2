@@ -164,7 +164,7 @@ static int split_tokens( char *str )
 /*  Format error in cmdline                                                */
 /***************************************************************************/
 
-static char * bad_cmd_line( msg_ids msg, char *str, char n )
+NO_RETURN( static char * bad_cmd_line( msg_ids msg, char *str, char n ) )
 {
     char    *   p;
     char    *   pbuff;
@@ -183,8 +183,8 @@ static char * bad_cmd_line( msg_ids msg, char *str, char n )
     }
     *p = '\0';
     g_banner();
-    xx_simple_err_c( msg, pbuff );
-    return( str );                      // to satisfy the compiler
+    xx_simple_err_exit_c( msg, pbuff );
+//    return( str );                      // to satisfy the compiler
 }
 
 /***************************************************************************/
@@ -330,14 +330,14 @@ static void set_bind( option * opt )
 
     if( tokennext == NULL || tokennext->bol || tokennext->token[0] == '('
                                             || is_option() ) {
-        xx_simple_err_cc( err_miss_inv_opt_value, opt->option, "" );
+        xx_simple_err_exit_cc( err_miss_inv_opt_value, opt->option, "" );
     } else {
         attr_val.quoted = ' ';
-        attr_val.name = tokennext->token;
-        attr_val.len = tokennext->toklen;
+        attr_val.tok.s = tokennext->token;
+        attr_val.tok.l = tokennext->toklen;
         scanerr = att_val_to_su( &bindwork, true, &attr_val, false ); // must be positive TBD
         if( scanerr ) {
-            xx_simple_err_cc( err_miss_inv_opt_value, opt->option, tokennext->token );
+            xx_simple_err_exit_cc( err_miss_inv_opt_value, opt->option, tokennext->token );
         } else {
             memcpy( &bind_odd, &bindwork, sizeof( bind_odd) );
 
@@ -351,11 +351,11 @@ static void set_bind( option * opt )
 
                 memcpy( &bind_even, &bind_odd, sizeof( bind_even ) );  // use bind_odd
             } else {
-                attr_val.name = tokennext->token;
-                attr_val.len = tokennext->toklen;
+                attr_val.tok.s = tokennext->token;
+                attr_val.tok.l = tokennext->toklen;
                 scanerr = att_val_to_su( &bindwork, true, &attr_val, false ); // must be positive TBD
                 if( scanerr ) {
-                    xx_simple_err_cc( err_miss_inv_opt_value, opt->option, tokennext->token );
+                    xx_simple_err_exit_cc( err_miss_inv_opt_value, opt->option, tokennext->token );
                 } else {
                     memcpy( &bind_even, &bindwork, sizeof( bindwork ) );
                     out_msg_research( "\tbind even value %lii (%limm) '%s' %li %li \n",
@@ -383,12 +383,12 @@ static void set_cpinch( option * opt )
     if( tokennext == NULL || tokennext->bol ||
         tokennext->token[0] == '(' || is_option() ) {
 
-        xx_simple_err_c( err_missing_opt_value, opt->option );
+        xx_simple_err_exit_c( err_missing_opt_value, opt->option );
     } else {
         p = tokennext->token;
         opt_value = get_num_value( p );
         if( opt_value < 1 || opt_value > MAX_CPI ) {
-            xx_simple_err_c( err_out_range, "cpinch" );
+            xx_simple_err_exit_c( err_out_range, "cpinch" );
         } else {
             CPI = opt_value;
         }
@@ -412,12 +412,12 @@ static void set_lpinch( option * opt )
     if( tokennext == NULL || tokennext->bol ||
         tokennext->token[0] == '(' || is_option() ) {
 
-        xx_simple_err_c( err_missing_opt_value, opt->option );
+        xx_simple_err_exit_c( err_missing_opt_value, opt->option );
     } else {
         p = tokennext->token;
         opt_value = get_num_value( p );
         if( opt_value < 1 || opt_value > MAX_LPI ) {
-            xx_simple_err_c( err_out_range, "lpinch" );
+            xx_simple_err_exit_c( err_out_range, "lpinch" );
         } else {
             LPI = opt_value;
         }
@@ -438,7 +438,7 @@ static void set_delim( option * opt )
 {
     if( tokennext == NULL || is_option()
       || tokennext->toklen != 1 ) {     // not length 1
-        xx_simple_err_cc( err_miss_inv_opt_value, opt->option,
+        xx_simple_err_exit_cc( err_miss_inv_opt_value, opt->option,
                           tokennext == NULL ? " " : tokennext->token );
     } else {
         GML_char = tokennext->token[0]; // new delimiter
@@ -810,7 +810,7 @@ static void set_font( option * opt )
         }
         break;
     default:
-        internal_err( __FILE__, __LINE__ );
+        internal_err_exit( __FILE__, __LINE__ );
     }
 
     if( old_errs == err_count ) {
@@ -854,7 +854,7 @@ static void set_layout( option * opt )
     struct laystack *laywk;
 
     if( tokennext == NULL || tokennext->bol || is_option() ) {
-        xx_simple_err_cc( err_miss_inv_opt_value, opt->option, "" );
+        xx_simple_err_exit_cc( err_miss_inv_opt_value, opt->option, "" );
     } else {
         len = tokennext->toklen;
         laywk = mem_alloc( sizeof( laystack ) + len );
@@ -885,7 +885,7 @@ static void set_outfile( option * opt )
     char    attrwork[MAX_FILE_ATTR];
 
     if( tokennext == NULL || tokennext->bol || is_option() ) {
-        xx_simple_err_cc( err_miss_inv_opt_value, opt->option, "" );
+        xx_simple_err_exit_cc( err_miss_inv_opt_value, opt->option, "" );
     } else {
         out_file = mem_tokdup( tokennext->token, tokennext->toklen );
 
@@ -912,14 +912,14 @@ static void set_passes( option * opt )
 
     if( tokennext == NULL || tokennext->bol ||
             tokennext->token[0] == '(' || is_option() ) {
-        xx_simple_err_c( err_missing_opt_value, opt->option );
+        xx_simple_err_exit_c( err_missing_opt_value, opt->option );
     } else {
         p = tokennext->token;
         opt_value = get_num_value( p );
         if( opt_value < 1 || opt_value > MAX_PASSES ) {
             sprintf( linestr, "%d", MAX_PASSES );
             sprintf( linestr2, "%d", opt_value );
-            xx_simple_err_cc( err_passes_value, linestr, linestr2 );
+            xx_simple_err_exit_cc( err_passes_value, linestr, linestr2 );
         } else {
             passes = opt_value;
         }
@@ -938,12 +938,12 @@ static void set_from( option * opt )
     if( tokennext == NULL || tokennext->bol ||
         tokennext->token[0] == '(' || is_option() ) {
 
-        xx_simple_err_c( err_missing_opt_value, opt->option );
+        xx_simple_err_exit_c( err_missing_opt_value, opt->option );
     } else {
         p = tokennext->token;
         opt_value = get_num_value( p );
         if( opt_value < 1 || opt_value >= INT_MAX ) {
-            xx_simple_err_c( err_out_range, "from" );
+            xx_simple_err_exit_c( err_out_range, "from" );
         } else {
             print_from = opt_value;
         }
@@ -966,7 +966,7 @@ static void set_symbol( option *opt )
       || tokennext->bol
       || tokennext->token[0] == '('
       || is_option() ) {
-        xx_simple_err_c( err_missing_name, opt->option );
+        xx_simple_err_exit_c( err_missing_name, opt->option );
     } else {
         name = tokennext->token;
 
@@ -976,7 +976,7 @@ static void set_symbol( option *opt )
           || tokennext->bol
           || tokennext->token[0] == '('
           || is_option() ) {
-            xx_simple_err_c( err_missing_value, opt->option );
+            xx_simple_err_exit_c( err_missing_value, opt->option );
         } else {
             val.s = tokennext->token;
             val.e = val.s + strlen( val.s );
@@ -998,12 +998,12 @@ static void set_to( option * opt )
     if( tokennext == NULL || tokennext->bol ||
         tokennext->token[0] == '(' || is_option() ) {
 
-        xx_simple_err_c( err_missing_value, opt->option );
+        xx_simple_err_exit_c( err_missing_value, opt->option );
     } else {
         p = tokennext->token;
         opt_value = get_num_value( p );
         if( opt_value < 1 || opt_value >= INT_MAX ) {
-            xx_simple_err_c( err_out_range, "to" );
+            xx_simple_err_exit_c( err_out_range, "to" );
         } else {
             print_to = opt_value;
         }
@@ -1062,7 +1062,7 @@ static void set_OPTFile( option * opt )
     if( tokennext == NULL || tokennext->bol || is_option()
         /* || tokennext->token[0] == '('  allow (t:123)file.opt construct */
                                          ) {
-        xx_simple_err_c( err_missing_value, opt->option );
+        xx_simple_err_exit_c( err_missing_value, opt->option );
     } else {
         len = tokennext->toklen;
 
@@ -1085,10 +1085,10 @@ static void set_OPTFile( option * opt )
                     int     k;
 
                     for( k = level; k > 0; k-- ) {
-                        if( stricmp( try_file_name, file_names[k]) == 0 ) {
-                            xx_simple_err_c( err_recursive_option, try_file_name );
+                        if( stricmp( try_file_name, file_names[k] ) == 0 ) {
                             fclose( fp );
-                            return;
+                            xx_simple_err_exit_c( err_recursive_option, try_file_name );
+//                            return;
                         }
                     }
                 }
@@ -1099,7 +1099,7 @@ static void set_OPTFile( option * opt )
                 fclose( fp );
                 tokennext = cmd_tokens[level];
             } else {
-                xx_simple_err_c( err_file_not_found, token_buf );
+                xx_simple_err_exit_c( err_file_not_found, token_buf );
             }
             if( str == NULL )  {
                 if( file_names[level] != NULL ) {
@@ -1108,7 +1108,7 @@ static void set_OPTFile( option * opt )
                 tokennext = sav_tokens[level];
             }
         } else {                        // max nesting level exceeded
-            xx_simple_err_c( err_max_nesting_opt, token_buf );
+            xx_simple_err_exit_c( err_max_nesting_opt, token_buf );
         }
         tokennext = tokennext->nxt;
     }
@@ -1131,7 +1131,7 @@ static void set_incpath( option * opt )
     if( tokennext == NULL || tokennext->bol || is_option()
             || tokennext->token[0] == '(' ) {
         str[0] = '\0';
-        xx_simple_err_c( err_missing_value, opt->option );
+        xx_simple_err_exit_c( err_missing_value, opt->option );
     } else {
         len = tokennext->toklen;
         if( len < sizeof( str ) ) {
@@ -1162,7 +1162,7 @@ static void set_libpath( option * opt )
     if( tokennext == NULL || tokennext->bol || is_option()
             || tokennext->token[0] == '(' ) {
         str[0] = '\0';
-        xx_simple_err_c( err_missing_value, opt->option );
+        xx_simple_err_exit_c( err_missing_value, opt->option );
     } else {
         len = tokennext->toklen;
         if( len < sizeof( str ) ) {
@@ -1191,7 +1191,7 @@ static void set_quiet( option * opt )
         val.s = "OFF";
     }
     val.e = val.s + strlen( val.s );
-    add_symvar( global_dict, "$quiet", &val, no_subscript, predefined );
+    add_symvar( global_dict, "$quiet", &val, no_subscript, SF_predefined );
 }
 
 
@@ -1219,8 +1219,8 @@ static void set_research( option * opt )
             strcpy( str, "too long " );
         }
         ProcFlags.researchfile = true;  // only one file
-        research_from = 1;
-        research_to = UINT_MAX - 1;
+        research_from = FIRST_LINE;
+        research_to = LAST_LINE;
 
         research_file_name[0] = '\0';   // no filename
         if( my_isalpha( *str ) ) {      // filename ?
@@ -1789,7 +1789,7 @@ int proc_options( char * string )
         g_banner();
         sprintf( linestr, "%d", print_from );
         sprintf( linestr2, "%d", print_to );
-        xx_simple_err_cc( err_inv_page_range, linestr, linestr2 );
+        xx_simple_err_exit_cc( err_inv_page_range, linestr, linestr2 );
     }
     return( tokcount );
 }

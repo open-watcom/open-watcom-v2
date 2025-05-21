@@ -57,7 +57,7 @@ void    gml_binclude( const gmltag * entry )
     memset( &AttrFlags, 0, sizeof( AttrFlags ) );   // clear all attribute flags
     if( (ProcFlags.doc_sect < doc_sect_gdoc) ) {
         if( (ProcFlags.doc_sect_nxt < doc_sect_gdoc) ) {
-            xx_err_c( err_tag_before_gdoc, entry->tagname );
+            xx_err_exit_c( err_tag_before_gdoc, entry->tagname );
         }
     }
 
@@ -79,17 +79,17 @@ void    gml_binclude( const gmltag * entry )
             if( strcmp( "file", attr_name.attname.t ) == 0 ) {
                 p = get_att_value( p, &attr_val );
                 if( AttrFlags.file ) {
-                    xx_line_err_ci( err_att_dup, attr_name.att_name,
-                        attr_val.name - attr_name.att_name + attr_val.len);
+                    xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
+                        attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                 }
                 AttrFlags.file = true;
-                if( attr_val.name == NULL ) {
+                if( attr_val.tok.s == NULL ) {
                     break;
                 }
-                if( attr_val.len > _MAX_PATH - 1 )
-                    attr_val.len = _MAX_PATH - 1;
-                strncpy( file, attr_val.name, attr_val.len );
-                file[attr_val.len] = '\0';
+                if( attr_val.tok.l > _MAX_PATH - 1 )
+                    attr_val.tok.l = _MAX_PATH - 1;
+                strncpy( file, attr_val.tok.s, attr_val.tok.l );
+                file[attr_val.tok.l] = '\0';
                 split_attr_file( file, rt_buff, MAX_FILE_ATTR );
                 if( (rt_buff[0] != '\0') ) {
                     has_rec_type = true;
@@ -103,11 +103,11 @@ void    gml_binclude( const gmltag * entry )
             } else if( strcmp( "depth", attr_name.attname.t ) == 0 ) {
                 p = get_att_value( p, &attr_val );
                 if( AttrFlags.depth ) {
-                    xx_line_err_ci( err_att_dup, attr_name.att_name,
-                        attr_val.name - attr_name.att_name + attr_val.len);
+                    xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
+                        attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                 }
                 AttrFlags.depth = true;
-                if( attr_val.name == NULL ) {
+                if( attr_val.tok.s == NULL ) {
                     break;
                 }
                 if( att_val_to_su( &depth_su, true, &attr_val, false ) ) {
@@ -115,7 +115,7 @@ void    gml_binclude( const gmltag * entry )
                 }
                 depth = conv_vert_unit( &depth_su, g_text_spacing, g_curr_font );
                 if( depth > t_page.max_depth ) {
-                    xx_line_err_c( err_inv_depth_binclude, attr_val.name );
+                    xx_line_err_exit_c( err_inv_depth_binclude, attr_val.tok.s );
                 }
                 if( ProcFlags.tag_end_found ) {
                     break;
@@ -123,11 +123,11 @@ void    gml_binclude( const gmltag * entry )
             } else if( strcmp( "reposition", attr_name.attname.t ) == 0 ) {
                 p = get_att_value( p, &attr_val );
                 if( AttrFlags.reposition ) {
-                    xx_line_err_ci( err_att_dup, attr_name.att_name,
-                        attr_val.name - attr_name.att_name + attr_val.len);
+                    xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
+                        attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                 }
                 AttrFlags.reposition = true;
-                if( attr_val.name == NULL ) {
+                if( attr_val.tok.s == NULL ) {
                     break;
                 }
                 if( strcmp( "start", attr_val.specval ) == 0 ) {
@@ -135,7 +135,7 @@ void    gml_binclude( const gmltag * entry )
                 } else if( strcmp( "end", attr_val.specval ) == 0 ) {
                     reposition = false; // device at proper position after insertion
                 } else {
-                    xx_line_err_c( err_inv_att_val, attr_val.name );
+                    xx_line_err_exit_c( err_inv_att_val, attr_val.tok.s );
                 }
                 if( ProcFlags.tag_end_found ) {
                     break;
@@ -150,7 +150,7 @@ void    gml_binclude( const gmltag * entry )
 
     // detect missing required attributes
     if( !AttrFlags.depth || !AttrFlags.file || !AttrFlags.reposition ) {
-        xx_err( err_att_missing );
+        xx_err_exit( err_att_missing );
     }
 
     // only set up the doc_element if the file exists
@@ -184,7 +184,7 @@ void    gml_binclude( const gmltag * entry )
         insert_col_main( cur_el );
 
     } else {
-        xx_err_c( err_file_not_found, file );
+        xx_err_exit_c( err_file_not_found, file );
     }
 
     scandata.s = scandata.e;         // skip following text

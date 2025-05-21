@@ -374,15 +374,15 @@ void    scr_gt( void )
 
     if( cc == omit ) {
         // no operands
-        xx_err_c( err_missing_name, "" );
+        xx_err_exit_c( err_missing_name, "" );
     }
 
     p = g_tok_start;
 
     if( *p == '*' ) {                   // single * as tagname
         if( arg_flen > 1 ) {
-            xx_err( err_tag_name_inv );
-            return;
+            xx_err_exit( err_tag_name_inv );
+//            return;
         }
         savetag = '*';         // remember for possible global delete / print
         if( GlobalFlags.firstpass && (input_cbs->fmflags & II_research) ) {
@@ -398,8 +398,8 @@ void    scr_gt( void )
 
         p = get_tagname( p, g_tagname );
         if( arg_flen > strlen( g_tagname ) ) {
-            xx_err( err_tag_name_inv );
-            return;
+            xx_err_exit( err_tag_name_inv );
+//            return;
         }
     }
 
@@ -411,8 +411,8 @@ void    scr_gt( void )
     cc = getarg();
 
     if( cc == omit ) {
-        xx_err( err_tag_func_inv );
-        return;
+        xx_err_exit( err_tag_func_inv );
+//        return;
     }
 
     p = g_tok_start;
@@ -461,8 +461,8 @@ void    scr_gt( void )
         break;
     }
     if( function == 0 ) {               // no valid function specified
-        xx_err( err_tag_func_inv );
-        return;
+        xx_err_exit( err_tag_func_inv );
+//        return;
     }
 
     cc = getarg();                      // get possible next parm
@@ -473,8 +473,8 @@ void    scr_gt( void )
 
     if( function == f_add || function == f_change ) {   // need macroname
         if( cc == omit ) {
-            xx_err( err_tag_mac_name );
-            return;
+            xx_err_exit( err_tag_mac_name );
+//            return;
         }
         get_macro_name( g_tok_start, macname );
 
@@ -483,7 +483,7 @@ void    scr_gt( void )
         if( function == f_add ) {       // collect tag options
             cc = scan_tag_options( &tag_flags );
             if( cc != omit ) {          // not all processed error
-               xx_err( err_tag_opt_inv );
+               xx_err_exit( err_tag_opt_inv );
             }
             g_tag_entry = add_tag( &tags_dict, g_tagname, macname, tag_flags );  // add to dictionary
             // if tag_entry is now NULL, error (+ msg) was output in add_tag
@@ -501,7 +501,7 @@ void    scr_gt( void )
     /***********************************************************************/
 
         if( cc != omit ) {
-            xx_err( err_tag_toomany );  // nothing more allowed
+            xx_err_exit( err_tag_toomany );  // nothing more allowed
         }
 
         switch( function ) {

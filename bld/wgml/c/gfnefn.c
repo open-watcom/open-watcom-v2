@@ -85,7 +85,7 @@ void gml_fn( const gmltag * entry )
                 break;
             if( strcmp( "id", attr_name.attname.t ) == 0 ) {
                 p = get_refid_value( p, &attr_val, fnrefid );
-                if( attr_val.name == NULL ) {
+                if( attr_val.tok.s == NULL ) {
                     break;
                 }
                 id_seen = true;             // valid id attribute found
@@ -146,7 +146,7 @@ void gml_fn( const gmltag * entry )
             if( cur_ref == NULL ) {     // new entry
                 cur_ref = add_new_refid( &fn_ref_dict, fnrefid, fn_entry );
             } else {
-                dup_refid_err( cur_ref->refid, "footnote" );
+                dup_refid_err_exit( cur_ref->refid, "footnote" );
             }
         }
     } else {
@@ -200,9 +200,9 @@ void gml_efn( const gmltag * entry )
     rs_loc = 0;
 
     if( cur_group_type != gt_fn ) {         // no preceding :FN tag
-        g_err_tag_prec( t_FN );
-        scandata.s = scandata.e;
-        return;
+        g_tag_prec_err_exit( t_FN );
+//        scandata.s = scandata.e;
+//        return;
     }
 
     ProcFlags.concat = concat_save;

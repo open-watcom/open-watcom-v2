@@ -40,19 +40,22 @@
 
 char    *get_refid_value( char *p, att_val_type *attr_val, char *refid )
 {
-    unsigned    k;
+    unsigned    len;
+    unsigned    i;
 
+    refid[0] = '\0';
     p = get_att_value( p, attr_val );
-    if( attr_val->name == NULL ) {       // no valid id
+    if( attr_val->tok.s == NULL ) {       // no valid id
         return( p );
     }
-    if( attr_val->len > REFID_LEN )
-        attr_val->len = REFID_LEN;
-    for( k = 0; k < attr_val->len; k++ ) {
-        refid[k] = my_tolower( attr_val->name[k] );
+    len = attr_val->tok.l;
+    if( len > REFID_LEN )
+        len = REFID_LEN;
+    for( i = 0; i < len; i++ ) {
+        refid[i] = my_tolower( attr_val->tok.s[i] );
     }
-    refid[attr_val->len] = '\0';
-    if( attr_val->len > 7 ) {                 // wgml 4 warning level
+    refid[i] = '\0';
+    if( attr_val->tok.l > 7 ) {                 // wgml 4 warning level
         xx_warn_c_info( wng_id_xxx, refid, inf_id_len );
     }
     return( p );

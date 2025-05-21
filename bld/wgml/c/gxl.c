@@ -76,7 +76,7 @@ static void gml_xl_lp_common( e_tags t )
 
     if( t != t_LP ) {
         if( is_ip_tag( nest_cb->c_tag ) ) {         // inline phrase not closed
-            g_err_tag_nest( nest_cb->c_tag + 1 );   // end tag expected
+            g_tag_nest_err_exit( nest_cb->c_tag + 1 );   // end tag expected
         }
     }
 
@@ -187,7 +187,7 @@ void gml_dl( const gmltag * entry )
     }
 
     if( dl_layout == NULL ) {
-        internal_err( __FILE__, __LINE__ );
+        internal_err_exit( __FILE__, __LINE__ );
     }
 
     if( dl_cur_level < layout_work.dl.max_level ) {
@@ -218,25 +218,25 @@ void gml_dl( const gmltag * entry )
                 dl_break = true;
             } else if( strcmp( "headhi", attr_name.attname.t ) == 0 ) {
                 p = get_att_value( p, &attr_val );
-                if( attr_val.name == NULL ) {
+                if( attr_val.tok.s == NULL ) {
                     break;
                 }
-                headhi = get_font_number( attr_val.name, attr_val.len );
+                headhi = get_font_number( attr_val.tok.s, attr_val.tok.l );
                 if( ProcFlags.tag_end_found ) {
                     break;
                 }
             } else if( strcmp( "termhi", attr_name.attname.t ) == 0 ) {
                 p = get_att_value( p, &attr_val );
-                if( attr_val.name == NULL ) {
+                if( attr_val.tok.s == NULL ) {
                     break;
                 }
-                termhi = get_font_number( attr_val.name, attr_val.len );
+                termhi = get_font_number( attr_val.tok.s, attr_val.tok.l );
                 if( ProcFlags.tag_end_found ) {
                     break;
                 }
             } else if( strcmp( "tsize", attr_name.attname.t ) == 0 ) {
                 p = get_att_value( p, &attr_val );
-                if( attr_val.name == NULL ) {
+                if( attr_val.tok.s == NULL ) {
                     break;
                 }
                 if( att_val_to_su( &cur_su, true, &attr_val, false ) ) {
@@ -330,10 +330,10 @@ void gml_gl( const gmltag * entry )
                 compact = true;
             } else if( strcmp( "termhi", attr_name.attname.t ) == 0 ) {
                 p = get_att_value( p, &attr_val );
-                if( attr_val.name == NULL ) {
+                if( attr_val.tok.s == NULL ) {
                     break;
                 }
-                termhi = get_font_number( attr_val.name, attr_val.len );
+                termhi = get_font_number( attr_val.tok.s, attr_val.tok.l );
                 if( ProcFlags.tag_end_found ) {
                     break;
                 }
@@ -353,7 +353,7 @@ void gml_gl( const gmltag * entry )
     }
 
     if( nest_cb->u.gl_layout == NULL ) {
-        internal_err( __FILE__, __LINE__ );
+        internal_err_exit( __FILE__, __LINE__ );
     }
 
     if( gl_cur_level < layout_work.gl.max_level ) {
@@ -431,7 +431,7 @@ void gml_ol( const gmltag * entry )
     scandata.s = p;
 
     if( ProcFlags.need_li_lp ) {
-        xx_nest_err( err_no_li_lp );
+        xx_nest_err_exit( err_no_li_lp );
     }
     gml_xl_lp_common( t_OL );
 
@@ -441,7 +441,7 @@ void gml_ol( const gmltag * entry )
     }
 
     if( nest_cb->u.ol_layout == NULL ) {
-        internal_err( __FILE__, __LINE__ );
+        internal_err_exit( __FILE__, __LINE__ );
     }
 
     if( ol_cur_level < layout_work.ol.max_level ) {
@@ -518,7 +518,7 @@ void gml_sl( const gmltag * entry )
     scandata.s = p;
 
     if( ProcFlags.need_li_lp ) {
-        xx_nest_err( err_no_li_lp );
+        xx_nest_err_exit( err_no_li_lp );
     }
     gml_xl_lp_common( t_SL );
 
@@ -528,7 +528,7 @@ void gml_sl( const gmltag * entry )
     }
 
     if( nest_cb->u.sl_layout == NULL ) {
-        internal_err( __FILE__, __LINE__ );
+        internal_err_exit( __FILE__, __LINE__ );
     }
 
     if( sl_cur_level < layout_work.sl.max_level ) {
@@ -604,7 +604,7 @@ void gml_ul( const gmltag * entry )
     scandata.s = p;
 
     if( ProcFlags.need_li_lp ) {
-        xx_nest_err( err_no_li_lp );
+        xx_nest_err_exit( err_no_li_lp );
     }
     gml_xl_lp_common( t_UL );
 
@@ -614,7 +614,7 @@ void gml_ul( const gmltag * entry )
     }
 
     if( nest_cb->u.ul_layout == NULL ) {
-        internal_err( __FILE__, __LINE__ );
+        internal_err_exit( __FILE__, __LINE__ );
     }
 
     if( ul_cur_level < layout_work.ul.max_level ) {
@@ -679,7 +679,7 @@ static void     gml_exl_common( const gmltag * entry )
         l_font = nest_cb->u.ul_layout->font;
         break;
     default :
-        internal_err( __FILE__, __LINE__ ); // not an inline phrase end tag
+        internal_err_exit( __FILE__, __LINE__ ); // not an inline phrase end tag
     }
 
     wk = nest_cb;
@@ -756,9 +756,9 @@ void    gml_edl( const gmltag * entry )
 
     if( nest_cb->c_tag != t_DL ) {      // unexpected exxx tag
         if( nest_cb->c_tag == t_NONE ) {
-            g_err_tag_no( t_DL + 1 );   // no exxx expected, no tag active
+            g_tag_no_err_exit( t_DL + 1 );   // no exxx expected, no tag active
         } else {
-            g_err_tag_nest( nest_cb->c_tag + 1 ); // exxx expected
+            g_tag_nest_err_exit( nest_cb->c_tag + 1 ); // exxx expected
         }
     } else {
         set_skip_vars( NULL, NULL, &nest_cb->u.dl_layout->post_skip, 1, g_curr_font );
@@ -783,9 +783,9 @@ void    gml_egl( const gmltag * entry )
 
     if( nest_cb->c_tag != t_GL ) {      // unexpected exxx tag
         if( nest_cb->c_tag == t_NONE ) {
-            g_err_tag_no( t_GL + 1 );// no exxx expected, no tag active
+            g_tag_no_err_exit( t_GL + 1 );// no exxx expected, no tag active
         } else {
-            g_err_tag_nest( nest_cb->c_tag + 1 ); // exxx expected
+            g_tag_nest_err_exit( nest_cb->c_tag + 1 ); // exxx expected
         }
     } else {
         set_skip_vars( NULL, NULL, &nest_cb->u.gl_layout->post_skip, 1, g_curr_font );
@@ -811,9 +811,9 @@ void    gml_eol( const gmltag * entry )
 
     if( nest_cb->c_tag != t_OL ) {      // unexpected exxx tag
         if( nest_cb->c_tag == t_NONE ) {
-            g_err_tag_no( t_OL + 1 );// no exxx expected, no tag active
+            g_tag_no_err_exit( t_OL + 1 );// no exxx expected, no tag active
         } else {
-            g_err_tag_nest( nest_cb->c_tag + 1 ); // exxx expected
+            g_tag_nest_err_exit( nest_cb->c_tag + 1 ); // exxx expected
         }
     } else {
         set_skip_vars( NULL, NULL, &nest_cb->u.ol_layout->post_skip, 1, g_curr_font );
@@ -839,9 +839,9 @@ void    gml_esl( const gmltag * entry )
 
     if( nest_cb->c_tag != t_SL ) {      // unexpected exxx tag
         if( nest_cb->c_tag == t_NONE ) {
-            g_err_tag_no( t_SL + 1 );// no exxx expected, no tag active
+            g_tag_no_err_exit( t_SL + 1 );// no exxx expected, no tag active
         } else {
-            g_err_tag_nest( nest_cb->c_tag + 1 ); // exxx expected
+            g_tag_nest_err_exit( nest_cb->c_tag + 1 ); // exxx expected
         }
     } else {
         set_skip_vars( NULL, NULL, &nest_cb->u.sl_layout->post_skip, 1, g_curr_font );
@@ -867,9 +867,9 @@ void    gml_eul( const gmltag * entry )
 
     if( nest_cb->c_tag != t_UL ) {      // unexpected exxx tag
         if( nest_cb->c_tag == t_NONE ) {
-            g_err_tag_no( t_UL + 1 );// no exxx expected, no tag active
+            g_tag_no_err_exit( t_UL + 1 );// no exxx expected, no tag active
         } else {
-            g_err_tag_nest( nest_cb->c_tag + 1 ); // exxx expected
+            g_tag_nest_err_exit( nest_cb->c_tag + 1 ); // exxx expected
         }
     } else {
         set_skip_vars( NULL, NULL, &nest_cb->u.ul_layout->post_skip, 1, g_curr_font );
@@ -1111,8 +1111,8 @@ void    gml_li( const gmltag * entry )
         break;
     case t_DL :
     case t_GL :
-        g_err_tag_nest( nest_cb->c_tag + 1 ); // end tag expected
-        break;
+        g_tag_nest_err_exit( nest_cb->c_tag + 1 ); // end tag expected
+//        break;
     default:
         break;
     }
@@ -1293,11 +1293,11 @@ void gml_ddhd( const gmltag * entry )
     if( ProcFlags.need_ddhd ) {
         ProcFlags.need_ddhd = false;
     } else if( ProcFlags.need_dd ) {
-        xx_err_c( err_tag_expected, "DD");
+        xx_err_exit_c( err_tag_expected, "DD");
     } else if( ProcFlags.need_gd ) {
-        xx_err_c( err_tag_expected, "GD");
+        xx_err_exit_c( err_tag_expected, "GD");
     } else {
-        xx_nest_err_cc( err_tag_preceding_2, "DTHD", "DDHD" );
+        xx_nest_err_exit_cc( err_tag_preceding_2, "DTHD", "DDHD" );
     }
 
     p = scandata.s;
@@ -1441,11 +1441,11 @@ void gml_dd( const gmltag * entry )
     if( ProcFlags.need_dd ) {
         ProcFlags.need_dd = false;
     } else if( ProcFlags.need_ddhd ) {
-        xx_err_c( err_tag_expected, "DDHD");
+        xx_err_exit_c( err_tag_expected, "DDHD");
     } else if( ProcFlags.need_gd ) {
-        xx_err_c( err_tag_expected, "GD");
+        xx_err_exit_c( err_tag_expected, "GD");
     } else {
-        xx_nest_err_cc( err_tag_preceding_2, "DT", "DD" );
+        xx_nest_err_exit_cc( err_tag_preceding_2, "DT", "DD" );
     }
 
     ProcFlags.dd_starting = false;
@@ -1586,11 +1586,11 @@ void gml_gd( const gmltag * entry )
     if( ProcFlags.need_gd ) {
         ProcFlags.need_gd = false;
     } else if( ProcFlags.need_ddhd ) {
-        xx_err_c( err_tag_expected, "DDHD");
+        xx_err_exit_c( err_tag_expected, "DDHD");
     } else if( ProcFlags.need_dd ) {
-        xx_err_c( err_tag_expected, "DD");
+        xx_err_exit_c( err_tag_expected, "DD");
     } else {
-        xx_nest_err_cc( err_tag_preceding_2, "GT", "GD" );
+        xx_nest_err_exit_cc( err_tag_preceding_2, "GT", "GD" );
     }
 
     p = scandata.s;

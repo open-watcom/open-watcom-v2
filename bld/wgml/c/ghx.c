@@ -301,7 +301,7 @@ void gen_heading( char *h_text, const char *hdrefid, hdsrc hn_lvl, hdsrc hds_lvl
             if( cur_ref == NULL ) {             // new entry
                 cur_ref = add_new_refid( &hd_ref_dict, hdrefid, hd_entry );
             } else {                // duplicate id
-                dup_refid_err( cur_ref->refid, "heading" );
+                dup_refid_err_exit( cur_ref->refid, "heading" );
             }
         }
     }
@@ -491,7 +491,7 @@ void gen_heading( char *h_text, const char *hdrefid, hdsrc hn_lvl, hdsrc hds_lvl
             cur_doc_el_group->depth += cur_doc_el_group->first->top_skip;   // top of page: top_skip
             cur_doc_el_group->first->subs_skip = 0;
             if( cur_doc_el_group->depth > t_page.max_depth ) {
-                xx_err( err_heading_too_deep );     // the block won't fit on any page
+                xx_err_exit( err_heading_too_deep );     // the block won't fit on any page
             } else {
                 if( page_width ) {
 
@@ -587,7 +587,7 @@ static void gml_hx_common( const gmltag * entry, hdsrc hn_lvl )
         if( !((ProcFlags.doc_sect == doc_sect_body) ||
             (ProcFlags.doc_sect_nxt == doc_sect_body)) ) {
 
-            xx_err_cc( err_tag_wrong_sect, hxstr, ":BODY section" );
+            xx_err_exit_cc( err_tag_wrong_sect, hxstr, ":BODY section" );
         } else {
             hd_level = hn_lvl;              // H0 always valid in BODY
         }
@@ -596,7 +596,7 @@ static void gml_hx_common( const gmltag * entry, hdsrc hn_lvl )
         if( !((ProcFlags.doc_sect >= doc_sect_body) ||
             (ProcFlags.doc_sect_nxt >= doc_sect_body)) ) {
 
-            xx_err_cc( err_tag_wrong_sect, hxstr, ":BODY :APPENDIX :BACKM sections" );
+            xx_err_exit_cc( err_tag_wrong_sect, hxstr, ":BODY :APPENDIX :BACKM sections" );
         } else if( !((ProcFlags.doc_sect == doc_sect_body) ||
             (ProcFlags.doc_sect_nxt == doc_sect_body)) ) {  // APPENDIX or BACKM
             hd_level = hn_lvl;              // H1 valid at this point
@@ -630,7 +630,7 @@ static void gml_hx_common( const gmltag * entry, hdsrc hn_lvl )
         if( !((ProcFlags.doc_sect >= doc_sect_abstract) ||
             (ProcFlags.doc_sect_nxt >= doc_sect_abstract)) ) {
 
-            xx_err_cc( err_tag_wrong_sect, hxstr, ":ABSTRACT section or later" );
+            xx_err_exit_cc( err_tag_wrong_sect, hxstr, ":ABSTRACT section or later" );
         }
         break;
     }
@@ -658,7 +658,7 @@ static void gml_hx_common( const gmltag * entry, hdsrc hn_lvl )
                 break;
             if( strcmp( "id", attr_name.attname.t ) == 0 ) {
                 p = get_refid_value( p, &attr_val, hdrefid );
-                if( attr_val.name == NULL ) {
+                if( attr_val.tok.s == NULL ) {
                     break;
                 }
                 id_seen = true;             // valid id attribute found
@@ -667,7 +667,7 @@ static void gml_hx_common( const gmltag * entry, hdsrc hn_lvl )
                 }
             } else if( strcmp( "stitle", attr_name.attname.t ) == 0 ) {
                 p = get_att_value( p, &attr_val );
-                if( attr_val.name == NULL ) {
+                if( attr_val.tok.s == NULL ) {
                     break;
                 }
                 xx_warn_c( wng_unsupp_att, "stitle" );

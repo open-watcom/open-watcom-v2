@@ -61,7 +61,7 @@ void    gml_graphic( const gmltag * entry )
 
     if( (ProcFlags.doc_sect < doc_sect_gdoc) ) {
         if( (ProcFlags.doc_sect_nxt < doc_sect_gdoc) ) {
-            xx_err_c( err_tag_before_gdoc, entry->tagname );
+            xx_err_exit_c( err_tag_before_gdoc, entry->tagname );
         }
     }
 
@@ -84,14 +84,14 @@ void    gml_graphic( const gmltag * entry )
                 break;
             if( strcmp( "file", attr_name.attname.t ) == 0 ) {
                 p = get_att_value( p, &attr_val );
-                if( attr_val.name == NULL ) {
+                if( attr_val.tok.s == NULL ) {
                     break;
                 }
                 file_found = true;
-                if( attr_val.len > _MAX_PATH - 1 )
-                    attr_val.len = _MAX_PATH - 1;
-                strncpy( file, attr_val.name, attr_val.len );
-                file[attr_val.len] = '\0';
+                if( attr_val.tok.l > _MAX_PATH - 1 )
+                    attr_val.tok.l = _MAX_PATH - 1;
+                strncpy( file, attr_val.tok.s, attr_val.tok.l );
+                file[attr_val.tok.l] = '\0';
                 split_attr_file( file, rt_buff, sizeof( rt_buff ) );
                 if( (rt_buff[0] != '\0') ) {
                     xx_warn( wng_rec_type_graphic );
@@ -101,7 +101,7 @@ void    gml_graphic( const gmltag * entry )
                 }
             } else if( strcmp( "depth", attr_name.attname.t ) == 0 ) {
                 p = get_att_value( p, &attr_val );
-                if( attr_val.name == NULL ) {
+                if( attr_val.tok.s == NULL ) {
                     break;
                 }
                 depth_found = true;
@@ -110,17 +110,17 @@ void    gml_graphic( const gmltag * entry )
                 }
                 depth = conv_vert_unit( &cur_su, g_text_spacing, g_curr_font );
                 if( depth == 0 ) {
-                    xx_line_err_c( err_inv_depth_graphic_1, attr_val.name );
+                    xx_line_err_exit_c( err_inv_depth_graphic_1, attr_val.tok.s );
                 }
                 if( depth > t_page.max_depth ) {
-                    xx_line_err_c( err_inv_depth_graphic_2, attr_val.name );
+                    xx_line_err_exit_c( err_inv_depth_graphic_2, attr_val.tok.s );
                 }
                 if( ProcFlags.tag_end_found ) {
                     break;
                 }
             } else if( strcmp( "width", attr_name.attname.t ) == 0 ) {
                 p = get_att_value( p, &attr_val );
-                if( attr_val.name == NULL ) {
+                if( attr_val.tok.s == NULL ) {
                     break;
                 }
 
@@ -136,10 +136,10 @@ void    gml_graphic( const gmltag * entry )
                     }
                     width = conv_hor_unit( &cur_su, g_curr_font );
                     if( width == 0 ) {
-                        xx_line_err_c( err_inv_width_graphic_1, attr_val.name );
+                        xx_line_err_exit_c( err_inv_width_graphic_1, attr_val.tok.s );
                     }
                     if( width > t_page.last_pane->col_width ) {
-                        xx_line_err_c( err_inv_width_graphic_2, attr_val.name );
+                        xx_line_err_exit_c( err_inv_width_graphic_2, attr_val.tok.s );
                     }
                 }
                 if( ProcFlags.tag_end_found ) {
@@ -147,33 +147,33 @@ void    gml_graphic( const gmltag * entry )
                 }
             } else if( strcmp( "scale", attr_name.attname.t ) == 0 ) {
                 p = get_att_value( p, &attr_val );
-                if( attr_val.name == NULL ) {
+                if( attr_val.tok.s == NULL ) {
                     break;
                 }
-                pb = attr_val.name;
+                pb = attr_val.tok.s;
                 if( (*pb == '+') || (*pb == '-') ) {    // signs not allowed
-                    xx_line_err_c( err_num_too_large, attr_val.name );
+                    xx_line_err_exit_c( err_num_too_large, attr_val.tok.s );
                 }
                 scale = 0;
                 while( my_isdigit( *pb ) ) {            // convert to number
                     scale = (10 * scale) + (*pb - '0');
                     pb++;
-                    if( (pb - attr_val.name) > attr_val.len ) {  // value end reached
+                    if( (pb - attr_val.tok.s) > attr_val.tok.l ) {  // value end reached
                         break;
                     }
                 }
                 if( scale > 0x7fffffff ) {              // wgml 4.0 limit
-                    xx_line_err_c( err_num_too_large, attr_val.name );
+                    xx_line_err_exit_c( err_num_too_large, attr_val.tok.s );
                 }
-                if( (pb - attr_val.name) < attr_val.len ) {      // value continues on
-                    xx_line_err_c( err_num_too_large, attr_val.name );
+                if( (pb - attr_val.tok.s) < attr_val.tok.l ) {      // value continues on
+                    xx_line_err_exit_c( err_num_too_large, attr_val.tok.s );
                 }
                 if( ProcFlags.tag_end_found ) {
                     break;
                 }
             } else if( strcmp( "xoff", attr_name.attname.t ) == 0 ) {
                 p = get_att_value( p, &attr_val );
-                if( attr_val.name == NULL ) {
+                if( attr_val.tok.s == NULL ) {
                     break;
                 }
                 if( att_val_to_su( &cur_su, false, &attr_val, false ) ) {
@@ -185,7 +185,7 @@ void    gml_graphic( const gmltag * entry )
                 }
             } else if( strcmp( "yoff", attr_name.attname.t ) == 0 ) {
                 p = get_att_value( p, &attr_val );
-                if( attr_val.name == NULL ) {
+                if( attr_val.tok.s == NULL ) {
                     break;
                 }
                 if( att_val_to_su( &cur_su, false, &attr_val, false ) ) {
@@ -204,7 +204,7 @@ void    gml_graphic( const gmltag * entry )
     }
 
     if( !depth_found || !file_found ) { // detect missing required attributes
-        xx_err( err_att_missing );
+        xx_err_exit( err_att_missing );
     }
 
     if( !ProcFlags.ps_device ) {        // character devices ignore SK & post_skip
@@ -243,7 +243,7 @@ void    gml_graphic( const gmltag * entry )
         insert_col_main( cur_el );
 
     } else {
-        xx_err_c( err_file_not_found, file );
+        xx_err_exit_c( err_file_not_found, file );
     }
 
     if( !ProcFlags.reprocess_line && *p != '\0' ) {

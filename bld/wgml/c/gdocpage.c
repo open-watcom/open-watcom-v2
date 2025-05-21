@@ -141,8 +141,8 @@ static void do_el_list_out( doc_element * in_element )
             }
             break;
         default :
-            internal_err( __FILE__, __LINE__ );
-            break;
+            internal_err_exit( __FILE__, __LINE__ );
+//            break;
         }
         save = in_element->next;
         in_element->next = NULL;            // clear only current element
@@ -836,7 +836,7 @@ static bool set_positions( doc_element * list, uint32_t h_start, uint32_t v_star
             at_top = false;
             break;
         default :
-            internal_err( __FILE__, __LINE__ );
+            internal_err_exit( __FILE__, __LINE__ );
         }
     }
 
@@ -988,8 +988,8 @@ static void fill_column( doc_element * a_element )
         /* Error if first line will not fit on any page */
 
         if( ( cur_line->line_height + cur_line->units_spacing ) > old_max_depth ) {
-            xx_err( err_text_line_too_deep );
-            break;
+            xx_err_exit( err_text_line_too_deep );
+//            break;
         }
 
         /****************************************************************/
@@ -1030,7 +1030,7 @@ static void fill_column( doc_element * a_element )
         }
         break;
     default :
-        internal_err( __FILE__, __LINE__ );
+        internal_err_exit( __FILE__, __LINE__ );
     }
     return;
 }
@@ -2245,7 +2245,7 @@ void insert_page_width( doc_el_group * a_group )
             n_page.last_page_width = a_group;
         }
     } else {
-        internal_err( __FILE__, __LINE__ );
+        internal_err_exit( __FILE__, __LINE__ );
     }
 
     return;
@@ -2604,8 +2604,8 @@ bool split_element( doc_element * a_element, uint32_t req_depth )
         /* Error if first line will not fit on any page */
 
         if( ( cur_line->line_height + cur_line->units_spacing ) > old_max_depth ) {
-            xx_err( err_text_line_too_deep );
-            break;
+            xx_err_exit( err_text_line_too_deep );
+//            break;
         }
 
         if( g_cur_threshold == 1 ) {                // simplest case
@@ -2704,7 +2704,7 @@ bool split_element( doc_element * a_element, uint32_t req_depth )
         }
         break;
     default :
-        internal_err( __FILE__, __LINE__ );
+        internal_err_exit( __FILE__, __LINE__ );
     }
     return( splittable );
 }

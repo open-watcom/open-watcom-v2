@@ -234,9 +234,9 @@ static void gml_e_inlne_common( const gmltag * entry, e_tags t )
 
     if( nest_cb->c_tag != t ) {         // unexpected exxx tag
         if( nest_cb->c_tag == t_NONE ) {
-            g_err_tag_no( t + 1 );      // no exxx expected
+            g_tag_no_err_exit( t + 1 );      // no exxx expected
         } else {
-            g_err_tag_nest( nest_cb->c_tag + 1 ); // exxx expected
+            g_tag_nest_err_exit( nest_cb->c_tag + 1 ); // exxx expected
         }
     } else {
 
@@ -429,8 +429,8 @@ void gml_sf( const gmltag * entry )
         if( !ProcFlags.reprocess_line && !ProcFlags.tag_end_found ) {
             if( strcmp( "font", attr_name.attname.t ) == 0 ) {
                 p = get_att_value( p, &attr_val );
-                if( attr_val.name != NULL ) {
-                    font = get_font_number( attr_val.name, attr_val.len );
+                if( attr_val.tok.s != NULL ) {
+                    font = get_font_number( attr_val.tok.s, attr_val.tok.l );
                     font_seen = true;
                     scandata.s = p;
                     gml_inline_common( entry, font, t_SF );
@@ -439,7 +439,7 @@ void gml_sf( const gmltag * entry )
         }
     }
     if( !font_seen ) {          // font is a required attribute
-        xx_line_err_c( err_att_missing, scandata.s );
+        xx_line_err_exit_c( err_att_missing, scandata.s );
     }
 
     scandata.s = scandata.e;

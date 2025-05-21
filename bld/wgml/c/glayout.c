@@ -71,7 +71,7 @@ void    lay_layout( const gmltag * entry )
     }
 
     if( ProcFlags.fb_document_done ) {
-        xx_err( err_lay_too_late );
+        xx_err_exit( err_lay_too_late );
     }
 
     if( !ProcFlags.lay_specified ) {
@@ -81,11 +81,11 @@ void    lay_layout( const gmltag * entry )
 
     if( *p == '\0' || *p == '.' ) {
         if( ProcFlags.layout ) {        // nested layout
-            xx_err_c( err_nested_tag, entry->tagname );
+            xx_err_exit_c( err_nested_tag, entry->tagname );
         }
         ProcFlags.layout = true;
     } else {
-        xx_err_cc( err_extra_ignored, g_tok_start, p );
+        xx_err_exit_cc( err_extra_ignored, g_tok_start, p );
     }
 }
 
@@ -109,11 +109,11 @@ void    lay_elayout( const gmltag * entry )
 
     if( *p == '\0' || *p == '.' ) {
         if( !ProcFlags.layout ) {       // not in layout processing
-            xx_err_cc( err_no_lay, &(entry->tagname[1]), entry->tagname );
+            xx_err_exit_cc( err_no_lay, &(entry->tagname[1]), entry->tagname );
         }
         ProcFlags.layout = false;
         ProcFlags.lay_xxx = el_zero;
     } else {
-        xx_err_cc( err_extra_ignored, g_tok_start, p );
+        xx_err_exit_cc( err_extra_ignored, g_tok_start, p );
     }
 }

@@ -46,7 +46,7 @@ void gml_address( const gmltag * entry )
 {
     if( !((ProcFlags.doc_sect == doc_sect_titlep) ||
           (ProcFlags.doc_sect_nxt == doc_sect_titlep)) ) {
-        xx_nest_err_cc( err_tag_wrong_sect, entry->tagname, ":TITLEP section" );
+        xx_nest_err_exit_cc( err_tag_wrong_sect, entry->tagname, ":TITLEP section" );
     }
     first_aline = true;
     font_save = g_curr_font;
@@ -94,7 +94,7 @@ void gml_eaddress( const gmltag * entry )
     (void)entry;
 
     if( cur_group_type != gt_address ) {   // no preceding :ADDRESS tag
-        g_err_tag_prec( t_ADDRESS );
+        g_tag_prec_err_exit( t_ADDRESS );
     }
     g_curr_font = font_save;
     rs_loc = titlep_tag;
@@ -170,10 +170,10 @@ void gml_aline( const gmltag * entry )
 
     if( !((ProcFlags.doc_sect == doc_sect_titlep) ||
           (ProcFlags.doc_sect_nxt == doc_sect_titlep)) ) {
-        xx_nest_err_cc( err_tag_wrong_sect, entry->tagname, ":TITLEP section" );
+        xx_nest_err_exit_cc( err_tag_wrong_sect, entry->tagname, ":TITLEP section" );
     }
     if( cur_group_type != gt_address ) {    // no preceding :ADDRESS tag
-        g_err_tag_prec( t_ADDRESS );
+        g_tag_prec_err_exit( t_ADDRESS );
     }
     p = scandata.s;
     SkipDot( p );                           // over '.'
@@ -198,7 +198,7 @@ void gml_aline( const gmltag * entry )
     t_page.cur_left += nest_cb->left_indent;
     t_page.cur_width = t_page.cur_left;
     if( t_page.max_width < -1 * nest_cb->right_indent ) {
-        xx_line_err_c( err_page_width_too_small, scandata.s );
+        xx_line_err_exit_c( err_page_width_too_small, scandata.s );
     } else {
         t_page.max_width += nest_cb->right_indent;
     }

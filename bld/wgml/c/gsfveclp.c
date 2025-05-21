@@ -133,7 +133,7 @@ static  condcode    get_vector_pos( parm parms[MAX_FUN_PARMS], unsigned parmcoun
                 cc = getnum( &gn );
                 if( (cc != pos) ) {
                     if( !ProcFlags.suppress_msg ) {
-                        xx_source_err_c( err_func_parm, "3 (startpos)" );
+                        xx_source_err_exit_c( err_func_parm, "3 (startpos)" );
                     }
                     return( cc );
                 }
@@ -157,7 +157,7 @@ static  condcode    get_vector_pos( parm parms[MAX_FUN_PARMS], unsigned parmcoun
             rc = find_symvar_sym( &symvar_entry, var_ind, &symsubval );
             if( rc > 0 ) {              // variable found
                 psymvar = symsubval->base;
-                if( psymvar->flags & subscripted ) {
+                if( psymvar->flags & SF_subscripted ) {
                     c = *needle.e;
                     *needle.e = '\0';   // make nul delimited
                     for( symsubval = psymvar->subscripts; symsubval != NULL; symsubval = symsubval->next ) {

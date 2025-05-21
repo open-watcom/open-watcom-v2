@@ -65,7 +65,7 @@ char * scan_sym( char * p, symvar * sym, sub_index * subscript, char * * result,
     }
     if( *p == '*' ) {                   // local var
         p++;
-        sym->flags = local_var;
+        sym->flags = SF_local_var;
     }
     sym_start = p;
     sym->name[0] = '\0';
@@ -100,7 +100,7 @@ char * scan_sym( char * p, symvar * sym, sub_index * subscript, char * * result,
                 if( !ProcFlags.suppress_msg ) {
                     // SC--074 For the symbol '%s'
                     //     The length of a symbol cannot exceed ten characters
-                    symbol_name_length_err( sym_start );
+                    symbol_name_length_err_exit( sym_start );
                 }
             }
         }
@@ -110,10 +110,10 @@ char * scan_sym( char * p, symvar * sym, sub_index * subscript, char * * result,
 
     if( p == sym_start ) {              // special for &*
         if( *p != ampchar ) {           // not &*&xx construct
-            if( (sym->flags & local_var)
+            if( (sym->flags & SF_local_var)
               && (input_cbs->fmflags & II_tag_mac) ) {
                 strcpy( sym->name, MAC_STAR_NAME );
-            } else if( (sym->flags & local_var)
+            } else if( (sym->flags & SF_local_var)
               && (input_cbs->fmflags & II_file) ) {
                 strcpy( sym->name, MAC_STAR_NAME );
             } else {
@@ -157,7 +157,7 @@ char * scan_sym( char * p, symvar * sym, sub_index * subscript, char * * result,
                 } else {
                     *subscript = 1;         // start with index 1
                 }
-                sym->flags |= auto_inc + subscripted;
+                sym->flags |= SF_auto_inc + SF_subscripted;
             } else if( *p == '*' ) {        // * concatenates all elements
                 p++;
                 if( *p == '+' ) {
@@ -204,10 +204,10 @@ char * scan_sym( char * p, symvar * sym, sub_index * subscript, char * * result,
                             p++;
                         }
                         SkipDot( p );
-                        sym->flags |= subscripted;
+                        sym->flags |= SF_subscripted;
                     } else {
                         if( !g_scan_err && !ProcFlags.suppress_msg ) {
-                            xx_line_err_c( err_sub_invalid, p );
+                            xx_line_err_exit_c( err_sub_invalid, p );
                         }
                         g_scan_err = true;
                     }
@@ -286,7 +286,7 @@ void    scr_se( void )
     }
     if( *p == '\0' ) {
         if( !ProcFlags.suppress_msg ) {
-            xx_line_err_c( err_eq_expected, p);
+            xx_line_err_exit_c( err_eq_expected, p);
         }
         g_scan_err = true;
     }
@@ -347,7 +347,7 @@ void    scr_se( void )
                 rc = add_symvar_sym( &sym, &val, subscript, sym.flags );
             } else {                                        // matches wgml 4.0
                 if( !ProcFlags.suppress_msg ) {
-                    xx_line_err_c( err_eq_expected, p);
+                    xx_line_err_exit_c( err_eq_expected, p);
                 }
                 g_scan_err = true;
             }
@@ -355,7 +355,7 @@ void    scr_se( void )
             p += 3;
             rc = find_symvar_sym( &sym, subscript, &symsubval );
             if( rc == 2 ) {
-                symsubval->base->flags |= deleted;
+                symsubval->base->flags |= SF_deleted;
             }
         } else {
             if( !ProcFlags.suppress_msg ) {

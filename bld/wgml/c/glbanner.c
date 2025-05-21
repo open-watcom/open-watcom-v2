@@ -230,12 +230,12 @@ void    lay_banner( const gmltag * entry )
         for( k = 0; k < att_count; k++ ) {
             curr = banner_att[k];
             if( strcmp( lay_att_names[curr], attr_name.attname.l ) == 0 ) {
-                p = attr_val.name;
+                p = attr_val.tok.s;
                 if( count[k] ) {
                     if( sum_count == att_count ) {  // all attributes found
-                        xx_err( err_lay_text );     // per wgml 4.0: treat as text
+                        xx_err_exit( err_lay_text );     // per wgml 4.0: treat as text
                     } else {
-                        xx_err( err_att_dup );      // per wgml 4.0: treat as duplicated attribute
+                        xx_err_exit( err_att_dup );      // per wgml 4.0: treat as duplicated attribute
                     }
                 } else {
                     count[k] = true;
@@ -243,62 +243,62 @@ void    lay_banner( const gmltag * entry )
                     switch( curr ) {
                     case e_left_adjust:
                         if( AttrFlags.left_adjust ) {
-                            xx_line_err_ci( err_att_dup, attr_name.att_name,
-                                attr_val.name - attr_name.att_name + attr_val.len);
+                            xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
+                                attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                         }
                         i_space_unit( p, &attr_val, &wk.left_adjust );
                         AttrFlags.left_adjust = true;
                         break;
                     case e_right_adjust:
                         if( AttrFlags.right_adjust ) {
-                            xx_line_err_ci( err_att_dup, attr_name.att_name,
-                                attr_val.name - attr_name.att_name + attr_val.len);
+                            xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
+                                attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                         }
                         i_space_unit( p, &attr_val, &wk.right_adjust );
                         AttrFlags.right_adjust = true;
                         break;
                     case e_depth:
                         if( AttrFlags.depth ) {
-                            xx_line_err_ci( err_att_dup, attr_name.att_name,
-                                attr_val.name - attr_name.att_name + attr_val.len);
+                            xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
+                                attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                         }
                         i_space_unit( p, &attr_val, &wk.depth );
                         AttrFlags.depth = true;
                         break;
                     case e_place:
                         if( AttrFlags.place ) {
-                            xx_line_err_ci( err_att_dup, attr_name.att_name,
-                                attr_val.name - attr_name.att_name + attr_val.len);
+                            xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
+                                attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                         }
                         i_place( p, &attr_val, &wk.place );
                         AttrFlags.place = true;
                         break;
                     case e_docsect:
                         if( AttrFlags.docsect ) {
-                            xx_line_err_ci( err_att_dup, attr_name.att_name,
-                                attr_val.name - attr_name.att_name + attr_val.len);
+                            xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
+                                attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                         }
                         i_docsect( p, &attr_val, &wk.docsect );
                         AttrFlags.docsect = true;
                         break;
                     case e_refplace:  // not stored in banner struct
                         if( AttrFlags.refplace ) {
-                            xx_line_err_ci( err_att_dup, attr_name.att_name,
-                                attr_val.name - attr_name.att_name + attr_val.len);
+                            xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
+                                attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                         }
                         i_place( p, &attr_val, &refplace );
                         AttrFlags.refplace = true;
                         break;
                     case e_refdoc:    // not stored in banner struct
                         if( AttrFlags.refdoc ) {
-                            xx_line_err_ci( err_att_dup, attr_name.att_name,
-                                attr_val.name - attr_name.att_name + attr_val.len);
+                            xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
+                                attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                         }
                         i_docsect( p, &attr_val, &refdoc );
                         AttrFlags.refdoc = true;
                         break;
                     default:
-                        internal_err( __FILE__, __LINE__ );
+                        internal_err_exit( __FILE__, __LINE__ );
                     }
                 }
                 break;                  // break out of for loop
@@ -313,7 +313,7 @@ void    lay_banner( const gmltag * entry )
     /*******************************************************/
 
     if( (wk.place == no_place) || (wk.docsect == no_ban) ) {    // both must be specified
-        xx_err( err_att_missing );
+        xx_err_exit( err_att_missing );
     }
 
     /*******************************************************/
@@ -327,9 +327,9 @@ void    lay_banner( const gmltag * entry )
     if( (refdoc != no_ban) || (refplace != no_place) ) {    // at least one was used
         if( ((refdoc == no_ban) && (refplace != no_place)) ||
                 ((refdoc != no_ban) && (refplace == no_place)) ) {
-            xx_err( err_both_refs );                        // both are required if either is used
+            xx_err_exit( err_both_refs );                        // both are required if either is used
         } else if( (refdoc == wk.docsect) && (refplace == wk.place) ) { // can't reference current banner
-            xx_err( err_self_ref );
+            xx_err_exit( err_self_ref );
         } else if( (refdoc != no_ban) && (refplace != no_place) ) { // find referenced banner
             banwk = layout_work.banner;
             ref_ban = NULL;
@@ -342,7 +342,7 @@ void    lay_banner( const gmltag * entry )
                 }
             }
             if( ref_ban == NULL ) {                 // referenced banner not found
-                xx_err( err_illegal_ban_ref );
+                xx_err_exit( err_illegal_ban_ref );
             } else {                                // copy from referenced banner
                 for( k = 0; k < att_count; ++k ) {
                     if( !count[k] ) {               // copy only unchanged values
@@ -447,7 +447,7 @@ void    lay_banner( const gmltag * entry )
     }
     if( (curr_ban == NULL) && (del_ban == NULL) ) { // not found: new banner definition
         if( sum_count != 5 ) {              // now we need all 5 non-ref attributes
-            xx_err( err_all_ban_att_rqrd );
+            xx_err_exit( err_all_ban_att_rqrd );
         } else {
             curr_ban = mem_alloc( sizeof( banner_lay_tag ) );
             memcpy( curr_ban, &wk, sizeof( banner_lay_tag ) );
@@ -563,7 +563,7 @@ void    lay_ebanner( const gmltag * entry )
             curr_ban = NULL;
         }
     } else {
-        xx_err_c( err_tag_expected, "BANNER" );
+        xx_err_exit_c( err_tag_expected, "BANNER" );
     }
     scandata.s = scandata.e;
     return;

@@ -1173,13 +1173,13 @@ static  void    init_predefined_symbols( void )
 
     val.s = "&";
     val.e = val.s + strlen( val.s );
-    add_symvar( global_dict, "amp", &val, no_subscript, is_AMP+predefined );
+    add_symvar( global_dict, "amp", &val, no_subscript, SF_is_AMP+SF_predefined );
 
     wkstring[1] = '\0';
     wkstring[0] = GML_CHAR_DEFAULT;
     val.s = wkstring;
     val.e = val.s + strlen( val.s );
-    add_symvar( global_dict, "gml", &val, no_subscript, predefined );
+    add_symvar( global_dict, "gml", &val, no_subscript, SF_predefined );
 
 }
 

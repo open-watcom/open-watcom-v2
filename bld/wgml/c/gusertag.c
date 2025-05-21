@@ -87,7 +87,7 @@ static void add_defaults_to_dict( gtentry * ge, symdict_hdl dict )
                     if( valp != NULL ) {
                         val.s = valp;
                         val.e = val.s + strlen( val.s );
-                        rc = add_symvar( dict, ga->attname, &val, no_subscript, local_var );
+                        rc = add_symvar( dict, ga->attname, &val, no_subscript, SF_local_var );
                     }
                 }
             }
@@ -139,15 +139,15 @@ static bool check_att_value( gaentry * ga, gtentry * ge, symdict_hdl loc_dict )
                 attval = strtol( token_buf, NULL, 10 );
                 if( attval < gaval->a.range[0] ||
                     attval > gaval->a.range[1]  ) {
-                    xx_err( ERR_ATT_RANGE_INV );// value outside range
-                    msg_done = true;
-                    break;
+                    xx_err_exit( ERR_ATT_RANGE_INV );// value outside range
+//                    msg_done = true;
+//                    break;
                 }
             } else {
                 if( gaval->valflags & val_length ) {
                     if( strlen( token_buf ) > gaval->a.length ) {
-                        xx_err( err_att_len_inv );  // value too long
-                        msg_done = true;
+                        xx_err_exit( err_att_len_inv );  // value too long
+//                        msg_done = true;
                     } else {
                         g_scan_err = false;
                     }
@@ -159,10 +159,10 @@ static bool check_att_value( gaentry * ga, gtentry * ge, symdict_hdl loc_dict )
     if( !g_scan_err ) {
         val.s = token_buf;
         val.e = val.s + strlen( val.s );
-        rc = add_symvar( loc_dict, ga->attname, &val, no_subscript, local_var );
+        rc = add_symvar( loc_dict, ga->attname, &val, no_subscript, SF_local_var );
     } else {
         if( !msg_done ) {
-            xx_err_cc( err_att_val, token_buf, ga->attname );
+            xx_err_exit_cc( err_att_val, token_buf, ga->attname );
         }
     }
     return( g_scan_err );
@@ -244,16 +244,16 @@ bool process_tag( gtentry *ge, mac_entry * me )
                     if( strcmp( ga->attname, attname ) == 0 ) {
                         ga->attflags |= att_proc_seen; // attribute specified
                         if( ga->attflags & att_auto ) {
-                            xx_line_err_cc( err_auto_att, attname, pa );
+                            xx_line_err_exit_cc( err_auto_att, attname, pa );
                         }
 
                         if( is_space_tab_char( *p ) ) { // no whitespace allowed before '='
-                            xx_line_err_cc( err_no_att_val, attname, p );
+                            xx_line_err_exit_cc( err_no_att_val, attname, p );
                         }
 
                         /* no line end allowed before '=' except with TEXTLine */
                         if( (*p == '\0') && (ge->tagflags & tag_textline) == 0 ) {
-                            xx_line_err_cc( err_no_att_val, attname, p );
+                            xx_line_err_exit_cc( err_no_att_val, attname, p );
                         }
 
                         if( *p == '=' ) {   // value follows
@@ -261,7 +261,7 @@ bool process_tag( gtentry *ge, mac_entry * me )
                             p++;            // over =
 
                             if( is_space_tab_char( *p ) ) { // no whitespace allowed after '='
-                                xx_line_err_cc( err_no_att_val, attname, p );
+                                xx_line_err_exit_cc( err_no_att_val, attname, p );
                             }
 
                             ga->attflags |= att_proc_val;
@@ -301,7 +301,7 @@ bool process_tag( gtentry *ge, mac_entry * me )
                                 if( gaval != NULL ) {
                                     val.s = token_buf;
                                     val.e = val.s + sprintf( token_buf, "%d", gaval->a.range[3] );
-                                    rc = add_symvar( loc_dict, ga->attname, &val, no_subscript, local_var );
+                                    rc = add_symvar( loc_dict, ga->attname, &val, no_subscript, SF_local_var );
                                 }
                             }
                         }
@@ -351,7 +351,7 @@ bool process_tag( gtentry *ge, mac_entry * me )
             }
         }
         if( *token_buf != '\0' ) {      // some req attr missing
-            att_req_err( ge->tagname, token_buf );
+            att_req_err_exit( ge->tagname, token_buf );
         }
     } else if( ge->tagflags & tag_attr ) {
         p2 = p;                                 // save value
@@ -382,7 +382,7 @@ bool process_tag( gtentry *ge, mac_entry * me )
         /* If TEXTReqrd was used in defining the user-tag, this is an error */
 
         if( ge->tagflags & tag_textreq ) {  // text must be present
-            xx_line_err_cc( err_att_text_req, ge->tagname, p2 );
+            xx_line_err_exit_cc( err_att_text_req, ge->tagname, p2 );
         }
 
         /* Otherwise, the value of * will be an empty string */
@@ -392,7 +392,7 @@ bool process_tag( gtentry *ge, mac_entry * me )
         /* If TEXTError was used in defining the user-tag, this is an error */
 
         if( ge->tagflags & tag_texterr ) {  // no text allowed
-            xx_line_err_cc( err_att_text, ge->tagname, p );
+            xx_line_err_exit_cc( err_att_text, ge->tagname, p );
         }
 
         /* Otherwise, things get a bit complicated */
@@ -430,7 +430,7 @@ bool process_tag( gtentry *ge, mac_entry * me )
     strcpy( token_buf, p );
     val.s = token_buf;
     val.e = val.s + strlen( val.s );
-    rc = add_symvar( loc_dict, "_", &val, no_subscript, local_var );
+    rc = add_symvar( loc_dict, "_", &val, no_subscript, SF_local_var );
     p += strlen( token_buf );
 
     scandata.s = p + 1;             // all processed
@@ -444,11 +444,11 @@ bool process_tag( gtentry *ge, mac_entry * me )
 
     val.s = ge->tagname;
     val.e = val.s + strlen( val.s );
-    rc = add_symvar( loc_dict, "_tag", &val, no_subscript, local_var );
+    rc = add_symvar( loc_dict, "_tag", &val, no_subscript, SF_local_var );
     ge->usecount++;
     val.s = longwork;
     val.e = val.s + sprintf( longwork, "%u", ge->usecount );
-    rc = add_symvar( loc_dict, "_n", &val, no_subscript, local_var );
+    rc = add_symvar( loc_dict, "_n", &val, no_subscript, SF_local_var );
 
     add_macro_cb_entry( me, ge );   // prepare GML macro as input
     free_dict( &input_cbs->local_dict );    // not super efficient

@@ -52,7 +52,7 @@ void    gml_title( const gmltag * entry )
 
     if( !((ProcFlags.doc_sect == doc_sect_titlep) ||
           (ProcFlags.doc_sect_nxt == doc_sect_titlep)) ) {
-        xx_nest_err_cc( err_tag_wrong_sect, entry->tagname, ":TITLEP section" );
+        xx_nest_err_exit_cc( err_tag_wrong_sect, entry->tagname, ":TITLEP section" );
     }
 
     p = scandata.s;
@@ -68,12 +68,12 @@ void    gml_title( const gmltag * entry )
                 break;
             if( strcmp( "stitle", attr_name.attname.t ) == 0 ) {
                 p = get_att_value( p, &attr_val );
-                if( attr_val.name == NULL ) {
+                if( attr_val.tok.s == NULL ) {
                     break;
                 }
                 if( GlobalFlags.firstpass && !ProcFlags.stitle_seen ) {  // first stitle goes into dictionary
-                    val.s = attr_val.name;
-                    val.e = val.s + attr_val.len;
+                    val.s = attr_val.tok.s;
+                    val.e = val.s + attr_val.tok.l;
                     add_symvar( global_dict, "$stitle", &val, no_subscript, 0 );
                     ProcFlags.stitle_seen = true;
                 }
@@ -118,7 +118,7 @@ void    gml_title( const gmltag * entry )
     t_page.cur_left += left_indent;
     t_page.cur_width = t_page.cur_left;
     if( t_page.max_width < right_indent ) {
-        xx_line_err_c( err_page_width_too_small, attr_val.name );
+        xx_line_err_exit_c( err_page_width_too_small, attr_val.tok.s );
     } else {
         t_page.max_width -= right_indent;
     }

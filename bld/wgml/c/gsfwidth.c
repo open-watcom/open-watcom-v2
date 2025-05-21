@@ -94,7 +94,7 @@ condcode    scr_width( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **res
             width = string_len;
             break;
         default:
-            xx_source_err_c( err_func_parm, "2 (type)" );
+            xx_source_err_exit_c( err_func_parm, "2 (type)" );
         }
     }
 

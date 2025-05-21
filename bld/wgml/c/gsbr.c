@@ -127,7 +127,7 @@ static void attach_eol( void )
             g_eol_ix = NULL;
             break;
         default :
-            internal_err( __FILE__, __LINE__ ); // bad element type value
+            internal_err_exit( __FILE__, __LINE__ ); // bad element type value
         }
     } else if( t_page.last_col_main != NULL ) {
         switch( t_page.last_col_main->type ) {
@@ -209,7 +209,7 @@ static void attach_eol( void )
             g_eol_ix = NULL;
             break;
         default :
-            internal_err( __FILE__, __LINE__ ); // bad element type value
+            internal_err_exit( __FILE__, __LINE__ ); // bad element type value
         }
     } else {    // only t_page is left!
         if( t_page.eol_index == NULL ) {

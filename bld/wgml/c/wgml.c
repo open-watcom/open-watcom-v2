@@ -238,7 +238,7 @@ static  void    del_input_cb_entry( void )
 //          char    linestr[NUM2STR_LENGTH];
 //
 //          sprintf( linestr, "%d", wk->if_cb->if_level );
-//          xx_err_c( err_if_level, linestr );
+//          xx_err_exit_c( err_if_level, linestr );
 //      }
         mem_free( wk->if_cb );
     }
@@ -441,10 +441,10 @@ static  void    proc_input( char * filename )
             fp = search_file_in_dirs( token_buf, def_ext, alt_ext, ds_doc_spec );
             if( fp != NULL ) {
                 if( inc_level >= MAX_INC_DEPTH ) {
-                    xx_err_c( err_max_input_nesting, token_buf );
+                    xx_err_exit_c( err_max_input_nesting, token_buf );
                 }
             } else {
-                main_file_err( token_buf );
+                main_file_err_exit( token_buf );
             }
             inc_inc_level();            // record max include level
             add_file_cb_entry( fp, try_file_name );
@@ -504,12 +504,12 @@ static  void    proc_input( char * filename )
                     if( input_cbs->fmflags & II_tag_mac ) {
                         if( gotargetno > 0 ) {
                             sprintf( linestr, "%d", gotargetno );
-                            xx_err_cc( err_goto, linestr, input_cbs->s.m->mac->name );
+                            xx_err_exit_cc( err_goto, linestr, input_cbs->s.m->mac->name );
                         } else {
-                            xx_err_cc( err_goto, gotarget, input_cbs->s.m->mac->name );
+                            xx_err_exit_cc( err_goto, gotarget, input_cbs->s.m->mac->name );
                         }
                     } else {
-                        xx_err_cc( err_goto, gotarget, input_cbs->s.f->filename );
+                        xx_err_exit_cc( err_goto, gotarget, input_cbs->s.f->filename );
                     }
                 }
                 break;                  // EOF
@@ -612,7 +612,7 @@ static  void    proc_input( char * filename )
             /***************************************************************/
 
             if( (nest_cb != NULL) && (nest_cb->c_tag != t_NONE) ) {
-                g_err_tag_nest( nest_cb->c_tag + 1 );// eXXX expected
+                g_tag_nest_err_exit( nest_cb->c_tag + 1 );// eXXX expected
             }
         }
         del_input_cb_entry();           // one level finished
@@ -729,8 +729,8 @@ static  void    init_pass( void )
         GlobalFlags.lastpass = 1;
     }
 
-    line_from   = 1;                    // processing line range Masterdocument
-    line_to     = UINT_MAX - 1;
+    line_from           = FIRST_LINE;   // processing line range Masterdocument
+    line_to             = LAST_LINE;
 
     g_apage             = 0;            // absolute pageno 1 - n
     g_page              = 0;            // current pageno (in body 1 - n)
@@ -870,7 +870,7 @@ int main( int argc, char * argv[] )
 
     } else {
         usage();
-        xx_simple_err( err_missing_mainfilename );
+        xx_simple_err_exit( err_missing_mainfilename );
     }
 
     g_info_lm( inf_fmt_end );

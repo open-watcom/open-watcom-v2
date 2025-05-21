@@ -407,7 +407,7 @@ doc_element * alloc_doc_el( element_type type )
         g_eol_ix = NULL;
         break;
     default :
-        internal_err( __FILE__, __LINE__ );
+        internal_err_exit( __FILE__, __LINE__ );
     }
 
     return( curr );
@@ -755,7 +755,7 @@ void clear_doc_element( doc_element * a_element )
             }
             break;
         default :
-            internal_err( __FILE__, __LINE__ );
+            internal_err_exit( __FILE__, __LINE__ );
         }
     }
 

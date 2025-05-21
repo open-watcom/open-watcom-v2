@@ -196,7 +196,7 @@ static void scan_gml( void )
     me = NULL;
     if( ge != NULL ) {                  // GML user defined Tag found
         if( ProcFlags.need_text ) {
-            xx_err( err_text_not_tag_cw );
+            xx_err_exit( err_text_not_tag_cw );
         }
         if( ge->tagflags & tag_off ) {  // inactive, treat as comment
             scandata.s = scandata.e;
@@ -204,7 +204,7 @@ static void scan_gml( void )
         }
         me = find_macro( macro_dict, ge->macname );
         if( me == NULL ) {
-            g_err_tag_mac( ge );
+            g_tag_mac_err_exit( ge );
         } else {
 
             /*******************************************************************/
@@ -248,9 +248,9 @@ static void scan_gml( void )
                         // tag allowed everywhere
                         tag->gmlproc( tag );
                     } else if( rs_loc == banner_tag ) {
-                        xx_err_c( err_tag_expected, "eBANNER" );
+                        xx_err_exit_c( err_tag_expected, "eBANNER" );
                     } else {    // rs_loc == banreg_tag
-                        xx_err_c( err_tag_expected, "eBANREGION" );
+                        xx_err_exit_c( err_tag_expected, "eBANREGION" );
                     }
                     SkipDot( scandata.s );
                 } else {
@@ -259,7 +259,7 @@ static void scan_gml( void )
                 }
                 processed = true;
             } else if( find_sys_tag( tagname ) != NULL ) {
-                xx_err_c( err_gml_in_lay, tagname );
+                xx_err_exit_c( err_gml_in_lay, tagname );
             }
         } else {                        // not within :LAYOUT
             tag = find_sys_tag( tagname );
@@ -300,7 +300,7 @@ static void scan_gml( void )
                         tag->gmlproc( tag );
                         ProcFlags.need_ddhd = false;
                     } else {
-                        xx_err_c( err_tag_expected, "DDHD");
+                        xx_err_exit_c( err_tag_expected, "DDHD");
                     }
                 } else if( ProcFlags.need_dd ) {
                     if( tag->tagclass & index_tag ) {
@@ -310,7 +310,7 @@ static void scan_gml( void )
                         tag->gmlproc( tag );
                         ProcFlags.need_dd = false;
                     } else {
-                        xx_err_c( err_tag_expected, "DD");
+                        xx_err_exit_c( err_tag_expected, "DD");
                     }
                 } else if( ProcFlags.need_gd ) {
                     if( (tag->tagclass & index_tag) == 0 ) {
@@ -321,24 +321,24 @@ static void scan_gml( void )
                         tag->gmlproc( tag );
                         ProcFlags.need_gd = false;
                     } else {
-                        xx_err_c( err_tag_expected, "GD");
+                        xx_err_exit_c( err_tag_expected, "GD");
                     }
                 } else if( !nest_cb->in_list ) {
                     if( (tag->tagclass & list_tag) == 0 ) {
                         // tag is not a list tag
                         tag->gmlproc( tag );
                     } else {
-                        xx_line_err_c( err_no_list, g_tok_start );
+                        xx_line_err_exit_c( err_no_list, g_tok_start );
                     }
                 } else if( ProcFlags.need_li_lp ) {
                     if( tag->tagclass & li_lp_tag ) {
                         // tag is LP or LI
                         tag->gmlproc( tag );
                     } else {
-                        xx_nest_err( err_no_li_lp );
+                        xx_nest_err_exit( err_no_li_lp );
                     }
                 } else if( ProcFlags.need_text ) {
-                    xx_err( err_text_not_tag_cw );
+                    xx_err_exit( err_text_not_tag_cw );
                 } else if( rs_loc == 0 ) {
                     // no restrictions: do them all
                     tag->gmlproc( tag );
@@ -350,12 +350,12 @@ static void scan_gml( void )
                     tag->gmlproc( tag );
                 } else {
                     start_doc_sect();   // if not already done
-                    g_err_tag_rsloc( rs_loc, g_tok_start );
+                    g_tag_rsloc_err_exit( rs_loc, g_tok_start );
                 }
                 processed = true;
                 SkipDot( scandata.s );
             } else if( find_lay_tag( tagname ) != NULL ) {
-                xx_err_c( err_lay_in_gml, tagname );
+                xx_err_exit_c( err_lay_in_gml, tagname );
             }
         }
     }
@@ -416,7 +416,7 @@ static void     scan_script( void )
     char            macname[MAC_NAME_LENGTH + 1];
 
     if( ProcFlags.need_text ) {
-        xx_err( err_text_not_tag_cw );
+        xx_err_exit( err_text_not_tag_cw );
     }
 
     cb = input_cbs;
@@ -578,7 +578,7 @@ static void     scan_script( void )
                 cwinfo->cwdproc();
             }
         } else {
-            xx_err_c( err_cw_unrecognized, macname );
+            xx_err_exit_c( err_cw_unrecognized, macname );
         }
     }
     scandata.s = scan_restart;
@@ -712,7 +712,7 @@ condcode    test_process( ifcb * cb )
         }
     }
     if( cc == no ) {                    // cc not set program logic error
-        g_err_if_int();
+        g_if_int_err_exit();
     }
 #ifdef DEBTESTPROC
     if( (input_cbs->fmflags & II_research)
@@ -807,7 +807,7 @@ void    scan_line( void )
                 g_info_lm( inf_text_line, scandata.s );
             }
             if( ProcFlags.layout ) {    // LAYOUT active: should not happen
-                internal_err( __FILE__, __LINE__ );
+                internal_err_exit( __FILE__, __LINE__ );
             } else {
                 // processs (remaining) text
                 if( rs_loc > 0 ) {
@@ -820,7 +820,7 @@ void    scan_line( void )
                         scandata.s++;
                     }
                     if( scandata.s < scandata.e ) {
-                        g_err_tag_rsloc( rs_loc, scandata.s );
+                        g_tag_rsloc_err_exit( rs_loc, scandata.s );
                     }
                 } else {
 
@@ -941,7 +941,7 @@ const gmltag *find_lay_tag( const char *tagname )
 bool is_ip_tag( e_tags tag )
 {
     if( (tag < t_NONE) || (tag >= t_MAX) ) {  // catch invalid offset values
-        internal_err( __FILE__, __LINE__ );
+        internal_err_exit( __FILE__, __LINE__ );
     } else if( tag != t_NONE ) {                 // t_NONE is valid, but is not an ip_start_tag
         return( (gml_tags[tag - 1].tagclass & ip_start_tag) != 0 );
     }
@@ -991,7 +991,7 @@ char *get_text_line( char *p )
         if( *p != '\0' ) {              // text exists
             classify_record( p );       // sets ProcFlags used below if appropriate
             if( ProcFlags.scr_cw) {
-                xx_err( err_text_not_tag_cw );  // control word, macro, or whatever
+                xx_err_exit( err_text_not_tag_cw );  // control word, macro, or whatever
             } else if( ProcFlags.gml_tag ) {
                 p1 = check_tagname( p, tagname );
                 if ( p1 != NULL && ( p1 - p - 1 ) <= TAG_NAME_LENGTH ) { // valid tag
@@ -1003,7 +1003,7 @@ char *get_text_line( char *p )
                     if( ge != NULL
                       || find_lay_tag( tagname ) != NULL
                       || find_sys_tag( tagname ) != NULL ) {
-                        xx_err( err_text_not_tag_cw );  // control word, macro, or whatever
+                        xx_err_exit( err_text_not_tag_cw );  // control word, macro, or whatever
                     }
                 }
             }

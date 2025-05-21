@@ -429,10 +429,10 @@ void    scr_if( void )
         cct2    = gargterm( &t2 );      // get term 2
 
         if( (cct1 == no) || (cct2 == no) ) {
-            xx_source_err( err_if_term );
+            xx_source_err_exit( err_if_term );
         }
         if( ccrelop != pos ) {
-            xx_source_err( err_if_relop );
+            xx_source_err_exit( err_if_relop );
         }
 
         // terms and operator ok now compare
@@ -449,7 +449,7 @@ void    scr_if( void )
                 cb->if_flags[cb->if_level].iftrue = false;  // cond not yet true
                 cb->if_flags[cb->if_level].iffalse = false; // cond not yet false
             } else {
-                xx_source_err( err_if_nesting );
+                xx_source_err_exit( err_if_nesting );
             }
             totalcondition = ifcond;
         } else {
@@ -593,7 +593,7 @@ void    scr_th( void )
         || cb->if_flags[cb->if_level].ifelse
         || cb->if_flags[cb->if_level].ifdo ) {
 
-        xx_source_err( err_if_then );
+        xx_source_err_exit( err_if_then );
     }
     cb->if_flags[cb->if_level].iflast = false;
     cb->if_flags[cb->if_level].ifthen = true;
@@ -651,7 +651,7 @@ void    scr_el( void )
         || cb->if_flags[cb->if_level].ifelse
         || cb->if_flags[cb->if_level].ifdo ) {
 
-        xx_source_err( err_if_else );
+        xx_source_err_exit( err_if_else );
     }
     cb->if_flags[cb->if_level].ifelse = true;
     ProcFlags.keep_ifstate = true;
@@ -701,7 +701,7 @@ void    scr_do( void )
             || cb->if_flags[cb->if_level].ifelse)
             || cb->if_flags[cb->if_level].ifdo ) {
 
-            xx_source_err( err_if_do );
+            xx_source_err_exit( err_if_do );
         }
         cb->if_flags[cb->if_level].ifdo = true;
         cb->if_flags[cb->if_level].ifindo = true;
@@ -734,7 +734,7 @@ void    scr_do( void )
                     || !(cb->if_flags[cb->if_level].iftrue
                     || cb->if_flags[cb->if_level].iffalse) ) {
 
-                    xx_source_err( err_if_do_end );
+                    xx_source_err_exit( err_if_do_end );
                 }
 
                 cb->if_flags[cb->if_level].ifindo = false;
@@ -749,7 +749,7 @@ void    scr_do( void )
             }
 #endif
         } else {
-            xx_source_err( err_if_do_fun );
+            xx_source_err_exit( err_if_do_fun );
         }
     }
     if( (input_cbs->fmflags & II_research) && GlobalFlags.firstpass ) {

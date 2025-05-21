@@ -92,7 +92,7 @@ void process_late_subst( char * buf )
             if( !g_scan_err ) {                   // potentially qualifying symbol
                 rc = find_symvar_sym( &symvar_entry, var_ind, &symsubval );
                 if( rc == 2 ) {             // variable found + resolved
-                    if( symsubval->base->flags & is_AMP ) {
+                    if( symsubval->base->flags & SF_is_AMP ) {
                         /* replace symbol with value */
                         strcpy( tail, p );       // copy tail
                         p = tokenstart;
@@ -451,9 +451,9 @@ static bool parse_r2l( sym_list_entry *stack, char *buf, bool subscript )
               && (p[1] == '*'))
               && ((curr->value[0] == ampchar)
               && (curr->value[1] == '*')) ) {
-                internal_err( __FILE__, __LINE__ );
-                ProcFlags.substituted = false;          // try to avoid infinite loop
-                break;
+                internal_err_exit( __FILE__, __LINE__ );
+//                ProcFlags.substituted = false;          // try to avoid infinite loop
+//                break;
             }
             strcpy( p, curr->value );       // copy value
             if( tail[0] == '.' ) {
@@ -511,8 +511,8 @@ static bool parse_r2l( sym_list_entry *stack, char *buf, bool subscript )
             }
             break;
         default:
-            internal_err( __FILE__, __LINE__ );
-            break;
+            internal_err_exit( __FILE__, __LINE__ );
+//            break;
         }
         if( subscript && (curr->type == sl_split) ) {
             break;
@@ -719,7 +719,7 @@ static sym_list_entry *parse_l2r( char *buf, bool splittable )
                             strcpy( curr->value, symsubval->value );  // save value in current stack entry
                             SkipDot( curr->orig.e );
                             break;              // line split terminates processing
-                        } else if( symsubval->base->flags & is_AMP ) {
+                        } else if( symsubval->base->flags & SF_is_AMP ) {
                             curr->type = sl_text;   // save for late substitution
                         } else {
                             curr->type = sl_symbol;
@@ -742,12 +742,12 @@ static sym_list_entry *parse_l2r( char *buf, bool splittable )
                         }
                         curr->type = sl_symbol;
                         expand_subscripts( curr->value, symsubval->base, lo_bound, hi_bound );
-                    } else if( symvar_entry.flags & local_var ) {   // undefined locals are set to ''
+                    } else if( symvar_entry.flags & SF_local_var ) {    // undefined locals are set to ''
                         curr->type = sl_symbol;
                         curr->value[0] = '\0';
-                    } else {                                        // undefined global
+                    } else {                        // undefined global
                         curr->type = sl_text;
-                        curr->orig.e = symstart;                     // rescan for CW separator past the &
+                        curr->orig.e = symstart;    // rescan for CW separator past the &
                     }
                 }
             }

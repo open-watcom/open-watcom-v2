@@ -88,11 +88,11 @@ extern  void    gml_include( const gmltag * entry )
                 p = pa;                 // reset for possible file name
                 p = get_tag_value( p, &attr_val );
             }
-            if( attr_val.name != NULL ) {
-                if( attr_val.len > _MAX_PATH - 1 )
-                    attr_val.len = _MAX_PATH - 1;
-                strncpy( token_buf, attr_val.name, attr_val.len );
-                token_buf[attr_val.len] = '\0';
+            if( attr_val.tok.s != NULL ) {
+                if( attr_val.tok.l > _MAX_PATH - 1 )
+                    attr_val.tok.l = _MAX_PATH - 1;
+                strncpy( token_buf, attr_val.tok.s, attr_val.tok.l );
+                token_buf[attr_val.tok.l] = '\0';
                 ProcFlags.newLevelFile = 1;     // start new include level
                 scandata.s = scandata.e;         // .. and ignore remaining line
             }

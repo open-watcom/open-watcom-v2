@@ -153,7 +153,7 @@ void    scr_tb( void )
         } else if( len == 1 ) {
             tab_char = *pa;                 // set to specified char
         } else {
-            xx_line_err_c( err_tab_char, pa );
+            xx_line_err_exit_c( err_tab_char, pa );
         }
         add_to_sysdir( "$tb", tab_char );
         add_to_sysdir( "$tab", tab_char );
@@ -162,7 +162,7 @@ void    scr_tb( void )
         SkipNonSpaces( p );                 // end of line
         len = p - pa;                       // should be "0"
         if( len != 0 ) {
-            xx_line_err_c( err_tab_char, pa );
+            xx_line_err_exit_c( err_tab_char, pa );
         }
     } else {
         user_tabs.current = 0;              // clear user_tabs
@@ -189,13 +189,13 @@ void    scr_tb( void )
                     p++;                                // should be fill char
                     if( *p == '\0' || (*p == ' ') ||
                         (*p == '+') || my_isdigit( *p ) ) { // ' " or / only before tab stop position
-                        xx_line_err_c( err_right_delim, pa );
+                        xx_line_err_exit_c( err_right_delim, pa );
                     }
                 }
                 user_tabs.tabs[i].fill_char = *p;
                 p++;                    // should be end delimiter
                 if( *p == '\0' ) {      // 'c "c or /c only
-                    xx_line_err_c( err_right_delim, pa );
+                    xx_line_err_exit_c( err_right_delim, pa );
                 }
 
                 /* fill strings are not allowed -- yet */
@@ -212,12 +212,12 @@ void    scr_tb( void )
                             p++;
                         }
                         if( *p == quote ) { // found: fill string
-                            xx_line_err_c( err_tab_fill_string, pa );
+                            xx_line_err_exit_c( err_tab_fill_string, pa );
                         } else if( *p != '\0' ) {   // not found: format error
-                            xx_line_err_c( err_right_delim, pa );
+                            xx_line_err_exit_c( err_right_delim, pa );
                         }
                     } else {                // format error
-                        xx_line_err_c( err_inv_text_before_tab, pa );
+                        xx_line_err_exit_c( err_inv_text_before_tab, pa );
                     }
                 }
             }
@@ -245,17 +245,17 @@ void    scr_tb( void )
                 if( gn.num_sign == '+' ) {
                     relative = true;
                 } else {
-                    xx_line_err_c( err_inv_tab_stop, pa );
+                    xx_line_err_exit_c( err_inv_tab_stop, pa );
                 }
             }
             if( cc == notnum ) {
-                xx_line_err_c( err_inv_text_before_tab, pa );
+                xx_line_err_exit_c( err_inv_text_before_tab, pa );
             } else {
                 if( gn.result <= 0 ) {
                     if( relative ) {
-                        xx_line_err_c( err_tab_stop_order, pa );
+                        xx_line_err_exit_c( err_tab_stop_order, pa );
                     } else {
-                        xx_line_err_c( err_inv_tab_stop, pa );
+                        xx_line_err_exit_c( err_inv_tab_stop, pa );
                     }
                 } else {
                     if( relative && ( i > 0) ) {
@@ -270,7 +270,7 @@ void    scr_tb( void )
                 }
                 if( !relative && (i > 0) ) {
                     if( user_tabs.tabs[i].column <= user_tabs.tabs[i-1].column ) {
-                        xx_line_err_c( err_tab_stop_order, pa );
+                        xx_line_err_exit_c( err_tab_stop_order, pa );
                     }
                 }
                 user_tabs.current++;
@@ -297,22 +297,22 @@ void    scr_tb( void )
                     p++;
                     if( *p == '\0' || (*p != ' ') ) {  // not end of tab stop
                         if( *p == '\0' ) {             // ' only
-                            xx_line_err_c( err_right_delim, pa );
+                            xx_line_err_exit_c( err_right_delim, pa );
                         }
                         p++;
                         if( *p == '\0' ) {             // 'c only
-                            xx_line_err_c( err_right_delim, pa );
+                            xx_line_err_exit_c( err_right_delim, pa );
                         } else if( *p == '\'' ) {   // definite alignment character
-                            xx_line_err_c( err_tab_align_char, pa );
+                            xx_line_err_exit_c( err_tab_align_char, pa );
                         } else {                // 'cc with or without more text
-                            xx_line_err_c( err_right_delim, pa );
+                            xx_line_err_exit_c( err_right_delim, pa );
                         }
                     } else {                    // something else
-                        xx_line_err_c( err_inv_text_after_tab, pa );
+                        xx_line_err_exit_c( err_inv_text_after_tab, pa );
                     }
-                    p++;
+//                    p++;
                 } else {                        // something else
-                    xx_line_err_c( err_inv_text_after_tab, pa );
+                    xx_line_err_exit_c( err_inv_text_after_tab, pa );
                 }
             }
             SkipNonSpaces( p );                 // find end of tab stop

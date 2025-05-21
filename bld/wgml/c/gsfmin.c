@@ -77,7 +77,7 @@ condcode    scr_min( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **resul
         cc = getnum( &gn );
         if( !(cc == pos || cc == neg) ) {
             if( !ProcFlags.suppress_msg ) {
-                xx_source_err_c( err_func_parm, "" );
+                xx_source_err_exit_c( err_func_parm, "" );
             }
             return( cc );
         }

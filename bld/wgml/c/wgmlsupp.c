@@ -112,11 +112,11 @@ static bool free_inc_fp( void )
                     save_errno = errno;
                     rc = fgetpos( cb->fp, &cb->pos );
                     if( rc != 0 ) {
-                        xx_simple_err_cc( err_file_io, strerror( errno ), cb->filename );
+                        xx_simple_err_exit_cc( err_file_io, strerror( errno ), cb->filename );
                     }
                     rc = fclose( cb->fp );
                     if( rc != 0 ) {
-                        xx_simple_err_cc( err_file_io, strerror( errno ), cb->filename );
+                        xx_simple_err_exit_cc( err_file_io, strerror( errno ), cb->filename );
                     }
                     cb->flags &= ~FF_open;
                     errno = save_errno;
@@ -157,11 +157,11 @@ static void reopen_inc_fp( filecb *cb )
         if( fp != NULL ) {
             rc = fsetpos( cb->fp, &cb->pos );
             if( rc != 0 ) {
-                xx_simple_err_cc( err_file_io, strerror( errno ), cb->filename );
+                xx_simple_err_exit_cc( err_file_io, strerror( errno ), cb->filename );
             }
             cb->flags |= FF_open;
         } else {
-            xx_simple_err_cc( err_file_io, strerror( errno ), cb->filename );
+            xx_simple_err_exit_cc( err_file_io, strerror( errno ), cb->filename );
         }
     }
     return;
@@ -173,8 +173,8 @@ static void reopen_inc_fp( filecb *cb )
 
 bool free_resources( int in_errno )
 {
-    if( in_errno == ENOMEM ) xx_simple_err( err_no_memory );
-    else xx_simple_err( err_no_handles );
+    if( in_errno == ENOMEM ) xx_simple_err_exit( err_no_memory );
+    else xx_simple_err_exit( err_no_handles );
     return( false );        // required by compiler
 }
 
@@ -351,7 +351,7 @@ static void get_macro_line( void )
     macrocb *   cb;
 
     if( input_cbs->fmflags & II_file ) {// current input is file not macro
-        xx_err( err_logic_mac );
+        xx_err_exit( err_logic_mac );
     }
     cb = input_cbs->s.m;
 
@@ -504,7 +504,7 @@ bool get_line( bool display_line )
                             *buff2 = '\0';
                             break;
                         } else {
-                            xx_simple_err_cc( err_file_io, strerror( errno ), cb->filename );
+                            xx_simple_err_exit_cc( err_file_io, strerror( errno ), cb->filename );
                         }
                     }
                 }

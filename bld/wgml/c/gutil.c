@@ -131,7 +131,7 @@ static const bool internal_to_su( su *in_su, bool tag, const char *base )
         }
     }
     if( my_isdigit( *ps ) ) {                   // too many digits in whole part
-        val_parse_err( base + (ps - s->su_txt), tag );
+        val_parse_err_exit( base + (ps - s->su_txt), tag );
     }
 
     if( *ps == '.' ) {                          // check for decimal point
@@ -155,7 +155,7 @@ static const bool internal_to_su( su *in_su, bool tag, const char *base )
             pdn = NULL;
         }
         if( my_isdigit( *ps ) ) {               // too many digits in decimals
-            val_parse_err( base + (ps - s->su_txt), tag );
+            val_parse_err_exit( base + (ps - s->su_txt), tag );
         }
     }
 
@@ -173,7 +173,7 @@ static const bool internal_to_su( su *in_su, bool tag, const char *base )
         }
     }
     if( my_isalpha( *ps ) ) {                   // too many characters in unit
-        val_parse_err( base + (ps - s->su_txt), tag );
+        val_parse_err_exit( base + (ps - s->su_txt), tag );
     }
 
     /***********************************************************************/
@@ -188,7 +188,7 @@ static const bool internal_to_su( su *in_su, bool tag, const char *base )
         case 'm' :
             s->su_u = SU_ems;
             if( pd != NULL ) {                  // no decimals with "M"
-                val_parse_err( base + (ps - s->su_txt), tag );
+                val_parse_err_exit( base + (ps - s->su_txt), tag );
             }
             break;
         case 'c' :
@@ -203,7 +203,7 @@ static const bool internal_to_su( su *in_su, bool tag, const char *base )
             s->su_u = SU_chars_lines;
             break;
         default:
-            val_parse_err( base + (ps - s->su_txt), tag );
+            val_parse_err_exit( base + (ps - s->su_txt), tag );
         }
     } else {                                    // two letter unit
         if( unit[1] == 'm' ) {                  // cm, mm ?
@@ -212,16 +212,16 @@ static const bool internal_to_su( su *in_su, bool tag, const char *base )
             } else if( unit[0] == 'm' ) {
                 s->su_u = SU_mm;
             } else {                            // invalid unit
-                val_parse_err( base + (ps - s->su_txt), tag );
+                val_parse_err_exit( base + (ps - s->su_txt), tag );
             }
         } else if( unit[0] == 'd' ) {           // dv ?
             if( unit[1] == 'v' ) {
                 s->su_u = SU_dv;
             } else {                            // invalid unit
-                val_parse_err( base + (ps - s->su_txt), tag );
+                val_parse_err_exit( base + (ps - s->su_txt), tag );
             }
         } else {                                // invalid unit
-            val_parse_err( base + (ps - s->su_txt), tag );
+            val_parse_err_exit( base + (ps - s->su_txt), tag );
         }
     }
 
@@ -238,12 +238,12 @@ static const bool internal_to_su( su *in_su, bool tag, const char *base )
             }
         }
         if( my_isdigit( *ps ) ) {     // too many digits after "C" or "P"
-            val_parse_err( base + (ps - s->su_txt), tag );
+            val_parse_err_exit( base + (ps - s->su_txt), tag );
         }
     }
 
     if( *ps != '\0' ) {                         // value continues on: it shouldn't
-        val_parse_err( base + (ps - s->su_txt), tag );
+        val_parse_err_exit( base + (ps - s->su_txt), tag );
     }
     s->su_whole = wh;
     s->su_dec   = wd;
@@ -253,7 +253,7 @@ static const bool internal_to_su( su *in_su, bool tag, const char *base )
     }
     if( pd != NULL ) {                  // dec point found
         if( pu == NULL ) {              // need trailing unit
-            val_parse_err( base + (ps - s->su_txt - 1), tag );
+            val_parse_err_exit( base + (ps - s->su_txt - 1), tag );
         }
     }
 
@@ -372,7 +372,7 @@ static void add_spaces_t_element( char * spaces )
     if( spc_cnt > 0 ) {                                 // must have something to add
         if( t_element != NULL ) {                       // t_element exists
             if( t_element->type != el_text ) {          // must be text
-                internal_err( __FILE__, __LINE__ );
+                internal_err_exit( __FILE__, __LINE__ );
             }
 
             line = t_element->element.text.first;
@@ -512,35 +512,35 @@ bool att_val_to_su( su *in_su, bool pos, att_val_type *attr_val, bool specval )
     ps = in_su->su_txt;
     *ps = '\0';
 
-    if( attr_val->len > MAX_SU_LENGTH ) {     // won't fit
-        xx_line_err_c( err_inv_att_val, attr_val->name );
+    if( attr_val->tok.l > MAX_SU_LENGTH ) {     // won't fit
+        xx_line_err_exit_c( err_inv_att_val, attr_val->tok.s );
     }
     strcpy( ps, attr_val->specval );
 
     in_su->su_u = SU_undefined;
     if( *ps == '+' ) {                      // not allowed with tags
-        xx_line_err_c( err_inv_att_val, attr_val->name );
+        xx_line_err_exit_c( err_inv_att_val, attr_val->tok.s );
     } else if( *ps == '-' ) {               // not relative, just negative
         if( pos ) {                         // value must be positive
-            xx_line_err_c( err_inv_att_val, attr_val->name );
+            xx_line_err_exit_c( err_inv_att_val, attr_val->tok.s );
         }
         sign = *ps;
         if( *(ps + 1) == '+'
           || *(ps + 1) == '-' ) {  // only one sign is allowed
-            xx_line_err_c( err_inv_att_val, attr_val->name );
+            xx_line_err_exit_c( err_inv_att_val, attr_val->tok.s );
         }
     } else {
         sign = '+';
     }
     if( *ps == '\0' ) {                     // value end reached, not valid
-        xx_line_err_c( err_inv_att_val, attr_val->name );
+        xx_line_err_exit_c( err_inv_att_val, attr_val->tok.s );
     }
     in_su->su_relative = false;             // no relative positioning with tags
 
     if( specval && su_layout_special( in_su ) )
         return( false );
 
-    return( internal_to_su( in_su, true, attr_val->name ) );
+    return( internal_to_su( in_su, true, attr_val->tok.s ) );
 }
 
 /***************************************************************************/
@@ -578,7 +578,7 @@ bool cw_val_to_su( const char **scanp, su *in_su )
     len = p - pb;
     *scanp = p;                 // report back value of p
     if( len > MAX_SU_LENGTH ) {
-        xx_line_err_c( err_inv_cw_op_val, pa );
+        xx_line_err_exit_c( err_inv_cw_op_val, pa );
     }
     for( i = 0; i < len; i++ ) {
         ps[i] = my_tolower( pb[i] );
@@ -638,7 +638,7 @@ bool lay_init_su( const char *p, su *in_su )
     len = p - pb;
 
     if( len > MAX_SU_LENGTH ) {     // won't fit
-        xx_line_err_c( err_inv_att_val, pa );
+        xx_line_err_exit_c( err_inv_att_val, pa );
     }
     for( i = 0; i < len; i++ ) {
         ps[i] = my_tolower( pb[i] );
@@ -647,18 +647,18 @@ bool lay_init_su( const char *p, su *in_su )
 
     in_su->su_u = SU_undefined;
     if( *ps == '+' ) {              // not allowed with tags
-        xx_line_err_c( err_inv_att_val, pa );
+        xx_line_err_exit_c( err_inv_att_val, pa );
     } else if( *ps == '-' ) {       // not relative, just negative
         sign = *ps;
         if( *(ps + 1) == '+'
           || *(ps + 1) == '-' ) {   // only one sign is allowed
-            xx_line_err_c( err_inv_att_val, pa );
+            xx_line_err_exit_c( err_inv_att_val, pa );
         }
     } else {
         sign = '+';
     }
     if( *ps == '\0' ) {             // value end reached, not valid
-        xx_line_err_c( err_inv_att_val, pa );
+        xx_line_err_exit_c( err_inv_att_val, pa );
     }
     in_su->su_relative = false;     // no relative positioning with tags
 
@@ -839,7 +839,7 @@ char *format_num( unsigned n, char *r, unsigned rsize, num_style ns )
         p += pos1;
         break;
     default:
-        internal_err( __FILE__, __LINE__ );
+        internal_err_exit( __FILE__, __LINE__ );
     }
 
     if( ns & xd_style ) {
@@ -921,10 +921,11 @@ char *get_tag_att_name( char *p, char **orig, att_name_type *attr_name )
         return( p );
     if( ProcFlags.tag_end_found )
         return( p );
-    attr_name->att_name = p;
+    attr_name->tok.s = p;
     p = get_tag_attname( p, attr_name->attname.t );
-    if( p - attr_name->att_name < 4 || p - attr_name->att_name > TAG_ATT_NAME_LENGTH ) {
-        xx_line_err_c( err_att_name_inv, *orig );
+    attr_name->tok.l = p - attr_name->tok.s;
+    if( attr_name->tok.l < 2 || attr_name->tok.l > TAG_ATT_NAME_LENGTH ) {
+        xx_line_err_exit_c( err_att_name_inv, *orig );
     }
     return( p );
 }
@@ -936,21 +937,20 @@ char *get_tag_att_name( char *p, char **orig, att_name_type *attr_name )
 
 void get_att_specval( att_val_type *attr_val )
 {
-    int     i;
+    unsigned    i;
+    unsigned    len;
 
-    for( i = 0; i < SPECVAL_LENGTH && is_su_char( attr_val->name[i] ); i++) {
-        attr_val->specval[i] = my_tolower( attr_val->name[i] );
+    len = attr_val->tok.l;
+    if( len > SPECVAL_LENGTH )
+        len = SPECVAL_LENGTH;
+    for( i = 0; i < len && is_su_char( attr_val->tok.s[i] ); i++) {
+        attr_val->specval[i] = my_tolower( attr_val->tok.s[i] );
     }
     attr_val->specval[i] = '\0';
 }
 
 static char *get_value( char *p, att_val_type *attr_val, bool equ, bool layout )
 {
-    char    c;
-
-    attr_val->quoted = ' ';
-    attr_val->name = NULL;
-    attr_val->len = 0;
     while( CHECK_WS( *p, layout ) )
         p++;
     if( equ ) {
@@ -960,45 +960,45 @@ static char *get_value( char *p, att_val_type *attr_val, bool equ, bool layout )
                 p++;
             }
         } else {
-            xx_line_err_c( err_eq_missing, p );
+            xx_line_err_exit_c( err_eq_missing, p );
         }
     }
-    c = *p;
-    if( (c == '\0')
-      || (c == '.') ) { // value is missing
-        if( c == '.' ) {
+    if( (*p == '\0')
+      || (*p == '.') ) { // value is missing
+        if( *p == '.' ) {
             ProcFlags.tag_end_found = true;
         }
-        xx_line_err_c( err_att_val_missing, p );
+        xx_line_err_exit_c( err_att_val_missing, p );
     }
-    if( layout && is_quote_char( c )
-      || !layout && is_base_quote_char( c ) ) {
-        attr_val->quoted = c;
-        ++p;                                // over open quote
-
-        attr_val->name = p;
-        while( *p != '\0' && *p != attr_val->quoted ) {
-            p++;
-        }
-        attr_val->len = p - attr_val->name; // up to (not including) final quote
-
-        if( *p != c ) {                     // terminating quote not found
-            xx_line_err_c( err_att_val_open, attr_val->name - 1 );
-        }
-        if( *p != '\0' ) {
-            p++;                            // over terminating quote
-        }
+    attr_val->tok.s = p;
+    if( layout && is_quote_char( *p )
+      || !layout && is_base_quote_char( *p ) ) {
+        attr_val->quoted = *p++;        // over open quote
     } else {
-        attr_val->name = p;
-        while( *p != '\0' && !CHECK_WS( *p, layout ) && *p != '.' ) {
-            ++p;
-        }
-        attr_val->len = p - attr_val->name;
+        attr_val->quoted = ' ';
     }
-    get_att_specval( attr_val );
+    while( *p != '\0' && *p != attr_val->quoted && ( attr_val->quoted != ' ' || *p != '.' )) {
+        p++;
+    }
+    attr_val->tok.l = p - attr_val->tok.s; // up to (not including) final quote
+    if( attr_val->tok.l == 0 ) {
+        attr_val->tok.s = NULL;
+        attr_val->specval[0] = '\0';
+    } else {
+        if( attr_val->quoted != ' ' ) {
+            if( *p != attr_val->quoted ) {  // terminating quote not found
+                xx_line_err_exit_c( err_att_val_open, attr_val->tok.s );
+            } else {
+                p++;                        // over terminating quote
+                attr_val->tok.s++;          // remove quotes from value info
+                attr_val->tok.l--;
+            }
+        }
+        get_att_specval( attr_val );
+    }
     if( *p == '.' ) {
         ProcFlags.tag_end_found = true;
-        p++;                                // over ending '.'
+        p++;                            // over ending '.'
     }
     return( p );
 }
@@ -1028,15 +1028,15 @@ char *get_att_value( char *p, att_val_type *attr_val )
 void g_keep_nest( const char * cw_tag ) {
     switch( cur_group_type ) {
     case gt_fb :
-        keep_nest_err( cw_tag, "a floating block" );
+        keep_nest_err_exit( cw_tag, "a floating block" );
     case gt_fig :
-        keep_nest_err( cw_tag, "a figure" );
+        keep_nest_err_exit( cw_tag, "a figure" );
     case gt_fk :
-        keep_nest_err( cw_tag, "a floating keep" );
+        keep_nest_err_exit( cw_tag, "a floating keep" );
     case gt_fn :
-        keep_nest_err( cw_tag, "a footnote" );
+        keep_nest_err_exit( cw_tag, "a footnote" );
     case gt_xmp :
-        keep_nest_err( cw_tag, "an example" );
+        keep_nest_err_exit( cw_tag, "an example" );
     }
     return;
 }
@@ -1059,7 +1059,7 @@ font_number get_font_number( const char *value, unsigned len )
     }
 
     if( p != pb ) {                             // badly-formed token
-        xx_line_err_c( err_num_too_large, value );
+        xx_line_err_exit_c( err_num_too_large, value );
     }
 
     wk = strtoul( value, NULL, 10 );
@@ -1170,8 +1170,8 @@ num_style find_pgnum_style( void )
         }
         break;
     default :
-        internal_err( __FILE__, __LINE__ );
-        break;
+        internal_err_exit( __FILE__, __LINE__ );
+//        break;
     }
 
     return( retval );

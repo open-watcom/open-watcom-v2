@@ -142,7 +142,7 @@ static void free_sym_chain( symvar * wk )
     symsub  *   wsn;
 
     while( wk != NULL ) {
-        if( (wk->flags & no_free) == 0 ) {
+        if( (wk->flags & SF_no_free) == 0 ) {
             ws = wk->subscripts;
             while( ws != NULL ) {
                 mem_free( ws->value );
@@ -211,31 +211,31 @@ static void print_sym_entry( symvar * wk, int * symcnt, int * symsubcnt )
     if( wk->subscript_used > 0 ) {
         out_msg( "Variable='%s'%s flags=%s%s%s%s%s%s%s "
                  "subscript_used=%d", wk->name, &fill[len],
-                 wk->flags & deleted ? "deleted " : "",
-                 wk->flags & local_var ? "local " : "",
-                 wk->flags & auto_inc ? "auto_inc " : "",
-                 wk->flags & predefined ? "predefined " : "",
-                 wk->flags & ro ? "RO " : "",
-                 wk->flags & no_free ? "no_free " : "",
-                 wk->flags & access_fun ? "access_fun " : "",
+                 wk->flags & SF_deleted ? "deleted " : "",
+                 wk->flags & SF_local_var ? "local " : "",
+                 wk->flags & SF_auto_inc ? "auto_inc " : "",
+                 wk->flags & SF_predefined ? "predefined " : "",
+                 wk->flags & SF_ro ? "RO " : "",
+                 wk->flags & SF_no_free ? "no_free " : "",
+                 wk->flags & SF_access_fun ? "access_fun " : "",
                  wk->subscript_used );
     } else {
         out_msg( "Variable='%s'%s flags=%s%s%s%s%s%s%s ",
                  wk->name, &fill[len],
-                 wk->flags & deleted ? "deleted " : "",
-                 wk->flags & local_var ? "local " : "",
-                 wk->flags & auto_inc ? "auto_inc " : "",
-                 wk->flags & predefined ? "predefined " : "",
-                 wk->flags & ro ? "RO " : "",
-                 wk->flags & no_free ? "no_free " : "",
-                 wk->flags & access_fun ? "access_fun " : "");
+                 wk->flags & SF_deleted ? "deleted " : "",
+                 wk->flags & SF_local_var ? "local " : "",
+                 wk->flags & SF_auto_inc ? "auto_inc " : "",
+                 wk->flags & SF_predefined ? "predefined " : "",
+                 wk->flags & SF_ro ? "RO " : "",
+                 wk->flags & SF_no_free ? "no_free " : "",
+                 wk->flags & SF_access_fun ? "access_fun " : "");
     }
     ws = wk->subscripts;
-    if( wk->flags & subscripted ) {
+    if( wk->flags & SF_subscripted ) {
         (*symsubcnt)++;
         out_msg( "\n" );
     } else {
-        if( (wk->flags & access_fun) && (wk->varfunc != NULL) ) {
+        if( (wk->flags & SF_access_fun) && (wk->varfunc != NULL) ) {
             (wk->varfunc)( wk );    // get current value
         }
         if( wk->sub_0->value == NULL) { // oops not initialized
@@ -245,7 +245,7 @@ static void print_sym_entry( symvar * wk, int * symcnt, int * symsubcnt )
         }
         (*symcnt)++;
     }
-    if( wk->flags & subscripted ) {
+    if( wk->flags & SF_subscripted ) {
         while( ws != NULL ) {
             out_msg( "   subscript= %8ld value='%s'\n",
                     ws->subscript, ws->value );
@@ -289,7 +289,7 @@ int find_symvar( symdict_hdl dict, const char *name, sub_index sub, symsub **sym
     while( wk != NULL) {
         dict->compares++;
         if( strcmp( wk->name, name ) == 0 ) {
-            if( wk->flags & deleted ) {
+            if( wk->flags & SF_deleted ) {
                 break;                  // symbol name is deleted
             }
             rc = 1;                     // symbol name found
@@ -299,7 +299,7 @@ int find_symvar( symdict_hdl dict, const char *name, sub_index sub, symsub **sym
     }
     if( rc ) {
         *symsubval = wk->sub_0;         // return at least sub 0
-        if( wk->flags & subscripted ) {
+        if( wk->flags & SF_subscripted ) {
             if( (sub == no_subscript) || (sub == 0) ) {
                 rc = 2;                 // subscript found
             } else {
@@ -315,7 +315,7 @@ int find_symvar( symdict_hdl dict, const char *name, sub_index sub, symsub **sym
                 }
             }
         } else {
-            if( (wk->flags & access_fun) && (wk->varfunc != NULL) ) {
+            if( (wk->flags & SF_access_fun) && (wk->varfunc != NULL) ) {
                 (wk->varfunc)( wk );    // get value via special function
             }
             rc = 2;                     // not subscripted -> all found
@@ -344,7 +344,7 @@ int find_symvar_sym( symvar *sym, sub_index sub, symsub **symsubval )
     int             rc;
     symdict_hdl     dict;
 
-    if( sym->flags & local_var ) {  // lookup var in dict
+    if( sym->flags & SF_local_var ) {  // lookup var in dict
         dict = input_cbs->local_dict;
     } else {
         dict = global_dict;
@@ -412,7 +412,7 @@ static  int find_symvar_del( symdict_hdl dict, const char *name, sub_index sub,
     while( wk != NULL) {
         dict->compares++;
         if( strcmp( wk->name, name ) == 0 ) {
-            if( wk->flags & deleted ) {
+            if( wk->flags & SF_deleted ) {
                 *delentry = wk;
                 rc = -1;                // deleted symbol found
             } else {
@@ -425,7 +425,7 @@ static  int find_symvar_del( symdict_hdl dict, const char *name, sub_index sub,
     if( rc > 0 ) {                      // non deleted symbol found
 
         *symsubval = wk->sub_0;         // return at least sub 0
-        if( wk->flags & subscripted ) {
+        if( wk->flags & SF_subscripted ) {
             if( (sub == no_subscript) || (sub == 0) ) {
                 rc = 2;                 // subscript found
             } else {
@@ -463,7 +463,7 @@ static bool check_subscript( sub_index sub )
             char    linestr[NUM2STR_LENGTH];
 
             sprintf( linestr, "%d", sub );
-            xx_line_err_c( err_sub_out_of_range, linestr );
+            xx_line_err_exit_c( err_sub_out_of_range, linestr );
         }
     }
     return( true );
@@ -481,7 +481,7 @@ static bool add_symvar_sub( symvar *var, tok_type *val, sub_index sub, symsub **
     symsub  *   wsv;
 //  char        sub_cnt[NUM2STR_LENGTH];
 
-    if( var->flags & ro ) {             // value readonly
+    if( var->flags & SF_ro ) {          // value readonly
         return( true );                 // pretend success as wgml 4.0 does
     }
     if( sub != no_subscript ) {
@@ -501,8 +501,8 @@ static bool add_symvar_sub( symvar *var, tok_type *val, sub_index sub, symsub **
             sprintf( var->sub_0->value, "%d", var->subscript_used );  // TBD
 #endif
 
-            var->flags |= subscripted;
-            if( (var->flags & auto_inc) && (sub == var->last_auto_inc + 1) ) {
+            var->flags |= SF_subscripted;
+            if( (var->flags & SF_auto_inc) && (sub == var->last_auto_inc + 1) ) {
                 var->last_auto_inc++;
             }
         }
@@ -583,7 +583,7 @@ static symvar *add_symsym( symdict_hdl dict, const char *name, symbol_flags f )
     new->last_auto_inc  = 0;
     new->subscript_used = 0;
     new->subscripts = NULL;
-    new->flags = f & ~deleted;
+    new->flags = f & ~SF_deleted;
 
     newsub = mem_alloc( sizeof( symsub ) );
     new->sub_0 = newsub;
@@ -620,7 +620,7 @@ int add_symvar_addr( symdict_hdl dict, const char *name, tok_type *val,
         rc = find_symvar_del( dict, name, subscript, &newsub, &new );
         switch ( rc ) {
         case -1: // deleted symbol found
-            new->flags &= ~deleted;     // reset deleted switch
+            new->flags &= ~SF_deleted;     // reset deleted switch
             ok = add_symvar_sub( new, val, subscript, sub );
             if( !ok ) {
                 rc = 3;
@@ -646,7 +646,7 @@ int add_symvar_addr( symdict_hdl dict, const char *name, tok_type *val,
             }
             break;
         case 1: // symbol found, but not subscript
-            newsub->base->flags &= ~deleted;// reset deleted switch
+            newsub->base->flags &= ~SF_deleted;// reset deleted switch
             newsub->base->flags |= f;   // use flags given
             ok = add_symvar_sub( newsub->base, val, subscript, sub );
             if( !ok ) {
@@ -660,9 +660,9 @@ int add_symvar_addr( symdict_hdl dict, const char *name, tok_type *val,
             }
             break;
         case 2: // symbol + subscript found, or not subscripted
-            newsub->base->flags &= ~deleted;// reset deleted switch
+            newsub->base->flags &= ~SF_deleted;// reset deleted switch
             newsub->base->flags |= f;   // use flags given
-            if( (newsub->base->flags & ro)
+            if( (newsub->base->flags & SF_ro)
               || strncmp( newsub->value, val->s, val->e - val->s ) == 0 ) {
                 ;             // do nothing var is readonly or value is unchanged
             } else {
@@ -680,7 +680,7 @@ int add_symvar_addr( symdict_hdl dict, const char *name, tok_type *val,
             }
             break;
         default:
-            xx_line_err_c( err_logic_err, __FILE__ );
+            xx_line_err_exit_c( err_logic_err, __FILE__ );
         }
     }
     return( rc );
@@ -704,7 +704,7 @@ int add_symvar_sym( symvar *sym, tok_type *val, sub_index subscript, symbol_flag
     symsub          *newsub;
     symdict_hdl     dict;
 
-    if( sym->flags & local_var ) {
+    if( sym->flags & SF_local_var ) {
         dict = input_cbs->local_dict;
     } else {
         dict = global_dict;
@@ -718,12 +718,12 @@ static void reset_auto_inc_chain( symvar * wk )
 
     while( wk != NULL ) {
 
-        if( wk->flags & auto_inc ) {
+        if( wk->flags & SF_auto_inc ) {
 
             wk->sub_0->value[0] = '0';
             wk->sub_0->value[1] = '\0';
 
-            wk->flags |= deleted;
+            wk->flags |= SF_deleted;
             wk->subscript_used = 0;
             while( (ws = wk->subscripts) != NULL ) {
                 wk->subscripts = ws->next;

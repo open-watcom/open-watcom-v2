@@ -108,8 +108,8 @@ static  void    put_lay_abspref( FILE *fp, abspref_lay_tag * ap,
             o_int8( fp, curr, &ap->columns );
             break;
         default:
-            internal_err( __FILE__, __LINE__ );
-            break;
+            internal_err_exit( __FILE__, __LINE__ );
+//            break;
         }
     }
 }
@@ -154,8 +154,8 @@ static  void    put_lay_address( FILE *fp, layout_data * lay )
             o_space_unit( fp, curr, &lay->address.pre_skip );
             break;
         default:
-            internal_err( __FILE__, __LINE__ );
-            break;
+            internal_err_exit( __FILE__, __LINE__ );
+//            break;
         }
     }
 }
@@ -178,8 +178,8 @@ static  void    put_lay_aline( FILE *fp, layout_data * lay )
             o_space_unit( fp, curr, &lay->aline.skip );
             break;
         default:
-            internal_err( __FILE__, __LINE__ );
-            break;
+            internal_err_exit( __FILE__, __LINE__ );
+//            break;
         }
     }
 }
@@ -262,8 +262,8 @@ static  void    put_lay_appendix( FILE *fp, layout_data * lay )
             o_int8( fp, curr, &lay->appendix.columns );
             break;
         default:
-            internal_err( __FILE__, __LINE__ );
-            break;
+            internal_err_exit( __FILE__, __LINE__ );
+//            break;
         }
     }
 }
@@ -301,8 +301,8 @@ static  void    put_lay_author( FILE *fp, layout_data * lay )
             o_space_unit( fp, curr, &lay->author.skip );
             break;
         default:
-            internal_err( __FILE__, __LINE__ );
-            break;
+            internal_err_exit( __FILE__, __LINE__ );
+//            break;
         }
     }
 }
@@ -356,8 +356,8 @@ static  void    put_lay_backbod( FILE *fp, backbod_lay_tag * bb,
             o_font_number( fp, curr, &bbsect->text_font );
             break;
         default:
-            internal_err( __FILE__, __LINE__ );
-            break;
+            internal_err_exit( __FILE__, __LINE__ );
+//            break;
         }
     }
 }
@@ -421,8 +421,8 @@ static  void    put_lay_region( FILE *fp, region_lay_tag * reg )
             o_content( fp, curr, &reg->contents );
             break;
         default:
-            internal_err( __FILE__, __LINE__ );
-            break;
+            internal_err_exit( __FILE__, __LINE__ );
+//            break;
         }
     }
     fprintf( fp, ":eBANREGION\n" );
@@ -463,8 +463,8 @@ static  void    put_lay_single_ban( FILE *fp, banner_lay_tag * ban )
             /* no action these are only used for input */
             break;
         default:
-            internal_err( __FILE__, __LINE__ );
-            break;
+            internal_err_exit( __FILE__, __LINE__ );
+//            break;
         }
     }
     reg = ban->region;
@@ -524,8 +524,8 @@ static  void    put_lay_date( FILE *fp, layout_data * lay )
             o_space_unit( fp, curr, &lay->date.pre_skip );
             break;
         default:
-            internal_err( __FILE__, __LINE__ );
-            break;
+            internal_err_exit( __FILE__, __LINE__ );
+//            break;
         }
     }
 }
@@ -551,8 +551,8 @@ static  void    put_lay_dd( FILE *fp, layout_data * lay )
             o_font_number( fp, curr, &lay->dd.font );
             break;
         default:
-            internal_err( __FILE__, __LINE__ );
-            break;
+            internal_err_exit( __FILE__, __LINE__ );
+//            break;
         }
     }
 }
@@ -593,8 +593,8 @@ static  void    put_lay_default( FILE *fp, layout_data * lay )
             o_space_unit( fp, curr, &lay->defaults.binding );
             break;
         default:
-            internal_err( __FILE__, __LINE__ );
-            break;
+            internal_err_exit( __FILE__, __LINE__ );
+//            break;
         }
     }
 }
@@ -645,8 +645,8 @@ static  void    put_lay_dl( FILE *fp, layout_data * lay )
                 o_yes_no( fp, curr, &dl_layout->line_break );
                 break;
             default:
-                internal_err( __FILE__, __LINE__ );
-                break;
+                internal_err_exit( __FILE__, __LINE__ );
+//                break;
             }
         }
         dl_layout = dl_layout->next;
@@ -686,8 +686,8 @@ static  void    put_lay_docnum( FILE *fp, layout_data * lay )
             o_xx_string( fp, curr, lay->docnum.string );
             break;
         default:
-            internal_err( __FILE__, __LINE__ );
-            break;
+            internal_err_exit( __FILE__, __LINE__ );
+//            break;
         }
     }
 }
@@ -731,8 +731,8 @@ static  void    put_lay_fig( FILE *fp, layout_data * lay )
             o_default_frame( fp, curr, &lay->fig.default_frame );
             break;
         default:
-            internal_err( __FILE__, __LINE__ );
-            break;
+            internal_err_exit( __FILE__, __LINE__ );
+//            break;
         }
     }
 }
@@ -767,8 +767,8 @@ static  void    put_lay_figcap( FILE *fp, layout_data * lay )
             o_char( fp, curr, &lay->figcap.delim );
             break;
         default:
-            internal_err( __FILE__, __LINE__ );
-            break;
+            internal_err_exit( __FILE__, __LINE__ );
+//            break;
         }
     }
 }
@@ -794,8 +794,8 @@ static  void    put_lay_figdesc( FILE *fp, layout_data * lay )
             o_font_number( fp, curr, &lay->figdesc.font );
             break;
         default:
-            internal_err( __FILE__, __LINE__ );
-            break;
+            internal_err_exit( __FILE__, __LINE__ );
+//            break;
         }
     }
 }
@@ -833,8 +833,8 @@ static  void    put_lay_figlist( FILE *fp, layout_data * lay )
             o_xx_string( fp, curr, lay->figlist.fill_string );
             break;
         default:
-            internal_err( __FILE__, __LINE__ );
-            break;
+            internal_err_exit( __FILE__, __LINE__ );
+//            break;
         }
     }
 }
@@ -860,8 +860,8 @@ static  void    put_lay_flpgnum( FILE *fp, layout_data * lay )
             o_font_number( fp, curr, &lay->flpgnum.font );
             break;
         default:
-            internal_err( __FILE__, __LINE__ );
-            break;
+            internal_err_exit( __FILE__, __LINE__ );
+//            break;
         }
     }
 }
@@ -908,8 +908,8 @@ static  void    put_lay_fn( FILE *fp, layout_data * lay )
             o_frame( fp, curr, &lay->fn.frame );
             break;
         default:
-            internal_err( __FILE__, __LINE__ );
-            break;
+            internal_err_exit( __FILE__, __LINE__ );
+//            break;
         }
     }
 }
@@ -935,8 +935,8 @@ static  void    put_lay_fnref( FILE *fp, layout_data * lay )
             o_number_style( fp, curr, &lay->fnref.number_style );
             break;
         default:
-            internal_err( __FILE__, __LINE__ );
-            break;
+            internal_err_exit( __FILE__, __LINE__ );
+//            break;
         }
     }
 }
@@ -987,8 +987,8 @@ static  void    put_lay_gl( FILE *fp, layout_data * lay )
                 o_char( fp, curr, &gl_layout->delim );
                 break;
             default:
-                internal_err( __FILE__, __LINE__ );
-                break;
+                internal_err_exit( __FILE__, __LINE__ );
+//                break;
             }
         }
         gl_layout = gl_layout->next;
@@ -1064,8 +1064,8 @@ static  void    put_lay_hx( FILE *fp, layout_data * lay )
                 o_space_unit( fp, curr, &lay->hx.hx_head[lvl].align );
                 break;
             default:
-                internal_err( __FILE__, __LINE__ );
-                break;
+                internal_err_exit( __FILE__, __LINE__ );
+//                break;
             }
         }
     }
@@ -1100,8 +1100,8 @@ static  void    put_lay_heading( FILE *fp, layout_data * lay )
             o_int8( fp, curr, &lay->heading.max_group );
             break;
         default:
-            internal_err( __FILE__, __LINE__ );
-            break;
+            internal_err_exit( __FILE__, __LINE__ );
+//            break;
         }
     }
 }
@@ -1149,8 +1149,8 @@ static  void    put_lay_ix( FILE *fp, layout_data * lay )
                 }
                 break;
             default:
-                internal_err( __FILE__, __LINE__ );
-                break;
+                internal_err_exit( __FILE__, __LINE__ );
+//                break;
             }
         }
     }
@@ -1210,8 +1210,8 @@ static  void    put_lay_index( FILE *fp, layout_data * lay )
             o_font_number( fp, curr, &lay->hx.hx_sect[hds_index].text_font );
             break;
         default:
-            internal_err( __FILE__, __LINE__ );
-            break;
+            internal_err_exit( __FILE__, __LINE__ );
+//            break;
         }
     }
 }
@@ -1250,8 +1250,8 @@ static  void    put_lay_ixhead( FILE *fp, layout_data * lay )
             o_yes_no( fp, curr, &lay->ixhead.header );
             break;
         default:
-            internal_err( __FILE__, __LINE__ );
-            break;
+            internal_err_exit( __FILE__, __LINE__ );
+//            break;
         }
     }
 }
@@ -1289,8 +1289,8 @@ static  void    put_lay_lp( FILE *fp, layout_data * lay )
             o_spacing( fp, curr, &lay->lp.spacing );
             break;
         default:
-            internal_err( __FILE__, __LINE__ );
-            break;
+            internal_err_exit( __FILE__, __LINE__ );
+//            break;
         }
     }
 }
@@ -1328,8 +1328,8 @@ static  void    put_lay_lq( FILE *fp, layout_data * lay )
             o_font_number( fp, curr, &lay->lq.font );
             break;
         default:
-            internal_err( __FILE__, __LINE__ );
-            break;
+            internal_err_exit( __FILE__, __LINE__ );
+//            break;
         }
     }
 }
@@ -1370,8 +1370,8 @@ static  void    put_lay_note( FILE *fp, layout_data * lay )
             o_xx_string( fp, curr, lay->note.string );
             break;
         default:
-            internal_err( __FILE__, __LINE__ );
-            break;
+            internal_err_exit( __FILE__, __LINE__ );
+//            break;
         }
     }
 }
@@ -1428,8 +1428,8 @@ static  void    put_lay_ol( FILE *fp, layout_data * lay )
                 o_font_number( fp, curr, &ol_layout->number_font );
                 break;
             default:
-                internal_err( __FILE__, __LINE__ );
-                break;
+                internal_err_exit( __FILE__, __LINE__ );
+//                break;
             }
         }
         ol_layout = ol_layout->next;
@@ -1464,8 +1464,8 @@ static  void    put_lay_page( FILE *fp, layout_data * lay )
             units = &(lay->page.depth);
             break;
         default:
-            internal_err( __FILE__, __LINE__ );
-            break;
+            internal_err_exit( __FILE__, __LINE__ );
+//            break;
         }
         o_space_unit( fp, curr, units );
     }
@@ -1496,8 +1496,8 @@ static  void    put_lay_p_pc( FILE *fp, p_lay_tag * ap, char * name )
             o_space_unit( fp, curr, &ap->post_skip );
             break;
         default:
-            internal_err( __FILE__, __LINE__ );
-            break;
+            internal_err_exit( __FILE__, __LINE__ );
+//            break;
         }
     }
 }
@@ -1554,8 +1554,8 @@ static  void    put_lay_sl( FILE *fp, layout_data * lay )
                 o_font_number( fp, curr, &sl_layout->font );
                 break;
             default:
-                internal_err( __FILE__, __LINE__ );
-                break;
+                internal_err_exit( __FILE__, __LINE__ );
+//                break;
             }
         }
         sl_layout = sl_layout->next;
@@ -1595,8 +1595,8 @@ static  void    put_lay_title( FILE *fp, layout_data * lay )
             o_space_unit( fp, curr, &lay->title.skip );
             break;
         default:
-            internal_err( __FILE__, __LINE__ );
-            break;
+            internal_err_exit( __FILE__, __LINE__ );
+//            break;
         }
     }
 }
@@ -1622,8 +1622,8 @@ static  void    put_lay_titlep( FILE *fp, layout_data * lay )
             o_int8( fp, curr, &lay->titlep.columns );
             break;
         default:
-            internal_err( __FILE__, __LINE__ );
-            break;
+            internal_err_exit( __FILE__, __LINE__ );
+//            break;
         }
     }
 }
@@ -1661,8 +1661,8 @@ static  void    put_lay_toc( FILE *fp, layout_data * lay )
             o_xx_string( fp, curr, lay->toc.fill_string );
             break;
         default:
-            internal_err( __FILE__, __LINE__ );
-            break;
+            internal_err_exit( __FILE__, __LINE__ );
+//            break;
         }
     }
 }
@@ -1688,8 +1688,8 @@ static  void    put_lay_tocpgnum( FILE *fp, layout_data * lay )
             o_font_number( fp, curr, &lay->tocpgnum.font );
             break;
         default:
-            internal_err( __FILE__, __LINE__ );
-            break;
+            internal_err_exit( __FILE__, __LINE__ );
+//            break;
         }
     }
 }
@@ -1738,8 +1738,8 @@ static  void    put_lay_tochx( FILE *fp, layout_data * lay )
                 break;
                 break;
             default:
-                internal_err( __FILE__, __LINE__ );internal_err( __FILE__, __LINE__ );
-                break;
+                internal_err_exit( __FILE__, __LINE__ );
+//                break;
             }
         }
     }
@@ -1800,8 +1800,8 @@ static  void    put_lay_ul( FILE *fp, layout_data * lay )
                 o_font_number( fp, curr, &ul_layout->bullet_font );
                 break;
             default:
-                internal_err( __FILE__, __LINE__ );
-                break;
+                internal_err_exit( __FILE__, __LINE__ );
+//                break;
             }
         }
         ul_layout = ul_layout->next;
@@ -1826,8 +1826,8 @@ static  void    put_lay_widow( FILE *fp, layout_data * lay )
             o_threshold( fp, curr, &lay->widow.threshold );
             break;
         default:
-            internal_err( __FILE__, __LINE__ );
-            break;
+            internal_err_exit( __FILE__, __LINE__ );
+//            break;
         }
     }
 }
@@ -1865,8 +1865,8 @@ static  void    put_lay_xmp( FILE *fp, layout_data * lay )
             o_font_number( fp, curr, &lay->xmp.font );
             break;
         default:
-            internal_err( __FILE__, __LINE__ );
-            break;
+            internal_err_exit( __FILE__, __LINE__ );
+//            break;
         }
     }
 }
@@ -2124,7 +2124,7 @@ void    lay_convert( const gmltag * entry )
         }
     }
     if( *token_buf == '\0' ) {           // file name missing
-        xx_err( err_att_missing );
+        xx_err_exit( err_att_missing );
     } else {
         put_layout( token_buf, &layout_work );
     }

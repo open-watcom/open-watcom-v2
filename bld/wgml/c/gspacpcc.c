@@ -142,7 +142,7 @@ void scr_pa( void )
     switch( len ) {
     case 7 :
         if( strnicmp( "NOSTART", pa, 7 ) ) {
-            xx_line_err_cc( err_xx_opt, cwcurr, pa );
+            xx_line_err_exit_cc( err_xx_opt, cwcurr, pa );
         }
         /* fallthru for NOSTART */
     case 0 :
@@ -157,7 +157,7 @@ void scr_pa( void )
                 reset_t_page();
             }
         } else {
-            xx_line_err_cc( err_xx_opt, cwcurr, pa );
+            xx_line_err_exit_cc( err_xx_opt, cwcurr, pa );
         }
         break;
     case 4 :
@@ -169,7 +169,7 @@ void scr_pa( void )
                 reset_t_page();
             }
         } else {
-            xx_line_err_cc( err_xx_opt, cwcurr, pa );
+            xx_line_err_exit_cc( err_xx_opt, cwcurr, pa );
         }
         break;
     default:
@@ -295,7 +295,7 @@ static void scr_cc_cp_common( bool do_pa )
         if( !scanerr ) {
             test_space = conv_vert_unit( &cpwork, 0, g_curr_font );
             if( test_space < 0 ) {
-                xx_line_err_c( err_spc_not_valid, pa );
+                xx_line_err_exit_c( err_spc_not_valid, pa );
             } else if( test_space > 0 ) {               // do nothing for 0
                 if( cpwork.su_u == SU_chars_lines ) {   // recompute value if from line count
                     test_space = (cpwork.su_whole * g_text_spacing * g_resv) / LPI;

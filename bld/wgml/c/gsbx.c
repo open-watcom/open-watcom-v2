@@ -927,7 +927,7 @@ static void draw_box_lines( doc_element * h_line_el )
                 box_depth = 0;                      // reset for new box
                 break;
             default:
-                internal_err( __FILE__, __LINE__ );
+                internal_err_exit( __FILE__, __LINE__ );
             }
         }
         el_skip = 0;            // el_skip used to position HLINEs/VLINEs
@@ -1908,7 +1908,7 @@ static void merge_lines( void )
 
     if( (g_prev_line == NULL) && (g_cur_line == NULL) ) {
         /* This might be an error if only possible for degenerate cases */
-        internal_err( __FILE__, __LINE__ );
+        internal_err_exit( __FILE__, __LINE__ );
     } else if( g_prev_line == NULL ) {    // g_cur_line becomes box_line->first
         box_line->first = g_cur_line;
         g_cur_line = NULL;
@@ -2554,7 +2554,7 @@ void scr_bx( void )
     }
 
     if( *p != '\0' && (cur_op == bx_can) ) {    // CAN and DEL cannot have column lists
-        xx_line_err_c( err_too_many_ops, pa );
+        xx_line_err_exit_c( err_too_many_ops, pa );
     }
 
     /* Now for the box column list, if any */
@@ -2572,7 +2572,7 @@ void scr_bx( void )
             cur_temp->cols[cur_temp->current].v_ind = bx_v_down;
             if( cur_temp->current == 0 ) {
                 if( *p == '/' ) {
-                    xx_line_err_c( err_spc_not_valid, p );
+                    xx_line_err_exit_c( err_spc_not_valid, p );
                 }
             } else if( *p == '/' ) {
                 cur_temp->next = alloc_box_col_set();
@@ -2585,7 +2585,7 @@ void scr_bx( void )
             if( !cw_val_to_su( &p, &boxcolwork ) ) {
                 boxcol_cur = conv_hor_unit( &boxcolwork, g_curr_font );
                 if( boxcol_cur <= 0 ) {
-                    xx_line_err_c( err_inv_box_pos, pa );
+                    xx_line_err_exit_c( err_inv_box_pos, pa );
                 } else if( first_col ) {   // no prior column
                     first_col = false;
                 } else {
@@ -2593,7 +2593,7 @@ void scr_bx( void )
                         boxcol_cur += boxcol_prev;
                     }
                     if( boxcol_cur <= boxcol_prev ) {
-                        xx_line_err_c( err_box_bad_order, pa );
+                        xx_line_err_exit_c( err_box_bad_order, pa );
                     }
                 }
                 if( boxcol_cur > 0 ) {        // treat as "+0" to minimize mischief
@@ -2601,7 +2601,7 @@ void scr_bx( void )
                 }
                 cur_temp->cols[cur_temp->current].col = boxcol_prev;
             } else {
-                xx_line_err_c( err_spc_not_valid, pa );
+                xx_line_err_exit_c( err_spc_not_valid, pa );
             }
             SkipSpaces( p );
             cur_temp->current++;
@@ -2660,8 +2660,8 @@ void scr_bx( void )
         merge_lines();
         break;
     default :
-        internal_err( __FILE__, __LINE__ );
-        break;
+        internal_err_exit( __FILE__, __LINE__ );
+//        break;
     }
 
     /* set the ProcFlags specific to BX */

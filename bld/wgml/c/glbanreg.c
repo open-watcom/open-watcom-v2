@@ -301,7 +301,7 @@ void    lay_banregion( const gmltag * entry )
 
     if( ProcFlags.lay_xxx != el_banregion ) {
         if( !ProcFlags.banner ) {               // not in BANNER/eBANNER block
-            xx_err_c( err_tag_expected, "BANNER" );
+            xx_err_exit_c( err_tag_expected, "BANNER" );
         }
         ProcFlags.lay_xxx = el_banregion;
         init_banregion_wk( &wk );
@@ -311,12 +311,12 @@ void    lay_banregion( const gmltag * entry )
         for( k = 0; k < att_count; k++ ) {
             curr = banregion_att[k];
             if( strcmp( lay_att_names[curr], attr_name.attname.l ) == 0 ) {
-                p = attr_val.name;
+                p = attr_val.tok.s;
                 if( count[k] ) {
                     if( sum_count == att_count ) {  // all attributes found
-                        xx_err( err_lay_text );     // per wgml 4.0: treat as text
+                        xx_err_exit( err_lay_text );     // per wgml 4.0: treat as text
                     } else {
-                        xx_err( err_att_dup );      // per wgml 4.0: treat as duplicated attribute
+                        xx_err_exit( err_att_dup );      // per wgml 4.0: treat as duplicated attribute
                     }
                 } else {
                     count[k] = true;
@@ -324,48 +324,48 @@ void    lay_banregion( const gmltag * entry )
                     switch( curr ) {
                     case e_indent:
                         if( AttrFlags.indent ) {
-                            xx_line_err_ci( err_att_dup, attr_name.att_name,
-                                attr_val.name - attr_name.att_name + attr_val.len);
+                            xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
+                                attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                         }
                         i_space_unit( p, &attr_val, &wk.indent );
                         AttrFlags.indent = true;
                         break;
                     case e_hoffset:
                         if( AttrFlags.hoffset ) {
-                            xx_line_err_ci( err_att_dup, attr_name.att_name,
-                                attr_val.name - attr_name.att_name + attr_val.len);
+                            xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
+                                attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                         }
                         i_space_unit( p, &attr_val, &wk.hoffset );
                         AttrFlags.hoffset = true;
                         break;
                     case e_width:
                         if( AttrFlags.width ) {
-                            xx_line_err_ci( err_att_dup, attr_name.att_name,
-                                attr_val.name - attr_name.att_name + attr_val.len);
+                            xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
+                                attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                         }
                         i_space_unit( p, &attr_val, &wk.width );
                         AttrFlags.width = true;
                         break;
                     case e_voffset:
                         if( AttrFlags.voffset ) {
-                            xx_line_err_ci( err_att_dup, attr_name.att_name,
-                                attr_val.name - attr_name.att_name + attr_val.len);
+                            xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
+                                attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                         }
                         i_space_unit( p, &attr_val, &wk.voffset );
                         AttrFlags.voffset = true;
                         break;
                     case e_depth:
                         if( AttrFlags.depth ) {
-                            xx_line_err_ci( err_att_dup, attr_name.att_name,
-                                attr_val.name - attr_name.att_name + attr_val.len);
+                            xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
+                                attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                         }
                         i_space_unit( p, &attr_val, &wk.depth );
                         AttrFlags.depth = true;
                         break;
                     case e_font:
                         if( AttrFlags.font ) {
-                            xx_line_err_ci( err_att_dup, attr_name.att_name,
-                                attr_val.name - attr_name.att_name + attr_val.len);
+                            xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
+                                attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                         }
                         i_font_number( p, &attr_val, &wk.font );
                         if( wk.font >= wgml_font_cnt ) wk.font = 0;
@@ -373,43 +373,43 @@ void    lay_banregion( const gmltag * entry )
                         break;
                     case e_refnum:
                         if( AttrFlags.refnum ) {
-                            xx_line_err_ci( err_att_dup, attr_name.att_name,
-                                attr_val.name - attr_name.att_name + attr_val.len);
+                            xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
+                                attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                         }
                         i_uint8( p, &attr_val, &wk.refnum );
                         if( wk.refnum == 0 ) {   // refnum must be greater than zero
-                            xx_line_err_c( err_num_zero, p );
+                            xx_line_err_exit_c( err_num_zero, p );
                         }
                         AttrFlags.refnum = true;
                         break;
                     case e_region_position:
                         if( AttrFlags.region_position ) {
-                            xx_line_err_ci( err_att_dup, attr_name.att_name,
-                                attr_val.name - attr_name.att_name + attr_val.len);
+                            xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
+                                attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                         }
                         i_page_position( p, &attr_val, &wk.region_position );
                         AttrFlags.region_position = true;
                         break;
                     case e_pouring:
                         if( AttrFlags.pouring ) {
-                            xx_line_err_ci( err_att_dup, attr_name.att_name,
-                                attr_val.name - attr_name.att_name + attr_val.len);
+                            xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
+                                attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                         }
                         i_pouring( p, &attr_val, &wk.pouring );
                         AttrFlags.pouring = true;
                         break;
                     case e_script_format:
                         if( AttrFlags.script_format ) {
-                            xx_line_err_ci( err_att_dup, attr_name.att_name,
-                                attr_val.name - attr_name.att_name + attr_val.len);
+                            xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
+                                attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                         }
                         i_yes_no( p, &attr_val, &wk.script_format );
                         AttrFlags.script_format = true;
                         break;
                     case e_contents:
                         if( AttrFlags.contents ) {
-                            xx_line_err_ci( err_att_dup, attr_name.att_name,
-                                attr_val.name - attr_name.att_name + attr_val.len);
+                            xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
+                                attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                         }
                         if( attr_val.quoted != ' ' ) {
                             wk.contents.content_type = string_content;
@@ -420,7 +420,7 @@ void    lay_banregion( const gmltag * entry )
                         AttrFlags.contents = true;
                         break;
                     default:
-                        internal_err( __FILE__, __LINE__ );
+                        internal_err_exit( __FILE__, __LINE__ );
                     }
                 }
                 break;                  // break out of for loop
@@ -435,9 +435,9 @@ void    lay_banregion( const gmltag * entry )
     /*******************************************************/
 
     if( !AttrFlags.refnum ) {                           // refnum was missing
-        xx_err( err_att_missing );
+        xx_err_exit( err_att_missing );
     } else if( wk.refnum > curr_ban->next_refnum ) {    // refnum must be, at most, the next value
-        xx_err( err_illegal_reg_ref );
+        xx_err_exit( err_illegal_reg_ref );
     }
 
     /*******************************************************/
@@ -526,7 +526,7 @@ void    lay_banregion( const gmltag * entry )
             /* except script_format.                               */
             /*******************************************************/
 
-            xx_err( err_all_reg_att_rqrd );
+            xx_err_exit( err_all_reg_att_rqrd );
         }
         reg = mem_alloc( sizeof( region_lay_tag ) );
         memcpy( reg, &wk, sizeof( region_lay_tag ) );
@@ -544,7 +544,7 @@ void    lay_banregion( const gmltag * entry )
 
     if( reg != NULL ) {             // region not deleted
         if( reg->script_format && (reg->contents.content_type != string_content) ) {
-            xx_err( err_scr_fmt );
+            xx_err_exit( err_scr_fmt );
         }
     }
 
@@ -563,7 +563,7 @@ void    lay_ebanregion( const gmltag * entry )
     if( ProcFlags.lay_xxx == el_banregion ) {   // :banregion was last tag
         ProcFlags.lay_xxx = el_ebanregion;
     } else {
-        xx_err_cc( err_no_lay, &(entry->tagname[1]), entry->tagname );
+        xx_err_exit_cc( err_no_lay, &(entry->tagname[1]), entry->tagname );
     }
     scandata.s = scandata.e;
     return;

@@ -57,7 +57,7 @@ gtentry *add_tag( tag_dict *pdict, const char *tagname, const char *macname, int
 
     ge = find_user_tag( pdict, tagname );
     if( ge != NULL ) {
-        xx_source_err_c( err_tag_exist, tagname );
+        xx_source_err_exit_c( err_tag_exist, tagname );
     }
     dict = mem_alloc( sizeof( *dict ) );
     dict->next = *pdict;

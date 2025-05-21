@@ -132,8 +132,8 @@ static FILE *try_open( char *prefix, char *filename )
 
     filename_length = strlen( prefix ) + strlen( filename ) + 1;
     if( filename_length > _MAX_PATH ) {
-        xx_simple_err_cc( err_file_max, prefix, filename );
-        return( NULL );
+        xx_simple_err_exit_cc( err_file_max, prefix, filename );
+//        return( NULL );
     }
 
     /* Create the full file name to search for. */
@@ -301,8 +301,8 @@ FILE *search_file_in_dirs( const char *filename, const char *defext, const char 
     /* Ensure filename will fit into buff. */
 
     if( strlen( filename ) > _MAX_PATH - 1 ) {
-        xx_simple_err_c( err_file_max, filename );
-        return( NULL );
+        xx_simple_err_exit_c( err_file_max, filename );
+//        return( NULL );
     }
 
     /* Initialize the filename buffers. */
@@ -320,8 +320,8 @@ FILE *search_file_in_dirs( const char *filename, const char *defext, const char 
         /* Determine if filename contains path information. */
 
         if( pg.drive[0] != '\0' || pg.dir[0] != '\0' ) {
-            xx_simple_err_c( err_file_name, filename );
-            return( NULL );
+            xx_simple_err_exit_c( err_file_name, filename );
+//            return( NULL );
         }
 
         /* Ensure the file name will fit in the buffers if the literal extensions
@@ -332,21 +332,21 @@ FILE *search_file_in_dirs( const char *filename, const char *defext, const char 
             if( strlen( filename ) >= _MAX_PATH - 4 ) {
                 switch( sequence ) {
                 case ds_opt_file:
-                    xx_simple_err_cc( err_file_max, filename, "." OPT_EXT );
-                    break;
+                    xx_simple_err_exit_cc( err_file_max, filename, "." OPT_EXT );
+//                    break;
                 case ds_doc_spec:
-                    xx_simple_err_cc( err_file_max, filename, "." GML_EXT );
-                    break;
+                    xx_simple_err_exit_cc( err_file_max, filename, "." GML_EXT );
+//                    break;
                 case ds_bin_lib:
-                    xx_simple_err_cc( err_file_max, filename, "." COP_EXT );
-                    break;
+                    xx_simple_err_exit_cc( err_file_max, filename, "." COP_EXT );
+//                    break;
                 case ds_lib_src:
-                    xx_simple_err_cc( err_file_max, filename, "." PCD_EXT );
-                    break;
+                    xx_simple_err_exit_cc( err_file_max, filename, "." PCD_EXT );
+//                    break;
                 default:
-                    xx_simple_err_cc( err_file_max, filename, ".xxx" );
+                    xx_simple_err_exit_cc( err_file_max, filename, ".xxx" );
                 }
-                return( NULL );
+//                return( NULL );
             }
         }
     }
@@ -396,8 +396,8 @@ FILE *search_file_in_dirs( const char *filename, const char *defext, const char 
         *pd++ = gml_inc_dirs;
         break;
     default:
-        internal_err( __FILE__, __LINE__ );
-        return( NULL );
+        internal_err_exit( __FILE__, __LINE__ );
+//        return( NULL );
     }
     /*
      * add terminate NULL pointer as last search directory to the array
@@ -441,9 +441,9 @@ FILE *search_file_in_dirs( const char *filename, const char *defext, const char 
                     /* Avoid buffer overflow from member_name. */
 
                     if( member_length >= _MAX_PATH - 4 ) {
-                        xx_simple_err_cc( err_file_max, member_name, "." COP_EXT );
-                        mem_free( member_name );
-                        return( NULL );
+                        xx_simple_err_exit_cc( err_file_max, member_name, "." COP_EXT );
+//                        mem_free( member_name );
+//                        return( NULL );
                     }
                     pg.ext = "COP";
                 }
@@ -458,10 +458,10 @@ FILE *search_file_in_dirs( const char *filename, const char *defext, const char 
 #endif
                 mem_free( member_name );
 
-            	/* Not finding the file is only a problem for ds_bin_lib. */
+                /* Not finding the file is only a problem for ds_bin_lib. */
 
                 if( fp == NULL ) {
-                    xx_simple_err_cc( ERR_MEM_DIR, dir_name, primary_file );
+                    xx_simple_err_exit_cc( ERR_MEM_DIR, dir_name, primary_file );
                 }
                 return( fp );
             }

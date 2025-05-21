@@ -216,7 +216,7 @@ void    add_macro_parms( char * p )
         /* local variable * must be added even though it has no value */
 
         val.e = val.s = p;
-        add_symvar( input_cbs->local_dict, MAC_STAR_NAME, &val, no_subscript, local_var );
+        add_symvar( input_cbs->local_dict, MAC_STAR_NAME, &val, no_subscript, SF_local_var );
     } else {                            // process text following the macro
 
         /* remove trailing spaces if appropriate */
@@ -250,7 +250,7 @@ void    add_macro_parms( char * p )
 
         val.s = p;
         val.e = val.s + strlen( val.s );
-        add_symvar( input_cbs->local_dict, MAC_STAR_NAME, &val, no_subscript, local_var );
+        add_symvar( input_cbs->local_dict, MAC_STAR_NAME, &val, no_subscript, SF_local_var );
         star0 = 0;
         g_tok_start = p;                  // save start of parameter
         SkipSpaces( p );                // find first nonspace character
@@ -261,7 +261,7 @@ void    add_macro_parms( char * p )
                 sprintf( starbuf, "%d", star0 );
                 val.s = p + 1;
                 val.e = pa;
-                add_symvar( input_cbs->local_dict, starbuf, &val, no_subscript, local_var );
+                add_symvar( input_cbs->local_dict, starbuf, &val, no_subscript, SF_local_var );
                 p = pa + 1;
             } else {                    // look if it is a symbolic variable definition
                 char    *ps;
@@ -295,7 +295,7 @@ void    add_macro_parms( char * p )
                     val.s = p;
                     val.e = pa;
                     add_symvar( input_cbs->local_dict, starbuf, &val,
-                                no_subscript, local_var );
+                                no_subscript, SF_local_var );
                 }
                 p = pa;
             }
@@ -304,7 +304,7 @@ void    add_macro_parms( char * p )
                                         // the positional parameter count
         val.s = starbuf;
         val.e = val.s + strlen( val.s );
-        add_symvar( input_cbs->local_dict, "0", &val, no_subscript, local_var );
+        add_symvar( input_cbs->local_dict, "0", &val, no_subscript, SF_local_var );
     }
 
     if( (input_cbs->fmflags & II_research) && GlobalFlags.firstpass ) {
@@ -334,7 +334,7 @@ void    free_lines( inp_line * line )
 
 /***************************************************************************/
 /* DEFINE  MACRO defines  a  sequence of  input lines  to  be invoked  by  */
-/* ".name" as  a user-defined control word  or as an Execute  Macro (.EM)  */
+/* ".tok.s" as  a user-defined control word  or as an Execute  Macro (.EM)  */
 /* operand.                                                                */
 /*                                                                         */
 /*      +-------+--------------------------------------------------+       */
@@ -363,21 +363,21 @@ void    free_lines( inp_line * line )
 /* This control word does not cause a break.                               */
 /*                                                                         */
 /* NOTES                                                                   */
-/* (1) The invoking of  defined user macros by ".name"  can be suppressed  */
+/* (1) The invoking of  defined user macros by ".tok.s"  can be suppressed  */
 /*     with the ".MS"  (Macro Substitution)  control word.    Invoking by  */
-/*     ".EM .name" cannot be suppressed.                                   */
+/*     ".EM .tok.s" cannot be suppressed.                                   */
 /* (2) The ".DM name END" operands  are verified for a  macro "name" that  */
 /*     matches the ".DM name BEGIN".   ".DM" starting  in column one with  */
 /*     no operands will also successfully terminate a macro definition.    */
 /* (3) The user-defined  macro may  be invoked  with a  variable list  of  */
 /*     keyword and positional operands                                     */
-/*       .name operand1 operand2                                           */
+/*       .tok.s operand1 operand2                                           */
 /*     that will assign to the local Set Symbols &*1, &*2, ..., the value  */
 /*     of corresponding operands in the macro call.   Each operand may be  */
 /*     a character string,  a delimited  character string,  or a numeric.  */
 /*     Numeric operands  that do not consist  entirely of digits  will be  */
 /*     treated as a character string.                                      */
-/*       .name key1=value key2=value                                       */
+/*       .tok.s key1=value key2=value                                       */
 /*     Operands  that consist  of  a valid  Set  Symbol name  immediately  */
 /*     followed by an  equal sign will assign  the value on the  right of  */
 /*     the equal  sign to  the specified Set  Symbol before  invoking the  */
@@ -410,7 +410,7 @@ void    scr_dm( void )
     cc = getarg();
 
     if( cc == omit ) {
-        xx_source_err( err_missing_name );
+        xx_source_err_exit( err_missing_name );
     }
 
     /*  truncate name if too long WITHOUT error msg
@@ -422,7 +422,7 @@ void    scr_dm( void )
     cc = getarg();
     if( cc == omit ) {                  // nothing found
         // SC--048 A control word parameter is missing
-        xx_source_err_c( err_mac_def_fun, macname1 );
+        xx_source_err_exit_c( err_mac_def_fun, macname1 );
     }
 
     get_macro_name( g_tok_start, macname2 );
@@ -440,7 +440,7 @@ void    scr_dm( void )
             g_tok_start--;    // for single line .dm /yy/xxy/.. back to sepchar
         }
         if( ProcFlags.in_macro_define ) {
-            xx_source_err_c( err_mac_def_nest, g_tok_start );
+            xx_source_err_exit_c( err_mac_def_nest, g_tok_start );
         }
         ProcFlags.in_macro_define = 1;
 
@@ -473,11 +473,11 @@ void    scr_dm( void )
 
     if( compend && !(ProcFlags.in_macro_define) ) {
         // SC--003: A macro is not being defined
-        xx_source_err_c( err_mac_def_end, macname1 );
+        xx_source_err_exit_c( err_mac_def_end, macname1 );
     }
     if( compbegin && (ProcFlags.in_macro_define) ) {
         // SC--002 The control word parameter '%s' is invalid
-        xx_source_err_c( err_mac_def_nest, macname1 );
+        xx_source_err_exit_c( err_mac_def_nest, macname1 );
     }
 
     if( compbegin ) {                   // start new macro define
@@ -519,17 +519,17 @@ void    scr_dm( void )
                         if( strcmp( macname1, macname2 ) != 0 ) {
                             // macroname from begin different from end
                             // SC--005 Macro '%s' is not being defined
-                            xx_source_err_c( err_mac_def_not, macname2 );
+                            xx_source_err_exit_c( err_mac_def_not, macname2 );
                         }
                         cc = getarg();
                         if( cc == omit ) {
                             // SC--048 A control word parameter is missing
-                            xx_source_err( err_mac_def_miss );
+                            xx_source_err_exit( err_mac_def_miss );
                         }
                         get_macro_name( g_tok_start, macname2 );
                         if( strcmp( "end", macname2 ) != 0 ) {
                             // SC--002 The control word parameter '%s' is invalid
-                            xx_source_err_c( err_mac_def_inv, macname2 );
+                            xx_source_err_exit_c( err_mac_def_inv, macname2 );
                         }
                         compend = true;
                         break;              // out of read loop
@@ -551,7 +551,7 @@ void    scr_dm( void )
         if( cb->s.f->flags & (FF_eof | FF_err) ) {
             // error SC--004 End of file reached
             // macro '%s' is still being defined
-            xx_source_err_c( err_mac_def_eof, macname1 );
+            xx_source_err_exit_c( err_mac_def_eof, macname1 );
         }
     }                                   // end compbegin
 
@@ -580,7 +580,7 @@ void    scr_dm( void )
             g_info( inf_mac_defined, macname1, linestr );
         }
     } else {
-        xx_source_err_c( err_mac_def_logic, macname1 );
+        xx_source_err_exit_c( err_mac_def_logic, macname1 );
     }
     scan_restart = scandata.e;
     return;
@@ -712,7 +712,7 @@ void    scr_em( void )
     cc = getarg();
 
     if( cc == omit ) {
-        xx_source_err( err_mac_name_inv );
+        xx_source_err_exit( err_mac_name_inv );
     }
 
     if( *g_tok_start == SCR_char ) {      // possible macro name
@@ -728,7 +728,7 @@ void    scr_em( void )
     }
 
     if( me == NULL ) {                  // macro not specified or not defined
-        xx_source_err( err_mac_name_inv );
+        xx_source_err_exit( err_mac_name_inv );
     } else {
         split_input( buff2, g_tok_start, input_cbs->fmflags );    // stack line operand
     }

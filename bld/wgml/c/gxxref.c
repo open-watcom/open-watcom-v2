@@ -65,7 +65,7 @@ static char * get_ref_attributes( void )
             if( strcmp( "page", attr_name.attname.t ) == 0 ) {
                 page_found = true;
                 p = get_att_value( p, &attr_val );
-                if( attr_val.name == NULL ) {
+                if( attr_val.tok.s == NULL ) {
                     break;
                 }
                 if( strcmp( "yes", attr_val.specval ) == 0 ) {
@@ -73,14 +73,14 @@ static char * get_ref_attributes( void )
                 } else if( strcmp( "no", attr_val.specval ) == 0 ) {
                     ref_page = false;
                 } else {
-                    xx_line_err_c( err_inv_att_val, attr_val.name );
+                    xx_line_err_exit_c( err_inv_att_val, attr_val.tok.s );
                 }
                 if( ProcFlags.tag_end_found ) {
                     break;
                 }
             } else if( strcmp( "refid", attr_name.attname.t ) == 0 ) {
                 p = get_refid_value( p, &attr_val, refid );
-                if( attr_val.name == NULL ) {
+                if( attr_val.tok.s == NULL ) {
                     break;
                 }
                 refid_found = true;
@@ -94,8 +94,8 @@ static char * get_ref_attributes( void )
         }
     }
     if( !refid_found ) {            // detect missing required attribute
-        xx_err( err_att_missing );
-        scandata.s = scandata.e;
+        xx_err_exit( err_att_missing );
+//        scandata.s = scandata.e;
     }
     return( p );
 }

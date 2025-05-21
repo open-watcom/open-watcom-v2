@@ -52,7 +52,7 @@
 #include "copfiles.h"       // mostly for access to bin_device & wgml_fonts
 #include "gvars.h"
 #include "findfile.h"
-
+#include "wnoret.h"
 
 #ifdef  __cplusplus
 extern "C" {    /* Use "C" linkage when in C++ mode */
@@ -447,39 +447,39 @@ extern void         g_info_lm( const msg_ids err, ... );
 extern void         g_info_research( const msg_ids num, ... );
 extern void         file_mac_info( void );
 extern void         file_mac_info_nest( void );
-extern void         att_req_err( const char *tagname, const char *attname );
-extern void         ban_reg_err( msg_ids num, banner_lay_tag *in_ban1, banner_lay_tag *in_ban2, region_lay_tag *in_reg1, region_lay_tag *in_reg2 );
-extern void         internal_err( const char *file, int line );
-extern void         list_level_err( const char *xl_tag, uint8_t xl_level );
-extern void         main_file_err( const char *filename );
-extern void         numb_err( void );
-extern void         symbol_name_length_err( const char *symname );
-extern void         val_parse_err( const char *pa, bool tag );
-extern void         dup_refid_err( const char *refid, const char *context );
-extern void         g_err_if_int( void );
-extern void         g_err_tag( e_tags etag );
-extern void         g_err_tag_mac( const gtentry *ge );
-extern void         g_err_tag_nest( e_tags etag );
-extern void         g_err_tag_no( e_tags etag );
-extern void         g_err_tag_prec( e_tags etag );
-extern void         g_err_tag_rsloc( locflags inloc, const char *pa );
+NO_RETURN( extern void  att_req_err_exit( const char *tagname, const char *attname ) );
+NO_RETURN( extern void  ban_reg_err_exit( msg_ids num, banner_lay_tag *in_ban1, banner_lay_tag *in_ban2, region_lay_tag *in_reg1, region_lay_tag *in_reg2 ) );
+NO_RETURN( extern void  internal_err_exit( const char *file, int line ) );
+NO_RETURN( extern void  list_level_err_exit( const char *xl_tag, uint8_t xl_level ) );
+NO_RETURN( extern void  main_file_err_exit( const char *filename ) );
+NO_RETURN( extern void  numb_err_exit( void ) );
+NO_RETURN( extern void  symbol_name_length_err_exit( const char *symname ) );
+NO_RETURN( extern void  val_parse_err_exit( const char *pa, bool tag ) );
+NO_RETURN( extern void  dup_refid_err_exit( const char *refid, const char *context ) );
+NO_RETURN( extern void  g_if_int_err_exit( void ) );
+NO_RETURN( extern void  g_tag_err_exit( e_tags etag ) );
+NO_RETURN( extern void  g_tag_mac_err_exit( const gtentry *ge ) );
+NO_RETURN( extern void  g_tag_nest_err_exit( e_tags etag ) );
+NO_RETURN( extern void  g_tag_no_err_exit( e_tags etag ) );
+NO_RETURN( extern void  g_tag_prec_err_exit( e_tags etag ) );
+NO_RETURN( extern void  g_tag_rsloc_err_exit( locflags inloc, const char *pa ) );
+NO_RETURN( extern void  keep_nest_err_exit( const char *arg1, const char *arg2 ) );
+NO_RETURN( extern void  xx_err_exit( const msg_ids errid ) );
+NO_RETURN( extern void  xx_err_exit_c( const msg_ids errid, char const *arg ) );
+NO_RETURN( extern void  xx_err_exit_cc( const msg_ids errid, const char *arg1, const char *arg2 ) );
+NO_RETURN( extern void  xx_line_err_exit_c( const msg_ids errid, const char *pa ) );
+NO_RETURN( extern void  xx_line_err_exit_ci( const msg_ids errid, const char *pa, unsigned len ) );
+NO_RETURN( extern void  xx_line_err_exit_cc( const msg_ids errid, char const *cw, const char *pa ) );
+NO_RETURN( extern void  xx_line_err_exit_cci( const msg_ids errid, char const *cw, char const *pa, unsigned len ) );
+NO_RETURN( extern void  xx_nest_err_exit( const msg_ids errid ) );
+NO_RETURN( extern void  xx_nest_err_exit_cc( const msg_ids errid, const char *arg1, const char *arg2 ) );
+NO_RETURN( extern void  xx_simple_err_exit( const msg_ids errid ) );
+NO_RETURN( extern void  xx_simple_err_exit_c( const msg_ids errid, const char *arg ) );
+NO_RETURN( extern void  xx_simple_err_exit_i( const msg_ids errid, int arg ) );
+NO_RETURN( extern void  xx_simple_err_exit_cc( const msg_ids errid, const char *arg1, const char *arg2 ) );
+NO_RETURN( extern void  xx_source_err_exit( const msg_ids errid ) );
+NO_RETURN( extern void  xx_source_err_exit_c( const msg_ids errid, const char *arg ) );
 extern void         g_wng_hlevel( hdsrc hd_found, hdsrc hd_expected );
-extern void         keep_nest_err( const char *arg1, const char *arg2 );
-extern void         xx_err( const msg_ids errid );
-extern void         xx_err_c( const msg_ids errid, char const *arg );
-extern void         xx_err_cc( const msg_ids errid, const char *arg1, const char *arg2 );
-extern void         xx_line_err_c( const msg_ids errid, const char *pa );
-extern void         xx_line_err_ci( const msg_ids errid, const char *pa, unsigned len );
-extern void         xx_line_err_cc( const msg_ids errid, char const *cw, const char *pa );
-extern void         xx_line_err_cci( const msg_ids errid, char const *cw, char const *pa, unsigned len );
-extern void         xx_nest_err( const msg_ids errid );
-extern void         xx_nest_err_cc( const msg_ids errid, const char *arg1, const char *arg2 );
-extern void         xx_simple_err( const msg_ids errid );
-extern void         xx_simple_err_c( const msg_ids errid, const char *arg );
-extern void         xx_simple_err_i( const msg_ids errid, int arg );
-extern void         xx_simple_err_cc( const msg_ids errid, const char *arg1, const char *arg2 );
-extern void         xx_source_err( const msg_ids errid );
-extern void         xx_source_err_c( const msg_ids errid, const char *arg );
 extern void         xx_warn( const msg_ids errid );
 extern void         xx_warn_c( const msg_ids errid, const char *arg );
 extern void         xx_warn_c_info( const msg_ids errid, const char *arg, const msg_ids warnid );

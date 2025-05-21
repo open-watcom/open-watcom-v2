@@ -51,10 +51,10 @@
 
 extern  void    gml_set( const gmltag * entry )
 {
-    bool            symbol_found    = false;
-    bool            value_found     = false;
-    char        *   p;
-    char        *   pa;
+    bool            symbol_found;
+    bool            value_found;
+    char            *p;
+    char            *pa;
     int             rc;
     symvar          sym;
     sub_index       subscript;
@@ -64,6 +64,8 @@ extern  void    gml_set( const gmltag * entry )
 
     (void)entry;
 
+    symbol_found = false;
+    value_found = false;
     subscript = no_subscript;           // not subscripted
     g_scan_err = false;
 
@@ -82,12 +84,12 @@ extern  void    gml_set( const gmltag * entry )
                 /* both get_att_value() and scan_sym() must be used */
 
                 p = get_att_value( p, &attr_val );
-                if( attr_val.name == NULL ) {
+                if( attr_val.tok.s == NULL ) {
                     break;
                 }
                 if( attr_val.quoted != ' ' )
-                    attr_val.name--;
-                scan_sym( attr_val.name, &sym, &subscript, NULL, false );
+                    attr_val.tok.s--;
+                scan_sym( attr_val.tok.s, &sym, &subscript, NULL, false );
                 if( g_scan_err ) {
                     break;
                 }
@@ -97,21 +99,20 @@ extern  void    gml_set( const gmltag * entry )
                 }
             } else if( strcmp( "value", attr_name.attname.t ) == 0 ) {
                 p = get_att_value( p, &attr_val );
-                if( attr_val.name == NULL ) {
+                if( attr_val.tok.s == NULL ) {
                     break;
                 }
                 value_found = true;
                 if( strcmp( "delete", attr_val.specval ) == 0 && attr_val.quoted == ' ' ) {
-                    sym.flags |= deleted;
+                    sym.flags |= SF_deleted;
                 } else {
-                    if( attr_val.len > BUF_SIZE - 1 )
-                        attr_val.len = BUF_SIZE - 1;
-                    strncpy( token_buf, attr_val.name, attr_val.len );
-                    token_buf[attr_val.len] = '\0';
+                    sym.flags &= ~SF_deleted;
+                    if( attr_val.tok.l > BUF_SIZE - 1 )
+                        attr_val.tok.l = BUF_SIZE - 1;
+                    strncpy( token_buf, attr_val.tok.s, attr_val.tok.l );
+                    token_buf[attr_val.tok.l] = '\0';
                 }
-                if( ProcFlags.tag_end_found ) {
-                    break;
-                }
+                break;
             } else {    // no match = end-of-tag in wgml 4.0
                 ProcFlags.tag_end_found = true;
                 p = pa; // restore spaces before text
@@ -121,11 +122,13 @@ extern  void    gml_set( const gmltag * entry )
     }
 
     if( symbol_found && value_found ) {   // both attributes
-        val.s = token_buf;
-        val.e = val.s + strlen( val.s );
-        rc = add_symvar_sym( &sym, &val, subscript, sym.flags );
+        if( (sym.flags & SF_deleted) == 0 ) {
+            val.s = token_buf;
+            val.e = val.s + strlen( val.s );
+            rc = add_symvar_sym( &sym, &val, subscript, sym.flags );
+        }
     } else {
-        xx_err( err_att_missing );
+        xx_err_exit( err_att_missing );
     }
 
     if( !ProcFlags.reprocess_line && *p != '\0' ) {

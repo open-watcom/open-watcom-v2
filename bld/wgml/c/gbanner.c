@@ -592,7 +592,7 @@ static void content_reg( region_lay_tag * region )
         case no_content :                   // empty region
             break;
         default:
-            internal_err( __FILE__, __LINE__ );
+            internal_err_exit( __FILE__, __LINE__ );
         }
 
         /* still not script format only normal string or keyword */

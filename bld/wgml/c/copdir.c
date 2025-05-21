@@ -244,23 +244,23 @@ static char *get_member_name( FILE *fp, const char *dir_file_name, const char *d
 
         /* File error, including premature eof. */
 
-        xx_simple_err_c( err_dev_lib_file, dir_file_name );
-        break;
+        xx_simple_err_exit_c( err_dev_lib_file, dir_file_name );
+//        break;
 
     case not_se_v4_1:
 
         /* File was created by a different version of gendev. */
 
-        xx_simple_err( err_wrong_gendev );
-        break;
+        xx_simple_err_exit( err_wrong_gendev );
+//        break;
 
     case not_bin_dev:
     case se_v4_1_not_dir:
 
         /* Wrong type of file: something is wrong with the device library. */
 
-        xx_simple_err_c( err_dev_lib_data, dir_file_name );
-        break;
+        xx_simple_err_exit_c( err_dev_lib_data, dir_file_name );
+//        break;
 
     case dir_v4_1_se:
 
@@ -358,8 +358,8 @@ static char *get_member_name( FILE *fp, const char *dir_file_name, const char *d
 
                             /* The entry_status is an unknown value. */
 
-                            internal_err( __FILE__, __LINE__ );
-                            break;
+                            internal_err_exit( __FILE__, __LINE__ );
+//                            break;
                         }
                         break;
 
@@ -367,8 +367,8 @@ static char *get_member_name( FILE *fp, const char *dir_file_name, const char *d
 
                         /* The entry_type is an unknown value. */
 
-                        internal_err( __FILE__, __LINE__ );
-                        break;
+                        internal_err_exit( __FILE__, __LINE__ );
+//                        break;
                     }
                     break;
                 }
@@ -401,8 +401,8 @@ static char *get_member_name( FILE *fp, const char *dir_file_name, const char *d
 
                     /* The entry_status is an unknown value. */
 
-                    internal_err( __FILE__, __LINE__ );
-                    break;
+                    internal_err_exit( __FILE__, __LINE__ );
+//                    break;
                 }
                 break;
 
@@ -410,8 +410,8 @@ static char *get_member_name( FILE *fp, const char *dir_file_name, const char *d
 
                 /* The entry_type is an unknown value. */
 
-                internal_err( __FILE__, __LINE__ );
-                break;
+                internal_err_exit( __FILE__, __LINE__ );
+//                break;
             }
         }
 
@@ -421,8 +421,8 @@ static char *get_member_name( FILE *fp, const char *dir_file_name, const char *d
 
         /* The file_type is an unknown value. */
 
-        internal_err( __FILE__, __LINE__ );
-        break;
+        internal_err_exit( __FILE__, __LINE__ );
+//        break;
     }
 
     return( NULL );

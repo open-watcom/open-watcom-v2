@@ -224,7 +224,7 @@ static char *scr_single_func_w( char *args, char *end, char **result )
             width = cop_text_width( symvar_entry.name, strlen( symvar_entry.name ), g_curr_font )
                     + wgml_fonts[g_curr_font].width.table['&'];
 
-            if( symvar_entry.flags & local_var ) {  // add width of *
+            if( symvar_entry.flags & SF_local_var ) {  // add width of *
                 width += wgml_fonts[g_curr_font].width.table['*'];
             }
         }

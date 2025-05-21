@@ -292,8 +292,8 @@ static  condcode    scan_att_optionsB( gavalflags * val_flags, condcode cca,
                 *val_flags |= val_auto;
                 *att_flags |= att_auto;
             } else {
-                xx_err( err_att_val_inv );
-                cc = neg;
+                xx_err_exit( err_att_val_inv );
+//                cc = neg;
             }
         }
 
@@ -332,17 +332,17 @@ static  condcode    scan_att_optionsB( gavalflags * val_flags, condcode cca,
                     break;
                 }
                 if( cc == notnum ) {
-                    xx_err( err_att_val_inv );
-                    cc = neg;
-                    return( cc );
+                    xx_err_exit( err_att_val_inv );
+//                    cc = neg;
+//                    return( cc );
                 }
                 ranges[k] = gn.result;
             }
             scandata.s = gn.arg.s;
             if( (k < 2) || (ranges[0] > ranges[1]) ) {// need 2 or more values
-                xx_err( err_att_range_inv );// ... second <= first
-                cc = neg;
-                return( cc );
+                xx_err_exit( err_att_range_inv );// ... second <= first
+//                cc = neg;
+//                return( cc );
             }
             if( k == 3 ) {
                 ranges[3] = ranges[2];  // only 1 default specified
@@ -352,9 +352,9 @@ static  condcode    scan_att_optionsB( gavalflags * val_flags, condcode cca,
                     || (ranges[1] < ranges[2])  // default gt max
                     || (ranges[0] > ranges[3])  // default2 less min
                     || (ranges[1] < ranges[3]) ) {  // default2 gt max
-                    xx_err( err_att_default );
-                    cc = neg;
-                    return( cc );
+                    xx_err_exit( err_att_default );
+//                    cc = neg;
+//                    return( cc );
                 }
             }
             if( ranges[2] > INT_MIN ) {
@@ -381,9 +381,9 @@ static  condcode    scan_att_optionsB( gavalflags * val_flags, condcode cca,
             gn.ignore_blanks = false;
             cc = getnum( &gn );
             if( cc == notnum || cc == omit ) {
-                xx_err( err_att_val_inv );
-                cc = neg;
-                return( cc );
+                xx_err_exit( err_att_val_inv );
+//                cc = neg;
+//                return( cc );
             } else {
                 scandata.s = gn.arg.s;
                 ranges[0] = gn.result;
@@ -407,9 +407,9 @@ static  condcode    scan_att_optionsB( gavalflags * val_flags, condcode cca,
                     }
                  } else {
 #if 1
-                    xx_err( err_att_val_inv );  // only short string allowed
-                    cc = neg;           // this is a restriction from wgml 4.0
-                    break;              // can be removed if neccessary
+                    xx_err_exit( err_att_val_inv );  // only short string allowed
+//                    cc = neg;           // this is a restriction from wgml 4.0
+//                    break;              // can be removed if neccessary
 #else
                     *val_flags |= val_valptr;
                     valptr = mem_tokdup( g_tok_start, arg_flen );
@@ -419,9 +419,9 @@ static  condcode    scan_att_optionsB( gavalflags * val_flags, condcode cca,
 #endif
                  }
             } else {
-                xx_err( err_att_val_inv );
-                cc = neg;
-                break;
+                xx_err_exit( err_att_val_inv );
+//                cc = neg;
+//                break;
             }
             cc = getarg();
             if( cc == omit ) {          // nothing more
@@ -433,9 +433,9 @@ static  condcode    scan_att_optionsB( gavalflags * val_flags, condcode cca,
                 *val_flags |= val_def;
                 *att_flags |= att_def;
             } else {
-                xx_err( err_att_val_inv );
-                cc = neg;
-                break;
+                xx_err_exit( err_att_val_inv );
+//                cc = neg;
+//                break;
             }
         } else {
             cc = neg;
@@ -480,7 +480,7 @@ void    scr_ga( void )
 
     if( cc == omit || (*g_tok_start == '*' && g_tag_entry == NULL) ) {
         // no operands or tagname * and no previous definition
-        xx_err_c( err_missing_name, "" );
+        xx_err_exit_c( err_missing_name, "" );
     }
     if( g_tag_entry == NULL ) {         // error during previous .gt
         scan_restart = scandata.e;       // ignore .ga
@@ -496,8 +496,8 @@ void    scr_ga( void )
 
     if( *p == '*' ) {                   // single * as tagname
         if( arg_flen > 1 ) {
-            xx_err( err_tag_name_inv );
-            return;
+            xx_err_exit( err_tag_name_inv );
+//            return;
         }
         savetag = '*';                      // remember for possible quick access
         if( GlobalFlags.firstpass && (input_cbs->fmflags & II_research) ) {
@@ -510,12 +510,12 @@ void    scr_ga( void )
 
         p = get_tagname( p, g_tagname );
         if( arg_flen > strlen( g_tagname ) ) {
-            xx_err( err_tag_name_inv );     // name contains invalid or too many chars
-            return;
+            xx_err_exit( err_tag_name_inv );     // name contains invalid or too many chars
+//            return;
         }
         g_tag_entry = find_user_tag( &tags_dict, g_tagname );
         if( g_tag_entry == NULL ) {
-            xx_err_c( err_user_tag, g_tagname );  // tagname not defined
+            xx_err_exit_c( err_user_tag, g_tagname );  // tagname not defined
         }
     }
 
@@ -527,16 +527,16 @@ void    scr_ga( void )
 
     if( cc == omit || (*g_tok_start == '*' && g_att_entry == NULL) ) {
         // no operands or attname * and no previous definition
-        xx_err( err_att_name_inv );
-        return;
+        xx_err_exit( err_att_name_inv );
+//        return;
     }
 
     p = g_tok_start;
 
     if( *p == '*' ) {                   // single * as attname
         if( arg_flen > 1 ) {
-            xx_err( err_att_name_inv );
-            return;
+            xx_err_exit( err_att_name_inv );
+//            return;
         }
         saveatt = '*';                      // remember for possible quick access
         if( GlobalFlags.firstpass && (input_cbs->fmflags & II_research) ) {
@@ -549,9 +549,9 @@ void    scr_ga( void )
 
         p = get_tag_attname( p, g_attname );
         if( arg_flen > strlen( g_attname ) ) {
-            xx_err( err_att_name_inv );// attname with invalid or too many chars
-            cc = neg;
-            return;
+            xx_err_exit( err_att_name_inv );// attname with invalid or too many chars
+//            cc = neg;
+//            return;
         }
     }
 
@@ -578,8 +578,8 @@ void    scr_ga( void )
 
             cc = scan_att_optionsB( &val_flags, cc, &att_flags );// process option B
             if( cc != omit ) {
-                xx_err( err_tag_toomany );  // excess parameters
-                return;
+                xx_err_exit( err_tag_toomany );  // excess parameters
+//                return;
             }
         }
     }

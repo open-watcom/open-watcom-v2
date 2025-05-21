@@ -96,8 +96,8 @@
 static  void    init_pe_line( int pe_count )
 {
     if( input_cbs->pe_cb.count > 0) {   // count >0 is switch for .pe active
-        xx_err( err_nested_pe );
-        reset_pe_cb();                  // terminate active .pe
+        xx_err_exit( err_nested_pe );
+//        reset_pe_cb();                  // terminate active .pe
     } else {
         if( get_line( true ) ) {
             input_cbs->pe_cb.count = pe_count;
@@ -157,30 +157,30 @@ void    scr_pe( void )
                 if( !strnicmp( "ON", pa, 2 ) ) {
                     init_pe_line( INT_MAX );    // partial implementation (no nesting)
                 } else {
-                    xx_line_err_cc( err_xx_opt, cwcurr, pa );
+                    xx_line_err_exit_cc( err_xx_opt, cwcurr, pa );
                 }
                 break;
             case 3 :
                 if( !strnicmp( "OFF", pa, 3 ) ) {
                     reset_pe_cb();              // partial implementation (no nesting)
                 } else {
-                    xx_line_err_cc( err_xx_opt, cwcurr, pa );
+                    xx_line_err_exit_cc( err_xx_opt, cwcurr, pa );
                 }
                 break;
             case 6 :
                 if( !strnicmp( "DELETE", pa, 6 ) ) {
                     reset_pe_cb();              // partial implementation (no nesting)
                 } else {
-                    xx_line_err_cc( err_xx_opt, cwcurr, pa );
+                    xx_line_err_exit_cc( err_xx_opt, cwcurr, pa );
                 }
                 break;
             default:
-                xx_line_err_cc( err_xx_opt, cwcurr, pa );
+                xx_line_err_exit_cc( err_xx_opt, cwcurr, pa );
             }
         } else {
             scandata.s = gn.arg.s;
             if( gn.result < 0 ) {
-                xx_line_err_c( err_val_neg, pa );
+                xx_line_err_exit_c( err_val_neg, pa );
             } else {
                 init_pe_line( gn.result );
             }
