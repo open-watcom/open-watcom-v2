@@ -51,7 +51,7 @@ static const gmltag     gml_tags[] = {
 /***************************************************************************/
 
 static const gmltag     lay_tags[] = {
-    #define pick( name, length, routine, gmlflags, locflags ) { #name, length, routine, gmlflags, locflags, no_class },
+    #define pick( name, length, routine, gmlflags, locflags ) { #name, length, routine, gmlflags, locflags, TCLS_no_class },
     #include "gtagslay.h"
     #undef pick
 };
@@ -247,9 +247,9 @@ static void scan_gml( void )
                     } else if( (tag->tagflags & tag_is_general) != 0 ) {
                         // tag allowed everywhere
                         tag->gmlproc( tag );
-                    } else if( rs_loc == banner_tag ) {
+                    } else if( rs_loc == TLOC_banner ) {
                         xx_err_exit_c( err_tag_expected, "eBANNER" );
-                    } else {    // rs_loc == banreg_tag
+                    } else {    // rs_loc == TLOC_banreg
                         xx_err_exit_c( err_tag_expected, "eBANREGION" );
                     }
                     SkipDot( scandata.s );
@@ -277,7 +277,7 @@ static void scan_gml( void )
                 /*  tag SET.                                                       */
                 /*******************************************************************/
 
-                if( (tag->tagclass & (ip_start_tag | ip_end_tag | index_tag)) == 0
+                if( (tag->tagclass & (TCLS_ip_start | TCLS_ip_end | TCLS_index)) == 0
                   && strcmp( "SET", tag->tagname ) != 0 ) {
                     ProcFlags.force_pc = false;
                 }
@@ -292,10 +292,10 @@ static void scan_gml( void )
 
                 ProcFlags.tag_end_found = false;
                 if( ProcFlags.need_ddhd ) {
-                    if( tag->tagclass & index_tag ) {
+                    if( tag->tagclass & TCLS_index ) {
                         // tag is index tag
                         tag->gmlproc( tag );
-                    } else if( tag->tagclass & def_tag ) {
+                    } else if( tag->tagclass & TCLS_def ) {
                         // tag is DD, DDHD or GD
                         tag->gmlproc( tag );
                         ProcFlags.need_ddhd = false;
@@ -303,20 +303,20 @@ static void scan_gml( void )
                         xx_err_exit_c( err_tag_expected, "DDHD");
                     }
                 } else if( ProcFlags.need_dd ) {
-                    if( tag->tagclass & index_tag ) {
+                    if( tag->tagclass & TCLS_index ) {
                         // tag is index tag
                         tag->gmlproc( tag );
-                    } else if( tag->tagclass & def_tag ) {                                    // tag is DD, DDHD or GD
+                    } else if( tag->tagclass & TCLS_def ) {                                    // tag is DD, DDHD or GD
                         tag->gmlproc( tag );
                         ProcFlags.need_dd = false;
                     } else {
                         xx_err_exit_c( err_tag_expected, "DD");
                     }
                 } else if( ProcFlags.need_gd ) {
-                    if( (tag->tagclass & index_tag) == 0 ) {
+                    if( (tag->tagclass & TCLS_index) == 0 ) {
                         // tag is index tag
                         tag->gmlproc( tag );
-                    } else if( tag->tagclass & def_tag ) {                                    // tag is DD, DDHD or GD
+                    } else if( tag->tagclass & TCLS_def ) {                                    // tag is DD, DDHD or GD
                         // tag is DD, DDHD or GD
                         tag->gmlproc( tag );
                         ProcFlags.need_gd = false;
@@ -324,14 +324,14 @@ static void scan_gml( void )
                         xx_err_exit_c( err_tag_expected, "GD");
                     }
                 } else if( !nest_cb->in_list ) {
-                    if( (tag->tagclass & list_tag) == 0 ) {
+                    if( (tag->tagclass & TCLS_list) == 0 ) {
                         // tag is not a list tag
                         tag->gmlproc( tag );
                     } else {
                         xx_line_err_exit_c( err_no_list, g_tok_start );
                     }
                 } else if( ProcFlags.need_li_lp ) {
-                    if( tag->tagclass & li_lp_tag ) {
+                    if( tag->tagclass & TCLS_li_lp ) {
                         // tag is LP or LI
                         tag->gmlproc( tag );
                     } else {
@@ -943,7 +943,7 @@ bool is_ip_tag( e_tags tag )
     if( (tag < t_NONE) || (tag >= t_MAX) ) {  // catch invalid offset values
         internal_err_exit( __FILE__, __LINE__ );
     } else if( tag != t_NONE ) {                 // t_NONE is valid, but is not an ip_start_tag
-        return( (gml_tags[tag - 1].tagclass & ip_start_tag) != 0 );
+        return( (gml_tags[tag - 1].tagclass & TCLS_ip_start) != 0 );
     }
     return( false );                                // not found
 }

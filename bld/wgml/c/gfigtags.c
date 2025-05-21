@@ -1099,7 +1099,7 @@ void gml_figcap( const gmltag * entry )
 
     start_doc_sect();
     scr_process_break();
-    rs_loc = figcap_tag;
+    rs_loc = TLOC_figcap;
 
     g_scan_err = false;
     p = scandata.s;

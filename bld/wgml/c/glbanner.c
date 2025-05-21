@@ -218,7 +218,7 @@ void    lay_banner( const gmltag * entry )
     (void)entry;
 
     p = scandata.s;
-    rs_loc = banner_tag;
+    rs_loc = TLOC_banner;
 
     memset( &AttrFlags, 0, sizeof( AttrFlags ) );   // clear all attribute flags
     if( ProcFlags.lay_xxx != el_banner ) {

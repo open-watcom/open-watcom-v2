@@ -58,9 +58,9 @@ static const char * const str_tags[] = {
     "MAX"
 };
 
-static loc_to_name  l2n_names[L2N_ENTRIES] = { { address_tag, "EADDRESS" },
-                                               { figcap_tag, "FIGDESC or EFIG" },
-                                               { titlep_tag, "ETITLEP" } };
+static loc_to_name  l2n_names[L2N_ENTRIES] = { { TLOC_address, "EADDRESS" },
+                                               { TLOC_figcap, "FIGDESC or EFIG" },
+                                               { TLOC_titlep, "ETITLEP" } };
 
 /* basic utility function (also used for debugging) */
 

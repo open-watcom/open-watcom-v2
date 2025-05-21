@@ -291,7 +291,7 @@ void    lay_banregion( const gmltag * entry )
     (void)entry;
 
     p = scandata.s;
-    rs_loc = banreg_tag;
+    rs_loc = TLOC_banreg;
 
     memset( &AttrFlags, 0, sizeof( AttrFlags ) );   // clear all attribute flags
     if( del_ban != NULL ) {             // BANREGION cancels deleteable status
@@ -559,7 +559,7 @@ void    lay_banregion( const gmltag * entry )
 
 void    lay_ebanregion( const gmltag * entry )
 {
-    rs_loc = banner_tag;
+    rs_loc = TLOC_banner;
     if( ProcFlags.lay_xxx == el_banregion ) {   // :banregion was last tag
         ProcFlags.lay_xxx = el_ebanregion;
     } else {

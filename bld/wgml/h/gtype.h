@@ -250,12 +250,12 @@ typedef struct symdict *symdict_hdl;
 /***************************************************************************/
 
 typedef enum {
-    sl_none     = 0,    // for initialization
-    sl_attrib   = 1,    // single-letter attribute function ("&e'")
-    sl_funct    = 2,    // multi-letter function ("&'upper")
-    sl_text     = 3,    // treat as text ("& " and malformed items)
-    sl_symbol   = 4,    // symbol ("&<text>" and "&<text>.") -- but not one of the above items
-    sl_split    = 5,    // symbol value requires line be split
+    SL_none     = 0,    // for initialization
+    SL_attrib   = 1,    // single-letter attribute function ("&e'")
+    SL_funct    = 2,    // multi-letter function ("&'upper")
+    SL_text     = 3,    // treat as text ("& " and malformed items)
+    SL_symbol   = 4,    // symbol ("&<text>" and "&<text>.") -- but not one of the above items
+    SL_split    = 5,    // symbol value requires line be split
 } slflags;
 
 
@@ -485,12 +485,12 @@ typedef enum {
 /************************************************************************/
 
 typedef enum {
-    restricted_tag  = 0,                // tag is not allowed in any restricted section
-    titlep_tag      = 1,                // tag allowed in TITLEP section
-    address_tag     = 2,                // tag allowed in ADDRESS section
-    figcap_tag      = 4,                // tag allowed after FIGCAP
-    banner_tag      = 8,                // tag allowed in BANNER (BANREGION, eBANNER)
-    banreg_tag      = 16,               // tag allowed in BANREGION (eBANREGION)
+    TLOC_restricted  = 0,                // tag is not allowed in any restricted section
+    TLOC_titlep      = 1,                // tag allowed in TITLEP section
+    TLOC_address     = 2,                // tag allowed in ADDRESS section
+    TLOC_figcap      = 4,                // tag allowed after FIGCAP
+    TLOC_banner      = 8,                // tag allowed in BANNER (BANREGION, eBANNER)
+    TLOC_banreg      = 16,               // tag allowed in BANREGION (eBANREGION)
 } locflags;
 
 /************************************************************************/
@@ -499,13 +499,13 @@ typedef enum {
 /************************************************************************/
 
 typedef enum {
-    no_class        = 0,                // tag is not assigned a class
-    def_tag         = 1,                // marks DDHD, DD, GD
-    index_tag       = 2,                // marks I1, I2, I3, IH1, IH2, IH3
-    ip_start_tag    = 4,                // marks CIT, HP0, HP1, HP2, HP3, SF, Q
-    ip_end_tag      = 8,                // marks eCIT, eHP0, eHP1, eHP2, eHP3, eSF, eQ
-    li_lp_tag       = 16,               // marks LI LP
-    list_tag        = 32,               // marks DTHD, DDHD, DT, DD, GT, GD, LI, LP
+    TCLS_no_class   = 0,                // tag is not assigned a class
+    TCLS_def        = 1,                // marks DDHD, DD, GD
+    TCLS_index      = 2,                // marks I1, I2, I3, IH1, IH2, IH3
+    TCLS_ip_start   = 4,                // marks CIT, HP0, HP1, HP2, HP3, SF, Q
+    TCLS_ip_end     = 8,                // marks eCIT, eHP0, eHP1, eHP2, eHP3, eSF, eQ
+    TCLS_li_lp      = 16,               // marks LI LP
+    TCLS_list       = 32,               // marks DTHD, DDHD, DT, DD, GT, GD, LI, LP
 } classflags;
 
 typedef struct gmltag {

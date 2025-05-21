@@ -1611,7 +1611,7 @@ extern void gml_titlep( const gmltag * entry )
     add_symvar( global_dict, "$stitle", "", 0, SI_no_subscript, SF_none );  // set null string
     add_symvar( global_dict, "$title", "", 0, SI_no_subscript, SF_none );   // set null string
 
-    rs_loc = titlep_tag;
+    rs_loc = TLOC_titlep;
     if( input_cbs->fmflags & II_file ) {    // save line number
         titlep_lineno = input_cbs->s.f->lineno;
     } else if( input_cbs->fmflags & II_tag_mac ) {

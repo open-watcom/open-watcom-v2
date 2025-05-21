@@ -51,7 +51,7 @@ void gml_address( const gmltag * entry )
     first_aline = true;
     font_save = g_curr_font;
     g_curr_font = layout_work.address.font;
-    rs_loc = address_tag;
+    rs_loc = TLOC_address;
 
     init_nest_cb();
     nest_cb->p_stack = copy_to_nest_stack();
@@ -97,7 +97,7 @@ void gml_eaddress( const gmltag * entry )
         g_tag_prec_err_exit( t_ADDRESS );
     }
     g_curr_font = font_save;
-    rs_loc = titlep_tag;
+    rs_loc = TLOC_titlep;
     t_page.cur_left = nest_cb->lm;
     t_page.max_width = nest_cb->rm;
     wk = nest_cb;
