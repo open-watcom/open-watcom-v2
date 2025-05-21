@@ -582,8 +582,9 @@ static void *df_do_nothing_num( void )
  * returns to the caller. It should never actually run. Since it is used
  * in the function tables, it must conform to the function typedef.
  */
+NO_RETURN( static void df_bad_code_err_exit( void ) );
 
-NO_RETURN( static void df_bad_code_err_exit( void ) )
+static void df_bad_code_err_exit( void )
 {
     internal_err_exit( __FILE__, __LINE__ );
 //    return( NULL );

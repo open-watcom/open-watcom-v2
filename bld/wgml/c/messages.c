@@ -262,8 +262,9 @@ void out_msg_research( const char *msg, ... )
 /*  may be used to implement allowing multiple errors to be displayed      */
 /*  if that is ever desired                                                */
 /***************************************************************************/
+NO_RETURN( static void err_exit( void ) );
 
-NO_RETURN( static void err_exit( void ) )
+static void err_exit( void )
 {
     if( GlobalFlags.research ) {        // TBD
 

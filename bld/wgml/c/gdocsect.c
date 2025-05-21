@@ -68,8 +68,9 @@ static struct {
 /***************************************************************************/
 /*  error routine for wrong sequence of doc section tags                   */
 /***************************************************************************/
+NO_RETURN( static void g_err_doc_sect( doc_section  ds ) );
 
-NO_RETURN( static void g_err_doc_sect( doc_section  ds ) )
+static void g_err_doc_sect( doc_section  ds )
 {
     err_count++;
     g_scan_err = true;
