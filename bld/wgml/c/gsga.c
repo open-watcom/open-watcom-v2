@@ -203,9 +203,9 @@ static  int         ranges[4];
 /*          cc = CC_omit if no more parms                                  */
 /***************************************************************************/
 
-static  condcode    scan_att_optionsA( gaflags * att_flags )
+static  condcode    scan_att_optionsA( gaflags *att_flags )
 {
-    char        *   p;
+    char            *p;
     condcode        cc = CC_pos;
 
     while( cc == CC_pos ) {
@@ -263,8 +263,7 @@ static  condcode    scan_att_optionsA( gaflags * att_flags )
 /*               other is error                                            */
 /***************************************************************************/
 
-static  condcode    scan_att_optionsB( gavalflags * val_flags, condcode cca,
-                                       gaflags * att_flags )
+static  condcode    scan_att_optionsB( gavalflags *val_flags, condcode cca, gaflags *att_flags )
 {
     condcode        cc;
     getnum_block    gn;
@@ -281,13 +280,13 @@ static  condcode    scan_att_optionsB( gavalflags * val_flags, condcode cca,
     case 'a' :
         if( !strnicmp( "ANY", g_tok_start, arg_flen ) ) {
 
-            *val_flags |= val_any;
+            *val_flags |= GAVAL_any;
             *att_flags |= GAFLG_any;
         } else {
             if( (arg_flen > 3) && (arg_flen < 10)
                 && !strnicmp( "AUTOmatic", g_tok_start, arg_flen ) ) {
 
-                *val_flags |= val_auto;
+                *val_flags |= GAVAL_auto;
                 *att_flags |= GAFLG_auto;
             } else {
                 xx_err_exit( err_att_val_inv );
@@ -301,13 +300,13 @@ static  condcode    scan_att_optionsB( gavalflags * val_flags, condcode cca,
                 if( arg_flen < sizeof( stringval ) ) {
                     strncpy( stringval, g_tok_start, arg_flen );
                     stringval[arg_flen] = '\0';
-                    *val_flags |= val_value;
+                    *val_flags |= GAVAL_value;
                 } else {
                     valptr = mem_tokdup( g_tok_start, arg_flen );
-                    *val_flags |= val_valptr;
+                    *val_flags |= GAVAL_valptr;
                 }
                 if( *att_flags & GAFLG_any ) { // default for any specified
-                    *val_flags |= val_def;
+                    *val_flags |= GAVAL_def;
                     *att_flags |= GAFLG_def;
                 }
             }
@@ -317,7 +316,7 @@ static  condcode    scan_att_optionsB( gavalflags * val_flags, condcode cca,
         if( (arg_flen > 2) && (arg_flen < 6)
           && strnicmp( "RANge", g_tok_start, arg_flen ) == 0 ) {
 
-            *val_flags |= val_range;
+            *val_flags |= GAVAL_range;
             *att_flags |= GAFLG_range;
 
             gn.arg = scandata;
@@ -356,14 +355,14 @@ static  condcode    scan_att_optionsB( gavalflags * val_flags, condcode cca,
                 }
             }
             if( ranges[2] > INT_MIN ) {
-                *val_flags |= val_def;  // we have default
+                *val_flags |= GAVAL_def;  // we have default
                 *att_flags |= GAFLG_def;  // we have default
             }
         } else {
             if( (arg_flen == 5)
                 && !strnicmp( "RESET", g_tok_start, arg_flen ) ) {
 
-                *val_flags |= val_reset;
+                *val_flags |= GAVAL_reset;
                 /* no further processing */
             } else {
                 cc = CC_neg;
@@ -374,7 +373,7 @@ static  condcode    scan_att_optionsB( gavalflags * val_flags, condcode cca,
         if( (arg_flen > 2) && (arg_flen < 7)
           && strnicmp( "LENgth", g_tok_start, arg_flen ) == 0 ) {
 
-            *val_flags |= val_length;
+            *val_flags |= GAVAL_length;
             gn.arg = scandata;
             gn.ignore_blanks = false;
             cc = getnum( &gn );
@@ -397,7 +396,7 @@ static  condcode    scan_att_optionsB( gavalflags * val_flags, condcode cca,
             cc = getarg();
             if( (cc == CC_pos) || (cc == CC_quotes) || (cc == CC_quotes0) ) {
                  if( arg_flen <= VAL_LENGTH ) {
-                    *val_flags |= val_value;
+                    *val_flags |= GAVAL_value;
                     strncpy( stringval, g_tok_start, arg_flen );
                     stringval[arg_flen] = '\0';
                     if( *att_flags & GAFLG_upper ) {
@@ -409,7 +408,7 @@ static  condcode    scan_att_optionsB( gavalflags * val_flags, condcode cca,
 //                    cc = CC_neg;           // this is a restriction from wgml 4.0
 //                    break;              // can be removed if neccessary
 #else
-                    *val_flags |= val_valptr;
+                    *val_flags |= GAVAL_valptr;
                     valptr = mem_tokdup( g_tok_start, arg_flen );
                     if( *att_flags & GAFLG_upper ) {
                         strupr( valptr );
@@ -428,7 +427,7 @@ static  condcode    scan_att_optionsB( gavalflags * val_flags, condcode cca,
             if( cc == CC_pos && (arg_flen > 2) && (arg_flen < 8)
                 && !strnicmp( "DEFault", g_tok_start, arg_flen ) ) {
 
-                *val_flags |= val_def;
+                *val_flags |= GAVAL_def;
                 *att_flags |= GAFLG_def;
             } else {
                 xx_err_exit( err_att_val_inv );
@@ -471,8 +470,8 @@ void    scr_ga( void )
 
     savetag = ' ';
     saveatt = ' ';
-    att_flags = 0;
-    val_flags = 0;
+    att_flags = GAFLG_none;
+    val_flags = GAVAL_none;
 
     cc = getarg();                      // Tagname or *
 
@@ -623,15 +622,15 @@ void    scr_ga( void )
     gaval->next = NULL;
 
     gaval->valflags = val_flags;
-    if( val_flags & val_length ) {
+    if( val_flags & GAVAL_length ) {
         gaval->a.length = ranges[0];
-    } else if( val_flags & val_range ) {
+    } else if( val_flags & GAVAL_range ) {
         for( k = 0; k < 4; k++ ) {
             gaval->a.range[k] = ranges[k];
         }
-    } else if( val_flags & val_value ) {
+    } else if( val_flags & GAVAL_value ) {
         strcpy( gaval->a.value, stringval );
-    } else if( val_flags & val_valptr ) {
+    } else if( val_flags & GAVAL_valptr ) {
         gaval->a.valptr = valptr;
     }
     scan_restart = scandata.e;

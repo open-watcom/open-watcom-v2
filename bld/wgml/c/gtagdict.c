@@ -102,7 +102,7 @@ static  void    free_att( gaentry *ga )
 
     vw = ga->vals;
     while( vw != NULL ) {
-        if( vw->valflags & val_valptr ) {
+        if( vw->valflags & GAVAL_valptr ) {
             mem_free( vw->a.valptr );
         }
         vwn = vw->next;
@@ -199,7 +199,7 @@ gtentry     *find_user_tag( tag_dict *pdict, const char *tagname )
 
 static  void    print_val_entry( gavalentry *wk )
 {
-    unsigned            flags;
+    gavalflags          flags;
     int                 find;
     char                opt[256];
     static const char   v_txt[8] [11] =
@@ -230,8 +230,8 @@ static  void    print_val_entry( gavalentry *wk )
 //    out_msg( "val:        %-10.10s %s\n", "jaja", opt );
     flags = wk->valflags;
 
-    if( flags & val_range ) {
-        if( flags & val_def ) {
+    if( flags & GAVAL_range ) {
+        if( flags & GAVAL_def ) {
             sprintf( opt, "default=%d %d min=%d max=%d",
                      wk->a.range[2], wk->a.range[3],
                      wk->a.range[0], wk->a.range[1] );
@@ -241,43 +241,43 @@ static  void    print_val_entry( gavalentry *wk )
         }
         out_msg( "val:        %-10.10s %s\n", " ", opt );
 
-    } else if( flags & val_length ) {
+    } else if( flags & GAVAL_length ) {
 
         sprintf( opt, "length=%d\n", wk->a.range[0] );
         out_msg( "val:        %-10.10s %s\n", " ", opt );
 
-    } else if( flags & val_any ) {
+    } else if( flags & GAVAL_any ) {
 
-        if( flags & val_value ) {
+        if( flags & GAVAL_value ) {
 
             out_msg( "val:        %-10.10s any use='%s'\n", "", wk->a.value );
 
-        } else if( flags & val_valptr ) {
+        } else if( flags & GAVAL_valptr ) {
 
             out_msg( "val:        %-10.10s any use='%s'\n", " ", wk->a.valptr );
         }
-    } else if( flags & val_auto ) {
+    } else if( flags & GAVAL_auto ) {
 
-        if( flags & val_value ) {
+        if( flags & GAVAL_value ) {
 
             out_msg( "val:        %-10.10s automatic use='%s'\n", "", wk->a.value );
 
-        } else if( flags & val_valptr ) {
+        } else if( flags & GAVAL_valptr ) {
 
             out_msg( "val:        %-10.10s automatic use='%s'\n", " ", wk->a.valptr );
         }
-    } else if( flags & val_value ) {
+    } else if( flags & GAVAL_value ) {
 
-        if( flags & val_def ) {
+        if( flags & GAVAL_def ) {
             strcpy( opt, "default" );
         } else {
             opt[0] = '\0';
         }
         out_msg( "val:        %-10.10s %s\n", wk->a.value, opt );
 
-    } else if( flags & val_valptr ) {
+    } else if( flags & GAVAL_valptr ) {
 
-        if( flags & val_def ) {
+        if( flags & GAVAL_def ) {
             strcpy( opt, "default" );
         } else {
             opt[0] = '\0';

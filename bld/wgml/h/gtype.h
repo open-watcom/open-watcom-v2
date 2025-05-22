@@ -524,14 +524,15 @@ typedef struct gmltag {
 /***************************************************************************/
 
 typedef enum gavalflags {
-    val_def     = 1,                    // value is default
-    val_any     = 2,                    // any value allowed
-    val_length  = 4,                    // max length of value
-    val_range   = 8,                    // allowed range (numeric)
-    val_value   = 16,                   // allowed value stored in union
-    val_valptr  = 32,                   // allowed value allocated
-    val_auto    = 64,                   // automatic (not used / implemented)
-    val_reset   = 128                   // reset (not used / implemented)
+    GAVAL_none    = 0,                    // none
+    GAVAL_def     = 1,                    // value is default
+    GAVAL_any     = 2,                    // any value allowed
+    GAVAL_length  = 4,                    // max length of value
+    GAVAL_range   = 8,                    // allowed range (numeric)
+    GAVAL_value   = 16,                   // allowed value stored in union
+    GAVAL_valptr  = 32,                   // allowed value allocated
+    GAVAL_auto    = 64,                   // automatic (not used / implemented)
+    GAVAL_reset   = 128                   // reset (not used / implemented)
 } gavalflags;
 
 /***************************************************************************/
@@ -556,6 +557,7 @@ typedef struct gavalentry {
 /***************************************************************************/
 
 typedef enum {
+    GAFLG_none        = 0,                // none
     GAFLG_def         = 0x0001,           // attribute has default value
     GAFLG_range       = 0x0002,           // attribute has range
     GAFLG_auto        = 0x0004,           // attribute is automatic

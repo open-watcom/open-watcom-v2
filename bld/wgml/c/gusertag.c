@@ -70,16 +70,16 @@ static void add_defaults_to_dict( gtentry * ge, symdict_hdl dict )
         }
         if( ga->attflags & (GAFLG_def | GAFLG_auto) ) {  // with default
             for( gaval = ga->vals; gaval != NULL; gaval = gaval->next ) {
-                if( gaval->valflags & (val_def | val_auto) ) {// value is default
+                if( gaval->valflags & (GAVAL_def | GAVAL_auto) ) {// value is default
                     valp = NULL;
-                    if( gaval->valflags & val_value ) { // short string
+                    if( gaval->valflags & GAVAL_value ) { // short string
                         valp = gaval->a.value;
                     } else {
-                        if( gaval->valflags & val_valptr ) {// long string
+                        if( gaval->valflags & GAVAL_valptr ) {// long string
                             valp = gaval->a.valptr;
                         }
                     }
-                    if( gaval->valflags & val_range ) { // range default
+                    if( gaval->valflags & GAVAL_range ) { // range default
                         sprintf( token_buf, "%d", gaval->a.range[2] );
                         valp = token_buf;
                     }
@@ -110,16 +110,16 @@ static bool check_att_value( gaentry * ga, gtentry * ge, symdict_hdl loc_dict )
     g_scan_err = true;
     msg_done = false;
     for( gaval = ga->vals; gaval != NULL; gaval = gaval->next ) {
-        if( gaval->valflags & val_any ) {
+        if( gaval->valflags & GAVAL_any ) {
             g_scan_err = false;           // any value is allowed
             break;
         }
 
         valp = NULL;
-        if( gaval->valflags & val_value ) {
+        if( gaval->valflags & GAVAL_value ) {
             valp = gaval->a.value;
         } else {
-            if( gaval->valflags & val_valptr ) {
+            if( gaval->valflags & GAVAL_valptr ) {
                 valp = gaval->a.valptr;
             }
         }
@@ -129,7 +129,7 @@ static bool check_att_value( gaentry * ga, gtentry * ge, symdict_hdl loc_dict )
                 break;
             }
         } else {
-            if( gaval->valflags & val_range ) {
+            if( gaval->valflags & GAVAL_range ) {
                 long    attval;
 
                 attval = strtol( token_buf, NULL, 10 );
@@ -140,7 +140,7 @@ static bool check_att_value( gaentry * ga, gtentry * ge, symdict_hdl loc_dict )
 //                    break;
                 }
             } else {
-                if( gaval->valflags & val_length ) {
+                if( gaval->valflags & GAVAL_length ) {
                     if( strlen( token_buf ) > gaval->a.length ) {
                         xx_err_exit( err_att_len_inv );  // value too long
 //                        msg_done = true;
@@ -287,7 +287,7 @@ bool process_tag( gtentry *ge, mac_entry * me )
                             if( ga->attflags & GAFLG_range ) {
                                 for( gaval = ga->vals; gaval != NULL;
                                      gaval = gaval->next ) {
-                                     if( gaval->valflags & val_range ) {
+                                     if( gaval->valflags & GAVAL_range ) {
                                         break;
                                      }
                                 }
