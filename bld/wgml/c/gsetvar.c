@@ -264,7 +264,6 @@ void    scr_se( void )
     symsub          *symsubval;
     symvar          sym;
     unsigned        len;
-    char            *val;
 
     subscript = SI_no_subscript;                       // not subscripted
     g_scan_err = false;
@@ -292,15 +291,15 @@ void    scr_se( void )
         if( *p == ')' ) {
             p++;
         }
-        val = p;
+        valstart = p;
         if( *p == '=' ) {                       // all other cases have no equal sign (see above)
             p++;
             if( ProcFlags.blanks_allowed ) {
                 SkipSpaces( p );                // skip over spaces to value
             }
-            val = p;
+            valstart = p;
             len = scandata.e - p;
-            if( is_quote_char( *val ) ) {      // quotes ?
+            if( is_quote_char( *valstart ) ) {  // quotes ?
                 p++;
                 while( p < scandata.e ) {
                     /*
@@ -310,15 +309,15 @@ void    scr_se( void )
                      *
                      *  if( (*valstart == *p) && (!*(p+1) || (*(p+1) == ' ')) ) {
                      */
-                    if( (*val == p[0]) && p + 1 >= scandata.e ) {
+                    if( (*valstart == p[0]) && p + 1 >= scandata.e ) {
                         break;
                     }
                     ++p;
                 }
-                if( (val < p) && (*p == *val) ) { // delete quotes if more than one character
-                    val++;
+                if( (valstart < p) && (*p == *valstart) ) { // delete quotes if more than one character
+                    valstart++;
                 }
-                len = p - val;
+                len = p - valstart;
             } else {                                // numeric or undelimited string
                 getnum_block    gn;
                 condcode        cc;
@@ -327,20 +326,20 @@ void    scr_se( void )
                 gn.arg.e = scandata.e;
                 gn.ignore_blanks = true;
                 cc = getnum( &gn );             // try numeric expression evaluation
-                if( cc != CC_notnum ) {
-                    val = gn.resultstr;
-                    len = scandata.e - val;
+                if( cc == CC_pos || cc == CC_neg ) {
+                    valstart = gn.resultstr;
+                    len = gn->length;
                 }                               // if notnum treat as character value
             }
-            rc = add_symvar_sym( &sym, val, len, subscript, sym.flags );
+            rc = add_symvar_sym( &sym, valstart, len, subscript, sym.flags );
         } else if( *p == '\'' ) {               // \' may introduce valid value
             if( *(p - 1) == ' ' ) {             // but must be preceded by a space
                 p++;
-                while( p < scandata.e && (*val != *p) ) {  // look for final \'
+                while( p < scandata.e && (*valstart != *p) ) {  // look for final \'
                     p++;
                 }
-                val++;                                 // delete initial \'
-                rc = add_symvar_sym( &sym, val, p - val, subscript, sym.flags );
+                valstart++;                                 // delete initial \'
+                rc = add_symvar_sym( &sym, valstart, p - valstart, subscript, sym.flags );
             } else {                                        // matches wgml 4.0
                 if( !ProcFlags.suppress_msg ) {
                     xx_line_err_exit_c( err_eq_expected, p);
