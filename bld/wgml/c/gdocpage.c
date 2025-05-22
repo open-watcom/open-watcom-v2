@@ -1919,7 +1919,7 @@ void insert_col_main( doc_element * a_element )
                                      a_element->depth);
             last_co = ProcFlags.concat;
         } else {
-            if( (last_co != ProcFlags.concat) && (nest_cb->c_tag != t_FIG) ) { // FB/FK, at least, need this
+            if( (last_co != ProcFlags.concat) && (nest_cb->c_tag != T_FIG) ) { // FB/FK, at least, need this
                 a_element->do_split = true;     // split block when closed
             }
             t_doc_el_group->last->next = a_element;

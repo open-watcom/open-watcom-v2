@@ -690,12 +690,12 @@ bool    i_page_position( const char *p, lay_attr_i lay_attr, page_pos *tm )
 
     cvterr = false;
     if( strcmp( "left", lay_attr->specval ) == 0 ) {
-        *tm = pos_left;
+        *tm = PPOS_left;
     } else if( strcmp( "right", lay_attr->specval ) == 0 ) {
-        *tm = pos_right;
+        *tm = PPOS_right;
     } else if( (strcmp( "centre", lay_attr->specval ) == 0
       || strcmp( "center", lay_attr->specval ) == 0 ) ) {
-        *tm = pos_center;
+        *tm = PPOS_center;
     } else {
         xx_line_err_exit_c( err_inv_att_val, p );
     }
@@ -706,11 +706,11 @@ void    o_page_position( FILE *fp, lay_attr_o lay_attr, const page_pos *tm )
 {
     char    * p;
 
-    if( *tm == pos_left ) {
+    if( *tm == PPOS_left ) {
         p = "left";
-    } else if( *tm == pos_right ) {
+    } else if( *tm == PPOS_right ) {
         p = "right";
-    } else if( *tm == pos_centre ) {
+    } else if( *tm == PPOS_centre ) {
         p = "centre";
     } else {
         p = "???";

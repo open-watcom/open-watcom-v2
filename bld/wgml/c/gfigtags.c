@@ -554,7 +554,7 @@ void gml_fig( const gmltag * entry )
     nest_cb->left_indent = conv_hor_unit( &layout_work.fig.left_adjust, g_curr_font );
     nest_cb->right_indent = conv_hor_unit( &layout_work.fig.right_adjust, g_curr_font );
     nest_cb->font = g_curr_font;
-    nest_cb->c_tag = t_FIG;
+    nest_cb->c_tag = T_FIG;
 
     sav_group_type = cur_group_type;
     cur_group_type = gt_fig;
@@ -727,7 +727,7 @@ void gml_efig( const gmltag * entry )
     SkipDot( p );                       // possible tag end
 
     if( cur_group_type != gt_fig ) {    // no preceding :FIG tag
-        g_tag_prec_err_exit( t_FIG );
+        g_tag_prec_err_exit( T_FIG );
     }
 
     t_page.cur_left = nest_cb->left_indent; // reset various values in case needed for frame
@@ -1136,7 +1136,7 @@ void gml_figcap( const gmltag * entry )
 
     if( ProcFlags.wh_device ) {             // Insert a marker
         marker = process_word( NULL, 0, g_curr_font, false );
-        marker->type |= tx_figcap;           // mark as from prefix string
+        marker->type |= TXT_figcap;           // mark as from prefix string
         marker->x_address = t_page.cur_width;
         t_line->last->next = marker;
         marker->prev = t_line->last;

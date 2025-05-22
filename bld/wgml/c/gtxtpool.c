@@ -90,9 +90,9 @@ text_chars *alloc_text_chars( const char *text, unsigned cnt, font_number font )
     curr->post_ix = ProcFlags.post_ix;
     curr->pre_gap = false;
     curr->tab_align = al_left;
-    curr->tab_pos = tt_none;
+    curr->tab_pos = TAB_none;
     curr->ts_width = 0;
-    curr->type = tx_norm;
+    curr->type = TXT_norm;
     curr->font = font;
     curr->f_switch = fs_norm;
     curr->width = 0;

@@ -1186,7 +1186,7 @@ void start_doc_sect( void )
         lvl_reset = false;
         init_nest_cb();
         nest_cb->p_stack = copy_to_nest_stack();
-        nest_cb->c_tag = t_TITLEP;
+        nest_cb->c_tag = T_TITLEP;
         nest_cb->p_stack->lineno = titlep_lineno; // correct line number
         break;
     case doc_sect_abstract :

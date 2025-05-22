@@ -80,7 +80,7 @@ static void proc_p_pc( p_lay_tag * p_pc, e_tags t )
 
     SkipDot( p );                       // over '.'
     if( *p != '\0' ) {
-        if( (t == t_P) && !ProcFlags.concat ) {
+        if( (t == T_P) && !ProcFlags.concat ) {
             if( input_cbs->fmflags & II_tag ) {
                 g_post_skip = 0;
             } else {
@@ -89,7 +89,7 @@ static void proc_p_pc( p_lay_tag * p_pc, e_tags t )
             }
         }
         process_text( p, g_curr_font );
-    } else if( (t == t_P) && !ProcFlags.concat ) {
+    } else if( (t == T_P) && !ProcFlags.concat ) {
         g_post_skip = 0;
     }
 
@@ -105,7 +105,7 @@ extern void gml_p( const gmltag * entry )
 {
     (void)entry;
 
-    proc_p_pc( &layout_work.p, t_P );
+    proc_p_pc( &layout_work.p, T_P );
 }
 
 /***************************************************************************/
@@ -116,7 +116,7 @@ extern void gml_pc( const gmltag * entry )
 {
     (void)entry;
 
-    proc_p_pc( &layout_work.pc, t_PC );
+    proc_p_pc( &layout_work.pc, T_PC );
 }
 
 /***************************************************************************/

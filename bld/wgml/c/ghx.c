@@ -122,7 +122,7 @@ static void hx_header( char * h_num, char * h_text, hdsrc hn_lvl, hdsrc hds_lvl 
                            layout_work.hx.hx_sect[hds_lvl].text_font );
         }
     } else {                                    // from a section heading
-        line_position = pos_center;
+        line_position = PPOS_center;
         set_skip_vars( &layout_work.hx.hx_head[hds_lvl].pre_skip,
                        &layout_work.hx.hx_sect[hds_lvl].pre_top_skip,
                        &layout_work.hx.hx_sect[hds_lvl].post_skip,

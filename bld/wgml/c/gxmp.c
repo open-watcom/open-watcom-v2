@@ -122,7 +122,7 @@ void gml_xmp( const gmltag * entry )
     nest_cb->left_indent = conv_hor_unit( &layout_work.xmp.left_indent, g_curr_font );
     nest_cb->right_indent = -1 * conv_hor_unit( &layout_work.xmp.right_indent, g_curr_font );
     nest_cb->font = g_curr_font;
-    nest_cb->c_tag = t_XMP;
+    nest_cb->c_tag = T_XMP;
 
     t_page.cur_left += nest_cb->left_indent;
     t_page.max_width += nest_cb->right_indent;
@@ -207,7 +207,7 @@ void gml_exmp( const gmltag * entry )
 
     scr_process_break();
     if( cur_group_type != gt_xmp ) {        // no preceding :XMP tag
-        g_tag_prec_err_exit( t_XMP );
+        g_tag_prec_err_exit( T_XMP );
     }
     g_curr_font = font_save;                // recover font in effect before XMP
     ProcFlags.concat = concat_save;

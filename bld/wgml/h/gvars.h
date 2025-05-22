@@ -93,7 +93,7 @@ global  int             wng_count;      // Overall warning count
 global  char            CONT_char;      // CONTINUE char (normally 0x03)
 global  char            GML_char;       // GML Keywword start char (normally ":")
 global  char            SCR_char;       // SCRIPT keywword start char (normally ".")
-global  char            CW_sep_char;    // Control Word separator char (normally ";")
+global  char            cw_sep_char;    // Control Word separator char (normally ";")
 
 global  int             CPI;            // chars per inch
 global  space_units     CPI_units;      // unit for chars per inch

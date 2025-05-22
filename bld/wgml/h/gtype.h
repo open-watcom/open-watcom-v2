@@ -451,9 +451,9 @@ typedef struct  inputcb {
 /***************************************************************************/
 
 typedef enum {
-    cw_none,
-    cw_break,                           // control word causes break, ie. flush output
-    cw_o_t                              // control word produces output text
+    CW_none,
+    CW_break,                           // control word causes break, ie. flush output
+    CW_out_text                         // control word produces output text
 } scrflags;
 
 typedef struct scrtag {
@@ -851,14 +851,12 @@ typedef enum lay_sub {
 /****************************************************************************/
 
 typedef enum functs {
-    function_escape         = '\xfd',
-    function_end            = '\x01',
-
-    function_subscript      = '\x02',
-    function_sub_end        = '\x03',
-
-    function_superscript    = '\x04',
-    function_sup_end        = '\x05',
+    FUNC_escape          = '\xfd',
+    FUNC_end             = '\x01',
+    FUNC_subscript_beg   = '\x02',
+    FUNC_subscript_end   = '\x03',
+    FUNC_superscript_beg = '\x04',
+    FUNC_superscript_end = '\x05',
 } functs;
 
 /***************************************************************************/
@@ -866,14 +864,14 @@ typedef enum functs {
 /***************************************************************************/
 
 typedef enum e_tags {
-    t_NONE,
-    #define pick( name, length, routine, gmlflags, locflags, classname )  t_##name,
+    T_NONE,
+    #define pick( name, length, routine, gmlflags, locflags, classname )  T_##name,
     #include "gtags.h"
     #undef pick
-//    #define pick( name, routine, flags )  t_##name,
+//    #define pick( name, routine, flags )  T_##name,
 //    #include "gscrcws.h" TBD
 //    #undef pick
-    t_MAX                               // the last one for range check
+    T_MAX                               // the last one for range check
 } e_tags;
 
 /***************************************************************************/
@@ -1021,16 +1019,16 @@ typedef struct {
 /***************************************************************************/
 
 typedef enum {
-    tx_norm     = 0,    // normal text
-    tx_sup      = 1,    // superscript text
-    tx_sub      = 2,    // subscript text
-    tx_figcap   = 4,    // FIGCAP prefix ending (only used with WHELP)
+    TXT_norm     = 0,    // normal text
+    TXT_sup      = 1,    // superscript text
+    TXT_sub      = 2,    // subscript text
+    TXT_figcap   = 4,    // FIGCAP prefix ending (only used with WHELP)
 } text_type;
 
 typedef enum {
-    tt_none,
-    tt_def,
-    tt_user
+    TAB_none,
+    TAB_def,
+    TAB_user
 } tab_type;
 
 /***************************************************************************/
@@ -1439,10 +1437,10 @@ typedef struct {
 } hd_num_data;
 
 typedef enum page_pos {         // needed here to avoid gtypelay.h circularity
-    pos_left,
-    pos_right,
-    pos_center,
-    pos_centre = pos_center
+    PPOS_left,
+    PPOS_right,
+    PPOS_center,
+    PPOS_centre = PPOS_center
 } page_pos;
 
 /***************************************************************************/
@@ -1609,9 +1607,9 @@ typedef struct proc_flags {
     unsigned        scr_cw              : 1;// input buf starts with SCR_char
     unsigned        if_cond             : 1;// symbol substitution in if condition
     unsigned        macro_ignore        : 1;// .. in col 1-2
-    unsigned        CW_force_sep        : 1;// scr cw line was indented and separator must be recognized
-    unsigned        CW_noblank          : 1;// no blank between CW/macro and first operand
-    unsigned        CW_sep_ignore       : 1;// ignore scr cw separator
+    unsigned        cw_force_sep        : 1;// scr cw line was indented and separator must be recognized
+    unsigned        cw_noblank          : 1;// no blank between CW/macro and first operand
+    unsigned        cw_sep_ignore       : 1;// ignore scr cw separator
     unsigned        indented_text       : 1;// text was indented
     unsigned        in_macro_define     : 1;// macro definition active
     unsigned        suppress_msg        : 1;// suppress error msg (during scanning)

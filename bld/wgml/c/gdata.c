@@ -87,7 +87,7 @@ void init_global_vars( void )
 
     GML_char            = GML_CHAR_DEFAULT;     // GML start char
     SCR_char            = SCR_CHAR_DEFAULT;     // script start char
-    CW_sep_char         = CW_SEP_CHAR_DEFAULT;  // script control word seperator
+    cw_sep_char         = CW_SEP_CHAR_DEFAULT;  // script control word seperator
 
     CPI                 = 10;           // chars per inch
     CPI_units           = SU_chars;
@@ -202,7 +202,7 @@ void init_global_vars( void )
     line_pool               = NULL;
     doc_el_pool             = NULL;
 
-    line_position           = pos_left;
+    line_position           = PPOS_left;
 
     lay_files           = NULL;         // filename(s) from ( LAYout option
 

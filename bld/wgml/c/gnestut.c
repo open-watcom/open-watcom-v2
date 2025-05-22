@@ -47,7 +47,7 @@ void init_nest_cb( void )
     memset( wk, 0, sizeof( *wk ) );
 
     wk->prev = nest_cb;
-    wk->c_tag = t_NONE;
+    wk->c_tag = T_NONE;
     wk->p_stack = NULL;
     wk->u.dl_layout = NULL;             // clears all pointers in union
     wk->spacing = g_text_spacing;       // save spacing on entry

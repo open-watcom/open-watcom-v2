@@ -57,7 +57,7 @@ void gml_lq( const gmltag * entry )
     init_nest_cb();
     nest_cb->p_stack = copy_to_nest_stack();
 
-    nest_cb->c_tag = t_LQ;
+    nest_cb->c_tag = T_LQ;
 
     nest_cb->left_indent = conv_hor_unit( &layout_work.lq.left_indent, g_curr_font );
     nest_cb->right_indent = -1 * conv_hor_unit( &layout_work.lq.right_indent, g_curr_font );
@@ -107,9 +107,9 @@ void gml_elq( const gmltag * entry )
 
     scr_process_break();
 
-    if( nest_cb->c_tag != t_LQ ) {                  // unexpected exxx tag
-        if( nest_cb->c_tag == t_NONE ) {
-            g_tag_no_err_exit( t_LQ + 1 );               // no exxx expected, no tag active
+    if( nest_cb->c_tag != T_LQ ) {                  // unexpected exxx tag
+        if( nest_cb->c_tag == T_NONE ) {
+            g_tag_no_err_exit( T_LQ + 1 );               // no exxx expected, no tag active
         } else {
             g_tag_nest_err_exit( nest_cb->c_tag + 1 );   // exxx expected
         }

@@ -163,7 +163,7 @@ void    init_def_lay( void )
     layout_work.hx.hx_head[k].number_form = num_none;
     layout_work.hx.hx_head[k].number_style = h_style;
     layout_work.hx.hx_head[k].page_eject = ej_yes;
-    layout_work.hx.hx_head[k].line_position = pos_left;
+    layout_work.hx.hx_head[k].line_position = PPOS_left;
     layout_work.hx.hx_head[k].display_heading = true;
     layout_work.hx.hx_head[k].line_break = true;
     layout_work.hx.hx_head[k].number_reset = true;
@@ -546,7 +546,7 @@ void    init_def_lay( void )
     /***********************************************************************/
     lay_init_su( z0, &layout_work.title.left_adjust );
     lay_init_su( i1, &layout_work.title.right_adjust );
-    layout_work.title.page_position = pos_right;
+    layout_work.title.page_position = PPOS_right;
     layout_work.title.font = 2;
     lay_init_su( n15, &layout_work.title.pre_top_skip );
     lay_init_su( n2, &layout_work.title.skip );
@@ -556,7 +556,7 @@ void    init_def_lay( void )
     /***********************************************************************/
     lay_init_su( z0, &layout_work.docnum.left_adjust );
     lay_init_su( i1, &layout_work.docnum.right_adjust );
-    layout_work.docnum.page_position = pos_right;
+    layout_work.docnum.page_position = PPOS_right;
     layout_work.docnum.font = 0;
     lay_init_su( n2, &layout_work.docnum.pre_skip );
     strcpy( layout_work.docnum.string, "Document Number " );
@@ -567,7 +567,7 @@ void    init_def_lay( void )
     strcpy( layout_work.date.date_form, "$ml $dsn, $yl" );
     lay_init_su( z0, &layout_work.date.left_adjust );
     lay_init_su( i1, &layout_work.date.right_adjust );
-    layout_work.date.page_position = pos_right;
+    layout_work.date.page_position = PPOS_right;
     layout_work.date.font = 0;
     lay_init_su( n2, &layout_work.date.pre_skip );
 
@@ -576,7 +576,7 @@ void    init_def_lay( void )
     /***********************************************************************/
     lay_init_su( z0, &layout_work.author.left_adjust );
     lay_init_su( i1, &layout_work.author.right_adjust );
-    layout_work.author.page_position = pos_right;
+    layout_work.author.page_position = PPOS_right;
     layout_work.author.font = 0;
     lay_init_su( n25, &layout_work.author.pre_skip );
     lay_init_su( n1, &layout_work.author.skip );
@@ -586,7 +586,7 @@ void    init_def_lay( void )
     /***********************************************************************/
     lay_init_su( z0, &layout_work.address.left_adjust );
     lay_init_su( i1, &layout_work.address.right_adjust );
-    layout_work.address.page_position = pos_right;
+    layout_work.address.page_position = PPOS_right;
     layout_work.address.font = 0;
     lay_init_su( n2, &layout_work.address.pre_skip );
 

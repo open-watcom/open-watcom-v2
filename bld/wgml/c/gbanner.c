@@ -598,17 +598,17 @@ static void content_reg( region_lay_tag * region )
         /* still not script format only normal string or keyword */
 
         if( buf[0] != '\0' ) {       // assign to final_content depending on region_position
-            if( region->region_position == pos_center ) {
+            if( region->region_position == PPOS_center ) {
                 resize_and_copy_strblk( &region->final_content[1], buf, region->font );
-            } else if( region->region_position == pos_right ) {
+            } else if( region->region_position == PPOS_right ) {
                 resize_and_copy_strblk( &region->final_content[2], buf, region->font );
             } else {                                // position left by default
                 resize_and_copy_strblk( &region->final_content[0], buf, region->font );
             }
         } else {                // clear appropriate region (no content)
-            if( region->region_position == pos_center ) {
+            if( region->region_position == PPOS_center ) {
                 free_strblk( &region->final_content[1] );
-            } else if( region->region_position == pos_right ) {
+            } else if( region->region_position == PPOS_right ) {
                 free_strblk( &region->final_content[2] );
             } else {                                // position left by default
                 free_strblk( &region->final_content[0] );
@@ -648,8 +648,8 @@ static text_chars * split_text_chars( text_chars * in_chars )
         o_count = c_chars->count;
         p = c_chars->text;
         while( *p != '\0' ) {
-            if( (*p == function_escape) && (*(p + 1) >= function_end) &&
-                                           (*(p + 1) <= function_sup_end) ) {
+            if( (*p == FUNC_escape) && (*(p + 1) >= FUNC_end) &&
+                                           (*(p + 1) <= FUNC_superscript_end) ) {
                 if( *(p + 2) != '\0' ) {    // only split if text follows
                     /* Reset c_chars to include text up to split */
                     c_chars->count = p - c_chars->text;
@@ -664,10 +664,10 @@ static text_chars * split_text_chars( text_chars * in_chars )
                     /* Finish configuring the post-split text_chars */
                     c_chars->width = cop_text_width( c_chars->text, c_chars->count, c_chars->font );
                     c_chars->x_address = c_chars->prev->x_address + c_chars->prev->width;
-                    if( *(p + 1) == function_subscript ) {
-                        c_chars->type |= tx_sub;
-                    } else if( *(p + 1) == function_superscript ) {
-                        c_chars->type |= tx_sup;
+                    if( *(p + 1) == FUNC_subscript_beg ) {
+                        c_chars->type |= TXT_sub;
+                    } else if( *(p + 1) == FUNC_superscript_beg ) {
+                        c_chars->type |= TXT_sup;
                     }
 
                     /* Reset for next possible split */

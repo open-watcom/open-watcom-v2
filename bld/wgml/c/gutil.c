@@ -385,7 +385,7 @@ static void add_spaces_t_element( char * spaces )
             line->last->next = process_word( layout_work.note.spaces, spc_cnt, font, false );
             line->last = line->last->next;
             line->last->prev = sav_chars;
-            line->last->type = tx_norm;
+            line->last->type = TXT_norm;
             line->last->x_address = start;
 
             if( wgml_fonts[font].line_height > line->line_height ) {

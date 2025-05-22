@@ -75,7 +75,7 @@ static void gml_inline_common( const gmltag * entry, font_number font, e_tags t 
                     }
                 }
             }
-        } else if( (t == t_SF) && (input_cbs->fmflags & II_macro) ) {   // may apply more generally
+        } else if( (t == T_SF) && (input_cbs->fmflags & II_macro) ) {   // may apply more generally
             ProcFlags.utc = true;
             if( (post_space == 0) && (input_cbs->sym_space || (input_cbs->fm_symbol && !ProcFlags.ct)) ) {
                 post_space = wgml_fonts[g_curr_font].spc_width;
@@ -90,7 +90,7 @@ static void gml_inline_common( const gmltag * entry, font_number font, e_tags t 
 
     /* Implements wgml 4.0 behavior */
 
-    if( (t == t_SF) && (input_cbs->fmflags & II_tag) && (cur_group_type == gt_xmp) ) {
+    if( (t == T_SF) && (input_cbs->fmflags & II_tag) && (cur_group_type == gt_xmp) ) {
         if( ProcFlags.xmp_ut_sf ) {     // matches wgml 4.0
             scr_process_break();
         } else {
@@ -137,7 +137,7 @@ static void gml_inline_common( const gmltag * entry, font_number font, e_tags t 
     p = scandata.s;
     SkipDot( p );                       // over '.'
 
-    if( t == t_Q ) {                    // Q/eQ inserts quote char
+    if( t == T_Q ) {                    // Q/eQ inserts quote char
         if( (quote_lvl % 2) ) {
             token_buf[0] = s_q;
         } else {
@@ -163,15 +163,15 @@ static void gml_inline_common( const gmltag * entry, font_number font, e_tags t 
         } else {
             process_text( p, g_curr_font);          // if text follows
         }
-    } else if( t != t_Q ) {
-        if( ProcFlags.concat && !ProcFlags.cont_char && (t == t_SF) ) {
+    } else if( t != T_Q ) {
+        if( ProcFlags.concat && !ProcFlags.cont_char && (t == T_SF) ) {
             post_space = wgml_fonts[o_c_font].spc_width;
         } else{
             post_space = wgml_fonts[g_curr_font].spc_width;
         }
     }
 
-    if( (t == t_SF) && sav_sbl ) {      // reset flag, but only if was set on entry, and only for SF
+    if( (t == T_SF) && sav_sbl ) {      // reset flag, but only if was set on entry, and only for SF
         ProcFlags.skip_blank_line = sav_sbl;
     }
 
@@ -202,22 +202,22 @@ static void gml_inline_common( const gmltag * entry, font_number font, e_tags t 
 
 void gml_hp0( const gmltag * entry )
 {
-    gml_inline_common( entry, 0, t_HP0 );
+    gml_inline_common( entry, 0, T_HP0 );
 }
 
 void gml_hp1( const gmltag * entry )
 {
-    gml_inline_common( entry, 1, t_HP1 );
+    gml_inline_common( entry, 1, T_HP1 );
 }
 
 void gml_hp2( const gmltag * entry )
 {
-    gml_inline_common( entry, 2, t_HP2 );
+    gml_inline_common( entry, 2, T_HP2 );
 }
 
 void gml_hp3( const gmltag * entry )
 {
-    gml_inline_common( entry, 3, t_HP3 );
+    gml_inline_common( entry, 3, T_HP3 );
 }
 
 
@@ -233,7 +233,7 @@ static void gml_e_inlne_common( const gmltag * entry, e_tags t )
     (void)entry;
 
     if( nest_cb->c_tag != t ) {         // unexpected exxx tag
-        if( nest_cb->c_tag == t_NONE ) {
+        if( nest_cb->c_tag == T_NONE ) {
             g_tag_no_err_exit( t + 1 );      // no exxx expected
         } else {
             g_tag_nest_err_exit( nest_cb->c_tag + 1 ); // exxx expected
@@ -243,13 +243,13 @@ static void gml_e_inlne_common( const gmltag * entry, e_tags t )
         /* Mark end of highlighted phrase embedded in a highlighted phrase */
         if( cur_group_type != gt_xmp && ProcFlags.concat ) {
             switch( nest_cb->prev->c_tag ) {    // testing showed they all do this, in either phrase
-            case t_CIT:
-            case t_HP0:
-            case t_HP1:
-            case t_HP2:
-            case t_HP3:
-            case t_Q:
-            case t_SF:
+            case T_CIT:
+            case T_HP0:
+            case T_HP1:
+            case T_HP2:
+            case T_HP3:
+            case T_Q:
+            case T_SF:
                 ProcFlags.einl_in_inlp = true;  // restrict further as needed for embedded phrase
                 break;
             default:
@@ -272,7 +272,7 @@ static void gml_e_inlne_common( const gmltag * entry, e_tags t )
         nest_cb = nest_cb->prev;
         add_tag_cb_to_pool( wk );
 
-        if( t != t_Q ) {                    // Q/eQ does not restore the prior font
+        if( t != T_Q ) {                    // Q/eQ does not restore the prior font
             g_curr_font = nest_cb->font;
         }
 
@@ -293,7 +293,7 @@ static void gml_e_inlne_common( const gmltag * entry, e_tags t )
                 ProcFlags.cont_char = true;
                 if( ProcFlags.space_fnd ) {
                     if( input_cbs->hh_tag ) {
-                        if( (t != t_CIT) && (t != t_Q) ) {
+                        if( (t != T_CIT) && (t != T_Q) ) {
                             post_space = 0;
                         }
                     } else {
@@ -307,7 +307,7 @@ static void gml_e_inlne_common( const gmltag * entry, e_tags t )
             }
         }
 
-        if( t == t_Q ) {                    // Q/eQ insert quote character
+        if( t == T_Q ) {                    // Q/eQ insert quote character
             quote_lvl--;
             if( (quote_lvl % 2) ) {
                 token_buf[0] = s_q;
@@ -354,22 +354,22 @@ static void gml_e_inlne_common( const gmltag * entry, e_tags t )
 
 void gml_ehp0( const gmltag * entry )
 {
-    gml_e_inlne_common( entry, t_HP0 );
+    gml_e_inlne_common( entry, T_HP0 );
 }
 
 void gml_ehp1( const gmltag * entry )
 {
-    gml_e_inlne_common( entry, t_HP1 );
+    gml_e_inlne_common( entry, T_HP1 );
 }
 
 void gml_ehp2( const gmltag * entry )
 {
-    gml_e_inlne_common( entry, t_HP2 );
+    gml_e_inlne_common( entry, T_HP2 );
 }
 
 void gml_ehp3( const gmltag * entry )
 {
-    gml_e_inlne_common( entry, t_HP3 );
+    gml_e_inlne_common( entry, T_HP3 );
 }
 
 /***************************************************************************/
@@ -382,7 +382,7 @@ void gml_ehp3( const gmltag * entry )
 
 void gml_esf( const gmltag * entry )
 {
-    gml_e_inlne_common( entry, t_SF );
+    gml_e_inlne_common( entry, T_SF );
 }
 
 
@@ -433,7 +433,7 @@ void gml_sf( const gmltag * entry )
                     font = get_font_number( attr_val.tok.s, attr_val.tok.l );
                     font_seen = true;
                     scandata.s = p;
-                    gml_inline_common( entry, font, t_SF );
+                    gml_inline_common( entry, font, T_SF );
                 }
             }
         }
@@ -466,7 +466,7 @@ void gml_sf( const gmltag * entry )
 
 void gml_cit( const gmltag * entry )
 {
-    gml_inline_common( entry, layout_work.cit.font, t_CIT );
+    gml_inline_common( entry, layout_work.cit.font, T_CIT );
     return;
 }
 
@@ -481,7 +481,7 @@ void gml_cit( const gmltag * entry )
 
 void gml_ecit( const gmltag * entry )
 {
-    gml_e_inlne_common( entry, t_CIT );
+    gml_e_inlne_common( entry, T_CIT );
     return;
 }
 
@@ -503,7 +503,7 @@ void gml_ecit( const gmltag * entry )
 
 void gml_q( const gmltag * entry )
 {
-    gml_inline_common( entry, FONT0, t_Q );
+    gml_inline_common( entry, FONT0, T_Q );
     return;
 }
 
@@ -519,7 +519,7 @@ void gml_q( const gmltag * entry )
 
 void gml_eq( const gmltag * entry )
 {
-    gml_e_inlne_common( entry, t_Q );
+    gml_e_inlne_common( entry, T_Q );
     return;
 }
 

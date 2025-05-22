@@ -246,7 +246,7 @@ static  void    init_banregion_wk( region_lay_tag * reg )
     lay_init_su( z0, &(reg->depth) );
     reg->font = 0;
     reg->refnum = 0;
-    reg->region_position = pos_left;
+    reg->region_position = PPOS_left;
     reg->pouring = no_pour;
     reg->script_format = false;
     reg->contents.content_type = string_content;

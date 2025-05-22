@@ -55,7 +55,7 @@ void gml_address( const gmltag * entry )
 
     init_nest_cb();
     nest_cb->p_stack = copy_to_nest_stack();
-    nest_cb->c_tag = t_ADDRESS;
+    nest_cb->c_tag = T_ADDRESS;
     nest_cb->left_indent = nest_cb->prev->left_indent + conv_hor_unit( &layout_work.address.left_adjust, g_curr_font );
     nest_cb->right_indent = nest_cb->prev->right_indent - conv_hor_unit( &layout_work.address.right_adjust, g_curr_font );
 
@@ -94,7 +94,7 @@ void gml_eaddress( const gmltag * entry )
     (void)entry;
 
     if( cur_group_type != gt_address ) {   // no preceding :ADDRESS tag
-        g_tag_prec_err_exit( t_ADDRESS );
+        g_tag_prec_err_exit( T_ADDRESS );
     }
     g_curr_font = font_save;
     rs_loc = TLOC_titlep;
@@ -173,7 +173,7 @@ void gml_aline( const gmltag * entry )
         xx_nest_err_exit_cc( err_tag_wrong_sect, entry->tagname, ":TITLEP section" );
     }
     if( cur_group_type != gt_address ) {    // no preceding :ADDRESS tag
-        g_tag_prec_err_exit( t_ADDRESS );
+        g_tag_prec_err_exit( T_ADDRESS );
     }
     p = scandata.s;
     SkipDot( p );                           // over '.'

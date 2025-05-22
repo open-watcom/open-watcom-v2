@@ -293,11 +293,11 @@ void    scr_cw( void )
     if( len > 2 ) {
         xx_line_err_exit_c( err_inv_cw_sep, pa );
     } else if( len > 0 ) {             // 1 char or 2 hex characters
-        CW_sep_char = parse_char( pa, len );
+        cw_sep_char = parse_char( pa, len );
     } else {
-        CW_sep_char = '\0';
+        cw_sep_char = '\0';
     }
-    add_to_sysdir( "$cw", CW_sep_char );
+    add_to_sysdir( "$cw", cw_sep_char );
     scan_restart = pa + len;
     return;
 }
@@ -357,8 +357,8 @@ void    scr_dc( void )
                 c = parse_char( v_p, v_len );
             }
             scan_restart = v_p + v_len;
-            CW_sep_char = c;
-            add_to_sysdir( "$cw", CW_sep_char );
+            cw_sep_char = c;
+            add_to_sysdir( "$cw", cw_sep_char );
         } else if( strnicmp( "LB", o_p, 2 ) == 0 ) {
             xx_line_warn_cc( wng_dc_opt, o_p, o_p );
             scan_restart = v_p + v_len;

@@ -301,7 +301,7 @@ void  scr_process_break( void )
 
             if( !ProcFlags.concat && (post_space > 0) ) {
                 marker = process_word( NULL, 0, g_curr_font, false );
-                marker->type = tx_norm;
+                marker->type = TXT_norm;
                 t_page.cur_width += post_space;
                 post_space = 0;
                 marker->x_address = t_page.cur_width;

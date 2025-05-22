@@ -455,15 +455,15 @@ static void post_text_output( void )
 
             /* Emit the appropriate post-subscript/superscript sequence. */
 
-            if( current_state.type == tx_norm ) {
+            if( current_state.type == TXT_norm ) {
                 /* Since shift_done was true, norm is not allowed. */
-            } else if( current_state.type & tx_sub ) {
+            } else if( current_state.type & TXT_sub ) {
                 ps_size = strlen( shift_scale );
                 ob_insert_block( shift_scale, ps_size, false, false, active_font );
 
                 ps_size = strlen( shift_rmoveto );
                 ob_insert_block( shift_rmoveto, ps_size, false, false, active_font );
-            } else if( current_state.type & tx_sup ) {
+            } else if( current_state.type & TXT_sup ) {
                 ps_size = strlen( shift_scale ) + 1;
                 ob_insert_block( shift_scale, ps_size, false, false, active_font );
 
@@ -475,7 +475,7 @@ static void post_text_output( void )
             } else {
                 internal_err_exit( __FILE__, __LINE__ );
             }
-            current_state.type = tx_norm;
+            current_state.type = TXT_norm;
         }
 
     }
@@ -508,7 +508,7 @@ static void pre_text_output( void )
             /* Emit the appropriate post-subscript/superscript sequence. */
 
             shift_done = false;
-            if( desired_state.type & tx_sub ) {
+            if( desired_state.type & TXT_sub ) {
                 ob_insert_block( " ", 1, false, false, active_font );
 
                 ps_size = wgml_fonts[active_font].shift_count;
@@ -529,7 +529,7 @@ static void pre_text_output( void )
                 ob_insert_block( shift_scale, ps_size, false, false, active_font );
 
                 shift_done = true;
-            } else if( desired_state.type & tx_sup ) {
+            } else if( desired_state.type & TXT_sup ) {
                 ob_insert_block( " ", 1, false, false, active_font );
 
                 ps_size = wgml_fonts[active_font].shift_count;
@@ -2744,7 +2744,7 @@ static void fb_internal_horizontal_positioning( text_chars * in_chars )
     x_address = desired_state.x_address;
     tab_width = desired_state.x_address - current_state.x_address;
     if( has_htab && (tab_width > 0) && ((tab_width % wgml_fonts[active_font].spc_width > 0)
-            || ((in_chars->tab_pos != tt_none) && ((in_chars->prev->font != in_chars->font)
+            || ((in_chars->tab_pos != TAB_none) && ((in_chars->prev->font != in_chars->font)
                 && (in_chars->prev->count != 0))) ) ) {
         fb_htab();
     } else {
@@ -3797,7 +3797,7 @@ void fb_first_text_line_pass( text_line *out_line )
         desired_state.type = current->type;
         if( current->f_switch != fs_norm ) {
             fb_fs_marker( current );                    // character device marker
-        } else if( (current_state.font != current->font) || (desired_state.type & tx_figcap) ) {
+        } else if( (current_state.font != current->font) || (desired_state.type & TXT_figcap) ) {
             if( wgml_fonts[current->font].font_style != NULL ) {
                 if( wgml_fonts[current->font].font_style->lineprocs == NULL ) {
                     cur_lineproc = NULL;

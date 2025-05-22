@@ -454,14 +454,14 @@ static void     scan_script( void )
         }
         if( *p == '\'' ) {              // .' (or ..')
             p++;
-            if( !ProcFlags.CW_force_sep ) {     // only change if not indented or all indents were .'
-                ProcFlags.CW_sep_ignore = true;
+            if( !ProcFlags.cw_force_sep ) {     // only change if not indented or all indents were .'
+                ProcFlags.cw_sep_ignore = true;
             }
-        } else {                        // no ': set per CW_sep_char
-            if( CW_sep_char == '\0') {
-                ProcFlags.CW_sep_ignore = true;// no separator char no split
+        } else {                        // no ': set per cw_sep_char
+            if( cw_sep_char == '\0') {
+                ProcFlags.cw_sep_ignore = true;// no separator char no split
             } else{
-                ProcFlags.CW_sep_ignore = false;
+                ProcFlags.cw_sep_ignore = false;
             }
         }
 
@@ -471,19 +471,19 @@ static void     scan_script( void )
         }
 
         if( ProcFlags.literal ) {       // no macro or split line if literal
-            ProcFlags.CW_sep_ignore = true;
+            ProcFlags.cw_sep_ignore = true;
             ProcFlags.macro_ignore = true;
         }
-        if( !ProcFlags.CW_sep_ignore ) { // scan line for CW_sep_char
+        if( !ProcFlags.cw_sep_ignore ) { // scan line for cw_sep_char
             char    *   pchar;
 
-            pchar = search_separator( buff2, CW_sep_char );
+            pchar = search_separator( buff2, cw_sep_char );
 
             if( pchar != NULL ) {
                 if( *(pchar + 1) != '\0' ) { // only split if more follows
-                    split_input( buff2, pchar + 1, II_none ); // split after CW_sep_char
+                    split_input( buff2, pchar + 1, II_none ); // split after cw_sep_char
                 }
-                *pchar= '\0';           // delete CW_sep_char
+                *pchar= '\0';           // delete cw_sep_char
                 buff2_lg = strlen( buff2 ); // new length of first part
             }
         }
@@ -492,7 +492,7 @@ static void     scan_script( void )
 
         p = get_macro_name( p, macname );
 
-        if( !ProcFlags.CW_sep_ignore && (*macname == '\0') ) {
+        if( !ProcFlags.cw_sep_ignore && (*macname == '\0') ) {
             // no valid script controlword / macro, treat as text
             scandata.s = scan_restart;
             return;
@@ -551,7 +551,7 @@ static void     scan_script( void )
         if( cwinfo != NULL ) {
             if( !ProcFlags.layout
               && !ProcFlags.fb_document_done
-              && (cwinfo->cwdflags & cw_o_t) ) {
+              && (cwinfo->cwdflags & CW_out_text) ) {
 
                 /********************************************************/
                 /* this is the first control word which produces output */
@@ -561,20 +561,20 @@ static void     scan_script( void )
 
                 start_doc_sect();
             }
-            ProcFlags.CW_noblank = false; // blank after CW is default
+            ProcFlags.cw_noblank = false; // blank after CW is default
             if( ProcFlags.literal  ) {  // .li active
                 if( strcmp( "li", macname ) == 0 ) {  // .li
-                    ProcFlags.CW_noblank = (*p != ' ');
+                    ProcFlags.cw_noblank = (*p != ' ');
                     scandata.s = p;     // found, process
                     cwinfo->cwdproc();
                 }
             } else {
                 scandata.s = p;         // script controlword found, process
-                if( cwinfo->cwdflags & cw_break ) {
+                if( cwinfo->cwdflags & CW_break ) {
                     ProcFlags.force_pc = false;
                     scr_process_break();// output incomplete line, if any
                 }
-                ProcFlags.CW_noblank = (*p != ' ');
+                ProcFlags.cw_noblank = (*p != ' ');
                 cwinfo->cwdproc();
             }
         } else {
@@ -940,9 +940,9 @@ const gmltag *find_lay_tag( const char *tagname )
 
 bool is_ip_tag( e_tags tag )
 {
-    if( (tag < t_NONE) || (tag >= t_MAX) ) {  // catch invalid offset values
+    if( (tag < T_NONE) || (tag >= T_MAX) ) {  // catch invalid offset values
         internal_err_exit( __FILE__, __LINE__ );
-    } else if( tag != t_NONE ) {                 // t_NONE is valid, but is not an ip_start_tag
+    } else if( tag != T_NONE ) {                 // t_NONE is valid, but is not an ip_start_tag
         return( (gml_tags[tag - 1].tagclass & TCLS_ip_start) != 0 );
     }
     return( false );                                // not found

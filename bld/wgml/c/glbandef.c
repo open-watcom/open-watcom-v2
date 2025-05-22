@@ -84,7 +84,7 @@ void    banner_defaults( void )
     lay_init_su( n1, &(reg->depth) );
     reg->font = 0;
     reg->refnum = 1;
-    reg->region_position = pos_left;
+    reg->region_position = PPOS_left;
     reg->pouring = last_pour;
     reg->script_format = true;
     reg->contents.content_type = string_content;
@@ -142,7 +142,7 @@ void    banner_defaults( void )
     ban->region = reg;
     reg->next = NULL;
     lay_init_su( n3, &(reg->voffset) );
-    reg->region_position = pos_center;
+    reg->region_position = PPOS_center;
     reg->script_format = false;
     reg->contents.content_type = pgnumr_content;
     strcpy( reg->contents.string, nr );
@@ -241,7 +241,7 @@ void    banner_defaults( void )
     ban->region = reg;
     reg->next = NULL;
     lay_init_su( z0, &(reg->voffset) );
-    reg->region_position = pos_left;
+    reg->region_position = PPOS_left;
     reg->font = 0;
     reg->pouring = no_pour;
     reg->script_format = true;

@@ -224,7 +224,7 @@ void    gml_graphic( const gmltag * entry )
         cur_el->element.graph.xoff = xoff;
         cur_el->element.graph.yoff = yoff;
         cur_el->element.graph.fp = fp;
-        if( nest_cb->c_tag == t_NONE ){
+        if( nest_cb->c_tag == T_NONE ){
             cur_el->element.graph.next_font = FONT0;
         } else {
             cur_el->element.graph.next_font = g_prev_font;

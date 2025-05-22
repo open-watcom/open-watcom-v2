@@ -151,7 +151,7 @@ void split_input( char *buf, char *split_pos, i_flags fmflags )
 
 /*  split_input_var
  *  The second part is constructed from 2 parts
- *  used if a substituted variable starts with CW_sep_char
+ *  used if a substituted variable starts with cw_sep_char
  */
 
 static void split_input_var( char *buf, char *split_pos, char *part2, i_flags fmflags )
@@ -339,15 +339,15 @@ static bool split_input_buffer( void )
             /*  ignore control word separator                              */
             /***************************************************************/
 
-            if( (!ProcFlags.CW_force_sep
+            if( (!ProcFlags.cw_force_sep
               && (*p == '\''))
-              || (CW_sep_char == '\0') ) {
-                ProcFlags.CW_sep_ignore = true;
+              || (cw_sep_char == '\0') ) {
+                ProcFlags.cw_sep_ignore = true;
             } else {
-                ProcFlags.CW_sep_ignore = false;
+                ProcFlags.cw_sep_ignore = false;
             }
         } else if( ProcFlags.indented_text ) {  // text, but preceded by indent
-            ProcFlags.CW_sep_ignore = false;
+            ProcFlags.cw_sep_ignore = false;
         }
     }
     return( true );                             // further processing needed
@@ -559,12 +559,12 @@ static char *scan_sym_or_sep( char *buf, bool splittable )
         if( *pa == ampchar ) {
             p = pa;
             break;
-        } else if( *pa == CW_sep_char ) {
+        } else if( *pa == cw_sep_char ) {
             if( splittable
               && (ProcFlags.scr_cw
-              || ProcFlags.CW_force_sep)
-              && !ProcFlags.CW_sep_ignore ) {
-                split_input( buff2, pa + 1, II_none );      // split after CW_sep_char
+              || ProcFlags.cw_force_sep)
+              && !ProcFlags.cw_sep_ignore ) {
+                split_input( buff2, pa + 1, II_none );      // split after cw_sep_char
 
                 buff2_lg = pa - buff2;      // update length after splitting
                 *(buff2 + buff2_lg) = '\0'; // terminate first record
@@ -676,11 +676,11 @@ static sym_list_entry *parse_l2r( char *buf, bool splittable )
                         p = curr->orig.e;                // skip argument
                         p = strchr( p, ampchar );       // look for next & in buffer
                     } else {
-                        if( !ProcFlags.CW_sep_ignore
+                        if( !ProcFlags.cw_sep_ignore
                           && splittable
-                          && (CW_sep_char != '\0')
-                          && (valbuf[0] == CW_sep_char)
-                          && (valbuf[1] != CW_sep_char) ) {
+                          && (cw_sep_char != '\0')
+                          && (valbuf[0] == cw_sep_char)
+                          && (valbuf[1] != cw_sep_char) ) {
                             strcpy( curr->value, valbuf );  // repurpose curr
                             curr->orig.s = p + 1;            // & of symbol causing split
                             curr->type = SL_split;
@@ -712,9 +712,9 @@ static sym_list_entry *parse_l2r( char *buf, bool splittable )
                         curr->type = SL_symbol;
                         expand_subscripts( curr->value, symsubval->base, lo_bound, hi_bound );
                     } else if( rc == 2 ) {          // variable found + resolved
-                        if( !ProcFlags.CW_sep_ignore && splittable && CW_sep_char != '\0' &&
-                                symsubval->value[0] == CW_sep_char &&
-                                symsubval->value[1] != CW_sep_char ) {
+                        if( !ProcFlags.cw_sep_ignore && splittable && cw_sep_char != '\0' &&
+                                symsubval->value[0] == cw_sep_char &&
+                                symsubval->value[1] != cw_sep_char ) {
                             curr->type = SL_split;
                             strcpy( curr->value, symsubval->value );  // save value in current stack entry
                             SkipDot( curr->orig.e );
@@ -830,7 +830,7 @@ void classify_record( const char *p )
     if( check_tagname( p, NULL ) != NULL ) {   // classify input
         ProcFlags.gml_tag = true;
         ProcFlags.scr_cw = false;
-        ProcFlags.CW_force_sep = false;
+        ProcFlags.cw_force_sep = false;
     } else {
         ProcFlags.gml_tag = false;
         if( *p == SCR_char ) {

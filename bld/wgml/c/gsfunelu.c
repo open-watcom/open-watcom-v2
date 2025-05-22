@@ -120,11 +120,11 @@ static char *scr_single_func_sS( char *args, char *end, char **result, bool supe
     int             rc;
     char            *pval;
 
-    *(*result)++ = function_escape;         // insert function code in buffer
+    *(*result)++ = FUNC_escape;         // insert function code in buffer
     if( super ) {
-        *(*result)++ = function_superscript;// function superscript start
+        *(*result)++ = FUNC_superscript_beg;// function superscript start
     } else {
-        *(*result)++ = function_subscript;  // function subscript start
+        *(*result)++ = FUNC_subscript_beg;  // function subscript start
     }
 
     if( *args == '&' ) {            // symbol name
@@ -143,11 +143,11 @@ static char *scr_single_func_sS( char *args, char *end, char **result, bool supe
             *(*result)++ = *pchar;
         }
     }
-    *(*result)++ = function_escape;         // insert function code in buffer
+    *(*result)++ = FUNC_escape;         // insert function code in buffer
     if( super ) {
-        *(*result)++ = function_sup_end;    // function superscript end
+        *(*result)++ = FUNC_superscript_end;    // function superscript end
     } else {
-        *(*result)++ = function_sub_end;    // function subscript end
+        *(*result)++ = FUNC_subscript_end;    // function subscript end
     }
     **result = '\0';
 

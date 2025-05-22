@@ -297,28 +297,28 @@ static void remove_indentation( void )
     char    *   pb;
     int         offset;
 
-    ProcFlags.CW_force_sep = false;
-    ProcFlags.CW_sep_ignore = false;
+    ProcFlags.cw_force_sep = false;
+    ProcFlags.cw_sep_ignore = false;
     ProcFlags.indented_text = false;
 
     p = buff2;
     while( ((buff2_lg > 1) && (*p == SCR_char) && (is_space_tab_char(*(p + 1)))) ||
             ((buff2_lg > 2) && (*p == SCR_char) && (((*(p + 1) == '\'') && (*(p + 2) == ' ')) ||
-            (*(p + 1) == CW_sep_char))) ) {
+            (*(p + 1) == cw_sep_char))) ) {
         p++;                                        // over SCR_char
         if( *p == ' ' ) {
-            ProcFlags.CW_force_sep = true;
+            ProcFlags.cw_force_sep = true;
         } else {                                    // *p == '\''
             p++;                                    // over ' or ;
         }
         SkipSpaces( p );                            // skip blanks
-        if( *p == CW_sep_char ) {
-            if( ProcFlags.CW_force_sep && (CW_sep_char != '\0') ) { // only if valid
-                p++;                                // skip CW_sep_char
+        if( *p == cw_sep_char ) {
+            if( ProcFlags.cw_force_sep && (cw_sep_char != '\0') ) { // only if valid
+                p++;                                // skip cw_sep_char
             }
         } else if( (*p == SCR_char) && (*(p + 1) == GML_char) ) {
             p++;                                    // skip SCR_char
-        } else if( !ProcFlags.CW_force_sep && (*p != GML_char) ) {
+        } else if( !ProcFlags.cw_force_sep && (*p != GML_char) ) {
             ProcFlags.indented_text = true;         // .  text
         }
         if( p != buff2 ) {                          // skipped indent now copy buffer
@@ -618,7 +618,7 @@ static  void    proc_input( char * filename )
             /*  Test for missing eXXX tag                                  */
             /***************************************************************/
 
-            if( (nest_cb != NULL) && (nest_cb->c_tag != t_NONE) ) {
+            if( (nest_cb != NULL) && (nest_cb->c_tag != T_NONE) ) {
                 g_tag_nest_err_exit( nest_cb->c_tag + 1 );// eXXX expected
             }
         }
