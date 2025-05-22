@@ -1463,8 +1463,8 @@ void gml_dd( const gmltag * entry )
         post_space = 0;
         ProcFlags.zsp = true;
     } else if( nest_cb->dl_break ) {
-        process_line_full( t_line, ((ProcFlags.justify != ju_off) &&
-                (ProcFlags.justify != ju_on) && (ProcFlags.justify != ju_half)) );
+        process_line_full( t_line, ((ProcFlags.justify != JUST_off) &&
+                (ProcFlags.justify != JUST_on) && (ProcFlags.justify != JUST_half)) );
         t_line = NULL;              // commit term but as part of same doc_element as definition
         t_page.cur_width = t_page.cur_left;
         post_space = 0;

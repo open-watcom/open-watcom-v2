@@ -240,29 +240,29 @@ static char *get_member_name( FILE *fp, const char *dir_file_name, const char *d
 
     file_type = parse_header( fp );
     switch( file_type ) {
-    case file_error:
+    case COP_file_error:
 
         /* File error, including premature eof. */
 
         xx_simple_err_exit_c( err_dev_lib_file, dir_file_name );
 //        break;
 
-    case not_se_v4_1:
+    case COP_not_se_v4_1:
 
         /* File was created by a different version of gendev. */
 
         xx_simple_err_exit( err_wrong_gendev );
 //        break;
 
-    case not_bin_dev:
-    case se_v4_1_not_dir:
+    case COP_not_bin_dev:
+    case COP_se_v4_1_not_dir:
 
         /* Wrong type of file: something is wrong with the device library. */
 
         xx_simple_err_exit_c( err_dev_lib_data, dir_file_name );
 //        break;
 
-    case dir_v4_1_se:
+    case COP_dir_v4_1_se:
 
         /* fp was a same-endian version 4.1 directory file. */
 

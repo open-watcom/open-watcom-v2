@@ -352,7 +352,7 @@ static void do_fc_comp( void )
      if( figlist_toc && (c_stop->alignment == al_right) ) {
         end_point = fill_start + (fill_width * fill_count);
         if( end_point != c_stop->column ) {
-            if( figlist_toc & gs_figlist ) {    // this depends on TOC preceding FIGLIST
+            if( figlist_toc & GENSEC_figlist ) {    // this depends on TOC preceding FIGLIST
                 fill_start -= ((c_stop->column + tab_col) - end_point);
                 fill_start -= 5;                // matches wgml 4.0, at least so far
             } else {
@@ -1163,7 +1163,7 @@ void do_justify( uint32_t lm, uint32_t rm, text_line * line )
     ju_enum         just;
     symsub  *       symjusub;         // for debug output string value of .ju
 
-    if( ProcFlags.justify == ju_off || ProcFlags.literal || line == NULL
+    if( ProcFlags.justify == JUST_off || ProcFlags.literal || line == NULL
         || line->first == NULL) {
         return;
     }
@@ -1212,11 +1212,11 @@ void do_justify( uint32_t lm, uint32_t rm, text_line * line )
 
     /* both here and below, it is not clear if this should be rounded up */
     /* when delta0 is odd                                                */
-    if( ProcFlags.justify == ju_half ) {
+    if( ProcFlags.justify == JUST_half ) {
         delta0 /= 2;
     }
 
-    if( ProcFlags.justify == ju_on ) {
+    if( ProcFlags.justify == JUST_on ) {
         if( cnt < 2 ) {      // one text_chars only, no full justify possible
             return;
         }
@@ -1244,18 +1244,18 @@ void do_justify( uint32_t lm, uint32_t rm, text_line * line )
         return;
     }
     switch( ProcFlags.justify ) { // convert inside / outside to left / right
-    case ju_inside :                    // depending on odd / even page
+    case JUST_inside:                    // depending on odd / even page
         if( g_page & 1 ) {
-            just = ju_right;
+            just = JUST_right;
         } else {
-            just = ju_left;
+            just = JUST_left;
         }
         break;
-    case ju_outside :
+    case JUST_outside :
         if( g_page & 1 ) {
-            just = ju_left;
+            just = JUST_left;
         } else {
-            just = ju_right;
+            just = JUST_right;
         }
         break;
     default :
@@ -1265,15 +1265,15 @@ void do_justify( uint32_t lm, uint32_t rm, text_line * line )
 
     switch( just ) {                  // what type of justification is wanted
 /*************************************
-    case ju_half :                   Treated as left ??? TBD
+    case JUST_half:                   Treated as left ??? TBD
         delta /= 2;
         if( delta < 1 && rem < 1 ) {
             break;
         }
         // falltrough
 ************************************** */
-    case ju_half :
-    case ju_on :
+    case JUST_half:
+    case JUST_on:
 //      if( tc->x_address < lm ) {
 //          break;                      // left of left margin no justify
 //      }
@@ -1285,7 +1285,7 @@ void do_justify( uint32_t lm, uint32_t rm, text_line * line )
         delta0 = rm - hor_end;          // TBD
 
         /* if delta0 is recomputed, then it must also be re-halved */
-        if( ProcFlags.justify == ju_half ) {
+        if( ProcFlags.justify == JUST_half ) {
             delta0 /= 2;
         }
 
@@ -1331,7 +1331,7 @@ void do_justify( uint32_t lm, uint32_t rm, text_line * line )
             tw = tw->next;
         }
         break;
-    case ju_left :
+    case JUST_left:
         delta = tc->x_address - lm;     // shift to the left
         if( delta < 1 ) {
             break;                      // already left
@@ -1342,7 +1342,7 @@ void do_justify( uint32_t lm, uint32_t rm, text_line * line )
             tw = tw->next;
         } while( tw != NULL );
         break;
-    case ju_right :
+    case JUST_right:
         delta = rm - hor_end;           // shift right
         if( delta < 1 ) {
             break;                      // already at right margin
@@ -1353,7 +1353,7 @@ void do_justify( uint32_t lm, uint32_t rm, text_line * line )
            tw = tw->next;
         } while( tw != NULL );
         break;
-    case ju_centre :
+    case JUST_centre:
         delta = (rm - hor_end) / 2;
         if( delta < 1 ) {
             break;                      // too wide no centre possible
@@ -1673,7 +1673,7 @@ void process_line_full( text_line * a_line, bool justify )
 
     while( a_line != NULL ) {
         if( justify && GlobalFlags.lastpass && !ProcFlags.literal
-                                         && ProcFlags.justify > ju_off ) {
+                                         && ProcFlags.justify > JUST_off ) {
             do_justify( ju_x_start, t_page.max_width, a_line );
         } else if( line_position == PPOS_center ) {          // center text on line
             if( t_page.max_width > (a_line->last->x_address + a_line->last->width) ) {
@@ -1840,13 +1840,13 @@ void process_text( char * text, font_number font )
     static      text_type       typ             = TXT_norm;
     static      text_type       typn            = TXT_norm;
 
-    if( ProcFlags.doc_sect < doc_sect_gdoc ) {
+    if( ProcFlags.doc_sect < DSECT_gdoc ) {
         return;
     }
 
     /********************************************************************/
     /*  we need a started section for text output                       */
-    /*  note: ProcFlags.doc_sect will be doc_sect_body                  */
+    /*  note: ProcFlags.doc_sect will be DSECT_body                     */
     /********************************************************************/
 
     if( !ProcFlags.start_section ) {
@@ -1858,9 +1858,9 @@ void process_text( char * text, font_number font )
     /*  :BODY, :APPENDIX, or :BACKM except between :TITLEP and :eTITLEP */
     /********************************************************************/
 
-    if( ProcFlags.doc_sect < doc_sect_abstract ) {
-        if( (ProcFlags.doc_sect != doc_sect_titlep) && (ProcFlags.doc_sect != doc_sect_etitlep) &&
-                (ProcFlags.doc_sect != doc_sect_frontm) ) {
+    if( ProcFlags.doc_sect < DSECT_abstract ) {
+        if( (ProcFlags.doc_sect != DSECT_titlep) && (ProcFlags.doc_sect != DSECT_etitlep) &&
+                (ProcFlags.doc_sect != DSECT_frontm) ) {
             xx_line_err_exit_c( err_doc_sec_expected_2, text );
 //            return;
         }
@@ -2378,7 +2378,7 @@ void process_text( char * text, font_number font )
                 }
 
                 if( t_line->first != NULL ) { // t_line is ready for output
-                    process_line_full( t_line, ProcFlags.concat && (ProcFlags.justify > ju_off) );
+                    process_line_full( t_line, ProcFlags.concat && (ProcFlags.justify > JUST_off) );
                     t_line = NULL;
                 }
                 // s_chars processing

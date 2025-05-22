@@ -320,8 +320,8 @@ void  scr_process_break( void )
             /* right-justified (ragged left) or centered                        */
             /********************************************************************/
 
-            process_line_full( t_line, ((ProcFlags.justify != ju_off) &&
-                (ProcFlags.justify != ju_on) && (ProcFlags.justify != ju_half)) );
+            process_line_full( t_line, ((ProcFlags.justify != JUST_off) &&
+                (ProcFlags.justify != JUST_on) && (ProcFlags.justify != JUST_half)) );
             t_line = NULL;
         }
     }

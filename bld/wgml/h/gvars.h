@@ -199,7 +199,7 @@ global  ix_h_blk    *   ixhtag[3];      // current entry for each level in index
 global  ref_entry   *   ix_ref_dict;    // reference id dictionary :Ix :IHx :IREF
 
 // page number format
-global  num_style       pgnum_style[pns_max];
+global  num_style       pgnum_style[PGNST_max];
 
 // symbol support
 global  sym_list_entry  *   sym_list_pool;  // sym_list_entry pool

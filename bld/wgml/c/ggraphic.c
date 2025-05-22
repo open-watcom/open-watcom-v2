@@ -59,8 +59,8 @@ void    gml_graphic( const gmltag * entry )
     att_name_type   attr_name;
     att_val_type    attr_val;
 
-    if( (ProcFlags.doc_sect < doc_sect_gdoc) ) {
-        if( (ProcFlags.doc_sect_nxt < doc_sect_gdoc) ) {
+    if( (ProcFlags.doc_sect < DSECT_gdoc) ) {
+        if( (ProcFlags.doc_sect_nxt < DSECT_gdoc) ) {
             xx_err_exit_c( err_tag_before_gdoc, entry->tagname );
         }
     }
@@ -214,7 +214,7 @@ void    gml_graphic( const gmltag * entry )
     set_skip_vars( NULL, NULL, NULL, 1, g_curr_font );
 
     // only set up the doc_element if the file exists
-    fp = search_file_in_dirs( file, "", "", ds_doc_spec );
+    fp = search_file_in_dirs( file, "", "", DSEQ_doc_spec );
     if( fp != NULL ) {
         cur_el = init_doc_el( el_graph, depth );
         cur_el->element.graph.cur_left = t_page.cur_left;

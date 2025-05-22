@@ -277,7 +277,7 @@ static cop_device *get_cop_device( char const *dev_name )
 
     /* Acquire the file, if it exists. */
 
-    fp = search_file_in_dirs( dev_name, "", "", ds_bin_lib );
+    fp = search_file_in_dirs( dev_name, "", "", DSEQ_bin_lib );
     if( fp == NULL ) {
         return( out_device );
     }
@@ -287,29 +287,29 @@ static cop_device *get_cop_device( char const *dev_name )
     file_type = parse_header( fp );
 
     switch( file_type ) {
-    case file_error:
+    case COP_file_error:
 
         /* File error, including premature eof. */
 
         xx_simple_err_exit_c( err_dev_data_file, try_file_name );
 //        break;
 
-    case not_se_v4_1:
+    case COP_not_se_v4_1:
 
         /* File was created by a different version of gendev. */
 
         xx_simple_err_exit( err_wrong_gendev );
 //        break;
 
-    case not_bin_dev:
-    case dir_v4_1_se:
+    case COP_not_bin_dev:
+    case COP_dir_v4_1_se:
 
         /* Wrong type of file: something is wrong with the device library. */
 
         xx_simple_err_exit_c( err_dev_lib_data, try_file_name );
 //        break;
 
-    case se_v4_1_not_dir:
+    case COP_se_v4_1_not_dir:
 
         /* fp was a same-endian version 4.1 file, but not a directory file. */
 
@@ -355,7 +355,7 @@ static cop_driver *get_cop_driver( char const *drv_name )
 
     /* Acquire the file, if it exists. */
 
-    fp = search_file_in_dirs( drv_name, "", "", ds_bin_lib );
+    fp = search_file_in_dirs( drv_name, "", "", DSEQ_bin_lib );
     if( fp == NULL ) {
         return( out_driver );
     }
@@ -365,29 +365,29 @@ static cop_driver *get_cop_driver( char const *drv_name )
     file_type = parse_header( fp );
 
     switch( file_type ) {
-    case file_error:
+    case COP_file_error:
 
         /* File error, including premature eof. */
 
         xx_simple_err_exit_c( err_dev_lib_file, try_file_name );
 //        break;
 
-    case not_se_v4_1:
+    case COP_not_se_v4_1:
 
         /* File was created by a different version of gendev. */
 
         xx_simple_err_exit( err_wrong_gendev );
 //        break;
 
-    case not_bin_dev:
-    case dir_v4_1_se:
+    case COP_not_bin_dev:
+    case COP_dir_v4_1_se:
 
         /* Wrong type of file: something is wrong with the device library. */
 
         xx_simple_err_exit_c( err_dev_lib_data, try_file_name );
 //        break;
 
-    case se_v4_1_not_dir:
+    case COP_se_v4_1_not_dir:
 
         /* fp was a same-endian version 4.1 file, but not a directory file. */
 
@@ -433,7 +433,7 @@ static cop_font *get_cop_font( char const *fon_name )
 
     /* Acquire the file, if it exists. */
 
-    fp = search_file_in_dirs( fon_name, "", "", ds_bin_lib );
+    fp = search_file_in_dirs( fon_name, "", "", DSEQ_bin_lib );
     if( fp == NULL ) {
         return( out_font );
     }
@@ -443,29 +443,29 @@ static cop_font *get_cop_font( char const *fon_name )
     file_type = parse_header( fp );
 
     switch( file_type ) {
-    case file_error:
+    case COP_file_error:
 
         /* File error, including premature eof. */
 
         xx_simple_err_exit_c( err_dev_lib_file, try_file_name );
 //        break;
 
-    case not_se_v4_1:
+    case COP_not_se_v4_1:
 
         /* File was created by a different version of gendev. */
 
         xx_simple_err_exit( err_wrong_gendev );
 //        break;
 
-    case not_bin_dev:
-    case dir_v4_1_se:
+    case COP_not_bin_dev:
+    case COP_dir_v4_1_se:
 
         /* Wrong type of file: something is wrong with the device library. */
 
         xx_simple_err_exit_c( err_dev_lib_data, try_file_name );
 //        break;
 
-    case se_v4_1_not_dir:
+    case COP_se_v4_1_not_dir:
 
         /* fp was a same-endian version 4.1 file, but not a directory file. */
 

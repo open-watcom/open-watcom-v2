@@ -236,18 +236,18 @@ void set_pgnum_style( void )
     int         i;
     ban_docsect ban_offset;
 
-    for( i = 0; i < pns_max; i++ ) {
+    for( i = 0; i < PGNST_max; i++ ) {
         switch( i ) {
-        case pns_abstract :
+        case PGNST_abstract :
             ban_offset = abstract_ban;
             break;
-        case pns_appendix :
+        case PGNST_appendix :
             ban_offset = appendix_ban;
             break;
-        case pns_backm :
+        case PGNST_backm :
             ban_offset = backm_ban;
             break;
-        case pns_body :
+        case PGNST_body :
             ban_offset = body_ban;
             break;
         }

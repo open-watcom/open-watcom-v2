@@ -417,8 +417,8 @@ void add_dt_space( void )
             ProcFlags.zsp = true;
         } else if( nest_cb->dl_break ) {
             if( t_line != NULL ) {      // break not previously applied because only needed now
-                process_line_full( t_line, ((ProcFlags.justify != ju_off) &&
-                    (ProcFlags.justify != ju_on) && (ProcFlags.justify != ju_half)) );
+                process_line_full( t_line, ((ProcFlags.justify != JUST_off) &&
+                    (ProcFlags.justify != JUST_on) && (ProcFlags.justify != JUST_half)) );
                 t_line = NULL;              // commit term but as part of same doc_element as definition
                 t_page.cur_width = t_page.cur_left;
                 post_space = 0;
@@ -1149,24 +1149,24 @@ num_style find_pgnum_style( void )
     /****************************************************/
 
     switch( ProcFlags.doc_sect ) {
-    case doc_sect_abstract :
-    case doc_sect_preface :
-    case doc_sect_body :
-    case doc_sect_appendix :
-    case doc_sect_backm :
-    case doc_sect_index :
-        if( ProcFlags.doc_sect == doc_sect_abstract ) {
-            retval = pgnum_style[pns_abstract];
-        } else if( ProcFlags.doc_sect == doc_sect_appendix ) {
-            retval = pgnum_style[pns_appendix];
-        } else if( ProcFlags.doc_sect == doc_sect_backm ) {
-            retval = pgnum_style[pns_backm];
-        } else if( ProcFlags.doc_sect == doc_sect_body ) {
-            retval = pgnum_style[pns_body];
-        } else if( ProcFlags.doc_sect == doc_sect_index ) {
-            retval = pgnum_style[pns_index];
-        } else if( ProcFlags.doc_sect == doc_sect_preface ) {
-            retval = pgnum_style[pns_preface];
+    case DSECT_abstract :
+    case DSECT_preface :
+    case DSECT_body :
+    case DSECT_appendix :
+    case DSECT_backm :
+    case DSECT_index :
+        if( ProcFlags.doc_sect == DSECT_abstract ) {
+            retval = pgnum_style[PGNST_abstract];
+        } else if( ProcFlags.doc_sect == DSECT_appendix ) {
+            retval = pgnum_style[PGNST_appendix];
+        } else if( ProcFlags.doc_sect == DSECT_backm ) {
+            retval = pgnum_style[PGNST_backm];
+        } else if( ProcFlags.doc_sect == DSECT_body ) {
+            retval = pgnum_style[PGNST_body];
+        } else if( ProcFlags.doc_sect == DSECT_index ) {
+            retval = pgnum_style[PGNST_index];
+        } else if( ProcFlags.doc_sect == DSECT_preface ) {
+            retval = pgnum_style[PGNST_preface];
         }
         break;
     default :

@@ -367,7 +367,7 @@ static void process_fo_ju( bool both , char *cwcurr )
         if( both ) {
             ProcFlags.concat = true;
         }
-        ProcFlags.justify = ju_on;
+        ProcFlags.justify = JUST_on;
         scan_restart = p;
         break;
     case 2 :                            // only ON valid
@@ -375,7 +375,7 @@ static void process_fo_ju( bool both , char *cwcurr )
             if( both ) {
                 do_co_on();
             }
-            ProcFlags.justify = ju_on;
+            ProcFlags.justify = JUST_on;
             scan_restart = pa + len;
         } else {
             xx_line_err_exit_cc( err_xx_opt, cwcurr, pa );
@@ -386,7 +386,7 @@ static void process_fo_ju( bool both , char *cwcurr )
             if( both ) {
                 do_co_off();
             }
-            ProcFlags.justify = ju_off;
+            ProcFlags.justify = JUST_off;
             scan_restart = pa + len;
         } else {
             xx_line_err_exit_cc( err_xx_opt, cwcurr, pa );
@@ -402,14 +402,14 @@ static void process_fo_ju( bool both , char *cwcurr )
             /*  .ju left is treated as .ju off by wgml4.0                  */
             /*  system variable &SYSJU is set to OFF                       */
             /***************************************************************/
-            ProcFlags.justify = ju_off; // left is like off for wgml 4.0
+            ProcFlags.justify = JUST_off; // left is like off for wgml 4.0
             scan_restart = pa + len;
         } else {
             if( !strnicmp( "HALF", pa, 4 ) ) {
                 if( both ) {
                     ProcFlags.concat = true;
                 }
-                ProcFlags.justify = ju_half;
+                ProcFlags.justify = JUST_half;
                 scan_restart = pa + len;
             } else {
                 xx_line_err_exit_cc( err_xx_opt, cwcurr, pa );
@@ -421,7 +421,7 @@ static void process_fo_ju( bool both , char *cwcurr )
             if( both ) {
                 ProcFlags.concat = true;
             }
-            ProcFlags.justify = ju_right;
+            ProcFlags.justify = JUST_right;
             scan_restart = pa + len;
         } else {
             xx_line_err_exit_cc( err_xx_opt, cwcurr, pa );
@@ -432,14 +432,14 @@ static void process_fo_ju( bool both , char *cwcurr )
             if( both ) {
                 ProcFlags.concat = true;
             }
-            ProcFlags.justify = ju_centre;
+            ProcFlags.justify = JUST_centre;
             scan_restart = pa + len;
         } else {
             if( !strnicmp( "INSIDE", pa, 6 ) ) {
                 if( both ) {
                     ProcFlags.concat = true;
                 }
-                ProcFlags.justify = ju_inside;
+                ProcFlags.justify = JUST_inside;
                 scan_restart = pa + len;
             } else {
                 xx_line_err_exit_cc( err_xx_opt, cwcurr, pa );
@@ -451,7 +451,7 @@ static void process_fo_ju( bool both , char *cwcurr )
             if( both ) {
                 ProcFlags.concat = true;
             }
-            ProcFlags.justify = ju_outside;
+            ProcFlags.justify = JUST_outside;
             scan_restart = pa + len;
         } else {
             xx_line_err_exit_cc( err_xx_opt, cwcurr, pa );

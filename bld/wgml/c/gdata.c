@@ -287,9 +287,9 @@ void init_pass_data( void )
                                         // .se var=7  without
     ProcFlags.concat    = true;         // .co on default
     ProcFlags.justify   = layout_work.defaults.justify; // match LAYOUT value
-    ProcFlags.doc_sect  = doc_sect_none;// no document section yet
-    ProcFlags.doc_sect_nxt  = doc_sect_none;// no document section yet
-    ProcFlags.frontm_seen  = false;     // FRONTM not yet seen
+    ProcFlags.doc_sect  = DSECT_none;// no document section yet
+    ProcFlags.doc_sect_nxt = DSECT_none;// no document section yet
+    ProcFlags.frontm_seen = false;     // FRONTM not yet seen
     ProcFlags.in_trans  = (in_esc != ' ');// translation wanted
     ProcFlags.has_aa_block = aa_save;
     ProcFlags.ps_device = ps_save;
@@ -400,7 +400,7 @@ void init_pass_data( void )
 
     g_oc_hpos = bin_device->x_start;
 
-    figlist_toc = gs_none;
+    figlist_toc = GENSEC_none;
 
     fig_count   = 0;
     fig_entry   = fig_list;     // start each pass at start of FIG list

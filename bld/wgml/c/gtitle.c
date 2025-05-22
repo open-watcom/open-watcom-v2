@@ -49,8 +49,8 @@ void    gml_title( const gmltag * entry )
     att_name_type   attr_name;
     att_val_type    attr_val;
 
-    if( !((ProcFlags.doc_sect == doc_sect_titlep) ||
-          (ProcFlags.doc_sect_nxt == doc_sect_titlep)) ) {
+    if( !((ProcFlags.doc_sect == DSECT_titlep) ||
+          (ProcFlags.doc_sect_nxt == DSECT_titlep)) ) {
         xx_nest_err_exit_cc( err_tag_wrong_sect, entry->tagname, ":TITLEP section" );
     }
 

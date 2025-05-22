@@ -55,8 +55,8 @@ void    gml_binclude( const gmltag * entry )
     att_val_type    attr_val;
 
     memset( &AttrFlags, 0, sizeof( AttrFlags ) );   // clear all attribute flags
-    if( (ProcFlags.doc_sect < doc_sect_gdoc) ) {
-        if( (ProcFlags.doc_sect_nxt < doc_sect_gdoc) ) {
+    if( (ProcFlags.doc_sect < DSECT_gdoc) ) {
+        if( (ProcFlags.doc_sect_nxt < DSECT_gdoc) ) {
             xx_err_exit_c( err_tag_before_gdoc, entry->tagname );
         }
     }
@@ -154,7 +154,7 @@ void    gml_binclude( const gmltag * entry )
     }
 
     // only set up the doc_element if the file exists
-    fp = search_file_in_dirs( file, "", "", ds_doc_spec );
+    fp = search_file_in_dirs( file, "", "", DSEQ_doc_spec );
     if( fp != NULL ) {
         if( depth == 0 ) {
             cur_el = alloc_doc_el(  el_binc );

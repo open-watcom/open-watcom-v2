@@ -710,9 +710,9 @@ typedef enum {
 /***************************************************************************/
 
 typedef enum {
-    gs_none     = 0,    // document specification includes neither FIGLIST nor TOC
-    gs_figlist  = 1,    // document specification includes FIGLIST
-    gs_toc      = 2,    // document specification includes TOC
+    GENSEC_none     = 0,    // document specification includes neither FIGLIST nor TOC
+    GENSEC_figlist  = 1,    // document specification includes FIGLIST
+    GENSEC_toc      = 2,    // document specification includes TOC
 } gen_sect;
 
 /***************************************************************************/
@@ -720,13 +720,13 @@ typedef enum {
 /***************************************************************************/
 
 typedef enum {
-    pns_abstract,
-    pns_preface,
-    pns_body,
-    pns_appendix,
-    pns_backm,
-    pns_index,
-    pns_max             // for pgnum_style array sizing
+    PGNST_abstract,
+    PGNST_preface,
+    PGNST_body,
+    PGNST_appendix,
+    PGNST_backm,
+    PGNST_index,
+    PGNST_max             // for pgnum_style array sizing
 } pgnum_sect;
 
 /***************************************************************************/
@@ -744,15 +744,15 @@ typedef enum doc_section {
 /***************************************************************************/
 
 typedef enum ju_enum {                  // for .ju(stify)
-    ju_off,                             // ju_off must have lowest value
-    ju_on,                              // ju_on next
-    ju_half,
-    ju_left,
-    ju_right,
-    ju_centre,
-    ju_center = ju_centre,
-    ju_inside,
-    ju_outside
+    JUST_off,                           // ju_off must have lowest value
+    JUST_on,                            // ju_on next
+    JUST_half,
+    JUST_left,
+    JUST_right,
+    JUST_centre,
+    JUST_center = JUST_centre,
+    JUST_inside,
+    JUST_outside
 } ju_enum;
 
 /***************************************************************************/

@@ -566,7 +566,7 @@ void gml_fig( const gmltag * entry )
     concat_save = ProcFlags.concat;
     ProcFlags.concat = false;
     justify_save = ProcFlags.justify;
-    ProcFlags.justify = ju_off;
+    ProcFlags.justify = JUST_off;
 
     /* Only create the entry on the first pass */
 

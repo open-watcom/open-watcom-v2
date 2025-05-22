@@ -265,8 +265,8 @@ void gen_heading( char *h_text, const char *hdrefid, hdsrc hn_lvl, hdsrc hds_lvl
     if( pass == 1 ) {                       // add this Hn to hd_list
         hd_entry = init_ffh_entry( hd_list, FFH_hn );   // mark as Hn
         hd_entry->number = hn_lvl;          // add heading level
-        if( ((ProcFlags.doc_sect == doc_sect_abstract) ||
-             (ProcFlags.doc_sect == doc_sect_preface)) && !ProcFlags.first_hdr ) {
+        if( ((ProcFlags.doc_sect == DSECT_abstract) ||
+             (ProcFlags.doc_sect == DSECT_preface)) && !ProcFlags.first_hdr ) {
             hd_entry->abs_pre = true;       // first header in ABSTRACT or PREFACE
             ProcFlags.first_hdr = true;
         }
@@ -588,8 +588,8 @@ static void gml_hx_common( const gmltag * entry, hdsrc hn_lvl )
     *hdrefid = '\0';                        // null string if no id found
     switch( hn_lvl ) {
     case hds_h0:
-        if( !((ProcFlags.doc_sect == doc_sect_body) ||
-            (ProcFlags.doc_sect_nxt == doc_sect_body)) ) {
+        if( !((ProcFlags.doc_sect == DSECT_body) ||
+            (ProcFlags.doc_sect_nxt == DSECT_body)) ) {
 
             xx_err_exit_cc( err_tag_wrong_sect, hxstr, ":BODY section" );
         } else {
@@ -597,12 +597,12 @@ static void gml_hx_common( const gmltag * entry, hdsrc hn_lvl )
         }
         break;
     case hds_h1:
-        if( !((ProcFlags.doc_sect >= doc_sect_body) ||
-            (ProcFlags.doc_sect_nxt >= doc_sect_body)) ) {
+        if( !((ProcFlags.doc_sect >= DSECT_body) ||
+            (ProcFlags.doc_sect_nxt >= DSECT_body)) ) {
 
             xx_err_exit_cc( err_tag_wrong_sect, hxstr, ":BODY :APPENDIX :BACKM sections" );
-        } else if( !((ProcFlags.doc_sect == doc_sect_body) ||
-            (ProcFlags.doc_sect_nxt == doc_sect_body)) ) {  // APPENDIX or BACKM
+        } else if( !((ProcFlags.doc_sect == DSECT_body) ||
+            (ProcFlags.doc_sect_nxt == DSECT_body)) ) {  // APPENDIX or BACKM
             hd_level = hn_lvl;              // H1 valid at this point
         } else {                                            // BODY
             if( hd_level < hn_lvl - 1 ) {
@@ -631,8 +631,8 @@ static void gml_hx_common( const gmltag * entry, hdsrc hn_lvl )
         }
         break;
     default:
-        if( !((ProcFlags.doc_sect >= doc_sect_abstract) ||
-            (ProcFlags.doc_sect_nxt >= doc_sect_abstract)) ) {
+        if( !((ProcFlags.doc_sect >= DSECT_abstract) ||
+            (ProcFlags.doc_sect_nxt >= DSECT_abstract)) ) {
 
             xx_err_exit_cc( err_tag_wrong_sect, hxstr, ":ABSTRACT section or later" );
         }
@@ -641,7 +641,7 @@ static void gml_hx_common( const gmltag * entry, hdsrc hn_lvl )
 
     /* After this, hds_lvl will access the correct LAYOUT data */
 
-    if( (ProcFlags.doc_sect == doc_sect_appendix) && (hn_lvl == hds_h1) ) {
+    if( (ProcFlags.doc_sect == DSECT_appendix) && (hn_lvl == hds_h1) ) {
         hds_lvl = hds_appendix;
     } else {
         hds_lvl = hn_lvl;

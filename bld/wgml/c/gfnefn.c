@@ -130,7 +130,7 @@ void gml_fn( const gmltag * entry )
     concat_save = ProcFlags.concat;
     ProcFlags.concat = false;
     justify_save = ProcFlags.justify;
-    ProcFlags.justify = ju_off;         // TBD
+    ProcFlags.justify = JUST_off;         // TBD
 
     /* Only create the entry on the first pass */
 

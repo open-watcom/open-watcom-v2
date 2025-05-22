@@ -64,18 +64,18 @@ cop_file_type parse_header( FILE *fp )
 
     count = fgetc( fp );
     if( ferror( fp ) || feof( fp ) ) {
-        return( file_error );
+        return( COP_file_error );
     }
 
     if( count != 0x02 ) {
-        return( not_bin_dev );
+        return( COP_not_bin_dev );
     }
 
     /* Get the version. */
 
     version = fread_u16( fp );
     if( ferror( fp ) || feof( fp ) ) {
-        return( file_error );
+        return( COP_file_error );
     }
 
     /* Check for a same_endian version 4.1 header.
@@ -84,30 +84,30 @@ cop_file_type parse_header( FILE *fp )
     */
 
     if( version != 0x000c ) {
-        return( not_se_v4_1 );
+        return( COP_not_se_v4_1 );
     }
 
     /* Get the text_version_length and ensure it is 0x0b. */
 
     count = fgetc( fp );
     if( ferror( fp ) || feof( fp ) ) {
-        return( file_error );
+        return( COP_file_error );
     }
 
     if( count != 0x0b ) {
-        return( not_bin_dev );
+        return( COP_not_bin_dev );
     }
 
     /* Verify the text_version. */
 
     fread_buff( text_version, count, fp );
     if( ferror( fp ) || feof( fp ) ) {
-        return( file_error );
+        return( COP_file_error );
     }
 
     text_version[count] = '\0';
     if( strcmp( VERSION41_TEXT, text_version ) != 0 ) {
-        return( not_bin_dev );
+        return( COP_not_bin_dev );
     }
 
     /* Get the type. */
@@ -117,19 +117,19 @@ cop_file_type parse_header( FILE *fp )
     /* If there is no more data, this is not a valid .COP file. */
 
     if( ferror( fp ) || feof( fp ) ) {
-        return( file_error );
+        return( COP_file_error );
     }
 
     /* Valid header, more data exists, determine the file type. */
 
     if( count == 0x03 ) {
-        return( se_v4_1_not_dir );
+        return( COP_se_v4_1_not_dir );
     }
     if( count == 0x04 ) {
-        return( dir_v4_1_se );
+        return( COP_dir_v4_1_se );
     }
 
     /* Invalid file type: this cannot be a valid .COP file. */
 
-    return( not_bin_dev );
+    return( COP_not_bin_dev );
 }

@@ -1073,7 +1073,7 @@ static void set_OPTFile( option * opt )
 
             buffers[level + 1] = NULL;
             file_names[level + 1] = NULL;
-            fp = search_file_in_dirs( token_buf, OPT_EXT, "", ds_opt_file );
+            fp = search_file_in_dirs( token_buf, OPT_EXT, "", DSEQ_opt_file );
             if( fp != NULL ) {
                 if( level > 0 ) {
                     int     k;

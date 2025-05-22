@@ -56,10 +56,10 @@ extern char     try_file_name[];
 /* Search sequences for various types of files. */
 
 typedef enum {
-    ds_opt_file = 1,    // wgml option files:     curdir, gmllib, gmlinc, path
-    ds_doc_spec,        // wgml document source:  curdir, gmlinc, gmllib, path
-    ds_bin_lib,         // wgml binary library:           gmllib, gmlinc, path
-    ds_lib_src          // gendev source:         curdir, gmlinc
+    DSEQ_opt_file = 1,    // wgml option files:     curdir, gmllib, gmlinc, path
+    DSEQ_doc_spec,        // wgml document source:  curdir, gmlinc, gmllib, path
+    DSEQ_bin_lib,         // wgml binary library:           gmllib, gmlinc, path
+    DSEQ_lib_src          // gendev source:         curdir, gmlinc
 } dirseq;
 
 /* Function declarations. */

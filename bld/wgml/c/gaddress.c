@@ -44,8 +44,8 @@ static  page_pos        old_line_pos;   // save prior line position
 
 void gml_address( const gmltag * entry )
 {
-    if( !((ProcFlags.doc_sect == doc_sect_titlep) ||
-          (ProcFlags.doc_sect_nxt == doc_sect_titlep)) ) {
+    if( !((ProcFlags.doc_sect == DSECT_titlep) ||
+          (ProcFlags.doc_sect_nxt == DSECT_titlep)) ) {
         xx_nest_err_exit_cc( err_tag_wrong_sect, entry->tagname, ":TITLEP section" );
     }
     first_aline = true;
@@ -168,8 +168,8 @@ void gml_aline( const gmltag * entry )
 {
     char        *   p;
 
-    if( !((ProcFlags.doc_sect == doc_sect_titlep) ||
-          (ProcFlags.doc_sect_nxt == doc_sect_titlep)) ) {
+    if( !((ProcFlags.doc_sect == DSECT_titlep) ||
+          (ProcFlags.doc_sect_nxt == DSECT_titlep)) ) {
         xx_nest_err_exit_cc( err_tag_wrong_sect, entry->tagname, ":TITLEP section" );
     }
     if( cur_group_type != gt_address ) {    // no preceding :ADDRESS tag

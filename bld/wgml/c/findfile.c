@@ -262,13 +262,13 @@ void ff_teardown( void )
  *
  * Parameters:
  *      in all cases, dirseq indicates the type of file sought.
- *      if dirseq is ds_bin_lib, then:
+ *      if dirseq is DSEQ_bin_lib, then:
  *          filename contains the defined name of a device, driver or font;
  *          defext and altext are ignored.
- *      if dirseq is ds_opt_file, then:
+ *      if dirseq is DSEQ_opt_file, then:
  *          filename contains the name of the file as provided by the user;
  *          defext and altext are ignored.
- *      if dirseq is ds_doc_spec or ds_lib_src, then:
+ *      if dirseq is DSEQ_doc_spec or DSEQ_lib_src, then:
  *          filename contains the name of the file as provided by the user;
  *          defext points to the first extension to use;
  *          altext points to the second extension to use, if any.
@@ -313,9 +313,9 @@ FILE *search_file_in_dirs( const char *filename, const char *defext, const char 
 
     _splitpath2( filename, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
 
-    /* For ds_bin_lib, filename contains a defined name. */
+    /* For DSEQ_bin_lib, filename contains a defined name. */
 
-    if( sequence != ds_bin_lib ) {
+    if( sequence != DSEQ_bin_lib ) {
 
         /* Determine if filename contains path information. */
 
@@ -331,16 +331,16 @@ FILE *search_file_in_dirs( const char *filename, const char *defext, const char 
         if( pg.ext[0] == '\0' ) {
             if( strlen( filename ) >= _MAX_PATH - 4 ) {
                 switch( sequence ) {
-                case ds_opt_file:
+                case DSEQ_opt_file:
                     xx_simple_err_exit_cc( err_file_max, filename, "." OPT_EXT );
 //                    break;
-                case ds_doc_spec:
+                case DSEQ_doc_spec:
                     xx_simple_err_exit_cc( err_file_max, filename, "." GML_EXT );
 //                    break;
-                case ds_bin_lib:
+                case DSEQ_bin_lib:
                     xx_simple_err_exit_cc( err_file_max, filename, "." COP_EXT );
 //                    break;
-                case ds_lib_src:
+                case DSEQ_lib_src:
                     xx_simple_err_exit_cc( err_file_max, filename, "." PCD_EXT );
 //                    break;
                 default:
@@ -355,7 +355,7 @@ FILE *search_file_in_dirs( const char *filename, const char *defext, const char 
 
     pd = searchdirs;
     switch( sequence ) {
-    case ds_opt_file:
+    case DSEQ_opt_file:
         if( pg.ext[0] == '\0' )
             pg.ext = OPT_EXT;
         _makepath( primary_file, NULL, NULL, pg.fname, pg.ext );
@@ -364,7 +364,7 @@ FILE *search_file_in_dirs( const char *filename, const char *defext, const char 
         *pd++ = gml_inc_dirs;
         *pd++ = path_dirs;
         break;
-    case ds_doc_spec:
+    case DSEQ_doc_spec:
         if( pg.ext[0] == '\0' ) {
             if( altext != NULL && altext[0] != '\0' ) {
                 _makepath( alternate_file, NULL, NULL, pg.fname, altext );
@@ -380,12 +380,12 @@ FILE *search_file_in_dirs( const char *filename, const char *defext, const char 
         *pd++ = gml_lib_dirs;
         *pd++ = path_dirs;
         break;
-    case ds_bin_lib:
+    case DSEQ_bin_lib:
         *pd++ = gml_lib_dirs;
         *pd++ = gml_inc_dirs;
         *pd++ = path_dirs;
         break;
-    case ds_lib_src:
+    case DSEQ_lib_src:
         if( altext == NULL || altext[0] == '\0' )
             altext = FON_EXT;
         _makepath( alternate_file, NULL, NULL, pg.fname, altext );
@@ -421,9 +421,9 @@ FILE *search_file_in_dirs( const char *filename, const char *defext, const char 
             }
             *p = '\0';
 
-            /* For ds_bin_lib, set primary file from the defined name. */
+            /* For DSEQ_bin_lib, set primary file from the defined name. */
 
-            if( sequence == ds_bin_lib ) {
+            if( sequence == DSEQ_bin_lib ) {
 
                 /* See if dir_ptr contains a wgmlst.cop file. */
 
@@ -458,7 +458,7 @@ FILE *search_file_in_dirs( const char *filename, const char *defext, const char 
 #endif
                 mem_free( member_name );
 
-                /* Not finding the file is only a problem for ds_bin_lib. */
+                /* Not finding the file is only a problem for DSEQ_bin_lib. */
 
                 if( fp == NULL ) {
                     xx_simple_err_exit_cc( ERR_MEM_DIR, dir_name, primary_file );

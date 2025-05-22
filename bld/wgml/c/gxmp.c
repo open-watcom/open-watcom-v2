@@ -148,7 +148,7 @@ void gml_xmp( const gmltag * entry )
     concat_save = ProcFlags.concat;
     ProcFlags.concat = false;
     justify_save = ProcFlags.justify;
-    ProcFlags.justify = ju_off;
+    ProcFlags.justify = JUST_off;
 
     if( depth > 0 ) {
         g_blank_units_lines = depth;

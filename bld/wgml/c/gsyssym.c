@@ -286,9 +286,9 @@ static void syscofun( symvar *e )      // .co status
     (void)e;
 
     if( ProcFlags.concat ) {
-        sysco0.value = str[ju_on];
+        sysco0.value = str[JUST_on];
     } else {
-        sysco0.value = str[ju_off];
+        sysco0.value = str[JUST_off];
     }
     return;
 }
@@ -527,7 +527,7 @@ static void syshyfun( symvar *e )
 {
     (void)e;
 
-    syshy0.value = str[ju_off];     // will need adjustment if hyphenation is implemented
+    syshy0.value = str[JUST_off];     // will need adjustment if hyphenation is implemented
     return;
 }
 
@@ -604,9 +604,9 @@ static void syslayoutfun( symvar *e ) // LAYOUT cmdline option or :LAYOUT tag se
     (void)e;
 
     if( ProcFlags.lay_specified ) {
-        syslayout0.value = str[ju_on];
+        syslayout0.value = str[JUST_on];
     } else {
-        syslayout0.value = str[ju_off];
+        syslayout0.value = str[JUST_off];
     }
     return;
 }
@@ -1251,8 +1251,8 @@ void    init_sys_dict( symdict_hdl *pdict )
     *(sysbxcharstr + 3) = 0;
     SET_CHAR( sysccstr, 'N' );
 //  *syscccstr =
-    syschars0.value = str[ju_off];
-    sysco0.value    = str[ju_on];
+    syschars0.value = str[JUST_off];
+    sysco0.value    = str[JUST_on];
     SET_CHAR( syscpstr, 'N' );
     SET_CHAR( syscontstr, 0x03 );
 //  *syscpagesstr  =
@@ -1262,7 +1262,7 @@ void    init_sys_dict( symdict_hdl *pdict )
 //  *sysdfontsstr =
 //  *sysdhsetstr =
 //  *sysdpagestr =
-    sysduplex0.value = str[ju_off];
+    sysduplex0.value = str[JUST_off];
     SET_CHAR( sysfbstr, 'N' );
 //  *sysfbcstr =
 //  *sysfbfstr =
@@ -1278,7 +1278,7 @@ void    init_sys_dict( symdict_hdl *pdict )
     SET_CHAR( syshnstr, 'N' );
 //  *syshncstr =
 //  *syshsstr =
-    syshy0.value = str[ju_off];
+    syshy0.value = str[JUST_off];
 //  *syshycstr =
     SET_CHAR( syshyphstr, 'N' );                // hyphenation OFF is default; hyphenation ON not implemented
 //  *sysinstr =
@@ -1288,8 +1288,8 @@ void    init_sys_dict( symdict_hdl *pdict )
     *sysixrefstr = ',';
     *(sysixrefstr + 1) = ' ';
     *(sysixrefstr + 2) = 0;
-    sysju0.value = str[ju_on];
-    syslayout0.value = str[ju_off];
+    sysju0.value = str[JUST_on];
+    syslayout0.value = str[JUST_off];
     SET_CHAR( syslistr, '.' );
     SET_CHAR( syslinbstr, ' ' );
 //  *syslsstr =
@@ -1310,10 +1310,10 @@ void    init_sys_dict( symdict_hdl *pdict )
     SET_CHAR( sysplsstr, ',' );
 //  *sysppagestr =
     SET_CHAR( sysprsstr, '-' );
-    sysprt0.value = str[ju_on];
+    sysprt0.value = str[JUST_on];
     SET_CHAR( syspsstr, '%' );
 //  *syspwstr =
-    sysquiet0.value = str[ju_off];
+    sysquiet0.value = str[JUST_off];
     SET_CHAR( sysrbstr, ' ' );
 //  *sysrecnostr =
 //  *sysretstr  =
@@ -1324,7 +1324,7 @@ void    init_sys_dict( symdict_hdl *pdict )
 //  *sysskcondstr =
 //  *sysslstr =
 //  *sysspcondstr =
-    syssu0.value = str[ju_on];
+    syssu0.value = str[JUST_on];
     syssys0.value = "DOS";
     SET_CHAR( systabstr, 0x09 );
     SET_CHAR( systbstr, 0x09 );
