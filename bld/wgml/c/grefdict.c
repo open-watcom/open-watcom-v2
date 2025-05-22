@@ -151,10 +151,10 @@ void init_ref_entry( ref_entry *re, const char *refid, ffh_entry *ffh )
     re->next = NULL;
     strcpy( re->refid, refid );
     if( ffh != NULL ) {
-        re->flags = rf_ffh;
+        re->flags = REF_ffh;
         re->u.ffh.entry = ffh;
     } else {
-        re->flags = rf_ix;
+        re->flags = REF_ix;
         re->u.ix.hblk = NULL;
         re->u.ix.base = NULL;
     }

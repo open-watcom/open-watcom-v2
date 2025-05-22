@@ -1480,8 +1480,8 @@ typedef struct ffh_entry {
 /***************************************************************************/
 
 typedef enum {
-    rf_ffh          =   1,  // :FIG, FN, or :Hx entry
-    rf_ix           =   2,  // :Ix :IHx entry
+    REF_ffh         = 1,                // :FIG, FN, or :Hx entry
+    REF_ix          = 2,                // :Ix :IHx entry
 } refflags;
 
 typedef struct ref_entry {
