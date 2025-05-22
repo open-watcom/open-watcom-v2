@@ -378,7 +378,7 @@ static void set_bind( option * opt )
 static void set_cpinch( option * opt )
 {
     char            *p;
-    char            wkstring[NUM2STR_LENGTH];
+    char            wkstring[NUM2STR_LENGTH + 1];
 
     if( tokennext == NULL || tokennext->bol ||
         tokennext->token[0] == '(' || is_option() ) {
@@ -903,8 +903,8 @@ static void set_outfile( option * opt )
 
 static void set_passes( option * opt )
 {
-    char        linestr[NUM2STR_LENGTH];
-    char        linestr2[NUM2STR_LENGTH];
+    char        linestr[NUM2STR_LENGTH + 1];
+    char        linestr2[NUM2STR_LENGTH + 1];
     char    *   p;
 
     if( tokennext == NULL || tokennext->bol ||
@@ -1697,8 +1697,8 @@ int proc_options( char * string )
 {
     bool        sol;                    // start of line switch
     char        c;
-    char        linestr[NUM2STR_LENGTH];
-    char        linestr2[NUM2STR_LENGTH];
+    char        linestr[NUM2STR_LENGTH + 1];
+    char        linestr2[NUM2STR_LENGTH + 1];
     char    *   p;
     char    *   s_after_dq;
     cmd_tok *   tok;

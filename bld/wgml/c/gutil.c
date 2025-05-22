@@ -765,7 +765,7 @@ char *format_num( unsigned n, char *r, unsigned rsize, num_style ns )
     unsigned    pos1;
     char        *p;
     char        *rp;
-    char        temp[NUM2STR_LENGTH + 3]; // +3 for () and decimal point
+    char        temp[NUM2STR_LENGTH + 3 + 1]; // +3 for () and decimal point
     char        a1;
     char        a2;
     char        charbase;

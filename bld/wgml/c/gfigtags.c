@@ -1087,7 +1087,7 @@ void gml_efig( const gmltag * entry )
 
 void gml_figcap( const gmltag * entry )
 {
-    char            buffer[NUM2STR_LENGTH];
+    char            buffer[NUM2STR_LENGTH + 1];
     char        *   prefix;
     char        *   p;
     unsigned        count;

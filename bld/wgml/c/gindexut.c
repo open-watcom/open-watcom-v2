@@ -411,9 +411,9 @@ ix_h_blk * find_create_ix_h_entry( ix_h_blk *ixhwork, ix_h_blk *ixhbase,
                 ixhwork->prt_term = mem_tokdup( printtxt, printtxtlen );
                 ixhwork->prt_term_len = printtxtlen;
             } else if( ixhwork->prt_term_len < printtxtlen ) {
+                mem_free( ixhwork->prt_term );
+                ixhwork->prt_term = mem_tokdup( printtxt, printtxtlen );
                 ixhwork->prt_term_len = printtxtlen;
-                ixhwork->prt_term = mem_realloc( ixhwork->prt_term, printtxtlen + 1 );
-                strcpy( ixhwork->prt_term, printtxt );
             } else if( printtxtlen == 0 ) {
                 ixhwork->prt_term[0] = '\0';
             } else if( ixhwork->prt_term != printtxt ) {

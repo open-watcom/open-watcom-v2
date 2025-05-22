@@ -184,6 +184,7 @@ void gen_heading( char *h_text, const char *hdrefid, hdsrc hn_lvl, hdsrc hds_lvl
     uint32_t        old_top_depth;
     uint32_t        page_diff;
     uint32_t        top_depth;
+    unsigned        slen;
 
     static char     headx[7]        = "$headX";
     static char     htextx[8]       = "$htextX";
@@ -233,26 +234,29 @@ void gen_heading( char *h_text, const char *hdrefid, hdsrc hn_lvl, hdsrc hds_lvl
 
     /* Reset $HEADx */
 
-    if( strlen( hd_nums[hn_lvl].headsub->value ) < strlen( headp ) ) {     // need more room
-        hd_nums[hn_lvl].headsub->value =
-                mem_realloc( hd_nums[hn_lvl].headsub->value, strlen( headp ) + 1 );
+    slen = strlen( headp );
+    if( hd_nums[hn_lvl].headsub->size < slen ) {     // need more room
+        hd_nums[hn_lvl].headsub->size = slen;
+        hd_nums[hn_lvl].headsub->value = mem_realloc( hd_nums[hn_lvl].headsub->value, slen + 1 );
     }
     strcpy( hd_nums[hn_lvl].headsub->value, headp );
     mem_free( headp );
 
     /* Reset $HNUMx */
 
-    if( strlen( hd_nums[hn_lvl].hnumsub->value ) < strlen( prefix ) ) {    // need more room
-        hd_nums[hn_lvl].hnumsub->value = mem_realloc( hd_nums[hn_lvl].hnumsub->value,
-                                                            strlen( prefix ) + 1 );
+    slen = strlen( prefix );
+    if( hd_nums[hn_lvl].hnumsub->size < slen ) {    // need more room
+        hd_nums[hn_lvl].hnumsub->size = slen;
+        hd_nums[hn_lvl].hnumsub->value = mem_realloc( hd_nums[hn_lvl].hnumsub->value, slen + 1 );
     }
     strcpy( hd_nums[hn_lvl].hnumsub->value, prefix );
 
     /* Reset $HTEXTx */
 
-    if( strlen( hd_nums[hn_lvl].htextsub->value ) < strlen( h_text ) ) {     // need more room
-        hd_nums[hn_lvl].htextsub->value =
-                mem_realloc( hd_nums[hn_lvl].htextsub->value, strlen( h_text ) + 1 );
+    slen = strlen( h_text );
+    if( hd_nums[hn_lvl].htextsub->size < slen ) {     // need more room
+        hd_nums[hn_lvl].htextsub->size = slen;
+        hd_nums[hn_lvl].htextsub->value = mem_realloc( hd_nums[hn_lvl].htextsub->value, slen + 1 );
     }
     strcpy( hd_nums[hn_lvl].htextsub->value, h_text );
 
@@ -520,10 +524,11 @@ void gen_heading( char *h_text, const char *hdrefid, hdsrc hn_lvl, hdsrc hds_lvl
 
     /* Reset $TOPHEADx */
 
+    slen = strlen( h_text );
     if( !ProcFlags.tophead_done ) { // first header on page
-        if( strlen( t_page.topheadsub->value ) < strlen( h_text ) ) {     // need more room
-            t_page.topheadsub->value =
-                        mem_realloc( t_page.topheadsub->value, strlen( h_text ) + 1 );
+        if( t_page.topheadsub->size < slen ) {     // need more room
+            t_page.topheadsub->size = slen;
+            t_page.topheadsub->value = mem_realloc( t_page.topheadsub->value, slen + 1 );
         }
         strcpy( t_page.topheadsub->value, h_text );
         ProcFlags.tophead_done = true;  // will be reset when page output
@@ -531,9 +536,9 @@ void gen_heading( char *h_text, const char *hdrefid, hdsrc hn_lvl, hdsrc hds_lvl
 
     /* Reset $BOTHEADx */
 
-    if( strlen( t_page.botheadsub->value ) < strlen( h_text ) ) {     // need more room
-        t_page.botheadsub->value =
-                        mem_realloc( t_page.botheadsub->value, strlen( h_text ) + 1 );
+    if( t_page.botheadsub->size < slen ) {     // need more room
+        t_page.botheadsub->size = slen;
+        t_page.botheadsub->value = mem_realloc( t_page.botheadsub->value, slen + 1 );
     }
     strcpy( t_page.botheadsub->value, h_text );
 

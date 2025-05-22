@@ -202,7 +202,7 @@ static char *is_quoted_string( const char *p )
 void    add_macro_parms( char * p )
 {
     char        *pa;
-    char        starbuf[NUM2STR_LENGTH];
+    char        starbuf[NUM2STR_LENGTH + 1];
     condcode    cc;
     int         star0;
     unsigned    len;
@@ -390,7 +390,7 @@ void    scr_dm( void )
     line_number     lineno_start;
     condcode        cc;
     inputcb     *   cb;
-    char            linestr[NUM2STR_LENGTH];
+    char            linestr[NUM2STR_LENGTH + 1];
     char            macname1[MAC_NAME_LENGTH + 1];
     char            macname2[MAC_NAME_LENGTH + 1];
 

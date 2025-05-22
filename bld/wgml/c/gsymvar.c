@@ -460,7 +460,7 @@ static bool check_subscript( sub_index subscript )
     if( subscript != SI_no_subscript ) {
         if( (subscript < SI_min_subscript) || (subscript > SI_max_subscript) ) {
             // SC--076 Subscript index must be between -1000000 and 1000000
-            char    linestr[NUM2STR_LENGTH];
+            char    linestr[NUM2STR_LENGTH + 1];
 
             sprintf( linestr, "%d", subscript );
             xx_line_err_exit_c( err_sub_out_of_range, linestr );
@@ -479,7 +479,7 @@ static bool add_symvar_sub( symvar *var, const char *val, unsigned len, sub_inde
     symsub  *   newsub;
     symsub  *   ws;
     symsub  *   wsv;
-//  char        sub_cnt[NUM2STR_LENGTH];
+//  char        sub_cnt[NUM2STR_LENGTH + 1];
 
     if( var->flags & SF_ro ) {          // value readonly
         return( true );                 // pretend success as wgml 4.0 does
@@ -492,9 +492,10 @@ static bool add_symvar_sub( symvar *var, const char *val, unsigned len, sub_inde
                                              /* update special sub 0 entry */
 #if 0
             sprintf( sub_cnt, "%d", var->subscript_used );
-            if( strlen( var->sub_0->value ) < strlen( sub_cnt ) ) {// need more room
-                var->sub_0->value = mem_realloc( var->sub_0->value,
-                                                 strlen( sub_cnt ) + 1 );
+            slen = strlen( sub_cnt );
+            if( var->sub_0->size < slen ) {// need more room
+                var->sub_0->size = slen;
+                var->sub_0->value = mem_realloc( var->sub_0->value, slen + 1 );
             }
             strcpy( var->sub_0->value, sub_cnt );
 #else
@@ -511,6 +512,7 @@ static bool add_symvar_sub( symvar *var, const char *val, unsigned len, sub_inde
         newsub->next      = NULL;
         newsub->base      = var;
         newsub->subscript = subscript;
+        newsub->size      = len;
         newsub->value     = mem_alloc( len + 1 );
         strncpy( newsub->value, val, len );
         newsub->value[len] = '\0';
@@ -536,7 +538,8 @@ static bool add_symvar_sub( symvar *var, const char *val, unsigned len, sub_inde
         }
     } else {                            // unsubscripted variable
         newsub = var->sub_0;
-        if( strlen( newsub->value ) < len ) { // need more room
+        if( newsub->size < len ) { // need more room
+            newsub->size = len;
             newsub->value = mem_realloc( newsub->value, len + 1 );
         }
         strncpy( newsub->value, val, len );
@@ -590,7 +593,8 @@ static symvar *add_symsym( symdict_hdl dict, const char *name, symbol_flags f )
     newsub->next      = NULL;
     newsub->base      = new;
     newsub->subscript = 0;
-    newsub->value     = mem_alloc( NUM2STR_LENGTH );
+    newsub->size      = NUM2STR_LENGTH;
+    newsub->value     = mem_alloc( NUM2STR_LENGTH + 1 );
     newsub->value[0]  = '0';
     newsub->value[1]  = '\0';
 
@@ -666,7 +670,8 @@ int add_symvar_addr( symdict_hdl dict, const char *name, const char *val, unsign
               || strncmp( newsub->value, val, len ) == 0 ) {
                 ;             // do nothing var is readonly or value is unchanged
             } else {
-                if( strlen( newsub->value ) < len ) { // need more room
+                if( newsub->size < len ) { // need more room
+                    newsub->size = len;
                     newsub->value = mem_realloc( newsub->value, len + 1 );
                 }
                 strncpy( newsub->value, val, len );

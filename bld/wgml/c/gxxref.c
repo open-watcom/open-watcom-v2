@@ -115,7 +115,7 @@ static char * get_ref_attributes( void )
 void gml_figref( const gmltag * entry )
 {
     bool            do_page     =   false;  // default for fwd refs w/no "page" attribute
-    char            buffer[NUM2STR_LENGTH];
+    char            buffer[NUM2STR_LENGTH + 1];
     char        *   p;
     char        *   ref_text;
     ref_entry   *   cur_re;
@@ -219,7 +219,7 @@ void gml_figref( const gmltag * entry )
 void gml_hdref( const gmltag * entry )
 {
     bool            do_page     =   false;
-    char            buffer[NUM2STR_LENGTH];
+    char            buffer[NUM2STR_LENGTH + 1];
     char        *   p;
     char        *   ref_text;
     ref_entry   *   cur_re;
@@ -346,7 +346,7 @@ void gml_hdref( const gmltag * entry )
 
 void gml_fnref( const gmltag * entry )
 {
-    char            buffer[NUM2STR_LENGTH];
+    char            buffer[NUM2STR_LENGTH + 1];
     char        *   p;
     ref_entry   *   cur_re;
 

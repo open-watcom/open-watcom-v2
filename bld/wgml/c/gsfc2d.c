@@ -59,7 +59,7 @@ condcode    scr_c2d( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **resul
 {
     tok_type        string;
     uint32_t        n;
-    char            linestr[NUM2STR_LENGTH];
+    char            linestr[NUM2STR_LENGTH + 1];
     char            *p;
 
     if( parmcount < 1

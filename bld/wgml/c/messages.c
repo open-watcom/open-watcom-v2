@@ -327,9 +327,9 @@ static void show_line_error( const char * pa )
 
 void file_mac_info( void )
 {
-    char        linestr[NUM2STR_LENGTH];
-    char        linemac[NUM2STR_LENGTH];
-    char        linefile[NUM2STR_LENGTH];
+    char        linestr[NUM2STR_LENGTH + 1];
+    char        linemac[NUM2STR_LENGTH + 1];
+    char        linefile[NUM2STR_LENGTH + 1];
 
     if( input_cbs != NULL ) {
         if( input_cbs->fmflags & II_tag_mac ) {
@@ -355,9 +355,9 @@ void file_mac_info( void )
 
 void file_mac_info_nest( void )
 {
-    char            linestr[NUM2STR_LENGTH];
-    char            linemac[NUM2STR_LENGTH];
-    char            linefile[NUM2STR_LENGTH];
+    char            linestr[NUM2STR_LENGTH + 1];
+    char            linemac[NUM2STR_LENGTH + 1];
+    char            linefile[NUM2STR_LENGTH + 1];
     nest_stack      *nw;
 
     if( input_cbs != NULL ) {
@@ -493,7 +493,7 @@ void main_file_err_exit( const char * filename )
 
 void numb_err_exit( void )                                           // for scr_pu()
 {
-    char    linestr[NUM2STR_LENGTH];
+    char    linestr[NUM2STR_LENGTH + 1];
 
     err_count++;
     if( input_cbs->fmflags & II_tag_mac ) {
@@ -509,7 +509,7 @@ void numb_err_exit( void )                                           // for scr_
 
 void symbol_name_length_err_exit( const char * symname )
 {
-    char    linestr[NUM2STR_LENGTH];
+    char    linestr[NUM2STR_LENGTH + 1];
 
     err_count++;
     g_err( err_sym_long, symname );
@@ -584,7 +584,7 @@ void g_tag_nest_err_exit( e_tags etag )
 
 void g_if_int_err_exit( void )
 {
-    char    linestr[NUM2STR_LENGTH];
+    char    linestr[NUM2STR_LENGTH + 1];
 
     if( input_cbs->fmflags & II_tag_mac ) {
         sprintf( linestr, "%d", input_cbs->s.m->lineno );
@@ -604,7 +604,7 @@ void g_if_int_err_exit( void )
 
 void g_tag_mac_err_exit( const gtentry *ge )
 {
-    char    linestr[NUM2STR_LENGTH];
+    char    linestr[NUM2STR_LENGTH + 1];
 
     if( input_cbs->fmflags & II_tag_mac ) {
         sprintf( linestr, "%d", input_cbs->s.m->lineno );
@@ -792,7 +792,7 @@ void xx_simple_err_exit_cc( const msg_ids errid, const char * arg1, const char *
 
 void xx_source_err_exit( const msg_ids errid )
 {
-    char    linestr[NUM2STR_LENGTH];
+    char    linestr[NUM2STR_LENGTH + 1];
 
     g_err( errid );
     if( input_cbs->fmflags & II_tag_mac ) {
@@ -809,7 +809,7 @@ void xx_source_err_exit( const msg_ids errid )
 
 void xx_source_err_exit_c( const msg_ids errid, const char * arg )
 {
-    char    linestr[NUM2STR_LENGTH];
+    char    linestr[NUM2STR_LENGTH + 1];
 
     g_err( errid, arg );
     if( input_cbs->fmflags & II_tag_mac ) {

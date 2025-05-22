@@ -55,7 +55,7 @@ static  ju_enum         justify_save;           // for ProcFlags.justify
 void gml_fn( const gmltag * entry )
 {
     bool            id_seen = false;
-    char            buffer[NUM2STR_LENGTH];
+    char            buffer[NUM2STR_LENGTH + 1];
     char            *p;
     char            *pa;
     ref_entry       *cur_ref;

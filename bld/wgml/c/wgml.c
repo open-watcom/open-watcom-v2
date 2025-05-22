@@ -242,7 +242,7 @@ static  void    del_input_cb_entry( void )
     free_dict( &wk->local_dict );
     if( wk->if_cb != NULL ) {
 //      if( wk->if_cb->if_level > 0 ) {
-//          char    linestr[NUM2STR_LENGTH];
+//          char    linestr[NUM2STR_LENGTH + 1];
 //
 //          sprintf( linestr, "%d", wk->if_cb->if_level );
 //          xx_err_exit_c( err_if_level, linestr );
@@ -505,7 +505,7 @@ static  void    proc_input( char * filename )
 
             if( !get_line( true ) ) {
                 if( ProcFlags.goto_active ) {   // goto active at EOF
-                    char    linestr[NUM2STR_LENGTH];
+                    char    linestr[NUM2STR_LENGTH + 1];
 
                     ProcFlags.goto_active = false;
                     if( input_cbs->fmflags & II_tag_mac ) {
@@ -655,7 +655,7 @@ static  void    proc_input( char * filename )
 
 static  void    print_stats( clock_t duration_ticks )
 {
-    char            linestr[NUM2STR_LENGTH];
+    char            linestr[NUM2STR_LENGTH + 1];
     char            linestr2[30];
     ldiv_t          hour_min;
     ldiv_t          sec_frac;

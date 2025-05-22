@@ -1887,7 +1887,7 @@ static void *df_decimal( void )
 
     /* Convert and return the value. */
 
-    value = mem_alloc( NUM2STR_LENGTH );
+    value = mem_alloc( NUM2STR_LENGTH + 1 );
     sprintf( value, "%d", first );
     return( value );
 }

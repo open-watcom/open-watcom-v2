@@ -324,7 +324,7 @@ static void gen_rule_head( char * letter )
 
 static void gen_ref_list( ix_e_blk * refs, font_number font )
 {
-    char            buffer[NUM2STR_LENGTH];
+    char            buffer[NUM2STR_LENGTH + 1];
     ix_e_blk    *   cur_ref;
     uint32_t        predict     = 0;
 
@@ -526,8 +526,8 @@ static void set_cols( doc_pane * a_pane )
 
 static void gen_figlist( void )
 {
-    char            buffer[NUM2STR_LENGTH];
-    char            postfix[NUM2STR_LENGTH + 1];
+    char            buffer[NUM2STR_LENGTH + 1];
+    char            postfix[NUM2STR_LENGTH + 1 + 1];
     ffh_entry   *   curr;
     uint32_t        size;
 
@@ -949,8 +949,8 @@ static void gen_index( void )
 static void gen_toc( void )
 {
     bool            levels[7];              // track levels
-    char            buffer[NUM2STR_LENGTH];
-    char            postfix[NUM2STR_LENGTH + 1];
+    char            buffer[NUM2STR_LENGTH + 1];
+    char            postfix[NUM2STR_LENGTH + 1 + 1];
     ffh_entry   *   curr;
     int             i;
     int             j;

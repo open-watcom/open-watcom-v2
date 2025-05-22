@@ -58,7 +58,7 @@
 
 #define VAL_LENGTH          10          // max length for attribute value
                                         // longer strings will be allocated
-#define NUM2STR_LENGTH      12          // int to string conversion buffer length sNNNNNNNNNN+'\0'
+#define NUM2STR_LENGTH      11          // int to string conversion buffer length sNNNNNNNNNN
 
 #define REFID_LEN           15          // length of refids wgml 4 gives a warning
                                         // for lengths > 7 but processes it
@@ -221,6 +221,7 @@ typedef struct symsub {
     struct symvar   *base;              // the base symvar
     sub_index       subscript;          // the subscript
     char            *value;             // the value ptr
+    unsigned        size;               // allocated character length of value
 } symsub;
 
 /***************************************************************************/
@@ -666,7 +667,7 @@ typedef struct getnum_block {
     char        *first;
     unsigned    length;
     int         result;                 // result as long
-    char        resultstr[NUM2STR_LENGTH];  // result in char format (32-bit number)
+    char        resultstr[NUM2STR_LENGTH + 1]; // result in char format (32-bit number)
     condcode    cc;
     char        num_sign;               // remember absolute or relative value
     bool        ignore_blanks;          // 1 if blanks are ignored

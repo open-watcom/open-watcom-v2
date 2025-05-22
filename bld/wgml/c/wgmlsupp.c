@@ -546,9 +546,9 @@ bool get_line( bool display_line )
 void show_include_stack( void )
 {
     inputcb *   ip;
-    char        linestr[NUM2STR_LENGTH];
-    char        linemac[NUM2STR_LENGTH];
-    char        linefile[NUM2STR_LENGTH];
+    char        linestr[NUM2STR_LENGTH + 1];
+    char        linemac[NUM2STR_LENGTH + 1];
+    char        linefile[NUM2STR_LENGTH + 1];
 
 
     if( input_cbs != NULL ) {
