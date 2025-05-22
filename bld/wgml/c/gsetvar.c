@@ -328,7 +328,7 @@ void    scr_se( void )
                 cc = getnum( &gn );             // try numeric expression evaluation
                 if( cc == CC_pos || cc == CC_neg ) {
                     valstart = gn.resultstr;
-                    len = gn->length;
+                    len = gn.length;
                 }                               // if notnum treat as character value
             }
             rc = add_symvar_sym( &sym, valstart, len, subscript, sym.flags );
