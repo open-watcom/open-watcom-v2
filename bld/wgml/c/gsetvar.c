@@ -83,18 +83,18 @@ char *scan_sym( char *p, symvar *sym, sub_index *subscript, char **result, bool 
     psave = p;
     g_scan_err = false;
     sym->next = NULL;
-    sym->flags = 0;
+    sym->flags = SF_none;
     *subscript = SI_no_subscript;       // not subscripted
 
     SkipSpaces( p );                    // skip over spaces
     if( *p == d_q || *p == s_q || *p == l_q ) {
-        quote = *p++;
+        quote = *p++;                   // skip over start quote
     } else {
         quote = '\0';
     }
     if( *p == '*' ) {                   // local var
-        p++;
-        sym->flags = SF_local_var;
+        p++;                            // skip over '*' character
+        sym->flags |= SF_local_var;
     }
     sym_start = p;
     p = get_symbol_name( p, sym->name, splittable );
@@ -111,17 +111,19 @@ char *scan_sym( char *p, symvar *sym, sub_index *subscript, char **result, bool 
             }
         }
     } else if( p > sym_start + SYM_NAME_LENGTH ) {
+        /*
+         * SC--074 For the symbol '%s'
+         *     The length of a symbol cannot exceed ten characters
+         */
         if( !g_scan_err ) {
             g_scan_err = true;
             if( !ProcFlags.suppress_msg ) {
-                // SC--074 For the symbol '%s'
-                //     The length of a symbol cannot exceed ten characters
                 symbol_name_length_err_exit( sym_start );
             }
         }
     }
-    if( quote != '\0' && quote == *p ) {    // over terminating quote
-        p++;
+    if( quote != '\0' && quote == *p ) {
+        p++;                                // skip over end quote
     }
     pend = p;                               // char after symbol name if not subscripted
 

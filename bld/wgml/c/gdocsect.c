@@ -563,7 +563,7 @@ static void gen_figlist( void )
     ProcFlags.justify = ju_off;
     ProcFlags.keep_left_margin = true;  // keep all indents while outputting text
     for( curr = fig_list; curr != NULL; curr = curr->next ) {
-        if( curr->flags & ffh_figcap ) {    // no FIGCAP used, no FIGLIST output
+        if( curr->flags & FFH_figcap ) {    // no FIGCAP used, no FIGLIST output
             g_curr_font = FONT0;            // wgml 4.0 uses font 0
             if( ProcFlags.col_started ) {   // not on first entry
                 g_text_spacing = layout_work.figlist.spacing;
@@ -1026,7 +1026,7 @@ static void gen_toc( void )
             t_page.cur_left = indent[cur_level];
             t_page.cur_width = t_page.cur_left;
 
-            if( curr->flags & ffh_prefix ) {
+            if( curr->flags & FFH_prefix ) {
                 process_text( curr->prefix, g_curr_font );
                 t_page.cur_left = t_line->last->x_address + t_line->last->width +
                                   wgml_fonts[g_curr_font].spc_width;

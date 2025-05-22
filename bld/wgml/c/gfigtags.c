@@ -571,8 +571,7 @@ void gml_fig( const gmltag * entry )
     /* Only create the entry on the first pass */
 
     if( pass == 1 ) {                   // add this FIG to fig_list
-        fig_entry = init_ffh_entry( fig_list );
-        fig_entry->flags = ffh_fig;     // mark as FIG
+        fig_entry = init_ffh_entry( fig_list, FFH_fig );    // mark as FIG
         if( fig_list == NULL ) {        // first entry
             fig_list = fig_entry;
         }
@@ -1163,7 +1162,7 @@ void gml_figcap( const gmltag * entry )
     } else {
         ProcFlags.need_text = true;
     }
-    fig_entry->flags |= ffh_figcap;         // mark as FIGCAP present, with or without text
+    fig_entry->flags |= FFH_figcap;         // mark as FIGCAP present, with or without text
     figcap_done = true;
 
     scandata.s = scandata.e;

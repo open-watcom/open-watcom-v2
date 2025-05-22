@@ -135,8 +135,7 @@ void gml_fn( const gmltag * entry )
     /* Only create the entry on the first pass */
 
     if( pass == 1 ) {                   // add this FN to the fn_list
-        fn_entry = init_ffh_entry( fn_list );
-        fn_entry->flags = ffh_fn;       // mark as FN
+        fn_entry = init_ffh_entry( fn_list, FFH_fn );   // mark as FN
         fn_entry->number = fn_count;    // add number of this FN
         if( fn_list == NULL ) {         // first entry
             fn_list = fn_entry;

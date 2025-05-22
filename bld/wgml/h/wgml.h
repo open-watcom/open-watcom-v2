@@ -431,7 +431,7 @@ extern char         *get_att_value( char *p, att_val_type *attr_val );
 extern char         *get_tag_value( char *p, att_val_type *attr_val );
 extern char         *get_lay_value( char *p, att_val_type *attr_val );
 extern font_number  get_font_number( const char *p, unsigned len );
-extern ffh_entry    *init_ffh_entry( ffh_entry *ffh_list );
+extern ffh_entry    *init_ffh_entry( ffh_entry *ffh_list, ffhflags flags );
 extern fwd_ref      *init_fwd_ref( fwd_ref *dict, const char *refid );
 extern char         *int_to_roman( unsigned n, char *r, unsigned rsize, bool ucase );
 extern bool         lay_init_su( const char *p, su *in_su );

@@ -259,14 +259,13 @@ void gen_heading( char *h_text, const char *hdrefid, hdsrc hn_lvl, hdsrc hds_lvl
     /* Only create the entry on the first pass */
 
     if( pass == 1 ) {                       // add this Hn to hd_list
-        hd_entry = init_ffh_entry( hd_list );
+        hd_entry = init_ffh_entry( hd_list, FFH_hn );   // mark as Hn
+        hd_entry->number = hn_lvl;          // add heading level
         if( ((ProcFlags.doc_sect == doc_sect_abstract) ||
              (ProcFlags.doc_sect == doc_sect_preface)) && !ProcFlags.first_hdr ) {
             hd_entry->abs_pre = true;       // first header in ABSTRACT or PREFACE
             ProcFlags.first_hdr = true;
         }
-        hd_entry->flags = ffh_hn;           // mark as Hn
-        hd_entry->number = hn_lvl;          // add heading level
         if( hd_list == NULL ) {             // first entry
             hd_list = hd_entry;
         }
@@ -281,7 +280,7 @@ void gen_heading( char *h_text, const char *hdrefid, hdsrc hn_lvl, hdsrc hds_lvl
             hd_entry->prefix = (char *)mem_alloc( current + 1 );
             strcpy( hd_entry->prefix, prefix );
             if( layout_work.hx.hx_head[hds_lvl].number_form != num_none ) {
-                hd_entry->flags |= ffh_prefix;  // mark prefix for use
+                hd_entry->flags |= FFH_prefix;  // mark prefix for use
             }
         }
         txtlen = strlen( h_text );

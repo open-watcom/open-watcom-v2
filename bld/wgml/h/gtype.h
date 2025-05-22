@@ -1449,11 +1449,12 @@ typedef enum page_pos {         // needed here to avoid gtypelay.h circularity
 /***************************************************************************/
 
 typedef enum {
-    ffh_fig         =    1, // FIG entry
-    ffh_fn          =    2, // FN entry
-    ffh_hn          =    4, // heading entry
-    ffh_figcap      =    8, // FIGCAP used -- even if there is no text
-    ffh_prefix      =   16, // use heading prefix
+    FFH_none        =    0, // none
+    FFH_fig         =    1, // FIG entry
+    FFH_fn          =    2, // FN entry
+    FFH_hn          =    4, // heading entry
+    FFH_figcap      =    8, // FIGCAP used -- even if there is no text
+    FFH_prefix      =   16, // use heading prefix
 } ffhflags;
 
 typedef struct ffh_entry {

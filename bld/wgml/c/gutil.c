@@ -1186,7 +1186,7 @@ num_style find_pgnum_style( void )
 /*        style field is set from correct and current information          */
 /***************************************************************************/
 
-ffh_entry * init_ffh_entry( ffh_entry * ffh_list )
+ffh_entry * init_ffh_entry( ffh_entry * ffh_list, ffhflags flags )
 {
     ffh_entry   *   curr;
 
@@ -1205,7 +1205,7 @@ ffh_entry * init_ffh_entry( ffh_entry * ffh_list )
     curr->number = 0;
     curr->prefix = NULL;
     curr->text = NULL;
-    curr->flags = 0;
+    curr->flags = flags;
     curr->abs_pre = false;
     curr->style = find_pgnum_style();
 
