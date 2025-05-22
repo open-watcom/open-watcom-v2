@@ -252,7 +252,7 @@ void    add_macro_parms( char * p )
         while( *p != '\0' ) {           // as long as there are parms
             pa = is_quoted_string( p );
             if( pa != NULL ) {          // argument is quoted
-                p++;                    // skip quote character
+                p++;                    // skip start quote character
                 star0++;
                 sprintf( starbuf, "%d", star0 );
                 add_symvar( input_cbs->local_dict, starbuf, p, pa - p, SI_no_subscript, SF_local_var );

@@ -389,7 +389,7 @@ void    test_out_t_line( text_line  * a_line )
 
     for( tw = a_line->first; tw != NULL; tw = tw->next ) {
 
-        snprintf( buf, BUF_SIZE,
+        snprintf( buf, sizeof( buf ),
                   "fnt:%d x:%d-%d w:%d cnt:%d type:%x txt:'%.*s'\n",
                   tw->font, tw->x_address, tw->x_address + tw->width,
                   tw->width, tw->count, tw->type, tw->count, tw->text );

@@ -302,7 +302,7 @@ typedef enum {
 
 /***************************************************************************/
 /*  List of (defined macro / input) lines                                  */
-/*    also used for in_buf_pool in this case fixed length BUF_SIZE         */
+/*    also used for in_buf_pool in this case fixed length BUF_SIZE + 1     */
 /***************************************************************************/
 
 typedef struct inp_line {

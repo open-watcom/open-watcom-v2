@@ -31,13 +31,43 @@
 
 #include "wgml.h"
 
+/* Special WGML 4.0 compatibility: When scanning symbol names,
+ * the scanning stops after 10 characters (not including the '&').
+ * It is thus possible to reference symbols with maximum-length
+ * names without properly separating them, such as
+ *   &longsymname
+ * and &longsymnam will be resolved if it exists.
+ */
+static char *get_symbol_name( const char *p, char *symname, bool splittable )
+{
+    int     i;
+
+    i = 0;
+    while( is_symbol_char( *p ) ) {
+        if( i == SYM_NAME_LENGTH && splittable )
+            /* break */;
+        if( i < SYM_NAME_LENGTH ) {
+            if( i == 3
+              && symname[0] == 's'
+              && symname[1] == 'y'
+              && symname[2] == 's' ) {
+                symname[0] = '$';   // create sys shortcut $
+                i = 1;
+            }
+            symname[i++] = my_tolower( *p );
+        }
+        p++;
+    }
+    symname[i] = '\0';
+    return( (char *)p );
+}
 
 /*****************************************************************************/
 /* construct symbol name and optionally subscript from input                 */
 /* Note: p must point to a symbol name, as no trailing "=<value" is required */
 /*****************************************************************************/
 
-char * scan_sym( char * p, symvar * sym, sub_index *subscript, char * * result, bool splittable )
+char *scan_sym( char *p, symvar *sym, sub_index *subscript, char **result, bool splittable )
 {
     char            *pend;
     int             p_level;
@@ -45,7 +75,6 @@ char * scan_sym( char * p, symvar * sym, sub_index *subscript, char * * result, 
     char            quote;
     char            *sym_start;
     int             rc;
-    unsigned        k;
     sub_index       var_ind;
     symsub          *symsubval;
 
@@ -55,7 +84,7 @@ char * scan_sym( char * p, symvar * sym, sub_index *subscript, char * * result, 
     g_scan_err = false;
     sym->next = NULL;
     sym->flags = 0;
-    *subscript = SI_no_subscript;          // not subscripted
+    *subscript = SI_no_subscript;       // not subscripted
 
     SkipSpaces( p );                    // skip over spaces
     if( *p == d_q || *p == s_q || *p == l_q ) {
@@ -68,46 +97,7 @@ char * scan_sym( char * p, symvar * sym, sub_index *subscript, char * * result, 
         sym->flags = SF_local_var;
     }
     sym_start = p;
-    sym->name[0] = '\0';
-
-    k = 0;
-    while( is_symbol_char( *p ) ) {
-        /* Special WGML 4.0 compatibility: When scanning symbol names,
-         * the scanning stops after 10 characters (not including the '&').
-         * It is thus possible to reference symbols with maximum-length
-         * names without properly separating them, such as
-         *   &longsymname
-         * and &longsymnam will be resolved if it exists.
-         */
-//        if( splittable && (k == SYM_NAME_LENGTH) )
-//            break;
-
-        if( k < SYM_NAME_LENGTH ) {
-            if( (k == 3) && (sym->name[0] != '$') ) {
-                if( sym->name[0] == 's' &&
-                    sym->name[1] == 'y' &&
-                    sym->name[2] == 's' ) {
-
-                    sym->name[0] = '$';   // create sys shortcut $
-                    k = 1;
-                }
-            }
-            sym->name[k] = my_tolower( *p );
-            k++;
-        } else {
-            if( !g_scan_err ) {
-                g_scan_err = true;
-                if( !ProcFlags.suppress_msg ) {
-                    // SC--074 For the symbol '%s'
-                    //     The length of a symbol cannot exceed ten characters
-                    symbol_name_length_err_exit( sym_start );
-                }
-            }
-        }
-        p++;
-    }
-    sym->name[k] = '\0';
-
+    p = get_symbol_name( p, sym->name, splittable );
     if( p == sym_start ) {              // special for &*
         if( *p != ampchar ) {           // not &*&xx construct
             if( (sym->flags & SF_local_var)
@@ -118,6 +108,15 @@ char * scan_sym( char * p, symvar * sym, sub_index *subscript, char * * result, 
                 strcpy( sym->name, MAC_STAR_NAME );
             } else {
                 g_scan_err = true;
+            }
+        }
+    } else if( p > sym_start + SYM_NAME_LENGTH ) {
+        if( !g_scan_err ) {
+            g_scan_err = true;
+            if( !ProcFlags.suppress_msg ) {
+                // SC--074 For the symbol '%s'
+                //     The length of a symbol cannot exceed ten characters
+                symbol_name_length_err_exit( sym_start );
             }
         }
     }
@@ -180,8 +179,8 @@ char * scan_sym( char * p, symvar * sym, sub_index *subscript, char * * result, 
                 unsigned        len;
 
                 len = pend - p - 1;
-                if( len > BUF_SIZE - 1 )
-                    len = BUF_SIZE - 1;
+                if( len > BUF_SIZE )
+                    len = BUF_SIZE;
                 strncpy( valbuf, p, len );
                 valbuf[len] = '\0';
                 pa = valbuf;
@@ -197,7 +196,6 @@ char * scan_sym( char * p, symvar * sym, sub_index *subscript, char * * result, 
                     }
                     gn.ignore_blanks = false;
                     cc = getnum( &gn );     // try numeric expression evaluation
-
                     if( cc == CC_pos || cc == CC_neg ) {
                         *subscript = gn.result;
                         if( *p == ')' ) {

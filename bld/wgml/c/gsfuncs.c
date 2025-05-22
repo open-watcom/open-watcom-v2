@@ -71,19 +71,18 @@ static bool         var_in_parm;            // parm contains variable
 /****************************************************/
 /*allocate a buffer for resolving symvars+functions */
 /****************************************************/
-static  char    * alloc_resbuf( inp_line ** in_wk )
+static char *alloc_resbuf( inp_line **in_wk )
 {
     inp_line  * wk;
 
+    wk = mem_alloc( sizeof( inp_line ) + BUF_SIZE );
     if( *in_wk == NULL ) {
-        *in_wk =  mem_alloc( sizeof( inp_line ) + BUF_SIZE );
-        (*in_wk)->next = NULL;
+        wk->next = NULL;
     } else {
-        wk = mem_alloc( sizeof( inp_line ) + BUF_SIZE );
         wk->next = *in_wk;
-        *in_wk = wk;
     }
-    return( (*in_wk)->value );
+    *in_wk = wk;
+    return( wk->value );
 }
 
 

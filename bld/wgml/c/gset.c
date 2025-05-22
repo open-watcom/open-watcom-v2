@@ -106,8 +106,8 @@ extern  void    gml_set( const gmltag * entry )
                     sym.flags |= SF_deleted;
                 } else {
                     sym.flags &= ~SF_deleted;
-                    if( attr_val.tok.l > BUF_SIZE - 1 )
-                        attr_val.tok.l = BUF_SIZE - 1;
+                    if( attr_val.tok.l > BUF_SIZE )
+                        attr_val.tok.l = BUF_SIZE;
                     strncpy( token_buf, attr_val.tok.s, attr_val.tok.l );
                     token_buf[attr_val.tok.l] = '\0';
                 }
