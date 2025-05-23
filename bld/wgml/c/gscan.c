@@ -932,20 +932,20 @@ const gmltag *find_lay_tag( const char *tagname )
 /***************************************************************************/
 /*  find gml tag entry by e_tag value and determine if is an ip_start_tag  */
 /*  ip_start_tags are CIT, HPx, Q, SF                                      */
-/*  return true if offset is for an ip_start_tag, false otherwise          */
-/*  NOTE: for some reason, an offset specified as, say "t_CIT" is actually */
-/*        the offset for the gmltag object for tag eCIT, hence the         */
+/*  return true if tag id is for an ip_start_tag, false otherwise          */
+/*  NOTE: for some reason, an offset specified as, say "T_CIT" is actually */
+/*        the tag id for the gmltag object for tag eCIT, hence the         */
 /*        adjustment                                                       */
 /***************************************************************************/
 
 bool is_ip_tag( g_tags tag )
 {
-    if( (tag < T_NONE) || (tag >= T_MAX) ) {  // catch invalid offset values
+    if( (tag < 0) || (tag >= T_MAX) ) { // catch invalid tag id values
         internal_err_exit( __FILE__, __LINE__ );
-    } else if( tag != T_NONE ) {                 // t_NONE is valid, but is not an ip_start_tag
+    } else if( tag != T_NONE ) {        // T_NONE is valid, but is not an ip_start_tag
         return( (gml_tags[tag - 1].tagclass & TCLS_ip_start) != 0 );
     }
-    return( false );                                // not found
+    return( false );                    // not found
 }
 
 /***************************************************************************/
