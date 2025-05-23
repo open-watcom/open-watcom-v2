@@ -558,7 +558,7 @@ void    lay_banregion( const gmltag * entry )
 void    lay_ebanregion( const gmltag * entry )
 {
     rs_loc = TLOC_banner;
-    if( ProcFlags.lay_xxx == entry->u.layid - 1 ) {   // :banregion was last tag
+    if( ProcFlags.lay_xxx == TL_BANNER ) {   // :banregion was last tag
         ProcFlags.lay_xxx = entry->u.layid;
     } else {
         xx_err_exit_cc( err_no_lay, &(entry->tagname[1]), entry->tagname );
