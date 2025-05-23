@@ -184,7 +184,6 @@ void gen_heading( char *h_text, const char *hdrefid, hdsrc hn_lvl, hdsrc hds_lvl
     uint32_t        old_top_depth;
     uint32_t        page_diff;
     uint32_t        top_depth;
-    unsigned        slen;
 
     static char     headx[7]        = "$headX";
     static char     htextx[8]       = "$htextX";
@@ -234,31 +233,16 @@ void gen_heading( char *h_text, const char *hdrefid, hdsrc hn_lvl, hdsrc hds_lvl
 
     /* Reset $HEADx */
 
-    slen = strlen( headp );
-    if( hd_nums[hn_lvl].headsub->size < slen ) {     // need more room
-        hd_nums[hn_lvl].headsub->size = slen;
-        hd_nums[hn_lvl].headsub->value = mem_realloc( hd_nums[hn_lvl].headsub->value, slen + 1 );
-    }
-    strcpy( hd_nums[hn_lvl].headsub->value, headp );
+    resize_and_copy_value( hd_nums[hn_lvl].headsub, headp );
     mem_free( headp );
 
     /* Reset $HNUMx */
 
-    slen = strlen( prefix );
-    if( hd_nums[hn_lvl].hnumsub->size < slen ) {    // need more room
-        hd_nums[hn_lvl].hnumsub->size = slen;
-        hd_nums[hn_lvl].hnumsub->value = mem_realloc( hd_nums[hn_lvl].hnumsub->value, slen + 1 );
-    }
-    strcpy( hd_nums[hn_lvl].hnumsub->value, prefix );
+    resize_and_copy_value( hd_nums[hn_lvl].hnumsub, prefix );
 
     /* Reset $HTEXTx */
 
-    slen = strlen( h_text );
-    if( hd_nums[hn_lvl].htextsub->size < slen ) {     // need more room
-        hd_nums[hn_lvl].htextsub->size = slen;
-        hd_nums[hn_lvl].htextsub->value = mem_realloc( hd_nums[hn_lvl].htextsub->value, slen + 1 );
-    }
-    strcpy( hd_nums[hn_lvl].htextsub->value, h_text );
+    resize_and_copy_value( hd_nums[hn_lvl].htextsub, h_text );
 
     /* Only create the entry on the first pass */
 
@@ -524,24 +508,14 @@ void gen_heading( char *h_text, const char *hdrefid, hdsrc hn_lvl, hdsrc hds_lvl
 
     /* Reset $TOPHEADx */
 
-    slen = strlen( h_text );
     if( !ProcFlags.tophead_done ) { // first header on page
-        if( t_page.topheadsub->size < slen ) {     // need more room
-            t_page.topheadsub->size = slen;
-            t_page.topheadsub->value = mem_realloc( t_page.topheadsub->value, slen + 1 );
-        }
-        strcpy( t_page.topheadsub->value, h_text );
+        resize_and_copy_value( t_page.topheadsub, h_text );
         ProcFlags.tophead_done = true;  // will be reset when page output
     }
 
     /* Reset $BOTHEADx */
 
-    if( t_page.botheadsub->size < slen ) {     // need more room
-        t_page.botheadsub->size = slen;
-        t_page.botheadsub->value = mem_realloc( t_page.botheadsub->value, slen + 1 );
-    }
-    strcpy( t_page.botheadsub->value, h_text );
-
+    resize_and_copy_value( t_page.botheadsub, h_text );
 
     if( pass > 1 ) {                    // not on first pass
         hd_entry = hd_entry->next;      // get to next Hn

@@ -193,6 +193,36 @@ void    free_dict( symdict_hdl *pdict )
 }
 
 
+/***************************************************************************
+ * resize_and_copy_value
+ *  resize value buffer to hold new value
+ *  and copy data into it
+ */
+static void resize_value( symsub *val, unsigned size )
+{
+    if( val->size < size ) {// need more room
+        if( val->size > 0 ) {
+            val->value = mem_realloc( val->value, size + 1 );
+        } else {
+            val->value = mem_alloc( size + 1 );
+        }
+        val->size = size;
+    }
+}
+
+void resize_and_copy_value( symsub *val, const char *src )
+{
+    resize_value( val, strlen( src ) );
+    strcpy( val->value, src );
+}
+
+static void resize_and_copy_value_len( symsub *val, const char *src, unsigned size )
+{
+    resize_value( val, size );
+    strncpy( val->value, src, size );
+    val->value[size] = '\0';
+}
+
 /***************************************************************************/
 /*  print_sym_entry  print symbol with walue                               */
 /***************************************************************************/
@@ -492,12 +522,7 @@ static bool add_symvar_sub( symvar *var, const char *val, unsigned len, sub_inde
                                              /* update special sub 0 entry */
 #if 0
             sprintf( sub_cnt, "%d", var->subscript_used );
-            slen = strlen( sub_cnt );
-            if( var->sub_0->size < slen ) {// need more room
-                var->sub_0->size = slen;
-                var->sub_0->value = mem_realloc( var->sub_0->value, slen + 1 );
-            }
-            strcpy( var->sub_0->value, sub_cnt );
+            resize_and_copy_value( var->sub_0, sub_cnt );
 #else
             sprintf( var->sub_0->value, "%d", var->subscript_used );  // TBD
 #endif
@@ -538,12 +563,7 @@ static bool add_symvar_sub( symvar *var, const char *val, unsigned len, sub_inde
         }
     } else {                            // unsubscripted variable
         newsub = var->sub_0;
-        if( newsub->size < len ) { // need more room
-            newsub->size = len;
-            newsub->value = mem_realloc( newsub->value, len + 1 );
-        }
-        strncpy( newsub->value, val, len );
-        newsub->value[len] = '\0';
+        resize_and_copy_value_len( newsub, val, len );
     }
     *nsub = newsub;
     return( true );
@@ -670,12 +690,7 @@ int add_symvar_addr( symdict_hdl dict, const char *name, const char *val, unsign
               || strncmp( newsub->value, val, len ) == 0 ) {
                 ;             // do nothing var is readonly or value is unchanged
             } else {
-                if( newsub->size < len ) { // need more room
-                    newsub->size = len;
-                    newsub->value = mem_realloc( newsub->value, len + 1 );
-                }
-                strncpy( newsub->value, val, len );
-                newsub->value[len] = '\0';
+                resize_and_copy_value_len( newsub, val, len );
             }
             *sub = newsub;
             if( GlobalFlags.firstpass && (input_cbs->fmflags & II_research) ) {

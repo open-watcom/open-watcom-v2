@@ -361,6 +361,7 @@ extern int          add_symvar_sym( symvar *sym, const char *val, unsigned len, 
 extern int          add_symvar_addr( symdict_hdl dict, const char *name, const char *val, unsigned len, sub_index subscript, symbol_flags f, symsub **symsubval );
 extern void         print_sym_dict( symdict_hdl dict );
 extern void         reset_auto_inc_dict( symdict_hdl dict );
+extern void         resize_and_copy_value( symsub *val, const char *src );
 
 
 /* gsyssym.c                            */
