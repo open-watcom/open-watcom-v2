@@ -126,12 +126,18 @@
 #undef pickc
 
 
-/***************************************************************************/
-/*  The sequence of the following strings must match the enum ju_enum      */
-/***************************************************************************/
+/***************************************************************************
+ *  Define array with justify parameter strings
+ *  used also for independent "OFF"/"ON" strings for other parameters
+ */
+static char     *just_str[] = {
+    #define JUST_DEF(a,b) b,
+    JUST_DEFS
+    #undef JUST_DEF
+};
 
-static  char    str[][8] = { "OFF", "ON", "HALF", "LEFT", "RIGHT", "CENTER",
-                            "INSIDE", "OUTSIDE" };
+#define CONST_OFF just_str[JUST_off]
+#define CONST_ON  just_str[JUST_on]
 
 static  char    dateval[20];
 static  char    dayofmval[3];
@@ -286,9 +292,9 @@ static void syscofun( symvar *e )      // .co status
     (void)e;
 
     if( ProcFlags.concat ) {
-        sysco0.value = str[JUST_on];
+        sysco0.value = CONST_ON;
     } else {
-        sysco0.value = str[JUST_off];
+        sysco0.value = CONST_OFF;
     }
     return;
 }
@@ -527,7 +533,7 @@ static void syshyfun( symvar *e )
 {
     (void)e;
 
-    syshy0.value = str[JUST_off];     // will need adjustment if hyphenation is implemented
+    syshy0.value = CONST_OFF;     // will need adjustment if hyphenation is implemented
     return;
 }
 
@@ -595,7 +601,7 @@ static void sysjufun( symvar *e )      // .ju status
 {
     (void)e;
 
-    sysju0.value = str[ProcFlags.justify];
+    sysju0.value = just_str[ProcFlags.justify];
     return;
 }
 
@@ -604,9 +610,9 @@ static void syslayoutfun( symvar *e ) // LAYOUT cmdline option or :LAYOUT tag se
     (void)e;
 
     if( ProcFlags.lay_specified ) {
-        syslayout0.value = str[JUST_on];
+        syslayout0.value = CONST_ON;
     } else {
-        syslayout0.value = str[JUST_off];
+        syslayout0.value = CONST_OFF;
     }
     return;
 }
@@ -1226,11 +1232,10 @@ void    init_sys_dict( symdict_hdl *pdict )
 #undef picka
 
 #define SET_CHAR(p,v)   (p)[0]=v;(p)[1]='\0'
-#define SET_STR(p,v)
+#define SET_STR(p,v)    strcpy((p),(v))
 
     init_date_time();                   // set up predefned global
     init_predefined_symbols();          // variables
-
 
     /***********************************************************************/
     /*  commented statements are perhaps  TBD                              */
@@ -1239,20 +1244,16 @@ void    init_sys_dict( symdict_hdl *pdict )
 //  *sysadstr  =
 //  *sysadevenstr  =
 //  *sysadoddstr  =
-
     SET_CHAR( sysampstr, '&' );
     SET_CHAR( sysbcstr, 'Y' );
 //  *sysbestr  =
     SET_CHAR( sysbsstr, 0x16 );
     SET_CHAR( sysbxstr, 'N' );
-    *sysbxcharstr       = 'U';
-    *(sysbxcharstr + 1) = 'N';
-    *(sysbxcharstr + 2) = 'D';
-    *(sysbxcharstr + 3) = 0;
+    SET_STR( sysbxcharstr, "UND" );
     SET_CHAR( sysccstr, 'N' );
 //  *syscccstr =
-    syschars0.value = str[JUST_off];
-    sysco0.value    = str[JUST_on];
+    syschars0.value = CONST_OFF;
+    sysco0.value    = CONST_ON;
     SET_CHAR( syscpstr, 'N' );
     SET_CHAR( syscontstr, 0x03 );
 //  *syscpagesstr  =
@@ -1262,7 +1263,7 @@ void    init_sys_dict( symdict_hdl *pdict )
 //  *sysdfontsstr =
 //  *sysdhsetstr =
 //  *sysdpagestr =
-    sysduplex0.value = str[JUST_off];
+    sysduplex0.value = CONST_OFF;
     SET_CHAR( sysfbstr, 'N' );
 //  *sysfbcstr =
 //  *sysfbfstr =
@@ -1278,18 +1279,16 @@ void    init_sys_dict( symdict_hdl *pdict )
     SET_CHAR( syshnstr, 'N' );
 //  *syshncstr =
 //  *syshsstr =
-    syshy0.value = str[JUST_off];
+    syshy0.value = CONST_OFF;
 //  *syshycstr =
-    SET_CHAR( syshyphstr, 'N' );                // hyphenation OFF is default; hyphenation ON not implemented
+    SET_CHAR( syshyphstr, 'N' );        // hyphenation OFF is default; hyphenation ON not implemented
 //  *sysinstr =
 //  *sysinrstr =
 //  *sysirstr =
     SET_CHAR( sysixjstr, '-' );
-    *sysixrefstr = ',';
-    *(sysixrefstr + 1) = ' ';
-    *(sysixrefstr + 2) = 0;
-    sysju0.value = str[JUST_on];
-    syslayout0.value = str[JUST_off];
+    SET_STR( sysixrefstr, ", " );
+    sysju0.value = CONST_ON;
+    syslayout0.value = CONST_OFF;
     SET_CHAR( syslistr, '.' );
     SET_CHAR( syslinbstr, ' ' );
 //  *syslsstr =
@@ -1310,10 +1309,10 @@ void    init_sys_dict( symdict_hdl *pdict )
     SET_CHAR( sysplsstr, ',' );
 //  *sysppagestr =
     SET_CHAR( sysprsstr, '-' );
-    sysprt0.value = str[JUST_on];
+    sysprt0.value = CONST_ON;
     SET_CHAR( syspsstr, '%' );
 //  *syspwstr =
-    sysquiet0.value = str[JUST_off];
+    sysquiet0.value = CONST_OFF;
     SET_CHAR( sysrbstr, ' ' );
 //  *sysrecnostr =
 //  *sysretstr  =
@@ -1324,10 +1323,24 @@ void    init_sys_dict( symdict_hdl *pdict )
 //  *sysskcondstr =
 //  *sysslstr =
 //  *sysspcondstr =
-    syssu0.value = str[JUST_on];
+    syssu0.value = CONST_ON;
+#if defined( __DOS__ )
     syssys0.value = "DOS";
-    SET_CHAR( systabstr, 0x09 );
-    SET_CHAR( systbstr, 0x09 );
+#elif defined( __OS2__ )
+    syssys0.value = "OS2";
+#elif defined( __NT__ )
+    syssys0.value = "NT";
+#elif defined( __UNIX__ )
+  #if defined( __LINUX__ )
+    syssys0.value = "LINUX";
+  #elif defined( __OSX__ )
+    syssys0.value = "OSX";
+  #elif defined( __BSD__ )
+    syssys0.value = "BSD";
+  #endif
+#endif
+    SET_CHAR( systabstr, '\t' );
+    SET_CHAR( systbstr, '\t' );
 //  *systermtstr =
     SET_CHAR( systisetstr, ' ' );
 //  *systitlestr =
@@ -1337,4 +1350,3 @@ void    init_sys_dict( symdict_hdl *pdict )
 
     return;
 }
-

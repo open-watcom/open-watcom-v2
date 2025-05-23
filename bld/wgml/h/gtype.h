@@ -773,16 +773,21 @@ typedef enum doc_section {
 /* enum for justify values                                                 */
 /***************************************************************************/
 
+#define JUST_DEFS \
+JUST_DEF(JUST_off,     "OFF" ) /* ju_off must have lowest value */ \
+JUST_DEF(JUST_on,      "ON" )  /* ju_on next */ \
+JUST_DEF(JUST_half,    "HALF" ) \
+JUST_DEF(JUST_left,    "LEFT" ) \
+JUST_DEF(JUST_right,   "RIGHT" ) \
+JUST_DEF(JUST_centre,  "CENTER" ) \
+JUST_DEF(JUST_inside,  "INSIDE" ) \
+JUST_DEF(JUST_outside, "OUTSIDE" )
+
 typedef enum ju_enum {                  // for .ju(stify)
-    JUST_off,                           // ju_off must have lowest value
-    JUST_on,                            // ju_on next
-    JUST_half,
-    JUST_left,
-    JUST_right,
-    JUST_centre,
+    #define JUST_DEF(a,b) a,
+    JUST_DEFS
+    #undef JUST_DEF
     JUST_center = JUST_centre,
-    JUST_inside,
-    JUST_outside
 } ju_enum;
 
 /****************************************************************************/
