@@ -69,7 +69,7 @@ static void p_pc_setup( p_lay_tag * p_pc )
 /*  :P. :PC common routine                                                 */
 /***************************************************************************/
 
-static void proc_p_pc( p_lay_tag * p_pc, e_tags t )
+static void proc_p_pc( p_lay_tag *p_pc, g_tags t )
 {
     char    *   p;
 
@@ -103,9 +103,7 @@ static void proc_p_pc( p_lay_tag * p_pc, e_tags t )
 
 extern void gml_p( const gmltag * entry )
 {
-    (void)entry;
-
-    proc_p_pc( &layout_work.p, T_P );
+    proc_p_pc( &layout_work.p, entry->u.tagid );
 }
 
 /***************************************************************************/
@@ -114,9 +112,7 @@ extern void gml_p( const gmltag * entry )
 
 extern void gml_pc( const gmltag * entry )
 {
-    (void)entry;
-
-    proc_p_pc( &layout_work.pc, T_PC );
+    proc_p_pc( &layout_work.pc, entry->u.tagid );
 }
 
 /***************************************************************************/

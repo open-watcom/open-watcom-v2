@@ -107,8 +107,8 @@ void    lay_lp( const gmltag * entry )
     cvterr = false;
 
     memset( &AttrFlags, 0, sizeof( AttrFlags ) );   // clear all attribute flags
-    if( ProcFlags.lay_xxx != el_lp ) {
-        ProcFlags.lay_xxx = el_lp;
+    if( ProcFlags.lay_xxx != TL_LP ) {
+        ProcFlags.lay_xxx = TL_LP;
     }
     while( (cc = lay_attr_and_value( &attr_name, &attr_val )) == CC_pos ) {   // get att with value
         cvterr = -1;

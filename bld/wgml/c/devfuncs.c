@@ -2596,7 +2596,7 @@ static void fb_fs_marker( text_chars *in_chars )
 
     fs_font = &wgml_fonts[in_chars->font];
     switch( in_chars->f_switch ) {
-    case fs_full :
+    case FSW_full:
         if( (fs_font->font_style != NULL) && (fs_font->font_style->lineprocs != NULL) ) {
             if( fs_font->font_style->lineprocs->startvalue != NULL ) {
                 df_interpret_driver_functions( fs_font->font_style->lineprocs->startvalue->text );
@@ -2607,23 +2607,23 @@ static void fb_fs_marker( text_chars *in_chars )
         }
         break;
 
-    case fs_from :
-    case fs_from2 :
+    case FSW_from:
+    case FSW_from2:
         if( (fs_font->font_style != NULL) && (fs_font->font_style->lineprocs != NULL)
                 && (fs_font->font_style->lineprocs->endvalue != NULL) ) {
             df_interpret_driver_functions( fs_font->font_style->lineprocs->endvalue->text );
-            if( in_chars->f_switch == fs_from2 ) {
+            if( in_chars->f_switch == FSW_from2 ) {
                 df_interpret_driver_functions( fs_font->font_style->lineprocs->endvalue->text );
             }
         }
         break;
 
-    case fs_to :
-    case fs_to2 :
+    case FSW_to:
+    case FSW_to2:
         if( (fs_font->font_style != NULL) && (fs_font->font_style->lineprocs != NULL)
                 && (fs_font->font_style->lineprocs->endvalue != NULL) ) {
             df_interpret_driver_functions( fs_font->font_style->lineprocs->startvalue->text );
-            if( in_chars->f_switch == fs_to2 ) {
+            if( in_chars->f_switch == FSW_to2 ) {
                 df_interpret_driver_functions( fs_font->font_style->lineprocs->startvalue->text );
             }
         }
@@ -3783,7 +3783,7 @@ void fb_first_text_line_pass( text_line *out_line )
         }
     }
     x_address = desired_state.x_address;
-    if( current->f_switch == fs_norm ) {
+    if( current->f_switch == FSW_norm ) {
         fb_first_text_chars( current, cur_lineproc );   // normal text_chars, not marker
     } else {
         fb_fs_marker( current );                        // character device marker
@@ -3795,7 +3795,7 @@ void fb_first_text_line_pass( text_line *out_line )
     for( current = current->next; current != NULL; current = current->next ) {
         desired_state.x_address = current->x_address;
         desired_state.type = current->type;
-        if( current->f_switch != fs_norm ) {
+        if( current->f_switch != FSW_norm ) {
             fb_fs_marker( current );                    // character device marker
         } else if( (current_state.font != current->font) || (desired_state.type & TXT_figcap) ) {
             if( wgml_fonts[current->font].font_style != NULL ) {
@@ -4146,7 +4146,7 @@ void fb_subsequent_text_line_pass( text_line *out_line, uint16_t line_pass )
 
     /* Interpret a :LINEPROC :ENDVALUE block if appropriate. */
 
-    if( out_line->last->f_switch == fs_norm ) {
+    if( out_line->last->f_switch == FSW_norm ) {
         fb_lineproc_endvalue();
     }
     line_pass_number = line_pass;

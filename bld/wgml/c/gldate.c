@@ -122,8 +122,8 @@ void    lay_date( const gmltag * entry )
     cvterr = false;
 
     memset( &AttrFlags, 0, sizeof( AttrFlags ) );   // clear all attribute flags
-    if( ProcFlags.lay_xxx != el_date ) {
-        ProcFlags.lay_xxx = el_date;
+    if( ProcFlags.lay_xxx != TL_DATE ) {
+        ProcFlags.lay_xxx = TL_DATE;
     }
     while( (cc = lay_attr_and_value( &attr_name, &attr_val )) == CC_pos ) {   // get att with value
         cvterr = -1;

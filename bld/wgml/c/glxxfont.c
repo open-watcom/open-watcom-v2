@@ -53,43 +53,35 @@ void    lay_xx( const gmltag * entry )
     int                 cvterr;
     int                 k;
     lay_att             curr;
-    lay_sub             x_tag;
+    l_tags              ltag;
     att_name_type       attr_name;
     att_val_type        attr_val;
 
     p = scandata.s;
     cvterr = false;
-
-    if( strcmp( "CIT", entry->tagname ) == 0 ) {
-        x_tag = el_cit;
+    ltag = entry->u.layid;
+    if( ltag == TL_CIT ) {
         fontptr = &layout_work.cit.font;
-    } else if( strcmp( "DTHD", entry->tagname ) == 0 ) {
-        x_tag = el_dthd;
+    } else if( ltag == TL_DTHD ) {
         fontptr = &layout_work.dthd.font;
-    } else if( strcmp( "DT", entry->tagname ) == 0 ) {
-        x_tag = el_dt;
+    } else if( ltag == TL_DT ) {
         fontptr = &layout_work.dt.font;
-    } else if( strcmp( "GT", entry->tagname ) == 0 ) {
-        x_tag = el_gt;
+    } else if( ltag == TL_GT ) {
         fontptr = &layout_work.gt.font;
-    } else if( strcmp( "GD", entry->tagname ) == 0 ) {
-        x_tag = el_gd;
+    } else if( ltag == TL_GD ) {
         fontptr = &layout_work.gd.font;
-    } else if( strcmp( "DDHD", entry->tagname ) == 0 ) {
-        x_tag = el_ddhd;
+    } else if( ltag == TL_DDHD ) {
         fontptr = &layout_work.ddhd.font;
-    } else if( strcmp( "IXPGNUM", entry->tagname ) == 0 ) {
-        x_tag = el_ixpgnum;
+    } else if( ltag == TL_IXPGNUM ) {
         fontptr = &layout_work.ixpgnum.font;
-    } else if( strcmp( "IXMAJOR", entry->tagname ) == 0 ) {
-        x_tag = el_ixmajor;
+    } else if( ltag == TL_IXMAJOR ) {
         fontptr = &layout_work.ixmajor.font;
     } else {
         internal_err_exit( __FILE__, __LINE__ );
     }
     memset( &AttrFlags, 0, sizeof( AttrFlags ) );   // clear all attribute flags
-    if( ProcFlags.lay_xxx != x_tag ) {
-        ProcFlags.lay_xxx = x_tag;
+    if( ProcFlags.lay_xxx != ltag ) {
+        ProcFlags.lay_xxx = ltag;
     }
     while( (cc = lay_attr_and_value( &attr_name, &attr_val )) == CC_pos ) {   // get att with value
         cvterr = -1;

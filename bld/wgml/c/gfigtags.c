@@ -96,7 +96,7 @@ static doc_element * get_box_line_el( void )
 {
     doc_element *   cur_doc_el;
 
-    cur_doc_el = alloc_doc_el( el_text );
+    cur_doc_el = alloc_doc_el( ELT_text );
     cur_doc_el->element.text.first = alloc_text_line();
     cur_doc_el->element.text.first->first =
             alloc_text_chars( line_buff.text, line_buff.current, bin_device->box.font );
@@ -159,13 +159,13 @@ static void draw_box( doc_el_group * in_group )
         while( cur_doc_el != NULL ) {
             switch( cur_doc_el->type ) {
             // add code for other element types as appropriate
-            case el_binc :
-            case el_dbox :
-            case el_graph :
-            case el_hline :
-            case el_vline :
+            case ELT_binc:
+            case ELT_dbox:
+            case ELT_graph:
+            case ELT_hline:
+            case ELT_vline:
                 break;
-            case el_text :
+            case ELT_text:
 
                 /********************************************************/
                 /* In reality, the box will have all text elements      */
@@ -224,7 +224,7 @@ static void draw_box( doc_el_group * in_group )
         in_group->last = in_group->last->next;
         in_group->depth += cur_doc_el->depth;
     } else {                                        // use DBOX
-        cur_doc_el = alloc_doc_el( el_dbox );
+        cur_doc_el = alloc_doc_el( ELT_dbox );
         if( place == inline_place ) {
             if( !splitting ) {
                 cur_doc_el->subs_skip += wgml_fonts[layout_work.fig.font].line_height;
@@ -317,7 +317,7 @@ static void insert_frame_line( void )
         /* placed one line too far down on the page                        */
         /*******************************************************************/
 
-            h_line_el = init_doc_el( el_hline, 0 );
+            h_line_el = init_doc_el( ELT_hline, 0 );
             h_line_el->element.hline.ban_adjust = false;   // TBD, may not apply to FIG
             h_line_el->element.hline.h_start = nest_cb->left_indent;
             h_line_el->element.hline.h_len = width;
@@ -407,8 +407,8 @@ void gml_fig( const gmltag * entry )
     scr_process_break();
     g_scan_err = false;
 
-    if( is_ip_tag( nest_cb->c_tag ) ) {                 // inline phrase not closed
-        g_tag_nest_err_exit( nest_cb->c_tag + 1 ); // end tag expected
+    if( is_ip_tag( nest_cb->gtag ) ) {                 // inline phrase not closed
+        g_tag_nest_err_exit( nest_cb->gtag + 1 ); // end tag expected
     }
     g_keep_nest( "Figure" );            // catch nesting errors
 
@@ -554,11 +554,11 @@ void gml_fig( const gmltag * entry )
     nest_cb->left_indent = conv_hor_unit( &layout_work.fig.left_adjust, g_curr_font );
     nest_cb->right_indent = conv_hor_unit( &layout_work.fig.right_adjust, g_curr_font );
     nest_cb->font = g_curr_font;
-    nest_cb->c_tag = T_FIG;
+    nest_cb->gtag = T_FIG;
 
     sav_group_type = cur_group_type;
-    cur_group_type = gt_fig;
-    cur_doc_el_group = alloc_doc_el_group( gt_fig );
+    cur_group_type = GRT_fig;
+    cur_doc_el_group = alloc_doc_el_group( GRT_fig );
     cur_doc_el_group->next = t_doc_el_group;
     t_doc_el_group = cur_doc_el_group;
     cur_doc_el_group = NULL;
@@ -726,7 +726,7 @@ void gml_efig( const gmltag * entry )
     p = scandata.s;
     SkipDot( p );                       // possible tag end
 
-    if( cur_group_type != gt_fig ) {    // no preceding :FIG tag
+    if( cur_group_type != GRT_fig ) {    // no preceding :FIG tag
         g_tag_prec_err_exit( T_FIG );
     }
 
@@ -836,7 +836,7 @@ void gml_efig( const gmltag * entry )
                         splitting = true;
                         split_done = true;
                         cur_depth = 0;
-                        new_group = alloc_doc_el_group( gt_fig );
+                        new_group = alloc_doc_el_group( GRT_fig );
                         while( cur_doc_el_group->first != NULL ) {
                             cur_el = cur_doc_el_group->first;
                             cur_doc_el_group->first = cur_doc_el_group->first->next;

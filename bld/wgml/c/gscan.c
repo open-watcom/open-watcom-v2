@@ -39,7 +39,7 @@
 /***************************************************************************/
 
 static const gmltag     gml_tags[] = {
-    #define pick( name, length, routine, gmlflags, locflags, classflags ) { #name, length, routine, gmlflags, locflags, classflags },
+    #define pick( name, length, routine, gmlflags, locflags, classflags ) { { T_##name }, #name, length, routine, gmlflags, locflags, classflags },
     #include "gtags.h"
     #undef pick
 };
@@ -51,7 +51,7 @@ static const gmltag     gml_tags[] = {
 /***************************************************************************/
 
 static const gmltag     lay_tags[] = {
-    #define pick( name, length, routine, gmlflags, locflags ) { #name, length, routine, gmlflags, locflags, TCLS_no_class },
+    #define pick( name, length, routine, gmlflags, locflags ) { { TL_##name }, #name, length, routine, gmlflags, locflags, TCLS_no_class },
     #include "gtagslay.h"
     #undef pick
 };
@@ -236,8 +236,8 @@ static void scan_gml( void )
             if( tag != NULL ) {
                 ProcFlags.tag_end_found = false;
                 if( GlobalFlags.firstpass
-                  || strcmp( "LAYOUT", tagname ) == 0
-                  || strcmp( "ELAYOUT", tagname ) == 0 ) {
+                  || tag->u.layid == TL_LAYOUT
+                  || tag->u.layid == TL_ELAYOUT ) {
                     if( rs_loc == 0 ) {
                         // no restrictions: do them all
                         tag->gmlproc( tag );
@@ -278,7 +278,7 @@ static void scan_gml( void )
                 /*******************************************************************/
 
                 if( (tag->tagclass & (TCLS_ip_start | TCLS_ip_end | TCLS_index)) == 0
-                  && strcmp( "SET", tag->tagname ) != 0 ) {
+                  && tag->u.tagid != T_SET ) {
                     ProcFlags.force_pc = false;
                 }
 
@@ -938,7 +938,7 @@ const gmltag *find_lay_tag( const char *tagname )
 /*        adjustment                                                       */
 /***************************************************************************/
 
-bool is_ip_tag( e_tags tag )
+bool is_ip_tag( g_tags tag )
 {
     if( (tag < T_NONE) || (tag >= T_MAX) ) {  // catch invalid offset values
         internal_err_exit( __FILE__, __LINE__ );

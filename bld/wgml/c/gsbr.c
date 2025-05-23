@@ -57,7 +57,7 @@ static void attach_eol( void )
 
     if( (t_doc_el_group != NULL ) && (t_doc_el_group->first != NULL ) ) {
         switch( t_doc_el_group->last->type ) {
-        case el_binc :
+        case ELT_binc:
             if( t_doc_el_group->last->element.binc.eol_index == NULL ) {
                 t_doc_el_group->last->element.binc.eol_index = g_eol_ix;
             } else {
@@ -66,7 +66,7 @@ static void attach_eol( void )
             }
             g_eol_ix = NULL;
             break;
-        case el_dbox :
+        case ELT_dbox:
             if( t_doc_el_group->last->element.dbox.eol_index == NULL ) {
                 t_doc_el_group->last->element.dbox.eol_index = g_eol_ix;
             } else {
@@ -75,7 +75,7 @@ static void attach_eol( void )
             }
             g_eol_ix = NULL;
             break;
-        case el_graph :
+        case ELT_graph:
             if( t_doc_el_group->last->element.graph.eol_index == NULL ) {
                 t_doc_el_group->last->element.graph.eol_index = g_eol_ix;
             } else {
@@ -84,7 +84,7 @@ static void attach_eol( void )
             }
             g_eol_ix = NULL;
             break;
-        case el_hline :
+        case ELT_hline:
             if( t_doc_el_group->last->element.hline.eol_index == NULL ) {
                 t_doc_el_group->last->element.hline.eol_index = g_eol_ix;
             } else {
@@ -93,7 +93,7 @@ static void attach_eol( void )
             }
             g_eol_ix = NULL;
             break;
-        case el_text :
+        case ELT_text:
             cur_tl = t_doc_el_group->last->element.text.first;
             if( cur_tl != NULL ) {              // text_lines exist
                 while( cur_tl->next != NULL ) {
@@ -108,7 +108,7 @@ static void attach_eol( void )
                 g_eol_ix = NULL;
             }
             break;
-        case el_vline :
+        case ELT_vline:
             if( t_doc_el_group->last->element.vline.eol_index == NULL ) {
                 t_doc_el_group->last->element.vline.eol_index = g_eol_ix;
             } else {
@@ -117,7 +117,7 @@ static void attach_eol( void )
             }
             g_eol_ix = NULL;
             break;
-        case el_vspace :
+        case ELT_vspace:
             if( t_doc_el_group->last->element.vspace.eol_index == NULL ) {
                 t_doc_el_group->last->element.vspace.eol_index = g_eol_ix;
             } else {
@@ -131,7 +131,7 @@ static void attach_eol( void )
         }
     } else if( t_page.last_col_main != NULL ) {
         switch( t_page.last_col_main->type ) {
-        case el_binc :
+        case ELT_binc:
             if( t_page.last_col_main->element.binc.eol_index == NULL ) {
                 t_page.last_col_main->element.binc.eol_index = g_eol_ix;
             } else {
@@ -140,7 +140,7 @@ static void attach_eol( void )
             }
             g_eol_ix = NULL;
             break;
-        case el_dbox :
+        case ELT_dbox:
             if( t_page.last_col_main->element.dbox.eol_index == NULL ) {
                 t_page.last_col_main->element.dbox.eol_index = g_eol_ix;
             } else {
@@ -149,7 +149,7 @@ static void attach_eol( void )
             }
             g_eol_ix = NULL;
             break;
-        case el_graph :
+        case ELT_graph:
             if( t_page.last_col_main->element.graph.eol_index == NULL ) {
                 t_page.last_col_main->element.graph.eol_index = g_eol_ix;
             } else {
@@ -158,7 +158,7 @@ static void attach_eol( void )
             }
             g_eol_ix = NULL;
             break;
-        case el_hline :
+        case ELT_hline:
             if( t_page.last_col_main->element.hline.eol_index == NULL ) {
                 t_page.last_col_main->element.hline.eol_index = g_eol_ix;
             } else {
@@ -167,7 +167,7 @@ static void attach_eol( void )
             }
             g_eol_ix = NULL;
             break;
-        case el_text :
+        case ELT_text:
             cur_tl = t_page.last_col_main->element.text.first;
             if( cur_tl != NULL ) {              // text_lines exist
                 while( cur_tl->next != NULL ) {
@@ -190,7 +190,7 @@ static void attach_eol( void )
                 g_eol_ix = NULL;
             }
             break;
-        case el_vline :
+        case ELT_vline:
             if( t_page.last_col_main->element.vline.eol_index == NULL ) {
                 t_page.last_col_main->element.vline.eol_index = g_eol_ix;
             } else {
@@ -199,7 +199,7 @@ static void attach_eol( void )
             }
             g_eol_ix = NULL;
             break;
-        case el_vspace :
+        case ELT_vspace:
             if( t_page.last_col_main->element.vspace.eol_index == NULL ) {
                 t_page.last_col_main->element.vspace.eol_index = g_eol_ix;
             } else {
@@ -328,9 +328,9 @@ void  scr_process_break( void )
     if( t_element != NULL ) {
         if( ProcFlags.concat && ProcFlags.in_reduced ) {
             g_blank_units_lines = wgml_fonts[g_curr_font].line_height;
-            cur_el = init_doc_el( el_vspace, 0 );
+            cur_el = init_doc_el( ELT_vspace, 0 );
             insert_col_main( cur_el );
-            if( t_element->type == el_text ) {   // not clear what to do for other types
+            if( t_element->type == ELT_text ) {   // not clear what to do for other types
                 t_element->element.text.overprint = true;
             }
         }
@@ -345,7 +345,7 @@ void  scr_process_break( void )
     } else if( ProcFlags.titlep_starting ) {    // TITLE : no text before break
         set_skip_vars( NULL, NULL, NULL, g_text_spacing, g_curr_font);
         g_subs_skip = 0;                        // matches wgml 4.0
-        t_element = init_doc_el( el_text, wgml_fonts[g_curr_font].line_height );
+        t_element = init_doc_el( ELT_text, wgml_fonts[g_curr_font].line_height );
         t_element->element.text.first = alloc_text_line();
         t_element->element.text.first->line_height = wgml_fonts[g_curr_font].line_height;
         t_element->element.text.first->first = NULL;
@@ -359,7 +359,7 @@ void  scr_process_break( void )
         if( (g_line_indent > 0) || (g_blank_units_lines > 0) ) {
             set_skip_vars( NULL, NULL, NULL, g_text_spacing, g_curr_font);
 
-            t_element = init_doc_el( el_text, wgml_fonts[g_curr_font].line_height );
+            t_element = init_doc_el( ELT_text, wgml_fonts[g_curr_font].line_height );
             if( g_line_indent == 0 ) {  // special case
                 t_element->depth = 0;
             }
@@ -380,7 +380,7 @@ void  scr_process_break( void )
     } else if( g_blank_text_lines > 0  ) {                  // pending blank lines
         set_skip_vars( NULL, NULL, NULL, 1, g_curr_font );  // emits vspace doc_element
     } else if( g_blank_units_lines > 0 ) {   // arbitrary blank space
-        t_element = init_doc_el( el_vspace, 0 );
+        t_element = init_doc_el( ELT_vspace, 0 );
         insert_col_main( t_element );
         t_element = NULL;
         t_el_last = NULL;

@@ -45,19 +45,17 @@ void gml_lq( const gmltag * entry )
 {
     char        *   p;
 
-    (void)entry;
-
     start_doc_sect();                   // if not already done
     scr_process_break();
 
-    if( is_ip_tag( nest_cb->c_tag ) ) {         // inline phrase not closed
-        g_tag_nest_err_exit( nest_cb->c_tag + 1 );   // end tag expected
+    if( is_ip_tag( nest_cb->gtag ) ) {         // inline phrase not closed
+        g_tag_nest_err_exit( nest_cb->gtag + 1 );   // end tag expected
     }
 
     init_nest_cb();
     nest_cb->p_stack = copy_to_nest_stack();
 
-    nest_cb->c_tag = T_LQ;
+    nest_cb->gtag = entry->u.tagid;
 
     nest_cb->left_indent = conv_hor_unit( &layout_work.lq.left_indent, g_curr_font );
     nest_cb->right_indent = -1 * conv_hor_unit( &layout_work.lq.right_indent, g_curr_font );
@@ -103,15 +101,13 @@ void gml_elq( const gmltag * entry )
     char    *   p;
     tag_cb  *   wk;
 
-    (void)entry;
-
     scr_process_break();
 
-    if( nest_cb->c_tag != T_LQ ) {                  // unexpected exxx tag
-        if( nest_cb->c_tag == T_NONE ) {
-            g_tag_no_err_exit( T_LQ + 1 );               // no exxx expected, no tag active
+    if( nest_cb->gtag != T_LQ ) {                  // unexpected exxx tag
+        if( nest_cb->gtag == T_NONE ) {
+            g_tag_no_err_exit( entry->u.tagid );               // no exxx expected, no tag active
         } else {
-            g_tag_nest_err_exit( nest_cb->c_tag + 1 );   // exxx expected
+            g_tag_nest_err_exit( nest_cb->gtag + 1 );   // exxx expected
         }
     }
 

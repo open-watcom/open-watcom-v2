@@ -372,7 +372,7 @@ void file_mac_info_nest( void )
             g_info( inf_file_line, linestr, input_cbs->s.f->filename );
         }
 
-        g_info( err_tag_starting, str_tags[nest_cb->c_tag] );
+        g_info( err_tag_starting, str_tags[nest_cb->gtag] );
 
         nw = nest_cb->p_stack;
         while( nw != NULL ) {
@@ -556,9 +556,9 @@ void dup_refid_err_exit( const char *refid, const char * context )
 /*  error msgs for missing or duplicate :XXX :eXXX tags                    */
 /***************************************************************************/
 
-static void g_tag_common_err( e_tags etag, bool nest )
+static void g_tag_common_err( g_tags gtag, bool nest )
 {
-    g_err( err_tag_expected, str_tags[etag] );
+    g_err( err_tag_expected, str_tags[gtag] );
     if( nest ) {
         file_mac_info_nest();
     } else {
@@ -568,15 +568,15 @@ static void g_tag_common_err( e_tags etag, bool nest )
     return;
 }
 
-void g_tag_err_exit( e_tags etag )
+void g_tag_err_exit( g_tags gtag )
 {
-    g_tag_common_err( etag, false );         // 'normal' stack display
+    g_tag_common_err( gtag, false );         // 'normal' stack display
     err_exit();
 }
 
-void g_tag_nest_err_exit( e_tags etag )
+void g_tag_nest_err_exit( g_tags gtag )
 {
-    g_tag_common_err( etag, true );         // nested tag stack display
+    g_tag_common_err( gtag, true );         // nested tag stack display
     err_exit();
 }
 
@@ -620,22 +620,22 @@ void g_tag_mac_err_exit( const gtentry *ge )
     err_exit();
 }
 
-void g_tag_no_err_exit( e_tags etag )
+void g_tag_no_err_exit( g_tags gtag )
 {
     char    tagn[TAG_NAME_LENGTH + 1 + 1];
 
-    sprintf( tagn, "%c%s", GML_char, str_tags[etag] );
+    sprintf( tagn, "%c%s", GML_char, str_tags[gtag] );
     g_err( err_tag_not_expected, tagn );
     file_mac_info_nest();
     err_count++;
     err_exit();
 }
 
-void g_tag_prec_err_exit( e_tags etag )
+void g_tag_prec_err_exit( g_tags gtag )
 {
     char    tagn[TAG_NAME_LENGTH + 1 + 1];
 
-    sprintf( tagn, "%c%s", GML_char, str_tags[etag] );
+    sprintf( tagn, "%c%s", GML_char, str_tags[gtag] );
     g_err( err_tag_preceding, tagn );
     file_mac_info();
     err_count++;

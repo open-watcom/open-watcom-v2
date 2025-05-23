@@ -61,8 +61,8 @@ void    lay_titlep( const gmltag * entry )
     cvterr = false;
 
     memset( &AttrFlags, 0, sizeof( AttrFlags ) );   // clear all attribute flags
-    if( ProcFlags.lay_xxx != el_titlep ) {
-        ProcFlags.lay_xxx = el_titlep;
+    if( ProcFlags.lay_xxx != TL_TITLEP ) {
+        ProcFlags.lay_xxx = TL_TITLEP;
     }
     while( (cc = lay_attr_and_value( &attr_name, &attr_val )) == CC_pos ) {   // get att with value
         cvterr = -1;

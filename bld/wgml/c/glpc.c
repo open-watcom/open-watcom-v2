@@ -167,8 +167,8 @@ void    lay_p( const gmltag * entry )
 {
     (void)entry;
 
-    if( ProcFlags.lay_xxx != el_p ) {
-        ProcFlags.lay_xxx = el_p;
+    if( ProcFlags.lay_xxx != TL_P ) {
+        ProcFlags.lay_xxx = TL_P;
     }
     process_arg( &layout_work.p );
     scandata.s = scandata.e;
@@ -183,8 +183,8 @@ void    lay_pc( const gmltag * entry )
 {
     (void)entry;
 
-    if( ProcFlags.lay_xxx != el_pc ) {
-        ProcFlags.lay_xxx = el_pc;
+    if( ProcFlags.lay_xxx != TL_PC ) {
+        ProcFlags.lay_xxx = TL_PC;
     }
     process_arg( &layout_work.pc );
     scandata.s = scandata.e;

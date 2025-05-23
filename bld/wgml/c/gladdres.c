@@ -123,8 +123,8 @@ void    lay_address( const gmltag * entry )
     cvterr = false;
 
     memset( &AttrFlags, 0, sizeof( AttrFlags ) );   // clear all attribute flags
-    if( ProcFlags.lay_xxx != el_address ) {
-        ProcFlags.lay_xxx = el_address;
+    if( ProcFlags.lay_xxx != TL_ADDRESS ) {
+        ProcFlags.lay_xxx = TL_ADDRESS;
     }
     while( (cc = lay_attr_and_value( &attr_name, &attr_val )) == CC_pos ) {   // get att with value
         cvterr = -1;
@@ -217,8 +217,8 @@ void    lay_aline( const gmltag * entry )
     cvterr = false;
 
     memset( &AttrFlags, 0, sizeof( AttrFlags ) );   // clear all attribute flags
-    if( ProcFlags.lay_xxx != el_aline ) {
-        ProcFlags.lay_xxx = el_aline;
+    if( ProcFlags.lay_xxx != TL_ALINE ) {
+        ProcFlags.lay_xxx = TL_ALINE;
     }
     while( (cc = lay_attr_and_value( &attr_name, &attr_val )) == CC_pos ) {   // get att with value
         cvterr = true;

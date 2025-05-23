@@ -539,8 +539,8 @@ void    lay_dl( const gmltag * entry )
     p = scandata.s;
 
     memset( &AttrFlags, 0, sizeof( AttrFlags ) );   // clear all attribute flags
-    if( ProcFlags.lay_xxx != el_dl ) {
-        ProcFlags.lay_xxx = el_dl;
+    if( ProcFlags.lay_xxx != TL_DL ) {
+        ProcFlags.lay_xxx = TL_DL;
     }
 
     /* Make a copy of the level 1 DL LAYOUT */
@@ -724,8 +724,8 @@ void    lay_gl( const gmltag * entry )
     p = scandata.s;
 
     memset( &AttrFlags, 0, sizeof( AttrFlags ) );   // clear all attribute flags
-    if( ProcFlags.lay_xxx != el_gl ) {
-        ProcFlags.lay_xxx = el_gl;
+    if( ProcFlags.lay_xxx != TL_GL ) {
+        ProcFlags.lay_xxx = TL_GL;
     }
 
     /* Make a copy of the level 1 GL LAYOUT */
@@ -909,8 +909,8 @@ void    lay_ol( const gmltag * entry )
     p = scandata.s;
 
     memset( &AttrFlags, 0, sizeof( AttrFlags ) );   // clear all attribute flags
-    if( ProcFlags.lay_xxx != el_ol ) {
-        ProcFlags.lay_xxx = el_ol;
+    if( ProcFlags.lay_xxx != TL_OL ) {
+        ProcFlags.lay_xxx = TL_OL;
     }
 
     /* Make a copy of the level 1 OL LAYOUT */
@@ -1124,8 +1124,8 @@ void    lay_sl( const gmltag * entry )
     p = scandata.s;
 
     memset( &AttrFlags, 0, sizeof( AttrFlags ) );   // clear all attribute flags
-    if( ProcFlags.lay_xxx != el_sl ) {
-        ProcFlags.lay_xxx = el_sl;
+    if( ProcFlags.lay_xxx != TL_SL ) {
+        ProcFlags.lay_xxx = TL_SL;
     }
 
     /* Make a copy of the level 1 SL LAYOUT */
@@ -1299,8 +1299,8 @@ void    lay_ul( const gmltag * entry )
     p = scandata.s;
 
     memset( &AttrFlags, 0, sizeof( AttrFlags ) );   // clear all attribute flags
-    if( ProcFlags.lay_xxx != el_ul ) {
-        ProcFlags.lay_xxx = el_ul;
+    if( ProcFlags.lay_xxx != TL_UL ) {
+        ProcFlags.lay_xxx = TL_UL;
     }
 
     /* Make a copy of the level 1 UL LAYOUT */

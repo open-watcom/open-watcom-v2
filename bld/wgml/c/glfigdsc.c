@@ -85,8 +85,8 @@ void    lay_figdesc( const gmltag * entry )
     cvterr = false;
 
     memset( &AttrFlags, 0, sizeof( AttrFlags ) );   // clear all attribute flags
-    if( ProcFlags.lay_xxx != el_figdesc ) {
-        ProcFlags.lay_xxx = el_figdesc;
+    if( ProcFlags.lay_xxx != TL_FIGDESC ) {
+        ProcFlags.lay_xxx = TL_FIGDESC;
     }
     while( (cc = lay_attr_and_value( &attr_name, &attr_val )) == CC_pos ) {   // get att with value
         cvterr = -1;

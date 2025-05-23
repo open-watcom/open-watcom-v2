@@ -45,7 +45,7 @@ static void do_co_off( void )
 {
     ProcFlags.concat = false;
     ProcFlags.sk_co = true;             // ensures first sub-block will be moved if appropriate
-    cur_doc_el_group = alloc_doc_el_group( gt_co );
+    cur_doc_el_group = alloc_doc_el_group( GRT_co );
     cur_doc_el_group->block_font = g_curr_font;
     cur_doc_el_group->next = t_doc_el_group;
     t_doc_el_group = cur_doc_el_group;
@@ -85,7 +85,7 @@ static void do_co_on( void )
 
     /* must have text and it must have been started by CO OFF */
 
-    if( (t_doc_el_group != NULL) && (t_doc_el_group->owner == gt_co) ) {
+    if( (t_doc_el_group != NULL) && (t_doc_el_group->owner == GRT_co) ) {
         cur_doc_el_group = t_doc_el_group;      // detach current element group
         t_doc_el_group = t_doc_el_group->next;  // processed doc_elements go to next group, if any
         cur_doc_el_group->next = NULL;
@@ -98,9 +98,9 @@ static void do_co_on( void )
             if( cur_doc_el_group->first != NULL ) {
                 cur_el = cur_doc_el_group->first;
                 while( cur_el != NULL ) {
-                    if( cur_el->type == el_text ) {
+                    if( cur_el->type == ELT_text ) {
                         t_line_tot += cur_el->depth / line_height;
-                    } else if( cur_el->type == el_vspace ) {    // other types may need to be added
+                    } else if( cur_el->type == ELT_vspace ) {    // other types may need to be added
                         b_line_tot += cur_el->blank_lines / line_height;
                     }
                     cur_el = cur_el->next;
@@ -135,7 +135,7 @@ static void do_co_on( void )
 
                 while( cur_el != NULL ) {
                     if( cur_el->do_split ) {                // new sub-block
-                        last_group->next = alloc_doc_el_group( gt_co );
+                        last_group->next = alloc_doc_el_group( GRT_co );
                         last_group = last_group->next;
                         last_group->first = cur_el;
                         last_group->last = last_group->first;
@@ -181,7 +181,7 @@ static void do_co_on( void )
                               - cur_doc_el_group->first->subs_skip) / line_height;  // for first page
                     }
                     start_page = g_apage;
-                    if( (cur_doc_el_group->first->type == el_text)
+                    if( (cur_doc_el_group->first->type == ELT_text)
                             && ((cur_doc_el_group->first->top_skip == 0)
                                 || (t_page.cur_depth == 0)) ) {            // first line is text
                         text_first = true;
@@ -191,16 +191,16 @@ static void do_co_on( void )
 
                     while( cur_doc_el_group->first != NULL ) {
                         cur_el = cur_doc_el_group->first;
-                        if( (cur_el->next != NULL) && (cur_el->type == el_text) &&
-                                (cur_el->next->type == el_vspace) ) {
+                        if( (cur_el->next != NULL) && (cur_el->type == ELT_text) &&
+                                (cur_el->next->type == ELT_vspace) ) {
                             cur_el->element.text.vspace_next = true;        // matches wgml 4.0
                         }
                         if( (page_line == lpp)
-                                && ((cur_el->type != el_text)
+                                && ((cur_el->type != ELT_text)
                                 || (!cur_el->element.text.vspace_next)) ) {
                             page_line = 0;
                             /* Skip blank line at bottom of page */
-                            if( (cur_el->type == el_vspace) && (cur_el->blank_lines >= line_height) ) {
+                            if( (cur_el->type == ELT_vspace) && (cur_el->blank_lines >= line_height) ) {
                                 skip_blank = true;
                             } else {
                                 skip_blank = false;
@@ -217,11 +217,11 @@ static void do_co_on( void )
                         /* is implementing what appears to be a bug in wgml 4.0         */
                         /****************************************************************/
 
-                        if( (cur_el->type == el_text) || !skip_blank ) {
-                            if( cur_el->type == el_text ) {
+                        if( (cur_el->type == ELT_text) || !skip_blank ) {
+                            if( cur_el->type == ELT_text ) {
                                 t_cur_line += cur_el->depth / line_height;
                                 page_line += cur_el->depth / line_height;
-                            } else if( cur_el->type == el_vspace ) {    // other types may need to be added
+                            } else if( cur_el->type == ELT_vspace ) {    // other types may need to be added
                                 b_cur_line += cur_el->blank_lines / line_height;
                                 page_line += cur_el->blank_lines / line_height;
                             }
@@ -248,7 +248,7 @@ static void do_co_on( void )
                         /*    than 1.                                                   */
                         /****************************************************************/
 
-                        if( (break_point > 0) && (cur_el->type == el_text) ) {
+                        if( (break_point > 0) && (cur_el->type == ELT_text) ) {
                             if( (t_cur_line == (break_point - threshold))
                                     && (page_line >= (lpp - threshold + 1))
                                     && !text_first ) { // the threshold line is the line before the break
@@ -259,7 +259,7 @@ static void do_co_on( void )
                                 if( (max_lines - (b_line_tot - b_cur_line)) >= t_line_tot ) {
                                     next_column();              // break point break
                                     page_line = 0;
-                                    if( cur_doc_el_group->first->type == el_vspace ) {
+                                    if( cur_doc_el_group->first->type == ELT_vspace ) {
                                         /* Skip blank line after break point */
                                         cur_el = cur_doc_el_group->first;
                                         cur_doc_el_group->first = cur_doc_el_group->first->next;

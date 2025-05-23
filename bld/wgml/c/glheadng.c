@@ -97,8 +97,8 @@ void    lay_heading( const gmltag * entry )
     p = scandata.s;
 
     memset( &AttrFlags, 0, sizeof( AttrFlags ) );   // clear all attribute flags
-    if( ProcFlags.lay_xxx != el_heading ) {
-        ProcFlags.lay_xxx = el_heading;
+    if( ProcFlags.lay_xxx != TL_HEADING ) {
+        ProcFlags.lay_xxx = TL_HEADING;
     }
 
     while( (cc = lay_attr_and_value( &attr_name, &attr_val )) == CC_pos ) {   // get att with value

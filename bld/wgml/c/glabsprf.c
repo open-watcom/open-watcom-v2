@@ -136,19 +136,17 @@ void    lay_abspref( const gmltag * entry )
     int                 k;
     int                 cvterr;
     lay_att             curr;
-    lay_sub             x_tag;
+    l_tags              ltag;
     att_name_type       attr_name;
     att_val_type        attr_val;
 
     p = scandata.s;
     cvterr = false;
-
-    if( strcmp( "ABSTRACT", entry->tagname ) == 0 ) {
-        x_tag = el_abstract;
+    ltag = entry->u.layid;
+    if( ltag == TL_ABSTRACT ) {
         ap  = &layout_work.abstract;
         apsect = &layout_work.hx.hx_sect[hds_abstract];
-    } else if( strcmp( "PREFACE", entry->tagname ) == 0 ) {
-        x_tag = el_preface;
+    } else if( ltag == TL_PREFACE ) {
         ap  = &layout_work.preface;
         apsect = &layout_work.hx.hx_sect[hds_preface];
     } else {
@@ -156,8 +154,8 @@ void    lay_abspref( const gmltag * entry )
     }
 
     memset( &AttrFlags, 0, sizeof( AttrFlags ) );   // clear all attribute flags
-    if( ProcFlags.lay_xxx != x_tag ) {
-        ProcFlags.lay_xxx = x_tag;
+    if( ProcFlags.lay_xxx != ltag ) {
+        ProcFlags.lay_xxx = ltag;
     }
     while( (cc = lay_attr_and_value( &attr_name, &attr_val )) == CC_pos ) {   // get att with value
         cvterr = -1;
@@ -207,7 +205,7 @@ void    lay_abspref( const gmltag * entry )
                     AttrFlags.header = true;
                     break;
                 case e_abstract_string:
-                    if( x_tag == el_abstract ) {
+                    if( ltag == TL_ABSTRACT ) {
                         if( AttrFlags.abstract_string ) {
                             xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
                                 attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
@@ -217,7 +215,7 @@ void    lay_abspref( const gmltag * entry )
                     }
                     break;
                 case e_preface_string:
-                    if( x_tag == el_preface ) {
+                    if( ltag == TL_PREFACE ) {
                         if( AttrFlags.preface_string ) {
                             xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
                                 attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);

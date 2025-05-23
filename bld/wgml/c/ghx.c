@@ -151,7 +151,7 @@ static void hx_header( char * h_num, char * h_text, hdsrc hn_lvl, hdsrc hds_lvl 
             process_text( h_text, layout_work.hx.hx_sect[hds_lvl].text_font );
         }
     } else {    // needed for setting page numbers on headings that are not displayed
-        t_element = init_doc_el( el_text, 0 );
+        t_element = init_doc_el( ELT_text, 0 );
         insert_col_main( t_element );
         t_element = NULL;
         t_el_last = NULL;
@@ -335,8 +335,8 @@ void gen_heading( char *h_text, const char *hdrefid, hdsrc hn_lvl, hdsrc hds_lvl
     /***********************************************************************/
 
     sav_group_type = cur_group_type;
-    cur_group_type = gt_hx;
-    cur_doc_el_group = alloc_doc_el_group( gt_hx );
+    cur_group_type = GRT_hx;
+    cur_doc_el_group = alloc_doc_el_group( GRT_hx );
     cur_doc_el_group->next = t_doc_el_group;
     t_doc_el_group = cur_doc_el_group;
     cur_doc_el_group = NULL;
@@ -577,7 +577,7 @@ static void gml_hx_common( const gmltag * entry, hdsrc hn_lvl )
     start_doc_sect();                       // in case not already done
 
     if( ProcFlags.dd_starting ) {
-        t_element = alloc_doc_el( el_vspace );
+        t_element = alloc_doc_el( ELT_vspace );
         t_element->depth = wgml_fonts[g_curr_font].line_height;
         insert_col_main( t_element );
         t_element = NULL;

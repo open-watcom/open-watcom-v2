@@ -881,7 +881,7 @@ static bool remove_leading_space( void )
     SkipSpacesTabs( p );
     if( (p != buff2)
       && (check_tagname( p, NULL ) != NULL )
-      && (cur_group_type != gt_xmp) ) {
+      && (cur_group_type != GRT_xmp) ) {
         p2 = buff2;
         do {
             *p2++ = *p++;

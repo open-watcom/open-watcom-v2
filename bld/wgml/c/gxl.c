@@ -58,7 +58,7 @@ static void end_lp( void )
 {
     tag_cb  *   wk;
 
-    if( nest_cb->c_tag == T_LP ) {      // terminate current :LP
+    if( nest_cb->gtag == T_LP ) {      // terminate current :LP
         wk = nest_cb;
         nest_cb = nest_cb->prev;
         add_tag_cb_to_pool( wk );
@@ -70,13 +70,13 @@ static void end_lp( void )
 /* :SL, ... common processing                                              */
 /***************************************************************************/
 
-static void gml_xl_lp_common( e_tags t )
+static void gml_xl_lp_common( g_tags t )
 {
     char        *   p;
 
     if( t != T_LP ) {
-        if( is_ip_tag( nest_cb->c_tag ) ) {         // inline phrase not closed
-            g_tag_nest_err_exit( nest_cb->c_tag + 1 );   // end tag expected
+        if( is_ip_tag( nest_cb->gtag ) ) {         // inline phrase not closed
+            g_tag_nest_err_exit( nest_cb->gtag + 1 );   // end tag expected
         }
     }
 
@@ -88,7 +88,7 @@ static void gml_xl_lp_common( e_tags t )
 
     if( ProcFlags.dd_starting ) {
         scr_process_break();
-        t_element = alloc_doc_el( el_vspace );
+        t_element = alloc_doc_el( ELT_vspace );
         t_element->depth = wgml_fonts[g_curr_font].line_height;
         insert_col_main( t_element );
         t_element = NULL;
@@ -99,7 +99,7 @@ static void gml_xl_lp_common( e_tags t )
     init_nest_cb();
     nest_cb->p_stack = copy_to_nest_stack();
 
-    nest_cb->c_tag = t;
+    nest_cb->gtag = t;
 
     g_scan_err = false;
     p = scandata.s;
@@ -254,7 +254,7 @@ void gml_dl( const gmltag * entry )
     }
     scandata.s = p;
 
-    gml_xl_lp_common( T_DL );
+    gml_xl_lp_common( entry->u.tagid );
 
     nest_cb->u.dl_layout = dl_layout;
     nest_cb->compact = compact;
@@ -345,7 +345,7 @@ void gml_gl( const gmltag * entry )
     }
     scandata.s = p;
 
-    gml_xl_lp_common( T_GL );
+    gml_xl_lp_common( entry->u.tagid );
 
     nest_cb->u.gl_layout = layout_work.gl.first;
     while( (nest_cb->u.gl_layout != NULL) && (nest_cb->u.gl_layout->level < gl_cur_level) ) {
@@ -433,7 +433,7 @@ void gml_ol( const gmltag * entry )
     if( ProcFlags.need_li_lp ) {
         xx_nest_err_exit( err_no_li_lp );
     }
-    gml_xl_lp_common( T_OL );
+    gml_xl_lp_common( entry->u.tagid );
 
     nest_cb->u.ol_layout = layout_work.ol.first;
     while( (nest_cb->u.ol_layout != NULL) && (nest_cb->u.ol_layout->level < ol_cur_level) ) {
@@ -520,7 +520,7 @@ void gml_sl( const gmltag * entry )
     if( ProcFlags.need_li_lp ) {
         xx_nest_err_exit( err_no_li_lp );
     }
-    gml_xl_lp_common( T_SL );
+    gml_xl_lp_common( entry->u.tagid );
 
     nest_cb->u.sl_layout = layout_work.sl.first;
     while( (nest_cb->u.sl_layout != NULL) && (nest_cb->u.sl_layout->level < sl_cur_level) ) {
@@ -606,7 +606,7 @@ void gml_ul( const gmltag * entry )
     if( ProcFlags.need_li_lp ) {
         xx_nest_err_exit( err_no_li_lp );
     }
-    gml_xl_lp_common( T_UL );
+    gml_xl_lp_common( entry->u.tagid );
 
     nest_cb->u.ul_layout = layout_work.ul.first;
     while( (nest_cb->u.ul_layout != NULL) && (nest_cb->u.ul_layout->level < ul_cur_level) ) {
@@ -657,7 +657,7 @@ static void     gml_exl_common( const gmltag * entry )
     t_page.cur_left = nest_cb->lm;
     t_page.max_width = nest_cb->rm;
 
-    switch( nest_cb->c_tag ) {
+    switch( nest_cb->gtag ) {
     case T_DL :
         l_post_skip = nest_cb->u.dl_layout->post_skip;
         l_font = layout_work.dd.font;
@@ -750,15 +750,15 @@ void    gml_edl( const gmltag * entry )
         ProcFlags.para_starting = false;    // clear for this tag's break
     }
     scr_process_break();
-    if( nest_cb->c_tag == T_LP ) {      // terminate :LP if active
+    if( nest_cb->gtag == T_LP ) {      // terminate :LP if active
         end_lp();
     }
 
-    if( nest_cb->c_tag != T_DL ) {      // unexpected exxx tag
-        if( nest_cb->c_tag == T_NONE ) {
-            g_tag_no_err_exit( T_DL + 1 );   // no exxx expected, no tag active
+    if( nest_cb->gtag != T_DL ) {      // unexpected exxx tag
+        if( nest_cb->gtag == T_NONE ) {
+            g_tag_no_err_exit( entry->u.tagid );   // no exxx expected, no tag active
         } else {
-            g_tag_nest_err_exit( nest_cb->c_tag + 1 ); // exxx expected
+            g_tag_nest_err_exit( nest_cb->gtag + 1 ); // exxx expected
         }
     } else {
         set_skip_vars( NULL, NULL, &nest_cb->u.dl_layout->post_skip, 1, g_curr_font );
@@ -777,15 +777,15 @@ void    gml_egl( const gmltag * entry )
         ProcFlags.para_starting = false;    // clear for this tag's break
     }
     scr_process_break();
-    if( nest_cb->c_tag == T_LP ) {      // terminate :LP if active
+    if( nest_cb->gtag == T_LP ) {      // terminate :LP if active
         end_lp();
     }
 
-    if( nest_cb->c_tag != T_GL ) {      // unexpected exxx tag
-        if( nest_cb->c_tag == T_NONE ) {
-            g_tag_no_err_exit( T_GL + 1 );// no exxx expected, no tag active
+    if( nest_cb->gtag != T_GL ) {      // unexpected exxx tag
+        if( nest_cb->gtag == T_NONE ) {
+            g_tag_no_err_exit( entry->u.tagid );// no exxx expected, no tag active
         } else {
-            g_tag_nest_err_exit( nest_cb->c_tag + 1 ); // exxx expected
+            g_tag_nest_err_exit( nest_cb->gtag + 1 ); // exxx expected
         }
     } else {
         set_skip_vars( NULL, NULL, &nest_cb->u.gl_layout->post_skip, 1, g_curr_font );
@@ -804,16 +804,16 @@ void    gml_eol( const gmltag * entry )
         ProcFlags.para_starting = false;    // clear for this tag's break
     }
     scr_process_break();
-    if( nest_cb->c_tag == T_LP ) {      // terminate :LP if active
+    if( nest_cb->gtag == T_LP ) {      // terminate :LP if active
         end_lp();
         g_curr_font = nest_cb->font;    // restore font
     }
 
-    if( nest_cb->c_tag != T_OL ) {      // unexpected exxx tag
-        if( nest_cb->c_tag == T_NONE ) {
-            g_tag_no_err_exit( T_OL + 1 );// no exxx expected, no tag active
+    if( nest_cb->gtag != T_OL ) {      // unexpected exxx tag
+        if( nest_cb->gtag == T_NONE ) {
+            g_tag_no_err_exit( entry->u.tagid );// no exxx expected, no tag active
         } else {
-            g_tag_nest_err_exit( nest_cb->c_tag + 1 ); // exxx expected
+            g_tag_nest_err_exit( nest_cb->gtag + 1 ); // exxx expected
         }
     } else {
         set_skip_vars( NULL, NULL, &nest_cb->u.ol_layout->post_skip, 1, g_curr_font );
@@ -832,16 +832,16 @@ void    gml_esl( const gmltag * entry )
         ProcFlags.para_starting = false;    // clear for this tag's break
     }
     scr_process_break();
-    if( nest_cb->c_tag == T_LP ) {      // terminate :LP if active
+    if( nest_cb->gtag == T_LP ) {      // terminate :LP if active
         end_lp();
         g_curr_font = nest_cb->font;    // restore font
     }
 
-    if( nest_cb->c_tag != T_SL ) {      // unexpected exxx tag
-        if( nest_cb->c_tag == T_NONE ) {
-            g_tag_no_err_exit( T_SL + 1 );// no exxx expected, no tag active
+    if( nest_cb->gtag != T_SL ) {      // unexpected exxx tag
+        if( nest_cb->gtag == T_NONE ) {
+            g_tag_no_err_exit( entry->u.tagid );// no exxx expected, no tag active
         } else {
-            g_tag_nest_err_exit( nest_cb->c_tag + 1 ); // exxx expected
+            g_tag_nest_err_exit( nest_cb->gtag + 1 ); // exxx expected
         }
     } else {
         set_skip_vars( NULL, NULL, &nest_cb->u.sl_layout->post_skip, 1, g_curr_font );
@@ -860,16 +860,16 @@ void    gml_eul( const gmltag * entry )
         ProcFlags.para_starting = false;    // clear for this tag's break
     }
     scr_process_break();
-    if( nest_cb->c_tag == T_LP ) {      // terminate :LP if active
+    if( nest_cb->gtag == T_LP ) {      // terminate :LP if active
         end_lp();
         g_curr_font = nest_cb->font;    // restore font
     }
 
-    if( nest_cb->c_tag != T_UL ) {      // unexpected exxx tag
-        if( nest_cb->c_tag == T_NONE ) {
-            g_tag_no_err_exit( T_UL + 1 );// no exxx expected, no tag active
+    if( nest_cb->gtag != T_UL ) {      // unexpected exxx tag
+        if( nest_cb->gtag == T_NONE ) {
+            g_tag_no_err_exit( entry->u.tagid );// no exxx expected, no tag active
         } else {
-            g_tag_nest_err_exit( nest_cb->c_tag + 1 ); // exxx expected
+            g_tag_nest_err_exit( nest_cb->gtag + 1 ); // exxx expected
         }
     } else {
         set_skip_vars( NULL, NULL, &nest_cb->u.ul_layout->post_skip, 1, g_curr_font );
@@ -1095,11 +1095,11 @@ static  void    gml_li_ul( const gmltag * entry )
 
 void    gml_li( const gmltag * entry )
 {
-    if( nest_cb->c_tag == T_LP ) {      // terminate :LP if active
+    if( nest_cb->gtag == T_LP ) {      // terminate :LP if active
         end_lp();
     }
 
-    switch( nest_cb->c_tag ) {
+    switch( nest_cb->gtag ) {
     case T_OL :
         gml_li_ol( entry );
         break;
@@ -1111,7 +1111,7 @@ void    gml_li( const gmltag * entry )
         break;
     case T_DL :
     case T_GL :
-        g_tag_nest_err_exit( nest_cb->c_tag + 1 ); // end tag expected
+        g_tag_nest_err_exit( nest_cb->gtag + 1 ); // end tag expected
 //        break;
     default:
         break;
@@ -1136,7 +1136,7 @@ void    gml_lp( const gmltag * entry )
     g_scan_err = false;
     p = scandata.s;
 
-    if( nest_cb->c_tag == T_LP ) {          // restore margins saved by prior LP
+    if( nest_cb->gtag == T_LP ) {          // restore margins saved by prior LP
         t_page.cur_left = nest_cb->lm;
         t_page.max_width = nest_cb->rm;
     } else {
@@ -1144,7 +1144,7 @@ void    gml_lp( const gmltag * entry )
         t_page.max_width = nest_cb->rm;
     }
 
-    gml_xl_lp_common( T_LP );
+    gml_xl_lp_common( entry->u.tagid );
 
     nest_cb->font = g_curr_font;
     g_curr_font = layout_work.defaults.font;    // matches wgml 4.0
@@ -1227,7 +1227,7 @@ void gml_dthd( const gmltag * entry )
 
     p = scandata.s;
 
-    if( nest_cb->c_tag == T_LP ) {      // terminate :LP if active
+    if( nest_cb->gtag == T_LP ) {      // terminate :LP if active
         end_lp();
     }
 
@@ -1357,13 +1357,13 @@ void gml_dt( const gmltag * entry )
 
     p = scandata.s;
 
-    if( nest_cb->c_tag == T_LP ) {      // terminate :LP if active
+    if( nest_cb->gtag == T_LP ) {      // terminate :LP if active
         end_lp();
     }
 
     if( ProcFlags.dd_starting ) {
         scr_process_break();
-        t_element = alloc_doc_el( el_vspace );
+        t_element = alloc_doc_el( ELT_vspace );
         t_element->depth = wgml_fonts[g_curr_font].line_height;
         insert_col_main( t_element );
         t_element = NULL;
@@ -1518,7 +1518,7 @@ void gml_gt( const gmltag * entry )
 
     p = scandata.s;
 
-    if( nest_cb->c_tag == T_LP ) {      // terminate :LP if active
+    if( nest_cb->gtag == T_LP ) {      // terminate :LP if active
         end_lp();
     }
 

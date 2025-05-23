@@ -466,6 +466,33 @@ typedef struct scrtag {
 /*  GML tags    predefined                                                 */
 /***************************************************************************/
 
+/***************************************************************************/
+/*  tags and controlwords as enums for distinction during processing       */
+/***************************************************************************/
+
+typedef enum g_tags {
+    #define pick( name, length, routine, gmlflags, locflags, classname )  T_##name,
+    #include "gtags.h"
+    #undef pick
+    T_NONE,
+//    #define pick( name, routine, flags )  T_##name,
+//    #include "gscrcws.h" TBD
+//    #undef pick
+    T_MAX = T_NONE                           // the last one for range check
+} g_tags;
+
+/***************************************************************************/
+/*  enums for layout tags with attributes  (and ebanregion)                */
+/*  the order is as shown by WGML 4.0 :convert output                      */
+/***************************************************************************/
+
+typedef enum l_tags {
+    #define pick( name, length, routine, gmlflags, locflags )  TL_##name,
+    #include "gtagslay.h"
+    #undef pick
+    TL_NONE,
+} l_tags;
+
 typedef enum {
     TFLG_none        = 0,                // none of the below
     TFLG_only        = 1,                // tag without any attribute
@@ -510,12 +537,16 @@ typedef enum {
 } classflags;
 
 typedef struct gmltag {
-   char             tagname[TAG_NAME_LENGTH + 1];
-   unsigned         taglen;
-   void             (*gmlproc)( const struct gmltag *entry );
-   gmlflags         tagflags;
-   locflags         taglocs;
-   classflags       tagclass;
+    union {
+        g_tags      tagid;
+        l_tags      layid;
+    } u;
+    char            tagname[TAG_NAME_LENGTH + 1];
+    unsigned        taglen;
+    void            (*gmlproc)( const struct gmltag *entry );
+    gmlflags        tagflags;
+    locflags        taglocs;
+    classflags      tagclass;
 } gmltag;
 
 /***************************************************************************/
@@ -755,91 +786,6 @@ typedef enum ju_enum {                  // for .ju(stify)
     JUST_outside
 } ju_enum;
 
-/***************************************************************************/
-/*  enums for layout tags with attributes  (and ebanregion)                */
-/*  the order is as shown by WGML 4.0 :convert output                      */
-/***************************************************************************/
-
-typedef enum lay_sub {
-    el_zero     = 0,                    // dummy to make 0 invalid
-    el_page     = 1,
-    el_default,
-    el_widow,
-    el_fn,
-    el_fnref,
-    el_p,
-    el_pc,
-    el_fig,
-    el_xmp,
-    el_note,
-    el_h0,
-    el_h1,
-    el_h2,
-    el_h3,
-    el_h4,
-    el_h5,
-    el_h6,
-    el_heading,
-    el_lq,
-    el_dt,
-    el_gt,
-    el_dthd,
-    el_cit,
-    el_figcap,
-    el_figdesc,
-    el_dd,
-    el_gd,
-    el_ddhd,
-    el_abstract,
-    el_preface,
-    el_body,
-    el_backm,
-    el_lp,
-    el_index,
-    el_ixpgnum,
-    el_ixmajor,
-    el_ixhead,
-    el_i1,
-    el_i2,
-    el_i3,
-    el_toc,
-    el_tocpgnum,
-    el_toch0,
-    el_toch1,
-    el_toch2,
-    el_toch3,
-    el_toch4,
-    el_toch5,
-    el_toch6,
-    el_figlist,
-    el_flpgnum,
-    el_titlep,
-    el_title,
-    el_docnum,
-    el_date,
-    el_author,
-    el_address,
-    el_aline,
-    el_from,
-    el_to,
-    el_attn,
-    el_subject,
-    el_letdate,
-    el_open,
-    el_close,
-    el_eclose,
-    el_distrib,
-    el_appendix,
-    el_sl,
-    el_ol,
-    el_ul,
-    el_dl,
-    el_gl,
-    el_banner,
-    el_banregion,
-    el_ebanregion
-} lay_sub;
-
 /****************************************************************************/
 /*  definitions for function codes inserted into input buffer               */
 /*  originally intended for subscript and superscript and similar items     */
@@ -858,21 +804,6 @@ typedef enum functs {
     FUNC_superscript_beg = '\x04',
     FUNC_superscript_end = '\x05',
 } functs;
-
-/***************************************************************************/
-/*  tags and controlwords as enums for distinction during processing       */
-/***************************************************************************/
-
-typedef enum e_tags {
-    T_NONE,
-    #define pick( name, length, routine, gmlflags, locflags, classname )  T_##name,
-    #include "gtags.h"
-    #undef pick
-//    #define pick( name, routine, flags )  T_##name,
-//    #include "gscrcws.h" TBD
-//    #undef pick
-    T_MAX                               // the last one for range check
-} e_tags;
 
 /***************************************************************************/
 /*  nesting stack for open tags even if input file is not active any more  */
@@ -934,7 +865,7 @@ typedef struct tag_cb {
     bool            compact  : 1;       // current attribute value
     bool            dl_break : 1;       // current attribute value
     bool            in_list  : 1;       // true if inside a list, including current tag
-    e_tags          c_tag;              // enum of tag
+    g_tags          gtag;               // enum of tag
 } tag_cb;
 
 /***************************************************************************/
@@ -962,13 +893,13 @@ typedef struct laystack {
 #define BOXCOL_COUNT 16
 
 typedef enum {  // see Wiki for column type definitions
-    bx_v_both,  // current box "both" column
-    bx_v_down,  // current box "down" column
-    bx_v_hid,   // current box "hid" column
-    bx_v_new,   // current box "new" column
-    bx_v_out,   // current box "out" column
-    bx_v_split, // current box "split" column
-    bx_v_up,    // current box "up" column
+    BOXV_both,  // current box "both" column
+    BOXV_down,  // current box "down" column
+    BOXV_hid,   // current box "hid" column
+    BOXV_new,   // current box "new" column
+    BOXV_out,   // current box "out" column
+    BOXV_split, // current box "split" column
+    BOXV_up,    // current box "up" column
 } bx_v_ind;
 
 typedef struct {
@@ -997,9 +928,9 @@ typedef struct box_col_stack {
 /***************************************************************************/
 
 typedef enum {
-    al_center,
-    al_left,
-    al_right,
+    ALIGN_center,
+    ALIGN_left,
+    ALIGN_right,
 } alignment;
 
 typedef struct {
@@ -1040,16 +971,16 @@ typedef enum {
 /*                                                                         */
 /*  Note: Although the code does not distinguish, WHELP is the device      */
 /*        these markers produce visible effects with                       */
-/*  Note: PS markers are fs_norm text_chars with no text                   */
+/*  Note: PS markers are FSW_norm text_chars with no text                   */
 /***************************************************************************/
 
 typedef enum {
-    fs_norm,        // this is not a marker; it is a normal text_chars instance
-    fs_full,        // this is a full marker: both startvalue and endvalue functions are run
-    fs_from,        // this is a half-marker which runs the endvalue function only
-    fs_from2,       // allow one half-marker to do the work of two fs_from half-markers
-    fs_to,          // this is a half-marker which runs the startvalue function only
-    fs_to2          // allow one half-marker to do the work of two fs_to half-markers
+    FSW_norm,        // this is not a marker; it is a normal text_chars instance
+    FSW_full,        // this is a full marker: both startvalue and endvalue functions are run
+    FSW_from,        // this is a half-marker which runs the endvalue function only
+    FSW_from2,       // allow one half-marker to do the work of two FSW_from half-markers
+    FSW_to,          // this is a half-marker which runs the startvalue function only
+    FSW_to2          // allow one half-marker to do the work of two FSW_to half-markers
 } fontswitch_type;
 
 typedef struct text_chars {             // tabbing-related fields have comments
@@ -1085,13 +1016,13 @@ typedef struct text_line {
 } text_line;
 
 typedef enum {
-    el_binc,        // BINCLUDE element
-    el_dbox,        // DBOX element
-    el_graph,       // GRAPHIC element
-    el_hline,       // HLINE element
-    el_text,        // text element
-    el_vline,       // VLINE element
-    el_vspace,      // vertical space element (blank lines and SP)
+    ELT_binc,        // BINCLUDE element
+    ELT_dbox,        // DBOX element
+    ELT_graph,       // GRAPHIC element
+    ELT_hline,       // HLINE element
+    ELT_text,        // text element
+    ELT_vline,       // VLINE element
+    ELT_vspace,      // vertical space element (blank lines and SP)
 } element_type;
 
 // struct doc_element;    // forward declaration (uncomment if ever needed)
@@ -1201,7 +1132,7 @@ typedef struct doc_element {
 /* wgml 4.0 does not recognize cc or cp blocks, so they are not     */
 /*   assigned tags here                                             */
 /* control word FN has not been implemented, so no tag is assigned  */
-/*   it may, of course, turn out to be possible to use gt_fn        */
+/*   it may, of course, turn out to be possible to use GRT_fn        */
 /* Control word BX can be used to draw a box around any block or    */
 /*   inside any block, or both with the same block                  */
 /* Thus, the stack intermingles BX groups and other groups, but can */
@@ -1211,16 +1142,16 @@ typedef struct doc_element {
 /********************************************************************/
 
 typedef enum {
-    gt_none,    // no doc_el_group in use
-    gt_address, // tag ADDRESS
-    gt_bx,      // control word BX
-    gt_co,      // control word CO
-    gt_fn,      // tag FN
-    gt_fig,     // tag FIG
-    gt_fb,      // control word FB
-    gt_fk,      // control work FK
-    gt_hx,      // tags H0--H6
-    gt_xmp,     // tag XMP
+    GRT_none,    // no doc_el_group in use
+    GRT_address, // tag ADDRESS
+    GRT_bx,      // control word BX
+    GRT_co,      // control word CO
+    GRT_fn,      // tag FN
+    GRT_fig,     // tag FIG
+    GRT_fb,      // control word FB
+    GRT_fk,      // control work FK
+    GRT_hx,      // tags H0--H6
+    GRT_xmp,     // tag XMP
 } group_type;
 
 typedef struct doc_el_group {
@@ -1325,16 +1256,17 @@ typedef enum content_enum {
 /***************************************************************************/
 
 typedef enum num_style {
-    h_style     = 0x0001,               // hindu-arabic
-    a_style     = 0x0002,               // lowercase alphabetic
-    b_style     = 0x0004,               // uppercase alphabetic
-    c_style     = 0x0080,               // uppercase roman
-    r_style     = 0x0010,               // lowercase roman
-    char1_style = a_style | b_style | c_style | h_style | r_style,
-    xd_style    = 0x0100,               // decimal point follows
-    xp_style    = 0x0600,               // in parenthesis
-    xpa_style   = 0x0200,               // only left parenthesis
-    xpb_style   = 0x0400                // only right parenthesis
+    STYLE_none  = 0,                    // none
+    STYLE_h     = 0x0001,               // hindu-arabic
+    STYLE_a     = 0x0002,               // lowercase alphabetic
+    STYLE_b     = 0x0004,               // uppercase alphabetic
+    STYLE_c     = 0x0080,               // uppercase roman
+    STYLE_r     = 0x0010,               // lowercase roman
+    STYLE_char1 = STYLE_a | STYLE_b | STYLE_c | STYLE_h | STYLE_r,
+    STYLE_xd    = 0x0100,               // decimal point follows
+    STYLE_xp    = 0x0600,               // in parenthesis
+    STYLE_xpa   = 0x0200,               // only left parenthesis
+    STYLE_xpb   = 0x0400                // only right parenthesis
 } num_style;
 
 /***************************************************************************/
@@ -1690,7 +1622,7 @@ typedef struct proc_flags {
     unsigned        banner              : 1;// within layout banner definition
     unsigned        banregion           : 1;// within layout banregion definition
     unsigned        hx_level            : 3;// 0 - 6  active Hx :layout sub tag
-    lay_sub         lay_xxx;                // active :layout sub tag
+    l_tags          lay_xxx;                // active :layout sub tag
 
     ju_enum         justify             : 8;// .ju on half off ...
 

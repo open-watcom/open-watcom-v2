@@ -62,8 +62,8 @@ void    lay_docnum( const gmltag * entry )
     cvterr = false;
 
     memset( &AttrFlags, 0, sizeof( AttrFlags ) );   // clear all attribute flags
-    if( ProcFlags.lay_xxx != el_docnum ) {
-        ProcFlags.lay_xxx = el_docnum;
+    if( ProcFlags.lay_xxx != TL_DOCNUM ) {
+        ProcFlags.lay_xxx = TL_DOCNUM;
     }
     while( (cc = lay_attr_and_value( &attr_name, &attr_val )) == CC_pos ) {   // get att with value
         cvterr = -1;

@@ -122,7 +122,7 @@ void set_banners( void )
 
     static const struct {
         ban_docsect     ban_tag;
-        e_tags          tag;
+        g_tags          tag;
     }  ban_2_tag[max_ban] =  {
         #define pick(ban,gml,text,len)   { ban, gml },
         #include "bdocsect.h"
@@ -205,17 +205,17 @@ static bool do_set_pgnum_style( banner_lay_tag * ban, uint8_t index )
     if( ban == NULL ) {         // nothing to do
         retval = false;
     } else if( ban->style == pgnuma_content ) {
-        pgnum_style[index] = h_style;
+        pgnum_style[index] = STYLE_h;
     } else if( ban->style == pgnumad_content ) {
-        pgnum_style[index] = h_style | xd_style;
+        pgnum_style[index] = STYLE_h | STYLE_xd;
     } else if( ban->style == pgnumr_content ) {
-        pgnum_style[index] = r_style;
+        pgnum_style[index] = STYLE_r;
     } else if( ban->style == pgnumrd_content ) {
-        pgnum_style[index] = r_style | xd_style;
+        pgnum_style[index] = STYLE_r | STYLE_xd;
     } else if( ban->style == pgnumc_content ) {
-        pgnum_style[index] = c_style;
+        pgnum_style[index] = STYLE_c;
     } else if( ban->style == pgnumcd_content ) {
-        pgnum_style[index] = c_style | xd_style;
+        pgnum_style[index] = STYLE_c | STYLE_xd;
     } else {    // banner content is not a page number style
         retval = false;
     }
@@ -256,7 +256,7 @@ void set_pgnum_style( void )
         } else if( do_set_pgnum_style( ban_bot[ban_offset][1], i ) ) {
         } else if( do_set_pgnum_style( ban_bot[ban_offset][0], i ) ) {
         } else {
-            pgnum_style[i] = h_style;
+            pgnum_style[i] = STYLE_h;
         }
     }
     return;
@@ -804,10 +804,10 @@ static void out_ban_common( banner_lay_tag * ban, bool top )
                 /*******************************************************************/
 
                 if( ban_doc_el == NULL ) {
-                    ban_doc_el = alloc_doc_el( el_hline );
+                    ban_doc_el = alloc_doc_el( ELT_hline );
                     old_doc_el = ban_doc_el;
                 } else {
-                    old_doc_el->next = alloc_doc_el( el_hline );
+                    old_doc_el->next = alloc_doc_el( ELT_hline );
                     old_doc_el = old_doc_el->next;
                 }
                 old_doc_el->element.hline.ban_adjust = false;
@@ -833,11 +833,11 @@ static void out_ban_common( banner_lay_tag * ban, bool top )
                 /* Initialize new doc_element, if appropriate */
 
                 if( ban_doc_el == NULL ) {
-                    ban_doc_el = alloc_doc_el( el_text );
+                    ban_doc_el = alloc_doc_el( ELT_text );
                     old_doc_el = ban_doc_el;
                     cur_line = NULL;
-                } else if( old_doc_el->type == el_hline ) {
-                    old_doc_el->next = alloc_doc_el( el_text );
+                } else if( old_doc_el->type == ELT_hline ) {
+                    old_doc_el->next = alloc_doc_el( ELT_text );
                     old_doc_el = old_doc_el->next;
                     cur_line = NULL;
                 }

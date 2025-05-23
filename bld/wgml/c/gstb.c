@@ -177,7 +177,7 @@ void    scr_tb( void )
             i = user_tabs.current;          // initialize (not done elsewhere)
             user_tabs.tabs[i].column = 0;
             user_tabs.tabs[i].fill_char = ' ';
-            user_tabs.tabs[i].alignment = al_left;
+            user_tabs.tabs[i].alignment = ALIGN_left;
             quote = ' ';
             pa = p;
 
@@ -278,20 +278,20 @@ void    scr_tb( void )
 
             // Parse the alignment
 
-            user_tabs.tabs[i].alignment = al_left;
+            user_tabs.tabs[i].alignment = ALIGN_left;
             if( *p != '\0' && (*p != ' ') ) {   // space ends tab stop
 
             /* alignment characters are not allowed -- yet */
 
                 pa = p;                         // potential alignment start
                 if( (*p == 'c') || (*p == 'C') ) {
-                    user_tabs.tabs[i].alignment = al_center;
+                    user_tabs.tabs[i].alignment = ALIGN_center;
                     p++;
                 } else if( (*p == 'l') || (*p == 'L') ) {
-                    user_tabs.tabs[i].alignment = al_left;
+                    user_tabs.tabs[i].alignment = ALIGN_left;
                     p++;
                 } else if( (*p == 'r') || (*p == 'R') ) {
-                    user_tabs.tabs[i].alignment = al_right;
+                    user_tabs.tabs[i].alignment = ALIGN_right;
                     p++;
                 } else if( *p == '\'' ) {       // possible alignment character
                     p++;

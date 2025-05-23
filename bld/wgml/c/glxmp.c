@@ -115,8 +115,8 @@ void    lay_xmp( const gmltag * entry )
     p = scandata.s;
 
     memset( &AttrFlags, 0, sizeof( AttrFlags ) );   // clear all attribute flags
-    if( ProcFlags.lay_xxx != el_xmp ) {
-        ProcFlags.lay_xxx = el_xmp;
+    if( ProcFlags.lay_xxx != TL_XMP ) {
+        ProcFlags.lay_xxx = TL_XMP;
     }
     while( (cc = lay_attr_and_value( &attr_name, &attr_val )) == CC_pos ) {   // get att with value
         cvterr = -1;

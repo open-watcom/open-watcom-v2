@@ -527,26 +527,26 @@ void    o_number_form( FILE *fp, lay_attr_o lay_attr, const num_form *tm )
 bool    i_number_style( const char *p, lay_attr_i lay_attr, num_style *tm )
 {
     bool        cvterr;
-    num_style   wk = 0;
+    num_style   wk = STYLE_none;
     char        c;
 
     cvterr = false;
     c = *lay_attr->specval;     // lower cased already
     switch( c ) {                   // first letter
     case 'a':
-        wk |= a_style;
+        wk |= STYLE_a;
         break;
     case 'b':
-        wk |= b_style;
+        wk |= STYLE_b;
         break;
     case 'c':
-        wk |= c_style;
+        wk |= STYLE_c;
         break;
     case 'r':
-        wk |= r_style;
+        wk |= STYLE_r;
         break;
     case 'h':
-        wk |= h_style;
+        wk |= STYLE_h;
         break;
     default:
         cvterr = true;
@@ -558,7 +558,7 @@ bool    i_number_style( const char *p, lay_attr_i lay_attr, num_style *tm )
         c = my_tolower( *p );
         switch( c ) {
         case 'd':
-            wk |= xd_style;
+            wk |= STYLE_xd;
             break;
         case 'p':
             p++;
@@ -566,17 +566,17 @@ bool    i_number_style( const char *p, lay_attr_i lay_attr, num_style *tm )
                 c = my_tolower( *p );
                 switch( c ) {
                 case 'a':
-                    wk |= xpa_style;    // only left parenthesis
+                    wk |= STYLE_xpa;    // only left parenthesis
                     break;
                 case 'b':
-                    wk |= xpb_style;    // only right parenthesis
+                    wk |= STYLE_xpb;    // only right parenthesis
                     break;
                 default:
                     cvterr = true;
                     break;
                 }
             } else {
-                wk |= xp_style;         // left and right parenthesis
+                wk |= STYLE_xp;         // left and right parenthesis
             }
             break;
         default:
@@ -598,36 +598,36 @@ void    o_number_style( FILE *fp, lay_attr_o lay_attr, const num_style *tm )
     char    *    p;
 
     p = str;
-    if( *tm & h_style ) {
+    if( *tm & STYLE_h ) {
         *p = 'h';
         p++;
-    } else if( *tm & a_style ) {
+    } else if( *tm & STYLE_a ) {
         *p = 'a';
         p++;
-    } else if( *tm & b_style ) {
+    } else if( *tm & STYLE_b ) {
         *p = 'b';
         p++;
-    } else if( *tm & c_style ) {
+    } else if( *tm & STYLE_c ) {
         *p = 'c';
         p++;
-    } else if( *tm & r_style ) {
+    } else if( *tm & STYLE_r ) {
         *p = 'r';
         p++;
     }
     *p = '\0';
 
-    if( *tm & xd_style ) {
+    if( *tm & STYLE_xd ) {
         *p = 'd';
         p++;
-    } else if( (*tm & xp_style) == xp_style) {
+    } else if( (*tm & STYLE_xp) == STYLE_xp) {
         *p = 'p';
         p++;
-    } else if( *tm & xpa_style ) {
+    } else if( *tm & STYLE_xpa ) {
         *p = 'p';
         p++;
         *p = 'a';
         p++;
-    } else if( *tm & xpb_style ) {
+    } else if( *tm & STYLE_xpb ) {
         *p = 'p';
         p++;
         *p = 'b';

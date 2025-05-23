@@ -100,8 +100,8 @@ void    lay_figlist( const gmltag * entry )
     p = scandata.s;
 
     memset( &AttrFlags, 0, sizeof( AttrFlags ) );   // clear all attribute flags
-    if( ProcFlags.lay_xxx != el_figlist ) {
-        ProcFlags.lay_xxx = el_figlist;
+    if( ProcFlags.lay_xxx != TL_FIGLIST ) {
+        ProcFlags.lay_xxx = TL_FIGLIST;
     }
     while( (cc = lay_attr_and_value( &attr_name, &attr_val )) == CC_pos ) {   // get att with value
         cvterr = -1;

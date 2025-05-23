@@ -216,7 +216,7 @@ void    gml_graphic( const gmltag * entry )
     // only set up the doc_element if the file exists
     fp = search_file_in_dirs( file, "", "", DSEQ_doc_spec );
     if( fp != NULL ) {
-        cur_el = init_doc_el( el_graph, depth );
+        cur_el = init_doc_el( ELT_graph, depth );
         cur_el->element.graph.cur_left = t_page.cur_left;
         cur_el->element.graph.depth = depth;
         cur_el->element.graph.scale = scale;
@@ -224,7 +224,7 @@ void    gml_graphic( const gmltag * entry )
         cur_el->element.graph.xoff = xoff;
         cur_el->element.graph.yoff = yoff;
         cur_el->element.graph.fp = fp;
-        if( nest_cb->c_tag == T_NONE ){
+        if( nest_cb->gtag == T_NONE ){
             cur_el->element.graph.next_font = FONT0;
         } else {
             cur_el->element.graph.next_font = g_prev_font;

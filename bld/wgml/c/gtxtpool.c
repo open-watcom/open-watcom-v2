@@ -89,12 +89,12 @@ text_chars *alloc_text_chars( const char *text, unsigned cnt, font_number font )
     curr->fmflags = 0;
     curr->post_ix = ProcFlags.post_ix;
     curr->pre_gap = false;
-    curr->tab_align = al_left;
+    curr->tab_align = ALIGN_left;
     curr->tab_pos = TAB_none;
     curr->ts_width = 0;
     curr->type = TXT_norm;
     curr->font = font;
-    curr->f_switch = fs_norm;
+    curr->f_switch = FSW_norm;
     curr->width = 0;
     if( text != NULL ) {                   // text supplied
         strncpy( curr->text, text, cnt ); // yes copy text
@@ -335,12 +335,12 @@ doc_element * alloc_doc_el( element_type type )
     curr->h_pos = 0;
     curr->v_pos = 0;
     curr->do_split = ProcFlags.sk_co;           // used to split doc_el_groups
-    curr->in_xmp = (cur_group_type == gt_xmp);  // used by BX
+    curr->in_xmp = (cur_group_type == GRT_xmp);  // used by BX
     curr->op_co_on = ProcFlags.concat;          // used with FK output
     ProcFlags.sk_co = false;
 
     switch( type ) {
-    case el_binc :
+    case ELT_binc:
         curr->element.binc.cur_left = 0;
         curr->element.binc.depth = 0;
         curr->element.binc.y_address = 0;
@@ -351,7 +351,7 @@ doc_element * alloc_doc_el( element_type type )
         curr->element.binc.eol_index = g_eol_ix;
         g_eol_ix = NULL;
         break;
-    case el_dbox :
+    case ELT_dbox:
         curr->element.dbox.h_start = 0;
         curr->element.dbox.v_start = 0;
         curr->element.dbox.h_len = 0;
@@ -359,7 +359,7 @@ doc_element * alloc_doc_el( element_type type )
         curr->element.dbox.eol_index = g_eol_ix;
         g_eol_ix = NULL;
         break;
-    case el_graph :
+    case ELT_graph:
         curr->element.graph.cur_left = 0;
         curr->element.graph.depth = 0;
         curr->element.graph.scale = 0;
@@ -375,7 +375,7 @@ doc_element * alloc_doc_el( element_type type )
         curr->element.graph.eol_index = g_eol_ix;
         g_eol_ix = NULL;
         break;
-    case el_hline :
+    case ELT_hline:
         curr->element.hline.h_start = 0;
         curr->element.hline.v_start = 0;
         curr->element.hline.h_len = 0;
@@ -383,7 +383,7 @@ doc_element * alloc_doc_el( element_type type )
         curr->element.hline.eol_index = g_eol_ix;
         g_eol_ix = NULL;
         break;
-    case el_text :
+    case ELT_text:
         curr->element.text.prev = NULL;
         curr->element.text.entry = NULL;
         curr->element.text.ref = NULL;
@@ -393,7 +393,7 @@ doc_element * alloc_doc_el( element_type type )
         curr->element.text.overprint = false;
         curr->element.text.vspace_next = false;
         break;
-    case el_vline :
+    case ELT_vline:
         curr->element.vline.h_start = 0;
         curr->element.vline.v_start = 0;
         curr->element.vline.v_len = 0;
@@ -401,7 +401,7 @@ doc_element * alloc_doc_el( element_type type )
         curr->element.vline.eol_index = g_eol_ix;
         g_eol_ix = NULL;
         break;
-    case el_vspace :
+    case ELT_vspace:
         curr->element.vspace.font = 0;
         curr->element.vspace.eol_index = g_eol_ix;
         g_eol_ix = NULL;
@@ -736,16 +736,16 @@ void clear_doc_element( doc_element * a_element )
 
     for( cur_el = a_element; cur_el != NULL; cur_el = cur_el->next ) {
         switch( cur_el->type ) {
-        case el_dbox :
-        case el_hline :
-        case el_vline :
-        case el_vspace :
+        case ELT_dbox:
+        case ELT_hline:
+        case ELT_vline:
+        case ELT_vspace:
             break;      // should be nothing to do
-        case el_binc :
-        case el_graph :
+        case ELT_binc:
+        case ELT_graph:
             // TODO! close files and free allocated memory
             break;
-        case el_text :
+        case ELT_text:
             cur_line = cur_el->element.text.first;
             while( cur_line != NULL ) {
                 add_text_chars_to_pool( cur_line );
@@ -781,10 +781,10 @@ doc_element * init_doc_el( element_type type, uint32_t depth )
     curr->top_skip = g_top_skip;
     g_top_skip = 0;
 
-    if( type == el_text ) {             // overprint applies to text lines
+    if( type == ELT_text ) {             // overprint applies to text lines
         curr->element.text.overprint = ProcFlags.overprint;
         ProcFlags.overprint = false;
-    } else if( type == el_vspace ) {    // the font is needed for post-BINCLUDE processing
+    } else if( type == ELT_vspace ) {    // the font is needed for post-BINCLUDE processing
         curr->element.vspace.font = g_curr_font;
     }
 

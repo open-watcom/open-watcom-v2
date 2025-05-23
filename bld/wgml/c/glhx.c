@@ -204,28 +204,28 @@ void    lay_hx( const gmltag * entry )
 
     switch( entry->tagname[1] ) {
     case '0':
-        hx_l = el_h0;
+        hx_l = TL_H0;
         break;
     case '1':
-        hx_l = el_h1;
+        hx_l = TL_H1;
         break;
     case '2':
-        hx_l = el_h2;
+        hx_l = TL_H2;
         break;
     case '3':
-        hx_l = el_h3;
+        hx_l = TL_H3;
         break;
     case '4':
-        hx_l = el_h4;
+        hx_l = TL_H4;
         break;
     case '5':
-        hx_l = el_h5;
+        hx_l = TL_H5;
         break;
     case '6':
-        hx_l = el_h6;
+        hx_l = TL_H6;
         break;
     default:
-        hx_l = el_h6;
+        hx_l = TL_H6;
         break;
     }
     memset( &AttrFlags, 0, sizeof( AttrFlags ) );   // clear all attribute flags

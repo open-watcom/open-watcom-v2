@@ -160,8 +160,8 @@ void    lay_fn( const gmltag * entry )
     cvterr = false;
 
     memset( &AttrFlags, 0, sizeof( AttrFlags ) );   // clear all attribute flags
-    if( ProcFlags.lay_xxx != el_fn ) {
-        ProcFlags.lay_xxx = el_fn;
+    if( ProcFlags.lay_xxx != TL_FN ) {
+        ProcFlags.lay_xxx = TL_FN;
     }
     while( (cc = lay_attr_and_value( &attr_name, &attr_val )) == CC_pos ) {   // get att with value
         cvterr = true;
@@ -282,8 +282,8 @@ void    lay_fnref( const gmltag * entry )
     cvterr = false;
 
     memset( &AttrFlags, 0, sizeof( AttrFlags ) );   // clear all attribute flags
-    if( ProcFlags.lay_xxx != el_fnref ) {
-        ProcFlags.lay_xxx = el_fnref;
+    if( ProcFlags.lay_xxx != TL_FNREF ) {
+        ProcFlags.lay_xxx = TL_FNREF;
     }
     while( (cc = lay_attr_and_value( &attr_name, &attr_val )) == CC_pos ) {   // get att with value
         cvterr = -1;

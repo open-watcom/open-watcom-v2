@@ -157,13 +157,13 @@ void    gml_binclude( const gmltag * entry )
     fp = search_file_in_dirs( file, "", "", DSEQ_doc_spec );
     if( fp != NULL ) {
         if( depth == 0 ) {
-            cur_el = alloc_doc_el(  el_binc );
+            cur_el = alloc_doc_el( ELT_binc );
         } else {
             set_skip_vars( NULL, NULL, NULL, 1, g_curr_font );
             if( reposition && depth ) {                 // otherwise, element depth will be "0"
-                cur_el = init_doc_el( el_binc, depth );
+                cur_el = init_doc_el( ELT_binc, depth );
             } else {
-                cur_el = init_doc_el( el_binc, 0 );
+                cur_el = init_doc_el( ELT_binc, 0 );
             }
         }
         cur_el->element.binc.depth = depth;

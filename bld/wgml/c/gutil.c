@@ -371,7 +371,7 @@ static void add_spaces_t_element( char * spaces )
     spc_cnt = strlen( spaces );
     if( spc_cnt > 0 ) {                                 // must have something to add
         if( t_element != NULL ) {                       // t_element exists
-            if( t_element->type != el_text ) {          // must be text
+            if( t_element->type != ELT_text ) {          // must be text
                 internal_err_exit( __FILE__, __LINE__ );
             }
 
@@ -773,28 +773,28 @@ char *format_num( unsigned n, char *r, unsigned rsize, num_style ns )
 
     p = temp;
     pos = 0;
-    if( ns & xpa_style ) {
+    if( ns & STYLE_xpa ) {
         *p++ = '(';                     // start number with left paren
         if( ++pos >= rsize ) {
             return( NULL );             // result field overflow
         }
     }
-    if( ns & (a_style | b_style) ) {    // alphabetic limit 2 'digits'
+    if( ns & (STYLE_a | STYLE_b) ) {    // alphabetic limit 2 'digits'
         /************************************************************************/
         /*  Arbitrary limit Value 728 = 2 characters    extend if needed    TBD */
         /************************************************************************/
         if( n >= 27 * 27 || (n < 1) ) { // only 2 letters supported
             return( NULL );             // and numbers > zero
         }
-        if( ns & a_style ) {
+        if( ns & STYLE_a ) {
             charbase = 'a' - 1;
         } else {
             charbase = 'A' - 1;
         }
     }
-    switch( ns & char1_style ) {
-    case a_style :                      // lower case alphabetic
-    case b_style :                      // UPPER case alphabetic
+    switch( ns & STYLE_char1 ) {
+    case STYLE_a:                      // lower case alphabetic
+    case STYLE_b:                      // UPPER case alphabetic
         a1 = n / 27;
         a2 = n % 27;
         if( a1 > 0 ) {
@@ -813,7 +813,7 @@ char *format_num( unsigned n, char *r, unsigned rsize, num_style ns )
             }
         }
         break;
-    case h_style :                      // arabic
+    case STYLE_h:                      // arabic
         pos1 = sprintf( p, "%u", n );
         pos += pos1;
         if( pos >= rsize ) {
@@ -821,7 +821,7 @@ char *format_num( unsigned n, char *r, unsigned rsize, num_style ns )
         }
         p += pos1;
         break;
-    case r_style :                      // lower case roman
+    case STYLE_r:                      // lower case roman
         rp = int_to_roman( n, p, rsize - pos, false );
         if( rp == NULL ) {
             return( NULL );             // field overflow
@@ -829,7 +829,7 @@ char *format_num( unsigned n, char *r, unsigned rsize, num_style ns )
         pos1 = strlen( rp );
         p += pos1;
         break;
-    case c_style :                      // UPPER case roman
+    case STYLE_c:                      // UPPER case roman
         rp = int_to_roman( n, p, rsize - pos, true );
         if( rp == NULL ) {
             return( NULL );             // field overflow
@@ -842,13 +842,13 @@ char *format_num( unsigned n, char *r, unsigned rsize, num_style ns )
         internal_err_exit( __FILE__, __LINE__ );
     }
 
-    if( ns & xd_style ) {
+    if( ns & STYLE_xd ) {
         *p++ = '.';                     // decimalpoint follows
         if( ++pos >= rsize ) {
             return( NULL );             // result field overflow
         }
     }
-    if( ns & xpb_style ) {
+    if( ns & STYLE_xpb ) {
         *p++ = ')';                     // right paren follows
         if( ++pos >= rsize ) {
             return( NULL );             // result field overflow
@@ -1027,15 +1027,15 @@ char *get_att_value( char *p, att_val_type *attr_val )
 
 void g_keep_nest( const char * cw_tag ) {
     switch( cur_group_type ) {
-    case gt_fb :
+    case GRT_fb :
         keep_nest_err_exit( cw_tag, "a floating block" );
-    case gt_fig :
+    case GRT_fig :
         keep_nest_err_exit( cw_tag, "a figure" );
-    case gt_fk :
+    case GRT_fk :
         keep_nest_err_exit( cw_tag, "a floating keep" );
-    case gt_fn :
+    case GRT_fn :
         keep_nest_err_exit( cw_tag, "a footnote" );
-    case gt_xmp :
+    case GRT_xmp :
         keep_nest_err_exit( cw_tag, "an example" );
     }
     return;

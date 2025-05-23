@@ -89,14 +89,14 @@ void    init_def_lay( void )
     layout_work.fn.spacing = 1;
     layout_work.fn.font = 0;
     layout_work.fn.number_font = 0;
-    layout_work.fn.number_style = h_style;
+    layout_work.fn.number_style = STYLE_h;
     layout_work.fn.frame = 0;
 
     /***********************************************************************/
     /* :FNREF  values                                                      */
     /***********************************************************************/
     layout_work.fnref.font = 0;
-    layout_work.fnref.number_style = h_style | xp_style;
+    layout_work.fnref.number_style = STYLE_h | STYLE_xp;
 
     /***********************************************************************/
     /*  :P     values                                                      */
@@ -161,7 +161,7 @@ void    init_def_lay( void )
     layout_work.hx.hx_head[k].number_font = 3;
     layout_work.hx.hx_head[k].hd_case = case_mixed;
     layout_work.hx.hx_head[k].number_form = num_none;
-    layout_work.hx.hx_head[k].number_style = h_style;
+    layout_work.hx.hx_head[k].number_style = STYLE_h;
     layout_work.hx.hx_head[k].page_eject = ej_yes;
     layout_work.hx.hx_head[k].line_position = PPOS_left;
     layout_work.hx.hx_head[k].display_heading = true;
@@ -237,7 +237,7 @@ void    init_def_lay( void )
     layout_work.hx.hx_head[k].line_break = true;
     layout_work.hx.hx_head[k].page_eject = ej_yes;
     layout_work.hx.hx_head[k].number_form = num_new;
-    layout_work.hx.hx_head[k].number_style = b_style;
+    layout_work.hx.hx_head[k].number_style = STYLE_b;
 
     memcpy( &layout_work.hx.hx_sect[k], &layout_work.hx.hx_sect[k-1],
             sizeof( layout_work.hx.hx_sect[0] ) );
@@ -633,7 +633,7 @@ void    init_def_lay( void )
     lay_init_su( i04, &layout_work.ol.first->align );
     layout_work.ol.first->spacing = 1;
     layout_work.ol.first->font = 0;
-    layout_work.ol.first->number_style = h_style | xd_style;;
+    layout_work.ol.first->number_style = STYLE_h | STYLE_xd;
     layout_work.ol.first->number_font = 0;
 
     /***********************************************************************/

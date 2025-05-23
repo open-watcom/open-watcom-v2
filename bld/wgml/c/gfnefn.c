@@ -106,7 +106,7 @@ void gml_fn( const gmltag * entry )
 
     nest_cb->left_indent = conv_hor_unit( &layout_work.fn.line_indent, g_curr_font );
     nest_cb->font = g_curr_font;
-    nest_cb->c_tag = T_FN;
+    nest_cb->gtag = T_FN;
 
     t_page.cur_left += nest_cb->left_indent;
     t_page.cur_width = t_page.cur_left;
@@ -121,8 +121,8 @@ void gml_fn( const gmltag * entry )
     }
 
     sav_group_type = cur_group_type;
-    cur_group_type = gt_fn;
-    cur_doc_el_group = alloc_doc_el_group( gt_fn );
+    cur_group_type = GRT_fn;
+    cur_doc_el_group = alloc_doc_el_group( GRT_fn );
     cur_doc_el_group->next = t_doc_el_group;
     t_doc_el_group = cur_doc_el_group;
     cur_doc_el_group = NULL;
@@ -198,7 +198,7 @@ void gml_efn( const gmltag * entry )
     scr_process_break();
     rs_loc = 0;
 
-    if( cur_group_type != gt_fn ) {         // no preceding :FN tag
+    if( cur_group_type != GRT_fn ) {         // no preceding :FN tag
         g_tag_prec_err_exit( T_FN );
 //        scandata.s = scandata.e;
 //        return;

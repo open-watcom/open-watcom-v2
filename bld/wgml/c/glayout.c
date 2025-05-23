@@ -112,7 +112,7 @@ void    lay_elayout( const gmltag * entry )
             xx_err_exit_cc( err_no_lay, &(entry->tagname[1]), entry->tagname );
         }
         ProcFlags.layout = false;
-        ProcFlags.lay_xxx = el_zero;
+        ProcFlags.lay_xxx = TL_NONE;
     } else {
         xx_err_exit_cc( err_extra_ignored, g_tok_start, p );
     }

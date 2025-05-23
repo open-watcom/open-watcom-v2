@@ -47,10 +47,10 @@ static void do_el_list_out( doc_element * in_element )
 
     while( in_element != NULL ) {
         switch( in_element->type ) {
-        case el_binc :
+        case ELT_binc:
             if( GlobalFlags.lastpass ) {
                 if( in_element->next != NULL ) {
-                    if( in_element->next->type == el_text ) {
+                    if( in_element->next->type == ELT_text ) {
                         if( in_element->next->element.text.first != NULL ) {
                             if( in_element->next->element.text.first->first != NULL ) {
                                 if( in_element->next->element.text.first->first->font > 0 ) {
@@ -58,7 +58,7 @@ static void do_el_list_out( doc_element * in_element )
                                 }
                             }
                         }
-                    } else if( in_element->next->type == el_vspace ) {
+                    } else if( in_element->next->type == ELT_vspace ) {
                         if( in_element->next->element.vspace.font > 0 ) {
                             in_element->element.binc.force_FONT0 = true;
                         }
@@ -70,7 +70,7 @@ static void do_el_list_out( doc_element * in_element )
                 }
             }
             break;
-        case el_dbox :  // should only be found if DBOX block exists
+        case ELT_dbox:  // should only be found if DBOX block exists
             if( GlobalFlags.lastpass ) {
                 fb_dbox( &in_element->element.dbox );
                 if( in_element->element.dbox.eol_index != NULL ) {
@@ -78,7 +78,7 @@ static void do_el_list_out( doc_element * in_element )
                 }
             }
             break;
-        case el_graph :
+        case ELT_graph:
             if( GlobalFlags.lastpass ) {
                 if( ProcFlags.ps_device ) {   // only available to PS device
                     ob_graphic( &in_element->element.graph );
@@ -88,7 +88,7 @@ static void do_el_list_out( doc_element * in_element )
                 }
             }
             break;
-        case el_hline :  // should only be found if HLINE block exists
+        case ELT_hline:  // should only be found if HLINE block exists
             if( GlobalFlags.lastpass ) {
                 fb_hline( &in_element->element.hline );
                 if( in_element->element.hline.eol_index != NULL ) {
@@ -96,7 +96,7 @@ static void do_el_list_out( doc_element * in_element )
                 }
             }
             break;
-        case el_text :
+        case ELT_text:
             if( in_element->element.text.entry != NULL ) {       // heading
                 out_head_page( in_element->element.text.entry,
                                in_element->element.text.ref, g_page );
@@ -124,7 +124,7 @@ static void do_el_list_out( doc_element * in_element )
                 ProcFlags.force_op = false;
             }
             break;
-        case el_vline :  // should only be found if VLINE block exists
+        case ELT_vline:  // should only be found if VLINE block exists
             if( GlobalFlags.lastpass ) {
                fb_vline( &in_element->element.vline );
                 if( in_element->element.vline.eol_index != NULL ) {
@@ -132,7 +132,7 @@ static void do_el_list_out( doc_element * in_element )
                 }
             }
             break;
-        case el_vspace :
+        case ELT_vspace:
             /* next element is positioned to skip the space */
             if( GlobalFlags.lastpass ) {
                 if( in_element->element.vspace.eol_index != NULL ) {
@@ -202,7 +202,7 @@ static void consolidate_array( doc_element * array[MAX_COL], uint8_t count )
         sav_nt_el = NULL;
         sav_te_el = NULL;
         while( array[i] != NULL ) {
-            if( array[i]->type == el_text ) {
+            if( array[i]->type == ELT_text ) {
                 if( cur_te_el[i] == NULL ) {
                     cur_te_el[i] = array[i];
                     te_el[i] = array[i];
@@ -258,7 +258,7 @@ static void consolidate_array( doc_element * array[MAX_COL], uint8_t count )
             if( nt_el[i] == NULL ) continue;    // some columns may be empty
             if( nt_el[i]->v_pos == top_pos ) {
                 if( cur_v_el == NULL ) {
-                    cur_nt_el_group = alloc_doc_el_group( gt_none );
+                    cur_nt_el_group = alloc_doc_el_group( GRT_none );
                     cur_nt_el_group->first = nt_el[i];
                     cur_v_el = nt_el[i];
                     nt_el_group = cur_nt_el_group;
@@ -267,7 +267,7 @@ static void consolidate_array( doc_element * array[MAX_COL], uint8_t count )
                         cur_v_el->next = nt_el[i];
                         cur_v_el = nt_el[i];
                     } else {
-                        cur_nt_el_group->next = alloc_doc_el_group( gt_none );
+                        cur_nt_el_group->next = alloc_doc_el_group( GRT_none );
                         cur_nt_el_group = cur_nt_el_group->next;
                         cur_nt_el_group->first = nt_el[i];
                         cur_v_el = nt_el[i];
@@ -397,7 +397,7 @@ static void consolidate_array( doc_element * array[MAX_COL], uint8_t count )
             if( tl[i] == NULL ) continue;          // some columns may be empty
             if( tl[i]->y_address == top_pos ) {
                 if( out_el == NULL ) {
-                    out_el = alloc_doc_el( el_text );
+                    out_el = alloc_doc_el( ELT_text );
                 }
                 if( cur_tl_list == NULL ) {
                     cur_tl_list = tl[i];
@@ -451,13 +451,13 @@ static void consolidate_array( doc_element * array[MAX_COL], uint8_t count )
                 /* No more non-text elements: do split if non-text element was just inserted */
 
                 if( cur_out_el == NULL ) {
-                    if( sav_el->type != el_text ) {
-                        sav_el->next = alloc_doc_el( el_text );
+                    if( sav_el->type != ELT_text ) {
+                        sav_el->next = alloc_doc_el( ELT_text );
                         sav_el->next->element.text.first = cur_tl_list->next;
                     }
                 } else {
-                    if( cur_out_el->type != el_text ) {
-                        cur_out_el->next = alloc_doc_el( el_text );
+                    if( cur_out_el->type != ELT_text ) {
+                        cur_out_el->next = alloc_doc_el( ELT_text );
                         cur_out_el->next->element.text.first = cur_tl_list->next;
                     }
                 }
@@ -536,7 +536,7 @@ static void consolidate_array( doc_element * array[MAX_COL], uint8_t count )
                             }
                         }
                         cur_out_el = sav_nt_el;
-                        cur_out_el->next = alloc_doc_el( el_text );
+                        cur_out_el->next = alloc_doc_el( ELT_text );
                         cur_out_el = cur_out_el->next;
                         cur_out_el->element.text.first = cur_tl_list;
                         sav_tl->next = NULL;
@@ -552,7 +552,7 @@ static void consolidate_array( doc_element * array[MAX_COL], uint8_t count )
 
     cur_out_el = out_el;
     while( cur_out_el != NULL ) {
-        if( cur_out_el->type == el_text ) {         // text elements only
+        if( cur_out_el->type == ELT_text ) {         // text elements only
             cur_tl_list = cur_out_el->element.text.first;
             sav_tl = cur_tl_list;
             cur_tl_list = cur_tl_list->next;
@@ -620,7 +620,7 @@ static bool set_positions( doc_element * list, uint32_t h_start, uint32_t v_star
     for( cur_el = list; cur_el != NULL; cur_el = cur_el->next ) {
         use_spacing = false;
         if( at_top ) {
-            if( cur_el->type == el_vspace ) {
+            if( cur_el->type == ELT_vspace ) {
                 cur_spacing = cur_el->blank_lines + cur_el->top_skip;
             } else if( cur_el->blank_lines > 0 ) {
                 cur_spacing = cur_el->blank_lines + cur_el->subs_skip;
@@ -629,11 +629,11 @@ static bool set_positions( doc_element * list, uint32_t h_start, uint32_t v_star
             }
         } else {
             cur_spacing = cur_el->blank_lines + cur_el->subs_skip;
-            use_spacing = (cur_spacing == 0);       // see el_text below
+            use_spacing = (cur_spacing == 0);       // see ELT_text below
         }
 
         switch( cur_el->type ) {
-        case el_binc :
+        case ELT_binc:
             cur_el->element.binc.cur_left += h_start;
             cur_el->h_pos = cur_el->element.binc.cur_left;
             cur_el->element.binc.at_top = at_top && (t_page.top_banner == NULL);
@@ -651,7 +651,7 @@ static bool set_positions( doc_element * list, uint32_t h_start, uint32_t v_star
             }
             at_top = false;
             break;
-        case el_dbox :
+        case ELT_dbox:
             cur_el->element.dbox.h_start += h_start;
             cur_el->h_pos = cur_el->element.dbox.h_start;
             if( bin_driver->y_positive == 0x00 ) {
@@ -668,7 +668,7 @@ static bool set_positions( doc_element * list, uint32_t h_start, uint32_t v_star
             }
             at_top = false;
             break;
-        case el_graph :
+        case ELT_graph:
             cur_el->element.graph.cur_left += h_start;
             cur_el->h_pos = cur_el->element.graph.cur_left;
             cur_el->element.graph.at_top = at_top && (t_page.top_banner == NULL);
@@ -686,7 +686,7 @@ static bool set_positions( doc_element * list, uint32_t h_start, uint32_t v_star
             }
             at_top = false;
             break;
-        case el_hline :
+        case ELT_hline:
             cur_el->element.hline.h_start += h_start;
             cur_el->h_pos = cur_el->element.hline.h_start;
             if( bin_driver->y_positive == 0x00 ) {
@@ -703,7 +703,7 @@ static bool set_positions( doc_element * list, uint32_t h_start, uint32_t v_star
             }
             at_top = false;
             break;
-        case el_text :
+        case ELT_text:
             if( cur_el->element.text.first == NULL ) {          // empty heading
 
                 /* Use cur_spacing to adjust vertical position */
@@ -803,7 +803,7 @@ static bool set_positions( doc_element * list, uint32_t h_start, uint32_t v_star
                 at_top = false;
             }
             break;
-        case el_vline :
+        case ELT_vline:
             cur_el->element.vline.h_start += h_start;
             cur_el->h_pos = cur_el->element.vline.h_start;
             if( bin_driver->y_positive == 0x00 ) {
@@ -820,7 +820,7 @@ static bool set_positions( doc_element * list, uint32_t h_start, uint32_t v_star
             }
             at_top = false;
             break;
-        case el_vspace :
+        case ELT_vspace:
             cur_el->h_pos = h_start;
             if( bin_driver->y_positive == 0x00 ) {
                 g_cur_v_start -= cur_spacing;
@@ -974,14 +974,14 @@ static void fill_column( doc_element * a_element )
 
     switch( a_element->type ) {
     // add/move code for other element types as appropriate/desired
-    case el_binc :
-    case el_dbox :
-    case el_graph :
-    case el_hline :
-    case el_vline :
-    case el_vspace :
+    case ELT_binc:
+    case ELT_dbox:
+    case ELT_graph:
+    case ELT_hline:
+    case ELT_vline:
+    case ELT_vspace:
         break;
-    case el_text :
+    case ELT_text:
 
         cur_line = a_element->element.text.first;
 
@@ -1016,7 +1016,7 @@ static void fill_column( doc_element * a_element )
         /*  line that can be left in the original element           */
         /************************************************************/
 
-        split_el = alloc_doc_el( el_text ); // most defaults are correct
+        split_el = alloc_doc_el( ELT_text ); // most defaults are correct
 
         split_el->depth = a_element->depth - cur_depth;
         split_el->element.text.first = cur_line;
@@ -1408,7 +1408,7 @@ static void update_column( void )
                     n_page.last_col_main = NULL;
                 }
                 t_page.last_col_main->next = NULL;
-                if( (cur_el->type == el_text) && cur_el->element.text.overprint
+                if( (cur_el->type == ELT_text) && cur_el->element.text.overprint
                                               && cur_el->element.text.force_op ) {
                     /* do nothing, adjusts for top-of-page overprint */
                 } else {
@@ -1534,7 +1534,7 @@ void do_page_out( void )
     if( ProcFlags.op_done ) {
         work_el = t_page.panes->cols[0].main;
         while( work_el != NULL ) {
-            if( (work_el->type == el_text) && (work_el->element.text.entry != NULL) ) {
+            if( (work_el->type == ELT_text) && (work_el->element.text.entry != NULL) ) {
                 op_hdg_cnt++;
             }
             work_el = work_el->next;
@@ -1542,11 +1542,11 @@ void do_page_out( void )
         work_el = t_page.panes->cols[0].main;
         if( op_hdg_cnt > 0 ) {
             while( work_el != NULL ) {
-                if( work_el->type != el_text ) {
+                if( work_el->type != ELT_text ) {
                     ProcFlags.op_done = false;  // cancel for non-text doc_el: TBD
                     break;
                 }
-                if( (work_el->type == el_text) && (work_el->element.text.entry != NULL) ) {
+                if( (work_el->type == ELT_text) && (work_el->element.text.entry != NULL) ) {
                     if( nh_pages < 2 ) {
                         ProcFlags.op_done = false;  // cancel for heading too far down on page: TBD
                     }
@@ -1591,9 +1591,9 @@ void do_page_out( void )
 
         first_col = &t_page.panes->cols[0];
         if( (t_page.panes->page_width == NULL) && (first_col->main != NULL) ) {
-            if( first_col->main->type == el_graph ) {               // first element on page
+            if( first_col->main->type == ELT_graph ) {               // first element on page
                 /* Left expanded in case future work is needed */
-                if( first_col->main->next->type == el_text ) {      // text element follows
+                if( first_col->main->next->type == ELT_text ) {      // text element follows
                     if( first_col->main->next->element.text.first != NULL ) {
                         if( first_col->main->next->element.text.first->first != NULL ) {
                             first_col->main->element.graph.next_font =
@@ -1603,13 +1603,13 @@ void do_page_out( void )
                 }
             }
             work_el = NULL;
-            if( (first_col->main->type == el_hline) ) {
+            if( (first_col->main->type == ELT_hline) ) {
                 work_el = first_col->main;
-            } else if( (first_col->main->type == el_text) &&
+            } else if( (first_col->main->type == ELT_text) &&
                     (first_col->main->next != NULL) &&
                     (first_col->main->element.text.first != NULL) &&
                     (first_col->main->element.text.first->first == NULL) &&
-                    (first_col->main->next->type == el_hline) ) {
+                    (first_col->main->next->type == ELT_hline) ) {
                 work_el = first_col->main->next;
             }
 
@@ -1630,7 +1630,7 @@ void do_page_out( void )
                     work_el->subs_skip -= (prev_height - curr_height) / 2;
                     work_el->top_skip -= (prev_height - curr_height) / 2;
                 }
-                while( (work_el != NULL) && (work_el->type != el_text) ) {
+                while( (work_el != NULL) && (work_el->type != ELT_text) ) {
                     work_el = work_el->next;
                 }
                 if( work_el != NULL ) {             // element is text
@@ -1641,10 +1641,10 @@ void do_page_out( void )
                     }
                 }
                 work_el = first_col->main;
-                while( (work_el != NULL) && (work_el->type != el_vline) ) {
+                while( (work_el != NULL) && (work_el->type != ELT_vline) ) {
                     work_el = work_el->next;
                 }
-                while( (work_el != NULL) && (work_el->type == el_vline)  ) {
+                while( (work_el != NULL) && (work_el->type == ELT_vline)  ) {
                     if( prev_height < curr_height ) {
                         work_el->element.vline.v_len -= (curr_height - prev_height) / 2;
                     } else if( prev_height > curr_height ) {
@@ -1693,10 +1693,10 @@ void do_page_out( void )
 
                 /* Find and adjust the vlines */
 
-                while( (work_el != NULL) && (work_el->type != el_vline) ) {
+                while( (work_el != NULL) && (work_el->type != ELT_vline) ) {
                     work_el = work_el->next;
                 }
-                while( (work_el != NULL) && (work_el->type == el_vline)  ) {
+                while( (work_el != NULL) && (work_el->type == ELT_vline)  ) {
                     if( prev_height < curr_height ) {
                         work_el->element.vline.v_len -= (curr_height - prev_height) / 2;
                     } else if( prev_height > curr_height ) {
@@ -1919,14 +1919,14 @@ void insert_col_main( doc_element * a_element )
                                      a_element->depth);
             last_co = ProcFlags.concat;
         } else {
-            if( (last_co != ProcFlags.concat) && (nest_cb->c_tag != T_FIG) ) { // FB/FK, at least, need this
+            if( (last_co != ProcFlags.concat) && (nest_cb->gtag != T_FIG) ) { // FB/FK, at least, need this
                 a_element->do_split = true;     // split block when closed
             }
             t_doc_el_group->last->next = a_element;
             t_doc_el_group->last = t_doc_el_group->last->next;
             t_doc_el_group->depth += (a_element->blank_lines + a_element->subs_skip +
                                       a_element->depth);
-            if( a_element->type == el_text ) {  // subsequent text elements only
+            if( a_element->type == ELT_text ) {  // subsequent text elements only
                 a_element->depth += g_units_spacing;
                 t_doc_el_group->depth += g_units_spacing;
             }
@@ -2012,7 +2012,7 @@ void insert_col_main( doc_element * a_element )
         /****************************************************************/
 
         depth = cur_skip + a_element->depth;
-        if( (a_element->type == el_text) && a_element->element.text.overprint
+        if( (a_element->type == ELT_text) && a_element->element.text.overprint
                 && (t_page.cur_depth != t_page.max_depth) ) {
             depth -= a_element->element.text.first->line_height;
             if( !a_element->op_co_on || a_element->element.text.first->first->post_ix ) {
@@ -2025,12 +2025,12 @@ void insert_col_main( doc_element * a_element )
             op_hdg_cnt = 0; // ignore headings before overprint line
         }
 
-        if( ((a_element->type == el_text) && a_element->element.text.first != NULL)
+        if( ((a_element->type == ELT_text) && a_element->element.text.first != NULL)
                 && (a_element->element.text.entry != NULL) ) {
             op_hdg_cnt++;   // heading found
         }
 
-        if( ((a_element->type == el_text) && a_element->element.text.first == NULL) ) {
+        if( ((a_element->type == ELT_text) && a_element->element.text.first == NULL) ) {
 
             /****************************************************************/
             /* Empty headings are added to the page but do not set          */
@@ -2049,7 +2049,7 @@ void insert_col_main( doc_element * a_element )
             }
 
         } else {
-            if( ((a_element->type == el_text) && a_element->element.text.vspace_next) ) {
+            if( ((a_element->type == ELT_text) && a_element->element.text.vspace_next) ) {
 
                 /****************************************************************/
                 /* Implements a wgml 4.0 bug in XMP/eXMP blocks:                */
@@ -2093,7 +2093,7 @@ void insert_col_main( doc_element * a_element )
                     t_page.cur_depth += a_element->depth + cur_skip;
                     a_element = a_element->next;
                     t_page.last_col_main->next = NULL;
-                } else if( (t_page.last_col_main != NULL) && (t_page.last_col_main->type == el_text) &&
+                } else if( (t_page.last_col_main != NULL) && (t_page.last_col_main->type == ELT_text) &&
                         (t_page.last_col_main->element.text.prev) != NULL ) {  // detach heading and reset a_element
                     t_page.last_col_main->next = a_element;
                     a_element = t_page.last_col_main;
@@ -2506,8 +2506,8 @@ void set_skip_vars( su * pre_skip, su * pre_top_skip, su * post_skip,
         ProcFlags.sk_2nd = false;               // if was true, make false
     }
 
-    if( g_blank_units_lines > 0 ) {             // blank space into el_vspace element
-        t_element = init_doc_el( el_vspace, 0 );
+    if( g_blank_units_lines > 0 ) {             // blank space into ELT_vspace element
+        t_element = init_doc_el( ELT_vspace, 0 );
         insert_col_main( t_element );
         t_element = NULL;
         t_el_last = NULL;
@@ -2589,15 +2589,15 @@ bool split_element( doc_element * a_element, uint32_t req_depth )
 
     switch( a_element->type ) {
     // add code for other element types as appropriate
-    case el_binc :
-    case el_dbox :
-    case el_graph :
-    case el_hline :
-    case el_vline :
-    case el_vspace :
+    case ELT_binc:
+    case ELT_dbox:
+    case ELT_graph:
+    case ELT_hline:
+    case ELT_vline:
+    case ELT_vspace:
         splittable = false;
         break;
-    case el_text :
+    case ELT_text:
 
         cur_line = a_element->element.text.first;
 
@@ -2690,7 +2690,7 @@ bool split_element( doc_element * a_element, uint32_t req_depth )
         /*  line that can be left in the original element           */
         /************************************************************/
 
-        split_el = alloc_doc_el( el_text ); // most defaults are correct
+        split_el = alloc_doc_el( ELT_text ); // most defaults are correct
 
         split_el->depth = a_element->depth - cur_depth;
         split_el->element.text.first = cur_line;

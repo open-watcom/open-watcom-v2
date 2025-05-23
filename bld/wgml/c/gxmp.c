@@ -79,8 +79,8 @@ void gml_xmp( const gmltag * entry )
 
     g_keep_nest( "Example" );           // catch nesting errors
 
-    if( is_ip_tag( nest_cb->c_tag ) ) {                 // inline phrase not closed
-        g_tag_nest_err_exit( nest_cb->c_tag + 1 ); // end tag expected
+    if( is_ip_tag( nest_cb->gtag ) ) {                 // inline phrase not closed
+        g_tag_nest_err_exit( nest_cb->gtag + 1 ); // end tag expected
     }
 
     font_save = g_curr_font;
@@ -122,7 +122,7 @@ void gml_xmp( const gmltag * entry )
     nest_cb->left_indent = conv_hor_unit( &layout_work.xmp.left_indent, g_curr_font );
     nest_cb->right_indent = -1 * conv_hor_unit( &layout_work.xmp.right_indent, g_curr_font );
     nest_cb->font = g_curr_font;
-    nest_cb->c_tag = T_XMP;
+    nest_cb->gtag = T_XMP;
 
     t_page.cur_left += nest_cb->left_indent;
     t_page.max_width += nest_cb->right_indent;
@@ -139,8 +139,8 @@ void gml_xmp( const gmltag * entry )
     g_post_skip = 0;
 
     sav_group_type = cur_group_type;
-    cur_group_type = gt_xmp;
-    cur_doc_el_group = alloc_doc_el_group( gt_xmp );
+    cur_group_type = GRT_xmp;
+    cur_doc_el_group = alloc_doc_el_group( GRT_xmp );
     cur_doc_el_group->next = t_doc_el_group;
     t_doc_el_group = cur_doc_el_group;
     cur_doc_el_group = NULL;
@@ -194,8 +194,8 @@ void gml_exmp( const gmltag * entry )
 
     (void)entry;
 
-    if( is_ip_tag( nest_cb->c_tag ) ) {                 // inline phrase not closed
-        g_tag_nest_err_exit( nest_cb->c_tag + 1 ); // end tag expected
+    if( is_ip_tag( nest_cb->gtag ) ) {                 // inline phrase not closed
+        g_tag_nest_err_exit( nest_cb->gtag + 1 ); // end tag expected
     }
 
     /* Ensure blank lines at end of XMP use correct font */
@@ -206,7 +206,7 @@ void gml_exmp( const gmltag * entry )
     g_blank_text_lines = 0;
 
     scr_process_break();
-    if( cur_group_type != gt_xmp ) {        // no preceding :XMP tag
+    if( cur_group_type != GRT_xmp ) {        // no preceding :XMP tag
         g_tag_prec_err_exit( T_XMP );
     }
     g_curr_font = font_save;                // recover font in effect before XMP
@@ -229,7 +229,7 @@ void gml_exmp( const gmltag * entry )
         cur_doc_el_group->next = NULL;
 
         if( cur_doc_el_group->first != NULL ) {
-            if( cur_doc_el_group->first->type == el_text ) {                    // only text has spacing
+            if( cur_doc_el_group->first->type == ELT_text ) {                    // only text has spacing
                 cur_doc_el_group->first->element.text.first->units_spacing = 0; // no spacing on first line
             }
 
@@ -241,13 +241,13 @@ void gml_exmp( const gmltag * entry )
         list_top = true;
         while( cur_doc_el_group->first != NULL ) {
             cur_el = cur_doc_el_group->first;
-            if( list_top && (input_cbs->fmflags & II_macro) && (cur_el->type == el_vspace) ) {     // first element is vspace
+            if( list_top && (input_cbs->fmflags & II_macro) && (cur_el->type == ELT_vspace) ) {     // first element is vspace
                 if( cur_el->blank_lines > 0 ) {
                     cur_el->blank_lines -= wgml_fonts[cur_el->element.vspace.font].line_height;
                 }
             }
-            if( (cur_el->next != NULL) && (cur_el->type == el_text) &&
-                    (cur_el->next->type == el_vspace) ) {
+            if( (cur_el->next != NULL) && (cur_el->type == ELT_text) &&
+                    (cur_el->next->type == ELT_vspace) ) {
                 cur_el->element.text.vspace_next = true;        // matches wgml 4.0
             }
             cur_doc_el_group->first = cur_doc_el_group->first->next;

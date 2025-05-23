@@ -123,27 +123,25 @@ void    lay_backbod( const gmltag * entry )
     int                 k;
     int                 cvterr;
     lay_att             curr;
-    lay_sub             x_tag;
+    l_tags              ltag;
     att_name_type       attr_name;
     att_val_type        attr_val;
 
     p = scandata.s;
     cvterr = false;
-
-    if( strcmp( "BACKM", entry->tagname ) == 0 ) {
-        x_tag = el_backm;
+    ltag = entry->u.layid;
+    if( ltag == TL_BACKM ) {
         bb  = &layout_work.backm;
         bbsect = &layout_work.hx.hx_sect[hds_backm];
-    } else if( strcmp( "BODY", entry->tagname ) == 0 ) {
-        x_tag = el_body;
+    } else if( ltag == TL_BODY ) {
         bb  = &layout_work.body;
         bbsect = &layout_work.hx.hx_sect[hds_body];
     } else {
         internal_err_exit( __FILE__, __LINE__ );
     }
     memset( &AttrFlags, 0, sizeof( AttrFlags ) );   // clear all attribute flags
-    if( ProcFlags.lay_xxx != x_tag ) {
-        ProcFlags.lay_xxx = x_tag;
+    if( ProcFlags.lay_xxx != ltag ) {
+        ProcFlags.lay_xxx = ltag;
     }
     while( (cc = lay_attr_and_value( &attr_name, &attr_val )) == CC_pos ) {   // get att with value
         cvterr = -1;
@@ -180,7 +178,7 @@ void    lay_backbod( const gmltag * entry )
                         xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                     }
-                    if( x_tag == el_body ) {
+                    if( ltag == TL_BODY ) {
                         cvterr = i_xx_string( p, &attr_val, bb->string );
                     }
                     AttrFlags.body_string = true;
@@ -190,7 +188,7 @@ void    lay_backbod( const gmltag * entry )
                         xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                     }
-                    if( x_tag == el_backm ) {
+                    if( ltag == TL_BACKM ) {
                         cvterr = i_xx_string( p, &attr_val, bb->string );
                     }
                     AttrFlags.backm_string = true;
@@ -227,7 +225,7 @@ void    lay_backbod( const gmltag * entry )
                         xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                     }
-                    if( x_tag == el_backm ) {
+                    if( ltag == TL_BACKM ) {
                         cvterr = i_int8( p, &attr_val, &(bb->columns) );
                     }
                     AttrFlags.columns = true;

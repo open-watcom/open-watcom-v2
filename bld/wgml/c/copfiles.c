@@ -1185,11 +1185,11 @@ void cop_setup( void )
     def_tabs.length = TAB_COUNT;
     def_tabs.tabs[0].column = first_tab;
     def_tabs.tabs[0].fill_char = ' ';
-    def_tabs.tabs[0].alignment = al_left;
+    def_tabs.tabs[0].alignment = ALIGN_left;
     for( i = 1; i < def_tabs.length; i++ ) {
         def_tabs.tabs[i].column = def_tabs.tabs[i - 1].column + inter_tab;
         def_tabs.tabs[i].fill_char = ' ';
-        def_tabs.tabs[i].alignment = al_left;
+        def_tabs.tabs[i].alignment = ALIGN_left;
     }
     def_tabs.current = def_tabs.length;
 

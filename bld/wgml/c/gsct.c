@@ -90,8 +90,8 @@ void    scr_ct( void )
         }
         if( *p != '\0' ) {
             if( !ProcFlags.fsp ) {                  // not forced space
-                if( is_ip_tag( nest_cb->c_tag ) ) { // in inline phrase
-                    if( is_ip_tag( nest_cb->prev->c_tag ) ) { // in 2nd inline phrase
+                if( is_ip_tag( nest_cb->gtag ) ) { // in inline phrase
+                    if( is_ip_tag( nest_cb->prev->gtag ) ) { // in 2nd inline phrase
                         /* placeholder */
                     } else if( !ProcFlags.inl_text ) {
                         /* placeholder */

@@ -299,11 +299,11 @@ void    lay_banregion( const gmltag * entry )
         del_ban = NULL;
     }
 
-    if( ProcFlags.lay_xxx != el_banregion ) {
+    if( ProcFlags.lay_xxx != TL_BANREGION ) {
         if( !ProcFlags.banner ) {               // not in BANNER/eBANNER block
             xx_err_exit_c( err_tag_expected, "BANNER" );
         }
-        ProcFlags.lay_xxx = el_banregion;
+        ProcFlags.lay_xxx = TL_BANREGION;
         init_banregion_wk( &wk );
     }
 
@@ -560,8 +560,8 @@ void    lay_banregion( const gmltag * entry )
 void    lay_ebanregion( const gmltag * entry )
 {
     rs_loc = TLOC_banner;
-    if( ProcFlags.lay_xxx == el_banregion ) {   // :banregion was last tag
-        ProcFlags.lay_xxx = el_ebanregion;
+    if( ProcFlags.lay_xxx == TL_BANREGION ) {   // :banregion was last tag
+        ProcFlags.lay_xxx = TL_EBANREGION;
     } else {
         xx_err_exit_cc( err_no_lay, &(entry->tagname[1]), entry->tagname );
     }

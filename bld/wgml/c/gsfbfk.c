@@ -354,14 +354,14 @@ void scr_fb( void )
         g_keep_nest( "FB" );                // catch nesting errors
         save_state( true );
         sav_group_type = cur_group_type;
-        cur_group_type = gt_fb;
-        cur_doc_el_group = alloc_doc_el_group( gt_fb );
+        cur_group_type = GRT_fb;
+        cur_doc_el_group = alloc_doc_el_group( GRT_fb );
         cur_doc_el_group->next = t_doc_el_group;
         t_doc_el_group = cur_doc_el_group;
         cur_doc_el_group = NULL;
         break;
     case fbk_end :
-        if( cur_group_type == gt_fb ) {
+        if( cur_group_type == GRT_fb ) {
             sav_post_space = post_space;
             scr_process_break();                    // for the last doc_element in the block
             post_space = sav_post_space;
@@ -462,14 +462,14 @@ void scr_fk( void )
         g_keep_nest( "FK" );                // catch nesting errors
         save_state( false );
         sav_group_type = cur_group_type;
-        cur_group_type = gt_fk;
-        cur_doc_el_group = alloc_doc_el_group( gt_fk );
+        cur_group_type = GRT_fk;
+        cur_doc_el_group = alloc_doc_el_group( GRT_fk );
         cur_doc_el_group->next = t_doc_el_group;
         t_doc_el_group = cur_doc_el_group;
         cur_doc_el_group = NULL;
         break;
     case fbk_end :
-        if( cur_group_type == gt_fk ) {
+        if( cur_group_type == GRT_fk ) {
             sav_post_space = post_space;
             scr_process_break();
             post_space = sav_post_space;
@@ -522,7 +522,7 @@ void fb_blocks_out( void )
             cur_group = block_queue;
             block_queue = block_queue->next;
             text_depth = cur_group->depth;
-            if( cur_group->first->type == el_text ) {
+            if( cur_group->first->type == ELT_text ) {
                 text_depth -= cur_group->first->subs_skip;
             }
             if( (t_page.cur_depth != 0) &&

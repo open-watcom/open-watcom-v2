@@ -131,13 +131,13 @@ void    lay_ix( const gmltag * entry )
 
     switch( entry->tagname[1] ) {
     case '1':
-        ix_l = el_i1;
+        ix_l = TL_I1;
         break;
     case '2':
-        ix_l = el_i2;
+        ix_l = TL_I2;
         break;
     default:
-        ix_l = el_i3;
+        ix_l = TL_I3;
         break;
     }
     memset( &AttrFlags, 0, sizeof( AttrFlags ) );   // clear all attribute flags

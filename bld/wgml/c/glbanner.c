@@ -221,8 +221,8 @@ void    lay_banner( const gmltag * entry )
     rs_loc = TLOC_banner;
 
     memset( &AttrFlags, 0, sizeof( AttrFlags ) );   // clear all attribute flags
-    if( ProcFlags.lay_xxx != el_banner ) {
-        ProcFlags.lay_xxx = el_banner;
+    if( ProcFlags.lay_xxx != TL_BANNER ) {
+        ProcFlags.lay_xxx = TL_BANNER;
         ProcFlags.banner = true;
         init_banner_wk( &wk );
     }
@@ -512,7 +512,7 @@ void    lay_ebanner( const gmltag * entry )
 
     (void)entry;
 
-    ProcFlags.lay_xxx = el_zero;        // banner no longer active
+    ProcFlags.lay_xxx = TL_NONE;        // banner no longer active
     rs_loc = 0;
 
     if( ProcFlags.banner ) {            // are we inside banner

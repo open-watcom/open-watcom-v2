@@ -133,7 +133,7 @@ void init_global_vars( void )
     block_queue         = NULL;
     block_queue_end     = NULL;
 
-    cur_group_type      = gt_none;
+    cur_group_type      = GRT_none;
     cur_doc_el_group    = NULL;
     doc_el_group_pool   = NULL;
     t_doc_el_group      = NULL;
@@ -229,11 +229,11 @@ void init_global_vars( void )
     fn_list             = NULL;
     hd_list             = NULL;
 
-    pgnum_style[0]      = h_style;
-    pgnum_style[1]      = h_style;
-    pgnum_style[2]      = h_style;
-    pgnum_style[3]      = h_style;
-    pgnum_style[4]      = h_style;
+    pgnum_style[0]      = STYLE_h;
+    pgnum_style[1]      = STYLE_h;
+    pgnum_style[2]      = STYLE_h;
+    pgnum_style[3]      = STYLE_h;
+    pgnum_style[4]      = STYLE_h;
 
     g_tagname[0]        = '*';          // last defined GML tag name none
     g_tag_entry         = NULL;         // ... entry in tags_dict

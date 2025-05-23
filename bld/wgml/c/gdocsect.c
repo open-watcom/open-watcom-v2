@@ -151,11 +151,11 @@ static void figlist_toc_tabs( char * fill, uint32_t size, bool setup )
         user_tabs.current = 2;
         user_tabs.tabs[0].column = t_page.max_width - tab_col - size;
         user_tabs.tabs[0].fill_char = fill[0];
-        user_tabs.tabs[0].alignment = al_right;
+        user_tabs.tabs[0].alignment = ALIGN_right;
 
         user_tabs.tabs[1].column = t_page.max_width - tab_col;
         user_tabs.tabs[1].fill_char = ' ';
-        user_tabs.tabs[1].alignment = al_right;
+        user_tabs.tabs[1].alignment = ALIGN_right;
 
     } else {                        // remove tabbing (restore to default)
         tab_char = 0x09;
@@ -213,7 +213,7 @@ static void gen_box_head( char * letter )
         scr_process_break();
         t_page.cur_width += ixh_indent;
         g_subs_skip += wgml_fonts[layout_work.ixhead.font].line_height;
-        h_box_el = init_doc_el( el_dbox, 0 );               // DBOX
+        h_box_el = init_doc_el( ELT_dbox, 0 );               // DBOX
         h_box_el->element.dbox.h_start = t_page.cur_width;
         h_box_el->element.dbox.h_len = full_line;
         h_box_el->element.dbox.v_len = 2 * wgml_fonts[layout_work.ixhead.font].line_height;
@@ -263,7 +263,7 @@ static void gen_rule_head( char * letter )
         /*******************************************************************/
 
             g_subs_skip += wgml_fonts[layout_work.ixhead.font].line_height;
-            h_line_el = init_doc_el( el_hline, 0 );             // top line
+            h_line_el = init_doc_el( ELT_hline, 0 );             // top line
             h_line_el->element.hline.ban_adjust = false;
             h_line_el->element.hline.h_start = t_page.cur_width;
             h_line_el->element.hline.h_len = full_line;
@@ -273,7 +273,7 @@ static void gen_rule_head( char * letter )
             scr_process_break();
             t_page.cur_width += ixh_indent;
             g_subs_skip += wgml_fonts[layout_work.ixhead.font].line_height;
-            h_line_el = init_doc_el( el_hline, 0 );             // bottom line
+            h_line_el = init_doc_el( ELT_hline, 0 );             // bottom line
             h_line_el->element.hline.ban_adjust = false;
             h_line_el->element.hline.h_start = t_page.cur_width;
             h_line_el->element.hline.h_len = full_line;
@@ -1186,7 +1186,7 @@ void start_doc_sect( void )
         lvl_reset = false;
         init_nest_cb();
         nest_cb->p_stack = copy_to_nest_stack();
-        nest_cb->c_tag = T_TITLEP;
+        nest_cb->gtag = T_TITLEP;
         nest_cb->p_stack->lineno = titlep_lineno; // correct line number
         break;
     case DSECT_abstract :
