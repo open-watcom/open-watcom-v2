@@ -106,7 +106,7 @@ void gml_fn( const gmltag * entry )
 
     nest_cb->left_indent = conv_hor_unit( &layout_work.fn.line_indent, g_curr_font );
     nest_cb->font = g_curr_font;
-    nest_cb->gtag = T_FN;
+    nest_cb->gtag = entry->u.tagid;
 
     t_page.cur_left += nest_cb->left_indent;
     t_page.cur_width = t_page.cur_left;

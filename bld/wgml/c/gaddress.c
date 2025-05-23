@@ -55,7 +55,7 @@ void gml_address( const gmltag * entry )
 
     init_nest_cb();
     nest_cb->p_stack = copy_to_nest_stack();
-    nest_cb->gtag = T_ADDRESS;
+    nest_cb->gtag = entry->u.tagid;
     nest_cb->left_indent = nest_cb->prev->left_indent + conv_hor_unit( &layout_work.address.left_adjust, g_curr_font );
     nest_cb->right_indent = nest_cb->prev->right_indent - conv_hor_unit( &layout_work.address.right_adjust, g_curr_font );
 

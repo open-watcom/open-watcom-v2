@@ -554,7 +554,7 @@ void gml_fig( const gmltag * entry )
     nest_cb->left_indent = conv_hor_unit( &layout_work.fig.left_adjust, g_curr_font );
     nest_cb->right_indent = conv_hor_unit( &layout_work.fig.right_adjust, g_curr_font );
     nest_cb->font = g_curr_font;
-    nest_cb->gtag = T_FIG;
+    nest_cb->gtag = entry->u.tagid;
 
     sav_group_type = cur_group_type;
     cur_group_type = GRT_fig;

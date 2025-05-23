@@ -478,7 +478,6 @@ typedef enum g_tags {
 //    #define pick( name, routine, flags )  T_##name,
 //    #include "gscrcws.h" TBD
 //    #undef pick
-    T_MAX = T_NONE                           // the last one for range check
 } g_tags;
 
 /***************************************************************************/

@@ -122,7 +122,7 @@ void gml_xmp( const gmltag * entry )
     nest_cb->left_indent = conv_hor_unit( &layout_work.xmp.left_indent, g_curr_font );
     nest_cb->right_indent = -1 * conv_hor_unit( &layout_work.xmp.right_indent, g_curr_font );
     nest_cb->font = g_curr_font;
-    nest_cb->gtag = T_XMP;
+    nest_cb->gtag = entry->u.tagid;
 
     t_page.cur_left += nest_cb->left_indent;
     t_page.max_width += nest_cb->right_indent;

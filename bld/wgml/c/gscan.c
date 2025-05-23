@@ -940,12 +940,10 @@ const gmltag *find_lay_tag( const char *tagname )
 
 bool is_ip_tag( g_tags tag )
 {
-    if( (tag < 0) || (tag >= T_MAX) ) { // catch invalid tag id values
-        internal_err_exit( __FILE__, __LINE__ );
-    } else if( tag != T_NONE ) {        // T_NONE is valid, but is not an ip_start_tag
-        return( (gml_tags[tag - 1].tagclass & TCLS_ip_start) != 0 );
+    if( tag == T_NONE ) {               // T_NONE is valid, but is not an ip_start_tag
+        return( false );                // not found
     }
-    return( false );                    // not found
+    return( (gml_tags[tag].tagclass & TCLS_ip_start) != 0 );
 }
 
 /***************************************************************************/
