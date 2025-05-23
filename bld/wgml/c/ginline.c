@@ -49,9 +49,6 @@ static void gml_inline_common( const gmltag *entry, font_number font )
     bool            sav_sbl = ProcFlags.skip_blank_line;
     char            *p;
     font_number     o_c_font;
-    g_tags          t;
-
-    t = entry->u.tagid;
 
     if( ProcFlags.overprint && ProcFlags.cc_cp_done ) {
         ProcFlags.overprint = false;    // cancel overprint
@@ -76,7 +73,7 @@ static void gml_inline_common( const gmltag *entry, font_number font )
                     }
                 }
             }
-        } else if( (t == T_SF) && (input_cbs->fmflags & II_macro) ) {   // may apply more generally
+        } else if( (entry->u.tagid == T_SF) && (input_cbs->fmflags & II_macro) ) {   // may apply more generally
             ProcFlags.utc = true;
             if( (post_space == 0) && (input_cbs->sym_space || (input_cbs->fm_symbol && !ProcFlags.ct)) ) {
                 post_space = wgml_fonts[g_curr_font].spc_width;
@@ -91,7 +88,7 @@ static void gml_inline_common( const gmltag *entry, font_number font )
 
     /* Implements wgml 4.0 behavior */
 
-    if( (t == T_SF) && (input_cbs->fmflags & II_tag) && (cur_group_type == GRT_xmp) ) {
+    if( (entry->u.tagid == T_SF) && (input_cbs->fmflags & II_tag) && (cur_group_type == GRT_xmp) ) {
         if( ProcFlags.xmp_ut_sf ) {     // matches wgml 4.0
             scr_process_break();
         } else {
@@ -120,7 +117,7 @@ static void gml_inline_common( const gmltag *entry, font_number font )
     o_c_font = g_curr_font;
     g_curr_font = font;
 
-    nest_cb->gtag = t;
+    nest_cb->gtag = entry->u.tagid;
 
     nest_cb->align = nest_cb->prev->align;
     nest_cb->left_indent = nest_cb->prev->left_indent;
@@ -138,7 +135,7 @@ static void gml_inline_common( const gmltag *entry, font_number font )
     p = scandata.s;
     SkipDot( p );                       // over '.'
 
-    if( t == T_Q ) {                    // Q/eQ inserts quote char
+    if( entry->u.tagid == T_Q ) {       // Q/eQ inserts quote char
         if( (quote_lvl % 2) ) {
             token_buf[0] = s_q;
         } else {
@@ -164,15 +161,15 @@ static void gml_inline_common( const gmltag *entry, font_number font )
         } else {
             process_text( p, g_curr_font);          // if text follows
         }
-    } else if( t != T_Q ) {
-        if( ProcFlags.concat && !ProcFlags.cont_char && (t == T_SF) ) {
+    } else if( entry->u.tagid != T_Q ) {
+        if( ProcFlags.concat && !ProcFlags.cont_char && (entry->u.tagid == T_SF) ) {
             post_space = wgml_fonts[o_c_font].spc_width;
         } else{
             post_space = wgml_fonts[g_curr_font].spc_width;
         }
     }
 
-    if( (t == T_SF) && sav_sbl ) {      // reset flag, but only if was set on entry, and only for SF
+    if( (entry->u.tagid == T_SF) && sav_sbl ) {      // reset flag, but only if was set on entry, and only for SF
         ProcFlags.skip_blank_line = sav_sbl;
     }
 
@@ -229,115 +226,111 @@ static void gml_e_inline_common( const gmltag *entry )
 {
     char            *p;
     tag_cb          *wk;
-    g_tags          t;
 
-    t = entry->u.tagid - 1;
-
-    if( nest_cb->gtag != t ) {         // unexpected exxx tag
+    if( nest_cb->gtag != get_topn( entry->u.tagid ) ) {         // unexpected exxx tag
         if( nest_cb->gtag == T_NONE ) {
-            g_tag_no_err_exit( t + 1 );    // no exxx expected
+            g_tag_no_err_exit( entry->u.tagid );                // no exxx expected
         } else {
-            g_tag_nest_err_exit( nest_cb->gtag + 1 ); // exxx expected
+            g_tag_nest_err_exit( get_tclo( nest_cb->gtag ) );   // exxx expected
         }
-    } else {
+        // never return
+    }
+    /* Mark end of highlighted phrase embedded in a highlighted phrase */
+    if( cur_group_type != GRT_xmp && ProcFlags.concat ) {
+        switch( nest_cb->prev->gtag ) {    // testing showed they all do this, in either phrase
+        case T_CIT:
+        case T_HP0:
+        case T_HP1:
+        case T_HP2:
+        case T_HP3:
+        case T_Q:
+        case T_SF:
+            ProcFlags.einl_in_inlp = true;  // restrict further as needed for embedded phrase
+            break;
+        default:
+            ProcFlags.einl_in_inlp = false; // cancel when outermost inline phrase closes
+        }
+    }
 
-        /* Mark end of highlighted phrase embedded in a highlighted phrase */
-        if( cur_group_type != GRT_xmp && ProcFlags.concat ) {
-            switch( nest_cb->prev->gtag ) {    // testing showed they all do this, in either phrase
-            case T_CIT:
-            case T_HP0:
-            case T_HP1:
-            case T_HP2:
-            case T_HP3:
-            case T_Q:
-            case T_SF:
-                ProcFlags.einl_in_inlp = true;  // restrict further as needed for embedded phrase
-                break;
-            default:
-                ProcFlags.einl_in_inlp = false; // cancel when outermost inline phrase closes
-            }
-        }
+    if( ProcFlags.xmp_ut_sf ) {   // matches wgml 4.0
+        scr_process_break();
+    }
+    if( nest_cb->prev->font == tt_font ) {      // returning to second stack entry
+        tt_stack = nest_cb->prev;               // set tt_stack
+    }
+    if( nest_cb == tt_stack ) {                 // closing second stack entry
+        tt_stack = NULL;                        // clear tt_stack
+    }
+    nest_cb->prev->left_indent = nest_cb->left_indent;
+    nest_cb->prev->right_indent = nest_cb->right_indent;
+    wk = nest_cb;
+    nest_cb = nest_cb->prev;
+    add_tag_cb_to_pool( wk );
 
-        if( ProcFlags.xmp_ut_sf ) {   // matches wgml 4.0
-            scr_process_break();
-        }
-        if( nest_cb->prev->font == tt_font ) {      // returning to second stack entry
-            tt_stack = nest_cb->prev;               // set tt_stack
-        }
-        if( nest_cb == tt_stack ) {                 // closing second stack entry
-            tt_stack = NULL;                        // clear tt_stack
-        }
-        nest_cb->prev->left_indent = nest_cb->left_indent;
-        nest_cb->prev->right_indent = nest_cb->right_indent;
-        wk = nest_cb;
-        nest_cb = nest_cb->prev;
-        add_tag_cb_to_pool( wk );
+    if( entry->u.tagid != T_EQ ) {                    // Q/eQ does not restore the prior font
+        g_curr_font = nest_cb->font;
+    }
 
-        if( t != T_Q ) {                    // Q/eQ does not restore the prior font
-            g_curr_font = nest_cb->font;
-        }
+    /************************************************************************/
+    /* when concatenation is on, the continue character is not needed to    */
+    /* cause input records to be put onto the same output line              */
+    /* but the presence/absence of a space before any text output by an     */
+    /* inline end tag must be determined as if a continue char were present */
+    /* when an inline end tag (used inside a user-defined tag or not) is    */
+    /* at the start of an input record from a file or a macro, then any     */
+    /* space must be cancelled unless the prior input record ended with a   */
+    /* continue character                                                   */
+    /************************************************************************/
 
-        /************************************************************************/
-        /* when concatenation is on, the continue character is not needed to    */
-        /* cause input records to be put onto the same output line              */
-        /* but the presence/absence of a space before any text output by an     */
-        /* inline end tag must be determined as if a continue char were present */
-        /* when an inline end tag (used inside a user-defined tag or not) is    */
-        /* at the start of an input record from a file or a macro, then any     */
-        /* space must be cancelled unless the prior input record ended with a   */
-        /* continue character                                                   */
-        /************************************************************************/
-
-        if( ProcFlags.concat ) {
-            if( ProcFlags.cont_char ) {
-            } else {
-                ProcFlags.cont_char = true;
-                if( ProcFlags.space_fnd ) {
-                    if( input_cbs->hh_tag ) {
-                        if( (t != T_CIT) && (t != T_Q) ) {
-                            post_space = 0;
-                        }
-                    } else {
-                        if( !ProcFlags.fsp ) {  // space not from substitution
-                            post_space = 0;
-                        }
+    if( ProcFlags.concat ) {
+        if( ProcFlags.cont_char ) {
+        } else {
+            ProcFlags.cont_char = true;
+            if( ProcFlags.space_fnd ) {
+                if( input_cbs->hh_tag ) {
+                    if( (entry->u.tagid != T_ECIT) && (entry->u.tagid != T_EQ) ) {
+                        post_space = 0;
                     }
                 } else {
-                    post_space = 0;
+                    if( !ProcFlags.fsp ) {  // space not from substitution
+                        post_space = 0;
+                    }
                 }
+            } else {
+                post_space = 0;
             }
         }
+    }
 
-        if( t == T_Q ) {                    // Q/eQ insert quote character
-            quote_lvl--;
-            if( (quote_lvl % 2) ) {
-                token_buf[0] = s_q;
-            } else {
-                token_buf[0] = d_q;
-            }
-            token_buf[1] = CONT_char;
-            token_buf[2] = '\0';
-            process_text( token_buf, g_curr_font );
-        }
-
-        g_scan_err = false;
-        p = scandata.s;
-        SkipDot( p );                           // over '.'
-        if( *p != '\0' ) {
-            if( (*(p + 1) == '\0') && (*p == CONT_char) ) { // text is continuation character only
-                /* tbd */
-            } else {
-                process_text( p, g_curr_font);          // if text follows
-            }
+    if( entry->u.tagid == T_EQ ) {          // Q/eQ insert quote character
+        quote_lvl--;
+        if( (quote_lvl % 2) ) {
+            token_buf[0] = s_q;
         } else {
-            if( input_cbs->hidden_head == NULL ) {  // no text, no continue char
-                ProcFlags.cont_char = false;
-            }
+            token_buf[0] = d_q;
         }
-        if( !ProcFlags.concat && !ProcFlags.cont_char
-                && (input_cbs->fmflags & (II_file | II_macro)) ) {
-            scr_process_break();        // ensure line is output
+        token_buf[1] = CONT_char;
+        token_buf[2] = '\0';
+        process_text( token_buf, g_curr_font );
+    }
+
+    g_scan_err = false;
+    p = scandata.s;
+    SkipDot( p );                           // over '.'
+    if( *p != '\0' ) {
+        if( (*(p + 1) == '\0') && (*p == CONT_char) ) { // text is continuation character only
+            /* tbd */
+        } else {
+            process_text( p, g_curr_font);          // if text follows
         }
+    } else {
+        if( input_cbs->hidden_head == NULL ) {  // no text, no continue char
+            ProcFlags.cont_char = false;
+        }
+    }
+    if( !ProcFlags.concat && !ProcFlags.cont_char
+            && (input_cbs->fmflags & (II_file | II_macro)) ) {
+        scr_process_break();        // ensure line is output
     }
     scandata.s = scandata.e;
 }

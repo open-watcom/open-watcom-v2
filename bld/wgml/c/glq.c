@@ -103,12 +103,13 @@ void gml_elq( const gmltag * entry )
 
     scr_process_break();
 
-    if( nest_cb->gtag != entry->u.tagid - 1 ) {                  // unexpected exxx tag
+    if( nest_cb->gtag != get_topn( entry->u.tagid ) ) {                  // unexpected exxx tag
         if( nest_cb->gtag == T_NONE ) {
             g_tag_no_err_exit( entry->u.tagid );               // no exxx expected, no tag active
         } else {
-            g_tag_nest_err_exit( nest_cb->gtag + 1 );   // exxx expected
+            g_tag_nest_err_exit( get_tclo( nest_cb->gtag ) );   // exxx expected
         }
+        // never return
     }
 
     set_skip_vars( NULL, NULL, &layout_work.lq.post_skip, 1, g_curr_font );

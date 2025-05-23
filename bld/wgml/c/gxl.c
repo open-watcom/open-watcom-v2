@@ -635,23 +635,24 @@ void gml_ul( const gmltag * entry )
 /* common :eXXX processing                                                 */
 /***************************************************************************/
 
-static bool    gml_exl_entry( const gmltag * entry )
+static bool    gml_exl_entry( const gmltag *entry )
 {
     if( g_line_indent == 0 ) {
         ProcFlags.para_starting = false;    // clear for this tag's break
     }
     scr_process_break();
-    if( nest_cb->gtag == T_LP ) {      // terminate :LP if active
+    if( nest_cb->gtag == T_LP ) {           // terminate :LP if active
         end_lp();
     }
 
-    if( nest_cb->gtag != entry->u.tagid - 1 ) {      // unexpected exxx tag
+    if( nest_cb->gtag != get_topn( entry->u.tagid ) ) {         // unexpected exxx tag
         if( nest_cb->gtag == T_NONE ) {
-            g_tag_no_err_exit( entry->u.tagid );   // no exxx expected, no tag active
+            g_tag_no_err_exit( entry->u.tagid );                // no exxx expected, no tag active
         } else {
-            g_tag_nest_err_exit( nest_cb->gtag + 1 ); // exxx expected
+            g_tag_nest_err_exit( get_tclo( nest_cb->gtag ) );   // exxx expected
         }
-        return( false );
+        // never return
+//        return( false );
     }
     return( true );
 }

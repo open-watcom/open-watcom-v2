@@ -437,6 +437,8 @@ extern char         *int_to_roman( unsigned n, char *r, unsigned rsize, bool uca
 extern bool         lay_init_su( const char *p, su *in_su );
 extern unsigned     len_to_trail_space( const char *p , unsigned len );
 extern char         *skip_to_quote( char *p, char quote );
+extern g_tags       get_topn( g_tags tclo );
+extern g_tags       get_tclo( g_tags topn );
 
 
 /* messages.c                           */
