@@ -215,14 +215,12 @@ void    lay_banner( const gmltag * entry )
     att_name_type       attr_name;
     att_val_type        attr_val;
 
-    (void)entry;
-
     p = scandata.s;
     rs_loc = TLOC_banner;
 
     memset( &AttrFlags, 0, sizeof( AttrFlags ) );   // clear all attribute flags
-    if( ProcFlags.lay_xxx != TL_BANNER ) {
-        ProcFlags.lay_xxx = TL_BANNER;
+    if( ProcFlags.lay_xxx != entry->u.layid ) {
+        ProcFlags.lay_xxx = entry->u.layid;
         ProcFlags.banner = true;
         init_banner_wk( &wk );
     }

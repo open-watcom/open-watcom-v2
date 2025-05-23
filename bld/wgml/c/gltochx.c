@@ -125,35 +125,9 @@ void    lay_tochx( const gmltag * entry )
 
     p = scandata.s;
 
-    switch( entry->tagname[4] ) {
-    case '0':
-        hx_l = TL_TOCH0;
-        break;
-    case '1':
-        hx_l = TL_TOCH1;
-        break;
-    case '2':
-        hx_l = TL_TOCH2;
-        break;
-    case '3':
-        hx_l = TL_TOCH3;
-        break;
-    case '4':
-        hx_l = TL_TOCH4;
-        break;
-    case '5':
-        hx_l = TL_TOCH5;
-        break;
-    case '6':
-        hx_l = TL_TOCH6;
-        break;
-    default:
-        hx_l = TL_TOCH6;
-        break;
-    }
     memset( &AttrFlags, 0, sizeof( AttrFlags ) );   // clear all attribute flags
-    if( ProcFlags.lay_xxx != hx_l ) {
-        ProcFlags.lay_xxx = hx_l;
+    if( ProcFlags.lay_xxx != entry->u.layid ) {
+        ProcFlags.lay_xxx = entry->u.layid;
     }
 
     hx_l = entry->tagname[4] - '0';     // construct TOCHx level

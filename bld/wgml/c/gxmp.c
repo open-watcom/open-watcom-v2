@@ -71,8 +71,6 @@ void gml_xmp( const gmltag * entry )
     att_name_type   attr_name;
     att_val_type    attr_val;
 
-    (void)entry;
-
     start_doc_sect();
     scr_process_break();
     g_scan_err = false;

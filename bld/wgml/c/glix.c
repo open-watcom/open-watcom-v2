@@ -129,20 +129,9 @@ void    lay_ix( const gmltag * entry )
 
     p = scandata.s;
 
-    switch( entry->tagname[1] ) {
-    case '1':
-        ix_l = TL_I1;
-        break;
-    case '2':
-        ix_l = TL_I2;
-        break;
-    default:
-        ix_l = TL_I3;
-        break;
-    }
     memset( &AttrFlags, 0, sizeof( AttrFlags ) );   // clear all attribute flags
-    if( ProcFlags.lay_xxx != ix_l ) {
-        ProcFlags.lay_xxx = ix_l;
+    if( ProcFlags.lay_xxx != entry->u.layid ) {
+        ProcFlags.lay_xxx = entry->u.layid;
     }
 
     ix_l = entry->tagname[1] - '1';     // construct Ix level  0 - 2

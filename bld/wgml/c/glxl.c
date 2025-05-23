@@ -534,13 +534,11 @@ void    lay_dl( const gmltag * entry )
     att_name_type       attr_name;
     att_val_type        attr_val;
 
-    (void)entry;
-
     p = scandata.s;
 
     memset( &AttrFlags, 0, sizeof( AttrFlags ) );   // clear all attribute flags
-    if( ProcFlags.lay_xxx != TL_DL ) {
-        ProcFlags.lay_xxx = TL_DL;
+    if( ProcFlags.lay_xxx != entry->u.layid ) {
+        ProcFlags.lay_xxx = entry->u.layid;
     }
 
     /* Make a copy of the level 1 DL LAYOUT */
@@ -719,13 +717,11 @@ void    lay_gl( const gmltag * entry )
     att_name_type       attr_name;
     att_val_type        attr_val;
 
-    (void)entry;
-
     p = scandata.s;
 
     memset( &AttrFlags, 0, sizeof( AttrFlags ) );   // clear all attribute flags
-    if( ProcFlags.lay_xxx != TL_GL ) {
-        ProcFlags.lay_xxx = TL_GL;
+    if( ProcFlags.lay_xxx != entry->u.layid ) {
+        ProcFlags.lay_xxx = entry->u.layid;
     }
 
     /* Make a copy of the level 1 GL LAYOUT */
@@ -904,13 +900,11 @@ void    lay_ol( const gmltag * entry )
     att_name_type       attr_name;
     att_val_type        attr_val;
 
-    (void)entry;
-
     p = scandata.s;
 
     memset( &AttrFlags, 0, sizeof( AttrFlags ) );   // clear all attribute flags
-    if( ProcFlags.lay_xxx != TL_OL ) {
-        ProcFlags.lay_xxx = TL_OL;
+    if( ProcFlags.lay_xxx != entry->u.layid ) {
+        ProcFlags.lay_xxx = entry->u.layid;
     }
 
     /* Make a copy of the level 1 OL LAYOUT */
@@ -1119,13 +1113,11 @@ void    lay_sl( const gmltag * entry )
     att_name_type       attr_name;
     att_val_type        attr_val;
 
-    (void)entry;
-
     p = scandata.s;
 
     memset( &AttrFlags, 0, sizeof( AttrFlags ) );   // clear all attribute flags
-    if( ProcFlags.lay_xxx != TL_SL ) {
-        ProcFlags.lay_xxx = TL_SL;
+    if( ProcFlags.lay_xxx != entry->u.layid ) {
+        ProcFlags.lay_xxx = entry->u.layid;
     }
 
     /* Make a copy of the level 1 SL LAYOUT */
@@ -1294,13 +1286,11 @@ void    lay_ul( const gmltag * entry )
     att_name_type       attr_name;
     att_val_type        attr_val;
 
-    (void)entry;
-
     p = scandata.s;
 
     memset( &AttrFlags, 0, sizeof( AttrFlags ) );   // clear all attribute flags
-    if( ProcFlags.lay_xxx != TL_UL ) {
-        ProcFlags.lay_xxx = TL_UL;
+    if( ProcFlags.lay_xxx != entry->u.layid ) {
+        ProcFlags.lay_xxx = entry->u.layid;
     }
 
     /* Make a copy of the level 1 UL LAYOUT */

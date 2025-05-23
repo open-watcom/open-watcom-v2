@@ -175,8 +175,6 @@ void gml_dl( const gmltag * entry )
     att_name_type   attr_name;
     att_val_type    attr_val;
 
-    (void)entry;
-
     if( !ProcFlags.start_section ) {
         start_doc_sect();
     }
@@ -307,8 +305,6 @@ void gml_gl( const gmltag * entry )
     att_name_type   attr_name;
     att_val_type    attr_val;
 
-    (void)entry;
-
     if( !ProcFlags.start_section ) {
         start_doc_sect();
     }
@@ -403,8 +399,6 @@ void gml_ol( const gmltag * entry )
     char            *pa;
     att_name_type   attr_name;
 
-    (void)entry;
-
     if( !ProcFlags.start_section ) {
         start_doc_sect();
     }
@@ -490,8 +484,6 @@ void gml_sl( const gmltag * entry )
     char            *pa;
     att_name_type   attr_name;
 
-    (void)entry;
-
     if( !ProcFlags.start_section ) {
         start_doc_sect();
     }
@@ -576,8 +568,6 @@ void gml_ul( const gmltag * entry )
     char            *pa;
     att_name_type   attr_name;
 
-    (void)entry;
-
     if( !ProcFlags.start_section ) {
         start_doc_sect();
     }
@@ -644,6 +634,27 @@ void gml_ul( const gmltag * entry )
 /***************************************************************************/
 /* common :eXXX processing                                                 */
 /***************************************************************************/
+
+static bool    gml_exl_entry( const gmltag * entry )
+{
+    if( g_line_indent == 0 ) {
+        ProcFlags.para_starting = false;    // clear for this tag's break
+    }
+    scr_process_break();
+    if( nest_cb->gtag == T_LP ) {      // terminate :LP if active
+        end_lp();
+    }
+
+    if( nest_cb->gtag != entry->u.tagid - 1 ) {      // unexpected exxx tag
+        if( nest_cb->gtag == T_NONE ) {
+            g_tag_no_err_exit( entry->u.tagid );   // no exxx expected, no tag active
+        } else {
+            g_tag_nest_err_exit( nest_cb->gtag + 1 ); // exxx expected
+        }
+        return( false );
+    }
+    return( true );
+}
 
 static void     gml_exl_common( const gmltag * entry )
 {
@@ -746,21 +757,7 @@ static void     gml_exl_common( const gmltag * entry )
 
 void    gml_edl( const gmltag * entry )
 {
-    if( g_line_indent == 0 ) {
-        ProcFlags.para_starting = false;    // clear for this tag's break
-    }
-    scr_process_break();
-    if( nest_cb->gtag == T_LP ) {      // terminate :LP if active
-        end_lp();
-    }
-
-    if( nest_cb->gtag != T_DL ) {      // unexpected exxx tag
-        if( nest_cb->gtag == T_NONE ) {
-            g_tag_no_err_exit( entry->u.tagid );   // no exxx expected, no tag active
-        } else {
-            g_tag_nest_err_exit( nest_cb->gtag + 1 ); // exxx expected
-        }
-    } else {
+    if( gml_exl_entry( entry ) ) {
         set_skip_vars( NULL, NULL, &nest_cb->u.dl_layout->post_skip, 1, g_curr_font );
         gml_exl_common( entry );
         if( dl_cur_level == 1 ) {
@@ -773,21 +770,7 @@ void    gml_edl( const gmltag * entry )
 
 void    gml_egl( const gmltag * entry )
 {
-    if( g_line_indent == 0 ) {
-        ProcFlags.para_starting = false;    // clear for this tag's break
-    }
-    scr_process_break();
-    if( nest_cb->gtag == T_LP ) {      // terminate :LP if active
-        end_lp();
-    }
-
-    if( nest_cb->gtag != T_GL ) {      // unexpected exxx tag
-        if( nest_cb->gtag == T_NONE ) {
-            g_tag_no_err_exit( entry->u.tagid );// no exxx expected, no tag active
-        } else {
-            g_tag_nest_err_exit( nest_cb->gtag + 1 ); // exxx expected
-        }
-    } else {
+    if( gml_exl_entry( entry ) ) {
         set_skip_vars( NULL, NULL, &nest_cb->u.gl_layout->post_skip, 1, g_curr_font );
         gml_exl_common( entry );
         if( gl_cur_level == 1 ) {
@@ -800,22 +783,7 @@ void    gml_egl( const gmltag * entry )
 
 void    gml_eol( const gmltag * entry )
 {
-    if( g_line_indent == 0 ) {
-        ProcFlags.para_starting = false;    // clear for this tag's break
-    }
-    scr_process_break();
-    if( nest_cb->gtag == T_LP ) {      // terminate :LP if active
-        end_lp();
-        g_curr_font = nest_cb->font;    // restore font
-    }
-
-    if( nest_cb->gtag != T_OL ) {      // unexpected exxx tag
-        if( nest_cb->gtag == T_NONE ) {
-            g_tag_no_err_exit( entry->u.tagid );// no exxx expected, no tag active
-        } else {
-            g_tag_nest_err_exit( nest_cb->gtag + 1 ); // exxx expected
-        }
-    } else {
+    if( gml_exl_entry( entry ) ) {
         set_skip_vars( NULL, NULL, &nest_cb->u.ol_layout->post_skip, 1, g_curr_font );
         gml_exl_common( entry );
         if( ol_cur_level == 1 ) {
@@ -828,22 +796,7 @@ void    gml_eol( const gmltag * entry )
 
 void    gml_esl( const gmltag * entry )
 {
-    if( g_line_indent == 0 ) {
-        ProcFlags.para_starting = false;    // clear for this tag's break
-    }
-    scr_process_break();
-    if( nest_cb->gtag == T_LP ) {      // terminate :LP if active
-        end_lp();
-        g_curr_font = nest_cb->font;    // restore font
-    }
-
-    if( nest_cb->gtag != T_SL ) {      // unexpected exxx tag
-        if( nest_cb->gtag == T_NONE ) {
-            g_tag_no_err_exit( entry->u.tagid );// no exxx expected, no tag active
-        } else {
-            g_tag_nest_err_exit( nest_cb->gtag + 1 ); // exxx expected
-        }
-    } else {
+    if( gml_exl_entry( entry ) ) {
         set_skip_vars( NULL, NULL, &nest_cb->u.sl_layout->post_skip, 1, g_curr_font );
         gml_exl_common( entry );
         if( sl_cur_level == 1 ) {
@@ -856,22 +809,7 @@ void    gml_esl( const gmltag * entry )
 
 void    gml_eul( const gmltag * entry )
 {
-    if( g_line_indent == 0 ) {
-        ProcFlags.para_starting = false;    // clear for this tag's break
-    }
-    scr_process_break();
-    if( nest_cb->gtag == T_LP ) {      // terminate :LP if active
-        end_lp();
-        g_curr_font = nest_cb->font;    // restore font
-    }
-
-    if( nest_cb->gtag != T_UL ) {      // unexpected exxx tag
-        if( nest_cb->gtag == T_NONE ) {
-            g_tag_no_err_exit( entry->u.tagid );// no exxx expected, no tag active
-        } else {
-            g_tag_nest_err_exit( nest_cb->gtag + 1 ); // exxx expected
-        }
-    } else {
+    if( gml_exl_entry( entry ) ) {
         set_skip_vars( NULL, NULL, &nest_cb->u.ul_layout->post_skip, 1, g_curr_font );
         gml_exl_common( entry );
         if( ul_cur_level == 1 ) {
@@ -1130,8 +1068,6 @@ void    gml_li( const gmltag * entry )
 void    gml_lp( const gmltag * entry )
 {
     char        *   p;
-
-    (void)entry;
 
     g_scan_err = false;
     p = scandata.s;
