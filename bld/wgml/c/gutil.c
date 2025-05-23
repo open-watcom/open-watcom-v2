@@ -1335,7 +1335,7 @@ g_tags get_topn( g_tags tclo )
     case T_EUL:         topn = T_UL;        break;
     case T_EXMP:        topn = T_XMP;       break;
     default:
-        topn = entry->u.tagid;
+        topn = tclo;
         break;
     }
     return( topn );
@@ -1367,7 +1367,7 @@ g_tags get_tclo( g_tags topn )
     case T_UL:      tclo = T_EUL;       break;
     case T_XMP:     tclo = T_EXMP;      break;
     default:
-        tclo = entry->u.tagid;
+        tclo = topn;
         break;
     }
     return( tclo );
