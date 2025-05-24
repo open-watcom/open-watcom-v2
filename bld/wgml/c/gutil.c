@@ -112,7 +112,8 @@ static const bool internal_to_su( su *in_su, bool tag, const char *base )
     /* lay_init_su() presupposes that the value has no initial sign     */
     /********************************************************************/
 
-    if( (*ps == '+') || (*ps == '-') ) {
+    if( (*ps == '+')
+      || (*ps == '-') ) {
         sign = *ps;
         ps++;
     } else {
@@ -759,7 +760,7 @@ int32_t conv_vert_unit( su *s, text_space text_spacing, font_number font )
 /*  returns ptr to string or NULL if error                                 */
 /***************************************************************************/
 
-char *format_num( unsigned n, char *r, unsigned rsize, num_style ns )
+char *format_num( unsigned n, char *res, unsigned ressize, num_style ns )
 {
     unsigned    pos;
     unsigned    pos1;
@@ -775,7 +776,7 @@ char *format_num( unsigned n, char *r, unsigned rsize, num_style ns )
     pos = 0;
     if( ns & STYLE_xpa ) {
         *p++ = '(';                     // start number with left paren
-        if( ++pos >= rsize ) {
+        if( ++pos >= ressize ) {
             return( NULL );             // result field overflow
         }
     }
@@ -783,7 +784,8 @@ char *format_num( unsigned n, char *r, unsigned rsize, num_style ns )
         /************************************************************************/
         /*  Arbitrary limit Value 728 = 2 characters    extend if needed    TBD */
         /************************************************************************/
-        if( n >= 27 * 27 || (n < 1) ) { // only 2 letters supported
+        if( n >= 27 * 27
+          || (n < 1) ) {                // only 2 letters supported
             return( NULL );             // and numbers > zero
         }
         if( ns & STYLE_a ) {
@@ -799,16 +801,16 @@ char *format_num( unsigned n, char *r, unsigned rsize, num_style ns )
         a2 = n % 27;
         if( a1 > 0 ) {
             *p++ = charbase + a1;
-            if( ++pos >= rsize ) {
+            if( ++pos >= ressize ) {
                 return( NULL );         // result field overflow
             }
             *p++ = charbase + 1 + a2;
-            if( ++pos >= rsize ) {
+            if( ++pos >= ressize ) {
                 return( NULL );         // result field overflow
             }
         } else {
             *p++ = charbase + a2;
-            if( ++pos >= rsize ) {
+            if( ++pos >= ressize ) {
                 return( NULL );         // result field overflow
             }
         }
@@ -816,13 +818,13 @@ char *format_num( unsigned n, char *r, unsigned rsize, num_style ns )
     case STYLE_h:                      // arabic
         pos1 = sprintf( p, "%u", n );
         pos += pos1;
-        if( pos >= rsize ) {
+        if( pos >= ressize ) {
             return( NULL );             // result field overflow
         }
         p += pos1;
         break;
     case STYLE_r:                      // lower case roman
-        rp = int_to_roman( n, p, rsize - pos, false );
+        rp = int_to_roman( n, p, ressize - pos, false );
         if( rp == NULL ) {
             return( NULL );             // field overflow
         }
@@ -830,7 +832,7 @@ char *format_num( unsigned n, char *r, unsigned rsize, num_style ns )
         p += pos1;
         break;
     case STYLE_c:                      // UPPER case roman
-        rp = int_to_roman( n, p, rsize - pos, true );
+        rp = int_to_roman( n, p, ressize - pos, true );
         if( rp == NULL ) {
             return( NULL );             // field overflow
         }
@@ -844,19 +846,19 @@ char *format_num( unsigned n, char *r, unsigned rsize, num_style ns )
 
     if( ns & STYLE_xd ) {
         *p++ = '.';                     // decimalpoint follows
-        if( ++pos >= rsize ) {
+        if( ++pos >= ressize ) {
             return( NULL );             // result field overflow
         }
     }
     if( ns & STYLE_xpb ) {
         *p++ = ')';                     // right paren follows
-        if( ++pos >= rsize ) {
+        if( ++pos >= ressize ) {
             return( NULL );             // result field overflow
         }
     }
     *p = '\0';                          // terminate string
-    strcpy( r, temp );                  // copy temp string to result
-    return( r );
+    strcpy( res, temp );                  // copy temp string to result
+    return( res );
 }
 
 /***************************************************************************/
@@ -924,7 +926,8 @@ char *get_tag_att_name( char *p, char **orig, att_name_type *attr_name )
     attr_name->tok.s = p;
     p = get_tag_attname( p, attr_name->attname.t );
     attr_name->tok.l = p - attr_name->tok.s;
-    if( attr_name->tok.l < 2 || attr_name->tok.l > TAG_ATT_NAME_LENGTH ) {
+    if( attr_name->tok.l < 2
+      || attr_name->tok.l > TAG_ATT_NAME_LENGTH ) {
         xx_line_err_exit_c( err_att_name_inv, *orig );
     }
     return( p );
@@ -971,8 +974,10 @@ static char *get_value( char *p, att_val_type *attr_val, bool equ, bool layout )
         xx_line_err_exit_c( err_att_val_missing, p );
     }
     attr_val->tok.s = p;
-    if( layout && is_quote_char( *p )
-      || !layout && is_base_quote_char( *p ) ) {
+    if( layout
+      && is_quote_char( *p )
+      || !layout
+      && is_base_quote_char( *p ) ) {
         attr_val->quoted = *p++;        // over open quote
     } else {
         attr_val->quoted = ' ';
@@ -1063,7 +1068,8 @@ font_number get_font_number( const char *value, unsigned len )
     }
 
     wk = strtoul( value, NULL, 10 );
-    if( errno == ERANGE || wk > 255 ) {
+    if( errno == ERANGE
+      || wk > 255 ) {
         wk = 0;
     }
     return( wk );
@@ -1073,7 +1079,7 @@ font_number get_font_number( const char *value, unsigned len )
 /*  convert integer to roman digits                                        */
 /***************************************************************************/
 
-char *int_to_roman( unsigned n, char *r, unsigned rsize, bool ucase )
+char *int_to_roman( unsigned n, char *res, unsigned ressize, bool ucase )
 {
     static const struct {
         unsigned    val;
@@ -1093,11 +1099,13 @@ char *int_to_roman( unsigned n, char *r, unsigned rsize, bool ucase )
 
     unsigned    digit;
     unsigned    pos;
-    char        *p = r;
+    char        *p;
     char        c;
 
+    p = res;
     *p = '\0';
-    if( (n < 1) || (n > 3999) ) {       // invalid out of range
+    if( (n < 1)
+      || (n > 3999) ) {       // invalid out of range
         return( NULL );
     }
 
@@ -1107,7 +1115,7 @@ char *int_to_roman( unsigned n, char *r, unsigned rsize, bool ucase )
         while( n >= i_2_r[digit].val ) {
             c = i_2_r[digit].ch;
             *p++ = c;
-            if( ++pos >= rsize ) {
+            if( ++pos >= ressize ) {
                 return( NULL );         // result field overflow
             }
             n -= i_2_r[digit].val;
@@ -1115,12 +1123,12 @@ char *int_to_roman( unsigned n, char *r, unsigned rsize, bool ucase )
         if( n >= i_2_r[digit].val49 ) {
             c = i_2_r[digit].ch49;
             *p++ = ( ucase ) ? my_toupper( c ) : c;
-            if( ++pos >= rsize ) {
+            if( ++pos >= ressize ) {
                 return( NULL );         // result field overflow
             }
             c = i_2_r[digit].ch;
             *p++ = ( ucase ) ? my_toupper( c ) : c;
-            if( ++pos >= rsize ) {
+            if( ++pos >= ressize ) {
                 return( NULL );         // result field overflow
             }
             n -= i_2_r[digit].val49;
@@ -1128,7 +1136,7 @@ char *int_to_roman( unsigned n, char *r, unsigned rsize, bool ucase )
         digit++;
     } while( n > 0 );
     *p = '\0';
-    return( r );
+    return( res );
 }
 
 
