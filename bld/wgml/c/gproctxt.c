@@ -2723,8 +2723,7 @@ void process_text( char * text, font_number font )
             /* Other similar cases may exist and so this may not be final       */
             /********************************************************************/
 
-            if( (input_cbs->fmflags
-              && II_macro)
+            if( (input_cbs->fmflags & II_macro)
               && (input_cbs->prev != NULL)
               && (input_cbs->prev->hidden_head != NULL)
               && (*input_cbs->prev->hidden_head->value == CONT_char)
