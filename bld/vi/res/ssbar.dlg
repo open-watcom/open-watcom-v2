@@ -16,7 +16,7 @@ BEGIN
     GROUPBOX        "Commands", 101, 98, 88, 94, 72
     LTEXT           "Col: 19", 106, 115, 43, 24, 8
     LTEXT           "Line: 21", 108, 55, 43, 28, 8
-    LTEXT           "8:03 am", 111, 17, 20, 27, 8
+    CTEXT           "18:03", 111, 17, 20, 27, 8
     LTEXT           "Friday, Mar 04", 110, 60, 20, 50, 8
     LTEXT           "Mode: overstrike", 112, 125, 20, 56, 8
     LTEXT           "Menu help text", 113, 16, 64, 50, 8

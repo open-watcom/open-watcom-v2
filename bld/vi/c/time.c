@@ -46,34 +46,11 @@ void GetTimeString( char *st )
 
     tod = time( NULL );
     s = ctime( &tod );
-    am_pm = 'a';
-    if( s[11] == '1' && s[12] == '2' ) {
-        am_pm = 'p';
-    } else if( (s[11] == '1' && s[12] > '2')
-      || s[11] == '2' ) {
-        am_pm = 'p';
-        i = (s[11] - '0') * 10 + s[12] - '0';
-        i -= 12;
-        s[11] = (i / 10) + '0';
-        s[12] = i % 10 + '0';
-    }
-    start = 11;
-    if( s[11] == '0' ) {
-        start = 12;
-    }
     j = 0;
-    for( i = start; i <= 15; i++ ) {
+    for( i = 11; i <= 15; i++ ) {
         st[j++] = s[i];
     }
-#ifdef __WIN__
-    st[j] = ' ';
-    st[j + 1] = am_pm;
-    st[j + 2] = 'm';
-    st[j + 3] = '\0';
-#else
-    st[j] = am_pm;
-    st[j + 1] = '\0';
-#endif
+    st[j] = '\0';
 
 } /* GetTimeString */
 
