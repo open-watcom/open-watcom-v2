@@ -857,7 +857,7 @@ void    scan_line( void )
                 /*******************************************************************/
 
                 if( ProcFlags.in_bx_box && !ProcFlags.keep_left_margin) {
-                    t_page.cur_width = g_indent;
+                    t_page.cur_width = g_indentl;
                 }
                 if( !ProcFlags.cont_char && !ProcFlags.para_has_text ) {
                     scr_process_break();

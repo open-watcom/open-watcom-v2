@@ -395,7 +395,7 @@ void init_pass_data( void )
     g_hm = bin_device->vertical_base_units / LPI;           // heading margin &syshm
     g_fm = g_hm;                                            // footing margin &sysfm
 
-    g_indent    = 0;
+    g_indentl   = 0;
     g_indentr   = 0;
 
     g_oc_hpos = bin_device->x_start;

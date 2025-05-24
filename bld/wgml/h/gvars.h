@@ -278,7 +278,7 @@ global  int32_t     g_space;            // .sp space value (in vbus)
 global  uint32_t    post_space;         // spacing within a line
 global  uint32_t    ju_x_start;         // .. formatting
 
-global  int32_t     g_indent;           // .in 1st value (left) default 0
+global  int32_t     g_indentl;          // .in 1st value (left) default 0
 global  int32_t     g_indentr;          // .in 2nd value (right) default 0
 global  int32_t     g_line_indent;      // :LP, :P, :PC line indent
 global  int32_t     wrap_indent;        // :I1/:I2/:I3 wrap_indent value

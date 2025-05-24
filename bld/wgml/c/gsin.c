@@ -92,7 +92,7 @@ void    scr_in( void )
     char            cwcurr[4];
     bool            scanerr;
     su              indentwork;
-    int32_t         newindent;
+    int32_t         newindentl;
     int32_t         newindentr;
 
     static  int32_t oldindent;
@@ -108,10 +108,10 @@ void    scr_in( void )
     SkipNonSpaces( p );                 // end of word
     len = p - pa;
     if( len == 0 ) {                    // omitted means reset to default
-        newindent = 0;
+        newindentl = 0;
         newindentr = 0;
     } else {
-        newindent  = g_indent;          // prepare keeping old values
+        newindentl = g_indentl;         // prepare keeping old values
         newindentr = g_indentr;
         if( *pa == '*' ) {              // keep old indent value
             p = pa + 1;
@@ -122,7 +122,7 @@ void    scr_in( void )
             if( scanerr ) {
                 xx_line_err_exit_c( err_spc_not_valid, pa );
             } else {
-                newindent = round_indent( &indentwork );
+                newindentl = round_indent( &indentwork );
             }
         }
         SkipSpaces( p );
@@ -149,7 +149,7 @@ void    scr_in( void )
             }
         }
     }
-    g_indent = newindent;
+    g_indentl = newindentl;
     g_indentr = newindentr;
 
     /* Reset margin(s) to reflect the current IN offsets */
@@ -158,13 +158,13 @@ void    scr_in( void )
         if( ProcFlags.in_reduced ) {
             t_page.cur_left = oldindent;
         }
-        t_page.cur_left += g_indent;
+        t_page.cur_left += g_indentl;
     } else {
-        t_page.cur_left = g_indent;
+        t_page.cur_left = g_indentl;
     }
     t_page.max_width = t_page.last_pane->col_width + g_indentr;
 
-    /* Reduce t_page.cur_left to 0 if g_indent made it negative */
+    /* Reduce t_page.cur_left to 0 if g_indentl made it negative */
 
     ProcFlags.in_reduced = false;       // flag, if on, is active until next IN
     if( ((int32_t) t_page.page_left + t_page.cur_left) < 0 ) {

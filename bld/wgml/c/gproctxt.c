@@ -1476,7 +1476,7 @@ unsigned intrans( char *data, unsigned len, font_number font )
 void set_h_start( void )
 {
     if( !ProcFlags.keep_left_margin ) {
-        t_page.cur_left = g_indent + nest_cb->left_indent + nest_cb->align;
+        t_page.cur_left = g_indentl + nest_cb->left_indent + nest_cb->align;
     }
     t_page.cur_width = t_page.cur_left;
 
@@ -1518,7 +1518,7 @@ void process_line_full( text_line * a_line, bool justify )
       && (a_line->first->tab_pos != TAB_none) ) {
         test_chars = a_line->first;
         while( test_chars != NULL ) {
-            test_chars->x_address += g_indent;
+            test_chars->x_address += g_indentl;
             test_chars = test_chars->next;
         }
         ProcFlags.cc_cp_done = false;

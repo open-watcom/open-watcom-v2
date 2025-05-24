@@ -42,7 +42,7 @@ static  bool            ref_done;                   // true if a reference has b
 static  char            frame_line_1[CHAR_FRAME_LEN + 1]; // box top line/rule line/'character string' line
 static  char            frame_line_2[CHAR_FRAME_LEN + 1]; // box blank/middle line
 static  char            frame_line_3[CHAR_FRAME_LEN + 1]; // box bottom line
-static  int32_t         save_indent;                // used with TITLEP/eTITLEP
+static  int32_t         save_indentl;               // used with TITLEP/eTITLEP
 static  int32_t         save_indentr;               // used with TITLEP/eTITLEP
 static  ju_enum         justify_save;               // for ProcFlags.justify
 static  line_number     titlep_lineno;              // TITLEP tag line number
@@ -1368,12 +1368,12 @@ void start_doc_sect( void )
         justify_save = ProcFlags.justify;
         ProcFlags.justify = JUST_off;
         gen_heading( h_text, NULL, 0, hds_lvl );
-        g_indent = 0;                           // reset for section body
+        g_indentl = 0;                          // reset for section body
         ProcFlags.concat = concat_save;
         ProcFlags.justify = justify_save;
     }
     g_curr_font = layout_work.defaults.font;
-    t_page.cur_width = g_indent;
+    t_page.cur_width = g_indentl;
     ProcFlags.doc_sect = ds;
 
     if( (block_queue != NULL) && (ds == DSECT_egdoc) ) {
@@ -1437,7 +1437,7 @@ extern void gml_abstract( const gmltag * entry )
     if( layout_work.hx.hx_sect[hds_abstract].header ) {
         start_doc_sect();                           // a header is enough
     }
-    g_indent = 0;
+    g_indentl = 0;
     g_indentr = 0;
     set_h_start();
 }
@@ -1455,7 +1455,7 @@ extern void gml_appendix( const gmltag * entry )
     if( !ProcFlags.fb_document_done ) { // the very first section/page
         do_layout_end_processing();
     }
-    g_indent = 0;
+    g_indentl = 0;
     g_indentr = 0;
     set_h_start();
 }
@@ -1480,7 +1480,7 @@ extern void gml_backm( const gmltag * entry )
     if( layout_work.hx.hx_sect[hds_backm].header ) {
         start_doc_sect();                           // a header is enough
     }
-    g_indent = 0;
+    g_indentl = 0;
     g_indentr = 0;
 }
 
@@ -1505,7 +1505,7 @@ extern void gml_body( const gmltag * entry )
     if( layout_work.hx.hx_sect[hds_body].header ) {
         start_doc_sect();                           // a header is enough
     }
-    g_indent = 0;
+    g_indentl = 0;
     g_indentr = 0;
     set_h_start();
 }
@@ -1563,7 +1563,7 @@ extern void gml_index( const gmltag * entry )
 
     /* When gen_index() is finalized, the resets may need to be moved */
 
-    g_indent = 0;
+    g_indentl = 0;
     g_indentr = 0;
     set_h_start();
 
@@ -1590,7 +1590,7 @@ extern void gml_preface( const gmltag * entry )
     if( layout_work.hx.hx_sect[hds_preface].header ) {
         start_doc_sect();                           // a header is enough
     }
-    g_indent = 0;
+    g_indentl = 0;
     g_indentr = 0;
     set_h_start();
 }
@@ -1619,9 +1619,9 @@ extern void gml_titlep( const gmltag * entry )
     } else {
         titlep_lineno = 0;                  // not clear what to do here
     }
-    save_indent = g_indent;
+    save_indentl = g_indentl;
     save_indentr = g_indentr;
-    g_indent = 0;
+    g_indentl = 0;
     g_indentr = 0;
     set_h_start();
 }
@@ -1638,7 +1638,7 @@ extern void gml_etitlep( const gmltag * entry )
     titlep_lineno = 0;
 
     if( nest_cb != NULL ) { // guard against no FRONTM, empty TITLEP section
-        g_indent = save_indent;
+        g_indentl = save_indentl;
         g_indentr = save_indentr;
         set_h_start();
         wk = nest_cb;

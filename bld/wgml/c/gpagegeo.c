@@ -209,7 +209,7 @@ void    init_page_geometry( void )
                   g_net_page_depth, g_net_page_width, g_max_line_height,
                   g_max_char_width );
     }
-    g_indent = 0;
+    g_indentl = 0;
     g_indentr = 0;
 }
 
