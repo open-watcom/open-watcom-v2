@@ -94,8 +94,10 @@ void FatalError( char *format, ... )
 void InternalError( int line, char *file )
 /****************************************/
 {
-    fprintf( stderr, "Internal error on line %d of %s; please contact Watcom\n",
-             line, file );
+    fprintf( stderr, "Internal error on line %d of %s.\n"
+                     "Please contact the Open Watcom project at "
+                     "https://github.com/open-watcom/open-watcom-v2\n",
+                     line, file );
     exit( EXIT_FAILURE );
 }
 
