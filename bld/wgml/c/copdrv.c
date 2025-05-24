@@ -1479,83 +1479,82 @@ cop_driver * parse_driver( FILE *fp )
                 mem_free( out_driver );
                 out_driver = NULL;
                 return( out_driver );
-            } else {
+            }
 
-                /* Get the CodeBlock(s). */
+            /* Get the CodeBlock(s). */
 
-                cop_codeblocks = get_code_blocks( &current, count16, p_buffer_set->buffer );
-                if( cop_codeblocks == NULL ) {
+            cop_codeblocks = get_code_blocks( &current, count16, p_buffer_set->buffer );
+            if( cop_codeblocks == NULL ) {
+                mem_free( p_buffer_set );
+                p_buffer_set = NULL;
+                mem_free( out_driver );
+                out_driver = NULL;
+                return( out_driver );
+            }
+
+            /* Process the CodeBlocks. */
+
+            fontswitch_block_ptr[i].startvalue = NULL;
+            fontswitch_block_ptr[i].endvalue = NULL;
+
+            for( j = 0; j < count16; j++ ) {
+                switch( cop_codeblocks[j].designator ) {
+                case 0x04:
+
+                    /* Add the code_text struct for endvalue. */
+
+                    if( OUT_DRV_EXPAND_CHK( sizeof( code_text ) ) ) {
+                        out_driver= resize_cop_driver( out_driver, sizeof( code_text ) );
+                        fontswitch_block_ptr = OUT_DRV_MAP_OFF( out_driver->fontswitches.fontswitchblocks );
+                    }
+                    code_text_ptr = OUT_DRV_SET_OFF( fontswitch_block_ptr[i].endvalue, sizeof( code_text ) );
+
+                    /* Now get the CodeBlock. */
+
+                    size = cop_codeblocks[j].count;
+
+                    if( OUT_DRV_EXPAND_CHK( size ) ) {
+                        out_driver = resize_cop_driver( out_driver, size );
+                        fontswitch_block_ptr = OUT_DRV_MAP_OFF( out_driver->fontswitches.fontswitchblocks );
+                        code_text_ptr = OUT_DRV_MAP_OFF( fontswitch_block_ptr[i].endvalue );
+                    }
+                    code_text_ptr->count = size;
+                    text_ptr = OUT_DRV_SET_OFF( code_text_ptr->text, size );
+
+                    memcpy( text_ptr, cop_codeblocks[j].text, size );
+                    break;
+                case 0x05:
+
+                    /* Add the code_text struct for startvalue. */
+
+                    if( OUT_DRV_EXPAND_CHK( sizeof( code_text ) ) ) {
+                        out_driver= resize_cop_driver( out_driver, sizeof( code_text ) );
+                        fontswitch_block_ptr = OUT_DRV_MAP_OFF( out_driver->fontswitches.fontswitchblocks );
+                    }
+                    code_text_ptr = OUT_DRV_SET_OFF( fontswitch_block_ptr[i].startvalue, sizeof( code_text ) );
+
+                    /* Now get the CodeBlock. */
+
+                    size = cop_codeblocks[j].count;
+
+                    if( OUT_DRV_EXPAND_CHK( size ) ) {
+                        out_driver = resize_cop_driver( out_driver, size );
+                        fontswitch_block_ptr = OUT_DRV_MAP_OFF( out_driver->fontswitches.fontswitchblocks );
+                        code_text_ptr = OUT_DRV_MAP_OFF( fontswitch_block_ptr[i].startvalue );
+                    }
+                    code_text_ptr->count = size;
+                    text_ptr = OUT_DRV_SET_OFF( code_text_ptr->text, size );
+
+                    memcpy( text_ptr, cop_codeblocks[j].text, size );
+                    break;
+                default:
                     mem_free( p_buffer_set );
                     p_buffer_set = NULL;
+                    mem_free( cop_codeblocks );
+                    cop_codeblocks = NULL;
                     mem_free( out_driver );
                     out_driver = NULL;
                     return( out_driver );
-                }
-
-                /* Process the CodeBlocks. */
-
-                fontswitch_block_ptr[i].startvalue = NULL;
-                fontswitch_block_ptr[i].endvalue = NULL;
-
-                for( j = 0; j < count16; j++ ) {
-                    switch( cop_codeblocks[j].designator ) {
-                    case 0x04:
-
-                        /* Add the code_text struct for endvalue. */
-
-                        if( OUT_DRV_EXPAND_CHK( sizeof( code_text ) ) ) {
-                            out_driver= resize_cop_driver( out_driver, sizeof( code_text ) );
-                            fontswitch_block_ptr = OUT_DRV_MAP_OFF( out_driver->fontswitches.fontswitchblocks );
-                        }
-                        code_text_ptr = OUT_DRV_SET_OFF( fontswitch_block_ptr[i].endvalue, sizeof( code_text ) );
-
-                        /* Now get the CodeBlock. */
-
-                        size = cop_codeblocks[j].count;
-
-                        if( OUT_DRV_EXPAND_CHK( size ) ) {
-                            out_driver = resize_cop_driver( out_driver, size );
-                            fontswitch_block_ptr = OUT_DRV_MAP_OFF( out_driver->fontswitches.fontswitchblocks );
-                            code_text_ptr = OUT_DRV_MAP_OFF( fontswitch_block_ptr[i].endvalue );
-                        }
-                        code_text_ptr->count = size;
-                        text_ptr = OUT_DRV_SET_OFF( code_text_ptr->text, size );
-
-                        memcpy( text_ptr, cop_codeblocks[j].text, size );
-                        break;
-                    case 0x05:
-
-                        /* Add the code_text struct for startvalue. */
-
-                        if( OUT_DRV_EXPAND_CHK( sizeof( code_text ) ) ) {
-                            out_driver= resize_cop_driver( out_driver, sizeof( code_text ) );
-                            fontswitch_block_ptr = OUT_DRV_MAP_OFF( out_driver->fontswitches.fontswitchblocks );
-                        }
-                        code_text_ptr = OUT_DRV_SET_OFF( fontswitch_block_ptr[i].startvalue, sizeof( code_text ) );
-
-                        /* Now get the CodeBlock. */
-
-                        size = cop_codeblocks[j].count;
-
-                        if( OUT_DRV_EXPAND_CHK( size ) ) {
-                            out_driver = resize_cop_driver( out_driver, size );
-                            fontswitch_block_ptr = OUT_DRV_MAP_OFF( out_driver->fontswitches.fontswitchblocks );
-                            code_text_ptr = OUT_DRV_MAP_OFF( fontswitch_block_ptr[i].startvalue );
-                        }
-                        code_text_ptr->count = size;
-                        text_ptr = OUT_DRV_SET_OFF( code_text_ptr->text, size );
-
-                        memcpy( text_ptr, cop_codeblocks[j].text, size );
-                        break;
-                    default:
-                        mem_free( p_buffer_set );
-                        p_buffer_set = NULL;
-                        mem_free( cop_codeblocks );
-                        cop_codeblocks = NULL;
-                        mem_free( out_driver );
-                        out_driver = NULL;
-                        return( out_driver );
-                    }
                 }
             }
 

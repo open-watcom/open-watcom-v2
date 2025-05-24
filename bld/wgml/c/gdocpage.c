@@ -989,6 +989,7 @@ static void fill_column( doc_element * a_element )
 
         if( ( cur_line->line_height + cur_line->units_spacing ) > old_max_depth ) {
             xx_err_exit( err_text_line_too_deep );
+            // never return
 //            break;
         }
 
@@ -1201,7 +1202,8 @@ static void update_column( void )
                         cur_el->blank_lines -= (t_page.max_depth - t_page.cur_depth);
                         /* Put block in new column */
                         break;
-                    } else if( !ProcFlags.col_started && ((t_page.cur_depth +
+                    }
+                    if( !ProcFlags.col_started && ((t_page.cur_depth +
                             cur_el->blank_lines + cur_el->top_skip) >=
                             t_page.max_depth) ) {
                         cur_el->top_skip -= (t_page.max_depth - t_page.cur_depth);
@@ -1209,10 +1211,11 @@ static void update_column( void )
                         cur_el->blank_lines = 0;
                         /* Put block in new column */
                         break;
-                    } else if( (t_page.cur_depth + cur_el->blank_lines +
+                    }
+                    if( (t_page.cur_depth + cur_el->blank_lines +
                             cur_el->subs_skip) >= t_page.max_depth ) {
                         cur_el->blank_lines = 0;
-                    /* Put block in new column */
+                        /* Put block in new column */
                         break;
                     }
                 }
@@ -1256,19 +1259,19 @@ static void update_column( void )
                         ProcFlags.col_started = true;
                     }
                     break;                              // column is now full
-                } else {                                // fits as-is
-                    if( t_page.cur_col->main == NULL ) {
-                        t_page.cur_col->main = cur_el;
-                    } else {
-                        t_page.last_col_main->next = cur_el;
-                    }
-                    t_page.last_col_main = cur_el;
-                    cur_group->first = cur_el->next;
-                    t_page.last_col_main->next = NULL;
-                    t_page.cur_depth += cur_el->depth + depth;
-                    cur_group->depth -= cur_el->depth + depth;
-                    ProcFlags.col_started = true;
                 }
+                // fits as-is
+                if( t_page.cur_col->main == NULL ) {
+                    t_page.cur_col->main = cur_el;
+                } else {
+                    t_page.last_col_main->next = cur_el;
+                }
+                t_page.last_col_main = cur_el;
+                cur_group->first = cur_el->next;
+                t_page.last_col_main->next = NULL;
+                t_page.cur_depth += cur_el->depth + depth;
+                cur_group->depth -= cur_el->depth + depth;
+                ProcFlags.col_started = true;
                 cur_el = cur_group->first;
             }
 
@@ -1323,14 +1326,16 @@ static void update_column( void )
                 if( (t_page.cur_depth + cur_el->blank_lines) >= t_page.max_depth ) {
                     cur_el->blank_lines -= (t_page.max_depth - t_page.cur_depth);
                     break;
-                } else if( !ProcFlags.col_started && ((t_page.cur_depth +
+                }
+                if( !ProcFlags.col_started && ((t_page.cur_depth +
                             cur_el->blank_lines + cur_el->top_skip) >=
                             t_page.max_depth) ) {
                     cur_el->top_skip -= (t_page.max_depth - t_page.cur_depth);
                     cur_el->top_skip += cur_el->blank_lines;
                     cur_el->blank_lines = 0;
                     break;
-                } else if( (t_page.cur_depth + cur_el->blank_lines +
+                }
+                if( (t_page.cur_depth + cur_el->blank_lines +
                             cur_el->subs_skip) >= t_page.max_depth ) {
                     cur_el->blank_lines = 0;
                     break;
@@ -1395,25 +1400,25 @@ static void update_column( void )
                     }
                 }
                 break;
-            } else {                                    // cur_el fits as-is
-                if( t_page.cur_col->main == NULL ) {
-                    t_page.cur_col->main = cur_el;
-                    t_page.last_col_main = t_page.cur_col->main;
-                } else {
-                    t_page.last_col_main->next = cur_el;
-                    t_page.last_col_main = t_page.last_col_main->next;
-                }
-                n_page.col_main = n_page.col_main->next;
-                if( n_page.col_main == NULL ) {
-                    n_page.last_col_main = NULL;
-                }
-                t_page.last_col_main->next = NULL;
-                if( (cur_el->type == ELT_text) && cur_el->element.text.overprint
-                                              && cur_el->element.text.force_op ) {
-                    /* do nothing, adjusts for top-of-page overprint */
-                } else {
-                    t_page.cur_depth += cur_el->depth + depth;
-                }
+            }
+            // cur_el fits as-is
+            if( t_page.cur_col->main == NULL ) {
+                t_page.cur_col->main = cur_el;
+                t_page.last_col_main = t_page.cur_col->main;
+            } else {
+                t_page.last_col_main->next = cur_el;
+                t_page.last_col_main = t_page.last_col_main->next;
+            }
+            n_page.col_main = n_page.col_main->next;
+            if( n_page.col_main == NULL ) {
+                n_page.last_col_main = NULL;
+            }
+            t_page.last_col_main->next = NULL;
+            if( (cur_el->type == ELT_text) && cur_el->element.text.overprint
+                                          && cur_el->element.text.force_op ) {
+                /* do nothing, adjusts for top-of-page overprint */
+            } else {
+                t_page.cur_depth += cur_el->depth + depth;
             }
         }
     }

@@ -677,10 +677,9 @@ void gml_fig( const gmltag * entry )
         } else {
             xx_line_err_exit_c( err_inv_margins_2, attr_val.tok.s );
         }
-    } else {
-        t_page.max_width -= right_inset;
+        // never return
     }
-
+    t_page.max_width -= right_inset;
     t_page.cur_width = t_page.cur_left;
     ProcFlags.keep_left_margin = true;      // keep special indent
 

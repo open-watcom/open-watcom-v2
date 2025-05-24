@@ -74,9 +74,8 @@ bool is_quote_char( char c )
         ((c == l_q) && (c != cw_sep_char)) ||
         c == not_c || c == vbar1 || c == vbar2 ) {
         return( true );
-    } else {
-        return( false );
     }
+    return( false );
 }
 
 /***************************************************************************/
@@ -89,9 +88,8 @@ bool is_base_quote_char( char c )
       || c == '\''
       || c == '`' ) {
         return( true );
-    } else {
-        return( false );
     }
+    return( false );
 }
 
 /***************************************************************************/

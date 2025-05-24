@@ -479,26 +479,26 @@ void gen_heading( char *h_text, const char *hdrefid, hdsrc hn_lvl, hdsrc hds_lvl
             cur_doc_el_group->first->subs_skip = 0;
             if( cur_doc_el_group->depth > t_page.max_depth ) {
                 xx_err_exit( err_heading_too_deep );     // the block won't fit on any page
-            } else {
-                if( page_width ) {
-
-                    /****************************************************/
-                    /* this is for multi-column pages where the heading */
-                    /* goes to the top of the page                      */
-                    /* each column must start at the same vertical      */
-                    /* position, whether some of the heading text       */
-                    /* above it or not, hence the post_skip is included */
-                    /* in the depth -- this appears to match wgml 4.0   */
-                    /****************************************************/
-
-                    cur_doc_el_group->post_skip = g_post_skip;
-                    insert_page_width( cur_doc_el_group );
-                    g_post_skip = 0;
-                } else {
-                    insert_col_width( cur_doc_el_group );
-                }
-                cur_doc_el_group = NULL;
+                // never return
             }
+            if( page_width ) {
+
+                /****************************************************/
+                /* this is for multi-column pages where the heading */
+                /* goes to the top of the page                      */
+                /* each column must start at the same vertical      */
+                /* position, whether some of the heading text       */
+                /* above it or not, hence the post_skip is included */
+                /* in the depth -- this appears to match wgml 4.0   */
+                /****************************************************/
+
+                cur_doc_el_group->post_skip = g_post_skip;
+                insert_page_width( cur_doc_el_group );
+                g_post_skip = 0;
+            } else {
+                insert_col_width( cur_doc_el_group );
+            }
+            cur_doc_el_group = NULL;
         }
     }
 
@@ -566,25 +566,24 @@ static void gml_hx_common( const gmltag * entry, hdsrc hn_lvl )
             (ProcFlags.doc_sect_nxt == DSECT_body)) ) {
 
             xx_err_exit_cc( err_tag_wrong_sect, hxstr, ":BODY section" );
-        } else {
-            hd_level = hn_lvl;              // H0 always valid in BODY
+            // never return
         }
+        hd_level = hn_lvl;              // H0 always valid in BODY
         break;
     case hds_h1:
-        if( !((ProcFlags.doc_sect >= DSECT_body) ||
-            (ProcFlags.doc_sect_nxt >= DSECT_body)) ) {
-
+        if( !((ProcFlags.doc_sect >= DSECT_body)
+          || (ProcFlags.doc_sect_nxt >= DSECT_body)) ) {
             xx_err_exit_cc( err_tag_wrong_sect, hxstr, ":BODY :APPENDIX :BACKM sections" );
-        } else if( !((ProcFlags.doc_sect == DSECT_body) ||
-            (ProcFlags.doc_sect_nxt == DSECT_body)) ) {  // APPENDIX or BACKM
-            hd_level = hn_lvl;              // H1 valid at this point
-        } else {                                            // BODY
-            if( hd_level < hn_lvl - 1 ) {
-                g_wng_hlevel( hn_lvl, hd_level + 1 );
-                hd_level = hn_lvl;          // H2 to H6 will be valid if none are skipped
-            } else {
-                hd_level = hn_lvl;          // H1 valid at this point
-            }
+            // never return
+        }
+        if( !((ProcFlags.doc_sect == DSECT_body)
+          || (ProcFlags.doc_sect_nxt == DSECT_body)) ) {  // APPENDIX or BACKM
+            hd_level = hn_lvl;          // H1 valid at this point
+        } else if( hd_level < hn_lvl - 1 ) {
+            g_wng_hlevel( hn_lvl, hd_level + 1 );
+            hd_level = hn_lvl;          // H2 to H6 will be valid if none are skipped
+        } else {
+            hd_level = hn_lvl;          // H1 valid at this point
         }
         break;
     case hds_h2:

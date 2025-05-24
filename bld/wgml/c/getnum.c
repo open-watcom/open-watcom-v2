@@ -181,9 +181,8 @@ static  int do_expr( void )
 
     if( 1 > cvalue ) {
         return( not_ok );
-    } else {
-        return( op );
     }
+    return( op );
 }
 
 /*
@@ -241,9 +240,8 @@ static char *get_exp( const char *start, const char *end )
             if( ignore_blanks ) {
                 p++;
                 continue;
-            } else {
-                break;
             }
+            break;
         }
         op = get_op( p );
         if (NULL != op ) {
@@ -258,10 +256,9 @@ static char *get_exp( const char *start, const char *end )
                     *tptr++ = *p++;
                     break;
                 }
-            } else if( start == p ) {
-                *tptr++ = *p++;
-                break;
             } else {
+                if( start == p )
+                    *tptr++ = *p++;
                 break;
             }
         }
@@ -293,9 +290,8 @@ static  int evaluate( tok_type *arg, int *val )
             if( ignore_blanks ) {
                 p++;
                 continue;
-            } else {
-                break;
             }
+            break;
         }
         switch( expr_oper ) {
         case 0:                         // look for term
@@ -333,27 +329,25 @@ static  int evaluate( tok_type *arg, int *val )
         case 1:                         // look for operator
             op = get_op( p );
             if( NULL == op ) {
-                if( !coper ) {
-                    arg->s = p;                    // next scan position
-
-                    /********************************************************/
-                    /* This little bit of confusion is brought to you by    */
-                    /* the tendency of the calling code to replace the byte */
-                    /* following the expression with '\0' before invoking   */
-                    /* this function and then restoring it afterwards.      */
-                    /* Thus, this byte /should/ be '\0' here but can be     */
-                    /* expected to become something else after this         */
-                    /* function returns                                     */
-                    /********************************************************/
-
-                    if( arg->s < arg->e ) {           // should be '\0' here
-                        return( not_ok );
-                    } else {
-                        return( pop_val( val ) );   // no operations left return result
-                    }
-                } else {
+                if( coper ) {
                     return( not_ok );
                 }
+                arg->s = p;                    // next scan position
+
+                /********************************************************/
+                /* This little bit of confusion is brought to you by    */
+                /* the tendency of the calling code to replace the byte */
+                /* following the expression with '\0' before invoking   */
+                /* this function and then restoring it afterwards.      */
+                /* Thus, this byte /should/ be '\0' here but can be     */
+                /* expected to become something else after this         */
+                /* function returns                                     */
+                /********************************************************/
+
+                if( arg->s < arg->e ) {           // should be '\0' here
+                    return( not_ok );
+                }
+                return( pop_val( val ) );   // no operations left return result
             }
             if( ')' == *p ) {
                 ercode = do_paren();
@@ -374,15 +368,15 @@ static  int evaluate( tok_type *arg, int *val )
 
     while( 1 < cvalue ) {
         ercode = do_expr();
-        if( ok > ercode )
-             return ercode;
+        if( ok > ercode ) {
+             return( ercode );
+        }
     }
-    if( !coper ) {
-        arg->s = p;                   // next scan position
-        return( pop_val( val ) );       // no operations left return result
-    } else {
+    if( coper )
         return( not_ok );
-    }
+
+    arg->s = p;                   // next scan position
+    return( pop_val( val ) );       // no operations left return result
 }
 
 /***************************************************************************/

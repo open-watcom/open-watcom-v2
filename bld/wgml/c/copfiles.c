@@ -896,9 +896,8 @@ void cop_setup( void )
         if( (cur_def_fonts[i].font_name == NULL)
                 || (cur_def_fonts[i].font_name[0] == '\0') ) {
             continue; /* Do not initialize skipped font numbers. */
-        } else {
-            wgml_fonts[i].bin_font = find_cop_font( cur_def_fonts[i].font_name );
         }
+        wgml_fonts[i].bin_font = find_cop_font( cur_def_fonts[i].font_name );
         if( (cur_def_fonts[i].font_style == NULL)
                 || (cur_def_fonts[i].font_style[0] == '\0') ) {
             wgml_fonts[i].font_style = find_style( "plain" );
@@ -1338,36 +1337,33 @@ void cop_ti_table( const char *p )
 
     if( len > 0 ) {
         if( len > 2 ) { // check for ".ti set"
-            if( len == 3 ) {
-                if( strnicmp( "SET", pa, len ) == 0 ) {
-                    SkipSpaces( p );        // set char start
-                    pa = p;
-                    SkipNonSpaces( p );     // set char start
-                    len = p - pa;
-                    if( len == 0 ) {        // no set char: set to ' '
-                        ProcFlags.in_trans = false;
-                        in_esc = ' ';
-                    } else if( len > 1 ) {  // hex digits are not allowed here
-                        xx_line_err_exit_ci( err_char_only, pa, len );
-                    } else {
-                        ProcFlags.in_trans = true;
-                        in_esc = *pa;
-                    }
-
-                    SkipSpaces( p );        // text or '\0'
-                    pa = p;
-                    SkipNonSpaces( p );     // set char start
-                    len = p - pa;
-                    if( len > 0 ) {         // additional text not allowed
-                        xx_line_err_exit_ci( err_char_only, pa, len );
-                    }
-                    return;     // done if was ".ti set"
+            if( len == 3 && strnicmp( "SET", pa, len ) == 0 ) {
+                SkipSpaces( p );        // set char start
+                pa = p;
+                SkipNonSpaces( p );     // set char start
+                len = p - pa;
+                if( len == 0 ) {        // no set char: set to ' '
+                    ProcFlags.in_trans = false;
+                    in_esc = ' ';
+                } else if( len > 1 ) {  // hex digits are not allowed here
+                    xx_line_err_exit_ci( err_char_only, pa, len );
                 } else {
-                    xx_line_err_exit_cci( err_xx_opt, cwcurr, pa, len );
+                    ProcFlags.in_trans = true;
+                    in_esc = *pa;
                 }
-            } else {
-                xx_line_err_exit_cci( err_xx_opt, cwcurr, pa, len );
+
+                SkipSpaces( p );        // text or '\0'
+                pa = p;
+                SkipNonSpaces( p );     // set char start
+                len = p - pa;
+                if( len > 0 ) {         // additional text not allowed
+                    xx_line_err_exit_ci( err_char_only, pa, len );
+                    // never return
+                }
+                return;     // done if was ".ti set"
             }
+            xx_line_err_exit_cci( err_xx_opt, cwcurr, pa, len );
+            // never return
         }
 
         // not .ti set: get pairs of chars

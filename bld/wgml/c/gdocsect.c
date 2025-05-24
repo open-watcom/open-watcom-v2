@@ -362,12 +362,12 @@ static void gen_ref_list( ix_e_blk * refs, font_number font )
                 cur_ref = cur_ref->next;
             if( cur_ref == NULL ) {
                 xx_simple_err_exit( err_open_page_range );
-            } else {
-                ProcFlags.ct = true;
-                post_space = 0;
-                format_num( cur_ref->u.pagenum.page_no, buffer, sizeof( buffer ), cur_ref->u.pagenum.style );
-                process_text( buffer, font );
+                // never return
             }
+            ProcFlags.ct = true;
+            post_space = 0;
+            format_num( cur_ref->u.pagenum.page_no, buffer, sizeof( buffer ), cur_ref->u.pagenum.style );
+            process_text( buffer, font );
             break;
         case pgend :
             xx_simple_err_exit( err_open_page_range );
