@@ -40,30 +40,29 @@
 /*  find an index item number reference in index_dict                      */
 /***************************************************************************/
 
-static bool find_num_ref( ix_e_blk * * base, uint32_t page_nr )
+static bool find_num_ref( ix_e_blk **base, uint32_t page_nr )
 {
-    bool            retval  = false;
-    ix_e_blk    *   cur_ieh;
-    ix_e_blk    *   old_ieh = NULL;     // will hold entry to insert after
+    bool            retval;
+    ix_e_blk        *cur_ieh;
+    ix_e_blk        *old_ieh;
 
-    cur_ieh = *base;                    // starting point is value passed
-    while( cur_ieh != NULL ) {
-        if( page_nr > cur_ieh->u.pagenum.page_no ) {       // new is later in list
-            old_ieh = cur_ieh;
-            cur_ieh = cur_ieh->next;
-            continue;
-        } else if( page_nr < cur_ieh->u.pagenum.page_no ) {// new is earlier in list
-            *base = old_ieh;           // use old_ixh as insert point
-            break;                     // entry found, and is in *entry
-        } else {                       // must be equal
-            *base = cur_ieh;           // use cur_ixh as insert point
+    retval = false;
+    old_ieh = NULL;                     // will hold entry to insert after
+    for( cur_ieh = *base; cur_ieh != NULL; cur_ieh = cur_ieh->next ) {
+        if( page_nr < cur_ieh->u.pagenum.page_no ) {
+            *base = old_ieh;            // use old_ixh as insert point
+            break;                      // entry found, and is in *entry
+        }
+        if( page_nr == cur_ieh->u.pagenum.page_no ) {
+            *base = cur_ieh;            // use cur_ixh as insert point
             retval = true;
             break;                      // entry found, and is in *entry
         }
+        old_ieh = cur_ieh;
     }
 
-    if( cur_ieh == NULL ) {            // insert at end of list
-        *base = old_ieh;               // use old_ixh as insert point
+    if( cur_ieh == NULL ) {             // insert at end of list
+        *base = old_ieh;                // use old_ixh as insert point
     }
 
     return( retval );
@@ -75,43 +74,40 @@ static bool find_num_ref( ix_e_blk * * base, uint32_t page_nr )
 
 static bool find_string_ref( char * ref, unsigned len, ix_e_blk * * base )
 {
-    bool            retval  = false;
+    bool            retval;
     unsigned        comp_len;           // compare length for searching existing entries
     int             comp_res;           // compare result
     ix_e_blk    *   cur_ieh;
-    ix_e_blk    *   old_ieh = NULL;     // will hold entry to insert after
+    ix_e_blk    *   old_ieh;
 
-    cur_ieh = *base;                   // starting point is value passed
-    while( cur_ieh != NULL ) {
+    retval = false;
+    old_ieh = NULL;                     // will hold entry to insert after
+    for( cur_ieh = *base; cur_ieh != NULL; cur_ieh = cur_ieh->next ) {
         comp_len = len;
         if( comp_len > cur_ieh->u.pageref.page_text_len ) {
             comp_len = cur_ieh->u.pageref.page_text_len;
         }
         comp_res = strnicmp( ref, cur_ieh->u.pageref.page_text, len );
-        if( comp_res > 0 ) {    // new is later in alphabet
-            old_ieh = cur_ieh;
-            cur_ieh = cur_ieh->next;
-            continue;
-        } else if( comp_res < 0 ) {     // new is earlier in alphabet
+        if( comp_res < 0 ) {
             *base = old_ieh;            // use old_ixh as insert point
             break;                      // entry found, and is in *entry
-        } else {                        // must be equal
+        }
+        if( comp_res == 0 ) {           // is equal
             if( len == cur_ieh->u.pageref.page_text_len ) {
                 *base = cur_ieh;        // use cur_ixh as insert point
                 retval = true;
                 break;                  // entry found, and is in *entry
-            } else if( len > cur_ieh->u.pageref.page_text_len ) { // new is later in alphabet
-                old_ieh = cur_ieh;
-                cur_ieh = cur_ieh->next;
-                continue;
-            } else {                    // shouldn't be possible
+            }
+            if( len < cur_ieh->u.pageref.page_text_len ) { // shouldn't be possible
                 internal_err_exit( __FILE__, __LINE__ );
+                // never return
             }
         }
+        old_ieh = cur_ieh;
     }
 
-    if( cur_ieh == NULL ) {         // insert at end of list
-        *base = old_ieh;            // use old_ixh as insert point
+    if( cur_ieh == NULL ) {             // insert at end of list
+        *base = old_ieh;                // use old_ixh as insert point
     }
 
     return( retval );
@@ -122,46 +118,42 @@ static bool find_string_ref( char * ref, unsigned len, ix_e_blk * * base )
 /*  find an index item in index_dict                                       */
 /***************************************************************************/
 
-static bool find_index_item( char * item, unsigned len, ix_h_blk ** entry )
+static bool find_index_item( char *item, unsigned len, ix_h_blk **entry )
 {
-    bool            retval  = false;
+    bool            retval;
     unsigned        comp_len;           // compare length for searching existing entries
     int             comp_res;           // compare result
     ix_h_blk    *   cur_ixh;
-    ix_h_blk    *   old_ixh = NULL;     // will hold entry to insert after
+    ix_h_blk    *   old_ixh;
 
-    cur_ixh = *entry;                   // starting point is value passed
-    while( cur_ixh != NULL ) {
+    retval = false;
+    old_ixh = NULL;                    // will hold entry to insert after
+    for( cur_ixh = *entry; cur_ixh != NULL; cur_ixh = cur_ixh->next ) {
         comp_len = len;
         if( comp_len > cur_ixh->ix_term_len ) {
             comp_len = cur_ixh->ix_term_len;
         }
         comp_res = strnicmp( item, cur_ixh->ix_term, len );
-        if( comp_res > 0 ) {    // new is later in alphabet
-            old_ixh = cur_ixh;
-            cur_ixh = cur_ixh->next;
-            continue;
-        } else if( comp_res < 0 ) {     // new is earlier in alphabet
+        if( comp_res < 0 ) {            // new is earlier in alphabet
             *entry = old_ixh;           // use old_ixh as insert point
             break;                      // entry found, and is in *entry
-        } else {                        // must be equal
+        }
+        if( comp_res == 0 ) {           // is equal
             if( len == cur_ixh->ix_term_len ) {
                 *entry = cur_ixh;       // use cur_ixh as insert point
                 retval = true;
                 break;                  // entry found, and is in *entry
-            } else if( len > cur_ixh->ix_term_len ) {   // new is later in alphabet
-                old_ixh = cur_ixh;
-                cur_ixh = cur_ixh->next;
-                continue;
-            } else {                    // new matches start and so is earlier
+            }
+            if( len < cur_ixh->ix_term_len ) {
                 *entry = old_ixh;       // use old_ixh as insert point
                 break;                  // entry found, and is in *entry
             }
         }
+        old_ixh = cur_ixh;
     }
 
-    if( cur_ixh == NULL ) {         // insert at end of list
-        *entry = old_ixh;           // use old_ixh as insert point
+    if( cur_ixh == NULL ) {             // insert at end of list
+        *entry = old_ixh;               // use old_ixh as insert point
     }
 
     return( retval );
@@ -317,32 +309,32 @@ void eol_index_page( eol_ix * eol_index, uint32_t page_nr )
 
     while( eol_index != NULL ) {
         switch( eol_index->type ) {
-            case pgmajor :
-                base = &eol_index->ixh->entry->major_pgnum;
-                ixework = eol_index->ixh->entry->major_pgnum;
-                find_num_ref( &ixework, page_nr );
-                found = false;      // allow multiple entries of same page number
-                break;
-            case pgpageno :
-                base = &eol_index->ixh->entry->normal_pgnum;
-                ixework = eol_index->ixh->entry->normal_pgnum;
-                found = find_num_ref( &ixework, page_nr );
-                break;
-            case pgstart :
-            case pgend :
-                base = &eol_index->ixh->entry->normal_pgnum;
-                ixework = eol_index->ixh->entry->normal_pgnum;
-                found = find_num_ref( &ixework, page_nr );
-                if( found ) {           // ensure correct type
-                    ixework->entry_typ = eol_index->type;
-                }
-                break;
-            case pgmajorstring :// should never appear used here, error
-            case pgstring :
-            case pgsee :
-            case pgnone :
-            default :           // out-of-range enum value
-                internal_err_exit( __FILE__, __LINE__ );
+        case pgmajor :
+            base = &eol_index->ixh->entry->major_pgnum;
+            ixework = eol_index->ixh->entry->major_pgnum;
+            find_num_ref( &ixework, page_nr );
+            found = false;      // allow multiple entries of same page number
+            break;
+        case pgpageno :
+            base = &eol_index->ixh->entry->normal_pgnum;
+            ixework = eol_index->ixh->entry->normal_pgnum;
+            found = find_num_ref( &ixework, page_nr );
+            break;
+        case pgstart :
+        case pgend :
+            base = &eol_index->ixh->entry->normal_pgnum;
+            ixework = eol_index->ixh->entry->normal_pgnum;
+            found = find_num_ref( &ixework, page_nr );
+            if( found ) {           // ensure correct type
+                ixework->entry_typ = eol_index->type;
+            }
+            break;
+        case pgmajorstring :// should never appear used here, error
+        case pgstring :
+        case pgsee :
+        case pgnone :
+        default :           // out-of-range enum value
+            internal_err_exit( __FILE__, __LINE__ );
         }
 
         if( found ) {
