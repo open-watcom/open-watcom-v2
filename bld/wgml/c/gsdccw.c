@@ -309,184 +309,213 @@ void    scr_cw( void )
 /*                this matches how wgml 4.0 treat it when WSCRIPT is used  */
 /***************************************************************************/
 
+static char *get_word_ucase( const char *p, char *word, unsigned maxlen )
+{
+    unsigned    i;
+
+    i = 0;
+    while( *p != ' ' && *p != '\0' ) {
+        if( i < maxlen ) {
+            word[i++] = my_toupper( *p );
+        }
+        p++;
+    }
+    word[i] = '\0';
+    return( (char *)p );
+}
+
+static int get_char_val( const char *p )
+{
+    int             c;
+
+    if( my_isxdigit( p[0] ) && my_isxdigit( p[1] ) ) {
+        if( my_isdigit( p[0] ) ) {
+            c = p[0] - '0';
+        } else {
+            c = p[0] - 'A' + 10;
+        }
+        if( my_isdigit( p[1] ) ) {
+            c = c * 16 + p[1] - '0';
+        } else {
+            c = c * 16 + p[1] - 'A' + 10;
+        }
+    } else {
+        c = -1;
+    }
+    return( c );
+}
+
 void    scr_dc( void )
 {
     char            c;                  // character provided (or 0x00)
-    char            *o_p;               // option start point
+    char            *opt_beg;           // option start point
     char            *p;
-    char            *v_p;               // value start point
+    char            *val_beg;           // value start point
     char            char2string[2];
-    unsigned        o_len;              // option length
-    unsigned        v_len;              // value length
+    unsigned        opt_len;            // option length
+    unsigned        val_len;            // value length
+    char            option[6];          // option upper cased value
+    char            value[6];           // value upper cased value
 
     p = scandata.s;
     SkipSpaces( p );                    // next word start = option
-    o_p = p;
-    SkipNonSpaces( p );                 // end of word
-    o_len = p - o_p;
+    opt_beg = p;
+    p = get_word_ucase( opt_beg, option, sizeof( option ) - 1 );
+    opt_len = p - opt_beg;
     SkipSpaces( p );                    // next word start = option value
-    v_p = p;
-    SkipNonSpaces( p );                 // end of word
-    v_len = p - v_p;
+    val_beg = p;
+    p = get_word_ucase( val_beg, value, sizeof( value ) - 1 );
+    val_len = p - val_beg;
+    scan_restart = p;
 
     /* Process options first by length and then by option name */
 
-    if( o_len == 0 ) {                  // no option entered
-        xx_line_err_exit_cc( err_parm_missing, "DC", o_p );
-    } else if( o_len == 1 ) {           // option malformed
-        xx_line_err_exit_cc( err_parm_invalid, o_p, o_p );
-    } else if( o_len == 2 ) {           // BS CW LB LI PS RB TB TI
-        if( strnicmp( "BS", o_p, 2 ) == 0 ) {
-            xx_line_warn_cc( wng_dc_opt, o_p, o_p );
-            scan_restart = v_p + v_len;
-        } else if( strnicmp( "CW", o_p, 2 ) == 0 ) {
-            if( v_len == 0 ) {
-                c = ';';                    // default is ;
-            } else if( v_len == 1 ) {
-                c = *v_p;
-            } else if( v_len > 2 ) {
-                if( v_len == 3 ) {
-                    if( strnicmp( "OFF", v_p, 3 ) != 0 ) {
-                        xx_line_err_exit_ci( err_dc_not_off, v_p, v_len );  // only OFF is valid
-                    }
-                    c = '\0';                   // OFF is 0
-                } else {
-                    xx_line_err_exit_ci( err_dc_not_off, v_p, v_len );      // only OFF is valid
+    if( opt_len == 0 ) {                    // no option entered
+        xx_line_err_exit_cc( err_parm_missing, "DC", opt_beg );
+        // never return
+    } else if( opt_len == 1 ) {         // option malformed
+        xx_line_err_exit_cc( err_parm_invalid, opt_beg, opt_beg );
+        // never return
+    } else if( opt_len == 2 ) {         // BS CW LB LI PS RB TB TI
+        if( strcmp( "BS", option ) == 0 ) {
+            xx_line_warn_cc( wng_dc_opt, opt_beg, opt_beg );
+        } else if( strcmp( "CW", option ) == 0 ) {
+            if( val_len == 0 ) {
+                c = ';';                // default is ;
+            } else if( val_len == 1 ) {
+                c = *val_beg;
+            } else if( val_len == 2 ) {
+                int     x;
+
+                x = get_char_val( value );
+                if( x == -1 ) {
+                    xx_line_err_exit_ci( err_dc_not_off, val_beg, val_len );    // only OFF is valid
+                    // never return
                 }
+                c = x;
+            } else if( val_len == 3 && strcmp( "OFF", value ) == 0 ) {
+                c = '\0';               // OFF is 0
             } else {
-                c = parse_char( v_p, v_len );
+                xx_line_err_exit_ci( err_dc_not_off, val_beg, val_len );        // only OFF is valid
+                // never return
             }
-            scan_restart = v_p + v_len;
             cw_sep_char = c;
             add_to_sysdir( "$cw", cw_sep_char );
-        } else if( strnicmp( "LB", o_p, 2 ) == 0 ) {
-            xx_line_warn_cc( wng_dc_opt, o_p, o_p );
-            scan_restart = v_p + v_len;
-        } else if( strnicmp( "LI", o_p, 2 ) == 0 ) {
-            xx_line_warn_cc( wng_dc_opt, o_p, o_p );
-            scan_restart = v_p + v_len;
-        } else if( strnicmp( "PS", o_p, 2 ) == 0 ) {
-            xx_line_warn_cc( wng_dc_opt, o_p, o_p );
-            scan_restart = v_p + v_len;
-        } else if( strnicmp( "RB", o_p, 2 ) == 0 ) {
-            xx_line_warn_cc( wng_dc_opt, o_p, o_p );
-        } else if( strnicmp( "TB", o_p, 2 ) == 0 ) {
-            if( v_len == 0 ) {
-                c = 0x09;                       // default is 0x09
-            } else if( v_len == 1 ) {
-                c = *v_p;
-            } else if( v_len > 2 ) {
-                if( v_len == 3 ) {
-                    if( strnicmp( "OFF", v_p, 3 ) != 0 ) {
-                        xx_line_err_exit_ci( err_dc_not_off, v_p, v_len );  // only OFF is valid
-                    }
-                    c = 0x09;                   // OFF is 0x09
-                } else {
-                    xx_line_err_exit_ci( err_dc_not_off, v_p, v_len );      // only OFF is valid
+        } else if( strcmp( "LB", option ) == 0 ) {
+            xx_line_warn_cc( wng_dc_opt, opt_beg, opt_beg );
+        } else if( strcmp( "LI", option ) == 0 ) {
+            xx_line_warn_cc( wng_dc_opt, opt_beg, opt_beg );
+        } else if( strcmp( "PS", option ) == 0 ) {
+            xx_line_warn_cc( wng_dc_opt, opt_beg, opt_beg );
+        } else if( strcmp( "RB", option ) == 0 ) {
+            xx_line_warn_cc( wng_dc_opt, opt_beg, opt_beg );
+        } else if( strcmp( "TB", option ) == 0 ) {
+            if( val_len == 0 ) {
+                c = '\t';               // default is '\t'
+            } else if( val_len == 1 ) {
+                c = *val_beg;
+            } else if( val_len == 2 ) {
+                int     x;
+
+                x = get_char_val( value );
+                if( x == -1 ) {
+                    xx_line_err_exit_ci( err_dc_not_off, val_beg, val_len );    // only OFF is valid
+                    // never return
                 }
+                c = x;
+            } else if( val_len == 3 && strcmp( "OFF", value ) == 0 ) {
+                c = '\t';               // OFF is '\t'
             } else {
-                if( *v_p != '\0' ) {
-                    c = parse_char( v_p, v_len );
-                }
+                xx_line_err_exit_ci( err_dc_not_off, val_beg, val_len );        // only OFF is valid
+                // never return
             }
-            scan_restart = v_p + v_len;
             tab_char = c;
 //            char2string[0] = c;
 //            char2string[1] = '\0';
             add_to_sysdir( "$tb", tab_char );
             add_to_sysdir( "$tab", tab_char );
-        } else if( strnicmp( "TI", o_p, 2 ) == 0 ) {
-            xx_line_warn_cc( wng_dc_opt, o_p, o_p );
-            scan_restart = v_p + v_len;
+        } else if( strcmp( "TI", option ) == 0 ) {
+            xx_line_warn_cc( wng_dc_opt, opt_beg, opt_beg );
         } else {
-            xx_line_err_exit_cc( err_parm_invalid, o_p, o_p );  // option invalid
+            xx_line_err_exit_cc( err_parm_invalid, opt_beg, opt_beg );  // option invalid
+            // never return
         }
-    } else if( o_len == 3 ) {           // GML IXB IXI IXJ MCS PIX SUB SUP
-        if( strnicmp( "GML", o_p, 3 ) == 0 ) {
-            if( v_len == 0 ) {
+    } else if( opt_len == 3 ) {           // GML IXB IXI IXJ MCS PIX SUB SUP
+        if( strcmp( "GML", option ) == 0 ) {
+            if( val_len == 0 ) {
                 c = ' ';                        // default is blank
-            } else if( v_len == 1 ) {
-                c = *v_p;
-            } else if( v_len > 2 ) {
-                if( v_len == 3 ) {
-                    if( strnicmp( "OFF", v_p, v_len ) != 0 ) {
-                        xx_line_err_exit_ci( err_dc_not_off, v_p, v_len );  // only OFF is valid
-                    }
-                    c = ' ';                    // OFF is blank
-                } else {
-                    xx_line_err_exit_ci( err_dc_not_off, v_p, v_len );      // only OFF is valid
+            } else if( val_len == 1 ) {
+                c = *val_beg;
+            } else if( val_len == 2 ) {
+                int     x;
+
+                x = get_char_val( value );
+                if( x == -1 ) {
+                    xx_line_err_exit_ci( err_dc_not_off, val_beg, val_len );    // only OFF is valid
+                    // never return
                 }
+                c = x;
+            } else if( val_len == 3 && strcmp( "OFF", value ) == 0 ) {
+                c = ' ';                // OFF is blank
             } else {
-                if( *v_p != '\0' ) {
-                    c = parse_char( v_p, v_len );
-                }
+                xx_line_err_exit_ci( err_dc_not_off, val_beg, val_len );        // only OFF is valid
+                // never return
             }
-            scan_restart = v_p + v_len;
             GML_char = c;
             char2string[0] = c;
             char2string[1] = '\0';
             add_symvar( global_dict, "gml", char2string, 1, SI_no_subscript, SF_predefined );
             add_to_sysdir( "$gml", GML_char );
-        } else if( strnicmp( "IXB", o_p, 3 ) == 0 ) {
-            xx_line_warn_cc( wng_dc_opt, o_p, o_p );
-            scan_restart = v_p + v_len;
-        } else if( strnicmp( "IXI", o_p, 3 ) == 0 ) {
-            xx_line_warn_cc( wng_dc_opt, o_p, o_p );
-            scan_restart = v_p + v_len;
-        } else if( strnicmp( "IXJ", o_p, 3 ) == 0 ) {
-            xx_line_warn_cc( wng_dc_opt, o_p, o_p );
-            scan_restart = v_p + v_len;
-        } else if( strnicmp( "MCS", o_p, 3 ) == 0 ) {
-            xx_line_warn_cc( wng_dc_opt, o_p, o_p );
-            scan_restart = v_p + v_len;
-        } else if( strnicmp( "PIX", o_p, 3 ) == 0 ) {
-            xx_line_warn_cc( wng_dc_opt, o_p, o_p );
-            scan_restart = v_p + v_len;
-        } else if( strnicmp( "SUB", o_p, 3 ) == 0 ) {
-            xx_line_warn_cc( wng_dc_opt, o_p, o_p );
-            scan_restart = v_p + v_len;
-        } else if( strnicmp( "SUP", o_p, 3 ) == 0 ) {
-            xx_line_warn_cc( wng_dc_opt, o_p, o_p );
-            scan_restart = v_p + v_len;
+        } else if( strcmp( "IXB", option ) == 0 ) {
+            xx_line_warn_cc( wng_dc_opt, opt_beg, opt_beg );
+        } else if( strcmp( "IXI", option ) == 0 ) {
+            xx_line_warn_cc( wng_dc_opt, opt_beg, opt_beg );
+        } else if( strcmp( "IXJ", option ) == 0 ) {
+            xx_line_warn_cc( wng_dc_opt, opt_beg, opt_beg );
+        } else if( strcmp( "MCS", option ) == 0 ) {
+            xx_line_warn_cc( wng_dc_opt, opt_beg, opt_beg );
+        } else if( strcmp( "PIX", option ) == 0 ) {
+            xx_line_warn_cc( wng_dc_opt, opt_beg, opt_beg );
+        } else if( strcmp( "SUB", option ) == 0 ) {
+            xx_line_warn_cc( wng_dc_opt, opt_beg, opt_beg );
+        } else if( strcmp( "SUP", option ) == 0 ) {
+            xx_line_warn_cc( wng_dc_opt, opt_beg, opt_beg );
         } else {
-            xx_line_err_exit_cc( err_parm_invalid, o_p, o_p );  // option invalid
+            xx_line_err_exit_cc( err_parm_invalid, opt_beg, opt_beg );  // option invalid
+            // never return
         }
-    } else if( o_len == 4 ) {           // CONT HYPH HYTR LINB PUNC STOP WORD
-        if( strnicmp( "CONT", o_p, 4 ) == 0 ) {
-            if( v_len == 0 ) {
+    } else if( opt_len == 4 ) {           // CONT HYPH HYTR LINB PUNC STOP WORD
+        if( strcmp( "CONT", option ) == 0 ) {
+            if( val_len == 0 ) {
                 c = ' ';                        // default is blank
-            } else if( v_len == 1 ) {
-                c = *v_p;
-            } else if( v_len > 2 ) {
-                if( v_len == 3 ) {
-                    if( strnicmp( "OFF", v_p, 3 ) != 0 ) {
-                        xx_line_err_exit_ci( err_dc_not_off, v_p, v_len );  // only OFF is valid
-                    }
-                    c = ' ';                    // OFF is blank
-                } else {
-                    xx_line_err_exit_ci( err_dc_not_off, v_p, v_len );      // only OFF is valid
+            } else if( val_len == 1 ) {
+                c = *val_beg;
+            } else if( val_len == 2 ) {
+                int     x;
+
+                x = get_char_val( value );
+                if( x == -1 ) {
+                    xx_line_err_exit_ci( err_dc_not_off, val_beg, val_len );    // only OFF is valid
+                    // never return
                 }
+                c = x;
+            } else if( val_len == 3 && strcmp( "OFF", value ) == 0 ) {
+                c = ' ';                // OFF is blank
             } else {
-                if( *v_p != '\0' ) {
-                    c = parse_char( v_p, v_len );
-                }
+                xx_line_err_exit_ci( err_dc_not_off, val_beg, val_len );        // only OFF is valid
+                // never return
             }
-            scan_restart = v_p + v_len;
             CONT_char = c;
             add_to_sysdir( "$cont", CONT_char );
-        } else if( strnicmp( "HYPH", o_p, 4 ) == 0 ) {
-            xx_line_warn_cc( wng_dc_opt, o_p, o_p );
-            scan_restart = v_p + v_len;
-        } else if( strnicmp( "HYTR", o_p, 4 ) == 0 ) {
-            xx_line_warn_cc( wng_dc_opt, o_p, o_p );
-            scan_restart = v_p + v_len;
-        } else if( strnicmp( "LINB", o_p, 4 ) == 0 ) {
-            xx_line_warn_cc( wng_dc_opt, o_p, o_p );
-            scan_restart = v_p + v_len;
-        } else if( strnicmp( "PUNC", o_p, 4 ) == 0 ) {
-            xx_line_warn_cc( wng_dc_opt, o_p, o_p );
-            scan_restart = v_p + v_len;
-        } else if( strnicmp( "STOP", o_p, 4 ) == 0 ) {
+        } else if( strcmp( "HYPH", option ) == 0 ) {
+            xx_line_warn_cc( wng_dc_opt, opt_beg, opt_beg );
+        } else if( strcmp( "HYTR", option ) == 0 ) {
+            xx_line_warn_cc( wng_dc_opt, opt_beg, opt_beg );
+        } else if( strcmp( "LINB", option ) == 0 ) {
+            xx_line_warn_cc( wng_dc_opt, opt_beg, opt_beg );
+        } else if( strcmp( "PUNC", option ) == 0 ) {
+            xx_line_warn_cc( wng_dc_opt, opt_beg, opt_beg );
+        } else if( strcmp( "STOP", option ) == 0 ) {
 
             /***************************************************************************/
             /*  when the documentation refers to "script", this may be quite literal:  */
@@ -498,22 +527,22 @@ void    scr_dc( void )
             /*        docs\doc\whelp\whelp.gml line 765                                */
             /***************************************************************************/
 
-            scan_restart = v_p + v_len;
-        } else if( strnicmp( "WORD", o_p, 4 ) == 0 ) {
-            xx_line_warn_cc( wng_dc_opt, o_p, o_p );
-            scan_restart = v_p + v_len;
+        } else if( strcmp( "WORD", option ) == 0 ) {
+            xx_line_warn_cc( wng_dc_opt, opt_beg, opt_beg );
         } else {
-            xx_line_err_exit_cc( err_parm_invalid, o_p, o_p );  // option invalid
+            xx_line_err_exit_cc( err_parm_invalid, opt_beg, opt_beg );  // option invalid
+            // never return
         }
-    } else if( o_len == 5 ) {           // XTEXT
-        if( strnicmp( "XTEXT", o_p, 5 ) == 0 ) {
-            xx_line_warn_cc( wng_dc_opt, o_p, o_p );
-            scan_restart = v_p + v_len;
+    } else if( opt_len == 5 ) {           // XTEXT
+        if( strcmp( "XTEXT", option ) == 0 ) {
+            xx_line_warn_cc( wng_dc_opt, opt_beg, opt_beg );
         } else {
-            xx_line_err_exit_cc( err_parm_invalid, o_p, o_p );  // option invalid
+            xx_line_err_exit_cc( err_parm_invalid, opt_beg, opt_beg );  // option invalid
+            // never return
         }
     } else {
-        xx_line_err_exit_cc( err_parm_invalid, o_p, o_p );      // option invalid
+        xx_line_err_exit_cc( err_parm_invalid, opt_beg, opt_beg );      // option invalid
+        // never return
     }
     return;
 }
