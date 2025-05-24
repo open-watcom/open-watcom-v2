@@ -33,9 +33,9 @@
 #include "wgml.h"
 
 
-#define NULC    '\0'
-#define not_ok  (-1)
-#define ok      0
+#define NULC        '\0'
+#define RC_not_ok   (-1)
+#define RC_ok       0
 
 typedef struct operator {
         int     priority;
@@ -88,7 +88,7 @@ static  int get_prio( char token )
 
 static  int get_prio_m1( void )
 {
-    if( !coper ) {
+    if( coper == 0 ) {
         return( 0 );
     }
     return( get_prio( oper_stack[coper - 1] ) );
@@ -102,10 +102,10 @@ static  int get_prio_m1( void )
 static  int pop_val( int *arg )
 {
     if( --cvalue < 0 ) {
-        return( not_ok );
+        return( RC_not_ok );
     }
     *arg = value_stack[cvalue];
-    return( ok );
+    return( RC_ok );
 }
 
 static  void push_val( int arg )
@@ -116,15 +116,15 @@ static  void push_val( int arg )
 static  int pop_op( int *op )
 {
     if( --coper < 0 ) {
-        return( not_ok );
+        return( RC_not_ok );
     }
     *op = oper_stack[coper];
-    return( ok );
+    return( RC_ok );
 }
 
 static  void push_op( char op )
 {
-    if( !get_prio( op ) ) {
+    if( get_prio( op ) == 0 ) {
         nparens++;
     }
     oper_stack[coper++] = op;
@@ -141,12 +141,12 @@ static  int do_expr( void )
     int arg2;
     int op;
 
-    if( not_ok == pop_op( &op ) ) {
-        return( not_ok );
+    if( RC_not_ok == pop_op( &op ) ) {
+        return( RC_not_ok );
     }
 
-    if( not_ok == pop_val( &arg1 ) ) {
-        return( not_ok );
+    if( RC_not_ok == pop_val( &arg1 ) ) {
+        return( RC_not_ok );
     }
 
     pop_val( &arg2 );
@@ -166,7 +166,7 @@ static  int do_expr( void )
 
     case '/':
         if( 0 == arg1 ) {
-            return( not_ok );
+            return( RC_not_ok );
         }
         push_val( arg2 / arg1 );
         break;
@@ -176,11 +176,11 @@ static  int do_expr( void )
         break;
 
     default:
-        return( not_ok );
+        return( RC_not_ok );
     }
 
     if( 1 > cvalue ) {
-        return( not_ok );
+        return( RC_not_ok );
     }
     return( op );
 }
@@ -194,12 +194,12 @@ static int do_paren( void )
     int op;
 
     if( 1 > nparens-- ) {
-        return( not_ok );
+        return( RC_not_ok );
     }
 
     do {
         op = do_expr();
-        if( op < ok ) {
+        if( op == RC_not_ok ) {
             break;
         }
     } while( get_prio( (char)op ) );
@@ -244,7 +244,7 @@ static char *get_exp( const char *start, const char *end )
             break;
         }
         op = get_op( p );
-        if (NULL != op ) {
+        if( NULL != op ) {
             if( ('-' == p[0]) || ('+' == p[0]) ) {
                 if( ( p + 1 < end ) && ( ('-' == p[1]) || ('+' == p[1]) ) ) {
                     return( NULL );
@@ -297,7 +297,7 @@ static  int evaluate( tok_type *arg, int *val )
         case 0:                         // look for term
             str = get_exp( p, arg->e );
             if( str == NULL ) {         // nothing is error
-                return( not_ok );
+                return( RC_not_ok );
             }
 
             op = get_op( str );
@@ -319,7 +319,7 @@ static  int evaluate( tok_type *arg, int *val )
               || (num <= INT_MIN)
               || (num >= INT_MAX)
               || (str == endptr) ) {
-                return( not_ok );
+                return( RC_not_ok );
             }
             push_val( num );
             p += endptr - str;          // to the next unprocessed char
@@ -330,7 +330,7 @@ static  int evaluate( tok_type *arg, int *val )
             op = get_op( p );
             if( NULL == op ) {
                 if( coper ) {
-                    return( not_ok );
+                    return( RC_not_ok );
                 }
                 arg->s = p;                    // next scan position
 
@@ -345,13 +345,13 @@ static  int evaluate( tok_type *arg, int *val )
                 /********************************************************/
 
                 if( arg->s < arg->e ) {           // should be '\0' here
-                    return( not_ok );
+                    return( RC_not_ok );
                 }
                 return( pop_val( val ) );   // no operations left return result
             }
             if( ')' == *p ) {
                 ercode = do_paren();
-                if( ok > ercode ) {
+                if( ercode == RC_not_ok ) {
                     return( ercode );
                 }
             } else {
@@ -368,12 +368,12 @@ static  int evaluate( tok_type *arg, int *val )
 
     while( 1 < cvalue ) {
         ercode = do_expr();
-        if( ok > ercode ) {
+        if( ercode == RC_not_ok ) {
              return( ercode );
         }
     }
     if( coper )
-        return( not_ok );
+        return( RC_not_ok );
 
     arg->s = p;                   // next scan position
     return( pop_val( val ) );       // no operations left return result
