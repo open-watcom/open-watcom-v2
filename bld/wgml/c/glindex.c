@@ -172,7 +172,7 @@ void    lay_index( const gmltag * entry )
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                     }
                     cvterr = i_space_unit( p, &attr_val,
-                                    &layout_work.hx.hx_sect[hds_index].post_skip );
+                                    &layout_work.hx.hx_sect[HDS_index].post_skip );
                     AttrFlags.post_skip = true;
                     break;
                 case e_pre_top_skip:
@@ -181,7 +181,7 @@ void    lay_index( const gmltag * entry )
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                     }
                     cvterr = i_space_unit( p, &attr_val,
-                                    &layout_work.hx.hx_sect[hds_index].pre_top_skip );
+                                    &layout_work.hx.hx_sect[HDS_index].pre_top_skip );
                     AttrFlags.pre_top_skip = true;
                     break;
                 case e_left_adjust:
@@ -205,7 +205,7 @@ void    lay_index( const gmltag * entry )
                         xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                     }
-                    cvterr = i_spacing( p, &attr_val, &layout_work.hx.hx_sect[hds_index].spacing );
+                    cvterr = i_spacing( p, &attr_val, &layout_work.hx.hx_sect[HDS_index].spacing );
                     AttrFlags.spacing = true;
                     break;
                 case e_columns:
@@ -238,7 +238,7 @@ void    lay_index( const gmltag * entry )
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                     }
                     cvterr = i_yes_no( p, &attr_val,
-                                        &layout_work.hx.hx_sect[hds_index].header );
+                                        &layout_work.hx.hx_sect[HDS_index].header );
                     AttrFlags.header = true;
                     break;
                 case e_index_string:
@@ -272,9 +272,9 @@ void    lay_index( const gmltag * entry )
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                     }
                     cvterr = i_font_number( p, &attr_val,
-                                            &layout_work.hx.hx_sect[hds_index].text_font );
-                    if( layout_work.hx.hx_sect[hds_index].text_font >= wgml_font_cnt ) {
-                        layout_work.hx.hx_sect[hds_index].text_font = 0;
+                                            &layout_work.hx.hx_sect[HDS_index].text_font );
+                    if( layout_work.hx.hx_sect[HDS_index].text_font >= wgml_font_cnt ) {
+                        layout_work.hx.hx_sect[HDS_index].text_font = 0;
                     }
                     AttrFlags.font = true;
                     break;

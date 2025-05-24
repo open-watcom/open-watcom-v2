@@ -319,8 +319,8 @@ typedef struct hx_sect_lay_tag {        // attributes common to Hx and all Secti
 
 typedef struct hx_lay_tag {
     int8_t          group;              // 0 - 9
-    hx_head_lay_tag hx_head[hds_abstract];
-    hx_sect_lay_tag hx_sect[hds_max];
+    hx_head_lay_tag hx_head[HDS_abstract];
+    hx_sect_lay_tag hx_sect[HDS_max];
 } hx_lay_tag;
 
 

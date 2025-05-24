@@ -132,10 +132,10 @@ void    lay_backbod( const gmltag * entry )
     ltag = entry->u.layid;
     if( ltag == TL_BACKM ) {
         bb  = &layout_work.backm;
-        bbsect = &layout_work.hx.hx_sect[hds_backm];
+        bbsect = &layout_work.hx.hx_sect[HDS_backm];
     } else if( ltag == TL_BODY ) {
         bb  = &layout_work.body;
-        bbsect = &layout_work.hx.hx_sect[hds_body];
+        bbsect = &layout_work.hx.hx_sect[HDS_body];
     } else {
         internal_err_exit( __FILE__, __LINE__ );
     }

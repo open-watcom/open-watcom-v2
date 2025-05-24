@@ -1341,20 +1341,20 @@ typedef struct eol_ix {                     // type for eol_index list
 /***************************************************************************/
 
 typedef enum {
-    hds_h0,         // H0 tag
-    hds_h1,         // H1 tag
-    hds_h2,         // H2 tag
-    hds_h3,         // H3 tag
-    hds_h4,         // H4 tag
-    hds_h5,         // H5 tag
-    hds_h6,         // H6 tag
-    hds_appendix,   // APPENDIX (also for sizing the hierarchy-related arrays)
-    hds_abstract,   // ABSTRACT (also used for sizing the hx_head_lay_tag array)
-    hds_preface,    // PREFACE
-    hds_body,       // BODY
-    hds_backm,      // BACKM
-    hds_index,      // INDEX
-    hds_max         // used for sizing the hx_sect_lay_tag array
+    HDS_h0,         // H0 tag
+    HDS_h1,         // H1 tag
+    HDS_h2,         // H2 tag
+    HDS_h3,         // H3 tag
+    HDS_h4,         // H4 tag
+    HDS_h5,         // H5 tag
+    HDS_h6,         // H6 tag
+    HDS_appendix,   // APPENDIX (also for sizing the hierarchy-related arrays)
+    HDS_abstract,   // ABSTRACT (also used for sizing the hx_head_lay_tag array)
+    HDS_preface,    // PREFACE
+    HDS_body,       // BODY
+    HDS_backm,      // BACKM
+    HDS_index,      // INDEX
+    HDS_max         // used for sizing the hx_sect_lay_tag array
 } hdsrc;
 
 /***************************************************************************/

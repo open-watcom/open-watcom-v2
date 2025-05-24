@@ -145,10 +145,10 @@ void    lay_abspref( const gmltag * entry )
     ltag = entry->u.layid;
     if( ltag == TL_ABSTRACT ) {
         ap  = &layout_work.abstract;
-        apsect = &layout_work.hx.hx_sect[hds_abstract];
+        apsect = &layout_work.hx.hx_sect[HDS_abstract];
     } else if( ltag == TL_PREFACE ) {
         ap  = &layout_work.preface;
-        apsect = &layout_work.hx.hx_sect[hds_preface];
+        apsect = &layout_work.hx.hx_sect[HDS_preface];
     } else {
         internal_err_exit( __FILE__, __LINE__ );
     }

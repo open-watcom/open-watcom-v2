@@ -1044,7 +1044,7 @@ void    do_layout_end_processing( void )
         /*  is set to the default value.                                   */
         /*******************************************************************/
 
-        layout_work.hx.hx_sect[hds_body].spacing = layout_work.defaults.spacing;
+        layout_work.hx.hx_sect[HDS_body].spacing = layout_work.defaults.spacing;
 
         /*******************************************************************/
         /*  This is a good place to start document processing.             */

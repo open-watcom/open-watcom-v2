@@ -188,7 +188,7 @@ global  fwd_ref     *   hd_fwd_refs;    // forward reference/undefined id/page c
 global  hdsrc           hd_level;       // current heading level
 global  ref_entry   *   hd_ref_dict;    // reference dictionary :Hx tags
 global  ffh_entry   *   hd_list;        // list of headings in order encountered
-global  hd_num_data     hd_nums[hds_appendix];  // heading hierarchy numbering
+global  hd_num_data     hd_nums[HDS_appendix];  // heading hierarchy numbering
 
 // index support
 global  bool            ixhlvl[2];      // true for levels that exist

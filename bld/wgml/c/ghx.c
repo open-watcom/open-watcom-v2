@@ -38,7 +38,7 @@
 /***************************************************************************/
 /*  extern array hd_nums[] will be accessed using hn_lvl                   */
 /*  the layout arrays hx_head and hx_sect will be accessed using hds_lvl   */
-/*  this allows hds_appendix values to set heading numbers for hn_lvl "1"  */
+/*  this allows HDS_appendix values to set heading numbers for hn_lvl "1"  */
 /***************************************************************************/
 
 
@@ -106,7 +106,7 @@ static void hx_header( char * h_num, char * h_text, hdsrc hn_lvl, hdsrc hds_lvl 
 
     /* text_font is used for setting the skips */
 
-    if( hds_lvl < hds_abstract ) {              // from an Hn tag
+    if( hds_lvl < HDS_abstract ) {              // from an Hn tag
         line_position = layout_work.hx.hx_head[hds_lvl].line_position;
         if( layout_work.hx.hx_head[hds_lvl].line_break ) {
             set_skip_vars( &layout_work.hx.hx_head[hds_lvl].pre_skip,
@@ -193,21 +193,21 @@ void gen_heading( char *h_text, const char *hdrefid, hdsrc hn_lvl, hdsrc hds_lvl
 
     /* Only Hx headings on multi-column pages actually go into the page_width section */
 
-    page_width = (hds_lvl < hds_abstract) && (t_page.last_pane->col_count > 1);
+    page_width = (hds_lvl < HDS_abstract) && (t_page.last_pane->col_count > 1);
     if( page_width ) {
         t_page.max_width = t_page.page_width;
     }
-    if( hds_lvl < hds_abstract )
+    if( hds_lvl < HDS_abstract )
         update_headnumx( hn_lvl, hds_lvl );
 
-    if( hds_lvl == hds_appendix ) {
+    if( hds_lvl == HDS_appendix ) {
         prefixlen = strlen( layout_work.appendix.string ) + strlen( hd_nums[hn_lvl].hnumstr );
         prefix = (char *)mem_alloc( prefixlen + 1 );
         strcpy( prefix, layout_work.appendix.string ); // prefix
         strcat( prefix, hd_nums[hn_lvl].hnumstr ); // numbered header
         headlen = prefixlen + strlen( h_text ) + 2;
         headp = (char *)mem_alloc( headlen );
-        if( layout_work.hx.hx_head[hds_appendix].number_form != num_none ) {
+        if( layout_work.hx.hx_head[HDS_appendix].number_form != num_none ) {
             strcpy( headp, prefix ); // numbered header
             strcat( headp, " " );
         } else {
@@ -217,7 +217,7 @@ void gen_heading( char *h_text, const char *hdrefid, hdsrc hn_lvl, hdsrc hds_lvl
         prefix = hd_nums[hn_lvl].hnumstr;
         headlen = strlen( hd_nums[hn_lvl].hnumstr ) + strlen( h_text ) + 2;
         headp = (char *)mem_alloc( headlen );
-        if( (hds_lvl < hds_abstract) &&
+        if( (hds_lvl < HDS_abstract) &&
                 (layout_work.hx.hx_head[hds_lvl].number_form != num_none) ) {
             strcpy( headp, prefix );     // numbered header
             strcat( headp, " " );
@@ -295,8 +295,8 @@ void gen_heading( char *h_text, const char *hdrefid, hdsrc hn_lvl, hdsrc hds_lvl
 
     /* Reset heading numbers for Hn tags and APPENDIX H1 tags */
 
-    if( (hds_lvl < hds_abstract) && (layout_work.hx.hx_head[hds_lvl].number_reset) ) {
-        for( k = hn_lvl + 1; k < hds_appendix; k++ ) {
+    if( (hds_lvl < HDS_abstract) && (layout_work.hx.hx_head[hds_lvl].number_reset) ) {
+        for( k = hn_lvl + 1; k < HDS_appendix; k++ ) {
             hd_nums[k].headn = 0;// reset following levels
             hd_nums[k].hnumstr[0] = '\0';
             if( hd_nums[k].hnumsub != NULL ) {
@@ -352,7 +352,7 @@ void gen_heading( char *h_text, const char *hdrefid, hdsrc hn_lvl, hdsrc hds_lvl
             cur_doc_el_group->first->element.text.ref = cur_ref;
         }
 
-        if( hds_lvl < hds_appendix ) {      // Hx only, but not APPENDIX H1
+        if( hds_lvl < HDS_appendix ) {      // Hx only, but not APPENDIX H1
 
             set_headx_banners( hn_lvl );    // set possible banners
 
@@ -561,7 +561,7 @@ static void gml_hx_common( const gmltag * entry, hdsrc hn_lvl )
 
     *hdrefid = '\0';                        // null string if no id found
     switch( hn_lvl ) {
-    case hds_h0:
+    case HDS_h0:
         if( !((ProcFlags.doc_sect == DSECT_body) ||
             (ProcFlags.doc_sect_nxt == DSECT_body)) ) {
 
@@ -570,7 +570,7 @@ static void gml_hx_common( const gmltag * entry, hdsrc hn_lvl )
         }
         hd_level = hn_lvl;              // H0 always valid in BODY
         break;
-    case hds_h1:
+    case HDS_h1:
         if( !((ProcFlags.doc_sect >= DSECT_body)
           || (ProcFlags.doc_sect_nxt >= DSECT_body)) ) {
             xx_err_exit_cc( err_tag_wrong_sect, hxstr, ":BODY :APPENDIX :BACKM sections" );
@@ -586,11 +586,11 @@ static void gml_hx_common( const gmltag * entry, hdsrc hn_lvl )
             hd_level = hn_lvl;          // H1 valid at this point
         }
         break;
-    case hds_h2:
-    case hds_h3:
-    case hds_h4:
-    case hds_h5:
-    case hds_h6:
+    case HDS_h2:
+    case HDS_h3:
+    case HDS_h4:
+    case HDS_h5:
+    case HDS_h6:
         if( hd_level < hn_lvl - 1 ) {
             g_wng_hlevel( hn_lvl, hd_level + 1 );
             /* Update numbers for the skipped headings. */

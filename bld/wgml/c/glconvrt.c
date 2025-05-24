@@ -116,12 +116,12 @@ static  void    put_lay_abspref( FILE *fp, abspref_lay_tag * ap,
 
 static  void    put_lay_abstract( FILE *fp, layout_data * lay )
 {
-    put_lay_abspref( fp, &(lay->abstract), &(lay->hx.hx_sect[hds_abstract]), "ABSTRACT" );
+    put_lay_abspref( fp, &(lay->abstract), &(lay->hx.hx_sect[HDS_abstract]), "ABSTRACT" );
 }
 
 static  void    put_lay_preface( FILE *fp, layout_data * lay )
 {
-    put_lay_abspref( fp, &(lay->preface), &(lay->hx.hx_sect[hds_preface]), "PREFACE" );
+    put_lay_abspref( fp, &(lay->preface), &(lay->hx.hx_sect[HDS_preface]), "PREFACE" );
 }
 
 
@@ -199,55 +199,55 @@ static  void    put_lay_appendix( FILE *fp, layout_data * lay )
 
         switch( curr ) {
         case e_indent:
-            o_space_unit( fp, curr, &lay->hx.hx_head[hds_appendix].indent );
+            o_space_unit( fp, curr, &lay->hx.hx_head[HDS_appendix].indent );
             break;
         case e_pre_top_skip:
-            o_space_unit( fp, curr, &lay->hx.hx_sect[hds_appendix].pre_top_skip );
+            o_space_unit( fp, curr, &lay->hx.hx_sect[HDS_appendix].pre_top_skip );
             break;
         case e_pre_skip:
-            o_space_unit( fp, curr, &lay->hx.hx_head[hds_appendix].pre_skip );
+            o_space_unit( fp, curr, &lay->hx.hx_head[HDS_appendix].pre_skip );
             break;
         case e_post_skip:
-            o_space_unit( fp, curr, &lay->hx.hx_sect[hds_appendix].post_skip );
+            o_space_unit( fp, curr, &lay->hx.hx_sect[HDS_appendix].post_skip );
             break;
         case e_spacing:
-            o_spacing( fp, curr, &lay->hx.hx_sect[hds_appendix].spacing );
+            o_spacing( fp, curr, &lay->hx.hx_sect[HDS_appendix].spacing );
             break;
         case e_font:
-            o_font_number( fp, curr, &lay->hx.hx_sect[hds_appendix].text_font );
+            o_font_number( fp, curr, &lay->hx.hx_sect[HDS_appendix].text_font );
             break;
         case e_number_font:
-            o_font_number( fp, curr, &lay->hx.hx_head[hds_appendix].number_font );
+            o_font_number( fp, curr, &lay->hx.hx_head[HDS_appendix].number_font );
             break;
         case e_number_form:
-            o_number_form( fp, curr, &lay->hx.hx_head[hds_appendix].number_form );
+            o_number_form( fp, curr, &lay->hx.hx_head[HDS_appendix].number_form );
             break;
         case e_page_position:
-            o_page_position( fp, curr, &lay->hx.hx_head[hds_appendix].line_position );
+            o_page_position( fp, curr, &lay->hx.hx_head[HDS_appendix].line_position );
             break;
         case e_number_style:
-            o_number_style( fp, curr, &lay->hx.hx_head[hds_appendix].number_style );
+            o_number_style( fp, curr, &lay->hx.hx_head[HDS_appendix].number_style );
             break;
         case e_page_eject:
-            o_page_eject( fp, curr, &lay->hx.hx_head[hds_appendix].page_eject );
+            o_page_eject( fp, curr, &lay->hx.hx_head[HDS_appendix].page_eject );
             break;
         case e_line_break:
-            o_yes_no( fp, curr, &lay->hx.hx_head[hds_appendix].line_break );
+            o_yes_no( fp, curr, &lay->hx.hx_head[HDS_appendix].line_break );
             break;
         case e_display_heading:
-            o_yes_no( fp, curr, &lay->hx.hx_head[hds_appendix].display_heading );
+            o_yes_no( fp, curr, &lay->hx.hx_head[HDS_appendix].display_heading );
             break;
         case e_number_reset:
-            o_yes_no( fp, curr, &lay->hx.hx_head[hds_appendix].number_reset );
+            o_yes_no( fp, curr, &lay->hx.hx_head[HDS_appendix].number_reset );
             break;
         case e_case:
-            o_case( fp, curr, &lay->hx.hx_head[hds_appendix].hd_case );
+            o_case( fp, curr, &lay->hx.hx_head[HDS_appendix].hd_case );
             break;
         case e_align:
-            o_space_unit( fp, curr, &lay->hx.hx_head[hds_appendix].align );
+            o_space_unit( fp, curr, &lay->hx.hx_head[HDS_appendix].align );
             break;
         case e_header:
-            o_yes_no( fp, curr, &lay->hx.hx_sect[hds_appendix].header );
+            o_yes_no( fp, curr, &lay->hx.hx_sect[HDS_appendix].header );
             break;
         case e_appendix_string:
             o_xx_string( fp, curr, lay->appendix.string );
@@ -364,12 +364,12 @@ static  void    put_lay_backbod( FILE *fp, backbod_lay_tag * bb,
 
 static  void    put_lay_backm( FILE *fp, layout_data * lay )
 {
-    put_lay_backbod( fp, &(lay->backm), &(lay->hx.hx_sect[hds_backm]), "BACKM" );
+    put_lay_backbod( fp, &(lay->backm), &(lay->hx.hx_sect[HDS_backm]), "BACKM" );
 }
 
 static  void    put_lay_body( FILE *fp, layout_data * lay )
 {
-    put_lay_backbod( fp, &(lay->body), &(lay->hx.hx_sect[hds_body]), "BODY" );
+    put_lay_backbod( fp, &(lay->body), &(lay->hx.hx_sect[HDS_body]), "BODY" );
 }
 
 
@@ -1171,10 +1171,10 @@ static  void    put_lay_index( FILE *fp, layout_data * lay )
 
         switch( curr ) {
         case e_post_skip:
-            o_space_unit( fp, curr, &lay->hx.hx_sect[hds_index].post_skip );
+            o_space_unit( fp, curr, &lay->hx.hx_sect[HDS_index].post_skip );
             break;
         case e_pre_top_skip:
-            o_space_unit( fp, curr, &lay->hx.hx_sect[hds_index].pre_top_skip );
+            o_space_unit( fp, curr, &lay->hx.hx_sect[HDS_index].pre_top_skip );
             break;
         case e_left_adjust:
             o_space_unit( fp, curr, &lay->index.left_adjust );
@@ -1183,7 +1183,7 @@ static  void    put_lay_index( FILE *fp, layout_data * lay )
             o_space_unit( fp, curr, &lay->index.right_adjust );
             break;
         case e_spacing:
-            o_spacing( fp, curr, &lay->hx.hx_sect[hds_index].spacing );
+            o_spacing( fp, curr, &lay->hx.hx_sect[HDS_index].spacing );
             break;
         case e_columns:
             o_int8( fp, curr, &lay->index.columns );
@@ -1195,7 +1195,7 @@ static  void    put_lay_index( FILE *fp, layout_data * lay )
             o_xx_string( fp, curr, lay->index.see_also_string );
             break;
         case e_header:
-            o_yes_no( fp, curr, &lay->hx.hx_sect[hds_index].header );
+            o_yes_no( fp, curr, &lay->hx.hx_sect[HDS_index].header );
             break;
         case e_index_string:
             o_xx_string( fp, curr, lay->index.index_string );
@@ -1207,7 +1207,7 @@ static  void    put_lay_index( FILE *fp, layout_data * lay )
             o_yes_no( fp, curr, &lay->index.page_reset );
             break;
         case e_font:
-            o_font_number( fp, curr, &lay->hx.hx_sect[hds_index].text_font );
+            o_font_number( fp, curr, &lay->hx.hx_sect[HDS_index].text_font );
             break;
         default:
             internal_err_exit( __FILE__, __LINE__ );

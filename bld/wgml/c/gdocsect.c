@@ -801,7 +801,7 @@ static void gen_index( void )
         }
 
         if( first[0] ) {                    // first entry in group
-            g_text_spacing = layout_work.hx.hx_sect[hds_index].spacing;
+            g_text_spacing = layout_work.hx.hx_sect[HDS_index].spacing;
             set_skip_vars( &layout_work.ix[0].skip, NULL, NULL,
                            g_text_spacing, layout_work.ix[0].font );
             first[0] = false;
@@ -842,7 +842,7 @@ static void gen_index( void )
         first[1] = true;
         while( ixh2 != NULL ) {     // level 2
             if( first[1] ) {                    // first entry in group
-                g_text_spacing = layout_work.hx.hx_sect[hds_index].spacing;
+                g_text_spacing = layout_work.hx.hx_sect[HDS_index].spacing;
                 set_skip_vars( &layout_work.ix[1].skip, NULL, NULL,
                                g_text_spacing, layout_work.ix[1].font );
                 first[1] = false;
@@ -883,7 +883,7 @@ static void gen_index( void )
             first[2] = true;
             while( ixh3 != NULL ) {     // level 3
                 if( first[2] ) {                    // first entry in group
-                    g_text_spacing = layout_work.hx.hx_sect[hds_index].spacing;
+                    g_text_spacing = layout_work.hx.hx_sect[HDS_index].spacing;
                     set_skip_vars( &layout_work.ix[2].skip, NULL, NULL,
                                    g_text_spacing, layout_work.ix[2].font );
                     first[2] = false;
@@ -1190,28 +1190,28 @@ void start_doc_sect( void )
         nest_cb->p_stack->lineno = titlep_lineno; // correct line number
         break;
     case DSECT_abstract :
-        hd_level = hds_h1;                      // H0 and H1 treated as already present
+        hd_level = HDS_h1;                      // H0 and H1 treated as already present
         page_c = layout_work.abstract.columns;
         page_e = layout_work.abstract.page_eject;
         page_r = layout_work.abstract.page_reset;
-        page_s = layout_work.hx.hx_sect[hds_abstract].spacing;
-        header = layout_work.hx.hx_sect[hds_abstract].header;
+        page_s = layout_work.hx.hx_sect[HDS_abstract].spacing;
+        header = layout_work.hx.hx_sect[HDS_abstract].header;
         if( header ) {
             h_text = layout_work.abstract.string;
-            hds_lvl = hds_abstract;
+            hds_lvl = HDS_abstract;
         }
         lvl_reset = false;
         break;
     case DSECT_preface :
-        hd_level = hds_h1;                      // H0 and H1 treated as already present
+        hd_level = HDS_h1;                      // H0 and H1 treated as already present
         page_c = layout_work.preface.columns;
         page_e = layout_work.preface.page_eject;
         page_r = layout_work.preface.page_reset;
-        page_s = layout_work.hx.hx_sect[hds_preface].spacing;
-        header = layout_work.hx.hx_sect[hds_preface].header;
+        page_s = layout_work.hx.hx_sect[HDS_preface].spacing;
+        header = layout_work.hx.hx_sect[HDS_preface].header;
         if( header ) {
             h_text = layout_work.preface.string;
-            hds_lvl = hds_preface;
+            hds_lvl = HDS_preface;
         }
         lvl_reset = false;
         break;
@@ -1220,20 +1220,20 @@ void start_doc_sect( void )
         page_c = layout_work.body.columns;
         page_e = layout_work.body.page_eject;
         page_r = layout_work.body.page_reset;
-        page_s = layout_work.hx.hx_sect[hds_body].spacing;
-        header = layout_work.hx.hx_sect[hds_body].header;
+        page_s = layout_work.hx.hx_sect[HDS_body].spacing;
+        header = layout_work.hx.hx_sect[HDS_body].header;
         if( header ) {
             h_text = layout_work.body.string;
-            hds_lvl = hds_body;
+            hds_lvl = HDS_body;
         }
         lvl_reset = true;
         break;
     case DSECT_appendix :
-        hd_level = hds_h0;                      // H0 treated as already present
+        hd_level = HDS_h0;                      // H0 treated as already present
         page_c = layout_work.appendix.columns;
         page_e = layout_work.appendix.section_eject;
         page_r = layout_work.appendix.page_reset;
-        page_s = layout_work.hx.hx_sect[hds_appendix].spacing;
+        page_s = layout_work.hx.hx_sect[HDS_appendix].spacing;
         header = false;                 // no section header string output, as such
         if( page_e != ej_no ) {
             page_e = ej_yes;                        // "even" and "odd" act like "yes"
@@ -1241,15 +1241,15 @@ void start_doc_sect( void )
         lvl_reset = true;
         break;
     case DSECT_backm :
-        hd_level = hds_h0;                      // H0 treated as already present
+        hd_level = HDS_h0;                      // H0 treated as already present
         page_c = layout_work.backm.columns;
         page_e = layout_work.backm.page_eject;
         page_r = layout_work.backm.page_reset;
-        page_s = layout_work.hx.hx_sect[hds_backm].spacing;
-        header = layout_work.hx.hx_sect[hds_backm].header;
+        page_s = layout_work.hx.hx_sect[HDS_backm].spacing;
+        header = layout_work.hx.hx_sect[HDS_backm].header;
         if( header ) {
             h_text = layout_work.backm.string;
-            hds_lvl = hds_backm;
+            hds_lvl = HDS_backm;
         }
         lvl_reset = true;
         break;
@@ -1258,11 +1258,11 @@ void start_doc_sect( void )
         page_c = layout_work.index.columns;
         page_e = layout_work.index.page_eject;
         page_r = layout_work.index.page_reset;
-        page_s = layout_work.hx.hx_sect[hds_index].spacing;
-        header = layout_work.hx.hx_sect[hds_index].header;
+        page_s = layout_work.hx.hx_sect[HDS_index].spacing;
+        header = layout_work.hx.hx_sect[HDS_index].header;
         if( header ) {
             h_text = layout_work.index.index_string;
-            hds_lvl = hds_index;
+            hds_lvl = HDS_index;
         }
         lvl_reset = false;
         break;
@@ -1352,7 +1352,7 @@ void start_doc_sect( void )
     /* Reset all heading numbers for ABSTRACT, BODY, APPENDIX and BACKM */
 
     if( lvl_reset ) {
-        for( k = 0; k < hds_appendix; k++ ) {
+        for( k = 0; k < HDS_appendix; k++ ) {
             hd_nums[k].headn = 0;// reset all levels
             hd_nums[k].hnumstr[0] = '\0';
             if( hd_nums[k].hnumsub != NULL ) {
@@ -1434,7 +1434,7 @@ extern void gml_abstract( const gmltag * entry )
     t_page.cur_left = 0;
     t_page.cur_width = 0;
 
-    if( layout_work.hx.hx_sect[hds_abstract].header ) {
+    if( layout_work.hx.hx_sect[HDS_abstract].header ) {
         start_doc_sect();                           // a header is enough
     }
     g_indentl = 0;
@@ -1477,7 +1477,7 @@ extern void gml_backm( const gmltag * entry )
     t_page.cur_left = 0;
     t_page.cur_width = 0;
 
-    if( layout_work.hx.hx_sect[hds_backm].header ) {
+    if( layout_work.hx.hx_sect[HDS_backm].header ) {
         start_doc_sect();                           // a header is enough
     }
     g_indentl = 0;
@@ -1587,7 +1587,7 @@ extern void gml_preface( const gmltag * entry )
     }
     scr_process_break();
     gml_doc_xxx( DSECT_preface );
-    if( layout_work.hx.hx_sect[hds_preface].header ) {
+    if( layout_work.hx.hx_sect[HDS_preface].header ) {
         start_doc_sect();                           // a header is enough
     }
     g_indentl = 0;

@@ -237,7 +237,7 @@ void    lay_appendix( const gmltag * entry )
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                     }
                     cvterr = i_space_unit( p, &attr_val,
-                                    &layout_work.hx.hx_head[hds_appendix].indent );
+                                    &layout_work.hx.hx_head[HDS_appendix].indent );
                     AttrFlags.indent = true;
                     break;
                 case e_pre_top_skip:
@@ -246,7 +246,7 @@ void    lay_appendix( const gmltag * entry )
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                     }
                     cvterr = i_space_unit( p, &attr_val,
-                                &layout_work.hx.hx_sect[hds_appendix].pre_top_skip );
+                                &layout_work.hx.hx_sect[HDS_appendix].pre_top_skip );
                     AttrFlags.pre_top_skip = true;
                     break;
                 case e_pre_skip:
@@ -255,7 +255,7 @@ void    lay_appendix( const gmltag * entry )
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                     }
                     cvterr = i_space_unit( p, &attr_val,
-                                    &layout_work.hx.hx_head[hds_appendix].pre_skip );
+                                    &layout_work.hx.hx_head[HDS_appendix].pre_skip );
                     AttrFlags.pre_skip = true;
                     break;
                 case e_post_skip:
@@ -264,7 +264,7 @@ void    lay_appendix( const gmltag * entry )
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                     }
                     cvterr = i_space_unit( p, &attr_val,
-                                    &layout_work.hx.hx_sect[hds_appendix].post_skip );
+                                    &layout_work.hx.hx_sect[HDS_appendix].post_skip );
                     AttrFlags.post_skip = true;
                     break;
                 case e_spacing:
@@ -272,7 +272,7 @@ void    lay_appendix( const gmltag * entry )
                         xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                     }
-                    cvterr = i_spacing( p, &attr_val, &layout_work.hx.hx_sect[hds_appendix].spacing );
+                    cvterr = i_spacing( p, &attr_val, &layout_work.hx.hx_sect[HDS_appendix].spacing );
                     AttrFlags.spacing = true;
                     break;
                 case e_font:
@@ -281,9 +281,9 @@ void    lay_appendix( const gmltag * entry )
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                     }
                     cvterr = i_font_number( p, &attr_val,
-                                        &layout_work.hx.hx_sect[hds_appendix].text_font );
-                    if( layout_work.hx.hx_sect[hds_appendix].text_font >= wgml_font_cnt ) {
-                        layout_work.hx.hx_sect[hds_appendix].text_font = 0;
+                                        &layout_work.hx.hx_sect[HDS_appendix].text_font );
+                    if( layout_work.hx.hx_sect[HDS_appendix].text_font >= wgml_font_cnt ) {
+                        layout_work.hx.hx_sect[HDS_appendix].text_font = 0;
                     }
                     AttrFlags.font = true;
                     break;
@@ -293,9 +293,9 @@ void    lay_appendix( const gmltag * entry )
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                     }
                     cvterr = i_font_number( p, &attr_val,
-                                &layout_work.hx.hx_head[hds_appendix].number_font );
-                    if( layout_work.hx.hx_head[hds_appendix].number_font >= wgml_font_cnt ) {
-                        layout_work.hx.hx_head[hds_appendix].number_font = 0;
+                                &layout_work.hx.hx_head[HDS_appendix].number_font );
+                    if( layout_work.hx.hx_head[HDS_appendix].number_font >= wgml_font_cnt ) {
+                        layout_work.hx.hx_head[HDS_appendix].number_font = 0;
                     }
                     AttrFlags.number_font = true;
                     break;
@@ -305,7 +305,7 @@ void    lay_appendix( const gmltag * entry )
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                     }
                     cvterr = i_number_form( p, &attr_val,
-                                &layout_work.hx.hx_head[hds_appendix].number_form );
+                                &layout_work.hx.hx_head[HDS_appendix].number_form );
                     AttrFlags.number_form = true;
                     break;
                 case e_page_position:
@@ -314,7 +314,7 @@ void    lay_appendix( const gmltag * entry )
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                     }
                     cvterr = i_page_position( p, &attr_val,
-                                &layout_work.hx.hx_head[hds_appendix].line_position );
+                                &layout_work.hx.hx_head[HDS_appendix].line_position );
                     AttrFlags.page_position = true;
                     break;
                 case e_number_style:
@@ -323,7 +323,7 @@ void    lay_appendix( const gmltag * entry )
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                     }
                     cvterr = i_number_style( p, &attr_val,
-                                &layout_work.hx.hx_head[hds_appendix].number_style );
+                                &layout_work.hx.hx_head[HDS_appendix].number_style );
                     AttrFlags.number_style = true;
                     break;
                 case e_page_eject:
@@ -332,7 +332,7 @@ void    lay_appendix( const gmltag * entry )
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                     }
                     cvterr = i_page_eject( p, &attr_val,
-                                &layout_work.hx.hx_head[hds_appendix].page_eject );
+                                &layout_work.hx.hx_head[HDS_appendix].page_eject );
                     AttrFlags.page_eject = true;
                     break;
                 case e_line_break:
@@ -341,7 +341,7 @@ void    lay_appendix( const gmltag * entry )
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                     }
                     cvterr = i_yes_no( p, &attr_val,
-                                &layout_work.hx.hx_head[hds_appendix].line_break );
+                                &layout_work.hx.hx_head[HDS_appendix].line_break );
                     AttrFlags.line_break = true;
                     break;
                 case e_display_heading:
@@ -350,7 +350,7 @@ void    lay_appendix( const gmltag * entry )
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                     }
                     cvterr = i_yes_no( p, &attr_val,
-                            &layout_work.hx.hx_head[hds_appendix].display_heading );
+                            &layout_work.hx.hx_head[HDS_appendix].display_heading );
                     AttrFlags.display_heading = true;
                     break;
                 case e_number_reset:
@@ -359,7 +359,7 @@ void    lay_appendix( const gmltag * entry )
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                     }
                     cvterr = i_yes_no( p, &attr_val,
-                                &layout_work.hx.hx_head[hds_appendix].number_reset );
+                                &layout_work.hx.hx_head[HDS_appendix].number_reset );
                     AttrFlags.number_reset = true;
                     break;
                 case e_case:
@@ -368,7 +368,7 @@ void    lay_appendix( const gmltag * entry )
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                     }
                     cvterr = i_case( p, &attr_val,
-                                     &layout_work.hx.hx_head[hds_appendix].hd_case );
+                                     &layout_work.hx.hx_head[HDS_appendix].hd_case );
                     AttrFlags.case_a = true;
                     break;
                 case e_align:
@@ -377,7 +377,7 @@ void    lay_appendix( const gmltag * entry )
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                     }
                     cvterr = i_space_unit( p, &attr_val,
-                                        &layout_work.hx.hx_head[hds_appendix].align );
+                                        &layout_work.hx.hx_head[HDS_appendix].align );
                     AttrFlags.align = true;
                     break;
                 case e_header:
@@ -386,7 +386,7 @@ void    lay_appendix( const gmltag * entry )
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                     }
                     cvterr = i_yes_no( p, &attr_val,
-                                       &layout_work.hx.hx_sect[hds_appendix].header );
+                                       &layout_work.hx.hx_sect[HDS_appendix].header );
                     AttrFlags.header = true;
                     break;
                 case e_appendix_string:
