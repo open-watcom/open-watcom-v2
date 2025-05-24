@@ -188,7 +188,12 @@ enum {
 typedef enum {
     STD_NONE,
     STD_CXX98,
-    STD_CXX0X,
+    STD_CXX11,
+    STD_CXX0X=STD_CXX11,
+    STD_CXX14,
+    STD_CXX17,
+    STD_CXX20,
+    STD_CXX23,
 } cxxstd_ver;
 
 #define CHECK_STD(o,v)  (CompVars.cxxstd o STD_ ## v)
