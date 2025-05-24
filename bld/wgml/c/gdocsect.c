@@ -1502,7 +1502,7 @@ extern void gml_body( const gmltag * entry )
     if( !ProcFlags.fb_document_done ) { // the very first section/page
         do_layout_end_processing();
     }
-    if( layout_work.hx.hx_sect[hds_body].header ) {
+    if( layout_work.hx.hx_sect[HDS_body].header ) {
         start_doc_sect();                           // a header is enough
     }
     g_indentl = 0;

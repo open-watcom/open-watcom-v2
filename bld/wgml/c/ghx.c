@@ -136,10 +136,10 @@ static void hx_header( char * h_num, char * h_text, hdsrc hn_lvl, hdsrc hds_lvl 
 
     /* display_heading is always "true" for section headings */
 
-    if( (hds_lvl > hds_appendix) || layout_work.hx.hx_head[hds_lvl].display_heading ) {
+    if( (hds_lvl > HDS_appendix) || layout_work.hx.hx_head[hds_lvl].display_heading ) {
         t_page.cur_left = 0;
         ProcFlags.keep_left_margin = true;  // keep left margin
-        if( (hds_lvl < hds_abstract) && (layout_work.hx.hx_head[hds_lvl].number_form != num_none) ) {
+        if( (hds_lvl < HDS_abstract) && (layout_work.hx.hx_head[hds_lvl].number_form != num_none) ) {
             ProcFlags.as_text_line = true;      // treat as <text_line>
             process_text( h_num, layout_work.hx.hx_head[hds_lvl].number_font );
             post_space /= wgml_fonts[layout_work.hx.hx_head[hds_lvl].number_font].spc_width;     // rescale post_space to correct font
@@ -614,8 +614,8 @@ static void gml_hx_common( const gmltag * entry, hdsrc hn_lvl )
 
     /* After this, hds_lvl will access the correct LAYOUT data */
 
-    if( (ProcFlags.doc_sect == DSECT_appendix) && (hn_lvl == hds_h1) ) {
-        hds_lvl = hds_appendix;
+    if( (ProcFlags.doc_sect == DSECT_appendix) && (hn_lvl == HDS_h1) ) {
+        hds_lvl = HDS_appendix;
     } else {
         hds_lvl = hn_lvl;
     }
@@ -764,37 +764,37 @@ static void gml_hx_common( const gmltag * entry, hdsrc hn_lvl )
 
 void gml_h0( const gmltag * entry )
 {
-    gml_hx_common( entry, hds_h0 );
+    gml_hx_common( entry, HDS_h0 );
 }
 
 void gml_h1( const gmltag * entry )
 {
-    gml_hx_common( entry, hds_h1 );
+    gml_hx_common( entry, HDS_h1 );
 }
 
 void gml_h2( const gmltag * entry )
 {
-    gml_hx_common( entry, hds_h2 );
+    gml_hx_common( entry, HDS_h2 );
 }
 
 void gml_h3( const gmltag * entry )
 {
-    gml_hx_common( entry, hds_h3 );
+    gml_hx_common( entry, HDS_h3 );
 }
 
 void gml_h4( const gmltag * entry )
 {
-    gml_hx_common( entry, hds_h4 );
+    gml_hx_common( entry, HDS_h4 );
 }
 
 void gml_h5( const gmltag * entry )
 {
-    gml_hx_common( entry, hds_h5 );
+    gml_hx_common( entry, HDS_h5 );
 }
 
 void gml_h6( const gmltag * entry )
 {
-    gml_hx_common( entry, hds_h6 );
+    gml_hx_common( entry, HDS_h6 );
 }
 
 
