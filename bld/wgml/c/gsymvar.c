@@ -517,23 +517,20 @@ static bool add_symvar_sub( symvar *var, const char *val, unsigned len, sub_inde
     if( subscript != SI_no_subscript ) {
         if( !check_subscript( subscript ) ) {
             return( false );
-        } else {
-            var->subscript_used++;
-                                             /* update special sub 0 entry */
-#if 0
-            sprintf( sub_cnt, "%d", var->subscript_used );
-            resize_and_copy_value( var->sub_0, sub_cnt );
-#else
-            sprintf( var->sub_0->value, "%d", var->subscript_used );  // TBD
-#endif
-
-            var->flags |= SF_subscripted;
-            if( (var->flags & SF_auto_inc)
-              && (subscript == var->last_auto_inc + 1) ) {
-                var->last_auto_inc++;
-            }
         }
-
+        var->subscript_used++;
+        /* update special sub 0 entry */
+#if 0
+        sprintf( sub_cnt, "%d", var->subscript_used );
+        resize_and_copy_value( var->sub_0, sub_cnt );
+#else
+        sprintf( var->sub_0->value, "%d", var->subscript_used );  // TBD
+#endif
+        var->flags |= SF_subscripted;
+        if( (var->flags & SF_auto_inc)
+          && (subscript == var->last_auto_inc + 1) ) {
+            var->last_auto_inc++;
+        }
         newsub            = mem_alloc( sizeof( symsub ) );
         newsub->next      = NULL;
         newsub->base      = var;
