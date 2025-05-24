@@ -1165,10 +1165,10 @@ void start_doc_sect( void )
     ProcFlags.keep_left_margin = false;
 
     page_c = layout_work.defaults.columns;
-    ds = ProcFlags.doc_sect_nxt;    // new section
+    ds = ProcFlags.doc_sect_nxt;        // new section
 
     if( ds == DSECT_none ) {
-        ds = DSECT_body;      // if text without section start assume body
+        ds = DSECT_body;                // if text without section start assume body
     }
 
     /***********************************************************************/
@@ -1190,7 +1190,7 @@ void start_doc_sect( void )
         nest_cb->p_stack->lineno = titlep_lineno; // correct line number
         break;
     case DSECT_abstract :
-        hd_level = HDS_h1;                      // H0 and H1 treated as already present
+        hd_level = HDS_h1;              // H0 and H1 treated as already present
         page_c = layout_work.abstract.columns;
         page_e = layout_work.abstract.page_eject;
         page_r = layout_work.abstract.page_reset;
@@ -1203,7 +1203,7 @@ void start_doc_sect( void )
         lvl_reset = false;
         break;
     case DSECT_preface :
-        hd_level = HDS_h1;                      // H0 and H1 treated as already present
+        hd_level = HDS_h1;              // H0 and H1 treated as already present
         page_c = layout_work.preface.columns;
         page_e = layout_work.preface.page_eject;
         page_r = layout_work.preface.page_reset;
@@ -1216,7 +1216,7 @@ void start_doc_sect( void )
         lvl_reset = false;
         break;
     case DSECT_body :
-        hd_level = -1;                          // force H0 to be used
+        hd_level = HDS_force_h0;        // force H0 to be used
         page_c = layout_work.body.columns;
         page_e = layout_work.body.page_eject;
         page_r = layout_work.body.page_reset;
@@ -1229,19 +1229,19 @@ void start_doc_sect( void )
         lvl_reset = true;
         break;
     case DSECT_appendix :
-        hd_level = HDS_h0;                      // H0 treated as already present
+        hd_level = HDS_h0;              // H0 treated as already present
         page_c = layout_work.appendix.columns;
         page_e = layout_work.appendix.section_eject;
         page_r = layout_work.appendix.page_reset;
         page_s = layout_work.hx.hx_sect[HDS_appendix].spacing;
         header = false;                 // no section header string output, as such
         if( page_e != ej_no ) {
-            page_e = ej_yes;                        // "even" and "odd" act like "yes"
+            page_e = ej_yes;            // "even" and "odd" act like "yes"
         }
         lvl_reset = true;
         break;
     case DSECT_backm :
-        hd_level = HDS_h0;                      // H0 treated as already present
+        hd_level = HDS_h0;              // H0 treated as already present
         page_c = layout_work.backm.columns;
         page_e = layout_work.backm.page_eject;
         page_r = layout_work.backm.page_reset;
@@ -1353,7 +1353,7 @@ void start_doc_sect( void )
 
     if( lvl_reset ) {
         for( k = 0; k < HDS_appendix; k++ ) {
-            hd_nums[k].headn = 0;// reset all levels
+            hd_nums[k].headn = 0;       // reset all levels
             hd_nums[k].hnumstr[0] = '\0';
             if( hd_nums[k].hnumsub != NULL ) {
                 *(hd_nums[k].hnumsub->value) = '\0';
@@ -1368,7 +1368,7 @@ void start_doc_sect( void )
         justify_save = ProcFlags.justify;
         ProcFlags.justify = JUST_off;
         gen_heading( h_text, NULL, 0, hds_lvl );
-        g_indentl = 0;                          // reset for section body
+        g_indentl = 0;                  // reset for section body
         ProcFlags.concat = concat_save;
         ProcFlags.justify = justify_save;
     }
@@ -1473,12 +1473,12 @@ extern void gml_backm( const gmltag * entry )
     }
     scr_process_break();
     gml_doc_xxx( DSECT_backm );
-    ProcFlags.frontm_seen = false;  // no longer in FRONTM section
+    ProcFlags.frontm_seen = false;      // no longer in FRONTM section
     t_page.cur_left = 0;
     t_page.cur_width = 0;
 
     if( layout_work.hx.hx_sect[HDS_backm].header ) {
-        start_doc_sect();                           // a header is enough
+        start_doc_sect();               // a header is enough
     }
     g_indentl = 0;
     g_indentr = 0;
@@ -1503,7 +1503,7 @@ extern void gml_body( const gmltag * entry )
         do_layout_end_processing();
     }
     if( layout_work.hx.hx_sect[HDS_body].header ) {
-        start_doc_sect();                           // a header is enough
+        start_doc_sect();               // a header is enough
     }
     g_indentl = 0;
     g_indentr = 0;
@@ -1617,7 +1617,7 @@ extern void gml_titlep( const gmltag * entry )
     } else if( input_cbs->fmflags & II_tag_mac ) {
         titlep_lineno = input_cbs->s.m->lineno;
     } else {
-        titlep_lineno = 0;                  // not clear what to do here
+        titlep_lineno = 0;              // not clear what to do here
     }
     save_indentl = g_indentl;
     save_indentr = g_indentr;
@@ -1637,7 +1637,7 @@ extern void gml_etitlep( const gmltag * entry )
     rs_loc = 0;
     titlep_lineno = 0;
 
-    if( nest_cb != NULL ) { // guard against no FRONTM, empty TITLEP section
+    if( nest_cb != NULL ) {             // guard against no FRONTM, empty TITLEP section
         g_indentl = save_indentl;
         g_indentr = save_indentr;
         set_h_start();
@@ -1665,16 +1665,16 @@ extern void gml_egdoc( const gmltag * entry )
     (void)entry;
 
     if( g_blank_text_lines > 0 ) {
-        set_skip_vars( NULL, NULL, NULL, 1, 0 );    // set g_blank_units_lines
+        set_skip_vars( NULL, NULL, NULL, 1, 0 ); // set g_blank_units_lines
     }
-    scr_process_break();                        // outputs last element in file
+    scr_process_break();                // outputs last element in file
 
-    if( GlobalFlags.lastpass ) {                // output on last pass only
-        if( passes == 1 ) {                     // first and only pass
-            if( figlist_toc & GENSEC_toc ) {        // only if TOC was found
+    if( GlobalFlags.lastpass ) {        // output on last pass only
+        if( passes == 1 ) {             // first and only pass
+            if( figlist_toc & GENSEC_toc ) { // only if TOC was found
                 gen_toc();
             }
-            if( figlist_toc & GENSEC_figlist ) {    // only if FIGLIST was found
+            if( figlist_toc & GENSEC_figlist ) { // only if FIGLIST was found
                 gen_figlist();
             }
             // output figure forward/undefined references
@@ -1723,7 +1723,7 @@ extern void gml_egdoc( const gmltag * entry )
     }
 
     gml_doc_xxx( DSECT_egdoc );
-    if( block_queue != NULL ) {     // avoids blank last page if nothing will follow
+    if( block_queue != NULL ) {         // avoids blank last page if nothing will follow
         start_doc_sect();
     }
 }

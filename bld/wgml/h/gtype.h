@@ -1357,6 +1357,8 @@ typedef enum {
     HDS_max         // used for sizing the hx_sect_lay_tag array
 } hdsrc;
 
+#define HDS_force_h0    (-1)
+
 /***************************************************************************/
 /*  Structure for storing information used to actually process and output  */
 /*  (if appropriate) headings, whether from an Hn tag or a secion tag.     */
