@@ -134,6 +134,8 @@
 #define SkipDot( p )        if( *(p) == '.' ) (p)++
 #define SkipSpacesTabs( p ) while( is_space_tab_char( *(p) ) ) (p)++
 
+#define TABLE_SIZE(x)       (sizeof( (x) ) / sizeof( (x)[0] ))
+
 typedef unsigned    line_number;
 typedef uint8_t     text_space;
 typedef unsigned    units_space;
