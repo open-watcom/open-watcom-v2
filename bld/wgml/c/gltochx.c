@@ -37,9 +37,9 @@
 /***************************************************************************/
 /*   :TOCHx    attributes                                                     */
 /***************************************************************************/
-const   lay_att     tochx_att[9] =
-    { e_group, e_indent, e_skip, e_pre_skip, e_post_skip,
-      e_font, e_align, e_display_in_toc, e_dummy_zero };
+static const lay_att    tochx_att[] = {
+    e_group, e_indent, e_skip, e_pre_skip, e_post_skip, e_font, e_align, e_display_in_toc
+};
 
 /***********************************************************************************/
 /*Define the characteristics of a table of contents heading, where n is between    */
@@ -139,7 +139,8 @@ void    lay_tochx( const gmltag * entry )
 
     while( (cc = lay_attr_and_value( &attr_name, &attr_val )) == CC_pos ) {   // get att with value
         cvterr = -1;
-        for( k = 0, curr = tochx_att[k]; curr > 0; k++, curr = tochx_att[k] ) {
+        for( k = 0; k < TABLE_SIZE( tochx_att ); k++ ) {
+            curr = tochx_att[k];
             if( strcmp( lay_att_names[curr], attr_name.attname.l ) == 0 ) {
                 p = attr_val.tok.s;
                 switch( curr ) {
@@ -147,6 +148,7 @@ void    lay_tochx( const gmltag * entry )
                     if( AttrFlags.group ) {
                         xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
                     }
                     cvterr = i_int8( p, &attr_val, &layout_work.tochx[hx_l].group );
                     AttrFlags.group = true;
@@ -155,6 +157,7 @@ void    lay_tochx( const gmltag * entry )
                     if( AttrFlags.indent ) {
                         xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
                     }
                     cvterr = i_space_unit( p, &attr_val,
                                            &layout_work.tochx[hx_l].indent );
@@ -164,6 +167,7 @@ void    lay_tochx( const gmltag * entry )
                     if( AttrFlags.skip ) {
                         xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
                     }
                     cvterr = i_space_unit( p, &attr_val,
                                            &layout_work.tochx[hx_l].skip );
@@ -173,6 +177,7 @@ void    lay_tochx( const gmltag * entry )
                     if( AttrFlags.pre_skip ) {
                         xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
                     }
                     cvterr = i_space_unit( p, &attr_val,
                                            &layout_work.tochx[hx_l].pre_skip );
@@ -182,6 +187,7 @@ void    lay_tochx( const gmltag * entry )
                     if( AttrFlags.post_skip ) {
                         xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
                     }
                     cvterr = i_space_unit( p, &attr_val,
                                            &layout_work.tochx[hx_l].post_skip );
@@ -191,6 +197,7 @@ void    lay_tochx( const gmltag * entry )
                     if( AttrFlags.font ) {
                         xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
                     }
                     cvterr = i_font_number( p, &attr_val, &layout_work.tochx[hx_l].font );
                     if( layout_work.tochx[hx_l].font >= wgml_font_cnt ) {
@@ -202,6 +209,7 @@ void    lay_tochx( const gmltag * entry )
                     if( AttrFlags.align ) {
                         xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
                     }
                     cvterr = i_space_unit( p, &attr_val,
                                            &layout_work.tochx[hx_l].align );
@@ -211,6 +219,7 @@ void    lay_tochx( const gmltag * entry )
                     if( AttrFlags.display_in_toc ) {
                         xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
                     }
                     cvterr = i_yes_no( p, &attr_val,
                                      &layout_work.tochx[hx_l].display_in_toc );
@@ -218,18 +227,72 @@ void    lay_tochx( const gmltag * entry )
                     break;
                 default:
                     internal_err_exit( __FILE__, __LINE__ );
+                    /* never return */
                 }
                 if( cvterr ) {          // there was an error
                     xx_err_exit( err_att_val_inv );
+                    /* never return */
                 }
                 break;                  // break out of for loop
             }
         }
         if( cvterr < 0 ) {
             xx_err_exit( err_att_name_inv );
+            /* never return */
         }
     }
     scandata.s = scandata.e;
     return;
 }
 
+
+
+/***************************************************************************/
+/*   :TOCHx     output TOC header attribute values for :TOCH0 - :TOCH6     */
+/***************************************************************************/
+void    put_lay_tochx( FILE *fp, layout_data * lay )
+{
+    int                 k;
+    int                 lvl;
+    lay_att             curr;
+
+    for( lvl = 0; lvl < 7; ++lvl ) {
+
+
+        fprintf( fp, ":TOCH%c\n", '0' + lvl );
+
+        for( k = 0; k < TABLE_SIZE( tochx_att ); k++ ) {
+            curr = tochx_att[k];
+            switch( curr ) {
+            case e_group:
+                o_int8( fp, curr, &lay->tochx[lvl].group );
+                break;
+            case e_indent:
+                o_space_unit( fp, curr, &lay->tochx[lvl].indent );
+                break;
+            case e_skip:
+                o_space_unit( fp, curr, &lay->tochx[lvl].skip );
+                break;
+            case e_pre_skip:
+                o_space_unit( fp, curr, &lay->tochx[lvl].pre_skip );
+                break;
+            case e_post_skip:
+                o_space_unit( fp, curr, &lay->tochx[lvl].post_skip );
+                break;
+            case e_font:
+                o_font_number( fp, curr, &lay->tochx[lvl].font );
+                break;
+            case e_align:
+                o_space_unit( fp, curr, &lay->tochx[lvl].align );
+                break;
+            case e_display_in_toc:
+                o_yes_no( fp, curr, &lay->tochx[lvl].display_in_toc );
+                break;
+                break;
+            default:
+                internal_err_exit( __FILE__, __LINE__ );
+                /* never return */
+            }
+        }
+    }
+}

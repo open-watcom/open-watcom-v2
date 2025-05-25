@@ -36,39 +36,42 @@
 /***************************************************************************/
 /*   :DL       attributes                                                  */
 /***************************************************************************/
-const   lay_att     dl_att[10] =
-    { e_level, e_left_indent, e_right_indent, e_pre_skip, e_skip,
-      e_spacing, e_post_skip, e_align, e_line_break, e_dummy_zero };
+static const lay_att    dl_att[] = {
+    e_level, e_left_indent, e_right_indent, e_pre_skip, e_skip, e_spacing,
+    e_post_skip, e_align, e_line_break
+};
 
 /***************************************************************************/
 /*   :GL       attributes                                                  */
 /***************************************************************************/
-const   lay_att     gl_att[10] =
-    { e_level, e_left_indent, e_right_indent, e_pre_skip, e_skip,
-      e_spacing, e_post_skip, e_align, e_delim, e_dummy_zero };
+static const lay_att    gl_att[] = {
+    e_level, e_left_indent, e_right_indent, e_pre_skip, e_skip, e_spacing,
+    e_post_skip, e_align, e_delim
+};
 
 /***************************************************************************/
 /*   :OL       attributes                                                  */
 /***************************************************************************/
-const   lay_att     ol_att[12] =
-    { e_level, e_left_indent, e_right_indent, e_pre_skip, e_skip,
-      e_spacing, e_post_skip, e_font, e_align, e_number_style, e_number_font,
-      e_dummy_zero };
+static const lay_att    ol_att[] = {
+    e_level, e_left_indent, e_right_indent, e_pre_skip, e_skip, e_spacing,
+    e_post_skip, e_font, e_align, e_number_style, e_number_font
+};
 
 /***************************************************************************/
 /*   :SL       attributes                                                  */
 /***************************************************************************/
-const   lay_att     sl_att[9] =
-    { e_level, e_left_indent, e_right_indent, e_pre_skip, e_skip,
-      e_spacing, e_post_skip, e_font, e_dummy_zero };
+static const lay_att    sl_att[] = {
+    e_level, e_left_indent, e_right_indent, e_pre_skip, e_skip, e_spacing,
+    e_post_skip, e_font
+};
 
 /***************************************************************************/
 /*   :UL       attributes                                                  */
 /***************************************************************************/
-const   lay_att     ul_att[13] =
-    { e_level, e_left_indent, e_right_indent, e_pre_skip, e_skip,
-      e_spacing, e_post_skip, e_font, e_align, e_bullet, e_bullet_translate,
-      e_bullet_font, e_dummy_zero };
+static const lay_att    ul_att[] = {
+    e_level, e_left_indent, e_right_indent, e_pre_skip, e_skip, e_spacing,
+    e_post_skip, e_font, e_align, e_bullet, e_bullet_translate, e_bullet_font
+};
 
 
 /********************************************************************************/
@@ -558,7 +561,8 @@ void    lay_dl( const gmltag * entry )
     /* Get the DL LAYOUT settings */
 
     while( (cc = lay_attr_and_value( &attr_name, &attr_val )) == CC_pos ) {   // get att with value
-        for( k = 0, curr = dl_att[k]; curr > 0; k++, curr = dl_att[k] ) {
+        for( k = 0; k < TABLE_SIZE( dl_att ); k++ ) {
+            curr = dl_att[k];
             if( strcmp( lay_att_names[curr], attr_name.attname.l ) == 0 ) {
                 p = attr_val.tok.s;
                 switch( curr ) {
@@ -566,6 +570,7 @@ void    lay_dl( const gmltag * entry )
                     if( AttrFlags.level ) {
                         xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
                     }
                     i_int8( p, &attr_val, &dl_layout->level );
                     AttrFlags.level = true;
@@ -574,6 +579,7 @@ void    lay_dl( const gmltag * entry )
                     if( AttrFlags.left_indent ) {
                         xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
                     }
                     i_space_unit( p, &attr_val, &dl_layout->left_indent );
                     AttrFlags.left_indent = true;
@@ -582,6 +588,7 @@ void    lay_dl( const gmltag * entry )
                     if( AttrFlags.right_indent ) {
                         xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
                     }
                     i_space_unit( p, &attr_val, &dl_layout->right_indent );
                     AttrFlags.right_indent = true;
@@ -590,6 +597,7 @@ void    lay_dl( const gmltag * entry )
                     if( AttrFlags.pre_skip ) {
                         xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
                     }
                     i_space_unit( p, &attr_val, &dl_layout->pre_skip );
                     AttrFlags.pre_skip = true;
@@ -598,6 +606,7 @@ void    lay_dl( const gmltag * entry )
                     if( AttrFlags.skip ) {
                         xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
                     }
                     i_space_unit( p, &attr_val, &dl_layout->skip );
                     AttrFlags.skip = true;
@@ -606,6 +615,7 @@ void    lay_dl( const gmltag * entry )
                     if( AttrFlags.spacing ) {
                         xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
                     }
                     i_spacing( p, &attr_val, &dl_layout->spacing );
                     AttrFlags.spacing = true;
@@ -614,6 +624,7 @@ void    lay_dl( const gmltag * entry )
                     if( AttrFlags.post_skip ) {
                         xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
                     }
                     i_space_unit( p, &attr_val, &dl_layout->post_skip );
                     AttrFlags.post_skip = true;
@@ -622,6 +633,7 @@ void    lay_dl( const gmltag * entry )
                     if( AttrFlags.align ) {
                         xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
                     }
                     i_space_unit( p, &attr_val, &dl_layout->align );
                     AttrFlags.align = true;
@@ -630,12 +642,14 @@ void    lay_dl( const gmltag * entry )
                     if( AttrFlags.line_break ) {
                         xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
                     }
                     i_yes_no( p, &attr_val, &dl_layout->line_break );
                     AttrFlags.line_break = true;
                     break;
                 default:
                     internal_err_exit( __FILE__, __LINE__ );
+                    /* never return */
                 }
                 break;                  // break out of for loop
             }
@@ -741,7 +755,8 @@ void    lay_gl( const gmltag * entry )
     /* Get the GL LAYOUT settings */
 
     while( (cc = lay_attr_and_value( &attr_name, &attr_val )) == CC_pos ) {   // get att with value
-        for( k = 0, curr = gl_att[k]; curr > 0; k++, curr = gl_att[k] ) {
+        for( k = 0; k < TABLE_SIZE( gl_att ); k++ ) {
+            curr = gl_att[k];
             if( strcmp( lay_att_names[curr], attr_name.attname.l ) == 0 ) {
                 p = attr_val.tok.s;
                 switch( curr ) {
@@ -749,6 +764,7 @@ void    lay_gl( const gmltag * entry )
                     if( AttrFlags.level ) {
                         xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
                     }
                     i_int8( p, &attr_val, &gl_layout->level );
                     AttrFlags.level = true;
@@ -757,6 +773,7 @@ void    lay_gl( const gmltag * entry )
                     if( AttrFlags.left_indent ) {
                         xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
                     }
                     i_space_unit( p, &attr_val, &gl_layout->left_indent );
                     AttrFlags.left_indent = true;
@@ -765,6 +782,7 @@ void    lay_gl( const gmltag * entry )
                     if( AttrFlags.right_indent ) {
                         xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
                     }
                     i_space_unit( p, &attr_val, &gl_layout->right_indent );
                     AttrFlags.right_indent = true;
@@ -773,6 +791,7 @@ void    lay_gl( const gmltag * entry )
                     if( AttrFlags.pre_skip ) {
                         xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
                     }
                     i_space_unit( p, &attr_val, &gl_layout->pre_skip );
                     AttrFlags.pre_skip = true;
@@ -781,6 +800,7 @@ void    lay_gl( const gmltag * entry )
                     if( AttrFlags.skip ) {
                         xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
                     }
                     i_space_unit( p, &attr_val, &gl_layout->skip );
                     AttrFlags.skip = true;
@@ -789,6 +809,7 @@ void    lay_gl( const gmltag * entry )
                     if( AttrFlags.spacing ) {
                         xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
                     }
                     i_spacing( p, &attr_val, &gl_layout->spacing );
                     AttrFlags.spacing = true;
@@ -797,6 +818,7 @@ void    lay_gl( const gmltag * entry )
                     if( AttrFlags.post_skip ) {
                         xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
                     }
                     i_space_unit( p, &attr_val, &gl_layout->post_skip );
                     AttrFlags.post_skip = true;
@@ -805,6 +827,7 @@ void    lay_gl( const gmltag * entry )
                     if( AttrFlags.align ) {
                         xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
                     }
                     i_space_unit( p, &attr_val, &gl_layout->align );
                     AttrFlags.align = true;
@@ -813,12 +836,14 @@ void    lay_gl( const gmltag * entry )
                     if( AttrFlags.delim ) {
                         xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
                     }
                     i_char( p, &attr_val, &gl_layout->delim );
                     AttrFlags.delim = true;
                     break;
                 default:
                     internal_err_exit( __FILE__, __LINE__ );
+                    /* never return */
                 }
                 break;                  // break out of for loop
             }
@@ -926,7 +951,8 @@ void    lay_ol( const gmltag * entry )
     /* Get the OL LAYOUT settings */
 
     while( (cc = lay_attr_and_value( &attr_name, &attr_val )) == CC_pos ) {   // get att with value
-        for( k = 0, curr = ol_att[k]; curr > 0; k++, curr = ol_att[k] ) {
+        for( k = 0; k < TABLE_SIZE( ol_att ); k++ ) {
+            curr = ol_att[k];
             if( strcmp( lay_att_names[curr], attr_name.attname.l ) == 0 ) {
                 p = attr_val.tok.s;
                 switch( curr ) {
@@ -934,6 +960,7 @@ void    lay_ol( const gmltag * entry )
                     if( AttrFlags.level ) {
                         xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
                     }
                     i_int8( p, &attr_val, &ol_layout->level );
                     AttrFlags.level = true;
@@ -942,6 +969,7 @@ void    lay_ol( const gmltag * entry )
                     if( AttrFlags.left_indent ) {
                         xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
                     }
                     i_space_unit( p, &attr_val, &ol_layout->left_indent );
                     AttrFlags.left_indent = true;
@@ -950,6 +978,7 @@ void    lay_ol( const gmltag * entry )
                     if( AttrFlags.right_indent ) {
                         xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
                     }
                     i_space_unit( p, &attr_val, &ol_layout->right_indent );
                     AttrFlags.right_indent = true;
@@ -958,6 +987,7 @@ void    lay_ol( const gmltag * entry )
                     if( AttrFlags.pre_skip ) {
                         xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
                     }
                     i_space_unit( p, &attr_val, &ol_layout->pre_skip );
                     AttrFlags.pre_skip = true;
@@ -966,6 +996,7 @@ void    lay_ol( const gmltag * entry )
                     if( AttrFlags.skip ) {
                         xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
                     }
                     i_space_unit( p, &attr_val, &ol_layout->skip );
                     AttrFlags.skip = true;
@@ -974,6 +1005,7 @@ void    lay_ol( const gmltag * entry )
                     if( AttrFlags.spacing ) {
                         xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
                     }
                     i_spacing( p, &attr_val, &ol_layout->spacing );
                     AttrFlags.spacing = true;
@@ -982,6 +1014,7 @@ void    lay_ol( const gmltag * entry )
                     if( AttrFlags.post_skip ) {
                         xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
                     }
                     i_space_unit( p, &attr_val, &ol_layout->post_skip );
                     AttrFlags.post_skip = true;
@@ -990,6 +1023,7 @@ void    lay_ol( const gmltag * entry )
                     if( AttrFlags.font ) {
                         xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
                     }
                     i_font_number( p, &attr_val, &ol_layout->font );
                     if( ol_layout->font >= wgml_font_cnt ) {
@@ -1001,6 +1035,7 @@ void    lay_ol( const gmltag * entry )
                     if( AttrFlags.align ) {
                         xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
                     }
                     i_space_unit( p, &attr_val, &ol_layout->align );
                     AttrFlags.align = true;
@@ -1009,6 +1044,7 @@ void    lay_ol( const gmltag * entry )
                     if( AttrFlags.number_style ) {
                         xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
                     }
                     i_number_style( p, &attr_val, &ol_layout->number_style );
                     AttrFlags.number_style = true;
@@ -1017,6 +1053,7 @@ void    lay_ol( const gmltag * entry )
                     if( AttrFlags.number_font ) {
                         xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
                     }
                     i_font_number( p, &attr_val, &ol_layout->number_font );
                     if( ol_layout->number_font >= wgml_font_cnt ) {
@@ -1026,6 +1063,7 @@ void    lay_ol( const gmltag * entry )
                     break;
                 default:
                     internal_err_exit( __FILE__, __LINE__ );
+                    /* never return */
                 }
                 break;                  // break out of for loop
             }
@@ -1136,7 +1174,8 @@ void    lay_sl( const gmltag * entry )
     /* Get the SL LAYOUT settings */
 
     while( (cc = lay_attr_and_value( &attr_name, &attr_val )) == CC_pos ) {   // get att with value
-        for( k = 0, curr = sl_att[k]; curr > 0; k++, curr = sl_att[k] ) {
+        for( k = 0; k < TABLE_SIZE( sl_att ); k++ ) {
+            curr = sl_att[k];
             if( strcmp( lay_att_names[curr], attr_name.attname.l ) == 0 ) {
                 p = attr_val.tok.s;
                 switch( curr ) {
@@ -1144,6 +1183,7 @@ void    lay_sl( const gmltag * entry )
                     if( AttrFlags.level ) {
                         xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
                     }
                     i_int8( p, &attr_val, &sl_layout->level );
                     AttrFlags.level = true;
@@ -1152,6 +1192,7 @@ void    lay_sl( const gmltag * entry )
                     if( AttrFlags.left_indent ) {
                         xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
                     }
                     i_space_unit( p, &attr_val, &sl_layout->left_indent );
                     AttrFlags.left_indent = true;
@@ -1160,6 +1201,7 @@ void    lay_sl( const gmltag * entry )
                     if( AttrFlags.right_indent ) {
                         xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
                     }
                     i_space_unit( p, &attr_val, &sl_layout->right_indent );
                     AttrFlags.right_indent = true;
@@ -1168,6 +1210,7 @@ void    lay_sl( const gmltag * entry )
                     if( AttrFlags.pre_skip ) {
                         xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
                     }
                     i_space_unit( p, &attr_val, &sl_layout->pre_skip );
                     AttrFlags.pre_skip = true;
@@ -1176,6 +1219,7 @@ void    lay_sl( const gmltag * entry )
                     if( AttrFlags.skip ) {
                         xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
                     }
                     i_space_unit( p, &attr_val, &sl_layout->skip );
                     AttrFlags.skip = true;
@@ -1184,6 +1228,7 @@ void    lay_sl( const gmltag * entry )
                     if( AttrFlags.spacing ) {
                         xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
                     }
                     i_spacing( p, &attr_val, &sl_layout->spacing );
                     AttrFlags.spacing = true;
@@ -1192,6 +1237,7 @@ void    lay_sl( const gmltag * entry )
                     if( AttrFlags.post_skip ) {
                         xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
                     }
                     i_space_unit( p, &attr_val, &sl_layout->post_skip );
                     AttrFlags.post_skip = true;
@@ -1200,6 +1246,7 @@ void    lay_sl( const gmltag * entry )
                     if( AttrFlags.font ) {
                         xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
                     }
                     i_font_number( p, &attr_val, &sl_layout->font );
                     if( sl_layout->font >= wgml_font_cnt ) {
@@ -1209,6 +1256,7 @@ void    lay_sl( const gmltag * entry )
                     break;
                 default:
                     internal_err_exit( __FILE__, __LINE__ );
+                    /* never return */
                 }
                 break;                  // break out of for loop
             }
@@ -1313,7 +1361,8 @@ void    lay_ul( const gmltag * entry )
     /* Get the UL LAYOUT settings */
 
     while( (cc = lay_attr_and_value( &attr_name, &attr_val )) == CC_pos ) {   // get att with value
-        for( k = 0, curr = ul_att[k]; curr > 0; k++, curr = ul_att[k] ) {
+        for( k = 0; k < TABLE_SIZE( ul_att ); k++ ) {
+            curr = ul_att[k];
             if( strcmp( lay_att_names[curr], attr_name.attname.l ) == 0 ) {
                 p = attr_val.tok.s;
                 switch( curr ) {
@@ -1321,6 +1370,7 @@ void    lay_ul( const gmltag * entry )
                     if( AttrFlags.level ) {
                         xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
                     }
                     i_int8( p, &attr_val, &ul_layout->level );
                     AttrFlags.level = true;
@@ -1329,6 +1379,7 @@ void    lay_ul( const gmltag * entry )
                     if( AttrFlags.left_indent ) {
                         xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
                     }
                     i_space_unit( p, &attr_val, &ul_layout->left_indent );
                     AttrFlags.left_indent = true;
@@ -1337,6 +1388,7 @@ void    lay_ul( const gmltag * entry )
                     if( AttrFlags.right_indent ) {
                         xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
                     }
                     i_space_unit( p, &attr_val, &ul_layout->right_indent );
                     AttrFlags.right_indent = true;
@@ -1345,6 +1397,7 @@ void    lay_ul( const gmltag * entry )
                     if( AttrFlags.pre_skip ) {
                         xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
                     }
                     i_space_unit( p, &attr_val, &ul_layout->pre_skip );
                     AttrFlags.pre_skip = true;
@@ -1353,6 +1406,7 @@ void    lay_ul( const gmltag * entry )
                     if( AttrFlags.skip ) {
                         xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
                     }
                     i_space_unit( p, &attr_val, &ul_layout->skip );
                     AttrFlags.skip = true;
@@ -1361,6 +1415,7 @@ void    lay_ul( const gmltag * entry )
                     if( AttrFlags.spacing ) {
                         xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
                     }
                     i_spacing( p, &attr_val, &ul_layout->spacing );
                     AttrFlags.spacing = true;
@@ -1369,6 +1424,7 @@ void    lay_ul( const gmltag * entry )
                     if( AttrFlags.post_skip ) {
                         xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
                     }
                     i_space_unit( p, &attr_val, &ul_layout->post_skip );
                     AttrFlags.post_skip = true;
@@ -1377,6 +1433,7 @@ void    lay_ul( const gmltag * entry )
                     if( AttrFlags.font ) {
                         xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
                     }
                     i_font_number( p, &attr_val, &ul_layout->font );
                     if( ul_layout->font >= wgml_font_cnt ) {
@@ -1388,6 +1445,7 @@ void    lay_ul( const gmltag * entry )
                     if( AttrFlags.align ) {
                         xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
                     }
                     i_space_unit( p, &attr_val, &ul_layout->align );
                     AttrFlags.align = true;
@@ -1396,6 +1454,7 @@ void    lay_ul( const gmltag * entry )
                     if( AttrFlags.bullet ) {
                         xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
                     }
                     i_char( p, &attr_val, &ul_layout->bullet );
                     AttrFlags.bullet = true;
@@ -1404,6 +1463,7 @@ void    lay_ul( const gmltag * entry )
                     if( AttrFlags.bullet_translate ) {
                         xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
                     }
                     i_yes_no( p, &attr_val, &ul_layout->bullet_translate );
                     AttrFlags.bullet_translate = true;
@@ -1412,6 +1472,7 @@ void    lay_ul( const gmltag * entry )
                     if( AttrFlags.bullet_font ) {
                         xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
                     }
                     i_font_number( p, &attr_val, &ul_layout->bullet_font );
                     if( ul_layout->bullet_font >= wgml_font_cnt ) {
@@ -1421,6 +1482,7 @@ void    lay_ul( const gmltag * entry )
                     break;
                 default:
                     internal_err_exit( __FILE__, __LINE__ );
+                    /* never return */
                 }
                 break;                  // break out of for loop
             }
@@ -1496,3 +1558,279 @@ void    lay_ul( const gmltag * entry )
     return;
 }
 
+
+
+/***************************************************************************/
+/*   :DL        output attribute values                                    */
+/***************************************************************************/
+void    put_lay_dl( FILE *fp, layout_data * lay )
+{
+    dl_lay_level    *   dl_layout;
+    int                 k;
+    lay_att             curr;
+
+    dl_layout = lay->dl.first;
+
+    while( dl_layout != NULL ) {
+        fprintf( fp, ":DL\n" );
+        for( k = 0; k < TABLE_SIZE( dl_att ); k++ ) {
+            curr = dl_att[k];
+            switch( curr ) {
+            case e_level:
+                o_int8( fp, curr, &dl_layout->level );
+                break;
+            case e_left_indent:
+                o_space_unit( fp, curr, &dl_layout->left_indent );
+                break;
+            case e_right_indent:
+                o_space_unit( fp, curr, &dl_layout->right_indent );
+                break;
+            case e_pre_skip:
+                o_space_unit( fp, curr, &dl_layout->pre_skip );
+                break;
+            case e_skip:
+                o_space_unit( fp, curr, &dl_layout->skip );
+                break;
+            case e_spacing:
+                o_spacing( fp, curr, &dl_layout->spacing );
+                break;
+            case e_post_skip:
+                o_space_unit( fp, curr, &dl_layout->post_skip );
+                break;
+            case e_align:
+                o_space_unit( fp, curr, &dl_layout->align );
+                break;
+            case e_line_break:
+                o_yes_no( fp, curr, &dl_layout->line_break );
+                break;
+            default:
+                internal_err_exit( __FILE__, __LINE__ );
+                /* never return */
+            }
+        }
+        dl_layout = dl_layout->next;
+    }
+}
+
+
+/***************************************************************************/
+/*   :GL        output attribute values                                    */
+/***************************************************************************/
+void    put_lay_gl( FILE *fp, layout_data * lay )
+{
+    gl_lay_level    *   gl_layout;
+    int                 k;
+    lay_att             curr;
+
+    gl_layout = lay->gl.first;
+
+    while( gl_layout != NULL ) {
+        fprintf( fp, ":GL\n" );
+        for( k = 0; k < TABLE_SIZE( gl_att ); k++ ) {
+            curr = gl_att[k];
+            switch( curr ) {
+            case e_level:
+                o_int8( fp, curr, &gl_layout->level );
+                break;
+            case e_left_indent:
+                o_space_unit( fp, curr, &gl_layout->left_indent );
+                break;
+            case e_right_indent:
+                o_space_unit( fp, curr, &gl_layout->right_indent );
+                break;
+            case e_pre_skip:
+                o_space_unit( fp, curr, &gl_layout->pre_skip );
+                break;
+            case e_skip:
+                o_space_unit( fp, curr, &gl_layout->skip );
+                break;
+            case e_spacing:
+                o_spacing( fp, curr, &gl_layout->spacing );
+                break;
+            case e_post_skip:
+                o_space_unit( fp, curr, &gl_layout->post_skip );
+                break;
+            case e_align:
+                o_space_unit( fp, curr, &gl_layout->align );
+                break;
+            case e_delim:
+                o_char( fp, curr, &gl_layout->delim );
+                break;
+            default:
+                internal_err_exit( __FILE__, __LINE__ );
+                /* never return */
+            }
+        }
+        gl_layout = gl_layout->next;
+    }
+}
+
+
+/***************************************************************************/
+/*   :OL        output attribute values                                    */
+/***************************************************************************/
+void    put_lay_ol( FILE *fp, layout_data * lay )
+{
+    int                 k;
+    lay_att             curr;
+    ol_lay_level    *   ol_layout;
+
+    ol_layout = lay->ol.first;
+
+    while( ol_layout != NULL ) {
+        fprintf( fp, ":OL\n" );
+        for( k = 0; k < TABLE_SIZE( ol_att ); k++ ) {
+            curr = ol_att[k];
+            switch( curr ) {
+            case e_level:
+                o_int8( fp, curr, &ol_layout->level );
+                break;
+            case e_left_indent:
+                o_space_unit( fp, curr, &ol_layout->left_indent );
+                break;
+            case e_right_indent:
+                o_space_unit( fp, curr, &ol_layout->right_indent );
+                break;
+            case e_pre_skip:
+                o_space_unit( fp, curr, &ol_layout->pre_skip );
+                break;
+            case e_skip:
+                o_space_unit( fp, curr, &ol_layout->skip );
+                break;
+            case e_spacing:
+                o_spacing( fp, curr, &ol_layout->spacing );
+                break;
+            case e_post_skip:
+                o_space_unit( fp, curr, &ol_layout->post_skip );
+                break;
+            case e_font:
+                o_font_number( fp, curr, &ol_layout->font );
+                break;
+            case e_align:
+                o_space_unit( fp, curr, &ol_layout->align );
+                break;
+            case e_number_style:
+                o_number_style( fp, curr, &ol_layout->number_style );
+                break;
+            case e_number_font:
+                o_font_number( fp, curr, &ol_layout->number_font );
+                break;
+            default:
+                internal_err_exit( __FILE__, __LINE__ );
+                /* never return */
+            }
+        }
+        ol_layout = ol_layout->next;
+    }
+}
+
+/***************************************************************************/
+/*   :SL        output attribute values                                    */
+/***************************************************************************/
+void    put_lay_sl( FILE *fp, layout_data * lay )
+{
+    int                 k;
+    lay_att             curr;
+    sl_lay_level    *   sl_layout;
+
+    sl_layout = lay->sl.first;
+
+    while( sl_layout != NULL ) {
+        fprintf( fp, ":SL\n" );
+        for( k = 0; k < TABLE_SIZE( sl_att ); k++ ) {
+            curr = sl_att[k];
+            switch( curr ) {
+            case e_level:
+                o_int8( fp, curr, &sl_layout->level );
+                break;
+            case e_left_indent:
+                o_space_unit( fp, curr, &sl_layout->left_indent );
+                break;
+            case e_right_indent:
+                o_space_unit( fp, curr, &sl_layout->right_indent );
+                break;
+            case e_pre_skip:
+                o_space_unit( fp, curr, &sl_layout->pre_skip );
+                break;
+            case e_skip:
+                o_space_unit( fp, curr, &sl_layout->skip );
+                break;
+            case e_spacing:
+                o_spacing( fp, curr, &sl_layout->spacing );
+                break;
+            case e_post_skip:
+                o_space_unit( fp, curr, &sl_layout->post_skip );
+                break;
+            case e_font:
+                o_font_number( fp, curr, &sl_layout->font );
+                break;
+            default:
+                internal_err_exit( __FILE__, __LINE__ );
+                /* never return */
+            }
+        }
+        sl_layout = sl_layout->next;
+    }
+}
+
+
+/***************************************************************************/
+/*   :UL        output attribute values                                    */
+/***************************************************************************/
+void    put_lay_ul( FILE *fp, layout_data * lay )
+{
+    int                 k;
+    lay_att             curr;
+    ul_lay_level    *   ul_layout;
+
+    ul_layout = lay->ul.first;
+
+    while( ul_layout != NULL ) {
+        fprintf( fp, ":UL\n" );
+        for( k = 0; k < TABLE_SIZE( ul_att ); k++ ) {
+            curr = ul_att[k];
+            switch( curr ) {
+            case e_level:
+                o_int8( fp, curr, &ul_layout->level );
+                break;
+            case e_left_indent:
+                o_space_unit( fp, curr, &ul_layout->left_indent );
+                break;
+            case e_right_indent:
+                o_space_unit( fp, curr, &ul_layout->right_indent );
+                break;
+            case e_pre_skip:
+                o_space_unit( fp, curr, &ul_layout->pre_skip );
+                break;
+            case e_skip:
+                o_space_unit( fp, curr, &ul_layout->skip );
+                break;
+            case e_spacing:
+                o_spacing( fp, curr, &ul_layout->spacing );
+                break;
+            case e_post_skip:
+                o_space_unit( fp, curr, &ul_layout->post_skip );
+                break;
+            case e_font:
+                o_font_number( fp, curr, &ul_layout->font );
+                break;
+            case e_align:
+                o_space_unit( fp, curr, &ul_layout->align );
+                break;
+            case e_bullet:
+                o_char( fp, curr, &ul_layout->bullet );
+                break;
+            case e_bullet_translate:
+                o_yes_no( fp, curr, &ul_layout->bullet_translate );
+                break;
+            case e_bullet_font:
+                o_font_number( fp, curr, &ul_layout->bullet_font );
+                break;
+            default:
+                internal_err_exit( __FILE__, __LINE__ );
+                /* never return */
+            }
+        }
+        ul_layout = ul_layout->next;
+    }
+}

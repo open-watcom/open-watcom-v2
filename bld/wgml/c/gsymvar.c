@@ -453,7 +453,6 @@ static  int find_symvar_del( symdict_hdl dict, const char *name, sub_index subsc
         }
     }
     if( rc > 0 ) {                      // non deleted symbol found
-
         *symsubval = wk->sub_0;         // return at least sub 0
         if( wk->flags & SF_subscripted ) {
             if( (subscript == SI_no_subscript)
@@ -494,6 +493,7 @@ static bool check_subscript( sub_index subscript )
 
             sprintf( linestr, "%d", subscript );
             xx_line_err_exit_c( err_sub_out_of_range, linestr );
+            /* never return */
         }
     }
     return( true );
@@ -706,6 +706,7 @@ int add_symvar_addr( symdict_hdl dict, const char *name, const char *val, unsign
             break;
         default:
             xx_line_err_exit_c( err_logic_err, __FILE__ );
+            /* never return */
         }
     }
     return( rc );

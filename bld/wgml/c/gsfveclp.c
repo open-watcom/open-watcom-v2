@@ -134,6 +134,7 @@ static  condcode    get_vector_pos( parm parms[MAX_FUN_PARMS], unsigned parmcoun
                 if( (cc != CC_pos) ) {
                     if( !ProcFlags.suppress_msg ) {
                         xx_source_err_exit_c( err_func_parm, "3 (startpos)" );
+                        /* never return */
                     }
                     return( cc );
                 }

@@ -49,9 +49,10 @@ void    gml_title( const gmltag * entry )
     att_name_type   attr_name;
     att_val_type    attr_val;
 
-    if( !((ProcFlags.doc_sect == DSECT_titlep) ||
-          (ProcFlags.doc_sect_nxt == DSECT_titlep)) ) {
+    if( !((ProcFlags.doc_sect == DSECT_titlep)
+      || (ProcFlags.doc_sect_nxt == DSECT_titlep)) ) {
         xx_nest_err_exit_cc( err_tag_wrong_sect, entry->tagname, ":TITLEP section" );
+        /* never return */
     }
 
     p = scandata.s;
@@ -114,9 +115,9 @@ void    gml_title( const gmltag * entry )
     t_page.cur_width = t_page.cur_left;
     if( t_page.max_width < right_indent ) {
         xx_line_err_exit_c( err_page_width_too_small, attr_val.tok.s );
-    } else {
-        t_page.max_width -= right_indent;
+        /* never return */
     }
+    t_page.max_width -= right_indent;
     ProcFlags.keep_left_margin = true;  // keep special indent
     old_line_pos = line_position;
     line_position = layout_work.title.page_position;

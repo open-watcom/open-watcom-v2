@@ -114,9 +114,8 @@ static condcode gargrelop( relop * r )
     if( cc != CC_pos ) {
         return( cc );                   // scan error
     }
-    if(  ! ((*(g_tok_start + 1) == ' ')
-        || (*(g_tok_start + 2) == ' ')) ) { // operator is max 2 chars long
-
+    if( !((*(g_tok_start + 1) == ' ')
+      || (*(g_tok_start + 2) == ' ')) ) { // operator is max 2 chars long
         return( CC_no );                   // scan error
     }
 
@@ -267,7 +266,8 @@ static bool ifcompare( termcb * t1, relop r, termcb * t2 )
     term1 = t1->term_number;            // assume integers
     term2 = t2->term_number;
 
-    if( !t1->numeric || !t2->numeric ) { // string compare
+    if( !t1->numeric
+      || !t2->numeric ) { // string compare
         char        *p1 = t1->term_string;
         char        *p2 = t2->term_string;
         unsigned    length;
@@ -428,11 +428,14 @@ void    scr_if( void )
         ccrelop = gargrelop( &relation );   // get relation operator
         cct2    = gargterm( &t2 );      // get term 2
 
-        if( (cct1 == CC_no) || (cct2 == CC_no) ) {
+        if( (cct1 == CC_no)
+          || (cct2 == CC_no) ) {
             xx_source_err_exit( err_if_term );
+            /* never return */
         }
         if( ccrelop != CC_pos ) {
             xx_source_err_exit( err_if_relop );
+            /* never return */
         }
 
         // terms and operator ok now compare
@@ -450,6 +453,7 @@ void    scr_if( void )
                 cb->if_flags[cb->if_level].iffalse = false; // cond not yet false
             } else {
                 xx_source_err_exit( err_if_nesting );
+                /* never return */
             }
             totalcondition = ifcond;
         } else {
@@ -585,15 +589,13 @@ void    scr_th( void )
     g_scan_err = false;
     cb->if_flags[cb->if_level].ifcwte = false;
     if( !cb->if_flags[cb->if_level].iflast
-
-        || !(cb->if_flags[cb->if_level].iftrue
-             || cb->if_flags[cb->if_level].iffalse)
-
-        || cb->if_flags[cb->if_level].ifthen
-        || cb->if_flags[cb->if_level].ifelse
-        || cb->if_flags[cb->if_level].ifdo ) {
-
+      || !(cb->if_flags[cb->if_level].iftrue
+      || cb->if_flags[cb->if_level].iffalse)
+      || cb->if_flags[cb->if_level].ifthen
+      || cb->if_flags[cb->if_level].ifelse
+      || cb->if_flags[cb->if_level].ifdo ) {
         xx_source_err_exit( err_if_then );
+        /* never return */
     }
     cb->if_flags[cb->if_level].iflast = false;
     cb->if_flags[cb->if_level].ifthen = true;
@@ -645,13 +647,12 @@ void    scr_el( void )
     cb->if_flags[cb->if_level].ifcwte = false;
 
     if( !(cb->if_flags[cb->if_level].iftrue
-          || cb->if_flags[cb->if_level].iffalse)
-
-        || cb->if_flags[cb->if_level].ifthen
-        || cb->if_flags[cb->if_level].ifelse
-        || cb->if_flags[cb->if_level].ifdo ) {
-
+      || cb->if_flags[cb->if_level].iffalse)
+      || cb->if_flags[cb->if_level].ifthen
+      || cb->if_flags[cb->if_level].ifelse
+      || cb->if_flags[cb->if_level].ifdo ) {
         xx_source_err_exit( err_if_else );
+        /* never return */
     }
     cb->if_flags[cb->if_level].ifelse = true;
     ProcFlags.keep_ifstate = true;
@@ -696,12 +697,13 @@ void    scr_do( void )
     cc = getarg();
 
     cb->if_flags[cb->if_level].ifcwdo = false;
-    if( cc == CC_omit || strnicmp( "begin", g_tok_start, 5 ) == 0 ) {
+    if( cc == CC_omit
+      || strnicmp( "begin", g_tok_start, 5 ) == 0 ) {
         if( !(cb->if_flags[cb->if_level].ifthen
-            || cb->if_flags[cb->if_level].ifelse)
-            || cb->if_flags[cb->if_level].ifdo ) {
-
+          || cb->if_flags[cb->if_level].ifelse)
+          || cb->if_flags[cb->if_level].ifdo ) {
             xx_source_err_exit( err_if_do );
+            /* never return */
         }
         cb->if_flags[cb->if_level].ifdo = true;
         cb->if_flags[cb->if_level].ifindo = true;
@@ -729,12 +731,12 @@ void    scr_do( void )
                 }
 
                 if( (!cb->if_flags[cb->if_level].ifindo
-                    && (cb->if_flags[cb->if_level].ifthen
-                    || cb->if_flags[cb->if_level].ifelse))
-                    || !(cb->if_flags[cb->if_level].iftrue
-                    || cb->if_flags[cb->if_level].iffalse) ) {
-
+                  && (cb->if_flags[cb->if_level].ifthen
+                  || cb->if_flags[cb->if_level].ifelse))
+                  || !(cb->if_flags[cb->if_level].iftrue
+                  || cb->if_flags[cb->if_level].iffalse) ) {
                     xx_source_err_exit( err_if_do_end );
+                    /* never return */
                 }
 
                 cb->if_flags[cb->if_level].ifindo = false;
@@ -750,6 +752,7 @@ void    scr_do( void )
 #endif
         } else {
             xx_source_err_exit( err_if_do_fun );
+            /* never return */
         }
     }
     if( (input_cbs->fmflags & II_research) && GlobalFlags.firstpass ) {

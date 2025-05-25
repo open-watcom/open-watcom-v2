@@ -37,8 +37,9 @@
 /***************************************************************************/
 /*   :P and :PC    attributes                                              */
 /***************************************************************************/
-const   lay_att     p_att[4] =
-    { e_line_indent, e_pre_skip, e_post_skip, e_dummy_zero };
+static const lay_att    p_att[] = {
+    e_line_indent, e_pre_skip, e_post_skip
+};
 
 
 /********************************************************************************/
@@ -115,7 +116,8 @@ static void process_arg( p_lay_tag *p_or_pc )
 
     while( (cc = lay_attr_and_value( &attr_name, &attr_val )) == CC_pos ) {   // get att with value
         cvterr = -1;
-        for( k = 0, curr = p_att[k]; curr > 0; k++, curr = p_att[k] ) {
+        for( k = 0; k < TABLE_SIZE( p_att ); k++ ) {
+            curr = p_att[k];
             if( strcmp( lay_att_names[curr], attr_name.attname.l ) == 0 ) {
                 p = attr_val.tok.s;
                 switch( curr ) {
@@ -123,6 +125,7 @@ static void process_arg( p_lay_tag *p_or_pc )
                     if( AttrFlags.line_indent ) {
                         xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
                     }
                     cvterr = i_space_unit( p, &attr_val, &p_or_pc->line_indent );
                     AttrFlags.line_indent = true;
@@ -131,6 +134,7 @@ static void process_arg( p_lay_tag *p_or_pc )
                     if( AttrFlags.pre_skip ) {
                         xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
                     }
                     cvterr = i_space_unit( p, &attr_val, &p_or_pc->pre_skip );
                     AttrFlags.pre_skip = true;
@@ -139,21 +143,25 @@ static void process_arg( p_lay_tag *p_or_pc )
                     if( AttrFlags.post_skip ) {
                         xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
                     }
                     cvterr = i_space_unit( p, &attr_val, &p_or_pc->post_skip );
                     AttrFlags.post_skip = true;
                     break;
                 default:
                     internal_err_exit( __FILE__, __LINE__ );
+                    /* never return */
                 }
                 if( cvterr ) {              // there was an error
                     xx_err_exit( err_att_val_inv );
+                    /* never return */
                 }
                 break;                      // break out of for loop
             }
         }
         if( cvterr < 0 ) {
             xx_err_exit( err_att_name_inv );
+            /* never return */
         }
     }
 }
@@ -184,4 +192,45 @@ void    lay_pc( const gmltag * entry )
     }
     process_arg( &layout_work.pc );
     scandata.s = scandata.e;
+}
+
+
+/***************************************************************************/
+/*   :P         output paragraph attribute values                          */
+/*   :PC        output paragraph continue attribute values                 */
+/***************************************************************************/
+static  void    put_lay_p_pc( FILE *fp, p_lay_tag * ap, char * name )
+{
+    int                 k;
+    lay_att             curr;
+
+    fprintf( fp, ":%s\n", name );
+
+    for( k = 0; k < TABLE_SIZE( p_att ); k++ ) {
+        curr = p_att[k];
+        switch( curr ) {
+        case e_line_indent:
+            o_space_unit( fp, curr, &ap->line_indent );
+            break;
+        case e_pre_skip:
+            o_space_unit( fp, curr, &ap->pre_skip );
+            break;
+        case e_post_skip:
+            o_space_unit( fp, curr, &ap->post_skip );
+            break;
+        default:
+            internal_err_exit( __FILE__, __LINE__ );
+            /* never return */
+        }
+    }
+}
+
+void    put_lay_p( FILE *fp, layout_data * lay )
+{
+    put_lay_p_pc( fp, &(lay->p), "P" );
+}
+
+void    put_lay_pc( FILE *fp, layout_data * lay )
+{
+    put_lay_p_pc( fp, &(lay->pc), "PC" );
 }

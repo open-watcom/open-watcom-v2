@@ -126,6 +126,7 @@ extern  void    gml_set( const gmltag * entry )
         }
     } else {
         xx_err_exit( err_att_missing );
+        /* never return */
     }
 
     if( !ProcFlags.reprocess_line && *p != '\0' ) {

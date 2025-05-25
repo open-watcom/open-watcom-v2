@@ -35,26 +35,37 @@
 #include "clibext.h"
 
 
-static banner_lay_tag  *   curr_ban;       // also needed for glbanreg.c
-static banner_lay_tag  *   del_ban;        // ... banner to be deleted
-
-
 /***************************************************************************/
 /*   :BANNER    attributes                                                 */
 /***************************************************************************/
-const   lay_att     banner_att[8] =
-    { e_left_adjust, e_right_adjust, e_depth, e_place, e_refplace,
-      e_docsect, e_refdoc, e_dummy_zero };
+static const lay_att    banner_att[] = {
+    e_left_adjust, e_right_adjust, e_depth, e_place, e_refplace,
+    e_docsect, e_refdoc
+};
 
-static  int             att_countb = sizeof( banner_att ) - 1;   // omit e_dummy_zero from count
-static  bool            countb[sizeof( banner_att ) - 1];
-static  int             sum_countb;
-static  banner_lay_tag  wkb;          // for temp storage of banner attributes
-static  ban_place       refplace;
-static  ban_docsect     refdoc;
+/***************************************************************************/
+/*   :BANREGION attributes                                                 */
+/***************************************************************************/
+static const lay_att    banregion_att[] = {
+    e_indent, e_hoffset, e_width, e_voffset, e_depth, e_font, e_refnum,
+    e_region_position, e_pouring, e_script_format, e_contents
+};
 
-static  banner_lay_tag  *   prev_ban;
-static  banner_lay_tag  *   ref_ban;    // referenced banner for copy values
+static bool             countb[TABLE_SIZE( banner_att )];
+static bool             countr[TABLE_SIZE( banregion_att )];
+static int              sum_countb;
+static int              sum_countr;
+static banner_lay_tag   wkb;            // for temp storage of banner attributes
+static region_lay_tag   wkr;            // temp for input values
+static region_lay_tag   *prev_reg;
+static ban_place        refplace;
+static ban_docsect      refdoc;
+
+static banner_lay_tag   *curr_ban;
+static banner_lay_tag   *del_ban;
+static banner_lay_tag   *prev_ban;
+static banner_lay_tag   *ref_ban;       // referenced banner for copy values
+
 
 /**********************************************************************************/
 /* Defines a page banner.  A page banner appears at the top and/or bottom         */
@@ -190,7 +201,7 @@ static  void    init_banner_wk( banner_lay_tag * ban )
     ref_ban = NULL;
     del_ban = NULL;
 
-    for( k = 0; k < att_countb; k++ ) {
+    for( k = 0; k < TABLE_SIZE( banner_att ); k++ ) {
         countb[k] = false;
     }
     sum_countb = 0;
@@ -226,79 +237,87 @@ void    lay_banner( const gmltag * entry )
         init_banner_wk( &wkb );
     }
     while( (cc = lay_attr_and_value( &attr_name, &attr_val )) == CC_pos ) {   // get att with value
-        for( k = 0; k < att_countb; k++ ) {
+        for( k = 0; k < TABLE_SIZE( banner_att ); k++ ) {
             curr = banner_att[k];
             if( strcmp( lay_att_names[curr], attr_name.attname.l ) == 0 ) {
                 p = attr_val.tok.s;
                 if( countb[k] ) {
-                    if( sum_countb == att_countb ) {  // all attributes found
+                    if( sum_countb == TABLE_SIZE( banner_att ) ) {  // all attributes found
                         xx_err_exit( err_lay_text );     // per wgml 4.0: treat as text
                     } else {
                         xx_err_exit( err_att_dup );      // per wgml 4.0: treat as duplicated attribute
                     }
-                } else {
-                    countb[k] = true;
-                    sum_countb++;
-                    switch( curr ) {
-                    case e_left_adjust:
-                        if( AttrFlags.left_adjust ) {
-                            xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
-                                attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
-                        }
-                        i_space_unit( p, &attr_val, &wkb.left_adjust );
-                        AttrFlags.left_adjust = true;
-                        break;
-                    case e_right_adjust:
-                        if( AttrFlags.right_adjust ) {
-                            xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
-                                attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
-                        }
-                        i_space_unit( p, &attr_val, &wkb.right_adjust );
-                        AttrFlags.right_adjust = true;
-                        break;
-                    case e_depth:
-                        if( AttrFlags.depth ) {
-                            xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
-                                attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
-                        }
-                        i_space_unit( p, &attr_val, &wkb.depth );
-                        AttrFlags.depth = true;
-                        break;
-                    case e_place:
-                        if( AttrFlags.place ) {
-                            xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
-                                attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
-                        }
-                        i_place( p, &attr_val, &wkb.place );
-                        AttrFlags.place = true;
-                        break;
-                    case e_docsect:
-                        if( AttrFlags.docsect ) {
-                            xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
-                                attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
-                        }
-                        i_docsect( p, &attr_val, &wkb.docsect );
-                        AttrFlags.docsect = true;
-                        break;
-                    case e_refplace:  // not stored in banner struct
-                        if( AttrFlags.refplace ) {
-                            xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
-                                attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
-                        }
-                        i_place( p, &attr_val, &refplace );
-                        AttrFlags.refplace = true;
-                        break;
-                    case e_refdoc:    // not stored in banner struct
-                        if( AttrFlags.refdoc ) {
-                            xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
-                                attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
-                        }
-                        i_docsect( p, &attr_val, &refdoc );
-                        AttrFlags.refdoc = true;
-                        break;
-                    default:
-                        internal_err_exit( __FILE__, __LINE__ );
+                    /* never return */
+                }
+                countb[k] = true;
+                sum_countb++;
+                switch( curr ) {
+                case e_left_adjust:
+                    if( AttrFlags.left_adjust ) {
+                        xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
+                            attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
                     }
+                    i_space_unit( p, &attr_val, &wkb.left_adjust );
+                    AttrFlags.left_adjust = true;
+                    break;
+                case e_right_adjust:
+                    if( AttrFlags.right_adjust ) {
+                        xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
+                            attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
+                    }
+                    i_space_unit( p, &attr_val, &wkb.right_adjust );
+                    AttrFlags.right_adjust = true;
+                    break;
+                case e_depth:
+                    if( AttrFlags.depth ) {
+                        xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
+                            attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
+                    }
+                    i_space_unit( p, &attr_val, &wkb.depth );
+                    AttrFlags.depth = true;
+                    break;
+                case e_place:
+                    if( AttrFlags.place ) {
+                        xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
+                            attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
+                    }
+                    i_place( p, &attr_val, &wkb.place );
+                    AttrFlags.place = true;
+                    break;
+                case e_docsect:
+                    if( AttrFlags.docsect ) {
+                        xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
+                            attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
+                    }
+                    i_docsect( p, &attr_val, &wkb.docsect );
+                    AttrFlags.docsect = true;
+                    break;
+                case e_refplace:  // not stored in banner struct
+                    if( AttrFlags.refplace ) {
+                        xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
+                            attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
+                    }
+                    i_place( p, &attr_val, &refplace );
+                    AttrFlags.refplace = true;
+                    break;
+                case e_refdoc:    // not stored in banner struct
+                    if( AttrFlags.refdoc ) {
+                        xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
+                            attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
+                    }
+                    i_docsect( p, &attr_val, &refdoc );
+                    AttrFlags.refdoc = true;
+                    break;
+                default:
+                    internal_err_exit( __FILE__, __LINE__ );
+                    /* never return */
                 }
                 break;                  // break out of for loop
             }
@@ -313,23 +332,31 @@ void    lay_banner( const gmltag * entry )
 
     if( (wkb.place == no_place) || (wkb.docsect == no_ban) ) {    // both must be specified
         xx_err_exit( err_att_missing );
+        /* never return */
     }
 
     /*******************************************************/
     /* Process a reference banner.                         */
-    /* When completed, wkb will have had any missing        */
+    /* When completed, wkb will have had any missing       */
     /* attribute values copied from the reference banner   */
-    /* and sum_countb is set to 5, as if all attributes     */
+    /* and sum_countb is set to 5, as if all attributes    */
     /* had been specified.                                 */
     /*******************************************************/
 
     if( (refdoc != no_ban) || (refplace != no_place) ) {    // at least one was used
-        if( ((refdoc == no_ban) && (refplace != no_place)) ||
-                ((refdoc != no_ban) && (refplace == no_place)) ) {
+        if( ((refdoc == no_ban)
+          && (refplace != no_place))
+          || ((refdoc != no_ban)
+          && (refplace == no_place)) ) {
             xx_err_exit( err_both_refs );                        // both are required if either is used
-        } else if( (refdoc == wkb.docsect) && (refplace == wkb.place) ) { // can't reference current banner
+            /* never return */
+        }
+        if( (refdoc == wkb.docsect)
+          && (refplace == wkb.place) ) { // can't reference current banner
             xx_err_exit( err_self_ref );
-        } else if( (refdoc != no_ban) && (refplace != no_place) ) { // find referenced banner
+            /* never return */
+        }
+        if( (refdoc != no_ban) && (refplace != no_place) ) { // find referenced banner
             banwk = layout_work.banner;
             ref_ban = NULL;
             while( banwk != NULL ) {
@@ -342,44 +369,44 @@ void    lay_banner( const gmltag * entry )
             }
             if( ref_ban == NULL ) {                 // referenced banner not found
                 xx_err_exit( err_illegal_ban_ref );
-            } else {                                // copy from referenced banner
-                for( k = 0; k < att_countb; ++k ) {
-                    if( !countb[k] ) {               // copy only unchanged values
-                        countb[k] = 1;               // treat as new value
-                        switch( banner_att[k] ) {
-                        case e_left_adjust:
-                            memcpy( &(wkb.left_adjust), &(ref_ban->left_adjust),
-                                    sizeof( wkb.left_adjust ) );
-                            break;
-                        case e_right_adjust:
-                            memcpy( &(wkb.right_adjust), &(ref_ban->right_adjust),
-                                    sizeof( wkb.right_adjust ) );
-                            break;
-                        case e_depth:
-                            memcpy( &(wkb.depth), &(ref_ban->depth),
-                                    sizeof( wkb.depth ) );
-                            break;
-                        default:            // refdoc and refplace are not stored
-                            break;          // docsect and place must be specified
-                        }
-                    }
-                }
-                // copy banregions too
-                wkb.next_refnum = ref_ban->next_refnum;
-                regwkold = ref_ban->region;
-                while( regwkold != NULL ) { // allocate + copy banregions
-                    regwknew = mem_alloc( sizeof( region_lay_tag ) );
-                    memcpy( regwknew, regwkold, sizeof( region_lay_tag ) );
-                    if( wkb.region == NULL ) {   // forward chain
-                        wkb.region = regwknew;
-                    } else {
-                        regwknew2->next = regwknew;
-                    }
-                    regwknew2 = regwknew;
-                    regwkold = regwkold->next;
-                }
-                sum_countb = 5;                  // process as if all attributes for new banner found
+                /* never return */
             }
+            for( k = 0; k < TABLE_SIZE( banner_att ); ++k ) {
+                if( !countb[k] ) {               // copy only unchanged values
+                    countb[k] = 1;               // treat as new value
+                    switch( banner_att[k] ) {
+                    case e_left_adjust:
+                        memcpy( &(wkb.left_adjust), &(ref_ban->left_adjust),
+                                sizeof( wkb.left_adjust ) );
+                        break;
+                    case e_right_adjust:
+                        memcpy( &(wkb.right_adjust), &(ref_ban->right_adjust),
+                                sizeof( wkb.right_adjust ) );
+                        break;
+                    case e_depth:
+                        memcpy( &(wkb.depth), &(ref_ban->depth),
+                                sizeof( wkb.depth ) );
+                        break;
+                    default:            // refdoc and refplace are not stored
+                        break;          // docsect and place must be specified
+                    }
+                }
+            }
+            // copy banregions too
+            wkb.next_refnum = ref_ban->next_refnum;
+            regwkold = ref_ban->region;
+            while( regwkold != NULL ) { // allocate + copy banregions
+                regwknew = mem_alloc( sizeof( region_lay_tag ) );
+                memcpy( regwknew, regwkold, sizeof( region_lay_tag ) );
+                if( wkb.region == NULL ) {   // forward chain
+                    wkb.region = regwknew;
+                } else {
+                    regwknew2->next = regwknew;
+                }
+                regwknew2 = regwknew;
+                regwkold = regwkold->next;
+            }
+            sum_countb = 5;                  // process as if all attributes for new banner found
         }
     }
 
@@ -391,7 +418,7 @@ void    lay_banner( const gmltag * entry )
 
     for( banwk = layout_work.banner; banwk != NULL; banwk = banwk->next ) {
         if( (banwk->place == wkb.place) && (banwk->docsect == wkb.docsect) ) {
-            for( k = 0; k < att_countb; ++k ) {  // update banwk
+            for( k = 0; k < TABLE_SIZE( banner_att ); ++k ) {  // update banwk
                 if( countb[k] ) {                // copy only changed values
                     switch( banner_att[k] ) {
                     case e_left_adjust:
@@ -447,51 +474,51 @@ void    lay_banner( const gmltag * entry )
     if( (curr_ban == NULL) && (del_ban == NULL) ) { // not found: new banner definition
         if( sum_countb != 5 ) {              // now we need all 5 non-ref attributes
             xx_err_exit( err_all_ban_att_rqrd );
+            /* never return */
+        }
+        curr_ban = mem_alloc( sizeof( banner_lay_tag ) );
+        memcpy( curr_ban, &wkb, sizeof( banner_lay_tag ) );
+
+        if( layout_work.banner == NULL ) {      // First banner initializes the list
+            layout_work.banner = curr_ban;
         } else {
-            curr_ban = mem_alloc( sizeof( banner_lay_tag ) );
-            memcpy( curr_ban, &wkb, sizeof( banner_lay_tag ) );
 
-            if( layout_work.banner == NULL ) {      // First banner initializes the list
-                layout_work.banner = curr_ban;
-            } else {
+            /************************************************************************/
+            /*  New banners can affect existing banners in the manner shown.        */
+            /*  The effect is that, if topeven or topodd exists, top itself cannot, */
+            /*  and similarly for bottom.                                           */
+            /************************************************************************/
 
-                /************************************************************************/
-                /*  New banners can affect existing banners in the manner shown.        */
-                /*  The effect is that, if topeven or topodd exists, top itself cannot, */
-                /*  and similarly for bottom.                                           */
-                /************************************************************************/
-
-                match_place = no_place;
-                new_place = no_place;
-                switch( curr_ban->place ) {
-                case boteven_place :
-                    match_place = bottom_place;
-                    new_place = botodd_place;
-                    break;
-                case botodd_place :
-                    match_place = bottom_place;
-                    new_place = boteven_place;
-                    break;
-                case topeven_place :
-                    match_place = top_place;
-                    new_place = topodd_place;
-                    break;
-                case topodd_place :
-                    match_place = top_place;
-                    new_place = topeven_place;
-                    break;
-                }
+            match_place = no_place;
+            new_place = no_place;
+            switch( curr_ban->place ) {
+            case boteven_place :
+                match_place = bottom_place;
+                new_place = botodd_place;
+                break;
+            case botodd_place :
+                match_place = bottom_place;
+                new_place = boteven_place;
+                break;
+            case topeven_place :
+                match_place = top_place;
+                new_place = topodd_place;
+                break;
+            case topodd_place :
+                match_place = top_place;
+                new_place = topeven_place;
+                break;
             }
+        }
 
-            if( match_place != no_place ) {         // prevban used to preserve curr_ban value
-                prev_ban = layout_work.banner;
-                while( prev_ban->next != NULL ) {   // change the place, if found
-                    if( (prev_ban->docsect == curr_ban->docsect) && (prev_ban->place == match_place) ) {
-                        prev_ban->place = new_place;
-                        break;
-                    }
-                    prev_ban = prev_ban->next;
+        if( match_place != no_place ) {         // prevban used to preserve curr_ban value
+            prev_ban = layout_work.banner;
+            while( prev_ban->next != NULL ) {   // change the place, if found
+                if( (prev_ban->docsect == curr_ban->docsect) && (prev_ban->place == match_place) ) {
+                    prev_ban->place = new_place;
+                    break;
                 }
+                prev_ban = prev_ban->next;
             }
         }
     }
@@ -563,26 +590,13 @@ void    lay_ebanner( const gmltag * entry )
         }
     } else {
         xx_err_exit_c( err_tag_expected, "BANNER" );
+        /* never return */
     }
     scandata.s = scandata.e;
     return;
 }
 
 
-static  region_lay_tag      wkr;         // temp for input values
-static  region_lay_tag  *   prev_reg;
-
-
-/***************************************************************************/
-/*   :BANREGION attributes                                                 */
-/***************************************************************************/
-const   lay_att     banregion_att[12] =
-    { e_indent, e_hoffset, e_width, e_voffset, e_depth, e_font, e_refnum,
-      e_region_position, e_pouring, e_script_format, e_contents, e_dummy_zero };
-
-static  const   int att_countr = sizeof( banregion_att ) - 1;    // omit e_dummy_zero from count
-static  bool        countr[sizeof( banregion_att ) - 1];
-static  int         sum_countr;
 
 /**************************************************************************************/
 /*Define a banner region within a banner. Each banner region specifies a rectangular  */
@@ -761,7 +775,7 @@ static  int         sum_countr;
 /*  init banregion with no values                                          */
 /***************************************************************************/
 
-static  void    init_banregion_wk( region_lay_tag * reg )
+static void     init_banregion_wk( region_lay_tag *reg )
 {
     int         k;
     char        z0[2] = "0";
@@ -799,7 +813,7 @@ static  void    init_banregion_wk( region_lay_tag * reg )
     reg->final_content[1].string = NULL;
     reg->final_content[2].string = NULL;
 
-    for( k = 0; k < att_countr; k++ ) {
+    for( k = 0; k < TABLE_SIZE( banregion_att ); k++ ) {
         countr[k] = false;
     }
     sum_countr = 0;
@@ -810,15 +824,15 @@ static  void    init_banregion_wk( region_lay_tag * reg )
 /*  lay_banregion                                                          */
 /***************************************************************************/
 
-void    lay_banregion( const gmltag * entry )
+void    lay_banregion( const gmltag *entry )
 {
-    char            *   p;
-    condcode            cc;
-    int                 k;
-    lay_att             curr;
-    region_lay_tag  *   reg;
-    att_name_type       attr_name;
-    att_val_type        attr_val;
+    char            *p;
+    condcode        cc;
+    int             k;
+    lay_att         curr;
+    region_lay_tag  *reg;
+    att_name_type   attr_name;
+    att_val_type    attr_val;
 
     p = scandata.s;
     rs_loc = TLOC_banreg;
@@ -832,126 +846,140 @@ void    lay_banregion( const gmltag * entry )
     if( ProcFlags.lay_xxx != entry->u.layid ) {
         if( !ProcFlags.banner ) {               // not in BANNER/eBANNER block
             xx_err_exit_c( err_tag_expected, "BANNER" );
+            /* never return */
         }
         ProcFlags.lay_xxx = entry->u.layid;
         init_banregion_wk( &wkr );
     }
 
     while( (cc = lay_attr_and_value( &attr_name, &attr_val )) == CC_pos ) {   // get att with value
-        for( k = 0; k < att_countr; k++ ) {
+        for( k = 0; k < TABLE_SIZE( banregion_att ); k++ ) {
             curr = banregion_att[k];
             if( strcmp( lay_att_names[curr], attr_name.attname.l ) == 0 ) {
                 p = attr_val.tok.s;
                 if( countr[k] ) {
-                    if( sum_countr == att_countr ) {  // all attributes found
+                    if( sum_countr == TABLE_SIZE( banregion_att ) ) {  // all attributes found
                         xx_err_exit( err_lay_text );     // per wgml 4.0: treat as text
                     } else {
                         xx_err_exit( err_att_dup );      // per wgml 4.0: treat as duplicated attribute
                     }
-                } else {
-                    countr[k] = true;
-                    sum_countr++;
-                    switch( curr ) {
-                    case e_indent:
-                        if( AttrFlags.indent ) {
-                            xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
-                                attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
-                        }
-                        i_space_unit( p, &attr_val, &wkr.indent );
-                        AttrFlags.indent = true;
-                        break;
-                    case e_hoffset:
-                        if( AttrFlags.hoffset ) {
-                            xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
-                                attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
-                        }
-                        i_space_unit( p, &attr_val, &wkr.hoffset );
-                        AttrFlags.hoffset = true;
-                        break;
-                    case e_width:
-                        if( AttrFlags.width ) {
-                            xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
-                                attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
-                        }
-                        i_space_unit( p, &attr_val, &wkr.width );
-                        AttrFlags.width = true;
-                        break;
-                    case e_voffset:
-                        if( AttrFlags.voffset ) {
-                            xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
-                                attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
-                        }
-                        i_space_unit( p, &attr_val, &wkr.voffset );
-                        AttrFlags.voffset = true;
-                        break;
-                    case e_depth:
-                        if( AttrFlags.depth ) {
-                            xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
-                                attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
-                        }
-                        i_space_unit( p, &attr_val, &wkr.depth );
-                        AttrFlags.depth = true;
-                        break;
-                    case e_font:
-                        if( AttrFlags.font ) {
-                            xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
-                                attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
-                        }
-                        i_font_number( p, &attr_val, &wkr.font );
-                        if( wkr.font >= wgml_font_cnt ) wkr.font = 0;
-                        AttrFlags.font = true;
-                        break;
-                    case e_refnum:
-                        if( AttrFlags.refnum ) {
-                            xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
-                                attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
-                        }
-                        i_uint8( p, &attr_val, &wkr.refnum );
-                        if( wkr.refnum == 0 ) {   // refnum must be greater than zero
-                            xx_line_err_exit_c( err_num_zero, p );
-                        }
-                        AttrFlags.refnum = true;
-                        break;
-                    case e_region_position:
-                        if( AttrFlags.region_position ) {
-                            xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
-                                attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
-                        }
-                        i_page_position( p, &attr_val, &wkr.region_position );
-                        AttrFlags.region_position = true;
-                        break;
-                    case e_pouring:
-                        if( AttrFlags.pouring ) {
-                            xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
-                                attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
-                        }
-                        i_pouring( p, &attr_val, &wkr.pouring );
-                        AttrFlags.pouring = true;
-                        break;
-                    case e_script_format:
-                        if( AttrFlags.script_format ) {
-                            xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
-                                attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
-                        }
-                        i_yes_no( p, &attr_val, &wkr.script_format );
-                        AttrFlags.script_format = true;
-                        break;
-                    case e_contents:
-                        if( AttrFlags.contents ) {
-                            xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
-                                attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
-                        }
-                        if( attr_val.quoted != ' ' ) {
-                            wkr.contents.content_type = string_content;
-                            i_xx_string( p, &attr_val, wkr.contents.string );
-                        } else {
-                            i_content( p, &attr_val, &wkr.contents );
-                        }
-                        AttrFlags.contents = true;
-                        break;
-                    default:
-                        internal_err_exit( __FILE__, __LINE__ );
+                    /* never return */
+                }
+                countr[k] = true;
+                sum_countr++;
+                switch( curr ) {
+                case e_indent:
+                    if( AttrFlags.indent ) {
+                        xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
+                            attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
                     }
+                    i_space_unit( p, &attr_val, &wkr.indent );
+                    AttrFlags.indent = true;
+                    break;
+                case e_hoffset:
+                    if( AttrFlags.hoffset ) {
+                        xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
+                            attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
+                    }
+                    i_space_unit( p, &attr_val, &wkr.hoffset );
+                    AttrFlags.hoffset = true;
+                    break;
+                case e_width:
+                    if( AttrFlags.width ) {
+                        xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
+                            attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
+                    }
+                    i_space_unit( p, &attr_val, &wkr.width );
+                    AttrFlags.width = true;
+                    break;
+                case e_voffset:
+                    if( AttrFlags.voffset ) {
+                        xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
+                            attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
+                    }
+                    i_space_unit( p, &attr_val, &wkr.voffset );
+                    AttrFlags.voffset = true;
+                    break;
+                case e_depth:
+                    if( AttrFlags.depth ) {
+                        xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
+                            attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
+                    }
+                    i_space_unit( p, &attr_val, &wkr.depth );
+                    AttrFlags.depth = true;
+                    break;
+                case e_font:
+                    if( AttrFlags.font ) {
+                        xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
+                            attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
+                    }
+                    i_font_number( p, &attr_val, &wkr.font );
+                    if( wkr.font >= wgml_font_cnt ) wkr.font = 0;
+                    AttrFlags.font = true;
+                    break;
+                case e_refnum:
+                    if( AttrFlags.refnum ) {
+                        xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
+                            attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
+                    }
+                    i_uint8( p, &attr_val, &wkr.refnum );
+                    if( wkr.refnum == 0 ) {   // refnum must be greater than zero
+                        xx_line_err_exit_c( err_num_zero, p );
+                        /* never return */
+                    }
+                    AttrFlags.refnum = true;
+                    break;
+                case e_region_position:
+                    if( AttrFlags.region_position ) {
+                        xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
+                            attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
+                    }
+                    i_page_position( p, &attr_val, &wkr.region_position );
+                    AttrFlags.region_position = true;
+                    break;
+                case e_pouring:
+                    if( AttrFlags.pouring ) {
+                        xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
+                            attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
+                    }
+                    i_pouring( p, &attr_val, &wkr.pouring );
+                    AttrFlags.pouring = true;
+                    break;
+                case e_script_format:
+                    if( AttrFlags.script_format ) {
+                        xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
+                            attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
+                    }
+                    i_yes_no( p, &attr_val, &wkr.script_format );
+                    AttrFlags.script_format = true;
+                    break;
+                case e_contents:
+                    if( AttrFlags.contents ) {
+                        xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
+                            attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
+                    }
+                    if( attr_val.quoted != ' ' ) {
+                        wkr.contents.content_type = string_content;
+                        i_xx_string( p, &attr_val, wkr.contents.string );
+                    } else {
+                        i_content( p, &attr_val, &wkr.contents );
+                    }
+                    AttrFlags.contents = true;
+                    break;
+                default:
+                    internal_err_exit( __FILE__, __LINE__ );
+                    /* never return */
                 }
                 break;                  // break out of for loop
             }
@@ -966,8 +994,10 @@ void    lay_banregion( const gmltag * entry )
 
     if( !AttrFlags.refnum ) {                           // refnum was missing
         xx_err_exit( err_att_missing );
+        /* never return */
     } else if( wkr.refnum > curr_ban->next_refnum ) {    // refnum must be, at most, the next value
         xx_err_exit( err_illegal_reg_ref );
+        /* never return */
     }
 
     /*******************************************************/
@@ -999,7 +1029,7 @@ void    lay_banregion( const gmltag * entry )
             mem_free( reg );
             reg = NULL;
         } else {                        // modify existing banregion
-            for( k = 0; k < att_countr; ++k ) {
+            for( k = 0; k < TABLE_SIZE( banregion_att ); ++k ) {
                 if( countr[k] ) {        // change specified attribute
                     switch( banregion_att[k] ) {
                     case e_indent:
@@ -1057,6 +1087,7 @@ void    lay_banregion( const gmltag * entry )
             /*******************************************************/
 
             xx_err_exit( err_all_reg_att_rqrd );
+            /* never return */
         }
         reg = mem_alloc( sizeof( region_lay_tag ) );
         memcpy( reg, &wkr, sizeof( region_lay_tag ) );
@@ -1075,6 +1106,7 @@ void    lay_banregion( const gmltag * entry )
     if( reg != NULL ) {             // region not deleted
         if( reg->script_format && (reg->contents.content_type != string_content) ) {
             xx_err_exit( err_scr_fmt );
+            /* never return */
         }
     }
 
@@ -1094,7 +1126,126 @@ void    lay_ebanregion( const gmltag * entry )
         ProcFlags.lay_xxx = entry->u.layid;
     } else {
         xx_err_exit_cc( err_no_lay, &(entry->tagname[1]), entry->tagname );
+        /* never return */
     }
     scandata.s = scandata.e;
     return;
+}
+
+
+
+/***************************************************************************/
+/*  output a banner region                                                 */
+/***************************************************************************/
+static void     put_lay_region( FILE *fp, region_lay_tag *reg )
+{
+    int                 k;
+    lay_att             curr;
+
+    fprintf( fp, ":BANREGION\n" );
+
+    for( k = 0; k < TABLE_SIZE( banregion_att ); k++ ) {
+        curr = banregion_att[k];
+        switch( curr ) {
+        case e_indent:
+            o_space_unit( fp, curr, &reg->indent );
+            break;
+        case e_hoffset:
+            o_space_unit( fp, curr, &reg->hoffset );
+            break;
+        case e_width:
+            o_space_unit( fp, curr, &reg->width );
+            break;
+        case e_voffset:
+            o_space_unit( fp, curr, &reg->voffset );
+            break;
+        case e_depth:
+            o_space_unit( fp, curr, &reg->depth );
+            break;
+        case e_font:
+            o_font_number( fp, curr, &reg->font );
+            break;
+        case e_refnum:
+            o_uint8( fp, curr, &reg->refnum );
+            break;
+        case e_region_position:
+            o_page_position( fp, curr, &reg->region_position );
+            break;
+        case e_pouring:
+            o_pouring( fp, curr, &reg->pouring );
+            break;
+        case e_script_format:
+            o_yes_no( fp, curr, &reg->script_format );
+            break;
+        case e_contents:
+            o_content( fp, curr, &reg->contents );
+            break;
+        default:
+            internal_err_exit( __FILE__, __LINE__ );
+            /* never return */
+        }
+    }
+    fprintf( fp, ":eBANREGION\n" );
+}
+
+/***************************************************************************/
+/*  output a single banner with regions                                    */
+/***************************************************************************/
+static void    put_lay_single_ban( FILE *fp, banner_lay_tag *ban )
+{
+    int                 k;
+    lay_att             curr;
+    region_lay_tag  *   reg;
+
+    fprintf( fp, ":BANNER\n" );
+
+    for( k = 0; k < TABLE_SIZE( banner_att ); k++ ) {
+        curr = banner_att[k];
+        switch( curr ) {
+        case e_left_adjust:
+            o_space_unit( fp, curr, &ban->left_adjust );
+            break;
+        case e_right_adjust:
+            o_space_unit( fp, curr, &ban->right_adjust );
+            break;
+        case e_depth:
+            o_space_unit( fp, curr, &ban->depth );
+            break;
+        case e_place:
+            o_place( fp, curr, &ban->place );
+            break;
+        case e_docsect:
+            o_docsect( fp, curr, &ban->docsect );
+            break;
+        case e_refplace:
+        case e_refdoc:
+            /* no action these are only used for input */
+            break;
+        default:
+            internal_err_exit( __FILE__, __LINE__ );
+            /* never return */
+        }
+    }
+    reg = ban->region;
+    while( reg != NULL ) {
+        put_lay_region( fp, reg );
+        reg = reg->next;
+    }
+
+    fprintf( fp, ":eBANNER\n" );
+}
+
+
+/***************************************************************************/
+/*   :BANNER   output all banners                                          */
+/***************************************************************************/
+void    put_lay_banner( FILE *fp, layout_data * lay )
+{
+    banner_lay_tag      *   ban;
+
+    ban = lay->banner;
+    while( ban != NULL ) {
+        put_lay_single_ban( fp, ban );
+        ban = ban->next;
+    }
 }

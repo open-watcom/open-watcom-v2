@@ -37,7 +37,9 @@
 /***************************************************************************/
 /*   :WIDOW attributes                                                     */
 /***************************************************************************/
-const   lay_att     widow_att[2] = { e_threshold, e_dummy_zero };
+static const lay_att    widow_att[] = {
+    e_threshold
+};
 
 /*****************************************************************************/
 /*Define the widowing control of document elements.                          */
@@ -71,7 +73,8 @@ void    lay_widow( const gmltag * entry )
     }
     while( (cc = lay_attr_and_value( &attr_name, &attr_val )) == CC_pos ) {   // get att with value
         cvterr = -1;
-        for( k = 0, curr = widow_att[k]; curr > 0; k++, curr = widow_att[k] ) {
+        for( k = 0; k < TABLE_SIZE( widow_att ); k++ ) {
+            curr = widow_att[k];
             if( strcmp( lay_att_names[curr], attr_name.attname.l ) == 0 ) {
                 p = attr_val.tok.s;
                 switch( curr ) {
@@ -79,23 +82,51 @@ void    lay_widow( const gmltag * entry )
                     if( AttrFlags.threshold ) {
                         xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
                     }
                     cvterr = i_threshold( p, &attr_val, &layout_work.widow.threshold );
                     AttrFlags.threshold = true;
                     break;
                 default:
                     internal_err_exit( __FILE__, __LINE__ );
+                    /* never return */
                 }
                 if( cvterr ) {          // there was an error
                     xx_err_exit( err_att_val_inv );
+                    /* never return */
                 }
                 break;                  // break out of for loop
             }
         }
         if( cvterr < 0 ) {
             xx_err_exit( err_att_name_inv );
+            /* never return */
         }
     }
     scandata.s = scandata.e;
     return;
+}
+
+
+/***************************************************************************/
+/*   :WIDOW    output widow attribute value                                */
+/***************************************************************************/
+void    put_lay_widow( FILE *fp, layout_data * lay )
+{
+    int                 k;
+    lay_att             curr;
+
+    fprintf( fp, ":WIDOW\n" );
+
+    for( k = 0; k < TABLE_SIZE( widow_att ); k++ ) {
+        curr = widow_att[k];
+        switch( curr ) {
+        case e_threshold:
+            o_threshold( fp, curr, &lay->widow.threshold );
+            break;
+        default:
+            internal_err_exit( __FILE__, __LINE__ );
+            /* never return */
+        }
+    }
 }

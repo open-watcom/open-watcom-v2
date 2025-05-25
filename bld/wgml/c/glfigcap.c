@@ -37,9 +37,9 @@
 /***************************************************************************/
 /*   :FIGCAP attributes                                                    */
 /***************************************************************************/
-const   lay_att     figcap_att[6] =
-    { e_pre_lines, e_font, e_figcap_string, e_string_font, e_delim,
-      e_dummy_zero };
+static const lay_att    figcap_att[] = {
+    e_pre_lines, e_font, e_figcap_string, e_string_font, e_delim
+};
 
 
 /*********************************************************************************/
@@ -111,7 +111,8 @@ void    lay_figcap( const gmltag * entry )
     }
     while( (cc = lay_attr_and_value( &attr_name, &attr_val )) == CC_pos ) {   // get att with value
         cvterr = -1;
-        for( k = 0, curr = figcap_att[k]; curr > 0; k++, curr = figcap_att[k] ) {
+        for( k = 0; k < TABLE_SIZE( figcap_att ); k++ ) {
+            curr = figcap_att[k];
             if( strcmp( lay_att_names[curr], attr_name.attname.l ) == 0 ) {
                 p = attr_val.tok.s;
                 switch( curr ) {
@@ -119,6 +120,7 @@ void    lay_figcap( const gmltag * entry )
                     if( AttrFlags.pre_lines ) {
                         xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
                     }
                     cvterr = i_space_unit( p, &attr_val,
                                            &layout_work.figcap.pre_lines );
@@ -128,6 +130,7 @@ void    lay_figcap( const gmltag * entry )
                     if( AttrFlags.font ) {
                         xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
                     }
                     cvterr = i_font_number( p, &attr_val, &layout_work.figcap.font );
                     if( layout_work.figcap.font >= wgml_font_cnt ) {
@@ -139,6 +142,7 @@ void    lay_figcap( const gmltag * entry )
                     if( AttrFlags.figcap_string ) {
                         xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
                     }
                     cvterr = i_xx_string( p, &attr_val, layout_work.figcap.string );
                     AttrFlags.figcap_string = true;
@@ -147,6 +151,7 @@ void    lay_figcap( const gmltag * entry )
                     if( AttrFlags.string_font ) {
                         xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
                     }
                     cvterr = i_font_number( p, &attr_val, &layout_work.figcap.string_font );
                     if( layout_work.figcap.string_font >= wgml_font_cnt ) {
@@ -158,24 +163,64 @@ void    lay_figcap( const gmltag * entry )
                     if( AttrFlags.delim ) {
                         xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
                     }
                     cvterr = i_char( p, &attr_val, &layout_work.figcap.delim );
                     AttrFlags.delim = true;
                     break;
                 default:
                     internal_err_exit( __FILE__, __LINE__ );
+                    /* never return */
                 }
                 if( cvterr ) {          // there was an error
                     xx_err_exit( err_att_val_inv );
+                    /* never return */
                 }
                 break;                  // break out of for loop
             }
         }
         if( cvterr < 0 ) {
             xx_err_exit( err_att_name_inv );
+            /* never return */
         }
     }
     scandata.s = scandata.e;
     return;
 }
 
+
+
+/***************************************************************************/
+/*   :FIGCAP    output figure caption attribute values                     */
+/***************************************************************************/
+void    put_lay_figcap( FILE *fp, layout_data * lay )
+{
+    int                 k;
+    lay_att             curr;
+
+    fprintf( fp, ":FIGCAP\n" );
+
+    for( k = 0; k < TABLE_SIZE( figcap_att ); k++ ) {
+        curr = figcap_att[k];
+        switch( curr ) {
+        case e_pre_lines:
+            o_space_unit( fp, curr, &lay->figcap.pre_lines );
+            break;
+        case e_font:
+            o_font_number( fp, curr, &lay->figcap.font );
+            break;
+        case e_figcap_string:
+            o_xx_string( fp, curr, lay->figcap.string );
+            break;
+        case e_string_font:
+            o_font_number( fp, curr, &lay->figcap.string_font );
+            break;
+        case e_delim:
+            o_char( fp, curr, &lay->figcap.delim );
+            break;
+        default:
+            internal_err_exit( __FILE__, __LINE__ );
+            /* never return */
+        }
+    }
+}

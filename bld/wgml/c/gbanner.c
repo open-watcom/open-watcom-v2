@@ -593,6 +593,7 @@ static void content_reg( region_lay_tag * region )
             break;
         default:
             internal_err_exit( __FILE__, __LINE__ );
+            /* never return */
         }
 
         /* still not script format only normal string or keyword */

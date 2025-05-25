@@ -488,7 +488,7 @@ typedef enum g_tags {
 /***************************************************************************/
 
 typedef enum l_tags {
-    #define pick( name, length, routine, gmlflags, locflags )  TL_##name,
+    #define pick( name, length, funci, funco, gmlflags, locflags )  TL_##name,
     #include "gtagslay.h"
     #undef pick
     TL_NONE,
@@ -909,10 +909,10 @@ typedef enum {  // see Wiki for column type definitions
 } bx_v_ind;
 
 typedef struct {
-            unsigned        col;
-            unsigned        depth;
-            bx_v_ind        v_ind;
-            bool            rebreak;
+    unsigned        col;
+    unsigned        depth;
+    bx_v_ind        v_ind;
+    bool            rebreak;
 } box_col_spec;
 
 typedef struct box_col_set {

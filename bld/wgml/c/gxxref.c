@@ -74,6 +74,7 @@ static char * get_ref_attributes( void )
                     ref_page = false;
                 } else {
                     xx_line_err_exit_c( err_inv_att_val, attr_val.tok.s );
+                    /* never return */
                 }
                 if( ProcFlags.tag_end_found ) {
                     break;
@@ -95,7 +96,7 @@ static char * get_ref_attributes( void )
     }
     if( !refid_found ) {            // detect missing required attribute
         xx_err_exit( err_att_missing );
-//        scandata.s = scandata.e;
+        /* never return */
     }
     return( p );
 }

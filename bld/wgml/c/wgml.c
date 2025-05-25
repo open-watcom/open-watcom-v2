@@ -55,6 +55,8 @@ static int      exit_rc = 0;
 /*  Usage info and end program                                             */
 /***************************************************************************/
 
+NO_RETURN( static void usage( void ) );
+
 static void usage( void )
 {
     int     k;
@@ -76,6 +78,7 @@ static void usage( void )
         }
     }
     my_exit( 4 );
+    /* never return */
 }
 
 #if 0                                   // not used for the moment
@@ -246,6 +249,7 @@ static  void    del_input_cb_entry( void )
 //
 //          sprintf( linestr, "%d", wk->if_cb->if_level );
 //          xx_err_exit_c( err_if_level, linestr );
+//          /* never return */
 //      }
         mem_free( wk->if_cb );
     }
@@ -449,9 +453,11 @@ static  void    proc_input( char * filename )
             if( fp != NULL ) {
                 if( inc_level >= MAX_INC_DEPTH ) {
                     xx_err_exit_c( err_max_input_nesting, token_buf );
+                    /* never return */
                 }
             } else {
                 main_file_err_exit( token_buf );
+                /* never return */
             }
             inc_inc_level();            // record max include level
             add_file_cb_entry( fp, try_file_name );
@@ -518,6 +524,7 @@ static  void    proc_input( char * filename )
                     } else {
                         xx_err_exit_cc( err_goto, gotarget, input_cbs->s.f->filename );
                     }
+                    /* never return */
                 }
                 break;                  // EOF
             }
@@ -620,6 +627,7 @@ static  void    proc_input( char * filename )
 
             if( (nest_cb != NULL) && (nest_cb->gtag != T_NONE) ) {
                 g_tag_nest_err_exit( nest_cb->gtag + 1 );// eXXX expected
+                /* never return */
             }
         }
         del_input_cb_entry();           // one level finished
@@ -759,6 +767,7 @@ void my_exit( int rc )
         longjmp( *environment, 1 );
     }
     exit( rc );
+    /* never return */
 }
 
 
@@ -815,6 +824,7 @@ int main( int argc, char * argv[] )
         g_banner();
         if( tok_count < 4 ) {               // file ( device xyz   is minimum
             usage();                        // display usage and exit
+            /* never return */
         }
         cop_setup();                        // init copfiles
 
@@ -889,7 +899,7 @@ int main( int argc, char * argv[] )
 
         } else {
             usage();
-            xx_simple_err_exit( err_missing_mainfilename );
+            /* never return */
         }
 
         g_info_lm( inf_fmt_end );

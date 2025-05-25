@@ -370,6 +370,7 @@ void    scr_gt( void )
     if( cc == CC_omit ) {
         // no operands
         xx_err_exit_c( err_missing_name, "" );
+        /* never return */
     }
 
     p = g_tok_start;
@@ -377,7 +378,7 @@ void    scr_gt( void )
     if( *p == '*' ) {                   // single * as tagname
         if( arg_flen > 1 ) {
             xx_err_exit( err_tag_name_inv );
-//            return;
+            /* never return */
         }
         savetag = '*';         // remember for possible global delete / print
         if( GlobalFlags.firstpass && (input_cbs->fmflags & II_research) ) {
@@ -394,7 +395,7 @@ void    scr_gt( void )
         p = get_tagname( p, g_tagname );
         if( arg_flen > strlen( g_tagname ) ) {
             xx_err_exit( err_tag_name_inv );
-//            return;
+            /* never return */
         }
     }
 
@@ -407,7 +408,7 @@ void    scr_gt( void )
 
     if( cc == CC_omit ) {
         xx_err_exit( err_tag_func_inv );
-//        return;
+        /* never return */
     }
 
     p = g_tok_start;
@@ -457,7 +458,7 @@ void    scr_gt( void )
     }
     if( function == 0 ) {               // no valid function specified
         xx_err_exit( err_tag_func_inv );
-//        return;
+        /* never return */
     }
 
     cc = getarg();                      // get possible next parm
@@ -469,7 +470,7 @@ void    scr_gt( void )
     if( function == f_add || function == f_change ) {   // need macroname
         if( cc == CC_omit ) {
             xx_err_exit( err_tag_mac_name );
-//            return;
+            /* never return */
         }
         get_macro_name( g_tok_start, macname );
 
@@ -479,6 +480,7 @@ void    scr_gt( void )
             cc = scan_tag_options( &tag_flags );
             if( cc != CC_omit ) {          // not all processed error
                xx_err_exit( err_tag_opt_inv );
+                /* never return */
             }
             g_tag_entry = add_tag( &tags_dict, g_tagname, macname, tag_flags );  // add to dictionary
             // if tag_entry is now NULL, error (+ msg) was output in add_tag
@@ -497,6 +499,7 @@ void    scr_gt( void )
 
         if( cc != CC_omit ) {
             xx_err_exit( err_tag_toomany );  // nothing more allowed
+            /* never return */
         }
 
         switch( function ) {

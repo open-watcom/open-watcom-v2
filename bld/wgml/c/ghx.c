@@ -289,6 +289,7 @@ void gen_heading( char *h_text, const char *hdrefid, hdsrc hn_lvl, hdsrc hds_lvl
                 cur_ref = add_new_refid( &hd_ref_dict, hdrefid, hd_entry );
             } else {                // duplicate id
                 dup_refid_err_exit( cur_ref->refid, "heading" );
+                /* never return */
             }
         }
     }
@@ -479,7 +480,7 @@ void gen_heading( char *h_text, const char *hdrefid, hdsrc hn_lvl, hdsrc hds_lvl
             cur_doc_el_group->first->subs_skip = 0;
             if( cur_doc_el_group->depth > t_page.max_depth ) {
                 xx_err_exit( err_heading_too_deep );     // the block won't fit on any page
-                // never return
+                /* never return */
             }
             if( page_width ) {
 
@@ -562,11 +563,10 @@ static void gml_hx_common( const gmltag * entry, hdsrc hn_lvl )
     *hdrefid = '\0';                        // null string if no id found
     switch( hn_lvl ) {
     case HDS_h0:
-        if( !((ProcFlags.doc_sect == DSECT_body) ||
-            (ProcFlags.doc_sect_nxt == DSECT_body)) ) {
-
+        if( !((ProcFlags.doc_sect == DSECT_body)
+          || (ProcFlags.doc_sect_nxt == DSECT_body)) ) {
             xx_err_exit_cc( err_tag_wrong_sect, hxstr, ":BODY section" );
-            // never return
+            /* never return */
         }
         hd_level = hn_lvl;              // H0 always valid in BODY
         break;
@@ -574,7 +574,7 @@ static void gml_hx_common( const gmltag * entry, hdsrc hn_lvl )
         if( !((ProcFlags.doc_sect >= DSECT_body)
           || (ProcFlags.doc_sect_nxt >= DSECT_body)) ) {
             xx_err_exit_cc( err_tag_wrong_sect, hxstr, ":BODY :APPENDIX :BACKM sections" );
-            // never return
+            /* never return */
         }
         if( !((ProcFlags.doc_sect == DSECT_body)
           || (ProcFlags.doc_sect_nxt == DSECT_body)) ) {  // APPENDIX or BACKM
@@ -604,10 +604,10 @@ static void gml_hx_common( const gmltag * entry, hdsrc hn_lvl )
         }
         break;
     default:
-        if( !((ProcFlags.doc_sect >= DSECT_abstract) ||
-            (ProcFlags.doc_sect_nxt >= DSECT_abstract)) ) {
-
+        if( !((ProcFlags.doc_sect >= DSECT_abstract)
+          || (ProcFlags.doc_sect_nxt >= DSECT_abstract)) ) {
             xx_err_exit_cc( err_tag_wrong_sect, hxstr, ":ABSTRACT section or later" );
+            /* never return */
         }
         break;
     }

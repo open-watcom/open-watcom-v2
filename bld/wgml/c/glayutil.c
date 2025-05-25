@@ -126,6 +126,7 @@ condcode    lay_attr_and_value( att_name_type *attr_name, att_val_type *attr_val
     p = get_lay_attname( p, attr_name->attname.l );
     if( p - attr_name->tok.s < 4 || p - attr_name->tok.s > LAY_ATT_NAME_LENGTH ) {
         xx_line_err_exit_c( err_att_name_inv, pa );
+        /* never return */
     }
 
     p = get_lay_value( p, attr_val );
@@ -230,6 +231,7 @@ bool    i_case( const char *p, lay_attr_i lay_attr, case_t *tm )
         *tm = case_upper;
     } else {
         xx_line_err_exit_c( err_inv_att_val, p );
+        /* never return */
     }
     return( cvterr );
 }
@@ -359,6 +361,7 @@ bool    i_default_frame( const char *p, lay_attr_i lay_attr, def_frame *tm )
     }
     if( cvterr ) {
         xx_line_err_exit_c( err_inv_att_val, p );
+        /* never return */
     }
     return( cvterr );
 
@@ -406,6 +409,7 @@ bool    i_docsect( const char *p, lay_attr_i lay_attr, ban_docsect *tm )
     }
     if( *tm == no_ban ) {
         xx_line_err_exit_c( err_inv_att_val, p );
+        /* never return */
     }
     return( cvterr );
 }
@@ -438,6 +442,7 @@ bool    i_frame( const char *p, lay_attr_i lay_attr, bool *tm )
         *tm = true;
     } else {
         xx_line_err_exit_c( err_inv_att_val, p );
+        /* never return */
     }
     return( cvterr );
 
@@ -499,6 +504,7 @@ bool    i_number_form( const char *p, lay_attr_i lay_attr, num_form *tm )
         *tm = num_new;
     } else {
         xx_line_err_exit_c( err_inv_att_val, p );
+        /* never return */
     }
     return( cvterr );
 }
@@ -588,6 +594,7 @@ bool    i_number_style( const char *p, lay_attr_i lay_attr, num_style *tm )
         *tm = wk;
     } else {
         xx_line_err_exit_c( err_inv_att_val, p );
+        /* never return */
     }
     return( cvterr );
 }
@@ -657,6 +664,7 @@ bool    i_page_eject( const char *p, lay_attr_i lay_attr, page_ej *tm )
         *tm = ej_even;
     } else {
         xx_line_err_exit_c( err_inv_att_val, p );
+        /* never return */
     }
     return( cvterr );
 }
@@ -698,6 +706,7 @@ bool    i_page_position( const char *p, lay_attr_i lay_attr, page_pos *tm )
         *tm = PPOS_center;
     } else {
         xx_line_err_exit_c( err_inv_att_val, p );
+        /* never return */
     }
     return( cvterr );
 }
@@ -738,6 +747,7 @@ bool    i_place( const char *p, lay_attr_i lay_attr, ban_place *tm )
     }
     if( *tm == no_place ) {
         xx_line_err_exit_c( err_inv_att_val, p );
+        /* never return */
     }
     return( cvterr );
 }
@@ -785,6 +795,7 @@ bool    i_pouring( const char *p, lay_attr_i lay_attr, reg_pour *tm )
         *tm = head6_pour;
     } else {
         xx_line_err_exit_c( err_inv_att_val, p );
+        /* never return */
     }
     return( cvterr );
 }
@@ -854,6 +865,7 @@ bool    i_spacing( const char *p, lay_attr_i lay_attr, text_space *tm )
     wk = strtol( p, NULL, 10 );
     if( wk < 0 || wk > 255 ) {
         xx_line_err_exit_c( err_ui_8, p );
+        /* never return */
     }
     *tm = wk;
     return( false );
@@ -878,6 +890,7 @@ bool    i_threshold( const char *p, lay_attr_i lay_attr, uint16_t *tm )
     cvterr = i_uint16( p, lay_attr, tm );
     if( *tm == 0 ) {
         xx_line_err_exit_c( err_num_zero, p );
+        /* never return */
     }
     return( cvterr );
 }
@@ -903,6 +916,7 @@ bool    i_xx_string( const char *p, lay_attr_i lay_attr, xx_str *tm )
         tm[lay_attr->tok.l] = '\0';
     } else {
         xx_line_err_exit_c( err_xx_string, p );
+        /* never return */
     }
     return( cvterr );
 }
@@ -941,6 +955,7 @@ bool    i_yes_no( const char *p, lay_attr_i lay_attr, bool *tm )
         *tm = true;
     } else {
         xx_line_err_exit_c( err_inv_att_val, p );
+        /* never return */
     }
     return( cvterr );
 }
@@ -993,9 +1008,11 @@ bool    i_uint16( const char *p, lay_attr_i lay_attr, uint16_t *tm )
         /* empty */;
     if( *pa != '\0' ) {
         xx_line_err_exit_c( err_num_too_large, p );
+        /* never return */
     }
     if( errno == ERANGE || wk < 0 || wk > USHRT_MAX ) {
         xx_line_err_exit_c( err_ui_16, p );
+        /* never return */
     }
     *tm = wk;
     return( false );
@@ -1018,6 +1035,7 @@ bool    i_int8( const char *p, lay_attr_i lay_attr, int8_t *tm )
     wk = strtol( p, NULL, 10 );
     if( errno == ERANGE || abs( wk ) > 255 ) {
         xx_line_err_exit_c( err_i_8, p );
+        /* never return */
     }
     *tm = wk;
     return( false );
@@ -1040,6 +1058,7 @@ bool    i_uint8( const char *p, lay_attr_i lay_attr, uint8_t *tm )
     wk = strtol( p, NULL, 10 );
     if( errno == ERANGE || wk < 0 || wk > 255 ) {
         xx_line_err_exit_c( err_ui_8, p );
+        /* never return */
     }
     *tm = wk;
     return( false );

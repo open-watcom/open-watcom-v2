@@ -62,6 +62,7 @@ void    gml_graphic( const gmltag * entry )
     if( (ProcFlags.doc_sect < DSECT_gdoc) ) {
         if( (ProcFlags.doc_sect_nxt < DSECT_gdoc) ) {
             xx_err_exit_c( err_tag_before_gdoc, entry->tagname );
+            /* never return */
         }
     }
 
@@ -111,9 +112,11 @@ void    gml_graphic( const gmltag * entry )
                 depth = conv_vert_unit( &cur_su, g_text_spacing, g_curr_font );
                 if( depth == 0 ) {
                     xx_line_err_exit_c( err_inv_depth_graphic_1, attr_val.tok.s );
+                    /* never return */
                 }
                 if( depth > t_page.max_depth ) {
                     xx_line_err_exit_c( err_inv_depth_graphic_2, attr_val.tok.s );
+                    /* never return */
                 }
                 if( ProcFlags.tag_end_found ) {
                     break;
@@ -137,9 +140,11 @@ void    gml_graphic( const gmltag * entry )
                     width = conv_hor_unit( &cur_su, g_curr_font );
                     if( width == 0 ) {
                         xx_line_err_exit_c( err_inv_width_graphic_1, attr_val.tok.s );
+                        /* never return */
                     }
                     if( width > t_page.last_pane->col_width ) {
                         xx_line_err_exit_c( err_inv_width_graphic_2, attr_val.tok.s );
+                        /* never return */
                     }
                 }
                 if( ProcFlags.tag_end_found ) {
@@ -153,6 +158,7 @@ void    gml_graphic( const gmltag * entry )
                 pb = attr_val.tok.s;
                 if( (*pb == '+') || (*pb == '-') ) {    // signs not allowed
                     xx_line_err_exit_c( err_num_too_large, attr_val.tok.s );
+                    /* never return */
                 }
                 scale = 0;
                 while( my_isdigit( *pb ) ) {            // convert to number
@@ -164,9 +170,11 @@ void    gml_graphic( const gmltag * entry )
                 }
                 if( scale > 0x7fffffff ) {              // wgml 4.0 limit
                     xx_line_err_exit_c( err_num_too_large, attr_val.tok.s );
+                    /* never return */
                 }
                 if( (pb - attr_val.tok.s) < attr_val.tok.l ) {      // value continues on
                     xx_line_err_exit_c( err_num_too_large, attr_val.tok.s );
+                    /* never return */
                 }
                 if( ProcFlags.tag_end_found ) {
                     break;
@@ -205,6 +213,7 @@ void    gml_graphic( const gmltag * entry )
 
     if( !depth_found || !file_found ) { // detect missing required attributes
         xx_err_exit( err_att_missing );
+        /* never return */
     }
 
     if( !ProcFlags.ps_device ) {        // character devices ignore SK & post_skip
@@ -244,6 +253,7 @@ void    gml_graphic( const gmltag * entry )
 
     } else {
         xx_err_exit_c( err_file_not_found, file );
+        /* never return */
     }
 
     if( !ProcFlags.reprocess_line && *p != '\0' ) {

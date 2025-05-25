@@ -58,6 +58,7 @@ void    gml_binclude( const gmltag * entry )
     if( (ProcFlags.doc_sect < DSECT_gdoc) ) {
         if( (ProcFlags.doc_sect_nxt < DSECT_gdoc) ) {
             xx_err_exit_c( err_tag_before_gdoc, entry->tagname );
+            /* never return */
         }
     }
 
@@ -81,6 +82,7 @@ void    gml_binclude( const gmltag * entry )
                 if( AttrFlags.file ) {
                     xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
                         attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                    /* never return */
                 }
                 AttrFlags.file = true;
                 if( attr_val.tok.s == NULL ) {
@@ -105,6 +107,7 @@ void    gml_binclude( const gmltag * entry )
                 if( AttrFlags.depth ) {
                     xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
                         attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                    /* never return */
                 }
                 AttrFlags.depth = true;
                 if( attr_val.tok.s == NULL ) {
@@ -116,6 +119,7 @@ void    gml_binclude( const gmltag * entry )
                 depth = conv_vert_unit( &depth_su, g_text_spacing, g_curr_font );
                 if( depth > t_page.max_depth ) {
                     xx_line_err_exit_c( err_inv_depth_binclude, attr_val.tok.s );
+                    /* never return */
                 }
                 if( ProcFlags.tag_end_found ) {
                     break;
@@ -125,6 +129,7 @@ void    gml_binclude( const gmltag * entry )
                 if( AttrFlags.reposition ) {
                     xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
                         attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                    /* never return */
                 }
                 AttrFlags.reposition = true;
                 if( attr_val.tok.s == NULL ) {
@@ -136,6 +141,7 @@ void    gml_binclude( const gmltag * entry )
                     reposition = false; // device at proper position after insertion
                 } else {
                     xx_line_err_exit_c( err_inv_att_val, attr_val.tok.s );
+                    /* never return */
                 }
                 if( ProcFlags.tag_end_found ) {
                     break;
@@ -149,8 +155,11 @@ void    gml_binclude( const gmltag * entry )
     }
 
     // detect missing required attributes
-    if( !AttrFlags.depth || !AttrFlags.file || !AttrFlags.reposition ) {
+    if( !AttrFlags.depth
+      || !AttrFlags.file
+      || !AttrFlags.reposition ) {
         xx_err_exit( err_att_missing );
+        /* never return */
     }
 
     // only set up the doc_element if the file exists
@@ -160,7 +169,8 @@ void    gml_binclude( const gmltag * entry )
             cur_el = alloc_doc_el( ELT_binc );
         } else {
             set_skip_vars( NULL, NULL, NULL, 1, g_curr_font );
-            if( reposition && depth ) {                 // otherwise, element depth will be "0"
+            if( reposition
+              && depth ) {              // otherwise, element depth will be "0"
                 cur_el = init_doc_el( ELT_binc, depth );
             } else {
                 cur_el = init_doc_el( ELT_binc, 0 );
@@ -175,7 +185,7 @@ void    gml_binclude( const gmltag * entry )
 
         if( GlobalFlags.inclist ) {
             g_info_lm( inf_curr_file, cur_el->element.binc.file );
-            while( cb->fmflags & II_macro ) {                 // find prior file
+            while( cb->fmflags & II_macro ) {   // find prior file
                  cb = cb->prev;
             }
             g_info_lm( inf_curr_file, cb->s.f->filename );
@@ -185,6 +195,7 @@ void    gml_binclude( const gmltag * entry )
 
     } else {
         xx_err_exit_c( err_file_not_found, file );
+        /* never return */
     }
 
     scandata.s = scandata.e;         // skip following text

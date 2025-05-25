@@ -531,7 +531,14 @@ extern void         show_include_stack( void );
 /*
  * prototypes for the layout tag processing routines
  */
-#define pick( name, length, routine, gmlflags, locflags )  extern void routine( const gmltag *entry );
+#define pick( name, length, funci, funco, gmlflags, locflags )  extern void funci( const gmltag *entry );
+#include "gtagslay.h"
+#undef pick
+
+/*
+ * prototypes for the layout tag output routines
+ */
+#define pick( name, length, funci, funco, gmlflags, locflags )  extern void funco( FILE *fp, layout_data *lay );
 #include "gtagslay.h"
 #undef pick
 
@@ -549,7 +556,6 @@ extern void         show_include_stack( void );
     extern condcode routine( parm parms[MAX_FUN_PARMS], unsigned parm_count, char **result, unsigned ressize );
 #include "gsfuncs.h"
 #undef pick
-
 
 #ifdef  __cplusplus
 }   /* End of "C" linkage for C++ */

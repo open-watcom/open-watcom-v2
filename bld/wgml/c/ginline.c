@@ -233,7 +233,7 @@ static void gml_e_inline_common( const gmltag *entry )
         } else {
             g_tag_nest_err_exit( get_tclo( nest_cb->gtag ) );   // exxx expected
         }
-        // never return
+        /* never return */
     }
     /* Mark end of highlighted phrase embedded in a highlighted phrase */
     if( cur_group_type != GRT_xmp && ProcFlags.concat ) {
@@ -434,6 +434,7 @@ void gml_sf( const gmltag *entry )
     }
     if( !font_seen ) {          // font is a required attribute
         xx_line_err_exit_c( err_att_missing, scandata.s );
+        /* never return */
     }
 
     scandata.s = scandata.e;

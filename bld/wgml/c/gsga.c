@@ -285,7 +285,7 @@ static  condcode    scan_att_optionsB( gavalflags *val_flags, condcode cca, gafl
             *att_flags |= GAFLG_auto;
         } else {
             xx_err_exit( err_att_val_inv );
-            // never return
+            /* never return */
         }
 
         if( cc != CC_neg ) {            // any or auto found now scan string
@@ -326,7 +326,7 @@ static  condcode    scan_att_optionsB( gavalflags *val_flags, condcode cca, gafl
                 }
                 if( cc == CC_notnum ) {
                     xx_err_exit( err_att_val_inv );
-                    // never return
+                    /* never return */
                 }
                 ranges[k] = gn.result;
             }
@@ -334,7 +334,7 @@ static  condcode    scan_att_optionsB( gavalflags *val_flags, condcode cca, gafl
             if( (k < 2)
               || (ranges[0] > ranges[1]) ) {// need 2 or more values
                 xx_err_exit( err_att_range_inv );// ... second <= first
-                // never return
+                /* never return */
             }
             if( k == 3 ) {
                 ranges[3] = ranges[2];  // only 1 default specified
@@ -345,7 +345,7 @@ static  condcode    scan_att_optionsB( gavalflags *val_flags, condcode cca, gafl
                   || (ranges[0] > ranges[3])    // default2 less min
                   || (ranges[1] < ranges[3]) ) {// default2 gt max
                     xx_err_exit( err_att_default );
-                    // never return
+                    /* never return */
                 }
             }
             if( ranges[2] > INT_MIN ) {
@@ -371,7 +371,7 @@ static  condcode    scan_att_optionsB( gavalflags *val_flags, condcode cca, gafl
             if( cc == CC_notnum
               || cc == CC_omit ) {
                 xx_err_exit( err_att_val_inv );
-                // never return
+                /* never return */
             } else {
                 scandata.s = gn.arg.s;
                 ranges[0] = gn.result;
@@ -398,7 +398,7 @@ static  condcode    scan_att_optionsB( gavalflags *val_flags, condcode cca, gafl
                  } else {
 #if 1
                     xx_err_exit( err_att_val_inv );  // only short string allowed
-                    // never return
+                    /* never return */
 #else
                     *val_flags |= GAVAL_valptr;
                     valptr = mem_tokdup( g_tok_start, arg_flen );
@@ -409,7 +409,7 @@ static  condcode    scan_att_optionsB( gavalflags *val_flags, condcode cca, gafl
                  }
             } else {
                 xx_err_exit( err_att_val_inv );
-                // never return
+                /* never return */
             }
             cc = getarg();
             if( cc == CC_omit ) {       // nothing more
@@ -423,7 +423,7 @@ static  condcode    scan_att_optionsB( gavalflags *val_flags, condcode cca, gafl
                 *att_flags |= GAFLG_def;
             } else {
                 xx_err_exit( err_att_val_inv );
-                // never return
+                /* never return */
             }
         } else {
             cc = CC_neg;
@@ -472,7 +472,7 @@ void    scr_ga( void )
          * no operands or tagname * and no previous definition
          */
         xx_err_exit_c( err_missing_name, "" );
-        // never return
+        /* never return */
     }
     if( g_tag_entry == NULL ) {         // error during previous .gt
         scan_restart = scandata.e;       // ignore .ga
@@ -489,7 +489,7 @@ void    scr_ga( void )
     if( *p == '*' ) {                   // single * as tagname
         if( arg_flen > 1 ) {
             xx_err_exit( err_tag_name_inv );
-            // never return
+            /* never return */
         }
         savetag = '*';                      // remember for possible quick access
         if( GlobalFlags.firstpass
@@ -504,12 +504,12 @@ void    scr_ga( void )
         p = get_tagname( p, g_tagname );
         if( arg_flen > strlen( g_tagname ) ) {
             xx_err_exit( err_tag_name_inv );     // name contains invalid or too many chars
-            // never return
+            /* never return */
         }
         g_tag_entry = find_user_tag( &tags_dict, g_tagname );
         if( g_tag_entry == NULL ) {
             xx_err_exit_c( err_user_tag, g_tagname );  // tagname not defined
-            // never return
+            /* never return */
         }
     }
 
@@ -526,7 +526,7 @@ void    scr_ga( void )
          * no operands or attname * and no previous definition
          */
         xx_err_exit( err_att_name_inv );
-        // never return
+        /* never return */
     }
 
     p = g_tok_start;
@@ -534,7 +534,7 @@ void    scr_ga( void )
     if( *p == '*' ) {                   // single * as attname
         if( arg_flen > 1 ) {
             xx_err_exit( err_att_name_inv );
-            // never return
+            /* never return */
         }
         saveatt = '*';                  // remember for possible quick access
         if( GlobalFlags.firstpass
@@ -549,7 +549,7 @@ void    scr_ga( void )
         p = get_tag_attname( p, g_attname );
         if( arg_flen > strlen( g_attname ) ) {
             xx_err_exit( err_att_name_inv );// attname with invalid or too many chars
-            // never return
+            /* never return */
         }
     }
 
@@ -576,7 +576,7 @@ void    scr_ga( void )
             cc = scan_att_optionsB( &val_flags, cc, &att_flags );// process option B
             if( cc != CC_omit ) {
                 xx_err_exit( err_tag_toomany );  // excess parameters
-                // never return
+                /* never return */
             }
         }
     }

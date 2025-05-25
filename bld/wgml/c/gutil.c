@@ -133,6 +133,7 @@ static const bool internal_to_su( su *in_su, bool tag, const char *base )
     }
     if( my_isdigit( *ps ) ) {                   // too many digits in whole part
         val_parse_err_exit( base + (ps - s->su_txt), tag );
+        /* never return */
     }
 
     if( *ps == '.' ) {                          // check for decimal point
@@ -157,6 +158,7 @@ static const bool internal_to_su( su *in_su, bool tag, const char *base )
         }
         if( my_isdigit( *ps ) ) {               // too many digits in decimals
             val_parse_err_exit( base + (ps - s->su_txt), tag );
+            /* never return */
         }
     }
 
@@ -175,6 +177,7 @@ static const bool internal_to_su( su *in_su, bool tag, const char *base )
     }
     if( my_isalpha( *ps ) ) {                   // too many characters in unit
         val_parse_err_exit( base + (ps - s->su_txt), tag );
+        /* never return */
     }
 
     /***********************************************************************/
@@ -190,6 +193,7 @@ static const bool internal_to_su( su *in_su, bool tag, const char *base )
             s->su_u = SU_ems;
             if( pd != NULL ) {                  // no decimals with "M"
                 val_parse_err_exit( base + (ps - s->su_txt), tag );
+                /* never return */
             }
             break;
         case 'c' :
@@ -205,6 +209,7 @@ static const bool internal_to_su( su *in_su, bool tag, const char *base )
             break;
         default:
             val_parse_err_exit( base + (ps - s->su_txt), tag );
+            /* never return */
         }
     } else {                                    // two letter unit
         if( unit[1] == 'm' ) {                  // cm, mm ?
@@ -214,15 +219,18 @@ static const bool internal_to_su( su *in_su, bool tag, const char *base )
                 s->su_u = SU_mm;
             } else {                            // invalid unit
                 val_parse_err_exit( base + (ps - s->su_txt), tag );
+                /* never return */
             }
         } else if( unit[0] == 'd' ) {           // dv ?
             if( unit[1] == 'v' ) {
                 s->su_u = SU_dv;
             } else {                            // invalid unit
                 val_parse_err_exit( base + (ps - s->su_txt), tag );
+                /* never return */
             }
         } else {                                // invalid unit
             val_parse_err_exit( base + (ps - s->su_txt), tag );
+            /* never return */
         }
     }
 
@@ -240,11 +248,13 @@ static const bool internal_to_su( su *in_su, bool tag, const char *base )
         }
         if( my_isdigit( *ps ) ) {     // too many digits after "C" or "P"
             val_parse_err_exit( base + (ps - s->su_txt), tag );
+            /* never return */
         }
     }
 
     if( *ps != '\0' ) {                         // value continues on: it shouldn't
         val_parse_err_exit( base + (ps - s->su_txt), tag );
+        /* never return */
     }
     s->su_whole = wh;
     s->su_dec   = wd;
@@ -255,6 +265,7 @@ static const bool internal_to_su( su *in_su, bool tag, const char *base )
     if( pd != NULL ) {                  // dec point found
         if( pu == NULL ) {              // need trailing unit
             val_parse_err_exit( base + (ps - s->su_txt - 1), tag );
+            /* never return */
         }
     }
 
@@ -374,6 +385,7 @@ static void add_spaces_t_element( char * spaces )
         if( t_element != NULL ) {                       // t_element exists
             if( t_element->type != ELT_text ) {          // must be text
                 internal_err_exit( __FILE__, __LINE__ );
+                /* never return */
             }
 
             line = t_element->element.text.first;
@@ -515,26 +527,32 @@ bool att_val_to_su( su *in_su, bool pos, att_val_type *attr_val, bool specval )
 
     if( attr_val->tok.l > MAX_SU_LENGTH ) {     // won't fit
         xx_line_err_exit_c( err_inv_att_val, attr_val->tok.s );
+        /* never return */
     }
     strcpy( ps, attr_val->specval );
 
     in_su->su_u = SU_undefined;
     if( *ps == '+' ) {                      // not allowed with tags
         xx_line_err_exit_c( err_inv_att_val, attr_val->tok.s );
-    } else if( *ps == '-' ) {               // not relative, just negative
+        /* never return */
+    }
+    if( *ps == '-' ) {               // not relative, just negative
         if( pos ) {                         // value must be positive
             xx_line_err_exit_c( err_inv_att_val, attr_val->tok.s );
+            /* never return */
         }
         sign = *ps;
         if( *(ps + 1) == '+'
           || *(ps + 1) == '-' ) {  // only one sign is allowed
             xx_line_err_exit_c( err_inv_att_val, attr_val->tok.s );
+            /* never return */
         }
     } else {
         sign = '+';
     }
     if( *ps == '\0' ) {                     // value end reached, not valid
         xx_line_err_exit_c( err_inv_att_val, attr_val->tok.s );
+        /* never return */
     }
     in_su->su_relative = false;             // no relative positioning with tags
 
@@ -580,6 +598,7 @@ bool cw_val_to_su( const char **scanp, su *in_su )
     *scanp = p;                 // report back value of p
     if( len > MAX_SU_LENGTH ) {
         xx_line_err_exit_c( err_inv_cw_op_val, pa );
+        /* never return */
     }
     for( i = 0; i < len; i++ ) {
         ps[i] = my_tolower( pb[i] );
@@ -640,6 +659,7 @@ bool lay_init_su( const char *p, su *in_su )
 
     if( len > MAX_SU_LENGTH ) {     // won't fit
         xx_line_err_exit_c( err_inv_att_val, pa );
+        /* never return */
     }
     for( i = 0; i < len; i++ ) {
         ps[i] = my_tolower( pb[i] );
@@ -649,17 +669,21 @@ bool lay_init_su( const char *p, su *in_su )
     in_su->su_u = SU_undefined;
     if( *ps == '+' ) {              // not allowed with tags
         xx_line_err_exit_c( err_inv_att_val, pa );
-    } else if( *ps == '-' ) {       // not relative, just negative
+        /* never return */
+    }
+    if( *ps == '-' ) {       // not relative, just negative
         sign = *ps;
         if( *(ps + 1) == '+'
           || *(ps + 1) == '-' ) {   // only one sign is allowed
             xx_line_err_exit_c( err_inv_att_val, pa );
+            /* never return */
         }
     } else {
         sign = '+';
     }
     if( *ps == '\0' ) {             // value end reached, not valid
         xx_line_err_exit_c( err_inv_att_val, pa );
+        /* never return */
     }
     in_su->su_relative = false;     // no relative positioning with tags
 
@@ -842,6 +866,7 @@ char *format_num( unsigned n, char *res, unsigned ressize, num_style ns )
         break;
     default:
         internal_err_exit( __FILE__, __LINE__ );
+        /* never return */
     }
 
     if( ns & STYLE_xd ) {
@@ -929,6 +954,7 @@ char *get_tag_att_name( char *p, char **orig, att_name_type *attr_name )
     if( attr_name->tok.l < 2
       || attr_name->tok.l > TAG_ATT_NAME_LENGTH ) {
         xx_line_err_exit_c( err_att_name_inv, *orig );
+        /* never return */
     }
     return( p );
 }
@@ -964,6 +990,7 @@ static char *get_value( char *p, att_val_type *attr_val, bool equ, bool layout )
             }
         } else {
             xx_line_err_exit_c( err_eq_missing, p );
+            /* never return */
         }
     }
     if( (*p == '\0')
@@ -972,6 +999,7 @@ static char *get_value( char *p, att_val_type *attr_val, bool equ, bool layout )
             ProcFlags.tag_end_found = true;
         }
         xx_line_err_exit_c( err_att_val_missing, p );
+        /* never return */
     }
     attr_val->tok.s = p;
     if( layout
@@ -993,11 +1021,11 @@ static char *get_value( char *p, att_val_type *attr_val, bool equ, bool layout )
         if( attr_val->quoted != ' ' ) {
             if( *p != attr_val->quoted ) {  // terminating quote not found
                 xx_line_err_exit_c( err_att_val_open, attr_val->tok.s );
-            } else {
-                p++;                        // over terminating quote
-                attr_val->tok.s++;          // remove quotes from value info
-                attr_val->tok.l--;
+                /* never return */
             }
+            p++;                        // over terminating quote
+            attr_val->tok.s++;          // remove quotes from value info
+            attr_val->tok.l--;
         }
         get_att_specval( attr_val );
     }
@@ -1034,14 +1062,19 @@ void g_keep_nest( const char * cw_tag ) {
     switch( cur_group_type ) {
     case GRT_fb :
         keep_nest_err_exit( cw_tag, "a floating block" );
+        /* never return */
     case GRT_fig :
         keep_nest_err_exit( cw_tag, "a figure" );
+        /* never return */
     case GRT_fk :
         keep_nest_err_exit( cw_tag, "a floating keep" );
+        /* never return */
     case GRT_fn :
         keep_nest_err_exit( cw_tag, "a footnote" );
+        /* never return */
     case GRT_xmp :
         keep_nest_err_exit( cw_tag, "an example" );
+        /* never return */
     }
     return;
 }
@@ -1065,6 +1098,7 @@ font_number get_font_number( const char *value, unsigned len )
 
     if( p != pb ) {                             // badly-formed token
         xx_line_err_exit_c( err_num_too_large, value );
+        /* never return */
     }
 
     wk = strtoul( value, NULL, 10 );
@@ -1179,7 +1213,7 @@ num_style find_pgnum_style( void )
         break;
     default :
         internal_err_exit( __FILE__, __LINE__ );
-//        break;
+        /* never return */
     }
 
     return( retval );

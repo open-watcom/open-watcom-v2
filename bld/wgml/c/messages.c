@@ -284,6 +284,7 @@ static void err_exit( void )
     out_msg( "\nWGML has ended prematurely\n" );
     fflush( NULL );                     // TBD
     my_exit( 16 );
+    /* never return */
 }
 
 /***************************************************************************/
@@ -430,6 +431,7 @@ void att_req_err_exit( const char *tagname, const char *attname )  // for proces
     g_info( info_att_req );
     file_mac_info();
     err_exit();
+    /* never return */
 }
 
 void ban_reg_err_exit( msg_ids num, banner_lay_tag * in_ban1, banner_lay_tag * in_ban2,
@@ -446,6 +448,7 @@ void ban_reg_err_exit( msg_ids num, banner_lay_tag * in_ban1, banner_lay_tag * i
         g_err( inf_ban_id, doc_sections[in_ban2->docsect].name, ban_places[in_ban2->place] );
     } else {
         internal_err_exit( __FILE__, __LINE__ );
+        /* never return */
     }
 
     if( in_reg1 != NULL ) {
@@ -461,6 +464,7 @@ void ban_reg_err_exit( msg_ids num, banner_lay_tag * in_ban1, banner_lay_tag * i
     g_info( num );
     file_mac_info();
     err_exit();
+    /* never return */
 }
 
 void internal_err_exit( const char * file, int line )    // utility function
@@ -468,6 +472,7 @@ void internal_err_exit( const char * file, int line )    // utility function
     err_count++;
     g_err( err_intern, file, line );
     err_exit();
+    /* never return */
 }
 
 void list_level_err_exit( const char * xl_tag, uint8_t xl_level )    // for finish_lists()
@@ -477,6 +482,7 @@ void list_level_err_exit( const char * xl_tag, uint8_t xl_level )    // for fini
     g_info( info_level_skipped, xl_level );
     file_mac_info();
     err_exit();
+    /* never return */
 }
 
 void main_file_err_exit( const char * filename )
@@ -489,6 +495,7 @@ void main_file_err_exit( const char * filename )
         g_info( inf_included, "cmdline" );
     }
     err_exit();
+    /* never return */
 }
 
 void numb_err_exit( void )                                           // for scr_pu()
@@ -505,6 +512,7 @@ void numb_err_exit( void )                                           // for scr_
     }
     show_include_stack();
     err_exit();
+    /* never return */
 }
 
 void symbol_name_length_err_exit( const char * symname )
@@ -523,6 +531,7 @@ void symbol_name_length_err_exit( const char * symname )
     }
     file_mac_info();
     err_exit();
+    /* never return */
 }
 
 void val_parse_err_exit( const char * pa, bool tag ) // for internal_to_su()
@@ -536,6 +545,7 @@ void val_parse_err_exit( const char * pa, bool tag ) // for internal_to_su()
     file_mac_info();
     show_line_error( pa );
     err_exit();
+    /* never return */
 }
 
 
@@ -550,6 +560,7 @@ void dup_refid_err_exit( const char *refid, const char * context )
     file_mac_info();
     err_count++;
     err_exit();
+    /* never return */
 }
 
 /***************************************************************************/
@@ -572,12 +583,14 @@ void g_tag_err_exit( g_tags gtag )
 {
     g_tag_common_err( gtag, false );         // 'normal' stack display
     err_exit();
+    /* never return */
 }
 
 void g_tag_nest_err_exit( g_tags gtag )
 {
     g_tag_common_err( gtag, true );         // nested tag stack display
     err_exit();
+    /* never return */
 }
 
 /* Various special-purpose functions */
@@ -598,6 +611,7 @@ void g_if_int_err_exit( void )
     }
     err_count++;
     err_exit();
+    /* never return */
 }
 
 /* SC--037: The macro 'xxxxxx' for the gml tag 'yyyyy' is not defined */
@@ -618,6 +632,7 @@ void g_tag_mac_err_exit( const gtentry *ge )
     }
     err_count++;
     err_exit();
+    /* never return */
 }
 
 void g_tag_no_err_exit( g_tags gtag )
@@ -629,6 +644,7 @@ void g_tag_no_err_exit( g_tags gtag )
     file_mac_info_nest();
     err_count++;
     err_exit();
+    /* never return */
 }
 
 void g_tag_prec_err_exit( g_tags gtag )
@@ -640,6 +656,7 @@ void g_tag_prec_err_exit( g_tags gtag )
     file_mac_info();
     err_count++;
     err_exit();
+    /* never return */
 }
 
 void g_tag_rsloc_err_exit( locflags inloc, const char * pa )
@@ -661,6 +678,7 @@ void g_tag_rsloc_err_exit( locflags inloc, const char * pa )
     show_line_error( pa );
 
     err_exit();
+    /* never return */
 }
 
 void g_wng_hlevel( hdsrc hd_found, hdsrc hd_expected )
@@ -682,6 +700,7 @@ void keep_nest_err_exit( const char * arg1, const char * arg2 )
     g_info( inf_nested_blocks2 );
     file_mac_info();
     err_exit();
+    /* never return */
 }
 
 /* These are generic helper functions */
@@ -692,6 +711,7 @@ void xx_err_exit( const msg_ids errid )
     g_err( errid );
     file_mac_info();
     err_exit();
+    /* never return */
 }
 
 void xx_err_exit_c( const msg_ids errid, char const * arg )
@@ -700,6 +720,7 @@ void xx_err_exit_c( const msg_ids errid, char const * arg )
     g_err( errid, arg );
     file_mac_info();
     err_exit();
+    /* never return */
 }
 
 void xx_err_exit_cc( const msg_ids errid, const char * arg1, const char * arg2 )
@@ -708,6 +729,7 @@ void xx_err_exit_cc( const msg_ids errid, const char * arg1, const char * arg2 )
     g_err( errid, arg1, arg2 );
     file_mac_info();
     err_exit();
+    /* never return */
 }
 
 void xx_line_err_exit_c( const msg_ids errid, const char * pa )
@@ -717,6 +739,7 @@ void xx_line_err_exit_c( const msg_ids errid, const char * pa )
     file_mac_info();
     show_line_error( pa );
     err_exit();
+    /* never return */
 }
 
 void xx_line_err_exit_ci( const msg_ids errid, const char * pa, unsigned len )
@@ -726,6 +749,7 @@ void xx_line_err_exit_ci( const msg_ids errid, const char * pa, unsigned len )
     file_mac_info();
     show_line_error_len( pa, len );
     err_exit();
+    /* never return */
 }
 
 void xx_line_err_exit_cc( const msg_ids errid, char const * cw, const char * pa )
@@ -735,6 +759,7 @@ void xx_line_err_exit_cc( const msg_ids errid, char const * cw, const char * pa 
     file_mac_info();
     show_line_error( pa );
     err_exit();
+    /* never return */
 }
 
 void xx_line_err_exit_cci( const msg_ids errid, char const * cw, char const * pa, unsigned len )
@@ -744,6 +769,7 @@ void xx_line_err_exit_cci( const msg_ids errid, char const * cw, char const * pa
     file_mac_info();
     show_line_error_len( pa, len );
     err_exit();
+    /* never return */
 }
 
 void xx_nest_err_exit( const msg_ids errid )
@@ -752,6 +778,7 @@ void xx_nest_err_exit( const msg_ids errid )
     g_err( errid );
     file_mac_info_nest();
     err_exit();
+    /* never return */
 }
 
 void xx_nest_err_exit_cc( const msg_ids errid, const char * arg1, const char * arg2 )
@@ -760,6 +787,7 @@ void xx_nest_err_exit_cc( const msg_ids errid, const char * arg1, const char * a
     g_err( errid, arg1, arg2 );
     file_mac_info_nest();
     err_exit();
+    /* never return */
 }
 
 void xx_simple_err_exit( const msg_ids errid )
@@ -767,6 +795,7 @@ void xx_simple_err_exit( const msg_ids errid )
     err_count++;
     g_err( errid );
     err_exit();
+    /* never return */
 }
 
 void xx_simple_err_exit_c( const msg_ids errid, const char * arg )
@@ -774,6 +803,7 @@ void xx_simple_err_exit_c( const msg_ids errid, const char * arg )
     err_count++;
     g_err( errid, arg );
     err_exit();
+    /* never return */
 }
 
 void xx_simple_err_exit_i( const msg_ids errid, int arg )
@@ -781,6 +811,7 @@ void xx_simple_err_exit_i( const msg_ids errid, int arg )
     err_count++;
     g_err( errid, arg );
     err_exit();
+    /* never return */
 }
 
 void xx_simple_err_exit_cc( const msg_ids errid, const char * arg1, const char * arg2 )
@@ -788,6 +819,7 @@ void xx_simple_err_exit_cc( const msg_ids errid, const char * arg1, const char *
     err_count++;
     g_err( errid, arg1, arg2 );
     err_exit();
+    /* never return */
 }
 
 void xx_source_err_exit( const msg_ids errid )
@@ -805,6 +837,7 @@ void xx_source_err_exit( const msg_ids errid )
     show_include_stack();
     err_count++;
     err_exit();
+    /* never return */
 }
 
 void xx_source_err_exit_c( const msg_ids errid, const char * arg )
@@ -822,6 +855,7 @@ void xx_source_err_exit_c( const msg_ids errid, const char * arg )
     show_include_stack();
     err_count++;
     err_exit();
+    /* never return */
 }
 
 void xx_warn( const msg_ids errid )

@@ -56,9 +56,11 @@ char parse_char( const char *p, unsigned len )
             }
         } else {
             xx_line_err_exit_ci( err_cw_not_char, p, len );
+            /* never return */
         }
     } else {
         xx_line_err_exit_ci( err_cw_not_char, p, len );
+        /* never return */
     }
 
     return( c );

@@ -37,9 +37,9 @@
 /***************************************************************************/
 /*   :FIGLIST attributes                                                   */
 /***************************************************************************/
-const   lay_att     figlist_att[7] =
-    { e_left_adjust, e_right_adjust, e_skip, e_spacing, e_columns,
-      e_fill_string, e_dummy_zero };
+static const lay_att    figlist_att[] = {
+    e_left_adjust, e_right_adjust, e_skip, e_spacing, e_columns, e_fill_string
+};
 
 /***********************************************************************************/
 /*Define the characteristics of the figure list.                                   */
@@ -103,7 +103,8 @@ void    lay_figlist( const gmltag * entry )
     }
     while( (cc = lay_attr_and_value( &attr_name, &attr_val )) == CC_pos ) {   // get att with value
         cvterr = -1;
-        for( k = 0, curr = figlist_att[k]; curr > 0; k++, curr = figlist_att[k] ) {
+        for( k = 0; k < TABLE_SIZE( figlist_att ); k++ ) {
+            curr = figlist_att[k];
             if( strcmp( lay_att_names[curr], attr_name.attname.l ) == 0 ) {
                 p = attr_val.tok.s;
                 switch( curr ) {
@@ -111,6 +112,7 @@ void    lay_figlist( const gmltag * entry )
                     if( AttrFlags.left_adjust ) {
                         xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
                     }
                     cvterr = i_space_unit( p, &attr_val,
                                            &layout_work.figlist.left_adjust );
@@ -120,6 +122,7 @@ void    lay_figlist( const gmltag * entry )
                     if( AttrFlags.right_adjust ) {
                         xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
                     }
                     cvterr = i_space_unit( p, &attr_val,
                                            &layout_work.figlist.right_adjust );
@@ -129,6 +132,7 @@ void    lay_figlist( const gmltag * entry )
                     if( AttrFlags.skip ) {
                         xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
                     }
                     cvterr = i_space_unit( p, &attr_val,
                                            &layout_work.figlist.skip );
@@ -138,6 +142,7 @@ void    lay_figlist( const gmltag * entry )
                     if( AttrFlags.spacing ) {
                         xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
                     }
                     cvterr = i_spacing( p, &attr_val, &layout_work.figlist.spacing );
                     AttrFlags.spacing = true;
@@ -146,6 +151,7 @@ void    lay_figlist( const gmltag * entry )
                     if( AttrFlags.columns ) {
                         xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
                     }
                     cvterr = i_int8( p, &attr_val, &layout_work.figlist.columns );
                     AttrFlags.columns = true;
@@ -154,24 +160,67 @@ void    lay_figlist( const gmltag * entry )
                     if( AttrFlags.fill_string ) {
                         xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
                     }
                     cvterr = i_xx_string( p, &attr_val, layout_work.figlist.fill_string );
                     AttrFlags.fill_string = true;
                     break;
                 default:
                     internal_err_exit( __FILE__, __LINE__ );
+                    /* never return */
                 }
                 if( cvterr ) {          // there was an error
                     xx_err_exit( err_att_val_inv );
+                    /* never return */
                 }
                 break;                  // break out of for loop
             }
         }
         if( cvterr < 0 ) {
             xx_err_exit( err_att_name_inv );
+            /* never return */
         }
     }
     scandata.s = scandata.e;
     return;
 }
 
+
+
+/***************************************************************************/
+/*   :FIGLIST   output figure list attribute values                        */
+/***************************************************************************/
+void    put_lay_figlist( FILE *fp, layout_data * lay )
+{
+    int                 k;
+    lay_att             curr;
+
+    fprintf( fp, ":FIGLIST\n" );
+
+    for( k = 0; k < TABLE_SIZE( figlist_att ); k++ ) {
+        curr = figlist_att[k];
+        switch( curr ) {
+        case e_left_adjust:
+            o_space_unit( fp, curr, &lay->figlist.left_adjust );
+            break;
+        case e_right_adjust:
+            o_space_unit( fp, curr, &lay->figlist.right_adjust );
+            break;
+        case e_skip:
+            o_space_unit( fp, curr, &lay->figlist.skip );
+            break;
+        case e_spacing:
+            o_spacing( fp, curr, &lay->figlist.spacing );
+            break;
+        case e_columns:
+            o_int8( fp, curr, &lay->figlist.columns );
+            break;
+        case e_fill_string:
+            o_xx_string( fp, curr, lay->figlist.fill_string );
+            break;
+        default:
+            internal_err_exit( __FILE__, __LINE__ );
+            /* never return */
+        }
+    }
+}

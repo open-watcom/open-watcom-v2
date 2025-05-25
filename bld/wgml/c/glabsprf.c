@@ -38,11 +38,10 @@
 /*   :ABSTRACT and :PREFACE attributes                                     */
 /***************************************************************************/
 
-const   lay_att     abspref_att[11] =
-    { e_post_skip, e_pre_top_skip, e_font, e_spacing, e_header,
-      e_abstract_string, e_preface_string, e_page_eject, e_page_reset,
-      e_columns, e_dummy_zero };
-
+static const lay_att       abspref_att[] = {
+    e_post_skip, e_pre_top_skip, e_font, e_spacing, e_header, e_abstract_string,
+    e_preface_string, e_page_eject, e_page_reset, e_columns
+};
 
 /**********************************************************************************/
 /*Define the characteristics of the abstract section and the abstract heading.    */
@@ -151,6 +150,7 @@ void    lay_abspref( const gmltag * entry )
         apsect = &layout_work.hx.hx_sect[HDS_preface];
     } else {
         internal_err_exit( __FILE__, __LINE__ );
+        /* never return */
     }
 
     memset( &AttrFlags, 0, sizeof( AttrFlags ) );   // clear all attribute flags
@@ -159,7 +159,8 @@ void    lay_abspref( const gmltag * entry )
     }
     while( (cc = lay_attr_and_value( &attr_name, &attr_val )) == CC_pos ) {   // get att with value
         cvterr = -1;
-        for( k = 0, curr = abspref_att[k]; curr > 0; k++, curr = abspref_att[k] ) {
+        for( k = 0; k < TABLE_SIZE( abspref_att ); k++ ) {
+            curr = abspref_att[k];
             if( strcmp( lay_att_names[curr], attr_name.attname.l ) == 0 ) {
                 p = attr_val.tok.s;
                 switch( curr ) {
@@ -167,6 +168,7 @@ void    lay_abspref( const gmltag * entry )
                     if( AttrFlags.post_skip ) {
                         xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
                     }
                     cvterr = i_space_unit( p, &attr_val, &(apsect->post_skip) );
                     AttrFlags.post_skip = true;
@@ -175,6 +177,7 @@ void    lay_abspref( const gmltag * entry )
                     if( AttrFlags.pre_top_skip ) {
                         xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
                     }
                     cvterr = i_space_unit( p, &attr_val, &(apsect->pre_top_skip) );
                     AttrFlags.pre_top_skip = true;
@@ -183,6 +186,7 @@ void    lay_abspref( const gmltag * entry )
                     if( AttrFlags.font ) {
                         xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
                     }
                     cvterr = i_font_number( p, &attr_val, &(apsect->text_font) );
                     if( apsect->text_font >= wgml_font_cnt ) apsect->text_font = 0;
@@ -192,6 +196,7 @@ void    lay_abspref( const gmltag * entry )
                     if( AttrFlags.spacing ) {
                         xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
                     }
                     cvterr = i_spacing( p, &attr_val, &(apsect->spacing) );
                     AttrFlags.spacing = true;
@@ -200,6 +205,7 @@ void    lay_abspref( const gmltag * entry )
                     if( AttrFlags.header ) {
                         xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
                     }
                     cvterr = i_yes_no( p, &attr_val, &(apsect->header) );
                     AttrFlags.header = true;
@@ -209,6 +215,7 @@ void    lay_abspref( const gmltag * entry )
                         if( AttrFlags.abstract_string ) {
                             xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
                                 attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                            /* never return */
                         }
                         cvterr = i_xx_string( p, &attr_val, ap->string );
                         AttrFlags.abstract_string = true;
@@ -219,6 +226,7 @@ void    lay_abspref( const gmltag * entry )
                         if( AttrFlags.preface_string ) {
                             xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
                                 attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                            /* never return */
                         }
                         cvterr = i_xx_string( p, &attr_val, ap->string );
                         AttrFlags.preface_string = true;
@@ -228,6 +236,7 @@ void    lay_abspref( const gmltag * entry )
                     if( AttrFlags.page_eject ) {
                         xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
                     }
                     cvterr = i_page_eject( p, &attr_val, &(ap->page_eject) );
                     AttrFlags.page_eject = true;
@@ -236,6 +245,7 @@ void    lay_abspref( const gmltag * entry )
                     if( AttrFlags.page_reset ) {
                         xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
                     }
                     cvterr = i_yes_no( p, &attr_val, &(ap->page_reset) );
                     AttrFlags.page_reset = true;
@@ -244,25 +254,93 @@ void    lay_abspref( const gmltag * entry )
                     if( AttrFlags.columns ) {
                         xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
                     }
                     cvterr = i_int8( p, &attr_val, &(ap->columns) );
                     AttrFlags.columns = true;
                     break;
                 default:
                     internal_err_exit( __FILE__, __LINE__ );
-//                    break;
+                    /* never return */
                 }
                 if( cvterr ) {          // there was an error
                     xx_err_exit( err_att_val_inv );
+                    /* never return */
                 }
                 break;                  // break out of for loop
             }
         }
         if( cvterr < 0 ) {
             xx_err_exit( err_att_name_inv );
+            /* never return */
         }
     }
     scandata.s = scandata.e;
     return;
 }
 
+
+/***************************************************************************/
+/*   output for :ABSTRACT or :PREFACE values                               */
+/***************************************************************************/
+static  void    put_lay_abspref( FILE *fp, abspref_lay_tag * ap,
+                                 hx_sect_lay_tag * apsect, char * name )
+{
+    int                 k;
+    lay_att             curr;
+
+    fprintf( fp, ":%s\n", name );
+
+    for( k = 0; k < TABLE_SIZE( abspref_att ); k++ ) {
+        curr = abspref_att[k];
+        switch( curr ) {
+        case e_post_skip:
+            o_space_unit( fp, curr, &apsect->post_skip );
+            break;
+        case e_pre_top_skip:
+            o_space_unit( fp, curr, &apsect->pre_top_skip );
+            break;
+        case e_font:
+            o_font_number( fp, curr, &apsect->text_font );
+            break;
+        case e_spacing:
+            o_spacing( fp, curr, &apsect->spacing );
+            break;
+        case e_header:
+            o_yes_no( fp, curr, &apsect->header );
+            break;
+        case e_abstract_string:
+            if( *name == 'A' ) {        // :Abstract output
+                o_xx_string( fp, curr, ap->string );
+            }
+            break;
+        case e_preface_string:
+            if( *name == 'P' ) {        // :Preface output
+                o_xx_string( fp, curr, ap->string );
+            }
+            break;
+        case e_page_eject:
+            o_page_eject( fp, curr, &ap->page_eject );
+            break;
+        case e_page_reset:
+            o_yes_no( fp, curr, &ap->page_reset );
+            break;
+        case e_columns:
+            o_int8( fp, curr, &ap->columns );
+            break;
+        default:
+            internal_err_exit( __FILE__, __LINE__ );
+            /* never return */
+        }
+    }
+}
+
+void    put_lay_abstract( FILE *fp, layout_data * lay )
+{
+    put_lay_abspref( fp, &(lay->abstract), &(lay->hx.hx_sect[HDS_abstract]), "ABSTRACT" );
+}
+
+void    put_lay_preface( FILE *fp, layout_data * lay )
+{
+    put_lay_abspref( fp, &(lay->preface), &(lay->hx.hx_sect[HDS_preface]), "PREFACE" );
+}

@@ -81,3 +81,11 @@ void    lay_dummy( const gmltag * entry )
 }
 
 
+/***************************************************************************/
+/*  put_lay_dummy    processing                                            */
+/***************************************************************************/
+
+void    put_lay_dummy( FILE *fp, layout_data *lay )
+{
+    (void)fp; (void)lay;
+}

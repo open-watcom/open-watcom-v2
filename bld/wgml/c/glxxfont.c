@@ -41,8 +41,9 @@
 /*                                                                         */
 /***************************************************************************/
 
-const   lay_att     xx_att[2] =
-    { e_font, e_dummy_zero };
+static const lay_att    xx_att[] = {
+    e_font
+};
 
 
 void    lay_xx( const gmltag * entry )
@@ -78,6 +79,7 @@ void    lay_xx( const gmltag * entry )
         fontptr = &layout_work.ixmajor.font;
     } else {
         internal_err_exit( __FILE__, __LINE__ );
+        /* never return */
     }
     memset( &AttrFlags, 0, sizeof( AttrFlags ) );   // clear all attribute flags
     if( ProcFlags.lay_xxx != ltag ) {
@@ -85,7 +87,8 @@ void    lay_xx( const gmltag * entry )
     }
     while( (cc = lay_attr_and_value( &attr_name, &attr_val )) == CC_pos ) {   // get att with value
         cvterr = -1;
-        for( k = 0, curr = xx_att[k]; curr > 0; k++, curr = xx_att[k] ) {
+        for( k = 0; k < TABLE_SIZE( xx_att ); k++ ) {
+            curr = xx_att[k];
             if( strcmp( lay_att_names[curr], attr_name.attname.l ) == 0 ) {
                 p = attr_val.tok.s;
                 switch( curr ) {
@@ -93,6 +96,7 @@ void    lay_xx( const gmltag * entry )
                     if( AttrFlags.font ) {
                         xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
                     }
                     cvterr = i_font_number( p, &attr_val, fontptr );
                     if( *fontptr >= wgml_font_cnt ) {
@@ -102,18 +106,86 @@ void    lay_xx( const gmltag * entry )
                     break;
                 default:
                     internal_err_exit( __FILE__, __LINE__ );
+                    /* never return */
                 }
                 if( cvterr ) {          // there was an error
                     xx_err_exit( err_att_val_inv );
+                    /* never return */
                 }
                 break;                  // break out of for loop
             }
         }
         if( cvterr < 0 ) {
             xx_err_exit( err_att_name_inv );
+            /* never return */
         }
     }
     scandata.s = scandata.e;
     return;
 }
 
+
+
+/***************************************************************************/
+/*   :xx        output for font only value                                 */
+/***************************************************************************/
+static  void    put_lay_xx( FILE *fp, font_number *font, char * name )
+{
+    int                 k;
+    lay_att             curr;
+
+    fprintf( fp, ":%s\n", name );
+
+    for( k = 0; k < TABLE_SIZE( xx_att ); k++ ) {
+        curr = xx_att[k];
+        switch( curr ) {
+        case e_font:
+            o_font_number( fp, curr, font );
+            break;
+        default:
+            out_msg( "WGML logic error glconvrt.c.\n");
+            err_count++;
+            break;
+        }
+    }
+}
+
+void    put_lay_dt( FILE *fp, layout_data * lay )
+{
+    put_lay_xx( fp, &(lay->dt.font), "DT" );
+}
+
+void    put_lay_gt( FILE *fp, layout_data * lay )
+{
+    put_lay_xx( fp, &(lay->gt.font), "GT" );
+}
+
+void    put_lay_dthd( FILE *fp, layout_data * lay )
+{
+    put_lay_xx( fp, &(lay->dthd.font), "DTHD" );
+}
+
+void    put_lay_cit( FILE *fp, layout_data * lay )
+{
+    put_lay_xx( fp, &(lay->cit.font), "CIT" );
+}
+
+void    put_lay_gd( FILE *fp, layout_data * lay )
+{
+    put_lay_xx( fp, &(lay->gd.font), "GD" );
+}
+
+void    put_lay_ddhd( FILE *fp, layout_data * lay )
+{
+    put_lay_xx( fp, &(lay->ddhd.font), "DDHD" );
+}
+
+void    put_lay_ixpgnum( FILE *fp, layout_data * lay )
+{
+    put_lay_xx( fp, &(lay->ixpgnum.font), "IXPGNUM" );
+}
+
+void    put_lay_ixmajor( FILE *fp, layout_data * lay )
+{
+    put_lay_xx( fp, &(lay->ixmajor.font), "IXMAJOR" );
+}

@@ -80,6 +80,7 @@ condcode    scr_strip( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **res
             default:
                 if( !ProcFlags.suppress_msg ) {
                     xx_source_err_exit_c( err_func_parm, "2 (type)" );
+                    /* never return */
                 }
                 return( CC_neg );
             }

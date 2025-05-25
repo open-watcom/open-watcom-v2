@@ -37,8 +37,9 @@
 /***************************************************************************/
 /*   :TITLEP   attributes                                                  */
 /***************************************************************************/
-const   lay_att     titlep_att[3] =
-    { e_spacing, e_columns, e_dummy_zero };
+static const lay_att    titlep_att[] = {
+    e_spacing, e_columns
+};
 
 
 /***************************************************************************/
@@ -64,7 +65,8 @@ void    lay_titlep( const gmltag * entry )
     }
     while( (cc = lay_attr_and_value( &attr_name, &attr_val )) == CC_pos ) {   // get att with value
         cvterr = -1;
-        for( k = 0, curr = titlep_att[k]; curr > 0; k++, curr = titlep_att[k] ) {
+        for( k = 0; k < TABLE_SIZE( titlep_att ); k++ ) {
+            curr = titlep_att[k];
             if( strcmp( lay_att_names[curr], attr_name.attname.l ) == 0 ) {
                 p = attr_val.tok.s;
                 switch( curr ) {
@@ -72,6 +74,7 @@ void    lay_titlep( const gmltag * entry )
                     if( AttrFlags.spacing ) {
                         xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
                     }
                     cvterr = i_spacing( p, &attr_val, &layout_work.titlep.spacing );
                     AttrFlags.spacing = true;
@@ -80,24 +83,55 @@ void    lay_titlep( const gmltag * entry )
                     if( AttrFlags.columns ) {
                         xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
                     }
                     cvterr = i_int8( p, &attr_val, &layout_work.titlep.columns );
                     AttrFlags.columns = true;
                     break;
                 default:
                     internal_err_exit( __FILE__, __LINE__ );
+                    /* never return */
                 }
                 if( cvterr ) {          // there was an error
                     xx_err_exit( err_att_val_inv );
+                    /* never return */
                 }
                 break;                  // break out of for loop
             }
         }
         if( cvterr < 0 ) {
             xx_err_exit( err_att_name_inv );
+            /* never return */
         }
     }
     scandata.s = scandata.e;
     return;
 }
 
+
+
+/***************************************************************************/
+/*   :TITLEP    output title page attribute values                         */
+/***************************************************************************/
+void    put_lay_titlep( FILE *fp, layout_data * lay )
+{
+    int                 k;
+    lay_att             curr;
+
+    fprintf( fp, ":TITLEP\n" );
+
+    for( k = 0; k < TABLE_SIZE( titlep_att ); k++ ) {
+        curr = titlep_att[k];
+        switch( curr ) {
+        case e_spacing:
+            o_spacing( fp, curr, &lay->titlep.spacing );
+            break;
+        case e_columns:
+            o_int8( fp, curr, &lay->titlep.columns );
+            break;
+        default:
+            internal_err_exit( __FILE__, __LINE__ );
+            /* never return */
+        }
+    }
+}

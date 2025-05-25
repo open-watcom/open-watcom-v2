@@ -202,12 +202,11 @@ void scr_ix( void )
 
     g_tok_start = NULL;                   // clear token start address
     cc = getarg();                      // get next operand
-    if( cc == CC_omit || cc == CC_quotes0 ) { // no operands
-
+    if( cc == CC_omit
+      || cc == CC_quotes0 ) { // no operands
         /* Position adjusted to avoid buffer overflow */
-
         xx_line_err_exit_cc( err_parm_missing, cwcurr, scandata.s - 1 );
-//        return;
+        /* never return */
     }
 
     /****************************************************************/
@@ -226,11 +225,12 @@ void scr_ix( void )
         gn.ignore_blanks = false;
         cc = getnum( &gn );
 
-        if( (cc == CC_pos) || (cc == CC_neg) ) {
-
+        if( (cc == CC_pos)
+          || (cc == CC_neg) ) {
             p = g_tok_start;
             for( k = 0; k < arg_flen; k++ ) {
-                if( (*p == ' ') || !my_isdigit( *p ) ) {
+                if( (*p == ' ')
+                  || !my_isdigit( *p ) ) {
                     break;
                 }
                 p++;
@@ -241,32 +241,42 @@ void scr_ix( void )
 
                 xx_warn_c( wng_unsupp_cw_opt, "structure" );
 
-                if( (gn.result < 1) || (gn.result > 9) ) { // out of range
+                if( (gn.result < 1)
+                  || (gn.result > 9) ) { // out of range
                     xx_line_err_exit_c( err_struct_range, g_tok_start );
+                    /* never return */
                 }
                 cc = getarg();                  // get next operand
-                if( cc == CC_omit || cc == CC_quotes0 ) { // no operands
+                if( cc == CC_omit
+                  || cc == CC_quotes0 ) { // no operands
                     xx_line_err_exit_cc( err_parm_missing, cwcurr, g_tok_start );
+                    /* never return */
                 }
             }
         } else {
 
             /* Check for '.' (the control word indicator) */
 
-            if( *g_tok_start == SCR_char && arg_flen == 1  ) {
+            if( *g_tok_start == SCR_char
+              && arg_flen == 1  ) {
 
                 cc = getarg();                  // get next operand
 
                 /* Only DUMP/PURGE allowed in this position */
 
-                if( cc == CC_omit || cc == CC_quotes0 ) { // no operands
+                if( cc == CC_omit
+                  || cc == CC_quotes0 ) { // no operands
                     xx_line_err_exit_cc( err_parm_missing, cwcurr, g_tok_start );
-                } else if( (arg_flen == 4) && stricmp( "DUMP", g_tok_start ) == 0 ) {
+                    /* never return */
+                } else if( (arg_flen == 4)
+                  && stricmp( "DUMP", g_tok_start ) == 0 ) {
                     xx_warn_c( wng_unsupp_cw_opt, "DUMP" );
-                } else if( (arg_flen == 5) && stricmp( "PURGE", g_tok_start ) == 0 ) {
+                } else if( (arg_flen == 5)
+                  && stricmp( "PURGE", g_tok_start ) == 0 ) {
                     xx_warn_c( wng_unsupp_cw_opt, "PURGE" );
                 } else {
                     xx_line_err_exit_c( err_bad_dp_value, g_tok_start );
+                    /* never return */
                 }
                 cc = getarg();                  // get next operand
             }
@@ -283,16 +293,18 @@ void scr_ix( void )
     /****************************************************************/
 
     for( lvl = 0; lvl < 3; lvl++ ) {
-
-        if( cc == CC_omit || cc == CC_quotes0 ) { // no (more) arguments
+        if( cc == CC_omit
+          || cc == CC_quotes0 ) { // no (more) arguments
             break;
         }
 
         /* Process a reference preceded by SCR_char */
 
-        if( *g_tok_start == SCR_char && arg_flen == 1  ) {    // identify reference
+        if( *g_tok_start == SCR_char
+          && arg_flen == 1  ) {    // identify reference
             cc = getarg();                                  // get next operand
-            if( (cc == CC_pos) || (cc == CC_quotes) ) {           // identify reference
+            if( (cc == CC_pos)
+              || (cc == CC_quotes) ) {           // identify reference
                 ref = g_tok_start;
                 reflen = arg_flen;
                 cc = getarg();                  // get next operand
@@ -305,19 +317,23 @@ void scr_ix( void )
     }
 
     if( lvl == 3 ) {                                        // check for reference
-        if( *g_tok_start == SCR_char && arg_flen == 1  ) {    // skip reference indicator
+        if( *g_tok_start == SCR_char
+          && arg_flen == 1  ) {    // skip reference indicator
             cc = getarg();                                  // get next operand
         }
 
-        if( (cc == CC_pos) || (cc == CC_quotes) ) {   // reference found
+        if( (cc == CC_pos)
+          || (cc == CC_quotes) ) {   // reference found
             ref = g_tok_start;
             reflen = arg_flen;
             cc = getarg();                      // get next operand
         }
     }
 
-    if( (cc == CC_pos) || (cc == CC_quotes) ) {       // extra data on line
+    if( (cc == CC_pos)
+      || (cc == CC_quotes) ) {       // extra data on line
         xx_line_err_exit_c( err_extra_data, g_tok_start );
+        /* never return */
     }
 
     ProcFlags.post_ix = true;           // records use of control word only if indexing is on
@@ -350,7 +366,8 @@ void scr_ix( void )
         /* Add the ix_e_blk, with reference/page number information */
 
         do_major = false;
-        if( (ref != NULL) && (ref[0] == pix_char) ) {      // identify major reference
+        if( (ref != NULL)
+          && (ref[0] == pix_char) ) {      // identify major reference
             do_major = true;
             reflen--;
             if( reflen == 0 ) {         // major numeric reference

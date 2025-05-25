@@ -38,9 +38,9 @@
 /*   :NOTE   attributes                                                    */
 /***************************************************************************/
 
-const   lay_att     note_att[8] =
-    { e_left_indent, e_right_indent, e_pre_skip, e_post_skip, e_font,
-      e_spacing, e_note_string, e_dummy_zero };
+static const lay_att    note_att[] = {
+    e_left_indent, e_right_indent, e_pre_skip, e_post_skip, e_font, e_spacing, e_note_string
+};
 
 
 /*********************************************************************************/
@@ -124,7 +124,8 @@ void    lay_note( const gmltag * entry )
     }
     while( (cc = lay_attr_and_value( &attr_name, &attr_val )) == CC_pos ) {   // get att with value
         cvterr = -1;
-        for( k = 0, curr = note_att[k]; curr > 0; k++, curr = note_att[k] ) {
+        for( k = 0; k < TABLE_SIZE( note_att ); k++ ) {
+            curr = note_att[k];
             if( strcmp( lay_att_names[curr], attr_name.attname.l ) == 0 ) {
                 p = attr_val.tok.s;
                 switch( curr ) {
@@ -132,6 +133,7 @@ void    lay_note( const gmltag * entry )
                     if( AttrFlags.left_indent ) {
                         xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
                     }
                     cvterr = i_space_unit( p, &attr_val,
                                            &layout_work.note.left_indent );
@@ -141,6 +143,7 @@ void    lay_note( const gmltag * entry )
                     if( AttrFlags.right_indent ) {
                         xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
                     }
                     cvterr = i_space_unit( p, &attr_val,
                                            &layout_work.note.right_indent );
@@ -150,6 +153,7 @@ void    lay_note( const gmltag * entry )
                     if( AttrFlags.pre_skip ) {
                         xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
                     }
                     cvterr = i_space_unit( p, &attr_val,
                                            &layout_work.note.pre_skip );
@@ -159,6 +163,7 @@ void    lay_note( const gmltag * entry )
                     if( AttrFlags.post_skip ) {
                         xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
                     }
                     cvterr = i_space_unit( p, &attr_val,
                                            &layout_work.note.post_skip );
@@ -168,6 +173,7 @@ void    lay_note( const gmltag * entry )
                     if( AttrFlags.font ) {
                         xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
                     }
                     cvterr = i_font_number( p, &attr_val, &layout_work.note.font );
                     if( layout_work.note.font >= wgml_font_cnt ) {
@@ -179,6 +185,7 @@ void    lay_note( const gmltag * entry )
                     if( AttrFlags.spacing ) {
                         xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
                     }
                     cvterr = i_spacing( p, &attr_val, &layout_work.note.spacing );
                     AttrFlags.spacing = true;
@@ -187,24 +194,70 @@ void    lay_note( const gmltag * entry )
                     if( AttrFlags.note_string ) {
                         xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
                     }
                     cvterr = i_xx_string( p, &attr_val, layout_work.note.string );
                     AttrFlags.note_string = true;
                     break;
                 default:
                     internal_err_exit( __FILE__, __LINE__ );
+                    /* never return */
                 }
                 if( cvterr ) {          // there was an error
                     xx_err_exit( err_att_val_inv );
+                    /* never return */
                 }
                 break;                  // break out of for loop
             }
         }
         if( cvterr < 0 ) {
             xx_err_exit( err_att_name_inv );
+            /* never return */
         }
     }
     scandata.s = scandata.e;
     return;
 }
 
+
+
+/***************************************************************************/
+/*   :NOTE      output note attribute values                               */
+/***************************************************************************/
+void    put_lay_note( FILE *fp, layout_data * lay )
+{
+    int                 k;
+    lay_att             curr;
+
+    fprintf( fp, ":NOTE\n" );
+
+    for( k = 0; k < TABLE_SIZE( note_att ); k++ ) {
+        curr = note_att[k];
+        switch( curr ) {
+        case e_left_indent:
+            o_space_unit( fp, curr, &lay->note.left_indent );
+            break;
+        case e_right_indent:
+            o_space_unit( fp, curr, &lay->note.right_indent );
+            break;
+        case e_pre_skip:
+            o_space_unit( fp, curr, &lay->note.pre_skip );
+            break;
+        case e_post_skip:
+            o_space_unit( fp, curr, &lay->note.post_skip );
+            break;
+        case e_spacing:
+            o_spacing( fp, curr, &lay->note.spacing );
+            break;
+        case e_font:
+            o_font_number( fp, curr, &lay->note.font );
+            break;
+        case e_note_string:
+            o_xx_string( fp, curr, lay->note.string );
+            break;
+        default:
+            internal_err_exit( __FILE__, __LINE__ );
+            /* never return */
+        }
+    }
+}

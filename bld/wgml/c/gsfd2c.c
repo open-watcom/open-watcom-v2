@@ -75,6 +75,7 @@ condcode    scr_d2c( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **resul
         if( cc != CC_pos ) {
             if( !ProcFlags.suppress_msg ) {
                 xx_source_err_exit_c( err_func_parm, "1 (number)" );
+                /* never return */
             }
             return( cc );
         }
@@ -86,6 +87,7 @@ condcode    scr_d2c( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **resul
             if( cc != CC_pos ) {
                 if( !ProcFlags.suppress_msg ) {
                     xx_source_err_exit_c( err_func_parm, "2 (n)" );
+                    /* never return */
                 }
                 return( cc );
             }

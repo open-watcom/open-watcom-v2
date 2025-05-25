@@ -37,15 +37,16 @@
 /***************************************************************************/
 /*   :ADDRESS  attributes                                                  */
 /***************************************************************************/
-const   lay_att     address_att[6] =
-    { e_left_adjust, e_right_adjust, e_page_position, e_font, e_pre_skip,
-      e_dummy_zero };
+static const lay_att    address_att[] = {
+    e_left_adjust, e_right_adjust, e_page_position, e_font, e_pre_skip
+};
 
 /***************************************************************************/
-/*   :ALINE  attribute                                                     */
+/*   :ALINE  attributes                                                    */
 /***************************************************************************/
-const   lay_att     aline_att[2] =
-    { e_skip, e_dummy_zero };
+static const lay_att    aline_att[] = {
+    e_skip
+};
 
 
 /***********************************************************************************/
@@ -109,13 +110,13 @@ const   lay_att     aline_att[2] =
 
 void    lay_address( const gmltag * entry )
 {
-    char            *   p;
-    condcode            cc;
-    int                 k;
-    lay_att             curr;
-    int                 cvterr;
-    att_name_type       attr_name;
-    att_val_type        attr_val;
+    char            *p;
+    condcode        cc;
+    int             k;
+    lay_att         curr;
+    int             cvterr;
+    att_name_type   attr_name;
+    att_val_type    attr_val;
 
     p = scandata.s;
     cvterr = false;
@@ -126,7 +127,8 @@ void    lay_address( const gmltag * entry )
     }
     while( (cc = lay_attr_and_value( &attr_name, &attr_val )) == CC_pos ) {   // get att with value
         cvterr = -1;
-        for( k = 0, curr = address_att[k]; curr > 0; k++, curr = address_att[k] ) {
+        for( k = 0; k < TABLE_SIZE( address_att ); k++ ) {
+            curr = address_att[k];
             if( strcmp( lay_att_names[curr], attr_name.attname.l ) == 0 ) {
                 p = attr_val.tok.s;
                 switch( curr ) {
@@ -134,6 +136,7 @@ void    lay_address( const gmltag * entry )
                     if( AttrFlags.left_adjust ) {
                         xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
                     }
                     cvterr = i_space_unit( p, &attr_val,
                                            &layout_work.address.left_adjust );
@@ -143,6 +146,7 @@ void    lay_address( const gmltag * entry )
                     if( AttrFlags.right_adjust ) {
                         xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
                     }
                     cvterr = i_space_unit( p, &attr_val,
                                            &layout_work.address.right_adjust );
@@ -152,6 +156,7 @@ void    lay_address( const gmltag * entry )
                     if( AttrFlags.page_position ) {
                         xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
                     }
                     cvterr = i_page_position( p, &attr_val,
                                           &layout_work.address.page_position );
@@ -161,6 +166,7 @@ void    lay_address( const gmltag * entry )
                     if( AttrFlags.font ) {
                         xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
                     }
                     cvterr = i_font_number( p, &attr_val, &layout_work.address.font );
                     if( layout_work.address.font >= wgml_font_cnt ) {
@@ -172,6 +178,7 @@ void    lay_address( const gmltag * entry )
                     if( AttrFlags.pre_skip ) {
                         xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
                     }
                     cvterr = i_space_unit( p, &attr_val,
                                            &layout_work.address.pre_skip );
@@ -179,16 +186,18 @@ void    lay_address( const gmltag * entry )
                     break;
                 default:
                     internal_err_exit( __FILE__, __LINE__ );
-//                    break;
+                    /* never return */
                 }
                 if( cvterr ) {          // there was an error
                     xx_err_exit( err_att_val_inv );
+                    /* never return */
                 }
                 break;                  // break out of for loop
             }
         }
         if( cvterr < 0 ) {
             xx_err_exit( err_att_name_inv );
+            /* never return */
         }
     }
     scandata.s = scandata.e;
@@ -199,15 +208,15 @@ void    lay_address( const gmltag * entry )
 /*  lay_aline                                                              */
 /***************************************************************************/
 
-void    lay_aline( const gmltag * entry )
+void    lay_aline( const gmltag *entry )
 {
-    char            *   p;
-    condcode            cc;
-    int                 k;
-    lay_att             curr;
-    bool                cvterr;
-    att_name_type       attr_name;
-    att_val_type        attr_val;
+    char            *p;
+    condcode        cc;
+    int             k;
+    lay_att         curr;
+    bool            cvterr;
+    att_name_type   attr_name;
+    att_val_type    attr_val;
 
     p = scandata.s;
     cvterr = false;
@@ -218,7 +227,8 @@ void    lay_aline( const gmltag * entry )
     }
     while( (cc = lay_attr_and_value( &attr_name, &attr_val )) == CC_pos ) {   // get att with value
         cvterr = true;
-        for( k = 0, curr = aline_att[k]; curr > 0; k++, curr = aline_att[k] ) {
+        for( k = 0; k < TABLE_SIZE( aline_att ); k++ ) {
+            curr = aline_att[k];
             if( strcmp( lay_att_names[curr], attr_name.attname.l ) == 0 ) {
                 p = attr_val.tok.s;
                 switch( curr ) {
@@ -226,6 +236,7 @@ void    lay_aline( const gmltag * entry )
                     if( AttrFlags.skip ) {
                         xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
                     }
                     cvterr = i_space_unit( p, &attr_val,
                                            &layout_work.aline.skip );
@@ -233,10 +244,11 @@ void    lay_aline( const gmltag * entry )
                     break;
                 default:
                     internal_err_exit( __FILE__, __LINE__ );
-//                    break;
+                    /* never return */
                 }
                 if( cvterr ) {          // there was an error
                     xx_err_exit( err_att_val_inv );
+                    /* never return */
                 }
                 break;                  // break out of for loop
             }
@@ -246,3 +258,63 @@ void    lay_aline( const gmltag * entry )
     return;
 }
 
+
+
+/***************************************************************************/
+/*   :ADDRESS   output address attribute values                            */
+/***************************************************************************/
+void    put_lay_address( FILE *fp, layout_data *lay )
+{
+    int                 k;
+    lay_att             curr;
+
+    fprintf( fp, ":ADDRESS\n" );
+
+    for( k = 0; k < TABLE_SIZE( address_att ); k++ ) {
+        curr = address_att[k];
+        switch( curr ) {
+        case e_left_adjust:
+            o_space_unit( fp, curr, &lay->address.left_adjust );
+            break;
+        case e_right_adjust:
+            o_space_unit( fp, curr, &lay->address.right_adjust );
+            break;
+        case e_page_position:
+            o_page_position( fp, curr, &lay->address.page_position );
+            break;
+        case e_font:
+            o_font_number( fp, curr, &lay->address.font );
+            break;
+        case e_pre_skip:
+            o_space_unit( fp, curr, &lay->address.pre_skip );
+            break;
+        default:
+            internal_err_exit( __FILE__, __LINE__ );
+            /* never return */
+        }
+    }
+}
+
+
+/***************************************************************************/
+/*   :ALINE     output aline attribute values                              */
+/***************************************************************************/
+void    put_lay_aline( FILE *fp, layout_data *lay )
+{
+    int                 k;
+    lay_att             curr;
+
+    fprintf( fp, ":ALINE\n" );
+
+    for( k = 0; k < TABLE_SIZE( aline_att ); k++ ) {
+        curr = aline_att[k];
+        switch( curr ) {
+        case e_skip:
+            o_space_unit( fp, curr, &lay->aline.skip );
+            break;
+        default:
+            internal_err_exit( __FILE__, __LINE__ );
+            /* never return */
+        }
+    }
+}

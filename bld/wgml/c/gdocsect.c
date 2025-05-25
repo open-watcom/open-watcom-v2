@@ -68,13 +68,14 @@ static struct {
 /***************************************************************************/
 /*  error routine for wrong sequence of doc section tags                   */
 /***************************************************************************/
-NO_RETURN( static void g_err_doc_sect( doc_section  ds ) );
+NO_RETURN( static void g_doc_sect_err_exit( doc_section  ds ) );
 
-static void g_err_doc_sect( doc_section  ds )
+static void g_doc_sect_err_exit( doc_section  ds )
 {
     err_count++;
     g_scan_err = true;
     xx_err_exit_c( err_doc_sect, sect_info[ds].text );
+    /* never return */
 }
 
 /***************************************************************************/
@@ -362,7 +363,7 @@ static void gen_ref_list( ix_e_blk * refs, font_number font )
                 cur_ref = cur_ref->next;
             if( cur_ref == NULL ) {
                 xx_simple_err_exit( err_open_page_range );
-                // never return
+                /* never return */
             }
             ProcFlags.ct = true;
             post_space = 0;
@@ -371,6 +372,7 @@ static void gen_ref_list( ix_e_blk * refs, font_number font )
             break;
         case pgend :
             xx_simple_err_exit( err_open_page_range );
+            /* never return */
         case pgmajor :
             ProcFlags.ct = true;
             post_space = 0;
@@ -408,7 +410,7 @@ static void gen_ref_list( ix_e_blk * refs, font_number font )
             break;
         default:
             internal_err_exit( __FILE__, __LINE__ );
-//            break;
+            /* never return */
         }
         ref_done = true;
     }
@@ -692,6 +694,7 @@ static void gen_index( void )
             }
         } else {                                        // shouldn't be here
             internal_err_exit( __FILE__, __LINE__ );
+            /* never return */
         }
     }
 
@@ -787,7 +790,7 @@ static void gen_index( void )
                     break;
                 default:
                     internal_err_exit( __FILE__, __LINE__ );
-//                    break;
+                    /* never return */
                 }
                 scr_process_break();        // flush letter heading
             }
@@ -1286,7 +1289,7 @@ void start_doc_sect( void )
         break;
     default:
         internal_err_exit( __FILE__, __LINE__ );
-//        break;
+        /* never return */
     }
 
     /***********************************************************************/
@@ -1329,6 +1332,7 @@ void start_doc_sect( void )
             }
         } else if( page_e != ej_yes ) {
             internal_err_exit( __FILE__, __LINE__ );
+            /* never return */
         }
         if( ds == DSECT_egdoc ) {
             set_section_banners( ProcFlags.doc_sect );  // retain last section's banners
@@ -1389,7 +1393,8 @@ static void gml_doc_xxx( doc_section ds )
 {
 
     if( ProcFlags.doc_sect >= ds ) {    // wrong sequence of sections
-        g_err_doc_sect( ds );
+        g_doc_sect_err_exit( ds );
+        /* never return */
     }
     ProcFlags.doc_sect_nxt = ds;        // remember new section
     ProcFlags.start_section = false;    // do real section start later
@@ -1422,9 +1427,11 @@ extern void gml_abstract( const gmltag * entry )
 
     if( ProcFlags.doc_sect_nxt == DSECT_egdoc ) {
         xx_line_err_exit_c( err_eof_expected, g_tok_start );
+        /* never return */
     }
     if( !ProcFlags.frontm_seen ) {
         xx_line_err_exit_c( err_doc_sec_expected_1, g_tok_start );
+        /* never return */
     }
     if( g_blank_text_lines > 0 ) {
         set_skip_vars( NULL, NULL, NULL, 1, 0 );    // set g_blank_units_lines
@@ -1543,6 +1550,7 @@ extern void gml_index( const gmltag * entry )
 
     if( ProcFlags.doc_sect_nxt == DSECT_egdoc ) {
         xx_line_err_exit_c( err_eof_expected, g_tok_start );
+        /* never return */
     }
 
     if( ProcFlags.doc_sect_nxt == DSECT_index ) {// duplicate :INDEX tag
@@ -1553,6 +1561,7 @@ extern void gml_index( const gmltag * entry )
     if( !((ProcFlags.doc_sect == DSECT_backm) ||
           (ProcFlags.doc_sect_nxt == DSECT_backm)) ) {
         xx_line_err_exit_c( err_doc_sec_expected_1, g_tok_start );
+        /* never return */
     }
     if( !GlobalFlags.index ) {          // index option not active
         return;
@@ -1578,9 +1587,11 @@ extern void gml_preface( const gmltag * entry )
 
     if( ProcFlags.doc_sect_nxt == DSECT_egdoc ) {
         xx_line_err_exit_c( err_eof_expected, g_tok_start );
+        /* never return */
     }
     if( !ProcFlags.frontm_seen ) {
         xx_line_err_exit_c( err_doc_sec_expected_1, g_tok_start );
+        /* never return */
     }
     if( g_blank_text_lines > 0 ) {
         set_skip_vars( NULL, NULL, NULL, 1, 0 );    // set g_blank_units_lines
@@ -1601,9 +1612,11 @@ extern void gml_titlep( const gmltag * entry )
 
     if( ProcFlags.doc_sect_nxt == DSECT_egdoc ) {
         xx_line_err_exit_c( err_eof_expected, g_tok_start );
+        /* never return */
     }
     if( !ProcFlags.frontm_seen ) {
         xx_line_err_exit_c( err_doc_sec_expected_1, g_tok_start );
+        /* never return */
     }
     scr_process_break();
     gml_doc_xxx( DSECT_titlep );

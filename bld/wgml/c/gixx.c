@@ -153,10 +153,12 @@ static void gml_ixxx_common( const gmltag * entry, int hx_lvl )
                     if( refwk == NULL ) {   // refid not in dict
                         if( GlobalFlags.lastpass ) {// this is an error
                             xx_line_err_exit_cc( err_id_undefined, refrefid, attr_val.tok.s );
+                            /* never return */
                         }
                     }
                 } else {                // not allowed for :I1 and :IHx
                     xx_line_err_exit_cc( err_ref_not_allowed, hxstring, attr_val.tok.s );
+                    /* never return */
                 }
                 if( ProcFlags.tag_end_found ) {
                     break;
@@ -218,6 +220,7 @@ static void gml_ixxx_common( const gmltag * entry, int hx_lvl )
                     if( seeidwk == NULL ) {             // not in dict, this is an error
                         if( GlobalFlags.lastpass ) {    // during lastpass
                             xx_line_err_exit_cc( err_id_undefined, seerefid, attr_val.tok.s );
+                            /* never return */
                         }
                     }
                 } else {                        // end-of-tag for Ix
@@ -259,6 +262,7 @@ static void gml_ixxx_common( const gmltag * entry, int hx_lvl )
 
                     if( (gn.result < 1) || (gn.result > 9) ) { // out of range
                         xx_line_err_exit_c( err_struct_range, attr_val.tok.s );
+                        /* never return */
                     }
                 }
                 if( ProcFlags.tag_end_found ) {
@@ -271,29 +275,28 @@ static void gml_ixxx_common( const gmltag * entry, int hx_lvl )
         }
     }
 
-    SkipDot( p );               // possible tag end
-    SkipSpaces( p );            // step over spaces
-    if( hx_lvl > 0 ) {          // not for IREF, take existing text, if any, as-is
-        while( *p == '\0' ) {   // we need a text line for :Ix :IHx
+    SkipDot( p );                       // possible tag end
+    SkipSpaces( p );                    // step over spaces
+    if( hx_lvl > 0 ) {                  // not for IREF, take existing text, if any, as-is
+        while( *p == '\0' ) {           // we need a text line for :Ix :IHx
             get_line( true );
-            /*******************************************************/
-            /* buff2 must be restored if it is to be reprocessed   */
-            /* so that any symbol substitutions will reflect any   */
-            /* changes made by the tag calling it                  */
-            /*******************************************************/
+            /*
+             * buff2 must be restored if it is to be reprocessed
+             * so that any symbol substitutions will reflect any
+             * changes made by the tag calling it
+             */
             scandata.s = buff2;
             scandata.e = buff2 + buff2_lg;
             if( check_tagname( scandata.s, NULL ) != NULL // tag found: error
               || (*scandata.s == SCR_char)          // cw found: error
               || (input_cbs->fmflags & II_eof) ) {  // EOF found: error
                 xx_err_exit( err_text_not_tag_cw );
-            } else {
-                process_line();
-                p = scandata.s; // new line is part of current tag
-                continue;
+                /* never return */
             }
+            process_line();
+            p = scandata.s;             // new line is part of current tag
         }
-        SkipSpaces( p );        // step over spaces
+        SkipSpaces( p );                // step over spaces
     }
 
     /***********************************************************************/
@@ -322,6 +325,7 @@ static void gml_ixxx_common( const gmltag * entry, int hx_lvl )
     if( hx_lvl == 0 ) {                 // :IREF tag
         if( !refidseen ) {              // refid= missing
             xx_err_exit( err_att_missing );
+            /* never return */
         }
     } else if( !refidseen ) {           // not required for refid
         if( hx_lvl == 1 ) {             // first level tag
@@ -330,12 +334,13 @@ static void gml_ixxx_common( const gmltag * entry, int hx_lvl )
         } else if( hx_lvl == 2 ) {      // second level tag
             if( !ixhlvl[0] ) {          // first level must exist
                 xx_err_exit_c( err_parent_undef, hxstring );
-            } else {
-                ixhlvl[1] = true;       // record first level found
+                /* never return */
             }
+            ixhlvl[1] = true;           // record first level found
         } else if( hx_lvl == 3 ) {      // third level tag
             if( !ixhlvl[1] ) {          // second level must exist
                 xx_err_exit_c( err_parent_undef, hxstring );
+                /* never return */
             }
         }
     }
@@ -476,15 +481,16 @@ static void gml_ixxx_common( const gmltag * entry, int hx_lvl )
                     refwork = add_new_refid( &ix_ref_dict, ixrefid, NULL );
                 } else {                            // duplicate id
                     dup_refid_err_exit( refwork->refid, "figure" );
+                    /* never return */
                 }
             }
             if( GlobalFlags.lastpass ){         // last pass: add data
                 if( refwork == NULL ) {         // shouldn't happen
                     xx_err_exit_c( err_id_undefined, ixrefid );
-                } else {
-                    refwork->u.ix.hblk = ixhwk;
-                    refwork->u.ix.base = ixhtag[hx_lvl - 1];
+                    /* never return */
                 }
+                refwork->u.ix.hblk = ixhwk;
+                refwork->u.ix.base = ixhtag[hx_lvl - 1];
             }
         }
     }

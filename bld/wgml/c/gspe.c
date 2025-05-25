@@ -97,14 +97,13 @@ static  void    init_pe_line( int pe_count )
 {
     if( input_cbs->pe_cb.count > 0) {   // count >0 is switch for .pe active
         xx_err_exit( err_nested_pe );
-//        reset_pe_cb();                  // terminate active .pe
-    } else {
-        if( get_line( true ) ) {
-            input_cbs->pe_cb.count = pe_count;
-            input_cbs->pe_cb.ll    = strlen( buff2 ) + 1;
-            input_cbs->pe_cb.line  = mem_alloc( input_cbs->pe_cb.ll );
-            strcpy( input_cbs->pe_cb.line, buff2 );
-        }
+        /* never return */
+    }
+    if( get_line( true ) ) {
+        input_cbs->pe_cb.count = pe_count;
+        input_cbs->pe_cb.ll    = strlen( buff2 ) + 1;
+        input_cbs->pe_cb.line  = mem_alloc( input_cbs->pe_cb.ll );
+        strcpy( input_cbs->pe_cb.line, buff2 );
     }
     return;
 }
@@ -154,36 +153,40 @@ void    scr_pe( void )
         if( cc == CC_notnum ) {
             switch( len ) {
             case 2 :
-                if( !strnicmp( "ON", pa, 2 ) ) {
+                if( strnicmp( "ON", pa, 2 ) == 0 ) {
                     init_pe_line( INT_MAX );    // partial implementation (no nesting)
                 } else {
                     xx_line_err_exit_cc( err_xx_opt, cwcurr, pa );
+                    /* never return */
                 }
                 break;
             case 3 :
-                if( !strnicmp( "OFF", pa, 3 ) ) {
+                if( strnicmp( "OFF", pa, 3 ) == 0 ) {
                     reset_pe_cb();              // partial implementation (no nesting)
                 } else {
                     xx_line_err_exit_cc( err_xx_opt, cwcurr, pa );
+                    /* never return */
                 }
                 break;
             case 6 :
-                if( !strnicmp( "DELETE", pa, 6 ) ) {
+                if( strnicmp( "DELETE", pa, 6 ) == 0 ) {
                     reset_pe_cb();              // partial implementation (no nesting)
                 } else {
                     xx_line_err_exit_cc( err_xx_opt, cwcurr, pa );
+                    /* never return */
                 }
                 break;
             default:
                 xx_line_err_exit_cc( err_xx_opt, cwcurr, pa );
+                /* never return */
             }
         } else {
             scandata.s = gn.arg.s;
             if( gn.result < 0 ) {
                 xx_line_err_exit_c( err_val_neg, pa );
-            } else {
-                init_pe_line( gn.result );
+                /* never return */
             }
+            init_pe_line( gn.result );
         }
     }
     scan_restart = scandata.e;

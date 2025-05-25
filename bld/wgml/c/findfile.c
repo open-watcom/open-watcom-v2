@@ -133,7 +133,7 @@ static FILE *try_open( char *prefix, char *filename )
     filename_length = strlen( prefix ) + strlen( filename ) + 1;
     if( filename_length > _MAX_PATH ) {
         xx_simple_err_exit_cc( err_file_max, prefix, filename );
-//        return( NULL );
+        /* never return */
     }
 
     /* Create the full file name to search for. */
@@ -164,9 +164,11 @@ static FILE *try_open( char *prefix, char *filename )
     if( fp == NULL ) {
         if( errno == ENOMEM ) {
             xx_simple_err_exit( err_no_memory );
+        	/* never return */
         }
         if( errno == ENFILE || errno == EMFILE ) {
             xx_simple_err_exit( err_no_handles );
+        	/* never return */
         }
     } else {
         strcpy( try_file_name, buff );
@@ -296,7 +298,7 @@ FILE *search_file_in_dirs( const char *filename, const char *defext, const char 
 
     if( strlen( filename ) > _MAX_PATH - 1 ) {
         xx_simple_err_exit_c( err_file_max, filename );
-//        return( NULL );
+        /* never return */
     }
 
     /* Initialize the filename buffers. */
@@ -315,7 +317,7 @@ FILE *search_file_in_dirs( const char *filename, const char *defext, const char 
 
         if( pg.drive[0] != '\0' || pg.dir[0] != '\0' ) {
             xx_simple_err_exit_c( err_file_name, filename );
-//            return( NULL );
+            /* never return */
         }
 
         /* Ensure the file name will fit in the buffers if the literal extensions
@@ -324,23 +326,22 @@ FILE *search_file_in_dirs( const char *filename, const char *defext, const char 
 
         if( pg.ext[0] == '\0' ) {
             if( strlen( filename ) >= _MAX_PATH - 4 ) {
+                const char  *ext;
+
                 switch( sequence ) {
                 case DSEQ_opt_file:
-                    xx_simple_err_exit_cc( err_file_max, filename, "." OPT_EXT );
-//                    break;
+                    ext = "." OPT_EXT;
                 case DSEQ_doc_spec:
-                    xx_simple_err_exit_cc( err_file_max, filename, "." GML_EXT );
-//                    break;
+                    ext = "." GML_EXT;
                 case DSEQ_bin_lib:
-                    xx_simple_err_exit_cc( err_file_max, filename, "." COP_EXT );
-//                    break;
+                    ext = "." COP_EXT;
                 case DSEQ_lib_src:
-                    xx_simple_err_exit_cc( err_file_max, filename, "." PCD_EXT );
-//                    break;
+                    ext = "." PCD_EXT;
                 default:
-                    xx_simple_err_exit_cc( err_file_max, filename, ".xxx" );
+                    ext = ".xxx";
                 }
-//                return( NULL );
+                xx_simple_err_exit_cc( err_file_max, filename, ext );
+                /* never return */
             }
         }
     }
@@ -391,7 +392,7 @@ FILE *search_file_in_dirs( const char *filename, const char *defext, const char 
         break;
     default:
         internal_err_exit( __FILE__, __LINE__ );
-//        return( NULL );
+        /* never return */
     }
     /*
      * add terminate NULL pointer as last search directory to the array
@@ -436,8 +437,7 @@ FILE *search_file_in_dirs( const char *filename, const char *defext, const char 
 
                     if( member_length >= _MAX_PATH - 4 ) {
                         xx_simple_err_exit_cc( err_file_max, member_name, "." COP_EXT );
-//                        mem_free( member_name );
-//                        return( NULL );
+                        /* never return */
                     }
                     pg.ext = "COP";
                 }
@@ -456,6 +456,7 @@ FILE *search_file_in_dirs( const char *filename, const char *defext, const char 
 
                 if( fp == NULL ) {
                     xx_simple_err_exit_cc( ERR_MEM_DIR, dir_name, primary_file );
+                    /* never return */
                 }
                 return( fp );
             }

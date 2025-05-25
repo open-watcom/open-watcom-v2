@@ -85,6 +85,7 @@ void    init_page_geometry( void )
     }
     if( g_rm < rm_test ) {                  // wgml 4.0 limits value
         xx_err_exit( err_right_margin_2_small ); // candidate Severe Error
+        /* never return */
     }
 
     g_page_left_org = g_lm + bin_device->x_start;
@@ -96,10 +97,12 @@ void    init_page_geometry( void )
     g_page_right_org = g_rm + bin_device->x_start;
     if( g_page_right_org > bin_device->page_width ) {   // output must appear on page
         xx_err_exit( err_margins_inverted );                 // candidate Severe Error
+        /* never return */
     }
 
     if( t_page.page_left >= g_page_right_org ) {    // margins cannot be inverted
         xx_err_exit( err_margins_inverted );             // candidate Severe Error
+        /* never return */
     }
 
     g_net_page_width = g_rm - g_lm;
@@ -121,7 +124,9 @@ void    init_page_geometry( void )
     page_depth_org = conv_vert_unit( &layout_work.page.depth, 1, g_curr_font );
     if( bin_device->y_offset > page_depth_org ) {
         xx_err_exit( err_page_depth_too_small ); // candidate Severe Error
-    } else if( top_margin > 0 ) {           // strange but true
+        /* never return */
+    }
+    if( top_margin > 0 ) {           // strange but true
         g_page_depth = page_depth_org;      // &syspaged
     } else {
         g_page_depth = page_depth_org - bin_device->y_offset;  // &syspaged
@@ -136,9 +141,9 @@ void    init_page_geometry( void )
         if( g_page_depth > bin_device->y_start ) {
             /* see Wiki for discussion, wgml 4.0 differs here */
             xx_err_exit( err_page_depth_too_big );   // candidate Severe Error
-        } else {
-            t_page.bot_ban_top = t_page.panes_top - g_page_depth;// end of text area
+            /* never return */
         }
+        t_page.bot_ban_top = t_page.panes_top - g_page_depth;// end of text area
         g_net_page_depth = t_page.panes_top - t_page.bot_ban_top;
 
         lcmax = 1 + (g_net_page_depth + bin_device->y_offset)
@@ -233,6 +238,7 @@ static void finish_lists( void )
         curr_level++;
         if( curr_level != dl_layout->level ) {
             list_level_err_exit( "DL", curr_level );
+            /* never return */
         }
         dl_layout = dl_layout->next;
     }
@@ -247,6 +253,7 @@ static void finish_lists( void )
         curr_level++;
         if( curr_level != gl_layout->level ) {
             list_level_err_exit( "GL", curr_level );
+            /* never return */
         }
         gl_layout = gl_layout->next;
     }
@@ -261,6 +268,7 @@ static void finish_lists( void )
         curr_level++;
         if( curr_level != ol_layout->level ) {
             list_level_err_exit( "OL", curr_level );
+            /* never return */
         }
         ol_layout = ol_layout->next;
     }
@@ -275,6 +283,7 @@ static void finish_lists( void )
         curr_level++;
         if( curr_level != sl_layout->level ) {
             list_level_err_exit( "SL", curr_level );
+            /* never return */
         }
         sl_layout = sl_layout->next;
     }
@@ -289,6 +298,7 @@ static void finish_lists( void )
         curr_level++;
         if( curr_level != ul_layout->level ) {
             list_level_err_exit( "UL", curr_level );
+            /* never return */
         }
         ul_layout = ul_layout->next;
     }
@@ -393,6 +403,7 @@ static void finish_banners( void )
 
         if( (cur_ban->ban_left_adjust + cur_ban->ban_right_adjust) >= g_net_page_width ) {
             ban_reg_err_exit( err_ban_width, cur_ban, NULL, NULL, NULL );
+            /* never return */
         }
 
         /****************************************************************/
@@ -413,10 +424,12 @@ static void finish_banners( void )
 
         if( cur_ban->ban_depth == 0 ) {
             ban_reg_err_exit( err_ban_depth1, cur_ban, NULL, NULL, NULL );
+            /* never return */
         }
 
         if( cur_ban->ban_depth > g_page_depth ) {
             ban_reg_err_exit( err_ban_depth2, cur_ban, NULL, NULL, NULL );
+            /* never return */
         }
 
         /****************************************************************/
@@ -478,6 +491,7 @@ static void finish_banners( void )
 
             if( cur_ban->ban_depth < cur_reg->reg_voffset + cur_reg->reg_depth ) {
                 ban_reg_err_exit( err_banreg_depth, cur_ban, NULL, cur_reg, NULL );
+                /* never return */
             }
 
             preprocess_script_region( cur_reg );
@@ -507,7 +521,9 @@ static void finish_banners( void )
                         for( cur_reg = cur_grp->first; cur_reg != NULL; cur_reg = cur_reg->next ) {
                             if( cur_reg->reg_hoffset == sav_reg->reg_hoffset ) {
                                 ban_reg_err_exit( err_banreg_overlap, cur_ban, NULL, cur_reg, sav_reg );
-                            } else if( cur_reg->reg_hoffset > sav_reg->reg_hoffset ) {  // insert/add region
+                                /* never return */
+                            }
+                            if( cur_reg->reg_hoffset > sav_reg->reg_hoffset ) {  // insert/add region
                                 if( cur_reg == cur_grp->first ) {   // insert before first region
                                     sav_reg->next = cur_reg;
                                     cur_grp->first = sav_reg;
@@ -613,29 +629,29 @@ static void finish_banners( void )
                     if( (cur_reg->width.su_u == SU_lay_extend) &&
                             (cur_reg->next->width.su_u == SU_lay_extend) ) {    // both can't use "extend"
                         ban_reg_err_exit( err_banreg_extend, cur_ban, NULL, cur_reg, cur_reg->next );
-                    } else {
-                        /* set hoffset to left boundary of region */
-                        if( cur_reg->next->width.su_u != SU_lay_extend ) {  // explicit width
-                            if( cur_reg->next->reg_h_type == SU_lay_centre ) {
-                                cur_reg->next->reg_hoffset = cur_reg->next->reg_hoffset -
-                                                                    (cur_reg->next->reg_width / 2);
-                                cur_reg->next->reg_h_type = SU_lay_left;
-                            } else if( cur_reg->next->reg_h_type == SU_lay_right ) {
-                                cur_reg->next->reg_hoffset = cur_reg->next->reg_hoffset -
-                                                                        cur_reg->next->reg_width;
-                                cur_reg->next->reg_h_type = SU_lay_left;
-                            }
+                        /* never return */
+                    }
+                    /* set hoffset to left boundary of region */
+                    if( cur_reg->next->width.su_u != SU_lay_extend ) {  // explicit width
+                        if( cur_reg->next->reg_h_type == SU_lay_centre ) {
+                            cur_reg->next->reg_hoffset = cur_reg->next->reg_hoffset -
+                                                                (cur_reg->next->reg_width / 2);
+                            cur_reg->next->reg_h_type = SU_lay_left;
+                        } else if( cur_reg->next->reg_h_type == SU_lay_right ) {
+                            cur_reg->next->reg_hoffset = cur_reg->next->reg_hoffset -
+                                                                    cur_reg->next->reg_width;
+                            cur_reg->next->reg_h_type = SU_lay_left;
                         }
-                        /* set width to reach right boundary of region */
-                        if( cur_reg->width.su_u == SU_lay_extend ) {                // next has fixed width
-                            cur_reg->reg_width = cur_reg->next->reg_hoffset - cur_reg->reg_hoffset;
-                        } else if( cur_reg->next->width.su_u == SU_lay_extend ) {   // cur_reg has fixed width
-                            cur_reg->next->reg_hoffset = cur_reg->reg_hoffset + cur_reg->reg_width;
-                        } else {                                                    // both have fixed widths
-                            if( (cur_reg->reg_hoffset + cur_reg->reg_width) >
-                                    cur_reg->next->reg_hoffset ) {      // overlap
-                                ban_reg_err_exit( err_banreg_overlap, cur_ban, NULL, cur_reg, cur_reg->next );
-                            }
+                    }
+                    /* set width to reach right boundary of region */
+                    if( cur_reg->width.su_u == SU_lay_extend ) {                // next has fixed width
+                        cur_reg->reg_width = cur_reg->next->reg_hoffset - cur_reg->reg_hoffset;
+                    } else if( cur_reg->next->width.su_u == SU_lay_extend ) {   // cur_reg has fixed width
+                        cur_reg->next->reg_hoffset = cur_reg->reg_hoffset + cur_reg->reg_width;
+                    } else {                                                    // both have fixed widths
+                        if( (cur_reg->reg_hoffset + cur_reg->reg_width) > cur_reg->next->reg_hoffset ) {      // overlap
+                            ban_reg_err_exit( err_banreg_overlap, cur_ban, NULL, cur_reg, cur_reg->next );
+                            /* never return */
                         }
                     }
                 } else {                                        // last region
@@ -647,10 +663,12 @@ static void finish_banners( void )
                     if( (old_reg != NULL) && ((old_reg->reg_hoffset + old_reg->reg_width) >
                                 cur_reg->reg_hoffset) ) {       // overlap
                         ban_reg_err_exit( err_banreg_overlap, cur_ban, NULL, cur_reg, old_reg );
+                        /* never return */
                     }
                     if( (cur_reg->reg_hoffset + cur_reg->reg_width) >
                             (g_net_page_width - cur_ban->ban_right_adjust) ) {
                         ban_reg_err_exit( err_banreg_width, cur_ban, NULL, cur_reg, NULL );
+                        /* never return */
                     }
                 }
                 old_reg = cur_reg;
@@ -755,7 +773,9 @@ static void finish_banners( void )
             for( cur_grp = cur_ban->by_line; cur_grp != NULL; cur_grp = cur_grp->next ) {
                 if( cur_grp->voffset == sav_grp->voffset ) {        // shouldn't be possible
                     internal_err_exit( __FILE__, __LINE__ );
-                } else if( cur_grp->voffset > sav_grp->voffset ) {  // insert/add new group
+                    /* never return */
+                }
+                if( cur_grp->voffset > sav_grp->voffset ) {  // insert/add new group
                     if( cur_grp == cur_ban->by_line ) {             // insert before first group
                         sav_grp->next = cur_ban->by_line;
                         cur_ban->by_line = sav_grp;
@@ -826,6 +846,7 @@ static void finish_banners( void )
                             if( ((sav_reg->reg_hoffset + sav_reg->reg_width) > cur_reg->reg_hoffset) &&
                                     ((sav_reg->reg_voffset + sav_reg->reg_depth) > cur_reg->reg_voffset) ) {
                                 ban_reg_err_exit( err_banreg_overlap, cur_ban, NULL, cur_reg, sav_reg );
+                                /* never return */
                             }
                         }
                     }
@@ -917,7 +938,9 @@ static void finish_banners( void )
                 if( (cur_grp->voffset + cur_grp->line_height) ==
                         (sav_grp->voffset + sav_grp->line_height) ) {        // shouldn't be possible
                     internal_err_exit( __FILE__, __LINE__ );
-                } else if( (cur_grp->voffset + cur_grp->line_height) >
+                    /* never return */
+                }
+                if( (cur_grp->voffset + cur_grp->line_height) >
                         (sav_grp->voffset + sav_grp->line_height) ) {  // insert/add new group
                     if( cur_grp == cur_ban->by_line ) {             // insert before first group
                         sav_grp->next = cur_ban->by_line;
@@ -967,13 +990,14 @@ static void finish_banners( void )
             break;
         default:
             internal_err_exit( __FILE__, __LINE__ );
-//            break;
+            /* never return */
         }
     }
 
     /* overall banner error checks */
     if( (ban_bot_depth + ban_top_depth) > g_page_depth ) {
         ban_reg_err_exit( err_ban_depth2, bot_ban, top_ban, NULL, NULL );
+        /* never return */
     }
 
     return;

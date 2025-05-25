@@ -37,9 +37,10 @@
 /***************************************************************************/
 /*   :BACKM and :BODY attributes                                           */
 /***************************************************************************/
-const   lay_att     backbod_att[10] =
-    { e_post_skip, e_pre_top_skip, e_header, e_backm_string, e_body_string,
-      e_page_eject, e_page_reset, e_columns, e_font, e_dummy_zero };
+static const lay_att       backbod_att[] = {
+    e_post_skip, e_pre_top_skip, e_header, e_backm_string, e_body_string,
+    e_page_eject, e_page_reset, e_columns, e_font
+};
 
 /*********************************************************************************/
 /*Define the characteristics of the back material section.                       */
@@ -138,6 +139,7 @@ void    lay_backbod( const gmltag * entry )
         bbsect = &layout_work.hx.hx_sect[HDS_body];
     } else {
         internal_err_exit( __FILE__, __LINE__ );
+        /* never return */
     }
     memset( &AttrFlags, 0, sizeof( AttrFlags ) );   // clear all attribute flags
     if( ProcFlags.lay_xxx != ltag ) {
@@ -145,7 +147,8 @@ void    lay_backbod( const gmltag * entry )
     }
     while( (cc = lay_attr_and_value( &attr_name, &attr_val )) == CC_pos ) {   // get att with value
         cvterr = -1;
-        for( k = 0, curr = backbod_att[k]; curr > 0; k++, curr = backbod_att[k] ) {
+        for( k = 0; k < TABLE_SIZE( backbod_att ); k++ ) {
+            curr = backbod_att[k];
             if( strcmp( lay_att_names[curr], attr_name.attname.l ) == 0 ) {
                 p = attr_val.tok.s;
                 switch( curr ) {
@@ -153,6 +156,7 @@ void    lay_backbod( const gmltag * entry )
                     if( AttrFlags.post_skip ) {
                         xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
                     }
                     cvterr = i_space_unit( p, &attr_val, &(bbsect->post_skip) );
                     AttrFlags.post_skip = true;
@@ -161,6 +165,7 @@ void    lay_backbod( const gmltag * entry )
                     if( AttrFlags.pre_top_skip ) {
                         xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
                     }
                     cvterr = i_space_unit( p, &attr_val, &(bbsect->pre_top_skip) );
                     AttrFlags.pre_top_skip = true;
@@ -169,6 +174,7 @@ void    lay_backbod( const gmltag * entry )
                     if( AttrFlags.header ) {
                         xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
                     }
                     cvterr = i_yes_no( p, &attr_val, &(bbsect->header) );
                     AttrFlags.header = true;
@@ -177,6 +183,7 @@ void    lay_backbod( const gmltag * entry )
                     if( AttrFlags.body_string ) {
                         xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
                     }
                     if( ltag == TL_BODY ) {
                         cvterr = i_xx_string( p, &attr_val, bb->string );
@@ -187,6 +194,7 @@ void    lay_backbod( const gmltag * entry )
                     if( AttrFlags.backm_string ) {
                         xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
                     }
                     if( ltag == TL_BACKM ) {
                         cvterr = i_xx_string( p, &attr_val, bb->string );
@@ -197,6 +205,7 @@ void    lay_backbod( const gmltag * entry )
                     if( AttrFlags.page_eject ) {
                         xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
                     }
                     cvterr = i_page_eject( p, &attr_val, &(bb->page_eject) );
                     AttrFlags.page_eject = true;
@@ -205,6 +214,7 @@ void    lay_backbod( const gmltag * entry )
                     if( AttrFlags.left_adjust ) {
                         xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
                     }
                     cvterr = i_yes_no( p, &attr_val, &(bb->page_reset) );
                     AttrFlags.page_reset = true;
@@ -213,6 +223,7 @@ void    lay_backbod( const gmltag * entry )
                     if( AttrFlags.font ) {
                         xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
                     }
                     cvterr = i_font_number( p, &attr_val, &(bbsect->text_font) );
                     if( bbsect->text_font >= wgml_font_cnt ) {
@@ -224,6 +235,7 @@ void    lay_backbod( const gmltag * entry )
                     if( AttrFlags.columns ) {
                         xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
                     }
                     if( ltag == TL_BACKM ) {
                         cvterr = i_int8( p, &attr_val, &(bb->columns) );
@@ -232,18 +244,86 @@ void    lay_backbod( const gmltag * entry )
                     break;
                 default:
                     internal_err_exit( __FILE__, __LINE__ );
+                    /* never return */
                 }
                 if( cvterr ) {          // there was an error
                     xx_err_exit( err_att_val_inv );
+                    /* never return */
                 }
                 break;                  // break out of for loop
             }
         }
         if( cvterr < 0 ) {
             xx_err_exit( err_att_name_inv );
+            /* never return */
         }
     }
     scandata.s = scandata.e;
     return;
 }
 
+
+
+/***************************************************************************/
+/*   output for :BACKM or :BODY values                                     */
+/***************************************************************************/
+static  void    put_lay_backbod( FILE *fp, backbod_lay_tag * bb,
+                                 hx_sect_lay_tag * bbsect, char * name )
+{
+    int                 k;
+    lay_att             curr;
+
+    fprintf( fp, ":%s\n", name );
+
+    for( k = 0; k < TABLE_SIZE( backbod_att ); k++ ) {
+        curr = backbod_att[k];
+        switch( curr ) {
+        case e_post_skip:
+            o_space_unit( fp, curr, &bbsect->post_skip );
+            break;
+        case e_pre_top_skip:
+            o_space_unit( fp, curr, &bbsect->pre_top_skip );
+            break;
+        case e_header:
+            o_yes_no( fp, curr, &bbsect->header );
+            break;
+        case e_body_string:
+            if( *(name + 1) == 'O') {   // BODY tag
+                o_xx_string( fp, curr, bb->string );
+            }
+            break;
+        case e_backm_string:
+            if( *(name + 1) == 'A') {   // BACKM tag
+                o_xx_string( fp, curr, bb->string );
+            }
+            break;
+        case e_page_eject:
+            o_page_eject( fp, curr, &bb->page_eject );
+            break;
+        case e_page_reset:
+            o_yes_no( fp, curr, &bb->page_reset );
+            break;
+        case e_columns:
+            if( *(name + 1) == 'A') {   // BACKM tag
+                o_int8( fp, curr, &bb->columns );
+            }
+            break;
+        case e_font:
+            o_font_number( fp, curr, &bbsect->text_font );
+            break;
+        default:
+            internal_err_exit( __FILE__, __LINE__ );
+            /* never return */
+        }
+    }
+}
+
+void    put_lay_backm( FILE *fp, layout_data * lay )
+{
+    put_lay_backbod( fp, &(lay->backm), &(lay->hx.hx_sect[HDS_backm]), "BACKM" );
+}
+
+void    put_lay_body( FILE *fp, layout_data * lay )
+{
+    put_lay_backbod( fp, &(lay->body), &(lay->hx.hx_sect[HDS_body]), "BODY" );
+}

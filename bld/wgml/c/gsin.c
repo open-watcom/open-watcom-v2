@@ -116,14 +116,13 @@ void    scr_in( void )
         if( *pa == '*' ) {              // keep old indent value
             p = pa + 1;
         } else {
-
             p = pa;
             scanerr = cw_val_to_su( &p, &indentwork );
             if( scanerr ) {
                 xx_line_err_exit_c( err_spc_not_valid, pa );
-            } else {
-                newindentl = round_indent( &indentwork );
+                /* never return */
             }
+            newindentl = round_indent( &indentwork );
         }
         SkipSpaces( p );
         if( *p == '\0' ) {              // zero right indent
@@ -135,17 +134,15 @@ void    scr_in( void )
             scanerr = cw_val_to_su( &p, &indentwork );
             if( scanerr ) {
                 xx_line_err_exit_cc( err_miss_inv_opt_value, cwcurr, pa );
-            } else {
-
+                /* never return */
+            }
             /***************************************************************/
             /*  indent right is always relative or 0 for reset to default  */
             /***************************************************************/
-
-                if( indentwork.su_whole + indentwork.su_dec != 0) {
-                    newindentr += round_indent( &indentwork );
-                } else {
-                    newindentr = 0;
-                }
+            if( indentwork.su_whole + indentwork.su_dec != 0) {
+                newindentr += round_indent( &indentwork );
+            } else {
+                newindentr = 0;
             }
         }
     }

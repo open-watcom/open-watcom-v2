@@ -133,20 +133,18 @@ static bool check_att_value( gaentry * ga, gtentry * ge, symdict_hdl loc_dict )
                 long    attval;
 
                 attval = strtol( token_buf, NULL, 10 );
-                if( attval < gaval->a.range[0] ||
-                    attval > gaval->a.range[1]  ) {
+                if( attval < gaval->a.range[0]
+                  || attval > gaval->a.range[1]  ) {
                     xx_err_exit( ERR_ATT_RANGE_INV );// value outside range
-//                    msg_done = true;
-//                    break;
+                    /* never return */
                 }
             } else {
                 if( gaval->valflags & GAVAL_length ) {
                     if( strlen( token_buf ) > gaval->a.length ) {
                         xx_err_exit( err_att_len_inv );  // value too long
-//                        msg_done = true;
-                    } else {
-                        g_scan_err = false;
+                        /* never return */
                     }
+                    g_scan_err = false;
                     break;
                 }
             }
@@ -157,6 +155,7 @@ static bool check_att_value( gaentry * ga, gtentry * ge, symdict_hdl loc_dict )
     } else {
         if( !msg_done ) {
             xx_err_exit_cc( err_att_val, token_buf, ga->attname );
+            /* never return */
         }
     }
     return( g_scan_err );
@@ -217,7 +216,8 @@ bool process_tag( gtentry *ge, mac_entry * me )
             mem_free( pline );
             p = p2;
         }
-    } else if( ge->attribs != NULL && (ge->tagflags & GTFLG_attr) ) {
+    } else if( ge->attribs != NULL
+      && (ge->tagflags & GTFLG_attr) ) {
 
         /***********************************************************************/
         /*  only process attributes if ATTribute was used and at least one     */
@@ -238,23 +238,27 @@ bool process_tag( gtentry *ge, mac_entry * me )
                         ga->attflags |= GAFLG_proc_seen; // attribute specified
                         if( ga->attflags & GAFLG_auto ) {
                             xx_line_err_exit_cc( err_auto_att, attname, pa );
+                            /* never return */
                         }
 
                         if( is_space_tab_char( *p ) ) { // no whitespace allowed before '='
                             xx_line_err_exit_cc( err_no_att_val, attname, p );
+                            /* never return */
                         }
 
                         /* no line end allowed before '=' except with TEXTLine */
-                        if( (*p == '\0') && (ge->tagflags & GTFLG_textline) == 0 ) {
+                        if( (*p == '\0')
+                          && (ge->tagflags & GTFLG_textline) == 0 ) {
                             xx_line_err_exit_cc( err_no_att_val, attname, p );
+                            /* never return */
                         }
 
                         if( *p == '=' ) {   // value follows
-
                             p++;            // over =
 
                             if( is_space_tab_char( *p ) ) { // no whitespace allowed after '='
                                 xx_line_err_exit_cc( err_no_att_val, attname, p );
+                                /* never return */
                             }
 
                             ga->attflags |= GAFLG_proc_val;
@@ -343,11 +347,13 @@ bool process_tag( gtentry *ge, mac_entry * me )
         }
         if( *token_buf != '\0' ) {      // some req attr missing
             att_req_err_exit( ge->tagname, token_buf );
+            /* never return */
         }
     } else if( ge->tagflags & GTFLG_attr ) {
         p2 = p;                                 // save value
         SkipSpaces( p );
-        if( (*p != '.') && (*p != '\0') ) {
+        if( (*p != '.')
+          && (*p != '\0') ) {
             xx_line_warn_cc( wng_att_name, p, p );
         }
         p = p2;                                 // restore value
@@ -363,7 +369,9 @@ bool process_tag( gtentry *ge, mac_entry * me )
 
     p2 = p;                         // p2 saves the start value for p
     SkipSpaces( p );                // skip spaces before the '.', if one is present
-    if( (*p2 != '.') && (p2 != p) && (*p == '.') ) {
+    if( (*p2 != '.')
+      && (p2 != p)
+      && (*p == '.') ) {
         p2 = p;                     // reset p2 to '.' ending tag
     }
     SkipDot( p );                   // skip the '.', if present
@@ -374,6 +382,7 @@ bool process_tag( gtentry *ge, mac_entry * me )
 
         if( ge->tagflags & GTFLG_textreq ) {  // text must be present
             xx_line_err_exit_cc( err_att_text_req, ge->tagname, p2 );
+            /* never return */
         }
 
         /* Otherwise, the value of * will be an empty string */
@@ -384,6 +393,7 @@ bool process_tag( gtentry *ge, mac_entry * me )
 
         if( ge->tagflags & GTFLG_texterr ) {  // no text allowed
             xx_line_err_exit_cc( err_att_text, ge->tagname, p );
+            /* never return */
         }
 
         /* Otherwise, things get a bit complicated */
@@ -392,14 +402,17 @@ bool process_tag( gtentry *ge, mac_entry * me )
         if( *p2 == '.' ) {
             SkipDot( p );
         } else {
-            if( (ge->tagflags & GTFLG_attr) && (ge->tagflags & GTFLG_textline) == 0 ) {
+            if( (ge->tagflags & GTFLG_attr)
+              && (ge->tagflags & GTFLG_textline) == 0 ) {
                 SkipSpaces( p );
             }
         }
 
         // remove trailing spaces
         len = strlen( p );
-        if( !ProcFlags.null_value && (len != 0) && (input_cbs->hidden_head == NULL) ) {
+        if( !ProcFlags.null_value
+          && (len != 0)
+          && (input_cbs->hidden_head == NULL) ) {
             while( *(p + len - 1) == ' ' ) {        // remove trailing spaces
                 len--;
                 if( len == 0 ) {                    // empty operand
@@ -446,7 +459,8 @@ bool process_tag( gtentry *ge, mac_entry * me )
         ProcFlags.utc = true;
     }
 
-    if( (input_cbs->fmflags & II_research) && GlobalFlags.firstpass ) {
+    if( (input_cbs->fmflags & II_research)
+      && GlobalFlags.firstpass ) {
         print_sym_dict( input_cbs->local_dict );
     }
 

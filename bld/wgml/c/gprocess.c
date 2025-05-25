@@ -452,8 +452,7 @@ static bool parse_r2l( sym_list_entry *stack, char *buf, bool subscript )
               && ((curr->value[0] == ampchar)
               && (curr->value[1] == '*')) ) {
                 internal_err_exit( __FILE__, __LINE__ );
-//                ProcFlags.substituted = false;          // try to avoid infinite loop
-//                break;
+                /* never return */
             }
             strcpy( p, curr->value );       // copy value
             if( tail[0] == '.' ) {
@@ -512,7 +511,7 @@ static bool parse_r2l( sym_list_entry *stack, char *buf, bool subscript )
             break;
         default:
             internal_err_exit( __FILE__, __LINE__ );
-//            break;
+            /* never return */
         }
         if( subscript && (curr->type == SL_split) ) {
             break;

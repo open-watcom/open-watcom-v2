@@ -102,10 +102,12 @@ static bool free_inc_fp( void )
                     rc = fgetpos( cb->fp, &cb->pos );
                     if( rc != 0 ) {
                         xx_simple_err_exit_cc( err_file_io, strerror( errno ), cb->filename );
+                        /* never return */
                     }
                     rc = fclose( cb->fp );
                     if( rc != 0 ) {
                         xx_simple_err_exit_cc( err_file_io, strerror( errno ), cb->filename );
+                        /* never return */
                     }
                     cb->flags &= ~FF_open;
                     errno = save_errno;
@@ -147,10 +149,12 @@ static void reopen_inc_fp( filecb *cb )
             rc = fsetpos( cb->fp, &cb->pos );
             if( rc != 0 ) {
                 xx_simple_err_exit_cc( err_file_io, strerror( errno ), cb->filename );
+                /* never return */
             }
             cb->flags |= FF_open;
         } else {
             xx_simple_err_exit_cc( err_file_io, strerror( errno ), cb->filename );
+            /* never return */
         }
     }
     return;
@@ -329,6 +333,7 @@ static void get_macro_line( void )
 
     if( input_cbs->fmflags & II_file ) {// current input is file not macro
         xx_err_exit( err_logic_mac );
+        /* never return */
     }
     cb = input_cbs->s.m;
 
@@ -482,6 +487,7 @@ bool get_line( bool display_line )
                             break;
                         } else {
                             xx_simple_err_exit_cc( err_file_io, strerror( errno ), cb->filename );
+                            /* never return */
                         }
                     }
                 }

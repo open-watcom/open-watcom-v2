@@ -57,7 +57,8 @@ static void do_output( bool do_pa )
     if( cur_page == g_apage ) {
         do_page_out();              // excludes cases where t_page has contents
     }
-    if( do_pa || (cur_page != g_apage) ) {
+    if( do_pa
+      || (cur_page != g_apage) ) {
         reset_t_page();
     }
     return;
@@ -141,15 +142,16 @@ void scr_pa( void )
     len = p - pa;
     switch( len ) {
     case 7 :
-        if( strnicmp( "NOSTART", pa, 7 ) ) {
+        if( strnicmp( "NOSTART", pa, 7 ) != 0 ) {
             xx_line_err_exit_cc( err_xx_opt, cwcurr, pa );
+            /* never return */
         }
         /* fallthru for NOSTART */
     case 0 :
         do_output( true );
         break;
     case 3 :
-        if( !strnicmp( "ODD", pa, 3 ) ) {
+        if( strnicmp( "ODD", pa, 3 ) == 0 ) {
             last_page_out();
             reset_t_page();
             if( g_page & 1 ) {          // next page would be even
@@ -158,10 +160,11 @@ void scr_pa( void )
             }
         } else {
             xx_line_err_exit_cc( err_xx_opt, cwcurr, pa );
+            /* never return */
         }
         break;
     case 4 :
-        if( !strnicmp( "EVEN", pa, 4 ) ) {
+        if( strnicmp( "EVEN", pa, 4 ) == 0 ) {
             last_page_out();
             reset_t_page();
             if( (g_page & 1) == 0 ) {         // next page would be odd
@@ -170,6 +173,7 @@ void scr_pa( void )
             }
         } else {
             xx_line_err_exit_cc( err_xx_opt, cwcurr, pa );
+            /* never return */
         }
         break;
     default:
@@ -296,7 +300,9 @@ static void scr_cc_cp_common( bool do_pa )
             test_space = conv_vert_unit( &cpwork, 0, g_curr_font );
             if( test_space < 0 ) {
                 xx_line_err_exit_c( err_spc_not_valid, pa );
-            } else if( test_space > 0 ) {               // do nothing for 0
+                /* never return */
+            }
+            if( test_space > 0 ) {               // do nothing for 0
                 if( cpwork.su_u == SU_chars_lines ) {   // recompute value if from line count
                     test_space = (cpwork.su_whole * g_text_spacing * g_resv) / LPI;
                 }

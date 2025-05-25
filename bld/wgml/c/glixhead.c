@@ -37,9 +37,9 @@
 /***************************************************************************/
 /*   :IXHEAD   attributes                                                    */
 /***************************************************************************/
-const   lay_att     ixhead_att[7] =
-    { e_pre_skip, e_post_skip, e_font, e_indent, e_ixhead_frame,
-      e_header, e_dummy_zero };
+static const lay_att    ixhead_att[] = {
+    e_pre_skip, e_post_skip, e_font, e_indent, e_ixhead_frame, e_header
+};
 
 
 /*********************************************************************************/
@@ -116,7 +116,8 @@ void    lay_ixhead( const gmltag * entry )
     }
     while( (cc = lay_attr_and_value( &attr_name, &attr_val )) == CC_pos ) {   // get att with value
         cvterr = -1;
-        for( k = 0, curr = ixhead_att[k]; curr > 0; k++, curr = ixhead_att[k] ) {
+        for( k = 0; k < TABLE_SIZE( ixhead_att ); k++ ) {
+            curr = ixhead_att[k];
             if( curr == e_ixhead_frame ) {
                 curr = e_frame;         // use correct externalname
             }
@@ -127,6 +128,7 @@ void    lay_ixhead( const gmltag * entry )
                     if( AttrFlags.pre_skip ) {
                         xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
                     }
                     cvterr = i_space_unit( p, &attr_val,
                                            &layout_work.ixhead.pre_skip );
@@ -136,6 +138,7 @@ void    lay_ixhead( const gmltag * entry )
                     if( AttrFlags.post_skip ) {
                         xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
                     }
                     cvterr = i_space_unit( p, &attr_val,
                                            &layout_work.ixhead.post_skip );
@@ -145,6 +148,7 @@ void    lay_ixhead( const gmltag * entry )
                     if( AttrFlags.font ) {
                         xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
                     }
                     cvterr = i_font_number( p, &attr_val, &layout_work.ixhead.font );
                     if( layout_work.ixhead.font >= wgml_font_cnt ) {
@@ -156,6 +160,7 @@ void    lay_ixhead( const gmltag * entry )
                     if( AttrFlags.indent ) {
                         xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
                     }
                     cvterr = i_space_unit( p, &attr_val,
                                            &layout_work.ixhead.indent );
@@ -165,6 +170,7 @@ void    lay_ixhead( const gmltag * entry )
                     if( AttrFlags.frame ) {
                         xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
                     }
                     cvterr = i_default_frame( p, &attr_val,
                                            &layout_work.ixhead.frame );
@@ -174,6 +180,7 @@ void    lay_ixhead( const gmltag * entry )
                     if( AttrFlags.header ) {
                         xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
                     }
                     cvterr = i_yes_no( p, &attr_val,
                                            &layout_work.ixhead.header );
@@ -181,18 +188,61 @@ void    lay_ixhead( const gmltag * entry )
                     break;
                 default:
                     internal_err_exit( __FILE__, __LINE__ );
+                    /* never return */
                 }
                 if( cvterr ) {          // there was an error
                     xx_err_exit( err_att_val_inv );
+                    /* never return */
                 }
                 break;                  // break out of for loop
             }
         }
         if( cvterr < 0 ) {
             xx_err_exit( err_att_name_inv );
+            /* never return */
         }
     }
     scandata.s = scandata.e;
     return;
 }
 
+
+
+/***************************************************************************/
+/*   :IXHEAD    output index header attribute values                       */
+/***************************************************************************/
+void    put_lay_ixhead( FILE *fp, layout_data * lay )
+{
+    int                 k;
+    lay_att             curr;
+
+    fprintf( fp, ":IXHEAD\n" );
+
+    for( k = 0; k < TABLE_SIZE( ixhead_att ); k++ ) {
+        curr = ixhead_att[k];
+        switch( curr ) {
+        case e_pre_skip:
+            o_space_unit( fp, curr, &lay->ixhead.pre_skip );
+            break;
+        case e_post_skip:
+            o_space_unit( fp, curr, &lay->ixhead.post_skip );
+            break;
+        case e_font:
+            o_font_number( fp, curr, &lay->ixhead.font );
+            break;
+        case e_indent:
+            o_space_unit( fp, curr, &lay->ixhead.indent );
+            break;
+        case e_ixhead_frame:
+            curr = e_frame;             // frame = instead of ixhead_frame =
+            o_default_frame( fp, curr, &lay->ixhead.frame );
+            break;
+        case e_header:
+            o_yes_no( fp, curr, &lay->ixhead.header );
+            break;
+        default:
+            internal_err_exit( __FILE__, __LINE__ );
+            /* never return */
+        }
+    }
+}

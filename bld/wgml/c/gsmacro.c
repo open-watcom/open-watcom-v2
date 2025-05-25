@@ -60,7 +60,8 @@ static char *verify_sym( const char *p, const char *e )
 
     if( *p == '*' ) {    // starts with "*"
         star_found = true;
-        if( p + 1 < e && is_symbol_char(*(p + 1)) ) {            // local var
+        if( p + 1 < e
+          && is_symbol_char(*(p + 1)) ) {            // local var
             local = true;
         }
     }
@@ -69,7 +70,8 @@ static char *verify_sym( const char *p, const char *e )
     }
 
     if( *p == '=' ) {                   // "=" found
-        if( !star_found || local ) {    // exclude constructs like "*=.()", which are text
+        if( !star_found
+          || local ) {    // exclude constructs like "*=.()", which are text
             p++;
             if( p < e ) {               // something follows "="
                 g_scan_err = false;
@@ -138,7 +140,9 @@ static char *is_quoted_string( const char *p )
     if( is_quote_char( *p ) ) {
         quote = *p++;           // skip over delimiter
         while( *p != '\0' ) {
-            if( (p[0] == quote) && ((p[1] == ' ') || (p[1] == '\0')) ) {
+            if( (p[0] == quote)
+              && ((p[1] == ' ')
+              || (p[1] == '\0')) ) {
                 break;          // matching delimiter found
             }
             p++;
@@ -223,7 +227,9 @@ void    add_macro_parms( char * p )
         o_len = strlen( p );
         len = o_len;
         if ( ProcFlags.pre_fsp ) {      // space characters from symbol/attribute/function evaluation
-            if( ProcFlags.concat && (len > 2) && (*(p + len - 1) == ' ') ) {
+            if( ProcFlags.concat
+              && (len > 2)
+              && (*(p + len - 1) == ' ') ) {
                 while( *(p + len - 2) == ' ' ) {        // remove trailing spaces
                     len--;
                     if( len == 0 ) {                    // empty operand
@@ -233,7 +239,9 @@ void    add_macro_parms( char * p )
                 *(p + len) = '\0';                      // end after last non-space character
             }
         } else {                        // explicit space characters
-            if( !ProcFlags.null_value && (input_cbs->prev->hidden_head == NULL) && (len != 0) ) {
+            if( !ProcFlags.null_value
+              && (input_cbs->prev->hidden_head == NULL)
+              && (len != 0) ) {
                 while( *(p + len - 1) == ' ' ) {        // remove trailing spaces
                     len--;
                     if( len == 0 ) {                    // empty operand
@@ -296,7 +304,8 @@ void    add_macro_parms( char * p )
         add_symvar( input_cbs->local_dict, "0", starbuf, strlen( starbuf ), SI_no_subscript, SF_local_var );
     }
 
-    if( (input_cbs->fmflags & II_research) && GlobalFlags.firstpass ) {
+    if( (input_cbs->fmflags & II_research)
+      && GlobalFlags.firstpass ) {
         print_sym_dict( input_cbs->local_dict );
     }
 }
@@ -400,6 +409,7 @@ void    scr_dm( void )
 
     if( cc == CC_omit ) {
         xx_source_err_exit( err_missing_name );
+        /* never return */
     }
 
     /*  truncate name if too long WITHOUT error msg
@@ -412,6 +422,7 @@ void    scr_dm( void )
     if( cc == CC_omit ) {                  // nothing found
         // SC--048 A control word parameter is missing
         xx_source_err_exit_c( err_mac_def_fun, macname1 );
+        /* never return */
     }
 
     get_macro_name( g_tok_start, macname2 );
@@ -422,7 +433,8 @@ void    scr_dm( void )
 
     compend   = ( strcmp( "end", macname2 ) == 0 );
     compbegin = ( strcmp( "begin", macname2 ) == 0 );
-    if( !compbegin && !compend ) { // only .dm macname /line1/line2/ possible
+    if( !compbegin
+      && !compend ) { // only .dm macname /line1/line2/ possible
         char    sepchar;
 
         if( cc == CC_quotes ) {
@@ -430,6 +442,7 @@ void    scr_dm( void )
         }
         if( ProcFlags.in_macro_define ) {
             xx_source_err_exit_c( err_mac_def_nest, g_tok_start );
+            /* never return */
         }
         ProcFlags.in_macro_define = 1;
 
@@ -460,13 +473,17 @@ void    scr_dm( void )
         compend = true;                    // so the end processing will happen
     }                                   // BEGIN or END not found
 
-    if( compend && !(ProcFlags.in_macro_define) ) {
+    if( compend
+      && !(ProcFlags.in_macro_define) ) {
         // SC--003: A macro is not being defined
         xx_source_err_exit_c( err_mac_def_end, macname1 );
+        /* never return */
     }
-    if( compbegin && (ProcFlags.in_macro_define) ) {
+    if( compbegin
+      && (ProcFlags.in_macro_define) ) {
         // SC--002 The control word parameter '%s' is invalid
         xx_source_err_exit_c( err_mac_def_nest, macname1 );
+        /* never return */
     }
 
     if( compbegin ) {                   // start new macro define
@@ -492,11 +509,13 @@ void    scr_dm( void )
                 /* constructs like "..'" ".'." have yet to be explored          */
                 /****************************************************************/
 
-                if( (*p == SCR_char)  || (*p == '\'') ) {
+                if( (*p == SCR_char)
+                  || (*p == '\'') ) {
                     p++;                        // over ".." or ".'"
                 }
                 p = get_macro_name( p, macname2 );
-                if( macname2[0] == 'd' && macname2[1] == 'm' ) {
+                if( macname2[0] == 'd'
+                  && macname2[1] == 'm' ) {
                     if( (macname2[2] == '\0')
                       || (find_macro( macro_dict, macname2 ) == NULL) ) { // .dm control word
                         cc = getarg();
@@ -509,16 +528,19 @@ void    scr_dm( void )
                             // macroname from begin different from end
                             // SC--005 Macro '%s' is not being defined
                             xx_source_err_exit_c( err_mac_def_not, macname2 );
+                            /* never return */
                         }
                         cc = getarg();
                         if( cc == CC_omit ) {
                             // SC--048 A control word parameter is missing
                             xx_source_err_exit( err_mac_def_miss );
+                            /* never return */
                         }
                         get_macro_name( g_tok_start, macname2 );
                         if( strcmp( "end", macname2 ) != 0 ) {
                             // SC--002 The control word parameter '%s' is invalid
                             xx_source_err_exit_c( err_mac_def_inv, macname2 );
+                            /* never return */
                         }
                         compend = true;
                         break;              // out of read loop
@@ -541,6 +563,7 @@ void    scr_dm( void )
             // error SC--004 End of file reached
             // macro '%s' is still being defined
             xx_source_err_exit_c( err_mac_def_eof, macname1 );
+            /* never return */
         }
     }                                   // end compbegin
 
@@ -564,12 +587,14 @@ void    scr_dm( void )
 
         add_macro_entry( macro_dict, me );
 
-        if( (cb->fmflags & II_research) && GlobalFlags.firstpass ) {
+        if( (cb->fmflags & II_research)
+          && GlobalFlags.firstpass ) {
             sprintf( linestr, "%d", macro_line_count );
             g_info( inf_mac_defined, macname1, linestr );
         }
     } else {
         xx_source_err_exit_c( err_mac_def_logic, macname1 );
+        /* never return */
     }
     scan_restart = scandata.e;
     return;
@@ -613,7 +638,6 @@ void    scr_me( void )
     condcode        cc;
 
     if( input_cbs->prev != NULL ) {     // if not master document file
-
         cc = getarg();
         if( cc != CC_omit ) {              // line operand present
 
@@ -702,6 +726,7 @@ void    scr_em( void )
 
     if( cc == CC_omit ) {
         xx_source_err_exit( err_mac_name_inv );
+        /* never return */
     }
 
     if( *g_tok_start == SCR_char ) {      // possible macro name
@@ -718,9 +743,9 @@ void    scr_em( void )
 
     if( me == NULL ) {                  // macro not specified or not defined
         xx_source_err_exit( err_mac_name_inv );
-    } else {
-        split_input( buff2, g_tok_start, input_cbs->fmflags );    // stack line operand
+        /* never return */
     }
+    split_input( buff2, g_tok_start, input_cbs->fmflags );    // stack line operand
     scan_restart = scandata.e;
     return;
 }

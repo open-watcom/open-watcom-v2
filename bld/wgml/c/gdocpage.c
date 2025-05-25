@@ -142,7 +142,7 @@ static void do_el_list_out( doc_element * in_element )
             break;
         default :
             internal_err_exit( __FILE__, __LINE__ );
-//            break;
+            /* never return */
         }
         save = in_element->next;
         in_element->next = NULL;            // clear only current element
@@ -837,6 +837,7 @@ static bool set_positions( doc_element * list, unsigned h_start, unsigned v_star
             break;
         default :
             internal_err_exit( __FILE__, __LINE__ );
+            /* never return */
         }
     }
 
@@ -989,8 +990,7 @@ static void fill_column( doc_element * a_element )
 
         if( ( cur_line->line_height + cur_line->units_spacing ) > old_max_depth ) {
             xx_err_exit( err_text_line_too_deep );
-            // never return
-//            break;
+            /* never return */
         }
 
         /****************************************************************/
@@ -1032,6 +1032,7 @@ static void fill_column( doc_element * a_element )
         break;
     default :
         internal_err_exit( __FILE__, __LINE__ );
+        /* never return */
     }
     return;
 }
@@ -2251,6 +2252,7 @@ void insert_page_width( doc_el_group * a_group )
         }
     } else {
         internal_err_exit( __FILE__, __LINE__ );
+        /* never return */
     }
 
     return;
@@ -2610,7 +2612,7 @@ bool split_element( doc_element * a_element, unsigned req_depth )
 
         if( ( cur_line->line_height + cur_line->units_spacing ) > old_max_depth ) {
             xx_err_exit( err_text_line_too_deep );
-//            break;
+            /* never return */
         }
 
         if( g_cur_threshold == 1 ) {                // simplest case
@@ -2710,6 +2712,7 @@ bool split_element( doc_element * a_element, unsigned req_depth )
         break;
     default :
         internal_err_exit( __FILE__, __LINE__ );
+        /* never return */
     }
     return( splittable );
 }

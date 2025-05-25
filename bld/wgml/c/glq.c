@@ -50,6 +50,7 @@ void gml_lq( const gmltag * entry )
 
     if( is_ip_tag( nest_cb->gtag ) ) {         // inline phrase not closed
         g_tag_nest_err_exit( nest_cb->gtag + 1 );   // end tag expected
+        /* never return */
     }
 
     init_nest_cb();
@@ -109,7 +110,7 @@ void gml_elq( const gmltag * entry )
         } else {
             g_tag_nest_err_exit( get_tclo( nest_cb->gtag ) );   // exxx expected
         }
-        // never return
+        /* never return */
     }
 
     set_skip_vars( NULL, NULL, &layout_work.lq.post_skip, 1, g_curr_font );

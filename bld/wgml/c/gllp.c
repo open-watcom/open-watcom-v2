@@ -37,9 +37,9 @@
 /***************************************************************************/
 /*   :LP    attributes                                                     */
 /***************************************************************************/
-const   lay_att     lp_att[7] =
-    { e_left_indent, e_right_indent, e_line_indent, e_pre_skip, e_post_skip,
-      e_spacing, e_dummy_zero };
+static const lay_att    lp_att[] = {
+    e_left_indent, e_right_indent, e_line_indent, e_pre_skip, e_post_skip, e_spacing
+};
 
 /*********************************************************************************/
 /*Define the characteristics of the list part entity.                            */
@@ -110,7 +110,8 @@ void    lay_lp( const gmltag * entry )
     }
     while( (cc = lay_attr_and_value( &attr_name, &attr_val )) == CC_pos ) {   // get att with value
         cvterr = -1;
-        for( k = 0, curr = lp_att[k]; curr > 0; k++, curr = lp_att[k] ) {
+        for( k = 0; k < TABLE_SIZE( lp_att ); k++ ) {
+            curr = lp_att[k];
             if( strcmp( lay_att_names[curr], attr_name.attname.l ) == 0 ) {
                 p = attr_val.tok.s;
                 switch( curr ) {
@@ -118,6 +119,7 @@ void    lay_lp( const gmltag * entry )
                     if( AttrFlags.left_indent ) {
                         xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
                     }
                     cvterr = i_space_unit( p, &attr_val,
                                            &layout_work.lp.left_indent );
@@ -127,6 +129,7 @@ void    lay_lp( const gmltag * entry )
                     if( AttrFlags.right_indent ) {
                         xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
                     }
                     cvterr = i_space_unit( p, &attr_val,
                                            &layout_work.lp.right_indent );
@@ -136,6 +139,7 @@ void    lay_lp( const gmltag * entry )
                     if( AttrFlags.line_indent ) {
                         xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
                     }
                     cvterr = i_space_unit( p, &attr_val,
                                            &layout_work.lp.line_indent );
@@ -145,6 +149,7 @@ void    lay_lp( const gmltag * entry )
                     if( AttrFlags.pre_skip ) {
                         xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
                     }
                     cvterr = i_space_unit( p, &attr_val, &layout_work.lp.pre_skip );
                     AttrFlags.pre_skip = true;
@@ -153,6 +158,7 @@ void    lay_lp( const gmltag * entry )
                     if( AttrFlags.post_skip ) {
                         xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
                     }
                     cvterr = i_space_unit( p, &attr_val, &layout_work.lp.post_skip );
                     AttrFlags.post_skip = true;
@@ -161,24 +167,67 @@ void    lay_lp( const gmltag * entry )
                     if( AttrFlags.spacing ) {
                         xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
                     }
                     cvterr = i_spacing( p, &attr_val, &layout_work.lp.spacing );
                     AttrFlags.spacing = true;
                     break;
                 default:
                     internal_err_exit( __FILE__, __LINE__ );
+                    /* never return */
                 }
                 if( cvterr ) {          // there was an error
                     xx_err_exit( err_att_val_inv );
+                    /* never return */
                 }
                 break;                  // break out of for loop
             }
         }
         if( cvterr < 0 ) {
             xx_err_exit( err_att_name_inv );
+            /* never return */
         }
     }
     scandata.s = scandata.e;
     return;
 }
 
+
+
+/***************************************************************************/
+/*   :LP        output list part attribute values                          */
+/***************************************************************************/
+void    put_lay_lp( FILE *fp, layout_data * lay )
+{
+    int                 k;
+    lay_att             curr;
+
+    fprintf( fp, ":LP\n" );
+
+    for( k = 0; k < TABLE_SIZE( lp_att ); k++ ) {
+        curr = lp_att[k];
+        switch( curr ) {
+        case e_left_indent:
+            o_space_unit( fp, curr, &lay->lp.left_indent );
+            break;
+        case e_right_indent:
+            o_space_unit( fp, curr, &lay->lp.right_indent );
+            break;
+        case e_line_indent:
+            o_space_unit( fp, curr, &lay->lp.line_indent );
+            break;
+        case e_pre_skip:
+            o_space_unit( fp, curr, &lay->lp.pre_skip );
+            break;
+        case e_post_skip:
+            o_space_unit( fp, curr, &lay->lp.post_skip );
+            break;
+        case e_spacing:
+            o_spacing( fp, curr, &lay->lp.spacing );
+            break;
+        default:
+            internal_err_exit( __FILE__, __LINE__ );
+            /* never return */
+        }
+    }
+}

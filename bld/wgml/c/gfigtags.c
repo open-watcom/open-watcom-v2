@@ -211,6 +211,7 @@ static void draw_box( doc_el_group * in_group )
                 break;
             default :
                 internal_err_exit( __FILE__, __LINE__ );
+                /* never return */
             }
             cur_doc_el = cur_doc_el->next;
         }
@@ -409,6 +410,7 @@ void gml_fig( const gmltag * entry )
 
     if( is_ip_tag( nest_cb->gtag ) ) {                 // inline phrase not closed
         g_tag_nest_err_exit( nest_cb->gtag + 1 ); // end tag expected
+        /* never return */
     }
     g_keep_nest( "Figure" );            // catch nesting errors
 
@@ -498,6 +500,7 @@ void gml_fig( const gmltag * entry )
                     place = top_place;
                 } else {
                     xx_line_err_exit_c( err_inv_att_val, attr_val.tok.s );
+                    /* never return */
                 }
                 if( ProcFlags.tag_end_found ) {
                     break;
@@ -520,6 +523,7 @@ void gml_fig( const gmltag * entry )
                     width = conv_hor_unit( &cur_su, g_curr_font );
                     if( width == 0 ) {
                         xx_line_err_exit_c( err_inv_width_fig_1, attr_val.tok.s );
+                        /* never return */
                     }
                     width_seen = true;
                 }
@@ -581,6 +585,7 @@ void gml_fig( const gmltag * entry )
                 cur_ref = add_new_refid( &fig_ref_dict, figrefid, fig_entry );
             } else {                // duplicate id
                 dup_refid_err_exit( cur_ref->refid, "figure" );
+                /* never return */
             }
         }
     }
@@ -617,6 +622,7 @@ void gml_fig( const gmltag * entry )
     if( width_seen ) {                  // width entered will be used
         if( width > max_width ) {
             xx_line_err_exit_c( err_inv_width_fig_3, attr_val.tok.s );
+            /* never return */
         }
     } else {
         width = max_width;              // t_page.last_pane->col_width will be used
@@ -651,8 +657,10 @@ void gml_fig( const gmltag * entry )
     if( width > t_page.last_pane->col_width ) {
         if( (t_page.last_pane->col_count > 1) && (place != top_place) ) {
             xx_line_err_exit_c( err_inv_width_fig_2, attr_val.tok.s );
+            /* never return */
         } else if( t_page.last_pane->col_count == 1 ) {
             xx_line_err_exit_c( err_inv_width_fig_3, attr_val.tok.s );
+            /* never return */
         }
     }
 
@@ -662,6 +670,7 @@ void gml_fig( const gmltag * entry )
         } else {
             xx_line_err_exit_c( err_inv_margins_2, attr_val.tok.s );
         }
+        /* never return */
     }
 
     /* Now set up margins for any text inside the figure */
@@ -677,7 +686,7 @@ void gml_fig( const gmltag * entry )
         } else {
             xx_line_err_exit_c( err_inv_margins_2, attr_val.tok.s );
         }
-        // never return
+        /* never return */
     }
     t_page.max_width -= right_inset;
     t_page.cur_width = t_page.cur_left;
@@ -727,6 +736,7 @@ void gml_efig( const gmltag * entry )
 
     if( cur_group_type != GRT_fig ) {    // no preceding :FIG tag
         g_tag_prec_err_exit( T_FIG );
+        /* never return */
     }
 
     t_page.cur_left = nest_cb->left_indent; // reset various values in case needed for frame
@@ -773,6 +783,7 @@ void gml_efig( const gmltag * entry )
 
     if( (*figrefid != '\0') && !figcap_done ) {  // FIG id requires FIGCAP
         xx_err_exit( err_fig_id_cap );
+        /* never return */
     }
 
     /* Place the accumulated lines on the proper page */

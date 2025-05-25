@@ -79,6 +79,7 @@ void gml_xmp( const gmltag * entry )
 
     if( is_ip_tag( nest_cb->gtag ) ) {                 // inline phrase not closed
         g_tag_nest_err_exit( nest_cb->gtag + 1 ); // end tag expected
+        /* never return */
     }
 
     font_save = g_curr_font;
@@ -194,6 +195,7 @@ void gml_exmp( const gmltag * entry )
 
     if( is_ip_tag( nest_cb->gtag ) ) {                 // inline phrase not closed
         g_tag_nest_err_exit( nest_cb->gtag + 1 ); // end tag expected
+        /* never return */
     }
 
     /* Ensure blank lines at end of XMP use correct font */
@@ -206,6 +208,7 @@ void gml_exmp( const gmltag * entry )
     scr_process_break();
     if( cur_group_type != GRT_xmp ) {        // no preceding :XMP tag
         g_tag_prec_err_exit( T_XMP );
+        /* never return */
     }
     g_curr_font = font_save;                // recover font in effect before XMP
     ProcFlags.concat = concat_save;

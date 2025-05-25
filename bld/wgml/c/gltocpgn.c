@@ -37,8 +37,9 @@
 /***************************************************************************/
 /*   :TOCPGNUM attributes                                                  */
 /***************************************************************************/
-const   lay_att     tocpgnum_att[3] =
-    { e_size, e_font, e_dummy_zero };
+static const lay_att    tocpgnum_att[] = {
+    e_size, e_font
+};
 
 
 /***************************************************************************/
@@ -64,7 +65,8 @@ void    lay_tocpgnum( const gmltag * entry )
     }
     while( (cc = lay_attr_and_value( &attr_name, &attr_val )) == CC_pos ) {   // get att with value
         cvterr = -1;
-        for( k = 0, curr = tocpgnum_att[k]; curr > 0; k++, curr = tocpgnum_att[k] ) {
+        for( k = 0; k < TABLE_SIZE( tocpgnum_att ); k++ ) {
+            curr = tocpgnum_att[k];
             if( strcmp( lay_att_names[curr], attr_name.attname.l ) == 0 ) {
                 p = attr_val.tok.s;
                 switch( curr ) {
@@ -72,6 +74,7 @@ void    lay_tocpgnum( const gmltag * entry )
                     if( AttrFlags.size ) {
                         xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
                     }
                     cvterr = i_space_unit( p, &attr_val,
                                            &layout_work.tocpgnum.size );
@@ -81,6 +84,7 @@ void    lay_tocpgnum( const gmltag * entry )
                     if( AttrFlags.font ) {
                         xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
                     }
                     cvterr = i_font_number( p, &attr_val, &layout_work.tocpgnum.font );
                     if( layout_work.tocpgnum.font >= wgml_font_cnt ) {
@@ -90,18 +94,48 @@ void    lay_tocpgnum( const gmltag * entry )
                     break;
                 default:
                     internal_err_exit( __FILE__, __LINE__ );
+                    /* never return */
                 }
                 if( cvterr ) {          // there was an error
                     xx_err_exit( err_att_val_inv );
+                    /* never return */
                 }
                 break;                  // break out of for loop
             }
         }
         if( cvterr < 0 ) {
             xx_err_exit( err_att_name_inv );
+            /* never return */
         }
     }
     scandata.s = scandata.e;
     return;
 }
 
+
+
+/***************************************************************************/
+/*   :TOCPGNUM  output table of contents number attribute values           */
+/***************************************************************************/
+void    put_lay_tocpgnum( FILE *fp, layout_data * lay )
+{
+    int                 k;
+    lay_att             curr;
+
+    fprintf( fp, ":TOCPGNUM\n" );
+
+    for( k = 0; k < TABLE_SIZE( tocpgnum_att ); k++ ) {
+        curr = tocpgnum_att[k];
+        switch( curr ) {
+        case e_size:
+            o_space_unit( fp, curr, &lay->tocpgnum.size );
+            break;
+        case e_font:
+            o_font_number( fp, curr, &lay->tocpgnum.font );
+            break;
+        default:
+            internal_err_exit( __FILE__, __LINE__ );
+            /* never return */
+        }
+    }
+}

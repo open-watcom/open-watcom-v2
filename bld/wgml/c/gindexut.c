@@ -100,7 +100,7 @@ static bool find_string_ref( char * ref, unsigned len, ix_e_blk * * base )
             }
             if( len < cur_ieh->u.pageref.page_text_len ) { // shouldn't be possible
                 internal_err_exit( __FILE__, __LINE__ );
-                // never return
+                /* never return */
             }
         }
         old_ieh = cur_ieh;
@@ -220,6 +220,7 @@ void find_create_ix_e_entry( ix_h_blk *ixhwork, char *ref, unsigned len,
                 cur_eol = cur_tl->eol_index;
             } else {
                 internal_err_exit( __FILE__, __LINE__ ); // bad element type value
+                /* never return */
             }
             if( found ) {
                 while( cur_eol->next != NULL ) {
@@ -253,6 +254,7 @@ void find_create_ix_e_entry( ix_h_blk *ixhwork, char *ref, unsigned len,
     case pgnone :       // should never appear here, but nothing to do
     default :           // out-of-range enum value
         internal_err_exit( __FILE__, __LINE__ );
+        /* never return */
     }
 
     if( found ) {
@@ -335,6 +337,7 @@ void eol_index_page( eol_ix * eol_index, unsigned page_nr )
         case pgnone :
         default :           // out-of-range enum value
             internal_err_exit( __FILE__, __LINE__ );
+            /* never return */
         }
 
         if( found ) {
@@ -448,6 +451,7 @@ ix_h_blk * find_create_ix_h_entry( ix_h_blk *ixhwork, ix_h_blk *ixhbase,
                     ixhbase->lower = ixhwk;
                 } else {                        // cannot be NULL for sub-list
                     internal_err_exit( __FILE__, __LINE__ );
+                    /* never return */
                 }
             }
         } else {                                // insert in list at current point

@@ -47,6 +47,7 @@ void gml_address( const gmltag * entry )
     if( !((ProcFlags.doc_sect == DSECT_titlep) ||
           (ProcFlags.doc_sect_nxt == DSECT_titlep)) ) {
         xx_nest_err_exit_cc( err_tag_wrong_sect, entry->tagname, ":TITLEP section" );
+        /* never return */
     }
     first_aline = true;
     font_save = g_curr_font;
@@ -95,6 +96,7 @@ void gml_eaddress( const gmltag * entry )
 
     if( cur_group_type != GRT_address ) {   // no preceding :ADDRESS tag
         g_tag_prec_err_exit( T_ADDRESS );
+        /* never return */
     }
     g_curr_font = font_save;
     rs_loc = TLOC_titlep;
@@ -171,6 +173,7 @@ void gml_aline( const gmltag * entry )
     if( !((ProcFlags.doc_sect == DSECT_titlep) ||
           (ProcFlags.doc_sect_nxt == DSECT_titlep)) ) {
         xx_nest_err_exit_cc( err_tag_wrong_sect, entry->tagname, ":TITLEP section" );
+        /* never return */
     }
     if( cur_group_type != GRT_address ) {    // no preceding :ADDRESS tag
         g_tag_prec_err_exit( T_ADDRESS );
@@ -199,9 +202,9 @@ void gml_aline( const gmltag * entry )
     t_page.cur_width = t_page.cur_left;
     if( t_page.max_width < -1 * nest_cb->right_indent ) {
         xx_line_err_exit_c( err_page_width_too_small, scandata.s );
-    } else {
-        t_page.max_width += nest_cb->right_indent;
+        /* never return */
     }
+    t_page.max_width += nest_cb->right_indent;
     ProcFlags.keep_left_margin = true;  // keep special indent
     line_position = layout_work.address.page_position;
     ProcFlags.as_text_line = true;

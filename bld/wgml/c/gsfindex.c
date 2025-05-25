@@ -81,6 +81,7 @@ static condcode    get_pos( parm parms[MAX_FUN_PARMS], unsigned parmcount, char 
                 if( (cc != CC_pos) || (gn.result == 0) ) {
                     if( !ProcFlags.suppress_msg ) {
                         xx_source_err_exit_c( err_func_parm, "3 (startpos)" );
+                        /* never return */
                     }
                     return( cc );
                 }

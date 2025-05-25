@@ -379,6 +379,7 @@ static void process_fo_ju( bool both , char *cwcurr )
             scan_restart = pa + len;
         } else {
             xx_line_err_exit_cc( err_xx_opt, cwcurr, pa );
+            /* never return */
         }
         break;
     case 3 :                            // only OFF valid
@@ -390,6 +391,7 @@ static void process_fo_ju( bool both , char *cwcurr )
             scan_restart = pa + len;
         } else {
             xx_line_err_exit_cc( err_xx_opt, cwcurr, pa );
+            /* never return */
         }
         break;
     case 4 :                            // Left or half valid
@@ -413,6 +415,7 @@ static void process_fo_ju( bool both , char *cwcurr )
                 scan_restart = pa + len;
             } else {
                 xx_line_err_exit_cc( err_xx_opt, cwcurr, pa );
+                /* never return */
             }
         }
         break;
@@ -425,6 +428,7 @@ static void process_fo_ju( bool both , char *cwcurr )
             scan_restart = pa + len;
         } else {
             xx_line_err_exit_cc( err_xx_opt, cwcurr, pa );
+            /* never return */
         }
         break;
     case 6 :                            // center or inside valid
@@ -443,6 +447,7 @@ static void process_fo_ju( bool both , char *cwcurr )
                 scan_restart = pa + len;
             } else {
                 xx_line_err_exit_cc( err_xx_opt, cwcurr, pa );
+                /* never return */
             }
         }
         break;
@@ -455,10 +460,12 @@ static void process_fo_ju( bool both , char *cwcurr )
             scan_restart = pa + len;
         } else {
             xx_line_err_exit_cc( err_xx_opt, cwcurr, pa );
+            /* never return */
         }
         break;
     default:
         xx_line_err_exit_cc( err_xx_opt, cwcurr, pa );
+        /* never return */
     }
 
     /********************************************************/
@@ -601,6 +608,7 @@ void    scr_co( void )
             scan_restart = pa + len;
         } else {
             xx_line_err_exit_cc( err_xx_opt, cwcurr, pa );
+            /* never return */
         }
         break;
     case 3 :                            // only OFF valid
@@ -609,10 +617,12 @@ void    scr_co( void )
             scan_restart = pa + len;
         } else {
             xx_line_err_exit_cc( err_xx_opt, cwcurr, pa );
+            /* never return */
         }
         break;
     default:
         xx_line_err_exit_cc( err_xx_opt, cwcurr, pa );
+        /* never return */
     }
     return;
 }

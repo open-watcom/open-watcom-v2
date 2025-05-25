@@ -678,6 +678,7 @@ static void wgml_tabs( void )
             break;
         default:
             internal_err_exit( __FILE__, __LINE__ );
+            /* never return */
         }
 
         if( skip_tab ) {    // never true for ALIGN_left
@@ -1049,6 +1050,7 @@ static void redo_tabs( text_line * a_line )
             break;
         default:
             internal_err_exit( __FILE__, __LINE__ );
+            /* never return */
         }
 
         if( skip_tab ) {    // never true for ALIGN_left
@@ -1870,8 +1872,7 @@ void process_text( char * text, font_number font )
           && (ProcFlags.doc_sect != DSECT_etitlep)
           && (ProcFlags.doc_sect != DSECT_frontm) ) {
             xx_line_err_exit_c( err_doc_sec_expected_2, text );
-            // never return
-            //return;
+            /* never return */
         }
     }
 
@@ -2356,6 +2357,7 @@ void process_text( char * text, font_number font )
                             if( count == o_count ) {
                                 if( t_line->first == NULL ) {    // prevents loop
                                     xx_err_exit( err_page_width_too_small );
+                                    /* never return */
                                 }
                             } else {                 // split n_chars with hyphenation
                                 // first attach n_chars to tline
@@ -2638,6 +2640,7 @@ void process_text( char * text, font_number font )
         if( ProcFlags.need_li_lp
           || ProcFlags.need_tag) {   // no text allowed!
             xx_err_exit( err_tag_not_text );
+            /* never return */
         }
     }
 

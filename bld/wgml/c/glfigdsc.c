@@ -37,8 +37,9 @@
 /***************************************************************************/
 /*   :FIGDESC attributes                                                   */
 /***************************************************************************/
-const   lay_att     figdesc_att[3] =
-    { e_pre_lines, e_font, e_dummy_zero };
+static const lay_att    figdesc_att[] = {
+    e_pre_lines, e_font
+};
 
 /*********************************************************************************/
 /*Define the characteristics of the figure description entity.                   */
@@ -88,7 +89,8 @@ void    lay_figdesc( const gmltag * entry )
     }
     while( (cc = lay_attr_and_value( &attr_name, &attr_val )) == CC_pos ) {   // get att with value
         cvterr = -1;
-        for( k = 0, curr = figdesc_att[k]; curr > 0; k++, curr = figdesc_att[k] ) {
+        for( k = 0; k < TABLE_SIZE( figdesc_att ); k++ ) {
+            curr = figdesc_att[k];
             if( strcmp( lay_att_names[curr], attr_name.attname.l ) == 0 ) {
                 p = attr_val.tok.s;
                 switch( curr ) {
@@ -96,6 +98,7 @@ void    lay_figdesc( const gmltag * entry )
                     if( AttrFlags.pre_lines ) {
                         xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
                     }
                     cvterr = i_space_unit( p, &attr_val,
                                            &layout_work.figdesc.pre_lines );
@@ -105,6 +108,7 @@ void    lay_figdesc( const gmltag * entry )
                     if( AttrFlags.font ) {
                         xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
                     }
                     cvterr = i_font_number( p, &attr_val, &layout_work.figdesc.font );
                     if( layout_work.figdesc.font >= wgml_font_cnt ) {
@@ -114,18 +118,48 @@ void    lay_figdesc( const gmltag * entry )
                     break;
                 default:
                     internal_err_exit( __FILE__, __LINE__ );
+                    /* never return */
                 }
                 if( cvterr ) {          // there was an error
                     xx_err_exit( err_att_val_inv );
+                    /* never return */
                 }
                 break;                  // break out of for loop
             }
         }
         if( cvterr < 0 ) {
             xx_err_exit( err_att_name_inv );
+            /* never return */
         }
     }
     scandata.s = scandata.e;
     return;
 }
 
+
+
+/***************************************************************************/
+/*   :FIGDESC   output figure description attribute values                 */
+/***************************************************************************/
+void    put_lay_figdesc( FILE *fp, layout_data * lay )
+{
+    int                 k;
+    lay_att             curr;
+
+    fprintf( fp, ":FIGDESC\n" );
+
+    for( k = 0; k < TABLE_SIZE( figdesc_att ); k++ ) {
+        curr = figdesc_att[k];
+        switch( curr ) {
+        case e_pre_lines:
+            o_space_unit( fp, curr, &lay->figdesc.pre_lines );
+            break;
+        case e_font:
+            o_font_number( fp, curr, &lay->figdesc.font );
+            break;
+        default:
+            internal_err_exit( __FILE__, __LINE__ );
+            /* never return */
+        }
+    }
+}

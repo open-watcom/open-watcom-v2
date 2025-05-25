@@ -37,9 +37,9 @@
 /***************************************************************************/
 /*   :AUTHOR   attributes                                                  */
 /***************************************************************************/
-const   lay_att     author_att[7] =
-    { e_left_adjust, e_right_adjust, e_page_position, e_font, e_pre_skip,
-      e_skip, e_dummy_zero };
+static const lay_att    author_att[] = {
+    e_left_adjust, e_right_adjust, e_page_position, e_font, e_pre_skip, e_skip
+};
 
 /**********************************************************************************/
 /*Define the characteristics of the author entity.                                */
@@ -113,7 +113,8 @@ void    lay_author( const gmltag * entry )
     }
     while( (cc = lay_attr_and_value( &attr_name, &attr_val )) == CC_pos ) {   // get att with value
         cvterr = -1;
-        for( k = 0, curr = author_att[k]; curr > 0; k++, curr = author_att[k] ) {
+        for( k = 0; k < TABLE_SIZE( author_att ); k++ ) {
+            curr = author_att[k];
             if( strcmp( lay_att_names[curr], attr_name.attname.l ) == 0 ) {
                 p = attr_val.tok.s;
                 switch( curr ) {
@@ -121,6 +122,7 @@ void    lay_author( const gmltag * entry )
                     if( AttrFlags.left_adjust ) {
                         xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
                     }
                     cvterr = i_space_unit( p, &attr_val,
                                            &layout_work.author.left_adjust );
@@ -130,6 +132,7 @@ void    lay_author( const gmltag * entry )
                     if( AttrFlags.right_adjust ) {
                         xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
                     }
                     cvterr = i_space_unit( p, &attr_val,
                                            &layout_work.author.right_adjust );
@@ -139,6 +142,7 @@ void    lay_author( const gmltag * entry )
                     if( AttrFlags.page_position ) {
                         xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
                     }
                     cvterr = i_page_position( p, &attr_val,
                                           &layout_work.author.page_position );
@@ -148,6 +152,7 @@ void    lay_author( const gmltag * entry )
                     if( AttrFlags.font ) {
                         xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
                     }
                     cvterr = i_font_number( p, &attr_val, &layout_work.author.font );
                     if( layout_work.author.font >= wgml_font_cnt ) {
@@ -159,6 +164,7 @@ void    lay_author( const gmltag * entry )
                     if( AttrFlags.pre_skip ) {
                         xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
                     }
                     cvterr = i_space_unit( p, &attr_val,
                                            &layout_work.author.pre_skip );
@@ -168,6 +174,7 @@ void    lay_author( const gmltag * entry )
                     if( AttrFlags.skip ) {
                         xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
                     }
                     cvterr = i_space_unit( p, &attr_val,
                                            &layout_work.author.skip );
@@ -175,18 +182,60 @@ void    lay_author( const gmltag * entry )
                     break;
                 default:
                     internal_err_exit( __FILE__, __LINE__ );
+                    /* never return */
                 }
                 if( cvterr ) {          // there was an error
                     xx_err_exit( err_att_val_inv );
+                    /* never return */
                 }
                 break;                  // break out of for loop
             }
         }
         if( cvterr < 0 ) {
             xx_err_exit( err_att_name_inv );
+            /* never return */
         }
     }
     scandata.s = scandata.e;
     return;
 }
 
+
+
+/***************************************************************************/
+/*   :AUTHOR   output author attribute values                              */
+/***************************************************************************/
+void    put_lay_author( FILE *fp, layout_data * lay )
+{
+    int                 k;
+    lay_att             curr;
+
+    fprintf( fp, ":AUTHOR\n" );
+
+    for( k = 0; k < TABLE_SIZE( author_att ); k++ ) {
+        curr = author_att[k];
+        switch( curr ) {
+        case e_left_adjust:
+            o_space_unit( fp, curr, &lay->author.left_adjust );
+            break;
+        case e_right_adjust:
+            o_space_unit( fp, curr, &lay->author.right_adjust );
+            break;
+        case e_page_position:
+            o_page_position( fp, curr, &lay->author.page_position );
+            break;
+        case e_font:
+            o_font_number( fp, curr, &lay->author.font );
+            break;
+        case e_pre_skip:
+            o_space_unit( fp, curr, &lay->author.pre_skip );
+            break;
+        case e_skip:
+            o_space_unit( fp, curr, &lay->author.skip );
+            break;
+        default:
+            internal_err_exit( __FILE__, __LINE__ );
+            /* never return */
+        }
+    }
+}

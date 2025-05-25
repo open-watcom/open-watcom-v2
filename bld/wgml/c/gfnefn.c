@@ -146,6 +146,7 @@ void gml_fn( const gmltag * entry )
                 cur_ref = add_new_refid( &fn_ref_dict, fnrefid, fn_entry );
             } else {
                 dup_refid_err_exit( cur_ref->refid, "footnote" );
+                /* never return */
             }
         }
     } else {
@@ -200,8 +201,7 @@ void gml_efn( const gmltag * entry )
 
     if( cur_group_type != GRT_fn ) {         // no preceding :FN tag
         g_tag_prec_err_exit( T_FN );
-//        scandata.s = scandata.e;
-//        return;
+        /* never return */
     }
 
     ProcFlags.concat = concat_save;

@@ -143,17 +143,19 @@ void    scr_tb( void )
     SkipNonSpaces( p );                     // token end
     len = p - pa;
 
-    if( (len == 3) && strnicmp( "set", pa, len ) == 0 ) {
+    if( (len == 3)
+      && strnicmp( "set", pa, len ) == 0 ) {
         SkipSpaces( p );                    // tab char
         pa = p;
         SkipNonSpaces( p );                 // end tab char
         len = p - pa;
         if( len == 0 ) {
-            tab_char = 0x09;                // reset to default value
+            tab_char = '\t';                // reset to default value
         } else if( len == 1 ) {
             tab_char = *pa;                 // set to specified char
         } else {
             xx_line_err_exit_c( err_tab_char, pa );
+            /* never return */
         }
         add_to_sysdir( "$tb", tab_char );
         add_to_sysdir( "$tab", tab_char );
@@ -163,13 +165,14 @@ void    scr_tb( void )
         len = p - pa;                       // should be "0"
         if( len != 0 ) {
             xx_line_err_exit_c( err_tab_char, pa );
+            /* never return */
         }
     } else {
         user_tabs.current = 0;              // clear user_tabs
         p = pa;                             // reset to start of first tab
 
         while( *p != '\0' ) {               // tab stop start
-            if( user_tabs.current == user_tabs.length) {
+            if( user_tabs.current == user_tabs.length ) {
                 user_tabs.length += TAB_COUNT;  // add space for new tab stops
                 user_tabs.tabs = mem_realloc( user_tabs.tabs, user_tabs.length *
                                             sizeof( tab_stop ) );
@@ -183,25 +186,34 @@ void    scr_tb( void )
 
             // Parse fill chars/strings
 
-            if( (*p != '+') && !my_isdigit( *p ) ) {    // potential fill char
-                if( (*p == '\'') || (*p == '"') || (*p == '/') ) {
+            if( (*p != '+')
+              && !my_isdigit( *p ) ) {    // potential fill char
+                if( (*p == '\'')
+                  || (*p == '"')
+                  || (*p == '/') ) {
                     quote = *p;                         // initial quote found
                     p++;                                // should be fill char
-                    if( *p == '\0' || (*p == ' ') ||
-                        (*p == '+') || my_isdigit( *p ) ) { // ' " or / only before tab stop position
+                    if( *p == '\0'
+                      || (*p == ' ')
+                      || (*p == '+')
+                      || my_isdigit( *p ) ) { // ' " or / only before tab stop position
                         xx_line_err_exit_c( err_right_delim, pa );
+                        /* never return */
                     }
                 }
                 user_tabs.tabs[i].fill_char = *p;
                 p++;                    // should be end delimiter
                 if( *p == '\0' ) {      // 'c "c or /c only
                     xx_line_err_exit_c( err_right_delim, pa );
+                    /* never return */
                 }
 
                 /* fill strings are not allowed -- yet */
 
-                if( ((quote == ' ') && (*p == '/')) ||
-                                       ((quote != ' ') && (*p == quote)) ) {
+                if( ((quote == ' ')
+                  && (*p == '/'))
+                  || ((quote != ' ')
+                  && (*p == quote)) ) {
                     p++;                // final quote found
                 } else {
                     if( quote != ' ' ) {        // quoted value started
@@ -213,11 +225,14 @@ void    scr_tb( void )
                         }
                         if( *p == quote ) { // found: fill string
                             xx_line_err_exit_c( err_tab_fill_string, pa );
+                            /* never return */
                         } else if( *p != '\0' ) {   // not found: format error
                             xx_line_err_exit_c( err_right_delim, pa );
+                            /* never return */
                         }
                     } else {                // format error
                         xx_line_err_exit_c( err_inv_text_before_tab, pa );
+                        /* never return */
                     }
                 }
             }
@@ -229,7 +244,8 @@ void    scr_tb( void )
 
             gn.arg.s = p;
             SkipNonSpaces( p );                 // tab position end plus 1
-            if( *p != '\0' && (p > pa) ) {      // as needed by getnum
+            if( *p != '\0'
+              && (p > pa) ) {      // as needed by getnum
                 p--;                            // *p is last character of tab stop
             }
             while( (p != pa) && !my_isdigit( *p ) ) { // back up over alignment
@@ -246,58 +262,67 @@ void    scr_tb( void )
                     relative = true;
                 } else {
                     xx_line_err_exit_c( err_inv_tab_stop, pa );
+                    /* never return */
                 }
             }
             if( cc == CC_notnum ) {
                 xx_line_err_exit_c( err_inv_text_before_tab, pa );
-            } else {
-                if( gn.result <= 0 ) {
-                    if( relative ) {
-                        xx_line_err_exit_c( err_tab_stop_order, pa );
-                    } else {
-                        xx_line_err_exit_c( err_inv_tab_stop, pa );
-                    }
-                } else {
-                    if( relative && ( i > 0) ) {
-                        gn.result *= tab_col;
-                        user_tabs.tabs[i].column = user_tabs.tabs[i-1].column +
-                                                   gn.result;
-                    } else {
-                        gn.result --;
-                        gn.result *= tab_col;
-                        user_tabs.tabs[i].column = gn.result;
-                    }
-                }
-                if( !relative && (i > 0) ) {
-                    if( user_tabs.tabs[i].column <= user_tabs.tabs[i-1].column ) {
-                        xx_line_err_exit_c( err_tab_stop_order, pa );
-                    }
-                }
-                user_tabs.current++;
+                /* never return */
             }
+            if( gn.result <= 0 ) {
+                if( relative ) {
+                    xx_line_err_exit_c( err_tab_stop_order, pa );
+                } else {
+                    xx_line_err_exit_c( err_inv_tab_stop, pa );
+                }
+                /* never return */
+            }
+            if( relative
+              && ( i > 0) ) {
+                gn.result *= tab_col;
+                user_tabs.tabs[i].column = user_tabs.tabs[i-1].column + gn.result;
+            } else {
+                gn.result --;
+                gn.result *= tab_col;
+                user_tabs.tabs[i].column = gn.result;
+            }
+            if( !relative
+              && (i > 0) ) {
+                if( user_tabs.tabs[i].column <= user_tabs.tabs[i-1].column ) {
+                    xx_line_err_exit_c( err_tab_stop_order, pa );
+                    /* never return */
+                }
+            }
+            user_tabs.current++;
 
             // Parse the alignment
 
             user_tabs.tabs[i].alignment = ALIGN_left;
-            if( *p != '\0' && (*p != ' ') ) {   // space ends tab stop
+            if( *p != '\0'
+              && (*p != ' ') ) {   // space ends tab stop
 
             /* alignment characters are not allowed -- yet */
 
                 pa = p;                         // potential alignment start
-                if( (*p == 'c') || (*p == 'C') ) {
+                if( (*p == 'c')
+                  || (*p == 'C') ) {
                     user_tabs.tabs[i].alignment = ALIGN_center;
                     p++;
-                } else if( (*p == 'l') || (*p == 'L') ) {
+                } else if( (*p == 'l')
+                  || (*p == 'L') ) {
                     user_tabs.tabs[i].alignment = ALIGN_left;
                     p++;
-                } else if( (*p == 'r') || (*p == 'R') ) {
+                } else if( (*p == 'r')
+                  || (*p == 'R') ) {
                     user_tabs.tabs[i].alignment = ALIGN_right;
                     p++;
                 } else if( *p == '\'' ) {       // possible alignment character
                     p++;
-                    if( *p == '\0' || (*p != ' ') ) {  // not end of tab stop
+                    if( *p == '\0'
+                      || (*p != ' ') ) {  // not end of tab stop
                         if( *p == '\0' ) {             // ' only
                             xx_line_err_exit_c( err_right_delim, pa );
+                            /* never return */
                         }
                         p++;
                         if( *p == '\0' ) {             // 'c only
@@ -307,12 +332,13 @@ void    scr_tb( void )
                         } else {                // 'cc with or without more text
                             xx_line_err_exit_c( err_right_delim, pa );
                         }
-                    } else {                    // something else
-                        xx_line_err_exit_c( err_inv_text_after_tab, pa );
+                        /* never return */
                     }
-//                    p++;
+                    xx_line_err_exit_c( err_inv_text_after_tab, pa );
+                    /* never return */
                 } else {                        // something else
                     xx_line_err_exit_c( err_inv_text_after_tab, pa );
+                    /* never return */
                 }
             }
             SkipNonSpaces( p );                 // find end of tab stop

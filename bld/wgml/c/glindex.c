@@ -37,10 +37,11 @@
 /***************************************************************************/
 /*   :INDEX attributes                                                     */
 /***************************************************************************/
-const   lay_att     index_att[14] =
-    { e_post_skip, e_pre_top_skip, e_left_adjust, e_right_adjust,
-      e_spacing, e_columns, e_see_string, e_see_also_string, e_header,
-      e_index_string, e_page_eject, e_page_reset, e_font, e_dummy_zero };
+static const lay_att    index_att[] = {
+    e_post_skip, e_pre_top_skip, e_left_adjust, e_right_adjust,
+    e_spacing, e_columns, e_see_string, e_see_also_string, e_header,
+    e_index_string, e_page_eject, e_page_reset, e_font
+};
 
 /***********************************************************************************/
 /*Define the characteristics of the index section.                                 */
@@ -162,7 +163,8 @@ void    lay_index( const gmltag * entry )
     }
     while( (cc = lay_attr_and_value( &attr_name, &attr_val )) == CC_pos ) {   // get att with value
         cvterr = -1;
-        for( k = 0, curr = index_att[k]; curr > 0; k++, curr = index_att[k] ) {
+        for( k = 0; k < TABLE_SIZE( index_att ); k++ ) {
+            curr = index_att[k];
             if( strcmp( lay_att_names[curr], attr_name.attname.l ) == 0 ) {
                 p = attr_val.tok.s;
                 switch( curr ) {
@@ -170,6 +172,7 @@ void    lay_index( const gmltag * entry )
                     if( AttrFlags.post_skip ) {
                         xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
                     }
                     cvterr = i_space_unit( p, &attr_val,
                                     &layout_work.hx.hx_sect[HDS_index].post_skip );
@@ -179,6 +182,7 @@ void    lay_index( const gmltag * entry )
                     if( AttrFlags.pre_top_skip ) {
                         xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
                     }
                     cvterr = i_space_unit( p, &attr_val,
                                     &layout_work.hx.hx_sect[HDS_index].pre_top_skip );
@@ -188,6 +192,7 @@ void    lay_index( const gmltag * entry )
                     if( AttrFlags.left_adjust ) {
                         xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
                     }
                     cvterr = i_space_unit( p, &attr_val, &layout_work.index.left_adjust );
                     AttrFlags.left_adjust = true;
@@ -196,6 +201,7 @@ void    lay_index( const gmltag * entry )
                     if( AttrFlags.right_adjust ) {
                         xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
                     }
                     cvterr = i_space_unit( p, &attr_val, &layout_work.index.right_adjust );
                     AttrFlags.right_adjust = true;
@@ -204,6 +210,7 @@ void    lay_index( const gmltag * entry )
                     if( AttrFlags.spacing ) {
                         xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
                     }
                     cvterr = i_spacing( p, &attr_val, &layout_work.hx.hx_sect[HDS_index].spacing );
                     AttrFlags.spacing = true;
@@ -212,6 +219,7 @@ void    lay_index( const gmltag * entry )
                     if( AttrFlags.columns ) {
                         xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
                     }
                     cvterr = i_int8( p, &attr_val, &layout_work.index.columns );
                     AttrFlags.columns = true;
@@ -220,6 +228,7 @@ void    lay_index( const gmltag * entry )
                     if( AttrFlags.see_string ) {
                         xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
                     }
                     cvterr = i_xx_string( p, &attr_val, layout_work.index.see_string );
                     AttrFlags.see_string = true;
@@ -228,6 +237,7 @@ void    lay_index( const gmltag * entry )
                     if( AttrFlags.see_also_string ) {
                         xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
                     }
                     cvterr = i_xx_string( p, &attr_val, layout_work.index.see_also_string );
                     AttrFlags.see_also_string = true;
@@ -236,6 +246,7 @@ void    lay_index( const gmltag * entry )
                     if( AttrFlags.header ) {
                         xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
                     }
                     cvterr = i_yes_no( p, &attr_val,
                                         &layout_work.hx.hx_sect[HDS_index].header );
@@ -245,6 +256,7 @@ void    lay_index( const gmltag * entry )
                     if( AttrFlags.index_string ) {
                         xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
                     }
                     cvterr = i_xx_string( p, &attr_val, layout_work.index.index_string );
                     AttrFlags.index_string = true;
@@ -253,6 +265,7 @@ void    lay_index( const gmltag * entry )
                     if( AttrFlags.page_eject ) {
                         xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
                     }
                     cvterr = i_page_eject( p, &attr_val,
                                     &layout_work.index.page_eject );
@@ -262,6 +275,7 @@ void    lay_index( const gmltag * entry )
                     if( AttrFlags.page_reset ) {
                         xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
                     }
                     cvterr = i_yes_no( p, &attr_val, &layout_work.index.page_reset );
                     AttrFlags.page_reset = true;
@@ -270,6 +284,7 @@ void    lay_index( const gmltag * entry )
                     if( AttrFlags.font ) {
                         xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
                     }
                     cvterr = i_font_number( p, &attr_val,
                                             &layout_work.hx.hx_sect[HDS_index].text_font );
@@ -280,18 +295,81 @@ void    lay_index( const gmltag * entry )
                     break;
                 default:
                     internal_err_exit( __FILE__, __LINE__ );
+                    /* never return */
                 }
                 if( cvterr ) {          // there was an error
                     xx_err_exit( err_att_val_inv );
+                    /* never return */
                 }
                 break;                  // break out of for loop
             }
         }
         if( cvterr < 0 ) {
             xx_err_exit( err_att_name_inv );
+            /* never return */
         }
     }
     scandata.s = scandata.e;
     return;
 }
 
+
+
+/***************************************************************************/
+/*   :INDEX     output index attribute values                              */
+/***************************************************************************/
+void    put_lay_index( FILE *fp, layout_data * lay )
+{
+    int                 k;
+    lay_att             curr;
+
+    fprintf( fp, ":INDEX\n" );
+
+    for( k = 0; k < TABLE_SIZE( index_att ); k++ ) {
+        curr = index_att[k];
+        switch( curr ) {
+        case e_post_skip:
+            o_space_unit( fp, curr, &lay->hx.hx_sect[HDS_index].post_skip );
+            break;
+        case e_pre_top_skip:
+            o_space_unit( fp, curr, &lay->hx.hx_sect[HDS_index].pre_top_skip );
+            break;
+        case e_left_adjust:
+            o_space_unit( fp, curr, &lay->index.left_adjust );
+            break;
+        case e_right_adjust:
+            o_space_unit( fp, curr, &lay->index.right_adjust );
+            break;
+        case e_spacing:
+            o_spacing( fp, curr, &lay->hx.hx_sect[HDS_index].spacing );
+            break;
+        case e_columns:
+            o_int8( fp, curr, &lay->index.columns );
+            break;
+        case e_see_string:
+            o_xx_string( fp, curr, lay->index.see_string );
+            break;
+        case e_see_also_string:
+            o_xx_string( fp, curr, lay->index.see_also_string );
+            break;
+        case e_header:
+            o_yes_no( fp, curr, &lay->hx.hx_sect[HDS_index].header );
+            break;
+        case e_index_string:
+            o_xx_string( fp, curr, lay->index.index_string );
+            break;
+        case e_page_eject:
+            o_page_eject( fp, curr, &lay->index.page_eject );
+            break;
+        case e_page_reset:
+            o_yes_no( fp, curr, &lay->index.page_reset );
+            break;
+        case e_font:
+            o_font_number( fp, curr, &lay->hx.hx_sect[HDS_index].text_font );
+            break;
+        default:
+            internal_err_exit( __FILE__, __LINE__ );
+            /* never return */
+        }
+    }
+}

@@ -310,6 +310,7 @@ static void fb_newline( void )
 
     if( desired_units < 0 ) {
         internal_err_exit( __FILE__, __LINE__ );
+        /* never return */
     }
 
     /* desired_lines contains the number of lines, rounded up. Note: the
@@ -331,6 +332,7 @@ static void fb_newline( void )
 
     if( (desired_units > 0 ) && (desired_lines == 0) ) {
         internal_err_exit( __FILE__, __LINE__ );
+        /* never return */
     }
 
     /* lines might equal 0, in which case no action is needed. */
@@ -411,6 +413,7 @@ static void output_uscores( text_chars *in_chars )
 
     if( current_state.x_address > desired_state.x_address) {
         internal_err_exit( __FILE__, __LINE__ );
+        /* never return */
     }
 
     /* This is simplified: since no known device specifies a font for use
@@ -474,6 +477,7 @@ static void post_text_output( void )
                 ob_insert_block( shift_rmoveto, ps_size, false, false, active_font );
             } else {
                 internal_err_exit( __FILE__, __LINE__ );
+                /* never return */
             }
             current_state.type = TXT_norm;
         }
@@ -587,7 +591,7 @@ NO_RETURN( static void df_bad_code_err_exit( void ) );
 static void df_bad_code_err_exit( void )
 {
     internal_err_exit( __FILE__, __LINE__ );
-//    return( NULL );
+    /* never return */
 }
 
 /* These functions are for device functions which take no parameters. */
@@ -607,6 +611,7 @@ static void *df_clearpc( void )
 {
     if( current_df_data.parameter_type != 0x00 ) {
         internal_err_exit( __FILE__, __LINE__ );
+        /* never return */
     }
 
 #ifdef __UNIX__
@@ -633,10 +638,12 @@ static void *df_dotab( void )
     instance++;
     if( instance > 1 ) {
         xx_simple_err_exit_c( err_rec_dev_func, "%dotab()" );
+        /* never return */
     }
 
     if( current_df_data.parameter_type != 0x00 ) {
         internal_err_exit( __FILE__, __LINE__ );
+        /* never return */
     }
 
     /* desired_state.x_address must be greater than current_state.x_address
@@ -664,6 +671,7 @@ static void *df_dotab( void )
 
             if( (tab_width % wgml_fonts[active_font].spc_width) > 0 ) {
                 internal_err_exit( __FILE__, __LINE__ );
+                /* never return */
             }
 
             /* Perform the %dotab() horizontal positioning. */
@@ -699,6 +707,7 @@ static void *df_endif( void )
 {
     if( current_df_data.parameter_type != 0x00 ) {
         internal_err_exit( __FILE__, __LINE__ );
+        /* never return */
     }
 
     return( NULL );
@@ -719,10 +728,12 @@ static void *df_flushpage( void )
     instance++;
     if( instance > 1 ) {
         xx_simple_err_exit_c( err_rec_dev_func, "%flushpage()" );
+        /* never return */
     }
 
     if( current_df_data.parameter_type != 0x00 ) {
         internal_err_exit( __FILE__, __LINE__ );
+        /* never return */
     }
 
     /* Save the value of desired_state.y_address. */
@@ -809,6 +820,7 @@ static void *df_recordbreak_device( void )
 {
     if( current_df_data.parameter_type != 0x00 ) {
         internal_err_exit( __FILE__, __LINE__ );
+        /* never return */
     }
 
     out_msg( "\n" );
@@ -823,6 +835,7 @@ static void *df_recordbreak_driver( void )
 {
     if( current_df_data.parameter_type != 0x00 ) {
         internal_err_exit( __FILE__, __LINE__ );
+        /* never return */
     }
 
     ob_flush();
@@ -837,6 +850,7 @@ static void *df_textpass( void )
 {
     if( current_df_data.parameter_type != 0x00 ) {
         internal_err_exit( __FILE__, __LINE__ );
+        /* never return */
     }
 
     textpass = true;
@@ -851,6 +865,7 @@ static void *df_ulineoff( void )
 {
     if( current_df_data.parameter_type != 0x00 ) {
         internal_err_exit( __FILE__, __LINE__ );
+        /* never return */
     }
 
     uline = false;
@@ -865,6 +880,7 @@ static void *df_ulineon( void )
 {
     if( current_df_data.parameter_type != 0x00 ) {
         internal_err_exit( __FILE__, __LINE__ );
+        /* never return */
     }
 
     uline = true;
@@ -879,6 +895,7 @@ static void *df_wait( void )
 {
     if( current_df_data.parameter_type != 0x00 ) {
         internal_err_exit( __FILE__, __LINE__ );
+        /* never return */
     }
 
     getchar();
@@ -1164,9 +1181,11 @@ static void *process_parameter( void )
 
     if( current_df_data.df_code > MAX_FUNC_INDEX ) {
         internal_err_exit( __FILE__, __LINE__ );
+        /* never return */
     }
     if( current_function_table[current_df_data.df_code] == NULL ) {
         df_bad_code_err_exit();
+        /* never return */
     }
     return( current_function_table[current_df_data.df_code]() );
 }
@@ -1225,6 +1244,7 @@ static void *df_out_text_device( void )
         get_parameters( &my_parameters );
         if( (my_parameters.first != 0x0009) && (my_parameters.first != 0x000d) ) {
             internal_err_exit( __FILE__, __LINE__ );
+            /* never return */
         }
 
         /* Now get and emit the parameter. */
@@ -1241,6 +1261,7 @@ static void *df_out_text_device( void )
 
     default:
         internal_err_exit( __FILE__, __LINE__ );
+        /* never return */
     }
     return( NULL );
 }
@@ -1274,6 +1295,7 @@ static void out_text_driver( bool out_trans, bool out_text )
         get_parameters( &my_parameters );
         if( (my_parameters.first != 0x0009) && (my_parameters.first != 0x000d) ) {
             internal_err_exit( __FILE__, __LINE__ );
+            /* never return */
         }
 
         /* Now get and insert the parameter. */
@@ -1291,6 +1313,7 @@ static void out_text_driver( bool out_trans, bool out_text )
 
     default:
         internal_err_exit( __FILE__, __LINE__ );
+        /* never return */
     }
     return;
 }
@@ -1383,6 +1406,7 @@ static void *df_cancel( void )
     instance++;
     if( instance > 1 ) {
         xx_simple_err_exit_c( err_rec_dev_func, "%cancel()" );
+        /* never return */
     }
 
     /* Ensure that this is either a ShortHeader or a LongHeader. */
@@ -1390,12 +1414,14 @@ static void *df_cancel( void )
     get_parameters( &my_parameters );
     if( (my_parameters.first != 0x0009) && (my_parameters.first != 0x000d) ) {
         internal_err_exit( __FILE__, __LINE__ );
+        /* never return */
     }
 
     /* Ensure the parameter_type is correct */
 
     if( current_df_data.parameter_type != 0x10 ) {
         internal_err_exit( __FILE__, __LINE__ );
+        /* never return */
     }
 
     /* Now invoke the parameter's handler. */
@@ -1440,6 +1466,7 @@ static void *df_enterfont( void )
     instance++;
     if( instance > 1 ) {
         xx_simple_err_exit_c( err_rec_dev_func, "%enterfont()" );
+        /* never return */
     }
 
     /* Device function %enterfont() ignores its parameter. */
@@ -1469,12 +1496,14 @@ static void *df_sleep( void )
     get_parameters( &my_parameters );
     if( (my_parameters.first != 0x0009) && (my_parameters.first != 0x000d) ) {
         internal_err_exit( __FILE__, __LINE__ );
+        /* never return */
     }
 
     /* Ensure the parameter_type is correct */
 
     if( current_df_data.parameter_type != 0x10 ) {
         internal_err_exit( __FILE__, __LINE__ );
+        /* never return */
     }
 
     /* Get the parameter. */
@@ -1509,12 +1538,14 @@ static void *df_setsymbol( void )
     get_parameters( &my_parameters );
     if( (my_parameters.first != 0x0009) && (my_parameters.first != 0x000d) ) {
         internal_err_exit( __FILE__, __LINE__ );
+        /* never return */
     }
 
     /* Ensure the parameter_type is correct */
 
     if( current_df_data.parameter_type != 0x10 ) {
         internal_err_exit( __FILE__, __LINE__ );
+        /* never return */
     }
 
     /* Now get the first parameter. */
@@ -1556,12 +1587,14 @@ static void *df_binary( void )
     get_parameters( &my_parameters );
     if( (my_parameters.first != 0x0009) && (my_parameters.first != 0x000d) ) {
         internal_err_exit( __FILE__, __LINE__ );
+        /* never return */
     }
 
     /* Ensure the parameter_type is correct */
 
     if( current_df_data.parameter_type != 0x10 ) {
         internal_err_exit( __FILE__, __LINE__ );
+        /* never return */
     }
 
     /* Now invoke the parameter's handler. */
@@ -1676,12 +1709,14 @@ static void *df_ifeqn( void )
     get_parameters( &my_parameters );
     if( (my_parameters.first != 0x0009) && (my_parameters.first != 0x000d) ) {
         internal_err_exit( __FILE__, __LINE__ );
+        /* never return */
     }
 
     /* Ensure the parameter_type is correct */
 
     if( current_df_data.parameter_type != 0x10 ) {
         internal_err_exit( __FILE__, __LINE__ );
+        /* never return */
     }
 
     /* Now get the first parameter. */
@@ -1717,12 +1752,14 @@ static void *df_ifnen( void )
     get_parameters( &my_parameters );
     if( (my_parameters.first != 0x0009) && (my_parameters.first != 0x000d) ) {
         internal_err_exit( __FILE__, __LINE__ );
+        /* never return */
     }
 
     /* Ensure the parameter_type is correct */
 
     if( current_df_data.parameter_type != 0x10 ) {
         internal_err_exit( __FILE__, __LINE__ );
+        /* never return */
     }
 
     /* Now get the first parameter. */
@@ -1758,12 +1795,14 @@ static void *df_ifeqs( void )
     get_parameters( &my_parameters );
     if( (my_parameters.first != 0x0009) && (my_parameters.first != 0x000d) ) {
         internal_err_exit( __FILE__, __LINE__ );
+        /* never return */
     }
 
     /* Ensure the parameter_type is correct */
 
     if( current_df_data.parameter_type != 0x10 ) {
         internal_err_exit( __FILE__, __LINE__ );
+        /* never return */
     }
 
     /* Now get the first parameter. */
@@ -1804,12 +1843,14 @@ static void *df_ifnes( void )
     get_parameters( &my_parameters );
     if( (my_parameters.first != 0x0009) && (my_parameters.first != 0x000d) ) {
         internal_err_exit( __FILE__, __LINE__ );
+        /* never return */
     }
 
     /* Ensure the parameter_type is correct */
 
     if( current_df_data.parameter_type != 0x10 ) {
         internal_err_exit( __FILE__, __LINE__ );
+        /* never return */
     }
 
     /* Now get the first parameter. */
@@ -1918,6 +1959,7 @@ static void *df_divide( void )
 
     if( second == 0 ) {
         xx_simple_err_exit_c( err_zero_divisor, "%divide()" );
+        /* never return */
     }
 
     return( (void *)(first / second) );
@@ -2063,6 +2105,7 @@ static void *df_remainder( void )
 
     if( second == 0 ) {
         xx_simple_err_exit_c( err_zero_divisor, "%remainder()" );
+        /* never return */
     }
 
     return( (void *)(first % second) );
@@ -2278,7 +2321,7 @@ static void interpret_functions( const char *in_function )
 
     if( in_function == NULL ) {
         internal_err_exit( __FILE__, __LINE__ );
-        return;
+        /* never return */
     }
 
     /* Save the interpreter state. */
@@ -2333,9 +2376,11 @@ static void interpret_functions( const char *in_function )
 
         if( current_df_data.df_code > MAX_FUNC_INDEX ) {
             internal_err_exit( __FILE__, __LINE__ );
+            /* never return */
         }
         if( current_function_table[current_df_data.df_code] == NULL ) {
             df_bad_code_err_exit();
+            /* never return */
         }
         current_function_table[current_df_data.df_code]();
     }
@@ -2631,6 +2676,7 @@ static void fb_fs_marker( text_chars *in_chars )
 
     default :
         internal_err_exit( __FILE__, __LINE__ );
+        /* never return */
     }
 
     fs_marker = true;
@@ -2684,6 +2730,7 @@ static void fb_initial_horizontal_positioning( void )
 
         if( current_state.x_address > desired_state.x_address ) {
             internal_err_exit( __FILE__, __LINE__ );
+            /* never return */
         }
 
         /* Perform the initial horizontal positioning. */
@@ -2723,6 +2770,7 @@ static void fb_internal_horizontal_positioning( text_chars * in_chars )
 
     if( current_state.x_address > desired_state.x_address) {
         internal_err_exit( __FILE__, __LINE__ );
+        /* never return */
     }
 
     /* Perform the internal horizontal positioning. */
@@ -3157,6 +3205,7 @@ static void fb_normal_vertical_positioning( void )
 
         if( current_state.y_address < desired_state.y_address ) {
             internal_err_exit( __FILE__, __LINE__ );
+            /* never return */
         }
     } else {
 
@@ -3164,6 +3213,7 @@ static void fb_normal_vertical_positioning( void )
 
         if( current_state.y_address > desired_state.y_address ) {
             internal_err_exit( __FILE__, __LINE__ );
+            /* never return */
         }
     }
 
@@ -4170,7 +4220,7 @@ void fb_subsequent_text_line_pass( text_line *out_line, uint16_t line_pass )
 
     if( current == NULL ) {
         internal_err_exit( __FILE__, __LINE__ );
-//        return;
+        /* never return */
     }
 
     desired_state.x_address = current->x_address;

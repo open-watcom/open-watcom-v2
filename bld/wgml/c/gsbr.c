@@ -128,6 +128,7 @@ static void attach_eol( void )
             break;
         default :
             internal_err_exit( __FILE__, __LINE__ ); // bad element type value
+            /* never return */
         }
     } else if( t_page.last_col_main != NULL ) {
         switch( t_page.last_col_main->type ) {
@@ -210,6 +211,7 @@ static void attach_eol( void )
             break;
         default :
             internal_err_exit( __FILE__, __LINE__ ); // bad element type value
+            /* never return */
         }
     } else {    // only t_page is left!
         if( t_page.eol_index == NULL ) {

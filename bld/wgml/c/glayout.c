@@ -72,6 +72,7 @@ void    lay_layout( const gmltag * entry )
 
     if( ProcFlags.fb_document_done ) {
         xx_err_exit( err_lay_too_late );
+        /* never return */
     }
 
     if( !ProcFlags.lay_specified ) {
@@ -82,10 +83,12 @@ void    lay_layout( const gmltag * entry )
     if( *p == '\0' || *p == '.' ) {
         if( ProcFlags.layout ) {        // nested layout
             xx_err_exit_c( err_nested_tag, entry->tagname );
+            /* never return */
         }
         ProcFlags.layout = true;
     } else {
         xx_err_exit_cc( err_extra_ignored, g_tok_start, p );
+        /* never return */
     }
 }
 
@@ -110,10 +113,12 @@ void    lay_elayout( const gmltag * entry )
     if( *p == '\0' || *p == '.' ) {
         if( !ProcFlags.layout ) {       // not in layout processing
             xx_err_exit_cc( err_no_lay, &(entry->tagname[1]), entry->tagname );
+            /* never return */
         }
         ProcFlags.layout = false;
         ProcFlags.lay_xxx = TL_NONE;
     } else {
         xx_err_exit_cc( err_extra_ignored, g_tok_start, p );
+        /* never return */
     }
 }

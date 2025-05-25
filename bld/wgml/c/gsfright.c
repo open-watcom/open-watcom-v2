@@ -72,6 +72,7 @@ condcode    scr_right( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **res
     if( cc != CC_pos ) {
         if( !ProcFlags.suppress_msg ) {
             xx_source_err_exit_c( err_func_parm, "2 (length)" );
+            /* never return */
         }
         return( cc );
     }

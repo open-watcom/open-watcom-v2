@@ -44,19 +44,19 @@ static const gmltag     gml_tags[] = {
     #undef pick
 };
 
-#define GML_TAGMAX  (sizeof( gml_tags ) / sizeof( gml_tags[0] ))
+#define GML_TAGMAX      TABLE_SIZE( gml_tags )
 
 /***************************************************************************/
 /*    GML layout tags                                                      */
 /***************************************************************************/
 
 static const gmltag     lay_tags[] = {
-    #define pick( name, length, routine, gmlflags, locflags ) { { TL_##name }, #name, length, routine, gmlflags, locflags, TCLS_no_class },
+    #define pick( name, length, funci, funco, gmlflags, locflags ) { { TL_##name }, #name, length, funci, gmlflags, locflags, TCLS_no_class },
     #include "gtagslay.h"
     #undef pick
 };
 
-#define LAY_TAGMAX  (sizeof( lay_tags ) / sizeof( lay_tags[0] ))
+#define LAY_TAGMAX      TABLE_SIZE( lay_tags )
 
 
 /***************************************************************************/
@@ -69,7 +69,7 @@ static const scrtag     scr_kwds[] = {
     #undef pick
 };
 
-#define SCR_KWDMAX  (sizeof( scr_kwds ) / sizeof( scr_kwds[0] ))
+#define SCR_KWDMAX      TABLE_SIZE( scr_kwds )
 
 static uint8_t  scr_lkup_tbl[26 * 36];
 static uint8_t  scr_lkup_label;
@@ -197,6 +197,7 @@ static void scan_gml( void )
     if( ge != NULL ) {                  // GML user defined Tag found
         if( ProcFlags.need_text ) {
             xx_err_exit( err_text_not_tag_cw );
+            /* never return */
         }
         if( ge->tagflags & GTFLG_off ) {  // inactive, treat as comment
             scandata.s = scandata.e;
@@ -205,23 +206,21 @@ static void scan_gml( void )
         me = find_macro( macro_dict, ge->macname );
         if( me == NULL ) {
             g_tag_mac_err_exit( ge );
-        } else {
+            /* never return */
+        }
+        /*******************************************************************/
+        /*  When a user-defined tag which overloads a predefined tag (ie,  */
+        /*  the tag names are the same) is used inside a macro, the        */
+        /*  predefined tag is used instead by WGML 4.0.                    */
+        /*                                                                 */
+        /*  Note that this allows a user-defined tag, or the macros it     */
+        /*  invokes, to use that tag without any danger of recursion.      */
+        /*  It is far more general than simply preventing recursive        */
+        /*  user-defined tag definitions.                                  */
+        /*******************************************************************/
 
-            /*******************************************************************/
-            /*  When a user-defined tag which overloads a predefined tag (ie,  */
-            /*  the tag names are the same) is used inside a macro, the        */
-            /*  predefined tag is used instead by WGML 4.0.                    */
-            /*                                                                 */
-            /*  Note that this allows a user-defined tag, or the macros it     */
-            /*  invokes, to use that tag without any danger of recursion.      */
-            /*  It is far more general than simply preventing recursive        */
-            /*  user-defined tag definitions.                                  */
-            /*******************************************************************/
-
-            if( (cb->fmflags & II_tag_mac) && ge->overload ) {
-                me = NULL;
-            }
-
+        if( (cb->fmflags & II_tag_mac) && ge->overload ) {
+            me = NULL;
         }
     }
     if( me != NULL ) {                  // usertag and coresponding macro ok
@@ -249,8 +248,10 @@ static void scan_gml( void )
                         tag->gmlproc( tag );
                     } else if( rs_loc == TLOC_banner ) {
                         xx_err_exit_c( err_tag_expected, "eBANNER" );
+                        /* never return */
                     } else {    // rs_loc == TLOC_banreg
                         xx_err_exit_c( err_tag_expected, "eBANREGION" );
+                        /* never return */
                     }
                     SkipDot( scandata.s );
                 } else {
@@ -260,6 +261,7 @@ static void scan_gml( void )
                 processed = true;
             } else if( find_sys_tag( tagname ) != NULL ) {
                 xx_err_exit_c( err_gml_in_lay, tagname );
+                /* never return */
             }
         } else {                        // not within :LAYOUT
             tag = find_sys_tag( tagname );
@@ -301,6 +303,7 @@ static void scan_gml( void )
                         ProcFlags.need_ddhd = false;
                     } else {
                         xx_err_exit_c( err_tag_expected, "DDHD");
+                        /* never return */
                     }
                 } else if( ProcFlags.need_dd ) {
                     if( tag->tagclass & TCLS_index ) {
@@ -311,6 +314,7 @@ static void scan_gml( void )
                         ProcFlags.need_dd = false;
                     } else {
                         xx_err_exit_c( err_tag_expected, "DD");
+                        /* never return */
                     }
                 } else if( ProcFlags.need_gd ) {
                     if( (tag->tagclass & TCLS_index) == 0 ) {
@@ -322,6 +326,7 @@ static void scan_gml( void )
                         ProcFlags.need_gd = false;
                     } else {
                         xx_err_exit_c( err_tag_expected, "GD");
+                        /* never return */
                     }
                 } else if( !nest_cb->in_list ) {
                     if( (tag->tagclass & TCLS_list) == 0 ) {
@@ -329,6 +334,7 @@ static void scan_gml( void )
                         tag->gmlproc( tag );
                     } else {
                         xx_line_err_exit_c( err_no_list, g_tok_start );
+                        /* never return */
                     }
                 } else if( ProcFlags.need_li_lp ) {
                     if( tag->tagclass & TCLS_li_lp ) {
@@ -336,9 +342,11 @@ static void scan_gml( void )
                         tag->gmlproc( tag );
                     } else {
                         xx_nest_err_exit( err_no_li_lp );
+                        /* never return */
                     }
                 } else if( ProcFlags.need_text ) {
                     xx_err_exit( err_text_not_tag_cw );
+                    /* never return */
                 } else if( rs_loc == 0 ) {
                     // no restrictions: do them all
                     tag->gmlproc( tag );
@@ -351,11 +359,13 @@ static void scan_gml( void )
                 } else {
                     start_doc_sect();   // if not already done
                     g_tag_rsloc_err_exit( rs_loc, g_tok_start );
+                    /* never return */
                 }
                 processed = true;
                 SkipDot( scandata.s );
             } else if( find_lay_tag( tagname ) != NULL ) {
                 xx_err_exit_c( err_lay_in_gml, tagname );
+                /* never return */
             }
         }
     }
@@ -417,6 +427,7 @@ static void     scan_script( void )
 
     if( ProcFlags.need_text ) {
         xx_err_exit( err_text_not_tag_cw );
+        /* never return */
     }
 
     cb = input_cbs;
@@ -579,6 +590,7 @@ static void     scan_script( void )
             }
         } else {
             xx_err_exit_c( err_cw_unrecognized, macname );
+            /* never return */
         }
     }
     scandata.s = scan_restart;
@@ -713,6 +725,7 @@ condcode    test_process( ifcb * cb )
     }
     if( cc == CC_no ) {                    // cc not set program logic error
         g_if_int_err_exit();
+        /* never return */
     }
 #ifdef DEBTESTPROC
     if( (input_cbs->fmflags & II_research)
@@ -808,35 +821,36 @@ void    scan_line( void )
             }
             if( ProcFlags.layout ) {    // LAYOUT active: should not happen
                 internal_err_exit( __FILE__, __LINE__ );
-            } else {
-                // processs (remaining) text
-                if( rs_loc > 0 ) {
-                    start_doc_sect();   // if not already done
-                    // catch blank lines: not an error
-                    while( scandata.s < scandata.e ) {
-                        if( (*scandata.s != ' ') && (*scandata.s != '\0') ) {
-                            break;
-                        }
-                        scandata.s++;
+                /* never return */
+            }
+            // processs (remaining) text
+            if( rs_loc > 0 ) {
+                start_doc_sect();   // if not already done
+                // catch blank lines: not an error
+                while( scandata.s < scandata.e ) {
+                    if( (*scandata.s != ' ') && (*scandata.s != '\0') ) {
+                        break;
                     }
-                    if( scandata.s < scandata.e ) {
-                        g_tag_rsloc_err_exit( rs_loc, scandata.s );
-                    }
-                } else {
-
-                    /* This test skips blank lines at the top of xmp blocks inside macros */
-
-                    if( !(ProcFlags.skip_blank_line && (*scandata.s == ' ') &&
-                            ((scandata.e - scandata.s) == 1) &&
-                            (input_cbs->fmflags & II_file)) ) {
-                        if( ProcFlags.force_pc ) {
-                            do_force_pc( scandata.s );
-                        } else {
-                            process_text( scandata.s, g_curr_font );
-                        }
-                    }
-                    ProcFlags.skip_blank_line = false;
+                    scandata.s++;
                 }
+                if( scandata.s < scandata.e ) {
+                    g_tag_rsloc_err_exit( rs_loc, scandata.s );
+                    /* never return */
+                }
+            } else {
+
+                /* This test skips blank lines at the top of xmp blocks inside macros */
+
+                if( !(ProcFlags.skip_blank_line && (*scandata.s == ' ') &&
+                        ((scandata.e - scandata.s) == 1) &&
+                        (input_cbs->fmflags & II_file)) ) {
+                    if( ProcFlags.force_pc ) {
+                        do_force_pc( scandata.s );
+                    } else {
+                        process_text( scandata.s, g_curr_font );
+                    }
+                }
+                ProcFlags.skip_blank_line = false;
             }
         }
 
@@ -990,7 +1004,9 @@ char *get_text_line( char *p )
             classify_record( p );       // sets ProcFlags used below if appropriate
             if( ProcFlags.scr_cw) {
                 xx_err_exit( err_text_not_tag_cw );  // control word, macro, or whatever
-            } else if( ProcFlags.gml_tag ) {
+                /* never return */
+            }
+            if( ProcFlags.gml_tag ) {
                 p1 = check_tagname( p, tagname );
                 if ( p1 != NULL && ( p1 - p - 1 ) <= TAG_NAME_LENGTH ) { // valid tag
                     if( ProcFlags.layout ) {
@@ -1002,6 +1018,7 @@ char *get_text_line( char *p )
                       || find_lay_tag( tagname ) != NULL
                       || find_sys_tag( tagname ) != NULL ) {
                         xx_err_exit( err_text_not_tag_cw );  // control word, macro, or whatever
+                        /* never return */
                     }
                 }
             }
