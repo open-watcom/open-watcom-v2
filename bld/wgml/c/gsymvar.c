@@ -690,7 +690,9 @@ int add_symvar_addr( symdict_hdl dict, const char *name, const char *val, unsign
             newsub->base->flags |= f;   // use flags given
             if( (newsub->base->flags & SF_ro)
               || strncmp( newsub->value, val, len ) == 0 ) {
-                ;             // do nothing var is readonly or value is unchanged
+                /*
+                 * do nothing var is readonly or value is unchanged
+                 */
             } else {
                 resize_and_copy_value_len( newsub, val, len );
             }

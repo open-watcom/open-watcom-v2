@@ -209,44 +209,41 @@ static  condcode    scan_att_optionsA( gaflags *att_flags )
     condcode        cc = CC_pos;
 
     while( cc == CC_pos ) {
-
         cc = getarg();
-        if( cc == CC_omit ) {              // nothing more
+        if( cc == CC_omit ) {           // nothing more
             break;
         }
         p = g_tok_start;
         switch( my_tolower( *p ) ) {
         case 'u' :
-            if( (arg_flen > 1) && (arg_flen < 11)
-                && !strnicmp( "UPpercase", p, arg_flen ) ) {
-
+            if( (arg_flen > 1)
+              && (arg_flen < 11)
+              && strnicmp( "UPpercase", p, arg_flen ) == 0 ) {
                 *att_flags |= GAFLG_upper;
             } else {
-                cc = CC_neg;               // perhaps option B
+                cc = CC_neg;            // perhaps option B
             }
             break;
         case 'r' :
-            if( (arg_flen > 2) && (arg_flen < 9)
-                && !strnicmp( "REQuired", p, arg_flen ) ) {
-
+            if( (arg_flen > 2)
+              && (arg_flen < 9)
+              && strnicmp( "REQuired", p, arg_flen ) == 0 ) {
                 *att_flags |= GAFLG_req;
             } else {
-                cc = CC_neg;               // perhaps option B
+                cc = CC_neg;            // perhaps option B
             }
             break;
         case 'o' :
-            if( !strnicmp( "OFF", p, arg_flen ) ) {
+            if( strnicmp( "OFF", p, arg_flen ) == 0 ) {
                 *att_flags |= GAFLG_off;
+            } else if( strnicmp( "ON", p, arg_flen ) == 0 ) {
+                *att_flags &= ~GAFLG_off;
             } else {
-                if( !strnicmp( "ON", p, arg_flen ) ) {
-                    *att_flags &= ~GAFLG_off;
-                } else {
-                    cc = CC_neg;           // perhaps option B
-                }
+                cc = CC_neg;            // perhaps option B
             }
             break;
         default:
-            cc = CC_neg;                   // invalid option
+            cc = CC_neg;                // invalid option
             break;                      // perhaps one of optionsB
         }
     }
@@ -278,25 +275,24 @@ static  condcode    scan_att_optionsB( gavalflags *val_flags, condcode cca, gafl
 
     switch( my_tolower( *g_tok_start ) ) {
     case 'a' :
-        if( !strnicmp( "ANY", g_tok_start, arg_flen ) ) {
-
+        if( strnicmp( "ANY", g_tok_start, arg_flen ) == 0 ) {
             *val_flags |= GAVAL_any;
             *att_flags |= GAFLG_any;
+        } else if( (arg_flen > 3)
+          && (arg_flen < 10)
+          && strnicmp( "AUTOmatic", g_tok_start, arg_flen ) == 0 ) {
+            *val_flags |= GAVAL_auto;
+            *att_flags |= GAFLG_auto;
         } else {
-            if( (arg_flen > 3) && (arg_flen < 10)
-                && !strnicmp( "AUTOmatic", g_tok_start, arg_flen ) ) {
-
-                *val_flags |= GAVAL_auto;
-                *att_flags |= GAFLG_auto;
-            } else {
-                xx_err_exit( err_att_val_inv );
-//                cc = CC_neg;
-            }
+            xx_err_exit( err_att_val_inv );
+            // never return
         }
 
-        if( cc != CC_neg ) {               // any or auto found now scan string
+        if( cc != CC_neg ) {            // any or auto found now scan string
             cc = getarg();
-            if( cc == CC_quotes || cc == CC_pos || cc == CC_quotes0) {
+            if( cc == CC_quotes
+              || cc == CC_pos
+              || cc == CC_quotes0) {
                 if( arg_flen < sizeof( stringval ) ) {
                     strncpy( stringval, g_tok_start, arg_flen );
                     stringval[arg_flen] = '\0';
@@ -313,9 +309,9 @@ static  condcode    scan_att_optionsB( gavalflags *val_flags, condcode cca, gafl
         }
         break;
     case 'r' :
-        if( (arg_flen > 2) && (arg_flen < 6)
+        if( (arg_flen > 2)
+          && (arg_flen < 6)
           && strnicmp( "RANge", g_tok_start, arg_flen ) == 0 ) {
-
             *val_flags |= GAVAL_range;
             *att_flags |= GAFLG_range;
 
@@ -330,57 +326,52 @@ static  condcode    scan_att_optionsB( gavalflags *val_flags, condcode cca, gafl
                 }
                 if( cc == CC_notnum ) {
                     xx_err_exit( err_att_val_inv );
-//                    cc = CC_neg;
-//                    return( cc );
+                    // never return
                 }
                 ranges[k] = gn.result;
             }
             scandata.s = gn.arg.s;
-            if( (k < 2) || (ranges[0] > ranges[1]) ) {// need 2 or more values
+            if( (k < 2)
+              || (ranges[0] > ranges[1]) ) {// need 2 or more values
                 xx_err_exit( err_att_range_inv );// ... second <= first
-//                cc = CC_neg;
-//                return( cc );
+                // never return
             }
             if( k == 3 ) {
                 ranges[3] = ranges[2];  // only 1 default specified
             }
             if( k > 2 ) {               // default specified
-                if( (ranges[0] > ranges[2]) // default less min
-                    || (ranges[1] < ranges[2])  // default gt max
-                    || (ranges[0] > ranges[3])  // default2 less min
-                    || (ranges[1] < ranges[3]) ) {  // default2 gt max
+                if( (ranges[0] > ranges[2])     // default less min
+                  || (ranges[1] < ranges[2])    // default gt max
+                  || (ranges[0] > ranges[3])    // default2 less min
+                  || (ranges[1] < ranges[3]) ) {// default2 gt max
                     xx_err_exit( err_att_default );
-//                    cc = CC_neg;
-//                    return( cc );
+                    // never return
                 }
             }
             if( ranges[2] > INT_MIN ) {
-                *val_flags |= GAVAL_def;  // we have default
-                *att_flags |= GAFLG_def;  // we have default
+                *val_flags |= GAVAL_def;    // we have default
+                *att_flags |= GAFLG_def;    // we have default
             }
+        } else if( (arg_flen == 5)
+          && strnicmp( "RESET", g_tok_start, arg_flen ) == 0 ) {
+            *val_flags |= GAVAL_reset;
+            /* no further processing */
         } else {
-            if( (arg_flen == 5)
-                && !strnicmp( "RESET", g_tok_start, arg_flen ) ) {
-
-                *val_flags |= GAVAL_reset;
-                /* no further processing */
-            } else {
-                cc = CC_neg;
-            }
+            cc = CC_neg;
         }
         break;
     case 'l' :
-        if( (arg_flen > 2) && (arg_flen < 7)
+        if( (arg_flen > 2)
+          && (arg_flen < 7)
           && strnicmp( "LENgth", g_tok_start, arg_flen ) == 0 ) {
-
             *val_flags |= GAVAL_length;
             gn.arg = scandata;
             gn.ignore_blanks = false;
             cc = getnum( &gn );
-            if( cc == CC_notnum || cc == CC_omit ) {
+            if( cc == CC_notnum
+              || cc == CC_omit ) {
                 xx_err_exit( err_att_val_inv );
-//                cc = CC_neg;
-//                return( cc );
+                // never return
             } else {
                 scandata.s = gn.arg.s;
                 ranges[0] = gn.result;
@@ -390,11 +381,13 @@ static  condcode    scan_att_optionsB( gavalflags *val_flags, condcode cca, gafl
         }
         break;
     case 'v' :
-        if( (arg_flen > 2) && (arg_flen < 6)
+        if( (arg_flen > 2)
+          && (arg_flen < 6)
           && strnicmp( "VALue", g_tok_start, arg_flen ) == 0 ) {
-
             cc = getarg();
-            if( (cc == CC_pos) || (cc == CC_quotes) || (cc == CC_quotes0) ) {
+            if( (cc == CC_pos)
+              || (cc == CC_quotes)
+              || (cc == CC_quotes0) ) {
                  if( arg_flen <= VAL_LENGTH ) {
                     *val_flags |= GAVAL_value;
                     strncpy( stringval, g_tok_start, arg_flen );
@@ -405,8 +398,7 @@ static  condcode    scan_att_optionsB( gavalflags *val_flags, condcode cca, gafl
                  } else {
 #if 1
                     xx_err_exit( err_att_val_inv );  // only short string allowed
-//                    cc = CC_neg;           // this is a restriction from wgml 4.0
-//                    break;              // can be removed if neccessary
+                    // never return
 #else
                     *val_flags |= GAVAL_valptr;
                     valptr = mem_tokdup( g_tok_start, arg_flen );
@@ -417,37 +409,35 @@ static  condcode    scan_att_optionsB( gavalflags *val_flags, condcode cca, gafl
                  }
             } else {
                 xx_err_exit( err_att_val_inv );
-//                cc = CC_neg;
-//                break;
+                // never return
             }
             cc = getarg();
-            if( cc == CC_omit ) {          // nothing more
+            if( cc == CC_omit ) {       // nothing more
                 break;
             }
-            if( cc == CC_pos && (arg_flen > 2) && (arg_flen < 8)
-                && !strnicmp( "DEFault", g_tok_start, arg_flen ) ) {
-
+            if( cc == CC_pos
+              && (arg_flen > 2)
+              && (arg_flen < 8)
+              && strnicmp( "DEFault", g_tok_start, arg_flen ) == 0 ) {
                 *val_flags |= GAVAL_def;
                 *att_flags |= GAFLG_def;
             } else {
                 xx_err_exit( err_att_val_inv );
-//                cc = CC_neg;
-//                break;
+                // never return
             }
         } else {
             cc = CC_neg;
         }
         break;
     default:
-        cc = CC_neg;                   // invalid option
+        cc = CC_neg;                    // invalid option
         break;
     }
-    if( cc == CC_omit || cc == CC_neg ) {
-       ; /* empty pass thru cc */
-    } else {
-        cc = getarg();                  // set new cc omit is expected
+    if( cc == CC_omit
+      || cc == CC_neg ) {
+        return( cc );
     }
-    return( cc );
+    return( getarg() );                 // set new cc, omit is expected
 }
 
 
@@ -475,9 +465,14 @@ void    scr_ga( void )
 
     cc = getarg();                      // Tagname or *
 
-    if( cc == CC_omit || (*g_tok_start == '*' && g_tag_entry == NULL) ) {
-        // no operands or tagname * and no previous definition
+    if( cc == CC_omit
+      || (*g_tok_start == '*'
+      && g_tag_entry == NULL) ) {
+        /*
+         * no operands or tagname * and no previous definition
+         */
         xx_err_exit_c( err_missing_name, "" );
+        // never return
     }
     if( g_tag_entry == NULL ) {         // error during previous .gt
         scan_restart = scandata.e;       // ignore .ga
@@ -494,25 +489,27 @@ void    scr_ga( void )
     if( *p == '*' ) {                   // single * as tagname
         if( arg_flen > 1 ) {
             xx_err_exit( err_tag_name_inv );
-//            return;
+            // never return
         }
         savetag = '*';                      // remember for possible quick access
-        if( GlobalFlags.firstpass && (input_cbs->fmflags & II_research) ) {
+        if( GlobalFlags.firstpass
+          && (input_cbs->fmflags & II_research) ) {
             out_msg("  using tagname %s\n", g_tagname );
         }
     } else {
-        savetag = ' ';                      // no quick access
+        savetag = ' ';                  // no quick access
 
-        init_tag_att();                     // forget previous values for quick access
+        init_tag_att();                 // forget previous values for quick access
 
         p = get_tagname( p, g_tagname );
         if( arg_flen > strlen( g_tagname ) ) {
             xx_err_exit( err_tag_name_inv );     // name contains invalid or too many chars
-//            return;
+            // never return
         }
         g_tag_entry = find_user_tag( &tags_dict, g_tagname );
         if( g_tag_entry == NULL ) {
             xx_err_exit_c( err_user_tag, g_tagname );  // tagname not defined
+            // never return
         }
     }
 
@@ -520,12 +517,16 @@ void    scr_ga( void )
     /* isolate attname  use previous if attname *                          */
     /***********************************************************************/
 
-    cc = getarg();                          // Attribute  name or *
+    cc = getarg();                      // Attribute  name or *
 
-    if( cc == CC_omit || (*g_tok_start == '*' && g_att_entry == NULL) ) {
-        // no operands or attname * and no previous definition
+    if( cc == CC_omit
+      || (*g_tok_start == '*'
+      && g_att_entry == NULL) ) {
+        /*
+         * no operands or attname * and no previous definition
+         */
         xx_err_exit( err_att_name_inv );
-//        return;
+        // never return
     }
 
     p = g_tok_start;
@@ -533,22 +534,22 @@ void    scr_ga( void )
     if( *p == '*' ) {                   // single * as attname
         if( arg_flen > 1 ) {
             xx_err_exit( err_att_name_inv );
-//            return;
+            // never return
         }
-        saveatt = '*';                      // remember for possible quick access
-        if( GlobalFlags.firstpass && (input_cbs->fmflags & II_research) ) {
+        saveatt = '*';                  // remember for possible quick access
+        if( GlobalFlags.firstpass
+          && (input_cbs->fmflags & II_research) ) {
             out_msg("  using attname %s\n", g_attname );
         }
         att_flags = g_att_entry->attflags;
     } else {
-        saveatt = ' ';                      // no quick access
+        saveatt = ' ';                  // no quick access
         g_att_entry = NULL;
 
         p = get_tag_attname( p, g_attname );
         if( arg_flen > strlen( g_attname ) ) {
             xx_err_exit( err_att_name_inv );// attname with invalid or too many chars
-//            cc = CC_neg;
-//            return;
+            // never return
         }
     }
 
@@ -572,11 +573,10 @@ void    scr_ga( void )
         cc = scan_att_optionsA( &att_flags );   // process options A
 
         if( cc != CC_omit ) {
-
             cc = scan_att_optionsB( &val_flags, cc, &att_flags );// process option B
             if( cc != CC_omit ) {
                 xx_err_exit( err_tag_toomany );  // excess parameters
-//                return;
+                // never return
             }
         }
     }
@@ -591,7 +591,7 @@ void    scr_ga( void )
             }
         }
     }
-    if( g_att_entry == NULL ) {           // new attribute
+    if( g_att_entry == NULL ) {         // new attribute
         g_att_entry = mem_alloc( sizeof( gaentry ) );
 
         g_att_entry->next = g_tag_entry->attribs;
@@ -604,20 +604,15 @@ void    scr_ga( void )
         g_att_entry->attflags = att_flags;// update flags
     }
 
-    gaval = mem_alloc( sizeof (gavalentry ) );
-
-    if( g_att_entry->vals == NULL ) {
-        g_att_entry->vals = gaval;
+    gaval = g_att_entry->vals;
+    if( gaval == NULL ) {
+        gaval = g_att_entry->vals = mem_alloc( sizeof (gavalentry ) );
     } else {
-        gavalentry  *   valwk;
-
-        for( valwk = g_att_entry->vals;  valwk != NULL;
-                                       valwk = valwk->next ) {
-            if( valwk->next == NULL ) {
-                break;                      // last entry found
-            }
+        while( gaval->next != NULL ) {  // find last entry
+            gaval = gaval->next;
         }
-        valwk->next = gaval;
+        gaval->next = mem_alloc( sizeof (gavalentry ) );
+        gaval = gaval->next;
     }
     gaval->next = NULL;
 

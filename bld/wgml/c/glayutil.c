@@ -990,7 +990,7 @@ bool    i_uint16( const char *p, lay_attr_i lay_attr, uint16_t *tm )
     wk = strtol( p, NULL, 10 );
 
     for( pa = p; isdigit( *pa ); pa++ )
-        ;
+        /* empty */;
     if( *pa != '\0' ) {
         xx_line_err_exit_c( err_num_too_large, p );
     }
