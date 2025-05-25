@@ -264,7 +264,7 @@ static void scan_gml( void )
         } else {                        // not within :LAYOUT
             tag = find_sys_tag( tagname );
             if( tag != NULL ) {
-                if( script_style.style != SCT_none ) {
+                if( g_script_style.style != SCT_none ) {
                     scr_style_end();        // cancel BD, BI, US
                 }
                 ProcFlags.need_tag = false;

@@ -260,12 +260,12 @@ void init_global_vars( void )
 
     msg_indent          = 0;            // should be correct initial value
 
-    script_style.font           = FONT0;// initialize BD/BI/US scope control
-    script_style.style          = SCT_none;
-    script_style.cw_bd.count    = 0;
-    script_style.cw_bd.scope    = SCS_none;
-    script_style.cw_us.count    = 0;
-    script_style.cw_us.scope    = SCS_none;
+    g_script_style.font         = FONT0;// initialize BD/BI/US scope control
+    g_script_style.style        = SCT_none;
+    g_script_style.cw_bd.count  = 0;
+    g_script_style.cw_bd.scope  = SCS_none;
+    g_script_style.cw_us.count  = 0;
+    g_script_style.cw_us.scope  = SCS_none;
 }
 
 

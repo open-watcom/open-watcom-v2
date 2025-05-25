@@ -142,8 +142,8 @@ static void scr_style_common( style_cw_type type, style_cw_info *cw_info )
     getnum_block    gn;
     unsigned        len;
 
-    if( script_style.style == SCT_none ) {  // save current font if no script style
-        script_style.font = layout_work.defaults.font;
+    if( g_script_style.style == SCT_none ) {  // save current font if no script style
+        g_script_style.font = layout_work.defaults.font;
     }
 
     p = scandata.s;     // for use later
@@ -151,7 +151,7 @@ static void scr_style_common( style_cw_type type, style_cw_info *cw_info )
     cc = getarg();      // uses g_tok_start, scandata.s and scandata.e
 
     if( cc == CC_omit ) {                  // same as BD 1
-        script_style.style |= type;
+        g_script_style.style |= type;
         if( type != SCT_bi ) {
             cw_info->count = 1;
             cw_info->scope = SCS_count;
@@ -166,28 +166,28 @@ static void scr_style_common( style_cw_type type, style_cw_info *cw_info )
         if( *p == '\0' ) {              // no second token
             if( (len == 3) && (strnicmp( "OFF", pa, len ) == 0) ) { // OFF
                 if( type == SCT_bi ) {
-                    script_style.style &= ~SCT_bd;
-                    script_style.cw_bd.count = 0;
-                    script_style.cw_bd.scope = SCS_none;
-                    script_style.style &= ~SCT_us;
-                    script_style.cw_us.count = 0;
-                    script_style.cw_us.scope = SCS_none;
+                    g_script_style.style &= ~SCT_bd;
+                    g_script_style.cw_bd.count = 0;
+                    g_script_style.cw_bd.scope = SCS_none;
+                    g_script_style.style &= ~SCT_us;
+                    g_script_style.cw_us.count = 0;
+                    g_script_style.cw_us.scope = SCS_none;
                 } else {
-                    script_style.style &= ~type;
+                    g_script_style.style &= ~type;
                     cw_info->count = 0;
                     cw_info->scope = SCS_none;
                 }
                 pa = p;                         // no following text
             } else if( (len == 2) && (strnicmp( "ON", pa, len ) == 0) ) {  // ON
                 if( type == SCT_bi ) {
-                    script_style.style |= SCT_bd;
-                    script_style.cw_bd.count = 0;
-                    script_style.cw_bd.scope = SCS_on;
-                    script_style.style |= SCT_us;
-                    script_style.cw_us.count = 0;
-                    script_style.cw_us.scope = SCS_on;
+                    g_script_style.style |= SCT_bd;
+                    g_script_style.cw_bd.count = 0;
+                    g_script_style.cw_bd.scope = SCS_on;
+                    g_script_style.style |= SCT_us;
+                    g_script_style.cw_us.count = 0;
+                    g_script_style.cw_us.scope = SCS_on;
                 } else {
-                    script_style.style |= type;
+                    g_script_style.style |= type;
                     cw_info->count = 0;
                     cw_info->scope = SCS_on;
                 }
@@ -208,14 +208,14 @@ static void scr_style_common( style_cw_type type, style_cw_info *cw_info )
                     pa = p;                     // nothing happens at all
                 } else {                        // number > 0
                     if( type == SCT_bi ) {
-                        script_style.style |= SCT_bd;
-                        script_style.cw_bd.count = gn.result;
-                        script_style.cw_bd.scope = SCS_count;
-                        script_style.style |= SCT_us;
-                        script_style.cw_us.count = gn.result;
-                        script_style.cw_us.scope = SCS_count;
+                        g_script_style.style |= SCT_bd;
+                        g_script_style.cw_bd.count = gn.result;
+                        g_script_style.cw_bd.scope = SCS_count;
+                        g_script_style.style |= SCT_us;
+                        g_script_style.cw_us.count = gn.result;
+                        g_script_style.cw_us.scope = SCS_count;
                     } else {
-                        script_style.style |= type;
+                        g_script_style.style |= type;
                         cw_info->count = gn.result;
                         cw_info->scope = SCS_count;
                     }
@@ -227,28 +227,28 @@ static void scr_style_common( style_cw_type type, style_cw_info *cw_info )
 
     if( *pa != '\0' ) {
         if( type == SCT_bi ) {
-            script_style.style |= SCT_bd;
-            script_style.cw_bd.count = 0;
-            script_style.cw_bd.scope = SCS_line;
-            script_style.style |= SCT_us;
-            script_style.cw_us.count = 0;
-            script_style.cw_us.scope = SCS_line;
+            g_script_style.style |= SCT_bd;
+            g_script_style.cw_bd.count = 0;
+            g_script_style.cw_bd.scope = SCS_line;
+            g_script_style.style |= SCT_us;
+            g_script_style.cw_us.count = 0;
+            g_script_style.cw_us.scope = SCS_line;
         } else {
-            script_style.style |= type;
+            g_script_style.style |= type;
             cw_info->count = 0;
             cw_info->scope = SCS_line;
         }
         process_text( pa, g_curr_font );         // submit text on the same line
         if( type == SCT_bi ) {
-            script_style.style &= ~SCT_bd;
-            script_style.cw_bd.scope = SCS_none ;
-            script_style.style &= ~SCT_us;
-            script_style.cw_us.scope = SCS_none;
+            g_script_style.style &= ~SCT_bd;
+            g_script_style.cw_bd.scope = SCS_none ;
+            g_script_style.style &= ~SCT_us;
+            g_script_style.cw_us.scope = SCS_none;
         } else {
-            script_style.style &= ~type;
+            g_script_style.style &= ~type;
             cw_info->scope = SCS_none;
         }
-        g_curr_font = script_style.font;
+        g_curr_font = g_script_style.font;
     }
 
     scan_restart = scandata.e;
@@ -258,7 +258,7 @@ static void scr_style_common( style_cw_type type, style_cw_info *cw_info )
 
 void scr_bd( void )
 {
-    scr_style_common( SCT_bd, &script_style.cw_bd );
+    scr_style_common( SCT_bd, &g_script_style.cw_bd );
     return;
 }
 
@@ -270,7 +270,7 @@ void scr_bi( void )
 
 void scr_us( void )
 {
-    scr_style_common( SCT_us, &script_style.cw_us );
+    scr_style_common( SCT_us, &g_script_style.cw_us );
     return;
 }
 
@@ -282,19 +282,19 @@ void scr_us( void )
 
 void scr_style_end( void )
 {
-    script_style.style = SCT_none;
-    script_style.cw_bd.count = 0;
-    script_style.cw_bd.scope = SCS_none;
-    script_style.cw_us.count = 0;
-    script_style.cw_us.scope = SCS_none;
+    g_script_style.style = SCT_none;
+    g_script_style.cw_bd.count = 0;
+    g_script_style.cw_bd.scope = SCS_none;
+    g_script_style.cw_us.count = 0;
+    g_script_style.cw_us.scope = SCS_none;
 
-    g_curr_font = script_style.font;
+    g_curr_font = g_script_style.font;
 
     return;
 }
 
 /************************************************************************/
-/* scr_style_font() adjusts script_style for a new input line and       */
+/* scr_style_font() adjusts g_script_style for a new input line and     */
 /*   returns the resulting font                                         */
 /************************************************************************/
 
@@ -303,34 +303,34 @@ font_number scr_style_font( font_number in_font )
     font_number     font;
 
     if( !input_cbs->fm_hh ) {                           // only adjust for SOL
-        if( script_style.cw_bd.scope == SCS_count ) {   // adjust/remove BD if appropriate
-            if( script_style.cw_bd.count > 0 ) {
-                script_style.cw_bd.count --;
+        if( g_script_style.cw_bd.scope == SCS_count ) {   // adjust/remove BD if appropriate
+            if( g_script_style.cw_bd.count > 0 ) {
+                g_script_style.cw_bd.count --;
             } else {
-                script_style.cw_bd.scope = SCS_none;
-                script_style.style &= ~SCT_bd;
+                g_script_style.cw_bd.scope = SCS_none;
+                g_script_style.style &= ~SCT_bd;
             }
         }
 
-        if( script_style.cw_us.scope == SCS_count ) {   // adjust/remove US if appropriate
-            if( script_style.cw_us.count > 0 ) {
-                script_style.cw_us.count --;
+        if( g_script_style.cw_us.scope == SCS_count ) {   // adjust/remove US if appropriate
+            if( g_script_style.cw_us.count > 0 ) {
+                g_script_style.cw_us.count --;
             } else {
-                script_style.cw_us.scope = SCS_none;
-                script_style.style &= ~SCT_us;
+                g_script_style.cw_us.scope = SCS_none;
+                g_script_style.style &= ~SCT_us;
             }
         }
     }
 
-    if( (script_style.style & SCT_bd) && (script_style.style & SCT_us) ) {
+    if( (g_script_style.style & SCT_bd) && (g_script_style.style & SCT_us) ) {
         font = 3;
-    } else if( script_style.style & SCT_bd ) {
+    } else if( g_script_style.style & SCT_bd ) {
         font = 2;
-    } else if( script_style.style & SCT_us ) {
+    } else if( g_script_style.style & SCT_us ) {
         font = 1;
-    } else {                                // no script_style
+    } else {                                // no g_script_style
         font = in_font;                     // TBD
-        g_curr_font = script_style.font;    // restore current font
+        g_curr_font = g_script_style.font;  // restore current font
     }
 
     return( font );

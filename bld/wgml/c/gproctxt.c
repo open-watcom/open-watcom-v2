@@ -1905,7 +1905,7 @@ void process_text( char * text, font_number font )
 
     /* Check for script style font */
 
-    if( script_style.style != SCT_none ) {
+    if( g_script_style.style != SCT_none ) {
         font = scr_style_font( font );
     }
 

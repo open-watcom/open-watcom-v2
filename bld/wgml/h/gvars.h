@@ -295,7 +295,7 @@ global banner_lay_tag   *sect_ban_bot[2];// bot even / odd banner for curr sect
 
 global unsigned     msg_indent;         // indent for message output (to screen, not to device)
 
-global script_style_infos   script_style;   // BD/US etc scope control
+global script_style_infos   g_script_style; // BD/US etc scope control
 
 /***************************************************************************/
 /* The tab lists.                                                          */
