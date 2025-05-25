@@ -86,7 +86,6 @@ lay_objs =  &
         glayutil.obj &
         glbandef.obj &
         glbanner.obj &
-        glbanreg.obj &
         glbodbck.obj &
         glconvrt.obj &
         gldd.obj     &
