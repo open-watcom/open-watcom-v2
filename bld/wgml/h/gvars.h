@@ -110,7 +110,6 @@ global int          pass;               // current document pass no
 global unsigned     g_apage;            // current absolute pageno &$apage
 global unsigned     g_page;             // current document pageno &$page
 global line_number  g_line;             // current output lineno   &$line
-global int          lcmax;              // remaining lines on page initial
 
 global int          g_hm;               // heading margin          &$hm
 global int          g_tm;               // top margin              &$tm

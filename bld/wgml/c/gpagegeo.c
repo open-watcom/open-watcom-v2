@@ -52,6 +52,7 @@ void    init_page_geometry( void )
     int         rm_test;
     unsigned    top_margin;
     unsigned    y_start_correction;
+    int         lcmax;                  // remaining lines on page initial
 
     g_resh = bin_device->horizontal_base_units; // hor resolution  &sysresh
     g_resv = bin_device->vertical_base_units;   // vert resolution &sysresv
