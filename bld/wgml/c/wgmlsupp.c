@@ -28,7 +28,6 @@
 *               into the research programs without including main() from wgml.c
 *               These should probably be moved to appropriate files at some point
 *                   free_inc_fp()
-*                   free_resources()
 *                   free_some_mem()
 *                   get_line()
 *                   get_macro_line()
@@ -156,18 +155,6 @@ static void reopen_inc_fp( filecb *cb )
     }
     return;
 }
-
-/***************************************************************************/
-/*  Report resource exhaustion: may eventually try to correct the problem  */
-/***************************************************************************/
-
-bool free_resources( int in_errno )
-{
-    if( in_errno == ENOMEM ) xx_simple_err_exit( err_no_memory );
-    else xx_simple_err_exit( err_no_handles );
-    return( false );        // required by compiler
-}
-
 
 /***************************************************************************/
 /*  free some buffers                                                      */

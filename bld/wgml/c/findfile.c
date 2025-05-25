@@ -147,34 +147,28 @@ static FILE *try_open( char *prefix, char *filename )
 
     /* Try to open the file. Return 0 on failure. */
 
-    for( ;; ) {
-        fp = fopen( buff, "rb" );
+    fp = fopen( buff, "rb" );
 #if defined( __UNIX__ )
-        if( fp != NULL ) {
-            break;
-        }
+    if( fp == NULL ) {
         strlwr( buff );                 // for the sake of linux try again with lower case filename
         fp = fopen( buff, "rb" );
-        if( fp != NULL ) {
-            break;
-        }
-#else       // DOS, OS/2, Windows
-        if( fp != NULL ) {
-            strlwr( buff );             // to match wgml 4.0
-            break;
-        }
-#endif
-        if( errno != ENOMEM && errno != ENFILE && errno != EMFILE ) {
-            break;
-        }
-        if( !free_resources( errno ) ) {
-            break;
-        }
     }
+#else       // DOS, OS/2, Windows
+    if( fp != NULL ) {
+        strlwr( buff );                 // to match wgml 4.0
+    }
+#endif
 
     /* Set the globals on success. */
 
-    if( fp != NULL ) {
+    if( fp == NULL ) {
+        if( errno == ENOMEM ) {
+            xx_simple_err_exit( err_no_memory );
+        }
+        if( errno == ENFILE || errno == EMFILE ) {
+            xx_simple_err_exit( err_no_handles );
+        }
+    } else {
         strcpy( try_file_name, buff );
     }
     return( fp );
