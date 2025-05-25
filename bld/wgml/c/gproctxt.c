@@ -1784,7 +1784,7 @@ text_chars * process_word( const char *pword, unsigned count, font_number font, 
       && !ProcFlags.concat
       && !ProcFlags.cont_char
       && ((input_cbs->hidden_head == NULL)
-      || (*input_cbs->hidden_head->value != GML_char))
+      || (input_cbs->hidden_head->value[0] != GML_char))
       && (input_cbs->hidden_head == NULL) ) {
         if( (*(p - 1) == ' ')
           || (*(p - 1) == '\t') ) {
@@ -1972,8 +1972,8 @@ void process_text( char * text, font_number font )
                     spaces_at_start = true;                         // catch text next time
                 }
             } else if( (tab_space > 0)
-              && (*p == CONT_char)
-              && (*(p+1) == '\0') ) {  // continue char at entd
+              && (p[0] == CONT_char)
+              && (p[1] == '\0') ) {  // continue char at entd
                 if( input_cbs->hidden_head != NULL ) {              // something follows (not EOL)
                     spaces_at_start = true;                         // catch text next time
                 }
