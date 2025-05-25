@@ -962,7 +962,7 @@ void    o_yes_no( FILE *fp, lay_attr_o lay_attr, const bool *tm )
 /***************************************************************************/
 /*  integer routines                                                       */
 /***************************************************************************/
-bool    i_int32( const char *p, lay_attr_i lay_attr, int32_t *tm )
+bool    i_int32( const char *p, lay_attr_i lay_attr, int *tm )
 {
     long    wk;
 
@@ -973,7 +973,7 @@ bool    i_int32( const char *p, lay_attr_i lay_attr, int32_t *tm )
     return( false );
 }
 
-void    o_int32( FILE *fp, lay_attr_o lay_attr, const int32_t *tm )
+void    o_int32( FILE *fp, lay_attr_o lay_attr, const int *tm )
 {
 
     fprintf( fp, "        %s = %d\n", lay_att_names[lay_attr], *tm );

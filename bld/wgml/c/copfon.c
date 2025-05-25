@@ -149,7 +149,7 @@ cop_font *parse_font( FILE *fp, char const *fon_name )
     uint16_t            uint16_array[0x100];
     uint8_t             width_data_size;
     uint8_t             width_flag;
-    uint32_t *          width_ptr;
+    unsigned *          width_ptr;
 
     unsigned            size;
 
@@ -682,7 +682,7 @@ cop_font *parse_font( FILE *fp, char const *fon_name )
 
             /* Get the width data array into an array of bytes.
              * It cannot be read in directly because the field is
-             * an array of uint32_t entries.
+             * an array of unsigned entries.
              */
 
             fread_buff( uint8_array, 0x100, fp );

@@ -107,10 +107,10 @@ global  su              bind_even;      // Bind value for even pages
 global  int             passes;         // Max no of document passes
 global  int             pass;           // current document pass no
 
-global  uint32_t        g_apage;        // current absolute pageno &$apage
-global  uint32_t        g_page;         // current document pageno &$page
-global  line_number     g_line;         // current output lineno   &$line
-global  int32_t         lcmax;          // remaining lines on page initial
+global unsigned         g_apage;        // current absolute pageno &$apage
+global unsigned         g_page;         // current document pageno &$page
+global line_number      g_line;         // current output lineno   &$line
+global int              lcmax;          // remaining lines on page initial
 
 global int              g_hm;           // heading margin          &$hm
 global int              g_tm;           // top margin              &$tm
@@ -163,12 +163,12 @@ global  box_col_set     *   g_cur_line;         // the line from the current BX 
 global  box_col_set     *   g_prev_line;        // the previously drawn line
 global  box_col_stack   *   box_col_stack_pool; // pool of box_col_stack instances
 global  box_col_stack   *   box_line;           // the current line to be drawn
-global  uint32_t            box_col_width;      // width of one column, as used with BX
-global  uint32_t            h_vl_offset;        // horizontal offset used to position VLINE output
-global  uint32_t            max_depth;          // space left on page (used by BX)
+global  unsigned            box_col_width;      // width of one column, as used with BX
+global  unsigned            h_vl_offset;        // horizontal offset used to position VLINE output
+global  unsigned            max_depth;          // space left on page (used by BX)
 
 // figure support
-global  uint32_t            fig_count;      // figure number
+global  unsigned            fig_count;      // figure number
 global  ffh_entry       *   fig_entry;      // current fig_list entry
 global  fwd_ref         *   fig_fwd_refs;   // forward reference/undefined id/page change
 global  ffh_entry       *   fig_list;       // list of figures in order encountered
@@ -176,7 +176,7 @@ global  record_buffer       line_buff;      // used for some frame types
 global  ref_entry       *   fig_ref_dict;   // reference dictionary :FIG tags
 
 // footnote support
-global  uint32_t        fn_count;       // footnote number
+global  unsigned        fn_count;       // footnote number
 global  ffh_entry   *   fn_entry;       // current fn_list entry
 global  fwd_ref     *   fn_fwd_refs;    // forward reference/undefined id
 global  ref_entry   *   fn_ref_dict;    // reference dictionary :FN tags
@@ -202,18 +202,18 @@ global  ref_entry   *   ix_ref_dict;    // reference id dictionary :Ix :IHx :IRE
 global  num_style       pgnum_style[PGNST_max];
 
 // symbol support
-global  sym_list_entry  *   sym_list_pool;  // sym_list_entry pool
-//global  sym_list_entry  *   g_sym_list;     // global stack of sym_list_entry instances
+global sym_list_entry   *sym_list_pool;  // sym_list_entry pool
+//global  sym_list_entry  *g_sym_list;     // global stack of sym_list_entry instances
 
 // keyboard tab support
-global  uint32_t        kbtab_count;    // chars processed; used for keyboard tab expansion
+global  unsigned        kbtab_count;    // chars processed; used for keyboard tab expansion
 
 // tab support
 global  tab_stop    *   c_stop;         // current tab_stop
-global  uint32_t        first_tab;      // first default tab position
-global  uint32_t        inter_tab;      // distance between default tabs
+global  unsigned        first_tab;      // first default tab position
+global  unsigned        inter_tab;      // distance between default tabs
 global  char            tab_char;       // tab character from .tb
-global  uint32_t        tab_col;        // width of one column, as used with tabs
+global  unsigned        tab_col;        // width of one column, as used with tabs
 global  tag_cb      *   tt_stack;       // font stack entry to modify for tab tables
 
 // the document page and related items
@@ -241,49 +241,49 @@ global gen_sect             figlist_toc;        // used with FIGLIST, TOC and eG
 /*  These are very slowly being refactored.                                */
 /***************************************************************************/
 
-global  uint32_t    g_cur_v_start;
-global  uint32_t    g_page_bottom_org;
-global  uint32_t    g_page_left_org;
-global  uint32_t    g_page_right_org;
-global  uint32_t    g_page_depth;
-global  uint32_t    g_max_char_width;
-global  uint32_t    g_max_line_height;
-global  uint32_t    g_net_page_depth;
-global  uint32_t    g_net_page_width;
+global  unsigned    g_cur_v_start;
+global  unsigned    g_page_bottom_org;
+global  unsigned    g_page_left_org;
+global  unsigned    g_page_right_org;
+global  unsigned    g_page_depth;
+global  unsigned    g_max_char_width;
+global  unsigned    g_max_line_height;
+global  unsigned    g_net_page_depth;
+global  unsigned    g_net_page_width;
 
-global  int32_t     g_resh;             // horiz base units
-global  int32_t     g_resv;             // vert base units
+global  int         g_resh;             // horiz base units
+global  int         g_resv;             // vert base units
 
 global  font_number g_curr_font;        // the font to use for current line
 global  font_number g_phrase_font;      // the font used with SF, even if too large
 global  font_number g_prev_font;        // the font used for the last text output
 
-global  uint32_t    g_cl;               // column length
-global  uint32_t    g_ll;               // line length
-global  uint32_t    g_cd;               // no of columns
-global  uint32_t    g_gutter;           // space between columns
+global  unsigned    g_cl;               // column length
+global  unsigned    g_ll;               // line length
+global  unsigned    g_cd;               // no of columns
+global  unsigned    g_gutter;           // space between columns
 
-global  uint32_t    g_oc_hpos;          // horizontal position for OC output
+global  unsigned    g_oc_hpos;          // horizontal position for OC output
 
-global  uint32_t    g_blank_text_lines; // blank lines (line count)
+global  unsigned    g_blank_text_lines; // blank lines (line count)
 global  units_space g_blank_units_lines;// blank lines (in vertical base units)
-global  uint32_t    g_post_skip;        // post_skip
-global  uint32_t    g_subs_skip;        // subs_skip
-global  uint32_t    g_top_skip;         // top_skip
+global  unsigned    g_post_skip;        // post_skip
+global  unsigned    g_subs_skip;        // subs_skip
+global  unsigned    g_top_skip;         // top_skip
 global  text_space  g_text_spacing;     // spacing between lines (line count)
 global  units_space g_units_spacing;    // spacing (in vertical base units)
-global  int32_t     g_skip;             // .sk skip value (in vbus)
-global  int32_t     g_space;            // .sp space value (in vbus)
+global  int         g_skip;             // .sk skip value (in vbus)
+global  int         g_space;            // .sp space value (in vbus)
 
-global  uint32_t    post_space;         // spacing within a line
-global  uint32_t    ju_x_start;         // .. formatting
+global  unsigned    post_space;         // spacing within a line
+global  unsigned    ju_x_start;         // .. formatting
 
-global  int32_t     g_indentl;          // .in 1st value (left) default 0
-global  int32_t     g_indentr;          // .in 2nd value (right) default 0
-global  int32_t     g_line_indent;      // :LP, :P, :PC line indent
-global  int32_t     wrap_indent;        // :I1/:I2/:I3 wrap_indent value
+global  int         g_indentl;          // .in 1st value (left) default 0
+global  int         g_indentr;          // .in 2nd value (right) default 0
+global  int         g_line_indent;      // :LP, :P, :PC line indent
+global  int         wrap_indent;        // :I1/:I2/:I3 wrap_indent value
 
-global  int32_t     g_cur_threshold;    // current widow threshold value
+global  int         g_cur_threshold;    // current widow threshold value
                                         // from layout (widow or heading)
 
 global  fwd_ref *   fwd_ref_pool;       // pool of unused fwd_ref instances
@@ -294,7 +294,7 @@ global  tag_cb  *   tag_pool;           // list of reusable tag_cbs
 global  banner_lay_tag  * sect_ban_top[2];// top even / odd banner for curr sect
 global  banner_lay_tag  * sect_ban_bot[2];// bot even / odd banner for curr sect
 
-global  uint32_t    msg_indent;         // indent for message output (to screen, not to device)
+global unsigned     msg_indent;         // indent for message output (to screen, not to device)
 
 global script_style_info    script_style;   // BD/US etc scope control
 
@@ -316,7 +316,7 @@ global  laystack    *   lay_files;      // layout file(s) specified on cmdline
 /*  document sections for banner definition                                */
 /***************************************************************************/
 
-extern  const   ban_sections    doc_sections[max_ban];
+extern const ban_sections   doc_sections[max_ban];
 
 /***************************************************************************/
 /*  place names for fig and banner definition                              */

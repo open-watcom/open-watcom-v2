@@ -767,7 +767,7 @@ void clear_doc_element( doc_element * a_element )
 /*  initalize a doc_element instance, which it obtains from alloc_doc_el() */
 /***************************************************************************/
 
-doc_element * init_doc_el( element_type type, uint32_t depth )
+doc_element * init_doc_el( element_type type, unsigned depth )
 {
     doc_element *   curr;
 

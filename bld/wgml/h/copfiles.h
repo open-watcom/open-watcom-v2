@@ -363,7 +363,7 @@ typedef struct {
  */
 
 typedef struct {
-    uint32_t            thickness;
+    unsigned            thickness;
     uint16_t            count;
     char                *text;
 } line_block;
@@ -375,7 +375,7 @@ typedef struct {
  */
 
 typedef struct {
-    uint32_t            table[0x100];
+    unsigned            table[0x100];
 } width_block;
 
 /* These are the top-level structs. These are the only structs intended to
@@ -403,15 +403,15 @@ typedef struct {
     char            *   driver_name;
     char            *   output_name;
     char            *   output_extension;
-    uint32_t            page_width;
-    uint32_t            page_depth;
-    uint32_t            horizontal_base_units;
-    uint32_t            vertical_base_units;
+    unsigned            page_width;
+    unsigned            page_depth;
+    unsigned            horizontal_base_units;
+    unsigned            vertical_base_units;
     /* PagegeometryBlock */
-    uint32_t            x_start;
-    uint32_t            y_start;
-    uint32_t            x_offset;
-    uint32_t            y_offset;
+    unsigned            x_start;
+    unsigned            y_start;
+    unsigned            x_offset;
+    unsigned            y_offset;
     /* BoxBlock */
     box_block           box;
     /* UnderscoreBlock */
@@ -502,12 +502,12 @@ typedef struct cop_font {
     /* The Attributes */
     char            *   font_out_name1;
     char            *   font_out_name2;
-    uint32_t            line_height;
-    uint32_t            line_space;
-    uint32_t            scale_basis;
-    uint32_t            scale_min;
-    uint32_t            scale_max;
-    uint32_t            char_width;
+    unsigned            line_height;
+    unsigned            line_space;
+    unsigned            scale_basis;
+    unsigned            scale_min;
+    unsigned            scale_max;
+    unsigned            char_width;
     /* CharacterDescriptionBlock */
     intrans_block   *   intrans;
     outtrans_block  *   outtrans;
@@ -542,13 +542,13 @@ typedef struct {
     code_text           *font_pause;
     fontstyle_block     *font_style;
     outtrans_block      *outtrans;
-    uint32_t            default_width;
-    uint32_t            em_base;
-    uint32_t            font_height;
-    uint32_t            font_space;
-    uint32_t            line_height;
-    uint32_t            line_space;
-    uint32_t            spc_width;
+    unsigned            default_width;
+    unsigned            em_base;
+    unsigned            font_height;
+    unsigned            font_space;
+    unsigned            line_height;
+    unsigned            line_space;
+    unsigned            spc_width;
     width_block         width;
     char                font_resident;
     unsigned char       shift_count;

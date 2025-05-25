@@ -674,13 +674,13 @@ bool lay_init_su( const char *p, su *in_su )
 /*  return value is signed as space unit can be relative (+ -)             */
 /***************************************************************************/
 
-int32_t conv_hor_unit( su * s, font_number font )
+int conv_hor_unit( su * s, font_number font )
 {
-    int32_t     ds;
+    int     ds;
 
     switch( s->su_u ) {
     case SU_chars_lines :
-        ds = s->su_whole * (int32_t)bin_device->horizontal_base_units / CPI;
+        ds = s->su_whole * (int)bin_device->horizontal_base_units / CPI;
         break;
     case SU_dv :
         ds = s->su_whole;
@@ -702,10 +702,10 @@ int32_t conv_hor_unit( su * s, font_number font )
     return( ds );
 }
 
-int32_t conv_vert_unit( su *s, text_space text_spacing, font_number font )
+int conv_vert_unit( su *s, text_space text_spacing, font_number font )
 {
-    int32_t         ds;
-    int32_t         fp;
+    int         ds;
+    int         fp;
 
     if( !( text_spacing > 0 ) ) {       // if spacing valid use it
         text_spacing = g_text_spacing;  // else default

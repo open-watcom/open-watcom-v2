@@ -117,7 +117,7 @@
   pick( voffset,           i_space_unit,    o_space_unit,    su              )
   pick( width,             i_space_unit,    o_space_unit,    su              )
   pick( wrap_indent,       i_space_unit,    o_space_unit,    su              )
-  pick( int32,             i_int32,         o_int32,         int32_t         )
+  pick( int32,             i_int32,         o_int32,         int             )
   pick( uint16,            i_uint16,        o_uint16,        uint16_t        )
   pick( int8,              i_int8,          o_int8,          int8_t          )
   pick( uint8,             i_uint8,         o_uint8,         uint8_t         )

@@ -225,7 +225,7 @@ void gml_hdref( const gmltag * entry )
     ref_entry   *   cur_re;
     unsigned        bu_len;
     unsigned        len;
-    uint32_t        t_depth;
+    unsigned        t_depth;
 
     static char     def_page[]  = " on page XXX";
     static char     def_ref[]   = "\"Undefined Heading\"";

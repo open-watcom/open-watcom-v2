@@ -208,12 +208,12 @@ static  bx_op       cur_op          = bx_none;  // current BX operator
 static  bx_op       prev_op         = bx_none;  // previous BX operator
 static  font_number bx_font         = 0;        // font in effect before first BX line
 static  font_number sk_font         = 0;        // font in effect before current BX line
-static  uint32_t    box_depth       = 0;        // depth of box (used with VLINES)
-static  uint32_t    def_height      = 0;        // default font line height
-static  uint32_t    box_skip        = 0;        // skip for outer (entire) box
-static  uint32_t    el_skip         = 0;        // skip for current element
-static  uint32_t    hl_depth        = 0;        // height from VLINE drawn to lower boundary of def_height
-static  uint32_t    v_offset        = 0;        // space reserved for the box line which is above the line drawn
+static  unsigned    box_depth       = 0;        // depth of box (used with VLINES)
+static  unsigned    def_height      = 0;        // default font line height
+static  unsigned    box_skip        = 0;        // skip for outer (entire) box
+static  unsigned    el_skip         = 0;        // skip for current element
+static  unsigned    hl_depth        = 0;        // height from VLINE drawn to lower boundary of def_height
+static  unsigned    v_offset        = 0;        // space reserved for the box line which is above the line drawn
 
 /***************************************************************************/
 /*  resize the cols member of a box_col_set                                */
@@ -231,12 +231,12 @@ static box_col_set * resize_box_cols( box_col_set * in_cols )
 /*  output blank lines with vertical box characters                        */
 /***************************************************************************/
 
-static void box_blank_lines( uint32_t lines )
+static void box_blank_lines( unsigned lines )
 {
     box_col_set *   cur_hline;
     doc_element *   blank_el;
-    uint32_t        i;
-    uint32_t        i_b;        // box_line index
+    unsigned        i;
+    unsigned        i_b;        // box_line index
     text_chars  *   cur_chars;
     text_line   *   cur_blank;
 
@@ -344,9 +344,9 @@ static void box_char_element( doc_element * cur_el ) {
     text_chars  *   cur_chars   = NULL; // current text_chars in cur_text
     text_chars  *   new_chars;          // text_chars to be inserted into cur_text
     text_line   *   cur_text;           // current text_line
-    uint32_t        cur_pos;            // current box column position (hbus)
-    uint32_t        i_b;                // box_line index
-    uint32_t        last_pos;           // last text_char text end position (hbus)
+    unsigned        cur_pos;            // current box column position (hbus)
+    unsigned        i_b;                // box_line index
+    unsigned        last_pos;           // last text_char text end position (hbus)
 
     last_pos = 0;
     switch( cur_el->type ) {
@@ -602,14 +602,14 @@ static void box_char_element( doc_element * cur_el ) {
 /*  Note: only processes columns for one specific box_col_set              */
 /***************************************************************************/
 
-static void box_draw_vlines( box_col_set * hline, uint32_t subs_skip,
-                              uint32_t top_skip, stub_type stub )
+static void box_draw_vlines( box_col_set * hline, unsigned subs_skip,
+                              unsigned top_skip, stub_type stub )
 {
     bool            first_done;
     bx_v_ind        cur_col_type;
     doc_element *   v_line_el;
-    uint32_t        i_h;                    // hline index
-    uint32_t        cur_depth;              // local box_depth (keeps box_depth unchanged)
+    unsigned        i_h;                    // hline index
+    unsigned        cur_depth;              // local box_depth (keeps box_depth unchanged)
 
     cur_depth = box_depth;
     first_done = false;
@@ -724,9 +724,9 @@ static void draw_box_lines( doc_element * h_line_el )
     box_col_set *   cur_hline;
     doc_element *   cur_el          = NULL;
     stub_type       off_stub        = st_down;
-    uint32_t        sav_blank_lines;
-    uint32_t        sav_subs_skip;
-    uint32_t        sav_top_skip;
+    unsigned        sav_blank_lines;
+    unsigned        sav_subs_skip;
+    unsigned        sav_top_skip;
 
     if( cur_op == bx_can ) {            // no HLINES exist
         cur_hline = box_line->first;
@@ -988,12 +988,12 @@ static void  do_char_device( void )
     doc_element *   box_el;             // holds the box line itself, for char devices
     doc_element *   cur_el;
     unsigned        i;                  // overall index
-    uint32_t        i_b;                // box_line index
+    unsigned        i_b;                // box_line index
     unsigned        len;
     text_chars  *   cur_chars   = NULL; // current text_chars in cur_text
     text_chars  *   new_chars   = NULL; // text_chars used to prepend markers if needed
-    uint32_t        cur_col;            // current column (not hbus)
-    uint32_t        skippage;           // lines to skip (not hbus)
+    unsigned        cur_col;            // current column (not hbus)
+    unsigned        skippage;           // lines to skip (not hbus)
 
     /* process any accumulated doc_elements */
 
@@ -1228,8 +1228,8 @@ static void do_line_device( void )
     doc_element *   check_el;
     doc_element *   cur_el;
     doc_element *   h_line_el;
-    uint32_t        h_offset;
-    uint32_t        prev_height;
+    unsigned        h_offset;
+    unsigned        prev_height;
 
     h_line_el = NULL;
 
@@ -1402,7 +1402,7 @@ static void do_line_device( void )
             cur_el->element.hline.o_top_skip = cur_el->top_skip;    // save top_skip in case needed
 
             h_offset = cur_hline->cols[0].col - h_vl_offset;
-            if( (int32_t) h_offset < 0 ) {
+            if( (int) h_offset < 0 ) {
                 h_offset = h_vl_offset;
             }
             if( h_vl_offset < h_offset ) {
@@ -1609,8 +1609,8 @@ static void do_line_device( void )
 static void eoc_char_device( void ) {
     bool            splittable;
     doc_element *   cur_el;
-    uint32_t        cur_skip;               // top_skip or subs_skip, as appropriate
-    uint32_t        skippage;               // lines to skip (not hbus)
+    unsigned        cur_skip;               // top_skip or subs_skip, as appropriate
+    unsigned        skippage;               // lines to skip (not hbus)
 
     /* process any accumulated doc_elements */
 
@@ -1693,8 +1693,8 @@ static void eoc_char_device( void ) {
 static void eoc_line_device( void ) {
     bool            splittable;
     box_col_set *   cur_hline;
-    uint32_t        cur_skip;               // top_skip or subs_skip, as appropriate
-    uint32_t        skippage       = 0;     // current element skip
+    unsigned        cur_skip;               // top_skip or subs_skip, as appropriate
+    unsigned        skippage       = 0;     // current element skip
 
     /* process any accumulated doc_elements */
 
@@ -1775,8 +1775,8 @@ static void merge_lines( void )
     box_col_set *   eoc_save;
     box_col_set *   prev_temp;
     int             box_col;
-    uint32_t        cur_col;
-    uint32_t        prev_col;
+    unsigned        cur_col;
+    unsigned        prev_col;
 
     if( g_prev_line == NULL ) {
         eoc_save = NULL;
@@ -2486,14 +2486,14 @@ void scr_bx( void )
     box_col_stack       *stack_temp;
     const char          *p;
     const char          *pa;
-    uint32_t            box_col;
-    uint32_t            cur_col;
-    uint32_t            i;
-    uint32_t            prev_col;
+    unsigned            box_col;
+    unsigned            cur_col;
+    unsigned            i;
+    unsigned            prev_col;
     unsigned            len;
     su                  boxcolwork;
-    int32_t             boxcol_cur;
-    int32_t             boxcol_prev;
+    int             boxcol_cur;
+    int             boxcol_prev;
 
     start_doc_sect();                   // if not already done
 

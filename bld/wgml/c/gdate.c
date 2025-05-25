@@ -40,11 +40,11 @@ void    gml_date( const gmltag * entry )
 {
     char            *p;
     font_number     font_save;
-    int32_t         rc;
+    int         rc;
     page_pos        old_line_pos;
     symsub          *dateval;
-    uint32_t        left_indent;
-    uint32_t        right_indent;
+    unsigned        left_indent;
+    unsigned        right_indent;
 
     if( !((ProcFlags.doc_sect == DSECT_titlep) ||
           (ProcFlags.doc_sect_nxt == DSECT_titlep)) ) {

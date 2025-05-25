@@ -50,7 +50,7 @@
 
 static void do_output( bool do_pa )
 {
-    uint32_t        cur_page;
+    unsigned        cur_page;
 
     cur_page = g_apage;
     full_col_out();                 // t_page has content, but n_page does not
@@ -268,7 +268,7 @@ static void scr_cc_cp_common( bool do_pa )
     const char      *p;
     int             len;
     su              cpwork;
-    int32_t         test_space;
+    int         test_space;
 
     cwcurr[0] = SCR_char;
     cwcurr[1] = 'c';

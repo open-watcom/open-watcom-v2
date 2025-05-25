@@ -31,9 +31,9 @@
 
 #include "wgml.h"
 
-static  uint32_t    bottom_depth;   // used in setting banners
-static  uint32_t    old_max_depth;  // used in splitting elements
-static  uint32_t    top_depth;      // used in setting banners
+static  unsigned    bottom_depth;   // used in setting banners
+static  unsigned    old_max_depth;  // used in splitting elements
+static  unsigned    top_depth;      // used in setting banners
 
 /***************************************************************************/
 /*  does the actual output to the device                                   */
@@ -184,8 +184,8 @@ static void consolidate_array( doc_element * array[MAX_COL], uint8_t count )
     text_line       *   cur_tl[MAX_COL];    // text_lines
     text_line       *   sav_tl;
     text_line       *   tl[MAX_COL];        // text_lines
-    uint32_t            left_pos;
-    uint32_t            top_pos;
+    unsigned            left_pos;
+    unsigned            top_pos;
 
     /* Initialize the local arrays */
 
@@ -600,7 +600,7 @@ static void consolidate_array( doc_element * array[MAX_COL], uint8_t count )
 /*  returns value of at_top                                                */
 /***************************************************************************/
 
-static bool set_positions( doc_element * list, uint32_t h_start, uint32_t v_start )
+static bool set_positions( doc_element * list, unsigned h_start, unsigned v_start )
 {
     bool            at_top;
     bool            op_done;
@@ -609,9 +609,9 @@ static bool set_positions( doc_element * list, uint32_t h_start, uint32_t v_star
     doc_element *   cur_el;
     text_chars  *   cur_text;
     text_line   *   cur_line;
-    uint32_t        cur_spacing;
-    uint32_t        offset;
-    uint32_t        old_v_start;
+    unsigned        cur_spacing;
+    unsigned        offset;
+    unsigned        old_v_start;
 
     at_top = !ProcFlags.page_started;
     g_cur_v_start = v_start;
@@ -718,8 +718,8 @@ static bool set_positions( doc_element * list, uint32_t h_start, uint32_t v_star
                 for( cur_line = cur_el->element.text.first; cur_line != NULL;
                                                     cur_line = cur_line->next ) {
                     if( (cur_line->first != NULL) &&
-                            ((int32_t)(cur_line->first->x_address + h_start)) < 0 ) {
-                        offset = -1 * (int32_t)cur_line->first->x_address + h_start;
+                            ((int)(cur_line->first->x_address + h_start)) < 0 ) {
+                        offset = -1 * (int)cur_line->first->x_address + h_start;
                         cur_text = cur_line->first;
                         while( cur_text != NULL ) {         // rebase line to keep on physical page
                             cur_text->x_address += offset;
@@ -860,7 +860,7 @@ static void do_doc_panes_out( void )
     doc_element *       cur_el[MAX_COL];
     doc_pane    *       cur_pane;
     int                 i;
-    uint32_t            col_count;
+    unsigned            col_count;
 
     for( i = 0; i < MAX_COL; i++ ) {
         cur_el[i] = NULL;
@@ -970,7 +970,7 @@ static void fill_column( doc_element * a_element )
     doc_element *   split_el;
     text_line   *   cur_line;
     text_line   *   last        =   NULL;
-    uint32_t        cur_depth   =   0;
+    unsigned        cur_depth   =   0;
 
     switch( a_element->type ) {
     // add/move code for other element types as appropriate/desired
@@ -1053,7 +1053,7 @@ static void update_column( void )
     bool                splittable;
     doc_element     *   cur_el;
     doc_el_group    *   cur_group;
-    uint32_t            depth;
+    unsigned            depth;
 
     t_page.cur_col = &t_page.last_pane->cols[t_page.last_pane->cur_col];
     t_page.cur_col->main_top = t_page.last_pane->col_width_top;
@@ -1441,7 +1441,7 @@ static void update_column( void )
 static void update_t_page( void )
 {
     doc_el_group    *   cur_group;
-    uint32_t            depth;
+    unsigned            depth;
 
     reset_t_page();
 
@@ -1514,14 +1514,14 @@ void do_page_out( void )
     doc_column  *   first_col;
     doc_element *   work_el;
     font_number     save_prev;
-    uint32_t        curr_height;
-    uint32_t        hl_depth;
-    uint32_t        op_hdg_cnt  = 0;
-    uint32_t        prev_height;
-    uint32_t        sav_hs;
-    uint32_t        v_offset;
+    unsigned        curr_height;
+    unsigned        hl_depth;
+    unsigned        op_hdg_cnt  = 0;
+    unsigned        prev_height;
+    unsigned        sav_hs;
+    unsigned        v_offset;
 
-    static uint32_t nh_pages    = 0;
+    static unsigned nh_pages    = 0;
 
     /* Set up for the new page */
 
@@ -1785,7 +1785,7 @@ void full_col_out( void )
 
 void insert_col_bot( doc_el_group * a_group )
 {
-    uint32_t    depth;
+    unsigned    depth;
 
     /****************************************************************/
     /*  if t_page.cols->bot_fig is empty and if it fits, place      */
@@ -1829,7 +1829,7 @@ void insert_col_bot( doc_el_group * a_group )
 void insert_col_fn( doc_el_group * a_group )
 {
     doc_element *   cur_el;
-    uint32_t        depth;
+    unsigned        depth;
 
     /****************************************************************/
     /*  if it fits, put the footnote on the current page            */
@@ -1903,12 +1903,12 @@ void insert_col_main( doc_element * a_element )
 {
     bool                page_full;
     bool                splittable;
-    uint32_t            cur_skip;
-    uint32_t            depth;
+    unsigned            cur_skip;
+    unsigned            depth;
 
     static  bool        last_co;
     static  bool        op_done     = false;
-    static  uint32_t    op_hdg_cnt  = 0;
+    static  unsigned    op_hdg_cnt  = 0;
 
     /****************************************************************/
     /*  alternate procesing: accumulate elements for later          */
@@ -2156,7 +2156,7 @@ void insert_col_main( doc_element * a_element )
 
 void insert_col_width( doc_el_group * a_group )
 {
-    uint32_t    depth;
+    unsigned    depth;
 
     /****************************************************************/
     /*  if t_page.cols->col_width is empty and if it fits, place    */
@@ -2209,7 +2209,7 @@ void insert_col_width( doc_el_group * a_group )
 
 void insert_page_width( doc_el_group * a_group )
 {
-    uint32_t    depth;
+    unsigned    depth;
 
     /****************************************************************/
     /*  headings with page_eject set to any value except ej_no or   */
@@ -2346,7 +2346,7 @@ void last_page_out( void )
 
 void reset_bot_ban( void )
 {
-    uint32_t    old_depth;
+    unsigned    old_depth;
 
     if( t_page.bottom_banner != NULL ) {
         old_depth = t_page.bottom_banner->ban_depth;
@@ -2382,7 +2382,7 @@ void reset_bot_ban( void )
 
 void reset_top_ban( void )
 {
-    uint32_t    old_depth;
+    unsigned    old_depth;
 
     if( t_page.top_banner != NULL ) {
         old_depth = t_page.top_banner->ban_depth;
@@ -2486,9 +2486,9 @@ void reset_t_page( void )
 void set_skip_vars( su * pre_skip, su * pre_top_skip, su * post_skip,
                     text_space text_spacing, font_number font )
 {
-    int32_t skiptop;
-    int32_t skippost;
-    int32_t skippre;
+    int skiptop;
+    int skippost;
+    int skippre;
 
     g_units_spacing = ( text_spacing - 1 ) * wgml_fonts[font].line_height;
     g_blank_units_lines = g_blank_text_lines * wgml_fonts[font].line_height;
@@ -2582,15 +2582,15 @@ void set_skip_vars( su * pre_skip, su * pre_top_skip, su * post_skip,
 /*        that are split are handled elsewhere and should always fit       */
 /***************************************************************************/
 
-bool split_element( doc_element * a_element, uint32_t req_depth )
+bool split_element( doc_element * a_element, unsigned req_depth )
 {
     bool            splittable  =   true;
     doc_element *   split_el;
     text_line   *   cur_line;
     text_line   *   last        =   NULL;
-    uint32_t        cur_count   =   0;
-    uint32_t        tot_count   =   0;
-    uint32_t        cur_depth   =   0;
+    unsigned        cur_count   =   0;
+    unsigned        tot_count   =   0;
+    unsigned        cur_depth   =   0;
 
     switch( a_element->type ) {
     // add code for other element types as appropriate

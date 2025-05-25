@@ -34,11 +34,11 @@ static  bool            phrase_start    = false;    // current token started new
 static  bool            tabbing         = false;    // current tab exists
 static  bool            user_tab_skip   = false;    // true when a user tab has been skipped
 static  uint8_t         def_tab_count   = 0;        // number of default tabs used
-static  uint32_t        fill_count      = 0;        // fill char count
-static  uint32_t        fill_start      = 0;        // fill string starting position
-static  uint32_t        fill_width      = 0;        // fill string width
-static  uint32_t        gap_start       = 0;        // tab gap start
-static  uint32_t        tab_space       = 0;        // space count between text and tab char, whether pre-tab or post-tab
+static  unsigned        fill_count      = 0;        // fill char count
+static  unsigned        fill_start      = 0;        // fill string starting position
+static  unsigned        fill_width      = 0;        // fill string width
+static  unsigned        gap_start       = 0;        // tab gap start
+static  unsigned        tab_space       = 0;        // space count between text and tab char, whether pre-tab or post-tab
 
 /***************************************************************************/
 /*  puncadj modelled after the host ASM sources to get the same horizontal */
@@ -47,8 +47,8 @@ static  uint32_t        tab_space       = 0;        // space count between text 
 /*  the others ;,) have no special effect                                  */
 /***************************************************************************/
 
-static void puncadj( text_line * line, int32_t * delta0, int32_t rem,
-                     int32_t cnt, uint32_t lm )
+static void puncadj( text_line * line, int * delta0, int rem,
+                     int cnt, unsigned lm )
 {
 
 /***************************************************************************/
@@ -72,11 +72,11 @@ static void puncadj( text_line * line, int32_t * delta0, int32_t rem,
     text_chars  *   tleft;              // first text_char to justify
     text_chars  *   tn;
     text_chars  *   tw;
-    int32_t         delta;
-    int32_t         loop_cnt;
-    int32_t         space = wgml_fonts[FONT0].spc_width;// TBD
-    int32_t         spacew;
-    int32_t         remw = rem - rem;   // TBD
+    int         delta;
+    int         loop_cnt;
+    int         space = wgml_fonts[FONT0].spc_width;// TBD
+    int         spacew;
+    int         remw = rem - rem;   // TBD
     char            ch;
     bool            changed;
 
@@ -189,11 +189,11 @@ static void puncadj( text_line * line, int32_t * delta0, int32_t rem,
 /*  return the width of text up to the first tab stop                      */
 /***************************************************************************/
 
-static uint32_t text_chars_width( const char *text, unsigned count, font_number font )
+static unsigned text_chars_width( const char *text, unsigned count, font_number font )
 {
     int         i;
     unsigned    cur_count   = 0;
-    uint32_t    retval      = 0;
+    unsigned    retval      = 0;
 
     for( i = 0; i < count; i++ ) {
         if( (text[i] == '\t')
@@ -218,12 +218,12 @@ static void next_tab( void )
 {
     int                 i;
     int                 last_i;
-    int32_t             cur_h;
+    int             cur_h;
     tab_stop            l_tab;
     tab_stop    *       c_tab       = NULL;
-    uint32_t            r_count;
+    unsigned            r_count;
     unsigned            r_length;
-    uint32_t            r_width;
+    unsigned            r_width;
 
     if( t_page.cur_left > t_page.cur_width ) {
         t_page.cur_width = t_page.cur_left;
@@ -243,7 +243,7 @@ static void next_tab( void )
             last_i = i;
         }
         for( ; i < user_tabs.current; i++ ) {
-            if( cur_h < (int32_t)user_tabs.tabs[i].column ) {
+            if( cur_h < (int)user_tabs.tabs[i].column ) {
                 c_tab = &user_tabs.tabs[i];
                 break;
             }
@@ -255,7 +255,7 @@ static void next_tab( void )
     if( c_tab == NULL ) {   // no user tab or none that works, use default tab
         def_tab_count++;    // record use of default tab
         l_tab = def_tabs.tabs[def_tabs.current - 1];
-        if( cur_h >= (int32_t)l_tab.column ) {   // initialize more tabs
+        if( cur_h >= (int)l_tab.column ) {   // initialize more tabs
             r_width = cur_h - l_tab.column;
             r_count = (r_width / inter_tab) + 1;
             if( (def_tabs.current + r_count) > def_tabs.length ) {
@@ -277,7 +277,7 @@ static void next_tab( void )
 
         // get the tab stop to use
         for( i = 0; i < def_tabs.current; i++ ) {
-            if( cur_h < (int32_t)def_tabs.tabs[i].column ) {
+            if( cur_h < (int)def_tabs.tabs[i].column ) {
                 c_tab = &def_tabs.tabs[i];
                 break;
             }
@@ -297,7 +297,7 @@ static void next_tab( void )
 
 static text_chars * do_c_chars( text_chars *c_chars, text_chars *in_chars,
                                  const char *in_text, unsigned count,
-                                 uint32_t in_x_address, uint32_t width,
+                                 unsigned in_x_address, unsigned width,
                                  font_number font, text_type type )
 {
     if( c_chars == NULL ) {
@@ -327,8 +327,8 @@ static text_chars * do_c_chars( text_chars *c_chars, text_chars *in_chars,
 
 static void do_fc_comp( void )
 {
-    uint32_t    end_point;
-    uint32_t    tot_shift;
+    unsigned    end_point;
+    unsigned    tot_shift;
 
     fill_width = wgml_fonts[g_curr_font].width.table[c_stop->fill_char];
     fill_count = t_page.cur_width / fill_width;
@@ -383,27 +383,27 @@ static void wgml_tabs( void )
     bool                        skip_tab    = false;    // skip current tab
     char                    *   in_text;                // in_chars->text
     int                         i;
-    int32_t                     t_align     = 0;        // current align value, or 0 if none found
-    int32_t                     offset      = 0;        // offset for position adjustment
+    int                     t_align     = 0;        // current align value, or 0 if none found
+    int                     offset      = 0;        // offset for position adjustment
     unsigned                    t_count     = 0;        // text count
     tag_cb                  *   t_cb        = NULL;
     text_chars              *   c_chars     = NULL;     // current text_chars
     text_chars              *   c_multi;                // used to traverse parts of multipart word
     text_chars              *   in_chars;               // text_chars being processed
     text_chars              *   s_chars     = NULL;     // source text_chars
-    uint32_t                    in_count;               // in_chars->count
-    uint32_t                    m_width;                // multi-part word width
-    uint32_t                    pre_space   = 0;        // space before current word
-    uint32_t                    pre_width;              // tab_space in hbus & adjusted for alignment
-    uint32_t                    t_start;                // text start
-    uint32_t                    t_width;                // text width
+    unsigned                    in_count;               // in_chars->count
+    unsigned                    m_width;                // multi-part word width
+    unsigned                    pre_space   = 0;        // space before current word
+    unsigned                    pre_width;              // tab_space in hbus & adjusted for alignment
+    unsigned                    t_start;                // text start
+    unsigned                    t_width;                // text width
 
     static  bool                text_found  = false;    // text found after tab character
     static  text_chars      *   s_multi     = NULL;     // first part of multipart word
     static  text_line           tab_chars   = { NULL, 0, 0, 0, NULL, NULL };   // current tab markers/fill chars
     static  text_type           c_type      = TXT_norm;  // type for current tab character
     static  font_number         c_font      = 0;        // font for current tab character
-    static  uint32_t            s_width     = 0;        // space width (from tab_space)
+    static  unsigned            s_width     = 0;        // space width (from tab_space)
 
     in_chars = t_line->last;
     in_text  = in_chars->text;
@@ -956,9 +956,9 @@ static void redo_tabs( text_line * a_line )
     bool            skip_tab    = false;    // skip current tab
     text_chars  *   cur_chars;
     text_line       tab_chars   = { NULL, 0, 0, 0, NULL, NULL };   // current tab markers/fill chars
-    uint32_t        cur_left;
-    uint32_t        offset;                 // to adjust subsequen text_chars in tab scope
-    uint32_t        scope_width = 0;        // total width of scope of current tab
+    unsigned        cur_left;
+    unsigned        offset;                 // to adjust subsequen text_chars in tab scope
+    unsigned        scope_width = 0;        // total width of scope of current tab
 
     if( a_line == NULL ) {          // why are we here?
         return;
@@ -1093,13 +1093,13 @@ static void redo_tabs( text_line * a_line )
 /*  returns number of characters which will not fit on the current line    */
 /***************************************************************************/
 
-static uint32_t split_text( text_chars *in_chars, uint32_t limit )
+static unsigned split_text( text_chars *in_chars, unsigned limit )
 {
-    uint32_t    retval;
+    unsigned    retval;
     unsigned    t_count;
-    uint32_t    p_width;
-    uint32_t    t_limit;
-    uint32_t    t_width;
+    unsigned    p_width;
+    unsigned    t_limit;
+    unsigned    t_width;
 
     if( limit < in_chars->x_address ) {     // no characters will fit
         retval = in_chars->count;
@@ -1151,20 +1151,20 @@ static uint32_t split_text( text_chars *in_chars, uint32_t limit )
 /*  both how wgml 4.0 actually implements JU and this implementation       */
 /***************************************************************************/
 
-void do_justify( uint32_t lm, uint32_t rm, text_line * line )
+void do_justify( unsigned lm, unsigned rm, text_line * line )
 {
     text_chars  *   tc;
     text_chars  *   tw;
     text_chars  *   tl;                 // last text_chars in line
-//    int32_t         sum_w;              // sum of words widths
-    int32_t         hor_end;
-    int32_t         cnt;                // # of text_chars
-    int32_t         line_width;         // usable line length
-    int32_t         delta;              // space increment between words
-    int32_t         delta0;             // total space to distribute
-    int32_t         delta1;
-    int32_t         rem;              // possible part of space to distribute
-    int32_t         deltarem;
+//    int         sum_w;              // sum of words widths
+    int         hor_end;
+    int         cnt;                // # of text_chars
+    int         line_width;         // usable line length
+    int         delta;              // space increment between words
+    int         delta0;             // total space to distribute
+    int         delta1;
+    int         rem;              // possible part of space to distribute
+    int         deltarem;
     ju_enum         just;
     symsub  *       symjusub;         // for debug output string value of .ju
 
@@ -1480,7 +1480,7 @@ void process_line_full( text_line * a_line, bool justify )
     text_chars  *   split_chars;    // first text_chars of second line, if any
     text_chars  *   test_chars;     // used to find alignment of prior tab
     text_line   *   b_line  = NULL; // for second line, if any
-    uint32_t        offset;         // to adjust second line x_address fields, if any
+    unsigned        offset;         // to adjust second line x_address fields, if any
 
     if( (a_line == NULL)
       || (a_line->first == NULL) ) { // why are we called?
@@ -1831,12 +1831,12 @@ void process_text( char * text, font_number font )
     text_chars          *   h_chars;                    // hyphen text_chars
     text_chars          *   n_chars;                    // new text_chars
     text_chars          *   s_chars;                    // save text_chars
-    uint32_t                o_count         = 0;
-    uint32_t                offset          = 0;
-    uint32_t                t_count_1       = 0;
-    uint32_t                t_count_2       = 0;
+    unsigned                o_count         = 0;
+    unsigned                offset          = 0;
+    unsigned                t_count_1       = 0;
+    unsigned                t_count_2       = 0;
     // when hyph can be set, it will need to be used here & below
-    uint32_t                hy_width        = wgml_fonts[FONT0].width.table['-'];
+    unsigned                hy_width        = wgml_fonts[FONT0].width.table['-'];
 
     static      bool            comma_fnd       = false;    // set true when prior n_chars ended with a comma
     static      bool            keep_together   = true;     // set false when mult-part word is not to be treated as one word
@@ -2256,7 +2256,7 @@ void process_text( char * text, font_number font )
             /***********************************************************/
 
             while( !tabbing &&
-                    ((int32_t)(n_chars->x_address + n_chars->width) > (int32_t)t_page.max_width) ) {
+                    ((int)(n_chars->x_address + n_chars->width) > (int)t_page.max_width) ) {
 
                 if( t_line == NULL ) {  // added when INDEX implemented
                     t_line = alloc_text_line();

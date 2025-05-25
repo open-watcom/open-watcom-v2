@@ -65,7 +65,7 @@ extern "C" {    /* Use "C" linkage when in C++ mode */
 extern char         cop_in_trans( char in_char, font_number font );
 extern void         cop_setup( void );
 extern void         cop_teardown( void );
-extern uint32_t     cop_text_width( const char *text, unsigned count, font_number font );
+extern unsigned     cop_text_width( const char *text, unsigned count, font_number font );
 extern void         cop_ti_table( const char *p );
 extern void         fb_dbox( dbox_element *in_dbox );
 extern void         fb_document( void );
@@ -83,8 +83,8 @@ extern void         resize_record_buffer_fill( record_buffer *recb, unsigned siz
 
 /* devfuncs.c                           */
 extern void         fb_absoluteaddress( void );
-extern void         fb_new_section( uint32_t v_start );
-extern void         fb_position( uint32_t h_start, uint32_t v_start );
+extern void         fb_new_section( unsigned v_start );
+extern void         fb_position( unsigned h_start, unsigned v_start );
 extern void         set_oc_pos( void );
 
 
@@ -143,7 +143,7 @@ extern void         reset_bot_ban( void );
 extern void         reset_t_page( void );
 extern void         reset_top_ban( void );
 extern void         set_skip_vars( su *pre_skip, su *pre_top_skip, su *post_skip, text_space text_spacing, font_number font );
-extern bool         split_element( doc_element *a_element, uint32_t req_depth );
+extern bool         split_element( doc_element *a_element, unsigned req_depth );
 extern void         text_col_out( void );
 
 
@@ -158,11 +158,11 @@ extern  condcode    getnum( getnum_block *gn );
 
 /* ghx.c                                */
 extern void         gen_heading( char *h_text, const char *refid, hdsrc hn_lvl, hdsrc hds_lvl );
-extern void         out_head_page( ffh_entry *in_entry, ref_entry *in_ref, uint32_t in_pageno );
+extern void         out_head_page( ffh_entry *in_entry, ref_entry *in_ref, unsigned in_pageno );
 
 
 /* gindexut.c                           */
-extern void         eol_index_page( eol_ix *eol_index, uint32_t page_nr );
+extern void         eol_index_page( eol_ix *eol_index, unsigned page_nr );
 extern void         find_create_ix_e_entry( ix_h_blk *ixhwork, char *ref, unsigned len, ix_h_blk *seeidwork, ereftyp type );
 extern  ix_h_blk    *find_create_ix_h_entry( ix_h_blk *ixhwork, ix_h_blk *ixhbase, char *printtxt, unsigned printtxtlen, char *txt, unsigned txtlen, int lvl );
 extern void         free_index_dict( ix_h_blk **dict );
@@ -246,7 +246,7 @@ extern void         split_input( char *buf, char *split_pos, i_flags fmflags );
 
 
 /* gproctxt.c                           */
-extern void         do_justify( uint32_t left_m, uint32_t right_m, text_line *line );
+extern void         do_justify( unsigned left_m, unsigned right_m, text_line *line );
 extern void         insert_hard_spaces( const char *spaces, unsigned len, font_number font );
 extern unsigned     intrans( char *text, unsigned count, font_number font );
 extern void         process_line_full( text_line *a_line, bool justify );
@@ -403,7 +403,7 @@ extern void         add_tag_cb_to_pool( tag_cb *cb );
 extern tag_cb       *alloc_tag_cb( void );
 extern void         clear_doc_element( doc_element *a_element );
 extern void         free_pool_storage( void );
-extern doc_element  *init_doc_el( element_type type, uint32_t depth );
+extern doc_element  *init_doc_el( element_type type, unsigned depth );
 
 
 /* gtitlepo.c                           */
@@ -417,8 +417,8 @@ extern bool         process_tag( gtentry *ge, mac_entry *me );
 /* gutil.c                              */
 extern void         add_dt_space( void );
 extern bool         att_val_to_su( su *spaceunit, bool pos, att_val_type *attr_val, bool specval );
-extern int32_t      conv_hor_unit( su *spaceunit, font_number font );
-extern int32_t      conv_vert_unit( su *spaceunit, text_space text_spacing, font_number font );
+extern int          conv_hor_unit( su *spaceunit, font_number font );
+extern int          conv_vert_unit( su *spaceunit, text_space text_spacing, font_number font );
 extern bool         cw_val_to_su( const char **scaninput, su *spaceunit );
 extern num_style    find_pgnum_style( void );
 extern char         *format_num( unsigned n, char *r, unsigned rsize, num_style ns );
@@ -506,8 +506,6 @@ extern void         ob_oc( const char *p );
 extern bool         init_msgs( void );
 extern void         fini_msgs( void );
 extern bool         get_msg( msg_ids resourceid, char *buffer, unsigned buflen );
-//extern void         Msg_Do_Put_Args( char rc_buff[], MSG_ARG_LIST *arg_info, char *types, ... );
-//extern void         Msg_Put_Args( char message[], MSG_ARG_LIST *arg_info, char *types, va_list *args );
 
 
 /* wgmlsupp.c                           */

@@ -44,8 +44,8 @@ void    gml_title( const gmltag * entry )
     char        *   pa;
     font_number     font_save;
     page_pos        old_line_pos;
-    uint32_t        left_indent;
-    uint32_t        right_indent;
+    unsigned        left_indent;
+    unsigned        right_indent;
     att_name_type   attr_name;
     att_val_type    attr_val;
 

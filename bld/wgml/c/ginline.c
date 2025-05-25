@@ -38,7 +38,7 @@
 
 
 static  font_number     tt_font     = 0;    // font number to be replaced with "0"
-static  uint32_t        quote_lvl   = 0;    // nesting level of Q phrases
+static  unsigned        quote_lvl   = 0;    // nesting level of Q phrases
 
 /***************************************************************************/
 /*  :CIT :HPx :Q :SF common processing                                        */

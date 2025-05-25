@@ -171,7 +171,7 @@ void gml_dl( const gmltag * entry )
     font_number     headhi;
     font_number     termhi;
     su              cur_su;
-    uint32_t        tsize;
+    unsigned        tsize;
     att_name_type   attr_name;
     att_val_type    attr_val;
 
@@ -831,7 +831,7 @@ static  void    gml_li_ol( const gmltag * entry )
     char            charnumber[NUM2STR_LENGTH + 2 + 1];
     char        *   p;
     char        *   pn;
-    uint32_t        num_len;
+    unsigned        num_len;
 
     (void)entry;
 

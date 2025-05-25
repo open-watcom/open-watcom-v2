@@ -35,7 +35,7 @@
 static  banner_lay_tag  *   ban_top[max_ban][2];
 static  banner_lay_tag  *   ban_bot[max_ban][2];
 static  text_line           ban_line;           // for constructing banner line
-static  uint32_t            ban_top_pos;        // top position of banner
+static  unsigned            ban_top_pos;        // top position of banner
 
 static void resize_and_copy_strblk( final_reg_content *strblk, char *buf, int font )
 {
@@ -636,7 +636,7 @@ static text_chars * split_text_chars( text_chars * in_chars )
     char        *   p;
     text_chars  *   c_chars;
     text_chars  *   old_next;
-    uint32_t        o_count;
+    unsigned        o_count;
 
     old_next = in_chars->next;
     if( old_next != NULL ) {
@@ -728,10 +728,10 @@ static void out_ban_common( banner_lay_tag * ban, bool top )
     int                 k;
     region_lay_tag  *   cur_region;
     text_line       *   cur_line;
-    uint32_t            cur_line_height;
-    uint32_t            cur_width;
-    uint32_t            cur_v_pos;
-    uint32_t            text_width;
+    unsigned            cur_line_height;
+    unsigned            cur_width;
+    unsigned            cur_v_pos;
+    unsigned            text_width;
 
     ban_line.first = NULL;
 

@@ -67,7 +67,7 @@ void gml_xmp( const gmltag * entry )
     char            *p;
     char            *pa;
     su              cur_su;
-    uint32_t        depth;
+    unsigned        depth;
     att_name_type   attr_name;
     att_val_type    attr_val;
 

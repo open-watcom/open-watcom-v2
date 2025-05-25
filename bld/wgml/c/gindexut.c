@@ -40,7 +40,7 @@
 /*  find an index item number reference in index_dict                      */
 /***************************************************************************/
 
-static bool find_num_ref( ix_e_blk **base, uint32_t page_nr )
+static bool find_num_ref( ix_e_blk **base, unsigned page_nr )
 {
     bool            retval;
     ix_e_blk        *cur_ieh;
@@ -299,7 +299,7 @@ void find_create_ix_e_entry( ix_h_blk *ixhwork, char *ref, unsigned len,
 /*  find or create/insert new index reference entry (at eol)               */
 /***************************************************************************/
 
-void eol_index_page( eol_ix * eol_index, uint32_t page_nr )
+void eol_index_page( eol_ix * eol_index, unsigned page_nr )
 {
     bool                found;
     eol_ix      *       save;

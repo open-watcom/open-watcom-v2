@@ -50,11 +50,11 @@ void    gml_graphic( const gmltag * entry )
     doc_element     *cur_el;
     inputcb         *cb                     = input_cbs;
     su              cur_su;
-    uint32_t        depth;
-    uint32_t        scale                   = 100;
-    uint32_t        width;
-    int32_t         xoff                    = 0;
-    int32_t         yoff                    = 0;
+    unsigned        depth;
+    unsigned        scale                   = 100;
+    unsigned        width;
+    int         xoff                    = 0;
+    int         yoff                    = 0;
     FILE            *fp;
     att_name_type   attr_name;
     att_val_type    attr_val;

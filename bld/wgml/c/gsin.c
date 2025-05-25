@@ -38,7 +38,7 @@
 /*  can be relative i.e. negative                                          */
 /***************************************************************************/
 
-static  int32_t round_indent( su * work )
+static  int round_indent( su * work )
 {
     return( conv_hor_unit( work, g_curr_font ) * CPI / g_resh * g_resh / CPI );
 }
@@ -92,10 +92,10 @@ void    scr_in( void )
     char            cwcurr[4];
     bool            scanerr;
     su              indentwork;
-    int32_t         newindentl;
-    int32_t         newindentr;
+    int         newindentl;
+    int         newindentr;
 
-    static  int32_t oldindent;
+    static  int oldindent;
 
     cwcurr[0] = SCR_char;
     cwcurr[1] = 'i';
@@ -167,7 +167,7 @@ void    scr_in( void )
     /* Reduce t_page.cur_left to 0 if g_indentl made it negative */
 
     ProcFlags.in_reduced = false;       // flag, if on, is active until next IN
-    if( ((int32_t) t_page.page_left + t_page.cur_left) < 0 ) {
+    if( ((int) t_page.page_left + t_page.cur_left) < 0 ) {
         oldindent = t_page.cur_left;
         t_page.cur_left = 0;
         ProcFlags.in_reduced = true;        // set flag to record virtual reduction of in value

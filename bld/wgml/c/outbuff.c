@@ -124,7 +124,7 @@ static void ob_insert_ps_text( const char *in_block, unsigned count, font_number
     translation         *cur_trans   = NULL;
     unsigned char       trbyte_out;
     unsigned char       trbyte_in;
-    uint32_t            i;
+    unsigned            i;
 
     /* If the buffer is full, flush it. */
 
@@ -352,9 +352,9 @@ static void ob_insert_ps_cmd_ot( const char *in_block, unsigned count, font_numb
     translation         *cur_trans   = NULL;
     unsigned char       trbyte_out;
     unsigned char       trbyte_in;
-    uint32_t            i;
-    uint32_t            j;
-    uint32_t            k;
+    unsigned            i;
+    unsigned            j;
+    unsigned            k;
 
     /* Adjust font if necessary and initialize cur_table and text_count. */
 
@@ -625,7 +625,7 @@ static void ob_insert_def_ot( const char *in_block, unsigned count, font_number 
     translation         *cur_trans   = NULL;
     unsigned char       trbyte_out;
     unsigned char       trbyte_in;
-    uint32_t            i;
+    unsigned            i;
 
     /* Adjust font if necessary and initialize cur_table and text_count. */
 
@@ -1002,7 +1002,7 @@ static void emit_FONT0( void )
 
 void ob_binclude( binclude_element * in_el )
 {
-    uint32_t    count;
+    unsigned    count;
 
     fb_binclude_support( in_el );
     if( fwrite( buffout.text, sizeof( uint8_t ), buffout.current, out_file_fp ) < buffout.current ) {
@@ -1120,7 +1120,7 @@ void ob_graphic( graphic_element * in_el )
     char        graphobj[] = "/graphobj save def /showpage { } def";
     char        restore[] = "graphobj restore";
     unsigned    ps_size;
-    uint32_t    count;
+    unsigned    count;
 
     fb_graphic_support( in_el );
     ob_flush();

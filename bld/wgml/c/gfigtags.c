@@ -47,10 +47,10 @@ static  def_frame       frame;                  // FIG attribute used by eFIG
 static  group_type      sav_group_type;         // save prior group type
 static  ju_enum         justify_save;           // for ProcFlags.justify
 static  text_space      spacing_save;           // for spacing
-static  uint32_t        depth           = 0;    // FIG attribute used by eFIG
-static  uint32_t        left_inset;             // offset from frame to contents
-static  uint32_t        right_inset;            // offset from frame to contents
-static  uint32_t        width           = 0;    // FIG attribute used by eFIG
+static  unsigned        depth           = 0;    // FIG attribute used by eFIG
+static  unsigned        left_inset;             // offset from frame to contents
+static  unsigned        right_inset;            // offset from frame to contents
+static  unsigned        width           = 0;    // FIG attribute used by eFIG
 
 /******************************************************************************/
 /* Add text_char instances containing one bin_device->box.chars.vertical_line */
@@ -278,9 +278,9 @@ static void insert_frame_line( void )
     int             i;
     unsigned        cur_count;
     unsigned        str_count;
-    uint32_t        cur_limit;  // number of whole copies of frame.string that will fit into line.buff
-    uint32_t        cur_width;
-    uint32_t        str_width;
+    unsigned        cur_limit;  // number of whole copies of frame.string that will fit into line.buff
+    unsigned        cur_width;
+    unsigned        str_width;
     unsigned        limit;
 
     if( bin_driver->hline.text == NULL ) {              // character device
@@ -397,7 +397,7 @@ void gml_fig( const gmltag * entry )
     char            *pa;
     ref_entry       *cur_ref     = NULL;
     su              cur_su;
-    uint32_t        max_width;
+    unsigned        max_width;
     att_name_type   attr_name;
     att_val_type    attr_val;
 
@@ -710,10 +710,10 @@ void gml_efig( const gmltag * entry )
     doc_element     *   cur_el;
     doc_element     *   next_el;
     tag_cb          *   wk;
-    uint32_t            bias;
-    uint32_t            cur_depth;
-    uint32_t            page_pred;
-    uint32_t            raw_p_skip;
+    unsigned            bias;
+    unsigned            cur_depth;
+    unsigned            page_pred;
+    unsigned            raw_p_skip;
 
     (void)entry;
 

@@ -34,7 +34,7 @@
 #include "clibext.h"
 
 
-static  int32_t    vspace  = 0;                 // vertical space entered (vbus)
+static  int    vspace  = 0;                 // vertical space entered (vbus)
 
 /**************************************************************************/
 /* Implements most of SK and SP                                           */
@@ -110,7 +110,7 @@ static void sksp_common( void )
                 vspace = 0;                             // avoid evaluating negative spacing
             } else {
                 ProcFlags.overprint = false;            // disable overprint
-                vspace = (text_spacing * spskwork.su_whole * (int32_t) bin_device->vertical_base_units) / LPI;
+                vspace = (text_spacing * spskwork.su_whole * (int) bin_device->vertical_base_units) / LPI;
             }
         } else {
             vspace = conv_vert_unit( &spskwork, 1, g_curr_font );

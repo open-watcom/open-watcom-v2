@@ -61,7 +61,7 @@ condcode    scr_width( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **res
     tok_type        string;
     int             string_len;
     char            typechar;
-    uint32_t        width;
+    unsigned        width;
 
     (void)ressize;
 

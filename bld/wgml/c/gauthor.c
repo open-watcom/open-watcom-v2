@@ -41,8 +41,8 @@ void gml_author( const gmltag * entry )
     char        *   p;
     font_number     font_save;
     page_pos        old_line_pos;
-    uint32_t        left_indent;
-    uint32_t        right_indent;
+    unsigned        left_indent;
+    unsigned        right_indent;
 
     if( !((ProcFlags.doc_sect == DSECT_titlep) ||
           (ProcFlags.doc_sect_nxt == DSECT_titlep)) ) {

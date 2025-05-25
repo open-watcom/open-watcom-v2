@@ -172,7 +172,7 @@ typedef struct page_lay_tag {
 /***************************************************************************/
 
 typedef struct default_lay_tag {
-    uint32_t        def_gutter;         // gutter value as a number
+    unsigned        def_gutter;         // gutter value as a number
     su              gutter;             // horizontal space unit
     su              binding;            // horizontal space unit
     text_space      spacing;            // positive integer
@@ -716,7 +716,7 @@ typedef struct script_ban_reg {         // for script format region
 
 typedef struct final_reg_content {      // final fully-preprocessed content
     unsigned        size;               // suitable for final trim and output
-    uint32_t        hoffset;
+    unsigned        hoffset;
     char            *string;
 } final_reg_content;
 
@@ -728,11 +728,11 @@ typedef uint8_t         refnum_type;
 
 typedef struct region_lay_tag {
     struct  region_lay_tag  *   next;       // next banner region
-    uint32_t            reg_indent;         // value of 'indent' in base units
-    uint32_t            reg_hoffset;        // value of 'hoffset' in base units
-    uint32_t            reg_width;          // value of 'width' in base units
-    uint32_t            reg_voffset;        // value of 'voffset' in base units
-    uint32_t            reg_depth;          // value of 'depth' in base units
+    unsigned            reg_indent;         // value of 'indent' in base units
+    unsigned            reg_hoffset;        // value of 'hoffset' in base units
+    unsigned            reg_width;          // value of 'width' in base units
+    unsigned            reg_voffset;        // value of 'voffset' in base units
+    unsigned            reg_depth;          // value of 'depth' in base units
     space_units         reg_h_type;         // type of reg_hoffset: left, middle, right
     su                  indent;             // horizontal space unit or keywords
     su                  hoffset;            // horizontal space unit or keywords
@@ -762,9 +762,9 @@ typedef struct region_lay_tag {
 typedef struct ban_reg_group {
     struct  ban_reg_group       *   next;       // next banner region group
             region_lay_tag      *   first;      // first BANREGION
-            uint32_t                voffset;    // value of 'voffset' in base units
-            uint32_t                line_height;// line height (in base units) of the region font
-            uint32_t                max_depth;  // largest value of 'depth' in base units
+            unsigned                voffset;    // value of 'voffset' in base units
+            unsigned                line_height;// line height (in base units) of the region font
+            unsigned                max_depth;  // largest value of 'depth' in base units
 } ban_reg_group;
 
 /***************************************************************************/
@@ -775,9 +775,9 @@ typedef struct banner_lay_tag {
     struct banner_lay_tag   *   next;       // next banner
     region_lay_tag          *   region;     // region list (in refnum order)
     ban_reg_group           *   by_line;    // group list (in vertical position order)
-    uint32_t        ban_left_adjust;        // value of 'left_adjust' in base units
-    uint32_t        ban_right_adjust;       // value of 'right_adjust' in base units
-    uint32_t        ban_depth;              // value of 'depth' in base units
+    unsigned        ban_left_adjust;        // value of 'left_adjust' in base units
+    unsigned        ban_right_adjust;       // value of 'right_adjust' in base units
+    unsigned        ban_depth;              // value of 'depth' in base units
     refnum_type     next_refnum;            // next expected refnum value
     su              left_adjust;            // horizontal space unit
     su              right_adjust;           // horizontal space unit

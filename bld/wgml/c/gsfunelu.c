@@ -209,7 +209,7 @@ static char *scr_single_func_w( char *args, char *end, char **result )
     symsub          *symsubval;
     int             rc;
     unsigned        len;
-    uint32_t        width;
+    unsigned        width;
 
     if( *args == '&' ) {            // symbol name
         pchar = scan_sym( args + 1, &symvar_entry, &var_ind, NULL, false );

@@ -42,8 +42,8 @@ static  bool            ref_done;                   // true if a reference has b
 static  char            frame_line_1[CHAR_FRAME_LEN + 1]; // box top line/rule line/'character string' line
 static  char            frame_line_2[CHAR_FRAME_LEN + 1]; // box blank/middle line
 static  char            frame_line_3[CHAR_FRAME_LEN + 1]; // box bottom line
-static  int32_t         save_indentl;               // used with TITLEP/eTITLEP
-static  int32_t         save_indentr;               // used with TITLEP/eTITLEP
+static  int         save_indentl;               // used with TITLEP/eTITLEP
+static  int         save_indentr;               // used with TITLEP/eTITLEP
 static  ju_enum         justify_save;               // for ProcFlags.justify
 static  line_number     titlep_lineno;              // TITLEP tag line number
 static  unsigned        cur_count;                  // current number of characters copied
@@ -51,10 +51,10 @@ static  unsigned        frame_line_len  = CHAR_FRAME_LEN;   // length of frame l
 static  unsigned        str_count;                  // IXHEAD 'character string' strlen()
 static  symsub          *ixjval;                    // &sysixj value
 static  symsub          *ixrefval;                  // &sysixref value
-static  uint32_t        cur_width;                  // current IXHEAD line width
-static  uint32_t        wrap[3];                    // I1/I2/I3 wrap_indent values
-static  uint32_t        ixh_indent;                 // IXHEAD indent
-static  uint32_t        str_width;                  // IXHEAD 'character string' width
+static  unsigned        cur_width;                  // current IXHEAD line width
+static  unsigned        wrap[3];                    // I1/I2/I3 wrap_indent values
+static  unsigned        ixh_indent;                 // IXHEAD indent
+static  unsigned        str_width;                  // IXHEAD 'character string' width
 
 static struct {
     char            *text;
@@ -133,7 +133,7 @@ void set_section_banners( doc_section ds )
 /*  will actually be used                                                 */
 /**************************************************************************/
 
-static void figlist_toc_tabs( char * fill, uint32_t size, bool setup )
+static void figlist_toc_tabs( char * fill, unsigned size, bool setup )
 {
     if( setup) {                    // set up tabbing
 
@@ -180,7 +180,7 @@ static void figlist_toc_tabs( char * fill, uint32_t size, bool setup )
 static void gen_box_head( char * letter )
 {
     doc_element *   h_box_el;       // PS only
-    uint32_t        full_line;      // PS only: original frame_line_len
+    unsigned        full_line;      // PS only: original frame_line_len
 
     if( bin_driver->hline.text == NULL ) {                      // character device
         process_text( frame_line_1, layout_work.ixhead.font );  // top line
@@ -231,9 +231,9 @@ static void gen_rule_head( char * letter )
 {
     doc_element *   h_line_el;      // PS only
     int             i;
-    uint32_t        cur_limit;
-    uint32_t        full_line;      // PS only: original frame_line_len
-    uint32_t        half_line;      // one half of frame_line_len
+    unsigned        cur_limit;
+    unsigned        full_line;      // PS only: original frame_line_len
+    unsigned        half_line;      // one half of frame_line_len
 
     half_line = frame_line_len / 2;
     if( bin_driver->hline.text == NULL ) {                      // character device
@@ -326,7 +326,7 @@ static void gen_ref_list( ix_e_blk * refs, font_number font )
 {
     char            buffer[NUM2STR_LENGTH + 1];
     ix_e_blk    *   cur_ref;
-    uint32_t        predict     = 0;
+    unsigned        predict     = 0;
 
     for( cur_ref = refs; cur_ref != NULL; cur_ref = cur_ref->next ) {
         ProcFlags.ct = true;
@@ -420,7 +420,7 @@ static void gen_ref_list( ix_e_blk * refs, font_number font )
 /*  output list of 'see'/'see also' references                             */
 /***************************************************************************/
 
-static void gen_see_list( ix_e_blk * refs, font_number font, uint32_t level,
+static void gen_see_list( ix_e_blk * refs, font_number font, unsigned level,
                           bool has_sub )
 {
     ix_e_blk    *   cur_ref;
@@ -450,7 +450,7 @@ static void gen_see_list( ix_e_blk * refs, font_number font, uint32_t level,
 /*  output entire set of references                                        */
 /***************************************************************************/
 
-static void gen_all_refs( entry_list * entry, uint32_t level, bool has_sub )
+static void gen_all_refs( entry_list * entry, unsigned level, bool has_sub )
 {
     ProcFlags.concat = true;
     ref_done = false;
@@ -491,10 +491,10 @@ static void gen_all_refs( entry_list * entry, uint32_t level, bool has_sub )
 static void set_cols( doc_pane * a_pane )
 {
     int         i;
-    uint32_t    col_count;
-    uint32_t    cur_col;
-    uint32_t    gutter;
-    uint32_t    width_avail;
+    unsigned    col_count;
+    unsigned    cur_col;
+    unsigned    gutter;
+    unsigned    width_avail;
 
     col_count = a_pane->col_count;
     if( col_count == 1 ) {
@@ -529,7 +529,7 @@ static void gen_figlist( void )
     char            buffer[NUM2STR_LENGTH + 1];
     char            postfix[NUM2STR_LENGTH + 1 + 1];
     ffh_entry   *   curr;
-    uint32_t        size;
+    unsigned        size;
 
     if( fig_list == NULL ) return;  // no fig_list, no FIGLIST
 
@@ -639,9 +639,9 @@ static void gen_index( void )
     ix_h_blk    *   ixh1;
     ix_h_blk    *   ixh2;
     ix_h_blk    *   ixh3;
-    uint32_t        cur_limit;
-    uint32_t        indent[3];          // I1/I2/I3 cumulative indents
-    uint32_t        spc_count;
+    unsigned        cur_limit;
+    unsigned        indent[3];          // I1/I2/I3 cumulative indents
+    unsigned        spc_count;
 
     scr_process_break();                // flush any pending text
     start_doc_sect();                   // emit heading regardless of pass
@@ -955,8 +955,8 @@ static void gen_toc( void )
     int             i;
     int             j;
     int             cur_level;
-    uint32_t        indent[7];
-    uint32_t        size;
+    unsigned        indent[7];
+    unsigned        size;
 
     if( hd_list == NULL ) return;       // no hd_list, no TOC
 
@@ -1091,7 +1091,7 @@ static void gen_toc( void )
 static void document_new_position( void )
 {
     region_lay_tag  *   top_reg;
-    uint32_t            top_pos;
+    unsigned            top_pos;
 
     /* The value used for fb_position() should be the first line of text,
      * even if that is from a TITLE tag (top banners do not apply to TITLEP).
@@ -1146,7 +1146,7 @@ void start_doc_sect( void )
     hdsrc               hds_lvl;
     int                 k;
     page_ej             page_e;         // page eject tag
-    uint32_t            page_c;         // page columns
+    unsigned            page_c;         // page columns
     text_space          page_s;         // page spacing
 
 

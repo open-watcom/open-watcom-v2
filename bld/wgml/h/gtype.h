@@ -136,7 +136,7 @@
 
 typedef unsigned    line_number;
 typedef uint8_t     text_space;
-typedef uint32_t    units_space;
+typedef unsigned    units_space;
 
 typedef struct tok_type {
     char            *s;
@@ -173,10 +173,10 @@ typedef enum space_units {
 
 typedef struct {
     char        su_txt[MAX_SU_LENGTH + 1];    // space unit as entered in chars
-    int32_t     su_whole;               // integer part
-    int32_t     su_dec;                 // decimal part (if any)
-    int32_t     su_inch;                // value in inch with 4 decimals
-    int32_t     su_mm;                  // value in mm with 4 decimals
+    int         su_whole;               // integer part
+    int         su_dec;                 // decimal part (if any)
+    int         su_inch;                // value in inch with 4 decimals
+    int         su_mm;                  // value in mm with 4 decimals
     bool        su_relative;            // + - sign found
     space_units su_u;                   // unit
 } su;
@@ -711,8 +711,8 @@ typedef struct opt_font {
     struct opt_font *nxt;
     char            *name;
     char            *style;
-    uint32_t        space;
-    uint32_t        height;
+    unsigned        space;
+    unsigned        height;
     font_number     font;
 } opt_font;
 
@@ -853,15 +853,15 @@ typedef struct tag_cb {
         struct sl_lay_level *sl_layout;  // current SL LAYOUT record
         struct ul_lay_level *ul_layout;  // current UL LAYOUT record
     } u;
-    uint32_t        li_number;          // current list item no
-    uint32_t        lm;                 // left margin on entry
-    uint32_t        rm;                 // max width on entry
-    int32_t         align;              // current attribute value
-    int32_t         left_indent;        // current attribute value
-    int32_t         right_indent;       // current attribute value
-    uint32_t        post_skip;          // current attribute value
-    uint32_t        tsize;              // current attribute value
-    uint32_t        xl_pre_skip;        // parent list pre_skip value (used by LP)
+    unsigned        li_number;          // current list item no
+    unsigned        lm;                 // left margin on entry
+    unsigned        rm;                 // max width on entry
+    int             align;              // current attribute value
+    int             left_indent;        // current attribute value
+    int             right_indent;       // current attribute value
+    unsigned        post_skip;          // current attribute value
+    unsigned        tsize;              // current attribute value
+    unsigned        xl_pre_skip;        // parent list pre_skip value (used by LP)
     text_space      spacing;            // spacing on entry
     uint8_t         headhi;             // current attribute value
     uint8_t         termhi;             // current attribute value
@@ -907,16 +907,16 @@ typedef enum {  // see Wiki for column type definitions
 } bx_v_ind;
 
 typedef struct {
-            uint32_t        col;
-            uint32_t        depth;
+            unsigned        col;
+            unsigned        depth;
             bx_v_ind        v_ind;
             bool            rebreak;
 } box_col_spec;
 
 typedef struct box_col_set {
     struct box_col_set *next;
-    uint32_t        current;
-    uint32_t        length;
+    unsigned        current;
+    unsigned        length;
     box_col_spec    *cols;
 } box_col_set;
 
@@ -938,7 +938,7 @@ typedef enum {
 } alignment;
 
 typedef struct {
-    uint32_t        column;
+    unsigned        column;
     alignment       alignment;
     uint8_t         fill_char;
 } tab_stop;
@@ -990,9 +990,9 @@ typedef enum {
 typedef struct text_chars {             // tabbing-related fields have comments
     struct text_chars *next;
     struct text_chars *prev;
-    uint32_t        x_address;
-    uint32_t        width;
-    uint32_t        ts_width;           // tab space width (expected to be needed with al_center and al_right)
+    unsigned        x_address;
+    unsigned        width;
+    unsigned        ts_width;           // tab space width (expected to be needed with al_center and al_right)
     uint16_t        count;
     uint16_t        length;
     alignment       tab_align;          // tab alignment
@@ -1011,9 +1011,9 @@ struct eol_ix;              // forward declaration
 
 typedef struct text_line {
     struct text_line *next;
-    uint32_t        line_height;
+    unsigned        line_height;
     units_space     units_spacing;
-    uint32_t        y_address;
+    unsigned        y_address;
     struct eol_ix   *eol_index;
     text_chars      *first;
     text_chars      *last;
@@ -1032,9 +1032,9 @@ typedef enum {
 // struct doc_element;    // forward declaration (uncomment if ever needed)
 
 typedef struct {
-    uint32_t        cur_left;
-    uint32_t        depth;
-    uint32_t        y_address;
+    unsigned        cur_left;
+    unsigned        depth;
+    unsigned        y_address;
     bool            at_top;
     bool            force_FONT0;
     bool            has_rec_type;
@@ -1044,21 +1044,21 @@ typedef struct {
 } binclude_element;
 
 typedef struct {
-    uint32_t        h_start;
-    uint32_t        v_start;
-    uint32_t        h_len;
-    uint32_t        v_len;
+    unsigned        h_start;
+    unsigned        v_start;
+    unsigned        h_len;
+    unsigned        v_len;
     struct eol_ix   *eol_index;
 } dbox_element;
 
 typedef struct {
-    uint32_t        cur_left;
-    uint32_t        depth;
-    uint32_t        scale;
-    uint32_t        width;
-    uint32_t        y_address;
-    int32_t         xoff;
-    int32_t         yoff;
+    unsigned        cur_left;
+    unsigned        depth;
+    unsigned        scale;
+    unsigned        width;
+    unsigned        y_address;
+    int             xoff;
+    int             yoff;
     bool            at_top;
     struct eol_ix   *eol_index;
     FILE            *fp;
@@ -1068,11 +1068,11 @@ typedef struct {
 } graphic_element;
 
 typedef struct {
-    uint32_t        h_start;
-    uint32_t        v_start;
-    uint32_t        h_len;
-    uint32_t        o_subs_skip;
-    uint32_t        o_top_skip;
+    unsigned        h_start;
+    unsigned        v_start;
+    unsigned        h_len;
+    unsigned        o_subs_skip;
+    unsigned        o_top_skip;
     struct eol_ix   *eol_index;
     bool            ban_adjust; // hline is first line in an outer box at effective top of page
 } hline_element;
@@ -1089,9 +1089,9 @@ typedef struct {
 } text_element;
 
 typedef struct {
-    uint32_t        h_start;
-    uint32_t        v_start;
-    uint32_t        v_len;
+    unsigned        h_start;
+    unsigned        v_start;
+    unsigned        v_len;
     struct eol_ix   *eol_index;
     bool            twice;
 } vline_element;
@@ -1103,12 +1103,12 @@ typedef struct {
 
 typedef struct doc_element {
     struct doc_element *next;
-    uint32_t        blank_lines;
-    uint32_t        depth;
-    uint32_t        subs_skip;
-    uint32_t        top_skip;
-    uint32_t        h_pos;              // used by multicolumn support only
-    uint32_t        v_pos;              // used by multicolumn support only
+    unsigned        blank_lines;
+    unsigned        depth;
+    unsigned        subs_skip;
+    unsigned        top_skip;
+    unsigned        h_pos;              // used by multicolumn support only
+    unsigned        v_pos;              // used by multicolumn support only
     union {
         binclude_element binc;
         dbox_element    dbox;
@@ -1160,8 +1160,8 @@ typedef enum {
 
 typedef struct doc_el_group {
     struct doc_el_group *next;
-    uint32_t        depth;
-    uint32_t        post_skip;          // figure or heading at top of column
+    unsigned        depth;
+    unsigned        post_skip;          // figure or heading at top of column
     doc_element     *first;
     doc_element     *last;
     group_type      owner;              // tag or control word using this instance
@@ -1169,10 +1169,10 @@ typedef struct doc_el_group {
 } doc_el_group;
 
 typedef struct {
-    uint32_t        main_top;           // top of page for main
-    uint32_t        fig_top;            // top of page for bot_fig
-    uint32_t        fn_top;             // top of page for footnote
-    uint32_t        col_left;           // column left margin
+    unsigned        main_top;           // top of page for main
+    unsigned        fig_top;            // top of page for bot_fig
+    unsigned        fn_top;             // top of page for footnote
+    unsigned        col_left;           // column left margin
     doc_element     *col_width;
     doc_element     *main;
     doc_element     *bot_fig;
@@ -1181,11 +1181,11 @@ typedef struct {
 
 typedef struct doc_pane {
     struct doc_pane *next;
-    uint32_t        page_width_top;     // top of page for page_width
-    uint32_t        col_width_top;      // top of page for col_width
-    uint32_t        col_count;          // number of columns
-    uint32_t        col_width;          // width of each column
-    uint32_t        cur_col;            // column currently in use
+    unsigned        page_width_top;     // top of page for page_width
+    unsigned        col_width_top;      // top of page for col_width
+    unsigned        col_count;          // number of columns
+    unsigned        col_width;          // width of each column
+    unsigned        cur_col;            // column currently in use
     doc_element     *page_width;
     doc_column      cols[MAX_COL];
 } doc_pane;
@@ -1203,16 +1203,16 @@ struct              banner_lay_tag;     // avoids include circularity with gtype
 /***************************************************************************/
 
 typedef struct {
-    uint32_t        page_top;           // top of page for top banner
-    uint32_t        panes_top;          // top of page for first pane
-    uint32_t        bot_ban_top;        // top of page for bottom banner
-    uint32_t        max_depth;
-    uint32_t        cur_depth;
-    uint32_t        page_left;          // page left margin
-    uint32_t        page_width;         // page right margin
-    uint32_t        max_width;          // maximum width (page or column)
-    int32_t         cur_left;           // net adjustment to left margin (can be negative)
-    int32_t         cur_width;          // current width
+    unsigned        page_top;           // top of page for top banner
+    unsigned        panes_top;          // top of page for first pane
+    unsigned        bot_ban_top;        // top of page for bottom banner
+    unsigned        max_depth;
+    unsigned        cur_depth;
+    unsigned        page_left;          // page left margin
+    unsigned        page_width;         // page right margin
+    unsigned        max_width;          // maximum width (page or column)
+    int             cur_left;           // net adjustment to left margin (can be negative)
+    int             cur_width;          // current width
     doc_pane        *last_pane;
     doc_column      *cur_col;           // quick access to t_page.last_pane->cols[t_page.last_pane->cur_col]
     doc_element     *last_col_main;
@@ -1240,7 +1240,7 @@ typedef struct {
     doc_element     *col_main;          // cols->main
     doc_el_group    *col_bot;           // cols->bot
     doc_el_group    *col_fn;            // cols->fn
-    uint32_t        prev_pg_depth;
+    unsigned        prev_pg_depth;
 } doc_next_page;
 
 /***************************************************************************/
@@ -1298,7 +1298,7 @@ typedef struct ix_e_blk {               // index entry for pagenos / text
             unsigned    page_text_len;  // reference text length
         } pageref;
         struct {
-            uint32_t    page_no;        // pageno is number
+            unsigned    page_no;        // pageno is number
             num_style   style;          // page number style defined by banner, if any
         } pagenum;
     } u;
@@ -1366,7 +1366,7 @@ typedef enum {
 /***************************************************************************/
 
 typedef struct {
-    int32_t         headn;              // current heading number (numeric)
+    unsigned        headn;              // current heading number (numeric)
     char            hnumstr[64];        // current heading number (text)
     symsub          *headsub;           // ptr to $HEADx symvar entry
     symsub          *hnumsub;           // ptr to $HNUMx symvar entry
@@ -1398,8 +1398,8 @@ typedef enum {
 
 typedef struct ffh_entry {
     struct ffh_entry *next;
-    uint32_t        pageno;             // output page
-    uint32_t        number;             // figure/footnote number or heading level
+    unsigned        pageno;             // output page
+    unsigned        number;             // figure/footnote number or heading level
     char            *prefix;            // figcap/heading generated text
     char            *text;              // figcap/heading text line
     num_style       style;              // figcap/heading number format (based on section)
@@ -1471,7 +1471,7 @@ typedef enum {
 } style_cw_scope;
 
 typedef struct {
-    uint32_t        count;  // number of lines, if scope is SCS_count
+    unsigned        count;  // number of lines, if scope is SCS_count
     style_cw_scope  scope;  // scope enum
 } style_cw_info;
 

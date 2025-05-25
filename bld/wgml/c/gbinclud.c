@@ -49,7 +49,7 @@ void    gml_binclude( const gmltag * entry )
     doc_element *   cur_el;
     inputcb     *   cb                      = input_cbs;
     su              depth_su;
-    uint32_t        depth;
+    unsigned        depth;
     FILE            *fp;
     att_name_type   attr_name;
     att_val_type    attr_val;

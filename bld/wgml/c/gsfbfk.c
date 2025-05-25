@@ -51,15 +51,15 @@ typedef struct {
     doc_element *   text_el;    // for t_element
     text_line   *   last_line;  // for t_el_last
     text_line   *   text_line;  // for t_line
-    uint32_t        cur_left;   // for t_page.cur_left
-    uint32_t        cur_width;  // for t_page.cur_width
-    uint32_t        subs_skip;  // for g_subs_skip
+    unsigned        cur_left;   // for t_page.cur_left
+    unsigned        cur_width;  // for t_page.cur_width
+    unsigned        subs_skip;  // for g_subs_skip
 } print_vars;
 
 static  fbk_cmd         cur_cmd;        // current command
 static  group_type      sav_group_type; // save prior group type
 static  print_vars      sav_state;      // save/reset values on entry
-static  uint32_t        sav_post_space; // save/restore post_space for line after FB/FK END
+static  unsigned        sav_post_space; // save/restore post_space for line after FB/FK END
 
 /**************************************************************************/
 /* Output all pending FK blocks                                           */
@@ -70,7 +70,7 @@ static void fk_blocks_out( void )
     doc_el_group    *   cur_group;  // current group from n_page, not cur_doc_el_group
     doc_el_group    *   sav_group;
     doc_element     *   cur_el;
-    uint32_t            depth;
+    unsigned            depth;
 
     if( (n_page.fk_queue != NULL) ) {
         if( ((t_page.cur_depth + n_page.fk_queue->depth) < t_page.max_depth) ||
@@ -205,7 +205,7 @@ static doc_el_group * do_split( void )
     doc_el_group    *   last_group;
     doc_element     *   cur_el;
     doc_element     *   last_el;
-    uint32_t            depth;
+    unsigned            depth;
 
     cur_group = cur_doc_el_group;
     last_group = cur_group;
@@ -515,7 +515,7 @@ void fb_blocks_out( void )
     doc_el_group    *   cur_group;  // current group from block_queue, not cur_doc_el_group
     doc_element     *   cur_el;
     doc_element     *   sav_el;
-    uint32_t            text_depth;
+    unsigned            text_depth;
 
     if( block_queue != NULL ) {
         while( block_queue != NULL ) {

@@ -177,13 +177,13 @@ void gen_heading( char *h_text, const char *hdrefid, hdsrc hn_lvl, hdsrc hds_lvl
     unsigned        txtlen;
     page_pos        old_line_pos;
     ref_entry   *   cur_ref         = NULL;
-    uint32_t        bot_depth;
-    uint32_t        hx_depth;
-    uint32_t        old_bot_depth;
-    uint32_t        old_cur_left;
-    uint32_t        old_top_depth;
-    uint32_t        page_diff;
-    uint32_t        top_depth;
+    unsigned        bot_depth;
+    unsigned        hx_depth;
+    unsigned        old_bot_depth;
+    unsigned        old_cur_left;
+    unsigned        old_top_depth;
+    unsigned        page_diff;
+    unsigned        top_depth;
 
     static char     headx[7]        = "$headX";
     static char     htextx[8]       = "$htextX";
@@ -805,9 +805,9 @@ void gml_h6( const gmltag * entry )
 /*        ref_entry unless it has an id                                       */
 /******************************************************************************/
 
-void out_head_page( ffh_entry * in_entry, ref_entry * in_ref, uint32_t in_pageno )
+void out_head_page( ffh_entry * in_entry, ref_entry * in_ref, unsigned in_pageno )
 {
-    uint32_t    currno;
+    unsigned    currno;
 
     currno = in_pageno;                         // default value
 

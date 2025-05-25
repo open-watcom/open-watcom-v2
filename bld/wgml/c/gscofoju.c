@@ -66,22 +66,22 @@ static void do_co_on( void )
     doc_element     *   cur_el;
     doc_el_group    *   cur_group;          // current group from n_page, not cur_doc_el_group
     doc_el_group    *   last_group;         // group to which doc_elements are to be added
-    uint32_t            b_cur_line  = 0;    // current blank line number
-    uint32_t            b_line_tot  = 0;    // total blank lines in block
-    uint32_t            break_point = 0;    // potential break point
-    uint32_t            break_start = 0;    // first possible break point
-    uint32_t            line_height = 0;    // line height for block
-    uint32_t            lpp         = 0;    // lines per page
-    uint32_t            interval    = 0;    // interval between break_point values and between max_lines values
-    uint32_t            max_start   = 0;    // first possible maximum line number
-    uint32_t            max_lines   = 0;    // maximum line number
-    uint32_t            min_lines   = 0;    // minimum line number
-    uint32_t            offset      = 0;    // offset from non-full first page
-    uint32_t            page_line   = 0;    // current line number on current page
-    uint32_t            start_page  = 0;    // apage on which block starts
-    uint32_t            t_cur_line  = 0;    // current text line number
-    uint32_t            t_line_tot  = 0;    // total text lines in block
-    uint32_t            threshold   = 0;    // threshold line number
+    unsigned            b_cur_line  = 0;    // current blank line number
+    unsigned            b_line_tot  = 0;    // total blank lines in block
+    unsigned            break_point = 0;    // potential break point
+    unsigned            break_start = 0;    // first possible break point
+    unsigned            line_height = 0;    // line height for block
+    unsigned            lpp         = 0;    // lines per page
+    unsigned            interval    = 0;    // interval between break_point values and between max_lines values
+    unsigned            max_start   = 0;    // first possible maximum line number
+    unsigned            max_lines   = 0;    // maximum line number
+    unsigned            min_lines   = 0;    // minimum line number
+    unsigned            offset      = 0;    // offset from non-full first page
+    unsigned            page_line   = 0;    // current line number on current page
+    unsigned            start_page  = 0;    // apage on which block starts
+    unsigned            t_cur_line  = 0;    // current text line number
+    unsigned            t_line_tot  = 0;    // total text lines in block
+    unsigned            threshold   = 0;    // threshold line number
 
     /* must have text and it must have been started by CO OFF */
 

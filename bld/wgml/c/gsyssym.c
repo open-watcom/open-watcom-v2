@@ -619,8 +619,8 @@ static void syslayoutfun( symvar *e ) // LAYOUT cmdline option or :LAYOUT tag se
 
 static void syslcfun( symvar *e )      // remaining lines in column
 {
-    uint32_t    column_lines;
-    uint32_t    net_depth;
+    unsigned    column_lines;
+    unsigned    net_depth;
 
     (void)e;
 
@@ -838,7 +838,7 @@ static void syspixfun( symvar *e )
 
 static void sysplfun( symvar *e )
 {
-    uint32_t    column_lines;
+    unsigned    column_lines;
 
     (void)e;
 

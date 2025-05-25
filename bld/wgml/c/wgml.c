@@ -133,7 +133,7 @@ static  void    free_filenames( void )
 {
     fnstack * wk;
     fnstack * wk1;
-    int32_t cnt;
+    int cnt;
 
     wk = fn_stack;
     if( GlobalFlags.statistics ) {

@@ -201,8 +201,8 @@ typedef struct {
 /* This is used to record the state of the current page. */
 
 typedef struct {
-    uint32_t    x_address;
-    uint32_t    y_address;
+    unsigned    x_address;
+    unsigned    y_address;
     font_number font;
     text_type   type;
 } page_state;
@@ -236,19 +236,19 @@ static bool             page_start;
 static bool             shift_done;
 static page_state       current_state;
 static page_state       desired_state;
-static uint32_t         line_pass_number;
+static unsigned         line_pass_number;
 
 /* These are used to hold values returned by device functions. */
 
 static char             *date_val;
 static char             *time_val;
 static font_number      df_font;
-static uint32_t         tab_width;
-static uint32_t         thickness;
-static uint32_t         x_address;
-static uint32_t         x_size;
-static uint32_t         y_address;
-static uint32_t         y_size;
+static unsigned         tab_width;
+static unsigned         thickness;
+static unsigned         x_address;
+static unsigned         x_size;
+static unsigned         y_address;
+static unsigned         y_size;
 
 /* These are used by the interpreter. */
 static bool             has_htab;
@@ -404,8 +404,8 @@ static void output_spaces( unsigned count )
 
 static void output_uscores( text_chars *in_chars )
 {
-    uint32_t    count;
-    uint32_t    uscore_width;
+    unsigned    count;
+    unsigned    uscore_width;
 
     /* Undersore characters cannot be emitted "backwards". */
 
@@ -712,7 +712,7 @@ static void *df_flushpage( void )
 {
     static  int         instance    = 0;
             uint16_t    current_pages;
-            uint32_t    save_desired_y;
+            unsigned    save_desired_y;
 
     /* Recursion is an error. */
 
@@ -1932,7 +1932,7 @@ static void *df_getnumsymbol( void )
     char        *name    = NULL;
     parameters  my_parameters;
     symsub      *sym_val;
-    uint32_t    ret_val = 0;
+    unsigned    ret_val = 0;
 
     /* Extract parameter offset. */
 
@@ -3141,10 +3141,10 @@ static void fb_overprint_vertical_positioning( void )
 
 static void fb_normal_vertical_positioning( void )
 {
-    uint32_t    i;
-    uint32_t    current_pages;
-    uint32_t    desired_pages;
-    uint32_t    device_pages;
+    unsigned    i;
+    unsigned    current_pages;
+    unsigned    desired_pages;
+    unsigned    device_pages;
 
     /* A device using :ABSOLUTEADDRESS may be able to move upwards on a given
      * device page, but it cannot go back to a prior device page. A device
@@ -3939,8 +3939,8 @@ void fb_init( init_block *in_block )
  *          drawing code is needed.
  */
 
-void fb_line_block( line_block *in_line_block, uint32_t h_start, uint32_t v_start,
-                     uint32_t h_len, uint32_t v_len, bool twice )
+void fb_line_block( line_block *in_line_block, unsigned h_start, unsigned v_start,
+                     unsigned h_len, unsigned v_len, bool twice )
 {
     /* Set up for fb_absoluteaddress(). */
 
@@ -4027,7 +4027,7 @@ void fb_lineproc_endvalue( void )
  *      partially described in the Wiki.
  */
 
-void fb_new_section( uint32_t v_start )
+void fb_new_section( unsigned v_start )
 {
     font_number font_save;
 
@@ -4096,7 +4096,7 @@ void fb_new_section( uint32_t v_start )
  *          blocks, or which function blocks, are interpreted.
  */
 
-void fb_position( uint32_t h_start, uint32_t v_start )
+void fb_position( unsigned h_start, unsigned v_start )
 {
     /* Set the desired state. */
 
@@ -4261,7 +4261,7 @@ void fb_subsequent_text_line_pass( text_line *out_line, uint16_t line_pass )
 
 void set_oc_pos( void )
 {
-    uint32_t sav_x_address;
+    unsigned sav_x_address;
 
     sav_x_address = x_address;
     x_address = g_oc_hpos;

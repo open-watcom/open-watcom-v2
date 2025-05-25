@@ -268,7 +268,7 @@ static char *get_member_name( FILE *fp, const char *dir_file_name, const char *d
 
         /* Skip the number of entries. */
 
-        fseek( fp, sizeof( uint32_t ), SEEK_CUR );
+        fseek( fp, sizeof( unsigned ), SEEK_CUR );
         if( ferror( fp ) || feof( fp ) ) {
             break;
         }

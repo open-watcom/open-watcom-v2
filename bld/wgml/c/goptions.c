@@ -657,7 +657,7 @@ static void set_font( option * opt )
                 bad_cmd_line_err_exit( err_invalid_font_space, p, ' ' );
             } else {
                 g_info_research( inf_recognized_xxx, "font space", pts );
-                new_font->space = (uint32_t) fn;
+                new_font->space = (unsigned) fn;
             }
         } else {
             g_info_research( inf_recognized_xxx, "font style", p );
@@ -689,7 +689,7 @@ static void set_font( option * opt )
                     bad_cmd_line_err_exit( err_invalid_font_height, p, ' ' );
                 } else {
                     g_info_research( inf_recognized_xxx, "font height", pts );
-                    new_font->height = (uint32_t) fn;
+                    new_font->height = (unsigned) fn;
                 }
             }
         } else {
@@ -699,7 +699,7 @@ static void set_font( option * opt )
                     bad_cmd_line_err_exit( err_invalid_font_space, p, ' ' );
                 } else {
                     g_info_research( inf_recognized_xxx, "font space", pts );
-                    new_font->space = (uint32_t) fn;
+                    new_font->space = (unsigned) fn;
                 }
 
                 for( i = 0; i < 4; i++ ) pts[i] = '0';
@@ -714,7 +714,7 @@ static void set_font( option * opt )
                         bad_cmd_line_err_exit( err_invalid_font_height, p, ' ' );
                     } else {
                         g_info_research( inf_recognized_xxx, "font height", pts );
-                        new_font->height = (uint32_t) fn;
+                        new_font->height = (unsigned) fn;
                     }
                 }
             } else {
@@ -737,7 +737,7 @@ static void set_font( option * opt )
                         bad_cmd_line_err_exit( err_invalid_font_space, p, ' ' );
                     } else {
                         g_info_research( inf_recognized_xxx, "font space", pts );
-                        new_font->space = (uint32_t) fn;
+                        new_font->space = (unsigned) fn;
                     }
                 }
             }
@@ -769,7 +769,7 @@ static void set_font( option * opt )
                     bad_cmd_line_err_exit( err_invalid_font_height, p, ' ' );
                 } else {
                     g_info_research( inf_recognized_xxx, "font height", pts );
-                    new_font->height = (uint32_t) fn;
+                    new_font->height = (unsigned) fn;
                 }
             }
         } else {
@@ -785,7 +785,7 @@ static void set_font( option * opt )
                     bad_cmd_line_err_exit( err_invalid_font_space, p, ' ' );
                 } else {
                     g_info_research( inf_recognized_xxx, "font space", pts );
-                    new_font->space = (uint32_t) fn;
+                    new_font->space = (unsigned) fn;
                 }
             }
 
@@ -801,7 +801,7 @@ static void set_font( option * opt )
                     bad_cmd_line_err_exit( err_invalid_font_height, p, ' ' );
                 } else {
                     g_info_research( inf_recognized_xxx, "font height", pts );
-                    new_font->height = (uint32_t) fn;
+                    new_font->height = (unsigned) fn;
                 }
             }
         }
@@ -956,7 +956,7 @@ static void set_from( option * opt )
 static void set_symbol( option *opt )
 {
     char            *name;
-    int32_t         rc;
+    int         rc;
 
     if( tokennext == NULL
       || tokennext->bol

@@ -46,12 +46,12 @@
 void    init_page_geometry( void )
 {
     int         i;
-    uint32_t    page_depth_org;
-    uint32_t    net_top_margin;
-    uint32_t    net_y_start;
+    unsigned    page_depth_org;
+    unsigned    net_top_margin;
+    unsigned    net_y_start;
     int         rm_test;
-    uint32_t    top_margin;
-    uint32_t    y_start_correction;
+    unsigned    top_margin;
+    unsigned    y_start_correction;
 
     g_resh = bin_device->horizontal_base_units; // hor resolution  &sysresh
     g_resv = bin_device->vertical_base_units;   // vert resolution &sysresv
@@ -373,9 +373,9 @@ static void finish_banners( void )
     region_lay_tag  *   nxt_reg;
     region_lay_tag  *   old_reg;
     region_lay_tag  *   sav_reg;
-    uint32_t            ban_line;
-    uint32_t            ban_bot_depth;
-    uint32_t            ban_top_depth;
+    unsigned            ban_line;
+    unsigned            ban_bot_depth;
+    unsigned            ban_top_depth;
 
     ban_bot_depth = 0;
     ban_top_depth = 0;

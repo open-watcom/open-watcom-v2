@@ -172,7 +172,7 @@ void scr_ix( void )
     symsub      *   dictval;
     unsigned        ixlen[3] = {0, 0, 0};   // index string lengths
     unsigned        reflen = 0;         // ref string length
-    uint32_t        wkpage;             // predicted page number
+    unsigned        wkpage;             // predicted page number
 
     static char     cwcurr[4] = {" ix"};// control word string for errmsg
 

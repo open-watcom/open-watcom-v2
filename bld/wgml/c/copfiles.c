@@ -94,11 +94,11 @@ static unsigned char    ti_table[0x100];    // .TI-controlled translation table
  *      the same length in horizontal_base_units.
  */
 
-static uint32_t scale_basis_to_horizontal_base_units( uint32_t in_units, wgml_font *in_font )
+static unsigned scale_basis_to_horizontal_base_units( unsigned in_units, wgml_font *in_font )
 {
-    uint32_t    divisor;
+    unsigned    divisor;
     uint64_t    units;
-    uint32_t    width;
+    unsigned    width;
 
     /* The conversion is done using this formula:
      * horizontal_base_units * font_height/100 * in_units
@@ -136,9 +136,9 @@ static uint32_t scale_basis_to_horizontal_base_units( uint32_t in_units, wgml_fo
 
 static void compute_metrics( wgml_font * in_font )
 {
-    uint32_t    glyph_height;
+    unsigned    glyph_height;
     unsigned    height;
-    uint32_t    shift_height;
+    unsigned    shift_height;
 
     /* Compute the default character width. */
 
