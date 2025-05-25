@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2024-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -41,8 +41,7 @@ void GetTimeString( char *st )
 {
     time_t      tod;
     char        *s;
-    int         i, j, start;
-    char        am_pm;
+    int         i, j;
 
     tod = time( NULL );
     s = ctime( &tod );
