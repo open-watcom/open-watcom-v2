@@ -813,7 +813,7 @@ static void gen_index( void )
         }
         t_page.cur_width += indent[0];
         ProcFlags.wrap_indent = true;
-        wrap_indent = wrap[0];
+        g_wrap_indent = wrap[0];
         if( ixh1->prt_term == NULL ) {
             ProcFlags.in_trans = false;         // turn off input translation
             process_text( ixh1->ix_term, layout_work.ix[0].font );
@@ -854,7 +854,7 @@ static void gen_index( void )
             }
             t_page.cur_width += indent[1];
             ProcFlags.wrap_indent = true;
-            wrap_indent = wrap[1];
+            g_wrap_indent = wrap[1];
             if( ixh2->prt_term == NULL ) {
                 ProcFlags.in_trans = false;         // turn off input translation
                 process_text( ixh2->ix_term, layout_work.ix[1].font );
@@ -895,7 +895,7 @@ static void gen_index( void )
                 }
                 t_page.cur_width += indent[2];
                 ProcFlags.wrap_indent = true;
-                wrap_indent = wrap[2];
+                g_wrap_indent = wrap[2];
                 if( ixh3->prt_term == NULL ) {
                     ProcFlags.in_trans = false;         // turn off input translation
                     process_text( ixh3->ix_term, layout_work.ix[2].font );

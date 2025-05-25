@@ -2422,7 +2422,7 @@ void process_text( char * text, font_number font )
                 // s_chars processing
                 if( ProcFlags.wrap_indent
                   && !wrap_done ) {       // INDEX item
-                    t_page.cur_left += wrap_indent;
+                    t_page.cur_left += g_wrap_indent;
                     wrap_done = true;
                 }
                 if( s_chars == NULL ) {
@@ -2524,7 +2524,7 @@ void process_text( char * text, font_number font )
                 // reset n_chars and count
                 if( ProcFlags.wrap_indent
                   && !wrap_done ) {     // INDEX item
-                    t_page.cur_left += wrap_indent;
+                    t_page.cur_left += g_wrap_indent;
                     wrap_done = true;
                 }
                 n_chars->x_address = t_page.cur_left;
