@@ -333,14 +333,19 @@ FILE *search_file_in_dirs( const char *filename, const char *defext, const char 
                 switch( sequence ) {
                 case DSEQ_opt_file:
                     ext = "." OPT_EXT;
+                    break;
                 case DSEQ_doc_spec:
                     ext = "." GML_EXT;
+                    break;
                 case DSEQ_bin_lib:
                     ext = "." COP_EXT;
+                    break;
                 case DSEQ_lib_src:
                     ext = "." PCD_EXT;
+                    break;
                 default:
                     ext = ".xxx";
+                    break;
                 }
                 xx_simple_err_exit_cc( ERR_FILE_MAX, filename, ext );
                 /* never return */
