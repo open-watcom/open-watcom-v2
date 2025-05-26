@@ -128,7 +128,7 @@ void *mem_alloc( unsigned size )
     p = malloc( size );
 #endif
     if( p == NULL ) {
-        xx_simple_err_exit( err_nomem_avail );
+        xx_simple_err_exit( ERR_NOMEM_AVAIL );
         /* never return */
     }
     return( p );
@@ -148,7 +148,7 @@ void *mem_realloc( void * oldp, unsigned size )
     p = realloc( oldp, size );
 #endif
     if( p == NULL ) {
-        xx_simple_err_exit( err_nomem_avail );
+        xx_simple_err_exit( ERR_NOMEM_AVAIL );
         /* never return */
     }
     return( p );
@@ -173,7 +173,7 @@ char *mem_strdup( const char *str )
     p = malloc( size + 1 );
 #endif
     if( p == NULL ) {
-        xx_simple_err_exit( err_nomem_avail );
+        xx_simple_err_exit( ERR_NOMEM_AVAIL );
         /* never return */
     }
     return( strcpy( p, str ) );
@@ -193,7 +193,7 @@ char *mem_tokdup( const char *str, unsigned size )
     p = malloc( size + 1 );
 #endif
     if( p == NULL ) {
-        xx_simple_err_exit( err_nomem_avail );
+        xx_simple_err_exit( ERR_NOMEM_AVAIL );
         /* never return */
     }
     strncpy( p, str, size );

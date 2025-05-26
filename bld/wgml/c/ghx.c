@@ -479,7 +479,7 @@ void gen_heading( char *h_text, const char *hdrefid, hdsrc hn_lvl, hdsrc hds_lvl
             cur_doc_el_group->depth += cur_doc_el_group->first->top_skip;   // top of page: top_skip
             cur_doc_el_group->first->subs_skip = 0;
             if( cur_doc_el_group->depth > t_page.max_depth ) {
-                xx_err_exit( err_heading_too_deep );     // the block won't fit on any page
+                xx_err_exit( ERR_HEADING_TOO_DEEP );     // the block won't fit on any page
                 /* never return */
             }
             if( page_width ) {
@@ -565,7 +565,7 @@ static void gml_hx_common( const gmltag * entry, hdsrc hn_lvl )
     case HDS_h0:
         if( !((ProcFlags.doc_sect == DSECT_body)
           || (ProcFlags.doc_sect_nxt == DSECT_body)) ) {
-            xx_err_exit_cc( err_tag_wrong_sect, hxstr, ":BODY section" );
+            xx_err_exit_cc( ERR_TAG_WRONG_SECT, hxstr, ":BODY section" );
             /* never return */
         }
         hd_level = hn_lvl;              // H0 always valid in BODY
@@ -573,7 +573,7 @@ static void gml_hx_common( const gmltag * entry, hdsrc hn_lvl )
     case HDS_h1:
         if( !((ProcFlags.doc_sect >= DSECT_body)
           || (ProcFlags.doc_sect_nxt >= DSECT_body)) ) {
-            xx_err_exit_cc( err_tag_wrong_sect, hxstr, ":BODY :APPENDIX :BACKM sections" );
+            xx_err_exit_cc( ERR_TAG_WRONG_SECT, hxstr, ":BODY :APPENDIX :BACKM sections" );
             /* never return */
         }
         if( !((ProcFlags.doc_sect == DSECT_body)
@@ -606,7 +606,7 @@ static void gml_hx_common( const gmltag * entry, hdsrc hn_lvl )
     default:
         if( !((ProcFlags.doc_sect >= DSECT_abstract)
           || (ProcFlags.doc_sect_nxt >= DSECT_abstract)) ) {
-            xx_err_exit_cc( err_tag_wrong_sect, hxstr, ":ABSTRACT section or later" );
+            xx_err_exit_cc( ERR_TAG_WRONG_SECT, hxstr, ":ABSTRACT section or later" );
             /* never return */
         }
         break;
@@ -647,7 +647,7 @@ static void gml_hx_common( const gmltag * entry, hdsrc hn_lvl )
                 if( attr_val.tok.s == NULL ) {
                     break;
                 }
-                xx_warn_c( wng_unsupp_att, "stitle" );
+                xx_warn_c( WNG_UNSUPP_ATT, "stitle" );
                 if( ProcFlags.tag_end_found ) {
                     break;
                 }

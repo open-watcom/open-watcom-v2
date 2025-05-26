@@ -93,7 +93,7 @@ static void sksp_common( void )
                 }
 
                 if( *p != '\0' ) {                      // more text on line
-                    xx_line_err_exit_c( err_parm_invalid, p );
+                    xx_line_err_exit_c( ERR_PARM_INVALID, p );
                     /* never return */
                 }
             }

@@ -247,7 +247,7 @@ void    lay_convert( const gmltag * entry )
         }
     }
     if( *token_buf == '\0' ) {           // file name missing
-        xx_err_exit( err_att_missing );
+        xx_err_exit( ERR_ATT_MISSING );
         /* never return */
     }
     put_layout( token_buf, &layout_work );

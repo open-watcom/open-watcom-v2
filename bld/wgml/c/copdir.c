@@ -244,14 +244,14 @@ static char *get_member_name( FILE *fp, const char *dir_file_name, const char *d
 
         /* File error, including premature eof. */
 
-        xx_simple_err_exit_c( err_dev_lib_file, dir_file_name );
+        xx_simple_err_exit_c( ERR_DEV_LIB_FILE, dir_file_name );
         /* never return */
 
     case COP_not_se_v4_1:
 
         /* File was created by a different version of gendev. */
 
-        xx_simple_err_exit( err_wrong_gendev );
+        xx_simple_err_exit( ERR_WRONG_GENDEV );
         /* never return */
 
     case COP_not_bin_dev:
@@ -259,7 +259,7 @@ static char *get_member_name( FILE *fp, const char *dir_file_name, const char *d
 
         /* Wrong type of file: something is wrong with the device library. */
 
-        xx_simple_err_exit_c( err_dev_lib_data, dir_file_name );
+        xx_simple_err_exit_c( ERR_DEV_LIB_DATA, dir_file_name );
         /* never return */
 
     case COP_dir_v4_1_se:

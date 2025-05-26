@@ -234,7 +234,7 @@ void    lay_appendix( const gmltag * entry )
                 switch( curr ) {
                 case e_indent:
                     if( AttrFlags.indent ) {
-                        xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
+                        xx_line_err_exit_ci( ERR_ATT_DUP, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                         /* never return */
                     }
@@ -244,7 +244,7 @@ void    lay_appendix( const gmltag * entry )
                     break;
                 case e_pre_top_skip:
                     if( AttrFlags.pre_top_skip ) {
-                        xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
+                        xx_line_err_exit_ci( ERR_ATT_DUP, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                         /* never return */
                     }
@@ -254,7 +254,7 @@ void    lay_appendix( const gmltag * entry )
                     break;
                 case e_pre_skip:
                     if( AttrFlags.pre_skip ) {
-                        xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
+                        xx_line_err_exit_ci( ERR_ATT_DUP, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                         /* never return */
                     }
@@ -264,7 +264,7 @@ void    lay_appendix( const gmltag * entry )
                     break;
                 case e_post_skip:
                     if( AttrFlags.post_skip ) {
-                        xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
+                        xx_line_err_exit_ci( ERR_ATT_DUP, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                         /* never return */
                     }
@@ -274,7 +274,7 @@ void    lay_appendix( const gmltag * entry )
                     break;
                 case e_spacing:
                     if( AttrFlags.spacing ) {
-                        xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
+                        xx_line_err_exit_ci( ERR_ATT_DUP, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                         /* never return */
                     }
@@ -283,7 +283,7 @@ void    lay_appendix( const gmltag * entry )
                     break;
                 case e_font:
                     if( AttrFlags.font ) {
-                        xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
+                        xx_line_err_exit_ci( ERR_ATT_DUP, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                         /* never return */
                     }
@@ -296,7 +296,7 @@ void    lay_appendix( const gmltag * entry )
                     break;
                 case e_number_font:
                     if( AttrFlags.number_font ) {
-                        xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
+                        xx_line_err_exit_ci( ERR_ATT_DUP, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                         /* never return */
                     }
@@ -309,7 +309,7 @@ void    lay_appendix( const gmltag * entry )
                     break;
                 case e_number_form:
                     if( AttrFlags.number_form ) {
-                        xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
+                        xx_line_err_exit_ci( ERR_ATT_DUP, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                         /* never return */
                     }
@@ -319,7 +319,7 @@ void    lay_appendix( const gmltag * entry )
                     break;
                 case e_page_position:
                     if( AttrFlags.page_position ) {
-                        xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
+                        xx_line_err_exit_ci( ERR_ATT_DUP, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                         /* never return */
                     }
@@ -329,7 +329,7 @@ void    lay_appendix( const gmltag * entry )
                     break;
                 case e_number_style:
                     if( AttrFlags.number_style ) {
-                        xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
+                        xx_line_err_exit_ci( ERR_ATT_DUP, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                         /* never return */
                     }
@@ -339,7 +339,7 @@ void    lay_appendix( const gmltag * entry )
                     break;
                 case e_page_eject:
                     if( AttrFlags.page_eject ) {
-                        xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
+                        xx_line_err_exit_ci( ERR_ATT_DUP, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                         /* never return */
                     }
@@ -349,7 +349,7 @@ void    lay_appendix( const gmltag * entry )
                     break;
                 case e_line_break:
                     if( AttrFlags.line_break ) {
-                        xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
+                        xx_line_err_exit_ci( ERR_ATT_DUP, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                         /* never return */
                     }
@@ -359,7 +359,7 @@ void    lay_appendix( const gmltag * entry )
                     break;
                 case e_display_heading:
                     if( AttrFlags.display_heading ) {
-                        xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
+                        xx_line_err_exit_ci( ERR_ATT_DUP, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                         /* never return */
                     }
@@ -369,7 +369,7 @@ void    lay_appendix( const gmltag * entry )
                     break;
                 case e_number_reset:
                     if( AttrFlags.number_reset ) {
-                        xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
+                        xx_line_err_exit_ci( ERR_ATT_DUP, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                         /* never return */
                     }
@@ -379,7 +379,7 @@ void    lay_appendix( const gmltag * entry )
                     break;
                 case e_case:
                     if( AttrFlags.case_a ) {
-                        xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
+                        xx_line_err_exit_ci( ERR_ATT_DUP, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                         /* never return */
                     }
@@ -389,7 +389,7 @@ void    lay_appendix( const gmltag * entry )
                     break;
                 case e_align:
                     if( AttrFlags.align ) {
-                        xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
+                        xx_line_err_exit_ci( ERR_ATT_DUP, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                         /* never return */
                     }
@@ -399,7 +399,7 @@ void    lay_appendix( const gmltag * entry )
                     break;
                 case e_header:
                     if( AttrFlags.header ) {
-                        xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
+                        xx_line_err_exit_ci( ERR_ATT_DUP, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                         /* never return */
                     }
@@ -409,7 +409,7 @@ void    lay_appendix( const gmltag * entry )
                     break;
                 case e_appendix_string:
                     if( AttrFlags.appendix_string ) {
-                        xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
+                        xx_line_err_exit_ci( ERR_ATT_DUP, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                         /* never return */
                     }
@@ -418,7 +418,7 @@ void    lay_appendix( const gmltag * entry )
                     break;
                 case e_page_reset:
                     if( AttrFlags.page_reset ) {
-                        xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
+                        xx_line_err_exit_ci( ERR_ATT_DUP, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                         /* never return */
                     }
@@ -427,7 +427,7 @@ void    lay_appendix( const gmltag * entry )
                     break;
                 case e_section_eject:
                     if( AttrFlags.section_eject ) {
-                        xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
+                        xx_line_err_exit_ci( ERR_ATT_DUP, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                         /* never return */
                     }
@@ -437,7 +437,7 @@ void    lay_appendix( const gmltag * entry )
                     break;
                 case e_columns:
                     if( AttrFlags.columns ) {
-                        xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
+                        xx_line_err_exit_ci( ERR_ATT_DUP, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                         /* never return */
                     }
@@ -449,14 +449,14 @@ void    lay_appendix( const gmltag * entry )
                     /* never return */
                 }
                 if( cvterr ) {          // there was an error
-                    xx_err_exit( err_att_val_inv );
+                    xx_err_exit( ERR_ATT_VAL_INV );
                     /* never return */
                 }
                 break;                  // break out of for loop
             }
         }
         if( cvterr < 0 ) {
-            xx_err_exit( err_att_name_inv );
+            xx_err_exit( ERR_ATT_NAME_INV );
             /* never return */
         }
     }

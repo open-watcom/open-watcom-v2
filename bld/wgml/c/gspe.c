@@ -96,7 +96,7 @@
 static  void    init_pe_line( int pe_count )
 {
     if( input_cbs->pe_cb.count > 0) {   // count >0 is switch for .pe active
-        xx_err_exit( err_nested_pe );
+        xx_err_exit( ERR_NESTED_PE );
         /* never return */
     }
     if( get_line( true ) ) {
@@ -156,7 +156,7 @@ void    scr_pe( void )
                 if( strnicmp( "ON", pa, 2 ) == 0 ) {
                     init_pe_line( INT_MAX );    // partial implementation (no nesting)
                 } else {
-                    xx_line_err_exit_cc( err_xx_opt, cwcurr, pa );
+                    xx_line_err_exit_cc( ERR_XX_OPT, cwcurr, pa );
                     /* never return */
                 }
                 break;
@@ -164,7 +164,7 @@ void    scr_pe( void )
                 if( strnicmp( "OFF", pa, 3 ) == 0 ) {
                     reset_pe_cb();              // partial implementation (no nesting)
                 } else {
-                    xx_line_err_exit_cc( err_xx_opt, cwcurr, pa );
+                    xx_line_err_exit_cc( ERR_XX_OPT, cwcurr, pa );
                     /* never return */
                 }
                 break;
@@ -172,18 +172,18 @@ void    scr_pe( void )
                 if( strnicmp( "DELETE", pa, 6 ) == 0 ) {
                     reset_pe_cb();              // partial implementation (no nesting)
                 } else {
-                    xx_line_err_exit_cc( err_xx_opt, cwcurr, pa );
+                    xx_line_err_exit_cc( ERR_XX_OPT, cwcurr, pa );
                     /* never return */
                 }
                 break;
             default:
-                xx_line_err_exit_cc( err_xx_opt, cwcurr, pa );
+                xx_line_err_exit_cc( ERR_XX_OPT, cwcurr, pa );
                 /* never return */
             }
         } else {
             scandata.s = gn.arg.s;
             if( gn.result < 0 ) {
-                xx_line_err_exit_c( err_val_neg, pa );
+                xx_line_err_exit_c( ERR_VAL_NEG, pa );
                 /* never return */
             }
             init_pe_line( gn.result );

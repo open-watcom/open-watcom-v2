@@ -123,7 +123,7 @@ static void process_arg( p_lay_tag *p_or_pc )
                 switch( curr ) {
                 case e_line_indent:
                     if( AttrFlags.line_indent ) {
-                        xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
+                        xx_line_err_exit_ci( ERR_ATT_DUP, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                         /* never return */
                     }
@@ -132,7 +132,7 @@ static void process_arg( p_lay_tag *p_or_pc )
                     break;
                 case e_pre_skip:
                     if( AttrFlags.pre_skip ) {
-                        xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
+                        xx_line_err_exit_ci( ERR_ATT_DUP, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                         /* never return */
                     }
@@ -141,7 +141,7 @@ static void process_arg( p_lay_tag *p_or_pc )
                     break;
                 case e_post_skip:
                     if( AttrFlags.post_skip ) {
-                        xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
+                        xx_line_err_exit_ci( ERR_ATT_DUP, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                         /* never return */
                     }
@@ -153,14 +153,14 @@ static void process_arg( p_lay_tag *p_or_pc )
                     /* never return */
                 }
                 if( cvterr ) {              // there was an error
-                    xx_err_exit( err_att_val_inv );
+                    xx_err_exit( ERR_ATT_VAL_INV );
                     /* never return */
                 }
                 break;                      // break out of for loop
             }
         }
         if( cvterr < 0 ) {
-            xx_err_exit( err_att_name_inv );
+            xx_err_exit( ERR_ATT_NAME_INV );
             /* never return */
         }
     }

@@ -433,7 +433,7 @@ void gml_sf( const gmltag *entry )
         }
     }
     if( !font_seen ) {          // font is a required attribute
-        xx_line_err_exit_c( err_att_missing, scandata.s );
+        xx_line_err_exit_c( ERR_ATT_MISSING, scandata.s );
         /* never return */
     }
 

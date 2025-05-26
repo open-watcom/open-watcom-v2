@@ -177,7 +177,7 @@ static void g_msg_var( msg_ids errornum, int sev, va_list arglist )
 /*  error message                                                          */
 /***************************************************************************/
 
-static void g_err( const msg_ids num, ... )
+static void g_err( msg_ids num, ... )
 {
     va_list args;
 
@@ -190,7 +190,7 @@ static void g_err( const msg_ids num, ... )
 /*  warning message                                                        */
 /***************************************************************************/
 
-static void g_warn( const msg_ids num, ... )
+static void g_warn( msg_ids num, ... )
 {
     va_list args;
 
@@ -203,7 +203,7 @@ static void g_warn( const msg_ids num, ... )
 /*  informational message (general)                                        */
 /***************************************************************************/
 
-void g_info( const msg_ids num, ... )
+void g_info( msg_ids num, ... )
 {
     va_list args;
 
@@ -216,7 +216,7 @@ void g_info( const msg_ids num, ... )
 /*  informational message forced to left margin                            */
 /***************************************************************************/
 
-void g_info_lm( const msg_ids num, ... )
+void g_info_lm( msg_ids num, ... )
 {
     va_list args;
 
@@ -230,7 +230,7 @@ void g_info_lm( const msg_ids num, ... )
 /*  these functions do output that is controlled by GlobalFlags.research   */
 /***************************************************************************/
 
-void g_info_research( const msg_ids num, ... )
+void g_info_research( msg_ids num, ... )
 {
     va_list args;
 
@@ -337,11 +337,11 @@ void file_mac_info( void )
             sprintf( linestr, "%d", input_cbs->s.m->lineno );
             sprintf( linefile, "%d", input_cbs->s.m->lineno + input_cbs->s.m->mac->lineno );
             sprintf( linemac, "%d", input_cbs->s.m->mac->lineno );
-            g_info( err_inf_mac_def, linestr, linefile, input_cbs->s.m->mac->name,
+            g_info( ERR_INF_MAC_DEF, linestr, linefile, input_cbs->s.m->mac->name,
                     linemac, input_cbs->s.m->mac->mac_file_name);
         } else {
             sprintf( linestr, "%d", input_cbs->s.f->lineno );
-            g_info( inf_file_line, linestr, input_cbs->s.f->filename );
+            g_info( INF_FILE_LINE, linestr, input_cbs->s.f->filename );
         }
     }
     show_include_stack();
@@ -366,34 +366,34 @@ void file_mac_info_nest( void )
             sprintf( linestr, "%d", input_cbs->s.m->lineno );
             sprintf( linefile, "%d", input_cbs->s.m->lineno + input_cbs->s.m->mac->lineno );
             sprintf( linemac, "%d", input_cbs->s.m->mac->lineno );
-            g_info( err_inf_mac_def, linestr, linefile, input_cbs->s.m->mac->name,
+            g_info( ERR_INF_MAC_DEF, linestr, linefile, input_cbs->s.m->mac->name,
                     linemac, input_cbs->s.m->mac->mac_file_name);
         } else {
             sprintf( linestr, "%d", input_cbs->s.f->lineno );
-            g_info( inf_file_line, linestr, input_cbs->s.f->filename );
+            g_info( INF_FILE_LINE, linestr, input_cbs->s.f->filename );
         }
 
-        g_info( err_tag_starting, str_tags[nest_cb->gtag] );
+        g_info( ERR_TAG_STARTING, str_tags[nest_cb->gtag] );
 
         nw = nest_cb->p_stack;
         while( nw != NULL ) {
             switch( nw->nest_flag & II_input ) {
             case II_file:
                 sprintf( linestr, "%d", nw->lineno );
-                g_info( inf_file_line, linestr, nw->s.filename );
+                g_info( INF_FILE_LINE, linestr, nw->s.filename );
                 break;
             case II_tag :
-                g_info( err_inf_tag, nw->s.mt.tag_m->tagname );
+                g_info( ERR_INF_TAG, nw->s.mt.tag_m->tagname );
                 // fallthrough
             case II_macro :
                 sprintf( linestr, "%d", nw->lineno );
                 sprintf( linefile, "%d", nw->lineno + nw->s.mt.m->lineno );
                 sprintf( linemac, "%d", nw->s.mt.m->lineno );
-                g_info( err_inf_mac_def, linestr, linefile, nw->s.mt.m->name,
+                g_info( ERR_INF_MAC_DEF, linestr, linefile, nw->s.mt.m->name,
                         linemac, nw->s.mt.m->mac_file_name);
                 break;
             default:
-                g_info( err_inc_unknown );
+                g_info( ERR_INC_UNKNOWN );
                 break;
             }
             nw = nw->prev;
@@ -414,7 +414,7 @@ void att_req_err_exit( const char *tagname, const char *attname )  // for proces
     const char    *   pa;
 
     err_count++;
-    g_err( err_att_req, tagname, attname );
+    g_err( ERR_ATT_REQ, tagname, attname );
     p = attname;
     SkipSpaces( p );    // start of first attribute name
     while( *p != '\0' ) {
@@ -425,10 +425,10 @@ void att_req_err_exit( const char *tagname, const char *attname )  // for proces
         len = p - pa;
         strncpy( one_name, pa, len );
         one_name[len] = '\0';
-        g_info( info_att_req_name, one_name );
+        g_info( INFO_ATT_REQ_NAME, one_name );
         SkipSpaces( p );    // start of next attribute name
     }
-    g_info( info_att_req );
+    g_info( INFO_ATT_REQ );
     file_mac_info();
     err_exit();
     /* never return */
@@ -440,24 +440,24 @@ void ban_reg_err_exit( msg_ids num, banner_lay_tag * in_ban1, banner_lay_tag * i
 // for finish_banners()
 {
     if( in_ban1 != NULL ) {
-        g_err( inf_ban_id, doc_sections[in_ban1->docsect].name, ban_places[in_ban1->place] );
+        g_err( INF_BAN_ID, doc_sections[in_ban1->docsect].name, ban_places[in_ban1->place] );
         if( in_ban2 != NULL ) {
-            g_info( inf_ban_id, doc_sections[in_ban2->docsect].name, ban_places[in_ban2->place] );
+            g_info( INF_BAN_ID, doc_sections[in_ban2->docsect].name, ban_places[in_ban2->place] );
         }
     } else if( in_ban2 != NULL ) {
-        g_err( inf_ban_id, doc_sections[in_ban2->docsect].name, ban_places[in_ban2->place] );
+        g_err( INF_BAN_ID, doc_sections[in_ban2->docsect].name, ban_places[in_ban2->place] );
     } else {
         internal_err_exit( __FILE__, __LINE__ );
         /* never return */
     }
 
     if( in_reg1 != NULL ) {
-        g_info( inf_reg_id, in_reg1->hoffset.su_txt, in_reg1->voffset.su_txt,
+        g_info( INF_REG_ID, in_reg1->hoffset.su_txt, in_reg1->voffset.su_txt,
                 in_reg1->indent.su_txt );
     }
 
     if( in_reg2 != NULL ) {
-        g_info( inf_reg_id, in_reg2->hoffset.su_txt, in_reg2->voffset.su_txt,
+        g_info( INF_REG_ID, in_reg2->hoffset.su_txt, in_reg2->voffset.su_txt,
                 in_reg2->indent.su_txt );
     }
 
@@ -470,7 +470,7 @@ void ban_reg_err_exit( msg_ids num, banner_lay_tag * in_ban1, banner_lay_tag * i
 void internal_err_exit( const char * file, int line )    // utility function
 {
     err_count++;
-    g_err( err_intern, file, line );
+    g_err( ERR_INTERN, file, line );
     err_exit();
     /* never return */
 }
@@ -478,8 +478,8 @@ void internal_err_exit( const char * file, int line )    // utility function
 void list_level_err_exit( const char * xl_tag, uint8_t xl_level )    // for finish_lists()
 {
     err_count++;
-    g_err( err_level_skipped, xl_tag );
-    g_info( info_level_skipped, xl_level );
+    g_err( ERR_LEVEL_SKIPPED, xl_tag );
+    g_info( INFO_LEVEL_SKIPPED, xl_level );
     file_mac_info();
     err_exit();
     /* never return */
@@ -487,12 +487,12 @@ void list_level_err_exit( const char * xl_tag, uint8_t xl_level )    // for fini
 
 void main_file_err_exit( const char * filename )
 {
-    g_err( err_input_file_not_found, filename );
+    g_err( ERR_INPUT_FILE_NOT_FOUND, filename );
     err_count++;
     if( inc_level > 0 ) {
         show_include_stack();
     } else {                // master file included from cmdline
-        g_info( inf_included, "cmdline" );
+        g_info( INF_INCLUDED, "cmdline" );
     }
     err_exit();
     /* never return */
@@ -505,10 +505,10 @@ void numb_err_exit( void )                                           // for scr_
     err_count++;
     if( input_cbs->fmflags & II_tag_mac ) {
         sprintf( linestr, "%d", input_cbs->s.m->lineno );
-        g_err( err_pu_num, linestr, "macro", input_cbs->s.m->mac->name );
+        g_err( ERR_PU_NUM, linestr, "macro", input_cbs->s.m->mac->name );
     } else {
         sprintf( linestr, "%d", input_cbs->s.f->lineno );
-        g_err( err_pu_num, linestr, "file", input_cbs->s.f->filename );
+        g_err( ERR_PU_NUM, linestr, "file", input_cbs->s.f->filename );
     }
     show_include_stack();
     err_exit();
@@ -520,14 +520,14 @@ void symbol_name_length_err_exit( const char * symname )
     char    linestr[NUM2STR_LENGTH + 1];
 
     err_count++;
-    g_err( err_sym_long, symname );
-    g_info( inf_sym_10 );
+    g_err( ERR_SYM_LONG, symname );
+    g_info( INF_SYM_10 );
     if( input_cbs->fmflags & II_tag_mac ) {
         sprintf( linestr, "%d", input_cbs->s.m->lineno );
-        g_info( inf_mac_line, linestr, input_cbs->s.m->mac->name );
+        g_info( INF_MAC_LINE, linestr, input_cbs->s.m->mac->name );
     } else {
         sprintf( linestr, "%d", input_cbs->s.f->lineno );
-        g_info( inf_file_line, linestr, input_cbs->s.f->filename );
+        g_info( INF_FILE_LINE, linestr, input_cbs->s.f->filename );
     }
     file_mac_info();
     err_exit();
@@ -538,9 +538,9 @@ void val_parse_err_exit( const char * pa, bool tag ) // for internal_to_su()
 {
     err_count++;
     if( tag ) {
-        g_err( err_inv_att_val );
+        g_err( ERR_INV_ATT_VAL );
     } else {
-        g_err( err_inv_cw_op_val );
+        g_err( ERR_INV_CW_OP_VAL );
     }
     file_mac_info();
     show_line_error( pa );
@@ -555,8 +555,8 @@ void val_parse_err_exit( const char * pa, bool tag ) // for internal_to_su()
 
 void dup_refid_err_exit( const char *refid, const char * context )
 {
-    g_err( wng_id_xxx, refid );
-    g_info( inf_id_duplicate, context );
+    g_err( WNG_ID_XXX, refid );
+    g_info( INF_ID_DUPLICATE, context );
     file_mac_info();
     err_count++;
     err_exit();
@@ -569,7 +569,7 @@ void dup_refid_err_exit( const char *refid, const char * context )
 
 static void g_tag_common_err( g_tags gtag, bool nest )
 {
-    g_err( err_tag_expected, str_tags[gtag] );
+    g_err( ERR_TAG_EXPECTED, str_tags[gtag] );
     if( nest ) {
         file_mac_info_nest();
     } else {
@@ -601,10 +601,10 @@ void g_if_int_err_exit( void )
 
     if( input_cbs->fmflags & II_tag_mac ) {
         sprintf( linestr, "%d", input_cbs->s.m->lineno );
-        g_err( err_if_intern, linestr, "macro", input_cbs->s.m->mac->name );
+        g_err( ERR_IF_INTERN, linestr, "macro", input_cbs->s.m->mac->name );
     } else {
         sprintf( linestr, "%d", input_cbs->s.f->lineno );
-        g_err( err_if_intern, linestr, "file", input_cbs->s.f->filename );
+        g_err( ERR_IF_INTERN, linestr, "file", input_cbs->s.f->filename );
     }
     if( inc_level > 1 ) {
         show_include_stack();
@@ -622,10 +622,10 @@ void g_tag_mac_err_exit( const gtentry *ge )
 
     if( input_cbs->fmflags & II_tag_mac ) {
         sprintf( linestr, "%d", input_cbs->s.m->lineno );
-        g_err( err_tag_macro, ge->macname, ge->tagname, linestr, "macro", input_cbs->s.m->mac->name );
+        g_err( ERR_TAG_MACRO, ge->macname, ge->tagname, linestr, "macro", input_cbs->s.m->mac->name );
     } else {
         sprintf( linestr, "%d", input_cbs->s.f->lineno );
-        g_err( err_tag_macro, ge->macname, ge->tagname, linestr, "file", input_cbs->s.f->filename );
+        g_err( ERR_TAG_MACRO, ge->macname, ge->tagname, linestr, "file", input_cbs->s.f->filename );
     }
     if( inc_level > 0 ) {
         show_include_stack();
@@ -640,7 +640,7 @@ void g_tag_no_err_exit( g_tags gtag )
     char    tagn[TAG_NAME_LENGTH + 1 + 1];
 
     sprintf( tagn, "%c%s", GML_char, str_tags[gtag] );
-    g_err( err_tag_not_expected, tagn );
+    g_err( ERR_TAG_NOT_EXPECTED, tagn );
     file_mac_info_nest();
     err_count++;
     err_exit();
@@ -652,7 +652,7 @@ void g_tag_prec_err_exit( g_tags gtag )
     char    tagn[TAG_NAME_LENGTH + 1 + 1];
 
     sprintf( tagn, "%c%s", GML_char, str_tags[gtag] );
-    g_err( err_tag_preceding, tagn );
+    g_err( ERR_TAG_PRECEDING, tagn );
     file_mac_info();
     err_count++;
     err_exit();
@@ -671,7 +671,7 @@ void g_tag_rsloc_err_exit( locflags inloc, const char * pa )
             break;
         }
     }
-    g_err( err_tag_expected, tag_name );
+    g_err( ERR_TAG_EXPECTED, tag_name );
     file_mac_info_nest();
     err_count++;
 
@@ -685,8 +685,8 @@ void g_wng_hlevel( hdsrc hd_found, hdsrc hd_expected )
 {
     wng_count++;
     if( GlobalFlags.warning ) {
-        g_warn( wng_heading_level );
-        g_info( inf_heading_level, hd_nums[hd_found].tag, hd_nums[hd_expected].tag );
+        g_warn( WNG_HEADING_LEVEL );
+        g_info( INF_HEADING_LEVEL, hd_nums[hd_found].tag, hd_nums[hd_expected].tag );
         file_mac_info();
     }
     return;
@@ -695,9 +695,9 @@ void g_wng_hlevel( hdsrc hd_found, hdsrc hd_expected )
 void keep_nest_err_exit( const char * arg1, const char * arg2 )
 {
     err_count++;
-    g_err( err_cw_tag_x_in_y, arg1, arg2 );
-    g_info( inf_nested_blocks1 );
-    g_info( inf_nested_blocks2 );
+    g_err( ERR_CW_TAG_X_IN_Y, arg1, arg2 );
+    g_info( INF_NESTED_BLOCKS1 );
+    g_info( INF_NESTED_BLOCKS2 );
     file_mac_info();
     err_exit();
     /* never return */
@@ -705,7 +705,7 @@ void keep_nest_err_exit( const char * arg1, const char * arg2 )
 
 /* These are generic helper functions */
 
-void xx_err_exit( const msg_ids errid )
+void xx_err_exit( msg_ids errid )
 {
     err_count++;
     g_err( errid );
@@ -714,7 +714,7 @@ void xx_err_exit( const msg_ids errid )
     /* never return */
 }
 
-void xx_err_exit_c( const msg_ids errid, char const * arg )
+void xx_err_exit_c( msg_ids errid, char const * arg )
 {
     err_count++;
     g_err( errid, arg );
@@ -723,7 +723,7 @@ void xx_err_exit_c( const msg_ids errid, char const * arg )
     /* never return */
 }
 
-void xx_err_exit_cc( const msg_ids errid, const char * arg1, const char * arg2 )
+void xx_err_exit_cc( msg_ids errid, const char * arg1, const char * arg2 )
 {
     err_count++;
     g_err( errid, arg1, arg2 );
@@ -732,7 +732,7 @@ void xx_err_exit_cc( const msg_ids errid, const char * arg1, const char * arg2 )
     /* never return */
 }
 
-void xx_line_err_exit_c( const msg_ids errid, const char * pa )
+void xx_line_err_exit_c( msg_ids errid, const char * pa )
 {
     err_count++;
     g_err( errid );
@@ -742,7 +742,7 @@ void xx_line_err_exit_c( const msg_ids errid, const char * pa )
     /* never return */
 }
 
-void xx_line_err_exit_ci( const msg_ids errid, const char * pa, unsigned len )
+void xx_line_err_exit_ci( msg_ids errid, const char * pa, unsigned len )
 {
     err_count++;
     g_err( errid );
@@ -752,7 +752,7 @@ void xx_line_err_exit_ci( const msg_ids errid, const char * pa, unsigned len )
     /* never return */
 }
 
-void xx_line_err_exit_cc( const msg_ids errid, char const * cw, const char * pa )
+void xx_line_err_exit_cc( msg_ids errid, char const * cw, const char * pa )
 {
     err_count++;
     g_err( errid, cw );
@@ -762,7 +762,7 @@ void xx_line_err_exit_cc( const msg_ids errid, char const * cw, const char * pa 
     /* never return */
 }
 
-void xx_line_err_exit_cci( const msg_ids errid, char const * cw, char const * pa, unsigned len )
+void xx_line_err_exit_cci( msg_ids errid, char const * cw, char const * pa, unsigned len )
 {
     err_count++;
     g_err( errid, cw, pa );
@@ -772,7 +772,7 @@ void xx_line_err_exit_cci( const msg_ids errid, char const * cw, char const * pa
     /* never return */
 }
 
-void xx_nest_err_exit( const msg_ids errid )
+void xx_nest_err_exit( msg_ids errid )
 {
     err_count++;
     g_err( errid );
@@ -781,7 +781,7 @@ void xx_nest_err_exit( const msg_ids errid )
     /* never return */
 }
 
-void xx_nest_err_exit_cc( const msg_ids errid, const char * arg1, const char * arg2 )
+void xx_nest_err_exit_cc( msg_ids errid, const char * arg1, const char * arg2 )
 {
     err_count++;
     g_err( errid, arg1, arg2 );
@@ -790,7 +790,7 @@ void xx_nest_err_exit_cc( const msg_ids errid, const char * arg1, const char * a
     /* never return */
 }
 
-void xx_simple_err_exit( const msg_ids errid )
+void xx_simple_err_exit( msg_ids errid )
 {
     err_count++;
     g_err( errid );
@@ -798,7 +798,7 @@ void xx_simple_err_exit( const msg_ids errid )
     /* never return */
 }
 
-void xx_simple_err_exit_c( const msg_ids errid, const char * arg )
+void xx_simple_err_exit_c( msg_ids errid, const char * arg )
 {
     err_count++;
     g_err( errid, arg );
@@ -806,7 +806,7 @@ void xx_simple_err_exit_c( const msg_ids errid, const char * arg )
     /* never return */
 }
 
-void xx_simple_err_exit_i( const msg_ids errid, int arg )
+void xx_simple_err_exit_i( msg_ids errid, int arg )
 {
     err_count++;
     g_err( errid, arg );
@@ -814,7 +814,7 @@ void xx_simple_err_exit_i( const msg_ids errid, int arg )
     /* never return */
 }
 
-void xx_simple_err_exit_cc( const msg_ids errid, const char * arg1, const char * arg2 )
+void xx_simple_err_exit_cc( msg_ids errid, const char * arg1, const char * arg2 )
 {
     err_count++;
     g_err( errid, arg1, arg2 );
@@ -822,17 +822,17 @@ void xx_simple_err_exit_cc( const msg_ids errid, const char * arg1, const char *
     /* never return */
 }
 
-void xx_source_err_exit( const msg_ids errid )
+void xx_source_err_exit( msg_ids errid )
 {
     char    linestr[NUM2STR_LENGTH + 1];
 
     g_err( errid );
     if( input_cbs->fmflags & II_tag_mac ) {
         sprintf( linestr, "%d", input_cbs->s.m->lineno );
-        g_info( inf_mac_line, linestr, input_cbs->s.m->mac->name );
+        g_info( INF_MAC_LINE, linestr, input_cbs->s.m->mac->name );
     } else {
         sprintf( linestr, "%d", input_cbs->s.f->lineno );
-        g_info( inf_file_line, linestr, input_cbs->s.f->filename );
+        g_info( INF_FILE_LINE, linestr, input_cbs->s.f->filename );
     }
     show_include_stack();
     err_count++;
@@ -840,17 +840,17 @@ void xx_source_err_exit( const msg_ids errid )
     /* never return */
 }
 
-void xx_source_err_exit_c( const msg_ids errid, const char * arg )
+void xx_source_err_exit_c( msg_ids errid, const char * arg )
 {
     char    linestr[NUM2STR_LENGTH + 1];
 
     g_err( errid, arg );
     if( input_cbs->fmflags & II_tag_mac ) {
         sprintf( linestr, "%d", input_cbs->s.m->lineno );
-        g_info( inf_mac_line, linestr, input_cbs->s.m->mac->name );
+        g_info( INF_MAC_LINE, linestr, input_cbs->s.m->mac->name );
     } else {
         sprintf( linestr, "%d", input_cbs->s.f->lineno );
-        g_info( inf_file_line, linestr, input_cbs->s.f->filename );
+        g_info( INF_FILE_LINE, linestr, input_cbs->s.f->filename );
     }
     show_include_stack();
     err_count++;
@@ -858,7 +858,7 @@ void xx_source_err_exit_c( const msg_ids errid, const char * arg )
     /* never return */
 }
 
-void xx_warn( const msg_ids errid )
+void xx_warn( msg_ids errid )
 {
     wng_count++;
     if( GlobalFlags.warning ) {
@@ -868,7 +868,7 @@ void xx_warn( const msg_ids errid )
     return;
 }
 
-void xx_warn_c( const msg_ids errid, const char * arg )
+void xx_warn_c( msg_ids errid, const char * arg )
 {
     wng_count++;
     if( GlobalFlags.warning ) {
@@ -878,7 +878,7 @@ void xx_warn_c( const msg_ids errid, const char * arg )
     return;
 }
 
-void xx_warn_c_info( const msg_ids errid, const char * arg, const msg_ids warnid )
+void xx_warn_c_info( msg_ids errid, const char * arg, msg_ids warnid )
 {
     wng_count++;
     if( GlobalFlags.warning ) {
@@ -889,7 +889,7 @@ void xx_warn_c_info( const msg_ids errid, const char * arg, const msg_ids warnid
     return;
 }
 
-void xx_warn_c_info_c( const msg_ids errid, const char * arg1, const msg_ids warnid,
+void xx_warn_c_info_c( msg_ids errid, const char * arg1, msg_ids warnid,
                        const char * arg2 )
 {
     wng_count++;
@@ -901,7 +901,7 @@ void xx_warn_c_info_c( const msg_ids errid, const char * arg1, const msg_ids war
     return;
 }
 
-void xx_warn_cc( const msg_ids errid, const char * arg1, const char * arg2 )
+void xx_warn_cc( msg_ids errid, const char * arg1, const char * arg2 )
 {
     wng_count++;
     if( GlobalFlags.warning ) {
@@ -911,7 +911,7 @@ void xx_warn_cc( const msg_ids errid, const char * arg1, const char * arg2 )
     return;
 }
 
-void xx_warn_info_cc( const msg_ids errid, const msg_ids warnid, const char * arg1,
+void xx_warn_info_cc( msg_ids errid, msg_ids warnid, const char * arg1,
                       const char * arg2 )
 {
     wng_count++;
@@ -923,7 +923,7 @@ void xx_warn_info_cc( const msg_ids errid, const msg_ids warnid, const char * ar
     return;
 }
 
-void xx_line_warn_c( const msg_ids errid, const char * pa )
+void xx_line_warn_c( msg_ids errid, const char * pa )
 {
     wng_count++;
     if( GlobalFlags.warning ) {
@@ -934,7 +934,7 @@ void xx_line_warn_c( const msg_ids errid, const char * pa )
     return;
 }
 
-void xx_line_warn_cc( const msg_ids errid, const char * cw, const char * pa )
+void xx_line_warn_cc( msg_ids errid, const char * cw, const char * pa )
 {
     wng_count++;
     if( GlobalFlags.warning ) {
@@ -945,7 +945,7 @@ void xx_line_warn_cc( const msg_ids errid, const char * cw, const char * pa )
     return;
 }
 
-void xx_simple_warn( const msg_ids errid )
+void xx_simple_warn( msg_ids errid )
 {
     wng_count++;
     if( GlobalFlags.warning ) {
@@ -954,7 +954,7 @@ void xx_simple_warn( const msg_ids errid )
     return;
 }
 
-void xx_simple_warn_info_cc( const msg_ids errid, const char * arg1, const msg_ids warnid,
+void xx_simple_warn_info_cc( msg_ids errid, const char * arg1, msg_ids warnid,
                              const char * arg2 )
 {
     wng_count++;

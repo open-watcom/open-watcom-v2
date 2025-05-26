@@ -125,7 +125,7 @@ extern  void    gml_set( const gmltag * entry )
             rc = add_symvar_sym( &sym, token_buf, strlen( token_buf ), subscript, sym.flags );
         }
     } else {
-        xx_err_exit( err_att_missing );
+        xx_err_exit( ERR_ATT_MISSING );
         /* never return */
     }
 

@@ -65,12 +65,12 @@ static void usage( void )
     g_banner();
 
     kscreen = 0;
-    for( k = inf_use_start; k <= inf_use_end; k++ ) {
+    for( k = INF_USE_START; k <= INF_USE_END; k++ ) {
         g_info_lm( k );
         if( isatty( fileno( stdin ) ) ) {
             if( kscreen == 22 ) {
                 kscreen = 0;
-                g_info_lm( inf_pause );
+                g_info_lm( INF_PAUSE );
                 getchar();
             } else {
                 kscreen++;
@@ -248,7 +248,7 @@ static  void    del_input_cb_entry( void )
 //          char    linestr[NUM2STR_LENGTH + 1];
 //
 //          sprintf( linestr, "%d", wk->if_cb->if_level );
-//          xx_err_exit_c( err_if_level, linestr );
+//          xx_err_exit_c( ERR_IF_LEVEL, linestr );
 //          /* never return */
 //      }
         mem_free( wk->if_cb );
@@ -447,12 +447,12 @@ static  void    proc_input( char * filename )
             split_attr_file( token_buf, attrwork, sizeof( attrwork ) );
 
             if( attrwork[0] ) {
-                xx_warn_cc( wng_fileattr_ignored, attrwork, token_buf );
+                xx_warn_cc( WNG_FILEATTR_IGNORED, attrwork, token_buf );
             }
             fp = search_file_in_dirs( token_buf, def_ext, alt_ext, DSEQ_doc_spec );
             if( fp != NULL ) {
                 if( inc_level >= MAX_INC_DEPTH ) {
-                    xx_err_exit_c( err_max_input_nesting, token_buf );
+                    xx_err_exit_c( ERR_MAX_INPUT_NESTING, token_buf );
                     /* never return */
                 }
             } else {
@@ -472,7 +472,7 @@ static  void    proc_input( char * filename )
                 cb->fileattr[0] = '\0';
             }
             if( GlobalFlags.inclist ) {
-                g_info_lm( inf_curr_file, cb->filename );
+                g_info_lm( INF_CURR_FILE, cb->filename );
             }
             save_cb = input_cbs;
 
@@ -517,12 +517,12 @@ static  void    proc_input( char * filename )
                     if( input_cbs->fmflags & II_tag_mac ) {
                         if( gotargetno > 0 ) {
                             sprintf( linestr, "%d", gotargetno );
-                            xx_err_exit_cc( err_goto, linestr, input_cbs->s.m->mac->name );
+                            xx_err_exit_cc( ERR_GOTO, linestr, input_cbs->s.m->mac->name );
                         } else {
-                            xx_err_exit_cc( err_goto, gotarget, input_cbs->s.m->mac->name );
+                            xx_err_exit_cc( ERR_GOTO, gotarget, input_cbs->s.m->mac->name );
                         }
                     } else {
-                        xx_err_exit_cc( err_goto, gotarget, input_cbs->s.f->filename );
+                        xx_err_exit_cc( ERR_GOTO, gotarget, input_cbs->s.f->filename );
                     }
                     /* never return */
                 }
@@ -584,7 +584,7 @@ static  void    proc_input( char * filename )
                 }
                 if( ProcFlags.in_macro_define ) {
                     if( (input_cbs->fmflags & II_research) && GlobalFlags.firstpass ) {
-                        g_info_lm( inf_skip_line );
+                        g_info_lm( INF_SKIP_LINE );
                     }
                     continue;           // skip processing
                 }
@@ -597,7 +597,7 @@ static  void    proc_input( char * filename )
                     }
                     if( (input_cbs->fmflags & II_research) &&
                         GlobalFlags.firstpass ) {
-                        g_info_lm( inf_skip_line );
+                        g_info_lm( INF_SKIP_LINE );
                     }
                     set_if_then_do( ic );
                     test_process( ic );
@@ -644,12 +644,12 @@ static  void    proc_input( char * filename )
         }
         if( input_cbs->fmflags & II_file ) {
             if( GlobalFlags.inclist && (save_cb != input_cbs) ) {
-                g_info_lm( inf_curr_file, input_cbs->s.f->filename );
+                g_info_lm( INF_CURR_FILE, input_cbs->s.f->filename );
                 save_cb = input_cbs;
             }
         } else {
             if( GlobalFlags.inclist && GlobalFlags.research ) {     // only when -r specified
-                g_info_lm( inf_curr_macro, input_cbs->s.m->mac->name,
+                g_info_lm( INF_CURR_MACRO, input_cbs->s.m->mac->name,
                                            input_cbs->s.m->mac->mac_file_name  );
             }
         }
@@ -669,7 +669,7 @@ static  void    print_stats( clock_t duration_ticks )
     ldiv_t          sec_frac;
     unsigned long   peak;
 
-    g_info_lm( inf_stat_0 );
+    g_info_lm( INF_STAT_0 );
 
     sprintf( linestr, "%d", pass );
     if( pass == passes ) {
@@ -677,24 +677,24 @@ static  void    print_stats( clock_t duration_ticks )
     } else {
         sprintf( linestr2, "of %d", passes );
     }
-    g_info_lm( inf_stat_1, linestr, linestr2 );
+    g_info_lm( INF_STAT_1, linestr, linestr2 );
 
     sprintf( linestr, "%d", max_inc_level );
-    g_info_lm( inf_stat_2, linestr );
+    g_info_lm( INF_STAT_2, linestr );
 
     sprintf( linestr, "%d", err_count );
-    g_info_lm( inf_stat_3, linestr );
+    g_info_lm( INF_STAT_3, linestr );
 
     sprintf( linestr, "%d", wng_count );
-    g_info_lm( inf_stat_4, linestr );
+    g_info_lm( INF_STAT_4, linestr );
 
     sprintf( linestr, "%d", err_count ? 8 : wng_count ? 4 : 0 );
-    g_info_lm( inf_stat_5, linestr );
+    g_info_lm( INF_STAT_5, linestr );
 
     peak = mem_get_peak_usage();
     if( peak ) {
         sprintf( linestr2, "%lu", peak );
-        g_info_lm( inf_stat_6, linestr2 );
+        g_info_lm( INF_STAT_6, linestr2 );
     }
 
     // convert duration from clock ticks to HH:MM:SS.hh
@@ -702,7 +702,7 @@ static  void    print_stats( clock_t duration_ticks )
     sec_frac  = ldiv( duration_ticks, CLOCKS_PER_SEC );
     sprintf( linestr2, "%02d:%02d:%02d.%02d",
         (int)hour_min.quot, (int)hour_min.rem, (int)(sec_frac.quot % 60), (int)(sec_frac.rem / 10) );
-    g_info_lm( inf_stat_7, linestr2 );
+    g_info_lm( INF_STAT_7, linestr2 );
 }
 
 
@@ -806,7 +806,7 @@ int main( int argc, char * argv[] )
 
         token_buf = mem_alloc( BUF_SIZE + 1 );
 
-        // out_msg( "define enum %d %d\n", INF_CMDLINE, inf_cmdline );
+        // out_msg( "define enum %d %d\n", INF_CMDLINE, INF_CMDLINE );
 
         init_msgs();                        // init msg resources
 
@@ -816,7 +816,7 @@ int main( int argc, char * argv[] )
         cmdline = mem_alloc( cmdlen );
         _bgetcmd( cmdline, cmdlen );
 
-        g_info_research( inf_cmdline, cmdline );
+        g_info_research( INF_CMDLINE, cmdline );
 
         tok_count = proc_options( cmdline );
         init_sysparm( cmdline, banner1w( "Script/GML", _WGML_VERSION_ ) );
@@ -890,7 +890,7 @@ int main( int argc, char * argv[] )
     //          }
                 passcount = pass;
                 if( !GlobalFlags.lastpass && (err_count > 0) ) {
-                    g_info_lm( inf_error_stop, passes - pass > 1 ? "es" : "" );
+                    g_info_lm( INF_ERROR_STOP, passes - pass > 1 ? "es" : "" );
                     break;                  // errors found stop now
                 }
             }
@@ -902,7 +902,7 @@ int main( int argc, char * argv[] )
             /* never return */
         }
 
-        g_info_lm( inf_fmt_end );
+        g_info_lm( INF_FMT_END );
 
 
         if( GlobalFlags.research ) {

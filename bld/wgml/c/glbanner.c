@@ -243,9 +243,9 @@ void    lay_banner( const gmltag * entry )
                 p = attr_val.tok.s;
                 if( countb[k] ) {
                     if( sum_countb == TABLE_SIZE( banner_att ) ) {  // all attributes found
-                        xx_err_exit( err_lay_text );     // per wgml 4.0: treat as text
+                        xx_err_exit( ERR_LAY_TEXT );     // per wgml 4.0: treat as text
                     } else {
-                        xx_err_exit( err_att_dup );      // per wgml 4.0: treat as duplicated attribute
+                        xx_err_exit( ERR_ATT_DUP );      // per wgml 4.0: treat as duplicated attribute
                     }
                     /* never return */
                 }
@@ -254,7 +254,7 @@ void    lay_banner( const gmltag * entry )
                 switch( curr ) {
                 case e_left_adjust:
                     if( AttrFlags.left_adjust ) {
-                        xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
+                        xx_line_err_exit_ci( ERR_ATT_DUP, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                         /* never return */
                     }
@@ -263,7 +263,7 @@ void    lay_banner( const gmltag * entry )
                     break;
                 case e_right_adjust:
                     if( AttrFlags.right_adjust ) {
-                        xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
+                        xx_line_err_exit_ci( ERR_ATT_DUP, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                         /* never return */
                     }
@@ -272,7 +272,7 @@ void    lay_banner( const gmltag * entry )
                     break;
                 case e_depth:
                     if( AttrFlags.depth ) {
-                        xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
+                        xx_line_err_exit_ci( ERR_ATT_DUP, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                         /* never return */
                     }
@@ -281,7 +281,7 @@ void    lay_banner( const gmltag * entry )
                     break;
                 case e_place:
                     if( AttrFlags.place ) {
-                        xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
+                        xx_line_err_exit_ci( ERR_ATT_DUP, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                         /* never return */
                     }
@@ -290,7 +290,7 @@ void    lay_banner( const gmltag * entry )
                     break;
                 case e_docsect:
                     if( AttrFlags.docsect ) {
-                        xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
+                        xx_line_err_exit_ci( ERR_ATT_DUP, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                         /* never return */
                     }
@@ -299,7 +299,7 @@ void    lay_banner( const gmltag * entry )
                     break;
                 case e_refplace:  // not stored in banner struct
                     if( AttrFlags.refplace ) {
-                        xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
+                        xx_line_err_exit_ci( ERR_ATT_DUP, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                         /* never return */
                     }
@@ -308,7 +308,7 @@ void    lay_banner( const gmltag * entry )
                     break;
                 case e_refdoc:    // not stored in banner struct
                     if( AttrFlags.refdoc ) {
-                        xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
+                        xx_line_err_exit_ci( ERR_ATT_DUP, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                         /* never return */
                     }
@@ -331,7 +331,7 @@ void    lay_banner( const gmltag * entry )
     /*******************************************************/
 
     if( (wkb.place == no_place) || (wkb.docsect == no_ban) ) {    // both must be specified
-        xx_err_exit( err_att_missing );
+        xx_err_exit( ERR_ATT_MISSING );
         /* never return */
     }
 
@@ -348,12 +348,12 @@ void    lay_banner( const gmltag * entry )
           && (refplace != no_place))
           || ((refdoc != no_ban)
           && (refplace == no_place)) ) {
-            xx_err_exit( err_both_refs );                        // both are required if either is used
+            xx_err_exit( ERR_BOTH_REFS );                        // both are required if either is used
             /* never return */
         }
         if( (refdoc == wkb.docsect)
           && (refplace == wkb.place) ) { // can't reference current banner
-            xx_err_exit( err_self_ref );
+            xx_err_exit( ERR_SELF_REF );
             /* never return */
         }
         if( (refdoc != no_ban) && (refplace != no_place) ) { // find referenced banner
@@ -368,7 +368,7 @@ void    lay_banner( const gmltag * entry )
                 }
             }
             if( ref_ban == NULL ) {                 // referenced banner not found
-                xx_err_exit( err_illegal_ban_ref );
+                xx_err_exit( ERR_ILLEGAL_BAN_REF );
                 /* never return */
             }
             for( k = 0; k < TABLE_SIZE( banner_att ); ++k ) {
@@ -473,7 +473,7 @@ void    lay_banner( const gmltag * entry )
     }
     if( (curr_ban == NULL) && (del_ban == NULL) ) { // not found: new banner definition
         if( sum_countb != 5 ) {              // now we need all 5 non-ref attributes
-            xx_err_exit( err_all_ban_att_rqrd );
+            xx_err_exit( ERR_ALL_BAN_ATT_RQRD );
             /* never return */
         }
         curr_ban = mem_alloc( sizeof( banner_lay_tag ) );
@@ -589,7 +589,7 @@ void    lay_ebanner( const gmltag * entry )
             curr_ban = NULL;
         }
     } else {
-        xx_err_exit_c( err_tag_expected, "BANNER" );
+        xx_err_exit_c( ERR_TAG_EXPECTED, "BANNER" );
         /* never return */
     }
     scandata.s = scandata.e;
@@ -845,7 +845,7 @@ void    lay_banregion( const gmltag *entry )
 
     if( ProcFlags.lay_xxx != entry->u.layid ) {
         if( !ProcFlags.banner ) {               // not in BANNER/eBANNER block
-            xx_err_exit_c( err_tag_expected, "BANNER" );
+            xx_err_exit_c( ERR_TAG_EXPECTED, "BANNER" );
             /* never return */
         }
         ProcFlags.lay_xxx = entry->u.layid;
@@ -859,9 +859,9 @@ void    lay_banregion( const gmltag *entry )
                 p = attr_val.tok.s;
                 if( countr[k] ) {
                     if( sum_countr == TABLE_SIZE( banregion_att ) ) {  // all attributes found
-                        xx_err_exit( err_lay_text );     // per wgml 4.0: treat as text
+                        xx_err_exit( ERR_LAY_TEXT );     // per wgml 4.0: treat as text
                     } else {
-                        xx_err_exit( err_att_dup );      // per wgml 4.0: treat as duplicated attribute
+                        xx_err_exit( ERR_ATT_DUP );      // per wgml 4.0: treat as duplicated attribute
                     }
                     /* never return */
                 }
@@ -870,7 +870,7 @@ void    lay_banregion( const gmltag *entry )
                 switch( curr ) {
                 case e_indent:
                     if( AttrFlags.indent ) {
-                        xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
+                        xx_line_err_exit_ci( ERR_ATT_DUP, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                         /* never return */
                     }
@@ -879,7 +879,7 @@ void    lay_banregion( const gmltag *entry )
                     break;
                 case e_hoffset:
                     if( AttrFlags.hoffset ) {
-                        xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
+                        xx_line_err_exit_ci( ERR_ATT_DUP, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                         /* never return */
                     }
@@ -888,7 +888,7 @@ void    lay_banregion( const gmltag *entry )
                     break;
                 case e_width:
                     if( AttrFlags.width ) {
-                        xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
+                        xx_line_err_exit_ci( ERR_ATT_DUP, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                         /* never return */
                     }
@@ -897,7 +897,7 @@ void    lay_banregion( const gmltag *entry )
                     break;
                 case e_voffset:
                     if( AttrFlags.voffset ) {
-                        xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
+                        xx_line_err_exit_ci( ERR_ATT_DUP, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                         /* never return */
                     }
@@ -906,7 +906,7 @@ void    lay_banregion( const gmltag *entry )
                     break;
                 case e_depth:
                     if( AttrFlags.depth ) {
-                        xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
+                        xx_line_err_exit_ci( ERR_ATT_DUP, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                         /* never return */
                     }
@@ -915,7 +915,7 @@ void    lay_banregion( const gmltag *entry )
                     break;
                 case e_font:
                     if( AttrFlags.font ) {
-                        xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
+                        xx_line_err_exit_ci( ERR_ATT_DUP, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                         /* never return */
                     }
@@ -925,20 +925,20 @@ void    lay_banregion( const gmltag *entry )
                     break;
                 case e_refnum:
                     if( AttrFlags.refnum ) {
-                        xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
+                        xx_line_err_exit_ci( ERR_ATT_DUP, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                         /* never return */
                     }
                     i_uint8( p, &attr_val, &wkr.refnum );
                     if( wkr.refnum == 0 ) {   // refnum must be greater than zero
-                        xx_line_err_exit_c( err_num_zero, p );
+                        xx_line_err_exit_c( ERR_NUM_ZERO, p );
                         /* never return */
                     }
                     AttrFlags.refnum = true;
                     break;
                 case e_region_position:
                     if( AttrFlags.region_position ) {
-                        xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
+                        xx_line_err_exit_ci( ERR_ATT_DUP, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                         /* never return */
                     }
@@ -947,7 +947,7 @@ void    lay_banregion( const gmltag *entry )
                     break;
                 case e_pouring:
                     if( AttrFlags.pouring ) {
-                        xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
+                        xx_line_err_exit_ci( ERR_ATT_DUP, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                         /* never return */
                     }
@@ -956,7 +956,7 @@ void    lay_banregion( const gmltag *entry )
                     break;
                 case e_script_format:
                     if( AttrFlags.script_format ) {
-                        xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
+                        xx_line_err_exit_ci( ERR_ATT_DUP, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                         /* never return */
                     }
@@ -965,7 +965,7 @@ void    lay_banregion( const gmltag *entry )
                     break;
                 case e_contents:
                     if( AttrFlags.contents ) {
-                        xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
+                        xx_line_err_exit_ci( ERR_ATT_DUP, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                         /* never return */
                     }
@@ -993,10 +993,10 @@ void    lay_banregion( const gmltag *entry )
     /*******************************************************/
 
     if( !AttrFlags.refnum ) {                           // refnum was missing
-        xx_err_exit( err_att_missing );
+        xx_err_exit( ERR_ATT_MISSING );
         /* never return */
     } else if( wkr.refnum > curr_ban->next_refnum ) {    // refnum must be, at most, the next value
-        xx_err_exit( err_illegal_reg_ref );
+        xx_err_exit( ERR_ILLEGAL_REG_REF );
         /* never return */
     }
 
@@ -1086,7 +1086,7 @@ void    lay_banregion( const gmltag *entry )
             /* except script_format.                               */
             /*******************************************************/
 
-            xx_err_exit( err_all_reg_att_rqrd );
+            xx_err_exit( ERR_ALL_REG_ATT_RQRD );
             /* never return */
         }
         reg = mem_alloc( sizeof( region_lay_tag ) );
@@ -1105,7 +1105,7 @@ void    lay_banregion( const gmltag *entry )
 
     if( reg != NULL ) {             // region not deleted
         if( reg->script_format && (reg->contents.content_type != string_content) ) {
-            xx_err_exit( err_scr_fmt );
+            xx_err_exit( ERR_SCR_FMT );
             /* never return */
         }
     }
@@ -1125,7 +1125,7 @@ void    lay_ebanregion( const gmltag * entry )
     if( ProcFlags.lay_xxx == TL_BANREGION ) {   // :banregion was last tag
         ProcFlags.lay_xxx = entry->u.layid;
     } else {
-        xx_err_exit_cc( err_no_lay, &(entry->tagname[1]), entry->tagname );
+        xx_err_exit_cc( ERR_NO_LAY, &(entry->tagname[1]), entry->tagname );
         /* never return */
     }
     scandata.s = scandata.e;

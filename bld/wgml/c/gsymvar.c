@@ -492,7 +492,7 @@ static bool check_subscript( sub_index subscript )
             char    linestr[NUM2STR_LENGTH + 1];
 
             sprintf( linestr, "%d", subscript );
-            xx_line_err_exit_c( err_sub_out_of_range, linestr );
+            xx_line_err_exit_c( ERR_SUB_OUT_OF_RANGE, linestr );
             /* never return */
         }
     }
@@ -705,7 +705,7 @@ int add_symvar_addr( symdict_hdl dict, const char *name, const char *val, unsign
             }
             break;
         default:
-            xx_line_err_exit_c( err_logic_err, __FILE__ );
+            xx_line_err_exit_c( ERR_LOGIC_ERR, __FILE__ );
             /* never return */
         }
     }

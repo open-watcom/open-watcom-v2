@@ -405,7 +405,7 @@ static void add_spaces_t_element( char * spaces )
                 line->line_height = wgml_fonts[font].line_height;
             }
         } else {                                        // too complicated
-            xx_line_warn_c( wng_hdref_co_off, buff2 );
+            xx_line_warn_c( WNG_HDREF_CO_OFF, buff2 );
         }
     }
     return;
@@ -526,32 +526,32 @@ bool att_val_to_su( su *in_su, bool pos, att_val_type *attr_val, bool specval )
     *ps = '\0';
 
     if( attr_val->tok.l > MAX_SU_LENGTH ) {     // won't fit
-        xx_line_err_exit_c( err_inv_att_val, attr_val->tok.s );
+        xx_line_err_exit_c( ERR_INV_ATT_VAL, attr_val->tok.s );
         /* never return */
     }
     strcpy( ps, attr_val->specval );
 
     in_su->su_u = SU_undefined;
     if( *ps == '+' ) {                      // not allowed with tags
-        xx_line_err_exit_c( err_inv_att_val, attr_val->tok.s );
+        xx_line_err_exit_c( ERR_INV_ATT_VAL, attr_val->tok.s );
         /* never return */
     }
     if( *ps == '-' ) {               // not relative, just negative
         if( pos ) {                         // value must be positive
-            xx_line_err_exit_c( err_inv_att_val, attr_val->tok.s );
+            xx_line_err_exit_c( ERR_INV_ATT_VAL, attr_val->tok.s );
             /* never return */
         }
         sign = *ps;
         if( *(ps + 1) == '+'
           || *(ps + 1) == '-' ) {  // only one sign is allowed
-            xx_line_err_exit_c( err_inv_att_val, attr_val->tok.s );
+            xx_line_err_exit_c( ERR_INV_ATT_VAL, attr_val->tok.s );
             /* never return */
         }
     } else {
         sign = '+';
     }
     if( *ps == '\0' ) {                     // value end reached, not valid
-        xx_line_err_exit_c( err_inv_att_val, attr_val->tok.s );
+        xx_line_err_exit_c( ERR_INV_ATT_VAL, attr_val->tok.s );
         /* never return */
     }
     in_su->su_relative = false;             // no relative positioning with tags
@@ -597,7 +597,7 @@ bool cw_val_to_su( const char **scanp, su *in_su )
     len = p - pb;
     *scanp = p;                 // report back value of p
     if( len > MAX_SU_LENGTH ) {
-        xx_line_err_exit_c( err_inv_cw_op_val, pa );
+        xx_line_err_exit_c( ERR_INV_CW_OP_VAL, pa );
         /* never return */
     }
     for( i = 0; i < len; i++ ) {
@@ -658,7 +658,7 @@ bool lay_init_su( const char *p, su *in_su )
     len = p - pb;
 
     if( len > MAX_SU_LENGTH ) {     // won't fit
-        xx_line_err_exit_c( err_inv_att_val, pa );
+        xx_line_err_exit_c( ERR_INV_ATT_VAL, pa );
         /* never return */
     }
     for( i = 0; i < len; i++ ) {
@@ -668,21 +668,21 @@ bool lay_init_su( const char *p, su *in_su )
 
     in_su->su_u = SU_undefined;
     if( *ps == '+' ) {              // not allowed with tags
-        xx_line_err_exit_c( err_inv_att_val, pa );
+        xx_line_err_exit_c( ERR_INV_ATT_VAL, pa );
         /* never return */
     }
     if( *ps == '-' ) {       // not relative, just negative
         sign = *ps;
         if( *(ps + 1) == '+'
           || *(ps + 1) == '-' ) {   // only one sign is allowed
-            xx_line_err_exit_c( err_inv_att_val, pa );
+            xx_line_err_exit_c( ERR_INV_ATT_VAL, pa );
             /* never return */
         }
     } else {
         sign = '+';
     }
     if( *ps == '\0' ) {             // value end reached, not valid
-        xx_line_err_exit_c( err_inv_att_val, pa );
+        xx_line_err_exit_c( ERR_INV_ATT_VAL, pa );
         /* never return */
     }
     in_su->su_relative = false;     // no relative positioning with tags
@@ -953,7 +953,7 @@ char *get_tag_att_name( char *p, char **orig, att_name_type *attr_name )
     attr_name->tok.l = p - attr_name->tok.s;
     if( attr_name->tok.l < 2
       || attr_name->tok.l > TAG_ATT_NAME_LENGTH ) {
-        xx_line_err_exit_c( err_att_name_inv, *orig );
+        xx_line_err_exit_c( ERR_ATT_NAME_INV, *orig );
         /* never return */
     }
     return( p );
@@ -989,7 +989,7 @@ static char *get_value( char *p, att_val_type *attr_val, bool equ, bool layout )
                 p++;
             }
         } else {
-            xx_line_err_exit_c( err_eq_missing, p );
+            xx_line_err_exit_c( ERR_EQ_MISSING, p );
             /* never return */
         }
     }
@@ -998,7 +998,7 @@ static char *get_value( char *p, att_val_type *attr_val, bool equ, bool layout )
         if( *p == '.' ) {
             ProcFlags.tag_end_found = true;
         }
-        xx_line_err_exit_c( err_att_val_missing, p );
+        xx_line_err_exit_c( ERR_ATT_VAL_MISSING, p );
         /* never return */
     }
     attr_val->tok.s = p;
@@ -1020,7 +1020,7 @@ static char *get_value( char *p, att_val_type *attr_val, bool equ, bool layout )
     } else {
         if( attr_val->quoted != ' ' ) {
             if( *p != attr_val->quoted ) {  // terminating quote not found
-                xx_line_err_exit_c( err_att_val_open, attr_val->tok.s );
+                xx_line_err_exit_c( ERR_ATT_VAL_OPEN, attr_val->tok.s );
                 /* never return */
             }
             p++;                        // over terminating quote
@@ -1097,7 +1097,7 @@ font_number get_font_number( const char *value, unsigned len )
     }
 
     if( p != pb ) {                             // badly-formed token
-        xx_line_err_exit_c( err_num_too_large, value );
+        xx_line_err_exit_c( ERR_NUM_TOO_LARGE, value );
         /* never return */
     }
 

@@ -143,7 +143,7 @@ void scr_pa( void )
     switch( len ) {
     case 7 :
         if( strnicmp( "NOSTART", pa, 7 ) != 0 ) {
-            xx_line_err_exit_cc( err_xx_opt, cwcurr, pa );
+            xx_line_err_exit_cc( ERR_XX_OPT, cwcurr, pa );
             /* never return */
         }
         /* fallthru for NOSTART */
@@ -159,7 +159,7 @@ void scr_pa( void )
                 reset_t_page();
             }
         } else {
-            xx_line_err_exit_cc( err_xx_opt, cwcurr, pa );
+            xx_line_err_exit_cc( ERR_XX_OPT, cwcurr, pa );
             /* never return */
         }
         break;
@@ -172,7 +172,7 @@ void scr_pa( void )
                 reset_t_page();
             }
         } else {
-            xx_line_err_exit_cc( err_xx_opt, cwcurr, pa );
+            xx_line_err_exit_cc( ERR_XX_OPT, cwcurr, pa );
             /* never return */
         }
         break;
@@ -299,7 +299,7 @@ static void scr_cc_cp_common( bool do_pa )
         if( !scanerr ) {
             test_space = conv_vert_unit( &cpwork, 0, g_curr_font );
             if( test_space < 0 ) {
-                xx_line_err_exit_c( err_spc_not_valid, pa );
+                xx_line_err_exit_c( ERR_SPC_NOT_VALID, pa );
                 /* never return */
             }
             if( test_space > 0 ) {               // do nothing for 0

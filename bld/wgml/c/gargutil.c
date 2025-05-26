@@ -55,11 +55,11 @@ char parse_char( const char *p, unsigned len )
                 c = c * 16 + my_toupper( p[1] ) - 'A' + 10;
             }
         } else {
-            xx_line_err_exit_ci( err_cw_not_char, p, len );
+            xx_line_err_exit_ci( ERR_CW_NOT_CHAR, p, len );
             /* never return */
         }
     } else {
-        xx_line_err_exit_ci( err_cw_not_char, p, len );
+        xx_line_err_exit_ci( ERR_CW_NOT_CHAR, p, len );
         /* never return */
     }
 

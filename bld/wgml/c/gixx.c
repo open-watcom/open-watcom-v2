@@ -152,12 +152,12 @@ static void gml_ixxx_common( const gmltag * entry, int hx_lvl )
                     refwk = find_refid( ix_ref_dict, refrefid );
                     if( refwk == NULL ) {   // refid not in dict
                         if( GlobalFlags.lastpass ) {// this is an error
-                            xx_line_err_exit_cc( err_id_undefined, refrefid, attr_val.tok.s );
+                            xx_line_err_exit_cc( ERR_ID_UNDEFINED, refrefid, attr_val.tok.s );
                             /* never return */
                         }
                     }
                 } else {                // not allowed for :I1 and :IHx
-                    xx_line_err_exit_cc( err_ref_not_allowed, hxstring, attr_val.tok.s );
+                    xx_line_err_exit_cc( ERR_REF_NOT_ALLOWED, hxstring, attr_val.tok.s );
                     /* never return */
                 }
                 if( ProcFlags.tag_end_found ) {
@@ -219,7 +219,7 @@ static void gml_ixxx_common( const gmltag * entry, int hx_lvl )
                     seeidwk = find_refid( ix_ref_dict, seerefid );
                     if( seeidwk == NULL ) {             // not in dict, this is an error
                         if( GlobalFlags.lastpass ) {    // during lastpass
-                            xx_line_err_exit_cc( err_id_undefined, seerefid, attr_val.tok.s );
+                            xx_line_err_exit_cc( ERR_ID_UNDEFINED, seerefid, attr_val.tok.s );
                             /* never return */
                         }
                     }
@@ -258,10 +258,10 @@ static void gml_ixxx_common( const gmltag * entry, int hx_lvl )
 
                     /* Groups are ignored, issue warning */
 
-                    xx_warn_c( wng_unsupp_att, "ix" );
+                    xx_warn_c( WNG_UNSUPP_ATT, "ix" );
 
                     if( (gn.result < 1) || (gn.result > 9) ) { // out of range
-                        xx_line_err_exit_c( err_struct_range, attr_val.tok.s );
+                        xx_line_err_exit_c( ERR_STRUCT_RANGE, attr_val.tok.s );
                         /* never return */
                     }
                 }
@@ -290,7 +290,7 @@ static void gml_ixxx_common( const gmltag * entry, int hx_lvl )
             if( check_tagname( scandata.s, NULL ) != NULL // tag found: error
               || (*scandata.s == SCR_char)          // cw found: error
               || (input_cbs->fmflags & II_eof) ) {  // EOF found: error
-                xx_err_exit( err_text_not_tag_cw );
+                xx_err_exit( ERR_TEXT_NOT_TAG_CW );
                 /* never return */
             }
             process_line();
@@ -324,7 +324,7 @@ static void gml_ixxx_common( const gmltag * entry, int hx_lvl )
 
     if( hx_lvl == 0 ) {                 // :IREF tag
         if( !refidseen ) {              // refid= missing
-            xx_err_exit( err_att_missing );
+            xx_err_exit( ERR_ATT_MISSING );
             /* never return */
         }
     } else if( !refidseen ) {           // not required for refid
@@ -333,13 +333,13 @@ static void gml_ixxx_common( const gmltag * entry, int hx_lvl )
             ixhlvl[1] = false;          // second level not found
         } else if( hx_lvl == 2 ) {      // second level tag
             if( !ixhlvl[0] ) {          // first level must exist
-                xx_err_exit_c( err_parent_undef, hxstring );
+                xx_err_exit_c( ERR_PARENT_UNDEF, hxstring );
                 /* never return */
             }
             ixhlvl[1] = true;           // record first level found
         } else if( hx_lvl == 3 ) {      // third level tag
             if( !ixhlvl[1] ) {          // second level must exist
-                xx_err_exit_c( err_parent_undef, hxstring );
+                xx_err_exit_c( ERR_PARENT_UNDEF, hxstring );
                 /* never return */
             }
         }
@@ -486,7 +486,7 @@ static void gml_ixxx_common( const gmltag * entry, int hx_lvl )
             }
             if( GlobalFlags.lastpass ){         // last pass: add data
                 if( refwork == NULL ) {         // shouldn't happen
-                    xx_err_exit_c( err_id_undefined, ixrefid );
+                    xx_err_exit_c( ERR_ID_UNDEFINED, ixrefid );
                     /* never return */
                 }
                 refwork->u.ix.hblk = ixhwk;

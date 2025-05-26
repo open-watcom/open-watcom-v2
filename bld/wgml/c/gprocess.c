@@ -948,7 +948,7 @@ void process_line( void )
     if( (input_cbs->fmflags & II_research)
       && GlobalFlags.firstpass
       && anything_substituted ) {
-        g_info_lm( inf_subst_line, buff2 ); // show line with substitution(s)
+        g_info_lm( INF_SUBST_LINE, buff2 ); // show line with substitution(s)
     }
 
     scandata.s = buff2;

@@ -101,12 +101,12 @@ static bool free_inc_fp( void )
                     save_errno = errno;
                     rc = fgetpos( cb->fp, &cb->pos );
                     if( rc != 0 ) {
-                        xx_simple_err_exit_cc( err_file_io, strerror( errno ), cb->filename );
+                        xx_simple_err_exit_cc( ERR_FILE_IO, strerror( errno ), cb->filename );
                         /* never return */
                     }
                     rc = fclose( cb->fp );
                     if( rc != 0 ) {
-                        xx_simple_err_exit_cc( err_file_io, strerror( errno ), cb->filename );
+                        xx_simple_err_exit_cc( ERR_FILE_IO, strerror( errno ), cb->filename );
                         /* never return */
                     }
                     cb->flags &= ~FF_open;
@@ -148,12 +148,12 @@ static void reopen_inc_fp( filecb *cb )
         if( fp != NULL ) {
             rc = fsetpos( cb->fp, &cb->pos );
             if( rc != 0 ) {
-                xx_simple_err_exit_cc( err_file_io, strerror( errno ), cb->filename );
+                xx_simple_err_exit_cc( ERR_FILE_IO, strerror( errno ), cb->filename );
                 /* never return */
             }
             cb->flags |= FF_open;
         } else {
-            xx_simple_err_exit_cc( err_file_io, strerror( errno ), cb->filename );
+            xx_simple_err_exit_cc( ERR_FILE_IO, strerror( errno ), cb->filename );
             /* never return */
         }
     }
@@ -332,7 +332,7 @@ static void get_macro_line( void )
     macrocb *   cb;
 
     if( input_cbs->fmflags & II_file ) {// current input is file not macro
-        xx_err_exit( err_logic_mac );
+        xx_err_exit( ERR_LOGIC_MAC );
         /* never return */
     }
     cb = input_cbs->s.m;
@@ -442,7 +442,7 @@ bool get_line( bool display_line )
                 ProcFlags.utc = false;  // to catch end of user-defined tag
                 cb = input_cbs->s.f;    // input from file
                 if( (cb->flags & FF_open) == 0 ) {
-                    g_info( err_inf_reopen );
+                    g_info( ERR_INF_REOPEN );
                     show_include_stack();
                     reopen_inc_fp( cb );
                 }
@@ -486,7 +486,7 @@ bool get_line( bool display_line )
                             *buff2 = '\0';
                             break;
                         } else {
-                            xx_simple_err_exit_cc( err_file_io, strerror( errno ), cb->filename );
+                            xx_simple_err_exit_cc( ERR_FILE_IO, strerror( errno ), cb->filename );
                             /* never return */
                         }
                     }
@@ -550,11 +550,11 @@ void show_include_stack( void )
             sprintf( linestr, "%d", input_cbs->s.m->lineno );
             sprintf( linefile, "%d", input_cbs->s.m->lineno + input_cbs->s.m->mac->lineno );
             sprintf( linemac, "%d", input_cbs->s.m->mac->lineno );
-            g_info( err_inf_mac_def, linestr, linefile, input_cbs->s.m->mac->name,
+            g_info( ERR_INF_MAC_DEF, linestr, linefile, input_cbs->s.m->mac->name,
                     linemac, input_cbs->s.m->mac->mac_file_name);
         } else {
             sprintf( linestr, "%d", input_cbs->s.f->lineno );
-            g_info( inf_file_line, linestr, input_cbs->s.f->filename );
+            g_info( INF_FILE_LINE, linestr, input_cbs->s.f->filename );
         }
 #endif
         ip = input_cbs->prev;
@@ -566,20 +566,20 @@ void show_include_stack( void )
         switch( ip->fmflags & II_input ) {
         case II_file:
             sprintf( linestr, "%d", ip->s.f->lineno );
-            g_info( err_inf_line_file, linestr, ip->s.f->filename );
+            g_info( ERR_INF_LINE_FILE, linestr, ip->s.f->filename );
             break;
         case II_tag :
-            g_info( err_inf_tag, ip->s.m->tag->tagname );
+            g_info( ERR_INF_TAG, ip->s.m->tag->tagname );
             // fallthrough
         case II_macro :
             sprintf( linestr, "%d", ip->s.m->lineno );
             sprintf( linefile, "%d", ip->s.m->lineno + ip->s.m->mac->lineno );
             sprintf( linemac, "%d", ip->s.m->mac->lineno );
-            g_info( err_inf_mac_def, linestr, linefile, ip->s.m->mac->name,
+            g_info( ERR_INF_MAC_DEF, linestr, linefile, ip->s.m->mac->name,
                     linemac, ip->s.m->mac->mac_file_name);
             break;
         default:
-            g_info( err_inc_unknown );
+            g_info( ERR_INC_UNKNOWN );
             break;
         }
         ip = ip->prev;

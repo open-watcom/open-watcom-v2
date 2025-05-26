@@ -568,7 +568,7 @@ void    lay_dl( const gmltag * entry )
                 switch( curr ) {
                 case e_level:
                     if( AttrFlags.level ) {
-                        xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
+                        xx_line_err_exit_ci( ERR_ATT_DUP, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                         /* never return */
                     }
@@ -577,7 +577,7 @@ void    lay_dl( const gmltag * entry )
                     break;
                 case e_left_indent:
                     if( AttrFlags.left_indent ) {
-                        xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
+                        xx_line_err_exit_ci( ERR_ATT_DUP, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                         /* never return */
                     }
@@ -586,7 +586,7 @@ void    lay_dl( const gmltag * entry )
                     break;
                 case e_right_indent:
                     if( AttrFlags.right_indent ) {
-                        xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
+                        xx_line_err_exit_ci( ERR_ATT_DUP, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                         /* never return */
                     }
@@ -595,7 +595,7 @@ void    lay_dl( const gmltag * entry )
                     break;
                 case e_pre_skip:
                     if( AttrFlags.pre_skip ) {
-                        xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
+                        xx_line_err_exit_ci( ERR_ATT_DUP, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                         /* never return */
                     }
@@ -604,7 +604,7 @@ void    lay_dl( const gmltag * entry )
                     break;
                 case e_skip:
                     if( AttrFlags.skip ) {
-                        xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
+                        xx_line_err_exit_ci( ERR_ATT_DUP, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                         /* never return */
                     }
@@ -613,7 +613,7 @@ void    lay_dl( const gmltag * entry )
                     break;
                 case e_spacing:
                     if( AttrFlags.spacing ) {
-                        xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
+                        xx_line_err_exit_ci( ERR_ATT_DUP, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                         /* never return */
                     }
@@ -622,7 +622,7 @@ void    lay_dl( const gmltag * entry )
                     break;
                 case e_post_skip:
                     if( AttrFlags.post_skip ) {
-                        xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
+                        xx_line_err_exit_ci( ERR_ATT_DUP, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                         /* never return */
                     }
@@ -631,7 +631,7 @@ void    lay_dl( const gmltag * entry )
                     break;
                 case e_align:
                     if( AttrFlags.align ) {
-                        xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
+                        xx_line_err_exit_ci( ERR_ATT_DUP, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                         /* never return */
                     }
@@ -640,7 +640,7 @@ void    lay_dl( const gmltag * entry )
                     break;
                 case e_line_break:
                     if( AttrFlags.line_break ) {
-                        xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
+                        xx_line_err_exit_ci( ERR_ATT_DUP, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                         /* never return */
                     }
@@ -762,7 +762,7 @@ void    lay_gl( const gmltag * entry )
                 switch( curr ) {
                 case e_level:
                     if( AttrFlags.level ) {
-                        xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
+                        xx_line_err_exit_ci( ERR_ATT_DUP, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                         /* never return */
                     }
@@ -771,7 +771,7 @@ void    lay_gl( const gmltag * entry )
                     break;
                 case e_left_indent:
                     if( AttrFlags.left_indent ) {
-                        xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
+                        xx_line_err_exit_ci( ERR_ATT_DUP, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                         /* never return */
                     }
@@ -780,7 +780,7 @@ void    lay_gl( const gmltag * entry )
                     break;
                 case e_right_indent:
                     if( AttrFlags.right_indent ) {
-                        xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
+                        xx_line_err_exit_ci( ERR_ATT_DUP, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                         /* never return */
                     }
@@ -789,7 +789,7 @@ void    lay_gl( const gmltag * entry )
                     break;
                 case e_pre_skip:
                     if( AttrFlags.pre_skip ) {
-                        xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
+                        xx_line_err_exit_ci( ERR_ATT_DUP, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                         /* never return */
                     }
@@ -798,7 +798,7 @@ void    lay_gl( const gmltag * entry )
                     break;
                 case e_skip:
                     if( AttrFlags.skip ) {
-                        xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
+                        xx_line_err_exit_ci( ERR_ATT_DUP, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                         /* never return */
                     }
@@ -807,7 +807,7 @@ void    lay_gl( const gmltag * entry )
                     break;
                 case e_spacing:
                     if( AttrFlags.spacing ) {
-                        xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
+                        xx_line_err_exit_ci( ERR_ATT_DUP, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                         /* never return */
                     }
@@ -816,7 +816,7 @@ void    lay_gl( const gmltag * entry )
                     break;
                 case e_post_skip:
                     if( AttrFlags.post_skip ) {
-                        xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
+                        xx_line_err_exit_ci( ERR_ATT_DUP, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                         /* never return */
                     }
@@ -825,7 +825,7 @@ void    lay_gl( const gmltag * entry )
                     break;
                 case e_align:
                     if( AttrFlags.align ) {
-                        xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
+                        xx_line_err_exit_ci( ERR_ATT_DUP, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                         /* never return */
                     }
@@ -834,7 +834,7 @@ void    lay_gl( const gmltag * entry )
                     break;
                 case e_delim:
                     if( AttrFlags.delim ) {
-                        xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
+                        xx_line_err_exit_ci( ERR_ATT_DUP, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                         /* never return */
                     }
@@ -958,7 +958,7 @@ void    lay_ol( const gmltag * entry )
                 switch( curr ) {
                 case e_level:
                     if( AttrFlags.level ) {
-                        xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
+                        xx_line_err_exit_ci( ERR_ATT_DUP, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                         /* never return */
                     }
@@ -967,7 +967,7 @@ void    lay_ol( const gmltag * entry )
                     break;
                 case e_left_indent:
                     if( AttrFlags.left_indent ) {
-                        xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
+                        xx_line_err_exit_ci( ERR_ATT_DUP, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                         /* never return */
                     }
@@ -976,7 +976,7 @@ void    lay_ol( const gmltag * entry )
                     break;
                 case e_right_indent:
                     if( AttrFlags.right_indent ) {
-                        xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
+                        xx_line_err_exit_ci( ERR_ATT_DUP, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                         /* never return */
                     }
@@ -985,7 +985,7 @@ void    lay_ol( const gmltag * entry )
                     break;
                 case e_pre_skip:
                     if( AttrFlags.pre_skip ) {
-                        xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
+                        xx_line_err_exit_ci( ERR_ATT_DUP, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                         /* never return */
                     }
@@ -994,7 +994,7 @@ void    lay_ol( const gmltag * entry )
                     break;
                 case e_skip:
                     if( AttrFlags.skip ) {
-                        xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
+                        xx_line_err_exit_ci( ERR_ATT_DUP, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                         /* never return */
                     }
@@ -1003,7 +1003,7 @@ void    lay_ol( const gmltag * entry )
                     break;
                 case e_spacing:
                     if( AttrFlags.spacing ) {
-                        xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
+                        xx_line_err_exit_ci( ERR_ATT_DUP, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                         /* never return */
                     }
@@ -1012,7 +1012,7 @@ void    lay_ol( const gmltag * entry )
                     break;
                 case e_post_skip:
                     if( AttrFlags.post_skip ) {
-                        xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
+                        xx_line_err_exit_ci( ERR_ATT_DUP, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                         /* never return */
                     }
@@ -1021,7 +1021,7 @@ void    lay_ol( const gmltag * entry )
                     break;
                 case e_font:
                     if( AttrFlags.font ) {
-                        xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
+                        xx_line_err_exit_ci( ERR_ATT_DUP, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                         /* never return */
                     }
@@ -1033,7 +1033,7 @@ void    lay_ol( const gmltag * entry )
                     break;
                 case e_align:
                     if( AttrFlags.align ) {
-                        xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
+                        xx_line_err_exit_ci( ERR_ATT_DUP, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                         /* never return */
                     }
@@ -1042,7 +1042,7 @@ void    lay_ol( const gmltag * entry )
                     break;
                 case e_number_style:
                     if( AttrFlags.number_style ) {
-                        xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
+                        xx_line_err_exit_ci( ERR_ATT_DUP, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                         /* never return */
                     }
@@ -1051,7 +1051,7 @@ void    lay_ol( const gmltag * entry )
                     break;
                 case e_number_font:
                     if( AttrFlags.number_font ) {
-                        xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
+                        xx_line_err_exit_ci( ERR_ATT_DUP, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                         /* never return */
                     }
@@ -1181,7 +1181,7 @@ void    lay_sl( const gmltag * entry )
                 switch( curr ) {
                 case e_level:
                     if( AttrFlags.level ) {
-                        xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
+                        xx_line_err_exit_ci( ERR_ATT_DUP, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                         /* never return */
                     }
@@ -1190,7 +1190,7 @@ void    lay_sl( const gmltag * entry )
                     break;
                 case e_left_indent:
                     if( AttrFlags.left_indent ) {
-                        xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
+                        xx_line_err_exit_ci( ERR_ATT_DUP, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                         /* never return */
                     }
@@ -1199,7 +1199,7 @@ void    lay_sl( const gmltag * entry )
                     break;
                 case e_right_indent:
                     if( AttrFlags.right_indent ) {
-                        xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
+                        xx_line_err_exit_ci( ERR_ATT_DUP, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                         /* never return */
                     }
@@ -1208,7 +1208,7 @@ void    lay_sl( const gmltag * entry )
                     break;
                 case e_pre_skip:
                     if( AttrFlags.pre_skip ) {
-                        xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
+                        xx_line_err_exit_ci( ERR_ATT_DUP, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                         /* never return */
                     }
@@ -1217,7 +1217,7 @@ void    lay_sl( const gmltag * entry )
                     break;
                 case e_skip:
                     if( AttrFlags.skip ) {
-                        xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
+                        xx_line_err_exit_ci( ERR_ATT_DUP, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                         /* never return */
                     }
@@ -1226,7 +1226,7 @@ void    lay_sl( const gmltag * entry )
                     break;
                 case e_spacing:
                     if( AttrFlags.spacing ) {
-                        xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
+                        xx_line_err_exit_ci( ERR_ATT_DUP, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                         /* never return */
                     }
@@ -1235,7 +1235,7 @@ void    lay_sl( const gmltag * entry )
                     break;
                 case e_post_skip:
                     if( AttrFlags.post_skip ) {
-                        xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
+                        xx_line_err_exit_ci( ERR_ATT_DUP, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                         /* never return */
                     }
@@ -1244,7 +1244,7 @@ void    lay_sl( const gmltag * entry )
                     break;
                 case e_font:
                     if( AttrFlags.font ) {
-                        xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
+                        xx_line_err_exit_ci( ERR_ATT_DUP, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                         /* never return */
                     }
@@ -1368,7 +1368,7 @@ void    lay_ul( const gmltag * entry )
                 switch( curr ) {
                 case e_level:
                     if( AttrFlags.level ) {
-                        xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
+                        xx_line_err_exit_ci( ERR_ATT_DUP, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                         /* never return */
                     }
@@ -1377,7 +1377,7 @@ void    lay_ul( const gmltag * entry )
                     break;
                 case e_left_indent:
                     if( AttrFlags.left_indent ) {
-                        xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
+                        xx_line_err_exit_ci( ERR_ATT_DUP, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                         /* never return */
                     }
@@ -1386,7 +1386,7 @@ void    lay_ul( const gmltag * entry )
                     break;
                 case e_right_indent:
                     if( AttrFlags.right_indent ) {
-                        xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
+                        xx_line_err_exit_ci( ERR_ATT_DUP, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                         /* never return */
                     }
@@ -1395,7 +1395,7 @@ void    lay_ul( const gmltag * entry )
                     break;
                 case e_pre_skip:
                     if( AttrFlags.pre_skip ) {
-                        xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
+                        xx_line_err_exit_ci( ERR_ATT_DUP, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                         /* never return */
                     }
@@ -1404,7 +1404,7 @@ void    lay_ul( const gmltag * entry )
                     break;
                 case e_skip:
                     if( AttrFlags.skip ) {
-                        xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
+                        xx_line_err_exit_ci( ERR_ATT_DUP, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                         /* never return */
                     }
@@ -1413,7 +1413,7 @@ void    lay_ul( const gmltag * entry )
                     break;
                 case e_spacing:
                     if( AttrFlags.spacing ) {
-                        xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
+                        xx_line_err_exit_ci( ERR_ATT_DUP, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                         /* never return */
                     }
@@ -1422,7 +1422,7 @@ void    lay_ul( const gmltag * entry )
                     break;
                 case e_post_skip:
                     if( AttrFlags.post_skip ) {
-                        xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
+                        xx_line_err_exit_ci( ERR_ATT_DUP, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                         /* never return */
                     }
@@ -1431,7 +1431,7 @@ void    lay_ul( const gmltag * entry )
                     break;
                 case e_font:
                     if( AttrFlags.font ) {
-                        xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
+                        xx_line_err_exit_ci( ERR_ATT_DUP, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                         /* never return */
                     }
@@ -1443,7 +1443,7 @@ void    lay_ul( const gmltag * entry )
                     break;
                 case e_align:
                     if( AttrFlags.align ) {
-                        xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
+                        xx_line_err_exit_ci( ERR_ATT_DUP, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                         /* never return */
                     }
@@ -1452,7 +1452,7 @@ void    lay_ul( const gmltag * entry )
                     break;
                 case e_bullet:
                     if( AttrFlags.bullet ) {
-                        xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
+                        xx_line_err_exit_ci( ERR_ATT_DUP, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                         /* never return */
                     }
@@ -1461,7 +1461,7 @@ void    lay_ul( const gmltag * entry )
                     break;
                 case e_bullet_translate:
                     if( AttrFlags.bullet_translate ) {
-                        xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
+                        xx_line_err_exit_ci( ERR_ATT_DUP, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                         /* never return */
                     }
@@ -1470,7 +1470,7 @@ void    lay_ul( const gmltag * entry )
                     break;
                 case e_bullet_font:
                     if( AttrFlags.bullet_font ) {
-                        xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
+                        xx_line_err_exit_ci( ERR_ATT_DUP, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                         /* never return */
                     }

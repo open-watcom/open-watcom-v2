@@ -284,7 +284,7 @@ char *scr_multi_funcs( const char *funcname, char *args, char **result, unsigned
     /* Missing ')' is only a problem if the function was found */
 
     if( p_level > 0 ) {      // at least one missing ')'
-        xx_line_err_exit_c( err_func_parm_end, p - 1 );
+        xx_line_err_exit_c( ERR_FUNC_PARM_END, p - 1 );
         /* never return */
     }
 
@@ -315,7 +315,7 @@ char *scr_multi_funcs( const char *funcname, char *args, char **result, unsigned
     m = k + (k < funcinfo->parm_cnt);// mandatory parm count
 
     if( m < funcinfo->parm_cnt ) {
-        xx_line_err_exit_c( err_func_parm_miss, p - 1 );
+        xx_line_err_exit_c( ERR_FUNC_PARM_MISS, p - 1 );
         /* never return */
     }
 

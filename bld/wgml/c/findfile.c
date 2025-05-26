@@ -132,7 +132,7 @@ static FILE *try_open( char *prefix, char *filename )
 
     filename_length = strlen( prefix ) + strlen( filename ) + 1;
     if( filename_length > _MAX_PATH ) {
-        xx_simple_err_exit_cc( err_file_max, prefix, filename );
+        xx_simple_err_exit_cc( ERR_FILE_MAX, prefix, filename );
         /* never return */
     }
 
@@ -163,11 +163,11 @@ static FILE *try_open( char *prefix, char *filename )
 
     if( fp == NULL ) {
         if( errno == ENOMEM ) {
-            xx_simple_err_exit( err_no_memory );
+            xx_simple_err_exit( ERR_NO_MEMORY );
         	/* never return */
         }
         if( errno == ENFILE || errno == EMFILE ) {
-            xx_simple_err_exit( err_no_handles );
+            xx_simple_err_exit( ERR_NO_HANDLES );
         	/* never return */
         }
     } else {
@@ -297,7 +297,7 @@ FILE *search_file_in_dirs( const char *filename, const char *defext, const char 
     /* Ensure filename will fit into buff. */
 
     if( strlen( filename ) > _MAX_PATH - 1 ) {
-        xx_simple_err_exit_c( err_file_max, filename );
+        xx_simple_err_exit_c( ERR_FILE_MAX, filename );
         /* never return */
     }
 
@@ -316,7 +316,7 @@ FILE *search_file_in_dirs( const char *filename, const char *defext, const char 
         /* Determine if filename contains path information. */
 
         if( pg.drive[0] != '\0' || pg.dir[0] != '\0' ) {
-            xx_simple_err_exit_c( err_file_name, filename );
+            xx_simple_err_exit_c( ERR_FILE_NAME, filename );
             /* never return */
         }
 
@@ -340,7 +340,7 @@ FILE *search_file_in_dirs( const char *filename, const char *defext, const char 
                 default:
                     ext = ".xxx";
                 }
-                xx_simple_err_exit_cc( err_file_max, filename, ext );
+                xx_simple_err_exit_cc( ERR_FILE_MAX, filename, ext );
                 /* never return */
             }
         }
@@ -436,7 +436,7 @@ FILE *search_file_in_dirs( const char *filename, const char *defext, const char 
                     /* Avoid buffer overflow from member_name. */
 
                     if( member_length >= _MAX_PATH - 4 ) {
-                        xx_simple_err_exit_cc( err_file_max, member_name, "." COP_EXT );
+                        xx_simple_err_exit_cc( ERR_FILE_MAX, member_name, "." COP_EXT );
                         /* never return */
                     }
                     pg.ext = "COP";

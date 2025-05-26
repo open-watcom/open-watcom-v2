@@ -49,7 +49,7 @@ extra_c_flags_f_gmemory = $(trmem_cover_cflags)
 #
 # EXE
 #
-exetarg_prebuild_objs = wgmlmsgs.gh wgmlmsge.gh
+exetarg_prebuild_objs = wgmlmsgs.grh
 exetarg_objs          = $(objs)
 exetarg_res           = $(proj_name).res
 !include exetarg.mif
@@ -59,19 +59,13 @@ exetarg_res           = $(proj_name).res
 #
 msgfiles = ../h/wgmlerr.msg ../h/wgml.msg
 
-$(proj_name).res : ../h/wgml.rc wgmlmsgs.gh $(__MAKEFILES__)
+$(proj_name).res : ../h/wgml.rc ../h/wgmlmsgs.rh wgmlmsgs.grh $(__MAKEFILES__)
     @%make echo_rc
     $(rcu8j) $(ppflags_common) $(ppflags_wreslib) $(rc_cppflags) $(rc_flags) $(rc_inc_path) $[@ -fo=$@
 
-wgmlmsgs.gh : $(msgfiles) $(__MAKEFILES__)
+wgmlmsgs.grh : $(msgfiles) $(__MAKEFILES__)
     @%make echo_awk
-#    $(noecho)*awk -v base=MSG_RC_BASE -f $(build_dir)/makemsg.awk -v OUTFILE=$^. $(msgfiles)
-    $(noecho)*awk -v base=000 -f ../makemdef.awk $(msgfiles) > $^.
-
-wgmlmsge.gh : $(msgfiles) $(__MAKEFILES__)
-    @%make echo_awk
-#    $(noecho)*awk -v base=MSG_RC_BASE -f $(build_dir)/makemsg.awk -v OUTFILE=$^. $(msgfiles)
-    $(noecho)*awk -v base=000 -f ../msgtoenm.awk $(msgfiles) > $^.
+    $(noecho)*awk -v base=MSG_RC_BASE -f $(build_dir)/makemsg.awk -v OUTFILE=$^. $(msgfiles)
 
 optencod_targets = $(host_os)
 !ifeq debug 2

@@ -637,7 +637,7 @@ static void *df_dotab( void )
 
     instance++;
     if( instance > 1 ) {
-        xx_simple_err_exit_c( err_rec_dev_func, "%dotab()" );
+        xx_simple_err_exit_c( ERR_REC_DEV_FUNC, "%dotab()" );
         /* never return */
     }
 
@@ -727,7 +727,7 @@ static void *df_flushpage( void )
 
     instance++;
     if( instance > 1 ) {
-        xx_simple_err_exit_c( err_rec_dev_func, "%flushpage()" );
+        xx_simple_err_exit_c( ERR_REC_DEV_FUNC, "%flushpage()" );
         /* never return */
     }
 
@@ -1405,7 +1405,7 @@ static void *df_cancel( void )
 
     instance++;
     if( instance > 1 ) {
-        xx_simple_err_exit_c( err_rec_dev_func, "%cancel()" );
+        xx_simple_err_exit_c( ERR_REC_DEV_FUNC, "%cancel()" );
         /* never return */
     }
 
@@ -1465,7 +1465,7 @@ static void *df_enterfont( void )
 
     instance++;
     if( instance > 1 ) {
-        xx_simple_err_exit_c( err_rec_dev_func, "%enterfont()" );
+        xx_simple_err_exit_c( ERR_REC_DEV_FUNC, "%enterfont()" );
         /* never return */
     }
 
@@ -1958,7 +1958,7 @@ static void *df_divide( void )
     second = (uintptr_t)process_parameter();
 
     if( second == 0 ) {
-        xx_simple_err_exit_c( err_zero_divisor, "%divide()" );
+        xx_simple_err_exit_c( ERR_ZERO_DIVISOR, "%divide()" );
         /* never return */
     }
 
@@ -2104,7 +2104,7 @@ static void *df_remainder( void )
     second = (uintptr_t)process_parameter();
 
     if( second == 0 ) {
-        xx_simple_err_exit_c( err_zero_divisor, "%remainder()" );
+        xx_simple_err_exit_c( ERR_ZERO_DIVISOR, "%remainder()" );
         /* never return */
     }
 

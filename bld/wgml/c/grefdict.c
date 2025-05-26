@@ -56,7 +56,7 @@ char    *get_refid_value( char *p, att_val_type *attr_val, char *refid )
     }
     refid[i] = '\0';
     if( attr_val->tok.l > 7 ) {                 // wgml 4 warning level
-        xx_warn_c_info( wng_id_xxx, refid, inf_id_len );
+        xx_warn_c_info( WNG_ID_XXX, refid, INF_ID_LEN );
     }
     return( p );
 }

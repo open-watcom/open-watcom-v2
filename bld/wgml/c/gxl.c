@@ -431,7 +431,7 @@ void gml_ol( const gmltag * entry )
     scandata.s = p;
 
     if( ProcFlags.need_li_lp ) {
-        xx_nest_err_exit( err_no_li_lp );
+        xx_nest_err_exit( ERR_NO_LI_LP );
         /* never return */
     }
     gml_xl_lp_common( entry->u.tagid );
@@ -518,7 +518,7 @@ void gml_sl( const gmltag * entry )
     scandata.s = p;
 
     if( ProcFlags.need_li_lp ) {
-        xx_nest_err_exit( err_no_li_lp );
+        xx_nest_err_exit( ERR_NO_LI_LP );
         /* never return */
     }
     gml_xl_lp_common( entry->u.tagid );
@@ -604,7 +604,7 @@ void gml_ul( const gmltag * entry )
     scandata.s = p;
 
     if( ProcFlags.need_li_lp ) {
-        xx_nest_err_exit( err_no_li_lp );
+        xx_nest_err_exit( ERR_NO_LI_LP );
         /* never return */
     }
     gml_xl_lp_common( entry->u.tagid );
@@ -1242,13 +1242,13 @@ void gml_ddhd( const gmltag * entry )
     if( ProcFlags.need_ddhd ) {
         ProcFlags.need_ddhd = false;
     } else if( ProcFlags.need_dd ) {
-        xx_err_exit_c( err_tag_expected, "DD");
+        xx_err_exit_c( ERR_TAG_EXPECTED, "DD");
         /* never return */
     } else if( ProcFlags.need_gd ) {
-        xx_err_exit_c( err_tag_expected, "GD");
+        xx_err_exit_c( ERR_TAG_EXPECTED, "GD");
         /* never return */
     } else {
-        xx_nest_err_exit_cc( err_tag_preceding_2, "DTHD", "DDHD" );
+        xx_nest_err_exit_cc( ERR_TAG_PRECEDING_2, "DTHD", "DDHD" );
         /* never return */
     }
 
@@ -1393,13 +1393,13 @@ void gml_dd( const gmltag * entry )
     if( ProcFlags.need_dd ) {
         ProcFlags.need_dd = false;
     } else if( ProcFlags.need_ddhd ) {
-        xx_err_exit_c( err_tag_expected, "DDHD");
+        xx_err_exit_c( ERR_TAG_EXPECTED, "DDHD");
         /* never return */
     } else if( ProcFlags.need_gd ) {
-        xx_err_exit_c( err_tag_expected, "GD");
+        xx_err_exit_c( ERR_TAG_EXPECTED, "GD");
         /* never return */
     } else {
-        xx_nest_err_exit_cc( err_tag_preceding_2, "DT", "DD" );
+        xx_nest_err_exit_cc( ERR_TAG_PRECEDING_2, "DT", "DD" );
         /* never return */
     }
 
@@ -1541,13 +1541,13 @@ void gml_gd( const gmltag * entry )
     if( ProcFlags.need_gd ) {
         ProcFlags.need_gd = false;
     } else if( ProcFlags.need_ddhd ) {
-        xx_err_exit_c( err_tag_expected, "DDHD");
+        xx_err_exit_c( ERR_TAG_EXPECTED, "DDHD");
         /* never return */
     } else if( ProcFlags.need_dd ) {
-        xx_err_exit_c( err_tag_expected, "DD");
+        xx_err_exit_c( ERR_TAG_EXPECTED, "DD");
         /* never return */
     } else {
-        xx_nest_err_exit_cc( err_tag_preceding_2, "GT", "GD" );
+        xx_nest_err_exit_cc( ERR_TAG_PRECEDING_2, "GT", "GD" );
         /* never return */
     }
 

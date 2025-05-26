@@ -24,7 +24,7 @@
     #include <windows.h>
 #undef GlobalFlags
 #endif
-#include "wgmlmsgs.gh"
+#include "wgmlmsgs.rh"
 
 #include "clibint.h"
 #include "clibext.h"

@@ -378,7 +378,7 @@ static void process_fo_ju( bool both , char *cwcurr )
             ProcFlags.justify = JUST_on;
             scan_restart = pa + len;
         } else {
-            xx_line_err_exit_cc( err_xx_opt, cwcurr, pa );
+            xx_line_err_exit_cc( ERR_XX_OPT, cwcurr, pa );
             /* never return */
         }
         break;
@@ -390,7 +390,7 @@ static void process_fo_ju( bool both , char *cwcurr )
             ProcFlags.justify = JUST_off;
             scan_restart = pa + len;
         } else {
-            xx_line_err_exit_cc( err_xx_opt, cwcurr, pa );
+            xx_line_err_exit_cc( ERR_XX_OPT, cwcurr, pa );
             /* never return */
         }
         break;
@@ -414,7 +414,7 @@ static void process_fo_ju( bool both , char *cwcurr )
                 ProcFlags.justify = JUST_half;
                 scan_restart = pa + len;
             } else {
-                xx_line_err_exit_cc( err_xx_opt, cwcurr, pa );
+                xx_line_err_exit_cc( ERR_XX_OPT, cwcurr, pa );
                 /* never return */
             }
         }
@@ -427,7 +427,7 @@ static void process_fo_ju( bool both , char *cwcurr )
             ProcFlags.justify = JUST_right;
             scan_restart = pa + len;
         } else {
-            xx_line_err_exit_cc( err_xx_opt, cwcurr, pa );
+            xx_line_err_exit_cc( ERR_XX_OPT, cwcurr, pa );
             /* never return */
         }
         break;
@@ -446,7 +446,7 @@ static void process_fo_ju( bool both , char *cwcurr )
                 ProcFlags.justify = JUST_inside;
                 scan_restart = pa + len;
             } else {
-                xx_line_err_exit_cc( err_xx_opt, cwcurr, pa );
+                xx_line_err_exit_cc( ERR_XX_OPT, cwcurr, pa );
                 /* never return */
             }
         }
@@ -459,12 +459,12 @@ static void process_fo_ju( bool both , char *cwcurr )
             ProcFlags.justify = JUST_outside;
             scan_restart = pa + len;
         } else {
-            xx_line_err_exit_cc( err_xx_opt, cwcurr, pa );
+            xx_line_err_exit_cc( ERR_XX_OPT, cwcurr, pa );
             /* never return */
         }
         break;
     default:
-        xx_line_err_exit_cc( err_xx_opt, cwcurr, pa );
+        xx_line_err_exit_cc( ERR_XX_OPT, cwcurr, pa );
         /* never return */
     }
 
@@ -607,7 +607,7 @@ void    scr_co( void )
             do_co_on();
             scan_restart = pa + len;
         } else {
-            xx_line_err_exit_cc( err_xx_opt, cwcurr, pa );
+            xx_line_err_exit_cc( ERR_XX_OPT, cwcurr, pa );
             /* never return */
         }
         break;
@@ -616,12 +616,12 @@ void    scr_co( void )
             do_co_off();
             scan_restart = pa + len;
         } else {
-            xx_line_err_exit_cc( err_xx_opt, cwcurr, pa );
+            xx_line_err_exit_cc( ERR_XX_OPT, cwcurr, pa );
             /* never return */
         }
         break;
     default:
-        xx_line_err_exit_cc( err_xx_opt, cwcurr, pa );
+        xx_line_err_exit_cc( ERR_XX_OPT, cwcurr, pa );
         /* never return */
     }
     return;

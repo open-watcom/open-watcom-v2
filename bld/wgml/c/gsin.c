@@ -92,8 +92,8 @@ void    scr_in( void )
     char            cwcurr[4];
     bool            scanerr;
     su              indentwork;
-    int         newindentl;
-    int         newindentr;
+    int             newindentl;
+    int             newindentr;
 
     static  int oldindent;
 
@@ -119,7 +119,7 @@ void    scr_in( void )
             p = pa;
             scanerr = cw_val_to_su( &p, &indentwork );
             if( scanerr ) {
-                xx_line_err_exit_c( err_spc_not_valid, pa );
+                xx_line_err_exit_c( ERR_SPC_NOT_VALID, pa );
                 /* never return */
             }
             newindentl = round_indent( &indentwork );
@@ -133,7 +133,7 @@ void    scr_in( void )
             pa = p;
             scanerr = cw_val_to_su( &p, &indentwork );
             if( scanerr ) {
-                xx_line_err_exit_cc( err_miss_inv_opt_value, cwcurr, pa );
+                xx_line_err_exit_cc( ERR_MISS_INV_OPT_VALUE, cwcurr, pa );
                 /* never return */
             }
             /***************************************************************/
@@ -148,9 +148,9 @@ void    scr_in( void )
     }
     g_indentl = newindentl;
     g_indentr = newindentr;
-
-    /* Reset margin(s) to reflect the current IN offsets */
-
+    /*
+     * Reset margin(s) to reflect the current IN offsets
+     */
     if( indentwork.su_relative ) {
         if( ProcFlags.in_reduced ) {
             t_page.cur_left = oldindent;
@@ -160,18 +160,17 @@ void    scr_in( void )
         t_page.cur_left = g_indentl;
     }
     t_page.max_width = t_page.last_pane->col_width + g_indentr;
-
-    /* Reduce t_page.cur_left to 0 if g_indentl made it negative */
-
+    /*
+     * Reduce t_page.cur_left to 0 if g_indentl made it negative
+     */
     ProcFlags.in_reduced = false;       // flag, if on, is active until next IN
-    if( ((int) t_page.page_left + t_page.cur_left) < 0 ) {
+    if( ( (int)t_page.page_left + t_page.cur_left ) < 0 ) {
         oldindent = t_page.cur_left;
         t_page.cur_left = 0;
-        ProcFlags.in_reduced = true;        // set flag to record virtual reduction of in value
+        ProcFlags.in_reduced = true;    // set flag to record virtual reduction of in value
     }
     t_page.cur_width = t_page.cur_left;
 
     scan_restart = (char *)p;
     return;
 }
-

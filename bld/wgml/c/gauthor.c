@@ -46,7 +46,7 @@ void gml_author( const gmltag * entry )
 
     if( !((ProcFlags.doc_sect == DSECT_titlep) ||
           (ProcFlags.doc_sect_nxt == DSECT_titlep)) ) {
-        xx_nest_err_exit_cc( err_tag_wrong_sect, entry->tagname, ":TITLEP section" );
+        xx_nest_err_exit_cc( ERR_TAG_WRONG_SECT, entry->tagname, ":TITLEP section" );
         /* never return */
     }
     p = scandata.s;
@@ -87,7 +87,7 @@ void gml_author( const gmltag * entry )
     t_page.cur_left += left_indent;
     t_page.cur_width = t_page.cur_left;
     if( t_page.max_width < right_indent ) {
-        xx_line_err_exit_c( err_page_width_too_small, scandata.s );
+        xx_line_err_exit_c( ERR_PAGE_WIDTH_TOO_SMALL, scandata.s );
         /* never return */
     }
     t_page.max_width -= right_indent;

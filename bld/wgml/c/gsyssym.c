@@ -173,7 +173,7 @@ static void var_wng( char *varname, symvar *e )
 {
     if( !ProcFlags.no_var_impl_err ) {  // for full dict print no err msg
         e->varfunc = NULL;              // deactivate after first warning
-        xx_warn_c( err_var_not_impl, varname );
+        xx_warn_c( ERR_VAR_NOT_IMPL, varname );
     }
     return;
 }

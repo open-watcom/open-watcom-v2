@@ -140,6 +140,8 @@ typedef unsigned    line_number;
 typedef uint8_t     text_space;
 typedef unsigned    units_space;
 
+typedef int         msg_ids;
+
 typedef struct tok_type {
     char            *s;
     char            *e;
@@ -722,11 +724,7 @@ typedef struct opt_font {
 /*  message numbers  + severities                                          */
 /***************************************************************************/
 
-typedef enum msg_ids  {
-    #include "wgmlmsge.gh"              // as lowercase enums
-} msg_ids;
-
-#include "wgmlmsgs.gh"                  // as uppercase defines
+#include "wgmlmsgs.rh"
 
 typedef enum {
     SEV_BANNER,

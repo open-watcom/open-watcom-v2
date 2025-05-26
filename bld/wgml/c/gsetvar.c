@@ -208,7 +208,7 @@ char *scan_sym( char *p, symvar *sym, sub_index *subscript, char **result, bool 
                         sym->flags |= SF_subscripted;
                     } else {
                         if( !g_scan_err && !ProcFlags.suppress_msg ) {
-                            xx_line_err_exit_c( err_sub_invalid, p );
+                            xx_line_err_exit_c( ERR_SUB_INVALID, p );
                             /* never return */
                         }
                         g_scan_err = true;
@@ -285,7 +285,7 @@ void    scr_se( void )
     }
     if( p >= scandata.e ) {
         if( !ProcFlags.suppress_msg ) {
-            xx_line_err_exit_c( err_eq_expected, p);
+            xx_line_err_exit_c( ERR_EQ_EXPECTED, p);
             /* never return */
         }
         g_scan_err = true;
@@ -345,7 +345,7 @@ void    scr_se( void )
                 rc = add_symvar_sym( &sym, valstart, p - valstart, subscript, sym.flags );
             } else {                                        // matches wgml 4.0
                 if( !ProcFlags.suppress_msg ) {
-                    xx_line_err_exit_c( err_eq_expected, p);
+                    xx_line_err_exit_c( ERR_EQ_EXPECTED, p);
                     /* never return */
                 }
                 g_scan_err = true;
@@ -358,7 +358,7 @@ void    scr_se( void )
             }
         } else {
             if( !ProcFlags.suppress_msg ) {
-                xx_warn_cc( wng_miss_inv_value, sym.name, p );
+                xx_warn_cc( WNG_MISS_INV_VALUE, sym.name, p );
             }
             g_scan_err = true;
         }
@@ -366,4 +366,3 @@ void    scr_se( void )
     scan_restart = scandata.e;
     return;
 }
-

@@ -141,7 +141,7 @@ static bool check_att_value( gaentry * ga, gtentry * ge, symdict_hdl loc_dict )
             } else {
                 if( gaval->valflags & GAVAL_length ) {
                     if( strlen( token_buf ) > gaval->a.length ) {
-                        xx_err_exit( err_att_len_inv );  // value too long
+                        xx_err_exit( ERR_ATT_LEN_INV );  // value too long
                         /* never return */
                     }
                     g_scan_err = false;
@@ -154,7 +154,7 @@ static bool check_att_value( gaentry * ga, gtentry * ge, symdict_hdl loc_dict )
         rc = add_symvar( loc_dict, ga->attname, token_buf, strlen( token_buf ), SI_no_subscript, SF_local_var );
     } else {
         if( !msg_done ) {
-            xx_err_exit_cc( err_att_val, token_buf, ga->attname );
+            xx_err_exit_cc( ERR_ATT_VAL, token_buf, ga->attname );
             /* never return */
         }
     }
@@ -237,19 +237,19 @@ bool process_tag( gtentry *ge, mac_entry * me )
                     if( strcmp( ga->attname, attname ) == 0 ) {
                         ga->attflags |= GAFLG_proc_seen; // attribute specified
                         if( ga->attflags & GAFLG_auto ) {
-                            xx_line_err_exit_cc( err_auto_att, attname, pa );
+                            xx_line_err_exit_cc( ERR_AUTO_ATT, attname, pa );
                             /* never return */
                         }
 
                         if( is_space_tab_char( *p ) ) { // no whitespace allowed before '='
-                            xx_line_err_exit_cc( err_no_att_val, attname, p );
+                            xx_line_err_exit_cc( ERR_NO_ATT_VAL, attname, p );
                             /* never return */
                         }
 
                         /* no line end allowed before '=' except with TEXTLine */
                         if( (*p == '\0')
                           && (ge->tagflags & GTFLG_textline) == 0 ) {
-                            xx_line_err_exit_cc( err_no_att_val, attname, p );
+                            xx_line_err_exit_cc( ERR_NO_ATT_VAL, attname, p );
                             /* never return */
                         }
 
@@ -257,7 +257,7 @@ bool process_tag( gtentry *ge, mac_entry * me )
                             p++;            // over =
 
                             if( is_space_tab_char( *p ) ) { // no whitespace allowed after '='
-                                xx_line_err_exit_cc( err_no_att_val, attname, p );
+                                xx_line_err_exit_cc( ERR_NO_ATT_VAL, attname, p );
                                 /* never return */
                             }
 
@@ -305,11 +305,11 @@ bool process_tag( gtentry *ge, mac_entry * me )
                 }
                 if( ga == NULL ) {      // supposed attribute not found
                     p = pa;
-                    xx_line_warn_cc( wng_att_name, attname, pa );
+                    xx_line_warn_cc( WNG_ATT_NAME, attname, pa );
                 }
             } else {
                 if( *p != '\0' ) {
-                    xx_line_warn_cc( wng_att_name, p, pa );
+                    xx_line_warn_cc( WNG_ATT_NAME, p, pa );
                 }
             }
 
@@ -354,7 +354,7 @@ bool process_tag( gtentry *ge, mac_entry * me )
         SkipSpaces( p );
         if( (*p != '.')
           && (*p != '\0') ) {
-            xx_line_warn_cc( wng_att_name, p, p );
+            xx_line_warn_cc( WNG_ATT_NAME, p, p );
         }
         p = p2;                                 // restore value
     }
@@ -381,7 +381,7 @@ bool process_tag( gtentry *ge, mac_entry * me )
         /* If TEXTReqrd was used in defining the user-tag, this is an error */
 
         if( ge->tagflags & GTFLG_textreq ) {  // text must be present
-            xx_line_err_exit_cc( err_att_text_req, ge->tagname, p2 );
+            xx_line_err_exit_cc( ERR_ATT_TEXT_REQ, ge->tagname, p2 );
             /* never return */
         }
 
@@ -392,7 +392,7 @@ bool process_tag( gtentry *ge, mac_entry * me )
         /* If TEXTError was used in defining the user-tag, this is an error */
 
         if( ge->tagflags & GTFLG_texterr ) {  // no text allowed
-            xx_line_err_exit_cc( err_att_text, ge->tagname, p );
+            xx_line_err_exit_cc( ERR_ATT_TEXT, ge->tagname, p );
             /* never return */
         }
 

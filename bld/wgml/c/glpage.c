@@ -104,7 +104,7 @@ void    lay_page( const gmltag * entry )
                 switch( curr ) {
                 case e_top_margin:
                     if( AttrFlags.top_margin ) {
-                        xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
+                        xx_line_err_exit_ci( ERR_ATT_DUP, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                         /* never return */
                     }
@@ -114,7 +114,7 @@ void    lay_page( const gmltag * entry )
                     break;
                 case e_left_margin:
                     if( AttrFlags.left_margin ) {
-                        xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
+                        xx_line_err_exit_ci( ERR_ATT_DUP, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                         /* never return */
                     }
@@ -124,7 +124,7 @@ void    lay_page( const gmltag * entry )
                     break;
                 case e_right_margin:
                     if( AttrFlags.right_margin ) {
-                        xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
+                        xx_line_err_exit_ci( ERR_ATT_DUP, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                         /* never return */
                     }
@@ -134,7 +134,7 @@ void    lay_page( const gmltag * entry )
                     break;
                 case e_depth:
                     if( AttrFlags.depth ) {
-                        xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
+                        xx_line_err_exit_ci( ERR_ATT_DUP, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                         /* never return */
                     }
@@ -146,14 +146,14 @@ void    lay_page( const gmltag * entry )
                     /* never return */
                 }
                 if( cvterr ) {          // there was an error
-                    xx_err_exit( err_att_val_inv );
+                    xx_err_exit( ERR_ATT_VAL_INV );
                     /* never return */
                 }
                 break;                  // break out of for loop
             }
         }
         if( cvterr < 0 ) {
-            xx_err_exit( err_att_name_inv );
+            xx_err_exit( ERR_ATT_NAME_INV );
             /* never return */
         }
     }

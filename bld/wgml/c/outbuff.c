@@ -180,7 +180,7 @@ static void ob_insert_ps_text( const char *in_block, unsigned count, font_number
                             /* If it is too large to fit at all, report overflow. */
 
                             if( cur_trans->count > buffout.size ) {
-                                xx_simple_err_exit_c( err_out_rec_size, g_dev_name );
+                                xx_simple_err_exit_c( ERR_OUT_REC_SIZE, g_dev_name );
                                 /* never return */
                             }
 
@@ -414,7 +414,7 @@ static void ob_insert_ps_cmd_ot( const char *in_block, unsigned count, font_numb
                             /* If it is too large to fit at all, report overflow. */
 
                             if( cur_trans->count > buffout.size ) {
-                                xx_simple_err_exit_c( err_out_rec_size, g_dev_name );
+                                xx_simple_err_exit_c( ERR_OUT_REC_SIZE, g_dev_name );
                                 /* never return */
                             }
 
@@ -498,7 +498,7 @@ static void ob_insert_ps_cmd_ot( const char *in_block, unsigned count, font_numb
                             /* If it is too large to fit at all, report overflow. */
 
                             if( cur_trans->count > buffout.size ) {
-                                xx_simple_err_exit_c( err_out_rec_size, g_dev_name );
+                                xx_simple_err_exit_c( ERR_OUT_REC_SIZE, g_dev_name );
                                 /* never return */
                             }
 
@@ -684,7 +684,7 @@ static void ob_insert_def_ot( const char *in_block, unsigned count, font_number 
                         /* If it is too large to fit at all, report overflow. */
 
                         if( cur_trans->count > buffout.size ) {
-                            xx_simple_err_exit_c( err_out_rec_size, g_dev_name );
+                            xx_simple_err_exit_c( ERR_OUT_REC_SIZE, g_dev_name );
                             /* never return */
                         }
 
@@ -1010,7 +1010,7 @@ void ob_binclude( binclude_element * in_el )
 
     fb_binclude_support( in_el );
     if( fwrite( buffout.text, sizeof( uint8_t ), buffout.current, out_file_fp ) < buffout.current ) {
-        xx_simple_err_exit_c( err_write_out_file, out_file );
+        xx_simple_err_exit_c( ERR_WRITE_OUT_FILE, out_file );
         /* never return */
     }
     buffout.current = 0;
@@ -1020,18 +1020,18 @@ void ob_binclude( binclude_element * in_el )
         while( count == buffout.size ) {
             buffout.current = count;
             if( fwrite( buffout.text, sizeof( uint8_t ), buffout.current, out_file_fp ) < buffout.current ) {
-                xx_simple_err_exit_c( err_write_out_file, out_file );
+                xx_simple_err_exit_c( ERR_WRITE_OUT_FILE, out_file );
                 /* never return */
             }
             count = fread( buffout.text, sizeof( uint8_t ), buffout.size, in_el->fp );
         }
         buffout.current = count;
         if( fwrite( buffout.text, sizeof( uint8_t ), buffout.current, out_file_fp ) < buffout.current ) {
-            xx_simple_err_exit_c( err_write_out_file, out_file );
+            xx_simple_err_exit_c( ERR_WRITE_OUT_FILE, out_file );
             /* never return */
         }
         if( ferror( in_el->fp ) ) {
-            xx_simple_err_exit_cc( err_in_file, "BINCLUDE", in_el->file );
+            xx_simple_err_exit_cc( ERR_IN_FILE, "BINCLUDE", in_el->file );
             /* never return */
         }
         buffout.current = 0;
@@ -1040,7 +1040,7 @@ void ob_binclude( binclude_element * in_el )
         while( count == binc_buff.size ) {
             binc_buff.current = count;
             if( fwrite( binc_buff.text, sizeof( uint8_t ), binc_buff.current, out_file_fp ) < binc_buff.current ) {
-                xx_simple_err_exit_c( err_write_out_file, out_file );
+                xx_simple_err_exit_c( ERR_WRITE_OUT_FILE, out_file );
                 /* never return */
             }
             ob_flush();
@@ -1048,11 +1048,11 @@ void ob_binclude( binclude_element * in_el )
         }
         binc_buff.current = count;
         if( fwrite( binc_buff.text, sizeof( uint8_t ), binc_buff.current, out_file_fp ) < binc_buff.current ) {
-            xx_simple_err_exit_c( err_write_out_file, out_file );
+            xx_simple_err_exit_c( ERR_WRITE_OUT_FILE, out_file );
             /* never return */
         }
         if( ferror( in_el->fp ) ) {
-            xx_simple_err_exit_cc( err_in_file, "BINCLUDE", in_el->file );
+            xx_simple_err_exit_cc( ERR_IN_FILE, "BINCLUDE", in_el->file );
             /* never return */
         }
     }
@@ -1103,7 +1103,7 @@ void ob_flush( void )
         return;     /* Bail in case of fatal errors further up. */
 
     if( fwrite( buffout.text, sizeof( uint8_t ), buffout.current, out_file_fp ) < buffout.current ) {
-        xx_simple_err_exit_c( err_write_out_file, out_file );
+        xx_simple_err_exit_c( ERR_WRITE_OUT_FILE, out_file );
         /* never return */
     }
     buffout.current = 0;
@@ -1111,7 +1111,7 @@ void ob_flush( void )
      * emit correct end-of-line bytes
      */
     if( fprintf( out_file_fp, TEXT_EOL ) != sizeof( TEXT_EOL ) - 1 ) {
-        xx_simple_err_exit_c( err_write_out_file, out_file );
+        xx_simple_err_exit_c( ERR_WRITE_OUT_FILE, out_file );
         /* never return */
     }
 }
@@ -1157,7 +1157,7 @@ void ob_graphic( graphic_element * in_el )
         buffout.current = count;
         if( fwrite( buffout.text, sizeof( uint8_t ), buffout.current, out_file_fp )
                 < buffout.current ) {
-            xx_simple_err_exit_c( err_write_out_file, out_file );
+            xx_simple_err_exit_c( ERR_WRITE_OUT_FILE, out_file );
             /* never return */
         }
         count = fread( buffout.text, sizeof( uint8_t ), buffout.size, in_el->fp );
@@ -1165,7 +1165,7 @@ void ob_graphic( graphic_element * in_el )
     buffout.current = count;
     if( fwrite( buffout.text, sizeof( uint8_t ), buffout.current, out_file_fp )
             < buffout.current ) {
-        xx_simple_err_exit_c( err_write_out_file, out_file );
+        xx_simple_err_exit_c( ERR_WRITE_OUT_FILE, out_file );
         /* never return */
     }
     buffout.current = 0;
@@ -1185,7 +1185,7 @@ void ob_graphic( graphic_element * in_el )
     if( in_el->next_font > FONT0 ) {
         emit_FONT0();
         if( ferror( in_el->fp ) ) {
-            xx_simple_err_exit_cc( err_in_file, "GRAPHIC", in_el->file );
+            xx_simple_err_exit_cc( ERR_IN_FILE, "GRAPHIC", in_el->file );
             /* never return */
         }
     }
@@ -1331,7 +1331,7 @@ void ob_setup( void )
     /* followed by ":".                                                    */
 
     if( ( my_tolower( out_file_attr[0] ) != 't' ) || ( out_file_attr[1] != ':' ) ) {
-        xx_simple_err_exit_c( err_rec_att_not_sup, out_file_attr );
+        xx_simple_err_exit_c( ERR_REC_ATT_NOT_SUP, out_file_attr );
         /* never return */
     }
 
@@ -1341,7 +1341,7 @@ void ob_setup( void )
 
     for( i = 2; i < strlen( out_file_attr ); i++ ) {
         if( !my_isdigit( out_file_attr[i] ) ) {
-            xx_simple_err_exit_c( err_rec_att_bad_fmt, out_file_attr );
+            xx_simple_err_exit_c( ERR_REC_ATT_BAD_FMT, out_file_attr );
             /* never return */
         }
         count++;
@@ -1353,7 +1353,7 @@ void ob_setup( void )
 #else
     if( errno == ERANGE ) {
 #endif
-        xx_simple_err_exit_i( err_out_rec_size2, UINT_MAX );
+        xx_simple_err_exit_i( ERR_OUT_REC_SIZE2, UINT_MAX );
         /* never return */
     }
 
@@ -1367,7 +1367,7 @@ void ob_setup( void )
 
     out_file_fp = fopen( out_file, "wb" );
     if( out_file_fp == NULL ) {
-        xx_simple_err_exit_c( err_open_out_file, out_file );
+        xx_simple_err_exit_c( ERR_OPEN_OUT_FILE, out_file );
         /* never return */
     }
 
@@ -1403,7 +1403,7 @@ void ob_teardown( void )
 
     if( out_file_fp != NULL ) {
         if( fclose( out_file_fp ) ) {
-            xx_simple_err_exit_c( err_close_out_file, out_file );
+            xx_simple_err_exit_c( ERR_CLOSE_OUT_FILE, out_file );
             /* never return */
         }
         out_file_fp = NULL;

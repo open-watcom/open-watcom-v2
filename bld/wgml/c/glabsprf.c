@@ -166,7 +166,7 @@ void    lay_abspref( const gmltag * entry )
                 switch( curr ) {
                 case e_post_skip:
                     if( AttrFlags.post_skip ) {
-                        xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
+                        xx_line_err_exit_ci( ERR_ATT_DUP, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                         /* never return */
                     }
@@ -175,7 +175,7 @@ void    lay_abspref( const gmltag * entry )
                     break;
                 case e_pre_top_skip:
                     if( AttrFlags.pre_top_skip ) {
-                        xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
+                        xx_line_err_exit_ci( ERR_ATT_DUP, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                         /* never return */
                     }
@@ -184,7 +184,7 @@ void    lay_abspref( const gmltag * entry )
                     break;
                 case e_font:
                     if( AttrFlags.font ) {
-                        xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
+                        xx_line_err_exit_ci( ERR_ATT_DUP, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                         /* never return */
                     }
@@ -194,7 +194,7 @@ void    lay_abspref( const gmltag * entry )
                     break;
                 case e_spacing:
                     if( AttrFlags.spacing ) {
-                        xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
+                        xx_line_err_exit_ci( ERR_ATT_DUP, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                         /* never return */
                     }
@@ -203,7 +203,7 @@ void    lay_abspref( const gmltag * entry )
                     break;
                 case e_header:
                     if( AttrFlags.header ) {
-                        xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
+                        xx_line_err_exit_ci( ERR_ATT_DUP, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                         /* never return */
                     }
@@ -213,7 +213,7 @@ void    lay_abspref( const gmltag * entry )
                 case e_abstract_string:
                     if( ltag == TL_ABSTRACT ) {
                         if( AttrFlags.abstract_string ) {
-                            xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
+                            xx_line_err_exit_ci( ERR_ATT_DUP, attr_name.tok.s,
                                 attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                             /* never return */
                         }
@@ -224,7 +224,7 @@ void    lay_abspref( const gmltag * entry )
                 case e_preface_string:
                     if( ltag == TL_PREFACE ) {
                         if( AttrFlags.preface_string ) {
-                            xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
+                            xx_line_err_exit_ci( ERR_ATT_DUP, attr_name.tok.s,
                                 attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                             /* never return */
                         }
@@ -234,7 +234,7 @@ void    lay_abspref( const gmltag * entry )
                     break;
                 case e_page_eject:
                     if( AttrFlags.page_eject ) {
-                        xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
+                        xx_line_err_exit_ci( ERR_ATT_DUP, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                         /* never return */
                     }
@@ -243,7 +243,7 @@ void    lay_abspref( const gmltag * entry )
                     break;
                 case e_page_reset:
                     if( AttrFlags.page_reset ) {
-                        xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
+                        xx_line_err_exit_ci( ERR_ATT_DUP, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                         /* never return */
                     }
@@ -252,7 +252,7 @@ void    lay_abspref( const gmltag * entry )
                     break;
                 case e_columns:
                     if( AttrFlags.columns ) {
-                        xx_line_err_exit_ci( err_att_dup, attr_name.tok.s,
+                        xx_line_err_exit_ci( ERR_ATT_DUP, attr_name.tok.s,
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                         /* never return */
                     }
@@ -264,14 +264,14 @@ void    lay_abspref( const gmltag * entry )
                     /* never return */
                 }
                 if( cvterr ) {          // there was an error
-                    xx_err_exit( err_att_val_inv );
+                    xx_err_exit( ERR_ATT_VAL_INV );
                     /* never return */
                 }
                 break;                  // break out of for loop
             }
         }
         if( cvterr < 0 ) {
-            xx_err_exit( err_att_name_inv );
+            xx_err_exit( ERR_ATT_NAME_INV );
             /* never return */
         }
     }

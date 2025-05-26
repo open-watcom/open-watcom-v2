@@ -74,7 +74,7 @@ static void g_doc_sect_err_exit( doc_section  ds )
 {
     err_count++;
     g_scan_err = true;
-    xx_err_exit_c( err_doc_sect, sect_info[ds].text );
+    xx_err_exit_c( ERR_DOC_SECT, sect_info[ds].text );
     /* never return */
 }
 
@@ -362,7 +362,7 @@ static void gen_ref_list( ix_e_blk * refs, font_number font )
             while( cur_ref->entry_typ != pgend )
                 cur_ref = cur_ref->next;
             if( cur_ref == NULL ) {
-                xx_simple_err_exit( err_open_page_range );
+                xx_simple_err_exit( ERR_OPEN_PAGE_RANGE );
                 /* never return */
             }
             ProcFlags.ct = true;
@@ -371,7 +371,7 @@ static void gen_ref_list( ix_e_blk * refs, font_number font )
             process_text( buffer, font );
             break;
         case pgend :
-            xx_simple_err_exit( err_open_page_range );
+            xx_simple_err_exit( ERR_OPEN_PAGE_RANGE );
             /* never return */
         case pgmajor :
             ProcFlags.ct = true;
@@ -1426,11 +1426,11 @@ extern void gml_abstract( const gmltag * entry )
     (void)entry;
 
     if( ProcFlags.doc_sect_nxt == DSECT_egdoc ) {
-        xx_line_err_exit_c( err_eof_expected, g_tok_start );
+        xx_line_err_exit_c( ERR_EOF_EXPECTED, g_tok_start );
         /* never return */
     }
     if( !ProcFlags.frontm_seen ) {
-        xx_line_err_exit_c( err_doc_sec_expected_1, g_tok_start );
+        xx_line_err_exit_c( ERR_DOC_SEC_EXPECTED_1, g_tok_start );
         /* never return */
     }
     if( g_blank_text_lines > 0 ) {
@@ -1549,7 +1549,7 @@ extern void gml_index( const gmltag * entry )
     (void)entry;
 
     if( ProcFlags.doc_sect_nxt == DSECT_egdoc ) {
-        xx_line_err_exit_c( err_eof_expected, g_tok_start );
+        xx_line_err_exit_c( ERR_EOF_EXPECTED, g_tok_start );
         /* never return */
     }
 
@@ -1560,7 +1560,7 @@ extern void gml_index( const gmltag * entry )
 
     if( !((ProcFlags.doc_sect == DSECT_backm) ||
           (ProcFlags.doc_sect_nxt == DSECT_backm)) ) {
-        xx_line_err_exit_c( err_doc_sec_expected_1, g_tok_start );
+        xx_line_err_exit_c( ERR_DOC_SEC_EXPECTED_1, g_tok_start );
         /* never return */
     }
     if( !GlobalFlags.index ) {          // index option not active
@@ -1586,11 +1586,11 @@ extern void gml_preface( const gmltag * entry )
     (void)entry;
 
     if( ProcFlags.doc_sect_nxt == DSECT_egdoc ) {
-        xx_line_err_exit_c( err_eof_expected, g_tok_start );
+        xx_line_err_exit_c( ERR_EOF_EXPECTED, g_tok_start );
         /* never return */
     }
     if( !ProcFlags.frontm_seen ) {
-        xx_line_err_exit_c( err_doc_sec_expected_1, g_tok_start );
+        xx_line_err_exit_c( ERR_DOC_SEC_EXPECTED_1, g_tok_start );
         /* never return */
     }
     if( g_blank_text_lines > 0 ) {
@@ -1611,11 +1611,11 @@ extern void gml_titlep( const gmltag * entry )
     (void)entry;
 
     if( ProcFlags.doc_sect_nxt == DSECT_egdoc ) {
-        xx_line_err_exit_c( err_eof_expected, g_tok_start );
+        xx_line_err_exit_c( ERR_EOF_EXPECTED, g_tok_start );
         /* never return */
     }
     if( !ProcFlags.frontm_seen ) {
-        xx_line_err_exit_c( err_doc_sec_expected_1, g_tok_start );
+        xx_line_err_exit_c( ERR_DOC_SEC_EXPECTED_1, g_tok_start );
         /* never return */
     }
     scr_process_break();
@@ -1693,45 +1693,45 @@ extern void gml_egdoc( const gmltag * entry )
             // output figure forward/undefined references
             for( curr = fig_fwd_refs; curr != NULL; curr = curr->next ) {
                 if( find_refid( fig_ref_dict, curr->refid ) != NULL ) {
-                    xx_simple_warn_info_cc( wng_id_xxx, curr->refid, inf_id_forward, "figure" );
+                    xx_simple_warn_info_cc( WNG_ID_XXX, curr->refid, INF_ID_FORWARD, "figure" );
                 } else {
-                    xx_simple_warn_info_cc( wng_id_xxx, curr->refid, inf_id_unknown, "Figure" );
+                    xx_simple_warn_info_cc( WNG_ID_XXX, curr->refid, INF_ID_UNKNOWN, "Figure" );
                 }
             }
             // output header forward/undefined references
             for( curr = hd_fwd_refs; curr != NULL; curr = curr->next ) {
                 if( find_refid( hd_ref_dict, curr->refid ) != NULL ) {
-                    xx_simple_warn_info_cc( wng_id_xxx, curr->refid, inf_id_forward, "heading" );
+                    xx_simple_warn_info_cc( WNG_ID_XXX, curr->refid, INF_ID_FORWARD, "heading" );
                 } else {
-                    xx_simple_warn_info_cc( wng_id_xxx, curr->refid, inf_id_unknown, "Heading" );
+                    xx_simple_warn_info_cc( WNG_ID_XXX, curr->refid, INF_ID_UNKNOWN, "Heading" );
                 }
             }
             // output footnote forward/undefined references
             for( curr = fn_fwd_refs; curr != NULL; curr = curr->next ) {
                 if( find_refid( fn_ref_dict, curr->refid ) != NULL ) {
-                    xx_simple_warn_info_cc( wng_id_xxx, curr->refid, inf_id_forward, "footnote" );
+                    xx_simple_warn_info_cc( WNG_ID_XXX, curr->refid, INF_ID_FORWARD, "footnote" );
                 } else {
-                    xx_simple_warn_info_cc( wng_id_xxx, curr->refid, inf_id_unknown, "Footnote" );
+                    xx_simple_warn_info_cc( WNG_ID_XXX, curr->refid, INF_ID_UNKNOWN, "Footnote" );
                 }
             }
             if( figlist_toc != GENSEC_none ) {
-                xx_simple_warn( wng_pass_1 );       // more than one pass needed
+                xx_simple_warn( WNG_PASS_1 );       // more than one pass needed
             }
         } else {                                    // last pass of at least 2
             // output figure undefined/page change references
             for( curr = fig_fwd_refs; curr != NULL; curr = curr->next ) {
-                xx_simple_warn_info_cc( wng_id_xxx, curr->refid, inf_id_forward, "figure" );
+                xx_simple_warn_info_cc( WNG_ID_XXX, curr->refid, INF_ID_FORWARD, "figure" );
             }
             // output header undefined/page change references
             for( curr = hd_fwd_refs; curr != NULL; curr = curr->next ) {
-                xx_simple_warn_info_cc( wng_id_xxx, curr->refid, inf_id_forward, "heading" );
+                xx_simple_warn_info_cc( WNG_ID_XXX, curr->refid, INF_ID_FORWARD, "heading" );
             }
             if( ProcFlags.new_pagenr ) {
-                xx_simple_warn( wng_pass_many );    // at least one more pass needed
+                xx_simple_warn( WNG_PASS_MANY );    // at least one more pass needed
             }
         }
         if( !GlobalFlags.index && ProcFlags.index_tag_cw_seen ) {   // index option needed
-            xx_simple_warn( wng_index_opt );                        // give hint to activate index
+            xx_simple_warn( WNG_INDEX_OPT );                        // give hint to activate index
         }
     }
 

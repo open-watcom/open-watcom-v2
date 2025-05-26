@@ -196,7 +196,7 @@ static void scan_gml( void )
     me = NULL;
     if( ge != NULL ) {                  // GML user defined Tag found
         if( ProcFlags.need_text ) {
-            xx_err_exit( err_text_not_tag_cw );
+            xx_err_exit( ERR_TEXT_NOT_TAG_CW );
             /* never return */
         }
         if( ge->tagflags & GTFLG_off ) {  // inactive, treat as comment
@@ -247,10 +247,10 @@ static void scan_gml( void )
                         // tag allowed everywhere
                         tag->gmlproc( tag );
                     } else if( rs_loc == TLOC_banner ) {
-                        xx_err_exit_c( err_tag_expected, "eBANNER" );
+                        xx_err_exit_c( ERR_TAG_EXPECTED, "eBANNER" );
                         /* never return */
                     } else {    // rs_loc == TLOC_banreg
-                        xx_err_exit_c( err_tag_expected, "eBANREGION" );
+                        xx_err_exit_c( ERR_TAG_EXPECTED, "eBANREGION" );
                         /* never return */
                     }
                     SkipDot( scandata.s );
@@ -260,7 +260,7 @@ static void scan_gml( void )
                 }
                 processed = true;
             } else if( find_sys_tag( tagname ) != NULL ) {
-                xx_err_exit_c( err_gml_in_lay, tagname );
+                xx_err_exit_c( ERR_GML_IN_LAY, tagname );
                 /* never return */
             }
         } else {                        // not within :LAYOUT
@@ -302,7 +302,7 @@ static void scan_gml( void )
                         tag->gmlproc( tag );
                         ProcFlags.need_ddhd = false;
                     } else {
-                        xx_err_exit_c( err_tag_expected, "DDHD");
+                        xx_err_exit_c( ERR_TAG_EXPECTED, "DDHD");
                         /* never return */
                     }
                 } else if( ProcFlags.need_dd ) {
@@ -313,7 +313,7 @@ static void scan_gml( void )
                         tag->gmlproc( tag );
                         ProcFlags.need_dd = false;
                     } else {
-                        xx_err_exit_c( err_tag_expected, "DD");
+                        xx_err_exit_c( ERR_TAG_EXPECTED, "DD");
                         /* never return */
                     }
                 } else if( ProcFlags.need_gd ) {
@@ -325,7 +325,7 @@ static void scan_gml( void )
                         tag->gmlproc( tag );
                         ProcFlags.need_gd = false;
                     } else {
-                        xx_err_exit_c( err_tag_expected, "GD");
+                        xx_err_exit_c( ERR_TAG_EXPECTED, "GD");
                         /* never return */
                     }
                 } else if( !nest_cb->in_list ) {
@@ -333,7 +333,7 @@ static void scan_gml( void )
                         // tag is not a list tag
                         tag->gmlproc( tag );
                     } else {
-                        xx_line_err_exit_c( err_no_list, g_tok_start );
+                        xx_line_err_exit_c( ERR_NO_LIST, g_tok_start );
                         /* never return */
                     }
                 } else if( ProcFlags.need_li_lp ) {
@@ -341,11 +341,11 @@ static void scan_gml( void )
                         // tag is LP or LI
                         tag->gmlproc( tag );
                     } else {
-                        xx_nest_err_exit( err_no_li_lp );
+                        xx_nest_err_exit( ERR_NO_LI_LP );
                         /* never return */
                     }
                 } else if( ProcFlags.need_text ) {
-                    xx_err_exit( err_text_not_tag_cw );
+                    xx_err_exit( ERR_TEXT_NOT_TAG_CW );
                     /* never return */
                 } else if( rs_loc == 0 ) {
                     // no restrictions: do them all
@@ -364,7 +364,7 @@ static void scan_gml( void )
                 processed = true;
                 SkipDot( scandata.s );
             } else if( find_lay_tag( tagname ) != NULL ) {
-                xx_err_exit_c( err_lay_in_gml, tagname );
+                xx_err_exit_c( ERR_LAY_IN_GML, tagname );
                 /* never return */
             }
         }
@@ -426,7 +426,7 @@ static void     scan_script( void )
     char            macname[MAC_NAME_LENGTH + 1];
 
     if( ProcFlags.need_text ) {
-        xx_err_exit( err_text_not_tag_cw );
+        xx_err_exit( ERR_TEXT_NOT_TAG_CW );
         /* never return */
     }
 
@@ -589,7 +589,7 @@ static void     scan_script( void )
                 cwinfo->cwdproc();
             }
         } else {
-            xx_err_exit_c( err_cw_unrecognized, macname );
+            xx_err_exit_c( ERR_CW_UNRECOGNIZED, macname );
             /* never return */
         }
     }
@@ -817,7 +817,7 @@ void    scan_line( void )
 
         if( (*scandata.s != '\0') && (scandata.s < scandata.e) ) {
             if( (input_cbs->fmflags & II_research) && GlobalFlags.firstpass ) {
-                g_info_lm( inf_text_line, scandata.s );
+                g_info_lm( INF_TEXT_LINE, scandata.s );
             }
             if( ProcFlags.layout ) {    // LAYOUT active: should not happen
                 internal_err_exit( __FILE__, __LINE__ );
@@ -879,7 +879,7 @@ void    scan_line( void )
             }
         }
     } else if( (input_cbs->fmflags & II_research) && GlobalFlags.firstpass ) {
-        g_info_lm( inf_skip_line );     // show skipped line
+        g_info_lm( INF_SKIP_LINE );     // show skipped line
     }
     if( ProcFlags.literal ) {
         if( li_cnt < INT_MAX ) {   // we decrement, do not wait for .li OFF
@@ -1003,7 +1003,7 @@ char *get_text_line( char *p )
         if( *p != '\0' ) {              // text exists
             classify_record( p );       // sets ProcFlags used below if appropriate
             if( ProcFlags.scr_cw) {
-                xx_err_exit( err_text_not_tag_cw );  // control word, macro, or whatever
+                xx_err_exit( ERR_TEXT_NOT_TAG_CW );  // control word, macro, or whatever
                 /* never return */
             }
             if( ProcFlags.gml_tag ) {
@@ -1017,7 +1017,7 @@ char *get_text_line( char *p )
                     if( ge != NULL
                       || find_lay_tag( tagname ) != NULL
                       || find_sys_tag( tagname ) != NULL ) {
-                        xx_err_exit( err_text_not_tag_cw );  // control word, macro, or whatever
+                        xx_err_exit( ERR_TEXT_NOT_TAG_CW );  // control word, macro, or whatever
                         /* never return */
                     }
                 }

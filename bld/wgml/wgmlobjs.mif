@@ -175,4 +175,3 @@ scr_objs =  &
         gsty.obj     &
  
 objs = wgml.obj $(common_objs) $(scr_objs) $(gml_objs) $(lay_objs) $(dev_objs) $(trmem_objs)
- 

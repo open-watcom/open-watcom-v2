@@ -61,7 +61,7 @@ void    gml_graphic( const gmltag * entry )
 
     if( (ProcFlags.doc_sect < DSECT_gdoc) ) {
         if( (ProcFlags.doc_sect_nxt < DSECT_gdoc) ) {
-            xx_err_exit_c( err_tag_before_gdoc, entry->tagname );
+            xx_err_exit_c( ERR_TAG_BEFORE_GDOC, entry->tagname );
             /* never return */
         }
     }
@@ -95,7 +95,7 @@ void    gml_graphic( const gmltag * entry )
                 file[attr_val.tok.l] = '\0';
                 split_attr_file( file, rt_buff, sizeof( rt_buff ) );
                 if( (rt_buff[0] != '\0') ) {
-                    xx_warn( wng_rec_type_graphic );
+                    xx_warn( WNG_REC_TYPE_GRAPHIC );
                 }
                 if( ProcFlags.tag_end_found ) {
                     break;
@@ -111,11 +111,11 @@ void    gml_graphic( const gmltag * entry )
                 }
                 depth = conv_vert_unit( &cur_su, g_text_spacing, g_curr_font );
                 if( depth == 0 ) {
-                    xx_line_err_exit_c( err_inv_depth_graphic_1, attr_val.tok.s );
+                    xx_line_err_exit_c( ERR_INV_DEPTH_GRAPHIC_1, attr_val.tok.s );
                     /* never return */
                 }
                 if( depth > t_page.max_depth ) {
-                    xx_line_err_exit_c( err_inv_depth_graphic_2, attr_val.tok.s );
+                    xx_line_err_exit_c( ERR_INV_DEPTH_GRAPHIC_2, attr_val.tok.s );
                     /* never return */
                 }
                 if( ProcFlags.tag_end_found ) {
@@ -139,11 +139,11 @@ void    gml_graphic( const gmltag * entry )
                     }
                     width = conv_hor_unit( &cur_su, g_curr_font );
                     if( width == 0 ) {
-                        xx_line_err_exit_c( err_inv_width_graphic_1, attr_val.tok.s );
+                        xx_line_err_exit_c( ERR_INV_WIDTH_GRAPHIC_1, attr_val.tok.s );
                         /* never return */
                     }
                     if( width > t_page.last_pane->col_width ) {
-                        xx_line_err_exit_c( err_inv_width_graphic_2, attr_val.tok.s );
+                        xx_line_err_exit_c( ERR_INV_WIDTH_GRAPHIC_2, attr_val.tok.s );
                         /* never return */
                     }
                 }
@@ -157,7 +157,7 @@ void    gml_graphic( const gmltag * entry )
                 }
                 pb = attr_val.tok.s;
                 if( (*pb == '+') || (*pb == '-') ) {    // signs not allowed
-                    xx_line_err_exit_c( err_num_too_large, attr_val.tok.s );
+                    xx_line_err_exit_c( ERR_NUM_TOO_LARGE, attr_val.tok.s );
                     /* never return */
                 }
                 scale = 0;
@@ -169,11 +169,11 @@ void    gml_graphic( const gmltag * entry )
                     }
                 }
                 if( scale > 0x7fffffff ) {              // wgml 4.0 limit
-                    xx_line_err_exit_c( err_num_too_large, attr_val.tok.s );
+                    xx_line_err_exit_c( ERR_NUM_TOO_LARGE, attr_val.tok.s );
                     /* never return */
                 }
                 if( (pb - attr_val.tok.s) < attr_val.tok.l ) {      // value continues on
-                    xx_line_err_exit_c( err_num_too_large, attr_val.tok.s );
+                    xx_line_err_exit_c( ERR_NUM_TOO_LARGE, attr_val.tok.s );
                     /* never return */
                 }
                 if( ProcFlags.tag_end_found ) {
@@ -212,7 +212,7 @@ void    gml_graphic( const gmltag * entry )
     }
 
     if( !depth_found || !file_found ) { // detect missing required attributes
-        xx_err_exit( err_att_missing );
+        xx_err_exit( ERR_ATT_MISSING );
         /* never return */
     }
 
@@ -242,17 +242,17 @@ void    gml_graphic( const gmltag * entry )
         cur_el->element.graph.file = mem_strdup( try_file_name );
 
         if( GlobalFlags.inclist ) {
-            g_info_lm( inf_curr_file, cur_el->element.graph.file );
+            g_info_lm( INF_CURR_FILE, cur_el->element.graph.file );
             while( cb->fmflags & II_macro ) {                 // find prior file
                  cb = cb->prev;
             }
-            g_info_lm( inf_curr_file, cb->s.f->filename );
+            g_info_lm( INF_CURR_FILE, cb->s.f->filename );
         }
 
         insert_col_main( cur_el );
 
     } else {
-        xx_err_exit_c( err_file_not_found, file );
+        xx_err_exit_c( ERR_FILE_NOT_FOUND, file );
         /* never return */
     }
 

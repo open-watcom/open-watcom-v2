@@ -291,14 +291,14 @@ static cop_device *get_cop_device( char const *dev_name )
 
         /* File error, including premature eof. */
 
-        xx_simple_err_exit_c( err_dev_data_file, try_file_name );
+        xx_simple_err_exit_c( ERR_DEV_DATA_FILE, try_file_name );
         /* never return */
 
     case COP_not_se_v4_1:
 
         /* File was created by a different version of gendev. */
 
-        xx_simple_err_exit( err_wrong_gendev );
+        xx_simple_err_exit( ERR_WRONG_GENDEV );
         /* never return */
 
     case COP_not_bin_dev:
@@ -306,7 +306,7 @@ static cop_device *get_cop_device( char const *dev_name )
 
         /* Wrong type of file: something is wrong with the device library. */
 
-        xx_simple_err_exit_c( err_dev_lib_data, try_file_name );
+        xx_simple_err_exit_c( ERR_DEV_LIB_DATA, try_file_name );
         /* never return */
 
     case COP_se_v4_1_not_dir:
@@ -315,7 +315,7 @@ static cop_device *get_cop_device( char const *dev_name )
 
         out_device = parse_device( fp );
         if( out_device == NULL ) {
-            xx_simple_err_exit_c( err_dev_lib_data, try_file_name );
+            xx_simple_err_exit_c( ERR_DEV_LIB_DATA, try_file_name );
             /* never return */
         }
         break;
@@ -370,14 +370,14 @@ static cop_driver *get_cop_driver( char const *drv_name )
 
         /* File error, including premature eof. */
 
-        xx_simple_err_exit_c( err_dev_lib_file, try_file_name );
+        xx_simple_err_exit_c( ERR_DEV_LIB_FILE, try_file_name );
         /* never return */
 
     case COP_not_se_v4_1:
 
         /* File was created by a different version of gendev. */
 
-        xx_simple_err_exit( err_wrong_gendev );
+        xx_simple_err_exit( ERR_WRONG_GENDEV );
         /* never return */
 
     case COP_not_bin_dev:
@@ -385,7 +385,7 @@ static cop_driver *get_cop_driver( char const *drv_name )
 
         /* Wrong type of file: something is wrong with the device library. */
 
-        xx_simple_err_exit_c( err_dev_lib_data, try_file_name );
+        xx_simple_err_exit_c( ERR_DEV_LIB_DATA, try_file_name );
         /* never return */
 
     case COP_se_v4_1_not_dir:
@@ -394,7 +394,7 @@ static cop_driver *get_cop_driver( char const *drv_name )
 
         out_driver = parse_driver( fp );
         if( out_driver == NULL ) {
-            xx_simple_err_exit_c( err_dev_data_file, try_file_name );
+            xx_simple_err_exit_c( ERR_DEV_DATA_FILE, try_file_name );
             /* never return */
         }
         break;
@@ -449,14 +449,14 @@ static cop_font *get_cop_font( char const *fon_name )
 
         /* File error, including premature eof. */
 
-        xx_simple_err_exit_c( err_dev_lib_file, try_file_name );
+        xx_simple_err_exit_c( ERR_DEV_LIB_FILE, try_file_name );
         /* never return */
 
     case COP_not_se_v4_1:
 
         /* File was created by a different version of gendev. */
 
-        xx_simple_err_exit( err_wrong_gendev );
+        xx_simple_err_exit( ERR_WRONG_GENDEV );
         /* never return */
 
     case COP_not_bin_dev:
@@ -464,7 +464,7 @@ static cop_font *get_cop_font( char const *fon_name )
 
         /* Wrong type of file: something is wrong with the device library. */
 
-        xx_simple_err_exit_c( err_dev_lib_data, try_file_name );
+        xx_simple_err_exit_c( ERR_DEV_LIB_DATA, try_file_name );
         /* never return */
 
     case COP_se_v4_1_not_dir:
@@ -473,7 +473,7 @@ static cop_font *get_cop_font( char const *fon_name )
 
         out_font = parse_font( fp, fon_name );
         if( out_font == NULL ) {
-            xx_simple_err_exit_c( err_dev_data_file, try_file_name );
+            xx_simple_err_exit_c( ERR_DEV_DATA_FILE, try_file_name );
             /* never return */
         }
         break;
@@ -521,7 +521,7 @@ static cop_font * find_cop_font( char const *fon_name )
     if( retval == NULL ) {
         retval = get_cop_font( fon_name );
         if( retval == NULL ) {
-            xx_simple_err_exit_c( err_dev_not_found, fon_name );
+            xx_simple_err_exit_c( ERR_DEV_NOT_FOUND, fon_name );
             /* never return */
         }
         retval->next_font = bin_fonts;
@@ -560,7 +560,7 @@ static device_font * find_dev_font( char const *font_name )
     }
 
     if( retval == NULL ) {
-        xx_simple_err_exit_cc( err_block_not_found, "DEVICEFONT", font_name );
+        xx_simple_err_exit_cc( ERR_BLOCK_NOT_FOUND, "DEVICEFONT", font_name );
         /* never return */
     }
 
@@ -596,7 +596,7 @@ static fontstyle_block * find_style( char const *name )
     }
 
     if( retval == NULL ) {
-        xx_simple_err_exit_cc( err_block_not_found, "FONTSTYLE", name );
+        xx_simple_err_exit_cc( ERR_BLOCK_NOT_FOUND, "FONTSTYLE", name );
         /* never return */
     }
 
@@ -632,7 +632,7 @@ static fontswitch_block * find_switch( char const *name )
     }
 
     if( retval == NULL ) {
-        xx_simple_err_exit_cc( err_block_not_found, "FONTSWITCH", name );
+        xx_simple_err_exit_cc( ERR_BLOCK_NOT_FOUND, "FONTSWITCH", name );
         /* never return */
     }
 
@@ -749,14 +749,14 @@ void cop_setup( void )
 
     /* Emit the expected message. */
 
-    g_info_lm( inf_proc_dev );
+    g_info_lm( INF_PROC_DEV );
 
     /* Process the device. */
 
     bin_device = get_cop_device( g_dev_name );
 
     if( bin_device == NULL ) {
-        xx_simple_err_exit_cc( err_block_not_found, "DEVICE", g_dev_name );
+        xx_simple_err_exit_cc( ERR_BLOCK_NOT_FOUND, "DEVICE", g_dev_name );
         /* never return */
     }
 
@@ -783,7 +783,7 @@ void cop_setup( void )
     bin_driver = get_cop_driver( bin_device->driver_name );
 
     if( bin_driver == NULL ) {
-        xx_simple_err_exit_cc( err_block_not_found, "DRIVER", bin_device->driver_name );
+        xx_simple_err_exit_cc( ERR_BLOCK_NOT_FOUND, "DRIVER", bin_device->driver_name );
         /* never return */
     }
 
@@ -946,7 +946,7 @@ void cop_setup( void )
 
         if( (wgml_fonts[i].bin_font->scale_basis != 0)
           && (wgml_fonts[i].font_height == 0)) {
-            xx_simple_err_exit_i( err_font_scaled, i );
+            xx_simple_err_exit_i( ERR_FONT_SCALED, i );
             /* never return */
         }
 
@@ -987,7 +987,7 @@ void cop_setup( void )
 
         if( (wgml_fonts[i].bin_font->scale_basis != 0)
           && (wgml_fonts[i].font_height == 0)) {
-            xx_simple_err_exit_i( err_font_opt_scaled, i );
+            xx_simple_err_exit_i( ERR_FONT_OPT_SCALED, i );
             /* never return */
         }
 
@@ -1028,7 +1028,7 @@ void cop_setup( void )
 
             if( (wgml_fonts[i].bin_font->scale_basis != 0) &&
                     (wgml_fonts[i].font_height == 0)) {
-                xx_simple_err_exit_i( err_font_scaled, i );
+                xx_simple_err_exit_i( ERR_FONT_SCALED, i );
                 /* never return */
             }
 
@@ -1079,7 +1079,7 @@ void cop_setup( void )
 
             if( (wgml_fonts[i].bin_font->scale_basis != 0) &&
                     (wgml_fonts[i].font_height == 0)) {
-                xx_simple_err_exit_i( err_font_scaled, i );
+                xx_simple_err_exit_i( ERR_FONT_SCALED, i );
                 /* never return */
             }
         }
@@ -1366,7 +1366,7 @@ void cop_ti_table( const char *p )
                     ProcFlags.in_trans = false;
                     in_esc = ' ';
                 } else if( len > 1 ) {  // hex digits are not allowed here
-                    xx_line_err_exit_ci( err_char_only, pa, len );
+                    xx_line_err_exit_ci( ERR_CHAR_ONLY, pa, len );
                     /* never return */
                 } else {
                     ProcFlags.in_trans = true;
@@ -1378,12 +1378,12 @@ void cop_ti_table( const char *p )
                 SkipNonSpaces( p );     // set char start
                 len = p - pa;
                 if( len > 0 ) {         // additional text not allowed
-                    xx_line_err_exit_ci( err_char_only, pa, len );
+                    xx_line_err_exit_ci( ERR_CHAR_ONLY, pa, len );
                     /* never return */
                 }
                 return;     // done if was ".ti set"
             }
-            xx_line_err_exit_cci( err_xx_opt, cwcurr, pa, len );
+            xx_line_err_exit_cci( ERR_XX_OPT, cwcurr, pa, len );
             /* never return */
         }
 
