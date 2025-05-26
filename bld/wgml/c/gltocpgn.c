@@ -87,9 +87,6 @@ void    lay_tocpgnum( const gmltag * entry )
                         /* never return */
                     }
                     cvterr = i_font_number( p, &attr_val, &layout_work.tocpgnum.font );
-                    if( layout_work.tocpgnum.font >= wgml_font_cnt ) {
-                        layout_work.tocpgnum.font = 0;
-                    }
                     AttrFlags.font = true;
                     break;
                 default:

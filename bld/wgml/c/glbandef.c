@@ -82,7 +82,7 @@ void    banner_defaults( void )
     lay_init_su( extendc, &(reg->width) );
     lay_init_su( n2, &(reg->voffset) );
     lay_init_su( n1, &(reg->depth) );
-    reg->font = 0;
+    reg->font = FONT0;
     reg->refnum = 1;
     reg->region_position = PPOS_left;
     reg->pouring = last_pour;
@@ -183,7 +183,7 @@ void    banner_defaults( void )
     ban->region = reg;
     reg->next = NULL;
     lay_init_su( n1, &(reg->voffset) );
-    reg->font = 3;
+    reg->font = FONT3;
     reg->contents.content_type = string_content;
     strcpy( reg->contents.string, "Table of Contents" );
     reg->script_region[0].len = 0;
@@ -242,7 +242,7 @@ void    banner_defaults( void )
     reg->next = NULL;
     lay_init_su( z0, &(reg->voffset) );
     reg->region_position = PPOS_left;
-    reg->font = 0;
+    reg->font = FONT0;
     reg->pouring = no_pour;
     reg->script_format = true;
     strcpy( reg->contents.string, "/&date.// Page &$pgnuma./" );

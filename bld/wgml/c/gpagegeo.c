@@ -395,7 +395,7 @@ static void finish_banners( void )
 
     for( cur_ban = layout_work.banner; cur_ban != NULL; cur_ban = cur_ban->next ) {
         ban_line = wgml_fonts[FONT0].line_height;       // minimum line height for banner
-        max_reg_font = 0;
+        max_reg_font = FONT0;
 
         /* horizontal attributes use default font */
         cur_ban->ban_left_adjust = conv_hor_unit( &cur_ban->left_adjust, g_curr_font );

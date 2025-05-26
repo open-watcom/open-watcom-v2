@@ -224,9 +224,6 @@ void    lay_fn( const gmltag * entry )
                         /* never return */
                     }
                     cvterr = i_font_number( p, &attr_val, &layout_work.fn.font );
-                    if( layout_work.fn.font >= wgml_font_cnt ) {
-                        layout_work.fn.font = 0;
-                    }
                     AttrFlags.font = true;
                     break;
                 case e_number_font:
@@ -236,9 +233,6 @@ void    lay_fn( const gmltag * entry )
                         /* never return */
                     }
                     cvterr = i_font_number( p, &attr_val, &layout_work.fn.number_font );
-                    if( layout_work.fn.number_font >= wgml_font_cnt ) {
-                        layout_work.fn.number_font = 0;
-                    }
                     AttrFlags.number_font = true;
                     break;
                 case e_number_style:
@@ -310,9 +304,6 @@ void    lay_fnref( const gmltag * entry )
                         /* never return */
                     }
                     cvterr = i_font_number( p, &attr_val, &layout_work.fnref.font );
-                    if( layout_work.fnref.font >= wgml_font_cnt ) {
-                        layout_work.fnref.font = 0;
-                    }
                     AttrFlags.font = true;
                     break;
                 case e_number_style:
@@ -321,8 +312,7 @@ void    lay_fnref( const gmltag * entry )
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                         /* never return */
                     }
-                    cvterr = i_number_style( p, &attr_val,
-                                             &layout_work.fnref.number_style );
+                    cvterr = i_number_style( p, &attr_val, &layout_work.fnref.number_style );
                     AttrFlags.number_style = true;
                     break;
                 default:

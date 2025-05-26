@@ -368,7 +368,7 @@ doc_element * alloc_doc_el( element_type type )
         curr->element.graph.xoff = 0;
         curr->element.graph.yoff = 0;
         curr->element.graph.at_top = false;
-        curr->element.graph.next_font = 0;
+        curr->element.graph.next_font = FONT0;
         curr->element.graph.short_name = NULL;
         curr->element.graph.file = NULL;
         curr->element.graph.fp = NULL;
@@ -402,7 +402,7 @@ doc_element * alloc_doc_el( element_type type )
         g_eol_ix = NULL;
         break;
     case ELT_vspace:
-        curr->element.vspace.font = 0;
+        curr->element.vspace.font = FONT0;
         curr->element.vspace.eol_index = g_eol_ix;
         g_eol_ix = NULL;
         break;
@@ -461,7 +461,7 @@ doc_el_group * alloc_doc_el_group( group_type type )
     curr->first = NULL;
     curr->last = NULL;
     curr->owner = type;
-    curr->block_font = 0;
+    curr->block_font = FONT0;
 
     return( curr );
 }

@@ -121,7 +121,8 @@ static unsigned scale_basis_to_horizontal_base_units( unsigned in_units, wgml_fo
      * side-by-side comparisons of wgml 4.0 and our wgml become possible.
      */
 
-    if( ((units % divisor) * 10) >= divisor ) width++;
+    if( ((units % divisor) * 10) >= divisor )
+        width++;
 
     return( width );
 }
@@ -185,7 +186,8 @@ static void compute_metrics( wgml_font * in_font )
          * comparisons of wgml 4.0 and our wgml become possible.
          */
 
-        if( (height % 7200) > 0 ) in_font->line_height++;
+        if( (height % 7200) > 0 )
+            in_font->line_height++;
 
         /* If font_space is "0", then line_space will be "0". */
 
@@ -204,7 +206,8 @@ static void compute_metrics( wgml_font * in_font )
              * comparisons of wgml 4.0 and our wgml become possible.
              */
 
-            if( (height % 7200) >= 3600 ) glyph_height++;
+            if( (height % 7200) >= 3600 )
+                glyph_height++;
 
             /* The value of font_space is the difference between the computed
              * value of font_height and the value of glyph_height.
@@ -231,7 +234,8 @@ static void compute_metrics( wgml_font * in_font )
         height = (in_font->font_height ) * bin_device->vertical_base_units;
 
         shift_height = height / 7200;
-        if( (height % 7200) > 0 ) shift_height++;
+        if( (height % 7200) > 0 )
+            shift_height++;
 
         height = (shift_height * 3 ) / 10;
         {
@@ -271,7 +275,8 @@ static cop_device *get_cop_device( char const *dev_name )
     FILE            *fp;
 
     /* Bail if no name was supplied. */
-    if( dev_name == NULL || *dev_name == '\0' ) {
+    if( dev_name == NULL
+      || *dev_name == '\0' ) {
         return( out_device );
     }
 
@@ -684,8 +689,7 @@ char cop_in_trans( char in_char, font_number font )
     intrans_block   *block   = NULL;
     char            retval;
 
-    if( font >= wgml_font_cnt )
-        font = FONT0;
+    CHECK_FONT( font );
 
     retval = ti_table[(unsigned char)in_char];
     if( retval == in_char ) {
@@ -841,7 +845,7 @@ void cop_setup( void )
      */
 
     for( cur_opt = opt_fonts; cur_opt != NULL; cur_opt = cur_opt->nxt ) {
-        if( cur_opt->font > wgml_font_cnt ) {
+        if( wgml_font_cnt < cur_opt->font  ) {
            wgml_font_cnt = cur_opt->font;
         }
     }
@@ -860,12 +864,14 @@ void cop_setup( void )
 
     if( !ProcFlags.ps_device ) {
         if( bin_device->box.font_name == NULL ) {
-            if( bin_device->underscore.specified_font && (bin_device->underscore.font_name != NULL) ) {
+            if( bin_device->underscore.specified_font
+              && (bin_device->underscore.font_name != NULL) ) {
                 gen_cnt++;
             }
         } else {
             gen_cnt++;
-            if( bin_device->underscore.specified_font && (bin_device->underscore.font_name != NULL) ) {
+            if( bin_device->underscore.specified_font
+              && (bin_device->underscore.font_name != NULL) ) {
                 if( stricmp( bin_device->box.font_name, bin_device->underscore.font_name ) != 0 ) {
                     gen_cnt++;
                 }
@@ -907,12 +913,12 @@ void cop_setup( void )
     cur_def_fonts = bin_device->defaultfonts.fonts;
     for( i = 0; i < bin_device->defaultfonts.font_count; i++ ) {
         if( (cur_def_fonts[i].font_name == NULL)
-                || (cur_def_fonts[i].font_name[0] == '\0') ) {
+          || (cur_def_fonts[i].font_name[0] == '\0') ) {
             continue; /* Do not initialize skipped font numbers. */
         }
         wgml_fonts[i].bin_font = find_cop_font( cur_def_fonts[i].font_name );
         if( (cur_def_fonts[i].font_style == NULL)
-                || (cur_def_fonts[i].font_style[0] == '\0') ) {
+          || (cur_def_fonts[i].font_style[0] == '\0') ) {
             wgml_fonts[i].font_style = find_style( "plain" );
         } else {
             wgml_fonts[i].font_style = find_style( cur_def_fonts[i].font_style );
@@ -1026,8 +1032,8 @@ void cop_setup( void )
 
             /* If scale_basis is not "0", then font_height must not be "0". */
 
-            if( (wgml_fonts[i].bin_font->scale_basis != 0) &&
-                    (wgml_fonts[i].font_height == 0)) {
+            if( (wgml_fonts[i].bin_font->scale_basis != 0)
+              && (wgml_fonts[i].font_height == 0) ) {
                 xx_simple_err_exit_i( ERR_FONT_SCALED, i );
                 /* never return */
             }
@@ -1077,8 +1083,8 @@ void cop_setup( void )
 
             /* If scale_basis is not "0", then font_height must not be "0". */
 
-            if( (wgml_fonts[i].bin_font->scale_basis != 0) &&
-                    (wgml_fonts[i].font_height == 0)) {
+            if( (wgml_fonts[i].bin_font->scale_basis != 0)
+              && (wgml_fonts[i].font_height == 0) ) {
                 xx_simple_err_exit_i( ERR_FONT_SCALED, i );
                 /* never return */
             }
@@ -1313,8 +1319,7 @@ unsigned cop_text_width( const char *text, unsigned count, font_number font )
     unsigned        i;
     unsigned        width;
 
-    if( font >= wgml_font_cnt )
-        font = FONT0;
+    CHECK_FONT( font );
 
     /* Compute the width. */
 
@@ -1357,7 +1362,8 @@ void cop_ti_table( const char *p )
 
     if( len > 0 ) {
         if( len > 2 ) { // check for ".ti set"
-            if( len == 3 && strnicmp( "SET", pa, len ) == 0 ) {
+            if( len == 3
+              && strnicmp( "SET", pa, len ) == 0 ) {
                 SkipSpaces( p );        // set char start
                 pa = p;
                 SkipNonSpaces( p );     // set char start
@@ -1594,8 +1600,7 @@ void fb_output_textline( text_line * out_line )
 
     line_passes = 0;
     for( current = out_line->first; current != NULL; current = current->next ) {
-        if( current->font >= wgml_font_cnt )
-            current->font = FONT0;
+        CHECK_FONT( current->font );
         if( wgml_fonts[current->font].font_style->line_passes > line_passes ) {
             line_passes = wgml_fonts[current->font].font_style->line_passes;
         }

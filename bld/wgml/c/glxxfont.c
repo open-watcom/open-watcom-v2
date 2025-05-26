@@ -99,9 +99,6 @@ void    lay_xx( const gmltag * entry )
                         /* never return */
                     }
                     cvterr = i_font_number( p, &attr_val, fontptr );
-                    if( *fontptr >= wgml_font_cnt ) {
-                        *fontptr = 0;
-                    }
                     AttrFlags.font = true;
                     break;
                 default:

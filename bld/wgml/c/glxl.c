@@ -1026,9 +1026,6 @@ void    lay_ol( const gmltag * entry )
                         /* never return */
                     }
                     i_font_number( p, &attr_val, &ol_layout->font );
-                    if( ol_layout->font >= wgml_font_cnt ) {
-                        ol_layout->font = 0;
-                    }
                     AttrFlags.font = true;
                     break;
                 case e_align:
@@ -1056,9 +1053,6 @@ void    lay_ol( const gmltag * entry )
                         /* never return */
                     }
                     i_font_number( p, &attr_val, &ol_layout->number_font );
-                    if( ol_layout->number_font >= wgml_font_cnt ) {
-                        ol_layout->number_font = 0;
-                    }
                     AttrFlags.number_font = true;
                     break;
                 default:
@@ -1249,9 +1243,6 @@ void    lay_sl( const gmltag * entry )
                         /* never return */
                     }
                     i_font_number( p, &attr_val, &sl_layout->font );
-                    if( sl_layout->font >= wgml_font_cnt ) {
-                        sl_layout->font = 0;
-                    }
                     AttrFlags.font = true;
                     break;
                 default:
@@ -1436,9 +1427,6 @@ void    lay_ul( const gmltag * entry )
                         /* never return */
                     }
                     i_font_number( p, &attr_val, &ul_layout->font );
-                    if( ul_layout->font >= wgml_font_cnt ) {
-                        ul_layout->font = 0;
-                    }
                     AttrFlags.font = true;
                     break;
                 case e_align:
@@ -1475,9 +1463,6 @@ void    lay_ul( const gmltag * entry )
                         /* never return */
                     }
                     i_font_number( p, &attr_val, &ul_layout->bullet_font );
-                    if( ul_layout->bullet_font >= wgml_font_cnt ) {
-                        ul_layout->bullet_font = 0;
-                    }
                     AttrFlags.bullet_font = true;
                     break;
                 default:

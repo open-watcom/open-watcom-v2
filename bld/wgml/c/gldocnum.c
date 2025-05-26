@@ -107,9 +107,6 @@ void    lay_docnum( const gmltag * entry )
                         /* never return */
                     }
                     cvterr = i_font_number( p, &attr_val, &layout_work.docnum.font );
-                    if( layout_work.docnum.font >= wgml_font_cnt ) {
-                        layout_work.docnum.font = 0;
-                    }
                     AttrFlags.font = true;
                     break;
                 case e_pre_skip:

@@ -190,9 +190,6 @@ void    lay_fig( const gmltag * entry )
                         /* never return */
                     }
                     cvterr = i_font_number( p, &attr_val, &layout_work.fig.font );
-                    if( layout_work.fig.font >= wgml_font_cnt ) {
-                        layout_work.fig.font = 0;
-                    }
                     AttrFlags.font = true;
                     break;
                 case e_default_place:

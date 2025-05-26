@@ -111,9 +111,6 @@ void    lay_figdesc( const gmltag * entry )
                         /* never return */
                     }
                     cvterr = i_font_number( p, &attr_val, &layout_work.figdesc.font );
-                    if( layout_work.figdesc.font >= wgml_font_cnt ) {
-                        layout_work.figdesc.font = 0;
-                    }
                     AttrFlags.font = true;
                     break;
                 default:

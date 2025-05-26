@@ -286,11 +286,7 @@ void    lay_index( const gmltag * entry )
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                         /* never return */
                     }
-                    cvterr = i_font_number( p, &attr_val,
-                                            &layout_work.hx.hx_sect[HDS_index].text_font );
-                    if( layout_work.hx.hx_sect[HDS_index].text_font >= wgml_font_cnt ) {
-                        layout_work.hx.hx_sect[HDS_index].text_font = 0;
-                    }
+                    cvterr = i_font_number( p, &attr_val, &layout_work.hx.hx_sect[HDS_index].text_font );
                     AttrFlags.font = true;
                     break;
                 default:

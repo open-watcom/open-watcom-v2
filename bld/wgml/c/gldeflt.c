@@ -148,9 +148,6 @@ void    lay_default( const gmltag * entry )
                         /* never return */
                     }
                     cvterr = i_font_number( p, &attr_val, &layout_work.defaults.font );
-                    if( layout_work.defaults.font >= wgml_font_cnt ) {
-                        layout_work.defaults.font = 0;
-                    }
                     AttrFlags.font = true;
                     break;
                 case e_justify:

@@ -107,9 +107,6 @@ void    lay_title( const gmltag * entry )
                         /* never return */
                     }
                     cvterr = i_font_number( p, &attr_val, &layout_work.title.font );
-                    if( layout_work.title.font >= wgml_font_cnt ) {
-                        layout_work.title.font = 0;
-                    }
                     AttrFlags.font = true;
                     break;
                 case e_pre_top_skip:

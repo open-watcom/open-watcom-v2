@@ -34,8 +34,8 @@
 *                   cur_dir
 *                   cur_dir_list
 *                   directory_list
-*                   gml_lib_dirs
-*                   gml_inc_dirs
+*                   wgml_lib_dirs
+*                   wgml_inc_dirs
 *                   initialize_directory_list()
 *                   path_dirs
 *                   try_open()
@@ -69,8 +69,8 @@ char    try_file_name[_MAX_PATH];
 /* Local data. */
 
 static  directory_list  cur_dir_list;
-static  directory_list  gml_lib_dirs;
-static  directory_list  gml_inc_dirs;
+static  directory_list  wgml_lib_dirs;
+static  directory_list  wgml_inc_dirs;
 static  directory_list  path_dirs;
 
 /* Local function definitions. */
@@ -164,11 +164,12 @@ static FILE *try_open( char *prefix, char *filename )
     if( fp == NULL ) {
         if( errno == ENOMEM ) {
             xx_simple_err_exit( ERR_NO_MEMORY );
-        	/* never return */
+                /* never return */
         }
-        if( errno == ENFILE || errno == EMFILE ) {
+        if( errno == ENFILE
+          || errno == EMFILE ) {
             xx_simple_err_exit( ERR_NO_HANDLES );
-        	/* never return */
+                /* never return */
         }
     } else {
         strcpy( try_file_name, buff );
@@ -190,11 +191,11 @@ void ff_setup( void )
 
     /* Initialize the directory list for GMLINC. */
 
-    gml_inc_dirs = initialize_directory_list( getenv( "GMLINC" ) );
+    wgml_inc_dirs = initialize_directory_list( getenv( "GMLINC" ) );
 
     /* Initialize the directory list for GMLLIB. */
 
-    gml_lib_dirs = initialize_directory_list( getenv( "GMLLIB" ) );
+    wgml_lib_dirs = initialize_directory_list( getenv( "GMLLIB" ) );
 
     /* Initialize the directory list for PATH. */
 
@@ -207,8 +208,8 @@ void ff_setup( void )
 
 void ff_set_incpath( const char *path )
 {
-    mem_free( gml_inc_dirs );
-    gml_inc_dirs = initialize_directory_list( path );
+    mem_free( wgml_inc_dirs );
+    wgml_inc_dirs = initialize_directory_list( path );
 }
 
 /* Function ff_set_libpath().
@@ -217,8 +218,8 @@ void ff_set_incpath( const char *path )
 
 void ff_set_libpath( const char *path )
 {
-    mem_free( gml_lib_dirs );
-    gml_lib_dirs = initialize_directory_list( path );
+    mem_free( wgml_lib_dirs );
+    wgml_lib_dirs = initialize_directory_list( path );
 }
 
 /* Function ff_teardown().
@@ -236,14 +237,14 @@ void ff_teardown( void )
         cur_dir_list = NULL;
     }
 
-    if( gml_inc_dirs != NULL ) {
-        mem_free( gml_inc_dirs );
-        gml_inc_dirs = NULL;
+    if( wgml_inc_dirs != NULL ) {
+        mem_free( wgml_inc_dirs );
+        wgml_inc_dirs = NULL;
     }
 
-    if( gml_lib_dirs != NULL) {
-        mem_free( gml_lib_dirs );
-        gml_lib_dirs = NULL;
+    if( wgml_lib_dirs != NULL) {
+        mem_free( wgml_lib_dirs );
+        wgml_lib_dirs = NULL;
     }
 
     if( path_dirs != NULL ) {
@@ -315,7 +316,8 @@ FILE *search_file_in_dirs( const char *filename, const char *defext, const char 
 
         /* Determine if filename contains path information. */
 
-        if( pg.drive[0] != '\0' || pg.dir[0] != '\0' ) {
+        if( pg.drive[0] != '\0'
+          || pg.dir[0] != '\0' ) {
             xx_simple_err_exit_c( ERR_FILE_NAME, filename );
             /* never return */
         }
@@ -355,40 +357,43 @@ FILE *search_file_in_dirs( const char *filename, const char *defext, const char 
             pg.ext = OPT_EXT;
         _makepath( primary_file, NULL, NULL, pg.fname, pg.ext );
         *pd++ = cur_dir_list;
-        *pd++ = gml_lib_dirs;
-        *pd++ = gml_inc_dirs;
+        *pd++ = wgml_lib_dirs;
+        *pd++ = wgml_inc_dirs;
         *pd++ = path_dirs;
         break;
     case DSEQ_doc_spec:
         if( pg.ext[0] == '\0' ) {
-            if( altext != NULL && altext[0] != '\0' ) {
+            if( altext != NULL
+              && altext[0] != '\0' ) {
                 _makepath( alternate_file, NULL, NULL, pg.fname, altext );
             }
-            if( defext == NULL || FNAMECMPSTR( defext, GML_EXT )) {
+            if( defext == NULL
+              || FNAMECMPSTR( defext, GML_EXT )) {
                 _makepath( default_file, NULL, NULL, pg.fname, GML_EXT );
             }
             pg.ext = GML_EXT;
         }
         _makepath( primary_file, NULL, NULL, pg.fname, pg.ext );
         *pd++ = cur_dir_list;
-        *pd++ = gml_inc_dirs;
-        *pd++ = gml_lib_dirs;
+        *pd++ = wgml_inc_dirs;
+        *pd++ = wgml_lib_dirs;
         *pd++ = path_dirs;
         break;
     case DSEQ_bin_lib:
-        *pd++ = gml_lib_dirs;
-        *pd++ = gml_inc_dirs;
+        *pd++ = wgml_lib_dirs;
+        *pd++ = wgml_inc_dirs;
         *pd++ = path_dirs;
         break;
     case DSEQ_lib_src:
-        if( altext == NULL || altext[0] == '\0' )
+        if( altext == NULL
+          || altext[0] == '\0' )
             altext = FON_EXT;
         _makepath( alternate_file, NULL, NULL, pg.fname, altext );
         if( pg.ext[0] == '\0' )
             pg.ext = PCD_EXT;
         _makepath( primary_file, NULL, NULL, pg.fname, pg.ext );
         *pd++ = cur_dir_list;
-        *pd++ = gml_inc_dirs;
+        *pd++ = wgml_inc_dirs;
         break;
     default:
         internal_err_exit( __FILE__, __LINE__ );

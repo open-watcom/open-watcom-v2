@@ -108,9 +108,6 @@ void    lay_dd( const gmltag * entry )
                         /* never return */
                     }
                     cvterr = i_font_number( p, &attr_val, &layout_work.dd.font );
-                    if( layout_work.dd.font >= wgml_font_cnt ) {
-                        layout_work.dd.font = 0;
-                    }
                     AttrFlags.font = true;
                     break;
                 default:

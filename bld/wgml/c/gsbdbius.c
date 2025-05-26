@@ -323,11 +323,11 @@ font_number scr_style_font( font_number in_font )
     }
 
     if( (g_script_style.style & SCT_bd) && (g_script_style.style & SCT_us) ) {
-        font = 3;
+        font = FONT3;
     } else if( g_script_style.style & SCT_bd ) {
-        font = 2;
+        font = FONT2;
     } else if( g_script_style.style & SCT_us ) {
-        font = 1;
+        font = FONT1;
     } else {                                // no g_script_style
         font = in_font;                     // TBD
         g_curr_font = g_script_style.font;  // restore current font

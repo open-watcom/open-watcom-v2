@@ -214,18 +214,18 @@ static  void    init_banner_wk( banner_lay_tag * ban )
 
 void    lay_banner( const gmltag * entry )
 {
-    banner_lay_tag  *   banwk;
-    ban_place           match_place;
-    ban_place           new_place;
-    char            *   p;
-    condcode            cc;
-    int                 k;
-    lay_att             curr;
-    region_lay_tag  *   regwknew;
-    region_lay_tag  *   regwknew2;
-    region_lay_tag  *   regwkold;
-    att_name_type       attr_name;
-    att_val_type        attr_val;
+    banner_lay_tag  *banwk;
+    ban_place       match_place;
+    ban_place       new_place;
+    char            *p;
+    condcode        cc;
+    int             k;
+    lay_att         curr;
+    region_lay_tag  *regwk;
+    region_lay_tag  *regwknew;
+    region_lay_tag  *regwkprev;
+    att_name_type   attr_name;
+    att_val_type    attr_val;
 
     p = scandata.s;
     rs_loc = TLOC_banner;
@@ -330,7 +330,8 @@ void    lay_banner( const gmltag * entry )
     /* First ensure the required attributes are present.   */
     /*******************************************************/
 
-    if( (wkb.place == no_place) || (wkb.docsect == no_ban) ) {    // both must be specified
+    if( (wkb.place == no_place)
+      || (wkb.docsect == no_ban) ) {    // both must be specified
         xx_err_exit( ERR_ATT_MISSING );
         /* never return */
     }
@@ -343,7 +344,8 @@ void    lay_banner( const gmltag * entry )
     /* had been specified.                                 */
     /*******************************************************/
 
-    if( (refdoc != no_ban) || (refplace != no_place) ) {    // at least one was used
+    if( (refdoc != no_ban)
+      || (refplace != no_place) ) {    // at least one was used
         if( ((refdoc == no_ban)
           && (refplace != no_place))
           || ((refdoc != no_ban)
@@ -356,15 +358,14 @@ void    lay_banner( const gmltag * entry )
             xx_err_exit( ERR_SELF_REF );
             /* never return */
         }
-        if( (refdoc != no_ban) && (refplace != no_place) ) { // find referenced banner
-            banwk = layout_work.banner;
+        if( (refdoc != no_ban)
+          && (refplace != no_place) ) { // find referenced banner
             ref_ban = NULL;
-            while( banwk != NULL ) {
-                if( (banwk->place == refplace) && (banwk->docsect == refdoc) ) {
+            for( banwk = layout_work.banner; banwk != NULL; banwk = banwk->next ) {
+                if( (banwk->place == refplace)
+                  && (banwk->docsect == refdoc) ) {
                     ref_ban = banwk;
                     break;
-                } else {
-                    banwk = banwk->next;
                 }
             }
             if( ref_ban == NULL ) {                 // referenced banner not found
@@ -394,17 +395,16 @@ void    lay_banner( const gmltag * entry )
             }
             // copy banregions too
             wkb.next_refnum = ref_ban->next_refnum;
-            regwkold = ref_ban->region;
-            while( regwkold != NULL ) { // allocate + copy banregions
+            regwkprev = NULL;
+            for( regwk = ref_ban->region; regwk != NULL; regwk = regwk->next ) { // allocate + copy banregions
                 regwknew = mem_alloc( sizeof( region_lay_tag ) );
-                memcpy( regwknew, regwkold, sizeof( region_lay_tag ) );
+                memcpy( regwknew, regwk, sizeof( region_lay_tag ) );
                 if( wkb.region == NULL ) {   // forward chain
                     wkb.region = regwknew;
                 } else {
-                    regwknew2->next = regwknew;
+                    regwkprev->next = regwknew;
                 }
-                regwknew2 = regwknew;
-                regwkold = regwkold->next;
+                regwkprev = regwknew;
             }
             sum_countb = 5;                  // process as if all attributes for new banner found
         }
@@ -417,7 +417,8 @@ void    lay_banner( const gmltag * entry )
     /*******************************************************/
 
     for( banwk = layout_work.banner; banwk != NULL; banwk = banwk->next ) {
-        if( (banwk->place == wkb.place) && (banwk->docsect == wkb.docsect) ) {
+        if( (banwk->place == wkb.place)
+          && (banwk->docsect == wkb.docsect) ) {
             for( k = 0; k < TABLE_SIZE( banner_att ); ++k ) {  // update banwk
                 if( countb[k] ) {                // copy only changed values
                     switch( banner_att[k] ) {
@@ -444,12 +445,9 @@ void    lay_banner( const gmltag * entry )
                 /*******************************************************/
 
                 banwk->next_refnum = wkb.next_refnum;
-                regwkold = NULL;
-                regwknew = banwk->region;
-                while( regwknew != NULL ) { // allocate + copy banregions
-                    regwkold = regwknew;
-                    regwknew = regwknew->next;
-                    mem_free( regwkold );
+                while( (regwk = banwk->region) != NULL ) { // free copy of banregions
+                    banwk->region = regwk->next;
+                    mem_free( regwk );
                 }
                 banwk->region = wkb.region;
                 wkb.region = NULL;
@@ -461,7 +459,9 @@ void    lay_banner( const gmltag * entry )
                 prev_ban->next = banwk->next;       // detach banner
             }
             banwk->next = NULL;
-            if( (sum_countb == 2) && (wkb.place != no_place) && (wkb.docsect != no_ban) ) {
+            if( (sum_countb == 2)
+              && (wkb.place != no_place)
+              && (wkb.docsect != no_ban) ) {
                 del_ban = banwk;                    // mark banner for possible deletion
             } else {
                 curr_ban = banwk;                   // mark banner for possible update
@@ -471,7 +471,8 @@ void    lay_banner( const gmltag * entry )
             prev_ban = banwk;
         }
     }
-    if( (curr_ban == NULL) && (del_ban == NULL) ) { // not found: new banner definition
+    if( (curr_ban == NULL)
+      && (del_ban == NULL) ) { // not found: new banner definition
         if( sum_countb != 5 ) {              // now we need all 5 non-ref attributes
             xx_err_exit( ERR_ALL_BAN_ATT_RQRD );
             /* never return */
@@ -512,13 +513,12 @@ void    lay_banner( const gmltag * entry )
         }
 
         if( match_place != no_place ) {         // prevban used to preserve curr_ban value
-            prev_ban = layout_work.banner;
-            while( prev_ban->next != NULL ) {   // change the place, if found
-                if( (prev_ban->docsect == curr_ban->docsect) && (prev_ban->place == match_place) ) {
+            for( prev_ban = layout_work.banner; prev_ban->next != NULL; prev_ban = prev_ban->next ) {   // change the place, if found
+                if( (prev_ban->docsect == curr_ban->docsect)
+                  && (prev_ban->place == match_place) ) {
                     prev_ban->place = new_place;
                     break;
                 }
-                prev_ban = prev_ban->next;
             }
         }
     }
@@ -556,19 +556,17 @@ void    lay_ebanner( const gmltag * entry )
         /*  to the list.                                                        */
         /************************************************************************/
 
-        if( (curr_ban != NULL) && (curr_ban->region == NULL) ) {  // flip if has no regions
+        if( (curr_ban != NULL)
+          && (curr_ban->region == NULL) ) {  // flip if has no regions
             del_ban = curr_ban;
             curr_ban = NULL;
         }
 
         if( del_ban != NULL) {              // delete request
-            while( del_ban->region != NULL) {
-                reg = del_ban->region;
-                del_ban->region = del_ban->region->next;
+            while( (reg = del_ban->region) != NULL) {
+                del_ban->region = reg->next;
                 mem_free( reg );
-                reg = NULL;
             }
-
             mem_free( del_ban );
             del_ban = NULL;
         } else if( curr_ban != NULL) {      // append survivor to the end of the list
@@ -790,7 +788,7 @@ static void     init_banregion_wk( region_lay_tag *reg )
     lay_init_su( z0, &(reg->hoffset) );
     lay_init_su( z0, &(reg->width) );
     lay_init_su( z0, &(reg->depth) );
-    reg->font = 0;
+    reg->font = FONT0;
     reg->refnum = 0;
     reg->region_position = PPOS_left;
     reg->pouring = no_pour;
@@ -920,7 +918,6 @@ void    lay_banregion( const gmltag *entry )
                         /* never return */
                     }
                     i_font_number( p, &attr_val, &wkr.font );
-                    if( wkr.font >= wgml_font_cnt ) wkr.font = 0;
                     AttrFlags.font = true;
                     break;
                 case e_refnum:
@@ -1005,14 +1002,11 @@ void    lay_banregion( const gmltag *entry )
     /*******************************************************/
 
     prev_reg = NULL;
-    reg = curr_ban->region;
-    while( reg != NULL ) {
+    for( reg = curr_ban->region; reg != NULL; reg = reg->next ) {
         if( reg->refnum == wkr.refnum ) {// found correct region
             break;
-        } else {
-            prev_reg = reg;
-            reg = reg->next;
         }
+        prev_reg = reg;
     }
 
     /*******************************************************/
@@ -1079,7 +1073,9 @@ void    lay_banregion( const gmltag *entry )
             /* then there is nothing to do.                        */
             /*******************************************************/
 
-        } else if( (sum_countr != 11) && (AttrFlags.script_format && (sum_countr == 10)) ) {
+        } else if( (sum_countr != 11)
+          && (AttrFlags.script_format
+          && (sum_countr == 10)) ) {
 
             /*******************************************************/
             /* A new region must have values for all attributes    */
@@ -1104,7 +1100,8 @@ void    lay_banregion( const gmltag *entry )
     /*******************************************************/
 
     if( reg != NULL ) {             // region not deleted
-        if( reg->script_format && (reg->contents.content_type != string_content) ) {
+        if( reg->script_format
+          && (reg->contents.content_type != string_content) ) {
             xx_err_exit( ERR_SCR_FMT );
             /* never return */
         }
@@ -1226,12 +1223,9 @@ static void    put_lay_single_ban( FILE *fp, banner_lay_tag *ban )
             /* never return */
         }
     }
-    reg = ban->region;
-    while( reg != NULL ) {
+    for( reg = ban->region; reg != NULL; reg = reg->next ) {
         put_lay_region( fp, reg );
-        reg = reg->next;
     }
-
     fprintf( fp, ":eBANNER\n" );
 }
 
@@ -1241,11 +1235,9 @@ static void    put_lay_single_ban( FILE *fp, banner_lay_tag *ban )
 /***************************************************************************/
 void    put_lay_banner( FILE *fp, layout_data * lay )
 {
-    banner_lay_tag      *   ban;
+    banner_lay_tag  *ban;
 
-    ban = lay->banner;
-    while( ban != NULL ) {
+    for( ban = lay->banner; ban != NULL; ban = ban->next ) {
         put_lay_single_ban( fp, ban );
-        ban = ban->next;
     }
 }

@@ -143,10 +143,10 @@ void    lay_abspref( const gmltag * entry )
     cvterr = false;
     ltag = entry->u.layid;
     if( ltag == TL_ABSTRACT ) {
-        ap  = &layout_work.abstract;
+        ap = &layout_work.abstract;
         apsect = &layout_work.hx.hx_sect[HDS_abstract];
     } else if( ltag == TL_PREFACE ) {
-        ap  = &layout_work.preface;
+        ap = &layout_work.preface;
         apsect = &layout_work.hx.hx_sect[HDS_preface];
     } else {
         internal_err_exit( __FILE__, __LINE__ );
@@ -189,7 +189,6 @@ void    lay_abspref( const gmltag * entry )
                         /* never return */
                     }
                     cvterr = i_font_number( p, &attr_val, &(apsect->text_font) );
-                    if( apsect->text_font >= wgml_font_cnt ) apsect->text_font = 0;
                     AttrFlags.font = true;
                     break;
                 case e_spacing:

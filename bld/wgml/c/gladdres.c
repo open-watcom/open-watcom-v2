@@ -169,9 +169,6 @@ void    lay_address( const gmltag * entry )
                         /* never return */
                     }
                     cvterr = i_font_number( p, &attr_val, &layout_work.address.font );
-                    if( layout_work.address.font >= wgml_font_cnt ) {
-                        layout_work.address.font = 0;
-                    }
                     AttrFlags.font = true;
                     break;
                 case e_pre_skip:

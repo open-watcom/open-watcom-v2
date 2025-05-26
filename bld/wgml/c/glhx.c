@@ -285,9 +285,6 @@ void    lay_hx( const gmltag * entry )
                         /* never return */
                     }
                     cvterr = i_font_number( p, &attr_val, &layout_work.hx.hx_sect[hx_l].text_font );
-                    if( layout_work.hx.hx_sect[hx_l].text_font >= wgml_font_cnt ) {
-                        layout_work.hx.hx_sect[hx_l].text_font = 0;
-                    }
                     AttrFlags.font = true;
                     break;
                 case e_number_font:
@@ -297,9 +294,6 @@ void    lay_hx( const gmltag * entry )
                         /* never return */
                     }
                     cvterr = i_font_number( p, &attr_val, &layout_work.hx.hx_head[hx_l].number_font );
-                    if( layout_work.hx.hx_head[hx_l].number_font >= wgml_font_cnt ) {
-                        layout_work.hx.hx_head[hx_l].number_font = 0;
-                    }
                     AttrFlags.number_font = true;
                     break;
                 case e_number_form:

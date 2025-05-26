@@ -37,8 +37,8 @@
 #include "clibext.h"
 
 
-static  font_number     tt_font     = 0;    // font number to be replaced with "0"
-static  unsigned        quote_lvl   = 0;    // nesting level of Q phrases
+static  font_number     tt_font     = FONT0;    // font number to be replaced with "0"
+static  unsigned        quote_lvl   = 0;        // nesting level of Q phrases
 
 /***************************************************************************/
 /*  :CIT :HPx :Q :SF common processing                                        */
@@ -50,34 +50,44 @@ static void gml_inline_common( const gmltag *entry, font_number font )
     char            *p;
     font_number     o_c_font;
 
-    if( ProcFlags.overprint && ProcFlags.cc_cp_done ) {
+    if( ProcFlags.overprint
+      && ProcFlags.cc_cp_done ) {
         ProcFlags.overprint = false;    // cancel overprint
     }
 
     // update block_font, if appropriate
 
-    if( (t_doc_el_group != NULL) && (t_doc_el_group->owner == GRT_co) &&
-            (t_doc_el_group->first == NULL) ) {
+    if( (t_doc_el_group != NULL)
+      && (t_doc_el_group->owner == GRT_co)
+      && (t_doc_el_group->first == NULL) ) {
         t_doc_el_group->block_font = font;
     }
 
     // keep the preceding space, even if followed by CT
 
-    if( ProcFlags.concat && !ProcFlags.cont_char ) {
-        if( !input_cbs->fm_hh && !ProcFlags.ct ) {
+    if( ProcFlags.concat
+      && !ProcFlags.cont_char ) {
+        if( !input_cbs->fm_hh
+          && !ProcFlags.ct ) {
             if( post_space == 0 ) {
                 post_space = wgml_fonts[g_curr_font].spc_width;
-                if( (t_line != NULL) && (t_line->last != NULL) ) {                                  // add second space after stop
+                if( (t_line != NULL)
+                  && (t_line->last != NULL) ) {                                  // add second space after stop
                     if( is_stop_char( t_line->last->text[t_line->last->count - 1] ) ) {
                         post_space *= 2;
                     }
                 }
             }
-        } else if( (entry->u.tagid == T_SF) && (input_cbs->fmflags & II_macro) ) {   // may apply more generally
+        } else if( (entry->u.tagid == T_SF)
+          && (input_cbs->fmflags & II_macro) ) {   // may apply more generally
             ProcFlags.utc = true;
-            if( (post_space == 0) && (input_cbs->sym_space || (input_cbs->fm_symbol && !ProcFlags.ct)) ) {
+            if( (post_space == 0)
+              && (input_cbs->sym_space
+              || (input_cbs->fm_symbol
+              && !ProcFlags.ct)) ) {
                 post_space = wgml_fonts[g_curr_font].spc_width;
-                if( (t_line != NULL) && (t_line->last != NULL) ) {                                  // add second space after stop
+                if( (t_line != NULL)
+                  && (t_line->last != NULL) ) {                                  // add second space after stop
                     if( is_stop_char( t_line->last->text[t_line->last->count - 1] ) ) {
                         post_space *= 2;
                     }
@@ -88,7 +98,9 @@ static void gml_inline_common( const gmltag *entry, font_number font )
 
     /* Implements wgml 4.0 behavior */
 
-    if( (entry->u.tagid == T_SF) && (input_cbs->fmflags & II_tag) && (cur_group_type == GRT_xmp) ) {
+    if( (entry->u.tagid == T_SF)
+      && (input_cbs->fmflags & II_tag)
+      && (cur_group_type == GRT_xmp) ) {
         if( ProcFlags.xmp_ut_sf ) {     // matches wgml 4.0
             scr_process_break();
         } else {
@@ -103,9 +115,7 @@ static void gml_inline_common( const gmltag *entry, font_number font )
     nest_cb->p_stack = copy_to_nest_stack();
 
     g_phrase_font = font;
-    if( font >= wgml_font_cnt ) {
-        font = FONT0;
-    }
+    CHECK_FONT( font );
 
     /* if pc is to be used, use it before changing g_curr_font */
     if( ProcFlags.force_pc ) {
@@ -141,14 +151,18 @@ static void gml_inline_common( const gmltag *entry, font_number font )
         } else {
             token_buf[0] = d_q;
         }
-        if( !ProcFlags.concat && ((input_cbs->hidden_head != NULL) || (*p != '\0')) ) {
+        if( !ProcFlags.concat
+          && ((input_cbs->hidden_head != NULL)
+          || (*p != '\0')) ) {
             token_buf[1] = CONT_char;
             token_buf[2] = '\0';
         } else {
             token_buf[1] = '\0';
         }
         process_text( token_buf, g_curr_font );
-        if( ProcFlags.concat && ((input_cbs->hidden_head != NULL) || (*p != '\0')) ) {
+        if( ProcFlags.concat
+          && ((input_cbs->hidden_head != NULL)
+          || (*p != '\0')) ) {
             post_space = 0;                 // no space after quote
             ProcFlags.cont_char = true;
         }
@@ -156,25 +170,30 @@ static void gml_inline_common( const gmltag *entry, font_number font )
     }
 
     if( *p != '\0' ) {
-        if( (*(p + 1) == '\0') && (*p == CONT_char) ) { // text is continuation character only
+        if( (*(p + 1) == '\0')
+          && (*p == CONT_char) ) { // text is continuation character only
             /* tbd */
         } else {
             process_text( p, g_curr_font);          // if text follows
         }
     } else if( entry->u.tagid != T_Q ) {
-        if( ProcFlags.concat && !ProcFlags.cont_char && (entry->u.tagid == T_SF) ) {
+        if( ProcFlags.concat
+          && !ProcFlags.cont_char
+          && (entry->u.tagid == T_SF) ) {
             post_space = wgml_fonts[o_c_font].spc_width;
         } else{
             post_space = wgml_fonts[g_curr_font].spc_width;
         }
     }
 
-    if( (entry->u.tagid == T_SF) && sav_sbl ) {      // reset flag, but only if was set on entry, and only for SF
+    if( (entry->u.tagid == T_SF)
+      && sav_sbl ) {      // reset flag, but only if was set on entry, and only for SF
         ProcFlags.skip_blank_line = sav_sbl;
     }
 
-    if( !ProcFlags.concat && !ProcFlags.cont_char
-            && (input_cbs->fmflags & (II_file | II_macro)) ) {
+    if( !ProcFlags.concat
+      && !ProcFlags.cont_char
+      && (input_cbs->fmflags & (II_file | II_macro)) ) {
         scr_process_break();            // ensure line is output
     }
     scandata.s = scandata.e;
@@ -199,22 +218,22 @@ static void gml_inline_common( const gmltag *entry, font_number font )
 
 void gml_hp0( const gmltag *entry )
 {
-    gml_inline_common( entry, 0 );
+    gml_inline_common( entry, FONT0 );
 }
 
 void gml_hp1( const gmltag *entry )
 {
-    gml_inline_common( entry, 1 );
+    gml_inline_common( entry, FONT1 );
 }
 
 void gml_hp2( const gmltag *entry )
 {
-    gml_inline_common( entry, 2 );
+    gml_inline_common( entry, FONT2 );
 }
 
 void gml_hp3( const gmltag *entry )
 {
-    gml_inline_common( entry, 3 );
+    gml_inline_common( entry, FONT3 );
 }
 
 
@@ -236,7 +255,8 @@ static void gml_e_inline_common( const gmltag *entry )
         /* never return */
     }
     /* Mark end of highlighted phrase embedded in a highlighted phrase */
-    if( cur_group_type != GRT_xmp && ProcFlags.concat ) {
+    if( cur_group_type != GRT_xmp
+      && ProcFlags.concat ) {
         switch( nest_cb->prev->gtag ) {    // testing showed they all do this, in either phrase
         case T_CIT:
         case T_HP0:
@@ -288,7 +308,8 @@ static void gml_e_inline_common( const gmltag *entry )
             ProcFlags.cont_char = true;
             if( ProcFlags.space_fnd ) {
                 if( input_cbs->hh_tag ) {
-                    if( (entry->u.tagid != T_ECIT) && (entry->u.tagid != T_EQ) ) {
+                    if( (entry->u.tagid != T_ECIT)
+                      && (entry->u.tagid != T_EQ) ) {
                         post_space = 0;
                     }
                 } else {
@@ -318,7 +339,8 @@ static void gml_e_inline_common( const gmltag *entry )
     p = scandata.s;
     SkipDot( p );                           // over '.'
     if( *p != '\0' ) {
-        if( (*(p + 1) == '\0') && (*p == CONT_char) ) { // text is continuation character only
+        if( (*(p + 1) == '\0')
+          && (*p == CONT_char) ) { // text is continuation character only
             /* tbd */
         } else {
             process_text( p, g_curr_font);          // if text follows
@@ -328,8 +350,9 @@ static void gml_e_inline_common( const gmltag *entry )
             ProcFlags.cont_char = false;
         }
     }
-    if( !ProcFlags.concat && !ProcFlags.cont_char
-            && (input_cbs->fmflags & (II_file | II_macro)) ) {
+    if( !ProcFlags.concat
+      && !ProcFlags.cont_char
+      && (input_cbs->fmflags & (II_file | II_macro)) ) {
         scr_process_break();        // ensure line is output
     }
     scandata.s = scandata.e;
@@ -420,7 +443,8 @@ void gml_sf( const gmltag *entry )
         /* already at tag end */
     } else {
         p = get_tag_att_name( p, &pa, &attr_name );
-        if( !ProcFlags.reprocess_line && !ProcFlags.tag_end_found ) {
+        if( !ProcFlags.reprocess_line
+          && !ProcFlags.tag_end_found ) {
             if( strcmp( "font", attr_name.attname.t ) == 0 ) {
                 p = get_att_value( p, &attr_val );
                 if( attr_val.tok.s != NULL ) {

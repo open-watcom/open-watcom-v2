@@ -200,9 +200,6 @@ void    lay_tochx( const gmltag * entry )
                         /* never return */
                     }
                     cvterr = i_font_number( p, &attr_val, &layout_work.tochx[hx_l].font );
-                    if( layout_work.tochx[hx_l].font >= wgml_font_cnt ) {
-                        layout_work.tochx[hx_l].font = 0;
-                    }
                     AttrFlags.font = true;
                     break;
                 case e_align:

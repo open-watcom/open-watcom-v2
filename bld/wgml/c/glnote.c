@@ -176,9 +176,6 @@ void    lay_note( const gmltag * entry )
                         /* never return */
                     }
                     cvterr = i_font_number( p, &attr_val, &layout_work.note.font );
-                    if( layout_work.note.font >= wgml_font_cnt ) {
-                        layout_work.note.font = 0;
-                    }
                     AttrFlags.font = true;
                     break;
                 case e_spacing:

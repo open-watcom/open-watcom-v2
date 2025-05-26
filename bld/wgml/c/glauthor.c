@@ -155,9 +155,6 @@ void    lay_author( const gmltag * entry )
                         /* never return */
                     }
                     cvterr = i_font_number( p, &attr_val, &layout_work.author.font );
-                    if( layout_work.author.font >= wgml_font_cnt ) {
-                        layout_work.author.font = 0;
-                    }
                     AttrFlags.font = true;
                     break;
                 case e_pre_skip:

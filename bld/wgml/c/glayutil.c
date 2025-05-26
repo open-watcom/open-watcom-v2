@@ -124,7 +124,8 @@ condcode    lay_attr_and_value( att_name_type *attr_name, att_val_type *attr_val
     }
     attr_name->tok.s = (char *)p;
     p = get_lay_attname( p, attr_name->attname.l );
-    if( p - attr_name->tok.s < 4 || p - attr_name->tok.s > LAY_ATT_NAME_LENGTH ) {
+    if( p - attr_name->tok.s < 4
+      || p - attr_name->tok.s > LAY_ATT_NAME_LENGTH ) {
         xx_line_err_exit_c( ERR_ATT_NAME_INV, pa );
         /* never return */
     }
@@ -140,7 +141,6 @@ condcode    lay_attr_and_value( att_name_type *attr_name, att_val_type *attr_val
 void    free_layout( void )
 {
     banner_lay_tag  * ban;
-    banner_lay_tag  * ban1;
     ban_reg_group   * br_gp;
     dl_lay_level    * dl_layout;
     gl_lay_level    * gl_layout;
@@ -149,48 +149,40 @@ void    free_layout( void )
     sl_lay_level    * sl_layout;
     ul_lay_level    * ul_layout;
 
-    while( layout_work.dl.first != NULL ) {
-        dl_layout = layout_work.dl.first;
+    while( (dl_layout = layout_work.dl.first) != NULL ) {
         layout_work.dl.first = layout_work.dl.first->next;
         mem_free( dl_layout );
     }
 
-    while( layout_work.gl.first != NULL ) {
-        gl_layout = layout_work.gl.first;
+    while( (gl_layout = layout_work.gl.first) != NULL ) {
         layout_work.gl.first = layout_work.gl.first->next;
         mem_free( gl_layout );
     }
 
-    while( layout_work.ol.first != NULL ) {
-        ol_layout = layout_work.ol.first;
+    while( (ol_layout = layout_work.ol.first) != NULL ) {
         layout_work.ol.first = layout_work.ol.first->next;
         mem_free( ol_layout );
     }
 
-    while( layout_work.sl.first != NULL ) {
-        sl_layout = layout_work.sl.first;
+    while( (sl_layout = layout_work.sl.first) != NULL ) {
         layout_work.sl.first = layout_work.sl.first->next;
         mem_free( sl_layout );
     }
 
-    while( layout_work.ul.first != NULL ) {
-        ul_layout = layout_work.ul.first;
+    while( (ul_layout = layout_work.ul.first) != NULL ) {
         layout_work.ul.first = layout_work.ul.first->next;
         mem_free( ul_layout );
     }
 
-    ban = layout_work.banner;
-    while( ban != NULL ) {
-        reg = ban->region;
-        while( reg != NULL ) {
+    while( (ban = layout_work.banner) != NULL ) {
+        layout_work.banner = ban->next;
+        while( (reg = ban->region) != NULL ) {
             ban->region = reg->next;
             mem_free( reg );
-            reg = ban->region;
         }
-        br_gp = ban->by_line;
-        while( br_gp != NULL ) {
-            reg = br_gp->first;
-            while( reg != NULL ) {
+        while( (br_gp = ban->by_line) != NULL ) {
+            ban->by_line = br_gp->next;
+            while( (reg = br_gp->first) != NULL ) {
                 br_gp->first = reg->next;
                 if( reg->final_content[0].string != NULL ) {
                     mem_free( reg->final_content[0].string );
@@ -202,15 +194,10 @@ void    free_layout( void )
                     mem_free( reg->final_content[2].string );
                 }
                 mem_free( reg );
-                reg = br_gp->first;
             }
-            ban->by_line = br_gp->next;
             mem_free( br_gp );
-            br_gp = ban->by_line;
         }
-        ban1 = ban->next;
         mem_free( ban );
-        ban = ban1;
     }
 }
 
@@ -260,7 +247,8 @@ void    o_case( FILE *fp, lay_attr_o lay_attr, const case_t *tm )
 /***************************************************************************/
 bool    i_char( const char *p, lay_attr_i lay_attr, char *tm )
 {
-    if( lay_attr->quoted != ' ' && *p == '\0' ) {
+    if( lay_attr->quoted != ' '
+      && *p == '\0' ) {
         *tm = ' ';                      // space if '' or ""
     } else {
         *tm = *p;                       // else 1st char
@@ -312,7 +300,8 @@ void    o_content( FILE *fp, lay_attr_o lay_attr, const reg_content *tm )
     const char  *p;
     char        c;
 
-    if( tm->content_type < no_content || tm->content_type >= max_content) {
+    if( tm->content_type < no_content
+      || tm->content_type >= max_content ) {
         p = "???";
     } else if( tm->content_type == string_content ) { // user string with quotes
         p = tm->string;
@@ -418,7 +407,8 @@ void    o_docsect( FILE *fp, lay_attr_o lay_attr, const ban_docsect *tm )
 {
     const   char    * p;
 
-    if( *tm >= no_ban && *tm < max_ban) {
+    if( *tm >= no_ban
+      && *tm < max_ban ) {
         p = doc_sections[*tm].name;
     } else {
         p = "???";
@@ -469,6 +459,7 @@ bool    i_font_number( const char *p, lay_attr_i lay_attr, font_number *tm )
 {
     const char      *pb;
     unsigned        len;
+    font_number     font;
 
     (void)lay_attr;
 
@@ -478,7 +469,9 @@ bool    i_font_number( const char *p, lay_attr_i lay_attr, font_number *tm )
         len++;
         pb++;
     }
-    *tm = get_font_number( p, len );
+    font = get_font_number( p, len );
+    CHECK_FONT( font );
+    *tm = font;
     return( false );
 }
 
@@ -560,7 +553,9 @@ bool    i_number_style( const char *p, lay_attr_i lay_attr, num_style *tm )
     }
 
     p++;
-    if( !cvterr && *p != '\0' && (*p != ' ') ) {    // second letter
+    if( !cvterr
+      && *p != '\0'
+      && (*p != ' ') ) {    // second letter
         c = my_tolower( *p );
         switch( c ) {
         case 'd':
@@ -568,7 +563,8 @@ bool    i_number_style( const char *p, lay_attr_i lay_attr, num_style *tm )
             break;
         case 'p':
             p++;
-            if( *p != '\0' && (*p != ' ') ) {   // third letter
+            if( *p != '\0'
+              && (*p != ' ') ) {   // third letter
                 c = my_tolower( *p );
                 switch( c ) {
                 case 'a':
@@ -757,7 +753,8 @@ void    o_place( FILE *fp, lay_attr_o lay_attr, const ban_place *tm )
     const char  *p;
     ban_place   k = *tm;
 
-    if( k < no_place || k >= max_place ) {
+    if( k < no_place
+      || k >= max_place ) {
         p = "???";          // desperation value
     } else {
         p = ban_places[k];
@@ -843,8 +840,9 @@ bool    i_space_unit( const char *p, lay_attr_i lay_attr, su *tm )
 void    o_space_unit( FILE *fp, lay_attr_o lay_attr, const su *tm )
 {
 
-    if( tm->su_u == SU_chars_lines || tm->su_u == SU_undefined ||
-        tm->su_u >= SU_lay_left ) {
+    if( tm->su_u == SU_chars_lines
+      || tm->su_u == SU_undefined
+      || tm->su_u >= SU_lay_left ) {
         fprintf( fp, "        %s = %s\n", lay_att_names[lay_attr], tm->su_txt );
     } else {
         fprintf( fp, "        %s = '%s'\n", lay_att_names[lay_attr], tm->su_txt );
@@ -863,7 +861,8 @@ bool    i_spacing( const char *p, lay_attr_i lay_attr, text_space *tm )
     (void)lay_attr;
 
     wk = strtol( p, NULL, 10 );
-    if( wk < 0 || wk > 255 ) {
+    if( wk < 0
+      || wk > 255 ) {
         xx_line_err_exit_c( ERR_UI_8, p );
         /* never return */
     }
@@ -911,7 +910,8 @@ bool    i_xx_string( const char *p, lay_attr_i lay_attr, xx_str *tm )
     bool        cvterr;
 
     cvterr = false;
-    if( (lay_attr->tok.s != NULL) && (lay_attr->tok.l < STRBLK_SIZE) ) {
+    if( (lay_attr->tok.s != NULL)
+      && (lay_attr->tok.l < STRBLK_SIZE) ) {
         strncpy( tm, lay_attr->tok.s, lay_attr->tok.l );
         tm[lay_attr->tok.l] = '\0';
     } else {
@@ -1010,7 +1010,9 @@ bool    i_uint16( const char *p, lay_attr_i lay_attr, uint16_t *tm )
         xx_line_err_exit_c( ERR_NUM_TOO_LARGE, p );
         /* never return */
     }
-    if( errno == ERANGE || wk < 0 || wk > USHRT_MAX ) {
+    if( errno == ERANGE
+      || wk < 0
+      || wk > USHRT_MAX ) {
         xx_line_err_exit_c( ERR_UI_16, p );
         /* never return */
     }
@@ -1033,7 +1035,8 @@ bool    i_int8( const char *p, lay_attr_i lay_attr, int8_t *tm )
     (void)lay_attr;
 
     wk = strtol( p, NULL, 10 );
-    if( errno == ERANGE || abs( wk ) > 255 ) {
+    if( errno == ERANGE
+      || abs( wk ) > 255 ) {
         xx_line_err_exit_c( ERR_I_8, p );
         /* never return */
     }
@@ -1056,7 +1059,9 @@ bool    i_uint8( const char *p, lay_attr_i lay_attr, uint8_t *tm )
     (void)lay_attr;
 
     wk = strtol( p, NULL, 10 );
-    if( errno == ERANGE || wk < 0 || wk > 255 ) {
+    if( errno == ERANGE
+      || wk < 0
+      || wk > 255 ) {
         xx_line_err_exit_c( ERR_UI_8, p );
         /* never return */
     }

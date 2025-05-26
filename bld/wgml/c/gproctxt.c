@@ -401,8 +401,8 @@ static void wgml_tabs( void )
     static  bool                text_found  = false;    // text found after tab character
     static  text_chars      *   s_multi     = NULL;     // first part of multipart word
     static  text_line           tab_chars   = { NULL, 0, 0, 0, NULL, NULL };   // current tab markers/fill chars
-    static  text_type           c_type      = TXT_norm;  // type for current tab character
-    static  font_number         c_font      = 0;        // font for current tab character
+    static  text_type           c_type      = TXT_norm; // type for current tab character
+    static  font_number         c_font      = FONT0;    // font for current tab character
     static  unsigned            s_width     = 0;        // space width (from tab_space)
 
     in_chars = t_line->last;
@@ -440,7 +440,7 @@ static void wgml_tabs( void )
     }
     if( !tabbing
       && (t_count > 0) ) {   // no current tab stop: reset state
-        c_font = 0;
+        c_font = FONT0;
         c_stop = NULL;
         c_type = TXT_norm;
         tab_chars.first = NULL;
@@ -1827,7 +1827,7 @@ void process_text( char * text, font_number font )
     bool                    wrap_done       = false;
     char                *   p;
     char                *   pword;
-    font_number             temp_font       = 0;
+    font_number             temp_font       = FONT0;
     unsigned                count;
     text_chars          *   fm_chars;                   // start text_chars for inserting fmflags
     text_chars          *   h_chars;                    // hyphen text_chars

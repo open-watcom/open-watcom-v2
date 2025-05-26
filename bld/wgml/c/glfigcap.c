@@ -133,9 +133,6 @@ void    lay_figcap( const gmltag * entry )
                         /* never return */
                     }
                     cvterr = i_font_number( p, &attr_val, &layout_work.figcap.font );
-                    if( layout_work.figcap.font >= wgml_font_cnt ) {
-                        layout_work.figcap.font = 0;
-                    }
                     AttrFlags.font = true;
                     break;
                 case e_figcap_string:
@@ -154,9 +151,6 @@ void    lay_figcap( const gmltag * entry )
                         /* never return */
                     }
                     cvterr = i_font_number( p, &attr_val, &layout_work.figcap.string_font );
-                    if( layout_work.figcap.string_font >= wgml_font_cnt ) {
-                        layout_work.figcap.string_font = 0;
-                    }
                     AttrFlags.string_font = true;
                     break;
                 case e_delim:

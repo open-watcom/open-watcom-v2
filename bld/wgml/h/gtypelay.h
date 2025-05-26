@@ -37,11 +37,9 @@
 /***************************************************************************/
 
 typedef enum lay_att {
-    e_dummy_zero = 0,
     #define pick( name, funci, funco, result ) e_##name,
     #include "glayutil.h"
     #undef pick
-    e_dummy_max
 } lay_att;
 
 /***************************************************************************/

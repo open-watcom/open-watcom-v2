@@ -184,9 +184,6 @@ void    lay_ix( const gmltag * entry )
                         /* never return */
                     }
                     cvterr = i_font_number( p, &attr_val, &layout_work.ix[ix_l].font );
-                    if( layout_work.ix[ix_l].font >= wgml_font_cnt ) {
-                        layout_work.ix[ix_l].font = 0;
-                    }
                     AttrFlags.font = true;
                     break;
                 case e_indent:
@@ -226,11 +223,7 @@ void    lay_ix( const gmltag * entry )
                         /* never return */
                     }
                     if( ix_l < 2 ) {
-                        cvterr = i_font_number( p, &attr_val,
-                                         &layout_work.ix[ix_l].string_font );
-                        if( layout_work.ix[ix_l].string_font >= wgml_font_cnt ) {
-                            layout_work.ix[ix_l].string_font = 0;
-                        }
+                        cvterr = i_font_number( p, &attr_val, &layout_work.ix[ix_l].string_font );
                     }
                     AttrFlags.string_font = true;
                     break;

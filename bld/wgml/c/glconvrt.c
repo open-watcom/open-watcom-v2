@@ -40,7 +40,6 @@
 /***************************************************************************/
 
 const char    * const lay_att_names[] = {
-    "DUMMY",                        // enum zero not used
     #define pick( name, funci, funco, result ) #name,
     #include "glayutil.h"
     #undef pick
@@ -229,7 +228,8 @@ void    lay_convert( const gmltag * entry )
         char    *filename_start;
 
         p += 5;
-        if( *p == '"' || *p == '\'' ) {
+        if( *p == '"'
+          || *p == '\'' ) {
             quote = *p;
             ++p;
         } else {
@@ -242,7 +242,8 @@ void    lay_convert( const gmltag * entry )
         *p = '\0';
         strcpy( token_buf, filename_start );
     } else {                            // try undocumented format
-        if( *p != '\0' && *p == '.' ) {
+        if( *p != '\0'
+          && *p == '.' ) {
             strcpy( token_buf, p + 1 );
         }
     }

@@ -598,7 +598,7 @@ static void set_font( option * opt )
     old_errs = err_count;
     new_font = mem_alloc( sizeof( opt_font ) );
     new_font->nxt = NULL;
-    new_font->font = 0;
+    new_font->font = FONT0;
     new_font->name = NULL;
     new_font->style = NULL;
     new_font->space = 0;

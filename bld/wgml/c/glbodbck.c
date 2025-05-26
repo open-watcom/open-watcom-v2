@@ -226,9 +226,6 @@ void    lay_backbod( const gmltag * entry )
                         /* never return */
                     }
                     cvterr = i_font_number( p, &attr_val, &(bbsect->text_font) );
-                    if( bbsect->text_font >= wgml_font_cnt ) {
-                        bbsect->text_font = 0;
-                    }
                     AttrFlags.font = true;
                     break;
                 case e_columns:
