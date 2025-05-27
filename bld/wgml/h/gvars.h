@@ -184,10 +184,10 @@ global ffh_entry    *fn_list;           // list of footnotes in order encountere
 // heading support
 global ffh_entry    *hd_entry;          // current hd_list entry
 global fwd_ref      *hd_fwd_refs;       // forward reference/undefined id/page change
-global hdsrc        hd_level;           // current heading level
+global hdlvl        hd_level;           // current heading level
 global ref_entry    *hd_ref_dict;       // reference dictionary :Hx tags
 global ffh_entry    *hd_list;           // list of headings in order encountered
-global hd_num_data  hd_nums[HDS_appendix];  // heading hierarchy numbering
+global hd_num_data  hd_nums[HLVL_MAX];  // heading hierarchy numbering
 
 // index support
 global bool         ixhlvl[2];          // true for levels that exist
@@ -198,7 +198,7 @@ global ix_h_blk     *ixhtag[3];         // current entry for each level in index
 global ref_entry    *ix_ref_dict;       // reference id dictionary :Ix :IHx :IREF
 
 // page number format
-global num_style       pgnum_style[PGNST_max];
+global num_style    pgnum_style[PGNST_max];
 
 // symbol support
 global sym_list_entry   *sym_list_pool; // sym_list_entry pool

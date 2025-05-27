@@ -51,7 +51,7 @@
 /*  construct Header numbers  1.2.3.V ...                                  */
 /***************************************************************************/
 
-static void update_headnumx( hdsrc hn_lvl, hdsrc hds_lvl )
+static void update_headnumx( hdlvl hn_lvl, hdsrc hds_lvl )
 {
     unsigned        pos;
     char            *pn;
@@ -63,12 +63,13 @@ static void update_headnumx( hdsrc hn_lvl, hdsrc hds_lvl )
     hd_nums[hn_lvl].hnumstr[0] = '\0';
     pos = 0;
 
-    if( (hn_lvl > 0) && (layout_work.hx.hx_head[hds_lvl - 1].number_form != num_none) ) {
+    if( (hn_lvl > HLVL_h0)
+      && (layout_work.hx.hx_head[hds_lvl - 1].number_form != FORM_none) ) {
 
         /* reuse formatted number from previous lvl */
 
-        if( (layout_work.hx.hx_head[hds_lvl].number_form == num_prop) &&
-                (hd_nums[hn_lvl - 1].hnumsub != NULL) ) {
+        if( (layout_work.hx.hx_head[hds_lvl].number_form == FORM_prop)
+          && (hd_nums[hn_lvl - 1].hnumsub != NULL) ) {
             strcpy( hd_nums[hn_lvl].hnumstr, hd_nums[hn_lvl - 1].hnumstr );
             pos = strlen( hd_nums[hn_lvl].hnumstr );
         }
@@ -98,7 +99,7 @@ static void update_headnumx( hdsrc hn_lvl, hdsrc hds_lvl )
 /*  output the heading                                                     */
 /***************************************************************************/
 
-static void hx_header( char * h_num, char * h_text, hdsrc hn_lvl, hdsrc hds_lvl )
+static void hx_header( char * h_num, char * h_text, hdlvl hn_lvl, hdsrc hds_lvl )
 {
     (void)hn_lvl;
 
@@ -121,32 +122,42 @@ static void hx_header( char * h_num, char * h_text, hdsrc hn_lvl, hdsrc hds_lvl 
                            layout_work.hx.hx_sect[hds_lvl].spacing,
                            layout_work.hx.hx_sect[hds_lvl].text_font );
         }
+        t_page.cur_width = conv_hor_unit( &layout_work.hx.hx_head[hds_lvl].indent,
+                                       layout_work.hx.hx_sect[hds_lvl].text_font);
     } else {                                    // from a section heading
         line_position = PPOS_center;
-        set_skip_vars( &layout_work.hx.hx_head[hds_lvl].pre_skip,
+        set_skip_vars( NULL,
                        &layout_work.hx.hx_sect[hds_lvl].pre_top_skip,
                        &layout_work.hx.hx_sect[hds_lvl].post_skip,
                        layout_work.hx.hx_sect[hds_lvl].spacing,
                        layout_work.hx.hx_sect[hds_lvl].text_font );
+        /*
+         * !TODO
+         *
+         * need to fix, original code overflows layout_work.hx.hx_sect[] array
+         */
+//        t_page.cur_width = conv_hor_unit( &layout_work.hx.hx_head[hds_lvl].indent,
+//                                       layout_work.hx.hx_sect[hds_lvl].text_font);
+        t_page.cur_width = 0;
     }
 
-    t_page.cur_width = conv_hor_unit( &layout_work.hx.hx_head[hds_lvl].indent,
-                                       layout_work.hx.hx_sect[hds_lvl].text_font);
     post_space = 0;
 
     /* display_heading is always "true" for section headings */
 
-    if( (hds_lvl > HDS_appendix) || layout_work.hx.hx_head[hds_lvl].display_heading ) {
+    if( (hds_lvl < HDS_abstract)
+      && layout_work.hx.hx_head[hds_lvl].display_heading ) {
         t_page.cur_left = 0;
         ProcFlags.keep_left_margin = true;  // keep left margin
-        if( (hds_lvl < HDS_abstract) && (layout_work.hx.hx_head[hds_lvl].number_form != num_none) ) {
+        if( (hds_lvl < HDS_abstract)
+          && (layout_work.hx.hx_head[hds_lvl].number_form != FORM_none) ) {
             ProcFlags.as_text_line = true;      // treat as <text_line>
             process_text( h_num, layout_work.hx.hx_head[hds_lvl].number_font );
             post_space /= wgml_fonts[layout_work.hx.hx_head[hds_lvl].number_font].spc_width;     // rescale post_space to correct font
             post_space *= wgml_fonts[layout_work.hx.hx_sect[hds_lvl].text_font].spc_width;
         }
-
-        if( (h_text != NULL) && (*h_text != '\0') ) {
+        if( (h_text != NULL)
+          && (*h_text != '\0') ) {
             ProcFlags.as_text_line = true;      // treat as <text_line>
             process_text( h_text, layout_work.hx.hx_sect[hds_lvl].text_font );
         }
@@ -163,20 +174,20 @@ static void hx_header( char * h_num, char * h_text, hdsrc hn_lvl, hdsrc hds_lvl 
 /* document sections which have headings                                      */
 /******************************************************************************/
 
-void gen_heading( char *h_text, const char *hdrefid, hdsrc hn_lvl, hdsrc hds_lvl )
+void gen_heading( char *h_text, const char *hdrefid, hdlvl hn_lvl, hdsrc hds_lvl )
 {
-    bool            page_width  = false;
-    char        *   headp;
-    char        *   prefix      = NULL;
-    doc_element *   cur_el;
+    bool            page_width;
+    char            *headp;
+    char            *prefix;
+    doc_element     *cur_el;
     group_type      sav_group_type;         // save prior group type
-    int             k;
+    hdlvl           hlvl;
     unsigned        current;
     unsigned        headlen;
     unsigned        prefixlen;
     unsigned        txtlen;
     page_pos        old_line_pos;
-    ref_entry   *   cur_ref         = NULL;
+    ref_entry       *cur_ref         = NULL;
     unsigned        bot_depth;
     unsigned        hx_depth;
     unsigned        old_bot_depth;
@@ -185,29 +196,36 @@ void gen_heading( char *h_text, const char *hdrefid, hdsrc hn_lvl, hdsrc hds_lvl
     unsigned        page_diff;
     unsigned        top_depth;
 
-    static char     headx[7]        = "$headX";
-    static char     htextx[8]       = "$htextX";
+    static char     headx[] = "$headX";
+    static char     htextx[] = "$htextX";
 
     headx[5] = '0' + hn_lvl;
     htextx[6] = '0' + hn_lvl;
 
     /* Only Hx headings on multi-column pages actually go into the page_width section */
 
-    page_width = (hds_lvl < HDS_abstract) && (t_page.last_pane->col_count > 1);
-    if( page_width ) {
-        t_page.max_width = t_page.page_width;
-    }
-    if( hds_lvl < HDS_abstract )
+    page_width = false;
+    if( hds_lvl < HDS_abstract ) {
+        page_width = ( t_page.last_pane->col_count > 1 );
+        if( page_width ) {
+            t_page.max_width = t_page.page_width;
+        }
         update_headnumx( hn_lvl, hds_lvl );
+    }
 
-    if( hds_lvl == HDS_appendix ) {
-        prefixlen = strlen( layout_work.appendix.string ) + strlen( hd_nums[hn_lvl].hnumstr );
-        prefix = (char *)mem_alloc( prefixlen + 1 );
-        strcpy( prefix, layout_work.appendix.string ); // prefix
-        strcat( prefix, hd_nums[hn_lvl].hnumstr ); // numbered header
+    if( hds_lvl < HDS_abstract ) {
+        if( hds_lvl == HDS_appendix ) {
+            prefixlen = strlen( layout_work.appendix.string ) + strlen( hd_nums[hn_lvl].hnumstr );
+            prefix = (char *)mem_alloc( prefixlen + 1 );
+            strcpy( prefix, layout_work.appendix.string ); // prefix
+            strcat( prefix, hd_nums[hn_lvl].hnumstr ); // numbered header
+        } else {
+            prefix = hd_nums[hn_lvl].hnumstr;
+            prefixlen = strlen( prefix );
+        }
         headlen = prefixlen + strlen( h_text ) + 2;
         headp = (char *)mem_alloc( headlen );
-        if( layout_work.hx.hx_head[HDS_appendix].number_form != num_none ) {
+        if( layout_work.hx.hx_head[hds_lvl].number_form != FORM_none ) {
             strcpy( headp, prefix ); // numbered header
             strcat( headp, " " );
         } else {
@@ -215,15 +233,9 @@ void gen_heading( char *h_text, const char *hdrefid, hdsrc hn_lvl, hdsrc hds_lvl
         }
     } else {
         prefix = hd_nums[hn_lvl].hnumstr;
-        headlen = strlen( hd_nums[hn_lvl].hnumstr ) + strlen( h_text ) + 2;
+        headlen = strlen( prefix ) + strlen( h_text ) + 2;
         headp = (char *)mem_alloc( headlen );
-        if( (hds_lvl < HDS_abstract) &&
-                (layout_work.hx.hx_head[hds_lvl].number_form != num_none) ) {
-            strcpy( headp, prefix );     // numbered header
-            strcat( headp, " " );
-        } else {
-            *headp = '\0';
-        }
+        *headp = '\0';
     }
     strcat( headp, h_text );
 
@@ -249,8 +261,9 @@ void gen_heading( char *h_text, const char *hdrefid, hdsrc hn_lvl, hdsrc hds_lvl
     if( pass == 1 ) {                       // add this Hn to hd_list
         hd_entry = init_ffh_entry( hd_list, FFH_hn );   // mark as Hn
         hd_entry->number = hn_lvl;          // add heading level
-        if( ((ProcFlags.doc_sect == DSECT_abstract) ||
-             (ProcFlags.doc_sect == DSECT_preface)) && !ProcFlags.first_hdr ) {
+        if( ((ProcFlags.doc_sect == DSECT_abstract)
+          || (ProcFlags.doc_sect == DSECT_preface))
+          && !ProcFlags.first_hdr ) {
             hd_entry->abs_pre = true;       // first header in ABSTRACT or PREFACE
             ProcFlags.first_hdr = true;
         }
@@ -263,12 +276,14 @@ void gen_heading( char *h_text, const char *hdrefid, hdsrc hn_lvl, hdsrc hds_lvl
         /* level number or APPENDIX string to prepend to the text       */
         /****************************************************************/
 
-        if( prefix[0] ) {
-            current = strlen( prefix );
-            hd_entry->prefix = (char *)mem_alloc( current + 1 );
-            strcpy( hd_entry->prefix, prefix );
-            if( layout_work.hx.hx_head[hds_lvl].number_form != num_none ) {
-                hd_entry->flags |= FFH_prefix;  // mark prefix for use
+        if( hds_lvl < HDS_abstract ) {
+            if( prefix[0] != '\0' ) {
+                current = strlen( prefix );
+                hd_entry->prefix = (char *)mem_alloc( current + 1 );
+                strcpy( hd_entry->prefix, prefix );
+                if( layout_work.hx.hx_head[hds_lvl].number_form != FORM_none ) {
+                    hd_entry->flags |= FFH_prefix;  // mark prefix for use
+                }
             }
         }
         txtlen = strlen( h_text );
@@ -283,7 +298,8 @@ void gen_heading( char *h_text, const char *hdrefid, hdsrc hn_lvl, hdsrc hds_lvl
         /* for document sections, it is NULL, as it has no meaning for them    */
         /***********************************************************************/
 
-        if( (hdrefid != NULL) && *hdrefid != '\0' ) {             // add this entry to fig_ref_dict
+        if( (hdrefid != NULL)
+          && *hdrefid != '\0' ) {             // add this entry to fig_ref_dict
             cur_ref = find_refid( hd_ref_dict, hdrefid );
             if( cur_ref == NULL ) {             // new entry
                 cur_ref = add_new_refid( &hd_ref_dict, hdrefid, hd_entry );
@@ -296,12 +312,13 @@ void gen_heading( char *h_text, const char *hdrefid, hdsrc hn_lvl, hdsrc hds_lvl
 
     /* Reset heading numbers for Hn tags and APPENDIX H1 tags */
 
-    if( (hds_lvl < HDS_abstract) && (layout_work.hx.hx_head[hds_lvl].number_reset) ) {
-        for( k = hn_lvl + 1; k < HDS_appendix; k++ ) {
-            hd_nums[k].headn = 0;// reset following levels
-            hd_nums[k].hnumstr[0] = '\0';
-            if( hd_nums[k].hnumsub != NULL ) {
-                *(hd_nums[k].hnumsub->value) = '\0';
+    if( (hds_lvl < HDS_abstract)
+      && (layout_work.hx.hx_head[hds_lvl].number_reset) ) {
+        for( hlvl = hn_lvl + 1; hlvl < HLVL_MAX; hlvl++ ) {
+            hd_nums[hlvl].headn = 0;// reset following levels
+            hd_nums[hlvl].hnumstr[0] = '\0';
+            if( hd_nums[hlvl].hnumsub != NULL ) {
+                *(hd_nums[hlvl].hnumsub->value) = '\0';
             }
         }
     }
@@ -333,7 +350,8 @@ void gen_heading( char *h_text, const char *hdrefid, hdsrc hn_lvl, hdsrc hds_lvl
     scr_process_break();                    // commit the header
     line_position = old_line_pos;
     t_page.cur_left = old_cur_left;
-    if( (prefix != NULL) && (prefix != hd_nums[hn_lvl].hnumstr) ) {
+    if( (prefix != NULL)
+      && (prefix != hd_nums[hn_lvl].hnumstr) ) {
         mem_free( prefix );
     }
 
@@ -403,14 +421,14 @@ void gen_heading( char *h_text, const char *hdrefid, hdsrc hn_lvl, hdsrc hds_lvl
                 hx_depth = cur_doc_el_group->depth +
                     wgml_fonts[layout_work.hx.hx_sect[hds_lvl].text_font].line_height +
                     g_post_skip;
-                if( ((page_diff + t_page.cur_depth) > t_page.max_depth) ||
-                        ((hx_depth + t_page.cur_depth) > t_page.max_depth) ) {
+                if( ((page_diff + t_page.cur_depth) > t_page.max_depth)
+                  || ((hx_depth + t_page.cur_depth) > t_page.max_depth) ) {
                     next_column();
                     if( t_page.last_pane->cur_col == 0 ) {  // on new page
                         ProcFlags.page_ejected = true;
                     }
                 }
-                if ( !ProcFlags.page_ejected ) {    // this page will do just fine
+                if( !ProcFlags.page_ejected ) {    // this page will do just fine
 
                     /* Adjust page vertical metrics */
 
@@ -530,19 +548,20 @@ void gen_heading( char *h_text, const char *hdrefid, hdsrc hn_lvl, hdsrc hds_lvl
 /*  NOTE: this function converts hn_lvl to hds_lvl, if needed              */
 /***************************************************************************/
 
-static void gml_hx_common( const gmltag * entry, hdsrc hn_lvl )
+static void gml_hx_common( const gmltag *entry, hdlvl hn_lvl )
 {
     bool            id_seen     = false;
     char            hdrefid[REFID_LEN + 1];
     char            *p;
     char            *pa;
     hdsrc           hds_lvl;
+    hdlvl           hlvl;
     text_space      sav_spacing;
     unsigned        len;
     att_name_type   attr_name;
     att_val_type    attr_val;
 
-    static char     hxstr[4]    = ":HX";
+    static char     hxstr[] = ":HX";
 
     (void)entry;
 
@@ -562,7 +581,7 @@ static void gml_hx_common( const gmltag * entry, hdsrc hn_lvl )
 
     *hdrefid = '\0';                        // null string if no id found
     switch( hn_lvl ) {
-    case HDS_h0:
+    case HLVL_h0:
         if( !((ProcFlags.doc_sect == DSECT_body)
           || (ProcFlags.doc_sect_nxt == DSECT_body)) ) {
             xx_err_exit_cc( ERR_TAG_WRONG_SECT, hxstr, ":BODY section" );
@@ -570,7 +589,7 @@ static void gml_hx_common( const gmltag * entry, hdsrc hn_lvl )
         }
         hd_level = hn_lvl;              // H0 always valid in BODY
         break;
-    case HDS_h1:
+    case HLVL_h1:
         if( !((ProcFlags.doc_sect >= DSECT_body)
           || (ProcFlags.doc_sect_nxt >= DSECT_body)) ) {
             xx_err_exit_cc( ERR_TAG_WRONG_SECT, hxstr, ":BODY :APPENDIX :BACKM sections" );
@@ -586,17 +605,17 @@ static void gml_hx_common( const gmltag * entry, hdsrc hn_lvl )
             hd_level = hn_lvl;          // H1 valid at this point
         }
         break;
-    case HDS_h2:
-    case HDS_h3:
-    case HDS_h4:
-    case HDS_h5:
-    case HDS_h6:
+    case HLVL_h2:
+    case HLVL_h3:
+    case HLVL_h4:
+    case HLVL_h5:
+    case HLVL_h6:
         if( hd_level < hn_lvl - 1 ) {
             g_wng_hlevel( hn_lvl, hd_level + 1 );
             /* Update numbers for the skipped headings. */
-            for( hds_lvl = hd_level + 1; hds_lvl < hn_lvl; ++hds_lvl ) {
-                hd_nums[hds_lvl].headn++;
-                update_headnumx( hds_lvl, hds_lvl);
+            for( hlvl = hd_level + 1; hlvl < hn_lvl; hlvl++ ) {
+                hd_nums[hlvl].headn++;
+                update_headnumx( hlvl, HLVL2HDS( hn_lvl ) );
             }
             hd_level = hn_lvl;          // hn_lvl + 1 to H6 will be valid if none are skipped
         } else {
@@ -614,10 +633,11 @@ static void gml_hx_common( const gmltag * entry, hdsrc hn_lvl )
 
     /* After this, hds_lvl will access the correct LAYOUT data */
 
-    if( (ProcFlags.doc_sect == DSECT_appendix) && (hn_lvl == HDS_h1) ) {
+    if( (ProcFlags.doc_sect == DSECT_appendix)
+      && (hn_lvl == HLVL_h1) ) {
         hds_lvl = HDS_appendix;
     } else {
-        hds_lvl = hn_lvl;
+        hds_lvl = HLVL2HDS( hn_lvl );
     }
 
     hd_nums[hn_lvl].headn++;
@@ -668,10 +688,12 @@ static void gml_hx_common( const gmltag * entry, hdsrc hn_lvl )
             do_page_out();
             reset_t_page();
         }
-        if( (layout_work.hx.hx_head[hds_lvl].page_eject == ej_odd) && (g_page & 1) ) {
+        if( (layout_work.hx.hx_head[hds_lvl].page_eject == ej_odd)
+          && (g_page & 1) ) {
             do_page_out();              // next page would be even
             reset_t_page();
-        } else if( (layout_work.hx.hx_head[hds_lvl].page_eject == ej_even) && ((g_page & 1) == 0) ) {
+        } else if( (layout_work.hx.hx_head[hds_lvl].page_eject == ej_even)
+          && ((g_page & 1) == 0) ) {
             do_page_out();              // next page would be odd
             reset_t_page();
         }
@@ -705,9 +727,10 @@ static void gml_hx_common( const gmltag * entry, hdsrc hn_lvl )
                 strupr( p );
             }
         }
-        if( ProcFlags.overprint && ProcFlags.cc_cp_done
-                && (layout_work.hx.hx_head[hds_lvl].page_eject == ej_no)
-                && layout_work.hx.hx_head[hds_lvl].line_break ) {
+        if( ProcFlags.overprint
+          && ProcFlags.cc_cp_done
+          && (layout_work.hx.hx_head[hds_lvl].page_eject == ej_no)
+          && layout_work.hx.hx_head[hds_lvl].line_break ) {
             ProcFlags.overprint = false;        // cancel overprint
         }
         gen_heading( p, hdrefid, hn_lvl, hds_lvl );
@@ -764,37 +787,37 @@ static void gml_hx_common( const gmltag * entry, hdsrc hn_lvl )
 
 void gml_h0( const gmltag * entry )
 {
-    gml_hx_common( entry, HDS_h0 );
+    gml_hx_common( entry, HLVL_h0 );
 }
 
 void gml_h1( const gmltag * entry )
 {
-    gml_hx_common( entry, HDS_h1 );
+    gml_hx_common( entry, HLVL_h1 );
 }
 
 void gml_h2( const gmltag * entry )
 {
-    gml_hx_common( entry, HDS_h2 );
+    gml_hx_common( entry, HLVL_h2 );
 }
 
 void gml_h3( const gmltag * entry )
 {
-    gml_hx_common( entry, HDS_h3 );
+    gml_hx_common( entry, HLVL_h3 );
 }
 
 void gml_h4( const gmltag * entry )
 {
-    gml_hx_common( entry, HDS_h4 );
+    gml_hx_common( entry, HLVL_h4 );
 }
 
 void gml_h5( const gmltag * entry )
 {
-    gml_hx_common( entry, HDS_h5 );
+    gml_hx_common( entry, HLVL_h5 );
 }
 
 void gml_h6( const gmltag * entry )
 {
-    gml_hx_common( entry, HDS_h6 );
+    gml_hx_common( entry, HLVL_h6 );
 }
 
 
@@ -828,7 +851,9 @@ void out_head_page( ffh_entry * in_entry, ref_entry * in_ref, unsigned in_pageno
         if( in_pageno != in_entry->pageno ) {   // page number changed
             in_entry->pageno = currno;
             if( GlobalFlags.lastpass ) {
-                if( (in_ref != NULL) && (in_ref->refid != NULL) && in_ref->refid[0] ) {
+                if( (in_ref != NULL)
+                  && (in_ref->refid != NULL)
+                  && in_ref->refid[0] ) {
                     hd_fwd_refs = init_fwd_ref( hd_fwd_refs, in_ref->refid );
                 }
                 ProcFlags.new_pagenr = true;

@@ -681,7 +681,7 @@ void g_tag_rsloc_err_exit( locflags inloc, const char * pa )
     /* never return */
 }
 
-void g_wng_hlevel( hdsrc hd_found, hdsrc hd_expected )
+void g_wng_hlevel( hdlvl hd_found, hdlvl hd_expected )
 {
     wng_count++;
     if( GlobalFlags.warning ) {

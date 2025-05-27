@@ -189,12 +189,12 @@ static const lay_att    hx_att[] = {
 /*  lay_hx                                                                 */
 /***************************************************************************/
 
-void    lay_hx( const gmltag * entry )
+void    lay_hx( const gmltag *entry )
 {
     char                *p;
     condcode            cc;
     int                 cvterr;
-    int                 hx_l;
+    hdsrc               hds_lvl;
     int                 k;
     int8_t              l_group     =   0;
     lay_att             curr;
@@ -208,13 +208,11 @@ void    lay_hx( const gmltag * entry )
         ProcFlags.lay_xxx = entry->u.layid;
     }
 
-    hx_l = entry->tagname[1] - '0';     // construct Hx level
-    if( hx_l > 6 ) {
-        hx_l = 6;
+    hds_lvl = HDS_h0 + ( entry->tagname[1] - '0' ); // construct Hx level
+    if( hds_lvl > HDS_h6 ) {
         internal_err_exit( __FILE__, __LINE__ );
         /* never return */
     }
-    ProcFlags.hx_level = hx_l;
 
     while( (cc = lay_attr_and_value( &attr_name, &attr_val )) == CC_pos ) {   // get att with value
         cvterr = -1;
@@ -238,8 +236,7 @@ void    lay_hx( const gmltag * entry )
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                         /* never return */
                     }
-                    cvterr = i_space_unit( p, &attr_val,
-                                           &layout_work.hx.hx_head[hx_l].indent );
+                    cvterr = i_space_unit( p, &attr_val, &layout_work.hx.hx_head[hds_lvl].indent );
                     AttrFlags.indent = true;
                     break;
                 case e_pre_top_skip:
@@ -248,7 +245,7 @@ void    lay_hx( const gmltag * entry )
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                         /* never return */
                     }
-                    cvterr = i_space_unit( p, &attr_val, &layout_work.hx.hx_sect[hx_l].pre_top_skip );
+                    cvterr = i_space_unit( p, &attr_val, &layout_work.hx.hx_sect[hds_lvl].pre_top_skip );
                     AttrFlags.pre_top_skip = true;
                     break;
                 case e_pre_skip:
@@ -257,7 +254,7 @@ void    lay_hx( const gmltag * entry )
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                         /* never return */
                     }
-                    cvterr = i_space_unit( p, &attr_val, &layout_work.hx.hx_head[hx_l].pre_skip );
+                    cvterr = i_space_unit( p, &attr_val, &layout_work.hx.hx_head[hds_lvl].pre_skip );
                     AttrFlags.pre_skip = true;
                     break;
                 case e_post_skip:
@@ -266,7 +263,7 @@ void    lay_hx( const gmltag * entry )
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                         /* never return */
                     }
-                    cvterr = i_space_unit( p, &attr_val, &layout_work.hx.hx_sect[hx_l].post_skip );
+                    cvterr = i_space_unit( p, &attr_val, &layout_work.hx.hx_sect[hds_lvl].post_skip );
                     AttrFlags.post_skip = true;
                     break;
                 case e_spacing:
@@ -275,7 +272,7 @@ void    lay_hx( const gmltag * entry )
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                         /* never return */
                     }
-                    cvterr = i_spacing( p, &attr_val, &layout_work.hx.hx_sect[hx_l].spacing );
+                    cvterr = i_spacing( p, &attr_val, &layout_work.hx.hx_sect[hds_lvl].spacing );
                     AttrFlags.spacing = true;
                     break;
                 case e_font:
@@ -284,7 +281,7 @@ void    lay_hx( const gmltag * entry )
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                         /* never return */
                     }
-                    cvterr = i_font_number( p, &attr_val, &layout_work.hx.hx_sect[hx_l].text_font );
+                    cvterr = i_font_number( p, &attr_val, &layout_work.hx.hx_sect[hds_lvl].text_font );
                     AttrFlags.font = true;
                     break;
                 case e_number_font:
@@ -293,7 +290,7 @@ void    lay_hx( const gmltag * entry )
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                         /* never return */
                     }
-                    cvterr = i_font_number( p, &attr_val, &layout_work.hx.hx_head[hx_l].number_font );
+                    cvterr = i_font_number( p, &attr_val, &layout_work.hx.hx_head[hds_lvl].number_font );
                     AttrFlags.number_font = true;
                     break;
                 case e_number_form:
@@ -302,7 +299,7 @@ void    lay_hx( const gmltag * entry )
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                         /* never return */
                     }
-                    cvterr = i_number_form( p, &attr_val, &layout_work.hx.hx_head[hx_l].number_form );
+                    cvterr = i_number_form( p, &attr_val, &layout_work.hx.hx_head[hds_lvl].number_form );
                     AttrFlags.number_form = true;
                     break;
                 case e_page_position:
@@ -311,7 +308,7 @@ void    lay_hx( const gmltag * entry )
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                         /* never return */
                     }
-                    cvterr = i_page_position( p, &attr_val, &layout_work.hx.hx_head[hx_l].line_position );
+                    cvterr = i_page_position( p, &attr_val, &layout_work.hx.hx_head[hds_lvl].line_position );
                     AttrFlags.page_position = true;
                     break;
                 case e_number_style:
@@ -320,7 +317,7 @@ void    lay_hx( const gmltag * entry )
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                         /* never return */
                     }
-                    cvterr = i_number_style( p, &attr_val, &layout_work.hx.hx_head[hx_l].number_style );
+                    cvterr = i_number_style( p, &attr_val, &layout_work.hx.hx_head[hds_lvl].number_style );
                     AttrFlags.number_style = true;
                     break;
                 case e_page_eject:
@@ -329,7 +326,7 @@ void    lay_hx( const gmltag * entry )
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                         /* never return */
                     }
-                    cvterr = i_page_eject( p, &attr_val, &layout_work.hx.hx_head[hx_l].page_eject );
+                    cvterr = i_page_eject( p, &attr_val, &layout_work.hx.hx_head[hds_lvl].page_eject );
                     AttrFlags.page_eject = true;
                     break;
                 case e_line_break:
@@ -338,7 +335,7 @@ void    lay_hx( const gmltag * entry )
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                         /* never return */
                     }
-                    cvterr = i_yes_no( p, &attr_val, &layout_work.hx.hx_head[hx_l].line_break );
+                    cvterr = i_yes_no( p, &attr_val, &layout_work.hx.hx_head[hds_lvl].line_break );
                     AttrFlags.line_break = true;
                     break;
                 case e_display_heading:
@@ -347,7 +344,7 @@ void    lay_hx( const gmltag * entry )
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                         /* never return */
                     }
-                    cvterr = i_yes_no( p, &attr_val, &layout_work.hx.hx_head[hx_l].display_heading );
+                    cvterr = i_yes_no( p, &attr_val, &layout_work.hx.hx_head[hds_lvl].display_heading );
                     AttrFlags.display_heading = true;
                     break;
                 case e_number_reset:
@@ -356,7 +353,7 @@ void    lay_hx( const gmltag * entry )
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                         /* never return */
                     }
-                    cvterr = i_yes_no( p, &attr_val, &layout_work.hx.hx_head[hx_l].number_reset );
+                    cvterr = i_yes_no( p, &attr_val, &layout_work.hx.hx_head[hds_lvl].number_reset );
                     AttrFlags.number_reset = true;
                     break;
                 case e_case:
@@ -365,7 +362,7 @@ void    lay_hx( const gmltag * entry )
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                         /* never return */
                     }
-                    cvterr = i_case( p, &attr_val, &layout_work.hx.hx_head[hx_l].hd_case );
+                    cvterr = i_case( p, &attr_val, &layout_work.hx.hx_head[hds_lvl].hd_case );
                     AttrFlags.case_a = true;
                     break;
                 case e_align:
@@ -374,7 +371,7 @@ void    lay_hx( const gmltag * entry )
                             attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
                         /* never return */
                     }
-                    cvterr = i_space_unit( p, &attr_val, &layout_work.hx.hx_head[hx_l].align );
+                    cvterr = i_space_unit( p, &attr_val, &layout_work.hx.hx_head[hds_lvl].align );
                     AttrFlags.align = true;
                     break;
                 default:
@@ -408,12 +405,12 @@ void    lay_hx( const gmltag * entry )
 void    put_lay_hx( FILE *fp, layout_data * lay )
 {
     int                 k;
-    int                 lvl;
+    hdsrc               hds_lvl;
     lay_att             curr;
 
-    for( lvl = 0; lvl < 7; ++lvl ) {
+    for( hds_lvl = HDS_h0; hds_lvl < HDS_h0 + HLVL_MAX; ++hds_lvl ) {
 
-        fprintf( fp, ":H%c\n", '0' + lvl );
+        fprintf( fp, ":H%c\n", '0' + HDS2HLVL( hds_lvl ) );
 
         for( k = 0; k < TABLE_SIZE( hx_att ); k++ ) {
             curr = hx_att[k];
@@ -422,52 +419,52 @@ void    put_lay_hx( FILE *fp, layout_data * lay )
                 o_int8( fp, curr, &lay->hx.group );
                 break;
             case e_indent:
-                o_space_unit( fp, curr, &lay->hx.hx_head[lvl].indent );
+                o_space_unit( fp, curr, &lay->hx.hx_head[hds_lvl].indent );
                 break;
             case e_pre_top_skip:
-                o_space_unit( fp, curr, &lay->hx.hx_sect[lvl].pre_top_skip );
+                o_space_unit( fp, curr, &lay->hx.hx_sect[hds_lvl].pre_top_skip );
                 break;
             case e_pre_skip:
-                o_space_unit( fp, curr, &lay->hx.hx_head[lvl].pre_skip );
+                o_space_unit( fp, curr, &lay->hx.hx_head[hds_lvl].pre_skip );
                 break;
             case e_post_skip:
-                o_space_unit( fp, curr, &lay->hx.hx_sect[lvl].post_skip );
+                o_space_unit( fp, curr, &lay->hx.hx_sect[hds_lvl].post_skip );
                 break;
             case e_spacing:
-                o_spacing( fp, curr, &lay->hx.hx_sect[lvl].spacing );
+                o_spacing( fp, curr, &lay->hx.hx_sect[hds_lvl].spacing );
                 break;
             case e_font:
-                o_font_number( fp, curr, &lay->hx.hx_sect[lvl].text_font );
+                o_font_number( fp, curr, &lay->hx.hx_sect[hds_lvl].text_font );
                 break;
             case e_number_font:
-                o_font_number( fp, curr, &lay->hx.hx_head[lvl].number_font );
+                o_font_number( fp, curr, &lay->hx.hx_head[hds_lvl].number_font );
                 break;
             case e_number_form:
-                o_number_form( fp, curr, &lay->hx.hx_head[lvl].number_form );
+                o_number_form( fp, curr, &lay->hx.hx_head[hds_lvl].number_form );
                 break;
             case e_page_position:
-                o_page_position( fp, curr, &lay->hx.hx_head[lvl].line_position );
+                o_page_position( fp, curr, &lay->hx.hx_head[hds_lvl].line_position );
                 break;
             case e_number_style:
-                o_number_style( fp, curr, &lay->hx.hx_head[lvl].number_style );
+                o_number_style( fp, curr, &lay->hx.hx_head[hds_lvl].number_style );
                 break;
             case e_page_eject:
-                o_page_eject( fp, curr, &lay->hx.hx_head[lvl].page_eject );
+                o_page_eject( fp, curr, &lay->hx.hx_head[hds_lvl].page_eject );
                 break;
             case e_line_break:
-                o_yes_no( fp, curr, &lay->hx.hx_head[lvl].line_break );
+                o_yes_no( fp, curr, &lay->hx.hx_head[hds_lvl].line_break );
                 break;
             case e_display_heading:
-                o_yes_no( fp, curr, &lay->hx.hx_head[lvl].display_heading );
+                o_yes_no( fp, curr, &lay->hx.hx_head[hds_lvl].display_heading );
                 break;
             case e_number_reset:
-                o_yes_no( fp, curr, &lay->hx.hx_head[lvl].number_reset );
+                o_yes_no( fp, curr, &lay->hx.hx_head[hds_lvl].number_reset );
                 break;
             case e_case:
-                o_case( fp, curr, &lay->hx.hx_head[lvl].hd_case );
+                o_case( fp, curr, &lay->hx.hx_head[hds_lvl].hd_case );
                 break;
             case e_align:
-                o_space_unit( fp, curr, &lay->hx.hx_head[lvl].align );
+                o_space_unit( fp, curr, &lay->hx.hx_head[hds_lvl].align );
                 break;
             default:
                 internal_err_exit( __FILE__, __LINE__ );

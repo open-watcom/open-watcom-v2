@@ -157,7 +157,7 @@ extern  condcode    getnum( getnum_block *gn );
 
 
 /* ghx.c                                */
-extern void         gen_heading( char *h_text, const char *refid, hdsrc hn_lvl, hdsrc hds_lvl );
+extern void         gen_heading( char *h_text, const char *refid, hdlvl hn_lvl, hdsrc hds_lvl );
 extern void         out_head_page( ffh_entry *in_entry, ref_entry *in_ref, unsigned in_pageno );
 
 
@@ -482,7 +482,7 @@ NO_RETURN( extern void  xx_simple_err_exit_i( msg_ids errid, int arg ) );
 NO_RETURN( extern void  xx_simple_err_exit_cc( msg_ids errid, const char *arg1, const char *arg2 ) );
 NO_RETURN( extern void  xx_source_err_exit( msg_ids errid ) );
 NO_RETURN( extern void  xx_source_err_exit_c( msg_ids errid, const char *arg ) );
-extern void         g_wng_hlevel( hdsrc hd_found, hdsrc hd_expected );
+extern void         g_wng_hlevel( hdlvl hd_found, hdlvl hd_expected );
 extern void         xx_warn( msg_ids errid );
 extern void         xx_warn_c( msg_ids errid, const char *arg );
 extern void         xx_warn_c_info( msg_ids errid, const char *arg, msg_ids warnid );

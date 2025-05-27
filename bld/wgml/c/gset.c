@@ -67,6 +67,7 @@ extern  void    gml_set( const gmltag * entry )
     value_found = false;
     subscript = SI_no_subscript;           // not subscripted
     g_scan_err = false;
+    sym.flags = SF_none;
 
     p = scandata.s;
     if( *p == '.' ) {

@@ -490,11 +490,11 @@ bool    i_number_form( const char *p, lay_attr_i lay_attr, num_form *tm )
 
     cvterr = false;
     if( strcmp( "none", lay_attr->specval ) == 0 ) {
-        *tm = num_none;
+        *tm = FORM_none;
     } else if( strcmp( "prop", lay_attr->specval ) == 0 ) {
-        *tm = num_prop;
+        *tm = FORM_prop;
     } else if( strcmp( "new", lay_attr->specval ) == 0 ) {
-        *tm = num_new;
+        *tm = FORM_new;
     } else {
         xx_line_err_exit_c( ERR_INV_ATT_VAL, p );
         /* never return */
@@ -506,11 +506,11 @@ void    o_number_form( FILE *fp, lay_attr_o lay_attr, const num_form *tm )
 {
     char    * p;
 
-    if( *tm == num_none ) {
+    if( *tm == FORM_none ) {
         p = "none";
-    } else if( *tm == num_prop ) {
+    } else if( *tm == FORM_prop ) {
         p = "prop";
-    } else if( *tm == num_new ) {
+    } else if( *tm == FORM_new ) {
         p = "new";
     } else {
         p = "???";

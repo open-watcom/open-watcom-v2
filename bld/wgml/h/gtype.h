@@ -138,6 +138,9 @@
 
 #define CHECK_FONT(f)       if((f) >= wgml_font_cnt) (f) = FONT0
 
+#define HDS2HLVL(x)         (((x) - HDS_h0) + HLVL_h0)
+#define HLVL2HDS(x)         (((x) - HLVL_h0) + HDS_h0)
+
 typedef unsigned    line_number;
 typedef uint8_t     text_space;
 typedef unsigned    units_space;
@@ -1359,7 +1362,18 @@ typedef enum {
     HDS_max         // used for sizing the hx_sect_lay_tag array
 } hdsrc;
 
-#define HDS_force_h0    (-1)
+typedef enum {
+    HLVL_h0,         // H0 tag
+    HLVL_h1,         // H1 tag
+    HLVL_h2,         // H2 tag
+    HLVL_h3,         // H3 tag
+    HLVL_h4,         // H4 tag
+    HLVL_h5,         // H5 tag
+    HLVL_h6,         // H6 tag
+    HLVL_MAX
+} hdlvl;
+
+#define HLVL_force_h0    (-1)
 
 /***************************************************************************/
 /*  Structure for storing information used to actually process and output  */
@@ -1629,7 +1643,6 @@ typedef struct proc_flags {
     unsigned        lay_specified       : 1;// LAYOUT option or :LAYOUT tag seen
     unsigned        banner              : 1;// within layout banner definition
     unsigned        banregion           : 1;// within layout banregion definition
-    unsigned        hx_level            : 3;// 0 - 6  active Hx :layout sub tag
     l_tags          lay_xxx;                // active :layout sub tag
 
     ju_enum         justify             : 8;// .ju on half off ...

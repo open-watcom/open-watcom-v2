@@ -250,40 +250,40 @@ void    lay_tochx( const gmltag * entry )
 void    put_lay_tochx( FILE *fp, layout_data * lay )
 {
     int                 k;
-    int                 lvl;
+    hdlvl               hn_lvl;
     lay_att             curr;
 
-    for( lvl = 0; lvl < 7; ++lvl ) {
+    for( hn_lvl = 0; hn_lvl < HLVL_MAX; hn_lvl++ ) {
 
 
-        fprintf( fp, ":TOCH%c\n", '0' + lvl );
+        fprintf( fp, ":TOCH%c\n", '0' + hn_lvl );
 
         for( k = 0; k < TABLE_SIZE( tochx_att ); k++ ) {
             curr = tochx_att[k];
             switch( curr ) {
             case e_group:
-                o_int8( fp, curr, &lay->tochx[lvl].group );
+                o_int8( fp, curr, &lay->tochx[hn_lvl].group );
                 break;
             case e_indent:
-                o_space_unit( fp, curr, &lay->tochx[lvl].indent );
+                o_space_unit( fp, curr, &lay->tochx[hn_lvl].indent );
                 break;
             case e_skip:
-                o_space_unit( fp, curr, &lay->tochx[lvl].skip );
+                o_space_unit( fp, curr, &lay->tochx[hn_lvl].skip );
                 break;
             case e_pre_skip:
-                o_space_unit( fp, curr, &lay->tochx[lvl].pre_skip );
+                o_space_unit( fp, curr, &lay->tochx[hn_lvl].pre_skip );
                 break;
             case e_post_skip:
-                o_space_unit( fp, curr, &lay->tochx[lvl].post_skip );
+                o_space_unit( fp, curr, &lay->tochx[hn_lvl].post_skip );
                 break;
             case e_font:
-                o_font_number( fp, curr, &lay->tochx[lvl].font );
+                o_font_number( fp, curr, &lay->tochx[hn_lvl].font );
                 break;
             case e_align:
-                o_space_unit( fp, curr, &lay->tochx[lvl].align );
+                o_space_unit( fp, curr, &lay->tochx[hn_lvl].align );
                 break;
             case e_display_in_toc:
-                o_yes_no( fp, curr, &lay->tochx[lvl].display_in_toc );
+                o_yes_no( fp, curr, &lay->tochx[hn_lvl].display_in_toc );
                 break;
                 break;
             default:

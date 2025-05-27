@@ -42,8 +42,8 @@ static  bool            ref_done;                   // true if a reference has b
 static  char            frame_line_1[CHAR_FRAME_LEN + 1]; // box top line/rule line/'character string' line
 static  char            frame_line_2[CHAR_FRAME_LEN + 1]; // box blank/middle line
 static  char            frame_line_3[CHAR_FRAME_LEN + 1]; // box bottom line
-static  int         save_indentl;               // used with TITLEP/eTITLEP
-static  int         save_indentr;               // used with TITLEP/eTITLEP
+static  int             save_indentl;               // used with TITLEP/eTITLEP
+static  int             save_indentr;               // used with TITLEP/eTITLEP
 static  ju_enum         justify_save;               // for ProcFlags.justify
 static  line_number     titlep_lineno;              // TITLEP tag line number
 static  unsigned        cur_count;                  // current number of characters copied
@@ -951,14 +951,14 @@ static void gen_index( void )
 
 static void gen_toc( void )
 {
-    bool            levels[7];              // track levels
+    bool            levels[HLVL_MAX];              // track levels
     char            buffer[NUM2STR_LENGTH + 1];
     char            postfix[NUM2STR_LENGTH + 1 + 1];
     ffh_entry   *   curr;
-    int             i;
-    int             j;
-    int             cur_level;
-    unsigned        indent[7];
+    hdlvl           hlvl;
+    hdlvl           hlvl2;
+    hdlvl           cur_level;
+    unsigned        indent[HLVL_MAX];
     unsigned        size;
 
     if( hd_list == NULL ) return;       // no hd_list, no TOC
@@ -985,17 +985,17 @@ static void gen_toc( void )
 
     /* Initialize levels and indent values */
 
-    for( i = 0; i < 7; i++ ) {
-        levels[i] = false;
-        indent[i] = 0;
+    for( hlvl = 0; hlvl < HLVL_MAX; hlvl++ ) {
+        levels[hlvl] = false;
+        indent[hlvl] = 0;
     }
-    levels[0] = true;       // H0 is active at start
+    levels[HLVL_h0] = true;       // H0 is active at start
 
     /* Get converted indent values, which are cumulative */
 
-    for( i = 0; i < 7; i++ ) {
-        for( j = i; j < 7; j++ ) {
-            indent[j] += conv_hor_unit( &layout_work.tochx[i].indent, g_curr_font );
+    for( hlvl = 0; hlvl < HLVL_MAX; hlvl++ ) {
+        for( hlvl2 = hlvl; hlvl2 < HLVL_MAX; hlvl2++ ) {
+            indent[hlvl2] += conv_hor_unit( &layout_work.tochx[hlvl].indent, g_curr_font );
         }
     }
 
@@ -1009,9 +1009,9 @@ static void gen_toc( void )
     ProcFlags.keep_left_margin = true;  // keep all indents while outputting text
     for( curr = hd_list; curr != NULL; curr = curr->next ) {
         cur_level = curr->number;
-        for( i = 0; i < 7; i++ ) {
-            if( i > cur_level ) {       // all lower levels are inactive
-                levels[i] = false;
+        for( hlvl = 0; hlvl < HLVL_MAX; hlvl++ ) {
+            if( hlvl > cur_level ) {    // all lower levels are inactive
+                levels[hlvl] = false;
             }
         }
         if( cur_level < layout_work.toc.toc_levels ) {
@@ -1147,7 +1147,7 @@ void start_doc_sect( void )
     char            *   h_text;
     doc_section         ds;
     hdsrc               hds_lvl;
-    int                 k;
+    hdlvl               hlvl;
     page_ej             page_e;         // page eject tag
     unsigned            page_c;         // page columns
     text_space          page_s;         // page spacing
@@ -1193,7 +1193,7 @@ void start_doc_sect( void )
         nest_cb->p_stack->lineno = titlep_lineno; // correct line number
         break;
     case DSECT_abstract :
-        hd_level = HDS_h1;              // H0 and H1 treated as already present
+        hd_level = HLVL_h1;              // H0 and H1 treated as already present
         page_c = layout_work.abstract.columns;
         page_e = layout_work.abstract.page_eject;
         page_r = layout_work.abstract.page_reset;
@@ -1206,7 +1206,7 @@ void start_doc_sect( void )
         lvl_reset = false;
         break;
     case DSECT_preface :
-        hd_level = HDS_h1;              // H0 and H1 treated as already present
+        hd_level = HLVL_h1;              // H0 and H1 treated as already present
         page_c = layout_work.preface.columns;
         page_e = layout_work.preface.page_eject;
         page_r = layout_work.preface.page_reset;
@@ -1219,7 +1219,7 @@ void start_doc_sect( void )
         lvl_reset = false;
         break;
     case DSECT_body :
-        hd_level = HDS_force_h0;        // force H0 to be used
+        hd_level = HLVL_force_h0;        // force H0 to be used
         page_c = layout_work.body.columns;
         page_e = layout_work.body.page_eject;
         page_r = layout_work.body.page_reset;
@@ -1232,7 +1232,7 @@ void start_doc_sect( void )
         lvl_reset = true;
         break;
     case DSECT_appendix :
-        hd_level = HDS_h0;              // H0 treated as already present
+        hd_level = HLVL_h0;              // H0 treated as already present
         page_c = layout_work.appendix.columns;
         page_e = layout_work.appendix.section_eject;
         page_r = layout_work.appendix.page_reset;
@@ -1244,7 +1244,7 @@ void start_doc_sect( void )
         lvl_reset = true;
         break;
     case DSECT_backm :
-        hd_level = HDS_h0;              // H0 treated as already present
+        hd_level = HLVL_h0;              // H0 treated as already present
         page_c = layout_work.backm.columns;
         page_e = layout_work.backm.page_eject;
         page_r = layout_work.backm.page_reset;
@@ -1356,11 +1356,11 @@ void start_doc_sect( void )
     /* Reset all heading numbers for ABSTRACT, BODY, APPENDIX and BACKM */
 
     if( lvl_reset ) {
-        for( k = 0; k < HDS_appendix; k++ ) {
-            hd_nums[k].headn = 0;       // reset all levels
-            hd_nums[k].hnumstr[0] = '\0';
-            if( hd_nums[k].hnumsub != NULL ) {
-                *(hd_nums[k].hnumsub->value) = '\0';
+        for( hlvl = 0; hlvl < HLVL_MAX; hlvl++ ) {
+            hd_nums[hlvl].headn = 0;       // reset all levels
+            hd_nums[hlvl].hnumstr[0] = '\0';
+            if( hd_nums[hlvl].hnumsub != NULL ) {
+                *(hd_nums[hlvl].hnumsub->value) = '\0';
             }
         }
     }
@@ -1371,7 +1371,7 @@ void start_doc_sect( void )
         ProcFlags.concat = true;
         justify_save = ProcFlags.justify;
         ProcFlags.justify = JUST_off;
-        gen_heading( h_text, NULL, 0, hds_lvl );
+        gen_heading( h_text, NULL, HLVL_h0, hds_lvl );
         g_indentl = 0;                  // reset for section body
         ProcFlags.concat = concat_save;
         ProcFlags.justify = justify_save;

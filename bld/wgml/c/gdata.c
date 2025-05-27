@@ -295,21 +295,21 @@ void init_pass_data( void )
     ProcFlags.ps_device = ps_save;
     ProcFlags.wh_device = wh_save;
 
-    hd_nums[HDS_h0].headn = 0;          // reset used header headn numbers (numeric)
-    hd_nums[HDS_h1].headn = 0;
-    hd_nums[HDS_h2].headn = 0;
-    hd_nums[HDS_h3].headn = 0;
-    hd_nums[HDS_h4].headn = 0;
-    hd_nums[HDS_h5].headn = 0;
-    hd_nums[HDS_h6].headn = 0;
+    hd_nums[HLVL_h0].headn = 0;          // reset used header headn numbers (numeric)
+    hd_nums[HLVL_h1].headn = 0;
+    hd_nums[HLVL_h2].headn = 0;
+    hd_nums[HLVL_h3].headn = 0;
+    hd_nums[HLVL_h4].headn = 0;
+    hd_nums[HLVL_h5].headn = 0;
+    hd_nums[HLVL_h6].headn = 0;
 
-    hd_nums[HDS_h0].hnumstr[0] = '\0';  // reset used header headn numbers (char)
-    hd_nums[HDS_h1].hnumstr[0] = '\0';
-    hd_nums[HDS_h2].hnumstr[0] = '\0';
-    hd_nums[HDS_h3].hnumstr[0] = '\0';
-    hd_nums[HDS_h4].hnumstr[0] = '\0';
-    hd_nums[HDS_h5].hnumstr[0] = '\0';
-    hd_nums[HDS_h6].hnumstr[0] = '\0';
+    hd_nums[HLVL_h0].hnumstr[0] = '\0';  // reset used header headn numbers (char)
+    hd_nums[HLVL_h1].hnumstr[0] = '\0';
+    hd_nums[HLVL_h2].hnumstr[0] = '\0';
+    hd_nums[HLVL_h3].hnumstr[0] = '\0';
+    hd_nums[HLVL_h4].hnumstr[0] = '\0';
+    hd_nums[HLVL_h5].hnumstr[0] = '\0';
+    hd_nums[HLVL_h6].hnumstr[0] = '\0';
 
     /* The heading variables are also used to set the corresponding keywords */
 
@@ -323,59 +323,59 @@ void init_pass_data( void )
                                                         &t_page.botheadsub );
 
         add_symvar_addr( global_dict, "$head0", "", 0, SI_no_subscript, SF_none,
-                                                        &hd_nums[HDS_h0].headsub );
+                                                        &hd_nums[HLVL_h0].headsub );
         add_symvar_addr( global_dict, "$head1", "", 0, SI_no_subscript, SF_none,
-                                                        &hd_nums[HDS_h1].headsub );
+                                                        &hd_nums[HLVL_h1].headsub );
         add_symvar_addr( global_dict, "$head2", "", 0, SI_no_subscript, SF_none,
-                                                        &hd_nums[HDS_h2].headsub );
+                                                        &hd_nums[HLVL_h2].headsub );
         add_symvar_addr( global_dict, "$head3", "", 0, SI_no_subscript, SF_none,
-                                                        &hd_nums[HDS_h3].headsub );
+                                                        &hd_nums[HLVL_h3].headsub );
         add_symvar_addr( global_dict, "$head4", "", 0, SI_no_subscript, SF_none,
-                                                        &hd_nums[HDS_h4].headsub );
+                                                        &hd_nums[HLVL_h4].headsub );
         add_symvar_addr( global_dict, "$head5", "", 0, SI_no_subscript, SF_none,
-                                                        &hd_nums[HDS_h5].headsub );
+                                                        &hd_nums[HLVL_h5].headsub );
         add_symvar_addr( global_dict, "$head6", "", 0, SI_no_subscript, SF_none,
-                                                        &hd_nums[HDS_h6].headsub );
+                                                        &hd_nums[HLVL_h6].headsub );
 
         add_symvar_addr( global_dict, "$hnum0", "", 0, SI_no_subscript, SF_none,
-                                                        &hd_nums[HDS_h0].hnumsub );
+                                                        &hd_nums[HLVL_h0].hnumsub );
         add_symvar_addr( global_dict, "$hnum1", "", 0, SI_no_subscript, SF_none,
-                                                        &hd_nums[HDS_h1].hnumsub );
+                                                        &hd_nums[HLVL_h1].hnumsub );
         add_symvar_addr( global_dict, "$hnum2", "", 0, SI_no_subscript, SF_none,
-                                                        &hd_nums[HDS_h2].hnumsub );
+                                                        &hd_nums[HLVL_h2].hnumsub );
         add_symvar_addr( global_dict, "$hnum3", "", 0, SI_no_subscript, SF_none,
-                                                        &hd_nums[HDS_h3].hnumsub );
+                                                        &hd_nums[HLVL_h3].hnumsub );
         add_symvar_addr( global_dict, "$hnum4", "", 0, SI_no_subscript, SF_none,
-                                                        &hd_nums[HDS_h4].hnumsub );
+                                                        &hd_nums[HLVL_h4].hnumsub );
         add_symvar_addr( global_dict, "$hnum5", "", 0, SI_no_subscript, SF_none,
-                                                        &hd_nums[HDS_h5].hnumsub );
+                                                        &hd_nums[HLVL_h5].hnumsub );
         add_symvar_addr( global_dict, "$hnum6", "", 0, SI_no_subscript, SF_none,
-                                                        &hd_nums[HDS_h6].hnumsub );
+                                                        &hd_nums[HLVL_h6].hnumsub );
 
         add_symvar_addr( global_dict, "$htext0", "", 0, SI_no_subscript, SF_none,
-                                                        &hd_nums[HDS_h0].htextsub );
+                                                        &hd_nums[HLVL_h0].htextsub );
         add_symvar_addr( global_dict, "$htext1", "", 0, SI_no_subscript, SF_none,
-                                                        &hd_nums[HDS_h1].htextsub );
+                                                        &hd_nums[HLVL_h1].htextsub );
         add_symvar_addr( global_dict, "$htext2", "", 0, SI_no_subscript, SF_none,
-                                                        &hd_nums[HDS_h2].htextsub );
+                                                        &hd_nums[HLVL_h2].htextsub );
         add_symvar_addr( global_dict, "$htext3", "", 0, SI_no_subscript, SF_none,
-                                                        &hd_nums[HDS_h3].htextsub );
+                                                        &hd_nums[HLVL_h3].htextsub );
         add_symvar_addr( global_dict, "$htext4", "", 0, SI_no_subscript, SF_none,
-                                                        &hd_nums[HDS_h4].htextsub );
+                                                        &hd_nums[HLVL_h4].htextsub );
         add_symvar_addr( global_dict, "$htext5", "", 0, SI_no_subscript, SF_none,
-                                                        &hd_nums[HDS_h5].htextsub );
+                                                        &hd_nums[HLVL_h5].htextsub );
         add_symvar_addr( global_dict, "$htext6", "", 0, SI_no_subscript, SF_none,
-                                                        &hd_nums[HDS_h6].htextsub );
+                                                        &hd_nums[HLVL_h6].htextsub );
 
         /* These never change, so can be done on the first pass only */
 
-        strcpy( hd_nums[HDS_h0].tag, "H0");
-        strcpy( hd_nums[HDS_h1].tag, "H1");
-        strcpy( hd_nums[HDS_h2].tag, "H2");
-        strcpy( hd_nums[HDS_h3].tag, "H3");
-        strcpy( hd_nums[HDS_h4].tag, "H4");
-        strcpy( hd_nums[HDS_h5].tag, "H5");
-        strcpy( hd_nums[HDS_h6].tag, "H6");
+        strcpy( hd_nums[HLVL_h0].tag, "H0");
+        strcpy( hd_nums[HLVL_h1].tag, "H1");
+        strcpy( hd_nums[HLVL_h2].tag, "H2");
+        strcpy( hd_nums[HLVL_h3].tag, "H3");
+        strcpy( hd_nums[HLVL_h4].tag, "H4");
+        strcpy( hd_nums[HLVL_h5].tag, "H5");
+        strcpy( hd_nums[HLVL_h6].tag, "H6");
 
     } else {
 
@@ -383,7 +383,7 @@ void init_pass_data( void )
 
         t_page.topheadsub->value[0] = '\0';
         t_page.botheadsub->value[0] = '\0';
-        for( i = HDS_h0; i < HDS_appendix; i++ ) {
+        for( i = 0; i < HLVL_MAX; i++ ) {
             hd_nums[i].headsub->value[0] = '\0';
             hd_nums[i].hnumsub->value[0] = '\0';
             hd_nums[i].htextsub->value[0] = '\0';

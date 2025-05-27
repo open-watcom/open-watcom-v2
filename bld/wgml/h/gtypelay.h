@@ -102,9 +102,9 @@ typedef struct def_frame {
 /***************************************************************************/
 
 typedef enum num_form {
-    num_none,
-    num_prop,
-    num_new
+    FORM_none,
+    FORM_prop,
+    FORM_new
 } num_form;
 
 typedef enum page_ej {
@@ -829,7 +829,7 @@ typedef struct layout_data {
     ix_lay_tag          ix[3];
     toc_lay_tag         toc;
     tocpgnum_lay_tag    tocpgnum;
-    tochx_lay_tag       tochx[7];
+    tochx_lay_tag       tochx[HLVL_MAX];
     figlist_lay_tag     figlist;
     tocpgnum_lay_tag    flpgnum;
     titlep_lay_tag      titlep;
