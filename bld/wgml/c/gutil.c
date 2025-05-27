@@ -497,7 +497,6 @@ static bool su_layout_special( su *in_su )
     in_su->su_dec      = 0;
     in_su->su_inch     = 0;
     in_su->su_mm       = 0;
-    in_su->su_relative = false;
     return( true );
 }
 
@@ -532,6 +531,8 @@ bool att_val_to_su( su *in_su, bool pos, att_val_type *attr_val, bool specval )
     strcpy( ps, attr_val->specval );
 
     in_su->su_u = SU_undefined;
+    in_su->su_relative = false;
+
     if( *ps == '+' ) {                      // not allowed with tags
         xx_line_err_exit_c( ERR_INV_ATT_VAL, attr_val->tok.s );
         /* never return */
@@ -554,7 +555,6 @@ bool att_val_to_su( su *in_su, bool pos, att_val_type *attr_val, bool specval )
         xx_line_err_exit_c( ERR_INV_ATT_VAL, attr_val->tok.s );
         /* never return */
     }
-    in_su->su_relative = false;             // no relative positioning with tags
 
     if( specval && su_layout_special( in_su ) )
         return( false );
@@ -667,6 +667,8 @@ bool lay_init_su( const char *p, su *in_su )
     ps[i] = '\0';
 
     in_su->su_u = SU_undefined;
+    in_su->su_relative = false;
+
     if( *ps == '+' ) {              // not allowed with tags
         xx_line_err_exit_c( ERR_INV_ATT_VAL, pa );
         /* never return */
@@ -685,7 +687,6 @@ bool lay_init_su( const char *p, su *in_su )
         xx_line_err_exit_c( ERR_INV_ATT_VAL, pa );
         /* never return */
     }
-    in_su->su_relative = false;     // no relative positioning with tags
 
     if( su_layout_special( in_su ) )
         return( false );

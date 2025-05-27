@@ -174,6 +174,7 @@ void find_create_ix_e_entry( ix_h_blk *ixhwork, char *ref, unsigned len,
     ix_e_blk    *       ixewk;
     text_line   *       cur_tl;
 
+    ixework = NULL;
     switch( type ) {
     case pgmajor :
     case pgpageno :
@@ -309,6 +310,7 @@ void eol_index_page( eol_ix * eol_index, unsigned page_nr )
     ix_e_blk    *       ixework;
     ix_e_blk    *       ixewk;
 
+    ixework = NULL;
     while( eol_index != NULL ) {
         switch( eol_index->type ) {
         case pgmajor :

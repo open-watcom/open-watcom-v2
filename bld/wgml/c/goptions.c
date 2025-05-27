@@ -37,29 +37,29 @@
 
 
 typedef struct option {
-    char        *option;            // the option
-    unsigned    optionLen;          // length of option
-    unsigned    minLength;          // minimum abbreviation
-    int         value;              // sometimes value to set option to
-    void        (*function)( struct option *optentry );
-    unsigned    parmcount;          // expected number of parms
+    char            *option;            // the option
+    unsigned        optionLen;          // length of option
+    unsigned        minLength;          // minimum abbreviation
+    int             value;              // sometimes value to set option to
+    void            (*function)( struct option *optentry );
+    unsigned        parmcount;          // expected number of parms
 } option;
 
 typedef struct cmd_tok {
-    struct cmd_tok  *   nxt;
-    unsigned            toklen;
-    bool                bol;
-    char                token[1];       // variable length
+    struct cmd_tok  *nxt;
+    unsigned        toklen;
+    bool            bol;
+    char            token[1];           // variable length
 } cmd_tok;
 
-static bool         is_option( void ); // used before defined
-static char     *   buffers[MAX_NESTING];
-static char     *   file_names[MAX_NESTING];
-static char     *   opt_parm;
-static char     *   opt_scan_ptr;
-static cmd_tok  *   cmd_tokens[MAX_NESTING];
-static cmd_tok  *   sav_tokens[MAX_NESTING];
-static cmd_tok  *   tokennext;
+static bool         is_option( void );  // used before defined
+static char         *buffers[MAX_NESTING];
+static char         *file_names[MAX_NESTING];
+static char         *opt_parm;
+static char         *opt_scan_ptr;
+static cmd_tok      *cmd_tokens[MAX_NESTING];
+static cmd_tok      *sav_tokens[MAX_NESTING];
+static cmd_tok      *tokennext;
 static int          opt_value;
 static unsigned     level;              // include level 0 = cmdline
 
@@ -71,15 +71,11 @@ static unsigned     level;              // include level 0 = cmdline
 
 static void free_tokens( int lvl )
 {
-    cmd_tok     *   tok;
-    cmd_tok     *   wk;
+    cmd_tok         *tok;
 
-    tok = cmd_tokens[lvl];
-    cmd_tokens[lvl] = NULL;
-    while( tok != NULL ) {
-        wk = tok->nxt;
+    while( (tok = cmd_tokens[lvl]) != NULL ) {
+        cmd_tokens[lvl] = tok->nxt;
         mem_free( tok );
-        tok = wk;
     }
 }
 
@@ -200,7 +196,7 @@ static void bad_cmd_line_err_exit( msg_ids msg, const char *str, char n )
 /*  read an option file into memory                                        */
 /***************************************************************************/
 
-static char * read_indirect_file( FILE *fp )
+static void read_indirect_file( FILE *fp )
 {
     char        *buf;
     char        ch;
@@ -230,7 +226,8 @@ static char * read_indirect_file( FILE *fp )
         }
         ++str;
     }
-    return( buf );
+    split_tokens( buf );
+    mem_free( buf );
 }
 
 /***************************************************************************/
@@ -1121,43 +1118,38 @@ static void set_OPTFile( option * opt )
     if( attrwork[0] ) {
         xx_warn_cc( WNG_FILEATTR_IGNORED, attrwork, token_buf );
     }
-    if( level < MAX_NESTING ) {
-        sav_tokens[level] = tokennext->nxt;
-
-        buffers[level + 1] = NULL;
-        file_names[level + 1] = NULL;
-        fp = search_file_in_dirs( token_buf, OPT_EXT, "", DSEQ_opt_file );
-        if( fp != NULL ) {
-            if( level > 0 ) {
-                int     k;
-
-                for( k = level; k > 0; k-- ) {
-                    if( stricmp( try_file_name, file_names[k] ) == 0 ) {
-                        fclose( fp );
-                        xx_simple_err_exit_c( ERR_RECURSIVE_OPTION, try_file_name );
-                        /* never return */
-                    }
-                }
-            }
-            file_names[++level] = mem_strdup( try_file_name );
-            str = read_indirect_file( fp );
-            split_tokens( str );
-            mem_free( str );
-            fclose( fp );
-            tokennext = cmd_tokens[level];
-        } else {
-            xx_simple_err_exit_c( ERR_FILE_NOT_FOUND, token_buf );
-            /* never return */
-        }
-        if( str == NULL ) {
-            if( file_names[level] != NULL ) {
-                mem_free( file_names[level] );
-            }
-            tokennext = sav_tokens[level];
-        }
-    } else {                        // max nesting level exceeded
+    if( level >= MAX_NESTING ) {
         xx_simple_err_exit_c( ERR_MAX_NESTING_OPT, token_buf );
         /* never return */
+    }
+    sav_tokens[level] = tokennext->nxt;
+    buffers[level + 1] = NULL;
+    file_names[level + 1] = NULL;
+    fp = search_file_in_dirs( token_buf, OPT_EXT, "", DSEQ_opt_file );
+    if( fp == NULL ) {
+        xx_simple_err_exit_c( ERR_FILE_NOT_FOUND, token_buf );
+        /* never return */
+    }
+    if( level > 0 ) {
+        int     k;
+
+        for( k = level; k > 0; k-- ) {
+            if( stricmp( try_file_name, file_names[k] ) == 0 ) {
+                fclose( fp );
+                xx_simple_err_exit_c( ERR_RECURSIVE_OPTION, try_file_name );
+                /* never return */
+            }
+        }
+    }
+    file_names[++level] = mem_strdup( try_file_name );
+    read_indirect_file( fp );
+    fclose( fp );
+    tokennext = cmd_tokens[level];
+    if( str == NULL ) {
+        if( file_names[level] != NULL ) {
+            mem_free( file_names[level] );
+        }
+        tokennext = sav_tokens[level];
     }
     tokennext = tokennext->nxt;
 }

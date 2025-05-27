@@ -136,6 +136,8 @@
 
 #define TABLE_SIZE(x)       (sizeof( (x) ) / sizeof( (x)[0] ))
 
+#define CHECK_FONT(f)       if((f) >= wgml_font_cnt) (f) = FONT0
+
 typedef unsigned    line_number;
 typedef uint8_t     text_space;
 typedef unsigned    units_space;

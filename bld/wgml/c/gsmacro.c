@@ -223,6 +223,7 @@ void    add_macro_parms( char * p )
 
         /* remove trailing spaces if appropriate */
 
+        *starbuf = '\0';
         p = pa;                         // restore start position
         o_len = strlen( p );
         len = o_len;

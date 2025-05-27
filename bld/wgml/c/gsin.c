@@ -94,6 +94,7 @@ void    scr_in( void )
     su              indentwork;
     int             newindentl;
     int             newindentr;
+    bool            su_relative;
 
     static  int oldindent;
 
@@ -102,18 +103,17 @@ void    scr_in( void )
     cwcurr[2] = 'n';
     cwcurr[3] = '\0';
 
+    su_relative = false;
     p = scandata.s;
     SkipSpaces( p );                    // next word start
     pa = p;
     SkipNonSpaces( p );                 // end of word
+    newindentl = 0;
+    newindentr = 0;
     len = p - pa;
-    if( len == 0 ) {                    // omitted means reset to default
-        newindentl = 0;
-        newindentr = 0;
-    } else {
-        newindentl = g_indentl;         // prepare keeping old values
-        newindentr = g_indentr;
+    if( len > 0 ) {                     // omitted means reset to default
         if( *pa == '*' ) {              // keep old indent value
+            newindentl = g_indentl;     // prepare keeping old values
             p = pa + 1;
         } else {
             p = pa;
@@ -122,12 +122,13 @@ void    scr_in( void )
                 xx_line_err_exit_c( ERR_SPC_NOT_VALID, pa );
                 /* never return */
             }
+            su_relative = indentwork.su_relative;
             newindentl = round_indent( &indentwork );
         }
         SkipSpaces( p );
         if( *p == '\0' ) {              // zero right indent
-            newindentr = 0;
         } else if( *p == '*' ) {        // keep old indentr value
+            newindentr = g_indentr;
             p++;
         } else {
             pa = p;
@@ -140,9 +141,7 @@ void    scr_in( void )
             /*  indent right is always relative or 0 for reset to default  */
             /***************************************************************/
             if( indentwork.su_whole + indentwork.su_dec != 0) {
-                newindentr += round_indent( &indentwork );
-            } else {
-                newindentr = 0;
+                newindentr = g_indentr + round_indent( &indentwork );
             }
         }
     }
@@ -151,7 +150,7 @@ void    scr_in( void )
     /*
      * Reset margin(s) to reflect the current IN offsets
      */
-    if( indentwork.su_relative ) {
+    if( su_relative ) {
         if( ProcFlags.in_reduced ) {
             t_page.cur_left = oldindent;
         }

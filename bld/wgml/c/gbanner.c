@@ -734,6 +734,7 @@ static void out_ban_common( banner_lay_tag * ban, bool top )
     unsigned            cur_v_pos;
     unsigned            text_width;
 
+    cur_line = NULL;
     ban_line.first = NULL;
 
     /***************************************************************************/

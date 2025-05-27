@@ -67,6 +67,7 @@ void    gml_binclude( const gmltag * entry )
 
     file[0] = '\0';
     rt_buff[0] = '\0';
+    depth = 0;
     p = scandata.s;
     if( *p == '.' ) {
         /* already at tag end */
