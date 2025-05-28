@@ -155,8 +155,7 @@ static void draw_box( doc_el_group * in_group )
 
         /* Process lines inside figure */
 
-        cur_doc_el = sav_doc_el;
-        while( cur_doc_el != NULL ) {
+        for( cur_doc_el = sav_doc_el; cur_doc_el != NULL; cur_doc_el = cur_doc_el->next ) {
             switch( cur_doc_el->type ) {
             // add code for other element types as appropriate
             case ELT_binc:
@@ -213,7 +212,6 @@ static void draw_box( doc_el_group * in_group )
                 internal_err_exit( __FILE__, __LINE__ );
                 /* never return */
             }
-            cur_doc_el = cur_doc_el->next;
         }
 
         /* Finalize and insert the bottom box line */
@@ -275,8 +273,8 @@ static void draw_box( doc_el_group * in_group )
 
 static void insert_frame_line( void )
 {
-    doc_element *   h_line_el;
-    int             i;
+    doc_element     *h_line_el;
+    unsigned        i;
     unsigned        cur_count;
     unsigned        str_count;
     unsigned        cur_limit;  // number of whole copies of frame.string that will fit into line.buff
@@ -592,17 +590,20 @@ void gml_fig( const gmltag * entry )
 
     /* insert_frame_line() uses width and nest_cb->left_indent */
 
-    if( (place != top_place) &&
-            ((frame.type == rule_frame) || (frame.type == char_frame)) ) {
-        if( (frame.type == rule_frame) && (bin_driver->hline.text != NULL)
-                && (place == inline_place) ) {
+    if( (place != top_place)
+      && ((frame.type == rule_frame)
+      || (frame.type == char_frame)) ) {
+        if( (frame.type == rule_frame)
+          && (bin_driver->hline.text != NULL)
+          && (place == inline_place) ) {
             g_subs_skip += wgml_fonts[FONT0].line_height;   // this is actually the depth used by the HLINE
             g_top_skip += wgml_fonts[FONT0].line_height;    // for use if fig moved to top of next column
         }
         insert_frame_line();
     }
 
-    if( (frame.type == none_frame) && (place != bottom_place) ) {
+    if( (frame.type == none_frame)
+      && (place != bottom_place) ) {
         if( depth > g_subs_skip ) {
             g_blank_units_lines = depth;
             g_subs_skip = 0;
@@ -655,7 +656,8 @@ void gml_fig( const gmltag * entry )
     t_page.max_width = width + nest_cb->left_indent;    // page/col width is not fig width
 
     if( width > t_page.last_pane->col_width ) {
-        if( (t_page.last_pane->col_count > 1) && (place != top_place) ) {
+        if( (t_page.last_pane->col_count > 1)
+          && (place != top_place) ) {
             xx_line_err_exit_c( ERR_INV_WIDTH_FIG_2, attr_val.tok.s );
             /* never return */
         } else if( t_page.last_pane->col_count == 1 ) {
@@ -664,7 +666,8 @@ void gml_fig( const gmltag * entry )
         }
     }
 
-    if( (t_page.cur_left >= t_page.max_width) || (t_page.cur_left >= g_page_right_org) ) {
+    if( (t_page.cur_left >= t_page.max_width)
+      || (t_page.cur_left >= g_page_right_org) ) {
         if( frame.type == none_frame ) {
             xx_line_err_exit_c( ERR_INV_MARGINS_1, attr_val.tok.s );
         } else {
@@ -692,7 +695,8 @@ void gml_fig( const gmltag * entry )
     t_page.cur_width = t_page.cur_left;
     ProcFlags.keep_left_margin = true;      // keep special indent
 
-    if( !ProcFlags.reprocess_line && *p != '\0' ) {
+    if( !ProcFlags.reprocess_line
+      && *p != '\0' ) {
         SkipDot( p );                       // possible tag end
         if( *p != '\0' ) {
             process_text( p, g_curr_font);  // if text follows
@@ -753,8 +757,8 @@ void gml_efig( const gmltag * entry )
     /*       but the test for "1" must be the font line height         */
     /*******************************************************************/
 
-    if( (g_post_skip == 0) ||
-            (g_post_skip == wgml_fonts[layout_work.fig.font].line_height) ) {
+    if( (g_post_skip == 0)
+      || (g_post_skip == wgml_fonts[layout_work.fig.font].line_height) ) {
         if( *p != '\0' ) {
             g_post_skip = wgml_fonts[FONT0].line_height;
         }
@@ -765,23 +769,27 @@ void gml_efig( const gmltag * entry )
         t_doc_el_group->post_skip = g_post_skip;
     }
 
-    if( (place != bottom_place) &&
-            ((frame.type == rule_frame) || (frame.type == char_frame)) ) {
-        if( (frame.type == rule_frame) && (bin_driver->hline.text != NULL) ) {
+    if( (place != bottom_place)
+      && ((frame.type == rule_frame)
+      || (frame.type == char_frame)) ) {
+        if( (frame.type == rule_frame)
+          && (bin_driver->hline.text != NULL) ) {
             g_subs_skip += wgml_fonts[layout_work.fig.font].line_height; // this is actually the depth used by the HLINE
         }
         insert_frame_line();
     }
 
-    if( (place == inline_place) &&
-            (frame.type == box_frame) && (bin_driver->dbox.text != NULL) ) {
+    if( (place == inline_place)
+      && (frame.type == box_frame)
+      && (bin_driver->dbox.text != NULL) ) {
         t_doc_el_group->first->subs_skip += wgml_fonts[FONT0].line_height;
         t_doc_el_group->depth += wgml_fonts[FONT0].line_height;
     }
 
     ProcFlags.skips_valid = false;      // activate post_skip for next element
 
-    if( (*figrefid != '\0') && !figcap_done ) {  // FIG id requires FIGCAP
+    if( (*figrefid != '\0')             // FIG id requires FIGCAP
+      && !figcap_done ) {
         xx_err_exit( ERR_FIG_ID_CAP );
         /* never return */
     }
@@ -809,8 +817,7 @@ void gml_efig( const gmltag * entry )
                 } else {
                     bias = 0;
                 }
-                if( (cur_doc_el_group->depth + t_page.cur_depth + bias)
-                        > t_page.max_depth ) {
+                if( (cur_doc_el_group->depth + t_page.cur_depth + bias) > t_page.max_depth ) {
 
                     /* the block won't fit in this column */
 
@@ -873,7 +880,8 @@ void gml_efig( const gmltag * entry )
                                                             - (new_group->depth + bias) );
                                 next_el = cur_el->next;
                                 cur_el->next = NULL;
-                                if( splittable && (next_el != NULL) ) {     // cur_el was split
+                                if( splittable
+                                  && (next_el != NULL) ) {     // cur_el was split
                                     if( new_group->first == NULL ) {
                                         new_group->first = cur_el;
                                     } else {
@@ -961,14 +969,15 @@ void gml_efig( const gmltag * entry )
 
             /* box drawn by dbox requires special handling */
 
-            if( (frame.type == box_frame)
-                    && (bin_driver->dbox.text != NULL) ) {
+            if( (frame.type == box_frame )
+              && (bin_driver->dbox.text != NULL) ) {
                 cur_doc_el_group->first->blank_lines = wgml_fonts[FONT0].line_height; // this is actually the depth used by the HLINE
             }
 
             /* top rule in a bottom fig requires special handling */
 
-            if( (place == bottom_place) && (frame.type == rule_frame) ) {
+            if( (place == bottom_place)
+              && (frame.type == rule_frame) ) {
                 cur_doc_el_group->first->subs_skip = wgml_fonts[FONT0].line_height; // this is actually the depth used by the HLINE
                 cur_doc_el_group->depth += wgml_fonts[FONT0].line_height; // this is actually the depth used by the HLINE
             }
@@ -1025,7 +1034,8 @@ void gml_efig( const gmltag * entry )
             /* copied                                                   */
             /************************************************************/
 
-            if( (page_pred > (g_page + 1)) && (place == top_place) ) {
+            if( (page_pred > (g_page + 1))
+              && (place == top_place) ) {
                 cur_doc_el_group->post_skip = raw_p_skip;
             }
         }
@@ -1061,7 +1071,9 @@ void gml_efig( const gmltag * entry )
 
     g_scan_err = false;
     if( *p != '\0' ) {
-        if( !input_cbs->hidden_head->ip_start && (*(p + 1) == '\0') && (*p == CONT_char) ) { // text is continuation character only
+        if( !input_cbs->hidden_head->ip_start
+          && (*(p + 1) == '\0')
+          && (*p == CONT_char) ) {      // text is continuation character only
 //            if( &layout_work.fig.post_skip != NULL ) {
                 g_post_skip = conv_vert_unit( &layout_work.fig.post_skip, g_text_spacing, layout_work.fig.font );
 //            } else {
