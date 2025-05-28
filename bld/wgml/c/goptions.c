@@ -883,7 +883,7 @@ static void set_font( option * opt )
 
 static void set_layout( option * opt )
 {
-    char            attrwork[MAX_FILE_ATTR];
+    char            attrwork[MAX_FILE_ATTR + 1];
     unsigned        len;
     struct laystack *laywk;
 
@@ -899,8 +899,8 @@ static void set_layout( option * opt )
     laywk->layfn[len] = '\0';
     laywk->next = NULL;
 
-    split_attr_file( laywk->layfn, attrwork, sizeof( attrwork ) );
-    if( attrwork[0] ) {
+    split_attr_file( laywk->layfn, attrwork, sizeof( attrwork ) - 1 );
+    if( attrwork[0] != '\0' ) {
         xx_warn_cc( WNG_FILEATTR_IGNORED, attrwork, laywk->layfn );
     }
     if( lay_files == NULL ) {       // first file
@@ -918,7 +918,7 @@ static void set_layout( option * opt )
 
 static void set_outfile( option * opt )
 {
-    char    attrwork[MAX_FILE_ATTR];
+    char    attrwork[MAX_FILE_ATTR + 1];
 
     if( tokennext == NULL
       || tokennext->bol
@@ -928,7 +928,7 @@ static void set_outfile( option * opt )
     }
     out_file = mem_tokdup( tokennext->token, tokennext->toklen );
 
-    split_attr_file( out_file, attrwork, sizeof( attrwork ) );
+    split_attr_file( out_file, attrwork, sizeof( attrwork ) - 1 );
     if( attrwork[0] != '\0' ) {
         out_file_attr = mem_strdup( attrwork );
     } else {
@@ -1095,7 +1095,7 @@ static void set_warning( option * opt )
 
 static void set_OPTFile( option * opt )
 {
-    char        attrwork[MAX_FILE_ATTR];
+    char        attrwork[MAX_FILE_ATTR + 1];
     char        *str;
     unsigned    len;
     FILE        *fp;
@@ -1114,8 +1114,8 @@ static void set_OPTFile( option * opt )
 
     g_info_research( INF_RECOGNIZED_XXX, "option file", str );
     strcpy( token_buf, str );
-    split_attr_file( token_buf, attrwork, sizeof( attrwork ) );
-    if( attrwork[0] ) {
+    split_attr_file( token_buf, attrwork, sizeof( attrwork ) - 1 );
+    if( attrwork[0] != '\0' ) {
         xx_warn_cc( WNG_FILEATTR_IGNORED, attrwork, token_buf );
     }
     if( level >= MAX_NESTING ) {
@@ -1398,7 +1398,7 @@ static option GML_new_Options[] =
 /*  split (t:200)Filename    into t:200 and Filename                       */
 /***************************************************************************/
 
-void split_attr_file( char * filename , char * attr, unsigned attrlen )
+void split_attr_file( char *filename , char *attr, unsigned attrlen )
 {
     char        *fn;
     char        *p;
@@ -1407,14 +1407,13 @@ void split_attr_file( char * filename , char * attr, unsigned attrlen )
     fn = filename;
     p = attr;
     if( *fn == '(' ) {                  // attribute infront of filename
-        k = 0;
-        while( ++k < attrlen ) {
+        for( k = 0; k < attrlen; k++ ) {
             *p++ = *++fn;               // isolate attribute
             if( *fn == ')' ) {
                 break;
             }
         }
-        *--p = '\0';                    // terminate attr
+        *p = '\0';                      // terminate attr
 
         p = filename;
         while( *fn != '\0' ) {          // shift filename
@@ -1744,7 +1743,7 @@ static bool is_option( void )
 
 static cmd_tok * process_master_filename( cmd_tok * tok )
 {
-    char        attrwork[MAX_FILE_ATTR];
+    char        attrwork[MAX_FILE_ATTR + 1];
     char    *   p;
 
     p = mem_tokdup( tok->token, tok->toklen );
@@ -1755,7 +1754,7 @@ static cmd_tok * process_master_filename( cmd_tok * tok )
         bad_cmd_line_err_exit( ERR_DOC_DUPLICATE, tok->token, ' ' );
         /* never return */
     }
-    split_attr_file( p , attrwork, sizeof( attrwork ) );
+    split_attr_file( p , attrwork, sizeof( attrwork ) - 1 );
     if( attrwork[0] != '\0' ) {
         xx_warn_cc( WNG_FILEATTR_IGNORED, attrwork, p );
         master_fname_attr = mem_strdup( attrwork );

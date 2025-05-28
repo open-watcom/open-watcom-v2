@@ -422,16 +422,16 @@ static  bool    test_comment( void )
 
 static  void    proc_input( char * filename )
 {
-    char            attrwork[32];
+    char            attrwork[MAX_FILE_ATTR + 1];
     condcode        cc;
-    filecb      *   cb;
+    filecb          *cb;
     ifcb            ic_work;
-    ifcb        *   ic;
-    laystack    *   cur_lay_file;
-    laystack    *   tmp_lay_file;
+    ifcb            *ic;
+    laystack        *cur_lay_file;
+    laystack        *tmp_lay_file;
     FILE            *fp;
 
-    static  inputcb *   save_cb;        // former input_cbs top entry
+    static inputcb  *save_cb;           // former input_cbs top entry
 
     ProcFlags.newLevelFile = 1;
     strcpy( token_buf, filename );
@@ -444,9 +444,9 @@ static  void    proc_input( char * filename )
             /***************************************************************/
             /*  split off attribute  (f:xxxx)                              */
             /***************************************************************/
-            split_attr_file( token_buf, attrwork, sizeof( attrwork ) );
+            split_attr_file( token_buf, attrwork, sizeof( attrwork ) - 1 );
 
-            if( attrwork[0] ) {
+            if( attrwork[0] != '\0' ) {
                 xx_warn_cc( WNG_FILEATTR_IGNORED, attrwork, token_buf );
             }
             fp = search_file_in_dirs( token_buf, def_ext, alt_ext, DSEQ_doc_spec );
@@ -466,7 +466,7 @@ static  void    proc_input( char * filename )
             }
             cb = input_cbs->s.f;
             cb->flags |= FF_crlf;       // delete crlf at end
-            if( attrwork[0] ) {
+            if( attrwork[0] != '\0' ) {
                 strcpy( cb->fileattr, attrwork );
             } else {
                 cb->fileattr[0] = '\0';

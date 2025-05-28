@@ -43,11 +43,11 @@ void    gml_binclude( const gmltag * entry )
     bool            has_rec_type            = false;
     bool            reposition;
     char            file[_MAX_PATH];
-    char            rt_buff[MAX_FILE_ATTR];
-    char        *   p;
-    char        *   pa;
-    doc_element *   cur_el;
-    inputcb     *   cb                      = input_cbs;
+    char            rt_buff[MAX_FILE_ATTR + 1];
+    char            *p;
+    char            *pa;
+    doc_element     *cur_el;
+    inputcb         *cb                      = input_cbs;
     su              depth_su;
     unsigned        depth;
     FILE            *fp;
@@ -93,7 +93,7 @@ void    gml_binclude( const gmltag * entry )
                     attr_val.tok.l = _MAX_PATH - 1;
                 strncpy( file, attr_val.tok.s, attr_val.tok.l );
                 file[attr_val.tok.l] = '\0';
-                split_attr_file( file, rt_buff, MAX_FILE_ATTR );
+                split_attr_file( file, rt_buff, sizeof( rt_buff ) - 1 );
                 if( (rt_buff[0] != '\0') ) {
                     has_rec_type = true;
                     if( rt_buff[0] != 't' ) {
