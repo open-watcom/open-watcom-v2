@@ -207,10 +207,10 @@ void    print_ref_dict( ref_dict dict, const char * type )
             for( wk = dict; wk != NULL; wk = wk->next ) {
                 len = strlen( wk->refid );
                 if( withnumber ) {
-                    out_msg( "%4ld ID='%s'%spage %-3ld text='%s'\n", wk->u.ffh.entry->number,
+                    out_msg( "%4d ID='%s'%spage %-3d text='%s'\n", wk->u.ffh.entry->number,
                              wk->refid, &fill[len], wk->u.ffh.entry->pageno, wk->u.ffh.entry->text );
                 } else {
-                    out_msg( "ID='%s'%spage %-3ld text='%s'\n", wk->refid,
+                    out_msg( "ID='%s'%spage %-3d text='%s'\n", wk->refid,
                             &fill[len], wk->u.ffh.entry->pageno, wk->u.ffh.entry->text );
                 }
                 cnt++;

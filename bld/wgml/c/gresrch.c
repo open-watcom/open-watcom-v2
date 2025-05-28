@@ -119,7 +119,7 @@ void    print_GML_tags_research( void )
     if( wk != NULL ) {
         printf_research( "\nGML layout tag list sorted by first occurrence\n\n" );
         while( wk ) {
-            printf_research("%6ld  :%s\n", wk->count, wk->tagname );
+            printf_research("%6d  :%s\n", wk->count, wk->tagname );
             cnt += wk->count;
             cnt1++;
             wk = wk->nxt;
@@ -131,7 +131,7 @@ void    print_GML_tags_research( void )
     wk = sys_tags;
     printf_research( "\nGML tag / macro list sorted by first occurrence\n\n" );
     while( wk ) {
-        printf_research( "%6ld  :%s\n", wk->count, wk->tagname );
+        printf_research( "%6d  :%s\n", wk->count, wk->tagname );
         cnt += wk->count;
         cnt1++;
         wk = wk->nxt;
@@ -208,7 +208,7 @@ void    print_SCR_tags_research( void )
     printf_research(
         "\nScript controlword / macro list sorted by first occurrence\n\n" );
     for( wk = scrkws; wk != NULL; wk = wk->nxt ) {
-        printf_research("%6ld  .%s\n", wk->count, wk->tagname );
+        printf_research("%6d  .%s\n", wk->count, wk->tagname );
         cnt += wk->count;
         cnt1++;
     }
@@ -277,7 +277,7 @@ void    print_multi_funcs_research( void )
     printf_research(
         "\nScript multi letter functions list sorted by first occurrence\n\n" );
     for( wk = multi_funcs; wk != NULL; wk = wk->nxt ) {
-        printf_research("%6ld  %s\n", wk->count, wk->tagname );
+        printf_research("%6d  %s\n", wk->count, wk->tagname );
         cnt += wk->count;
         cnt1++;
     }
@@ -346,7 +346,7 @@ void    print_single_funcs_research( void )
     printf_research(
         "\nScript single letter functions list sorted by first occurrence\n\n" );
     for( wk = single_funcs; wk != NULL; wk = wk->nxt ) {
-        printf_research("%6ld  %s\n", wk->count, wk->tagname );
+        printf_research("%6d  %s\n", wk->count, wk->tagname );
         cnt += wk->count;
         cnt1++;
     }

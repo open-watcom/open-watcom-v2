@@ -343,16 +343,16 @@ static void gen_ref_list( ix_e_blk * refs, font_number font )
         }
 
         switch( cur_ref->entry_typ ) {
-        case pgmajorstring :
+        case pgmajorstring:
             ProcFlags.ct = true;
             post_space = wgml_fonts[font].spc_width;
             /* fall through */
-        case pgstring :
+        case pgstring:
             if( cur_ref->u.pageref.page_text[0] != '\0' ) {     // if not null string
                 process_text( cur_ref->u.pageref.page_text, font );
             }
             break;
-        case pgstart :
+        case pgstart:
             format_num( cur_ref->u.pagenum.page_no, buffer, sizeof( buffer ), cur_ref->u.pagenum.style );
             process_text( buffer, font );
             ProcFlags.ct = true;
@@ -369,14 +369,14 @@ static void gen_ref_list( ix_e_blk * refs, font_number font )
             format_num( cur_ref->u.pagenum.page_no, buffer, sizeof( buffer ), cur_ref->u.pagenum.style );
             process_text( buffer, font );
             break;
-        case pgend :
+        case pgend:
             xx_simple_err_exit( ERR_OPEN_PAGE_RANGE );
             /* never return */
-        case pgmajor :
+        case pgmajor:
             ProcFlags.ct = true;
             post_space = 0;
             /* fall through */
-        case pgpageno :
+        case pgpageno:
             format_num( cur_ref->u.pagenum.page_no, buffer, sizeof( buffer ), cur_ref->u.pagenum.style );
             process_text( buffer, font );
             if( cur_ref->next != NULL ) {                   // done if last page number
@@ -401,7 +401,7 @@ static void gen_ref_list( ix_e_blk * refs, font_number font )
                 }
             }
             break;
-        case pgsee :
+        case pgsee:
             if( cur_ref->prt_text != NULL ) {
                 process_text( cur_ref->prt_text, g_curr_font );
             } else if( cur_ref->u.pageref.page_text_len > 0 ) {  // if not null string
@@ -773,21 +773,21 @@ static void gen_index( void )
                 t_page.cur_width += ixh_indent;
 
                 switch( layout_work.ixhead.frame.type ) {
-                case none_frame :
+                case none_frame:
                     process_text( letter, layout_work.ixhead.font );
                     break;
-                case box_frame :
+                case box_frame:
                     if( !ProcFlags.col_started ) {      // at top of page
                         g_top_skip = wgml_fonts[layout_work.ixhead.font].line_height;
                     }
                     gen_box_head( letter );
                     break;
-                case rule_frame :
+                case rule_frame:
                     if( !ProcFlags.col_started ) {      // at top of page
                         g_top_skip = wgml_fonts[layout_work.ixhead.font].line_height;
                     }
                     /* fall through */
-                case char_frame :                   // no top-of-page correction in wgml 4.0
+                case char_frame:                   // no top-of-page correction in wgml 4.0
                     gen_rule_head( letter );
                     break;
                 default:
@@ -1182,7 +1182,7 @@ void start_doc_sect( void )
 
     clear_banners = false;
     switch( ds ) {
-    case DSECT_titlep :
+    case DSECT_titlep:
         page_c = layout_work.titlep.columns;
         page_e = ej_yes;
         page_r = false;                 // no page number reset
@@ -1194,7 +1194,7 @@ void start_doc_sect( void )
         nest_cb->gtag = T_TITLEP;
         nest_cb->p_stack->lineno = titlep_lineno; // correct line number
         break;
-    case DSECT_abstract :
+    case DSECT_abstract:
         hd_level = HLVL_h1;              // H0 and H1 treated as already present
         page_c = layout_work.abstract.columns;
         page_e = layout_work.abstract.page_eject;
@@ -1207,7 +1207,7 @@ void start_doc_sect( void )
         }
         lvl_reset = false;
         break;
-    case DSECT_preface :
+    case DSECT_preface:
         hd_level = HLVL_h1;              // H0 and H1 treated as already present
         page_c = layout_work.preface.columns;
         page_e = layout_work.preface.page_eject;
@@ -1220,7 +1220,7 @@ void start_doc_sect( void )
         }
         lvl_reset = false;
         break;
-    case DSECT_body :
+    case DSECT_body:
         hd_level = HLVL_force_h0;        // force H0 to be used
         page_c = layout_work.body.columns;
         page_e = layout_work.body.page_eject;
@@ -1233,7 +1233,7 @@ void start_doc_sect( void )
         }
         lvl_reset = true;
         break;
-    case DSECT_appendix :
+    case DSECT_appendix:
         hd_level = HLVL_h0;              // H0 treated as already present
         page_c = layout_work.appendix.columns;
         page_e = layout_work.appendix.section_eject;
@@ -1245,7 +1245,7 @@ void start_doc_sect( void )
         }
         lvl_reset = true;
         break;
-    case DSECT_backm :
+    case DSECT_backm:
         hd_level = HLVL_h0;              // H0 treated as already present
         page_c = layout_work.backm.columns;
         page_e = layout_work.backm.page_eject;
@@ -1258,7 +1258,7 @@ void start_doc_sect( void )
         }
         lvl_reset = true;
         break;
-    case DSECT_index :
+    case DSECT_index:
         clear_banners = true;
         page_c = layout_work.index.columns;
         page_e = layout_work.index.page_eject;
@@ -1271,9 +1271,9 @@ void start_doc_sect( void )
         }
         lvl_reset = false;
         break;
-    case DSECT_gdoc :
-    case DSECT_etitlep :
-    case DSECT_frontm :
+    case DSECT_gdoc:
+    case DSECT_etitlep:
+    case DSECT_frontm:
         page_c = layout_work.defaults.columns;
         page_e = ej_no;                         // no page eject
         page_r = false;                         // no page number reset
@@ -1281,7 +1281,7 @@ void start_doc_sect( void )
         header = false;                         // no section header
         lvl_reset = false;
         break;
-    case DSECT_egdoc :
+    case DSECT_egdoc:
         page_c = 1;                             // as per wgml 4.0
         page_e = ej_odd;                        // as per wgml 4.0
         page_r = false;                         // no page number reset

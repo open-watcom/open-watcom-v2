@@ -38,7 +38,7 @@
 
 void    gml_docnum( const gmltag * entry )
 {
-    char            *buff            = NULL;
+    char            *buff;
     char            *p;
     font_number     font_save;
     page_pos        old_line_pos;
@@ -47,8 +47,8 @@ void    gml_docnum( const gmltag * entry )
     unsigned        right_indent;
 
 
-    if( !((ProcFlags.doc_sect == DSECT_titlep) ||
-          (ProcFlags.doc_sect_nxt == DSECT_titlep)) ) {
+    if( !((ProcFlags.doc_sect == DSECT_titlep)
+      || (ProcFlags.doc_sect_nxt == DSECT_titlep)) ) {
         xx_nest_err_exit_cc( ERR_TAG_WRONG_SECT, entry->tagname, ":TITLEP section" );
         /* never return */
     }
@@ -64,7 +64,8 @@ void    gml_docnum( const gmltag * entry )
 
     /* Prepend the docnum_string, if any */
 
-    if( layout_work.docnum.string != NULL ) {
+    buff = NULL;
+    if( layout_work.docnum.string[0] != '\0' ) {
         buff_len = strlen( layout_work.docnum.string ) + strlen ( p ) + 1;
         buff = mem_alloc( buff_len );
         strcpy( buff, layout_work.docnum.string );
@@ -72,7 +73,8 @@ void    gml_docnum( const gmltag * entry )
         p = buff;
     }
 
-    if( GlobalFlags.firstpass && *p != '\0' ) {
+    if( GlobalFlags.firstpass
+      && *p != '\0' ) {
         add_symvar( global_dict, "$docnum", p, strlen( p ), SI_no_subscript, SF_none );
     }
     ProcFlags.docnum_tag_seen = true;
