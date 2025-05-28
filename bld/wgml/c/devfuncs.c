@@ -176,6 +176,7 @@
 #include "devfuncs.h"
 #include "outbuff.h"
 #include "cophdr.h"
+#include "copfunc.h"
 
 #include "clibext.h"
 
@@ -386,7 +387,7 @@ static void fb_newline( void )
  *          as an exact multiple of the width of a space character.
  */
 
-static void output_spaces( unsigned count )
+static void output_spaces( int count )
 {
     if( !text_out_open && ProcFlags.ps_device ) {
         ob_insert_ps_text_start();
@@ -406,7 +407,7 @@ static void output_spaces( unsigned count )
 
 static void output_uscores( text_chars *in_chars )
 {
-    unsigned    count;
+    int         count;
     unsigned    uscore_width;
 
     /* Undersore characters cannot be emitted "backwards". */
@@ -1128,27 +1129,21 @@ static void *df_y_size( void )
 
 static void *get_parameters( parameters *in_parameters )
 {
-    uint16_t    offset;
-
     /* Skip the offset1 value. */
 
-    memcpy( &offset, current_df_data.current, sizeof( offset ) );
-    current_df_data.current += sizeof( offset );
+    get_u16( &current_df_data.current );
 
     /* Get the first parameter offset (offset2). */
 
-    memcpy( &in_parameters->first, current_df_data.current, sizeof( in_parameters->first ) );
-    current_df_data.current += sizeof( in_parameters->first );
+    in_parameters->first = get_u16( &current_df_data.current );
 
     /* Get the second parameter offset (offset3). */
 
-    memcpy( &in_parameters->second, current_df_data.current, sizeof( in_parameters->second ) );
-    current_df_data.current += sizeof( in_parameters->second );
+    in_parameters->second = get_u16( &current_df_data.current );
 
     /* Skip the offset4 value. */
 
-    memcpy( &offset, current_df_data.current, sizeof( offset ) );
-    current_df_data.current += sizeof( offset );
+    get_u16( &current_df_data.current );
 
     return( NULL );
 }
@@ -1170,12 +1165,13 @@ static void *get_parameters( parameters *in_parameters )
  *      the value returned by the device function invoked.
 */
 
-static void *process_parameter( void )
+static void *process_parameter( uint16_t param )
 {
+    current_df_data.current = current_df_data.base + param;
+
     /* Reset current_df_data for the parameter. */
 
-    memcpy( &current_df_data.df_code, current_df_data.current, sizeof( current_df_data.df_code ) );
-    current_df_data.current += sizeof( current_df_data.df_code );
+    current_df_data.df_code = get_u8( &current_df_data.current );
 
     /* Invoke parameter function. */
 
@@ -1218,15 +1214,14 @@ static void *df_out_text_device( void )
     char        *first;
     int         i;
     parameters  my_parameters;
-    uint16_t    count;
+    int         count;
 
     switch( current_df_data.parameter_type) {
     case 0x00:
 
         /* Character literal parameter. */
 
-        memcpy( &count, current_df_data.current, sizeof( count ) );
-        current_df_data.current += sizeof( count );
+        count = get_u16( &current_df_data.current );
 
         /* Emit parameter byte-by-byte since may contain nulls. */
 
@@ -1249,8 +1244,7 @@ static void *df_out_text_device( void )
 
         /* Now get and emit the parameter. */
 
-        current_df_data.current = current_df_data.base + my_parameters.first;
-        first = process_parameter();
+        first = process_parameter( my_parameters.first );
         out_msg( first );
 
         /* Free the memory allocated to the parameter. */
@@ -1274,15 +1268,15 @@ static void out_text_driver( bool out_trans, bool out_text )
 {
     char            *first;
     parameters      my_parameters;
-    uint16_t        count;
+    int             count;
 
     switch( current_df_data.parameter_type) {
     case 0x00:
 
         /* Character literal parameter. */
 
-        memcpy( &count, current_df_data.current, sizeof( count ) );
-        current_df_data.current += sizeof( count );
+        count = get_u16( &current_df_data.current );
+
         ob_insert_block( current_df_data.current, count, out_trans, out_text, active_font );
         break;
 
@@ -1300,8 +1294,7 @@ static void out_text_driver( bool out_trans, bool out_text )
 
         /* Now get and insert the parameter. */
 
-        current_df_data.current = current_df_data.base + my_parameters.first;
-        first = process_parameter();
+        first = process_parameter( my_parameters.first );
         count = strlen( first );
         ob_insert_block( first, count, out_trans, out_text, active_font );
 
@@ -1348,7 +1341,7 @@ static void *df_text_driver( void )
 static void *char_literal( void )
 {
     char        *ret_val = NULL;
-    uint16_t    count;
+    int         count;
 
     /* Skip the rest of the Directive. */
 
@@ -1356,8 +1349,7 @@ static void *char_literal( void )
 
     /* Get the count. */
 
-    memcpy( &count, current_df_data.current, sizeof( count ) );
-    current_df_data.current += sizeof( count );
+    count = get_u16( &current_df_data.current );
 
     /* Convert the character literal into a char *. */
 
@@ -1397,9 +1389,9 @@ static void *numeric_literal( void )
 
 static void *df_cancel( void )
 {
-            char        *first;
-    static  int         instance = 0;
-            parameters  my_parameters;
+    static int      instance = 0;
+    char            *first;
+    parameters      my_parameters;
 
     /* Recursion is an error. */
 
@@ -1426,8 +1418,7 @@ static void *df_cancel( void )
 
     /* Now invoke the parameter's handler. */
 
-    current_df_data.current = current_df_data.base + my_parameters.first;
-    first = process_parameter();
+    first = process_parameter( my_parameters.first );
 
     if( wgml_fonts[df_font].font_style != NULL ) {
         if( stricmp( first, wgml_fonts[df_font].font_style->type ) == 0 ) {
@@ -1515,8 +1506,7 @@ static void *df_sleep( void )
      * will be read as 0xFF, which exceeds the maximum value for the code.
      */
 
-    current_df_data.current = current_df_data.base + my_parameters.first;
-    first = (uintptr_t)process_parameter();
+    first = (uintptr_t)process_parameter( my_parameters.first );
 
     sleep( (unsigned)first );
 
@@ -1550,13 +1540,11 @@ static void *df_setsymbol( void )
 
     /* Now get the first parameter. */
 
-    current_df_data.current = current_df_data.base + my_parameters.first;
-    first = process_parameter();
+    first = process_parameter( my_parameters.first );
 
     /* Now get the second parameter. */
 
-    current_df_data.current = current_df_data.base + my_parameters.second;
-    second = process_parameter();
+    second = process_parameter( my_parameters.second );
 
     /* Insert the symbol into the global symbol table. */
 
@@ -1581,6 +1569,7 @@ static void *df_setsymbol( void )
 static void *df_binary( void )
 {
     parameters  my_parameters;
+    uintptr_t   first;
 
     /* Ensure that this is either a ShortHeader or a LongHeader. */
 
@@ -1599,8 +1588,8 @@ static void *df_binary( void )
 
     /* Now invoke the parameter's handler. */
 
-    current_df_data.current = current_df_data.base + my_parameters.first;
-    ob_insert_byte( (unsigned char)(uintptr_t)process_parameter() );
+    first = (uintptr_t)process_parameter( my_parameters.first );
+    ob_insert_byte( (unsigned char)first );
 
     return( NULL );
 }
@@ -1652,15 +1641,11 @@ static void skip_functions( void )
 
         /* Get the offset to the next element in the linked list. */
 
-        memcpy( &current_offset, current_df_data.current, sizeof( current_offset ) );
-        current_df_data.current += sizeof( current_offset );
+        current_offset = get_u16( &current_df_data.current );
 
         /* Get the parameter type for the current device function */
 
-        memcpy( &current_df_data.parameter_type,
-                  current_df_data.current,
-                  sizeof( current_df_data.parameter_type ) );
-        current_df_data.current += sizeof( current_df_data.parameter_type );
+        current_df_data.parameter_type = get_u8( &current_df_data.current );
 
         /* Either reset current_function to the next list element
          * or exit the loop. If this is the last function, it is either
@@ -1681,8 +1666,7 @@ static void skip_functions( void )
 
         /* Get the function code. */
 
-        memcpy( &current_df_data.df_code, current_df_data.current, sizeof( current_df_data.df_code ) );
-        current_df_data.current += sizeof( current_df_data.df_code );
+        current_df_data.df_code = get_u8( &current_df_data.current );
 
         /* If the function code is for %endif(), exit the loop. */
 
@@ -1721,13 +1705,11 @@ static void *df_ifeqn( void )
 
     /* Now get the first parameter. */
 
-    current_df_data.current = current_df_data.base + my_parameters.first;
-    first = (uintptr_t)process_parameter();
+    first = (uintptr_t)process_parameter( my_parameters.first );
 
     /* Now get the second parameter. */
 
-    current_df_data.current = current_df_data.base + my_parameters.second;
-    second = (uintptr_t)process_parameter();
+    second = (uintptr_t)process_parameter( my_parameters.second );
 
     /* if_eqn: skip the controlled functions if the values are not equal. */
 
@@ -1764,13 +1746,11 @@ static void *df_ifnen( void )
 
     /* Now get the first parameter. */
 
-    current_df_data.current = current_df_data.base + my_parameters.first;
-    first = (uintptr_t)process_parameter();
+    first = (uintptr_t)process_parameter( my_parameters.first );
 
     /* Now get the second parameter. */
 
-    current_df_data.current = current_df_data.base + my_parameters.second;
-    second = (uintptr_t)process_parameter();
+    second = (uintptr_t)process_parameter( my_parameters.second );
 
     /* if_nen: skip the controlled functions if the values are equal. */
 
@@ -1807,13 +1787,11 @@ static void *df_ifeqs( void )
 
     /* Now get the first parameter. */
 
-    current_df_data.current = current_df_data.base + my_parameters.first;
-    first = process_parameter();
+    first = process_parameter( my_parameters.first );
 
     /* Now get the second parameter. */
 
-    current_df_data.current = current_df_data.base + my_parameters.second;
-    second = process_parameter();
+    second = process_parameter( my_parameters.second );
 
     /* if_eqs: skip the controlled functions if the values are not equal. */
 
@@ -1855,13 +1833,11 @@ static void *df_ifnes( void )
 
     /* Now get the first parameter. */
 
-    current_df_data.current = current_df_data.base + my_parameters.first;
-    first = process_parameter();
+    first = process_parameter( my_parameters.first );
 
     /* Now get the second parameter. */
 
-    current_df_data.current = current_df_data.base + my_parameters.second;
-    second = process_parameter();
+    second = process_parameter( my_parameters.second );
 
     /* if_nes: skip the controlled functions if the values are equal. */
 
@@ -1896,13 +1872,11 @@ static void *df_add( void )
 
     /* Now get the first parameter. */
 
-    current_df_data.current = current_df_data.base + my_parameters.first;
-    first = (uintptr_t)process_parameter();
+    first = (uintptr_t)process_parameter( my_parameters.first );
 
     /* Now get the second parameter. */
 
-    current_df_data.current = current_df_data.base + my_parameters.second;
-    second = (uintptr_t)process_parameter();
+    second = (uintptr_t)process_parameter( my_parameters.second );
 
     return( (void *)(first + second) );
 }
@@ -1915,7 +1889,7 @@ static void *df_decimal( void )
 {
     void            *value;
     parameters      my_parameters;
-    int             first;
+    intptr_t        first;
 
     /* Extract parameter offset. */
 
@@ -1923,13 +1897,12 @@ static void *df_decimal( void )
 
     /* Now get the parameter. */
 
-    current_df_data.current = current_df_data.base + my_parameters.first;
-    first = (int)(intptr_t)process_parameter();
+    first = (intptr_t)process_parameter( my_parameters.first );
 
     /* Convert and return the value. */
 
     value = mem_alloc( NUM2STR_LENGTH + 1 );
-    sprintf( value, "%d", first );
+    sprintf( value, "%d", (int)first );
     return( value );
 }
 
@@ -1949,13 +1922,11 @@ static void *df_divide( void )
 
     /* Now get the first parameter. */
 
-    current_df_data.current = current_df_data.base + my_parameters.first;
-    first = (uintptr_t)process_parameter();
+    first = (uintptr_t)process_parameter( my_parameters.first );
 
     /* Now get the second parameter. */
 
-    current_df_data.current = current_df_data.base + my_parameters.second;
-    second = (uintptr_t)process_parameter();
+    second = (uintptr_t)process_parameter( my_parameters.second );
 
     if( second == 0 ) {
         xx_simple_err_exit_c( ERR_ZERO_DIVISOR, "%divide()" );
@@ -1982,8 +1953,7 @@ static void *df_getnumsymbol( void )
 
     /* Now get the parameter. */
 
-    current_df_data.current = current_df_data.base + my_parameters.first;
-    name = process_parameter();
+    name = process_parameter( my_parameters.first );
 
     /* Now get the symbol's value. */
 
@@ -2015,8 +1985,7 @@ static void *df_getstrsymbol( void )
 
     /* Now get the parameter. */
 
-    current_df_data.current = current_df_data.base + my_parameters.first;
-    name = process_parameter();
+    name = process_parameter( my_parameters.first );
 
     /* Now get the symbol's value. */
 
@@ -2038,7 +2007,7 @@ static void *df_hex( void )
 {
     void            *value;
     parameters      my_parameters;
-    unsigned        first;
+    uintptr_t       first;
 
     /* Extract parameter offset. */
 
@@ -2046,13 +2015,12 @@ static void *df_hex( void )
 
     /* Now get the parameter. */
 
-    current_df_data.current = current_df_data.base + my_parameters.first;
-    first = (unsigned)(uintptr_t)process_parameter();
+    first = (uintptr_t)process_parameter( my_parameters.first );
 
     /* Convert and return a pointer to the parameter */
 
     value = mem_alloc( 9 );
-    sprintf( value, "%x", first );
+    sprintf( value, "%x", (unsigned)first );
     return( value );
 }
 
@@ -2071,8 +2039,7 @@ static void *df_lower( void )
 
     /* Now get the parameter. */
 
-    current_df_data.current = current_df_data.base + my_parameters.first;
-    first = process_parameter();
+    first = process_parameter( my_parameters.first );
 
     /* Convert and return the parameter. */
 
@@ -2095,13 +2062,11 @@ static void *df_remainder( void )
 
     /* Now get the first parameter. */
 
-    current_df_data.current = current_df_data.base + my_parameters.first;
-    first = (uintptr_t)process_parameter();
+    first = (uintptr_t)process_parameter( my_parameters.first );
 
     /* Now get the second parameter. */
 
-    current_df_data.current = current_df_data.base + my_parameters.second;
-    second = (uintptr_t)process_parameter();
+    second = (uintptr_t)process_parameter( my_parameters.second );
 
     if( second == 0 ) {
         xx_simple_err_exit_c( ERR_ZERO_DIVISOR, "%remainder()" );
@@ -2127,13 +2092,11 @@ static void *df_subtract( void )
 
     /* Now get the first parameter. */
 
-    current_df_data.current = current_df_data.base + my_parameters.first;
-    first = (uintptr_t)process_parameter();
+    first = (uintptr_t)process_parameter( my_parameters.first );
 
     /* Now get the second parameter. */
 
-    current_df_data.current = current_df_data.base + my_parameters.second;
-    second = (uintptr_t)process_parameter();
+    second = (uintptr_t)process_parameter( my_parameters.second );
 
     return( (void *)(first - second) );
 }
@@ -2347,15 +2310,11 @@ static void interpret_functions( const char *in_function )
 
         /* Get the offset to the next element in the linked list. */
 
-        memcpy( &current_offset, current_df_data.current, sizeof( current_offset ) );
-        current_df_data.current += sizeof( current_offset );
+        current_offset = get_u16( &current_df_data.current );
 
         /* Get the parameter type for the current device function */
 
-        memcpy( &current_df_data.parameter_type,
-                  current_df_data.current,
-                  sizeof( current_df_data.parameter_type ) );
-        current_df_data.current += sizeof( current_df_data.parameter_type );
+        current_df_data.parameter_type = get_u8( &current_df_data.current );
 
         /* Either reset current_function to the next list element
          * or record that the last function will be done this iteration.
@@ -2369,8 +2328,7 @@ static void interpret_functions( const char *in_function )
 
         /* Get the function code. */
 
-        memcpy( &current_df_data.df_code, current_df_data.current, sizeof( current_df_data.df_code ) );
-        current_df_data.current += sizeof( current_df_data.df_code );
+        current_df_data.df_code = get_u8( &current_df_data.current );
 
         /* This is where the df_code processing occurs. */
 
@@ -2791,9 +2749,12 @@ static void fb_internal_horizontal_positioning( text_chars * in_chars )
 
     x_address = desired_state.x_address;
     tab_width = desired_state.x_address - current_state.x_address;
-    if( has_htab && (tab_width > 0) && ((tab_width % wgml_fonts[active_font].spc_width > 0)
-            || ((in_chars->tab_pos != TAB_none) && ((in_chars->prev->font != in_chars->font)
-                && (in_chars->prev->count != 0))) ) ) {
+    if( has_htab
+      && (tab_width > 0)
+      && ((tab_width % wgml_fonts[active_font].spc_width > 0)
+      || ((in_chars->tab_pos != TAB_none)
+      && ((in_chars->prev->font != in_chars->font)
+      && (in_chars->prev->count != 0))) ) ) {
         fb_htab();
     } else {
 

@@ -60,12 +60,12 @@
  *      mem_alloc() will call exit() if the allocation fails.
  */
 
-code_block *get_code_blocks( const char **current, uint16_t count, const char *base )
+code_block *get_code_blocks( const char **current, int count, const char *base )
 {
-    code_block *    out_block   = NULL;
+    code_block      *out_block   = NULL;
     unsigned        difference;
     unsigned        position;
-    uint8_t         i;
+    int             i;
 
     /* Allocate out_block. */
 
@@ -86,8 +86,7 @@ code_block *get_code_blocks( const char **current, uint16_t count, const char *b
             *current += 1;
         }
 
-        memcpy( &out_block[i].designator, *current, 1 );
-        *current += 1;
+        out_block[i].designator = get_u8( current );
 
         /* Skip the cb05_flag and the lp_flag. */
 
@@ -99,8 +98,7 @@ code_block *get_code_blocks( const char **current, uint16_t count, const char *b
             *current += 1;
         }
 
-        memcpy( &out_block[i].line_pass, *current, 2 );
-        *current += 2;
+        out_block[i].line_pass = get_u16( current );
 
         /* Get the count, shifting it if necessary */
 
@@ -108,8 +106,7 @@ code_block *get_code_blocks( const char **current, uint16_t count, const char *b
             *current += 1;
         }
 
-        memcpy( &out_block[i].count, *current, 2 );
-        *current += 2;
+        out_block[i].count = get_u16( current );
 
         /* Set function, which is the pointer to the actual compiled code. */
 
@@ -248,13 +245,12 @@ p_buffer * get_p_buffer( FILE *fp )
 
 functions_block *parse_functions_block( const char **current, const char *base )
 {
-    uint16_t            code_count;
-    functions_block *   out_block   = NULL;
+    unsigned        code_count;
+    functions_block *out_block   = NULL;
 
     /* Get the number of CodeBlocks. */
 
-    memcpy( &code_count, *current, 2 );
-    *current += 2;
+    code_count = get_u16( current );
 
     /* Allocate the out_block. */
 
@@ -276,7 +272,7 @@ unsigned char fread_u8( FILE *fp )
 {
     unsigned char   u8;
 
-    fread( &u8, 1, sizeof( u8 ), fp );
+    fread( &u8, 1, U8_SIZE, fp );
     return( u8 );
 }
 
@@ -284,7 +280,7 @@ unsigned short fread_u16( FILE *fp )
 {
     uint16_t        u16;
 
-    fread( &u16, 1, sizeof( u16 ), fp );
+    fread( &u16, 1, U16_SIZE, fp );
     return( u16 );
 }
 
@@ -292,21 +288,21 @@ unsigned fread_u32( FILE *fp )
 {
     uint32_t        u32;
 
-    fread( &u32, 1, sizeof( u32 ), fp );
+    fread( &u32, 1, U32_SIZE, fp );
     return( u32 );
 }
 
-unsigned fread_buff( void *buff, unsigned len, FILE *fp )
+unsigned fread_buff( void *buff, int len, FILE *fp )
 {
-    return( fread( buff, 1, len, fp ) );
+    return( fread( buff, 1, (unsigned)len, fp ) );
 }
 
 unsigned char get_u8( const char **buff )
 {
     unsigned char   u8;
 
-    memcpy( &u8, *buff, sizeof( u8 ) );
-    *buff += sizeof( u8 );
+    memcpy( &u8, *buff, U8_SIZE );
+    *buff += U8_SIZE;
     return( u8 );
 }
 
@@ -314,8 +310,8 @@ unsigned short get_u16( const char **buff )
 {
     uint16_t        u16;
 
-    memcpy( &u16, *buff, sizeof( u16 ) );
-    *buff += sizeof( u16 );
+    memcpy( &u16, *buff, U16_SIZE );
+    *buff += U16_SIZE;
     return( u16 );
 }
 
@@ -323,13 +319,13 @@ unsigned get_u32( const char **buff )
 {
     uint32_t        u32;
 
-    memcpy( &u32, *buff, sizeof( u32 ) );
-    *buff += sizeof( u32 );
+    memcpy( &u32, *buff, U32_SIZE );
+    *buff += U32_SIZE;
     return( u32 );
 }
 
-void get_buff( void *obuff, unsigned len, const char **buff )
+void get_buff( void *obuff, int len, const char **buff )
 {
-    memcpy( obuff, *buff, len );
+    memcpy( obuff, *buff, (unsigned)len );
     *buff += len;
 }

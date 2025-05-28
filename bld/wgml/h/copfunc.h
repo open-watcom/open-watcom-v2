@@ -48,6 +48,10 @@
 
 #define SEEK_POSBACK(x)     (-(long)(x))
 
+#define U8_SIZE     sizeof( uint8_t )
+#define U16_SIZE    sizeof( uint16_t )
+#define U32_SIZE    sizeof( uint32_t )
+
 /* Struct declarations. */
 
 /* This holds the raw contents of one or more contiguous P-buffers. The
@@ -86,18 +90,18 @@ typedef struct {
 extern "C" {    /* Use "C" linkage when in C++ mode. */
 #endif
 
-extern code_block       *get_code_blocks( const char **position, uint16_t count, const char *base );
+extern code_block       *get_code_blocks( const char **position, int count, const char *base );
 extern p_buffer         *get_p_buffer( FILE *file );
 extern functions_block  *parse_functions_block( const char **position, const char *base );
 
 extern unsigned char    fread_u8( FILE *fp );
 extern unsigned short   fread_u16( FILE *fp );
 extern unsigned         fread_u32( FILE *fp );
-extern unsigned         fread_buff( void *buff, unsigned len, FILE *fp );
+extern unsigned         fread_buff( void *buff, int len, FILE *fp );
 extern unsigned char    get_u8( const char **buff );
 extern unsigned short   get_u16( const char **buff );
 extern unsigned         get_u32( const char **buff );
-extern void             get_buff( void *obuff, unsigned len, const char **buff );
+extern void             get_buff( void *obuff, int len, const char **buff );
 
 #ifdef  __cplusplus
 }   /* End of "C" linkage for C++. */

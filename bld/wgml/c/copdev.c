@@ -186,7 +186,7 @@ cop_device * parse_device( FILE *fp )
 
     /* Used to acquire string attributes. */
 
-    uint8_t             length;
+    int                 length;
     char *              string_ptr          = NULL;
 
     /* Used to acquire numeric attributes. */
@@ -196,7 +196,7 @@ cop_device * parse_device( FILE *fp )
     /* Used to acquire the TranslationBlock. */
 
     uint8_t *           byte_ptr            = NULL;
-    uint8_t             data_count;
+    int                 data_count;
     uint16_t            i;
     uint8_t             intrans_flag;
     uint8_t *           outtrans_data       = NULL;
@@ -226,7 +226,7 @@ cop_device * parse_device( FILE *fp )
 
     /* Used for count and other values. */
 
-    uint8_t             count8;
+    int                 count;
 
     unsigned            size;
 
@@ -396,7 +396,7 @@ cop_device * parse_device( FILE *fp )
 
     /* Skip the next_codeblock value. */
 
-    fseek( fp, sizeof( uint16_t ), SEEK_CUR );
+    fseek( fp, U16_SIZE, SEEK_CUR );
     if( ferror( fp ) || feof( fp ) ) {
         mem_free( out_device );
         out_device = NULL;
@@ -455,7 +455,7 @@ cop_device * parse_device( FILE *fp )
 
         /* The font attribute is numeric: get the font number. */
 
-        count8 = fread_u8( fp );
+        count = fread_u8( fp );
         if( ferror( fp ) || feof( fp ) ) {
             mem_free( out_device );
             out_device = NULL;
@@ -515,14 +515,14 @@ cop_device * parse_device( FILE *fp )
 
     /* Get the count and verify that it contains 0x0F. */
 
-    count8 = fread_u8( fp );
+    count = fread_u8( fp );
     if( ferror( fp ) || feof( fp ) ) {
         mem_free( out_device );
         out_device = NULL;
         return( out_device );
     }
 
-    if( count8 != 0x0F ) {
+    if( count != 0x0F ) {
         mem_free( out_device );
         out_device = NULL;
         return( out_device );
@@ -562,7 +562,7 @@ cop_device * parse_device( FILE *fp )
 
         /* The font attribute is numeric: get the font number. */
 
-        count8 = fread_u8( fp );
+        count = fread_u8( fp );
         if( ferror( fp ) || feof( fp ) ) {
             mem_free( out_device );
             out_device = NULL;
@@ -629,14 +629,14 @@ cop_device * parse_device( FILE *fp )
 
     /* Get the count and verify that it contains 0x05. */
 
-    count8 = fread_u8( fp );
+    count = fread_u8( fp );
     if( ferror( fp ) || feof( fp ) ) {
         mem_free( out_device );
         out_device = NULL;
         return( out_device );
     }
 
-    if( count8 != 0x05 ) {
+    if( count != 0x05 ) {
         mem_free( out_device );
         out_device = NULL;
         return( out_device );
@@ -664,14 +664,14 @@ cop_device * parse_device( FILE *fp )
 
     /* Get the count and verify that it containss 0x03. */
 
-    count8 = fread_u8( fp );
+    count = fread_u8( fp );
     if( ferror( fp ) || feof( fp ) ) {
         mem_free( out_device );
         out_device = NULL;
         return( out_device );
     }
 
-    if( count8 != 0x03 ) {
+    if( count != 0x03 ) {
         mem_free( out_device );
         out_device = NULL;
         return( out_device );
@@ -708,14 +708,14 @@ cop_device * parse_device( FILE *fp )
 
         /* Verify that the next byte is 0x81. */
 
-        count8 = fread_u8( fp );
+        count = fread_u8( fp );
         if( ferror( fp ) || feof( fp ) ) {
             mem_free( out_device );
             out_device = NULL;
             return( out_device );
         }
 
-        if( count8 != 0x81 ) {
+        if( count != 0x81 ) {
             mem_free( out_device );
             out_device = NULL;
             return( out_device );
@@ -723,14 +723,14 @@ cop_device * parse_device( FILE *fp )
 
         /* Get the count byte and verify that it contains 0x00. */
 
-        count8 = fread_u8( fp );
+        count = fread_u8( fp );
         if( ferror( fp ) || feof( fp ) ) {
             mem_free( out_device );
             out_device = NULL;
             return( out_device );
         }
 
-        if( count8 != 0x00 ) {
+        if( count != 0x00 ) {
             mem_free( out_device );
             out_device = NULL;
             return( out_device );
@@ -768,7 +768,7 @@ cop_device * parse_device( FILE *fp )
 
         /* Read the count byte. */
 
-        count8 = fread_u8( fp );
+        count = fread_u8( fp );
         if( ferror( fp ) || feof( fp ) ) {
             mem_free( out_device );
             out_device = NULL;
@@ -782,7 +782,7 @@ cop_device * parse_device( FILE *fp )
 
             /* The count byte should be 0x00. */
 
-            if( count8 != 0x00 ) {
+            if( count != 0x00 ) {
                 mem_free( out_device );
                 out_device = NULL;
                 return( out_device );
@@ -853,7 +853,7 @@ cop_device * parse_device( FILE *fp )
 
             /* The count byte should be equal to data_count. */
 
-            if( count8 != data_count ) {
+            if( count != data_count ) {
                 mem_free( out_device );
                 out_device = NULL;
                 return( out_device );
@@ -967,14 +967,14 @@ cop_device * parse_device( FILE *fp )
 
     /* Get the count and verify that it is 0x02. */
 
-    count8 = fread_u8( fp );
+    count = fread_u8( fp );
     if( ferror( fp ) || feof( fp ) ) {
         mem_free( out_device );
         out_device = NULL;
         return( out_device );
     }
 
-    if( count8 != 0x02 ) {
+    if( count != 0x02 ) {
         mem_free( out_device );
         out_device = NULL;
         return( out_device );
@@ -1031,14 +1031,14 @@ cop_device * parse_device( FILE *fp )
 
         /* Get the count and verify that it is 0x04. */
 
-        count8 = fread_u8( fp );
+        count = fread_u8( fp );
         if( ferror( fp ) || feof( fp ) ) {
             mem_free( out_device );
             out_device = NULL;
             return( out_device );
         }
 
-        if( count8 != 0x04 ) {
+        if( count != 0x04 ) {
             mem_free( out_device );
             out_device = NULL;
             return( out_device );
@@ -1116,7 +1116,7 @@ cop_device * parse_device( FILE *fp )
 
     /* Get the count and verify that it is 0x02. */
 
-    count8 = fread_u8( fp );
+    count = fread_u8( fp );
     if( ferror( fp ) || feof( fp ) ) {
         mem_free( raw_functions );
         raw_functions = NULL;
@@ -1131,7 +1131,7 @@ cop_device * parse_device( FILE *fp )
         return( out_device );
     }
 
-    if( count8 != 0x02 ) {
+    if( count != 0x02 ) {
         mem_free( raw_functions );
         raw_functions = NULL;
         if( cop_functions->code_blocks != NULL ) {
@@ -1206,7 +1206,7 @@ cop_device * parse_device( FILE *fp )
 
     /* Get the count and verify that it is 0x02. */
 
-    count8 = fread_u8( fp );
+    count = fread_u8( fp );
     if( ferror( fp ) || feof( fp ) ) {
         mem_free( raw_functions );
         raw_functions = NULL;
@@ -1221,7 +1221,7 @@ cop_device * parse_device( FILE *fp )
         return( out_device );
     }
 
-    if( count8 != 0x02 ) {
+    if( count != 0x02 ) {
         mem_free( raw_functions );
         raw_functions = NULL;
         if( cop_functions->code_blocks != NULL ) {
@@ -1296,7 +1296,7 @@ cop_device * parse_device( FILE *fp )
 
     /* Get the count and verify that it is 0x02. */
 
-    count8 = fread_u8( fp );
+    count = fread_u8( fp );
     if( ferror( fp ) || feof( fp ) ) {
         mem_free( raw_functions );
         raw_functions = NULL;
@@ -1311,7 +1311,7 @@ cop_device * parse_device( FILE *fp )
         return( out_device );
     }
 
-    if( count8 != 0x02 ) {
+    if( count != 0x02 ) {
         mem_free( raw_functions );
         raw_functions = NULL;
         if( cop_functions->code_blocks != NULL ) {
@@ -1386,7 +1386,7 @@ cop_device * parse_device( FILE *fp )
 
     /* Get the count and verify that it is 0x02. */
 
-    count8 = fread_u8( fp );
+    count = fread_u8( fp );
     if( ferror( fp ) || feof( fp ) ) {
         mem_free( raw_functions );
         raw_functions = NULL;
@@ -1401,7 +1401,7 @@ cop_device * parse_device( FILE *fp )
         return( out_device );
     }
 
-    if( count8 != 0x02 ) {
+    if( count != 0x02 ) {
         mem_free( raw_functions );
         raw_functions = NULL;
         if( cop_functions->code_blocks != NULL ) {
@@ -1476,7 +1476,7 @@ cop_device * parse_device( FILE *fp )
 
     /* Get the count and verify that it is 0x02. */
 
-    count8 = fread_u8( fp );
+    count = fread_u8( fp );
     if( ferror( fp ) || feof( fp ) ) {
         mem_free( raw_functions );
         raw_functions = NULL;
@@ -1491,7 +1491,7 @@ cop_device * parse_device( FILE *fp )
         return( out_device );
     }
 
-    if( count8 != 0x02 ) {
+    if( count != 0x02 ) {
         mem_free( raw_functions );
         raw_functions = NULL;
         if( cop_functions->code_blocks != NULL ) {
@@ -1659,7 +1659,7 @@ cop_device * parse_device( FILE *fp )
 
         /* Get the count and verify that it is 0x03. */
 
-        count8 = fread_u8( fp );
+        count = fread_u8( fp );
         if( ferror( fp ) || feof( fp ) ) {
             mem_free( raw_functions );
             raw_functions = NULL;
@@ -1674,7 +1674,7 @@ cop_device * parse_device( FILE *fp )
             return( out_device );
         }
 
-        if( count8 != 0x03 ) {
+        if( count != 0x03 ) {
             mem_free( raw_functions );
             raw_functions = NULL;
             if( cop_functions->code_blocks != NULL ) {

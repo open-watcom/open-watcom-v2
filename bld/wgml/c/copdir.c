@@ -86,11 +86,11 @@ typedef enum {
 
 static entry_found get_compact_entry( FILE *fp, directory_entry * entry )
 {
-    int     count;
+    int             count;
 
     /* Get the defined_name_length. */
 
-    count = fgetc( fp );
+    count = fread_u8( fp );
     if( ferror( fp ) || feof( fp ) ) return( not_valid_entry );
 
     /* Ensure the defined_name_length is not too long for the buffer. */
@@ -111,7 +111,7 @@ static entry_found get_compact_entry( FILE *fp, directory_entry * entry )
 
     /* Get the member_name_length. */
 
-    count = fgetc( fp );
+    count = fread_u8( fp );
     if( ferror( fp ) || feof( fp ) ) {
         return( not_valid_entry );
     }
@@ -155,11 +155,11 @@ static entry_found get_compact_entry( FILE *fp, directory_entry * entry )
 
 static entry_found get_extended_entry( FILE *fp, directory_entry * entry )
 {
-    int     count;
+    int             count;
 
     /* Get the defined_name_length. */
 
-    count = fgetc( fp );
+    count = fread_u8( fp );
     if( ferror( fp ) || feof( fp ) ) return( not_valid_entry );
 
     /* Ensure the defined_name_length is not too long for the buffer. */
@@ -180,13 +180,13 @@ static entry_found get_extended_entry( FILE *fp, directory_entry * entry )
 
     /* Skip the marker. */
 
-    fseek( fp, sizeof( uint16_t ), SEEK_CUR );
+    fseek( fp, U16_SIZE, SEEK_CUR );
     if( ferror( fp ) || feof( fp ) )
         return( not_valid_entry );
 
     /* Get the the member_name_length. */
 
-    count = fgetc( fp );
+    count = fread_u8( fp );
     if( ferror( fp ) || feof( fp ) )
         return( not_valid_entry );
 
@@ -205,7 +205,7 @@ static entry_found get_extended_entry( FILE *fp, directory_entry * entry )
 
     /* Skip the preview. */
 
-    fseek( fp, sizeof( uint16_t ), SEEK_CUR );
+    fseek( fp, U16_SIZE, SEEK_CUR );
     if( ferror( fp ) || feof( fp ) )
         return( valid_entry );
 

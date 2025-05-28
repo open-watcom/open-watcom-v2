@@ -62,7 +62,7 @@ cop_file_type parse_header( FILE *fp )
 
     /* Get the count and ensure it is 0x02. */
 
-    count = fgetc( fp );
+    count = fread_u8( fp );
     if( ferror( fp ) || feof( fp ) ) {
         return( COP_file_error );
     }
@@ -89,7 +89,7 @@ cop_file_type parse_header( FILE *fp )
 
     /* Get the text_version_length and ensure it is 0x0b. */
 
-    count = fgetc( fp );
+    count = fread_u8( fp );
     if( ferror( fp ) || feof( fp ) ) {
         return( COP_file_error );
     }
@@ -112,7 +112,7 @@ cop_file_type parse_header( FILE *fp )
 
     /* Get the type. */
 
-    count = fgetc( fp );
+    count = fread_u8( fp );
 
     /* If there is no more data, this is not a valid .COP file. */
 

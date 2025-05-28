@@ -126,7 +126,7 @@ cop_font *parse_font( FILE *fp, char const *fon_name )
 
     /* Used to acquire string attributes. */
 
-    uint8_t             length;
+    int                 length;
     char *              string_ptr          = NULL;
 
     /* Used to acquire numeric attributes. */
@@ -136,8 +136,8 @@ cop_font *parse_font( FILE *fp, char const *fon_name )
     /* Used to acquire the CharacterDescriptionBlock. */
 
     uint8_t *           byte_ptr            = NULL;
-    uint8_t             data_count;
-    uint16_t            i;
+    int                 data_count;
+    int                 i;
     uint8_t             intrans_flag;
     uint8_t *           outtrans_data       = NULL;
     uint8_t             outtrans_data_size;
@@ -155,7 +155,7 @@ cop_font *parse_font( FILE *fp, char const *fon_name )
 
     /* Used for count and other values. */
 
-    uint8_t             count8;
+    int                 count;
 
     char                discriminator[3];
 
@@ -330,7 +330,7 @@ cop_font *parse_font( FILE *fp, char const *fon_name )
 
     /* Get the size_flag, which is not needed. */
 
-    count8 = fread_u8( fp );
+    count = fread_u8( fp );
     if( ferror( fp ) || feof( fp ) ) {
         mem_free( out_font );
         out_font = NULL;
@@ -375,14 +375,14 @@ cop_font *parse_font( FILE *fp, char const *fon_name )
 
         /* Get the designator and verify it contains 0x81. */
 
-        count8 = fread_u8( fp );
+        count = fread_u8( fp );
         if( ferror( fp ) || feof( fp ) ) {
            mem_free( out_font );
            out_font = NULL;
            return( out_font );
         }
 
-        if( count8 != 0x81 ) {
+        if( count != 0x81 ) {
            mem_free( out_font );
            out_font = NULL;
            return( out_font );
@@ -390,14 +390,14 @@ cop_font *parse_font( FILE *fp, char const *fon_name )
 
         /* Get the count and verify that it contains 0x00. */
 
-        count8 = fread_u8( fp );
+        count = fread_u8( fp );
         if( ferror( fp ) || feof( fp ) ) {
            mem_free( out_font );
            out_font = NULL;
            return( out_font );
         }
 
-        if( count8 != 0x00 ) {
+        if( count != 0x00 ) {
             mem_free( out_font );
             out_font = NULL;
             return( out_font );
@@ -436,7 +436,7 @@ cop_font *parse_font( FILE *fp, char const *fon_name )
 
         /* Read the count. */
 
-        count8 = fread_u8( fp );
+        count = fread_u8( fp );
         if( ferror( fp ) || feof( fp ) ) {
             mem_free( out_font );
             out_font = NULL;
@@ -454,7 +454,7 @@ cop_font *parse_font( FILE *fp, char const *fon_name )
 
             /* The count should be 0x00. */
 
-            if( count8 != 0x00 ) {
+            if( count != 0x00 ) {
                 mem_free( out_font );
                 out_font = NULL;
                 return( out_font );
@@ -522,7 +522,7 @@ cop_font *parse_font( FILE *fp, char const *fon_name )
 
             /* The count should be equal to the data_count. */
 
-            if( count8 != data_count ) {
+            if( count != data_count ) {
                 mem_free( out_font );
                 out_font = NULL;
                 return( out_font );
@@ -658,7 +658,7 @@ cop_font *parse_font( FILE *fp, char const *fon_name )
 
         /* This byte's value is checked below. */
 
-        count8 = fread_u8( fp );
+        count = fread_u8( fp );
         if( ferror( fp ) || feof( fp ) ) {
             mem_free( out_font );
             out_font = NULL;
@@ -674,7 +674,7 @@ cop_font *parse_font( FILE *fp, char const *fon_name )
 
             /* The count should be 0x00. */
 
-            if( count8 != 0x00 ) {
+            if( count != 0x00 ) {
                 mem_free( out_font );
                 out_font = NULL;
                 return( out_font );
@@ -706,7 +706,7 @@ cop_font *parse_font( FILE *fp, char const *fon_name )
 
             /* The count should be 0x01. */
 
-            if( count8 != 0x01 ) {
+            if( count != 0x01 ) {
                 mem_free( out_font );
                 out_font = NULL;
                 return( out_font );
