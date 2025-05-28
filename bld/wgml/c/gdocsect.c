@@ -112,7 +112,6 @@ void set_section_banners( doc_section ds )
                 case topeven_place :
                     sect_ban_top[0] = ban;
                     break;
-
                 case botodd_place :
                     sect_ban_bot[1] = ban;
                     break;
@@ -347,6 +346,7 @@ static void gen_ref_list( ix_e_blk * refs, font_number font )
         case pgmajorstring :
             ProcFlags.ct = true;
             post_space = wgml_fonts[font].spc_width;
+            /* fall through */
         case pgstring :
             if( cur_ref->u.pageref.page_text[0] != '\0' ) {     // if not null string
                 process_text( cur_ref->u.pageref.page_text, font );
@@ -375,6 +375,7 @@ static void gen_ref_list( ix_e_blk * refs, font_number font )
         case pgmajor :
             ProcFlags.ct = true;
             post_space = 0;
+            /* fall through */
         case pgpageno :
             format_num( cur_ref->u.pagenum.page_no, buffer, sizeof( buffer ), cur_ref->u.pagenum.style );
             process_text( buffer, font );
@@ -785,6 +786,7 @@ static void gen_index( void )
                     if( !ProcFlags.col_started ) {      // at top of page
                         g_top_skip = wgml_fonts[layout_work.ixhead.font].line_height;
                     }
+                    /* fall through */
                 case char_frame :                   // no top-of-page correction in wgml 4.0
                     gen_rule_head( letter );
                     break;
