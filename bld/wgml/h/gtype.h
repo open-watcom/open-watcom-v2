@@ -134,6 +134,8 @@
 #define SkipDot( p )        if( *(p) == '.' ) (p)++
 #define SkipSpacesTabs( p ) while( is_space_tab_char( *(p) ) ) (p)++
 
+#define SkipSpacesTok(p,e)  while( *(p) == ' ' && (p) < (e) ) (p)++
+
 #define TABLE_SIZE(x)       (sizeof( (x) ) / sizeof( (x)[0] ))
 
 #define CHECK_FONT(f)       if((f) >= wgml_font_cnt) (f) = FONT0

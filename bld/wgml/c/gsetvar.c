@@ -272,16 +272,13 @@ void    scr_se( void )
     p = scan_sym( scandata.s, &sym, &subscript, NULL, false );
 
     if( strcmp( MAC_STAR_NAME, sym.name ) != 0 ) {  // remove trailing blanks from all symbols except *
-        valstart = p;
-        p = scandata.e;
-        while( p-- > valstart && *p == ' ' )
-            {;}
-        scandata.e = p + 1;
-        p = valstart;
+        while( scandata.e-- > p && *scandata.e == ' ' )
+            /* empty */;
+        scandata.e++;
     }
 
     if( ProcFlags.blanks_allowed ) {
-        SkipSpaces( p );                        // skip over spaces
+        SkipSpacesTok( p, scandata.e );                        // skip over spaces
     }
     if( p >= scandata.e ) {
         if( !ProcFlags.suppress_msg ) {
@@ -298,7 +295,7 @@ void    scr_se( void )
         if( *p == '=' ) {                       // all other cases have no equal sign (see above)
             p++;
             if( ProcFlags.blanks_allowed ) {
-                SkipSpaces( p );                // skip over spaces to value
+                SkipSpacesTok( p, scandata.e ); // skip over spaces to value
             }
             valstart = p;
             len = scandata.e - p;
