@@ -182,7 +182,7 @@ typedef enum space_units {
     SU_lay_extend            // additions before SU_lay_left please
 } space_units;
 
-typedef struct {
+typedef struct su {
     char        su_txt[MAX_SU_LENGTH + 1];    // space unit as entered in chars
     int         su_whole;               // integer part
     int         su_dec;                 // decimal part (if any)
@@ -913,7 +913,7 @@ typedef enum {  // see Wiki for column type definitions
     BOXV_up,    // current box "up" column
 } bx_v_ind;
 
-typedef struct {
+typedef struct box_col_spec {
     unsigned        col;
     unsigned        depth;
     bx_v_ind        v_ind;
@@ -944,13 +944,13 @@ typedef enum {
     ALIGN_right,
 } alignment;
 
-typedef struct {
+typedef struct tab_stop {
     unsigned        column;
     alignment       alignment;
     uint8_t         fill_char;
 } tab_stop;
 
-typedef struct {
+typedef struct tab_list {
     uint16_t        current;
     uint16_t        length;
     tab_stop        *tabs;
@@ -1038,7 +1038,7 @@ typedef enum {
 
 // struct doc_element;    // forward declaration (uncomment if ever needed)
 
-typedef struct {
+typedef struct binclude_element {
     unsigned        cur_left;
     unsigned        depth;
     unsigned        y_address;
@@ -1050,7 +1050,7 @@ typedef struct {
     char            *file;
 } binclude_element;
 
-typedef struct {
+typedef struct dbox_element {
     unsigned        h_start;
     unsigned        v_start;
     unsigned        h_len;
@@ -1058,7 +1058,7 @@ typedef struct {
     struct eol_ix   *eol_index;
 } dbox_element;
 
-typedef struct {
+typedef struct graphic_element {
     unsigned        cur_left;
     unsigned        depth;
     unsigned        scale;
@@ -1074,7 +1074,7 @@ typedef struct {
     char            *file;
 } graphic_element;
 
-typedef struct {
+typedef struct hline_element {
     unsigned        h_start;
     unsigned        v_start;
     unsigned        h_len;
@@ -1084,7 +1084,7 @@ typedef struct {
     bool            ban_adjust; // hline is first line in an outer box at effective top of page
 } hline_element;
 
-typedef struct {
+typedef struct text_element {
     struct doc_element *prev;           // only used with headings
     struct ffh_entry *entry;            // only used with headings
     struct ref_entry *ref;              // only used with headings
@@ -1095,7 +1095,7 @@ typedef struct {
     bool            vspace_next;        // next element is a vspace_element (XMP/eXMP blocks only)
 } text_element;
 
-typedef struct {
+typedef struct vline_element {
     unsigned        h_start;
     unsigned        v_start;
     unsigned        v_len;
@@ -1103,7 +1103,7 @@ typedef struct {
     bool            twice;
 } vline_element;
 
-typedef struct {
+typedef struct vspace_element {
     font_number     font;
     struct eol_ix   *eol_index;
 } vspace_element;
@@ -1175,7 +1175,7 @@ typedef struct doc_el_group {
     font_number     block_font;         // used by CO OFF/CO ON blocks
 } doc_el_group;
 
-typedef struct {
+typedef struct doc_column {
     unsigned        main_top;           // top of page for main
     unsigned        fig_top;            // top of page for bot_fig
     unsigned        fn_top;             // top of page for footnote
@@ -1209,7 +1209,7 @@ struct              banner_lay_tag;     // avoids include circularity with gtype
 /*        they can only hold one item (heading or figure)                  */
 /***************************************************************************/
 
-typedef struct {
+typedef struct doc_page {
     unsigned        page_top;           // top of page for top banner
     unsigned        panes_top;          // top of page for first pane
     unsigned        bot_ban_top;        // top of page for bottom banner
@@ -1234,7 +1234,7 @@ typedef struct {
     struct eol_ix   *eol_index;
 } doc_page;
 
-typedef struct {
+typedef struct doc_next_page {
     doc_el_group    *last_fk_queue;
     doc_el_group    *last_page_width;
     doc_el_group    *last_col_width;
@@ -1314,7 +1314,7 @@ typedef struct ix_e_blk {               // index entry for pagenos / text
 
 /* These are used in the order given, and each is kept in sorted order */
 
-typedef struct {
+typedef struct entry_list {
     ix_e_blk        *major_pgnum;   // first major page number ix entry block
     ix_e_blk        *major_string;  // first major string ix entry block
     ix_e_blk        *normal_pgnum;  // first normal page number ix entry block
@@ -1383,7 +1383,7 @@ typedef enum {
 /*  IN PROGRESS */
 /***************************************************************************/
 
-typedef struct {
+typedef struct hd_num_data {
     unsigned        headn;              // current heading number (numeric)
     char            hnumstr[64];        // current heading number (text)
     symsub          *headsub;           // ptr to $HEADx symvar entry
@@ -1488,12 +1488,12 @@ typedef enum {
     SCS_count,  // used with line count
 } style_cw_scope;
 
-typedef struct {
+typedef struct style_cw_info {
     unsigned        count;  // number of lines, if scope is SCS_count
     style_cw_scope  scope;  // scope enum
 } style_cw_info;
 
-typedef struct {
+typedef struct script_style_info {
     style_cw_info   cw_bd;  // info for .BD
     style_cw_info   cw_us;  // info for .US (or .UL, which behaves the same way)
     font_number     font;   // font to restore when all scope fields are SCS_none
