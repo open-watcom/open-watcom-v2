@@ -1407,9 +1407,11 @@ void split_attr_file( char *filename , char *attr, unsigned attrlen )
     fn = filename;
     p = attr;
     if( *fn == '(' ) {                  // attribute infront of filename
+        fn++;
         for( k = 0; k < attrlen; k++ ) {
-            *p++ = *++fn;               // isolate attribute
+            *p++ = *fn++;               // isolate attribute
             if( *fn == ')' ) {
+                fn++;
                 break;
             }
         }
@@ -1417,11 +1419,10 @@ void split_attr_file( char *filename , char *attr, unsigned attrlen )
 
         p = filename;
         while( *fn != '\0' ) {          // shift filename
-            *p++ = *++fn;
+            *p++ = *fn++;
         }
-    } else {
-        *p = '\0';                      // no attr
     }
+    *p = '\0';                          // terminate attr or filename
 }
 
 

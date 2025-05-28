@@ -852,8 +852,7 @@ void out_head_page( ffh_entry * in_entry, ref_entry * in_ref, unsigned in_pageno
             in_entry->pageno = currno;
             if( GlobalFlags.lastpass ) {
                 if( (in_ref != NULL)
-                  && (in_ref->refid != NULL)
-                  && in_ref->refid[0] ) {
+                  && in_ref->refid[0] != '\0' ) {
                     hd_fwd_refs = init_fwd_ref( hd_fwd_refs, in_ref->refid );
                 }
                 ProcFlags.new_pagenr = true;
