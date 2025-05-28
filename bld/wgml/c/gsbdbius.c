@@ -202,7 +202,7 @@ static void scr_style_common( style_cw_type type, style_cw_info *cw_info )
                         p = pa;                 // output as text
                     } else {
                         pb++;                   // over blank after control word
-                        pa = pb;                 // keep spaces at start of text when CO is OFF
+                        pa = pb;                // keep spaces at start of text when CO is OFF
                     }
                 } else if( gn.result == 0 ) {
                     pa = p;                     // nothing happens at all
@@ -275,8 +275,27 @@ void scr_us( void )
 }
 
 /************************************************************************/
+/* scr_style_copy() copies the contents of the fields from parameter    */
+/* first to those of parameter second                                   */
+/* the inline phrase tags use this to interact properly with the        */
+/* control words in this file                                           */
+/************************************************************************/
+
+void scr_style_copy( script_style_info * first, script_style_info * second )
+{
+    second->font = first->font;
+    second->style = first->style;
+    second->cw_bd.count = first->cw_bd.count;
+    second->cw_bd.scope = first->cw_bd.scope;
+    second->cw_us.count = first->cw_us.count;
+    second->cw_us.scope = first->cw_us.scope;
+
+    return;
+}
+
+/************************************************************************/
 /* scr_style_end() terminates all processing controlled by the control  */
-/*   words defined in this file                                         */
+/* words defined in this file                                           */
 /* for example, the next tag will cause this function to be called      */
 /************************************************************************/
 

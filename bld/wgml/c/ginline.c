@@ -355,6 +355,13 @@ static void gml_e_inline_common( const gmltag *entry )
       && (input_cbs->fmflags & (II_file | II_macro)) ) {
         scr_process_break();        // ensure line is output
     }
+    if( g_script_style_sav.style != SCT_none ) {
+        if( entry->u.tagid != T_EQ ) {
+            scr_style_copy( &g_script_style_sav, &g_script_style );
+            ProcFlags.scr_scope_eip = true;
+        }
+        g_script_style_sav.style = SCT_none;
+    }
     scandata.s = scandata.e;
 }
 

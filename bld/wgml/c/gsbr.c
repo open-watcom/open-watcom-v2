@@ -289,8 +289,12 @@ void    scr_br( void )
 
 void  scr_process_break( void )
 {
-    doc_element *   cur_el;
-    text_chars  *   marker  = NULL;
+    doc_element     *cur_el;
+    text_chars      *marker  = NULL;
+
+    if( (g_script_style.style != SCT_none) && ProcFlags.scr_scope_eip ) {
+        scr_style_end();
+    }
 
     if( g_eol_ix != NULL ) {
         attach_eol();
@@ -393,6 +397,7 @@ void  scr_process_break( void )
     ProcFlags.dd_space = false;
     ProcFlags.para_starting = false;
     ProcFlags.para_has_text = false;
+    ProcFlags.scr_scope_eip = false;
     ProcFlags.skips_valid = false;
     ProcFlags.titlep_starting = false;
     c_stop = NULL;

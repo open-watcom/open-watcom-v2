@@ -283,6 +283,7 @@ extern void         test_out_t_line( text_line  *a_line );
 
 
 /* gsbdbius.c                           */
+extern void         scr_style_copy( script_style_info *first, script_style_info *second );
 extern void         scr_style_end( void );
 extern font_number  scr_style_font( font_number in_font );
 

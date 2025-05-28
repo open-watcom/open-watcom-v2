@@ -422,4 +422,11 @@ void init_pass_data( void )
     new_file_parms = NULL;      // set for initial file
 
     CONT_char   = CONT_CHAR_DEFAULT;    // CONT start char
+
+    g_script_style_sav.font        = FONT0; // initialize BD/BI/US scope control save
+    g_script_style_sav.style       = SCT_none;
+    g_script_style_sav.cw_bd.count = 0;
+    g_script_style_sav.cw_bd.scope = SCS_none;
+    g_script_style_sav.cw_us.count = 0;
+    g_script_style_sav.cw_us.scope = SCS_none;
 }

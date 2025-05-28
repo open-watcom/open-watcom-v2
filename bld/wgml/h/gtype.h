@@ -1616,6 +1616,7 @@ typedef struct proc_flags {
     unsigned        br_done             : 1;// break done after einl_in_inlp set: set font to FONT0 in process_text()
     unsigned        einl_in_inlp        : 1;// inline end tag inside inline phrase
     unsigned        inl_text            : 1;// text just processed was inside an inline phrase
+    unsigned        scr_scope_eip       : 1;// inline phrase end tag inside BD/BI/US scope
     unsigned        xmp_ut_sf           : 1;// SF in user-defined tag inside XMP block
 
     unsigned        cc_cp_done          : 1;// CC or CP done; apply current inset to first line only

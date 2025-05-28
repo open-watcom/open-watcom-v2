@@ -266,9 +266,22 @@ static void scan_gml( void )
         } else {                        // not within :LAYOUT
             tag = find_sys_tag( tagname );
             if( tag != NULL ) {
+                /*******************************************************************/
+                /*  If any of the BD/BI/US tags is active, then:                   */
+                /*  The inline phrase start tags (CIT, Hn, Q, and SF) need to be   */
+                /*  able to cancel this, and then the end tag must restore it.     */
+                /*  The index tags (I1, I2, I3, IH1, IH2, and IH3) must not cancel */
+                /*  this but other tags must do so.                                */
+                /*******************************************************************/
                 if( g_script_style.style != SCT_none ) {
-                    scr_style_end();        // cancel BD, BI, US
+                    if( (tag->tagclass & TCLS_ip_start) != 0 ) {
+                        scr_style_copy( &g_script_style, &g_script_style_sav );
+                    }
+                    if( (tag->tagclass & TCLS_index) == 0 ) {
+                        scr_style_end();
+                    }
                 }
+
                 ProcFlags.need_tag = false;
 
                 /*******************************************************************/
