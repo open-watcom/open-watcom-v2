@@ -78,31 +78,21 @@
 
 static const bool internal_to_su( su *in_su, bool tag, const char *base )
 {
-    bool        cvterr  = true;
-    bool        is_cp   = false;
-    char    *   pd      = NULL; // ptr to decimal point
-    char    *   pd1     = NULL; // ptr to first decimal digit
-    char    *   pdn     = NULL; // ptr to last digit +1
-    char    *   ps      = NULL; // destination for value text
-    char    *   pu      = NULL; // ptr to trailing unit
-    char        sign;
-    char        unit[4];
-    int         i;
-    ldiv_t      div;
-    int         k;
-    int         wh;
-    int         wd;
-    su      *   s;
+    bool            cvterr  = true;
+    bool            is_cp   = false;
+    char            *pd     = NULL;     // ptr to decimal point
+    char            *pd1    = NULL;     // ptr to first decimal digit
+    char            *pdn    = NULL;     // ptr to last digit +1
+    char            *ps;                // destination for value text
+    char            sign;
+    char            unit[4];
+    int             i;
+    ldiv_t          div;
+    int             k;
+    int             wh;
+    int             wd;
 
-    unit[3] = '\0';
-    unit[2] = '\0';
-    unit[1] = '\0';
-    unit[0] = '\0';
-    s = in_su;
-    wh = 0;
-    wd = 0;
-
-    ps = s->su_txt;
+    ps = in_su->su_txt;
 
     /********************************************************************/
     /* extract and skip the sign, if present                            */
@@ -120,63 +110,49 @@ static const bool internal_to_su( su *in_su, bool tag, const char *base )
         sign = '+';
     }
 
-    for( i = 0; i < 4; i++ ) {                  // max four digits in whole part
-        if( my_isdigit( *ps ) ) {
-            wh = (10 * wh) + (*ps - '0');
-            ps++;
-        } else {
-            break;
-        }
-        if( *ps == '\0' ) {                     // value end reached
-            break;
-        }
+    wh = 0;
+    for( i = 0; i < 4 && my_isdigit( *ps ); i++ ) { // max four digits in whole part
+        wh = (10 * wh) + (*ps - '0');
+        ps++;
     }
-    if( my_isdigit( *ps ) ) {                   // too many digits in whole part
-        val_parse_err_exit( base + (ps - s->su_txt), tag );
+    if( my_isdigit( *ps ) ) {           // too many digits in whole part
+        val_parse_err_exit( base + (ps - in_su->su_txt), tag );
         /* never return */
     }
 
-    if( *ps == '.' ) {                          // check for decimal point
-        pd = ps;
-        ps++;
-        pd1 = ps;                               // remember start of decimals
-        for( i = 0; i < 2; i++ ) {              // max two digits in decimals
-            if( my_isdigit( *ps ) ) {
-                wd = 10 * wd + *ps - '0';
-                ps++;
-            } else {
-                break;
-            }
-            if( *ps == '\0' ) {                 // value end reached
-                break;
-            }
+    wd = 0;
+    if( *ps == '.' ) {                  // check for decimal point
+        pd = ps++;
+        pd1 = ps;                       // remember start of decimals
+        for( i = 0; i < 2 && my_isdigit( *ps ); i++ ) { // max two digits in decimals
+            wd = 10 * wd + *ps - '0';
+            ps++;
+        }
+        if( my_isdigit( *ps ) ) {       // too many digits in decimals
+            val_parse_err_exit( base + (ps - in_su->su_txt), tag );
+            /* never return */
         }
         pdn = ps;
-        if( pd1 == ps ) {                       // no decimals
+        if( pd1 == ps ) {               // no decimals
             pd1 = NULL;
             pdn = NULL;
         }
-        if( my_isdigit( *ps ) ) {               // too many digits in decimals
-            val_parse_err_exit( base + (ps - s->su_txt), tag );
-            /* never return */
-        }
     }
 
-    k = 0;
-    pu = ps;
-    for( i = 0; i < 2; i++ ) {                  // max two characters in unit
-        if( my_isalpha( *ps ) ) {
-            unit[k++] = my_tolower( *ps );      // save Unit
-            ps++;
-        } else {
-            break;
-        }
-        if( *ps == '\0' ) {                     // value end reached
-            break;
-        }
-    }
-    if( my_isalpha( *ps ) ) {                   // too many characters in unit
-        val_parse_err_exit( base + (ps - s->su_txt), tag );
+    /***********************************************************************/
+    /*  get max two characters in unit                                     */
+    /***********************************************************************/
+
+    unit[3] = '\0';
+    unit[2] = '\0';
+    unit[1] = '\0';
+    unit[0] = '\0';
+    if( my_isalpha( *ps ) )             // check first
+        unit[0] = *ps++;                // save Unit
+    if( my_isalpha( *ps ) )             // check second
+        unit[1] = *ps++;                // save Unit
+    if( my_isalpha( *ps ) ) {           // too many characters in unit
+        val_parse_err_exit( base + (ps - in_su->su_txt), tag );
         /* never return */
     }
 
@@ -184,116 +160,106 @@ static const bool internal_to_su( su *in_su, bool tag, const char *base )
     /*  check for valid unit                                               */
     /***********************************************************************/
 
-    if( unit[1] == '\0' ) {                     // single letter unit
+    if( unit[1] == '\0' ) {             // single letter unit
         switch( unit[0] ) {
         case 'i' :
-            s->su_u = SU_inch;
+            in_su->su_u = SU_inch;
             break;
         case 'm' :
-            s->su_u = SU_ems;
-            if( pd != NULL ) {                  // no decimals with "M"
-                val_parse_err_exit( base + (ps - s->su_txt), tag );
+            in_su->su_u = SU_ems;
+            if( pd != NULL ) {          // no decimals with "M"
+                val_parse_err_exit( base + (ps - in_su->su_txt), tag );
                 /* never return */
             }
             break;
         case 'c' :
-            s->su_u = SU_cicero;
+            in_su->su_u = SU_cicero;
             is_cp = true;
             break;
         case 'p' :
-            s->su_u = SU_pica;
+            in_su->su_u = SU_pica;
             is_cp = true;
             break;
-        case '\0' :                             // no unit is characters or lines
-            s->su_u = SU_chars_lines;
+        case '\0' :                     // no unit is characters or lines
+            in_su->su_u = SU_chars_lines;
             break;
         default:
-            val_parse_err_exit( base + (ps - s->su_txt), tag );
+            val_parse_err_exit( base + (ps - in_su->su_txt), tag );
             /* never return */
         }
-    } else {                                    // two letter unit
-        if( unit[1] == 'm' ) {                  // cm, mm ?
+    } else {                            // two letter unit
+        if( unit[1] == 'm' ) {          // cm, mm ?
             if( unit[0] == 'c' ) {
-                s->su_u = SU_cm;
+                in_su->su_u = SU_cm;
             } else if( unit[0] == 'm' ) {
-                s->su_u = SU_mm;
-            } else {                            // invalid unit
-                val_parse_err_exit( base + (ps - s->su_txt), tag );
+                in_su->su_u = SU_mm;
+            } else {                    // invalid unit
+                val_parse_err_exit( base + (ps - in_su->su_txt), tag );
                 /* never return */
             }
-        } else if( unit[0] == 'd' ) {           // dv ?
+        } else if( unit[0] == 'd' ) {   // dv ?
             if( unit[1] == 'v' ) {
-                s->su_u = SU_dv;
-            } else {                            // invalid unit
-                val_parse_err_exit( base + (ps - s->su_txt), tag );
+                in_su->su_u = SU_dv;
+            } else {                    // invalid unit
+                val_parse_err_exit( base + (ps - in_su->su_txt), tag );
                 /* never return */
             }
-        } else {                                // invalid unit
-            val_parse_err_exit( base + (ps - s->su_txt), tag );
+        } else {                        // invalid unit
+            val_parse_err_exit( base + (ps - in_su->su_txt), tag );
             /* never return */
         }
     }
 
-    if( is_cp ) {       // "C" and "P" can be followed by max four digits
-        for( i = 0; i < 4; i++ ) {
-            if( my_isdigit( *ps ) ) {
-                wd = (10 * wd) + (*ps - '0');
-                ps++;
-            } else {
-                break;
-            }
-            if( *ps == '\0' ) {                 // value end reached
-                break;
-            }
+    if( is_cp ) {                       // "c" and "p" can be followed by max four digits
+        for( i = 0; i < 4 && my_isdigit( *ps ); i++ ) {
+            wd = (10 * wd) + (*ps - '0');
+            ps++;
         }
-        if( my_isdigit( *ps ) ) {     // too many digits after "C" or "P"
-            val_parse_err_exit( base + (ps - s->su_txt), tag );
+        if( my_isdigit( *ps ) ) {       // too many digits after "c" or "p"
+            val_parse_err_exit( base + (ps - in_su->su_txt), tag );
             /* never return */
         }
     }
 
-    if( *ps != '\0' ) {                         // value continues on: it shouldn't
-        val_parse_err_exit( base + (ps - s->su_txt), tag );
+    if( *ps != '\0' ) {                 // value continues on: it shouldn't
+        val_parse_err_exit( base + (ps - in_su->su_txt), tag );
         /* never return */
     }
-    s->su_whole = wh;
-    s->su_dec   = wd;
+    in_su->su_whole = wh;
+    in_su->su_dec   = wd;
 
-    if( k == 0 ) {                      // no trailing unit
-        pu = NULL;
-    }
     if( pd != NULL ) {                  // dec point found
-        if( pu == NULL ) {              // need trailing unit
-            val_parse_err_exit( base + (ps - s->su_txt - 1), tag );
+        if( unit[0] == '\0' ) {         // need trailing unit
+            val_parse_err_exit( base + (ps - in_su->su_txt - 1), tag );
             /* never return */
         }
     }
 
-    s->su_inch = 0;
-    s->su_mm   = 0;
+    in_su->su_inch = 0;
+    in_su->su_mm   = 0;
     k = 1;
     if( pd1 != NULL ) {
         if( pdn - pd1 == 1 ) {
-            k = 10;                 // only 0.1 digit
+            k = 10;                     // only 0.1 digit
         }
     }
-    switch( s->su_u ) {
+    switch( in_su->su_u ) {
     // the relative units are only stored, not converted
     case SU_chars_lines :
     case SU_ems :
     case SU_dv :
         break;
     case SU_inch :                      // inch, cm, mm valid with decimals
-        s->su_mm   = (wh * 100L + wd * k) * 2540L;
-        s->su_inch = (wh * 100L + wd * k) *  100L;
+        in_su->su_mm   = (wh * 100L + wd * k) * 2540L;
+        in_su->su_inch = (wh * 100L + wd * k) *  100L;
         break;
     case SU_cm :
-        s->su_mm   = (wh * 100L + wd * k) * 1000L;
-        s->su_inch = s->su_mm * 10L / 254L;
+        in_su->su_mm   = (wh * 100L + wd * k) * 1000L;
+        in_su->su_inch = in_su->su_mm * 10L / 254L;
         break;
     case SU_mm :
-        s->su_mm   = (wh * 100L + wd * k) *  100L;
-        s->su_inch = s->su_mm * 10L / 254L;
+        in_su->su_mm   = (wh * 100L + wd * k) *  100L;
+        in_su->su_inch = in_su->su_mm * 10L / 254L;
         break;
     case SU_cicero :                    // cicero
         if( wd > 11 ) {
@@ -301,9 +267,9 @@ static const bool internal_to_su( su *in_su, bool tag, const char *base )
             wh += div.quot;
             wd = div.rem;
         }
-        s->su_inch = wh * 10000L / 6L + wd * 10000L / 72L;
-        s->su_inch = (int64_t)s->su_inch * 10656L / 10000L;
-        s->su_mm = s->su_inch * 254L / 10L;
+        in_su->su_inch = wh * 10000L / 6L + wd * 10000L / 72L;
+        in_su->su_inch = (int64_t)in_su->su_inch * 10656L / 10000L;
+        in_su->su_mm = in_su->su_inch * 254L / 10L;
         break;
     case SU_pica :                      // pica
         if( wd > 11 ) {
@@ -311,17 +277,17 @@ static const bool internal_to_su( su *in_su, bool tag, const char *base )
             wh += div.quot;
             wd = div.rem;
         }
-        s->su_inch = wh * 10000L / 6L + wd * 10000L / 72L;
-        s->su_inch = (int64_t)s->su_inch * 9978L / 10000L;
-        s->su_mm = s->su_inch * 254L / 10L;
+        in_su->su_inch = wh * 10000L / 6L + wd * 10000L / 72L;
+        in_su->su_inch = (int64_t)in_su->su_inch * 9978L / 10000L;
+        in_su->su_mm = in_su->su_inch * 254L / 10L;
         break;
     default:
         break;
     }
     if( sign == '-' ) {
-        s->su_inch  = -s->su_inch;
-        s->su_mm    = -s->su_mm;
-        s->su_whole = -s->su_whole;
+        in_su->su_inch  = -in_su->su_inch;
+        in_su->su_mm    = -in_su->su_mm;
+        in_su->su_whole = -in_su->su_whole;
     }
 
     cvterr = false;
@@ -335,17 +301,15 @@ static const bool internal_to_su( su *in_su, bool tag, const char *base )
 /*          false otherwise (not necessarily an error)                     */
 /***************************************************************************/
 
-static bool su_expression( su * in_su )
+static bool su_expression( su *in_su )
 {
     bool                retval  = true;
-    char            *   p       = in_su->su_txt;
     condcode            cc;
     getnum_block        gn;
 
-    gn.arg.s = p;
-    while( *p != '\0' )
-        p++;
-    gn.arg.e = p;
+    gn.arg.e = gn.arg.s = in_su->su_txt;
+    while( *gn.arg.e != '\0' )
+        gn.arg.e++;
     gn.ignore_blanks = false;
     cc = getnum( &gn );
 
@@ -387,11 +351,8 @@ static void add_spaces_t_element( char * spaces )
                 internal_err_exit( __FILE__, __LINE__ );
                 /* never return */
             }
-
-            line = t_element->element.text.first;
-            while( line->next != NULL ) {
-                line = line->next;
-            }
+            for( line = t_element->element.text.first; line->next != NULL; line = line->next )
+                /* empty */;
             font = line->last->font;
             start = line->last->x_address + line->last->width;
             sav_chars = line->last;
@@ -521,18 +482,17 @@ bool att_val_to_su( su *in_su, bool pos, att_val_type *attr_val, bool specval )
     char        *ps;        // destination for value text
     char        sign;
 
-    ps = in_su->su_txt;
-    *ps = '\0';
-
     if( attr_val->tok.l > MAX_SU_LENGTH ) {     // won't fit
         xx_line_err_exit_c( ERR_INV_ATT_VAL, attr_val->tok.s );
         /* never return */
     }
-    strcpy( ps, attr_val->specval );
+    /* attr_val->specval is lowercased already */
+    strcpy( in_su->su_txt, attr_val->specval );
 
     in_su->su_u = SU_undefined;
     in_su->su_relative = false;
 
+    ps = in_su->su_txt;
     if( *ps == '+' ) {                      // not allowed with tags
         xx_line_err_exit_c( ERR_INV_ATT_VAL, attr_val->tok.s );
         /* never return */
@@ -600,6 +560,7 @@ bool cw_val_to_su( const char **scanp, su *in_su )
         xx_line_err_exit_c( ERR_INV_CW_OP_VAL, pa );
         /* never return */
     }
+    /* lowercase input string */
     for( i = 0; i < len; i++ ) {
         ps[i] = my_tolower( pb[i] );
     }
@@ -661,6 +622,7 @@ bool lay_init_su( const char *p, su *in_su )
         xx_line_err_exit_c( ERR_INV_ATT_VAL, pa );
         /* never return */
     }
+    /* lowercase input string */
     for( i = 0; i < len; i++ ) {
         ps[i] = my_tolower( pb[i] );
     }
@@ -699,26 +661,26 @@ bool lay_init_su( const char *p, su *in_su )
 /*  return value is signed as space unit can be relative (+ -)             */
 /***************************************************************************/
 
-int conv_hor_unit( su * s, font_number font )
+int conv_hor_unit( su *in_su, font_number font )
 {
-    int     ds;
+    int             ds;
 
-    switch( s->su_u ) {
+    switch( in_su->su_u ) {
     case SU_chars_lines :
-        ds = s->su_whole * (int)bin_device->horizontal_base_units / CPI;
+        ds = in_su->su_whole * (int)bin_device->horizontal_base_units / CPI;
         break;
     case SU_dv :
-        ds = s->su_whole;
+        ds = in_su->su_whole;
         break;
     case SU_ems :
-        ds = s->su_whole * wgml_fonts[font].em_base;
+        ds = in_su->su_whole * wgml_fonts[font].em_base;
         break;
     case SU_inch :
     case SU_cm :
     case SU_mm :
     case SU_cicero :
     case SU_pica :
-        ds = (int64_t)s->su_inch * bin_device->horizontal_base_units / 10000L;
+        ds = (int64_t)in_su->su_inch * bin_device->horizontal_base_units / 10000L;
         break;
     default:
         ds = 0;
@@ -727,26 +689,26 @@ int conv_hor_unit( su * s, font_number font )
     return( ds );
 }
 
-int conv_vert_unit( su *s, text_space text_spacing, font_number font )
+int conv_vert_unit( su *in_su, text_space text_spacing, font_number font )
 {
-    int         ds;
-    int         fp;
+    int             ds;
+    int             fp;
 
     if( !( text_spacing > 0 ) ) {       // if spacing valid use it
         text_spacing = g_text_spacing;  // else default
     }
-    switch( s->su_u ) {
+    switch( in_su->su_u ) {
     case SU_chars_lines :
     case SU_ems :
         // no decimals, use spacing, round negative values down
-        ds = text_spacing * s->su_whole * wgml_fonts[font].line_height;
+        ds = text_spacing * in_su->su_whole * wgml_fonts[font].line_height;
         if( ds < 0 ) {
             ds++;
         }
         break;
     case SU_dv :
         // no decimals, no spacing, round negative values down
-        ds = s->su_whole;
+        ds = in_su->su_whole;
         if( ds < 0 ) {
             ds++;
         }
@@ -756,13 +718,13 @@ int conv_vert_unit( su *s, text_space text_spacing, font_number font )
     case SU_mm :
     case SU_cicero :
     case SU_pica :
-        if ( s->su_inch == 0 ) {    // if the value is "0", ds is "0"
+        if ( in_su->su_inch == 0 ) {    // if the value is "0", ds is "0"
             ds = 0;
             break;
         }
-        ds = (int64_t)s->su_inch * bin_device->vertical_base_units / 10000L;
-        fp = (int64_t)s->su_inch * bin_device->vertical_base_units % 10000L;
-        if( s->su_inch > 0 ) {
+        ds = (int64_t)in_su->su_inch * bin_device->vertical_base_units / 10000L;
+        fp = (int64_t)in_su->su_inch * bin_device->vertical_base_units % 10000L;
+        if( in_su->su_inch > 0 ) {
             if ( fp > 5000 ) {
                 ds++;
             }
@@ -1121,16 +1083,15 @@ char *int_to_roman( unsigned n, char *res, unsigned ressize, bool ucase )
         unsigned    val49;
         char        ch;
         char        ch49;
-    } i_2_r[] =
-                {
-                    { 1000, 900, 'm', 'c' },
-                    {  500, 400, 'd', 'c' },
-                    {  100,  90, 'd', 'x' },
-                    {   50,  40, 'l', 'x' },
-                    {   10,   9, 'x', 'i' },
-                    {    5,   4, 'v', 'i' },
-                    {    1,   1, 'i', 'i' }
-                };
+    } i_2_r[] = {
+        { 1000, 900, 'm', 'c' },
+        {  500, 400, 'd', 'c' },
+        {  100,  90, 'd', 'x' },
+        {   50,  40, 'l', 'x' },
+        {   10,   9, 'x', 'i' },
+        {    5,   4, 'v', 'i' },
+        {    1,   1, 'i', 'i' }
+    };
 
     unsigned    digit;
     unsigned    pos;
@@ -1259,7 +1220,7 @@ ffh_entry * init_ffh_entry( ffh_entry * ffh_list, ffhflags flags )
 /*  initalize a fwd_ref instance and insert it (if new) in alpha order     */
 /***************************************************************************/
 
-fwd_ref * init_fwd_ref( fwd_ref *dict, const char *refid )
+fwd_ref *init_fwd_ref( fwd_ref *dict, const char *refid )
 {
     fwd_ref *   curr;
     fwd_ref *   local;
@@ -1270,19 +1231,11 @@ fwd_ref * init_fwd_ref( fwd_ref *dict, const char *refid )
         curr->next = NULL;
         strcpy( curr->refid, refid );
         dict = curr;         // first entry
-    } else {
-        local = dict;
-        prev = NULL;
-        while( (local != NULL) && (strcmp( local->refid, refid ) < 0) ) {
-            prev = local;
-            local = local->next;
-        }
-        if( local == NULL ) {       // curr goes at end of list
-            curr = (fwd_ref *)mem_alloc( sizeof( fwd_ref ) );
-            curr->next = NULL;
-            strcpy( curr->refid, refid );
-            prev->next = curr;
-        } else if( strcmp( local->refid, refid ) > 0 ) {   // note: duplicate id ignored
+        return( dict );
+    }
+    prev = NULL;
+    for( local = dict; local != NULL; local = local->next ) {
+        if( strcmp( local->refid, refid ) >= 0 ) {
             curr = (fwd_ref *)mem_alloc( sizeof( fwd_ref ) );
             curr->next = NULL;
             strcpy( curr->refid, refid );
@@ -1292,9 +1245,15 @@ fwd_ref * init_fwd_ref( fwd_ref *dict, const char *refid )
                 prev->next = curr;  // curr goes between two existing entries
             }
             curr->next = local;
+            return( dict );
         }
+        prev = local;
     }
-
+    // curr goes at end of list
+    curr = (fwd_ref *)mem_alloc( sizeof( fwd_ref ) );
+    curr->next = NULL;
+    strcpy( curr->refid, refid );
+    prev->next = curr;
     return( dict );
 }
 

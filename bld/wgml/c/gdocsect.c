@@ -47,7 +47,7 @@ static  int             save_indentr;               // used with TITLEP/eTITLEP
 static  ju_enum         justify_save;               // for ProcFlags.justify
 static  line_number     titlep_lineno;              // TITLEP tag line number
 static  unsigned        cur_count;                  // current number of characters copied
-static  unsigned        frame_line_len  = CHAR_FRAME_LEN;   // length of frame lines
+static  unsigned        frame_line_len = CHAR_FRAME_LEN; // length of frame lines
 static  unsigned        str_count;                  // IXHEAD 'character string' strlen()
 static  symsub          *ixjval;                    // &sysixj value
 static  symsub          *ixrefval;                  // &sysixref value
@@ -136,7 +136,7 @@ void set_section_banners( doc_section ds )
 
 static void figlist_toc_tabs( char * fill, unsigned size, bool setup )
 {
-    if( setup) {                    // set up tabbing
+    if( setup ) {                       // set up tabbing
 
         /* Set tab char to "$" */
 
@@ -249,8 +249,7 @@ static void gen_rule_head( char * letter )
         scr_process_break();
     } else {                                            // page-oriented device
         full_line = frame_line_len;
-        full_line +=
-                wgml_fonts[layout_work.ixhead.font].width.table[*(unsigned char *)letter];
+        full_line += wgml_fonts[layout_work.ixhead.font].width.table[*(unsigned char *)letter];
         if( layout_work.ixhead.frame.type == rule_frame ) {
 
         /*******************************************************************/
@@ -283,7 +282,7 @@ static void gen_rule_head( char * letter )
             cur_limit = full_line / str_width;
             cur_count = 0;
             cur_width = 0;
-            resize_record_buffer( &line_buff, cur_limit *str_count );  // length in characters
+            resize_record_buffer( &line_buff, cur_limit * str_count );  // length in characters
             line_buff.text[0] = '\0';
             for( i = 0; i < cur_limit; i++ ) {              // fill text with copies of full string
                 strcat( line_buff.text, layout_work.ixhead.frame.string );
@@ -382,8 +381,8 @@ static void gen_ref_list( ix_e_blk * refs, font_number font )
             if( cur_ref->next != NULL ) {                   // done if last page number
                 predict = cur_ref->u.pagenum.page_no;
                 predict++;
-                if( (cur_ref->entry_typ != pgmajor ) &&
-                        (cur_ref->next->u.pagenum.page_no == predict) ) {   // sequence detected
+                if( (cur_ref->entry_typ != pgmajor )
+                  && (cur_ref->next->u.pagenum.page_no == predict) ) {   // sequence detected
                     ProcFlags.ct = true;
                     post_space = 0;
                     process_text( ixjval->value, font );
@@ -432,7 +431,8 @@ static void gen_see_list( ix_e_blk * refs, font_number font, unsigned level,
         t_page.cur_width += wrap[level];
         ProcFlags.ct = true;
         post_space = 0;
-        if( ref_done || has_sub ) {
+        if( ref_done
+          || has_sub ) {
             process_text( layout_work.index.see_also_string, font );
         } else {
             process_text( layout_work.index.see_string, font );
@@ -533,27 +533,26 @@ static void gen_figlist( void )
     ffh_entry   *   curr;
     unsigned        size;
 
-    if( fig_list == NULL ) return;  // no fig_list, no FIGLIST
+    if( fig_list == NULL )              // no fig_list, no FIGLIST
+        return;
 
     /* Insert FIGLIST into current section */
 
-    ProcFlags.start_section = true; // prevent ABSTRACT/PREFACE start if pending
-    last_page_out();                // ensure are on new page
-    g_skip = 0;                     // ignore remaining skip value
+    ProcFlags.start_section = true;     // prevent ABSTRACT/PREFACE start if pending
+    last_page_out();                    // ensure are on new page
+    g_skip = 0;                         // ignore remaining skip value
     set_section_banners( DSECT_figlist );
     reset_t_page();
 
     /* Set FIGLIST columns */
 
     t_page.panes->col_count = layout_work.figlist.columns;
-    set_cols( t_page.panes );       // will need to be updated if multiple panes activated
+    set_cols( t_page.panes );           // will need to be updated if multiple panes activated
 
     /* Set FIGLIST margins and other values */
 
-    t_page.cur_left = 2 * conv_hor_unit( &layout_work.figlist.left_adjust,
-                                         g_curr_font );    // matches wgml 4.0
-    t_page.max_width = t_page.page_width -
-                   conv_hor_unit( &layout_work.figlist.right_adjust, g_curr_font );
+    t_page.cur_left = 2 * conv_hor_unit( &layout_work.figlist.left_adjust, g_curr_font );    // matches wgml 4.0
+    t_page.max_width = t_page.page_width - conv_hor_unit( &layout_work.figlist.right_adjust, g_curr_font );
     size = conv_hor_unit( &layout_work.flpgnum.size, g_curr_font );  // space from fill to right edge
 
     /* Output FIGLIST */
@@ -650,7 +649,9 @@ static void gen_index( void )
 
     /* No index is output without an index_dict or before the last pass */
 
-    if( !GlobalFlags.lastpass || (index_dict == NULL) ) return;
+    if( !GlobalFlags.lastpass
+      || (index_dict == NULL) )
+        return;
 
     in_trans_sav = ProcFlags.in_trans;
 
@@ -755,8 +756,7 @@ static void gen_index( void )
             /* The factor 4.6 is empirical and chosen to match wgml 4.0 */
 
             if( ((4.6 * wgml_fonts[layout_work.ixhead.font].line_height)
-                   + g_subs_skip
-                   + t_page.cur_depth) >= t_page.max_depth ) {
+                   + g_subs_skip + t_page.cur_depth) >= t_page.max_depth ) {
                 next_column();
             }
 
