@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -130,7 +130,7 @@ static bool checkSTD( unsigned *value )
                 if( CmdRecogChar( '3' ) ) {
                     cxxstd = STD_CXX03;
                 } else if( CmdRecogChar( 'x' ) ) {
-                    cxxstd = STD_CXX0X;
+                    cxxstd = STD_CXX11;
                 } else {
                     return( false );
                 }
@@ -1118,7 +1118,7 @@ static void analyseAnyTargetOptions( OPT_STORAGE *data )
     }
     switch( data->cxxstd ) {
     case OPT_ENUM_cxxstd_za0x:
-        SET_STD( CXX0X );
+        CompVars.cxxstd = STD_CXX11;
         break;
     case OPT_ENUM_cxxstd_zastd:
         if( data->zastd_value != STD_NONE )

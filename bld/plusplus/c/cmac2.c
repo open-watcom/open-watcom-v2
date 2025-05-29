@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -700,7 +700,7 @@ static void CWarning( void )
 {
     bool save;
 
-    if( CompFlags.extensions_enabled || ( CHECK_STD( >= , CXX23 ) ) ) {
+    if( CompFlags.extensions_enabled || ( CompVars.cxxstd >= STD_CXX23 ) ) {
         get_arg_message();
         /* Force #warning output to be reported, even with preprocessor */
         save = CompFlags.cpp_output;
