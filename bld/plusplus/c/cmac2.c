@@ -700,9 +700,9 @@ static void CWarning( void )
 {
     bool save;
 
-    if( !CompFlags.extensions_enabled ) {
+    if( CompFlags.extensions_enabled || ( CHECK_STD( >= , CXX23 ) ) ) {
         get_arg_message();
-        /* Force #error output to be reported, even with preprocessor */
+        /* Force #warning output to be reported, even with preprocessor */
         save = CompFlags.cpp_output;
         CompFlags.cpp_output = false;
         CErr2p( WARN_USER_WARNING_MSG, Buffer );
