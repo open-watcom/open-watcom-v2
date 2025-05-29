@@ -295,6 +295,7 @@ TOKEN SpecialMacro(             // EXECUTE A SPECIAL MACRO
 {
     const char  *p;
     SYMBOL      sym;
+    long        cxxvalue;
 
     switch( mentry->parm_count ) {
     case MACRO_LINE:
@@ -335,46 +336,38 @@ TOKEN SpecialMacro(             // EXECUTE A SPECIAL MACRO
         return( T_STRING );
     case MACRO_CPLUSPLUS:
         TokenLen = 0;
-
-        long cxxvalue = 0;
         switch( CompVars.cxxstd ) {
-            default:
-            case STD_CXXPRE98:
-                cxxvalue = 1;
-                WriteBufferString( "1" );
-                break;
-
-            case STD_CXX98:
-            case STD_CXX03:
-                /* c++98 and c++03 use the same value */
-                cxxvalue = 199711;
-                WriteBufferString( "199711L" );
-                break;
-
-            case STD_CXX11:
-                cxxvalue = 201103;
-                WriteBufferString( "201103L" );
-                break;
-
-            case STD_CXX14:
-                cxxvalue = 201402;
-                WriteBufferString( "201402L" );
-                break;
-
-            case STD_CXX17:
-                cxxvalue = 201703;
-                WriteBufferString( "201703L" );
-                break;
-
-            case STD_CXX20:
-                cxxvalue = 202002;
-                WriteBufferString( "202002L" );
-                break;
-
-            case STD_CXX23:
-                cxxvalue = 202302;
-                WriteBufferString( "202302L" );
-                break;
+        default:
+        case STD_CXXPRE98:
+            cxxvalue = 1;
+            WriteBufferString( "1" );
+            break;
+        case STD_CXX98:
+        case STD_CXX03:
+            /* c++98 and c++03 use the same value */
+            cxxvalue = 199711;
+            WriteBufferString( "199711L" );
+            break;
+        case STD_CXX11:
+            cxxvalue = 201103;
+            WriteBufferString( "201103L" );
+            break;
+        case STD_CXX14:
+            cxxvalue = 201402;
+            WriteBufferString( "201402L" );
+            break;
+        case STD_CXX17:
+            cxxvalue = 201703;
+            WriteBufferString( "201703L" );
+            break;
+        case STD_CXX20:
+            cxxvalue = 202002;
+            WriteBufferString( "202002L" );
+            break;
+        case STD_CXX23:
+            cxxvalue = 202302;
+            WriteBufferString( "202302L" );
+            break;
         }
         U32ToU64( cxxvalue, &Constant64 );
         ConstType = TYP_SINT;
