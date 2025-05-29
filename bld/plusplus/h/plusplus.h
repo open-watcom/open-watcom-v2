@@ -187,6 +187,7 @@ enum {
 
 typedef enum {
     STD_NONE,
+    STD_CXXPRE98,
     STD_CXX98,
     STD_CXX11,
     STD_CXX0X=STD_CXX11,
