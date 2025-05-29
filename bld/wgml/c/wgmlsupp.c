@@ -2,7 +2,6 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -27,8 +26,8 @@
 *
 * Description:  Defines functions moved out of wgml.c so they can be linked
 *               into the research programs without including main() from wgml.c
+*               These should probably be moved to appropriate files at some point
 *                   free_inc_fp()
-*                   free_resources()
 *                   free_some_mem()
 *                   get_line()
 *                   get_macro_line()
@@ -39,11 +38,14 @@
 *                   show_include_stack()
 ****************************************************************************/
 
+
 #include <errno.h>
 #include "wgml.h"
 #include "banner.h"
 
-#include "clibext.h"
+
+#define mystr(x)            # x
+#define xmystr(s)           mystr(s)
 
 #define CRLF            "\n"
 
@@ -54,15 +56,15 @@
 
 void g_banner( void )
 {
-    if( !(GlobFlags.bannerprinted | GlobFlags.quiet) ) {
-        out_msg( banner1w( "Script/GML", _WGML_VERSION_ ) CRLF );
+    if( (GlobalFlags.bannerprinted | GlobalFlags.quiet) == 0 ) {
+        out_msg( "WATCOM Script/GML V4.0 Copyright by WATCOM International Corp. 1985, 1993." CRLF );
+        out_msg( banner1( "Special Edition for Open Watcom", _WGML_VERSION_ ) CRLF );
         out_msg( banner2 CRLF );
         out_msg( banner3 CRLF );
         out_msg( banner3a CRLF );
-        out_msg( "Compiled with WATCOMC " _MACROSTR( __WATCOMC__ )
-                 " " __DATE__ " " __TIME__ CRLF );
+        out_msg( "Compiled with WATCOMC " xmystr(__WATCOMC__) " "__DATE__" "__TIME__ CRLF);
         mem_banner();
-        GlobFlags.bannerprinted = 1;
+        GlobalFlags.bannerprinted = 1;
     }
 }
 
@@ -71,7 +73,7 @@ void g_banner( void )
 /*  increment include level                                                */
 /***************************************************************************/
 
-void    inc_inc_level( void )
+void inc_inc_level( void )
 {
     inc_level++;                        // start new level
     if( inc_level > max_inc_level ) {
@@ -81,43 +83,34 @@ void    inc_inc_level( void )
 
 
 /***************************************************************************/
-/*  Program end                                                            */
-/***************************************************************************/
-
-void my_exit( int rc )
-{
-    exit( rc );
-}
-
-
-/***************************************************************************/
 /*  Try to close an opened include file                                    */
 /***************************************************************************/
 
-static  bool    free_inc_fp( void )
+static bool free_inc_fp( void )
 {
     inputcb *   ip;
     filecb  *   cb;
     int         rc;
+    int         save_errno;
 
     ip = input_cbs;
     while( ip != NULL ) {              // as long as input stack is not empty
         if( ip->fmflags & II_file ) {   // if file (not macro)
             if( (cb = ip->s.f) != NULL ) {
                 if( (cb->flags & FF_open) ) {   // and file is open
+                    save_errno = errno;
                     rc = fgetpos( cb->fp, &cb->pos );
                     if( rc != 0 ) {
-                        g_err( err_file_io, strerror( errno ), cb->filename );
-                        err_count++;
-                        g_suicide();
+                        xx_simple_err_exit_cc( ERR_FILE_IO, strerror( errno ), cb->filename );
+                        /* never return */
                     }
                     rc = fclose( cb->fp );
                     if( rc != 0 ) {
-                        g_err( err_file_io, strerror( errno ), cb->filename );
-                        err_count++;
-                        g_suicide();
+                        xx_simple_err_exit_cc( ERR_FILE_IO, strerror( errno ), cb->filename );
+                        /* never return */
                     }
                     cb->flags &= ~FF_open;
+                    errno = save_errno;
                     return( true );
                 }
             }
@@ -136,78 +129,45 @@ static  bool    free_inc_fp( void )
 static void reopen_inc_fp( filecb *cb )
 {
     int         rc;
-    int         erc2;
+    FILE        *fp;
 
     if( (cb->flags & FF_open) == 0 ) {
         for( ;; ) {
-            cb->fp = fopen( cb->filename, "rb" );
-            if( cb->fp != NULL ) break;
-            erc2 = errno;
-            if( errno != ENOMEM && errno != ENFILE && errno != EMFILE ) break;
-            if( !free_inc_fp() ) break; // try closing an include file
+            fp = fopen( cb->filename, "rb" );
+            cb->fp = fp;
+            if( fp != NULL )
+                break;
+            if( errno != ENOMEM
+              && errno != ENFILE
+              && errno != EMFILE )
+                break;
+            if( !free_inc_fp() ) {
+                break; // try closing an include file
+            }
         }
-        if( cb->fp != NULL ) {
+        if( fp != NULL ) {
             rc = fsetpos( cb->fp, &cb->pos );
             if( rc != 0 ) {
-                g_err( err_file_io, strerror( errno ), cb->filename );
-                err_count++;
-                g_suicide();
+                xx_simple_err_exit_cc( ERR_FILE_IO, strerror( errno ), cb->filename );
+                /* never return */
             }
             cb->flags |= FF_open;
         } else {
-            g_err( err_file_io, strerror( erc2 ), cb->filename );
-            err_count++;
-            g_suicide();
+            xx_simple_err_exit_cc( ERR_FILE_IO, strerror( errno ), cb->filename );
+            /* never return */
         }
     }
     return;
 }
 
 /***************************************************************************/
-/*  Report resource exhaustion: may eventually try to correct the problem  */
-/***************************************************************************/
-
-bool    free_resources( int in_errno )
-{
-    if( in_errno == ENOMEM) {
-        g_err( err_no_memory );
-    } else {
-        g_err( err_no_handles );
-    }
-    err_count++;
-    return( false );
-}
-
-/***************************************************************************/
-/* free_layout_banner  free banner and banregion, the only parts of the    */
-/* layout dynamically allocated                                            */
-/***************************************************************************/
-void    free_layout_banner( void )
-{
-    banner_lay_tag  * ban;
-    banner_lay_tag  * ban1;
-    region_lay_tag  * reg;
-
-    ban = layout_work.banner;
-    while( ban != NULL ) {
-        reg = ban->region;
-        while( reg != NULL ) {
-            ban->region = reg->next;
-            mem_free( reg );
-            reg = ban->region;
-        }
-        ban1 = ban->next;
-        mem_free( ban );
-        ban = ban1;
-    }
-}
-
-/***************************************************************************/
 /*  free some buffers                                                      */
 /***************************************************************************/
 
-void    free_some_mem( void )
+void free_some_mem( void )
 {
+    doc_pane    *   sav_pane;
+    int             i;
 
     if( token_buf != NULL ) {
         mem_free( token_buf );
@@ -224,8 +184,8 @@ void    free_some_mem( void )
     if( master_fname_attr != NULL ) {
         mem_free( master_fname_attr );
     }
-    if( dev_name != NULL ) {
-        mem_free( dev_name );
+    if( g_dev_name != NULL ) {
+        mem_free( g_dev_name );
     }
     if( lay_files != NULL ) {
         laystack * lwk;
@@ -245,23 +205,47 @@ void    free_some_mem( void )
     if( global_dict != NULL ) {
         free_dict( &global_dict );
     }
+    if( sys_dict != NULL ) {
+        free_dict( &sys_dict );
+    }
     if( macro_dict != NULL ) {
         free_macro_dict( &macro_dict );
     }
-    if( ref_dict != NULL ) {
-        free_ref_dict( &ref_dict );
+    if( line_buff.text != NULL ) {
+        mem_free( line_buff.text );
     }
-    if( iref_dict != NULL ) {
-        free_ref_dict( &iref_dict );
+    if( fig_list != NULL ) {
+        free_ffh_list( fig_list );
     }
-    if( fig_dict != NULL ) {
-        free_ref_dict( &fig_dict );
+    if( fn_list != NULL ) {
+        free_ffh_list( fn_list );
     }
-    if( fn_dict != NULL ) {
-        free_ref_dict( &fn_dict );
+    if( hd_list != NULL ) {
+        free_ffh_list( hd_list );
     }
-    if( tag_dict != NULL ) {
-        free_tag_dict( &tag_dict );
+    if( fig_fwd_refs != NULL ) {
+        free_fwd_refs( fig_fwd_refs );
+    }
+    if( fn_fwd_refs != NULL ) {
+        free_fwd_refs( fn_fwd_refs );
+    }
+    if( hd_fwd_refs != NULL ) {
+        free_fwd_refs( hd_fwd_refs );
+    }
+    if( fig_ref_dict != NULL ) {
+        free_ref_dict( &fig_ref_dict );
+    }
+    if( fn_ref_dict != NULL ) {
+        free_ref_dict( &fn_ref_dict );
+    }
+    if( hd_ref_dict != NULL ) {
+        free_ref_dict( &hd_ref_dict );
+    }
+    if( ix_ref_dict != NULL ) {
+        free_ref_dict( &ix_ref_dict );
+    }
+    if( tags_dict != NULL ) {
+        free_tag_dict( &tags_dict );
     }
     if( index_dict != NULL ) {
         free_index_dict( &index_dict );
@@ -275,11 +259,11 @@ void    free_some_mem( void )
     if( box_line != NULL ) {
         add_box_col_stack_to_pool( box_line );
     }
-    if( cur_line != NULL ) {
-        add_box_col_set_to_pool( cur_line );
+    if( g_cur_line != NULL ) {
+        add_box_col_set_to_pool( g_cur_line );
     }
-    if( prev_line != NULL ) {
-        add_box_col_set_to_pool( prev_line );
+    if( g_prev_line != NULL ) {
+        add_box_col_set_to_pool( g_prev_line );
     }
     if( t_line != NULL ) {
         add_text_chars_to_pool( t_line );
@@ -289,56 +273,50 @@ void    free_some_mem( void )
         clear_doc_element( t_element );
     }
     if( t_page.top_ban != NULL ) {
-        if( t_page.top_ban->first != NULL ) {
-            clear_doc_element( t_page.top_ban->first );
-            add_doc_el_to_pool( t_page.top_ban->first );
-        }
-        add_ban_col_to_pool( t_page.top_ban );
+        clear_doc_element( t_page.top_ban );
     }
-    if( t_page.page_width != NULL ) {
-        clear_doc_element( t_page.page_width );
-        add_doc_el_to_pool( t_page.page_width );
-    }
-    if( t_page.main != NULL ) {
-        if( t_page.main->main != NULL ) {
-            clear_doc_element( t_page.main->main );
-            add_doc_el_to_pool( t_page.main->main );
+    while( t_page.panes != NULL ) {
+        if( t_page.panes->page_width != NULL ) {
+            add_doc_el_to_pool( t_page.panes->page_width );
         }
-        if( t_page.main->bot_fig != NULL ) {
-            clear_doc_element( t_page.main->bot_fig );
-            add_doc_el_to_pool( t_page.main->bot_fig );
+        for( i = 0; i < MAX_COL; i++ ) {
+            if( t_page.panes->cols[i].col_width != NULL ) {
+                add_doc_el_to_pool( t_page.panes->cols[i].col_width );
+            }
+            if( t_page.panes->cols[i].main != NULL ) {
+                add_doc_el_to_pool( t_page.panes->cols[i].main );
+            }
+            if( t_page.panes->cols[i].bot_fig != NULL ) {
+                add_doc_el_to_pool( t_page.panes->cols[i].bot_fig );
+            }
+            if( t_page.panes->cols[i].footnote != NULL ) {
+                add_doc_el_to_pool( t_page.panes->cols[i].footnote );
+            }
         }
-        if( t_page.main->footnote != NULL ) {
-            clear_doc_element( t_page.main->footnote );
-            add_doc_el_to_pool( t_page.main->footnote );
-        }
-        add_doc_col_to_pool( t_page.main );
+        sav_pane = t_page.panes->next;
+        mem_free( t_page.panes );
+        t_page.panes = sav_pane;
     }
     if( t_page.bot_ban != NULL ) {
-        if( t_page.bot_ban->first != NULL ) {
-            clear_doc_element( t_page.bot_ban->first );
-            add_doc_el_to_pool( t_page.bot_ban->first );
-        }
-        add_ban_col_to_pool( t_page.bot_ban );
+        clear_doc_element( t_page.top_ban );
     }
-    if( n_page.col_top != NULL ) {
-        clear_doc_element( n_page.col_top );
-        add_doc_el_to_pool( n_page.col_top );
+    if( n_page.page_width != NULL ) {
+        add_doc_el_group_to_pool( n_page.page_width );
+    }
+    if( n_page.col_width != NULL ) {
+        add_doc_el_group_to_pool( n_page.col_width );
     }
     if( n_page.col_main != NULL ) {
-        clear_doc_element( n_page.col_main );
         add_doc_el_to_pool( n_page.col_main );
     }
     if( n_page.col_bot != NULL ) {
-        clear_doc_element( n_page.col_bot );
-        add_doc_el_to_pool( n_page.col_bot );
+        add_doc_el_group_to_pool( n_page.col_bot );
     }
     if( n_page.col_fn != NULL ) {
-        clear_doc_element( n_page.col_fn );
-        add_doc_el_to_pool( n_page.col_fn );
+        add_doc_el_group_to_pool( n_page.col_fn );
     }
 
-    free_layout_banner();
+    free_layout();
 
     free_pool_storage();
 
@@ -348,30 +326,72 @@ void    free_some_mem( void )
 /***************************************************************************/
 /*  get line from current macro                                            */
 /***************************************************************************/
-static  void    get_macro_line( void )
+
+static void get_macro_line( void )
 {
     macrocb *   cb;
 
     if( input_cbs->fmflags & II_file ) {// current input is file not macro
-        g_err( err_logic_mac );
-        show_include_stack();
-        err_count++;
-        g_suicide();
+        xx_err_exit( ERR_LOGIC_MAC );
+        /* never return */
     }
     cb = input_cbs->s.m;
 
     if( cb->macline == NULL ) {         // no more macrolines
+        if( !ProcFlags.concat && !ProcFlags.cont_char && (input_cbs->hidden_head == NULL) &&
+                (input_cbs->prev->fmflags & (II_file | II_macro)) ) {
+            scr_process_break();
+        }
         input_cbs->fmflags |= II_eof;
-        input_cbs->fmflags &= ~(II_sol | II_eol);
         cb->flags          |= FF_eof;
         *buff2              = '\0';
+        if( (input_cbs->prev->fmflags & II_macro) ) {
+            if( cb->ix_seen && !ProcFlags.ix_seen) {
+                ProcFlags.ix_seen = true;
+            }
+        }
     } else {
         cb->lineno++;
+
         cb->flags          &= ~FF_eof;
         input_cbs->fmflags &= ~II_eof;
         strcpy( buff2, cb->macline->value );
         cb->macline         = cb->macline->next;
+
+        if( input_cbs->fmflags & II_macro ) {   // not invoked by a user-defined tag
+            input_cbs->fm_hh = false;           // not from hidden_head
+            input_cbs->hh_tag = false;          // not tag
+        }
     }
+}
+
+
+/***************************************************************************/
+/*  check input_cbs->if_cb to see if blank line should be counted          */
+/*  return "true" if the line should be counted, "false" if not            */
+/*  this is a very specialized function                                    */
+/***************************************************************************/
+
+static bool check_if( void )
+{
+    bool    retval  = true;
+    ifflags flagset = input_cbs->if_cb->if_flags[input_cbs->if_cb->if_level];
+
+    if( input_cbs->if_cb->if_level > 0 ) {      // .if active
+        /* This is very specific and may need to be expanded */
+        if( input_cbs->if_cb->if_level == 1 ) { // topmost .if active
+            if( flagset.ifdo ) {                // in do begin/do end block
+                if( flagset.iftrue && flagset.ifelse ) {
+                    retval = false;             // do not process line
+                }
+                if( flagset.iffalse && !flagset.ifelse ) {
+                    retval = false;             // do not process line
+                }
+            }
+        }
+    }
+
+    return( retval );
 }
 
 
@@ -381,32 +401,32 @@ static  void    get_macro_line( void )
 /*                                                                         */
 /*  returns  false for EOF                                                 */
 /***************************************************************************/
-bool    get_line( bool display_line )
+
+bool get_line( bool display_line )
 {
-    filecb      *   cb;
     char        *   p;
+    filecb      *   cb;
     inp_line    *   pline;
 
     if( ProcFlags.reprocess_line ) {    // there was an unget
         ProcFlags.reprocess_line = false;   // only used for :LAYOUT
-        return( !(input_cbs->fmflags & II_eof) );
+        return( (input_cbs->fmflags & II_eof) == 0 );
     }
     if( input_cbs->hidden_head != NULL ) {  // line was previously split,
         strcpy( buff2, input_cbs->hidden_head->value ); // take next part
         pline = input_cbs->hidden_head;
         input_cbs->hidden_head = input_cbs->hidden_head->next;
 
-        if( pline->sol ) {
-            input_cbs->fmflags |=  II_sol;  // start of logical record
-        } else {
-            input_cbs->fmflags &= ~II_sol;  // not at start of input line
-        }
+        input_cbs->fmflags |= pline->fmflags;       // use flags from hidden_head
+        input_cbs->fm_hh = true;                    // not from hidden_head
+        input_cbs->fm_symbol = pline->fm_symbol;
+        input_cbs->hh_tag = pline->hh_tag;
+        input_cbs->sym_space = pline->sym_space;
 
         mem_free( pline );
 
         if( input_cbs->hidden_head == NULL ) {  // last part of split line
             input_cbs->hidden_tail = NULL;
-            input_cbs->fmflags |= II_eol;
         }
     } else {
         if( input_cbs->pe_cb.count > 0 ) {  // .pe perform active
@@ -419,25 +439,28 @@ bool    get_line( bool display_line )
             if( input_cbs->fmflags & II_tag_mac ) {
                 get_macro_line();       // input from macro line
             } else {
+                ProcFlags.utc = false;  // to catch end of user-defined tag
                 cb = input_cbs->s.f;    // input from file
-                if( !(cb->flags & FF_open) ) {
-                    g_info( err_inf_reopen );
+                if( (cb->flags & FF_open) == 0 ) {
+                    g_info( ERR_INF_REOPEN );
                     show_include_stack();
                     reopen_inc_fp( cb );
                 }
-                do {
+                while( 1 ) {                    // break when next line obtained or file ends
                     fgetpos( cb->fp, &cb->pos );// remember position for label
-                    p = fgets( buff2, buf_size, cb->fp );
+                    p = fgets( buff2, BUF_SIZE + 1, cb->fp );
                     if( p != NULL ) {
                         if( cb->lineno >= cb->linemax ) {
                             input_cbs->fmflags |= II_eof;
-                            input_cbs->fmflags &= ~(II_sol | II_eol);
                             cb->flags |= FF_eof;
                             *buff2 = '\0';
                             break;
                         }
+                        ProcFlags.xmp_ut_sf = false;    // effect ends with physical input record
                         cb->lineno++;
-                        input_cbs->fmflags |= (II_sol | II_eol);
+                        if( cb->lineno < cb->linemin ) {
+                            continue;
+                        }
 
                         if( cb->flags & FF_crlf ) {// try to delete CRLF at end
                             p += strlen( p ) - 1;
@@ -445,37 +468,41 @@ bool    get_line( bool display_line )
                                 *p-- = '\0';
                             }
                         }
-#if 1
                         if( ProcFlags.start_section && !ProcFlags.concat &&
                             (*buff2 == '\0') ) {
-                            *buff2 = ' ';   // empty line gets 1 blank
-                            *(buff2 + 1) = '\0';// requires more testing TBD
+                            if( !ProcFlags.concat && !ProcFlags.skip_blank_line
+                                && check_if() ) {
+                                /* ensure an empty output line */
+                                g_blank_text_lines++;
+                                set_skip_vars( NULL, NULL, NULL, 1, g_curr_font );
+                            }
+                            continue;
                         }
-#endif
+                        break;
                     } else {
                         if( feof( cb->fp ) ) {
                             input_cbs->fmflags |= II_eof;
-                            input_cbs->fmflags &= ~(II_sol | II_eol);
                             cb->flags |= FF_eof;
                             *buff2 = '\0';
                             break;
                         } else {
-                            g_err( err_file_io, strerror( errno ), cb->filename );
-                            err_count++;
-                            g_suicide();
+                            xx_simple_err_exit_cc( ERR_FILE_IO, strerror( errno ), cb->filename );
+                            /* never return */
                         }
                     }
-                } while( cb->lineno < cb->linemin );
+                }
+                input_cbs->fm_hh = false;       // not from hidden_head
+                input_cbs->hh_tag = false;      // even if tag, not from hidden_head
             }
         }
     }
 
     buff2_lg = strlen( buff2 );
     *(buff2 + buff2_lg) = '\0';
-    *(buff2 + buff2_lg + 1) = '\0';
+//    *(buff2 + buff2_lg + 1) = '\0';
     if( input_cbs->fmflags & II_file ) {
         input_cbs->s.f->usedlen = buff2_lg;
-        if( GlobFlags.research ) {    // research mode
+        if( GlobalFlags.research ) {    // research mode
             if( ProcFlags.researchfile ) {  // for single file
                 if( input_cbs->fmflags & II_research ) {// research active
                     if( research_to < input_cbs->s.f->lineno ) {
@@ -495,13 +522,13 @@ bool    get_line( bool display_line )
         }
     }
 
-    if( !(input_cbs->fmflags & II_eof) ) {
-        if( display_line && GlobFlags.firstpass
-            && input_cbs->fmflags & II_research ) {
+    if( (input_cbs->fmflags & II_eof) == 0 ) {
+        if( display_line && GlobalFlags.firstpass
+            && (input_cbs->fmflags & II_research) ) {
             printf( "%s\n", buff2 );
         }
     }
-    return( !(input_cbs->fmflags & II_eof) );
+    return( (input_cbs->fmflags & II_eof) == 0 );
 }
 
 
@@ -509,23 +536,27 @@ bool    get_line( bool display_line )
 /*  output the filenames + lines which were included                       */
 /***************************************************************************/
 
-void    show_include_stack( void )
+void show_include_stack( void )
 {
     inputcb *   ip;
-    char        linestr[MAX_L_AS_STR];
-    char        linemac[MAX_L_AS_STR];
+    char        linestr[NUM2STR_LENGTH + 1];
+    char        linemac[NUM2STR_LENGTH + 1];
+    char        linefile[NUM2STR_LENGTH + 1];
 
 
     if( input_cbs != NULL ) {
+#if 0
         if( input_cbs->fmflags & II_tag_mac ) {
-            sprintf( linestr, "%lu", (unsigned long)input_cbs->s.m->lineno );
-            sprintf( linemac, "%lu", (unsigned long)input_cbs->s.m->mac->lineno );
-            g_info( err_inf_mac_def, linestr, input_cbs->s.m->mac->name,
+            sprintf( linestr, "%d", input_cbs->s.m->lineno );
+            sprintf( linefile, "%d", input_cbs->s.m->lineno + input_cbs->s.m->mac->lineno );
+            sprintf( linemac, "%d", input_cbs->s.m->mac->lineno );
+            g_info( ERR_INF_MAC_DEF, linestr, linefile, input_cbs->s.m->mac->name,
                     linemac, input_cbs->s.m->mac->mac_file_name);
-//      } else {
-//          sprintf( linestr, "%lu", (unsigned long)input_cbs->s.f->lineno );
-//          g_info( inf_file_line, linestr, input_cbs->s.f->filename );
+        } else {
+            sprintf( linestr, "%d", input_cbs->s.f->lineno );
+            g_info( INF_FILE_LINE, linestr, input_cbs->s.f->filename );
         }
+#endif
         ip = input_cbs->prev;
     } else {
         ip = NULL;
@@ -533,21 +564,22 @@ void    show_include_stack( void )
     out_msg( "\n" );
     while( ip != NULL ) {
         switch( ip->fmflags & II_input ) {
-        case    II_file:
-            sprintf( linestr, "%lu", (unsigned long)ip->s.f->lineno );
-            g_info( err_inf_line_file, linestr, ip->s.f->filename );
+        case II_file:
+            sprintf( linestr, "%d", ip->s.f->lineno );
+            g_info( ERR_INF_LINE_FILE, linestr, ip->s.f->filename );
             break;
-        case    II_tag :
-            g_info( err_inf_tag, ip->s.m->tag->name );
+        case II_tag :
+            g_info( ERR_INF_TAG, ip->s.m->tag->tagname );
             // fallthrough
-        case    II_macro :
-            sprintf( linestr, "%lu", (unsigned long)ip->s.m->lineno );
-            sprintf( linemac, "%lu", (unsigned long)ip->s.m->mac->lineno );
-            g_info( err_inf_mac_def, linestr, ip->s.m->mac->name,
+        case II_macro :
+            sprintf( linestr, "%d", ip->s.m->lineno );
+            sprintf( linefile, "%d", ip->s.m->lineno + ip->s.m->mac->lineno );
+            sprintf( linemac, "%d", ip->s.m->mac->lineno );
+            g_info( ERR_INF_MAC_DEF, linestr, linefile, ip->s.m->mac->name,
                     linemac, ip->s.m->mac->mac_file_name);
             break;
         default:
-            g_info( err_inc_unknown );
+            g_info( ERR_INC_UNKNOWN );
             break;
         }
         ip = ip->prev;

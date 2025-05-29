@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2004-2013 The Open Watcom Contributors. All Rights Reserved.
+*  Copyright (c) 2004-2009 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -28,79 +28,110 @@
 *
 ****************************************************************************/
 
+
 #include "wgml.h"
 
 #include "clibext.h"
 
+
 /***************************************************************************/
 /*   :TITLEP   attributes                                                  */
 /***************************************************************************/
-const   lay_att     titlep_att[3] =
-    { e_spacing, e_columns, e_dummy_zero };
+static const lay_att    titlep_att[] = {
+    e_spacing, e_columns
+};
 
 
 /***************************************************************************/
 /*  lay_titlep                                                             */
 /***************************************************************************/
 
-void    lay_titlep( lay_tag ltag )
+void    lay_titlep( const gmltag * entry )
 {
     char            *   p;
     condcode            cc;
+    int                 cvterr;
     int                 k;
     lay_att             curr;
-    att_args            l_args;
-    int                 cvterr;
+    att_name_type       attr_name;
+    att_val_type        attr_val;
 
-    /* unused parameters */ (void)ltag;
-
-    p = scan_start;
+    p = scandata.s;
     cvterr = false;
 
-    if( !GlobFlags.firstpass ) {
-        scan_start = scan_stop;
-        eat_lay_sub_tag();
-        return;                         // process during first pass only
+    memset( &AttrFlags, 0, sizeof( AttrFlags ) );   // clear all attribute flags
+    if( ProcFlags.lay_xxx != entry->u.layid ) {
+        ProcFlags.lay_xxx = entry->u.layid;
     }
-    if( ProcFlags.lay_xxx != el_titlep ) {
-        ProcFlags.lay_xxx = el_titlep;
-    }
-    cc = get_lay_sub_and_value( &l_args );  // get att with value
-    while( cc == pos ) {
+    while( (cc = lay_attr_and_value( &attr_name, &attr_val )) == CC_pos ) {   // get att with value
         cvterr = -1;
-        for( k = 0, curr = titlep_att[k]; curr > 0; k++, curr = titlep_att[k] ) {
-
-            if( !strnicmp( att_names[curr], l_args.start[0], l_args.len[0] ) ) {
-                p = l_args.start[1];
-
+        for( k = 0; k < TABLE_SIZE( titlep_att ); k++ ) {
+            curr = titlep_att[k];
+            if( strcmp( lay_att_names[curr], attr_name.attname.l ) == 0 ) {
+                p = attr_val.tok.s;
                 switch( curr ) {
-                case   e_spacing:
-                    cvterr = i_int8( p, curr, &layout_work.titlep.spacing );
+                case e_spacing:
+                    if( AttrFlags.spacing ) {
+                        xx_line_err_exit_ci( ERR_ATT_DUP, attr_name.tok.s,
+                            attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
+                    }
+                    cvterr = i_spacing( p, &attr_val, &layout_work.titlep.spacing );
+                    AttrFlags.spacing = true;
                     break;
-                case   e_columns:
-                    cvterr = i_int8( p, curr, &layout_work.titlep.columns );
+                case e_columns:
+                    if( AttrFlags.columns ) {
+                        xx_line_err_exit_ci( ERR_ATT_DUP, attr_name.tok.s,
+                            attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
+                    }
+                    cvterr = i_int8( p, &attr_val, &layout_work.titlep.columns );
+                    AttrFlags.columns = true;
                     break;
                 default:
-                    out_msg( "WGML logic error.\n");
-                    cvterr = true;
-                    break;
+                    internal_err_exit( __FILE__, __LINE__ );
+                    /* never return */
                 }
                 if( cvterr ) {          // there was an error
-                    err_count++;
-                    g_err( err_att_val_inv );
-                    file_mac_info();
+                    xx_err_exit( ERR_ATT_VAL_INV );
+                    /* never return */
                 }
                 break;                  // break out of for loop
             }
         }
         if( cvterr < 0 ) {
-            err_count++;
-            g_err( err_att_name_inv );
-            file_mac_info();
+            xx_err_exit( ERR_ATT_NAME_INV );
+            /* never return */
         }
-        cc = get_lay_sub_and_value( &l_args );  // get att with value
     }
-    scan_start = scan_stop;
+    scandata.s = scandata.e;
     return;
 }
 
+
+
+/***************************************************************************/
+/*   :TITLEP    output title page attribute values                         */
+/***************************************************************************/
+void    put_lay_titlep( FILE *fp, layout_data * lay )
+{
+    int                 k;
+    lay_att             curr;
+
+    fprintf( fp, ":TITLEP\n" );
+
+    for( k = 0; k < TABLE_SIZE( titlep_att ); k++ ) {
+        curr = titlep_att[k];
+        switch( curr ) {
+        case e_spacing:
+            o_spacing( fp, curr, &lay->titlep.spacing );
+            break;
+        case e_columns:
+            o_int8( fp, curr, &lay->titlep.columns );
+            break;
+        default:
+            internal_err_exit( __FILE__, __LINE__ );
+            /* never return */
+        }
+    }
+}

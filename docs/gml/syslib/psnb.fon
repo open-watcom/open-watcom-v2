@@ -1,0 +1,124 @@
+:CMT.
+:CMT. This font is for the NewCenturySchlbk-Bold font.
+:CMT. This font is scaled with a 72000 dpi basis.
+:CMT. Bounding box: -166 -224 1000 1007
+:CMT.
+
+:CMT. Definition file                 Font name
+:CMT. -------------------------------------------------
+:CMT. PSNB                            newcenturyschlbk-bold
+:CMT.eoc
+
+:FONT
+  defined_name     = 'newcenturyschlbk-bold'
+  member_name      = 'PSNB'
+  font_out_name1   = 'NewCenturySchlbk-Bold'
+  line_height      = 1000
+  line_space       = 231
+  scale_basis      = 72000
+  scale_min        = 1000
+  scale_max        = 72000
+  char_width       = 287
+
+
+:WIDTH.
+$20 287
+! 296
+" 333
+# 574
+$ 574
+% 833
+& 852
+' 241
+( 389
+) 389
+* 500
++ 606
+, 278
+- 333
+. 278
+/ 278
+0 574
+1 463
+2 574
+3 574
+4 574
+5 574
+6 574
+7 574
+8 574
+9 574
+: 278
+; 278
+< 606
+= 606
+> 606
+? 500
+@ 747
+A 759
+B 778
+C 778
+D 833
+E 759
+F 722
+G 833
+H 870
+I 444
+J 648
+K 815
+L 722
+M 981
+N 833
+O 833
+P 759
+Q 833
+R 815
+S 667
+T 722
+U 833
+V 759
+W 981
+X 722
+Y 722
+Z 667
+$5D 389
+\ 606
+$5B 389
+$5E 606
+_ 500
+` 241
+a 611
+b 648
+c 556
+d 667
+e 574
+f 389
+g 611
+h 685
+i 370
+j 352
+k 667
+l 352
+m 963
+n 685
+o 611
+p 667
+q 648
+r 519
+s 500
+t 426
+u 685
+v 611
+w 889
+x 611
+y 611
+z 537
+{ 389
+| 606
+} 389
+$7E 606
+$AF 606
+$BF 1000
+:eWIDTH.
+
+:eFONT.

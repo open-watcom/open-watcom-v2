@@ -1,0 +1,124 @@
+:CMT.
+:CMT. This font is for the Bookman-DemiItalic font.
+:CMT. This font is scaled with a 72000 dpi basis.
+:CMT. Bounding box: -231 -220 1388 941
+:CMT.
+
+:CMT. Definition file                 Font name
+:CMT. -------------------------------------------------
+:CMT. PSBDI                           bookman-demiitalic
+:CMT.eoc
+
+:FONT
+  defined_name     = 'bookman-demiitalic'
+  member_name      = 'PSBDI'
+  font_out_name1   = 'Bookman-DemiItalic'
+  line_height      = 1000
+  line_space       = 161
+  scale_basis      = 72000
+  scale_min        = 1000
+  scale_max        = 72000
+  char_width       = 340
+
+
+:WIDTH.
+$20 340
+! 320
+" 380
+# 600
+$ 680
+% 880
+& 980
+' 320
+( 260
+) 260
+* 460
++ 600
+, 340
+- 280
+. 340
+/ 360
+0 680
+1 680
+2 680
+3 680
+4 680
+5 680
+6 680
+7 680
+8 680
+9 680
+: 340
+; 340
+< 620
+= 600
+> 620
+? 620
+@ 780
+A 720
+B 720
+C 700
+D 760
+E 720
+F 660
+G 760
+H 800
+I 380
+J 620
+K 780
+L 640
+M 860
+N 740
+O 760
+P 640
+Q 760
+R 740
+S 700
+T 700
+U 740
+V 660
+W 1000
+X 740
+Y 660
+Z 680
+$5D 260
+\ 580
+$5B 260
+$5E 620
+_ 500
+` 320
+a 680
+b 600
+c 560
+d 680
+e 560
+f 420
+g 620
+h 700
+i 380
+j 320
+k 700
+l 380
+m 960
+n 680
+o 600
+p 660
+q 620
+r 500
+s 540
+t 440
+u 680
+v 540
+w 860
+x 620
+y 600
+z 560
+{ 300
+| 620
+} 300
+$7E 620
+$AF 360
+$BF 1000
+:eWIDTH.
+
+:eFONT.

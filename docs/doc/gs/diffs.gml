@@ -2385,8 +2385,8 @@ We have fixed unduly harsh restriction on virtual ...-style functions.
 They are now allowed in single inheritance hierarchies as long as the
 return type is not changed when the virtual function is overridden. In
 multiple inheritance hierarchies, an implementation restriction is
-still present for generating a 'this' adjustment thunk for virtual
-...-style functions.
+still present for generating a 'this' adjustment thunk for
+virtual ...-style functions.
 .note
 We have fixed line number information for multi-line statement
 expressions in some weird cases.

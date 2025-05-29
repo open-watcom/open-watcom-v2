@@ -29,17 +29,19 @@
 ****************************************************************************/
 
 
-pick( "NONE",      doc_sect_none,     no_ban       )
-pick( "GDOC",      doc_sect_gdoc,     no_ban       )
-pick( "FRONTM",    doc_sect_frontm,   no_ban       )
-pick( "TITLEP",    doc_sect_titlep,   no_ban       )
-pick( "eTITLEP",   doc_sect_etitlep,  no_ban       )
-pick( "ABSTRACT",  doc_sect_abstract, abstract_ban )
-pick( "PREFACE",   doc_sect_preface,  preface_ban  )
-pick( "TOC",       doc_sect_toc,      toc_ban      )
-pick( "FIGLIST",   doc_sect_figlist,  figlist_ban  )
-pick( "BODY",      doc_sect_body,     body_ban     )
-pick( "APPENDIX",  doc_sect_appendix, appendix_ban )
-pick( "BACKM",     doc_sect_backm,    backm_ban    )
-pick( "INDEX",     doc_sect_index,    index_ban    )
-pick( "eGDOC",     doc_sect_egdoc,    no_ban       )
+pick( "NONE",      DSECT_none,     no_ban       )    // nothing so far
+pick( "GDOC",      DSECT_gdoc,     no_ban       )    // gdoc
+pick( "FRONTM",    DSECT_frontm,   no_ban       )    // front matter
+pick( "TITLEP",    DSECT_titlep,   no_ban       )    // title page
+pick( "eTITLEP",   DSECT_etitlep,  no_ban       )    // end title page
+pick( "ABSTRACT",  DSECT_abstract, abstract_ban )    // abstract
+pick( "PREFACE",   DSECT_preface,  preface_ban  )    // preface
+pick( "TOC",       DSECT_toc,      toc_ban      )    // table of contents
+pick( "FIGLIST",   DSECT_figlist,  figlist_ban  )    // figure list
+pick( "BODY",      DSECT_body,     body_ban     )    // body
+pick( "APPENDIX",  DSECT_appendix, appendix_ban )    // appendix
+pick( "BACKM",     DSECT_backm,    backm_ban    )    // back matter
+pick( "INDEX",     DSECT_index,    index_ban    )    // index
+pick( "TOC",       DSECT_toce,     toc_ban      )    // table of contents (at end of file)
+pick( "FIGLIST",   DSECT_figliste, figlist_ban  )    // figure list (at end of file)
+pick( "eGDOC",     DSECT_egdoc,    no_ban       )    // egdoc  has to be last

@@ -23,7 +23,7 @@ concurrency:
 
 jobs:
   start-start:
-    if: github.repository == 'open-watcom/open-watcom-v2'
+    if: github.repository == vars.OWREPO
     name: Check if to run
     runs-on: ubuntu-latest
     steps:

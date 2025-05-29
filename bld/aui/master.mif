@@ -12,10 +12,7 @@ aui_os2pm = 1
 
 suppress_zc = 1
 
-additional_clean = *.grh
-!ifdef aui_os2pm
-additional_clean += *.dlg
-!endif
+additional_clean = *.grh *.dlg
 
 !include cproj.mif
 !include defrule.mif
@@ -73,7 +70,7 @@ aui_dialogs = &
 #
 # LIB
 #
-libtarg_prebuild_objs = aui.grh $(aui_dialogs)
+libtarg_prebuild_objs = $(cli_aui_deps)
 libtarg_objs = &
     guimain.obj &
     wndgadgt.obj &
@@ -134,31 +131,3 @@ libtarg_objs = &
     wndmnsz.obj &
     wndimain.obj
 !include libtarg.mif
-
-#
-# rc and others
-#
-!ifdef aui_os2pm
-
-dlg_opts  = -font=10.Helv
-dlgj_opts =
-
-dlgrx.dlg : ../res/dlgs/dlgrx.dlg
-    parsedlg $(dlg_opts) $[@ $@
-dlgsrch.dlg : ../res/dlgs/dlgsrch.dlg
-    parsedlg $(dlg_opts) $[@ $@
-dlgsrcha.dlg : ../res/dlgs/dlgsrcha.dlg
-    parsedlg $(dlg_opts) $[@ $@
-
-japrx.dlg : ../res/dlgs/japrx.dlg
-    parsedlg $(dlgj_opts) $[@ $@
-japsrch.dlg : ../res/dlgs/japsrch.dlg
-    parsedlg $(dlgj_opts) $[@ $@
-japsrcha.dlg : ../res/dlgs/japsrcha.dlg
-    parsedlg $(dlgj_opts) $[@ $@
-
-!endif
-
-aui.grh : ../res/aui.msg
-    @%make echo_awk
-    $(noecho)*awk -v prefix=AUI_LITERAL_ -v base=AUI_LITERAL_BASE -f $(build_dir)/makemsg.awk -v OUTFILE=$^. $[@

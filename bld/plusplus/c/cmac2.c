@@ -700,7 +700,6 @@ static void CWarning( void )
 {
     bool save;
 
-
     if( CompFlags.extensions_enabled || ( CHECK_STD( >= , CXX23 ) ) ) {
         get_arg_message();
         /* Force #warning output to be reported, even with preprocessor */

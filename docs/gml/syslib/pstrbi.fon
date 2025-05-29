@@ -1,0 +1,124 @@
+:CMT.
+:CMT. This font is for the Times-BoldItalic font.
+:CMT. This font is scaled with a 72000 dpi basis.
+:CMT. Bounding box: -168 -232 1014 894
+:CMT.
+
+:CMT. Definition file                 Font name
+:CMT. -------------------------------------------------
+:CMT. PSTRBI                          times-bolditalic
+:CMT.eoc
+
+:FONT
+  defined_name     = 'times-bolditalic'
+  member_name      = 'PSTRBI'
+  font_out_name1   = 'Times-BoldItalic'
+  line_height      = 1000
+  line_space       = 126
+  scale_basis      = 72000
+  scale_min        = 1000
+  scale_max        = 72000
+  char_width       = 250
+
+
+:WIDTH.
+$20 250
+! 389
+" 555
+# 500
+$ 500
+% 833
+& 778
+' 333
+( 333
+) 333
+* 500
++ 570
+, 250
+- 333
+. 250
+/ 278
+0 500
+1 500
+2 500
+3 500
+4 500
+5 500
+6 500
+7 500
+8 500
+9 500
+: 333
+; 333
+< 570
+= 570
+> 570
+? 500
+@ 832
+A 667
+B 667
+C 667
+D 722
+E 667
+F 667
+G 722
+H 778
+I 389
+J 500
+K 667
+L 611
+M 889
+N 722
+O 722
+P 611
+Q 722
+R 667
+S 556
+T 611
+U 722
+V 667
+W 889
+X 667
+Y 611
+Z 611
+$5D 333
+\ 278
+$5B 333
+$5E 570
+_ 500
+` 333
+a 500
+b 500
+c 444
+d 500
+e 444
+f 333
+g 500
+h 556
+i 278
+j 278
+k 500
+l 278
+m 778
+n 556
+o 500
+p 500
+q 500
+r 389
+s 389
+t 278
+u 556
+v 444
+w 667
+x 500
+y 444
+z 389
+{ 348
+| 220
+} 348
+$7E 570
+$AF 350
+$BF 1000
+:eWIDTH.
+
+:eFONT.

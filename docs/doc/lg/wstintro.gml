@@ -52,8 +52,8 @@ OS/2
 .bull
 QNX
 .bull
-Windows NT/2000/XP
+Windows
 .bull
-Windows 95/98/Me
+Linux
 .endbull
 .do end

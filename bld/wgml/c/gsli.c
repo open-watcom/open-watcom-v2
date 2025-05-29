@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2004-2013 The Open Watcom Contributors. All Rights Reserved.
+*  Copyright (c) 2004-2009 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -29,19 +29,21 @@
 *  comments are from script-tso.txt
 ****************************************************************************/
 
+
 #include "wgml.h"
 
 #include "clibext.h"
+
 
 /***************************************************************************/
 /* LITERAL causes  following input  records to be  treated as  text lines  */
 /* even if they begin with the control word indicator.                     */
 /*                                                                         */
-/*      旼컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴커       */
+/*      +-------+--------------------------------------------------+       */
 /*      |       |                                                  |       */
 /*      |  .LI  |    <1|n|ON|OFF|line>                             |       */
 /*      |       |                                                  |       */
-/*      읕컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴켸       */
+/*      +-------+--------------------------------------------------+       */
 /*                                                                         */
 /* This control word does not cause a break.                               */
 /*                                                                         */
@@ -83,14 +85,10 @@ void    scr_li( void )
     cwcurr[2] = 'i';
     cwcurr[3] = '\0';
 
-    p = scan_start;
-    while( *p && *p == ' ' ) {          // next word start
-        p++;
-    }
+    p = scandata.s;
+    SkipSpaces( p );                    // next word start
     pa = p;
-    while( *p && *p != ' ' ) {          // end of word
-        p++;
-    }
+    SkipNonSpaces( p );                 // end of word
     len = p - pa;
     if( len == 0 ) {                    // omitted means 1 = next line
         if( !ProcFlags.literal ) {
@@ -99,17 +97,16 @@ void    scr_li( void )
             scan_restart = pa;
         }
     } else {
-        gn.argstart = pa;
-        gn.argstop = scan_stop;
-        gn.ignore_blanks = 0;
-
-        cc = getnum( &gn );            // try to get numeric value
-        if( cc == notnum ) {
+        gn.arg.s = pa;
+        gn.arg.e = scandata.e;
+        gn.ignore_blanks = false;
+        cc = getnum( &gn );             // try to get numeric value
+        if( cc == CC_notnum ) {
             switch( len ) {
             case 2 :
                 if( !strnicmp( "ON", pa, 2 ) ) {
                     if( !ProcFlags.literal ) {
-                        li_cnt = LONG_MAX;
+                        li_cnt = INT_MAX;
                         ProcFlags.literal = true;
                         scan_restart = pa + 2;
                     }
@@ -117,7 +114,7 @@ void    scr_li( void )
                     if( !ProcFlags.literal ) {
                         li_cnt = 1;
                         ProcFlags.literal = true;
-                        split_input( scan_start, pa, false );
+                        split_input( scandata.s, pa, input_cbs->fmflags );  // split and process next
                         scan_restart = pa;
                     }
                 }
@@ -130,7 +127,7 @@ void    scr_li( void )
                     if( !ProcFlags.literal ) {
                         li_cnt = 1;
                         ProcFlags.literal = true;
-                        split_input( scan_start, pa, false );
+                        split_input( scandata.s, pa, input_cbs->fmflags );  // split and process next
                         scan_restart = pa;
                     }
                 }
@@ -139,7 +136,7 @@ void    scr_li( void )
                 if( !ProcFlags.literal ) {
                     li_cnt = 1;
                     ProcFlags.literal = true;
-                    split_input( scan_start, pa, false );
+                    split_input( scandata.s, pa, input_cbs->fmflags );  // split and process next
                     scan_restart = pa;
                 }
                 break;
@@ -149,7 +146,7 @@ void    scr_li( void )
                 if( gn.result > 0 ) {
                     li_cnt = gn.result;
                     ProcFlags.literal = true;
-                    scan_restart = gn.argstart;
+                    scan_restart = gn.arg.s;
                 }
             } else {
                 scan_restart = pa;         // .li already active, treat as text

@@ -1,0 +1,124 @@
+:CMT.
+:CMT. This font is for the Courier-Oblique font.
+:CMT. This font is scaled with a 72000 dpi basis.
+:CMT. Bounding box: 0 -251 600 700
+:CMT.
+
+:CMT. Definition file                 Font name
+:CMT. -------------------------------------------------
+:CMT. PSCOB                           courier-oblique
+:CMT.eoc
+
+:FONT
+  defined_name     = 'courier-oblique'
+  member_name      = 'PSCOB'
+  font_out_name1   = 'Courier-Oblique'
+  line_height      = 1000
+  line_space       = 0
+  scale_basis      = 72000
+  scale_min        = 1000
+  scale_max        = 72000
+  char_width       = 600
+
+
+:WIDTH.
+$20 600
+! 600
+" 600
+# 600
+$ 600
+% 600
+& 600
+' 600
+( 600
+) 600
+* 600
++ 600
+, 600
+- 600
+. 600
+/ 600
+0 600
+1 600
+2 600
+3 600
+4 600
+5 600
+6 600
+7 600
+8 600
+9 600
+: 600
+; 600
+< 600
+= 600
+> 600
+? 600
+@ 600
+A 600
+B 600
+C 600
+D 600
+E 600
+F 600
+G 600
+H 600
+I 600
+J 600
+K 600
+L 600
+M 600
+N 600
+O 600
+P 600
+Q 600
+R 600
+S 600
+T 600
+U 600
+V 600
+W 600
+X 600
+Y 600
+Z 600
+$5D 600
+\ 600
+$5B 600
+$5E 600
+_ 600
+` 600
+a 600
+b 600
+c 600
+d 600
+e 600
+f 600
+g 600
+h 600
+i 600
+j 600
+k 600
+l 600
+m 600
+n 600
+o 600
+p 600
+q 600
+r 600
+s 600
+t 600
+u 600
+v 600
+w 600
+x 600
+y 600
+z 600
+{ 600
+| 600
+} 600
+$7E 600
+$AF 600
+$BF 600
+:eWIDTH.
+
+:eFONT.

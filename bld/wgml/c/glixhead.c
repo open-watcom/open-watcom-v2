@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2004-2013 The Open Watcom Contributors. All Rights Reserved.
+*  Copyright (c) 2004-2009 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -28,16 +28,18 @@
 *
 ****************************************************************************/
 
+
 #include "wgml.h"
 
 #include "clibext.h"
 
+
 /***************************************************************************/
 /*   :IXHEAD   attributes                                                    */
 /***************************************************************************/
-const   lay_att     ixhead_att[7] =
-    { e_pre_skip, e_post_skip, e_font, e_indent, e_ixhead_frame,
-      e_header, e_dummy_zero };
+static const lay_att    ixhead_att[] = {
+    e_pre_skip, e_post_skip, e_font, e_indent, e_ixhead_frame, e_header
+};
 
 
 /*********************************************************************************/
@@ -95,87 +97,149 @@ const   lay_att     ixhead_att[7] =
 /*  lay_ixhead                                                             */
 /***************************************************************************/
 
-void    lay_ixhead( lay_tag ltag )
+void    lay_ixhead( const gmltag * entry )
 {
     char            *   p;
     condcode            cc;
+    int                 cvterr;
     int                 k;
     lay_att             curr;
-    att_args            l_args;
-    int                 cvterr;
+    att_name_type       attr_name;
+    att_val_type        attr_val;
 
-    /* unused parameters */ (void)ltag;
-
-    p = scan_start;
+    p = scandata.s;
     cvterr = false;
 
-    if( !GlobFlags.firstpass ) {
-        scan_start = scan_stop;
-        eat_lay_sub_tag();
-        return;                         // process during first pass only
+    memset( &AttrFlags, 0, sizeof( AttrFlags ) );   // clear all attribute flags
+    if( ProcFlags.lay_xxx != entry->u.layid ) {
+        ProcFlags.lay_xxx = entry->u.layid;
     }
-    if( ProcFlags.lay_xxx != el_ixhead ) {
-        ProcFlags.lay_xxx = el_ixhead;
-    }
-    cc = get_lay_sub_and_value( &l_args );  // get att with value
-    while( cc == pos ) {
+    while( (cc = lay_attr_and_value( &attr_name, &attr_val )) == CC_pos ) {   // get att with value
         cvterr = -1;
-        for( k = 0, curr = ixhead_att[k]; curr > 0; k++, curr = ixhead_att[k] ) {
+        for( k = 0; k < TABLE_SIZE( ixhead_att ); k++ ) {
+            curr = ixhead_att[k];
             if( curr == e_ixhead_frame ) {
                 curr = e_frame;         // use correct externalname
             }
-
-            if( !strnicmp( att_names[curr], l_args.start[0], l_args.len[0] ) ) {
-                p = l_args.start[1];
-
+            if( strcmp( lay_att_names[curr], attr_name.attname.l ) == 0 ) {
+                p = attr_val.tok.s;
                 switch( curr ) {
-                case   e_pre_skip:
-                    cvterr = i_space_unit( p, curr,
-                                           &layout_work.ixhead.pre_skip );
-                    break;
-                case   e_post_skip:
-                    cvterr = i_space_unit( p, curr,
-                                           &layout_work.ixhead.post_skip );
-                    break;
-                case   e_font:
-                    cvterr = i_font_number( p, curr, &layout_work.ixhead.font );
-                    if( layout_work.ixhead.font >= wgml_font_cnt ) {
-                        layout_work.ixhead.font = 0;
+                case e_pre_skip:
+                    if( AttrFlags.pre_skip ) {
+                        xx_line_err_exit_ci( ERR_ATT_DUP, attr_name.tok.s,
+                            attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
                     }
+                    cvterr = i_space_unit( p, &attr_val,
+                                           &layout_work.ixhead.pre_skip );
+                    AttrFlags.pre_skip = true;
                     break;
-                case   e_indent:
-                    cvterr = i_space_unit( p, curr,
+                case e_post_skip:
+                    if( AttrFlags.post_skip ) {
+                        xx_line_err_exit_ci( ERR_ATT_DUP, attr_name.tok.s,
+                            attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
+                    }
+                    cvterr = i_space_unit( p, &attr_val,
+                                           &layout_work.ixhead.post_skip );
+                    AttrFlags.post_skip = true;
+                    break;
+                case e_font:
+                    if( AttrFlags.font ) {
+                        xx_line_err_exit_ci( ERR_ATT_DUP, attr_name.tok.s,
+                            attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
+                    }
+                    cvterr = i_font_number( p, &attr_val, &layout_work.ixhead.font );
+                    AttrFlags.font = true;
+                    break;
+                case e_indent:
+                    if( AttrFlags.indent ) {
+                        xx_line_err_exit_ci( ERR_ATT_DUP, attr_name.tok.s,
+                            attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
+                    }
+                    cvterr = i_space_unit( p, &attr_val,
                                            &layout_work.ixhead.indent );
+                    AttrFlags.indent = true;
                     break;
-                case   e_frame:
-                    cvterr = i_default_frame( p, curr,
+                case e_frame:
+                    if( AttrFlags.frame ) {
+                        xx_line_err_exit_ci( ERR_ATT_DUP, attr_name.tok.s,
+                            attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
+                    }
+                    cvterr = i_default_frame( p, &attr_val,
                                            &layout_work.ixhead.frame );
+                    AttrFlags.frame = true;
                     break;
-                case   e_header:
-                    cvterr = i_yes_no( p, curr,
+                case e_header:
+                    if( AttrFlags.header ) {
+                        xx_line_err_exit_ci( ERR_ATT_DUP, attr_name.tok.s,
+                            attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
+                    }
+                    cvterr = i_yes_no( p, &attr_val,
                                            &layout_work.ixhead.header );
+                    AttrFlags.header = true;
                     break;
                 default:
-                    out_msg( "WGML logic error.\n");
-                    cvterr = true;
-                    break;
+                    internal_err_exit( __FILE__, __LINE__ );
+                    /* never return */
                 }
                 if( cvterr ) {          // there was an error
-                    err_count++;
-                    g_err( err_att_val_inv );
-                    file_mac_info();
+                    xx_err_exit( ERR_ATT_VAL_INV );
+                    /* never return */
                 }
                 break;                  // break out of for loop
             }
         }
         if( cvterr < 0 ) {
-            err_count++;
-            g_err( err_att_name_inv );
-            file_mac_info();
+            xx_err_exit( ERR_ATT_NAME_INV );
+            /* never return */
         }
-        cc = get_lay_sub_and_value( &l_args );  // get att with value
     }
-    scan_start = scan_stop;
+    scandata.s = scandata.e;
     return;
 }
 
+
+
+/***************************************************************************/
+/*   :IXHEAD    output index header attribute values                       */
+/***************************************************************************/
+void    put_lay_ixhead( FILE *fp, layout_data * lay )
+{
+    int                 k;
+    lay_att             curr;
+
+    fprintf( fp, ":IXHEAD\n" );
+
+    for( k = 0; k < TABLE_SIZE( ixhead_att ); k++ ) {
+        curr = ixhead_att[k];
+        switch( curr ) {
+        case e_pre_skip:
+            o_space_unit( fp, curr, &lay->ixhead.pre_skip );
+            break;
+        case e_post_skip:
+            o_space_unit( fp, curr, &lay->ixhead.post_skip );
+            break;
+        case e_font:
+            o_font_number( fp, curr, &lay->ixhead.font );
+            break;
+        case e_indent:
+            o_space_unit( fp, curr, &lay->ixhead.indent );
+            break;
+        case e_ixhead_frame:
+            curr = e_frame;             // frame = instead of ixhead_frame =
+            o_default_frame( fp, curr, &lay->ixhead.frame );
+            break;
+        case e_header:
+            o_yes_no( fp, curr, &lay->ixhead.header );
+            break;
+        default:
+            internal_err_exit( __FILE__, __LINE__ );
+            /* never return */
+        }
+    }
+}

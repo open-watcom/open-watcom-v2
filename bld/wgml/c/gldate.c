@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2004-2013 The Open Watcom Contributors. All Rights Reserved.
+*  Copyright (c) 2004-2009 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -28,6 +28,7 @@
 *
 ****************************************************************************/
 
+
 #include "wgml.h"
 
 #include "clibext.h"
@@ -36,9 +37,10 @@
 /***************************************************************************/
 /*   :DATE     attributes                                                  */
 /***************************************************************************/
-const   lay_att     date_att[7] =
-    { e_date_form, e_left_adjust, e_right_adjust,
-      e_page_position, e_font, e_pre_skip, e_dummy_zero };
+static const lay_att     date_att[] = {
+    e_date_form, e_left_adjust, e_right_adjust,
+    e_page_position, e_font, e_pre_skip
+};
 
 /**********************************************************************************/
 /*Defines the characteristics of the date entity in the standard tag format.      */
@@ -105,81 +107,144 @@ const   lay_att     date_att[7] =
 /*  lay_date                                                               */
 /***************************************************************************/
 
-void    lay_date( lay_tag ltag )
+void    lay_date( const gmltag * entry )
 {
     char            *   p;
     condcode            cc;
+    int                 cvterr;
     int                 k;
     lay_att             curr;
-    att_args            l_args;
-    int                 cvterr;
+    att_name_type       attr_name;
+    att_val_type        attr_val;
 
-    /* unused parameters */ (void)ltag;
-
-    p = scan_start;
+    p = scandata.s;
     cvterr = false;
 
-    if( !GlobFlags.firstpass ) {
-        scan_start = scan_stop;
-        eat_lay_sub_tag();
-        return;                         // process during first pass only
+    memset( &AttrFlags, 0, sizeof( AttrFlags ) );   // clear all attribute flags
+    if( ProcFlags.lay_xxx != entry->u.layid ) {
+        ProcFlags.lay_xxx = entry->u.layid;
     }
-    if( ProcFlags.lay_xxx != el_date ) {
-        ProcFlags.lay_xxx = el_date;
-    }
-    cc = get_lay_sub_and_value( &l_args );  // get att with value
-    while( cc == pos ) {
+    while( (cc = lay_attr_and_value( &attr_name, &attr_val )) == CC_pos ) {   // get att with value
         cvterr = -1;
-        for( k = 0, curr = date_att[k]; curr > 0; k++, curr = date_att[k] ) {
-
-            if( !strnicmp( att_names[curr], l_args.start[0], l_args.len[0] ) ) {
-                p = l_args.start[1];
-
+        for( k = 0; k < TABLE_SIZE( date_att ); k++ ) {
+            curr = date_att[k];
+            if( strcmp( lay_att_names[curr], attr_name.attname.l ) == 0 ) {
+                p = attr_val.tok.s;
                 switch( curr ) {
-                case   e_date_form:
-                    p = l_args.start[0] + l_args.len[0];
-                    cvterr = i_date_form( p, curr, layout_work.date.date_form );
-                    break;
-                case   e_left_adjust:
-                    cvterr = i_space_unit( p, curr, &layout_work.date.left_adjust );
-                    break;
-                case   e_right_adjust:
-                    cvterr = i_space_unit( p, curr, &layout_work.date.right_adjust );
-                    break;
-                case   e_page_position:
-                    cvterr = i_page_position( p, curr, &layout_work.date.page_position );
-                    break;
-                case   e_font:
-                    cvterr = i_font_number( p, curr, &layout_work.date.font );
-                    if( layout_work.date.font >= wgml_font_cnt ) {
-                        layout_work.date.font = 0;
+                case e_date_form:
+                    if( AttrFlags.date_form ) {
+                        xx_line_err_exit_ci( ERR_ATT_DUP, attr_name.tok.s,
+                            attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
                     }
+                    cvterr = i_date_form( p, &attr_val, layout_work.date.date_form );
+                    AttrFlags.date_form = true;
                     break;
-                case   e_pre_skip:
-                    cvterr = i_space_unit( p, curr,
+                case e_left_adjust:
+                    if( AttrFlags.left_adjust ) {
+                        xx_line_err_exit_ci( ERR_ATT_DUP, attr_name.tok.s,
+                            attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
+                    }
+                    cvterr = i_space_unit( p, &attr_val,
+                                           &layout_work.date.left_adjust );
+                    AttrFlags.left_adjust = true;
+                    break;
+                case e_right_adjust:
+                    if( AttrFlags.right_adjust ) {
+                        xx_line_err_exit_ci( ERR_ATT_DUP, attr_name.tok.s,
+                            attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
+                    }
+                    cvterr = i_space_unit( p, &attr_val,
+                                           &layout_work.date.right_adjust );
+                    AttrFlags.right_adjust = true;
+                    break;
+                case e_page_position:
+                    if( AttrFlags.page_position ) {
+                        xx_line_err_exit_ci( ERR_ATT_DUP, attr_name.tok.s,
+                            attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
+                    }
+                    cvterr = i_page_position( p, &attr_val,
+                                          &layout_work.date.page_position );
+                    AttrFlags.page_position = true;
+                    break;
+                case e_font:
+                    if( AttrFlags.font ) {
+                        xx_line_err_exit_ci( ERR_ATT_DUP, attr_name.tok.s,
+                            attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
+                    }
+                    cvterr = i_font_number( p, &attr_val, &layout_work.date.font );
+                    AttrFlags.font = true;
+                    break;
+                case e_pre_skip:
+                    if( AttrFlags.pre_skip ) {
+                        xx_line_err_exit_ci( ERR_ATT_DUP, attr_name.tok.s,
+                            attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
+                    }
+                    cvterr = i_space_unit( p, &attr_val,
                                            &layout_work.date.pre_skip );
+                    AttrFlags.pre_skip = true;
                     break;
                 default:
-                    out_msg( "WGML logic error.\n");
-                    cvterr = true;
-                    break;
+                    internal_err_exit( __FILE__, __LINE__ );
+                    /* never return */
                 }
                 if( cvterr ) {          // there was an error
-                    err_count++;
-                    g_err( err_att_val_inv );
-                    file_mac_info();
+                    xx_err_exit( ERR_ATT_VAL_INV );
+                    /* never return */
                 }
                 break;                  // break out of for loop
             }
         }
         if( cvterr < 0 ) {
-            err_count++;
-            g_err( err_att_name_inv );
-            file_mac_info();
+            xx_err_exit( ERR_ATT_NAME_INV );
+            /* never return */
         }
-        cc = get_lay_sub_and_value( &l_args );  // get att with value
     }
-    scan_start = scan_stop;
+    scandata.s = scandata.e;
     return;
 }
 
+
+
+/***************************************************************************/
+/*   :DATE     output date attribute values                                */
+/***************************************************************************/
+void    put_lay_date( FILE *fp, layout_data * lay )
+{
+    int                 k;
+    lay_att             curr;
+
+    fprintf( fp, ":DATE\n" );
+
+    for( k = 0; k < TABLE_SIZE( date_att ); k++ ) {
+        curr = date_att[k];
+        switch( curr ) {
+        case e_date_form:
+            o_date_form( fp, curr, lay->date.date_form );
+            break;
+        case e_left_adjust:
+            o_space_unit( fp, curr, &lay->date.left_adjust );
+            break;
+        case e_right_adjust:
+            o_space_unit( fp, curr, &lay->date.right_adjust );
+            break;
+        case e_page_position:
+            o_page_position( fp, curr, &lay->date.page_position );
+            break;
+        case e_font:
+            o_font_number( fp, curr, &lay->date.font );
+            break;
+        case e_pre_skip:
+            o_space_unit( fp, curr, &lay->date.pre_skip );
+            break;
+        default:
+            internal_err_exit( __FILE__, __LINE__ );
+            /* never return */
+        }
+    }
+}

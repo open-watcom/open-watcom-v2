@@ -41,4 +41,6 @@ OS/2
 QNX
 .bull
 Windows
+.bull
+Linux
 .endbull

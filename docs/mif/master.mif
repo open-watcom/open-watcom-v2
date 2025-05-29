@@ -8,15 +8,6 @@ to_os_path=\=/
 to_os_path=/=\
 !endif
 
-# change file name to lower case on NT and OS2
-!ifdef __UNIX__
-lowercase = %null
-!else ifdef __DOS__
-lowercase = %null
-!else
-lowercase = %ren
-!endif
-
 #
 # wgml targets
 #
@@ -45,12 +36,6 @@ wikidir    = ..\wiki
 wikidir    = ..\wiki
 !endif
 
-!ifeq wgml_target ps
-cop_files = mono01.cop ps.cop psdrv.cop
-!else
-cop_files = mono01.cop whelp.cop whelpdrv.cop
-!endif
-
 #
 # project configuration files
 #
@@ -63,24 +48,11 @@ proj_objs= &
 !include ../mif/books.mif
 
 wgml_cmdl_params = $^& ( file $(wgml_optfile)
-gendev_cmdl_params = $[@
 
 !include wgmlcmd.mif
 
 wgml1_ext=pt1
 wgml2_ext=pt2
-
-!ifdef wgml_ucase
-wgml_tmpfile=TMP.PTF
-wgml_sysfile_01=SYSUSR01.GML
-wgml_sysfile_02=SYSUSR02.GML
-wgml_sysfile_03=SYSUSR03.GML
-!else
-wgml_tmpfile=tmp.ptf
-wgml_sysfile_01=sysusr01.gml
-wgml_sysfile_02=sysusr02.gml
-wgml_sysfile_03=sysusr03.gml
-!endif
 
 #############################################################
 #
@@ -226,6 +198,44 @@ $(wikidir):
     mkdir $@
 !endif
 
+#-------------------------------------------------------
+# run new (native) wgml utility
+#-------------------------------------------------------
+run_wgml_new : .PROCEDURE .EXPLICIT
+!ifeq verbose 0
+    @echo wgml $@
+!endif
+!ifdef __UNIX__
+    $(noecho)set GMLINC=$(%OWGMLINC)
+    $(noecho)set GMLLIB=$(%OWGMLLIB)
+    -wgml $^& "(" file $(wgml_optfile)
+!else
+    $(noecho)set GMLINC=$(%OWGMLINC:/=\)
+    $(noecho)set GMLLIB=$(%OWGMLLIB:/=\)
+    -wgml $^& ( file $(wgml_optfile)
+!endif
+
+#-------------------------------------------------------
+# run Windows help compiler
+#-------------------------------------------------------
+run_hc_nt : .PROCEDURE .EXPLICIT
+!ifeq bld_os linux
+    @%create $(wine_hc_batch)
+    @%append $(wine_hc_batch) $(hc_nt) -xn $*.hpj
+    # this lowercase help file name in wine
+    @%append $(wine_hc_batch) ren $@ xxxxxxxx.tmp
+    @%append $(wine_hc_batch) ren xxxxxxxx.tmp $@
+    wine cmd /c $(wine_hc_batch)
+!else ifeq bld_os nt
+    $(hc_nt) -xn $*.hpj
+    %ren $@ $@    # change file name to lower case
+!else ifeq bld_os os2
+    $(hc_nt) -xn $*.hpj
+    %ren $@ $@    # change file name to lower case
+!else
+    $(hc_nt) -xn $*.hpj
+!endif
+
 ####################################################
 #
 # make WIN32 help files
@@ -237,17 +247,7 @@ $(wikidir):
 
 .rtf.hlp :
     @%make compile_hpj_nt
-!ifeq bld_os linux
-    @%create $(wine_hc_batch)
-    @%append $(wine_hc_batch) $(hc_nt) -xn $*.hpj
-    # this lowercase help file name in wine
-    @%append $(wine_hc_batch) ren $@ xxxxxxxx.tmp
-    @%append $(wine_hc_batch) ren xxxxxxxx.tmp $@
-    wine cmd /c $(wine_hc_batch)
-!else
-    $(hc_nt) -xn $*.hpj
-    $(lowercase) $@ $@    # change file name to lower case
-!endif
+    @%make run_hc_nt
 
 {$(root_books)}.gml.rtf &
 {$(root_books)}.gml.gh :
@@ -302,13 +302,11 @@ $(wikidir):
     $(noecho)set IPFCARTWORK=$($^&_book_incs)
     $(noecho)set WIPFC=$(%OWROOT)/bld/wipfc/helper
     $(ipfc) -q -inf $[@
-    $(lowercase) $@ $@	     # change file name to lower case
 
 .ipf.hlp :
     $(noecho)set IPFCARTWORK=$($^&_book_incs)
     $(noecho)set WIPFC=$(%OWROOT)/bld/wipfc/helper
     $(ipfc) -q $[@
-    $(lowercase) $@ $@	     # change file name to lower case
 
 {$(root_books)}.gml.ipf &
 {$(root_books)}.gml.gh :
@@ -336,12 +334,15 @@ $(wikidir):
 {$(root_books)}.gml.ps :
     @echo BOOK : $^&
     $(noecho)set OWGMLINC=.;$(root_books);$(tmpdir);$(ps_incs);$($^&_book_incs);$(whelp_incs);$(gml_incs)
-    $(noecho)set GMLINC=$(%OWGMLINC:/=\)
-    $(noecho)set GMLLIB=.;..\gml\syslib
+    $(noecho)set OWGMLLIB=../gml/owhelp
     %make prepare_wgml_opts
+!ifdef %OWNEWWGML
+    @%make run_wgml_new
+!else
     @%make run_wgml
+!endif
     @if exist $@ $(noecho)%erase $@
-    $(noecho)%ren $(wgml_tmpfile) $@
+    $(noecho)%ren tmp.ptf $@
 
 {$(bmroot_gs)}.bmp{$(tmpdir)}.ps &
 {$(bmroot_gui)}.bmp{$(tmpdir)}.ps &
@@ -403,47 +404,6 @@ $(wikidir):
 
 ####################################################
 !endif
-
-####################################################
-#
-# compile all necessary wgml .cop objects
-#
-####################################################
-
-mono01.cop : ../gml/syslib/mono01.fon
-    @%make gencop
-!ifdef wgml_ucase
-    @%ren MONO01.COP $@
-!endif
-
-ps.cop : ../gml/syslib/ps.pcd
-    @%make gencop
-!ifdef wgml_ucase
-    @%ren PS.COP $@
-!endif
-
-psdrv.cop : ../gml/syslib/psdrv.pcd
-    @%make gencop
-!ifdef wgml_ucase
-    @%ren PSDRV.COP $@
-!endif
-
-whelp.cop : ../gml/syslib/whelp.pcd
-    @%make gencop
-!ifdef wgml_ucase
-    @%ren WHELP.COP $@
-!endif
-
-whelpdrv.cop : ../gml/syslib/whelpdrv.pcd
-    @%make gencop
-!ifdef wgml_ucase
-    @%ren WHELPDRV.COP $@
-!endif
-
-gencop : .procedure .explicit
-    @set GMLINC=.
-    @set GMLLIB=
-    @%make run_gendev
 
 ####################################################
 #
@@ -510,6 +470,7 @@ wgml_optfile_2_wddoc    = 3
 wgml_optfile_2_lguide   = 3
 wgml_optfile_2_vi       = 3
 wgml_optfile_2_wgmlref  = 3
+wgml_optfile_2_wipfc    = 3
 
 prepare_wgml_opts : .PROCEDURE
 #--------------------------------------
@@ -552,7 +513,7 @@ prepare_wgml_opts : .PROCEDURE
 #
 # output format
 #
-    @%append $(wgml_optfile) ( output (text:100)$(wgml_tmpfile)
+    @%append $(wgml_optfile) ( output (t:100)tmp.ptf
 #
 # common setting
 #
@@ -569,7 +530,7 @@ prepare_wgml_opts : .PROCEDURE
     @%append $(wgml_optfile) ( file whelp.opt
     @%append $(wgml_optfile) ( passes 2
     @%append $(wgml_optfile) ( setsymbol dohelp 1
-    @%append $(wgml_optfile) ( output (text:2200)$(wgml_tmpfile)
+    @%append $(wgml_optfile) ( output (t:2200)tmp.ptf
     @%append $(wgml_optfile) ( setsymbol book $^&
 !endif
 #
@@ -577,7 +538,7 @@ prepare_wgml_opts : .PROCEDURE
 #
 !ifeq doc_verbose 1
     @%append $(wgml_optfile) ( warning
-    @%append $(wgml_optfile) ( verbose
+#    @%append $(wgml_optfile) ( verbose
     @%append $(wgml_optfile) ( statistics
 !else
     @%append $(wgml_optfile) ( nowarning
@@ -610,23 +571,30 @@ compile_gml_to_xxx : .PROCEDURE
     @if not exist $*.tbl @%create $*.tbl
     @if not exist $*.kw @%create $*.kw
     $(noecho)set OWGMLINC=.;$(root_books);$(hlp_incs);$($^&_book_incs);$(whelp_incs);$(gml_incs);
-    $(noecho)set GMLINC=$(%OWGMLINC:/=\)
-    $(noecho)set GMLLIB=
+    $(noecho)set OWGMLLIB=../gml/owhelp
     @%make prepare_wgml_opts
+!ifdef %OWNEWWGML
+    @%make run_wgml_new
+!else
     @%make run_wgml
+!endif
     @if exist $*.$(wgml1_ext) $(noecho)%erase $*.$(wgml1_ext)
-    $(noecho)%ren $(wgml_tmpfile) $*.$(wgml1_ext)
+    $(noecho)%ren tmp.ptf $*.$(wgml1_ext)
     @%make prepare_whpcvt_opts
     whpcvt -@ $(whpcvt_optfile) $*.$(wgml1_ext)
-    @%create $(wgml_sysfile_02)
+    @%create sysusr02.gml
+!ifdef %OWNEWWGML
+    @%make run_wgml_new
+!else
     @%make run_wgml
+!endif
     @if exist $*.$(wgml2_ext) $(noecho)%erase $*.$(wgml2_ext)
-    $(noecho)%ren $(wgml_tmpfile) $*.$(wgml2_ext)
+    $(noecho)%ren tmp.ptf $*.$(wgml2_ext)
     @if exist $*.mix @%erase $*.mix
-    @if not exist $(wgml_sysfile_01) @%create $*.mix
-    @if exist $(wgml_sysfile_01) @%ren $(wgml_sysfile_01) $*.mix
+    @if not exist sysusr01.gml @%create $*.mix
+    @if exist sysusr01.gml @%ren sysusr01.gml $*.mix
     @if exist $*.gh @%erase $*.gh
-    @%ren $(wgml_sysfile_02) $*.gh
+    @%ren sysusr02.gml $*.gh
 !ifeq dotarget nt
     @%make create_cnt_nt
 !endif
@@ -699,9 +667,9 @@ create_cnt_nt_fbooks = 1
 ####################################################
 create_cnt_nt : .PROCEDURE
     @if exist $*.cnt @%erase $*.cnt
-    @if not exist $(wgml_sysfile_03) @%create $(wgml_sysfile_03)
+    @if not exist sysusr03.gml @%create sysusr03.gml
     @if not "$(create_cnt_nt_$^&)" == "" @awk -f ../makecnt1.awk $(root_gs)/$^&.cnt > $^&.cnt
-    @if "$(create_cnt_nt_$^&)" == "" @awk -f ../makecnt2.awk -v file=$^&.hlp -v title="$($^&_book_title)" -v multi=$($^&_book_multi_chapter) $(wgml_sysfile_03) > $^&.cnt
+    @if "$(create_cnt_nt_$^&)" == "" @awk -f ../makecnt2.awk -v file=$^&.hlp -v title="$($^&_book_title)" -v multi=$($^&_book_multi_chapter) sysusr03.gml > $^&.cnt
 
 ####################################################
 
@@ -713,17 +681,17 @@ create_cnt_nt : .PROCEDURE
 #
 ####################################################
 !ifeq dotarget nt
-rulex = $(b).rtf $(b).gh : $(root_books)/$(b).gml $(cop_files) $($(b)_book_objs) $(proj_objs)
+rulex = $(b).rtf $(b).gh : $(root_books)/$(b).gml $($(b)_book_objs) $(proj_objs)
 !else ifeq dotarget win
-rulex = $(b).rtf $(b).gh : $(root_books)/$(b).gml $(cop_files) $($(b)_book_objs) $(proj_objs)
+rulex = $(b).rtf $(b).gh : $(root_books)/$(b).gml $($(b)_book_objs) $(proj_objs)
 !else ifeq dotarget dos
-rulex = $(b).ib $(b).gh : $(root_books)/$(b).gml $(cop_files) $($(b)_book_objs) $(proj_objs)
+rulex = $(b).ib $(b).gh : $(root_books)/$(b).gml $($(b)_book_objs) $(proj_objs)
 !else ifeq dotarget os2
-rulex = $(b).ipf $(b).gh : $(root_books)/$(b).gml $(cop_files) $($(b)_book_objs) $(proj_objs)
+rulex = $(b).ipf $(b).gh : $(root_books)/$(b).gml $($(b)_book_objs) $(proj_objs)
 !else ifeq wgml_target html
-rulex = $(b).gh $(b).htm : $(root_books)/$(b).gml $(cop_files) $($(b)_book_objs) $(proj_objs)
+rulex = $(b).gh $(b).htm : $(root_books)/$(b).gml $($(b)_book_objs) $(proj_objs)
 !else ifeq wgml_target ps
-rulex = $(b).ps : $(root_books)/$(b).gml $(cop_files) $($(b)_book_objs) $($(b)_book_objs_ps) $(proj_objs)
+rulex = $(b).ps : $(root_books)/$(b).gml $($(b)_book_objs) $($(b)_book_objs_ps) $(proj_objs)
 !endif
 b=c_readme
 $+$(rulex)$-

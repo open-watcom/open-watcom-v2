@@ -1,0 +1,124 @@
+:CMT.
+:CMT. This font is for the Bookman-Demi font.
+:CMT. This font is scaled with a 72000 dpi basis.
+:CMT. Bounding box: -194 -243 1346 934
+:CMT.
+
+:CMT. Definition file                 Font name
+:CMT. -------------------------------------------------
+:CMT. PSBD                            bookman-demi
+:CMT.eoc
+
+:FONT
+  defined_name     = 'bookman-demi'
+  member_name      = 'PSBD'
+  font_out_name1   = 'Bookman-Demi'
+  line_height      = 1000
+  line_space       = 177
+  scale_basis      = 72000
+  scale_min        = 1000
+  scale_max        = 72000
+  char_width       = 340
+
+
+:WIDTH.
+$20 340
+! 360
+" 420
+# 600
+$ 660
+% 940
+& 800
+' 320
+( 320
+) 320
+* 460
++ 600
+, 340
+- 360
+. 340
+/ 600
+0 660
+1 660
+2 660
+3 660
+4 660
+5 660
+6 660
+7 660
+8 660
+9 660
+: 340
+; 340
+< 600
+= 600
+> 600
+? 660
+@ 820
+A 720
+B 720
+C 740
+D 780
+E 720
+F 680
+G 780
+H 820
+I 400
+J 640
+K 800
+L 640
+M 940
+N 740
+O 800
+P 660
+Q 800
+R 780
+S 660
+T 700
+U 740
+V 720
+W 940
+X 780
+Y 700
+Z 640
+$5D 300
+\ 600
+$5B 300
+$5E 600
+_ 500
+` 320
+a 580
+b 600
+c 580
+d 640
+e 580
+f 380
+g 580
+h 680
+i 360
+j 340
+k 660
+l 340
+m 1000
+n 680
+o 620
+p 640
+q 620
+r 460
+s 520
+t 460
+u 660
+v 600
+w 800
+x 600
+y 620
+z 560
+{ 320
+| 600
+} 320
+$7E 600
+$AF 460
+$BF 1000
+:eWIDTH.
+
+:eFONT.

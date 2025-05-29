@@ -1,0 +1,124 @@
+:CMT.
+:CMT. This font is for the AvantGarde-Book font.
+:CMT. This font is scaled with a 72000 dpi basis.
+:CMT. Bounding box: -115 -223 1151 989
+:CMT.
+
+:CMT. Definition file                 Font name
+:CMT. -------------------------------------------------
+:CMT. PSAB                            avantgarde-book
+:CMT.eoc
+
+:FONT
+  defined_name     = 'avantgarde-book'
+  member_name      = 'PSAB'
+  font_out_name1   = 'AvantGarde-Book'
+  line_height      = 1000
+  line_space       = 212
+  scale_basis      = 72000
+  scale_min        = 1000
+  scale_max        = 72000
+  char_width       = 277
+
+
+:WIDTH.
+$20 277
+! 295
+" 309
+# 720
+$ 554
+% 775
+& 757
+' 351
+( 369
+) 369
+* 425
++ 606
+, 277
+- 332
+. 277
+/ 437
+0 554
+1 554
+2 554
+3 554
+4 554
+5 554
+6 554
+7 554
+8 554
+9 554
+: 277
+; 277
+< 606
+= 606
+> 606
+? 591
+@ 867
+A 740
+B 574
+C 813
+D 744
+E 536
+F 485
+G 872
+H 683
+I 226
+J 482
+K 591
+L 462
+M 919
+N 740
+O 869
+P 592
+Q 871
+R 607
+S 498
+T 426
+U 655
+V 702
+W 960
+X 609
+Y 592
+Z 480
+$5D 351
+\ 605
+$5B 351
+$5E 672
+_ 500
+` 351
+a 683
+b 682
+c 647
+d 685
+e 650
+f 314
+g 673
+h 610
+i 200
+j 203
+k 502
+l 200
+m 938
+n 610
+o 655
+p 682
+q 682
+r 301
+s 388
+t 339
+u 608
+v 554
+w 831
+x 480
+y 536
+z 425
+{ 351
+| 672
+} 351
+$7E 606
+$AF 606
+$BF 1000
+:eWIDTH.
+
+:eFONT.

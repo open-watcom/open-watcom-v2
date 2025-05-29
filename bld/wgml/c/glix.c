@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2004-2013 The Open Watcom Contributors. All Rights Reserved.
+*  Copyright (c) 2004-2009 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -28,16 +28,19 @@
 *
 ****************************************************************************/
 
+
 #include "wgml.h"
 
 #include "clibext.h"
 
+
 /***************************************************************************/
 /*   :I1 - :I3 attributes                                                  */
 /***************************************************************************/
-const   lay_att     ix_att[9] =
-    { e_pre_skip, e_post_skip, e_skip, e_font, e_indent, e_wrap_indent,
-      e_index_delim, e_string_font, e_dummy_zero };
+static const lay_att    ix_att[] = {
+    e_pre_skip, e_post_skip, e_skip, e_font, e_indent, e_wrap_indent,
+    e_index_delim, e_string_font
+};
 
 /**********************************************************************************/
 /*Define the characteristics of an index entry level, where n is 1, 2, or 3.      */
@@ -110,116 +113,188 @@ const   lay_att     ix_att[9] =
 /**********************************************************************************/
 
 
-
 /***************************************************************************/
 /*  lay_ix          for :I1 - :I3                                          */
 /***************************************************************************/
 
-void    lay_ix( lay_tag ltag )
+void    lay_ix( const gmltag * entry )
 {
     char            *   p;
     condcode            cc;
-    int                 k;
-    lay_att             curr;
-    att_args            l_args;
     int                 cvterr;
     int                 ix_l;
-    int                 ix;
+    int                 k;
+    lay_att             curr;
+    att_name_type       attr_name;
+    att_val_type        attr_val;
 
-    p = scan_start;
+    p = scandata.s;
 
-    if( !GlobFlags.firstpass ) {
-        scan_start = scan_stop;
-        eat_lay_sub_tag();
-        return;                         // process during first pass only
+    memset( &AttrFlags, 0, sizeof( AttrFlags ) );   // clear all attribute flags
+    if( ProcFlags.lay_xxx != entry->u.layid ) {
+        ProcFlags.lay_xxx = entry->u.layid;
     }
-    switch( ltag ) {
-    case LAY_TAG_I1:
-        ix_l = el_i1;
-        break;
-    case LAY_TAG_I2:
-        ix_l = el_i2;
-        break;
-    case LAY_TAG_I3:
-        ix_l = el_i3;
-        break;
-    default:
-        ix_l = el_i3;
-        out_msg( "WGML logic error in glix.c\n" );
-        err_count++;
-        break;
-    }
-    if( ProcFlags.lay_xxx != ix_l ) {
-        ProcFlags.lay_xxx = ix_l;
-    }
-    ix = ix_l - el_i1;      // construct Ix level  0 - 2
 
-    cc = get_lay_sub_and_value( &l_args );  // get att with value
-    while( cc == pos ) {
+    ix_l = entry->tagname[1] - '1';     // construct Ix level  0 - 2
+    if( ix_l > 2 ) {
+        ix_l = 2;
+    }
+
+    while( (cc = lay_attr_and_value( &attr_name, &attr_val )) == CC_pos ) {   // get att with value
         cvterr = -1;
-        for( k = 0, curr = ix_att[k]; curr > 0; k++, curr = ix_att[k] ) {
-
-            if( !strnicmp( att_names[curr], l_args.start[0], l_args.len[0] ) ) {
-                p = l_args.start[1];
-
+        for( k = 0; k < TABLE_SIZE( ix_att ); k++ ) {
+            curr = ix_att[k];
+            if( strcmp( lay_att_names[curr], attr_name.attname.l ) == 0 ) {
+                p = attr_val.tok.s;
                 switch( curr ) {
-                case   e_pre_skip:
-                    cvterr = i_space_unit( p, curr,
-                                           &layout_work.ix[ix].pre_skip );
-                    break;
-                case   e_post_skip:
-                    cvterr = i_space_unit( p, curr,
-                                           &layout_work.ix[ix].post_skip );
-                    break;
-                case   e_skip:
-                    cvterr = i_space_unit( p, curr,
-                                           &layout_work.ix[ix].skip );
-                    break;
-                case   e_font:
-                    cvterr = i_font_number( p, curr, &layout_work.ix[ix].font );
-                    if( layout_work.ix[ix].font >= wgml_font_cnt ) {
-                        layout_work.ix[ix].font = 0;
+                case e_pre_skip:
+                    if( AttrFlags.pre_skip ) {
+                        xx_line_err_exit_ci( ERR_ATT_DUP, attr_name.tok.s,
+                            attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
                     }
+                    cvterr = i_space_unit( p, &attr_val,
+                                           &layout_work.ix[ix_l].pre_skip );
+                    AttrFlags.pre_skip = true;
                     break;
-                case   e_indent:
-                    cvterr = i_space_unit( p, curr,
-                                           &layout_work.ix[ix].indent );
-                    break;
-                case   e_wrap_indent:
-                    cvterr = i_space_unit( p, curr,
-                                           &layout_work.ix[ix].wrap_indent );
-                    break;
-                case   e_index_delim:
-                    cvterr = i_xx_string( p, curr, layout_work.ix[ix].index_delim );
-                    break;
-                case   e_string_font:
-                    if( ix < 2 ) {
-                        cvterr = i_font_number( p, curr, &layout_work.ix[ix].string_font );
-                        if( layout_work.ix[ix].string_font >= wgml_font_cnt ) {
-                            layout_work.ix[ix].string_font = 0;
-                        }
+                case e_post_skip:
+                    if( AttrFlags.post_skip ) {
+                        xx_line_err_exit_ci( ERR_ATT_DUP, attr_name.tok.s,
+                            attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
                     }
+                    cvterr = i_space_unit( p, &attr_val,
+                                           &layout_work.ix[ix_l].post_skip );
+                    AttrFlags.post_skip = true;
+                    break;
+                case e_skip:
+                    if( AttrFlags.skip ) {
+                        xx_line_err_exit_ci( ERR_ATT_DUP, attr_name.tok.s,
+                            attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
+                    }
+                    cvterr = i_space_unit( p, &attr_val,
+                                           &layout_work.ix[ix_l].skip );
+                    AttrFlags.skip = true;
+                    break;
+                case e_font:
+                    if( AttrFlags.font ) {
+                        xx_line_err_exit_ci( ERR_ATT_DUP, attr_name.tok.s,
+                            attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
+                    }
+                    cvterr = i_font_number( p, &attr_val, &layout_work.ix[ix_l].font );
+                    AttrFlags.font = true;
+                    break;
+                case e_indent:
+                    if( AttrFlags.indent ) {
+                        xx_line_err_exit_ci( ERR_ATT_DUP, attr_name.tok.s,
+                            attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
+                    }
+                    cvterr = i_space_unit( p, &attr_val,
+                                           &layout_work.ix[ix_l].indent );
+                    AttrFlags.indent = true;
+                    break;
+                case e_wrap_indent:
+                    if( AttrFlags.wrap_indent ) {
+                        xx_line_err_exit_ci( ERR_ATT_DUP, attr_name.tok.s,
+                            attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
+                    }
+                    cvterr = i_space_unit( p, &attr_val,
+                                           &layout_work.ix[ix_l].wrap_indent );
+                    AttrFlags.wrap_indent = true;
+                    break;
+                case e_index_delim:
+                    if( AttrFlags.index_delim ) {
+                        xx_line_err_exit_ci( ERR_ATT_DUP, attr_name.tok.s,
+                            attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
+                    }
+                    cvterr = i_xx_string( p, &attr_val,
+                                          layout_work.ix[ix_l].index_delim );
+                    AttrFlags.index_delim = true;
+                    break;
+                case e_string_font:
+                    if( AttrFlags.string_font ) {
+                        xx_line_err_exit_ci( ERR_ATT_DUP, attr_name.tok.s,
+                            attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
+                    }
+                    if( ix_l < 2 ) {
+                        cvterr = i_font_number( p, &attr_val, &layout_work.ix[ix_l].string_font );
+                    }
+                    AttrFlags.string_font = true;
                     break;
                 default:
-                    out_msg( "WGML logic error.\n");
-                    cvterr = true;
-                    break;
+                    internal_err_exit( __FILE__, __LINE__ );
+                    /* never return */
                 }
                 if( cvterr ) {          // there was an error
-                    err_count++;
-                    g_err( err_att_val_inv );
-                    file_mac_info();
+                    xx_err_exit( ERR_ATT_VAL_INV );
+                    /* never return */
                 }
                 break;                  // break out of for loop
             }
         }
         if( cvterr < 0 ) {
-            err_count++;
-            g_err( err_att_name_inv );
-            file_mac_info();
+            xx_err_exit( ERR_ATT_NAME_INV );
+            /* never return */
         }
-        cc = get_lay_sub_and_value( &l_args );  // get att with value
     }
-    scan_start = scan_stop;
+    scandata.s = scandata.e;
     return;
+}
+
+
+
+/***************************************************************************/
+/*   :Ix        output index  attribute values for :I1 - :I3               */
+/***************************************************************************/
+void    put_lay_ix( FILE *fp, layout_data * lay )
+{
+    int                 k;
+    int                 lvl;
+    lay_att             curr;
+
+    for( lvl = 0; lvl < 3; ++lvl ) {
+
+        fprintf( fp, ":I%c\n", '1' + lvl );
+
+        for( k = 0; k < TABLE_SIZE( ix_att ); k++ ) {
+            curr = ix_att[k];
+            switch( curr ) {
+            case e_pre_skip:
+                o_space_unit( fp, curr, &lay->ix[lvl].pre_skip );
+                break;
+            case e_post_skip:
+                o_space_unit( fp, curr, &lay->ix[lvl].post_skip );
+                break;
+            case e_skip:
+                o_space_unit( fp, curr, &lay->ix[lvl].skip );
+                break;
+            case e_font:
+                o_font_number( fp, curr, &lay->ix[lvl].font );
+                break;
+            case e_indent:
+                o_space_unit( fp, curr, &lay->ix[lvl].indent );
+                break;
+            case e_wrap_indent:
+                o_space_unit( fp, curr, &lay->ix[lvl].wrap_indent );
+                break;
+            case e_index_delim:
+                o_xx_string( fp, curr, lay->ix[lvl].index_delim );
+                break;
+            case e_string_font:
+                if( lvl < 2 ) {         // :I3 has no string font
+                    o_font_number( fp, curr, &lay->ix[lvl].string_font );
+                }
+                break;
+            default:
+                internal_err_exit( __FILE__, __LINE__ );
+                /* never return */
+            }
+        }
+    }
 }

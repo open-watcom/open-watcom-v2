@@ -3,19 +3,23 @@
 
 set PROJNAME=wgml
 
+set BINTOOL=0
+
 set PROJDIR=<CWD>
 
 [ INCLUDE "<OWROOT>/build/prolog.ctl" ]
 
 [ INCLUDE "<OWROOT>/build/defrule.ctl" ]
 
-[ BLOCK <BLDRULE> wgml ]
-#=================
-    pmake -d wgml <2> <3> <4> <5> <6> <7> <8> <9> -h
+[ BLOCK <BINTOOL> build ]
+#========================
+    cdsay "<PROJDIR>"
+    <CPCMD> <OWOBJDIR>/wgml.exe "<OWROOT>/build/<OWOBJDIR>/wgml<CMDEXT>"
 
-[ BLOCK <BLDRULE> wgmlclean ]
-#============================
-    pmake -d wgml <2> <3> <4> <5> <6> <7> <8> <9> -h clean
+[ BLOCK <BINTOOL> clean ]
+#========================
+    echo rm -f "<OWROOT>/build/<OWOBJDIR>/wgml<CMDEXT>"
+    rm -f "<OWROOT>/build/<OWOBJDIR>/wgml<CMDEXT>"
 
 [ BLOCK . . ]
 

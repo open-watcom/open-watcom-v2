@@ -27,6 +27,8 @@
 * Description:  Declares everything used by wgml to find and open files:
 *                   dirseq
 *                   ff_setup()
+*                   ff_set_incpath()
+*                   ff_set_libpath()
 *                   ff_teardown()
 *                   search_file_in_dirs()
 *                   try_file_name
@@ -39,15 +41,25 @@
 
 #include <stdio.h>
 
+/* Extern variable declaration. */
+
+/* This allows the same declarations to function as definitions.
+ * Just #define global before including this file.
+ */
+
+extern char     try_file_name[];
+
+/* Reset so can be reused with other headers. */
+
 /* Extern enum declaration. */
 
 /* Search sequences for various types of files. */
 
 typedef enum {
-    ds_opt_file = 1,    // wgml option files:     curdir, gmllib, gmlinc, path
-    ds_doc_spec,        // wgml document source:  curdir, gmlinc, gmllib, path
-    ds_bin_lib,         // wgml binary library:           gmllib, gmlinc, path
-    ds_lib_src          // gendev source:         curdir, gmlinc
+    DSEQ_opt_file = 1,    // wgml option files:     curdir, gmllib, gmlinc, path
+    DSEQ_doc_spec,        // wgml document source:  curdir, gmlinc, gmllib, path
+    DSEQ_bin_lib,         // wgml binary library:           gmllib, gmlinc, path
+    DSEQ_lib_src          // gendev source:         curdir, gmlinc
 } dirseq;
 
 /* Function declarations. */
@@ -57,28 +69,13 @@ extern "C" {    /* Use "C" linkage when in C++ mode. */
 #endif
 
 extern  void        ff_teardown( void );
+extern  void        ff_set_incpath( const char * );
+extern  void        ff_set_libpath( const char * );
 extern  void        ff_setup( void );
-extern  bool        search_file_in_dirs( const char * filename, const char * defext, const char * altext, dirseq seq );
+extern  FILE        *search_file_in_dirs( const char *filename, const char *defext, const char *altext, dirseq seq );
 
 #ifdef  __cplusplus
 }   /* End of "C" linkage for C++. */
 #endif
 
 #endif  /* FINDFILE_H_INCLUDED */
-
-/* Extern variable declaration. */
-
-/* This allows the same declarations to function as definitions.
- * Just #define global before including this file.
- */
-
-#ifndef global
-    #define global  extern
-#endif
-
-global  char    *   try_file_name;
-global  FILE    *   try_fp;
-
-/* Reset so can be reused with other headers. */
-
-#undef global

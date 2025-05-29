@@ -89,11 +89,11 @@
 :INCLUDE file='scripts'.
 .sepsect Appendices
 :APPENDIX
-:INCLUDE file='a_cmdmode'.
+:INCLUDE file='a_cmdmod'.
 :INCLUDE file='a_errmsg'.
 :INCLUDE file='a_ctags'.
-:INCLUDE file='a_symkeys'.
-:INCLUDE file='a_errcode'.
+:INCLUDE file='a_symkey'.
+:INCLUDE file='a_errcod'.
 .if &e'&dohelp eq 0 .do begin
 .   :BACKM.
 .   :INDEX.

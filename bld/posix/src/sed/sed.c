@@ -475,7 +475,7 @@ static void dosub( char const *rhsbuf ) /* where to put the result */
     }
 
     for( rp = rhsbuf; (c = *rp++) != '\0'; ) {
-        if( c == '&' ) {
+        if( c == ('&' | '\x80') ) {
             sp = place( sp, loc1, loc2 );
         } else if( c >= ('1' | '\x80') && c <= ('9' | '\x80') ) {
             tagindex = (c & 0x7F) - '0';

@@ -7,7 +7,7 @@ use of any data type as the queue data.
 A second template parameter specifies the storage class used to implement the
 queue.  The
 :MONO.WCValSList
-:CONT:,
+:CONT.,
 :MONO.WCIsvSList
 and
 :MONO.WCPtrSList

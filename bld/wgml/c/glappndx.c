@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2004-2013 The Open Watcom Contributors. All Rights Reserved.
+*  Copyright (c) 2004-2009 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -28,6 +28,7 @@
 *
 ****************************************************************************/
 
+
 #include "wgml.h"
 
 #include "clibext.h"
@@ -36,12 +37,12 @@
 /***************************************************************************/
 /*   :APPENDIX attributes                                                  */
 /***************************************************************************/
-const   lay_att     appendix_att[22] =
-    { e_indent, e_pre_top_skip, e_pre_skip, e_post_skip, e_spacing,
-      e_font, e_number_font, e_number_form, e_page_position, e_number_style,
-      e_page_eject, e_line_break, e_display_heading, e_number_reset, e_case,
-      e_align, e_header, e_appendix_string, e_page_reset, e_section_eject,
-      e_columns, e_dummy_zero };
+static const lay_att    appendix_att[] = {
+    e_indent, e_pre_top_skip, e_pre_skip, e_post_skip, e_spacing, e_font,
+    e_number_font, e_number_form, e_page_position, e_number_style, e_page_eject,
+    e_line_break, e_display_heading, e_number_reset, e_case, e_align, e_header,
+    e_appendix_string, e_page_reset, e_section_eject, e_columns
+};
 
 /*********************************************************************************/
 /*Define the characteristics of the appendix section and appendix heading. All   */
@@ -207,127 +208,335 @@ const   lay_att     appendix_att[22] =
 /*  lay_appendix                                                           */
 /***************************************************************************/
 
-void    lay_appendix( lay_tag ltag )
+void    lay_appendix( const gmltag * entry )
 {
     char            *   p;
     condcode            cc;
     int                 k;
-    lay_att             curr;
-    att_args            l_args;
     int                 cvterr;
+    lay_att             curr;
+    att_name_type       attr_name;
+    att_val_type        attr_val;
 
-    /* unused parameters */ (void)ltag;
-
-    p = scan_start;
+    p = scandata.s;
     cvterr = false;
 
-    if( !GlobFlags.firstpass ) {
-        scan_start = scan_stop;
-        eat_lay_sub_tag();
-        return;                         // process during first pass only
+    memset( &AttrFlags, 0, sizeof( AttrFlags ) );   // clear all attribute flags
+    if( ProcFlags.lay_xxx != entry->u.layid ) {
+        ProcFlags.lay_xxx = entry->u.layid;
     }
-    if( ProcFlags.lay_xxx != el_appendix ) {
-        ProcFlags.lay_xxx = el_appendix;
-    }
-    cc = get_lay_sub_and_value( &l_args );  // get att with value
-    while( cc == pos ) {
+    while( (cc = lay_attr_and_value( &attr_name, &attr_val )) == CC_pos ) {   // get att with value
         cvterr = -1;
-        for( k = 0, curr = appendix_att[k]; curr > 0; k++, curr = appendix_att[k] ) {
-
-            if( !strnicmp( att_names[curr], l_args.start[0], l_args.len[0] ) ) {
-                p = l_args.start[1];
-
+        for( k = 0; k < TABLE_SIZE( appendix_att ); k++ ) {
+            curr = appendix_att[k];
+            if( strcmp( lay_att_names[curr], attr_name.attname.l ) == 0 ) {
+                p = attr_val.tok.s;
                 switch( curr ) {
-                case   e_indent:
-                    cvterr = i_space_unit( p, curr, &layout_work.appendix.indent );
-                    break;
-                case   e_pre_top_skip:
-                    cvterr = i_space_unit( p, curr, &layout_work.appendix.pre_top_skip );
-                    break;
-                case   e_pre_skip:
-                    cvterr = i_space_unit( p, curr, &layout_work.appendix.pre_skip );
-                    break;
-                case   e_post_skip:
-                    cvterr = i_space_unit( p, curr, &layout_work.appendix.post_skip );
-                    break;
-                case   e_spacing:
-                    cvterr = i_int8( p, curr, &layout_work.appendix.spacing );
-                    break;
-                case   e_font:
-                    cvterr = i_font_number( p, curr, &layout_work.appendix.font );
-                    if( layout_work.appendix.font >= wgml_font_cnt ) {
-                        layout_work.appendix.font = 0;
+                case e_indent:
+                    if( AttrFlags.indent ) {
+                        xx_line_err_exit_ci( ERR_ATT_DUP, attr_name.tok.s,
+                            attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
                     }
+                    cvterr = i_space_unit( p, &attr_val,
+                                    &layout_work.hx.hx_head[HDS_appendix].indent );
+                    AttrFlags.indent = true;
                     break;
-                case   e_number_font:
-                    cvterr = i_font_number( p, curr, &layout_work.appendix.number_font );
-                    if( layout_work.appendix.number_font >= wgml_font_cnt ) {
-                        layout_work.appendix.number_font = 0;
+                case e_pre_top_skip:
+                    if( AttrFlags.pre_top_skip ) {
+                        xx_line_err_exit_ci( ERR_ATT_DUP, attr_name.tok.s,
+                            attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
                     }
+                    cvterr = i_space_unit( p, &attr_val,
+                                &layout_work.hx.hx_sect[HDS_appendix].pre_top_skip );
+                    AttrFlags.pre_top_skip = true;
                     break;
-                case   e_number_form:
-                    cvterr = i_number_form( p, curr, &layout_work.appendix.number_form );
+                case e_pre_skip:
+                    if( AttrFlags.pre_skip ) {
+                        xx_line_err_exit_ci( ERR_ATT_DUP, attr_name.tok.s,
+                            attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
+                    }
+                    cvterr = i_space_unit( p, &attr_val,
+                                    &layout_work.hx.hx_head[HDS_appendix].pre_skip );
+                    AttrFlags.pre_skip = true;
                     break;
-                case   e_page_position:
-                    cvterr = i_page_position( p, curr, &layout_work.appendix.page_position );
+                case e_post_skip:
+                    if( AttrFlags.post_skip ) {
+                        xx_line_err_exit_ci( ERR_ATT_DUP, attr_name.tok.s,
+                            attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
+                    }
+                    cvterr = i_space_unit( p, &attr_val,
+                                    &layout_work.hx.hx_sect[HDS_appendix].post_skip );
+                    AttrFlags.post_skip = true;
                     break;
-                case   e_number_style:
-                    cvterr = i_number_style( p, curr, &layout_work.appendix.number_style );
+                case e_spacing:
+                    if( AttrFlags.spacing ) {
+                        xx_line_err_exit_ci( ERR_ATT_DUP, attr_name.tok.s,
+                            attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
+                    }
+                    cvterr = i_spacing( p, &attr_val, &layout_work.hx.hx_sect[HDS_appendix].spacing );
+                    AttrFlags.spacing = true;
                     break;
-                case   e_page_eject:
-                    cvterr = i_page_eject( p, curr, &layout_work.appendix.page_eject );
+                case e_font:
+                    if( AttrFlags.font ) {
+                        xx_line_err_exit_ci( ERR_ATT_DUP, attr_name.tok.s,
+                            attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
+                    }
+                    cvterr = i_font_number( p, &attr_val, &layout_work.hx.hx_sect[HDS_appendix].text_font );
+                    AttrFlags.font = true;
                     break;
-                case   e_line_break:
-                    cvterr = i_yes_no( p, curr, &layout_work.appendix.line_break );
+                case e_number_font:
+                    if( AttrFlags.number_font ) {
+                        xx_line_err_exit_ci( ERR_ATT_DUP, attr_name.tok.s,
+                            attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
+                    }
+                    cvterr = i_font_number( p, &attr_val, &layout_work.hx.hx_head[HDS_appendix].number_font );
+                    AttrFlags.number_font = true;
                     break;
-                case   e_display_heading:
-                    cvterr = i_yes_no( p, curr, &layout_work.appendix.display_heading );
+                case e_number_form:
+                    if( AttrFlags.number_form ) {
+                        xx_line_err_exit_ci( ERR_ATT_DUP, attr_name.tok.s,
+                            attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
+                    }
+                    cvterr = i_number_form( p, &attr_val,
+                                &layout_work.hx.hx_head[HDS_appendix].number_form );
+                    AttrFlags.number_form = true;
                     break;
-                case   e_number_reset:
-                    cvterr = i_yes_no( p, curr, &layout_work.appendix.number_reset );
+                case e_page_position:
+                    if( AttrFlags.page_position ) {
+                        xx_line_err_exit_ci( ERR_ATT_DUP, attr_name.tok.s,
+                            attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
+                    }
+                    cvterr = i_page_position( p, &attr_val,
+                                &layout_work.hx.hx_head[HDS_appendix].line_position );
+                    AttrFlags.page_position = true;
                     break;
-                case   e_case:
-                    cvterr = i_case( p, curr, &layout_work.appendix.cases );
+                case e_number_style:
+                    if( AttrFlags.number_style ) {
+                        xx_line_err_exit_ci( ERR_ATT_DUP, attr_name.tok.s,
+                            attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
+                    }
+                    cvterr = i_number_style( p, &attr_val,
+                                &layout_work.hx.hx_head[HDS_appendix].number_style );
+                    AttrFlags.number_style = true;
                     break;
-                case   e_align:
-                    cvterr = i_space_unit( p, curr, &layout_work.appendix.align );
+                case e_page_eject:
+                    if( AttrFlags.page_eject ) {
+                        xx_line_err_exit_ci( ERR_ATT_DUP, attr_name.tok.s,
+                            attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
+                    }
+                    cvterr = i_page_eject( p, &attr_val,
+                                &layout_work.hx.hx_head[HDS_appendix].page_eject );
+                    AttrFlags.page_eject = true;
                     break;
-                case   e_header:
-                    cvterr = i_yes_no( p, curr, &layout_work.appendix.header );
+                case e_line_break:
+                    if( AttrFlags.line_break ) {
+                        xx_line_err_exit_ci( ERR_ATT_DUP, attr_name.tok.s,
+                            attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
+                    }
+                    cvterr = i_yes_no( p, &attr_val,
+                                &layout_work.hx.hx_head[HDS_appendix].line_break );
+                    AttrFlags.line_break = true;
                     break;
-                case   e_appendix_string:
-                    cvterr = i_xx_string( p, curr, layout_work.appendix.string );
+                case e_display_heading:
+                    if( AttrFlags.display_heading ) {
+                        xx_line_err_exit_ci( ERR_ATT_DUP, attr_name.tok.s,
+                            attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
+                    }
+                    cvterr = i_yes_no( p, &attr_val,
+                            &layout_work.hx.hx_head[HDS_appendix].display_heading );
+                    AttrFlags.display_heading = true;
                     break;
-                case   e_page_reset:
-                    cvterr = i_yes_no( p, curr, &layout_work.appendix.page_reset );
+                case e_number_reset:
+                    if( AttrFlags.number_reset ) {
+                        xx_line_err_exit_ci( ERR_ATT_DUP, attr_name.tok.s,
+                            attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
+                    }
+                    cvterr = i_yes_no( p, &attr_val,
+                                &layout_work.hx.hx_head[HDS_appendix].number_reset );
+                    AttrFlags.number_reset = true;
                     break;
-                case   e_section_eject:
-                    cvterr = i_page_eject( p, curr, &layout_work.appendix.section_eject );
+                case e_case:
+                    if( AttrFlags.case_a ) {
+                        xx_line_err_exit_ci( ERR_ATT_DUP, attr_name.tok.s,
+                            attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
+                    }
+                    cvterr = i_case( p, &attr_val,
+                                     &layout_work.hx.hx_head[HDS_appendix].hd_case );
+                    AttrFlags.case_a = true;
                     break;
-                case   e_columns:
-                    cvterr = i_int8( p, curr, &layout_work.appendix.columns );
+                case e_align:
+                    if( AttrFlags.align ) {
+                        xx_line_err_exit_ci( ERR_ATT_DUP, attr_name.tok.s,
+                            attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
+                    }
+                    cvterr = i_space_unit( p, &attr_val,
+                                        &layout_work.hx.hx_head[HDS_appendix].align );
+                    AttrFlags.align = true;
+                    break;
+                case e_header:
+                    if( AttrFlags.header ) {
+                        xx_line_err_exit_ci( ERR_ATT_DUP, attr_name.tok.s,
+                            attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
+                    }
+                    cvterr = i_yes_no( p, &attr_val,
+                                       &layout_work.hx.hx_sect[HDS_appendix].header );
+                    AttrFlags.header = true;
+                    break;
+                case e_appendix_string:
+                    if( AttrFlags.appendix_string ) {
+                        xx_line_err_exit_ci( ERR_ATT_DUP, attr_name.tok.s,
+                            attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
+                    }
+                    cvterr = i_xx_string( p, &attr_val, layout_work.appendix.string );
+                    AttrFlags.appendix_string = true;
+                    break;
+                case e_page_reset:
+                    if( AttrFlags.page_reset ) {
+                        xx_line_err_exit_ci( ERR_ATT_DUP, attr_name.tok.s,
+                            attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
+                    }
+                    cvterr = i_yes_no( p, &attr_val, &layout_work.appendix.page_reset );
+                    AttrFlags.page_reset = true;
+                    break;
+                case e_section_eject:
+                    if( AttrFlags.section_eject ) {
+                        xx_line_err_exit_ci( ERR_ATT_DUP, attr_name.tok.s,
+                            attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
+                    }
+                    cvterr = i_page_eject( p, &attr_val,
+                                                &layout_work.appendix.section_eject );
+                    AttrFlags.section_eject = true;
+                    break;
+                case e_columns:
+                    if( AttrFlags.columns ) {
+                        xx_line_err_exit_ci( ERR_ATT_DUP, attr_name.tok.s,
+                            attr_val.tok.s - attr_name.tok.s + attr_val.tok.l);
+                        /* never return */
+                    }
+                    cvterr = i_int8( p, &attr_val, &layout_work.appendix.columns );
+                    AttrFlags.columns = true;
                     break;
                 default:
-                    out_msg( "WGML logic error.\n");
-                    cvterr = true;
-                    break;
+                    internal_err_exit( __FILE__, __LINE__ );
+                    /* never return */
                 }
                 if( cvterr ) {          // there was an error
-                    err_count++;
-                    g_err( err_att_val_inv );
-                    file_mac_info();
+                    xx_err_exit( ERR_ATT_VAL_INV );
+                    /* never return */
                 }
                 break;                  // break out of for loop
             }
         }
         if( cvterr < 0 ) {
-            err_count++;
-            g_err( err_att_name_inv );
-            file_mac_info();
+            xx_err_exit( ERR_ATT_NAME_INV );
+            /* never return */
         }
-        cc = get_lay_sub_and_value( &l_args );  // get att with value
     }
-    scan_start = scan_stop;
+    scandata.s = scandata.e;
     return;
 }
 
+
+
+/***************************************************************************/
+/*   :APPENDIX  output attribute values                                    */
+/***************************************************************************/
+void    put_lay_appendix( FILE *fp, layout_data * lay )
+{
+    int                 k;
+    lay_att             curr;
+
+    fprintf( fp, ":APPENDIX\n" );
+
+    for( k = 0; k < TABLE_SIZE( appendix_att ); k++ ) {
+        curr = appendix_att[k];
+        switch( curr ) {
+        case e_indent:
+            o_space_unit( fp, curr, &lay->hx.hx_head[HDS_appendix].indent );
+            break;
+        case e_pre_top_skip:
+            o_space_unit( fp, curr, &lay->hx.hx_sect[HDS_appendix].pre_top_skip );
+            break;
+        case e_pre_skip:
+            o_space_unit( fp, curr, &lay->hx.hx_head[HDS_appendix].pre_skip );
+            break;
+        case e_post_skip:
+            o_space_unit( fp, curr, &lay->hx.hx_sect[HDS_appendix].post_skip );
+            break;
+        case e_spacing:
+            o_spacing( fp, curr, &lay->hx.hx_sect[HDS_appendix].spacing );
+            break;
+        case e_font:
+            o_font_number( fp, curr, &lay->hx.hx_sect[HDS_appendix].text_font );
+            break;
+        case e_number_font:
+            o_font_number( fp, curr, &lay->hx.hx_head[HDS_appendix].number_font );
+            break;
+        case e_number_form:
+            o_number_form( fp, curr, &lay->hx.hx_head[HDS_appendix].number_form );
+            break;
+        case e_page_position:
+            o_page_position( fp, curr, &lay->hx.hx_head[HDS_appendix].line_position );
+            break;
+        case e_number_style:
+            o_number_style( fp, curr, &lay->hx.hx_head[HDS_appendix].number_style );
+            break;
+        case e_page_eject:
+            o_page_eject( fp, curr, &lay->hx.hx_head[HDS_appendix].page_eject );
+            break;
+        case e_line_break:
+            o_yes_no( fp, curr, &lay->hx.hx_head[HDS_appendix].line_break );
+            break;
+        case e_display_heading:
+            o_yes_no( fp, curr, &lay->hx.hx_head[HDS_appendix].display_heading );
+            break;
+        case e_number_reset:
+            o_yes_no( fp, curr, &lay->hx.hx_head[HDS_appendix].number_reset );
+            break;
+        case e_case:
+            o_case( fp, curr, &lay->hx.hx_head[HDS_appendix].hd_case );
+            break;
+        case e_align:
+            o_space_unit( fp, curr, &lay->hx.hx_head[HDS_appendix].align );
+            break;
+        case e_header:
+            o_yes_no( fp, curr, &lay->hx.hx_sect[HDS_appendix].header );
+            break;
+        case e_appendix_string:
+            o_xx_string( fp, curr, lay->appendix.string );
+            break;
+        case e_page_reset:
+            o_yes_no( fp, curr, &lay->appendix.page_reset );
+            break;
+        case e_section_eject:
+            o_page_eject( fp, curr, &lay->appendix.section_eject );
+            break;
+        case e_columns:
+            o_int8( fp, curr, &lay->appendix.columns );
+            break;
+        default:
+            internal_err_exit( __FILE__, __LINE__ );
+            /* never return */
+        }
+    }
+}

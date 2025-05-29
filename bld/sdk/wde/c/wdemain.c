@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -77,6 +77,7 @@
 #include "aboutdlg.h"
 #include "ldstr.h"
 #include "wclbproc.h"
+#include "jmpbuf.h"
 
 #include "clibint.h"
 
@@ -242,9 +243,9 @@ int PASCAL WinMain( HINSTANCE hinstCurrent, HINSTANCE hinstPrevious,
             WdeDisplayErrorMsg( WDE_EXCEPTIONDURINGABNORMALEXIT );
             exit( -1 );
         }
-        WdePushEnv( WdeEnv );
+        WdePushEnv( JMPBUF_PTR( WdeEnv ) );
     } else {
-        WdePushEnv( WdeEnv );
+        WdePushEnv( JMPBUF_PTR( WdeEnv ) );
         WdeProcessArgs( _argv, _argc );
     }
 
@@ -267,7 +268,7 @@ int PASCAL WinMain( HINSTANCE hinstCurrent, HINSTANCE hinstPrevious,
         WdeDDEEndConversation();
     }
 
-    WdePopEnv( WdeEnv );
+    WdePopEnv( JMPBUF_PTR( WdeEnv ) );
 
     if( IsDDE ) {
         WdeDDEEnd();
