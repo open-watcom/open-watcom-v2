@@ -266,6 +266,7 @@ void    scr_se( void )
     symsub          *symsubval;
     symvar          sym;
     unsigned        len;
+    getnum_block    gn;
 
     subscript = SI_no_subscript;                       // not subscripted
     g_scan_err = false;
@@ -319,7 +320,6 @@ void    scr_se( void )
                 }
                 len = p - valstart;
             } else {                                // numeric or undelimited string
-                getnum_block    gn;
                 condcode        cc;
 
                 gn.arg.s = p;
