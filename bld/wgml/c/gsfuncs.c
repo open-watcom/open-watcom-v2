@@ -254,9 +254,9 @@ char *scr_multi_funcs( const char *funcname, char *args, char **result, unsigned
     rc = 0;
 
     // find true end of function
-    p = args;
+    pend = args + strlen( args );
     p_level = 0;
-    while( *p != '\0' ) {               // to end of buffer
+    for( p = args; *p != '\0'; p++ ) {  // to end of buffer
         if( *p == '(' ) {
             p_level++;
         } else if( *p == ')' ) {
@@ -266,9 +266,7 @@ char *scr_multi_funcs( const char *funcname, char *args, char **result, unsigned
                 break;
             }
         }
-        p++;
     }
-
     pret = p;                           // save for return (points to final ')')
 
     // test for valid functionname
@@ -283,7 +281,7 @@ char *scr_multi_funcs( const char *funcname, char *args, char **result, unsigned
 
     /* Missing ')' is only a problem if the function was found */
 
-    if( p_level > 0 ) {      // at least one missing ')'
+    if( p_level > 0 ) {                 // at least one missing ')'
         xx_line_err_exit_c( ERR_FUNC_PARM_END, p - 1 );
         /* never return */
     }
@@ -312,7 +310,7 @@ char *scr_multi_funcs( const char *funcname, char *args, char **result, unsigned
             break;                      // end of parms
         }
     }
-    m = k + (k < funcinfo->parm_cnt);// mandatory parm count
+    m = k + (k < funcinfo->parm_cnt);   // mandatory parm count
 
     if( m < funcinfo->parm_cnt ) {
         xx_line_err_exit_c( ERR_FUNC_PARM_MISS, p - 1 );
@@ -344,7 +342,7 @@ char *scr_multi_funcs( const char *funcname, char *args, char **result, unsigned
         k += (k < funcinfo->opt_parm_cnt);
     }
     parmcount = m + k;                  // total parmcount
-    parms[parmcount].arg.s = NULL;          // end of parms indicator
+    parms[parmcount].arg.s = NULL;      // end of parms indicator
 
     /* Now resolve those parm that need it */
 
@@ -390,7 +388,7 @@ char *scr_multi_funcs( const char *funcname, char *args, char **result, unsigned
 
     free_lines( in_wk );
 
-    if( cc != CC_pos ) {                   // error in function
+    if( cc != CC_pos ) {                // error in function
         *(*result)++ = '&';             // result is & to preserve the input
         **result = '\0';
 
@@ -400,7 +398,7 @@ char *scr_multi_funcs( const char *funcname, char *args, char **result, unsigned
     }
 
     ProcFlags.substituted = true;
-    return( (char *)pret + 1 );                 // all OK new scan position
+    return( (char *)pret + 1 );         // all OK new scan position
 }
 
 

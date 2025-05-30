@@ -545,17 +545,17 @@ static bool add_symvar_sub( symvar *var, const char *val, unsigned len, sub_inde
  */
         ws  = var->subscripts;
         if( ws == NULL
-          || (subscript < ws->subscript) ) {
+          || (ws->subscript >= subscript) ) {
             newsub->next    = var->subscripts;
             var->subscripts = newsub;
         } else {
+            wsv = ws;
             while( (ws != NULL) ) {
-                if( subscript > ws->subscript ) {
-                    wsv = ws;
-                    ws  = ws->next;
-                } else {
+                if( ws->subscript >= subscript ) {
                     break;
                 }
+                wsv = ws;
+                ws  = ws->next;
             }
             newsub->next = ws;
             wsv->next    = newsub;

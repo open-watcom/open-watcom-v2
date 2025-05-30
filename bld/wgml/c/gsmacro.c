@@ -431,6 +431,7 @@ void    scr_dm( void )
     head = NULL;
     last = NULL;
     macro_line_count = 0;
+    lineno_start = 0;
 
     compend   = ( strcmp( "end", macname2 ) == 0 );
     compbegin = ( strcmp( "begin", macname2 ) == 0 );
