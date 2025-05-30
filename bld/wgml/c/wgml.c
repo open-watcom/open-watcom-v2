@@ -153,7 +153,7 @@ static  void    free_filenames( void )
         wk = wk1;
     }
     if( GlobalFlags.statistics ) {
-        out_msg( "Total files: %ld\n\n", cnt );
+        out_msg( "Total files: %d\n\n", cnt );
     }
     fn_stack = NULL;
     return;

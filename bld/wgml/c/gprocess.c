@@ -724,23 +724,6 @@ static sym_list_entry *parse_l2r( char *buf, bool splittable )
                             curr->type = SL_symbol;
                             strcpy( curr->value, symsubval->value );  // save value in current stack entry
                         }
-                    } else if( (rc == 1) && ((var_ind == SI_all_subscript) ||(var_ind == SI_neg_subscript) || (var_ind == SI_pos_subscript)) ) {
-                        sub_index   lo_bound = SI_min_subscript;
-                        sub_index   hi_bound = SI_max_subscript;
-
-                        // adjust default bounds which go from min to max
-                        switch( var_ind ) {
-                        case SI_neg_subscript:
-                            hi_bound = 0;
-                            break;
-                        case SI_pos_subscript:
-                            lo_bound = 0;
-                            break;
-                        default:
-                            break;
-                        }
-                        curr->type = SL_symbol;
-                        expand_subscripts( curr->value, symsubval->base, lo_bound, hi_bound );
                     } else if( symvar_entry.flags & SF_local_var ) {    // undefined locals are set to ''
                         curr->type = SL_symbol;
                         curr->value[0] = '\0';

@@ -362,7 +362,7 @@ static void set_bind( option * opt )
     }
     memcpy( &bind_odd, &bindwork, sizeof( bind_odd) );
 
-    out_msg_research( "\tbind odd  value %lii (%limm) '%s' %li %li \n",
+    out_msg_research( "\tbind odd  value %ii (%imm) '%s' %i %i \n",
              bind_odd.su_inch, bind_odd.su_mm, bind_odd.su_txt,
              bind_odd.su_whole, bind_odd.su_dec );
 
@@ -381,7 +381,7 @@ static void set_bind( option * opt )
             /* never return */
         }
         memcpy( &bind_even, &bindwork, sizeof( bindwork ) );
-        out_msg_research( "\tbind even value %lii (%limm) '%s' %li %li \n",
+        out_msg_research( "\tbind even value %ii (%imm) '%s' %i %i \n",
                 bind_even.su_inch,bind_even.su_mm, bind_even.su_txt,
                 bind_even.su_whole, bind_even.su_dec );
     }
