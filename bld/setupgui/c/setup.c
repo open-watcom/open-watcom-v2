@@ -47,6 +47,7 @@
 #include "guistats.h"
 #include "guiutils.h"
 
+#include "clibint.h"
 #include "clibext.h"
 
 
@@ -56,6 +57,11 @@ typedef enum {
     Stack_IsEmpty
 } DIR_PARAM_STACK_OPS;
 
+
+#if defined( __WATCOMC__ ) && defined( _M_IX86 )
+unsigned char   _8087 = 0;
+unsigned char   _real87 = 0;
+#endif
 
 static bool SetupOperations( void )
 /*********************************/
