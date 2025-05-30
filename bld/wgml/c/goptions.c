@@ -52,13 +52,16 @@ typedef struct cmd_tok {
     char            token[1];           // variable length
 } cmd_tok;
 
+typedef struct cmd_data_lvl {
+    char            *file_name;
+    cmd_tok         *cmd_tokens;
+    cmd_tok         *sav_tokens;
+} cmd_data_lvl;
+
 static bool         is_option( void );  // used before defined
-static char         *buffers[MAX_NESTING];
-static char         *file_names[MAX_NESTING];
+static cmd_data_lvl cmd_data[MAX_NESTING];
 static char         *opt_parm;
 static char         *opt_scan_ptr;
-static cmd_tok      *cmd_tokens[MAX_NESTING];
-static cmd_tok      *sav_tokens[MAX_NESTING];
 static cmd_tok      *tokennext;
 static int          opt_value;
 static unsigned     level;              // include level 0 = cmdline
@@ -73,8 +76,8 @@ static void free_tokens( int lvl )
 {
     cmd_tok         *tok;
 
-    while( (tok = cmd_tokens[lvl]) != NULL ) {
-        cmd_tokens[lvl] = tok->nxt;
+    while( (tok = cmd_data[lvl].cmd_tokens) != NULL ) {
+        cmd_data[lvl].cmd_tokens = tok->nxt;
         mem_free( tok );
     }
 }
@@ -96,7 +99,7 @@ static int split_tokens( char *str )
     linestart = true;                   // assume start of line
     cnt = 0;                            // found tokens
 
-    last_tok = cmd_tokens[level];       // first token at this level
+    last_tok = cmd_data[level].cmd_tokens;       // first token at this level
     if( last_tok != NULL ) {
         while( last_tok->nxt != NULL ) {
             last_tok = last_tok->nxt;   // last token at this level
@@ -149,7 +152,7 @@ static int split_tokens( char *str )
         new->token[toklen] = '\0';
 
         if( last_tok == NULL ) {
-            cmd_tokens[level] = new;
+            cmd_data[level].cmd_tokens = new;
         } else {
             last_tok->nxt = new;
         }
@@ -1093,7 +1096,7 @@ static void set_warning( option * opt )
 /*  ( file xxx    command option file                                      */
 /***************************************************************************/
 
-static void set_OPTFile( option * opt )
+static void set_optfile( option * opt )
 {
     char        attrwork[MAX_FILE_ATTR + 1];
     char        *str;
@@ -1108,8 +1111,12 @@ static void set_OPTFile( option * opt )
         xx_simple_err_exit_c( ERR_MISSING_VALUE, opt->option );
         /* never return */
     }
-    len = tokennext->toklen;
+    if( level + 1 == MAX_NESTING ) {
+        xx_simple_err_exit_c( ERR_MAX_NESTING_OPT, token_buf );
+        /* never return */
+    }
 
+    len = tokennext->toklen;
     str = tokennext->token;
 
     g_info_research( INF_RECOGNIZED_XXX, "option file", str );
@@ -1118,40 +1125,32 @@ static void set_OPTFile( option * opt )
     if( attrwork[0] != '\0' ) {
         xx_warn_cc( WNG_FILEATTR_IGNORED, attrwork, token_buf );
     }
-    if( level >= MAX_NESTING ) {
-        xx_simple_err_exit_c( ERR_MAX_NESTING_OPT, token_buf );
-        /* never return */
-    }
-    sav_tokens[level] = tokennext->nxt;
-    buffers[level + 1] = NULL;
-    file_names[level + 1] = NULL;
     fp = search_file_in_dirs( token_buf, OPT_EXT, "", DSEQ_opt_file );
     if( fp == NULL ) {
         xx_simple_err_exit_c( ERR_FILE_NOT_FOUND, token_buf );
         /* never return */
     }
-    if( level > 0 ) {
+    /*
+     * level 0 is command line
+     */
+    if( level > 1 ) {
         int     k;
 
-        for( k = level; k > 0; k-- ) {
-            if( stricmp( try_file_name, file_names[k] ) == 0 ) {
+        for( k = level; k > 1; k-- ) {
+            if( stricmp( try_file_name, cmd_data[k - 1].file_name ) == 0 ) {
                 fclose( fp );
                 xx_simple_err_exit_c( ERR_RECURSIVE_OPTION, try_file_name );
                 /* never return */
             }
         }
     }
-    file_names[++level] = mem_strdup( try_file_name );
+    cmd_data[level].sav_tokens = tokennext->nxt;
+    cmd_data[level].file_name = mem_strdup( try_file_name );
     read_indirect_file( fp );
     fclose( fp );
-    tokennext = cmd_tokens[level];
-    if( str == NULL ) {
-        if( file_names[level] != NULL ) {
-            mem_free( file_names[level] );
-        }
-        tokennext = sav_tokens[level];
-    }
+    tokennext = cmd_data[level].cmd_tokens;
     tokennext = tokennext->nxt;
+    level++;
 }
 
 /***************************************************************************/
@@ -1331,7 +1330,7 @@ static void set_wscript( option * opt )
 
 /*options in format of WGML i.e.,   ( option xxx     */
 
-static option GML_old_Options[] =
+static option gml_old_options[] =
 {
 /*                 length  minimum  default  Processing             */
 /*     optionname          Abbrev   value    routine      Parmcount */
@@ -1342,7 +1341,7 @@ static option GML_old_Options[] =
     { "device",        6,  3,       0,       set_device,     1 },
     { "description",   11, 4,       0,       ign_option,     1 },
     { "duplex",        6,  3,       0,       ign_option,     0 },
-    { "file",          4,  4,       0,       set_OPTFile,    1 },
+    { "file",          4,  4,       0,       set_optfile,    1 },
     { "font",          4,  4,       0,       set_font,       5 },
     { "fontfamily",    10, 5,       0,       ign_option,     0 },
     { "format",        6,  4,       0,       ign_option,     1 },
@@ -1384,7 +1383,7 @@ static option GML_old_Options[] =
 };
 
 /* options in 'new' format   -o                        */
-static option GML_new_Options[] =
+static option gml_new_options[] =
 {
     { "i",             1,  1,       0,        set_incpath,   1 },
     { "l",             1,  1,       0,        set_libpath,   1 },
@@ -1696,14 +1695,14 @@ static bool is_option( void )
         }
     }
     for( i = 0; ; i++ ) {
-        opt = GML_old_Options[i].option;
+        opt = gml_old_options[i].option;
         if( opt == NULL )
             break;    // end of table
         if( c != *opt )
             continue;  // easy disqualifiers: first char & length
-        if( len < GML_old_Options[i].minLength )
+        if( len < gml_old_options[i].minLength )
             continue;
-        if( len > GML_old_Options[i].optionLen )
+        if( len > gml_old_options[i].optionLen )
             continue;
         if( strnicmp( opt, p, len ) )
             continue; // no match
@@ -1720,14 +1719,14 @@ static bool is_option( void )
         --len;
 
         for( i = 0; ; i++ ) {
-            opt = GML_new_Options[i].option;
+            opt = gml_new_options[i].option;
             if( opt == NULL )
                 break;    // end of table
             if( c != *opt )
                 continue;  // easy disqualifiers: first char & length
-            if( len < GML_new_Options[i].minLength )
+            if( len < gml_new_options[i].minLength )
                 continue;
-            if( len > GML_new_Options[i].optionLen )
+            if( len > gml_new_options[i].optionLen )
                 continue;
             if( strnicmp( opt, p, len ) )
                 continue; // no match
@@ -1776,18 +1775,14 @@ static cmd_tok * process_master_filename( cmd_tok * tok )
 
 int proc_options( char * string )
 {
-    bool        sol;                    // start of line switch
-    char        c;
-    char        linestr[NUM2STR_LENGTH + 1];
-    char        linestr2[NUM2STR_LENGTH + 1];
-    char    *   p;
-    char    *   s_after_dq;
-    cmd_tok *   tok;
-    int         tokcount;
-
-    level = 0;                          // option file include level: 0 == cmdline
-    buffers[0] = NULL;
-    cmd_tokens[0] = NULL;
+    bool            sol;                    // start of line switch
+    char            c;
+    char            linestr[NUM2STR_LENGTH + 1];
+    char            linestr2[NUM2STR_LENGTH + 1];
+    char            *p;
+    char            *s_after_dq;
+    cmd_tok         *tok;
+    int             tokcount;
 
     SkipSpaces( string );
     s_after_dq = string;                // assume no starting quote
@@ -1803,11 +1798,14 @@ int proc_options( char * string )
             s_after_dq = string + 1;    // start after leading quote
         }
     }
+
+    level = 0;                          // option file include level: 0 == cmdline
+    cmd_data[level].cmd_tokens = NULL;
     tokcount = split_tokens( s_after_dq );
     sprintf( linestr, "%d", tokcount );
     g_info_research( INF_CMDLINE_TOK_CNT, linestr );
-
-    tok = cmd_tokens[level];
+    tok = cmd_data[level].cmd_tokens;
+    level++;
     for( ;; ) {
         while( tok != NULL ) {
             sol = tok->bol;
@@ -1818,7 +1816,7 @@ int proc_options( char * string )
                 /***************************************************************/
                 /*  process 'new' options -x or /x                             */
                 /***************************************************************/
-                tok = process_option( GML_new_Options, tok );
+                tok = process_option( gml_new_options, tok );
 
                 if( tok != NULL
                   && !tok->bol ) {
@@ -1833,7 +1831,7 @@ int proc_options( char * string )
                     /*******************************************************/
                     /*  process 'old' options  ( xxx                       */
                     /*******************************************************/
-                    tok = process_option_old( GML_old_Options, tok );
+                    tok = process_option_old( gml_old_options, tok );
                 } else {
 
                     /*******************************************************/
@@ -1843,20 +1841,17 @@ int proc_options( char * string )
                 }
             }
         }
-        if( buffers[level] != NULL ) {
-            mem_free( buffers[level] );
-            buffers[level] = NULL;
-        }
-        if( cmd_tokens[level] != NULL ) {
-            free_tokens( level );
-        }
-        if( file_names[level] != NULL ) {
-            mem_free( file_names[level] );
-            file_names[level] = NULL;
-        }
         if( level == 0 )
             break;
-        tok = sav_tokens[--level];
+        level--;
+        if( cmd_data[level].cmd_tokens != NULL ) {
+            free_tokens( level );
+        }
+        if( cmd_data[level].file_name != NULL ) {
+            mem_free( cmd_data[level].file_name );
+            cmd_data[level].file_name = NULL;
+        }
+        tok = cmd_data[level].sav_tokens;
     }
     if( print_to < print_from ) {
         g_banner();
