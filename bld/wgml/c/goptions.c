@@ -211,7 +211,7 @@ static void read_indirect_file( FILE *fp )
         len += blk_len;
     }
     len += blk_len;
-    mem_realloc( buf, len + 1 );
+    buf = mem_realloc( buf, len + 1 );
     rewind( fp );
     fread( buf, 1, len, fp );
     buf[len] = '\0';
