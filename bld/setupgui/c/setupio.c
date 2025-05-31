@@ -236,6 +236,8 @@ file_handle FileOpen( const VBUF *path, data_mode mode )
 #endif
     if( afh->type == DS_FILE
       && afh->u.fp == NULL ) {
+        if( afh->textbuf != NULL )
+            free( afh->textbuf );
         free( afh );
         afh = NULL;
     }
