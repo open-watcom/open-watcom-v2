@@ -1285,15 +1285,15 @@ typedef enum num_style {
 /*  and In IHn IREF tags                                                   */
 /***************************************************************************/
 
-typedef enum {          // definition order is important
-    pgnone,             // nothing (In, IHn, IREF)
-    pgpageno,           // numeric page number (IX default)(In)
-    pgmajor,            // major page reference (IX)(In, IREF)
-    pgstart,            // start page (In, IREF)
-    pgend,              // end page (In, IREF)
-    pgstring,           // pg string (In, IREF) / reference (ix)
-    pgmajorstring,      // major string reference (IX)
-    pgsee,              // see string or seeid item (IHn, IREF)
+typedef enum {                          // definition order is important
+    PGREF_none,                         // nothing (In, IHn, IREF)
+    PGREF_pageno,                       // numeric page number (IX default)(In)
+    PGREF_major,                        // major page reference (IX)(In, IREF)
+    PGREF_start,                        // start page (In, IREF)
+    PGREF_end,                          // end page (In, IREF)
+    PGREF_string,                       // pg string (In, IREF) / reference (ix)
+    PGREF_majorstring,                  // major string reference (IX)
+    PGREF_see,                          // see string or seeid item (IHn, IREF)
 } ereftyp;
 
 typedef struct ix_e_blk {               // index entry for pagenos / text

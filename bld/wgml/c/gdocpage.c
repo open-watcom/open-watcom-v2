@@ -113,10 +113,8 @@ static void do_el_list_out( doc_element * in_element )
                     /* Set value for OC output (if all goes well) */
                     if( (in_element->next == NULL) && (cur_line->next == NULL) ) {
                         if( cur_line->first != NULL ) {
-                            cur_chars = cur_line->first;
-                            while( cur_chars->next != NULL ) {
-                                cur_chars = cur_chars->next;
-                            }
+                            for( cur_chars = cur_line->first; cur_chars->next != NULL; cur_chars = cur_chars->next )
+                                /* empty */;
                             g_oc_hpos = cur_chars->x_address + cur_chars->width;
                         }
                     }
@@ -242,7 +240,8 @@ static void consolidate_array( doc_element * array[MAX_COL], uint8_t count )
             top_pos = t_page.page_top;
         }
         for( i = 0; i < count; i++ ) {
-            if( nt_el[i] == NULL ) continue;    // some columns may be empty
+            if( nt_el[i] == NULL )
+                continue;               // some columns may be empty
             if( bin_driver->y_positive == 0x00 ) {
                 if( top_pos < nt_el[i]->v_pos ) {
                     top_pos = nt_el[i]->v_pos;
@@ -255,7 +254,8 @@ static void consolidate_array( doc_element * array[MAX_COL], uint8_t count )
         }
 
         for( i = 0; i < count; i++ ) {
-            if( nt_el[i] == NULL ) continue;    // some columns may be empty
+            if( nt_el[i] == NULL )
+                continue;               // some columns may be empty
             if( nt_el[i]->v_pos == top_pos ) {
                 if( cur_v_el == NULL ) {
                     cur_nt_el_group = alloc_doc_el_group( GRT_none );
@@ -307,15 +307,12 @@ static void consolidate_array( doc_element * array[MAX_COL], uint8_t count )
             while( cur_v_el != NULL) {
                 sav_nt_el = NULL;
                 left_pos = t_page.page_left + t_page.page_width;
-                cur_h_el = cur_v_el;
-                while( cur_h_el != NULL) {
+                for( cur_h_el = cur_v_el; cur_h_el != NULL; cur_h_el = cur_h_el->next ) {
                     if( cur_h_el->h_pos < left_pos ) {
                         left_pos = cur_h_el->h_pos;
                     }
-                    cur_h_el = cur_h_el->next;
                 }
-                cur_h_el = cur_v_el;
-                while( cur_h_el != NULL) {
+                for( cur_h_el = cur_v_el; cur_h_el != NULL; cur_h_el = cur_h_el->next ) {
                     if( cur_h_el->h_pos == left_pos ) {
                         if( nt_el_list == NULL ) {
                             cur_nt_el_list = cur_h_el;
@@ -327,7 +324,6 @@ static void consolidate_array( doc_element * array[MAX_COL], uint8_t count )
                     } else if( sav_nt_el == NULL ) {
                         sav_nt_el = cur_h_el;
                     }
-                    cur_h_el = cur_h_el->next;
                     cur_nt_el_list->next = NULL;
                 }
                 cur_v_el = sav_nt_el;
@@ -349,7 +345,8 @@ static void consolidate_array( doc_element * array[MAX_COL], uint8_t count )
 
     for( i = 0; i < count; i++ ) {
         while( te_el[i] != NULL ) {
-            if( te_el[i] == NULL ) continue;    // some columns may be empty
+            if( te_el[i] == NULL )
+                continue;               // some columns may be empty
             while( te_el[i]->element.text.first != NULL ) {
                 if( tl[i] == NULL ) {
                     cur_tl[i] = te_el[i]->element.text.first;
@@ -381,7 +378,8 @@ static void consolidate_array( doc_element * array[MAX_COL], uint8_t count )
             top_pos = t_page.page_top;
         }
         for( i = 0; i < count; i++ ) {
-            if( tl[i] == NULL ) continue;       // some columns may be empty
+            if( tl[i] == NULL )
+                continue;               // some columns may be empty
             if( bin_driver->y_positive == 0x00 ) {
                 if( top_pos < tl[i]->y_address ) {
                     top_pos = tl[i]->y_address;
@@ -394,7 +392,8 @@ static void consolidate_array( doc_element * array[MAX_COL], uint8_t count )
         }
 
         for( i = 0; i < count; i++ ) {
-            if( tl[i] == NULL ) continue;          // some columns may be empty
+            if( tl[i] == NULL )
+                continue;               // some columns may be empty
             if( tl[i]->y_address == top_pos ) {
                 if( out_el == NULL ) {
                     out_el = alloc_doc_el( ELT_text );
@@ -550,8 +549,7 @@ static void consolidate_array( doc_element * array[MAX_COL], uint8_t count )
 
     /* text_lines at the same vertical position in the same doc_element must be merged */
 
-    cur_out_el = out_el;
-    while( cur_out_el != NULL ) {
+    for( cur_out_el = out_el; cur_out_el != NULL; cur_out_el = cur_out_el->next ) {
         if( cur_out_el->type == ELT_text ) {         // text elements only
             cur_tl_list = cur_out_el->element.text.first;
             sav_tl = cur_tl_list;
@@ -585,7 +583,6 @@ static void consolidate_array( doc_element * array[MAX_COL], uint8_t count )
                 }
             }
         }
-        cur_out_el = cur_out_el->next;
     }
 
     /* Output linked list of doc_elements */
@@ -717,19 +714,16 @@ static bool set_positions( doc_element * list, unsigned h_start, unsigned v_star
                 op_done = false;
                 for( cur_line = cur_el->element.text.first; cur_line != NULL;
                                                     cur_line = cur_line->next ) {
-                    if( (cur_line->first != NULL) &&
-                            ((int)(cur_line->first->x_address + h_start)) < 0 ) {
+                    if( (cur_line->first != NULL)
+                      && ((int)(cur_line->first->x_address + h_start)) < 0 ) {
                         offset = -1 * (int)cur_line->first->x_address + h_start;
-                        cur_text = cur_line->first;
-                        while( cur_text != NULL ) {         // rebase line to keep on physical page
+                        // rebase line to keep on physical page
+                        for( cur_text = cur_line->first; cur_text != NULL; cur_text = cur_text->next ) {
                             cur_text->x_address += offset;
-                            cur_text = cur_text->next;
                         }
                     }
-                    cur_text = cur_line->first;
-                    while( cur_text != NULL ) {
+                    for( cur_text = cur_line->first; cur_text != NULL; cur_text = cur_text->next ) {
                         cur_text->x_address += h_start;
-                        cur_text = cur_text->next;
                     }
                     if( use_spacing ) {
                         cur_spacing += cur_line->units_spacing + cur_line->line_height;
@@ -755,14 +749,15 @@ static bool set_positions( doc_element * list, unsigned h_start, unsigned v_star
                         /*      section of the page to suppress any subs_skip   */
                         /********************************************************/
 
-                        if( cur_el->element.text.overprint && cur_el->element.text.force_op ) {
+                        if( cur_el->element.text.overprint
+                          && cur_el->element.text.force_op ) {
                             if( use_spacing ) {
                                 cur_spacing -= cur_line->units_spacing + cur_line->line_height;
                             } else {
                                 cur_spacing -= cur_line->line_height;
                             }
-                        } else if( (t_page.top_banner == NULL) &&
-                                    (t_page.panes->page_width == NULL) ) {    // minimum height
+                        } else if( (t_page.top_banner == NULL)
+                          && (t_page.panes->page_width == NULL) ) {    // minimum height
                             if( cur_spacing < wgml_fonts[g_curr_font].line_height ) {
                                 cur_spacing = wgml_fonts[g_curr_font].line_height;
                             }
@@ -869,8 +864,7 @@ static void do_doc_panes_out( void )
     }
 
     col_count = 0;
-    cur_pane = t_page.panes;
-    while( cur_pane != NULL ) {
+    for( cur_pane = t_page.panes; cur_pane != NULL; cur_pane = cur_pane->next ) {
         if( col_count < cur_pane->col_count ) { // maximum number of colums used
             col_count = cur_pane->col_count;
         }
@@ -879,7 +873,8 @@ static void do_doc_panes_out( void )
                            cur_pane->page_width_top );
             out_el[0] = cur_pane->page_width;
             cur_el[0] = cur_pane->page_width;
-            while( cur_el[0]->next != NULL) cur_el[0] = cur_el[0]->next;
+            while( cur_el[0]->next != NULL)
+                cur_el[0] = cur_el[0]->next;
             cur_pane->page_width = NULL;
         }
         for( i = 0; i < cur_pane->col_count; i++ ) {
@@ -895,7 +890,8 @@ static void do_doc_panes_out( void )
                 } else {
                     cur_el[i]->next = cur_pane->cols[i].col_width;
                 }
-                while( cur_el[i]->next != NULL ) cur_el[i] = cur_el[i]->next;
+                while( cur_el[i]->next != NULL )
+                    cur_el[i] = cur_el[i]->next;
                 cur_pane->cols[i].col_width = NULL;
             }
             if( cur_pane->cols[i].main != NULL ) {
@@ -909,7 +905,8 @@ static void do_doc_panes_out( void )
                 } else {
                     cur_el[i]->next = cur_pane->cols[i].main;
                 }
-                while( cur_el[i]->next != NULL ) cur_el[i] = cur_el[i]->next;
+                while( cur_el[i]->next != NULL )
+                    cur_el[i] = cur_el[i]->next;
                 cur_pane->cols[i].main = NULL;
             }
             ProcFlags.page_started = true;
@@ -924,7 +921,8 @@ static void do_doc_panes_out( void )
                 } else {
                     cur_el[i]->next = cur_pane->cols[i].bot_fig;
                 }
-                while( cur_el[i]->next != NULL ) cur_el[i] = cur_el[i]->next;
+                while( cur_el[i]->next != NULL )
+                    cur_el[i] = cur_el[i]->next;
                 cur_pane->cols[i].bot_fig = NULL;
             }
             if( cur_pane->cols[i].footnote != NULL ) {
@@ -938,11 +936,11 @@ static void do_doc_panes_out( void )
                 } else {
                     cur_el[i]->next = cur_pane->cols[i].footnote;
                 }
-                while( cur_el[i]->next != NULL ) cur_el[i] = cur_el[i]->next;
+                while( cur_el[i]->next != NULL )
+                    cur_el[i] = cur_el[i]->next;
                 cur_pane->cols[i].footnote = NULL;
             }
         }
-        cur_pane = cur_pane->next;
     }
 
     if( col_count == 1 ) {
@@ -1007,7 +1005,8 @@ static void fill_column( doc_element * a_element )
             cur_line = cur_line->next;
         }
 
-        if( (cur_line == NULL) || (last == NULL) ) {        // just in case
+        if( (cur_line == NULL)
+          || (last == NULL) ) {         // just in case
             break;
         }
 
@@ -1103,7 +1102,7 @@ static void update_column( void )
     if( n_page.col_bot != NULL ) {              // at most one item can be placed
         cur_group = n_page.col_bot;
         t_page.cur_col->bot_fig = cur_group->first;
-        if( bin_driver->y_positive == 0) {
+        if( bin_driver->y_positive == 0 ) {
             t_page.cur_col->fig_top += cur_group->depth;
         } else {
             t_page.cur_col->fig_top -= cur_group->depth;
@@ -1141,7 +1140,7 @@ static void update_column( void )
                     t_page.last_col_fn = cur_el;
                     cur_group->first = cur_group->first->next;
                     cur_el->next = NULL;
-                    if( bin_driver->y_positive == 0) {
+                    if( bin_driver->y_positive == 0 ) {
                         t_page.cur_col->fig_top += cur_el->depth;
                         t_page.cur_col->fn_top += cur_el->depth;
                     } else {
@@ -1152,17 +1151,16 @@ static void update_column( void )
                     cur_group->depth -= cur_el->depth;
                 }
             } else {
-                cur_el = cur_group->first;          // here, cur_el is the last element
-                while( cur_el->next != NULL ) {
-                    cur_el = cur_el->next;
-                }
+                // here, cur_el is the last element
+                for( cur_el = cur_group->first; cur_el->next != NULL; cur_el = cur_el->next )
+                    /* empty */;
                 if( t_page.cur_col->footnote == NULL ) {
                     t_page.cur_col->footnote = cur_group->first;
                 } else {
                     t_page.last_col_fn->next = cur_group->first;
                 }
                 t_page.last_col_fn = cur_el;
-                if( bin_driver->y_positive == 0) {
+                if( bin_driver->y_positive == 0 ) {
                     t_page.cur_col->fig_top += cur_group->depth;
                     t_page.cur_col->fn_top += cur_group->depth;
                 } else {
@@ -1196,8 +1194,7 @@ static void update_column( void )
                 break;
             }
 #endif
-            cur_el = cur_group->first;
-            while( cur_el != NULL ) {
+            while( (cur_el = cur_group->first) != NULL ) {
                 if( cur_el->blank_lines > 0 ) {
                     if( (t_page.cur_depth + cur_el->blank_lines) >= t_page.max_depth ) {
                         cur_el->blank_lines -= (t_page.max_depth - t_page.cur_depth);
@@ -1273,7 +1270,6 @@ static void update_column( void )
                 t_page.cur_depth += cur_el->depth + depth;
                 cur_group->depth -= cur_el->depth + depth;
                 ProcFlags.col_started = true;
-                cur_el = cur_group->first;
             }
 
             /**************************************************************************/
@@ -1369,10 +1365,8 @@ static void update_column( void )
                                                     t_page.cur_depth - depth );
                 if( splittable ) {              // cur_el was split
                     n_page.col_main = cur_el->next;
-                    n_page.last_col_main = n_page.col_main;
-                    while( n_page.last_col_main->next != NULL ) {
-                        n_page.last_col_main = n_page.last_col_main->next;
-                    }
+                    for( n_page.last_col_main = n_page.col_main; n_page.last_col_main->next != NULL; n_page.last_col_main = n_page.last_col_main->next )
+                        /* empty */;
                     cur_el->next = NULL;
                     if( t_page.cur_col->main == NULL ) {
                         t_page.cur_col->main = cur_el;
@@ -1538,16 +1532,13 @@ void do_page_out( void )
     /****************************************************************/
 
     if( ProcFlags.op_done ) {
-        work_el = t_page.panes->cols[0].main;
-        while( work_el != NULL ) {
+        for( work_el = t_page.panes->cols[0].main; work_el != NULL; work_el = work_el->next ) {
             if( (work_el->type == ELT_text) && (work_el->element.text.entry != NULL) ) {
                 op_hdg_cnt++;
             }
-            work_el = work_el->next;
         }
-        work_el = t_page.panes->cols[0].main;
         if( op_hdg_cnt > 0 ) {
-            while( work_el != NULL ) {
+            for( work_el = t_page.panes->cols[0].main; work_el != NULL; work_el = work_el->next ) {
                 if( work_el->type != ELT_text ) {
                     ProcFlags.op_done = false;  // cancel for non-text doc_el: TBD
                     break;
@@ -1558,9 +1549,9 @@ void do_page_out( void )
                     }
                     break;                          // keep ProcFlags.op_done set
                 }
-                work_el = work_el->next;
             }
         } else {
+            work_el = t_page.panes->cols[0].main;
             nh_pages++;
         }
     }
@@ -1804,7 +1795,7 @@ void insert_col_bot( doc_el_group * a_group )
         t_page.cur_col->bot_fig = a_group->first;
         a_group->first = NULL;
         add_doc_el_group_to_pool( a_group );
-        if( bin_driver->y_positive == 0) {
+        if( bin_driver->y_positive == 0 ) {
             t_page.cur_col->fig_top += depth;
         } else {
             t_page.cur_col->fig_top -= depth;
@@ -1851,7 +1842,7 @@ void insert_col_fn( doc_el_group * a_group )
             t_page.last_col_fn = cur_el;
             a_group->first = a_group->first->next;
             cur_el->next = NULL;
-            if( bin_driver->y_positive == 0) {
+            if( bin_driver->y_positive == 0 ) {
                 t_page.cur_col->fig_top += cur_el->depth;
                 t_page.cur_col->fn_top += cur_el->depth;
             } else {
@@ -1870,10 +1861,9 @@ void insert_col_fn( doc_el_group * a_group )
             n_page.last_col_fn = a_group;
         }
     } else {
-        cur_el = a_group->first;            // here, cur_el is the last element
-        while( cur_el->next != NULL ) {
-            cur_el = cur_el->next;
-        }
+        // here, cur_el is the last element
+        for( cur_el = a_group->first; cur_el->next != NULL; cur_el = cur_el->next )
+            /* empty */;
         if( t_page.cur_col->footnote == NULL ) {
             t_page.cur_col->footnote = a_group->first;
         } else {
@@ -1882,7 +1872,7 @@ void insert_col_fn( doc_el_group * a_group )
         t_page.last_col_fn = cur_el;
         a_group->first = NULL;
         add_doc_el_group_to_pool( a_group );
-        if( bin_driver->y_positive == 0) {
+        if( bin_driver->y_positive == 0 ) {
             t_page.cur_col->fig_top += depth;
             t_page.cur_col->fn_top += depth;
         } else {
@@ -2421,8 +2411,7 @@ void reset_top_ban( void )
 
 void reset_t_page( void )
 {
-    doc_pane    *   cur_pane;
-    doc_pane    *   sav_pane;
+    doc_pane        *cur_pane;
     int             i;
 
     if( n_page.fk_queue == NULL ){
@@ -2458,12 +2447,9 @@ void reset_t_page( void )
     max_depth = t_page.max_depth - t_page.cur_depth;
 
     if( t_page.panes->next != NULL ) {  // keep only the first pane
-        cur_pane = t_page.panes->next;
-        while( cur_pane != NULL ) {
-            sav_pane = cur_pane->next;
-            cur_pane->next = NULL;
+        while( (cur_pane = t_page.panes->next) != NULL ) {
+            t_page.panes->next = cur_pane->next;
             mem_free( cur_pane );
-            cur_pane = sav_pane;
         }
     }
     t_page.last_pane = t_page.panes;
@@ -2590,8 +2576,6 @@ bool split_element( doc_element * a_element, unsigned req_depth )
     doc_element *   split_el;
     text_line   *   cur_line;
     text_line   *   last        =   NULL;
-    unsigned        cur_count   =   0;
-    unsigned        tot_count   =   0;
     unsigned        cur_depth   =   0;
 
     switch( a_element->type ) {
@@ -2617,13 +2601,12 @@ bool split_element( doc_element * a_element, unsigned req_depth )
 
         if( g_cur_threshold == 1 ) {                // simplest case
 
-            while( cur_line != NULL ) {
+            for( cur_line = a_element->element.text.first; cur_line != NULL; cur_line = cur_line->next ) {
                 if( ( cur_depth + cur_line->line_height + cur_line->units_spacing ) > req_depth ) {
                     break;
                 }
                 cur_depth += cur_line->line_height + cur_line->units_spacing;
                 last = cur_line;
-                cur_line = cur_line->next;
             }
 
             if( cur_line == NULL ) {                // all lines fit; unlikely, but seen
@@ -2632,26 +2615,25 @@ bool split_element( doc_element * a_element, unsigned req_depth )
             }
 
         } else {                                    // not so simple
+            unsigned    cur_count;
+            unsigned    tot_count;
 
             /* compute tot_count, the total number of lines in the paragraph */
 
-            while( cur_line != NULL ) {
+            tot_count = 0;
+            for( cur_line = a_element->element.text.first; cur_line != NULL; cur_line = cur_line->next ) {
                 tot_count++;
-                cur_line = cur_line->next;
             }
 
             /* compute cur_depth, the depth of the first g_cur_threshold lines */
 
-            cur_line = a_element->element.text.first;
-            while( cur_line != NULL ) {
-                if( cur_count < g_cur_threshold ) {
-                    cur_depth += cur_line->line_height + cur_line->units_spacing;
-                } else {
+            cur_count = 0;
+            for( cur_line = a_element->element.text.first; cur_line != NULL; cur_line = cur_line->next ) {
+                if( cur_count >= g_cur_threshold )
                     break;
-                }
+                cur_depth += cur_line->line_height + cur_line->units_spacing;
                 cur_count++;
                 last = cur_line;
-                cur_line = cur_line->next;
             }
 
             /****************************************************************/

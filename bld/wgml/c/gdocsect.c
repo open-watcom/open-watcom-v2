@@ -334,7 +334,7 @@ static void gen_ref_list( ix_e_blk * refs, font_number font )
 
             /* This sequence appears to be hard-wired in wgml 4.0 */
 
-            if( cur_ref->entry_typ == pgmajor ) {   // major refs differ from normal refs
+            if( cur_ref->entry_typ == PGREF_major ) {   // major refs differ from normal refs
                 process_text( ",", layout_work.ixpgnum.font );
                 insert_hard_spaces( " ", 1, font );
             } else {
@@ -343,22 +343,22 @@ static void gen_ref_list( ix_e_blk * refs, font_number font )
         }
 
         switch( cur_ref->entry_typ ) {
-        case pgmajorstring:
+        case PGREF_majorstring:
             ProcFlags.ct = true;
             post_space = wgml_fonts[font].spc_width;
             /* fall through */
-        case pgstring:
+        case PGREF_string:
             if( cur_ref->u.pageref.page_text[0] != '\0' ) {     // if not null string
                 process_text( cur_ref->u.pageref.page_text, font );
             }
             break;
-        case pgstart:
+        case PGREF_start:
             format_num( cur_ref->u.pagenum.page_no, buffer, sizeof( buffer ), cur_ref->u.pagenum.style );
             process_text( buffer, font );
             ProcFlags.ct = true;
             post_space = 0;
             process_text( ixjval->value, font );
-            while( cur_ref->entry_typ != pgend )
+            while( cur_ref->entry_typ != PGREF_end )
                 cur_ref = cur_ref->next;
             if( cur_ref == NULL ) {
                 xx_simple_err_exit( ERR_OPEN_PAGE_RANGE );
@@ -369,20 +369,20 @@ static void gen_ref_list( ix_e_blk * refs, font_number font )
             format_num( cur_ref->u.pagenum.page_no, buffer, sizeof( buffer ), cur_ref->u.pagenum.style );
             process_text( buffer, font );
             break;
-        case pgend:
+        case PGREF_end:
             xx_simple_err_exit( ERR_OPEN_PAGE_RANGE );
             /* never return */
-        case pgmajor:
+        case PGREF_major:
             ProcFlags.ct = true;
             post_space = 0;
             /* fall through */
-        case pgpageno:
+        case PGREF_pageno:
             format_num( cur_ref->u.pagenum.page_no, buffer, sizeof( buffer ), cur_ref->u.pagenum.style );
             process_text( buffer, font );
             if( cur_ref->next != NULL ) {                   // done if last page number
                 predict = cur_ref->u.pagenum.page_no;
                 predict++;
-                if( (cur_ref->entry_typ != pgmajor )
+                if( (cur_ref->entry_typ != PGREF_major )
                   && (cur_ref->next->u.pagenum.page_no == predict) ) {   // sequence detected
                     ProcFlags.ct = true;
                     post_space = 0;
@@ -401,7 +401,7 @@ static void gen_ref_list( ix_e_blk * refs, font_number font )
                 }
             }
             break;
-        case pgsee:
+        case PGREF_see:
             if( cur_ref->prt_text != NULL ) {
                 process_text( cur_ref->prt_text, g_curr_font );
             } else if( cur_ref->u.pageref.page_text_len > 0 ) {  // if not null string
@@ -716,7 +716,6 @@ static void gen_index( void )
     }
 
     ixh_indent = indent[0] + conv_hor_unit( &layout_work.ixhead.indent, layout_work.ixhead.font );
-    ixh1 = index_dict;
     find_symvar( sys_dict, "$ixj", SI_no_subscript, &ixjval );
     find_symvar( sys_dict, "$ixref", SI_no_subscript, &ixrefval );
 
@@ -740,22 +739,24 @@ static void gen_index( void )
 
     /* Output the index */
 
+    /*
+     * level 1
+     */
     first[0] = true;
-    while( ixh1 != NULL ) {             // level 1
-
+    for( ixh1 = index_dict; ixh1 != NULL; ixh1 = ixh1->next ) {
         if( letter[0] != my_toupper( *(ixh1->ix_term) ) ) {
-
-            /* Set g_subs_skip for IXHEAD */
-
+            /*
+             * Set g_subs_skip for IXHEAD
+             */
             set_skip_vars( &layout_work.ixhead.pre_skip, NULL, NULL, g_text_spacing,
                            layout_work.ixhead.font );
-
-            /* Generate IXHEAD heading */
-
+            /*
+             * Generate IXHEAD heading
+             */
             letter[0] = my_toupper( *(ixh1->ix_term) );
-
-            /* The factor 4.6 is empirical and chosen to match wgml 4.0 */
-
+            /*
+             * The factor 4.6 is empirical and chosen to match wgml 4.0
+             */
             if( ((4.6 * wgml_fonts[layout_work.ixhead.font].line_height)
                    + g_subs_skip + t_page.cur_depth) >= t_page.max_depth ) {
                 next_column();
@@ -831,10 +832,10 @@ static void gen_index( void )
 
         if( ixh1->entry != NULL ) {
             post_space = 0;
-            if( (ixh1->entry->major_pgnum != NULL) ||
-                    (ixh1->entry->major_string != NULL) ||
-                    (ixh1->entry->normal_pgnum != NULL) ||
-                    (ixh1->entry->normal_string != NULL) ) {    // see_string alone doesn't need the index_delim
+            if( (ixh1->entry->major_pgnum != NULL)
+              || (ixh1->entry->major_string != NULL)
+              || (ixh1->entry->normal_pgnum != NULL)
+              || (ixh1->entry->normal_string != NULL) ) {    // see_string alone doesn't need the index_delim
                 ProcFlags.in_trans = false;         // turn off input translation
                 process_text( layout_work.ix[0].index_delim, layout_work.ix[0].font );
             }
@@ -843,9 +844,11 @@ static void gen_index( void )
         post_space = 0;
         scr_process_break();
 
-        ixh2 = ixh1->lower;
+        /*
+         * level 2
+         */
         first[1] = true;
-        while( ixh2 != NULL ) {     // level 2
+        for( ixh2 = ixh1->lower; ixh2 != NULL; ixh2 = ixh2->next ) {
             if( first[1] ) {                    // first entry in group
                 g_text_spacing = layout_work.hx.hx_sect[HDS_index].spacing;
                 set_skip_vars( &layout_work.ix[1].skip, NULL, NULL,
@@ -872,10 +875,10 @@ static void gen_index( void )
 
             if( ixh2->entry != NULL ) {
                 post_space = 0;
-                if( (ixh2->entry->major_pgnum != NULL) ||
-                        (ixh2->entry->major_string != NULL) ||
-                        (ixh2->entry->normal_pgnum != NULL) ||
-                        (ixh2->entry->normal_string != NULL) ) {    // see_string alone doesn't need the index_delim
+                if( (ixh2->entry->major_pgnum != NULL)
+                  || (ixh2->entry->major_string != NULL)
+                  || (ixh2->entry->normal_pgnum != NULL)
+                  || (ixh2->entry->normal_string != NULL) ) {    // see_string alone doesn't need the index_delim
                     ProcFlags.in_trans = false;         // turn off input translation
                     process_text( layout_work.ix[1].index_delim, layout_work.ix[1].font );
                 }
@@ -884,9 +887,11 @@ static void gen_index( void )
             post_space = 0;
             scr_process_break();
 
-            ixh3 = ixh2->lower;
+            /*
+             * level 3
+             */
             first[2] = true;
-            while( ixh3 != NULL ) {     // level 3
+            for( ixh3 = ixh2->lower; ixh3 != NULL; ixh3 = ixh3->next ) {
                 if( first[2] ) {                    // first entry in group
                     g_text_spacing = layout_work.hx.hx_sect[HDS_index].spacing;
                     set_skip_vars( &layout_work.ix[2].skip, NULL, NULL,
@@ -913,28 +918,24 @@ static void gen_index( void )
 
                 if( ixh3->entry != NULL ) {
                     post_space = 0;
-                    if( (ixh3->entry->major_pgnum != NULL) ||
-                            (ixh3->entry->major_string != NULL) ||
-                            (ixh3->entry->normal_pgnum != NULL) ||
-                            (ixh3->entry->normal_string != NULL) ) {    // see_string alone doesn't need the index_delim
+                    if( (ixh3->entry->major_pgnum != NULL)
+                      || (ixh3->entry->major_string != NULL)
+                      || (ixh3->entry->normal_pgnum != NULL)
+                      || (ixh3->entry->normal_string != NULL) ) {    // see_string alone doesn't need the index_delim
                         ProcFlags.in_trans = false;         // turn off input translation
                         process_text( layout_work.ix[2].index_delim, layout_work.ix[2].font );
                     }
-                    gen_all_refs( ixh3->entry, 2, ixh3->lower != NULL  );
+                    gen_all_refs( ixh3->entry, 2, ixh3->lower != NULL );
                 }
                 post_space = 0;
                 scr_process_break();
-
-                ixh3 = ixh3->next;
             }
-            ixh2 = ixh2->next;
             if( !first[2] ) {   // at least one I3 entry existed
                 first[1] = true;
             }
         }
-        ixh1 = ixh1->next;
         if( !first[1] ) {   // at least one I2 entry existed
-        first[0] = true;
+            first[0] = true;
         }
     }
     ProcFlags.concat = concat_save;
@@ -963,20 +964,21 @@ static void gen_toc( void )
     unsigned        indent[HLVL_MAX];
     unsigned        size;
 
-    if( hd_list == NULL ) return;       // no hd_list, no TOC
+    if( hd_list == NULL )
+        return;                         // no hd_list, no TOC
 
     /* Insert TOC into current section */
 
-    ProcFlags.start_section = true; // prevent ABSTRACT/PREFACE start if pending
-    last_page_out();                // ensure are on new page
-    g_skip = 0;                     // ignore remaining skip value
+    ProcFlags.start_section = true;     // prevent ABSTRACT/PREFACE start if pending
+    last_page_out();                    // ensure are on new page
+    g_skip = 0;                         // ignore remaining skip value
     set_section_banners( DSECT_toc );
     reset_t_page();
 
     /* Set TOC columns */
 
     t_page.panes->col_count = layout_work.toc.columns;
-    set_cols( t_page.panes );       // will need to be updated if multiple panes activated
+    set_cols( t_page.panes );           // will need to be updated if multiple panes activated
 
     /* Set TOC margins and other values */
 
@@ -991,7 +993,7 @@ static void gen_toc( void )
         levels[hlvl] = false;
         indent[hlvl] = 0;
     }
-    levels[HLVL_h0] = true;       // H0 is active at start
+    levels[HLVL_h0] = true;             // H0 is active at start
 
     /* Get converted indent values, which are cumulative */
 
@@ -1560,8 +1562,8 @@ extern void gml_index( const gmltag * entry )
         return;                         // wgml4 OS/2 crashes with page fault
     }
 
-    if( !((ProcFlags.doc_sect == DSECT_backm) ||
-          (ProcFlags.doc_sect_nxt == DSECT_backm)) ) {
+    if( !((ProcFlags.doc_sect == DSECT_backm)
+      || (ProcFlags.doc_sect_nxt == DSECT_backm)) ) {
         xx_line_err_exit_c( ERR_DOC_SEC_EXPECTED_1, g_tok_start );
         /* never return */
     }

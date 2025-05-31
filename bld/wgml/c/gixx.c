@@ -96,7 +96,7 @@ static void gml_ixxx_common( const gmltag * entry, int hx_lvl )
     hxstring[0] = GML_char;           // construct tagname for possible error msg
     strcpy( hxstring + 1, entry->tagname );
 
-    pgvalue = pgnone;
+    pgvalue = PGREF_none;
 
     p = scandata.s;
 
@@ -173,15 +173,15 @@ static void gml_ixxx_common( const gmltag * entry, int hx_lvl )
                     pgseen = true;
                     if( attr_val.quoted == ' ' ) {  // value not quoted
                         if( strcmp( "start", attr_val.specval ) == 0 ) {
-                            pgvalue = pgstart;
+                            pgvalue = PGREF_start;
                         } else if( strcmp( "end", attr_val.specval ) == 0 ) {
-                            pgvalue = pgend;
+                            pgvalue = PGREF_end;
                         } else if( strcmp( "major", attr_val.specval ) == 0 ) {
-                            pgvalue = pgmajor;
+                            pgvalue = PGREF_major;
                         }
                     }
-                    if( pgvalue == pgnone ) {                // arbitrary string value
-                        pgvalue = pgstring;
+                    if( pgvalue == PGREF_none ) {                // arbitrary string value
+                        pgvalue = PGREF_string;
                         pgtext = mem_tokdup( attr_val.tok.s, attr_val.tok.l );  // use text instead of pageno
                         pgtextlen = attr_val.tok.l;
                     }
@@ -319,7 +319,7 @@ static void gml_ixxx_common( const gmltag * entry, int hx_lvl )
     }
 
     if( !pgseen ) {
-        pgvalue = pgpageno;             // set default
+        pgvalue = PGREF_pageno;         // set default
     }
 
     if( hx_lvl == 0 ) {                 // :IREF tag
@@ -462,14 +462,14 @@ static void gml_ixxx_common( const gmltag * entry, int hx_lvl )
                 init_entry_list( ixhwk );
             }
             find_create_ix_e_entry( ixhwk, seeidwk->u.ix.hblk->ix_term,
-                                    seeidwk->u.ix.hblk->ix_term_len, seeidwk->u.ix.hblk, pgsee );
+                                    seeidwk->u.ix.hblk->ix_term_len, seeidwk->u.ix.hblk, PGREF_see );
         }
 
         if( seeseen ) {
             if( ixhwk->entry == NULL ) {
                 init_entry_list( ixhwk );
             }
-            find_create_ix_e_entry( ixhwk, seetext, seetextlen, NULL, pgsee );
+            find_create_ix_e_entry( ixhwk, seetext, seetextlen, NULL, PGREF_see );
         }
     }
 

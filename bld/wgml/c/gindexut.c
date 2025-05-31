@@ -176,10 +176,10 @@ void find_create_ix_e_entry( ix_h_blk *ixhwork, char *ref, unsigned len,
 
     ixework = NULL;
     switch( type ) {
-    case pgmajor :
-    case pgpageno :
-    case pgstart :
-    case pgend :
+    case PGREF_major :
+    case PGREF_pageno :
+    case PGREF_start :
+    case PGREF_end :
         if( (t_line == NULL) && (t_element == NULL) ) {
 
             /**********************************************************/
@@ -233,17 +233,17 @@ void find_create_ix_e_entry( ix_h_blk *ixhwork, char *ref, unsigned len,
             }
         }
         break;
-    case pgmajorstring :
+    case PGREF_majorstring :
         base = &ixhwork->entry->major_string;
         ixework = ixhwork->entry->major_string;
         found = find_string_ref( ref, len, &ixework );
         break;
-    case pgstring :
+    case PGREF_string :
         base = &ixhwork->entry->normal_string;
         ixework = ixhwork->entry->normal_string;
         found = find_string_ref( ref, len, &ixework );
         break;
-    case pgsee :
+    case PGREF_see :
         base = &ixhwork->entry->see_string;
         ixework = ixhwork->entry->see_string;
         if( (seeidwork != 0) && ixhwork->prt_term_len > 0 ) {   // insert per seeid->ix_term, display prt_term
@@ -252,7 +252,7 @@ void find_create_ix_e_entry( ix_h_blk *ixhwork, char *ref, unsigned len,
             found = find_string_ref( ref, len, &ixework );
         }
         break;
-    case pgnone :       // should never appear here, but nothing to do
+    case PGREF_none :       // should never appear here, but nothing to do
     default :           // out-of-range enum value
         internal_err_exit( __FILE__, __LINE__ );
         /* never return */
@@ -313,19 +313,19 @@ void eol_index_page( eol_ix * eol_index, unsigned page_nr )
     ixework = NULL;
     while( eol_index != NULL ) {
         switch( eol_index->type ) {
-        case pgmajor :
+        case PGREF_major :
             base = &eol_index->ixh->entry->major_pgnum;
             ixework = eol_index->ixh->entry->major_pgnum;
             find_num_ref( &ixework, page_nr );
             found = false;      // allow multiple entries of same page number
             break;
-        case pgpageno :
+        case PGREF_pageno :
             base = &eol_index->ixh->entry->normal_pgnum;
             ixework = eol_index->ixh->entry->normal_pgnum;
             found = find_num_ref( &ixework, page_nr );
             break;
-        case pgstart :
-        case pgend :
+        case PGREF_start :
+        case PGREF_end :
             base = &eol_index->ixh->entry->normal_pgnum;
             ixework = eol_index->ixh->entry->normal_pgnum;
             found = find_num_ref( &ixework, page_nr );
@@ -333,10 +333,10 @@ void eol_index_page( eol_ix * eol_index, unsigned page_nr )
                 ixework->entry_typ = eol_index->type;
             }
             break;
-        case pgmajorstring :// should never appear used here, error
-        case pgstring :
-        case pgsee :
-        case pgnone :
+        case PGREF_majorstring :// should never appear used here, error
+        case PGREF_string :
+        case PGREF_see :
+        case PGREF_none :
         default :           // out-of-range enum value
             internal_err_exit( __FILE__, __LINE__ );
             /* never return */
@@ -476,7 +476,7 @@ static void free_ix_e_entries( ix_e_blk * e )
 
     while( ew != NULL ) {
         ewk = ew->next;
-        if( ew->entry_typ >= pgstring ) {
+        if( ew->entry_typ >= PGREF_string ) {
             mem_free( ew->u.pageref.page_text );
         }
         mem_free( ew );

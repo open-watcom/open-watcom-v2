@@ -286,7 +286,8 @@ static cop_driver *parse_font_style( FILE *fp, cop_driver *in_driver,
     /* Get the number of line passes, which can be 0. */
 
     fontstyle_block_ptr->line_passes = fread_u16( fp );
-    if( ferror( fp ) || feof( fp ) ) {
+    if( ferror( fp )
+      || feof( fp ) ) {
         mem_free( in_driver );
         in_driver = NULL;
         return( in_driver );
@@ -296,7 +297,8 @@ static cop_driver *parse_font_style( FILE *fp, cop_driver *in_driver,
     /* Get the unknown_count, and verify that it is 1. */
 
     count = fread_u16( fp );
-    if( ferror( fp ) || feof( fp ) ) {
+    if( ferror( fp )
+      || feof( fp ) ) {
         mem_free( in_driver );
         in_driver = NULL;
         return( in_driver );
@@ -312,7 +314,8 @@ static cop_driver *parse_font_style( FILE *fp, cop_driver *in_driver,
     /* Get the two nulls, and verify they contain the value 0. */
 
     count = fread_u16( fp );
-    if( ferror( fp ) || feof( fp ) ) {
+    if( ferror( fp )
+      || feof( fp ) ) {
         mem_free( in_driver );
         in_driver = NULL;
         return( in_driver );
@@ -347,7 +350,8 @@ static cop_driver *parse_font_style( FILE *fp, cop_driver *in_driver,
         /* Acquire the type. */
 
         fread_buff( string_ptr, data_count, fp );
-        if( ferror( fp ) || feof( fp ) ) {
+        if( ferror( fp )
+          || feof( fp ) ) {
             mem_free( in_driver );
             in_driver = NULL;
             return( in_driver );
@@ -387,7 +391,7 @@ static cop_driver *parse_font_style( FILE *fp, cop_driver *in_driver,
     /* Now get the P-buffers. */
 
     *p_buffer_set = get_p_buffer( fp );
-    if( *p_buffer_set == NULL) {
+    if( *p_buffer_set == NULL ) {
         mem_free( in_driver );
         in_driver = NULL;
         return( in_driver );
@@ -967,7 +971,8 @@ cop_driver * parse_driver( FILE *fp )
     /* Get the discriminator. */
 
     fread_buff( discriminator, 3, fp );
-    if( ferror( fp ) || feof( fp ) ) {
+    if( ferror( fp )
+      || feof( fp ) ) {
         mem_free( out_driver );
         out_driver = NULL;
         return( out_driver );
@@ -984,7 +989,8 @@ cop_driver * parse_driver( FILE *fp )
     /* Get the rec_spec. */
 
     length = fread_u8( fp );
-    if( ferror( fp ) || feof( fp ) ) {
+    if( ferror( fp )
+      || feof( fp ) ) {
         mem_free( out_driver );
         out_driver = NULL;
         return( out_driver );
@@ -997,7 +1003,8 @@ cop_driver * parse_driver( FILE *fp )
         string_ptr = OUT_DRV_SET_OFF( out_driver->rec_spec, length + 1 );
 
         fread_buff( string_ptr, length, fp );
-        if( ferror( fp ) || feof( fp ) ) {
+        if( ferror( fp )
+          || feof( fp ) ) {
             mem_free( out_driver );
             out_driver = NULL;
             return( out_driver );
@@ -1010,7 +1017,8 @@ cop_driver * parse_driver( FILE *fp )
     /* Get the unknown value and verify that it contains 0x04. */
 
     count = fread_u8( fp );
-    if( ferror( fp ) || feof( fp ) ) {
+    if( ferror( fp )
+      || feof( fp ) ) {
         mem_free( out_driver );
         out_driver = NULL;
         return( out_driver );
@@ -1025,7 +1033,8 @@ cop_driver * parse_driver( FILE *fp )
     /* Get the fill_char. */
 
     out_driver->fill_char = fread_u8( fp );
-    if( ferror( fp ) || feof( fp ) ) {
+    if( ferror( fp )
+      || feof( fp ) ) {
         mem_free( out_driver );
         out_driver = NULL;
         return( out_driver );
@@ -1034,7 +1043,8 @@ cop_driver * parse_driver( FILE *fp )
     /* Get the x_positive flag. */
 
     out_driver->x_positive = fread_u8( fp );
-    if( ferror( fp ) || feof( fp ) ) {
+    if( ferror( fp )
+      || feof( fp ) ) {
         mem_free( out_driver );
         out_driver = NULL;
         return( out_driver );
@@ -1043,7 +1053,8 @@ cop_driver * parse_driver( FILE *fp )
     /* Get the y_positive flag. */
 
     out_driver->y_positive = fread_u8( fp );
-    if( ferror( fp ) || feof( fp ) ) {
+    if( ferror( fp )
+      || feof( fp ) ) {
         mem_free( out_driver );
         out_driver = NULL;
         return( out_driver );
@@ -1052,7 +1063,8 @@ cop_driver * parse_driver( FILE *fp )
     /* Get the null byte and verify that it is, in fact, null. */
 
     count = fread_u8( fp );
-    if( ferror( fp ) || feof( fp ) ) {
+    if( ferror( fp )
+      || feof( fp ) ) {
         mem_free( out_driver );
         out_driver = NULL;
         return( out_driver );
@@ -1067,7 +1079,7 @@ cop_driver * parse_driver( FILE *fp )
     /* Get the first set of P-buffers. */
 
     p_buffer_set = get_p_buffer( fp );
-    if( p_buffer_set == NULL) {
+    if( p_buffer_set == NULL ) {
         mem_free( out_driver );
         out_driver = NULL;
         return( out_driver );
@@ -1449,11 +1461,16 @@ cop_driver * parse_driver( FILE *fp )
              */
 
             fontswitch_block_ptr[i].do_always = false;
-            if( the_flags[0] == 0x01 ) fontswitch_block_ptr[i].do_always = true;
-            if( the_flags[4] == 0x01 ) fontswitch_block_ptr[i].do_always = true;
-            if( the_flags[5] == 0x01 ) fontswitch_block_ptr[i].do_always = true;
-            if( the_flags[7] == 0x01 ) fontswitch_block_ptr[i].do_always = true;
-            if( the_flags[20] == 0x01 ) fontswitch_block_ptr[i].do_always = true;
+            if( the_flags[0] == 0x01 )
+                fontswitch_block_ptr[i].do_always = true;
+            if( the_flags[4] == 0x01 )
+                fontswitch_block_ptr[i].do_always = true;
+            if( the_flags[5] == 0x01 )
+                fontswitch_block_ptr[i].do_always = true;
+            if( the_flags[7] == 0x01 )
+                fontswitch_block_ptr[i].do_always = true;
+            if( the_flags[20] == 0x01 )
+                fontswitch_block_ptr[i].do_always = true;
 
             /* Set the _flag members to true or false. */
 
@@ -1470,7 +1487,8 @@ cop_driver * parse_driver( FILE *fp )
 
             count = get_u16( &current );
 
-            if( (count == 0x00) || (count > 0x02) ) {
+            if( (count == 0x00)
+              || (count > 0x02) ) {
                 mem_free( p_buffer_set );
                 p_buffer_set = NULL;
                 mem_free( out_driver );
@@ -1578,7 +1596,8 @@ cop_driver * parse_driver( FILE *fp )
 
         span = (p_buffer_set->count - (factor * 80));
         fseek( fp, SEEK_POSBACK( span + span / 80 ), SEEK_CUR );
-        if( ferror( fp ) || feof( fp ) ) {
+        if( ferror( fp )
+          || feof( fp ) ) {
             mem_free( p_buffer_set );
             p_buffer_set = NULL;
             mem_free( out_driver );
@@ -1595,7 +1614,8 @@ cop_driver * parse_driver( FILE *fp )
     /* Get the count and ensure it is not 0. */
 
     count = fread_u8( fp );
-    if( ferror( fp ) || feof( fp ) ) {
+    if( ferror( fp )
+      || feof( fp ) ) {
         mem_free( out_driver );
         out_driver = NULL;
         return( out_driver );
@@ -1610,7 +1630,8 @@ cop_driver * parse_driver( FILE *fp )
     /* Get the fontstyle_count and ensure it is not 0. */
 
     out_driver->fontstyles.count = fread_u16( fp );
-    if( ferror( fp ) || feof( fp ) ) {
+    if( ferror( fp )
+      || feof( fp ) ) {
         mem_free( out_driver );
         out_driver = NULL;
         return( out_driver );
@@ -1669,7 +1690,8 @@ cop_driver * parse_driver( FILE *fp )
 
             span = (p_buffer_set->count - (factor * 80));
             fseek( fp, SEEK_POSBACK( span + span / 80 ), SEEK_CUR );
-            if( ferror( fp ) || feof( fp ) ) {
+            if( ferror( fp )
+              || feof( fp ) ) {
                 mem_free( p_buffer_set );
                 p_buffer_set = NULL;
                 mem_free( out_driver );
@@ -1683,7 +1705,8 @@ cop_driver * parse_driver( FILE *fp )
         /* Get the count and ensure it is not 0. */
 
         count = fread_u8( fp );
-        if( ferror( fp ) || feof( fp ) ) {
+        if( ferror( fp )
+          || feof( fp ) ) {
             mem_free( out_driver );
             out_driver = NULL;
             return( out_driver );
@@ -1802,7 +1825,7 @@ cop_driver * parse_driver( FILE *fp )
 
     /* The thickness is present only if the HlineBlock was present. */
 
-    if( out_driver->hline.text == NULL) {
+    if( out_driver->hline.text == NULL ) {
 
         /* Reset to the start of the next P-buffer's data. */
 
@@ -1821,7 +1844,8 @@ cop_driver * parse_driver( FILE *fp )
         /* Ensure that the count is 0x04. */
 
         count = fread_u8( fp );
-        if( ferror( fp ) || feof( fp ) ) {
+        if( ferror( fp )
+          || feof( fp ) ) {
             mem_free( out_driver );
             out_driver = NULL;
             return( out_driver );
@@ -1836,7 +1860,8 @@ cop_driver * parse_driver( FILE *fp )
         /* Get the thickness. */
 
         out_driver->hline.thickness = fread_u32( fp );
-        if( ferror( fp ) || feof( fp ) ) {
+        if( ferror( fp )
+          || feof( fp ) ) {
             mem_free( out_driver );
             out_driver = NULL;
             return( out_driver );
@@ -1847,15 +1872,15 @@ cop_driver * parse_driver( FILE *fp )
 
     /* If there was an HlineBlock, then get the next set of P-buffers. */
 
-    if( out_driver->hline.text != NULL) {
+    if( out_driver->hline.text != NULL ) {
         p_buffer_set = get_p_buffer( fp );
-        if( p_buffer_set == NULL) {
+        if( p_buffer_set == NULL ) {
             mem_free( out_driver );
             out_driver = NULL;
             return( out_driver );
         }
 
-        if( p_buffer_set->buffer == NULL) {
+        if( p_buffer_set->buffer == NULL ) {
             mem_free( p_buffer_set );
             p_buffer_set = NULL;
             mem_free( out_driver );
@@ -1908,7 +1933,7 @@ cop_driver * parse_driver( FILE *fp )
 
     /* The thickness is present only if the VlineBlock was present. */
 
-    if( out_driver->vline.text == NULL) {
+    if( out_driver->vline.text == NULL ) {
 
         /* Reset to the start of the next P-buffer's data. */
 
@@ -1927,7 +1952,8 @@ cop_driver * parse_driver( FILE *fp )
         /* Ensure that the count in 0x04. */
 
         count = fread_u8( fp );
-        if( ferror( fp ) || feof( fp ) ) {
+        if( ferror( fp )
+          || feof( fp ) ) {
             mem_free( out_driver );
             out_driver = NULL;
             return( out_driver );
@@ -1942,7 +1968,8 @@ cop_driver * parse_driver( FILE *fp )
         /* Get the thickness. */
 
         out_driver->vline.thickness = fread_u32( fp );
-        if( ferror( fp ) || feof( fp ) ) {
+        if( ferror( fp )
+          || feof( fp ) ) {
             mem_free( out_driver );
             out_driver = NULL;
             return( out_driver );
@@ -1953,18 +1980,18 @@ cop_driver * parse_driver( FILE *fp )
 
     /* If there was a VlineBlock, then get the final set of P-buffers. */
 
-    if( out_driver->vline.text != NULL) {
+    if( out_driver->vline.text != NULL ) {
 
         /* Get the set of P-buffers */
 
         p_buffer_set = get_p_buffer( fp );
-        if( p_buffer_set == NULL) {
+        if( p_buffer_set == NULL ) {
             mem_free( out_driver );
             out_driver = NULL;
             return( out_driver );
         }
 
-        if( p_buffer_set->buffer == NULL) {
+        if( p_buffer_set->buffer == NULL ) {
             mem_free( p_buffer_set );
             p_buffer_set = NULL;
             mem_free( out_driver );
@@ -2021,12 +2048,13 @@ cop_driver * parse_driver( FILE *fp )
 
     /* The thickness is present only if DboxBlock was present. */
 
-    if( out_driver->dbox.text != NULL) {
+    if( out_driver->dbox.text != NULL ) {
 
         /* Ensure that the count in 0x04. */
 
         count = fread_u8( fp );
-        if( ferror( fp ) || feof( fp ) ) {
+        if( ferror( fp )
+          || feof( fp ) ) {
             mem_free( out_driver );
             out_driver = NULL;
             return( out_driver );
@@ -2041,7 +2069,8 @@ cop_driver * parse_driver( FILE *fp )
         /* Get the thickness. */
 
         out_driver->dbox.thickness = fread_u32( fp );
-        if( ferror( fp ) || feof( fp ) ) {
+        if( ferror( fp )
+          || feof( fp ) ) {
             mem_free( out_driver );
             out_driver = NULL;
             return( out_driver );

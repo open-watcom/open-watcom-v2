@@ -134,10 +134,12 @@ static char *find_end_of_parm( const char *pchar, const char *pend )
                     instring[paren_level] = false;
                 }
             } else {
-                if( test_for_quote && is_quote_char( c ) ) {
-                    if( (cm1 == ampchar) || // &' sequence
-                        ((cm2 == ampchar) && my_isalpha( cm1 )) ) {// &X' sequence
-                                /* no instring change */
+                if( test_for_quote
+                  && is_quote_char( c ) ) {
+                    if( (cm1 == ampchar)        // &' sequence
+                      || ((cm2 == ampchar)
+                      && my_isalpha( cm1 )) ) { // &X' sequence
+                        /* no instring change */
                     } else {
                         instring[paren_level] = true;
                         quotechar[paren_level] = c;
@@ -180,7 +182,8 @@ static char *find_end_of_parm( const char *pchar, const char *pend )
                 }
             }
         }
-        if( finished || (pchar >= pend)) {
+        if( finished
+          || (pchar >= pend) ) {
             break;
         }
         pchar++;
@@ -212,7 +215,8 @@ static const scrfunc *find_funcinfo( const char *funcname )
     for( k = 0; k < SCR_FUNC_MAX; k++ ) {
         if( funclen == funcinfo->funclen
           && strcmp( funcname, funcinfo->funcname ) == 0 ) {
-            if( (input_cbs->fmflags & II_research) && GlobalFlags.firstpass ) {
+            if( (input_cbs->fmflags & II_research)
+              && GlobalFlags.firstpass ) {
                 out_msg( " Function %s found\n", funcname );
                 add_multi_func_research( funcname );
             }
@@ -298,7 +302,8 @@ char *scr_multi_funcs( const char *funcname, char *args, char **result, unsigned
         parms[k].arg.s = find_start_of_parm( pchar );
         pchar = find_end_of_parm( parms[k].arg.s, pend );
 
-        if( multiletter_function || var_in_parm ) {
+        if( multiletter_function
+          || var_in_parm ) {
             parms[k].redo = true;
         } else {
             parms[k].redo = false;
@@ -327,7 +332,8 @@ char *scr_multi_funcs( const char *funcname, char *args, char **result, unsigned
             parms[m + k].arg.s = find_start_of_parm( pchar );
             pchar = find_end_of_parm( parms[m + k].arg.s, pend );
 
-            if( multiletter_function || var_in_parm ) {
+            if( multiletter_function
+              || var_in_parm ) {
                 parms[m + k].redo = true;
             } else {
                 parms[m + k].redo = false;
@@ -356,25 +362,29 @@ char *scr_multi_funcs( const char *funcname, char *args, char **result, unsigned
 
             parms[k].arg.e = ps;
             parms[k].arg.s = resbuf;
-            if( (input_cbs->fmflags & II_research) && GlobalFlags.firstpass ) {
+            if( (input_cbs->fmflags & II_research)
+              && GlobalFlags.firstpass ) {
                 out_msg( " Function %s parm %s found\n", funcname, resbuf );
             }
 
-            if( !resolve_symvar_functions( resbuf, false ) ) break; // no change, we're done
+            if( !resolve_symvar_functions( resbuf, false ) )
+                break; // no change, we're done
 
             pend = parms[k].arg.s + strlen( parms[k].arg.s );
             multiletter_function = false;
             var_in_parm = false;
             pend = find_end_of_parm( parms[k].arg.s, pend );
 
-            if( multiletter_function || var_in_parm ) {
+            if( multiletter_function
+              || var_in_parm ) {
                 parms[k].redo = true;
             } else {
                 parms[k].redo = false;
             }
 
             parms[k].arg.e = resbuf + strlen( parms[k].arg.s );
-            if( (input_cbs->fmflags & II_research) && GlobalFlags.firstpass ) {
+            if( (input_cbs->fmflags & II_research)
+              && GlobalFlags.firstpass ) {
                 out_msg( " Function      parm %s return\n", resbuf );
             }
         }

@@ -381,34 +381,33 @@ void scr_ix( void )
             init_entry_list( ixhwk);
             if( ref != NULL ) {
                 if( do_major ) {
-                    find_create_ix_e_entry( ixhwk, ref, reflen, NULL, pgmajorstring );
+                    find_create_ix_e_entry( ixhwk, ref, reflen, NULL, PGREF_majorstring );
                 } else {
-                    find_create_ix_e_entry( ixhwk, ref, reflen, NULL, pgstring );
+                    find_create_ix_e_entry( ixhwk, ref, reflen, NULL, PGREF_string );
                 }
             } else {
                 if( do_major ) {
-                    find_create_ix_e_entry( ixhwk, NULL, 0, NULL, pgmajor );
+                    find_create_ix_e_entry( ixhwk, NULL, 0, NULL, PGREF_major );
                 } else {
-                    find_create_ix_e_entry( ixhwk, NULL, 0, NULL, pgpageno );
+                    find_create_ix_e_entry( ixhwk, NULL, 0, NULL, PGREF_pageno );
                 }
             }
         } else {
             entry = ixhwk->entry;
             if( ref != NULL ) {
                 if( do_major ) {
-                    find_create_ix_e_entry( ixhwk, ref, reflen, NULL, pgmajorstring );
+                    find_create_ix_e_entry( ixhwk, ref, reflen, NULL, PGREF_majorstring );
                 } else {
-                    find_create_ix_e_entry( ixhwk, ref, reflen, NULL, pgstring );
+                    find_create_ix_e_entry( ixhwk, ref, reflen, NULL, PGREF_string );
                 }
             } else {
                 if( do_major ) {
-                    find_create_ix_e_entry( ixhwk, NULL, 0, NULL, pgmajor );
+                    find_create_ix_e_entry( ixhwk, NULL, 0, NULL, PGREF_major );
                 } else {
-                    find_create_ix_e_entry( ixhwk, NULL, 0, NULL, pgpageno );
+                    find_create_ix_e_entry( ixhwk, NULL, 0, NULL, PGREF_pageno );
                 }
             }
         }
     }
     return;
 }
-

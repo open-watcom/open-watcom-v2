@@ -91,7 +91,9 @@ static entry_found get_compact_entry( FILE *fp, directory_entry * entry )
     /* Get the defined_name_length. */
 
     count = fread_u8( fp );
-    if( ferror( fp ) || feof( fp ) ) return( not_valid_entry );
+    if( ferror( fp )
+      || feof( fp ) )
+        return( not_valid_entry );
 
     /* Ensure the defined_name_length is not too long for the buffer. */
 
@@ -103,7 +105,8 @@ static entry_found get_compact_entry( FILE *fp, directory_entry * entry )
 
     if( count > 0 ) {
         fread_buff( entry->defined_name, count, fp );
-        if( ferror( fp ) || feof( fp ) ) {
+        if( ferror( fp )
+          || feof( fp ) ) {
             return( not_valid_entry );
         }
     }
@@ -112,20 +115,23 @@ static entry_found get_compact_entry( FILE *fp, directory_entry * entry )
     /* Get the member_name_length. */
 
     count = fread_u8( fp );
-    if( ferror( fp ) || feof( fp ) ) {
+    if( ferror( fp )
+      || feof( fp ) ) {
         return( not_valid_entry );
     }
 
     /* Ensure the member_name_length is not zero or too long for the buffer. */
 
-    if( (count == 0) || (count > _MAX_PATH - 1) ) {
+    if( (count == 0)
+      || (count > _MAX_PATH - 1) ) {
         return( not_valid_entry );
     }
 
     /* Get the member_name. */
 
     fread_buff( entry->member_name, count, fp );
-    if( ferror( fp ) || feof( fp ) )
+    if( ferror( fp )
+      || feof( fp ) )
         return( not_valid_entry );
     entry->member_name[count] = '\0';
 
@@ -160,7 +166,9 @@ static entry_found get_extended_entry( FILE *fp, directory_entry * entry )
     /* Get the defined_name_length. */
 
     count = fread_u8( fp );
-    if( ferror( fp ) || feof( fp ) ) return( not_valid_entry );
+    if( ferror( fp )
+      || feof( fp ) )
+        return( not_valid_entry );
 
     /* Ensure the defined_name_length is not too long for the buffer. */
 
@@ -172,7 +180,8 @@ static entry_found get_extended_entry( FILE *fp, directory_entry * entry )
 
     if( count > 0 ) {
         fread_buff( entry->defined_name, count, fp );
-        if( ferror( fp ) || feof( fp ) ) {
+        if( ferror( fp )
+          || feof( fp ) ) {
             return( not_valid_entry );
         }
     }
@@ -181,32 +190,37 @@ static entry_found get_extended_entry( FILE *fp, directory_entry * entry )
     /* Skip the marker. */
 
     fseek( fp, U16_SIZE, SEEK_CUR );
-    if( ferror( fp ) || feof( fp ) )
+    if( ferror( fp )
+      || feof( fp ) )
         return( not_valid_entry );
 
     /* Get the the member_name_length. */
 
     count = fread_u8( fp );
-    if( ferror( fp ) || feof( fp ) )
+    if( ferror( fp )
+      || feof( fp ) )
         return( not_valid_entry );
 
     /* Ensure the member_name_length is not zero or too long for the buffer. */
 
-    if( (count == 0) || (count > _MAX_PATH - 1) ) {
+    if( (count == 0)
+      || (count > _MAX_PATH - 1) ) {
         return( not_valid_entry );
     }
 
     /* Get the member_name. */
 
     fread_buff( entry->member_name, count, fp );
-    if( ferror( fp ) || feof( fp ) )
+    if( ferror( fp )
+      || feof( fp ) )
         return( not_valid_entry );
     entry->member_name[count] = '\0';
 
     /* Skip the preview. */
 
     fseek( fp, U16_SIZE, SEEK_CUR );
-    if( ferror( fp ) || feof( fp ) )
+    if( ferror( fp )
+      || feof( fp ) )
         return( valid_entry );
 
     return( valid_entry );
@@ -269,7 +283,8 @@ static char *get_member_name( FILE *fp, const char *dir_file_name, const char *d
         /* Skip the number of entries. */
 
         fseek( fp, sizeof( unsigned ), SEEK_CUR );
-        if( ferror( fp ) || feof( fp ) ) {
+        if( ferror( fp )
+          || feof( fp ) ) {
             break;
         }
 
@@ -284,7 +299,8 @@ static char *get_member_name( FILE *fp, const char *dir_file_name, const char *d
 
             /* Exit the loop when the final entry has been processed. */
 
-            if( feof( fp ) || ferror( fp ) ) {
+            if( feof( fp )
+              || ferror( fp ) ) {
                 break;
             }
 
@@ -311,7 +327,8 @@ static char *get_member_name( FILE *fp, const char *dir_file_name, const char *d
 
                     /* Exit the loop when the final entry has been processed. */
 
-                    if( feof( fp ) || ferror( fp ) ) {
+                    if( feof( fp )
+                      || ferror( fp ) ) {
                         break;
                     }
 
