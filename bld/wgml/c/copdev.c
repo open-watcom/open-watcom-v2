@@ -106,19 +106,17 @@ static index_status find_cumulative_index( functions_block * in_block, uint16_t 
  *          store the return value.
  */
 
-static cop_device * resize_cop_device( cop_device * in_device, unsigned in_size )
+static cop_device *resize_cop_device( cop_device *in_device, unsigned in_size )
 {
-    cop_device *    local_device = NULL;
-    unsigned        increment = INC_SIZE;
+    cop_device      *local_device;
+    unsigned        increment;
     unsigned        new_size;
-    unsigned        scale;
 
     /* Compute how much larger to make the cop_device struct. */
 
+    increment = INC_SIZE;
     if( in_size > INC_SIZE ) {
-        scale = in_size / INC_SIZE;
-        ++scale;
-        increment = scale * INC_SIZE;
+        increment = ( ( in_size / INC_SIZE ) + 1 ) * INC_SIZE;
     }
     new_size = in_device->allocated_size + increment;
 
@@ -126,7 +124,6 @@ static cop_device * resize_cop_device( cop_device * in_device, unsigned in_size 
 
     local_device = mem_realloc( in_device, new_size );
     local_device->allocated_size = new_size;
-
     return( local_device );
 }
 

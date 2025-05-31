@@ -69,19 +69,17 @@
  *          store the return value.
  */
 
-static cop_driver * resize_cop_driver( cop_driver * in_driver, unsigned in_size )
+static cop_driver *resize_cop_driver( cop_driver *in_driver, unsigned in_size )
 {
-    cop_driver *    local_driver = NULL;
-    unsigned        increment = INC_SIZE;
+    cop_driver      *local_driver;
+    unsigned        increment;
     unsigned        new_size;
-    unsigned        scale;
 
     /* Compute how much larger to make the cop_driver struct. */
 
+    increment = INC_SIZE;
     if( in_size > INC_SIZE ) {
-        scale = in_size / INC_SIZE;
-        ++scale;
-        increment = scale * INC_SIZE;
+        increment = ( ( in_size / INC_SIZE ) + 1 ) * INC_SIZE;
     }
     new_size = in_driver->allocated_size + increment;
 
@@ -89,7 +87,6 @@ static cop_driver * resize_cop_driver( cop_driver * in_driver, unsigned in_size 
 
     local_driver = mem_realloc( in_driver, new_size );
     local_driver->allocated_size = new_size;
-
     return( local_driver );
 }
 

@@ -66,19 +66,17 @@
  *          store the return value.
  */
 
-static cop_font * resize_cop_font( cop_font * in_font, unsigned in_size )
+static cop_font *resize_cop_font( cop_font *in_font, unsigned in_size )
 {
-    cop_font *  local_font  = NULL;
-    unsigned    increment   = INC_SIZE;
-    unsigned    new_size;
-    unsigned    scale;
+    cop_font        *local_font;
+    unsigned        increment;
+    unsigned        new_size;
 
     /* Compute how much larger to make the cop_font struct. */
 
+    increment = INC_SIZE;
     if( in_size > INC_SIZE ) {
-        scale = in_size / INC_SIZE;
-        ++scale;
-        increment = scale * INC_SIZE;
+        increment = ( ( in_size / INC_SIZE ) + 1 ) * INC_SIZE;
     }
     new_size = in_font->allocated_size + increment;
 
@@ -86,7 +84,6 @@ static cop_font * resize_cop_font( cop_font * in_font, unsigned in_size )
 
     local_font = mem_realloc( in_font, new_size );
     local_font->allocated_size = new_size;
-
     return( local_font );
 }
 
