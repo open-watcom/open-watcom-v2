@@ -281,8 +281,8 @@ static void fb_newline( void )
 {
     int             i;
     newline_block   *current_block   = NULL;
-    int16_t         desired_units;
-    int16_t         desired_lines;
+    uint16_t        desired_units;
+    uint16_t        desired_lines;
     uint16_t        remainder;
     uint16_t        max_advance;
 
@@ -292,26 +292,29 @@ static void fb_newline( void )
 
     /* desired_units holds the number of vertical base units to be moved. */
 
-    if( bin_driver->y_positive == 0x00 ) {
-
-        /* desired_state.y_address was formed by subtraction. */
-
-        desired_units = current_state.y_address - desired_state.y_address;
-    } else {
-
-        /* desired_state.y_address was formed by addition. */
-
-        desired_units = desired_state.y_address - current_state.y_address;
-    }
-
     /* Devices using :ABSOLUTEADDRESS may be able to move backwards, but
      * :NEWLINE blocks with negative values for advance are not accepted
      * by gendev and so negative values of lines must be an error.
      */
 
-    if( desired_units < 0 ) {
-        internal_err_exit( __FILE__, __LINE__ );
-        /* never return */
+    if( bin_driver->y_positive == 0x00 ) {
+
+        /* desired_state.y_address was formed by subtraction. */
+
+        if( current_state.y_address < desired_state.y_address ) {
+            internal_err_exit( __FILE__, __LINE__ );
+            /* never return */
+        }
+        desired_units = current_state.y_address - desired_state.y_address;
+    } else {
+
+        /* desired_state.y_address was formed by addition. */
+
+        if( desired_state.y_address < current_state.y_address ) {
+            internal_err_exit( __FILE__, __LINE__ );
+            /* never return */
+        }
+        desired_units = desired_state.y_address - current_state.y_address;
     }
 
     /* desired_lines contains the number of lines, rounded up. Note: the
@@ -321,7 +324,7 @@ static void fb_newline( void )
 
     desired_lines = desired_units / wgml_fonts[active_font].line_height;
     remainder = desired_lines % wgml_fonts[active_font].line_height;
-    if( 2 * remainder >= wgml_fonts[active_font].line_height )
+    if( 2 * (unsigned)remainder >= wgml_fonts[active_font].line_height )
         desired_lines++;
 
     /* Devices using :ABSOLUTEADDRESS may be able to use partial line heights,
@@ -579,7 +582,7 @@ static void *df_do_nothing_char( void )
 
 static void *df_do_nothing_num( void )
 {
-    return( (void *)0 );
+    return( (void *)(uintptr_t)0 );
 }
 
 /* Function df_bad_code_err_exit().
@@ -920,7 +923,7 @@ static void *df_date( void )
 
 static void *df_default_width( void )
 {
-    return( (void *)wgml_fonts[df_font].bin_font->char_width );
+    return( (void *)(uintptr_t)wgml_fonts[df_font].bin_font->char_width );
 }
 
 /* Function df_font_height().
@@ -929,7 +932,7 @@ static void *df_default_width( void )
 
 static void *df_font_height( void )
 {
-    return( (void *)wgml_fonts[df_font].font_height );
+    return( (void *)(uintptr_t)wgml_fonts[df_font].font_height );
 }
 
 /* Function df_font_number().
@@ -938,7 +941,7 @@ static void *df_font_height( void )
 
 static void *df_font_number( void )
 {
-    return( (void *)df_font );
+    return( (void *)(uintptr_t)df_font );
 }
 
 /* Function df_font_outname1().
@@ -988,7 +991,7 @@ static void *df_font_resident( void )
 
 static void *df_font_space( void )
 {
-    return( (void *)wgml_fonts[df_font].font_space );
+    return( (void *)(uintptr_t)wgml_fonts[df_font].font_space );
 }
 
 /* Function df_line_height().
@@ -997,7 +1000,7 @@ static void *df_font_space( void )
 
 static void *df_line_height( void )
 {
-    return( (void *)wgml_fonts[df_font].line_height );
+    return( (void *)(uintptr_t)wgml_fonts[df_font].line_height );
 }
 
 /* Function df_line_space().
@@ -1006,7 +1009,7 @@ static void *df_line_height( void )
 
 static void *df_line_space( void )
 {
-    return( (void *)wgml_fonts[df_font].line_space );
+    return( (void *)(uintptr_t)wgml_fonts[df_font].line_space );
 }
 
 /* Function df_page_depth().
@@ -1015,7 +1018,7 @@ static void *df_line_space( void )
 
 static void *df_page_depth( void )
 {
-    return( (void *)bin_device->page_depth );
+    return( (void *)(uintptr_t)bin_device->page_depth );
 }
 
 /* Function df_page_width().
@@ -1024,7 +1027,7 @@ static void *df_page_depth( void )
 
 static void *df_page_width( void )
 {
-    return( (void *)bin_device->page_width );
+    return( (void *)(uintptr_t)bin_device->page_width );
 }
 
 /* Function df_pages().
@@ -1033,7 +1036,7 @@ static void *df_page_width( void )
 
 static void *df_pages( void )
 {
-    return( (void *)g_apage );
+    return( (void *)(uintptr_t)g_apage );
 }
 
 /* Function df_tab_width().
@@ -1042,7 +1045,7 @@ static void *df_pages( void )
 
 static void *df_tab_width( void )
 {
-    return( (void *)tab_width );
+    return( (void *)(uintptr_t)tab_width );
 }
 
 /* Function df_thickness().
@@ -1051,7 +1054,7 @@ static void *df_tab_width( void )
 
 static void *df_thickness( void )
 {
-    return( (void *)thickness );
+    return( (void *)(uintptr_t)thickness );
 }
 
 /* Function df_time().
@@ -1078,7 +1081,7 @@ static void *df_wgml_header( void )
 
 static void *df_x_address( void )
 {
-    return( (void *)x_address );
+    return( (void *)(uintptr_t)x_address );
 }
 
 /* Function df_x_size().
@@ -1087,7 +1090,7 @@ static void *df_x_address( void )
 
 static void *df_x_size( void )
 {
-    return( (void *)x_size );
+    return( (void *)(uintptr_t)x_size );
 }
 
 /* Function df_y_address().
@@ -1096,7 +1099,7 @@ static void *df_x_size( void )
 
 static void *df_y_address( void )
 {
-    return( (void *)y_address );
+    return( (void *)(uintptr_t)y_address );
 }
 
 /* Function df_y_size().
@@ -1105,7 +1108,7 @@ static void *df_y_address( void )
 
 static void *df_y_size( void )
 {
-    return( (void *)y_size );
+    return( (void *)(uintptr_t)y_size );
 }
 
 /* Parameter block parsing functions. */
@@ -1295,8 +1298,7 @@ static void out_text_driver( bool out_trans, bool out_text )
         /* Now get and insert the parameter. */
 
         first = process_parameter( my_parameters.first );
-        count = strlen( first );
-        ob_insert_block( first, count, out_trans, out_text, active_font );
+        ob_insert_block( first, strlen( first ), out_trans, out_text, active_font );
 
         /* Free the memory allocated to the parameter. */
 
@@ -1965,7 +1967,7 @@ static void *df_getnumsymbol( void )
 
     mem_free( name );
 
-    return( (void *)ret_val );
+    return( (void *)(uintptr_t)ret_val );
 }
 
 /* Function df_getstrsymbol().
