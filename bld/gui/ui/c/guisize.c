@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -624,10 +624,10 @@ bool GUIAPI GUIResizeWindow( gui_window *wnd, const gui_rect *rect )
         hidden = uivshow( &wnd->vs );
 #ifdef HELL_FREEZES_OVER
         if( ret ) {
-            ret = GUIWndMoveSize( wnd, &area, GUI_NONE, RESIZE_DOWN | RESIZE_RIGHT );
+            ret = GUIWndMoveSize( wnd, &area, NONE, RESIZE_DOWN | RESIZE_RIGHT );
         }
 #else
-        ret = GUIWndMoveSize( wnd, &area, GUI_NONE, RESIZE_DOWN | RESIZE_RIGHT );
+        ret = GUIWndMoveSize( wnd, &area, NONE, RESIZE_DOWN | RESIZE_RIGHT );
 #endif
         if( hidden ) {
             uivhide( &wnd->vs );
