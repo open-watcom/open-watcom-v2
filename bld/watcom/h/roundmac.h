@@ -64,6 +64,8 @@
 #define __ROUND_UP_SIZE(__x,__amt)          (((__x)+((__amt)-1))&(~((__amt)-1)))
 #define __ROUND_DOWN_SIZE_TO(__x,__amt)     ((__x)/(__amt))
 #define __ROUND_UP_SIZE_TO(__x,__amt)       (((__x)+((__amt)-1))/(__amt))
+#define __ROUND_DOWN_SIZE_ANY(__x,__amt)    (__ROUND_DOWN_SIZE_TO(__x,__amt)*(__amt))
+#define __ROUND_UP_SIZE_ANY(__x,__amt)      (__ROUND_UP_SIZE_TO(__x,__amt)*(__amt))
 
 #define __ROUND_DOWN_SIZE_EVEN(__x)         __ROUND_DOWN_SIZE(__x,2)
 #define __ROUND_UP_SIZE_EVEN(__x)           __ROUND_UP_SIZE(__x,2)
