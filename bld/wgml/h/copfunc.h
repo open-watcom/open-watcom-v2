@@ -46,8 +46,6 @@
 #include <stdio.h>
 
 
-#define SEEK_POSBACK(x)     (-(long)(x))
-
 #define U8_SIZE     sizeof( uint8_t )
 #define U16_SIZE    sizeof( uint16_t )
 #define U32_SIZE    sizeof( uint32_t )

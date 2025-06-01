@@ -1551,7 +1551,6 @@ void do_page_out( void )
                 }
             }
         } else {
-            work_el = t_page.panes->cols[0].main;
             nh_pages++;
         }
     }

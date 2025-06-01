@@ -143,6 +143,8 @@
 #define HDS2HLVL(x)         (((x) - HDS_h0) + HLVL_h0)
 #define HLVL2HDS(x)         (((x) - HLVL_h0) + HDS_h0)
 
+#define SEEK_POSBACK(p)     (-(long)(p))
+
 typedef unsigned    line_number;
 typedef uint8_t     text_space;
 typedef unsigned    units_space;

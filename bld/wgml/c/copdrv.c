@@ -42,6 +42,7 @@
 #include "copdrv.h"
 #include "copfunc.h"
 
+
 /* Local macros. */
 
 #define START_SIZE 2048
