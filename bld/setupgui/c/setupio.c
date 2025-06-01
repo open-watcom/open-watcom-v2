@@ -64,7 +64,7 @@ typedef struct file_handle_t {
     char                *textbuf;
     char                *textpos;
     char                *textend;
-} *file_handle;
+} file_handle_t;
 
 static ds_type          srcType;
 

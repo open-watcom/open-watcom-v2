@@ -566,10 +566,10 @@ static bool EvalExprTree( tree_node *tree )
 
     switch( tree->op ) {
     case OP_AND:
-        value = EvalExprTree( tree->left.u.node ) & EvalExprTree( tree->right );
+        value = EvalExprTree( tree->left.u.node ) && EvalExprTree( tree->right );
         break;
     case OP_OR:
-        value = EvalExprTree( tree->left.u.node ) | EvalExprTree( tree->right );
+        value = EvalExprTree( tree->left.u.node ) || EvalExprTree( tree->right );
         break;
     case OP_NOT:
         value = !EvalExprTree( tree->left.u.node );
