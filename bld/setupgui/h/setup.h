@@ -101,6 +101,8 @@
 #define TEST_DRIVE(x)       (isalpha( (x)[0] ) && (x)[1] == ':')
 #define TEST_NODE(x)        ((x)[0] == '/' && (x)[1] == '/')
 
+#define SEEK_POSBACK(p)     (-(long)(p))
+
 typedef enum {
     CFE_NOERROR,
     CFE_NOMEMORY,
