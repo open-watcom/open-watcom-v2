@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2018-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2018-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -90,7 +90,7 @@ bool GUISeekDialogTemplate( res_name_or_id dlg_id )
     ok = ( hInstance.status != 0 );
 
     if( ok ) {
-        ok = WResSeekResourceX( &hInstance, MAKEINTRESOURCE( RT_DIALOG ), dlg_id );
+        ok = WResSeekResourceX( &hInstance, RT_DIALOG, dlg_id );
     }
 
     return( ok );
@@ -103,7 +103,7 @@ bool GUISeekMenuTemplate( res_name_or_id menu_id )
     ok = ( hInstance.status != 0 );
 
     if( ok ) {
-        ok = WResSeekResourceX( &hInstance, MAKEINTRESOURCE( RT_MENU ), menu_id );
+        ok = WResSeekResourceX( &hInstance, RT_MENU, menu_id );
     }
 
     return( ok );
