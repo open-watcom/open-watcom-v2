@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -64,7 +64,7 @@ void BoundDataInit( void )
     if( h == -1 ) {
         return;
     }
-    lseek( h, - (long)sizeof( buff ), SEEK_END );
+    lseek( h, SEEK_POSBACK( sizeof( buff ) ), SEEK_END );
     read( h, buff, sizeof( buff ) );
 
     /*
@@ -75,7 +75,7 @@ void BoundDataInit( void )
         return;
     }
     size = *(bind_size *)( buff + sizeof( MAGIC_COOKIE ) );
-    dataStart = -(long)( size + sizeof( buff ) );
+    dataStart = SEEK_POSBACK( size + sizeof( buff ) );
     lseek( h, dataStart, SEEK_END );
 
     /*
