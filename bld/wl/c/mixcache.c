@@ -253,7 +253,7 @@ void *CacheRead( const file_list *list, unsigned long pos, size_t len )
         result = cache[startnum] + offset;
     } else {
         if( len > TokSize ) {
-            TokSize = __ROUND_UP_SIZE( len, SECTOR_SIZE );
+            TokSize = __ROUND_UP_SIZE_SECTOR( len );
             _LnkRealloc( TokBuff, TokBuff, TokSize );
         }
         amtread = CACHE_PAGE_SIZE - offset;
