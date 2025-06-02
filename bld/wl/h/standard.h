@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -50,9 +50,6 @@
 #else
 #define CONSTU32(x)     x ## U
 #endif
-
-/* round up by a power of 2 */
-#define ROUND_SHIFT(x,r)    __ROUND_UP_SIZE(x, PWROF2((r)))
 
 // useful for stringizing tokens
 #define __str( m )      #m
