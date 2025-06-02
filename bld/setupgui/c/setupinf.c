@@ -57,18 +57,24 @@
 #include "setupio.h"
 #include "iopath.h"
 #include "watcom.h"
+#include "roundmac.h"
 
 #include "clibext.h"
 
 
-#define decode36( x )       strtol( x, NULL, 36 )
+#define decode36s( x )      strtol( x, NULL, 36 )
+#define decode36u( x )      strtoul( x, NULL, 36 )
 
 #define IS_EMPTY(p)         ((p)[0] == '\0' || (p)[0] == '.' && (p)[1] == '\0')
 
 #define IS_WS(c)            ((c) == ' ' || (c) == '\t')
 #define SKIP_WS(p)          while(IS_WS(*(p))) (p)++
 
-#define RoundUp( v, r )     (((v) + (r) - 1) & ~(unsigned long)((r)-1))
+#define INF_BLOCK_SIZE      512         // installer uses sector size
+
+#define __ROUND_UP_SIZE_TEXTBUF(x)      __ROUND_UP_SIZE((x), TEXTBUF_SIZE)
+#define __ROUND_UP_SIZE_INF(x)          __ROUND_UP_SIZE((x), INF_BLOCK_SIZE)
+#define __ROUND_UP_SIZE_BLOCK(x)        __ROUND_UP_SIZE((x), block_size)
 
 #define MAX_WINDOW_WIDTH    90
 
@@ -254,7 +260,7 @@ static struct file_info {
     char                *filename;
     int                 dir_index;
     int                 old_dir_index;
-    int                 num_files;
+    unsigned            num_files;
     a_file_info         *files;
     union {
         file_cond_info  *p;
@@ -1910,9 +1916,9 @@ static bool ProcLine( char *line, pass_type pass )
             line = next; next = NextToken( line, ',' );
             /*
                 Multiple files in archive. First number is number of files,
-                followed by a list of file sizes in 512 byte blocks.
+                followed by a list of file sizes in INF_BLOCK_SIZE byte blocks.
             */
-            num_files = decode36( line );
+            num_files = decode36u( line );
             if( num_files == 0 ) {
                 FileInfo[num].files = NULL;
             } else {
@@ -1935,11 +1941,11 @@ static bool ProcLine( char *line, pass_type pass )
                 file->is_nlm = VbufCompExt( &buff, "nlm", true ) == 0;
                 file->is_dll = VbufCompExt( &buff, "dll", true ) == 0;
                 line = p; p = NextToken( line, '!' );
-                file->size = decode36( line ) * 512UL;
+                file->size = decode36u( line ) * INF_BLOCK_SIZE;
                 if( p != NULL
                   && *p != '\0'
                   && *p != '!' ) {
-                    file->date = decode36( p );
+                    file->date = decode36u( p );
                 } else {
                     file->date = SetupInfo.stamp;
                 }
@@ -1973,9 +1979,9 @@ static bool ProcLine( char *line, pass_type pass )
             }
             VbufFree( &buff );
             line = next; next = NextToken( line, ',' );
-            FileInfo[num].dir_index = decode36( line ) - 1;
+            FileInfo[num].dir_index = decode36s( line ) - 1;
             line = next; next = NextToken( line, ',' );
-            FileInfo[num].old_dir_index = decode36( line );
+            FileInfo[num].old_dir_index = decode36s( line );
             if( FileInfo[num].old_dir_index != -1 ) {
                 FileInfo[num].old_dir_index--;
             }
@@ -2228,7 +2234,7 @@ static bool GetFileInfo( int dir_index, int i, bool in_old_dir, bool *pzeroed )
                 }
                 PropagateValue( FileInfo[i].condition.p->cond, true );
                 if( file->in_new_dir
-                  && RoundUp( file->disk_size, 512 ) == file->size
+                  && __ROUND_UP_SIZE_INF( file->disk_size ) == file->size
                   && file->date == file->disk_date ) {
                     FileInfo[i].condition.p->one_uptodate = true;
                 }
@@ -2323,6 +2329,7 @@ static int PrepareSetupInfo( file_handle afh, pass_type pass )
     char                *buffer;
     size_t              bufsize;
     char                readbuf[1024 + 1];
+    size_t              bytes_read;
 
     bufsize = TEXTBUF_SIZE;
     buffer = GUIMemAlloc( bufsize );
@@ -2343,22 +2350,29 @@ static int PrepareSetupInfo( file_handle afh, pass_type pass )
     for( ;; ) {
         len = 0;
         for( ;; ) {
-            if( (int)FileRead( afh, readbuf, 1024 ) <= 0 ) {
+            bytes_read = FileRead( afh, readbuf, 1024 );
+            if( (int)bytes_read <= 0 ) {
                 done = true;
                 break;
             }
+            readbuf[bytes_read] = '\0';
             /*
              * Eliminate leading blanks on lines
              */
             p = readbuf;
             SKIP_WS( p );
+            bytes_read = len + bytes_read - ( p - readbuf );
+            if( bytes_read > bufsize ) {
+                bufsize = __ROUND_UP_SIZE_TEXTBUF( bytes_read );
+                buffer = GUIMemRealloc( buffer, bufsize + 1 );
+            }
             strcpy( buffer + len, p );
-            len = strlen( buffer );
-            if( len == 0 )
+            if( bytes_read == 0 )
                 break;
             /*
              * Manually convert CR/LF if needed
              */
+            len = bytes_read;
             if( (len > 1)
               && (buffer[len - 1] == '\n') ) {
                 if( buffer[len - 2] == '\r' ) {
@@ -2374,10 +2388,6 @@ static int PrepareSetupInfo( file_handle afh, pass_type pass )
                 if( buffer[len - 2] != '\\' )
                     break;
                 len -= 2;
-            }
-            if( bufsize - len < TEXTBUF_SIZE / 2 ) {
-                bufsize += TEXTBUF_SIZE;
-                buffer = GUIMemRealloc( buffer, bufsize );
             }
         }
         if( done )
@@ -2806,7 +2816,7 @@ bool SimFileUpToDate( int parm )
             return( true );
         if( info->files[i].date > info->files[i].disk_date )
             return( false );
-        if( RoundUp( info->files[i].disk_size, 512 ) != info->files[i].size )
+        if( __ROUND_UP_SIZE_INF( info->files[i].disk_size ) != info->files[i].size )
             return( false );
     }
     return( true );
@@ -3407,17 +3417,17 @@ static void CalcAddRemove( void )
 #endif
 
             if( add ) {
-                TargetInfo[target_index].space_needed += RoundUp( file->size, block_size );
+                TargetInfo[target_index].space_needed += __ROUND_UP_SIZE_BLOCK( file->size );
 #if 0   // I don't think this logic is right...
                 if( !file->is_nlm ) {
-                    TargetInfo[target_index].space_needed -= RoundUp( file->disk_size, block_size );
+                    TargetInfo[target_index].space_needed -= __ROUND_UP_SIZE_BLOCK( file->disk_size );
                 }
 #else
-                TargetInfo[target_index].space_needed -= RoundUp( file->disk_size, block_size );
+                TargetInfo[target_index].space_needed -= __ROUND_UP_SIZE_BLOCK( file->disk_size );
 #endif
                 TargetInfo[target_index].needs_update = true;
             } else if( remove ) {
-                TargetInfo[target_index].space_needed -= RoundUp( FileInfo[i].files[k].disk_size, block_size );
+                TargetInfo[target_index].space_needed -= __ROUND_UP_SIZE_BLOCK( FileInfo[i].files[k].disk_size );
                 TargetInfo[target_index].needs_update = true;
             }
         }
@@ -3434,7 +3444,7 @@ static void CalcAddRemove( void )
                         continue;
                     if( DirInfo[j].num_files <= DirInfo[j].num_existing )
                         continue;
-                    TargetInfo[i].space_needed += RoundUp( ((( DirInfo[j].num_files - DirInfo[j].num_existing ) / 10) + 1) * 1024UL, block_size);
+                    TargetInfo[i].space_needed += __ROUND_UP_SIZE_BLOCK( ((( DirInfo[j].num_files - DirInfo[j].num_existing ) / 10) + 1) * 1024UL );
                 }
             }
         }

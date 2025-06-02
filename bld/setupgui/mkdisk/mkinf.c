@@ -54,9 +54,9 @@
 
 #define SECTION_BUF_SIZE 8192   // allow long text strings
 
-#define BLOCKSIZE       512
+#define INF_BLOCK_SIZE  512     // installer uses sector size
 
-#define RoundUp( size, limit )  ( ( ( size + limit - 1 ) / limit ) * limit )
+#define __ROUND_UP_SIZE_INF(x)  __ROUND_UP_SIZE((x), INF_BLOCK_SIZE)
 
 #define IS_EMPTY(p)     ((p)[0] == '\0' || (p)[0] == '.' && (p)[1] == '\0')
 
@@ -78,7 +78,7 @@ typedef struct path_info {
 
 typedef struct size_list {
     struct size_list    *next;
-    long                size;
+    unsigned long       size;
     time_t              stamp;
     char                type;
     char                redist;
@@ -94,7 +94,7 @@ typedef struct file_info {
     char                *condition;
     int                 path;
     int                 old_path;
-    int                 num_files;
+    unsigned            num_files;
     size_list           *sizes;
 } FILE_INFO;
 
@@ -321,8 +321,8 @@ static void AddToList( LIST *new, LIST **list )
 }
 
 
-static long FileSize( const char *file )
-/**************************************/
+static unsigned long FileSize( const char *file )
+/***********************************************/
 {
     struct stat         stat_buf;
 
@@ -330,7 +330,7 @@ static long FileSize( const char *file )
         printf( "Can't find '%s'\n", file );
         return( 0 );
     } else {
-        return( RoundUp( stat_buf.st_size, BLOCKSIZE ) );
+        return( __ROUND_UP_SIZE_INF( stat_buf.st_size ) );
     }
 }
 
@@ -463,8 +463,8 @@ static char *GetBracketedString( const char *src, const char **end )
 }
 
 
-int AddPath( const char *path, int target, int parent )
-/*****************************************************/
+int AddPathIndex( const char *path, int target, int parent )
+/**********************************************************/
 {
     int                 count;
     PATH_INFO           *newitem, *curr, **owner;
@@ -494,28 +494,28 @@ int AddPath( const char *path, int target, int parent )
 }
 
 
-int AddPathTree( char *path, int target )
-/***************************************/
+int AddPathTreeIndex( char *path, int target )
+/********************************************/
 {
     int         parent;
     char        *p;
 
     if( path == NULL )
         return( -1 );
-    parent = AddPath( ".", target, -1 );
+    parent = AddPathIndex( ".", target, -1 );
     for( p = path; (p = strchr( p, '\\' )) != NULL; ) {
         *p = '/';
     }
     p = strchr( path, '/' );
     while( p != NULL ) {
         *p = '\0';
-        parent = AddPath( path, target, parent );
+        parent = AddPathIndex( path, target, parent );
         if( parent == 0 )
             return( 0 );
         *p = '/';
         p = strchr( p + 1, '/' );
     }
-    return( AddPath( path, target, parent ) );
+    return( AddPathIndex( path, target, parent ) );
 }
 
 static int mkdir_nested( const char *path )
@@ -599,7 +599,7 @@ bool AddFile( char *path, char *old_path, char type, char redist, char *file, co
 {
     int                 path_dir, old_path_dir, target;
     FILE_INFO           *newitem, *curr, **owner;
-    long                act_size;
+    unsigned long       act_size;
     time_t              time;
     struct stat         stat_buf;
     char                *p;
@@ -642,7 +642,7 @@ bool AddFile( char *path, char *old_path, char type, char redist, char *file, co
     } else if( stat( src, &stat_buf ) != 0 ) {
         printf( "'%s' does not exist\n", src );
         if( IgnoreMissingFiles ) {
-            act_size = 1024;
+            act_size = 2 * INF_BLOCK_SIZE;
             time = 0;
 //            return( true );
         } else if( CreateMissingFiles ) {
@@ -680,7 +680,7 @@ bool AddFile( char *path, char *old_path, char type, char redist, char *file, co
     printf( "\r%s                              \r", file );
     fflush( stdout );
 #endif
-    act_size = RoundUp( act_size, 512 );
+    act_size = __ROUND_UP_SIZE_INF( act_size );
 
     // strip target off front of path
     if( *path == '%' ) {
@@ -708,11 +708,11 @@ bool AddFile( char *path, char *old_path, char type, char redist, char *file, co
     }
 
     // handle sub-directories in path before full path
-    path_dir = AddPathTree( path, target );
+    path_dir = AddPathTreeIndex( path, target );
     if( path_dir == 0 ) {
         return( false );
     }
-    old_path_dir = AddPathTree( old_path, target );
+    old_path_dir = AddPathTreeIndex( old_path, target );
     p = file;
 #ifndef __UNIX__
     if( p[0] != '\0' && p[1] == ':' ) {
@@ -1170,8 +1170,16 @@ static char *encode36( char *buffer, unsigned long value )
     return( buffer );
 }
 
-static void fput36( FILE *fp, long value )
-/****************************************/
+static void fput36u( FILE *fp, unsigned long value )
+/**************************************************/
+{
+    char        buff[30];
+
+    fprintf( fp, "%s", encode36( buff, value ) );
+}
+
+static void fput36s( FILE *fp, long value )
+/*****************************************/
 {
     char        buff[30];
 
@@ -1187,17 +1195,17 @@ void DumpSizes( FILE *fp, FILE_INFO *curr )
 {
     size_list   *csize;
 
-    fput36( fp, curr->num_files );
+    fput36u( fp, curr->num_files );
     fprintf( fp, "," );
     if( curr->num_files > 1 ) {
         fprintf( fp, "\\\n" );
     }
     for( csize = curr->sizes; csize != NULL; csize = csize->next ) {
         fprintf( fp, "%s!", csize->name );
-        fput36( fp, csize->size/512 );
+        fput36u( fp, csize->size / INF_BLOCK_SIZE );
         fprintf( fp, "!" );
         if( csize->redist != '\0' ) {
-            fput36( fp, (long)( csize->stamp ) );
+            fput36u( fp, (unsigned long)( csize->stamp ) );
         }
         fprintf( fp, "!" );
         if( csize->dst_var != NULL ) {
@@ -1318,9 +1326,9 @@ static void CreateScript( long init_size, unsigned padding )
     for( curr = FileList; curr != NULL; curr = curr->next ) {
         fprintf( fp, "%s,", curr->pack );
         DumpSizes( fp, curr );
-        fput36( fp, curr->path );
+        fput36s( fp, curr->path );
         fprintf( fp, "," );
-        fput36( fp, curr->old_path );
+        fput36s( fp, curr->old_path );
         fprintf( fp, ",%s\n", curr->condition );
     }
 
@@ -1456,8 +1464,10 @@ static void MakeScript( void )
 {
     FILE_INFO           *curr;
     size_list           *csize;
-    long                act_size;
-    long                size, old_size, inf_size;
+    unsigned long       act_size;
+    unsigned long       size;
+    unsigned long       old_size;
+    unsigned long       setup_inf_size;
     LIST                *list;
 
     act_size = 0;
@@ -1473,25 +1483,25 @@ static void MakeScript( void )
     for( list = ExeList; list != NULL; list = list->next ) {
         size += FileSize( list->item );
     }
-    inf_size = 0;
+    setup_inf_size = 0;
     old_size = 0;
     for ( ;; ) {
         /* keep creating script until size stabilizes */
-        CreateScript( size + inf_size, 0 );
-        inf_size = FileSize( "setup.inf" );
-        if( old_size > inf_size ) {
+        CreateScript( size + setup_inf_size, 0 );
+        setup_inf_size = FileSize( "setup.inf" );
+        if( old_size > setup_inf_size ) {
             /*
                 If the new size of the install script is less than the
                 old size, we can create the script with some padding
                 to bring it up to the old size. This prevents us from
                 going into an oscillation between two sizes.
             */
-            CreateScript( size + old_size, old_size - inf_size );
-            inf_size = old_size;
+            CreateScript( size + old_size, old_size - setup_inf_size );
+            setup_inf_size = old_size;
         }
-        if( old_size == inf_size )
+        if( old_size == setup_inf_size )
             break;
-        old_size = inf_size;
+        old_size = setup_inf_size;
     }
 }
 
