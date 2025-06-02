@@ -57,7 +57,7 @@
 #include "setupio.h"
 #include "iopath.h"
 #include "watcom.h"
-#include "roundmac.h"
+#include "infcomm.h"
 
 #include "clibext.h"
 
@@ -70,10 +70,7 @@
 #define IS_WS(c)            ((c) == ' ' || (c) == '\t')
 #define SKIP_WS(p)          while(IS_WS(*(p))) (p)++
 
-#define INF_BLOCK_SIZE      512         // installer uses sector size
-
 #define __ROUND_UP_SIZE_TEXTBUF(x)      __ROUND_UP_SIZE((x), TEXTBUF_SIZE)
-#define __ROUND_UP_SIZE_INF(x)          __ROUND_UP_SIZE((x), INF_BLOCK_SIZE)
 #define __ROUND_UP_SIZE_BLOCK(x)        __ROUND_UP_SIZE((x), block_size)
 
 #define MAX_WINDOW_WIDTH    90
@@ -100,9 +97,9 @@
 typedef struct a_file_info {
     VBUF                name;
     vhandle             dst_var;
-    unsigned long       disk_size;
+    unsigned            disk_size;
     time_t              disk_date;
-    unsigned long       size;
+    unsigned            size;
     time_t              date;
     boolbit             in_old_dir  : 1;
     boolbit             in_new_dir  : 1;
@@ -260,7 +257,7 @@ static struct file_info {
     char                *filename;
     int                 dir_index;
     int                 old_dir_index;
-    unsigned            num_files;
+    int                 num_files;
     a_file_info         *files;
     union {
         file_cond_info  *p;
@@ -1915,10 +1912,10 @@ static bool ProcLine( char *line, pass_type pass )
             FileInfo[num].filename = GUIStrDup( line );
             line = next; next = NextToken( line, ',' );
             /*
-                Multiple files in archive. First number is number of files,
-                followed by a list of file sizes in INF_BLOCK_SIZE byte blocks.
-            */
-            num_files = decode36u( line );
+             * Multiple files in archive. First number is number of files,
+             * followed by a list of file sizes in INF_BLOCK_SIZE blocks.
+             */
+            num_files = decode36s( line );
             if( num_files == 0 ) {
                 FileInfo[num].files = NULL;
             } else {
@@ -1941,7 +1938,7 @@ static bool ProcLine( char *line, pass_type pass )
                 file->is_nlm = VbufCompExt( &buff, "nlm", true ) == 0;
                 file->is_dll = VbufCompExt( &buff, "dll", true ) == 0;
                 line = p; p = NextToken( line, '!' );
-                file->size = decode36u( line ) * INF_BLOCK_SIZE;
+                file->size = INFBLK2SIZE( decode36u( line ) );
                 if( p != NULL
                   && *p != '\0'
                   && *p != '!' ) {
@@ -2250,8 +2247,8 @@ static bool GetDiskSizes( void )
 {
     array_idx   i;
     int         j;
-    long        status_amount;
-    long        status_curr;
+    int         status_amount;
+    int         status_curr;
     bool        zeroed;
     bool        rc = true;
     bool        asked;
@@ -2422,10 +2419,10 @@ bool CheckForceDLLInstall( const VBUF *name )
     return( false );
 }
 
-long SimInit( const VBUF *inf_name )
-/**********************************/
+int SimInit( const VBUF *inf_name )
+/*********************************/
 {
-    long                result;
+    int                 result;
     file_handle         afh;
     struct stat         statbuf;
     array_idx           i;
@@ -2677,10 +2674,10 @@ void SimGetFileName( int parm, VBUF *buff )
     VbufSetStr( buff, FileInfo[parm].filename );
 }
 
-long SimFileSize( int parm )
-/**************************/
+unsigned SimFileSize( int parm )
+/******************************/
 {
-    long        size;
+    unsigned    size;
     int         i;
 
     size = 0;
@@ -2692,8 +2689,8 @@ long SimFileSize( int parm )
 }
 
 
-long SimSubFileSize( int parm, int subfile )
-/******************************************/
+unsigned SimSubFileSize( int parm, int subfile )
+/**********************************************/
 {
     return( FileInfo[parm].files[subfile].size );
 }

@@ -25,15 +25,17 @@
 *
 *  ========================================================================
 *
-* Description:  Installer GUI status bar.
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
 
-extern void StatusShow( bool show );
-extern void StatusFini( void );
-extern void StatusLines( int msg0, const char *message1 );
-extern void BumpStatus( unsigned by );
-extern void StatusAmount( unsigned parts_complete, unsigned parts_injob );
-extern bool StatusCancelled( void );
-extern void StatusInit( void );
+#include "roundmac.h"
+
+#define INF_BLOCK_SIZE  512     // installer uses sector size
+
+#define __ROUND_UP_SIZE_INF(x)  __ROUND_UP_SIZE((x), INF_BLOCK_SIZE)
+
+#define INFBLK2SIZE(x)  ((x) * INF_BLOCK_SIZE)
+#define SIZE2INFBLK(x)  ((x) / INF_BLOCK_SIZE)

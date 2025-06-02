@@ -48,15 +48,12 @@
 #include "iopath.h"
 #include "wreslang.h"
 #include "cvttable.h"
+#include "infcomm.h"
 
 #include "clibext.h"
 
 
 #define SECTION_BUF_SIZE 8192   // allow long text strings
-
-#define INF_BLOCK_SIZE  512     // installer uses sector size
-
-#define __ROUND_UP_SIZE_INF(x)  __ROUND_UP_SIZE((x), INF_BLOCK_SIZE)
 
 #define IS_EMPTY(p)     ((p)[0] == '\0' || (p)[0] == '.' && (p)[1] == '\0')
 
@@ -78,7 +75,7 @@ typedef struct path_info {
 
 typedef struct size_list {
     struct size_list    *next;
-    unsigned long       size;
+    unsigned            size;
     time_t              stamp;
     char                type;
     char                redist;
@@ -94,7 +91,7 @@ typedef struct file_info {
     char                *condition;
     int                 path;
     int                 old_path;
-    unsigned            num_files;
+    int                 num_files;
     size_list           *sizes;
 } FILE_INFO;
 
@@ -321,8 +318,8 @@ static void AddToList( LIST *new, LIST **list )
 }
 
 
-static unsigned long FileSize( const char *file )
-/***********************************************/
+static unsigned FileSize( const char *file )
+/******************************************/
 {
     struct stat         stat_buf;
 
@@ -599,7 +596,7 @@ bool AddFile( char *path, char *old_path, char type, char redist, char *file, co
 {
     int                 path_dir, old_path_dir, target;
     FILE_INFO           *newitem, *curr, **owner;
-    unsigned long       act_size;
+    unsigned            act_size;
     time_t              time;
     struct stat         stat_buf;
     char                *p;
@@ -642,7 +639,7 @@ bool AddFile( char *path, char *old_path, char type, char redist, char *file, co
     } else if( stat( src, &stat_buf ) != 0 ) {
         printf( "'%s' does not exist\n", src );
         if( IgnoreMissingFiles ) {
-            act_size = 2 * INF_BLOCK_SIZE;
+            act_size = INFBLK2SIZE( 2 );
             time = 0;
 //            return( true );
         } else if( CreateMissingFiles ) {
@@ -1195,14 +1192,14 @@ void DumpSizes( FILE *fp, FILE_INFO *curr )
 {
     size_list   *csize;
 
-    fput36u( fp, curr->num_files );
+    fput36s( fp, curr->num_files );
     fprintf( fp, "," );
     if( curr->num_files > 1 ) {
         fprintf( fp, "\\\n" );
     }
     for( csize = curr->sizes; csize != NULL; csize = csize->next ) {
         fprintf( fp, "%s!", csize->name );
-        fput36u( fp, csize->size / INF_BLOCK_SIZE );
+        fput36u( fp, SIZE2INFBLK( csize->size ) );
         fprintf( fp, "!" );
         if( csize->redist != '\0' ) {
             fput36u( fp, (unsigned long)( csize->stamp ) );
@@ -1286,8 +1283,8 @@ static void DumpFile( FILE *out, const char *fname )
 }
 
 
-static void CreateScript( long init_size, unsigned padding )
-/**********************************************************/
+static void CreateScript( unsigned init_size, unsigned padding )
+/**************************************************************/
 {
     FILE                *fp;
     FILE_INFO           *curr;
@@ -1449,10 +1446,9 @@ static void CreateScript( long init_size, unsigned padding )
 
     fprintf( fp, "\n[End]\n" );
 
-    while( padding != 0 ) {
+    while( padding-- > 0 ) {
         /* add some padding to bring the size up to old size */
         fputc( ' ', fp );
-        --padding;
     }
 
     fclose( fp );
@@ -1464,10 +1460,10 @@ static void MakeScript( void )
 {
     FILE_INFO           *curr;
     size_list           *csize;
-    unsigned long       act_size;
-    unsigned long       size;
-    unsigned long       old_size;
-    unsigned long       setup_inf_size;
+    unsigned            act_size;
+    unsigned            size;
+    unsigned            old_size;
+    unsigned            setup_inf_size;
     LIST                *list;
 
     act_size = 0;
@@ -1476,7 +1472,7 @@ static void MakeScript( void )
             act_size += csize->size;
         }
     }
-    printf( "Installed size = %ld\n", act_size );
+    printf( "Installed size = %u\n", act_size );
 
 //  place SETUP.EXE, *.EXE on the 1st disk
     size = FileSize( Setup );

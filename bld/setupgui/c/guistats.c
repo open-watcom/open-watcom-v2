@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -72,9 +72,9 @@ gui_colour_set          ToolStandout = { GUI_BR_WHITE, GUI_BLUE };
 static gui_window       *StatusWnd;
 static gui_rect         StatusBarRect;
 static gui_coord        CharSize;
-static int              Percent;
-static long             Parts_Injob;
-static long             Parts_Complete;
+static unsigned         Percent;
+static unsigned         Parts_Injob;
+static unsigned         Parts_Complete;
 static char             StatusLine1[_MAX_PATH];
 static gui_ord          StatusBarLen;
 static gui_rect         StatusRect;
@@ -178,10 +178,10 @@ static bool GUICALLBACK StatusGUIEventProc( gui_window *gui, gui_event gui_ev, v
 
                 memset( StatusBarBuf, ' ', StatusBarLen );
                 StatusBarBuf[StatusBarLen] = '\0';
-                sprintf( num, "%d%%", Percent );
+                sprintf( num, "%u%%", Percent );
                 memcpy( StatusBarBuf + StatusBarLen / 2 - 1, num, strlen( num ) );
                 // draw bar in two parts
-                len1 = (StatusBarLen * (long)Percent) / 100;
+                len1 = (StatusBarLen * Percent) / 100;
                 if( len1 < 0 ) {
                     len1 = 0;
                 } else if( len1 > StatusBarLen ) {
@@ -213,12 +213,12 @@ static bool GUICALLBACK StatusGUIEventProc( gui_window *gui, gui_event gui_ev, v
                 gui_point   start, end;
                 gui_rect    rStatusBar;
 
-//              sprintf( StatusBarBuf, "%d%%", Percent );
+//              sprintf( StatusBarBuf, "%u%%", Percent );
                 // clear whole bar
                 GUIFillRect( gui, &StatusBarRect, WND_STATUS_BAR );
                 // calculate where divider splits rectangle
                 bar_width = StatusBarRect.width;
-                divider = (bar_width * (long)Percent) / 100;
+                divider = (bar_width * Percent) / 100;
                 if( divider < 0 ) {
                     divider = 0;
                 } else if( divider > bar_width ) {
@@ -427,17 +427,17 @@ void StatusLines( int msg0, const char *message1 )
     }
 }
 
-void BumpStatus( long by )
-/************************/
+void BumpStatus( unsigned by )
+/****************************/
 {
     StatusAmount( Parts_Complete + by, Parts_Injob );
 }
 
-void StatusAmount( long parts_complete, long parts_injob )
-/********************************************************/
+void StatusAmount( unsigned parts_complete, unsigned parts_injob )
+/****************************************************************/
 // Display slider bar indicating percentage complete
 {
-    int                 old_percent;
+    unsigned        old_percent;
 
     Parts_Injob = parts_injob;
     Parts_Complete = parts_complete;
@@ -476,17 +476,17 @@ void StatusAmount( long parts_complete, long parts_injob )
         gui_ord         bar_width, old_divider, divider;
         gui_rect        rect;
 
-        sprintf( StatusBarBuf, "%d%%", Percent );
+        sprintf( StatusBarBuf, "%u%%", Percent );
 
         // calculate where divider splits rectangle
         bar_width = StatusBarRect.width;
-        divider = (bar_width * (long)Percent) / 100;
+        divider = (bar_width * Percent) / 100;
         if( divider < 0 ) {
             divider = 0;
         } else if( divider > bar_width ) {
             divider = bar_width;
         }
-        old_divider = (bar_width * (long)old_percent) / 100;
+        old_divider = (bar_width * old_percent) / 100;
         if( old_divider < 0 ) {
             old_divider = 0;
         } else if( old_divider > bar_width ) {

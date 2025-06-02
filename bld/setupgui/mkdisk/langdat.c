@@ -513,7 +513,7 @@ static void set_product_version( const char *filename )
             *filever = Product_ver[1];
             return;
         }
-        src = filever + ( Product_ver[0] != '\0' ) ? 1 : 2;
+        src = filever + ( ( Product_ver[0] != '\0' ) ? 1 : 2 );
         while( (*filever++ = *src++) != '\0' ) {
             /* empty*/;
         }
