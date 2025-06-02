@@ -197,7 +197,7 @@ jobs:
 #      shell: pwsh
 #    - name: "Build Coverity output data Windows"
 #      run: |
-#        ci\coverity.cmd ${{ steps.covtool.outputs.cmd }} ${{ env.OWCOV_RESULTS_GITPATH }} ci\covbuild.cmd vs2019
+#        ci\coverity.cmd ${{ steps.covtool.outputs.cmd }} ${{ env.OWCOV_RESULTS_GITPATH }} ci\covbuild.cmd vs2022
 #      env:
 #        OWROOT:         ${{ github.workspace }}
 #        OWTOOLS:        VISUALC

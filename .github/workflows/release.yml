@@ -53,8 +53,8 @@ jobs:
         include:
         - owtools: 'VISUALC'
           arch:    'x64'
-          image:   'windows-2019'
-          tools:   'vs2019'
+          image:   'windows-2022'
+          tools:   'vs2022'
     name: Windows ${{ matrix.arch }} ${{ matrix.tools }}
     uses: "./.github/workflows/rel-nt.yml"
     with:

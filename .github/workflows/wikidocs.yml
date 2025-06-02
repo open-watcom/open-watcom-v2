@@ -55,8 +55,8 @@ jobs:
       uses: "./.github/actions/boot"
       with:
         hostos:         'nt'
-        buildcmd:       'ci/buildx.cmd vs2019'
-        suffix:         'nt x64 vs2019'
+        buildcmd:       'ci/buildx.cmd vs2022'
+        suffix:         'nt x64 vs2022'
         owtools:        'VISUALC'
         noarchive:      '1'
         owdebug:        ${{ vars.OWDEBUG }}
@@ -86,11 +86,11 @@ jobs:
       uses: "./.github/actions/docbuild"
       with:
         hostos:     'nt'
-        buildcmd:   'ci/buildx.cmd vs2019'
+        buildcmd:   'ci/buildx.cmd vs2022'
         target:     ${{ matrix.doctype }}
         relpath:    'docs wiki'
-        suffixi:    'nt x64 vs2019'
-        suffixo:    "${{ matrix.doctype }} vs2019"
+        suffixi:    'nt x64 vs2022'
+        suffixo:    "${{ matrix.doctype }} vs2022"
         owtools:    'VISUALC'
         owtarget:   ${{ matrix.owtarget }}
         owdebug:    ${{ vars.OWDEBUG }}
@@ -118,12 +118,12 @@ jobs:
     - name: Download Artifact html
       uses: actions/download-artifact@v4
       with:
-        name: 'rel-wikihtml-vs2019'
+        name: 'rel-wikihtml-vs2022'
         path: docs
     - name: Download Artifact pdf
       uses: actions/download-artifact@v4
       with:
-        name: 'rel-wikipdf-vs2019'
+        name: 'rel-wikipdf-vs2022'
         path: docs
     - name: Wiki Repo Update
       shell: cmd
