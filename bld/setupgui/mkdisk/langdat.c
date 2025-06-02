@@ -827,7 +827,7 @@ static void ProcessCtlFile( const char *name )
             } else if( stricmp( p, "LOG" ) == 0 ) {
                 if( IncludeStk->skipping == 0 ) {
                     log_name = GetNextPathOrFile( p );
-                    p = NextWord( log_name );
+                    NextWord( log_name );
                     if( LogFile == NULL ) {
                         OpenLog( log_name );
                     }
