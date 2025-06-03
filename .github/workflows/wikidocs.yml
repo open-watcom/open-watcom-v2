@@ -50,7 +50,7 @@ jobs:
     - run: git config --global core.autocrlf input
     - name: checkout
       uses: actions/checkout@v4
-    - run: od -N500 -tx1 projects.txt
+    # run: od -N500 -tx1 projects.txt
     - name: Bootstrap
       uses: "./.github/actions/boot"
       with:
@@ -62,7 +62,7 @@ jobs:
         owdebug:        ${{ vars.OWDEBUG }}
       env:
         OWDOCTARGET:    'bootdocs'
-    - run: git config --local --list
+    # run: git config --local --list
   wiki-build:
     needs: wiki-boot
     name: Build
@@ -81,7 +81,7 @@ jobs:
     - run: git config --global core.autocrlf input
     - name: checkout
       uses: actions/checkout@v4
-    - run: od -N500 -tx1 projects.txt
+    # run: od -N500 -tx1 projects.txt
     - name: Build ${{ matrix.title }}
       uses: "./.github/actions/docbuild"
       with:
@@ -95,7 +95,7 @@ jobs:
         owtarget:   ${{ matrix.owtarget }}
         owdebug:    ${{ vars.OWDEBUG }}
         noarchive:  '1'
-    - run: git config --local --list
+    # run: git config --local --list
   wiki-update:
     name: Update Wiki
     needs: wiki-build
@@ -131,7 +131,7 @@ jobs:
         git add -v -f .
         git commit -v -m "GitHub Workflow build"
         git push -v
-    - run: git config --list
+    # run: git config --list
   cleanup:
     needs: wiki-update
     name: Call to delete Artifacts
