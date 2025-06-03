@@ -17,7 +17,7 @@ zlib_nodoslfn = 1
 #
 .c: $(zlib_dir)
 
-inc_dirs = -I"$(zlib_dir)"
+inc_dirs = -I"$(zlib_dir)" -I"$(setupgui_dir)/h" $(incl_file_opts)zlibsupp.h
 
 # Stupid zlib has conditionals that are constant at compile time and
 # trigger unreachable code warnings, and I don't want to modify the source
