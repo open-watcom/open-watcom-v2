@@ -121,6 +121,9 @@ jobs:
       uses: "./.github/actions/install"
       with:
         target:     ${{ matrix.asset }}
+        tools_nt:   'vs2022'
+        tools_lnx:  'gcc'
+        tools_osx:  'clang'
         owdebug:    ${{ vars.OWDEBUG }}
   release:
     needs: Installers
