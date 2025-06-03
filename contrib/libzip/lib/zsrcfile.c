@@ -33,7 +33,7 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-
+
 
 #include <errno.h>
 #include <stdio.h>
@@ -41,7 +41,7 @@
 #include "zip.h"
 #include "zipint.h"
 
-
+
 
 struct zip_source *
 zip_source_file(struct zip *za, const char *fname, off_t start, off_t len)

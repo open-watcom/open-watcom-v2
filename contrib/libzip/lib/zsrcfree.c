@@ -19,7 +19,7 @@
   3. The names of the authors may not be used to endorse or promote
      products derived from this software without specific prior
      written permission.
- 
+
   THIS SOFTWARE IS PROVIDED BY THE AUTHORS ``AS IS'' AND ANY EXPRESS
   OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -33,22 +33,22 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-
+
 
 #include <stdlib.h>
 
 #include "zip.h"
 #include "zipint.h"
 
-
+
 
 void
 zip_source_free(struct zip_source *source)
 {
     if (source == NULL)
-	return;
+        return;
 
     (void)source->f(source->ud, NULL, 0, ZIP_SOURCE_FREE);
 
-    free(source);
+    ZIP_FREE(source);
 }

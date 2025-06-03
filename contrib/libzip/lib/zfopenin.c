@@ -19,7 +19,7 @@
   3. The names of the authors may not be used to endorse or promote
      products derived from this software without specific prior
      written permission.
- 
+
   THIS SOFTWARE IS PROVIDED BY THE AUTHORS ``AS IS'' AND ANY EXPRESS
   OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -33,7 +33,7 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-
+
 
 #include <errno.h>
 #include <stdio.h>
@@ -44,7 +44,7 @@
 
 static struct zip_file *_zip_file_new(struct zip *za);
 
-
+
 
 struct zip_file *
 zip_fopen_index(struct zip *za, int fileno, int flags)
@@ -54,37 +54,37 @@ zip_fopen_index(struct zip *za, int fileno, int flags)
     struct zip_file *zf;
 
     if ((fileno < 0) || (fileno >= za->nentry)) {
-	_zip_error_set(&za->error, ZIP_ER_INVAL, 0);
-	return NULL;
+        _zip_error_set(&za->error, ZIP_ER_INVAL, 0);
+        return NULL;
     }
 
     if ((flags & ZIP_FL_UNCHANGED) == 0
-	&& ZIP_ENTRY_DATA_CHANGED(za->entry+fileno)) {
-	_zip_error_set(&za->error, ZIP_ER_CHANGED, 0);
-	return NULL;
+        && ZIP_ENTRY_DATA_CHANGED(za->entry+fileno)) {
+        _zip_error_set(&za->error, ZIP_ER_CHANGED, 0);
+        return NULL;
     }
 
     if (fileno >= za->cdir->nentry) {
-	_zip_error_set(&za->error, ZIP_ER_INVAL, 0);
-	return NULL;
+        _zip_error_set(&za->error, ZIP_ER_INVAL, 0);
+        return NULL;
     }
 
     zfflags = 0;
     switch (za->cdir->entry[fileno].comp_method) {
     case ZIP_CM_STORE:
-	zfflags |= ZIP_ZF_CRC;
-	break;
+        zfflags |= ZIP_ZF_CRC;
+        break;
 
     case ZIP_CM_DEFLATE:
-	if ((flags & ZIP_FL_COMPRESSED) == 0)
-	    zfflags |= ZIP_ZF_CRC | ZIP_ZF_DECOMP;
-	break;
+        if ((flags & ZIP_FL_COMPRESSED) == 0)
+            zfflags |= ZIP_ZF_CRC | ZIP_ZF_DECOMP;
+        break;
     default:
-	if ((flags & ZIP_FL_COMPRESSED) == 0) {
-	    _zip_error_set(&za->error, ZIP_ER_COMPNOTSUPP, 0);
-	    return NULL;
-	}
-	break;
+        if ((flags & ZIP_FL_COMPRESSED) == 0) {
+            _zip_error_set(&za->error, ZIP_ER_COMPNOTSUPP, 0);
+            return NULL;
+        }
+        break;
     }
 
     zf = _zip_file_new(za);
@@ -97,49 +97,49 @@ zip_fopen_index(struct zip *za, int fileno, int flags)
     zf->crc_orig = za->cdir->entry[fileno].crc;
 
     if ((zf->fpos=_zip_file_get_offset(za, fileno)) == 0) {
-	zip_fclose(zf);
-	return NULL;
+        zip_fclose(zf);
+        return NULL;
     }
-    
+
     if ((zf->flags & ZIP_ZF_DECOMP) == 0)
-	zf->bytes_left = zf->cbytes_left;
+        zf->bytes_left = zf->cbytes_left;
     else {
-	if ((zf->buffer=(char *)malloc(BUFSIZE)) == NULL) {
-	    _zip_error_set(&za->error, ZIP_ER_MEMORY, 0);
-	    zip_fclose(zf);
-	    return NULL;
-	}
+        if ((zf->buffer=(char *)ZIP_ALLOC(BUFSIZE)) == NULL) {
+            _zip_error_set(&za->error, ZIP_ER_MEMORY, 0);
+            zip_fclose(zf);
+            return NULL;
+        }
 
-	len = _zip_file_fillbuf(zf->buffer, BUFSIZE, zf);
-	if (len <= 0) {
-	    _zip_error_copy(&za->error, &zf->error);
-	    zip_fclose(zf);
-	return NULL;
-	}
+        len = _zip_file_fillbuf(zf->buffer, BUFSIZE, zf);
+        if (len <= 0) {
+            _zip_error_copy(&za->error, &zf->error);
+            zip_fclose(zf);
+        return NULL;
+        }
 
-	if ((zf->zstr = (z_stream *)malloc(sizeof(z_stream))) == NULL) {
-	    _zip_error_set(&za->error, ZIP_ER_MEMORY, 0);
-	    zip_fclose(zf);
-	    return NULL;
-	}
-	zf->zstr->zalloc = Z_NULL;
-	zf->zstr->zfree = Z_NULL;
-	zf->zstr->opaque = NULL;
-	zf->zstr->next_in = (Bytef *)zf->buffer;
-	zf->zstr->avail_in = len;
-	
-	/* negative value to tell zlib that there is no header */
-	if ((ret=inflateInit2(zf->zstr, -MAX_WBITS)) != Z_OK) {
-	    _zip_error_set(&za->error, ZIP_ER_ZLIB, ret);
-	    zip_fclose(zf);
-	    return NULL;
-	}
+        if ((zf->zstr = (z_stream *)ZIP_ALLOC(sizeof(z_stream))) == NULL) {
+            _zip_error_set(&za->error, ZIP_ER_MEMORY, 0);
+            zip_fclose(zf);
+            return NULL;
+        }
+        zf->zstr->zalloc = Z_NULL;
+        zf->zstr->zfree = Z_NULL;
+        zf->zstr->opaque = NULL;
+        zf->zstr->next_in = (Bytef *)zf->buffer;
+        zf->zstr->avail_in = len;
+
+        /* negative value to tell zlib that there is no header */
+        if ((ret=inflateInit2(zf->zstr, -MAX_WBITS)) != Z_OK) {
+            _zip_error_set(&za->error, ZIP_ER_ZLIB, ret);
+            zip_fclose(zf);
+            return NULL;
+        }
     }
-    
+
     return zf;
 }
 
-
+
 
 int
 _zip_file_fillbuf(void *buf, size_t buflen, struct zip_file *zf)
@@ -147,36 +147,36 @@ _zip_file_fillbuf(void *buf, size_t buflen, struct zip_file *zf)
     int i, j;
 
     if (zf->error.zip_err != ZIP_ER_OK)
-	return -1;
+        return -1;
 
     if ((zf->flags & ZIP_ZF_EOF) || zf->cbytes_left == 0 || buflen == 0)
-	return 0;
-    
+        return 0;
+
     if (fseek(zf->za->zp, zf->fpos, SEEK_SET) < 0) {
-	_zip_error_set(&zf->error, ZIP_ER_SEEK, errno);
-	return -1;
+        _zip_error_set(&zf->error, ZIP_ER_SEEK, errno);
+        return -1;
     }
     if (buflen < zf->cbytes_left)
-	i = buflen;
+        i = buflen;
     else
-	i = zf->cbytes_left;
+        i = zf->cbytes_left;
 
     j = fread(buf, 1, i, zf->za->zp);
     if (j == 0) {
-	_zip_error_set(&zf->error, ZIP_ER_EOF, 0);
-	j = -1;
+        _zip_error_set(&zf->error, ZIP_ER_EOF, 0);
+        j = -1;
     }
     else if (j < 0)
-	_zip_error_set(&zf->error, ZIP_ER_READ, errno);
+        _zip_error_set(&zf->error, ZIP_ER_READ, errno);
     else {
-	zf->fpos += j;
-	zf->cbytes_left -= j;
+        zf->fpos += j;
+        zf->cbytes_left -= j;
     }
 
-    return j;	
+    return j;
 }
 
-
+
 
 static struct zip_file *
 _zip_file_new(struct zip *za)
@@ -184,22 +184,22 @@ _zip_file_new(struct zip *za)
     struct zip_file *zf, **file;
     int n;
 
-    if ((zf=(struct zip_file *)malloc(sizeof(struct zip_file))) == NULL) {
-	_zip_error_set(&za->error, ZIP_ER_MEMORY, 0);
-	return NULL;
+    if ((zf=(struct zip_file *)ZIP_ALLOC(sizeof(struct zip_file))) == NULL) {
+        _zip_error_set(&za->error, ZIP_ER_MEMORY, 0);
+        return NULL;
     }
-    
+
     if (za->nfile >= za->nfile_alloc-1) {
-	n = za->nfile_alloc + 10;
-	file = (struct zip_file **)realloc(za->file,
-					   n*sizeof(struct zip_file *));
-	if (file == NULL) {
-	    _zip_error_set(&za->error, ZIP_ER_MEMORY, 0);
-	    free(zf);
-	    return NULL;
-	}
-	za->nfile_alloc = n;
-	za->file = file;
+        n = za->nfile_alloc + 10;
+        file = (struct zip_file **)ZIP_REALLOC(za->file,
+                                           n*sizeof(struct zip_file *));
+        if (file == NULL) {
+            _zip_error_set(&za->error, ZIP_ER_MEMORY, 0);
+            ZIP_FREE(zf);
+            return NULL;
+        }
+        za->nfile_alloc = n;
+        za->file = file;
     }
 
     za->file[za->nfile++] = zf;

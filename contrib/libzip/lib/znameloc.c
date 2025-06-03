@@ -33,7 +33,7 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-
+
 
 #include <string.h>
 
@@ -42,7 +42,7 @@
 #include "zip.h"
 #include "zipint.h"
 
-
+
 
 int
 zip_name_locate(struct zip *za, const char *fname, int flags)
@@ -50,7 +50,7 @@ zip_name_locate(struct zip *za, const char *fname, int flags)
     return _zip_name_locate(za, fname, flags, &za->error);
 }
 
-
+
 
 int
 _zip_name_locate(struct zip *za, const char *fname, int flags,
