@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,12 +30,9 @@
 ****************************************************************************/
 
 
-#include <stddef.h>
+#include "zipmem.h"
 
-extern void         *GUIMemAlloc( size_t size );
-extern void         *GUIMemRealloc( void *ptr, size_t size );
-extern void         GUIMemFree( void *ptr );
 
-#define ZIP_ALLOC   GUIMemAlloc
-#define ZIP_REALLOC GUIMemRealloc
-#define ZIP_FREE    GUIMemFree
+#define ZIP_ALLOC   zip_alloc
+#define ZIP_REALLOC zip_realloc
+#define ZIP_FREE    zip_free

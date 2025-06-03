@@ -25,15 +25,14 @@
 *
 *  ========================================================================
 *
-* Description:  Memory Management functions for ZLIB
+* Description:  Memory Management functions for ZLIB and LIBZIP
 *
 ****************************************************************************/
 
 
-#include "zipmem.h"
+#include <stddef.h>
 
-#define ZCALLOC     zip_alloc
-#define ZCFREE      zip_free
 
-#define ALLOC       zip_alloc
-#define FREE        zip_free
+extern void         *zip_alloc( size_t size );
+extern void         *zip_realloc( void *ptr, size_t size );
+extern void         zip_free( void *ptr );

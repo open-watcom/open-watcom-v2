@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -46,6 +46,7 @@
 #ifdef USE_WRESLIB
     #include "wresmem.h"
 #endif
+#include "zipmem.h"
 
 
 #ifdef TRMEM
@@ -157,6 +158,15 @@ void *GUIMemAlloc( size_t size )
     return( malloc( size ) );
 #endif
 }
+void *zip_alloc( size_t size )
+/****************************/
+{
+#ifdef TRMEM
+    return( _trmem_alloc( size, _trmem_guess_who(), GUIMemHandle ) );
+#else
+    return( malloc( size ) );
+#endif
+}
 #if defined( GUI_IS_GUI )
 #if defined( __OS2__ )
 void * _wpi_malloc( size_t size )
@@ -203,6 +213,15 @@ void *wres_alloc( size_t size )
 
 void GUIMemFree( void *ptr )
 /**************************/
+{
+#ifdef TRMEM
+    _trmem_free( ptr, _trmem_guess_who(), GUIMemHandle );
+#else
+    free( ptr );
+#endif
+}
+void zip_free( void *ptr )
+/************************/
 {
 #ifdef TRMEM
     _trmem_free( ptr, _trmem_guess_who(), GUIMemHandle );
@@ -257,6 +276,15 @@ void wres_free( void *ptr )
 
 void *GUIMemRealloc( void *ptr, size_t size )
 /*******************************************/
+{
+#ifdef TRMEM
+    return( _trmem_realloc( ptr, size, _trmem_guess_who(), GUIMemHandle ) );
+#else
+    return( realloc( ptr, size ) );
+#endif
+}
+void *zip_realloc( void *ptr, size_t size )
+/*****************************************/
 {
 #ifdef TRMEM
     return( _trmem_realloc( ptr, size, _trmem_guess_who(), GUIMemHandle ) );
