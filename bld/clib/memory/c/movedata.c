@@ -29,11 +29,11 @@
 ****************************************************************************/
 
 
-#include "variety.h"
 /* Inline variant must always be used, no equivalent exists */
 #ifndef __INLINE_FUNCTIONS__
     #define __INLINE_FUNCTIONS__
 #endif
+#include "variety.h"
 #include "xstring.h"
 
 #undef  movedata

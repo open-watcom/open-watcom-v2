@@ -30,35 +30,36 @@
 ****************************************************************************/
 
 
+#undef __INLINE_FUNCTIONS__
 #include "variety.h"
 #include "extfunc.h"
-#undef __INLINE_FUNCTIONS__
 #include <stddef.h>
 #include <string.h>
 #include <search.h>
+
 
 typedef int lcomp( const void *, const void * );
 #if defined(_M_IX86)
     #pragma aux (__outside_CLIB) lcomp;
 #endif
 
-_WCRTLINK void *lsearch( 
-    const void *key, 
-    void *base, 
+_WCRTLINK void *lsearch(
+    const void *key,
+    void *base,
     unsigned *num,
-    unsigned width, 
-    int (*compare)( 
-        const void *, 
-        const void * 
-        ) 
+    unsigned width,
+    int (*compare)(
+        const void *,
+        const void *
+        )
     )
 {
     lcomp *cmp = (lcomp *)compare;
     unsigned  n;
 
-    for( n = *num; n; --n ) 
+    for( n = *num; n; --n )
     {
-        if( cmp( key, base ) == 0 ) 
+        if( cmp( key, base ) == 0 )
             return( base );
         base = ((char *)base) + width;
     }

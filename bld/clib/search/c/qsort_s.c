@@ -29,9 +29,9 @@
 ****************************************************************************/
 
 
+#undef __INLINE_FUNCTIONS__
 #include "variety.h"
 #include "saferlib.h"
-#undef __INLINE_FUNCTIONS__
 #include <stdio.h>
 #include <stdlib.h>
 #include "extfunc.h"
