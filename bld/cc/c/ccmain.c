@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -1402,17 +1402,13 @@ void CloseFiles( void )
     }
 }
 
+#if defined( __WATCOMC__ ) && defined( _M_IX86 )
+unsigned char   _8087 = 0;
+unsigned char   _real87 = 0;
+#endif
 
 bool FrontEnd( char **cmdline )
 {
-#if defined(__WATCOMC__) && defined( _M_IX86 )
-    /*
-     * set to 0 in case 8087 is present
-     */
-    _real87 = 0;
-    _8087 = 0;
-#endif
-
     InitGlobalVars();
     CMemInit();
     InitMsg();
