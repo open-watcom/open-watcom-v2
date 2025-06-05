@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,7 +33,9 @@
 
 #include "variety.h"
 #include "xstring.h"
+
 #undef  _fmemcpy
+
 
 _WCRTLINK void _WCFAR *_fmemcpy( void _WCFAR *dst, const void _WCFAR *s, size_t len )
     {

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -59,6 +59,11 @@
   #define _MAX_EXT     5   /* maximum length of extension component */
 #endif
 
+#define TEST_UNC(x)         ((x)[0] == '\\' && (x)[1] == '\\')
+//#define TEST_DRIVE(x)       (isalpha( (x)[0] ) && (x)[1] == ':')
+#define TEST_DRIVE(x)       ((x)[0] != NULLCHAR && (x)[1] == ':')
+#define TEST_NODE(x)        ((x)[0] == '/' && (x)[1] == '/')
+
 
 static void copypart( CHAR_TYPE *buf, const CHAR_TYPE *p, int len, int maxlen )
 {
@@ -84,15 +89,15 @@ static void copypart( CHAR_TYPE *buf, const CHAR_TYPE *p, int len, int maxlen )
 #define _MAX_NODE   _MAX_DRIVE  /*  maximum length of node name w/ '\0' */
 #endif
 
-/* split full QNX path name into its components */
-
-/* Under QNX we will map drive to node, dir to dir, and
+/*
+ * split full path name into its components
+ *
+ * Under QNX we will map drive to node, dir to dir, and
  * filename to (filename and extension)
  *          or (filename) if no extension requested.
+ *
+ * Under Netware, 'drive' maps to 'volume'
  */
-
-/* Under Netware, 'drive' maps to 'volume' */
-
 _WCRTLINK void __F_NAME(_splitpath,_wsplitpath)( const CHAR_TYPE *path,
     CHAR_TYPE *drive, CHAR_TYPE *dir, CHAR_TYPE *fname, CHAR_TYPE *ext )
 {
@@ -104,14 +109,18 @@ _WCRTLINK void __F_NAME(_splitpath,_wsplitpath)( const CHAR_TYPE *path,
     const CHAR_TYPE *ptr;
 #endif
 
-    /* take apart specification like -> //0/hd/user/fred/filename.ext for QNX */
-    /* take apart specification like -> c:\fred\filename.ext for DOS, OS/2 */
+    /* take apart specification like
+     *      //0/hd/user/fred/filename.ext for QNX
+     *      /fred/filename.ext for *NIX
+     *      c:\fred\filename.ext for DOS, OS/2, Windows
+     */
 
 #if defined(__UNIX__)
-
-    /* process node/drive specification */
+    /*
+     * process node specification
+     */
     startp = path;
-    if( path[0] == DIR_SEP && path[1] == DIR_SEP ) {
+    if( TEST_NODE( path ) ) {
         path += 2;
         for( ;; ) {
             if( *path == NULLCHAR )
@@ -126,7 +135,9 @@ _WCRTLINK void __F_NAME(_splitpath,_wsplitpath)( const CHAR_TYPE *path,
     copypart( drive, startp, path - startp, _MAX_NODE );
 
 #elif defined(__NETWARE__)
-
+    /*
+     * process volume specification
+     */
   #ifdef __WIDECHAR__
         ptr = wcschr( path, DRV_SEP );
   #else
@@ -144,30 +155,31 @@ _WCRTLINK void __F_NAME(_splitpath,_wsplitpath)( const CHAR_TYPE *path,
     } else if( drive != NULL ) {
         *drive = NULLCHAR;
     }
-
 #else
-
-    /* processs drive specification */
-    if( path[0] != NULLCHAR && path[1] == DRV_SEP ) {
+    /*
+     * process drive specification
+     */
+    if( TEST_DRIVE( path ) ) {
         if( drive != NULL ) {
-            drive[0] = path[0];
-            drive[1] = DRV_SEP;
-            drive[2] = NULLCHAR;
+            *drive++ = *path++;
+            *drive++ = *path++;
+            *drive = NULLCHAR;
         }
-        path += 2;
     } else if( drive != NULL ) {
-        drive[0] = NULLCHAR;
+        *drive = NULLCHAR;
     }
-
 #endif
-
-    /* process /user/fred/filename.ext for QNX */
-    /* process /fred/filename.ext for DOS, OS/2 */
+    /*
+     * process
+     *      /user/fred/filename.ext for QNX
+     *      /fred/filename.ext for *NIX
+     *      /fred/filename.ext for DOS, OS/2, Windows
+     */
     dotp = NULL;
     fnamep = path;
     startp = path;
 
-    for( ;; ) {         /* 07-jul-91 DJG -- save *path in ch for speed */
+    for( ;; ) {         /* save *path in ch for speed */
         if( *path == NULLCHAR )
             break;
 #if defined( __WIDECHAR__ ) || defined( __UNIX__ ) || defined( __RDOS__ ) || defined( __RDOSDEV__ )
