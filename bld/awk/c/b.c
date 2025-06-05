@@ -57,9 +57,9 @@ THIS SOFTWARE.
 
 
 const char          *patbeg;
-size_t              patlen;
+int                 patlen;
 
-static size_t       maxsetvec = 0;
+static int          maxsetvec = 0;
 static bool         *setvec;
 static int          *tmpset;
 
