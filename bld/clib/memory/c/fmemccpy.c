@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,20 +31,8 @@
 ****************************************************************************/
 
 
-#include "variety.h"
-#include <string.h>
-
-_WCRTLINK void _WCFAR *_fmemccpy( void _WCFAR *d, const void _WCFAR *s, int c, size_t cnt )
-    {
-        char _WCFAR *dst = d;
-        const char _WCFAR *src = s;
-        for(;;) {
-            if( cnt == 0 ) break;
-            *dst = *src;
-            ++dst;
-            if( *src == c ) return( dst );
-            ++src;
-            --cnt;
-        }
-        return( NULL );
-    }
+// this file should remain an indirected file
+// it is done this way to support the reuse of the source file
+#define __FARFUNC__
+#undef __INLINE_FUNCTIONS__
+#include "memccpy.c"

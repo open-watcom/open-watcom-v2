@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -161,7 +162,7 @@ _WCRTLINK void _WCFAR *_fmemmove( void _WCFAR *t, const void _WCFAR *f, size_t l
 {
     char _WCFAR *to = t;
     const char _WCFAR *from = f;
-    if( from == to ) {
+    if( from == to || len == 0 ) {
         return( to );
     }
     if( from < to  &&  from + len > to ) {  /* if buffers are overlapped*/

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,28 +31,8 @@
 ****************************************************************************/
 
 
-#include "variety.h"
-#include <string.h>
-#include <ctype.h>
-
-_WCRTLINK int _fmemicmp( const void _WCFAR *v1, const void _WCFAR *v2, size_t len )
-    {
-        unsigned char c1;
-        unsigned char c2;
-        const unsigned char _WCFAR *s1;
-        const unsigned char _WCFAR *s2;
-
-        for( s1 = v1, s2 = v2; len > 0; --len )  {
-            c1 = *s1;
-            if( c1 >= 'A' && c1 <= 'Z' )
-                c1 += 'a' - 'A';
-            c2 = *s2;
-            if( c2 >= 'A' && c2 <= 'Z' )
-                c2 += 'a' - 'A';
-            if( c1 != c2 )
-                return( c1 - c2 );
-            ++s1;
-            ++s2;
-        }
-        return( 0 );    /* both operands are equal */
-    }
+// this file should remain an indirected file
+// it is done this way to support the reuse of the source file
+#define __FARFUNC__
+#undef __INLINE_FUNCTIONS__
+#include "memicmp.c"

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -190,7 +191,7 @@ _WCRTLINK void *memmove( void *toStart, const void *fromStart, size_t len )
     const char      *from = fromStart;
     char            *to = toStart;
 
-    if( from == to ) {
+    if( from == to || len == 0 ) {
         return( to );
     }
     if( from < to  &&  from + len > to ) {  /* if buffers are overlapped */
