@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,24 +38,6 @@
 #include "heap.h"
 
 
-extern void _mymemcpy( void_fptr, void_fptr, size_t );
-#if defined(__SMALL_DATA__) || defined(__WINDOWS__)
-#pragma aux _mymemcpy = \
-        "push ds"       \
-        "mov ds,dx"     \
-        memcpy_i86      \
-        "pop ds"        \
-    __parm __caller     [__es __di] [__dx __si] [__cx] \
-    __value             \
-    __modify __exact    [__si __di __cx]
-#else
-#pragma aux _mymemcpy = \
-        memcpy_i86      \
-    __parm __caller     [__es __di] [__ds __si] [__cx] \
-    __value             \
-    __modify __exact    [__si __di __cx]
-#endif
-
 _WCRTLINK void_bptr _brealloc( __segment seg, void_bptr cstg_old, size_t size )
 {
     void_bptr   cstg_new;
@@ -71,7 +54,7 @@ _WCRTLINK void_bptr _brealloc( __segment seg, void_bptr cstg_old, size_t size )
     if( cstg_new == _NULLOFF ) {                /* if it couldn't be expanded */
         cstg_new = _bmalloc( seg, size );       /* - allocate new block */
         if( cstg_new != _NULLOFF ) {            /* - if we got one */
-            _mymemcpy( seg :> cstg_new, seg :> cstg_old, old_size );
+            _fmemcpy( seg :> cstg_new, seg :> cstg_old, old_size );
             _bfree( seg, cstg_old );
         } else {
             _bexpand( seg, cstg_old, old_size );

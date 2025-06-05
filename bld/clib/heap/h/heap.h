@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -102,12 +102,6 @@
 #define SET_HEAP_END(s,p)   ((FRLPTR(s))(p))->len = END_TAG; ((FRLPTR(s))(p))->prev.offs = 0
 
 #define IS_IN_HEAP(m,h)     ((unsigned)(h) <= (unsigned)(m) && (unsigned)(m) < (unsigned)NEXT_BLK((h)))
-
-#define memcpy_i86      "shr cx,1"  "rep movsw" "adc cx,cx"   "rep movsb"
-#define memcpy_386      "shr ecx,1" "rep movsw" "adc ecx,ecx" "rep movsb"
-
-#define memset_i86      "mov ah,al" "shr cx,1"  "rep stosw" "adc cx,cx"   "rep stosb"
-#define memset_386      "mov ah,al" "shr ecx,1" "rep stosw" "adc ecx,ecx" "rep stosb"
 
 /*
 ** NOTE: the size of these data structures is critical to the alignemnt
