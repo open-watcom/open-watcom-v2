@@ -164,6 +164,15 @@
 
 !include ../../../../objlist.mif
 
+fstrcat_opts = -oi
+fstrcmp_opts = -oi
+fstrcpy_opts = -oi
+fstrlen_opts = -oi
+strcat_opts  = -oi
+strcmp_opts  = -oi
+strcpy_opts  = -oi
+strlen_opts  = -oi
+
 usprintf_postopts=-os
 usscanf_postopts =-os
 ustrcat_postopts =-os

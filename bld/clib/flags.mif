@@ -73,12 +73,15 @@ sw_c_common = $(watcom_common_cflags)-we-j-zastd=c99-zl-x-xx-zam-wpx
 !else
 sw_c_common += -s
 !endif
+# optimization settings
+# need to remove -oi and -s from -ox (-ox is -obeilmr -s)
+# 
 !ifeq processor 086
-sw_c_common += -oax
+sw_c_common += -oabelmr
 !else ifeq processor 286
-sw_c_common += -oax
+sw_c_common += -oabelmr
 !else
-sw_c_common += -oaxt
+sw_c_common += -oabelmrt
 !endif
 !ifdef __UNIX__
 sw_c_common += -fo=.obj
