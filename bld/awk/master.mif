@@ -17,9 +17,9 @@ inc_dirs = -I"../h"
 
 !ifdef __WATCOM_TOOLS__
 !ifndef bootstrap
-extra_c_flags_f_ytab = -wcd=C118 -wcd=C202
+extra_c_flags_f_ytab = -wcd=C118 -wcd=C202 -pil
 !else
-extra_c_flags_f_ytab = -wcd=118 -wcd=202
+extra_c_flags_f_ytab = -wcd=118 -wcd=202 -pil
 !endif
 !endif
 
