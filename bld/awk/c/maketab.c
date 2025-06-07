@@ -120,11 +120,11 @@ int main( int argc, char *argv[] )
 
     if (argc != 2) {
         fprintf(stderr, "usage: maketab <YTAB_H>\n");
-        exit(1);
+        return( 1 );
     }
     if ((fp = fopen(argv[1], "r")) == NULL) {
         fprintf(stderr, "maketab can't open %s!\n", argv[1]);
-        exit(1);
+        return( 1 );
     }
 
     printf( "/*************************************************************\n" );

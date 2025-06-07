@@ -25,6 +25,7 @@ THIS SOFTWARE.
 
 #include <assert.h>
 #include "bool.h"
+#include "wnoret.h"
 
 
 #define DEBUG

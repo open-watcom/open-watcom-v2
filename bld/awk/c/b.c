@@ -89,6 +89,7 @@ fa *makedfa( const char *s, bool anchor )   /* returns dfa for reg expr s */
         tmpset = (int *)malloc( maxsetvec * sizeof( int ) );
         if( setvec == NULL || tmpset == NULL ) {
             overflo( "out of space initializing makedfa" );
+            /* never return */
         }
     }
 
@@ -138,13 +139,16 @@ fa *mkdfa( const char *s, bool anchor )
     penter(p1); /* enter parent pointers and leaf indices */
     if( (f = (fa *)calloc( 1, sizeof( fa ) + poscnt * sizeof( rrow ) )) == NULL )
         overflo(     "out of space for fa" );
+        /* never return */
     f->accept = poscnt - 1; /* penter has computed number of positions in re */
     cfoll( f, p1 );         /* set up follow sets */
     freetr(p1);
     if( (f->posns[0] = (int *)calloc( 1, *(f->re[0].lfollow) * sizeof( int ) )) == NULL )
-            overflo( "out of space in makedfa" );
+        overflo( "out of space in makedfa" );
+        /* never return */
     if( (f->posns[1] = (int *)calloc( 1, sizeof( int ) )) == NULL )
         overflo( "out of space in makedfa" );
+        /* never return */
     *f->posns[1] = 0;
     f->initstat = makeinit( f, anchor );
     f->anchor = anchor;
@@ -163,6 +167,7 @@ int makeinit( fa *f, bool anchor )
     xfree(f->posns[2]);
     if( (f->posns[2] = (int *)calloc( 1, ( k + 1 ) * sizeof( int ) )) == NULL )
         overflo( "out of space in makeinit" );
+        /* never return */
     for( i = 0; i <= k; i++ ) {
         (f->posns[2])[i] = (f->re[0].lfollow)[i];
     }
@@ -206,7 +211,7 @@ void penter(Node *p)    /* set up parent pointers and leaf indices */
         break;
     default:    /* can't happen */
         FATAL( "can't happen: unknown type %d in penter", type( p ) );
-        break;
+        /* never return */
     }
 }
 
@@ -229,7 +234,7 @@ void freetr(Node *p)    /* free parse tree */
         break;
     default:    /* can't happen */
         FATAL( "can't happen: unknown type %d in freetr", type( p ) );
-        break;
+        /* never return */
     }
 }
 
@@ -305,6 +310,7 @@ char *cclenter( const char *argp )    /* add a character class */
 
     if( buf == NULL && (buf = (char *)malloc( bufsz )) == NULL )
         FATAL( "out of space for character class [%.10s...] 1", p );
+        /* never return */
     bp = buf;
     for( i = 0; (c = (uschar)*p++) != '\0'; ) {
         if( c == '\\' ) {
@@ -323,6 +329,7 @@ char *cclenter( const char *argp )    /* add a character class */
                 while( c < c2 ) {
                     if( !adjbuf( &buf, &bufsz, bp - buf + 2, 100, &bp, "cclenter1" ) )
                         FATAL( "out of space for character class [%.10s...] 2", p );
+                        /* never return */
                     *bp++ = ++c;
                     i++;
                 }
@@ -331,6 +338,7 @@ char *cclenter( const char *argp )    /* add a character class */
         }
         if( !adjbuf( &buf, &bufsz, bp - buf + 2, 100, &bp, "cclenter2" ) )
             FATAL( "out of space for character class [%.10s...] 3", p );
+            /* never return */
         *bp++ = c;
         i++;
     }
@@ -342,6 +350,7 @@ char *cclenter( const char *argp )    /* add a character class */
 void overflo( const char *s )
 {
     FATAL( "regular expression too big: %.30s...", s );
+    /* never return */
 }
 
 void cfoll(fa *f, Node *v)  /* enter follow set of each leaf of vertex v into lfollow[leaf] */
@@ -360,6 +369,7 @@ void cfoll(fa *f, Node *v)  /* enter follow set of each leaf of vertex v into lf
             tmpset = (int *)realloc( tmpset, maxsetvec * sizeof( int ) );
             if( setvec == NULL || tmpset == NULL ) {
                 overflo( "out of space in cfoll()" );
+                /* never return */
             }
         }
         for( i = 0; i <= f->accept; i++ ) {
@@ -369,6 +379,7 @@ void cfoll(fa *f, Node *v)  /* enter follow set of each leaf of vertex v into lf
         follow( v );  /* computes setvec and setcnt */
         if( (p = (int *)calloc( 1, ( setcnt + 1 ) * sizeof( int ) )) == NULL )
             overflo( "out of space building follow set" );
+            /* never return */
         f->re[info( v )].lfollow = p;
         *p = setcnt;
         for( i = f->accept; i >= 0; i-- ) {
@@ -387,6 +398,7 @@ void cfoll(fa *f, Node *v)  /* enter follow set of each leaf of vertex v into lf
         break;
     default:    /* can't happen */
         FATAL( "can't happen: unknown type %d in cfoll", type( v ) );
+        /* never return */
     }
 }
 
@@ -406,6 +418,7 @@ int first( Node *p )
             tmpset = (int *)realloc( tmpset, maxsetvec * sizeof( int ) );
             if( setvec == NULL || tmpset == NULL ) {
                 overflo( "out of space in first()" );
+                /* never return */
             }
         }
         if( type( p ) == EMPTYRE ) {
@@ -418,11 +431,11 @@ int first( Node *p )
         }
         if( type( p ) == CCL && *(char *)right( p ) == '\0' )
             return( 0 );    /* empty CCL */
-        return( 1 );
+        break;
     case PLUS:
         if( first( left( p ) ) == 0 )
             return( 0 );
-        return( 1 );
+        break;
     case STAR:
     case QUEST:
         first( left( p ) );
@@ -430,15 +443,17 @@ int first( Node *p )
     case CAT:
         if( first( left( p ) ) == 0 && first( right( p ) ) == 0 )
             return( 0 );
-        return( 1 );
+        break;
     case OR:
         b = first( right( p ) );
         if( first( left( p ) ) == 0 || b == 0 )
             return( 0 );
-        return( 1 );
+        break;
+    default:
+        FATAL( "can't happen: unknown type %d in first", type( p ) );   /* can't happen */
+        /* never return */
     }
-    FATAL( "can't happen: unknown type %d in first", type( p ) );   /* can't happen */
-    return( -1 );
+    return( 1 );
 }
 
 void follow( Node *v )
@@ -551,6 +566,7 @@ nextin:
             k = *f->posns[0];
             if( (f->posns[2] = (int *)calloc( 1, ( k + 1 ) * sizeof( int ) )) == NULL )
                 overflo( "out of space in pmatch" );
+                /* never return */
             for( i = 0; i <= k; i++ ) {
                 (f->posns[2])[i] = (f->posns[0])[i];
             }
@@ -612,6 +628,7 @@ nnextin:
             k = *f->posns[0];
             if( (f->posns[2] = (int *)calloc( 1, ( k + 1 ) * sizeof( int ) )) == NULL )
                 overflo( "out of state space" );
+                /* never return */
             for( i = 0; i <= k; i++ ) {
                 (f->posns[2])[i] = (f->posns[0])[i];
             }
@@ -643,6 +660,7 @@ Node *reparse( const char *p )
     np = regexp();
     if( rtok != '\0' )
         FATAL( "syntax error in regular expression %s at %s", lastre, prestr );
+        /* never return */
     return( np );
 }
 
@@ -657,49 +675,61 @@ Node *primary(void)
 
     switch( rtok ) {
     case CHAR:
-        np = op2(CHAR, NIL, itonp(rlxval));
+        np = op2( CHAR, NIL, itonp( rlxval ) );
         rtok = relex();
-        return (unary(np));
+        np = unary( np );
+        break;
     case ALL:
         rtok = relex();
-        return (unary(op2(ALL, NIL, NIL)));
+        np = unary( op2( ALL, NIL, NIL ) );
+        break;
     case EMPTYRE:
         rtok = relex();
-        return (unary(op2(ALL, NIL, NIL)));
+        np = unary( op2( ALL, NIL, NIL ) );
+        break;
     case DOT:
         rtok = relex();
-        return (unary(op2(DOT, NIL, NIL)));
+        np = unary( op2( DOT, NIL, NIL ) );
+        break;
     case CCL:
         np = op2( CCL, NIL, (Node *)cclenter( rlxstr ) );
         rtok = relex();
-        return (unary(np));
+        np = unary( np );
+        break;
     case NCCL:
         np = op2( NCCL, NIL, (Node *)cclenter( rlxstr ) );
         rtok = relex();
-        return (unary(np));
+        np = unary( np );
+        break;
     case '^':
         rtok = relex();
-        return (unary(op2(CHAR, NIL, itonp(HAT))));
+        np = unary( op2( CHAR, NIL, itonp( HAT ) ) );
+        break;
     case '$':
         rtok = relex();
-        return (unary(op2(CHAR, NIL, NIL)));
+        np = unary( op2( CHAR, NIL, NIL ) );
+        break;
     case '(':
         rtok = relex();
-        if (rtok == ')') {  /* special pleading for () */
+        if( rtok == ')' ) {  /* special pleading for () */
             rtok = relex();
-            return( unary( op2( CCL, NIL, (Node *)tostring( "" ) ) ) );
+            np = unary( op2( CCL, NIL, (Node *)tostring( "" ) ) );
+            break;
         }
         np = regexp();
-        if (rtok == ')') {
+        if( rtok == ')' ) {
             rtok = relex();
-            return( unary( np ) );
+            np = unary( np );
+            break;
         } else {
             FATAL( "syntax error in regular expression %s at %s", lastre, prestr );
+            /* never return */
         }
     default:
         FATAL( "illegal primary in regular expression %s at %s", lastre, prestr );
+        /* never return */
     }
-    return( 0 );   /*NOTREACHED*/
+    return( np );
 }
 
 Node *concat( Node *np )
@@ -722,7 +752,7 @@ Node *alt( Node *np )
 {
     if( rtok == OR ) {
         rtok = relex();
-        return( alt( op2( OR, np, concat( primary() ) ) ) );
+        np = alt( op2( OR, np, concat( primary() ) ) );
     }
     return( np );
 }
@@ -732,15 +762,15 @@ Node *unary(Node *np)
     switch( rtok ) {
     case STAR:
         rtok = relex();
-        return (unary(op2(STAR, np, NIL)));
+        return( unary( op2( STAR, np, NIL ) ) );
     case PLUS:
         rtok = relex();
-        return (unary(op2(PLUS, np, NIL)));
+        return( unary( op2( PLUS, np, NIL ) ) );
     case QUEST:
         rtok = relex();
-        return (unary(op2(QUEST, np, NIL)));
+        return( unary( op2( QUEST, np, NIL ) ) );
     default:
-        return (np);
+        return( np );
     }
 }
 
@@ -822,6 +852,7 @@ int relex( void )   /* lexical analyzer for reparse */
     case '[':
         if( buf == NULL && (buf = (char *)malloc( bufsz )) == NULL )
             FATAL( "out of space in reg expr %.10s..", lastre );
+            /* never return */
         bp = buf;
         if( *prestr == '^' ) {
             cflag = true;
@@ -832,12 +863,14 @@ int relex( void )   /* lexical analyzer for reparse */
         n = 2 * strlen( prestr ) + 1;
         if( !adjbuf( &buf, &bufsz, n, n, &bp, "relex1" ) ) {
             FATAL( "out of space for reg expr %.10s...", lastre );
+            /* never return */
         }
         for( ;; ) {
             if( (c = (uschar)*prestr++) == '\\' ) {
                 *bp++ = '\\';
                 if( (c = (uschar)*prestr++) == '\0' )
                     FATAL( "nonterminated character class %.20s...", lastre );
+                    /* never return */
                 *bp++ = c;
             /* } else if (c == '\n') { */
             /*  FATAL( "newline in character class %.20s...", lastre ); */
@@ -854,6 +887,7 @@ int relex( void )   /* lexical analyzer for reparse */
                     for( i = 0; i < NCHARS; i++ ) {
                         if( !adjbuf( &buf, &bufsz, bp - buf + 1, 100, &bp, "relex2" ) )
                             FATAL( "out of space for reg expr %.10s...", lastre );
+                            /* never return */
                         if( cc->cc_func( i ) ) {
                             *bp++ = i;
                             n++;
@@ -864,6 +898,7 @@ int relex( void )   /* lexical analyzer for reparse */
                 }
             } else if( c == '\0' ) {
                 FATAL( "nonterminated character class %.20s", lastre );
+                /* never return */
             } else if( bp == buf ) { /* 1st char is special */
                 *bp++ = c;
             } else if( c == ']' ) {
@@ -893,6 +928,7 @@ int cgoto( fa *f, int s, int c )
         tmpset = (int *)realloc( tmpset, maxsetvec * sizeof( int ) );
         if( setvec == NULL || tmpset == NULL ) {
             overflo( "out of space in cgoto()" );
+            /* never return */
         }
     }
     for( i = 0; i <= f->accept; i++ ) {
@@ -917,6 +953,7 @@ int cgoto( fa *f, int s, int c )
                         tmpset = (int *)realloc( tmpset, maxsetvec * sizeof( int ) );
                         if( setvec == NULL || tmpset == NULL ) {
                             overflo( "cgoto overflow" );
+                            /* never return */
                         }
                     }
                     if( !setvec[q[j]] ) {
@@ -967,6 +1004,7 @@ different:;
     xfree( f->posns[f->curstat] );
     if( (p = (int *)calloc( 1, ( setcnt + 1 ) * sizeof( int ) )) == NULL )
         overflo( "out of space in cgoto" );
+        /* never return */
 
     f->posns[f->curstat] = p;
     f->gototab[s][c] = f->curstat;
