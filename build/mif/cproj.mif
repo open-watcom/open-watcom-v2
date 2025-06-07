@@ -893,6 +893,7 @@ incl_file_opts  = -fi
 rcbind  = $(noecho)*bwrc -q -k
 wstrip  = $(noecho)bwstrip
 wbind   = $(noecho)bwbind
+yacc    = $(noecho)byacc
 
 !include local.mif
 

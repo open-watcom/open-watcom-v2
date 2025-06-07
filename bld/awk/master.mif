@@ -65,7 +65,8 @@ updateproctab : ./maketab.exe ../h/ytab.h .SYMBOLIC
 updateytab: .SYMBOLIC
 #    bison -o ytab.c -d ../h/awkgram.y
 #    yacc -d -dd -db -de ../h/awkgram.y ../c/yydriver.c >awk.out
-    yacc -d -db -de ../h/awkgram.y ../c/yydriver.c >awk.out
+    @%make echo_yacc
+    $(yacc) -d -db -de ../h/awkgram.y ../c/yydriver.c >awk.out
     %copy ytab.c ../c/ytab.c
     %copy ytab.h ../h/ytab.h
     @rm -f ytab.c

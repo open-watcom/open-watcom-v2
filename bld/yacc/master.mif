@@ -2,6 +2,10 @@ proj_name = yacc
 
 yacc_autodepends = .AUTODEPEND
 
+!ifdef bootstrap
+exetarg_name = b$(proj_name)
+!endif
+
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif

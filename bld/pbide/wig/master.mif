@@ -82,4 +82,4 @@ exetarg_name = wig
 #
 ytab.c ytab.h: ../c/sruparse.y ../c/yydriver.c
     @%make echo_yacc
-    $(noecho)yacc -d $[@ ../c/yydriver.c > $(nulldevice)
+    $(noecho)$(yacc) -d $[@ ../c/yydriver.c > $(nulldevice)
