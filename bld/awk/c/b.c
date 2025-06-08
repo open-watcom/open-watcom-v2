@@ -33,8 +33,12 @@ THIS SOFTWARE.
 #include "awk.h"
 #include "ytab.h"
 
-#define HAT (NCHARS+2)  /* matches ^ in regular expr */
-                /* NCHARS is 2**n */
+/*
+ * HAT matches ^ in regular expr
+ * NCHARS is 2**n
+ */
+#define HAT (NCHARS+2)
+
 #define MAXLIN 22
 
 #define type(v)     (v)->nobj   /* badly overloaded here */
@@ -241,62 +245,91 @@ void freetr(Node *p)    /* free parse tree */
 /* in the parsing of regular expressions, metacharacters like . have */
 /* to be seen literally;  \056 is not a metacharacter. */
 
+#define X2BIN(c)    ((isdigit( c )) ? (c - '0') : (c - 'a' + 10))
+
 int hexstr( const char **pp )
 /* find and eval hex string at pp, return new p */
 /* only pick up one 8-bit byte (2 chars) */
 {
-    const char *p;
     int n = 0;
-    int i;
+    int c;
 
-    for( i = 0, p = *pp; i < 2 && isxdigit( *p ); i++, p++ ) {
-        if( isdigit( *p ) ) {
-            n = 16 * n + *p - '0';
-        } else if( *p >= 'a' && *p <= 'f' ) {
-            n = 16 * n + *p - 'a' + 10;
-        } else if( *p >= 'A' && *p <= 'F' ) {
-            n = 16 * n + *p - 'A' + 10;
+    c = tolower( *(uschar *)*pp );
+    if( isxdigit( c ) ) {
+        n = X2BIN( c );
+        (*pp)++;
+        c = tolower( *(uschar *)*pp );
+        if( isxdigit( c ) ) {
+            n = 16 * n + X2BIN( c );
+            (*pp)++;
         }
     }
-    *pp = p;
     return( n );
 }
 
 #define isoctdigit(c) ((c) >= '0' && (c) <= '7')    /* multiple use of arg */
 
+static int octstr( int n, const char **pp )
+/* find and eval oct string at pp, return new pp */
+/* only pick up one 8-bit byte (2 chars) */
+{
+    int c;
+
+    c = *(uschar *)*pp;
+    if( isoctdigit( c ) ) {
+        n = 8 * n + c - '0';
+        (*pp)++;
+        c = *(uschar *)*pp;
+        if( isoctdigit( c ) ) {
+            n = 8 * n + c - '0';
+            (*pp)++;
+        }
+    }
+    return( n );
+}
+
 int quoted( const char **pp )
 /* pick up next thing after a \\ */
 /* and increment *pp */
 {
-    const char *p = *pp;
     int c;
 
-    if( (c = (uschar)*p++) == 't' ) {
+    c = *(uschar *)(*pp)++;
+    switch( c ) {
+    case 't':
         c = '\t';
-    } else if( c == 'n' ) {
+        break;
+    case 'n':
         c = '\n';
-    } else if( c == 'f' ) {
+        break;
+    case 'f':
         c = '\f';
-    } else if( c == 'r' ) {
+        break;
+    case 'r':
         c = '\r';
-    } else if( c == 'b' ) {
+        break;
+    case 'b':
         c = '\b';
-    } else if( c == '\\' ) {
-        c = '\\';
-    } else if( c == 'x' ) { /* hexadecimal goo follows */
-        c = hexstr( &p );   /* this adds a null if number is invalid */
-    } else if( isoctdigit( c ) ) { /* \d \dd \ddd */
-        int n = c - '0';
-        if( isoctdigit( *p ) ) {
-            n = 8 * n + *p++ - '0';
-            if( isoctdigit( *p ) ) {
-                n = 8 * n + *p++ - '0';
-            }
-        }
-        c = n;
-    } /* else */
-        /* c = c; */
-    *pp = p;
+        break;
+    case 'x':
+        /* \xh \xhh */
+        c = hexstr( pp );   /* this return a null if number is invalid */
+        break;
+    case '0':
+    case '1':
+    case '2':
+    case '3':
+    case '4':
+    case '5':
+    case '6':
+    case '7':
+        /* \o \oo \ooo */
+        c = octstr( c - '0', pp );
+        break;
+    case '\\':
+    default:
+        break;
+    }
     return( c );
 }
 
@@ -305,20 +338,22 @@ char *cclenter( const char *argp )    /* add a character class */
     int         i, c, c2;
     const char  *p = argp;
     char        *bp;
-    static char *buf = NULL;
-    static size_t bufsz = 100;
+    char        *buf;
+    size_t      bufsz = 100;
 
-    if( buf == NULL && (buf = (char *)malloc( bufsz )) == NULL )
+    buf = (char *)malloc( bufsz );
+    if( buf == NULL ) {
         FATAL( "out of space for character class [%.10s...] 1", p );
         /* never return */
+    }
     bp = buf;
-    for( i = 0; (c = (uschar)*p++) != '\0'; ) {
+    for( i = 0; (c = *(uschar *)p++) != '\0'; ) {
         if( c == '\\' ) {
             c = quoted( &p );
         } else if( c == '-' && i > 0 && bp[-1] != '\0' ) {
             if( *p != '\0' ) {
                 c = (uschar)bp[-1];
-                c2 = (uschar)*p++;
+                c2 = *(uschar *)p++;
                 if( c2 == '\\' )
                     c2 = quoted( &p );
                 if( c > c2 ) {   /* empty; ignore */
@@ -344,7 +379,7 @@ char *cclenter( const char *argp )    /* add a character class */
     }
     *bp = '\0';
     dprintf(( "cclenter: in = |%s|, out = |%s|\n", argp, buf ));
-    return( tostring( buf ) );
+    return( buf );
 }
 
 void overflo( const char *s )
@@ -489,7 +524,7 @@ void follow( Node *v )
 bool member( int c, const char *s )   /* is c in s? */
 {
     while( *s != '\0' ) {
-        if( c == (uschar)*s++ ) {
+        if( c == *(uschar *)s++ ) {
             return( true );
         }
     }
@@ -505,10 +540,10 @@ bool match( fa *f, const char *p )      /* shortest match ? */
         return( true );
     do {
         /* assert(*p < NCHARS); */
-        if( (ns = f->gototab[s][(uschar)*p]) != 0 ) {
+        if( (ns = f->gototab[s][*(uschar *)p]) != 0 ) {
             s = ns;
         } else {
-            s = cgoto( f, s, (uschar)*p );
+            s = cgoto( f, s, *(uschar *)p );
         }
         if( f->out[s] ) {
             return( true );
@@ -537,10 +572,10 @@ bool pmatch( fa *f, const char *p )         /* longest match, for sub */
             if( f->out[s] )         /* final state */
                 patlen = q - p;
             /* assert(*q < NCHARS); */
-            if( (ns = f->gototab[s][(uschar)*q]) != 0 ) {
+            if( (ns = f->gototab[s][*(uschar *)q]) != 0 ) {
                 s = ns;
             } else {
-                s = cgoto(f, s, (uschar)*q);
+                s = cgoto(f, s, *(uschar *)q);
             }
             if( s == 1 ) {          /* no transition */
                 if( patlen != NOPAT ) {
@@ -599,10 +634,10 @@ bool nematch( fa *f, const char *p )    /* non-empty match, for sub */
             if( f->out[s] )      /* final state */
                 patlen = q - p;
             /* assert(*q < NCHARS); */
-            if( (ns = f->gototab[s][(uschar)*q]) != 0 ) {
+            if( (ns = f->gototab[s][*(uschar *)q]) != 0 ) {
                 s = ns;
             } else {
-                s = cgoto(f, s, (uschar)*q);
+                s = cgoto(f, s, *(uschar *)q);
             }
             if (s == 1) {   /* no transition */
                 if( patlen != NOPAT && patlen > 0 ) {
@@ -831,7 +866,8 @@ int relex( void )   /* lexical analyzer for reparse */
     struct charclass *cc;
     int             i;
 
-    switch( c = (uschar)*prestr++ ) {
+    c = *(uschar *)prestr++;
+    switch( c ) {
     case '|': return( OR );
     case '*': return( STAR );
     case '+': return( PLUS );
@@ -866,9 +902,11 @@ int relex( void )   /* lexical analyzer for reparse */
             /* never return */
         }
         for( ;; ) {
-            if( (c = (uschar)*prestr++) == '\\' ) {
+            c = *(uschar *)prestr++;
+            if( c == '\\' ) {
                 *bp++ = '\\';
-                if( (c = (uschar)*prestr++) == '\0' )
+                c = *(uschar *)prestr++;
+                if( c == '\0' )
                     FATAL( "nonterminated character class %.20s...", lastre );
                     /* never return */
                 *bp++ = c;

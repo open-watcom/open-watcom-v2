@@ -117,7 +117,7 @@ int getrec( char **pbuf, size_t *pbufsize, bool isrecord )    /* get next input 
 {           /* note: cares whether buf == record */
     int c;
     char *buf = *pbuf;
-    uschar saveb0;
+    char saveb0;
     size_t bufsize = *pbufsize;
     size_t savebufsize = bufsize;
 
@@ -419,7 +419,7 @@ void growfldtab( int n )  /* make new fields up to at least $n */
     int nf = 2 * nfields;
     int s;
 
-    if( n > nf )
+    if( nf < n )
         nf = n;
     s = ( nf + 1 ) * sizeof( struct Cell * );       /* freebsd: how much do we need? */
     if( s / sizeof( struct Cell * ) - 1 == nf ) {   /* didn't overflow */
@@ -702,15 +702,17 @@ double errcheck(double x, const char *s)
 bool isclvar( const char *s )  /* is s of form var=something ? */
 {
     const char *os = s;
+    int        c;
 
-    if( !isalpha( (uschar)*s ) && *s != '_' )
+    c = *(uschar *)s;
+    if( !isalpha( c ) && c != '_' )
         return( false );
-    for( ; *s != '\0'; s++ ) {
-        if( !( isalnum( (uschar)*s ) || *s == '_' ) ) {
+    for( ; (c = *(uschar *)s) != '\0'; s++ ) {
+        if( !( isalnum( c ) || c == '_' ) ) {
             break;
         }
     }
-    return( *s == '=' && s > os && *( s + 1 ) != '=' );
+    return( c == '=' && s > os && *(uschar *)(s + 1) != '=' );
 }
 
 /* strtod is supposed to be a proper test of what's a valid number */

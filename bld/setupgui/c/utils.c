@@ -690,7 +690,7 @@ static bool updateFsysInfo( fsys_info *info, bool removable )
             char        stuff[100];
         } dataBuffer;
         ULONG           dataBufferLen;
-        char            drive_num;
+        unsigned char   drive_num;
 
         /* unused parameters */ (void)removable;
 
@@ -705,14 +705,12 @@ static bool updateFsysInfo( fsys_info *info, bool removable )
         p.drive_num = drive_num - 1;
         parmLengthInOut = sizeof( p );
         dataLengthInOut = sizeof( r );
-        if( DosDevIOCtl( -1, 8, 0x63, &p, sizeof( p ), &parmLengthInOut, &r,
-                         sizeof( r ), &dataLengthInOut ) == 0 ) {
+        if( DosDevIOCtl( -1, 8, 0x63, &p, sizeof( p ), &parmLengthInOut, &r, sizeof( r ), &dataLengthInOut ) == 0 ) {
             dev[0] = info->root[0];
             dev[1] = ':';
             dev[2] = '\0';
             dataBufferLen = sizeof( dataBuffer );
-            rc = DosQueryFSAttach( dev, 0, FSAIL_QUERYNAME, (PFSQBUFFER2)&dataBuffer,
-                                   &dataBufferLen );
+            rc = DosQueryFSAttach( dev, 0, FSAIL_QUERYNAME, (PFSQBUFFER2)&dataBuffer, &dataBufferLen );
             if( rc == 0 ) {
                 if( dataBuffer.b.iType == FSAT_LOCALDRV ) {
                     switch( r.type ) {
@@ -807,8 +805,8 @@ static bool updateFsysInfo( fsys_info *info, bool removable )
              * it's likely faked; assume the real cluster size is
              * much smaller - 4096 should be a conservative estimate.
              */
-            if( info->block_size > 64 * 1024UL ) {
-                info->block_size = 4096;
+            if( info->block_size > _64K ) {
+                info->block_size = _4K;
             }
         } else if( removable ) {
             /*
@@ -821,7 +819,7 @@ static bool updateFsysInfo( fsys_info *info, bool removable )
              * doesn't work on network drive - assume 4K cluster,
              * max free
              */
-            info->block_size = 4096;
+            info->block_size = _4K;
             info->free_space = (fsys_size)-1;
         }
     }
@@ -884,7 +882,7 @@ static int GetFsysInfo( int target, bool removable )
     if( fsys != -1 ) {
         info = &FsysInfo[fsys];
         if( (info->block_size == 0
-          || removable /* recheck - could have been replaced */) ) {
+          || removable /* recheck - could have been replaced */ ) ) {
             NoHardErrors();
             updateFsysInfo( info, removable );
             if( !removable ) {

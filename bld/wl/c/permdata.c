@@ -77,7 +77,7 @@ static void             *AltDefData;
 static char             *IncStrTab;
 
 #define SEG_CARVE_SIZE          _2K
-#define MOD_CARVE_SIZE          _5K
+#define MOD_CARVE_SIZE          (_4K + _1K)
 #define SDATA_CARVE_SIZE        _16K
 #define SYM_CARVE_SIZE          _32K
 

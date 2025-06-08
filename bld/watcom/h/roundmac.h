@@ -25,7 +25,7 @@
 *
 *  ========================================================================
 *
-* Description:  Definition used for rounding memory size
+* Description:  Definition used for memory size and rounding
 *
 ****************************************************************************/
 
@@ -34,7 +34,6 @@
 #define _1K             0x00000400UL
 #define _2K             0x00000800UL
 #define _4K             0x00001000UL
-#define _5K             0x00001400UL
 #define _8K             0x00002000UL
 #define _16K            0x00004000UL
 #define _32K            0x00008000UL
@@ -43,12 +42,10 @@
 #define _4M             0x00400000UL
 #define _16M            0x01000000UL
 #define _256M           0x10000000UL
-#define PWROF2(r)       (1UL<<(r))
 #else
 #define _1K             0x00000400U
 #define _2K             0x00000800U
 #define _4K             0x00001000U
-#define _5K             0x00001400U
 #define _8K             0x00002000U
 #define _16K            0x00004000U
 #define _32K            0x00008000U
@@ -57,16 +54,28 @@
 #define _4M             0x00400000U
 #define _16M            0x01000000U
 #define _256M           0x10000000U
+#endif
+
+#ifdef _M_I86
 #define PWROF2(r)       (1U<<(r))
+#else
+#define PWROF2(r)       (1UL<<(r))
 #endif
 #define PWROF2LL(r)     (1ULL<<(r))
 
-#define __ROUND_DOWN_SIZE(__x,__amt)                ((__x)&(~((__amt)-1)))
-#define __ROUND_UP_SIZE(__x,__amt)                  (((__x)+((__amt)-1))&(~((__amt)-1)))
+/*
+ * these are for size which is any value
+ */
 #define __ROUND_DOWN_SIZE_TO(__x,__amt)             ((__x)/(__amt))
 #define __ROUND_UP_SIZE_TO(__x,__amt)               (((__x)+((__amt)-1))/(__amt))
+
 #define __ROUND_DOWN_SIZE_ANY(__x,__amt)            (__ROUND_DOWN_SIZE_TO(__x,__amt)*(__amt))
 #define __ROUND_UP_SIZE_ANY(__x,__amt)              (__ROUND_UP_SIZE_TO(__x,__amt)*(__amt))
+/*
+ * these are for size which is power of 2
+ */
+#define __ROUND_DOWN_SIZE(__x,__amt)                ((__x)&(~((__amt)-1)))
+#define __ROUND_UP_SIZE(__x,__amt)                  (((__x)+((__amt)-1))&(~((__amt)-1)))
 
 #define __ROUND_DOWN_SIZE_EVEN(__x)                 __ROUND_DOWN_SIZE(__x,2)
 #define __ROUND_UP_SIZE_EVEN(__x)                   __ROUND_UP_SIZE(__x,2)

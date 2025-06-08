@@ -951,19 +951,21 @@ int format( char **pbuf, size_t *pbufsize, const char *s, Node *a )
     char        *buf = *pbuf;
     size_t      bufsize = *pbufsize;
     int         val;
+    int         c;
 
-    os = s;
     p = buf;
     if( (fmt = (char *)malloc( fmtsz )) == NULL )
         FATAL( "out of memory in format()" );
         /* never return */
-    while( *s != '\0' ) {
+    os = s;
+    while( (c = *(uschar *)s) != '\0' ) {
         adjbuf( &buf, &bufsize, MAXNUMSIZE + 1 + p - buf, recsize, &p, "format1" );
-        if( *s != '%' ) {
-            *p++ = *s++;
+        if( c != '%' ) {
+            *p++ = c;
+            s++;
             continue;
         }
-        if( *( s + 1 ) == '%' ) {
+        if( *(uschar *)( s + 1 ) == '%' ) {
             *p++ = '%';
             s += 2;
             continue;
@@ -972,13 +974,14 @@ int format( char **pbuf, size_t *pbufsize, const char *s, Node *a )
         val = atoi( s + 1 );
         fmtwd = ( val < 0 ) ? -val : val;
         adjbuf( &buf, &bufsize, fmtwd + 1 + p - buf, recsize, &p, "format2" );
-        for( t = fmt; (*t++ = *s) != '\0'; s++ ) {
+        for( t = fmt; (c = *(uschar *)s) != '\0'; s++ ) {
+            *t++ = c;
             if( !adjbuf( &fmt, &fmtsz, MAXNUMSIZE + 1 + t - fmt, recsize, &t, "format3" ) )
                 FATAL( "format item %.30s... ran format() out of memory", os );
                 /* never return */
-            if( isalpha( (uschar)*s ) && *s != 'l' && *s != 'h' && *s != 'L' )
+            if( isalpha( c ) && c != 'l' && c != 'h' && c != 'L' )
                 break;  /* the ansi panoply */
-            if( *s == '*' ) {
+            if( c == '*' ) {
                 x = execute( a );
                 a = a->nnext;
                 val = (int)getfval( x );
@@ -992,20 +995,28 @@ int format( char **pbuf, size_t *pbufsize, const char *s, Node *a )
         *t = '\0';
         adjbuf( &buf, &bufsize, fmtwd + 1 + p - buf, recsize, &p, "format4" );
 
-        switch( *s ) {
-        case 'f': case 'e': case 'g': case 'E': case 'G':
+        switch( c ) {
+        case 'f':
+        case 'e':
+        case 'g':
+        case 'E':
+        case 'G':
             flag = 'f';
             break;
-        case 'd': case 'i':
+        case 'd':
+        case 'i':
             flag = 'd';
-            if( *( s - 1 ) == 'l' )
+            if( *(uschar *)( s - 1 ) == 'l' )
                 break;
             *(t - 1) = 'l';
             *t = 'd';
             *++t = '\0';
             break;
-        case 'o': case 'x': case 'X': case 'u':
-            flag = *(s-1) == 'l' ? 'd' : 'u';
+        case 'o':
+        case 'x':
+        case 'X':
+        case 'u':
+            flag = ( *(uschar *)( s - 1 ) == 'l' ) ? 'd' : 'u';
             break;
         case 's':
             flag = 's';
@@ -1028,7 +1039,8 @@ int format( char **pbuf, size_t *pbufsize, const char *s, Node *a )
             n = fmtwd;
         adjbuf( &buf, &bufsize, 1 + n + p - buf, recsize, &p, "format5" );
         switch (flag) {
-        case '?':   sprintf(p, "%s", fmt);  /* unknown, so dump it too */
+        case '?':
+            sprintf(p, "%s", fmt);  /* unknown, so dump it too */
             t = getsval(x);
             n = strlen( t );
             if( n < fmtwd )
@@ -1691,6 +1703,7 @@ Cell *bltin( Node **a, int n )
     char *p, *buf;
     Node *nextarg;
     FILE *fp;
+    int c;
 
     /* unused parameters */ (void)n;
 
@@ -1752,15 +1765,15 @@ Cell *bltin( Node **a, int n )
     case FTOLOWER:
         buf = tostring( getsval( x ) );
         if( t == FTOUPPER ) {
-            for( p = buf; *p != '\0'; p++ ) {
-                if( islower( (uschar)*p ) ) {
-                    *p = toupper( (uschar)*p );
+            for( p = buf; (c = *(uschar *)p) != '\0'; p++ ) {
+                if( islower( c ) ) {
+                    *p = toupper( c );
                 }
             }
         } else {
-            for( p = buf; *p != '\0'; p++ ) {
-                if( isupper( (uschar)*p ) ) {
-                    *p = tolower( (uschar)*p );
+            for( p = buf; (c = *(uschar *)p) != '\0'; p++ ) {
+                if( isupper( c ) ) {
+                    *p = tolower( c );
                 }
             }
         }

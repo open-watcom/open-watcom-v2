@@ -550,9 +550,10 @@ int input( void ) /* get next lexical input character */
     int c;
 
     if( yysptr > yysbuf ) {
-        c = (uschar)*--yysptr;
+        yysptr--;
+        c = *(uschar *)yysptr;
     } else if( lexprog != NULL ) { /* awk '...' */
-        if( (c = (uschar)*lexprog) != '\0' ) {
+        if( (c = *(uschar *)lexprog) != '\0' ) {
             lexprog++;
         }
     } else {            /* awk -f ... */

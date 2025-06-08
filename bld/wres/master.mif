@@ -12,6 +12,7 @@ tree_depth = 4
 proj_name = wres
 
 wres_autodepends = .AUTODEPEND
+wres_nofpu = 1
 wres_distrib_lib = 1
 wres_nodoslfn = 1
 
