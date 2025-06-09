@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2018-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2018-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,46 +34,51 @@
 #include "variety.h"
 #include <stdlib.h>
 //#include "mbrdos.h"
+#include "xstring.h"
 
 
 #define MY_MB_LEN_MAX   ( sizeof(wchar_t) * 3 / 2 )
+
 /*  If wchar_t is long,  MY_MB_LEN_MAX will be 6.
  *  If wchar_t is short, MY_MB_LEN_MAX will be 3.
  *  It should be equal to MB_LEN_MAX anyway.
+ *
+ *  RDOS uses UTF-8 encoding for multi-byte characters
  */
-
-
 int mbtowc( wchar_t *pwc, const char *s, size_t n )
 {
-    unsigned char       c;
+    int         c;
 
     if( s != NULL ) {
-        if( ( c = *s ) != '\0' ) {
+        if( (c = CHAR2INT( *s )) != '\0' ) {
             if( n > 0 ) {
-                if( (signed char)( c = *s ) > 0 ) {
-                    if( pwc != NULL ) *pwc = c;
+                if( (c & 0x80) == 0 ) {
+                    if( pwc != NULL )
+                        *pwc = c;
                     return( 1 );
                 }
-                if( sizeof(wchar_t) == 2 ) {
+                if( sizeof( wchar_t ) == 2 ) {
                     /* Explicitly optimised for 16-bit wchar_t */
                     if( ( c & 0xE0 ) == 0xC0 ) {
                         unsigned char   d;
-                        if( n < 2  ||  ((d=s[1]^0x80)&0xC0) != 0 ) {
+                        if( n < 2 || ((d = s[1] ^ 0x80) & 0xC0) != 0 ) {
                             /* return -1; */
                             goto neg1;
                         }
-                        if( pwc != NULL ) *pwc = ((c&0x1F) << 6) | d;
+                        if( pwc != NULL )
+                            *pwc = ((c & 0x1F) << 6) | d;
                         return( 2 );
                     }
-                    if( ( c & 0xF0 ) == 0xE0 ) {
+                    if( (c & 0xF0) == 0xE0 ) {
                         unsigned char   d, e;
-                        if( n < 3                                   ||
-                            ( (d = *++s^0x80) & 0xC0 ) != 0         ||
-                            ( (e = *++s^0x80) & 0xC0 ) != 0 ) {
+                        if( n < 3
+                          || ((d = *++s ^ 0x80) & 0xC0) != 0
+                          || ((e = *++s ^ 0x80) & 0xC0) != 0 ) {
                             /* return -1; */
                             goto neg1;
                         }
-                        if( pwc != NULL ) *pwc = ( ( ((c&0x1F) << 6)|d ) << 6)|e;
+                        if( pwc != NULL )
+                            *pwc = ((((c & 0x1F) << 6) | d) << 6) | e;
                         return( 3 );
                     }
                 } else {

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -49,9 +50,11 @@
 #if defined(__INLINE_FUNCTIONS__) && !defined(__WIDECHAR__) && defined(_M_IX86)
     return( _inline_strcmp( s, t ) );
 #else
-    for( ; *s == *t; s++, t++ )
-        if( *s == NULLCHAR )
+    for( ; *s == *t; s++, t++ ) {
+        if( *s == NULLCHAR ) {
             return( 0 );
+        }
+    }
     return( *s - *t );
 #endif
 }

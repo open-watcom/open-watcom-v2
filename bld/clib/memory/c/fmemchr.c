@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -45,11 +46,12 @@ _WCRTLINK void _WCFAR *_fmemchr( const void _WCFAR *vs, int c, size_t n )
 #if defined(__INLINE_FUNCTIONS__)
     return( _inline__fmemchr( vs, c, n ) );
 #else
-    const char _WCFAR *s = vs;
-    while( n ) {
-        if( *s == c ) return( (void _WCFAR *)s );
-        ++s;
-        --n;
+    const unsigned char _WCFAR *s;
+
+    for( s = vs; n != 0; ++s, --n ) {
+        if( *s == c ) {
+            return( (void _WCFAR *)s );
+        }
     }
     return( NULL );
 #endif

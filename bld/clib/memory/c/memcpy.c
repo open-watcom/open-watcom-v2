@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -41,10 +41,10 @@ _WCRTLINK VOID_WC_TYPE *__F_NAME(memcpy,wmemcpy)( VOID_WC_TYPE *in_dst, const VO
 #if defined(__INLINE_FUNCTIONS__) && !defined(__WIDECHAR__) && defined(_M_IX86)
     return( _inline_memcpy( in_dst, in_src, len ) );
 #else
-    CHAR_TYPE           *dst = in_dst;
-    const CHAR_TYPE     *src = in_src;
+    CHAR_TYPE           *dst;
+    const CHAR_TYPE     *src;
 
-    for( ; len; --len ) {
+    for( dst = in_dst, src = in_src; len != 0; --len ) {
         *dst++ = *src++;
     }
     return( in_dst );

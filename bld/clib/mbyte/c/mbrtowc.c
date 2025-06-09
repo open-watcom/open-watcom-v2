@@ -44,6 +44,7 @@
 #include "rterrno.h"
 #include "farfunc.h"
 #include "thread.h"
+#include "xstring.h"
 
 
 _WCRTLINK size_t _NEARFAR(mbrtowc,_fmbrtowc)( wchar_t _FFAR *pwc, const char _FFAR *s, size_t n, mbstate_t _FFAR *ps )
@@ -62,7 +63,7 @@ _WCRTLINK size_t _NEARFAR(mbrtowc,_fmbrtowc)( wchar_t _FFAR *pwc, const char _FF
     rc = _NEARFAR(mbtowc,_fmbtowc)( pwc, s, n );
     if( rc != -1 ) {
         return( rc );
-    } else if( n < MB_LEN_MAX && _ismbblead( (unsigned char)*s ) ) {
+    } else if( n < MB_LEN_MAX && _ismbblead( CHAR2INT( *s ) ) ) {
         return( (size_t)-2 );               /* incomplete, possibly valid */
     } else {
         _RWD_errno = EILSEQ;                /* encoding error */

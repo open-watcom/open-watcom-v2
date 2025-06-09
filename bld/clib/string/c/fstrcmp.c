@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,6 +35,7 @@
 
 #undef  _fstrcmp
 
+
 /* return <0 if s<t, 0 if s==t, >0 if s>t */
 
 _WCRTLINK int _fstrcmp( const char _WCFAR *s, const char _WCFAR *t )
@@ -41,9 +43,11 @@ _WCRTLINK int _fstrcmp( const char _WCFAR *s, const char _WCFAR *t )
 #if defined(__INLINE_FUNCTIONS__)
     return( _inline__fstrcmp( s, t ) );
 #else
-    for( ; *s == *t; s++, t++ )
-        if( *s == '\0' )
+    for( ; *s == *t; s++, t++ ) {
+        if( *s == '\0' ) {
             return( 0 );
+        }
+    }
     return( *s - *t );
 #endif
 }

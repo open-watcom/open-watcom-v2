@@ -35,6 +35,8 @@
 
 #include <string.h>
 
+#define CHAR2INT(c)     ((unsigned char)(c))
+
 #ifdef __cplusplus
 extern "C" {
 #endif

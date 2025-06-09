@@ -51,9 +51,8 @@
 #else
     const CHAR_TYPE *p;
 
-    p = s;
-    while( *p != NULLCHAR )
-        ++p;
+    for( p = s; *p != NULLCHAR; ++p )
+        /* empty */;
     return( p - s );
 #endif
 }

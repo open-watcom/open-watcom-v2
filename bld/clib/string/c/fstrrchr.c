@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,6 +32,7 @@
 
 #include "variety.h"
 #include <string.h>
+#include "xstring.h"
 
 #ifdef  _M_I86
 
@@ -71,8 +73,9 @@ _WCRTLINK char _WCFAR *_fstrrchr( const char _WCFAR *s, int c )
 
     p = NULL;       /* assume c will not be found */
     do {
-        if( *s == c )
+        if( CHAR2INT( *s ) == c ) {
             p = (char _WCFAR *)s;
+        }
     } while( *s++ != '\0' );
     return( p );
 #endif

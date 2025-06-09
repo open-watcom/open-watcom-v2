@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,6 +35,8 @@
 #include "xstring.h"
 
 #undef  _fstrcat
+
+
 /* concatenate t to the end of dst */
 
 _WCRTLINK char _WCFAR *_fstrcat( char _WCFAR *dst, const char _WCFAR *t )
@@ -42,11 +45,11 @@ _WCRTLINK char _WCFAR *_fstrcat( char _WCFAR *dst, const char _WCFAR *t )
     return( _inline__fstrcat( dst, t ) );
 #else
     char _WCFAR     *s;
-    s = dst;
-    while( *s != '\0' )
-        ++s;
-    while( *s++ = *t++ )
-        ;
+
+    for( s = dst; *s != '\0'; ++s )
+        /* empty */;
+    while( (*s++ = *t++) != '\0' )
+        /* empty */;
     return( dst );
 #endif
 }
