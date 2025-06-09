@@ -38,17 +38,14 @@
 
 _WCRTLINK void _FFAR * _NEARFAR(memccpy,_fmemccpy)( void _FFAR *d, const void _FFAR *s, int c, size_t cnt )
 {
-    char _FFAR *dst = (char _FFAR *)d;
-    const char _FFAR *src = (const char _FFAR *)s;
-    for(;;) {
-        if( cnt == 0 )
-            break;
-        *dst = *src;
-        ++dst;
-        if( *src == c )
+    char _FFAR *dst;
+    const char _FFAR *src;
+
+    for( dst = d, src = s; cnt != 0; ++src, --cnt ) {
+        *dst++ = *src;
+        if( *(unsigned char _FFAR *)src == c ) {
             return( dst );
-        ++src;
-        --cnt;
+        }
     }
     return( NULL );
 }
