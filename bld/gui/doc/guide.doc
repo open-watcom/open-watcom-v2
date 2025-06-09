@@ -83,12 +83,13 @@ avoid wasting memory.  When GUISetHintText is called, that char * is retained
 and any previous hint text for that menu item is no longer assumed to exist.
 
 When the GUI library returns a piece of text, it has been allocated using
-GUIAlloc and must be freed by the application.  When a buffer and length
-are passed in to the GUI function, the buffer will be filled, up to length
-characters, and the GUI library will not allocate any memory.  Examples
-of functions which allocation memory which must be freed by the application
-are : GUIGetText, GUIGetListItem, GUIGetFontInfo, GUIGetFontFromUser.  Text
-is written to an existing buffer in such calls as GUIGetWindowText.
+GUIMemAlloc and must be freed by the application using GUIMemFree.  When
+a buffer and length are passed in to the GUI function, the buffer will be
+filled, up to length characters, and the GUI library will not allocate any
+memory.  Examples of functions which allocation memory which must be freed
+by the application are : GUIGetText, GUIGetListItem, GUIGetFontInfo,
+GUIGetFontFromUser.  Text is written to an existing buffer in such calls
+as GUIGetWindowText.
 
 
 API
