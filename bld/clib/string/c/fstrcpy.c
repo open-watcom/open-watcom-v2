@@ -44,8 +44,7 @@ _WCRTLINK char _WCFAR *_fstrcpy( char _WCFAR *s, const char _WCFAR *t )
 #else
     char _WCFAR     *p;
 
-    p = s;
-    while( (*p++ = *t++) != '\0' )
+    for( p = s; (*p++ = *t++) != '\0'; )
         /* empty */;
     return( s );
 #endif

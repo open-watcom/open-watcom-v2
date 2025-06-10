@@ -37,24 +37,23 @@
 #include "farfunc.h"
 
 
-_WCRTLINK int _NEARFAR(_memicmp,_fmemicmp)( const void _FFAR *in_s1, const void _FFAR *in_s2, size_t len )
+_WCRTLINK int _NEARFAR(_memicmp,_fmemicmp)( const void _FFAR *vs1, const void _FFAR *vs2, size_t len )
 {
-    const unsigned char _FFAR   *s1 = (const unsigned char _FFAR *)in_s1;
-    const unsigned char _FFAR   *s2 = (const unsigned char _FFAR *)in_s2;
+    const unsigned char _FFAR   *s1;
+    const unsigned char _FFAR   *s2;
     unsigned char               c1;
     unsigned char               c2;
 
-    while( len-- > 0 )  {
-        c1 = *s1;
+    for( s1 = vs1, s2 = vs2; len > 0; --len )  {
+        c1 = *s1++;
         if( c1 >= 'A' && c1 <= 'Z' )
             c1 += 'a' - 'A';
-        c2 = *s2;
+        c2 = *s2++;
         if( c2 >= 'A' && c2 <= 'Z' )
             c2 += 'a' - 'A';
-        if( c1 != c2 )
+        if( c1 != c2 ) {
             return( c1 - c2 );
-        ++s1;
-        ++s2;
+        }
     }
     return( 0 );    /* both operands are equal */
 }

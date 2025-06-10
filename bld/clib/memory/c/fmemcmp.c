@@ -37,15 +37,15 @@
 #undef  _fmemcmp
 
 
-_WCRTLINK int _fmemcmp( const void _WCFAR *v1, const void _WCFAR *v2, size_t len )
+_WCRTLINK int _fmemcmp( const void _WCFAR *vs1, const void _WCFAR *vs2, size_t len )
 {
 #if defined(__INLINE_FUNCTIONS__)
-    return( _inline__fmemcmp( v1, v2, len ) );
+    return( _inline__fmemcmp( vs1, vs2, len ) );
 #else
     const unsigned char _WCFAR *s1;
     const unsigned char _WCFAR *s2;
 
-    for( s1 = v1, s2 = v2; len != 0; ++s1, ++s2, --len )  {
+    for( s1 = vs1, s2 = vs2; len != 0; ++s1, ++s2, --len )  {
         if( *s1 != *s2 ) {
             return( *s1 - *s2 );
         }

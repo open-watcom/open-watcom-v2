@@ -38,16 +38,16 @@
 #undef  _fmemset
 
 
-_WCRTLINK void _WCFAR *_fmemset( void _WCFAR *dst, int c, size_t len )
+_WCRTLINK void _WCFAR *_fmemset( void _WCFAR *vd, int c, size_t len )
 {
 #if defined(__INLINE_FUNCTIONS__)
-    return( _inline__fmemset( dst, c, len ) );
+    return( _inline__fmemset( vd, c, len ) );
 #else
-    char _WCFAR *p;
+    char _WCFAR *d;
 
-    for( p = dst; len != 0; --len ) {
-        *p++ = c;
+    for( d = vd; len != 0; --len ) {
+        *d++ = c;
     }
-    return( dst );
+    return( vd );
 #endif
 }

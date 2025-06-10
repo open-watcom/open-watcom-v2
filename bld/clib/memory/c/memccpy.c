@@ -36,15 +36,15 @@
 #include "farfunc.h"
 
 
-_WCRTLINK void _FFAR * _NEARFAR(memccpy,_fmemccpy)( void _FFAR *d, const void _FFAR *s, int c, size_t cnt )
+_WCRTLINK void _FFAR * _NEARFAR(memccpy,_fmemccpy)( void _FFAR *vd, const void _FFAR *vs, int c, size_t cnt )
 {
-    char _FFAR *dst;
-    const char _FFAR *src;
+    unsigned char _FFAR *d;
+    const unsigned char _FFAR *s;
 
-    for( dst = d, src = s; cnt != 0; ++src, --cnt ) {
-        *dst++ = *src;
-        if( *(unsigned char _FFAR *)src == c ) {
-            return( dst );
+    for( d = vd, s = vs; cnt != 0; ++s, --cnt ) {
+        *d++ = *s;
+        if( *s == c ) {
+            return( (void _FFAR *)d );
         }
     }
     return( NULL );

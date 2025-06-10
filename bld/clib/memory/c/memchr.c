@@ -40,16 +40,16 @@
    If the character c is not found, NULL is returned.
 */
 
-_WCRTLINK VOID_WC_TYPE *__F_NAME(memchr,wmemchr)( const VOID_WC_TYPE *s, INT_WC_TYPE c, size_t n )
+_WCRTLINK VOID_WC_TYPE *__F_NAME(memchr,wmemchr)( const VOID_WC_TYPE *vs, INT_WC_TYPE c, size_t n )
 {
 #if defined(__INLINE_FUNCTIONS__) && !defined(__WIDECHAR__) && defined(_M_IX86)
-    return( _inline_memchr( s, c, n ) );
+    return( _inline_memchr( vs, c, n ) );
 #else
-    const UCHAR_TYPE *cs;
+    const UCHAR_TYPE *s;
 
-    for( cs = s; n != 0; ++cs, --n ) {
-        if( *cs == c ) {
-            return( (VOID_WC_TYPE *)cs );
+    for( s = vs; n != 0; ++s, --n ) {
+        if( *s == c ) {
+            return( (VOID_WC_TYPE *)s );
         }
     }
     return( NULL );

@@ -55,20 +55,20 @@ extern void *__set386( void *, int, unsigned );
     __modify __exact    [__ecx __edx]
 #endif
 
-_WCRTLINK VOID_WC_TYPE *__F_NAME(memset,wmemset)( VOID_WC_TYPE *dst, INT_WC_TYPE c, size_t len )
+_WCRTLINK VOID_WC_TYPE *__F_NAME(memset,wmemset)( VOID_WC_TYPE *vd, INT_WC_TYPE c, size_t len )
 {
 #if defined(__INLINE_FUNCTIONS__) && !defined(__WIDECHAR__) && defined(_M_IX86)
   #if defined(__386__) && defined(__SMALL_DATA__)
-    return( __set386( dst, c, len ) );
+    return( __set386( vd, c, len ) );
   #else
-    return( _inline_memset( dst, c, len ) );
+    return( _inline_memset( vd, c, len ) );
   #endif
 #else
-    CHAR_TYPE   *p;
+    CHAR_TYPE   *d;
 
-    for( p = dst; len != 0; --len ) {
-        *p++ = c;
+    for( d = vd; len != 0; --len ) {
+        *d++ = c;
     }
-    return( dst );
+    return( vd );
 #endif
 }

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,15 +34,15 @@
 #include "variety.h"
 #include <stdlib.h>
 
-_WCRTLINK void swab( char *src, char *dst, int n )
-    {
-        char c;
+_WCRTLINK void swab( char *s, char *d, int n )
+{
+    char c;
 
-        for( n = n >> 1; n; --n ) {
-            c = src[0];  /* 25-jun-90: just in case src and dst are the same */
-            dst[0] = src[1];
-            dst[1] = c;
-            dst += 2;
-            src += 2;
-        }
+    for( n = n >> 1; n; --n ) {
+        c = s[0];  /* just in case s and d are the same */
+        d[0] = s[1];
+        d[1] = c;
+        d += 2;
+        s += 2;
     }
+}

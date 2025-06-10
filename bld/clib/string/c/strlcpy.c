@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,31 +36,27 @@
 #include "libwchar.h"
 
 
-_WCRTLINK size_t __F_NAME(strlcpy,wcslcpy)( CHAR_TYPE *dst, const CHAR_TYPE *src, size_t len )
+_WCRTLINK size_t __F_NAME(strlcpy,wcslcpy)( CHAR_TYPE *s, const CHAR_TYPE *t, size_t len )
 {
-    const CHAR_TYPE     *s;
+    const CHAR_TYPE     *p;
     size_t              count;
 
-    count = len;
     if( len ) {
-        --len;                  // leave space for terminating null
-        for( ; len; --len ) {
-            if( *src == NULLCHAR ) {
-                break;
-            }
-            *dst++ = *src++;
+        count = len;
+        // leave space for terminating null
+        for( --len; len != 0 && *t != NULLCHAR; --len ) {
+            *s++ = *t++;
         }
-        *dst = NULLCHAR;        // terminate 'dst'
+        *s = NULLCHAR;          // terminate 's'
     } else {
-        ++count;                // account for not decrementing 'len'
+        count = 1;              // account for not decrementing 'len'
     }
 
-    if( !len ) {                // source string was truncated
-        s = src;
-        while( *s != NULLCHAR ) {
-            ++s;
+    if( len == 0 ) {            // source string was truncated
+        for( p = t; *p != NULLCHAR; ++p ) {
+            /* empty */;
         }
-        count += s - src;       // find out how long 'src' really is
+        count += p - t;         // find out how long 't' really is
     }
     return( count - len - 1 );  // final null doesn't count
 }

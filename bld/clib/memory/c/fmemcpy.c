@@ -37,17 +37,17 @@
 #undef  _fmemcpy
 
 
-_WCRTLINK void _WCFAR *_fmemcpy( void _WCFAR *dst, const void _WCFAR *s, size_t len )
+_WCRTLINK void _WCFAR *_fmemcpy( void _WCFAR *vd, const void _WCFAR *vs, size_t len )
 {
 #if defined(__INLINE_FUNCTIONS__)
-    return( _inline__fmemcpy( dst, s, len ) );
+    return( _inline__fmemcpy( vd, vs, len ) );
 #else
-    const char _WCFAR *src;
-    char _WCFAR *p;
+    const char _WCFAR *s;
+    char _WCFAR *d;
 
-    for( src = s, p = dst; len != 0; --len ) {
-        *p++ = *src++;
+    for( s = vs, d = vd; len != 0; --len ) {
+        *d++ = *s++;
     }
-    return( dst );
+    return( vd );
 #endif
 }

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -119,10 +120,10 @@ extern  char * _scan1();
  _WCRTLINK CHAR_TYPE *__F_NAME(strchr,wcschr)( const CHAR_TYPE *s, INTCHAR_TYPE c )
 #endif
 {
-    CHAR_TYPE   cc = c;
     do {
-        if( *s == cc )
+        if( (UCHAR_TYPE)*s == c ) {
             return( (CHAR_TYPE *)s );
+        }
     } while( *s++ != NULLCHAR );
     return( NULL );
 }

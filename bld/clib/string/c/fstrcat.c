@@ -37,19 +37,19 @@
 #undef  _fstrcat
 
 
-/* concatenate t to the end of dst */
+/* concatenate t to the end of s */
 
-_WCRTLINK char _WCFAR *_fstrcat( char _WCFAR *dst, const char _WCFAR *t )
+_WCRTLINK char _WCFAR *_fstrcat( char _WCFAR *s, const char _WCFAR *t )
 {
 #if defined(__INLINE_FUNCTIONS__)
-    return( _inline__fstrcat( dst, t ) );
+    return( _inline__fstrcat( s, t ) );
 #else
-    char _WCFAR     *s;
+    char _WCFAR     *p;
 
-    for( s = dst; *s != '\0'; ++s )
+    for( p = s; *p != '\0'; ++p )
         /* empty */;
-    while( (*s++ = *t++) != '\0' )
+    while( (*p++ = *t++) != '\0' )
         /* empty */;
-    return( dst );
+    return( s );
 #endif
 }

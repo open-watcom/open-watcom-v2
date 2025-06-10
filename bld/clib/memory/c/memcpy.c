@@ -36,17 +36,17 @@
 #include "xstring.h"
 
 
-_WCRTLINK VOID_WC_TYPE *__F_NAME(memcpy,wmemcpy)( VOID_WC_TYPE *in_dst, const VOID_WC_TYPE *in_src, size_t len )
+_WCRTLINK VOID_WC_TYPE *__F_NAME(memcpy,wmemcpy)( VOID_WC_TYPE *vd, const VOID_WC_TYPE *vs, size_t len )
 {
 #if defined(__INLINE_FUNCTIONS__) && !defined(__WIDECHAR__) && defined(_M_IX86)
-    return( _inline_memcpy( in_dst, in_src, len ) );
+    return( _inline_memcpy( vd, vs, len ) );
 #else
-    CHAR_TYPE           *dst;
-    const CHAR_TYPE     *src;
+    CHAR_TYPE           *d;
+    const CHAR_TYPE     *s;
 
-    for( dst = in_dst, src = in_src; len != 0; --len ) {
-        *dst++ = *src++;
+    for( d = vd, s = vs; len != 0; --len ) {
+        *d++ = *s++;
     }
-    return( in_dst );
+    return( vd );
 #endif
 }

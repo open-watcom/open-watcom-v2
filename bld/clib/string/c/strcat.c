@@ -39,18 +39,18 @@
 
 /* concatenate t to the end of s */
 
-_WCRTLINK CHAR_TYPE *__F_NAME(strcat,wcscat)( CHAR_TYPE *dst, const CHAR_TYPE *t )
+_WCRTLINK CHAR_TYPE *__F_NAME(strcat,wcscat)( CHAR_TYPE *s, const CHAR_TYPE *t )
 {
 
 #if defined(__INLINE_FUNCTIONS__) && !defined(__WIDECHAR__) && defined(_M_IX86)
-    return( _inline_strcat( dst, t ) );
+    return( _inline_strcat( s, t ) );
 #else
-    CHAR_TYPE   *s;
+    CHAR_TYPE   *p;
 
-    for( s = dst; *s != NULLCHAR; ++s )
+    for( p = s; *p != NULLCHAR; ++p )
         /* empty */;
-    while( (*s++ = *t++) != NULLCHAR )
+    while( (*p++ = *t++) != NULLCHAR )
         /* empty */;
-    return( dst );
+    return( s );
 #endif
 }

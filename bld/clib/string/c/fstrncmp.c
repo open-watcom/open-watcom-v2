@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -67,16 +68,13 @@ _WCRTLINK int _fstrncmp( const char _WCFAR *s, const char _WCFAR *t, size_t n )
     }
     return( 0 );
 #else
-    for( ;; ) {
-        if( n == 0 )
-            return( 0 );       /* equal */
+    for( ; n != 0; ++s, ++t, --n ) {
         if( *s != *t )
-            return( *s - *t ); /* less than or greater than */
-        if( *s == '\0' )
-            return( 0 );       /* equal */
-        ++s;
-        ++t;
-        --n;
+            return( *s - *t );  /* less than or greater than */
+        if( *s == '\0' ) {
+            break;              /* equal */
+        }
     }
+    return( 0 );                /* equal */
 #endif
 }

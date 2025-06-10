@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -87,32 +88,23 @@ extern char *_fast_strncat( char _WCFAR *, const char *, size_t );
 #endif
 
 
-/* concatenate t to the end of dst */
+/* concatenate t to the end of s */
 
-_WCRTLINK CHAR_TYPE *__F_NAME(strncat,wcsncat) ( CHAR_TYPE *dst, const CHAR_TYPE *t, size_t n )
+_WCRTLINK CHAR_TYPE *__F_NAME(strncat,wcsncat) ( CHAR_TYPE *s, const CHAR_TYPE *t, size_t n )
 {
 #if defined( _M_I86 ) && !defined(__WIDECHAR__)
     if( n ) {
-        return( _fast_strncat( dst, t, n ) );
+        return( _fast_strncat( s, t, n ) );
     }
-    return( dst );
+    return( s );
 #else
-    CHAR_TYPE   *s;
+    CHAR_TYPE   *p;
 
-#ifdef __WIDECHAR__
-    s = dst + wcslen( dst );
-#else
-    s = memchr( dst, NULLCHAR, ~0u );
-#endif
-    while( n != 0 ) {
-        *s = *t;
-        if( *s == NULLCHAR )
-            break;
-        ++s;
-        ++t;
-        --n;
-    }
-    *s = NULLCHAR;
-    return( dst );
+    for( p = s; *p != NULLCHAR; ++p )
+        /* empty */;
+    for( ; n != 0 && (*p = *t) != NULLCHAR; ++p, ++t, --n )
+        /* empty */;
+    *p = NULLCHAR;
+    return( s );
 #endif
 }
