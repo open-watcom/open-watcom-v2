@@ -50,7 +50,6 @@ jobs:
     - run: git config --global core.autocrlf input
     - name: checkout
       uses: actions/checkout@v4
-    # run: od -N500 -tx1 projects.txt
     - name: Bootstrap
       uses: "./.github/actions/boot"
       with:
@@ -81,7 +80,6 @@ jobs:
     - run: git config --global core.autocrlf input
     - name: checkout
       uses: actions/checkout@v4
-    # run: od -N500 -tx1 projects.txt
     - name: Build ${{ matrix.title }}
       uses: "./.github/actions/docbuild"
       with:
