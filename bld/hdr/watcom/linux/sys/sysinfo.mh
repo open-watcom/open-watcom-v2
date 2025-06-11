@@ -12,10 +12,9 @@
 
 :include cpluspro.sp
 
-:include lnxkpack.sp
-
 :include incdir.sp
 
+:include lnxkpack.sp
 
 struct sysinfo {
     unsigned long uptime;

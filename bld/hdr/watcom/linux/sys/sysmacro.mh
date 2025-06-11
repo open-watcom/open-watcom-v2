@@ -12,9 +12,9 @@
 
 :include cpluspro.sp
 
-:include lnxkpack.sp
-
 :include incdir.sp
+
+:include lnxkpack.sp
 
 #include _ARCH_INCLUDE(sys/sysmacros.h)
 

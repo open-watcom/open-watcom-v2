@@ -332,7 +332,7 @@ h/pthread.h       : $(mh_dir)/pthread.mh $(owhdr) ../sem_t.sp $(cplus) $(packll)
 h/pwd.h           : $(mh_dir)/pwd.mh $(owhdrqnx) ../systypes.sp $(cplus) $(packll)
 h/sched.h         : $(mh_dir)/sched.mh $(owhdrcnt) ../owrtlink.sp $(cplus) ../pid_t.sp ../time_t.sp ../timespec.sp ../schedp.sp
 h/semaphor.h      : $(mh_dir)/semaphor.mh $(owhdrcnt) ../owrtlink.sp $(cplus) ../time_t.sp ../timespec.sp ../sem_t.sp
-h/termios.h       : $(mh_dir)/linux/termios.mh $(owhdr) $(cplus) $(packlnxk) ../pid_t.sp
+h/termios.h       : $(mh_dir)/linux/termios.mh $(owhdr) $(cplus) ../incdir.sp $(packlnxk) ../pid_t.sp
 
 h/sys/ioctl.h     : $(mh_dir)/linux/sys/ioctl.mh $(owhdr) $(cplus) $(packlnxk) ../incdir.sp
 h/sys/mman.h      : $(mh_dir)/linux/sys/mman.mh $(owhdr) ../systypes.sp $(cplus) $(packlnxk)
@@ -358,6 +358,7 @@ h/arch/i386/fcntl.h        : $(mh_dir)/linux/arch/i386/fcntl.mh $(crwatcnt_sp) .
 h/arch/i386/siginfo.h      : $(mh_dir)/linux/arch/i386/siginfo.mh $(crwatcnt_sp) ../clock_t.sp
 h/arch/i386/signal.h       : $(mh_dir)/linux/arch/i386/signal.mh $(crwatcnt_sp)
 h/arch/i386/sigposix.h     : $(mh_dir)/linux/arch/i386/sigposix.mh $(crwatcnt_sp)
+h/arch/i386/termios.h      : $(mh_dir)/linux/arch/i386/termios.mh $(crwatcnt_sp)
 h/arch/i386/sys/endian.h   : $(mh_dir)/linux/arch/i386/sys/endian.mh $(crwatcnt_sp)
 h/arch/i386/sys/ioctl.h    : $(mh_dir)/linux/arch/i386/sys/ioctl.mh $(crwatcnt_sp)
 h/arch/i386/sys/resource.h : $(mh_dir)/linux/arch/i386/sys/resource.mh $(crwatcnt_sp)
@@ -370,6 +371,7 @@ h/arch/mips/fcntl.h        : $(mh_dir)/linux/arch/mips/fcntl.mh $(crwatcnt_sp) .
 h/arch/mips/siginfo.h      : $(mh_dir)/linux/arch/mips/siginfo.mh $(crwatcnt_sp) ../clock_t.sp
 h/arch/mips/signal.h       : $(mh_dir)/linux/arch/mips/signal.mh $(crwatcnt_sp)
 h/arch/mips/sigposix.h     : $(mh_dir)/linux/arch/mips/sigposix.mh $(crwatcnt_sp)
+h/arch/mips/termios.h      : $(mh_dir)/linux/arch/mips/termios.mh $(crwatcnt_sp)
 h/arch/mips/sys/endian.h   : $(mh_dir)/linux/arch/mips/sys/endian.mh $(crwatcnt_sp)
 h/arch/mips/sys/ioctl.h    : $(mh_dir)/linux/arch/mips/sys/ioctl.mh $(crwatcnt_sp)
 h/arch/mips/sys/resource.h : $(mh_dir)/linux/arch/mips/sys/resource.mh $(crwatcnt_sp)
@@ -378,6 +380,7 @@ h/arch/mips/sys/stat.h     : $(mh_dir)/linux/arch/mips/sys/stat.mh $(crwatcnt_sp
 h/arch/mips/sys/sysmacro.h : $(mh_dir)/linux/arch/mips/sys/sysmacro.mh $(crwatcnt_sp)
 h/arch/mips/sys/types.h    : $(mh_dir)/linux/arch/mips/sys/types.mh $(crwatcnt_sp) ../dev_t.sp ../ino_t.sp ../mode_t.sp ../nlink_t.sp ../uid_t.sp ../gid_t.sp ../blksizet.sp ../blkcnt_t.sp ../id_t.sp
 h/arch/ppc/err_no.h        : $(mh_dir)/linux/arch/ppc/err_no.mh $(crwatcnt_sp)
+h/arch/ppc/termios.h       : $(mh_dir)/linux/arch/ppc/termios.mh $(crwatcnt_sp)
 h/arch/ppc/sys/endian.h    : $(mh_dir)/linux/arch/ppc/sys/endian.mh $(crwatcnt_sp)
 
 !else ifeq system qnx

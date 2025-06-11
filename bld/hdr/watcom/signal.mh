@@ -47,6 +47,8 @@ using std::raise;
 
 :endsegment
 :segment LINUX
+:include incdir.sp
+
 :include lnxkpack.sp
 
 :elsesegment DOS | QNX | RDOS
@@ -88,8 +90,6 @@ typedef void _WCCALLBACK __sigfpe_func( int, int );
 :endsegment
 
 :segment LINUX
-:include incdir.sp
-
 #include _ARCH_INCLUDE(signal.h)
 
 :include extposix.sp

@@ -18,6 +18,10 @@
 :endsegment
 :include cpluspro.sp
 
+:segment LINUX
+:include incdir.sp
+
+:endsegment
 :: no Linux kernel structure
 :include pshpackl.sp
 
@@ -45,8 +49,6 @@
 :include sem_t.sp
 :include pthread1.sp
 :include pthread2.sp
-
-:include incdir.sp
 
 #include _ARCH_INCLUDE(sys/types.h)
 #include _ARCH_INCLUDE(sys/sysmacros.h)

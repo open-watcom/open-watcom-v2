@@ -1,0 +1,38 @@
+/*
+ *  arch/i386/termios.h
+ *
+:include crwatcnt.sp
+ */
+
+#define NCCS 19
+struct termios {
+    tcflag_t        c_iflag;        /* Input mode flags     */
+    tcflag_t        c_oflag;        /* Output mode flags    */
+    tcflag_t        c_cflag;        /* Control mode flags   */
+    tcflag_t        c_lflag;        /* Local mode flags     */
+    cc_t            c_line;         /* Line discipline      */
+    cc_t            c_cc[NCCS];     /* Control characters   */
+    speed_t         c_ispeed;       /* input speed          */
+    speed_t         c_ospeed;       /* output speed         */
+};
+
+/*
+ * Special Control Character indices into c_cc[]
+ */
+#define VINTR       0
+#define VQUIT       1
+#define VERASE      2
+#define VKILL       3
+#define VEOF        4
+#define VTIME       5
+#define VMIN        6
+#define VSWTC       7
+#define VSTART      8
+#define VSTOP       9
+#define VSUSP       10
+#define VEOL        11
+#define VREPRINT    12
+#define VDISCARD    13
+#define VWERASE     14
+#define VLNEXT      15
+#define VEOL2       16

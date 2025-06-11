@@ -218,6 +218,7 @@
 !inject h/arch/i386/siginfo.h                 hlnx
 !inject h/arch/i386/signal.h                  hlnx
 !inject h/arch/i386/sigposix.h                hlnx
+!inject h/arch/i386/termios.h                 hlnx
 !inject h/arch/i386/sys/endian.h              hlnx
 !inject h/arch/i386/sys/ioctl.h               hlnx
 !inject h/arch/i386/sys/resource.h            hlnx
@@ -230,6 +231,7 @@
 !inject h/arch/mips/siginfo.h                 hlnx
 !inject h/arch/mips/signal.h                  hlnx
 !inject h/arch/mips/sigposix.h                hlnx
+!inject h/arch/mips/termios.h                 hlnx
 !inject h/arch/mips/sys/endian.h              hlnx
 !inject h/arch/mips/sys/ioctl.h               hlnx
 !inject h/arch/mips/sys/resource.h            hlnx
@@ -238,6 +240,7 @@
 !inject h/arch/mips/sys/sysmacro.h            hlnx
 !inject h/arch/mips/sys/types.h               hlnx
 !inject h/arch/ppc/err_no.h                   hlnx
+!inject h/arch/ppc/termios.h                  hlnx
 !inject h/arch/ppc/sys/endian.h               hlnx
 !inject h/arpa/inet.h                         hlnx      hrdos
 !inject h/netinet/in.h                        hlnx      hrdos

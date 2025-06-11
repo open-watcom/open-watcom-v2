@@ -16,6 +16,10 @@
 
 :include cpluspro.sp
 
+:segment LINUX
+:include incdir.sp
+
+:endsegment
 :include errno.sp
 
 :segment QNX
@@ -128,8 +132,6 @@
 #define ENOLIC          1011 /* No license                              */
 #define EDSTFAULT       1012 /* Destination fault on msg pass           */
 :elsesegment LINUX
-:include incdir.sp
-
 :: Calling the header 'errno.h' is no good because there's already a macro
 :: called 'errno' which will fuck us up
 :include errsbase.sp

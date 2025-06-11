@@ -13,14 +13,12 @@
 :include cpluspro.sp
 
 :segment LINUX
+:include incdir.sp
+
 :include lnxkpack.sp
 :endsegment
 
 :include unistd.sp
-
-:segment LINUX
-:include incdir.sp
-:endsegment
 
 :include safamilt.sp
 

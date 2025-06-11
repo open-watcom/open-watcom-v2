@@ -16,6 +16,8 @@
 
 :include cpluspro.sp
 
+:include incdir.sp
+
 :include lnxkpack.sp
 
 :include pid_t.sp
@@ -24,38 +26,7 @@ typedef unsigned char   cc_t;
 typedef unsigned int    speed_t;
 typedef unsigned int    tcflag_t;
 
-#define NCCS 19
-struct termios {
-    tcflag_t        c_iflag;        /* Input mode flags     */
-    tcflag_t        c_oflag;        /* Output mode flags    */
-    tcflag_t        c_cflag;        /* Control mode flags   */
-    tcflag_t        c_lflag;        /* Local mode flags     */
-    cc_t            c_line;         /* Line discipline      */
-    cc_t            c_cc[NCCS];     /* Control characters   */
-    speed_t         c_ispeed;       /* input speed          */
-    speed_t         c_ospeed;       /* output speed         */
-};
-
-/*
- * Special Control Character indices into c_cc[]
- */
-#define VINTR       0
-#define VQUIT       1
-#define VERASE      2
-#define VKILL       3
-#define VEOF        4
-#define VTIME       5
-#define VMIN        6
-#define VSWTC       7
-#define VSTART      8
-#define VSTOP       9
-#define VSUSP       10
-#define VEOL        11
-#define VREPRINT    12
-#define VDISCARD    13
-#define VWERASE     14
-#define VLNEXT      15
-#define VEOL2       16
+#include _ARCH_INCLUDE(termios.h)
 
 /*
  * Input modes (c_iflag)
@@ -109,6 +80,7 @@ struct termios {
 #define B9600       0000015
 #define B19200      0000016
 #define B38400      0000017
+
 #define CSIZE       0000060
 #define CS5         0000000
 #define CS6         0000020
@@ -190,3 +162,23 @@ _WCRTLINK extern pid_t   tcgetsid( int __fildes );
 :include cplusepi.sp
 
 #endif /* !_TERMIOS_H_INCLUDED */
+
+ppc64
+/* c_cc characters */
+#define VINTR            0
+#define VQUIT            1
+#define VERASE           2
+#define VKILL            3
+#define VEOF             4
+#define VMIN             5
+#define VEOL             6
+#define VTIME            7
+#define VEOL2            8
+#define VSWTC            9
+#define VWERASE         10
+#define VREPRINT        11
+#define VSUSP           12
+#define VSTART          13
+#define VSTOP           14
+#define VLNEXT          15
+#define VDISCARD        16
