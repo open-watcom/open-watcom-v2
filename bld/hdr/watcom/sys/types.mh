@@ -10,6 +10,10 @@
 
 :include owrtlink.sp
 
+:segment LINUX
+:include incdir.sp
+
+:endsegment
 :segment LINUX | QNX
 #ifndef _LIMITS_H_INCLUDED
  #include <limits.h>
@@ -18,10 +22,6 @@
 :endsegment
 :include cpluspro.sp
 
-:segment LINUX
-:include incdir.sp
-
-:endsegment
 :: no Linux kernel structure
 :include pshpackl.sp
 

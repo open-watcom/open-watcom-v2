@@ -10,11 +10,11 @@
 
 :include owrtlink.sp
 
+:include incdir.sp
+
 #ifndef _TIME_H_INCLUDED
  #include <time.h>
 #endif
-
-:include incdir.sp
 
 :include cpluspro.sp
 

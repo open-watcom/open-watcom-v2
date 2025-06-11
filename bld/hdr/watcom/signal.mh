@@ -40,6 +40,9 @@ using std::raise;
 :segment QNX
 :include systypes.sp
 
+:elsesegment LINUX
+:include incdir.sp
+
 :endsegment
 :: Only need extern "C" in csignal
 :segment CNAME
@@ -47,8 +50,6 @@ using std::raise;
 
 :endsegment
 :segment LINUX
-:include incdir.sp
-
 :include lnxkpack.sp
 
 :elsesegment DOS | QNX | RDOS

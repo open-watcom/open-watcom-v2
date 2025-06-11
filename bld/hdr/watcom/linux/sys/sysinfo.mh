@@ -10,9 +10,9 @@
 
 :include owrtlink.sp
 
-:include cpluspro.sp
-
 :include incdir.sp
+
+:include cpluspro.sp
 
 :include lnxkpack.sp
 

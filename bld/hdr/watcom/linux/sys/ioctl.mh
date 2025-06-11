@@ -10,13 +10,13 @@
 
 :include owrtlink.sp
 
+:include incdir.sp
+
 #ifndef _TIME_H_INCLUDED
  #include <time.h>
 #endif
 
 :include cpluspro.sp
-
-:include incdir.sp
 
 :include lnxkpack.sp
 

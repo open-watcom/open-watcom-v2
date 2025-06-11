@@ -15,12 +15,13 @@
 :segment DOS
 :include lfndos.sp
 
+:elsesegment LINUX
+:include incdir.sp
+
 :endsegment
 :include cpluspro.sp
 
 :segment LINUX
-:include incdir.sp
-
 :include lnxkpack.sp
 
 :elsesegment DOS | RDOS
