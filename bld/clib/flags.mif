@@ -81,7 +81,7 @@ sw_c_common += -oabelmr
 !else ifeq processor 286
 sw_c_common += -oabelmr
 !else
-sw_c_common += -oabelmrt -oi
+sw_c_common += -oabelmrt
 !endif
 !ifdef __UNIX__
 sw_c_common += -fo=.obj

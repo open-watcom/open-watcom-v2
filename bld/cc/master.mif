@@ -4,8 +4,6 @@ proj_name = cc
 
 cc_autodepends = .AUTODEPEND
 
-cc_nofpu = 1
-
 cc_wreslib_cli = incl_msgtext
 
 cc_ntverrc = ..

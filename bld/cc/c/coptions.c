@@ -435,8 +435,8 @@ static void AnalyseAnyTargetOptions( OPT_STORAGE *data )
         GenSwitches |= CGSW_GEN_I_MATH_INLINE;      // -om
         data->oi = true;                            // -oi
         GenSwitches |= CGSW_GEN_LOOP_OPTIMIZATION;  // -ol
-        Inline_Threshold = 20;                      // -oe=20
-        TOGGLE( inline ) = true;                    // ...
+        Inline_Threshold = 20;                      // -oe
+        TOGGLE( inline ) = true;
         GenSwitches |= CGSW_GEN_INS_SCHEDULING;     // -or
         TOGGLE( check_stack ) = false;              // -s
         break;
@@ -459,7 +459,7 @@ static void AnalyseAnyTargetOptions( OPT_STORAGE *data )
         GenSwitches &= ~CGSW_GEN_NO_OPTIMIZATION;
         break;
     case OPT_ENUM_opt_size_time_default:
-        OptSize = 50;
+        // OptSize = 50; default value
         break;
     default:
         DbgNever();
