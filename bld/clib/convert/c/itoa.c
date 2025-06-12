@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,8 +35,6 @@
 #include <stdlib.h>
 #include "_xtoa.h"
 
-
-#define TO_WIDE(c)  ((CHAR_TYPE)(c))
 
 typedef unsigned __based(__segname("_STACK")) *uint_stk_ptr;
 
@@ -97,8 +95,13 @@ _WCRTLINK CHAR_TYPE *__F_NAME(utoa,_utow)( unsigned value, CHAR_TYPE *buffer, in
         ++q;
         value = quot;
     } while( value != 0 );
-    while( (*p++ = TO_WIDE( *--q )) != NULLCHAR )
-        ;
+#ifdef __WIDECHAR__
+    while( (*p++ = (CHAR_TYPE)(unsigned char)*--q) != NULLCHAR )
+        /* empty */;
+#else
+    while( (*p++ = *--q) != NULLCHAR )
+        /* empty */;
+#endif
     return( buffer );
 }
 
