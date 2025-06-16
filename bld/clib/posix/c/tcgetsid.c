@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2016-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2016-2025 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -24,28 +24,32 @@
 *
 *  ========================================================================
 *
-* Description:  Implementation of termios tcgetsid for Linux
-*
-* Author: J. Armstrong
+* Description:  Implementation of POSIX tcgetsid
 *
 ****************************************************************************/
 
 
 #include "variety.h"
-#include "linuxsys.h"
-#include <sys/ioctl.h>
 #include <termios.h>
-#include <sys/types.h>
+#ifdef __LINUX__
+    #include <sys/ioctl.h>
+    #include <sys/types.h>
+#else
+    #include "rterrno.h"
+    #include "thread.h"
+#endif
 
 
 _WCRTLINK pid_t tcgetsid( int fd )
 {
-    int res;
-    pid_t ret;
+#ifdef __LINUX__
+    pid_t   sid;
 
-    res = ioctl(fd, TIOCGSID, &ret);
-    if( res < 0 )
+    if( ioctl( fd, TIOCGSID, &sid ) == -1 )
         return( -1 );
-
-    return( ret );
+    return( sid );
+#else
+    _RWD_errno = EINVAL;
+    return( -1 );
+#endif
 }

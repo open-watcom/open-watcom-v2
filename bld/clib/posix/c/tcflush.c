@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -25,17 +25,27 @@
 *
 *  ========================================================================
 *
-* Description:  Implementation for tcflush() for Linux.
+* Description:  Implementation for POSIX tcflush
 *
 ****************************************************************************/
 
 
 #include "variety.h"
 #include <termios.h>
-#include <sys/ioctl.h>
+#ifdef __LINUX__
+    #include <sys/ioctl.h>
+#else
+    #include "rterrno.h"
+    #include "thread.h"
+#endif
 
-_WCRTLINK int tcflush( int __fd, int __queue_selector )
+
+_WCRTLINK int tcflush( int fd, int queue_selector )
 {
-    return( ioctl( __fd, TCFLSH, __queue_selector ) );
+#ifdef __LINUX__
+    return( ioctl( fd, TCFLSH, queue_selector ) );
+#else
+    _RWD_errno = EINVAL;
+    return( -1 );
+#endif
 }
-

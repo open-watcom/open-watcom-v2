@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2016-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2016-2025 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -24,21 +24,27 @@
 *
 *  ========================================================================
 *
-* Description:  Implementation of termios tcflow for Linux
-*
-* Author: J. Armstrong
+* Description:  Implementation of POSIX tcflow
 *
 ****************************************************************************/
 
 
 #include "variety.h"
-#include "linuxsys.h"
-#include <sys/ioctl.h>
 #include <termios.h>
+#ifdef __LINUX__
+    #include <sys/ioctl.h>
+#else
+    #include "rterrno.h"
+    #include "thread.h"
+#endif
 
 
 _WCRTLINK int tcflow( int fd, int action )
 {
-    syscall_res res = sys_call3( SYS_ioctl, (u_long)fd, (u_long)TCXONC, (u_long)action);
-    __syscall_return( int, res );
+#ifdef __LINUX__
+    return( ioctl( fd, TCXONC, action ) );
+#else
+    _RWD_errno = EINVAL;
+    return( -1 );
+#endif
 }

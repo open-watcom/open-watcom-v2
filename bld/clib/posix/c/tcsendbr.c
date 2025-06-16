@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2016-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2016-2025 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -24,20 +24,27 @@
 *
 *  ========================================================================
 *
-* Description:  Implementation of termios tcsendbreak for Linux
-*
-* Author: J. Armstrong
+* Description:  Implementation of POSIX tcsendbreak
 *
 ****************************************************************************/
 
 
 #include "variety.h"
-#include "linuxsys.h"
-#include <sys/ioctl.h>
 #include <termios.h>
+#ifdef __LINUX__
+    #include <sys/ioctl.h>
+#else
+    #include "rterrno.h"
+    #include "thread.h"
+#endif
 
 
 _WCRTLINK int tcsendbreak( int fd, int duration )
 {
+#ifdef __LINUX__
     return( ioctl( fd, TCSBRKP, duration ) );
+#else
+    _RWD_errno = EINVAL;
+    return( -1 );
+#endif
 }

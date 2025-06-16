@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2025 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -24,30 +24,27 @@
 *
 *  ========================================================================
 *
-* Description:  Implementation of termios tcdrain for Linux
-*
-* Author: J. Armstrong
+* Description:  Implementation of POSIX tcdrain
 *
 ****************************************************************************/
 
 
 #include "variety.h"
-#include "linuxsys.h"
-#include <sys/ioctl.h>
 #include <termios.h>
+#ifdef __LINUX__
+    #include <sys/ioctl.h>
+#else
+    #include "rterrno.h"
+    #include "thread.h"
+#endif
 
 
 _WCRTLINK int tcdrain( int fd )
 {
-syscall_res res;
-
-    /* Send SYS_ioctl to the kernel.  We're passing a "1" as an
-     * argument, but the kernel is actually ignoring it.
-     *
-     * See tty_io.c#L2856 where the kernel calls:
-     *    tty_wait_until_sent(tty, 0);
-     */
-    res = sys_call3( SYS_ioctl, (u_long)fd, (u_long)TCSBRK, (u_long)1 );
-
-    __syscall_return( int, res );
+#ifdef __LINUX__
+    return( ioctl( fd, TCSBRK, 1 ) );
+#else
+    _RWD_errno = EINVAL;
+    return( -1 );
+#endif
 }
