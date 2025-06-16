@@ -888,6 +888,11 @@ Tool WLANG "Languages"
     SwitchText WLANG_st, "Touch stack through SS first"
     SwitchText WLANG_wcd, "Disable warning messages"
     SwitchText WLANG_wce, "Enable warning messages"
+    RGroup "C Language standard"
+      RSwitch 0, ?????, WLANG_zastd89, , ON
+      RSwitch 0, ?????, WLANG_zastd99, -zastd=c99, OFF
+      SwitchText WLANG_zastd89, "C89 Language standard"
+      SwitchText WLANG_zastd99, "C99 Language standard"
   Family Source
     CSwitch 0, ?????, WLANG_d+, -d+, OFF
     VSwitch 0, ?????, WLANG_u, -u,, MULTI, REQ, ""

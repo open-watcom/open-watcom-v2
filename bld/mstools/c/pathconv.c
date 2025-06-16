@@ -25,12 +25,14 @@
 *  ========================================================================
 *
 * Description:  String utilities to convert filenames to more usable format.
-*               
+*
 *
 ****************************************************************************/
 
 
-#include <mbstring.h>
+#ifndef __UNIX__
+    #include <mbstring.h>
+#endif
 #include <string.h>
 #include "bool.h"
 #include "memory.h"
@@ -40,27 +42,36 @@
 /*
  * Translate  foo/dir1\\dir2" \\"bar"grok  -->  "foo\\dir1\\dir2 \\"bargrok".
  */
-char *PathConvert( const char *pathname, char quote )
+char *PathConvert( const char *path, char quote )
 /***************************************************/
 {
-    const unsigned char *path = (const unsigned char *)pathname;
+    char                *p;
     char                *out;
-    unsigned char       *p;
     bool                quoteends = false;  /* quote the whole filename */
     bool                backslash = false;  /* true if last char was a '\\' */
     bool                inquote = false;    /* true if inside a quoted string */
 
     /*** Allocate a buffer for the new string (should be big enough) ***/
-    out = AllocMem( 2 * ( strlen( (char *)path ) + 1 + 2 ) );
-    p = (unsigned char *)out;
+    out = AllocMem( 2 * ( strlen( path ) + 1 + 2 ) );
+    p = out;
 
     /*** Determine if path contains any bizarre characters ***/
-    if( _mbschr( path, ' ' )  !=  NULL      ||
-        _mbschr( path, '\t' )  !=  NULL     ||
-        _mbschr( path, '"' )  !=  NULL      ||
-        _mbschr( path, '\'' )  !=  NULL     ||
-        _mbschr( path, '`' )  !=  NULL      ||
-        _mbschr( path, quote )  !=  NULL ) {
+#ifdef __UNIX__
+    if( strchr( path, ' ' ) !=  NULL
+      || strchr( path, '\t' ) !=  NULL
+      || strchr( path, '"' ) !=  NULL
+      || strchr( path, '\'' ) !=  NULL
+      || strchr( path, '`' ) !=  NULL
+      || strchr( path, quote ) !=  NULL )
+#else
+    if( _mbschr( (const unsigned char *)path, ' ' ) !=  NULL
+      || _mbschr( (const unsigned char *)path, '\t' ) !=  NULL
+      || _mbschr( (const unsigned char *)path, '"' ) !=  NULL
+      || _mbschr( (const unsigned char *)path, '\'' ) !=  NULL
+      || _mbschr( (const unsigned char *)path, '`' ) !=  NULL
+      || _mbschr( (const unsigned char *)path, quote ) !=  NULL )
+#endif
+    {
         quoteends = true;
         *p++ = quote;
     }
@@ -93,13 +104,25 @@ char *PathConvert( const char *pathname, char quote )
             }
             backslash = false;
         } else {
-            _mbccpy( p, path );         /* copy an ordinary character */
-            p = _mbsinc( p );
+            /*
+             * copy an ordinary character
+             */
+#ifdef __UNIX__
+            *p++ = *path;
+#else
+            _mbccpy( (unsigned char *)p, (unsigned char *)path );
+            p = (char *)_mbsinc( (unsigned char *)p );
+#endif
             backslash = false;
         }
-        path = _mbsinc( path );
+#ifdef __UNIX__
+        path++;
+#else
+        path = (char *)_mbsinc( (unsigned char *)path );
+#endif
     }
-    if( quoteends )  *p++ = quote;
+    if( quoteends )
+        *p++ = quote;
     *p++ = '\0';
 
     return( out );
@@ -117,7 +140,7 @@ char *PathConvertWithoutQuotes( const char *path )
     bool                inquote = false;    /* true if inside a quoted string */
 
     /*** Allocate a buffer for the new string (should be big enough) ***/
-    out = AllocMem( 2 * ( strlen(path) + 1 + 2 ) );
+    out = AllocMem( 2 * ( strlen( path ) + 1 + 2 ) );
     p = out;
 
     /*** Convert the path one character at a time ***/
@@ -148,12 +171,22 @@ char *PathConvertWithoutQuotes( const char *path )
             }
             backslash = false;
         } else {
-            /* copy an ordinary character */
-            _mbccpy( (unsigned char *)p, (unsigned char *)path );     /* copy an ordinary character */
+            /*
+             * copy an ordinary character
+             */
+#ifdef __UNIX__
+            *p++ = *path;
+#else
+            _mbccpy( (unsigned char *)p, (unsigned char *)path );
             p = (char *)_mbsinc( (unsigned char *)p );
+#endif
             backslash = false;
         }
+#ifdef __UNIX__
+        path++;
+#else
         path = (char *)_mbsinc( (unsigned char *)path );
+#endif
     }
     *p++ = '\0';
 

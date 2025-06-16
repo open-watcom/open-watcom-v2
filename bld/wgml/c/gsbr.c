@@ -267,17 +267,17 @@ void    scr_br( void )
 {
     char        *   p;
 
-    p = scandata.s;
+    p = g_scandata.s;
 
     if( *p != '\0' ) {
         SkipSpaces( p );
         if( *p != '\0' ) {
-            split_input( scandata.s, p, input_cbs->fmflags );   // line operand
+            split_input( g_scandata.s, p, input_cbs->fmflags );   // line operand
         }
     }
     scr_process_break();                // break processing
 
-    scan_restart = scandata.e;
+    scan_restart = g_scandata.e;
     return;
 }
 

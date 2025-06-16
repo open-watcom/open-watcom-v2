@@ -44,7 +44,6 @@
 #include <errno.h>
 #include <sys/types.h>
 #include <string.h>
-#include <direct.h>
 #include <process.h>
 #if defined( __UNIX__ ) || defined( __WATCOMC__ )
     #include <utime.h>

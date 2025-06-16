@@ -48,7 +48,6 @@
 
 #ifdef MSDOS
 #include <conio.h>
-#include <fcntl.h>
 #endif
 #ifdef V7
 FILE *fopen();

@@ -285,7 +285,7 @@ void    scr_cw( void )
     char            *p;
     unsigned        len;
 
-    p = scandata.s;
+    p = g_scandata.s;
     SkipSpaces( p );                    // next word start
     pa = p;
     SkipNonSpaces( p );                 // end of word
@@ -359,7 +359,7 @@ void    scr_dc( void )
     char            option[6];          // option upper cased value
     char            value[6];           // value upper cased value
 
-    p = scandata.s;
+    p = g_scandata.s;
     SkipSpaces( p );                    // next word start = option
     opt_beg = p;
     p = get_word_ucase( opt_beg, option, sizeof( option ) - 1 );

@@ -134,3 +134,14 @@ unsigned long Ticks( void )
 {
     return( GetTickCount() / 100 );
 }
+
+// DBGPORT_IO data;
+// data.port = DATAPORT;
+// data.data.u8 = 0;
+//DeviceIoControl( PortHdl, IOCTL_DBG_READ_PORT_U8, NULL, 0, &data, sizeof( data ), &ret_size, NULL );
+// data.port = DATAPORT;
+// data.data.u8 = 0xFF;
+//DeviceIoControl( PortHdl, IOCTL_DBG_WRITE_PORT_U8, &data, sizeof( data ), NULL, 0, &ret_size, NULL );
+// data.len =
+// data.buffer =
+//DeviceIoControl( PortHdl, IOCTL_DBG_REMOTE_GET,

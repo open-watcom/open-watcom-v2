@@ -159,10 +159,10 @@ void    scr_im( void )
     condcode        cc;
     getnum_block    gn;
 
-    p = scandata.s;
+    p = g_scandata.s;
     SkipSpaces( p );
     gn.arg.s = p;
-    gn.arg.e = scandata.e;
+    gn.arg.e = g_scandata.e;
     gn.ignore_blanks = false;
     cc = getnum( &gn );
     if( (cc == CC_pos) && (gn.result < 10) ) { // include SYSUSR0x.GML
@@ -184,12 +184,12 @@ void    scr_im( void )
         strcpy( token_buf, filename_start );
     }
 
-    if( p < scandata.e ) {
+    if( p < g_scandata.e ) {
         new_file_parms = p + 1;
     } else {
         new_file_parms = NULL;
     }
-    scan_restart = scandata.e;
+    scan_restart = g_scandata.e;
     ProcFlags.newLevelFile = 1;
     line_from = LINEFROM_DEFAULT;
     line_to   = LINETO_DEFAULT;

@@ -144,10 +144,10 @@ typedef unsigned int    tcflag_t;
 #define TCSADRAIN       1
 #define TCSAFLUSH       2
 
-_WCRTLINK extern speed_t cfgetospeed( const struct termios *__termios_p );
 _WCRTLINK extern speed_t cfgetispeed( const struct termios *__termios_p );
-_WCRTLINK extern int     cfsetospeed( struct termios *__termios_p, speed_t __speed );
+_WCRTLINK extern speed_t cfgetospeed( const struct termios *__termios_p );
 _WCRTLINK extern int     cfsetispeed( struct termios *__termios_p, speed_t __speed );
+_WCRTLINK extern int     cfsetospeed( struct termios *__termios_p, speed_t __speed );
 _WCRTLINK extern int     tcgetattr( int __fd, struct termios *__termios_p );
 _WCRTLINK extern int     tcsetattr( int __fd, int __optional_actions, const struct termios *__termios_p );
 _WCRTLINK extern void    cfmakeraw( struct termios *__termios_p );

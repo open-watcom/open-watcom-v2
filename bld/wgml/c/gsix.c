@@ -182,12 +182,12 @@ void scr_ix( void )
 
     if( !GlobalFlags.index ) {
         ProcFlags.index_tag_cw_seen = true;
-        scan_restart = scandata.e;
+        scan_restart = g_scandata.e;
         return;                         // no need to process .ix
     }
 
     start_doc_sect();                   // if not already done
-    scan_restart = scandata.e;
+    scan_restart = g_scandata.e;
 
     cwcurr[0] = SCR_char;
     lvl = 0;                            // index level
@@ -196,7 +196,7 @@ void scr_ix( void )
     pix_char = *(dictval->value);
     wkpage = g_page + 1;                  // predicted number of current page
 
-    p = scandata.s;
+    p = g_scandata.s;
 
     /* Check for no operands, a structure number, or a DUMP/PURGE line */
 
@@ -205,7 +205,7 @@ void scr_ix( void )
     if( cc == CC_omit
       || cc == CC_quotes0 ) { // no operands
         /* Position adjusted to avoid buffer overflow */
-        xx_line_err_exit_cc( ERR_PARM_MISSING, cwcurr, scandata.s - 1 );
+        xx_line_err_exit_cc( ERR_PARM_MISSING, cwcurr, g_scandata.s - 1 );
         /* never return */
     }
 
@@ -221,7 +221,7 @@ void scr_ix( void )
         /* Unquoted numeric string here must be a structure number */
 
         gn.arg.s = g_tok_start;
-        gn.arg.e = scandata.e;
+        gn.arg.e = g_scandata.e;
         gn.ignore_blanks = false;
         cc = getnum( &gn );
 

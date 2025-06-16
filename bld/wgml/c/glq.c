@@ -78,14 +78,14 @@ void gml_lq( const gmltag * entry )
     t_page.cur_width = t_page.cur_left;
     ju_x_start = t_page.cur_width;
 
-    p = scandata.s;
+    p = g_scandata.s;
     SkipSpaces( p );                        // skip spaces
     SkipDot( p );                           // skip tag end
     if( *p != '\0' ) {
         process_text( p, g_curr_font );
     }
 
-    scandata.s = scandata.e;
+    g_scandata.s = g_scandata.e;
 }
 
 
@@ -125,7 +125,7 @@ void gml_elq( const gmltag * entry )
 
     t_page.cur_width = t_page.cur_left;
     g_scan_err = false;
-    p = scandata.s;
+    p = g_scandata.s;
     SkipDot( p );                       // over '.'
     if( *p != '\0' ) {
         ProcFlags.skips_valid = false;
@@ -134,6 +134,6 @@ void gml_elq( const gmltag * entry )
         ProcFlags.force_pc = true;
     }
 
-    scandata.s = scandata.e;
+    g_scandata.s = g_scandata.e;
 }
 

@@ -123,7 +123,7 @@ void    lay_tochx( const gmltag * entry )
     att_name_type       attr_name;
     att_val_type        attr_val;
 
-    p = scandata.s;
+    p = g_scandata.s;
 
     memset( &AttrFlags, 0, sizeof( AttrFlags ) );   // clear all attribute flags
     if( ProcFlags.lay_xxx != entry->u.layid ) {
@@ -238,7 +238,7 @@ void    lay_tochx( const gmltag * entry )
             /* never return */
         }
     }
-    scandata.s = scandata.e;
+    g_scandata.s = g_scandata.e;
     return;
 }
 

@@ -101,7 +101,7 @@ void    scr_ir( void )
     cwcurr[2] = 'r';
     cwcurr[3] = '\0';
 
-    p = scandata.s;
+    p = g_scandata.s;
     SkipSpaces( p );                    // next word start
     pa = p;
     SkipNonSpaces( p );                 // end of word
@@ -194,7 +194,7 @@ void    scr_in( void )
     cwcurr[3] = '\0';
 
     su_relative = false;
-    p = scandata.s;
+    p = g_scandata.s;
     SkipSpaces( p );                    // next word start
     pa = p;
     SkipNonSpaces( p );                 // end of word

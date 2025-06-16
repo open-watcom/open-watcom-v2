@@ -353,8 +353,6 @@ static vi_rc processSetToken( int j, char *new, const char **pvalue, int *winfla
     jmp_buf     jmpaddr;
     cursor_type ct;
     char        *name;
-    command_rtn fptr;
-    event_bits  eb;
     bool        redisplay = false;
     int         i;
     long        lval;
@@ -434,10 +432,10 @@ static vi_rc processSetToken( int j, char *new, const char **pvalue, int *winfla
         case SETFLAG_T_MODELESS:
             if( (newset && !flag_value) || (!newset && flag_value) ) {
                 for( k = 0; k < MAX_EVENTS; k++ ) {
-                    fptr = EventList[k].rtn;
-                    eb = EventList[k].b;
+                    command_rtn fn = EventList[k].rtn;
+                    event_bits  eb = EventList[k].b;
                     EventList[k].rtn = EventList[k].alt_rtn;
-                    EventList[k].alt_rtn = fptr;
+                    EventList[k].alt_rtn = fn;
                     EventList[k].b = EventList[k].alt_b;
                     EventList[k].alt_b = eb;
                 }

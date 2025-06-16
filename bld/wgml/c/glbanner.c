@@ -227,7 +227,7 @@ void    lay_banner( const gmltag * entry )
     att_name_type   attr_name;
     att_val_type    attr_val;
 
-    p = scandata.s;
+    p = g_scandata.s;
     rs_loc = TLOC_banner;
 
     memset( &AttrFlags, 0, sizeof( AttrFlags ) );   // clear all attribute flags
@@ -522,7 +522,7 @@ void    lay_banner( const gmltag * entry )
             }
         }
     }
-    scandata.s = scandata.e;
+    g_scandata.s = g_scandata.e;
     return;
 }
 
@@ -590,7 +590,7 @@ void    lay_ebanner( const gmltag * entry )
         xx_err_exit_c( ERR_TAG_EXPECTED, "BANNER" );
         /* never return */
     }
-    scandata.s = scandata.e;
+    g_scandata.s = g_scandata.e;
     return;
 }
 
@@ -832,7 +832,7 @@ void    lay_banregion( const gmltag *entry )
     att_name_type   attr_name;
     att_val_type    attr_val;
 
-    p = scandata.s;
+    p = g_scandata.s;
     rs_loc = TLOC_banreg;
 
     memset( &AttrFlags, 0, sizeof( AttrFlags ) );   // clear all attribute flags
@@ -1107,7 +1107,7 @@ void    lay_banregion( const gmltag *entry )
         }
     }
 
-    scandata.s = scandata.e;
+    g_scandata.s = g_scandata.e;
     return;
 }
 
@@ -1125,7 +1125,7 @@ void    lay_ebanregion( const gmltag * entry )
         xx_err_exit_cc( ERR_NO_LAY, &(entry->tagname[1]), entry->tagname );
         /* never return */
     }
-    scandata.s = scandata.e;
+    g_scandata.s = g_scandata.e;
     return;
 }
 

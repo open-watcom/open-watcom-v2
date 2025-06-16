@@ -201,7 +201,7 @@ void    lay_hx( const gmltag *entry )
     att_name_type       attr_name;
     att_val_type        attr_val;
 
-    p = scandata.s;
+    p = g_scandata.s;
 
     memset( &AttrFlags, 0, sizeof( AttrFlags ) );   // clear all attribute flags
     if( ProcFlags.lay_xxx != entry->u.layid ) {
@@ -393,7 +393,7 @@ void    lay_hx( const gmltag *entry )
     if( l_group > 0 ) {         // only group 0 is supported
         xx_warn_c( WNG_UNSUPP_LAY_ATT, "group" );
     }
-    scandata.s = scandata.e;
+    g_scandata.s = g_scandata.e;
     return;
 }
 

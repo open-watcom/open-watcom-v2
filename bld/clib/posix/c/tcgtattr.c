@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -25,17 +25,27 @@
 *
 *  ========================================================================
 *
-* Description:  Implementation for tcgetattr() for Linux.
+* Description:  Implementation for POSIX tcgetattr
 *
 ****************************************************************************/
 
 
 #include "variety.h"
 #include <termios.h>
-#include <sys/ioctl.h>
+#ifdef __LINUX__
+    #include <sys/ioctl.h>
+#else
+    #include "rterrno.h"
+    #include "thread.h"
+#endif
 
-_WCRTLINK int tcgetattr( int __fd, struct termios *__termios_p )
+
+_WCRTLINK int tcgetattr( int fd, struct termios *termios_p )
 {
-    return( ioctl( __fd, TCGETS, __termios_p ) );
+#ifdef __LINUX__
+    return( ioctl( fd, TCGETS, termios_p ) );
+#else
+    _RWD_errno = EINVAL;
+    return( -1 );
+#endif
 }
-

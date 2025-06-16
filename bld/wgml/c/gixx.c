@@ -86,7 +86,7 @@ static void gml_ixxx_common( const gmltag * entry, int hx_lvl )
 
     if( !GlobalFlags.index ) {          // index option not active
         ProcFlags.index_tag_cw_seen = true;
-        scandata.s = scandata.e;         // ignore tag
+        g_scandata.s = g_scandata.e;         // ignore tag
         return;
     }
 
@@ -98,7 +98,7 @@ static void gml_ixxx_common( const gmltag * entry, int hx_lvl )
 
     pgvalue = PGREF_none;
 
-    p = scandata.s;
+    p = g_scandata.s;
 
     /***********************************************************************/
     /*  Scan attributes for Ix IHx IREF                                    */
@@ -165,7 +165,7 @@ static void gml_ixxx_common( const gmltag * entry, int hx_lvl )
                 }
             } else if( strcmp( "pg", attr_name.attname.t ) == 0 ) {
                 p = get_att_value( p, &attr_val );
-                scandata.s = p;
+                g_scandata.s = p;
                 if( attr_val.tok.s == NULL ) {
                     break;
                 }
@@ -194,7 +194,7 @@ static void gml_ixxx_common( const gmltag * entry, int hx_lvl )
                 }
             } else if( strcmp( "print", attr_name.attname.t ) == 0 ) {
                 p = get_att_value( p, &attr_val );
-                scandata.s = p;
+                g_scandata.s = p;
                 if( attr_val.tok.s == NULL ) {
                     break;
                 }
@@ -232,7 +232,7 @@ static void gml_ixxx_common( const gmltag * entry, int hx_lvl )
                 }
             } else if( strcmp( "see", attr_name.attname.t ) == 0 ) {
                 p = get_att_value( p, &attr_val );
-                scandata.s = p;
+                g_scandata.s = p;
                 if( attr_val.tok.s == NULL ) {
                     break;
                 }
@@ -285,16 +285,16 @@ static void gml_ixxx_common( const gmltag * entry, int hx_lvl )
              * so that any symbol substitutions will reflect any
              * changes made by the tag calling it
              */
-            scandata.s = buff2;
-            scandata.e = buff2 + buff2_lg;
-            if( check_tagname( scandata.s, NULL ) != NULL // tag found: error
-              || (*scandata.s == SCR_char)          // cw found: error
+            g_scandata.s = buff2;
+            g_scandata.e = buff2 + buff2_lg;
+            if( check_tagname( g_scandata.s, NULL ) != NULL // tag found: error
+              || (*g_scandata.s == SCR_char)          // cw found: error
               || (input_cbs->fmflags & II_eof) ) {  // EOF found: error
                 xx_err_exit( ERR_TEXT_NOT_TAG_CW );
                 /* never return */
             }
             process_line();
-            p = scandata.s;             // new line is part of current tag
+            p = g_scandata.s;             // new line is part of current tag
         }
         SkipSpaces( p );                // step over spaces
     }
@@ -507,7 +507,7 @@ static void gml_ixxx_common( const gmltag * entry, int hx_lvl )
     ProcFlags.null_value = false;
     ProcFlags.post_ix = true;           // records use of index tag only if indexing is on
 
-    scandata.s = scandata.e;
+    g_scandata.s = g_scandata.e;
     return;
 }
 

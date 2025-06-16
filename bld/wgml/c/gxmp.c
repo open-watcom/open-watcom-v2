@@ -85,7 +85,7 @@ void gml_xmp( const gmltag * entry )
     font_save = g_curr_font;
     g_curr_font = layout_work.xmp.font;
     depth = 0;                          // default value: depth will be depth of box contents
-    p = scandata.s;
+    p = g_scandata.s;
     if( *p == '.' ) {
         /* already at tag end */
     } else {
@@ -171,7 +171,7 @@ void gml_xmp( const gmltag * entry )
         ProcFlags.skip_blank_line = true;
     }
 
-    scandata.s = scandata.e;
+    g_scandata.s = g_scandata.e;
     return;
 }
 
@@ -264,7 +264,7 @@ void gml_exmp( const gmltag * entry )
     ProcFlags.skips_valid = false;      // activate post_skip for next element
     t_page.cur_width = t_page.cur_left;
     g_scan_err = false;
-    p = scandata.s;
+    p = g_scandata.s;
     SkipDot( p );                       // over '.'
     if( *p != '\0' ) {
         if( (input_cbs->hidden_head != NULL) && !input_cbs->hidden_head->ip_start
@@ -283,7 +283,7 @@ void gml_exmp( const gmltag * entry )
         ProcFlags.force_pc = true;
     }
 
-    scandata.s = scandata.e;
+    g_scandata.s = g_scandata.e;
     return;
 }
 

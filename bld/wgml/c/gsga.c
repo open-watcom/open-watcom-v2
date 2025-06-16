@@ -315,7 +315,7 @@ static  condcode    scan_att_optionsB( gavalflags *val_flags, condcode cca, gafl
             *val_flags |= GAVAL_range;
             *att_flags |= GAFLG_range;
 
-            gn.arg = scandata;
+            gn.arg = g_scandata;
             gn.ignore_blanks = false;
             ranges[2] = INT_MIN;
             ranges[3] = INT_MIN;
@@ -330,7 +330,7 @@ static  condcode    scan_att_optionsB( gavalflags *val_flags, condcode cca, gafl
                 }
                 ranges[k] = gn.result;
             }
-            scandata.s = gn.arg.s;
+            g_scandata.s = gn.arg.s;
             if( (k < 2)
               || (ranges[0] > ranges[1]) ) {// need 2 or more values
                 xx_err_exit( ERR_ATT_RANGE_INV );// ... second <= first
@@ -365,7 +365,7 @@ static  condcode    scan_att_optionsB( gavalflags *val_flags, condcode cca, gafl
           && (arg_flen < 7)
           && strnicmp( "LENgth", g_tok_start, arg_flen ) == 0 ) {
             *val_flags |= GAVAL_length;
-            gn.arg = scandata;
+            gn.arg = g_scandata;
             gn.ignore_blanks = false;
             cc = getnum( &gn );
             if( cc == CC_notnum
@@ -373,7 +373,7 @@ static  condcode    scan_att_optionsB( gavalflags *val_flags, condcode cca, gafl
                 xx_err_exit( ERR_ATT_VAL_INV );
                 /* never return */
             } else {
-                scandata.s = gn.arg.s;
+                g_scandata.s = gn.arg.s;
                 ranges[0] = gn.result;
             }
         } else {
@@ -475,7 +475,7 @@ void    scr_ga( void )
         /* never return */
     }
     if( g_tag_entry == NULL ) {         // error during previous .gt
-        scan_restart = scandata.e;       // ignore .ga
+        scan_restart = g_scandata.e;       // ignore .ga
         return;
     }
 
@@ -628,6 +628,6 @@ void    scr_ga( void )
     } else if( val_flags & GAVAL_valptr ) {
         gaval->a.valptr = valptr;
     }
-    scan_restart = scandata.e;
+    scan_restart = g_scandata.e;
     return;
 }

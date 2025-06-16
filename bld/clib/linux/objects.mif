@@ -121,9 +121,7 @@
 !inject tcflow.obj                                                                          l32 lpc lmp
 !inject tcflush.obj                                                                         l32 lpc lmp
 !inject tcgetsid.obj                                                                        l32 lpc lmp
-!inject tcgtattr.obj                                                                        l32 lpc lmp
 !inject tcsendbr.obj                                                                        l32 lpc lmp
-!inject tcstattr.obj                                                                        l32 lpc lmp
 !inject __tgkill.obj                                                                        l32 lpc lmp
 !inject time.obj                                                                            l32 lpc lmp
 !inject timer.obj                                                                           l32 lpc lmp

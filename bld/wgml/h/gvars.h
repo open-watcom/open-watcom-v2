@@ -53,7 +53,7 @@ global struct tm    doc_tm;             // document time/date
 
 global jmp_buf      *environment;       // var for GSuicide()
 
-global tok_type     scandata;
+global tok_type     g_scandata;
 global char         *new_file_parms;    // command tail for IM/AP
 global char         *scan_restart;      // used by character scanning routines
 global bool         g_scan_err;         // used by character scanning routines
@@ -277,12 +277,12 @@ global int          g_space;            // .sp space value (in vbus)
 global unsigned     post_space;         // spacing within a line
 global unsigned     ju_x_start;         // .. formatting
 
-global int          g_indentl;          // .in 1st value (left) default 0
-global int          g_indentr;          // .in 2nd value (right) default 0
-global int          g_line_indent;      // :LP, :P, :PC line indent
-global int          g_wrap_indent;      // :I1/:I2/:I3 wrap_indent value
+global unsigned     g_indentl;          // .in 1st value (left) default 0
+global unsigned     g_indentr;          // .in 2nd value (right) default 0
+global unsigned     g_line_indent;      // :LP, :P, :PC line indent
+global unsigned     g_wrap_indent;      // :I1/:I2/:I3 wrap_indent value
 
-global int          g_cur_threshold;    // current widow threshold value
+global unsigned     g_cur_threshold;    // current widow threshold value
                                         // from layout (widow or heading)
 
 global fwd_ref      *fwd_ref_pool;      // pool of unused fwd_ref instances

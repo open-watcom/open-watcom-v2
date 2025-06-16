@@ -38,10 +38,10 @@
  * 16-apr-90    D.J.Gaudet      Defined
  */
 
-#include <direct.h>
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include "wdirent.h"
 
 
 static char *stpcpy( char *d, const char *s )

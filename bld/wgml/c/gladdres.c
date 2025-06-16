@@ -118,7 +118,7 @@ void    lay_address( const gmltag * entry )
     att_name_type   attr_name;
     att_val_type    attr_val;
 
-    p = scandata.s;
+    p = g_scandata.s;
     cvterr = false;
 
     memset( &AttrFlags, 0, sizeof( AttrFlags ) );   // clear all attribute flags
@@ -197,7 +197,7 @@ void    lay_address( const gmltag * entry )
             /* never return */
         }
     }
-    scandata.s = scandata.e;
+    g_scandata.s = g_scandata.e;
     return;
 }
 
@@ -215,7 +215,7 @@ void    lay_aline( const gmltag *entry )
     att_name_type   attr_name;
     att_val_type    attr_val;
 
-    p = scandata.s;
+    p = g_scandata.s;
     cvterr = false;
 
     memset( &AttrFlags, 0, sizeof( AttrFlags ) );   // clear all attribute flags
@@ -251,7 +251,7 @@ void    lay_aline( const gmltag *entry )
             }
         }
     }
-    scandata.s = scandata.e;
+    g_scandata.s = g_scandata.e;
     return;
 }
 

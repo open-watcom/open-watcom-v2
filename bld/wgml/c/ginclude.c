@@ -74,7 +74,7 @@ extern  void    gml_include( const gmltag * entry )
     (void)entry;
 
     *token_buf = '\0';
-    p = scandata.s;
+    p = g_scandata.s;
     p++;
     SkipSpaces( p );
     if( *p == '.' ) {
@@ -94,11 +94,11 @@ extern  void    gml_include( const gmltag * entry )
                 strncpy( token_buf, attr_val.tok.s, attr_val.tok.l );
                 token_buf[attr_val.tok.l] = '\0';
                 ProcFlags.newLevelFile = 1;     // start new include level
-                scandata.s = scandata.e;         // .. and ignore remaining line
+                g_scandata.s = g_scandata.e;         // .. and ignore remaining line
             }
         } else {                                // wgml 4.0 appears to mark "" as the filename
             ProcFlags.newLevelFile = 1;         // start new include level
-            scandata.s = scandata.e;             // .. and ignore remaining line
+            g_scandata.s = g_scandata.e;             // .. and ignore remaining line
         }
     }
 

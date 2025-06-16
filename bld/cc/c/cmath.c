@@ -1014,11 +1014,41 @@ static TREEPTR MulByConst( TREEPTR opnd, target_ssize amount )
 {
     TREEPTR     tree;
 
+#if 0
+    if( opnd->op.opr == OPR_PUSHINT ) {
+        switch( opnd->op.u1.const_type ) {
+        case TYP_LONG64:
+        case TYP_ULONG64:
+          {
+            signed_64   val64;
+
+            I32ToI64( amount, &val64 );
+            U64Mul( &opnd->op.u2.long64_value, &val64, &opnd->op.u2.long64_value );
+          } break;
+        default:
+            opnd->op.u2.long_value *= amount;
+        }
+        return( opnd );
+    }
+#else
     if( opnd->op.opr == OPR_PUSHINT ) {
         opnd->op.u2.long_value *= amount;
         return( opnd );
     }
+#endif
+
     switch( TypeOf( opnd )->decl_type ) {
+#if 0
+    case TYP_LONG64:
+    case TYP_ULONG64:
+      {
+        unsigned_64 val64;
+
+        I32ToI64( amount, &val64 );
+        tree = ExprNode( opnd, OPR_MUL, Long64Leaf( &val64 ) );
+        tree->u.expr_type = GetType( TYP_LONG64 );
+      } break;
+#endif
     case TYP_LONG:
     case TYP_ULONG:
         tree = ExprNode( opnd, OPR_MUL, LongLeaf( amount ) );

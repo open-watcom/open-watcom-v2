@@ -78,7 +78,7 @@ void gml_address( const gmltag * entry )
     t_doc_el_group = cur_doc_el_group;
     cur_doc_el_group = NULL;
 
-    scandata.s = scandata.e;
+    g_scandata.s = g_scandata.e;
     return;
 }
 
@@ -157,7 +157,7 @@ void gml_eaddress( const gmltag * entry )
 
     scr_process_break();                // commit last address line
     line_position = old_line_pos;
-    scandata.s = scandata.e;
+    g_scandata.s = g_scandata.e;
     return;
 }
 
@@ -178,7 +178,7 @@ void gml_aline( const gmltag * entry )
     if( cur_group_type != GRT_address ) {    // no preceding :ADDRESS tag
         g_tag_prec_err_exit( T_ADDRESS );
     }
-    p = scandata.s;
+    p = g_scandata.s;
     SkipDot( p );                           // over '.'
     SkipSpaces( p );                        // over WS to <text line>
 
@@ -201,7 +201,7 @@ void gml_aline( const gmltag * entry )
     t_page.cur_left += nest_cb->left_indent;
     t_page.cur_width = t_page.cur_left;
     if( t_page.max_width < -1 * nest_cb->right_indent ) {
-        xx_line_err_exit_c( ERR_PAGE_WIDTH_TOO_SMALL, scandata.s );
+        xx_line_err_exit_c( ERR_PAGE_WIDTH_TOO_SMALL, g_scandata.s );
         /* never return */
     }
     t_page.max_width += nest_cb->right_indent;
@@ -216,6 +216,6 @@ void gml_aline( const gmltag * entry )
     scr_process_break();                // commit address line (or blank line)
 
     first_aline = false;
-    scandata.s = scandata.e;
+    g_scandata.s = g_scandata.e;
 }
 

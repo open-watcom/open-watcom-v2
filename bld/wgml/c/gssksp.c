@@ -56,7 +56,7 @@ static void sksp_common( void )
     spskwork.su_u = SU_undefined;
     text_spacing = g_text_spacing;          // set spacing to default
 
-    p = scandata.s;
+    p = g_scandata.s;
     if( *p != '\0' ) {
         SkipSpaces( p );
         pa = p;
@@ -192,7 +192,7 @@ void    scr_sk( void )
         ProcFlags.sk_2nd = true;
     }
 
-    scan_restart = scandata.e;
+    scan_restart = g_scandata.e;
     return;
 }
 
@@ -221,7 +221,7 @@ void    scr_sp( void )
         g_space = vspace;
     }
 
-    scan_restart = scandata.e;
+    scan_restart = g_scandata.e;
     return;
 }
 

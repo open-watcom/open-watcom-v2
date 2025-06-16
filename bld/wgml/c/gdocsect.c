@@ -42,8 +42,8 @@ static  bool            ref_done;                   // true if a reference has b
 static  char            frame_line_1[CHAR_FRAME_LEN + 1]; // box top line/rule line/'character string' line
 static  char            frame_line_2[CHAR_FRAME_LEN + 1]; // box blank/middle line
 static  char            frame_line_3[CHAR_FRAME_LEN + 1]; // box bottom line
-static  int             save_indentl;               // used with TITLEP/eTITLEP
-static  int             save_indentr;               // used with TITLEP/eTITLEP
+static  unsigned        save_indentl;               // used with TITLEP/eTITLEP
+static  unsigned        save_indentr;               // used with TITLEP/eTITLEP
 static  ju_enum         justify_save;               // for ProcFlags.justify
 static  line_number     titlep_lineno;              // TITLEP tag line number
 static  unsigned        cur_count;                  // current number of characters copied
@@ -1403,7 +1403,7 @@ static void gml_doc_xxx( doc_section ds )
     ProcFlags.doc_sect_nxt = ds;        // remember new section
     ProcFlags.start_section = false;    // do real section start later
 
-    scandata.s = scandata.e;
+    g_scandata.s = g_scandata.e;
     return;
 }
 
@@ -1558,7 +1558,7 @@ extern void gml_index( const gmltag * entry )
     }
 
     if( ProcFlags.doc_sect_nxt == DSECT_index ) {// duplicate :INDEX tag
-        scandata.s = scandata.e;         // ignore this call
+        g_scandata.s = g_scandata.e;         // ignore this call
         return;                         // wgml4 OS/2 crashes with page fault
     }
 
@@ -1757,7 +1757,7 @@ extern void gml_gdoc( const gmltag *entry )
     (void)entry;
 
     g_scan_err = false;
-    p = scandata.s;
+    p = g_scandata.s;
     if( *p != '\0' )
         p++;
 

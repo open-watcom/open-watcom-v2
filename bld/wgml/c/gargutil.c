@@ -111,19 +111,19 @@ condcode getarg( void )
     char            valquote;
 
     cc = CC_omit;                          // arg omitted
-    if( scandata.s < scandata.e ) {     // already at end
-        p = scandata.s;
-        while( *p == ' ' && p < scandata.e ) {// skip leading blanks
+    if( g_scandata.s < g_scandata.e ) {     // already at end
+        p = g_scandata.s;
+        while( *p == ' ' && p < g_scandata.e ) {// skip leading blanks
             p++;
         }
-        if( p == scandata.e ) {
+        if( p == g_scandata.e ) {
             return( CC_omit );             // nothing found
         }
 
-        if( p == scandata.e - 1 ) {     // one character token found
+        if( p == g_scandata.e - 1 ) {     // one character token found
             arg_flen = 1;
             g_tok_start = p;
-            scandata.s = p + 1;         // address of start for next call
+            g_scandata.s = p + 1;         // address of start for next call
             return( CC_pos );              // arg found
         }
 
@@ -136,11 +136,11 @@ condcode getarg( void )
             quote = ' ';
         }
         for( ;; p++ ) {
-            if( p == scandata.e || *p == '\0' ) {
+            if( p == g_scandata.e || *p == '\0' ) {
                 if( quote != ' ' ) {
                     quote = ' ';
                     p = g_tok_start;    // find end of space-delimited token
-                    while( (p < scandata.e) && (*p != ' ') ) {
+                    while( (p < g_scandata.e) && (*p != ' ') ) {
                         p++;
                     }
                 }
@@ -152,7 +152,7 @@ condcode getarg( void )
             if( quote == ' ' && (p[0] == '=') && is_quote_char( p[1] ) ) {
                 valquote = p[1];
                 p += 2;
-                for( ; *p != '\0' && p < scandata.e; p++ ) {
+                for( ; *p != '\0' && p < g_scandata.e; p++ ) {
                     if( *p == valquote ) {
                         p++;
                         break;
@@ -163,9 +163,9 @@ condcode getarg( void )
         }
         if( quote != ' ' ) {
             g_tok_start++;
-            scandata.s = p + 1;         // address of start for next call
+            g_scandata.s = p + 1;         // address of start for next call
         } else {
-            scandata.s = p;             // address of start for next call
+            g_scandata.s = p;             // address of start for next call
         }
         arg_flen = p - g_tok_start;     // length of multichar arg
         if( arg_flen > 0 ) {
@@ -197,13 +197,13 @@ condcode getqst( void )
     char            quote;
 
     cc = CC_omit;                          // arg omitted
-    if( scandata.s < scandata.e ) {     // already at end
-        p = scandata.s;
-        while( *p == ' ' && p < scandata.e ) {// skip leading blanks
+    if( g_scandata.s < g_scandata.e ) {     // already at end
+        p = g_scandata.s;
+        while( *p == ' ' && p < g_scandata.e ) {// skip leading blanks
             p++;
         }
 
-        if( p == scandata.e ) {
+        if( p == g_scandata.e ) {
             return( CC_omit );             // nothing found
         }
 
@@ -214,7 +214,7 @@ condcode getqst( void )
         } else {
             quote = ' ';
         }
-        for( ; *p != '\0' && p < scandata.e; p++ ) {  // look for end of string
+        for( ; *p != '\0' && p < g_scandata.e; p++ ) {  // look for end of string
             if( *p == quote ) {
                 if( quote == ' ' )
                     break;
@@ -228,10 +228,10 @@ condcode getqst( void )
         }
         if( quote != ' ' ) {
             g_tok_start++;
-            scandata.s = p + 1;         // start address for next call
+            g_scandata.s = p + 1;         // start address for next call
             arg_flen = p - g_tok_start; // length of arg
         } else {
-            scandata.s = p;             // address of start for next call
+            g_scandata.s = p;             // address of start for next call
             arg_flen = p - g_tok_start; // length of arg
         }
         if( arg_flen > 0 ) {

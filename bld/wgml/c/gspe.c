@@ -138,7 +138,7 @@ void    scr_pe( void )
     cwcurr[2] = 'e';
     cwcurr[3] = '\0';
 
-    p = scandata.s;
+    p = g_scandata.s;
     SkipSpaces( p );                    // next word start
     pa = p;
     SkipNonSpaces( p );                 // end of word
@@ -147,7 +147,7 @@ void    scr_pe( void )
         init_pe_line( INT_MAX );
     } else {
         gn.arg.s = pa;
-        gn.arg.e = scandata.e;
+        gn.arg.e = g_scandata.e;
         gn.ignore_blanks = false;
         cc = getnum( &gn );             // try to get numeric value
         if( cc == CC_notnum ) {
@@ -181,7 +181,7 @@ void    scr_pe( void )
                 /* never return */
             }
         } else {
-            scandata.s = gn.arg.s;
+            g_scandata.s = gn.arg.s;
             if( gn.result < 0 ) {
                 xx_line_err_exit_c( ERR_VAL_NEG, pa );
                 /* never return */
@@ -189,7 +189,7 @@ void    scr_pe( void )
             init_pe_line( gn.result );
         }
     }
-    scan_restart = scandata.e;
+    scan_restart = g_scandata.e;
     return;
 }
 

@@ -58,7 +58,7 @@ void    lay_xx( const gmltag * entry )
     att_name_type       attr_name;
     att_val_type        attr_val;
 
-    p = scandata.s;
+    p = g_scandata.s;
     cvterr = false;
     ltag = entry->u.layid;
     if( ltag == TL_CIT ) {
@@ -117,7 +117,7 @@ void    lay_xx( const gmltag * entry )
             /* never return */
         }
     }
-    scandata.s = scandata.e;
+    g_scandata.s = g_scandata.e;
     return;
 }
 

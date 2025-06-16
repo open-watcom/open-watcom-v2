@@ -221,73 +221,73 @@ static  void    CalculateLoadStore( conflict_node *conf )
     block               *blk;
     data_flow_def       *flow;
 
-    _MarkBlkAllAttrClr( BLK_CONTAINS_CALL | BLK_BLOCK_MARKED | BLK_BLOCK_VISITED );
+    _GBitAssign( id, conf->id.out_of_block );
     blk = HeadBlock;
     if( blk != NULL ) {
+        _MarkBlkAllAttrClr( BLK_CONTAINS_CALL | BLK_BLOCK_MARKED | BLK_BLOCK_VISITED );
         _MarkBlkAttrSet( blk, BLK_BIG_LABEL );
-    }
-    _GBitAssign( id, conf->id.out_of_block );
-    /*
-     * turn on bits before the conflict range
-     */
-    while( blk != NULL ) {
-        if( blk == conf->start_block )
-            break;
-        _GBitTurnOn( blk->dataflow->need_load, id );
-        _GBitTurnOn( blk->dataflow->need_store, id );
-        _MarkBlkMarked( blk );
-        blk = blk->next_block;
-    }
-    /*
-     * turn on bits in the conflict range
-     */
-    while( blk != NULL ) {
-        flow = blk->dataflow;
-        CheckRefs( conf, blk );
-        if( _GBitOverlap( flow->in, id )
-          && _IsBlkAttr( blk, BLK_BIG_LABEL ) ) {
-            _GBitTurnOn( flow->need_load, id );
-        } else {
-            _GBitTurnOff( flow->need_load, id );
-        }
-        if( _GBitOverlap( flow->out, id )
-          && _IsBlkAttr( blk, BLK_RETURN | BLK_BIG_JUMP ) ) {
-            _GBitTurnOn( flow->need_store, id );
-        } else {
-            _GBitTurnOff( flow->need_store, id );
-        }
-        if( blk->ins.head.prev != (instruction *)&blk->ins ) {
-            _INS_NOT_BLOCK( blk->ins.head.prev );
-            _INS_NOT_BLOCK( conf->ins_range.last );
-            if( blk->ins.head.prev->id >= conf->ins_range.last->id ) {
+        /*
+         * turn on bits before the conflict range
+         */
+        while( blk != NULL ) {
+            if( blk == conf->start_block )
                 break;
+            _GBitTurnOn( blk->dataflow->need_load, id );
+            _GBitTurnOn( blk->dataflow->need_store, id );
+            _MarkBlkMarked( blk );
+            blk = blk->next_block;
+        }
+        /*
+         * turn on bits in the conflict range
+         */
+        while( blk != NULL ) {
+            flow = blk->dataflow;
+            CheckRefs( conf, blk );
+            if( _GBitOverlap( flow->in, id ) && _IsBlkAttr( blk, BLK_BIG_LABEL ) ) {
+                _GBitTurnOn( flow->need_load, id );
+            } else {
+                _GBitTurnOff( flow->need_load, id );
+            }
+            if( _GBitOverlap( flow->out, id ) && _IsBlkAttr( blk, BLK_RETURN | BLK_BIG_JUMP ) ) {
+                _GBitTurnOn( flow->need_store, id );
+            } else {
+                _GBitTurnOff( flow->need_store, id );
+            }
+            if( blk->ins.head.prev != (instruction *)&blk->ins ) {
+                _INS_NOT_BLOCK( blk->ins.head.prev );
+                _INS_NOT_BLOCK( conf->ins_range.last );
+                if( blk->ins.head.prev->id >= conf->ins_range.last->id) {
+                    break;
+                }
+            }
+            blk = blk->next_block;
+        }
+        /*
+         * turn on bits after the conflict range
+         */
+        while( blk != NULL ) {
+            flow = blk->dataflow;
+            blk = blk->next_block;
+            if( blk == NULL )
+                break;
+            _MarkBlkMarked( blk );
+            _GBitTurnOn( flow->need_load, id );
+            _GBitTurnOn( flow->need_store, id );
+        }
+        LoadStoreIfCall( &id );
+        PropagateLoadStoreBits( conf->start_block, &id );
+        TurnOffLoadStoreBits( &id );
+        if( NameIsConstant( conf->name ) ) {
+            id = conf->id.out_of_block;
+            for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
+                flow = blk->dataflow;
+                _GBitTurnOff( flow->need_store, id );
             }
         }
-        blk = blk->next_block;
+        _MarkBlkAllAttrClr( BLK_CONTAINS_CALL | BLK_BLOCK_MARKED | BLK_BLOCK_VISITED );
+    } else {
+        PropagateLoadStoreBits( conf->start_block, &id );
     }
-    /*
-     * turn on bits after the conflict range
-     */
-    while( blk != NULL ) {
-        flow = blk->dataflow;
-        blk = blk->next_block;
-        if( blk == NULL )
-            break;
-        _MarkBlkMarked( blk );
-        _GBitTurnOn( flow->need_load, id );
-        _GBitTurnOn( flow->need_store, id );
-    }
-    LoadStoreIfCall( &id );
-    PropagateLoadStoreBits( conf->start_block, &id );
-    TurnOffLoadStoreBits( &id );
-    if( NameIsConstant( conf->name ) ) {
-        id = conf->id.out_of_block;
-        for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
-            flow = blk->dataflow;
-            _GBitTurnOff( flow->need_store, id );
-        }
-    }
-    _MarkBlkAllAttrClr( BLK_CONTAINS_CALL | BLK_BLOCK_MARKED | BLK_BLOCK_VISITED );
 }
 
 

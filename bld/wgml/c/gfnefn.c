@@ -70,7 +70,7 @@ void gml_fn( const gmltag * entry )
 
     g_keep_nest( "Footnote" );          // catch nesting errors
 
-    p = scandata.s;
+    p = g_scandata.s;
     SkipDot( p );                       // possible tag end
 
     fn_count++;                         // get current FN number
@@ -178,7 +178,7 @@ void gml_fn( const gmltag * entry )
             process_text( p, g_curr_font);  // if text follows
         }
     }
-    scandata.s = scandata.e;
+    g_scandata.s = g_scandata.e;
     return;
 }
 
@@ -228,7 +228,7 @@ void gml_efn( const gmltag * entry )
     t_page.cur_width = t_page.cur_left;
 
     g_scan_err = false;
-    p = scandata.s;
+    p = g_scandata.s;
     SkipDot( p );                       // possible tag end
     if( *p != '\0' ) {
         process_text( p, g_curr_font);  // if text follows
@@ -236,7 +236,7 @@ void gml_efn( const gmltag * entry )
     if( pass > 1 ) {                    // not on first pass
         fn_entry = fn_entry->next;      // get to next FN
     }
-    scandata.s = scandata.e;
+    g_scandata.s = g_scandata.e;
     return;
 }
 
