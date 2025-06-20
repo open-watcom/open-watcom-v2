@@ -651,6 +651,7 @@ usr="fcntl.h"
 usr="siginfo.h"
 usr="signal.h"
 usr="sigposix.h"
+usr="termios.h"
 
 [ DEFAULT type="s" dir="lh/arch/i386/sys" where="c jc f77 jf77 ac" cond="lnxtarg" ]
 usr="endian.h"
@@ -671,6 +672,7 @@ usr="fcntl.h"
 usr="siginfo.h"
 usr="signal.h"
 usr="sigposix.h"
+usr="termios.h"
 
 [ DEFAULT type="s" dir="lh/arch/mips/sys" where="mc" cond="lnxtarg" ]
 usr="endian.h"
@@ -684,6 +686,7 @@ usr="types.h"
 # PowerPC headers. Not currently used.
 #[ DEFAULT type="s" dir="lh/arch/ppc" where="mc" cond="lnxtarg" ]
 #usr="err_no.h"
+#usr="termios.h"
 
 #[ DEFAULT type="s" dir="lh/arch/ppc/sys" where="mc" cond="lnxtarg" ]
 #usr="endian.h"

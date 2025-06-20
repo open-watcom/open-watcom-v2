@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -47,7 +47,7 @@
 #if defined( _M_I86 ) || defined( _M_IX86 )
 #define FAR2NEAR(t,f)   ((t __near *)(long)(f))
 #else
-#define FAR2NEAR(t,f) ((t*)(f))
+#define FAR2NEAR(t,f)   ((t*)(f))
 #endif
 
 #define BLK2CSTG(f)     ((unsigned)((unsigned)(f) + TAG_SIZE))
@@ -103,12 +103,6 @@
 
 #define IS_IN_HEAP(m,h)     ((unsigned)(h) <= (unsigned)(m) && (unsigned)(m) < (unsigned)NEXT_BLK((h)))
 
-#define memcpy_i86      "shr cx,1"  "rep movsw" "adc cx,cx"   "rep movsb"
-#define memcpy_386      "shr ecx,1" "rep movsw" "adc ecx,ecx" "rep movsb"
-
-#define memset_i86      "mov ah,al" "shr cx,1"  "rep stosw" "adc cx,cx"   "rep stosb"
-#define memset_386      "mov ah,al" "shr ecx,1" "rep stosw" "adc ecx,ecx" "rep stosb"
-
 /*
 ** NOTE: the size of these data structures is critical to the alignemnt
 **       of the pointers returned by malloc().
@@ -124,7 +118,7 @@ typedef freelist        _WCNEAR *freelist_nptr;
 typedef freelist        _WCFAR *freelist_fptr;
 
 typedef union heapptr {
-#if defined( _M_I86 ) || defined( _M_IX86 )
+#if defined( _M_I86 )
     __segment           segm;
 #endif
     heapblk_nptr        nptr;
@@ -211,20 +205,28 @@ extern int              __ExpandDGROUP( unsigned int __amt );
 extern void             __UnlinkNHeap( heapblk_nptr heap, heapblk_nptr prev_heap, heapblk_nptr next_heap );
 
 #if defined( _M_I86 )
+/*
+ * 16-bit target
+ */
 extern int              __HeapManager_expand( __segment seg, void_bptr cstg, size_t req_size, size_t *growth_size );
-extern  void_bptr       __MemAllocator( unsigned __size, __segment __seg, heap_bptr __heap );
-extern  void            __MemFree( void_bptr __cstg, __segment __seg, heap_bptr __heap );
-#else
-extern int              __HeapManager_expand( void_bptr cstg, size_t req_size, size_t *growth_size );
-extern  void_bptr       __MemAllocator( unsigned __size, heap_bptr __heap );
-extern  void            __MemFree( void_bptr __cstg, heap_bptr __heap );
-#endif
-#if defined( _M_I86 )
+extern void_bptr        __MemAllocator( unsigned __size, __segment __seg, heap_bptr __heap );
+extern void             __MemFree( void_bptr __cstg, __segment __seg, heap_bptr __heap );
   #pragma aux __MemAllocator "*" __parm [__ax] [__dx] [__bx]
   #pragma aux __MemFree      "*" __parm [__ax] [__dx] [__bx]
-#elif defined( _M_IX86 )
+#else
+/*
+ * 32-bit target
+ */
+extern int              __HeapManager_expand( void_bptr cstg, size_t req_size, size_t *growth_size );
+extern void_bptr        __MemAllocator( unsigned __size, heap_bptr __heap );
+extern void             __MemFree( void_bptr __cstg, heap_bptr __heap );
+# if defined( _M_IX86 )
+/*
+ * 32-bit Intel target
+ */
   #pragma aux __MemAllocator "*" __parm [__eax] [__edx]
   #pragma aux __MemFree      "*" __parm [__eax] [__edx]
+# endif
 #endif
 
 #if defined( _M_I86 )

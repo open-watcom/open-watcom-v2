@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -53,6 +53,8 @@
 #define MAX_DATA_FILES  255
 #define MAX_BIND_DATA   65000
 #define FILE_BUFF_SIZE  COPY_SIZE
+
+#define SEEK_POSBACK(p) (-(long)(p))
 
 char        *dats[MAX_DATA_FILES];
 
@@ -167,7 +169,7 @@ static void AddDataToEXE( const char *exe, const char *outexe, char *data, bind_
     /*
      * get trailer
      */
-    if( fseek( fp, - (long)sizeof( buff ), SEEK_END ) ) {
+    if( fseek( fp, SEEK_POSBACK( sizeof( buff ) ), SEEK_END ) ) {
         fclose( fp );
         Abort( "Initial seek error on \"%s\"", exe );
     }

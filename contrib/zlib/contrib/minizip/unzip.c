@@ -77,9 +77,11 @@ woven in by Terry Thorsen 1/2003.
 #ifndef ALLOC
 # define ALLOC(size) (malloc(size))
 #endif
-#ifndef TRYFREE
-# define TRYFREE(p) {if (p) free(p);}
+#ifndef FREE
+# define FREE(p)     (free(p))
 #endif
+
+#define TRYFREE(p) {if (p) FREE(p);}
 
 #define SIZECENTRALDIRITEM (0x2e)
 #define SIZEZIPLOCALHEADER (0x1e)

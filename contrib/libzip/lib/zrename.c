@@ -33,12 +33,12 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-
+
 
 #include "zip.h"
 #include "zipint.h"
 
-
+
 
 int
 zip_rename(struct zip *za, int idx, const char *name)

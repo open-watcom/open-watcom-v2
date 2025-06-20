@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,7 +36,7 @@
 
 void __fsetbits( unsigned char _WCFAR *vector, const char _WCFAR *charset )
 {
-    char    c;
+    unsigned char   c;
 
     _fmemset( vector, 0, CHARVECTOR_SIZE );
     for( ; c = *charset; ++charset ) {

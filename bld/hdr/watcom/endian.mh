@@ -8,6 +8,10 @@
 
 :include readonly.sp
 
+:segment LINUX
+:include incdir.sp
+
+:endsegment
 :include extposix.sp
 
 #define LITTLE_ENDIAN   1234
@@ -38,8 +42,6 @@
 )
 
 :segment LINUX
-:include incdir.sp
-
 #include _ARCH_INCLUDE(sys/endian.h)
 :elsesegment
 #define BYTE_ORDER      LITTLE_ENDIAN

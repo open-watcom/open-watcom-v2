@@ -170,26 +170,17 @@ static void ClearCachedData( const file_list *list )
     }
 }
 
-bool IsORL( const file_list *list, unsigned long loc )
-/*****************************************************
+orl_file_format FileTypeORL( const file_list *list, unsigned long loc )
+/**********************************************************************
  * return true if this is can be handled by ORL
  */
 {
     orl_file_format     type;
-    bool                isOK;
 
-    isOK = true;
     ORLFileSeek( list, loc, SEEK_SET );
     type = ORLFileIdentify( ORLHandle, (struct orl_io_struct *)list );
-    if( type == ORL_ELF ) {
-        ObjFormat |= FMT_ELF;
-    } else if( type == ORL_COFF ) {
-        ObjFormat |= FMT_COFF;
-    } else {
-        isOK = false;
-    }
     ClearCachedData( list );
-    return( isOK );
+    return( type );
 }
 
 static void FiniFile( orl_file_handle filehdl, const file_list *list )

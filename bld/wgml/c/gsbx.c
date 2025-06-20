@@ -2519,7 +2519,7 @@ void scr_bx( void )
         cur_doc_el_group = NULL;                // top line of outer box
     }
 
-    p = scandata.s;
+    p = g_scandata.s;
     SkipSpaces( p );
     pa = p;
     SkipNonSpaces( p );
@@ -2541,7 +2541,7 @@ void scr_bx( void )
             cur_op = bx_set;
         }
     } else if( (len == 4) && strnicmp( "char", pa , len ) == 0 ) {
-        scan_restart = scandata.e;
+        scan_restart = g_scandata.e;
         return;
     }
 
@@ -2552,7 +2552,7 @@ void scr_bx( void )
     SkipSpaces( p );
 
     if( !ProcFlags.in_bx_box && *p == '\0' ) {  // if not in a box, box columns must be given
-        scan_restart = scandata.e;
+        scan_restart = g_scandata.e;
         return;
     }
 
@@ -2856,7 +2856,7 @@ void scr_bx( void )
 
     set_h_start();                          // pick up any indents
 
-    scan_restart = scandata.e;
+    scan_restart = g_scandata.e;
 
     return;
 }

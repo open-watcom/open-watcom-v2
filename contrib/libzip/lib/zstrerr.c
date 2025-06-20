@@ -33,12 +33,12 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-
+
 
 #include "zip.h"
 #include "zipint.h"
 
-
+
 
 const char *
 zip_strerror(struct zip *za)

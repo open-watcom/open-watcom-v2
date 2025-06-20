@@ -38,6 +38,7 @@
 #include "wgml.h"
 #include "copfunc.h"
 
+
 /* Extern function definitions. */
 
 /* Function get_code_blocks().

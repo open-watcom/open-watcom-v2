@@ -51,7 +51,7 @@ static char * get_ref_attributes( void )
     att_val_type    attr_val;
 
     g_scan_err = false;
-    p = scandata.s;
+    p = g_scandata.s;
 
     if( *p == '.' ) {
         /* already at tag end */
@@ -196,7 +196,7 @@ void gml_figref( const gmltag * entry )
         }
     }
 
-    scandata.s = scandata.e;
+    g_scandata.s = g_scandata.e;
 
     return;
 }
@@ -332,7 +332,7 @@ void gml_hdref( const gmltag * entry )
         }
     }
 
-    scandata.s = scandata.e;
+    g_scandata.s = g_scandata.e;
 
     return;
 }
@@ -391,7 +391,7 @@ void gml_fnref( const gmltag * entry )
         }
     }
 
-    scandata.s = scandata.e;
+    g_scandata.s = g_scandata.e;
     return;
 }
 

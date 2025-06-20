@@ -35,13 +35,19 @@ struct internal_state {int dummy;}; /* for buggy compilers */
    FILE *fdopen(int, const char *);
 #endif
 
-#ifndef STDC
-extern voidp  malloc OF((uInt size));
-extern void   free   OF((voidpf ptr));
+#ifndef ALLOC
+#define ALLOC	malloc
+#endif
+#ifndef FREE
+#define FREE	free
 #endif
 
-#define ALLOC(size) malloc(size)
-#define TRYFREE(p) {if (p) free(p);}
+#ifndef STDC
+extern voidp  ALLOC OF((uInt size));
+extern void   FREE  OF((voidpf ptr));
+#endif
+
+#define TRYFREE(p) {if (p) FREE(p);}
 
 static int const gz_magic[2] = {0x1f, 0x8b}; /* gzip magic header */
 

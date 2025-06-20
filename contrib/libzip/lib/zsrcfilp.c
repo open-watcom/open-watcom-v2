@@ -33,7 +33,7 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-
+
 
 #include <sys/stat.h>
 #include <errno.h>
@@ -56,7 +56,7 @@ struct read_file {
 static ssize_t read_file(void *state, void *data, size_t len,
                      enum zip_source_cmd cmd);
 
-
+
 
 struct zip_source *
 zip_source_filep(struct zip *za, const char *file, off_t start, off_t len)
@@ -72,7 +72,7 @@ zip_source_filep(struct zip *za, const char *file, off_t start, off_t len)
         return NULL;
     }
 
-    if ((f=(struct read_file *)malloc(sizeof(struct read_file))) == NULL) {
+    if ((f=(struct read_file *)ZIP_ALLOC(sizeof(struct read_file))) == NULL) {
         _zip_error_set(&za->error, ZIP_ER_MEMORY, 0);
         return NULL;
     }
@@ -83,14 +83,14 @@ zip_source_filep(struct zip *za, const char *file, off_t start, off_t len)
     f->len = (len ? len : -1);
 
     if ((zs=zip_source_function(za, read_file, f)) == NULL) {
-        free(f);
+        ZIP_FREE(f);
         return NULL;
     }
 
     return zs;
 }
 
-
+
 
 static ssize_t
 read_file(void *state, void *data, size_t len, enum zip_source_cmd cmd)
@@ -189,8 +189,8 @@ read_file(void *state, void *data, size_t len, enum zip_source_cmd cmd)
         return sizeof(int)*2;
 
     case ZIP_SOURCE_FREE:
-        free(z->fname);
-        free(z);
+        ZIP_FREE(z->fname);
+        ZIP_FREE(z);
         return 0;
 
     default:

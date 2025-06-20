@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,11 +30,12 @@
 ****************************************************************************/
 
 
-#ifdef __INT64__
-
 #include "variety.h"
 #include <sys/types.h>
 #include <sys/stat.h>
+
+#ifdef __INT64__
+
 
 
 _WCRTLINK int _fstati64( int handle, struct _stati64 *buf )
@@ -71,12 +72,9 @@ _WCRTLINK int _fstati64( int handle, struct _stati64 *buf )
 
 #else   /* !__INT64__ */
 
-#include "variety.h"
 #include <stdio.h>
 #include <stddef.h>
 #include <string.h>
-#include <sys/types.h>
-#include <sys/stat.h>
 #include <io.h>
 #include <dos.h>
 #include "rtdata.h"

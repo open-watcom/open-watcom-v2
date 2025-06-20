@@ -1,5 +1,7 @@
 proj_name = gui
 
+gui_nofpu = 1
+
 gui_nodoslfn = 1
 
 !ifndef bootstrap

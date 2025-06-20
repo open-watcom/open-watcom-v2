@@ -306,7 +306,7 @@ _WCRTLINK extern int        need_usage( char **__argv );
 _WCRTLINK extern int        print_usage( char **__argv );
 _WCRTLINK extern void       searchenv( const char *__name, const char *__env_var, char *__buf );
 :endsegment
-_WCRTLINK extern void       swab( char *__src, char *__dest, int __num );
+:include swab.sp
 _WCRTLINK extern char       *ultoa( unsigned long __value, char *__buf, int __radix );
 _WCRTLINK extern char       *ulltoa( unsigned long long __value, char *__buf, int __radix );
 _WCRTLINK extern char       *_ultoa( unsigned long __value, char *__buf, int __radix );

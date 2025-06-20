@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,63 +38,6 @@
 #include "heap.h"
 #include "heapacc.h"
 
-
-#if defined( _M_I86 )
-// 16-bit Intel
-#if defined(__SMALL_DATA__) || defined(__WINDOWS__)
-// small data models
-extern void _mymemcpy( void_fptr, void_nptr, size_t );
-#pragma aux _mymemcpy = \
-        memcpy_i86      \
-    __parm __caller     [__es __di] [__si] [__cx] \
-    __value             \
-    __modify __exact    [__si __di __cx]
-#else
-// big data models
-extern void _mymemcpy( void_fptr, void_fptr, size_t );
-#pragma aux _mymemcpy = \
-        "push ds"       \
-        "mov ds,dx"     \
-        memcpy_i86      \
-        "pop ds"        \
-    __parm __caller     [__es __di] [__dx __si] [__cx] \
-    __value             \
-    __modify __exact    [__si __di __cx]
-#endif
-#elif defined( _M_IX86 )
-// 32-bit Intel
-#if defined( __FLAT__ )
-// flat model
-extern void _mymemcpy( void_nptr, void_nptr, size_t );
-#pragma aux _mymemcpy = \
-        memcpy_386      \
-    __parm __caller     [__edi] [__esi] [__ecx] \
-    __value             \
-    __modify __exact    [__esi __edi __ecx]
-#elif defined(__SMALL_DATA__)
-// small data models
-extern void _mymemcpy( void_fptr, void_nptr, size_t );
-#pragma aux _mymemcpy = \
-        memcpy_386      \
-    __parm __caller     [__es __edi] [__esi] [__ecx] \
-    __value             \
-    __modify __exact    [__esi __edi __ecx]
-#else
-// big data models
-extern void _mymemcpy( void_fptr, void_fptr, size_t );
-#pragma aux _mymemcpy = \
-        "push ds"       \
-        "mov ds,edx"    \
-        memcpy_386      \
-        "pop ds"        \
-    __parm __caller     [__es __edi] [__dx __esi] [__ecx] \
-    __value             \
-    __modify __exact    [__esi __edi __ecx]
-#endif
-#else
-// non-Intel targets
-#define _mymemcpy   memcpy
-#endif
 
 #if defined(__SMALL_DATA__)
 
@@ -148,7 +91,7 @@ _WCRTLINK void_nptr _nrealloc( void_nptr cstg_old, size_t req_size )
         cstg_new = _nmalloc( req_size );        /* - allocate a new block */
 #endif
         if( cstg_new != NULL ) {                /* - if we got one */
-            _mymemcpy( cstg_new, cstg_old, old_size );  /* copy it */
+            memcpy( cstg_new, cstg_old, old_size );  /* copy it */
             _nfree( cstg_old );                 /* and free old one */
         } else {
             _nexpand( cstg_old, old_size );     /* reset back to old size */

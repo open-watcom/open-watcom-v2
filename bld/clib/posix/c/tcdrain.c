@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2016-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2025 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -24,32 +24,27 @@
 *
 *  ========================================================================
 *
-* Description:  Implementation of termios tcgetattr for Linux
-*
-* Author: J. Armstrong
+* Description:  Implementation of POSIX tcdrain
 *
 ****************************************************************************/
 
 
 #include "variety.h"
-#include <stddef.h>
-#include <sys/ioctl.h>
 #include <termios.h>
-#include "linuxsys.h"
+#ifdef __LINUX__
+    #include <sys/ioctl.h>
+#else
+    #include "rterrno.h"
+    #include "thread.h"
+#endif
 
 
-_WCRTLINK int tcgetattr( int fd, struct termios *t )
+_WCRTLINK int tcdrain( int fd )
 {
-    syscall_res res;
-
-    if( t == NULL ) {
-        _RWD_errno = EINVAL;
-        return( -1 );
-    }
-
-    /* OW's struct termios is the same (basically) as the kernel's
-     * termios
-     */
-    res = sys_call3( SYS_ioctl, (u_long)fd, (u_long)TCGETS, (u_long)t);
-    __syscall_return( int, res );
+#ifdef __LINUX__
+    return( ioctl( fd, TCSBRK, 1 ) );
+#else
+    _RWD_errno = EINVAL;
+    return( -1 );
+#endif
 }

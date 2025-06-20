@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,11 +31,11 @@
 ****************************************************************************/
 
 
+#define __FUNCTION_DATA_ACCESS
 #include "variety.h"
 #include <mbstring.h>
 #include <string.h>
 #include "farfunc.h"
-
 
 
 /****

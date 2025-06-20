@@ -33,4 +33,4 @@ exetarg_objs          = ytab.obj main.obj scan.obj error.obj semantic.obj output
 #
 ytab.c ytab.h: ../yydriver.c ../defgen.y
     @%make echo_yacc
-    $(noecho)yacc -d -dd $]@ $[@
+    $(noecho)$(yacc) -d -dd $]@ $[@

@@ -167,16 +167,16 @@ void    scr_label( void )
     char            linestr[NUM2STR_LENGTH + 1];
     char            labelname[LABEL_NAME_LENGTH + 1];
 
-    SkipSpaces( scandata.s );       // may be ...LABEL or ...<blanks>LABEL, skip over blanks
-    if( *scandata.s == '\0'  ) {    // no label?
+    SkipSpaces( g_scandata.s );       // may be ...LABEL or ...<blanks>LABEL, skip over blanks
+    if( *g_scandata.s == '\0'  ) {    // no label?
         xx_source_err_exit_c( ERR_MISSING_NAME, "" );
         /* never return */
     }
-    gn.arg = scandata;
+    gn.arg = g_scandata;
     gn.ignore_blanks = false;
     cc = getnum( &gn );             // try numeric expression evaluation
     if( cc == CC_pos ) {               // numeric linenumber
-        scandata.s = gn.arg.s;      // start for next token
+        g_scandata.s = gn.arg.s;      // start for next token
 
         // check if lineno from label matches actual lineno
 
@@ -252,14 +252,14 @@ void    scr_label( void )
         }
     }
 
-    if( *scandata.s == ' ' ) {
-        scandata.s++;               // skip one blank
+    if( *g_scandata.s == ' ' ) {
+        g_scandata.s++;               // skip one blank
 
-        if( *scandata.s != '\0' ) {         // rest of line is not empty
-            split_input( buff2, scandata.s, input_cbs->fmflags );   // split and process next
+        if( *g_scandata.s != '\0' ) {         // rest of line is not empty
+            split_input( buff2, g_scandata.s, input_cbs->fmflags );   // split and process next
         }
     }
-    scan_restart = scandata.e;
+    scan_restart = g_scandata.e;
     return;
 }
 
@@ -325,7 +325,7 @@ void    scr_go( void )
     }
 
     gn.arg.s = g_tok_start;
-    gn.arg.e = scandata.e;
+    gn.arg.e = g_scandata.e;
     gn.ignore_blanks = false;
     cc = getnum( &gn );             // try numeric expression evaluation
     if( cc == CC_pos  || cc == CC_neg) {     // numeric linenumber
@@ -381,7 +381,7 @@ void    scr_go( void )
     input_cbs->hidden_head = NULL;
     input_cbs->hidden_tail = NULL;
     ProcFlags.goto_active = true;           // special goto processing
-    scan_restart = scandata.e;
+    scan_restart = g_scandata.e;
 }
 
 

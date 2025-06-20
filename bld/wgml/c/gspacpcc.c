@@ -135,7 +135,7 @@ void scr_pa( void )
     /* page.                                                  */
     /**********************************************************/
 
-    p = scandata.s;
+    p = g_scandata.s;
     SkipSpaces( p );                    // next word start
     pa = p;
     SkipNonSpaces( p );                 // end of word
@@ -180,7 +180,7 @@ void scr_pa( void )
         do_output( true );
         break;
     }
-    scan_restart = scandata.e;
+    scan_restart = g_scandata.e;
     return;
 }
 
@@ -285,7 +285,7 @@ static void scr_cc_cp_common( bool do_pa )
 
     start_doc_sect();
     ProcFlags.cc_cp_done = true;
-    p = scandata.s;
+    p = g_scandata.s;
     SkipSpaces( p );                    // next word start
     pa = p;
     SkipNonSpaces( p );                 // end of word

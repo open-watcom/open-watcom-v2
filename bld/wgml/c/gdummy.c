@@ -49,7 +49,7 @@ void    scr_dummy( void )
     cwcurr[2] = token_buf[1];
     cwcurr[3] = '\0';
 
-    scan_restart = scandata.e;
+    scan_restart = g_scandata.e;
 
     xx_warn_c( WNG_UNSUPP_CW, cwcurr );
 }
@@ -62,7 +62,7 @@ void    scr_dummy( void )
 void    gml_dummy( const gmltag * entry )
 {
 
-    scandata.s = scandata.e;
+    g_scandata.s = g_scandata.e;
 
     xx_warn_c( WNG_UNSUPP_TAG, entry->tagname );
 }
@@ -74,7 +74,7 @@ void    gml_dummy( const gmltag * entry )
 void    lay_dummy( const gmltag * entry )
 {
 
-    scandata.s = scandata.e;
+    g_scandata.s = g_scandata.e;
 
     xx_warn_c( WNG_UNSUPP_LAY, entry->tagname );
     eat_lay_sub_tag();                  // ignore any attribute / value

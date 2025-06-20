@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,18 +33,19 @@
 
 #include "variety.h"
 #include <string.h>
+#include "farfunc.h"
 
-_WCRTLINK void *memccpy( void *d, const void *s, int c, size_t cnt )
-    {
-        char *dst = d;
-        const char *src = s;
-        for(;;) {
-            if( cnt == 0 ) break;
-            *dst = *src;
-            ++dst;
-            if( *src == c ) return( dst );
-            ++src;
-            --cnt;
+
+_WCRTLINK void _FFAR * _NEARFAR(memccpy,_fmemccpy)( void _FFAR *vd, const void _FFAR *vs, int c, size_t cnt )
+{
+    unsigned char _FFAR *d;
+    const unsigned char _FFAR *s;
+
+    for( d = vd, s = vs; cnt != 0; ++s, --cnt ) {
+        *d++ = *s;
+        if( *s == c ) {
+            return( (void _FFAR *)d );
         }
-        return( NULL );
     }
+    return( NULL );
+}

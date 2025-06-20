@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+* Copyright (c) 2016-2025 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -24,30 +24,50 @@
 *
 *  ========================================================================
 *
-* Description:  Implementation for tcsetattr() for Linux.
+* Description:  Implementation of POSIX tcsetattr
 *
 ****************************************************************************/
 
 
 #include "variety.h"
+#include <stddef.h>
 #include <termios.h>
-#include <sys/ioctl.h>
+#ifdef __LINUX__
+    #include <sys/ioctl.h>
+#else
+#endif
 #include "rterrno.h"
 #include "thread.h"
 
 
-_WCRTLINK int tcsetattr( int __fd, int __optional_actions, const struct termios *__termios_p )
+_WCRTLINK int tcsetattr( int fd, int actions, const struct termios *t )
 {
-    switch(__optional_actions) {
+#ifdef __LINUX__
+    int cmd;
+
+    if( t == NULL ) {
+        _RWD_errno = EINVAL;
+        return( -1 );
+    }
+
+    switch( actions ) {
     case TCSANOW:
-        return( ioctl( __fd, TCSETS, __termios_p ) );
+        cmd = TCSETS;
+        break;
     case TCSADRAIN:
-        return( ioctl( __fd, TCSETSW, __termios_p ) );
+        cmd = TCSETSW;
+        break;
     case TCSAFLUSH:
-        return( ioctl( __fd, TCSETSF, __termios_p ) );
+        cmd = TCSETSF;
+        break;
     default:
         _RWD_errno = EINVAL;
         return( -1 );
     }
-}
 
+    return( ioctl( fd, cmd, t ) );
+#else
+    _RWD_errno = EINVAL;
+    return( -1 );
+#endif
+}

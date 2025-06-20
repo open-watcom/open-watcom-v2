@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2016-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2016-2025 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -24,43 +24,32 @@
 *
 *  ========================================================================
 *
-* Description:  Implementation of termios tcsetattr for Linux
-*
-* Author: J. Armstrong
+* Description:  Implementation of POSIX tcgetsid
 *
 ****************************************************************************/
 
 
 #include "variety.h"
-#include <stddef.h>
-#include <sys/ioctl.h>
 #include <termios.h>
-#include "linuxsys.h"
+#ifdef __LINUX__
+    #include <sys/ioctl.h>
+    #include <sys/types.h>
+#else
+    #include "rterrno.h"
+    #include "thread.h"
+#endif
 
 
-_WCRTLINK int tcsetattr( int fd, int actions, const struct termios *t )
+_WCRTLINK pid_t tcgetsid( int fd )
 {
-    int cmd;
+#ifdef __LINUX__
+    pid_t   sid;
 
-    if( t == NULL ) {
-        _RWD_errno = EINVAL;
+    if( ioctl( fd, TIOCGSID, &sid ) == -1 )
         return( -1 );
-    }
-
-    switch( actions ) {
-    case TCSANOW:
-        cmd = TCSETS;
-        break;
-    case TCSADRAIN:
-        cmd = TCSETSW;
-        break;
-    case TCSAFLUSH:
-        cmd = TCSETSF;
-        break;
-    default:
-        _RWD_errno = EINVAL;
-        return( -1 );
-    }
-
-    return( ioctl( fd, cmd, t ) );
+    return( sid );
+#else
+    _RWD_errno = EINVAL;
+    return( -1 );
+#endif
 }

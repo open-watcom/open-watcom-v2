@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,14 +33,15 @@
 
 #include "variety.h"
 #include <conio.h>
+#include "xstring.h"
 
 
 _WCRTLINK int cputs( const char *s )              /* put string s to console */
-    {
-        int c;
+{
+    int c;
 
-        while( c = *s++ ) {
-            putch( c );
-        }
-        return( 0 );
+    while( (c = CHAR2INT( *s++ )) != '\0' ) {
+        putch( c );
     }
+    return( 0 );
+}

@@ -30,9 +30,9 @@
 ****************************************************************************/
 
 
+#undef __INLINE_FUNCTIONS__
 #include "variety.h"
 #include "widechar.h"
-#undef __INLINE_FUNCTIONS__
 /* most includes should go after this line */
 #include <stddef.h>
 #include <sys/types.h>

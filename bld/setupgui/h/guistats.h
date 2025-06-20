@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,7 +33,7 @@
 extern void StatusShow( bool show );
 extern void StatusFini( void );
 extern void StatusLines( int msg0, const char *message1 );
-extern void BumpStatus( long by );
-extern void StatusAmount( long parts_complete, long parts_injob );
+extern void BumpStatus( unsigned by );
+extern void StatusAmount( unsigned parts_complete, unsigned parts_injob );
 extern bool StatusCancelled( void );
 extern void StatusInit( void );

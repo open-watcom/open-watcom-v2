@@ -211,8 +211,8 @@ typedef struct {
 /* Holds the offsets to the parameter(s). */
 
 typedef struct {
-    uint16_t    first;
-    uint16_t    second;
+    unsigned    first;
+    unsigned    second;
 } parameters;
 
 /* Local typedef. */
@@ -1168,7 +1168,7 @@ static void *get_parameters( parameters *in_parameters )
  *      the value returned by the device function invoked.
 */
 
-static void *process_parameter( uint16_t param )
+static void *process_parameter( unsigned param )
 {
     current_df_data.current = current_df_data.base + param;
 
@@ -1240,7 +1240,7 @@ static void *df_out_text_device( void )
         /* Ensure that this is either a ShortHeader or a LongHeader. */
 
         get_parameters( &my_parameters );
-        if( (my_parameters.first != 0x0009) && (my_parameters.first != 0x000d) ) {
+        if( (my_parameters.first != 9) && (my_parameters.first != 13) ) {
             internal_err_exit( __FILE__, __LINE__ );
             /* never return */
         }
@@ -1290,7 +1290,7 @@ static void out_text_driver( bool out_trans, bool out_text )
         /* Ensure that this is either a ShortHeader or a LongHeader. */
 
         get_parameters( &my_parameters );
-        if( (my_parameters.first != 0x0009) && (my_parameters.first != 0x000d) ) {
+        if( (my_parameters.first != 9) && (my_parameters.first != 13) ) {
             internal_err_exit( __FILE__, __LINE__ );
             /* never return */
         }
@@ -1367,7 +1367,7 @@ static void *char_literal( void )
 
 static void *numeric_literal( void )
 {
-    uint16_t    value;
+    unsigned    value;
 
     /* Skip the Offsets. */
 
@@ -1375,8 +1375,8 @@ static void *numeric_literal( void )
 
     /* Get and return the value. */
 
-    memcpy( &value, current_df_data.current, sizeof( value ) );
-    return( (void *)value );
+    value = get_u16( &current_df_data.current );
+    return( (void *)(uintptr_t)value );
 }
 
 /* These functions take parameters in parameter blocks only. */
@@ -1406,7 +1406,7 @@ static void *df_cancel( void )
     /* Ensure that this is either a ShortHeader or a LongHeader. */
 
     get_parameters( &my_parameters );
-    if( (my_parameters.first != 0x0009) && (my_parameters.first != 0x000d) ) {
+    if( (my_parameters.first != 9) && (my_parameters.first != 13) ) {
         internal_err_exit( __FILE__, __LINE__ );
         /* never return */
     }
@@ -1487,7 +1487,7 @@ static void *df_sleep( void )
     /* Ensure that this is either a ShortHeader or a LongHeader. */
 
     get_parameters( &my_parameters );
-    if( (my_parameters.first != 0x0009) && (my_parameters.first != 0x000d) ) {
+    if( (my_parameters.first != 9) && (my_parameters.first != 13) ) {
         internal_err_exit( __FILE__, __LINE__ );
         /* never return */
     }
@@ -1528,7 +1528,7 @@ static void *df_setsymbol( void )
     /* Ensure that this is either a ShortHeader or a LongHeader. */
 
     get_parameters( &my_parameters );
-    if( (my_parameters.first != 0x0009) && (my_parameters.first != 0x000d) ) {
+    if( (my_parameters.first != 9) && (my_parameters.first != 13) ) {
         internal_err_exit( __FILE__, __LINE__ );
         /* never return */
     }
@@ -1576,7 +1576,7 @@ static void *df_binary( void )
     /* Ensure that this is either a ShortHeader or a LongHeader. */
 
     get_parameters( &my_parameters );
-    if( (my_parameters.first != 0x0009) && (my_parameters.first != 0x000d) ) {
+    if( (my_parameters.first != 9) && (my_parameters.first != 13) ) {
         internal_err_exit( __FILE__, __LINE__ );
         /* never return */
     }
@@ -1618,7 +1618,7 @@ static void *df_binary( void )
 
 static void skip_functions( void )
 {
-    uint16_t    current_offset;
+    unsigned    current_offset;
 
     /* current_df_data.base points at the binary code for the conditional
      * function. current_function needs to point to the next top-level
@@ -1627,9 +1627,8 @@ static void skip_functions( void )
      * must be added to current_df_data.base.
      */
 
-    current_function = current_df_data.base;
-    current_function -= 3;
-    memcpy( &current_offset, current_function, sizeof( current_offset ) );
+    current_function = current_df_data.base - 3;
+    current_offset = get_u16( &current_function );
     current_function = current_df_data.base + current_offset;
 
     for( ;; ) {
@@ -1637,8 +1636,7 @@ static void skip_functions( void )
          * the byte before where the parameter block starts, if one is present.
          */
 
-        current_df_data.base = current_function;
-        current_df_data.base += 3;
+        current_df_data.base = current_function + 3;
         current_df_data.current = current_function;
 
         /* Get the offset to the next element in the linked list. */
@@ -1693,7 +1691,7 @@ static void *df_ifeqn( void )
     /* Ensure that this is either a ShortHeader or a LongHeader. */
 
     get_parameters( &my_parameters );
-    if( (my_parameters.first != 0x0009) && (my_parameters.first != 0x000d) ) {
+    if( (my_parameters.first != 9) && (my_parameters.first != 13) ) {
         internal_err_exit( __FILE__, __LINE__ );
         /* never return */
     }
@@ -1734,7 +1732,7 @@ static void *df_ifnen( void )
     /* Ensure that this is either a ShortHeader or a LongHeader. */
 
     get_parameters( &my_parameters );
-    if( (my_parameters.first != 0x0009) && (my_parameters.first != 0x000d) ) {
+    if( (my_parameters.first != 9) && (my_parameters.first != 13) ) {
         internal_err_exit( __FILE__, __LINE__ );
         /* never return */
     }
@@ -1775,7 +1773,7 @@ static void *df_ifeqs( void )
     /* Ensure that this is either a ShortHeader or a LongHeader. */
 
     get_parameters( &my_parameters );
-    if( (my_parameters.first != 0x0009) && (my_parameters.first != 0x000d) ) {
+    if( (my_parameters.first != 9) && (my_parameters.first != 13) ) {
         internal_err_exit( __FILE__, __LINE__ );
         /* never return */
     }
@@ -1821,7 +1819,7 @@ static void *df_ifnes( void )
     /* Ensure that this is either a ShortHeader or a LongHeader. */
 
     get_parameters( &my_parameters );
-    if( (my_parameters.first != 0x0009) && (my_parameters.first != 0x000d) ) {
+    if( (my_parameters.first != 9) && (my_parameters.first != 13) ) {
         internal_err_exit( __FILE__, __LINE__ );
         /* never return */
     }
@@ -2278,7 +2276,7 @@ static void interpret_functions( const char *in_function )
     bool            old_last_done = false;
     df_function     *old_function_table = NULL;
     const char      *old_function = NULL;
-    uint16_t        current_offset;
+    unsigned        current_offset;
 
     /* An empty or missing block is not an error, but a warning is issued
      * in case the calling code needs adjustment.
@@ -2306,8 +2304,7 @@ static void interpret_functions( const char *in_function )
          * the byte before where the parameter block starts, if one is present.
          */
 
-        current_df_data.base = current_function;
-        current_df_data.base += 3;
+        current_df_data.base = current_function + 3;
         current_df_data.current = current_function;
 
         /* Get the offset to the next element in the linked list. */

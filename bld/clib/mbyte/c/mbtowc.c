@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -29,6 +30,7 @@
 ****************************************************************************/
 
 
+#define __FUNCTION_DATA_ACCESS
 #include "variety.h"
 #include <stdlib.h>
 #ifdef __NT__
@@ -38,6 +40,7 @@
 #endif
 #include <mbstring.h>
 #include "farfunc.h"
+#include "xstring.h"
 
 
 #define TO_WCHAR(c) ((wchar_t)(unsigned char)(c))
@@ -50,18 +53,20 @@ _WCRTLINK int _NEARFAR(mbtowc,_fmbtowc)( wchar_t _FFAR *pwc, const char _FFAR *c
     int                 buflen;
     wchar_t             wch;
 #endif
+    int                 c;
 
     /*** Catch special cases ***/
     if( ch == NULL )
         return( 0 );
     if( n == 0 )
         return( -1 );
-    if( *ch == '\0' ) {
+    c = CHAR2INT( *ch );
+    if( c == '\0' ) {
         if( pwc != NULL )
             *pwc = L'\0';
         return( 0 );
     }
-    if( _ismbblead( (unsigned char)ch[0] ) && ch[1] == '\0' )
+    if( _ismbblead( c ) && ch[1] == '\0' )
         return( -1 ); /* invalid */
 
     /*** Convert the character ***/
@@ -78,15 +83,14 @@ _WCRTLINK int _NEARFAR(mbtowc,_fmbtowc)( wchar_t _FFAR *pwc, const char _FFAR *c
         return( -1 );                                   /* cannot convert */
     }
 #else
-    if( _ismbblead( (unsigned char)*ch ) && n >= 2 ) {  /* lead byte present? */
+    if( _ismbblead( c ) && n >= 2 ) {                   /* lead byte present? */
         if( pwc != NULL ) {
-            *pwc = (TO_WCHAR( ch[0] ) << 8) |           /* convert to lead:trail */
-                    TO_WCHAR( ch[1] );
+            *pwc = (c << 8) | TO_WCHAR( ch[1] );
         }
         return( 2 );                                    /* return char size */
-    } else if( !_ismbblead( (unsigned char)*ch ) ) {
+    } else if( !_ismbblead( c ) ) {
         if( pwc != NULL ) {
-            *pwc = TO_WCHAR( ch[0] );                   /* convert to 00:byte */
+            *pwc = c;                                   /* convert to 00:byte */
         }
         return( 1 );                                    /* return char size */
     } else {

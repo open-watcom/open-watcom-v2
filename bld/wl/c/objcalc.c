@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -705,7 +705,7 @@ static void setDefBase( void )
 #endif
 #ifdef _QNX
     if( FmtData.type & MK_QNX_FLAT ) {
-        FmtData.base = __ROUND_UP_SIZE( StackSize + QNX_DEFAULT_BASE, _4K );
+        FmtData.base = __ROUND_UP_SIZE_4K( StackSize + QNX_DEFAULT_BASE );
         return;
     }
 #endif

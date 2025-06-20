@@ -297,7 +297,7 @@ static bool ZapKey( const VBUF *app_name, const char *old, const char *new,
                 if( strncmp( old, buff, old_len ) == 0 ) {
                     if( num++ == pos ) {
                         memcpy( buff, new, old_len );
-                        fseek( io, -(long)(strlen( buff ) + 1), SEEK_CUR );
+                        fseek( io, SEEK_POSBACK( strlen( buff ) + 1 ), SEEK_CUR );
                         fputs( buff, io );
                         fclose( io );
                         return( true );

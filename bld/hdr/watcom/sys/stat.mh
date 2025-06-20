@@ -15,6 +15,9 @@
 :segment DOS
 :include lfndos.sp
 
+:elsesegment LINUX
+:include incdir.sp
+
 :endsegment
 :include cpluspro.sp
 
@@ -48,8 +51,6 @@
 #define _STAT_VER_SVR4      2
 #define _STAT_VER_LINUX     3
 #define _STAT_VER           _STAT_VER_LINUX /* The one defined below.  */
-
-:include incdir.sp
 
 #include _ARCH_INCLUDE(sys/stat.h)
 

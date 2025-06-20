@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -43,7 +43,10 @@
 #ifdef TRMEM
     #include "trmem.h"
 #endif
-#include "wresmem.h"
+#ifdef USE_WRESLIB
+    #include "wresmem.h"
+#endif
+#include "zipmem.h"
 
 
 #ifdef TRMEM
@@ -155,7 +158,17 @@ void *GUIMemAlloc( size_t size )
     return( malloc( size ) );
 #endif
 }
+void *zip_alloc( size_t size )
+/****************************/
+{
+#ifdef TRMEM
+    return( _trmem_alloc( size, _trmem_guess_who(), GUIMemHandle ) );
+#else
+    return( malloc( size ) );
+#endif
+}
 #if defined( GUI_IS_GUI )
+#if defined( __OS2__ )
 void * _wpi_malloc( size_t size )
 {
 #ifdef TRMEM
@@ -164,6 +177,7 @@ void * _wpi_malloc( size_t size )
     return( malloc( size ) );
 #endif
 }
+#endif
 #else
 void * UIAPI uimalloc( size_t size )
 {
@@ -182,6 +196,7 @@ void *HelpMemAlloc( size_t size )
 #endif
 }
 #endif
+#ifdef USE_WRESLIB
 void *wres_alloc( size_t size )
 {
 #ifdef TRMEM
@@ -190,6 +205,7 @@ void *wres_alloc( size_t size )
     return( malloc( size ) );
 #endif
 }
+#endif
 
 /*
  * Free functions
@@ -204,7 +220,17 @@ void GUIMemFree( void *ptr )
     free( ptr );
 #endif
 }
+void zip_free( void *ptr )
+/************************/
+{
+#ifdef TRMEM
+    _trmem_free( ptr, _trmem_guess_who(), GUIMemHandle );
+#else
+    free( ptr );
+#endif
+}
 #if defined( GUI_IS_GUI )
+#if defined( __OS2__ )
 void _wpi_free( void *ptr )
 {
 #ifdef TRMEM
@@ -213,6 +239,7 @@ void _wpi_free( void *ptr )
     free( ptr );
 #endif
 }
+#endif
 #else
 void UIAPI uifree( void *ptr )
 {
@@ -231,6 +258,7 @@ void HelpMemFree( void *ptr )
 #endif
 }
 #endif
+#ifdef USE_WRESLIB
 void wres_free( void *ptr )
 {
 #ifdef TRMEM
@@ -239,6 +267,7 @@ void wres_free( void *ptr )
     free( ptr );
 #endif
 }
+#endif
 
 
 /*
@@ -254,7 +283,17 @@ void *GUIMemRealloc( void *ptr, size_t size )
     return( realloc( ptr, size ) );
 #endif
 }
+void *zip_realloc( void *ptr, size_t size )
+/*****************************************/
+{
+#ifdef TRMEM
+    return( _trmem_realloc( ptr, size, _trmem_guess_who(), GUIMemHandle ) );
+#else
+    return( realloc( ptr, size ) );
+#endif
+}
 #if defined( GUI_IS_GUI )
+#if defined( __OS2__ )
 void * _wpi_realloc( void *ptr, size_t size )
 {
 #ifdef TRMEM
@@ -263,6 +302,7 @@ void * _wpi_realloc( void *ptr, size_t size )
     return( realloc( ptr, size ) );
 #endif
 }
+#endif
 #else
 void * UIAPI uirealloc( void *old, size_t size )
 {

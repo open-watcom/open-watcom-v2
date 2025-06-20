@@ -56,7 +56,7 @@ void scr_pp( void )
 {
     char    *   p;
 
-    p = scandata.s;
+    p = g_scandata.s;
 
     /* BR is done before scr_pp() is called */
 
@@ -78,7 +78,7 @@ void scr_pp( void )
         process_text( p, g_curr_font );
     }
 
-    scan_restart = scandata.e;
+    scan_restart = g_scandata.e;
     return;
 }
 

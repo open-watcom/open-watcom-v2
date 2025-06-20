@@ -133,8 +133,11 @@ static int link( const OPT_STORAGE *cmdOpts, CmdLine *cmdLine )
             fprintf( fp, "%s\n", args[count] );
         }
         if( cmdOpts->showwopts ) {
-            fprintf( stderr, "echo.%s%s%s\n",
-                args[count], (count == 0 ? ">" : ">>"), cmdFileName );
+#ifdef __UNIX__
+            fprintf( stderr, "echo \"%s\" %s%s\n", args[count], (count == 0 ? ">" : ">>"), cmdFileName );
+#else
+            fprintf( stderr, "echo.%s%s%s\n", args[count], (count == 0 ? ">" : ">>"), cmdFileName );
+#endif
         }
     }
     if( !cmdOpts->noinvoke ) {

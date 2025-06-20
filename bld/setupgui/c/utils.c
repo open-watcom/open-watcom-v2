@@ -65,6 +65,7 @@
 #include "iopath.h"
 #include "guistats.h"
 #include "pathgrp2.h"
+#include "roundmac.h"
 
 #include "clibext.h"
 
@@ -72,6 +73,14 @@
 #define DRIVE_NUM(x)    (toupper((x)) - 'A' + 1)
 
 #define TMPFILENAME     "_watcom_.tmp"
+
+#define GB_UNITS        "GB"
+#define MB_UNITS        "MB"
+#define KB_UNITS        "KB"
+
+#define GB_SCALE        30
+#define MB_SCALE        20
+#define KB_SCALE        10
 
 typedef struct def_var {
     char                *variable;
@@ -681,7 +690,7 @@ static bool updateFsysInfo( fsys_info *info, bool removable )
             char        stuff[100];
         } dataBuffer;
         ULONG           dataBufferLen;
-        char            drive_num;
+        unsigned char   drive_num;
 
         /* unused parameters */ (void)removable;
 
@@ -696,14 +705,12 @@ static bool updateFsysInfo( fsys_info *info, bool removable )
         p.drive_num = drive_num - 1;
         parmLengthInOut = sizeof( p );
         dataLengthInOut = sizeof( r );
-        if( DosDevIOCtl( -1, 8, 0x63, &p, sizeof( p ), &parmLengthInOut, &r,
-                         sizeof( r ), &dataLengthInOut ) == 0 ) {
+        if( DosDevIOCtl( -1, 8, 0x63, &p, sizeof( p ), &parmLengthInOut, &r, sizeof( r ), &dataLengthInOut ) == 0 ) {
             dev[0] = info->root[0];
             dev[1] = ':';
             dev[2] = '\0';
             dataBufferLen = sizeof( dataBuffer );
-            rc = DosQueryFSAttach( dev, 0, FSAIL_QUERYNAME, (PFSQBUFFER2)&dataBuffer,
-                                   &dataBufferLen );
+            rc = DosQueryFSAttach( dev, 0, FSAIL_QUERYNAME, (PFSQBUFFER2)&dataBuffer, &dataBufferLen );
             if( rc == 0 ) {
                 if( dataBuffer.b.iType == FSAT_LOCALDRV ) {
                     switch( r.type ) {
@@ -798,8 +805,8 @@ static bool updateFsysInfo( fsys_info *info, bool removable )
              * it's likely faked; assume the real cluster size is
              * much smaller - 4096 should be a conservative estimate.
              */
-            if( info->block_size > 64 * 1024UL ) {
-                info->block_size = 4096;
+            if( info->block_size > _64K ) {
+                info->block_size = _4K;
             }
         } else if( removable ) {
             /*
@@ -812,7 +819,7 @@ static bool updateFsysInfo( fsys_info *info, bool removable )
              * doesn't work on network drive - assume 4K cluster,
              * max free
              */
-            info->block_size = 4096;
+            info->block_size = _4K;
             info->free_space = (fsys_size)-1;
         }
     }
@@ -875,7 +882,7 @@ static int GetFsysInfo( int target, bool removable )
     if( fsys != -1 ) {
         info = &FsysInfo[fsys];
         if( (info->block_size == 0
-          || removable /* recheck - could have been replaced */) ) {
+          || removable /* recheck - could have been replaced */ ) ) {
             NoHardErrors();
             updateFsysInfo( info, removable );
             if( !removable ) {
@@ -979,26 +986,13 @@ static bool CreateDstDir( int i, VBUF *buff )
     return( true );
 }
 
-#define SCALE_VALUE(s)              (1ULL << (s))
-#define __ROUND_DOWN_SCALE_TO(x,s)  ((x)/SCALE_VALUE(s))
-#define __ROUND_UP_SCALE_TO(x,s)    (((x)+(SCALE_VALUE(s)-1))/SCALE_VALUE(s))
-
-
-#define GB_UNITS    "GB"
-#define MB_UNITS    "MB"
-#define KB_UNITS    "KB"
-
-#define GB_SCALE    30
-#define MB_SCALE    20
-#define KB_SCALE    10
-
 static int getScale( unsigned long long o1, unsigned long long o2 )
 {
     if( o1 < o2 )
         o1 = o2;
-    if( o1 > 99 * SCALE_VALUE( GB_SCALE ) )
+    if( o1 > 99 * PWROF2LL( GB_SCALE ) )
         return( GB_SCALE );
-    if( o1 > 99 * SCALE_VALUE( MB_SCALE ) )
+    if( o1 > 99 * PWROF2LL( MB_SCALE ) )
         return( MB_SCALE );
     return( KB_SCALE );
 }
@@ -1105,8 +1099,8 @@ bool CheckFsys( bool issue_message )
                     scale = getScale( disk_space_needed, free_disk_space );
                     units = getUnits( scale );
                     reply = MsgBox( NULL, msg_ids, GUI_YES_NO, msg_path,
-                                __ROUND_DOWN_SCALE_TO( free_disk_space, scale ), units,
-                                __ROUND_UP_SCALE_TO( disk_space_needed, scale ), units );
+                                __ROUND_DOWN_SIZE_TO_PWROF2LL( free_disk_space, scale ), units,
+                                __ROUND_UP_SIZE_TO_PWROF2LL( disk_space_needed, scale ), units );
                     if( reply == GUI_RET_NO ) {
                         ok = false;
                         break;
@@ -1153,7 +1147,7 @@ bool CheckFsys( bool issue_message )
                     sprintf( fmt, "%s %%lld %s %%s", GetVariableStrVal( msg_ids ), units );
                     sprintf( buff, fmt,
                         msg_path,
-                        __ROUND_UP_SCALE_TO( disk_space_needed, scale ),
+                        __ROUND_UP_SIZE_TO_PWROF2LL( disk_space_needed, scale ),
                         GetVariableStrVal( "IDS_DRIVE_FREED" ) );
                 } else {
                     scale = getScale( disk_space_needed, free_disk_space );
@@ -1161,9 +1155,9 @@ bool CheckFsys( bool issue_message )
                     sprintf( fmt, "%s %%lld %s %%s %%lld %s %%s", GetVariableStrVal( msg_ids ), units, units );
                     sprintf( buff, fmt,
                         msg_path,
-                        __ROUND_UP_SCALE_TO( disk_space_needed, scale ),
+                        __ROUND_UP_SIZE_TO_PWROF2LL( disk_space_needed, scale ),
                         GetVariableStrVal( "IDS_DRIVE_REQUIRED" ),
-                        __ROUND_DOWN_SCALE_TO( free_disk_space, scale ),
+                        __ROUND_DOWN_SIZE_TO_PWROF2LL( free_disk_space, scale ),
                         GetVariableStrVal( "IDS_DRIVE_AVAILABLE" ) );
                 }
             } else {
@@ -1322,8 +1316,8 @@ typedef struct split_file {
 static bool CreateDirectoryTree( void )
 /*************************************/
 {
-    long                num_total_install;
-    long                num_installed;
+    unsigned            num_total_install;
+    unsigned            num_installed;
     int                 i;
     VBUF                dst_path;
     int                 max_dirs;
@@ -1382,9 +1376,10 @@ static bool RelocateFiles( void )
 /*******************************/
 {
     int                 filenum;
-    int                 subfilenum, max_subfiles;
-    long                num_total_install;
-    long                num_installed;
+    int                 subfilenum;
+    int                 max_subfiles;
+    unsigned            size_total_install;
+    unsigned            size_installed;
     VBUF                dst_file;
     VBUF                src_file;
     VBUF                dir;
@@ -1392,27 +1387,27 @@ static bool RelocateFiles( void )
     int                 max_files = SimNumFiles();
     bool                ok;
 
-    num_total_install = 0;
+    size_total_install = 0;
     for( filenum = 0; filenum < max_files; filenum++ ) {
         if( SimFileRemove( filenum ) )
             continue;
         max_subfiles = SimNumSubFiles( filenum );
         for( subfilenum = 0; subfilenum < max_subfiles; ++subfilenum ) {
             if( SimSubFileInOldDir( filenum, subfilenum ) ) {
-                num_total_install += SimSubFileSize( filenum, subfilenum );
+                size_total_install += SimSubFileSize( filenum, subfilenum );
             }
         }
     }
 
-    if( num_total_install != 0 ) {
+    if( size_total_install != 0 ) {
         StatusLines( STAT_RELOCATING, "" );
-        StatusAmount( 0, num_total_install );
+        StatusAmount( 0, size_total_install );
     }
     VbufInit( &dir );
     VbufInit( &file_desc );
     VbufInit( &dst_file );
     VbufInit( &src_file );
-    num_installed = 0;
+    size_installed = 0;
     ok = true;
     for( filenum = 0; ok && filenum < max_files; filenum++ ) {
         if( SimFileRemove( filenum ) )
@@ -1437,8 +1432,8 @@ static bool RelocateFiles( void )
                     chmod_vbuf( &dst_file, PMODE_RX_USR_W );
                 }
                 remove_vbuf( &src_file );
-                num_installed += SimSubFileSize( filenum, subfilenum );
-                StatusAmount( num_installed, num_total_install );
+                size_installed += SimSubFileSize( filenum, subfilenum );
+                StatusAmount( size_installed, size_total_install );
             }
         }
     }
@@ -1446,9 +1441,9 @@ static bool RelocateFiles( void )
     VbufFree( &dst_file );
     VbufFree( &file_desc );
     VbufFree( &dir );
-    if( num_total_install != 0 ) {
+    if( size_total_install != 0 ) {
         StatusLines( STAT_RELOCATING, "" );
-        StatusAmount( num_total_install, num_total_install );
+        StatusAmount( size_total_install, size_total_install );
     }
     return( ok );
 }
@@ -1601,8 +1596,8 @@ static bool DoCopyFiles( void )
     VBUF                dir;
     VBUF                temp_vbuf;
     VBUF                old_dir;
-    long                num_total_install;
-    long                num_installed;
+    unsigned            size_total_install;
+    unsigned            size_installed;
     split_file          *split = NULL;
     split_file          **owner_split = &split;
     split_file          *junk;
@@ -1625,15 +1620,15 @@ static bool DoCopyFiles( void )
 
     /*
      * Check files for processing
-     * Calculate "num_total_install" overall value for progress status
+     * Calculate "size_total_install" overall value for progress status
      */
-    num_total_install = 0;
+    size_total_install = 0;
     ok = true;
     for( filenum = 0; ok && filenum < max_files; filenum++ ) {
         SimFileDir( filenum, &dir );
         if( SimFileAdd( filenum )
           && !SimFileUpToDate( filenum ) ) {
-            num_total_install += SimFileSize( filenum );
+            size_total_install += SimFileSize( filenum );
             max_subfiles = SimNumSubFiles( filenum );
             for( subfilenum = 0; subfilenum < max_subfiles; ++subfilenum ) {
                 if( SimSubFileReadOnly( filenum, subfilenum ) ) {
@@ -1674,18 +1669,18 @@ static bool DoCopyFiles( void )
                     }
                     if( resp_replace ) {
                         chmod_vbuf( &dst_file, PMODE_USR_W );
-                        num_total_install += OVERHEAD_SIZE;
+                        size_total_install += OVERHEAD_SIZE;
                     }
                 } else {
-                    num_total_install += OVERHEAD_SIZE;
+                    size_total_install += OVERHEAD_SIZE;
                 }
             }
         }
     }
     if( ok ) {
-        num_installed = 0;
+        size_installed = 0;
         StatusLines( STAT_COPYINGFILE, "" );
-        StatusAmount( 0, num_total_install );
+        StatusAmount( 0, size_total_install );
         /*
          * remove files first so we don't go over disk space estimate
          */
@@ -1696,7 +1691,7 @@ static bool DoCopyFiles( void )
                 for( subfilenum = 0; subfilenum < max_subfiles; ++subfilenum ) {
                     if( !SimSubFileExists( filenum, subfilenum ) )
                         continue;
-                    num_installed += OVERHEAD_SIZE;
+                    size_installed += OVERHEAD_SIZE;
                     SimSubFileName( filenum, subfilenum, &file_desc );
                     VbufMakepath( &dst_file, NULL, &dir, &file_desc, NULL );
                     StatusLinesVbuf( STAT_REMOVING, &dst_file );
@@ -1707,7 +1702,7 @@ static bool DoCopyFiles( void )
                         StatusLinesVbuf( STAT_REMOVING, &dst_file );
                         remove_vbuf( &dst_file );
                     }
-                    StatusAmount( num_installed, num_total_install );
+                    StatusAmount( size_installed, size_total_install );
                     if( StatusCancelled() ) {
                         ok = false;
                         break;
@@ -1834,10 +1829,10 @@ static bool DoCopyFiles( void )
                 if( ok ) {
                     TransferCheckList();
 
-                    num_installed += SimFileSize( filenum );
-                    if( num_installed > num_total_install )
-                        num_installed = num_total_install;
-                    StatusAmount( num_installed, num_total_install );
+                    size_installed += SimFileSize( filenum );
+                    if( size_installed > size_total_install )
+                        size_installed = size_total_install;
+                    StatusAmount( size_installed, size_total_install );
                     if( StatusCancelled() ) {
                         ok = false;
                     }
@@ -1847,7 +1842,7 @@ static bool DoCopyFiles( void )
                 ok = false;
             }
         }
-        StatusAmount( num_total_install, num_total_install );
+        StatusAmount( size_total_install, size_total_install );
     }
 
     VbufFree( &src_file );

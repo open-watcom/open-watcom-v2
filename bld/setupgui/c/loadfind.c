@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,6 +40,8 @@
 #include "wzipcdir.h"
 
 
+#define SEEK_POSBACK(p)     (-(long)(p))
+
 long            WResFileShift = 0;
 
 /* look for the resource information in a debugger record at the end of file */
@@ -58,7 +60,7 @@ bool FindResourcesX( PHANDLE_INFO hinfo, bool res_file )
         offset = sizeof( master_dbg_header );
 
         /* Look for a PKZIP header and skip archive if present */
-        if( !WRESSEEK( hinfo->fp, -(long)sizeof( eocd ), SEEK_END ) ) {
+        if( !WRESSEEK( hinfo->fp, SEEK_POSBACK( sizeof( eocd ) ), SEEK_END ) ) {
             if( WRESREAD( hinfo->fp, &eocd, sizeof( eocd ) ) == sizeof( eocd ) ) {
                 if( memcmp( &eocd.signature, EOCD_MAGIC, SIZE_EOCD_MAGIC ) == 0 ) {
                     if( !WRESSEEK( hinfo->fp, eocd.cd_offset, SEEK_SET ) ) {
@@ -71,7 +73,7 @@ bool FindResourcesX( PHANDLE_INFO hinfo, bool res_file )
                 }
             }
         }
-        WRESSEEK( hinfo->fp, -offset, SEEK_END );
+        WRESSEEK( hinfo->fp, SEEK_POSBACK( offset ), SEEK_END );
         currpos = WRESTELL( hinfo->fp );
         for( ;; ) {
             WRESREAD( hinfo->fp, &header, sizeof( master_dbg_header ) );

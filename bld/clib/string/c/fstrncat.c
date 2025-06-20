@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -59,28 +60,23 @@ extern char _WCFAR *_fast_strncat( char _WCFAR *, const char _WCFAR *, size_t );
 
 #endif
 
-/* concatenate t to the end of dst */
+/* concatenate t to the end of s */
 
-_WCRTLINK char _WCFAR *_fstrncat( char _WCFAR *dst, const char _WCFAR *t, size_t n )
+_WCRTLINK char _WCFAR *_fstrncat( char _WCFAR *s, const char _WCFAR *t, size_t n )
 {
 #ifdef _M_I86
     if( n ) {
-        return( _fast_strncat( dst, t, n ) );
+        return( _fast_strncat( s, t, n ) );
     }
-    return( dst );
+    return( s );
 #else
-    char _WCFAR     *s;
+    char _WCFAR     *p;
 
-    s = _fmemchr( dst, '\0', ~0 );
-    while( n != 0 ) {
-        *s = *t;
-        if( *s == '\0' )
-            break;
-        ++s;
-        ++t;
-        --n;
-    }
-    *s = '\0';
-    return( dst );
+    for( p = s; *p != '\0'; ++p )
+        /* empty */;
+    for( ; n != 0 && (*p = *t) != '\0'; ++p, ++t, --n )
+        /* empty */;
+    *p = '\0';
+    return( s );
 #endif
 }

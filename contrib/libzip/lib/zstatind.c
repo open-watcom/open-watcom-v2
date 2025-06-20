@@ -33,12 +33,12 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-
+
 
 #include "zip.h"
 #include "zipint.h"
 
-
+
 
 int
 zip_stat_index(struct zip *za, int index, int flags, struct zip_stat *st)

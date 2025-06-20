@@ -2,7 +2,8 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2016-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -24,21 +25,14 @@
 *
 *  ========================================================================
 *
-* Description:  Implementation of termios tcflush for Linux
-*
-* Author: J. Armstrong
+* Description:  Memory Management functions for LIBZIP
 *
 ****************************************************************************/
 
 
-#include "variety.h"
-#include "linuxsys.h"
-#include <sys/ioctl.h>
-#include <termios.h>
+#include "zipmem.h"
 
 
-_WCRTLINK int tcflush( int fd, int queue )
-{
-    syscall_res res = sys_call3( SYS_ioctl, (u_long)fd, (u_long)TCFLSH, (u_long)queue);
-    __syscall_return( int, res );
-}
+#define ZIP_ALLOC   zip_alloc
+#define ZIP_REALLOC zip_realloc
+#define ZIP_FREE    zip_free

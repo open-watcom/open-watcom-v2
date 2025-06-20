@@ -45,7 +45,7 @@ extern  void    gml_cmt( const gmltag * entry )
 {
     (void)entry;
 
-    scandata.s = scandata.e;
+    g_scandata.s = g_scandata.e;
     return;
 }
 

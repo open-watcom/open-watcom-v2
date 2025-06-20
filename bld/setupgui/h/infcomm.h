@@ -2,7 +2,8 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2016-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
+*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -24,20 +25,17 @@
 *
 *  ========================================================================
 *
-* Description:  Implementation of termios tcsendbreak for Linux
-*
-* Author: J. Armstrong
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
 
-#include "variety.h"
-#include "linuxsys.h"
-#include <sys/ioctl.h>
-#include <termios.h>
+#include "roundmac.h"
 
+#define INF_BLOCK_SIZE  512     // installer uses sector size
 
-_WCRTLINK int tcsendbreak( int fd, int duration )
-{
-    return( ioctl( fd, TCSBRKP, duration ) );
-}
+#define __ROUND_UP_SIZE_INF(x)  __ROUND_UP_SIZE((x), INF_BLOCK_SIZE)
+
+#define INFBLK2SIZE(x)  ((x) * INF_BLOCK_SIZE)
+#define SIZE2INFBLK(x)  ((x) / INF_BLOCK_SIZE)

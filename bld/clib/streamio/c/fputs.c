@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -62,7 +62,7 @@ _WCRTLINK int __F_NAME(fputs,fputws)( const CHAR_TYPE *s, FILE *fp )
     }
     rc = 0;
     start = s;
-    while( c = *s ) {
+    while( (c = (UCHAR_TYPE)*s) != NULLCHAR ) {
         s++;
         if( __F_NAME(fputc,fputwc)( c, fp ) == INTCHAR_EOF ) {
             rc = EOF;

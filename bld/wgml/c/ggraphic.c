@@ -73,7 +73,7 @@ void    gml_graphic( const gmltag * entry )
     rt_buff[0] = '\0';
     width = t_page.max_width - t_page.cur_left;
 
-    p = scandata.s;
+    p = g_scandata.s;
     if( *p == '.' ) {
         /* already at tag end */
     } else {
@@ -263,7 +263,7 @@ void    gml_graphic( const gmltag * entry )
         }
     }
 
-    scandata.s = scandata.e;
+    g_scandata.s = g_scandata.e;
     return;
 }
 

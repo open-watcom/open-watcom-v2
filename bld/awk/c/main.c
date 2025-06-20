@@ -34,7 +34,6 @@ const char  *version = "version 20110810";
 #include "awk.h"
 #include "ytab.h"
 
-extern  char    **environ;
 extern  int     nfields;
 
 int         dbg     = 0;
@@ -135,7 +134,7 @@ int main( int argc, char *argv[] )
         fprintf( stderr,
           "usage: %s [-F fs] [-v var=value] [-f progfile | 'prog'] [file ...]\n",
           cmdname );
-        exit( 1 );
+        return( 1 );
     }
     signal( SIGFPE, fpecatch );
 
@@ -159,8 +158,7 @@ int main( int argc, char *argv[] )
     while( argc > 1 && argv[1][0] == '-' && argv[1][1] != '\0' ) {
         if( strcmp( argv[1], "-version" ) == 0 || strcmp( argv[1], "--version" ) == 0 ) {
             printf( "awk %s\n", version );
-            exit( 0 );
-            break;
+            return( 0 );
         }
         if( strncmp( argv[1], "--", 2 ) == 0 ) {   /* explicit end of args */
             argc--;
@@ -251,7 +249,7 @@ int main( int argc, char *argv[] )
 
         if( argc <= 1 ) {
             if( dbg )
-                exit( 0 );
+                return( 0 );
             FATAL( "no program given" );
         }
         p = unquote( argv[1] );

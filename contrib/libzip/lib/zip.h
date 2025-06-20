@@ -36,7 +36,7 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-
+
 
 #ifdef __cplusplus
 extern "C" {
@@ -112,7 +112,7 @@ extern "C" {
 #define ZIP_CM_DEFLATE64       9  /* deflate64 */
 #define ZIP_CM_PKWARE_IMPLODE 10  /* PKWARE imploding */
 
-
+
 
 enum zip_source_cmd {
     ZIP_SOURCE_OPEN,    /* prepare for reading */
@@ -140,7 +140,7 @@ struct zip;
 struct zip_file;
 struct zip_source;
 
-
+
 
 int zip_add(struct zip *, const char *, struct zip_source *);
 int zip_close(struct zip *);

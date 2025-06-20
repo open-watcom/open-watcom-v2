@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,6 +35,8 @@
 
 #include <string.h>
 
+#define CHAR2INT(c)     ((unsigned char)(c))
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -42,7 +45,6 @@ extern "C" {
 extern void     *_inline_memchr( const void *__s, int __c, size_t __n );
 extern int      _inline_memcmp( const void *__s1, const void *__s2, size_t __n );
 extern void     *_inline_memcpy( void *__s1, const void *__s2, size_t __n );
-extern void     *_inline_memmove( void *__s1, const void *__s2, size_t __n );
 extern void     *_inline_memset( void *__s, int __c, size_t __n );
 extern char     *_inline_strcat( char *__s1, const char *__s2 );
 extern char     *_inline_strchr( const char *__s, int __c );

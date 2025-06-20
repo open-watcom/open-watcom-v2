@@ -146,13 +146,13 @@ void    scr_ti( void )
 {
     char        *   p;
 
-    p = scandata.s;
+    p = g_scandata.s;
     SkipSpaces( p );                    // next word start
 
     cop_ti_table( p );
     add_to_sysdir( "$tiset", in_esc );  // put in dictionary
 
-    scan_restart = scandata.e;
+    scan_restart = g_scandata.e;
     return;
 }
 
@@ -161,12 +161,12 @@ void    scr_tr( void )
 {
     char        *   p;
 
-    p = scandata.s;
+    p = g_scandata.s;
 
     SkipSpaces( p );                    // next word start
     cop_tr_table( p );
 
-    scan_restart = scandata.e;
+    scan_restart = g_scandata.e;
     return;
 }
 

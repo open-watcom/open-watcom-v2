@@ -889,12 +889,12 @@ char *get_att_name_start( char *p, char **orig, bool layout )
             return( p );
         }
         process_line();
-        if( (*scandata.s == SCR_char)      // cw found: end-of-tag
-          || (*scandata.s == GML_char) ) { // tag found: end-of-tag
+        if( (*g_scandata.s == SCR_char)      // cw found: end-of-tag
+          || (*g_scandata.s == GML_char) ) { // tag found: end-of-tag
             ProcFlags.reprocess_line = true;
             return( p );
         }
-        p = scandata.s;                 // new line is part of current tag
+        p = g_scandata.s;                 // new line is part of current tag
     }
     if( *p == '.' ) {                   // end of tag
         ProcFlags.tag_end_found = true;

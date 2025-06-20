@@ -934,8 +934,8 @@ void process_line( void )
         g_info_lm( INF_SUBST_LINE, buff2 ); // show line with substitution(s)
     }
 
-    scandata.s = buff2;
-    scandata.e = buff2 + buff2_lg;
+    g_scandata.s = buff2;
+    g_scandata.e = buff2 + buff2_lg;
     return;
 }
 

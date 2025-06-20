@@ -642,7 +642,7 @@ static void gml_hx_common( const gmltag *entry, hdlvl hn_lvl )
 
     hd_nums[hn_lvl].headn++;
 
-    p = scandata.s;
+    p = g_scandata.s;
     SkipSpaces( p );
     if( *p == '.' ) {
         /* already at tag end */
@@ -734,7 +734,7 @@ static void gml_hx_common( const gmltag *entry, hdlvl hn_lvl )
             ProcFlags.overprint = false;        // cancel overprint
         }
         gen_heading( p, hdrefid, hn_lvl, hds_lvl );
-        scandata.s = scandata.e;
+        g_scandata.s = g_scandata.e;
     } else {
         gen_heading( "", hdrefid, hn_lvl, hds_lvl );
     }

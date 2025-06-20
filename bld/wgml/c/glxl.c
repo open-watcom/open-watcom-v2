@@ -537,7 +537,7 @@ void    lay_dl( const gmltag * entry )
     att_name_type       attr_name;
     att_val_type        attr_val;
 
-    p = scandata.s;
+    p = g_scandata.s;
 
     memset( &AttrFlags, 0, sizeof( AttrFlags ) );   // clear all attribute flags
     if( ProcFlags.lay_xxx != entry->u.layid ) {
@@ -712,7 +712,7 @@ void    lay_dl( const gmltag * entry )
         curr_level->next = dl_layout;
     }
 
-    scandata.s = scandata.e;
+    g_scandata.s = g_scandata.e;
     return;
 }
 
@@ -731,7 +731,7 @@ void    lay_gl( const gmltag * entry )
     att_name_type       attr_name;
     att_val_type        attr_val;
 
-    p = scandata.s;
+    p = g_scandata.s;
 
     memset( &AttrFlags, 0, sizeof( AttrFlags ) );   // clear all attribute flags
     if( ProcFlags.lay_xxx != entry->u.layid ) {
@@ -906,7 +906,7 @@ void    lay_gl( const gmltag * entry )
         curr_level->next = gl_layout;
     }
 
-    scandata.s = scandata.e;
+    g_scandata.s = g_scandata.e;
     return;
 }
 
@@ -925,7 +925,7 @@ void    lay_ol( const gmltag * entry )
     att_name_type       attr_name;
     att_val_type        attr_val;
 
-    p = scandata.s;
+    p = g_scandata.s;
 
     memset( &AttrFlags, 0, sizeof( AttrFlags ) );   // clear all attribute flags
     if( ProcFlags.lay_xxx != entry->u.layid ) {
@@ -1126,7 +1126,7 @@ void    lay_ol( const gmltag * entry )
         curr_level->next = ol_layout;
     }
 
-    scandata.s = scandata.e;
+    g_scandata.s = g_scandata.e;
     return;
 }
 
@@ -1145,7 +1145,7 @@ void    lay_sl( const gmltag * entry )
     att_name_type       attr_name;
     att_val_type        attr_val;
 
-    p = scandata.s;
+    p = g_scandata.s;
 
     memset( &AttrFlags, 0, sizeof( AttrFlags ) );   // clear all attribute flags
     if( ProcFlags.lay_xxx != entry->u.layid ) {
@@ -1306,7 +1306,7 @@ void    lay_sl( const gmltag * entry )
         curr_level->next = sl_layout;
     }
 
-    scandata.s = scandata.e;
+    g_scandata.s = g_scandata.e;
     return;
 }
 
@@ -1325,7 +1325,7 @@ void    lay_ul( const gmltag * entry )
     att_name_type       attr_name;
     att_val_type        attr_val;
 
-    p = scandata.s;
+    p = g_scandata.s;
 
     memset( &AttrFlags, 0, sizeof( AttrFlags ) );   // clear all attribute flags
     if( ProcFlags.lay_xxx != entry->u.layid ) {
@@ -1539,7 +1539,7 @@ void    lay_ul( const gmltag * entry )
         curr_level->next = ul_layout;
     }
 
-    scandata.s = scandata.e;
+    g_scandata.s = g_scandata.e;
     return;
 }
 

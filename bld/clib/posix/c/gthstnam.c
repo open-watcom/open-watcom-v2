@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2025 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -44,6 +44,8 @@
 #include "rdos.h"
 #else
 #include "thread.h"
+#include "bool.h"
+
 
 #define DNSRESOLV   "/etc/resolv.conf"
 
@@ -51,18 +53,18 @@ static struct hostent *__check_hostdb( const char *name )
 {
     int             i;
     struct hostent  *one;
-    int             alias;
+    bool            alias;
 
     one = NULL;
     if( name != NULL ) {
-        alias = 0;
+        alias = false;
         sethostent( 1 );
-        while( alias == 0 && (one = gethostent()) != NULL ) {
+        while( !alias && (one = gethostent()) != NULL ) {
             if( one->h_name != NULL && strcmp( one->h_name, name ) == 0 )
                 break;
             for( i = 0; one->h_aliases[i] != NULL; i++ ) {
                 if( strcmp( one->h_aliases[i], name ) == 0 ) {
-                    alias = 1;
+                    alias = true;
                     break;
                 }
             }

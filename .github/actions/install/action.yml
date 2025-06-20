@@ -6,6 +6,21 @@ inputs:
     required: false
     default: ''
     type: string
+  tools_nt:
+    description: 'used compiler toolchain (for Windows)'
+    required: false
+    default: ''
+    type: string
+  tools_lnx:
+    description: 'used compiler toolchain (for Linux)'
+    required: false
+    default: ''
+    type: string
+  tools_osx:
+    description: 'used compiler toolchain (for OSX)'
+    required: false
+    default: ''
+    type: string
   owdebug:
     description: 'verbosed/debug output for GH Actions scripts development'
     required: false
@@ -18,27 +33,27 @@ runs:
     with:
       hostos:       'lnx'
       gitpath:      'build binbuild'
-      artifact:     'build lnx x64 gcc'
-      owdebug:      ${{ inputs.owdebug }}
+      artifact:     'build lnx x64 ${{inputs.tools_lnx}}'
+      owdebug:      ${{inputs.owdebug}}
   - uses: "./.github/actions/artfload"
     with:
       hostos:       'lnx'
       gitpath:      'bld setupgui'
-      artifact:     'bld setupgui nt x64 vs2019'
-      owdebug:      ${{ inputs.owdebug }}
+      artifact:     'bld setupgui nt x64 ${{inputs.tools_nt}}'
+      owdebug:      ${{inputs.owdebug}}
   - uses: "./.github/actions/artfload"
     with:
       hostos:       'lnx'
       gitpath:      'bld setupgui'
-      artifact:     'bld setupgui lnx x64 gcc'
-      owdebug:      ${{ inputs.owdebug }}
+      artifact:     'bld setupgui lnx x64 ${{inputs.tools_lnx}}'
+      owdebug:      ${{inputs.owdebug}}
   # load all release binaries
   - uses: "./.github/actions/relload"
     with:
-      tools_nt:     'vs2019'
-      tools_lnx:    'gcc'
-      tools_osx:    'clang'
-      owdebug:      ${{ inputs.owdebug }}
+      tools_nt:     ${{inputs.tools_nt}}
+      tools_lnx:    ${{inputs.tools_lnx}}
+      tools_osx:    ${{inputs.tools_osx}}
+      owdebug:      ${{inputs.owdebug}}
   - if: inputs.target == 'snapshot'
     name: Create OW snapshot
     id: owsnapshot
@@ -46,7 +61,7 @@ runs:
     with:
       hostos:       'lnx'
       gitpath:      'rel'
-      owdebug:      ${{ inputs.owdebug }}
+      owdebug:      ${{inputs.owdebug}}
   # run build script
   - if: inputs.target != 'snapshot'
     name: Build Installers
@@ -54,9 +69,9 @@ runs:
     env:
       OWBUILD_STAGE: 'inst'
       OWTOOLS:       'GCC'
-      OWROOT:        ${{ github.workspace }}
-      OWDEBUG:       ${{ inputs.owdebug }}
-      OWINSTTARGET:  ${{ inputs.target }}
+      OWROOT:        ${{github.workspace}}
+      OWDEBUG:       ${{inputs.owdebug}}
+      OWINSTTARGET:  ${{inputs.target}}
       OWVERBOSE:     1
     shell: bash
   # save all artifacts for distribution
@@ -65,5 +80,5 @@ runs:
     with:
       hostos:       'lnx'
       gitpath:      'distrib ow bin'
-      artifact:     "install ${{ inputs.target }}"
-      owdebug:      ${{ inputs.owdebug }}
+      artifact:     "install ${{inputs.target}}"
+      owdebug:      ${{inputs.owdebug}}

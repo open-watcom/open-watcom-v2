@@ -238,6 +238,34 @@ static int sysdepDLLgetProc( IDEDRV *inf
 
 #endif /* __DOS__ */
 
+#if defined( __LINUX__ ) && !defined( __WATCOMC__ )
+/***************************************
+ * Linux Interface
+ ***************************************/
+
+#include <dlfcn.h>
+
+static int sysdepDLLLoad( IDEDRV *inf )
+{
+    return( dlopen( inf->dll_name, RTLD_NOW ) );
+}
+
+static int sysdepDLLUnload( IDEDRV *inf )
+{
+    dlclose( inf->dll_handle );
+    return( 0 );    // sometimes get failure in good situations
+}
+
+static int sysdepDLLgetProc( IDEDRV *inf
+                           , char const *fun_name
+                           , P_FUN *fun )
+{
+    *fun = dlsym( inf->dll_handle, fun_name );
+    return( *fun != NULL );
+}
+
+#endif /* __LINUX__ && ! __WATCOMC__ */
+
 #endif /* STATIC_LINKAGE */
 
 

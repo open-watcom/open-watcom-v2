@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -92,19 +93,15 @@ extern int _fast_strncmp( const char *, const char _WCFAR *, size_t );
 #if defined( _M_I86 ) && !defined(__WIDECHAR__)
     if( n )
         return( _fast_strncmp( s, t, n ) );
-
     return( 0 );
 #else
-    for( ;; ) {
-        if( n == 0 )
-            return( 0 );       /* equal */
+    for( ; n != 0; ++s, ++t, --n ) {
         if( *s != *t )
-            return( *s - *t ); /* less than or greater than */
-        if( *s == NULLCHAR )
-            return( 0 );       /* equal */
-        ++s;
-        ++t;
-        --n;
+            return( *s - *t );  /* less than or greater than */
+        if( *s == NULLCHAR ) {
+            break;              /* equal */
+        }
     }
+    return( 0 );                /* equal */
 #endif
 }

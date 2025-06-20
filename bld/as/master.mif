@@ -225,11 +225,11 @@ asi_in.y : $(yacc_src) $(yacc_driver) $(__MAKEFILES__)
 
 $(as_yacc_out).c : as_in.y $(__MAKEFILES__)
     @%make echo_yacc
-    $(noecho)yacc $(as_yacc_flags) as_in.y $(yacc_driver) > $(nulldevice)
+    $(noecho)$(yacc) $(as_yacc_flags) as_in.y $(yacc_driver) > $(nulldevice)
 
 $(asi_yacc_out).c : asi_in.y $(__MAKEFILES__)
     @%make echo_yacc
-    $(noecho)yacc $(asi_yacc_flags) asi_in.y $(yacc_driver) > $(nulldevice)
+    $(noecho)$(yacc) $(asi_yacc_flags) asi_in.y $(yacc_driver) > $(nulldevice)
 
 scan_in.re : $(lex_src) $(__MAKEFILES__)
     @%make echo_wsplice

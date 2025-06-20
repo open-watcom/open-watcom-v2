@@ -272,26 +272,26 @@ void    add_macro_parms( char * p )
                 pa = p;
                 pa++;
                 SkipNonSpaces( pa );    // get end of string
-                scandata.s = p;         // rescan for variable
+                g_scandata.s = p;         // rescan for variable
                 ProcFlags.suppress_msg = true;  // no errmsg please
                 ProcFlags.blanks_allowed = 0;   // no blanks please
-                ps = verify_sym( scandata.s, pa );
+                ps = verify_sym( g_scandata.s, pa );
                 if( ps != NULL ) {              // have name=value pair?
-                    char *p1 = scandata.e;
+                    char *p1 = g_scandata.e;
                     ps = is_quoted_string( ps );// have name='string'?
                     if( ps != NULL ) {
-                        scandata.e = ps + 1;    // point past delimiter
+                        g_scandata.e = ps + 1;    // point past delimiter
                     } else {
-                        scandata.e = pa;// terminate as before
+                        g_scandata.e = pa;// terminate as before
                     }
                     scr_se();           // try to set variable and value
-                    scandata.e = p1;
+                    g_scandata.e = p1;
                 }
 
                 ProcFlags.suppress_msg = false; // reenable err msg
                 ProcFlags.blanks_allowed = 1;   // blanks again
                 if( g_scan_err ) {      // not variable=value format
-                    scandata.s = p;     // restore scan addresses
+                    g_scandata.s = p;     // restore scan addresses
                     cc = CC_omit;
                     star0++;
                     sprintf( starbuf, "%d", star0 );
@@ -598,7 +598,7 @@ void    scr_dm( void )
         xx_source_err_exit_c( ERR_MAC_DEF_LOGIC, macname1 );
         /* never return */
     }
-    scan_restart = scandata.e;
+    scan_restart = g_scandata.e;
     return;
 }
 
@@ -660,7 +660,7 @@ void    scr_me( void )
 
     input_cbs->if_cb->if_level = 0;     // terminate
     ProcFlags.keep_ifstate = false;     // ... all .if controls
-    scan_restart = scandata.e;
+    scan_restart = g_scandata.e;
     return;
 }
 
@@ -748,7 +748,7 @@ void    scr_em( void )
         /* never return */
     }
     split_input( buff2, g_tok_start, input_cbs->fmflags );    // stack line operand
-    scan_restart = scandata.e;
+    scan_restart = g_scandata.e;
     return;
 }
 

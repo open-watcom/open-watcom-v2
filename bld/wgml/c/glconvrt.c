@@ -214,8 +214,8 @@ void    lay_convert( const gmltag * entry )
 
     (void)entry;
 
-    p = scandata.s;
-    scandata.s = scandata.e;
+    p = g_scandata.s;
+    g_scandata.s = g_scandata.e;
 
     if( !GlobalFlags.firstpass ) {
         ProcFlags.layout = true;

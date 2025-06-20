@@ -69,7 +69,7 @@ extern  void    gml_set( const gmltag * entry )
     g_scan_err = false;
     sym.flags = SF_none;
 
-    p = scandata.s;
+    p = g_scandata.s;
     if( *p == '.' ) {
         /* already at tag end */
     } else {
@@ -138,7 +138,7 @@ extern  void    gml_set( const gmltag * entry )
             process_text( p, g_curr_font);  // if text follows
         }
     }
-    scandata.s = scandata.e;
+    g_scandata.s = g_scandata.e;
     return;
 }
 

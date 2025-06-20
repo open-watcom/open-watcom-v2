@@ -19,7 +19,7 @@
   3. The names of the authors may not be used to endorse or promote
      products derived from this software without specific prior
      written permission.
- 
+
   THIS SOFTWARE IS PROVIDED BY THE AUTHORS ``AS IS'' AND ANY EXPRESS
   OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -33,7 +33,7 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-
+
 
 #include <stdlib.h>
 #include <string.h>
@@ -48,9 +48,9 @@ struct read_data {
 };
 
 static ssize_t read_data(void *state, void *data, size_t len,
-			 enum zip_source_cmd cmd);
+                         enum zip_source_cmd cmd);
 
-
+
 
 struct zip_source *
 zip_source_buffer(struct zip *za, const void *data, off_t len, int freep)
@@ -59,32 +59,32 @@ zip_source_buffer(struct zip *za, const void *data, off_t len, int freep)
     struct zip_source *zs;
 
     if (za == NULL)
-	return NULL;
+        return NULL;
 
     if (len < 0 || (data == NULL && len > 0)) {
-	_zip_error_set(&za->error, ZIP_ER_INVAL, 0);
-	return NULL;
+        _zip_error_set(&za->error, ZIP_ER_INVAL, 0);
+        return NULL;
     }
 
-    if ((f=malloc(sizeof(*f))) == NULL) {
-	_zip_error_set(&za->error, ZIP_ER_MEMORY, 0);
-	return NULL;
+    if ((f=ZIP_ALLOC(sizeof(*f))) == NULL) {
+        _zip_error_set(&za->error, ZIP_ER_MEMORY, 0);
+        return NULL;
     }
 
     f->data = data;
     f->end = ((const char *)data)+len;
     f->freep = freep;
     f->mtime = time(NULL);
-    
+
     if ((zs=zip_source_function(za, read_data, f)) == NULL) {
-	free(f);
-	return NULL;
+        ZIP_FREE(f);
+        return NULL;
     }
 
     return zs;
 }
 
-
+
 
 static ssize_t
 read_data(void *state, void *data, size_t len, enum zip_source_cmd cmd)
@@ -98,66 +98,66 @@ read_data(void *state, void *data, size_t len, enum zip_source_cmd cmd)
 
     switch (cmd) {
     case ZIP_SOURCE_OPEN:
-	z->buf = z->data;
-	return 0;
-	
+        z->buf = z->data;
+        return 0;
+
     case ZIP_SOURCE_READ:
-	n = z->end - z->buf;
-	if (n > len)
-	    n = len;
-	if (n < 0)
-	    n = 0;
+        n = z->end - z->buf;
+        if (n > len)
+            n = len;
+        if (n < 0)
+            n = 0;
 
-	if (n) {
-	    memcpy(buf, z->buf, n);
-	    z->buf += n;
-	}
+        if (n) {
+            memcpy(buf, z->buf, n);
+            z->buf += n;
+        }
 
-	return n;
-	
+        return n;
+
     case ZIP_SOURCE_CLOSE:
-	return 0;
+        return 0;
 
     case ZIP_SOURCE_STAT:
         {
-	    struct zip_stat *st;
-	    
-	    if (len < sizeof(*st))
-		return -1;
+            struct zip_stat *st;
 
-	    st = (struct zip_stat *)data;
+            if (len < sizeof(*st))
+                return -1;
 
-	    st->mtime = z->mtime;
-	    st->crc = 0;
-	    st->size = z->end - z->data;
-	    st->comp_size = -1;
-	    st->comp_method = ZIP_CM_STORE;
-	    
-	    return sizeof(*st);
-	}
+            st = (struct zip_stat *)data;
+
+            st->mtime = z->mtime;
+            st->crc = 0;
+            st->size = z->end - z->data;
+            st->comp_size = -1;
+            st->comp_method = ZIP_CM_STORE;
+
+            return sizeof(*st);
+        }
 
     case ZIP_SOURCE_ERROR:
-	{
-	    int *e;
+        {
+            int *e;
 
-	    if (len < sizeof(int)*2)
-		return -1;
+            if (len < sizeof(int)*2)
+                return -1;
 
-	    e = (int *)data;
-	    e[0] = e[1] = 0;
-	}
-	return sizeof(int)*2;
+            e = (int *)data;
+            e[0] = e[1] = 0;
+        }
+        return sizeof(int)*2;
 
     case ZIP_SOURCE_FREE:
-	if (z->freep) {
-	    free((void *)z->data);
-	    z->data = NULL;
-	}
-	free(z);
-	return 0;
+        if (z->freep) {
+            ZIP_FREE((void *)z->data);
+            z->data = NULL;
+        }
+        ZIP_FREE(z);
+        return 0;
 
     default:
-	;
+        ;
     }
 
     return -1;

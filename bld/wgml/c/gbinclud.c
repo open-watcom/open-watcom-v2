@@ -68,7 +68,7 @@ void    gml_binclude( const gmltag * entry )
     file[0] = '\0';
     rt_buff[0] = '\0';
     depth = 0;
-    p = scandata.s;
+    p = g_scandata.s;
     if( *p == '.' ) {
         /* already at tag end */
     } else {
@@ -199,7 +199,7 @@ void    gml_binclude( const gmltag * entry )
         /* never return */
     }
 
-    scandata.s = scandata.e;         // skip following text
+    g_scandata.s = g_scandata.e;         // skip following text
     return;
 }
 

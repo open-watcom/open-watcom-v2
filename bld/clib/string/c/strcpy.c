@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,7 +38,7 @@
 
 #undef  strcpy
 
-extern CHAR_TYPE *__strcpy( CHAR_TYPE *dst, const CHAR_TYPE *src );
+extern CHAR_TYPE *__strcpy( CHAR_TYPE *s, const CHAR_TYPE *t );
 #if defined( _M_I86 )
  #if defined(__SMALL_DATA__)
   #pragma aux __strcpy = \
@@ -170,11 +171,10 @@ extern CHAR_TYPE *__strcpy( CHAR_TYPE *dst, const CHAR_TYPE *src );
 #if !defined(__WIDECHAR__) && defined(_M_IX86)
     return( __strcpy( s, t ) );
 #else
-    CHAR_TYPE *dst;
+    CHAR_TYPE *p;
 
-    dst = s;
-    while( *dst++ = *t++ )
-        ;
+    for( p = s; (*p++ = *t++) != NULLCHAR; )
+        /* empty */;
     return( s );
 #endif
 }

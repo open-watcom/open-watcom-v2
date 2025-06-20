@@ -96,7 +96,7 @@
   pick( il, scr_dummy, CW_break+CW_out_text    )// indent line
   pick( im, scr_im,    CW_none                 )// imbed
   pick( in, scr_in,    CW_break+CW_out_text    )// indent
-  pick( ir, scr_dummy, CW_break+CW_out_text    )// indent right
+  pick( ir, scr_ir,    CW_break+CW_out_text    )// indent right
   pick( it, scr_dummy, CW_break+CW_out_text    )// input trace
   pick( ix, scr_ix,    CW_none                 )// index
   pick( ju, scr_ju,    CW_break+CW_out_text    )// justify

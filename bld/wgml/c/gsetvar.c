@@ -255,6 +255,11 @@ char *scan_sym( char *p, symvar *sym, sub_index *subscript, char **result, bool 
 /*  before further processing (so that spaces inside delimiters are not    */
 /*  afftected, but any following the closing delimiter are)                */
 /*                                                                         */
+/* NOTE: it must use g_scandata pointers instead of relation to              */
+/*       null terminating character because it is called from macro        */
+/*       parameters processing for approriate variable setup in input      */
+/*       buffer without null termination.                                  */
+/*                                                                         */
 /***************************************************************************/
 
 void    scr_se( void )
@@ -270,18 +275,18 @@ void    scr_se( void )
 
     subscript = SI_no_subscript;                       // not subscripted
     g_scan_err = false;
-    p = scan_sym( scandata.s, &sym, &subscript, NULL, false );
+    p = scan_sym( g_scandata.s, &sym, &subscript, NULL, false );
 
     if( strcmp( MAC_STAR_NAME, sym.name ) != 0 ) {  // remove trailing blanks from all symbols except *
-        while( scandata.e-- > p && *scandata.e == ' ' )
+        while( g_scandata.e-- > p && *g_scandata.e == ' ' )
             /* empty */;
-        scandata.e++;
+        g_scandata.e++;
     }
 
     if( ProcFlags.blanks_allowed ) {
-        SkipSpacesTok( p, scandata.e );                        // skip over spaces
+        SkipSpacesTok( p, g_scandata.e );                        // skip over spaces
     }
-    if( p >= scandata.e ) {
+    if( p >= g_scandata.e ) {
         if( !ProcFlags.suppress_msg ) {
             xx_line_err_exit_c( ERR_EQ_EXPECTED, p);
             /* never return */
@@ -296,13 +301,13 @@ void    scr_se( void )
         if( *p == '=' ) {                       // all other cases have no equal sign (see above)
             p++;
             if( ProcFlags.blanks_allowed ) {
-                SkipSpacesTok( p, scandata.e ); // skip over spaces to value
+                SkipSpacesTok( p, g_scandata.e ); // skip over spaces to value
             }
             valstart = p;
-            len = scandata.e - p;
+            len = g_scandata.e - p;
             if( is_quote_char( *valstart ) ) {  // quotes ?
                 p++;
-                while( p < scandata.e ) {
+                while( p < g_scandata.e ) {
                     /*
                      * TODO! ????
                      * remove final character, if it matches the start character
@@ -310,7 +315,7 @@ void    scr_se( void )
                      *
                      *  if( (*valstart == *p) && (!*(p+1) || (*(p+1) == ' ')) ) {
                      */
-                    if( (*valstart == p[0]) && p + 1 >= scandata.e ) {
+                    if( (*valstart == p[0]) && p + 1 >= g_scandata.e ) {
                         break;
                     }
                     ++p;
@@ -323,7 +328,7 @@ void    scr_se( void )
                 condcode        cc;
 
                 gn.arg.s = p;
-                gn.arg.e = scandata.e;
+                gn.arg.e = g_scandata.e;
                 gn.ignore_blanks = true;
                 cc = getnum( &gn );             // try numeric expression evaluation
                 if( cc == CC_pos || cc == CC_neg ) {
@@ -335,7 +340,7 @@ void    scr_se( void )
         } else if( *p == '\'' ) {               // \' may introduce valid value
             if( *(p - 1) == ' ' ) {             // but must be preceded by a space
                 p++;
-                while( p < scandata.e && (*valstart != *p) ) {  // look for final \'
+                while( p < g_scandata.e && (*valstart != *p) ) {  // look for final \'
                     p++;
                 }
                 valstart++;                                 // delete initial \'
@@ -360,6 +365,6 @@ void    scr_se( void )
             g_scan_err = true;
         }
     }
-    scan_restart = scandata.e;
+    scan_restart = g_scandata.e;
     return;
 }

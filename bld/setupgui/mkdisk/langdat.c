@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -98,7 +98,7 @@ static void AddToList( const char *name, ctl_file **owner )
     for( ;; ) {
         curr = *owner;
         if( curr == NULL )
-        break;
+            break;
         owner = &curr->next;
     }
     curr = MAlloc( sizeof( *curr ) );
@@ -132,7 +132,8 @@ static void ProcessOptions( char *argv[] )
 
     opt_end = false;
     while( argv[0] != NULL ) {
-        if( !opt_end && argv[0][0] == '-' ) {
+        if( !opt_end
+          && argv[0][0] == '-' ) {
             switch( tolower( argv[0][1] ) ) {
             case 'c':
                 argv = getvalue( argv, parm_buff );
@@ -204,7 +205,9 @@ static int sysChdir( const char *dir )
 #ifdef __UNIX__
         if( dir[len - 1] == '/' ) {
 #else
-        if( ( dir[len - 1] == '\\' ) && ( len > 3 || drive == 0 ) ) {
+        if( ( dir[len - 1] == '\\' )
+          && ( len > 3
+          || drive == 0 ) ) {
 #endif
             len--;
             memcpy( tmp_buf, dir, len );
@@ -484,7 +487,10 @@ static bool ContainsWord( const char *str, ctl_file *word_list, bool and_op )
     memcpy( s_copy, str, len );
     for( p = FirstWord( s_copy ); p != NULL; p = NextWord( p ) ) {
         found = checkWord( p, word_list );
-        if( found && !and_op || !found && and_op ) {
+        if( found
+          && !and_op
+          || !found
+          && and_op ) {
             MFree( s_copy );
             return( !and_op );
         }
@@ -496,18 +502,20 @@ static bool ContainsWord( const char *str, ctl_file *word_list, bool and_op )
 static void set_product_version( const char *filename )
 {
     char    *filever;
+    char    *src;
 
     filever = strstr( filename, "??" );
     if( filever != NULL ) {
-        if( Product_ver[0] == '\0' ) {
-            strcpy( filever, filever + 2 );
-        } else {
+        if( Product_ver[0] != '\0' ) {
             *filever++ = Product_ver[0];
-            if( Product_ver[1] == '\0' ) {
-                strcpy( filever, filever + 1 );
-            } else {
-                *filever = Product_ver[1];
-            }
+        }
+        if( Product_ver[1] != '\0' ) {
+            *filever = Product_ver[1];
+            return;
+        }
+        src = filever + ( ( Product_ver[0] != '\0' ) ? 1 : 2 );
+        while( (*filever++ = *src++) != '\0' ) {
+            /* empty*/;
         }
     }
 }
@@ -597,37 +605,37 @@ static void ProcessLine( const char *line )
     cmd = strtok( p, "=" );
     do {
         str = strtok( NULL, "\"" );
-        if( !stricmp( cmd, "echo" ) ) {
+        if( stricmp( cmd, "echo" ) == 0 ) {
             Log( true, "%s\n", str );
             special = true;
             break;
-        } else if( !stricmp( cmd, "type" ) ) {
+        } else if( stricmp( cmd, "type" ) == 0 ) {
             type = str;
-        } else if( !stricmp( cmd, "redist" ) ) {
+        } else if( stricmp( cmd, "redist" ) == 0 ) {
             redist = str;
-        } else if( !stricmp( cmd, "dir" ) ) {
+        } else if( stricmp( cmd, "dir" ) == 0 ) {
             dir = str;
-        } else if( !stricmp( cmd, "usr" ) ) {
+        } else if( stricmp( cmd, "usr" ) == 0 ) {
             usr = str;
-        } else if( !stricmp( cmd, "rel" ) ) {
+        } else if( stricmp( cmd, "rel" ) == 0 ) {
             rel = str;
-        } else if( !stricmp( cmd, "cond" ) ) {
+        } else if( stricmp( cmd, "cond" ) == 0 ) {
             cond = item_redef( cond, str );
-        } else if( !stricmp( cmd, "cond+" ) ) {
+        } else if( stricmp( cmd, "cond+" ) == 0 ) {
             cond = item_append( cond, str );
-        } else if( !stricmp( cmd, "where" ) ) {
+        } else if( stricmp( cmd, "where" ) == 0 ) {
             where = item_redef( where, str );
-        } else if( !stricmp( cmd, "where+" ) ) {
+        } else if( stricmp( cmd, "where+" ) == 0 ) {
             where = item_append( where, str );
-        } else if( !stricmp( cmd, "descr" ) ) {
+        } else if( stricmp( cmd, "descr" ) == 0 ) {
             descr = str;
-        } else if( !stricmp( cmd, "old" ) ) {
+        } else if( stricmp( cmd, "old" ) == 0 ) {
             old = str;
-        } else if( !stricmp( cmd, "dstvar" ) ) {
+        } else if( stricmp( cmd, "dstvar" ) == 0 ) {
             dstvar = str;
-        } else if( !stricmp( cmd, "keys" ) ) {
+        } else if( stricmp( cmd, "keys" ) == 0 ) {
             keys = item_redef( keys, str );
-        } else if( !stricmp( cmd, "keys+" ) ) {
+        } else if( stricmp( cmd, "keys+" ) == 0 ) {
             keys = item_append( keys, str );
         } else {
             printf( "langdat warning: unknown keyword %s\n", cmd );
@@ -648,8 +656,11 @@ static void ProcessLine( const char *line )
         set_product_version( usr );
         set_product_version( rel );
         /* Check if 'where' matches specified product */
-        if( ( Product == NULL || *where == '\0' || ContainsWord( where, Product, false ) )
-          && ( *keys == '\0' || ContainsWord( keys, KeyList, true ) ) ) {
+        if( ( Product == NULL
+          || *where == '\0'
+          || ContainsWord( where, Product, false ) )
+          && ( *keys == '\0'
+          || ContainsWord( keys, KeyList, true ) ) ) {
             Log( true, "<%s><%s><%s><%s><%s><%s><%s><%s><%s><%s>\n", type, redist, dir, old, usr, rel, where, dstvar, cond, descr );
         }
     }
@@ -697,27 +708,27 @@ static void ProcessDefault( const char *line )
         do {
             str = strtok( NULL, "\"" );
             SKIP_BLANKS( str );
-            if( !stricmp( cmd, "type" ) ) {
+            if( stricmp( cmd, "type" ) == 0 ) {
                 DefType = item_def( DefType, str, cmd );
-            } else if( !stricmp( cmd, "redist" ) ) {
+            } else if( stricmp( cmd, "redist" ) == 0 ) {
                 DefRedist = item_def( DefRedist, str, cmd );
-            } else if( !stricmp( cmd, "dir" ) ) {
+            } else if( stricmp( cmd, "dir" ) == 0 ) {
                 DefDir = item_def( DefDir, str, cmd );
-            } else if( !stricmp( cmd, "usr" ) ) {
+            } else if( stricmp( cmd, "usr" ) == 0 ) {
                 DefUsr = item_def( DefUsr, str, cmd );
-            } else if( !stricmp( cmd, "rel" ) ) {
+            } else if( stricmp( cmd, "rel" ) == 0 ) {
                 DefRel = item_def( DefRel, str, cmd );
-            } else if( !stricmp( cmd, "cond" ) ) {
+            } else if( stricmp( cmd, "cond" ) == 0 ) {
                 DefCond = item_def( DefCond, str, cmd );
-            } else if( !stricmp( cmd, "where" ) ) {
+            } else if( stricmp( cmd, "where" ) == 0 ) {
                 DefWhere = item_def( DefWhere, str, cmd );
-            } else if( !stricmp( cmd, "descr" ) ) {
+            } else if( stricmp( cmd, "descr" ) == 0 ) {
                 DefDescr = item_def( DefDescr, str, cmd );
-            } else if( !stricmp( cmd, "old" ) ) {
+            } else if( stricmp( cmd, "old" ) == 0 ) {
                 DefOld = item_def( DefOld, str, cmd );
-            } else if( !stricmp( cmd, "dstvar" ) ) {
+            } else if( stricmp( cmd, "dstvar" ) == 0 ) {
                 DefDstvar = item_def( DefDstvar, str, cmd );
-            } else if( !stricmp( cmd, "keys" ) ) {
+            } else if( stricmp( cmd, "keys" ) == 0 ) {
                 DefKeys = item_def( DefKeys, str, cmd );
             } else {
                 printf( "langdat warning: unknown default %s\n", cmd );
@@ -754,10 +765,11 @@ static int MatchFound( char *p )
         for( ; MatchWords < 20; ) {
             if( p == NULL )
                 Fatal( "Missing match word\n" );
-            if( stricmp( p, "\"\"" ) == 0 ) // 'No parameter' indicator
+            if( stricmp( p, "\"\"" ) == 0 ) {   // 'No parameter' indicator
                 EmptyOk = true;
-            else
+            } else {
                 Match[MatchWords++] = p;
+            }
             p = NextWord( p );
             if( strcmp( p, ")" ) == 0 ) {
                 p = NextWord( p );
@@ -772,16 +784,20 @@ static int MatchFound( char *p )
     // At this point, p must point to the first word after the (last) match word
 
     for( ;; ) {
-        if( p == NULL || strcmp( p, "]" ) == 0 ) { // End of string
-            if( WordsExamined == 0 && EmptyOk )
+        if( p == NULL
+          || strcmp( p, "]" ) == 0 ) { // End of string
+            if( WordsExamined == 0
+              && EmptyOk ) {
                 return 1;
-            else
+            } else {
                 return 0;
+            }
         }
         WordsExamined++;
         for( i = 0; i < MatchWords; i++ )
-            if( stricmp( Match[i], p ) == 0 )
+            if( stricmp( Match[i], p ) == 0 ) {
                 return 1;
+            }
         p = NextWord( p );
     }
 }
@@ -808,11 +824,10 @@ static void ProcessCtlFile( const char *name )
                 if( IncludeStk->skipping == 0 ) {
                     PushInclude( GetNextPathOrFile( p ) );
                 }
-            }
-            else if( stricmp( p, "LOG" ) == 0 ) {
+            } else if( stricmp( p, "LOG" ) == 0 ) {
                 if( IncludeStk->skipping == 0 ) {
                     log_name = GetNextPathOrFile( p );
-                    p = NextWord( log_name );
+                    NextWord( log_name );
                     if( LogFile == NULL ) {
                         OpenLog( log_name );
                     }
@@ -847,13 +862,15 @@ static void ProcessCtlFile( const char *name )
                 SKIP_BLANKS( p );
                 logit = false;
             }
-            if( IncludeStk->skipping == 0 && IncludeStk->ifdefskipping == 0 ) {
+            if( IncludeStk->skipping == 0
+              && IncludeStk->ifdefskipping == 0 ) {
                 if( logit ) {
                     Log( false, "+++<%s>+++\n", p );
                 }
                 ProcessLine( p );
                 LogFlush();
-            } else if( logit && ( VerbLevel > 1 ) ) {
+            } else if( logit
+              && ( VerbLevel > 1 ) ) {
                 Log( false, "---<%s>---\n", p );
             }
         }

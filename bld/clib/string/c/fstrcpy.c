@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,17 +34,18 @@
 #include "xstring.h"
 
 #undef  _fstrcpy
-         /* copy string t to string s */
+
+/* copy string t to string s */
 
 _WCRTLINK char _WCFAR *_fstrcpy( char _WCFAR *s, const char _WCFAR *t )
 {
 #if defined(__INLINE_FUNCTIONS__)
     return( _inline__fstrcpy( s, t ) );
 #else
-    char _WCFAR     *dst;
-    dst = s;
-    while( *dst++ = *t++ )
-        ;
+    char _WCFAR     *p;
+
+    for( p = s; (*p++ = *t++) != '\0'; )
+        /* empty */;
     return( s );
 #endif
 }

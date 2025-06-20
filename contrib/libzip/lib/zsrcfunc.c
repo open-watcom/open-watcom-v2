@@ -19,7 +19,7 @@
   3. The names of the authors may not be used to endorse or promote
      products derived from this software without specific prior
      written permission.
- 
+
   THIS SOFTWARE IS PROVIDED BY THE AUTHORS ``AS IS'' AND ANY EXPRESS
   OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -33,14 +33,14 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-
+
 
 #include <stdlib.h>
 
 #include "zip.h"
 #include "zipint.h"
 
-
+
 
 struct zip_source *
 zip_source_function(struct zip *za, zip_source_callback zcb, void *ud)
@@ -48,15 +48,15 @@ zip_source_function(struct zip *za, zip_source_callback zcb, void *ud)
     struct zip_source *zs;
 
     if (za == NULL)
-	return NULL;
+        return NULL;
 
-    if ((zs=malloc(sizeof(*zs))) == NULL) {
-	_zip_error_set(&za->error, ZIP_ER_MEMORY, 0);
-	return NULL;
+    if ((zs=ZIP_ALLOC(sizeof(*zs))) == NULL) {
+        _zip_error_set(&za->error, ZIP_ER_MEMORY, 0);
+        return NULL;
     }
 
     zs->f = zcb;
     zs->ud = ud;
-    
+
     return zs;
 }

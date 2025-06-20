@@ -2,7 +2,8 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -24,30 +25,15 @@
 *
 *  ========================================================================
 *
-* Description:  Implementation of termios tcdrain for Linux
-*
-* Author: J. Armstrong
+* Description:  Memory Management functions for ZLIB
 *
 ****************************************************************************/
 
 
-#include "variety.h"
-#include "linuxsys.h"
-#include <sys/ioctl.h>
-#include <termios.h>
+#include "zipmem.h"
 
+#define ZCALLOC     zip_alloc
+#define ZCFREE      zip_free
 
-_WCRTLINK int tcdrain( int fd )
-{
-syscall_res res;
-
-    /* Send SYS_ioctl to the kernel.  We're passing a "1" as an
-     * argument, but the kernel is actually ignoring it.
-     *
-     * See tty_io.c#L2856 where the kernel calls:
-     *    tty_wait_until_sent(tty, 0);
-     */
-    res = sys_call3( SYS_ioctl, (u_long)fd, (u_long)TCSBRK, (u_long)1 );
-
-    __syscall_return( int, res );
-}
+#define ALLOC       zip_alloc
+#define FREE        zip_free

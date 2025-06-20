@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -101,7 +101,7 @@ static void AssignFileLocs( section *sect )
 /*****************************************/
 {
     if( FmtData.u.dos.pad_sections ) {
-        sect->outfile->file_loc = __ROUND_UP_SIZE( sect->outfile->file_loc, SECTOR_SIZE );
+        sect->outfile->file_loc = __ROUND_UP_SIZE_SECTOR( sect->outfile->file_loc );
     }
     sect->u.file_loc = sect->outfile->file_loc;
     sect->outfile->file_loc += __ROUND_UP_SIZE_PARA( sect->size )

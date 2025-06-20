@@ -253,7 +253,7 @@ static char *get_params( const char *scw_name )
     unsigned            len;
     su                  fbk_su;
 
-    p = scandata.s;
+    p = g_scandata.s;
     SkipSpaces( p );
 
     if( *p != '\0' ) {          // at least one potential operand
@@ -399,7 +399,7 @@ void scr_fb( void )
         /* never return */
     }
 
-    scan_restart = scandata.e;
+    scan_restart = g_scandata.e;
     return;
 }
 
@@ -505,7 +505,7 @@ void scr_fk( void )
         /* never return */
     }
 
-    scan_restart = scandata.e;
+    scan_restart = g_scandata.e;
     return;
 }
 

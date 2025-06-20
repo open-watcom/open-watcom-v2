@@ -115,7 +115,7 @@ condcode    lay_attr_and_value( att_name_type *attr_name, att_val_type *attr_val
     memset( attr_val, 0, sizeof( *attr_val ) );
     attr_val->quoted = ' ';
 
-    p = get_att_name_start( scandata.s, &pa, true );
+    p = get_att_name_start( g_scandata.s, &pa, true );
     if( ProcFlags.reprocess_line ) {
         return( CC_no );
     }
@@ -131,7 +131,7 @@ condcode    lay_attr_and_value( att_name_type *attr_name, att_val_type *attr_val
     }
 
     p = get_lay_value( p, attr_val );
-    scandata.s = p;
+    g_scandata.s = p;
     return( ( attr_val->tok.l > 0 ) ? CC_pos : CC_no );
 }
 

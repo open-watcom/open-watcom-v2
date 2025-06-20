@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,18 +33,21 @@
 
 #include "variety.h"
 #include "xstring.h"
+
 #undef  _fmemcpy
 
-_WCRTLINK void _WCFAR *_fmemcpy( void _WCFAR *dst, const void _WCFAR *s, size_t len )
-    {
+
+_WCRTLINK void _WCFAR *_fmemcpy( void _WCFAR *vd, const void _WCFAR *vs, size_t len )
+{
 #if defined(__INLINE_FUNCTIONS__)
-        return( _inline__fmemcpy( dst, s, len ) );
+    return( _inline__fmemcpy( vd, vs, len ) );
 #else
-        const char _WCFAR *src = s;
-        char _WCFAR *p;
-        for( p = dst; len; --len ) {
-            *p++ = *src++;
-        }
-        return( dst );
-#endif
+    const char _WCFAR *s;
+    char _WCFAR *d;
+
+    for( s = vs, d = vd; len != 0; --len ) {
+        *d++ = *s++;
     }
+    return( vd );
+#endif
+}

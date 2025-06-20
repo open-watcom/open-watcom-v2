@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,17 +36,17 @@
 #include "xstring.h"
 
 
-_WCRTLINK VOID_WC_TYPE *__F_NAME(memcpy,wmemcpy)( VOID_WC_TYPE *in_dst, const VOID_WC_TYPE *in_src, size_t len )
+_WCRTLINK VOID_WC_TYPE *__F_NAME(memcpy,wmemcpy)( VOID_WC_TYPE *vd, const VOID_WC_TYPE *vs, size_t len )
 {
 #if defined(__INLINE_FUNCTIONS__) && !defined(__WIDECHAR__) && defined(_M_IX86)
-    return( _inline_memcpy( in_dst, in_src, len ) );
+    return( _inline_memcpy( vd, vs, len ) );
 #else
-    CHAR_TYPE           *dst = in_dst;
-    const CHAR_TYPE     *src = in_src;
+    CHAR_TYPE           *d;
+    const CHAR_TYPE     *s;
 
-    for( ; len; --len ) {
-        *dst++ = *src++;
+    for( d = vd, s = vs; len != 0; --len ) {
+        *d++ = *s++;
     }
-    return( in_dst );
+    return( vd );
 #endif
 }

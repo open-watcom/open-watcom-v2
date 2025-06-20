@@ -122,8 +122,7 @@ static int lib( const OPT_STORAGE *cmdOpts, CmdLine *cmdLine )
             fprintf( fp, "%s\n", args[count] );
         }
         if( cmdOpts->showwopts ) {
-            fprintf( stderr, "echo.%s%s%s\n",
-                args[count], (count == 0 ? ">" : ">>"), cmdFileName );
+            fprintf( stderr, "%s\n", args[count] );
         }
     }
     if( !cmdOpts->noinvoke ) {

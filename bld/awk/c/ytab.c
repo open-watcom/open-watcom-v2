@@ -11,7 +11,7 @@ yyrcsid[] = "$FreeBSD: src/usr.bin/yacc/skeleton.c,v 1.28 2000/01/17 02:04:06 bd
 #define yyclearin (yychar=(YYEMPTY))
 #define yyerrok (yyerrflag=0)
 #define YYRECOVERING() (yyerrflag!=0)
-static int yygrowstack();
+static int yygrowstack( void );
 #define YYPREFIX "yy"
 #line 26 "awkgram.y"
 #include <stdio.h>

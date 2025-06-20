@@ -88,6 +88,6 @@
 
 void scr_cs( void )
 {
-    scan_restart = scandata.e;
+    scan_restart = g_scandata.e;
     return;
 }

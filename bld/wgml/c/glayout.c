@@ -61,8 +61,8 @@ void    lay_layout( const gmltag * entry )
 {
     char            *p;
 
-    p = scandata.s;
-    scandata.s = scandata.e;
+    p = g_scandata.s;
+    g_scandata.s = g_scandata.e;
 
     if( !GlobalFlags.firstpass ) {
         ProcFlags.layout = true;
@@ -101,8 +101,8 @@ void    lay_elayout( const gmltag * entry )
 {
     char            *p;
 
-    p = scandata.s;
-    scandata.s = scandata.e;
+    p = g_scandata.s;
+    g_scandata.s = g_scandata.e;
 
     if( !GlobalFlags.firstpass ) {
         ProcFlags.layout = false;

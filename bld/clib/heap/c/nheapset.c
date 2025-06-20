@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,38 +39,6 @@
 #include "heapacc.h"
 
 
-#if defined( _M_I86 )
-// 16-bit Intel all models
-extern void     _mymemset( void_fptr, unsigned, unsigned );
-#pragma aux _mymemset = \
-        memset_i86              \
-    __parm __caller     [__es __di] [__ax] [__cx] \
-    __value             \
-    __modify __exact    [__ax __di __cx]
-#elif defined( _M_IX86 )
-// 32-bit Intel
-#if defined( __FLAT__ )
-// flat model
-extern void     _mymemset( void_nptr, unsigned, unsigned );
-#pragma aux _mymemset = \
-        memset_386              \
-    __parm __caller     [__edi] [__eax] [__ecx] \
-    __value             \
-    __modify __exact    [__ax __edi __ecx]
-#else
-// all segmented models
-extern void     _mymemset( void_fptr, unsigned, unsigned );
-#pragma aux _mymemset = \
-        memset_386              \
-    __parm __caller     [__es __edi] [__eax] [__ecx] \
-    __value             \
-    __modify __exact    [__ax __edi __ecx]
-#endif
-#else
-// 32-bit non-Intel targets
-#define _mymemset   memset
-#endif
-
 #if defined(__SMALL_DATA__)
 _WCRTLINK int _heapset( unsigned int fill )
 {
@@ -91,7 +60,7 @@ _WCRTLINK int _nheapset( unsigned int fill )
 
     for( heap = __nheapbeg; heap != NULL; heap = heap->next.nptr ) {
         for( frl = heap->freehead.next.nptr; frl != (freelist_nptr)&heap->freehead; frl = frl->next.nptr ) {
-            _mymemset( frl + 1, fill, frl->len - sizeof( freelist ) );
+            memset( frl + 1, fill, frl->len - sizeof( freelist ) );
         }
     }
     _ReleaseNHeap();

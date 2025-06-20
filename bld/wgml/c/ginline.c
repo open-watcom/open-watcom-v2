@@ -142,7 +142,7 @@ static void gml_inline_common( const gmltag *entry, font_number font )
     }
 
     g_scan_err = false;
-    p = scandata.s;
+    p = g_scandata.s;
     SkipDot( p );                       // over '.'
 
     if( entry->u.tagid == T_Q ) {       // Q/eQ inserts quote char
@@ -196,7 +196,7 @@ static void gml_inline_common( const gmltag *entry, font_number font )
       && (input_cbs->fmflags & (II_file | II_macro)) ) {
         scr_process_break();            // ensure line is output
     }
-    scandata.s = scandata.e;
+    g_scandata.s = g_scandata.e;
 }
 
 
@@ -336,7 +336,7 @@ static void gml_e_inline_common( const gmltag *entry )
     }
 
     g_scan_err = false;
-    p = scandata.s;
+    p = g_scandata.s;
     SkipDot( p );                           // over '.'
     if( *p != '\0' ) {
         if( (*(p + 1) == '\0')
@@ -362,7 +362,7 @@ static void gml_e_inline_common( const gmltag *entry )
         }
         g_script_style_sav.style = SCT_none;
     }
-    scandata.s = scandata.e;
+    g_scandata.s = g_scandata.e;
 }
 
 
@@ -444,7 +444,7 @@ void gml_sf( const gmltag *entry )
     att_name_type   attr_name;
     att_val_type    attr_val;
 
-    p = scandata.s;
+    p = g_scandata.s;
     SkipSpaces( p );
     if( *p == '.' ) {
         /* already at tag end */
@@ -457,18 +457,18 @@ void gml_sf( const gmltag *entry )
                 if( attr_val.tok.s != NULL ) {
                     font = get_font_number( attr_val.tok.s, attr_val.tok.l );
                     font_seen = true;
-                    scandata.s = p;
+                    g_scandata.s = p;
                     gml_inline_common( entry, font );
                 }
             }
         }
     }
     if( !font_seen ) {          // font is a required attribute
-        xx_line_err_exit_c( ERR_ATT_MISSING, scandata.s );
+        xx_line_err_exit_c( ERR_ATT_MISSING, g_scandata.s );
         /* never return */
     }
 
-    scandata.s = scandata.e;
+    g_scandata.s = g_scandata.e;
 }
 
 

@@ -31,8 +31,8 @@
 ****************************************************************************/
 
 
-#include "variety.h"
 #undef  __INLINE_FUNCTIONS__
+#include "variety.h"
 #include <bios.h>
 #include "clibxw32.h"
 

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -57,7 +57,7 @@
 
 static CHAR_TYPE *stpcpy( CHAR_TYPE *dest, const CHAR_TYPE *src )
 {
-    while( *dest = *src ) {
+    while( (*dest = *src) != '\0' ) {
         ++dest;
         ++src;
     }

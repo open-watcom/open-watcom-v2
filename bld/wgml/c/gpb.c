@@ -54,7 +54,7 @@ extern  void    gml_pb( const gmltag * entry )
     (void)entry;
 
     g_scan_err = false;
-    p = scandata.s;
+    p = g_scandata.s;
 
     start_doc_sect();                   // if not already done
     if( ProcFlags.concat ) {
@@ -76,7 +76,7 @@ extern  void    gml_pb( const gmltag * entry )
         process_text( p, g_curr_font );
     }
 
-    scandata.s = scandata.e;
+    g_scandata.s = g_scandata.e;
     return;
 }
 

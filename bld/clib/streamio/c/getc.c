@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,9 +38,5 @@
 _WCRTLINK INTCHAR_TYPE __F_NAME((getc),(getwc))( FILE *fp )
 {
     __stream_check( fp, 1 );
-#if !defined( __WIDECHAR__ ) && defined( getc )
-    return( getc( fp ) );
-#else
     return( __F_NAME(fgetc,fgetwc)( fp ) );
-#endif
 }

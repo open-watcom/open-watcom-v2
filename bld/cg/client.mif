@@ -14,6 +14,8 @@ obj_dir = $(host).cgd
 obj_dir = $(host).rtd
 !else ifdef $(proj_name)_dll
 obj_dir = $(host).dll
+!else ifdef $(proj_name)_so
+obj_dir = $(host).so
 !else ifdef debug_cg
 obj_dir = $(host).dbg
 !else

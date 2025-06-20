@@ -10,6 +10,8 @@
 
 :include owrtlink.sp
 
+:include incdir.sp
+
 #ifndef _TIME_H_INCLUDED
  #include <time.h>
 #endif
@@ -24,38 +26,7 @@ typedef unsigned char   cc_t;
 typedef unsigned int    speed_t;
 typedef unsigned int    tcflag_t;
 
-#define NCCS 32
-struct termios {
-    tcflag_t        c_iflag;        /* Input mode flags     */
-    tcflag_t        c_oflag;        /* Output mode flags    */
-    tcflag_t        c_cflag;        /* Control mode flags   */
-    tcflag_t        c_lflag;        /* Local mode flags     */
-    cc_t            c_cc[NCCS];     /* Control characters   */
-    speed_t         c_ispeed;       /* Input speed          */
-    speed_t         c_ospeed;       /* Output speed         */
-    cc_t            c_line;         /* Line discipline      */
-};
-
-/*
- * Special Control Character indices into c_cc[]
- */
-#define VINTR       0
-#define VQUIT       1
-#define VERASE      2
-#define VKILL       3
-#define VEOF        4
-#define VTIME       5
-#define VMIN        6
-#define VSWTC       7
-#define VSTART      8
-#define VSTOP       9
-#define VSUSP       10
-#define VEOL        11
-#define VREPRINT    12
-#define VDISCARD    13
-#define VWERASE     14
-#define VLNEXT      15
-#define VEOL2       16
+#include _ARCH_INCLUDE(termios.h)
 
 /*
  * Input modes (c_iflag)
@@ -109,6 +80,7 @@ struct termios {
 #define B9600       0000015
 #define B19200      0000016
 #define B38400      0000017
+
 #define CSIZE       0000060
 #define CS5         0000000
 #define CS6         0000020
@@ -172,10 +144,10 @@ struct termios {
 #define TCSADRAIN       1
 #define TCSAFLUSH       2
 
-_WCRTLINK extern speed_t cfgetospeed( const struct termios *__termios_p );
 _WCRTLINK extern speed_t cfgetispeed( const struct termios *__termios_p );
-_WCRTLINK extern int     cfsetospeed( struct termios *__termios_p, speed_t __speed );
+_WCRTLINK extern speed_t cfgetospeed( const struct termios *__termios_p );
 _WCRTLINK extern int     cfsetispeed( struct termios *__termios_p, speed_t __speed );
+_WCRTLINK extern int     cfsetospeed( struct termios *__termios_p, speed_t __speed );
 _WCRTLINK extern int     tcgetattr( int __fd, struct termios *__termios_p );
 _WCRTLINK extern int     tcsetattr( int __fd, int __optional_actions, const struct termios *__termios_p );
 _WCRTLINK extern void    cfmakeraw( struct termios *__termios_p );

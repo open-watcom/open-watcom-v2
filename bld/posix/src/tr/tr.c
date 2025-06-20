@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -42,6 +42,10 @@
 #include "misc.h"
 
 
+#define MAX_STR     256
+
+typedef unsigned    tr_len;     /* must be able hold MAX_STR value */
+
 static const char *usageTxt[] = {
     "Usage: tr [-?bcds] string1 [string2]",
     "\tstring1     : characters to translate",
@@ -62,9 +66,7 @@ static const char *usageTxt[] = {
     NULL
 };
 
-#define MAX_STR 256
-
-unsigned char   translationMatrix[MAX_STR];
+char            translationMatrix[MAX_STR];
 bool            deleteSet[MAX_STR];           /* formed from string1 */
 bool            squeezeSet[MAX_STR];          /* formed from string2 */
 int             flagDelete;
@@ -84,17 +86,17 @@ int             flagComplement;
                 If n is not present, then it defaults to 256.
 */
 
-static unsigned char expandChar( char **str ) {
+static char expandChar( char **str ) {
 
-    unsigned char   ch;
+    char   ch;
 
-    ch = **(unsigned char **)str;
+    ch = **str;
     if( ch == 0 )
         return( ch );
     ++*str;
     if( ch != '\\' )
         return( ch );
-    ch = **(unsigned char **)str;
+    ch = **str;
     if( ch == 0 )
         return( ch );
     ++*str;
@@ -113,14 +115,14 @@ static unsigned char expandChar( char **str ) {
     case '4':
     case '5':
     case '6':
-    case '7':   return( (unsigned char)strtol( *str, str, 8 ) );
-    case 'x':   return( (unsigned char)strtol( *str, str, 16 ) );
+    case '7':   return( (char)strtol( *str, str, 8 ) );
+    case 'x':   return( (char)strtol( *str, str, 16 ) );
     default:    return( ch );
     }
 }
 
 
-static size_t expandString( char *str, unsigned char *output ) {
+static tr_len expandString( char *str, char *output ) {
 
     static const char class_msg[] = {
         "[] class must be of the form [x-y] or [a*n]\n"
@@ -129,9 +131,9 @@ static size_t expandString( char *str, unsigned char *output ) {
         "a string cannot expand to greater than 256 characters\n"
     };
     unsigned char   low;
-    unsigned        hi;
-    unsigned char   *outp;
-    int             numb;
+    unsigned char   hi;
+    char            *outp;
+    tr_len          numb;
 
     outp = output;
     for( ;; ) {
@@ -161,7 +163,7 @@ static size_t expandString( char *str, unsigned char *output ) {
                         Die( class_msg );
                     }
                 } else {
-                    numb = (int)( MAX_STR - ( outp - output ) );
+                    numb = (tr_len)( MAX_STR - ( outp - output ) );
                 }
                 while( numb ) {
                     if( outp - output >= MAX_STR )
@@ -183,19 +185,19 @@ static size_t expandString( char *str, unsigned char *output ) {
             *outp++ = expandChar( &str );
         }
     }
-    return( outp - output );
+    return( (tr_len)( outp - output ) );
 }
 
 
-static void doTranslate( size_t len1, unsigned char *str1, size_t len2, unsigned char *str2 ) {
+static void doTranslate( tr_len len1, char *str1, tr_len len2, char *str2 ) {
 
-    int         i;
-    int         j;
+    tr_len      i;
+    tr_len      j;
     int         ch;
     int         last_ch;
 
     for( i = 0; i < MAX_STR; ++i ) {
-        translationMatrix[i] = (unsigned char)i;
+        translationMatrix[i] = (char)i;
     }
     if( flagComplement ) {
         for( i = 0; i < MAX_STR; ++i ) {
@@ -211,32 +213,32 @@ static void doTranslate( size_t len1, unsigned char *str1, size_t len2, unsigned
     } else {
         j = 0;
         for( i = 0; i < len1 && i < len2; ++i ) {
-            translationMatrix[str1[i]] = str2[i];
+            translationMatrix[(unsigned char)str1[i]] = str2[i];
         }
     }
-    last_ch = -1;
-    for( ;; ) {
-        ch = getchar();
-        if( ch == EOF ) break;
-        if( flagDelete && deleteSet[ch] ) continue;
-        ch = translationMatrix[ch];
-        if( flagSqueeze && last_ch == ch && squeezeSet[ch] ) continue;
+    last_ch = EOF;
+    while( (ch = getchar()) != EOF ) {
+        if( flagDelete && deleteSet[ch] )
+            continue;
+        ch = (unsigned char)translationMatrix[ch];
+        if( flagSqueeze && last_ch == ch && squeezeSet[ch] )
+            continue;
         putchar( ch );
         last_ch = ch;
     }
 }
 
 
-static void makeSet( size_t len, unsigned char *str, bool set[], bool no_dups ) {
+static void makeSet( tr_len len, char *str, bool set[], bool no_dups ) {
 
-    size_t      i;
+    tr_len          i;
 
     memset( set, false, MAX_STR );
     for( i = 0; i < len; ++i ) {
-        if( no_dups && set[str[i]] ) {
+        if( no_dups && set[(unsigned char)str[i]] ) {
             Die( "no duplicates allowed in string1" );
         }
-        set[str[i]] = true;
+        set[(unsigned char)str[i]] = true;
     }
 }
 
@@ -244,10 +246,10 @@ static void makeSet( size_t len, unsigned char *str, bool set[], bool no_dups ) 
 int main( int argc, char **argv )
 {
     int             ch;
-    unsigned char   string1[MAX_STR];
-    size_t          string1_len;
-    unsigned char   string2[MAX_STR];
-    size_t          string2_len;
+    char            string1[MAX_STR];
+    tr_len          string1_len;
+    char            string2[MAX_STR];
+    tr_len          string2_len;
 
     argv = ExpandEnv( &argc, argv, "TR" );
 

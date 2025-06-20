@@ -33,7 +33,7 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-
+
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -46,7 +46,7 @@
 #include "zip.h"
 #include "zipint.h"
 
-
+
 
 /* _zip_file_get_offset(za, ze):
    Returns the offset of the file data for entry ze.

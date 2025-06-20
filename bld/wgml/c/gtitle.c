@@ -55,7 +55,7 @@ void    gml_title( const gmltag * entry )
         /* never return */
     }
 
-    p = scandata.s;
+    p = g_scandata.s;
 
     if( *p == '.' ) {
         /* already at tag end */
@@ -131,5 +131,5 @@ void    gml_title( const gmltag * entry )
 
     g_curr_font = font_save;
     line_position = old_line_pos;
-    scandata.s = scandata.e;
+    g_scandata.s = g_scandata.e;
 }

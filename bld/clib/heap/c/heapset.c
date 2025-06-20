@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,13 +40,6 @@
 #include "heapacc.h"
 
 
-extern void     _mymemset( void_fptr, unsigned, unsigned );
-#pragma aux _mymemset = \
-        memset_i86      \
-    __parm __caller     [__es __di] [__ax] [__cx] \
-    __value             \
-    __modify __exact    [__ax __di __cx]
-
 int __HeapSet( __segment seg, unsigned int fill )
 {
     FRLPTR( seg )   frl;
@@ -55,7 +48,7 @@ int __HeapSet( __segment seg, unsigned int fill )
     for( ; seg != _NULLSEG; seg = BHEAP( seg )->next.segm ) {
         frl = BHEAP( seg )->freehead.next.nptr;
         while( _FP_OFF( frl ) != offsetof( heapblk, freehead ) ) {
-            _mymemset( frl + 1, fill, frl->len - sizeof( freelist ) );
+            _fmemset( frl + 1, fill, frl->len - sizeof( freelist ) );
             frl = frl->next.nptr;
         }
     }

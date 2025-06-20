@@ -177,7 +177,7 @@ void    lay_p( const gmltag * entry )
         ProcFlags.lay_xxx = entry->u.layid;
     }
     process_arg( &layout_work.p );
-    scandata.s = scandata.e;
+    g_scandata.s = g_scandata.e;
 }
 
 
@@ -191,7 +191,7 @@ void    lay_pc( const gmltag * entry )
         ProcFlags.lay_xxx = entry->u.layid;
     }
     process_arg( &layout_work.pc );
-    scandata.s = scandata.e;
+    g_scandata.s = g_scandata.e;
 }
 
 

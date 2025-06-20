@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -25,17 +25,14 @@
 *
 *  ========================================================================
 *
-* Description:  Implementation for tcgetattr() for Linux.
+* Description:  Memory Management functions for ZLIB and LIBZIP
 *
 ****************************************************************************/
 
 
-#include "variety.h"
-#include <termios.h>
-#include <sys/ioctl.h>
+#include <stddef.h>
 
-_WCRTLINK int tcgetattr( int __fd, struct termios *__termios_p )
-{
-    return( ioctl( __fd, TCGETS, __termios_p ) );
-}
 
+extern void         *zip_alloc( size_t size );
+extern void         *zip_realloc( void *ptr, size_t size );
+extern void         zip_free( void *ptr );

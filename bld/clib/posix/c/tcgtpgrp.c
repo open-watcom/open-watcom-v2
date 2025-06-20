@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -25,21 +25,32 @@
 *
 *  ========================================================================
 *
-* Description:  Implementation for tcgetpgrp() for Linux.
+* Description:  Implementation for POSIX tcgetpgrp
 *
 ****************************************************************************/
 
 
 #include "variety.h"
-#include <termios.h>
 #include <unistd.h>
-#include <sys/ioctl.h>
+#ifdef __LINUX__
+    #include <sys/ioctl.h>
+#else
+    #include "rterrno.h"
+    #include "thread.h"
+#endif
 
-_WCRTLINK  pid_t  tcgetpgrp( int __fildes )
+
+_WCRTLINK  pid_t  tcgetpgrp( int fd )
 {
+#ifdef __LINUX__
     pid_t pid;
-    if ( ioctl( __fildes, TIOCGPGRP, &pid ) == -1 )
+
+    if ( ioctl( fd, TIOCGPGRP, &pid ) == -1 )
         return( -1 );
     return( pid );
+#else
+    _RWD_errno = EINVAL;
+    return( -1 );
+#endif
 }
 

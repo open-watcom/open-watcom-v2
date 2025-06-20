@@ -357,7 +357,7 @@ static void process_fo_ju( bool both , char *cwcurr )
     char            *p;
     unsigned        len;
 
-    p = scandata.s;
+    p = g_scandata.s;
     SkipSpaces( p );                    // next word start
     pa = p;
     SkipNonSpaces( p );                 // end of word
@@ -592,7 +592,7 @@ void    scr_co( void )
     cwcurr[2] = 'o';
     cwcurr[3] = '\0';
 
-    p = scandata.s;
+    p = g_scandata.s;
     SkipSpaces( p );                    // next word start
     pa = p;
     SkipNonSpaces( p );                 // end of word

@@ -415,7 +415,7 @@ void gml_fig( const gmltag * entry )
     figcap_done = false;                // reset for this FIG
     *figrefid = '\0';
     page_width = false;
-    p = scandata.s;
+    p = g_scandata.s;
     depth = 0;                          // default value; depth is space reserved for some other item
     frame.type = layout_work.fig.default_frame.type;
     if( frame.type == char_frame ) {
@@ -702,7 +702,7 @@ void gml_fig( const gmltag * entry )
             process_text( p, g_curr_font);  // if text follows
         }
     }
-    scandata.s = scandata.e;
+    g_scandata.s = g_scandata.e;
     return;
 }
 
@@ -735,7 +735,7 @@ void gml_efig( const gmltag * entry )
 
     /* Done here because needed for the minimum post_skip */
 
-    p = scandata.s;
+    p = g_scandata.s;
     SkipDot( p );                       // possible tag end
 
     if( cur_group_type != GRT_fig ) {    // no preceding :FIG tag
@@ -1092,7 +1092,7 @@ void gml_efig( const gmltag * entry )
         fig_entry = fig_entry->next;    // get to next FIG
     }
     g_text_spacing = spacing_save;
-    scandata.s = scandata.e;
+    g_scandata.s = g_scandata.e;
     return;
 }
 
@@ -1123,7 +1123,7 @@ void gml_figcap( const gmltag * entry )
     rs_loc = TLOC_figcap;
 
     g_scan_err = false;
-    p = scandata.s;
+    p = g_scandata.s;
 
     g_curr_font = layout_work.figcap.string_font;
     set_skip_vars( NULL, &layout_work.figcap.pre_lines, NULL, g_text_spacing, g_curr_font );
@@ -1187,7 +1187,7 @@ void gml_figcap( const gmltag * entry )
     fig_entry->flags |= FFH_figcap;         // mark as FIGCAP present, with or without text
     figcap_done = true;
 
-    scandata.s = scandata.e;
+    g_scandata.s = g_scandata.e;
     return;
 }
 
@@ -1211,7 +1211,7 @@ void gml_figdesc( const gmltag * entry )
     rs_loc = 0;
 
     g_scan_err = false;
-    p = scandata.s;
+    p = g_scandata.s;
 
     if( figcap_done ) {                         // FIGCAP was present
         post_space = 0;
@@ -1240,7 +1240,7 @@ void gml_figdesc( const gmltag * entry )
             scr_process_break();
         }
     }
-    scandata.s = scandata.e;
+    g_scandata.s = g_scandata.e;
     return;
 }
 

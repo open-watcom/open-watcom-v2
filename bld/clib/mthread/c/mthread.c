@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2016-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2016-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -742,7 +742,7 @@ void __LinuxRemoveThread( void )
     thread_data *tdata;
 
     tdata = __LinuxGetThreadData();
-    if(tdata != NULL && tdata->__allocated )
+    if( tdata != NULL && tdata->__allocated )
         lib_free( tdata );
 
     __LinuxSetThreadData( NULL );
@@ -808,7 +808,7 @@ void __RdosRemoveThread( void )
         if( tdata == NULL )
             return;
         __RemoveThreadData( tdata->thread_id );
-        RdosFreeMem(tdata);
+        RdosFreeMem( tdata );
         __tls_set_value( __TlsIndex, NULL );
     }
 }

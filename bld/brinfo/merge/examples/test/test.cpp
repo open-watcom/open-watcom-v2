@@ -35,7 +35,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include <direct.h>
+#include <dirent.h>
 #include "brmerge.hpp"
 #include "pathgrp2.hpp"
 

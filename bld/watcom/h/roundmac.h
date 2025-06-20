@@ -25,17 +25,15 @@
 *
 *  ========================================================================
 *
-* Description:  Definition used for rounding memory size
+* Description:  Definition used for memory size and rounding
 *
 ****************************************************************************/
 
 
 #ifdef _M_I86
-#define PWROF2(r)       (1UL<<(r))
 #define _1K             0x00000400UL
 #define _2K             0x00000800UL
 #define _4K             0x00001000UL
-#define _5K             0x00001400UL
 #define _8K             0x00002000UL
 #define _16K            0x00004000UL
 #define _32K            0x00008000UL
@@ -45,11 +43,9 @@
 #define _16M            0x01000000UL
 #define _256M           0x10000000UL
 #else
-#define PWROF2(r)       (1U<<(r))
 #define _1K             0x00000400U
 #define _2K             0x00000800U
 #define _4K             0x00001000U
-#define _5K             0x00001400U
 #define _8K             0x00002000U
 #define _16K            0x00004000U
 #define _32K            0x00008000U
@@ -60,33 +56,53 @@
 #define _256M           0x10000000U
 #endif
 
-#define __ROUND_DOWN_SIZE(__x,__amt)        ((__x)&(~((__amt)-1)))
-#define __ROUND_UP_SIZE(__x,__amt)          (((__x)+((__amt)-1))&(~((__amt)-1)))
-#define __ROUND_DOWN_SIZE_TO(__x,__amt)     ((__x)/(__amt))
-#define __ROUND_UP_SIZE_TO(__x,__amt)       (((__x)+((__amt)-1))/(__amt))
+#ifdef _M_I86
+#define PWROF2(r)       (1U<<(r))
+#else
+#define PWROF2(r)       (1UL<<(r))
+#endif
+#define PWROF2LL(r)     (1ULL<<(r))
 
-#define __ROUND_DOWN_SIZE_EVEN(__x)         __ROUND_DOWN_SIZE(__x,2)
-#define __ROUND_UP_SIZE_EVEN(__x)           __ROUND_UP_SIZE(__x,2)
+/*
+ * these are for size which is any value
+ */
+#define __ROUND_DOWN_SIZE_TO(__x,__amt)             ((__x)/(__amt))
+#define __ROUND_UP_SIZE_TO(__x,__amt)               (((__x)+((__amt)-1))/(__amt))
 
-#define __ROUND_DOWN_SIZE_WORD(__x)         __ROUND_DOWN_SIZE(__x,2)
-#define __ROUND_UP_SIZE_WORD(__x)           __ROUND_UP_SIZE(__x,2)
-#define __ROUND_DOWN_SIZE_DWORD(__x)        __ROUND_DOWN_SIZE(__x,4)
-#define __ROUND_UP_SIZE_DWORD(__x)          __ROUND_UP_SIZE(__x,4)
-#define __ROUND_DOWN_SIZE_QWORD(__x)        __ROUND_DOWN_SIZE(__x,8)
-#define __ROUND_UP_SIZE_QWORD(__x)          __ROUND_UP_SIZE(__x,8)
-#define __ROUND_DOWN_SIZE_PARA(__x)         __ROUND_DOWN_SIZE(__x,16)
-#define __ROUND_UP_SIZE_PARA(__x)           __ROUND_UP_SIZE(__x,16)
-#define __ROUND_DOWN_SIZE_PAGE(__x)         __ROUND_DOWN_SIZE(__x,256)
-#define __ROUND_UP_SIZE_PAGE(__x)           __ROUND_UP_SIZE(__x,256)
-#define __ROUND_DOWN_SIZE_4K(__x)           __ROUND_DOWN_SIZE(__x,_4K)
-#define __ROUND_UP_SIZE_4K(__x)             __ROUND_UP_SIZE(__x,_4K)
-#define __ROUND_DOWN_SIZE_64K(__x)          __ROUND_DOWN_SIZE(__x,_64K)
-#define __ROUND_UP_SIZE_64K(__x)            __ROUND_UP_SIZE(__x,_64K)
+#define __ROUND_DOWN_SIZE_ANY(__x,__amt)            (__ROUND_DOWN_SIZE_TO(__x,__amt)*(__amt))
+#define __ROUND_UP_SIZE_ANY(__x,__amt)              (__ROUND_UP_SIZE_TO(__x,__amt)*(__amt))
+/*
+ * these are for size which is power of 2
+ */
+#define __ROUND_DOWN_SIZE(__x,__amt)                ((__x)&(~((__amt)-1)))
+#define __ROUND_UP_SIZE(__x,__amt)                  (((__x)+((__amt)-1))&(~((__amt)-1)))
 
-#define __ROUND_DOWN_SIZE_TO_PARA(__x)      __ROUND_DOWN_SIZE_TO((__x),16)
-#define __ROUND_UP_SIZE_TO_PARA(__x)        __ROUND_UP_SIZE_TO((__x),16)
+#define __ROUND_DOWN_SIZE_EVEN(__x)                 __ROUND_DOWN_SIZE(__x,2)
+#define __ROUND_UP_SIZE_EVEN(__x)                   __ROUND_UP_SIZE(__x,2)
 
-#define __ROUND_DOWN_SIZE_TO_4K(__x)        __ROUND_DOWN_SIZE_TO((__x),_4K)
-#define __ROUND_UP_SIZE_TO_4K(__x)          __ROUND_UP_SIZE_TO((__x),_4K)
+#define __ROUND_DOWN_SIZE_WORD(__x)                 __ROUND_DOWN_SIZE(__x,2)
+#define __ROUND_UP_SIZE_WORD(__x)                   __ROUND_UP_SIZE(__x,2)
+#define __ROUND_DOWN_SIZE_DWORD(__x)                __ROUND_DOWN_SIZE(__x,4)
+#define __ROUND_UP_SIZE_DWORD(__x)                  __ROUND_UP_SIZE(__x,4)
+#define __ROUND_DOWN_SIZE_QWORD(__x)                __ROUND_DOWN_SIZE(__x,8)
+#define __ROUND_UP_SIZE_QWORD(__x)                  __ROUND_UP_SIZE(__x,8)
+#define __ROUND_DOWN_SIZE_PARA(__x)                 __ROUND_DOWN_SIZE(__x,16)
+#define __ROUND_UP_SIZE_PARA(__x)                   __ROUND_UP_SIZE(__x,16)
+#define __ROUND_DOWN_SIZE_PAGE(__x)                 __ROUND_DOWN_SIZE(__x,256)
+#define __ROUND_UP_SIZE_PAGE(__x)                   __ROUND_UP_SIZE(__x,256)
+#define __ROUND_DOWN_SIZE_4K(__x)                   __ROUND_DOWN_SIZE(__x,_4K)
+#define __ROUND_UP_SIZE_4K(__x)                     __ROUND_UP_SIZE(__x,_4K)
+#define __ROUND_DOWN_SIZE_64K(__x)                  __ROUND_DOWN_SIZE(__x,_64K)
+#define __ROUND_UP_SIZE_64K(__x)                    __ROUND_UP_SIZE(__x,_64K)
 
-#define __ROUND_UP_SIZE_PWROF2(__x,__pwr)   __ROUND_UP_SIZE(__x,PWROF2(__pwr))
+#define __ROUND_DOWN_SIZE_TO_PARA(__x)              __ROUND_DOWN_SIZE_TO((__x),16)
+#define __ROUND_UP_SIZE_TO_PARA(__x)                __ROUND_UP_SIZE_TO((__x),16)
+
+#define __ROUND_DOWN_SIZE_TO_4K(__x)                __ROUND_DOWN_SIZE_TO((__x),_4K)
+#define __ROUND_UP_SIZE_TO_4K(__x)                  __ROUND_UP_SIZE_TO((__x),_4K)
+
+#define __ROUND_UP_SIZE_PWROF2(__x,__pwr)           __ROUND_UP_SIZE(__x,PWROF2(__pwr))
+#define __ROUND_UP_SIZE_PWROF2LL(__x,__pwr)         __ROUND_UP_SIZE(__x,PWROF2LL(__pwr))
+
+#define __ROUND_DOWN_SIZE_TO_PWROF2LL(__x,__pwr)    __ROUND_DOWN_SIZE_TO(__x,PWROF2LL(__pwr))
+#define __ROUND_UP_SIZE_TO_PWROF2LL(__x,__pwr)      __ROUND_UP_SIZE_TO(__x,PWROF2LL(__pwr))

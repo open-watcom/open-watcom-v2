@@ -19,7 +19,7 @@
   3. The names of the authors may not be used to endorse or promote
      products derived from this software without specific prior
      written permission.
- 
+
   THIS SOFTWARE IS PROVIDED BY THE AUTHORS ``AS IS'' AND ANY EXPRESS
   OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -33,13 +33,13 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-
+
 
 #include <stdlib.h>
 #include "zip.h"
 #include "zipint.h"
 
-
+
 
 /* _zip_free:
    frees the space allocated to a zipfile struct, and closes the
@@ -51,33 +51,33 @@ _zip_free(struct zip *za)
     int i;
 
     if (za == NULL)
-	return;
+        return;
 
     if (za->zn)
-	free(za->zn);
+        ZIP_FREE(za->zn);
 
     if (za->zp)
-	fclose(za->zp);
+        fclose(za->zp);
 
     _zip_cdir_free(za->cdir);
 
     if (za->entry) {
-	for (i=0; i<za->nentry; i++) {
-	    _zip_entry_free(za->entry+i);
-	}
-	free(za->entry);
+        for (i=0; i<za->nentry; i++) {
+            _zip_entry_free(za->entry+i);
+        }
+        ZIP_FREE(za->entry);
     }
 
     for (i=0; i<za->nfile; i++) {
-	if (za->file[i]->error.zip_err == ZIP_ER_OK) {
-	    _zip_error_set(&za->file[i]->error, ZIP_ER_ZIPCLOSED, 0);
-	    za->file[i]->za = NULL;
-	}
+        if (za->file[i]->error.zip_err == ZIP_ER_OK) {
+            _zip_error_set(&za->file[i]->error, ZIP_ER_ZIPCLOSED, 0);
+            za->file[i]->za = NULL;
+        }
     }
 
-    free(za->file);
-    
-    free(za);
+    ZIP_FREE(za->file);
+
+    ZIP_FREE(za);
 
     return;
 }

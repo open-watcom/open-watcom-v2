@@ -66,10 +66,10 @@ void    scr_ty( void )
 {
     char    *   p;
 
-    p = scandata.s;
+    p = g_scandata.s;
     SkipSpaces( p );
     out_msg( "%s\n", p );
-    scan_restart = scandata.e;
+    scan_restart = g_scandata.e;
     return;
 }
 

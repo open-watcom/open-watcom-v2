@@ -76,7 +76,7 @@ static void proc_p_pc( p_lay_tag *p_pc, g_tags t )
     p_pc_setup( p_pc );
 
     g_scan_err = false;
-    p = scandata.s;
+    p = g_scandata.s;
 
     SkipDot( p );                       // over '.'
     if( *p != '\0' ) {
@@ -93,7 +93,7 @@ static void proc_p_pc( p_lay_tag *p_pc, g_tags t )
         g_post_skip = 0;
     }
 
-    scandata.s = scandata.e;
+    g_scandata.s = g_scandata.e;
     return;
 }
 
@@ -128,7 +128,7 @@ extern void gml_note( const gmltag * entry )
     (void)entry;
 
     g_scan_err = false;
-    p = scandata.s;
+    p = g_scandata.s;
 
     start_doc_sect();                   // if not already done
 
@@ -179,7 +179,7 @@ extern void gml_note( const gmltag * entry )
     }
 
     g_curr_font = font_save;
-    scandata.s = scandata.e;
+    g_scandata.s = g_scandata.e;
     return;
 }
 
