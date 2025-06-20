@@ -179,7 +179,7 @@ jobs:
         hostos:     'lnx'
         gitpath:    'rel'
         owdebug:    ${{ vars.OWDEBUG }}
-    - if: github.event_name == 'PullRequest'
+    - if: github.event_name == 'pull_request'
       name: Upload Pull Request owsnapshot
       uses: actions/upload-artifact@v4
       with:
@@ -187,21 +187,21 @@ jobs:
         path:           ${{ steps.owsnapshot.outputs.fullname }}
         retention-days: 14
         overwrite:      true
-    - if: vars.OWDELETEARTIFACTS == 1 && github.event_name == 'PullRequest'
+    - if: vars.OWDELETEARTIFACTS == 1 && github.event_name == 'pull_request'
       name: Call to delete Pull Request Artifacs
       uses: "./.github/actions/artfdelc"
       with:
         exclude:    'owsnapshot'
         owdebug:    ${{ vars.OWDEBUG }}
         owcurlopts: ${{ vars.OWCURLOPTS }}
-    - if: github.event_name != 'PullRequest'
+    - if: github.event_name != 'pull_request'
       name: Upload Last CI Build
       uses: "./.github/actions/lastbld"
       with:
         fullname:   ${{ steps.owsnapshot.outputs.fullname }}
         owdebug:    ${{ vars.OWDEBUG }}
         owcurlopts: ${{ vars.OWCURLOPTS }}
-    - if: vars.OWDELETEARTIFACTS == 1 && github.event_name != 'PullRequest'
+    - if: vars.OWDELETEARTIFACTS == 1 && github.event_name != 'pull_request'
       name: Call to delete Last CI Build Artifacs
       uses: "./.github/actions/artfdelc"
       with:
