@@ -17,3 +17,4 @@ if [ -d "bld/wmake/$OWOBJDIR" ]; then rm -rf "bld/wmake/$OWOBJDIR"; fi
 # Finally delete the builder and wmake executables
 rm -f "build/$OWOBJDIR/builder"
 rm -f "build/$OWOBJDIR/wmake"
+
