@@ -52,11 +52,11 @@ The Safer C Library extension provides the
 function which is a safer alternative to
 .id &funcb.
 .period
-This newer
-.id &funcsafe.
-function is recommended to be used instead of the traditional "unsafe"
-.id &funcb.
-function.
+:cmt. This newer
+:cmt. .id &funcsafe.
+:cmt. function is recommended to be used instead of the traditional "unsafe"
+:cmt. .id &funcb.
+:cmt. function.
 .oldtext
 .dm safealt end
 .*
