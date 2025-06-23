@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -209,7 +209,6 @@ _WCRTLINK int _CrtDbgReport( int reporttype, const char *filename,
 {
 #ifdef __NT__
     DWORD           byteswritten;
-    BOOL            osrc;
 #endif
     char                usermsg[MAX_MSG_LEN] = { 0 };
     char                linemsg[MAX_MSG_LEN] = { 0 };
@@ -271,9 +270,7 @@ _WCRTLINK int _CrtDbgReport( int reporttype, const char *filename,
     if( __DbgReportModes[reporttype] & _CRTDBG_MODE_FILE ) {
         if( __DbgReportFiles[reporttype] != _CRTDBG_INVALID_HFILE ) {
 #ifdef __NT__
-            osrc = WriteFile( __DbgReportFiles[reporttype], outmsg,
-                              strlen( outmsg ), &byteswritten, NULL );
-            if( osrc == FALSE ) {
+            if( WriteFile( __DbgReportFiles[reporttype], outmsg, strlen( outmsg ), &byteswritten, NULL ) == 0 ) {
                 retval = -1;
             }
 #else

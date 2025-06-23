@@ -383,7 +383,7 @@ void CFile::Write( const void *lpBuf, UINT nCount )
 /*************************************************/
 {
     DWORD   dwBytesWritten;
-    if( !::WriteFile( m_hFile, lpBuf, nCount, &dwBytesWritten, NULL ) ) {
+    if( ::WriteFile( m_hFile, lpBuf, nCount, &dwBytesWritten, NULL ) == 0 ) {
         CFileException::ThrowOsError( ::GetLastError(), m_strFileName );
     }
 }

@@ -154,7 +154,7 @@ int __qwrite( int handle, const void *buffer, unsigned len )
     }
 #endif
 #if defined(__NT__)
-    if( !WriteFile( h, buffer, len, &len_written, NULL ) ) {
+    if( WriteFile( h, buffer, len, &len_written, NULL ) == 0 ) {
         error = GetLastError();
         if( atomic == 1 ) {
             _ReleaseFileH( handle );

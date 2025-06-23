@@ -91,8 +91,8 @@ _WCRTLINK __int64 __lseeki64( int handle, __int64 offset, int origin )
   #elif defined( __NT__ )
     {
         DWORD           rc;
+        DWORD           error;
         LONG            offset_hi;
-        int             error;
 
         offset_hi = HIDWORD( offset );
         rc = SetFilePointer( __getOSHandle( handle ), LODWORD( offset ), &offset_hi, origin );

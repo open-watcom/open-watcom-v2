@@ -220,7 +220,7 @@ int CpFile( HANDLE in )
         if( lenread == 0 ) {
             break;
         }
-        if( !WriteFile( out, buff, lenread, &lenread, NULL ) ) {
+        if( WriteFile( out, buff, lenread, &lenread, NULL ) == 0 ) {
             rc = 3;
             break;
         }

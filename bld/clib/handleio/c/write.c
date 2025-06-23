@@ -115,7 +115,6 @@ static int zero_pad( int handle )           /* 09-jan-95 */
     unsigned    write_amt;
     __i64       cur_ptr;
     __i64       end_ptr;
-    BOOL        rc;
     char        zeroBuf[PAD_SIZE];
 
     h = __getOSHandle( handle );
@@ -148,8 +147,7 @@ static int zero_pad( int handle )           /* 09-jan-95 */
         } else {
             write_amt = cur_ptr._64 - end_ptr._64;
         }
-        rc = WriteFile( h, zeroBuf, write_amt, &number_of_bytes_written, NULL );
-        if( rc == 0 )
+        if( WriteFile( h, zeroBuf, write_amt, &number_of_bytes_written, NULL ) == 0 )
             return( -1 );
         end_ptr._64 = end_ptr._64 + write_amt;
     }
@@ -234,7 +232,7 @@ static int os_write( int handle, const void *buffer, unsigned len, unsigned *amt
     {
 #if defined(__NT__)
         h = __getOSHandle( handle );
-        if( !WriteFile( h, (LPCVOID)buffer, (DWORD)len, (LPDWORD)amt, NULL ) ) {
+        if( WriteFile( h, (LPCVOID)buffer, (DWORD)len, (LPDWORD)amt, NULL ) == 0 ) {
             return( __set_errno_nt() );
         }
 #elif defined(__OS2__)

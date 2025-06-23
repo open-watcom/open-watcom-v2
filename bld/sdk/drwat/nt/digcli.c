@@ -158,7 +158,7 @@ size_t DIGCLIENTRY( Write )( FILE *fp, const void *buf, size_t size )
 {
     DWORD       byteswritten;
 
-    if( !WriteFile( FP2WH( fp ), buf, size, &byteswritten, NULL ) )
+    if( WriteFile( FP2WH( fp ), buf, size, &byteswritten, NULL ) == 0 )
         return( (size_t)-1 );
     return( byteswritten );
 }

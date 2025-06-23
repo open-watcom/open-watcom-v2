@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -62,7 +63,7 @@ int mywrite( bhandle handle, void *buff, int len )
 {
     DWORD               bytes;
 
-    if( !WriteFile( handle, buff, len, &bytes, NULL ) ) {
+    if( WriteFile( handle, buff, len, &bytes, NULL ) == 0 ) {
         bytes = 0;
     }
     return( bytes );

@@ -183,7 +183,7 @@ trap_retval TRAP_FILE( write_console )( void )
     ret = GetOutPtr( 0 );
     ret->err = 0;
     if( WriteFile( GetStdHandle( STD_ERROR_HANDLE ), GetInPtr( sizeof( *acc ) ),
-                        GetTotalSizeIn() - sizeof( *acc ), &bytes, NULL ) ) {
+                        GetTotalSizeIn() - sizeof( *acc ), &bytes, NULL ) == 0 ) {
         ret->err = GetLastError();
     }
     ret->len = bytes;
