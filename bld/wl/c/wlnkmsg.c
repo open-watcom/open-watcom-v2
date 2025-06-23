@@ -47,7 +47,7 @@
 #include "loadfile.h"
 #include "wreslang.h"
 #include "wressetr.h"
-#include "rcrtns.h"
+#include "_rcrtns.h"
 #include "posixfp.h"
 #ifdef USE_WRESLIB
     #include "wresset2.h"

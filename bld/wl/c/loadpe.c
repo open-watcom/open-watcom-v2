@@ -61,7 +61,7 @@
 #include "toc.h"
 #include "objstrip.h"
 #include "wressetr.h"
-#include "rcrtns.h"
+#include "_rcrtns.h"
 #include "pass2l1.h"
 #include "exerespe.h"
 #include "sharedio.h"
