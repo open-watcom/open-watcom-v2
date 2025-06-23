@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -66,7 +66,8 @@ _WCRTLINK int _setmode( int handle, int mode )
     }
     old_mode = (iomode_flags & _BINARY) ? O_BINARY : O_TEXT;
     if( mode != old_mode ) {
-        if( mode == O_BINARY  ||  mode == O_TEXT ) {
+        if( mode == O_BINARY
+          || mode == O_TEXT ) {
             iomode_flags &= ~ _BINARY;
             if( mode == O_BINARY ) {
                 iomode_flags |= _BINARY;

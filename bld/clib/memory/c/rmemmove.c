@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -42,11 +43,16 @@ void *memmove( void *dest, const void *src, size_t n )
     const char *        from = src;
     char *              to = dest;
 
-    if( from == to )  return( dest );
+    if( from == to )
+        return( dest );
 
-    if( ( to<from && to+n<from )  ||  ( from<to && from+n<to ) ) {
+    if( ( to < from
+      && to + n < from )
+      || ( from < to
+      && from + n < to ) ) {
         memcpy( to, from, n );          /* no overlap between regions */
-    } else if( from < to  &&  from + n > to ) {
+    } else if( from < to
+      && from + n > to ) {
         to += n;
         from += n;
         while( n != 0 ) {               /* tread softly */

@@ -39,7 +39,7 @@
 _WCRTLINK unsigned int _NEARFAR(_mbsnextc,_fmbsnextc)( const unsigned char _FFAR *string )
 {
     unsigned int retval = string[0];
-    if( _ismbblead(retval) )
-        retval = (retval << 8)  |  string[1];
+    if( _ismbblead( retval ) )
+        retval = (retval << 8) | string[1];
     return( retval );
 }

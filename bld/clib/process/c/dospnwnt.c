@@ -74,8 +74,8 @@ int __F_NAME(_dospawn,_wdospawn)( int mode, CHAR_TYPE *pgmname, CHAR_TYPE *cmdli
     if( __lib_CreateProcess( cmdline, (mode != P_DETACH), envp, &sinfo, &pinfo ) == 0 ) {
         error = GetLastError();
         if( (error == ERROR_ACCESS_DENIED)
-         || (error == ERROR_BAD_EXE_FORMAT)
-         || (error == ERROR_BAD_PATHNAME) ) {
+          || (error == ERROR_BAD_EXE_FORMAT)
+          || (error == ERROR_BAD_PATHNAME) ) {
             error = ERROR_FILE_NOT_FOUND;
         }
         return( __set_errno_dos( error ) );

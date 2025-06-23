@@ -162,10 +162,12 @@ _WCRTLINK void _WCFAR *_fmemmove( void _WCFAR *vd, const void _WCFAR *vs, size_t
 {
     char _WCFAR *d = vd;
     const char _WCFAR *s = vs;
-    if( s == d || len == 0 ) {
+    if( s == d
+      || len == 0 ) {
         return( d );
     }
-    if( s < d  &&  s + len > d ) {  /* if buffers are overlapped*/
+    if( s < d
+      && s + len > d ) {  /* if buffers are overlapped*/
 #if defined(__HUGE__) || defined(__386__)
         d += len;
         s += len;
@@ -183,4 +185,3 @@ _WCRTLINK void _WCFAR *_fmemmove( void _WCFAR *vd, const void _WCFAR *vs, size_t
     }
     return( d );
 }
-

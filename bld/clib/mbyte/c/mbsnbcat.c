@@ -59,27 +59,29 @@ _WCRTLINK unsigned char _FFAR *_NEARFAR(_mbsnbcat,_fmbsnbcat)( unsigned char _FF
     /*** Determine where to begin copying ***/
     if( *s1 != '\0' ) {
         p2 = (unsigned char _FFAR *)_NEARFAR(strchr,_fstrchr)( (char _FFAR *)s1, '\0' ) - 1; /* find null byte */
-        p1 = s1;                                /* start at string start */
-        while( *p1 != '\0' ) {                  /* until last character */
-            if( p1 == p2  &&  _ismbblead(*p1) ) {/* s1 ends in a lead byte? */
-                s1 = p2;                        /* yes, smite last byte */
+        p1 = s1;                                    /* start at string start */
+        while( *p1 != '\0' ) {                      /* until last character */
+            if( p1 == p2 && _ismbblead( *p1 ) ) {   /* s1 ends in a lead byte? */
+                s1 = p2;                            /* yes, smite last byte */
                 break;
             }
             p1 = _NEARFAR(_mbsinc,_fmbsinc)( p1 );
         }
-        if( s1 != p2 )  s1 = p2+1;              /* no, point at null byte */
+        if( s1 != p2 ) {
+            s1 = p2 + 1;                            /* no, point at null byte */
+        }
     }
 
     /*** Copy up to 'n' characters ***/
     while( *s2 != '\0' ) {
-        bytes = _NEARFAR(_mbclen,_fmbclen)( s2 ); /* char size in bytes */
+        bytes = _NEARFAR(_mbclen,_fmbclen)( s2 );   /* char size in bytes */
         if( n >= bytes ) {
-            _NEARFAR(_mbccpy,_fmbccpy)( s1, s2 ); /* copy a character */
-            s1 = _NEARFAR(_mbsinc,_fmbsinc)( s1 );/* skip over character */
-            s2 = _NEARFAR(_mbsinc,_fmbsinc)( s2 );/* skip over character */
-            n -= bytes;                           /* update counter */
+            _NEARFAR(_mbccpy,_fmbccpy)( s1, s2 );   /* copy a character */
+            s1 = _NEARFAR(_mbsinc,_fmbsinc)( s1 );  /* skip over character */
+            s2 = _NEARFAR(_mbsinc,_fmbsinc)( s2 );  /* skip over character */
+            n -= bytes;                             /* update counter */
         } else {
-            while( n-- > 0 ) {                  /* partial char */
+            while( n-- > 0 ) {                      /* partial char */
                 *s1++ = '\0';
             }
             break;
@@ -87,7 +89,7 @@ _WCRTLINK unsigned char _FFAR *_NEARFAR(_mbsnbcat,_fmbsnbcat)( unsigned char _FF
     }
 
     /*** Pad with a terminating NULL character ***/
-    *s1 = '\0';                                 /* append NULL char */
+    *s1 = '\0';                                     /* append NULL char */
 
     return( string_start );
 }

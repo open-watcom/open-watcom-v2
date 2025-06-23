@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -66,7 +66,8 @@ _WCRTLINK void_hptr halloc( long numb, unsigned size )
     amount = (unsigned long)numb * size;
     if( amount == 0 )
         return( NULL );
-    if( OVERFLOW_64K( amount ) && !only_one_bit( size ) )
+    if( OVERFLOW_64K( amount )
+      && !only_one_bit( size ) )
         return( NULL );
     hmem = GlobalAlloc( GMEM_MOVEABLE | GMEM_ZEROINIT, amount );
     if( hmem == NULL )
@@ -79,9 +80,11 @@ _WCRTLINK void_hptr halloc( long numb, unsigned size )
     void_hptr       hp;
 
     amount = (unsigned long)numb * size;
-    if( amount == 0  || amount >= 0x100000 )
+    if( amount == 0
+      || amount >= 0x100000 )
         return( NULL );
-    if( OVERFLOW_64K( amount ) && !only_one_bit( size ) )
+    if( OVERFLOW_64K( amount )
+      && !only_one_bit( size ) )
         return( NULL );
     num_of_paras = __ROUND_UP_SIZE_TO_PARA( amount );
     rc = TinyAllocBlock( num_of_paras );
