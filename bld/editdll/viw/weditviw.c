@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -139,8 +139,7 @@ int EDITAPI EDITConnect( void )
             // editor is up - try again (otherwise give up)
             memset( &si, 0, sizeof( si ) );
             si.cb = sizeof( si );
-            rc = CreateProcess( NULL, szCommandLine, NULL, NULL, FALSE, NORMAL_PRIORITY_CLASS, NULL, NULL, &si, &pi );
-            if( rc ) {
+            if( CreateProcess( NULL, szCommandLine, NULL, NULL, FALSE, NORMAL_PRIORITY_CLASS, NULL, NULL, &si, &pi ) ) {
                 rc = WaitForInputIdle( pi.hProcess, INFINITE );
                 if( rc == 0 ) {
                     // Now this is starting to get scary

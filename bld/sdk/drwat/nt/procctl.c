@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -177,21 +178,17 @@ static void DebuggerMain( void *_info ) {
         }
         memset( &startup, 0, sizeof( STARTUPINFO ) );
         startup.cb = sizeof( STARTUPINFO );
-        ret = CreateProcess( NULL,              /* application path */
-                       info->info.path,         /* command line */
-                       NULL,                    /* process security
-                                                   attributes */
-                       NULL,                    /* main thread security
-                                                   attributes */
-                       FALSE,                   /* inherits parent handles */
-                       DEBUG_PROCESS |          /* create parameters */
-                       NORMAL_PRIORITY_CLASS,
-                       NULL,                    /* environment block */
-                       NULL,                    /* current directory */
-                       &startup,                /* other startup info */
-                       &procinfo );             /* structure to get process
-                                                   info */
-        if( !ret ) {
+        if( CreateProcess(
+                NULL,                   /* application path */
+                info->info.path,        /* command line */
+                NULL,                   /* process security attributes */
+                NULL,                   /* main thread security attributes */
+                FALSE,                  /* inherits parent handles */
+                DEBUG_PROCESS | NORMAL_PRIORITY_CLASS, /* create parameters */
+                NULL,                   /* environment block */
+                NULL,                   /* current directory */
+                &startup,               /* other startup info */
+                &procinfo ) == 0 ) {    /* structure to get process info */
             if( info->errhdler == NULL ) {
                 RCsprintf( buf, STR_CANT_CREATE_PROCESS, info->info.path );
                 MessageBox( NULL, buf, AppName, MB_OK | MB_ICONEXCLAMATION

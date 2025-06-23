@@ -290,17 +290,15 @@ static bool NTSpawnWait( const char *cmd, DWORD *exit_code, HANDLE in, HANDLE ou
         start.hStdOutput = GetStdHandle( STD_OUTPUT_HANDLE );
         start.hStdError = GetStdHandle( STD_ERROR_HANDLE );
     }
-    if( !CreateProcess( NULL, (char *)cmd, NULL, NULL, TRUE,
+    if( CreateProcess( NULL, (char *)cmd, NULL, NULL, TRUE,
                         CREATE_NEW_PROCESS_GROUP + CREATE_NEW_CONSOLE,
-                        NULL, NULL, &start, &info ) ) {
+                        NULL, NULL, &start, &info ) == 0 ) {
         return( false );
-    } else {
-        WaitForSingleObject( info.hProcess, INFINITE );
-        while( !GetExitCodeProcess( info.hProcess, exit_code ) ||
-               *exit_code == STILL_ACTIVE ) {
-            if( StatusCancelled() ) {
-                return( false );
-            }
+    }
+    WaitForSingleObject( info.hProcess, INFINITE );
+    while( !GetExitCodeProcess( info.hProcess, exit_code ) || *exit_code == STILL_ACTIVE ) {
+        if( StatusCancelled() ) {
+            return( false );
         }
     }
     CloseHandle( info.hProcess );

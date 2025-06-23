@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -178,7 +178,7 @@ const char *RemoteLink( const char *parms, bool server )
     }
     memset( &sinfo, 0, sizeof( sinfo ) );
     strcat( command, " -debug sun.tools.debug.jvmhelp" );
-    if( !CreateProcess( NULL, (void *)command, NULL, NULL, TRUE, CREATE_NEW_CONSOLE, NULL, NULL, (void *)&sinfo, (void *)&pinfo ) ) {
+    if( CreateProcess( NULL, (void *)command, NULL, NULL, TRUE, CREATE_NEW_CONSOLE, NULL, NULL, (void *)&sinfo, (void *)&pinfo ) == 0 ) {
         return( "unable to start " JAVA_NAME );
     }
 

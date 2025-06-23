@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -75,21 +75,17 @@ int WEXPORT WSystemService::sysExec( const char *cmd,
     // set ShowWindow default value for nCmdShow parameter
     sinfo.dwFlags = STARTF_USESHOWWINDOW;
     sinfo.wShowWindow = show;
-    rc = CreateProcess( NULL,
-                        (char *)cmd,
-                        NULL,
-                        NULL,
-                        FALSE,
-                        0,
-                        NULL,
-                        NULL,
-                        &sinfo,
-                        &pinfo );
-    if( rc ) {
-        CloseHandle( pinfo.hThread );
-        CloseHandle( pinfo.hProcess );
-        rc = 33;
-    } else {
+    if( CreateProcess(
+            NULL,
+            (char *)cmd,
+            NULL,
+            NULL,
+            FALSE,
+            0,
+            NULL,
+            NULL,
+            &sinfo,
+            &pinfo ) == 0 ) {
         switch( GetLastError() ) {
         case ERROR_FILE_NOT_FOUND:
             rc = 2;
@@ -107,6 +103,10 @@ int WEXPORT WSystemService::sysExec( const char *cmd,
             rc = 0;
             break;
         }
+    } else {
+        CloseHandle( pinfo.hThread );
+        CloseHandle( pinfo.hProcess );
+        rc = 33;
     }
 #else
     int rc = WinExec( cmd, show );

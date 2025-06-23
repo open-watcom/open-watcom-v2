@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -51,16 +51,22 @@ extern msglist ThreadStateMsgs[];
 extern msglist Actions[];
 extern msglist ExceptionMsgs[];
 
-static BOOL initRCStrings( void ) 
+static BOOL initRCStrings( void )
 {
     SetRCInstance( Instance );
     AppName = AllocRCString( STR_APP_NAME );
-    if( AppName == NULL ) return( FALSE );
-    if( !InitSrchTable( Instance, ThreadWaitMsgs ) ) return( FALSE );
-    if( !InitSrchTable( Instance, ThreadStateMsgs ) ) return( FALSE );
-    if( !InitSrchTable( Instance, Actions ) ) return( FALSE );
-    if( !InitSrchTable( Instance, ExceptionMsgs ) ) return( FALSE );
-    if( !InitSrchTable( Instance, MADMsgs ) ) return( FALSE );
+    if( AppName == NULL )
+        return( FALSE );
+    if( !InitSrchTable( Instance, ThreadWaitMsgs ) )
+        return( FALSE );
+    if( !InitSrchTable( Instance, ThreadStateMsgs ) )
+        return( FALSE );
+    if( !InitSrchTable( Instance, Actions ) )
+        return( FALSE );
+    if( !InitSrchTable( Instance, ExceptionMsgs ) )
+        return( FALSE );
+    if( !InitSrchTable( Instance, MADMsgs ) )
+        return( FALSE );
     return( TRUE );
 }
 
@@ -96,7 +102,6 @@ int PASCAL WinMain( HINSTANCE currinst, HINSTANCE previnst, LPSTR cmdline, int c
 #ifndef CHICAGO
     STARTUPINFO         startup;
     PROCESS_INFORMATION procinfo;
-    BOOL                ret;
     char                cmd[_MAX_PATH];
     char*               env;
 
@@ -113,20 +118,17 @@ int PASCAL WinMain( HINSTANCE currinst, HINSTANCE previnst, LPSTR cmdline, int c
 
             memset( &startup, 0, sizeof( STARTUPINFO ) );
             startup.cb = sizeof( STARTUPINFO );
-            ret = CreateProcess( cmd,           /* application path */
-                        cmdline,                /* command line */
-                        NULL,                   /* process security
-                                                        attributes */
-                        NULL,                   /* main thread security
-                                                        attributes */
-                        FALSE,                  /* inherits parent handles */
-                        NORMAL_PRIORITY_CLASS,  /* create parameters */
-                        NULL,                   /* environment block */
-                        NULL,                   /* current directory */
-                        &startup,               /* other startup info */
-                        &procinfo );            /* structure to get process
-                                                        info */
-            if( !ret ) {
+            if( CreateProcess(
+                    cmd,                    /* application path */
+                    cmdline,                /* command line */
+                    NULL,                   /* process security attributes */
+                    NULL,                   /* main thread security attributes */
+                    FALSE,                  /* inherits parent handles */
+                    NORMAL_PRIORITY_CLASS,  /* create parameters */
+                    NULL,                   /* environment block */
+                    NULL,                   /* current directory */
+                    &startup,               /* other startup info */
+                    &procinfo ) == 0 ) {    /* structure to get process info */
                 MessageBox( NULL, "Unable to open DrWatcom for Windows 95",
                             "DrWatcom", MB_OK |  MB_ICONEXCLAMATION );
             }

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2024-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -86,8 +86,7 @@ static void RunCmd( const char *cmd_name )
                 0, TRUE, DUPLICATE_SAME_ACCESS );
     start.hStdOutput = dup;
     start.hStdInput  = NulHdl;
-    if( !CreateProcess( NULL, cmd, NULL, NULL, TRUE, CREATE_NEW_PROCESS_GROUP,
-                        NULL, NULL, &start, &info ) ) {
+    if( CreateProcess( NULL, cmd, NULL, NULL, TRUE, CREATE_NEW_PROCESS_GROUP, NULL, NULL, &start, &info ) == 0 ) {
         info.dwProcessId = 0;
     }
     CloseHandle( info.hThread );

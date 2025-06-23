@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -69,14 +70,11 @@ long MySpawn( const char *cmd )
     // set ShowWindow default value for nCmdShow parameter
     sinfo.dwFlags = STARTF_USESHOWWINDOW;
     sinfo.wShowWindow = SW_SHOWNORMAL;
-    if( !CreateProcess( NULL, path, NULL, NULL, TRUE, CREATE_NEW_CONSOLE, NULL, NULL, &sinfo, &pinfo ) ) {
-        return( -1L );
-    } else {
+    if( CreateProcess( NULL, path, NULL, NULL, TRUE, CREATE_NEW_CONSOLE, NULL, NULL, &sinfo, &pinfo ) ) {
         if( WaitForSingleObject( pinfo.hProcess, INFINITE ) == 0 ) {
             GetExitCodeProcess( pinfo.hProcess, &rc );
             return( (long)rc );
-        } else {
-            return( -1L );
         }
     }
+    return( -1L );
 }
