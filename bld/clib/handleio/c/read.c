@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -69,7 +69,7 @@ _WCRTLINK int read( int handle, void *buf, unsigned len )
     char        *buffer = buf;
 #if defined(__NT__)
     DWORD       amount_read;
-    BOOL        rc;
+    DWORD       error;
     HANDLE      h;
 #elif defined(__OS2__)
     OS_UINT     amount_read;
@@ -104,16 +104,15 @@ _WCRTLINK int read( int handle, void *buf, unsigned len )
 #ifdef DEFAULT_WINDOWING
         if( _WindowsStdin != NULL && (res = _WindowsIsWindowedHandle( handle )) != NULL ) {
             total_len = _WindowsStdin( res, buffer, len );
-            rc = 0;
         } else
 #endif
         {
 #if defined(__NT__)
-            rc = ReadFile( h, buffer, len, &amount_read, NULL );
-            if( !rc ) {
-                if( GetLastError() == ERROR_BROKEN_PIPE )
+            if( ReadFile( h, buffer, len, &amount_read, NULL ) == 0 ) {
+                error = GetLastError();
+                if( error == ERROR_BROKEN_PIPE )
                     return( amount_read );
-                return( __set_errno_nt() );
+                return( __set_errno_dos( error ) );
             }
 #elif defined( __OS2__ )
             rc = DosRead( handle, buffer, len, &amount_read );
@@ -137,17 +136,16 @@ _WCRTLINK int read( int handle, void *buf, unsigned len )
 #ifdef DEFAULT_WINDOWING
             if( _WindowsStdin != NULL && (res = _WindowsIsWindowedHandle( handle )) != NULL ) {
                 amount_read = _WindowsStdin( res, buffer, read_len );
-                rc = 0;
             } else
 #endif
             {
 #if defined(__NT__)
-                rc = ReadFile( h, buffer, read_len, &amount_read, NULL );
-                if( !rc ) {
+                if( ReadFile( h, buffer, read_len, &amount_read, NULL ) == 0 ) {
                     _ReleaseFileH( handle );
-                    if( GetLastError() == ERROR_BROKEN_PIPE )
+                    error = GetLastError();
+                    if( error == ERROR_BROKEN_PIPE )
                         return( total_len );
-                    return( __set_errno_nt() );
+                    return( __set_errno_dos( error ) );
                 }
 #elif defined( __OS2__ )
                 rc = DosRead( handle, buffer, read_len, &amount_read );
@@ -171,7 +169,7 @@ _WCRTLINK int read( int handle, void *buf, unsigned len )
             for( reduce_idx = 0; reduce_idx < amount_read; ++reduce_idx ) {
                 if( buffer[ reduce_idx ] == 0x1a ) {    /* EOF */
                     __lseek( handle,
-                           ((long)reduce_idx - (long)amount_read)+1L,
+                           ((long)reduce_idx - (long)amount_read) + 1L,
                            SEEK_CUR );
                     total_len += finish_idx;
                     _ReleaseFileH( handle );

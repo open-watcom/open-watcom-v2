@@ -326,7 +326,7 @@ UINT CFile::Read( void *lpBuf, UINT nCount )
 /******************************************/
 {
     DWORD   dwBytesRead;
-    if( !::ReadFile( m_hFile, lpBuf, nCount, &dwBytesRead, NULL ) ) {
+    if( ::ReadFile( m_hFile, lpBuf, nCount, &dwBytesRead, NULL ) == 0 ) {
         CFileException::ThrowOsError( ::GetLastError(), m_strFileName );
     }
     return( (UINT)dwBytesRead );

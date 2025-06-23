@@ -91,7 +91,7 @@ void LocalGetBuff( char *buff, unsigned size )
     HANDLE  hStdin;
 
     hStdin = GetStdHandle( STD_INPUT_HANDLE );
-    if( !ReadFile( hStdin, buff, size, &cRead, NULL ) ) {
+    if( ReadFile( hStdin, buff, size, &cRead, NULL ) == 0 ) {
         buff[0] = '\r';
         buff[1] = NULLCHAR;
         return;

@@ -146,7 +146,7 @@ size_t DIGCLIENTRY( Read )( FILE *fp, void *buf, size_t size )
 {
     DWORD       bytesread;
 
-    if( !ReadFile( FP2WH( fp ), buf, size, &bytesread, NULL ) )
+    if( ReadFile( FP2WH( fp ), buf, size, &bytesread, NULL ) == 0 )
         return( (size_t)-1 );
     return( bytesread );
 }

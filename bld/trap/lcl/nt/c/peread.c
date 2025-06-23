@@ -90,7 +90,7 @@ bool GetEXEHeader( HANDLE handle, header_info *hi, WORD *stack )
 
         hi->signature = EXESIGN_PE;
         if( !SeekRead( handle, ne_header_off, &hi->u.pehdr, PE_HDR_SIZE )
-          || !ReadFile( handle, (char *)&hi->u.pehdr + PE_HDR_SIZE, PE_OPT_SIZE( hi->u.pehdr ), &bytes, NULL ) ) {
+          || ReadFile( handle, (char *)&hi->u.pehdr + PE_HDR_SIZE, PE_OPT_SIZE( hi->u.pehdr ), &bytes, NULL ) == 0 ) {
             return( false );
         }
         return( true );
@@ -114,7 +114,7 @@ bool GetEXEHeader( HANDLE handle, header_info *hi, WORD *stack )
             if( len > sizeof( hi->modname ) - 1 ) {
                 len = sizeof( hi->modname ) - 1;
             }
-            if( !ReadFile( handle, hi->modname, len, &bytes, NULL ) ) {
+            if( ReadFile( handle, hi->modname, len, &bytes, NULL ) == 0 ) {
                 return( false );
             }
             hi->modname[len] = 0;
@@ -166,7 +166,8 @@ bool GetModuleName( HANDLE fhdl, char *buff, size_t maxlen )
     }
     memset( &obj, 0, sizeof( obj ) );
     for( i = 0; i < num_objects; i++ ) {
-        if( !ReadFile( fhdl, &obj, sizeof( obj ), &lenread, NULL ) || lenread != sizeof( obj ) ) {
+        if( ReadFile( fhdl, &obj, sizeof( obj ), &lenread, NULL ) == 0
+          || lenread != sizeof( obj ) ) {
             return( false );
         }
         if( export_rva >= obj.rva && export_rva < ( obj.rva + obj.physical_size ) ) {
@@ -189,7 +190,7 @@ bool GetModuleName( HANDLE fhdl, char *buff, size_t maxlen )
     }
     if( maxlen > 0 )
         maxlen--;
-    if( !ReadFile( fhdl, buff, maxlen, &lenread, NULL ) ) {
+    if( ReadFile( fhdl, buff, maxlen, &lenread, NULL ) == 0 ) {
         return( false );
     }
     buff[lenread] = '\0';
@@ -213,7 +214,7 @@ int CpFile( HANDLE in )
     SetFilePointer( in, 0, NULL, FILE_BEGIN );
     rc = 0;
     for( ;; ) {
-        if( !ReadFile( in, buff, sizeof( buff ), &lenread, NULL ) ) {
+        if( ReadFile( in, buff, sizeof( buff ), &lenread, NULL ) == 0 ) {
             rc = 2;
             break;
         }

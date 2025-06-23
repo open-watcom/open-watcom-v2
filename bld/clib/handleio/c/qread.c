@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -87,6 +87,7 @@ int __qread( int handle, void *buffer, unsigned len )
 {
 #if defined( __NT__ )
     DWORD           amount_read;
+    DWORD           error;
 #elif defined(__OS2__)
     OS_UINT         amount_read;
     APIRET          rc;
@@ -109,11 +110,11 @@ int __qread( int handle, void *buffer, unsigned len )
     }
 #endif
 #if defined(__NT__)
-    if( !ReadFile( __getOSHandle( handle ), buffer, len, &amount_read, NULL ) ) {
-        DWORD       err;
-        err = GetLastError();
-        __set_errno_dos( err );
-        if( err != ERROR_BROKEN_PIPE || amount_read != 0 ) {
+    if( ReadFile( __getOSHandle( handle ), buffer, len, &amount_read, NULL ) == 0 ) {
+        error = GetLastError();
+        __set_errno_dos( error );
+        if( error != ERROR_BROKEN_PIPE
+          || amount_read != 0 ) {
             return( -1 );
         }
     }

@@ -52,7 +52,7 @@ int myread( bhandle handle, void *buff, int len )
 {
     DWORD               bytes;
 
-    if( !ReadFile( handle, buff, len, &bytes, NULL ) ) {
+    if( ReadFile( handle, buff, len, &bytes, NULL ) == 0 ) {
         bytes = 0;
     }
     return( bytes );
