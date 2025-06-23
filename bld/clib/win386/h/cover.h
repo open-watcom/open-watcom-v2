@@ -41,6 +41,8 @@
 #define INCLUDE_PENWIN_H
 #include <stdarg.h>
 #include <windows.h>
+#include "bool.h"
+
 
 #define MAGICCOOKIE 0xdeadbeefL
 
