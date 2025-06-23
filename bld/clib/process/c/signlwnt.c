@@ -36,6 +36,7 @@
 #include <float.h>
 #include <windows.h>
 #include <excpt.h>
+#include "bool.h"
 #include "rtdata.h"
 #include "rtfpehdl.h"
 #include "rtfpesig.h"
