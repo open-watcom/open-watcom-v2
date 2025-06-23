@@ -33,7 +33,7 @@
 
 #include "roundmac.h"
 
-#define INF_BLOCK_SIZE  512     // installer uses sector size
+#define INF_BLOCK_SIZE  (_1K / 2)   // installer uses sector size
 
 #define __ROUND_UP_SIZE_INF(x)  __ROUND_UP_SIZE((x), INF_BLOCK_SIZE)
 

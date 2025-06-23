@@ -83,8 +83,9 @@ void _WindowsKeyPush( WORD key, WORD data )
 {
     char        scan;
     int         ch;
-    BOOL        havekey = TRUE;
+    bool        havekey;
 
+    havekey = true;
 #if defined( __OS2__ )
     ch = key;
     scan = data;
@@ -102,7 +103,7 @@ void _WindowsKeyPush( WORD key, WORD data )
 
     /* char_count can be -1, 0, 1 or 2 */
     if( char_count <= 0 ) {
-        havekey = FALSE;    /* error or no translation for key */
+        havekey = false;    /* error or no translation for key */
     } else {
         ch = trans_key[0];  /* 1 or 2 characters */
         if( char_count == 2 ) {
@@ -129,8 +130,9 @@ void _WindowsVirtualKeyPush( WORD vk, WORD data )
 {
     char        scan;
     int         ch;
-    BOOL        havekey = TRUE;
+    bool        havekey;
 
+    havekey = true;
 #if defined( __OS2__ )
     ch = vk;
 #else
@@ -161,7 +163,7 @@ void _WindowsVirtualKeyPush( WORD vk, WORD data )
         case VK_SCRLLOCK:
         case VK_NUMLOCK:
         case VK_SYSRQ:
-            havekey = FALSE;
+            havekey = false;
 #endif
         default:
             break;
@@ -180,14 +182,14 @@ void _WindowsVirtualKeyPush( WORD vk, WORD data )
 /*
  * _KeyboardHit - test for a waiting key
  */
-int _KeyboardHit( BOOL block )
+int _KeyboardHit( bool block )
 {
     if( keyTop != keyBottom )
         return( TRUE );
     if( block ) {
-        _BlockingMessageLoop( TRUE );
+        _BlockingMessageLoop( true );
     } else {
-        _MessageLoop( TRUE );
+        _MessageLoop( true );
     }
     if( keyTop != keyBottom )
         return( TRUE );
@@ -219,8 +221,8 @@ int _GetString( LPWDATA w, char *str, int maxbuff )
     HWND        hwnd;
     int         buff_end = 0;
     int         curr_pos = 0;
-    BOOL        escape = FALSE;
-    BOOL        insert_flag = FALSE;
+    bool        escape;
+    bool        insert_flag;
     int         maxlen = maxbuff;
     LPSTR       res;
     int         wt;
@@ -238,6 +240,8 @@ int _GetString( LPWDATA w, char *str, int maxbuff )
     char        cx;
 #endif
 
+    escape = false;
+    insert_flag = false;
 #ifdef _MBCS
     res = FARmalloc( MB_CUR_MAX * ( maxbuff + 1 ) );
 #else
@@ -248,16 +252,17 @@ int _GetString( LPWDATA w, char *str, int maxbuff )
 
     hwnd = w->hwnd;
 
-    _MoveToLine( w, _GetLastLineNumber( w ), FALSE );
+    _MoveToLine( w, _GetLastLineNumber( w ), false );
     _NewCursor( w, SMALL_CURSOR );
     _SetInputMode( w, TRUE );
-    _GotEOF = FALSE;
+    _GotEOF = false;
     str[0] = 0;
 
     for( ;; ) {
         w->curr_pos = curr_pos;
         _DisplayCursor( w );
-        while( !_KeyboardHit( TRUE ) );
+        while( !_KeyboardHit( true ) )
+            /* empty */;
         ci = _GetKeyboard( &scan );
 #if defined( __OS2__ )
         WinShowCursor( hwnd, FALSE );
@@ -272,10 +277,10 @@ int _GetString( LPWDATA w, char *str, int maxbuff )
 #else
             str[curr_pos++] = ci;
 #endif
-            escape = FALSE;
+            escape = false;
         } else if( (ci == CTRL_V) || (scan != 0xFF) ) {
             if( ci == CTRL_V ) {
-                escape = TRUE;      /* This is a VI thing - */
+                escape = true;      /* This is a VI thing - */
                 ci = '^';           /* it permits insertion of any key */
             }
             if( insert_flag ) {
@@ -399,9 +404,9 @@ int _GetString( LPWDATA w, char *str, int maxbuff )
 #endif
                 _NewCursor( w, ORIGINAL_CURSOR );
 #ifdef _MBCS
-                _UpdateInputLine( w, str, __mbslen( (unsigned char *)str ), TRUE );
+                _UpdateInputLine( w, str, __mbslen( (unsigned char *)str ), true );
 #else
-                _UpdateInputLine( w, str, strlen( str ), TRUE );
+                _UpdateInputLine( w, str, strlen( str ), true );
 #endif
                 _SetInputMode( w, FALSE );
                 FARstrcat( res, str );
@@ -442,10 +447,10 @@ int _GetString( LPWDATA w, char *str, int maxbuff )
                 break;
             case VK_INSERT:
                 if( insert_flag ) {
-                    insert_flag = FALSE;
+                    insert_flag = false;
                     _NewCursor( w, SMALL_CURSOR );
                 } else {
-                    insert_flag = TRUE;
+                    insert_flag = true;
                     _NewCursor( w, FAT_CURSOR );
                 }
                 break;
@@ -459,9 +464,9 @@ int _GetString( LPWDATA w, char *str, int maxbuff )
          * the current line info.
          */
 #ifdef _MBCS
-        wt = _UpdateInputLine( w, str, expectingTrailByte ? __mbslen( (unsigned char *)str ) - 1 : __mbslen( (unsigned char *)str ), FALSE );
+        wt = _UpdateInputLine( w, str, expectingTrailByte ? __mbslen( (unsigned char *)str ) - 1 : __mbslen( (unsigned char *)str ), false );
 #else
-        wt = _UpdateInputLine( w, str, strlen( str ), FALSE );
+        wt = _UpdateInputLine( w, str, strlen( str ), false );
 #endif
 
         if( wt >= 0 ) {

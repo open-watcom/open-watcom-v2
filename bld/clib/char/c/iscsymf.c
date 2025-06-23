@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -48,5 +49,5 @@
 _WCRTLINK int __F_NAME(__iscsymf,__iswcsymf)( INTCHAR_TYPE c )
 {
     return( IS_ASCII_INT( c )
-        && ( IsWhat( c, _LOWER | _UPPER ) || ((unsigned char)c == '_') ) );
+        && ( IsWhat( c, _LOWER | _UPPER ) || (c == STRING( '_' )) ) );
 }

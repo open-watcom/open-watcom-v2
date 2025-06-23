@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,6 +36,7 @@
 #ifdef _M_I86
     #include <malloc.h>
 #endif
+#include "bool.h"
 #include "_defwin.h"
 /*
  * Define the _MBCS macro to compile defwin stuff with multibyte support.
@@ -154,9 +155,10 @@ typedef enum {
  * structures
  */
 typedef struct line_data {
-    struct line_data _WCI86FAR *next, _WCI86FAR *prev;
-    char has_cr;
-    char data[1];
+    struct line_data _WCI86FAR *next;
+    struct line_data _WCI86FAR *prev;
+    bool            has_cr;
+    char            data[1];
 } line_data;
 typedef line_data _WCI86FAR *LPLDATA;
 
@@ -197,15 +199,14 @@ typedef struct window_data {
     HWND            frame;
 #endif
     short           menuid;
-    BOOL            lineinprogress;
     cursors         CaretType;
+    unsigned char   lineinprogress:1;
     unsigned char   resizing:1;
     unsigned char   active:1;
     unsigned char   hascursor:1;
     unsigned char   gphwin:1;
     unsigned char   no_advance:1;
     unsigned char   destroy:1;
-    unsigned char   hold7:1;
     unsigned char   hold8:1;
 } window_data;
 
@@ -245,7 +246,7 @@ extern int      _MainWindowDestroyed;
 extern LPMWDATA _MainWindowData;
 extern char     *_ClassName;
 extern DWORD    _AutoClearLines;
-extern BOOL     _GotEOF;
+extern bool     _GotEOF;
 extern DWORD    _ColorMap[16];
 
 
@@ -304,7 +305,7 @@ extern void     _DoPutch( LPWDATA, unsigned );
 extern void     _WindowsKeyUp( WORD, WORD );
 extern void     _WindowsKeyPush( WORD, WORD );
 extern void     _WindowsVirtualKeyPush( WORD, WORD );
-extern int      _KeyboardHit( BOOL );
+extern int      _KeyboardHit( bool );
 extern int      _GetKeyboard( int * );
 extern int      _GetString( LPWDATA, char *, int );
 
@@ -316,7 +317,7 @@ extern LPLDATA  _GetLineDataPointer( LPWDATA, DWORD );
 extern void     _FreeAllLines( LPWDATA );
 extern void     _SaveAllLines( LPWDATA );
 extern void     _CopyAllLines( LPWDATA );
-extern int      _UpdateInputLine( LPWDATA, char *, unsigned, BOOL );
+extern int      _UpdateInputLine( LPWDATA, char *, unsigned, bool );
 extern DWORD    _GetLastLineNumber( LPWDATA w );
 
 /* winmisc.c/pmmisc.c */
@@ -326,8 +327,8 @@ extern HFONT    _SetMyDC( HDC, DWORD, DWORD ) ;
 extern void     _Error( HWND hwndDlg, char *caption, char *msg );
 extern void     _ResizeWindows( void );
 #endif
-extern int      _MessageLoop( BOOL );
-extern int      _BlockingMessageLoop( BOOL );
+extern int      _MessageLoop( bool );
+extern int      _BlockingMessageLoop( bool );
 extern void     _NewCursor( LPWDATA, cursors );
 extern void     _DisplayCursor( LPWDATA w );
 extern void     _SetInputMode( LPWDATA, int );
@@ -344,7 +345,7 @@ extern void     _MovePageUp( LPWDATA );
 extern void     _MovePageDown( LPWDATA );
 extern void     _MoveLineUp( LPWDATA );
 extern void     _MoveLineDown( LPWDATA );
-extern void     _MoveToLine( LPWDATA, DWORD, BOOL );
+extern void     _MoveToLine( LPWDATA, DWORD, bool );
 
 /* winnew.c/pmmnew.c */
 extern unsigned _NewWindow( const char *name, ... );

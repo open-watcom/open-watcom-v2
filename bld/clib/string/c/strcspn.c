@@ -68,7 +68,7 @@ _WCRTLINK size_t __F_NAME(strcspn,wcscspn)( const CHAR_TYPE *str, const CHAR_TYP
 
 #else
     char            tc;
-    unsigned char   vector[ CHARVECTOR_SIZE ];
+    unsigned char   vector[CHARVECTOR_SIZE];
     size_t          len;
 
     __setbits( vector, charset );

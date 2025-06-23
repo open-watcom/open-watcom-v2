@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -173,7 +173,7 @@ _WCRTLINK DIRENT_TYPE *__F_NAME(readdir,_wreaddir)( DIR_TYPE *dirp )
     if( dirp->d_first == _DIR_ISFIRST ) {
         dirp->d_first = _DIR_NOTFIRST;
     } else {
-        if( !__lib_FindNextFile( DTAXXX_HANDLE_OF( dirp->d_dta ), &ffd ) ) {
+        if( __lib_FindNextFile( DTAXXX_HANDLE_OF( dirp->d_dta ), &ffd ) == 0 ) {
             err = GetLastError();
             if( err != ERROR_NO_MORE_FILES ) {
                 __set_errno_dos( err );
@@ -193,7 +193,7 @@ _WCRTLINK int __F_NAME(closedir,_wclosedir)( DIR_TYPE *dirp )
     if( dirp == NULL || dirp->d_first == _DIR_CLOSED ) {
         return( __set_errno_dos( ERROR_INVALID_HANDLE ) );
     }
-    if( !FindClose( DTAXXX_HANDLE_OF( dirp->d_dta ) ) ) {
+    if( FindClose( DTAXXX_HANDLE_OF( dirp->d_dta ) ) == 0 ) {
         return( __set_errno_nt() );
     }
     dirp->d_first = _DIR_CLOSED;

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,7 +41,7 @@
 
 _WCRTLINK unsigned _dos_setfileattr( const char *path, unsigned dos_attrib )
 {
-    if( !SetFileAttributes( path, DOS2NTATTR( dos_attrib ) ) ) {
+    if( SetFileAttributes( path, DOS2NTATTR( dos_attrib ) ) == 0 ) {
         return( __set_errno_nt_reterr() );
     }
     return( 0 );

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -53,7 +53,8 @@ _WCRTLINK CHAR_TYPE *__F_NAME(fgets,fgetws)( CHAR_TYPE *s, int n, FILE *fp )
 
     /* don't use macro version of getc: multi-threading issues */
     while( (--n > 0) && (c = __F_NAME(fgetc,fgetwc)( fp )) != INTCHAR_EOF ) {
-        if( (*cs++ = (CHAR_TYPE)c) == STRING( '\n' ) ) {
+        *cs++ = c;
+        if( c == STRING( '\n' ) ) {
             break;
         }
     }

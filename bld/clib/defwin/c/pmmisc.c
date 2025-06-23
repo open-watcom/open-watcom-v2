@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,7 +40,7 @@
 #include "pmmenu.rh"
 
 
-int _MessageLoop( BOOL doexit )
+int _MessageLoop( bool doexit )
 //=============================
 {
     QMSG        msg;
@@ -62,7 +62,7 @@ int _MessageLoop( BOOL doexit )
     return( rc );
 }
 
-int _BlockingMessageLoop( BOOL doexit )
+int _BlockingMessageLoop( bool doexit )
 //=====================================
 {
     int         rc;
@@ -116,7 +116,7 @@ void    _NewCursor( LPWDATA w, cursors type )
 {
     if( w->hascursor ) {
         WinDestroyCursor( w->hwnd );
-        w->hascursor = FALSE;
+        w->hascursor = false;
     }
     if( type == KILL_CURSOR )
         return;
@@ -125,12 +125,12 @@ void    _NewCursor( LPWDATA w, cursors type )
     case SMALL_CURSOR:
         WinCreateCursor( w->hwnd, 0, 0, 0, w->ychar - SPACE_BETWEEN_LINES,
                          CURSOR_SOLID | CURSOR_FLASH, NULL );
-        w->hascursor = TRUE;
+        w->hascursor = true;
         break;
     case FAT_CURSOR:
         WinCreateCursor( w->hwnd, 0, 0, 4, w->ychar - SPACE_BETWEEN_LINES,
                          CURSOR_SOLID | CURSOR_FLASH, NULL );
-        w->hascursor = TRUE;
+        w->hascursor = true;
         break;
     case ORIGINAL_CURSOR:
         break;

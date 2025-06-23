@@ -50,7 +50,7 @@
 _WCRTLINK int _findclose( intptr_t handle )
 {
 #if defined( __NT__ )
-    if( FindClose( (HANDLE)handle ) != TRUE ) {
+    if( FindClose( (HANDLE)handle ) == 0 ) {
         return( -1 );
     }
 #elif defined( __OS2__ )

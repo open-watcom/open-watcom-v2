@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -192,10 +192,10 @@ static long MainWindowProc( HWND hwnd, UINT message, WPARAM wparam, LPARAM lpara
             _MovePageDown( w );
             break;
         case VK_HOME:
-            _MoveToLine( w, 1, TRUE );
+            _MoveToLine( w, 1, true );
             break;
         case VK_END:
-            _MoveToLine( w, _GetLastLineNumber( w ), TRUE );
+            _MoveToLine( w, _GetLastLineNumber( w ), true );
             break;
         default:
             if( wparam==VK_HOME    ||  wparam==VK_END       ||
@@ -287,7 +287,7 @@ LRESULT CALLBACK _MainDriver( HWND hwnd, UINT message, WPARAM wparam, LPARAM lpa
 
     case WM_SIZE:
         if( w->resizing ) {
-            w->resizing = FALSE;
+            w->resizing = false;
             return( DefWindowProc( hwnd, message, wparam, lparam ) );
         }
         height = HIWORD( lparam );
@@ -313,7 +313,7 @@ LRESULT CALLBACK _MainDriver( HWND hwnd, UINT message, WPARAM wparam, LPARAM lpa
         switch( LOWORD( wparam ) ) {
         case SB_THUMBPOSITION:
             _MoveToLine( w, _GetLineFromThumbPosition( w,
-                            GET_WM_VSCROLL_POS( wparam, lparam ) ), TRUE  );
+                            GET_WM_VSCROLL_POS( wparam, lparam ) ), true );
             break;
         case SB_PAGEDOWN:
             _MovePageDown( w );

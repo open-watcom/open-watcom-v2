@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -56,8 +56,8 @@ char    __init_default_win;
 
 static char *mainClass;
 
-static BOOL firstInstance( HANDLE );
-static int windowsInit( HANDLE, int );
+static bool firstInstance( HANDLE );
+static bool windowsInit( HANDLE, int );
 static void windowsFini( void );
 
 
@@ -102,9 +102,9 @@ int PASCAL __export DefaultWinMain( HINSTANCE inst, HINSTANCE previnst,
     previnst = previnst;
     cmd = cmd;
     if( !firstInstance( inst ) )
-        return( FALSE );
+        return( 0 );
     if( !windowsInit( inst, show ) )
-        return( FALSE );
+        return( 0 );
     _InitFunctionPointers();
 
     rc = pmain( ___Argc, ___Argv );
@@ -119,25 +119,24 @@ int PASCAL __export DefaultWinMain( HINSTANCE inst, HINSTANCE previnst,
 /*
  * firstInstance - initialization at startup
  */
-static BOOL firstInstance( HANDLE inst)
+static bool firstInstance( HANDLE inst)
 {
     char        tmp[128];
-    BOOL        rc;
     WNDCLASS    wc;
     HMENU       smf,smh;
 
     /*
      * set up class names
      */
-    sprintf( tmp,"WATCLASS%d", inst );
+    sprintf( tmp, "WATCLASS%d", inst );
     mainClass = malloc( strlen( tmp ) + 1 );
     if( mainClass == NULL )
-        return( FALSE );
+        return( false );
     strcpy( mainClass, tmp );
-    sprintf( tmp,"WATSUBCLASS%d", inst );
+    sprintf( tmp, "WATSUBCLASS%d", inst );
     _ClassName = malloc( strlen( tmp ) + 1 );
     if( _ClassName == NULL )
-        return( FALSE );
+        return( false );
     strcpy( _ClassName, tmp );
 
     /*
@@ -145,21 +144,20 @@ static BOOL firstInstance( HANDLE inst)
      */
     smf = CreateMenu();
     if( smf == NULL )
-        return( FALSE );
+        return( false );
     AppendMenu( smf, MF_ENABLED, MSG_WRITE, "&Save As ..." );
-    AppendMenu( smf, MF_ENABLED, MSG_SETCLEARINT,
-                        "Set &Lines Between Auto-Clears ..." );
-    AppendMenu( smf, MF_SEPARATOR, 0,NULL );
+    AppendMenu( smf, MF_ENABLED, MSG_SETCLEARINT, "Set &Lines Between Auto-Clears ..." );
+    AppendMenu( smf, MF_SEPARATOR, 0, NULL );
     AppendMenu( smf, MF_ENABLED, MSG_EXIT, "E&xit" );
 
     smh = CreateMenu();
     if( smh == NULL )
-        return( FALSE );
+        return( false );
     AppendMenu( smh, MF_ENABLED, MSG_ABOUT, "&About..." );
 
     _SubMenuEdit = CreateMenu();
     if( _SubMenuEdit == NULL )
-        return( FALSE );
+        return( false );
     AppendMenu( _SubMenuEdit, MF_ENABLED, MSG_FLUSH, "&Clear" );
     AppendMenu( _SubMenuEdit, MF_ENABLED, MSG_COPY, "&Copy" );
 
@@ -167,11 +165,11 @@ static BOOL firstInstance( HANDLE inst)
 
     _MainMenu = CreateMenu();
     if( _MainMenu == NULL )
-        return( FALSE );
-    AppendMenu( _MainMenu, MF_POPUP, (UINT) smf, "&File" );
-    AppendMenu( _MainMenu, MF_POPUP, (UINT) _SubMenuEdit, "&Edit" );
-    AppendMenu( _MainMenu, MF_POPUP, (UINT) _SubMenuWindows, "&Windows" );
-    AppendMenu( _MainMenu, MF_POPUP, (UINT) smh, "&Help" );
+        return( false );
+    AppendMenu( _MainMenu, MF_POPUP, (UINT)smf, "&File" );
+    AppendMenu( _MainMenu, MF_POPUP, (UINT)_SubMenuEdit, "&Edit" );
+    AppendMenu( _MainMenu, MF_POPUP, (UINT)_SubMenuWindows, "&Windows" );
+    AppendMenu( _MainMenu, MF_POPUP, (UINT)smh, "&Help" );
 
     /*
      * register window classes
@@ -187,9 +185,8 @@ static BOOL firstInstance( HANDLE inst)
     wc.lpszMenuName =  NULL;
     wc.lpszClassName = mainClass;
 
-    rc = RegisterClass( &wc );
-    if( !rc )
-        return( FALSE );
+    if( RegisterClass( &wc ) == 0 )
+        return( false );
 
     wc.style = 0;
     wc.lpfnWndProc = GetWndProc( _MainDriver );
@@ -202,17 +199,16 @@ static BOOL firstInstance( HANDLE inst)
     wc.lpszMenuName =  NULL;
     wc.lpszClassName = _ClassName;
 
-    rc = RegisterClass( &wc );
-    if( !rc )
-        return( FALSE );
-    return( TRUE );
+    if( RegisterClass( &wc ) == 0 )
+        return( false );
+    return( true );
 
 } /* firstInstance */
 
 /*
  * windowsInit - windows-specific initialization
 */
-static int windowsInit( HANDLE inst, int showcmd )
+static bool windowsInit( HANDLE inst, int showcmd )
 {
     LOGFONT     logfont;
     WORD        x,y;
@@ -250,7 +246,7 @@ static int windowsInit( HANDLE inst, int showcmd )
     );
 
     if( !_MainWindow ) {
-        return( FALSE );
+        return( false );
     }
 
     /*
@@ -264,7 +260,7 @@ static int windowsInit( HANDLE inst, int showcmd )
      *                             input from stdin
      */
     _NewWindow( "Standard IO", stdin->_handle, stdout->_handle, stderr->_handle, -1 );
-    return( TRUE );
+    return( true );
 
 } /* windowsInit */
 

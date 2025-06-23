@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -68,12 +68,10 @@
 #ifdef __INT64__
     DWORD                       highorder;
 #endif
-    int                         error;
     DWORD                       ftype;
     FILETIME                    ctime, atime, mtime;
     HANDLE                      h;
     unsigned                    iomode_flags;
-    BOOL                        osrc;
     BY_HANDLE_FILE_INFORMATION  fileinfo;
 
     __handle_check( hid, -1 );
@@ -118,16 +116,15 @@
         buf->st_dev = buf->st_rdev = 1;
     } else {
         /*** Try to get attributes (can reasonably fail; see Win32 docs) ***/
-        osrc = GetFileInformationByHandle( h, &fileinfo );
-        if( osrc == TRUE ) {
+        if( GetFileInformationByHandle( h, &fileinfo ) == 0 ) {
+            buf->st_attr = 0;           /* cannot be determined */
+        } else {
             buf->st_attr = fileinfo.dwFileAttributes;
             if( fileinfo.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY ) {
                 buf->st_mode |= S_IFDIR;
             } else {
                 buf->st_mode |= S_IFREG;
             }
-        } else {
-            buf->st_attr = 0;           /* cannot be determined */
         }
 
         /*** Get the file size ***/
@@ -137,6 +134,8 @@
 #ifdef __INT64__
             size = GetFileSize( h, &highorder );
             if( size == INVALID_FILE_SIZE ) {
+                DWORD   error;
+
                 error = GetLastError();
                 if( error != NO_ERROR ) {
                     _ReleaseFileH( hid );
@@ -147,6 +146,8 @@
 #else
             size = GetFileSize( h, NULL );
             if( size == INVALID_FILE_SIZE ) {
+                DWORD   error;
+
                 error = GetLastError();
                 if( error != NO_ERROR ) {
                     _ReleaseFileH( hid );

@@ -154,7 +154,7 @@ static void addBuff( LPWDATA w )
     LPLDATA     ld;
 
     ld = createNewEntry( w );
-    ld->has_cr = TRUE;
+    ld->has_cr = true;
     _DisplayLineInWindow( w, w->LastLineNumber - w->TopLineNumber + 1, ld->data );
 
 } /* addBuff */
@@ -173,7 +173,7 @@ static void updateBuff( LPWDATA w )
     } else {
         replaceTail( w );
     }
-    w->LineTail->has_cr = FALSE;
+    w->LineTail->has_cr = false;
 
 } /* updateBuff */
 
@@ -185,11 +185,11 @@ static void newLine( LPWDATA w )
     if( w->LineTail != NULL && !w->LineTail->has_cr ) {
         replaceTail( w );
         w->buffoff = 0;
-        w->LineTail->has_cr = TRUE;
+        w->LineTail->has_cr = true;
     } else {
         addBuff( w );
     }
-    w->lineinprogress = FALSE;
+    w->lineinprogress = false;
     incrementLastLineNumber( w );
 
 } /* newLine */
@@ -200,7 +200,7 @@ static void newLine( LPWDATA w )
 void _AddLine( LPWDATA w, const void *in_data, unsigned len )
 {
     int                     i;
-    BOOL                    hadbreak;
+    bool                    hadbreak;
     HWND                    hwnd;
     int                     tabcnt = 0;
     int                     nlcnt = 0;
@@ -239,9 +239,9 @@ void _AddLine( LPWDATA w, const void *in_data, unsigned len )
         curbufoff = 0;
     }
     for( i = 0; i < len; i++ ) {
-        w->no_advance = FALSE;
+        w->no_advance = false;
         do {
-            hadbreak = FALSE;
+            hadbreak = false;
 #ifdef _MBCS                        /* MBCS */
             if( tabcnt ) {
                 _mbccpy( ch, (unsigned char *)" " );     /* copy the character */
@@ -278,11 +278,11 @@ void _AddLine( LPWDATA w, const void *in_data, unsigned len )
                 continue;
             } else if( !_mbccmp( ch, (unsigned char *)"\r" ) ) {
                 curbufoff = 0;
-                w->no_advance = TRUE;
-                w->tmpbuff->has_cr = TRUE;
+                w->no_advance = true;
+                w->tmpbuff->has_cr = true;
                 continue;
             } else if( !_mbccmp( ch, (unsigned char *)"\n" ) ) {
-                hadbreak = TRUE;
+                hadbreak = true;
                 newLine( w );
                 curbufoff = w->buffoff;
             } else if( !_mbccmp( ch, (unsigned char *)"\b" ) ) {
@@ -302,7 +302,7 @@ void _AddLine( LPWDATA w, const void *in_data, unsigned len )
                     w->buffoff = curbufoff;
                 }
                 if( TOOWIDE( w->buffoff, w ) ) {
-                    hadbreak = TRUE;
+                    hadbreak = true;
                     newLine( w );
                     curbufoff = w->buffoff;
                 }
@@ -326,11 +326,11 @@ void _AddLine( LPWDATA w, const void *in_data, unsigned len )
                 continue;
             } else if( ch == '\r' ) {
                 curbufoff = 0;
-                w->no_advance = TRUE;
-                w->tmpbuff->has_cr = TRUE;
+                w->no_advance = true;
+                w->tmpbuff->has_cr = true;
                 continue;
             } else if( ch == '\n' ) {
-                hadbreak = TRUE;
+                hadbreak = true;
                 newLine( w );
                 curbufoff = w->buffoff;
             } else if( ch == '\b' ) {
@@ -343,7 +343,7 @@ void _AddLine( LPWDATA w, const void *in_data, unsigned len )
                     w->buffoff = curbufoff;
                 }
                 if( TOOWIDE( w->buffoff, w ) ) {
-                    hadbreak = TRUE;
+                    hadbreak = true;
                     newLine( w );
                     curbufoff = w->buffoff;
                 }
@@ -362,17 +362,19 @@ void _AddLine( LPWDATA w, const void *in_data, unsigned len )
  * _UpdateInputLine - add data to current line; return number of chars
  *                   on next line if line break was forced
  */
-int _UpdateInputLine( LPWDATA w, char *line, unsigned len, BOOL force_add )
+int _UpdateInputLine( LPWDATA w, char *line, unsigned len, bool force_add )
 {
     int         i,j;
-    BOOL        justnew=FALSE;
-    BOOL        wassplit=FALSE;
+    bool        justnew;
+    bool        wassplit;
 
+    justnew = false;
+    wassplit = false;
     _AccessWinLines();
-    w->lineinprogress = TRUE;
+    w->lineinprogress = true;
     j = w->buffoff;
     for( i = 0; i < len; i++ ) {
-        justnew = FALSE;
+        justnew = false;
         if( TOOWIDE( j, w ) ) {
 #ifdef _MBCS
             FAR_mbccpy( FAR_mbsninc( (LPBYTE)w->tmpbuff->data, j ), (LPBYTE)"" );
@@ -382,8 +384,8 @@ int _UpdateInputLine( LPWDATA w, char *line, unsigned len, BOOL force_add )
             w->buffoff = j;
             newLine( w );
             j = 0;
-            justnew = TRUE;
-            wassplit = TRUE;
+            justnew = true;
+            wassplit = true;
         }
 #ifdef _MBCS
         FAR_mbccpy( FAR_mbsninc( (LPBYTE)w->tmpbuff->data, j ), FAR_mbsninc( (LPBYTE)line, i ) );
@@ -527,7 +529,6 @@ void _SaveAllLines( LPWDATA w )
 {
     char                fname[_MAX_PATH];
     OPENFILENAME        of;
-    BOOL                rc;
     FILE                *f;
     LPLDATA             ld;
 
@@ -541,9 +542,7 @@ void _SaveAllLines( LPWDATA w )
     of.nMaxFile = _MAX_PATH;
     of.lpstrTitle = "Save File Name Selection";
     of.Flags = OFN_HIDEREADONLY;
-    rc = GetSaveFileName( &of );
-
-    if( !rc ) {
+    if( GetSaveFileName( &of ) == 0 ) {
         return;
     }
 
@@ -594,9 +593,8 @@ void _CopyAllLines( LPWDATA w )
     for( ld = w->LineHead; ld != NULL; ld = ld->next ) {
         total += FARstrlen( ld->data ) + 2;
     }
-    if( total > MAX_BYTES ) {
-        len = (unsigned)MAX_BYTES;
-    } else {
+    len = MAX_BYTES;
+    if( total < MAX_BYTES ) {
         len = total;
     }
 

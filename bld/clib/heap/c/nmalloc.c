@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -60,7 +60,7 @@ unsigned int    __LargestSizeB4MiniHeapRover = 0;
  * _os2lalloc always allocates from lower memory
  */
 
-unsigned char _os2_use_obj_any = 0;
+bool            _os2_use_obj_any = false;
 
 _WCRTLINK int _use_os2_high_mem( int fUseHighMem )
 {
@@ -144,7 +144,7 @@ _WCRTLINK void_nptr _nmalloc( size_t amt )
     unsigned char   expanded;
     heapblk_nptr    heap;
 #if defined(__OS2__) && !defined(_M_I86)
-    unsigned char   use_obj_any;
+    bool            use_obj_any;
 #endif
 
     if( (amt == 0) || (amt > -sizeof( heapblk )) ) {

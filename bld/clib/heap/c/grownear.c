@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -63,6 +63,7 @@
 #include "roundmac.h"
 #include "heapacc.h"
 #include "heap.h"
+#include "bool.h"
 
 
 #define FIRST_FRL(h)    ((freelist_nptr)(h + 1))
@@ -490,17 +491,17 @@ int __ExpandDGROUP( unsigned amount )
 }
 
 #if defined(__OS2__) && !defined(_M_I86)
-unsigned char _os2_obj_any_supported = FALSE;
+bool _os2_obj_any_supported = false;
 
 static void _check_os2_obj_any_support( void )
 {
     PBYTE           p;
     APIRET          rc;
 
-    _os2_obj_any_supported = TRUE;
+    _os2_obj_any_supported = true;
     rc = DosAllocMem( (PPVOID)&p, 1, PAG_COMMIT | PAG_READ | OBJ_ANY );
     if( rc == ERROR_INVALID_PARAMETER ) {
-        _os2_obj_any_supported = FALSE;
+        _os2_obj_any_supported = false;
     } else if( rc == 0 ) {
         DosFreeMem( p );
     }

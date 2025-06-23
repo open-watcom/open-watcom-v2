@@ -35,8 +35,11 @@
  */
 
 #ifdef _M_IX86
-#include <i86.h>
-#include "extender.h"
+    #include <i86.h>
+    #include "extender.h"
+#endif
+#if defined(__OS2__) && !defined(_M_I86)
+    #include "bool.h"
 #endif
 
 
@@ -69,34 +72,34 @@
 #define FRL_SIZE                    __ROUND_UP_SIZE( sizeof( freelist ), HEAP_ROUND_SIZE )
 
 #if defined( _M_IX86 )
- #define _DGroup()          _FP_SEG((&__nheapbeg))
+    #define _DGroup()           _FP_SEG((&__nheapbeg))
 #else
- #define _DGroup()          0
+    #define _DGroup()           0
 #endif
 
-#define __HM_SUCCESS        0
-#define __HM_FAIL           1
-#define __HM_TRYGROW        2
+#define __HM_SUCCESS            0
+#define __HM_FAIL               1
+#define __HM_TRYGROW            2
 
-#define PARAS_IN_64K        (0x1000)
-#define END_TAG             (/*0x....ffff*/ ~0U)
-#define OVERFLOW_64K(x)     ((x) > 0x10000)
+#define PARAS_IN_64K            (0x1000)
+#define END_TAG                 (/*0x....ffff*/ ~0U)
+#define OVERFLOW_64K(x)         ((x) > 0x10000)
 
-#define GET_BLK_SIZE(p)             ((p)->len & ~1U)
-#define IS_BLK_INUSE(p)             (((p)->len & 1) != 0)
-#define SET_BLK_SIZE_INUSE(p,s)     (p)->len = ((s) | 1)
-#define SET_BLK_INUSE(p)            (p)->len |= 1
-#define IS_BLK_END(p)               ((p)->len == END_TAG)
-#define SET_BLK_END(p)              (p)->len = END_TAG
+#define GET_BLK_SIZE(p)         ((p)->len & ~1U)
+#define IS_BLK_INUSE(p)         (((p)->len & 1) != 0)
+#define SET_BLK_SIZE_INUSE(p,s) (p)->len = ((s) | 1)
+#define SET_BLK_INUSE(p)        (p)->len |= 1
+#define IS_BLK_END(p)           ((p)->len == END_TAG)
+#define SET_BLK_END(p)          (p)->len = END_TAG
 
-#define NEXT_BLK(p)                 ((unsigned)(p) + (p)->len)
-#define NEXT_BLK_A(p)               ((unsigned)(p) + GET_BLK_SIZE(p))
+#define NEXT_BLK(p)             ((unsigned)(p) + (p)->len)
+#define NEXT_BLK_A(p)           ((unsigned)(p) + GET_BLK_SIZE(p))
 
 #ifdef _M_I86
-#define BHEAP(s)            ((heapblk __based(s) *)0)
-#define FRLPTR(s)           freelist __based(s) *
+    #define BHEAP(s)            ((heapblk __based(s) *)0)
+    #define FRLPTR(s)           freelist __based(s) *
 #else
-#define FRLPTR(s)           freelist_nptr
+    #define FRLPTR(s)           freelist_nptr
 #endif
 
 #define SET_HEAP_END(s,p)   ((FRLPTR(s))(p))->len = END_TAG; ((FRLPTR(s))(p))->prev.offs = 0
@@ -195,8 +198,8 @@ extern unsigned int     __LargestSizeB4MiniHeapRover;
 extern heapblk_nptr     __MiniHeapFreeRover;
 
 #if defined(__OS2__) && !defined(_M_I86)
-extern unsigned char    _os2_use_obj_any;           // Prefer high memory heap block
-extern unsigned char    _os2_obj_any_supported;     // DosAllocMem supports OBJ_ANY
+extern bool             _os2_use_obj_any;           // Prefer high memory heap block
+extern bool             _os2_obj_any_supported;     // DosAllocMem supports OBJ_ANY
 #endif
 
 extern size_t           __LastFree( void );

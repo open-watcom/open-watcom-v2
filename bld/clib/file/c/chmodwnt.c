@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,7 +41,6 @@
 
 _WCRTLINK int __F_NAME(chmod,_wchmod)( const CHAR_TYPE *pathname, mode_t pmode )
 {
-    BOOL        rc;
     DWORD       attr;
 
     attr = __lib_GetFileAttributes( pathname );
@@ -51,8 +51,7 @@ _WCRTLINK int __F_NAME(chmod,_wchmod)( const CHAR_TYPE *pathname, mode_t pmode )
     if( !( pmode & S_IWRITE ) ) {
         attr |= FILE_ATTRIBUTE_READONLY;
     }
-    rc = __lib_SetFileAttributes( pathname, attr );
-    if( rc == FALSE ) {
+    if( __lib_SetFileAttributes( pathname, attr ) == 0 ) {
         return( __set_errno_nt() );
     }
     return( 0 );

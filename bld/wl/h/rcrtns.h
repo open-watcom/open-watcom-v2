@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,31 +31,11 @@
 ****************************************************************************/
 
 
-#ifndef RCRTNS_INLCUDED
-#define RCRTNS_INLCUDED
+#ifndef RCRTNS_INCLUDED
+#define RCRTNS_INCLUDED
 
 #include "wlinkcfg.h"
 #include "alloc.h"
-
-#define RESOPEN         res_open
-#define RESCLOSE        res_close
-#define RESWRITE        res_write
-#define RESREAD         res_read
-#define RESSEEK         res_seek
-#define RESTELL         res_tell
-#define RESIOERR        res_ioerr
-
-#define RESALLOC        ChkLAlloc
-#define RESFREE         LFree
-
-#define RCREALLOC       LnkRealloc
-
-extern FILE             *res_open( const char *name, wres_open_mode omode );
-extern bool             res_close( FILE *fp );
-extern size_t           res_read( FILE *fp, void *buf, size_t len );
-extern size_t           res_write( FILE *fp, const void *buf, size_t len );
-extern bool             res_seek( FILE *fp, long off, int where );
-extern long             res_tell( FILE *fp );
-extern bool             res_ioerr( FILE *fp, size_t rc );
+#include "_rcrtns.h"
 
 #endif

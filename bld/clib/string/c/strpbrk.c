@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -63,7 +64,7 @@ _WCRTLINK CHAR_TYPE *__F_NAME(strpbrk,wcspbrk) ( const CHAR_TYPE *str, const CHA
 
 #else
     char            tc;
-    unsigned char   vector[ CHARVECTOR_SIZE ];
+    unsigned char   vector[CHARVECTOR_SIZE];
 
     __setbits( vector, charset );
     for( ; tc = *str; ++str ) {

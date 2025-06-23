@@ -1346,15 +1346,15 @@ void __MakeDOSDT( FILETIME *NT_stamp, unsigned short *d, unsigned short *t )
 
 #define NT_FIND_ATTRIBUTES_MASK (FILE_ATTRIBUTE_HIDDEN | FILE_ATTRIBUTE_SYSTEM | FILE_ATTRIBUTE_DIRECTORY)
 
-BOOL __NTFindNextFileWithAttr( HANDLE h, unsigned nt_attrib, LPWIN32_FIND_DATA ffd )
+bool __NTFindNextFileWithAttr( HANDLE h, unsigned nt_attrib, LPWIN32_FIND_DATA ffd )
 /**********************************************************************************/
 {
     for( ;; ) {
         if( (nt_attrib | ~ffd->dwFileAttributes) & NT_FIND_ATTRIBUTES_MASK ) {
-            return( TRUE );
+            return( true );
         }
         if( !FindNextFile( h, ffd ) ) {
-            return( FALSE );
+            return( false );
         }
     }
 }
@@ -1493,7 +1493,7 @@ int closedir( DIR *dirp )
         errno = ERANGE;
         return( -1 );
     }
-    if( !FindClose( DTAXXX_HANDLE_OF( dirp->d_dta ) ) ) {
+    if( FindClose( DTAXXX_HANDLE_OF( dirp->d_dta ) ) == 0 ) {
         return( -1 );
     }
     dirp->d_first = _DIR_CLOSED;

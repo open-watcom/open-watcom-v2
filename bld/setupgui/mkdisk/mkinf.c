@@ -53,7 +53,7 @@
 #include "clibext.h"
 
 
-#define SECTION_BUF_SIZE 8192   // allow long text strings
+#define SECTION_BUF_SIZE _8K    // allow long text strings
 
 #define IS_EMPTY(p)     ((p)[0] == '\0' || (p)[0] == '.' && (p)[1] == '\0')
 

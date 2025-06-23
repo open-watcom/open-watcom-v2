@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -92,7 +92,7 @@ _WCRTLINK unsigned _dos_findnext( struct find_t *findt )
 _WCRTLINK unsigned _dos_findclose( struct find_t *findt )
 {
     if( DTAXXX_HANDLE_OF( findt->reserved ) != DTAXXX_INVALID_HANDLE ) {
-        if( !FindClose( DTAXXX_HANDLE_OF( findt->reserved ) ) ) {
+        if( FindClose( DTAXXX_HANDLE_OF( findt->reserved ) ) == 0 ) {
             return( __set_errno_nt_reterr() );
         }
     }

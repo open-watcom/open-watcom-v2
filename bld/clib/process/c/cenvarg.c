@@ -76,7 +76,7 @@ int __F_NAME(__cenvarg,__wcenvarg)(
     CHAR_TYPE           **envptr,       /* o: environment ptr (DOS 16-bit aligned to para) */
     unsigned            *envseg,        /* o: environment segment (DOS 16-bit normalized, zero for others) */
     size_t              *cmdline_len,   /* o: size required to hold cmd line */
-    int                 exec )          /* i: TRUE if for exec */
+    bool                exec )          /* i: true if for exec */
 {
     unsigned            length;         /* environment length in bytes */
     unsigned            old_amblksiz;
@@ -86,7 +86,7 @@ int __F_NAME(__cenvarg,__wcenvarg)(
     int                 i;
 
 #if !defined( __DOS_086__ )
-    exec = exec;
+    (void)exec;
 #endif
     if( envp == NULL ) {
         CHECK_WIDE_ENV();

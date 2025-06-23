@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -65,11 +65,9 @@
 {
 #ifdef __NT__
     WIN32_FIND_DATA ffd;
-    BOOL            rc;
 
     /*** Try to find another matching file ***/
-    rc = __lib_FindNextFile( (HANDLE)handle, &ffd );
-    if( rc == FALSE ) {
+    if( __lib_FindNextFile( (HANDLE)handle, &ffd ) == 0 ) {
         return( __set_errno_nt() );
     }
     if( !__NTFindNextFileWithAttr( (HANDLE)handle, NT_FIND_ATTR, &ffd ) ) {

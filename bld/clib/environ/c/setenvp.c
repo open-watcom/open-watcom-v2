@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -255,7 +255,7 @@ void __freeenvp( void )
         lib_free( _RWD_environ );
         _RWD_environ = NULL;
     }
-  #if defined( CLIB_USE_OTHER_ENV )
+  #if defined( CLIB_USE_ALT_ENV )
     if( _RWD_wenviron != NULL ) {
         lib_free( _RWD_wenviron );
         _RWD_wenviron = NULL;

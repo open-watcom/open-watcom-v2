@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -234,10 +234,10 @@ static MRESULT _MainWindowProc( HWND hwnd, USHORT msg, MPARAM mp1, MPARAM mp2 )
                     _MovePageDown( w );
                     break;
                 case VK_HOME:
-                    _MoveToLine( w, 1, TRUE );
+                    _MoveToLine( w, 1, true );
                     break;
                 case VK_END:
-                    _MoveToLine( w, _GetLastLineNumber( w ), TRUE );
+                    _MoveToLine( w, _GetLastLineNumber( w ), true );
                     break;
                 default:
                     _WindowsVirtualKeyPush( vk, scan );
@@ -315,7 +315,7 @@ MRESULT EXPENTRY _MainDriver( HWND hwnd, USHORT msg, MPARAM mp1, MPARAM mp2 )
 
     case WM_SIZE:
         if( w->resizing ) {
-            w->resizing = FALSE;
+            w->resizing = false;
             break;
         }
         WinQueryWindowRect( hwnd, &rcl );
@@ -329,7 +329,7 @@ MRESULT EXPENTRY _MainDriver( HWND hwnd, USHORT msg, MPARAM mp1, MPARAM mp2 )
         WinShowPointer( HWND_DESKTOP, FALSE );
         switch( SHORT2FROMMP( mp2 ) ) {
         case SB_SLIDERPOSITION:
-            _MoveToLine( w, _GetLineFromThumbPosition( w, SHORT1FROMMP( mp2 ) ), TRUE  );
+            _MoveToLine( w, _GetLineFromThumbPosition( w, SHORT1FROMMP( mp2 ) ), true );
             break;
         case SB_PAGEDOWN:
             _MovePageDown( w );

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -53,8 +53,6 @@
 #include "rterrno.h"
 
 
-#define TRUE            1
-#define FALSE           0
 #define MIN_COM_STACK   128             /* Minimum size stack for .COM file */
 #define PSP_SIZE        256             /* Size of PSP */
 
@@ -142,7 +140,7 @@ static void resetints( void )
     (*__int23_exit)();
 }
 
-static int doalloc( unsigned size, unsigned envdata, unsigned envsize_paras )
+static bool doalloc( unsigned size, unsigned envdata, unsigned envsize_paras )
 {
     unsigned            p;
     unsigned            q;
@@ -190,7 +188,7 @@ static int doalloc( unsigned size, unsigned envdata, unsigned envsize_paras )
                     puts( "Not enough memory on exec\r\n" );
                     TinyTerminateProcess( -1 );
                 }
-                return( TRUE );
+                return( true );
             }
         }
     }
@@ -203,7 +201,7 @@ error: /* if we get an error */
         q = _blkptr( p )->next;
         TinyFreeBlock( p );
     }
-    return( FALSE );
+    return( false );
 }
 
 static void save_file_handles( void )
@@ -292,7 +290,7 @@ _WCRTLINK int execve( path, argv, envp )
         argvv[i] = argv[i];
     }
     argvv[0] = pgmname;         /* set program name */
-    envpara = __cenvarg( argvv, envp, &_envptr, &envptr, &envseg, &cmdline_len, TRUE );
+    envpara = __cenvarg( argvv, envp, &_envptr, &envptr, &envseg, &cmdline_len, true );
     if( envpara == -1 )
         goto error;
     para += __ROUND_DOWN_SIZE_TO_PARA( PSP_SIZE ) + __exec_para + __ROUND_UP_SIZE_TO_PARA( strlen( path ) );

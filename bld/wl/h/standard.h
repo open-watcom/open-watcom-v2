@@ -36,9 +36,10 @@
 #include <stddef.h>
 #include <stdarg.h>
 #include <time.h>
-#include "watcom.h"
 #include "bool.h"
+#include "machtype.h"
 #include "roundmac.h"
+#include "alloc.h"
 #include "iopath.h"
 #include "wlinkcfg.h"
 
@@ -82,7 +83,6 @@
     #define FNAMECMPSTR      stricmp     /* for case insensitive file systems */
 #endif
 
-typedef unsigned char   byte;
 typedef int             f_handle;
 
 #if defined( USE_VIRTMEM )

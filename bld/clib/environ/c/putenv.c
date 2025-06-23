@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -60,9 +60,9 @@
 #include "thread.h"
 
 
-#ifdef CLIB_USE_OTHER_ENV
+#ifdef CLIB_USE_ALT_ENV
 
-static int __other_env_update( const CHAR_TYPE *in_env_string )
+static int __alt_env_update( const CHAR_TYPE *in_env_string )
 /*
  * it updates counterpart environment data (wide or narrow)
  *
@@ -164,9 +164,9 @@ _WCRTLINK int __F_NAME(putenv,_wputenv)( const CHAR_TYPE *env_string )
 
     /*** Update the other environment ***/
 
-#ifdef CLIB_USE_OTHER_ENV
+#ifdef CLIB_USE_ALT_ENV
     if( rc == 0 ) {
-        rc = __other_env_update( env_string );
+        rc = __alt_env_update( env_string );
     }
 #endif
     return( rc );

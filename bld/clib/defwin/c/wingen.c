@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -82,16 +82,16 @@ LPWDATA _GetActiveWindowData( void )
 void _MakeWindowActive( LPWDATA w )
 {
     int         i;
-    LPWDATA     last=NULL;
+    LPWDATA     last = NULL;
 
     for( i = 0; i < _MainWindowData->window_count; i++ ) {
         if( _MainWindowData->windows[i]->active ) {
             last = _MainWindowData->windows[i];
-            last->active = FALSE;
+            last->active = false;
             break;
         }
     }
-    w->active = TRUE;
+    w->active = true;
     if( last == w )
         last = NULL;
     _ShowWindowActive( w, last );
@@ -147,8 +147,8 @@ void _WindowsExit( void )
 {
     _ExecutionComplete();
     if( !_MainWindowDestroyed ) {
-        while( _BlockingMessageLoop( FALSE ) ) {
-            ;
+        while( _BlockingMessageLoop( false ) ) {
+            /* empty */;
         }
     }
     _WindowsExitRtn = NULL;
@@ -169,7 +169,7 @@ int _DestroyOnClose( LPWDATA w )
  */
 int _YieldControl( void )
 {
-    _MessageLoop( TRUE );
+    _MessageLoop( true );
     return( TRUE );
 } /* _YieldControl */
 
@@ -201,8 +201,8 @@ void _InitFunctionPointers( void )
 _WCNORETURN void _OutOfMemoryExit( void )
 {
     _OutOfMemory();
-    while( _MessageLoop( FALSE ) )
-        ;
+    while( _MessageLoop( false ) )
+        /* empty */;
     _WindowsExitRtn = NULL;
     exit( 0 );
     // never return

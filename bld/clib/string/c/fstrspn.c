@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -41,15 +42,16 @@
 _WCRTLINK size_t _fstrspn( const char _WCFAR *str, const char _WCFAR *charset )
 {
     char            tc;
-    unsigned char   vector[ CHARVECTOR_SIZE ];
+    unsigned char   vector[CHARVECTOR_SIZE];
     size_t          len;
 
     __fsetbits( vector, charset );
     len = 0;
-    for( ; tc = *str; ++str, ++len ) {
+    for( ; (tc = *str) != '\0'; ++str, ++len ) {
         /* quit if we find any char not in charset */
-        if( GETCHARBIT( vector, tc ) == 0 )
+        if( GETCHARBIT( vector, tc ) == 0 ) {
             break;
+        }
     }
     return( len );
 }
