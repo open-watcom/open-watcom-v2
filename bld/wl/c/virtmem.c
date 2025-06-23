@@ -33,7 +33,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include "linkstd.h"
-#include "roundmac.h"
 #include "virtmem.h"
 #if defined( USE_VIRTMEM )
     #include "walloca.h"

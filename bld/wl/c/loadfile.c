@@ -36,7 +36,7 @@
 #include "walloca.h"
 #include "linkstd.h"
 #if !defined( __UNIX__ ) || defined(__WATCOMC__)
-#include <process.h>
+    #include <process.h>
 #endif
 #include "ring.h"
 #include "pcobj.h"

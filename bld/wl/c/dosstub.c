@@ -31,7 +31,6 @@
 
 
 #include <stddef.h>
-#include "watcom.h"
 #include "linkstd.h"
 #include "exedos.h"
 #include "loadfile.h"
