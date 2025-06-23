@@ -31,9 +31,6 @@
 
 #include <string.h>
 #include "linkstd.h"
-#include "msg.h"
-#include "alloc.h"
-#include "wlnkmsg.h"
 #include "pcobj.h"
 #include "library.h"
 #include "ar.h"

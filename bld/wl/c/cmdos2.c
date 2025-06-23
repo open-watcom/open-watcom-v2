@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,17 +32,14 @@
 
 #include <string.h>
 #include <ctype.h>
-#include "linkstd.h"
-#include "alloc.h"
 #include "walloca.h"
+#include "linkstd.h"
 #include "cmdutils.h"
 #include "cmdos2.h"
 #include "exeos2.h"
 #include "exepe.h"
 #include "loados2.h"
 #include "loadpe.h"
-#include "msg.h"
-#include "wlnkmsg.h"
 #include "objfree.h"
 #include "cmdline.h"
 #include "fileio.h"

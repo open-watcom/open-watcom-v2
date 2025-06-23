@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2023-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,9 +35,6 @@
 #include "linkstd.h"
 #include "toc.h"
 #include "hash.h"
-#include "alloc.h"
-#include "msg.h"
-#include "wlnkmsg.h"
 #include "virtmem.h"
 #include "reloc.h"
 #include "obj2supp.h"
@@ -46,6 +43,7 @@
 #include "specials.h"
 #include "objpass1.h"
 #include "objstrip.h"
+
 
 #define BOGUS  0xa5a5a5a5
 

@@ -33,10 +33,7 @@
 
 #include <string.h>
 #include "linkstd.h"
-#include "alloc.h"
 #include "specials.h"
-#include "msg.h"
-#include "wlnkmsg.h"
 #include "fileio.h"
 #include "virtmem.h"
 #include "exeelf.h"

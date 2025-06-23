@@ -32,12 +32,9 @@
 
 #include <stdlib.h>
 #include <string.h>
+#include "walloca.h"
 #include "linkstd.h"
 #include "pcobj.h"
-#include "msg.h"
-#include "walloca.h"
-#include "alloc.h"
-#include "wlnkmsg.h"
 #include "library.h"
 #include "objnode.h"
 #include "fileio.h"

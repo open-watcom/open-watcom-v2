@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,9 +36,6 @@
 #include <stdlib.h>
 #include "linkstd.h"
 #include "pcobj.h"
-#include "msg.h"
-#include "alloc.h"
-#include "wlnkmsg.h"
 #include "fileio.h"
 #include "ideentry.h"
 #include "strtab.h"

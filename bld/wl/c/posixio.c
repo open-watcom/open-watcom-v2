@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,24 +34,21 @@
 #include <string.h>
 #include <stdlib.h>
 #include <errno.h>
-#include "wio.h"
 #include <termios.h>
 #ifdef __WATCOMC__
-#include <process.h>
+    #include <process.h>
 #endif
-#include "linkstd.h"
-#include "msg.h"
-#include "alloc.h"
 #if defined( __QNX__ )
-#include <sys/proc_msg.h>
+    #include <sys/proc_msg.h>
 #endif
-#include "wlnkmsg.h"
+#include "wio.h"
+#include "linkstd.h"
 #include "wressetr.h"   // from wres project
 #include "objio.h"
-#include "alloc.h"
 #include "fileio.h"
 
 #include "clibext.h"
+
 
 static int      OpenFiles;          // the number of open files
 static unsigned LastResult;

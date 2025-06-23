@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,13 +35,11 @@
     #include <malloc.h>     /* necessary for _heapshrink() */
 #endif
 #include "linkstd.h"
-#include "msg.h"
 #include "fileio.h"
 #include "idedll.h"
 #include "idedrv.h"
 #include "ideentry.h"
 #include "wlink.h"
-#include "wlnkmsg.h"
 #include "cmdline.h"
 
 #include "clibint.h"

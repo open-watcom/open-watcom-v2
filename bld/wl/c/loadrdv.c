@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,10 +34,7 @@
 #include <exerdos.h>
 #include "pcobj.h"
 #include "newmem.h"
-#include "msg.h"
-#include "alloc.h"
 #include "reloc.h"
-#include "wlnkmsg.h"
 #include "virtmem.h"
 #include "fileio.h"
 #include "overlays.h"

@@ -33,9 +33,6 @@
 #include <string.h>
 #include <stdlib.h>
 #include "linkstd.h"
-#include "msg.h"
-#include "alloc.h"
-#include "wlnkmsg.h"
 #include "specials.h"
 #include "objnode.h"
 #include "objcalc.h"

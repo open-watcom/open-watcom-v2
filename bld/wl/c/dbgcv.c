@@ -33,7 +33,6 @@
 #include <string.h>
 #include "linkstd.h"
 #include "exepe.h"
-#include "alloc.h"
 #include "cv4w.h"
 #include "virtmem.h"
 #include "objnode.h"
@@ -43,9 +42,8 @@
 #include "loadqnx.h"    // for ToQNXIndex
 #include "ring.h"
 #include "dbgcv.h"
-#include "msg.h"
-#include "wlnkmsg.h"
 #include "specials.h"
+
 
 typedef struct cvmodinfo {
     unsigned_32         pubsize;

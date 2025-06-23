@@ -35,10 +35,7 @@
 #include <exedos.h>
 #include "pcobj.h"
 #include "newmem.h"
-#include "msg.h"
-#include "alloc.h"
 #include "reloc.h"
-#include "wlnkmsg.h"
 #include "virtmem.h"
 #include "fileio.h"
 #include "overlays.h"

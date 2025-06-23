@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,25 +36,26 @@
 #if defined( __WATCOMC__ )
     #include <malloc.h>     /* necessary for __(n/f)memneed */
 #endif
+#if defined( __QNX__ )
+    #include <sys/seginfo.h>
+#endif
 #include "trmem.h"
 #include "linkstd.h"
-#include "msg.h"
-#include "wlnkmsg.h"
 #include "library.h"
 #include "virtmem.h"
 #include "reloc.h"
 #include "objcache.h"
-#include "alloc.h"
 #include "wresmem.h"
-#if defined( __QNX__ )
-    #include <sys/seginfo.h>
+#ifdef TRMEM
+    #include "ideentry.h"
+#endif
 
-    unsigned LastChanceSeg;
+
+#if defined( __QNX__ )
+unsigned LastChanceSeg;
 #endif
 
 #ifdef TRMEM
-#include "ideentry.h"
-
 void    *TrHdl;
 #endif
 

@@ -36,9 +36,6 @@
 #include <errno.h>
 
 #include "linkstd.h"
-#include "msg.h"
-#include "alloc.h"
-#include "wlnkmsg.h"
 #include "fileio.h"
 #include "ideentry.h"
 #include "spillio.h"

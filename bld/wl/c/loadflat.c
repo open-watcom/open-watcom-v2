@@ -38,7 +38,6 @@
 #include "loados2.h"
 #include "loadfile.h"
 #include "specials.h"
-#include "alloc.h"
 #include "virtmem.h"
 #include "fileio.h"
 #include "impexp.h"
