@@ -116,7 +116,7 @@ static void ProcessConnection( void )
         switch( bdata.u.s.cmd ) {
         case LNK_CWD:
             status = 0;
-            if( !SetCurrentDirectory( bdata.u.s.u.data ) ) {
+            if( SetCurrentDirectory( bdata.u.s.u.data ) == 0 ) {
                 status = GetLastError();
             }
             BatservWriteData( LNK_STATUS, &status, sizeof( status ) );

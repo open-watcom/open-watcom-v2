@@ -105,7 +105,7 @@ typedef union {
     long                _32[2];
 } __i64;
 
-static int zero_pad( int handle )           /* 09-jan-95 */
+static int zero_pad( int handle )
 /*******************************/
 {
 #if defined(__NT__)
@@ -147,8 +147,9 @@ static int zero_pad( int handle )           /* 09-jan-95 */
         } else {
             write_amt = cur_ptr._64 - end_ptr._64;
         }
-        if( WriteFile( h, zeroBuf, write_amt, &number_of_bytes_written, NULL ) == 0 )
+        if( WriteFile( h, zeroBuf, write_amt, &number_of_bytes_written, NULL ) == 0 ) {
             return( -1 );
+        }
         end_ptr._64 = end_ptr._64 + write_amt;
     }
 

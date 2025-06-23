@@ -210,13 +210,13 @@ _WCRTLINK int _CrtDbgReport( int reporttype, const char *filename,
 #ifdef __NT__
     DWORD           byteswritten;
 #endif
-    char                usermsg[MAX_MSG_LEN] = { 0 };
-    char                linemsg[MAX_MSG_LEN] = { 0 };
-    char                outmsg[MAX_MSG_LEN] = { 0 };
-    va_list             args;
-    size_t              len;
-    int                 retval = 0;
-    int                 rc;
+    char            usermsg[MAX_MSG_LEN] = { 0 };
+    char            linemsg[MAX_MSG_LEN] = { 0 };
+    char            outmsg[MAX_MSG_LEN] = { 0 };
+    va_list         args;
+    size_t          len;
+    int             retval = 0;
+    int             rc;
 
     /* unused parameters */ (void)modulename;
 

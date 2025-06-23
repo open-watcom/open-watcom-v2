@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,11 +40,7 @@
 
 _WCRTLINK int __F_NAME(chdir,_wchdir)( const CHAR_TYPE *path )
 {
-    BOOL                rc;
-
-    rc = __lib_SetCurrentDirectory( path );
-
-    if( rc == FALSE ) {
+    if( __lib_SetCurrentDirectory( path ) == 0 ) {
         return( __set_errno_nt() );
     }
     return( 0 );
