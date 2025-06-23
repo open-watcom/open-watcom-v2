@@ -162,7 +162,6 @@ static void DebuggerMain( void *_info ) {
     PROCESS_INFORMATION         procinfo;
     CommunicationBuffer         data;
     BOOL                        error;
-    BOOL                        ret;
     char                        buf[256];
 
     error = FALSE;
@@ -191,8 +190,7 @@ static void DebuggerMain( void *_info ) {
                 &procinfo ) == 0 ) {    /* structure to get process info */
             if( info->errhdler == NULL ) {
                 RCsprintf( buf, STR_CANT_CREATE_PROCESS, info->info.path );
-                MessageBox( NULL, buf, AppName, MB_OK | MB_ICONEXCLAMATION
-                                                | MB_SETFOREGROUND );
+                MessageBox( NULL, buf, AppName, MB_OK | MB_ICONEXCLAMATION | MB_SETFOREGROUND );
             }
             error = TRUE;
         }
