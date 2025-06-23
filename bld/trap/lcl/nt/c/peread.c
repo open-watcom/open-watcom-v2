@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -42,14 +42,14 @@ bool SeekRead( HANDLE handle, DWORD newpos, void *buff, WORD size )
  * seek to a specified spot in the file, and read some data
  */
 {
-    int     rc;
     DWORD   bytes;
 
     if( SetFilePointer( handle, newpos, NULL, FILE_BEGIN ) == INVALID_SET_FILE_POINTER ) {
-        return( false );
+        if( GetLastError() != NO_ERROR ) {
+            return( false );
+        }
     }
-    rc = ReadFile( handle, buff, size, &bytes, NULL );
-    if( !rc ) {
+    if( ReadFile( handle, buff, size, &bytes, NULL ) == 0 ) {
         return( false );
     }
     if( bytes != size ) {
@@ -108,10 +108,7 @@ bool GetEXEHeader( HANDLE handle, header_info *hi, WORD *stack )
             DWORD           pos;
 
             off = ne_header_off + hi->u.nehdr.resident_off;
-            if( SetFilePointer( handle, off, NULL, FILE_BEGIN ) == INVALID_SET_FILE_POINTER ) {
-                return( false );
-            }
-            if( !ReadFile( handle, &len, sizeof( len ), &bytes, NULL ) ) {
+            if( !SeekRead( handle, off, &len, sizeof( len ) ) ) {
                 return( false );
             }
             if( len > sizeof( hi->modname ) - 1 ) {
@@ -186,7 +183,9 @@ bool GetModuleName( HANDLE fhdl, char *buff, size_t maxlen )
         return( false );
     }
     if( SetFilePointer( fhdl, obj.physical_offset + expdir.name_rva - obj.rva, NULL, FILE_BEGIN ) == INVALID_SET_FILE_POINTER ) {
-        return( false );
+        if( GetLastError() != NO_ERROR ) {
+            return( false );
+        }
     }
     if( maxlen > 0 )
         maxlen--;

@@ -138,6 +138,7 @@ trap_retval TRAP_FILE( open )( void )
 trap_retval TRAP_FILE( seek )( void )
 {
     DWORD               rc;
+    DWORD               error;
     file_seek_req       *acc;
     file_seek_ret       *ret;
 
@@ -147,7 +148,10 @@ trap_retval TRAP_FILE( seek )( void )
     rc = SetFilePointer( TRPH2LH( acc ), acc->pos, NULL, local_seek_method[acc->mode] );
     ret->pos = rc;
     if( rc == INVALID_SET_FILE_POINTER ) {
-        ret->err = GetLastError();
+        error = GetLastError();
+        if( error != NO_ERROR ) {
+            ret->err = error;
+        }
     }
     return( sizeof( *ret ) );
 }

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -123,7 +123,12 @@ int DIGCLIENTRY( Seek )( FILE *fp, unsigned long offset, dig_seek where )
         mode = FILE_END;
         break;
     }
-    return( SetFilePointer( FP2WH( fp ), offset, 0, mode ) == INVALID_SET_FILE_POINTER );
+    if( SetFilePointer( FP2WH( fp ), offset, 0, mode ) == INVALID_SET_FILE_POINTER ) {
+        if( GetLastError() != NO_ERROR ) {
+            return( 1 );
+        }
+    }
+    return( 0 );
 }
 
 unsigned long DIGCLIENTRY( Tell )( FILE *fp )

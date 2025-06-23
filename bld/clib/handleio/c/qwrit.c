@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -98,7 +98,7 @@ int __qwrite( int handle, const void *buffer, unsigned len )
 #if defined(__NT__)
     DWORD           len_written;
     HANDLE          h;
-    int             error;
+    DWORD           error;
 #elif defined(__OS2__)
     OS_UINT         len_written;
     APIRET          rc;
@@ -117,10 +117,12 @@ int __qwrite( int handle, const void *buffer, unsigned len )
         _AccessFileH( handle );
         atomic = 1;
 #if defined(__NT__)
-        if( SetFilePointer( h, 0, NULL, FILE_END ) == -1 ) {
+        if( SetFilePointer( h, 0, NULL, FILE_END ) == INVALID_SET_FILE_POINTER ) {
             error = GetLastError();
-            _ReleaseFileH( handle );
-            return( __set_errno_dos( error ) );
+            if( error != NO_ERROR ) {
+                _ReleaseFileH( handle );
+                return( __set_errno_dos( error ) );
+            }
         }
 #elif defined(__OS2__)
         rc = DosChgFilePtr( handle, 0L, SEEK_END, &dummy );

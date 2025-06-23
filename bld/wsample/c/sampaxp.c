@@ -278,14 +278,14 @@ static void internalErrorMsg( int msg )
  */
 static bool seekRead( HANDLE handle, DWORD newpos, void *buff, WORD size )
 {
-    int         rc;
-    DWORD       bytes;
+    DWORD   bytes;
 
-    if( SetFilePointer( handle, newpos, 0, SEEK_SET ) == INVALID_SET_FILE_POINTER ) {
-        return( false );
+    if( SetFilePointer( handle, newpos, NULL, FILE_BEGIN ) == INVALID_SET_FILE_POINTER ) {
+        if( GetLastError() != NO_ERROR ) {
+            return( false );
+        }
     }
-    rc = ReadFile( handle, buff, size, &bytes, NULL );
-    if( !rc ) {
+    if( ReadFile( handle, buff, size, &bytes, NULL ) == 0 ) {
         return( false );
     }
     if( bytes != size ) {

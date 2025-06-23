@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -110,8 +110,7 @@ static int zero_pad( int handle )           /* 09-jan-95 */
 {
 #if defined(__NT__)
     HANDLE      h;
-    DWORD       dw_ptr;
-    DWORD       dw_error;
+    DWORD       pos;
     DWORD       number_of_bytes_written;
     unsigned    write_amt;
     __i64       cur_ptr;
@@ -120,25 +119,26 @@ static int zero_pad( int handle )           /* 09-jan-95 */
     char        zeroBuf[PAD_SIZE];
 
     h = __getOSHandle( handle );
-    dw_error = NO_ERROR;
 
     cur_ptr._64 = 0;
-    dw_ptr = SetFilePointer( h, cur_ptr._32[0], &cur_ptr._32[1], FILE_CURRENT );
-    if( dw_ptr == INVALID_SET_FILE_POINTER ) { // this might be OK so
-        dw_error = GetLastError() ;
+    pos = SetFilePointer( h, cur_ptr._32[0], &cur_ptr._32[1], FILE_CURRENT );
+    if( pos == INVALID_SET_FILE_POINTER ) {
+        // this might be OK so need check error
+        if( GetLastError() != NO_ERROR ) {
+            return( -1 );
+        }
     }
-    if( dw_error != NO_ERROR )
-        return( -1 );
-    cur_ptr._32[0] = dw_ptr;
+    cur_ptr._32[0] = pos;
 
     end_ptr._64 = 0;
-    dw_ptr = SetFilePointer( h, end_ptr._32[0], &end_ptr._32[1], FILE_END );
-    if( dw_ptr == INVALID_SET_FILE_POINTER ) { // this might be OK so
-        dw_error = GetLastError() ;
+    pos = SetFilePointer( h, end_ptr._32[0], &end_ptr._32[1], FILE_END );
+    if( pos == INVALID_SET_FILE_POINTER ) {
+        // this might be OK so need check error
+        if( GetLastError() != NO_ERROR ) {
+            return( -1 );
+        }
     }
-    if( dw_error != NO_ERROR )
-        return( -1 );
-    end_ptr._32[0] = dw_ptr;
+    end_ptr._32[0] = pos;
 
     memset( zeroBuf, 0, PAD_SIZE );
 
@@ -149,19 +149,18 @@ static int zero_pad( int handle )           /* 09-jan-95 */
             write_amt = cur_ptr._64 - end_ptr._64;
         }
         rc = WriteFile( h, zeroBuf, write_amt, &number_of_bytes_written, NULL );
-        dw_error = GetLastError() ;
         if( rc == 0 )
             return( -1 );
         end_ptr._64 = end_ptr._64 + write_amt;
     }
 
     if( cur_ptr._64 != end_ptr._64 ) {
-        dw_ptr = SetFilePointer( h, cur_ptr._32[0], &cur_ptr._32[1], FILE_BEGIN );
-        if( dw_ptr == INVALID_SET_FILE_POINTER ) { // this might be OK so
-            dw_error = GetLastError() ;
-        }
-        if( dw_error != NO_ERROR ) {
-            return( -1 );
+        pos = SetFilePointer( h, cur_ptr._32[0], &cur_ptr._32[1], FILE_BEGIN );
+        if( pos == INVALID_SET_FILE_POINTER ) {
+            // this might be OK so need check error
+            if( GetLastError() != NO_ERROR ) {
+                return( -1 );
+            }
         }
     }
     return( 0 );
@@ -274,7 +273,7 @@ static int os_write( int handle, const void *buffer, unsigned len, unsigned *amt
     HANDLE          h;
     LONG            cur_ptr_low;
     LONG            cur_ptr_high;
-    DWORD           rc1;
+    DWORD           error;
 #elif defined(__OS2__)
     unsigned long   dummy;
     APIRET          rc1;
@@ -310,11 +309,12 @@ static int os_write( int handle, const void *buffer, unsigned len, unsigned *amt
         if( GetFileType( h ) == FILE_TYPE_DISK ) {
             cur_ptr_low = 0;
             cur_ptr_high = 0;
-            rc1 = SetFilePointer( h, cur_ptr_low, &cur_ptr_high, FILE_END );
-            if( rc1 == INVALID_SET_FILE_POINTER ) { // this might be OK so
-                if( GetLastError() != NO_ERROR ) {
+            if( SetFilePointer( h, cur_ptr_low, &cur_ptr_high, FILE_END ) == INVALID_SET_FILE_POINTER ) {
+                // this might be OK so need check error
+                error = GetLastError() ;
+                if( error != NO_ERROR ) {
                     _ReleaseFileH( handle );
-                    return( __set_errno_nt() );
+                    return( __set_errno_dos( error ) );
                 }
             }
         }

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -72,6 +72,7 @@ _WCRTLINK int _chsize( int hid, long size )
     long        oldSize;
     long        rc;
     HANDLE      h;
+    DWORD       error;
 
     __handle_check( hid, -1 );
     h = __getOSHandle( hid );
@@ -91,10 +92,12 @@ _WCRTLINK int _chsize( int hid, long size )
         position plus the size of the buffer written, leaving the intervening
         bytes uninitialized.
     */
-    rc = SetFilePointer( h, size, 0, FILE_BEGIN );
-    if( rc == -1L ) {
-        _ReleaseFileH( hid );
-        return( __set_errno_nt() );
+    if( SetFilePointer( h, size, 0, FILE_BEGIN ) == INVALID_SET_FILE_POINTER ) {
+        error = GetLastError();
+        if( error != NO_ERROR ) {
+            _ReleaseFileH( hid );
+            return( __set_errno_dos( error ) );
+        }
     }
     if( !SetEndOfFile( h ) ) {
         _ReleaseFileH( hid );
